@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "[
 			 Unit group, designed on the basis of the Unified Code for Units of Measure (UCUM),
@@ -37,7 +37,7 @@ create
 
 feature -- Initialisation
 
-	make(a_file_name:STRING) is
+	make(a_file_name:STRING)
 		require
 			File_name_exists: a_file_name /= Void and then not a_file_name.is_empty
 		local
@@ -64,14 +64,14 @@ feature -- Initialisation
 
 feature -- Definitions
 
-	Id_section_name:STRING is "identification"
+	Id_section_name:STRING = "identification"
 			-- the first section in the file is indicated by "[Identification]"
 			-- (case insensitive match)
 
-	Units_section_name:STRING is "units"
+	Units_section_name:STRING = "units"
 			-- the second section in the file is indicated by "[units]
 
-	Id_group_name:STRING is "GROUP_NAME"
+	Id_group_name:STRING = "GROUP_NAME"
 			-- tag name for units group name, under identification section of file
 
 feature -- Access
@@ -85,7 +85,7 @@ feature -- Access
 	units_by_symbol: HASH_TABLE[UNIT_DESCRIPTOR, STRING]
 			-- unit table, in the form of a series of UNIT_DESCRIPTORs, keyed by unit symbol
 
-	unit(a_name:STRING):UNIT_DESCRIPTOR is
+	unit(a_name:STRING):UNIT_DESCRIPTOR
 			-- unit descriptor for unit `a_name' or else Void
 		require
 			Name_exists: a_name /= Void and then not a_name.is_empty
@@ -93,7 +93,7 @@ feature -- Access
 			Result := units.item(a_name)
 		end
 
-	unit_for_symbol(a_symbol:STRING):UNIT_DESCRIPTOR is
+	unit_for_symbol(a_symbol:STRING):UNIT_DESCRIPTOR
 			-- unit descriptor for unit `a_symbol' or else Void
 		require
 			Symbol_exists: a_symbol /= Void and then not a_symbol.is_empty
@@ -101,21 +101,21 @@ feature -- Access
 			Result := units_by_symbol.item(a_symbol)
 		end
 
-	has_unit(a_name:STRING):BOOLEAN is
+	has_unit(a_name:STRING):BOOLEAN
 		require
 			Name_exists: a_name /= Void and then not a_name.is_empty
 		do
 			Result := units.has(a_name)
 		end
 
-	has_unit_for_symbol(a_symbol:STRING):BOOLEAN is
+	has_unit_for_symbol(a_symbol:STRING):BOOLEAN
 		require
 			Symbol_exists: a_symbol /= Void and then not a_symbol.is_empty
 		do
 			Result := units_by_symbol.has(a_symbol)
 		end
 
-	match_length_for_symbol(a_symbol:STRING):INTEGER is
+	match_length_for_symbol(a_symbol:STRING):INTEGER
 		require
 			Symbol_exists: a_symbol /= Void and then not a_symbol.is_empty
 		do
@@ -128,7 +128,7 @@ feature -- Access
 
 feature -- Output
 
-	out:STRING is
+	out:STRING
 		do
 			create Result.make(0)
 			Result.append(group_name + "%N")

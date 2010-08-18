@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Information Model"
 
 	description: "Test PARTY_RELATED"
@@ -21,21 +21,21 @@ inherit
 			check_result
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title: STRING is "TC_PARTY_RELATED"
+	title: STRING = "TC_PARTY_RELATED"
 
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		local
 			a_party: PARTY_RELATED
 		do
@@ -44,7 +44,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 		do
 		end
 

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Resuable Library Project"
 	description: "Shared UML model"
 	keywords:    "UML, introspection, reflection"
@@ -21,12 +21,12 @@ inherit
 
 feature -- Representation
 
-	model_rep: DT_COMPLEX_OBJECT_NODE is
+	model_rep: DT_COMPLEX_OBJECT_NODE
 		do
 			Result := model_rep_cell.item
 		end
 
-	set_model_rep(an_obj: DT_COMPLEX_OBJECT_NODE) is
+	set_model_rep(an_obj: DT_COMPLEX_OBJECT_NODE)
 			-- put a new model_rep object
 		require
 			an_object_exists: an_obj /= Void
@@ -34,13 +34,13 @@ feature -- Representation
 			model_rep_cell.put(an_obj)
 		end
 		
-	object_node_stack: ARRAYED_STACK [DT_COMPLEX_OBJECT_NODE] is
+	object_node_stack: ARRAYED_STACK [DT_COMPLEX_OBJECT_NODE]
 			-- 
 		once
 			create Result.make(0)
 		end
 		
-	attribute_node_stack: ARRAYED_STACK [DT_ATTRIBUTE_NODE] is
+	attribute_node_stack: ARRAYED_STACK [DT_ATTRIBUTE_NODE]
 			-- 
 		once
 			create Result.make(0)
@@ -48,7 +48,7 @@ feature -- Representation
 		
 feature {NONE} -- Implementation
 
-	model_rep_cell: CELL [DT_COMPLEX_OBJECT_NODE] is
+	model_rep_cell: CELL [DT_COMPLEX_OBJECT_NODE]
 		once
 			create Result.put(Void)
 		end

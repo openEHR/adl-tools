@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Resuable Library Project"
 	description: "[
 			 UML TypedElement abstraction, as defined in OMG UML 2.0 Infrastructure 
@@ -25,7 +25,7 @@ inherit
 
 feature -- Initialisation
 
-	make is
+	make
 			-- 
 		do
 			create generalization.make
@@ -41,13 +41,13 @@ feature -- Access
 
 feature -- Modification
 
-	set_is_abstract is
+	set_is_abstract
 			-- 
 		do
 			is_abstract := True
 		end
 		
-	add_generalization(a_gen: UML_GENERALIZATION) is
+	add_generalization(a_gen: UML_GENERALIZATION)
 			-- add a generalization parent
 		require
 			a_gen_exists: a_gen /= Void

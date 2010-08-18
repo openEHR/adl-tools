@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "[
@@ -36,12 +36,12 @@ create
 
 feature -- Initialization
 
-	default_create is
+	default_create
 		do
 			create items.make
 		end
 
-	make (an_item_list: LINKED_LIST [DV_TEXT]) is
+	make (an_item_list: LINKED_LIST [DV_TEXT])
 		require
 			items_exists: an_item_list /= void and then not an_item_list.is_empty
 		do
@@ -50,24 +50,24 @@ feature -- Initialization
 			items_set: items = an_item_list
 		end
 
-	make_from_string(str:STRING) is
+	make_from_string(str:STRING)
 		do
 		end
 
-	make_from_canonical_string(str:STRING) is
+	make_from_canonical_string(str:STRING)
 		do
 		end
 
 feature -- Status Report
 
-	valid_canonical_string(str: STRING): BOOLEAN is
+	valid_canonical_string(str: STRING): BOOLEAN
 			-- True if str contains required tags
 		do
 		end
 
 feature -- Element Change
 
-	add_paragraph_item (new_item: DV_TEXT) is
+	add_paragraph_item (new_item: DV_TEXT)
 		require
 			item_valid: new_item /= void
 		do
@@ -85,7 +85,7 @@ feature -- Access
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 		do
 			create Result.make (0)
 			from
@@ -101,7 +101,7 @@ feature -- Output
 			end
 		end
 
-	as_canonical_string: STRING is
+	as_canonical_string: STRING
 		do
 			create Result.make (0)
 			Result.append ("<items>")

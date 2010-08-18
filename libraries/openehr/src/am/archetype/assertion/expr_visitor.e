@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Generic visitor class for ASSERTION objects"
 	keywords:    "visitor, assertion expressions"
@@ -15,7 +15,7 @@ deferred class EXPR_VISITOR
 
 feature -- Initialisation
 
-	initialise(an_assertion: ASSERTION) is
+	initialise(an_assertion: ASSERTION)
 			-- set assertion
 		require
 			Assertion_valid: an_assertion /= Void
@@ -25,39 +25,39 @@ feature -- Initialisation
 
 feature -- Visitor
 
-	start_expr_binary_operator(a_node: EXPR_BINARY_OPERATOR; depth: INTEGER) is
+	start_expr_binary_operator(a_node: EXPR_BINARY_OPERATOR; depth: INTEGER)
 			-- enter an EXPR_BINARY_OPERATOR
 		do
 		end
 
-	end_expr_binary_operator(a_node: EXPR_BINARY_OPERATOR; depth: INTEGER) is
+	end_expr_binary_operator(a_node: EXPR_BINARY_OPERATOR; depth: INTEGER)
 			-- exit an EXPR_BINARY_OPERATOR
 		do
 		end
 
-	start_expr_unary_operator(a_node: EXPR_UNARY_OPERATOR; depth: INTEGER) is
+	start_expr_unary_operator(a_node: EXPR_UNARY_OPERATOR; depth: INTEGER)
 			-- enter an EXPR_UNARY_OPERATOR
 		do
 		end
 
-	end_expr_unary_operator(a_node: EXPR_UNARY_OPERATOR; depth: INTEGER) is
+	end_expr_unary_operator(a_node: EXPR_UNARY_OPERATOR; depth: INTEGER)
 			-- exit an EXPR_UNARY_OPERATOR
 		do
 		end
 
-	start_expr_leaf(a_node: EXPR_LEAF; depth: INTEGER) is
+	start_expr_leaf(a_node: EXPR_LEAF; depth: INTEGER)
 			-- enter an EXPR_LEAF
 		do
 		end
 
-	end_expr_leaf(a_node: EXPR_LEAF; depth: INTEGER) is
+	end_expr_leaf(a_node: EXPR_LEAF; depth: INTEGER)
 			-- exit an EXPR_LEAF
 		do
 		end
 
 feature -- Finalisation
 
-	finalise is
+	finalise
 			-- finalise after all nodes visited
 		do
 			-- assume nothing; override in descendants

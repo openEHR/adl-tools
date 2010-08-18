@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Archetype abstraction"
 	keywords:    "archetype"
@@ -22,23 +22,66 @@ inherit
 create
 	make, make_from_differential
 
+create {ARCHETYPE_FLATTENER}
+	make_staging
+
 feature -- Initialisation
 
-	make_from_differential (a_diff: DIFFERENTIAL_ARCHETYPE) is
+	make_from_differential (a_diff: DIFFERENTIAL_ARCHETYPE)
 			-- initialise from a differential archetype
 		do
-			make(a_diff.archetype_id.deep_twin, a_diff.concept.deep_twin,
-					a_diff.original_language.code_string, a_diff.description.deep_twin,
+			make(a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
+					a_diff.original_language.code_string,
+					a_diff.description.deep_twin,
 					a_diff.definition.deep_twin, a_diff.ontology.to_flat)
-			invariants := a_diff.invariants
+			if a_diff.has_translations then
+				translations := a_diff.translations.deep_twin
+			end
+			if a_diff.has_invariants then
+				invariants := a_diff.invariants.deep_twin
+			end
 			rebuild
 			is_valid := True
 			is_generated := True
+		ensure
+			is_valid: is_valid
+			is_generated: is_generated
+		end
+
+feature {ARCHETYPE_FLATTENER} -- Initialisation
+
+	make_staging (a_diff: DIFFERENTIAL_ARCHETYPE; a_flat_parent: FLAT_ARCHETYPE)
+			-- initialise from a differential archetype and its flat parent, as preparation
+			-- for generating a flat archetype. The items from the differential are used
+			-- except for the definition, which is the flat parent version, so that the
+			-- differential definition can be overlaid on it by a merging process.
+		do
+			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
+					a_diff.original_language.code_string,
+					a_diff.description.deep_twin,
+					a_flat_parent.definition.deep_twin,
+					a_diff.ontology.to_flat)
+			if a_diff.has_translations then
+				translations := a_diff.translations.deep_twin
+			end
+			if a_diff.has_invariants then
+				invariants := a_diff.invariants.deep_twin
+			end
+			rebuild
+			is_valid := True
+			is_generated := True
+		ensure
+			is_valid: is_valid
+			is_generated: is_generated
 		end
 
 feature -- Access
 
-	ontology: !FLAT_ARCHETYPE_ONTOLOGY
+	ontology: attached FLAT_ARCHETYPE_ONTOLOGY
+
+	component_ontologies: HASH_TABLE [FLAT_ARCHETYPE_ONTOLOGY, STRING]
+			-- Compendium of flattened ontologies of all archetypes/templates used in this
+			-- archetype/template, keyed by identifier
 
 feature -- Factory
 
@@ -46,6 +89,19 @@ feature -- Factory
 			-- generate differential form of archetype if specialised, to be in differential form by removing inherited parts
 		do
 			create Result.make_from_flat(Current)
+		end
+
+feature -- Modification
+
+	add_component_ontology (an_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_archetype_id: STRING)
+		require
+			Ontology_attached: attached an_ontology
+			Archetype_id_attached: attached an_archetype_id and then not an_archetype_id.is_empty
+		do
+			if component_ontologies = Void then
+				create component_ontologies.make(0)
+			end
+			component_ontologies.put(an_ontology, an_archetype_id)
 		end
 
 end

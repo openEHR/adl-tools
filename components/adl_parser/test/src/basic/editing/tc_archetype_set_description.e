@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Test case for setting description on an archetype"
 	keywords:    "test, ADL, CADL"
@@ -32,15 +32,15 @@ create
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 	    do
 	    end
 
 feature -- Access
 
-	title: STRING is "Test Archetype set Description"
+	title: STRING = "Test Archetype set Description"
 
-	prereqs: ARRAY[STRING] is
+	prereqs: ARRAY[STRING]
 			-- ids of prerequisite test cases
 		once
 			Result := <<"TC_ARCHETYPE_CREATE", "TC_ONTOLOGY_POPULATE">>
@@ -48,7 +48,7 @@ feature -- Access
 
 feature -- testing
 
-	execute is
+	execute
 		local
 			archetype: ARCHETYPE
 			desc: RESOURCE_DESCRIPTION

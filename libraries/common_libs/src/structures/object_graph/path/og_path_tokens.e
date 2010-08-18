@@ -1,7 +1,7 @@
-indexing
+note
 
 	description: "Parser token codes"
-	generator: "geyacc version 3.7"
+	generator: "geyacc version 3.9"
 
 class OG_PATH_TOKENS
 
@@ -16,7 +16,7 @@ feature -- Last values
 
 feature -- Access
 
-	token_name (a_token: INTEGER): STRING is
+	token_name (a_token: INTEGER): STRING
 			-- Name of token `a_token'
 		do
 			inspect a_token
@@ -41,10 +41,10 @@ feature -- Access
 
 feature -- Token codes
 
-	V_ATTRIBUTE_IDENTIFIER: INTEGER is 258
-	V_STRING: INTEGER is 259
-	V_LOCAL_TERM_CODE_REF: INTEGER is 260
-	ERR_STRING: INTEGER is 261
-	SYM_MOVABLE_LEADER: INTEGER is 262
+	V_ATTRIBUTE_IDENTIFIER: INTEGER = 258
+	V_STRING: INTEGER = 259
+	V_LOCAL_TERM_CODE_REF: INTEGER = 260
+	ERR_STRING: INTEGER = 261
+	SYM_MOVABLE_LEADER: INTEGER = 262
 
 end

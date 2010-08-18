@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "[
@@ -31,7 +31,7 @@ inherit
 
 feature -- Access
 
-	Min_timezone: DV_DURATION is
+	Min_timezone: DV_DURATION
 		once
 			create Result.make_definite(0, 12, 0, 0)
 			Result := -Result
@@ -39,7 +39,7 @@ feature -- Access
 			Result.as_string.is_equal("-12:00:00")
 		end
 
-	Max_timezone: DV_DURATION is
+	Max_timezone: DV_DURATION
 		once
 			create Result.make_definite(0, 12, 0, 0)
 		ensure
@@ -52,7 +52,7 @@ feature -- Access
 
 feature -- Comparison
 
-	is_strictly_comparable_to (other: like Current): BOOLEAN is
+	is_strictly_comparable_to (other: like Current): BOOLEAN
 			-- True for all date/time types
 		do
 			Result := True

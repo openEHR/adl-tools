@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR re-usable library"
 	description: "[
 				ISO8601:2004 compliant Date/Time class, including facility to represent 
@@ -29,18 +29,18 @@ inherit
 		undefine
 			is_equal, out
 		end
-	
+
 	COMPARABLE
 		redefine
 			out
 		end
-	
+
 create
 	make_from_string, make_date_time
-	
+
 feature -- Initialisation
 
-	make_from_string(str: STRING) is
+	make_from_string(str: STRING)
 			-- make from any valid ISO date/time string
 		require
 			String_valid: str /= Void and valid_iso8601_date_time(str)
@@ -51,7 +51,7 @@ feature -- Initialisation
 			value := as_string
 		end
 
-	make_date_time(a_date: ISO8601_DATE; a_time: ISO8601_TIME) is
+	make_date_time(a_date: ISO8601_DATE; a_time: ISO8601_TIME)
 			-- create from date and time parts
 		require
 			Date_valid: a_date /= Void
@@ -62,112 +62,112 @@ feature -- Initialisation
 			time_part := a_time
 			value := as_string
 		end
-		
+
 feature -- Access
 
 	value: STRING
 			-- ISO8601 string for date/time; always equal to result of as_string
 
-	year: INTEGER is
+	year: INTEGER
 		do
 			Result := date_part.year
 		end
-	
-	month: INTEGER is
+
+	month: INTEGER
 		do
 			Result := date_part.month
 		end
-	
-	day: INTEGER is
+
+	day: INTEGER
 		do
 			Result := date_part.day
 		end
-	
-	hour: INTEGER is
+
+	hour: INTEGER
 		do
 			if time_part /= Void then
 				Result := time_part.hour
 			end
 		end
 
-	minute: INTEGER is
+	minute: INTEGER
 		do
 			if time_part /= Void then
 				Result := time_part.minute
 			end
 		end
 
-	second: INTEGER is
+	second: INTEGER
 		do
 			if time_part /= Void then
 				Result := time_part.minute
 			end
 		end
 
-	fractional_second: DOUBLE is
+	fractional_second: DOUBLE
 		do
 			if time_part /= Void then
 				Result := time_part.fractional_second
 			end
 		end
-	
-	timezone: ISO8601_TIMEZONE is
+
+	timezone: ISO8601_TIMEZONE
 		do
 			if time_part /= Void then
 				Result := time_part.timezone
 			end
 		end
-			
+
 feature -- Status Report
 
 	is_extended: BOOLEAN
 			-- True if syntax format uses separators
-			
-	month_unknown: BOOLEAN is
+
+	month_unknown: BOOLEAN
 			-- True if month is unknown
 		do
 			Result := date_part.month_unknown
 		end
 
-	day_unknown: BOOLEAN is
+	day_unknown: BOOLEAN
 			-- True if date is unknown
 		do
 			Result := date_part.day_unknown
 		end
 
-	hour_unknown: BOOLEAN is
+	hour_unknown: BOOLEAN
 			-- True if hour unknown
 		do
 			Result := time_part = Void
 		end
 
-	minute_unknown: BOOLEAN is
+	minute_unknown: BOOLEAN
 			-- True if minute unknown
 		do
 			Result := (time_part /= Void and time_part.minute_unknown)
 		end
 
-	second_unknown: BOOLEAN is
+	second_unknown: BOOLEAN
 			-- True if second unknown
 		do
 			Result := (time_part /= Void and time_part.second_unknown)
 		end
 
-	has_fractional_second: BOOLEAN is
+	has_fractional_second: BOOLEAN
 			-- True if second fraction incuded
 		do
 			Result := (time_part /= Void and time_part.has_fractional_second)
 		end
 
-	is_partial: BOOLEAN is
+	is_partial: BOOLEAN
 			-- True if either date or month unknown
 		do
 			Result := second_unknown
 		end
 
 feature -- Comparison
-	
-	infix "<" (other: like Current): BOOLEAN is
+
+	is_less alias "<" (other: like Current): BOOLEAN
 			-- Is current object less than `other'?
 		do
 			Result := to_seconds < other.to_seconds
@@ -175,7 +175,7 @@ feature -- Comparison
 
 feature -- Conversion
 
-	to_seconds: DOUBLE is
+	to_seconds: DOUBLE
 			-- date/time as a number of days since origin point of 1600-01-01
 		do
 			Result := date_part.to_days * seconds_in_day + time_part.to_seconds
@@ -183,30 +183,30 @@ feature -- Conversion
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 			-- express as ISO8601 format string
 		do
 			create Result.make(0)
 			Result.append(date_part.as_string)
 			if time_part /= Void then
 				Result.append_character(Time_leader)
-				Result.append(time_part.as_string)			
+				Result.append(time_part.as_string)
 			end
 		ensure
 			valid_iso8601_date_time(Result)
 		end
-			
-	out: STRING is
+
+	out: STRING
 		do
 			Result := as_string
 		end
-		
+
 feature {ISO8601_DATE_TIME} -- Implementation
 
 	date_part: ISO8601_DATE
-	
+
 	time_part: ISO8601_TIME
-	
+
 invariant
 	Year_valid: valid_year(year)
 	Month_valid: valid_month(month)
@@ -216,14 +216,14 @@ invariant
 	Minute_valid: not minute_unknown implies valid_minute(minute)
 	Seconds_valid: not second_unknown implies valid_second(second)
 	Fractional_second_valid: has_fractional_second implies (not second_unknown and valid_fractional_second(fractional_second))
-	
+
 	Partial_validity_month: not month_unknown
 	Partial_validity_day: not day_unknown
 	Partial_validity_hour: not hour_unknown
 	Partial_validity_minute: minute_unknown implies second_unknown
 
 	Value_validity: value.is_equal(as_string)
-	
+
 end
 
 

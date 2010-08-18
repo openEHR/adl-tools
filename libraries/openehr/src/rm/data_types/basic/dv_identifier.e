@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 	description: "[
 				 Real-world entity identifiers, such as driver's licence number, 
@@ -30,16 +30,16 @@ create
 
 feature -- Initialization
 
-	make is
+	make
 		do
 		end
 
-	make_from_string (a_str:STRING) is
+	make_from_string (a_str:STRING)
 			-- 
 		do
 		end
 	
-	make_from_canonical_string (a_str:STRING) is
+	make_from_canonical_string (a_str:STRING)
 			-- "<issuer>xxx</issuer>
 			-- <id>xxx</id>
 			-- <type>xxxx</type>"
@@ -48,7 +48,7 @@ feature -- Initialization
 	
 feature -- Status Report
 
-	valid_canonical_string(str: STRING): BOOLEAN is
+	valid_canonical_string(str: STRING): BOOLEAN
 			-- True if str contains required tags
 		do
 			Result := xml_has_tag(str, "issuer", 1) and
@@ -76,11 +76,11 @@ feature -- Modify
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 		do
 		end
 	
-	as_canonical_string: STRING is
+	as_canonical_string: STRING
 			-- 
 		do
 		end

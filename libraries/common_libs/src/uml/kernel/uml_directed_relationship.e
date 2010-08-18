@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Resuable Library Project"
 	description: "[
 			 UML TypedElement abstraction, as defined in OMG UML 2.0 Infrastructure 
@@ -24,7 +24,7 @@ inherit
 
 feature -- Initialisation
 
-	default_create is
+	default_create
 			-- 
 		do
 			create source.make

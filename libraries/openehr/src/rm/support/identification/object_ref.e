@@ -1,6 +1,6 @@
-indexing
+note
 	component:   "openEHR Common Reference Model"
-	
+
 	description: "[
 			 Class describing a reference to an object maintained outside (usually) the current 
 			 namespace, e.g. in another service. Services are usually external, e.g. available in 
@@ -25,7 +25,7 @@ class OBJECT_REF
 
 feature -- Initialization
 
-	make(a_namespace, a_type:STRING; an_object_id: OBJECT_ID) is
+	make (a_namespace, a_type: STRING; an_object_id: OBJECT_ID)
 			-- build an external ID
 		require
 			Namespace_exists: a_namespace /= Void and then not a_namespace.is_empty
@@ -40,30 +40,30 @@ feature -- Initialization
 			Type_set: type = a_type
 			Id_set: id = an_object_id
 		end
-		
+
 feature -- Access
 
-	id: OBJECT_ID 
+	id: OBJECT_ID
 			-- Globally unique id of an object, regardless of where it is stored.
 
 	namespace: STRING
-			-- Namespace to which this identifier belongs in the local system context (and possibly 
-			-- in any other openEHR compliant environment) e.g. “terminology”, “demographic”. These 
-			-- names are not yet standardised. Legal values for the namespace are 
+			-- Namespace to which this identifier belongs in the local system context (and possibly
+			-- in any other openEHR compliant environment) e.g. “terminology”, “demographic”. These
+			-- names are not yet standardised. Legal values for the namespace are
 			-- “local” | “unknown” | “[a-zA-Z][a-zA-Z0-9_-]*”
 
 	type: STRING
-			-- Name of the class of object to which this identifier type refers, e.g. “PARTY”, 
-			-- “PERSON”, “GUIDELINE” etc. These class names are from the relevant reference model. 
-			-- The type name “ANY” can be used to indicate that any type is accepted (e.g. if the 
+			-- Name of the class of object to which this identifier type refers, e.g. “PARTY”,
+			-- “PERSON”, “GUIDELINE” etc. These class names are from the relevant reference model.
+			-- The type name “ANY” can be used to indicate that any type is accepted (e.g. if the
 			-- type is unknown).
 
-	as_string: STRING is
+	as_string: STRING
 			-- 	
 		do
-			
+
 		end
-		
+
 invariant
 	Id_exists: id /= Void
 	namespace_exists: namespace /= Void and then not namespace.is_empty

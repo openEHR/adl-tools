@@ -1,11 +1,11 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Object node type representing constraint on text or term"
-	keywords:    "test, ADL"
+	keywords:    "codephrase, ADL"
 
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -17,7 +17,7 @@ class C_CODE_PHRASE
 inherit
 	C_DOMAIN_TYPE
 		redefine
-			default_create, enter_subtree, exit_subtree, synchronise_to_tree, specialisation_status
+			enter_subtree, exit_subtree, synchronise_to_tree, specialisation_status, node_conforms_to
 		end
 
 create
@@ -28,32 +28,11 @@ feature -- Definitions
 	-- FIXME: these have been copied from CODE_PHRASE for now;
 	-- in future, this class should just use C_CODE_PHRASE to represent its data
 
-	separator: STRING is "::"
+	separator: STRING = "::"
 
 feature -- Initialisation
 
-	default_create
-			-- Create in default state.
-		do
-			Precursor
-			rm_type_name := (create {CODE_PHRASE}).generator
-			create representation.make_anonymous (Current)
-			fail_reason := Void
-			terminology_id := Void
-			code_list := Void
-		ensure then
-			Any_allowed: any_allowed
-		end
-
-	make_dt is
-			--
-		do
-			default_create
-		ensure then
-			Any_allowed: any_allowed
-		end
-
-	make_from_terminology_id (a_terminology_id: STRING) is
+	make_from_terminology_id (a_terminology_id: STRING)
 			-- Make from `terminology_id'.
 		do
 			default_create
@@ -63,17 +42,14 @@ feature -- Initialisation
 			Terminology_id_set: terminology_id.value.is_equal (a_terminology_id)
 		end
 
-	make_from_pattern (a_pattern: STRING) is
+	make_from_pattern (a_pattern: STRING)
 			-- Make from pattern of form "terminology_id::code, code, ... [; code]".
 			-- Pattern "terminology_id::" is legal.
 		require
 			a_pattern /= Void and then valid_pattern (a_pattern)
 		do
-			if terminology_id /= Void then
-				-- `parse_pattern' has already been run and generated the results.
-			else
-				parse_pattern (a_pattern)
-			end
+			default_create
+			initialise_from_pattern (a_pattern)
 		ensure
 			Not_any_allowed: not any_allowed
 			Terminology_id_exists: terminology_id /= Void
@@ -88,7 +64,7 @@ feature -- Access
 	code_list: ARRAYED_LIST[STRING]
 			-- list of codes in terminology designated by terminology_id
 
-	code_count: INTEGER is
+	code_count: INTEGER
 			-- number of codes in code_list
 		do
 			if code_list /= Void then
@@ -96,7 +72,7 @@ feature -- Access
 			end
 		end
 
-	default_value: CODE_PHRASE is
+	prototype_value: CODE_PHRASE
 			-- generate a default value from this constraint object of the form
 			-- "terminology_id::code_string"
 		do
@@ -117,14 +93,14 @@ feature -- Access
 
 feature -- Status Report
 
-	any_allowed: BOOLEAN is
+	any_allowed: BOOLEAN
 			-- True if any value allowed
 			-- i.e. no terminology_id or code_list
 		do
 			Result := terminology_id = Void and code_list = Void
 		end
 
-	is_local: BOOLEAN is
+	is_local: BOOLEAN
 			-- True if this terminology id = "local"
 		require
 			not any_allowed
@@ -132,7 +108,7 @@ feature -- Status Report
 			Result := terminology_id.is_local
 		end
 
-	valid_value (a_value: like default_value): BOOLEAN is
+	valid_value (a_value: like prototype_value): BOOLEAN
 			-- check a value of the form "terminology_id::code_string"
 		do
 			if any_allowed then
@@ -147,7 +123,7 @@ feature -- Status Report
 			end
 		end
 
-	has_code (a_code: STRING): BOOLEAN is
+	has_code (a_code: STRING): BOOLEAN
 			-- True if 'a_code' found in code list
 		require
 			Code_valid: a_code /= Void and then not a_code.is_empty
@@ -155,20 +131,94 @@ feature -- Status Report
 			Result := code_list /= Void and code_list.has (a_code)
 		end
 
-	valid_pattern (a_pattern: STRING): BOOLEAN is
-			-- Verify that the pattern of form "terminology_id::code, code, ... [; code]"
-			-- is valid, i.e. that there are no repeats.
-			-- FIXME: This has a nasty side-effect: it reinitialises `Current'!
+	has_parent_code (a_code: STRING): BOOLEAN
+			-- True if an immediate parent of 'a_code' found in code list, assuming a_code is sepcialised
+		require
+			Code_valid: a_code /= Void and then not a_code.is_empty
+		do
+			if code_list /= Void and is_refined_code (a_code) then
+				Result := code_list.has (specialisation_parent_from_code (a_code))
+			end
+		end
+
+	valid_pattern (a_pattern: STRING): BOOLEAN
+			-- Verify that the pattern of form "terminology_id::[code, code, ... [; code]]" is valid
 		require
 			Pattern_valid: a_pattern /= Void and then not a_pattern.is_empty
+		local
+			sep_pos, end_pos: INTEGER
+			str, code_str, assumed_code: STRING
+			codes: LIST[STRING]
+			code_set: ARRAYED_SET[STRING]
 		do
-			parse_pattern (a_pattern)
+			fail_reason := Void
+			str := a_pattern.twin
+			str.prune_all (' ')
+			str.prune_all ('%T')
+			sep_pos := str.substring_index (separator, 1)
+			if sep_pos > 1 then
+				-- get the part after the terminology_id
+				end_pos := str.index_of (';', sep_pos)-1
+				if end_pos < 0 then
+					end_pos := str.count
+				else
+					assumed_code := str.substring (end_pos+2, str.count)
+				end
+				if end_pos > sep_pos + separator.count then
+					code_str := str.substring (sep_pos + separator.count, end_pos)
+					codes := code_str.split (',')
+					create code_set.make (0)
+					code_set.compare_objects
+					from codes.start until codes.off loop
+						code_set.extend (codes.item)
+						codes.forth
+					end
+					if code_set.count /= codes.count then
+						fail_reason := "duplicate code(s) found in code list"
+					elseif assumed_code /= Void and not code_set.has (assumed_code) then
+						fail_reason := "assumed value code " + assumed_code + " not found in code list"
+					end
+				end
+			else
+				fail_reason := "no terminology_id specified"
+			end
 			Result := fail_reason = Void
+		ensure
+			not Result implies not fail_reason.is_empty
+		end
+
+feature -- Comparison
+
+	node_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
+			-- True if this node is a subset, i.e. a redefinition of, `other'. Evaluated as True if
+			-- 	a) this node contains codes already in `other' (but with some removed) and/or
+			--	b) this node contains redefinitions of codes found in `other'
+		do
+			if precursor(other, an_rm_schema) then
+				if other.any_allowed then
+					Result := True
+				elseif not any_allowed then
+					if terminology_id.is_equal (other.terminology_id) then
+						if other.code_list = Void then
+							Result := True
+						elseif code_list /= Void then
+							from
+								code_list.start
+							until
+								code_list.off or not (other.has_code (code_list.item) or else other.has_parent_code(code_list.item))
+							loop
+								code_list.forth
+							end
+							Result := code_list.off
+						end
+					end
+				end
+			end
 		end
 
 feature -- Source Control
 
-	specialisation_status (specialisation_level: INTEGER): SPECIALISATION_STATUS is
+	specialisation_status (spec_level: INTEGER): SPECIALISATION_STATUS
 			-- status of this node in the source text of this archetype with respect to the
 			-- specialisation hierarchy. Values are defined in SPECIALISATION_STATUSES
 			-- FIXME: this code is only an attempt to work out the specialisation status,
@@ -176,13 +226,13 @@ feature -- Source Control
 			-- from an outside terminology, there is no way to know definitively.
 		do
 			create Result.make (ss_propagated)
-			if terminology_id.is_local and code_list /= Void then
+			if not any_allowed and terminology_id.is_local and code_list /= Void then
 				from
 					code_list.start
 				until
 					code_list.off
 				loop
-					Result := Result.specialisation_dominant_status (specialisation_status_from_code (code_list.item, specialisation_level))
+					Result := Result.specialisation_dominant_status (specialisation_status_from_code (code_list.item, spec_level))
 					code_list.forth
 				end
 			end
@@ -190,7 +240,7 @@ feature -- Source Control
 
 feature -- Modification
 
-	add_code (a_code: STRING) is
+	add_code (a_code: STRING)
 			-- 	add a term to the list
 		require
 			Not_any_allowed: not any_allowed
@@ -208,7 +258,7 @@ feature -- Modification
 
 feature -- Conversion
 
-	as_string: STRING is
+	as_string: STRING
 			--
 		do
 			create Result.make_empty
@@ -219,11 +269,7 @@ feature -- Conversion
 				Result.append ("[" + terminology_id.value + separator)
 
 				if code_list /= Void then
-					from
-						code_list.start
-					until
-						code_list.off
-					loop
+					from code_list.start until code_list.off loop
 						if not code_list.isfirst then
 							Result.append (", ")
 						end
@@ -240,14 +286,14 @@ feature -- Conversion
 			end
 		end
 
-	standard_equivalent: C_COMPLEX_OBJECT is
+	standard_equivalent: C_COMPLEX_OBJECT
 		do
 			-- FIXME: to be implemented
 		end
 
 feature -- Synchronisation
 
-	synchronise_to_tree is
+	synchronise_to_tree
 			-- synchronise to parse tree representation
 		do
             if any_allowed then -- only represent as an inline dADL if any_allowed, else use syntax
@@ -257,14 +303,14 @@ feature -- Synchronisation
 
 feature -- Visitor
 
-	enter_subtree (visitor: C_VISITOR; depth: INTEGER) is
+	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
             Precursor (visitor, depth)
 			visitor.start_c_code_phrase (Current, depth)
 		end
 
-	exit_subtree (visitor: C_VISITOR; depth: INTEGER) is
+	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
             Precursor (visitor, depth)
@@ -273,7 +319,7 @@ feature -- Visitor
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	persistent_attributes: ARRAYED_LIST [STRING] is
+	persistent_attributes: ARRAYED_LIST [STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		once
@@ -286,79 +332,29 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 
 feature {NONE} -- Implementation
 
-	parse_pattern (a_pattern: STRING) is
+	initialise_from_pattern (a_pattern: STRING)
 			-- parse pattern of form "terminology_id::code, code, ... [; code]"
 			-- Pattern "terminology_id::" is legal
 		require
-			a_pattern /= Void and then not a_pattern.is_empty
+			a_pattern /= Void and then valid_pattern(a_pattern)
 		local
-			pos1, pos2, sep_pos: INTEGER
-			code_str: STRING
-			a_code, assumed_code: STRING
-			found_assumed_value: BOOLEAN
+			sep_pos, end_pos: INTEGER
+			str: STRING
 		do
-			default_create
-
-			sep_pos := a_pattern.substring_index (separator, 1)
-			create terminology_id.make (a_pattern.substring (1, sep_pos - 1))
-
-			-- get the part after the terminology_id
-			code_str := a_pattern.substring (sep_pos + separator.count, a_pattern.count)
-
-			from
-				pos1 := 1
-				pos2 := code_str.index_of (',', pos1) - 1
-				if pos2 < 1 then
-					pos2 := code_str.index_of (';', pos1) - 1 -- look for assumed value
-					if pos2 < 1 then
-						pos2 := code_str.count
-					else -- found assumed value
-						found_assumed_value := True
-					end
-				end
-			until
-				pos1 > code_str.count
-			loop
-				if pos2 >= pos1 then
-					a_code := code_str.substring (pos1, pos2)
-					a_code.left_adjust
-					a_code.right_adjust
-					if not has_code (a_code) then
-						add_code (a_code)
-					else
-						fail_reason := " duplicate code " + a_code + " found in code list"
-					end
-				end
-
-				pos1 := pos2 + 2
-
-				if found_assumed_value then
-					pos2 := code_str.count
-					assumed_code := code_str.substring (pos1, pos2)
-					assumed_code.left_adjust
-					assumed_code.right_adjust
-					pos1 := pos2 + 2
-				end
-
-				if pos1 <= code_str.count then
-					pos2 := code_str.index_of (',', pos1) - 1
-					if pos2 < 1 then
-						pos2 := code_str.index_of (';', pos1) - 1 -- look for assumed value
-						if pos2 < 1 then
-							pos2 := code_str.count
-						else -- found assumed value
-							found_assumed_value := True
-						end
-					end
-				end
+			str := a_pattern.twin
+			str.prune_all (' ')
+			str.prune_all ('%T')
+			sep_pos := str.substring_index (separator, 1)
+			create terminology_id.make (str.substring (1, sep_pos-1))
+			end_pos := str.index_of (';', sep_pos)-1
+			if end_pos < 0 then
+				end_pos := str.count
+			else
+				set_assumed_value (create {CODE_PHRASE}.make_from_string (terminology_id.value + separator + str.substring (end_pos+2, str.count)))
 			end
-
-			if found_assumed_value then
-				if has_code (assumed_code) then
-					set_assumed_value (create {CODE_PHRASE}.make_from_string (terminology_id.value + separator + assumed_code))
-				else
-					fail_reason := "assumed value code " + assumed_code + " not found in code list"
-				end
+			if end_pos > sep_pos + separator.count then
+				create code_list.make(0)
+				code_list.append (str.substring (sep_pos + separator.count, end_pos).split (','))
 			end
 		ensure
 			not any_allowed
@@ -366,7 +362,7 @@ feature {NONE} -- Implementation
 
 invariant
 	List_validity: code_list /= Void implies (not code_list.is_empty and terminology_id /= Void)
-	Any_allowed_validity: (terminology_id /= Void or code_list /= Void) xor any_allowed
+	Any_allowed_validity: terminology_id /= Void xor any_allowed
 
 end
 

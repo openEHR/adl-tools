@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "Ocean openEHR kernel test framework"
 	description: "Test DV_DATE_TIME"
 	keywords:    "test, date"
@@ -17,12 +17,12 @@ class TS_DT_DATE_TIME
 inherit 
 	TEST_SUITE
 
-creation
+create
 	make
 
 feature -- Access
 
-	test_cases: LINKED_LIST[TEST_CASE] is
+	test_cases: LINKED_LIST[TEST_CASE]
 		local
 			tc:TEST_CASE
 		once
@@ -33,11 +33,11 @@ feature -- Access
 			create {TC_DV_DURATION} tc.make(Void) 		Result.extend(tc)
 		end
 
-	title:STRING is "Date/time tests"
+	title:STRING = "Date/time tests"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 	    do
 
 	    end

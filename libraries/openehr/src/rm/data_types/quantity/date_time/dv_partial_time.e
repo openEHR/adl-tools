@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "Implementation of DV_PARTIAL_TIME"
@@ -30,13 +30,13 @@ feature -- Access
 			-- Indicates whether minute in hour is known. If so, the time 
 			-- is of the form y/m/?, if not, it is of the form y/?/
 
-	magnitude: DOUBLE is
+	magnitude: DOUBLE
 		do
 		ensure
 			Result = enclosing_interval.midpoint.magnitude
 		end
 
-	enclosing_interval: DV_INTERVAL[DV_TIME] is
+	enclosing_interval: DV_INTERVAL[DV_TIME]
 		do
 		ensure
 			minute_known implies Result.lower.second = 1 and Result.upper.second = seconds_in_minute
@@ -46,7 +46,7 @@ feature -- Access
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 			-- Result has form “hh:mm:??” where mm, ss might be “??”	Result = follows ISO 8601
 		do
 		end

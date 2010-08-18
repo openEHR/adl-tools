@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "interface class to ADL parser and parse tree"
 	keywords:    "ADL"
@@ -44,12 +44,10 @@ feature -- Access
 	serialised: STRING
 			-- The last result of calling `serialise'.
 
-	parse_error_text: STRING is
+	parse_error_text: attached STRING
 			-- Result of last parse.
 		do
 			Result := parser.error_text
-		ensure
-			attached: Result /= Void
 		end
 
 feature -- Status Report
@@ -57,7 +55,7 @@ feature -- Status Report
 	in_parse_mode: BOOLEAN
 			-- True if engine in mode where archetype was created from source
 
-	parse_succeeded: BOOLEAN is
+	parse_succeeded: BOOLEAN
 			-- True if parse succeeded; call after parse()
 		do
 			Result := tree /= Void
@@ -73,7 +71,7 @@ feature -- Commands
 			serialised := Void
 		end
 
-	set_source (in_text: STRING; a_source_start_line: INTEGER) is
+	set_source (in_text: STRING; a_source_start_line: INTEGER)
 			-- Set `in_text' as working artifact.
 		require
 			text_attached: in_text /= Void
@@ -105,7 +103,7 @@ feature -- Commands
 			parse_succeeded or else tree = Void
 		end
 
-	serialise (a_format: STRING) is
+	serialise (a_format: STRING)
 			-- Serialise current artifact into `a_format'.
 		require
 			Format_valid: has_dt_serialiser_format (a_format)
@@ -127,7 +125,7 @@ feature -- Commands
 			serialised_attached: serialised /= Void
 		end
 
-	set_tree (a_node: DT_COMPLEX_OBJECT_NODE) is
+	set_tree (a_node: DT_COMPLEX_OBJECT_NODE)
 			-- Set root node of `tree' from e.g. GUI tool.
 		require
 			node_attached: a_node /= Void
@@ -141,7 +139,7 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	parser: !DADL2_VALIDATOR
+	parser: attached DADL2_VALIDATOR
 			-- dADL parser.
 
 end

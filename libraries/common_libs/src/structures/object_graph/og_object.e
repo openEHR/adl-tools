@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Any OBJECT node in object parse tree, including real OBJECTs,
@@ -25,7 +25,7 @@ inherit
 
 feature -- Initialisation
 
-	make_anonymous(a_content_item: VISITABLE) is
+	make_anonymous(a_content_item: VISITABLE)
 			-- make an anonymous node with optional content item
 		do
 			make(Anonymous_node_id, a_content_item)
@@ -37,9 +37,9 @@ feature -- Access
 
 feature -- Status Report
 
-	is_object_node: BOOLEAN is True
+	is_object_node: BOOLEAN = True
 
-	is_addressable: BOOLEAN is
+	is_addressable: BOOLEAN
 			-- True if this node has a proper node_id
 			-- node_id must not be something like "unknown" or "unknown_1", "unknown_2" etc
 		do

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "[
@@ -32,27 +32,27 @@ inherit
 		redefine
 			out
 		end
-		
+
 	COMPARABLE
 		undefine
 			out
 		redefine
 			default_create
 		end
-		
-create 
+
+create
 	default_create,
 	make, make_from_string, make_from_canonical_string
 
 feature -- Definitions
 
-	default_code_string: STRING is "000001"
+	default_code_string: STRING = "000001"
 
-	separator: STRING is "::"
+	separator: STRING = "::"
 
 feature -- Initialization
 
-	default_create is
+	default_create
 		do
 			create terminology_id.default_create
 			code_string := default_code_string.twin
@@ -61,7 +61,7 @@ feature -- Initialization
 			Code_string_set: code_string.is_equal(default_code_string)
 		end
 
-	make_from_string(a_key: STRING) is
+	make_from_string(a_key: STRING)
 			-- make from a string of the form terminology_id::code_string, e.g. ICD10(1998)::M10
 			-- the form terminology_id:: is also allowable, in which case the default_code_string will
 			-- be used
@@ -82,7 +82,7 @@ feature -- Initialization
 			Code_string_set: code_string /= Void
 		end
 
-	make(a_terminology_id, a_code_string: STRING) is
+	make(a_terminology_id, a_code_string: STRING)
 			-- make from two strings
 		require
 			Terminology_id_valid: a_terminology_id /= Void and then not a_terminology_id.is_empty
@@ -95,7 +95,7 @@ feature -- Initialization
 			Code_string_set: code_string = a_code_string
 		end
 
-	make_from_canonical_string(str:STRING) is
+	make_from_canonical_string (str: STRING)
 			-- make from string of form:
 			-- <terminology_id>
 			--		<name>string</name>
@@ -109,13 +109,13 @@ feature -- Initialization
 
 feature -- Status Report
 
-	is_local: BOOLEAN is
+	is_local: BOOLEAN
 			-- True if this terminology id = "local"
 		do
 			Result := terminology_id.is_local
 		end
-		
-	valid_canonical_string(str: STRING): BOOLEAN is
+
+	valid_canonical_string(str: STRING): BOOLEAN
 			-- True if str contains required tags
 		do
 			Result := xml_has_tag(str, "terminology_id", 1) and xml_has_tag(str, "code_string", 1)
@@ -124,52 +124,52 @@ feature -- Status Report
 feature -- Access
 
 	terminology_id: TERMINOLOGY_ID
-			-- Identifier of the distinct terminology from which the code_string 
+			-- Identifier of the distinct terminology from which the code_string
 			-- (or its elements) was extracted
-		
+
 	code_string: STRING
 			-- The key used by the terminology service to identify a concept or
-			-- coordination of concepts. This string is most likely parsable inside 
+			-- coordination of concepts. This string is most likely parsable inside
 			-- the terminology service, but nothing can be assumed about its syntax
 			-- outside that context.
-		
+
 feature -- Comparison
 
-	infix "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: like Current): BOOLEAN
 			-- Compare two terms
 		local
-			s, s_other:STRING
+			s, s_other: STRING
 		do
 			create s.make(0)
-			s.append(terminology_id.value)
-			s.append(code_string)
+			s.append (terminology_id.value)
+			s.append (code_string)
 
 			create s_other.make(0)
-			s_other.append(other.terminology_id.value)
-			s_other.append(other.code_string)		
-			
+			s_other.append (other.terminology_id.value)
+			s_other.append (other.code_string)
+
 			Result := s < s_other
 		end
-		
+
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 			-- string form displayable for humans - e.g. ICD9(1989)::M17
 		do
 			create Result.make(0)
-			Result.append(terminology_id.value)
-			Result.append(separator)
-			Result.append(code_string)
+			Result.append (terminology_id.value)
+			Result.append (separator)
+			Result.append (code_string)
 		end
-		
-	out: STRING is
+
+	out: STRING
 			-- '['  + `as_string' + ']'
 		do
 			Result := "[" + as_string + "]"
 		end
-		
-	
-	as_canonical_string: STRING is
+
+
+	as_canonical_string: STRING
 			-- standardised form of string guaranteed to contain all information
 			-- in data item
 		do
@@ -180,7 +180,7 @@ feature -- Output
 invariant
 	terminology_id_exists: terminology_id /= Void
 	code_string_valid: code_string /= Void and then not code_string.is_empty
-	
+
 end
 
 

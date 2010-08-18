@@ -1,10 +1,10 @@
-indexing
+note
 
 	component:   "openEHR Common Archetype Model"
-	
+
 	description: "Constrainer type for instances of STRING"
 	keywords:    "archetype, string, data"
-	
+
 	design:      "openEHR Common Archetype Model 0.2"
 
 	author:      "Thomas Beale"
@@ -26,21 +26,21 @@ create
 
 feature -- Definitions
 
-	default_delimiter: CHARACTER is '/'
-	
-	alternative_delimiter: CHARACTER is '^'
-	
-	Regexp_compile_error: STRING is "regexp COMPILE ERROR"
-	
+	default_delimiter: CHARACTER = '/'
+
+	alternative_delimiter: CHARACTER = '^'
+
+	Regexp_compile_error: STRING = "regexp COMPILE ERROR"
+
 feature -- Initialization
 
-	make_any is
+	make_any
 			-- make completely open
 		do
 			is_open := True
 		end
-		
-	make_from_string(str: STRING) is
+
+	make_from_string(str: STRING)
 			-- make from a single string
 		require
 			str /= Void
@@ -49,12 +49,14 @@ feature -- Initialization
 			strings.extend(str)
 			strings.compare_objects
 		ensure
-			not is_open
+			strings_attached: strings /= Void
+			not_open: not is_open
+			str_valid: valid_value (str)
 		end
 
-	make_from_regexp(str: STRING; using_default_delimiter: BOOLEAN) is
+	make_from_regexp(str: STRING; using_default_delimiter: BOOLEAN)
 			-- make from a regular expression contained in 'str' (not including delimiters);
-			-- if `using_default_delimiter' is True, the '/' delimiter is being used, 
+			-- if `using_default_delimiter' is True, the '/' delimiter is being used,
 			-- else the '^' delimiter is being used
 		require
 			str /= Void
@@ -66,11 +68,12 @@ feature -- Initialization
 				regexp := Regexp_compile_error.twin
 			end
 		ensure
-			strings = Void
+			strings_void: strings = Void
+			not_open: not is_open
 			regexp.is_equal(str) xor regexp.is_equal(Regexp_compile_error)
 		end
 
-	make_from_string_list(lst: LIST[STRING]) is
+	make_from_string_list(lst: LIST[STRING])
 		require
 			lst /= Void
 		do
@@ -78,33 +81,37 @@ feature -- Initialization
 			strings.fill(lst)
 			strings.compare_objects
 		ensure
-			strings /= Void
-			not is_open
+			strings_attached: strings /= Void
+			not_open: not is_open
 		end
 
 feature -- Modification
 
-	set_open is
+	set_open
 		do
 			is_open := True
 		end
 
-	add_string(str: STRING) is
+	add_string(str: STRING)
 		require
-			str /= Void
+			str_attached: str /= Void
+			strings_attached: strings /= Void
 		do
 			strings.extend(str)
+		ensure
+			extended: strings.count = old strings.count + 1
+			str_valid: valid_value (str)
 		end
 
 feature -- Access
 
 	strings: ARRAYED_LIST[STRING]
 			-- representation of constraint as allowed values for the constrained string
-			
+
 	regexp: STRING
 			-- representation of constraint as PERL-compliant regexp pattern
 
-	default_value: STRING is
+	prototype_value: STRING
 			-- 	generate a default value from this constraint object
 		do
 			if strings /= Void then
@@ -121,8 +128,8 @@ feature -- Access
 		ensure then
 			Result /= Void
 		end
-		
-	regexp_delimiter: CHARACTER is 
+
+	regexp_delimiter: CHARACTER
 			-- return correct delimiter according to `regexp_default_delimiter'
 		do
 			if regexp_default_delimiter then
@@ -131,42 +138,56 @@ feature -- Access
 				Result := alternative_delimiter
 			end
 		end
-	
+
 feature -- Status Report
 
 	is_open: BOOLEAN
 			-- values other than those in 'items' are allowed
 
+	is_regexp: BOOLEAN
+			-- True if this constraint is a regular expression
+		do
+			Result := regexp /= Void
+		end
+
 feature -- Status Report
 
-	valid_value (a_value: STRING): BOOLEAN is 
+	valid_value (a_value: STRING): BOOLEAN
 		do
 			if is_open then
 				Result := True
-			elseif strings /= Void then 
+			elseif strings /= Void then
 				Result := strings.has (a_value)
 			else
 				Result := regexp_parser.matches(a_value)
 			end
 		end
-		
+
 	regexp_default_delimiter: BOOLEAN
-			-- if True, the '/' delimiter is being used, 
+			-- if True, the '/' delimiter is being used,
 			-- else the '^' delimiter is being used		
+
+feature -- Comparison
+
+	node_conforms_to (other: like Current): BOOLEAN
+			-- True if this node is a subset of, or the same as `other'
+		do
+			-- FIXME: TO BE IMPLEMENTED
+		end
 
 feature -- Output
 
-	as_string:STRING is
+	as_string: STRING
 		do
 			create Result.make(0)
-			
+
 			if strings /= Void then
 				from
 					strings.start
 				until
 					strings.off
 				loop
-					if not strings.isfirst then 
+					if not strings.isfirst then
 						Result.append(", ")
 					end
 					Result.append_character('%"')
@@ -176,7 +197,7 @@ feature -- Output
 				end
 				if is_open then
 					Result.append(", ...")
-				end			
+				end
 			else -- its a regexp
 				Result.append_character(regexp_delimiter)
 				Result.append(regexp)
@@ -188,7 +209,40 @@ feature -- Output
 
 		end
 
-	as_canonical_string:STRING is
+	clean_as_string (cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
+			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
+		do
+			create Result.make(0)
+
+			if strings /= Void then
+				from
+					strings.start
+				until
+					strings.off
+				loop
+					if not strings.isfirst then
+						Result.append(", ")
+					end
+					Result.append_character('%"')
+					Result.append(cleaner.item ([strings.item]))
+					Result.append_character('%"')
+					strings.forth
+				end
+				if is_open then
+					Result.append(", ...")
+				end
+			else -- its a regexp
+				Result.append_character(regexp_delimiter)
+				Result.append(regexp)
+				Result.append_character(regexp_delimiter)
+			end
+			if assumed_value /= Void then
+				Result.append("; %"" + cleaner.item ([assumed_value.out]) + "%"")
+			end
+
+		end
+
+	as_canonical_string: STRING
 		do
 		end
 

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "test object for method dispatcher tests"
 	keywords:    "test, method dispatcher"
@@ -14,12 +14,12 @@ indexing
 
 class SUB_PART
 
-creation
+create
 	make
 
 feature -- Initialisation
 
-	make(a_name:STRING) is
+	make(a_name:STRING)
 		do
 		    name := a_name
 		end

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Reference Model"
 
 	description: "Generic test suite"
@@ -18,12 +18,12 @@ class TS_COMMON_GENERIC
 inherit 
 	TEST_SUITE
 
-creation
+create
 	make
 
 feature -- Access
 
-	test_cases: LINKED_LIST[TEST_CASE] is
+	test_cases: LINKED_LIST[TEST_CASE]
 		local
 			tc:TEST_CASE
 		once
@@ -37,11 +37,11 @@ feature -- Access
 			create {TC_AUDIT_DETAILS} tc.make(Void) 		Result.extend(tc)
 		end
 
-	title:STRING is "Generic Package tests"
+	title:STRING = "Generic Package tests"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 	    do
 
 	    end

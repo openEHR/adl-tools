@@ -1,6 +1,6 @@
-indexing
+note
 	component:   "openEHR Data Types"
-	
+
 	description: "[
 				 Defines a named range to be associated with any ORDERED datum. Each such 
 				 range is particular to the patient and context, e.g. sex, age, and any 
@@ -24,13 +24,13 @@ class REFERENCE_RANGE [G -> DV_ORDERED]
 
 inherit
 	CANONICAL_FRAGMENT
-	
+
 create
 	make, make_from_canonical_string
-	
+
 feature -- Initialization
 
-	make(a_meaning: DV_CODED_TEXT; a_range:DV_INTERVAL[G]) is
+	make (a_meaning: DV_CODED_TEXT; a_range: DV_INTERVAL [G])
 			-- make a range from a meaning and an interval
 		require
 			Meaning_exists: a_meaning /= Void
@@ -42,27 +42,27 @@ feature -- Initialization
 			Meaning_set: meaning = a_meaning
 			Range_set: range = a_range
 		end
-	
-	make_from_canonical_string(str:STRING) is
+
+	make_from_canonical_string (str: STRING)
 		do
 		end
-		
+
 feature -- Access
 
 	meaning: DV_CODED_TEXT
-			-- Term whose value indicates the meaning of this range, e.g. “normal”, 
+			-- Term whose value indicates the meaning of this range, e.g. “normal”,
 			-- “critical”, “therapeutic” etc.
 
-	range: DV_INTERVAL[G]
+	range: DV_INTERVAL [G]
 			-- The data range for this meaning, e.g. “critical” etc.
 
 feature -- Status Report
 
-	valid_canonical_string(str: STRING): BOOLEAN is
+	valid_canonical_string (str: STRING): BOOLEAN
 		do
 		end
 
-	has (v: G): BOOLEAN is
+	has (v: G): BOOLEAN
 		require
 			Value_exists: v /= Void
 		do
@@ -71,21 +71,21 @@ feature -- Status Report
 
 feature -- Conversion
 
-	as_string: STRING is
+	as_string: STRING
 		do
 			Result := range.as_string + " (" + meaning.as_string + ")"
 		end
 	
-	as_canonical_string: STRING is
+	as_canonical_string: STRING
 		do
 			Result := "<range>" + range.as_canonical_string + "</range>" +
 				"<meaning>" + meaning.as_canonical_string + "</meaning>"
 		end
-	
+
 invariant
 	Meaning_exists: meaning /= Void
 	Range_exists: range /= Void
-	Range_is_simple: (range.lower_unbounded or else range.lower.is_simple) and 
+	Range_is_simple: (range.lower_unbounded or else range.lower.is_simple) and
 						(range.upper_unbounded or else range.upper.is_simple)
 
 end

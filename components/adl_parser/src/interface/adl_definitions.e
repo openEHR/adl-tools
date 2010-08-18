@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Common ADL syntax definitions"
 	keywords:    "ADL"
@@ -18,11 +18,9 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
 feature -- Definitions
-		
-	Current_adl_version: STRING is "1.4"
-	
+
 end
 
 

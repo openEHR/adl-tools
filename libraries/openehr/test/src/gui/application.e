@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reference Model"
 
 	description: "Reference Model testing application"
@@ -31,7 +31,7 @@ create
 	
 feature {NONE} -- Initialization
 
-	make_and_launch is
+	make_and_launch
 			-- Create `Current', build and display `main_window',
 			-- then launch the application.
 		do
@@ -61,7 +61,7 @@ feature {NONE} -- Implementation
 	
 	fail_reason: STRING
 	
-	has_resources: BOOLEAN is
+	has_resources: BOOLEAN
 			-- True if all resources are available
 		local
 			cfa: CONFIG_FILE_ACCESS

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Shared DT factory object"
 	keywords:    "DT, ADL"
@@ -15,7 +15,7 @@ class SHARED_DT_FACTORY
 
 feature -- Access
 
-	dt_factory: DT_FACTORY is
+	dt_factory: DT_FACTORY
 			-- create a new node_factory
 		once
 			create Result

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "item in an ADL parse tree"
 	keywords:    "test, ADL"
@@ -27,19 +27,19 @@ feature -- Access
 	
 feature -- Status Report
 
-	is_addressable: BOOLEAN is
+	is_addressable: BOOLEAN
 			-- True if this node has a non-anonymous node_id
 		do
 			Result := representation.is_addressable
 		end
 			
-	is_root: BOOLEAN is
+	is_root: BOOLEAN
 			-- True if is root of parse tree structure
 		do
 			Result := representation.is_root
 		end
 		
-	is_valid: BOOLEAN is
+	is_valid: BOOLEAN
 			-- True if node valid; if False, reason in `invalid_reason'
 		deferred
 		ensure
@@ -48,7 +48,7 @@ feature -- Status Report
 		
 feature {DT_ITEM} -- Modification
 
-	set_parent(a_node: like parent) is
+	set_parent(a_node: like parent)
 			-- connect child to parent
 		require
 			a_node /= Void
@@ -62,12 +62,12 @@ feature -- Representation
 
 feature -- Serialisation
 
-	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
+	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at start of block for this node
 		deferred
 		end
 		
-	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
+	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at end of block for this node
 		deferred
 		end

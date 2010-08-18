@@ -1,5 +1,5 @@
 %{
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Scanner for ADL syntax items"
 	keywords:    "ADL"
@@ -42,6 +42,14 @@ create
 	make
 %}
 
+--------------- Definitions --------------
+ALPHANUM [a-zA-Z0-9]
+IDCHAR [a-zA-Z0-9_]
+NAMECHAR [a-zA-Z0-9._\-]
+NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
+
+
+--------------- Options --------------
 %x IN_DADL_SECTION IN_CADL_SECTION IN_ASSERTION_SECTION
 %option outfile="adl_scanner.e"
 
@@ -81,8 +89,20 @@ create
 
 ----------/* keywords */ -------------------------------------------------
 
-^[Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee][ \t\r]* 		{
+^[Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee][ \t\r\n]+ 		{
 				last_token := SYM_ARCHETYPE
+			}
+
+^[Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee]_[Cc][Oo][Mm][Pp][Oo][Nn][Ee][Nn][Tt][ \t\r\n]+ 		{
+				last_token := SYM_TEMPLATE_COMPONENT
+			}
+
+^[Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee][ \t\r\n]+ 		{
+				last_token := SYM_TEMPLATE
+			}
+
+^[Oo][Pp][Ee][Rr][Aa][Tt][Ii][Oo][Nn][Aa][Ll]_[Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee][ \t\r\n]+ 		{
+				last_token := SYM_OPERATIONAL_TEMPLATE
 			}
 
 [Aa][Dd][Ll]_[Vv][Ee][Rr][Ss][Ii][Oo][Nn] 		{
@@ -162,13 +182,12 @@ create
 
 				set_start_condition(INITIAL)
 			}
-	[^\n]+\n { -- any text on line with a LF
-				in_buffer.append_string(text)
+	\n 		{ -- LF
+				in_buffer.append_character('%N')
 				in_lineno := in_lineno + 1
 			}
 	[^\n]+ { -- any text on line with no LF
 				in_buffer.append_string(text)
-				in_lineno := in_lineno + 1
 			}
 	<<EOF>> {
 				-- get the dADL section sorted out
@@ -225,13 +244,13 @@ create
 			}
 
 ----------/* term code reference */ -------------------------------------------------
-\[[a-zA-Z0-9][a-zA-Z0-9._\-]*\]	{
+\[a[ct][0-9.]+\] {
 					last_token := V_LOCAL_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
 			}
 
 ----------/* archetype id */ -------------------------------------------------
-[a-zA-Z][a-zA-Z0-9()#_]+(-[a-zA-Z0-9()#_]+){2}\.[a-zA-Z][a-zA-Z0-9()#-_]+\.v[0-9]+[a-zA-Z]*	{
+{NAMESTR}(-{NAMESTR}){2}\.{NAMESTR}(-{NAMESTR})*\.v[1-9][0-9]* {
 					last_token := V_ARCHETYPE_ID
 					last_string_value := text
 			}
@@ -258,7 +277,7 @@ feature {NONE} -- Local variables
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create a new scanner.
 		do
 			make_compressed_scanner_skeleton
@@ -268,7 +287,7 @@ feature {NONE} -- Initialization
 
 feature -- Initialization
 
-	reset is
+	reset
 			-- Reset scanner before scanning next input.
 		do
 			reset_compressed_scanner_skeleton
@@ -304,11 +323,10 @@ feature -- Access
 
 feature {NONE} -- Constants
 
-	Init_buffer_size: INTEGER is 256
+	Init_buffer_size: INTEGER = 256
 				-- Initial size for `in_buffer'
 
 invariant
-
 	in_buffer_not_void: in_buffer /= Void
 
 end

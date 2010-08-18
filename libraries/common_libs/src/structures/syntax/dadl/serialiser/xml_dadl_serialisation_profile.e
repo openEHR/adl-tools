@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Common routines for HTML ADL serialisation"
 	keywords:    "test, ADL"
@@ -26,7 +26,7 @@ create
 	
 feature {NONE} -- Implementation
 
-	symbols: HASH_TABLE[STRING, INTEGER] is
+	symbols: HASH_TABLE[STRING, INTEGER]
 			-- keywords in this format, keyed by logical name
 		once
 			create Result.make(0)
@@ -35,7 +35,7 @@ feature {NONE} -- Implementation
 			Result.put("&gt;",			SYM_END_DBLOCK)
 		end	
 	
-	tags: HASH_TABLE[STRING, INTEGER] is
+	tags: HASH_TABLE[STRING, INTEGER]
 			-- keywords in this format, keyed by logical name
 		once
 			create Result.make(0)

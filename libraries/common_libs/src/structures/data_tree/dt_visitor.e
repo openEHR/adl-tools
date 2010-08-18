@@ -1,10 +1,10 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Visitor template for Data Tree structures"
 	keywords:    "visitor, Data Tree"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -15,53 +15,73 @@ deferred class DT_VISITOR
 
 feature -- Visitor
 
-	start_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER) is
+	start_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER)
 			-- start serialising an DT_COMPLEX_OBJECT_NODE
 		deferred
 		end
 
-	end_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER) is
+	end_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER)
 			-- end serialising an DT_COMPLEX_OBJECT_NODE
 		deferred
 		end
 
-	start_attribute_node(a_node: DT_ATTRIBUTE_NODE; depth: INTEGER) is
+	start_attribute_node(a_node: DT_ATTRIBUTE_NODE; depth: INTEGER)
 			-- start serialising an DT_ATTRIBUTE_NODE
 		deferred
 		end
 
-	end_attribute_node(a_node: DT_ATTRIBUTE_NODE; depth: INTEGER) is
+	end_attribute_node(a_node: DT_ATTRIBUTE_NODE; depth: INTEGER)
 			-- end serialising an DT_ATTRIBUTE_NODE
 		deferred
 		end
 
-	start_primitive_object(a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER) is
+	start_primitive_object(a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- start serialising a DT_OBJECT_SIMPLE
 		deferred
 		end
 
-	end_primitive_object(a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER) is
+	end_primitive_object(a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- end serialising a DT_OBJECT_SIMPLE
 		deferred
 		end
 
-	start_primitive_object_list(a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER) is
+	start_primitive_object_list(a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER)
 			-- start serialising an DT_OBJECT_SIMPLE_LIST
 		deferred
 		end
 
-	end_primitive_object_list(a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER) is
+	end_primitive_object_list(a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER)
 			-- end serialising an DT_OBJECT_SIMPLE_LIST
 		deferred
 		end
 
-	start_primitive_object_interval(a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER) is
+	start_primitive_object_interval(a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER)
 			-- start serialising a DT_OBJECT_SIMPLE
 		deferred
 		end
 
-	end_primitive_object_interval(a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER) is
+	end_primitive_object_interval(a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER)
 			-- end serialising a DT_OBJECT_SIMPLE
+		deferred
+		end
+
+	start_object_reference(a_node: DT_OBJECT_REFERENCE; depth: INTEGER)
+			-- start serialising a DT_OBJECT_REFERENCE
+		deferred
+		end
+
+	end_object_reference(a_node: DT_OBJECT_REFERENCE; depth: INTEGER)
+			-- end serialising a DT_OBJECT_REFERENCE
+		deferred
+		end
+
+	start_object_reference_list(a_node: DT_OBJECT_REFERENCE_LIST; depth: INTEGER)
+			-- start serialising a DT_OBJECT_REFERENCE_LIST
+		deferred
+		end
+
+	end_object_reference_list(a_node: DT_OBJECT_REFERENCE_LIST; depth: INTEGER)
+			-- end serialising a DT_OBJECT_REFERENCE_LIST
 		deferred
 		end
 

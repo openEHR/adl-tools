@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "Quantity Test Suite"
@@ -13,12 +13,12 @@ class TS_C_QUANTITY
 inherit 
 	TEST_SUITE
 
-creation
+create
 	make
 
 feature -- Access
 
-	test_cases: LINKED_LIST[TEST_CASE] is
+	test_cases: LINKED_LIST[TEST_CASE]
 		local
 			tc:TEST_CASE
 		once
@@ -28,15 +28,15 @@ feature -- Access
 			create {TC_C_DV_INTERVAL} tc.make(Void) 		Result.extend(tc)
 		end
 
-	title:STRING is "Quantity tests"
+	title:STRING = "Quantity tests"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 	    do
 	    end
 
-	finalise is
+	finalise
 	    do
 	    end
 

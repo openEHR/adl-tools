@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 This class knows how to parse an ADL text, and serialise an ARCHETYPE object.
@@ -22,35 +22,22 @@ inherit
 			{ANY} archetype_serialiser_formats, has_archetype_serialiser_format
 		end
 
-	SHARED_DT_SERIALISERS
-		export
-			{NONE} all
-			{ANY} has_dt_serialiser_format
-		end
-
-	SHARED_C_SERIALISERS
-		export
-			{NONE} all
-			{ANY} has_c_serialiser_format
-		end
-
-	SHARED_ASSERTION_SERIALISERS
-		export
-			{NONE} all
-			{ANY} has_assertion_serialiser_format
-		end
-
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all
 		end
 
-	SHARED_APPLICATION_CONTEXT
+	SHARED_C_FACTORY
 		export
 			{NONE} all
 		end
 
-	SHARED_C_FACTORY
+	ADL_SYNTAX_CONVERTER
+		export
+			{NONE} all
+		end
+
+	SHARED_MESSAGE_DB
 		export
 			{NONE} all
 		end
@@ -65,9 +52,8 @@ create
 
 feature {NONE} -- Initialisation
 
-	make is
+	make
 		do
-			initialise_serialisers
 			create language_context.make
 			create description_context.make
 			create definition_context.make
@@ -82,23 +68,27 @@ feature -- Access
 
 feature -- Commands
 
-	parse_differential (text: STRING): DIFFERENTIAL_ARCHETYPE is
+	parse_differential (text: STRING; an_rm_schema: SCHEMA_ACCESS): DIFFERENTIAL_ARCHETYPE
 			-- parse text as differential archetype. If successful, `archetype' contains the parse structure.
 		require
 			Text_exists: text /= Void
+			Rm_schema_available: an_rm_schema /= Void
 		do
+			rm_schema := an_rm_schema
 			Result ?= parse(text, True)
 		end
 
-	parse_flat (text: STRING): FLAT_ARCHETYPE is
+	parse_flat (text: STRING; an_rm_schema: SCHEMA_ACCESS): FLAT_ARCHETYPE
 			-- parse text as flat archetype. If successful, `archetype' contains the parse structure.
 		require
 			Text_exists: text /= Void
+			Rm_schema_available: an_rm_schema /= Void
 		do
+			rm_schema := an_rm_schema
 			Result ?= parse(text, False)
 		end
 
-	serialise (an_archetype: ARCHETYPE; a_format: STRING):STRING is
+	serialise (an_archetype: ARCHETYPE; a_format: STRING): STRING
 			-- serialise current archetype into format, using the supplied ontology. For serialising
 			-- any form of archetype, the flat-form ontology has to be supplied
 		require
@@ -129,35 +119,35 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	parse (text: STRING; is_differential_source: BOOLEAN): ARCHETYPE is
+	parse (text: STRING; differential_source_flag: BOOLEAN): ARCHETYPE
 			-- parse tree. If successful, `archetype' contains the parse
 			-- structure. Then validate the tree
 		local
 			language_error, description_error, invariant_error: BOOLEAN
 			res_desc: RESOURCE_DESCRIPTION
 			orig_lang_trans: LANGUAGE_TRANSLATIONS
-			differential_ontology: !DIFFERENTIAL_ARCHETYPE_ONTOLOGY
-			flat_ontology: !FLAT_ARCHETYPE_ONTOLOGY
+			differential_ontology: attached DIFFERENTIAL_ARCHETYPE_ONTOLOGY
+			flat_ontology: attached FLAT_ARCHETYPE_ONTOLOGY
 		do
 			create adl_parser.make
 			adl_parser.execute(text)
 
 			if adl_parser.syntax_error then
 				parse_error_text := adl_parser.error_text
-			elseif not valid_concept_code (adl_parser.concept) then
-				parse_error_text := "concept code " + adl_parser.concept + " is invalid"
+--			elseif not valid_concept_code (adl_parser.concept) then
+--				parse_error_text := create_message_line("VARCN", <<adl_parser.concept>>)
 			else
 				------------------- language section ---------------
-				if adl_parser.language_text /= Void and then not adl_parser.language_text.is_empty then
+--				if adl_parser.language_text /= Void and then not adl_parser.language_text.is_empty then
 					language_context.set_source(adl_parser.language_text, adl_parser.language_text_start_line)
 					language_context.parse
 					if not language_context.parse_succeeded then
 						parse_error_text := language_context.parse_error_text
 						language_error := True
 					end
-				else
-					language_context.reset
-				end
+--				else
+--					language_context.reset
+--				end
 
 				if not language_error then
 					if language_context.tree /= Void then
@@ -182,14 +172,14 @@ feature {NONE} -- Implementation
 						end
 
 						------------------- definition section ---------------
-						definition_context.set_source(adl_parser.definition_text, adl_parser.definition_text_start_line)
+						definition_context.set_source(adl_parser.definition_text, adl_parser.definition_text_start_line, differential_source_flag, rm_schema)
 						definition_context.parse
 						if not definition_context.parse_succeeded then
 							parse_error_text := definition_context.parse_error_text
 						else
 							------------------- invariant section ---------------
 							if adl_parser.invariant_text /= Void and then not adl_parser.invariant_text.is_empty then
-								invariant_context.set_source(adl_parser.invariant_text, adl_parser.invariant_text_start_line)
+								invariant_context.set_source(adl_parser.invariant_text, adl_parser.invariant_text_start_line, differential_source_flag, rm_schema)
 								invariant_context.parse
 								if not invariant_context.parse_succeeded then
 									parse_error_text := invariant_context.parse_error_text
@@ -206,18 +196,19 @@ feature {NONE} -- Implementation
 
 								if not ontology_context.parse_succeeded then
 									parse_error_text := ontology_context.parse_error_text
-								elseif {definition: !C_COMPLEX_OBJECT} definition_context.tree and then {id: !ARCHETYPE_ID} adl_parser.archetype_id then
-									if is_differential_source then
+								elseif attached {C_COMPLEX_OBJECT} definition_context.tree as definition and then attached {ARCHETYPE_ID} adl_parser.archetype_id as id then
+									convert_ontology_syntax(ontology_context.tree)  -- perform any version upgrade conversions
+									if differential_source_flag then
 										if orig_lang_trans /= Void then
-											create differential_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, adl_parser.concept)
+											create differential_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, definition.node_id)
 										else
-											create differential_ontology.make_from_tree (Void, ontology_context.tree, adl_parser.concept)
+											create differential_ontology.make_from_tree (Void, ontology_context.tree, definition.node_id)
 											orig_lang_trans := original_language_and_translations_from_ontology (differential_ontology)
 										end
 
 										create {DIFFERENTIAL_ARCHETYPE} Result.make (
+											adl_parser.artefact_type,
 											id,
-											adl_parser.concept,
 											orig_lang_trans.original_language.code_string,
 											res_desc,	-- may be Void
 											definition,
@@ -225,15 +216,15 @@ feature {NONE} -- Implementation
 										)
 									else
 										if orig_lang_trans /= Void then
-											create flat_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, adl_parser.concept)
+											create flat_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, definition.node_id)
 										else
-											create flat_ontology.make_from_tree (Void, ontology_context.tree, adl_parser.concept)
+											create flat_ontology.make_from_tree (Void, ontology_context.tree, definition.node_id)
 											orig_lang_trans := original_language_and_translations_from_ontology (flat_ontology)
 										end
 
 										create {FLAT_ARCHETYPE} Result.make (
+											adl_parser.artefact_type,
 											id,
-											adl_parser.concept,
 											orig_lang_trans.original_language.code_string,
 											res_desc,	-- may be Void
 											definition,
@@ -241,14 +232,14 @@ feature {NONE} -- Implementation
 										)
 									end
 
-									if {parent_id: !ARCHETYPE_ID} adl_parser.parent_archetype_id then
+									if attached {ARCHETYPE_ID} adl_parser.parent_archetype_id as parent_id then
 										Result.set_parent_archetype_id (parent_id)
 									end
 
 									if adl_parser.adl_version /= Void then
 										Result.set_adl_version(adl_parser.adl_version)
 									else
-										Result.set_adl_version(Current_adl_version)
+										Result.set_adl_version(latest_adl_version)
 									end
 
 									if adl_parser.is_controlled then
@@ -268,6 +259,8 @@ feature {NONE} -- Implementation
 									if invariant_context.tree /= Void then
 										Result.set_invariants(invariant_context.tree)
 									end
+
+									Result.rebuild
 								end
 							end
 						end
@@ -290,20 +283,22 @@ feature {NONE} -- Implementation
 
 	ontology_context: DADL_ENGINE
 
-	res_desc_id: INTEGER is
+	rm_schema: SCHEMA_ACCESS
+
+	res_desc_id: INTEGER
 			-- dynamic type id of RESOURCE_DESCRIPTION type
 		once
 			Result := dynamic_type(create {RESOURCE_DESCRIPTION}.default_create)
 		end
 
-	trans_det_id: INTEGER is
+	trans_det_id: INTEGER
 			-- dynamic type id of dummy class containing translations: LIST [TRANSLATION_DETAILS], to
 			-- mimic AUTHORED_RESOURCE - only needed until ADL2
 		once
 			Result := dynamic_type(create {LANGUAGE_TRANSLATIONS}.make)
 		end
 
-	synchronise_from_archetype(an_archetype: ARCHETYPE) is
+	synchronise_from_archetype(an_archetype: ARCHETYPE)
 			-- synchronise archetype to processing engines
 		do
 			an_archetype.synchronise
@@ -320,13 +315,13 @@ feature {NONE} -- Implementation
 			ontology_context.set_tree(an_archetype.ontology.representation)
 		end
 
-	original_language_and_translations_from_ontology (ontology: !ARCHETYPE_ONTOLOGY): !LANGUAGE_TRANSLATIONS
+	original_language_and_translations_from_ontology (ontology: attached ARCHETYPE_ONTOLOGY): attached LANGUAGE_TRANSLATIONS
 			-- The original language and translations, mined from `ontology'.
 		local
 			languages: SEQUENCE [STRING]
 		do
 			create Result.make
-			Result.set_original_language_from_string (ontology.primary_language)
+			Result.set_original_language_from_string (ontology.original_language)
 
 			from
 				languages := ontology.languages_available
@@ -334,35 +329,12 @@ feature {NONE} -- Implementation
 			until
 				languages.off
 			loop
-				if not languages.item.is_equal (ontology.primary_language) then
+				if not languages.item.is_equal (ontology.original_language) then
 					Result.add_new_translation (languages.item)
 				end
 
 				languages.forth
 			end
-		end
-
-	initialise_serialisers is
-		once
-			archetype_serialisers.put(create {ADL_SYNTAX_SERIALISER}.make(create {NATIVE_ADL_SERIALISATION_PROFILE}.make("adl")), "adl")
-			archetype_serialisers.put(create {ADL_SYNTAX_SERIALISER}.make(create {HTML_ADL_SERIALISATION_PROFILE}.make("html")), "html")
-			-- archetype_serialisers.put(create {ADL_TAGGED_SERIALISER}.make(create {XML_ADL_SERIALISATION_PROFILE}.make("xml")), "xml")
-			-- archetype_serialisers.put(create {ADL_OWL_SERIALISER}.make(create {OWL_ADL_SERIALISATION_PROFILE}.make("owl")), "owl")
-
-			c_serialisers.put(create {CADL_SYNTAX_SERIALISER}.make(create {NATIVE_CADL_SERIALISATION_PROFILE}.make("adl")), "adl")
-			c_serialisers.put(create {CADL_SYNTAX_SERIALISER}.make(create {HTML_CADL_SERIALISATION_PROFILE}.make("html")), "html")
-			-- c_serialisers.put(create {CADL_TAGGED_SERIALISER}.make(create {XML_CADL_SERIALISATION_PROFILE}.make("xml")), "xml")
-			-- c_serialisers.put(create {CADL_OWL_SERIALISER}.make(create {OWL_CADL_SERIALISATION_PROFILE}.make("owl")), "owl")
-
-			assertion_serialisers.put(create {ASSERTION_SYNTAX_SERIALISER}.make(create {NATIVE_CADL_SERIALISATION_PROFILE}.make("adl")), "adl")
-			assertion_serialisers.put(create {ASSERTION_SYNTAX_SERIALISER}.make(create {HTML_CADL_SERIALISATION_PROFILE}.make("html")), "html")
-			-- assertion_serialisers.put(create {ASSERTION_TAGGED_SERIALISER}.make(create {XML_CADL_SERIALISATION_PROFILE}.make("xml")), "xml")
-			-- assertion_serialisers.put(create {ASSERTION_OWL_SERIALISER}.make(create {OWL_CADL_SERIALISATION_PROFILE}.make("owl")), "owl")
-
-			dt_serialisers.put(create {DADL_SYNTAX_SERIALISER}.make(create {NATIVE_DADL_SERIALISATION_PROFILE}.make("adl")), "adl")
-			dt_serialisers.put(create {DADL_SYNTAX_SERIALISER}.make(create {HTML_DADL_SERIALISATION_PROFILE}.make("html")), "html")
-			-- dt_serialisers.put(create {DADL_TAGGED_SERIALISER}.make(create {XML_DADL_SERIALISATION_PROFILE}.make("xml")), "xml")
-			-- dt_serialisers.put(create {DADL_OWL_SERIALISER}.make(create {OWL_DADL_SERIALISATION_PROFILE}.make("owl")), "owl")
 		end
 
 end

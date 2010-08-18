@@ -1,5 +1,5 @@
 %{
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Validating parser for Archetype Description Language (ADL)"
 	keywords:    "ADL"
@@ -29,6 +29,11 @@ inherit
 
 	ADL_SYNTAX_CONVERTER
 
+	SHARED_MESSAGE_DB
+		export
+			{NONE} all
+		end
+
 	KL_SHARED_EXCEPTIONS
 	KL_SHARED_ARGUMENTS
 
@@ -43,7 +48,8 @@ create
 %token <STRING> V_DADL_TEXT V_CADL_TEXT V_ASSERTION_TEXT
 %token <STRING> V_VERSION_STRING
 
-%token SYM_ARCHETYPE SYM_CONCEPT SYM_SPECIALIZE
+%token SYM_ARCHETYPE SYM_TEMPLATE SYM_TEMPLATE_COMPONENT SYM_OPERATIONAL_TEMPLATE
+%token SYM_CONCEPT SYM_SPECIALIZE
 %token SYM_DEFINITION SYM_LANGUAGE
 %token SYM_DESCRIPTION SYM_ONTOLOGY SYM_INVARIANT
 %token SYM_ADL_VERSION SYM_IS_CONTROLLED SYM_IS_GENERATED
@@ -70,23 +76,48 @@ archetype: arch_identification
 		arch_ontology
 	;
 
-arch_identification: arch_head V_ARCHETYPE_ID 
+arch_identification: arch_head arch_meta_data V_ARCHETYPE_ID 
 		{
-			create archetype_id.make_from_string($2) -- FIXME - should be other make routine
+			if arch_id.valid_id($3) then
+				create archetype_id.make_from_string($3)
+			end
 		}
-	| SYM_ARCHETYPE error
+	| arch_head error
 		{
 			raise_error
-			report_error("In 'archetype' clause; expecting archetype id (model_issuer-ref_model-model_class.concept.version)")
+			report_error(create_message_line("SARID", Void))
 			abort
 		}
 	;
 
 arch_head: SYM_ARCHETYPE 
-	| SYM_ARCHETYPE arch_meta_data
+		{
+			str := text
+			str.right_adjust
+			create artefact_type.make_from_type_name(str)
+		}
+	| SYM_TEMPLATE
+		{
+			str := text
+			str.right_adjust
+			create artefact_type.make_from_type_name(str)
+		}
+	| SYM_TEMPLATE_COMPONENT
+		{
+			str := text
+			str.right_adjust
+			create artefact_type.make_from_type_name(str)
+		}
+	| SYM_OPERATIONAL_TEMPLATE
+		{
+			str := text
+			str.right_adjust
+			create artefact_type.make_from_type_name(str)
+		}
 	;
 
-arch_meta_data: '(' arch_meta_data_items ')'
+arch_meta_data: -- empty ok
+	| '(' arch_meta_data_items ')'
 	;
 
 arch_meta_data_items: arch_meta_data_item
@@ -110,22 +141,20 @@ arch_meta_data_item: SYM_ADL_VERSION '=' V_VERSION_STRING
 arch_specialisation: -- empty is ok
 	| SYM_SPECIALIZE V_ARCHETYPE_ID 
 		{
-			create parent_archetype_id.make_from_string($2) -- FIXME - should be other make routine
-			if not parent_archetype_id.semantic_id.is_equal(archetype_id.semantic_parent_id) then
-				raise_error
-				report_error("Archetype id not based on specialisation parent archetype id")
-				abort
+			if arch_id.valid_id($2) then
+				create parent_archetype_id.make_from_string($2)
 			end
 		}
 	| SYM_SPECIALIZE error
 		{
 			raise_error
-			report_error("In 'specialise' clause; expecting parent archetype id (model_issuer-ref_model-model_class.concept.version)")
+			report_error(create_message_line("SASID", Void))
 			abort
 		}
 	;
 
-arch_concept: SYM_CONCEPT V_LOCAL_TERM_CODE_REF 
+arch_concept: -- empty is ADL 1.5 
+	| SYM_CONCEPT V_LOCAL_TERM_CODE_REF 
 		{
 			concept := $2
 			debug("ADL_parse")
@@ -135,12 +164,17 @@ arch_concept: SYM_CONCEPT V_LOCAL_TERM_CODE_REF
 	| SYM_CONCEPT error
 		{
 			raise_error
-			report_error("In 'concept' clause; expecting TERM_CODE reference")
+			report_error(create_message_line("SACO", Void))
 			abort
 		}
 	;
 
-arch_language: -- empty is ok for ADL 1.4 tools
+arch_language: 
+		{
+			raise_error
+			report_error(create_message_line("SALAN", Void))
+			abort
+		}
 	| SYM_LANGUAGE V_DADL_TEXT
 		{
 			convert_dadl_language($2)
@@ -149,7 +183,7 @@ arch_language: -- empty is ok for ADL 1.4 tools
 	| SYM_LANGUAGE error
 		{
 			raise_error
-			report_error("Error in language section")
+			report_error(create_message_line("SALA", Void))
 			abort
 		}
 	;
@@ -163,7 +197,7 @@ arch_description: -- no meta-data ok
 	| SYM_DESCRIPTION error
 		{
 			raise_error
-			report_error("Error in description section")
+			report_error(create_message_line("SADS", Void))
 			abort
 		}
 	;
@@ -176,7 +210,7 @@ arch_definition:	SYM_DEFINITION V_CADL_TEXT
 	| SYM_DEFINITION error
 		{
 			raise_error
-			report_error("Error in definition section")
+			report_error(create_message_line("SADF", Void))
 			abort
 		}
 	;
@@ -189,7 +223,7 @@ arch_invariant: -- no invariant ok
 	| SYM_INVARIANT error
 		{
 			raise_error
-			report_error("Error in invariant section")
+			report_error(create_message_line("SAIV", Void))
 			abort
 		}
 	;
@@ -201,7 +235,7 @@ arch_ontology: SYM_ONTOLOGY V_DADL_TEXT
 	| SYM_ONTOLOGY error
 		{
 			raise_error
-			report_error("Error in ontology section")
+			report_error(create_message_line("SAON", Void))
 			abort
 		}
 	;
@@ -210,14 +244,14 @@ arch_ontology: SYM_ONTOLOGY V_DADL_TEXT
 
 feature -- Initialization
 
-	make is
+	make
 			-- Create a new Eiffel parser.
 		do
 			make_eiffel_scanner
 			make_parser_skeleton
 		end
 
-	execute(in_text:STRING) is
+	execute (in_text: STRING)
 		do
 			reset
 			create error_text.make(0)
@@ -227,7 +261,7 @@ feature -- Initialization
 
 feature {YY_PARSER_ACTION} -- Basic Operations
 
-	report_error (a_message: STRING) is
+	report_error (a_message: STRING)
 			-- Print error message.
 		local
 			f_buffer: YY_FILE_BUFFER
@@ -251,6 +285,8 @@ feature -- Parse Output
 
 	is_generated: BOOLEAN
 
+	artefact_type: ARTEFACT_TYPE
+
 	parent_archetype_id: ARCHETYPE_ID
 
 	concept: STRING
@@ -272,5 +308,10 @@ feature -- Access
 feature {NONE} -- Implementation 
 
 	str: STRING
+
+	arch_id: ARCHETYPE_ID
+		once
+			create Result
+		end
 
 end

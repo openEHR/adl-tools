@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "Test DV_QUANTITY_RATIO"
@@ -26,20 +26,20 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title: STRING is "DV_QUANTITY_RATIO"
+	title: STRING = "DV_QUANTITY_RATIO"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		local
 			q1, q2: DV_QUANTITY
 			a_datum:DV_QUANTITY_RATIO
@@ -52,7 +52,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 		do
 		end
 

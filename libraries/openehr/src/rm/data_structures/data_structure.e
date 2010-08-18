@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Structures Reference Model"
 
 	description: "General concept of a complex data structure"
@@ -20,7 +20,7 @@ inherit
 
 feature -- Conversion
 
-	as_hierarchy: ITEM is
+	as_hierarchy: ITEM
 			-- the physical representation as a CEN 13606-compliant structure
 		deferred
 		end

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Scanner for Object Graph PathS"
 	keywords:    "OG_PATH scanner"
@@ -42,7 +42,7 @@ create
 
 feature -- Status report
 
-	valid_start_condition (sc: INTEGER): BOOLEAN is
+	valid_start_condition (sc: INTEGER): BOOLEAN
 			-- Is `sc' a valid start condition?
 		do
 			Result := (INITIAL <= sc and sc <= IN_STR)
@@ -50,7 +50,7 @@ feature -- Status report
 
 feature {NONE} -- Implementation
 
-	yy_build_tables is
+	yy_build_tables
 			-- Build scanner tables.
 		do
 			yy_nxt := yy_nxt_template
@@ -62,7 +62,7 @@ feature {NONE} -- Implementation
 			yy_accept := yy_accept_template
 		end
 
-	yy_execute_action (yy_act: INTEGER) is
+	yy_execute_action (yy_act: INTEGER)
 			-- Execute semantic action.
 		do
 if yy_act <= 10 then
@@ -258,7 +258,7 @@ end
 end
 		end
 
-	yy_execute_eof_action (yy_sc: INTEGER) is
+	yy_execute_eof_action (yy_sc: INTEGER)
 			-- Execute EOF semantic action.
 		do
 			inspect yy_sc
@@ -284,7 +284,7 @@ end
 
 feature {NONE} -- Table templates
 
-	yy_nxt_template: SPECIAL [INTEGER] is
+	yy_nxt_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,   48,   48,    7,    8,    9,   10,   28,   11,   12,
@@ -321,7 +321,7 @@ feature {NONE} -- Table templates
 			   48,   48,   48,   48,   48, yy_Dummy>>)
 		end
 
-	yy_chk_template: SPECIAL [INTEGER] is
+	yy_chk_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    0,    0,    1,    1,    1,    1,   53,    1,    1,
@@ -358,7 +358,7 @@ feature {NONE} -- Table templates
 			   48,   48,   48,   48,   48, yy_Dummy>>)
 		end
 
-	yy_base_template: SPECIAL [INTEGER] is
+	yy_base_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    0,   13,   26,   47,   77,  271,  271,   72,  271,
@@ -369,7 +369,7 @@ feature {NONE} -- Table templates
 			   61,    9,   71,    4, yy_Dummy>>)
 		end
 
-	yy_def_template: SPECIAL [INTEGER] is
+	yy_def_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,   49,   49,   50,   50,   48,   48,   48,   51,   48,
@@ -380,7 +380,7 @@ feature {NONE} -- Table templates
 			   48,   48,   48,   48, yy_Dummy>>)
 		end
 
-	yy_ec_template: SPECIAL [INTEGER] is
+	yy_ec_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    1,    1,    1,    1,    1,    1,    2,
@@ -413,7 +413,7 @@ feature {NONE} -- Table templates
 			    1,    1,    1,    1,    1,    1,    1, yy_Dummy>>)
 		end
 
-	yy_meta_template: SPECIAL [INTEGER] is
+	yy_meta_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    1,    1,    2,    1,    1,    1,    3,    3,    1,
@@ -421,7 +421,7 @@ feature {NONE} -- Table templates
 			    1,    1,    1,    1, yy_Dummy>>)
 		end
 
-	yy_accept_template: SPECIAL [INTEGER] is
+	yy_accept_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
 			    0,    0,    0,    0,    0,   21,   19,   20,   11,    5,
@@ -433,46 +433,46 @@ feature {NONE} -- Table templates
 
 feature {NONE} -- Constants
 
-	yyJam_base: INTEGER is 271
+	yyJam_base: INTEGER = 271
 			-- Position in `yy_nxt'/`yy_chk' tables
 			-- where default jam table starts
 
-	yyJam_state: INTEGER is 48
+	yyJam_state: INTEGER = 48
 			-- State id corresponding to jam state
 
-	yyTemplate_mark: INTEGER is 49
+	yyTemplate_mark: INTEGER = 49
 			-- Mark between normal states and templates
 
-	yyNull_equiv_class: INTEGER is 1
+	yyNull_equiv_class: INTEGER = 1
 			-- Equivalence code for NULL character
 
-	yyReject_used: BOOLEAN is false
+	yyReject_used: BOOLEAN = false
 			-- Is `reject' called?
 
-	yyVariable_trail_context: BOOLEAN is false
+	yyVariable_trail_context: BOOLEAN = false
 			-- Is there a regular expression with
 			-- both leading and trailing parts having
 			-- variable length?
 
-	yyReject_or_variable_trail_context: BOOLEAN is false
+	yyReject_or_variable_trail_context: BOOLEAN = false
 			-- Is `reject' called or is there a
 			-- regular expression with both leading
 			-- and trailing parts having variable length?
 
-	yyNb_rules: INTEGER is 20
+	yyNb_rules: INTEGER = 20
 			-- Number of rules
 
-	yyEnd_of_buffer: INTEGER is 21
+	yyEnd_of_buffer: INTEGER = 21
 			-- End of buffer rule code
 
-	yyLine_used: BOOLEAN is false
+	yyLine_used: BOOLEAN = false
 			-- Are line and column numbers used?
 
-	yyPosition_used: BOOLEAN is false
+	yyPosition_used: BOOLEAN = false
 			-- Is `position' used?
 
-	INITIAL: INTEGER is 0
-	IN_STR: INTEGER is 1
+	INITIAL: INTEGER = 0
+	IN_STR: INTEGER = 1
 			-- Start condition codes
 
 feature -- User-defined features
@@ -488,7 +488,7 @@ feature {NONE} -- Local variables
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create a new scanner.
 		do
 			make_compressed_scanner_skeleton
@@ -498,7 +498,7 @@ feature {NONE} -- Initialization
 
 feature -- Initialization
 
-	reset is
+	reset
 			-- Reset scanner before scanning next input.
 		do
 			reset_compressed_scanner_skeleton
@@ -519,11 +519,10 @@ feature -- Access
 
 feature {NONE} -- Constants
 
-	Init_buffer_size: INTEGER is 256
+	Init_buffer_size: INTEGER = 256
 				-- Initial size for `in_buffer'
 
 invariant
-
 	in_buffer_not_void: in_buffer /= Void
 
 end

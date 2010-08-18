@@ -1,6 +1,6 @@
-indexing
+note
 	component:   "openEHR Common Reference Model"
-	
+
 	description: "[
 			 Ancestor class of identifiers of informational objects. Ids may be completely meaningless, 
 			 in which case their only job is to refer to something, or may carry some information to do 
@@ -23,23 +23,23 @@ deferred class OBJECT_ID
 
 inherit
 	COMPARABLE
-	
+
 feature -- Access
 
 	value: STRING
-			
+
 feature -- Status Report
 
-	valid_id(an_id:STRING): BOOLEAN is
-			-- 
+	valid_id (an_id: STRING): BOOLEAN
+			--
 		require
 			an_id_valid: an_id /= Void and then not an_id.is_empty
 		deferred
 		end
-		
+
 feature -- Comparison
 
-	infix "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: like Current): BOOLEAN
 			-- Is current object less than `other'?
 		do
 			Result := value < other.value

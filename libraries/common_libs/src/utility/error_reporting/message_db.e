@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "[
 			     Error database abstraction. Subtypes can be easily turned into a file that is read in as
@@ -17,47 +17,81 @@ indexing
 
 deferred class MESSAGE_DB
 
+feature -- Definitions
+
+	Default_message_language: STRING = "en"
+			-- default language of messages in this database
+
 feature -- Initialisation
 
-	make is
-		deferred
+	make
+		do
+			create templates.make (0)
 		end
 
 feature -- Access
 
 	templates: HASH_TABLE [STRING, STRING]
-			-- error templates in the form of a table of templates
-			-- keyed by id
+			-- error templates in the form of a table of templates keyed by id
 
-	has_message(an_id: STRING): BOOLEAN is
+	has_message(an_id: STRING): BOOLEAN
 		require
 			an_id /= Void
 		do
 			Result := templates.has(an_id)
 		end
 
-	stringify(an_id: STRING; args: ARRAY[STRING]): STRING is
+	create_message_content(an_id: STRING; args: ARRAY[STRING]): STRING
 		require
 			an_id /= Void
 		local
 			i: INTEGER
 			idx_str: STRING
+			args_list: ARRAY[STRING]
+			replacement: STRING
 		do
-			Result := templates.item(an_id).twin
+			if templates.has (an_id) then
+				Result := templates.item(an_id).twin
+				args_list := args
+			else
+				Result := templates.item ("message_code_error").twin
+				args_list := <<an_id>>
+			end
 			Result.replace_substring_all("%%N", "%N")
-			if args /= Void then
-				from
-					i := args.lower
-				until 
-					i > args.upper
-				loop
+			if args_list /= Void then
+				from i := args_list.lower until i > args_list.upper loop
+					replacement := args_list.item(i)
+
+					if not attached replacement then
+						create replacement.make_empty
+					end
+
 					idx_str := i.out
 					idx_str.left_adjust
-					Result.replace_substring_all("$" + idx_str, args.item(i))
+					Result.replace_substring_all("$" + idx_str, replacement)
 					i := i + 1
 				end
 			end
 		end
+
+	create_message_line(an_id: STRING; args: ARRAY[STRING]): STRING
+			-- create message as a full line
+		require
+			an_id /= Void
+		do
+			Result := create_message_content(an_id, args)
+			Result.append_character ('%N')
+		end
+
+feature -- Status Report
+
+	database_loaded: BOOLEAN
+		do
+			Result := not templates.is_empty
+		end
+
+invariant
+	templates /= Void
 
 end
 
@@ -98,4 +132,4 @@ end
 --| ***** END LICENSE BLOCK *****
 --|
 
- 
+

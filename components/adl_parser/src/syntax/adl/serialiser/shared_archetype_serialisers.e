@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "cADL serialisers"
 	keywords:    "test, ADL"
@@ -16,25 +16,53 @@ class SHARED_ARCHETYPE_SERIALISERS
 inherit
 	ARCHETYPE_DEFINITIONS
 
+	SHARED_DT_SERIALISERS
+		export
+			{NONE} all
+			{ANY} has_dt_serialiser_format
+		end
+
+	SHARED_C_SERIALISERS
+		export
+			{NONE} all
+			{ANY} has_c_serialiser_format
+		end
+
+	SHARED_ASSERTION_SERIALISERS
+		export
+			{NONE} all
+			{ANY} has_assertion_serialiser_format
+		end
+
+feature -- Initialisation
+
+	initialise_serialisers
+		once
+			archetype_serialisers.put(create {ADL_SYNTAX_SERIALISER}.make(create {NATIVE_ADL_SERIALISATION_PROFILE}.make(Archetype_native_syntax)), Archetype_native_syntax)
+			archetype_serialisers.put(create {ADL_SYNTAX_SERIALISER}.make(create {HTML_ADL_SERIALISATION_PROFILE}.make(Archetype_web_syntax)), Archetype_web_syntax)
+
+			c_serialisers.put(create {CADL_SYNTAX_SERIALISER}.make(create {NATIVE_CADL_SERIALISATION_PROFILE}.make(Archetype_native_syntax)), Archetype_native_syntax)
+			c_serialisers.put(create {CADL_SYNTAX_SERIALISER}.make(create {HTML_CADL_SERIALISATION_PROFILE}.make(Archetype_web_syntax)), Archetype_web_syntax)
+
+			assertion_serialisers.put(create {ASSERTION_SYNTAX_SERIALISER}.make(create {NATIVE_CADL_SERIALISATION_PROFILE}.make(Archetype_native_syntax)), Archetype_native_syntax)
+			assertion_serialisers.put(create {ASSERTION_SYNTAX_SERIALISER}.make(create {HTML_CADL_SERIALISATION_PROFILE}.make(Archetype_web_syntax)), Archetype_web_syntax)
+
+			dt_serialisers.put(create {DADL_SYNTAX_SERIALISER}.make(create {NATIVE_DADL_SERIALISATION_PROFILE}.make(Archetype_native_syntax)), Archetype_native_syntax)
+			dt_serialisers.put(create {DADL_SYNTAX_SERIALISER}.make(create {HTML_DADL_SERIALISATION_PROFILE}.make(Archetype_web_syntax)), Archetype_web_syntax)
+		end
+
 feature -- Access
 
-	archetype_serialiser_formats: ARRAYED_LIST [STRING]
+	archetype_serialiser_formats: attached ARRAYED_LIST [STRING]
 			-- List of format names.
 		once
 			create Result.make (0)
-
-			from
-				archetype_serialisers.start
-			until
-				archetype_serialisers.off
-			loop
+			Result.compare_objects
+			from archetype_serialisers.start until archetype_serialisers.off loop
 				Result.extend (archetype_serialisers.key_for_iteration)
 				archetype_serialisers.forth
 			end
-
-			Result.compare_objects
 		ensure
-			attached: Result /= Void
 			not_empty: not Result.is_empty
 			each_format_has_file_extension: Result.for_all (agent (format: STRING): BOOLEAN
 				do
@@ -42,18 +70,15 @@ feature -- Access
 				end)
 		end
 
-	archetype_serialiser_for_format (a_format: STRING): ARCHETYPE_SERIALISER
+	archetype_serialiser_for_format (a_format: attached STRING): attached ARCHETYPE_SERIALISER
 			-- The archetype serialiser for `a_format'.
 		require
-			format_attached: a_format /= Void
 			format_valid: has_archetype_serialiser_format (a_format)
 		do
 			Result := archetype_serialisers [a_format]
-		ensure
-			Result_exists: Result /= Void
 		end
 
-	archetype_file_extensions: HASH_TABLE [STRING, STRING]
+	archetype_file_extensions: attached HASH_TABLE [STRING, STRING]
 			-- File extensions for logical serialisation formats.
 		once
 			create Result.make (0)
@@ -62,28 +87,23 @@ feature -- Access
 			Result.put (".xml", "xml")
 			Result.put (".owl", "owl")
 		ensure
-			attached: Result /= Void
 			not_empty: not Result.is_empty
 		end
 
 feature -- Status Report
 
-	has_archetype_serialiser_format (a_format: STRING): BOOLEAN
+	has_archetype_serialiser_format (a_format: attached STRING): BOOLEAN
 			-- Is `a_format' supported for serialisation?
-		require
-			format_attached: a_format /= Void
 		do
 			Result := archetype_serialisers.has (a_format)
 		end
 
 feature {NONE} -- Implementation
 
-	archetype_serialisers: HASH_TABLE [ARCHETYPE_SERIALISER, STRING]
+	archetype_serialisers: attached HASH_TABLE [ARCHETYPE_SERIALISER, STRING]
 			-- The supported archetype serialisers.
 		once
 			create Result.make (0)
-		ensure
-			attached: Result /= Void
 		end
 
 end

@@ -1,13 +1,13 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Archetype compiler interface. This object knows how to compile a system of archetypes
 				 found in the ARCHETYPE_DIRECTORY.
 				 ]"
-	keywords:    "test, ADL"
+	keywords:    "compiler, archetype, ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL: http://svn.openehr.org/ref_impl_eiffel/BRANCHES/specialisation/components/adl_parser/src/interface/archetype_parser.e $"
@@ -17,21 +17,19 @@ indexing
 class ARCHETYPE_COMPILER
 
 inherit
-	SHARED_ARCHETYPE_DIRECTORY
+	SHARED_KNOWLEDGE_REPOSITORY
+		export
+			{NONE} all
+		end
 
-	SHARED_ARCHETYPE_PARSER
+	SHARED_APP_RESOURCES
 		export
 			{NONE} all
 		undefine
-			copy, default_create
+			is_equal
 		end
 
-	SHARED_RESOURCES
-		export
-			{NONE} all
-		end
-
-	MESSAGE_BILLBOARD
+	COMPILATION_STATES
 		export
 			{NONE} all
 		end
@@ -46,9 +44,10 @@ create
 
 feature {NONE} -- Initialisation
 
-	make is
+	make
 		do
 			create status.make_empty
+			create task_stack.make(0)
 		end
 
 feature -- Access
@@ -81,7 +80,7 @@ feature -- Status Setting
 
 feature -- Commands
 
-	set_visual_update_action (value: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]]) is
+	set_visual_update_action (value: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]])
 			-- Set `visual_update_action'.
 		do
 			visual_update_action := value
@@ -92,82 +91,98 @@ feature -- Commands
 	build_all
 			-- Build the whole system, but not artefacts that seem to be built already.
 		do
-			do_subtree (archetype_directory.directory, agent build_archetype (False, ?), "building system")
+			do_all (agent build_archetype (False, ?), "building system")
 		end
 
 	rebuild_all
 			-- Rebuild the whole system from scratch, regardless of previous attempts.
 		do
-			do_subtree (archetype_directory.directory, agent build_archetype (True, ?), "rebuilding system from scratch")
+			do_all (agent build_archetype (True, ?), "rebuilding system from scratch")
 		end
 
 	build_subtree
 			-- Build the sub-system at and below `archetype_directory.selected_node', but not artefacts that seem to be built already.
 		do
-			do_subtree (archetype_directory.selected_node, agent build_archetype (False, ?), "building sub-system")
+			do_subtree (arch_dir.selected_item, agent build_archetype (False, ?), "building sub-tree")
 		end
 
 	rebuild_subtree
 			-- Rebuild the sub-system at and below `archetype_directory.selected_node' from scratch, regardless of previous attempts.
 		do
-			do_subtree (archetype_directory.selected_node, agent build_archetype (True, ?), "rebuilding sub-system from scratch")
+			do_subtree (arch_dir.selected_item, agent build_archetype (True, ?), "rebuilding sub-tree from scratch")
 		end
 
-	build_lineage (ara: ARCH_REP_ARCHETYPE) is
+	build_lineage (ara: ARCH_REP_ARCHETYPE)
 			-- Build the archetypes in the lineage containing `ara', except those that seem to be built already.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		require
 			ara_attached: ara /= Void
 		do
+			do_lineage (ara, agent check_archetype_for_changes (False, ?))
 			do_lineage (ara, agent build_archetype (False, ?))
 		end
 
-	rebuild_lineage (ara: ARCH_REP_ARCHETYPE) is
+	rebuild_lineage (ara: ARCH_REP_ARCHETYPE)
 			-- Rebuild the archetypes in the lineage containing `ara'.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		require
 			ara_attached: ara /= Void
 		do
+			do_lineage (ara, agent check_archetype_for_changes (True, ?))
 			do_lineage (ara, agent build_archetype (True, ?))
 		end
 
-	export_all_html (html_export_directory: STRING) is
+	export_all_html (a_html_export_directory: STRING)
 			-- Generate HTML under `html_export_directory' from all archetypes that have already been built.
 		require
-			directory_attached: html_export_directory /= Void
+			directory_attached: a_html_export_directory /= Void
 		do
-			do_subtree (archetype_directory.directory, agent export_archetype_html (html_export_directory, False, ?), "exporting built system as html")
+			do_all (agent export_archetype_html (a_html_export_directory, False, ?), "exporting built system as html")
 		end
 
-	build_and_export_all_html (html_export_directory: STRING) is
+	build_and_export_all_html (a_html_export_directory: STRING)
 			-- Generate HTML under `html_export_directory' from the whole system, building each archetype as necessary.
 		require
-			directory_attached: html_export_directory /= Void
+			directory_attached: a_html_export_directory /= Void
 		do
-			do_subtree (archetype_directory.directory, agent export_archetype_html (html_export_directory, True, ?), "building system and exporting as html")
+			do_all (agent export_archetype_html (a_html_export_directory, True, ?), "building system and exporting as html")
 		end
 
 feature {NONE} -- Implementation
 
-	do_subtree (subtree: TWO_WAY_TREE [ARCH_REP_ITEM]; action: PROCEDURE [ANY, TUPLE [!ARCH_REP_ARCHETYPE]]; message: STRING) is
+	do_all (action: PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]]; message: STRING)
 			-- Display `message' and perform `action' on the sub-system at and below `subtree'.
 		require
 			action_attached: action /= Void
 			message_attached: message /= Void
 		do
-			status := "=============== " + message + " ===============%N"
+			status := create_message_line ("compiler_status", <<message>>)
 			call_visual_update_action (Void)
 			is_interrupted := False
 			build_completed := False
-			archetype_directory.do_subtree (subtree, agent do_if_archetype (?, action), Void)
-			status := "=============== finished " + message + " ===============%N"
+			arch_dir.do_all_archetypes (action)
+			status := create_message_line ("compiler_finished_status", <<message>>)
 			call_visual_update_action (Void)
-			if not is_interrupted then
-				build_completed := True
-			end
+			build_completed := not is_interrupted
 		end
 
-	do_lineage (ara: ARCH_REP_ARCHETYPE; action: PROCEDURE [ANY, TUPLE [!ARCH_REP_ARCHETYPE]]) is
+	do_subtree (subtree: ARCH_REP_ITEM; action: PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]]; message: STRING)
+			-- Display `message' and perform `action' on the sub-system at and below `subtree'.
+		require
+			action_attached: action /= Void
+			message_attached: message /= Void
+		do
+			status := create_message_line ("compiler_status", <<message>>)
+			call_visual_update_action (Void)
+			is_interrupted := False
+			build_completed := False
+			arch_dir.do_archetypes (subtree, action)
+			status := create_message_line ("compiler_finished_status", <<message>>)
+			call_visual_update_action (Void)
+			build_completed := not is_interrupted
+		end
+
+	do_lineage (ara: ARCH_REP_ARCHETYPE; action: PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
 			-- Build the archetypes in the lineage containing `ara', possibly from scratch.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		require
@@ -179,41 +194,71 @@ feature {NONE} -- Implementation
 			ara.archetype_lineage.do_all (action)
 		end
 
-	do_if_archetype (item: ARCH_REP_ITEM; action: PROCEDURE [ANY, TUPLE [!ARCH_REP_ARCHETYPE]]) is
-			-- If `item' is an archetype, perform `action' on it.
+	check_archetype_for_changes (from_scratch: BOOLEAN; ara: attached ARCH_REP_ARCHETYPE)
+			-- check archetype for editing changes, including anything that might cause reparenting
 		do
-			if {ara: !ARCH_REP_ARCHETYPE} item then
-				action.call ([ara])
+			if not is_interrupted and ara.compile_attempted and ara.is_out_of_date then
+				ara.signal_source_edited
+				if ara.ontology_location_changed then
+					arch_dir.update_archetype_id(ara)
+					-- FIXME - the directory data structure on which we are now traversing has changed;
+					-- could cause problems...
+				end
 			end
 		end
 
-	build_archetype (from_scratch: BOOLEAN; ara: !ARCH_REP_ARCHETYPE) is
+	build_archetype (from_scratch: BOOLEAN; ara: attached ARCH_REP_ARCHETYPE)
 			-- Build `ara' only if `from_scratch' is true, or if it is has changed since it was last validly built.
 		do
 			if not is_interrupted then
-				if from_scratch or ara.is_out_of_date then
-					status := "------------- compiling " + ara.id.value + " -------------%N"
+				if from_scratch or not ara.is_in_terminal_compilation_state then
+					status := create_message_line("compiler_compiling_archetype", <<ara.id.value>>)
 					call_visual_update_action (ara)
-					archetype_parser.set_target (ara)
-					archetype_parser.parse_archetype
-					status := archetype_parser.status.twin
+					-- first phase; initially signal that any parents are compiled already
+					-- (this happens because this routine is being driven by `build_lineage', which
+					-- always comes down the specialisation lineage from the top. However... other
+					-- approaches might replace this one day.
+					if ara.compilation_state = Cs_lineage_known then
+						ara.signal_lineage_compilation
+					end
+					if not ara.is_in_terminal_compilation_state then
+						ara.compile
 
-					if ara.is_valid and not ara.has_differential_file then
-						archetype_parser.save_archetype_differential
-						status.append (archetype_parser.status)
+						-- second phase - needed if there are suppliers (i.e. slot-fillers or plain
+						-- external references to compile first
+						if ara.compilation_state = Cs_suppliers_known then
+							from ara.suppliers_index.start until ara.suppliers_index.off loop
+								build_lineage (ara.suppliers_index.item_for_iteration)
+								ara.suppliers_index.forth
+							end
+
+							-- continue compilation - remaining steps after suppliers compilation
+							ara.signal_suppliers_compilation
+							if not ara.is_in_terminal_compilation_state then
+								ara.compile
+							end
+						end
+					end
+					status := ara.compilation_result.twin
+
+				elseif ara.is_valid then
+					if ara.has_compilation_result then
+						status := create_message_line ("compiler_already_attempted_validated_with_warnings", <<ara.id.value, ara.compilation_result>>)
+					else
+						status := create_message_line ("compiler_already_attempted_validated", <<ara.id.value>>)
 					end
 				else
-					status.wipe_out
+					status := create_message_line ("compiler_already_attempted_failed", <<ara.id.value, ara.compilation_result>>)
 				end
 
 				call_visual_update_action (ara)
 			end
 		end
 
-	export_archetype_html (html_export_directory: STRING; build_too: BOOLEAN; ara: !ARCH_REP_ARCHETYPE) is
+	export_archetype_html (a_html_export_directory: STRING; build_too: BOOLEAN; ara: attached ARCH_REP_ARCHETYPE)
 			-- Generate HTML under `html_export_directory' from `ara', optionally building it first if necessary.
 		require
-			directory_attached: html_export_directory /= Void
+			directory_attached: a_html_export_directory /= Void
 		local
 			filename: STRING
 		do
@@ -223,23 +268,25 @@ feature {NONE} -- Implementation
 				end
 
 				if ara.is_valid then
-					filename := file_system.pathname (html_export_directory, ara.relative_path) + ".html"
+					filename := file_system.pathname (a_html_export_directory, ara.relative_path) + Archetype_web_page_extension
 					file_system.recursive_create_directory (file_system.dirname (filename))
-					archetype_parser.set_target (ara)
-					archetype_parser.save_archetype_flat_as (filename, "html")
-					status := archetype_parser.status
+					ara.save_flat_as (filename, Archetype_web_syntax)
+					status := ara.status
 					call_visual_update_action (ara)
 				end
 			end
 		end
 
-	call_visual_update_action (ara: ARCH_REP_ARCHETYPE) is
+	call_visual_update_action (ara: ARCH_REP_ARCHETYPE)
 			-- Call `visual_update_action', if it is attached.
 		do
 			if visual_update_action /= Void then
 				visual_update_action.call ([ara])
 			end
 		end
+
+	task_stack: ARRAYED_STACK [ARCH_REP_ARCHETYPE]
+			-- stack of task items to do or underway
 
 invariant
 	status_attached: status /= Void

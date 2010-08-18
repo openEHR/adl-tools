@@ -1,10 +1,10 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Version of openEHR"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2008 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -22,18 +22,20 @@ inherit
 
 feature -- Access
 
+	location: STRING = "$URL$"
+
 	last_changed: STRING = "$LastChangedRevision$%N%T$LastChangedDate$"
 			-- Details of when this class was last committed to Subversion.
-			-- This would typically be whenever `major', `minor' or `build' are manually incremented.
+			-- This would typically be whenever `major', `minor', `build' or `out' are manually edited.
 
 	major: INTEGER = 1
 			-- The major version number: manually incremented.
 
-	minor: INTEGER = 4
-			-- The minor version number: manually incremented.
+	minor: INTEGER = 5
+			-- The minor version number: manually incremented, or else reset to 0 when `major' changes.
 
-	build: INTEGER = 2
-			-- The build number: manually incremented for each public release.
+	build: INTEGER = 0
+			-- The build number: manually incremented for each public release, or else reset to 0 when `minor' changes.
 
 	revision: INTEGER = 0
 			-- The Subversion revision number: automatically set by the SConstruct.
@@ -46,7 +48,7 @@ feature -- Access
 	out: STRING
 			-- The version as a string of the form "major.minor.build.revision".
 		do
-			Result := major.out + "." + minor.out + "." + build.out + "." + revision.out + " Preview"
+			Result := major.out + "." + minor.out + "." + build.out + "." + revision.out + " Beta"
 		ensure then
 			long_enough: Result.count >= 7
 		end

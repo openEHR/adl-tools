@@ -1,10 +1,10 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Language-specific detail of resource description. When a resource 
 				 is translated for use in another language environment, each 
 				 RESOURCE_DESCRIPTION_ITEM needs to be copied and translated into 
-				 the new language.	
+				 the new language.
 				 ]"
 	keywords:    "archetype"
 	author:      "Thomas Beale"
@@ -28,30 +28,25 @@ inherit
 		export
 			{NONE} all
 		end
-		
-	OPENEHR_DEFINITIONS
-		export
-			{NONE} all
-		end
-	
+
 create
 	make_dt, make, make_from_language
-	
+
 feature -- Definitions
 
-	Default_purpose: STRING is "???"
-	
+	Default_purpose: STRING = "???"
+
 feature -- Initialisation
 
-	make_dt is
-			-- 
+	make_dt
+			--
 		do
 			language := Default_language_code
 			create purpose.make (0)
 			purpose.append (Default_purpose)
 		end
-		
-	make(a_lang: CODE_PHRASE; a_purpose: STRING) is
+
+	make(a_lang: CODE_PHRASE; a_purpose: STRING)
 		require
 			Lang_valid: a_lang /= Void
 			Purpose_valid: a_purpose /= Void and then not a_purpose.is_empty
@@ -63,7 +58,7 @@ feature -- Initialisation
 			Purpose_set: purpose = a_purpose
 		end
 
-	make_from_language(a_lang_name: STRING; a_purpose: STRING) is
+	make_from_language(a_lang_name: STRING; a_purpose: STRING)
 			-- make using a_lang_name and default language code ste
 		require
 			Lang_valid: a_lang_name /= Void and then not a_lang_name.is_empty
@@ -78,26 +73,26 @@ feature -- Initialisation
 
 feature -- Access
 
-	language: CODE_PHRASE	
+	language: CODE_PHRASE
 			-- Language of this item
 
-	purpose: STRING	
+	purpose: STRING
 			-- Purpose of the archetype.
 
-	use: STRING	
-			-- Description of the uses of the archetype, 
+	use: STRING
+			-- Description of the uses of the archetype,
 			-- i.e. contexts in which it could be used.
-			
+
 	keywords: ARRAYED_LIST [STRING]
-			-- Keywords which characterise this archetype, used e.g. 
+			-- Keywords which characterise this archetype, used e.g.
 			-- for indexing and searching.
 
-	misuse: STRING	
-			-- Description of any misuses of the archetype, 
+	misuse: STRING
+			-- Description of any misuses of the archetype,
 			-- i.e. contexts in which it should not be used.
 
-	copyright: STRING	
-			-- Rights over the archetype as a knowledge resource; 
+	copyright: STRING
+			-- Rights over the archetype as a knowledge resource;
 			-- usually copyright and/or license to use.
 
 	original_resource_uri: HASH_TABLE [STRING, STRING]
@@ -113,7 +108,7 @@ feature -- Status
 
 feature -- Modification
 
-	set_purpose(a_purpose: STRING) is
+	set_purpose(a_purpose: STRING)
 			-- set purpose
 		require
 			Purpose_valid: a_purpose /= Void and then not a_purpose.is_empty
@@ -123,7 +118,7 @@ feature -- Modification
 			Purpose_set: purpose = a_purpose
 		end
 
-	set_use(a_use: STRING) is
+	set_use(a_use: STRING)
 			-- set use
 		require
 			Purpose_valid: a_use /= Void and then not a_use.is_empty
@@ -133,7 +128,7 @@ feature -- Modification
 			Use_set: use = a_use
 		end
 
-	set_misuse(a_misuse: STRING) is
+	set_misuse(a_misuse: STRING)
 			-- set misuse
 		require
 			Misuse_valid: a_misuse /= Void and then not a_misuse.is_empty
@@ -143,7 +138,7 @@ feature -- Modification
 			Misuse_set: misuse = a_misuse
 		end
 
-	set_copyright(a_copyright: STRING) is
+	set_copyright(a_copyright: STRING)
 			-- set copyright
 		require
 			Copyright_valid: a_copyright /= Void and then not a_copyright.is_empty
@@ -153,7 +148,7 @@ feature -- Modification
 			Copyright_set: copyright = a_copyright
 		end
 
-	add_keyword(a_keyword: STRING) is
+	add_keyword(a_keyword: STRING)
 			-- add a_keyword to keywords
 		require
 			Contributor_valid: a_keyword /= Void and then not a_keyword.is_empty
@@ -165,8 +160,8 @@ feature -- Modification
 		ensure
 			Keyword_added: keywords.has(a_keyword)
 		end
-		
-	add_other_detail(a_key, a_value: STRING) is
+
+	add_other_detail(a_key, a_value: STRING)
 			-- add the key, value pair to other_details
 		require
 			Key_valid: a_key /= Void and then not a_key.is_empty
@@ -180,7 +175,7 @@ feature -- Modification
 			Other_details_set: other_details.item(a_key) = a_value
 		end
 
-	add_original_resource_uri(a_key, a_value: STRING) is
+	add_original_resource_uri(a_key, a_value: STRING)
 			-- add the key, value pair to original_resource_uri
 		require
 			Key_valid: a_key /= Void and then not a_key.is_empty
@@ -194,10 +189,10 @@ feature -- Modification
 		ensure
 			Original_resource_uri_added: original_resource_uri.item(a_key) = a_value
 		end
-		
+
 feature -- Copying
 
-	translated_copy(a_lang: STRING): RESOURCE_DESCRIPTION_ITEM is
+	translated_copy(a_lang: STRING): RESOURCE_DESCRIPTION_ITEM
 			-- generate a copy of this object, with all strings sss replaced by
 			-- "*sss(orig_lang)"
 		require
@@ -207,7 +202,7 @@ feature -- Copying
 		do
 			prefix_str := "*"
 			suffix_str := "(" + a_lang + ")"
-			create Result.make(create {CODE_PHRASE}.make(Default_language_code_set, a_lang), 
+			create Result.make(create {CODE_PHRASE}.make(Default_language_code_set, a_lang),
 				prefix_str + purpose + suffix_str)
 			if use /= Void then
 				Result.set_use(prefix_str + use + suffix_str)
@@ -237,7 +232,7 @@ feature -- Copying
 					Result.add_original_resource_uri(prefix_str + original_resource_uri.key_for_iteration + suffix_str,
 						original_resource_uri.item_for_iteration)
 					original_resource_uri.forth
-				end			
+				end
 			end
 			if other_details /= Void then
 				from
@@ -248,13 +243,13 @@ feature -- Copying
 					Result.add_other_detail(prefix_str + other_details.key_for_iteration + suffix_str,
 						prefix_str + other_details.item_for_iteration + suffix_str)
 					other_details.forth
-				end			
+				end
 			end
 		end
-		
+
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	persistent_attributes: ARRAYED_LIST[STRING] is
+	persistent_attributes: ARRAYED_LIST[STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		once
@@ -271,12 +266,12 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 		end
 
 invariant
-	language_valid: language /= Void and then code_set(code_set_id_languages).has(language) 
+	language_valid: language /= Void and then code_set(code_set_id_languages).has(language)
 	purpose_valid: purpose /= Void and then not purpose.is_empty
 	use_valid: use /= Void implies not use.is_empty
 	misuse_valid: misuse /= Void implies not misuse.is_empty
-	copyright_valid: copyright /= Void implies not copyright.is_empty	
-	
+	copyright_valid: copyright /= Void implies not copyright.is_empty
+
 end
 
 

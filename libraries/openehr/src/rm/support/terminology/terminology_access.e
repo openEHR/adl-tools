@@ -1,6 +1,6 @@
-indexing
+note
 	component:   "openEHR common definitions"
-	
+
 	description: "Simple terminology interface definition"
 	keywords:    "terminology, vocabulary"
 
@@ -17,10 +17,10 @@ class TERMINOLOGY_ACCESS
 
 create
 	make
-	
+
 feature -- Initialisation
-	
-	make(an_id: STRING) is
+
+	make(an_id: STRING)
 			-- make a terminology interface with `an_id'
 		require
 			Id_valid: an_id /= Void and then not an_id.is_empty
@@ -35,52 +35,52 @@ feature -- Access
 	id: STRING
 			-- identifier of this terminology
 
-	all_codes: SET [CODE_PHRASE] is
+	all_codes: SET [CODE_PHRASE]
 		do
 		end
 
-	all_group_ids: SET [STRING] is
+	all_group_ids: SET [STRING]
 		do
 		end
 
-	codes_for_group_id (a_group_id: STRING): SET [CODE_PHRASE] is
+	codes_for_group_id (a_group_id: STRING): SET [CODE_PHRASE]
 		do
 		end
 
-	codes_for_group_name (a_group_rubric, a_language: STRING): SET [CODE_PHRASE] is
+	codes_for_group_name (a_group_rubric, a_language: STRING): SET [CODE_PHRASE]
 		do
 		end
 
-	rubric_for_code (a_code: STRING; a_lang: STRING): STRING is
+	rubric_for_code (a_code: STRING; a_lang: STRING): STRING
 		do
 		end
 
-	code_for_rubric(a_rubric, a_lang: STRING): CODE_PHRASE is
-			-- 
+	code_for_rubric(a_rubric, a_lang: STRING): CODE_PHRASE
+			--
 		do
-			
+
 		end
-		
+
 feature -- Status Report
 
-	has(a_code: CODE_PHRASE): BOOLEAN is
+	has(a_code: CODE_PHRASE): BOOLEAN
 			-- 	True if a_code exists in this code set
 		require
 			Code_exists: a_code /= Void
 		do
-			
-		end		
 
-	has_group_id(gid: STRING): BOOLEAN is
+		end
+
+	has_group_id (gid: STRING): BOOLEAN
 		require
 			gid_valid: gid /= Void and then not gid.is_empty
 		do
 		end
 
-	has_code_for_group_id (group_id: String; a_code: CODE_PHRASE): BOOLEAN is
+	has_code_for_group_id (group_id: String; a_code: CODE_PHRASE): BOOLEAN
 			-- True if ‘a_code’ is known in group ‘group_id’ in the openEHR terminology.
 		do
-			
+
 		end
 
 end

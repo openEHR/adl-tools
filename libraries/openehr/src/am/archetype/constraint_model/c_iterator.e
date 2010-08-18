@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Generic Iterator for C_XXX class structures; this just applies various routines to
@@ -27,7 +27,7 @@ create
 
 feature -- Initialisation
 
-	make(a_target: C_COMPLEX_OBJECT) is
+	make(a_target: C_COMPLEX_OBJECT)
 			-- create a new iterator targetted to the parse tree `a_target'
 		require
 			Target_exists: a_target /= Void
@@ -48,51 +48,49 @@ feature -- Access
 
 feature -- Command
 
-	do_all(a_c_node_enter_action, a_c_node_exit_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]) is
+	do_all(a_c_node_enter_action, a_c_node_exit_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]])
 		do
 			c_node_enter_action := a_c_node_enter_action
 			c_node_exit_action := a_c_node_exit_action
 			tree_iterator.do_all(agent node_enter_action(?, ?), agent node_exit_action(?, ?))
 		end
 
-	do_at_surface(a_c_node_enter_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]; a_c_node_test: FUNCTION [ANY, TUPLE [ARCHETYPE_CONSTRAINT], BOOLEAN]) is
+	do_at_surface(a_c_node_enter_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]; a_c_node_test: FUNCTION [ANY, TUPLE [ARCHETYPE_CONSTRAINT], BOOLEAN])
 			-- do the enter action at the surface detected by a_c_node_test
 		do
 			c_node_enter_action := a_c_node_enter_action
 			c_node_test := a_c_node_test
-			tree_iterator.do_at_surface(agent node_enter_action(?, ?), agent node_is_included(?))
+			tree_iterator.do_at_surface(agent node_action(?, ?), agent node_is_included(?))
 		end
 
-	do_until_surface(a_c_node_enter_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]; a_c_node_test: FUNCTION [ANY, TUPLE [ARCHETYPE_CONSTRAINT], BOOLEAN]) is
+	do_until_surface(a_c_node_enter_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]; a_c_node_test: FUNCTION [ANY, TUPLE [ARCHETYPE_CONSTRAINT], BOOLEAN])
 			-- do the enter action while a_c_node_test returns true; where it is false, stop processing child nodes
 		do
 			c_node_enter_action := a_c_node_enter_action
 			c_node_test := a_c_node_test
-			tree_iterator.do_until_surface(agent node_enter_action(?, ?), agent node_is_included(?))
+			tree_iterator.do_until_surface(agent node_action(?, ?), agent node_is_included(?))
 		end
 
 feature {NONE} -- Implementation
 
 	tree_iterator: OG_ITERATOR
 
-	node_enter_action(a_node: OG_ITEM; depth: INTEGER) is
+	node_enter_action(a_node: OG_ITEM; depth: INTEGER)
 		require
 			Node_exists: a_node /= Void
 		do
-			if arch_node = Void then
-				arch_node ?= a_node.content_item
-			end
+			arch_node ?= a_node.content_item
 			c_node_enter_action.call([arch_node, depth])
 		end
 
-	node_exit_action(a_node: OG_ITEM; depth: INTEGER) is
+	node_exit_action(a_node: OG_ITEM; depth: INTEGER)
 		require
 			Node_exists: a_node /= Void
 		do
 			c_node_exit_action.call([arch_node, depth])
 		end
 
-	node_is_included(a_node: OG_ITEM): BOOLEAN is
+	node_is_included(a_node: OG_ITEM): BOOLEAN
 		require
 			Node_exists: a_node /= Void
 		do
@@ -100,8 +98,17 @@ feature {NONE} -- Implementation
 			Result := arch_node /= Void and then c_node_test.item([arch_node])
 		end
 
-	arch_node: ARCHETYPE_CONSTRAINT
+	node_action(a_node: OG_ITEM; depth: INTEGER)
+		require
+			Node_exists: a_node /= Void
+		do
+--			if arch_node = Void then
+--				arch_node ?= a_node.content_item
+--			end
+			c_node_enter_action.call([arch_node, depth])
+		end
 
+	arch_node: ARCHETYPE_CONSTRAINT
 
 end
 

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test case for call to boolean-returning function"
 	keywords:    "test, method dispatcher"
@@ -21,21 +21,21 @@ inherit
 			check_result
 		end
 
-creation
+create
 	make
 
 feature -- Initialisation
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
 feature -- Access
 
-	title:STRING is "Function call - FUNC <STRING> : BOOLEAN"
+	title:STRING = "Function call - FUNC <STRING> : BOOLEAN"
 
 feature -- testing
 
-	execute is
+	execute
 		local
 			arg, feat_name:STRING
 			call_result:BOOLEAN
@@ -58,7 +58,7 @@ feature -- testing
 			io.put_string("Result using direct call: " + string_list.has(arg).out + "%N")
 		end
 
-	check_result is
+	check_result
 		do
 		end
 

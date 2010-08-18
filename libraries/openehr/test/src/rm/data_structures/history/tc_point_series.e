@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Structures Reference Model"
 
 	description: "Test History of all POINT_EVENT data"
@@ -21,20 +21,20 @@ inherit
 			check_result
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title: STRING is "TC_POINT_EVENT"
+	title: STRING = "TC_POINT_EVENT"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		local
 			h1: HISTORY [ITEM_SINGLE]
 			h2: HISTORY [ITEM_LIST]
@@ -51,7 +51,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 		do
 		end
 

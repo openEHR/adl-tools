@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Structures Reference Model"
 
 	description: "Items in a hierarchical representation for spatial data structures"

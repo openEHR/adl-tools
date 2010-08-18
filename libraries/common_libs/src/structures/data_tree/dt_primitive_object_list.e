@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Node of simple type in an dADL parse tree. Simple
@@ -20,60 +20,23 @@ class DT_PRIMITIVE_OBJECT_LIST
 inherit
 	DT_OBJECT_LEAF
 
+	STRING_UTILITIES
+		export
+			{NONE} all
+		undefine
+			is_equal, default_create
+		end
+
 create
 	make_identified, make_anonymous
-
-feature -- Initialisation
-
-	make_identified(a_value: SEQUENCE[ANY]; a_node_id: STRING) is
-		require
-			Item_valid: a_value /= Void
-			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
-		do
-			default_create
-			create representation.make(a_node_id, Current)
-			set_node_id(a_node_id)
-			set_value(a_value)
-		ensure
-			is_typed
-			is_addressable
-		end
-	
-	make_anonymous(a_value: SEQUENCE[ANY]) is
-		require
-			Item_valid: a_value /= Void
-		do
-			default_create
-			create representation.make_anonymous(Current)
-			set_value(a_value)
-		ensure
-			is_typed
-			not is_addressable
-		end
 
 feature -- Access
 
 	value: SEQUENCE[ANY]
 
-feature -- Status Report
-
-	is_valid: BOOLEAN is
-			-- report on validity
-		do
-			create invalid_reason.make(0)
-			invalid_reason.append(rm_type_name + ": ")
-			if value = Void then
-				invalid_reason.append("simple type constraint not specified")
-			else
-				Result := True
-			end
-		end
-
 feature -- Modification
 
-	set_value(a_value: SEQUENCE[ANY]) is
-		require
-			Item_valid: a_value /= Void
+	set_value(a_value: like value)
 		local
 			string_list: SEQUENCE[STRING]
 		do
@@ -85,7 +48,7 @@ feature -- Modification
 
 feature -- Conversion
 
-	as_string: STRING is
+	as_string: STRING
 		local
 			out_val: STRING
 		do
@@ -99,16 +62,16 @@ feature -- Conversion
 					Result.append(", ")
 				end
 				if is_string then
-					Result.append("%"")
-				end
-				out_val := value.item.out
-				Result.append(out_val)
-				-- FIXME: REAL.out is broken; forgets to output '.0'
-				if value.item.generating_type.substring(1,4).is_equal("REAL") and then out_val.index_of('.', 1) = 0 then
-					Result.append(".0")
-				end
-				if is_string then
-					Result.append("%"")
+					Result.append_character('"')
+					Result.append (value.item.out)
+					Result.append_character('"')
+				else
+					out_val := value.item.out
+					Result.append(out_val)
+					-- FIXME: REAL.out is broken; forgets to output '.0'
+					if value.item.generating_type.out.substring (1, 4).is_equal ("REAL") and then out_val.index_of ('.', 1) = 0 then
+						Result.append(".0")
+					end
 				end
 				value.forth
 			end
@@ -116,16 +79,49 @@ feature -- Conversion
 				Result.append(", ...")
 			end
 		end
-		
+
+	clean_as_string (cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
+			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
+		local
+			out_val: STRING
+		do
+			create Result.make(0)
+			from
+				value.start
+			until
+				value.off
+			loop
+				if value.index > 1 then
+					Result.append(", ")
+				end
+				if is_string then
+					Result.append_character('"')
+					Result.append (cleaner.item([value.item.out]))
+					Result.append_character('"')
+				else
+					out_val := value.item.out
+					Result.append(out_val)
+					-- FIXME: REAL.out is broken; forgets to output '.0'
+					if value.item.generating_type.out.substring (1, 4).is_equal ("REAL") and then out_val.index_of ('.', 1) = 0 then
+						Result.append(".0")
+					end
+				end
+				value.forth
+			end
+			if value.count = 1 then -- append syntactic indication of list continuation
+				Result.append(", ...")
+			end
+		end
+
 feature -- Serialisation
 
-	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
+	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at start of block for this node
 		do
 			serialiser.start_primitive_object_list(Current, depth)
 		end
-		
-	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
+
+	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at end of block for this node
 		do
 			serialiser.end_primitive_object_list(Current, depth)
@@ -134,7 +130,7 @@ feature -- Serialisation
 feature {NONE} -- Implementation
 
 	is_string: BOOLEAN
-	
+
 end
 
 

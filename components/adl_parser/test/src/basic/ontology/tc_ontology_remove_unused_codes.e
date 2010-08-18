@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Test case for removing unused codes in ontology"
 	keywords:    "test, ADL, CADL"
@@ -32,15 +32,15 @@ create
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 	    do
 	    end
 
 feature -- Access
 
-	title: STRING is "Remove unused codes"
+	title: STRING = "Remove unused codes"
 
-	prereqs: ARRAY[STRING] is
+	prereqs: ARRAY[STRING]
 			-- ids of prerequisite test cases
 		once
 			Result := <<"TC_ARCHETYPE_CREATE">>
@@ -48,7 +48,7 @@ feature -- Access
 
 feature -- testing
 
-	execute is
+	execute
 		local
 			archetype: ARCHETYPE
 		do

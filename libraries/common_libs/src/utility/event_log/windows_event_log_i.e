@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Windows Event implementation of logging facility"
 	keywords:    "logging"
@@ -20,7 +20,7 @@ create
 
 feature -- Initialisation
 
-	make(a_facility_interface:like facility_interface) is
+	make(a_facility_interface:like facility_interface)
 		do
 			facility_make(a_facility_interface)
 
@@ -37,12 +37,12 @@ feature -- Initialisation
 
 feature {NONE} -- Implementation
 
-	append_event(severity: INTEGER; source ,msg: STRING) is
+	append_event(severity: INTEGER; source ,msg: STRING)
 		do
 			-- FIXME: to be implemented
 		end
 
-	event_log: ANY is
+	event_log: ANY
 		once
 			-- FIXME: to be implemented with Windows event log
 		end

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "ADL editor"
 
 	description: "file handling context for ADL back-end"
@@ -24,18 +24,18 @@ create
 
 feature -- Definitions
 
-	UTF8_bom_char_1: CHARACTER is '%/239/'
-	UTF8_bom_char_2: CHARACTER is '%/187/'
-	UTF8_bom_char_3: CHARACTER is '%/191/'
+	UTF8_bom_char_1: CHARACTER = '%/239/'
+	UTF8_bom_char_2: CHARACTER = '%/187/'
+	UTF8_bom_char_3: CHARACTER = '%/191/'
 			-- UTF-8 files don't normally have a BOM (byte order marker) at the start as can be
 			-- required by UTF-16 files, but if the file has been converted from UTF-16 or UTF-32
 			-- then the BOM in a UTF-8 file will be 0xEF 0xBB 0xBF (dec equivalent: 239, 187, 191)
 
-	Default_current_directory: STRING is "."
+	Default_current_directory: STRING = "."
 
 feature {NONE} -- Initialisation
 
-	make is
+	make
 			-- basic initialisation
 		do
 			create current_directory.make_empty
@@ -46,12 +46,10 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	current_full_path: STRING
+	current_full_path: attached STRING
 			-- derive from file name and path
 		do
 			Result := current_directory + operating_environment.Directory_separator.out + current_file_name
-		ensure
-			attached: Result /= Void
 		end
 
 	current_directory: STRING
@@ -61,7 +59,7 @@ feature -- Access
 			-- name of fle only
 
 	has_byte_order_marker: BOOLEAN
-			-- True if current file has a BOM, which means it is a UTF encoded unicode file
+			-- Does the current file have a BOM indicating it is a UTF-8 encoded unicode file?
 
 	last_op_failed: BOOLEAN
 
@@ -70,15 +68,15 @@ feature -- Access
 	file_content: STRING
 			-- Text from current file as a string.
 
-	file_first_line: STRING
-			-- First line from current file as a string.
+	file_lines: ARRAYED_LIST [STRING]
+			-- file split into liines from `read_n_lines', `read_to_line'
 
 	file_timestamp: INTEGER
 			-- Last marked change timestamp of file, for file changes to be compared to.
 
 feature -- Status Report
 
-	has_file (a_file_name: STRING):BOOLEAN is
+	has_file (a_file_name: STRING): BOOLEAN
 			-- Does `a_file_name' exist in `current_directory'?
 		require
 			File_name_valid: a_file_name /= Void
@@ -89,7 +87,7 @@ feature -- Status Report
 			Result := a_file.exists
 		end
 
-	file_writable (a_file_name: STRING): BOOLEAN is
+	file_writable (a_file_name: STRING): BOOLEAN
 			-- True if named file is writable, or else doesn't exist
 		require
 			File_name_valid: a_file_name /= Void and then not a_file_name.is_empty
@@ -116,30 +114,90 @@ feature -- Commands
 			end
 		end
 
-	read_first_line
-			-- read first line from current file as a string
+	read_n_lines (n: INTEGER)
+			-- Read first n non-empty lines from current file as a string, removing leading and trailing whitespace, including %R%N.
+		require
+			n > 0
 		local
 			in_file: PLAIN_TEXT_FILE
+			i: INTEGER
+			a_line: STRING
    		do
    			last_op_failed := False
 			create in_file.make(current_full_path)
-			create file_first_line.make_empty
+			create file_lines.make(0)
 
 			if in_file.exists then
 				in_file.open_read
-				in_file.read_line
-				file_first_line.append(in_file.last_string)
+				from i := 1 until i > n or in_file.end_of_file loop
+					in_file.read_line
+					a_line := in_file.last_string.twin
+					a_line.right_adjust
+					a_line.left_adjust
+					if not a_line.is_empty then
+						file_lines.extend (a_line)
+						i := i + 1
+					end
+				end
 				in_file.close
+				if file_lines.count >= 1 then
+					clean_utf(file_lines[1])
+				end
 			else
 				last_op_failed := True
 				last_op_fail_reason := "Read failed; file " + current_full_path + " does not exist"
 			end
 		ensure
-			file_first_line_empty_on_failure: last_op_failed implies file_first_line.is_empty
+			file_lines_empty_on_failure: last_op_failed implies file_lines.is_empty
 		end
 
-	read_file is
-			-- read text from current file as a string
+	read_matching_lines (start_patterns: attached ARRAY[STRING]; ignore_pattern: STRING; max_lines: INTEGER)
+			-- Read lines starting with `start_patterns', ignoring lines starting with `ignore_pattern',
+			-- up to a maximum of `max_lines' non-ignored lines. Output line, if any, in `file_lines'
+		require
+			Start_patterns_valid: not start_patterns.is_empty
+			Ignore_pattern_valid: attached ignore_pattern implies not ignore_pattern.is_empty
+			Valid_max_lines: max_lines > 0
+		local
+			in_file: PLAIN_TEXT_FILE
+			i, j: INTEGER
+			items_found: ARRAY[BOOLEAN]
+   		do
+   			last_op_failed := False
+			create in_file.make(current_full_path)
+			create file_lines.make(0)
+
+			if in_file.exists then
+				in_file.open_read
+				create items_found.make (start_patterns.lower, start_patterns.upper)
+				from i := 1 until i > max_lines or file_lines.count = start_patterns.count or in_file.end_of_file loop
+					in_file.read_line
+					if not in_file.last_string.starts_with (ignore_pattern) then
+						from j := start_patterns.lower until j > start_patterns.upper loop
+							if not items_found[j] and in_file.last_string.starts_with (start_patterns[j]) then
+								file_lines.extend (in_file.last_string.twin)
+								file_lines.last.prune_all('%R')
+								items_found[j] := True
+							end
+							j := j + 1
+						end
+						i := i + 1
+					end
+				end
+				in_file.close
+				if file_lines.count >= 1 then
+					clean_utf(file_lines[1])
+				end
+			else
+				last_op_failed := True
+				last_op_fail_reason := "Read failed; file " + current_full_path + " does not exist"
+			end
+		ensure
+			file_lines_empty_on_failure: last_op_failed implies file_lines.is_empty
+		end
+
+	read_file
+			-- Read text from current file into `file_content'.
 		local
 			in_file: PLAIN_TEXT_FILE
    		do
@@ -151,31 +209,12 @@ feature -- Commands
 			if in_file.exists then
 				file_timestamp := in_file.date
 				in_file.open_read
-
-				from
-					in_file.start
-				until
-					in_file.off
-				loop
-					in_file.read_line
-					file_content.append(in_file.last_string)
-
-					if file_content.item (file_content.count) = '%R' then
-						file_content.put ('%N', file_content.count)
-					else
-						file_content.append_character('%N')
-					end
-				end
-
+				in_file.read_stream (in_file.count)
+				file_content := in_file.last_string
 				in_file.close
 
-				if file_content.count >= 3 then
-					if file_content.item (1) = UTF8_bom_char_1 and file_content.item (2) = UTF8_bom_char_2 and file_content.item (3) = UTF8_bom_char_3 then
-						file_content.remove_head (3)
-						has_byte_order_marker := True
-					end
-				end
-
+				file_content.prune_all ('%R')
+				clean_utf(file_content)
 				if not utf8.valid_utf8 (file_content) then
 					if has_byte_order_marker then
 						create file_content.make_empty
@@ -193,17 +232,18 @@ feature -- Commands
 			file_content_empty_on_failure: last_op_failed implies file_content.is_empty
 		end
 
-	save_file (a_file_name, content: STRING) is
-			-- write the content out to file `a_file_name' in `current_directory'
+	save_file (a_file_name, content: STRING)
+			-- Write `content' out to file `a_file_name' in `current_directory'.
 		require
 			Arch_id_valid: a_file_name /= Void
 			Content_valid: content /= Void
-			File_writable: file_writable(a_file_name)
+			File_writable: file_writable (a_file_name)
 		local
 			out_file: PLAIN_TEXT_FILE
    		do
    			last_op_failed := False
-			create out_file.make_create_read_write(a_file_name)
+			create out_file.make_create_read_write (a_file_name)
+
 			if out_file.exists then
 				if has_byte_order_marker then
 					-- only safe if the file was last read using this object
@@ -211,7 +251,10 @@ feature -- Commands
 					out_file.put_character (UTF8_bom_char_2)
 					out_file.put_character (UTF8_bom_char_3)
 				end
-				out_file.put_string(content)
+
+				file_content := content.twin
+				file_content.replace_substring_all ("%R%N", "%N")
+				out_file.put_string (file_content)
 				out_file.close
 				file_timestamp := out_file.date
 			else
@@ -220,7 +263,7 @@ feature -- Commands
 			end
 		end
 
-	set_target (a_file_path: STRING) is
+	set_target (a_file_path: STRING)
 			-- set context to `a_file_path'
 		require
 			a_file_path_valid: a_file_path /= Void and then not a_file_path.is_empty
@@ -238,18 +281,31 @@ feature -- Commands
 			end
 		end
 
-	set_current_file_name (a_file_name: STRING) is
+	set_current_file_name (a_file_name: STRING)
 		require
 			a_file_name_valid: a_file_name /= Void and then not a_file_name.is_empty
 		do
 			current_file_name := a_file_name
 		end
 
-	set_current_directory (a_dir: STRING) is
+	set_current_directory (a_dir: STRING)
 		require
 			a_dir_valid: a_dir /= Void and then not a_dir.is_empty
 		do
 			current_directory := a_dir
+		end
+
+feature {NONE} -- Implementation
+
+	clean_utf (s: STRING)
+			-- remove UTF BOM
+		do
+			if s.count >= 3 then
+				if utf8.is_endian_detection_character (s.item (1), s.item (2), s.item (3)) then
+					s.remove_head (3)
+					has_byte_order_marker := True
+				end
+			end
 		end
 
 invariant
@@ -298,4 +354,3 @@ end
 --| the terms of any one of the MPL, the GPL or the LGPL.
 --|
 --| ***** END LICENSE BLOCK *****
---|

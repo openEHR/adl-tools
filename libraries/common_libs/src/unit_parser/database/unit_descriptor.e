@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "[
 			 Descriptor for on unit from a unit group table, i.e. a row of values
@@ -33,14 +33,14 @@ create
 
 feature -- Definitions
 
-	Tokens_expected:INTEGER is 7
+	Tokens_expected:INTEGER = 7
 
-	Empty_token:STRING is "-"
+	Empty_token:STRING = "-"
 
 feature -- Initialisation
 
 	make(a_group_name, a_name, a_property, a_cs_symbol, a_ci_symbol:STRING;
-			a_metric:BOOLEAN; a_value:DOUBLE; a_definition:STRING) is
+			a_metric:BOOLEAN; a_value:DOUBLE; a_definition:STRING)
 		require
 			Group_name_valid: a_group_name /= Void and then not a_group_name.is_empty
 			Name_valid: a_name /= Void and then not a_name.is_empty
@@ -58,7 +58,7 @@ feature -- Initialisation
 			definition := a_definition
 		end
 
-	make_from_string(a_group_name, a_str:STRING; delim:CHARACTER) is
+	make_from_string(a_group_name, a_str:STRING; delim:CHARACTER)
 			-- initialise from  string with fields delimted by `delim'
 		require
 			Group_name_valid: a_group_name /= Void and then not a_group_name.is_empty
@@ -157,7 +157,7 @@ feature -- Access
 
 feature -- Output
 
-	out:STRING is
+	out:STRING
 		do
 			create Result.make(0)
 			Result.append(name + ", " + property + ", " + cs_symbol+ ", " + ci_symbol+ ", ")
@@ -173,7 +173,7 @@ feature -- Error
 
 	invalid_reason:STRING
 
-	is_valid:BOOLEAN is
+	is_valid:BOOLEAN
 		do
 			Result := invalid_reason = Void or else invalid_reason.is_empty
 		end

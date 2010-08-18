@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Structures Reference Model"
 
 	description: "Test HISTORY of INTERVAL_EVENTs"
@@ -21,20 +21,20 @@ inherit
 			check_result
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title: STRING is "TC_INTERVAL_SERIES"
+	title: STRING = "TC_INTERVAL_SERIES"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		local
 			evs1: INTERVAL_EVENT [ITEM_SINGLE]
 			evs2: INTERVAL_EVENT [ITEM_LIST]
@@ -46,7 +46,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 		do
 		end
 

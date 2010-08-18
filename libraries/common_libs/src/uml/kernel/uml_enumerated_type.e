@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Resuable Library Project"
 	description: "[
 			 UML TypedElement abstraction, as defined in OMG UML 2.0 Infrastructure 
@@ -27,7 +27,7 @@ create
 
 feature -- Initialisation
 
-	make(a_name: STRING) is
+	make(a_name: STRING)
 		require
 			Name_exists: a_name /= Void and then not a_name.is_empty
 		do

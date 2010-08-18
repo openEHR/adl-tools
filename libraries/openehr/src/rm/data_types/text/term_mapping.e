@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "A mapping of a term to a text item."
@@ -23,20 +23,20 @@ inherit
 	EXTERNAL_ENVIRONMENT_ACCESS
 
 	CANONICAL_FRAGMENT
-	
+
 	MATCH_CODES
 		export
 			{NONE} all;
 			{ANY} is_valid_match_code
 		end
-	
-create 
+
+create
 	make, make_from_canonical_string
 
 feature -- Initialization
 
-	make(a_target: CODE_PHRASE; a_match: CHARACTER; a_purpose: DV_CODED_TEXT) is
-			-- 
+	make(a_target: CODE_PHRASE; a_match: CHARACTER; a_purpose: DV_CODED_TEXT)
+			--
 		require
 			Term_exists: a_target /= Void
 			Valid_match_code: is_valid_match_code(a_match)
@@ -44,14 +44,14 @@ feature -- Initialization
 		do
 			target := a_target
 			match := a_match
-			purpose := a_purpose			
+			purpose := a_purpose
 		ensure
 			Target_set: target = a_target
 			Match_set: match = a_match
 			Purpose_set: purpose = a_purpose
 		end
 
-	make_from_canonical_string(str: STRING) is
+	make_from_canonical_string(str: STRING)
 			-- make from a string of the form:
 			--
 			-- <target>
@@ -73,7 +73,7 @@ feature -- Initialization
 
 feature -- Status Report
 
-	valid_canonical_string(str: STRING): BOOLEAN is
+	valid_canonical_string(str: STRING): BOOLEAN
 			-- True if str contains required tags
 		do
 			Result := xml_has_tag(str, "target", 1) and xml_has_tag(str, "match", 1)
@@ -82,16 +82,16 @@ feature -- Status Report
 feature -- Access
 
 	target: CODE_PHRASE
-	
+
 	match: CHARACTER
-			-- The relative match of the target term with respect to the mapped text item. 
+			-- The relative match of the target term with respect to the mapped text item.
 			-- Result meanings:
 			-- 	‘>’: the mapping is to a broader term
 			-- 			e.g. orginal text = “arbovirus infection”, target = “viral infection”
 			-- 	‘=’: the mapping is to a (supposedly) equivalent to the original item
 			--  ‘<’: the mapping is to a narrower term. e.g. original text = “diabetes”, mapping
 			-- 			= “diabetes mellitus”.
-			-- 	‘?’: the kind of mapping is unknown. 
+			-- 	‘?’: the kind of mapping is unknown.
 			-- The first three values are taken from the ISO standards 2788 (“Guide to Establishment
 			-- and development of monolingual thesauri”) and 5964 (“Guide to Establishment
 			-- and development of multilingual thesauri”).
@@ -101,33 +101,33 @@ feature -- Access
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 			-- Result in form "-> <target> (<match>; <purpose>)
 		do
 			Result := target.as_string + " (" + match_codes.item(match) + "; "
 			if purpose /= Void then
-				Result.append(purpose.as_string + ")")
+				Result.append (purpose.as_string + ")")
 			else
-				Result.append(")")
+				Result.append (")")
 			end
 		end
 
-	as_canonical_string: STRING is
+	as_canonical_string: STRING
 			-- Result in canonical form
 		do
 			create Result.make(0)
-			Result.append("<target>" + target.as_canonical_string + "</target>")
-			Result.append("<match>" + match.out + "</match>")
+			Result.append ("<target>" + target.as_canonical_string + "</target>")
+			Result.append ("<match>" + match.out + "</match>")
 			if purpose /= Void then
-				Result.append("<purpose>" + purpose.as_canonical_string + "</purpose>")
+				Result.append ("<purpose>" + purpose.as_canonical_string + "</purpose>")
 			end
 		end
 
 invariant
 	Target_exists: target /= Void
 	Match_valid: is_valid_match_code(match)
-	Purpose_valid: purpose /= Void implies 
-		terminology(terminology_id_openehr).has_code_for_group_id(Group_id_term_mapping_purpose, purpose.defining_code)
+	Purpose_valid: purpose /= Void implies
+		terminology(terminology_id_openehr).has_code_for_group_id (Group_id_term_mapping_purpose, purpose.defining_code)
 
 end
 

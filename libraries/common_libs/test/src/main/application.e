@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Test application for object graph generic parse tree"
 	keywords:    "test, object graph"
@@ -37,12 +37,12 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 	make
 
 feature -- Template
 
-	test_init is
+	test_init
 		local
 			tables_dir:STRING
    		do
@@ -65,7 +65,7 @@ feature -- Template
 			end
 		end
 
-	test_suites: LINKED_LIST[TEST_SUITE] is
+	test_suites: LINKED_LIST[TEST_SUITE]
 		once
 			create Result.make
 			Result.extend(create {TS_DADL}.make(Void))
@@ -79,7 +79,7 @@ feature -- Template
 
 feature -- Template
 	
-	splash: STRING is
+	splash: STRING
 			-- create a splash string for the console
 		do
 			create Result.make(0)
@@ -97,7 +97,7 @@ feature -- Template
 
 feature {NONE} -- Implementation
 
-	initialise_serialisers is
+	initialise_serialisers
 		once
 			dt_serialisers.put(create {DADL_SYNTAX_SERIALISER}.make(create {NATIVE_DADL_SERIALISATION_PROFILE}.make("adl")), "adl")
 			dt_serialisers.put(create {DADL_SYNTAX_SERIALISER}.make(create {HTML_DADL_SERIALISATION_PROFILE}.make("html")), "html")

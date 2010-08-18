@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Serialise DADL archetype to any tagged format"
 	keywords:    "serialisation, OWL"
@@ -16,57 +16,57 @@ class DADL_OWL_SERIALISER
 inherit
 	DT_SERIALISER
 	
-creation
+create
 	make
 	
 feature -- Modification
 
-	start_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER) is
+	start_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER)
 			-- start serialising an DT_COMPLEX_OBJECT_NODE
 		do
 		end
 		
-	end_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER) is
+	end_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER)
 			-- end serialising an DT_COMPLEX_OBJECT_NODE
 		do	
 		end
 
-	start_attribute_node(a_node: DT_ATTRIBUTE_NODE; depth: INTEGER) is
+	start_attribute_node(a_node: DT_ATTRIBUTE_NODE; depth: INTEGER)
 			-- start serialising an DT_ATTRIBUTE_NODE
 		do
 		end
 		
-	end_attribute_node(a_node: DT_ATTRIBUTE_NODE; depth: INTEGER) is
+	end_attribute_node(a_node: DT_ATTRIBUTE_NODE; depth: INTEGER)
 			-- end serialising an DT_ATTRIBUTE_NODE
 		do
 		end
 
-	start_primitive_object(a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER) is
+	start_primitive_object(a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- start serialising a DT_PRIMITIVE_OBJECT
 		do
 		end
 		
-	end_primitive_object(a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER) is
+	end_primitive_object(a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- end serialising a DT_PRIMITIVE_OBJECT
 		do
 		end
 
-	start_primitive_object_list(a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER) is
+	start_primitive_object_list(a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER)
 			-- start serialising an DT_PRIMITIVE_OBJECT_LIST
 		do
 		end
 		
-	end_primitive_object_list(a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER) is
+	end_primitive_object_list(a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER)
 			-- end serialising an DT_PRIMITIVE_OBJECT_LIST
 		do
 		end
 
-	start_primitive_object_interval(a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER) is
+	start_primitive_object_interval(a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER)
 			-- start serialising a DT_PRIMITIVE_OBJECT_INTERVAL
 		do
 		end
 		
-	end_primitive_object_interval(a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER) is
+	end_primitive_object_interval(a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER)
 			-- end serialising a DT_PRIMITIVE_OBJECT_INTERVAL
 		do
 		end

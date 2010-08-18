@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR common definitions"
 	
 	description: "Simple measurement service interface definition"
@@ -17,7 +17,7 @@ class MEASUREMENT_SERVICE
 
 feature -- Access
 
-	units_for_property(a_property: CODE_PHRASE): ARRAYED_LIST[STRING] is
+	units_for_property(a_property: CODE_PHRASE): ARRAYED_LIST[STRING]
 			-- return list of units for this property
 		require
 			a_property /= Void and then has_property(a_property)
@@ -29,7 +29,7 @@ feature -- Access
 
 feature -- Status Report
 
-	has_property(a_property: CODE_PHRASE): BOOLEAN is
+	has_property(a_property: CODE_PHRASE): BOOLEAN
 			-- True if a_property known in property list
 		require
 			a_property /= Void
@@ -40,14 +40,14 @@ feature -- Status Report
 		
 feature -- Comparison
 
-	is_valid_units_string (units: STRING): BOOLEAN is
+	is_valid_units_string (units: STRING): BOOLEAN
 			-- True if the units string ‘units’ is a valid string according to the UCUM specification [8].
 		require
 			units /= Void 
 		do
 		end
 
-	units_equivalent (units1, units2: STRING): BOOLEAN is
+	units_equivalent (units1, units2: STRING): BOOLEAN
 			-- True if two units strings correspond to the same measured property.
 		require
 			units1 /= Void and then is_valid_units_string(units1)

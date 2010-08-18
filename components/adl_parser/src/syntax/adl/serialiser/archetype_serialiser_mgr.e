@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Serialiser Manager for all ADL serialiser types"
 	keywords:    "test, CADL"
@@ -21,7 +21,7 @@ create
 
 feature -- Initialisation
 
-	make(a_target: ARCHETYPE; format: STRING; an_ontology: ARCHETYPE_ONTOLOGY) is 
+	make(a_target: ARCHETYPE; format: STRING; an_ontology: ARCHETYPE_ONTOLOGY) 
 			-- create a new manager targetted to the ADL archetype 'a_target'
 		require
 			Target_exists: a_target /= Void
@@ -35,7 +35,7 @@ feature -- Initialisation
 
 feature -- Command
 
-	serialise(lang_serialised, desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING) is
+	serialise(lang_serialised, desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING)
 			-- start the serialisation process; the result will be in `serialiser_output'
 		require
 			lang_serialised /= Void
@@ -50,7 +50,7 @@ feature -- Access
 
 	target: ARCHETYPE
 	
-	last_result: STRING is 
+	last_result: STRING 
 		do
 			Result := serialiser.last_result
 		end

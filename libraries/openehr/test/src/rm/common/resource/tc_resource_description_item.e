@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Information Model"
 
 	description: "Test RESOURCE_DESCRIPTION_ITEM class"
@@ -21,21 +21,21 @@ inherit
 			check_result
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title: STRING is "TC_RESOURCE_DESCRIPTION_ITEM"
+	title: STRING = "TC_RESOURCE_DESCRIPTION_ITEM"
 
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		local
 			v: RESOURCE_DESCRIPTION_ITEM
 		do
@@ -44,7 +44,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 		do
 		end
 

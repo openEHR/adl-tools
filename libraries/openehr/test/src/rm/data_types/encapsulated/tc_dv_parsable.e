@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR test framework"
 	description: "Test DV_PERIODIC_TIME_SPECIFICATION"
 	keywords:    "test, parsable"
@@ -20,20 +20,20 @@ inherit
 			check_result
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title: STRING is "DV_PARSABLE"
+	title: STRING = "DV_PARSABLE"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		local
 			v: DV_PARSABLE
 		do
@@ -41,7 +41,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 		do
 		end
 

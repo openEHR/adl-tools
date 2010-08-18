@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 	description: "Items which are truly boolean data, such as true/false or yes/no answers."
 	keywords:    "boolean, data"
@@ -27,14 +27,14 @@ create
 
 feature -- Initialization
 
-	make is
+	make
 		do
 			-- nothing special required, since value defaults to False
 		ensure
 			value_false: value = False
 		end
 
-	make_from_string (a_str:STRING) is
+	make_from_string (a_str:STRING)
 			-- "True" or "False"
 		do
 			a_str.to_lower
@@ -43,7 +43,7 @@ feature -- Initialization
 			end
 		end
 	
-	make_from_canonical_string (a_str:STRING) is
+	make_from_canonical_string (a_str:STRING)
 			-- "<value>True</value>" or "<value>False</value>"
 		do
 			make_from_string(xml_remove_tags(a_str))
@@ -51,7 +51,7 @@ feature -- Initialization
 	
 feature -- Status Report
 
-	valid_canonical_string(str: STRING): BOOLEAN is
+	valid_canonical_string(str: STRING): BOOLEAN
 			-- True if str contains required tags
 		do
 			Result := xml_has_tag(str, "value", 1)
@@ -64,14 +64,14 @@ feature -- Access
 
 feature -- Modify
 
-	set_true is
+	set_true
 		do
 			value := True
 		ensure
 			value_set: value = True
 		end
 
-	set_false is
+	set_false
 		do
 			value := False
 		ensure
@@ -80,13 +80,13 @@ feature -- Modify
 	
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 			-- "True" or "False"
 		do
 			Result := value.out
 		end
 	
-	as_canonical_string: STRING is
+	as_canonical_string: STRING
 			-- <value>: BOOLEAN ("True" or "False")
 		do
 			Result := "<value>" + as_string + "</value>"

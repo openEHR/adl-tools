@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleGetInfoString</key>
-	<string>1.4.2.0, Copyright © 2003-2008 Ocean Informatics Pty Ltd</string>
+	<string>1.5.0.0, Copyright © 2003-2010 openEHR Foundation</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.oceaninformatics.adl_workbench</string>
+	<string>org.openehr.adl_workbench</string>
 	<key>CFBundleName</key>
 	<string>ADL Workbench</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.4.2</string>
+	<string>1.5.0</string>
 	<key>IFMajorVersion</key>
 	<integer>1</integer>
 	<key>IFMinorVersion</key>
-	<integer>4</integer>
+	<integer>5</integer>
 	<key>IFPkgFlagAllowBackRev</key>
 	<true/>
 	<key>IFPkgFlagAuthorizationAction</key>
@@ -23,7 +23,7 @@
 	<key>IFPkgFlagBackgroundScaling</key>
 	<string>none</string>
 	<key>IFPkgFlagDefaultLocation</key>
-	<string>/Applications/Ocean Informatics</string>
+	<string>/Applications/openEHR</string>
 	<key>IFPkgFlagFollowLinks</key>
 	<false/>
 	<key>IFPkgFlagInstallFat</key>

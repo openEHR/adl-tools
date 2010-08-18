@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			 ADL expression tree constraint - consists of either an 
@@ -27,14 +27,14 @@ feature -- Access
 
 feature -- Modification
 
-	set_eval_result(v:ANY) is
+	set_eval_result(v:ANY)
 		require
 			Exists: v /= Void
 		do
 			eval_result := v
 		end
 
-	set_expression(e: ADL_EXPR_ITEM) is
+	set_expression(e: ADL_EXPR_ITEM)
 		require
 			Exists: e /= Void
 		do

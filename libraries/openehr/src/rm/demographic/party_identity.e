@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Demographic Reference Model"
 
 	description: "[
@@ -29,7 +29,7 @@ feature -- Access
 	details: ITEM_STRUCTURE	
 			-- The value of the indentity. This will often taken the form of a parsable string or a small structure of strings.
 
-	purpose: DV_TEXT is
+	purpose: DV_TEXT
 			-- Purpose of identity, e.g. “legal”, “stagename”, “nickname”, “tribal name”, 
 			-- “trading name”. Taken from value of inherited name attribute.
 		do
@@ -39,12 +39,12 @@ feature -- Access
 	as_string: STRING	
 			-- Identity in the form of a single string.
 
-	path_of_item (a_loc: LOCATABLE): STRING is
+	path_of_item (a_loc: LOCATABLE): STRING
 			-- The path to an item relative to the root of this archetyped structure.
 		do
 		end
 
-	item_at_path (a_path: STRING): LOCATABLE is
+	item_at_path (a_path: STRING): LOCATABLE
 			-- The item at a path (relative to this item).
 		do
 		end
@@ -54,7 +54,7 @@ feature -- Access
 
 feature -- Status Report
 
-	path_exists (a_path: STRING): BOOLEAN is
+	path_exists (a_path: STRING): BOOLEAN
 			-- True if the path is valid with respect to the current item.
 		do
 		end

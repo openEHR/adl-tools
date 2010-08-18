@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Resuable Library Project"
 	description: "[
 			 UML TypedElement abstraction, as defined in OMG UML 2.0 Infrastructure 
@@ -25,13 +25,13 @@ feature -- Access
 
 	package_import: SET [UML_PACKAGE_IMPORT]
 
-	owned_member: LINKED_SET [UML_NAMED_ELEMENT] is
+	owned_member: LINKED_SET [UML_NAMED_ELEMENT]
 			--
 		do
 			
 		end
 	
-	member: LINKED_SET [UML_PACKAGEABLE_ELEMENT] is
+	member: LINKED_SET [UML_PACKAGEABLE_ELEMENT]
 			-- 
 		do
 			

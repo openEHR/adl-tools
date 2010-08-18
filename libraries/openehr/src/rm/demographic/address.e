@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Demographic Reference Model"
 
 	description: "[
@@ -30,7 +30,7 @@ feature -- Access
 			-- This may take the form of a SINGLE_S, whose data item is a 
 			-- parsable string or a list or tree of many parts.
 
-	type: DV_TEXT is
+	type: DV_TEXT
 			-- Type of address, e.g. “electronic”, “locality”. Taken from value of inherited name attribute.
 		do
 			Result := name.twin
@@ -39,12 +39,12 @@ feature -- Access
 	as_string: STRING	
 			-- Address in the form of a single string.
 
-	path_of_item (a_loc: LOCATABLE): STRING is
+	path_of_item (a_loc: LOCATABLE): STRING
 			-- The path to an item relative to the root of this archetyped structure.
 		do
 		end
 
-	item_at_path (a_path: STRING): LOCATABLE is
+	item_at_path (a_path: STRING): LOCATABLE
 			-- The item at a path (relative to this item).
 		do
 		end
@@ -54,7 +54,7 @@ feature -- Access
 			
 feature -- Status Report
 
-	path_exists (a_path: STRING): BOOLEAN is
+	path_exists (a_path: STRING): BOOLEAN
 			-- True if the path is valid with respect to the current item.
 		do
 		end

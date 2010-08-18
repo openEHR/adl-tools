@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Archetype abstraction"
 	keywords:    "archetype"
@@ -14,7 +14,7 @@ indexing
 deferred class ARCHETYPE
 
 inherit
-	ADL_DEFINITIONS
+	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all;
 			{ANY} deep_twin
@@ -33,17 +33,20 @@ inherit
 
 feature -- Initialisation
 
-	make (an_id: like archetype_id; a_concept_code: STRING;
-			an_original_language: STRING; a_description: RESOURCE_DESCRIPTION;
-			a_definition: like definition; an_ontology: like ontology) is
+	make (an_artefact_type: ARTEFACT_TYPE;
+			an_id: like archetype_id;
+			an_original_language: STRING;
+			a_description: RESOURCE_DESCRIPTION;
+			a_definition: like definition;
+			an_ontology: like ontology)
 				-- make from pieces obtained by parsing
 		require
-			Concept_exists: a_concept_code /= Void and then valid_concept_code(a_concept_code)
+			Artefact_type_attached: an_artefact_type /= Void
 			Language_valid: an_original_language /= Void and then not an_original_language.is_empty
 		do
-			adl_version := 	Current_adl_version
+			artefact_type := an_artefact_type
+			adl_version := 	Latest_adl_version
 			archetype_id := an_id
-			concept := a_concept_code
 			create original_language.make (Default_language_code_set, an_original_language)
 
 			if a_description = Void then
@@ -56,26 +59,34 @@ feature -- Initialisation
 			ontology := an_ontology
 			is_dirty := True
 		ensure
+			Artefact_type_set: artefact_type = an_artefact_type
+			Adl_version_set: adl_version = Latest_adl_version
 			Id_set: archetype_id = an_id
-			Concept_set: concept = a_concept_code
 			Original_language_set: original_language.code_string.is_equal (an_original_language)
 			Definition_set: definition = a_definition
 			Ontology_set: ontology = an_ontology
 			Is_dirty: is_dirty
 		end
 
-	make_all(an_adl_version: STRING; an_id: like archetype_id; a_parent_archetype_id: ARCHETYPE_ID; is_controlled_flag: BOOLEAN;
-			a_concept_code: STRING; an_original_language: STRING; a_translations: HASH_TABLE [TRANSLATION_DETAILS, STRING];
-			a_description: RESOURCE_DESCRIPTION; a_definition: like definition; an_invariants: ARRAYED_LIST[ASSERTION];
-			an_ontology: like ontology) is
+	make_all(an_artefact_type: ARTEFACT_TYPE;
+			an_adl_version: STRING;
+			an_id: like archetype_id;
+			a_parent_archetype_id: ARCHETYPE_ID;
+			is_controlled_flag: BOOLEAN;
+			an_original_language: STRING;
+			a_translations: HASH_TABLE [TRANSLATION_DETAILS, STRING];
+			a_description: RESOURCE_DESCRIPTION;
+			a_definition: like definition;
+			an_invariants: ARRAYED_LIST[ASSERTION];
+			an_ontology: like ontology)
 				-- make from all possible items
 		require
-			Concept_exists: a_concept_code /= Void and then valid_concept_code(a_concept_code)
+			Artefact_type_attached: an_artefact_type /= Void
 			Language_valid: an_original_language /= Void and then not an_original_language.is_empty
 			Translations_valid: a_translations /= Void implies not a_translations.is_empty
 			Invariants_valid: an_invariants /= Void implies not an_invariants.is_empty
 		do
-			make (an_id, a_concept_code,
+			make (an_artefact_type, an_id,
 					an_original_language, a_description,
 					a_definition, an_ontology)
 			parent_archetype_id := a_parent_archetype_id
@@ -84,11 +95,11 @@ feature -- Initialisation
 			is_controlled := is_controlled_flag
 			invariants := an_invariants
 		ensure
-			Adl_version_set: adl_version = adl_version
+			Artefact_type_set: artefact_type = an_artefact_type
+			Adl_version_set: adl_version = an_adl_version
 			Is_controlled_set: is_controlled = is_controlled_flag
 			Id_set: archetype_id = an_id
 			Parent_id_set: parent_archetype_id = a_parent_archetype_id
-			Concept_set: concept = a_concept_code
 			Original_language_set: original_language.code_string.is_equal (an_original_language)
 			Translations_set: translations = a_translations
 			Definition_set: definition = a_definition
@@ -99,12 +110,15 @@ feature -- Initialisation
 
 feature -- Access
 
-	archetype_id: !ARCHETYPE_ID
+	archetype_id: attached ARCHETYPE_ID
 
 	adl_version: STRING
 			-- ADL version of this archetype
 
-	version: STRING is
+	artefact_type: ARTEFACT_TYPE
+			-- design type of artefact, archetype, template, template-component, etc
+
+	version: STRING
 			-- version of this archetype, according to its id
 		do
 			Result := archetype_id.version_id
@@ -113,25 +127,28 @@ feature -- Access
 	parent_archetype_id: ARCHETYPE_ID
 			-- id of specialisation parent of this archetype
 
-	specialisation_depth: INTEGER is
+	specialisation_depth: INTEGER
 			-- infer number of levels of specialisation from concept code
 		do
-			Result := archetype_id.specialisation_depth
+			Result := specialisation_depth_from_code (concept)
 		ensure
 			non_negative: Result >= 0
 		end
 
 	concept: STRING
 			-- at-code of concept of the archetype as a whole and the code of its root node
+		do
+			Result := definition.node_id
+		end
 
-	definition: !C_COMPLEX_OBJECT
+	definition: attached C_COMPLEX_OBJECT
 
 	invariants: ARRAYED_LIST[ASSERTION]
 
-	ontology: !ARCHETYPE_ONTOLOGY
+	ontology: attached ARCHETYPE_ONTOLOGY
 
-	physical_paths: ARRAYED_LIST [STRING] is
-			-- generate physical paths from definition structure; if no changes made on archetype,
+	physical_paths: ARRAYED_LIST [STRING]
+			-- physical paths from definition structure for all objects; if no changes made on archetype,
 			-- return cached value
 		do
 			if path_map = Void then
@@ -140,8 +157,8 @@ feature -- Access
 			Result := physical_paths_cache
 		end
 
-	physical_leaf_paths: ARRAYED_LIST [STRING] is
-			-- generate physical paths from definition structure; if no changes made on archetype,
+	physical_leaf_paths: ARRAYED_LIST [STRING]
+			-- physical paths from definition structure for leaf objects only; if no changes made on archetype,
 			-- return cached value
 		do
 			if path_map = Void then
@@ -150,11 +167,11 @@ feature -- Access
 			Result := physical_leaf_paths_cache
 		end
 
-	logical_paths (a_lang: STRING; leaves_only: BOOLEAN): ARRAYED_LIST [STRING] is
+	logical_paths (a_lang: STRING; leaves_only: BOOLEAN): ARRAYED_LIST [STRING]
 			-- paths with human readable terms substituted
 		require
 			language_attached: a_lang /= Void
-			has_language: ontology.languages_available.has (a_lang)
+			has_language: ontology.has_language(a_lang)
 		local
 			phys_paths: ARRAYED_LIST [STRING]
 		do
@@ -166,17 +183,13 @@ feature -- Access
 				phys_paths := physical_paths
 			end
 
-			from
-				phys_paths.start
-			until
-				phys_paths.off
-			loop
+			from phys_paths.start until phys_paths.off loop
 				Result.extend (ontology.physical_to_logical_path (phys_paths.item, a_lang))
 				phys_paths.forth
 			end
 		end
 
-	physical_to_logical_path (a_phys_path: STRING; a_lang: STRING): STRING is
+	physical_to_logical_path (a_phys_path: STRING; a_lang: STRING): STRING
 			-- generate a logical path in 'a_lang' from a physical path
 		require
 			Phys_path_valid: a_phys_path /= Void and then not a_phys_path.is_empty
@@ -185,7 +198,7 @@ feature -- Access
 			Result := ontology.physical_to_logical_path(a_phys_path, a_lang)
 		end
 
-	c_object_at_path (a_path: STRING): C_OBJECT is
+	c_object_at_path (a_path: STRING): C_OBJECT
 			-- find the c_object from the path_map matching the path; uses path map so as to pick up
 			-- paths generated by internal references
 		require
@@ -196,37 +209,43 @@ feature -- Access
 
 feature -- Status Report
 
-	has_adl_version: BOOLEAN is
+	has_adl_version: BOOLEAN
 			-- True if adl_version is set
 		do
 			Result := adl_version /= Void
 		end
 
-	is_specialised: BOOLEAN is
+	is_specialised: BOOLEAN
 			-- 	True if this archetype identifies a specialisation parent
 		do
 			Result := specialisation_depth > 0
 		end
 
-	has_physical_path(a_path: STRING): BOOLEAN is
+	has_physical_path(a_path: STRING): BOOLEAN
 			-- true if physical path `a_path' exists in this archetype
 		do
 			Result := physical_paths.has(a_path)
 		end
 
-	has_slots: BOOLEAN is
+	has_slots: BOOLEAN
 			-- true if there are any slots
 		do
 			Result := slot_index /= Void and then slot_index.count > 0
 		end
 
-	has_invariants: BOOLEAN is
+	has_suppliers: BOOLEAN
+			-- true if there are any external references / fillers, i.e. any C_ARCHETYPE_ROOTs
+		do
+			Result := suppliers_index /= Void and then suppliers_index.count > 0
+		end
+
+	has_invariants: BOOLEAN
 			-- true if there are invariants
 		do
 			Result := invariants /= Void
 		end
 
-	has_path(a_path: STRING):BOOLEAN is
+	has_path (a_path: STRING): BOOLEAN
 			-- True if a_path exists in this archetype. If asked on a flat archetype, result indicates whether path exists
 			-- anywhere in inheritance-flattened archetype. ; uses path map so as to pick up paths generated by internal references
 		require
@@ -242,7 +261,7 @@ feature -- Status Report
 	is_valid: BOOLEAN
 			-- True if archetype is completely validated, including with respect to specialisation parents, where they exist
 
-	valid_adl_version(a_ver: STRING): BOOLEAN is
+	valid_adl_version(a_ver: STRING): BOOLEAN
 			-- set adl_version with a string containing only '.' and numbers,
 			-- not commencing or finishing in '.'
 		require
@@ -258,24 +277,30 @@ feature -- Status Report
 	is_generated: BOOLEAN
 			-- True if this archetype was generated from another one, rather than being an original authored archetype
 
+	is_template: BOOLEAN
+			-- True if `artefact_type' is any type other than archetype
+		do
+			Result := artefact_type.is_template
+		end
+
 feature -- Status Setting
 
-	set_is_valid(a_validity: BOOLEAN) is
+	set_is_valid(a_validity: BOOLEAN)
 			-- set is_valid flag
 		do
 			is_valid := a_validity
 			is_dirty := False
 		end
 
-	set_is_generated is
+	set_is_generated
 			-- set is_generated flag
 		do
 			is_generated := True
 		end
 
-feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUILDER} -- Validation
+feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUILDER, ARCH_REP_ARCHETYPE} -- Validation
 
-	build_xrefs is
+	build_xrefs
 			-- build definition / ontology cross reference tables used for validation and
 			-- other purposes
 		local
@@ -287,6 +312,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 			create id_atcodes_index.make(0)
 			create data_atcodes_index.make(0)
 			create use_node_index.make(0)
+			create suppliers_index.make(0)
 			create accodes_index.make(0)
 			create slot_index.make(0)
 
@@ -298,11 +324,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 			if has_invariants then
 				create invariants_index.make(0)
 				create invariants_xref_builder
-				from
-					invariants.start
-				until
-					invariants.off
-				loop
+				from invariants.start until invariants.off loop
 					invariants_xref_builder.initialise(Current, invariants.item)
 					create expr_iterator.make (invariants.item, invariants_xref_builder)
 					expr_iterator.do_all
@@ -311,7 +333,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 			end
 		end
 
-	build_rolled_up_status is
+	build_rolled_up_status
 			-- set rolled_up_specialisation statuses in nodes of definition
 			-- only useful to call for specialised archetypes
 		require
@@ -326,7 +348,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 			a_c_iterator.do_all
 		end
 
-	id_atcodes_index: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
+	id_atcodes_index: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_CONSTRAINT], STRING]
 			-- table of {list<node>, code} for term codes which identify nodes in archetype (note that there
 			-- are other uses of term codes from the ontology, which is why this attribute is not just called
 			-- 'term_codes_xref_table')
@@ -342,6 +364,10 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 			-- table of {list<ARCHETYPE_INTERNAL_REF>, target_path}
 			-- i.e. <list of use_nodes> keyed by path they point to
 
+	suppliers_index: HASH_TABLE[ARRAYED_LIST[C_ARCHETYPE_ROOT], STRING]
+			-- table of {list<C_ARCHETYPE_ROOT>, archetype_id}
+			-- i.e. <list of use_archetype nodes> keyed by archetype id they refer to
+
 	invariants_index: HASH_TABLE[ARRAYED_LIST[EXPR_LEAF], STRING]
 			-- table of {list<EXPR_LEAF>, target_path}
 			-- i.e. <list of invariant leaf nodes> keyed by path they point to
@@ -351,7 +377,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 
 feature -- Modification
 
-	set_adl_version(a_ver: STRING) is
+	set_adl_version(a_ver: STRING)
 			-- set adl_version with a string containing only '.' and numbers,
 			-- not commencing or finishing in '.'
 		require
@@ -360,42 +386,42 @@ feature -- Modification
 			adl_version := a_ver
 		end
 
-	set_archetype_id (an_id: like archetype_id) is
+	set_archetype_id (an_id: like archetype_id)
 		do
 			archetype_id := an_id
 		end
 
-	set_concept(str: STRING) is
+	set_artefact_type_from_string (s: STRING)
 		require
-			str_valid: str /= Void and then not str.is_empty
+			s /= Void and then (create {ARTEFACT_TYPE}).valid_type_name(s)
 		do
-			concept := str
+			create artefact_type.make_from_type_name(s)
 		end
 
-	set_parent_archetype_id (an_id: !ARCHETYPE_ID) is
+	set_parent_archetype_id (an_id: attached ARCHETYPE_ID)
 		do
 			parent_archetype_id := an_id
 		end
 
-	set_definition (a_node: like definition) is
+	set_definition (a_node: like definition)
 		do
 			definition := a_node
 		end
 
-	set_invariants(assn_list: ARRAYED_LIST[ASSERTION]) is
+	set_invariants(an_assertion_list: ARRAYED_LIST[ASSERTION])
 			-- set invariants
 		require
-			assn_list /= Void
+			an_assertion_list /= Void
 		do
-			invariants := assn_list
+			invariants := an_assertion_list
 		end
 
-	set_ontology (a_node: like ontology) is
+	set_ontology (a_node: like ontology)
 		do
 			ontology := a_node
 		end
 
-	add_invariant(an_inv: ASSERTION) is
+	add_invariant(an_inv: ASSERTION)
 			-- add a new invariant
 		require
 			Invariant_exists: an_inv /= Void
@@ -406,55 +432,20 @@ feature -- Modification
 			invariants.extend(an_inv)
 		end
 
-	rebuild is
-			-- rebuild any cached state after changes
+	rebuild
+			-- rebuild any cached state after changes to definition or invariant structure
 		do
 			build_xrefs
 			build_physical_paths
 			if is_specialised then
 				build_rolled_up_status
 			end
+			is_dirty := False
 		end
 
 feature -- Output
 
--- FIXME: this is probably used in some test app; if so, a simple display_hash_table_keys
--- routine should be implemented to generate the keys of each of the archetype_validator.xref tables
---
---	found_terms: STRING is
---		local
---			str_lst: ARRAYED_LIST[STRING]
---   		do
---   			create Result.make(0)
---
---			Result.append("%N--------------- found node term codes -------------%N")
---			Result.append(display_arrayed_list(found_id_node_codes))
---			Result.append("%N")
---
---			Result.append("%N--------------- found leaf term codes -------------%N")
---			Result.append(display_arrayed_list(found_code_node_codes))
---			Result.append("%N")
---
---			Result.append("%N--------------- found constraint codes -----------%N")
---			str_lst := found_constraint_codes
---			Result.append(display_arrayed_list(str_lst))
---			Result.append("%N")
---
---			Result.append("%N--------------- found use refs -----------%N")
---			create str_lst.make(0)
---			from
---				found_internal_references.start
---			until
---				found_internal_references.off
---			loop
---				str_lst.extend(found_internal_references.item)
---				found_internal_references.forth
---			end
---			Result.append(display_arrayed_list(str_lst))
---			Result.append("%N")
---		end
-
-	as_string: STRING is
+	as_string: STRING
    		do
    			create Result.make(0)
 
@@ -467,7 +458,7 @@ feature -- Output
 
 feature -- Serialisation
 
-	synchronise is
+	synchronise
 			-- synchronise object representation of archetype to forms suitable for
 			-- serialisation
 		do
@@ -477,7 +468,7 @@ feature -- Serialisation
 
 feature {NONE} -- Implementation
 
-	build_physical_paths is
+	build_physical_paths
 			-- generate physical paths from definition structure; if no changes made on archetype
 		local
 			src_node_path: OG_PATH
@@ -494,11 +485,7 @@ feature {NONE} -- Implementation
 
 			-- Add full paths of internal references thus giving full set of actual paths
 			use_refs_csr := use_node_index.cursor
-			from
-				use_node_index.start
-			until
-				use_node_index.off
-			loop
+			from use_node_index.start until use_node_index.off loop
 				-- Hash table with arrayed list of ARCHETYPE_INTERNAL_REFs and Key of target
 				-- (ie the ref path of the internal reference)
 				src_nodes := use_node_index.item_for_iteration
@@ -512,16 +499,12 @@ feature {NONE} -- Implementation
 					c_o ?= definition.c_object_at_path (tgt_path_str)
 
 					-- now add the paths below it
-					from
-						src_nodes.start
-					until
-						src_nodes.off
-					loop
+					from src_nodes.start until src_nodes.off loop
 						src_node_path := src_nodes.item.representation.path
 						src_node_path.last.set_object_id(tgt_path.last.object_id)
 						src_node_path_str := src_node_path.as_string
 
-						path_map.put (c_o, src_node_path_str)
+						path_map.force (c_o, src_node_path_str)
 
 						from
 							tgt_path_c_objects.start
@@ -541,13 +524,9 @@ feature {NONE} -- Implementation
 
 			create sorted_physical_paths.make
 			create sorted_physical_leaf_paths.make
-			from
-				path_map.start
-			until
-				path_map.off
-			loop
+			from path_map.start until path_map.off loop
 				sorted_physical_paths.extend(path_map.key_for_iteration)
-				if path_map.item_for_iteration.is_leaf then
+				if path_map.item_for_iteration /= Void and path_map.item_for_iteration.is_leaf then
 					sorted_physical_leaf_paths.extend(path_map.key_for_iteration)
 				end
 				path_map.forth
@@ -570,7 +549,7 @@ feature {NONE} -- Implementation
 			-- complete map of object nodes keyed by path, including paths implied by
 			-- use_nodes in definition structure.
 
-	display_arrayed_list(str_lst: ARRAYED_LIST[STRING]):STRING is
+	display_arrayed_list (str_lst: ARRAYED_LIST [STRING]): STRING
 			--
 		require
 			str_lst /= Void
@@ -589,17 +568,13 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	display_paths(path_list: ARRAYED_LIST[STRING]):STRING is
+	display_paths (path_list: ARRAYED_LIST [STRING]): STRING
 			-- display terminal paths
 		require
 			path_list /= Void
 		do
 			create Result.make(0)
-			from
-				path_list.start
-			until
-				path_list.off
-			loop
+			from path_list.start until path_list.off loop
 				if path_list.islast then
 					Result.append(path_list.item)
 					Result.append("%N")
@@ -609,8 +584,8 @@ feature {NONE} -- Implementation
 		end
 
 invariant
+	Artefact_type_set: artefact_type /= Void
 	Concept_valid: concept /= Void and then concept.is_equal (ontology.concept_code)
-	Description_exists: description /= Void
 	Invariants_valid: invariants /= Void implies not invariants.is_empty
 	RM_type_validity: definition.rm_type_name.as_lower.is_equal (archetype_id.rm_entity.as_lower)
 	Specialisation_validity: is_specialised implies (specialisation_depth > 0 and parent_archetype_id /= Void)

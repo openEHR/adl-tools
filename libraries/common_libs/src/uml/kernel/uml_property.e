@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Resuable Library Project"
 	description: "[
 			 UML class abstraction, as defined in OMG UML 2.0 Infrastructure 
@@ -27,14 +27,14 @@ create
 
 feature -- Initialisation
 
-	make(a_name: STRING) is
+	make(a_name: STRING)
 		require
 			Name_exists: a_name /= Void and then not a_name.is_empty
 		do
 			name := a_name
 		end
 		
-	make_single_relationship(a_name: STRING; target: UML_CLASS; is_mandatory: BOOLEAN) is
+	make_single_relationship(a_name: STRING; target: UML_CLASS; is_mandatory: BOOLEAN)
 			-- make a single relationship
 		require
 			Name_valid: a_name /= Void and then not a_name.is_empty
@@ -47,7 +47,7 @@ feature -- Initialisation
 
 	make_multiple_relationship(a_name: STRING; target: UML_CLASS; 
 							min_cardinality, max_cardinality: INTEGER; 
-							max_cardinality_infinite, ordered, unique_flag: BOOLEAN) is
+							max_cardinality_infinite, ordered, unique_flag: BOOLEAN)
 			-- make a multiple relationship
 		require
 			Name_valid: a_name /= Void and then not a_name.is_empty
@@ -82,7 +82,7 @@ feature -- Modification
 	
 feature -- Serialisation
 
-	synchronise_to_tree is
+	synchronise_to_tree
 		local
 			an_attr_node: DT_ATTRIBUTE_NODE
 			dummy_node: DT_OBJECT_ITEM

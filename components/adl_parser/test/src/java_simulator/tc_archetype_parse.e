@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Test case for archetype parse, simulating call from java"
 	keywords:    "test, ADL, java"
@@ -30,21 +30,21 @@ create
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 	    do
 	    end
 
 feature -- Access
 
-	title: STRING is "Test Archetype Create"
+	title: STRING = "Test Archetype Create"
 
-	infile: STRING is
+	infile: STRING
 		once
 			create Result.make(0)
 			Result.append("openEHR-EHR-OBSERVATION.blood_pressure.v1.adl")
 		end
 
-	outfile: STRING is
+	outfile: STRING
 		once
 			create Result.make(0)
 			Result.append("openEHR-EHR-OBSERVATION.blood_pressure.v1.html")
@@ -52,7 +52,7 @@ feature -- Access
 
 feature -- testing
 
-	execute is
+	execute
 		local
 			c_status, c_infile, c_outfile, c_format: BASE_C_STRING
 		do

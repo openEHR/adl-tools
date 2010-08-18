@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR common definitions"
 	
 	description: "Names of terminologies defined and used internally by openEHR"
@@ -17,41 +17,41 @@ class OPENEHR_TERMINOLOGY_GROUP_IDENTIFIERS
 
 feature -- Definitions
 
-	Terminology_id_openehr: STRING is "openehr"
+	Terminology_id_openehr: STRING = "openehr"
 
-	Group_id_audit_change_type: STRING is "audit change type"
+	Group_id_audit_change_type: STRING = "audit change type"
 
-	Group_id_attestation_reason: STRING is "attestation reason"
+	Group_id_attestation_reason: STRING = "attestation reason"
 
-	Group_id_composition_category: STRING is "composition category"
+	Group_id_composition_category: STRING = "composition category"
 
-	Group_id_event_math_function: STRING is "event math function"
+	Group_id_event_math_function: STRING = "event math function"
 
-	Group_id_ism_states: STRING is "ISM states"
+	Group_id_ism_states: STRING = "ISM states"
 
-	Group_id_ism_transitions: STRING is "ISM transitions"
+	Group_id_ism_transitions: STRING = "ISM transitions"
 	
-	Group_id_normal_status: STRING is "normal status"
+	Group_id_normal_status: STRING = "normal status"
 
-	Group_id_null_flavours: STRING is "null flavours"
+	Group_id_null_flavours: STRING = "null flavours"
 
-	Group_id_measurable_properties: STRING is "measurable properties"
+	Group_id_measurable_properties: STRING = "measurable properties"
 
-	Group_id_participation_function: STRING is "participation function"
+	Group_id_participation_function: STRING = "participation function"
 
-	Group_id_participation_mode: STRING is "participation mode"
+	Group_id_participation_mode: STRING = "participation mode"
 
-	Group_id_related_party_relationship: STRING is "related party relationship"
+	Group_id_related_party_relationship: STRING = "related party relationship"
 
-	Group_id_setting: STRING is "setting"
+	Group_id_setting: STRING = "setting"
 
-	Group_id_term_mapping_purpose: STRING is "term mapping purpose"
+	Group_id_term_mapping_purpose: STRING = "term mapping purpose"
 
-	Group_id_version_lifecycle_state: STRING is "version lifecycle state"
+	Group_id_version_lifecycle_state: STRING = "version lifecycle state"
 
 feature -- Comparison
 
-	valid_terminology_group_id (an_id: STRING): BOOLEAN is
+	valid_terminology_group_id (an_id: STRING): BOOLEAN
 			-- True if an_id is in the set defined by this class
 		do
 			-- FIXME: to be implemented

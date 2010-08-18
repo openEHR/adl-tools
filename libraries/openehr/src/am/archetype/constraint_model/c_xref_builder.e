@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Archetype cross-reference table validator. The ARCHEYPE class has a number of
@@ -23,14 +23,11 @@ inherit
 	C_VISITOR
 		rename
 			initialise as initialise_visitor
-		redefine
-			start_c_complex_object, start_archetype_slot, start_archetype_internal_ref,
-			start_constraint_ref, start_c_code_phrase, start_c_ordinal
 		end
 
 feature -- Initialisation
 
-	initialise(an_archetype: ARCHETYPE) is
+	initialise(an_archetype: ARCHETYPE)
 			-- set ontology required for interpreting meaning of object nodes
 			-- archetype is required as well since it contains the xref tables that are
 			-- populated by this visitor
@@ -43,50 +40,61 @@ feature -- Initialisation
 
 feature -- Visitor
 
-	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER) is
-			-- enter an C_COMPLEX_OBJECT
+	start_c_object(a_node: C_OBJECT; depth: INTEGER)
+			-- enter a C_OBJECT
 		do
 			if a_node.is_addressable then
 				if not archetype.id_atcodes_index.has(a_node.node_id) then
 					archetype.id_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
 				end
-				archetype.id_atcodes_index.item(a_node.node_id).extend(a_node)
+				archetype.id_atcodes_index.item(a_node.node_id).extend (a_node)
 			end
 		end
 
-	start_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER) is
+	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER)
+			-- enter a C_COMPLEX_OBJECT
+		do
+			start_c_object(a_node, depth)
+		end
+
+	start_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER)
 			-- enter an ARCHETYPE_SLOT
 		do
-			if a_node.is_addressable then
-				if not archetype.id_atcodes_index.has(a_node.node_id) then
-					archetype.id_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
-				end
-				archetype.id_atcodes_index.item(a_node.node_id).extend(a_node)
-			end
-			archetype.slot_index.extend(a_node)
+			start_c_object(a_node, depth)
+			archetype.slot_index.extend (a_node)
 		end
 
-	start_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER) is
+	start_c_archetype_root(a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
+			-- enter a C_ARCHETYPE_ROOT
+		do
+			if not archetype.suppliers_index.has(a_node.archetype_id) then
+				archetype.suppliers_index.put(create {ARRAYED_LIST[C_ARCHETYPE_ROOT]}.make(0), a_node.archetype_id)
+			end
+			archetype.suppliers_index.item(a_node.archetype_id).extend (a_node)
+		end
+
+	start_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
 			-- enter an ARCHETYPE_INTERNAL_REF
 		do
 			if not archetype.use_node_index.has(a_node.target_path) then
 				archetype.use_node_index.put(create {ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]}.make(0), a_node.target_path)
 			end
-			archetype.use_node_index.item(a_node.target_path).extend(a_node)
+			archetype.use_node_index.item(a_node.target_path).extend (a_node)
 		end
 
-	start_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER) is
+	start_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER)
 			-- enter a CONSTRAINT_REF
 		do
 			if not archetype.accodes_index.has(a_node.target) then
 				archetype.accodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.target)
 			end
-			archetype.accodes_index.item(a_node.target).extend(a_node)
+			archetype.accodes_index.item(a_node.target).extend (a_node)
 		end
 
-	start_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER) is
+	start_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER)
 			-- enter an C_CODE_PHRASE
 		do
+			start_c_domain_type(a_node, depth)
 			if not a_node.any_allowed and then (a_node.is_local and a_node.code_count > 0) then
 				from
 					a_node.code_list.start
@@ -96,15 +104,16 @@ feature -- Visitor
 					if not archetype.data_atcodes_index.has(a_node.code_list.item) then
 						archetype.data_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.code_list.item)
 					end
-					archetype.data_atcodes_index.item(a_node.code_list.item).extend(a_node)
+					archetype.data_atcodes_index.item(a_node.code_list.item).extend (a_node)
 					a_node.code_list.forth
 				end
 			end
 		end
 
-	start_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER) is
+	start_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER)
 			-- enter an C_DV_ORDINAL
 		do
+			start_c_domain_type(a_node, depth)
 			if not a_node.any_allowed and then a_node.is_local then
 				from
 					a_node.items.start
@@ -114,10 +123,59 @@ feature -- Visitor
 					if not archetype.data_atcodes_index.has(a_node.items.item.symbol.code_string) then
 						archetype.data_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.items.item.symbol.code_string)
 					end
-					archetype.data_atcodes_index.item(a_node.items.item.symbol.code_string).extend(a_node)
+					archetype.data_atcodes_index.item(a_node.items.item.symbol.code_string).extend (a_node)
 					a_node.items.forth
 				end
 			end
+		end
+
+	start_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER)
+			-- enter a C_ATTRIBUTE; see if it has a differential path, in which case there may be at-codes
+			-- referenced there not visible elsewhere in the structure; these need to be found and added to
+			-- the id_atcodes list
+		local
+			og_path: OG_PATH
+		do
+			if a_node.has_differential_path then
+				create og_path.make_from_string (a_node.differential_path)
+				from og_path.start until og_path.off loop
+					if og_path.item.is_addressable then
+						if not archetype.id_atcodes_index.has(og_path.item.object_id) then
+							archetype.id_atcodes_index.put(create {ARRAYED_LIST[ARCHETYPE_CONSTRAINT]}.make(0), og_path.item.object_id)
+						end
+						archetype.id_atcodes_index.item(og_path.item.object_id).extend (a_node)
+					end
+					og_path.forth
+				end
+
+			end
+		end
+
+	start_c_leaf_object(a_node: C_LEAF_OBJECT; depth: INTEGER)
+			-- enter a C_LEAF_OBJECT
+		do
+		end
+
+	start_c_reference_object(a_node: C_REFERENCE_OBJECT; depth: INTEGER)
+			-- enter a C_REFERENCE_OBJECT
+		do
+		end
+
+	start_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
+			-- enter an C_PRIMITIVE_OBJECT
+		do
+		end
+
+	start_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER)
+			-- enter an C_DOMAIN_TYPE
+		do
+			start_c_object(a_node, depth)
+		end
+
+	start_c_quantity(a_node: C_DV_QUANTITY; depth: INTEGER)
+			-- enter a C_DV_QUANTITY
+		do
+			start_c_domain_type(a_node, depth)
 		end
 
 feature {NONE} -- Implementation

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			     Object node representing root object in dADL parse tree
@@ -16,7 +16,6 @@ indexing
 class DT_COMPLEX_OBJECT_NODE
 
 inherit
-
 	SHARED_DT_OBJECT_CONVERTER
 		export
 			{NONE} all
@@ -40,11 +39,11 @@ inherit
 		end
 
 create
-	make_identified, make_anonymous, make_typed, make_typed_identified, make_from_object
+	make_identified, make_anonymous, make_from_object -- , make_typed, make_typed_identified
 
 feature -- Initialisation
 
-	default_create is
+	default_create
 			--
 		do
 			create attributes.make(0)
@@ -54,7 +53,7 @@ feature -- Initialisation
 			not is_typed
 		end
 
-	make_identified(a_node_id: STRING) is
+	make_identified(a_node_id: STRING)
 			-- set node id, type_name = 'unknown'
 		require
 			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
@@ -65,30 +64,35 @@ feature -- Initialisation
 			not is_typed
 		end
 
-	make_typed_identified(a_type_name, a_node_id: STRING) is
-			-- set node id, type_name
-		require
-			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
-			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
-		do
-			make_identified(a_node_id)
-			set_type_name(a_type_name)
-		ensure
-			is_typed
-		end
+--
+-- FIXME
+-- this code is a candidate for deletion - it is never used, because the parser always does two calls,
+-- one to make_xx and another to set_type.
+--
+--	make_typed_identified(a_type_name, a_node_id: STRING) is
+--			-- set node id, type_name
+--		require
+--			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
+--			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
+--		do
+--			make_identified(a_node_id)
+--			set_type_name(a_type_name)
+--		ensure
+--			is_typed
+--		end
 
-	make_typed(a_type_name: STRING) is
-			-- set type_name
-		require
-			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
-		do
-			make_anonymous
-			set_type_name(a_type_name)
-		ensure
-			is_typed
-		end
+--	make_typed(a_type_name: STRING) is
+--			-- set type_name
+--		require
+--			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
+--		do
+--			make_anonymous
+--			set_type_name(a_type_name)
+--		ensure
+--			is_typed
+--		end
 
-	make_anonymous is
+	make_anonymous
 		do
 			default_create
 			create representation.make_anonymous (Current)
@@ -96,7 +100,7 @@ feature -- Initialisation
 			not is_typed
 		end
 
-	make_from_object(an_obj:ANY) is
+	make_from_object (an_obj: ANY)
 			-- make a data tree from an object
 		do
 			make_anonymous
@@ -110,7 +114,7 @@ feature -- Access
 	attributes: ARRAYED_LIST [DT_ATTRIBUTE_NODE]
 			-- next nodes, keyed by node id or attribute name
 
-	attribute(an_attr_name: STRING): DT_ATTRIBUTE_NODE is
+	attribute_node (an_attr_name: STRING): DT_ATTRIBUTE_NODE
 			-- return attribute node at an_attr_name
 		require
 			An_attr_name_valid: an_attr_name /= Void and then has_attribute(an_attr_name)
@@ -118,7 +122,7 @@ feature -- Access
 			Result ?= representation.child_with_id(an_attr_name).content_item
 		end
 
-	node_at_path(a_path: STRING): DT_OBJECT_ITEM is
+	node_at_path(a_path: STRING): DT_OBJECT_ITEM
 			-- find the child at the relative path `a_path'; paths can only ever return an object
 		require
 			Path_valid: a_path /= Void and then has_path(a_path)
@@ -128,7 +132,7 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	attribute_node_at_path(a_path: STRING): DT_ATTRIBUTE_NODE is
+	attribute_node_at_path(a_path: STRING): DT_ATTRIBUTE_NODE
 			-- find the child at the relative path `a_path'; paths can only ever return an object
 		require
 			Path_valid: a_path /= Void and then has_path(a_path)
@@ -138,7 +142,7 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	all_paths: ARRAYED_LIST[STRING] is
+	all_paths: ARRAYED_LIST[STRING]
 			-- all paths below this point, including this node
 		local
 			og_paths: HASH_TABLE [OG_OBJECT, OG_PATH]
@@ -158,7 +162,7 @@ feature -- Access
 			Result_exists: Result /= Void and then Result.object_comparison
 		end
 
-	value_at_path(a_path: STRING): ANY is
+	value_at_path(a_path: STRING): ANY
 		require
 			Path_valid: a_path /= Void and then (valid_path_string(a_path) and has_path(a_path))
 		local
@@ -168,7 +172,7 @@ feature -- Access
 			Result := a_primitive_node.value
 		end
 
-	value_list_at_path(a_path: STRING): SEQUENCE[ANY] is
+	value_list_at_path(a_path: STRING): SEQUENCE[ANY]
 			-- get value list from path `a_path'
 		require
 			Path_valid: a_path /= Void and then (valid_path_string(a_path) and has_path(a_path))
@@ -183,33 +187,29 @@ feature -- Access
 
 feature -- Iteration
 
-	start is
-			--
+	start
 		do
 			attributes.start
 		end
 
-	forth is
-			--
+	forth
 		do
 			attributes.forth
 		end
 
-	off: BOOLEAN is
-			--
+	off: BOOLEAN
 		do
 			Result := attributes.off
 		end
 
-	item: DT_ATTRIBUTE_NODE is
-			--
+	item: DT_ATTRIBUTE_NODE
 		do
 			Result := attributes.item
 		end
 
 feature -- Status Report
 
-	has_path(a_path: STRING): BOOLEAN is
+	has_path(a_path: STRING): BOOLEAN
 			-- find the child at the relative path `a_path'
 		require
 			Path_valid: a_path /= Void and then not a_path.is_empty
@@ -217,7 +217,7 @@ feature -- Status Report
 			Result := representation.has_path(create {OG_PATH}.make_from_string(a_path))
 		end
 
-	has_attribute(an_attr_name: STRING):BOOLEAN is
+	has_attribute (an_attr_name: STRING): BOOLEAN
 			-- valid REL children of an object node must all be unique
 		require
 			Attr_name_valid: an_attr_name /= Void and then not an_attr_name.is_empty
@@ -225,7 +225,7 @@ feature -- Status Report
 			Result := representation.has_child_with_id(an_attr_name)
 		end
 
-	is_valid: BOOLEAN is
+	is_valid: BOOLEAN
 			-- report on validity
 		do
 			create invalid_reason.make(0)
@@ -233,7 +233,7 @@ feature -- Status Report
 			Result := True
 		end
 
-	is_empty: BOOLEAN is
+	is_empty: BOOLEAN
 			--
 		do
 			Result := attributes.is_empty
@@ -241,7 +241,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	put_attribute(an_attr_node: DT_ATTRIBUTE_NODE) is
+	put_attribute(an_attr_node: DT_ATTRIBUTE_NODE)
 			-- put a new child node
 		require
 			Node_exists: an_attr_node /= Void and then not has_attribute(an_attr_node.rm_attr_name)
@@ -251,7 +251,7 @@ feature -- Modification
 			an_attr_node.set_parent(Current)
 		end
 
-	set_value_at_path(a_value:ANY; a_path: STRING) is
+	set_value_at_path (a_value: ANY; a_path: STRING)
 			-- set a leaf value at a path
 		require
 			Path_valid: a_path /= Void and then has_path(a_path)
@@ -263,7 +263,7 @@ feature -- Modification
 			a_primitive_node.set_value(a_value)
 		end
 
-	set_value_list_at_path(a_value:LIST[ANY]; a_path: STRING) is
+	set_value_list_at_path (a_value: LIST [ANY]; a_path: STRING)
 			-- set a leaf value at a path
 		require
 			Path_valid: a_path /= Void and then has_path(a_path)
@@ -275,27 +275,57 @@ feature -- Modification
 			a_primitive_node.set_value(a_value)
 		end
 
-	create_path(a_path: STRING) is
+	create_path(a_path: STRING)
 			-- create a new set of objects corresponding to `a_path'
 		require
 			a_path_valid: a_path /= Void and then not a_path.is_empty
 		do
 		end
 
+	replace_attribute_name(old_name, new_name: STRING)
+			-- change the name of an attribute
+		require
+			Old_name_valid: old_name /= Void and then has_attribute(old_name)
+			New_name_valid: new_name /= Void and then not new_name.is_empty
+		do
+			representation.replace_attribute_name(old_name, new_name)
+		end
+
+	remove_attribute (attr_name: STRING)
+			-- remove attribute node at `attr_name'
+		require
+			Attr_name_valid: attr_name /= Void and then has_attribute(attr_name)
+		local
+			attr_node: DT_ATTRIBUTE_NODE
+		do
+			attr_node := attribute_node(attr_name)
+			representation.remove_child (attr_node.representation)
+			attributes.prune (attr_node)
+		end
+
 feature -- Conversion
 
-	out: STRING is
+	out: STRING
 			--
 		do
 			create Result.make(0)
 			Result.append(rm_type_name + "[" + node_id + "] ")
 		end
 
-	as_object(a_type_id: INTEGER): ANY is
+	as_object(a_type_id: INTEGER): ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		do
 			Result := object_converter.dt_to_object(Current, a_type_id)
+			as_object_ref := Result
+		end
+
+	as_object_from_string(a_type_name: STRING): ANY
+			-- make an object whose classes and attributes correspond to the structure
+			-- of this DT_OBJECT
+		do
+			Result := object_converter.dt_to_object_from_string(Current, a_type_name)
+			as_object_ref := Result
 		end
 
 feature -- Representation
@@ -304,13 +334,13 @@ feature -- Representation
 
 feature -- Serialisation
 
-	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
+	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at start of block for this node
 		do
 			serialiser.start_complex_object_node(Current, depth)
 		end
 
-	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
+	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at end of block for this node
 		do
 			serialiser.end_complex_object_node(Current, depth)

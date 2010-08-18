@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Node of simple type in an dADL parse tree. Simple
@@ -31,56 +31,13 @@ inherit
 create
 	make_identified, make_anonymous
 
-feature -- Initialisation
-
-	make_identified(a_value: ANY; a_node_id: STRING) is
-		require
-			Item_valid: a_value /= Void
-			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
-		do
-			default_create
-			create representation.make(a_node_id, Current)
-			set_value(a_value)
-		ensure
-			is_typed
-			is_addressable
-		end
-
-	make_anonymous(a_value: ANY) is
-		require
-			Item_valid: a_value /= Void
-		do
-			default_create
-			create representation.make_anonymous(Current)
-			set_value(a_value)
-		ensure
-			is_typed
-			not is_addressable
-		end
-
 feature -- Access
 
 	value: ANY
 
-feature -- Status Report
-
-	is_valid: BOOLEAN is
-			-- report on validity
-		do
-			create invalid_reason.make(0)
-			invalid_reason.append(rm_type_name + ": ")
-			if value = Void then
-				invalid_reason.append("simple type value not specified")
-			else
-				Result := True
-			end
-		end
-
 feature -- Modification
 
-	set_value(a_value: ANY) is
-		require
-			Item_valid: a_value /= Void
+	set_value(a_value: ANY)
 		do
 			value := a_value
 			rm_type_name := a_value.generating_type
@@ -91,39 +48,45 @@ feature -- Modification
 
 feature -- Conversion
 
-	as_string: STRING is
-		local
-			a_dur: DATE_TIME_DURATION
+	as_string: STRING
 		do
 			if is_string then
 				Result := "%"" + value.out + "%""
 			elseif is_character then
 				Result := "%'" + value.out + "%'"
 			else
-				-- FIXME: duration.out does not exist in Eiffel, and in any case would not be ISO8601
-				-- compliant
-				a_dur ?= value
-				if a_dur = Void then
+				-- FIXME: duration.out does not exist in Eiffel, and in any case would not be ISO8601-compliant
+				if attached {DATE_TIME_DURATION} value as a_dur then
+					Result := duration_to_iso8601_string(a_dur)
+				else
 					Result := value.out
 					-- FIXME: REAL.out is broken
-					if value.generating_type.substring(1,4).is_equal("REAL") and then Result.index_of('.', 1) = 0 then
+					if value.generating_type.out.substring (1, 4).is_equal ("REAL") and then Result.index_of ('.', 1) = 0 then
 						Result.append(".0")
 					end
-				else
-					Result := duration_to_iso8601_string(a_dur)
 				end
+			end
+		end
+
+	clean_as_string (cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
+			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
+		do
+			if is_string then
+				Result := "%"" + cleaner.item ([value.out]) + "%""
+			else
+				Result := as_string
 			end
 		end
 
 feature -- Serialisation
 
-	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
+	enter_subtree (serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at start of block for this node
 		do
 			serialiser.start_primitive_object(Current, depth)
 		end
 
-	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER) is
+	exit_subtree (serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at end of block for this node
 		do
 			serialiser.end_primitive_object(Current, depth)
@@ -132,6 +95,7 @@ feature -- Serialisation
 feature {NONE} -- Implementation
 
 	is_string: BOOLEAN
+
 	is_character: BOOLEAN
 
 end

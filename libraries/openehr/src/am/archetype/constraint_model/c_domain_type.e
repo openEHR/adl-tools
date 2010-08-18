@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			 Abstract parent type of domain specific constraint types. This
@@ -22,39 +22,87 @@ deferred class C_DOMAIN_TYPE
 inherit
 	C_LEAF_OBJECT
 		redefine
-			representation, enter_subtree, exit_subtree
+			default_create, representation, enter_subtree, exit_subtree, node_id
 		end
 
 	DT_CONVERTIBLE
 		undefine
 			default_create
 		redefine
-			synchronise_to_tree
+			synchronise_to_tree, finalise_dt
 		end
+
+feature -- Initialisation
+
+	default_create
+			-- set `rm_type_name' from typename of this object
+		do
+			rm_type_name := generator.substring (3, generator.count)
+			create representation.make_anonymous(Current)
+			create node_id.make_empty
+		end
+
+feature -- Initialisation
+
+	make
+		do
+			default_create
+		ensure
+			Any_allowed: any_allowed
+		end
+
+	make_dt
+			-- make used by DT_OBJECT_CONVERTER
+		do
+			make
+		ensure then
+			Any_allowed: any_allowed
+		end
+
+feature -- Finalisation
+
+	finalise_dt
+			-- used by DT_OBJECT_CONVERTER
+		do
+			if node_id /= Void and not node_id.is_empty then
+				create representation.make(node_id, Current)
+			else
+				create representation.make_anonymous (Current)
+			end
+		end
+
+feature -- Access
+
+	node_id: STRING
 
 feature -- Conversion
 
-	standard_equivalent: C_COMPLEX_OBJECT is
+	standard_equivalent: C_COMPLEX_OBJECT
 			-- standard equivalent constraint form for this subtype
 		deferred
 		end
 
 feature -- Representation
 
-	representation: !OG_OBJECT_LEAF
+	representation: attached OG_OBJECT_LEAF
 
 feature -- Synchronisation
 
-	synchronise_to_tree is
+	synchronise_to_tree
 			-- synchronise to parse tree representation
 		do
 			precursor
-			dt_representation.show_type
+			dt_representation.set_type_visible
+			if node_id = Void or node_id.is_empty then
+				if dt_representation.has_attribute ("node_id") then
+					dt_representation.remove_attribute ("node_id")
+				end
+			end
 		end
 
 feature -- Visitor
 
-	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	enter_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
 			synchronise_to_tree
@@ -62,7 +110,7 @@ feature -- Visitor
 			visitor.start_c_domain_type(Current, depth)
 		end
 
-	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
 			precursor(visitor, depth)

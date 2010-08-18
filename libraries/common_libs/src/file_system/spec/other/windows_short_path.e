@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "[
 				 Short (8-dot-3) MS-DOS style paths on Windows.
@@ -26,7 +26,7 @@ feature {NONE} -- Initialisation
 	make (path: STRING)
 			-- Stub implementation: simply set `as_long_path'.
 		require
-			attached: path /= Void
+			not_void: path /= Void
 		do
 			as_long_path := path
 		end

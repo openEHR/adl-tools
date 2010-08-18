@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR EHR Reference Model"
 
 	description: "[
@@ -35,19 +35,19 @@ feature -- Access
 			-- The state of the subject of this observation, 
 			-- in the form of a history of values which may be of any complexity.
 
-	path_of_item (a_loc: LOCATABLE): STRING is
+	path_of_item (a_loc: LOCATABLE): STRING
 			-- The path to an item relative to the root of this archetyped structure.
 		do
 		end
 
-	item_at_path (a_path: STRING): LOCATABLE is
+	item_at_path (a_path: STRING): LOCATABLE
 			-- The item at a path (relative to this item).
 		do
 		end
 
 feature -- Status Report
 
-	path_exists (a_path: STRING): BOOLEAN is
+	path_exists (a_path: STRING): BOOLEAN
 			-- True if the path is valid with respect to the current item.
 		do
 		end

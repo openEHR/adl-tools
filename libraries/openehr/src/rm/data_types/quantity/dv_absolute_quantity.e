@@ -1,5 +1,5 @@
 
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "[
@@ -33,17 +33,17 @@ feature -- Access
 	
 feature -- Basic Operations
 
-	add (a_diff: like diff): like Current	is
+	add (a_diff: like diff): like Current
 			-- Addition of a differential amount to this quantity.
 		deferred
 		end
 	
-	subtract (a_diff: like diff): like Current is
+	subtract (a_diff: like diff): like Current
 			-- Result of subtracting a differential amount from this quantity.
 		deferred
 		end
 	
-	diff (a_diff: like Current): ANY is
+	diff (a_diff: like Current): ANY
 			-- Difference of two quantities.
 		deferred
 		end

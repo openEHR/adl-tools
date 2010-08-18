@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			 Shared access to ARCHETYPE_PARSER.
@@ -20,9 +20,9 @@ inherit
 
 feature {NONE} -- Implementation
 
-	archetype_parser: ARCHETYPE_PARSER is
+	archetype_parser: ARCHETYPE_PARSER
 		once
-			create Result.make
+			create Result
 		end
 
 end

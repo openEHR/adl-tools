@@ -1,10 +1,10 @@
-indexing
+note
 
 	component:   "openEHR Common Archetype Model"
-	
+
 	description: "parent type of constrainer types of simple types"
 	keywords:    "archetype, string, data"
-	
+
 	design:      "openEHR Common Archetype Model 0.2"
 
 	author:      "Thomas Beale"
@@ -23,37 +23,46 @@ inherit
 		redefine
 			out
 		end
-		
+
 feature -- Access
 
-	default_value: ANY is
-			-- 	generate a default value from this constraint object
+	prototype_value: ANY
+			-- 	generate a prototype value from this constraint object
 		deferred
 		ensure
 			Result /= Void
 		end
-		
-	assumed_value: like default_value
+
+	assumed_value: like prototype_value
 			-- assumed value for this constraint object
 			-- FIXME: consider consolidating with assumed_value in C_DOMAIN_TYPE
-		
+
+	rm_type_name: STRING
+			-- generate a Reference Model type name that this type constrains. Generally this is
+			-- the same as the C_XX clas name with the "C_" removed, but for some types e.g. Date/time types
+			-- it is not true.
+		do
+			Result := generating_type
+			Result.remove_head (2)
+		end
+
 feature -- Status Report
 
-	valid_value (a_value: like default_value): BOOLEAN is
+	valid_value (a_value: like prototype_value): BOOLEAN
 		require
 			a_value /= Void
 		deferred
 		end
-		
-	has_assumed_value: BOOLEAN is
+
+	has_assumed_value: BOOLEAN
 			-- True if there is an assumed value
 		do
 			Result := assumed_value /= Void
 		end
-		
+
 feature -- Modification
 
-	set_assumed_value(a_value: like assumed_value) is
+	set_assumed_value(a_value: like assumed_value)
 			-- set `assumed_value'
 		require
 			a_value /= Void and then valid_value(a_value)
@@ -62,23 +71,32 @@ feature -- Modification
 		ensure
 			assumed_value_set: assumed_value = a_value
 		end
-		
+
+feature -- Comparison
+
+	node_conforms_to (other: like Current): BOOLEAN
+			-- True if this node is a subset of, or the same as `other'
+		require
+			other /= Void
+		deferred
+		end
+
 feature -- Output
 
-	as_string:STRING is
+	as_string: STRING
 		deferred
 		ensure
 			Result_exists: Result /= Void
 		end
 
-	out: STRING is
+	out: STRING
 		do
 			Result := as_string
 		end
 
 invariant
 	Assumed_value_valid: assumed_value /= Void implies valid_value(assumed_value)
-	
+
 end
 
 

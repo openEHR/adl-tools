@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test suite for units parser."
 	keywords:    "test, units"
@@ -17,20 +17,20 @@ class TS_UNITS
 inherit
 	TEST_SUITE
 
-creation
+create
 	make
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 	    do
 	    end
 
 feature -- Access
 
-	title:STRING is "Units parser test suite"
+	title:STRING = "Units parser test suite"
 
-	test_cases:LINKED_LIST[TEST_CASE] is
+	test_cases:LINKED_LIST[TEST_CASE]
 		local
 			tc:TEST_CASE
 		once

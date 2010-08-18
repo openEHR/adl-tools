@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "File-based Event logging facility implementation"
 	keywords:    "logging"
@@ -29,15 +29,15 @@ create
 
 feature -- Definitions
 
-	Date_variable:STRING is "$DATE"
+	Date_variable:STRING = "$DATE"
 			-- string to replace with canonical date in filename. Useful for making daily logfiles.
 
-    File_date_format:STRING is "yyyy-[0]mm-[0]dd"
+    File_date_format:STRING = "yyyy-[0]mm-[0]dd"
             -- format of date segment of file name for date-stamped file names
 
 feature -- Initialisation
 
-	make(a_facility_interface:like facility_interface) is
+	make(a_facility_interface:like facility_interface)
 		local
 			event_dir:DIRECTORY
 			dir_name, file_name:STRING
@@ -75,7 +75,7 @@ feature -- Initialisation
 
 feature -- Modify
 
-	append_event(severity:INTEGER; source, msg:STRING) is
+	append_event(severity:INTEGER; source, msg:STRING)
 		do
 			event_log.put_string(
            		Severities.item(severity) + "    " + facility_interface.app_name + "    " +

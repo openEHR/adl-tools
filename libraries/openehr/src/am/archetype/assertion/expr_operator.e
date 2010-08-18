@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "node in ADL parse tree"
 	keywords:    "test, ADL"
@@ -22,7 +22,7 @@ inherit
 
 feature -- Initialisation
 
-	make(an_op: OPERATOR_KIND) is
+	make(an_op: OPERATOR_KIND)
 		require
 			an_op_exists: an_op /= Void
    		do
@@ -44,7 +44,7 @@ feature -- Access
 
 feature -- Modification
 
-	override_precedence is
+	override_precedence
 			-- override natural precedence
 		do
 			precedence_overridden := True

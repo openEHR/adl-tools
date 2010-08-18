@@ -5,25 +5,28 @@ Name "ADL Workbench"
 
 # Defines
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION "1.4"
-!define COMPANY "Ocean Informatics Pty Ltd"
-!define URL www.oceaninformatics.com
+!define VERSION "1.5"
+!define COMPANY "openEHR Foundation"
+!define URL www.openehr.org
 
 # MUI defines
 !define MUI_ICON "..\..\..\app\icons\openEHR.ico"
-!define MUI_FINISHPAGE_NOAUTOCLOSE
+!define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of the openEHR Foundation's $(^Name).\r\n\r\nClick Next to continue."
 !define MUI_LICENSEPAGE_RADIOBUTTONS
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
 !define MUI_STARTMENUPAGE_NODISABLE
 !define MUI_STARTMENUPAGE_REGISTRY_KEY ${REGKEY}
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME StartMenuGroup
-!define MUI_STARTMENUPAGE_DEFAULTFOLDER "Ocean Informatics\ADL Workbench"
+!define MUI_STARTMENUPAGE_DEFAULTFOLDER "openEHR\ADL Workbench"
 !define MUI_UNICON "..\..\..\app\icons\openEHR.ico"
-!define MUI_WELCOMEFINISHPAGE_BITMAP "ocean.bmp"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "birds_vertical.bmp"
 !define MUI_HEADERIMAGE
-!define MUI_HEADERIMAGE_BITMAP "oceanheader.bmp"
-!define MUI_UNFINISHPAGE_NOAUTOCLOSE
+!define MUI_HEADERIMAGE_BITMAP "openEHR.bmp"
 !define MUI_FINISHPAGE_RUN "$INSTDIR\adl_workbench.exe"
+!define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\release_notes.txt"
+!define MUI_FINISHPAGE_SHOWREADME_TEXT "Show Release Notes"
+!define MUI_FINISHPAGE_NOAUTOCLOSE
+!define MUI_UNFINISHPAGE_NOAUTOCLOSE
 
 # Included files
 !include Sections.nsh
@@ -46,18 +49,18 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-InstallDir "$PROGRAMFILES\Ocean Informatics\ADL Workbench"
+InstallDir "$PROGRAMFILES\openEHR\ADL Workbench"
 CRCCheck on
 XPStyle on
 ShowInstDetails show
-VIProductVersion 1.4.2.0
-VIAddVersionKey ProductName "Ocean ADL Workbench"
+VIProductVersion 1.5.0.0
+VIAddVersionKey ProductName "openEHR ADL Workbench"
 VIAddVersionKey ProductVersion "${VERSION}"
 VIAddVersionKey CompanyName "${COMPANY}"
 VIAddVersionKey CompanyWebsite "${URL}"
 VIAddVersionKey FileVersion "${VERSION}"
 VIAddVersionKey FileDescription "ADL Workbench Installer"
-VIAddVersionKey LegalCopyright "Copyright 2003-2008 Ocean Informatics Pty Ltd"
+VIAddVersionKey LegalCopyright "Copyright 2003-2010 openEHR Foundation"
 InstallDirRegKey HKLM "${REGKEY}" Path
 ShowUninstDetails show
 
@@ -73,15 +76,18 @@ Section -Main SEC0000
         File ..\..\..\app\EIFGENs\adl_workbench\F_code\adl_workbench.exe
     !endif
 
-    File ..\..\..\app\news.txt
+    File ..\..\..\app\release_notes.txt
     File ..\..\..\app\ArchetypeRepositoryReport.xsl
     File ..\..\..\app\ArchetypeRepositoryReport.css
 
-    SetOutPath $INSTDIR\vim
-    File ..\..\..\etc\vim\*
-
     SetOutPath $INSTDIR\icons
     File /r /x .svn ..\..\..\app\icons\*
+
+    SetOutPath $INSTDIR\rm_schemas
+    File ..\..\..\app\rm_schemas\*
+
+    SetOutPath $INSTDIR\vim
+    File ..\..\..\etc\vim\*
 
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
 SectionEnd
@@ -123,11 +129,12 @@ done${UNSECTION_ID}:
 Section /o un.Main UNSEC0000
 
     Delete /REBOOTOK $INSTDIR\adl_workbench.exe
-    Delete /REBOOTOK $INSTDIR\news.txt
+    Delete /REBOOTOK $INSTDIR\release_notes.txt
     Delete /REBOOTOK $INSTDIR\ArchetypeRepositoryReport.xsl
     Delete /REBOOTOK $INSTDIR\ArchetypeRepositoryReport.css
-    RMDir /r /REBOOTOK $INSTDIR\vim
     RMDir /r /REBOOTOK $INSTDIR\icons
+    RMDir /r /REBOOTOK $INSTDIR\rm_schemas
+    RMDir /r /REBOOTOK $INSTDIR\vim
     DeleteRegValue HKLM "${REGKEY}\Components" Main
 SectionEnd
 
@@ -148,7 +155,6 @@ SectionEnd
 Function .onInit
     InitPluginsDir
 FunctionEnd
-
 
 # Uninstaller functions
 Function un.onInit

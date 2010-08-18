@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Library Project"
 	description: "Type conversion routines to help Eiffel's type system"
 	keywords:    "type conversion"
@@ -16,7 +16,7 @@ class TYPE_UTILITIES
 
 feature -- Conversion
 	
-	interval_integer_to_interval_integer_ref(a_ivl_integer: INTERVAL[INTEGER]): INTERVAL [INTEGER_REF] is
+	interval_integer_to_interval_integer_ref(a_ivl_integer: INTERVAL[INTEGER]): INTERVAL [INTEGER_REF]
 			-- convert INTERVAL[INTEGER] -> INTERVAL[INTEGER_REF]
 		require
 			Ivl_validity: a_ivl_integer /= Void
@@ -40,7 +40,7 @@ feature -- Conversion
 			end
 		end
 	
-	interval_real_to_interval_real_ref(a_ivl_real: INTERVAL[REAL]): INTERVAL [REAL_REF] is
+	interval_real_to_interval_real_ref(a_ivl_real: INTERVAL[REAL]): INTERVAL [REAL_REF]
 			-- convert INTERVAL[REAL] -> INTERVAL[REAL_REF]
 		require
 			Ivl_validity: a_ivl_real /= Void
@@ -64,7 +64,7 @@ feature -- Conversion
 			end
 		end
 	
-	interval_integer_ref_to_interval_integer(a_ivl_integer_ref: INTERVAL[INTEGER_REF]): INTERVAL [INTEGER] is
+	interval_integer_ref_to_interval_integer(a_ivl_integer_ref: INTERVAL[INTEGER_REF]): INTERVAL [INTEGER]
 			-- convert INTERVAL[INTEGER_REF] -> INTERVAL[INTEGER]
 		require
 			Ivl_validity: a_ivl_integer_ref /= Void
@@ -79,7 +79,7 @@ feature -- Conversion
 			end
 		end
 
-	interval_real_ref_to_interval_real(a_ivl_real_ref: INTERVAL[REAL_REF]): INTERVAL [REAL] is
+	interval_real_ref_to_interval_real(a_ivl_real_ref: INTERVAL[REAL_REF]): INTERVAL [REAL]
 			-- convert INTERVAL[REAL_REF] -> INTERVAL[REAL]
 		require
 			Ivl_validity: a_ivl_real_ref /= Void
@@ -94,7 +94,7 @@ feature -- Conversion
 			end
 		end
 
-	interval_double_ref_to_interval_double(a_ivl_ref: INTERVAL[DOUBLE_REF]): INTERVAL [DOUBLE] is
+	interval_double_ref_to_interval_double(a_ivl_ref: INTERVAL[DOUBLE_REF]): INTERVAL [DOUBLE]
 			-- convert INTERVAL[DOUBLE_REF] -> INTERVAL[DOUBLE]
 		require
 			Ivl_validity: a_ivl_ref /= Void

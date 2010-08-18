@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Resuable Library Project"
 	description: "[
 			 UML MultiplicityElement abstraction, as defined in OMG UML 2.0 Infrastructure 
@@ -21,7 +21,7 @@ inherit
 	
 feature -- Modification
 
-	set_single_multiplicity(is_mandatory: BOOLEAN) is
+	set_single_multiplicity(is_mandatory: BOOLEAN)
 			-- make a single cardinality
 		do
 			if is_mandatory then
@@ -31,7 +31,7 @@ feature -- Modification
 		end
 
 	set_multiple_multiplicity(min_cardinality, max_cardinality: INTEGER; 
-				max_cardinality_infinite, ordered, unique_flag: BOOLEAN) is
+				max_cardinality_infinite, ordered, unique_flag: BOOLEAN)
 			-- make a multiple cardinality
 		require
 			Min_cardinality_valid: min_cardinality >= 0 

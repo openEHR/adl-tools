@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR EHR Reference Model"
 	description: "[
 		 	 This class models thhe log of extracts sent and received from a particular EHR.

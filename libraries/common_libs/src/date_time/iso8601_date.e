@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR re-usable library"
 	description: "[
 				ISO8601:2004 compliant Date class, including facility to represent 
@@ -32,18 +32,18 @@ inherit
 		undefine
 			is_equal, out
 		end
-	
+
 	COMPARABLE
 		redefine
 			out
 		end
-	
+
 create
 	make_from_string, make_y, make_ym, make_ymd
-	
+
 feature -- Initialisation
 
-	make_from_string(str: STRING) is
+	make_from_string(str: STRING)
 			-- make from any valid ISO date string
 		require
 			String_valid: str /= Void and valid_iso8601_date(str)
@@ -54,7 +54,7 @@ feature -- Initialisation
 			value := as_string
 		end
 
-	make_y(y: INTEGER; is_extended_flag: BOOLEAN) is
+	make_y(y: INTEGER; is_extended_flag: BOOLEAN)
 			-- make from year only
 		require
 			Year_valid: valid_year(y)
@@ -69,7 +69,7 @@ feature -- Initialisation
 			day_unknown
 		end
 
-	make_ym(y, m: INTEGER; is_extended_flag: BOOLEAN) is
+	make_ym(y, m: INTEGER; is_extended_flag: BOOLEAN)
 			-- make from year, month
 		require
 			Year_valid: valid_year(y)
@@ -84,7 +84,7 @@ feature -- Initialisation
 			day_unknown
 		end
 
-	make_ymd(y, m, d: INTEGER; is_extended_flag: BOOLEAN) is
+	make_ymd(y, m, d: INTEGER; is_extended_flag: BOOLEAN)
 			-- make from year, month day
 		require
 			Year_valid: valid_year(y)
@@ -97,7 +97,7 @@ feature -- Initialisation
 			is_extended := is_extended_flag
 			value := as_string
 		end
-		
+
 feature -- Access
 
 	value: STRING
@@ -105,25 +105,25 @@ feature -- Access
 
 	year: INTEGER
 			-- extracted year
-	
+
 	month: INTEGER
 			-- extracted month
-	
+
 	day: INTEGER
 			-- extracted day
-	
+
 feature -- Status Report
 
 	is_extended: BOOLEAN
 			-- True if syntax format uses separators
-			
+
 	month_unknown: BOOLEAN
 			-- True if month is unknown
 
 	day_unknown: BOOLEAN
 			-- True if date is unknown
 
-	is_partial: BOOLEAN is
+	is_partial: BOOLEAN
 			-- True if either date or month unknown
 		do
 			Result := day_unknown
@@ -131,7 +131,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	infix "<" (other: like Current): BOOLEAN is
+	is_less alias "<" (other: like Current): BOOLEAN
 			-- Is current object less than `other'?
 		do
 			Result := to_days < other.to_days
@@ -139,7 +139,7 @@ feature -- Comparison
 
 feature -- Conversion
 
-	to_days: INTEGER is
+	to_days: INTEGER
 			-- convert to numeric form for comparison. Value is days since 1600-01-01, and
 			-- may be negative. Uses Eiffel Software DATE.days to compute.
 			-- For other alternative, see gobo KL_GREGORIAN_CALENDAR, but this uses 1970-01-01
@@ -166,7 +166,7 @@ feature -- Conversion
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 			-- express as string of ISO8601 format
 		local
 			s: STRING
@@ -176,30 +176,30 @@ feature -- Output
 
 			if not month_unknown then
 				if is_extended then
-					Result.append_character(Date_separator)			
+					Result.append_character(Date_separator)
 				end
 				s := month.out
 				if s.count = 1 then
 					Result.append_character ('0')
 				end
 				Result.append(s)
-				
+
 				if not day_unknown then
 					if is_extended then
-						Result.append_character(Date_separator)			
+						Result.append_character(Date_separator)
 					end
 					s := day.out
 					if s.count = 1 then
 						Result.append_character ('0')
 					end
-					Result.append(s)					
+					Result.append(s)
 				end
-			end			
+			end
 		ensure
-			Result_valid: Result /= Void and then valid_iso8601_date(Result)				
+			Result_valid: Result /= Void and then valid_iso8601_date(Result)
 		end
 
-	out: STRING is
+	out: STRING
 		do
 			Result := as_string
 		end
@@ -208,11 +208,11 @@ invariant
 	Year_valid: valid_year(year)
 	Month_valid: not month_unknown implies valid_month(month)
 	Day_valid: not day_unknown implies valid_day(year, month, day)
-	
+
 	Partial_validity: month_unknown implies day_unknown
-	
+
 	Value_validity: value.is_equal(as_string)
-		
+
 end
 
 

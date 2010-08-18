@@ -115,7 +115,7 @@ demographic and archetype servers.</li>
 
   
 
-  <li>Download and install <a href="http://eiffel.com">EiffelStudio 6.2</a> (free use license).</li>
+  <li>Download and install <a href="http://eiffel.com">EiffelStudio 6.6</a> (free use license).</li>
 
 
 
@@ -126,7 +126,7 @@ demographic and archetype servers.</li>
 
 
 
-    <li>During install, when it asks whether to precompile the libraries, choose Yes, and precompile Base and Vision.</li>
+    <li>During installation, when it asks whether to precompile the libraries, you can choose No.</li>
 
 
 
@@ -152,11 +152,11 @@ demographic and archetype servers.</li>
 
 
 
-    <li>Download and install <a href="http://www.python.org">Python 2.5</a> or higher.</li>
+    <li>Download and install <a href="http://www.python.org">Python 2.5</a> or higher. (Do not install Python 3.0 or higher!)</li>
 
 
 
-    <li>Download and install <a href="http://www.scons.org">SCons 1.0</a> or higher.</li>
+    <li>Download and install <a href="http://www.scons.org">SCons 2.0</a> or higher.</li>
 
 
 
@@ -197,17 +197,16 @@ demographic and archetype servers.</li>
 
   <li>On <span style="font-weight: bold;">Windows</span>:
     <ul>
-        <li>Mke sure NSIS is in your path too if you installed it.</li>
-        <li>For SCons, you can copy scons.bat from Python's Scripts directory up to the Python directory; or else add the Scripts directory to your path too.</li>
+        <li>Make sure NSIS is in your path too if you installed it.</li>
     </ul>
   </li>
 
 
 
-  <li>On <span style="font-weight: bold;">Linux</span> or <span style="font-weight: bold;">Mac</span>, make sure that you have also set the EiffelStudio environment variables. For example, on an Intel Mac, your <span style="font-weight: bold;">.profile</span> might contain this:
+  <li>On <span style="font-weight: bold;">Linux</span> or <span style="font-weight: bold;">Mac</span>, make sure that you have also set the EiffelStudio environment variables. For example, on a Mac, your <span style="font-weight: bold;">.profile</span> might contain this:
     <ul>
         <li>export <span style="font-weight: bold;">ISE_PLATFORM</span>=macosx-x86</li>
-        <li>export <span style="font-weight: bold;">ISE_EIFFEL</span>=/Applications/MacPorts/Eiffel61</li>
+        <li>export <span style="font-weight: bold;">ISE_EIFFEL</span>=/Applications/MacPorts/Eiffel66</li>
         <li>export <span style="font-weight: bold;">GOBO</span>=$ISE_EIFFEL/library/gobo</li>
         <li>export <span style="font-weight: bold;">ES_PATH</span>=$ISE_EIFFEL/studio/spec/$ISE_PLATFORM/bin</li>
         <li>export <span style="font-weight: bold;">PATH</span>=$ES_PATH:$GOBO/spec/$ISE_PLATFORM/bin:$PATH</li>
@@ -224,19 +223,11 @@ demographic and archetype servers.</li>
 
 
 
-  <li>To build everything, simply type <span style="font-weight: bold;">scons</span>.</li>
+  <li>To build all of the binaries, simply type <span style="font-weight: bold;">scons</span>.</li>
 
 
 
 </ul>
-
-
-
-This will cause the build of all binaries. Sometimes it fails in
-various strange ways, and a manual build has to be done. This is not
-hard - it just means starting EiffelStudio by hand and telling it to
-build from an existing ECF file; depending on what you want to build,
-you just select the ECF file in the appropriate directory. <br />
 
 
 
@@ -264,6 +255,9 @@ you just select the ECF file in the appropriate directory. <br />
 
 
 
+Building without SCons is not hard. Just start EiffelStudio by hand and then tell it to build from an existing ECF file.
+Depending on what you want to build, you just select the ECF file in the appropriate directory.
+
 <h2>Build Targets (what can I build?)</h2>
 
 
@@ -287,11 +281,11 @@ you just select the ECF file in the appropriate directory. <br />
 
 
 
-    <li>common_libs\test\app - a tester for dADL, method dispatcher, units library and others;</li>
+    <li>common_libs\test\app - a tester for dADL, method dispatcher, units library and others; (currently not being maintained - out of date!)</li>
 
 
 
-    <li>openehr\test\app - a tester for the openEHR reference model classes</li>
+    <li>openehr\test\app - a tester for the openEHR reference model classes (currently not being maintained - out of date!)</li>
 
 
 
@@ -313,11 +307,11 @@ you just select the ECF file in the appropriate directory. <br />
 
 
 
-    <li>components\adl_parser\test\app - a tester for the ADL parser</li>
+    <li>components\adl_parser\test\app - a tester for the ADL parser (currently not being maintained - out of date!)</li>
 
 
 
-    <li>components\adl_parser\lib\dotnet_dll - the <span style="font-weight: bold;">.Net DLL</span> form of the ADL parser</li>
+    <li>components\adl_parser\lib\dotnet_dll - the <span style="font-weight: bold;">.NET DLL</span> form of the ADL parser</li>
 
 
 

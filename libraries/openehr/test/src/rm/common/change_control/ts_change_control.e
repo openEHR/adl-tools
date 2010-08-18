@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Information Model"
 
 	description: "Common test suite"
@@ -18,12 +18,12 @@ class TS_COMMON_CHANGE_CONTROL
 inherit 
 	TEST_SUITE
 
-creation
+create
 	make
 
 feature -- Access
 
-	test_cases: LINKED_LIST[TEST_CASE] is
+	test_cases: LINKED_LIST[TEST_CASE]
 		local
 			tc:TEST_CASE
 		once
@@ -35,11 +35,11 @@ feature -- Access
 			create {TC_CONTRIBUTION} tc.make(Void) 			Result.extend(tc)
 		end
 
-	title:STRING is "Change Control tests"
+	title:STRING = "Change Control tests"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 	    do
 
 	    end

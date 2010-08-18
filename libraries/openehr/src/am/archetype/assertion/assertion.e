@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "ADL assertion"
 	keywords:    "test, ADL"
@@ -17,8 +17,8 @@ create
 	make
 
 feature -- Initialisation
-	
-	make(an_expr: EXPR_ITEM; a_tag:STRING) is
+
+	make (an_expr: EXPR_ITEM; a_tag: STRING)
 			-- make assertion with an expression and an optional tag
 		require
 			Tag_valid: a_tag /= Void implies not a_tag.is_empty
@@ -34,10 +34,10 @@ feature -- Access
 			-- tag name of assertion
 
 	expression: EXPR_ITEM
-	
+
 feature -- Output
-	
-	as_string: STRING is
+
+	as_string: STRING
 			-- generate string version
 		do
 			Result := expression.as_string

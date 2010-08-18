@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			 C wrapper for ARCHETYPE. In this wrapper, the following
@@ -40,7 +40,7 @@ inherit
 
 feature -- Definitions
 
-	Default_concept_code: POINTER is
+	Default_concept_code: POINTER
 			-- "at0000"
 		local
 			obj: ANY
@@ -51,7 +51,7 @@ feature -- Definitions
 
 feature -- Access
 
-	archetype_id: POINTER is
+	archetype_id: POINTER
 			-- archetype_id as a string
 		local
 			obj: ANY
@@ -60,7 +60,7 @@ feature -- Access
 			Result := $obj
 		end
 
-	archetype_parent_archetype_id: POINTER is
+	archetype_parent_archetype_id: POINTER
 			-- id of specialisation parent of this archetype
 		local
 			obj: ANY
@@ -69,7 +69,7 @@ feature -- Access
 			Result := $obj
 		end
 
-	archetype_concept_code: POINTER is
+	archetype_concept_code: POINTER
 			-- concept_code as a string
 		local
 			obj: ANY
@@ -78,13 +78,13 @@ feature -- Access
 			Result := $obj
 		end
 
-	archetype_specialisation_depth: INTEGER is
+	archetype_specialisation_depth: INTEGER
 			-- infer number of levels of specialisation from concept code
 		do
 			Result := archetype_compiler.archetype.specialisation_depth
 		end
 
-	archetype_version: POINTER is
+	archetype_version: POINTER
 			-- version of this archetype, according to its id
 		local
 			obj: ANY
@@ -93,7 +93,7 @@ feature -- Access
 			Result := $obj
 		end
 
-	archetype_errors: POINTER is
+	archetype_errors: POINTER
 			-- validity errors in this archetype
 		local
 			obj: ANY
@@ -103,7 +103,7 @@ feature -- Access
 			Result := $obj
 		end
 
-	archetype_warnings: POINTER is
+	archetype_warnings: POINTER
 			-- validity warnings for this archetype
 		local
 			obj: ANY
@@ -113,7 +113,7 @@ feature -- Access
 			Result := $obj
 		end
 
-	archetype_logical_paths (a_lang: POINTER): POINTER is
+	archetype_logical_paths (a_lang: POINTER): POINTER
 			-- paths with human readable terms substituted
 			-- REQUIRE
 			-- a_lang /= void and then ontology.languages_available.has (a_lang)
@@ -124,25 +124,25 @@ feature -- Access
 			Result := eif_list_string_to_c_array (archetype_compiler.archetype.logical_paths (c_a_lang.string))
 		end
 
-	archetype_logical_paths_count: INTEGER is
+	archetype_logical_paths_count: INTEGER
 			-- SUPPORT FUNCTION SOLELY FOR USE BY JNI LAYER TO DISCOVER ARRAY LENGTH
 		do
 			Result := archetype_compiler.archetype.physical_paths.count
 		end
 
-	archetype_physical_paths: POINTER is
+	archetype_physical_paths: POINTER
 			-- generate physical paths from definition structure
 		do
 			Result := eif_list_string_to_c_array (archetype_compiler.archetype.physical_paths)
 		end
 
-	archetype_physical_paths_count: INTEGER is
+	archetype_physical_paths_count: INTEGER
 			-- SUPPORT FUNCTION SOLELY FOR USE BY JNI LAYER TO DISCOVER ARRAY LENGTH
 		do
 			Result := archetype_compiler.archetype.physical_paths.count
 		end
 
-	archetype_physical_to_logical_path (a_phys_path: POINTER; a_lang: POINTER): POINTER is
+	archetype_physical_to_logical_path (a_phys_path: POINTER; a_lang: POINTER): POINTER
 			-- generate a logical path in 'a_lang' from a physical path
 			-- REQUIRE
 			-- phys_path_valid: a_phys_path /= void and then not a_phys_path.is_empty
@@ -157,7 +157,7 @@ feature -- Access
 			Result := $obj
 		end
 
-	archetype_definition: INTEGER is
+	archetype_definition: INTEGER
 			-- integer handle to archetype definition (a C_COMPLEX_OBJECT)
 		do
 			Result := adl_objects.archetype_definition_handle
@@ -165,7 +165,7 @@ feature -- Access
 
 feature -- Modification
 
-	archetype_convert_to_specialised (a_spec_concept: POINTER) is
+	archetype_convert_to_specialised (a_spec_concept: POINTER)
 			-- convert this arcehtype to being a specialised version of itself
 			-- one level down
 			-- REQUIRE
@@ -177,14 +177,14 @@ feature -- Modification
 			archetype_compiler.archetype.convert_to_specialised (c_a_spec_concept.string)
 		end
 
-	archetype_reset_definition is
+	archetype_reset_definition
 			-- set definition back to its original state - just the root
 			-- node with all children gone
 		do
 			archetype_compiler.archetype.reset_definition
 		end
 
-	archetype_set_definition_node_id (a_term_code: POINTER) is
+	archetype_set_definition_node_id (a_term_code: POINTER)
 			-- set the node_id of the archetype root node to a_term_id
 			-- REQUIRE
 			--  valid_term_code: ontology.has_term_code (a_term_code)
@@ -197,7 +197,7 @@ feature -- Modification
 
 feature -- Status Report
 
-	archetype_has_physical_path (a_path: POINTER): BOOLEAN is
+	archetype_has_physical_path (a_path: POINTER): BOOLEAN
 			-- true if physical path `a_path' exists in this archetype
 		local
 			c_a_path: BASE_C_STRING
@@ -206,20 +206,20 @@ feature -- Status Report
 			Result := archetype_compiler.archetype.has_physical_path (c_a_path.string)
 		end
 
-	archetype_has_warnings: BOOLEAN is
+	archetype_has_warnings: BOOLEAN
 			-- True if warnings from last call to validate
 		do
 			-- FIXME: This did not compile because of revision 319. What should it do?
 			Result := archetype_compiler.archetype.has_warnings
 		end
 
-	archetype_is_specialised: BOOLEAN is
+	archetype_is_specialised: BOOLEAN
 			-- 	True if this archetype identifies a specialisation parent
 		do
 			Result := archetype_compiler.archetype.is_specialised
 		end
 
-	archetype_is_valid: BOOLEAN is
+	archetype_is_valid: BOOLEAN
 			-- is archetype in valid state?
 		do
 			Result := archetype_compiler.archetype.is_valid

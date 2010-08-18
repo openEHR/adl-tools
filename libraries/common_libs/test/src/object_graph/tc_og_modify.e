@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test case for object graph modification"
 	keywords:    "test, object graph, creation"
@@ -25,20 +25,20 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title:STRING is "Object Graph MODIFY test"
+	title:STRING = "Object Graph MODIFY test"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		local
 			attr_node: OG_ATTRIBUTE_NODE
 			obj_node: OG_OBJECT
@@ -56,7 +56,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 	    do
 	    end
 

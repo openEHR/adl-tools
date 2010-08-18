@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Structures Reference Model"
 
 	description: "[
@@ -28,7 +28,7 @@ inherit
 
 feature -- Conversion
 
-	as_hierarchy: ELEMENT is
+	as_hierarchy: ELEMENT
 			-- the physical representation as a CEN 13606-compliant structure
 		do
 			create Result

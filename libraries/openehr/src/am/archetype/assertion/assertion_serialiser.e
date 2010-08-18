@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Serialise assertions to any format"
 	keywords:    "assertion"
@@ -18,12 +18,12 @@ inherit
 	
 feature -- Modification
 
-	start_assertion(a_node: ARRAYED_LIST[ASSERTION]; depth: INTEGER) is
+	start_assertion(a_node: ARRAYED_LIST[ASSERTION]; depth: INTEGER)
 			-- start serialising an ASSERTION
 		deferred
 		end
 		
-	end_assertion(a_node: ARRAYED_LIST[ASSERTION]; depth: INTEGER) is
+	end_assertion(a_node: ARRAYED_LIST[ASSERTION]; depth: INTEGER)
 			-- end serialising an ASSERTION
 		deferred	
 		end

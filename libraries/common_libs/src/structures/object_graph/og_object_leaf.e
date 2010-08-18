@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Any leaf OBJECT node in object graph
@@ -23,7 +23,7 @@ create
 
 feature -- Status Report
 
-	is_leaf: BOOLEAN is True
+	is_leaf: BOOLEAN = True
 			-- True if this object is a leaf object
 
 end

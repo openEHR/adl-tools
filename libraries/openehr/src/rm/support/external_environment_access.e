@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR common definitions"
 	
 	description: "Access to services in the external environment"

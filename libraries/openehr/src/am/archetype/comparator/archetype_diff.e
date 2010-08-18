@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Difference of two archetypes.
@@ -20,7 +20,7 @@ create
 
 feature -- Initialisation
 
-	make is
+	make
 		do
 		end
 

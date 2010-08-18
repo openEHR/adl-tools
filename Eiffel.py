@@ -64,6 +64,30 @@ def ec_action(target, source, env):
 	log('=================== ' + ecf_target(target) + ' ===================')
 	log_date()
 
+	rc_copied_to_target = None
+
+	if env['PLATFORM'] == 'win32':
+		rc = os.path.splitext(str(source[0]))[0] + '.rc'
+
+		if os.path.exists(rc):
+			project_path = dirname(str(target[0]), 4)
+			rc_copied_to_target = os.path.join(project_path, os.path.basename(rc))
+
+			if rc == rc_copied_to_target:
+				rc_copied_to_target = None
+			else:
+				f = open(rc, 'r')
+				try: s = f.read()
+				finally: f.close()
+
+				if s:
+					icon_pattern = r'(\w+[ \t]+ICON[ \t]+[^"]*")([^"]+")'
+					substitution = r'\g<1>' + os.path.dirname(rc).replace('\\', '/') + r'/\g<2>'
+					s = re.sub(icon_pattern, substitution, s)
+					f = open(rc_copied_to_target, 'w')
+					try: f.write(s)
+					finally: f.close()
+
 	flags = env['ECFLAGS'].split()
 	if not '-target' in flags: flags += ['-target', ecf_target(target)]
 	log_process([env['EC'], '-batch', '-config', str(source[0])] + flags)
@@ -73,6 +97,7 @@ def ec_action(target, source, env):
 			print log_file_tail()
 			result = 1
 
+	if rc_copied_to_target: os.remove(rc_copied_to_target)
 	if log_file != sys.stdout: log_file.close()
 	return result
 
@@ -88,7 +113,7 @@ def ec_emitter(target, source, env):
 	 * The source emitted is exactly the same as the source parameter passed in.
 	 * The target emitted contains one or more calculated file paths.
 	   Each target file is in the directory {-project_path}/EIFGENs/{-target}/{-finalize}, where:
-		-project_path if omitted defaults to the ECF file's directory;
+		-project_path if omitted defaults to the current working directory;
 		-target if omitted defaults to the base name of target[0] (or else to the first target in the ECF file);
 		-finalize evaluates to "F_code", else if omitted defaults to "W_code".
 	   The number of target file paths emitted, and the actual file names, depend on several factors:
@@ -109,7 +134,7 @@ def ec_emitter(target, source, env):
 		print '****** ERROR! The Eiffel compiler ' + env['EC'] + ' is missing from your path: cannot build ' + ec_target
 	else:
 		ecf = str(source[0])
-		ec_path = os.path.abspath(os.path.dirname(ecf))
+		ec_path = os.getcwd()
 		ec_code = 'W_code'
 		exe_name = dotnet_type = is_dotnet = is_precompiling = is_c_compiling = is_shared_library = None
 
@@ -225,6 +250,8 @@ def ecf_scanner(node, env, path):
 				else:
 					print '****** WARNING!', str(node), 'uses undefined environment variable', token
 
+		result = result.replace('\\', '/')
+
 		if not os.path.isabs(result):
 			result = os.path.join(os.path.dirname(str(node)), result)
 
@@ -250,7 +277,7 @@ def ecf_scanner(node, env, path):
 
 def ecf_target(target, source = None, env = None):
 	"""The ECF target corresponding to the given build target."""
-	return os.path.basename(os.path.dirname(os.path.dirname(str(target[0]))))
+	return os.path.basename(dirname(str(target[0]), 2))
 
 def generate(env):
 	"""Add a Builder and construction variables for Eiffel to the given Environment."""
@@ -263,6 +290,7 @@ def generate(env):
 
 	env['BUILDERS']['Eiffel'] = Builder(action = Action(ec_action, ecf_target), emitter = ec_emitter, target_factory = Entry)
 	env.Append(SCANNERS = Scanner(ecf_scanner, skeys = ['.ecf']))
+	env.AddMethod(environment_variable, "EiffelEnvironmentVariable")
 	env.AddMethod(files, "Files")
 	env.AddMethod(eiffel_classes_in_cluster, "EiffelClassesInCluster")
 
@@ -296,7 +324,7 @@ def environment_variable(env, var):
 			result = 'gcc'
 	elif var == 'ISE_EIFFEL':
 		result = env.WhereIs(env['EC'])
-		if result: result = os.path.abspath(result + '/../../../../..')
+		if result: result = os.path.abspath(dirname(result, 5))
 	elif var == 'ISE_LIBRARY':
 		result = environment_variable(env, 'ISE_EIFFEL')
 
@@ -314,4 +342,10 @@ def eiffel_classes_in_cluster(env, cluster):
 		if '.svn' in dirnames: dirnames.remove('.svn')
 		result += files(env, root + '/*.e')
 
+	return result
+
+def dirname(path, n):
+	"""The directory name of 'path', called recursively 'n' times."""
+	result = path
+	if n > 0: result = dirname(os.path.dirname(path), n - 1)
 	return result

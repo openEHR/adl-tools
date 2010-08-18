@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "FIXME: temporary type for QUANTITY until reconciled with DV_QUANTITY"
 	keywords:    "quantity, ADL"
@@ -25,14 +25,14 @@ create
 
 feature -- Definitions
 
-	Default_units: STRING is "m"
+	Default_units: STRING = "m"
 			-- metres
 
-	Default_precision: INTEGER is -1
+	Default_precision: INTEGER = -1
 
 feature -- Initialisation
 
-	default_create is
+	default_create
 			-- create a reasonable default object
 		do
 			units := Default_units.twin
@@ -41,7 +41,7 @@ feature -- Initialisation
 			precision = Default_precision
 		end
 
-	make(a_magnitude: REAL; a_units: STRING; a_precision: INTEGER) is
+	make(a_magnitude: REAL; a_units: STRING; a_precision: INTEGER)
 			-- set magnitude and units; precision should be set to -1 if no precision
 		require
 			Units_valid: a_units /= Void implies not a_units.is_empty

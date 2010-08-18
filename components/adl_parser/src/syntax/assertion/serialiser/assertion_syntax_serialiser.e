@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			 Serialise assertion to any syntax format, i.e. where the
@@ -31,7 +31,7 @@ create
 
 feature -- Modification
 
-	start_assertion(invs: ARRAYED_LIST[ASSERTION]; depth: INTEGER) is
+	start_assertion(invs: ARRAYED_LIST[ASSERTION]; depth: INTEGER)
 			-- start serialising an ASSERTION
 		do
 			from
@@ -39,16 +39,16 @@ feature -- Modification
 			until
 				invs.off
 			loop
-				last_result.append(create_indent(depth+1))
+				last_result.append (create_indent(depth+1))
 				if invs.item.tag /= Void then
-					last_result.append(invs.item.tag + ": ")
+					last_result.append (invs.item.tag + ": ")
 				end
-				last_result.append(invs.item.expression.as_string + format_item(FMT_NEWLINE))
+				last_result.append (invs.item.expression.as_string + format_item(FMT_NEWLINE))
 				invs.forth
 			end
 		end
 
-	end_assertion(a_node: ARRAYED_LIST[ASSERTION]; depth: INTEGER) is
+	end_assertion(a_node: ARRAYED_LIST[ASSERTION]; depth: INTEGER)
 			-- end serialising an ASSERTION
 		do
 		end

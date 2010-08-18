@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "interface class to ADL parser and parse tree"
 	keywords:    "ADL"
@@ -25,7 +25,7 @@ create
 
 feature {NONE} -- Initialisation
 
-	make is
+	make
 		do
 		end
 
@@ -43,7 +43,7 @@ feature -- Access
 	serialised: STRING
 			-- The last result of calling `serialise'.
 
-	parse_error_text: STRING is
+	parse_error_text: attached STRING
 			-- Result of last parse.
 		do
 			if parser /= Void then
@@ -51,8 +51,6 @@ feature -- Access
 			else
 				create Result.make_empty
 			end
-		ensure
-			attached: Result /= Void
 		end
 
 feature -- Status Report
@@ -60,11 +58,14 @@ feature -- Status Report
 	in_parse_mode: BOOLEAN
 			-- True if engine in mode where tree was created from source
 
-	parse_succeeded: BOOLEAN is
+	parse_succeeded: BOOLEAN
 			-- True if parse succeeded; call after parse()
 		do
 			Result := tree /= Void
 		end
+
+	is_differential: BOOLEAN
+			-- True if archetype is differential
 
 feature -- Commands
 
@@ -76,19 +77,23 @@ feature -- Commands
 			serialised := Void
 		end
 
-	set_source (in_text: STRING; a_source_start_line: INTEGER) is
+	set_source (in_text: STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: SCHEMA_ACCESS)
 			-- Set `in_text' as working artifact.
 		require
 			text_attached: in_text /= Void
 			start_line_positive: a_source_start_line > 0
+			Rm_schema_available: an_rm_schema /= Void
 		do
+			rm_schema := an_rm_schema
 			source := in_text
 			source_start_line := a_source_start_line
 			in_parse_mode := True
+			is_differential := differential_flag
 		ensure
 			source_set: source = in_text
 			source_start_line_set: source_start_line = a_source_start_line
 			parsing: in_parse_mode
+			is_differential_set: is_differential = differential_flag
 		end
 
 	parse
@@ -100,7 +105,7 @@ feature -- Commands
 			tree := Void
 			serialised := Void
 			create parser.make
-			parser.execute (source, source_start_line)
+			parser.execute (source, source_start_line, is_differential, rm_schema)
 
 			if not parser.syntax_error then
 				tree := parser.output
@@ -109,11 +114,10 @@ feature -- Commands
 			parse_succeeded or else tree = Void
 		end
 
-	serialise (a_format: STRING; an_ontology: !ARCHETYPE_ONTOLOGY) is
+	serialise (a_format: STRING; an_ontology: attached ARCHETYPE_ONTOLOGY)
 			-- Serialise current artifact into `a_format'.
 		require
 			Format_valid: has_c_serialiser_format (a_format)
-			Archetype_valid: tree.is_valid
 		local
 			a_c_serialiser: C_SERIALISER
 			a_c_iterator: C_VISITOR_ITERATOR
@@ -128,7 +132,7 @@ feature -- Commands
 			serialised_attached: serialised /= Void
 		end
 
-	set_tree (a_node: C_COMPLEX_OBJECT) is
+	set_tree (a_node: C_COMPLEX_OBJECT)
 			-- Set root node of `tree' from e.g. GUI tool.
 		require
 			node_attached: a_node /= Void
@@ -143,6 +147,8 @@ feature -- Commands
 feature {NONE} -- Implementation
 
 	parser: CADL_VALIDATOR
+
+	rm_schema: SCHEMA_ACCESS
 
 end
 

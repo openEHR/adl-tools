@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Console implementation of Event logging facility"
 	keywords:    "logging"
@@ -21,7 +21,7 @@ create
 
 feature -- Modify
 
-	append_event(severity:INTEGER; source, msg:STRING) is
+	append_event(severity:INTEGER; source, msg:STRING)
 		do
 			io.put_string(Severities.item(severity) + "    " + facility_interface.app_name + "    " + source + "    " + msg + "%N")
 		end

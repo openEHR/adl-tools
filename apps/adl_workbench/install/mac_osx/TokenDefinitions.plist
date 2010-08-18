@@ -8,7 +8,7 @@
 			<key>searchPlugin</key>
 			<string>CheckPath</string>
 			<key>path</key>
-			<string>/Applications/Ocean Informatics/ADL Workbench.app</string>
+			<string>/Applications/openEHR/ADL Workbench.app</string>
 		</dict>
 		<dict>
 			<key>searchPlugin</key>
@@ -20,7 +20,7 @@
 			<key>searchPlugin</key>
 			<string>CheckPath</string>
 			<key>path</key>
-			<string>~/Applications/Ocean Informatics/ADL Workbench.app</string>
+			<string>~/Applications/openEHR/ADL Workbench.app</string>
 		</dict>
 		<dict>
 			<key>searchPlugin</key>

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Model of a unit atom with prefix, suffix, name, property and unit group"
 	keywords:    "units"
@@ -24,13 +24,13 @@ create
 
 feature -- Definitions
 
-	Suffix_start:STRING is "["
+	Suffix_start:STRING = "["
 
-	Suffix_end:STRING is "]"
+	Suffix_end:STRING = "]"
 
 feature -- Initialisation
 
-	make(a_name, a_property, a_group:STRING) is
+	make(a_name, a_property, a_group:STRING)
 		require
 			Name_exists: a_name /= Void and then not a_name.is_empty
 			Property_exists: a_property /= Void and then not a_property.is_empty
@@ -63,7 +63,7 @@ feature -- Access
 
 feature -- Modify
 
-	set_metric_prefix(str:STRING) is
+	set_metric_prefix(str:STRING)
 			-- set metric prefix
 		require
 			str /= Void and then not str.is_empty
@@ -71,7 +71,7 @@ feature -- Modify
 			metric_prefix := str.twin
 		end
 
-	set_suffix(str:STRING) is
+	set_suffix(str:STRING)
 			-- suffix is a string whose inclusion changes the meaning of the unit, e.g.
 			-- "m" = distance, but "m[H2O]" means pressure
 		require
@@ -82,13 +82,13 @@ feature -- Modify
 
 feature -- Output
 
-	as_string:STRING is
+	as_string:STRING
 		do
 			create Result.make(0)
 			Result.append(metric_prefix_as_string + name.out + suffix_out)
 		end
 
-	out:STRING is
+	out:STRING
 		do
 			create Result.make(0)
 			Result.append(metric_prefix_out + name.out + suffix_out + " {" + property.out + ", " + group.out + "}")
@@ -96,7 +96,7 @@ feature -- Output
 
 feature {UNITS} -- Implementation
 
-	suffix_out:STRING is
+	suffix_out:STRING
 		do
 			create Result.make(0)
 			if suffix /= Void then
@@ -104,7 +104,7 @@ feature {UNITS} -- Implementation
 			end
 		end
 
-	metric_prefix_as_string:STRING is
+	metric_prefix_as_string:STRING
 		do
 			create Result.make(0)
 			if metric_prefix /= Void then
@@ -112,7 +112,7 @@ feature {UNITS} -- Implementation
 			end
 		end
 
-	metric_prefix_out:STRING is
+	metric_prefix_out:STRING
 		do
 			create Result.make(0)
 			if metric_prefix /= Void then

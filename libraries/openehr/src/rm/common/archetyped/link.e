@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "[
@@ -24,13 +24,13 @@ create
 
 feature -- Initialization
 
-	make, make_from_display_string(str:STRING) is
+	make, make_from_display_string(str:STRING)
 			-- make from a single string
 		do
 			-- TO_BE_IMPLEM
 		end
 
-	make_from_canonical_string(str:STRING) is
+	make_from_canonical_string(str:STRING)
 			-- make from a canonical string
 		do
 			-- TO_BE_IMPLEM
@@ -60,13 +60,13 @@ feature -- Access
 			
 feature -- Output
 
-	as_display_string: STRING is
+	as_display_string: STRING
 			-- string form displayable for humans
 		do
 			create Result.make(0)
 		end
 	
-	as_canonical_string: STRING is
+	as_canonical_string: STRING
 			-- standardised form of string guaranteed to contain all information
 			-- in data item
 		do

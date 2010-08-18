@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Interface class for ontologies in an archetype specialisation lineage. This is used
@@ -33,7 +33,7 @@ create
 
 feature -- Initialisation
 
-	make(an_ontology: ARCHETYPE_ONTOLOGY) is
+	make(an_ontology: ARCHETYPE_ONTOLOGY)
 			-- make with the ontology of the current archetype (add parents later)
 		require
 			an_ontology /= Void and then an_ontology.is_differential
@@ -44,7 +44,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	has_ontology(an_ontology: ARCHETYPE_ONTOLOGY): BOOLEAN is
+	has_ontology(an_ontology: ARCHETYPE_ONTOLOGY): BOOLEAN
 			-- check if the ontology object has already been added to the lineage
 		require
 			Ontology_valid: an_ontology /= Void
@@ -52,7 +52,7 @@ feature -- Access
 			Result := ontologies.has_item(an_ontology)
 		end
 
-	has_specialisation_level(a_level: INTEGER): BOOLEAN is
+	has_specialisation_level(a_level: INTEGER): BOOLEAN
 			-- check if the specialisation level is known in this ontology object
 		require
 			a_level >= 0
@@ -62,7 +62,7 @@ feature -- Access
 
 feature -- Modification
 
-	add_ontology(an_ontology: ARCHETYPE_ONTOLOGY) is
+	add_ontology(an_ontology: ARCHETYPE_ONTOLOGY)
 			-- add an ontology that is from a parent archetype of the original ontology used in make()
 		require
 			Ontology_valid: an_ontology /= Void and then an_ontology.is_differential

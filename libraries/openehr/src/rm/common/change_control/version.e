@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Information Model"
 
 	description: "[
@@ -26,13 +26,13 @@ inherit
 
 feature -- Access
 
-	uid: OBJECT_VERSION_ID is
+	uid: OBJECT_VERSION_ID
 			-- Unique identifier of this version, containing owner_id, version_tree_id and 
 			-- creating_system_id.
 		deferred
 		end
 
-	preceding_version_uid: OBJECT_VERSION_ID is
+	preceding_version_uid: OBJECT_VERSION_ID
 			-- Unique identifier of the version of which this version is a modification; 
 			-- Void if this is the first version.
 		deferred
@@ -45,17 +45,17 @@ feature -- Access
 	contribution: OBJECT_REF
 			-- Contribution in which this version was added.
 
-	owner_id: HIER_OBJECT_ID is
+	owner_id: HIER_OBJECT_ID
 			-- Unique identifier of the owning VERSIONED_OBJECT.
 		do
 		end
 		
-	data: G is
+	data: G
 			-- content of this Version
 		deferred
 		end
 
-	lifecycle_state: DV_CODED_TEXT is	
+	lifecycle_state: DV_CODED_TEXT	
 			-- Lifecycle state of this version; coded by openEHR vocabulary “version lifecycle state”
 		deferred
 		end
@@ -65,14 +65,14 @@ feature -- Access
 
 feature -- Status Report
 
-	is_branch: BOOLEAN is
+	is_branch: BOOLEAN
 			-- True if this Version represents a branch; derived from uid attribute
 		do
 		end
 
 feature -- Conversion
 	
-	canonical_form: STRING is	
+	canonical_form: STRING	
 			-- Canonical form of Version object, created by serialising all attributes except signature.
 		do
 			

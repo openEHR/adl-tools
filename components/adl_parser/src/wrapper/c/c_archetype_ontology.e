@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			 C wrapper for ARCHETYPE_ONTOLOGY (flattened). In this wrapper, the following
@@ -35,7 +35,7 @@ inherit
 
 feature -- Access
 
-	ontology_concept_code: POINTER is
+	ontology_concept_code: POINTER
 			-- term code of the concept of the ontology as a whole
 		local
 			obj: ANY
@@ -44,7 +44,7 @@ feature -- Access
 			Result := $obj
 		end
 
-	ontology_constraint_binding (a_terminology, a_term_code: POINTER): POINTER is
+	ontology_constraint_binding (a_terminology, a_term_code: POINTER): POINTER
 			-- retrieve the constraint definition in language `a_lang' for code `a_term_code'
 			-- in form of a string: "service::query"
 			-- REQUIRE
@@ -62,19 +62,19 @@ feature -- Access
 			Result := $obj
 		end
 
-	ontology_constraint_codes: POINTER is
+	ontology_constraint_codes: POINTER
 			-- list of constraint codes as address of C array
 		do
 			Result := eif_list_string_to_c_array(ontology.constraint_codes)
 		end
 
-	ontology_constraint_codes_count: INTEGER is
+	ontology_constraint_codes_count: INTEGER
 			-- SUPPORT FUNCTION SOLELY FOR USE BY JNI LAYER TO DISCOVER ARRAY LENGTH
 		do
 			Result := ontology.constraint_codes.count
 		end
 
-	ontology_constraint_definition (a_lang, a_term_code: POINTER): POINTER is
+	ontology_constraint_definition (a_lang, a_term_code: POINTER): POINTER
 			-- retrieve the constraint definition in language `a_lang' for code `a_term_code'
 			-- output in String dADL form of ARCHETYPE_TERM used in archetypes (same as .out form):
 			--  [code] = <key1 = <"value1">, key2 = <"value2">, key3 = <"value3">>
@@ -93,18 +93,18 @@ feature -- Access
 			Result := $obj
 		end
 
-	ontology_languages_available: POINTER is
+	ontology_languages_available: POINTER
 		do
 			Result := eif_list_string_to_c_array(ontology.languages_available)
 		end
 
-	ontology_languages_available_count: INTEGER is
+	ontology_languages_available_count: INTEGER
 			-- SUPPORT FUNCTION SOLELY FOR USE BY JNI LAYER TO DISCOVER ARRAY LENGTH
 		do
 			Result := ontology.languages_available.count
 		end
 
-	ontology_logical_path_for_physical_path (a_path, a_lang: POINTER): POINTER is
+	ontology_logical_path_for_physical_path (a_path, a_lang: POINTER): POINTER
 			-- generate the logical path in language 'a_lang' for 'a_path'
 			-- REQUIRE
 			--  a_path_valid: a_path /= void
@@ -137,7 +137,7 @@ feature -- Access
 --			Result := $obj
 --		end
 
-	ontology_primary_language: POINTER is
+	ontology_primary_language: POINTER
 			-- get the original language of the archetype
 		local
 			obj: ANY
@@ -146,25 +146,25 @@ feature -- Access
 			Result := $obj
 		end
 
-	ontology_specialisation_depth: INTEGER is
+	ontology_specialisation_depth: INTEGER
 			-- depth of this ontology with relation to ontologies in other archetypes
 		do
 			Result := ontology.specialisation_depth
 		end
 
-	ontology_term_attribute_names: POINTER is
+	ontology_term_attribute_names: POINTER
 			-- the attribute names found in ARCHETYPE_TERM objects
 		do
 			Result := eif_list_string_to_c_array(ontology.term_attribute_names)
 		end
 
-	ontology_term_attribute_names_count: INTEGER is
+	ontology_term_attribute_names_count: INTEGER
 			-- SUPPORT FUNCTION SOLELY FOR USE BY JNI LAYER TO DISCOVER ARRAY LENGTH
 		do
 			Result := ontology.term_attribute_names.count
 		end
 
-	ontology_term_binding (a_terminology, a_term_code: POINTER): POINTER is
+	ontology_term_binding (a_terminology, a_term_code: POINTER): POINTER
 			-- retrieve the term definition in language `a_lang' for code `a_term_code'
 			-- Output in format displayable for humans - e.g. "ICD9::M17"
 			-- REQUIRE
@@ -182,19 +182,19 @@ feature -- Access
 			Result := $obj
 		end
 
-	ontology_term_codes: POINTER is
+	ontology_term_codes: POINTER
 			-- list of term codes
 		do
 			Result := eif_list_string_to_c_array(ontology.term_codes)
 		end
 
-	ontology_term_codes_count: INTEGER is
+	ontology_term_codes_count: INTEGER
 			-- SUPPORT FUNCTION SOLELY FOR USE BY JNI LAYER TO DISCOVER ARRAY LENGTH
 		do
 			Result := ontology.term_codes.count
 		end
 
-	ontology_term_definition (a_lang, a_term_code: POINTER): POINTER is
+	ontology_term_definition (a_lang, a_term_code: POINTER): POINTER
 			-- retrieve the term definition in language `a_lang' for code `a_term_code'
 			-- output in string form of ARCHETYPE_TERM, i.e.
 			--   [code] = <key1 = <"value1">, key2 = <"value2">, key3 = <"value3">>
@@ -214,19 +214,19 @@ feature -- Access
 			Result := obj.item
 		end
 
-	ontology_terminologies_available: POINTER is
+	ontology_terminologies_available: POINTER
 			-- array of strings
 		do
 			Result := eif_list_string_to_c_array(ontology.terminologies_available)
 		end
 
-	ontology_terminologies_available_count: INTEGER is
+	ontology_terminologies_available_count: INTEGER
 			-- SUPPORT FUNCTION SOLELY FOR USE BY JNI LAYER TO DISCOVER ARRAY LENGTH
 		do
 			Result := ontology.terminologies_available.count
 		end
 
-	ontology_validity_report: POINTER is
+	ontology_validity_report: POINTER
 		local
 			obj: ANY
 		do
@@ -236,7 +236,7 @@ feature -- Access
 
 feature -- Conversion
 
-	ontology_substitute_codes (a_str, a_lang: POINTER): POINTER is
+	ontology_substitute_codes (a_str, a_lang: POINTER): POINTER
 			-- substitute all occurrences of archetype codes in 'str'
 			-- with their term texts from this ontology, in 'lang'
 			-- REQUIRE
@@ -256,7 +256,7 @@ feature -- Conversion
 
 feature -- Factory
 
-	ontology_new_constraint_code: POINTER is
+	ontology_new_constraint_code: POINTER
 			-- get a new constraint code at this level
 			-- ENSURE
 			--  result_exists: Result /= void and then not Result.is_empty
@@ -267,7 +267,7 @@ feature -- Factory
 			Result := $obj
 		end
 
-	ontology_new_non_specialised_term_code: POINTER is
+	ontology_new_non_specialised_term_code: POINTER
 			-- get a new term code at the specialisation depth of this ontology
 			-- NOTE: don't use this to get a specialised code;
 			-- use `new_specialised_term_code' and supply parent code
@@ -280,7 +280,7 @@ feature -- Factory
 			Result := c_str.item
 		end
 
-	ontology_new_specialised_term_code (a_parent_code: POINTER): POINTER is
+	ontology_new_specialised_term_code (a_parent_code: POINTER): POINTER
 			-- get a new specialised code based on `a_parent_code' at the depth
 			-- of this ontology
 			-- REQUIRE
@@ -299,7 +299,7 @@ feature -- Factory
 
 feature -- Modification
 
-	ontology_add_constraint_definition (a_lang: POINTER; a_term: POINTER) is
+	ontology_add_constraint_definition (a_lang: POINTER; a_term: POINTER)
 			-- add a new constraint definition for language `a_lang' and
 			-- automatically add translation placeholders
 			-- a_term must be provided in dADL form of ARCHETYPE_TERM used in archetypes (same as .out form):
@@ -317,7 +317,7 @@ feature -- Modification
 			ontology.add_constraint_definition (c_a_lang.string, create {ARCHETYPE_TERM}.make_from_string(c_a_term.string))
 		end
 
-	ontology_add_language (a_lang: POINTER) is
+	ontology_add_language (a_lang: POINTER)
 			-- add a new language to list of languages available
 			-- No action if language already exists
 			-- REQUIRE
@@ -331,7 +331,7 @@ feature -- Modification
 			ontology.add_language(c_a_lang.string)
 		end
 
-	ontology_add_term_binding (a_code_phrase_str: POINTER; a_term_code: POINTER) is
+	ontology_add_term_binding (a_code_phrase_str: POINTER; a_term_code: POINTER)
 			-- add a new term binding to local code a_term_code, in the terminology
 			-- group corresponding to the a_code_phrase.terminology
 			-- a_code_phrase is in string form "ICD9(1989)::M17"
@@ -351,7 +351,7 @@ feature -- Modification
 			ontology.add_term_binding(a_code_phrase, c_a_term_code.string)
 		end
 
-	ontology_add_term_definition (a_lang: POINTER; a_term: POINTER) is
+	ontology_add_term_definition (a_lang: POINTER; a_term: POINTER)
 			-- add a new term definition for language `a_lang' and
 			-- automatically add translation placeholders
 			-- a_term must be provided in dADL form of ARCHETYPE_TERM used in archetypes (same as .out form):
@@ -369,7 +369,7 @@ feature -- Modification
 			ontology.add_term_definition (c_a_lang.string, create {ARCHETYPE_TERM}.make_from_string(c_a_term.string))
 		end
 
-	ontology_initialise_term_definitions (a_term: POINTER) is
+	ontology_initialise_term_definitions (a_term: POINTER)
 			-- set concept of ontology from a term
 			-- a_term must be provided in dADL form of ARCHETYPE_TERM used in archetypes (same as .out form):
 			-- REQUIRE
@@ -384,7 +384,7 @@ feature -- Modification
 			ontology.initialise_term_definitions (create {ARCHETYPE_TERM}.make_from_string(c_a_term.string))
 		end
 
-	ontology_remove_term_binding (a_term_code, a_terminology: POINTER) is
+	ontology_remove_term_binding (a_term_code, a_terminology: POINTER)
 			-- remove term binding to local code in group a_terminology
 			-- REQUIRE
 			--  local_code_valid: a_term_code /= void and then has_term_code (a_term_code)
@@ -400,7 +400,7 @@ feature -- Modification
 			ontology.remove_term_binding(c_a_term_code.string, c_a_terminology.string)
 		end
 
-	ontology_replace_constraint_definition (a_lang: POINTER; a_term: POINTER; replace_translations: BOOLEAN) is
+	ontology_replace_constraint_definition (a_lang: POINTER; a_term: POINTER; replace_translations: BOOLEAN)
 			-- replace the definition of an existing constraint code; replace all translations
 			-- if flag set and `a_lang' is the primary language
 			-- a_term must be provided in dADL form of ARCHETYPE_TERM used in archetypes (same as .out form):
@@ -416,7 +416,7 @@ feature -- Modification
 			ontology.replace_constraint_definition (c_a_lang.string, create {ARCHETYPE_TERM}.make_from_string(c_a_term.string), replace_translations)
 		end
 
-	ontology_replace_term_binding (a_code_phrase_str: POINTER; a_term_code: POINTER) is
+	ontology_replace_term_binding (a_code_phrase_str: POINTER; a_term_code: POINTER)
 			-- replaces existing a term binding to local code a_term_code, in group a_terminology
 			-- a_code_phrase is in string form "ICD9(1989)::M17"
 			-- REQUIRE
@@ -436,7 +436,7 @@ feature -- Modification
 			ontology.replace_term_binding(a_code_phrase, c_a_term_code.string)
 		end
 
-	ontology_replace_term_definition (a_lang: POINTER; a_term: POINTER; replace_translations: BOOLEAN) is
+	ontology_replace_term_definition (a_lang: POINTER; a_term: POINTER; replace_translations: BOOLEAN)
 			-- replace the definition of an existing term code; replace all translations
 			-- if flag set and `a_lang' is the primary language
 			-- a_term must be provided in dADL form of ARCHETYPE_TERM used in archetypes (same as .out form):
@@ -452,7 +452,7 @@ feature -- Modification
 			ontology.replace_term_definition (c_a_lang.string, create {ARCHETYPE_TERM}.make_from_string(c_a_term.string), replace_translations)
 		end
 
-	ontology_set_primary_language (a_lang: POINTER) is
+	ontology_set_primary_language (a_lang: POINTER)
 			-- set the primary language of the ontology
 			-- REQUIRE
 			--  a_lang_valid: a_lang /= void and then languages_available.has (a_lang)
@@ -467,7 +467,7 @@ feature -- Modification
 
 feature -- Status Report
 
-	ontology_has_constraint_binding (a_terminology, a_term_code: POINTER): BOOLEAN is
+	ontology_has_constraint_binding (a_terminology, a_term_code: POINTER): BOOLEAN
 			-- true if there is a term binding for code `a_term_code' in `a_terminology'
 			-- REQUIRE
 			--  terminology_valid: a_terminology /= void and then not terminologies_available.is_empty
@@ -480,7 +480,7 @@ feature -- Status Report
 			Result := ontology.has_constraint_binding(c_a_terminology.string, c_a_term_code.string)
 		end
 
-	ontology_has_constraint_bindings (a_terminology: POINTER): BOOLEAN is
+	ontology_has_constraint_bindings (a_terminology: POINTER): BOOLEAN
 			-- true if there are term bindings `a_terminology'
 			-- REQUIRE
 			--  terminology_valid: a_terminology /= void and then not terminologies_available.is_empty
@@ -491,7 +491,7 @@ feature -- Status Report
 			Result := ontology.has_constraint_bindings(c_a_terminology.string)
 		end
 
-	ontology_has_constraint_code (a_constraint_code: POINTER): BOOLEAN is
+	ontology_has_constraint_code (a_constraint_code: POINTER): BOOLEAN
 			-- true if a_constraint_code is defined in ontology
 			-- REQUIRE
 			--  constraint_code_valid: a_constraint_code /= void and then not a_constraint_code.is_empty
@@ -502,7 +502,7 @@ feature -- Status Report
 			Result := ontology.has_constraint_code(c_a_constraint_code.string)
 		end
 
-	ontology_has_language (a_lang: POINTER): BOOLEAN is
+	ontology_has_language (a_lang: POINTER): BOOLEAN
 			-- check that `a_language' supported
 			-- REQUIRE
 			--  language_valid: a_language /= void and then not a_language.is_empty
@@ -513,7 +513,7 @@ feature -- Status Report
 			Result := ontology.has_language(c_a_lang.string)
 		end
 
-	ontology_has_path (a_path: POINTER): BOOLEAN is
+	ontology_has_path (a_path: POINTER): BOOLEAN
 			-- True if path `a_path' exists in structure
 			-- REQUIRE
 			--  a_path_valid: a_path /= void and then not a_path.is_empty
@@ -524,7 +524,7 @@ feature -- Status Report
 			Result := ontology.has_path(c_a_path.string)
 		end
 
-	ontology_has_term_binding (a_terminology, a_term_code: POINTER): BOOLEAN is
+	ontology_has_term_binding (a_terminology, a_term_code: POINTER): BOOLEAN
 			-- true if there is a term binding for code `a_term_code' in `a_terminology'
 			-- REQUIRE
 			--  terminology_valid: a_terminology /= void and then not terminologies_available.is_empty
@@ -537,7 +537,7 @@ feature -- Status Report
 			Result := ontology.has_term_binding(c_a_terminology.string, c_a_term_code.string)
 		end
 
-	ontology_has_term_bindings (a_terminology: POINTER): BOOLEAN is
+	ontology_has_term_bindings (a_terminology: POINTER): BOOLEAN
 			-- true if there are term bindings `a_terminology'
 			-- REQUIRE
 			--  terminology_valid: a_terminology /= void and then not terminologies_available.is_empty
@@ -548,7 +548,7 @@ feature -- Status Report
 			Result := ontology.has_term_bindings(c_a_terminology.string)
 		end
 
-	ontology_has_term_code (a_term_code: POINTER): BOOLEAN is
+	ontology_has_term_code (a_term_code: POINTER): BOOLEAN
 			-- is `a_term_code' known in this ontology
 		local
 			c_a_term_code: BASE_C_STRING
@@ -557,7 +557,7 @@ feature -- Status Report
 			Result := ontology.has_term_code(c_a_term_code.string)
 		end
 
-	ontology_has_terminology (a_terminology: POINTER): BOOLEAN is
+	ontology_has_terminology (a_terminology: POINTER): BOOLEAN
 			-- is `a_terminology' known in this ontology
 			-- REQUIRE
 			--  terminology_valid: a_terminology /= void and then not a_terminology.is_empty
@@ -568,7 +568,7 @@ feature -- Status Report
 			Result := ontology.has_terminology(c_a_terminology.string)
 		end
 
-	ontology_is_valid: BOOLEAN is
+	ontology_is_valid: BOOLEAN
 			-- true if ontology is valid
 			-- ENSURE
 			--  validity_report_exists: validity_report /= void

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR re-usable library"
 	description: "ISO 8601 Date/time parser"
 	keywords:    "date, time, iso8601"
@@ -22,16 +22,16 @@ create
 	
 feature -- Definitions
 
-	Date_separator: CHARACTER is '-'
-	Time_separator: CHARACTER is ':'
-	Time_leader: CHARACTER is 'T'
-	Time_leader_lower: CHARACTER is 't'
-	Time_zone_GMT: CHARACTER is 'Z'
-	Duration_leader: CHARACTER is 'P'
-	Iso8601_decimal_separator: CHARACTER is ','
-	Decimal_separator: CHARACTER is '.'
+	Date_separator: CHARACTER = '-'
+	Time_separator: CHARACTER = ':'
+	Time_leader: CHARACTER = 'T'
+	Time_leader_lower: CHARACTER = 't'
+	Time_zone_GMT: CHARACTER = 'Z'
+	Duration_leader: CHARACTER = 'P'
+	Iso8601_decimal_separator: CHARACTER = ','
+	Decimal_separator: CHARACTER = '.'
 
-	Case_converter: HASH_TABLE[CHARACTER, CHARACTER] is
+	Case_converter: HASH_TABLE[CHARACTER, CHARACTER]
 			-- safe case converter for chars in ISO strings
 		once
 			create Result.make(0)
@@ -48,7 +48,7 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make is	
+	make	
 			-- 
 		do
 			create cached_iso8601_time_string.make(0)
@@ -72,7 +72,7 @@ feature -- Status Report
 --			end
 --		end
 
-	valid_iso8601_time(str: STRING): BOOLEAN is
+	valid_iso8601_time(str: STRING): BOOLEAN
 			-- True if string in one of the forms:
 			--	hh
 			--	hhmm
@@ -187,7 +187,7 @@ feature -- Status Report
 			end
 		end		
 		
-	valid_iso8601_date(str: STRING): BOOLEAN is
+	valid_iso8601_date(str: STRING): BOOLEAN
 			-- True if string in one of the forms
 			--	YYYY
 			--	YYYYMM
@@ -254,7 +254,7 @@ feature -- Status Report
 			end
 		end
 		
-	valid_iso8601_date_time(str: STRING): BOOLEAN is
+	valid_iso8601_date_time(str: STRING): BOOLEAN
 			-- True if string in one of the forms
 			--	YYYYMMDDThh
 			--	YYYYMMDDThhmm
@@ -307,7 +307,7 @@ feature -- Status Report
 			end
 		end
 		
-	valid_iso8601_duration(str: STRING): BOOLEAN is
+	valid_iso8601_duration(str: STRING): BOOLEAN
 			-- True if string in form "PnYnMnWnDTnHnMnS"
 		require
 			str /= Void
@@ -456,7 +456,7 @@ feature -- Status Report
 		
 feature {NONE} -- Implementation
 
-	valid_date_strings(y_str, m_str, d_str: STRING; is_extended: BOOLEAN): BOOLEAN is 
+	valid_date_strings(y_str, m_str, d_str: STRING; is_extended: BOOLEAN): BOOLEAN 
 			-- True if each string is within correct limits for years, mnonths, days
 		require
 			y_str /= Void
@@ -489,7 +489,7 @@ feature {NONE} -- Implementation
 			Result implies cached_iso8601_date /= Void
 		end
 
-	valid_time_strings(h_str, m_str, s_str, fs_str, tz_str: STRING; is_extended: BOOLEAN): BOOLEAN is 
+	valid_time_strings(h_str, m_str, s_str, fs_str, tz_str: STRING; is_extended: BOOLEAN): BOOLEAN 
 			-- True if each string is within correct limits for hours, minutes, seconds
 		require
 			h_str /= Void
@@ -593,7 +593,7 @@ feature {NONE} -- Implementation
 
 feature {ISO8601_ROUTINES} -- Implementation
 
-	convert_to_lower(a_str: STRING): STRING is
+	convert_to_lower(a_str: STRING): STRING
 			-- safe case conversion
 		local
 			i: INTEGER

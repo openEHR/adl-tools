@@ -1,11 +1,11 @@
 %{
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Scanner for dADL syntax items"
 	keywords:    "ADL, dADL"
 	
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -112,6 +112,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 			else
 				last_token := SYM_START_DBLOCK
 				start_block_received := True
+				block_depth := block_depth + 1
 			end
 		}
 
@@ -120,6 +121,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 				last_token := SYM_GT
 			else
 				last_token := SYM_END_DBLOCK
+				block_depth := block_depth - 1
 			end
 		}
 
@@ -134,9 +136,6 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 
 [Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy]			last_token := SYM_INFINITY
 
--- FIXME: query syntax is obsolete from 01/jun/2005; remove when backward compatibility no longer needed
-[Qq][Uu][Ee][Rr][Yy]					 	last_token := SYM_QUERY_FUNC
-
 ----------/* URI */ -------------------------------------------------
 [a-z]+:\/\/[^<>|\\{}^~"\[\] ]*	{
 	last_token := V_URI
@@ -149,13 +148,18 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 					last_string_value := text_substring (2, text_count - 1)
 			}
 
-\[{NAMECHAR_PAREN}+::{NAMECHAR_SPACE}+\]	{
+\[{NAMECHAR_PAREN}+::[^\]]+\]	{
 					last_token := ERR_V_QUALIFIED_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
 			}
 
-\[{ALPHANUM}{NAMECHAR}*\]	{
+\[a[ct][0-9.]+\] {
 					last_token := V_LOCAL_TERM_CODE_REF
+					last_string_value := text_substring (2, text_count - 1)
+			}
+
+\[{ALPHANUM}[^\]]+\]	{
+					last_token := ERR_V_LOCAL_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
 			}
 
@@ -167,7 +171,7 @@ a[ct][0-9.]+		{
 
 ----------/* V_ISO8601_DATE_TIME YYYY-MM-DDThh:mm:ss[,sss][Z|+/-nnnn] */ -------------------------------------------------
 
-[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})? |
+[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9]([\.,][0-9]+)?(Z|[+-][0-9]{4})? |
 [0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})? |
 [0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9](Z|[+-][0-9]{4})? {
 				last_token := V_ISO8601_EXTENDED_DATE_TIME
@@ -176,7 +180,7 @@ a[ct][0-9.]+		{
 
 ----------/* V_ISO8601_TIME Thh:mm:ss[,sss][Z|+/-nnnn] */ -------------------------------------------------
 
-[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})? |
+[0-2][0-9]:[0-6][0-9]:[0-6][0-9]([\.,][0-9]+)?(Z|[+-][0-9]{4})? |
 [0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})? {
 				last_token := V_ISO8601_EXTENDED_TIME
 				last_string_value := text
@@ -190,12 +194,12 @@ a[ct][0-9.]+		{
 				last_string_value := text
 		}
 
-----------/* V_ISO8601_DURATION PnYnMnWnDtnnHnnMnnS */ -------------------------------------------------
+----------/* V_ISO8601_DURATION PnYnMnWnDtnnHnnMnn.nnnS */ -------------------------------------------------
 
 -- here we allow a deviation from the standard to allow weeks to be mixed in with the rest
 -- since this commonly occurs in medicine
 
-P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])? |
+P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+([\.,][0-9]+)?[sS])? |
 P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])? {
 				last_token := V_ISO8601_DURATION
 				last_string_value := text
@@ -220,9 +224,13 @@ P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])? {
 
 ----------/* CADL Blocks */ -------------------------------------------------
 \{[^{}]*		{				-- beginning of CADL block
-				in_buffer.append_string (text)
-				set_start_condition (IN_CADL_BLOCK)
-				cadl_depth := 1
+				if block_depth = 1 then
+					in_buffer.append_string (text)
+					set_start_condition (IN_CADL_BLOCK)
+					cadl_depth := 1
+				else
+					last_token := ERR_CADL_MISPLACED
+				end
 			}
 
 <IN_CADL_BLOCK> {
@@ -286,7 +294,7 @@ P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])? {
 
 	[^\\\n"]+		in_buffer.append_string (text)
 
-	\n[ \t\r]*	{
+	\n		{
 				in_lineno := in_lineno + 1	-- match LF in line
 				in_buffer.append_character ('%N')
 			}
@@ -345,9 +353,11 @@ feature {NONE} -- Local variables
 
 	start_block_received: BOOLEAN
 
+	block_depth: INTEGER
+
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create a new scanner.
 		do
 			make_compressed_scanner_skeleton
@@ -357,7 +367,7 @@ feature {NONE} -- Initialization
 
 feature -- Initialization
 
-	reset is
+	reset
 			-- Reset scanner before scanning next input.
 		do
 			reset_compressed_scanner_skeleton
@@ -378,11 +388,10 @@ feature -- Access
 
 feature {NONE} -- Constants
 
-	Init_buffer_size: INTEGER is 256
+	Init_buffer_size: INTEGER = 256
 				-- Initial size for `in_buffer'
 
 invariant
-
 	in_buffer_not_void: in_buffer /= Void
 
 end

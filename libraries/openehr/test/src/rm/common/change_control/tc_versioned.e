@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Reference Model"
 
 	description: "Test VERSIONED"
@@ -21,21 +21,21 @@ inherit
 			check_result
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title: STRING is "TC_VERSIONED_OBJECT"
+	title: STRING = "TC_VERSIONED_OBJECT"
 
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		local
 			vo: VERSIONED_OBJECT [TEST_DATA]
 		do
@@ -44,7 +44,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 		do
 		end
 

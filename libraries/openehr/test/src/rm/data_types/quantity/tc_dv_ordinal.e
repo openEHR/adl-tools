@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "Test DV_ORDINAL"
@@ -21,21 +21,21 @@ inherit
 			check_result
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title: STRING is "DV_ORDINAL"
+	title: STRING = "DV_ORDINAL"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 			
 		end
 
-	execute is
+	execute
 		local
 			a_datum: DV_ORDINAL
 		do
@@ -43,7 +43,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 		do
 		end
 

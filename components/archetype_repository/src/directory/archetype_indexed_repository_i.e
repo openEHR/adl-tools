@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Directory representation of a file-system archetype repository.
@@ -28,73 +28,48 @@ feature {NONE} -- Initialisation
 			group_id_valid: a_group_id > 0
 		do
 			group_id := a_group_id
-			root_path := dir_name
-			clear
+			full_path := dir_name
 		ensure
-			root_path_set: root_path = dir_name
+			root_path_set: full_path = dir_name
 			group_id_set: group_id = a_group_id
 		end
 
 feature -- Access
 
-	root_path: STRING
+	full_path: STRING
 			-- Path of file-system repository of archetypes.
 
-feature {ARCH_DIRECTORY} -- Access
+feature {ARCHETYPE_DIRECTORY} -- Access
 
-	directory: TWO_WAY_TREE [ARCH_REP_ITEM]
-			-- Tree-structured directory of folders and archetypes.
+	fast_archetype_list: ARRAYED_LIST [ARCH_REP_ARCHETYPE]
+			-- linear index list for efficient processing
 
 feature -- Commands
-
-	clear
-			-- Reinitialise `directory' to empty.
-		do
-			directory := new_folder_node (root_path)
-		end
-
-	repopulate
-			-- Rebuild `directory' based on existing paths.
-		do
-			clear
-			populate
-		end
 
 	populate
 			-- Make based on `root_path'.
 		do
-			build_directory (directory)
+			create archetype_id_index.make (0)
+			create fast_archetype_list.make(0)
+			get_archetypes_in_folder (full_path)
+			from archetype_id_index.start until archetype_id_index.off loop
+				fast_archetype_list.extend(archetype_id_index.item_for_iteration)
+				archetype_id_index.forth
+			end
 		end
 
 feature {NONE} -- Implementation
 
-	build_directory (tree: like directory)
+	get_archetypes_in_folder (a_path: STRING)
 			-- Build a literal representation of the archetype and folder structure
 			-- in the repository path, as a tree; each node carries some meta-data.
 		require
-			tree_attached: tree /= Void
+			Path_valid: a_path /= Void and then not a_path.is_empty
    		deferred
 		end
 
-	new_folder_node (path: STRING): like directory
-			-- A newly-created folder for `path', ready to be added to `directory'.
-		require
-			path_valid: path /= Void and then path.substring_index (root_path, 1) = 1
-   		do
-			create Result.make (create {ARCH_REP_FOLDER}.make (root_path, path, Current))
-		ensure
-			attached: Result /= Void
-			root_path_set: Result.item.root_path = root_path
-			full_path_set: Result.item.full_path = path
-			repository_set: Result.item.file_repository = Current
-		end
-
 invariant
-	repository_path_valid: is_valid_directory (root_path)
-	directory_attached: directory /= Void
-	directory_root_path: directory.item.root_path = root_path
-	directory_full_path: directory.item.full_path = root_path
-	directory_repository: directory.item.file_repository = Current
+	repository_path_valid: is_valid_directory (full_path)
 
 end
 

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Descriptor of a node in a directory of archetypes"
 	keywords:    "ADL, archetype"
@@ -18,122 +18,230 @@ inherit
 	SHARED_RESOURCES
 		export
 			{NONE} all
+		undefine
+			is_equal
 		end
 
 	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all
+		undefine
+			is_equal
 		end
 
-feature {NONE} -- initialisation
+	BMM_DEFINITIONS
+		export
+			{NONE} all
+		undefine
+			is_equal
+		end
 
-	make (a_root_path, a_full_path: STRING; a_repository: ARCHETYPE_REPOSITORY_I)
-			-- Make to represent the directory or archetype file at `a_full_path',
-			-- belonging to `a_repository' at `a_root_path'.
-		require
-			repository_attached: a_repository /= Void
-			root_path_valid: a_repository.is_valid_directory (a_root_path)
-			full_path_attached: a_full_path /= Void
-			full_path_under_root_path: a_full_path.starts_with (a_root_path)
+	COMPARABLE
+
+feature -- Initialisation
+
+	make
 		do
-			root_path := a_root_path
-			full_path := a_full_path
-			file_repository := a_repository
-			make_ontological_paths
-		ensure
-			root_path_set: root_path = a_root_path
-			full_path_set: full_path = a_full_path
-			file_repository_set: file_repository = a_repository
 		end
 
 feature -- Access
 
-	root_path: STRING
-			-- Root path of repository on storage medium containing this item.
-
-	full_path: STRING
-			-- Full path to the item on the storage medium.
-
-	relative_path: STRING
-			-- Path to the item on the storage medium, excluding `root_path'.
-		do
-			Result := full_path.substring (root_path.count + 1, full_path.count)
-			Result.prune_all_leading (os_directory_separator)
-		ensure
-			attached: Result /= Void
-			relative: file_system.is_relative_pathname (Result)
-			under_full_path: full_path.ends_with (Result)
-			same_basename: file_system.basename (Result).same_string (file_system.basename (full_path))
-		end
-
-	base_name: STRING
-			-- Name of last segment of `ontological_path'.
-
-	ontological_path: STRING
-			-- Logical ontological path of item with respect to `root_path'; for folder nodes,
-			-- this will look like the directory path; for archetype nodes, this will be
-			-- the concatenation of the directory path and a path pseudo-path constructed
-			-- by replacing the '-'s in an archetype concept with '/', enabling specialised
-			-- archetypes to be treated as subnodes of their parent.
-
-	ontological_parent_path: STRING
-			-- Logical path of parent node (empty if `ontological_path' is already the root).
-
-	file_repository: ARCHETYPE_REPOSITORY_I
-			-- The repository on which this item is found.
-
-	group_name: STRING
+	group_name: attached STRING
 			-- Name distinguishing the type of item and the group to which its `repository' belongs.
 			-- Useful as a logical key to pixmap icons, etc.
 		deferred
 		ensure
-			attached: Result /= Void
 			not_empty: not Result.is_empty
+		end
+
+	ontological_name: STRING
+			-- semantic name of this node, relative to parent concept, which is either class or package name, or else as concept name of archetype
+			-- used to generate ontological path
+			-- For Classes, will be the name of the top-level package & class e.g. EHR-OBSERVATION
+			-- For archetypes will be the id
+		deferred
+		end
+
+	display_name: STRING
+			-- semantic name of this node to use in display context
+		deferred
+		end
+
+	ontological_path: STRING
+			-- path from root of ontology structure down to this point
+			-- for classes in the RM, it will look lie 			/content_item/care_entry/observation
+			-- for archetypes, it will look like 				/content_item/care_entry/observation/lab_result
+			-- for specialised archetypes, it will look like 	/content_item/care_entry/observation/lab_result/microbiology
+		do
+			create Result.make (0)
+			if parent /= Void then
+				Result.append(parent.ontological_path + Ontological_path_separator)
+			end
+			Result.append (display_name)
+		end
+
+	subtree_artefact_counts: HASH_TABLE [INTEGER, INTEGER]
+			-- stored counter of archetype child objects, keyed by artefact type,
+			-- i.e. archetype & template counts stored separately
+		local
+			atf_types: ARRAYED_LIST [INTEGER]
+		do
+			if subtree_artefact_counts_cache = Void then
+				-- create empty set of counters
+				create subtree_artefact_counts_cache.make(0)
+				atf_types := (create {ARTEFACT_TYPE}).types.linear_representation
+				from atf_types.start until atf_types.off loop
+					subtree_artefact_counts_cache.put (0, atf_types.item)
+					atf_types.forth
+				end
+
+				-- aggregate child counts and local count
+				if has_children then
+					from children.start until children.off loop
+						-- the following is technically naughty, since it creates a dependency on a descendant type, but
+						-- the code reduction seems worth it
+						from subtree_artefact_counts_cache.start until subtree_artefact_counts_cache.off loop
+							subtree_artefact_counts_cache.replace (subtree_artefact_counts_cache.item_for_iteration +
+																	children.item.subtree_artefact_counts.item(subtree_artefact_counts_cache.key_for_iteration),
+																	subtree_artefact_counts_cache.key_for_iteration)
+							subtree_artefact_counts_cache.forth
+						end
+						if attached {ARCH_REP_ARCHETYPE} children.item as ara then
+							subtree_artefact_counts_cache.replace(subtree_artefact_counts_cache.item(ara.artefact_type) + 1, ara.artefact_type)
+						end
+						children.forth
+					end
+				end
+			end
+			Result := subtree_artefact_counts_cache
+		end
+
+   	sub_tree_artefact_count (artefact_types: ARRAY [INTEGER]): INTEGER
+   			-- number of artefacts below this node of the types mentioned in `artefact_types'
+		require
+			artefact_types_attached: artefact_types /= Void
+   		local
+			i: INTEGER
+		do
+ 			from i := artefact_types.lower until i > artefact_types.upper loop
+ 				Result := Result + subtree_artefact_counts.item(artefact_types[i])
+ 				i := i + 1
+ 			end
 		end
 
 feature -- Status Report
 
-	is_valid_path (path: STRING): BOOLEAN
-			-- Is `path' a valid, existing directory or file on `file_repository'?
-		do
-			Result := file_repository.is_valid_path (path)
-		ensure
-			false_if_void: Result implies path /= Void
-		end
-
-	is_valid_directory (path: STRING): BOOLEAN
-			-- Is `path' a valid, existing directory on `file_repository'?
-		do
-			Result := file_repository.is_valid_directory (path)
-		ensure
-			false_if_void: Result implies path /= Void
-		end
-
-	is_valid_directory_part (path: STRING): BOOLEAN
-			-- Is the directory part of `path', whose last section is a file name, valid on `file_repository'?
-		do
-			Result := file_repository.is_valid_directory_part (path)
-		ensure
-			false_if_void: Result implies path /= Void
-		end
-
-feature {NONE} -- Implementation
-
-	make_ontological_paths
-			-- Make `base_name', `ontological_path' and `ontological_parent_path'.
+	has_artefacts: BOOLEAN
+			-- True if there are any artefacts at or below this point
 		deferred
 		end
 
+	has_children: BOOLEAN
+			-- True if there are any child nodes
+		do
+			Result := children /= Void
+		end
+
+	is_root: BOOLEAN
+			-- True if this node is the root of the tree
+		do
+			Result := parent = Void
+		end
+
+	has_child (a_child: like child_type): BOOLEAN
+		require
+			a_child /= Void
+		do
+			if children /= Void then
+				Result := children.has(a_child)
+			end
+		end
+
+feature -- Iteration
+
+	child_start
+			-- iterate through child nodes
+		require
+			has_chidlren: has_children
+		do
+			children.start
+		end
+
+	child_off: BOOLEAN
+		require
+			has_chidlren: has_children
+		do
+			Result := children.off
+		end
+
+	child_forth
+		require
+			has_chidlren: has_children
+		do
+			children.forth
+		end
+
+	child_item: like child_type
+		require
+			has_chidlren: has_children
+		do
+			Result := children.item
+		end
+
+feature {ARCHETYPE_DIRECTORY} -- Modification
+
+	put_child (a_child: like child_type)
+		require
+			a_child /= Void
+		do
+			if children = Void then
+				create children.make
+			end
+			children.extend (a_child)
+			a_child.set_parent(Current)
+		end
+
+	remove_child (a_child: like child_type)
+		require
+			a_child /= Void and then has_child(a_child)
+		do
+			children.prune (a_child)
+		end
+
+feature {ARCH_REP_ITEM} -- Modification
+
+	set_parent (a_parent: ARCH_REP_ITEM)
+		require
+			a_parent /= Void
+		do
+			parent := a_parent
+		end
+
+feature -- Comparison
+
+	is_less alias "<" (other: like Current): BOOLEAN
+			-- Is current object less than `other'?
+		do
+			Result := ontological_name < other.ontological_name
+		end
+
+feature {ARCH_REP_ITEM, ARCHETYPE_DIRECTORY} -- Implementation
+
+	children: SORTED_TWO_WAY_LIST [like child_type]
+			-- list of child nodes
+
+	child_type: ARCH_REP_ITEM
+			-- type of allowable child node
+
+	parent: ARCH_REP_ITEM
+			-- parent node
+
+	subtree_artefact_counts_cache: HASH_TABLE [INTEGER, INTEGER]
+			-- stored counter of archetype child objects, keyed by artefact type,
+			-- i.e. archetype & template counts stored separately
+
 invariant
-	repository_attached: file_repository /= Void
-	root_path_valid: is_valid_directory (root_path)
-	full_path_attached: full_path /= Void
-	full_path_not_empty: not full_path.is_empty
-	ontological_path_attached: ontological_path /= Void
-	ontological_parent_path_attached: ontological_parent_path /= Void
-	ontological_path_absolute: ontological_path.starts_with (ontological_path_separator)
-	ontological_parent_path_valid: ontological_path.starts_with (ontological_parent_path)
-	base_name_attached: base_name /= Void
+	ontological_name_attached: ontological_name /= Void
 
 end
 

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Object node type representing constraint on ordinal quantity"
 	keywords:    "ordinal, ADL"
@@ -17,46 +17,17 @@ class C_DV_ORDINAL
 inherit
 	C_DOMAIN_TYPE
 		redefine
-			default_create, enter_subtree, exit_subtree, synchronise_to_tree, specialisation_status
+			enter_subtree, exit_subtree, synchronise_to_tree, specialisation_status, node_conforms_to
 		end
 
 create
 	make, make_dt
 
-feature -- Initialisation
-
-	default_create is
-			--
-		do
-			precursor
-			rm_type_name := generator
-			rm_type_name.remove_head(2) -- remove "C_"
-		ensure then
-			any_allowed
-		end
-
-	make is
-			-- make empty, add members with add_item
-		do
-			default_create
-			create representation.make_anonymous(Current)
-		ensure
-			any_allowed
-		end
-
-	make_dt is
-			-- make used by DT_OBJECT_CONVERTER
-		do
-			make
-		ensure then
-			any_allowed
-		end
-
 feature -- Access
 
 	items: LINKED_SET [ORDINAL]
 
-	default_value: ORDINAL is
+	prototype_value: ORDINAL
 			-- 	generate a default value from this constraint object
 		do
 			if any_allowed then
@@ -66,7 +37,7 @@ feature -- Access
 			end
 		end
 
-	item_at_ordinal(i: INTEGER): ORDINAL is
+	item_at_ordinal(i: INTEGER): ORDINAL
 			-- get the item in the list which has the ordinal value i
 		require
 			Not_any_allowed: not any_allowed
@@ -77,7 +48,7 @@ feature -- Access
 
 feature -- Source Control
 
-	specialisation_status (specialisation_level: INTEGER): SPECIALISATION_STATUS is
+	specialisation_status (spec_level: INTEGER): SPECIALISATION_STATUS
 			-- status of this node in the source text of this archetype with respect to the
 			-- specialisation hierarchy. Values are defined in SPECIALISATION_STATUSES
 			-- FIXME: this code is only an attempt to work out the specialisation status,
@@ -92,7 +63,7 @@ feature -- Source Control
 					items.off
 				loop
 					if items.item.symbol.is_local then
-						Result := Result.specialisation_dominant_status (specialisation_status_from_code (items.item.symbol.code_string, specialisation_level))
+						Result := Result.specialisation_dominant_status (specialisation_status_from_code (items.item.symbol.code_string, spec_level))
 						items.forth
 					end
 				end
@@ -101,13 +72,13 @@ feature -- Source Control
 
 feature -- Status Report
 
-	any_allowed: BOOLEAN is
+	any_allowed: BOOLEAN
 			-- True if any value allowed i.e. no items
 		do
 			Result := items = Void
 		end
 
-	is_local: BOOLEAN is
+	is_local: BOOLEAN
 			-- True if terminology id = "local"
 		require
 			not any_allowed
@@ -115,7 +86,7 @@ feature -- Status Report
 			Result := items.first.symbol.is_local
 		end
 
-	has_code_phrase (code_phrase: CODE_PHRASE): BOOLEAN is
+	has_code_phrase (code_phrase: CODE_PHRASE): BOOLEAN
 			-- Is `code_phrase' in one of the ordinals in `index'?
 		do
 			if index /= Void then
@@ -130,20 +101,46 @@ feature -- Status Report
 			end
 		end
 
-	has_item (ordinal_value: INTEGER): BOOLEAN is
+	has_item (ordinal_value: INTEGER): BOOLEAN
 			-- Is `ordinal_value' one of the keys in `index'?
 		do
 			Result := index /= Void and then index.has (ordinal_value)
 		end
 
-	valid_value (a_value: like default_value): BOOLEAN is
+	valid_value (a_value: like prototype_value): BOOLEAN
 		do
 			Result := any_allowed or else has_item (a_value.value)
 		end
 
+feature -- Comparison
+
+	node_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
+			-- True if this node is a subset, i.e. a redefinition of, `other' in the ADL constraint sense, i.e. that all
+			-- aspects of the definition of this node and all child nodes define a narrower, wholly
+			-- contained instance space of `other'.
+			-- Returns False if they are the same, or if they do not correspond
+		do
+			if precursor(other, an_rm_schema) then
+				if other.any_allowed then
+					Result := True
+				elseif not any_allowed then
+					if items.count <= other.items.count then
+						from
+							items.start
+						until
+							items.off or not other.has_item (items.item.value)
+						loop
+							items.forth
+						end
+					end
+					Result := items.off
+				end
+			end
+		end
+
 feature -- Modification
 
-	add_item(an_ordinal: ORDINAL) is
+	add_item(an_ordinal: ORDINAL)
 			-- add an ordinal to the list
 		require
 			An_ordinal_valid: not any_allowed implies not has_item(an_ordinal.value)
@@ -158,7 +155,7 @@ feature -- Modification
 			Item_added: items.has(an_ordinal)
 		end
 
-	set_assumed_value_from_integer(a_value: INTEGER) is
+	set_assumed_value_from_integer(a_value: INTEGER)
 			-- set `assumed_value' from an integer in the ordinal enumeration
 		require
 			Not_any_allowed: not any_allowed
@@ -171,7 +168,7 @@ feature -- Modification
 
 feature -- Conversion
 
-	as_string: STRING is
+	as_string: STRING
 			--
 		do
 			create Result.make (0)
@@ -192,13 +189,13 @@ feature -- Conversion
 			end
 		end
 
-	standard_equivalent: C_COMPLEX_OBJECT is
+	standard_equivalent: C_COMPLEX_OBJECT
 		do
 		end
 
 feature -- Synchronisation
 
-	synchronise_to_tree is
+	synchronise_to_tree
 			-- synchronise to parse tree representation
 		do
             if any_allowed then -- only represent as an inline dADL if any_allowed, else use syntax
@@ -208,14 +205,14 @@ feature -- Synchronisation
 
 feature -- Visitor
 
-	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	enter_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
             precursor(visitor, depth)
 			visitor.start_c_ordinal(Current, depth)
 		end
 
-	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
             precursor(visitor, depth)
@@ -229,7 +226,7 @@ feature {NONE} -- Implementation
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	persistent_attributes: ARRAYED_LIST[STRING] is
+	persistent_attributes: ARRAYED_LIST[STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		once

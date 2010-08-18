@@ -1,12 +1,12 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Basic archetype definitions
 				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2006-2009 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -18,16 +18,51 @@ class ARCHETYPE_DEFINITIONS
 
 feature -- Definitions
 
-	Archetype_native_syntax: STRING is "adl"
+	Archetype_native_syntax: STRING = "adl"
 			-- Name of native ADL syntax type.
 
-	Archetype_flat_file_extension: STRING is ".adl"
-			-- Extension for flat form archetype files.
+	Archetype_web_syntax: STRING = "html"
+			-- Name of web publishing syntax type.
 
-	Archetype_source_file_extension: STRING is ".adls"
+	Archetype_web_page_extension: STRING = ".html"
+			-- Extension of web publishing syntax type.
+
+	archetype_legacy_file_extension: STRING = ".adl"
+			-- Extension for legacy flat form archetype files.
+
+	archetype_flat_file_extension: STRING = ".adlf"
+			-- Extension for legacy flat form archetype files.
+
+	Archetype_source_file_extension: STRING = ".adls"
 			-- Extension for source form (differential) archetype files.
 
-	Ontological_path_separator: STRING is "/"
+	Ontological_path_separator: STRING = "/"
+
+	Archetype_category: STRING = "archetypes"
+
+	Template_category: STRING = "templates"
+
+	Adl_versions: ARRAYED_LIST [STRING]
+			-- list of ADL versions known in this tool
+		once
+			create Result.make(0)
+			Result.compare_objects
+			Result.extend("1.4")
+			Result.extend("1.4.1")
+			Result.extend("1.5")
+		end
+
+	Latest_adl_version: STRING
+			-- return current latest known ADL version in this tool
+		once
+			Result := Adl_versions.last
+		end
+
+	Group_id_adhoc: INTEGER = 1
+
+	Group_id_reference: INTEGER = 2
+
+	Group_id_work: INTEGER = 3
 
 end
 

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Shared CADL Factor"
 	keywords:    "CADL"
@@ -15,7 +15,7 @@ class SHARED_C_FACTORY
 
 feature -- Access
 
-	constraint_model_factory: C_FACTORY is
+	constraint_model_factory: C_FACTORY
 			-- access to constraint-building routines
 		once
 			create Result.make

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test suite for method dispatcher"
 	keywords:    "test, method dispatcher"
@@ -18,12 +18,12 @@ inherit
 	TEST_SUITE
 	SHARED_TEST_ENV
 
-creation
+create
 	make
 
 feature -- Access
 
-	test_cases: LINKED_LIST[TEST_CASE] is
+	test_cases: LINKED_LIST[TEST_CASE]
 		local
 			tc_md_proc1:TC_MD_PROC_CALL_1
 			tc_md_proc2:TC_MD_PROC_CALL_2
@@ -41,11 +41,11 @@ feature -- Access
 			create tc_md_create.make(Void) Result.extend(tc_md_create)
 		end
 
-	title:STRING is "Method Dispatcher"
+	title:STRING = "Method Dispatcher"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 	    do
 	    end
 

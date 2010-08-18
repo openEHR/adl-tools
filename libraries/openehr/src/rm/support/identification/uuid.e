@@ -1,6 +1,6 @@
-indexing
+note
 	component:   "openEHR Support Information Model"
-	
+
 	description: "[
 				 Model of the DCE Universal Unique Identifier or UUID which takes the 
 				 form of hexadecimal integers separated by hyphens, following the pattern 
@@ -27,19 +27,19 @@ inherit
 
 create
 	default_create, make
-	
+
 feature -- Definitions
 
-	Default_value: STRING is "00000000-0000-0000-0000-000000000000"
+	Default_value: STRING = "00000000-0000-0000-0000-000000000000"
 			-- default UUID
 
 feature -- Status Report
 
-	valid_id(an_id:STRING): BOOLEAN is
-			-- 
+	valid_id (an_id: STRING): BOOLEAN
+			--
 		do
 		end
-		
+
 end
 
 

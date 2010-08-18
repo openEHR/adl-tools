@@ -1,10 +1,10 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
-	description: "leaf OBJECT item in an dADL parse tree"
-	keywords:    "test, ADL"
+	description: "leaf OBJECT item in a dADL parse tree"
+	keywords:    "data tree, serialisation, ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003-2009 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -21,7 +21,32 @@ inherit
 
 feature -- Initialisation
 
-	default_create is
+	make_identified(a_value: like value; a_node_id: STRING)
+		require
+			Item_valid: a_value /= Void
+			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
+		do
+			default_create
+			create representation.make(a_node_id, Current)
+			set_value(a_value)
+		ensure
+			is_typed
+			is_addressable
+		end
+
+	make_anonymous(a_value: like value)
+		require
+			Item_valid: a_value /= Void
+		do
+			default_create
+			create representation.make_anonymous(Current)
+			set_value(a_value)
+		ensure
+			is_typed
+			not is_addressable
+		end
+
+	default_create
 			-- create with unknown type
 		do
 			create rm_type_name.make(0)
@@ -30,31 +55,52 @@ feature -- Initialisation
 
 feature -- Access
 
-	value: ANY is
+	value: ANY
 			-- data item of this node
 		deferred
 		end
-	
+
 feature -- Status Report
 
-	is_leaf: BOOLEAN is True
-		
+	is_valid: BOOLEAN
+			-- report on validity
+		do
+			create invalid_reason.make(0)
+			invalid_reason.append(rm_type_name + ": ")
+			if value = Void then
+				invalid_reason.append("leaf value Void")
+			else
+				Result := True
+			end
+		end
+
 feature -- Representation
 
 	representation: OG_OBJECT_LEAF
-	
+
 feature -- Conversion
 
-	as_object(a_type_id: INTEGER): ANY is
-			-- make an object whose classes and attributes correspond to the structure 
+	as_object(a_type_id: INTEGER): ANY
+			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
-		do	
+		do
 			Result := value
+			as_object_ref := Result
+		end
+
+feature -- Modification
+
+	set_value(a_value: like value)
+		require
+			Item_valid: a_value /= Void
+		deferred
+		ensure
+			Value_set: value = a_value
 		end
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 		deferred
 		ensure
 			Result_exists: Result /= Void
@@ -80,7 +126,7 @@ end
 --| The Original Code is dadl_object_leaf.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2003-2009
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

@@ -1,10 +1,19 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
-	description: "Abstract class providing convertibility from a DT structure to any object type"
+	description: "[
+			     Abstract class providing convertibility from a DT structure to any object type.
+			     
+			     The `make_dt' routine provides a parameterless make routine that can be safely called by DT_OBJECT_CONVERTER during 
+			     deserialisation, to ensure invariants are satisfied directly after initial creation.
+			     
+			     The `persistent_attributes' attribute defines a list of names of attributes that should be persisted, since often 
+			     there are other extraneous attributes. If empty, the DT_OBJECT_CONVERTER
+			     routines will assume all.
+			     ]"
 	keywords:    "Data Tree"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003-2005 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003-2009 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -15,7 +24,7 @@ deferred class DT_CONVERTIBLE
 
 feature -- Initialisation
 
-	make_dt is
+	make_dt
 			-- basic make routine to guarantee validity on creation
 		deferred
 		end
@@ -27,15 +36,22 @@ feature -- Representation
 
 feature -- Synchronisation
 
-	synchronise_to_tree is
+	synchronise_to_tree
 			-- synchronise to parse tree representation
 		do
 			create dt_representation.make_from_object(Current)
 		end
 
+feature -- Finalisation
+
+	finalise_dt
+			-- finalisation routine to guarantee validity on creation
+		do
+		end
+
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	persistent_attributes: ARRAYED_LIST[STRING] is
+	persistent_attributes: ARRAYED_LIST[STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		deferred

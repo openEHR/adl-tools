@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Comparator of two archetypes.
@@ -20,7 +20,7 @@ create
 
 feature -- Initialisation
 
-	make(a_reference_archetype, an_other_archetype: ARCHETYPE) is
+	make(a_reference_archetype, an_other_archetype: ARCHETYPE)
 			-- create with two archetypes for comparison
 		require
 			Valid_reference_archetype: valid_reference_archetype(a_reference_archetype)
@@ -40,12 +40,12 @@ feature -- Access
 
 feature -- Comparison
 
-	is_specialised: BOOLEAN is
+	is_specialised: BOOLEAN
 			-- True if other_archetype is a legal specialisation of reference_archetype
 		do
 		end
 
-	diff: ARCHETYPE_DIFF is
+	diff: ARCHETYPE_DIFF
 			-- Generate a diff object from the two archetypes
 		do
 		ensure

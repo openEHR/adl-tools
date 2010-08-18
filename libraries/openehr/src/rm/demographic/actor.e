@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Demographic Reference Model"
 
 	description: "[

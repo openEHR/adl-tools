@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Node of simple type in an ADL parse tree. Simple
@@ -20,7 +20,7 @@ class C_PRIMITIVE_OBJECT
 inherit
 	C_LEAF_OBJECT
 		redefine
-			representation, out, is_valid, enter_subtree, exit_subtree
+			representation, out, enter_subtree, exit_subtree, node_conforms_to
 		end
 
 create
@@ -28,14 +28,13 @@ create
 
 feature -- Initialisation
 
-	make(an_item: C_PRIMITIVE) is
+	make(an_item: C_PRIMITIVE)
 		require
 			an_item /= Void
 		do
 			default_create
 			item := an_item
-			rm_type_name := an_item.generating_type
-			rm_type_name.remove_head (2)
+			rm_type_name := an_item.rm_type_name
 			create representation.make_anonymous (Current)
 		end
 
@@ -43,68 +42,68 @@ feature -- Access
 
 	item: C_PRIMITIVE
 
-	default_value: ANY is
+	prototype_value: ANY
 			-- 	generate a default value from this constraint object
 		do
-			Result := item.default_value
+			Result := item.prototype_value
 		end
 
 feature -- Status Report
 
-	any_allowed: BOOLEAN is
+	any_allowed: BOOLEAN
 			-- True if any value allowed ('*' received in parsed input)
 			-- i.e. no item
 		do
 			Result := item = Void
 		end
 
-	is_valid: BOOLEAN is
-			-- report on validity
-		do
-			if precursor then
-				if item = Void then
-					invalid_reason.append("simple type constraint not specified")
-				elseif occurrences = Void then
-					invalid_reason.append("occurrences must not be Void")
-				else
-					Result := True
-				end
-			end
-		end
-
-	valid_value (a_value: like default_value): BOOLEAN is
+	valid_value (a_value: like prototype_value): BOOLEAN
 		do
 			Result := item.valid_value (a_value)
 		end
 
+feature -- Comparison
+
+	node_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
+			-- True if this node is a subset of, or the same as `other'
+		do
+			if precursor(other, an_rm_schema) then
+				if other.any_allowed then
+					Result := True
+				elseif not any_allowed then
+					Result := item.node_conforms_to(other.item)
+				end
+			end
+		end
+
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 		do
 			Result := item.as_string
 		ensure
 			Result_exists: Result /= Void
 		end
 
-	out: STRING is
+	out: STRING
 		do
 			Result := as_string
 		end
 
 feature -- Representation
 
-	representation: !OG_OBJECT_LEAF
+	representation: attached OG_OBJECT_LEAF
 
 feature -- Visitor
 
-	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	enter_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
 			precursor(visitor, depth)
 			visitor.start_c_primitive_object(Current, depth)
 		end
 
-	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
 			precursor(visitor, depth)

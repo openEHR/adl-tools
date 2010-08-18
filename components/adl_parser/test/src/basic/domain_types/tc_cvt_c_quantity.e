@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test case converting dadl to a simple object"
 	keywords:    "test, object graph, creation"
@@ -25,20 +25,20 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title:STRING is "C_DV_QUANTITY bidirectional conversion from dADL"
+	title:STRING = "C_DV_QUANTITY bidirectional conversion from dADL"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		local
 			a_dt_obj: DT_COMPLEX_OBJECT_NODE
 		do
@@ -76,13 +76,13 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 	    do
 	    end
 
 feature -- Implementation
 
-	dadl_c_quantity: STRING is "[
+	dadl_c_quantity: STRING = "[
 			C_DV_QUANTITY <
 				property = <[openehr::271]>
 				list = <

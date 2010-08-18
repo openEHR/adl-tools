@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			 Shared C_ADL_INTERFACE Object for testing purposes - used
@@ -21,7 +21,7 @@ inherit
 
 feature {NONE} -- Implementation
 
-	c_adl_interface: C_ADL_INTERFACE is
+	c_adl_interface: C_ADL_INTERFACE
 		once
 			create Result.make
 		end

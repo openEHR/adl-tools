@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 General idea of a validator object that reports errors, warnings.
@@ -17,25 +17,62 @@ indexing
 deferred class ANY_VALIDATOR
 
 inherit
-	MESSAGE_BILLBOARD
+	SHARED_MESSAGE_DB
 		export
 			{NONE} all
+		end
+
+feature -- Initialisation
+
+	reset
+			-- initialise reporting variables
+		do
+			create errors.make (0)
+			create warnings.make (0)
+			create info.make (0)
+			passed := True
+		ensure
+			Passed: passed
 		end
 
 feature -- Access
 
 	errors: STRING
-			-- error output of validator
+			-- error output of validator - things that must be corrected
 
 	warnings: STRING
-			-- warnings output of validator
+			-- warnings output of validator - things that can be acted upon
+
+	info: STRING
+			-- informative messages that will not normally be acted upon
+
+feature -- Modification
+
+	add_error(a_key: STRING; args: ARRAY [STRING])
+			-- append an error with key `a_key' and `args' array to the `errors' string
+		do
+			errors.append(create_message_line(a_key, args))
+			passed := False
+		end
+
+	add_warning(a_key: STRING; args: ARRAY [STRING])
+			-- append a warning with key `a_key' and `args' array to the `warnings' string
+		do
+			warnings.append(create_message_line(a_key, args))
+		end
+
+	add_info(a_key: STRING; args: ARRAY [STRING])
+			-- append an information message with key `a_key' and `args' array to the `information' string
+		do
+			info.append(create_message_line(a_key, args))
+		end
 
 feature -- Status Report
 
 	passed: BOOLEAN
 			-- True if validation succeeded
 
-	has_warnings: BOOLEAN is
+	has_warnings: BOOLEAN
 			-- True if warnings from last call to validate
 		do
 			Result := warnings /= Void and then not warnings.is_empty
@@ -43,11 +80,14 @@ feature -- Status Report
 
 feature -- Validation
 
-	validate is
+	validate
+		require
+			passed
 		deferred
 		end
 
 invariant
+	Info_exists: info /= Void
 	Errors_exists: errors /= Void
 	Warnings_exists: warnings /= Void
 

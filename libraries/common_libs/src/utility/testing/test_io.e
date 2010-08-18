@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
       description: "Test input/output streams"
 	keywords:    "test"
@@ -16,25 +16,25 @@ class TEST_IO
 
 feature -- Access
 
-	streams: HASH_TABLE [TEST_STREAM, STRING] is 
+	streams: HASH_TABLE [TEST_STREAM, STRING] 
 			-- a set of names streams
 		once
 			create Result.make(0)
 		end
 
-	io_message: TEST_STREAM is
+	io_message: TEST_STREAM
 		do
 			Result := streams.item("message")
 		end
 
-	io_output: TEST_STREAM is
+	io_output: TEST_STREAM
 		do
 			Result := streams.item("output")
 		end
 
 feature -- Modify
 
-	set_default_streams(msg_stream, out_stream: TEST_STREAM) is
+	set_default_streams(msg_stream, out_stream: TEST_STREAM)
 		require
 			Msg_stream_valid: msg_stream /= Void
 			Out_stream_valid: out_stream /= Void
@@ -43,7 +43,7 @@ feature -- Modify
 			streams.put(out_stream, "output")
 		end
 
-	add_stream(stream_name: STRING; a_stream: TEST_STREAM) is
+	add_stream(stream_name: STRING; a_stream: TEST_STREAM)
 		require
 			stream_name_valid: stream_name /= Void and then not streams.has(stream_name)
 			stream_valid: a_stream /= Void

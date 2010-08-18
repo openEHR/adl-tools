@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			 Tools for manipulating archetype codes. Term codes take the form of 'atNNNN.N..'.
@@ -15,6 +15,13 @@ indexing
 			 The factory routines in this class are smart - they don't just make new specialised
 			 codes by adding '.1', but by looking at the current hash of codes known in the 
 			 archetype ontology into which this class is inherited.
+			 
+			 NOTE: there is a logical anomaly in how we use codes: 'at0000' is a legitimate code in 
+			 an archetype; 'at0000.1' is a specialisation of this, but 'at0.1' is a newly 
+			 introduced node at level 1. This means that cods have to be lexically processed 
+			 sometimes to detect the 'at0000' pattern, to get correct results. Fixing this 
+			 is probably impossible now, but potentially all at0000 should move to being at0001.
+			 The same problem is true with the code 'ac0000'.
 			 ]"
 	keywords:    "archetype, ontology, coded term"
 	author:      "Thomas Beale"
@@ -33,28 +40,50 @@ inherit
 
 feature -- Definitions
 
-	Default_concept_code: STRING is "at0000"
+	Default_code_number_string: STRING = "0000"
+
+	Default_concept_code: STRING
 			-- FIXME: the 0000 code should not be allowed to be used in an archetype
 			-- definition secton, since it violates the rule that a '0' code means
 			-- "not defined here" (i.e. it is normally a filler for lower down codes)
 			-- THIS SHOULD BE CHANGED to at0001
+		once
+			Result := Term_code_leader + Default_code_number_string
+		end
 
-	Specialisation_separator: CHARACTER is '.'
+	Default_constraint_code: STRING
+			-- FIXME: the 0000 code should not be allowed to be used in an archetype
+			-- definition secton, since it violates the rule that a '0' code means
+			-- "not defined here" (i.e. it is normally a filler for lower down codes)
+			-- THIS SHOULD BE CHANGED to ac0001
+		once
+			Result := Constraint_code_leader + Default_code_number_string
+		end
 
-	Term_code_length: INTEGER is 6
+	Specialisation_separator: CHARACTER = '.'
+
+	Term_code_length: INTEGER
 			-- length of top-level term codes, e.g. "at0001"
+		once
+			Result := Default_concept_code.count
+		end
 
-	Term_code_leader: STRING is "at"
+	Term_code_leader: STRING = "at"
 			-- leader of all internal term codes
 
-	Constraint_code_length: INTEGER is 6
+	Constraint_code_length: INTEGER
 			-- length of top-level constraint codes, e.g. "ac0001"
+		once
+			Result := Default_constraint_code.count
+		end
 
-	Constraint_code_leader: STRING is "ac"
+	Constraint_code_leader: STRING = "ac"
+
+	Zero_filler: STRING = ".0"
 
 feature -- Access
 
-	specialisation_parent_from_code(a_code: STRING): STRING is
+	specialisation_parent_from_code(a_code: STRING): STRING
 			-- get parent of this specialised code
 		require
 			Code_valid: a_code /= Void and then specialisation_depth_from_code(a_code) > 0
@@ -64,41 +93,66 @@ feature -- Access
 			Valid_result: specialisation_depth_from_code(Result) = specialisation_depth_from_code(a_code) - 1
 		end
 
-	specialisation_parent_from_code_at_level(a_code: STRING; a_level: INTEGER): STRING is
-			-- get parent of this specialised code at `a_level'
+	code_at_level(a_code: STRING; a_level: INTEGER): STRING
+			-- get valid form of this code at `a_level'
 		require
-			Code_valid: a_code /= Void and then is_valid_code(a_code)
+			Code_valid: a_code /= Void and then code_exists_at_level(a_code, a_level)
 			Level_valid: a_level >= 0 and a_level <= specialisation_depth_from_code(a_code)
 		local
 			i, idx: INTEGER
+			finished: BOOLEAN
 		do
+			-- this loop finds the index in a code string of the character just before a_level-1'th '.'
 			from
-				i := a_level
+				i := specialisation_depth_from_code (a_code)
 				idx := a_code.count
 			until
-				i >= specialisation_depth_from_code(a_code)
+				i = a_level
 			loop
-				idx := a_code.last_index_of(Specialisation_separator, a_code.count)-1
-				i := i + 1
+				idx := a_code.last_index_of (Specialisation_separator, idx) - 1
+				i := i - 1
 			end
+
+			-- if there are trailing 0s, get rid of them
+			from
+			until
+				finished
+			loop
+				if a_code.substring (idx-1, idx).is_equal (Zero_filler) then
+					idx := idx - 2
+				else
+					finished := True
+				end
+			end
+
 			Result := a_code.substring (1, idx)
 		ensure
-			Valid_result: specialisation_depth_from_code(Result) = a_level
+			Valid_result: is_valid_code (Result)
 		end
 
-	specialisation_status_from_code(a_code: STRING; a_depth: INTEGER): SPECIALISATION_STATUS is
+	specialisation_status_from_code(a_code: STRING; a_depth: INTEGER): SPECIALISATION_STATUS
 			-- get the specialisation status (added, inherited, redefined) from this code, at a_depth
 			-- for example:
-			-- 		status of at0001 is added at depth 0
-			--		status of at0001.1 is added at depth 0, redefined at depth 1
-			--		status of at0.1 is undefined at depth 0, added at depth 1
-			--		status of at0.1.1 is undefined at depth 0, added at depth 1, redefined at depth 2
-			--		status of any code at a lower level than the code is inherited
+			-- 		at0001 at depth 0 ==> ss_added
+			--		at0001.1 at depth 0 ==> ss_added
+			--		at0001.1 at depth 1 ==> ss_redefined
+			--		at0.1 at depth 0 ==> ss_undefined
+			--		at0.1 at depth 1 ==> ss_added
+			--		at0.1.1 at depth 0 ==> ss_undefined
+			--		at0.1.1 at depth 1 ==> ss_added
+			--		at0.1.1 at depth 2 ==> ss_redefined
+			--		at0009.0.0.1 at depth 0 ==> ss_added
+			--		at0009.0.0.1 at depth 1 ==> ss_inherited
+			--		at0009.0.0.1 at depth 2 ==> ss_inherited
+			--		at0009.0.0.1 at depth 3 ==> ss_redefined
+			--		any code at a lower level than the code is inherited, e.g.
+			--		at0.1.1 at depth 4 ==> ss_inherited
+			--		at0009.0.0.1 at depth 5 ==> ss_inherited
 		require
 			Code_valid: a_code /= Void and then is_valid_code(a_code)
 			Depth_valid: a_depth >= 0
 		local
-			code_defined_in_this_level, parent_code_defined_in_level_above: BOOLEAN
+			code_defined_in_this_level, has_parent_code: BOOLEAN
 			code_at_this_level, code_at_parent_level: STRING
 		do
 			if a_depth > specialisation_depth_from_code(a_code) then
@@ -106,18 +160,13 @@ feature -- Access
 			else
 				code_at_this_level := index_from_code_at_level(a_code, a_depth)
 				code_defined_in_this_level := code_at_this_level.to_integer > 0 or else code_at_this_level.count = 4 -- takes account of anomalous "0000" code
-				if a_depth > 0 then
-					code_at_parent_level := index_from_code_at_level(a_code, a_depth - 1)
-					parent_code_defined_in_level_above := code_at_parent_level.to_integer > 0 or else code_at_parent_level.count = 4 -- takes account of anomalous "0000" code
-				end
-
 				if code_defined_in_this_level then
-					if parent_code_defined_in_level_above then
+					if a_depth > 0 and code_exists_at_level(a_code, a_depth - 1) then -- parent is valid
 						create Result.make (ss_redefined)
 					else
 						create Result.make (ss_added)
 					end
-				elseif parent_code_defined_in_level_above then
+				elseif a_depth > 0 and code_exists_at_level(a_code, a_depth - 1) then
 					create Result.make (ss_inherited)
 				else
 					create Result.make (ss_undefined)
@@ -125,7 +174,7 @@ feature -- Access
 			end
 		end
 
-	index_from_code_at_level(a_code: STRING; a_depth: INTEGER): STRING is
+	index_from_code_at_level(a_code: STRING; a_depth: INTEGER): STRING
 			-- get the numeric part of the code from this code, at a_depth
 			-- for example:
 			-- 		a_code = at0001		a_depth = 0 -> 0001
@@ -168,7 +217,7 @@ feature -- Access
 			Result := code_num_part.substring(lpos, rpos)
 		end
 
-	specialisation_depth_from_code(a_code: STRING): INTEGER is
+	specialisation_depth_from_code (a_code: STRING): INTEGER
 			-- Infer number of levels of specialisation from `a_code'.
 		require
 			code_valid: a_code /= Void and then is_valid_code (a_code)
@@ -178,20 +227,26 @@ feature -- Access
 			non_negative: Result >= 0
 		end
 
-	specialised_code_tail(a_code: STRING): STRING is
+	specialised_code_tail (a_code: STRING): STRING
 			-- get code tail from a specialised code, e.g. from
 			-- "at0032.0.1", the result is "1"; from
 			-- "at0004.3", the result is "3"
 		require
-			Code_valid: a_code /= Void and then is_specialised_code(a_code)
+			code_valid: a_code /= Void and then is_valid_code (a_code)
+			not_root_code: is_refined_code (a_code)
 		do
-			Result := a_code.substring(a_code.last_index_of(Specialisation_separator, a_code.count)+1, a_code.count)
+			Result := a_code.substring (a_code.last_index_of (Specialisation_separator, a_code.count) + 1, a_code.count)
 		end
 
 feature -- Comparison
 
-	is_valid_code (a_code: STRING): BOOLEAN is
-			-- Is `a_code' an "at" or "ac" code?
+	is_valid_code (a_code: STRING): BOOLEAN
+			-- Is `a_code' a valid "at" or "ac" code? It can be any of:
+			-- at0000
+			-- at000n
+			-- at0.n, at0.1.n, at0.0.n etc
+			-- where n is non-0
+			-- It can't have a final 0-value numeric segment except in the at0000 case.
 		require
 			code_attached: a_code /= Void
 		local
@@ -207,16 +262,26 @@ feature -- Comparison
 
 				if i > 0 then
 					str := a_code.substring (i + 1, a_code.count)
-					str.prune_all (specialisation_separator)
-					Result := str.is_integer
+					if str.is_equal (default_code_number_string) then
+						Result := True
+					else
+						if str.has (specialisation_separator) then
+							str.remove_head (str.last_index_of(Specialisation_separator, str.count))
+						end
+						if str.is_integer then
+							Result := str.to_integer > 0
+						end
+					end
 				end
 			end
 		end
 
-	is_specialised_code(a_code: STRING): BOOLEAN is
+	is_refined_code(a_code: STRING): BOOLEAN
 			-- a code has been specialised if there is a non-zero code index anywhere above the last index
-			-- e.g. at0.0.1, level=3 -> False
-			--      at0001.0.1, level=3 -> True
+			-- e.g. at0.0.1 -> False
+			--      at0001.0.1 -> True
+			-- OR: if the code is a specialisation of the at0000 code, e.g. at0000.1, it will also return true, even
+			-- though it breaks the above rule. This occurs because we allowed at0000 to be a real code!
 		require
 			Code_valid: a_code /= Void and then is_valid_code (a_code)
 		local
@@ -226,10 +291,50 @@ feature -- Comparison
 				idx_str := a_code.substring(Term_code_leader.count+1, a_code.last_index_of(Specialisation_separator, a_code.count)-1)
 				idx_str.prune_all (Specialisation_separator)
 				Result := idx_str.to_integer > 0
+
+				-- this deals with the exception
+				if not Result then
+					Result := a_code.starts_with (default_concept_code)
+				end
 			end
 		end
 
-	valid_concept_code(a_code: STRING): BOOLEAN is
+	code_exists_at_level(a_code: STRING; a_level: INTEGER): BOOLEAN
+			-- is `a_code' valid at level `a_level' or less, i.e. if we remove its
+			-- trailing specialised part corresponding to specialisation below `a_level',
+			-- and then any trailing '.0' pieces, do we end up with a valid code? If so
+			-- it means that the code corresponds to a real node from `a_level' or higher
+		require
+			Code_valid: a_code /= Void and then is_valid_code(a_code)
+			Level_valid: a_level >= 0
+		local
+			s: STRING
+			idx, i: INTEGER
+		do
+			if a_level >= specialisation_depth_from_code(a_code) then
+				Result := True
+			else
+				-- this loop finds the index in a code string of the character just before a_level-1'th '.'
+				from
+					i := specialisation_depth_from_code (a_code)
+					idx := a_code.count
+				until
+					i = a_level
+				loop
+					idx := a_code.last_index_of (Specialisation_separator, idx) - 1
+					i := i - 1
+				end
+				s := a_code.substring(Term_code_leader.count+1, idx)
+				if s.starts_with (Default_code_number_string) then
+					Result := True
+				else
+					s.prune_all (Specialisation_separator)
+					Result := s.to_integer > 0
+				end
+			end
+		end
+
+	valid_concept_code(a_code: STRING): BOOLEAN
 			-- check if `a_code' is a valid root concept code of an archetype
 			-- True if a_code has form at0000, or at0000.1, at0000.1.1 etc
 		require
@@ -238,17 +343,22 @@ feature -- Comparison
 			csr: INTEGER
 		do
 			Result := a_code.starts_with (default_concept_code)
-
 			if Result then
-				from
-					csr := Default_concept_code.count + 1
-				until
-					csr > a_code.count or not Result
-				loop
-					Result := a_code.count >= csr+1 and (a_code.item (csr) = Specialisation_separator and a_code.item (csr+1) = '1')
+				from csr := Default_concept_code.count + 1 until csr > a_code.count or not Result loop
+					Result := a_code.count >= csr + 1 and (a_code.item (csr) = Specialisation_separator and a_code.item (csr + 1) = '1')
 					csr := csr + 2
 				end
 			end
+		end
+
+	codes_conformant(a_child_code, a_parent_code: STRING): BOOLEAN
+			-- True if `a_child_code' conforms to `a_parent_code' in the sense of specialisation, i.e.
+			-- is `a_child_code' the same as or more specialised than `a_parent_code'
+		require
+			Child_code_valid: a_child_code /= Void and then not a_child_code.is_empty
+			Parent_code_valid: a_parent_code /= Void and then not a_parent_code.is_empty
+		do
+			Result := a_child_code.starts_with (a_parent_code)
 		end
 
 end

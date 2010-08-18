@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "Ocean openEHR kernel test framework"
 	description: "Test TIME_SPECIFICATION data cluster"
 	keywords:    "test, path"
@@ -17,12 +17,12 @@ class TS_DT_TIME_SPECIFICATION
 inherit 
 	TEST_SUITE
 
-creation
+create
 	make
 
 feature -- Access
 
-	test_cases: LINKED_LIST[TEST_CASE] is
+	test_cases: LINKED_LIST[TEST_CASE]
 		local
 			tc:TEST_CASE
 		once
@@ -31,11 +31,11 @@ feature -- Access
 			create {TC_DV_PERIODIC_TIME_SPECIFICATION} tc.make(Void) 		Result.extend(tc)
 		end
 
-	title:STRING is "Time specification tests"
+	title:STRING = "Time specification tests"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 	    do
 
 	    end

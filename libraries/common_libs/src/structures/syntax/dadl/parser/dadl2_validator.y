@@ -1,12 +1,12 @@
 %{
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Validating parser for Archetype Description Language (ADL)"
 	keywords:    "ADL, dADL"
 	
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004, 2005 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2004-2009 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -24,6 +24,11 @@ inherit
 		end
 
 	DATE_TIME_ROUTINES
+		export
+			{NONE} all
+		end
+
+	SHARED_MESSAGE_DB
 		export
 			{NONE} all
 		end
@@ -55,14 +60,11 @@ create
 %token SYM_EQ SYM_ELLIPSIS SYM_LIST_CONTINUE SYM_INFINITY SYM_INTERVAL_DELIM
 %token SYM_DT_UNKNOWN
 
--- FIXME: query syntax is obsolete from 01/jun/2005; remove when backward compatibility no longer needed
-%token SYM_QUERY_FUNC
-
 %token SYM_TRUE SYM_FALSE
 %left SYM_LT SYM_GT SYM_LE SYM_GE
 
-%token ERR_CHARACTER ERR_STRING 
-%token <STRING> ERR_V_QUALIFIED_TERM_CODE_REF
+%token ERR_CHARACTER ERR_STRING ERR_CADL_MISPLACED
+%token <STRING> ERR_V_QUALIFIED_TERM_CODE_REF ERR_V_LOCAL_TERM_CODE_REF
 
 %type <STRING> type_identifier
 %type <INTEGER> integer_value
@@ -79,7 +81,12 @@ create
 %type <DT_COMPLEX_OBJECT_NODE> single_attr_object_block, untyped_single_attr_object_block
 %type <DT_COMPLEX_OBJECT_NODE> multiple_attr_object_block, untyped_multiple_attr_object_block
 %type <DT_COMPLEX_OBJECT_NODE> complex_object_block
-%type <DT_OBJECT_LEAF> untyped_primitive_object_block, primitive_object_block
+%type <DT_OBJECT_LEAF> untyped_primitive_object_block, primitive_object_block object_reference_block
+%type <DT_OBJECT_LEAF> primitive_object_value absolute_path_object_value
+
+%type <OG_PATH> absolute_path relative_path
+%type <OG_PATH_ITEM> path_segment
+%type <ARRAYED_LIST[OG_PATH]> absolute_path_list
 
 %type <ARRAYED_LIST[STRING]> string_list_value
 %type <ARRAYED_LIST[INTEGER_REF]> integer_list_value
@@ -188,7 +195,7 @@ attr_id: V_ATTRIBUTE_IDENTIFIER
 				complex_object_nodes.item.put_attribute(attr_node)
 			else
 				raise_error
-				report_error("Duplicate relationship: " + attr_node.rm_attr_name)
+				report_error(create_message_line("VDATU", <<attr_node.rm_attr_name>>))
 				abort
 			end
 
@@ -202,7 +209,7 @@ attr_id: V_ATTRIBUTE_IDENTIFIER
 	| V_ATTRIBUTE_IDENTIFIER error
 		{
 			raise_error
-			report_error("Error in attribute value")
+			report_error(create_message_line("SDAT", Void))
 			abort
 		}
 	;
@@ -212,6 +219,7 @@ attr_id: V_ATTRIBUTE_IDENTIFIER
 --
 object_block: complex_object_block
 	| primitive_object_block
+	| object_reference_block
 	;
 
 complex_object_block: single_attr_object_block
@@ -282,9 +290,7 @@ multiple_attr_object_block_head: SYM_START_DBLOCK
 					attr_nodes.item.put_child(complex_object_node)
 				else
 					raise_error
-					report_error("Key must be unique; key [" + complex_object_node.node_id + 
-						"] already exists under attribute %"" + 
-						attr_nodes.item.rm_attr_name + "%"")
+					report_error(create_message_line("VOKU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>))
 					abort
 				end
 
@@ -309,7 +315,7 @@ multiple_attr_object_block_head: SYM_START_DBLOCK
 					complex_object_node.put_attribute(attr_node)
 				else
 					raise_error
-					report_error("Duplicate relationship: " + attr_node.rm_attr_name)
+					report_error(create_message_line("VDATU", <<attr_node.rm_attr_name>>))
 					abort
 				end
 
@@ -356,7 +362,7 @@ object_key: '[' simple_value ']'
 				attr_nodes.item.set_multiple
 			else
 				raise_error
-				report_error("generic object not enclosed by normal object not allowed")
+				report_error(create_message_line("SGEE", <<attr_node.rm_attr_name>>))
 				abort
 			end
 		}
@@ -378,7 +384,7 @@ single_attr_object_block: untyped_single_attr_object_block
 			debug("dADL_parse")
 				io.put_string(indent + "typed single_attr_object_block; type = " + $1 + "%N")
 			end
-			$2.set_type_name($1)
+			$2.set_visible_type_name($1)
 			$$ := $2
 		}
 	;
@@ -440,8 +446,7 @@ single_attr_object_complex_head: SYM_START_DBLOCK
 					attr_nodes.item.put_child(complex_object_node)
 				else
 					raise_error
-					report_error("Key must be unique; key [" + complex_object_node.node_id 
-								+ "] already exists under attribute %"" + attr_nodes.item.rm_attr_name + "%"")
+					report_error(create_message_line("VOKU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>))
 					abort
 				end
 			end
@@ -454,7 +459,6 @@ single_attr_object_complex_head: SYM_START_DBLOCK
 			complex_object_nodes.extend(complex_object_node)
 		}
 	;
-
 
 --
 -- ------------------------- primitive objects ---------------------
@@ -471,7 +475,7 @@ primitive_object_block: untyped_primitive_object_block
 			debug("dADL_parse")
 				io.put_string(indent + "typed primitive_object_block; type = " + $1 + "%N")
 			end
-			$2.set_type_name($1)
+			$2.set_visible_type_name($1)
 			$$ := $2
 		}
 	;
@@ -481,15 +485,14 @@ untyped_primitive_object_block: SYM_START_DBLOCK primitive_object_value SYM_END_
 			debug("dADL_parse")
 				io.put_string(indent + "untyped_primitive_object_block; attr_nodes(<<" + 
 						attr_nodes.item.rm_attr_name + ">>).item.put_child(<<" + 
-						leaf_object_node.as_string + ">>)%N")
+						$2.as_string + ">>)%N")
 			end
-			if not attr_nodes.item.has_child_with_id(leaf_object_node.node_id) then
-				attr_nodes.item.put_child(leaf_object_node)
-				$$ := leaf_object_node
+			if not attr_nodes.item.has_child_with_id($2.node_id) then
+				attr_nodes.item.put_child($2)
+				$$ := $2
 			else
 				raise_error
-				report_error("Key must be unique; key [" + leaf_object_node.node_id 
-						+ "] already exists under attribute %"" + attr_nodes.item.rm_attr_name + "%"")
+				report_error(create_message_line("VOKU", <<$2.node_id, attr_nodes.item.rm_attr_name >>))
 				abort
 			end
 		}
@@ -498,46 +501,46 @@ untyped_primitive_object_block: SYM_START_DBLOCK primitive_object_value SYM_END_
 primitive_object_value: simple_value
 		{
 			if obj_id /= Void then
-				create {DT_PRIMITIVE_OBJECT} leaf_object_node.make_identified($1, obj_id)
+				create {DT_PRIMITIVE_OBJECT} $$.make_identified($1, obj_id)
 				obj_id := Void
 			else
-				create {DT_PRIMITIVE_OBJECT} leaf_object_node.make_anonymous($1)
+				create {DT_PRIMITIVE_OBJECT} $$.make_anonymous($1)
 			end
 		}
 	| simple_list_value
 		{
 			if obj_id /= Void then
-				create {DT_PRIMITIVE_OBJECT_LIST} leaf_object_node.make_identified($1, obj_id)
+				create {DT_PRIMITIVE_OBJECT_LIST} $$.make_identified($1, obj_id)
 				obj_id := Void
 			else
-				create {DT_PRIMITIVE_OBJECT_LIST} leaf_object_node.make_anonymous($1)
+				create {DT_PRIMITIVE_OBJECT_LIST} $$.make_anonymous($1)
 			end
 		}
 	| simple_interval_value
 		{
 			if obj_id /= Void then
-				create {DT_PRIMITIVE_OBJECT_INTERVAL} leaf_object_node.make_identified($1, obj_id)
+				create {DT_PRIMITIVE_OBJECT_INTERVAL} $$.make_identified($1, obj_id)
 				obj_id := Void
 			else
-				create {DT_PRIMITIVE_OBJECT_INTERVAL} leaf_object_node.make_anonymous($1)
+				create {DT_PRIMITIVE_OBJECT_INTERVAL} $$.make_anonymous($1)
 			end
 		}
 	| term_code
 		{
 			if obj_id /= Void then
-				create {DT_PRIMITIVE_OBJECT} leaf_object_node.make_identified($1, obj_id)
+				create {DT_PRIMITIVE_OBJECT} $$.make_identified($1, obj_id)
 				obj_id := Void
 			else
-				create {DT_PRIMITIVE_OBJECT} leaf_object_node.make_anonymous($1)
+				create {DT_PRIMITIVE_OBJECT} $$.make_anonymous($1)
 			end
 		}
 	| term_code_list_value
 		{
 			if obj_id /= Void then
-				create {DT_PRIMITIVE_OBJECT_LIST} leaf_object_node.make_identified($1, obj_id)
+				create {DT_PRIMITIVE_OBJECT_LIST} $$.make_identified($1, obj_id)
 				obj_id := Void
 			else
-				create {DT_PRIMITIVE_OBJECT_LIST} leaf_object_node.make_anonymous($1)
+				create {DT_PRIMITIVE_OBJECT_LIST} $$.make_anonymous($1)
 			end
 		}
 	;
@@ -650,6 +653,7 @@ simple_interval_value: integer_interval_value
 
 ---------------------- BASIC DATA VALUES -----------------------
 
+
 type_identifier: '(' V_TYPE_IDENTIFIER ')'
 		{
 			$$ := $2
@@ -727,9 +731,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 				create integer_interval.make_bounded($2, $4, True, True)
 				$$ := integer_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $4.out)
-				abort
+				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS integer_value SYM_INTERVAL_DELIM
@@ -738,9 +740,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 				create integer_interval.make_bounded($3, $5, False, True)
 				$$ := integer_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $5.out)
-				abort
+				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM
@@ -749,9 +749,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 				create integer_interval.make_bounded($2, $5, True, False)
 				$$ := integer_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $5.out)
-				abort
+				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM
@@ -760,9 +758,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 				create integer_interval.make_bounded($3, $6, False, False)
 				$$ := integer_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $6.out)
-				abort
+				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT integer_value SYM_INTERVAL_DELIM
@@ -830,9 +826,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 				create real_interval.make_bounded($2, $4, True, True)
 				$$ := real_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $4.out)
-				abort
+				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS real_value SYM_INTERVAL_DELIM
@@ -841,9 +835,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 				create real_interval.make_bounded($3, $5, False, True)
 				$$ := real_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $5.out)
-				abort
+				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM
@@ -852,9 +844,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 				create real_interval.make_bounded($2, $5, True, False)
 				$$ := real_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $5.out)
-				abort
+				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM
@@ -863,9 +853,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 				create real_interval.make_bounded($3, $6, False, False)
 				$$ := real_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $6.out)
-				abort
+				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT real_value SYM_INTERVAL_DELIM
@@ -952,9 +940,7 @@ date_value: V_ISO8601_EXTENDED_DATE -- in ISO8601 form yyyy-MM-dd
 			if valid_iso8601_date($1) then
 				create $$.make_from_string($1)
 			else
-				raise_error
-				report_error("invalid ISO8601 date: " + $1)
-				abort
+				abort_with_error("VIDV", <<$1>>)
 			end
 		}
 	;
@@ -983,9 +969,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 				create date_interval.make_bounded($2, $4, True, True)
 				$$ := date_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $4.out)
-				abort
+				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS date_value SYM_INTERVAL_DELIM
@@ -994,9 +978,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 				create date_interval.make_bounded($3, $5, False, True)
 				$$ := date_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $5.out)
-				abort
+				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM
@@ -1005,9 +987,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 				create date_interval.make_bounded($2, $5, True, False)
 				$$ := date_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $5.out)
-				abort
+				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM
@@ -1016,9 +996,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 				create date_interval.make_bounded($3, $6, False, False)
 				$$ := date_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $6.out)
-				abort
+				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT date_value SYM_INTERVAL_DELIM
@@ -1053,9 +1031,7 @@ time_value: V_ISO8601_EXTENDED_TIME
 			if valid_iso8601_time($1) then
 				create $$.make_from_string($1)
 			else
-				raise_error
-				report_error("invalid ISO8601 time: " + $1)
-				abort
+				abort_with_error("VITV", <<$1>>)
 			end
 		}
 	;
@@ -1084,9 +1060,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 				create time_interval.make_bounded($2, $4, True, True)
 				$$ := time_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $4.out)
-				abort
+				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS time_value SYM_INTERVAL_DELIM
@@ -1095,9 +1069,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 				create time_interval.make_bounded($3, $5, False, True)
 				$$ := time_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $5.out)
-				abort
+				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM
@@ -1106,9 +1078,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 				create time_interval.make_bounded($2, $5, True, False)
 				$$ := time_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $5.out)
-				abort
+				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM
@@ -1117,9 +1087,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 				create time_interval.make_bounded($3, $6, False, False)
 				$$ := time_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $6.out)
-				abort
+				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT time_value SYM_INTERVAL_DELIM
@@ -1154,9 +1122,7 @@ date_time_value: V_ISO8601_EXTENDED_DATE_TIME
 			if valid_iso8601_date_time($1) then
 				create $$.make_from_string($1)
 			else
-				raise_error
-				report_error("invalid ISO8601 date/time: " + $1)
-				abort
+				abort_with_error("VIDTV", <<$1>>)
 			end
 		}
 	;
@@ -1185,9 +1151,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 				create date_time_interval.make_bounded($2, $4, True, True)
 				$$ := date_time_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $4.out)
-				abort
+				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS date_time_value SYM_INTERVAL_DELIM
@@ -1196,9 +1160,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 				create date_time_interval.make_bounded($3, $5, False, True)
 				$$ := date_time_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $5.out)
-				abort
+				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM
@@ -1207,9 +1169,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 				create date_time_interval.make_bounded($2, $5, True, False)
 				$$ := date_time_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $5.out)
-				abort
+				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM
@@ -1218,9 +1178,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 				create date_time_interval.make_bounded($3, $6, False, False)
 				$$ := date_time_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $6.out)
-				abort
+				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT date_time_value SYM_INTERVAL_DELIM
@@ -1255,9 +1213,7 @@ duration_value: V_ISO8601_DURATION
 			if valid_iso8601_duration($1) then
 				create $$.make_from_string($1)
 			else
-				raise_error
-				report_error("invalid ISO8601 duration: " + $1)
-				abort
+				abort_with_error("VIDUV", <<$1>>)
 			end
 		}
 	;
@@ -1286,9 +1242,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 				create duration_interval.make_bounded($2, $4, True, True)
 				$$ := duration_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $4.out)
-				abort
+				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS duration_value SYM_INTERVAL_DELIM
@@ -1297,9 +1251,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 				create duration_interval.make_bounded($3, $5, False, True)
 				$$ := duration_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $5.out)
-				abort
+				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM
@@ -1308,9 +1260,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 				create duration_interval.make_bounded($2, $5, True, False)
 				$$ := duration_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $2.out + " must be <= " + $5.out)
-				abort
+				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM
@@ -1319,9 +1269,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 				create duration_interval.make_bounded($3, $6, False, False)
 				$$ := duration_interval
 			else
-				raise_error
-				report_error("Invalid interval: " + $3.out + " must be <= " + $6.out)
-				abort
+				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT duration_value SYM_INTERVAL_DELIM
@@ -1358,9 +1306,7 @@ term_code: V_QUALIFIED_TERM_CODE_REF
 		}
 	| ERR_V_QUALIFIED_TERM_CODE_REF
 		{
-			raise_error
-			report_error("Invalid term code reference: %"" + $1 + "%"; spaces not allowed in code string")
-			abort
+			abort_with_error("STCV", <<$1>>)
 		}
 	;
 
@@ -1389,18 +1335,139 @@ uri_value: V_URI
 		}
 	;
 
+--
+-- ------------------------- object reference ---------------------
+--
+object_reference_block: SYM_START_DBLOCK absolute_path_object_value SYM_END_DBLOCK
+		{
+			debug("dADL_parse")
+				io.put_string(indent + "object_reference_block; attr_nodes(<<" + 
+						attr_nodes.item.rm_attr_name + ">>).item.put_child(<<" + 
+						$2.as_string + ">>)%N")
+			end
+			if not attr_nodes.item.has_child_with_id($2.node_id) then
+				attr_nodes.item.put_child($2)
+				$$ := $2
+			else
+				raise_error
+				report_error(create_message_line("VOKU", <<$2.node_id, attr_nodes.item.rm_attr_name >>))
+				abort
+			end
+		}
+	;
+
+absolute_path_object_value: absolute_path
+		{
+			if obj_id /= Void then
+				create {DT_OBJECT_REFERENCE} $$.make_identified($1, obj_id)
+				obj_id := Void
+			else
+				create {DT_OBJECT_REFERENCE} $$.make_anonymous($1)
+			end
+		}
+	| absolute_path_list
+		{
+			if obj_id /= Void then
+				create {DT_OBJECT_REFERENCE_LIST} $$.make_identified($1, obj_id)
+				obj_id := Void
+			else
+				create {DT_OBJECT_REFERENCE_LIST} $$.make_anonymous($1)
+			end
+		}
+	;
+
+
+absolute_path_list: absolute_path ',' absolute_path
+		{
+			create $$.make(0)
+			$$.extend($1)
+			$$.extend($3)
+		}
+	| absolute_path_list ',' absolute_path
+		{
+			$1.extend($3)
+			$$ := $1
+		}
+	| absolute_path ',' SYM_LIST_CONTINUE
+		{
+			create $$.make(0)
+			$$.extend($1)
+		}
+	;
+
+--------------------------------------------------------------------------------------------------
+--------------- THE FOLLOWING SOURCE TAKEN FROM OG_PATH_VALIDATOR.Y - DO NOT MODIFY  -------------
+--------------- except to remove movable_path ----------------------------------------------------
+--------------------------------------------------------------------------------------------------
+
+absolute_path: '/'
+		{
+			create $$.make_root
+			debug("OG_PATH_parse")
+				io.put_string("....absolute_path (root); %N")
+			end
+		}
+	|'/' relative_path
+		{
+			$$ := $2
+			$$.set_absolute
+			debug("OG_PATH_parse")
+				io.put_string("....absolute_path; %N")
+			end
+		}
+	| absolute_path '/' relative_path
+		{
+			$$ := $1
+			$$.append_path($3)
+			debug("OG_PATH_parse")
+				io.put_string("....absolute_path (appended relative path); %N")
+			end
+		}
+	;
+
+relative_path: path_segment
+		{
+			create $$.make_relative($1)
+		}
+	| relative_path '/' path_segment
+		{
+			$$ := $1
+			$$.append_segment($3)
+		}
+	;
+
+path_segment: V_ATTRIBUTE_IDENTIFIER '[' V_STRING ']'
+		{
+			create $$.make_with_object_id($1, $3)
+			debug("OG_PATH_parse")
+				io.put_string("...path_segment: " + $1 + "[" + $3 + "]%N")
+			end
+		}
+	| V_ATTRIBUTE_IDENTIFIER
+		{
+			create $$.make($1)
+			debug("OG_PATH_parse")
+				io.put_string("...path_segment: " + $1 + "%N")
+			end
+		}
+	;
+
+--------------------------------------------------------------------------------------------------
+-------------------------------- END SOURCE TAKEN FROM OG_PATH_VALIDATOR.Y ----------------------
+--------------------------------------------------------------------------------------------------
+
 %%
 
 feature -- Initialization
 
-	make is
+	make
 			-- Create a new parser.
 		do
 			make_scanner
 			make_parser_skeleton
 		end
 
-	execute(in_text:STRING; a_source_start_line: INTEGER) is
+	execute (in_text:STRING; a_source_start_line: INTEGER)
 		do
 			reset_scanner
 			accept -- ensure no syntax errors lying around from previous invocation
@@ -1423,7 +1490,7 @@ feature -- Initialization
 
 feature {YY_PARSER_ACTION} -- Basic Operations
 
-	report_error (a_message: STRING) is
+	report_error (a_message: STRING)
 			-- Print error message.
 		local
 			f_buffer: YY_FILE_BUFFER
@@ -1437,6 +1504,13 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 				error_text.append ("line ")
 			end
 			error_text.append ((in_lineno + source_start_line).out + ": " + error_message + "%N")
+		end
+
+	abort_with_error (err_code: STRING; params: ARRAY [STRING])
+		do
+			raise_error
+			report_error(create_message_line(err_code, params))
+			abort
 		end
 
 feature -- Access
@@ -1455,12 +1529,11 @@ feature -- Access
 
 feature {NONE} -- Parse Tree
 
-	complex_object_nodes: ARRAYED_STACK[DT_COMPLEX_OBJECT_NODE]
+	complex_object_nodes: ARRAYED_STACK [DT_COMPLEX_OBJECT_NODE]
 	complex_object_node: DT_COMPLEX_OBJECT_NODE
-	leaf_object_node: DT_OBJECT_LEAF
 	last_object_node: DT_OBJECT_ITEM
 
-	attr_nodes: ARRAYED_STACK[DT_ATTRIBUTE_NODE]
+	attr_nodes: ARRAYED_STACK [DT_ATTRIBUTE_NODE]
 	attr_node: DT_ATTRIBUTE_NODE
 
 	obj_id: STRING

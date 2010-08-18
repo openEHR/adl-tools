@@ -1,11 +1,11 @@
-indexing
+note
 	component:   "openEHR common definitions"
-	
+
 	description: "Definitions of some basic constant values for the openEHR models"
 	keywords:    "definitions"
 
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
@@ -17,9 +17,11 @@ class BASIC_DEFINITIONS
 
 feature -- Definitions
 
-	CR: CHARACTER is '%/015/'
+	CR: CHARACTER = '%/015/'
 
-	LF: CHARACTER is '%/012/'
+	LF: CHARACTER = '%/012/'
+
+	Default_language: STRING = "en"
 
 end
 

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test case for UML class creation"
 	keywords:    "test, object graph, creation"
@@ -25,20 +25,20 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title:STRING is "Create UML Class Object"
+	title:STRING = "Create UML Class Object"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		local
 			uc_abstract, uc_concrete: UML_CLASS
 			up_1: UML_PROPERTY
@@ -54,7 +54,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 	    do
 	    end
 

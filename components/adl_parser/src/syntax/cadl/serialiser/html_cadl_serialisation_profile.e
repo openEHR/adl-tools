@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Common routines for HTML ADL serialisation"
 	keywords:    "test, ADL"
@@ -23,10 +23,10 @@ inherit
 
 create
 	make
-	
+
 feature {NONE} -- Implementation
 
-	symbols: HASH_TABLE[STRING, INTEGER] is
+	symbols: HASH_TABLE[STRING, INTEGER]
 			-- keywords in this format, keyed by logical name
 		once
 			create Result.make(0)
@@ -36,16 +36,20 @@ feature {NONE} -- Implementation
 			Result.put("cardinality",		SYM_CARDINALITY)
 			Result.put("use_node",			SYM_USE_NODE)
 			Result.put("allow_archetype",		SYM_ALLOW_ARCHETYPE)
-			
+			Result.put("use_archetype",		SYM_USE_ARCHETYPE)
+
 			Result.put("include",			SYM_INCLUDE)
 			Result.put("exclude",			SYM_EXCLUDE)
-			
+
+			Result.put("before",			SYM_BEFORE)
+			Result.put("after",			SYM_AFTER)
+
 			Result.put("{",				SYM_START_CBLOCK)
 			Result.put("}",				SYM_END_CBLOCK)
 			Result.put("*",				SYM_ANY)
 			Result.put("invariant",			SYM_INVARIANT)
-		end	
-	
+		end
+
 end
 
 

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			     Subtype of C_OBJECT representing an archetype %"slot%", i.e.
@@ -32,15 +32,14 @@ create
 
 feature -- Initialisation
 
-	default_create is
+	default_create
 			--
 		do
-			precursor
 			create includes.make(0)
 			create excludes.make(0)
 		end
 
-	make_identified(a_rm_type_name, an_object_id:STRING) is
+	make_identified (a_rm_type_name, an_object_id: STRING)
 			-- set type name, object_id
 		require
 			Rm_type_name_valid: a_rm_type_name /= Void and then not a_rm_type_name.is_empty
@@ -51,7 +50,7 @@ feature -- Initialisation
 			rm_type_name := a_rm_type_name
 		end
 
-	make_anonymous(a_rm_type_name:STRING) is
+	make_anonymous (a_rm_type_name: STRING)
 			-- set type name
 		require
 			Rm_type_name_valid: a_rm_type_name /= Void and then not a_rm_type_name.is_empty
@@ -73,28 +72,47 @@ feature -- Access
 
 feature -- Status Report
 
-	any_allowed: BOOLEAN is
-			-- True if any value allowed
-			-- i.e. no terminology_id or code_list
+	any_allowed: BOOLEAN
+			-- True if any value allowed i.e. no includes or excludes defined, and
+			-- slot is not closed
 		do
-			Result := not (has_includes or has_excludes)
+			Result := not (has_includes or has_excludes) and not is_closed
 		end
 
-	has_includes: BOOLEAN is
+	has_includes: BOOLEAN
 			-- true if there are invariants
 		do
 			Result := includes /= Void and then includes.count > 0
 		end
 
-	has_excludes: BOOLEAN is
+	has_excludes: BOOLEAN
 			-- true if there are invariants
 		do
 			Result := excludes /= Void and then excludes.count > 0
 		end
 
+	is_closed: BOOLEAN
+			-- True if this slot specification in this template exhaustively mentions all fillers,
+			-- in which case, the slot will not be available for further filling in either
+			-- specialised archetypes or at runtime.
+			-- Default value False, i.e. unless explicitly set, slots remain open.
+
+feature -- Comparison
+
+	is_subset_of (other: like Current): BOOLEAN
+			-- True if this node is a subset, i.e. a redefinition of, `other'
+			-- Returns False if they are the same, or if they do not correspond
+		do
+			if other.any_allowed then
+				Result := True
+			elseif not any_allowed then
+				-- FIXME - tobe implemented
+			end
+		end
+
 feature -- Modification
 
-	add_include(assn: ASSERTION) is
+	add_include(assn: ASSERTION)
 			-- add includes constraint
 		require
 			assn /= Void
@@ -102,12 +120,12 @@ feature -- Modification
 			if includes = Void then
 				create includes.make(0)
 			end
-			includes.extend(assn)
+			includes.extend (assn)
 		ensure
 			includes.has(assn)
 		end
 
-	add_exclude(assn: ASSERTION) is
+	add_exclude(assn: ASSERTION)
 			-- add excludes constraint
 		require
 			assn /= Void
@@ -115,12 +133,12 @@ feature -- Modification
 			if excludes = Void then
 				create excludes.make(0)
 			end
-			excludes.extend(assn)
+			excludes.extend (assn)
 		ensure
 			excludes.has(assn)
 		end
 
-	set_includes(assn_list: ARRAYED_LIST[ASSERTION]) is
+	set_includes(assn_list: ARRAYED_LIST[ASSERTION])
 			-- set includes constraints
 		require
 			assn_list /= Void
@@ -128,7 +146,7 @@ feature -- Modification
 			includes := assn_list
 		end
 
-	set_excludes(assn_list: ARRAYED_LIST[ASSERTION]) is
+	set_excludes(assn_list: ARRAYED_LIST[ASSERTION])
 			-- set excludes constraints
 		require
 			assn_list /= Void
@@ -136,29 +154,38 @@ feature -- Modification
 			excludes := assn_list
 		end
 
+	set_closed
+			-- set `is_closed'
+		do
+			is_closed := True
+		end
+
 feature -- Output
 
-	out: STRING is
+	out: STRING
 			--
 		do
 			create Result.make(0)
-			Result.append(rm_type_name + "[" + representation.node_id + "] " + occurrences.as_string)
+			Result.append (rm_type_name + "[" + representation.node_id + "] ")
+			if occurrences /= Void then
+				Result.append(occurrences.as_string)
+			end
 		end
 
 feature -- Representation
 
-	representation: !OG_OBJECT_LEAF
+	representation: attached OG_OBJECT_LEAF
 
 feature -- Visitor
 
-	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	enter_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
 			precursor(visitor, depth)
 			visitor.start_archetype_slot(Current, depth)
 		end
 
-	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
 			precursor(visitor, depth)

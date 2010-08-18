@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Unit definition/exponent atom, as used in units"
 	keywords:    "units"
@@ -25,7 +25,7 @@ create
 
 feature -- Initialisation
 
-	make(a_unit:UNIT_REFERENCE; an_exponent:INTEGER) is
+	make(a_unit:UNIT_REFERENCE; an_exponent:INTEGER)
 		require
 			Unit_exists: a_unit /= Void
 		do
@@ -41,14 +41,14 @@ feature -- Access
 
 feature -- Modify
 
-	set_exponent(i:INTEGER) is
+	set_exponent(i:INTEGER)
 		do
 			exponent := i
 		end
 
 feature -- Output
 
-	out:STRING is
+	out:STRING
 		do
 			create Result.make(0)
 			Result.append(unit.out)

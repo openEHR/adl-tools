@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Information Model"
 
 	description: "Test FEEDER_AUDIT_DETAILS"
@@ -21,20 +21,20 @@ inherit
 			check_result
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title: STRING is "TC_FEEDER_AUDIT_DETAILS"
+	title: STRING = "TC_FEEDER_AUDIT_DETAILS"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		local
 			xx: FEEDER_AUDIT_DETAILS
 		do
@@ -43,7 +43,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 		do
 		end
 

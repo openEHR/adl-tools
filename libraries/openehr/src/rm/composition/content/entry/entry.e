@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR EHR Reference Model"
 
 	description: "[
@@ -33,7 +33,7 @@ inherit
 
 feature -- Definitions
 
-	Default_subject_relationship: PARTY_SELF is
+	Default_subject_relationship: PARTY_SELF
 		do
 		end
 

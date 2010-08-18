@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR common definitions"
 	
 	description: "Simple code set interface definition"
@@ -20,7 +20,7 @@ create
 	
 feature -- Initialisation
 	
-	make(an_id: STRING) is
+	make(an_id: STRING)
 			-- make a code_set interface with `an_id'
 		require
 			Id_valid: an_id /= Void and then not an_id.is_empty
@@ -35,7 +35,7 @@ feature -- Access
 	id: STRING
 			-- identifier of this terminology
 
-	all_codes: SET [CODE_PHRASE] is
+	all_codes: SET [CODE_PHRASE]
 		do
 			create {LINKED_SET[CODE_PHRASE]} Result.make
 		ensure
@@ -44,7 +44,7 @@ feature -- Access
 		
 feature -- Status Report
 
-	has(a_code: CODE_PHRASE): BOOLEAN is
+	has(a_code: CODE_PHRASE): BOOLEAN
 			-- 	True if a_code exists in thsi code set
 		require
 			Code_exists: a_code /= Void
@@ -53,7 +53,7 @@ feature -- Status Report
 			Result := True
 		end
 
-	has_code(a_code: STRING): BOOLEAN is
+	has_code(a_code: STRING): BOOLEAN
 		require
 			a_code_valid: a_code /= Void and then not a_code.is_empty
 		do

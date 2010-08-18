@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "File-system repository of archetypes - implementation of ARCHETYPE_REPOSITORY_I."
 	keywords:    "ADL"
@@ -17,12 +17,12 @@ deferred class
 inherit
 	ARCHETYPE_REPOSITORY_I
 
-	SHARED_ARCHETYPE_DIRECTORY
+	SHARED_KNOWLEDGE_REPOSITORY
 		export
 			{NONE} all
 		end
 
-	MESSAGE_BILLBOARD
+	SHARED_APP_RESOURCES
 		rename
 			file_exists as is_valid_path,
 			directory_exists as is_valid_directory
@@ -37,14 +37,6 @@ feature -- Access
 
 	text_timestamp: INTEGER
 			-- Modification time of last opened archetype file as an integer, for comparison purposes.
-
-	first_line (full_path: STRING): STRING is
-			-- return the first line of the file at `full_path'.
-		do
-			file_context.set_target (full_path)
-			file_context.read_first_line
-			Result := file_context.file_first_line
-		end
 
 feature -- Status Report
 
@@ -81,7 +73,7 @@ feature -- Commands
 			if file_context.file_writable (full_path) then
 				file_context.save_file (full_path, a_text)
 				text_timestamp := file_context.file_timestamp
-				post_info (Current, "save_as", "save_as_i1", <<current_language, full_path>>)
+				post_info (Current, "save_as", "save_as_i1", <<full_path>>)
 			else
 				post_error (Current, "save_as", "save_as_e1", <<full_path>>)
 			end
@@ -89,29 +81,10 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	file_context: FILE_CONTEXT
+	file_context: attached FILE_CONTEXT
 			-- Access to the file system.
 		once
 			create Result.make
-		ensure
-			attached: Result /= Void
-		end
-
-	archteype_id_from_path (full_path: STRING): STRING
-			-- Create the id of the archetype designated by `full_path' to this repository
-			-- or else Void if not possible
-		require
-			full_path_valid: is_valid_path (full_path)
-		local
-			base_name: STRING
-			id: !ARCHETYPE_ID
-		do
-			base_name := file_system.basename (full_path)
-			base_name.remove_tail (file_system.extension (base_name).count)
-			create id
-			if id.valid_id (base_name) then
-				Result := base_name
-			end
 		end
 
 end

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Resuable Library Project"
 	description: "[
 			 UML TypedElement abstraction, as defined in OMG UML 2.0 Infrastructure 
@@ -21,7 +21,7 @@ create
 
 feature -- Initialisation
 
-	make is
+	make
 		do
 		end
 

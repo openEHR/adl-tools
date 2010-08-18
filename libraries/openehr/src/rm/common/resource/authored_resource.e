@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Information Model"
 	description: "Abstract idea of an online resource authored by a (usually) human author."
 	keywords:    "archetype"
@@ -21,7 +21,7 @@ inherit
 
 feature -- Definitions
 
-	Uncontrolled_revision_name: STRING is "(uncontrolled)"
+	Uncontrolled_revision_name: STRING = "(uncontrolled)"
 
 feature -- Access
 
@@ -43,7 +43,7 @@ feature -- Access
 			-- The revision history of the resource. Only required if is_controlled = True
 			-- (avoids large revision histories for informal or private editing situations).
 
-	current_revision: STRING is
+	current_revision: STRING
 			-- Current revision if revision_history exists else "(uncontrolled)".
 		do
 			if revision_history /= Void then
@@ -53,31 +53,31 @@ feature -- Access
 			end
 		end
 
-	languages_available: ARRAYED_SET [STRING] is
+	languages_available: attached ARRAYED_SET [STRING]
 			-- Total list of languages available in this resource, derived from
 			-- original_language and translations. Guaranteed to at least include original_language
 		do
-			if stored_languages_available = Void then
-				create stored_languages_available.make(0)
-				stored_languages_available.compare_objects
-				stored_languages_available.extend(original_language.code_string)
+			if languages_available_cache = Void then
+				create languages_available_cache.make(0)
+				languages_available_cache.compare_objects
+				languages_available_cache.extend(original_language.code_string)
 				if translations /= Void then
 					from
 						translations.start
 					until
 						translations.off
 					loop
-						stored_languages_available.extend(translations.key_for_iteration)
+						languages_available_cache.extend(translations.key_for_iteration)
 						translations.forth
 					end
 				end
 			end
-			Result := stored_languages_available
+			Result := languages_available_cache
 		ensure
-			Result /= Void and then not Result.is_empty
+			not Result.is_empty
 		end
 
-	translation_for_language(a_lang: STRING): TRANSLATION_DETAILS is
+	translation_for_language(a_lang: STRING): TRANSLATION_DETAILS
 			-- get translation details for a_lang
 			-- Void if nothing for that language
 		require
@@ -92,7 +92,7 @@ feature -- Status Report
 			-- True if this resource is under any kind of change control (even file
 			-- copying), in which case revision history is created.
 
-	has_language(a_lang: STRING): BOOLEAN is
+	has_language(a_lang: STRING): BOOLEAN
 			-- True if either original_language or translations has a_lang
 		require
 			Language_valid: a_lang /= Void
@@ -100,29 +100,22 @@ feature -- Status Report
 			Result := original_language.code_string.is_equal(a_lang) or else (translations /= Void and then translations.has(a_lang))
 		end
 
--- FIXME: we may re-instate this, but needs something like a list
--- of XX_VALIDATOR objects that can be added to down the inheritance chain (e.g. by ARCHETYPE as well)
---	is_valid_resource: BOOLEAN is
---			-- True if all structures obey their invariants
---		do
---			-- check original_language
---			if original_language = Void then
---				errors.append("No original language%N")
---			end
---
---			Result := errors.is_empty and is_valid_description and is_valid_translations
---		end
+	has_translations: BOOLEAN
+			-- True if there are translations
+		do
+			Result := translations /= Void
+		end
 
 feature -- Modification
 
-	set_description(a_desc: RESOURCE_DESCRIPTION) is
+	set_description(a_desc: RESOURCE_DESCRIPTION)
 		require
 			Description_valid: a_desc /= Void and then a_desc.languages.is_equal(languages_available)
 		do
 			description := a_desc
 		end
 
-	add_default_translation(a_lang: STRING) is
+	add_default_translation(a_lang: STRING)
 			-- add a blank translation object for a_lang
 		require
 			Lang_valid: a_lang /= Void and then not has_language(a_lang)
@@ -131,54 +124,68 @@ feature -- Modification
 		do
 			create a_trans.make_from_language(a_lang)
 			a_trans.add_author_detail ("name", "unknown")
-			add_translation (a_trans, a_lang)
+			add_translation (a_trans)
 		end
 
-	add_translation(a_trans: TRANSLATION_DETAILS; a_lang: STRING) is
+	add_translation(a_trans: TRANSLATION_DETAILS)
 			-- add a translation for a_lang
 		require
-			Lang_valid: a_lang /= Void and then not languages_available.has(a_lang)
-			Translation_valid: a_trans /= Void
+			Translation_valid: a_trans /= Void and then not languages_available.has(a_trans.language.code_string)
 		do
 			if translations = Void then
 				create translations.make(0)
 			end
-			translations.put (a_trans, a_lang)
-			stored_languages_available := Void
+			translations.put (a_trans, a_trans.language.code_string)
+			languages_available_cache := Void
 		end
 
-	add_language(a_lang: STRING) is
+	add_language(a_lang: STRING)
 			-- add a new translation language to the resource, creating appropriate copies
 		require
 			Lang_valid: a_lang /= Void and then not has_language(a_lang)
 		do
 			add_default_translation(a_lang)
 			description.add_language(a_lang)
-			stored_languages_available := Void
+			languages_available_cache := Void
 		end
 
 feature {ADL_ENGINE} -- Construction
 
-	set_translations(a_trans: HASH_TABLE [TRANSLATION_DETAILS, STRING]) is
+	set_translations(a_trans: HASH_TABLE [TRANSLATION_DETAILS, STRING])
 			-- set translations
 		require
 			a_trans /= Void
 		do
 			translations := a_trans
-			stored_languages_available := Void
+			languages_available_cache := Void
 		end
 
 feature -- Status setting
 
-	set_is_controlled is
+	set_is_controlled
 			-- set 'is_controlled'
 		do
 			is_controlled := True
 		end
 
+feature -- Output
+
+	languages_available_out: STRING
+			-- generate readable comma-separated list of languages available
+		do
+			create Result.make_empty
+				from languages_available.start until languages_available.off loop
+					if not Result.is_empty then
+						Result.append (", ")
+					end
+					Result.append (languages_available.item)
+					languages_available.forth
+				end
+			end
+
 feature -- Serialisation
 
-	synchronise is
+	synchronise
 			-- synchronise object representation of resource to forms suitable for
 			-- serialisation
 		do
@@ -190,20 +197,17 @@ feature -- Serialisation
 				orig_lang_translations.set_translations(translations)
 			end
 			orig_lang_translations.synchronise_to_tree
-			if description /= Void then
-				description.synchronise_to_tree
-			end
+			description.synchronise_to_tree
 		end
 
 feature {ADL_ENGINE} -- Implementation
 
 	orig_lang_translations: LANGUAGE_TRANSLATIONS
-			-- holds a copy of translations for purposes of DT object/dADL
-			-- reading and writing
+			-- holds a copy of translations for purposes of DT object/dADL reading and writing
 
 feature {NONE} -- Implementation
 
-	stored_languages_available: ARRAYED_SET [STRING]
+	languages_available_cache: ARRAYED_SET [STRING]
 			-- Total list of languages available in this resource, derived from
 			-- original_language and translations. Guaranteed to at least include original_language
 
@@ -211,15 +215,13 @@ invariant
 	Description_exists: description /= Void
 	Original_language_valid: original_language /= void and then
 		code_set(Code_set_id_languages).has(original_language)
-	Languages_available_valid: languages_available /= Void and then
-		languages_available.has(original_language.as_string)
 	Revision_history_valid: is_controlled xor revision_history = Void
 	Current_revision_valid: current_revision /= Void and not is_controlled
 		implies current_revision.is_equal(Uncontrolled_revision_name)
 	Translations_valid: translations /= Void implies (not translations.is_empty and
 		not translations.has(original_language.code_string))
 --	Description_valid: translations /= Void implies (description.details.for_all
---		(d | translations.has_key(d.language.code_string)))
+--		(agent (d:RESOURCE_DESCRIPTION_ITEM):BOOLEAN do translations.has_key(d.language.code_string) end))
 
 end
 

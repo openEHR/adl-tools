@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 	description: "[
 				 For representing state values which obey a defined state machine, 
@@ -34,16 +34,16 @@ create
 	
 feature -- Definitions
 
-	Default_state: STRING is "Unknown"
+	Default_state: STRING = "Unknown"
 
 feature -- Initialization
 
-	default_create is
+	default_create
 		do
 			create value.default_create
 		end
 
-	make (a_state: DV_CODED_TEXT) is
+	make (a_state: DV_CODED_TEXT)
 			-- make from named state
 		require
 			State_valid: a_state /= Void
@@ -53,13 +53,13 @@ feature -- Initialization
 			Value_set: value = a_state
 		end
 	
-	make_from_string (a_str:STRING) is
+	make_from_string (a_str:STRING)
 			-- make from canonical string (same as make_from_canonical_string)
 		do
 			make_from_canonical_string(a_str)
 		end
 
-	make_from_canonical_string (a_str:STRING) is
+	make_from_canonical_string (a_str:STRING)
 			-- <value>
 			-- 		<value>xxxx</value>
 			-- 		<language>
@@ -91,7 +91,7 @@ feature -- Initialization
 
 feature -- Status Report
 
-	valid_canonical_string(str: STRING): BOOLEAN is
+	valid_canonical_string(str: STRING): BOOLEAN
 			-- True if str contains required tags
 		do
 			Result := xml_has_tag(str, "value", 1)
@@ -107,7 +107,7 @@ feature -- Access
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 			-- name of current state
 		do
 			Result := value.as_string
@@ -115,7 +115,7 @@ feature -- Output
 			Result.is_equal(value.as_string)
 		end
 	
-	as_canonical_string: STRING is
+	as_canonical_string: STRING
 			-- <value>value</value>
 		do
 			Result := "<value>" + value.as_canonical_string + "</value>" + 

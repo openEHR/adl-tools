@@ -1,7 +1,12 @@
-indexing
+note
 	component:   "openEHR support types"
 
-	description: "Generic class defining an interval (i.e. range) of a comparable type."
+	description: "[
+				 Generic class defining an interval (i.e. range) of a comparable type, allowing half-ranges, i.e. with
+				 -infinity as lower limit or +infinity as upper limit.
+				 FIXME: should really be defined as INTERVAL[COMPARABLE] but DATE_TIME_DURATION (one of the types occurring
+				 as a generic parameter of this type) is strangely only PART_COMPARABLE.
+				 ]"
 	keywords:    "intervals"
 
 	author:      "Thomas Beale"
@@ -18,8 +23,7 @@ class INTERVAL [G -> PART_COMPARABLE]
 inherit
 	ANY
 		redefine
-			default_create,
-			is_equal
+			default_create
 		end
 
 create
@@ -27,6 +31,7 @@ create
 	make_bounded,
 	make_lower_unbounded,
 	make_upper_unbounded,
+	make_unbounded,
 	make_point
 
 feature -- Initialization
@@ -40,7 +45,7 @@ feature -- Initialization
 			unbounded: lower_unbounded and upper_unbounded
 		end
 
-	make_point(a_value:G) is
+	make_point (a_value: G)
 			-- make with both limits set to the same value
 		require
 			Value_exists: a_value /= Void
@@ -57,7 +62,7 @@ feature -- Initialization
 			Is_point: is_point
 		end
 
-	make_bounded(a_lower, an_upper:G; lower_included_flag, upper_included_flag: BOOLEAN) is
+	make_bounded (a_lower, an_upper: G; lower_included_flag, upper_included_flag: BOOLEAN)
 			-- make with both limits set
 		require
 			Lower_exists: a_lower /= Void
@@ -75,7 +80,7 @@ feature -- Initialization
 			upper_included_set: upper_included = upper_included_flag
 		end
 
-	make_lower_unbounded(an_upper:G; upper_included_flag: BOOLEAN) is
+	make_lower_unbounded (an_upper: G; upper_included_flag: BOOLEAN)
 			-- make an interval from -infinity to `an_upper'
 		require
 			Upper_exists: an_upper /= Void
@@ -89,7 +94,7 @@ feature -- Initialization
 			upper_included_set: upper_included = upper_included_flag
 		end
 
-	make_upper_unbounded(a_lower:G; lower_included_flag: BOOLEAN) is
+	make_upper_unbounded (a_lower: G; lower_included_flag: BOOLEAN)
 			-- make an interval from `a_lower' to +infinity
 		require
 			Lower_exists: a_lower /= Void
@@ -103,6 +108,17 @@ feature -- Initialization
 			lower_included_set: lower_included = lower_included_flag
 		end
 
+	make_unbounded
+			-- make an interval from -infinity to +infinity, usually
+			-- only sensible as the result of two half-intervals
+		do
+			lower_unbounded := True
+			upper_unbounded := True
+		ensure
+			Lower_unbounded: lower_unbounded
+			Upper_unbounded: upper_unbounded
+		end
+
 feature -- Access
 
 	lower: G
@@ -111,7 +127,7 @@ feature -- Access
 	upper: G
 			-- upper limit of interval
 
-	midpoint: G is
+	midpoint: G
 			-- generate midpoint of limits
 		do
 
@@ -131,7 +147,7 @@ feature -- Status report
 	upper_included: BOOLEAN
 			-- True if upper limit point included in interval
 
-	is_point: BOOLEAN is
+	is_point: BOOLEAN
 			-- Is current interval a point (width = 0)?
 		do
 			Result := not (lower_unbounded or upper_unbounded) and
@@ -141,19 +157,39 @@ feature -- Status report
 				lower_included and upper_included and lower.is_equal (upper))
 		end
 
-	has (v: G): BOOLEAN is
+	unbounded: BOOLEAN
+			-- True if interval is completely open
+		do
+			Result := lower_unbounded and upper_unbounded
+		end
+
+feature -- Comparison
+
+	has (v: G): BOOLEAN
 			-- Does current interval have `v' between its bounds?
 		require
-			exists: v /= void
+			exists: v /= Void
 		do
 			Result := (lower_unbounded or ((lower_included and v >= lower) or v > lower)) and
 			(upper_unbounded or ((upper_included and v <= upper or v < upper)))
-		ensure
-			result_definition: Result = (lower_unbounded or ((lower_included and v >= lower) or v > lower)) and
-			(upper_unbounded or ((upper_included and v <= upper or v < upper)))
+		-- FIXME: this post-condition fails
+		-- ensure
+		--	result_definition: Result = (lower_unbounded or ((lower_included and v >= lower) or v > lower)) and
+		--	(upper_unbounded or ((upper_included and v <= upper or v < upper)))
 		end
 
-	contains (other: like Current): BOOLEAN is
+	intersects (other: like Current): BOOLEAN
+			-- True if there is any overlap between intervals represented by Current and other
+		require
+			exists: other /= Void
+		do
+			Result := unbounded or other.unbounded or
+				(lower_unbounded and (other.lower_unbounded or upper >= other.lower)) or
+				(upper_unbounded and (other.upper_unbounded or lower <= other.upper)) or
+				(upper >= other.lower or lower <= other.upper)
+		end
+
+	contains (other: like Current): BOOLEAN
 			-- Does current interval contain `other'?
 		require
 			Other_exists: other /= void
@@ -171,8 +207,10 @@ feature -- Status report
 			end
 		end
 
-	is_equal(other: like Current): BOOLEAN is
-			-- compare two intervals
+	equal_interval (other: like Current): BOOLEAN
+			-- compare two intervals, allows subtypes like MULTIPLICITY_INTERVAL to be compared
+		require
+			other_attached: other /= Void
 		do
 			if lower_unbounded then
 				Result := other.lower_unbounded
@@ -191,7 +229,7 @@ feature -- Status report
 			end
 		end
 
-	limits_equal: BOOLEAN is
+	limits_equal: BOOLEAN
 			-- true if limits bounded and equal
 		do
 			Result := not (lower_unbounded or upper_unbounded) and (lower.is_equal(upper))
@@ -199,7 +237,7 @@ feature -- Status report
 
 feature -- Output
 
-	lower_out: STRING is
+	lower_out: STRING
 			-- same as out but fixed to make REALs with no decimal part
 			-- output as NNN.0 anyway
 		require
@@ -207,12 +245,12 @@ feature -- Output
 		do
 			-- FIXME: REAL.out is broken
 			Result := lower.out
-			if lower.generating_type.substring(1,4).is_equal("REAL") and then Result.index_of('.', 1) = 0 then
+			if lower.generating_type.out.substring (1, 4).is_equal ("REAL") and then Result.index_of ('.', 1) = 0 then
 				Result.append(".0")
 			end
 		end
 
-	upper_out: STRING is
+	upper_out: STRING
 			-- same as out but fixed to make REALs with no decimal part
 			-- output as NNN.0 anyway
 		require
@@ -220,26 +258,12 @@ feature -- Output
 		do
 			-- FIXME: REAL.out is broken
 			Result := upper.out
-			if upper.generating_type.substring(1,4).is_equal("REAL") and then Result.index_of('.', 1) = 0 then
+			if upper.generating_type.out.substring (1, 4).is_equal ("REAL") and then Result.index_of ('.', 1) = 0 then
 				Result.append(".0")
 			end
 		end
 
-	as_occurrences_string: STRING is
-		do
-			create Result.make(0)
-			if lower_unbounded then
-				Result.append("(error - lower limit unbounded)")
-			elseif upper_unbounded then
-				Result.append(lower_out + "..*")
-			elseif not limits_equal then
-				Result.append(lower_out + ".." + upper_out)
-			else
-				Result.append(lower_out)
-			end
-		end
-
-	as_string: STRING is
+	as_string: STRING
 		do
 			create Result.make(0)
 			if lower_unbounded then

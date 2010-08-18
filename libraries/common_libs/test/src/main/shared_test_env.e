@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Test case for archetype creation"
 	keywords:    "test, ADL, CADL"
@@ -40,7 +40,7 @@ inherit
 		
 feature -- Access
 
-	root_node: OG_OBJECT_NODE is
+	root_node: OG_OBJECT_NODE
 			-- 
 		once
 			-- initial creation
@@ -48,7 +48,7 @@ feature -- Access
 			create Result.make("at0001", Void)
 		end
 
-	print_paths(paths: HASH_TABLE [OG_OBJECT, OG_PATH]) is
+	print_paths(paths: HASH_TABLE [OG_OBJECT, OG_PATH])
 		do
 			from 
 				paths.start
@@ -61,7 +61,7 @@ feature -- Access
 			end
 		end
 
-	print_paths_list(paths: ARRAYED_LIST [OG_PATH]) is
+	print_paths_list(paths: ARRAYED_LIST [OG_PATH])
 		do
 			from 
 				paths.start
@@ -74,12 +74,12 @@ feature -- Access
 			end
 		end
 
-	part: PART is
+	part: PART
 		once
 			create Result
 		end
 
-	string_list:LINKED_LIST[STRING] is
+	string_list:LINKED_LIST[STRING]
 		once
 			create Result.make
 			Result.extend("1 - this")
@@ -90,7 +90,7 @@ feature -- Access
 			Result.compare_objects
 		end
 	
-	print_list (a_list: LIST[STRING]):STRING is
+	print_list (a_list: LIST[STRING]):STRING
 		do
 			create Result.make(0)
 			from a_list.start until a_list.off loop
@@ -100,7 +100,7 @@ feature -- Access
 			end
 		end
 		
-	dadl_engine: DADL_ENGINE is
+	dadl_engine: DADL_ENGINE
 			-- 
 		once
 			create Result.make

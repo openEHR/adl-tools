@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Abstract model of any archetype constraint"
 	keywords:    "archetype, ADL"
@@ -24,20 +24,23 @@ inherit
 
 feature -- Access
 
-	invalid_reason: STRING
-
 	parent: ARCHETYPE_CONSTRAINT
 
-	path: STRING is
+	path: STRING
 			-- path to this object in the tree with respect to root
 		do
-			create Result.make(0)
 			Result := representation.path.as_string
+		end
+
+	path_to_node (a_node: ARCHETYPE_CONSTRAINT): STRING
+			-- path from this node to `a_node'
+		do
+			Result := representation.path_to_node(a_node.representation).as_string
 		end
 
 feature -- Source Control
 
-	specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS is
+	specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS
 			-- status of this node in the source text of this archetype with respect to the
 			-- specialisation hierarchy. Values are: defined_here; redefined, added, unknown
 		require
@@ -50,47 +53,73 @@ feature -- Source Control
 			-- all sub-nodes. Used to roll up nodes on visualisation, and also to decide which
 			-- subtree to remove to convert an archetype to differential form
 
-	set_rolled_up_specialisation_status (a_status: SPECIALISATION_STATUS) is
+	set_rolled_up_specialisation_status (a_status: SPECIALISATION_STATUS)
 		require
 			valid_specialisation_status: valid_specialisation_status(a_status.value)
 		do
 			rolled_up_specialisation_status := a_status
 		end
 
-feature -- Status Report
+feature -- Status report
 
-	is_leaf: BOOLEAN is
+	is_path_compressible: BOOLEAN
+			-- flag to indicate this node is in a specialised archetype and makes no changes
+			-- to the corresponding node in the flat parent, and therefore, this node can be
+			-- compressed .
+
+	is_leaf: BOOLEAN
 			-- True if this node is a terminal node
 		do
 			Result := representation.is_leaf
 		end
 
-	is_root: BOOLEAN is
+	is_root: BOOLEAN
 			-- True if this node is a top node
 		do
 			Result := representation.is_root
 		end
 
-	is_addressable: BOOLEAN is
+	is_addressable: BOOLEAN
 			-- True if this node has a non-anonymous node_id
 		do
 			Result := representation.is_addressable
 		end
 
-	is_valid: BOOLEAN is
-			-- True if node valid; if False, reason in `invalid_reason'
+	is_prohibited: BOOLEAN
+			-- True if node is prohibited, i.e. excluded
 		deferred
-		ensure
-			not Result implies invalid_reason /= Void and then not invalid_reason.is_empty
 		end
 
-feature -- Representation
+feature -- Comparison
 
-	representation: !OG_ITEM
+	node_congruent_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
+			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other'.
+		require
+			other /= Void
+			Schema_attached: an_rm_schema /= Void
+		deferred
+		end
+
+	node_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
+			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
+			-- An error message can be obtained by calling node_conformance_failure_reason
+		require
+			Other_attached: other /= Void
+			Schema_attached: an_rm_schema /= Void
+		deferred
+		end
+
+feature -- Modification
+
+	set_is_path_compressible
+			-- set `is_path_compressible'
+		do
+			is_path_compressible := True
+		end
 
 feature {ARCHETYPE_CONSTRAINT} -- Modification
 
-	set_parent(a_node: like parent) is
+	set_parent(a_node: like parent)
 			-- set parent
 		require
 			Node_exists: a_node /= Void
@@ -98,9 +127,13 @@ feature {ARCHETYPE_CONSTRAINT} -- Modification
 			parent := a_node
 		end
 
+feature -- Representation
+
+	representation: attached OG_ITEM
+
 feature {OG_ITEM} -- Implementation
 
-	set_representation(a_rep: like representation) is
+	set_representation(a_rep: like representation)
 			--
 		do
 			representation := a_rep
@@ -110,15 +143,22 @@ feature {OG_ITEM} -- Implementation
 
 feature -- Duplication
 
-	safe_deep_twin: like Current is
+	safe_deep_twin: like Current
 			-- safe version of deep_twin that Voids `parent' first so as not to clone backwards up tree
 		local
 			p: like parent
+			og_p: OG_NODE
 		do
 			p := parent
 			parent := Void
+
+			og_p := representation.parent
+			representation.set_root
+
 			Result := deep_twin
+
 			parent := p
+			representation.set_parent (og_p)
 		ensure
 			Result.parent = Void
 		end

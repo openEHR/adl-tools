@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Library Project"
 	description: "Native method dispatcher for Eiffel routine and attribute access. Uses CECIL."
 	keywords:    "method dispatch cecil"
@@ -30,7 +30,7 @@ create
 
 feature -- Initialisation
 
-	make(ignore_invisible, cache_created_obj_ids: BOOLEAN) is
+	make(ignore_invisible, cache_created_obj_ids: BOOLEAN)
 			-- 'ignore_invisible' = True prevents Eiffel from raising an exception if a feature
 			-- call is made on a non-visible object;
 			-- 'cache_created_obj_ids' is now ignored; a type id cache is always created.
@@ -42,7 +42,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	eif_type_id(a_type_name: STRING): INTEGER is
+	eif_type_id(a_type_name: STRING): INTEGER
 			-- return the unique internal type id as from eif_type_id()
 		obsolete
 			"Use INTERNAL.dynamic_type_from_string instead"
@@ -54,7 +54,7 @@ feature -- Access
 
 feature -- Status
 
-	is_class_visible(a_type_name:STRING):BOOLEAN is
+	is_class_visible(a_type_name:STRING):BOOLEAN
 			-- unless a class is described as VISIBLE in the ace file, these
 			-- features will not work. Use is_class_visible to test whether
 			-- you may use the other features of this class on it.
@@ -67,7 +67,7 @@ feature -- Status
 			Result := c_is_class_visible($c_class_name)
 		end
 
-	is_valid_feature(a_type_name:STRING; feature_name:STRING):BOOLEAN is
+	is_valid_feature(a_type_name:STRING; feature_name:STRING):BOOLEAN
 			-- is the call 'a_type_name'.'feature_name' a valid feature call (of any signature)
 		require
 			Class_name_exists: a_type_name /= Void and then not a_type_name.is_empty
@@ -83,24 +83,24 @@ feature -- Status
 
 feature -- Argument Handling
 
-	marshal_args_reset is
+	marshal_args_reset
 		do
 			c_marshal_args_reset
 		end
 
-	marshal_int_arg(an_int:INTEGER) is
+	marshal_int_arg(an_int:INTEGER)
 		do
 			c_marshal_int_arg(an_int)
 		end
 
-	marshal_ref_arg(a_ref:ANY) is
+	marshal_ref_arg(a_ref:ANY)
 		do
 			c_marshal_ptr_arg($a_ref)
 		end
 
 feature -- Creation
 
-	create_object(a_type_name, make_proc_name:STRING):ANY is
+	create_object(a_type_name, make_proc_name:STRING):ANY
 			-- create a new object; if make routine is present, any arguments have to be
 			-- marshalled in advance
 		require
@@ -113,7 +113,7 @@ feature -- Creation
 			Result_exists: Result /= Void
 		end
 
-	create_object_by_id(a_type_id:INTEGER; make_proc_name:STRING):ANY is
+	create_object_by_id(a_type_id:INTEGER; make_proc_name:STRING):ANY
 			-- create a new object; if make routine is present, any arguments have to be
 			-- marshalled in advance
 		require
@@ -130,7 +130,7 @@ feature -- Creation
 			Result_exists: Result /= Void
 		end
 
-	create_make_object(a_type_name, make_proc_name:STRING; make_arg:ANY):ANY is
+	create_make_object(a_type_name, make_proc_name:STRING; make_arg:ANY):ANY
 			-- create a new object and call 'make_proc_name' with 'make_arg'
 		require
 			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
@@ -142,7 +142,7 @@ feature -- Creation
 			Result_exists: Result /= Void
 		end
 
-	create_make_object_by_id(a_type_id:INTEGER; make_proc_name:STRING; make_arg:ANY):ANY is
+	create_make_object_by_id(a_type_id:INTEGER; make_proc_name:STRING; make_arg:ANY):ANY
 			-- create a new object; if make routine is present, any arguments have to be
 			-- marshalled in advance
 		require
@@ -161,7 +161,7 @@ feature -- Creation
 
 feature -- Routine Dispatch
 
-	dispatch_procedure (obj:ANY; feature_name:STRING; arg:ANY) is
+	dispatch_procedure (obj:ANY; feature_name:STRING; arg:ANY)
 			-- dispatch a procedure call. Signature: PROC (ARG)
 		require
 			Object_exists: obj /= Void
@@ -173,56 +173,56 @@ feature -- Routine Dispatch
 			c_dispatch_procedure($obj, $c_feature_name, $arg)
 		end
 
-	dispatch_reference_function (obj:ANY; feature_name:STRING; arg:ANY):ANY is
+	dispatch_reference_function (obj:ANY; feature_name:STRING; arg:ANY):ANY
 			-- dispatch a call to a feature with signature: FEATURE (ARG) : REFERENCE
 		do
 			dispatch_function (obj, feature_name, arg, Reference_type)
 			Result := c_result_obj
 		end
 
-	dispatch_boolean_function (obj:ANY; feature_name:STRING; arg:ANY):BOOLEAN is
+	dispatch_boolean_function (obj:ANY; feature_name:STRING; arg:ANY):BOOLEAN
 			-- dispatch a call to a feature with signature: FEATURE (ARG) : BOOLEAN
 		do
 			dispatch_function (obj, feature_name, arg, Boolean_type)
 			Result := c_result_bool
 		end
 
-	dispatch_character_function (obj:ANY; feature_name:STRING; arg:ANY):CHARACTER is
+	dispatch_character_function (obj:ANY; feature_name:STRING; arg:ANY):CHARACTER
 			-- dispatch a call to a feature with signature: FEATURE (ARG) : CHARACTER
 		do
 			dispatch_function (obj, feature_name, arg, Character_type)
 			Result := c_result_char
 		end
 
-	dispatch_integer_function (obj:ANY; feature_name:STRING; arg:ANY):INTEGER is
+	dispatch_integer_function (obj:ANY; feature_name:STRING; arg:ANY):INTEGER
 			-- dispatch a call to a feature with signature: FEATURE (ARG) : INTEGER
 		do
 			dispatch_function (obj, feature_name, arg, Integer_type)
 			Result := c_result_int
 		end
 
-	dispatch_real_function (obj:ANY; feature_name:STRING; arg:ANY):REAL is
+	dispatch_real_function (obj:ANY; feature_name:STRING; arg:ANY):REAL
 			-- dispatch a call to a feature with signature: FEATURE (ARG) : REAL
 		do
 			dispatch_function (obj, feature_name, arg, Real_type)
 			Result := c_result_real
 		end
 
-	dispatch_double_function (obj:ANY; feature_name:STRING; arg:ANY):DOUBLE is
+	dispatch_double_function (obj:ANY; feature_name:STRING; arg:ANY):DOUBLE
 			-- dispatch a call to a feature with signature: FEATURE (ARG) : DOUBLE
 		do
 			dispatch_function (obj, feature_name, arg, Double_type)
 			Result := c_result_double
 		end
 
-	dispatch_pointer_function (obj:ANY; feature_name:STRING; arg:ANY):POINTER is
+	dispatch_pointer_function (obj:ANY; feature_name:STRING; arg:ANY):POINTER
 			-- dispatch a call to a feature with signature: FEATURE (ARG) : POINTER
 		do
 			dispatch_function (obj, feature_name, arg, Pointer_type)
 			Result := c_result_pointer
 		end
 
-	dispatch_bit_function (obj:ANY; feature_name:STRING; arg:ANY):BIT_REF is
+	dispatch_bit_function (obj:ANY; feature_name:STRING; arg:ANY):BIT_REF
 			-- dispatch a call to a feature with signature: FEATURE (ARG) : BIT_REF
 		do
 			dispatch_function (obj, feature_name, arg, Bit_type)
@@ -231,7 +231,7 @@ feature -- Routine Dispatch
 
 feature -- Field Dispatch
 
-	dispatch_reference_field (obj:ANY; feature_name:STRING):ANY is
+	dispatch_reference_field (obj:ANY; feature_name:STRING):ANY
 			-- obtain a field (signature: ATTRIBUTE : ANY)
 		require
 			Object_exists: obj /= Void
@@ -244,7 +244,7 @@ feature -- Field Dispatch
 			Result := c_result_obj
 		end
 
-	dispatch_integer_field (obj:ANY; feature_name:STRING):INTEGER is
+	dispatch_integer_field (obj:ANY; feature_name:STRING):INTEGER
 			-- obtain a field (signature: ATTRIBUTE : INTEGER)
 		require
 			Object_exists: obj /= Void
@@ -257,7 +257,7 @@ feature -- Field Dispatch
 			Result := c_result_int
 		end
 
-	dispatch_boolean_field (obj:ANY; feature_name:STRING):BOOLEAN is
+	dispatch_boolean_field (obj:ANY; feature_name:STRING):BOOLEAN
 			-- obtain a field (signature: ATTRIBUTE : BOOLEAN)
 		require
 			Object_exists: obj /= Void
@@ -270,7 +270,7 @@ feature -- Field Dispatch
 			Result := c_result_bool
 		end
 
-	dispatch_real_field (obj:ANY; feature_name:STRING):REAL is
+	dispatch_real_field (obj:ANY; feature_name:STRING):REAL
 			-- obtain a field (signature: ATTRIBUTE : REAL)
 		require
 			Object_exists: obj /= Void
@@ -283,7 +283,7 @@ feature -- Field Dispatch
 			Result := c_result_real
 		end
 
-	dispatch_double_field (obj:ANY; feature_name:STRING):DOUBLE is
+	dispatch_double_field (obj:ANY; feature_name:STRING):DOUBLE
 			-- obtain a field (signature: ATTRIBUTE : DOUBLE)
 		require
 			Object_exists: obj /= Void
@@ -296,7 +296,7 @@ feature -- Field Dispatch
 			Result := c_result_double
 		end
 
-	dispatch_character_field (obj:ANY; feature_name:STRING):CHARACTER is
+	dispatch_character_field (obj:ANY; feature_name:STRING):CHARACTER
 			-- obtain a field (signature: ATTRIBUTE : CHARACTER)
 		require
 			Object_exists: obj /= Void
@@ -311,7 +311,7 @@ feature -- Field Dispatch
 
 feature {NONE} -- Implementation
 
-	dispatch_function (obj:ANY; feature_name:STRING; arg:ANY; feature_type:INTEGER) is
+	dispatch_function (obj:ANY; feature_name:STRING; arg:ANY; feature_type:INTEGER)
 			-- dispatch any feature call
 		require
 			Object_exists: obj /= Void
@@ -327,122 +327,122 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- External
 
-	c_ignore_invisible is
+	c_ignore_invisible
 		external
 		   "C"
 		end
 
-	c_create_object_by_id(obj_type_id: INTEGER; c_make_proc_name: POINTER): ANY is
+	c_create_object_by_id(obj_type_id: INTEGER; c_make_proc_name: POINTER): ANY
 		external
 		   "C"
 		end
 
-	c_create_make_object_by_id(obj_type_id: INTEGER; c_make_proc_name, c_arg: POINTER): ANY is
+	c_create_make_object_by_id(obj_type_id: INTEGER; c_make_proc_name, c_arg: POINTER): ANY
 		external
 		   "C"
 		end
 
-	c_is_valid_feature(c_str_class_name, c_str_feature_name: POINTER): BOOLEAN is
+	c_is_valid_feature(c_str_class_name, c_str_feature_name: POINTER): BOOLEAN
 		external
 		   "C"
 		end
 
-	c_is_class_visible(c_class_name: POINTER): BOOLEAN is
+	c_is_class_visible(c_class_name: POINTER): BOOLEAN
 		external
 		   "C"
 		end
 
-	c_dispatch_procedure (c_obj, c_feature, c_arg: POINTER) is
+	c_dispatch_procedure (c_obj, c_feature, c_arg: POINTER)
 		external
 		   "C"
 		end
 
-	c_dispatch_reference_field (c_obj, c_feature: POINTER) is
+	c_dispatch_reference_field (c_obj, c_feature: POINTER)
 		external
 		   "C"
 		end
 
-	c_dispatch_boolean_field (c_obj: POINTER; c_feature: POINTER) is
+	c_dispatch_boolean_field (c_obj: POINTER; c_feature: POINTER)
 		external
 		   "C"
 		end
 
-	c_dispatch_integer_field (c_obj: POINTER; c_feature: POINTER) is
+	c_dispatch_integer_field (c_obj: POINTER; c_feature: POINTER)
 		external
 		   "C"
 		end
 
-	c_dispatch_real_field (c_obj: POINTER; c_feature: POINTER) is
+	c_dispatch_real_field (c_obj: POINTER; c_feature: POINTER)
 		external
 		   "C"
 		end
 
-	c_dispatch_double_field (c_obj: POINTER; c_feature: POINTER) is
+	c_dispatch_double_field (c_obj: POINTER; c_feature: POINTER)
 		external
 		   "C"
 		end
 
-	c_dispatch_character_field (c_obj: POINTER; c_feature: POINTER) is
+	c_dispatch_character_field (c_obj: POINTER; c_feature: POINTER)
 		external
 		   "C"
 		end
 
-	c_dispatch_function (c_obj, c_feature, c_arg: POINTER; feature_type: INTEGER) is
+	c_dispatch_function (c_obj, c_feature, c_arg: POINTER; feature_type: INTEGER)
 		external
 		   "C"
 		end
 
-	c_result_char: CHARACTER is
+	c_result_char: CHARACTER
 		external
 		   "C"
 		end
 
-	c_result_bool: BOOLEAN is
+	c_result_bool: BOOLEAN
 		external
 		   "C"
 		end
 
-	c_result_int: INTEGER is
+	c_result_int: INTEGER
 		external
 		   "C"
 		end
 
-	c_result_real: REAL is
+	c_result_real: REAL
 		external
 		   "C"
 		end
 
-	c_result_double: DOUBLE is
+	c_result_double: DOUBLE
 		external
 		   "C"
 		end
 
-	c_result_pointer: POINTER is
+	c_result_pointer: POINTER
 		external
 		   "C"
 		end
 
-	c_result_bit: BIT_REF is
+	c_result_bit: BIT_REF
 		external
 		   "C"
 		end
 
-	c_result_obj: ANY is
+	c_result_obj: ANY
 		external
 		   "C"
 		end
 
-	c_marshal_args_reset is
+	c_marshal_args_reset
 		external
 		   "C"
 		end
 
-	c_marshal_int_arg(arg: INTEGER) is
+	c_marshal_int_arg(arg: INTEGER)
 		external
 		   "C"
 		end
 
-	c_marshal_ptr_arg(arg: POINTER) is
+	c_marshal_ptr_arg(arg: POINTER)
 		external
 		   "C"
 		end

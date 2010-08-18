@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Event logging severity constants"
 	keywords:    "logging"
@@ -15,16 +15,16 @@ class EVENT_SEVERITY_CONSTANTS
 
 feature -- Access
 
-	Default_event_level, Information: INTEGER is 0
+	Default_event_level, Information: INTEGER = 0
 
-	Warning: INTEGER is 101
+	Warning: INTEGER = 101
 
-	Error: INTEGER is 102
+	Error: INTEGER = 102
 
-	No_events: INTEGER is 110
+	No_events: INTEGER = 110
 			-- pseudo level (not a severity) for masking all events	
 
-	Severities: HASH_TABLE[STRING, INTEGER] is
+	Severities: HASH_TABLE[STRING, INTEGER]
 		once
 			create Result.make(0)
 			Result.put("Information", Information)
@@ -32,7 +32,7 @@ feature -- Access
 			Result.put("Error", Error)
 		end
 
-	Event_levels:HASH_TABLE[INTEGER, STRING] is
+	Event_levels:HASH_TABLE[INTEGER, STRING]
 		once
 			create Result.make(0)
 			Result.put(Information,	"all")
@@ -42,7 +42,7 @@ feature -- Access
 			Result.put(No_events,	"none")
 		end
 
-	event_severity_threshold(a_threshold:STRING):INTEGER is
+	event_severity_threshold(a_threshold:STRING):INTEGER
 			-- send events of this severity and higher to log device; default to all
 		do
 			if a_threshold = Void then
@@ -61,7 +61,7 @@ feature -- Access
 
 feature -- Status
 
-	is_valid_severity(n:INTEGER):BOOLEAN is
+	is_valid_severity(n:INTEGER):BOOLEAN
 		do
 			Result := n = Information or else (n >= Warning and n <= Error)
 		end

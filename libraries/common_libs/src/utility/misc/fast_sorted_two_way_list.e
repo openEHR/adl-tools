@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Library Project"
       description: "[
 			 Version of SORTED_TWO_WAY_LIST[G] with faster searching,
@@ -30,7 +30,7 @@ create
 
 feature -- Access
 
-	search_after (v: like item) is
+	search_after (v: like item)
 			-- Go to first position with item greater than or
 			-- equal to `v', using the binary split method.
 		local
@@ -57,7 +57,7 @@ feature -- Access
 			end
 		end
 
-	search_before (v: like item) is
+	search_before (v: like item)
 			-- Go to first position with item less than or
 			-- equal to `v', using the binary split method.
 		local

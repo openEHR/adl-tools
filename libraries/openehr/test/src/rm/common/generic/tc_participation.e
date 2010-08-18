@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Reference Model"
 
 	description: "Test PARTICIPATION"
@@ -21,20 +21,20 @@ inherit
 			check_result
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title: STRING is "TC_PARTICIPATION"
+	title: STRING = "TC_PARTICIPATION"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		local
 			par: PARTICIPATION
 		do
@@ -43,7 +43,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 		do
 		end
 

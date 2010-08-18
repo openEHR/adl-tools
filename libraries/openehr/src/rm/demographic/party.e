@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Demographic Reference Model"
 
 	description: "[
@@ -43,7 +43,7 @@ feature -- Access
 	details: ITEM_STRUCTURE	
 			-- All other details for this party.
 
-	type: DV_TEXT is
+	type: DV_TEXT
 			-- Type of party, such as “PERSON”, “ORGANISATION”, etc, or 
 			-- Role name, e.g. “general practitioner”, “nurse”, “private citizen”.
 			-- Taken from inherited name attribute.
@@ -51,24 +51,24 @@ feature -- Access
 			Result := name
 		end
 
-	path_of_item (a_loc: LOCATABLE): STRING is
+	path_of_item (a_loc: LOCATABLE): STRING
 			-- The path to an item relative to the root of this archetyped structure.
 		do
 		end
 
-	item_at_path (a_path: STRING): LOCATABLE is
+	item_at_path (a_path: STRING): LOCATABLE
 			-- The item at a path (relative to this item).
 		do
 		end
 
-	parent: PARTY is
+	parent: PARTY
 			-- parent node of this node in compositional structure
 		once		
 		end
 
 feature -- Status Report
 
-	path_exists (a_path: STRING): BOOLEAN is
+	path_exists (a_path: STRING): BOOLEAN
 			-- True if the path is valid with respect to the current item.
 		do
 		end

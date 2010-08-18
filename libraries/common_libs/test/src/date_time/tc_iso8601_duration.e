@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test case for ISO8601_DURATION type."
 	keywords:    "test, date, time"
@@ -25,20 +25,20 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title: STRING is "ISO8601_DURATION test"
+	title: STRING = "ISO8601_DURATION test"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		local
 			iso_dur: ISO8601_DURATION
 			str, iso_dur_str: STRING
@@ -86,7 +86,7 @@ feature -- Initialisation
 			end
 		end
 
-	valid_iso_strings: ARRAYED_LIST [STRING] is
+	valid_iso_strings: ARRAYED_LIST [STRING]
 		once
 			create Result.make(0)
 
@@ -111,7 +111,7 @@ feature -- Initialisation
 			Result.extend("PT2H4M22,049S")
 		end
 
-	invalid_iso_strings: ARRAYED_LIST [STRING] is
+	invalid_iso_strings: ARRAYED_LIST [STRING]
 		once
 			create Result.make(0)
 
@@ -121,7 +121,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 	    do
 	    end
 

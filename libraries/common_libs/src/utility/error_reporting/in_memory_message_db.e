@@ -1,7 +1,7 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "[
-			     In-memory implementation of message database abstraction
+			     In-memory implementation of message database abstraction.
 				 ]"
 	keywords:    "error status reporting"
 
@@ -19,95 +19,44 @@ class IN_MEMORY_MESSAGE_DB
 inherit
 	MESSAGE_DB
 
-	INTERNAL
-		export
-			{NONE} all
-		end
-
 create
 	make
 
-feature -- Initialisation
+feature -- Modification
 
-	make is
+	populate (a_dadl_str, a_locale_lang: STRING)
+			-- populate message database using messages in `a_dadl_str' in language `a_locale_lang'.
+			-- The latter should be a 2-digit ISO 639 language code, e.g. "en", "de" etc
+			-- The format of `a_dadl_str' (dADL):
+			--	templates = <
+			--		["en"] = <
+			--			["key1"] = <"Message string with $1 argument $2 argument etc">
+			--			["key2"] = <"Message string with $1 argument $2 argument etc">
+			--		>
+			--	>
+			-- caller should check database_loaded after call.
+		require
+			Valid_message_string: attached a_dadl_str
+			Valid_local_lang: attached a_locale_lang and then not a_locale_lang.is_empty
 		local
 			parser: DADL2_VALIDATOR
 			dt_tree: DT_COMPLEX_OBJECT_NODE
 			init_helper: IN_MEMORY_MESSAGE_DB_INITIALISER
 		do
 			create parser.make
-			parser.execute(message_templates_text, 1)
+			parser.execute(a_dadl_str, 1)
 			if not parser.syntax_error then
 				dt_tree := parser.output
-				init_helper ?= dt_tree.as_object(dynamic_type_from_string("IN_MEMORY_MESSAGE_DB_INITIALISER"))
-				check init_helper /= Void end
-				templates := init_helper.templates
+				init_helper ?= dt_tree.as_object_from_string("IN_MEMORY_MESSAGE_DB_INITIALISER")
+				if init_helper.templates.has (a_locale_lang) then
+					templates.merge (init_helper.templates.item (a_locale_lang))
+				else
+					templates.merge (init_helper.templates.item (Default_message_language))
+				end
+			else
+				io.put_string ("Message database failure: " + parser.error_text + " (check ADL_APPLICATION)%N")
 			end
 		end
-
-feature -- Access
-
-	message_templates_text: STRING is
-			-- string form of message template tables in one language
-		"[
-		templates = <
-			-- MESSAGE_BILLBOARD
-			["none"] = <"No error">
-			["message_code_error"] = <"Error code $1 does not exist">
-			
-			-- ANY
-			["report_exception"] = <"Software Exception $1 caught; stack:%N$2">
-			["unhandled_exception"] = <"Exception caught but not handled: $1">
-			["general_error"] = <"Error: $1">
-			["general"] = <"$1">
-			
-			-- ARCHETYPE_COMPILER
-			["create_new_archetype_1"] = <"CREATE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
-			["specialise_archetype_1"] = <"SPECIALISE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
-			["open_adl_file_1"] = <"%NOPEN FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
-			["save_archetype_i1"] = <"Serialised: $1 to file $2">
-			["save_archetype_e2"] = <"Serialisation failed (archetype not valid)">
-			["save_archetype_e3"] = <"%NSAVE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
-			["serialise_archetype_e1"] = <"Serialisation failed; archetype not valid: $1">
-			["serialise_archetype_e2"] = <"%NSERIALISE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
-			["parse_archetype_i1"] = <"Archetype $1 syntax VALIDATED">
-			["parse_archetype_i2"] = <"Archetype $1 semantics VALIDATED">
-			["parse_archetype_i3"] = <"Archetype differential form file found; parsing that">
-			["parse_archetype_e1"] = <"$1 (Parse failed)">
-			["parse_archetype_e2"] = <"Archetype $1 semantic validation FAILED; reasons:%N$2">
-			["parse_archetype_w2"] = <"Archetype $1 semantic validation Warnings:%N$2">
-			["parse_archetype_e3"] = <"PARSE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
-			["parse_archetype_e4"] = <"Archetype $1 semantic validation of differential form FAILED; reasons:%N$2">
-
-			["arch_context_make_flat_i1"] = <"Generated differential archetype from specialised flat archetype">
-			
-			-- ARCHETYPE_VALIDATOR
-			
-			
-			-- ARCHETYPE_FILE_REPOSITORY_IMP
-			["invalid_filename_e1"] = <"Invalid archetype filename $1">
-			["pair_filename_i1"] = <"(Differential/flat pair archetype filename found $1)">
-			["save_as_i1"] = <"Archetype saved in language $1 to $2">
-			["save_as_e1"] = <"Save-as failed; could not write to file $1">
-			
-			-- DT_OBJECT_CONVERTER.dt_to_object
-			["container_type_mismatch"] = 
-				<"Mismatch error in data and model for field $1 in type $2. Parsed data implies container type but is not in model">
-			["primitive_type_mismatch"] = 
-				<"Mismatch error in data and model for field $1 in type $2. Parsed data implies primitive, sequence<primitive> or interval<primitive> type but model does not">
-			["dt_proc_arg_type_mismatch"] = 
-				<"[Exception caught]: Mismatch between data and model for $1.$2. Expecting $3, read a $4">
-			["populate_dt_proc_arg_type_mismatch"] = 
-				<"[Exception caught]: $1.$2 - writing primitive object of type $3 into argument of type $4">
-				
-			-- ARCHETYPE_DIRECTORY
-			["arch_dir_orphan_archetype"] = <"No parent matching $1 found for archetype $2">
-			["arch_dir_dup_archetype"] = <"Duplicate archetype $1">
-
-			-- ADL_SYNTAX_CONTERTER
-			["syntax_upgraded_i1"] = <"Syntax element upgraded: --$1-- changed to --$2--">
-		>
-		]"
 
 end
 

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test suite for ADL archetype test cases"
 	keywords:    "test"
@@ -22,7 +22,7 @@ create
 	
 feature -- Access
 
-	test_cases: LINKED_LIST[TEST_CASE] is
+	test_cases: LINKED_LIST[TEST_CASE]
 			-- the list of tests available
 		once
 			create Result.make
@@ -53,11 +53,11 @@ feature -- Access
 			Result.extend(create {TC_CVT_C_QUANTITY}.make(Void))
 		end
 
-	title: STRING is "ADL test cases"
+	title: STRING = "ADL test cases"
 
 feature -- Initialisation
 
-	make(arg: ANY) is
+	make(arg: ANY)
 		do
 		end
 

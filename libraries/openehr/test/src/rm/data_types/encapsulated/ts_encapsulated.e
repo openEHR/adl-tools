@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR test framework"
 	description: "Test ENCAPSULATED data cluster"
 	keywords:    "test"
@@ -17,12 +17,12 @@ class TS_DT_ENCAPSULATED
 inherit 
 	TEST_SUITE
 
-creation
+create
 	make
 
 feature -- Access
 
-	test_cases: LINKED_LIST[TEST_CASE] is
+	test_cases: LINKED_LIST[TEST_CASE]
 		local
 			tc:TEST_CASE
 		once
@@ -31,11 +31,11 @@ feature -- Access
 			create {TC_DV_PARSABLE} tc.make(Void) 		Result.extend(tc)
 		end
 
-	title:STRING is "Encapsulated type tests"
+	title:STRING = "Encapsulated type tests"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 	    do
 
 	    end

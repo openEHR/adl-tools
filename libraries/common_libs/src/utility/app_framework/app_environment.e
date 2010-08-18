@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Libraries"
 	description: "[
 				 Common access point operating environment resources.
@@ -24,16 +24,16 @@ inherit
 
 feature -- Definitions
 
-	Default_cmd_line_option_sign: CHARACTER is '-'
+	Default_cmd_line_option_sign: CHARACTER = '-'
 
-	Default_cfg_file_name: STRING is "default.cfg"
+	Default_cfg_file_name: STRING = "default.cfg"
 			-- default config filename is name of app + ".cfg"
 
-	Default_cfg_file_cmt_char: CHARACTER is ';'
+	Default_cfg_file_cmt_char: CHARACTER = ';'
 
 feature --- Initiatialisation
 
-	app_env_initialise is
+	app_env_initialise
 			-- initialise the application environment; set
 			-- 'app_env_fail_reason' if encountered problems
 		deferred
@@ -43,37 +43,37 @@ feature --- Initiatialisation
 
 feature -- Application Resources
 
-	app_cfg_file_name: STRING is 
+	app_cfg_file_name: STRING 
 			-- application config file full pathname
 		deferred 
 		end
 
 feature -- Resource Configuration
 
-	app_cmd_line_option_sign: CHARACTER is 
+	app_cmd_line_option_sign: CHARACTER 
 		deferred
 		end
 
-	app_cfg_file_cmt_char: CHARACTER is 
+	app_cfg_file_cmt_char: CHARACTER 
 		deferred 
 		end
 
 feature -- Environment Status
 
-	app_env_is_valid: BOOLEAN is
+	app_env_is_valid: BOOLEAN
 	        -- if not True, look at app_init_fail_reason
 	    do
 	        Result := app_env_fail_reason.is_empty
 	    end
 
-	app_env_fail_reason: STRING is
+	app_env_fail_reason: STRING
  	    once
 	        create Result.make(0)
 	    end
 
 feature -- Miscellaneous
 
-	close_console:BOOLEAN is
+	close_console:BOOLEAN
             external
                 "C | <wincon.h> , <wtypes.h>"
             alias

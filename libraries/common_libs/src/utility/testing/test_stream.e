@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
       description: "Test input/output streams"
 	keywords:    "test"
@@ -16,13 +16,13 @@ deferred class TEST_STREAM
 
 feature -- Access
 
-	put_string (a_text: STRING) is
+	put_string (a_text: STRING)
 		require
 			text_not_void: a_text /= void
 		deferred
 		end
 
-	search (str: STRING; start: INTEGER): INTEGER is
+	search (str: STRING; start: INTEGER): INTEGER
 			-- Position of first occurrence of `str' at or after `start';
 			-- 0 if none.
 		require
@@ -31,7 +31,7 @@ feature -- Access
 		deferred
 		end
 
-	new_line is
+	new_line
 		deferred
 		end
 

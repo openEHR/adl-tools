@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "interface class to assertion parser and parse tree"
 	keywords:    "ADL, assertion"
@@ -25,11 +25,11 @@ create
 
 feature -- Initialisation
 
-	make is
+	make
 		do
 		end
 
-	reset is
+	reset
 			-- clear current state
 		do
 			source := Void
@@ -50,7 +50,7 @@ feature -- Access
 
 	serialised: STRING
 
-	parse_error_text: STRING is
+	parse_error_text: STRING
 			-- result of last parse
 		do
 			Result := parser.error_text
@@ -61,28 +61,35 @@ feature -- Status Report
 	in_parse_mode: BOOLEAN
 			-- True if engine in mode where tree was created from source
 
-	parse_succeeded: BOOLEAN is
+	parse_succeeded: BOOLEAN
 			-- True if parse succeeded; call after parse()
 		do
 			Result := tree /= Void
 		end
 
+	is_differential: BOOLEAN
+			-- True if archetype is differential
+
 feature -- Commands
 
-	set_source(in_text: STRING; a_source_start_line: INTEGER) is
+	set_source(in_text: STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: SCHEMA_ACCESS)
 			-- set `in_text' as working artifact
 		require
 			Text_valid: in_text /= Void and then not in_text.is_empty
 			Start_line_valid: a_source_start_line > 0
+			Rm_schema_available: an_rm_schema /= Void
 		do
+			rm_schema := an_rm_schema
 			source := in_text
 			source_start_line := a_source_start_line
 			in_parse_mode := True
+			is_differential := differential_flag
 		ensure
-			in_parse_mode
+			in_parse_mode: in_parse_mode
+			is_differential_set: is_differential = differential_flag
 		end
 
-	parse is
+	parse
 			-- parse artifact. If successful, `tree' contains the parse
 			-- structure. Then validate the artifact
 		require
@@ -92,7 +99,7 @@ feature -- Commands
 			tree := Void
 			serialised := Void
 			create parser.make
-			parser.execute(source, source_start_line)
+			parser.execute(source, source_start_line, is_differential, rm_schema)
 			if not parser.syntax_error then
 				tree := parser.assertion_list
 			end
@@ -100,7 +107,7 @@ feature -- Commands
 			parse_succeeded or else tree = Void
 		end
 
-	serialise(a_format: STRING) is
+	serialise(a_format: STRING)
 			-- serialise current artifact into format
 		require
 			Format_valid: has_assertion_serialiser_format(a_format)
@@ -110,7 +117,7 @@ feature -- Commands
 			serialised := serialiser_mgr.last_result
 		end
 
-	set_tree(a_node: like tree) is
+	set_tree(a_node: like tree)
 			-- set root node from e.g. GUI tool
 		require
 			a_node /= Void
@@ -126,6 +133,8 @@ feature {NONE} -- Implementation
 	parser: CADL_VALIDATOR
 
 	serialiser_mgr: ASSERTION_SERIALISER_MGR
+
+	rm_schema: SCHEMA_ACCESS
 
 end
 

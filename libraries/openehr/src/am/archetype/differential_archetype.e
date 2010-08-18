@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Archetype abstraction"
 	keywords:    "archetype"
@@ -20,55 +20,48 @@ inherit
 		end
 
 create
-	make, make_minimal, make_specialised_child, make_from_flat, make_all
+	make, make_minimal, make_from_flat, make_all
 
 feature -- Initialisation
 
-	make_minimal (an_id: like archetype_id; an_original_language: STRING; a_specialisation_depth: INTEGER) is
+	make_minimal (an_artefact_type: ARTEFACT_TYPE; an_id: like archetype_id; an_original_language: STRING; a_specialisation_depth: INTEGER)
 			-- make a new differential form archetype
 		require
+			Artefact_type_attached: an_artefact_type /= Void
 			Language_valid: an_original_language /= Void and then not an_original_language.is_empty
 			Specialisation_depth_valid: a_specialisation_depth >= 0
 		do
+			artefact_type := an_artefact_type
 			archetype_id := an_id
-			adl_version := 	Current_adl_version
+			adl_version := 	Latest_adl_version
 			create ontology.make_empty(an_original_language, a_specialisation_depth)
-			concept := ontology.concept_code.twin
 			create original_language.make (Default_language_code_set, an_original_language)
 			create description.default_create
-			create definition.make_identified(an_id.rm_entity, concept)
+			create definition.make_identified(an_id.rm_entity, ontology.concept_code.twin)
 			is_dirty := True
 		ensure
+			Artefact_type_set: artefact_type = an_artefact_type
+			Adl_version_set: adl_version = Latest_adl_version
 			Id_set: archetype_id = an_id
-			Original_language_set: original_language.as_string.is_equal(an_original_language)
+			Original_language_set: original_language.code_string.is_equal (an_original_language)
+			Ontology_original_language_set: original_language.code_string.is_equal (ontology.original_language)
 			Specialisation_depth_set: specialisation_depth = a_specialisation_depth
 			Definition_root_node_id: definition.node_id.is_equal (concept)
 			Is_dirty: is_dirty
 		end
 
-	make_specialised_child(a_parent: ARCHETYPE; a_spec_concept: STRING) is
-			-- make this archetype as a specialisation 1 level below the 'other'
-		require
-			Other_valid: a_parent /= Void and then a_parent.is_valid
-			Concept_valid: a_spec_concept /= Void and then not a_spec_concept.is_empty
-		do
-			make_minimal (a_parent.archetype_id.create_specialised_id (a_spec_concept), a_parent.original_language.as_string, a_parent.specialisation_depth+1)
-			create parent_archetype_id.make_from_string(a_parent.archetype_id.value)
-		end
-
-	make_from_flat (a_flat: FLAT_ARCHETYPE) is
+	make_from_flat (a_flat: FLAT_ARCHETYPE)
 			-- create from a flat archetype by cloning and then removing inherited parts
 		require
 			Flat_archetype_valid: a_flat /= Void
 		local
-			c_obj: C_COMPLEX_OBJECT
-			c_attr: C_ATTRIBUTE
-			list_builder: C_ITERATOR
+			cco_prev, cco_next: C_OBJECT
+			c_it: C_ITERATOR
 			a_flat_copy: FLAT_ARCHETYPE
 		do
 			a_flat_copy := a_flat.deep_twin
-			make_all(a_flat_copy.adl_version, a_flat_copy.archetype_id, a_flat_copy.parent_archetype_id, a_flat_copy.is_controlled,
-					a_flat_copy.concept, a_flat_copy.original_language.code_string, a_flat_copy.translations,
+			make_all(a_flat.artefact_type, Latest_adl_version, a_flat_copy.archetype_id, a_flat_copy.parent_archetype_id, a_flat_copy.is_controlled,
+					a_flat_copy.original_language.code_string, a_flat_copy.translations,
 					a_flat_copy.description, a_flat_copy.definition, a_flat_copy.invariants,
 					a_flat_copy.ontology.to_differential)
 
@@ -78,42 +71,56 @@ feature -- Initialisation
 				-- using rolled_up_specialisation statuses in nodes of definition
 				-- generate a list of nodes/paths for deletion from a flat-form archetype
 				create inherited_subtree_list.make(0)
-				create list_builder.make(definition)
-				list_builder.do_at_surface(
+				create c_it.make(definition)
+				c_it.do_at_surface(
 					agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER) do inherited_subtree_list.put (a_c_node, a_c_node.path) end,
-					agent (a_c_node: ARCHETYPE_CONSTRAINT):BOOLEAN do Result := a_c_node.rolled_up_specialisation_status.value = ss_inherited end
+					agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := a_c_node.rolled_up_specialisation_status.value = ss_inherited end
 				)
 
-				-- remove inherited subtrees
-				from
-					inherited_subtree_list.start
-				until
-					inherited_subtree_list.off
-				loop
-					c_obj ?= inherited_subtree_list.item_for_iteration
-
-					if c_obj /= Void then
-						if c_obj.parent /= Void then
-							c_obj.parent.remove_child (c_obj)
-						else
-							-- c_obj must be the parent, which means the entire definition is a copy of that from the parent archetype
+				-- add before/after ordering markers to new nodes whose parent attributes are ordered containers
+				from inherited_subtree_list.start until inherited_subtree_list.off loop
+					if attached {C_OBJECT} inherited_subtree_list.item_for_iteration as cco_1 then
+						-- FIXME: in the following statement, we are assuming that if the cardinality of the parent attribute
+						-- does not exist (typical for a differential archetype), that it is ordered; really we should look up
+						-- the RM schema
+						if cco_1.parent /= Void and (cco_1.parent.cardinality = Void or cco_1.parent.is_ordered) then
+							cco_next := cco_1.parent.child_after (cco_1)
+							if cco_next /= Void and cco_next.specialisation_status (specialisation_depth).value = ss_added then
+								cco_next.set_sibling_order_after (cco_1.node_id)
+							end
+							cco_prev := cco_1.parent.child_before (cco_1)
+							if cco_prev /= Void and cco_prev.specialisation_status (specialisation_depth).value = ss_added then
+								cco_prev.set_sibling_order_before (cco_1.node_id)
+							end
 						end
-					else
-						c_attr ?= inherited_subtree_list.item_for_iteration
+					end
+					inherited_subtree_list.forth
+				end
+
+				-- now remove inherited subtrees
+				from inherited_subtree_list.start until inherited_subtree_list.off loop
+					if attached {C_OBJECT} inherited_subtree_list.item_for_iteration as cco_2 then
+						if cco_2.parent /= Void then
+							cco_2.parent.remove_child (cco_2)
+						else
+							-- cco_2 must be the parent, which means the entire definition is a copy of that from the parent archetype
+						end
+					elseif attached {C_ATTRIBUTE} inherited_subtree_list.item_for_iteration as c_attr then
 						c_attr.parent.remove_attribute (c_attr)
 					end
-
 					inherited_subtree_list.forth
 				end
 			end
-			rebuild
 
 			is_generated := True
+
+			-- rebuild all internal references, path cache etc
+			rebuild
 		end
 
 feature -- Access
 
-	ontology: !DIFFERENTIAL_ARCHETYPE_ONTOLOGY
+	ontology: attached DIFFERENTIAL_ARCHETYPE_ONTOLOGY
 
 	ontology_unused_term_codes: ARRAYED_LIST[STRING]
 			-- list of at codes found in ontology that are not referenced
@@ -125,7 +132,7 @@ feature -- Access
 
 feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER} -- Validation
 
-	build_xrefs is
+	build_xrefs
 			-- build definition / ontology cross reference tables used for validation and
 			-- other purposes
 		do
@@ -138,11 +145,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER} -- Validation
 			create ontology_unused_constraint_codes.make(0)
 			ontology_unused_constraint_codes.compare_objects
 
-			from
-				ontology.term_codes.start
-			until
-				ontology.term_codes.off
-			loop
+			from ontology.term_codes.start until ontology.term_codes.off loop
 				if not id_atcodes_index.has(ontology.term_codes.item) and not
 						data_atcodes_index.has(ontology.term_codes.item) then
 					ontology_unused_term_codes.extend(ontology.term_codes.item)
@@ -151,11 +154,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER} -- Validation
 			end
 			ontology_unused_term_codes.prune(concept)
 
-			from
-				ontology.constraint_codes.start
-			until
-				ontology.constraint_codes.off
-			loop
+			from ontology.constraint_codes.start until ontology.constraint_codes.off loop
 				if not accodes_index.has(ontology.constraint_codes.item) then
 					ontology_unused_constraint_codes.extend(ontology.constraint_codes.item)
 				end
@@ -163,24 +162,91 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER} -- Validation
 			end
 		end
 
+feature {ARCH_REP_ARCHETYPE} -- Structure
+
+	convert_to_differential_paths
+			-- FIXME: only needed while differential archetype source is being created in uncompressed form
+			-- compress paths of congruent nodes in specialised archetype so that equivalent paths
+			-- are recorded in the `differential_path' attribute of terminal C_ATTRIBUTE nodes of congruent sections
+			-- This routine only works if validation has successfully completed because the latter process sets
+			-- is_mergeable markers in the structure.
+		require
+			Target_specialised: is_specialised
+			Is_generated: is_generated
+			Is_valid: is_valid
+		local
+			def_it: C_ITERATOR
+		do
+			converted_def := definition.deep_twin
+			create def_it.make(definition)
+			def_it.do_at_surface(agent node_set_differential_path, agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := not a_c_node.is_path_compressible end)
+			definition := converted_def
+			rebuild
+		end
+
+	converted_def: attached C_COMPLEX_OBJECT
+
+	node_set_differential_path (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+			-- FIXME: only needed while differential archetype source is being created in uncompressed form
+			-- perform validation of node against reference model
+			-- This function gets executed on nodes 1 level BELOW where the is_congruent marker is True
+		local
+			co2: C_OBJECT
+			ca2: C_ATTRIBUTE
+		do
+			if attached {C_ATTRIBUTE} a_c_node as ca then
+				-- these are attributes that are not congruent to any node in the parent archetype,
+				-- i.e. they don't exist in the parent.
+				if converted_def.has_attribute_path (ca.path) then
+					ca2 := converted_def.c_attribute_at_path (ca.path)
+					if not ca2.has_differential_path then
+						debug("compress")
+							io.put_string ("Compressing path at ATTR " + ca.path + "%N")
+						end
+						ca2.set_differential_path_to_here
+					else
+						debug("compress")
+							io.put_string ("Path " + ca.path + " no longer available - attribute moved (already compressed?)%N")
+						end
+					end
+				end
+			elseif attached {C_OBJECT} a_c_node as co then
+				if not co.is_root then
+					if converted_def.has_object_path (co.path) then
+						co2 := converted_def.c_object_at_path (co.path)
+						if not co2.parent.has_differential_path then
+							debug("compress")
+								io.put_string ("Compressing path of ATTR above OBJ with path " + co.path + "%N")
+							end
+							co2.parent.set_differential_path_to_here
+						end
+					else
+						debug("compress")
+							io.put_string ("Path " + co.path + " no longer available - parent moved (already compressed?)%N")
+						end
+					end
+				end
+			end
+		end
+
 feature -- Modification
 
-	set_definition_node_id(a_term_code: STRING) is
+	set_definition_node_id(a_term_code: STRING)
 			-- set the node_id of the archetype root node to a_term_id
 		require
 			Valid_term_code: ontology.has_term_code(a_term_code)
 		do
-			definition.set_object_id(a_term_code)
+			definition.set_node_id(a_term_code)
 		end
 
-	reset_definition is
+	reset_definition
 			-- set definition back to its original state - just the root
 			-- node with all children gone
 		do
 			definition.remove_all_attributes
 		end
 
-	add_language(a_lang: STRING) is
+	add_language(a_lang: STRING)
 			-- add a new language to the archetype - creates new language section in
 			-- ontology, translations and resource description
 		do
@@ -188,7 +254,7 @@ feature -- Modification
 			ontology.add_language (a_lang)
 		end
 
-	remove_ontology_unused_codes is
+	remove_ontology_unused_codes
 			-- remove all term and constraint codes from ontology
 		local
 			code_list: ARRAYED_LIST[STRING]
@@ -199,21 +265,13 @@ feature -- Modification
 			end
 
 			code_list := ontology_unused_term_codes
-			from
-				code_list.start
-			until
-				code_list.off
-			loop
+			from code_list.start until code_list.off loop
 				ontology.remove_term_definition(code_list.item)
 				code_list.forth
 			end
 
 			code_list := ontology_unused_constraint_codes
-			from
-				code_list.start
-			until
-				code_list.off
-			loop
+			from code_list.start until code_list.off loop
 				ontology.remove_constraint_definition(code_list.item)
 				code_list.forth
 			end
@@ -221,7 +279,7 @@ feature -- Modification
 
 feature {ARCHETYPE_VALIDATOR} -- Implementation
 
-	set_parent_archetype (an_archetype: DIFFERENTIAL_ARCHETYPE) is
+	set_parent_archetype (an_archetype: DIFFERENTIAL_ARCHETYPE)
 			-- set `parent_archetype'
 		require
 			Archetype_valid: an_archetype /= Void and then an_archetype.specialisation_depth + 1 = specialisation_depth

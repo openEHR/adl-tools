@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "[
 			 Descriptor for metic prefix.
@@ -30,11 +30,11 @@ create
 
 feature -- Definitions
 
-	Tokens_expected:INTEGER is 4
+	Tokens_expected:INTEGER = 4
 
 feature -- Initialisation
 
-	make(a_name, a_case_sensitive, a_case_insensitive:STRING; a_value:DOUBLE) is
+	make(a_name, a_case_sensitive, a_case_insensitive:STRING; a_value:DOUBLE)
 		require
 			Name_valid: a_name /= Void and then not a_name.is_empty
 			Case_sens_valid: a_case_sensitive /= Void and then not a_case_sensitive.is_empty
@@ -46,7 +46,7 @@ feature -- Initialisation
 			value := a_value
 		end
 
-	make_from_string(a_str:STRING; delim:CHARACTER) is
+	make_from_string(a_str:STRING; delim:CHARACTER)
 			-- initialise from  string with fields delimted by `delim'
 		require
 			Str_exists: a_str /= Void and then not a_str.is_empty
@@ -110,7 +110,7 @@ feature -- Access
 
 feature -- Output
 
-	out:STRING is
+	out:STRING
 		do
 			create Result.make(0)
 			Result.append(name + ", " + case_sensitive + ", " + case_insensitive + ", " + value.out)
@@ -120,7 +120,7 @@ feature -- Error
 
 	invalid_reason:STRING
 
-	is_valid:BOOLEAN is
+	is_valid:BOOLEAN
 		do
 			Result := invalid_reason = Void or else invalid_reason.is_empty
 		end

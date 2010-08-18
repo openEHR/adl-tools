@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Error status flag and reason to be inherited by classes needing its services."
 	keywords:    "error status reporting"
@@ -18,7 +18,7 @@ feature -- Access
 
 	last_op_fail: BOOLEAN -- result of operation
 
-	fail_reason:STRING is
+	fail_reason: STRING
 			-- reason for last op failure
 		do
 			Result := fail_reason_string
@@ -26,11 +26,11 @@ feature -- Access
 
 feature -- Reporting
 
-	fail_reason_line_len:INTEGER is 78
+	fail_reason_line_len: INTEGER = 78
 
 feature -- Modify
 
-	set_fail_reason(s:STRING) is
+	set_fail_reason (s: STRING)
 			-- initialise 'fail_reason' to reason 's'
 		require
 			Args_valid: s /= Void
@@ -42,7 +42,7 @@ feature -- Modify
 			Fail_flag_set: last_op_fail
 		end
 
-	append_fail_reason(s:STRING) is
+	append_fail_reason (s: STRING)
 			-- append another reason 's' to 'fail_reason'
 		require
 			Args_valid: s /= Void
@@ -58,7 +58,7 @@ feature -- Modify
 			Fail_flag_set: last_op_fail
 		end
 
-	clear_fail_reason is
+	clear_fail_reason
 			-- clear fail reason and flag
 		do
 			fail_reason_string := Void
@@ -69,9 +69,9 @@ feature -- Modify
 
 feature {NONE} -- Implementation
 
-	fail_reason_string:STRING
+	fail_reason_string: STRING
 
-	fail_string(op_name, code_context, rep_msg:STRING; rep_code:INTEGER):STRING is
+	fail_string (op_name, code_context, rep_msg: STRING; rep_code: INTEGER): STRING
 	    require
 			Args_valid: op_name /= Void and code_context /= Void and rep_msg /= Void
 	    local
@@ -82,7 +82,7 @@ feature {NONE} -- Implementation
 
 			Result.append(op_name)
 			Result.to_upper
-			Result.append(" failure (reported in " + code_context + "):%N")  
+			Result.append(" failure (reported in " + code_context + "):%N")
 
 			-- the next bit might be long, so build it, then chop it up to be readable
 			create str.make_filled(' ', 4)
@@ -91,7 +91,7 @@ feature {NONE} -- Implementation
 			    -- find next space
 			    spcpos := str.index_of(' ',charpos).max(charpos)
 			    if spcpos <= str.count then
-				    str.insert_string("%N",spcpos) 
+				    str.insert_string("%N",spcpos)
 				    str.insert_string(create {STRING}.make_filled(' ', 4), spcpos+2)
 			    end
 			    charpos := spcpos + fail_reason_line_len
@@ -142,4 +142,4 @@ end
 --| ***** END LICENSE BLOCK *****
 --|
 
- 
+

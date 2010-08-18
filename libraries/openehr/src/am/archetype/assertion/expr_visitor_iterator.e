@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Class to send a visitor to every node in an EXPR_ITEM tree."
 	keywords:    "assertion, iterator"
@@ -18,7 +18,7 @@ create
 
 feature -- Initialisation
 
-	make(a_target: ASSERTION; a_visitor: EXPR_VISITOR) is
+	make(a_target: ASSERTION; a_visitor: EXPR_VISITOR)
 			-- create a new manager targetted to the parse tree `a_target'
 		require
 			Target_exists: a_target /= Void
@@ -30,7 +30,7 @@ feature -- Initialisation
 
 feature -- Command
 
-	do_all is
+	do_all
 			-- start the serialisation process; the result will be in `serialiser_output'
 		do
 			tree_iterator.do_all(agent node_enter_action(?,?), agent node_exit_action(?,?))
@@ -42,14 +42,14 @@ feature {NONE} -- Implementation
 
 	visitor: EXPR_VISITOR
 
-	node_enter_action(a_node: EXPR_ITEM; indent_level: INTEGER) is
+	node_enter_action(a_node: EXPR_ITEM; indent_level: INTEGER)
 		require
 			Node_exists: a_node /= Void
 		do
 			a_node.enter_subtree(visitor, indent_level)
 		end
 
-	node_exit_action(a_node: EXPR_ITEM; indent_level: INTEGER) is
+	node_exit_action(a_node: EXPR_ITEM; indent_level: INTEGER)
 		require
 			Node_exists: a_node /= Void
 		do

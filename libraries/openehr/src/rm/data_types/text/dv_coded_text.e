@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "[
@@ -20,7 +20,7 @@ indexing
 	last_change: "$LastChangedDate$"
 
 class DV_CODED_TEXT
-    
+
 inherit
 	DV_TEXT
 		rename
@@ -30,25 +30,25 @@ inherit
 			make_from_canonical_string, make_from_string
 		end
 
-create 
+create
 	default_create,
 	make, make_from_string, make_from_canonical_string
 
 feature -- Definitions
 
-	Default_primary_code: STRING is "0"
+	Default_primary_code: STRING = "0"
 
-	Default_primary_rubric: STRING is "unknown"
-	
+	Default_primary_rubric: STRING = "unknown"
+
 feature -- Initialization
 
-	default_create is
+	default_create
 		do
 			precursor
 			create defining_code.default_create
 		end
 
-	make (str: STRING; a_code: CODE_PHRASE) is
+	make (str: STRING; a_code: CODE_PHRASE)
 		require
 			String_valid: str /= void and then not str.is_empty
 			A_code_valid: a_code /= Void
@@ -60,11 +60,11 @@ feature -- Initialization
 			Code_set: defining_code = a_code
 		end
 
-	make_from_string(str:STRING) is
+	make_from_string (str: STRING)
 		do
 		end
 
-	make_from_canonical_string(str:STRING) is
+	make_from_canonical_string (str: STRING)
 			-- make from a string of the form:
 			--
 			-- <value>xxxx</value>
@@ -112,7 +112,7 @@ feature -- Initialization
 
 feature -- Status Report
 
-	valid_canonical_string(str: STRING): BOOLEAN is
+	valid_canonical_string(str: STRING): BOOLEAN
 			-- True if str contains required tags
 		do
 			Result := precursor(str) and then xml_has_tag(str, "defining_code", 1)
@@ -125,13 +125,13 @@ feature -- Access
 
 feature -- Comparison
 
-	is_equal (other: like Current): BOOLEAN is
+	is_equal (other: like Current): BOOLEAN
 			-- True if value and key are equal in this and `other'
 		do
 			Result := value.is_equal (other.value) and defining_code.is_equal(other.defining_code)
 		end
-	
-	is_comparable (other: like Current): BOOLEAN is
+
+	is_comparable (other: like Current): BOOLEAN
 			-- True if Current and other are both from same vocabulary; only really meaingiful
 			-- for terms from same small vocabulary, i.e. a subset or value range
 		require
@@ -142,20 +142,20 @@ feature -- Comparison
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 			-- Result in same form as `value'
 		do
 			Result := precursor
 			Result.append (defining_code.as_string)
 		end
 
-	as_canonical_string: STRING is
+	as_canonical_string: STRING
 			-- Result in canonical form
 		do
-			Result := precursor 
+			Result := precursor
 			Result.append("<defining_code>" + defining_code.as_canonical_string + "</defining_code>")
 		end
-	
+
 invariant
 	Defining_code_exists: defining_code /= void
 

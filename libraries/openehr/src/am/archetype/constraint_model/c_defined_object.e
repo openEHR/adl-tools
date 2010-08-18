@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 ADL object nodes that are defined in line, rather than being
@@ -6,7 +6,7 @@ indexing
 				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -20,39 +20,39 @@ inherit
 	C_OBJECT
 
 feature -- Access
-	
-	default_value: ANY is
+
+	prototype_value: ANY
 			-- 	generate a default value from this constraint object
 		deferred
 		ensure
 			Result /= Void
 		end
-		
-    assumed_value: like default_value
+
+    assumed_value: like prototype_value
             -- value to be assumed if none sent in data
 
 feature -- Status Report
 
-	any_allowed: BOOLEAN is
+	any_allowed: BOOLEAN
 			-- True if any value allowed ('*' received in parsed input)
 		deferred
 		end
 
-	valid_value (a_value: like default_value): BOOLEAN is 
+	valid_value (a_value: like prototype_value): BOOLEAN
 		require
 			a_value /= Void
 		deferred
 		end
-	
-	has_assumed_value: BOOLEAN is
+
+	has_assumed_value: BOOLEAN
 			-- True if there is an assumed value
 		do
 			Result := assumed_value /= Void
 		end
-		
+
 feature -- Modification
 
-	set_assumed_value(a_value: like assumed_value) is
+	set_assumed_value(a_value: like assumed_value)
 			-- set `assumed_value'
 		require
 			a_value /= Void and then valid_value(a_value)
@@ -61,9 +61,10 @@ feature -- Modification
 		ensure
 			assumed_value_set: assumed_value = a_value
 		end
-	
+
 invariant
 	Assumed_value_valid: assumed_value /= Void implies valid_value(assumed_value)
+	Any_allowed_validity: not (any_allowed and is_prohibited)
 
 end
 

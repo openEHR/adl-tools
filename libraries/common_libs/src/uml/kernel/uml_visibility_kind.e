@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Resuable Library Project"
 	description: "[
 			 UML TypedElement abstraction, as defined in OMG UML 2.0 Infrastructure 
@@ -18,13 +18,13 @@ class UML_VISIBILITY_KIND
 
 feature -- Definition
 
-	public: INTEGER is 0
+	public: INTEGER = 0
 
-	private: INTEGER is 1
+	private: INTEGER = 1
 
-	protected: INTEGER is 2
+	protected: INTEGER = 2
 
-	package: INTEGER is 3
+	package: INTEGER = 3
 
 feature -- Access
 
@@ -32,7 +32,7 @@ feature -- Access
 
 feature -- Status Report
 	
-	valid_visibility(i: INTEGER): BOOLEAN is 
+	valid_visibility(i: INTEGER): BOOLEAN 
 		do
 			Result := i >= public and i <= protected
 		end

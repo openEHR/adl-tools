@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			 Object node type representing a reference to a constraint
@@ -20,7 +20,7 @@ class CONSTRAINT_REF
 inherit
 	C_REFERENCE_OBJECT
 		redefine
-			default_create, representation, is_valid, enter_subtree, exit_subtree
+			default_create, representation, enter_subtree, exit_subtree
 		end
 
 create
@@ -28,14 +28,13 @@ create
 
 feature -- Initialisation
 
-	default_create is
+	default_create
 			--
 		do
-			precursor
 			rm_type_name := (create {CODE_PHRASE}.default_create).generator
 		end
 
-	make(a_code: STRING) is
+	make(a_code: STRING)
 			-- make from pattern of form "[acNNNN[.NN[etc]]]"
 		require
 			Code_exists: a_code /= Void and then not a_code.is_empty
@@ -55,37 +54,65 @@ feature -- Access
 			-- usually in the ontology section of an ADL archetype
 			-- [called 'reference' in AOM, but that is a keyword in Eiffel]
 
+	external_reference: DV_PARSABLE
+			-- direct reference to external resource in the form of a String, typically a URI;
+			-- the `formalism' attribute can be used to record the exact syntax model of the
+			-- parsable value, enabling it to be processed within archetype tools
+
 feature -- Status Report
 
-	is_valid: BOOLEAN is
-			-- report on validity
+	is_resolved: BOOLEAN
+			-- True if `external_reference' is assigned
 		do
-			Result := precursor
+			Result := external_reference /= Void
+		ensure
+			Result = (external_reference /= Void)
+		end
+
+feature -- Comparison
+
+	is_subset_of (other: like Current): BOOLEAN
+			-- True if this node is a subset, i.e. a redefinition of, `other'
+			-- Returns False if they are the same, or if they do not correspond
+		do
+				-- FIXME - tobe implemented
 		end
 
 feature -- Conversion
 
-	as_string: STRING is
+	as_string: STRING
 			--
 		do
 			create Result.make (0)
-			Result.append("[" + target + "]")
+			Result.append ("[" + target + "]")
+		end
+
+feature -- Modification
+
+	set_external_reference (an_ext_ref, a_syntax: STRING)
+			-- set `external_reference' from two parameters - the actual reference (e.g. a URI string)
+			-- and a syntax model, used to help interpret the reference structure
+		require
+			Ref_valid: an_ext_ref /= Void and then not an_ext_ref.is_empty
+			Syntax_valid: a_syntax /= Void and then not a_syntax.is_empty
+		do
+			create external_reference.make (an_ext_ref, a_syntax)
 		end
 
 feature -- Representation
 
-	representation: !OG_OBJECT_LEAF
+	representation: attached OG_OBJECT_LEAF
 
 feature -- Visitor
 
-	enter_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	enter_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
 			precursor(visitor, depth)
 			visitor.start_constraint_ref(Current, depth)
 		end
 
-	exit_subtree(visitor: C_VISITOR; depth: INTEGER) is
+	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
 			precursor(visitor, depth)

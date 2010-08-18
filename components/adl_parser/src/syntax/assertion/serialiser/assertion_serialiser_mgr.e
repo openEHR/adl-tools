@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Serialiser Manager for archetype definition"
 	keywords:    "archetype constraint definition"
@@ -21,7 +21,7 @@ create
 
 feature -- Initialisation
 
-	make(a_target: ARRAYED_LIST [ASSERTION]; format: STRING) is
+	make(a_target: ARRAYED_LIST [ASSERTION]; format: STRING)
 			-- create a new manager targetted to the parse tree `a_target'
 		require
 			Target_exists: a_target /= Void
@@ -34,7 +34,7 @@ feature -- Initialisation
 
 feature -- Command
 
-	serialise is
+	serialise
 			-- start the serialisation process; the result will be in `serialiser_output'
 		do
 			serialiser.start_assertion(target, 0)
@@ -42,7 +42,7 @@ feature -- Command
 
 feature -- Access
 
-	last_result: STRING is
+	last_result: STRING
 		do
 			Result := serialiser.last_result
 		end

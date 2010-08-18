@@ -1,11 +1,11 @@
 %{
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Scanner for CADL syntax items"
 	keywords:    "CADL, archetype"
 
-	author:      "Thomas Beale <thomas@deepthought.com.au>"
-	support:     "Deep Thought Informatics <support@deepthought.com.au>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues"
 	copyright:   "Copyright (c) 2003-2007 Ocean Informatics Pty Ltd"
 	license:     "Mozilla tri-license"
 
@@ -64,6 +64,7 @@ IDCHAR [a-zA-Z0-9_]
 NAMECHAR [a-zA-Z0-9._\-]
 NAMECHAR_SPACE [a-zA-Z0-9._\- ]
 NAMECHAR_PAREN [a-zA-Z0-9._\-()]
+NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
 
 UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x80-\xBF][\x80-\xBF])|(\xF0[\x90-\xBF][\x80-\xBF][\x80-\xBF])|([\xF1-\xF7][\x80-\xBF][\x80-\xBF][\x80-\xBF]))
 
@@ -173,7 +174,7 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 
 [Uu][Ss][Ee][_][Nn][Oo][Dd][Ee]				last_token := SYM_USE_NODE
 
-[Uu][Ss][Ee][_][Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee] 	last_token := SYM_ALLOW_ARCHETYPE
+[Uu][Ss][Ee][_][Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee] 	last_token := SYM_USE_ARCHETYPE
 
 [Aa][Ll][Ll][Oo][Ww][_][Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee] 	last_token := SYM_ALLOW_ARCHETYPE
 
@@ -181,6 +182,11 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 
 [Ee][Xx][Cc][Ll][Uu][Dd][Ee]					last_token := SYM_EXCLUDE
 
+[Aa][Ff][Tt][Ee][Rr]							last_token := SYM_AFTER
+
+[Bb][Ee][Ff][Oo][Rr][Ee]						last_token := SYM_BEFORE
+
+[Cc][Ll][Oo][Ss][Ee][Dd]						last_token := SYM_CLOSED
 
 ----------/* V_URI */ -------------------------------------------------
 [a-z]+:\/\/[^<>|\\{}^~"\[\] ]*	{
@@ -200,7 +206,8 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 			}
 
 ----------/* V_LOCAL_TERM_CODE_REF: term code of form [at0000], [ac0000] */ ---------------
-\[{ALPHANUM}{NAMECHAR}*\]	{
+
+\[a[ct][0-9.]+\] {
 					last_token := V_LOCAL_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
 			}
@@ -269,9 +276,15 @@ a[ct][0-9.]+ {
 				last_string_value := text
 		}
 
+----------/* archetype id */ -------------------------------------------------
+{NAMESTR}(-{NAMESTR}){2}\.{NAMESTR}(-{NAMESTR})*\.v[1-9][0-9]* {
+					last_token := V_ARCHETYPE_ID
+					last_string_value := text
+			}
+
 ----------/* V_ISO8601_EXTENDED_DATE_TIME YYYY-MM-DDThh:mm:ss[,sss][Z|+/-nnnn] */ -------------------------------------------------
 
-[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})? |
+[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9]([\.,][0-9]+)?(Z|[+-][0-9]{4})? |
 [0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})? |
 [0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9](Z|[+-][0-9]{4})? {
 				last_token := V_ISO8601_EXTENDED_DATE_TIME
@@ -280,7 +293,7 @@ a[ct][0-9.]+ {
 
 ----------/* V_ISO8601_EXTENDED_TIME hh:mm:ss[,sss][Z|+/-nnnn] */ -------------------------------------------------
 
-[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})? |
+[0-2][0-9]:[0-6][0-9]:[0-6][0-9]([\.,][0-9]+)?(Z|[+-][0-9]{4})? |
 [0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})? {
 				last_token := V_ISO8601_EXTENDED_TIME
 				last_string_value := text
@@ -294,9 +307,9 @@ a[ct][0-9.]+ {
 				last_string_value := text
 		}
 
-----------/* V_ISO8601_DURATION PnYnMnWnDtnnHnnMnnS */ -------------------------------------------------
+----------/* V_ISO8601_DURATION PnYnMnWnDtnnHnnMnn.nnnS */ -------------------------------------------------
 
-P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])? |
+P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+([\.,][0-9]+)?[sS])? |
 P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])? {
 				last_token := V_ISO8601_DURATION
 				last_string_value := text
@@ -304,13 +317,13 @@ P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])? {
 
 -- temporary...
 -- missing 'T' silently correct; assume 'm' means minutes not months
-P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])? {
+P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+([\.,][0-9]+)[sS])? {
 				last_token := V_ISO8601_DURATION
 				last_string_value := convert_non_conforming_duration(text)
 			}
 
 -- in future, use this instead to treat as an error
--- P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])? {
+-- P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+([\.,][0-9]+)[sS])? {
 -- 				last_token := ERR_V_ISO8601_DURATION
 --			}
 
@@ -612,7 +625,7 @@ feature {NONE} -- Local variables
 
 feature {NONE} -- Initialization
 
-	make is
+	make
 			-- Create a new scanner.
 		do
 			make_compressed_scanner_skeleton
@@ -622,7 +635,7 @@ feature {NONE} -- Initialization
 
 feature -- Initialization
 
-	reset is
+	reset
 			-- Reset scanner before scanning next input.
 		do
 			reset_compressed_scanner_skeleton
@@ -646,10 +659,10 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	Init_buffer_size: INTEGER is 256
+	Init_buffer_size: INTEGER = 256
 				-- Initial size for `in_buffer'
 
-	dadl_parser: DADL2_VALIDATOR is
+	dadl_parser: DADL2_VALIDATOR
 		once
 			create Result.make
 		end

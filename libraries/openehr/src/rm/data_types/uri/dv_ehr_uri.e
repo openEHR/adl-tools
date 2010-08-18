@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "[
@@ -32,67 +32,67 @@ create
 	
 feature -- Definitions
 
-	Ehr_scheme:STRING is "ehr"
+	Ehr_scheme:STRING = "ehr"
 		
 feature -- Access
 
-	ehr_id: STRING is
+	ehr_id: STRING
 			-- the EHR identification part of the URI
 		do
 		end
 
-	transaction_id:STRING is
+	transaction_id:STRING
 			-- the Transaction identification part of the URI
 		do
 		end
 
-	organiser_id:STRING is
+	organiser_id:STRING
 			-- the Organiser identification part of the URI
 		do
 		end
 
-	entry_id:STRING is
+	entry_id:STRING
 			-- the Entry identification part of the URI
 		do
 		end
 
-	scheme:STRING is 
+	scheme:STRING 
 		once
 			create Result.make(0)
 			Result.append(Ehr_scheme)
 		end
 
-	path: STRING is
+	path: STRING
 		do
 			Result := ehr_id + transaction_id
 		end
 
-	fragment_id: STRING is
+	fragment_id: STRING
 		do
 			Result := organiser_id + entry_id
 		end
 
 feature -- Status Report
 
-	target_is_ehr: BOOLEAN	is
+	target_is_ehr: BOOLEAN
 			-- True if target is an EHR
 		do
 			
 		end
 		
-	target_is_transaction: BOOLEAN is
+	target_is_transaction: BOOLEAN
 			-- 	True if target is a Transaction
 		do
 			
 		end
 		
-	target_is_organiser: BOOLEAN is
+	target_is_organiser: BOOLEAN
 			-- True if target is an Organiser
 		do
 			
 		end
 		
-	target_is_entry: BOOLEAN is
+	target_is_entry: BOOLEAN
 			-- True if target is an Entry
 		do
 			

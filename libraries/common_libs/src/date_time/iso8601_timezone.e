@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR re-usable library"
 	description: "[
 				ISO8601:2004 compliant Timezone class, enabling representation
@@ -25,21 +25,21 @@ create
 	
 feature -- Initialisation
 
-	make_from_string(s: STRING) is
+	make_from_string(s: STRING)
 			-- make from a time of form: Z|+hhmm|-hhmm
 		require
 			String_valid: s /= Void 
 		do
 		end
 
-	make_gmt is
+	make_gmt
 			-- 
 		do
 			is_gmt := True
 			sign := 1
 		end
 
-	make(a_sign: INTEGER; h, m: INTEGER) is
+	make(a_sign: INTEGER; h, m: INTEGER)
 		require
 			Sign_valid: a_sign = -1 or a_sign = 1
 			Hour_valid: h >= 0 and h <= Max_timezone_hour
@@ -66,7 +66,7 @@ feature -- Status Report
 
 feature -- Conversion
 
-	to_seconds: INTEGER is
+	to_seconds: INTEGER
 			-- generate signed number of seconds after or before midnight at the 0 meridian
 			-- represented by this timezone
 		do
@@ -75,7 +75,7 @@ feature -- Conversion
 		
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 			-- express as ISO8601 format string "Z" or "+hhmm" or "-hhmm"
 		local
 			s: STRING

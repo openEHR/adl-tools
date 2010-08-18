@@ -1,6 +1,6 @@
-indexing
+note
 	component:   "openEHR Support Information Model"
-	
+
 	description: "[
 				 Abstract parent of classes representing unique identifiers which 
 				 identify information entities in a durable way. UIDs only ever 
@@ -31,42 +31,42 @@ inherit
 
 feature -- Definitions
 
-	Default_value: STRING is
+	Default_value: STRING
 			-- value for default id
 		deferred
 		end
-		
+
 feature -- Initialisation
 
-	default_create is
+	default_create
 			-- create a default version
 		do
 			create value.make_from_string (Default_value)
 		end
-		
-	make(a_str: STRING) is
+
+	make (a_str: STRING)
 			-- make from a string
 		require
-			Valid_id: valid_id(a_str)
+			Valid_id: valid_id (a_str)
 		do
 			value := a_str
 		ensure
 			Value_set: value = a_str
 		end
-		
+
 feature -- Access
 
 	value: STRING
-	
+
 feature -- Status Report
 
-	valid_id(an_id:STRING): BOOLEAN is
-			-- 
+	valid_id (an_id: STRING): BOOLEAN
+			--
 		require
 			an_id_valid: an_id /= Void and then not an_id.is_empty
 		deferred
 		end
-		
+
 invariant
 	value_exists: value /= Void and then not value.is_empty
 

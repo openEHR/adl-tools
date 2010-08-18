@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Abstract model of a unit property and unit group"
 	keywords:    "unit"
@@ -19,7 +19,7 @@ feature -- Access
 	property: STRING
 			-- physical property being measured by the unit, e.g. "length"
 	     
-	as_string:STRING is
+	as_string:STRING
 		deferred
 		end
 

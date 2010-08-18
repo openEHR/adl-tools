@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test case for nested 1:N attribute"
 	keywords:    "test, object graph, creation"
@@ -25,20 +25,20 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title: STRING is "dADL2 nested multiple attr test"
+	title: STRING = "dADL2 nested multiple attr test"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		do
 			dadl_engine.set_source (dadl_term_definitions, 1)
 			dadl_engine.parse
@@ -57,13 +57,13 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 	    do
 	    end
 
 feature -- Implementation
 
-	dadl_term_definitions: STRING is "%N%
+	dadl_term_definitions: STRING = "%N%
 		%term_definitions = < 							%N%
 		%	[%"en%"] = <								%N%
 		%		[%"at0000%"] = <						%N%

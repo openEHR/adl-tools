@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Event logging facility Interface"
 	keywords:    "logging"
@@ -21,7 +21,7 @@ create
 
 feature -- Initialisation
 
-	make(an_app_name, a_name, a_type, a_threshold:STRING) is
+	make(an_app_name, a_name, a_type, a_threshold:STRING)
 		require
 			App_name_exists: an_app_name /= Void and then not an_app_name.is_empty
 			Name_exists: a_name /= Void
@@ -72,7 +72,7 @@ feature -- Status Report
 
 feature -- Modify
 
-	append_event(class_name, op_name, msg:STRING; severity:INTEGER) is
+	append_event(class_name, op_name, msg:STRING; severity:INTEGER)
 		require
 			Valid_source: class_name /= Void and op_name /= Void
 		local
@@ -92,7 +92,7 @@ feature -- Modify
 
 feature {NONE} -- Implementation
 
-	log_start_event is
+	log_start_event
 			-- log initial message
 	    do
 			append_event(generator, "make",

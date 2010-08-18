@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Test case for archetype creation"
 	keywords:    "test, ADL, CADL"
@@ -30,17 +30,17 @@ create
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 	    do
 	    end
 
 feature -- Access
 
-	title: STRING is "Test Archetype Create"
+	title: STRING = "Test Archetype Create"
 
 feature -- testing
 
-	execute is
+	execute
 		local
 			a_code: STRING
 			a_term: ARCHETYPE_TERM

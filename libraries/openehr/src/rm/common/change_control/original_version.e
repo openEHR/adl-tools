@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Information Model"
 
 	description: "[
@@ -48,7 +48,7 @@ feature -- Access
 			
 feature -- Status Report
 
-	is_merged: BOOLEAN is
+	is_merged: BOOLEAN
 			-- True if this Version was created from more than just the preceding (checked out) version
 		do
 			

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "test object for method dispatcher tests"
 	keywords:    "test, method dispatcher"
@@ -16,7 +16,7 @@ class PART
 
 feature -- Access
 
-	sub_parts:LINKED_LIST[SUB_PART] is
+	sub_parts:LINKED_LIST[SUB_PART]
 		local
 			item:SUB_PART
 		once
@@ -26,13 +26,13 @@ feature -- Access
 			create item.make("harry") Result.extend(item)
 		end
 
-	proc_no_args is
+	proc_no_args
 		do
 			io.put_string(">> Called proc_no_args")
 			io.new_line
 		end
 
-	proc_with_exp_arg(proc_arg:INTEGER) is
+	proc_with_exp_arg(proc_arg:INTEGER)
 		do
 			io.put_string(">> Called proc_with_exp_arg(")
 			io.put_integer(proc_arg)
@@ -40,7 +40,7 @@ feature -- Access
 			io.new_line
 		end
 
-	proc_with_ref_arg(proc_arg:STRING) is
+	proc_with_ref_arg(proc_arg:STRING)
 		do
 			io.put_string(">> Called proc_with_ref_arg(")
 			io.put_string(proc_arg)
@@ -48,7 +48,7 @@ feature -- Access
 			io.new_line
 		end
 
-	ref_func_with_ref_arg(func_arg:STRING):STRING is
+	ref_func_with_ref_arg(func_arg:STRING):STRING
 		do
 			io.put_string(">> Called ref_func_with_ref_arg(") io.put_string(func_arg) io.put_string(":STRING):STRING")
 			Result := func_arg.twin
@@ -57,7 +57,7 @@ feature -- Access
 			io.new_line
 		end
 
-	real_func_with_ref_arg(func_arg:STRING):REAL is
+	real_func_with_ref_arg(func_arg:STRING):REAL
 		do
 			io.put_string(">> Called real_func_with_ref_arg(") io.put_string(func_arg) io.put_string(":STRING):STRING")
 			if func_arg.is_real then
@@ -67,7 +67,7 @@ feature -- Access
 			io.new_line
 		end
 
-	boolean_func_with_ref_arg(func_arg:STRING):BOOLEAN is
+	boolean_func_with_ref_arg(func_arg:STRING):BOOLEAN
 		do
 			io.put_string(">> Called boolean_func_with_ref_arg(") io.put_string(func_arg) io.put_string(":STRING):STRING")
 			if func_arg.is_boolean then

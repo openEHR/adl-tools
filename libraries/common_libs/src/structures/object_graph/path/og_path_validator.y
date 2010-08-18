@@ -1,5 +1,5 @@
 %{
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "parser for Object Graph paths"
 	keywords:    "OG_PATH"
@@ -24,7 +24,7 @@ inherit
 
 	OG_PATH_SCANNER
 		rename
-			make as make_eiffel_scanner
+			make as make_scanner
 		end
 
 	KL_SHARED_EXCEPTIONS
@@ -132,15 +132,15 @@ path_segment: V_ATTRIBUTE_IDENTIFIER V_LOCAL_TERM_CODE_REF
 
 feature -- Initialization
 
-	make is
+	make
 			-- Create a new Eiffel parser.
 		do
-			make_eiffel_scanner
+			make_scanner
 			make_parser_skeleton
 			create indent.make(0)
 		end
 
-	execute(in_text:STRING) is
+	execute (in_text: STRING)
 		do
 			reset
 			create error_text.make(0)
@@ -150,7 +150,7 @@ feature -- Initialization
 
 feature {YY_PARSER_ACTION} -- Basic Operations
 
-	report_error (a_message: STRING) is
+	report_error (a_message: STRING)
 			-- Print error message.
 		do
 			error_text.append (a_message)

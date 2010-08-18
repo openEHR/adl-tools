@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Assertion operator types"
 	keywords:    "ADL, assertion"
@@ -15,66 +15,66 @@ class OPERATOR_TYPES
 
 feature -- Definitions
 
-	op_eq: Integer is 2001	
+	op_eq: Integer = 2001	
 			-- Equals operator (= or ==)
 
-	op_ne: Integer is 2002	
+	op_ne: Integer = 2002	
 			-- Not equals operator (!= or /= or <>)
 
-	op_le: Integer is 2003	
+	op_le: Integer = 2003	
 			-- Less-than or equals operator (<=)
 
-	op_lt: Integer is 2004	
+	op_lt: Integer = 2004	
 			-- Less-than operator (<=)
 
-	op_ge: Integer is 2005	
+	op_ge: Integer = 2005	
 			-- Greater-than or equals operator (>=)
 
-	op_gt: Integer is 2006	
+	op_gt: Integer = 2006	
 			-- Greater-than operator (>)
 
-	op_matches: Integer is 2007	
+	op_matches: Integer = 2007	
 			-- Matches operator (matches or is_in)
 		
-	op_not: Integer is 2010	
+	op_not: Integer = 2010	
 			-- Not logical operator
 
-	op_and: Integer is 2011	
+	op_and: Integer = 2011	
 			-- And logical operator
 
-	op_or: Integer is 2012	
+	op_or: Integer = 2012	
 			-- Or logical operator
 
-	op_xor: Integer is 2013	
+	op_xor: Integer = 2013	
 			-- Xor logical operator
 
-	op_implies: Integer is 2014	
+	op_implies: Integer = 2014	
 			-- Implies logical operator
 
-	op_for_all: Integer is 2015	
+	op_for_all: Integer = 2015	
 			-- For-all quantifier operator
 
-	op_exists: Integer is 2016	
+	op_exists: Integer = 2016	
 			-- Exists quantifier operator
 		
-	op_plus: Integer is 2020	
+	op_plus: Integer = 2020	
 			-- Plus operator (+)
 
-	op_minus: Integer is 2021	
+	op_minus: Integer = 2021	
 			-- Minus operator (-)
 
-	op_multiply: Integer is 2022	
+	op_multiply: Integer = 2022	
 			-- Multiply operator (*)
 
-	op_divide: Integer is 2023	
+	op_divide: Integer = 2023	
 			-- Divide operator (/)
 
-	op_exp: Integer is 2024	
+	op_exp: Integer = 2024	
 			-- Exponent operator (^)
 
 feature -- Status Report
 
-	valid_operator (an_op: INTEGER): BOOLEAN is
+	valid_operator (an_op: INTEGER): BOOLEAN
 			-- Function to test operator values.
 		do
 			Result := an_op >= op_eq and an_op <= op_exp
@@ -82,13 +82,13 @@ feature -- Status Report
 			an_op >= op_eq and an_op <= op_exp	
 		end
 
-	valid_operator_name(an_op_name: STRING): BOOLEAN is
+	valid_operator_name(an_op_name: STRING): BOOLEAN
 			-- True if an_op_name is in list of operator names
 		do
 			Result := operator_values.has(an_op_name)
 		end
 
-	boolean_operator(an_op: INTEGER): BOOLEAN is
+	boolean_operator(an_op: INTEGER): BOOLEAN
 			-- True if an_op can operate on boolean operands
 		require
 			valid_operator(an_op)
@@ -96,7 +96,7 @@ feature -- Status Report
 			Result := unary_boolean_operator(an_op) or binary_boolean_operator(an_op)
 		end
 		
-	unary_boolean_operator(an_op: INTEGER): BOOLEAN is
+	unary_boolean_operator(an_op: INTEGER): BOOLEAN
 			-- True if an_op is a unary boolean operator
 		require
 			valid_operator(an_op)
@@ -104,7 +104,7 @@ feature -- Status Report
 			Result := an_op = op_not
 		end
 		
-	binary_boolean_operator(an_op: INTEGER): BOOLEAN is
+	binary_boolean_operator(an_op: INTEGER): BOOLEAN
 			-- True if an_op is a binary boolean operator
 		require
 			valid_operator(an_op)
@@ -112,7 +112,7 @@ feature -- Status Report
 			Result := an_op >= op_and and an_op <= op_implies
 		end
 		
-	relational_operator(an_op: INTEGER): BOOLEAN is
+	relational_operator(an_op: INTEGER): BOOLEAN
 			-- True if an_op is a binary operator with COMPARABLE arguments returning a boolean
 		require
 			valid_operator(an_op)
@@ -120,7 +120,7 @@ feature -- Status Report
 			Result := an_op >= op_eq and an_op <= op_gt
 		end
 		
-	unary_arithmetic_operator(an_op: INTEGER): BOOLEAN is
+	unary_arithmetic_operator(an_op: INTEGER): BOOLEAN
 			-- True if an_op is a unary arithmetic operator
 		require
 			valid_operator(an_op)
@@ -128,7 +128,7 @@ feature -- Status Report
 			Result := an_op = op_minus
 		end
 		
-	arithmetic_operator(an_op: INTEGER): BOOLEAN is
+	arithmetic_operator(an_op: INTEGER): BOOLEAN
 			-- True if an_op is a binary operator with numeric arguments returning a numeric
 		require
 			valid_operator(an_op)
@@ -136,7 +136,7 @@ feature -- Status Report
 			Result := binary_arithmetic_operator(an_op)
 		end
 		
-	binary_arithmetic_operator(an_op: INTEGER): BOOLEAN is
+	binary_arithmetic_operator(an_op: INTEGER): BOOLEAN
 			-- True if an_op is a binary operator with numeric arguments returning a numeric
 		require
 			valid_operator(an_op)
@@ -144,7 +144,7 @@ feature -- Status Report
 			Result := an_op >= op_plus and an_op <= op_exp
 		end
 		
-	set_operator(an_op: INTEGER): BOOLEAN is
+	set_operator(an_op: INTEGER): BOOLEAN
 			-- True if an_op is a unary set operator
 		require
 			valid_operator(an_op)
@@ -152,7 +152,7 @@ feature -- Status Report
 			Result := an_op = op_matches
 		end
 		
-	quantifier_operator(an_op: INTEGER): BOOLEAN is
+	quantifier_operator(an_op: INTEGER): BOOLEAN
 			-- True if an_op is a unary quantifier operator
 		require
 			valid_operator(an_op)
@@ -162,7 +162,7 @@ feature -- Status Report
 		
 feature -- Access
 
-	operator_names: HASH_TABLE [STRING, INTEGER] is
+	operator_names: HASH_TABLE [STRING, INTEGER]
 			-- english names of operators, keyed by value
 		once
 			create Result.make(0)
@@ -187,7 +187,7 @@ feature -- Access
 			Result.put("exponent", op_exp)
 		end
 		
-	operator_symbols: HASH_TABLE [STRING, INTEGER] is
+	operator_symbols: HASH_TABLE [STRING, INTEGER]
 			-- symbols of operators, keyed by value
 		once
 			create Result.make(0)
@@ -212,7 +212,7 @@ feature -- Access
 			Result.put("^", op_exp)
 		end
 
-	operator_values: HASH_TABLE [INTEGER, STRING] is
+	operator_values: HASH_TABLE [INTEGER, STRING]
 			-- english names of operators, keyed by value
 		once
 			create Result.make(0)

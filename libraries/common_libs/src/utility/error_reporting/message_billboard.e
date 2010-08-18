@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "[
 			     Message billboard for posting and reading information and errors.
@@ -19,70 +19,70 @@ indexing
 class MESSAGE_BILLBOARD
 
 inherit
-	SHARED_RESOURCES
+	BILLBOARD_MESSAGE_TYPES
 		export
 			{NONE} all
 		end
 
+	SHARED_MESSAGE_DB
+		export
+			{NONE} all
+		end
+
+create
+	make
+
+feature -- Initialisation
+
+	make
+		do
+			create billboard.make (0)
+			status_reporting_level := message_type_info
+		end
+
 feature -- Access
 
-	billboard_content: STRING is
+	content: STRING
 			-- text of the billboard in locale current language
 		do
-			Result := filtered_billboard_content(status_reporting_level)
+			Result := filtered_content(status_reporting_level)
 		end
 
-	billboard_most_recent: STRING is
-			-- text of the message in locale current language
+	most_recent: STRING
+			-- text of most recent addition
 		do
-			Result := billboard_item_formatted(billboard.first)
-		end
-
-	billboard_ith (i: INTEGER): STRING is
-			-- text of the i-th message in language lang
-		require
-			Index_valid: i > 0 and i < billboard_count
-		do
-			Result := billboard_item_formatted(billboard.i_th(i))
-		end
-
-	billboard_count: INTEGER is
-			-- return number of messages currently posted
-		do
-			Result := billboard.count
+			Result := item_formatted(billboard.first, status_reporting_level)
 		end
 
 feature -- Status Report
 
-	billboard_empty: BOOLEAN is
-			-- True if there are messages posted at the moment
-		do
-			Result := billboard.is_empty
-		end
-
-	billboard_has_errors: BOOLEAN is
+	has_errors: BOOLEAN
 			-- True if billboard has any error messages (note: it may be non-empty
 			-- and still have no error messages, just info messages)
 		do
-			from
-				billboard.start
-			until
-				Result or billboard.off
-			loop
+			from billboard.start until Result or billboard.off loop
 				Result := billboard.item.message_type = Message_type_error
 				billboard.forth
 			end
 		end
 
+feature -- Status Setting
+
+	set_status_reporting_level (a_level: INTEGER)
+		do
+			status_reporting_level := a_level
+			create billboard.make (0)
+		end
+
 feature -- Modify
 
-	clear_billboard is
+	clear
 			-- wipe out error billboard and set is_error_posted False
 		do
 			billboard.wipe_out
 		end
 
-	post_error(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING]) is
+	post_error(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING])
 			-- append to the  current contents of billboard an error message
 			-- corresponding to id, with positional parameters replaced
 			-- by contents of optional args
@@ -92,14 +92,9 @@ feature -- Modify
 		do
 			billboard.put_front(
 				create {MESSAGE_BILLBOARD_ITEM}.make(poster_object.generator, poster_routine, id, args, Message_type_error))
-			debug("BB")
-				io.put_string("MSG_BB: " + billboard_most_recent)
-			end
-		ensure
-			Error_posted: billboard_has_errors
 		end
 
-	post_warning(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING]) is
+	post_warning(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING])
 			-- append to the  current contents of billboard a warning message
 			-- corresponding to id, with positional parameters replaced
 			-- by contents of optional args
@@ -109,11 +104,9 @@ feature -- Modify
 		do
 			billboard.put_front(
 				create {MESSAGE_BILLBOARD_ITEM}.make(poster_object.generator, poster_routine, id, args, Message_type_warning))
-		ensure
-			Warning_posted: not billboard_empty
 		end
 
-	post_info(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING]) is
+	post_info(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING])
 			-- append to the  current contents of billboard an info message
 			-- corresponding to id, with positional parameters replaced
 			-- by contents of optional args
@@ -123,24 +116,15 @@ feature -- Modify
 		do
 			billboard.put_front(
 				create {MESSAGE_BILLBOARD_ITEM}.make(poster_object.generator, poster_routine, id, args, Message_type_info))
-		ensure
-			Info_posted: not billboard_empty
 		end
 
 feature {NONE} -- Implementation
 
-	billboard: ARRAYED_LIST [MESSAGE_BILLBOARD_ITEM] is
-		once
-			create Result.make(0)
-		end
+	status_reporting_level: INTEGER
 
-	message_db: MESSAGE_DB is
-			-- error database keyed by id
-		once
-			create {IN_MEMORY_MESSAGE_DB} Result.make
-		end
+	billboard: ARRAYED_LIST [MESSAGE_BILLBOARD_ITEM]
 
-	filtered_billboard_content(at_level: INTEGER): STRING is
+	filtered_content(at_level: INTEGER): STRING
 			-- text of the billboard in locale current language, filtered according to include_types
 		require
 			at_level_valid: is_valid_message_type (at_level)
@@ -148,31 +132,31 @@ feature {NONE} -- Implementation
 			bb_item: MESSAGE_BILLBOARD_ITEM
 		do
 			create Result.make(0)
-			from
-				billboard.start
-			until
-				billboard.off
-			loop
+			from billboard.start until billboard.off loop
 				bb_item := billboard.item
 				if bb_item.message_type >= at_level then
-					Result.append(billboard_item_formatted(bb_item))
+					Result.append(item_formatted(bb_item, at_level))
 				end
 				billboard.forth
 			end
 		end
 
-	billboard_item_formatted(bb_item: MESSAGE_BILLBOARD_ITEM): STRING is
+	item_formatted(bb_item: MESSAGE_BILLBOARD_ITEM; at_level: INTEGER): STRING
 			-- format one item
 		local
 			err_str, leader, trailer: STRING
 		do
 			create Result.make(0)
 			leader := Message_type_names.item(bb_item.message_type) + " - "
-			trailer := " (" + bb_item.type_name + "." + bb_item.routine_name + ")"
-			if message_db.has_message(bb_item.message_id) then
-				err_str := message_db.stringify(bb_item.message_id, bb_item.args)
+			if at_level = Message_type_debug then
+				trailer := "      (" + bb_item.type_name + "." + bb_item.routine_name + ")"
 			else
-				err_str := message_db.stringify("message_code_error", Void)
+				trailer := ""
+			end
+			if message_db.has_message(bb_item.message_id) then
+				err_str := message_db.create_message_content(bb_item.message_id, bb_item.args)
+			else
+				err_str := message_db.create_message_content("message_code_error", Void)
 			end
 			Result.append(leader)
 			Result.append(err_str)

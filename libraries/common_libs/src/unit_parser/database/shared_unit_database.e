@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Shared Database of unit tables."
 	keywords:    "units, UCUM"
@@ -16,7 +16,7 @@ class SHARED_UNIT_DATABASE
 
 feature -- Initialisation
 
-	initialise_unit_database(unit_groups_path_name, prefixes_file_name:STRING) is
+	initialise_unit_database(unit_groups_path_name, prefixes_file_name:STRING)
 			-- initialise unit database from supplied directory & filename
 		require
 			Groups_path_name_exists: unit_groups_path_name /= Void and then not unit_groups_path_name.is_empty
@@ -40,14 +40,14 @@ feature -- Initialisation
 
 feature -- Access
 
-	unit_database:UNIT_DATABASE is
+	unit_database:UNIT_DATABASE
 		do
 			Result := shared_unit_database.item
 		end
 
 feature {NONE} -- Implementation
 
-	shared_unit_database:CELL[UNIT_DATABASE] is
+	shared_unit_database:CELL[UNIT_DATABASE]
 		once
 			create Result.put(Void)
 		end

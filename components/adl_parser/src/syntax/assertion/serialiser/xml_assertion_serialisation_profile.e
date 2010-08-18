@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Common routines for XML assertion serialisation"
 	keywords:    "serialisation, XML, assertion"
@@ -26,7 +26,7 @@ create
 	
 feature {NONE} -- Implementation
 
-	symbols: HASH_TABLE[STRING, INTEGER] is
+	symbols: HASH_TABLE[STRING, INTEGER]
 			-- keywords in this format, keyed by logical name
 		once
 			create Result.make(0)
@@ -36,7 +36,7 @@ feature {NONE} -- Implementation
 			Result.put("*",					SYM_ANY)
 		end	
 	
-	tags: HASH_TABLE[STRING, INTEGER] is
+	tags: HASH_TABLE[STRING, INTEGER]
 			-- keywords in this format, keyed by logical name
 		once
 			create Result.make(0)

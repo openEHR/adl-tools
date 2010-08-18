@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 			 Serialise CADL archetype to OWL abstract syntax
@@ -25,12 +25,12 @@ inherit
 			{NONE} all
 		end
 	
-creation
+create
 	make
 
 feature -- Modification
 
-	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER) is
+	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- start serialising an C_COMPLEX_OBJECT
 		local
 			node_concept_ref:STRING
@@ -122,22 +122,22 @@ feature -- Modification
 			end
 		end
 		
-	end_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER) is
+	end_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- end serialising an C_COMPLEX_OBJECT
 		do	
 		end
 
-	start_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER) is
+	start_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER)
 			-- start serialising an ARCHETYPE_SLOT
 		do
 		end
 		
-	end_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER) is
+	end_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER)
 			-- end serialising an ARCHETYPE_SLOT
 		do	
 		end
 
-	start_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER) is
+	start_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- start serialising an C_ATTRIBUTE
 		local
 			node_concept_ref: STRING
@@ -185,35 +185,35 @@ feature -- Modification
 			end
 		end
 		
-	end_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER) is
+	end_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- end serialising an C_ATTRIBUTE
 		do
 			last_result.append(format_item(FMT_NEWLINE))
 		end
 
-	start_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER) is
+	start_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
 			-- start serialising an ARCHETYPE_INTERNAL_REF
 		do
 		end
 		
-	end_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER) is
+	end_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
 			-- end serialising an ARCHETYPE_INTERNAL_REF
 		do
 			-- nothing needed
 		end
 
-	start_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER) is
+	start_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER)
 			-- start serialising a CONSTRAINT_REF
 		do
 			last_object_simple := True
 		end
 		
-	end_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER) is
+	end_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER)
 			-- end serialising a CONSTRAINT_REF
 		do
 		end
 
-	start_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER) is
+	start_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- start serialising an C_PRIMITIVE_OBJECT
 		local
 			l_object_pattern_key: STRING
@@ -225,24 +225,24 @@ feature -- Modification
 			end
 		end
 		
-	end_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER) is
+	end_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- end serialising an C_PRIMITIVE_OBJECT
 		do
 			-- nothing needed
 			-- EXCEPTION TEST
 		end
 
-	start_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER) is
+	start_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER)
 			-- start serialising an C_DOMAIN_TYPE
 		do
 		end
 		
-	end_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER) is
+	end_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER)
 			-- end serialising an C_DOMAIN_TYPE
 		do
 		end
 
-	start_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER) is
+	start_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER)
 			-- start serialising an C_CODE_PHRASE
 		local
 			adl_term: ARCHETYPE_TERM
@@ -285,12 +285,12 @@ feature -- Modification
 			end				
 		end
 		
-	end_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER) is
+	end_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER)
 			-- end serialising an C_CODE_PHRASE
 		do
 		end
 
-	start_c_ordinal(a_node: C_ORDINAL; depth: INTEGER) is
+	start_c_ordinal(a_node: C_ORDINAL; depth: INTEGER)
 			-- start serialising an C_ORDINAL
 		local
 			adl_term: ARCHETYPE_TERM
@@ -332,12 +332,12 @@ feature -- Modification
 			end				
 		end
 		
-	end_c_ordinal(a_node: C_ORDINAL; depth: INTEGER) is
+	end_c_ordinal(a_node: C_ORDINAL; depth: INTEGER)
 			-- end serialising an C_ORDINAL
 		do
 		end
 
-	serialise_occurrences(a_node: C_OBJECT; depth: INTEGER) is
+	serialise_occurrences(a_node: C_OBJECT; depth: INTEGER)
 			-- any positive range
 		do
 			if not a_node.occurrences.is_equal(default_occurrences) then
@@ -349,7 +349,7 @@ feature -- Modification
 			end
 		end
 		
-	serialise_existence(a_node: C_ATTRIBUTE; depth: INTEGER) is
+	serialise_existence(a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- can only  be a range of 0..1 or 1..1
 		do
 			if not a_node.existence.is_equal(default_existence) then
@@ -361,7 +361,7 @@ feature -- Modification
 			end
 		end
 		
-	serialise_cardinality(a_node: C_ATTRIBUTE; depth: INTEGER) is
+	serialise_cardinality(a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- includes a range and possibly ordered, unique qualifiers
 		local
 			s: STRING

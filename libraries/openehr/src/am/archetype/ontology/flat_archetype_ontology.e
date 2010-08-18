@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "ADL Terminology class"
 	keywords:    "archetype, ontology, terminology"
@@ -22,124 +22,120 @@ create
 
 feature -- Access
 
-	term_definition(a_lang, a_term_code: STRING): ARCHETYPE_TERM is
-			-- retrieve the term definition in language `a_lang' for code `a_term_code'
+	term_definition(a_language, a_code: STRING): attached ARCHETYPE_TERM
+			-- retrieve the term definition in language `a_language' for code `a_code'
 		do
-			Result := term_definitions.item(a_lang).item(a_term_code)
+			Result := term_definitions.item(a_language).item(a_code)
 		end
 
-	constraint_definition(a_lang, a_term_code: STRING): ARCHETYPE_TERM is
-			-- retrieve the constraint definition in language `a_lang' for code `a_term_code'
+	constraint_definition(a_language, a_code: STRING): attached ARCHETYPE_TERM
+			-- retrieve the constraint definition in language `a_language' for code `a_code'
 		do
-			Result := constraint_definitions.item(a_lang).item(a_term_code)
+			Result := constraint_definitions.item(a_language).item(a_code)
 		end
 
-	term_binding(a_terminology, a_term_code: STRING): CODE_PHRASE is
-			-- retrieve the term definition in language `a_lang' for code `a_term_code'
+	term_binding(a_terminology, a_code: STRING): attached CODE_PHRASE
+			-- retrieve the term binding from terminology `a_terminology' for code `a_code'
 		do
-			Result := term_bindings.item(a_terminology).item(a_term_code)
+			Result := term_bindings.item(a_terminology).item(a_code)
 		end
 
-	constraint_binding(a_terminology, a_term_code: STRING): URI is
-			-- retrieve the constraint definition in language `a_lang' for code `a_term_code'
+	constraint_binding(a_terminology, a_code: STRING): attached URI
+			-- retrieve the constraint binding from terminology `a_terminology' for code `a_code'
 			-- in form of a string: "service::query"
 		do
-			Result := constraint_bindings.item(a_terminology).item(a_term_code)
+			Result := constraint_bindings.item(a_terminology).item(a_code)
+		end
+
+	terminology_extract_term (a_terminology, a_code: STRING): ARCHETYPE_TERM
+			-- true if there is an extract from terminology `a_terminology'
+		do
+			Result := terminology_extracts.item(a_terminology).item(a_code)
 		end
 
 feature -- Status Report
 
-	has_term_code(a_term_code: STRING): BOOLEAN is
-			-- is `a_term_code' known in this ontology
+	has_term_code(a_code: STRING): BOOLEAN
+			-- is `a_code' known in this ontology
 		do
-			Result := term_codes.has(a_term_code)
+			Result := term_codes.has(a_code)
 		end
 
-	has_constraint_code(a_constraint_code: STRING): BOOLEAN is
+	has_constraint_code(a_code: STRING): BOOLEAN
 			--
 		do
-			Result := constraint_codes.has(a_constraint_code)
+			Result := constraint_codes.has(a_code)
 		end
 
-	has_any_term_binding(a_term_code: STRING): BOOLEAN is
-			-- true if there is any term binding for code `a_term_code'
+	has_term_definition (a_language, a_code: STRING): BOOLEAN
+			-- is `a_code' defined in `a_language' in this ontology?
+		do
+			Result := term_definitions.has (a_language) and then term_definitions.item(a_language).has(a_code)
+		end
+
+	has_constraint_definition (a_language, a_code: STRING): BOOLEAN
+			-- is `a_code' defined in `a_language' in this ontology?
+		do
+			Result := constraint_definitions.has (a_language) and then constraint_definitions.item(a_language).has(a_code)
+		end
+
+	has_any_term_binding(a_code: STRING): BOOLEAN
+			-- true if there is any term binding for code `a_code'
 		local
 			p: ARRAYED_LIST_CURSOR
 		do
 			p := terminologies_available.cursor
-			from
-				terminologies_available.start
-			until
-				terminologies_available.off or Result
-			loop
+			from terminologies_available.start until terminologies_available.off or Result loop
 				Result := term_bindings.has(terminologies_available.item) and then
-					term_bindings.item(terminologies_available.item).has(a_term_code)
+					term_bindings.item(terminologies_available.item).has(a_code)
 				terminologies_available.forth
 			end
 			terminologies_available.go_to (p)
 		end
 
-	has_term_binding(a_terminology, a_term_code: STRING): BOOLEAN is
-			-- true if there is a term binding for code `a_term_code' in `a_terminology'
+	has_term_binding(a_terminology, a_code: STRING): BOOLEAN
+			-- true if there is a term binding for code `a_code' in `a_terminology'
 		do
-			Result := term_bindings.has(a_terminology) and then term_bindings.item(a_terminology).has(a_term_code)
+			Result := term_bindings.has(a_terminology) and then term_bindings.item(a_terminology).has(a_code)
 		end
 
-	has_any_constraint_binding(a_term_code: STRING): BOOLEAN is
-			-- true if there is any constraint binding for code `a_term_code'
+	has_any_constraint_binding(a_code: STRING): BOOLEAN
+			-- true if there is any constraint binding for code `a_code'
 		local
 			p: ARRAYED_LIST_CURSOR
 		do
 			p := terminologies_available.cursor
-			from
-				terminologies_available.start
-			until
-				terminologies_available.off or Result
-			loop
+			from terminologies_available.start until terminologies_available.off or Result loop
 				Result := constraint_bindings.has(terminologies_available.item) and then
-					constraint_bindings.item(terminologies_available.item).has(a_term_code)
+					constraint_bindings.item(terminologies_available.item).has(a_code)
 				terminologies_available.forth
 			end
 			terminologies_available.go_to (p)
 		end
 
-	has_constraint_binding(a_terminology, a_term_code: STRING): BOOLEAN is
-			-- true if there is a term binding for code `a_term_code' in `a_terminology'
+	has_constraint_binding(a_terminology, a_code: STRING): BOOLEAN
+			-- true if there is a term binding for code `a_code' in `a_terminology'
 		do
-			Result := constraint_bindings.has(a_terminology) and then constraint_bindings.item(a_terminology).has(a_term_code)
+			Result := constraint_bindings.has(a_terminology) and then constraint_bindings.item(a_terminology).has(a_code)
 		end
 
-	semantically_conforms_to(other: FLAT_ARCHETYPE_ONTOLOGY): BOOLEAN is
-			-- True if this ontology conforms to `other' in the sense of being a specialisation child of it
-			-- - must have the same or subset of languages, and the same or a superset of terminologies
-		require
-			other /= Void
+	has_terminology_extract (a_terminology: STRING): BOOLEAN
+			-- true if there is an extract from terminology `a_terminology'
 		do
-			from
-				languages_available.start
-			until
-				languages_available.off or not other.languages_available.has (languages_available.item)
-			loop
-				languages_available.forth
-			end
-			Result := languages_available.off
+			Result := terminology_extracts.has(a_terminology)
+		end
 
-			if Result then
-				from
-					terminologies_available.start
-				until
-					terminologies_available.off or not other.terminologies_available.has(terminologies_available.item)
-				loop
-					terminologies_available.forth
-				end
-				Result := terminologies_available.off
-			end
+	has_terminology_extract_code (a_terminology, a_code: STRING): BOOLEAN
+			-- true if there is a term binding for code `a_code' in `a_terminology'
+		do
+			Result := terminology_extracts.item(a_terminology).has(a_code)
 		end
 
 feature -- Modification
 
-	merge(other: FLAT_ARCHETYPE_ONTOLOGY) is
+	merge(other: FLAT_ARCHETYPE_ONTOLOGY)
 			-- append all the codes from the other ontology to this one; used to create the ontology for flat-form archetypes
+			-- only languages that exist in the current ontology are merged from `other'
 		require
 			Other_valid: other /= Void and then semantically_conforms_to(other)
 		local
@@ -149,22 +145,14 @@ feature -- Modification
 			a_lang, a_terminology: STRING
 		do
 			-- term definitions
-			from
-				other.term_definitions.start
-			until
-				other.term_definitions.off
-			loop
+			from other.term_definitions.start until other.term_definitions.off loop
 				a_lang := other.term_definitions.key_for_iteration
 				if has_language (a_lang) then
 					if not term_definitions.has (a_lang) then
 						term_definitions.put(create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), a_lang)
 					end
 					lang_terms := other.term_definitions.item_for_iteration
-					from
-						lang_terms.start
-					until
-						lang_terms.off
-					loop
+					from lang_terms.start until lang_terms.off loop
 						if has_term_code (lang_terms.key_for_iteration) then
 							replace_term_definition (a_lang, lang_terms.item_for_iteration.deep_twin, False)
 						else
@@ -177,22 +165,14 @@ feature -- Modification
 			end
 
 			-- constraint definitions
-			from
-				other.constraint_definitions.start
-			until
-				other.constraint_definitions.off
-			loop
+			from other.constraint_definitions.start until other.constraint_definitions.off loop
 				a_lang := other.constraint_definitions.key_for_iteration
 				if has_language (a_lang) then
 					if not constraint_definitions.has (a_lang) then
 						constraint_definitions.put(create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), a_lang)
 					end
 					lang_terms := other.constraint_definitions.item_for_iteration
-					from
-						lang_terms.start
-					until
-						lang_terms.off
-					loop
+					from lang_terms.start until lang_terms.off loop
 						if has_constraint_code (lang_terms.item_for_iteration.code) then
 							replace_constraint_definition (a_lang, lang_terms.item_for_iteration.deep_twin, False)
 						else
@@ -205,19 +185,11 @@ feature -- Modification
 			end
 
 			-- terminology bindings; first add the bindings to terminologies that are not there at all
-			from
-				other.terminologies_available.start
-			until
-				other.terminologies_available.off
-			loop
+			from other.terminologies_available.start until other.terminologies_available.off loop
 				a_terminology := other.terminologies_available.item
 				if other.has_term_bindings (a_terminology) then
 					term_bindings_1 := other.term_bindings_for_terminology (a_terminology)
-					from
-						term_bindings_1.start
-					until
-						term_bindings_1.off
-					loop
+					from term_bindings_1.start until term_bindings_1.off loop
 						add_term_binding (term_bindings_1.item_for_iteration.deep_twin, term_bindings_1.key_for_iteration)
 						debug ("flatten")
 							io.put_string ("%TONTOLOGY: adding term_binding for " + term_bindings_1.key_for_iteration + "%N")
@@ -229,30 +201,24 @@ feature -- Modification
 			end
 
 			-- constraint bindings; first add the bindings to terminologies that are not there at all
-			from
-				other.terminologies_available.start
-			until
-				other.terminologies_available.off
-			loop
+			from other.terminologies_available.start until other.terminologies_available.off loop
 				a_terminology := other.terminologies_available.item
 				if other.has_constraint_bindings (a_terminology) then
 					cons_bindings_1 := other.constraint_bindings_for_terminology (a_terminology)
-					from
-						cons_bindings_1.start
-					until
-						cons_bindings_1.off
-					loop
+					from cons_bindings_1.start until cons_bindings_1.off loop
 						add_constraint_binding (cons_bindings_1.item_for_iteration.deep_twin, a_terminology, cons_bindings_1.key_for_iteration)
 						cons_bindings_1.forth
 					end
 				end
 				other.terminologies_available.forth
 			end
+		ensure
+			-- Terminologies_merged: terminologies_available.is_superset (other.terminologies_available)
 		end
 
 feature -- Factory
 
-	to_differential: !DIFFERENTIAL_ARCHETYPE_ONTOLOGY
+	to_differential: attached DIFFERENTIAL_ARCHETYPE_ONTOLOGY
 			-- Create a differential version from this flat ontology.
 		do
 			create Result.make_from_flat (Current)
@@ -260,7 +226,7 @@ feature -- Factory
 
 feature {ARCHETYPE_ONTOLOGY} -- Implementation
 
-	remove_inherited_codes is
+	remove_inherited_codes
 			-- remove all at- and ac- codes inherited from ancestor archetypes
 		local
 			rm_term_codes: ARRAYED_LIST[STRING]
@@ -268,40 +234,24 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 		do
 			create rm_term_codes.make(0)
 			create rm_constraint_codes.make(0)
-			from
-				term_codes.start
-			until
-				term_codes.off
-			loop
+			from term_codes.start until term_codes.off loop
 				if specialisation_depth_from_code (term_codes.item) /= specialisation_depth then
 					rm_term_codes.extend(term_codes.item)
 				end
 				term_codes.forth
 			end
-			from
-				constraint_codes.start
-			until
-				constraint_codes.off
-			loop
+			from constraint_codes.start until constraint_codes.off loop
 				if specialisation_depth_from_code (constraint_codes.item) /= specialisation_depth then
 					rm_constraint_codes.extend (constraint_codes.item)
 				end
 				constraint_codes.forth
 			end
 
-			from
-				rm_term_codes.start
-			until
-				rm_term_codes.off
-			loop
+			from rm_term_codes.start until rm_term_codes.off loop
 				remove_term_definition (rm_term_codes.item)
 				rm_term_codes.forth
 			end
-			from
-				rm_constraint_codes.start
-			until
-				rm_constraint_codes.off
-			loop
+			from rm_constraint_codes.start until rm_constraint_codes.off loop
 				remove_constraint_definition (rm_constraint_codes.item)
 				rm_constraint_codes.forth
 			end

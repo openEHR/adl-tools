@@ -1,4 +1,4 @@
-indexing
+note
 	description: "Objects that provide access to constants loaded from files."
 	date: "$LastChangedDate$"
 	revision: "$LastChangedRevision$"
@@ -8,7 +8,7 @@ class
 	
 feature {NONE} -- Initialization
 
-	initialize_constants is
+	initialize_constants
 			-- Load all constants from file.
 		local
 			file: PLAIN_TEXT_FILE
@@ -29,91 +29,91 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	test_list_width: INTEGER is 
+	test_list_width: INTEGER 
 			-- `Result' is INTEGER constant named test_list_width.
 		once
 			Result := integer_constant_by_name ("test_list_width")
 		end
 
-	test_cases_label: STRING is
+	test_cases_label: STRING
 			-- `Result' is STRING constant named `test_cases_label'.
 		once
 			Result := string_constant_by_name ("test_cases_label")
 		end
 
-	run_test_button_text: STRING is
+	run_test_button_text: STRING
 			-- `Result' is STRING constant named `run_test_button_text'.
 		once
 			Result := string_constant_by_name ("run_test_button_text")
 		end
 
-	test_suites_label: STRING is
+	test_suites_label: STRING
 			-- `Result' is STRING constant named `test_suites_label'.
 		once
 			Result := string_constant_by_name ("test_suites_label")
 		end
 
-	execution_label_name: STRING is
+	execution_label_name: STRING
 			-- `Result' is STRING constant named `execution_label_name'.
 		once
 			Result := string_constant_by_name ("execution_label_name")
 		end
 
-	button_width: INTEGER is 
+	button_width: INTEGER 
 			-- `Result' is INTEGER constant named button_width.
 		once
 			Result := integer_constant_by_name ("button_width")
 		end
 
-	screen_depth: INTEGER is 
+	screen_depth: INTEGER 
 			-- `Result' is INTEGER constant named screen_depth.
 		once
 			Result := integer_constant_by_name ("screen_depth")
 		end
 
-	test_list_height: INTEGER is 
+	test_list_height: INTEGER 
 			-- `Result' is INTEGER constant named test_list_height.
 		once
 			Result := integer_constant_by_name ("test_list_height")
 		end
 
-	output_text_height: INTEGER is 
+	output_text_height: INTEGER 
 			-- `Result' is INTEGER constant named output_text_height.
 		once
 			Result := integer_constant_by_name ("output_text_height")
 		end
 
-	main_window_title: STRING is
+	main_window_title: STRING
 			-- `Result' is STRING constant named `main_window_title'.
 		once
 			Result := string_constant_by_name ("main_window_title")
 		end
 
-	screen_width: INTEGER is 
+	screen_width: INTEGER 
 			-- `Result' is INTEGER constant named screen_width.
 		once
 			Result := integer_constant_by_name ("screen_width")
 		end
 
-	test_case_list_width: INTEGER is 
+	test_case_list_width: INTEGER 
 			-- `Result' is INTEGER constant named test_case_list_width.
 		once
 			Result := integer_constant_by_name ("test_case_list_width")
 		end
 
-	test_output_text_width: INTEGER is 
+	test_output_text_width: INTEGER 
 			-- `Result' is INTEGER constant named test_output_text_width.
 		once
 			Result := integer_constant_by_name ("test_output_text_width")
 		end
 
-	test_case_output_name: STRING is
+	test_case_output_name: STRING
 			-- `Result' is STRING constant named `test_case_output_name'.
 		once
 			Result := string_constant_by_name ("test_case_output_name")
 		end
 
-	test_case_report: STRING is
+	test_case_report: STRING
 			-- `Result' is STRING constant named `test_case_report'.
 		once
 			Result := string_constant_by_name ("test_case_report")
@@ -125,13 +125,13 @@ feature -- Access
 --| FIXME `constant_by_name' and `has_constant' `constants_initialized' are only required until the complete change to
 --| constants is complete. They are required for the pixmaps at the moment.
 
-	constants_initialized: BOOLEAN is
+	constants_initialized: BOOLEAN
 			-- Have constants been initialized from file?
 		do
 			Result := initialized_cell.item
 		end
 
-	string_constant_by_name (a_name: STRING): STRING is
+	string_constant_by_name (a_name: STRING): STRING
 			-- `Result' is STRING 
 		require
 			initialized: constants_initialized
@@ -143,7 +143,7 @@ feature -- Access
 			Result_not_void: Result /= Void
 		end
 		
-	integer_constant_by_name (a_name: STRING): INTEGER is
+	integer_constant_by_name (a_name: STRING): INTEGER
 			-- `Result' is STRING 
 		require
 			initialized: constants_initialized
@@ -160,7 +160,7 @@ feature -- Access
 			Result := l_string.to_integer
 		end
 		
-	has_constant (a_name: STRING): BOOLEAN is
+	has_constant (a_name: STRING): BOOLEAN
 			-- Does constant `a_name' exist?
 		require
 			initialized: constants_initialized
@@ -171,26 +171,26 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	initialized_cell: CELL [BOOLEAN] is
+	initialized_cell: CELL [BOOLEAN]
 			-- A cell to hold whether the constants have been loaded.
 		once
 			create Result
 		end
 		
-	all_constants: HASH_TABLE [STRING, STRING] is
+	all_constants: HASH_TABLE [STRING, STRING]
 			-- All constants loaded from constants file.
 		once
 			create Result.make (4)
 		end
 		
-	file_name: STRING is "constants.txt"
+	file_name: STRING = "constants.txt"
 		-- File name from which constants must be loaded.
 		
-	String_constant: STRING is "STRING"
+	String_constant: STRING = "STRING"
 	
-	Integer_constant: STRING is "INTEGER"
+	Integer_constant: STRING = "INTEGER"
 		
-	parse_file_contents (content: STRING) is
+	parse_file_contents (content: STRING)
 			-- Parse contents of `content' into `all_constants'.
 		local
 			line_contents: STRING
@@ -220,7 +220,7 @@ feature {NONE} -- Implementation
 			end
 		end
 		
-	first_line (content: STRING): STRING is
+	first_line (content: STRING): STRING
 			-- `Result' is first line of `Content',
 			-- which will be stripped from `content'.
 		require
@@ -242,7 +242,7 @@ feature {NONE} -- Implementation
 			no_characters_lost: old content.count = Result.count + content.count
 		end
 
-	set_with_named_file (a_pixmap: EV_PIXMAP; a_file_name: STRING) is
+	set_with_named_file (a_pixmap: EV_PIXMAP; a_file_name: STRING)
 			-- Set image of `a_pixmap' from file, `a_file_name'.
 			-- If `a_file_name' does not exist, do nothing.
 		require

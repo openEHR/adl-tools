@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Reference Model"
 
 	description: "[

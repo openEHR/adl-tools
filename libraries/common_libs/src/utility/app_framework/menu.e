@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Simple menu class"
 	keywords:    "menu"
@@ -13,12 +13,12 @@ indexing
 	
 class MENU
 
-creation
+create
 	make
 
 feature -- Initialisation
 
-	make(a_title:STRING) is
+	make(a_title:STRING)
 		require
 			title_exists: a_title /= Void
 		do
@@ -34,7 +34,7 @@ feature -- Initialisation
 		
 feature -- Access
 
-	item_at_index(i:INTEGER): STRING is
+	item_at_index(i:INTEGER): STRING
 			-- get i'th menu item
 		require
 			valid_index: i > 0 and i <= count
@@ -42,7 +42,7 @@ feature -- Access
 			Result := items.i_th(i)
 		end
 		
-	count: INTEGER is
+	count: INTEGER
 			-- number of items in menu excluding all and quit options
 		do
 			Result := items.count
@@ -50,7 +50,7 @@ feature -- Access
 
 feature -- Modification
 
-	add_item(s:STRING) is
+	add_item(s:STRING)
 			-- an empty string creates a blank line in the menu display
 		require
 			Item_Exists: s /= Void
@@ -58,7 +58,7 @@ feature -- Modification
 			items.extend(s)
 		end
 
-	set_i_th_item(i:INTEGER; s:STRING) is
+	set_i_th_item(i:INTEGER; s:STRING)
 			-- set an existing item to 's'
 		require
 			Index_valid: i >= 1 and i <= count
@@ -67,7 +67,7 @@ feature -- Modification
 			items.put_i_th (s, i)
 		end
 
-	set_all_item(s:STRING) is
+	set_all_item(s:STRING)
 			-- string to display for All option
 		require
 			Item_Exists: s /= Void
@@ -75,7 +75,7 @@ feature -- Modification
 			all_item := s
 		end
 
-	set_quit_item(s:STRING) is
+	set_quit_item(s:STRING)
 			-- string to display for Quit option
 		require
 			Item_Exists: s /= Void
@@ -83,7 +83,7 @@ feature -- Modification
 			quit_item := s
 		end
 
-	clear is
+	clear
 			-- wipe out menu items and reset selection state
 		do
 			items.wipe_out
@@ -94,7 +94,7 @@ feature -- Modification
 
 feature -- Output
 
-	display is
+	display
 		local
 			i:INTEGER
 		do
@@ -119,7 +119,7 @@ feature -- Output
 
 feature -- commands
 
-	choose is
+	choose
 			-- get an answer from the user; must be between 1 and number of items added;
 			-- result in 'selection'
 		local
@@ -173,8 +173,8 @@ feature {NONE} -- Implementation
 	quit_item:STRING
 	all_item:STRING
 
-	default_quit_item:STRING is "Quit"
-	default_all_item:STRING is "All"
+	default_quit_item:STRING = "Quit"
+	default_all_item:STRING = "All"
 
 invariant
 	Title_exists: title /= Void

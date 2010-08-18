@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
     description: "Token-handling string. NOTE: cannot have empty fields."
 	keywords:    "token, string"
@@ -25,7 +25,7 @@ create
 
 feature -- Initialisation
 
-	make(a_str: STRING) is
+	make (a_str: STRING)
 		require
 			a_str_valid: a_str /= Void
 		do
@@ -33,28 +33,28 @@ feature -- Initialisation
 			delimiter := Default_delimiter
 		end
 
-	set_delimiter(a_delimiter: CHARACTER) is
+	set_delimiter(a_delimiter: CHARACTER)
 		do
 			delimiter := a_delimiter
 		end
 
 feature -- Access
 
-	Default_delimiter:CHARACTER is ','
+	Default_delimiter: CHARACTER = ','
 
 
-	is_empty: BOOLEAN is
+	is_empty: BOOLEAN
 		do
 			Result := str.is_empty
 		end
 
-	token_count : INTEGER is
+	token_count: INTEGER
 	        -- return the number of tokens found
 		do
 			Result := str.occurrences(delimiter) + 1
 		end
 
-	remainder:STRING is
+	remainder: STRING
 			-- output the rest of the string starting with the current token
 		do
 			create Result.make(0)
@@ -65,7 +65,7 @@ feature -- Access
 
 feature -- Iteration
 
-	token_start is
+	token_start
 	    require
 			Not_empty: not is_empty
 	    do
@@ -76,7 +76,7 @@ feature -- Iteration
 			end
 		end
 
-	token_forth is
+	token_forth
 		require
 			Not_off: not token_off
 		do
@@ -89,12 +89,12 @@ feature -- Iteration
 			end
 		end
 
-	token_off : BOOLEAN is
+	token_off : BOOLEAN
 		do
 			Result := token_start_pos > str.count
 		end
 
-	token_item : STRING is
+	token_item : STRING
 		require
 			Not_off: not token_off
 		do
@@ -108,14 +108,14 @@ feature -- Iteration
 
 feature -- Status setting
 
-	use_whitespace_parsing is
+	use_whitespace_parsing
 	        -- set up string so that any whitespace (TABs, SPCs) will be treated
 	        -- as a single delimiter between tokens not containing whitespace chars
 	    require
 	        Not_empty: not is_empty
 	    local
-	        change_pos :INTEGER
-	        one_tab, two_tabs, one_space:STRING
+	        change_pos: INTEGER
+	        one_tab, two_tabs, one_space: STRING
 	    do
 	        create one_tab.make_filled ('%T', 1)
 	        create two_tabs.make_filled ('%T', 2)
@@ -149,7 +149,7 @@ feature -- Status setting
 
 feature -- Modification
 
-	append_token(s: STRING) is
+	append_token(s: STRING)
 			-- append s adding a delimiter before if there is already content
 		require
 			s /= Void
@@ -160,7 +160,7 @@ feature -- Modification
 			str.append(s)
 		end
 
-	append(s: STRING) is
+	append(s: STRING)
 			-- append s
 		require
 			s /= Void
@@ -170,13 +170,13 @@ feature -- Modification
 
 feature -- Output
 
-	out: STRING is
+	out: STRING
 			--
 		do
 			Result := str.twin
 		end
 
-	as_list: ARRAYED_LIST [STRING] is
+	as_list: ARRAYED_LIST [STRING]
 			-- generate a list containing all the tokens in the original string
 		do
 			create Result.make(0)

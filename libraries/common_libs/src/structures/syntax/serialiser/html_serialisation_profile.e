@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Common routines for HTML ADL serialisation"
 	keywords:    "test, ADL"
@@ -18,7 +18,7 @@ inherit
 
 feature {ANY_SERIALISER} -- Access
 
-	format_items: HASH_TABLE[STRING, INTEGER] is
+	format_items: HASH_TABLE[STRING, INTEGER]
 			-- formatting items
 		once
 			create Result.make(0)
@@ -35,12 +35,12 @@ feature {ANY_SERIALISER} -- Access
 			Result.put("</span>",			FMT_END_SPAN)
 			Result.put("%N<title>$title",	FMT_START_TITLE)
 			Result.put("</title>%N",		FMT_END_TITLE)
-			Result.put("<meta name=%"$name%" content=%"$content%">%N",			FMT_META_ITEM)
+			Result.put(html_meta,			FMT_META_ITEM)
 			Result.put(", ",				FMT_LIST_ITEM_SEPARATOR)
 			Result.put("; ",				FMT_ASSUMED_VALUE_SEPARATOR)
 		end
 
-	styles: HASH_TABLE[STRING, INTEGER] is
+	styles: HASH_TABLE[STRING, INTEGER]
 			-- styles in this format, keyed by logical name
 		once
 			create Result.make (0)
@@ -54,13 +54,13 @@ feature {ANY_SERIALISER} -- Access
 			Result.put ("comment", style_comment)
 		end
 
-	tags: HASH_TABLE[STRING, INTEGER] is
+	tags: HASH_TABLE[STRING, INTEGER]
 			-- tag strings, keyed by logical name
 		once
 			create Result.make(0)
 		end
 
-	quote_patterns: HASH_TABLE[STRING, STRING] is
+	quote_patterns: HASH_TABLE[STRING, STRING]
 			-- styles in this format, keyed by logical name
 		once
 			create Result.make(0)
@@ -70,7 +70,7 @@ feature {ANY_SERIALISER} -- Access
 
 feature {ANY_SERIALISER} -- Factory
 
-	apply_style(elem:STRING; a_style:INTEGER): STRING is
+	apply_style (elem: STRING; a_style: INTEGER): STRING
 			-- apply `a_style' to `elem', using attr 'class'
 		do
 			create Result.make(0)
@@ -80,7 +80,7 @@ feature {ANY_SERIALISER} -- Factory
 
 feature {NONE} -- Implementation
 
-	html_style_header: STRING is
+	html_style_header: STRING =
 "<style>%N%
 %BODY {%N%
 	%font-family:%"Courier New%";%N%
@@ -165,6 +165,11 @@ feature {NONE} -- Implementation
 	%}%N%
 %</style>"
 
+	html_meta: STRING = "[
+		<meta name="$name" content="$content">
+		<meta http-equiv="Content-Language" content="en">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		]"
 
 end
 

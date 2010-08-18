@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Archetype notion of a coded term"
 	keywords:    "archetype, coded term"
@@ -24,32 +24,38 @@ create
 
 feature -- Initialisation
 
-	default_create is
+	default_create
 			-- basic creation
 		do
 			create code.make(0)
 			create items.make(0)
 		end
 
-	make_default is
+	make_default
 			-- create a default version with code at0000 and text and description
 			-- both set to "unknown"
 		do
 			default_create
-			code.append(Default_concept_code)
+			code.append (Default_concept_code)
 			add_item("text", "unknown")
 			add_item("description", "unknown")
+		ensure
+			code_set: code.same_string (default_concept_code)
+			items_not_empty: not items.is_empty
 		end
 
-	make(a_code:STRING) is
+	make (a_code: STRING)
 		require
 			Code_valid: a_code /= Void and then not a_code.is_empty
 		do
 			default_create
 			code := a_code
+		ensure
+			code_set: code.same_string (a_code)
+			items_empty: items.is_empty
 		end
 
-	make_from_string(a_str:STRING) is
+	make_from_string (a_str: STRING)
 			-- make from string in dADL form used in archetypes (same as .out form):
 			--  [code] = <key1 = <"value1">, key2 = <"value2">, key3 = <"value3">>
 		require
@@ -65,7 +71,7 @@ feature -- Initialisation
 			end
 		end
 
-	make_from_data_tree (a_dt: DT_COMPLEX_OBJECT_NODE) is
+	make_from_data_tree (a_dt: DT_COMPLEX_OBJECT_NODE)
 			-- make from a data tree
 		local
 			dt_property: DT_PRIMITIVE_OBJECT
@@ -80,18 +86,14 @@ feature -- Initialisation
 				code ?= dt_property.value
 
 				create items_path.make(0)
-				items_path.append("/items")
+				items_path.append ("/items")
 				if a_dt.has_path(items_path) then
 					dt_list_attr ?= a_dt.node_at_path (items_path)
 					if dt_list_attr.is_multiple then
-						from
-							dt_list_attr.start
-						until
-							dt_list_attr.off
-						loop
+						from dt_list_attr.start until dt_list_attr.off loop
 							create path_list_item.make(0)
 							l_key := dt_list_attr.item.node_id
-							path_list_item.append("/items[" + l_key + "]/")
+							path_list_item.append ("/items[" + l_key + "]/")
 							dt_property ?= a_dt.node_at_path(path_list_item)
 							l_item ?= dt_property.value
 							add_item(l_key, l_item)
@@ -110,24 +112,20 @@ feature -- Access
 
 	code: STRING
 
-	keys: ARRAYED_LIST[STRING] is
+	keys: ARRAYED_LIST [STRING]
 			-- return all attribute keys for this term
 		do
 			create Result.make(0)
-			from
-				items.start
-			until
-				items.off
-			loop
-				Result.extend(items.key_for_iteration)
+			from items.start until items.off loop
+				Result.extend (items.key_for_iteration)
 				items.forth
 			end
 		end
 
-	items: DS_HASH_TABLE[STRING, STRING]
+	items: DS_HASH_TABLE [STRING, STRING]
 			-- DS_HASH_TABLE maintains chronological order of insertion
 
-	item(a_key:STRING):STRING is
+	item (a_key: STRING): STRING
 			--
 		require
 			a_key /= Void and then has_key(a_key)
@@ -137,7 +135,7 @@ feature -- Access
 
 feature -- Status Report
 
-	has_key(a_key:STRING): BOOLEAN is
+	has_key (a_key: STRING): BOOLEAN
 			--
 		require
 			a_key /= Void and then not a_key.is_empty
@@ -147,7 +145,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	add_item(a_key, value: STRING) is
+	add_item (a_key, value: STRING)
 		require
 			Key_valid: a_key /= Void and then not has_key(a_key)
 			Value_valid: value /= Void and then not value.is_empty
@@ -155,7 +153,7 @@ feature -- Modification
 			items.force(value, a_key)
 		end
 
-	replace_item(a_key, value: STRING) is
+	replace_item (a_key, value: STRING)
 		require
 			Key_valid: a_key /= Void and then has_key(a_key)
 			Value_valid: value /= Void and then not value.is_empty
@@ -163,7 +161,7 @@ feature -- Modification
 			items.replace(value, a_key)
 		end
 
-	set_items(ht: DS_HASH_TABLE[STRING, STRING]) is
+	set_items (ht: DS_HASH_TABLE [STRING, STRING])
 		require
 			ht /= Void
 		do
@@ -172,7 +170,7 @@ feature -- Modification
 
 feature -- Output
 
-	out:STRING is
+	out: STRING
 			-- output term in standard dADL form (not the archetype form):
 			--  code = <"somecode">
 			--  items = <
@@ -185,22 +183,22 @@ feature -- Output
 		do
 			keys_list := keys
 			create Result.make(0)
-			Result.append("code = <%"" + code + "%">%N")
-			Result.append("items = <%N")
+			Result.append ("code = <%"" + code + "%">%N")
+			Result.append ("items = <%N")
 			from
 				keys_list.start
 			until
 				keys_list.off
 			loop
-				Result.append("%T[%"" + keys_list.item + "%"] = <%"" + items.item(keys_list.item) + "%">%N")
+				Result.append ("%T[%"" + keys_list.item + "%"] = <%"" + items.item(keys_list.item) + "%">%N")
 				keys_list.forth
 			end
-			Result.append(">%N")
+			Result.append (">%N")
 		end
 
 feature -- Factory
 
-	create_translated_term(a_lang: STRING): ARCHETYPE_TERM is
+	create_translated_term (a_lang: STRING): ARCHETYPE_TERM
 			-- create a new ARCHETYPE_TERM whose members are the same as those in the current object,
 			-- with '*' prepended and '(lang)' appended - this acts as an obvious
 			-- placeholder for translation. The lang is the original lang of a_term.
@@ -209,6 +207,7 @@ feature -- Factory
 		do
 			-- make a new term from the old term, with every item wrapped using "*xxx(lang)"
 			create Result.make (code)
+
 			from
 				items.start
 			until
@@ -217,9 +216,21 @@ feature -- Factory
 				Result.add_item (items.key_for_iteration, "*" + items.item_for_iteration + "(" + a_lang + ")")
 				items.forth
 			end
+		ensure
+			same_code: Result.code.same_string (code)
+			same_keys: Result.keys.is_deep_equal (keys)
+			different_items: keys.for_all (
+								agent (key: STRING; original_items, new_items: like items): BOOLEAN
+									local
+										original, new: STRING
+									do
+										original := original_items.item (key)
+										new := new_items.item (key)
+										Result := new.has_substring (original) and not new.is_equal (original)
+									end (?, items, Result.items))
 		end
 
-	create_derived_term(a_code: STRING): ARCHETYPE_TERM is
+	create_derived_term (a_code: STRING): ARCHETYPE_TERM
 			-- create a new ARCHETYPE_TERM whose members are the same as those in the current object,
 			-- with an '!' appended to each term to indicate that it needs to be edited.
 			-- The new term has the code `a_code'.
@@ -227,6 +238,7 @@ feature -- Factory
 			Code_valid: a_code /= Void and then not a_code.is_empty
 		do
 			create Result.make (a_code)
+
 			from
 				items.start
 			until
@@ -235,11 +247,23 @@ feature -- Factory
 				Result.add_item (items.key_for_iteration, items.item_for_iteration + "!")
 				items.forth
 			end
+		ensure
+			code_set: Result.code.same_string (a_code)
+			same_keys: Result.keys.is_deep_equal (keys)
+			different_items: keys.for_all (
+								agent (key: STRING; original_items, new_items: like items): BOOLEAN
+									local
+										original, new: STRING
+									do
+										original := original_items.item (key)
+										new := new_items.item (key)
+										Result := new.has_substring (original) and not new.is_equal (original)
+									end (?, items, Result.items))
 		end
 
 feature {NONE} -- Implementation
 
-	dadl_validator: DADL2_VALIDATOR is
+	dadl_validator: DADL2_VALIDATOR
 			-- shared dADL2_validator for all ARCHETYPE_TERM instances
 		once
 			create Result.make

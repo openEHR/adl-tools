@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Reference Model"
 
 	description: "[
@@ -26,7 +26,7 @@ create
 	
 feature -- Initialisation
 
-	make(an_audit: AUDIT_DETAILS) is
+	make(an_audit: AUDIT_DETAILS)
 		require
 			Audit_valid: an_audit.description /= Void
 		do

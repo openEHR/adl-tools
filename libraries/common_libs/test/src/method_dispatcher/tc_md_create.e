@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test case for object creation"
 	keywords:    "test, method dispatcher"
@@ -21,22 +21,22 @@ inherit
 			check_result
 		end
 
-creation
+create
 	make
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
 feature -- Access
 
-	title: STRING is "Create object"
+	title: STRING = "Create object"
 
 feature -- testing
 
-	execute is
+	execute
 		local
 			obj: LINKED_LIST[STRING]
 		do
@@ -51,7 +51,7 @@ feature -- testing
 			end
 		end
 
-	check_result is
+	check_result
 		do
 		end
 

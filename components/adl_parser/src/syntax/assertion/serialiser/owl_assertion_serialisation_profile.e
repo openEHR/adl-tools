@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Common routines for OWL assertion serialisation"
 	keywords:    "assertion, serialisation, OWL"
@@ -16,7 +16,7 @@ class OWL_ASSERTION_SERIALISATION_PROFILE
 inherit
 	OWL_SERIALISATION_PROFILE
 
-creation
+create
 	make
 	
 feature {NONE} -- Implementation

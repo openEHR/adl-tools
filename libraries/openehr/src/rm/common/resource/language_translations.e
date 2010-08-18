@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Information Model"
 	description: "[
 				 Dummy class containing just the translations attribute of AUTHORED_RESOURCE;
@@ -22,31 +22,31 @@ inherit
 		redefine
 			default_create
 		end
-		
+
 	TERMINOLOGY_SERVICE
 		export
 			{NONE} all
 		undefine
 			default_create
 		end
-				
+
 create
 	make, make_dt
-	
+
 feature -- Initialisation
 
-	default_create is
-			-- 
+	default_create
+			--
 		do
 		end
-		
-	make is
+
+	make
 			-- default make
 		do
 			default_create
 		end
-		
-	make_dt is
+
+	make_dt
 			-- make used by DT_OBJECT_CONVERTER
 		do
 			make
@@ -55,33 +55,33 @@ feature -- Initialisation
 feature -- Access
 
 	original_language: CODE_PHRASE
-	
+
 	translations: HASH_TABLE [TRANSLATION_DETAILS, STRING]
-			-- List of details for each natural translation made of this resource, keyed by 
-			-- language. For each translation listed here, there must be corresponding 
-			-- sections in all language-dependent parts of the resource. 
-			
+			-- List of details for each natural translation made of this resource, keyed by
+			-- language. For each translation listed here, there must be corresponding
+			-- sections in all language-dependent parts of the resource.
+
 feature -- Modification
 
-	set_translations(a_trans: HASH_TABLE [TRANSLATION_DETAILS, STRING]) is
+	set_translations(a_trans: HASH_TABLE [TRANSLATION_DETAILS, STRING])
 			-- set translations
 		do
 			translations := a_trans
 		end
 
-	set_original_language(a_lang: CODE_PHRASE) is
-			-- 
+	set_original_language(a_lang: CODE_PHRASE)
+			--
 		do
 			original_language := a_lang
 		end
-		
-	set_original_language_from_string(a_lang: STRING) is
-			-- 
+
+	set_original_language_from_string(a_lang: STRING)
+			--
 		do
 			create original_language.make (Default_language_code_set, a_lang)
 		end
-		
-	add_new_translation(a_lang: STRING) is
+
+	add_new_translation(a_lang: STRING)
 			-- add a blank translation object for a_lang
 		local
 			a_trans: TRANSLATION_DETAILS
@@ -89,20 +89,20 @@ feature -- Modification
 			if translations = Void then
 				create translations.make(0)
 			end
-			
+
 			create a_trans.make_from_language(a_lang)
 			translations.put (a_trans, a_lang)
 		end
-		
+
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	persistent_attributes: ARRAYED_LIST[STRING] is
+	persistent_attributes: ARRAYED_LIST[STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		once
 			create Result.make(0)
-			Result.extend("original_language")
-			Result.extend("translations")
+			Result.extend ("original_language")
+			Result.extend ("translations")
 			Result.compare_objects
 		end
 

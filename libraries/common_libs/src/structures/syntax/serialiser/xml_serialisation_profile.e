@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Common routines for XML ADL serialisation"
 	keywords:    "test, ADL"
@@ -23,7 +23,7 @@ inherit
 
 feature {ANY_SERIALISER} -- Access
 
-	format_items: HASH_TABLE[STRING, INTEGER] is
+	format_items: HASH_TABLE[STRING, INTEGER]
 			-- formatting items
 		once
 			create Result.make(0)
@@ -36,7 +36,7 @@ feature {ANY_SERIALISER} -- Access
 			Result.put("; ",				FMT_ASSUMED_VALUE_SEPARATOR)
 		end
 
-	styles: HASH_TABLE[STRING, INTEGER] is
+	styles: HASH_TABLE[STRING, INTEGER]
 			-- styles in this format, keyed by logical name
 		once
 			create Result.make(0)
@@ -48,7 +48,7 @@ feature {ANY_SERIALISER} -- Access
 			Result.put("comment",			STYLE_COMMENT)
 		end
 
-	quote_patterns: HASH_TABLE[STRING, STRING] is
+	quote_patterns: HASH_TABLE[STRING, STRING]
 			-- styles in this format, keyed by logical name
 		once
 			create Result.make(0)
@@ -58,7 +58,7 @@ feature {ANY_SERIALISER} -- Access
 
 feature {ANY_SERIALISER} -- Factory
 
-	apply_style(elem:STRING; a_style:INTEGER): STRING is
+	apply_style(elem:STRING; a_style:INTEGER): STRING
 			-- apply `a_style' to `elem', using attr 'class'
 		do
 		end

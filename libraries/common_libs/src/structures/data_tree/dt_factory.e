@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Factory class for dADL nodes"
 	keywords:    "ADL, Data Tree"
@@ -15,10 +15,10 @@ class DT_FACTORY
 
 inherit
 	DT_TYPES
-		
+
 feature -- Access
 
-	create_complex_object_node(a_parent:DT_ATTRIBUTE_NODE; a_node_id:STRING): DT_COMPLEX_OBJECT_NODE is
+	create_complex_object_node (a_parent: DT_ATTRIBUTE_NODE; a_node_id: STRING): DT_COMPLEX_OBJECT_NODE
 		require
 			parent_valid: a_parent /= Void
 			a_node_id_valid: a_node_id /= Void implies not a_node_id.is_empty
@@ -30,8 +30,8 @@ feature -- Access
 			end
 			a_parent.put_child(Result)
 		end
-			
-	create_attribute_node(a_parent:DT_COMPLEX_OBJECT_NODE; a_rel_name: STRING; is_multiple: BOOLEAN): DT_ATTRIBUTE_NODE is
+
+	create_attribute_node (a_parent: DT_COMPLEX_OBJECT_NODE; a_rel_name: STRING; is_multiple: BOOLEAN): DT_ATTRIBUTE_NODE
 			-- create a rel_node with a simple name like "text" or "description"
 			-- is_multiple flag indicates if multiple cardinality
 		require
@@ -46,8 +46,8 @@ feature -- Access
 			a_parent.put_attribute(Result)
 		end
 
-	create_primitive_object(a_parent: DT_ATTRIBUTE_NODE; an_item: ANY; a_node_id: STRING): DT_PRIMITIVE_OBJECT is
-			-- an_item must be STRING, INTEGER, REAL, DOUBLE, BOOLEAN, CHARACTER, 
+	create_primitive_object (a_parent: DT_ATTRIBUTE_NODE; an_item: ANY; a_node_id: STRING): DT_PRIMITIVE_OBJECT
+			-- an_item must be STRING, INTEGER, REAL, DOUBLE, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION
 		require
 			parent_valid: a_parent /= Void
@@ -100,8 +100,8 @@ feature -- Access
 			a_parent.put_child(Result)
 		end
 
-	create_primitive_object_list(a_parent: DT_ATTRIBUTE_NODE; an_item: LIST[ANY]; a_node_id: STRING): DT_PRIMITIVE_OBJECT_LIST is
-			-- an_item must conform to LIST of STRING, INTEGER, REAL, DOUBLE, BOOLEAN, CHARACTER, 
+	create_primitive_object_list (a_parent: DT_ATTRIBUTE_NODE; an_item: LIST [ANY]; a_node_id: STRING): DT_PRIMITIVE_OBJECT_LIST
+			-- an_item must conform to LIST of STRING, INTEGER, REAL, DOUBLE, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION
 		require
 			parent_valid: a_parent /= Void
@@ -116,7 +116,7 @@ feature -- Access
 			a_parent.put_child(Result)
 		end
 
-	create_primitive_object_term(a_parent: DT_ATTRIBUTE_NODE; a_qualified_code, a_node_id: STRING): DT_PRIMITIVE_OBJECT is
+	create_primitive_object_term(a_parent: DT_ATTRIBUTE_NODE; a_qualified_code, a_node_id: STRING): DT_PRIMITIVE_OBJECT
 			-- an_item must be in the form TERMINOLOGY_ID::CODE
 		require
 			parent_valid: a_parent /= Void
@@ -131,7 +131,7 @@ feature -- Access
 			a_parent.put_child(Result)
 		end
 
-	create_primitive_object_term_list(a_parent: DT_ATTRIBUTE_NODE; an_item: LIST[ANY]; a_node_id: STRING): DT_PRIMITIVE_OBJECT_LIST is
+	create_primitive_object_term_list (a_parent: DT_ATTRIBUTE_NODE; an_item: LIST [ANY]; a_node_id: STRING): DT_PRIMITIVE_OBJECT_LIST
 			-- an_item must conform to LIST of STRINGs representing terms
 		require
 			parent_valid: a_parent /= Void

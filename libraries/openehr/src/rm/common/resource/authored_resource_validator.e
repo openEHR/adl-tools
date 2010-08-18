@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Common Information Model"
 	description: "Validator for AUTHOR_RESOURCE objects"
 	keywords:    "archetype"
@@ -16,83 +16,60 @@ class AUTHORED_RESOURCE_VALIDATOR
 inherit
 	ANY_VALIDATOR
 
-create
-	make
-
 feature {NONE} -- Initialisation
 
-	make (a_target_desc: like target_descriptor) is
-			-- set target_descriptor
-			-- initialise reporting variables
+	make (a_target: like target)
+			-- set target and initialise reporting variables
 		require
-			target_desc_attached: a_target_desc /= Void
-			target_desc_valid: a_target_desc.archetype_differential /= Void
+			target_valid: a_target /= Void
 		do
-			target_descriptor := a_target_desc
-			target := target_descriptor.archetype_differential
-			create errors.make (0)
-			create warnings.make (0)
-			passed := False
+			target := a_target
+			reset
 		ensure
-			target_descriptor_set: target_descriptor = a_target_desc
-			target_set: target = a_target_desc.archetype_differential
-			Not_passed: not passed
+			target_set: target = a_target
+			Passed: passed
 		end
 
 feature -- Access
 
-	target_descriptor: ARCH_REP_ARCHETYPE
-			-- descriptor object for a resource to be validated
-
 	target: AUTHORED_RESOURCE
 			-- target of this validator
 
-	validate is
+	validate
 			-- True if all structures obey their invariants
 		do
-			passed := True
 			if target.original_language = Void then
-				errors.append("No original language%N")
-				passed := False
+				add_error("VDEOL", Void)
 			end
-			validate_description
-			validate_translations
-		end
 
-feature -- Status Report
+			-- check that AUTHORED_RESOURCE.translations items match their Hash keys
+			if target.has_translations then
+				from
+					target.translations.start
+				until
+					target.translations.off or not target.translations.key_for_iteration.is_equal (target.translations.item_for_iteration.language.code_string)
+				loop
+					target.translations.forth
+				end
+				if not target.translations.off then
+					add_error("VTRLA", <<target.translations.key_for_iteration, target.translations.item_for_iteration.language.code_string>>)
+				end
+			end
 
-	strict: BOOLEAN
-			-- True if strict validation is to be applied. When strict is on, the following things cause errors:
-			-- - paths at the wrong specialisation level
-
-feature -- Status Setting
-
-	set_strict is
-			-- set `strict' to True
-		do
-			strict := True
-		end
-
-	unset_strict is
-			-- set `strict' to False
-		do
-			strict := False
-		end
-
-feature {NONE} -- Implementation
-
-	validate_description is
-			-- TODO
-		do
-		end
-
-	validate_translations is
-			-- TODO
-		do
+			-- check that RESOURCE_DESCRIPTION.details items match their Hash keys
+			from
+				target.description.details.start
+			until
+				target.description.details.off or not target.description.details.key_for_iteration.is_equal (target.description.details.item_for_iteration.language.code_string)
+			loop
+				target.description.details.forth
+			end
+			if not target.description.details.off then
+				add_error("VRDLA", <<target.description.details.key_for_iteration, target.description.details.item_for_iteration.language.code_string>>)
+			end
 		end
 
 invariant
-	target_descriptor_attached: target_descriptor /= Void
 	target_attached: target /= Void
 
 end

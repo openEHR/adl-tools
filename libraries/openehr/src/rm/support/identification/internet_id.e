@@ -1,6 +1,6 @@
-indexing
+note
 	component:   "openEHR Common Reference Model"
-	
+
 	description: "[
 				 Model of a reverse internet domain, as used to uniquely identify an internet domain. 
 				 In the form of a dot-separated string in the reverse order of a domain name, 
@@ -26,18 +26,18 @@ inherit
 
 create
 	default_create, make
-	
+
 feature -- Definitions
 
-	Default_value: STRING is "org.openehr"
+	Default_value: STRING = "org.openehr"
 
 feature -- Status Report
 
-	valid_id(an_id:STRING): BOOLEAN is
-			-- 
+	valid_id (an_id: STRING): BOOLEAN
+			--
 		do
 		end
-		
+
 end
 
 --|

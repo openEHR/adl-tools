@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR re-usable library"
 	description: "Date/time routines"
 	keywords:    "date time"
@@ -19,7 +19,7 @@ inherit
 
 feature -- Definitions
 
-	valid_date_constraint_patterns: ARRAYED_LIST [STRING] is
+	valid_date_constraint_patterns: attached ARRAYED_LIST [STRING]
 			-- List of allowed date constraints.
 		once
 			create Result.make (0)
@@ -31,11 +31,32 @@ feature -- Definitions
 			Result.extend ("YYYY-??-XX")	-- day not allowed
 			Result.extend ("YYYY-XX-XX")	-- neither month nor day allowed
 		ensure
-			attached: Result /= Void
 			not_empty: not Result.is_empty
 		end
 
-	valid_time_constraint_patterns: ARRAYED_LIST [STRING] is
+	valid_date_constraint_replacements: attached HASH_TABLE[ARRAY [STRING], STRING]
+			-- List of allowed date constraint replacements e.g. in specialised archetype
+		once
+			create Result.make (0)
+			Result.put (<<>>, "YYYY-MM-DD")	-- no replacements possible
+			Result.put (<<"YYYY-MM-DD", "YYYY-MM-XX">>, "YYYY-MM-??")
+			Result.put (<<>>, "YYYY-MM-XX")	-- no replacements possible
+			Result.put (<<"YYYY-MM-??", "YYYY-MM-DD", "YYYY-MM-XX", "YYYY-??-XX", "YYYY-XX-XX">>, "YYYY-??-??")
+			Result.put (<<"YYYY-MM-XX", "YYYY-XX-XX">>, "YYYY-??-XX")
+			Result.put (<<>>, "YYYY-XX-XX")	-- no replacements possible
+			from
+				Result.start
+			until
+				Result.off
+			loop
+				Result.item_for_iteration.compare_objects
+				Result.forth
+			end
+		ensure
+			not_empty: not Result.is_empty
+		end
+
+	valid_time_constraint_patterns: attached ARRAYED_LIST [STRING]
 			-- List of allowed time constraints.
 		once
 			create Result.make (0)
@@ -46,11 +67,31 @@ feature -- Definitions
 			Result.extend ("HH:??:??")	-- minutes and seconds optional
 			Result.extend ("HH:??:XX")	-- minutes optional but seconds not allowed
 		ensure
-			attached: Result /= Void
 			not_empty: not Result.is_empty
 		end
 
-	valid_date_time_constraint_patterns: ARRAYED_LIST [STRING] is
+	valid_time_constraint_replacements: attached HASH_TABLE[ARRAY [STRING], STRING]
+			-- List of allowed time constraint replacements e.g. in specialised archetype
+		once
+			create Result.make (0)
+			Result.put (<<>>, "HH:MM:SS")	-- no replacements possible
+			Result.put (<<"HH:MM:SS", "HH:MM:XX">>, "HH:MM:??")
+			Result.put (<<>>, "HH:MM:XX")	-- no replacements possible
+			Result.put (<<"HH:MM:??", "HH:MM:SS", "HH:MM:XX", "HH:??:XX">>, "HH:??:??")
+			Result.put (<<"HH:MM:XX">>, "HH:??:XX")
+			from
+				Result.start
+			until
+				Result.off
+			loop
+				Result.item_for_iteration.compare_objects
+				Result.forth
+			end
+		ensure
+			not_empty: not Result.is_empty
+		end
+
+	valid_date_time_constraint_patterns: attached ARRAYED_LIST [STRING]
 			-- List of allowed date/time constraints.
 		once
 			create Result.make (0)
@@ -62,13 +103,34 @@ feature -- Definitions
 			Result.extend ("YYYY-MM-DDTHH:??:XX")	-- minutes optional but seconds not allowed
 			Result.extend ("YYYY-??-??T??:??:??")	-- any date/time ok
 		ensure
-			attached: Result /= Void
+			not_empty: not Result.is_empty
+		end
+
+	valid_date_time_constraint_replacements: attached HASH_TABLE [ARRAY [STRING], STRING]
+			-- List of allowed date/time constraint replacements e.g. in specialised archetype
+		once
+			create Result.make (0)
+			Result.put (<<>>, "YYYY-MM-DDTHH:MM:SS")	-- no replacements possible
+			Result.put (<<"YYYY-MM-DDTHH:MM:SS", "YYYY-MM-DDTHH:MM:XX">>, "YYYY-MM-DDTHH:MM:??")
+			Result.put (<<>>, "YYYY-MM-DDTHH:MM:XX")	-- no replacements possible
+			Result.put (<<"YYYY-MM-DDTHH:??:XX", "YYYY-MM-DDTHH:MM:SS", "YYYY-MM-DDTHH:MM:??", "YYYY-MM-DDTHH:MM:XX">>, "YYYY-MM-DDTHH:??:??")
+			Result.put (<<"YYYY-MM-DDTHH:MM:XX">>, "YYYY-MM-DDTHH:??:XX")
+			Result.put (<<"YYYY-MM-DDTHH:MM:SS", "YYYY-MM-DDTHH:MM:??", "YYYY-MM-DDTHH:MM:XX", "YYYY-MM-DDTHH:??:??", "YYYY-MM-DDTHH:??:XX">>, "YYYY-??-??T??:??:??")
+			from
+				Result.start
+			until
+				Result.off
+			loop
+				Result.item_for_iteration.compare_objects
+				Result.forth
+			end
+		ensure
 			not_empty: not Result.is_empty
 		end
 
 feature -- Status Report
 
-	valid_iso8601_time_constraint_pattern(s: STRING): BOOLEAN is
+	valid_iso8601_time_constraint_pattern(s: STRING): BOOLEAN
 			-- True if string literal like "hh:mm:ss[.ssss]"
 			-- with XX or ?? allowed in mm or ss slots
 		require
@@ -77,7 +139,7 @@ feature -- Status Report
 			Result := valid_time_constraint_patterns.has (s.as_upper)
 		end
 
-	valid_iso8601_date_constraint_pattern(s: STRING): BOOLEAN is
+	valid_iso8601_date_constraint_pattern(s: STRING): BOOLEAN
 			-- True if string literal like "yyyy-MM-dd"
 			-- with XX or ?? allowed in MM or dd slots
 		require
@@ -86,7 +148,7 @@ feature -- Status Report
 			Result := valid_date_constraint_patterns.has (s.as_upper)
 		end
 
-	valid_iso8601_date_time_constraint_pattern(s: STRING): BOOLEAN is
+	valid_iso8601_date_time_constraint_pattern(s: STRING): BOOLEAN
 			-- True if string in form "yyyy-MM-dd hh:mm:ss[.ssss]"
 		require
 			s_attached: s /= Void
@@ -94,7 +156,7 @@ feature -- Status Report
 			Result := valid_date_time_constraint_patterns.has (s.as_upper)
 		end
 
-	valid_iso8601_duration_constraint_pattern(s: STRING): BOOLEAN is
+	valid_iso8601_duration_constraint_pattern(s: STRING): BOOLEAN
 			-- True if string in form
 			-- P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]]
 			-- (note: allowing 'W' to be mixed in is an openEHR deviation of ISO 8601)

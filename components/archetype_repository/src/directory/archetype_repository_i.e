@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Representation of an archetype repository in some medium."
 	keywords:    "ADL"
@@ -15,12 +15,6 @@ deferred class
 	ARCHETYPE_REPOSITORY_I
 
 inherit
-	SHARED_APPLICATION_CONTEXT
-		export
-			{NONE} all
-			{ANY} current_language, set_current_language
-		end
-
 	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all
@@ -41,15 +35,10 @@ feature -- Access
 	group_id: INTEGER
 			-- Id of the group to which this repository belongs.
 
-	first_line (full_path: STRING): STRING
-			-- return the first line of the file at `full_path' (up to LF or end of file)
-			-- or Void if the file is empty
-		require
-			path_valid: is_valid_path (full_path)
-		deferred
-		ensure
-			Result_exists: Result /= Void
-		end
+feature {ARCHETYPE_DIRECTORY} -- Access
+
+	archetype_id_index: DS_HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
+			-- list of all archetypes found in this directory tree, keyed by id
 
 feature -- Status Report
 

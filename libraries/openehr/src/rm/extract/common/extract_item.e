@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR EHR Reference Model"
 
 	description: "[
@@ -48,12 +48,12 @@ feature -- Access
 			-- True if the content of this item has not been included due to insufficient access rights 
 			-- of requestor.
 
-	path_of_item (an_item: LOCATABLE): STRING is
+	path_of_item (an_item: LOCATABLE): STRING
 			-- The path to an item relative to the root of this archetyped structure.
 		do
 		end
 
-	item_at_path (a_path: STRING): LOCATABLE is
+	item_at_path (a_path: STRING): LOCATABLE
 			-- The item at a path (relative to this item).
 		do
 		end
@@ -63,7 +63,7 @@ feature -- Access
 		
 feature -- Status Report
 
-	path_exists (a_path: STRING): BOOLEAN is
+	path_exists (a_path: STRING): BOOLEAN
 			-- True if the path is valid with respect to the current item.
 		do
 		end

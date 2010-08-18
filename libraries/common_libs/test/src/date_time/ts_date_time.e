@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test suite for date/time types."
 	keywords:    "test, date, time"
@@ -17,20 +17,20 @@ class TS_DATE_TIME
 inherit
 	TEST_SUITE
 
-creation
+create
 	make
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 	    do
 	    end
 
 feature -- Access
 
-	title:STRING is "ISO 8601 Date/time test suite"
+	title:STRING = "ISO 8601 Date/time test suite"
 
-	test_cases: LINKED_LIST[TEST_CASE] is
+	test_cases: LINKED_LIST[TEST_CASE]
 		local
 			tc:TEST_CASE
 		once

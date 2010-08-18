@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Reusable Libraries"
 	description: "Test case for presence of object path"
 	keywords:    "test, object graph, path"
@@ -25,20 +25,20 @@ inherit
 			{NONE} all
 		end
 
-creation
+create
 	make
 
 feature -- Access
 
-	title:STRING is "Object Graph has_path (movable path)"
+	title:STRING = "Object Graph has_path (movable path)"
 
 feature -- Initialisation
 
-	make(arg:ANY) is
+	make(arg:ANY)
 		do
 		end
 
-	execute is
+	execute
 		local
 			path_set: HASH_TABLE [OG_OBJECT, OG_PATH]
 			a_path, a_movable_path: OG_PATH
@@ -72,7 +72,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	check_result is
+	check_result
 	    do
 	    end
 

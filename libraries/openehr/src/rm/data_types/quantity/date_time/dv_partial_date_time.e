@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Data Types"
 
 	description: "Implementation of DV_PARTIAL_DATE_TIME"
@@ -38,20 +38,20 @@ feature -- Access
 	minute_known: BOOLEAN	
 			-- Indicates whether minute in hour is known.
 
-	magnitude: DOUBLE_REF is	
+	magnitude: DOUBLE_REF	
 			-- canonical value of enclosing_interval.midpoint.
 		do
 		ensure then
 			Result = enclosing_interval.midpoint.magnitude
 		end
 
-	enclosing_interval: DV_INTERVAL[DV_DATE_TIME] is
+	enclosing_interval: DV_INTERVAL[DV_DATE_TIME]
 		do
 		end
 
 feature -- Output
 
-	as_string: STRING is
+	as_string: STRING
 			-- Result has form “yyyy-MM-dd hh:mm:??” where MM, dd, hh and mm might be “??”	Result = follows ISO 8601
 		do
 		end

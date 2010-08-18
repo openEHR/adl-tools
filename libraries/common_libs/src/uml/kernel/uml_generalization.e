@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Resuable Library Project"
 	description: "[
 			 UML TypedElement abstraction, as defined in OMG UML 2.0 Infrastructure 
@@ -24,7 +24,7 @@ create
 
 feature -- Initialisation
 
-	make_substitutable(a_target: UML_CLASS) is
+	make_substitutable(a_target: UML_CLASS)
 		require
 			Target_exists: a_target /= Void
 		do
