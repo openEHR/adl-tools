@@ -53,7 +53,6 @@
 		<assembly name="system" location="$ISE_DOTNET_FRAMEWORK\System.dll" prefix="SYSTEM_DLL_"/>
 		<assembly name="system.xml" location="$ISE_DOTNET_FRAMEWORK\System.Xml.dll" prefix="XML_"/>
 		<cluster name="adl_parser" location="..\..\src\" recursive="true"/>
-		<cluster name="app_config" location="..\..\..\..\apps\adl_workbench\src\main\" recursive="true"/>
 		<cluster name="archetype_repository" location="..\..\..\archetype_repository\src\" recursive="true"/>
 		<cluster name="common_libs" location="..\..\..\..\libraries\common_libs\src\" recursive="true">
 			<file_rule>
