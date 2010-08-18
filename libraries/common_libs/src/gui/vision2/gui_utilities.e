@@ -231,6 +231,16 @@ feature {NONE} -- Implementation
 			ht.go_to (csr)
 		end
 
+	initialise_splitter (split: EV_SPLIT_AREA; position: INTEGER)
+			-- Make `position' the position for `split'; but do nothing if `position' is outside the allowed bounds.
+		do
+			if position = 0 then
+				split.set_split_position (((split.minimum_split_position + split.maximum_split_position)/2).floor)
+			elseif split.minimum_split_position <= position and position <= split.maximum_split_position then
+				split.set_split_position (position)
+			end
+		end
+
 end
 
 

@@ -38,6 +38,10 @@ inherit
 
 	COMPARABLE
 
+feature -- Definitions
+
+	Ontological_path_separator: STRING = "/"
+
 feature -- Initialisation
 
 	make

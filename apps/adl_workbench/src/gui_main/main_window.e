@@ -20,7 +20,7 @@ inherit
 			show
 		end
 
-	MAIN_WINDOW_ACCELERATORS
+	WINDOW_ACCELERATORS
 		undefine
 			copy, default_create
 		end
@@ -1450,16 +1450,6 @@ feature {NONE} -- Build commands
 		end
 
 feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be managing automatically
-
-	initialise_splitter (split: EV_SPLIT_AREA; position: INTEGER)
-			-- Make `position' the position for `split'; but do nothing if `position' is outside the allowed bounds.
-		do
-			if position = 0 then
-				split.set_split_position (((split.minimum_split_position + split.maximum_split_position)/2).floor)
-			elseif split.minimum_split_position <= position and position <= split.maximum_split_position then
-				split.set_split_position (position)
-			end
-		end
 
 	step_focused_notebook_tab (step: INTEGER)
 			-- Switch forward or back from the current tab page of the currently focused notebook.

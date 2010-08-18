@@ -23,13 +23,16 @@ inherit
 			{ANY} directory_exists
 		end
 
-	ARCHETYPE_DEFINITIONS
-		export
-			{NONE} all
-		end
-
 create
 	make
+
+feature -- Definitions
+
+	Group_id_adhoc: INTEGER = 1
+
+	Group_id_reference: INTEGER = 2
+
+	Group_id_work: INTEGER = 3
 
 feature -- Initialisation
 

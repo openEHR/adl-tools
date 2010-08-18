@@ -36,12 +36,6 @@ feature -- Definitions
 	Archetype_source_file_extension: STRING = ".adls"
 			-- Extension for source form (differential) archetype files.
 
-	Ontological_path_separator: STRING = "/"
-
-	Archetype_category: STRING = "archetypes"
-
-	Template_category: STRING = "templates"
-
 	Adl_versions: ARRAYED_LIST [STRING]
 			-- list of ADL versions known in this tool
 		once
@@ -57,12 +51,6 @@ feature -- Definitions
 		once
 			Result := Adl_versions.last
 		end
-
-	Group_id_adhoc: INTEGER = 1
-
-	Group_id_reference: INTEGER = 2
-
-	Group_id_work: INTEGER = 3
 
 end
 
