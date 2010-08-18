@@ -18,9 +18,12 @@ class APP_ROOT
 inherit
 	SHARED_APP_RESOURCES
 
+create
+	make
+
 feature -- Initialisation
 
-	initialise
+	make
 		once
 			Message_db.populate (Message_templates_text, locale_language_short)
 			if Message_db.database_loaded then
@@ -83,7 +86,7 @@ feature {NONE} -- Implementation
 					["VOKU"] = <"Error (VOKU): dADL object key must be unique; key [$1] already exists under attribute '$2'">
 				>
 			>
-	]"		
+	]"
 
 end
 
