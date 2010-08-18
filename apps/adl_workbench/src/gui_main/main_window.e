@@ -361,22 +361,6 @@ feature -- File events
 
 feature {NONE} -- Edit events
 
-	call_unless_text_focused (action: PROCEDURE [ANY, TUPLE])
-			-- Some of the edit shortcuts are implemented automatically for text boxes (although not for rich text
-			-- boxes, or at least not on Windows).
-			-- If called from a keyboard shortcut, execute the action unless a text box is focused.
-			-- Executing it within a text box would cause it to be performed twice.
-			-- For some actions this wouldn't really matter (cut, copy), but for paste it would be a blatant bug.
-		local
-			t: EV_TEXT_COMPONENT
-		do
-			t := focused_text
-
-			if t = Void or attached {EV_RICH_TEXT} t then
-				action.call ([])
-			end
-		end
-
 	on_cut
 			-- Cut the selected item, depending on which widget has focus.
 		do
@@ -1520,6 +1504,22 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 		ensure
 			focused: Result /= Void implies Result.has_focus
 			in_this_window: Result /= Void implies has_recursive (Result)
+		end
+
+	call_unless_text_focused (action: PROCEDURE [ANY, TUPLE])
+			-- Some of the edit shortcuts are implemented automatically for text boxes (although not for rich text
+			-- boxes, or at least not on Windows).
+			-- If called from a keyboard shortcut, execute the action unless a text box is focused.
+			-- Executing it within a text box would cause it to be performed twice.
+			-- For some actions this wouldn't really matter (cut, copy), but for paste it would be a blatant bug.
+		local
+			t: EV_TEXT_COMPONENT
+		do
+			t := focused_text
+
+			if t = Void or attached {EV_RICH_TEXT} t then
+				action.call ([])
+			end
 		end
 
 end
