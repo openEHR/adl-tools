@@ -22,7 +22,7 @@ inherit
 			on_prepare
 		end
 
-	SHARED_ADL_APPLICATION
+	SHARED_APP_ROOT
 		undefine
 			default_create
 		end
@@ -55,7 +55,7 @@ feature {NONE} -- Events
 			Precursor
 			application_developer_name.make_from_string ("openEHR")
 			resource_config_file.make (user_config_file_path)
-			adl_application.initialise
+			assert ("app_root initialisation failed", app_root.initialised)
 
 			if repository_profiles.has ("Test") then
 				test_repository := repository_profiles ["Test"].first
