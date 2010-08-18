@@ -1,11 +1,11 @@
 note
-	component:   "openEHR Archetype Project"
+	component:   "openEHR Project"
 	description: "[
 				 General idea of a validator object that reports errors, warnings.
 				 ]"
 	keywords:    "ADL, archetype"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 

@@ -62,13 +62,14 @@ inherit
 			{NONE} all
 		end
 
-	ARCHETYPE_DEFINITIONS
-		export
-			{NONE} all
-		end
-
 create
 	make
+
+feature -- Definitions
+
+	Archetype_category: STRING = "archetypes"
+
+	Template_category: STRING = "templates"
 
 feature -- Initialisation
 
