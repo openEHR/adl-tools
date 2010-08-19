@@ -150,11 +150,7 @@ feature -- Access
 			og_paths := representation.all_paths
 			create Result.make(0)
 			Result.compare_objects
-			from
-				og_paths.start
-			until
-				og_paths.off
-			loop
+			from og_paths.start until og_paths.off loop
 				Result.extend(og_paths.key_for_iteration.as_string)
 				og_paths.forth
 			end

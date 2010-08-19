@@ -39,7 +39,11 @@ inherit
 		end
 
 create
-	make_from_string, make_y, make_ym, make_ymd
+	make_from_string, make_y, make_ym, make_ymd, make_date
+
+convert
+	make_date ({DATE}),
+	to_date: {DATE}
 
 feature -- Initialisation
 
@@ -96,6 +100,12 @@ feature -- Initialisation
 			day := d
 			is_extended := is_extended_flag
 			value := as_string
+		end
+
+	make_date (a_date: attached DATE)
+			-- make into string of ISO8601 format "YYYY-MM-DD"
+		do
+			make_ymd (a_date.year, a_date.month, a_date.day, True)
 		end
 
 feature -- Access
@@ -162,6 +172,27 @@ feature -- Conversion
 			end
 
 			Result := (create {DATE}.make(year, m, d)).days
+		end
+
+	to_date: attached DATE
+			-- convert to DATE type
+		local
+			y, m, d: INTEGER
+		do
+			y := year
+			if day_unknown then
+				if month_unknown then
+					m := Middle_month_of_year
+					d := Last_day_of_middle_month
+				else
+					m := month
+					d := Middle_day_of_month
+				end
+			else
+				m := month
+				d := day
+			end
+			create Result.make(y, m, d)
 		end
 
 feature -- Output

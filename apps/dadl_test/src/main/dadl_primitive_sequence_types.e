@@ -1,6 +1,6 @@
 note
 	component:   "openEHR dADL Project"
-	description: "Type for testing dADL serialise/deserialise of simple types."
+	description: "Type for testing dADL serialise/deserialise of intervals of simple types."
 	keywords:    "test, dADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
@@ -11,7 +11,7 @@ note
 	revision:    "$LastChangedRevision"
 	last_change: "$LastChangedDate"
 
-class DADL_PRIMITIVE_TYPES
+class DADL_PRIMITIVE_SEQUENCE_TYPES
 
 
 feature -- Access
@@ -56,7 +56,7 @@ feature -- Access
 
 	my_real_64: REAL_64 assign set_my_real_64
 
-	my_double: DOUBLE assign set_my_double
+	my_double: REAL assign set_my_double
 
 	my_date: DATE assign set_my_date
 

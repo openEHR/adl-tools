@@ -39,7 +39,11 @@ inherit
 		end
 
 create
-	make_from_string, make_h, make_hm, make_hms, make_hmsf
+	make_from_string, make_h, make_hm, make_hms, make_hmsf, make_time
+
+convert
+	make_time ({TIME}),
+	to_time: {TIME}
 
 feature -- Initialisation
 
@@ -110,6 +114,12 @@ feature -- Initialisation
 			has_fractional_second := True
 			is_extended := is_extended_flag
 			value := as_string
+		end
+
+	make_time (a_time: attached TIME)
+			-- make from a TIME object
+		do
+			make_hmsf (a_time.hour, a_time.minute, a_time.second, a_time.fractional_second, True)
 		end
 
 feature -- Access
@@ -210,6 +220,29 @@ feature -- Conversion
 				tz := timezone.to_seconds
 			end
 			Result := hour * seconds_in_hour + m * seconds_in_minute + s + fs + tz
+		end
+
+	to_time: attached TIME
+			-- convert to a TIME object
+		local
+			h, m, s: INTEGER
+			fs: DOUBLE
+		do
+			h := hour
+			if second_unknown then
+				if minute_unknown then
+					m := (Minutes_in_hour / 2).truncated_to_integer
+					s := Seconds_in_hour - 1
+				else
+					m := minute
+					s := (Seconds_in_hour / 2).truncated_to_integer
+				end
+			else
+				m := minute
+				s := second
+				fs := fractional_second
+			end
+			create Result.make_fine(h, m, s + fs)
 		end
 
 feature -- Output

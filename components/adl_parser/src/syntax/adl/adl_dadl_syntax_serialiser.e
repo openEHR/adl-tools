@@ -1,28 +1,59 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Common ADL syntax definitions"
-	keywords:    "ADL"
+	description: "[
+		         Temporary variant of DADL_SYNTAX_SERIALISER needed until ADL 1.5 is universally used. This
+				 variant implements two ADL-specific variations of standard dADL:
+					* the dadl type name is serialised with "()" if ADL version is >= 1.5
+					* 
+				 ]"
+	keywords:    "test, DADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class ADL_DEFINITIONS
+class ADL_DADL_SYNTAX_SERIALISER
 
 inherit
-	OPENEHR_CODE_SET_IDENTIFIERS
+	DADL_SYNTAX_SERIALISER
+		redefine
+			start_complex_object_node
+		end
+
+	ADL_SYNTAX_CONVERTER
 		export
 			{NONE} all
 		end
 
-feature -- Definitions
+create
+	make
+
+feature -- Visitor
+
+	start_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER)
+			-- start serialising a DT_COMPLEX_OBJECT_NODE
+		do
+			if not a_node.is_root and then a_node.parent.is_multiple then
+				last_result.append(create_indent(depth//2 + multiple_attr_count))
+			end
+			if a_node.is_addressable then
+				last_result.append(apply_style("[%"" + a_node.node_id + "%"]", STYLE_IDENTIFIER))
+				last_result.append(format_item(FMT_SPACE))
+				last_result.append(apply_style(symbol(SYM_EQ), STYLE_OPERATOR) + format_item(FMT_SPACE))
+			end
+			if a_node.is_typed and a_node.type_visible then
+				last_result.append(convert_dadl_type_name(a_node.rm_type_name) + format_item(FMT_SPACE) + symbol(SYM_START_DBLOCK) +
+					format_item(FMT_NEWLINE))
+			elseif not a_node.is_root then
+				last_result.append(symbol(SYM_START_DBLOCK) + format_item(FMT_NEWLINE))
+			end
+		end
 
 end
-
 
 
 --|
@@ -39,10 +70,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is adl_definitions.e.
+--| The Original Code is adl_dadl_syntax_serialiser.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2010
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

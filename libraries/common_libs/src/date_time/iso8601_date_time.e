@@ -36,7 +36,11 @@ inherit
 		end
 
 create
-	make_from_string, make_date_time
+	make_from_string, make_date_and_time, make_date_time
+
+convert
+	make_date_time ({DATE_TIME}),
+	to_date_time: {DATE_TIME}
 
 feature -- Initialisation
 
@@ -51,7 +55,7 @@ feature -- Initialisation
 			value := as_string
 		end
 
-	make_date_time(a_date: ISO8601_DATE; a_time: ISO8601_TIME)
+	make_date_and_time(a_date: ISO8601_DATE; a_time: ISO8601_TIME)
 			-- create from date and time parts
 		require
 			Date_valid: a_date /= Void
@@ -61,6 +65,14 @@ feature -- Initialisation
 			date_part := a_date
 			time_part := a_time
 			value := as_string
+		end
+
+	make_date_time (a_dt: attached DATE_TIME)
+			-- make from a DATE_TIME object
+		require
+			a_dt /= Void
+		do
+			make_date_and_time(create {ISO8601_DATE}.make_date(a_dt.date), create {ISO8601_TIME}.make_time(a_dt.time))
 		end
 
 feature -- Access
@@ -179,6 +191,12 @@ feature -- Conversion
 			-- date/time as a number of days since origin point of 1600-01-01
 		do
 			Result := date_part.to_days * seconds_in_day + time_part.to_seconds
+		end
+
+	to_date_time: attached DATE_TIME
+			-- convert to DATE_TIME object
+		do
+			create Result.make_by_date_time (date_part.to_date, time_part.to_time)
 		end
 
 feature -- Output

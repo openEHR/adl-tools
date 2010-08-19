@@ -25,34 +25,48 @@ feature {NONE} -- Definitions
 		once
 			create Result.make (0)
 			Result.compare_objects
+			Result.extend (dynamic_type (create {NATURAL}))
+			Result.extend (dynamic_type (create {NATURAL_8}))
+			Result.extend (dynamic_type (create {NATURAL_16}))
+			Result.extend (dynamic_type (create {NATURAL_32}))
+			Result.extend (dynamic_type (create {NATURAL_64}))
 			Result.extend (dynamic_type (create {INTEGER}))
+			Result.extend (dynamic_type (create {INTEGER_8}))
+			Result.extend (dynamic_type (create {INTEGER_16}))
+			Result.extend (dynamic_type (create {INTEGER_32}))
+			Result.extend (dynamic_type (create {INTEGER_64}))
 			Result.extend (dynamic_type (create {REAL}))
+			Result.extend (dynamic_type (create {REAL_32}))
+			Result.extend (dynamic_type (create {REAL_64}))
 			Result.extend (dynamic_type (create {DOUBLE}))
 			Result.extend (dynamic_type (create {BOOLEAN}))
 			Result.extend (dynamic_type (create {CHARACTER}))
+			Result.extend (dynamic_type (create {CHARACTER_8}))
+			Result.extend (dynamic_type (create {CHARACTER_32}))
 			Result.extend (dynamic_type (create {STRING}.make_empty))
+			Result.extend (dynamic_type (create {STRING_8}.make_empty))
+			Result.extend (dynamic_type (create {STRING_32}.make_empty))
 			Result.extend (dynamic_type (create {DATE}.make_now))
 			Result.extend (dynamic_type (create {DATE_TIME}.make_now))
 			Result.extend (dynamic_type (create {TIME}.make_now))
 			Result.extend (dynamic_type (create {DATE_TIME_DURATION}.make (0, 0, 0, 0, 0, 0)))
 			Result.extend (dynamic_type (create {CODE_PHRASE}))
 			Result.extend (dynamic_type (create {URI}.make_from_string ("http://no.way.home")))
-			Result.extend (dynamic_type (create {INTEGER_REF}))
-			Result.extend (dynamic_type (create {REAL_REF}))
-			Result.extend (dynamic_type (create {DOUBLE_REF}))
-			Result.extend (dynamic_type (create {BOOLEAN_REF}))
-			Result.extend (dynamic_type (create {CHARACTER_REF}))
+--			Result.extend (dynamic_type (create {INTEGER_REF}))
+--			Result.extend (dynamic_type (create {REAL_REF}))
+--			Result.extend (dynamic_type (create {DOUBLE_REF}))
+--			Result.extend (dynamic_type (create {BOOLEAN_REF}))
+--			Result.extend (dynamic_type (create {CHARACTER_REF}))
 
 			-- When DT_OBJECT_CONVERTER retrieves the type id of a .NET primitive type via field_static_type_of_type,
 			-- it receives a primitive .NET type (Int32, etc.), which is compatible with the corresponding Eiffel type,
 			-- but has different type id. We therefore need to list these .NET types too.
 			-- We can retrieve these .NET type ids from the Eiffel strings, as shown below.
 			-- This fixes the problem, without having to list .NET types explicitly here, which would not be portable of course.
-			Result.extend (dynamic_type_from_string ("INTEGER_32"))
-			Result.extend (dynamic_type_from_string ("REAL_32"))
-			Result.extend (dynamic_type_from_string ("REAL_64"))
-			Result.extend (dynamic_type_from_string ("BOOLEAN"))
-			Result.extend (dynamic_type_from_string ("CHARACTER_8"))
+--			Result.extend (dynamic_type (create {INTEGER_32}))
+--			Result.extend (dynamic_type (create {REAL_32}))
+--			Result.extend (dynamic_type (create {REAL_64}))
+--			Result.extend (dynamic_type (create {BOOLEAN}))
 		end
 
 	primitive_sequence_types: ARRAYED_LIST [INTEGER]
@@ -62,16 +76,29 @@ feature {NONE} -- Definitions
 			-- These are just here to make sure the types are compiled in.
 			-- N.B. SEQUENCE is deferred; therefore we can't create a prototype object for it as we are doing for INTERVAL, etc.
 			seq_boolean: SEQUENCE [BOOLEAN]
+			seq_natural: SEQUENCE [NATURAL]
+			seq_natural_8: SEQUENCE [NATURAL_8]
+			seq_natural_16: SEQUENCE [NATURAL_16]
+			seq_natural_32: SEQUENCE [NATURAL_32]
+			seq_natural_64: SEQUENCE [NATURAL_64]
 			seq_integer: SEQUENCE [INTEGER]
+			seq_integer_8: SEQUENCE [INTEGER_8]
+			seq_integer_16: SEQUENCE [INTEGER_16]
+			seq_integer_32: SEQUENCE [INTEGER_32]
+			seq_integer_64: SEQUENCE [INTEGER_64]
 			seq_real: SEQUENCE [REAL]
+			seq_real_32: SEQUENCE [REAL_32]
+			seq_real_64: SEQUENCE [REAL_64]
 			seq_double: SEQUENCE [DOUBLE]
 			seq_string: SEQUENCE [STRING]
 			seq_character: SEQUENCE [CHARACTER]
-			seq_boolean_ref: SEQUENCE [BOOLEAN_REF]
-			seq_integer_ref: SEQUENCE [INTEGER_REF]
-			seq_real_ref: SEQUENCE [REAL_REF]
-			seq_double_ref: SEQUENCE [DOUBLE_REF]
-			seq_character_ref: SEQUENCE [CHARACTER_REF]
+			seq_character_8: SEQUENCE [CHARACTER_8]
+			seq_character_32: SEQUENCE [CHARACTER_32]
+--			seq_boolean_ref: SEQUENCE [BOOLEAN_REF]
+--			seq_integer_ref: SEQUENCE [INTEGER_REF]
+--			seq_real_ref: SEQUENCE [REAL_REF]
+--			seq_double_ref: SEQUENCE [DOUBLE_REF]
+--			seq_character_ref: SEQUENCE [CHARACTER_REF]
 			seq_date: SEQUENCE [DATE]
 			seq_date_time: SEQUENCE [DATE_TIME]
 			seq_time: SEQUENCE [TIME]
@@ -82,10 +109,18 @@ feature {NONE} -- Definitions
 			Create Result.make (0)
 			Result.compare_objects
 			Result.extend (dynamic_type_from_string ("SEQUENCE [INTEGER]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [INTEGER_8]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [INTEGER_16]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [INTEGER_32]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [INTEGER_64]"))
 			Result.extend (dynamic_type_from_string ("SEQUENCE [BOOLEAN]"))
 			Result.extend (dynamic_type_from_string ("SEQUENCE [REAL]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [REAL_32]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [REAL_64]"))
 			Result.extend (dynamic_type_from_string ("SEQUENCE [DOUBLE]"))
 			Result.extend (dynamic_type_from_string ("SEQUENCE [CHARACTER]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [CHARACTER_8]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [CHARACTER_32]"))
 			Result.extend (dynamic_type_from_string ("SEQUENCE [STRING]"))
 			Result.extend (dynamic_type_from_string ("SEQUENCE [DATE]"))
 			Result.extend (dynamic_type_from_string ("SEQUENCE [DATE_TIME]"))
@@ -93,11 +128,11 @@ feature {NONE} -- Definitions
 			Result.extend (dynamic_type_from_string ("SEQUENCE [DURATION]"))
 			Result.extend (dynamic_type_from_string ("SEQUENCE [URI]"))
 			Result.extend (dynamic_type_from_string ("SEQUENCE [CODE_PHRASE]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [INTEGER_REF]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [BOOLEAN_REF]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [REAL_REF]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [DOUBLE_REF]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [CHARACTER_REF]"))
+--			Result.extend (dynamic_type_from_string ("SEQUENCE [INTEGER_REF]"))
+--			Result.extend (dynamic_type_from_string ("SEQUENCE [BOOLEAN_REF]"))
+--			Result.extend (dynamic_type_from_string ("SEQUENCE [REAL_REF]"))
+--			Result.extend (dynamic_type_from_string ("SEQUENCE [DOUBLE_REF]"))
+--			Result.extend (dynamic_type_from_string ("SEQUENCE [CHARACTER_REF]"))
 		end
 
 	primitive_interval_types: ARRAYED_LIST [INTEGER]
@@ -105,16 +140,27 @@ feature {NONE} -- Definitions
 		once
 			Create Result.make (0)
 			Result.compare_objects
+			Result.extend (dynamic_type (create {INTERVAL [NATURAL]}))
+			Result.extend (dynamic_type (create {INTERVAL [NATURAL_8]}))
+			Result.extend (dynamic_type (create {INTERVAL [NATURAL_16]}))
+			Result.extend (dynamic_type (create {INTERVAL [NATURAL_32]}))
+			Result.extend (dynamic_type (create {INTERVAL [NATURAL_64]}))
 			Result.extend (dynamic_type (create {INTERVAL [INTEGER]}))
+			Result.extend (dynamic_type (create {INTERVAL [INTEGER_8]}))
+			Result.extend (dynamic_type (create {INTERVAL [INTEGER_16]}))
+			Result.extend (dynamic_type (create {INTERVAL [INTEGER_32]}))
+			Result.extend (dynamic_type (create {INTERVAL [INTEGER_64]}))
 			Result.extend (dynamic_type (create {INTERVAL [REAL]}))
+			Result.extend (dynamic_type (create {INTERVAL [REAL_32]}))
+			Result.extend (dynamic_type (create {INTERVAL [REAL_64]}))
 			Result.extend (dynamic_type (create {INTERVAL [DOUBLE]}))
 			Result.extend (dynamic_type (create {INTERVAL [DATE]}))
 			Result.extend (dynamic_type (create {INTERVAL [DATE_TIME]}))
 			Result.extend (dynamic_type (create {INTERVAL [TIME]}))
 			Result.extend (dynamic_type (create {INTERVAL [DATE_TIME_DURATION]}))
-			Result.extend (dynamic_type (create {INTERVAL [INTEGER_REF]}))
-			Result.extend (dynamic_type (create {INTERVAL [REAL_REF]}))
-			Result.extend (dynamic_type (create {INTERVAL [DOUBLE_REF]}))
+--			Result.extend (dynamic_type (create {INTERVAL [INTEGER_REF]}))
+--			Result.extend (dynamic_type (create {INTERVAL [REAL_REF]}))
+--			Result.extend (dynamic_type (create {INTERVAL [DOUBLE_REF]}))
 		end
 
 feature -- Access
@@ -195,8 +241,7 @@ feature -- Status Report
 		do
 			Result := is_primitive_type(a_type_id)
 			if not Result and generic_count_of_type(a_type_id) > 0 then
-				Result := primitive_sequence_types.has(a_type_id) or
-						primitive_interval_types.has(a_type_id)
+				Result := primitive_sequence_types.has(a_type_id) or primitive_interval_types.has(a_type_id)
 			end
 		end
 

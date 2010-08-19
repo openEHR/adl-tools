@@ -109,6 +109,17 @@ feature -- Application Switches
 			end
 		end
 
+	main_split_position: INTEGER
+			-- Split position of main vertical split control.
+		local
+			str: STRING
+		do
+			str := resource_value ("default", "main_split_position")
+			if str.is_integer then
+				Result := str.to_integer
+			end
+		end
+
 feature -- Application Switch Setting
 
 	set_current_work_directory (a_path: STRING)
@@ -172,6 +183,14 @@ feature -- Application Switch Setting
 			v > 0
 		do
 			set_resource_value ("default", "explorer_split_position", v.out)
+		end
+
+	set_main_split_position (v: INTEGER)
+			-- Set split position of main vertical split control.
+		require
+			v > 0
+		do
+			set_resource_value ("default", "main_split_position", v.out)
 		end
 
 	set_main_notebook_tab_pos(a_tab_pos: INTEGER)

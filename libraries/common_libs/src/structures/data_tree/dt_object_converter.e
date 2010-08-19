@@ -382,34 +382,35 @@ feature -- Conversion
 
 feature {NONE} -- Conversion to object
 
-	set_primitive_integer_field (i: INTEGER; object: ANY; value: INTEGER_REF)
-		do
-			set_integer_field (i, object, value)
-		end
+--	set_primitive_integer_field (i: INTEGER; object: ANY; value: INTEGER)
+--		do
+--			set_integer_field (i, object, value)
+--		end
 
-	set_primitive_real_field (i: INTEGER; object: ANY; value: REAL_REF)
-		do
-			set_real_field (i, object, value)
-		end
+--	set_primitive_real_field (i: INTEGER; object: ANY; value: REAL)
+--		do
+--			set_real_field (i, object, value)
+--		end
 
-	set_primitive_double_field (i: INTEGER; object: ANY; value: DOUBLE_REF)
-		do
-			set_double_field (i, object, value)
-		end
+--	set_primitive_double_field (i: INTEGER; object: ANY; value: DOUBLE)
+--		do
+--			set_double_field (i, object, value)
+--		end
 
-	set_primitive_boolean_field (i: INTEGER; object: ANY; value: BOOLEAN_REF)
-		do
-			set_boolean_field (i, object, value)
-		end
+--	set_primitive_boolean_field (i: INTEGER; object: ANY; value: BOOLEAN)
+--		do
+--			set_boolean_field (i, object, value)
+--		end
 
-	set_primitive_character_field (i: INTEGER; object: ANY; value: CHARACTER_REF)
-		do
-			set_character_field (i, object, value)
-		end
+--	set_primitive_character_field (i: INTEGER; object: ANY; value: CHARACTER)
+--		do
+--			set_character_field (i, object, value)
+--		end
 
 	set_primitive_sequence_field (i: INTEGER; object: ANY; value: ANY)
 			-- set i-th field of object which is some kind of sequence of a primitive type,
-			-- from a value which is either an ARRAYED_LIST or a single object like a INTEGER_REF
+			-- from a value which is either an ARRAYED_LIST or a single object like an INTEGER,
+			-- which we want to turn into the member of a new sequence
 		require
 			object_not_void: object /= Void
 			index_large_enough: i >= 1
@@ -438,11 +439,7 @@ feature {NONE} -- Conversion to object
 				seq ?= field(i, object)
 				al_val ?= value
 				if al_val /= Void then
-					from
-						al_val.start
-					until
-						al_val.off
-					loop
+					from al_val.start until al_val.off loop
 						seq.extend(al_val.item)
 						al_val.forth
 					end
@@ -467,6 +464,9 @@ feature {NONE} -- Conversion to object
 			if dynamic_type(value) = fld_type then
 				set_reference_field (i, object, value)
 			else
+				debug ("DT")
+					io.put_string("DT_OBJECT_CONVERTER.set_interval_integer_field - CALLING interval_integer_ref_to_interval_integer on field " + i.out + " of " + object.generating_type + "%N")
+				end
 				set_reference_field (i, object, interval_integer_ref_to_interval_integer(value))
 			end
 		end
@@ -481,6 +481,9 @@ feature {NONE} -- Conversion to object
 			if dynamic_type(value) = fld_type then
 				set_reference_field (i, object, value)
 			else
+				debug ("DT")
+					io.put_string("DT_OBJECT_CONVERTER.set_interval_real_field - CALLING interval_real_ref_to_interval_real on field " + i.out + " of " + object.generating_type + "%N")
+				end
 				set_reference_field (i, object, interval_real_ref_to_interval_real(value))
 			end
 		end
@@ -495,6 +498,9 @@ feature {NONE} -- Conversion to object
 			if dynamic_type(value) = fld_type then
 				set_reference_field (i, object, value)
 			else
+				debug ("DT")
+					io.put_string("DT_OBJECT_CONVERTER.set_interval_double_field - CALLING interval_double_ref_to_interval_double on field " + i.out + " of " + object.generating_type + "%N")
+				end
 				set_reference_field (i, object, interval_double_ref_to_interval_double(value))
 			end
 		end
@@ -509,7 +515,7 @@ feature -- Conversion from object
 				io.put_string("--->ENTER from_obj_primitive_type(DT_ATTIBUTE_NODE, " +
 							an_obj.generating_type + ", [a_node_id])%N")
 			end
-			a_dt_obj := create_primitive_object(a_parent, an_obj, a_node_id)
+			a_dt_obj := create_dt_primitive_object(a_parent, an_obj, a_node_id)
 			debug("DT")
 				io.put_string("<---EXIT from_obj_primitive_type%N")
 			end
@@ -708,33 +714,58 @@ feature {NONE} -- Implementation
 			create Result.make (0)
 
 			-- primitive types
-			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_primitive_integer_field (?, ?, ?))
+			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_natural_32_field (?, ?, ?))
+			Result.put (a_dt_conv, dynamic_type (create {NATURAL}))
+--			Result.put (a_dt_conv, dynamic_type (create {NATURAL_REF}))
+			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_natural_8_field (?, ?, ?))
+			Result.put (a_dt_conv, dynamic_type (create {NATURAL_8}))
+			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_natural_16_field (?, ?, ?))
+			Result.put (a_dt_conv, dynamic_type (create {NATURAL_16}))
+			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_natural_32_field (?, ?, ?))
+			Result.put (a_dt_conv, dynamic_type (create {NATURAL_32}))
+			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_natural_64_field (?, ?, ?))
+			Result.put (a_dt_conv, dynamic_type (create {NATURAL_64}))
+
+			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_integer_field (?, ?, ?))
 			Result.put (a_dt_conv, dynamic_type (create {INTEGER}))
-			Result.put (a_dt_conv, dynamic_type (create {INTEGER_REF}))
-			Result.put (a_dt_conv, dynamic_type_from_string ("INTEGER_32"))
+--			Result.put (a_dt_conv, dynamic_type (create {INTEGER_REF}))
+			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_integer_8_field (?, ?, ?))
+			Result.put (a_dt_conv, dynamic_type (create {INTEGER_8}))
+			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_integer_16_field (?, ?, ?))
+			Result.put (a_dt_conv, dynamic_type (create {INTEGER_16}))
+			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_integer_32_field (?, ?, ?))
+			Result.put (a_dt_conv, dynamic_type (create {INTEGER_32}))
+			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_integer_64_field (?, ?, ?))
+			Result.put (a_dt_conv, dynamic_type (create {INTEGER_64}))
 
-			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_primitive_boolean_field (?, ?, ?))
+			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_boolean_field (?, ?, ?))
 			Result.put (a_dt_conv, dynamic_type (create {BOOLEAN}))
-			Result.put (a_dt_conv, dynamic_type (create {BOOLEAN_REF}))
-			Result.put (a_dt_conv, dynamic_type_from_string ("BOOLEAN"))
+--			Result.put (a_dt_conv, dynamic_type (create {BOOLEAN_REF}))
 
-			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_primitive_real_field (?, ?, ?))
+			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_real_field (?, ?, ?))
 			Result.put (a_dt_conv, dynamic_type (create {REAL}))
-			Result.put (a_dt_conv, dynamic_type (create {REAL_REF}))
-			Result.put (a_dt_conv, dynamic_type_from_string ("REAL_32"))
+--			Result.put (a_dt_conv, dynamic_type (create {REAL_REF}))
+			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_real_32_field (?, ?, ?))
+			Result.put (a_dt_conv, dynamic_type (create {REAL_32}))
+			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_real_64_field (?, ?, ?))
+			Result.put (a_dt_conv, dynamic_type (create {REAL_64}))
 
-			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_primitive_double_field (?, ?, ?))
+			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_double_field (?, ?, ?))
 			Result.put (a_dt_conv, dynamic_type (create {DOUBLE}))
-			Result.put (a_dt_conv, dynamic_type (create {DOUBLE_REF}))
-			Result.put (a_dt_conv, dynamic_type_from_string ("REAL_64"))
+--			Result.put (a_dt_conv, dynamic_type (create {DOUBLE_REF}))
 
-			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_primitive_character_field (?, ?, ?))
+			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_character_field (?, ?, ?))
 			Result.put (a_dt_conv, dynamic_type (create {CHARACTER}))
-			Result.put (a_dt_conv, dynamic_type (create {CHARACTER_REF}))
-			Result.put (a_dt_conv, dynamic_type_from_string ("CHARACTER_8"))
+--			Result.put (a_dt_conv, dynamic_type (create {CHARACTER_REF}))
+			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_character_8_field (?, ?, ?))
+			Result.put (a_dt_conv, dynamic_type (create {CHARACTER_8}))
+			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_character_32_field (?, ?, ?))
+			Result.put (a_dt_conv, dynamic_type (create {CHARACTER_32}))
 
 			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_reference_field (?, ?, ?))
 			Result.put (a_dt_conv, dynamic_type (create {STRING}.make_empty))
+			Result.put (a_dt_conv, dynamic_type (create {STRING_8}.make_empty))
+			Result.put (a_dt_conv, dynamic_type (create {STRING_32}.make_empty))
 			Result.put (a_dt_conv, dynamic_type (create {DATE}.make_now))
 			Result.put (a_dt_conv, dynamic_type (create {DATE_TIME}.make_now))
 			Result.put (a_dt_conv, dynamic_type (create {TIME}.make_now))
@@ -754,19 +785,24 @@ feature {NONE} -- Implementation
 			end
 
 			-- primitive interval types
-			create a_dt_conv.make (agent from_obj_interval_primitive_type (?, ?, ?), agent set_interval_integer_field (?, ?, ?))
+			create a_dt_conv.make (agent from_obj_interval_primitive_type (?, ?, ?), agent set_reference_field (?, ?, ?))
 			Result.put (a_dt_conv, dynamic_type (create {INTERVAL [INTEGER]}))
+			Result.put (a_dt_conv, dynamic_type (create {INTERVAL [INTEGER_8]}))
+			Result.put (a_dt_conv, dynamic_type (create {INTERVAL [INTEGER_16]}))
+			Result.put (a_dt_conv, dynamic_type (create {INTERVAL [INTEGER_32]}))
+			Result.put (a_dt_conv, dynamic_type (create {INTERVAL [INTEGER_64]}))
 
-			create a_dt_conv.make (agent from_obj_interval_primitive_type (?, ?, ?), agent set_interval_real_field (?, ?, ?))
+			Result.put (a_dt_conv, dynamic_type (create {INTERVAL [NATURAL]}))
+			Result.put (a_dt_conv, dynamic_type (create {INTERVAL [NATURAL_8]}))
+			Result.put (a_dt_conv, dynamic_type (create {INTERVAL [NATURAL_16]}))
+			Result.put (a_dt_conv, dynamic_type (create {INTERVAL [NATURAL_32]}))
+			Result.put (a_dt_conv, dynamic_type (create {INTERVAL [NATURAL_64]}))
+
 			Result.put (a_dt_conv, dynamic_type (create {INTERVAL [REAL]}))
-
-			create a_dt_conv.make (agent from_obj_interval_primitive_type (?, ?, ?), agent set_interval_double_field (?, ?, ?))
+			Result.put (a_dt_conv, dynamic_type (create {INTERVAL [REAL_32]}))
+			Result.put (a_dt_conv, dynamic_type (create {INTERVAL [REAL_64]}))
 			Result.put (a_dt_conv, dynamic_type (create {INTERVAL [DOUBLE]}))
 
-			create a_dt_conv.make (agent from_obj_interval_primitive_type (?, ?, ?), agent set_reference_field (?, ?, ?))
-			Result.put (a_dt_conv, dynamic_type (create {INTERVAL [DOUBLE_REF]}))
-			Result.put (a_dt_conv, dynamic_type (create {INTERVAL [REAL_REF]}))
-			Result.put (a_dt_conv, dynamic_type (create {INTERVAL [INTEGER_REF]}))
 			Result.put (a_dt_conv, dynamic_type (create {INTERVAL [DATE]}))
 			Result.put (a_dt_conv, dynamic_type (create {INTERVAL [DATE_TIME]}))
 			Result.put (a_dt_conv, dynamic_type (create {INTERVAL [TIME]}))

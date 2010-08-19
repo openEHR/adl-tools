@@ -28,7 +28,7 @@ inherit
 
 create
 	default_create,
-	make_bounded,
+	make_bounded, make_bounded_included,
 	make_lower_unbounded,
 	make_upper_unbounded,
 	make_unbounded,
@@ -78,6 +78,24 @@ feature -- Initialization
 			Upper_set: upper = an_upper
 			lower_included_set: lower_included = lower_included_flag
 			upper_included_set: upper_included = upper_included_flag
+		end
+
+	make_bounded_included (a_lower, an_upper: G)
+			-- make with both limits set and included, the most typical situation
+		require
+			Lower_exists: a_lower /= Void
+			Upper_exists: an_upper /= Void
+			Valid_order: a_lower <= an_upper
+		do
+			lower := a_lower
+			upper := an_upper
+			lower_included := True
+			upper_included := True
+		ensure
+			Lower_set: lower = a_lower
+			Upper_set: upper = an_upper
+			lower_included_set: lower_included
+			upper_included_set: upper_included
 		end
 
 	make_lower_unbounded (an_upper: G; upper_included_flag: BOOLEAN)

@@ -18,6 +18,12 @@ class APP_ROOT
 inherit
 	SHARED_APP_RESOURCES
 
+	SHARED_DT_SERIALISERS
+		export
+			{NONE} all
+			{ANY} has_dt_serialiser_format
+		end
+
 create
 	make
 
@@ -28,6 +34,7 @@ feature -- Initialisation
 			Message_db.populate (Message_templates_text, locale_language_short)
 			if Message_db.database_loaded then
 				billboard.set_status_reporting_level(status_reporting_level)
+				dt_serialisers.put(create {DADL_SYNTAX_SERIALISER}.make(create {NATIVE_DADL_SERIALISATION_PROFILE}.make("dadl")), "dadl")
 				initialised := True
 			end
 		end

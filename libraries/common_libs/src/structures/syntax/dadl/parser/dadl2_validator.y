@@ -89,10 +89,10 @@ create
 %type <ARRAYED_LIST[OG_PATH]> absolute_path_list
 
 %type <ARRAYED_LIST[STRING]> string_list_value
-%type <ARRAYED_LIST[INTEGER_REF]> integer_list_value
-%type <ARRAYED_LIST[REAL_REF]> real_list_value
-%type <ARRAYED_LIST[CHARACTER_REF]> character_list_value
-%type <ARRAYED_LIST[BOOLEAN_REF]> boolean_list_value
+%type <ARRAYED_LIST[INTEGER]> integer_list_value
+%type <ARRAYED_LIST[REAL]> real_list_value
+%type <ARRAYED_LIST[CHARACTER]> character_list_value
+%type <ARRAYED_LIST[BOOLEAN]> boolean_list_value
 %type <ARRAYED_LIST[ISO8601_DATE]> date_list_value
 %type <ARRAYED_LIST[ISO8601_TIME]> time_list_value
 %type <ARRAYED_LIST[ISO8601_DATE_TIME]> date_time_list_value
@@ -100,8 +100,8 @@ create
 %type <ARRAYED_LIST[CODE_PHRASE]> term_code_list_value
 %type <ARRAYED_LIST[ANY]> simple_list_value
 
-%type <INTERVAL[INTEGER_REF]> integer_interval_value
-%type <INTERVAL[REAL_REF]> real_interval_value
+%type <INTERVAL[INTEGER]> integer_interval_value
+%type <INTERVAL[REAL]> real_interval_value
 %type <INTERVAL[ISO8601_TIME]> time_interval_value
 %type <INTERVAL[ISO8601_DATE]> date_interval_value
 %type <INTERVAL[ISO8601_DATE_TIME]> date_time_interval_value
@@ -1551,8 +1551,8 @@ feature {NONE} -- Implementation
 	term: CODE_PHRASE
 	a_uri: URI
 
-	integer_interval: INTERVAL [INTEGER_REF]
-	real_interval: INTERVAL [REAL_REF]
+	integer_interval: INTERVAL [INTEGER]
+	real_interval: INTERVAL [REAL]
 	date_interval: INTERVAL [ISO8601_DATE]
 	time_interval: INTERVAL [ISO8601_TIME]
 	date_time_interval: INTERVAL [ISO8601_DATE_TIME]
