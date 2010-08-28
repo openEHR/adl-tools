@@ -1,43 +1,68 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "descriptor for conversion for one type into and out of DT_OBJECT"
-	keywords:    "test, ADL"
+	description: "C wrapper tools"
+	keywords:    "C wrapper"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class DT_CONV_DESC
+class C_WRAPPER_TOOLS
 
-create
-	make
+feature -- Conversion
 
-feature -- Initialisation
+	eif_list_string_to_c_array(a_list: LIST [STRING]): POINTER
+			-- convert and Eiffel a_list: ARRAYED_LIST [STRING] to
+			-- ARRAY<POINTER>, which is passed back as a POINTER
+        local
+            i: INTEGER
+            c_str: BASE_C_STRING
+            c_str_array: ANY
+       do
+            create eif_ptr_array.make(0, a_list.count-1)
+            from
+                a_list.start
+            until
+                a_list.off
+            loop
+                create c_str.make(a_list.item)
+                eif_ptr_array.put(c_str.item, i)  -- put a pointer to a string into the array
+                i := i + 1
+                a_list.forth
+            end
+            c_str_array := eif_ptr_array.to_c -- get hold of the SPECIAL holding the string pointers
+            Result := $c_str_array -- generate a pointer to that
+        end
 
-	make (a_from_obj_proc: like from_obj_proc; a_from_dt_proc: like from_dt_proc)
+   eif_ptr_array: ARRAY [POINTER]
+
+   c_array_string_to_eif_list (a_str_lst: ARRAY [POINTER]): ARRAYED_LIST [STRING]
+			-- convert a C ARRAY<POINTER> to an Eiffel ARRAYED_LIST [STRING]
 		require
-			From_proc_valid: a_from_obj_proc /= Void
-			To_proc_valid: a_from_dt_proc /= Void
+			a_str_lst /= void
+		local
+			c_a_str: BASE_C_STRING
+			i: INTEGER
 		do
-			from_obj_proc := a_from_obj_proc
-			from_dt_proc := a_from_dt_proc
+			create Result.make(0)
+
+			from
+				i := a_str_lst.lower
+			until
+				i > a_str_lst.upper
+			loop
+				create c_a_str.make_by_pointer (a_str_lst.item(i))
+				Result.extend(c_a_str.string)
+				i := i + 1
+			end
 		end
 
-
-feature -- Access
-
-	from_obj_proc: PROCEDURE [DT_OBJECT_CONVERTER, TUPLE [DT_ATTRIBUTE_NODE, ANY, STRING]]
-			-- object_to_dt(a_parent: DT_ATTRIBUTE_NODE; an_obj: ANY; a_node_id: STRING)
-
-	from_dt_proc: PROCEDURE [DT_OBJECT_CONVERTER, TUPLE [INTEGER, ANY, ANY]]
-			-- signature: from_dt_xxx (a_dt_obj: DT_OBJECT_ITEM)
-			-- set_xxx_field (i: INTEGER; object: ANY; value: ANY)
-
 end
+
 
 
 --|
@@ -54,10 +79,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is dt_conv_desc.e
+--| The Original Code is adl_interface.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2005
+--| Portions created by the Initial Developer are Copyright (C) 2003-2004
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

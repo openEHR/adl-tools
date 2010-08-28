@@ -1,9 +1,13 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "descriptor for conversion for one type into and out of DT_OBJECT"
-	keywords:    "test, ADL"
+	description: "[
+		`	 Archetype node populator: when an archetype is read in,
+			 its nodes need to be included in the Java interface Hash
+			 map, keyed by integer handle ids.
+			 ]"
+	keywords:    "archetype, constraint, definition"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -11,31 +15,75 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class DT_CONV_DESC
+class C_ARCHETYPE_NODE_POPULATOR
+
+inherit
+	SHARED_ADL_OBJECTS
+		export
+			{NONE} all
+		end
+
+	C_ITERATOR
+		rename
+			make as make_iterator
+		redefine
+			node_enter_action,
+			node_exit_action
+		end
 
 create
 	make
 
 feature -- Initialisation
 
-	make (a_from_obj_proc: like from_obj_proc; a_from_dt_proc: like from_dt_proc)
+	make(a_target: C_COMPLEX_OBJECT)
+			-- create a new manager targetted to the parse tree `a_target'
 		require
-			From_proc_valid: a_from_obj_proc /= Void
-			To_proc_valid: a_from_dt_proc /= Void
+			Target_exists: a_target /= Void
 		do
-			from_obj_proc := a_from_obj_proc
-			from_dt_proc := a_from_dt_proc
+			make_iterator (a_target)
+			-- FIXME: A visitor is needed for the second argument, and node_enter_action below should be reconsidered.
 		end
-
 
 feature -- Access
 
-	from_obj_proc: PROCEDURE [DT_OBJECT_CONVERTER, TUPLE [DT_ATTRIBUTE_NODE, ANY, STRING]]
-			-- object_to_dt(a_parent: DT_ATTRIBUTE_NODE; an_obj: ANY; a_node_id: STRING)
+	root_handle: INTEGER
+			-- handle of root node
 
-	from_dt_proc: PROCEDURE [DT_OBJECT_CONVERTER, TUPLE [INTEGER, ANY, ANY]]
-			-- signature: from_dt_xxx (a_dt_obj: DT_OBJECT_ITEM)
-			-- set_xxx_field (i: INTEGER; object: ANY; value: ANY)
+feature {NONE} -- Implementation
+
+	node_enter_action(a_node: OG_ITEM; indent_level: INTEGER)
+		local
+			l_c_object: C_OBJECT
+			l_c_complex_object: C_COMPLEX_OBJECT
+			l_handle: INTEGER
+			l_c_attribute: C_ATTRIBUTE
+		do
+			l_c_object ?= a_node.content_item
+			if l_c_object /= Void then
+				l_handle := adl_objects.new_handle
+			--	put_c_object(l_c_object, l_handle)
+				l_c_complex_object ?= l_c_object
+				if l_c_complex_object /= Void then
+					if root_handle = 0 then
+						root_handle := l_handle
+					end
+					put_c_complex_object(l_c_complex_object, l_handle)
+					from
+						l_c_complex_object.attributes.start
+					until
+						l_c_complex_object.attributes.off
+					loop
+						put_c_attribute(l_c_complex_object.attributes.item, adl_objects.new_handle)
+						l_c_complex_object.attributes.forth
+					end
+				end
+			end
+		end
+
+	node_exit_action(a_node: OG_ITEM; indent_level: INTEGER)
+		do
+		end
 
 end
 
@@ -54,10 +102,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is dt_conv_desc.e
+--| The Original Code is cadl_serialiser_mgr.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2005
+--| Portions created by the Initial Developer are Copyright (C) 2003-2004
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

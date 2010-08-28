@@ -1,0 +1,114 @@
+archetype
+	openehr-ehr-SECTION.UNKNOWN.draft
+
+concept
+	[at0000]	-- unknown
+
+definition
+	SECTION[at0001] matches {	-- post-natal examination headings
+		name matches {
+			CODED_TEXT matches {
+				code matches {[local::at0000]}		-- unknown
+			}
+		}
+		items cardinality matches {0..*; ordered} matches {
+			SECTION[at0003] matches {	-- neonate
+				name matches {
+					CODED_TEXT matches {
+						code matches {[local::at0003]}		-- neonate
+					}
+				}
+				items cardinality matches {0..*; ordered} matches {
+					allow_archetype OBSERVATION matches {
+						include
+							id matches {/openehr-ehr-observation.*.*/}
+					}
+				}
+			}
+			SECTION[at0004] matches {	-- mother
+				name matches {
+					CODED_TEXT matches {
+						code matches {[local::at0004]}		-- mother
+					}
+				}
+				items cardinality matches {0..*; ordered} matches {
+					allow_archetype OBSERVATION matches {
+						include
+							id matches {/openehr-ehr-observation.*.*/}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	primary_language = <"en">
+	languages_available = <"en", "fr">
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					description = <"unknown">
+					text = <"unknown">
+				>
+				["at0001"] = <
+					description = <"headings for post-natal examination note">
+					text = <"post-natal examination headings">
+				>
+				["at0002"] = <
+					description = <"post-natal examination of mother and newborn children">
+					text = <"post-natal examination">
+				>
+				["at0003"] = <
+					description = <"newborn child">
+					text = <"neonate">
+				>
+				["at0004"] = <
+					description = <"mother of newborn child">
+					text = <"mother">
+				>
+			>
+		>
+		["fr"] = <
+			items = <
+				["at0000"] = <
+					description = <"*unknown(en)">
+					text = <"*unknown(en)">
+				>
+				["at0001"] = <
+					description = <"*headings for post-natal examination note(en)">
+					text = <"*post-natal examination headings(en)">
+				>
+				["at0002"] = <
+					description = <"*post-natal examination of mother and newborn children(en)">
+					text = <"*post-natal examination(en)">
+				>
+				["at0003"] = <
+					description = <"*newborn child(en)">
+					text = <"*neonate(en)">
+				>
+				["at0004"] = <
+					description = <"*mother of newborn child(en)">
+					text = <"*mother(en)">
+				>
+			>
+		>
+	>
+	constraint_definitions = <
+		["en"] = <
+			items = <
+				["at0003"] = <
+					description = <"xxxxx">
+					text = <"xxxx">
+				>
+			>
+		>
+		["fr"] = <
+			items = <
+				["at0003"] = <
+					description = <"*xxxxx(en)">
+					text = <"*xxxx(en)">
+				>
+			>
+		>
+	>

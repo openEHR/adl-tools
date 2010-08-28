@@ -1,0 +1,120 @@
+system
+	"adl_java_lib"
+
+root
+	c_adl_interface: make
+
+default
+	document (".")
+	assertion (require)
+	disabled_debug (yes)
+	disabled_debug ("adl_invariant")
+	disabled_debug ("adl_parse")
+	disabled_debug ("adl_tree")
+	disabled_debug ("exclude list")
+	disabled_debug ("gelex")
+	disabled_debug ("geyacc")
+	disabled_debug ("include list")
+	disabled_debug ("og_path_parse")
+	debug (no)
+	line_generation (no)
+	profile (no)
+	trace (no)
+	check_vape (no)
+	console_application (no)
+	syntax_warning (no)
+	address_expression (no)
+	array_optimization (no)
+	dead_code_removal (no)
+	dynamic_runtime (no)
+	exception_trace (no)
+	inlining (no)
+	multithreaded (no)
+	shared_library_definition ("C:\project\openehr\implem-dev\tools\eiffel\adl_workbench\shared_lib\java_lib\adl_jni_wrapper.def")
+
+
+cluster
+	openehr_root:		"$OPENEHR"
+
+
+	openehr_spec (openehr_root):		"$\spec-dev\architecture\computable\eiffel"
+
+	openehr_impl (openehr_root):		"$\implem-dev"
+
+	adl_root (openehr_impl):		"$\tools\eiffel\adl_workbench"
+
+	app (adl_root):		"$\shared_lib\java_lib"
+		exclude
+			"SCCS"; 
+		end
+
+	all adl_lib (adl_root):		"$\library"
+		exclude
+			"SCCS"; 
+		visible
+			adl_interface
+				end
+			c_adl_interface
+				end
+		end
+
+	all openehr_rm (openehr_spec):		"$\rm"
+		exclude
+			"SCCS"; 
+		end
+
+	all openehr_am (openehr_spec):		"$\am"
+		exclude
+			"SCCS"; "archetype"; 
+		end
+
+	all openehr_kernel_factory (openehr_impl):		"$\reference\eiffel\kernel\factory"
+		exclude
+			"SCCS"; 
+		end
+
+	all openehr_library (openehr_impl):		"$\library\eiffel"
+		exclude
+			"SCCS"; "test"; 
+		end
+
+	library ut_support:		"$GOBO\library\utility"
+
+	library kl_kernel:		"$GOBO\library\kernel"
+		exclude
+			spec; 
+		end
+
+	library kl_kernel_spec:		"$GOBO\library\kernel\spec\ise"
+
+	library kl_lexical:		"$GOBO\library\lexical"
+
+	library kl_parse:		"$GOBO\library\parse"
+
+	library gobo_structure:		"$GOBO\library\structure"
+
+	library regexp:		"$GOBO\library\regexp"
+
+	library design_pattern:		"$GOBO\library\pattern"
+
+	library base:		"$ISE_EIFFEL\library\base"
+		exclude
+			"table_eiffel3"; "desc"; 
+		end
+
+	time:		"$ISE_EIFFEL\library\time"
+
+	time_format (time):		"$\format"
+
+	library time_format_english (time_format):		"$\english"
+
+external
+
+	include_path:
+		"$(GOBO)\library\kernel\include",
+		"$(OPENEHR)\implem-dev\tools\eiffel\adl_workbench\shared_lib\java_lib\c"
+
+	object:
+		"$(OPENEHR)\implem-dev\tools\eiffel\adl_workbench\shared_lib\java_lib\c\adl_jni_wrapper.lib"
+
+end

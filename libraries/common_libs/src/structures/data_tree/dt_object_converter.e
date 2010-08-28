@@ -324,8 +324,8 @@ feature -- Conversion
 										if equiv_prim_type_id /= 0 then
 											debug ("DT")
 												io.put_string("DT_OBJECT_CONVERTER.populate_object_from_dt: from_dt_proc.call([" +
-													i.out + ", " + Result.generating_type + ", " +
-													a_dt_obj_leaf.value.generating_type + ")%N")
+													i.out + ", " + Result.generating_type + " (field static type = " + fld_type_id.out + "), " +
+													a_dt_obj_leaf.value.generating_type + " (dyn type = " + dynamic_type (a_dt_obj_leaf.value).out + "))%N")
 											end
 											cvt_tbl.item(equiv_prim_type_id).from_dt_proc.call([i, Result, a_dt_obj_leaf.value])
 											debug ("DT")
@@ -705,6 +705,11 @@ feature {NONE} -- Implementation
 					a_sequence.forth
 				end
 			end
+		end
+
+	set_primitive_boolean_field (i: INTEGER; object: ANY; value: BOOLEAN_REF)
+		do
+			set_boolean_field (i, object, value)
 		end
 
 	cvt_tbl: HASH_TABLE [DT_CONV_DESC, INTEGER]

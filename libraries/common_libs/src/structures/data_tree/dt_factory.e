@@ -53,45 +53,7 @@ feature -- Access
 			parent_valid: a_parent /= Void
 			an_item_valid: an_item /= Void and then has_primitive_type(an_item)
 			a_node_id_valid: a_node_id /= Void implies not a_node_id.is_empty
-		local
---			t: STRING
---			v: ANY
---			int_ref: INTEGER_REF
---			real_ref: REAL_REF
---			bool_ref: BOOLEAN_REF
---			char_ref: CHARACTER_REF
---			double_ref: DOUBLE_REF
 		do
---			t := an_item.generating_type
---			if t.is_equal("INTEGER") then
---				create int_ref
---				int_ref.set_item(an_item.out.to_integer)
---				v := int_ref
---				v := an_item.out.to_integer
---			elseif t.is_equal("REAL") then
---				create real_ref
---				real_ref.set_item(an_item.out.to_real)
---				v := real_ref
---				v := an_item.out.to_real
---			elseif t.is_equal("DOUBLE") then
---				create double_ref
---				double_ref.set_item(an_item.out.to_double)
---				v := double_ref
---				v := an_item.out.to_double
---			elseif t.is_equal("BOOLEAN") then
---				create bool_ref
---				bool_ref.set_item(an_item.out.to_boolean)
---				v := bool_ref
---				v := an_item.out.to_boolean
---			elseif t.is_equal("CHARACTER") then
---				create char_ref
---				char_ref.set_item(an_item.out.item(1))
---				v := char_ref
---				v := an_item.out.item(1)
---			else
---				v := an_item
---			end
-
 			if a_node_id /= Void then
 				create Result.make_identified(an_item, a_node_id)
 			else

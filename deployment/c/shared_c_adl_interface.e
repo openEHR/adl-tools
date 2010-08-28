@@ -1,9 +1,12 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "descriptor for conversion for one type into and out of DT_OBJECT"
-	keywords:    "test, ADL"
+	description: "[
+			 Shared C_ADL_INTERFACE Object for testing purposes - used
+			 by test application to access C_ADL_INTERFACE to simulate java calls.
+			 ]"
+	keywords:    "C wrapper"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -11,33 +14,20 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class DT_CONV_DESC
+class SHARED_C_ADL_INTERFACE
 
-create
-	make
+inherit
+	SHARED_APPLICATION_CONTEXT
 
-feature -- Initialisation
+feature {NONE} -- Implementation
 
-	make (a_from_obj_proc: like from_obj_proc; a_from_dt_proc: like from_dt_proc)
-		require
-			From_proc_valid: a_from_obj_proc /= Void
-			To_proc_valid: a_from_dt_proc /= Void
-		do
-			from_obj_proc := a_from_obj_proc
-			from_dt_proc := a_from_dt_proc
+	c_adl_interface: C_ADL_INTERFACE
+		once
+			create Result.make
 		end
 
-
-feature -- Access
-
-	from_obj_proc: PROCEDURE [DT_OBJECT_CONVERTER, TUPLE [DT_ATTRIBUTE_NODE, ANY, STRING]]
-			-- object_to_dt(a_parent: DT_ATTRIBUTE_NODE; an_obj: ANY; a_node_id: STRING)
-
-	from_dt_proc: PROCEDURE [DT_OBJECT_CONVERTER, TUPLE [INTEGER, ANY, ANY]]
-			-- signature: from_dt_xxx (a_dt_obj: DT_OBJECT_ITEM)
-			-- set_xxx_field (i: INTEGER; object: ANY; value: ANY)
-
 end
+
 
 
 --|
@@ -54,10 +44,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is dt_conv_desc.e
+--| The Original Code is adl_interface.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2005
+--| Portions created by the Initial Developer are Copyright (C) 2003-2004
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
