@@ -721,7 +721,6 @@ feature {NONE} -- Implementation
 			-- primitive types
 			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_natural_32_field (?, ?, ?))
 			Result.put (a_dt_conv, dynamic_type (create {NATURAL}))
---			Result.put (a_dt_conv, dynamic_type (create {NATURAL_REF}))
 			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_natural_8_field (?, ?, ?))
 			Result.put (a_dt_conv, dynamic_type (create {NATURAL_8}))
 			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_natural_16_field (?, ?, ?))
@@ -733,7 +732,6 @@ feature {NONE} -- Implementation
 
 			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_integer_field (?, ?, ?))
 			Result.put (a_dt_conv, dynamic_type (create {INTEGER}))
---			Result.put (a_dt_conv, dynamic_type (create {INTEGER_REF}))
 			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_integer_8_field (?, ?, ?))
 			Result.put (a_dt_conv, dynamic_type (create {INTEGER_8}))
 			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_integer_16_field (?, ?, ?))
@@ -745,11 +743,9 @@ feature {NONE} -- Implementation
 
 			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_boolean_field (?, ?, ?))
 			Result.put (a_dt_conv, dynamic_type (create {BOOLEAN}))
---			Result.put (a_dt_conv, dynamic_type (create {BOOLEAN_REF}))
 
 			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_real_field (?, ?, ?))
 			Result.put (a_dt_conv, dynamic_type (create {REAL}))
---			Result.put (a_dt_conv, dynamic_type (create {REAL_REF}))
 			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_real_32_field (?, ?, ?))
 			Result.put (a_dt_conv, dynamic_type (create {REAL_32}))
 			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_real_64_field (?, ?, ?))
@@ -757,11 +753,9 @@ feature {NONE} -- Implementation
 
 			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_double_field (?, ?, ?))
 			Result.put (a_dt_conv, dynamic_type (create {DOUBLE}))
---			Result.put (a_dt_conv, dynamic_type (create {DOUBLE_REF}))
 
 			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_character_field (?, ?, ?))
 			Result.put (a_dt_conv, dynamic_type (create {CHARACTER}))
---			Result.put (a_dt_conv, dynamic_type (create {CHARACTER_REF}))
 			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_character_8_field (?, ?, ?))
 			Result.put (a_dt_conv, dynamic_type (create {CHARACTER_8}))
 			create a_dt_conv.make (agent from_obj_primitive_type (?, ?, ?), agent set_character_32_field (?, ?, ?))
