@@ -29,11 +29,6 @@ create
 
 feature -- Initialisation
 
-set_primitive_boolean_field (i: INTEGER; object: ANY; value: BOOLEAN_REF)
-	do
-		(create {INTERNAL}).set_boolean_field (i, object, value)
-	end
-
 	make
 		local
 			rep_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
