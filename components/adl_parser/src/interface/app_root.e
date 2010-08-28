@@ -26,8 +26,13 @@ inherit
 
 create
 	make
-	
+
 feature -- Initialisation
+
+set_primitive_boolean_field (i: INTEGER; object: ANY; value: BOOLEAN_REF)
+	do
+		(create {INTERNAL}).set_boolean_field (i, object, value)
+	end
 
 	make
 		local
