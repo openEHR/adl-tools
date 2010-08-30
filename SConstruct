@@ -35,8 +35,8 @@ eiffel_syntax_updater = [
 	]
 
 for scanner, parser, tokens, dir in [
-	['adl_scanner', 'adl_validator', 'adl_tokens', 'components/adl_parser/src/syntax/adl/parser/'],
-	['cadl_scanner', 'cadl_validator', 'cadl_tokens', 'components/adl_parser/src/syntax/cadl/parser/'],
+	['adl_scanner', 'adl_validator', 'adl_tokens', 'components/adl_compiler/src/syntax/adl/parser/'],
+	['cadl_scanner', 'cadl_validator', 'cadl_tokens', 'components/adl_compiler/src/syntax/cadl/parser/'],
 	['dadl_scanner', 'dadl2_validator', 'dadl_tokens', 'libraries/common_libs/src/structures/syntax/dadl/parser/'],
 	['units_scanner', 'units_parser', 'units_tokens', 'libraries/common_libs/src/unit_parser/parser/'],
 	['og_path_scanner', 'og_path_validator', 'og_path_tokens', 'libraries/common_libs/src/structures/object_graph/path/']
@@ -55,12 +55,8 @@ def eiffel(target, ecf):
 adl_workbench = eiffel('adl_workbench', 'apps/adl_workbench/app/adl_workbench.ecf')
 versioned_targets = [adl_workbench]
 
-eiffel('openehr_test',     'libraries/openehr/test/app/openehr_test.ecf')
-eiffel('adl_parser_test',  'components/adl_parser/test/app/adl_parser_test.ecf')
-eiffel('common_libs_test', 'libraries/common_libs/test/app/common_libs_test.ecf')
-
 if platform == 'windows':
-	adl_parser = eiffel('adl_parser', 'components/adl_parser/lib/dotnet_dll/adl_parser.ecf')
+	adl_parser = eiffel('adl_parser', 'deployment/dotnet/dll/adl_parser.ecf')
 	versioned_targets += [adl_parser]
 
 # Define how to put installers, etc., into the distribution directory.
@@ -86,7 +82,7 @@ if distrib and len(adl_workbench) > 0:
 	css = 'apps/adl_workbench/app/ArchetypeRepositoryReport.css'
 	icons = 'apps/adl_workbench/app/icons'
 	rm_schemas = 'apps/adl_workbench/app/rm_schemas'
-	vim = 'apps/adl_workbench/etc/vim'
+	vim = 'components/adl_compiler/etc/vim'
 	install = 'apps/adl_workbench/install/' + platform
 	adl_workbench_installer_sources = [adl_workbench[0], release_notes, readme, license, xsl, css]
 
@@ -225,7 +221,7 @@ else:
 					substitutions += [['apps/adl_workbench/app/adl_workbench.rc', r'(#define\s+VER_\S+\s+"?\d+[,.]\d+[,.]\d+[,.])\d+']]
 
 				if target == adl_parser:
-					substitutions += [['components/adl_parser/lib/dotnet_dll/adl_parser.ecf', r'(<version\s+major="\d+"\s+minor="\d+"\s+release="\d+"\s+build=")\d+']]
+					substitutions += [['deployment/dotnet/dll/adl_parser.ecf', r'(<version\s+major="\d+"\s+minor="\d+"\s+release="\d+"\s+build=")\d+']]
 
 				if target == installer:
 					substitutions = [[install + '/ADL_Workbench/ADLWorkbenchInstall.nsi', r'(VIProductVersion\s+\d+\.\d+\.\d+\.)\d+']]
