@@ -243,7 +243,7 @@
      <EV_SENSITIVE>
      </EV_SENSITIVE>
      <EV_TEXTABLE>
-      <Text>Schemas</Text>
+      <Text>Tests</Text>
      </EV_TEXTABLE>
      <EV_TOOLTIPABLE>
      </EV_TOOLTIPABLE>
@@ -267,11 +267,15 @@
      <EV_WIDGET>
       <Minimum_width>150</Minimum_width>
      </EV_WIDGET>
+     <Events>
+      <Event>select_actions EV_TREE_ACTION_SEQUENCES select_explorer_item</Event>
+     </Events>
     </item>
    </item>
    <item type="EV_VERTICAL_SPLIT_AREA">
     <Internal_properties>
      <id>19</id>
+     <name>main_split_area</name>
      <Expanded>1</Expanded>
     </Internal_properties>
     <EV_COLORIZABLE>

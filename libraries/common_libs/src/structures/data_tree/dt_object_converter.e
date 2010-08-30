@@ -509,7 +509,7 @@ feature -- Conversion from object
 				io.put_string("--->ENTER from_obj_primitive_type(DT_ATTIBUTE_NODE, " +
 							an_obj.generating_type + ", [a_node_id])%N")
 			end
-			a_dt_obj := create_primitive_object(a_parent, an_obj, a_node_id)
+			a_dt_obj := create_dt_primitive_object(a_parent, an_obj, a_node_id)
 			debug("DT")
 				io.put_string("<---EXIT from_obj_primitive_type%N")
 			end

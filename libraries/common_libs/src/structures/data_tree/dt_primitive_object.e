@@ -58,6 +58,8 @@ feature -- Conversion
 				-- FIXME: duration.out does not exist in Eiffel, and in any case would not be ISO8601-compliant
 				if attached {DATE_TIME_DURATION} value as a_dur then
 					Result := duration_to_iso8601_string(a_dur)
+				elseif attached {DATE_TIME} value as a_dt then
+					Result := date_time_to_iso8601_string(a_dt)
 				else
 					Result := value.out
 					-- FIXME: REAL.out is broken

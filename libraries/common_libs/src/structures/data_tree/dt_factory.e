@@ -46,7 +46,7 @@ feature -- Access
 			a_parent.put_attribute(Result)
 		end
 
-	create_primitive_object (a_parent: DT_ATTRIBUTE_NODE; an_item: ANY; a_node_id: STRING): DT_PRIMITIVE_OBJECT
+	create_dt_primitive_object (a_parent: DT_ATTRIBUTE_NODE; an_item: ANY; a_node_id: STRING): DT_PRIMITIVE_OBJECT
 			-- an_item must be STRING, INTEGER, REAL, DOUBLE, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION
 		require

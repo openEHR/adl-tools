@@ -27,6 +27,13 @@ inherit
 			copy, default_create
 		end
 
+	SHARED_DADL_TEST_OBJECTS
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 	SHARED_APP_ROOT
 		undefine
 			copy, default_create
@@ -47,6 +54,7 @@ feature -- Status setting
 			Precursor
 
 			initialise_splitter (explorer_split_area, explorer_split_position)
+			initialise_splitter (main_split_area, main_split_position)
 			focus_first_widget (main_notebook.selected_item)
 
 			if app_maximised then
@@ -57,6 +65,7 @@ feature -- Status setting
 				set_editor_command (default_editor_command)
 			end
 
+			populate_explorer
 			append_billboard_to_status_area
 		end
 
@@ -70,13 +79,24 @@ feature {NONE} -- Initialization
 			-- can be added here.
 		do
 			initialise_accelerators
+			test_objects.initialise (agent append_status_area (?), agent update_source_area (?))
 		end
 
-	test_main
-		local
-			dadl_base_types: DADL_BASE_TYPES
-		do
+feature -- Events
 
+	select_explorer_item
+			-- Called by `select_actions' of `explorer_tree'.
+   		local
+			a_node: EV_TREE_ITEM
+		do
+			if attached {EV_TREE_NODE} explorer_tree.selected_item as node and then attached {PROCEDURE [ANY, TUPLE[]]} node.data as test_proc then
+				test_proc.call ([])
+			end
+		end
+
+	dadl_engine: DADL_ENGINE
+		once
+			create Result.make
 		end
 
 	on_copy
@@ -102,6 +122,24 @@ feature {NONE} -- Initialization
 		end
 
 feature {NONE} -- Implementation
+
+	populate_explorer
+   		local
+			a_node, a_node2: EV_TREE_ITEM
+		do
+			explorer_tree.wipe_out
+			create a_node
+ 			a_node.set_text ("Test objects")
+			explorer_tree.extend (a_node)
+
+			from test_objects.object_table.start until test_objects.object_table.off loop
+				create a_node2
+	 			a_node2.set_data (agent test_objects.round_trip(test_objects.object_table.item_for_iteration))
+	 			a_node2.set_text (test_objects.object_table.key_for_iteration)
+				a_node.extend (a_node2)
+				test_objects.object_table.forth
+			end
+		end
 
 	initialise_overall_appearance
 			-- Initialise the main properties of the window (size, appearance, title, etc.).
@@ -135,6 +173,14 @@ feature {NONE} -- Implementation
 		do
 			status_area.append_text (text)
 			ev_application.process_graphical_events
+		end
+
+	update_source_area (text: STRING)
+			-- Write `text' to `source_text'.
+		require
+			text_attached: text /= Void
+		do
+			source_text.set_text (text)
 		end
 
 	append_billboard_to_status_area

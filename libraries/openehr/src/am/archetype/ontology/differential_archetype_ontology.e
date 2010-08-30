@@ -546,7 +546,7 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 					keys.off
 				loop
 					attr_node := dt_factory.create_attribute_node(object_node, keys.item, False)
-					object_simple_node := dt_factory.create_primitive_object(attr_node, a_term.item(keys.item), Void)
+					object_simple_node := dt_factory.create_dt_primitive_object(attr_node, a_term.item(keys.item), Void)
 					keys.forth
 				end
 			end

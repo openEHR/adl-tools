@@ -47,11 +47,11 @@ feature {NONE}-- Initialization
 			explorer_split_area.extend (explorer_area)
 			explorer_area.extend (l_ev_label_1)
 			explorer_area.extend (explorer_tree)
-			explorer_split_area.extend (l_ev_vertical_split_area_1)
-			l_ev_vertical_split_area_1.extend (main_notebook)
+			explorer_split_area.extend (main_split_area)
+			main_split_area.extend (main_notebook)
 			main_notebook.extend (source_text)
 			main_notebook.extend (dadl_tree)
-			l_ev_vertical_split_area_1.extend (status_area)
+			main_split_area.extend (status_area)
 
 			file_menu_open.set_text ("&Open")
 			file_menu_save_as.set_text ("&Save As")
@@ -59,12 +59,12 @@ feature {NONE}-- Initialization
 			edit_menu_copy.set_text ("&Copy")
 			edit_menu_select_all.set_text ("Select &All")
 			explorer_split_area.enable_item_expand (explorer_area)
-			explorer_split_area.disable_item_expand (l_ev_vertical_split_area_1)
+			explorer_split_area.disable_item_expand (main_split_area)
 			explorer_area.disable_item_expand (l_ev_label_1)
-			l_ev_label_1.set_text ("Schemas")
+			l_ev_label_1.set_text ("Tests")
 			explorer_tree.set_minimum_width (150)
-			l_ev_vertical_split_area_1.enable_item_expand (main_notebook)
-			l_ev_vertical_split_area_1.disable_item_expand (status_area)
+			main_split_area.enable_item_expand (main_notebook)
+			main_split_area.disable_item_expand (status_area)
 			main_notebook.set_item_text (source_text, "Source")
 			main_notebook.set_item_text (dadl_tree, "Node map")
 			status_area.disable_edit
@@ -76,6 +76,7 @@ feature {NONE}-- Initialization
 			file_menu_save_as.select_actions.extend (agent exit_app)
 			file_menu_exit.select_actions.extend (agent exit_app)
 			edit_menu_copy.select_actions.extend (agent on_copy)
+			explorer_tree.select_actions.extend (agent select_explorer_item)
 				-- Close the application when an interface close
 				-- request is recieved on `Current'. i.e. the cross is clicked.
 			close_request_actions.extend (agent destroy_and_exit_if_last)
@@ -102,7 +103,7 @@ feature {NONE}-- Initialization
 			create explorer_area
 			create l_ev_label_1
 			create explorer_tree
-			create l_ev_vertical_split_area_1
+			create main_split_area
 			create main_notebook
 			create source_text
 			create dadl_tree
@@ -132,6 +133,7 @@ feature -- Access
 	explorer_area: EV_VERTICAL_BOX
 	explorer_tree,
 	dadl_tree: EV_TREE
+	main_split_area: EV_VERTICAL_SPLIT_AREA
 	main_notebook: EV_NOTEBOOK
 	source_text: EV_RICH_TEXT
 	status_area: EV_TEXT
@@ -142,7 +144,6 @@ feature {NONE} -- Implementation
 	l_ev_menu_separator_1: EV_MENU_SEPARATOR
 	l_ev_menu_3: EV_MENU
 	l_ev_label_1: EV_LABEL
-	l_ev_vertical_split_area_1: EV_VERTICAL_SPLIT_AREA
 
 feature {NONE} -- Implementation
 
@@ -166,6 +167,11 @@ feature {NONE} -- Implementation
 	
 	on_copy
 			-- Called by `select_actions' of `edit_menu_copy'.
+		deferred
+		end
+	
+	select_explorer_item
+			-- Called by `select_actions' of `explorer_tree'.
 		deferred
 		end
 	

@@ -30,7 +30,7 @@ inherit
 		end
 
 create
-	default_create,	make_from_string, make_date_time
+	default_create,	make_from_string, make_date_and_time
 
 feature -- Definitions
 

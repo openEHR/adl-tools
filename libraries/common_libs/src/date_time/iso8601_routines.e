@@ -31,148 +31,68 @@ feature -- Definitions
 
 feature -- Conversion
 
-	date_to_iso8601_string (a_date: DATE): STRING
+	date_to_iso8601_string (a_date: attached DATE): attached STRING
 			-- make into string of ISO8601 format "YYYY-MM-DD"
-		require
-			a_date /= Void
-		local
-			an_iso_date: ISO8601_DATE
 		do
-			create an_iso_date.make_ymd (a_date.year, a_date.month, a_date.day, True)
-			Result := an_iso_date.as_string
+			Result := (create {ISO8601_DATE}.make_date (a_date)).as_string
 		ensure
-			Result_valid: Result /= Void and then valid_iso8601_date(Result)
+			Result_valid: valid_iso8601_date(Result)
 		end
 
-	iso8601_string_to_date (str: STRING): DATE
+	iso8601_string_to_date (str: attached STRING): attached DATE
 			-- make from string using ISO8601 format "YYYY-MM-DD"
 		require
-			str_valid: str /= Void and then valid_iso8601_date(str)
-		local
-			y, m, d: INTEGER
-			an_iso_date: ISO8601_DATE
+			str_valid: valid_iso8601_date(str)
 		do
-			create an_iso_date.make_from_string(str)
-			y := an_iso_date.year
-			if an_iso_date.day_unknown then
-				if an_iso_date.month_unknown then
-					m := Middle_month_of_year
-					d := Last_day_of_middle_month
-				else
-					m := an_iso_date.month
-					d := Middle_day_of_month
-				end
-			else
-				m := an_iso_date.month
-				d := an_iso_date.day
-			end
-			create Result.make(y, m, d)
-		ensure
-			Result /= Void
+			Result := (create {ISO8601_DATE}.make_from_string(str)).to_date
 		end
 
-	time_to_iso8601_string (a_time: TIME): STRING
+	time_to_iso8601_string (a_time: attached TIME): attached STRING
 			-- make into string using ISO8601 format "Thh:mm:ss[.ssss]"
-		require
-			a_time /= Void
-		local
-			an_iso_time: ISO8601_TIME
 		do
-			create an_iso_time.make_hmsf (a_time.hour, a_time.minute, a_time.second, a_time.fine_second, True)
-			Result := an_iso_time.as_string
+			Result := (create {ISO8601_TIME}.make_time (a_time)).as_string
 		ensure
-			Result_valid: Result /= Void and then valid_iso8601_time(Result)
+			Result_valid: valid_iso8601_time(Result)
 		end
 
-	iso8601_string_to_time (str: STRING): TIME
+	iso8601_string_to_time (str: attached STRING): attached TIME
 			-- make from string using ISO8601 format "Thh:mm:ss[.ssss]"
 		require
-			str_valid: str /= Void and then valid_iso8601_time(str)
-		local
-			h, m, s: INTEGER
-			fs: DOUBLE
-			an_iso_time: ISO8601_TIME
+			str_valid: valid_iso8601_time(str)
 		do
-			create an_iso_time.make_from_string(str)
-			h := an_iso_time.hour
-			if an_iso_time.second_unknown then
-				if an_iso_time.minute_unknown then
-					m := (Minutes_in_hour / 2).truncated_to_integer
-					s := Seconds_in_hour - 1
-				else
-					m := an_iso_time.minute
-					s := (Seconds_in_hour / 2).truncated_to_integer
-				end
-			else
-				m := an_iso_time.minute
-				s := an_iso_time.second
-				fs := an_iso_time.fractional_second
-			end
-			create Result.make_fine(h, m, s + fs)
-		ensure
-			Result /= Void
+			Result := (create {ISO8601_TIME}.make_from_string(str)).to_time
 		end
 
-	date_time_to_iso8601_string (a_dt: DATE_TIME): STRING
+	date_time_to_iso8601_string (a_dt: attached DATE_TIME): attached STRING
 			-- make into string using ISO8601 format "YYYY-MM-DDThh:mm:ss[.ssss]"
-		require
-			a_dt /= Void
 		do
-			create Result.make(0)
-			Result.append(date_to_iso8601_string(a_dt.date))
-			Result.append_character(Time_leader)
-			Result.append(time_to_iso8601_string(a_dt.time))
+			Result := (create {ISO8601_DATE_TIME}.make_date_time(a_dt)).as_string
 		ensure
-			Result_valid: Result /= Void and then valid_iso8601_date_time(Result)
+			Result_valid: valid_iso8601_date_time(Result)
 		end
 
-	iso8601_string_to_date_time (str: STRING): DATE_TIME
+	iso8601_string_to_date_time (str: attached STRING): attached DATE_TIME
 			-- make from string using ISO8601 format "YYYY-MM-DDThh:mm:ss[.ssss]"
 		require
-			str_valid: str /= Void and then valid_iso8601_date_time(str)
-		local
-			dt: DATE
-			tm: TIME
-			sep_pos: INTEGER
+			str_valid: valid_iso8601_date_time(str)
 		do
-			sep_pos := str.index_of(Time_leader, 1)
-			dt := iso8601_string_to_date(str.substring(1, sep_pos-1))
-			tm := iso8601_string_to_time(str.substring(sep_pos+1, str.count))
-		ensure
-			Result /= Void
+			Result := (create {ISO8601_DATE_TIME}.make_from_string(str)).to_date_time
 		end
 
-	duration_to_iso8601_string (a_dur: DATE_TIME_DURATION): STRING
+	duration_to_iso8601_string (a_dur: attached DATE_TIME_DURATION): attached STRING
 			-- make into string using ISO8601 format "PNNDTNNhNNmNNs"
-		require
-			a_dur /= Void
-		local
-			an_iso_dur: ISO8601_DURATION
 		do
-			create an_iso_dur.make (a_dur.year, a_dur.month, 0, a_dur.day, a_dur.hour, a_dur.minute,
-				a_dur.second, a_dur.fine_second)
-			Result := an_iso_dur.as_string
+			Result := (create {ISO8601_DURATION}.make_date_time_duration (a_dur)).as_string
 		ensure
-			Result_valid: Result /= Void and then valid_iso8601_duration(Result)
+			Result_valid: valid_iso8601_duration(Result)
 		end
 
-	iso8601_string_to_duration (str: STRING): DATE_TIME_DURATION
+	iso8601_string_to_duration (str: attached STRING): attached DATE_TIME_DURATION
 			-- make from string using ISO8601 format "PNNDTNNhNNmNNs"
 		require
-			str_valid: str /= Void and then valid_iso8601_duration(str)
-		local
-			an_iso_dur: ISO8601_DURATION
+			str_valid: valid_iso8601_duration(str)
 		do
-			create an_iso_dur.make_from_string (str)
-			if an_iso_dur.weeks > 0 then
-				create Result.make_definite (an_iso_dur.weeks * Days_in_week, 0, 0, 0)
-			else
-				create Result.make_fine (an_iso_dur.years, an_iso_dur.months, an_iso_dur.days,
-					an_iso_dur.hours, an_iso_dur.minutes,
-					an_iso_dur.seconds + an_iso_dur.fractional_seconds)
-			end
-		ensure
-			Result /= Void
+			Result := (create {ISO8601_DURATION}.make_from_string (str)).to_date_time_duration
 		end
 
 feature -- Validity

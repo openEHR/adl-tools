@@ -87,7 +87,7 @@ Section -Main SEC0000
     File ..\..\..\app\rm_schemas\*
 
     SetOutPath $INSTDIR\vim
-    File ..\..\..\etc\vim\*
+    File ..\..\..\..\..\components\adl_compiler\etc\vim\*
 
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
 SectionEnd

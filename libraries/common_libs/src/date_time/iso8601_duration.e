@@ -37,8 +37,11 @@ inherit
 		end
 
 create
-	make,
-	make_from_string
+	make, make_from_string, make_date_time_duration
+
+convert
+	make_date_time_duration ({DATE_TIME_DURATION}),
+	to_date_time_duration: {DATE_TIME_DURATION}
 
 feature {NONE} -- Initialisation
 
@@ -83,6 +86,13 @@ feature {NONE} -- Initialisation
 			fractional_seconds := sec_frac
 			has_time := hours > 0 or minutes > 0 or seconds > 0 or fractional_seconds > 0.0
 			value := as_string
+		end
+
+	make_date_time_duration (a_dur: attached DATE_TIME_DURATION)
+			-- make from a DATE_TIME_DURATION object
+		do
+			make (a_dur.year, a_dur.month, 0, a_dur.day, a_dur.hour, a_dur.minute,
+				a_dur.second, a_dur.fine_second)
 		end
 
 feature -- Access
@@ -211,6 +221,18 @@ feature -- Conversion
 			Result := (((years  + months/months_in_year) * days_in_4_years/4) + weeks * days_in_week + days) * seconds_in_day +
 				hours * seconds_in_hour + minutes * seconds_in_minute + seconds
 			Result := Result + fractional_seconds -- (Double-precision fp operation)
+		end
+
+	to_date_time_duration: attached DATE_TIME_DURATION
+			-- convert to DATE_TIME_DURATION object
+		local
+			an_iso_dur: ISO8601_DURATION
+		do
+			if weeks > 0 then
+				create Result.make_definite (weeks * Days_in_week, 0, 0, 0)
+			else
+				create Result.make_fine (years, months, days, hours, minutes, seconds + fractional_seconds)
+			end
 		end
 
 invariant
