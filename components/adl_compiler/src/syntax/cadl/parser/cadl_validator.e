@@ -24,7 +24,7 @@ inherit
 
 	CADL_SCANNER
 		rename
-			make as make_eiffel_scanner
+			make as make_scanner
 		end
 
 	C_COMMON
@@ -8406,7 +8406,7 @@ feature -- Initialization
 	make
 			-- Create a new Eiffel parser.
 		do
-			make_eiffel_scanner
+			make_scanner
 			make_parser_skeleton
 		end
 

@@ -66,6 +66,14 @@ feature -- Access
 
 	my_duration: DATE_TIME_DURATION assign set_my_duration
 
+	my_iso8601_date: ISO8601_DATE assign set_my_iso8601_date
+
+	my_iso8601_date_time: ISO8601_DATE_TIME assign set_my_iso8601_date_time
+
+	my_iso8601_time: ISO8601_TIME assign set_my_iso8601_time
+
+	my_iso8601_duration: ISO8601_DURATION assign set_my_iso8601_duration
+
 feature -- Element change
 
 	set_my_character (a_char: like my_character)
@@ -191,6 +199,26 @@ feature -- Element change
 	set_my_duration (a_duration: like my_duration)
 		do
 			my_duration := a_duration
+		end
+
+	set_my_iso8601_date (a_iso8601_date: like my_iso8601_date)
+		do
+			my_iso8601_date := a_iso8601_date
+		end
+
+	set_my_iso8601_date_time (a_iso8601_date_time: like my_iso8601_date_time)
+		do
+			my_iso8601_date_time := a_iso8601_date_time
+		end
+
+	set_my_iso8601_time (a_iso8601_time: like my_iso8601_time)
+		do
+			my_iso8601_time := a_iso8601_time
+		end
+
+	set_my_iso8601_duration (a_iso8601_duration: like my_iso8601_duration)
+		do
+			my_iso8601_duration := a_iso8601_duration
 		end
 
 end
