@@ -21,139 +21,98 @@ inherit
 
 feature {NONE} -- Definitions
 
-	primitive_types: ARRAYED_LIST[INTEGER]
+	primitive_types: ARRAYED_LIST [INTEGER]
 		once
 			create Result.make (0)
 			Result.compare_objects
-			Result.extend (dynamic_type (create {NATURAL}))
-			Result.extend (dynamic_type (create {NATURAL_8}))
-			Result.extend (dynamic_type (create {NATURAL_16}))
-			Result.extend (dynamic_type (create {NATURAL_32}))
-			Result.extend (dynamic_type (create {NATURAL_64}))
 
-			Result.extend (dynamic_type (create {INTEGER}))
-			Result.extend (dynamic_type (create {INTEGER_8}))
-			Result.extend (dynamic_type (create {INTEGER_16}))
-			Result.extend (dynamic_type (create {INTEGER_32}))
-			Result.extend (dynamic_type (create {INTEGER_64}))
+			Result.extend (({NATURAL}).type_id)
+			Result.extend (({NATURAL_8}).type_id)
+			Result.extend (({NATURAL_16}).type_id)
+			Result.extend (({NATURAL_32}).type_id)
+			Result.extend (({NATURAL_64}).type_id)
 
-			Result.extend (dynamic_type (create {REAL}))
-			Result.extend (dynamic_type (create {REAL_32}))
-			Result.extend (dynamic_type (create {REAL_64}))
-			Result.extend (dynamic_type (create {DOUBLE}))
+			Result.extend (({INTEGER}).type_id)
+			Result.extend (({INTEGER_8}).type_id)
+			Result.extend (({INTEGER_16}).type_id)
+			Result.extend (({INTEGER_32}).type_id)
+			Result.extend (({INTEGER_64}).type_id)
 
-			Result.extend (dynamic_type (create {BOOLEAN}))
+			Result.extend (({REAL}).type_id)
+			Result.extend (({REAL_32}).type_id)
+			Result.extend (({REAL_64}).type_id)
+			Result.extend (({DOUBLE}).type_id)
 
-			Result.extend (dynamic_type (create {CHARACTER}))
-			Result.extend (dynamic_type (create {CHARACTER_8}))
-			Result.extend (dynamic_type (create {CHARACTER_32}))
+			Result.extend (({BOOLEAN}).type_id)
 
-			Result.extend (dynamic_type (create {STRING}.make_empty))
-			Result.extend (dynamic_type (create {STRING_8}.make_empty))
-			Result.extend (dynamic_type (create {STRING_32}.make_empty))
+			Result.extend (({CHARACTER}).type_id)
+			Result.extend (({CHARACTER_8}).type_id)
+			Result.extend (({CHARACTER_32}).type_id)
 
-			Result.extend (dynamic_type (create {DATE}.make_now))
-			Result.extend (dynamic_type (create {DATE_TIME}.make_now))
-			Result.extend (dynamic_type (create {TIME}.make_now))
-			Result.extend (dynamic_type (create {DATE_TIME_DURATION}.make (0, 0, 0, 0, 0, 0)))
+			Result.extend (({STRING}).type_id)
+			Result.extend (({STRING_8}).type_id)
+			Result.extend (({STRING_32}).type_id)
 
-			Result.extend (dynamic_type (create {ISO8601_DATE}.make_from_string("2000-01-01")))
-			Result.extend (dynamic_type (create {ISO8601_DATE_TIME}.make_from_string("2000-01-01T00:00:00")))
-			Result.extend (dynamic_type (create {ISO8601_TIME}.make_from_string("00:00:00")))
-			Result.extend (dynamic_type (create {ISO8601_DURATION}.make_from_string ("P1Y")))
+			Result.extend (({DATE}).type_id)
+			Result.extend (({DATE_TIME}).type_id)
+			Result.extend (({TIME}).type_id)
+			Result.extend (({DATE_TIME_DURATION}).type_id)
 
-			Result.extend (dynamic_type (create {CODE_PHRASE}))
-			Result.extend (dynamic_type (create {URI}.make_from_string ("http://no.way.home")))
+			Result.extend (({ISO8601_DATE}).type_id)
+			Result.extend (({ISO8601_DATE_TIME}).type_id)
+			Result.extend (({ISO8601_TIME}).type_id)
+			Result.extend (({ISO8601_DURATION}).type_id)
 
-			-- When DT_OBJECT_CONVERTER retrieves the type id of a .NET primitive type via field_static_type_of_type,
-			-- it receives a primitive .NET type (Int32, etc.), which is compatible with the corresponding Eiffel type,
-			-- but has different type id. We therefore need to list these .NET types too.
-			-- We can retrieve these .NET type ids from the Eiffel strings, as shown below.
-			-- This fixes the problem, without having to list .NET types explicitly here, which would not be portable of course.
---			Result.extend (dynamic_type (create {INTEGER_32}))
---			Result.extend (dynamic_type (create {REAL_32}))
---			Result.extend (dynamic_type (create {REAL_64}))
---			Result.extend (dynamic_type (create {BOOLEAN}))
+			Result.extend (({CODE_PHRASE}).type_id)
+			Result.extend (({URI}).type_id)
 		end
 
 	primitive_sequence_types: ARRAYED_LIST [INTEGER]
 			-- the list of dynamic types of abstract types from cvt_table
 			-- e.g. types like LIST[INTEGER] are there, but not LINKED_LIST[INTEGER]
-		local
-			-- These are just here to make sure the types are compiled in.
-			-- N.B. SEQUENCE is deferred; therefore we can't create a prototype object for it as we are doing for INTERVAL, etc.
-			seq_boolean: SEQUENCE [BOOLEAN]
-			seq_natural: SEQUENCE [NATURAL]
-			seq_natural_8: SEQUENCE [NATURAL_8]
-			seq_natural_16: SEQUENCE [NATURAL_16]
-			seq_natural_32: SEQUENCE [NATURAL_32]
-			seq_natural_64: SEQUENCE [NATURAL_64]
-			seq_integer: SEQUENCE [INTEGER]
-			seq_integer_8: SEQUENCE [INTEGER_8]
-			seq_integer_16: SEQUENCE [INTEGER_16]
-			seq_integer_32: SEQUENCE [INTEGER_32]
-			seq_integer_64: SEQUENCE [INTEGER_64]
-			seq_real: SEQUENCE [REAL]
-			seq_real_32: SEQUENCE [REAL_32]
-			seq_real_64: SEQUENCE [REAL_64]
-			seq_double: SEQUENCE [DOUBLE]
-			seq_string: SEQUENCE [STRING]
-			seq_string_8: SEQUENCE [STRING_8]
-			seq_string_32: SEQUENCE [STRING_32]
-			seq_character: SEQUENCE [CHARACTER]
-			seq_character_8: SEQUENCE [CHARACTER_8]
-			seq_character_32: SEQUENCE [CHARACTER_32]
-			seq_date: SEQUENCE [DATE]
-			seq_date_time: SEQUENCE [DATE_TIME]
-			seq_time: SEQUENCE [TIME]
-			seq_duration: SEQUENCE [DATE_TIME_DURATION]
-			seq_iso8601_date: SEQUENCE [ISO8601_DATE]
-			seq_iso8601_date_time: SEQUENCE [ISO8601_DATE_TIME]
-			seq_iso8601_time: SEQUENCE [ISO8601_TIME]
-			seq_iso8601_duration: SEQUENCE [ISO8601_DURATION]
-			seq_uri: SEQUENCE [URI]
-			seq_code_phrase: SEQUENCE [CODE_PHRASE]
 		once
 			Create Result.make (0)
 			Result.compare_objects
-			Result.extend (dynamic_type_from_string ("SEQUENCE [NATURAL]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [NATURAL_8]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [NATURAL_16]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [NATURAL_32]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [NATURAL_64]"))
 
-			Result.extend (dynamic_type_from_string ("SEQUENCE [INTEGER]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [INTEGER_8]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [INTEGER_16]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [INTEGER_32]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [INTEGER_64]"))
+			Result.extend (({SEQUENCE [NATURAL]}).type_id)
+			Result.extend (({SEQUENCE [NATURAL_8]}).type_id)
+			Result.extend (({SEQUENCE [NATURAL_16]}).type_id)
+			Result.extend (({SEQUENCE [NATURAL_32]}).type_id)
+			Result.extend (({SEQUENCE [NATURAL_64]}).type_id)
 
-			Result.extend (dynamic_type_from_string ("SEQUENCE [BOOLEAN]"))
+			Result.extend (({SEQUENCE [INTEGER]}).type_id)
+			Result.extend (({SEQUENCE [INTEGER_8]}).type_id)
+			Result.extend (({SEQUENCE [INTEGER_16]}).type_id)
+			Result.extend (({SEQUENCE [INTEGER_32]}).type_id)
+			Result.extend (({SEQUENCE [INTEGER_64]}).type_id)
 
-			Result.extend (dynamic_type_from_string ("SEQUENCE [REAL]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [REAL_32]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [REAL_64]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [DOUBLE]"))
+			Result.extend (({SEQUENCE [REAL]}).type_id)
+			Result.extend (({SEQUENCE [REAL_32]}).type_id)
+			Result.extend (({SEQUENCE [REAL_64]}).type_id)
+			Result.extend (({SEQUENCE [DOUBLE]}).type_id)
 
-			Result.extend (dynamic_type_from_string ("SEQUENCE [CHARACTER]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [CHARACTER_8]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [CHARACTER_32]"))
+			Result.extend (({SEQUENCE [BOOLEAN]}).type_id)
 
-			Result.extend (dynamic_type_from_string ("SEQUENCE [STRING]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [STRING_8]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [STRING_32]"))
+			Result.extend (({SEQUENCE [CHARACTER]}).type_id)
+			Result.extend (({SEQUENCE [CHARACTER_8]}).type_id)
+			Result.extend (({SEQUENCE [CHARACTER_32]}).type_id)
 
-			Result.extend (dynamic_type_from_string ("SEQUENCE [DATE]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [DATE_TIME]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [TIME]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [DATE_TIME_DURATION]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [ISO8601_DATE]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [ISO8601_DATE_TIME]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [ISO8601_TIME]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [ISO8601_DURATION]"))
+			Result.extend (({SEQUENCE [STRING]}).type_id)
+			Result.extend (({SEQUENCE [STRING_8]}).type_id)
+			Result.extend (({SEQUENCE [STRING_32]}).type_id)
 
-			Result.extend (dynamic_type_from_string ("SEQUENCE [URI]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [CODE_PHRASE]"))
+			Result.extend (({SEQUENCE [DATE]}).type_id)
+			Result.extend (({SEQUENCE [DATE_TIME]}).type_id)
+			Result.extend (({SEQUENCE [TIME]}).type_id)
+			Result.extend (({SEQUENCE [DATE_TIME_DURATION]}).type_id)
+
+			Result.extend (({SEQUENCE [ISO8601_DATE]}).type_id)
+			Result.extend (({SEQUENCE [ISO8601_DATE_TIME]}).type_id)
+			Result.extend (({SEQUENCE [ISO8601_TIME]}).type_id)
+			Result.extend (({SEQUENCE [ISO8601_DURATION]}).type_id)
+
+			Result.extend (({SEQUENCE [CODE_PHRASE]}).type_id)
+			Result.extend (({SEQUENCE [URI]}).type_id)
 		end
 
 	primitive_interval_types: ARRAYED_LIST [INTEGER]
@@ -161,32 +120,33 @@ feature {NONE} -- Definitions
 		once
 			Create Result.make (0)
 			Result.compare_objects
-			Result.extend (dynamic_type (create {INTERVAL [NATURAL]}))
-			Result.extend (dynamic_type (create {INTERVAL [NATURAL_8]}))
-			Result.extend (dynamic_type (create {INTERVAL [NATURAL_16]}))
-			Result.extend (dynamic_type (create {INTERVAL [NATURAL_32]}))
-			Result.extend (dynamic_type (create {INTERVAL [NATURAL_64]}))
 
-			Result.extend (dynamic_type (create {INTERVAL [INTEGER]}))
-			Result.extend (dynamic_type (create {INTERVAL [INTEGER_8]}))
-			Result.extend (dynamic_type (create {INTERVAL [INTEGER_16]}))
-			Result.extend (dynamic_type (create {INTERVAL [INTEGER_32]}))
-			Result.extend (dynamic_type (create {INTERVAL [INTEGER_64]}))
+			Result.extend (({INTERVAL [NATURAL]}).type_id)
+			Result.extend (({INTERVAL [NATURAL_8]}).type_id)
+			Result.extend (({INTERVAL [NATURAL_16]}).type_id)
+			Result.extend (({INTERVAL [NATURAL_32]}).type_id)
+			Result.extend (({INTERVAL [NATURAL_64]}).type_id)
 
-			Result.extend (dynamic_type (create {INTERVAL [REAL]}))
-			Result.extend (dynamic_type (create {INTERVAL [REAL_32]}))
-			Result.extend (dynamic_type (create {INTERVAL [REAL_64]}))
-			Result.extend (dynamic_type (create {INTERVAL [DOUBLE]}))
+			Result.extend (({INTERVAL [INTEGER]}).type_id)
+			Result.extend (({INTERVAL [INTEGER_8]}).type_id)
+			Result.extend (({INTERVAL [INTEGER_16]}).type_id)
+			Result.extend (({INTERVAL [INTEGER_32]}).type_id)
+			Result.extend (({INTERVAL [INTEGER_64]}).type_id)
 
-			Result.extend (dynamic_type (create {INTERVAL [DATE]}))
-			Result.extend (dynamic_type (create {INTERVAL [DATE_TIME]}))
-			Result.extend (dynamic_type (create {INTERVAL [TIME]}))
-			Result.extend (dynamic_type (create {INTERVAL [DATE_TIME_DURATION]}))
+			Result.extend (({INTERVAL [REAL]}).type_id)
+			Result.extend (({INTERVAL [REAL_32]}).type_id)
+			Result.extend (({INTERVAL [REAL_64]}).type_id)
+			Result.extend (({INTERVAL [DOUBLE]}).type_id)
 
-			Result.extend (dynamic_type (create {INTERVAL [ISO8601_DATE]}))
-			Result.extend (dynamic_type (create {INTERVAL [ISO8601_DATE_TIME]}))
-			Result.extend (dynamic_type (create {INTERVAL [ISO8601_TIME]}))
-			Result.extend (dynamic_type (create {INTERVAL [ISO8601_DURATION]}))
+			Result.extend (({INTERVAL [DATE]}).type_id)
+			Result.extend (({INTERVAL [DATE_TIME]}).type_id)
+			Result.extend (({INTERVAL [TIME]}).type_id)
+			Result.extend (({INTERVAL [DATE_TIME_DURATION]}).type_id)
+
+			Result.extend (({INTERVAL [ISO8601_DATE]}).type_id)
+			Result.extend (({INTERVAL [ISO8601_DATE_TIME]}).type_id)
+			Result.extend (({INTERVAL [ISO8601_TIME]}).type_id)
+			Result.extend (({INTERVAL [ISO8601_DURATION]}).type_id)
 		end
 
 feature -- Access
