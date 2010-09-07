@@ -96,6 +96,16 @@ feature -- Access
 			Result.set_my_real_32_interval (create {INTERVAL[REAL_32]}.make_bounded_included(10.1, 20.234))
 			Result.set_my_real_64_interval (create {INTERVAL[REAL_64]}.make_bounded_included(10.0, 20.0))
 			Result.set_my_double_interval (create {INTERVAL[DOUBLE]}.make_bounded_included(300.0, 50000.0))
+
+			Result.set_my_date_interval (create {INTERVAL[DATE]}.make_bounded_included(create {DATE}.make(2000, 1, 3), create {DATE}.make(2005, 12, 19)))
+			Result.set_my_date_time_interval (create {INTERVAL[DATE_TIME]}.make_bounded_included(create {DATE_TIME}.make(2000, 1, 3, 11, 30, 0), create {DATE_TIME}.make(2005, 12, 19, 11, 30, 0)))
+			Result.set_my_time_interval (create {INTERVAL[TIME]}.make_bounded_included(create {TIME}.make(11, 30, 0), create {TIME}.make(11, 30, 0)))
+			Result.set_my_duration_interval (create {INTERVAL[DATE_TIME_DURATION]}.make_bounded_included(create {DATE_TIME_DURATION}.make_definite (1, 0, 0, 0), create {DATE_TIME_DURATION}.make_definite (5, 0, 0, 0)))
+
+			Result.set_my_iso8601_date_interval (create {INTERVAL[ISO8601_DATE]}.make_bounded_included(create {ISO8601_DATE}.make_from_string("2001-08-12"), create {ISO8601_DATE}.make_from_string("2004-12-25")))
+			Result.set_my_iso8601_date_time_interval (create {INTERVAL[ISO8601_DATE_TIME]}.make_bounded_included(create {ISO8601_DATE_TIME}.make_from_string("2001-08-12T03:46:00"), create {ISO8601_DATE_TIME}.make_from_string("2003-01-12T03:46:00")))
+			Result.set_my_iso8601_time_interval (create {INTERVAL[ISO8601_TIME]}.make_bounded_included(create {ISO8601_TIME}.make_from_string("03:46:00"), create {ISO8601_TIME}.make_from_string("22:12:00")))
+			Result.set_my_iso8601_duration_interval (create {INTERVAL[ISO8601_DURATION]}.make_bounded_included(create {ISO8601_DURATION}.make_from_string("P1Y2D"), create {ISO8601_DURATION}.make_from_string("P2Y66D")))
 		end
 
 	dadl_primitive_sequence_types: DADL_PRIMITIVE_SEQUENCE_TYPES
