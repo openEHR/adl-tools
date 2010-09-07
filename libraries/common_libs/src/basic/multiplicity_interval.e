@@ -180,11 +180,11 @@ feature -- Output
 		do
 			create Result.make(0)
 			if upper_unbounded then
-				Result.append(lower_out + "..*")
+				Result.append(atomic_value_to_string(lower) + "..*")
 			elseif not limits_equal then
-				Result.append(lower_out + ".." + upper_out)
+				Result.append(atomic_value_to_string(lower) + ".." + atomic_value_to_string(upper))
 			else
-				Result.append(lower_out)
+				Result.append(atomic_value_to_string(lower))
 			end
 		end
 

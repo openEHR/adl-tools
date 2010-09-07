@@ -67,6 +67,8 @@ feature {NONE} -- Implementation
 					-- DT_OBJECT_CONVERTER.dt_to_object
 					["container_type_mismatch"] =
 						<"Mismatch error in data and model for field $1 in type $2. Parsed data implies container type but is not in model">
+					["atomic_type_mismatch"] =
+						<"Mismatch error in data and model for field $1 in type $2. Parsed data implies atomic type but no conversion available">
 					["primitive_type_mismatch"] =
 						<"Mismatch error in data and model for field $1 in type $2. Parsed data implies primitive, sequence<primitive> or interval<primitive> type but model does not">
 					["dt_proc_arg_type_mismatch"] =

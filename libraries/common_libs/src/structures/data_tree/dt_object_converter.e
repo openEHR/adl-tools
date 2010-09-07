@@ -414,13 +414,17 @@ feature -- Conversion
 												type_conforms_to (dynamic_type (a_dt_obj_leaf.value), hash_table_any_hashable_type_id)
 											then
 												if is_container_type(fld_type_id) then -- Eiffel field type is compatible
-													set_primitive_sequence_field (i, Result, a_dt_obj_leaf.value)
+													set_primitive_sequence_field (i, Result, fld_type_id, a_dt_obj_leaf.value)
 												else -- type in parsed DT is container, but not in Eiffel class		
 													post_error(Current, "populate_object_from_dt", "container_type_mismatch",
-														<<type_name_of_type(fld_type_id), type_name_of_type(a_type_id)>>
+														<<type_name_of_type(fld_type_id), type_name_of_type(dynamic_type (a_dt_obj_leaf.value))>>
 													)
 												end
-											else -- must be some other reference type not requiring special process
+
+											elseif type_conforms_to (dynamic_type (a_dt_obj_leaf.value), interval_any_type_id) then
+												set_primitive_interval_field (i, Result, fld_type_id, a_dt_obj_leaf.value)
+
+											else -- must be an atomic reference type
 
 												-- take care of any type conversions required to match 'convert' statements in basic types
 												if not field_conforms_to (dynamic_type (a_dt_obj_leaf.value), fld_type_id) then
@@ -432,6 +436,10 @@ feature -- Conversion
 														v := iso_date_time.to_date_time
 													elseif attached {ISO8601_DURATION} a_dt_obj_leaf.value as iso_duration then
 														v := iso_duration.to_date_time_duration
+													else
+														post_error(Current, "populate_object_from_dt", "atomic_type_mismatch",
+															<<type_name_of_type(fld_type_id), type_name_of_type(dynamic_type (a_dt_obj_leaf.value))>>
+														)
 													end
 												else
 													v := a_dt_obj_leaf.value
@@ -471,18 +479,60 @@ feature -- Conversion
 
 feature {NONE} -- Conversion to object
 
-	set_primitive_sequence_field (i: INTEGER; object: ANY; value: ANY)
+	set_primitive_interval_field (i: INTEGER; object: ANY; fld_type:INTEGER; value: ANY)
+			-- set a field of a specific Eiffel type like INTERVAL[INTEGER_8] from the parsed form, which is always (currently)
+			-- INTERVAL[INTEGER_32] (larger numbers will have to be parsed as INTERVAL[INTEGER_64]; same for large reals => REAL_64).
+			-- This is currently a total hack, awaiting ES to implement INTEGER_GENERAL, REAL_GENERAL etc from the ECMA spec.
+		require
+			object_not_void: object /= Void
+			index_large_enough: i >= 1
+		local
+			v: ANY
+		do
+			v := new_instance_of (fld_type)
+
+			if attached {INTERVAL[INTEGER]} value as src_ivl_int then
+				if attached {INTERVAL[INTEGER_8]} v as targ_ivl_int_8 then
+					targ_ivl_int_8.make_from_other (src_ivl_int.lower.as_integer_8, src_ivl_int.upper.as_integer_8, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
+				elseif attached {INTERVAL[INTEGER_16]} v as targ_ivl_int_16 then
+					targ_ivl_int_16.make_from_other (src_ivl_int.lower.as_integer_16, src_ivl_int.upper.as_integer_16, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
+				elseif attached {INTERVAL[INTEGER_32]} v as targ_ivl_int_32 then
+					targ_ivl_int_32.make_from_other (src_ivl_int.lower, src_ivl_int.upper, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
+				elseif attached {INTERVAL[INTEGER_64]} v as targ_ivl_int_64 then
+					targ_ivl_int_64.make_from_other (src_ivl_int.lower, src_ivl_int.upper, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
+				elseif attached {INTERVAL[NATURAL_8]} v as targ_ivl_nat_8 then
+					targ_ivl_nat_8.make_from_other (src_ivl_int.lower.as_natural_8, src_ivl_int.upper.as_natural_8, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
+				elseif attached {INTERVAL[NATURAL_16]} v as targ_ivl_nat_16 then
+					targ_ivl_nat_16.make_from_other (src_ivl_int.lower.as_natural_16, src_ivl_int.upper.as_natural_16, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
+				elseif attached {INTERVAL[NATURAL_32]} v as targ_ivl_nat_32 then
+					targ_ivl_nat_32.make_from_other (src_ivl_int.lower.as_natural_32, src_ivl_int.upper.as_natural_32, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
+				elseif attached {INTERVAL[NATURAL_64]} v as targ_ivl_nat_64 then
+					targ_ivl_nat_64.make_from_other (src_ivl_int.lower.as_natural_64, src_ivl_int.upper.as_natural_64, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
+				end
+
+			elseif attached {INTERVAL[REAL]} value as src_ivl_real then
+				if attached {INTERVAL[REAL_32]} v as targ_ivl_real_32 then
+					targ_ivl_real_32.make_from_other (src_ivl_real.lower, src_ivl_real.upper, src_ivl_real.lower_unbounded, src_ivl_real.upper_unbounded, src_ivl_real.lower_included, src_ivl_real.upper_included)
+				elseif attached {INTERVAL[REAL_64]} v as targ_ivl_int_64 then
+					targ_ivl_int_64.make_from_other (src_ivl_real.lower, src_ivl_real.upper, src_ivl_real.lower_unbounded, src_ivl_real.upper_unbounded, src_ivl_real.lower_included, src_ivl_real.upper_included)
+				end
+			end
+
+			set_reference_field (i, object, v)
+		end
+
+	set_primitive_sequence_field (i: INTEGER; object: ANY; fld_type:INTEGER; value: ANY)
 			-- set i-th field of object which is some kind of sequence of a primitive type,
 			-- from a value which is either an ARRAYED_LIST or a single object like an INTEGER,
 			-- which we want to turn into the member of a new sequence
 		require
 			object_not_void: object /= Void
+			fld_type_valid: fld_type > 0
 			index_large_enough: i >= 1
 		local
-			val_type, fld_type: INTEGER
+			val_type: INTEGER
 		do
 			val_type := dynamic_type(value)
-			fld_type := field_static_type_of_type(i, dynamic_type(object))
 			if val_type = fld_type then
 				set_reference_field (i, object, value)
 			else

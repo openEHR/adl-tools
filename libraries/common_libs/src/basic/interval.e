@@ -26,13 +26,21 @@ inherit
 			default_create
 		end
 
+	STRING_UTILITIES
+		export
+			{NONE} all
+		undefine
+			is_equal, default_create
+		end
+
 create
 	default_create,
 	make_bounded, make_bounded_included,
 	make_lower_unbounded,
 	make_upper_unbounded,
 	make_unbounded,
-	make_point
+	make_point,
+	make_from_other
 
 feature -- Initialization
 
@@ -135,6 +143,24 @@ feature -- Initialization
 		ensure
 			Lower_unbounded: lower_unbounded
 			Upper_unbounded: upper_unbounded
+		end
+
+	make_from_other (a_lower, an_upper: G; a_lower_unbounded, an_upper_unbounded, a_lower_included, an_upper_included: BOOLEAN)
+			-- make from parts of another interval
+		do
+			lower := a_lower
+			upper := an_upper
+			lower_unbounded := a_lower_unbounded
+			upper_unbounded := an_upper_unbounded
+			lower_included := a_lower_included
+			upper_included := an_upper_included
+		ensure
+			Lower_set: lower = a_lower
+			Upper_set: upper = an_upper
+			Lower_unbounded_set: lower_unbounded = a_lower_unbounded
+			Upper_unbounded_set: upper_unbounded = an_upper_unbounded
+			lower_included_set: lower_included = a_lower_included
+			upper_included_set: upper_included = an_upper_included
 		end
 
 feature -- Access
@@ -255,59 +281,33 @@ feature -- Comparison
 
 feature -- Output
 
-	lower_out: STRING
-			-- same as out but fixed to make REALs with no decimal part
-			-- output as NNN.0 anyway
-		require
-			has_lower: not lower_unbounded
-		do
-			-- FIXME: REAL.out is broken
-			Result := lower.out
-			if lower.generating_type.out.substring (1, 4).is_equal ("REAL") and then Result.index_of ('.', 1) = 0 then
-				Result.append(".0")
-			end
-		end
-
-	upper_out: STRING
-			-- same as out but fixed to make REALs with no decimal part
-			-- output as NNN.0 anyway
-		require
-			has_upper: not upper_unbounded
-		do
-			-- FIXME: REAL.out is broken
-			Result := upper.out
-			if upper.generating_type.out.substring (1, 4).is_equal ("REAL") and then Result.index_of ('.', 1) = 0 then
-				Result.append(".0")
-			end
-		end
-
 	as_string: STRING
 		do
 			create Result.make(0)
 			if lower_unbounded then
 				if upper_included then
-					Result.append("<=" + upper_out)
+					Result.append("<=" + atomic_value_to_string(upper))
 				else
-					Result.append("<" + upper_out)
+					Result.append("<" + atomic_value_to_string(upper))
 				end
 			elseif upper_unbounded then
 				if lower_included then
-					Result.append(">=" + lower_out)
+					Result.append(">=" + atomic_value_to_string(lower))
 				else
-					Result.append(">" + lower_out)
+					Result.append(">" + atomic_value_to_string(lower))
 				end
 			elseif not limits_equal then
 				if lower_included and upper_included then
-					Result.append(lower_out + ".." + upper_out)
+					Result.append(atomic_value_to_string(lower) + ".." + atomic_value_to_string(upper))
 				elseif lower_included then
-					Result.append(lower_out + "..<" + upper_out)
+					Result.append(atomic_value_to_string(lower) + "..<" + atomic_value_to_string(upper))
 				elseif upper_included then
-					Result.append(">" + lower_out + ".." + upper_out)
+					Result.append(">" + atomic_value_to_string(lower) + ".." + atomic_value_to_string(upper))
 				else
-					Result.append(">" + lower_out + "..<" + upper_out)
+					Result.append(">" + atomic_value_to_string(lower) + "..<" + atomic_value_to_string(upper))
 				end
 			else
-				Result.append(lower_out)
+				Result.append(atomic_value_to_string(lower))
 			end
 		end
 
