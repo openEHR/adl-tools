@@ -40,9 +40,10 @@ feature -- Access
 			-- table of test objects keyed by their type
 		once
 			create Result.make(0)
-			Result.put (dadl_primitive_types, dadl_primitive_types.generator)
-			Result.put (dadl_primitive_interval_types, dadl_primitive_interval_types.generator)
-			Result.put (dadl_primitive_sequence_types, dadl_primitive_sequence_types.generator)
+			Result.put (dadl_primitive_types, "Primitive atoms")
+			Result.put (dadl_primitive_interval_types, "Primitive intervals")
+			Result.put (dadl_primitive_sequence_types_1, "ARRAYED_LIST [primitive]")
+			Result.put (dadl_primitive_sequence_types_2, "ARRAYED_LIST [primitive], single element lists")
 		end
 
 	dadl_primitive_types: DADL_PRIMITIVE_TYPES
@@ -108,7 +109,7 @@ feature -- Access
 			Result.set_my_iso8601_duration_interval (create {INTERVAL[ISO8601_DURATION]}.make_bounded_included(create {ISO8601_DURATION}.make_from_string("P1Y2D"), create {ISO8601_DURATION}.make_from_string("P2Y66D")))
 		end
 
-	dadl_primitive_sequence_types: DADL_PRIMITIVE_SEQUENCE_TYPES
+	dadl_primitive_sequence_types_1: DADL_PRIMITIVE_SEQUENCE_TYPES
 		once
 			create Result
 			Result.set_my_integer_arrayed_list (create {ARRAYED_LIST[INTEGER]}.make_from_array(<<1, 2, 3, 4>>))
@@ -148,6 +149,46 @@ feature -- Access
 			Result.set_my_iso8601_duration_arrayed_list (create {ARRAYED_LIST[ISO8601_DURATION]}.make_from_array(<<create {ISO8601_DURATION}.make_from_string("P1Y2D")>>))
 		end
 
+	dadl_primitive_sequence_types_2: DADL_PRIMITIVE_SEQUENCE_TYPES
+		once
+			create Result
+			Result.set_my_integer_arrayed_list (create {ARRAYED_LIST[INTEGER]}.make_from_array(<<1>>))
+			Result.set_my_integer_8_arrayed_list (create {ARRAYED_LIST[INTEGER_8]}.make_from_array(<<2>>))
+			Result.set_my_integer_16_arrayed_list (create {ARRAYED_LIST[INTEGER_16]}.make_from_array(<<3>>))
+			Result.set_my_integer_32_arrayed_list (create {ARRAYED_LIST[INTEGER_32]}.make_from_array(<<4>>))
+			Result.set_my_integer_64_arrayed_list (create {ARRAYED_LIST[INTEGER_64]}.make_from_array(<<5>>))
+
+			Result.set_my_natural_arrayed_list (create {ARRAYED_LIST[NATURAL]}.make_from_array(<<10>>))
+			Result.set_my_natural_8_arrayed_list (create {ARRAYED_LIST[NATURAL_8]}.make_from_array(<<20>>))
+			Result.set_my_natural_16_arrayed_list (create {ARRAYED_LIST[NATURAL_16]}.make_from_array(<<30>>))
+			Result.set_my_natural_32_arrayed_list (create {ARRAYED_LIST[NATURAL_32]}.make_from_array(<<40>>))
+			Result.set_my_natural_64_arrayed_list (create {ARRAYED_LIST[NATURAL_64]}.make_from_array(<<50>>))
+
+			Result.set_my_real_arrayed_list (create {ARRAYED_LIST[REAL]}.make_from_array(<<1000>>))
+			Result.set_my_real_32_arrayed_list (create {ARRAYED_LIST[REAL_32]}.make_from_array(<<2000>>))
+			Result.set_my_real_64_arrayed_list (create {ARRAYED_LIST[REAL_64]}.make_from_array(<<3000>>))
+			Result.set_my_double_arrayed_list (create {ARRAYED_LIST[DOUBLE]}.make_from_array(<<4000>>))
+
+			Result.set_my_boolean_arrayed_list (create {ARRAYED_LIST[BOOLEAN]}.make_from_array(<<True>>))
+
+			Result.set_my_character_arrayed_list (create {ARRAYED_LIST[CHARACTER]}.make_from_array(<<'a'>>))
+			Result.set_my_character_8_arrayed_list (create {ARRAYED_LIST[CHARACTER_8]}.make_from_array(<<'e'>>))
+	--		Result.set_my_character_32_arrayed_list (create {ARRAYED_LIST[CHARACTER_32]}.make_from_array(<<#>>))
+
+			Result.set_my_string_arrayed_list (create {ARRAYED_LIST[STRING]}.make_from_array(<<"this">>))
+	--		Result.set_my_string_32_arrayed_list (create {ARRAYED_LIST[STRING_32]}.make_from_array(<<#>>))
+
+			Result.set_my_date_arrayed_list (create {ARRAYED_LIST[DATE]}.make_from_array(<<create {DATE}.make_now>>))
+			Result.set_my_date_time_arrayed_list (create {ARRAYED_LIST[DATE_TIME]}.make_from_array(<<create {DATE_TIME}.make_now>>))
+			Result.set_my_time_arrayed_list (create {ARRAYED_LIST[TIME]}.make_from_array(<<create {TIME}.make_now>>))
+			Result.set_my_duration_arrayed_list (create {ARRAYED_LIST[DATE_TIME_DURATION]}.make_from_array(<<create {DATE_TIME_DURATION}.make(32, 0, 0, 5, 0, 0)>>))
+
+			Result.set_my_iso8601_date_arrayed_list (create {ARRAYED_LIST[ISO8601_DATE]}.make_from_array(<<create {ISO8601_DATE}.make_from_string("2001-01-02")>>))
+			Result.set_my_iso8601_date_time_arrayed_list (create {ARRAYED_LIST[ISO8601_DATE_TIME]}.make_from_array(<<create {ISO8601_DATE_TIME}.make_from_string("2001-01-02T00:47:00")>>))
+			Result.set_my_iso8601_time_arrayed_list (create {ARRAYED_LIST[ISO8601_TIME]}.make_from_array(<<create {ISO8601_TIME}.make_from_string("11:15:02")>>))
+			Result.set_my_iso8601_duration_arrayed_list (create {ARRAYED_LIST[ISO8601_DURATION]}.make_from_array(<<create {ISO8601_DURATION}.make_from_string("P1Y2D")>>))
+		end
+
 feature -- Status setting
 
 feature -- Commands
@@ -172,9 +213,9 @@ feature -- Commands
 				-- display tree in node explorer
 				new_obj ?= dadl_engine.tree.as_object_from_string (an_obj.generator)
 				if attached new_obj then
-					append_status("%Tsuccessfully created " + new_obj.generator + " object from round trip%N")
+					append_status("%TSuccessfully created " + new_obj.generator + " object from DADL%N")
 				else
-					append_status("%Tsuccessfully created " + new_obj.generator + " object from round trip; Error%N")
+					append_status("%TFailed to create " + new_obj.generator + " object from DADL Error%N")
 					append_status(billboard.content)
 					billboard.clear
 				end

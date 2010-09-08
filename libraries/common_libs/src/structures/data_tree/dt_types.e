@@ -21,7 +21,7 @@ inherit
 
 feature {NONE} -- Definitions
 
-	primitive_types: ARRAYED_LIST [INTEGER]
+	dt_primitive_atomic_types: ARRAYED_LIST [INTEGER]
 		once
 			create Result.make (0)
 			Result.compare_objects
@@ -67,7 +67,7 @@ feature {NONE} -- Definitions
 			Result.extend (({URI}).type_id)
 		end
 
-	primitive_sequence_types: ARRAYED_LIST [INTEGER]
+	dt_primitive_sequence_types: ARRAYED_LIST [INTEGER]
 			-- the list of dynamic types of abstract types from cvt_table
 			-- e.g. types like LIST[INTEGER] are there, but not LINKED_LIST[INTEGER]
 		once
@@ -115,7 +115,7 @@ feature {NONE} -- Definitions
 			Result.extend (({SEQUENCE [URI]}).type_id)
 		end
 
-	primitive_interval_types: ARRAYED_LIST [INTEGER]
+	dt_primitive_interval_types: ARRAYED_LIST [INTEGER]
 			-- the list of dynamic types of intervals of primitives
 		once
 			Create Result.make (0)
@@ -151,171 +151,183 @@ feature {NONE} -- Definitions
 
 feature -- Access
 
-	primitive_sequence_conforming_type(a_type_id: INTEGER): INTEGER
-			-- Type which is the primitive_sequence type to which a_type_id conforms
-			-- Returns 0 if not found
+	dt_primitive_sequence_conforming_type(a_type_id: INTEGER): INTEGER
+			-- Type which is the primitive_sequence type to which a_type_id (a concrete type, e.g. some kind of
+			-- sorted list or whatever) conforms. Returns 0 if not found
 		require
 			Type_valid: a_type_id >= 0
 		do
 			if type_conforms_to(a_type_id, sequence_any_type_id) then
-				if primitive_sequence_conforming_types.has(a_type_id) then
-					Result := primitive_sequence_conforming_types.item(a_type_id)
+				if dt_primitive_sequence_conforming_types.has(a_type_id) then
+					Result := dt_primitive_sequence_conforming_types.item(a_type_id)
 				else
-					if primitive_sequence_types.has(a_type_id) then
+					if dt_primitive_sequence_types.has(a_type_id) then
 						Result := a_type_id
 					else
-						from primitive_sequence_types.start until primitive_sequence_types.off or Result /= 0 loop
-							debug ("DT")
-								io.put_string(generator +
-									".primitive_sequence_conforming_type: call to type_conforms_to(" +
-									type_name_of_type(a_type_id) + ", " +
-									type_name_of_type(primitive_sequence_types.item)
-									+ "):")
+						from dt_primitive_sequence_types.start until dt_primitive_sequence_types.off or Result /= 0 loop
+debug ("DT")
+	io.put_string(generator + ".primitive_sequence_conforming_type: call to type_conforms_to(" +
+		type_name_of_type(a_type_id) + ", " + type_name_of_type(dt_primitive_sequence_types.item) + "):")
+end
+							if type_conforms_to(a_type_id, dt_primitive_sequence_types.item) then
+								Result := dt_primitive_sequence_types.item
+debug ("DT")
+	io.put_string(" True%N")
+end
+else
+debug ("DT")
+	io.put_string(" False%N")
+end
 							end
-							if type_conforms_to(a_type_id, primitive_sequence_types.item) then
-								Result := primitive_sequence_types.item
-								debug ("DT")
-									io.put_string(" True%N")
-								end
-							else
-								debug ("DT")
-									io.put_string(" False%N")
-								end
-							end
-							primitive_sequence_types.forth
+							dt_primitive_sequence_types.forth
 						end
 					end
 					if Result /= 0 then
-						primitive_sequence_conforming_types.put(Result, a_type_id)
+						dt_primitive_sequence_conforming_types.put(Result, a_type_id)
 					end
 				end
 			end
 		end
 
-	any_primitive_conforming_type(a_type_id: INTEGER): INTEGER
-			-- Returns a_type_id if in any of the primitive types which
-			-- a_type_id, or
-			-- one of the primitive_sequence types to which a_type_id conforms
-			-- or 0 if not found
-		require
-			Type_valid: a_type_id >= 0
-		do
-			debug ("DT")
-				io.put_string("--->ENTER any_primitive_conforming_type(" + a_type_id.out + ")%N")
-			end
-			if is_any_primitive_type(a_type_id) then
-				Result := a_type_id
-			elseif generic_count_of_type(a_type_id) > 0 then
-				Result := primitive_sequence_conforming_type(a_type_id)
-			end
-			debug ("DT")
-				io.put_string("<---EXIT any_primitive_conforming_type(" + a_type_id.out + ")=" + Result.out + "%N")
-			end
-		end
+--	any_dt_primitive_conforming_type(a_type_id: INTEGER): INTEGER
+--			-- Returns a_type_id if in any of the DT primitive types, or if this doesn't match
+--			-- it returns the primitive DT type to which `a_type_id' formally conforms; at the
+--			-- moment, this only makes a difference for SEQUENCE[ANY] conforming types; for all
+--			-- the rest, a direct match is needed. We might have to support types conforming to
+--			-- INTERVAL[ANY] one day as well.
+--			-- Returns 0 if not found
+--		require
+--			Type_valid: a_type_id >= 0
+--		do
+--debug ("DT")
+--	io.put_string("--->ENTER any_primitive_conforming_type(" + a_type_id.out + ")%N")
+--end
+--			if is_any_dt_primitive_type(a_type_id) then
+--				Result := a_type_id
+--			elseif generic_count_of_type(a_type_id) > 0 then
+--				Result := dt_primitive_sequence_conforming_type(a_type_id)
+--			end
+--debug ("DT")
+--	io.put_string("<---EXIT any_primitive_conforming_type(" + a_type_id.out + ")=" + Result.out + "%N")
+--end
+--		end
 
 feature -- Status Report
 
-	is_any_primitive_type(a_type_id: INTEGER): BOOLEAN
-			-- True if a_type_id is any of the primitive, primitive_sequence or
-			-- primitive_interval types
-		require
-			Type_valid: a_type_id >= 0
-		do
-			Result := is_primitive_type(a_type_id)
-			if not Result and generic_count_of_type(a_type_id) > 0 then
-				Result := primitive_sequence_types.has(a_type_id) or primitive_interval_types.has(a_type_id)
-			end
-		end
+--	is_any_dt_primitive_type(a_type_id: INTEGER): BOOLEAN
+--			-- True if a_type_id is any of the primitive, primitive_sequence or
+--			-- primitive_interval types
+--		require
+--			Type_valid: a_type_id >= 0
+--		do
+--			Result := is_dt_primitive_atomic_type(a_type_id)
+--			if not Result and generic_count_of_type(a_type_id) > 0 then
+--				Result := dt_primitive_sequence_types.has(a_type_id) or dt_primitive_interval_types.has(a_type_id)
+--			end
+--		end
 
-	is_any_primitive_conforming_type(a_type_id: INTEGER): BOOLEAN
-			-- True if a_type_id is any of the primitive, primitive_sequence or
-			-- primitive_interval types, or conforms to one of those
-		require
-			Type_valid: a_type_id >= 0
-		do
-			Result := any_primitive_conforming_type(a_type_id) /= 0
-		end
+--	is_any_primitive_conforming_type(a_type_id: INTEGER): BOOLEAN
+--			-- True if a_type_id is any of the primitive, primitive_sequence or
+--			-- primitive_interval types, or conforms to one of those
+--		require
+--			Type_valid: a_type_id >= 0
+--		do
+--			Result := any_dt_primitive_conforming_type(a_type_id) /= 0
+--		end
 
-	is_primitive_type(a_type_id: INTEGER): BOOLEAN
+	is_dt_primitive_atomic_type(a_type_id: INTEGER): BOOLEAN
 			-- True if one of the types STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION
 		require
 			Type_valid: a_type_id >= 0
 		do
-			Result := primitive_types.has(a_type_id)
+			Result := dt_primitive_atomic_types.has(a_type_id)
 		end
 
-	is_primitive_sequence_type(a_type_id: INTEGER): BOOLEAN
+	is_dt_primitive_sequence_type(a_type_id: INTEGER): BOOLEAN
 			-- True if a_type_id conforms to SEQUENCE of STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, CODE_PHRASE, URI
 		require
 			Type_valid: a_type_id >= 0
 		do
-			Result := primitive_sequence_types.has(a_type_id)
+			Result := dt_primitive_sequence_types.has(a_type_id)
 		end
 
-	is_primitive_interval_type(a_type_id: INTEGER): BOOLEAN
+	is_dt_primitive_interval_type(a_type_id: INTEGER): BOOLEAN
 			-- True if a_type_id conforms to INTERVAL of STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, CODE_PHRASE, URI
 		require
 			Type_valid: a_type_id >= 0
 		do
-			Result := primitive_interval_types.has(a_type_id)
+			Result := dt_primitive_interval_types.has(a_type_id)
 		end
 
-	is_primitive_sequence_conforming_type(a_type_id: INTEGER): BOOLEAN
+	is_dt_primitive_sequence_conforming_type(a_type_id: INTEGER): BOOLEAN
 			-- True if a_type_id is either any of the primitive_sequence types, or else
 			-- a type which conforms to one of those types
 		require
 			Type_valid: a_type_id >= 0
 		do
-			Result := primitive_sequence_conforming_type(a_type_id) /= 0
+			Result := dt_primitive_sequence_conforming_type(a_type_id) /= 0
 		end
 
-	has_primitive_type(an_obj: ANY): BOOLEAN
+	has_dt_primitive_atomic_type(an_obj: ANY): BOOLEAN
 			-- True if one of the types STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION
 		require
 			Object_valid: an_obj /= Void
 		do
-			Result := is_primitive_type(dynamic_type(an_obj))
+			Result := is_dt_primitive_atomic_type(dynamic_type(an_obj))
 		end
 
-	has_primitive_sequence_type(an_obj: ANY): BOOLEAN
+	has_dt_primitive_sequence_type(an_obj: ANY): BOOLEAN
 			-- True if an_obj conforms to SEQUENCE of STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, CODE_PHRASE, URI
 		require
 			Object_valid: an_obj /= Void
 		do
-			Result := is_primitive_sequence_type(dynamic_type(an_obj))
+			Result := is_dt_primitive_sequence_type(dynamic_type(an_obj))
 		end
 
-	has_primitive_interval_type(an_obj: ANY): BOOLEAN
+	has_dt_primitive_interval_type(an_obj: ANY): BOOLEAN
 			-- True if an_obj conforms to INTERVAL of STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION, CODE_PHRASE, URI
 		require
 			Object_valid: an_obj /= Void
 		do
-			Result := is_primitive_interval_type(dynamic_type(an_obj))
+			Result := is_dt_primitive_interval_type(dynamic_type(an_obj))
 		end
 
-	is_container_type(a_type_id: INTEGER): BOOLEAN
+	is_eiffel_container_type(a_type_id: INTEGER): BOOLEAN
 			-- True if a_type_id is of a type which is a SEQUENCE or HASH_TABLE, which are the only
-			-- CONTAINERs used in DT structures
+			-- Eiffel CONTAINERs mapped by DT structures
 		do
-			debug ("DT")
-				io.put_string(generator +
-					".is_container_type: call to type_conforms_to(" +
-						type_name_of_type(a_type_id) + ", " +
-						type_name_of_type(sequence_any_type_id) + "), type_conforms_to(" +
-						type_name_of_type(a_type_id) + ", " +
-						type_name_of_type(hash_table_any_hashable_type_id) + ")%N")
-			end
+debug ("DT")
+	io.put_string(generator +
+	".is_container_type: call to type_conforms_to(" + type_name_of_type(a_type_id) + ", " +
+	type_name_of_type(sequence_any_type_id) + "), type_conforms_to(" + type_name_of_type(a_type_id) + ", " +
+	type_name_of_type(hash_table_any_hashable_type_id) + ")%N")
+end
 			Result := type_conforms_to(a_type_id, sequence_any_type_id) or
 				type_conforms_to(a_type_id, hash_table_any_hashable_type_id)
-			debug ("DT")
-				io.put_string("%T(return)%N")
-			end
+debug ("DT")
+	io.put_string("%T(Result = " + Result.out + ")%N")
+end
+		end
+
+	is_eiffel_interval_type(a_type_id: INTEGER): BOOLEAN
+			-- True if a_type_id is of a type which conforms to INTERVAL[ANY]
+		do
+debug ("DT")
+	io.put_string(generator +
+	".is_container_type: call to type_conforms_to(" + type_name_of_type(a_type_id) + ", " +
+	type_name_of_type(sequence_any_type_id) + "), type_conforms_to(" + type_name_of_type(a_type_id) + ", " +
+	type_name_of_type(hash_table_any_hashable_type_id) + ")%N")
+end
+			Result := type_conforms_to(a_type_id, interval_any_type_id)
+debug ("DT")
+	io.put_string("%T(Result = " + Result.out + ")%N")
+end
 		end
 
 feature {NONE} -- Implementation
@@ -344,7 +356,11 @@ feature {NONE} -- Implementation
 			Result := dynamic_type (create {HASH_TABLE [ANY, HASHABLE]}.make (0))
 		end
 
-	primitive_sequence_conforming_types: HASH_TABLE [INTEGER, INTEGER]
+	dt_primitive_sequence_conforming_types: HASH_TABLE [INTEGER, INTEGER]
+			-- this table contains abstract DT primitive sequence types found in `dt_primitive_sequence_types'
+			-- keyed by concrete types which conform to them, e.g. LINKED_LIST [INTEGER] etc. It is populated
+			-- due to repeated calling, thus only contains type ids of types that actually get converted
+			-- into DT/DADL format.
 		once
 			create Result.make(0)
 		end

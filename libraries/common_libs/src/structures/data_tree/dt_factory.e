@@ -51,7 +51,7 @@ feature -- Access
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION
 		require
 			parent_valid: a_parent /= Void
-			an_item_valid: an_item /= Void and then has_primitive_type(an_item)
+			an_item_valid: an_item /= Void and then has_dt_primitive_atomic_type(an_item)
 			a_node_id_valid: a_node_id /= Void implies not a_node_id.is_empty
 		do
 			if a_node_id /= Void then
@@ -67,7 +67,7 @@ feature -- Access
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION
 		require
 			parent_valid: a_parent /= Void
-			an_item_valid: an_item /= Void and then has_primitive_sequence_type(an_item)
+			an_item_valid: an_item /= Void and then has_dt_primitive_sequence_type(an_item)
 			a_node_id_valid: a_node_id /= Void implies not a_node_id.is_empty
 		do
 			if a_node_id /= Void then
@@ -97,7 +97,7 @@ feature -- Access
 			-- an_item must conform to LIST of STRINGs representing terms
 		require
 			parent_valid: a_parent /= Void
-			an_item_valid: an_item /= Void and then has_primitive_sequence_type(an_item)
+			an_item_valid: an_item /= Void and then has_dt_primitive_sequence_type(an_item)
 			a_node_id_valid: a_node_id /= Void implies not a_node_id.is_empty
 		do
 			Result := create_primitive_object_list(a_parent, an_item, a_node_id)
