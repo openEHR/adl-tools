@@ -23,9 +23,9 @@ feature -- Conversion
 
 	atomic_value_to_string (an_atomic_val: ANY): STRING
 		do
-			if attached {STRING_GENERAL} an_atomic_val as a_str then
+			if attached {STRING_GENERAL} an_atomic_val then
 				Result := "%"" + an_atomic_val.out + "%""
-			elseif attached {CHARACTER} an_atomic_val as a_char or attached {CHARACTER_32} an_atomic_val as a_char_32 then
+			elseif attached {CHARACTER} an_atomic_val or attached {CHARACTER_32} an_atomic_val then
 				Result := "%'" + an_atomic_val.out + "%'"
 			else
 				-- FIXME: duration.out does not exist in Eiffel, and in any case would not be ISO8601-compliant
@@ -36,7 +36,7 @@ feature -- Conversion
 				else
 					Result := an_atomic_val.out
 					-- FIXME: REAL.out is broken (still the case in Eiffel 6.6)
-					if an_atomic_val.generating_type.out.substring (1, 4).is_equal ("REAL") and then Result.index_of ('.', 1) = 0 then
+					if (attached {REAL_32} an_atomic_val or attached {REAL_64} an_atomic_val) and then Result.index_of ('.', 1) = 0 then
 						Result.append(".0")
 					end
 				end
