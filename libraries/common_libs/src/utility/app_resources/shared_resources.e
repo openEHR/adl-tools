@@ -17,7 +17,7 @@ class SHARED_RESOURCES
 inherit
 	KL_SHARED_FILE_SYSTEM
 
-	BILLBOARD_MESSAGE_TYPES
+	ERROR_SEVERITY_TYPES
 		export
 			{NONE} all
 		end
@@ -92,7 +92,7 @@ feature -- Access
 			if str.is_integer then
 				Result := str.to_integer
 			else
-				Result := message_type_info
+				Result := Error_type_info
 			end
 		end
 
@@ -219,6 +219,14 @@ feature -- Environment
 			Result := file_system.dirname (application_full_path)
 		ensure
 			not_empty: not Result.is_empty
+		end
+
+	Error_db_directory: STRING
+			-- directory of error database files in .dadl format e.g.
+			-- .../error_db/dadl_errors.txt etc
+		once
+			Result := application_startup_directory.twin
+			Result.append(os_directory_separator.out + "error_db")
 		end
 
 	application_name: attached STRING

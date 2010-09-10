@@ -1,43 +1,32 @@
-note
-	component:   "openEHR Archetype Project"
-	description: "Shared access to application root object"
-	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
-	license:     "See notice at bottom of class"
+--	component:   openEHR dadl Project
+--	description: Error database for any application
+--				 
+--	keywords:    error database
+--	author:      Thomas Beale
+--	support:     Ocean Informatics <support@OceanInformatics.com>
+--	copyright:   Copyright (c) 2010 Ocean Informatics Pty Ltd
+--	license:     See notice at bottom of class
+--
+--	file:        $URL$
+--	revision:    $LastChangedRevision$
+--	last_change: $LastChangedDate$
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+templates = <
+	["en"] = <
+		-- MESSAGE_BILLBOARD
+		["none"] = <"No error">
+		["message_code_error"] = <"Error code $1 does not exist">
 
-class SHARED_APP_ROOT
-
-inherit
-	SHARED_REFERENCE_MODEL_ACCESS
-
-	SHARED_SOURCE_REPOSITORIES
-
-	SHARED_KNOWLEDGE_REPOSITORY
-
-	SHARED_ARCHETYPE_COMPILER
-
-	SHARED_ARCHETYPE_SERIALISERS
-		export
-			{NONE} all
-			{ANY} has_archetype_serialiser_format, archetype_serialiser_formats
-		end
-
-feature -- Access
-
-	app_root: APP_ROOT
-		once
-			create Result.make
-		end
-
-end
-
-
+		-- General application
+		["report_exception"] = <"Software Exception $1 caught; Stack:%N$2">
+		["report_exception_with_context"] = <"Software Exception caught; Context: $1; Type: $2; Stack:%N$3">
+		["unhandled_exception"] = <"Exception caught but not handled: $1">
+		["general_error"] = <"Error: $1">
+		["general"] = <"$1">
+		["cfg_file_i1"] = <"Wrote config file $1">
+		["file_exists_replace_question"] = <"File $1 already exists. Replace it?">
+	>
+>
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****
@@ -53,10 +42,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is shared_ui_resources.e.
+--| The Original Code is general_error_db.txt
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2010
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

@@ -37,34 +37,61 @@ feature -- Initialisation
 
 feature -- Access
 
-	errors: STRING
+	errors: ARRAYED_LIST[ERROR_DESCRIPTOR]
 			-- error output of validator - things that must be corrected
 
-	warnings: STRING
+	warnings: ARRAYED_LIST[ERROR_DESCRIPTOR]
 			-- warnings output of validator - things that can be acted upon
 
-	info: STRING
+	info: ARRAYED_LIST[ERROR_DESCRIPTOR]
 			-- informative messages that will not normally be acted upon
+
+	error_text: STRING
+		do
+			create Result.make(0)
+			from errors.start until errors.off loop
+				Result.append(errors.item.message)
+				errors.forth
+			end
+		end
+
+	warning_text: STRING
+		do
+			create Result.make(0)
+			from warnings.start until warnings.off loop
+				Result.append(warnings.item.message)
+				warnings.forth
+			end
+		end
+
+	info_text: STRING
+		do
+			create Result.make(0)
+			from info.start until info.off loop
+				Result.append(info.item.message)
+				info.forth
+			end
+		end
 
 feature -- Modification
 
 	add_error(a_key: STRING; args: ARRAY [STRING])
 			-- append an error with key `a_key' and `args' array to the `errors' string
 		do
-			errors.append(create_message_line(a_key, args))
+			errors.extend(create {ERROR_DESCRIPTOR}.make_error(a_key, create_message_line(a_key, args)))
 			passed := False
 		end
 
 	add_warning(a_key: STRING; args: ARRAY [STRING])
 			-- append a warning with key `a_key' and `args' array to the `warnings' string
 		do
-			warnings.append(create_message_line(a_key, args))
+			warnings.extend(create {ERROR_DESCRIPTOR}.make_warning(a_key, create_message_line(a_key, args)))
 		end
 
 	add_info(a_key: STRING; args: ARRAY [STRING])
 			-- append an information message with key `a_key' and `args' array to the `information' string
 		do
-			info.append(create_message_line(a_key, args))
+			info.extend(create {ERROR_DESCRIPTOR}.make_info(a_key, create_message_line(a_key, args)))
 		end
 
 feature -- Status Report

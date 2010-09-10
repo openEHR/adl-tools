@@ -29,10 +29,8 @@ create
 
 feature -- Initialisation
 
-	make(a_schema_full_path: STRING)
+	make(a_schema_full_path: attached STRING)
 			-- set up model from full path to model file
-		require
-			schema_full_path_attached: a_schema_full_path /= Void
 		local
 			model_file: PLAIN_TEXT_FILE
 			dt_tree: DT_COMPLEX_OBJECT_NODE
@@ -56,12 +54,12 @@ feature -- Initialisation
 						schema.dt_finalise
 						schema.validate
 						if schema.passed then
-							status.copy (schema.info)
-							status.append (schema.warnings)
+							status.copy (schema.info_text)
+							status.append (schema.warning_text)
 							is_valid := True
 						else
-							status.copy (schema.errors)
-							status.append (schema.warnings)
+							status.copy (schema.error_text)
+							status.append (schema.warning_text)
 						end
 					end
 				else

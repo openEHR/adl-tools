@@ -714,11 +714,11 @@ feature {NONE} -- Implementation
 			if attached {HASH_TABLE [ANY, HASHABLE]} an_obj as a_hash_table then
 				if is_dt_primitive_interval_type (generic_param_type) then -- it is an INTERVAL[some primitive or leaf type]; convert to DT_PRIMITIVE_OBJECT_INTERVAL
 					from a_hash_table.start until a_hash_table.off loop
-						debug ("DT")
-							io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj: from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
-								a_dt_attr.rm_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
-								", " + a_hash_table.key_for_iteration.out + ")%N")
-						end
+debug ("DT")
+	io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj: from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
+		a_dt_attr.rm_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
+		", " + a_hash_table.key_for_iteration.out + ")%N")
+end
 						if attached {INTERVAL[PART_COMPARABLE]} a_hash_table.item_for_iteration as v_typed then
 							a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT_INTERVAL}.make_identified(v_typed, a_hash_table.key_for_iteration.out))
 						end
@@ -727,11 +727,11 @@ feature {NONE} -- Implementation
 
 				elseif is_dt_primitive_sequence_conforming_type(generic_param_type) then -- it is a SEQUENCE of some DT primitive type
 					from a_hash_table.start until a_hash_table.off loop
-						debug ("DT")
-							io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj: from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
-								a_dt_attr.rm_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
-								", " + a_hash_table.key_for_iteration.out + ")%N")
-						end
+debug ("DT")
+	io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj: from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
+		a_dt_attr.rm_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
+		", " + a_hash_table.key_for_iteration.out + ")%N")
+end
 						if attached {SEQUENCE[ANY]} a_hash_table.item_for_iteration as v_typed then
 							a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT_LIST}.make_identified(v_typed, a_hash_table.key_for_iteration.out))
 						end
@@ -740,30 +740,33 @@ feature {NONE} -- Implementation
 
 				elseif is_dt_primitive_atomic_type(generic_param_type) then -- it is a DT primitive type then
 					from a_hash_table.start until a_hash_table.off loop
-						debug ("DT")
-							io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj: from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
-								a_dt_attr.rm_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
-								", " + a_hash_table.key_for_iteration.out + ")%N")
-						end
+debug ("DT")
+	io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj: from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
+		a_dt_attr.rm_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
+		", " + a_hash_table.key_for_iteration.out + ")%N")
+end
 						a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT}.make_identified(a_hash_table.item_for_iteration, a_hash_table.key_for_iteration.out))
 						a_hash_table.forth
 					end
 
 				else
-					populate_dt_from_object(a_hash_table.item_for_iteration,
-						create_complex_object_node(a_dt_attr, a_hash_table.key_for_iteration.out))
+					from a_hash_table.start until a_hash_table.off loop
+						populate_dt_from_object(a_hash_table.item_for_iteration,
+							create_complex_object_node(a_dt_attr, a_hash_table.key_for_iteration.out))
+						a_hash_table.forth
+					end
 				end
-				debug ("DT")
-					io.put_string("%T(return)%N")
-				end
+debug ("DT")
+	io.put_string("%T(return)%N")
+end
 
 			elseif attached {SEQUENCE[ANY]} an_obj as a_sequence then
 				if is_dt_primitive_interval_type (generic_param_type) then -- it is an INTERVAL[some primitive or leaf type]; convert to DT_PRIMITIVE_OBJECT_INTERVAL
 					from a_sequence.start until a_sequence.off loop
-						debug ("DT")
-							io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj(2): from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
-								a_dt_attr.rm_attr_name + "), " + a_sequence.item.generating_type + ", " + a_sequence.index.out + ")%N")
-						end
+debug ("DT")
+	io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj(2): from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
+		a_dt_attr.rm_attr_name + "), " + a_sequence.item.generating_type + ", " + a_sequence.index.out + ")%N")
+end
 						if attached {INTERVAL[PART_COMPARABLE]} a_sequence.item as v_typed then
 							a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT_INTERVAL}.make_identified(v_typed, a_sequence.index.out))
 						end
@@ -772,10 +775,10 @@ feature {NONE} -- Implementation
 
 				elseif is_dt_primitive_sequence_conforming_type(generic_param_type) then -- it is a SEQUENCE of some DT primitive type
 					from a_sequence.start until a_sequence.off loop
-						debug ("DT")
-							io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj(2): from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
-								a_dt_attr.rm_attr_name + "), " + a_sequence.item.generating_type + ", " + a_sequence.index.out + ")%N")
-						end
+debug ("DT")
+	io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj(2): from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
+		a_dt_attr.rm_attr_name + "), " + a_sequence.item.generating_type + ", " + a_sequence.index.out + ")%N")
+end
 						if attached {SEQUENCE[ANY]} a_sequence.item as v_typed then
 							a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT_LIST}.make_identified(v_typed, a_sequence.index.out))
 						end
@@ -784,20 +787,23 @@ feature {NONE} -- Implementation
 
 				elseif is_dt_primitive_atomic_type(generic_param_type) then -- it is a DT primitive type then
 					from a_sequence.start until a_sequence.off loop
-						debug ("DT")
-							io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj(2): from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
-								a_dt_attr.rm_attr_name + "), " + a_sequence.item.generating_type + ", " + a_sequence.index.out + ")%N")
-						end
+debug ("DT")
+	io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj(2): from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
+		a_dt_attr.rm_attr_name + "), " + a_sequence.item.generating_type + ", " + a_sequence.index.out + ")%N")
+end
 						a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT}.make_identified(a_sequence.item, a_sequence.index.out))
 						a_sequence.forth
 					end
 
 				else
-					populate_dt_from_object(a_sequence.item, create_complex_object_node(a_dt_attr, a_sequence.index.out))
+					from a_sequence.start until a_sequence.off loop
+						populate_dt_from_object(a_sequence.item, create_complex_object_node(a_dt_attr, a_sequence.index.out))
+						a_sequence.forth
+					end
 				end
-				debug ("DT")
-					io.put_string("%T(return)%N")
-				end
+debug ("DT")
+	io.put_string("%T(return)%N")
+end
 			end
 		end
 

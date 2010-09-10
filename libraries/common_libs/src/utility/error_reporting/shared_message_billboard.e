@@ -14,7 +14,7 @@ note
 class SHARED_MESSAGE_BILLBOARD
 
 inherit
-	BILLBOARD_MESSAGE_TYPES
+	ERROR_SEVERITY_TYPES
 		export
 			{NONE} all
 		end

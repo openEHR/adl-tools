@@ -19,7 +19,7 @@ note
 class MESSAGE_BILLBOARD
 
 inherit
-	BILLBOARD_MESSAGE_TYPES
+	ERROR_SEVERITY_TYPES
 		export
 			{NONE} all
 		end
@@ -37,7 +37,7 @@ feature -- Initialisation
 	make
 		do
 			create billboard.make (0)
-			status_reporting_level := message_type_info
+			status_reporting_level := Error_type_info
 		end
 
 feature -- Access
@@ -61,7 +61,7 @@ feature -- Status Report
 			-- and still have no error messages, just info messages)
 		do
 			from billboard.start until Result or billboard.off loop
-				Result := billboard.item.message_type = Message_type_error
+				Result := billboard.item.message_type = Error_type_error
 				billboard.forth
 			end
 		end
@@ -91,7 +91,7 @@ feature -- Modify
 						  not poster_routine.is_empty
 		do
 			billboard.put_front(
-				create {MESSAGE_BILLBOARD_ITEM}.make(poster_object.generator, poster_routine, id, args, Message_type_error))
+				create {MESSAGE_BILLBOARD_ITEM}.make(poster_object.generator, poster_routine, id, args, Error_type_error))
 		end
 
 	post_warning(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING])
@@ -103,7 +103,7 @@ feature -- Modify
 						  not poster_routine.is_empty
 		do
 			billboard.put_front(
-				create {MESSAGE_BILLBOARD_ITEM}.make(poster_object.generator, poster_routine, id, args, Message_type_warning))
+				create {MESSAGE_BILLBOARD_ITEM}.make(poster_object.generator, poster_routine, id, args, Error_type_warning))
 		end
 
 	post_info(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING])
@@ -115,7 +115,7 @@ feature -- Modify
 						  not poster_routine.is_empty
 		do
 			billboard.put_front(
-				create {MESSAGE_BILLBOARD_ITEM}.make(poster_object.generator, poster_routine, id, args, Message_type_info))
+				create {MESSAGE_BILLBOARD_ITEM}.make(poster_object.generator, poster_routine, id, args, Error_type_info))
 		end
 
 feature {NONE} -- Implementation
@@ -147,8 +147,8 @@ feature {NONE} -- Implementation
 			err_str, leader, trailer: STRING
 		do
 			create Result.make(0)
-			leader := Message_type_names.item(bb_item.message_type) + " - "
-			if at_level = Message_type_debug then
+			leader := error_type_names.item(bb_item.message_type) + " - "
+			if at_level = Error_type_debug then
 				trailer := "      (" + bb_item.type_name + "." + bb_item.routine_name + ")"
 			else
 				trailer := ""

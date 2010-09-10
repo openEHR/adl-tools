@@ -19,12 +19,53 @@ class IN_MEMORY_MESSAGE_DB
 inherit
 	MESSAGE_DB
 
+	KL_SHARED_FILE_SYSTEM
+		export
+			{NONE} all
+		end
+
 create
 	make
 
+feature -- Definitions
+
+	Error_file_extension: STRING = ".txt"
+
 feature -- Modification
 
-	populate (a_dadl_str, a_locale_lang: STRING)
+	populate (an_err_db_dir, a_locale_lang: STRING)
+			-- populate error database from error DB files found in `an_err_db_dir'
+		local
+			file_name, file_path: STRING
+			err_db_file: PLAIN_TEXT_FILE
+			dir: DIRECTORY
+			file_names: ARRAYED_LIST [STRING]
+		do
+			create dir.make (an_err_db_dir)
+			if dir.exists then
+				dir.open_read
+				file_names := dir.linear_representation
+				from file_names.start until file_names.off loop
+					file_name := file_names.item
+					if file_name.has_substring(Error_file_extension) then
+						file_path := file_system.pathname (an_err_db_dir, file_name)
+						create err_db_file.make (file_path)
+						if not err_db_file.exists or else not err_db_file.is_readable then
+							io.put_string ("Message database file: " + file_path + " does not exist or not readable%N")
+						else
+							err_db_file.open_read
+							err_db_file.read_stream (err_db_file.count)
+							populate_from_text(err_db_file.last_string, a_locale_lang)
+						end
+					end
+					file_names.forth
+				end
+			else
+				io.put_string ("Message database directory: " + an_err_db_dir + " does not exist or not readable%N")
+			end
+		end
+
+	populate_from_text (a_dadl_str, a_locale_lang: STRING)
 			-- populate message database using messages in `a_dadl_str' in language `a_locale_lang'.
 			-- The latter should be a 2-digit ISO 639 language code, e.g. "en", "de" etc
 			-- The format of `a_dadl_str' (dADL):
@@ -54,7 +95,7 @@ feature -- Modification
 					templates.merge (init_helper.templates.item (Default_message_language))
 				end
 			else
-				io.put_string ("Message database failure: " + parser.error_text + " (check ADL_APPLICATION)%N")
+				io.put_string ("Message database failure: " + parser.error_text + "%N")
 			end
 		end
 

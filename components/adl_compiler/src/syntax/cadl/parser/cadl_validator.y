@@ -2315,6 +2315,7 @@ feature -- Initialization
 			differential_syntax := differential_flag
 
 			create indent.make(0)
+			create errors.make(0)
 			create error_text.make(0)
 
 			create object_nodes.make(0)
@@ -2332,26 +2333,32 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 
 	report_error (a_message: STRING)
 			-- Print error message.
-		local
-			f_buffer: YY_FILE_BUFFER
 		do
-			f_buffer ?= input_buffer
-			if f_buffer /= Void then
-				error_text.append (f_buffer.file.name + ", line ")
-			else
-				error_text.append ("line ")
-			end
-			error_text.append ((in_lineno + source_start_line).out + ": " + a_message + " [last cADL token = " + token_name(last_token) + "]%N")
+			error_text.append (a_message)
 		end
 
 	abort_with_error (err_code: STRING; params: ARRAY [STRING])
+		local
+			msg: STRING
 		do
+			create msg.make_empty
+			if attached {YY_FILE_BUFFER} input_buffer as f_buffer then
+				msg.append (f_buffer.file.name + ", line ")
+			else
+				msg.append ("line ")
+			end
+			msg.append ((in_lineno + source_start_line).out + ": " + create_message_line(err_code, params) + " [last cADL token = " + token_name(last_token) + "]%N")
+			errors.extend(create {ERROR_DESCRIPTOR}.make_error(err_code, msg))
+			report_error(msg)
+
 			raise_error
-			report_error(create_message_line(err_code, params))
 			abort
 		end
 
 feature -- Access
+
+	errors: ARRAYED_LIST[ERROR_DESCRIPTOR]
+			-- error output of validator - things that must be corrected
 
 	error_text: STRING
 

@@ -88,7 +88,7 @@ feature -- Test routines
 		note
 			testing: "covers/{ARCHETYPE_DIRECTORY}.populate"
 		do
-			set_status_reporting_level (message_type_error)
+			set_status_reporting_level (Error_type_error)
 			source_repositories.set_reference_repository (test_repository)
 			arch_dir.populate
 			assert ("Expected warning about ADL version", billboard.content.has_substring ("WARNING - Using ADL version"))

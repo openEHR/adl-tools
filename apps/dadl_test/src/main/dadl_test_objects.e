@@ -191,7 +191,7 @@ feature -- Access
 
 feature -- Status setting
 
-feature -- Commands
+feature -- Test procedures
 
 	round_trip (an_obj: ANY)
 		local

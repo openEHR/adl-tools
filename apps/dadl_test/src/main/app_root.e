@@ -31,7 +31,7 @@ feature -- Initialisation
 
 	make
 		once
-			Message_db.populate (Message_templates_text, locale_language_short)
+			message_db.populate(Error_db_directory, locale_language_short)
 			if Message_db.database_loaded then
 				billboard.set_status_reporting_level(status_reporting_level)
 				dt_serialisers.put(create {DADL_SYNTAX_SERIALISER}.make(create {NATIVE_DADL_SERIALISATION_PROFILE}.make("dadl")), "dadl")
@@ -43,61 +43,6 @@ feature -- Status Report
 
 	initialised: BOOLEAN
 			-- True after successful initialisation
-
-feature {NONE} -- Implementation
-
-	message_templates_text: STRING_8 = "[
-		templates = <
-			["en"] = <
-				-- MESSAGE_BILLBOARD
-				["none"] = <"No error">
-				["message_code_error"] = <"Error code $1 does not exist">
-
-				-- General application
-				["report_exception"] = <"Software Exception $1 caught; Stack:%N$2">
-				["report_exception_with_context"] = <"Software Exception caught; Context: $1; Type: $2; Stack:%N$3">
-				["unhandled_exception"] = <"Exception caught but not handled: $1">
-				["general_error"] = <"Error: $1">
-				["general"] = <"$1">
-				["cfg_file_i1"] = <"Wrote config file $1">
-				["file_exists_replace_question"] = <"File $1 already exists. Replace it?">
-
-				-- the following two groups should be separated out into a dadl-related error file and used by both ADL workbench app and dadl apps
-
-				-- DT_OBJECT_CONVERTER.dt_to_object
-				["container_type_mismatch"] =
-					<"Mismatch error in data and model for field $1 in type $2. Parsed data implies container type but is not in model">
-				["interval_type_mismatch"] =
-					<"Mismatch error in data and model for field $1 in type $2. Parsed data implies interval type but is not in model">
-				["atomic_type_mismatch"] =
-					<"Mismatch error in data and model for field $1 in type $2. Parsed data implies atomic type but no conversion available">
-				["primitive_type_mismatch"] =
-					<"Mismatch error in data and model for field $1 in type $2. Parsed data implies primitive, sequence<primitive> or interval<primitive> type but model does not">
-				["dt_proc_arg_type_mismatch"] =
-					<"[Exception caught]: Mismatch between data and model for $1.$2. Expecting $3, read a $4">
-				["populate_dt_proc_arg_type_mismatch"] =
-					<"[Exception caught]: $1.$2 - writing primitive object of type $3 into argument of type $4">
-				["non_existent_path"] = <"Error: non-existent path $1 in data tree structure">
-				["non_existent_path_in_list"] = <"Error: non-existent path (in list) $1 in data tree structure">
-				["dt_to_object_type_mismatch"] = <"[Exception caught]: Mismatch error - original recipient = $1">
-
-				-- dADL
-				["VOBAV"] = <"Error (VOBAV): assumed value $1 not within constraint value space">
-				["VCPCV"] = <"Error (VCPCV): invalid term code constraint: $1">
-				["VCOV"] = <"Error (VCOV): invalid ordinal constraint: duplicated value $1">
-				["VCOC"] = <"Error (VCOC): invalid ordinal constraint: duplicated code $1">
-
-				["VIVLO"] = <"Error (VIVLO): invalid interval: $1 must be <= $2"> -- dADL validity; additional to spec
-				["VIDV"] = <"Error (VIDV): invalid ISO8601 date: $1"> -- dADL validity; additional to spec
-				["VITV"] = <"Error (VITV): invalid ISO8601 time: $1"> -- dADL validity; additional to spec
-				["VIDTV"] = <"Error (VIDTV): invalid ISO8601 date/time: $1"> -- dADL validity; additional to spec
-				["VIDUV"] = <"Error (VIDUV): invalid ISO8601 duration: $1"> -- dADL validity; additional to spec
-
-				["VDATU"] = <"Error (VDATU): dADL object duplicate attribute: $1">
-				["VOKU"] = <"Error (VOKU): dADL object key must be unique; key [$1] already exists under attribute '$2'">
-			>
-		>
-	]"
 
 end
 

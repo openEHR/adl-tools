@@ -748,15 +748,15 @@ feature -- Commands
 					arch_dir.update_slot_statistics (Current)
 					arch_dir.update_terminology_bindings_info (Current)
 				else
-					post_error (Current, "validate", "parse_archetype_e2", <<id.as_string, validator.errors>>)
+					post_error (Current, "validate", "parse_archetype_e2", <<id.as_string, validator.error_text>>)
 					compilation_state := Cs_validate_failed
 				end
 
 				if validator.has_warnings then
-					post_warning (Current, "validate", "parse_archetype_w2", <<id.as_string, validator.warnings>>)
+					post_warning (Current, "validate", "parse_archetype_w2", <<id.as_string, validator.warning_text>>)
 				end
 			else
-				post_error (Current, "validate", "parse_archetype_e2", <<id.as_string, validator.errors>>)
+				post_error (Current, "validate", "parse_archetype_e2", <<id.as_string, validator.error_text>>)
 				compilation_state := Cs_validate_failed
 			end
 			differential_archetype.set_is_valid (validator.passed)

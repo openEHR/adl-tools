@@ -107,11 +107,11 @@ feature {NONE} -- Implementation
 			old_show_entire_ontology := show_entire_ontology
 
 			-- compiler settings
-			populate_ev_combo_from_ds_hash_keys (parser_error_reporting_level_combo_box, message_type_ids)
+			populate_ev_combo_from_ds_hash_keys (parser_error_reporting_level_combo_box, error_type_ids)
 			parser_error_reporting_level_combo_box.do_all (
 				agent (li: EV_LIST_ITEM)
 					do
-						if li.text.same_string (message_type_names.item (status_reporting_level)) then
+						if li.text.same_string (error_type_names.item (status_reporting_level)) then
 							li.enable_select
 						end
 					end
@@ -169,7 +169,7 @@ feature {NONE} -- Implementation
 			set_display_archetype_source (display_archetype_source_check_button.is_selected)
 			set_validation_strict(validation_strict_check_button.is_selected)
 
-			set_status_reporting_level (message_type_ids.item (parser_error_reporting_level_combo_box.text.as_string_8))
+			set_status_reporting_level (error_type_ids.item (parser_error_reporting_level_combo_box.text.as_string_8))
 			billboard.set_status_reporting_level(status_reporting_level)
 
 			has_changed_archetype_options := True
