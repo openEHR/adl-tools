@@ -15,22 +15,18 @@ class SHARED_MESSAGE_DB
 
 feature -- Access
 
-	message_db: IN_MEMORY_MESSAGE_DB
+	message_db: MESSAGE_DB
 			-- error database keyed by id
 		once
 			create Result.make
 		end
 
-	create_message_line(an_id: STRING; args: ARRAY[STRING]): STRING
-		require
-			an_id /= Void
+	create_message_line(an_id: attached STRING; args: ARRAY[STRING]): attached STRING
 		do
 			Result := message_db.create_message_line (an_id, args)
 		end
 
-	create_message_content(an_id: STRING; args: ARRAY[STRING]): STRING
-		require
-			an_id /= Void
+	create_message_content(an_id: attached STRING; args: ARRAY[STRING]): attached STRING
 		do
 			Result := message_db.create_message_content (an_id, args)
 		end
