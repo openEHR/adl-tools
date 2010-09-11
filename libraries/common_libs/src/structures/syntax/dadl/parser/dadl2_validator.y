@@ -35,8 +35,7 @@ inherit
 
 	DADL_SCANNER
 		rename
-			make as make_scanner, 
-			reset as reset_scanner
+			make as make_scanner
 		end
 
 	KL_SHARED_EXCEPTIONS
@@ -194,9 +193,7 @@ attr_id: V_ATTRIBUTE_IDENTIFIER
 			if not complex_object_nodes.item.has_attribute(attr_node.rm_attr_name) then
 				complex_object_nodes.item.put_attribute(attr_node)
 			else
-				raise_error
-				report_error(create_message_line("VDATU", <<attr_node.rm_attr_name>>))
-				abort
+				abort_with_error("VDATU", <<attr_node.rm_attr_name>>)
 			end
 
 			debug("dADL_parse")
@@ -208,9 +205,7 @@ attr_id: V_ATTRIBUTE_IDENTIFIER
 		}
 	| V_ATTRIBUTE_IDENTIFIER error
 		{
-			raise_error
-			report_error(create_message_line("SDAT", Void))
-			abort
+			abort_with_error("SDAT", Void)
 		}
 	;
 
@@ -289,9 +284,7 @@ multiple_attr_object_block_head: SYM_START_DBLOCK
 					end
 					attr_nodes.item.put_child(complex_object_node)
 				else
-					raise_error
-					report_error(create_message_line("VOKU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>))
-					abort
+					abort_with_error("VOKU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>)
 				end
 
 				debug("dADL_parse")
@@ -314,9 +307,7 @@ multiple_attr_object_block_head: SYM_START_DBLOCK
 				if not complex_object_node.has_attribute(attr_node.rm_attr_name) then
 					complex_object_node.put_attribute(attr_node)
 				else
-					raise_error
-					report_error(create_message_line("VDATU", <<attr_node.rm_attr_name>>))
-					abort
+					abort_with_error("VDATU", <<attr_node.rm_attr_name>>)
 				end
 
 				debug("dADL_parse")
@@ -361,9 +352,7 @@ object_key: '[' simple_value ']'
 			if not attr_nodes.is_empty then
 				attr_nodes.item.set_multiple
 			else
-				raise_error
-				report_error(create_message_line("SGEE", <<attr_node.rm_attr_name>>))
-				abort
+				abort_with_error("SGEE", <<attr_node.rm_attr_name>>)
 			end
 		}
 	;
@@ -445,9 +434,7 @@ single_attr_object_complex_head: SYM_START_DBLOCK
 					end
 					attr_nodes.item.put_child(complex_object_node)
 				else
-					raise_error
-					report_error(create_message_line("VOKU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>))
-					abort
+					abort_with_error("VOKU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>)
 				end
 			end
 
@@ -491,9 +478,7 @@ untyped_primitive_object_block: SYM_START_DBLOCK primitive_object_value SYM_END_
 				attr_nodes.item.put_child($2)
 				$$ := $2
 			else
-				raise_error
-				report_error(create_message_line("VOKU", <<$2.node_id, attr_nodes.item.rm_attr_name >>))
-				abort
+				abort_with_error("VOKU", <<$2.node_id, attr_nodes.item.rm_attr_name >>)
 			end
 		}
 	;
@@ -1349,9 +1334,7 @@ object_reference_block: SYM_START_DBLOCK absolute_path_object_value SYM_END_DBLO
 				attr_nodes.item.put_child($2)
 				$$ := $2
 			else
-				raise_error
-				report_error(create_message_line("VOKU", <<$2.node_id, attr_nodes.item.rm_attr_name >>))
-				abort
+				abort_with_error("VOKU", <<$2.node_id, attr_nodes.item.rm_attr_name >>)
 			end
 		}
 	;
@@ -1469,15 +1452,12 @@ feature -- Initialization
 
 	execute (in_text:STRING; a_source_start_line: INTEGER)
 		do
-			reset_scanner
+			reset
 			accept -- ensure no syntax errors lying around from previous invocation
 
 			source_start_line := a_source_start_line
 
 			create indent.make(0)
-			create error_text.make(0)
-			create error_message.make(0)
-
 			create complex_object_nodes.make(0)
 			create attr_nodes.make(0)
 
@@ -1492,34 +1472,28 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 
 	report_error (a_message: STRING)
 			-- Print error message.
-		local
-			f_buffer: YY_FILE_BUFFER
 		do
-			error_message.append (a_message + " [last dADL token = " + token_name(last_token) + "]")
-
-			f_buffer ?= input_buffer
-			if f_buffer /= Void then
-				error_text.append (f_buffer.file.name + ", line ")
-			else
-				error_text.append ("line ")
-			end
-			error_text.append ((in_lineno + source_start_line).out + ": " + error_message + "%N")
+			add_error_with_location("general_error", <<a_message>>, error_loc)
 		end
 
-	abort_with_error (err_code: STRING; params: ARRAY [STRING])
+	abort_with_error (err_code: STRING; args: ARRAY [STRING])
 		do
+			add_error_with_location(err_code, args, error_loc)
 			raise_error
-			report_error(create_message_line(err_code, params))
 			abort
 		end
 
+	error_loc: attached STRING
+		do
+			create Result.make_empty
+			if attached {YY_FILE_BUFFER} input_buffer as f_buffer then
+				Result.append (f_buffer.file.name + ", ")
+			end
+			Result.append ("line " + (in_lineno + source_start_line).out)
+			Result.append(" [last dADL token = " + token_name(last_token) + "]")
+		end
+
 feature -- Access
-
-	error_text: STRING
-			-- complete error text including line number location
-
-	error_message: STRING
-			-- message part of error text
 
 	source_start_line: INTEGER
 			-- offset of source in other document, else 0

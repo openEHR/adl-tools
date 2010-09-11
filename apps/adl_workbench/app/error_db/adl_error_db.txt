@@ -16,9 +16,9 @@
 templates = <
 	["en"] = <
 		-- Archetype repository
-		["ref_repo_not_found"] = <"Error: Reference Repository $1 does not exist or not readable (check Repository Settings)">
-		["work_repo_not_found"] = <"Error; Work Repository $1 does not exist or not readable (check Repository Settings)">
-		["work_repo_not_invalid"] = <"Error; Work Repository $1 does not exist or is the same as or a child of the reference repository (check Repository Settings)">
+		["ref_repo_not_found"] = <"Reference Repository $1 does not exist or not readable (check Repository Settings)">
+		["work_repo_not_found"] = <"Work Repository $1 does not exist or not readable (check Repository Settings)">
+		["work_repo_not_invalid"] = <"Work Repository $1 does not exist or is the same as or a child of the reference repository (check Repository Settings)">
 		["profile_not_yet_defined"] = <"Create a profile name before choosing directories">
 		["no_profile_to_remove"] = <"No profile available to remove">
 		["remove_profile_question"] = <"Remove profile $1?">
@@ -29,7 +29,7 @@ templates = <
 		["existing_profile_changes_pending"] = <"Changes to current profile need to be committed; hit OK or Cancel">
 		["clean_generated_files_info"] = <"System needs to be compiled before generated files can be deleted">
 		["export_repository_report_replace_info"] = <"Exported report to $1">
-		["export_repository_report_replace_err"] = <"Error: Failed to export report to $1">
+		["export_repository_report_replace_err"] = <"Failed to export report to $1">
 		["export_html_question"] = <"Only successfully built archetypes can be exported to HTML.%N%NDo you want to build each archetype before exporting it?">
 		
 		-- MAIN_WINDOW
@@ -87,20 +87,20 @@ templates = <
 		["Test_arch_compare_i2"] = <"Archetype source lengths differ: original =  $1; new = $2">
 
 		-- ARCHETYPE_VALIDATOR
-		["validate_e1"] = <"Error: specialisation parent is missing">
-		["validate_e2"] = <"Error: specialisation parent failed to validate">
-		["validate_e3"] = <"Error: archetype id in descriptor $1 does not match id at top of file $2">
+		["validate_e1"] = <"specialisation parent is missing">
+		["validate_e2"] = <"specialisation parent failed to validate">
+		["validate_e3"] = <"archetype id in descriptor $1 does not match id at top of file $2">
 		["validation_strict"] = <"Validation level STRICT">
 		["validation_non_strict"] = <"Validation level NON-STRICT; non-coforming existence, occurrences & cardinality will be removed">
 
 		-- GUI controls, MAIN_WINDOW
-		["slots_incomplete_w1"] = <"Warning: this list may be incomplete. To be sure, run Build All under the Repository menu.">
+		["slots_incomplete_w1"] = <"this list may be incomplete. To be sure, run Build All under the Repository menu.">
 
 		-- ARCHETYPE_DIRECTORY
 		["arch_dir_orphan_archetype"] = <"No parent matching $1 found for archetype $2">
 		["arch_dir_orphan_archetype_e2"] = <"No ontology node matching $1 found for archetype $2; incorrect id?">
 		["arch_dir_dup_archetype"] = <"Duplicate archetype $1">
-		["regex_e1"] = <"Error: Invalid regular expression $1">
+		["regex_e1"] = <"Invalid regular expression $1">
 
 		-- ADL_SYNTAX_CONTERTER
 		["syntax_upgraded_i1"] = <"Syntax element upgraded: --$1-- changed to --$2--">
@@ -113,143 +113,144 @@ templates = <
 		["duplicate_filename"] = <"Duplicate file name or alternate version $1">
 
 		------------------------- syntax errors: see the cADL, dADL and ADL syntax validators ---------------------
-		["SARID"] = <"Syntax error (SARID): in artefact identification clause; expecting archetype id (format = model_issuer-package-class.concept.version)">
-		["SASID"] = <"Syntax error (SASID): in 'specialise' clause; expecting parent archetype id (model_issuer-ref_model-model_class.concept.version)">
-		["SACO"] = <"Syntax error (SACO): in 'concept' clause; expecting TERM_CODE reference">
-		["SALA"] = <"Syntax error (SALA): error in language section">
-		["SALAN"] = <"Syntax error (SALAN): no language section found">
-		["SADS"] = <"Syntax error (SADS): error in description section">
-		["SADF"] = <"Syntax error (SADF): error in definition section">
-		["SAIV"] = <"Syntax error (SAIV): error in invariant section">
-		["SAON"] = <"Syntax error (SAON): error in ontology section">
+		["SARID"] = <"Syntax error in artefact identification clause; expecting archetype id (format = model_issuer-package-class.concept.version)">
+		["SASID"] = <"Syntax error in 'specialise' clause; expecting parent archetype id (model_issuer-ref_model-model_class.concept.version)">
+		["SACO"] = <"Syntax error in 'concept' clause; expecting TERM_CODE reference">
+		["SALA"] = <"Syntax error in language section">
+		["SALAN"] = <"Syntax error no language section found">
+		["SADS"] = <"Syntax error in description section">
+		["SADF"] = <"Syntax error in definition section">
+		["SAIV"] = <"Syntax error in invariant section">
+		["SAON"] = <"Syntax error in ontology section">
 
-		["SDSF"] = <"Syntax error (SDSF): differential syntax not allowed in top-level archetype">
-		["SDINV"] = <"Syntax error (SDINV): invalid dADL section; error: $1">
-		["SCCOG"] = <"Syntax error (SCCOG): expecting a new node definition, primitive node definition, 'use' path, or 'archetype' reference">
-		["SUAID"] = <"Syntax error (SUAID): expecting [archetype_id], or [at-code ',' archetype_id] in use_archetype statement">
-		["SOCCF"] = <"Syntax error (SOCCF): expecting an 'occurrences expression', e.g. 'occurrences matches {n..m}'">
-		["SUNPA"] = <"Syntax error (SUNPA): expecting absolute path in use_node statement">
-		["SUAS"] = <"Syntax error (SUAS): error after 'use_archetype' keyword; expecting Object node definition">
-		["SCAS"] = <"Syntax error (SCAS): expecting a 'any' node, 'leaf' node, or new node definition">
-		["SINVS"] = <"Syntax error (SINVS): illegal invariant expression at identifier $1">
-		["SEXPT"] = <"Syntax error (SEXPT): expecting absolute path after exists keyword">
-		["SEXLSG"] = <"Syntax error (SEXLSG): existence single value must be 0 or 1">
-		["SEXLU1"] = <"Syntax error (SEXLU): existence upper limit must be 0 or 1 when lower limit is 0">
-		["SEXLU2"] = <"Syntax error (SEXLU): existence upper limit must be 1 when lower limit is 1">
-		["SEXLMG"] = <"Syntax error (SEXLMG): existence must be one of 0..0, 0..1, or 1..1">
+		["SDSF"] = <"Syntax error: differential syntax not allowed in top-level archetype">
+		["SDINV"] = <"Syntax error: invalid dADL section; error: $1">
+		["SCCOG"] = <"Syntax error: expecting a new node definition, primitive node definition, 'use' path, or 'archetype' reference">
+		["SUAID"] = <"Syntax error: expecting [archetype_id], or [at-code ',' archetype_id] in use_archetype statement">
+		["SOCCF"] = <"Syntax error: expecting an 'occurrences expression', e.g. 'occurrences matches {n..m}'">
+		["SUNPA"] = <"Syntax error: expecting absolute path in use_node statement">
+		["SUAS"] = <"Syntax error: error after 'use_archetype' keyword; expecting Object node definition">
+		["SCAS"] = <"Syntax error: expecting a 'any' node, 'leaf' node, or new node definition">
+		["SINVS"] = <"Syntax error: illegal invariant expression at identifier $1">
+		["SEXPT"] = <"Syntax error: expecting absolute path after exists keyword">
+		["SEXLSG"] = <"Syntax error: existence single value must be 0 or 1">
+		["SEXLU1"] = <"Syntax error: existence upper limit must be 0 or 1 when lower limit is 0">
+		["SEXLU2"] = <"Syntax error: existence upper limit must be 1 when lower limit is 1">
+		["SEXLMG"] = <"Syntax error: existence must be one of 0..0, 0..1, or 1..1">
 
-		["SCIAV"] = <"Syntax error (SCIAV): invalid assumed value; must be an integer">
-		["SCRAV"] = <"Syntax error (SCRAV): invalid assumed value; must be a real number">
-		["SCDAV"] = <"Syntax error (SCDAV): invalid assumed value; must be an ISO8601 date">
-		["SCTAV"] = <"Syntax error (SCTAV): invalid assumed value; must be an ISO8601 time">
-		["SCDTAV"] = <"Syntax error (SCDTAV): invalid assumed value; must be an ISO8601 date/time">
-		["SCDUAV"] = <"Syntax error (SCDUAV): invalid assumed value; must be an ISO8601 duration">
-		["SCSAV"] = <"Syntax error (SCSAV): invalid assumed value; must be a string">
-		["SCBAV"] = <"Syntax error (SCBAV): invalid assumed value; must be a 'True' or 'False'">
-		["SCOAV"] = <"Syntax error (SCOAV): invalid assumed value; must be an ordinal integer value">
+		["SCIAV"] = <"Syntax error: invalid assumed value; must be an integer">
+		["SCRAV"] = <"Syntax error: invalid assumed value; must be a real number">
+		["SCDAV"] = <"Syntax error: invalid assumed value; must be an ISO8601 date">
+		["SCTAV"] = <"Syntax error: invalid assumed value; must be an ISO8601 time">
+		["SCDTAV"] = <"Syntax error: invalid assumed value; must be an ISO8601 date/time">
+		["SCDUAV"] = <"Syntax error: invalid assumed value; must be an ISO8601 duration">
+		["SCSAV"] = <"Syntax error: invalid assumed value; must be a string">
+		["SCBAV"] = <"Syntax error: invalid assumed value; must be a 'True' or 'False'">
+		["SCOAV"] = <"Syntax error: invalid assumed value; must be an ordinal integer value">
 
-		["SCDPT"] = <"Syntax error (SCDPT): invalid date constraint pattern; allowed patterns: $1">
-		["SCTPT"] = <"Syntax error (SCTPT): invalid time constraint pattern; allowed patterns: $1">
-		["SCDTPT"] = <"Syntax error (SCDTPT): invalid date/time constraint pattern; allowed patterns: $1">
-		["SCDUPT"] = <"Syntax error (SCDUPT): invalid duration constraint pattern; legal pattern: P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or P[W|w]">
-		["SCSRE"] = <"Syntax error (SCSRE): regular expression compile error '$1' is not a valid regular expression">
-		["SCPCV"] = <"Syntax error (SCPCV): invalid term code constraint pattern: $1">
-		["STCV"] = <"Syntax error (STCV)Invalid term code reference: '$1'; code string can only contain digits, letters and '.', '_' and '-' and must commence with a letter or digit">
+		["SCDPT"] = <"Syntax error: invalid date constraint pattern; allowed patterns: $1">
+		["SCTPT"] = <"Syntax error: invalid time constraint pattern; allowed patterns: $1">
+		["SCDTPT"] = <"Syntax error: invalid date/time constraint pattern; allowed patterns: $1">
+		["SCDUPT"] = <"Syntax error: invalid duration constraint pattern; legal pattern: P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]] or P[W|w]">
+		["SCSRE"] = <"Syntax error: regular expression compile error '$1' is not a valid regular expression">
+		["SCPCV"] = <"Syntax error: invalid term code constraint pattern: $1">
+		["STCV"] = <"Syntax error: invalid term code reference: '$1'; code string can only contain digits, letters and '.', '_' and '-' and must commence with a letter or digit">
 
 		["SDAT"] = <"Syntax error (SDAT)invalid attribute value">
 		["SGEE"] = <"Syntax error (SGEE)generic object not enclosed by normal object not allowed">
 
 		-------------- validity errors: unless otherwise noted, these codes are defined in the AOM 1.5 or later spec ------------------
-		["VASID"] = <"Error (VASID): specialised archetype id not based on specialisation parent archetype id">
-		["VALC"] = <"Error (VALC): specialised archetype languages ($1) invalid - should be same as or a subset of those in flat parent ($2)">
+		["VASID"] = <"specialised archetype id not based on specialisation parent archetype id">
+		["VALC"] = <"specialised archetype languages ($1) invalid - should be same as or a subset of those in flat parent ($2)">
 
 		-- description
-		["VTRLA"] = <"Error (VTRLA): translations key '$1' does not match translation item language '$2'">
-		["VRDLA"] = <"Error (VRDLA): resource detail key '$1' does not match resource detail item language '$2'">
+		["VTRLA"] = <"translations key '$1' does not match translation item language '$2'">
+		["VRDLA"] = <"resource detail key '$1' does not match resource detail item language '$2'">
 
 		-- ontology
-		["VARDT"] = <"Error (VARDT): archetype id type $1 does not match type $2 in definition section">
-		["VACSD"] = <"Error (VACSD): specialisation depth of concept code $1 not consistent with specialisation depth of parent archetype $2">
-		["VACSDtop"] = <"Error (VACSD): specialisation depth of concept code $1 not consistent with specialisation depth 0 of archetype">
-		["VACCD"] = <"Error (VACCD): archetype concept code $1 not used in definition">
-		["VOTM"] = <"Error (VOTM): translations for $1 defined in the description / translations section but missing in the term_definition and constraint_definition sections">
-		["VATCD"] = <"Error (VATCD): at-code $1 used in archetype more specialised than archetype">
-		["VATDF1"] = <"Error (VATDF): node id at-code $1 from specialisation parent not defined in ontology of any parent archetype">
-		["VATDF2"] = <"Error (VATDF): node id at-code $1 not defined in ontology of current archetype">
-		["VACDF1"] = <"Error (VACDF): constraint code $1 from specialisation parent not defined in ontology of any parent archetype">
-		["VACDF2"] = <"Error (VACDF): constraint code $1 not found in ontology of current archetype">
+		["VARDT"] = <"archetype id type $1 does not match type $2 in definition section">
+		["VACSD"] = <"specialisation depth of concept code $1 not consistent with specialisation depth of parent archetype $2">
+		["VACSDtop"] = <"specialisation depth of concept code $1 not consistent with specialisation depth 0 of archetype">
+		["VACCD"] = <"archetype concept code $1 not used in definition">
+		["VOTM"] = <"translations for $1 defined in the description / translations section but missing in the term_definition and constraint_definition sections">
+		["VATCD"] = <"at-code $1 used in archetype more specialised than archetype">
+		["VATDF1"] = <"node id at-code $1 from specialisation parent not defined in ontology of any parent archetype">
+		["VATDF2"] = <"node id at-code $1 not defined in ontology of current archetype">
+		["VACDF1"] = <"constraint code $1 from specialisation parent not defined in ontology of any parent archetype">
+		["VACDF2"] = <"constraint code $1 not found in ontology of current archetype">
 
 		-- C_ATTRIBUTE
-		["VSANCE"] = <"Error (VSANCE): attribute at path $1 existence $2 does not conform to parent $3 existence $4">
-		["VSANCC"] = <"Error (VSANCC): attribute at path $1 cardinality $2 does not conform to parent $3 cardinality $4">
-		["VDIFP1"] = <"Error (VDIFP): differential path $1 should have corresponding node in flat parent at $2 but doesn't">
-		["VDIFP2"] = <"Error (VDIFP): differential path $1 not legal with respect to RM">
-		["VSAM"] = <"Error (VSAM): attribute at path $1 cardinality does not correspond to that of attribute in parent or reference model">
+		["VSANCE"] = <"attribute at path $1 existence $2 does not conform to parent $3 existence $4">
+		["VSANCC"] = <"attribute at path $1 cardinality $2 does not conform to parent $3 cardinality $4">
+		["VDIFP1"] = <"differential path $1 should have corresponding node in flat parent at $2 but doesn't">
+		["VDIFP2"] = <"differential path $1 not legal with respect to RM">
+		["VSAM1"] = <"attribute at path $1 is single-valued but is defined as multiply-valued in flat parent">
+		["VSAM2"] = <"attribute at path $1 is multiply-valued but is defined as single-valued in flat parent">
 
 		-- C_OBJECT
-		["VACSO"] = <"Error (VACSO): cannot add $1 object with $2 to singly-valued attribute $3 because object occurrences > 1">
-		["VACSI"] = <"Error (VACSI): cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same node id">
-		["VACSIT"] = <"Error (VACSIT): cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same RM type">
+		["VACSO"] = <"cannot add $1 object with $2 to singly-valued attribute $3 because object occurrences > 1">
+		["VACSI"] = <"cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same node id">
+		["VACSIT"] = <"cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same RM type">
 
-		["VACMC1"] = <"Error (VACMC): cannot add $1 object with $2 to multiply-valued attribute $3 because cardinality $4 does not contain occurrences $5 of object">
-		["VACMC2"] = <"Error (VACMC): occurrences of children of multiply-valued attribute $1 exceed its cardinality $2">
-		["VACMI"] = <"Error (VACMI): cannot add $1 object with $2 to multiply-valued attribute $3 because object has no node id">
-		["VACMM"] = <"Error (VACMM): cannot add $1 object with $2 to multiply-valued attribute $3 because attribute already has child with same node id">
+		["VACMC1"] = <"cannot add $1 object with $2 to multiply-valued attribute $3 because cardinality $4 does not contain occurrences $5 of object">
+		["VACMC2"] = <"occurrences of children of multiply-valued attribute $1 exceed its cardinality $2">
+		["VACMI"] = <"cannot add $1 object with $2 to multiply-valued attribute $3 because object has no node id">
+		["VACMM"] = <"cannot add $1 object with $2 to multiply-valued attribute $3 because attribute already has child with same node id">
 
-		["VARCN"] = <"Error (VARCN): root object node_id (concept code) $1 is invalid; should follow pattern at0000{.1}*">
-		["VSSM"] = <"Error (VSSM): node at path $1 has order marker referring to non-existant sibling node $2">
+		["VARCN"] = <"root object node_id (concept code) $1 is invalid; should follow pattern at0000{.1}*">
+		["VSSM"] = <"node at path $1 has order marker referring to non-existant sibling node $2">
 
-		["VSONI"] = <"Error (VSONI): $1 object node at path $2 use of node identifier does not conform to $3 node at parent path $4">
-		["VSONIN"] = <"Error (VSONIN): object node identifier $1 (RM type $2) at path $3 should have corresponding node in flat parent at $4 but doesn't">
-		["VSONIRocc"] = <"Error (VSONIR): object node at path $1 (RM type $2) redefines parent node (RM type = $3) occurrences but node_id $4 not redefined">
-		["VSONIRrm"] = <"Error (VSONIR): object node at path $1 (RM type $2) redefines parent node (RM type = $3) RM type but node_id $4 not redefined">
-		["VSCNR"] = <"Error (VSCNR): illegal redefinition of $1 node at $2 in parent into $3 node at $4 in child">
-		["VCOCDocc"] = <"Error (VCOCD): object node of RM type $1 at path $2 definition missing (empty definition only allowed when occurrences redefined in specialised child)">
-		["VSONT"] = <"Error (VSONT): object node at path $1 (AOM type $2) does not conform to node at parent path $3 AOM type $4">
-		["VSONCT"] = <"Error (VSONCT): object node at path $1 (RM type $2) does not conform to node at parent path $3 RM type $4">
-		["VSONCO"] = <"Error (VSONCO): object node at path $1 occurrences $2 does not conform to node at parent path $3 occurrences $4">
-		["VSONCI"] = <"Error (VSONCI): object node at path $1 node_id $2 does not conform to node at parent path $3 node_id $4">
-		["VCATU"] = <"Error (VCATU) cADL object duplicate attribute $1">
+		["VSONI"] = <"$1 object node at path $2 use of node identifier does not conform to $3 node at parent path $4">
+		["VSONIN"] = <"object node identifier $1 (RM type $2) at path $3 should have corresponding node in flat parent at $4 but doesn't">
+		["VSONIRocc"] = <"object node at path $1 (RM type $2) redefines parent node (RM type = $3) occurrences but node_id $4 not redefined">
+		["VSONIRrm"] = <"object node at path $1 (RM type $2) redefines parent node (RM type = $3) RM type but node_id $4 not redefined">
+		["VSCNR"] = <"illegal redefinition of $1 node at $2 in parent into $3 node at $4 in child">
+		["VCOCDocc"] = <"object node of RM type $1 at path $2 definition missing (empty definition only allowed when occurrences redefined in specialised child)">
+		["VSONT"] = <"object node at path $1 (AOM type $2) does not conform to node at parent path $3 AOM type $4">
+		["VSONCT"] = <"object node at path $1 (RM type $2) does not conform to node at parent path $3 RM type $4">
+		["VSONCO"] = <"object node at path $1 occurrences $2 does not conform to node at parent path $3 occurrences $4">
+		["VSONCI"] = <"object node at path $1 node_id $2 does not conform to node at parent path $3 node_id $4">
+		["VCATU"] = <"cADL object duplicate attribute $1">
 
 		-- ARCHETYPE_INTERNAL_REF
-		["VUNP"] = <"Error (VUNP): ARCHETYPE_INTERNAL_REF path $1 not found in archetype">
-		["VSUNT"] = <"Error (VSUNT): node at path $1 AOM type $2 does not conform to node at parent path $3 AOM type $4">
+		["VUNP"] = <"ARCHETYPE_INTERNAL_REF path $1 not found in archetype">
+		["VSUNT"] = <"node at path $1 AOM type $2 does not conform to node at parent path $3 AOM type $4">
 
 		-- C_ARCHETYPE_SLOT
-		["VASMD"] = <"Error (VASMD): definition of slot of RM type $1 at path $2 missing; only allowed if slot is 'closed'">
-		["VDSEV1"] = <"Error (VDSEV): 'exclude' constraint of slot of RM type $1 at path $2 invalid; exclude must be either empty or not match 'any' when 'include' matches 'any'">
-		["VDSEV2"] = <"Error (VDSEV): 'exclude' constraint of slot of RM type $1 at path $2 invalid; exclude must be either empty or match 'any' when 'include' matches non-'any'">
-		["VDSIV1"] = <"Error (VDSIV): 'include' constraint of slot of RM type $1 at path $2 invalid; include must be either empty or not match 'any' when 'exclude' matches 'any'">
-		["VDSIV2"] = <"Error (VDSIV): 'include' constraint of slot of RM type $1 at path $2 invalid; include must be either empty or match 'any' when 'exclude' matches non-'any'">
+		["VASMD"] = <"definition of slot of RM type $1 at path $2 missing; only allowed if slot is 'closed'">
+		["VDSEV1"] = <"'exclude' constraint of slot of RM type $1 at path $2 invalid; exclude must be either empty or not match 'any' when 'include' matches 'any'">
+		["VDSEV2"] = <"'exclude' constraint of slot of RM type $1 at path $2 invalid; exclude must be either empty or match 'any' when 'include' matches non-'any'">
+		["VDSIV1"] = <"'include' constraint of slot of RM type $1 at path $2 invalid; include must be either empty or not match 'any' when 'exclude' matches 'any'">
+		["VDSIV2"] = <"'include' constraint of slot of RM type $1 at path $2 invalid; include must be either empty or match 'any' when 'exclude' matches non-'any'">
 
 		-- C_ARCHETYPE_ROOT
-		["VARXR"] = <"Warning (VARXR): slot filler at $1 specifies archetype $2 that matches slot but doesn't exist in current repository, or has non-existent ancestor">
-		["VARXS"] = <"Error (VARXS): slot filler at $1 specifies archetype id $2 that does not conform to flat parent slot constraint">
-		["VARXNC"] = <"Error (VARXNC): slot node id of slot filler at $1 does not correspond to any ARCHETYPE slot in flat parent">
-		["VARXTV"] = <"Error (VARXTV): RM type of slot filler $1 does not conform to RM type $2 of slot or attribute in flat parent">
+		["VARXR"] = <"slot filler at $1 specifies archetype $2 that matches slot but doesn't exist in current repository, or has non-existent ancestor">
+		["VARXS"] = <"slot filler at $1 specifies archetype id $2 that does not conform to flat parent slot constraint">
+		["VARXNC"] = <"slot node id of slot filler at $1 does not correspond to any ARCHETYPE slot in flat parent">
+		["VARXTV"] = <"RM type of slot filler $1 does not conform to RM type $2 of slot or attribute in flat parent">
 
 		-- ontology-related validity
-		["VONSD"] = <"Error (VONSD): archetype code $1 in ontology more specialised than archetype">
-		["VONLC"] = <"Error (VONLC): archetype code $1 in ontology not present in language $2">
+		["VONSD"] = <"archetype code $1 in ontology more specialised than archetype">
+		["VONLC"] = <"archetype code $1 in ontology not present in language $2">
 
 		-- description-related validity
-		["VDEOL"] = <"Error (VDEOL): original_language section missing">
+		["VDEOL"] = <"original_language section missing">
 
 		-- reference model-related validation
-		["VCORM"] = <"Error (VCORM): type name '$1' at object node at $2 not known in reference model">
-		["VCORMT"] = <"Error (VCORMT): type '$1' of object node at $2 not does not conform to type '$3' of $4.$5 in reference model">
-		["VCARM"] = <"Error (VCARM): attribute name '$1' in object node at $2 (type=$3) not among flat set of properties in reference model">
-		["VCAEX"] = <"Error (VCAEX): attribute $1 in object node at $2 existence $3 does not conform to existence $4 in reference model">
-		["VCACA"] = <"Error (VCACA): attribute $1 in object node at $2 cardinality $3 does not conform to cardinality $4 in reference model">
-		["WCACA"] = <"Warning (WCACA): attribute $1 in object node at $2 cardinality $3 same as in reference model">
-		["VCAM"] = <"Error (VCAM): attribute $1 at path $2 multiplicity $3 does not correspond to multiplicity $4 of attribute in reference model">
-		["WCAEX"] = <"Warning (WCAEX): attribute $1 in object node at $2 existence $3 same as in reference model">
-		["WCARMC"] = <"Warning (WCARMC): attribute name '$1' in object node at $2 (type=$3) is a computed property in reference model">
-		["ICORMTS"] = <"(info) type '$1' of object node at $2 not does not conform to type $3 of $4.$5 in reference model but substitution allowed">
+		["VCORM"] = <"type name '$1' at object node at $2 not known in reference model">
+		["VCORMT"] = <"type '$1' of object node at $2 not does not conform to type '$3' of $4.$5 in reference model">
+		["VCARM"] = <"attribute name '$1' in object node at $2 (type=$3) not among flat set of properties in reference model">
+		["VCAEX"] = <"attribute $1 in object node at $2 existence $3 does not conform to existence $4 in reference model">
+		["VCACA"] = <"attribute $1 in object node at $2 cardinality $3 does not conform to cardinality $4 in reference model">
+		["WCACA"] = <"attribute $1 in object node at $2 cardinality $3 same as in reference model">
+		["VCAM"] = <"attribute $1 at path $2 multiplicity $3 does not correspond to multiplicity $4 of attribute in reference model">
+		["WCAEX"] = <"attribute $1 in object node at $2 existence $3 same as in reference model">
+		["WCARMC"] = <"attribute name '$1' in object node at $2 (type=$3) is a computed property in reference model">
+		["ICORMTS"] = <"type '$1' of object node at $2 not does not conform to type $3 of $4.$5 in reference model but substitution allowed">
 
 		-- validation warnings: in addition to spec, used to help archetype authors
-		["WOUC"] = <"Warning (WOUC): code $1 in ontology not used in archetype definition">
-		["WCRC"] = <"Warning (WCRC): redefinition of CONSTRAINT_REF (ac_code node) by C_CODE_PHRASE node at path $1 in child - not checked">
+		["WOUC"] = <"code $1 in ontology not used in archetype definition">
+		["WCRC"] = <"redefinition of CONSTRAINT_REF (ac_code node) by C_CODE_PHRASE node at path $1 in child - not checked">
 	>
 >
 

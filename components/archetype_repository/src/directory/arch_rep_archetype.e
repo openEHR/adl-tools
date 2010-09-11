@@ -89,7 +89,7 @@ feature {NONE} -- Initialisation
 		do
 			make_item
 			create status.make_empty
-			create compilation_result.make_empty
+			create errors.make
 
 			id := an_id
 			full_path := a_full_path
@@ -145,7 +145,7 @@ feature {NONE} -- Initialisation
 		do
 			make_item
 			create status.make_empty
-			create compilation_result.make_empty
+			create errors.make
 
 			id := an_id
 			full_path := id.as_string + archetype_source_file_extension
@@ -173,7 +173,7 @@ feature -- Access
 	compilation_state: INTEGER
 			-- current compilation state, obeying the state machine described above
 
-	compilation_result: STRING
+	errors: ERROR_ACCUMULATOR
 			-- errors from last compile attempt; allows redisplay if this archetype is reselected
 
 	status: STRING
@@ -354,7 +354,7 @@ feature -- Access
 
 			inspect compilation_state
 			when Cs_validated then
-				if compilation_result.is_empty then
+				if errors.is_empty then
 					Result.append("_valid_" + file_repository.group_id.out)
 				else
 					Result.append("_warning_" + file_repository.group_id.out)
@@ -373,7 +373,7 @@ feature -- Access
 		do
 			inspect compilation_state
 			when Cs_validated then
-				if compilation_result.is_empty then
+				if errors.is_empty then
 					Result := Err_type_valid
 				else
 					Result := Err_type_warning
@@ -449,12 +449,6 @@ feature -- Status Report - Compilation
 			Result := Cs_terminal_states.has(compilation_state)
 		end
 
-	has_compilation_result: BOOLEAN
-			-- Does this archetype have any compiler errors or warnings?
-		do
-			Result := not compilation_result.is_empty
-		end
-
 	ontology_location_changed: BOOLEAN
 			-- True if changed due to external editing require a move of this archetype in ontology
 			-- cleared by calling `clear_old_ontological_parent_name'
@@ -509,12 +503,12 @@ feature -- Status Setting
 		do
 			exception_encountered := False
 			status.wipe_out
-			compilation_result.wipe_out
+			errors.wipe_out
 			billboard.clear
 		ensure
 			Exception_cleared: not exception_encountered
 			Status_cleared: status.is_empty
-			Compiler_status_cleared: compilation_result.is_empty
+			Errors_cleared: errors.is_empty
 		end
 
 feature -- Commands
@@ -627,7 +621,7 @@ feature -- Commands
 				legacy_flat_archetype := adl_engine.parse_flat (legacy_flat_text, rm_schema)
 				flat_archetype_cache := Void
 				if legacy_flat_archetype = Void then
-					post_error (Current, "compile_legacy", "compile_legacy_e1", <<adl_engine.parse_error_text>>)
+					errors.append(adl_engine.errors)
 				 	compilation_state := Cs_convert_legacy_failed
 				else
 					post_info (Current, "compile_legacy", "compile_legacy_i1", <<id.as_string>>)
@@ -650,11 +644,8 @@ feature -- Commands
 					end
 				end
 			else
-				post_error (Current, "compile_legacy", "compile_legacy_e2", Void)
+				errors.extend(create {ERROR_DESCRIPTOR}.make_error("compile_legacy_e2", Void, ""))
 			end
-
-			compilation_result.append (billboard.content)
-			billboard.clear
 		ensure
 			Compilation_state: compilation_state = Cs_validated or compilation_state = Cs_validate_failed or compilation_state = Cs_convert_legacy_failed or compilation_state = cs_lineage_invalid
 			Differential_file: compilation_state = Cs_validated implies has_differential_file
@@ -677,20 +668,19 @@ feature -- Commands
 		do
 			if not exception_encountered then
 				read_differential
-
 				reset
 				set_compile_attempt_timestamp
 				post_info (Current, "parse", "parse_i2", Void)
 				differential_archetype := adl_engine.parse_differential (differential_text, rm_schema)
 				flat_archetype_cache := Void
 				if differential_archetype = Void then
-					post_error (Current, "parse", "parse_e1", <<adl_engine.parse_error_text>>)
+					errors.append (adl_engine.errors)
 					compilation_state := Cs_parse_failed
 				else
 					if is_specialised and not parent_id.is_equal(differential_archetype.parent_archetype_id) then
-						post_warning (Current, "parse", "parse_w1", <<id.as_string, parent_id.as_string, differential_archetype.parent_archetype_id.as_string>>)
+						errors.extend(create {ERROR_DESCRIPTOR}.make_warning("parse_w1", create_message_line("parse_w1", <<id.as_string, parent_id.as_string, differential_archetype.parent_archetype_id.as_string>>), ""))
 					else
-						post_info (Current, "parse", "parse_i1", <<id.as_string>>)
+						post_info(Current, "parse", "parse_i1", <<id.as_string>>)
 					end
 					create suppliers_index.make (0)
 					if differential_archetype.has_suppliers then
@@ -710,11 +700,8 @@ feature -- Commands
 					end
 				end
 			else
-				post_error (Current, "parse", "parse_e3", Void)
+				errors.extend(create {ERROR_DESCRIPTOR}.make_error("parse_e3", Void, ""))
 			end
-
-			compilation_result := billboard.content
-			billboard.clear
 		ensure
 			Compilation_state: compilation_state = Cs_suppliers_known or compilation_state = Cs_ready_to_validate or compilation_state = Cs_parse_failed
 		rescue
@@ -748,21 +735,18 @@ feature -- Commands
 					arch_dir.update_slot_statistics (Current)
 					arch_dir.update_terminology_bindings_info (Current)
 				else
-					post_error (Current, "validate", "parse_archetype_e2", <<id.as_string, validator.error_text>>)
+					errors.append(validator.errors)
 					compilation_state := Cs_validate_failed
 				end
 
 				if validator.has_warnings then
-					post_warning (Current, "validate", "parse_archetype_w2", <<id.as_string, validator.warning_text>>)
+					errors.append(validator.warnings)
 				end
 			else
-				post_error (Current, "validate", "parse_archetype_e2", <<id.as_string, validator.error_text>>)
+				errors.append(validator.errors)
 				compilation_state := Cs_validate_failed
 			end
 			differential_archetype.set_is_valid (validator.passed)
-
-			compilation_result.append (billboard.content)
-			billboard.clear
 		ensure
 			Compilation_state: compilation_state = Cs_validated or compilation_state = Cs_validate_failed
 		end
@@ -804,7 +788,6 @@ feature -- Commands
 			else
 				compilation_state := Cs_rm_class_unknown
 				post_error (Current, "make", "model_access_e7", <<id.qualified_rm_name>>)
-				compilation_result := billboard.most_recent
 			end
 		ensure
 			compilation_state_set: Cs_initial_states.has(compilation_state)
@@ -1094,7 +1077,6 @@ feature {NONE} -- Implementation
 invariant
 	compilation_state_valid: valid_compilation_state (compilation_state)
 	repository_attached: file_repository /= Void
-	compiler_status_attached: compilation_result /= Void
 
 	full_path_attached: full_path /= Void and not full_path.is_empty
 	flat_text_timestamp_natural: legacy_flat_text_timestamp >= 0

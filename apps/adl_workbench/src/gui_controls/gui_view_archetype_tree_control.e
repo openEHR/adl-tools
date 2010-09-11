@@ -204,8 +204,8 @@ feature {NONE} -- Implementation
 						text.append_code (Right_arrow_char)	-- Unicode character: an arrow pointing right
 					end
 
-					if ara.has_compilation_result then
-						tooltip.append (utf8 ("%N%N" + ara.compilation_result))
+					if not ara.errors.is_empty then
+						tooltip.append (utf8 ("%N%N" + ara.errors.as_string))
 					end
 	 				node.set_tooltip (tooltip)
 	 			else -- it is a model node

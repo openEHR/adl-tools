@@ -86,6 +86,9 @@ Section -Main SEC0000
     SetOutPath $INSTDIR\rm_schemas
     File ..\..\..\app\rm_schemas\*
 
+    SetOutPath $INSTDIR\error_db
+    File ..\..\..\app\error_db\*
+
     SetOutPath $INSTDIR\vim
     File ..\..\..\..\..\components\adl_compiler\etc\vim\*
 
@@ -134,6 +137,7 @@ Section /o un.Main UNSEC0000
     Delete /REBOOTOK $INSTDIR\ArchetypeRepositoryReport.css
     RMDir /r /REBOOTOK $INSTDIR\icons
     RMDir /r /REBOOTOK $INSTDIR\rm_schemas
+    RMDir /r /REBOOTOK $INSTDIR\error_db
     RMDir /r /REBOOTOK $INSTDIR\vim
     DeleteRegValue HKLM "${REGKEY}\Components" Main
 SectionEnd

@@ -16,6 +16,11 @@ note
 class CADL_SCANNER
 
 inherit
+	ANY_VALIDATOR
+		rename
+			reset as validator_reset
+		end
+
 	YY_COMPRESSED_SCANNER_SKELETON
 		rename
 			make as make_compressed_scanner_skeleton,
@@ -434,7 +439,7 @@ P[yY]?[mM]?[Ww]?[dD]? {
 						last_token := ERR_C_DOMAIN_TYPE
 					end
 				else
-					dadl_parser_error := dadl_parser.error_message
+					dadl_parser_error := dadl_parser.errors.last.message
 					last_token := ERR_C_DOMAIN_TYPE
 				end
 
@@ -633,7 +638,7 @@ feature {NONE} -- Initialization
 			in_lineno := 1
 		end
 
-feature -- Initialization
+feature -- Commands
 
 	reset
 			-- Reset scanner before scanning next input.
@@ -641,6 +646,11 @@ feature -- Initialization
 			reset_compressed_scanner_skeleton
 			in_lineno := 1
 			in_buffer.wipe_out
+			validator_reset
+		end
+
+	validate
+		do
 		end
 
 feature -- Access

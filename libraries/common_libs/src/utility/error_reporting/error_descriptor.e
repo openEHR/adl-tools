@@ -22,33 +22,34 @@ create
 
 feature -- Initialisation
 
-	make_error (a_code, a_message: attached STRING)
+	make_error (a_code, a_message: attached STRING; a_loc: STRING)
 		do
-			make (a_code, error_type_error, a_message)
+			make (a_code, error_type_error, a_message, a_loc)
 		end
 
-	make_warning (a_code, a_message: attached STRING)
+	make_warning (a_code, a_message: attached STRING; a_loc: STRING)
 		do
-			make (a_code, error_type_warning, a_message)
+			make (a_code, error_type_warning, a_message, a_loc)
 		end
 
-	make_info (a_code, a_message: attached STRING)
+	make_info (a_code, a_message: attached STRING; a_loc: STRING)
 		do
-			make (a_code, error_type_info, a_message)
+			make (a_code, error_type_info, a_message, a_loc)
 		end
 
-	make_debug (a_code, a_message: attached STRING)
+	make_debug (a_message: attached STRING; a_loc: STRING)
 		do
-			make (a_code, error_type_debug, a_message)
+			make ("", error_type_debug, a_message, a_loc)
 		end
 
-	make (a_code: attached STRING; a_severity: INTEGER; a_message: attached STRING)
+	make (a_code: attached STRING; a_severity: INTEGER; a_message: attached STRING; a_loc: STRING)
 		require
-			Severity_valid: is_valid_message_type (a_severity)
+			Severity_valid: is_valid_error_type (a_severity)
 		do
 			code := a_code
 			severity := a_severity
 			message := a_message
+			location := a_loc
 		end
 
 feature -- Access
@@ -59,10 +60,22 @@ feature -- Access
 
 	message: attached STRING
 
-feature -- Status Report
+	location: attached STRING
+
+feature -- Output
+
+	as_string: attached STRING
+		do
+			create Result.make (0)
+			Result.append (error_type_names.item(severity) + " ")
+			if not location.is_empty then
+				Result.append (location + ": ")
+			end
+			Result.append ("(" + code + ") " + message)
+		end
 
 invariant
-	is_valid_message_type (severity)
+	is_valid_error_type (severity)
 
 end
 

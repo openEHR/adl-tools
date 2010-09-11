@@ -33,7 +33,7 @@ templates = <
 		["model_access_w4"] = <"Reference Model for $1 meta-data missing/invalid: $2">
 		["model_access_w5"] = <"Unknown Reference Model '$1' mentioned in 'rm_schemas_load_list' config setting (ignored)">
 		["model_access_w6"] = <"No 'rm_schemas_load_list' config setting found; attempting to load all schemas (change via Tools>Options)">
-		["RMPTV"] = <"Error (RMPTV): class definition $1 property $2 type not defined in schema">
+		["RMPTV"] = <"class definition $1 property $2 type not defined in schema">
 
 	>
 >

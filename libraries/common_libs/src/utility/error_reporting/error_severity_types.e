@@ -47,7 +47,7 @@ feature -- Access
 
 feature -- Status Report
 
-	is_valid_message_type(i: INTEGER): BOOLEAN
+	is_valid_error_type(i: INTEGER): BOOLEAN
 		do
 			Result := i >= Error_type_debug and i <= Error_type_error
 		end

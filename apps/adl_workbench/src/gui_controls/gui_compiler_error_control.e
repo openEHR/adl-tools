@@ -144,7 +144,7 @@ feature -- Commands
 					gli.set_pixmap (pixmap)
 				end
 
-				gli.set_tooltip (utf8 (ara.compilation_result))
+				gli.set_tooltip (utf8 (ara.errors.as_string))
 				gli.pointer_double_press_actions.force_extend (agent select_node_in_archetype_tree_view)
 				row.set_item (col_location, gli)
 				row.expand
@@ -154,7 +154,7 @@ feature -- Commands
 					gli.ensure_visible
 				end
 
-				create gli.make_with_text (utf8 (ara.compilation_result))
+				create gli.make_with_text (utf8 (ara.errors.as_string))
 				subrow.set_item (col_message, gli)
 				subrow.set_height (gli.text_height)
 
@@ -238,7 +238,7 @@ feature -- Commands
 							create attr.make_last ("id", ns, ara.id.as_string, archetype_element)
 
 							from
-								message_lines := ara.compilation_result.split ('%N')
+								message_lines := ara.errors.as_string.split ('%N')
 								message_lines.start
 							until
 								message_lines.off

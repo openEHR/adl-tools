@@ -109,7 +109,7 @@ feature -- Modification
 				file_names := dir.linear_representation
 				from file_names.start until file_names.off loop
 					file_name := file_names.item
-					if file_name.has_substring(Error_file_extension) then
+					if file_name.ends_with(Error_file_extension) then
 						file_path := file_system.pathname (an_err_db_dir, file_name)
 						create err_db_file.make (file_path)
 						if not err_db_file.exists or else not err_db_file.is_readable then
@@ -157,7 +157,7 @@ feature -- Modification
 					templates.merge (init_helper.templates.item (Default_message_language))
 				end
 			else
-				io.put_string ("Message database failure: " + parser.error_text + "%N")
+				io.put_string ("Message database failure: " + parser.errors.as_string + "%N")
 			end
 		end
 

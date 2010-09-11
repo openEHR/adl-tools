@@ -61,7 +61,7 @@ feature -- Status Report
 			-- and still have no error messages, just info messages)
 		do
 			from billboard.start until Result or billboard.off loop
-				Result := billboard.item.message_type = Error_type_error
+				Result := billboard.item.error_type = Error_type_error
 				billboard.forth
 			end
 		end
@@ -127,14 +127,14 @@ feature {NONE} -- Implementation
 	filtered_content(at_level: INTEGER): STRING
 			-- text of the billboard in locale current language, filtered according to include_types
 		require
-			at_level_valid: is_valid_message_type (at_level)
+			at_level_valid: is_valid_error_type (at_level)
 		local
 			bb_item: MESSAGE_BILLBOARD_ITEM
 		do
 			create Result.make(0)
 			from billboard.start until billboard.off loop
 				bb_item := billboard.item
-				if bb_item.message_type >= at_level then
+				if bb_item.error_type >= at_level then
 					Result.append(item_formatted(bb_item, at_level))
 				end
 				billboard.forth
@@ -147,7 +147,7 @@ feature {NONE} -- Implementation
 			err_str, leader, trailer: STRING
 		do
 			create Result.make(0)
-			leader := error_type_names.item(bb_item.message_type) + " - "
+			leader := error_type_names.item(bb_item.error_type) + " - "
 			if at_level = Error_type_debug then
 				trailer := "      (" + bb_item.type_name + "." + bb_item.routine_name + ")"
 			else
