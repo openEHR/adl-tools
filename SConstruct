@@ -82,11 +82,12 @@ if distrib and len(adl_workbench) > 0:
 	css = 'apps/adl_workbench/app/ArchetypeRepositoryReport.css'
 	icons = 'apps/adl_workbench/app/icons'
 	rm_schemas = 'apps/adl_workbench/app/rm_schemas'
+	error_db = 'apps/adl_workbench/app/error_db'
 	vim = 'components/adl_compiler/etc/vim'
 	install = 'apps/adl_workbench/install/' + platform
 	adl_workbench_installer_sources = [adl_workbench[0], release_notes, readme, license, xsl, css]
 
-	for dir in [icons, rm_schemas, vim, install]:
+	for dir in [icons, rm_schemas, error_db, vim, install]:
 		for source, dirnames, filenames in os.walk(dir):
 			if '.svn' in dirnames: dirnames.remove('.svn')
 			adl_workbench_installer_sources += env.Files(source + '/*')
@@ -114,7 +115,7 @@ if distrib and len(adl_workbench) > 0:
 			for src in [str(adl_workbench[0]), release_notes, readme, license, xsl, css]:
 				tar.add(src, os.path.basename(src))
 
-			for root in [icons, rm_schemas, vim]:
+			for root in [icons, rm_schemas, error_db, vim]:
 				for dir, dirnames, filenames in os.walk(root):
 					if '.svn' in dirnames: dirnames.remove('.svn')
 					archived_dir = dir[len(os.path.dirname(root)) + 1:]
@@ -151,7 +152,7 @@ if distrib and len(adl_workbench) > 0:
 				copy_tree(install, distrib)
 				copy_tree(vim, pkg_contents)
 
-				for src in [str(adl_workbench[0]), release_notes, readme, license, xsl, css, icons, rm_schemas]:
+				for src in [str(adl_workbench[0]), release_notes, readme, license, xsl, css, icons, rm_schemas, error_db]:
 					copy_tree(src, pkg_contents + '/ADL Workbench.app/Contents/Resources/')
 
 				shutil.copy2(release_notes, pkg_resources + '/Welcome.txt')
