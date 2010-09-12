@@ -220,7 +220,7 @@ feature -- Test procedures
 					billboard.clear
 				end
 			else
-				append_status (dadl_engine.parse_error_text)
+				append_status (dadl_engine.errors.as_string)
 			end
 		end
 
