@@ -11,7 +11,7 @@
 -- 
 -- 	file:        $URL: http://www.openehr.org/svn/knowledge2/TRUNK/rm_schemas/openehr_rm_102.dadl $
 -- 	revision:    $LastChangedRevision$
--- 	last_change: $LastChangedDate: 2010-07-19 16:29:00 +0100 (Mon, 19 Jul 2010) $
+-- 	last_change: $LastChangedDate: 2010-09-11 18:05:04 +0100 (Sat, 11 Sep 2010) $
 -- 
 
 schema_revision = <"$LastChangedRevision$">
@@ -1696,6 +1696,11 @@ class_definitions = <
 					cardinality = <|>=0|>
 				>
 			>
+			["type"] = (BMM_SINGLE_PROPERTY) <
+				name = <"type">
+				type = </class_definitions["DV_TEXT"]>
+				is_computed = <True>
+			>
 		>
 	>
     
@@ -1753,6 +1758,11 @@ class_definitions = <
 				name = <"details">
 				type = </class_definitions["ITEM_STRUCTURE"]>
 				is_mandatory = <True>
+			>
+			["type"] = (BMM_SINGLE_PROPERTY) <
+				name = <"type">
+				type = </class_definitions["DV_TEXT"]>
+				is_computed = <True>
 			>
 		>
 	>

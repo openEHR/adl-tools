@@ -77,16 +77,24 @@ feature -- Status Report
 			Result := list.is_empty
 		end
 
+	has_errors: BOOLEAN
+
+	has_warnings: BOOLEAN
+
 feature -- Modification
 
 	extend(err_desc: attached ERROR_DESCRIPTOR)
 		do
 			list.extend(err_desc)
+			has_errors := has_errors or err_desc.severity = Error_type_error
+			has_warnings := has_warnings or err_desc.severity = Error_type_warning
 		end
 
 	append(other: attached ERROR_ACCUMULATOR)
 		do
 			list.append(other.list)
+			has_errors := has_errors or other.has_errors
+			has_warnings := has_warnings or other.has_warnings
 		end
 
 	wipe_out
