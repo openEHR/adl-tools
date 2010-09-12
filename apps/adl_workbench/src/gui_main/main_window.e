@@ -897,6 +897,11 @@ feature -- Archetype commands
 			archetype_test_tree_control.populate
 		end
 
+	archetype_test_regression_toggle
+		do
+			archetype_test_tree_control.toggle_test_regression
+		end
+
 	path_column_select (a_list_item: EV_LIST_ITEM)
 			-- Show a column in the Path Analysis list after setting a check box in `path_view_check_list'.
 		do

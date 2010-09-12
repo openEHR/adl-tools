@@ -110,7 +110,7 @@ feature -- Status Setting
 	test_stop_requested: BOOLEAN
 			-- user requested stop
 
-	regression_test_on: BOOLEAN = True
+	regression_test_on: BOOLEAN
 			-- True if user has turned on regression testing, in which case, the archetype text being parsed will be searched
 			-- for a "Regression" tag within the 'other_details' part of the 'description' section of the archetype. If this
 			-- tag is found, the value should be "PASS", "FAIL", or some validity code like "VOTM", as defined in the AOM 1.5 spec.
@@ -312,6 +312,17 @@ feature -- Commands
 				expand_tree (grid.row (1))
 				gui.arch_test_tree_toggle_expand_bn.set_text ("Collapse Tree")
 				is_expanded := True
+			end
+		end
+
+	toggle_test_regression
+		do
+			if regression_test_on then
+				gui.regression_test_bn.set_text ("Regression off")
+				regression_test_on := False
+			else
+				gui.regression_test_bn.set_text ("Regression on")
+				regression_test_on := True
 			end
 		end
 
