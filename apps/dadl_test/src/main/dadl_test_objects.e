@@ -36,8 +36,43 @@ feature -- Initialisation
 
 feature -- Access
 
-	object_table: HASH_TABLE [ANY, STRING]
-			-- table of test objects keyed by their type
+	test_table: ARRAYED_LIST [TUPLE [HASH_TABLE [ANY, STRING], PROCEDURE [ANY, TUPLE[ANY]], STRING]]
+		once
+			create Result.make(0)
+			Result.extend ([round_trip_tests, agent round_trip, "Round trip tests"])
+			Result.extend ([from_dadl_tests, agent from_dadl, "From dadl tests"])
+		end
+
+	from_dadl_tests: HASH_TABLE [STRING, STRING]
+			-- table of dadl test texts keyed by their name
+		local
+			dir: DIRECTORY
+			a_dadl_file: PLAIN_TEXT_FILE
+			file_name, file_path, dir_path: STRING
+			file_names: ARRAYED_LIST [STRING]
+		once
+			create Result.make(0)
+			dir_path := file_system.pathname(application_startup_directory, "test_files")
+			create dir.make (dir_path)
+			if dir.exists then
+				dir.open_read
+				file_names := dir.linear_representation
+				from file_names.start until file_names.off loop
+					file_name := file_names.item
+					if file_name.ends_with(".dadl") then
+						file_path := file_system.pathname (dir_path, file_name)
+						create a_dadl_file.make (file_path)
+						a_dadl_file.open_read
+						a_dadl_file.read_stream (a_dadl_file.count)
+						Result.put(a_dadl_file.last_string, file_name.substring (1, file_name.count - 5))
+					end
+					file_names.forth
+				end
+			end
+		end
+
+	round_trip_tests: HASH_TABLE [ANY, STRING]
+			-- table of round trip test objects keyed by their type
 		once
 			create Result.make(0)
 			Result.put (dadl_primitive_types, "Primitive atoms")
@@ -211,7 +246,7 @@ feature -- Test procedures
 			dadl_engine.parse
 			if dadl_engine.parse_succeeded then
 				-- display tree in node explorer
-				new_obj ?= dadl_engine.tree.as_object_from_string (an_obj.generator)
+				new_obj := dadl_engine.tree.as_object_from_string (an_obj.generator)
 				if attached new_obj then
 					append_status("%TSuccessfully created " + new_obj.generator + " object from DADL%N")
 				else
@@ -221,6 +256,18 @@ feature -- Test procedures
 				end
 			else
 				append_status (dadl_engine.errors.as_string)
+			end
+		end
+
+	from_dadl (a_dadl_text: STRING)
+		do
+			set_source_text(a_dadl_text)
+			dadl_engine.set_source (a_dadl_text, 1)
+			dadl_engine.parse
+			if dadl_engine.parse_succeeded then
+				append_status("%TParse succeeded%N")
+			else
+				append_status ("%TParse failed " + dadl_engine.errors.as_string + "%N")
 			end
 		end
 

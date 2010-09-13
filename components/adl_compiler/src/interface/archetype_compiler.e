@@ -250,6 +250,7 @@ feature {NONE} -- Implementation
 				else
 					status := create_message_line ("compiler_already_attempted_failed", <<ara.id.value, ara.errors.as_string>>)
 				end
+				status.append (ara.status)
 
 				call_visual_update_action (ara)
 			end

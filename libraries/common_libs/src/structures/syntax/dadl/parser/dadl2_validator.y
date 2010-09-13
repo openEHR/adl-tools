@@ -1479,7 +1479,6 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 	abort_with_error (err_code: STRING; args: ARRAY [STRING])
 		do
 			add_error_with_location(err_code, args, error_loc)
-			raise_error
 			abort
 		end
 

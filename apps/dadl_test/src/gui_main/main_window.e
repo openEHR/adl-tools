@@ -89,8 +89,10 @@ feature -- Events
    		local
 			a_node: EV_TREE_ITEM
 		do
-			if attached {EV_TREE_NODE} explorer_tree.selected_item as node and then attached {PROCEDURE [ANY, TUPLE[]]} node.data as test_proc then
-				test_proc.call ([])
+			if attached {EV_TREE_NODE} explorer_tree.selected_item as node then
+				if attached {PROCEDURE [ANY, TUPLE[ANY]]} node.parent.data as test_proc then
+					test_proc.call ([node.data])
+				end
 			end
 		end
 
@@ -125,19 +127,34 @@ feature {NONE} -- Implementation
 
 	populate_explorer
    		local
-			a_node, a_node2: EV_TREE_ITEM
+			a_node, a_node1, a_node2: EV_TREE_ITEM
+			test_item: TUPLE[HASH_TABLE [ANY, STRING], PROCEDURE [ANY, TUPLE[ANY]], STRING]
+			test_proc: PROCEDURE [ANY, TUPLE[ANY]]
+			tests: HASH_TABLE [ANY, STRING]
+			test_group: STRING
 		do
 			explorer_tree.wipe_out
 			create a_node
- 			a_node.set_text ("Test objects")
+ 			a_node.set_text ("Test groups")
 			explorer_tree.extend (a_node)
 
-			from test_objects.object_table.start until test_objects.object_table.off loop
-				create a_node2
-	 			a_node2.set_data (agent test_objects.round_trip(test_objects.object_table.item_for_iteration))
-	 			a_node2.set_text (test_objects.object_table.key_for_iteration)
-				a_node.extend (a_node2)
-				test_objects.object_table.forth
+			from test_objects.test_table.start until test_objects.test_table.off loop
+				create a_node1
+				test_item := test_objects.test_table.item
+				tests ?= test_item.reference_item(1)
+				test_proc ?= test_item.reference_item(2)
+				test_group ?= test_item.reference_item (3)
+		 		a_node1.set_data (test_proc)
+		 		a_node1.set_text (test_group)
+				a_node.extend (a_node1)
+				from tests.start until tests.off loop
+					create a_node2
+		 			a_node2.set_data (tests.item_for_iteration)
+		 			a_node2.set_text (tests.key_for_iteration)
+					a_node1.extend (a_node2)
+					tests.forth
+				end
+				test_objects.test_table.forth
 			end
 		end
 

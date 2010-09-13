@@ -359,9 +359,9 @@ feature -- Access
 				else
 					Result.append("_warning_" + file_repository.group_id.out)
 				end
-			when Cs_validate_failed then
+			when Cs_validate_failed, cs_suppliers_invalid then
 				Result.append("_parsed_" + file_repository.group_id.out)
-			when Cs_parse_failed, cs_convert_legacy_failed then
+			when Cs_parse_failed, cs_convert_legacy_failed, cs_lineage_invalid then
 				Result.append("_parse_failed_" + file_repository.group_id.out)
 			else
 				Result.append("_" + file_repository.group_id.out)
@@ -378,10 +378,12 @@ feature -- Access
 				else
 					Result := Err_type_warning
 				end
-			when Cs_validate_failed then
+			when Cs_validate_failed, cs_suppliers_invalid then
 				Result := Err_type_validity_error
-			else
+			when Cs_parse_failed, cs_convert_legacy_failed, cs_lineage_invalid then
 				Result := Err_type_parse_error
+			else
+				-- unknown
 			end
 		ensure
 			valid: valid_err_type (Result)
@@ -646,6 +648,9 @@ feature -- Commands
 			else
 				errors.extend(create {ERROR_DESCRIPTOR}.make_error("compile_legacy_e2", Void, ""))
 			end
+
+			status.copy(billboard.content)
+			billboard.clear
 		ensure
 			Compilation_state: compilation_state = Cs_validated or compilation_state = Cs_validate_failed or compilation_state = Cs_convert_legacy_failed or compilation_state = cs_lineage_invalid
 			Differential_file: compilation_state = Cs_validated implies has_differential_file
@@ -702,6 +707,9 @@ feature -- Commands
 			else
 				errors.extend(create {ERROR_DESCRIPTOR}.make_error("parse_e3", Void, ""))
 			end
+
+			status.copy(billboard.content)
+			billboard.clear
 		ensure
 			Compilation_state: compilation_state = Cs_suppliers_known or compilation_state = Cs_ready_to_validate or compilation_state = Cs_parse_failed
 		rescue
@@ -747,6 +755,9 @@ feature -- Commands
 				compilation_state := Cs_validate_failed
 			end
 			differential_archetype.set_is_valid (validator.passed)
+
+			status.copy(billboard.content)
+			billboard.clear
 		ensure
 			Compilation_state: compilation_state = Cs_validated or compilation_state = Cs_validate_failed
 		end
@@ -787,7 +798,7 @@ feature -- Commands
 				end
 			else
 				compilation_state := Cs_rm_class_unknown
-				post_error (Current, "make", "model_access_e7", <<id.qualified_rm_name>>)
+				errors.extend(create {ERROR_DESCRIPTOR}.make_error("model_access_e7", create_message_line("model_access_e7", <<id.qualified_rm_name>>), ""))
 			end
 		ensure
 			compilation_state_set: Cs_initial_states.has(compilation_state)
