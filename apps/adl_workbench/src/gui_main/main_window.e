@@ -685,7 +685,7 @@ feature {NONE} -- Help events
 	show_release_notes
 			-- Display news about the latest release.
 		do
-			(create {RELEASE_NOTES_DIALOG}).show_modal_to_window (Current)
+			show_in_system_browser (Release_notes_file_path)
 		end
 
 	show_clinical_knowledge_manager

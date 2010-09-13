@@ -75,7 +75,7 @@ for target in COMMAND_LINE_TARGETS:
 			s = os.path.dirname(s)
 
 if distrib and len(adl_workbench) > 0:
-	release_notes = 'apps/adl_workbench/app/release_notes.txt'
+	release_notes = 'apps/adl_workbench/doc/web/release_notes.html'
 	license = 'apps/adl_workbench/doc/LICENSE.txt'
 	xsl = 'apps/adl_workbench/app/ArchetypeRepositoryReport.xsl'
 	css = 'apps/adl_workbench/app/ArchetypeRepositoryReport.css'
@@ -154,7 +154,7 @@ if distrib and len(adl_workbench) > 0:
 				for src in [str(adl_workbench[0]), release_notes, license, xsl, css, icons, rm_schemas, error_db]:
 					copy_tree(src, pkg_contents + '/ADL Workbench.app/Contents/Resources/')
 
-				shutil.copy2(release_notes, pkg_resources + '/Welcome.txt')
+				shutil.copy2(release_notes, pkg_resources + '/Welcome.html')
 				shutil.copy2('apps/adl_workbench/doc/web/help-mac_install.html', pkg_resources + '/ReadMe.html')
 
 				substitutions = 's|\&|\&amp;|;'

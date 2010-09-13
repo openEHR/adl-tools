@@ -30,13 +30,13 @@ feature -- Definitions
 	ADL_help_page_url: STRING
 			-- The URL to ADL Workbench's online help.
 		once
-			Result := "http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/apps/doc/web/index.html"
+			Result := "http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/adl_workbench/doc/web/index.html"
 		end
 
 	Release_notes_file_path: STRING
 			-- The path to ADL Workbench's release notes.
 		once
-			Result := file_system.pathname (application_startup_directory, "release_notes.txt")
+			Result := file_system.pathname (file_system.pathname (file_system.pathname (application_startup_directory, "doc"), "web"), "release_notes.html")
 		end
 
 	clinical_knowledge_manager_url: STRING = "http://www.openehr.org/knowledge/"
