@@ -1,5 +1,8 @@
 note
-	description : "project application root class"
+	description : "[
+				   This application simulates what a real application written in Java or another lanauge might do, 
+				   across the language interface.
+				   ]"
 	date        : "$Date$"
 	revision    : "$Revision$"
 
@@ -14,7 +17,7 @@ inherit
 create
 	make
 
-feature {NONE} -- Initialization
+feature -- Initialization
 
 	make
 			-- Run application.

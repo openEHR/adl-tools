@@ -51,9 +51,8 @@ feature -- Conversion
 			-- creation of copied data. This could be fixed by tracking ojbect references while generating the tree
 		local
 			a_dt_attr: DT_ATTRIBUTE_NODE
-			fld_dynamic_type: INTEGER
+			fld_dynamic_type, i: INTEGER
 			fld_val: ANY
-			equiv_prim_type_id, i: INTEGER
 			fld_name: STRING
 			fld_lst: ARRAYED_LIST[STRING]
 		do

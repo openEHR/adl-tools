@@ -225,8 +225,6 @@ feature -- Conversion
 
 	to_date_time_duration: attached DATE_TIME_DURATION
 			-- convert to DATE_TIME_DURATION object
-		local
-			an_iso_dur: ISO8601_DURATION
 		do
 			if weeks > 0 then
 				create Result.make_definite (weeks * Days_in_week, 0, 0, 0)

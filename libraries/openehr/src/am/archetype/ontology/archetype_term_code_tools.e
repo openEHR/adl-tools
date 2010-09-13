@@ -152,8 +152,8 @@ feature -- Access
 			Code_valid: a_code /= Void and then is_valid_code(a_code)
 			Depth_valid: a_depth >= 0
 		local
-			code_defined_in_this_level, has_parent_code: BOOLEAN
-			code_at_this_level, code_at_parent_level: STRING
+			code_defined_in_this_level: BOOLEAN
+			code_at_this_level: STRING
 		do
 			if a_depth > specialisation_depth_from_code(a_code) then
 				create Result.make (ss_inherited)

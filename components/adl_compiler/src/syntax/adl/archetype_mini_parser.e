@@ -133,7 +133,6 @@ feature -- Commands
 			-- extract description.other_details hash from archetype, if it exists; if not, return empty hash
 		local
 			start_pos, i, rpos, dadl_block_count: INTEGER
-			finished: BOOLEAN
 			key, val: STRING
 		do
 			create Result.make(0)

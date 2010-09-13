@@ -119,8 +119,6 @@ feature -- Visitor
 
 	start_c_archetype_root(a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- enter a C_ARCHETYPE_ROOT
-		local
-			spec_sts: SPECIALISATION_STATUS
 		do
 			a_node.set_rolled_up_specialisation_status(create {SPECIALISATION_STATUS}.make (ss_added))
 		end

@@ -45,8 +45,6 @@ feature -- Modification
 feature -- Conversion
 
 	as_string: STRING
-		local
-			out_val: STRING
 		do
 			create Result.make(0)
 			from value.start until value.off loop
@@ -63,8 +61,6 @@ feature -- Conversion
 
 	clean_as_string (cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
 			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
-		local
-			out_val: STRING
 		do
 			if attached {SEQUENCE[STRING]} value as str_seq then
 				create Result.make(0)
