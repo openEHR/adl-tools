@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
   <title>AWB release notes</title>
   <meta content="text/html; charset=us-ascii" http-equiv="Content-Type" />
@@ -32,95 +32,90 @@
       <div id="content">
         <h2>Release History</h2>
 
+        <h3>11 Aug 2010 ADL 1.5 beta Release (<a href=
+        "http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/1105/BRANCHES/specialisation/">SVN rev 1105</a>):</h3>
+
         <ul>
-          <li value="0">11 Aug 2010 ADL 1.5 beta Release (<a href=
-          "http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/1105/BRANCHES/specialisation/">SVN rev 1105</a>):
+          <li value="0">Improved validation, with code-based error messages matching ADL and AOM 1.5 <a href=
+          "http://www.openehr.org/svn/specification/TRUNK/publishing/roadmap.html">draft&nbsp;specifications</a> (see
+          bottom of page);</li>
 
+          <li value="0">Support for referencing from one archetype to another without slots;</li>
+
+          <li value="0">Support for ADL 1.5 templates, including slot-filling and exclusions;</li>
+
+          <li value="0">Separate explorers for archetypes and templates;</li>
+
+          <li value="0">Multiple RM schemas can be loaded and managed in the options dialog;</li>
+
+          <li value="0">Archetype files can now be arranged anywhere on the file-system; compiler uses RM and
+          specialisation relationships to build directory in tool;</li>
+
+          <li value="0">Repositories are now defined / selected using profiles;</li>
+
+          <li value="0">Archetype search facility;</li>
+
+          <li value="0">An initial 13606 schema is available, allowing validation of EN 13606 archetypes.</li>
+
+          <li value="0">Test function changed to prevent any .adl file overwriting; instead, outputs files for viewing
+          in diff tools.</li>
+        </ul>
+
+        <h3>22 Mar 2009 ADL 1.5 Preview Release 1.5.0 (<a href=
+        "http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/851/BRANCHES/specialisation/">SVN rev 851</a>):</h3>
+
+        <ul>
+          <li value="0">performs stricter validation than previous versions, now reporting 40 syntax errors, 47
+          validity errors, and 4 validity warnings.</li>
+
+          <li value="0">Errors are more clearly differentiated into the following categories:</li>
+
+          <li style="LIST-STYLE-TYPE: none; DISPLAY: inline" value="0">
             <ul>
-              <li value="0">Improved validation, with code-based error messages matching ADL and AOM 1.5 <a href=
-              "http://www.openehr.org/svn/specification/TRUNK/publishing/roadmap.html">draft&nbsp;specifications</a>
-              (see bottom of page);</li>
+              <li value="0">syntax error: the file is not valid ADL - shown in red</li>
 
-              <li value="0">Support for referencing from one archetype to another without slots;</li>
+              <li value="0">validity error: the archetype semantics are not valid when validated against parent
+              archetypes and the reference model - shown in orange</li>
 
-              <li value="0">Support for ADL 1.5 templates, including slot-filling and exclusions;</li>
+              <li value="0">validity warning: the semantics are valid, but there are redundant elements or other small
+              issues to correct - shown in yellow</li>
 
-              <li value="0">Separate explorers for archetypes and templates;</li>
-
-              <li value="0">Multiple RM schemas can be loaded and managed in the options dialog;</li>
-
-              <li value="0">Archetype files can now be arranged anywhere on the file-system; compiler uses RM and
-              specialisation relationships to build directory in tool;</li>
-
-              <li value="0">Repositories are now defined / selected using profiles;</li>
-
-              <li value="0">Archetype search facility;</li>
-
-              <li value="0">An initial 13606 schema is available, allowing validation of EN 13606 archetypes.</li>
-
-              <li value="0">Test function changed to prevent any .adl file overwriting; instead, outputs files for
-              viewing in diff tools.</li>
+              <li value="0">passed - shown in green</li>
             </ul>
           </li>
 
-          <li value="0">22 Mar 2009 ADL 1.5 Preview Release 1.5.0 (<a href=
-          "http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/851/BRANCHES/specialisation/">SVN rev 851</a>):
+          <li value="0">improved error reporting.</li>
 
+          <li value="0">it now uses the reference model (RM) to validate all archetypes. The reference model is
+          currently expressed in a custom meta-model format which is much simpler than UML 2 based meta-models, e.g.
+          XMI (<a href=
+          "http://www.openehr.org/wiki/display/dev/Machine-readable+model+representations+of+openEHR">why</a>?). The
+          meta-model can be found <a href="http://www.openehr.org/svn/knowledge2/TRUNK/rm_schemas/">here</a>. Both the
+          location of this file, and its design may change in the future, and its current format should not be taken as
+          normative for openEHR.</li>
+
+          <li value="0">RM attributes are now shown in the node map visualisation (<a href=
+          "images/rm_differential.png">differential form</a>, <a href="images/rm_flat.png">flattened form</a>). In the
+          differential view, only attributes defined on the concrete class mentioned in the archetype are shown; in the
+          flat view, all inherited attributes are shown.</li>
+
+          <li value="0">A new&nbsp;test has been added to the test page that allows original ADL fles to be overwritten
+          with the result of the flattening operation on archetypes. THIS IS EXPERIMENTAL and should be used with care
+          - it will really overwrite ADL files, so be sure to use it in a version-controlled context, such as SVN
+          (where you can conveniently then see diffs of the files). For this reason, both the &#39;Save ADL&#39; and
+          &#39;Save ADLS&#39; tests now require checkboxes to be checked before they will operate. The intention of the
+          new &#39;Save ADL&#39; operation is to experiment with removal of some kinds of errors from legacy ADL
+          fles.</li>
+        </ul>
+
+        <h3>02 Apr 2008 Release 1.4.1 (<a href=
+          "http://www.openehr.org/svn/ref_impl_eiffel/TAGS/Release-1.4.1">SVN rev 599 / TAG Release-1.4.1</a>)</h3>
             <ul>
-              <li>performs stricter validation than previous versions, now reporting 40 syntax errors, 47 validity
-              errors, and 4 validity warnings.</li>
-
-              <li>Errors are more clearly differentiated into the following categories:</li>
-
-              <li style="list-style: none; display: inline">
-                <ul>
-                  <li>syntax error: the file is not valid ADL - shown in red</li>
-
-                  <li>validity error: the archetype semantics are not valid when validated against parent archetypes
-                  and the reference model - shown in orange</li>
-
-                  <li>validity warning: the semantics are valid, but there are redundant elements or other small issues
-                  to correct - shown in yellow</li>
-
-                  <li>passed - shown in green</li>
-                </ul>
-              </li>
-
-              <li value="0">improved error reporting.</li>
-
-              <li>it now uses the reference model (RM) to validate all archetypes. The reference model is currently
-              expressed in a custom meta-model format which is much simpler than UML 2 based meta-models, e.g. XMI
-              (<a href=
-              "http://www.openehr.org/wiki/display/dev/Machine-readable+model+representations+of+openEHR">why</a>?).
-              The meta-model can be found <a href="http://www.openehr.org/svn/knowledge2/TRUNK/rm_schemas/">here</a>.
-              Both the location of this file, and its design may change in the future, and its current format should
-              not be taken as normative for openEHR.</li>
-
-              <li>RM attributes are now shown in the node map visualisation (<a href=
-              "images/rm_differential.png">differential form</a>, <a href="images/rm_flat.png">flattened form</a>). In
-              the differential view, only attributes defined on the concrete class mentioned in the archetype are
-              shown; in the flat view, all inherited attributes are shown.</li>
-
-              <li>A new&nbsp;test has been added to the test page that allows original ADL fles to be overwritten with
-              the result of the flattening operation on archetypes. THIS IS EXPERIMENTAL and should be used with care -
-              it will really overwrite ADL files, so be sure to use it in a version-controlled context, such as SVN
-              (where you can conveniently then see diffs of the files). For this reason, both the &#39;Save ADL&#39;
-              and &#39;Save ADLS&#39; tests now require checkboxes to be checked before they will operate. The
-              intention of the new &#39;Save ADL&#39; operation is to experiment with removal of some kinds of errors
-              from legacy ADL fles.</li>
-            </ul>
-          </li>
-
-          <li value="0">02 Apr 2008 Release 1.4.1 (<a href=
-          "http://www.openehr.org/svn/ref_impl_eiffel/TAGS/Release-1.4.1">SVN rev 599 / TAG Release-1.4.1</a>):
-
-            <ul>
-              <li value="0">The Archetype workbench now functions as a compiler over the entire
-				archteype 'directory' (the merged result of the reference and work
-				repositories). With a single command (F7; build repository), all
-				archetypes are compiled, and an error report built up which can be
-				perused at any time. Slot relationships between archetypes are now
-				shown, as are statistics for the repositories. </li>
+              <li value="0">The Archetype workbench now functions as a compiler over the entire archteype
+              &#39;directory&#39; (the merged result of the reference and work repositories). With a single command
+              (F7; build repository), all archetypes are compiled, and an error report built up which can be perused at
+              any time. Slot relationships between archetypes are now shown, as are statistics for the
+              repositories.</li>
 
               <li value="0">user history of archetypes visited;</li>
 
@@ -129,19 +124,18 @@
               all archetypes. There are now two kinds of files:
 
                 <ul>
-                  <li><span style="font-weight: bold;">.adls file</span>: this will become the &#39;source&#39; file
-                  type for all archetypes.&nbsp;</li>
+                  <li value="0"><span style="FONT-WEIGHT: bold">.adls file</span>: this will become the
+                  &#39;source&#39; file type for all archetypes.&nbsp;</li>
 
-                  <li><span style="font-weight: bold;">.adl file</span>: this will become the file type for&nbsp;the
-                  &#39;flat&#39; &nbsp;view of an archetype. In the future, .adl files will no longer be stored, but
-                  will be generated on the fly.</li>
+                  <li value="0"><span style="FONT-WEIGHT: bold">.adl file</span>: this will become the file type
+                  for&nbsp;the &#39;flat&#39; &nbsp;view of an archetype. In the future, .adl files will no longer be
+                  stored, but will be generated on the fly.</li>
                 </ul>
               </li>
-				  <li>for existing archetype repositories consisting
-				of .adl files, the .adl file will be treated as the initial source. A
-				.adls file will be generated once only for each .adl file, and from
-				then on, the .adls file will be used as the source.</li>
-							  
+
+              <li value="0">for existing archetype repositories consisting of .adl files, the .adl file will be treated
+              as the initial source. A .adls file will be generated once only for each .adl file, and from then on, the
+              .adls file will be used as the source.</li>
 
               <li value="0">slot and used-by maps;</li>
 
@@ -151,10 +145,9 @@
 
               <li value="0">repository export to HTML.</li>
             </ul>
-          </li>
 
-          <li value="0">09 Apr 2007 Release 1.4.0 (<a href=
-          "http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/203/TRUNK/">SVN rev 203</a>):
+            <h3>09 Apr 2007 Release 1.4.0 (<a href="http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/203/TRUNK/">SVN
+            rev 203</a>):</h3>
 
             <ul>
               <li value="0">Unicode support (see test/family_history archetype example in farsi);</li>
@@ -163,20 +156,18 @@
 
               <li value="0">correct bugs with icon loading.</li>
             </ul>
-          </li>
 
-          <li value="0">05 Mar 2007 bug fix release&nbsp;(<a href=
-          "http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/169/TRUNK/">SVN rev 169</a>):
+            <h3>05 Mar 2007 bug fix release&nbsp;(<a href=
+            "http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/169/TRUNK/">SVN rev 169</a>):</h3>
 
             <ul>
               <li value="0">Support non-inclusive two-sided intervals (e.g. |0..&lt;1000|)</li>
 
               <li value="0">correct bug in parsing text terms used in C_CODE_PHRASE with &#39;,&#39;</li>
             </ul>
-          </li>
 
-          <li value="0">02 Mar&nbsp;2007 Release (<a href=
-          "http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/166/TRUNK/">SVN rev 166</a>):
+            <h3>02 Mar&nbsp;2007 Release (<a href="http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/166/TRUNK/">SVN
+            rev 166</a>)</h3>:
 
             <ul>
               <li value="0">Upgrade ADL workbench to <span style="FONT-WEIGHT: bold">process ADL 1.4 languages
@@ -184,10 +175,9 @@
 
               <li value="0">Performs various silent upgrades on strings to turn them into CODE_PHRASEs.</li>
             </ul>
-          </li>
 
-          <li value="0">10 Jan 2007 Release (<a href=
-          "http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/152/TRUNK/">SVN rev 152</a>):
+            <h3>10 Jan 2007 Release (<a href="http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/152/TRUNK/">SVN rev
+            152</a>):</h3>
 
             <ul>
               <li value="0">Repository merging - local and reference repositories can now be merged and viewed as one
@@ -195,39 +185,617 @@
 
               <li value="0">Inheritance view - the node map now shows nodes as inherited, redefined or added.</li>
             </ul>
+
+            <h3>interim release subversion 89 - 24/aug/2006 - various small fixes</h3>
+
+            <ul>
+              <li>enhancements
+
+                <ul>
+                  <li>allow date constraint pattern yyyy-mm-xx</li>
+
+                  <li>added language to COMPOSITION</li>
+
+                  <li>added magnitude_status to DV_QUANTITY</li>
+                </ul>
+              </li>
+            </ul>
+
+            <h3>interim release Subversion 81 - 29/Jun/2006 - ISO 8601 date/time enhancements &amp; fixes</h3>
+
+            <ul>
+              <li>enhancements
+
+                <ul>
+                  <li>Implement openEHR ISO8601 deviation</li>
+
+                  <li>allow &#39;W&#39; to be included in durations containing &#39;Y&#39;, &#39;M&#39; etc
+                  designators;</li>
+
+                  <li>allow &#39;W&#39; to be mixed in with other designators in ADL duration constraints;</li>
+
+                  <li>improve error reporting in dADL and cADL parsers for intervals whose limits are not legal</li>
+
+                  <li>Some small changes to enable reading unicode files - a BOM stripper for UTF-8 files, and UTF-8
+                  character matching in the dADL scanner</li>
+
+                  <li>Minor enhancements to ADL cmd line app.</li>
+                </ul>
+              </li>
+
+              <li>bugfixes
+
+                <ul>
+                  <li>Fix bug where adding a constraint definition when multiple languages already defined caused
+                  crash;</li>
+
+                  <li>Renamed ONTOLOGY.remove_term to remove_term_definition and remove_constraint to
+                  remove_constraint_definition, to be more obvious for developers.</li>
+
+                  <li>Small correct to allow ISO Duration strings without the &#39;T&#39; character to be silently
+                  fixed during by the cADL scanner;</li>
+
+                  <li>Added a hardwired lower-case converter for ISO8601 Durations to avoid culture specific case
+                  conversion problems.</li>
+
+                  <li>Corrected some errors in ARCHETYPE.ontology_remove_unused_codes;</li>
+                </ul>
+              </li>
+            </ul>
+
+            <h3>interim release Subversion 63 - 14/May/2006 ADL - 1.4 compliance</h3>
+
+            <ul>
+              <li>enhancements
+
+                <ul>
+                  <li>all ISO date/time constraint patterns now include the &#39;T&#39; where appropriate, but parser
+                  tolerates a space for the moment, and silently substitutes a &#39;T&#39; on output</li>
+
+                  <li>ISO8601 duration constraint patterns now possible. See basic_types archetype in test archetypes
+                  area for examples property attribute value in C_QUANTITY dADL sections now upgraded to CODE_PHRASE as
+                  defined by openEHR Archetype profile spec.</li>
+
+                  <li>Existing archetypes with old form of property = &lt;&quot;xxxxx&quot;&gt; still parse but are
+                  silently converted to property = &lt;[openehr:xxxx]&gt; (note spaces converted to &#39;_&#39; as
+                  well)</li>
+
+                  <li>clear_xxx routines added to ARCHETYPE_DESCRIPTION and ARCHETYPE_DESCRIPTION_ITEM to allow all
+                  list attributes (e.g. author, keywords, details, other_details etc) to be cleared in one go.</li>
+
+                  <li>implemented &#39;adl_version&#39; and &#39;controlled&#39; markers in ADL files. Existing ADL
+                  files opened and saved with the ADL workbench or other tool using this parser will have the latest
+                  ADL version written into them.</li>
+
+                  <li>added functions to ARCHETYPE_ONTOLOGY to remove terms and constraints completely.</li>
+
+                  <li>added a function to ARCHETYPE to generate list of unused term and constraint codes, and to delete
+                  them from the ontology.</li>
+                </ul>
+              </li>
+
+              <li>bug fixes:
+
+                <ul>
+                  <li>string values in dADL sections that wrap to start of next line now parse properly</li>
+
+                  <li>all ISO date/time values in dADL and cADL now parse with proper &#39;P&#39; and &#39;T&#39;
+                  characters; if no &#39;T&#39; present in value, it parses fine (for now) but a &#39;T&#39; is
+                  included on output.</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+
+        <h3>interim release Subversion 47 - 02/Apr/2006</h3>
+
+        <ul>
+          <li>bug fixes
+
+            <ul>
+              <li>fixed bug where Save on archetype opened from explorer tree had wrong directory removed leading
+              whitespace in dADL text fields</li>
+
+              <li>fixed incorrectly generated logical paths in ARCHETYPE</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h3>interim release Subversion 46 - 27/Mar/2006</h3>
+
+        <p>All archetypes parse, save and reparse as expected except SOAP Headings.</p>
+
+        <ul>
+          <li>enhancements:
+
+            <ul>
+              <li>now can have two archetypes in memory at once, due to getting rid of current_archteype from
+              SHARED_ARCHETYPE_CONTEXT object</li>
+            </ul>
+          </li>
+
+          <li>bug fixes:
+
+            <ul>
+              <li>rewrote Assertion expression rules, removed 96 reduce/reduce conflicts in the cADL parser;</li>
+
+              <li>fixed minor bug in path testing where a path ending in attr[obj_id] would match the OG structure when
+              it should not</li>
+
+              <li>assertion expressions now parse properly with rewritten grammar for boolean_expressions.</li>
+
+              <li>dADL text containing newlines no longer cause crash; newlines are preserved through parsing.</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h3>interim subversion release 4 - 12 Oct 2005</h3>
+
+        <ul>
+          <li>enhancements
+
+            <ul>
+              <li>more efficient implementation of DT_OBJECT_CONVERTER, which now checks far fewer types when comparing
+              generic types</li>
+            </ul>
+          </li>
+
+          <li>bugfixes
+
+            <ul>
+              <li>better structure of code with respect to use of SHARED_ADL_INTERFACE, which slved .Net DLL crash
+              problem.</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h3>interim release Subversion revision 3 - 23 July 2005</h3>
+
+        <ul>
+          <li>changes:
+
+            <ul>
+              <li>library package structure significantly improved. Note that this will mean that .Net users will see
+              that many classes are in a new namespace. The main change is that the am package is now populated as
+              described in the Archetype Object Model (AOM) documentation.</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h3>++++++++++++++ move to subversion ++++++++++++++</h3>
+
+        <h3>interim release BitKeeper cset 1.57 23/June/2005</h3>
+
+        <ul>
+          <li>enhancements
+            <ul>
+              <li>implemented CR-000138 Archetype level assertions. Updated test cases, test archetypes.</li>
+              <li>minor improvements in open and save button behaviour in workbench GUI</li>
+              <li>in ASSERTION_FACTORY:
+                <ul>
+                  <li>functions &quot;create_expr_unary_operator_xxx&quot; etc replaced by one function:
+                    <pre>
+     create_expr_unary_operator_node(an_operator: OPERATOR_KIND; an_operand: EXPR_ITEM): EXPR_UNARY_OPERATOR
+          -- operators with one operand, e.g. not x, -5 etc
+        require
+          an_operator_exists: an_operator /= Void
+          an_operand_exists: an_operand /= Void
+</pre>
+                  </li>
+                  <li>functions &quot;create_expr_binary_operator_xxx&quot; etc replaced by one function:
+                    <pre>
+     create_expr_binary_operator_node(an_operator: OPERATOR_KIND; 
+        a_left_operand, a_right_operand: EXPR_ITEM): EXPR_BINARY_OPERATOR is
+          -- operators with boolean results, e.g.
+          -- and, or, xor, etc
+        require
+          an_operator_exists: an_operator /= Void
+          a_left_operand_exists: a_left_operand /= Void
+          a_right_operand_exists: a_right_operand /= Void
+</pre>
+                  </li>
+                  <li>java wrapper changes: &quot;create_expr_binary_operator_xxx&quot; etc replaced by one function:
+                    <pre>
+   create_expr_binary_operator_node (an_operator: INTEGER; h_a_left_operand, h_a_right_operand: INTEGER): INTEGER
+      -- REQUIRE
+      -- an_operator_exists: {OPERATOR_KIND}.is_valid_operator(an_operator)
+      -- a_left_operand_exists: a_left_operand /= void
+      -- a_right_operand_exists: a_right_operand /= void
+</pre>
+                  </li>
+                  <li>&quot;create_expr_unary_operator_xxx&quot; etc replaced by one function
+                    <pre>
+   create_expr_unary_operator_node (an_operator: INTEGER; h_an_operand: INTEGER): INTEGER
+</pre>
+                  </li>
+                  <li>codes for an_operator argument given in openEHR AOM specification - the new classes OPERATOR_KIND
+                  and OPERATOR_TYPES are added. To make a call to one of the above functions, an OPERATOR_KIND object
+                  needs to be created using the c# syntax which has the effect of doing OPERATOR_KIND.make(integer
+                  value) or OPERATOR_KIND.make_from_string(string value)</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>bugs:
+            <ul>
+              <li>some bugs remain in the java wrapping; compiles ok, but runtime errors at assertion building. - More
+              functions need to be wrapped for ARCHETYPE_DESCRIPTION, adding invariants to ARCHETYPE etc.</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h3>release &#39;arch_desc&#39; BitKeeper cset 1.56 19/June/2005</h3>
+
+        <ul>
+          <li>enhancements
+
+            <ul>
+              <li>implemented ARCHETYPE_DESCRIPTION class, parsing, and GUI view. Upgraded all test archetypes. - added
+              new class DT_OBJECT_CONVERTER, which performs generic DT_ &lt;-&gt; object structure conversion. This
+              enables the archetype description and any other dADL content to be converted automatically into objects,
+              rather than requiring hand-built routines.</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h3>interim release BitKeeper cset 1.50 01/June/2005</h3>
+
+        <ul>
+          <li>enhancements
+
+            <ul>
+              <li>News facility added: a news window will pop up the first time the workbench is used with a new
+              version.</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h3>interim release BitKeeper cset 1.49 30/May/2005</h3>
+
+        <ul>
+          <li>enhancements
+
+            <ul>
+              <li>DT structures (the internal representation of dADL sections) are all generically generated from
+              objects and are used to generate objects. This means that C_QUANTITYs, the description section and so on
+              of an archetype are all handled by the one piece of code now. The ontology section is slightly more
+              complex, since its current modelling does not correspond strictly to the object types used in the class
+              ARCHETYPE_ONTOLOGY. This will change in the future.</li>
+            </ul>
+          </li>
+
+          <li>bug fixes
+
+            <ul>
+              <li>numerous small bugs fixed.</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h3>interim release BitKeeper cset 1.48 06/May/2005</h3>
+
+        <ul>
+          <li>bug fixes
+
+            <ul>
+              <li>implemented interval constraints of the form |100|, i.e. point intervals. Implemented for all ordered
+              basic types, i.e. integer, real, date, date_time, time, duration. - enhancements - implemented assumed
+              values for primitive types and domain types C_QUANTITY, C_CODED_TEXT, C_ORDINAL. C_PRIMITIVE and all
+              subtypes, as well as C_DOMAIN_TYPE have assumed_value, default_value, has_assumed_value and
+              set_assumed_value. Workbench GUI indicates assumed values.</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h3>interim release BitKeeper cset 1.46 - 05 May 2005</h3>
+
+        <ul>
+          <li>enhancements
+
+            <ul>
+              <li>implemented assumed_value in primitive and domain types</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h3>interim release BitKeeper cset 1.39 25/Feb/2005</h3>
+
+        <ul>
+          <li>enhancements
+
+            <ul>
+              <li>C_QUANTITY now allows magnitude to be absent in inline dADL, meaning open magnitude, with unit still
+              constrained - support dADL2 style syntax, including nested generics - change paths to include anonymous
+              nodes - bug fixes - an error whereby archetypes with include and exclude lists sent the parser into an
+              infinite loop is fixed. - empty C_DOMAIN_TYPE sections now parse, e.g. {C_QUANTITY &lt;&gt;} - embedded
+              C_DOMAIN_TYPE sections with sibling non-C_DOMAIN_TYPE sections now parse properly</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h3>interim release cset 1.38 - 19 Jan 2005</h3>
+
+        <ul>
+          <li>changes
+
+            <ul>
+              <li>complete JNI wrapping for ADL parser. Many fixes in parser. See http://www.deepthought.com.au for
+              documentation on JNI wrapping for Eiffel / C. - it is now recommended that users download the BitKeeper
+              repository for this project, since it contains the proper java directory structure. - this directory
+              still contains the correct DLL, but will be replaced in the near future by a proper distribution
+              server.</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h3>interim release BitKeeper cset 1.32 - 29 July 2004</h3>
+
+        <ul>
+          <li>changes
+
+            <ul>
+              <li>CADL_FACTORY class routine create_archetype_slot replaced by two routines
+              create_archetype_slot_anonymous and create_archetype_slot_identified</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h3>interim release BitKeeper cset 1.27 - 19 September 2004</h3>
+
+        <ul>
+          <li>enhancements
+
+            <ul>
+              <li>finished inline dADL support for C_DOMAIN_TYPE subtypes; correctly serialises now; use of parantheses
+              corrected - file names for serialisations other than ADL now replace the &#39;.adl&#39; extension at the
+              end rather than just appending &#39;.html&#39;, &#39;.xml&#39; or whatever..:wq - bug fixes - fix crash
+              if icon not available (black square now shows, plus message indicating which icon missing).</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h3>interim release BitKeeper cset 1.25 - 05 May 2004</h3>
+
+        <ul>
+          <li>changes
+
+            <ul>
+              <li>Renaming and re-arrangement of all classes and some attributes, as follows:
+
+                <ul>
+                  <li>CADL classes
+
+                    <ul>
+                      <li>CADL_ITEM -&gt; ARCHETYPE_CONSTRAINT</li>
+
+                      <li>CADL_OBJECT_ITEM -&gt; C_OBJECT</li>
+
+                      <li>type_name -&gt; rm_type_name</li>
+
+                      <li>CADL_NODE removed</li>
+
+                      <li>CADL_REL_NODE -&gt; C_ATTRIBUTE</li>
+
+                      <li>attr_name -&gt; rm_attr_name</li>
+
+                      <li>CADL_CARDINALITY -&gt; CARDINALITY</li>
+
+                      <li>CADL_OBJECT_NODE_REF -&gt; ARCHETYPE_INTERNAL_REF</li>
+
+                      <li>CADL_OBJECT_NODE with is_archetype_ref = True -&gt; ARCHETYPE_SLOT</li>
+
+                      <li>CADL_OBJECT_NODE with is_archetype_ref = False -&gt; C_COMPLEX_OBJECT</li>
+
+                      <li>CADL_OBJECT_TERM_REF with is_reference = True -&gt; CONSTRAINT_REF</li>
+
+                      <li>CADL_OBJECT_TERM_REF with is_reference = False -&gt; C_CODED_TERM</li>
+
+                      <li>CADL_OBJECT_SIMPLE -&gt; C_PRIMITIVE_OBJECT</li>
+
+                      <li>C_SIMPLE -&gt; C_PRIMITIVE</li>
+
+                      <li>ADL_ASSERTION -&gt; ASSERTION</li>
+                    </ul>
+                  </li>
+
+                  <li>DADL classes
+
+                    <ul>
+                      <li>DADL_ITEM -&gt; DT_ITEM</li>
+
+                      <li>DADL_NODE removed</li>
+
+                      <li>DADL_OBJECT_ITEM -&gt; DT_OBJECT_ITEM</li>
+
+                      <li>type_name -&gt; rm_type_name</li>
+
+                      <li>DADL_REL_NODE -&gt; DT_ATTRIBUTE_NODE</li>
+
+                      <li>attr_name -&gt; rm_attr_name</li>
+
+                      <li>DADL_OBJECT_NODE -&gt; DT_COMPLEX_OBJECT_NODE</li>
+
+                      <li>DADL_OBJECT_LEAF -&gt; DT_OBJECT_LEAF</li>
+
+                      <li>DADL_OBJECT_QUERY -&gt; DT_OBJECT_QUERY</li>
+
+                      <li>DADL_OBJECT_SIMPLE -&gt; DT_PRIMITIVE_OBJECT</li>
+
+                      <li>DADL_OBJECT_SIMPLE_LIST -&gt; DT_PRIMITIVE_OBJECT_LIST</li>
+
+                      <li>DADL_OBJECT_SIMPLE_INTERVAL -&gt; DT_PRIMITIVE_OBJECT_INTERVAL</li>
+                    </ul>
+                  </li>
+
+                  <li>DotNet classes
+
+                    <ul>
+                      <li>DOTNET_CADL_TREE_ITERATOR -&gt; DOTNET_ARCHETYPE_ITERATOR</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+
+            <h3>interim release BitKeeper cset 1.27 - 19 September 2004</h3>
+
+            <ul>
+              <li>enhancements
+
+                <ul>
+                  <li>finished inline dADL support for C_DOMAIN_TYPE subtypes; correctly serialises now; use of
+                  parantheses corrected - file names for serialisations other than ADL now replace the &#39;.adl&#39;
+                  extension at the end rather than just appending &#39;.html&#39;, &#39;.xml&#39; or whatever. - bug
+                  fixes - fix workbench crash if icon not available (black square now shows, plus message indicating
+                  which icon missing).</li>
+                </ul>
+              </li>
+            </ul>
+
+            <h3>interim release BitKeeper cset 1.23 - 09 September 2004</h3>
+
+            <ul>
+              <li>GUI fixes:
+
+                <ul>
+                  <li>added option dialog; tool now asks for editor and repository path if no .cfg file found on
+                  startup, and writes settings to .cfg file in startup directory - specialisated archetypes have a
+                  differnt icon in archetype explorer - specialised archetype parent archetype id now shown in GUI -
+                  general GUI size &amp; widget cleanup - Bug fixes: - unused parent codes in specialised archetypes no
+                  longer generate warnings - Enhancements: - ASSERTION-building factory routines exposed in interface -
+                  ontology sections all now save in sorted order of keys - ADL_INTERFACE has an attribute called
+                  openehr_version which contains the automatically version information from the software repository -
+                  useful for reporting bugs, using in &#39;about&#39; window.</li>
+                </ul>
+              </li>
+            </ul>
+
+            <h3>interim release BitKeeper cset 1.3.1.30 - 29 July 2004</h3>
+
+            <ul>
+              <li>added archetype explorer control on left side of tool - fixed error where empty term definition text
+              caused crash - corrected validation of found use_node paths - corrected error where sibling object nodes
+              with same code caused crash.</li>
+            </ul>
+
+            <h3>interim release BitKeeper cset 1.3.1.22 - 05 May 2004</h3>
+
+            <ul>
+              <li>re-engineered object models as described in draft ADL 1.2 manual (See openEHR website). This
+              doesn&#39;t affect standalong applications but does affect the DLLs. - added ADL keywords
+              &quot;allow_archetype&quot;, to replace &quot;use_archetype&quot;, and &quot;include&quot; and
+              &quot;exclude&quot; to define allowed and excluded sets of archetypes in an archetype slot. - slightly
+              imprved visual display in GUI tool with a new icon for 1:N attributes.</li>
+            </ul>
+
+            <h3>&quot;mar2004&quot; Release - 31 Mar 2004 (BitKeeper cset 1.3.1.13)</h3>
+
+            <ul>
+              <li>separated out .Net DLL into its own toolkit - ADL language 1.1; ADL language manual 1.1 - VB.net
+              sources updated - implements new interval syntax using &quot;||&quot;. - implementation of clinical ADL
+              types CODED_TEXT and ORDINAL conforming to syntax defined in version 1.1 of manual. - initial
+              experimental XML output for OWL as save option in ADL workbench. THis will be rewritten next version! -
+              many small bugs and limitations of DLLs fixed, allowing more powerful interrogation of the Archetype
+              ontology in memory from any .net language, or any application natively using the Eiffel backend (i.e. any
+              C/C++ app, or Java via JNI).</li>
+            </ul>
+
+            <h3>interim Release - 06 Feb 2004</h3>
+
+            <ul>
+              <li>ADL language 1.1; ADL language manual 0.9.9 - fixed REAL output error where &quot;.0&quot; forgotten
+              for round numbers - numerous small GUI fixes</li>
+            </ul>
+
+            <h3>interim Release - 27 Jan 2004</h3>
+
+            <ul>
+              <li>ADL language 1.0; ADL language manual 0.9.5 - added intervals as data types in dADL - intervals now
+              require &quot;|&quot; delimiters, e.g. &quot;|100..200|&quot;, &quot;|&lt;100|&quot;.</li>
+
+              <li>various minor bugs fixed in date/times, durations.</li>
+            </ul>
+
+            <h3>&quot;jan2004&quot; Release - 15 Jan 2004</h3>
+
+            <ul>
+              <li>ADL language 0.95 - Ontology model completely rewritten - now has its own functional interface
+              independent of dADL. Tested with C# and VB through dotNet DLL build. - date/time types now have
+              pattern-based constraint expressions - term references in cADL and dADL no longer need version id in
+              terminlogy part - it is now optional; e.g. [ICD9AM::F72] can be used instead of [ICD9AM(2003)::F72] -
+              introduction of clinical/scientific predefined type library, including constraint types (&quot;c_&quot;
+              types) for: * Text, Coded_text, Code_phrase * Quantity, Ordinal, Countable * Partial_date, Partial_time,
+              Partial_date_time New efficient syntax for coded term constraints: [terminology_id::code1, code2, code3,
+              ...] New efficient syntax for ordinals: 0|[local::at0003], 1|[local::at0004], 2|[local::at0005] -
+              improvements in GUI validator tree rendering of archetypes: * c_ordinals shown efficiently with codes and
+              comments * c_terms shown efficiently with codes and comments * presence of invariants indicated -
+              integration of ADL back-end with Clinician&#39;s Archetype Editor via dotNet: clinician-designed
+              archetypes now save as regular ADL.</li>
+            </ul>
+
+            <h3>Initial Release - November 2003</h3>
+
+            <ul>
+              <li>Basic validation functionality: - basic primitive types String, Integer, Real, Boolean - simple
+              version of constraints for primitive types Date, Time, Date_time - basic implementation of ontology
+              section of archetype</li>
+            </ul>
           </li>
         </ul>
       </div>
-  </div>
+    </div>
+
     <div id="navigation">
       <h2>Contents</h2>
+
       <ul>
-        <li value="0"> <a href="index.html">Home</a> </li>
-        <li value="0"> <a href="getting_started.html">Getting started</a> </li>
-        <li value="0"> <a href="browsing_archetypes.html">Browsing and compiling</a> </li>
-        <li value="0"> <a href="learning_adl_15.html">Learning about ADL 1.5</a> </li>
-        <li value="0"> <a href="templates.html">Working with templates</a> </li>
-        <li value="0"> <a href="test_tool.html">The test tool</a> </li>
-        <li value="0"> <a href="en13606.html">EN13606</a> </li>
-        <li value="0"> <a href="support.html">Support and contributing</a> </li>
-        <li value="0"> <a href="release_notes.html">Release notes</a> </li>
+        <li value="0"><a href="index.html">Home</a></li>
+
+        <li value="0"><a href="getting_started.html">Getting started</a></li>
+
+        <li value="0"><a href="browsing_archetypes.html">Browsing and compiling</a></li>
+
+        <li value="0"><a href="learning_adl_15.html">Learning about ADL 1.5</a></li>
+
+        <li value="0"><a href="templates.html">Working with templates</a></li>
+
+        <li value="0"><a href="test_tool.html">The test tool</a></li>
+
+        <li value="0"><a href="en13606.html">EN13606</a></li>
+
+        <li value="0"><a href="support.html">Support and contributing</a></li>
+
+        <li value="0"><a href="release_notes.html">Release notes</a></li>
       </ul>
     </div><!--       <div id="extra">
-	<h2>XXXXXX</h2>
-	<p>xxxxx.</p>
-</div> --><div id="footer">
+  <h2>XXXXXX</h2>
+  <p>xxxxx.</p>
+</div> -->
+
+    <div id="footer">
       <ul>
-        <li value="0"> <a href="index.html">Home</a> </li>
-        <li value="0"> <a href="getting_started.html">Getting started</a> </li>
-        <li value="0"> <a href="browsing_archetypes.html">Browsing and compiling</a> </li>
-        <li value="0"> <a href="learning_adl_15.html">Learning about ADL 1.5</a> </li>
-        <li value="0"> <a href="templates.html">Working with templates</a> </li>
-        <li value="0"> <a href="test_tool.html">The test tool</a> </li>
-        <li value="0"> <a href="en13606.html">EN13606</a> </li>
-        <li value="0"> <a href="support.html">Support and contributing</a> </li>
-        <li value="0"> <a href="release_notes.html">Release notes</a> </li>
+        <li value="0"><a href="index.html">Home</a></li>
+
+        <li value="0"><a href="getting_started.html">Getting started</a></li>
+
+        <li value="0"><a href="browsing_archetypes.html">Browsing and compiling</a></li>
+
+        <li value="0"><a href="learning_adl_15.html">Learning about ADL 1.5</a></li>
+
+        <li value="0"><a href="templates.html">Working with templates</a></li>
+
+        <li value="0"><a href="test_tool.html">The test tool</a></li>
+
+        <li value="0"><a href="en13606.html">EN13606</a></li>
+
+        <li value="0"><a href="support.html">Support and contributing</a></li>
+
+        <li value="0"><a href="release_notes.html">Release notes</a></li>
       </ul>
-      <p>Copyright 2010 openEHR Foundation - $LastChangedDate: 2010-08-11 12:42:28 +0100 (Wed, 11 Aug 2010) $ $LastChangedRevision$</p>
+
+      <p>Copyright 2010 openEHR Foundation - $LastChangedDate: 2010-08-11 12:42:28 +0100 (Wed, 11 Aug 2010) $
+      $LastChangedRevision$</p>
     </div>
   </div>
 </body>

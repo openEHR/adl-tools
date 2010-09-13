@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
   <title>AWB test page</title>
   <meta content="text/html; charset=us-ascii" http-equiv="Content-Type" />
@@ -32,7 +32,9 @@
       <div id="content">
         <h2>Overview</h2>
 
-        <p>The test page in the Workbench  is accessible via the 'Test' tab on the right hand side of the tool. It enables batch execution of test or other routines built into the tool archetypes, and is mainly a facility for debugging archetypes, as well as parser logic.</p>
+        <p>The test page in the Workbench is accessible via the &#39;Test&#39; tab on the right hand side of the tool.
+        It enables batch execution of test or other routines built into the tool archetypes, and is mainly a facility
+        for debugging archetypes, as well as parser logic.</p>
 
         <h2>Configuration</h2>
 
@@ -45,27 +47,28 @@
         this will be as follows:</p>
 
         <ul>
-          <li>$profile, i.e. names of your repository profiles, e.g. &#39;CKM&#39;, &#39;ADL_1.5_test&#39;, etc</li>
+          <li value="0">$profile, i.e. names of your repository profiles, e.g. &#39;CKM&#39;, &#39;ADL_1.5_test&#39;,
+          etc</li>
 
-          <li style="list-style: none; display: inline">
+          <li style="LIST-STYLE-TYPE: none; DISPLAY: inline" value="0">
             <ul>
-              <li>source</li>
+              <li value="0">source</li>
 
-              <li style="list-style: none; display: inline">
+              <li style="LIST-STYLE-TYPE: none; DISPLAY: inline" value="0">
                 <ul>
-                  <li>orig</li>
+                  <li value="0">orig</li>
 
-                  <li>new</li>
+                  <li value="0">new</li>
                 </ul>
               </li>
 
-              <li>flat</li>
+              <li value="0">flat</li>
 
-              <li style="list-style: none; display: inline">
+              <li style="LIST-STYLE-TYPE: none; DISPLAY: inline" value="0">
                 <ul>
-                  <li>orig</li>
+                  <li value="0">orig</li>
 
-                  <li>new</li>
+                  <li value="0">new</li>
                 </ul>
               </li>
             </ul>
@@ -74,30 +77,46 @@
 
         <h2>Selecting archetypes</h2>
 
-        <p>The test page allows you to batch process as many or as few archetypes as you like. You choose them via the check-box column, with higher levels of the hierarchy being choosable in blocks via the associated check box. You can experiment with this. <a href="images/test_page_arch_select.png">Here</a> is an example showing how the EHR EVALUATION group of archetypes was chosen with two mouse clicks, first the top checkbox, to uncheck all archetypes, then the EVALUATION check-box, to check all EVALUATION archetypes. You can continue checking / unchecking to get exactly the set you want. Once you are satisfied, you can hit the Go button to start the tests running. Each test that succeeds is indicated with a green tick, failed tests with a red cross, and non-applicability with 'n/a'.</p>
+        <p>The test page allows you to batch process as many or as few archetypes as you like. You choose them via the
+        check-box column, with higher levels of the hierarchy being choosable in blocks via the associated check box.
+        You can experiment with this. <a href="images/test_page_arch_select.png">Here</a> is an example showing how the
+        EHR EVALUATION group of archetypes was chosen with two mouse clicks, first the top checkbox, to uncheck all
+        archetypes, then the EVALUATION check-box, to check all EVALUATION archetypes. You can continue checking /
+        unchecking to get exactly the set you want. Once you are satisfied, you can hit the Go button to start the
+        tests running. Each test that succeeds is indicated with a green tick, failed tests with a red cross, and
+        non-applicability with &#39;n/a&#39;.</p>
 
         <h2>What the tests do</h2>
 
         <p>The tests are as follows (names are in the columns).</p>
 
         <ul>
-          <li><b>Parse</b>: perform a normal compile on the archetype; if there is only a legacy (.adl) file available,
-          an initial .adl to .adls conversion will be done;</li>
+          <li value="0"><b>Parse</b>: perform a normal compile on the archetype; if there is only a legacy (.adl) file
+          available, an initial .adl to .adls conversion will be done;</li>
 
-          <li><b>Save src (orig)</b>: save the differential source (either what was converted from a .adl file, or the
-          existing .adls file), to the directory $diff_test/$profile/source/orig;</li>
+          <li value="0"><b>Regression</b>: perform a regression comparison of the compilation results with expected
+          results, which are encoded in the archetype details/other_deals section using the &quot;regression&quot; tag.
+          See <a href=
+          "http://www.openehr.org/svn/knowledge2/TRUNK/archetypes/ADL_1.5_test/validity/basics/openEHR-TEST_PKG-ENTRY.VACCD_illegal_concept_code.v1.adls">
+          this archetype</a> for example. Regression testing is only performed if the Regression button on the user
+          interface is selected by the user, as it involves some extra computing cost, and is only useful for test
+          archetypes found in the test repository, or archetypes similarly including the &quot;regression&quot; item
+          within the details/other_deals.</li>
 
-          <li><b>Save source (gen)</b>: serialise the compiled in-memory AOM archetype back out to ADL syntax, to the
+          <li value="0"><b>Save src (orig)</b>: save the differential source (either what was converted from a .adl
+          file, or the existing .adls file), to the directory $diff_test/$profile/source/orig;</li>
+
+          <li value="0"><b>Save source (gen)</b>: serialise the compiled in-memory AOM archetype back out to ADL
+          syntax, to the directory $diff_test/$profile/source/new;</li>
+
+          <li value="0"><b>Save legacy</b>: if there is a .adl (ADL 1.4) file, save it to the directory , to the
+          directory $diff_test/$profile/flat/orig, with a &#39;.adlf&#39; extension;</li>
+
+          <li value="0"><b>Save flat</b>: serialise the in-memory flat archetype out to the directory , to the
           directory $diff_test/$profile/source/new;</li>
 
-          <li><b>Save legacy</b>: if there is a .adl (ADL 1.4) file, save it to the directory , to the directory
-          $diff_test/$profile/flat/orig, with a &#39;.adlf&#39; extension;</li>
-
-          <li><b>Save flat</b>: serialise the in-memory flat archetype out to the directory , to the directory
-          $diff_test/$profile/source/new;</li>
-
-          <li><b>Compare src</b>: perform a simple compare between the original source (.adls) file contents and the
-          serialised source form. An exact match indicates identical file length, and usually 100% faithful
+          <li value="0"><b>Compare src</b>: perform a simple compare between the original source (.adls) file contents
+          and the serialised source form. An exact match indicates identical file length, and usually 100% faithful
           round-tripping.</li>
         </ul>
 
@@ -105,45 +124,76 @@
         (i.e. &#39;saved&#39; in the sense of a normal editor tool) forms of a source archetype, and also between the
         original .adl and tool-generated flattened form of an archetype (remembering that all .adl files are
         essentially flat-form archetypes).</p>
+		
+        <h2>Regression Testing</h2>
+		
+		<p>he regression testing facility is intended to be used with the test archetypes found in the knowledge2 SVN repository, in the TRUNK\archetypes\ADL_1.5_test directory. This directory contains 150+ archetypes designed specifically to exercise the ADL compiler. Each such archetype is hand-built to either pass or fail, exercising a specific part of the ADL 1.5 specification.</p>
+		<p>Regression testing is turned via a button on the Test page, and the results show up in the second column, as shown here.</p>
 
         <h2>Viewing results</h2>
 
         <p>The files described above are saved in a way to make it convenient to look at diffs using a typical
-        &#39;diff&#39; tool capable of diffing same-named files in sibling directories. This is useful to assess round-tripping correctness and to find bugs. For the examples here, we have used the <a href="http://winmerge.org/">open source Winmerge tool</a>, but you can use any tool you like.</p>
+        &#39;diff&#39; tool capable of diffing same-named files in sibling directories. This is useful to assess
+        round-tripping correctness and to find bugs. For the examples here, we have used the <a href=
+        "http://winmerge.org/">open source Winmerge tool</a>, but you can use any tool you like.</p>
 
-        <p>Based on the selection of EVALUATION archetypes in the CKM repository, here is the resulting directory structure. Below are some example diff views.</p>
-		<p>TBC</p>
+        <p>Based on the selection of EVALUATION archetypes in the CKM repository, here is the resulting directory
+        structure. Below are some example diff views.</p>
+
+        <p>TBC</p>
       </div>
-  </div>
+    </div>
+
     <div id="navigation">
       <h2>Contents</h2>
+
       <ul>
-        <li value="0"> <a href="index.html">Home</a> </li>
-        <li value="0"> <a href="getting_started.html">Getting started</a> </li>
-        <li value="0"> <a href="browsing_archetypes.html">Browsing and compiling</a> </li>
-        <li value="0"> <a href="learning_adl_15.html">Learning about ADL 1.5</a> </li>
-        <li value="0"> <a href="templates.html">Working with templates</a> </li>
-        <li value="0"> <a href="test_tool.html">The test tool</a> </li>
-        <li value="0"> <a href="en13606.html">EN13606</a> </li>
-        <li value="0"> <a href="support.html">Support and contributing</a> </li>
-        <li value="0"> <a href="release_notes.html">Release notes</a> </li>
+        <li value="0"><a href="index.html">Home</a></li>
+
+        <li value="0"><a href="getting_started.html">Getting started</a></li>
+
+        <li value="0"><a href="browsing_archetypes.html">Browsing and compiling</a></li>
+
+        <li value="0"><a href="learning_adl_15.html">Learning about ADL 1.5</a></li>
+
+        <li value="0"><a href="templates.html">Working with templates</a></li>
+
+        <li value="0"><a href="test_tool.html">The test tool</a></li>
+
+        <li value="0"><a href="en13606.html">EN13606</a></li>
+
+        <li value="0"><a href="support.html">Support and contributing</a></li>
+
+        <li value="0"><a href="release_notes.html">Release notes</a></li>
       </ul>
     </div><!--       <div id="extra">
-	<h2>XXXXXX</h2>
-	<p>xxxxx.</p>
-</div> --><div id="footer">
+  <h2>XXXXXX</h2>
+  <p>xxxxx.</p>
+</div> -->
+
+    <div id="footer">
       <ul>
-        <li value="0"> <a href="index.html">Home</a> </li>
-        <li value="0"> <a href="getting_started.html">Getting started</a> </li>
-        <li value="0"> <a href="browsing_archetypes.html">Browsing and compiling</a> </li>
-        <li value="0"> <a href="learning_adl_15.html">Learning about ADL 1.5</a> </li>
-        <li value="0"> <a href="templates.html">Working with templates</a> </li>
-        <li value="0"> <a href="test_tool.html">The test tool</a> </li>
-        <li value="0"> <a href="en13606.html">EN13606</a> </li>
-        <li value="0"> <a href="support.html">Support and contributing</a> </li>
-        <li value="0"> <a href="release_notes.html">Release notes</a> </li>
+        <li value="0"><a href="index.html">Home</a></li>
+
+        <li value="0"><a href="getting_started.html">Getting started</a></li>
+
+        <li value="0"><a href="browsing_archetypes.html">Browsing and compiling</a></li>
+
+        <li value="0"><a href="learning_adl_15.html">Learning about ADL 1.5</a></li>
+
+        <li value="0"><a href="templates.html">Working with templates</a></li>
+
+        <li value="0"><a href="test_tool.html">The test tool</a></li>
+
+        <li value="0"><a href="en13606.html">EN13606</a></li>
+
+        <li value="0"><a href="support.html">Support and contributing</a></li>
+
+        <li value="0"><a href="release_notes.html">Release notes</a></li>
       </ul>
-      <p>Copyright 2010 openEHR Foundation - $LastChangedDate$ $LastChangedRevision$</p>
+
+      <p>Copyright 2010 openEHR Foundation - $LastChangedDate$
+      $LastChangedRevision$</p>
     </div>
   </div>
 </body>
