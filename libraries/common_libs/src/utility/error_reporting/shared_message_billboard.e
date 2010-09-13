@@ -27,6 +27,8 @@ feature -- Access
 			create Result.make
 		end
 
+feature -- Commands
+
 	post_error(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING])
 			-- append to the  current contents of billboard an error message corresponding to id,
 			-- with positional parameters replaced by contents of optional args

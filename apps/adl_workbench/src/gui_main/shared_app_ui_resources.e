@@ -308,25 +308,6 @@ feature -- Access
 			not_empty: not Result.is_empty
 		end
 
-	Release_notes_text: attached STRING
-			-- News dialog.
-		local
-			rn_file: PLAIN_TEXT_FILE
-		once
-			create rn_file.make (Release_notes_file_path)
-
-			if rn_file.exists and then rn_file.is_readable then
-				rn_file.open_read
-				rn_file.read_stream (rn_file.count)
-				Result := rn_file.last_string
-				rn_file.close
-			else
-				Result := "(%"" + Release_notes_file_path + "%" file is missing)"
-			end
-		ensure
-			not_empty: not Result.is_empty
-		end
-
 feature -- Application Switches
 
 	current_work_directory: attached STRING

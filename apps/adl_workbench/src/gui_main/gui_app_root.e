@@ -18,6 +18,9 @@ inherit
 	EV_APPLICATION
 
 	SHARED_APP_ROOT
+		export
+			{NONE} all;
+			{ANY} app_root
 		undefine
 			copy, default_create
 		end

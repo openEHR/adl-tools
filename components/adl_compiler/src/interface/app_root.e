@@ -17,12 +17,38 @@ class APP_ROOT
 
 inherit
 	SHARED_APP_RESOURCES
+		export
+			{NONE} all;
+			{ANY} user_config_file_path
+		end
+
+	SHARED_KNOWLEDGE_REPOSITORY
+		export
+			{NONE} all;
+			{ANY} arch_dir
+		end
+
+	SHARED_ARCHETYPE_COMPILER
+		export
+			{NONE} all;
+			{ANY} archetype_compiler
+		end
 
 	SHARED_REFERENCE_MODEL_ACCESS
+		export
+			{NONE} all
+		end
 
 	SHARED_SOURCE_REPOSITORIES
+		export
+			{NONE} all;
+			{ANY} source_repositories
+		end
 
 	SHARED_ARCHETYPE_SERIALISERS
+		export
+			{NONE} all
+		end
 
 create
 	make
