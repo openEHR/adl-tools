@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-5-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-5-0 http://www.eiffel.com/developers/xml/configuration-1-5-0.xsd" name="adl_compiler" uuid="D02A4E49-CAAC-4455-8A72-2D3F91BECA98">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-6-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-6-0 http://www.eiffel.com/developers/xml/configuration-1-6-0.xsd" name="adl_compiler" uuid="D02A4E49-CAAC-4455-8A72-2D3F91BECA98">
 	<target name="adl_compiler">
-		<root feature="make" class="APP_ROOT"/>
+		<root class="APP_ROOT" feature="make"/>
 		<file_rule>
 			<exclude>/EIFGENs$</exclude>
-			<exclude>/.svn$</exclude>
 			<exclude>/CVS$</exclude>
+			<exclude>/.svn$</exclude>
 		</file_rule>
 		<option warning="true">
 			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
 		</option>
-		<precompile name="base_pre" location="$ISE_PRECOMP/base.ecf"/>
-		<library name="base" location="$ISE_LIBRARY/library/base/base.ecf">
+		<precompile name="base_pre" location="$ISE_PRECOMP\base.ecf"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf">
 			<renaming old_name="C_STRING" new_name="BASE_C_STRING"/>
 		</library>
 		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
@@ -25,8 +25,9 @@
 			<renaming old_name="C_DATE" new_name="TIME_C_DATE"/>
 			<renaming old_name="INTERVAL" new_name="TIME_INTERVAL"/>
 		</library>
-
-		<cluster name="adl_compiler" location="..\..\..\components\adl_compiler\src\" recursive="true"/>
+		<cluster name="adl_compiler" location="..\..\..\components\adl_compiler\src\" recursive="true">
+			<visible class="APP_ROOT"/>
+		</cluster>
 		<cluster name="archetype_repository" location="..\..\..\components\archetype_repository\src\" recursive="true">
 			<option>
 				<assertions precondition="true" postcondition="true" check="true" loop="true" supplier_precondition="true"/>
