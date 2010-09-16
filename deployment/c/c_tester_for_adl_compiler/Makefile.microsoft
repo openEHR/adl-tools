@@ -49,10 +49,22 @@ END_TEST =
 
 EXTERNALS = 
 
-all:: adlc_test_app.exe
+all:: adlc_test_app.exe test.exe
 	echo done > completed.eif
 
+TEST_OBJECTS = test.obj
+
 OBJECTS = adlc_test_app.obj libadl_compiler.lib
+
+test.exe: test.lnk
+	$(COMMAND_MAKEFILE)
+	link @test.lnk
+
+test.lnk: $(TEST_OBJECTS) Makefile
+	if exist $@ $(RM) $@
+	@echo $(LDFLAGS) $(CCLDFLAGS) -OUT:test.exe > $@
+	@echo $(TEST_OBJECTS) >> $@
+	@echo ws2_32.lib >> $@
 
 adlc_test_app.exe: adlc_test_app.lnk
 	$(COMMAND_MAKEFILE)
