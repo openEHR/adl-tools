@@ -17,10 +17,10 @@ class APP_ROOT
 
 inherit
 	SHARED_APP_RESOURCES
-		export
-			{NONE} all;
-			{ANY} user_config_file_path
-		end
+--		export
+--			{NONE} all;
+--			{ANY} user_config_file_path
+--		end
 
 	SHARED_KNOWLEDGE_REPOSITORY
 		export
