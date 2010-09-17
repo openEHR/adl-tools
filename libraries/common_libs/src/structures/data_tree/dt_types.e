@@ -30,33 +30,40 @@ feature {NONE} -- Definitions
 			Result.extend (dynamic_type (create {NATURAL_16}))
 			Result.extend (dynamic_type (create {NATURAL_32}))
 			Result.extend (dynamic_type (create {NATURAL_64}))
+
 			Result.extend (dynamic_type (create {INTEGER}))
 			Result.extend (dynamic_type (create {INTEGER_8}))
 			Result.extend (dynamic_type (create {INTEGER_16}))
 			Result.extend (dynamic_type (create {INTEGER_32}))
 			Result.extend (dynamic_type (create {INTEGER_64}))
+
 			Result.extend (dynamic_type (create {REAL}))
 			Result.extend (dynamic_type (create {REAL_32}))
 			Result.extend (dynamic_type (create {REAL_64}))
 			Result.extend (dynamic_type (create {DOUBLE}))
+
 			Result.extend (dynamic_type (create {BOOLEAN}))
+
 			Result.extend (dynamic_type (create {CHARACTER}))
 			Result.extend (dynamic_type (create {CHARACTER_8}))
 			Result.extend (dynamic_type (create {CHARACTER_32}))
+
 			Result.extend (dynamic_type (create {STRING}.make_empty))
 			Result.extend (dynamic_type (create {STRING_8}.make_empty))
 			Result.extend (dynamic_type (create {STRING_32}.make_empty))
+
 			Result.extend (dynamic_type (create {DATE}.make_now))
 			Result.extend (dynamic_type (create {DATE_TIME}.make_now))
 			Result.extend (dynamic_type (create {TIME}.make_now))
 			Result.extend (dynamic_type (create {DATE_TIME_DURATION}.make (0, 0, 0, 0, 0, 0)))
+
+			Result.extend (dynamic_type (create {ISO8601_DATE}.make_from_string("2000-01-01")))
+			Result.extend (dynamic_type (create {ISO8601_DATE_TIME}.make_from_string("2000-01-01T00:00:00")))
+			Result.extend (dynamic_type (create {ISO8601_TIME}.make_from_string("00:00:00")))
+			Result.extend (dynamic_type (create {ISO8601_DURATION}.make_from_string ("P1Y")))
+
 			Result.extend (dynamic_type (create {CODE_PHRASE}))
 			Result.extend (dynamic_type (create {URI}.make_from_string ("http://no.way.home")))
---			Result.extend (dynamic_type (create {INTEGER_REF}))
---			Result.extend (dynamic_type (create {REAL_REF}))
---			Result.extend (dynamic_type (create {DOUBLE_REF}))
---			Result.extend (dynamic_type (create {BOOLEAN_REF}))
---			Result.extend (dynamic_type (create {CHARACTER_REF}))
 
 			-- When DT_OBJECT_CONVERTER retrieves the type id of a .NET primitive type via field_static_type_of_type,
 			-- it receives a primitive .NET type (Int32, etc.), which is compatible with the corresponding Eiffel type,
@@ -91,48 +98,62 @@ feature {NONE} -- Definitions
 			seq_real_64: SEQUENCE [REAL_64]
 			seq_double: SEQUENCE [DOUBLE]
 			seq_string: SEQUENCE [STRING]
+			seq_string_8: SEQUENCE [STRING_8]
+			seq_string_32: SEQUENCE [STRING_32]
 			seq_character: SEQUENCE [CHARACTER]
 			seq_character_8: SEQUENCE [CHARACTER_8]
 			seq_character_32: SEQUENCE [CHARACTER_32]
---			seq_boolean_ref: SEQUENCE [BOOLEAN_REF]
---			seq_integer_ref: SEQUENCE [INTEGER_REF]
---			seq_real_ref: SEQUENCE [REAL_REF]
---			seq_double_ref: SEQUENCE [DOUBLE_REF]
---			seq_character_ref: SEQUENCE [CHARACTER_REF]
 			seq_date: SEQUENCE [DATE]
 			seq_date_time: SEQUENCE [DATE_TIME]
 			seq_time: SEQUENCE [TIME]
 			seq_duration: SEQUENCE [DATE_TIME_DURATION]
+			seq_iso8601_date: SEQUENCE [ISO8601_DATE]
+			seq_iso8601_date_time: SEQUENCE [ISO8601_DATE_TIME]
+			seq_iso8601_time: SEQUENCE [ISO8601_TIME]
+			seq_iso8601_duration: SEQUENCE [ISO8601_DURATION]
 			seq_uri: SEQUENCE [URI]
 			seq_code_phrase: SEQUENCE [CODE_PHRASE]
 		once
 			Create Result.make (0)
 			Result.compare_objects
+			Result.extend (dynamic_type_from_string ("SEQUENCE [NATURAL]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [NATURAL_8]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [NATURAL_16]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [NATURAL_32]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [NATURAL_64]"))
+
 			Result.extend (dynamic_type_from_string ("SEQUENCE [INTEGER]"))
 			Result.extend (dynamic_type_from_string ("SEQUENCE [INTEGER_8]"))
 			Result.extend (dynamic_type_from_string ("SEQUENCE [INTEGER_16]"))
 			Result.extend (dynamic_type_from_string ("SEQUENCE [INTEGER_32]"))
 			Result.extend (dynamic_type_from_string ("SEQUENCE [INTEGER_64]"))
+
 			Result.extend (dynamic_type_from_string ("SEQUENCE [BOOLEAN]"))
+
 			Result.extend (dynamic_type_from_string ("SEQUENCE [REAL]"))
 			Result.extend (dynamic_type_from_string ("SEQUENCE [REAL_32]"))
 			Result.extend (dynamic_type_from_string ("SEQUENCE [REAL_64]"))
 			Result.extend (dynamic_type_from_string ("SEQUENCE [DOUBLE]"))
+
 			Result.extend (dynamic_type_from_string ("SEQUENCE [CHARACTER]"))
 			Result.extend (dynamic_type_from_string ("SEQUENCE [CHARACTER_8]"))
 			Result.extend (dynamic_type_from_string ("SEQUENCE [CHARACTER_32]"))
+
 			Result.extend (dynamic_type_from_string ("SEQUENCE [STRING]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [STRING_8]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [STRING_32]"))
+
 			Result.extend (dynamic_type_from_string ("SEQUENCE [DATE]"))
 			Result.extend (dynamic_type_from_string ("SEQUENCE [DATE_TIME]"))
 			Result.extend (dynamic_type_from_string ("SEQUENCE [TIME]"))
-			Result.extend (dynamic_type_from_string ("SEQUENCE [DURATION]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [DATE_TIME_DURATION]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [ISO8601_DATE]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [ISO8601_DATE_TIME]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [ISO8601_TIME]"))
+			Result.extend (dynamic_type_from_string ("SEQUENCE [ISO8601_DURATION]"))
+
 			Result.extend (dynamic_type_from_string ("SEQUENCE [URI]"))
 			Result.extend (dynamic_type_from_string ("SEQUENCE [CODE_PHRASE]"))
---			Result.extend (dynamic_type_from_string ("SEQUENCE [INTEGER_REF]"))
---			Result.extend (dynamic_type_from_string ("SEQUENCE [BOOLEAN_REF]"))
---			Result.extend (dynamic_type_from_string ("SEQUENCE [REAL_REF]"))
---			Result.extend (dynamic_type_from_string ("SEQUENCE [DOUBLE_REF]"))
---			Result.extend (dynamic_type_from_string ("SEQUENCE [CHARACTER_REF]"))
 		end
 
 	primitive_interval_types: ARRAYED_LIST [INTEGER]
@@ -145,22 +166,27 @@ feature {NONE} -- Definitions
 			Result.extend (dynamic_type (create {INTERVAL [NATURAL_16]}))
 			Result.extend (dynamic_type (create {INTERVAL [NATURAL_32]}))
 			Result.extend (dynamic_type (create {INTERVAL [NATURAL_64]}))
+
 			Result.extend (dynamic_type (create {INTERVAL [INTEGER]}))
 			Result.extend (dynamic_type (create {INTERVAL [INTEGER_8]}))
 			Result.extend (dynamic_type (create {INTERVAL [INTEGER_16]}))
 			Result.extend (dynamic_type (create {INTERVAL [INTEGER_32]}))
 			Result.extend (dynamic_type (create {INTERVAL [INTEGER_64]}))
+
 			Result.extend (dynamic_type (create {INTERVAL [REAL]}))
 			Result.extend (dynamic_type (create {INTERVAL [REAL_32]}))
 			Result.extend (dynamic_type (create {INTERVAL [REAL_64]}))
 			Result.extend (dynamic_type (create {INTERVAL [DOUBLE]}))
+
 			Result.extend (dynamic_type (create {INTERVAL [DATE]}))
 			Result.extend (dynamic_type (create {INTERVAL [DATE_TIME]}))
 			Result.extend (dynamic_type (create {INTERVAL [TIME]}))
 			Result.extend (dynamic_type (create {INTERVAL [DATE_TIME_DURATION]}))
---			Result.extend (dynamic_type (create {INTERVAL [INTEGER_REF]}))
---			Result.extend (dynamic_type (create {INTERVAL [REAL_REF]}))
---			Result.extend (dynamic_type (create {INTERVAL [DOUBLE_REF]}))
+
+			Result.extend (dynamic_type (create {INTERVAL [ISO8601_DATE]}))
+			Result.extend (dynamic_type (create {INTERVAL [ISO8601_DATE_TIME]}))
+			Result.extend (dynamic_type (create {INTERVAL [ISO8601_TIME]}))
+			Result.extend (dynamic_type (create {INTERVAL [ISO8601_DURATION]}))
 		end
 
 feature -- Access
@@ -178,11 +204,7 @@ feature -- Access
 					if primitive_sequence_types.has(a_type_id) then
 						Result := a_type_id
 					else
-						from
-							primitive_sequence_types.start
-						until
-							primitive_sequence_types.off or Result /= 0
-						loop
+						from primitive_sequence_types.start until primitive_sequence_types.off or Result /= 0 loop
 							debug ("DT")
 								io.put_string(generator +
 									".primitive_sequence_conforming_type: call to type_conforms_to(" +
@@ -218,17 +240,17 @@ feature -- Access
 		require
 			Type_valid: a_type_id >= 0
 		do
-debug ("DT")
-	io.put_string("--->ENTER any_primitive_conforming_type(" + a_type_id.out + ")%N")
-end
+			debug ("DT")
+				io.put_string("--->ENTER any_primitive_conforming_type(" + a_type_id.out + ")%N")
+			end
 			if is_any_primitive_type(a_type_id) then
 				Result := a_type_id
 			elseif generic_count_of_type(a_type_id) > 0 then
 				Result := primitive_sequence_conforming_type(a_type_id)
 			end
-debug ("DT")
-	io.put_string("<---EXIT any_primitive_conforming_type(" + a_type_id.out + ")=" + Result.out + "%N")
-end
+			debug ("DT")
+				io.put_string("<---EXIT any_primitive_conforming_type(" + a_type_id.out + ")=" + Result.out + "%N")
+			end
 		end
 
 feature -- Status Report
@@ -339,13 +361,25 @@ feature -- Status Report
 feature {NONE} -- Implementation
 
 	sequence_any_type_id: INTEGER
-			-- dynamic type of SEQUENCE[ANY]
+			-- dynamic type of SEQUENCE[ANY] in this system
 		once
 			Result := dynamic_type_from_string("SEQUENCE[ANY]")
 		end
 
+	interval_any_type_id: INTEGER
+			-- dynamic type of INTERVAL [PART_COMPARABLE] in this system
+		once
+			Result := dynamic_type (create {INTERVAL [PART_COMPARABLE]}.default_create)
+		end
+
+	arrayed_list_any_type_id: INTEGER
+			-- dynamic type of ARRAYED_LIST[ANY] in this system
+		once
+			Result := dynamic_type (create {ARRAYED_LIST[ANY]}.make(0))
+		end
+
 	hash_table_any_hashable_type_id: INTEGER
-			-- dynamic type of HASH_TABLE[ANY, HASHABLE]
+			-- dynamic type of HASH_TABLE[ANY, HASHABLE] in this system
 		once
 			Result := dynamic_type (create {HASH_TABLE [ANY, HASHABLE]}.make (0))
 		end

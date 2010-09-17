@@ -9,14 +9,18 @@ note
 	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL"
-	revision:    "$LastChangedRevision"
-	last_change: "$LastChangedDate"
+	file:        "$URL$"
+	revision:    "$LastChangedRevision$"
+	last_change: "$LastChangedDate$"
 
 class APP_ROOT
 
 inherit
 	SHARED_APP_RESOURCES
+
+	SHARED_KNOWLEDGE_REPOSITORY
+
+	SHARED_ARCHETYPE_COMPILER
 
 	SHARED_REFERENCE_MODEL_ACCESS
 
@@ -24,12 +28,16 @@ inherit
 
 	SHARED_ARCHETYPE_SERIALISERS
 
-create
-	make
-	
 feature -- Initialisation
 
-	make
+	set_application_developer_name (a_name: attached STRING)
+			-- override the default of "openEHR" for the developer (i.e. vendor) name; this
+			-- name is what gets used in the user's app config path, install directory and so on
+		do
+			application_developer_name.make_from_string (a_name)
+		end
+
+	initialise
 		local
 			rep_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
 		once
@@ -53,13 +61,8 @@ feature -- Initialisation
 					post_warning (Current, "initialise", "validation_non_strict", Void)
 				end
 
-				-- adjust for repository profiles being out of sync with current profile setting (e.g. due to
-				-- manual editing of .cfg file
-				rep_profiles := repository_profiles
-				if not rep_profiles.is_empty and not rep_profiles.has (current_repository_profile) then
-					rep_profiles.start
-					set_current_repository_profile (rep_profiles.key_for_iteration)
-				end
+				-- initialise serialisers
+				initialise_serialisers
 
 				-- set up the RM schemas
 				rm_schemas_access.initialise(default_rm_schema_directory, rm_schemas_load_list)
@@ -70,28 +73,49 @@ feature -- Initialisation
 					rm_schemas_load_list.do_all(agent (s: STRING) do strx.append(s + ", ") end)
 					strx.remove_tail (2) -- remove final ", "
 					post_warning (Current, "initialise", "model_access_e0", <<strx, default_rm_schema_directory>>)
-				else
-					if not reference_repository_path.is_empty then
-						if directory_exists(reference_repository_path) then
-							source_repositories.set_reference_repository (reference_repository_path)
-
-							if not work_repository_path.is_empty then
-								if source_repositories.valid_working_repository_path (work_repository_path) then
-									source_repositories.set_work_repository (work_repository_path)
-								else
-									post_error (Current, "initialise", "work_repo_not_found", <<work_repository_path>>)
-								end
-							end
-						else
-							post_error (Current, "initialise", "ref_repo_not_found", <<reference_repository_path>>)
-						end
-					end
 				end
 
-				-- initialise serialisers
-				initialise_serialisers
+				-- adjust for repository profiles being out of sync with current profile setting (e.g. due to
+				-- manual editing of .cfg file
+				rep_profiles := repository_profiles
+				if not rep_profiles.is_empty and not rep_profiles.has (current_repository_profile) then
+					rep_profiles.start
+					set_current_repository_profile(rep_profiles.key_for_iteration)
+				end
 
 				initialised := True
+			end
+		end
+
+	switch_to_profile (a_profile: attached STRING)
+			-- switch to `a_profile'
+		require
+			repository_profiles.has (a_profile)
+		do
+			if not a_profile.same_string (current_repository_profile) then
+				set_current_repository_profile(a_profile)
+				use_current_profile
+			end
+		end
+
+	use_current_profile
+			-- switch to current profile
+		do
+			if directory_exists (reference_repository_path) then
+				source_repositories.set_reference_repository (reference_repository_path)
+				if not work_repository_path.is_empty then
+					if source_repositories.valid_working_repository_path (work_repository_path) then
+						source_repositories.set_work_repository (work_repository_path)
+					else
+						post_error (Current, "switch_to_profile", "work_repo_not_found", <<work_repository_path>>)
+					end
+				else
+					source_repositories.remove_work_repository
+				end
+				arch_dir.clear
+				arch_dir.populate
+			else
+				post_error (Current, "switch_to_profile", "ref_repo_not_found", <<reference_repository_path>>)
 			end
 		end
 
@@ -140,13 +164,17 @@ feature {NONE} -- Implementation
 			["export_html_question"] = <"Only successfully built archetypes can be exported to HTML.%N%NDo you want to build each archetype before exporting it?">
 			
 			-- DT_OBJECT_CONVERTER.dt_to_object
-			["container_type_mismatch"] = 
+			["container_type_mismatch"] =
 				<"Mismatch error in data and model for field $1 in type $2. Parsed data implies container type but is not in model">
-			["primitive_type_mismatch"] = 
+			["interval_type_mismatch"] =
+				<"Mismatch error in data and model for field $1 in type $2. Parsed data implies interval type but is not in model">
+			["atomic_type_mismatch"] =
+				<"Mismatch error in data and model for field $1 in type $2. Parsed data implies atomic type but no conversion available">
+			["primitive_type_mismatch"] =
 				<"Mismatch error in data and model for field $1 in type $2. Parsed data implies primitive, sequence<primitive> or interval<primitive> type but model does not">
-			["dt_proc_arg_type_mismatch"] = 
+			["dt_proc_arg_type_mismatch"] =
 				<"[Exception caught]: Mismatch between data and model for $1.$2. Expecting $3, read a $4">
-			["populate_dt_proc_arg_type_mismatch"] = 
+			["populate_dt_proc_arg_type_mismatch"] =
 				<"[Exception caught]: $1.$2 - writing primitive object of type $3 into argument of type $4">
 			["non_existent_path"] = <"Error: non-existent path $1 in data tree structure">
 			["non_existent_path_in_list"] = <"Error: non-existent path (in list) $1 in data tree structure">

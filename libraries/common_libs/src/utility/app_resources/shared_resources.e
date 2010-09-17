@@ -30,7 +30,7 @@ feature -- Definitions
 
 	User_config_file_extension: STRING = ".cfg"
 
-feature -- Access
+feature {NONE} -- Access
 
 	resource_value (a_category, a_resource_name: STRING): attached STRING
 			-- The value for `a_resource_name', in `a_category', preferably from a command-line option.
@@ -80,6 +80,8 @@ feature -- Access
         do
 			Result := resource_config_file.resource_category_lists(a_category)
         end
+
+feature -- Access
 
 	status_reporting_level: INTEGER
 			-- Level of error reporting required; see BILLBOARD_MESSAGE_TYPES for levels
@@ -170,22 +172,6 @@ feature -- Environment
 			ends_with_directory_separator: Result @ Result.count = os_directory_separator
 		end
 
-	execution_environment: EXECUTION_ENVIRONMENT
-			-- Shared instance of the execution environment.
-	    once
-	        create Result
-	    end
-
-	current_working_directory: STRING
-		do
-			Result := execution_environment.current_working_directory
-		end
-
-	os_directory_separator: CHARACTER
-	    once
-			Result := operating_environment.directory_separator
-	    end
-
 	application_full_path: attached STRING
 			-- The full path to the application; else, if the application is in an Eiffel project's W_code
 			-- or F_code directory, a path within the Eiffel project directory. This must be called before
@@ -230,51 +216,7 @@ feature -- Environment
 	application_developer_name: attached STRING
 			-- usually the company or organisation name of the application vendor.
 		once
-			create Result.make (0)
-		end
-
-	file_exists (path: STRING): BOOLEAN
-			-- Is `path' a valid, existing file?
-		do
-			if path /= Void and then not path.is_empty then
-				Result := file_system.file_exists (file_system.canonical_pathname (path))
-			end
-		end
-
-	directory_exists (path: STRING): BOOLEAN
-			-- Is `path' a valid, existing directory?
-		do
-			if path /= Void and then not path.is_empty then
-				Result := file_system.directory_exists (file_system.canonical_pathname (path))
-			end
-		end
-
-	extension_replaced (path, new_extension: STRING): attached STRING
-			-- Copy of `path', with its extension replaced by `new_extension'.
-		require
-			path_attached: path /= Void
-			new_extension_attached: new_extension /= Void
-			new_extension_starts_with_dot: not new_extension.is_empty implies new_extension.item (1) = '.'
-		local
-			n: INTEGER
-		do
-			n := path.count
-			Result := path.twin
-			Result.replace_substring (new_extension, n - file_system.extension (path).count + 1, n)
-		ensure
-			cloned: Result /= path
-			ends_with_new_extension: Result.ends_with (new_extension)
-		end
-
-	extension_removed (path: STRING): attached STRING
-			-- Copy of `path', with its extension (final segment preceded by '.'), if any, removed
-		require
-			path_attached: path /= Void
-		do
-			Result := path.substring (1, path.count - file_system.extension (path).count)
-		ensure
-			cloned: Result /= path
-			extension_removed: path.has ('.') implies path.count > Result.count
+			create Result.make_from_string ("openEHR")
 		end
 
 	locale_language_short: STRING
@@ -297,6 +239,13 @@ feature -- Environment
 			Result_attached: Result /= Void
 		end
 
+	Error_db_directory: STRING
+			-- directory of error database files in .dadl format e.g.
+			-- .../error_db/dadl_errors.txt etc
+		once
+			Result := file_system.pathname(application_startup_directory, "error_db")
+		end
+
 	Default_editor_command: STRING
 			-- A reasonable name of an editor based on operating system.
 		once
@@ -309,7 +258,7 @@ feature -- Environment
    			end
    		end
 
-feature -- Element Change
+feature {NONE} -- Element Change
 
 	record_resource_request (a_category, a_resource_name: STRING)
 		require
@@ -356,13 +305,15 @@ feature -- Element Change
 			resource_config_file.set_resource_category_lists(a_category, res_lists)
         end
 
+feature -- Element Change
+
 	set_status_reporting_level (v: INTEGER)
 			-- Set `status_reporting_level'.
 		do
 			set_resource_value ("default", "status_reporting_level", v.out)
 		end
 
-feature -- Element Removal
+feature  {NONE} -- Element Removal
 
 	remove_resource (a_category, a_resource_name: attached STRING)
 			-- remove the resource a_resource_name
@@ -373,7 +324,7 @@ feature -- Element Removal
 			resource_config_file.remove_resource(a_category, a_resource_name)
 		end
 
-feature -- Conversion
+feature  {NONE} -- Conversion
 
 	substitute_env_vars (s: attached STRING): attached STRING
 			-- expand the environment variables, delimited by a '$' and any
@@ -417,7 +368,7 @@ feature -- Conversion
 			end
 		end
 
-feature -- Output
+feature  {NONE} -- Output
 
 	resources_as_list: attached ARRAYED_LIST[STRING]
 			-- list of resources configured for application, in format:
@@ -433,7 +384,7 @@ feature -- Output
 			Result := res_to_list(requested_resources)
 		end
 
-feature -- Persistence
+feature {NONE} -- Commands
 
 	save_resources
 			-- save current resource settings in file
@@ -443,7 +394,69 @@ feature -- Persistence
 			resource_config_file.write_file
 		end
 
+feature {NONE} -- Access
+
+	execution_environment: EXECUTION_ENVIRONMENT
+			-- Shared instance of the execution environment.
+	    once
+	        create Result
+	    end
+
+	current_working_directory: STRING
+		do
+			Result := execution_environment.current_working_directory
+		end
+
+	os_directory_separator: CHARACTER
+	    once
+			Result := operating_environment.directory_separator
+	    end
+
 feature {NONE} -- Implementation
+
+	file_exists (path: STRING): BOOLEAN
+			-- Is `path' a valid, existing file?
+		do
+			if path /= Void and then not path.is_empty then
+				Result := file_system.file_exists (file_system.canonical_pathname (path))
+			end
+		end
+
+	directory_exists (path: STRING): BOOLEAN
+			-- Is `path' a valid, existing directory?
+		do
+			if path /= Void and then not path.is_empty then
+				Result := file_system.directory_exists (file_system.canonical_pathname (path))
+			end
+		end
+
+	extension_replaced (path, new_extension: STRING): attached STRING
+			-- Copy of `path', with its extension replaced by `new_extension'.
+		require
+			path_attached: path /= Void
+			new_extension_attached: new_extension /= Void
+			new_extension_starts_with_dot: not new_extension.is_empty implies new_extension.item (1) = '.'
+		local
+			n: INTEGER
+		do
+			n := path.count
+			Result := path.twin
+			Result.replace_substring (new_extension, n - file_system.extension (path).count + 1, n)
+		ensure
+			cloned: Result /= path
+			ends_with_new_extension: Result.ends_with (new_extension)
+		end
+
+	extension_removed (path: STRING): attached STRING
+			-- Copy of `path', with its extension (final segment preceded by '.'), if any, removed
+		require
+			path_attached: path /= Void
+		do
+			Result := path.substring (1, path.count - file_system.extension (path).count)
+		ensure
+			cloned: Result /= path
+			extension_removed: path.has ('.') implies path.count > Result.count
+		end
 
 	resources: HASH_TABLE[HASH_TABLE[STRING,STRING], STRING]
 		do

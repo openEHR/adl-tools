@@ -71,6 +71,10 @@ feature -- Access
 			Result.set_my_date_time (create {DATE_TIME}.make_now)
 			Result.set_my_time (create {TIME}.make_now)
 			Result.set_my_duration (create {DATE_TIME_DURATION}.make_definite (1, 0, 0, 0))
+			Result.set_my_iso8601_date (create {ISO8601_DATE}.make_from_string("2001-08-12"))
+			Result.set_my_iso8601_date_time (create {ISO8601_DATE_TIME}.make_from_string("2001-08-12T03:46:00"))
+			Result.set_my_iso8601_time (create {ISO8601_TIME}.make_from_string("03:46:00"))
+			Result.set_my_iso8601_duration (create {ISO8601_DURATION}.make_from_string("P1Y2D"))
 		end
 
 	dadl_primitive_interval_types: DADL_PRIMITIVE_INTERVAL_TYPES

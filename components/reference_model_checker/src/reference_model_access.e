@@ -104,6 +104,13 @@ feature -- Status Report
 
 feature -- Commands
 
+	set_schema_load_list (a_schemas_load_list: attached LIST [STRING])
+		do
+			schemas_load_list := a_schemas_load_list
+		ensure
+			Schemas_load_list_set: schemas_load_list = a_schemas_load_list
+		end
+
 	load_schemas
 			-- populate the rm_schemas table by reading in schemas either specified in the 'rm_schemas_load_list'
 			-- config variable, or by reading all schemas found in the schema directory
@@ -178,6 +185,7 @@ feature -- Commands
 feature {NONE} -- Implementation
 
 	schemas_load_list: LIST [STRING]
+			-- initial load list for this session, set during initialisation
 
 	initialise_schema_metadata_table
 			-- initialise `rm_schema_metadata_table'

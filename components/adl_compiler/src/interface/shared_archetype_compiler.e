@@ -15,7 +15,7 @@ note
 
 class SHARED_ARCHETYPE_COMPILER
 
-feature {NONE} -- Implementation
+feature -- Implementation
 
 	archetype_compiler: ARCHETYPE_COMPILER
 		once

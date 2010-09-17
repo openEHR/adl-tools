@@ -17,12 +17,24 @@ inherit
 	SHARED_RESOURCES
 
 	BASIC_DEFINITIONS
+		export
+			{NONE} all
+		end
 
 	ARCHETYPE_DEFINITIONS
+		export
+			{NONE} all
+		end
 
 	SHARED_MESSAGE_DB
+		export
+			{NONE} all
+		end
 
 	SHARED_MESSAGE_BILLBOARD
+		export
+			{NONE} all
+		end
 
 feature -- Definitions
 

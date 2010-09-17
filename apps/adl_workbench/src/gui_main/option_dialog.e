@@ -195,6 +195,7 @@ feature {NONE} -- Implementation
 				has_changed_schema_load_list := False
 			else
 				set_rm_schemas_load_list (rm_schemas_ll)
+				rm_schemas_access.set_schema_load_list (rm_schemas_ll)
 				has_changed_schema_load_list := True
 			end
 		end
