@@ -32,7 +32,7 @@ feature -- Access
 
 	app_root: APP_ROOT
 		once
-			create Result.make
+			create Result
 		end
 
 end

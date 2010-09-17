@@ -15,12 +15,6 @@ class SHARED_MESSAGE_DB
 
 feature -- Access
 
-	message_db: MESSAGE_DB
-			-- error database keyed by id
-		once
-			create Result.make
-		end
-
 	create_message_line(an_id: attached STRING; args: ARRAY[STRING]): attached STRING
 		do
 			Result := message_db.create_message_line (an_id, args)
@@ -29,6 +23,14 @@ feature -- Access
 	create_message_content(an_id: attached STRING; args: ARRAY[STRING]): attached STRING
 		do
 			Result := message_db.create_message_content (an_id, args)
+		end
+
+feature {NONE} -- Access
+
+	message_db: MESSAGE_DB
+			-- error database keyed by id
+		once
+			create Result.make
 		end
 
 end

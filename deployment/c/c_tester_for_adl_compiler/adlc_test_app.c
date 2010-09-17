@@ -16,8 +16,9 @@ main(int argc, char **argv, char **envp)
 		eif_panic ("No type id.");
 	obj = eif_create (tid);
 
-	ep = eif_procedure("make", tid);
+	ep = eif_procedure("initialise", tid);
 	(ep)(eif_access(obj));
+
 
 	EIF_DISPOSE_ALL
 

@@ -20,3 +20,9 @@
 	working on another platform and/or compiler, you will need a different
 	Makefile.
 
+	To make a statically-linked executable, simple do 
+
+		make all		# nmake on Windows/VC++
+
+	This will create the test executable adlc_test_app.exe or equivalent
+	on Unix/Mac.

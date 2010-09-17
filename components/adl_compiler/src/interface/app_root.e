@@ -17,45 +17,30 @@ class APP_ROOT
 
 inherit
 	SHARED_APP_RESOURCES
---		export
---			{NONE} all;
---			{ANY} user_config_file_path
---		end
 
 	SHARED_KNOWLEDGE_REPOSITORY
-		export
-			{NONE} all;
-			{ANY} arch_dir
-		end
 
 	SHARED_ARCHETYPE_COMPILER
-		export
-			{NONE} all;
-			{ANY} archetype_compiler
-		end
 
 	SHARED_REFERENCE_MODEL_ACCESS
-		export
-			{NONE} all
-		end
 
 	SHARED_SOURCE_REPOSITORIES
-		export
-			{NONE} all;
-			{ANY} source_repositories
-		end
 
 	SHARED_ARCHETYPE_SERIALISERS
 		export
 			{NONE} all
 		end
 
-create
-	make
-
 feature -- Initialisation
 
-	make
+	set_application_developer_name (a_name: attached STRING)
+			-- override the default of "openEHR" for the developer (i.e. vendor) name; this
+			-- name is what gets used in the user's app config path, install directory and so on
+		do
+			application_developer_name.make_from_string (a_name)
+		end
+
+	initialise
 		local
 			rep_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
 		once
@@ -79,13 +64,8 @@ feature -- Initialisation
 					post_warning (Current, "initialise", "validation_non_strict", Void)
 				end
 
-				-- adjust for repository profiles being out of sync with current profile setting (e.g. due to
-				-- manual editing of .cfg file
-				rep_profiles := repository_profiles
-				if not rep_profiles.is_empty and not rep_profiles.has (current_repository_profile) then
-					rep_profiles.start
-					set_current_repository_profile (rep_profiles.key_for_iteration)
-				end
+				-- initialise serialisers
+				initialise_serialisers
 
 				-- set up the RM schemas
 				rm_schemas_access.initialise(default_rm_schema_directory, rm_schemas_load_list)
@@ -96,28 +76,49 @@ feature -- Initialisation
 					rm_schemas_load_list.do_all(agent (s: STRING) do strx.append(s + ", ") end)
 					strx.remove_tail (2) -- remove final ", "
 					post_warning (Current, "initialise", "model_access_e0", <<strx, default_rm_schema_directory>>)
-				else
-					if not reference_repository_path.is_empty then
-						if directory_exists(reference_repository_path) then
-							source_repositories.set_reference_repository (reference_repository_path)
-
-							if not work_repository_path.is_empty then
-								if source_repositories.valid_working_repository_path (work_repository_path) then
-									source_repositories.set_work_repository (work_repository_path)
-								else
-									post_error (Current, "initialise", "work_repo_not_found", <<work_repository_path>>)
-								end
-							end
-						else
-							post_error (Current, "initialise", "ref_repo_not_found", <<reference_repository_path>>)
-						end
-					end
 				end
 
-				-- initialise serialisers
-				initialise_serialisers
+				-- adjust for repository profiles being out of sync with current profile setting (e.g. due to
+				-- manual editing of .cfg file
+				rep_profiles := repository_profiles
+				if not rep_profiles.is_empty and not rep_profiles.has (current_repository_profile) then
+					rep_profiles.start
+					set_current_repository_profile(rep_profiles.key_for_iteration)
+				end
 
 				initialised := True
+			end
+		end
+
+	switch_to_profile (a_profile: attached STRING)
+			-- switch to `a_profile'
+		require
+			repository_profiles.has (a_profile)
+		do
+			if not a_profile.same_string (current_repository_profile) then
+				set_current_repository_profile(a_profile)
+				use_current_profile
+			end
+		end
+
+	use_current_profile
+			-- switch to current profile
+		do
+			if directory_exists (reference_repository_path) then
+				source_repositories.set_reference_repository (reference_repository_path)
+				if not work_repository_path.is_empty then
+					if source_repositories.valid_working_repository_path (work_repository_path) then
+						source_repositories.set_work_repository (work_repository_path)
+					else
+						post_error (Current, "switch_to_profile", "work_repo_not_found", <<work_repository_path>>)
+					end
+				else
+					source_repositories.remove_work_repository
+				end
+				arch_dir.clear
+				arch_dir.populate
+			else
+				post_error (Current, "switch_to_profile", "ref_repo_not_found", <<reference_repository_path>>)
 			end
 		end
 

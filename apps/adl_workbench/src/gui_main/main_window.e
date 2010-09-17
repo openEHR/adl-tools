@@ -445,7 +445,7 @@ feature {NONE} -- Repository events
 			populate_archetype_profile_combo
 
 			if use_changes_after_destroying_dialog then
-				change_profile
+				populate_directory
 			end
 		end
 
@@ -453,23 +453,9 @@ feature {NONE} -- Repository events
 			-- Called by `select_actions' of `archetype_profile_combo'.
 		do
 			if not archetype_profile_combo.text.same_string (current_repository_profile) then
-				set_current_repository_profile(archetype_profile_combo.text)
-				change_profile
+				set_current_repository_profile (archetype_profile_combo.text)
+				populate_directory
 			end
-		end
-
-	change_profile
-			-- change to `current_repository_profile'
-		do
-			if directory_exists (reference_repository_path) then
-				source_repositories.set_reference_repository (reference_repository_path)
-			end
-			if not work_repository_path.is_empty then
-				source_repositories.set_work_repository (work_repository_path)
-			else
-				source_repositories.remove_work_repository
-			end
-			populate_directory
 		end
 
 	build_all
@@ -1086,8 +1072,6 @@ feature {NONE} -- Implementation
 		do
 			do_with_wait_cursor (agent
 				do
-					arch_dir.clear
-
 					if title.has_substring (" - ") then
 						set_title (title.substring (title.substring_index (" - ", 1) + 3, title.count))
 					end
@@ -1100,7 +1084,7 @@ feature {NONE} -- Implementation
 					select_node_in_archetype_tree_view
 
 					append_status_area (create_message_line ("populating_directory_start", <<current_repository_profile>>))
-					arch_dir.populate
+					app_root.use_current_profile
 					append_status_area (create_message_line ("populating_directory_complete", Void))
 
 					append_billboard_to_status_area
