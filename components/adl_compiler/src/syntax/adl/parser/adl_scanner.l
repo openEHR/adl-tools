@@ -15,6 +15,11 @@ note
 class ADL_SCANNER
 
 inherit
+	ANY_VALIDATOR
+		rename
+			reset as validator_reset
+		end
+
 	YY_COMPRESSED_SCANNER_SKELETON
 		rename
 			make as make_compressed_scanner_skeleton,
@@ -293,6 +298,11 @@ feature -- Initialization
 			reset_compressed_scanner_skeleton
 			in_lineno := 1
 			in_buffer.wipe_out
+			validator_reset
+		end
+
+	validate
+		do
 		end
 
 feature -- Access

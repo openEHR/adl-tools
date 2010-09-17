@@ -16,181 +16,209 @@ class DADL_PRIMITIVE_SEQUENCE_TYPES
 
 feature -- Access
 
-	my_character: CHARACTER assign set_my_character
+	my_character_arrayed_list: ARRAYED_LIST[CHARACTER]
 
-	my_character_8: CHARACTER_8 assign set_my_character_8
+	my_character_8_arrayed_list: ARRAYED_LIST[CHARACTER_8]
 
---	my_character_32: CHARACTER_32 assign set_my_character_32
+--	my_character_3_arrayed_list2: ARRAYED_LIST[CHARACTER_32]
 
-	my_string: STRING assign set_my_string
+	my_string_arrayed_list: ARRAYED_LIST[STRING]
 
-	my_string_8: STRING_8 assign set_my_string_8
+	my_string_8_arrayed_list: ARRAYED_LIST[STRING_8]
 
---	my_string_32: STRING_32 assign set_my_string_32
+--	my_string_32_arrayed_list: ARRAYED_LIST[STRING_32]
 
-	my_boolean: BOOLEAN assign set_my_boolean
+	my_boolean_arrayed_list: ARRAYED_LIST[BOOLEAN]
 
-	my_integer: INTEGER assign set_my_integer
+	my_integer_arrayed_list: ARRAYED_LIST[INTEGER]
 
-	my_integer_8: INTEGER_8 assign set_my_integer_8
+	my_integer_8_arrayed_list: ARRAYED_LIST[INTEGER_8]
 
-	my_integer_16: INTEGER_16 assign set_my_integer_16
+	my_integer_16_arrayed_list: ARRAYED_LIST[INTEGER_16]
 
-	my_integer_32: INTEGER_32 assign set_my_integer_32
+	my_integer_32_arrayed_list: ARRAYED_LIST[INTEGER_32]
 
-	my_integer_64: INTEGER_64 assign set_my_integer_64
+	my_integer_64_arrayed_list: ARRAYED_LIST[INTEGER_64]
 
-	my_natural: NATURAL assign set_my_natural
+	my_natural_arrayed_list: ARRAYED_LIST[NATURAL]
 
-	my_natural_8: NATURAL_8 assign set_my_natural_8
+	my_natural_8_arrayed_list: ARRAYED_LIST[NATURAL_8]
 
-	my_natural_16: NATURAL_16 assign set_my_natural_16
+	my_natural_16_arrayed_list: ARRAYED_LIST[NATURAL_16]
 
-	my_natural_32: NATURAL_32 assign set_my_natural_32
+	my_natural_32_arrayed_list: ARRAYED_LIST[NATURAL_32]
 
-	my_natural_64: NATURAL_64 assign set_my_natural_64
+	my_natural_64_arrayed_list: ARRAYED_LIST[NATURAL_64]
 
-	my_real: REAL assign set_my_real
+	my_real_arrayed_list: ARRAYED_LIST[REAL]
 
-	my_real_32: REAL_32 assign set_my_real_32
+	my_real_32_arrayed_list: ARRAYED_LIST[REAL_32]
 
-	my_real_64: REAL_64 assign set_my_real_64
+	my_real_64_arrayed_list: ARRAYED_LIST[REAL_64]
 
-	my_double: REAL assign set_my_double
+	my_double_arrayed_list: ARRAYED_LIST[DOUBLE]
 
-	my_date: DATE assign set_my_date
+	my_date_arrayed_list: ARRAYED_LIST[DATE]
 
-	my_date_time: DATE_TIME assign set_my_date_time
+	my_date_time_arrayed_list: ARRAYED_LIST[DATE_TIME]
 
-	my_time: TIME assign set_my_time
+	my_time_arrayed_list: ARRAYED_LIST[TIME]
 
-	my_duration: DATE_TIME_DURATION assign set_my_duration
+	my_duration_arrayed_list: ARRAYED_LIST[DATE_TIME_DURATION]
+
+	my_iso8601_date_arrayed_list: ARRAYED_LIST[ISO8601_DATE]
+
+	my_iso8601_date_time_arrayed_list: ARRAYED_LIST[ISO8601_DATE_TIME]
+
+	my_iso8601_time_arrayed_list: ARRAYED_LIST[ISO8601_TIME]
+
+	my_iso8601_duration_arrayed_list: ARRAYED_LIST[ISO8601_DURATION]
 
 feature -- Element change
 
-	set_my_character (a_char: like my_character)
+	set_my_character_arrayed_list (a_char_arrayed_list: like my_character_arrayed_list)
 		do
-			my_character := a_char
+			my_character_arrayed_list := a_char_arrayed_list
 		end
 
-	set_my_character_8 (a_char: like my_character_8)
+	set_my_character_8_arrayed_list (a_char_arrayed_list: like my_character_8_arrayed_list)
 		do
-			my_character_8 := a_char
+			my_character_8_arrayed_list := a_char_arrayed_list
 		end
 
---	set_my_character_32 (a_char: like my_character_32)
+--	set_my_character_32_arrayed_list (a_char_arrayed_list: like my_character_32_arrayed_list)
 --		do
---			my_character_32 := a_char
+--			my_character_32_arrayed_list := a_char_arrayed_list
 --		end
 
-	set_my_string (a_str: like my_string)
+	set_my_string_arrayed_list (a_str_arrayed_list: like my_string_arrayed_list)
 		do
-			my_string := a_str
+			my_string_arrayed_list := a_str_arrayed_list
 		end
 
-	set_my_string_8 (a_str: like my_string_8)
+	set_my_string_8_arrayed_list (a_str_arrayed_list: like my_string_8_arrayed_list)
 		do
-			my_string_8 := a_str
+			my_string_8_arrayed_list := a_str_arrayed_list
 		end
 
---	set_my_string_32 (a_str: like my_string_32)
+--	set_my_string_32_arrayed_list (a_str_arrayed_list: like my_string_32_arrayed_list)
 --		do
---			my_string_32 := a_str
+--			my_string_32_arrayed_list := a_str_arrayed_list
 --		end
 
-	set_my_boolean (a_bool: like my_boolean)
+	set_my_boolean_arrayed_list (a_bool_arrayed_list: like my_boolean_arrayed_list)
 		do
-			my_boolean := a_bool
+			my_boolean_arrayed_list := a_bool_arrayed_list
 		end
 
-	set_my_integer (an_int: like my_integer)
+	set_my_integer_arrayed_list (an_int_arrayed_list: like my_integer_arrayed_list)
 		do
-			my_integer := an_int
+			my_integer_arrayed_list := an_int_arrayed_list
 		end
 
-	set_my_integer_8 (an_int: like my_integer_8)
+	set_my_integer_8_arrayed_list (an_int_arrayed_list: like my_integer_8_arrayed_list)
 		do
-			my_integer_8 := an_int
+			my_integer_8_arrayed_list := an_int_arrayed_list
 		end
 
-	set_my_integer_16 (an_int: like my_integer_16)
+	set_my_integer_16_arrayed_list (an_int_arrayed_list: like my_integer_16_arrayed_list)
 		do
-			my_integer_16 := an_int
+			my_integer_16_arrayed_list := an_int_arrayed_list
 		end
 
-	set_my_integer_32 (an_int: like my_integer_32)
+	set_my_integer_32_arrayed_list (an_int_arrayed_list: like my_integer_32_arrayed_list)
 		do
-			my_integer_32 := an_int
+			my_integer_32_arrayed_list := an_int_arrayed_list
 		end
 
-	set_my_integer_64 (an_int: like my_integer_64)
+	set_my_integer_64_arrayed_list (an_int_arrayed_list: like my_integer_64_arrayed_list)
 		do
-			my_integer_64 := an_int
+			my_integer_64_arrayed_list := an_int_arrayed_list
 		end
 
-	set_my_real (a_real: like my_real)
+	set_my_real_arrayed_list (a_real_arrayed_list: like my_real_arrayed_list)
 		do
-			 my_real := a_real
+			 my_real_arrayed_list := a_real_arrayed_list
 		end
 
-	set_my_real_32 (a_real: like my_real_32)
+	set_my_real_32_arrayed_list (a_real_arrayed_list: like my_real_32_arrayed_list)
 		do
-			 my_real_32 := a_real
+			 my_real_32_arrayed_list := a_real_arrayed_list
 		end
 
-	set_my_real_64 (a_real: like my_real_64)
+	set_my_real_64_arrayed_list (a_real_arrayed_list: like my_real_64_arrayed_list)
 		do
-			 my_real_64 := a_real
+			 my_real_64_arrayed_list := a_real_arrayed_list
 		end
 
-	set_my_double (a_double: like my_double)
+	set_my_double_arrayed_list (a_double_arrayed_list: like my_double_arrayed_list)
 		do
-			 my_double := a_double
+			 my_double_arrayed_list := a_double_arrayed_list
 		end
 
-	set_my_natural (a_nat: like my_natural)
+	set_my_natural_arrayed_list (a_nat_arrayed_list: like my_natural_arrayed_list)
 		do
-			my_natural := a_nat
+			my_natural_arrayed_list := a_nat_arrayed_list
 		end
 
-	set_my_natural_8 (a_nat: like my_natural_8)
+	set_my_natural_8_arrayed_list (a_nat_arrayed_list: like my_natural_8_arrayed_list)
 		do
-			my_natural_8 := a_nat
+			my_natural_8_arrayed_list := a_nat_arrayed_list
 		end
 
-	set_my_natural_16 (a_nat: like my_natural_16)
+	set_my_natural_16_arrayed_list (a_nat_arrayed_list: like my_natural_16_arrayed_list)
 		do
-			my_natural := a_nat
+			my_natural_16_arrayed_list := a_nat_arrayed_list
 		end
 
-	set_my_natural_32 (a_nat: like my_natural_32)
+	set_my_natural_32_arrayed_list (a_nat_arrayed_list: like my_natural_32_arrayed_list)
 		do
-			my_natural_32 := a_nat
+			my_natural_32_arrayed_list := a_nat_arrayed_list
 		end
 
-	set_my_natural_64 (a_nat: like my_natural_64)
+	set_my_natural_64_arrayed_list (a_nat_arrayed_list: like my_natural_64_arrayed_list)
 		do
-			my_natural_64 := a_nat
+			my_natural_64_arrayed_list := a_nat_arrayed_list
 		end
 
-	set_my_date (a_date: like my_date)
+	set_my_date_arrayed_list (a_date_arrayed_list: like my_date_arrayed_list)
 		do
-			my_date := a_date
+			my_date_arrayed_list := a_date_arrayed_list
 		end
 
-	set_my_date_time (a_date_time: like my_date_time)
+	set_my_date_time_arrayed_list (a_date_time_arrayed_list: like my_date_time_arrayed_list)
 		do
-			my_date_time := a_date_time
+			my_date_time_arrayed_list := a_date_time_arrayed_list
 		end
 
-	set_my_time (a_time: like my_time)
+	set_my_time_arrayed_list (a_time_arrayed_list: like my_time_arrayed_list)
 		do
-			my_time := a_time
+			my_time_arrayed_list := a_time_arrayed_list
 		end
 
-	set_my_duration (a_duration: like my_duration)
+	set_my_duration_arrayed_list (a_duration_arrayed_list: like my_duration_arrayed_list)
 		do
-			my_duration := a_duration
+			my_duration_arrayed_list := a_duration_arrayed_list
+		end
+
+	set_my_iso8601_date_arrayed_list (a_iso8601_date_arrayed_list: like my_iso8601_date_arrayed_list)
+		do
+			my_iso8601_date_arrayed_list := a_iso8601_date_arrayed_list
+		end
+
+	set_my_iso8601_date_time_arrayed_list (a_iso8601_date_time_arrayed_list: like my_iso8601_date_time_arrayed_list)
+		do
+			my_iso8601_date_time_arrayed_list := a_iso8601_date_time_arrayed_list
+		end
+
+	set_my_iso8601_time_arrayed_list (a_iso8601_time_arrayed_list: like my_iso8601_time_arrayed_list)
+		do
+			my_iso8601_time_arrayed_list := a_iso8601_time_arrayed_list
+		end
+
+	set_my_iso8601_duration_arrayed_list (a_iso8601_duration_arrayed_list: like my_iso8601_duration_arrayed_list)
+		do
+			my_iso8601_duration_arrayed_list := a_iso8601_duration_arrayed_list
 		end
 
 end

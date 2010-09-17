@@ -3,7 +3,7 @@ note
 	description: "descriptor for conversion for one type into and out of DT_OBJECT"
 	keywords:    "test, ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -32,12 +32,10 @@ feature -- Access
 
 	from_obj_proc: PROCEDURE [DT_OBJECT_CONVERTER, TUPLE [DT_ATTRIBUTE_NODE, ANY, STRING]]
 			-- object_to_dt(a_parent: DT_ATTRIBUTE_NODE; an_obj: ANY; a_node_id: STRING)
-			
+
 	from_dt_proc: PROCEDURE [DT_OBJECT_CONVERTER, TUPLE [INTEGER, ANY, ANY]]
 			-- signature: from_dt_xxx (a_dt_obj: DT_OBJECT_ITEM)
 			-- set_xxx_field (i: INTEGER; object: ANY; value: ANY)
-	
-feature -- Status Report
 
 end
 

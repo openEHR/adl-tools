@@ -59,11 +59,12 @@ feature {NONE} -- Initialisation
 			create definition_context.make
 			create invariant_context.make
 			create ontology_context.make
+			create errors.make
 		end
 
 feature -- Access
 
-	parse_error_text: STRING
+	errors: attached ERROR_ACCUMULATOR
 			-- errors of last parse
 
 feature -- Commands
@@ -119,7 +120,7 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	parse (text: STRING; differential_source_flag: BOOLEAN): ARCHETYPE
+	parse (text: attached STRING; differential_source_flag: BOOLEAN): ARCHETYPE
 			-- parse tree. If successful, `archetype' contains the parse
 			-- structure. Then validate the tree
 		local
@@ -133,7 +134,8 @@ feature {NONE} -- Implementation
 			adl_parser.execute(text)
 
 			if adl_parser.syntax_error then
-				parse_error_text := adl_parser.error_text
+				errors := adl_parser.errors
+				errors.append(adl_parser.warnings)
 --			elseif not valid_concept_code (adl_parser.concept) then
 --				parse_error_text := create_message_line("VARCN", <<adl_parser.concept>>)
 			else
@@ -142,7 +144,7 @@ feature {NONE} -- Implementation
 					language_context.set_source(adl_parser.language_text, adl_parser.language_text_start_line)
 					language_context.parse
 					if not language_context.parse_succeeded then
-						parse_error_text := language_context.parse_error_text
+						errors := language_context.errors
 						language_error := True
 					end
 --				else
@@ -159,7 +161,7 @@ feature {NONE} -- Implementation
 						description_context.set_source(adl_parser.description_text, adl_parser.description_text_start_line)
 						description_context.parse
 						if not description_context.parse_succeeded then
-							parse_error_text := description_context.parse_error_text
+							errors := description_context.errors
 							description_error := True
 						end
 					else
@@ -175,14 +177,14 @@ feature {NONE} -- Implementation
 						definition_context.set_source(adl_parser.definition_text, adl_parser.definition_text_start_line, differential_source_flag, rm_schema)
 						definition_context.parse
 						if not definition_context.parse_succeeded then
-							parse_error_text := definition_context.parse_error_text
+							errors := definition_context.errors
 						else
 							------------------- invariant section ---------------
 							if adl_parser.invariant_text /= Void and then not adl_parser.invariant_text.is_empty then
 								invariant_context.set_source(adl_parser.invariant_text, adl_parser.invariant_text_start_line, differential_source_flag, rm_schema)
 								invariant_context.parse
 								if not invariant_context.parse_succeeded then
-									parse_error_text := invariant_context.parse_error_text
+									errors := invariant_context.errors
 									invariant_error := True
 								end
 							else
@@ -195,7 +197,7 @@ feature {NONE} -- Implementation
 								ontology_context.parse
 
 								if not ontology_context.parse_succeeded then
-									parse_error_text := ontology_context.parse_error_text
+									errors := ontology_context.errors
 								elseif attached {C_COMPLEX_OBJECT} definition_context.tree as definition and then attached {ARCHETYPE_ID} adl_parser.archetype_id as id then
 									convert_ontology_syntax(ontology_context.tree)  -- perform any version upgrade conversions
 									if differential_source_flag then

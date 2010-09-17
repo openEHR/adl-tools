@@ -1,24 +1,18 @@
 note
-	component:   "openEHR Reusable Libraries"
-	description: "[
-			     Error status billboard item: contains id of message template
-				 and a set of args to be substituted. This approach allows
-				 messages to be reported in multiple languages, since they are
-				 built from the template & args on the fly when requested,
-				 not when created.
-				 ]"
-	keywords:    "error status reporting"
-
+	component:   "openEHR Project"
+	description: "Structured error list with some useful facilities"
+	keywords:    "ADL, archetype"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class MESSAGE_BILLBOARD_ITEM
+
+class ERROR_ACCUMULATOR
 
 inherit
 	ERROR_SEVERITY_TYPES
@@ -28,40 +22,88 @@ create
 
 feature -- Initialisation
 
-	make (a_type_name, a_routine_name: STRING; a_message_id: STRING; an_args: ARRAY[STRING]; an_error_type: INTEGER)
-		require
-			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
-			Routine_name_valid: a_routine_name /= Void and then not a_routine_name.is_empty
-			Error_id_valid: a_message_id /= Void and then not a_message_id.is_empty
-			Error_type_valid: is_valid_error_type(an_error_type)
+	make
 		do
-			type_name := a_type_name
-			routine_name := a_routine_name
-			message_id := a_message_id
-			args := an_args
-			error_type := an_error_type
+			create list.make(0)
 		end
 
 feature -- Access
 
-	type_name: STRING
-			-- type name of the object posting the message
+	list: attached ARRAYED_LIST[ERROR_DESCRIPTOR]
+			-- error output of validator - things that must be corrected
 
-	routine_name: STRING
-			-- name of routine posting the message
+	as_string: STRING
+		do
+			create Result.make(0)
+			from list.start until list.off loop
+				Result.append(list.item.as_string)
+				list.forth
+			end
+		end
 
-	message_id: STRING
-			-- id of message message template
+	last: attached ERROR_DESCRIPTOR
+		do
+			Result := list.last
+		end
 
-	args: ARRAY[STRING]
-			-- string arguments to be substituted into message message
+	error_codes: ARRAYED_LIST[STRING]
+		do
+			create Result.make(0)
+			Result.compare_objects
+			from list.start until list.off loop
+				if list.item.severity = error_type_error then
+					Result.extend(list.item.code)
+				end
+				list.forth
+			end
+		end
 
-	error_type: INTEGER
+	warning_codes: ARRAYED_LIST[STRING]
+		do
+			create Result.make(0)
+			Result.compare_objects
+			from list.start until list.off loop
+				if list.item.severity = error_type_warning then
+					Result.extend(list.item.code)
+				end
+				list.forth
+			end
+		end
 
-invariant
-	is_valid_error_type(error_type)
+feature -- Status Report
+
+	is_empty: BOOLEAN
+		do
+			Result := list.is_empty
+		end
+
+	has_errors: BOOLEAN
+
+	has_warnings: BOOLEAN
+
+feature -- Modification
+
+	extend(err_desc: attached ERROR_DESCRIPTOR)
+		do
+			list.extend(err_desc)
+			has_errors := has_errors or err_desc.severity = Error_type_error
+			has_warnings := has_warnings or err_desc.severity = Error_type_warning
+		end
+
+	append(other: attached ERROR_ACCUMULATOR)
+		do
+			list.append(other.list)
+			has_errors := has_errors or other.has_errors
+			has_warnings := has_warnings or other.has_warnings
+		end
+
+	wipe_out
+		do
+			list.wipe_out
+		end
 
 end
+
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****
@@ -77,10 +119,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is message_billboard_item.e.
+--| The Original Code is error_accumulator.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2007
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
@@ -99,5 +141,3 @@ end
 --|
 --| ***** END LICENSE BLOCK *****
 --|
-
-

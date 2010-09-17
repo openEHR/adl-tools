@@ -62,7 +62,7 @@ feature -- Initialisation
 			Code_valid: a_str /= Void and then not a_str.is_empty
 		do
 			default_create
-			dadl_validator.reset_scanner
+			dadl_validator.reset
 			dadl_validator.execute(a_str, 1)
 			if not dadl_validator.syntax_error then
 				make_from_data_tree(dadl_validator.output)

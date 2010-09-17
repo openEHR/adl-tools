@@ -17,7 +17,7 @@ feature -- Access
 
 	app_root: APP_ROOT
 		once
-			create Result
+			create Result.make
 		end
 
 end

@@ -52,6 +52,14 @@ feature -- Access
 
 	my_duration_interval: INTERVAL[DATE_TIME_DURATION]
 
+	my_iso8601_date_interval: INTERVAL[ISO8601_DATE]
+
+	my_iso8601_date_time_interval: INTERVAL[ISO8601_DATE_TIME]
+
+	my_iso8601_time_interval: INTERVAL[ISO8601_TIME]
+
+	my_iso8601_duration_interval: INTERVAL[ISO8601_DURATION]
+
 feature -- Element change
 
 	set_my_integer_interval (an_int: like my_integer_interval)
@@ -142,6 +150,26 @@ feature -- Element change
 	set_my_duration_interval (a_duration_interval: like my_duration_interval)
 		do
 			my_duration_interval := a_duration_interval
+		end
+
+	set_my_iso8601_date_interval (a_iso8601_date_interval: like my_iso8601_date_interval)
+		do
+			my_iso8601_date_interval := a_iso8601_date_interval
+		end
+
+	set_my_iso8601_date_time_interval (a_iso8601_date_time_interval: like my_iso8601_date_time_interval)
+		do
+			my_iso8601_date_time_interval := a_iso8601_date_time_interval
+		end
+
+	set_my_iso8601_time_interval (a_iso8601_time_interval: like my_iso8601_time_interval)
+		do
+			my_iso8601_time_interval := a_iso8601_time_interval
+		end
+
+	set_my_iso8601_duration_interval (a_iso8601_duration_interval: like my_iso8601_duration_interval)
+		do
+			my_iso8601_duration_interval := a_iso8601_duration_interval
 		end
 
 end

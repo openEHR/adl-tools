@@ -50,10 +50,10 @@ feature -- Access
 
 	serialised: STRING
 
-	parse_error_text: STRING
-			-- result of last parse
+	errors: attached ERROR_ACCUMULATOR
+			-- Result of last parse.
 		do
-			Result := parser.error_text
+			Result := parser.errors
 		end
 
 feature -- Status Report

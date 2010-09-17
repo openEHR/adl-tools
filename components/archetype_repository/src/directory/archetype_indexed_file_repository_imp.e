@@ -51,11 +51,7 @@ feature {NONE} -- Implementation
 				fs_node_names := a_dir.linear_representation
 				create dir_name_index.make
 
-				from
-					fs_node_names.start
-				until
-					fs_node_names.off
-				loop
+				from fs_node_names.start until fs_node_names.off loop
 					fn := fs_node_names.item
 
 					if fn.item (1) /= '.' then

@@ -37,42 +37,21 @@ feature -- Access
 feature -- Modification
 
 	set_value(a_value: like value)
-		local
-			string_list: SEQUENCE[STRING]
 		do
 			value := a_value
-			string_list ?= value
-			is_string := string_list /= Void
 			rm_type_name := a_value.generating_type
 		end
 
 feature -- Conversion
 
 	as_string: STRING
-		local
-			out_val: STRING
 		do
 			create Result.make(0)
-			from
-				value.start
-			until
-				value.off
-			loop
+			from value.start until value.off loop
 				if value.index > 1 then
 					Result.append(", ")
 				end
-				if is_string then
-					Result.append_character('"')
-					Result.append (value.item.out)
-					Result.append_character('"')
-				else
-					out_val := value.item.out
-					Result.append(out_val)
-					-- FIXME: REAL.out is broken; forgets to output '.0'
-					if value.item.generating_type.out.substring (1, 4).is_equal ("REAL") and then out_val.index_of ('.', 1) = 0 then
-						Result.append(".0")
-					end
-				end
+				Result.append (atomic_value_to_string(value.item))
 				value.forth
 			end
 			if value.count = 1 then -- append syntactic indication of list continuation
@@ -82,34 +61,21 @@ feature -- Conversion
 
 	clean_as_string (cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
 			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
-		local
-			out_val: STRING
 		do
-			create Result.make(0)
-			from
-				value.start
-			until
-				value.off
-			loop
-				if value.index > 1 then
-					Result.append(", ")
-				end
-				if is_string then
-					Result.append_character('"')
-					Result.append (cleaner.item([value.item.out]))
-					Result.append_character('"')
-				else
-					out_val := value.item.out
-					Result.append(out_val)
-					-- FIXME: REAL.out is broken; forgets to output '.0'
-					if value.item.generating_type.out.substring (1, 4).is_equal ("REAL") and then out_val.index_of ('.', 1) = 0 then
-						Result.append(".0")
+			if attached {SEQUENCE[STRING]} value as str_seq then
+				create Result.make(0)
+				from value.start until value.off loop
+					if value.index > 1 then
+						Result.append(", ")
 					end
+					Result.append(atomic_value_to_string(cleaner.item([value.item.out])))
+					value.forth
 				end
-				value.forth
-			end
-			if value.count = 1 then -- append syntactic indication of list continuation
-				Result.append(", ...")
+				if value.count = 1 then -- append syntactic indication of list continuation
+					Result.append(", ...")
+				end
+			else
+				Result := as_string
 			end
 		end
 
@@ -126,10 +92,6 @@ feature -- Serialisation
 		do
 			serialiser.end_primitive_object_list(Current, depth)
 		end
-
-feature {NONE} -- Implementation
-
-	is_string: BOOLEAN
 
 end
 

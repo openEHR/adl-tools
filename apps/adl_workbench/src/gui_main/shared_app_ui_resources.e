@@ -30,13 +30,13 @@ feature -- Definitions
 	ADL_help_page_url: STRING
 			-- The URL to ADL Workbench's online help.
 		once
-			Result := "http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/apps/doc/web/index.html"
+			Result := "http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/adl_workbench/doc/web/index.html"
 		end
 
 	Release_notes_file_path: STRING
 			-- The path to ADL Workbench's release notes.
 		once
-			Result := file_system.pathname (application_startup_directory, "release_notes.txt")
+			Result := file_system.pathname (file_system.pathname (file_system.pathname (application_startup_directory, "doc"), "web"), "release_notes.html")
 		end
 
 	clinical_knowledge_manager_url: STRING = "http://www.openehr.org/knowledge/"
@@ -304,25 +304,6 @@ feature -- Access
 			Result.append ("Built using%N")
 			Result.append ("- Eiffel Software Eiffel (http://www.eiffel.com)%N")
 			Result.append ("- Gobo parsing libraries & tools (http://www.gobosoft.com)%N")
-		ensure
-			not_empty: not Result.is_empty
-		end
-
-	Release_notes_text: attached STRING
-			-- News dialog.
-		local
-			rn_file: PLAIN_TEXT_FILE
-		once
-			create rn_file.make (Release_notes_file_path)
-
-			if rn_file.exists and then rn_file.is_readable then
-				rn_file.open_read
-				rn_file.read_stream (rn_file.count)
-				Result := rn_file.last_string
-				rn_file.close
-			else
-				Result := "(%"" + Release_notes_file_path + "%" file is missing)"
-			end
 		ensure
 			not_empty: not Result.is_empty
 		end

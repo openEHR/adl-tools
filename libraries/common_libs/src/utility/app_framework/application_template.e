@@ -13,7 +13,7 @@ note
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
-	
+
 deferred class APPLICATION_TEMPLATE
 
 inherit
@@ -23,41 +23,50 @@ inherit
 			{ANY} fail_reason, last_op_fail
 		end
 
-	FILE_APP_ENVIRONMENT
+	SHARED_RESOURCES
 		export
 			{NONE} all
 		end
-		
+
+	SHARED_EVENT_LOG
+		export
+			{NONE} all
+		end
+
 feature -- Template
+
+	app_env_initialise
+		do
+		end
 
 	application_register
 			-- override in descendants; set `application_registering' appropriately
 		do
 		end
-		
+
 	application_initialise
 			-- effect in descendants; set `application_initialised' appropriately
 		do
 			application_initialised := True
 		end
-		
+
 	persistence_initialise
 			-- effect in descendants; set `persistence_initialised' appropriately
 		do
 			persistence_initialised := True
 		end
-		
+
 	persistence_finalise
 			-- effect in descendants
 		do
-			
+
 		end
-		
+
 	main
 			-- effect in descendants - the main business of the application
 		deferred
 		end
-		
+
 feature -- Initialisation
 
 	make
@@ -94,13 +103,13 @@ feature -- Initialisation
 		end
 
 feature {NONE} -- Implementation
-		
+
 	initialise_event_log
 			-- initialisation the logging facility in SHARED_EVENT_LOG
 		local
 			app_log_facility: EVENT_LOG_FACILITY
 		do
-			create app_log_facility.make(application_name, resource_value("logging", "facility_name"), 
+			create app_log_facility.make(application_name, resource_value("logging", "facility_name"),
 										resource_value("logging", "facility_type"),
 										resource_value("logging", "severity_threshold"))
 			if app_log_facility.exists then
@@ -108,7 +117,7 @@ feature {NONE} -- Implementation
 				event_log_initialised := True
 			end
 		end
-		
+
 feature -- Status
 
 	application_initialised: BOOLEAN
@@ -116,11 +125,24 @@ feature -- Status
 
 	application_registering: BOOLEAN
 			-- result of `application_register'
-			
+
 	persistence_initialised: BOOLEAN
 			-- result of persistence_initialise
 
 	event_log_initialised: BOOLEAN
 			-- result of initialise_event_log
+
+feature -- Environment Status
+
+	app_env_is_valid: BOOLEAN
+	        -- if not True, look at app_init_fail_reason
+	    do
+	        Result := app_env_fail_reason.is_empty
+	    end
+
+	app_env_fail_reason: STRING
+ 	    once
+	        create Result.make(0)
+	    end
 
 end

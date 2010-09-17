@@ -14,7 +14,7 @@ note
 class SHARED_MESSAGE_BILLBOARD
 
 inherit
-	BILLBOARD_MESSAGE_TYPES
+	ERROR_SEVERITY_TYPES
 		export
 			{NONE} all
 		end
@@ -26,6 +26,8 @@ feature -- Access
 		once
 			create Result.make
 		end
+
+feature -- Commands
 
 	post_error(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING])
 			-- append to the  current contents of billboard an error message corresponding to id,

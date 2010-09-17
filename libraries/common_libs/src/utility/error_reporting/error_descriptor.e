@@ -1,65 +1,81 @@
 note
 	component:   "openEHR Reusable Libraries"
-	description: "[
-			     Error status billboard item: contains id of message template
-				 and a set of args to be substituted. This approach allows
-				 messages to be reported in multiple languages, since they are
-				 built from the template & args on the fly when requested,
-				 not when created.
-				 ]"
+	description: "Error descriptor abstraction"
 	keywords:    "error status reporting"
 
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class MESSAGE_BILLBOARD_ITEM
+class ERROR_DESCRIPTOR
 
 inherit
 	ERROR_SEVERITY_TYPES
 
 create
-	make
+	make, make_error, make_warning, make_info, make_debug
 
 feature -- Initialisation
 
-	make (a_type_name, a_routine_name: STRING; a_message_id: STRING; an_args: ARRAY[STRING]; an_error_type: INTEGER)
-		require
-			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
-			Routine_name_valid: a_routine_name /= Void and then not a_routine_name.is_empty
-			Error_id_valid: a_message_id /= Void and then not a_message_id.is_empty
-			Error_type_valid: is_valid_error_type(an_error_type)
+	make_error (a_code, a_message: attached STRING; a_loc: STRING)
 		do
-			type_name := a_type_name
-			routine_name := a_routine_name
-			message_id := a_message_id
-			args := an_args
-			error_type := an_error_type
+			make (a_code, error_type_error, a_message, a_loc)
+		end
+
+	make_warning (a_code, a_message: attached STRING; a_loc: STRING)
+		do
+			make (a_code, error_type_warning, a_message, a_loc)
+		end
+
+	make_info (a_code, a_message: attached STRING; a_loc: STRING)
+		do
+			make (a_code, error_type_info, a_message, a_loc)
+		end
+
+	make_debug (a_message: attached STRING; a_loc: STRING)
+		do
+			make ("", error_type_debug, a_message, a_loc)
+		end
+
+	make (a_code: attached STRING; a_severity: INTEGER; a_message: attached STRING; a_loc: STRING)
+		require
+			Severity_valid: is_valid_error_type (a_severity)
+		do
+			code := a_code
+			severity := a_severity
+			message := a_message
+			location := a_loc
 		end
 
 feature -- Access
 
-	type_name: STRING
-			-- type name of the object posting the message
+	code: attached STRING
 
-	routine_name: STRING
-			-- name of routine posting the message
+	severity: INTEGER
 
-	message_id: STRING
-			-- id of message message template
+	message: attached STRING
 
-	args: ARRAY[STRING]
-			-- string arguments to be substituted into message message
+	location: attached STRING
 
-	error_type: INTEGER
+feature -- Output
+
+	as_string: attached STRING
+		do
+			create Result.make (0)
+			Result.append (error_type_names.item(severity) + " ")
+			if not location.is_empty then
+				Result.append (location + ": ")
+			end
+			Result.append ("(" + code + ") " + message)
+		end
 
 invariant
-	is_valid_error_type(error_type)
+	is_valid_error_type (severity)
 
 end
 
@@ -77,7 +93,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is message_billboard_item.e.
+--| The Original Code is error_descriptor.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

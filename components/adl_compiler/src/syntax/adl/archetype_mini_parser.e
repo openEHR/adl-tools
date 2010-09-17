@@ -25,6 +25,20 @@ inherit
 			{ANY} is_valid_path
 		end
 
+feature -- Definitions
+
+	Other_details_dadl_name: STRING = "other_details"
+
+	Dadl_left_delim: CHARACTER = '<'
+
+	Dadl_right_delim: CHARACTER = '>'
+
+	Dadl_key_left_delim: CHARACTER = '['
+
+	Dadl_key_right_delim: CHARACTER = ']'
+
+	Double_quote_char: CHARACTER = '"'
+
 feature -- Access
 
 	last_archetype_id: STRING
@@ -112,6 +126,49 @@ feature -- Commands
 				end
 			else
 				last_parse_fail_reason := create_message_content("parse_archetype_e9", <<a_full_path, lines[2]>>)
+			end
+		end
+
+	extract_other_details (adl_text: attached STRING): attached HASH_TABLE [STRING, STRING]
+			-- extract description.other_details hash from archetype, if it exists; if not, return empty hash
+		local
+			start_pos, i, rpos, dadl_block_count: INTEGER
+			key, val: STRING
+		do
+			create Result.make(0)
+			start_pos := adl_text.substring_index (Other_details_dadl_name, 1) + Other_details_dadl_name.count
+			if start_pos > 0 then
+				i := adl_text.index_of (Dadl_left_delim, start_pos) + 1
+				if i > 0 then
+					from dadl_block_count := 1 until dadl_block_count = 0 or i > adl_text.count loop
+						inspect adl_text.item (i)
+						when Dadl_left_delim then -- consume chars between <>
+							rpos := adl_text.index_of (Dadl_right_delim, i) - 1
+							if rpos >= i+1 then -- guard against empty <> as value
+								if adl_text.item (i+1) = Double_quote_char and adl_text.item (rpos) = Double_quote_char then
+									val := adl_text.substring (i+2, rpos-1)
+								else
+									val := adl_text.substring (i+1, rpos)
+								end
+								Result.put (val, key)
+							end
+							i := rpos + 1
+						when Dadl_right_delim then
+							dadl_block_count := dadl_block_count - 1
+						when Dadl_key_left_delim then -- consume chars between []
+							rpos := adl_text.index_of (Dadl_key_right_delim, i) - 1
+							if adl_text.item (i+1) = Double_quote_char and adl_text.item (rpos) = Double_quote_char then
+								key := adl_text.substring (i+2, rpos-1)
+							else
+								key := adl_text.substring (i+1, rpos)
+							end
+							i := rpos + 1
+						else
+							-- nothing special
+						end
+						i := i + 1
+					end
+				end
 			end
 		end
 

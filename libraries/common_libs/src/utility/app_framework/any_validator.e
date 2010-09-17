@@ -27,9 +27,9 @@ feature -- Initialisation
 	reset
 			-- initialise reporting variables
 		do
-			create errors.make (0)
-			create warnings.make (0)
-			create info.make (0)
+			create errors.make
+			create warnings.make
+			create info.make
 			passed := True
 		ensure
 			Passed: passed
@@ -37,13 +37,13 @@ feature -- Initialisation
 
 feature -- Access
 
-	errors: STRING
+	errors: attached ERROR_ACCUMULATOR
 			-- error output of validator - things that must be corrected
 
-	warnings: STRING
+	warnings: attached ERROR_ACCUMULATOR
 			-- warnings output of validator - things that can be acted upon
 
-	info: STRING
+	info: attached ERROR_ACCUMULATOR
 			-- informative messages that will not normally be acted upon
 
 feature -- Modification
@@ -51,20 +51,38 @@ feature -- Modification
 	add_error(a_key: STRING; args: ARRAY [STRING])
 			-- append an error with key `a_key' and `args' array to the `errors' string
 		do
-			errors.append(create_message_line(a_key, args))
-			passed := False
+			add_error_with_location(a_key, args, "")
 		end
 
 	add_warning(a_key: STRING; args: ARRAY [STRING])
 			-- append a warning with key `a_key' and `args' array to the `warnings' string
 		do
-			warnings.append(create_message_line(a_key, args))
+			add_warning_with_location(a_key, args, "")
 		end
 
 	add_info(a_key: STRING; args: ARRAY [STRING])
 			-- append an information message with key `a_key' and `args' array to the `information' string
 		do
-			info.append(create_message_line(a_key, args))
+			add_info_with_location(a_key, args, "")
+		end
+
+	add_error_with_location(a_key: STRING; args: ARRAY [STRING]; a_location: STRING)
+			-- append an error with key `a_key' and `args' array to the `errors' string
+		do
+			errors.extend(create {ERROR_DESCRIPTOR}.make_error(a_key, create_message_line(a_key, args), a_location))
+			passed := False
+		end
+
+	add_warning_with_location(a_key: STRING; args: ARRAY [STRING]; a_location: STRING)
+			-- append a warning with key `a_key' and `args' array to the `warnings' string
+		do
+			warnings.extend(create {ERROR_DESCRIPTOR}.make_warning(a_key, create_message_line(a_key, args), a_location))
+		end
+
+	add_info_with_location(a_key: STRING; args: ARRAY [STRING]; a_location: STRING)
+			-- append an information message with key `a_key' and `args' array to the `information' string
+		do
+			info.extend(create {ERROR_DESCRIPTOR}.make_info(a_key, create_message_line(a_key, args), a_location))
 		end
 
 feature -- Status Report
@@ -85,11 +103,6 @@ feature -- Validation
 			passed
 		deferred
 		end
-
-invariant
-	Info_exists: info /= Void
-	Errors_exists: errors /= Void
-	Warnings_exists: warnings /= Void
 
 end
 

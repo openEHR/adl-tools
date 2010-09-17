@@ -671,7 +671,7 @@ feature {NONE} -- Help events
 	show_release_notes
 			-- Display news about the latest release.
 		do
-			(create {RELEASE_NOTES_DIALOG}).show_modal_to_window (Current)
+			show_in_system_browser (Release_notes_file_path)
 		end
 
 	show_clinical_knowledge_manager
@@ -881,6 +881,11 @@ feature -- Archetype commands
 			-- statuses cleared
 		do
 			archetype_test_tree_control.populate
+		end
+
+	archetype_test_regression_toggle
+		do
+			archetype_test_tree_control.toggle_test_regression
 		end
 
 	path_column_select (a_list_item: EV_LIST_ITEM)

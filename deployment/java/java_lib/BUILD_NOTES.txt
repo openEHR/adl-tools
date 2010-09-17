@@ -58,7 +58,7 @@ In Eiffel:
 	  by hand):
 
 		* In $(OPENEHR)\ref_impl_eiffel\components\adl_parser\lib\java_lib
-		  do a normal do a normal Eiffel finalize either from EiffelStudio 
+		  do a normal Eiffel finalize either from EiffelStudio 
 		  or using "nmake finalized". This will rebuild the Eiffel code, 
 		  and also cause the linking of the JNI wrapper .lib file from the 
 		  java area into the build dynamic library in EIFGEN/F_code.

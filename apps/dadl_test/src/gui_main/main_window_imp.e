@@ -40,9 +40,9 @@ feature {NONE}-- Initialization
 			file_menu.extend (file_menu_save_as)
 			file_menu.extend (l_ev_menu_separator_1)
 			file_menu.extend (file_menu_exit)
-			l_ev_menu_bar_1.extend (l_ev_menu_3)
-			l_ev_menu_3.extend (edit_menu_copy)
-			l_ev_menu_3.extend (edit_menu_select_all)
+			l_ev_menu_bar_1.extend (edit_menu)
+			edit_menu.extend (edit_menu_copy)
+			edit_menu.extend (edit_menu_select_all)
 			extend (explorer_split_area)
 			explorer_split_area.extend (explorer_area)
 			explorer_area.extend (l_ev_label_1)
@@ -53,9 +53,11 @@ feature {NONE}-- Initialization
 			main_notebook.extend (dadl_tree)
 			main_split_area.extend (status_area)
 
+			file_menu.set_text ("&File")
 			file_menu_open.set_text ("&Open")
 			file_menu_save_as.set_text ("&Save As")
 			file_menu_exit.set_text ("E&xit")
+			edit_menu.set_text ("&Edit")
 			edit_menu_copy.set_text ("&Copy")
 			edit_menu_select_all.set_text ("Select &All")
 			explorer_split_area.enable_item_expand (explorer_area)
@@ -96,7 +98,7 @@ feature {NONE}-- Initialization
 			create file_menu_save_as
 			create l_ev_menu_separator_1
 			create file_menu_exit
-			create l_ev_menu_3
+			create edit_menu
 			create edit_menu_copy
 			create edit_menu_select_all
 			create explorer_split_area
@@ -127,12 +129,12 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
-	file_menu: EV_MENU
-	file_menu_open, file_menu_save_as, file_menu_exit, edit_menu_copy, edit_menu_select_all: EV_MENU_ITEM
+	file_menu, edit_menu: EV_MENU
+	file_menu_open, file_menu_save_as, file_menu_exit, edit_menu_copy,
+	edit_menu_select_all: EV_MENU_ITEM
 	explorer_split_area: EV_HORIZONTAL_SPLIT_AREA
 	explorer_area: EV_VERTICAL_BOX
-	explorer_tree,
-	dadl_tree: EV_TREE
+	explorer_tree, dadl_tree: EV_TREE
 	main_split_area: EV_VERTICAL_SPLIT_AREA
 	main_notebook: EV_NOTEBOOK
 	source_text: EV_RICH_TEXT
@@ -142,7 +144,6 @@ feature {NONE} -- Implementation
 
 	l_ev_menu_bar_1: EV_MENU_BAR
 	l_ev_menu_separator_1: EV_MENU_SEPARATOR
-	l_ev_menu_3: EV_MENU
 	l_ev_label_1: EV_LABEL
 
 feature {NONE} -- Implementation

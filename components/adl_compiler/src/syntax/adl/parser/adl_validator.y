@@ -24,7 +24,7 @@ inherit
 
 	ADL_SCANNER
 		rename
-			make as make_eiffel_scanner
+			make as make_scanner
 		end
 
 	ADL_SYNTAX_CONVERTER
@@ -247,14 +247,13 @@ feature -- Initialization
 	make
 			-- Create a new Eiffel parser.
 		do
-			make_eiffel_scanner
+			make_scanner
 			make_parser_skeleton
 		end
 
-	execute (in_text: STRING)
+	execute (in_text:STRING)
 		do
 			reset
-			create error_text.make(0)
 			set_input_buffer (new_string_buffer (in_text))
 			parse
 		end
@@ -263,17 +262,29 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 
 	report_error (a_message: STRING)
 			-- Print error message.
-		local
-			f_buffer: YY_FILE_BUFFER
 		do
-			f_buffer ?= input_buffer
-			if f_buffer /= Void then
-				error_text.append (f_buffer.file.name + ", line ")
-			else
-				error_text.append ("line ")
-			end
-			error_text.append (in_lineno.out + ": " + a_message + " [last token = " + token_name(last_token) + "]%N")
+			add_error_with_location("general_error", <<a_message>>, error_loc)
 		end
+
+	abort_with_error (err_code: STRING; args: ARRAY [STRING])
+		do
+			add_error_with_location(err_code, args, error_loc)
+			raise_error
+			abort
+		end
+
+	error_loc: attached STRING
+		do
+			create Result.make_empty
+			if attached {YY_FILE_BUFFER} input_buffer as f_buffer then
+				Result.append (f_buffer.file.name + ", ")
+			end
+			Result.append ("line " + (in_lineno + source_start_line).out)
+			Result.append(" [last ADL token = " + token_name(last_token) + "]")
+		end
+
+	source_start_line: INTEGER
+			-- offset of source in other document, else 0
 
 feature -- Parse Output
 
@@ -300,10 +311,6 @@ feature -- Parse Output
 	invariant_text: STRING
 	
 	ontology_text: STRING
-
-feature -- Access
-
-	error_text: STRING
 
 feature {NONE} -- Implementation 
 

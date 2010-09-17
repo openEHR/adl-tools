@@ -241,6 +241,7 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_16.extend (remove_unused_codes_rb)
 			l_ev_vertical_box_16.extend (arch_test_tree_toggle_expand_bn)
 			l_ev_vertical_box_16.extend (arch_test_refresh_bn)
+			l_ev_vertical_box_16.extend (regression_test_bn)
 			l_ev_vertical_box_16.extend (l_ev_horizontal_box_18)
 			l_ev_horizontal_box_18.extend (l_ev_label_9)
 			l_ev_horizontal_box_18.extend (arch_test_processed_count)
@@ -816,6 +817,7 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_16.disable_item_expand (remove_unused_codes_rb)
 			l_ev_vertical_box_16.disable_item_expand (arch_test_tree_toggle_expand_bn)
 			l_ev_vertical_box_16.disable_item_expand (arch_test_refresh_bn)
+			l_ev_vertical_box_16.disable_item_expand (regression_test_bn)
 			l_ev_vertical_box_16.disable_item_expand (l_ev_horizontal_box_18)
 			l_ev_vertical_box_16.disable_item_expand (l_ev_horizontal_separator_1)
 			l_ev_vertical_box_16.disable_item_expand (archetype_test_go_bn)
@@ -825,6 +827,8 @@ feature {NONE}-- Initialization
 			arch_test_tree_toggle_expand_bn.set_tooltip ("Expand or collapse directory tree")
 			arch_test_refresh_bn.set_text ("Refresh")
 			arch_test_refresh_bn.set_tooltip ("Resync to file system and reset statuses")
+			regression_test_bn.set_text ("Regression off")
+			regression_test_bn.set_tooltip ("Turn regression testing on for test archetypes")
 			l_ev_horizontal_box_18.set_minimum_width (110)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_18.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
@@ -917,6 +921,7 @@ feature {NONE}-- Initialization
 			arch_bad_count_tf.focus_in_actions.extend (agent on_select_all)
 			arch_test_tree_toggle_expand_bn.select_actions.extend (agent archetype_test_tree_expand_toggle)
 			arch_test_refresh_bn.select_actions.extend (agent archetype_test_refresh)
+			regression_test_bn.select_actions.extend (agent archetype_test_regression_toggle)
 			arch_test_processed_count.focus_in_actions.extend (agent on_select_all)
 			archetype_test_go_bn.select_actions.extend (agent archetype_test_go_stop)
 			close_request_actions.extend (agent exit_app)
@@ -1135,6 +1140,7 @@ feature {NONE}-- Initialization
 			create remove_unused_codes_rb
 			create arch_test_tree_toggle_expand_bn
 			create arch_test_refresh_bn
+			create regression_test_bn
 			create l_ev_horizontal_box_18
 			create l_ev_label_9
 			create arch_test_processed_count
@@ -1229,10 +1235,10 @@ feature -- Access
 	parser_status_area, test_status_area: EV_TEXT
 	node_map_expand_button, node_map_expand_one_button,
 	node_map_collapse_one_button, arch_test_tree_toggle_expand_bn, arch_test_refresh_bn,
-	archetype_test_go_bn: EV_BUTTON
+	regression_test_bn, archetype_test_go_bn: EV_BUTTON
 	l_ev_cell_1: EV_CELL
-	node_map_domain_radio_button, node_map_technical_radio_button,
-	node_map_reference_model_radio_button: EV_RADIO_BUTTON
+	node_map_domain_radio_button,
+	node_map_technical_radio_button, node_map_reference_model_radio_button: EV_RADIO_BUTTON
 	path_analysis_column_view_checkable_list: EV_CHECKABLE_LIST
 	source_rich_text: EV_RICH_TEXT
 	compiler_output_grid,
@@ -1502,6 +1508,11 @@ feature {NONE} -- Implementation
 	
 	archetype_test_refresh
 			-- Called by `select_actions' of `arch_test_refresh_bn'.
+		deferred
+		end
+	
+	archetype_test_regression_toggle
+			-- Called by `select_actions' of `regression_test_bn'.
 		deferred
 		end
 	

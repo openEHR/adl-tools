@@ -610,7 +610,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 						end
 						object_nodes.item.put_attribute(attr_node)
 					else -- error - cardinality stated, but on a non-container attribute
-						abort_with_error("VSAM", <<rm_attribute_name>>)
+						abort_with_error("VSAM2", <<rm_attribute_name>>)
 					end
 				else
 					abort_with_error("VCARM", <<rm_attribute_name, object_nodes.item.path, object_nodes.item.rm_type_name>>)
@@ -662,7 +662,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 						end
 						object_nodes.item.put_attribute(attr_node)
 					else -- error - cardinality stated, but on a non-container attribute
-						abort_with_error("VSAM", <<path_str>>)
+						abort_with_error("VSAM2", <<path_str>>)
 					end
 				else
 					abort_with_error("VDIFP2", <<path_str>>)
@@ -2315,7 +2315,6 @@ feature -- Initialization
 			differential_syntax := differential_flag
 
 			create indent.make(0)
-			create error_text.make(0)
 
 			create object_nodes.make(0)
 			assertion_list := Void
@@ -2332,28 +2331,28 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 
 	report_error (a_message: STRING)
 			-- Print error message.
-		local
-			f_buffer: YY_FILE_BUFFER
 		do
-			f_buffer ?= input_buffer
-			if f_buffer /= Void then
-				error_text.append (f_buffer.file.name + ", line ")
-			else
-				error_text.append ("line ")
-			end
-			error_text.append ((in_lineno + source_start_line).out + ": " + a_message + " [last cADL token = " + token_name(last_token) + "]%N")
+			add_error_with_location("general_error", <<a_message>>, error_loc)
 		end
 
-	abort_with_error (err_code: STRING; params: ARRAY [STRING])
+	abort_with_error (err_code: STRING; args: ARRAY [STRING])
 		do
+			add_error_with_location(err_code, args, error_loc)
 			raise_error
-			report_error(create_message_line(err_code, params))
 			abort
 		end
 
-feature -- Access
+	error_loc: attached STRING
+		do
+			create Result.make_empty
+			if attached {YY_FILE_BUFFER} input_buffer as f_buffer then
+				Result.append (f_buffer.file.name + ", ")
+			end
+			Result.append ("line " + (in_lineno + source_start_line).out)
+			Result.append(" [last cADL token = " + token_name(last_token) + "]")
+		end
 
-	error_text: STRING
+feature -- Access
 
 	output: C_COMPLEX_OBJECT
 			

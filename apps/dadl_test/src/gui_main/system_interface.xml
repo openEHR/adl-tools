@@ -85,6 +85,7 @@
     <EV_SENSITIVE>
     </EV_SENSITIVE>
     <EV_TEXTABLE>
+     <Text>&amp;File</Text>
     </EV_TEXTABLE>
     <EV_PIXMAPABLE>
     </EV_PIXMAPABLE>
@@ -152,11 +153,13 @@
    <item type="EV_MENU">
     <Internal_properties>
      <id>9</id>
+     <name>edit_menu</name>
      <Expanded>1</Expanded>
     </Internal_properties>
     <EV_SENSITIVE>
     </EV_SENSITIVE>
     <EV_TEXTABLE>
+     <Text>&amp;Edit</Text>
     </EV_TEXTABLE>
     <EV_PIXMAPABLE>
     </EV_PIXMAPABLE>

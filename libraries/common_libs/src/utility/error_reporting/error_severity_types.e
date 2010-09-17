@@ -1,11 +1,7 @@
 note
 	component:   "openEHR Reusable Libraries"
 	description: "[
-			     Error status billboard item: contains id of message template
-				 and a set of args to be substituted. This approach allows
-				 messages to be reported in multiple languages, since they are
-				 built from the template & args on the fly when requested,
-				 not when created.
+			     Enumeration of message types
 				 ]"
 	keywords:    "error status reporting"
 
@@ -18,48 +14,43 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class MESSAGE_BILLBOARD_ITEM
+deferred class ERROR_SEVERITY_TYPES
 
-inherit
-	ERROR_SEVERITY_TYPES
+feature -- Definitions
 
-create
-	make
-
-feature -- Initialisation
-
-	make (a_type_name, a_routine_name: STRING; a_message_id: STRING; an_args: ARRAY[STRING]; an_error_type: INTEGER)
-		require
-			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
-			Routine_name_valid: a_routine_name /= Void and then not a_routine_name.is_empty
-			Error_id_valid: a_message_id /= Void and then not a_message_id.is_empty
-			Error_type_valid: is_valid_error_type(an_error_type)
-		do
-			type_name := a_type_name
-			routine_name := a_routine_name
-			message_id := a_message_id
-			args := an_args
-			error_type := an_error_type
-		end
+	Error_type_debug: INTEGER = 9000
+	Error_type_info: INTEGER = 9001
+	Error_type_warning: INTEGER = 9002
+	Error_type_error: INTEGER = 9003
 
 feature -- Access
 
-	type_name: STRING
-			-- type name of the object posting the message
+	error_type_names: DS_HASH_TABLE [STRING, INTEGER]
+			-- names of message types
+		once
+			create Result.make(0)
+			Result.force("ERROR", Error_type_error)
+			Result.force("WARNING", Error_type_warning)
+			Result.force("INFO", Error_type_info)
+			Result.force("DEBUG", Error_type_debug)
+		end
 
-	routine_name: STRING
-			-- name of routine posting the message
+	error_type_ids: DS_HASH_TABLE [INTEGER, STRING]
+			-- ids of message types
+		once
+			create Result.make(0)
+			Result.force(Error_type_error, "ERROR")
+			Result.force(Error_type_warning, "WARNING")
+			Result.force(Error_type_info, "INFO")
+			Result.force(Error_type_debug, "DEBUG")
+		end
 
-	message_id: STRING
-			-- id of message message template
+feature -- Status Report
 
-	args: ARRAY[STRING]
-			-- string arguments to be substituted into message message
-
-	error_type: INTEGER
-
-invariant
-	is_valid_error_type(error_type)
+	is_valid_error_type(i: INTEGER): BOOLEAN
+		do
+			Result := i >= Error_type_debug and i <= Error_type_error
+		end
 
 end
 
@@ -77,7 +68,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is message_billboard_item.e.
+--| The Original Code is error_status.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

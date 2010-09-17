@@ -574,9 +574,10 @@ feature {NONE} -- Implementation
 				create apa.make_from_string (a_c_node.path)
 				if attached {C_ATTRIBUTE} flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth)) as ca_parent_flat then
 					if not ca_child_diff.node_conforms_to(ca_parent_flat, rm_schema) then
-						if ca_child_diff.is_single /= ca_parent_flat.is_single then
-							-- FIXME: should never get here now, since cardinality of same-named attributes under same object type is now read from RM schema
-							add_error("VSAM", <<ca_child_diff.path>>)
+						if ca_child_diff.is_single and not ca_parent_flat.is_single then
+							add_error("VSAM1", <<ca_child_diff.path>>)
+						elseif not ca_child_diff.is_single and ca_parent_flat.is_single then
+							add_error("VSAM2", <<ca_child_diff.path>>)
 						elseif not ca_child_diff.existence_conforms_to (ca_parent_flat) then
 							add_error("VSANCE", <<ca_child_diff.path, ca_child_diff.existence.as_string,
 										ca_parent_flat.path, ca_parent_flat.existence.as_string>>)

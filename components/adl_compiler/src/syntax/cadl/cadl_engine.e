@@ -43,14 +43,10 @@ feature -- Access
 	serialised: STRING
 			-- The last result of calling `serialise'.
 
-	parse_error_text: attached STRING
+	errors: attached ERROR_ACCUMULATOR
 			-- Result of last parse.
 		do
-			if parser /= Void then
-				Result := parser.error_text
-			else
-				create Result.make_empty
-			end
+			Result := parser.errors
 		end
 
 feature -- Status Report

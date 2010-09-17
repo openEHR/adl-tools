@@ -15,12 +15,23 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class MESSAGE_DB
+class MESSAGE_DB
+
+inherit
+	KL_SHARED_FILE_SYSTEM
+		export
+			{NONE} all
+		end
+
+create
+	make
 
 feature -- Definitions
 
 	Default_message_language: STRING = "en"
 			-- default language of messages in this database
+
+	Error_file_extension: STRING = ".txt"
 
 feature -- Initialisation
 
@@ -31,19 +42,15 @@ feature -- Initialisation
 
 feature -- Access
 
-	templates: HASH_TABLE [STRING, STRING]
+	templates: attached HASH_TABLE [STRING, STRING]
 			-- error templates in the form of a table of templates keyed by id
 
-	has_message(an_id: STRING): BOOLEAN
-		require
-			an_id /= Void
+	has_message(an_id: attached STRING): BOOLEAN
 		do
 			Result := templates.has(an_id)
 		end
 
-	create_message_content(an_id: STRING; args: ARRAY[STRING]): STRING
-		require
-			an_id /= Void
+	create_message_content(an_id: attached STRING; args: ARRAY[STRING]): attached STRING
 		local
 			i: INTEGER
 			idx_str: STRING
@@ -61,11 +68,9 @@ feature -- Access
 			if args_list /= Void then
 				from i := args_list.lower until i > args_list.upper loop
 					replacement := args_list.item(i)
-
 					if not attached replacement then
 						create replacement.make_empty
 					end
-
 					idx_str := i.out
 					idx_str.left_adjust
 					Result.replace_substring_all("$" + idx_str, replacement)
@@ -74,10 +79,8 @@ feature -- Access
 			end
 		end
 
-	create_message_line(an_id: STRING; args: ARRAY[STRING]): STRING
+	create_message_line(an_id: attached STRING; args: ARRAY[STRING]): attached STRING
 			-- create message as a full line
-		require
-			an_id /= Void
 		do
 			Result := create_message_content(an_id, args)
 			Result.append_character ('%N')
@@ -90,8 +93,73 @@ feature -- Status Report
 			Result := not templates.is_empty
 		end
 
-invariant
-	templates /= Void
+feature -- Modification
+
+	populate (an_err_db_dir, a_locale_lang: attached STRING)
+			-- populate error database from error DB files found in `an_err_db_dir'
+		local
+			file_name, file_path: STRING
+			err_db_file: PLAIN_TEXT_FILE
+			dir: DIRECTORY
+			file_names: ARRAYED_LIST [STRING]
+		do
+			create dir.make (an_err_db_dir)
+			if dir.exists then
+				dir.open_read
+				file_names := dir.linear_representation
+				from file_names.start until file_names.off loop
+					file_name := file_names.item
+					if file_name.ends_with(Error_file_extension) then
+						file_path := file_system.pathname (an_err_db_dir, file_name)
+						create err_db_file.make (file_path)
+						if not err_db_file.exists or else not err_db_file.is_readable then
+							io.put_string ("Message database file: " + file_path + " does not exist or not readable%N")
+						else
+							err_db_file.open_read
+							err_db_file.read_stream (err_db_file.count)
+							populate_from_text(err_db_file.last_string, a_locale_lang)
+						end
+					end
+					file_names.forth
+				end
+			else
+				io.put_string ("Message database directory: " + an_err_db_dir + " does not exist or not readable%N")
+			end
+		end
+
+	populate_from_text (a_dadl_str, a_locale_lang: attached STRING)
+			-- populate message database using messages in `a_dadl_str' in language `a_locale_lang'.
+			-- The latter should be a 2-digit ISO 639 language code, e.g. "en", "de" etc
+			-- The format of `a_dadl_str' (dADL):
+			--	templates = <
+			--		["en"] = <
+			--			["key1"] = <"Message string with $1 argument $2 argument etc">
+			--			["key2"] = <"Message string with $1 argument $2 argument etc">
+			--		>
+			--	>
+			-- caller should check database_loaded after call.
+		require
+			Valid_message_string:  not a_dadl_str.is_empty
+			Valid_local_lang: not a_locale_lang.is_empty
+		local
+			parser: DADL2_VALIDATOR
+			dt_tree: DT_COMPLEX_OBJECT_NODE
+			init_helper: IN_MEMORY_MESSAGE_DB_INITIALISER
+		do
+			create parser.make
+			parser.execute(a_dadl_str, 1)
+			if not parser.syntax_error then
+				dt_tree := parser.output
+				init_helper ?= dt_tree.as_object_from_string("IN_MEMORY_MESSAGE_DB_INITIALISER")
+				if init_helper.templates.has (a_locale_lang) then
+					templates.merge (init_helper.templates.item (a_locale_lang))
+				else
+					templates.merge (init_helper.templates.item (Default_message_language))
+				end
+			else
+				io.put_string ("Message database failure: " + parser.errors.as_string + "%N")
+			end
+		end
 
 end
 

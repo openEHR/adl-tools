@@ -17,7 +17,7 @@ class SHARED_RESOURCES
 inherit
 	KL_SHARED_FILE_SYSTEM
 
-	BILLBOARD_MESSAGE_TYPES
+	ERROR_SEVERITY_TYPES
 		export
 			{NONE} all
 		end
@@ -94,7 +94,7 @@ feature -- Access
 			if str.is_integer then
 				Result := str.to_integer
 			else
-				Result := message_type_info
+				Result := Error_type_info
 			end
 		end
 

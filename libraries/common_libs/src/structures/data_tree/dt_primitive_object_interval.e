@@ -39,7 +39,10 @@ feature -- Conversion
 
 	as_string: STRING
 		do
-			Result := "|" + value.as_string + "|"
+			create Result.make_empty
+			Result.append_character ('|')
+			Result.append(value.as_string)
+			Result.append_character ('|')
 		end
 
 feature -- Serialisation

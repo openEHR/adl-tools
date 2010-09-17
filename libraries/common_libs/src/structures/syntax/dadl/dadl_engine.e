@@ -44,10 +44,10 @@ feature -- Access
 	serialised: STRING
 			-- The last result of calling `serialise'.
 
-	parse_error_text: attached STRING
+	errors: attached ERROR_ACCUMULATOR
 			-- Result of last parse.
 		do
-			Result := parser.error_text
+			Result := parser.errors
 		end
 
 feature -- Status Report

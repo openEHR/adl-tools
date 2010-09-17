@@ -28,6 +28,13 @@ inherit
 			is_equal, default_create
 		end
 
+	STRING_UTILITIES
+		export
+			{NONE} all
+		undefine
+			is_equal, default_create
+		end
+
 create
 	make_identified, make_anonymous
 
@@ -41,40 +48,20 @@ feature -- Modification
 		do
 			value := a_value
 			rm_type_name := a_value.generating_type
-
-			is_string := rm_type_name.starts_with ("STRING")
-			is_character := rm_type_name.starts_with ("CHARACTER")
 		end
 
 feature -- Conversion
 
 	as_string: STRING
 		do
-			if is_string then
-				Result := "%"" + value.out + "%""
-			elseif is_character then
-				Result := "%'" + value.out + "%'"
-			else
-				-- FIXME: duration.out does not exist in Eiffel, and in any case would not be ISO8601-compliant
-				if attached {DATE_TIME_DURATION} value as a_dur then
-					Result := (create {ISO8601_DURATION}.make_date_time_duration(a_dur)).as_string
-				elseif attached {DATE_TIME} value as a_dt then
-					Result := (create {ISO8601_DATE_TIME}.make_date_time(a_dt)).as_string
-				else
-					Result := value.out
-					-- FIXME: REAL.out is broken (still the case in Eiffel 6.6)
-					if value.generating_type.out.substring (1, 4).is_equal ("REAL") and then Result.index_of ('.', 1) = 0 then
-						Result.append(".0")
-					end
-				end
-			end
+			Result := atomic_value_to_string(value)
 		end
 
 	clean_as_string (cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
 			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
 		do
-			if is_string then
-				Result := "%"" + cleaner.item ([value.out]) + "%""
+			if attached {STRING} value as str then
+				Result := atomic_value_to_string(cleaner.item ([str]))
 			else
 				Result := as_string
 			end
@@ -93,12 +80,6 @@ feature -- Serialisation
 		do
 			serialiser.end_primitive_object(Current, depth)
 		end
-
-feature {NONE} -- Implementation
-
-	is_string: BOOLEAN
-
-	is_character: BOOLEAN
 
 end
 

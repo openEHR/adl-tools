@@ -63,6 +63,8 @@ feature -- Definitions
 
 	Test_unknown: INTEGER = 104
 
+	Regression_test_key: STRING = "Regression"
+
 feature {NONE} -- Initialisation
 
 	make (a_main_window: MAIN_WINDOW)
@@ -83,6 +85,7 @@ feature -- Access
 		once
 			create Result.make (0)
 			Result.force (agent test_parse, "Parse")
+			Result.force (agent reqgression_test, Regression_test_key)
 			Result.force (agent test_save_source_orig, "Save src (orig)")
 			Result.force (agent test_save_source_new, "Save src (gen)")
 			Result.force (agent test_save_legacy, "Save legacy")
@@ -106,6 +109,11 @@ feature -- Status Setting
 
 	test_stop_requested: BOOLEAN
 			-- user requested stop
+
+	regression_test_on: BOOLEAN
+			-- True if user has turned on regression testing, in which case, the archetype text being parsed will be searched
+			-- for a "Regression" tag within the 'other_details' part of the 'description' section of the archetype. If this
+			-- tag is found, the value should be "PASS", "FAIL", or some validity code like "VOTM", as defined in the AOM 1.5 spec.
 
 feature -- Commands
 
@@ -256,14 +264,13 @@ feature -- Commands
 						col_csr := first_test_col
 						test_result := test_unknown
 					until
-						tests.off or test_result = test_failed
+						tests.off or test_result = test_failed and not (regression_test_on and tests.key_for_iteration.is_equal (Regression_test_key))
 					loop
 						row.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("processing..."))
 
 						create test_status.make_empty
 
 						test_result := tests.item_for_iteration.item ([])
-
 						inspect test_result
 						when test_passed then
 							res_label := "test_passed"
@@ -271,12 +278,13 @@ feature -- Commands
 							res_label := "test_failed"
 						when test_not_applicable then
 							res_label := "test_not_applicable"
-						else
-
 						end
 
 						create gli
 						gli.set_pixmap (pixmaps [res_label])
+						if regression_test_on and tests.key_for_iteration.is_equal (Regression_test_key) then
+							gli.set_text (val_code)
+						end
 						row.set_item (col_csr, gli)
 
 						if not test_status.is_empty then
@@ -307,6 +315,17 @@ feature -- Commands
 				expand_tree (grid.row (1))
 				gui.arch_test_tree_toggle_expand_bn.set_text ("Collapse Tree")
 				is_expanded := True
+			end
+		end
+
+	toggle_test_regression
+		do
+			if regression_test_on then
+				gui.regression_test_bn.set_text ("Regression off")
+				regression_test_on := False
+			else
+				gui.regression_test_bn.set_text ("Regression on")
+				regression_test_on := True
 			end
 		end
 
@@ -356,10 +375,9 @@ feature {NONE} -- Tests
 		do
 			Result := test_failed
 			archetype_compiler.rebuild_lineage (target)
-
 			if target.is_valid then
 				Result := test_passed
-				test_status.append (" parse succeeded%N" + target.compilation_result)
+				test_status.append (" parse succeeded%N" + target.errors.as_string)
 
 				if remove_unused_codes then
 					unused_at_codes := target.differential_archetype.ontology_unused_term_codes
@@ -385,9 +403,61 @@ feature {NONE} -- Tests
 				end
 				original_differential_text := target.differential_text
 			else
-				test_status.append (" parse failed%N" + target.compilation_result)
+				test_status.append (" parse failed%N" + target.errors.as_string)
 			end
 		end
+
+	reqgression_test: INTEGER
+			-- if archetype description.other_details contains an item with key "validity", see if the value
+			-- matches the parse result
+		local
+			other_details: HASH_TABLE [STRING, STRING]
+			amp: ARCHETYPE_MINI_PARSER
+		do
+			if regression_test_on then
+				val_code := ""
+				create amp
+				if target.has_legacy_flat_file then
+					other_details := amp.extract_other_details (target.legacy_flat_text)
+				else
+					other_details := amp.extract_other_details (target.differential_text)
+				end
+				if other_details.has (Regression_test_key) then
+					val_code := other_details.item (Regression_test_key).as_upper
+				elseif other_details.has (Regression_test_key.as_lower) then
+					val_code := other_details.item (Regression_test_key.as_lower).as_upper
+				end
+
+				-- check to see if expected regression test result `val_code' (typically some code like "VSONIR" from AOM 1.5 spec)
+				-- is in the errors or warnings list from a recent compilation. This list may contain slight variants of the
+				-- official codes, e.g. "VSONIRocc" which are used to distinguish multiple error messages to do with the same
+				-- validity condition. Therefore the comparison is not as simple as just doing compiler_result_codes.has(test_code)
+				if attached val_code then
+					if target.is_valid then
+						if not val_code.is_equal ("FAIL") and
+							(val_code.is_equal ("PASS") or target.errors.warning_codes.there_exists (agent (str: STRING):BOOLEAN do Result := str.starts_with (val_code) end)) and
+							not target.errors.has_errors
+						then
+							Result := test_passed
+						else
+							Result := test_failed
+						end
+					else
+						if (val_code.is_equal ("FAIL") or target.errors.error_codes.there_exists (agent (str: STRING):BOOLEAN do Result := str.starts_with (val_code) end)) then
+							Result := test_passed
+						else
+							Result := test_failed
+						end
+					end
+				else
+					Result := test_not_applicable
+				end
+			else
+				Result := test_not_applicable
+			end
+		end
+
+	val_code: STRING
 
 	test_save_source_orig: INTEGER
 			-- parse archetype, save in source form and return result

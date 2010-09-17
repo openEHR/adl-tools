@@ -23,7 +23,7 @@ Name "ADL Workbench"
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP "openEHR.bmp"
 !define MUI_FINISHPAGE_RUN "$INSTDIR\adl_workbench.exe"
-!define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\release_notes.txt"
+!define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\doc\web\release_notes.html"
 !define MUI_FINISHPAGE_SHOWREADME_TEXT "Show Release Notes"
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
@@ -37,7 +37,7 @@ Var StartMenuGroup
 
 # Installer pages
 !insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE "..\..\..\..\doc\LICENSE.txt"
+!insertmacro MUI_PAGE_LICENSE "..\..\..\doc\LICENSE.txt"
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_STARTMENU Application $StartMenuGroup
 !insertmacro MUI_PAGE_INSTFILES
@@ -76,7 +76,7 @@ Section -Main SEC0000
         File ..\..\..\app\EIFGENs\adl_workbench\F_code\adl_workbench.exe
     !endif
 
-    File ..\..\..\app\release_notes.txt
+    File ..\..\..\doc\web\release_notes.html
     File ..\..\..\app\ArchetypeRepositoryReport.xsl
     File ..\..\..\app\ArchetypeRepositoryReport.css
 
@@ -85,6 +85,9 @@ Section -Main SEC0000
 
     SetOutPath $INSTDIR\rm_schemas
     File ..\..\..\app\rm_schemas\*
+
+    SetOutPath $INSTDIR\error_db
+    File ..\..\..\app\error_db\*
 
     SetOutPath $INSTDIR\vim
     File ..\..\..\..\..\components\adl_compiler\etc\vim\*
@@ -129,11 +132,12 @@ done${UNSECTION_ID}:
 Section /o un.Main UNSEC0000
 
     Delete /REBOOTOK $INSTDIR\adl_workbench.exe
-    Delete /REBOOTOK $INSTDIR\release_notes.txt
     Delete /REBOOTOK $INSTDIR\ArchetypeRepositoryReport.xsl
     Delete /REBOOTOK $INSTDIR\ArchetypeRepositoryReport.css
+    RMDir /r /REBOOTOK $INSTDIR\doc
     RMDir /r /REBOOTOK $INSTDIR\icons
     RMDir /r /REBOOTOK $INSTDIR\rm_schemas
+    RMDir /r /REBOOTOK $INSTDIR\error_db
     RMDir /r /REBOOTOK $INSTDIR\vim
     DeleteRegValue HKLM "${REGKEY}\Components" Main
 SectionEnd
