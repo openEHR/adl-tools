@@ -75,18 +75,18 @@ for target in COMMAND_LINE_TARGETS:
 			s = os.path.dirname(s)
 
 if distrib and len(adl_workbench) > 0:
-	release_notes = 'apps/adl_workbench/app/release_notes.txt'
-	readme = 'apps/doc/README-adl_workbench.txt'
-	license = 'apps/doc/LICENSE.txt'
+	release_notes = 'apps/adl_workbench/doc/web/release_notes.html'
+	license = 'apps/adl_workbench/doc/LICENSE.txt'
 	xsl = 'apps/adl_workbench/app/ArchetypeRepositoryReport.xsl'
 	css = 'apps/adl_workbench/app/ArchetypeRepositoryReport.css'
 	icons = 'apps/adl_workbench/app/icons'
 	rm_schemas = 'apps/adl_workbench/app/rm_schemas'
+	error_db = 'apps/adl_workbench/app/error_db'
 	vim = 'components/adl_compiler/etc/vim'
 	install = 'apps/adl_workbench/install/' + platform
-	adl_workbench_installer_sources = [adl_workbench[0], release_notes, readme, license, xsl, css]
+	adl_workbench_installer_sources = [adl_workbench[0], release_notes, license, xsl, css]
 
-	for dir in [icons, rm_schemas, vim, install]:
+	for dir in [icons, rm_schemas, error_db, vim, install]:
 		for source, dirnames, filenames in os.walk(dir):
 			if '.svn' in dirnames: dirnames.remove('.svn')
 			adl_workbench_installer_sources += env.Files(source + '/*')
@@ -111,10 +111,10 @@ if distrib and len(adl_workbench) > 0:
 			import tarfile
 			tar = tarfile.open(str(target[0]), 'w:bz2')
 
-			for src in [str(adl_workbench[0]), release_notes, readme, license, xsl, css]:
+			for src in [str(adl_workbench[0]), release_notes, license, xsl, css]:
 				tar.add(src, os.path.basename(src))
 
-			for root in [icons, rm_schemas, vim]:
+			for root in [icons, rm_schemas, error_db, vim]:
 				for dir, dirnames, filenames in os.walk(root):
 					if '.svn' in dirnames: dirnames.remove('.svn')
 					archived_dir = dir[len(os.path.dirname(root)) + 1:]
@@ -151,22 +151,22 @@ if distrib and len(adl_workbench) > 0:
 				copy_tree(install, distrib)
 				copy_tree(vim, pkg_contents)
 
-				for src in [str(adl_workbench[0]), release_notes, readme, license, xsl, css, icons, rm_schemas]:
+				for src in [str(adl_workbench[0]), release_notes, license, xsl, css, icons, rm_schemas, error_db]:
 					copy_tree(src, pkg_contents + '/ADL Workbench.app/Contents/Resources/')
 
-				shutil.copy2(release_notes, pkg_resources + '/Welcome.txt')
+				shutil.copy2(release_notes, pkg_resources + '/Welcome.html')
+				shutil.copy2('apps/adl_workbench/doc/web/help-mac_install.html', pkg_resources + '/ReadMe.html')
 
-				for html, txt in [['ReadMe.html', readme], ['License.html', license]]:
-					substitutions = 's|\&|\&amp;|;'
-					substitutions += 's|\<|\&lt;|;'
-					substitutions += 's|\>|\&gt;|;'
-					substitutions += '2s|^.+$|<h2>&</h2>|;'
-					substitutions += 's|^[A-Z].+$|<h3>&</h3>|;'
-					substitutions += 's|^$|<br><br>|;'
-					substitutions += 's|^-+$||'
-					f = open(pkg_resources + '/' + html, 'w')
-					f.write(os.popen('sed -E \'' + substitutions + '\' ' + txt).read())
-					f.close()
+				substitutions = 's|\&|\&amp;|;'
+				substitutions += 's|\<|\&lt;|;'
+				substitutions += 's|\>|\&gt;|;'
+				substitutions += '2s|^.+$|<h2>&</h2>|;'
+				substitutions += 's|^[A-Z].+$|<h3>&</h3>|;'
+				substitutions += 's|^$|<br><br>|;'
+				substitutions += 's|^-+$||'
+				f = open(pkg_resources + '/License.html', 'w')
+				f.write(os.popen('sed -E \'' + substitutions + '\' ' + license).read())
+				f.close()
 
 			pkg_name = ''
 			match = re.match(r'\d+', os.popen('uname -r').read())
@@ -188,7 +188,7 @@ if distrib and len(adl_workbench) > 0:
 				'-d', pkg_tree + '/Description.plist'
 			]
 
-			installer = env.Command(distrib + '/tools/' + pkg_name + '.dmg', adl_workbench_installer_sources + env.Files('apps/doc/*.txt'), [
+			installer = env.Command(distrib + '/tools/' + pkg_name + '.dmg', adl_workbench_installer_sources, [
 				Delete(pkg_tree),
 				env.Action(copy_mac_osx_installer_sources, 'Copying installer files to ' + pkg_tree),
 				command,
