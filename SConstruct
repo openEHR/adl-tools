@@ -154,8 +154,12 @@ if distrib and len(adl_workbench) > 0:
 				for src in [str(adl_workbench[0]), release_notes, license, xsl, css, icons, rm_schemas, error_db]:
 					copy_tree(src, pkg_contents + '/ADL Workbench.app/Contents/Resources/')
 
-				shutil.copy2(release_notes, pkg_resources + '/Welcome.html')
-				shutil.copy2('apps/adl_workbench/doc/web/help-mac_install.html', pkg_resources + '/ReadMe.html')
+				for src, dst in [[release_notes, 'Welcome.html'], ['apps/adl_workbench/doc/web/help-mac_install.html', 'ReadMe.html']]:
+					substitutions = 's|\</head\>|<base href="http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/apps/adl_workbench/doc/web/" /></head>|;'
+					substitutions += 's|div id="header"|div style="display: none;"|'
+					f = open(pkg_resources + '/' + dst, 'w')
+					f.write(os.popen('sed -E \'' + substitutions + '\' ' + src).read())
+					f.close()
 
 				substitutions = 's|\&|\&amp;|;'
 				substitutions += 's|\<|\&lt;|;'
