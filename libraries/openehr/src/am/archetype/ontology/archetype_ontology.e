@@ -1160,17 +1160,16 @@ feature {NONE} -- Implementation
 			an_attr_node := representation.attribute_node_at_path (terminology_path)
 
 			if an_attr_node.is_multiple then
-				from
-					an_attr_node.start
-				until
-					an_attr_node.off
-				loop
+				from an_attr_node.start until an_attr_node.off loop
 					if {a_simple_node: !DT_PRIMITIVE_OBJECT} an_attr_node.item then
 						if {a_term: !CODE_PHRASE} a_simple_node.value then
 							term_bindings_one_terminology.force (a_term, a_simple_node.node_id)
+						else
+							errors.append ("Expecting CODE_PHRASE, e.g. <[terminology_id::code]>%N")
 						end
+					else
+						errors.append ("Expecting primitive node containing CODE_PHRASE%N")
 					end
-
 					an_attr_node.forth
 				end
 			end
@@ -1180,28 +1179,20 @@ feature {NONE} -- Implementation
 			--
 		local
 			an_attr_node: DT_ATTRIBUTE_NODE
-			a_leaf_node: DT_PRIMITIVE_OBJECT
-			a_uri: URI
 		do
 			an_attr_node := representation.attribute_node_at_path("/" + Sym_constraint_bindings + "[" + a_terminology + "]/items")
 			if an_attr_node.is_multiple then
-				from
-					an_attr_node.start
-				until
-					an_attr_node.off
-				loop
-					a_leaf_node ?= an_attr_node.item
-					if a_leaf_node /= Void then
-						a_uri ?= a_leaf_node.value
-						if a_uri /= Void then
+				from an_attr_node.start until an_attr_node.off loop
+					if {a_leaf_node: !DT_PRIMITIVE_OBJECT} an_attr_node.item then
+						if {a_uri: !URI} a_leaf_node.value then
 							constraint_bindings_one_terminology.force(a_uri, a_leaf_node.node_id)
-							an_attr_node.forth
 						else
-							errors.append("Expecting URI, e.g. <xxx://some.authority/x/y/z?query#fragment>%N")
+							errors.append ("Expecting URI, e.g. <xxx://some.authority/x/y/z?query#fragment>%N")
 						end
 					else
-						errors.append("Expecting primitive node containing URI%N")
+						errors.append ("Expecting primitive node containing URI%N")
 					end
+					an_attr_node.forth
 				end
 			end
 		end
