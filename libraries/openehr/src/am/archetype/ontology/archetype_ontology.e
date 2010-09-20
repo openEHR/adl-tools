@@ -25,7 +25,7 @@ inherit
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all;
-			{ANY} valid_concept_code, is_valid_code, specialisation_depth_from_code, deep_twin
+			{ANY} is_valid_concept_code, is_valid_code, specialisation_depth_from_code, deep_twin
 		undefine
 			default_create
 		end
@@ -74,7 +74,7 @@ feature -- Initialisation
 			Original_language_valid: an_original_lang /= Void and then not an_original_lang.is_empty
 			Tree_exists: a_dadl_tree /= Void
 			root_code_attached: a_concept_code /= Void
-			root_code_valid: valid_concept_code (a_concept_code)
+			root_code_valid: is_valid_concept_code (a_concept_code)
 		do
 			default_create
 			representation := a_dadl_tree
@@ -1132,7 +1132,7 @@ invariant
 	Term_bindings_exists: term_bindings /= Void
 	Constraint_bindings_exists: constraint_bindings /= Void
 	root_code_attached: concept_code /= Void
-	root_code_valid: valid_concept_code (concept_code)
+	root_code_valid: is_valid_concept_code (concept_code)
 	root_code_in_terms: term_codes.has (concept_code)
 	Term_attribute_names_valid: term_attribute_names /= Void
 

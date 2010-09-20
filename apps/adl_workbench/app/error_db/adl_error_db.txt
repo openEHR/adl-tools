@@ -88,10 +88,13 @@ templates = <
 
 		-- ARCHETYPE_VALIDATOR
 		["validate_e1"] = <"specialisation parent is missing">
-		["validate_e2"] = <"specialisation parent failed to validate">
 		["validate_e3"] = <"archetype id in descriptor $1 does not match id at top of file $2">
 		["validation_strict"] = <"Validation level STRICT">
 		["validation_non_strict"] = <"Validation level NON-STRICT; non-coforming existence, occurrences & cardinality will be removed">
+
+		-- ARCHETYPE_COMPILER / ARCH_REP_ARCHETYPE
+		["compile_e1"] = <"specialisation parent $1 failed to validate">
+		["compile_e2"] = <"component artefact $1 failed to validate">
 
 		-- GUI controls, MAIN_WINDOW
 		["slots_incomplete_w1"] = <"this list may be incomplete. To be sure, run Build All under the Repository menu.">
@@ -228,6 +231,9 @@ templates = <
 		["VARXS"] = <"slot filler at $1 specifies archetype id $2 that does not conform to flat parent slot constraint">
 		["VARXNC"] = <"slot node id of slot filler at $1 does not correspond to any ARCHETYPE slot in flat parent">
 		["VARXTV"] = <"RM type of slot filler $1 does not conform to RM type $2 of slot or attribute in flat parent">
+
+		-- C_PRIMITIVE_OBJECT
+		["VPOV"] = <"$1 object node at path $2 leaf value redefinition $3 does not conform to $4 in $5 node at parent path $6">
 
 		-- ontology-related validity
 		["VONSD"] = <"archetype code $1 in ontology more specialised than archetype">

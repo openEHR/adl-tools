@@ -89,18 +89,18 @@ feature -- Commands
 			Result ?= parse(text, False)
 		end
 
-	serialise (an_archetype: ARCHETYPE; a_format: STRING): STRING
+	serialise (an_archetype: attached ARCHETYPE; a_format, a_lang: attached STRING): STRING
 			-- serialise current archetype into format, using the supplied ontology. For serialising
 			-- any form of archetype, the flat-form ontology has to be supplied
 		require
-			archetype_attached: an_archetype /= Void
 			archetype_valid: an_archetype.is_valid
+			Language_valid: an_archetype.has_language (a_lang)
 			format_valid: has_archetype_serialiser_format (a_format)
 		do
 			synchronise_from_archetype(an_archetype)
 			language_context.serialise(a_format)
 			description_context.serialise(a_format)
-			definition_context.serialise(a_format, an_archetype.ontology)
+			definition_context.serialise(a_format, a_lang, an_archetype.ontology)
 
 			if an_archetype.has_invariants then
 				invariant_context.serialise(a_format)

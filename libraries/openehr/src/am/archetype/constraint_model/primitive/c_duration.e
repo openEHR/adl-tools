@@ -162,7 +162,11 @@ feature -- Comparison
 	node_conforms_to (other: like Current): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		do
-			-- FIXME: TO BE IMPLEMENTED
+			if range /= Void and other.range /= Void then
+				Result := other.range.contains (range)
+			else
+				Result := True
+			end
 		end
 
 feature -- Output

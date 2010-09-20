@@ -1,10 +1,10 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Serialise archetype definition to any format"
+	description: "Serialise a C_XXX object structure to any format"
 	keywords:    "test, constraint model"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -15,9 +15,6 @@ deferred class C_SERIALISER
 
 inherit
 	ANY_SERIALISER
-		rename
-			initialise as initialise_any_serialiser
-		end
 
 	C_VISITOR
 		rename
@@ -26,12 +23,13 @@ inherit
 
 feature -- Initialisation
 
-	initialise(an_ontology: ARCHETYPE_ONTOLOGY)
+	initialise(an_ontology: attached ARCHETYPE_ONTOLOGY; a_lang: attached STRING)
 			-- set ontology required for serialising cADL, and perform basic initialisation
 		require
-			Ontology_valid: an_ontology /= Void
+			Language_valid: an_ontology.has_language (a_lang)
 		do
-			initialise_any_serialiser
+			reset
+			language := a_lang
 			initialise_visitor(an_ontology)
 		end
 
@@ -51,6 +49,10 @@ feature {NONE} -- Implementation
 			-- includes a range and possibly ordered, unique qualifiers
 		deferred
 		end
+
+	language: attached STRING
+			-- IETF RFC 5646 language tag; wll be an exact text match
+			-- for one of the 'languages' in the archetype
 
 end
 

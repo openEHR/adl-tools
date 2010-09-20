@@ -19,6 +19,11 @@ inherit
 			{NONE} all
 		end
 
+feature -- Definitions
+
+	Buffer_size: INTEGER = 10000
+			-- initial size of output buffer
+
 feature -- Initialisation
 
 	make(a_profile: SERIALISATION_PROFILE)
@@ -27,21 +32,24 @@ feature -- Initialisation
 			Profile_exists: a_profile /= Void
 		do
 			profile := a_profile
-			initialise
+			reset
 		end
 
-feature -- Invocation
+feature -- Element Change
 
-	initialise
+	reset
 			-- set up serialiser
 		do
-			create last_result.make(10000)
+			create last_result.make(Buffer_size)
 		end
 
 feature -- Access
 
 	last_result: attached STRING
 			-- result of last call to serialisation procedures
+--		once("OBJECT")
+--			create Result.make(Buffer_size)
+--		end
 
 	symbol (sym_id: INTEGER): STRING
 			-- retrieve symbol string for `sym_id'

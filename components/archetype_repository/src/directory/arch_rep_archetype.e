@@ -109,7 +109,7 @@ feature {NONE} -- Initialisation
 				legacy_flat_path := full_path
 			end
 
-			initialise_compilation_state
+			compilation_state := Cs_unread
 		ensure
 			full_path_set: full_path = a_full_path
 			file_repository_set: file_repository = a_repository
@@ -160,7 +160,8 @@ feature {NONE} -- Initialisation
 			flat_path := extension_replaced (full_path, archetype_flat_file_extension)
 			legacy_flat_path := extension_replaced (full_path, archetype_legacy_file_extension)
 
-			initialise_compilation_state
+			compilation_state := Cs_unread
+			initialise
 		ensure
 			full_path_set: full_path.has_substring (id.as_string)
 			file_repository_set: file_repository = a_repository
@@ -273,10 +274,8 @@ feature -- Access
 	flat_text: STRING
 			-- The text of the flat form of the archetype
 		do
-			if flat_archetype /= Void then
-				if flat_text_cache = Void then
-					flat_text_cache := adl_engine.serialise(flat_archetype, Archetype_native_syntax)
-				end
+			if flat_archetype /= Void and flat_text_cache = Void then
+				flat_text_cache := adl_engine.serialise(flat_archetype, Archetype_native_syntax, current_archetype_language)
 			end
 			Result := flat_text_cache
 		end
@@ -303,29 +302,6 @@ feature -- Access
 		do
 			Result ?= parent
 		end
-
-	archetype_lineage: attached ARRAYED_LIST [ARCH_REP_ARCHETYPE]
-			-- lineage of archetypes from parent to this one, inclusive of the current one.
-			-- For non-specialised archetypes, contains just the top-level archetype.
-			-- FIXME: in theory this could be precomputed from ARCH_DIRECTORY, but modifications to
-			-- the directory structure would mean always recomputing parts of it. This computation
-			-- is not particularly expensive anyway...however, the result could be cached on a per-
-			-- instance basis to be more efficient
-		local
-			csr: ARCH_REP_ARCHETYPE
-		do
-			create Result.make (1)
-			from csr := Current until csr = Void loop
-				Result.put_front (csr)
-				csr := csr.specialisation_parent
-			end
-		ensure
-			not_empty: not Result.is_empty
-			current_last: Result.last = Current
-		end
-
-	ontology_lineage: HASH_TABLE [DIFFERENTIAL_ARCHETYPE_ONTOLOGY, INTEGER]
-			-- lineage of ontologies of archetypes from top to this one
 
 	differential_archetype: DIFFERENTIAL_ARCHETYPE
 			-- archetype representing differential structure with respect to parent archetype;
@@ -426,6 +402,13 @@ feature -- Status Report - Compilation
 			Result := last_compile_attempt_timestamp = Void or
 				is_differential_out_of_date or is_legacy_out_of_date or
 				(specialisation_parent /= Void and then specialisation_parent.last_compile_attempt_timestamp > last_compile_attempt_timestamp)
+
+			if not Result and suppliers_index /= Void then
+				from suppliers_index.start until suppliers_index.off or suppliers_index.item_for_iteration.is_out_of_date loop
+					suppliers_index.forth
+				end
+				Result := not suppliers_index.off
+			end
 		end
 
 	is_differential_out_of_date: BOOLEAN
@@ -515,6 +498,35 @@ feature -- Status Setting
 
 feature -- Commands
 
+	initialise
+			-- set compilation state at creation, or if editing occurs
+			-- also sets rm_schema reference
+		require
+			compilation_state = Cs_unread
+		do
+			if rm_schemas_access.has_schema_for_package (id.qualified_package_name) then
+				rm_schema := rm_schemas_access.schema_for_package (id.qualified_package_name)
+				if legacy_is_primary and is_legacy_out_of_date or else not has_differential_file then
+					compilation_state := Cs_ready_to_parse_legacy
+				elseif has_differential_file then -- either authored in ADL 1.5, or compiled successfully from legacy .adl file
+					if is_specialised then
+						compilation_state := Cs_lineage_known
+					else
+						compilation_state := Cs_ready_to_parse
+					end
+					read_differential
+				elseif differential_archetype /= Void then -- must have been newly created
+					compilation_state := Cs_validated
+				end
+			else
+				compilation_state := Cs_rm_class_unknown
+				errors.extend(create {ERROR_DESCRIPTOR}.make_error("model_access_e7", create_message_line("model_access_e7", <<id.qualified_rm_name>>), ""))
+			end
+		ensure
+			compilation_state_set: Cs_initial_states.has(compilation_state)
+			no_rm_schema_compilation_state: rm_schema = Void implies compilation_state = Cs_rm_class_unknown
+		end
+
 	compile
 			-- perform as many steps of the compilation process as possible; may be called repeatedly by ARCHETYPE_COMPILER as it
 			-- does initial parsing here, finds dependencies, compiles them, comes back here, etc etc
@@ -524,10 +536,7 @@ feature -- Commands
 		local
 			finished: BOOLEAN
 		do
-			from
-			until
-				finished
-			loop
+			from until finished loop
 				inspect compilation_state
 				when cs_ready_to_parse_legacy then
 					compile_legacy
@@ -548,6 +557,9 @@ feature -- Commands
 			arch_id, parent_arch_id: attached ARCHETYPE_ID
 			old_ont_parent: STRING
 		do
+			-- TODO: first check that there is not a more recent modification to the in-memory structure.
+
+			-- now deal with changes from file
 			create amp
 			amp.parse (full_path)
 			if amp.last_parse_valid then
@@ -572,11 +584,13 @@ feature -- Commands
 						parent_id := parent_arch_id
 					end
 				end
-				initialise_compilation_state
+				compilation_state := Cs_unread
 			else
 				post_error (Current, "signal_source_edited", "general", <<amp.last_parse_fail_reason>>)
 				compilation_state := Cs_invalid
 			end
+		ensure
+			compilation_state = Cs_unread or compilation_state = Cs_invalid
 		end
 
 	signal_lineage_compilation
@@ -587,6 +601,7 @@ feature -- Commands
 				compilation_state := Cs_ready_to_parse
 			else
 				compilation_state := cs_lineage_invalid
+				errors.extend(create {ERROR_DESCRIPTOR}.make_error("compile_e1", create_message_line("compile_e1", <<parent_id.as_string>>), ""))
 			end
 		ensure
 			Compilation_state: compilation_state = Cs_ready_to_parse or compilation_state = cs_lineage_invalid
@@ -603,6 +618,7 @@ feature -- Commands
 				compilation_state := Cs_ready_to_validate
 			else
 				compilation_state := cs_suppliers_invalid
+				errors.extend(create {ERROR_DESCRIPTOR}.make_error("compile_e2", create_message_line("compile_e2", <<suppliers_index.item_for_iteration.id.as_string>>), ""))
 			end
 		ensure
 			Compilation_state: compilation_state = Cs_ready_to_validate or compilation_state = cs_suppliers_invalid
@@ -614,6 +630,7 @@ feature -- Commands
 			-- This is safe, since this is an ADL 1.5 only construct
 		require
 			Compilation_state_valid: compilation_state = cs_ready_to_parse_legacy
+			Legacy_file_available: has_legacy_flat_file
 		local
 			legacy_flat_archetype: FLAT_ARCHETYPE
 		do
@@ -632,7 +649,7 @@ feature -- Commands
 						compilation_state := cs_lineage_invalid
 					else
 					 	compilation_state := Cs_ready_to_validate
-						if (current_language = Void or not differential_archetype.has_language (current_language)) then
+						if current_language.is_empty or not differential_archetype.has_language (current_language) then
 							set_current_language (differential_archetype.original_language.code_string)
 						end
 						validate
@@ -661,7 +678,7 @@ feature -- Commands
 		end
 
 	parse
-			-- Parse `target', in differential form if available, else in legacy flat form.
+			-- Parse archetype, in differential form if available, else in legacy flat form.
 			-- Comilation state changes:
 			-- parse succeeded: Cs_ready_to_parse --> Cs_suppliers_known
 			-- parse failed: Cs_ready_to_parse --> Cs_parse_failed
@@ -672,7 +689,6 @@ feature -- Commands
 			supp_idx: HASH_TABLE[ARRAYED_LIST[C_ARCHETYPE_ROOT], STRING]
 		do
 			if not exception_encountered then
-				read_differential
 				reset
 				set_compile_attempt_timestamp
 				post_info (Current, "parse", "parse_i2", Void)
@@ -700,7 +716,7 @@ feature -- Commands
 					else
 						compilation_state := Cs_ready_to_validate
 					end
-					if (current_language = Void or not differential_archetype.has_language (current_language)) then
+					if current_language.is_empty or not differential_archetype.has_language (current_language) then
 						set_current_language (differential_archetype.original_language.code_string)
 					end
 				end
@@ -721,6 +737,9 @@ feature -- Commands
 	signal_differential_edited
 			-- signal event of differential in-memory being changed by editing at UI
 		do
+			-- TODO: differential_text will now be out of date
+
+			-- flat is also out of date
 			flat_archetype_cache := Void
 		end
 
@@ -779,32 +798,6 @@ feature -- Commands
 			flat_text_cache := Void
 		end
 
-	initialise_compilation_state
-			-- set compilation state at creation, or if editing occurs
-			-- also sets rm_schema reference
-		do
-			if rm_schemas_access.has_schema_for_package (id.qualified_package_name) then
-				rm_schema := rm_schemas_access.schema_for_package (id.qualified_package_name)
-				if legacy_is_primary and is_legacy_out_of_date or else not has_differential_file then
-					compilation_state := Cs_ready_to_parse_legacy
-				elseif has_differential_file then -- either authored in ADL 1.5, or compiled successfully from legacy .adl file
-					if is_specialised then
-						compilation_state := Cs_lineage_known
-					else
-						compilation_state := Cs_ready_to_parse
-					end
-				elseif differential_archetype /= Void then -- must have been newly created
-					compilation_state := Cs_validated
-				end
-			else
-				compilation_state := Cs_rm_class_unknown
-				errors.extend(create {ERROR_DESCRIPTOR}.make_error("model_access_e7", create_message_line("model_access_e7", <<id.qualified_rm_name>>), ""))
-			end
-		ensure
-			compilation_state_set: Cs_initial_states.has(compilation_state)
-			no_rm_schema_compilation_state: rm_schema = Void implies compilation_state = Cs_rm_class_unknown
-		end
-
 feature {ARCHETYPE_VALIDATOR} -- Modification
 
 	add_slot_ids (a_list: ARRAYED_SET[STRING]; a_slot_path: STRING)
@@ -844,7 +837,7 @@ feature -- Modification
 		do
 			if not exception_encountered then
 				if differential_text = Void then
-					differential_text := adl_engine.serialise(differential_archetype, Archetype_native_syntax)
+					differential_text := adl_engine.serialise(differential_archetype, Archetype_native_syntax, current_archetype_language)
 				end
 				file_repository.save_text_to_file (differential_path, differential_text)
 				full_path := differential_path
@@ -898,13 +891,13 @@ feature -- Modification
 			if not exception_encountered then
 				if serialise_format.same_string (Archetype_native_syntax) then
 					if differential_text = Void then
-						differential_text := adl_engine.serialise(differential_archetype, serialise_format)
+						differential_text := adl_engine.serialise(differential_archetype, serialise_format, current_archetype_language)
 					end
 					-- replace the extension because we want it to be clear that it is a source file; but maybe the caller should just
 					-- be trusted?
 					file_repository.save_text_to_file (extension_replaced (a_full_path, archetype_source_file_extension), differential_text)
 				else
-					file_repository.save_text_to_file (a_full_path, adl_engine.serialise(differential_archetype, serialise_format))
+					file_repository.save_text_to_file (a_full_path, adl_engine.serialise(differential_archetype, serialise_format, current_archetype_language))
 				end
 				save_succeeded := True
 			else
@@ -934,7 +927,7 @@ feature -- Modification
 				if serialise_format.same_string (Archetype_native_syntax) then
 					file_repository.save_text_to_file (a_full_path, flat_text)
 				else
-					file_repository.save_text_to_file (a_full_path, adl_engine.serialise(flat_archetype, serialise_format))
+					file_repository.save_text_to_file (a_full_path, adl_engine.serialise(flat_archetype, serialise_format, current_archetype_language))
 				end
 				save_succeeded := True
 			else
@@ -979,27 +972,6 @@ feature -- Modification
 			retry
 		end
 
-	serialise_differential
-			-- Force serialisation of differential_archetype into `differential_text'
-		require
-			Is_valid: is_valid
-		do
-			if not exception_encountered then
-				differential_text := adl_engine.serialise(differential_archetype, Archetype_native_syntax)
-			else
-				post_error(Current, "serialise_differential", "serialise_archetype_e2", Void)
-			end
-			status.copy(billboard.content)
-			billboard.clear
-			exception_encountered := False
-		ensure
-			(differential_text /= old differential_text) or else not status.is_empty
-		rescue
-			post_error(Current, "serialise_differential", "report_exception_with_context", <<"Serialising archetype " + id.as_string, exception.out, exception_trace>>)
-			exception_encountered := True
-			retry
-		end
-
 	read_legacy_flat
 			-- Read `legacy_flat_text' and `text_timestamp' from `legacy_flat_path'.
 		require
@@ -1012,6 +984,20 @@ feature -- Modification
 		end
 
 feature {NONE} -- Implementation
+
+	current_archetype_language: STRING
+			-- find a language from the current archetype that matches `current_language' either directly
+			-- (e.g. "en" matches "en") or on a language group basis (e.g. "en-GB" matches "en"); if
+			-- none found, return archetype original language
+		do
+			if differential_archetype.has_language (current_language) then
+				Result := current_language
+			elseif differential_archetype.has_matching_language_tag (current_language) then
+				Result := differential_archetype.matching_language_tag (current_language)
+			else
+				Result := differential_archetype.original_language.code_string
+			end
+		end
 
 	set_compile_attempt_timestamp
 			-- Set `compile_attempt_timestamp'
@@ -1032,24 +1018,7 @@ feature {NONE} -- Implementation
 			full_path := differential_path
 			differential_text_timestamp := file_repository.text_timestamp
 		ensure
-			differential_text_set: differential_text /= old differential_text
-		end
-
-	build_ontology_lineage
-		local
-			arch_lin: ARRAYED_LIST [ARCH_REP_ARCHETYPE]
-		do
-			create ontology_lineage.make(1)
-			arch_lin := archetype_lineage
-
-			from
-				arch_lin.start
-			until
-				arch_lin.off
-			loop
-				ontology_lineage.put (arch_lin.item.differential_archetype.ontology, arch_lin.item.differential_archetype.specialisation_depth)
-				arch_lin.forth
-			end
+			differential_text_set: differential_text /= Void
 		end
 
 	flatten

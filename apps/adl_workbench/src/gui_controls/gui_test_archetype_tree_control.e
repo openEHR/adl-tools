@@ -85,7 +85,7 @@ feature -- Access
 		once
 			create Result.make (0)
 			Result.force (agent test_parse, "Parse")
-			Result.force (agent reqgression_test, Regression_test_key)
+			Result.force (agent regression_test, Regression_test_key)
 			Result.force (agent test_save_source_orig, "Save src (orig)")
 			Result.force (agent test_save_source_new, "Save src (gen)")
 			Result.force (agent test_save_legacy, "Save legacy")
@@ -379,23 +379,17 @@ feature {NONE} -- Tests
 				Result := test_passed
 				test_status.append (" parse succeeded%N" + target.errors.as_string)
 
-				if remove_unused_codes then
-					unused_at_codes := target.differential_archetype.ontology_unused_term_codes
-					unused_ac_codes := target.differential_archetype.ontology_unused_constraint_codes
-
-					if not unused_at_codes.is_empty or not unused_ac_codes.is_empty then
-						test_status.append (">>>>>>>>>> removing unused codes%N")
-
-						if not unused_at_codes.is_empty then
-							test_status.append ("Unused AT codes: " + display_arrayed_list (unused_at_codes) + "%N")
-						end
-
-						if not unused_ac_codes.is_empty then
-							test_status.append ("Unused AC codes: " + display_arrayed_list (unused_ac_codes) + "%N")
-						end
-
-						target.differential_archetype.remove_ontology_unused_codes
-					end
+				unused_at_codes := target.differential_archetype.ontology_unused_term_codes
+				unused_ac_codes := target.differential_archetype.ontology_unused_constraint_codes
+				if not unused_at_codes.is_empty then
+					test_status.append ("Unused at-codes: " + display_arrayed_list (unused_at_codes) + "%N")
+				end
+				if not unused_ac_codes.is_empty then
+					test_status.append ("Unused ac-codes: " + display_arrayed_list (unused_ac_codes) + "%N")
+				end
+				if remove_unused_codes and (not unused_at_codes.is_empty or not unused_ac_codes.is_empty) then
+					test_status.append (">>>>>>>>>> removing unused codes%N")
+					target.differential_archetype.remove_ontology_unused_codes
 				end
 
 				if diff_dirs_available then
@@ -407,7 +401,7 @@ feature {NONE} -- Tests
 			end
 		end
 
-	reqgression_test: INTEGER
+	regression_test: INTEGER
 			-- if archetype description.other_details contains an item with key "validity", see if the value
 			-- matches the parse result
 		local
@@ -482,7 +476,6 @@ feature {NONE} -- Tests
 		do
 			Result := test_failed
 			if target.is_valid then
-				target.serialise_differential
 				if diff_dirs_available then
 					target.save_differential_as (file_system.pathname (diff_dir_source_new, target.ontological_name + Archetype_source_file_extension), Archetype_native_syntax)
 				end

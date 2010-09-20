@@ -622,7 +622,7 @@ end
 				io.put_string("CADL definition parsed%N")
 			end
 
-			if valid_concept_code(output.node_id) then
+			if is_valid_concept_code(output.node_id) then
 				accept
 			else
 				abort_with_error("VARCN", <<output.node_id>>)

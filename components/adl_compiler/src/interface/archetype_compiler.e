@@ -191,7 +191,7 @@ feature {NONE} -- Implementation
 		do
 			status.wipe_out
 			is_interrupted := False
-			ara.archetype_lineage.do_all (action)
+			arch_dir.do_archetype_lineage(ara, action)
 		end
 
 	check_archetype_for_changes (from_scratch: BOOLEAN; ara: attached ARCH_REP_ARCHETYPE)
@@ -199,6 +199,7 @@ feature {NONE} -- Implementation
 		do
 			if not is_interrupted and ara.compile_attempted and ara.is_out_of_date then
 				ara.signal_source_edited
+				ara.initialise
 				if ara.ontology_location_changed then
 					arch_dir.update_archetype_id(ara)
 					-- FIXME - the directory data structure on which we are now traversing has changed;
@@ -212,8 +213,13 @@ feature {NONE} -- Implementation
 		do
 			if not is_interrupted then
 				if from_scratch or not ara.is_in_terminal_compilation_state then
+					if ara.compilation_state = Cs_unread then
+						ara.initialise
+					end
+
 					status := create_message_line("compiler_compiling_archetype", <<ara.id.value>>)
 					call_visual_update_action (ara)
+
 					-- first phase; initially signal that any parents are compiled already
 					-- (this happens because this routine is being driven by `build_lineage', which
 					-- always comes down the specialisation lineage from the top. However... other
@@ -221,6 +227,7 @@ feature {NONE} -- Implementation
 					if ara.compilation_state = Cs_lineage_known then
 						ara.signal_lineage_compilation
 					end
+					
 					if not ara.is_in_terminal_compilation_state then
 						ara.compile
 

@@ -23,7 +23,7 @@ inherit
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all;
-			{ANY} valid_concept_code, deep_twin
+			{ANY} is_valid_concept_code, deep_twin
 		end
 
 	AUTHORED_RESOURCE

@@ -163,7 +163,7 @@ feature -- Operations
 
 feature -- Comparison
 
-	equal_interval(other: INTERVAL [INTEGER]): BOOLEAN
+	equal_interval(other: attached  INTERVAL [INTEGER]): BOOLEAN
 			-- True if current object's interval is same as `other'
 		do
 			Result := lower = other.lower and

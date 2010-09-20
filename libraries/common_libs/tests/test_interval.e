@@ -35,6 +35,64 @@ feature -- Test routines
 			assert_equal (True, target.equal_interval (create {MULTIPLICITY_INTERVAL}.make_from_interval (target)))
 		end
 
+	test_contains
+			-- Two intervals are equal if their bounds are the same, regardless of whether they are of the same type.
+		note
+			testing:  "covers/{INTERVAL}.contains"
+		local
+			outer, inner: INTERVAL [INTEGER]
+		do
+			-- 1..* does not contain 1..*
+			create outer.make_upper_unbounded (1, True)
+			create inner.make_upper_unbounded (1, True)
+			assert_equal (False, outer.contains (inner))
+
+			-- 1..* contains 1..5
+			create inner.make_bounded_included (1, 5)
+			assert_equal (True, outer.contains (inner))
+
+			-- 1..* does not contain 0..5
+			create inner.make_bounded_included (0, 5)
+			assert_equal (False, outer.contains (inner))
+
+			-- 1..* contains 1..1
+			create inner.make_point (1)
+			assert_equal (True, outer.contains (inner))
+
+			-- 0..* contains 1..*
+			create outer.make_upper_unbounded (0, True)
+			create inner.make_upper_unbounded (1, True)
+			assert_equal (True, outer.contains (inner))
+
+			-- 0..* contains 0..1
+			create inner.make_bounded_included (0, 1)
+			assert_equal (True, outer.contains (inner))
+
+			-- 0..* contains 1..1
+			create inner.make_point (1)
+			assert_equal (True, outer.contains (inner))
+
+			-- 0..* does not contain 0..*
+			create inner.make_upper_unbounded (0, True)
+			assert_equal (False, outer.contains (inner))
+
+			-- 0..1 contains 1..1
+			create outer.make_bounded_included (0, 1)
+			create inner.make_point (1)
+			assert_equal (True, outer.contains (inner))
+
+			-- 0..1 does not contain 0..1
+			create outer.make_bounded_included (0, 1)
+			create inner.make_bounded_included (0, 1)
+			assert_equal (False, outer.contains (inner))
+
+			-- 1..1 does not contain 0..1
+			create outer.make_point (1)
+			create inner.make_bounded_included (0, 1)
+			assert_equal (False, outer.contains (inner))
+
+		end
+
 end
 
 
