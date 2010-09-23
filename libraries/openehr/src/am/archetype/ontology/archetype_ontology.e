@@ -47,8 +47,7 @@ feature -- Initialisation
 	default_create
 			--
 		do
-			create errors.make (0)
-			create warnings.make (0)
+			create errors.make
 
 			create terminologies_available.make (0)
 			terminologies_available.compare_objects
@@ -181,9 +180,7 @@ feature -- Access
 	term_attribute_names: ARRAYED_LIST[STRING]
 			-- the attribute names found in ARCHETYPE_TERM objects
 
-	errors: STRING
-
-	warnings: STRING
+	errors: ERROR_ACCUMULATOR
 
 	physical_to_logical_path(a_phys_path: STRING; a_language: STRING): STRING
 			-- generate a logical path in 'a_language' from a physical path
@@ -956,17 +953,16 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			an_attr_node: DT_ATTRIBUTE_NODE
 		do
 			an_attr_node := representation.attribute_node_at_path (terminology_path)
-
 			if an_attr_node.is_multiple then
 				from an_attr_node.start until an_attr_node.off loop
 					if attached {DT_PRIMITIVE_OBJECT} an_attr_node.item as a_simple_node then
 						if attached {CODE_PHRASE} a_simple_node.value as a_term then
 							term_bindings_one_terminology.force (a_term, a_simple_node.node_id)
 						else
-							errors.append ("Expecting CODE_PHRASE, e.g. <[terminology_id::code]>%N")
+							errors.add_error ("VONTBC", <<terminology_path>>, "ontology section " + an_attr_node.path)
 						end
 					else
-						errors.append ("Expecting primitive node containing CODE_PHRASE%N")
+						errors.add_warning ("VONG", <<terminology_path>>, "ontology section, path " + an_attr_node.path)
 					end
 					an_attr_node.forth
 				end
@@ -977,18 +973,20 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			--
 		local
 			an_attr_node: DT_ATTRIBUTE_NODE
+			a_path: STRING
 		do
-			an_attr_node := representation.attribute_node_at_path("/" + Sym_constraint_bindings + "[" + a_terminology + "]/items")
+			a_path := "/" + Sym_constraint_bindings + "[" + a_terminology + "]/items"
+			an_attr_node := representation.attribute_node_at_path(a_path)
 			if an_attr_node.is_multiple then
 				from an_attr_node.start until an_attr_node.off loop
 					if attached {DT_PRIMITIVE_OBJECT} an_attr_node.item as a_leaf_node then
 						if attached {URI} a_leaf_node.value as a_uri then
 							constraint_bindings_one_terminology.force(a_uri, a_leaf_node.node_id)
 						else
-							errors.append ("Expecting URI, e.g. <xxx://some.authority/x/y/z?query#fragment>%N")
+							errors.add_error ("VONCBU", <<a_path>>, "ontology section, path " + an_attr_node.path)
 						end
 					else
-						errors.append ("Expecting primitive node containing URI%N")
+						errors.add_warning ("VONG", <<a_path>>, "ontology section, path " + an_attr_node.path)
 					end
 					an_attr_node.forth
 				end

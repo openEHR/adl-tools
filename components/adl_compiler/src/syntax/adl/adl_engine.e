@@ -208,14 +208,18 @@ feature {NONE} -- Implementation
 											orig_lang_trans := original_language_and_translations_from_ontology (differential_ontology)
 										end
 
-										create {DIFFERENTIAL_ARCHETYPE} Result.make (
-											adl_parser.artefact_type,
-											id,
-											orig_lang_trans.original_language.code_string,
-											res_desc,	-- may be Void
-											definition,
-											differential_ontology
-										)
+										if not differential_ontology.errors.is_empty then
+											errors := differential_ontology.errors
+										else
+											create {DIFFERENTIAL_ARCHETYPE} Result.make (
+												adl_parser.artefact_type,
+												id,
+												orig_lang_trans.original_language.code_string,
+												res_desc,	-- may be Void
+												definition,
+												differential_ontology
+											)
+										end
 									else
 										if orig_lang_trans /= Void then
 											create flat_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, definition.node_id)
@@ -224,45 +228,51 @@ feature {NONE} -- Implementation
 											orig_lang_trans := original_language_and_translations_from_ontology (flat_ontology)
 										end
 
-										create {FLAT_ARCHETYPE} Result.make (
-											adl_parser.artefact_type,
-											id,
-											orig_lang_trans.original_language.code_string,
-											res_desc,	-- may be Void
-											definition,
-											flat_ontology
-										)
+										if not flat_ontology.errors.is_empty then
+											errors := flat_ontology.errors
+										else
+											create {FLAT_ARCHETYPE} Result.make (
+												adl_parser.artefact_type,
+												id,
+												orig_lang_trans.original_language.code_string,
+												res_desc,	-- may be Void
+												definition,
+												flat_ontology
+											)
+										end
 									end
 
-									if attached {ARCHETYPE_ID} adl_parser.parent_archetype_id as parent_id then
-										Result.set_parent_archetype_id (parent_id)
-									end
+									if errors.is_empty then
+										if attached {ARCHETYPE_ID} adl_parser.parent_archetype_id as parent_id then
+											Result.set_parent_archetype_id (parent_id)
+										end
 
-									if adl_parser.adl_version /= Void then
-										Result.set_adl_version(adl_parser.adl_version)
-									else
-										Result.set_adl_version(latest_adl_version)
-									end
+										if adl_parser.adl_version /= Void then
+											Result.set_adl_version(adl_parser.adl_version)
+										else
+											Result.set_adl_version(latest_adl_version)
+										end
 
-									if adl_parser.is_controlled then
-										Result.set_is_controlled
-									end
+										if adl_parser.is_controlled then
+											Result.set_is_controlled
+										end
 
-									if adl_parser.is_generated then
-										Result.set_is_generated
-									end
+										if adl_parser.is_generated then
+											Result.set_is_generated
+										end
 
-									-- if there was no language section, then create the equivalent object
-									-- and use it to paste translations into the archetype
-									if orig_lang_trans.translations /= Void then
-										Result.set_translations(orig_lang_trans.translations)
-									end
+										-- if there was no language section, then create the equivalent object
+										-- and use it to paste translations into the archetype
+										if orig_lang_trans.translations /= Void then
+											Result.set_translations(orig_lang_trans.translations)
+										end
 
-									if invariant_context.tree /= Void then
-										Result.set_invariants(invariant_context.tree)
-									end
+										if invariant_context.tree /= Void then
+											Result.set_invariants(invariant_context.tree)
+										end
 
-									Result.rebuild
+										Result.rebuild
+									end
 								end
 							end
 						end

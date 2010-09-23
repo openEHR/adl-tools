@@ -17,6 +17,11 @@ class ERROR_ACCUMULATOR
 inherit
 	ERROR_SEVERITY_TYPES
 
+	SHARED_MESSAGE_DB
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -31,15 +36,6 @@ feature -- Access
 
 	list: attached ARRAYED_LIST[ERROR_DESCRIPTOR]
 			-- error output of validator - things that must be corrected
-
-	as_string: STRING
-		do
-			create Result.make(0)
-			from list.start until list.off loop
-				Result.append(list.item.as_string)
-				list.forth
-			end
-		end
 
 	last: attached ERROR_DESCRIPTOR
 		do
@@ -83,6 +79,26 @@ feature -- Status Report
 
 feature -- Modification
 
+	add_error (a_code: attached STRING; args: ARRAY[STRING]; a_loc: STRING)
+		do
+			extend (create {ERROR_DESCRIPTOR}.make (a_code, error_type_error, create_message_content (a_code, args), a_loc))
+		end
+
+	add_warning (a_code: attached STRING; args: ARRAY[STRING]; a_loc: STRING)
+		do
+			extend (create {ERROR_DESCRIPTOR}.make (a_code, error_type_warning, create_message_content (a_code, args), a_loc))
+		end
+
+	add_info (a_code: attached STRING; args: ARRAY[STRING]; a_loc: STRING)
+		do
+			extend (create {ERROR_DESCRIPTOR}.make (a_code, error_type_info, create_message_content (a_code, args), a_loc))
+		end
+
+	add_debug (a_message: attached STRING; a_loc: STRING)
+		do
+			extend (create {ERROR_DESCRIPTOR}.make ("", error_type_debug, a_message, a_loc))
+		end
+
 	extend(err_desc: attached ERROR_DESCRIPTOR)
 		do
 			list.extend(err_desc)
@@ -100,6 +116,18 @@ feature -- Modification
 	wipe_out
 		do
 			list.wipe_out
+		end
+
+feature -- Output
+
+	as_string: STRING
+		do
+			create Result.make(0)
+			from list.start until list.off loop
+				Result.append(list.item.as_string)
+				Result.append_character ('%N')
+				list.forth
+			end
 		end
 
 end

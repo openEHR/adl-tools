@@ -1,81 +1,41 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "item in an ADL parse tree"
-	keywords:    "test, ADL"
+	description: "Tests OG_PATH functions"
+	keywords:    "archetype, ontology, terminology"
+
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$URL"
+	revision:    "$LastChangedRevision"
+	last_change: "$LastChangedDate"
+	testing:     "type/manual"
 
-deferred class DT_ITEM
+class
+	TEST_OG_PATH
 
 inherit
-	VISITABLE
-		export
-			{NONE} all
-		end
+	OPENEHR_TEST_SET
 
-feature -- Access
+feature -- Test routines
 
-	parent: DT_ITEM
-
-	invalid_reason: STRING
-
-	path: STRING
-			-- path from root to this node
+	test_make_from_string
+			-- see if make_from_string parses properly
+		note
+			testing:  "covers/{OG_PATH}.make_from_string"
+		local
+			a_path_string: STRING
+			a_path: OG_PATH
 		do
-			Result := representation.path.as_string
-		end
+			a_path_string := "/constraint_bindings[AIR93]/items"
+			create a_path.make_from_string(a_path_string)
+			assert_equal (True, a_path.as_string.is_equal(a_path_string))
 
-feature -- Status Report
-
-	is_addressable: BOOLEAN
-			-- True if this node has a non-anonymous node_id
-		do
-			Result := representation.is_addressable
-		end
-
-	is_root: BOOLEAN
-			-- True if is root of parse tree structure
-		do
-			Result := representation.is_root
-		end
-
-	is_valid: BOOLEAN
-			-- True if node valid; if False, reason in `invalid_reason'
-		deferred
-		ensure
-			not Result implies invalid_reason /= Void and then not invalid_reason.is_empty
-		end
-
-feature {DT_ITEM} -- Modification
-
-	set_parent(a_node: like parent)
-			-- connect child to parent
-		require
-			a_node /= Void
-		do
-			parent := a_node
-		end
-
-feature -- Representation
-
-	representation: OG_ITEM
-
-feature -- Serialisation
-
-	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
-			-- perform serialisation at start of block for this node
-		deferred
-		end
-
-	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
-			-- perform serialisation at end of block for this node
-		deferred
+			a_path_string := "/constraint_bindings[AIR93(1.0.0)]/items"
+			create a_path.make_from_string(a_path_string)
+			assert_equal (True, a_path.as_string.is_equal(a_path_string))
 		end
 
 end
@@ -95,7 +55,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is dadl_item.e.
+--| The Original Code is test_interval.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

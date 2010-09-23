@@ -520,7 +520,7 @@ feature -- Commands
 				end
 			else
 				compilation_state := Cs_rm_class_unknown
-				errors.extend(create {ERROR_DESCRIPTOR}.make_error("model_access_e7", create_message_line("model_access_e7", <<id.qualified_rm_name>>), ""))
+				errors.add_error("model_access_e7", <<id.qualified_rm_name>>, "")
 			end
 		ensure
 			compilation_state_set: Cs_initial_states.has(compilation_state)
@@ -601,7 +601,7 @@ feature -- Commands
 				compilation_state := Cs_ready_to_parse
 			else
 				compilation_state := cs_lineage_invalid
-				errors.extend(create {ERROR_DESCRIPTOR}.make_error("compile_e1", create_message_line("compile_e1", <<parent_id.as_string>>), ""))
+				errors.add_error("compile_e1", <<parent_id.as_string>>, "")
 			end
 		ensure
 			Compilation_state: compilation_state = Cs_ready_to_parse or compilation_state = cs_lineage_invalid
@@ -618,7 +618,7 @@ feature -- Commands
 				compilation_state := Cs_ready_to_validate
 			else
 				compilation_state := cs_suppliers_invalid
-				errors.extend(create {ERROR_DESCRIPTOR}.make_error("compile_e2", create_message_line("compile_e2", <<suppliers_index.item_for_iteration.id.as_string>>), ""))
+				errors.add_error("compile_e2", <<suppliers_index.item_for_iteration.id.as_string>>, "")
 			end
 		ensure
 			Compilation_state: compilation_state = Cs_ready_to_validate or compilation_state = cs_suppliers_invalid
@@ -699,7 +699,7 @@ feature -- Commands
 					compilation_state := Cs_parse_failed
 				else
 					if is_specialised and not parent_id.is_equal(differential_archetype.parent_archetype_id) then
-						errors.extend(create {ERROR_DESCRIPTOR}.make_warning("parse_w1", create_message_line("parse_w1", <<id.as_string, parent_id.as_string, differential_archetype.parent_archetype_id.as_string>>), ""))
+						errors.add_warning("parse_w1", <<id.as_string, parent_id.as_string, differential_archetype.parent_archetype_id.as_string>>, "")
 					else
 						post_info(Current, "parse", "parse_i1", <<id.as_string>>)
 					end

@@ -238,6 +238,9 @@ templates = <
 		-- ontology-related validity
 		["VONSD"] = <"archetype code $1 in ontology more specialised than archetype">
 		["VONLC"] = <"archetype code $1 in ontology not present in language $2">
+		["VONCBU"] = <"Expecting URI e.g. <xxx:some.domain/x/y/z?query#fragment> at path $1">
+		["VONTBC"] = <"Expecting CODE_PHRASE, e.g. <[terminology_id::code]">
+		["VONG"] = <"Expecting primitive object node at path $1">
 
 		-- description-related validity
 		["VDEOL"] = <"original_language section missing">
