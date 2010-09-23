@@ -20,11 +20,17 @@ inherit
 		end
 
 feature -- Access
-	
+
 	parent: DT_ITEM
-	
+
 	invalid_reason: STRING
-	
+
+	path: STRING
+			-- path from root to this node
+		do
+			Result := representation.path.as_string
+		end
+
 feature -- Status Report
 
 	is_addressable: BOOLEAN is
@@ -32,20 +38,20 @@ feature -- Status Report
 		do
 			Result := representation.is_addressable
 		end
-			
+
 	is_root: BOOLEAN is
 			-- True if is root of parse tree structure
 		do
 			Result := representation.is_root
 		end
-		
+
 	is_valid: BOOLEAN is
 			-- True if node valid; if False, reason in `invalid_reason'
 		deferred
 		ensure
 			not Result implies invalid_reason /= Void and then not invalid_reason.is_empty
 		end
-		
+
 feature {DT_ITEM} -- Modification
 
 	set_parent(a_node: like parent) is
@@ -66,12 +72,12 @@ feature -- Serialisation
 			-- perform serialisation at start of block for this node
 		deferred
 		end
-		
+
 	exit_block(serialiser: DT_SERIALISER; depth: INTEGER) is
 			-- perform serialisation at end of block for this node
 		deferred
 		end
-	
+
 end
 
 
