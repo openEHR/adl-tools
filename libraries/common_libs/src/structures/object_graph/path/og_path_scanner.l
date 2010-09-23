@@ -75,6 +75,12 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 					last_string_value := text_substring (2, text_count - 1)
 			}
 
+----------/* any predicate expression (i.e. [] Xpath expression), currently not internally parsed */ ------------
+\[[^\\\[\\\]]+\]	{
+					last_token := V_ANY_PREDICATE
+					last_string_value := text_substring (2, text_count - 1)
+			}
+
 ----------/* identifiers */ -------------------------------------------------
 [a-z]{IDCHAR}*	{
 					last_token := V_ATTRIBUTE_IDENTIFIER
