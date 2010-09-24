@@ -15,7 +15,6 @@ indexing
 class OG_PATH_VALIDATOR
 
 inherit
-
 	YY_PARSER_SKELETON
 		rename
 			make as make_parser_skeleton
@@ -31,14 +30,13 @@ inherit
 	KL_SHARED_EXCEPTIONS
 	KL_SHARED_ARGUMENTS
 
-creation
-
+create
 	make
 
 %}
 
 %token <STRING> V_ATTRIBUTE_IDENTIFIER V_STRING
-%token <STRING> V_LOCAL_TERM_CODE_REF
+%token <STRING> V_LOCAL_TERM_CODE_REF V_ANY_PREDICATE
 %token ERR_STRING
 %token SYM_MOVABLE_LEADER
 
@@ -121,6 +119,13 @@ path_segment: V_ATTRIBUTE_IDENTIFIER V_LOCAL_TERM_CODE_REF
 				io.put_string("...path_segment: " + $1 + "[" + $2 + "]%N")
 			end
 		}
+	| V_ATTRIBUTE_IDENTIFIER V_ANY_PREDICATE
+		{
+			create $$.make_with_object_id($1, $2)
+			debug("OG_PATH_parse")
+				io.put_string("...path_segment: " + $1 + "[" + $2 + "]%N")
+			end
+		}
 	| V_ATTRIBUTE_IDENTIFIER
 		{
 			create $$.make($1)
@@ -135,14 +140,14 @@ path_segment: V_ATTRIBUTE_IDENTIFIER V_LOCAL_TERM_CODE_REF
 feature -- Initialization
 
 	make is
-			-- Create a new Eiffel parser.
+			-- Create a new parser.
 		do
 			make_eiffel_scanner
 			make_parser_skeleton
 			create indent.make(0)
 		end
 
-	execute(in_text:STRING) is
+	execute (in_text: STRING) is
 		do
 			reset
 			create error_text.make(0)

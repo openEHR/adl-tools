@@ -15,7 +15,6 @@ indexing
 class OG_PATH_SCANNER
 
 inherit
-
 	YY_COMPRESSED_SCANNER_SKELETON
 		rename
 			make as make_compressed_scanner_skeleton,
@@ -39,8 +38,7 @@ inherit
 	KL_SHARED_EXCEPTIONS
 	KL_SHARED_ARGUMENTS
 
-creation
-
+create
 	make
 %}
 
@@ -74,6 +72,12 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 ----------/* term code reference */ -------------------------------------------------
 \[{ALPHANUM}{NAMECHAR}*\]	{
 					last_token := V_LOCAL_TERM_CODE_REF
+					last_string_value := text_substring (2, text_count - 1)
+			}
+
+----------/* any predicate expression (i.e. [] Xpath expression), currently not internally parsed */ ------------
+\[[^\\\[\\\]]+\]	{
+					last_token := V_ANY_PREDICATE
 					last_string_value := text_substring (2, text_count - 1)
 			}
 
@@ -114,10 +118,12 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 
 	[^\\\n"]*\"	{						-- match final end of string
 				last_token := V_STRING
+
 				if text_count > 1 then
 					in_buffer.append_string (text_substring (1, text_count - 1))
 				end
-				str_ := STRING_.make (in_buffer.count)
+
+				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
 				last_string_value := str_
@@ -151,7 +157,7 @@ feature {NONE} -- Initialization
 			-- Create a new scanner.
 		do
 			make_compressed_scanner_skeleton
-			in_buffer := string_.make (Init_buffer_size)
+			create in_buffer.make (Init_buffer_size)
 			in_lineno := 1
 		end
 
@@ -182,7 +188,6 @@ feature {NONE} -- Constants
 				-- Initial size for `in_buffer'
 
 invariant
-
 	in_buffer_not_void: in_buffer /= Void
 
 end
