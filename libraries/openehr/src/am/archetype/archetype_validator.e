@@ -366,7 +366,6 @@ feature {NONE} -- Implementation
 			use_refs: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_INTERNAL_REF], STRING]
 		do
 			use_refs := target.use_node_index
-
 			from use_refs.start until use_refs.off loop
 				-- check on paths in the current archetype
 				if target.definition.has_path (use_refs.key_for_iteration) then

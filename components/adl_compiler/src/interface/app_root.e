@@ -43,19 +43,27 @@ feature -- Initialisation
 	initialise
 		local
 			rep_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
+			dummy_error_accumulator: ERROR_ACCUMULATOR
 		once
 			message_db.populate(Error_db_directory, locale_language_short)
 			if message_db.database_loaded then
-				billboard.set_status_reporting_level(status_reporting_level)
 
+				-- set error reporting level in billboard and all error accumulator objects
+				billboard.set_error_reporting_level(error_reporting_level)
+				create dummy_error_accumulator.make
+				dummy_error_accumulator.set_error_reporting_level (error_reporting_level)
+
+				-- set a reasonable default for HTML output directory
 				if html_export_directory.is_empty then
 					set_html_export_directory (file_system.pathname (user_config_file_directory, "html"))
 				end
 
+				-- set a reasonable default for diff test file directory (where files are written from test page for comparison with a diff tool)
 				if test_diff_directory.is_empty then
 					set_test_diff_directory (file_system.pathname (user_config_file_directory, "diff_test"))
 				end
 
+				-- tell the user a few useful things
 				post_warning (Current, "initialise", "adl_version_warning", <<adl_version_for_flat_output>>)
 
 				if validation_strict then

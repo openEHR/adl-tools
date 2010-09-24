@@ -762,13 +762,9 @@ feature -- Commands
 					arch_dir.update_slot_statistics (Current)
 					arch_dir.update_terminology_bindings_info (Current)
 				else
-					errors.append(validator.errors)
 					compilation_state := Cs_validate_failed
 				end
-
-				if validator.has_warnings then
-					errors.append(validator.warnings)
-				end
+				errors.append(validator.errors)
 			else
 				errors.append(validator.errors)
 				compilation_state := Cs_validate_failed

@@ -111,7 +111,7 @@ feature {NONE} -- Implementation
 			parser_error_reporting_level_combo_box.do_all (
 				agent (li: EV_LIST_ITEM)
 					do
-						if li.text.same_string (error_type_names.item (status_reporting_level)) then
+						if li.text.same_string (error_type_names.item (error_reporting_level)) then
 							li.enable_select
 						end
 					end
@@ -170,7 +170,7 @@ feature {NONE} -- Implementation
 			set_validation_strict(validation_strict_check_button.is_selected)
 
 			set_status_reporting_level (error_type_ids.item (parser_error_reporting_level_combo_box.text.as_string_8))
-			billboard.set_status_reporting_level(status_reporting_level)
+			billboard.set_error_reporting_level(error_reporting_level)
 
 			has_changed_archetype_options := True
 			if show_entire_ontology /= old_show_entire_ontology then

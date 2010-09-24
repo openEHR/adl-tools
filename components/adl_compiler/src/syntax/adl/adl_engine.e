@@ -59,7 +59,6 @@ feature {NONE} -- Initialisation
 			create definition_context.make
 			create invariant_context.make
 			create ontology_context.make
-			create errors.make
 		end
 
 feature -- Access
@@ -124,7 +123,6 @@ feature {NONE} -- Implementation
 			-- parse tree. If successful, `archetype' contains the parse
 			-- structure. Then validate the tree
 		local
-			language_error, description_error, invariant_error: BOOLEAN
 			res_desc: RESOURCE_DESCRIPTION
 			orig_lang_trans: LANGUAGE_TRANSLATIONS
 			differential_ontology: attached DIFFERENTIAL_ARCHETYPE_ONTOLOGY
@@ -133,25 +131,19 @@ feature {NONE} -- Implementation
 			create adl_parser.make
 			adl_parser.execute(text)
 
+			create errors.make
+
 			if adl_parser.syntax_error then
-				errors := adl_parser.errors
-				errors.append(adl_parser.warnings)
---			elseif not valid_concept_code (adl_parser.concept) then
---				parse_error_text := create_message_line("VARCN", <<adl_parser.concept>>)
+				errors.append (adl_parser.errors)
 			else
 				------------------- language section ---------------
---				if adl_parser.language_text /= Void and then not adl_parser.language_text.is_empty then
-					language_context.set_source(adl_parser.language_text, adl_parser.language_text_start_line)
-					language_context.parse
-					if not language_context.parse_succeeded then
-						errors := language_context.errors
-						language_error := True
-					end
---				else
---					language_context.reset
---				end
+				language_context.set_source(adl_parser.language_text, adl_parser.language_text_start_line)
+				language_context.parse
+				if not language_context.parse_succeeded then
+					errors.append (language_context.errors)
+				end
 
-				if not language_error then
+				if not errors.has_errors then
 					if language_context.tree /= Void then
 						orig_lang_trans ?= language_context.tree.as_object (trans_det_id)
 					end
@@ -161,14 +153,13 @@ feature {NONE} -- Implementation
 						description_context.set_source(adl_parser.description_text, adl_parser.description_text_start_line)
 						description_context.parse
 						if not description_context.parse_succeeded then
-							errors := description_context.errors
-							description_error := True
+							errors.append (description_context.errors)
 						end
 					else
 						description_context.reset
 					end
 
-					if not description_error then
+					if not errors.has_errors then
 						if description_context.tree /= Void then
 							res_desc ?= description_context.tree.as_object (res_desc_id)
 						end
@@ -177,27 +168,27 @@ feature {NONE} -- Implementation
 						definition_context.set_source(adl_parser.definition_text, adl_parser.definition_text_start_line, differential_source_flag, rm_schema)
 						definition_context.parse
 						if not definition_context.parse_succeeded then
-							errors := definition_context.errors
+							errors.append (definition_context.errors)
 						else
 							------------------- invariant section ---------------
 							if adl_parser.invariant_text /= Void and then not adl_parser.invariant_text.is_empty then
 								invariant_context.set_source(adl_parser.invariant_text, adl_parser.invariant_text_start_line, differential_source_flag, rm_schema)
 								invariant_context.parse
 								if not invariant_context.parse_succeeded then
-									errors := invariant_context.errors
-									invariant_error := True
+									errors.append (invariant_context.errors)
 								end
 							else
 								invariant_context.reset
 							end
 
-							if not invariant_error then
+							if not errors.has_errors then
 								------------------- ontology section ---------------
 								ontology_context.set_source (adl_parser.ontology_text, adl_parser.ontology_text_start_line)
 								ontology_context.parse
 
 								if not ontology_context.parse_succeeded then
-									errors := ontology_context.errors
+									errors.append(ontology_context.errors)
+
 								elseif attached {C_COMPLEX_OBJECT} definition_context.tree as definition and then attached {ARCHETYPE_ID} adl_parser.archetype_id as id then
 									convert_ontology_syntax(ontology_context.tree)  -- perform any version upgrade conversions
 									if differential_source_flag then
@@ -209,7 +200,7 @@ feature {NONE} -- Implementation
 										end
 
 										if not differential_ontology.errors.is_empty then
-											errors := differential_ontology.errors
+											errors.append (differential_ontology.errors)
 										else
 											create {DIFFERENTIAL_ARCHETYPE} Result.make (
 												adl_parser.artefact_type,
@@ -229,7 +220,7 @@ feature {NONE} -- Implementation
 										end
 
 										if not flat_ontology.errors.is_empty then
-											errors := flat_ontology.errors
+											errors.append (flat_ontology.errors)
 										else
 											create {FLAT_ARCHETYPE} Result.make (
 												adl_parser.artefact_type,
@@ -242,7 +233,7 @@ feature {NONE} -- Implementation
 										end
 									end
 
-									if errors.is_empty then
+									if not errors.has_errors then
 										if attached {ARCHETYPE_ID} adl_parser.parent_archetype_id as parent_id then
 											Result.set_parent_archetype_id (parent_id)
 										end

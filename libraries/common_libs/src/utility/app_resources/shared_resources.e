@@ -83,7 +83,7 @@ feature {NONE} -- Access
 
 feature -- Access
 
-	status_reporting_level: INTEGER
+	error_reporting_level: INTEGER
 			-- Level of error reporting required; see BILLBOARD_MESSAGE_TYPES for levels
 			-- all levels >= the one stored will be displayed; Info is the minimum.
 		local
