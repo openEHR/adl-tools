@@ -90,7 +90,7 @@ feature -- Access
 		require
 			Valid_language: has_matching_language_tag (a_lang)
 		do
-			from languages_available.start until languages_available.item.starts_with (a_lang) or languages_available.off loop
+			from languages_available.start until languages_available.off or language_tag_has_language(languages_available.item, a_lang) loop
 				languages_available.forth
 			end
 			Result := languages_available.item
@@ -114,7 +114,7 @@ feature -- Status Report
 		require
 			Valid_language: valid_language_pattern_tag (a_lang)
 		do
-			from languages_available.start until languages_available.item.starts_with (a_lang) or languages_available.off loop
+			from languages_available.start until languages_available.off or language_tag_has_language(languages_available.item, a_lang) loop
 				languages_available.forth
 			end
 			Result := not languages_available.off

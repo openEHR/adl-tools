@@ -628,8 +628,6 @@ feature {NONE} -- Implementation
 			elseif attached {C_ARCHETYPE_ROOT} a_c_node as car then
 				create apa.make_from_string (car.slot_path)
 				co_parent_flat := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
---				check co_parent_flat_detachable /= Void end
---				co_parent_flat := co_parent_flat_detachable
 
 				if attached {ARCHETYPE_SLOT} co_parent_flat as a_slot then
 					slot_id_index := target_descriptor.specialisation_parent.slot_id_index
@@ -662,9 +660,6 @@ feature {NONE} -- Implementation
 			elseif attached {C_OBJECT} a_c_node as co_child_diff then
 				create apa.make_from_string (a_c_node.path)
 				co_parent_flat := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
---				co_parent_flat_detachable := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
---				check co_parent_flat_detachable /= Void end
---				co_parent_flat := co_parent_flat_detachable
 
 				debug ("validate")
 					io.put_string (">>>>> validate: C_OBJECT in child at " + co_child_diff.path)
@@ -685,9 +680,6 @@ feature {NONE} -- Implementation
 					-- we re-assign co_parent_flat to point to the target structure; unless they both are use_nodes, in which case leave them as is
 					if attached {ARCHETYPE_INTERNAL_REF} co_parent_flat as air_p and not attached {ARCHETYPE_INTERNAL_REF} co_child_diff as air_c then
 						co_parent_flat := flat_parent.c_object_at_path (air_p.path)
---						co_parent_flat_detachable := flat_parent.c_object_at_path (air_p.path)
---						check co_parent_flat_detachable /= Void end
---						co_parent_flat := co_parent_flat_detachable
 						if dynamic_type (co_child_diff) /= dynamic_type (co_parent_flat) then
 							add_error("VSUNT", <<co_child_diff.path, co_child_diff.generating_type, co_parent_flat.path, co_parent_flat.generating_type>>)
 						end
@@ -730,11 +722,15 @@ feature {NONE} -- Implementation
 							if not co_child_diff.node_id_conforms_to (co_parent_flat) then
 								add_error("VSONCI", <<co_child_diff.path, co_child_diff.node_id, co_parent_flat.path, co_parent_flat.node_id>>)
 							elseif co_child_diff.node_id.is_equal(co_parent_flat.node_id) then -- id same, something else must be different
-								add_error("VSONIRrm", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
+								if not co_child_diff.rm_type_name.is_equal (co_parent_flat.rm_type_name) then -- has to be that RM type was redefined but at-code wasn't
+									add_error("VSONIRrm", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
+								else -- has to be the occurrences was redefined, but the at-code wasn't
+									add_error("VSONIRocc", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.occurrences_as_string, co_child_diff.node_id>>)
+								end
 							end
 
 						-- node id non-conformance presence / absence was the reason
-						elseif not co_child_diff.is_addressable and co_parent_flat.is_addressable then
+						elseif co_parent_flat.is_addressable then
 							add_error("VSONI", <<co_child_diff.rm_type_name, co_child_diff.path, co_parent_flat.rm_type_name, co_parent_flat.path>>)
 
 						-- could be a leaf object value redefinition

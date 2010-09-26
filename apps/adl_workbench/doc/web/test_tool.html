@@ -103,12 +103,6 @@
           archetypes found in the test repository, or archetypes similarly including the &quot;regression&quot; item
           within the details/other_deals.</li>
 
-          <li value="0"><b>Save src (orig)</b>: save the differential source (either what was converted from a .adl
-          file, or the existing .adls file), to the directory $diff_test/$profile/source/orig;</li>
-
-          <li value="0"><b>Save source (gen)</b>: serialise the compiled in-memory AOM archetype back out to ADL
-          syntax, to the directory $diff_test/$profile/source/new;</li>
-
           <li value="0"><b>Save legacy</b>: if there is a .adl (ADL 1.4) file, save it to the directory , to the
           directory $diff_test/$profile/flat/orig, with a &#39;.adlf&#39; extension;</li>
 
@@ -127,8 +121,16 @@
 		
         <h2>Regression Testing</h2>
 		
-		<p>he regression testing facility is intended to be used with the test archetypes found in the knowledge2 SVN repository, in the TRUNK\archetypes\ADL_1.5_test directory. This directory contains 150+ archetypes designed specifically to exercise the ADL compiler. Each such archetype is hand-built to either pass or fail, exercising a specific part of the ADL 1.5 specification.</p>
-		<p>Regression testing is turned via a button on the Test page, and the results show up in the second column, as shown here.</p>
+		<p>The regression testing facility is intended to be used with the test archetypes found in the <a href ="http://www.openehr.org/svn/knowledge2/">knowledge2 SVN repository</a>, in the TRUNK\archetypes\ADL_1.5_test directory. This directory contains 150+ archetypes designed specifically to exercise the ADL compiler. Each such archetype is hand-built to either pass or fail, exercising a specific part of the ADL 1.5 specification.</p>
+          <p>Regression testing is turned via a button on the Test page, and the results show up in the second column, as shown <a href="images/test_regression.png">here</a>. A green 'tick' indicates that the regression test passed, which means that the compilation result was as indicated in the archetype. The possible results indicated within an archetype are:</p>
+		<ul>
+		<li>"PASS" - the archetype should pass compilation with no errors or warnings;</li>
+		<li>"FAIL" - the archetype should fail compilation, typically for extremely basic syntax reasons that do not have a specific validity code;</li>
+		<li>a validity code, e.g. "VACDF", taken from the AOM 1.5 specification, indicating the validity condition that this archetype violates;</li>
+		<li>a warning code, e.g. "WOUC", indicating the expected warning, even though the archetype will pass compilation.</li>
+		</ul>
+		<p>The main purpose of regression tests is to test the compiler software, and particularly <i>changes</i> in the software. After any change is made, the regression tests should be executed to find any failures. The validity code being tested is indicated in the results column.</p>
+		<p>The regression testing facility has been designed to be independent of any particular tool technology, and the logic implemented in the Eiffel ADL Workbench can easily be replicated in Java, .Net and other tools.</p>
 
         <h2>Viewing results</h2>
 

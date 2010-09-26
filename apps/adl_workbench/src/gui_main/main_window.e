@@ -597,7 +597,7 @@ feature {NONE} -- History events
 feature {NONE} -- Tools events
 
 	clean_generated_files
-			-- Remove all generated files below the repository directory.
+			-- Remove all generated files below the repository directory and repopulate from scratch
 		local
 			info_dialog: EV_INFORMATION_DIALOG
 		do
@@ -608,6 +608,7 @@ feature {NONE} -- Tools events
 			else
 				do_with_wait_cursor (agent arch_dir.do_all_archetypes (agent delete_generated_files))
 			end
+			populate_directory
 		end
 
 	delete_generated_files (ara: ARCH_REP_ARCHETYPE)
