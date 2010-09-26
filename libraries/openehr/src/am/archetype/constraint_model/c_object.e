@@ -120,10 +120,8 @@ feature -- Comparison
 			Result := rm_type_name.is_equal (other.rm_type_name) or an_rm_schema.is_descendant_of (rm_type_name, other.rm_type_name)
 		end
 
-	occurrences_conforms_to (other: like Current): BOOLEAN
+	occurrences_conforms_to (other: attached C_OBJECT): BOOLEAN
 			-- True if this node occurrences conforms to other.occurrences; `other' is assumed to be in a flat archetype
-		require
-			other_exists: other /= Void
 		do
 			Result := other.occurrences = Void or else occurrences = Void or else other.occurrences.contains (occurrences)
 		end
@@ -135,20 +133,18 @@ feature -- Comparison
 			Result := codes_conformant (node_id, other.node_id)
 		end
 
-	valid_occurrences(occ: MULTIPLICITY_INTERVAL): BOOLEAN
+	valid_occurrences(occ: attached MULTIPLICITY_INTERVAL): BOOLEAN
 			-- check if `occ' is valid to be set as occurrences on this object
-		require
-			Occurrences_attached: occ /= Void
 		do
 			Result := parent /= Void and parent.is_single implies occ.upper <= 1
 		end
 
 feature -- Modification
 
-	set_occurrences(occ: MULTIPLICITY_INTERVAL)
+	set_occurrences(occ: attached MULTIPLICITY_INTERVAL)
 			--
 		require
-			Occurrences_valid: occ /= Void and then valid_occurrences(occ)
+			Occurrences_valid: valid_occurrences(occ)
 		do
 			occurrences := occ
 		ensure
@@ -162,20 +158,20 @@ feature -- Modification
 			occurrences = Void
 		end
 
-	set_sibling_order (a_sibling_order: SIBLING_ORDER)
+	set_sibling_order (a_sibling_order: attached SIBLING_ORDER)
 			-- set sibling order
 		require
-			a_sibling_order /= Void and specialisation_depth > 0
+			specialisation_depth > 0
 		do
 			sibling_order := a_sibling_order
 		ensure
 			sibling_order_set: sibling_order = a_sibling_order
 		end
 
-	set_sibling_order_before (a_node_id: STRING)
+	set_sibling_order_before (a_node_id: attached STRING)
 			-- set sibling order of this node to be before the inherited sibling node with id a_node_id
 		require
-			a_node_id /= Void and not a_node_id.is_empty
+			not a_node_id.is_empty
 		do
 			create sibling_order.make_before (a_node_id)
 		ensure

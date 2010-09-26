@@ -512,6 +512,42 @@ feature -- Traversal
 			do_subtree (ontology, enter_action, exit_action)
 		end
 
+	do_archetypes (ari: ARCH_REP_ITEM; action: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]])
+			-- On all archetype nodes in tree, execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
+		do
+			do_subtree (ari, agent do_if_archetype (?, action), Void)
+		end
+
+	do_all_archetypes (action: PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
+			-- On all archetype nodes in tree, execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
+		do
+			do_subtree (ontology, agent do_if_archetype (?, action), Void)
+		end
+
+	do_if_archetype (ari: ARCH_REP_ITEM; action: PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
+			-- If `ari' is an archetype, perform `action' on it.
+		do
+			if attached {ARCH_REP_ARCHETYPE} ari as ara then
+				action.call ([ara])
+			end
+		end
+
+	do_archetype_lineage (ara: ARCH_REP_ARCHETYPE; action: PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
+			-- On all archetype nodes from top to , execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
+		local
+			csr: ARCH_REP_ARCHETYPE
+			lineage: attached ARRAYED_LIST [ARCH_REP_ARCHETYPE]
+		do
+			create lineage.make (1)
+			from csr := ara until csr = Void loop
+				lineage.put_front (csr)
+				csr := csr.specialisation_parent
+			end
+			lineage.do_all (action)
+		end
+
+feature {NONE} -- Implementation
+
 	do_subtree (node: ARCH_REP_ITEM; enter_action, exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]])
 			-- On `node', execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 		require
@@ -536,28 +572,6 @@ feature -- Traversal
 				end
 			end
 		end
-
-	do_archetypes (node: ARCH_REP_ITEM; action: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]])
-			-- On all archetype nodes in tree, execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
-		do
-			do_subtree (node, agent do_if_archetype (?, action), Void)
-		end
-
-	do_all_archetypes (action: PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
-			-- On all archetype nodes in tree, execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
-		do
-			do_subtree (ontology, agent do_if_archetype (?, action), Void)
-		end
-
-	do_if_archetype (item: ARCH_REP_ITEM; action: PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
-			-- If `item' is an archetype, perform `action' on it.
-		do
-			if attached {ARCH_REP_ARCHETYPE} item as ara then
-				action.call ([ara])
-			end
-		end
-
-feature {NONE} -- Implementation
 
 	selection_history: attached LINKED_LIST [attached ARCH_REP_ITEM]
 			-- The history in which archetypes and folders have been selected, from earliest to most recent.

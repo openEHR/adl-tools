@@ -1,6 +1,6 @@
 note
 	component:   "openEHR Common Information Model"
-	description: "Abstract idea of an online resource authored by a (usually) human author."
+	description: "Abstract model of an online resource authored by a (usually) human author."
 	keywords:    "archetype"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
@@ -19,6 +19,8 @@ inherit
 			{NONE} all
 		end
 
+	LANGUAGE_TAG_TOOLS
+
 feature -- Definitions
 
 	Uncontrolled_revision_name: STRING = "(uncontrolled)"
@@ -33,7 +35,7 @@ feature -- Access
 
 	translations: HASH_TABLE [TRANSLATION_DETAILS, STRING]
 			-- List of details for each natural translation made of this resource, keyed by
-			-- language. For each translation listed here, there must be corresponding
+			-- language tag. For each translation listed here, there must be corresponding
 			-- sections in all language-dependent parts of the resource.
 
 	description: RESOURCE_DESCRIPTION
@@ -53,7 +55,7 @@ feature -- Access
 			end
 		end
 
-	languages_available: attached ARRAYED_SET [STRING]
+	languages_available: ARRAYED_SET [STRING]
 			-- Total list of languages available in this resource, derived from
 			-- original_language and translations. Guaranteed to at least include original_language
 		do
@@ -62,11 +64,7 @@ feature -- Access
 				languages_available_cache.compare_objects
 				languages_available_cache.extend(original_language.code_string)
 				if translations /= Void then
-					from
-						translations.start
-					until
-						translations.off
-					loop
+					from translations.start until translations.off loop
 						languages_available_cache.extend(translations.key_for_iteration)
 						translations.forth
 					end
@@ -86,18 +84,40 @@ feature -- Access
 			Result := translations.item(a_lang)
 		end
 
+	matching_language_tag(a_lang: attached STRING): STRING
+			-- True if the currently defined language tags match the language `a_lang', e.g.
+			-- The current set might be {"en-GB", "es-CL"} and `a_lang' might be "es"
+		require
+			Valid_language: has_matching_language_tag (a_lang)
+		do
+			from languages_available.start until languages_available.off or language_tag_has_language(languages_available.item, a_lang) loop
+				languages_available.forth
+			end
+			Result := languages_available.item
+		end
+
 feature -- Status Report
 
 	is_controlled: BOOLEAN
 			-- True if this resource is under any kind of change control (even file
 			-- copying), in which case revision history is created.
 
-	has_language(a_lang: STRING): BOOLEAN
-			-- True if either original_language or translations has a_lang
-		require
-			Language_valid: a_lang /= Void
+	has_language(a_lang_tag: attached STRING): BOOLEAN
+			-- True if either original_language or translations has a_lang_tag
 		do
-			Result := original_language.code_string.is_equal(a_lang) or else (translations /= Void and then translations.has(a_lang))
+			Result := original_language.code_string.is_equal(a_lang_tag) or else (has_translations and then translations.has(a_lang_tag))
+		end
+
+	has_matching_language_tag(a_lang: attached STRING): BOOLEAN
+			-- True if the currently defined language tags match the language `a_lang', e.g.
+			-- The current set might be {"en-GB", "es-CL"} and `a_lang' might be "es"
+		require
+			Valid_language: valid_language_pattern_tag (a_lang)
+		do
+			from languages_available.start until languages_available.off or language_tag_has_language(languages_available.item, a_lang) loop
+				languages_available.forth
+			end
+			Result := not languages_available.off
 		end
 
 	has_translations: BOOLEAN
@@ -115,22 +135,23 @@ feature -- Modification
 			description := a_desc
 		end
 
-	add_default_translation(a_lang: STRING)
-			-- add a blank translation object for a_lang
+	add_default_translation(a_lang_tag: attached STRING)
+			-- add a blank translation object for a_lang_tag
 		require
-			Lang_valid: a_lang /= Void and then not has_language(a_lang)
+			Lang_tag_valid: valid_language_tag(a_lang_tag)
+			Lang_tag_not_already_present: not has_language(a_lang_tag)
 		local
 			a_trans: TRANSLATION_DETAILS
 		do
-			create a_trans.make_from_language(a_lang)
+			create a_trans.make_from_language(a_lang_tag)
 			a_trans.add_author_detail ("name", "unknown")
 			add_translation (a_trans)
 		end
 
-	add_translation(a_trans: TRANSLATION_DETAILS)
+	add_translation(a_trans: attached TRANSLATION_DETAILS)
 			-- add a translation for a_lang
 		require
-			Translation_valid: a_trans /= Void and then not languages_available.has(a_trans.language.code_string)
+			Translation_valid: not languages_available.has(a_trans.language.code_string)
 		do
 			if translations = Void then
 				create translations.make(0)
@@ -139,19 +160,20 @@ feature -- Modification
 			languages_available_cache := Void
 		end
 
-	add_language(a_lang: STRING)
+	add_language_tag(a_lang_tag: attached STRING)
 			-- add a new translation language to the resource, creating appropriate copies
 		require
-			Lang_valid: a_lang /= Void and then not has_language(a_lang)
+			Lang_tag_valid: valid_language_tag(a_lang_tag)
+			Lang_tag_not_already_present: not has_language(a_lang_tag)
 		do
-			add_default_translation(a_lang)
-			description.add_language(a_lang)
+			add_default_translation(a_lang_tag)
+			description.add_language(a_lang_tag)
 			languages_available_cache := Void
 		end
 
 feature {ADL_ENGINE} -- Construction
 
-	set_translations(a_trans: HASH_TABLE [TRANSLATION_DETAILS, STRING])
+	set_translations(a_trans: attached HASH_TABLE [TRANSLATION_DETAILS, STRING])
 			-- set translations
 		require
 			a_trans /= Void

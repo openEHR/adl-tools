@@ -28,8 +28,6 @@ feature -- Initialisation
 			-- initialise reporting variables
 		do
 			create errors.make
-			create warnings.make
-			create info.make
 			passed := True
 		ensure
 			Passed: passed
@@ -39,12 +37,6 @@ feature -- Access
 
 	errors: attached ERROR_ACCUMULATOR
 			-- error output of validator - things that must be corrected
-
-	warnings: attached ERROR_ACCUMULATOR
-			-- warnings output of validator - things that can be acted upon
-
-	info: attached ERROR_ACCUMULATOR
-			-- informative messages that will not normally be acted upon
 
 feature -- Modification
 
@@ -69,32 +61,26 @@ feature -- Modification
 	add_error_with_location(a_key: STRING; args: ARRAY [STRING]; a_location: STRING)
 			-- append an error with key `a_key' and `args' array to the `errors' string
 		do
-			errors.extend(create {ERROR_DESCRIPTOR}.make_error(a_key, create_message_line(a_key, args), a_location))
+			errors.extend(create {ERROR_DESCRIPTOR}.make_error(a_key, create_message_content(a_key, args), a_location))
 			passed := False
 		end
 
 	add_warning_with_location(a_key: STRING; args: ARRAY [STRING]; a_location: STRING)
 			-- append a warning with key `a_key' and `args' array to the `warnings' string
 		do
-			warnings.extend(create {ERROR_DESCRIPTOR}.make_warning(a_key, create_message_line(a_key, args), a_location))
+			errors.extend(create {ERROR_DESCRIPTOR}.make_warning(a_key, create_message_content(a_key, args), a_location))
 		end
 
 	add_info_with_location(a_key: STRING; args: ARRAY [STRING]; a_location: STRING)
 			-- append an information message with key `a_key' and `args' array to the `information' string
 		do
-			info.extend(create {ERROR_DESCRIPTOR}.make_info(a_key, create_message_line(a_key, args), a_location))
+			errors.extend(create {ERROR_DESCRIPTOR}.make_info(a_key, create_message_content(a_key, args), a_location))
 		end
 
 feature -- Status Report
 
 	passed: BOOLEAN
 			-- True if validation succeeded
-
-	has_warnings: BOOLEAN
-			-- True if warnings from last call to validate
-		do
-			Result := warnings /= Void and then not warnings.is_empty
-		end
 
 feature -- Validation
 

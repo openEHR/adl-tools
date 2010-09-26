@@ -15,9 +15,6 @@ deferred class ARCHETYPE_SERIALISER
 
 inherit
 	ANY_SERIALISER
-		rename
-			initialise as initialise_any_serialiser
-		end
 
 feature -- Initialisation
 
@@ -26,7 +23,7 @@ feature -- Initialisation
 		require
 			Ontology_valid: an_ontology /= Void
 		do
-			initialise_any_serialiser
+			reset
 			ontology := an_ontology
 		end
 

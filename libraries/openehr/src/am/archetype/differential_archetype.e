@@ -16,7 +16,7 @@ class DIFFERENTIAL_ARCHETYPE
 inherit
 	ARCHETYPE
 		redefine
-			add_language, build_xrefs, ontology
+			add_language_tag, build_xrefs, ontology
 		end
 
 create
@@ -246,12 +246,12 @@ feature -- Modification
 			definition.remove_all_attributes
 		end
 
-	add_language(a_lang: STRING)
+	add_language_tag(a_lang_tag: STRING)
 			-- add a new language to the archetype - creates new language section in
 			-- ontology, translations and resource description
 		do
-			precursor(a_lang)
-			ontology.add_language (a_lang)
+			precursor(a_lang_tag)
+			ontology.add_language (a_lang_tag)
 		end
 
 	remove_ontology_unused_codes

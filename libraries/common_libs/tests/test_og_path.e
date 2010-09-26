@@ -1,58 +1,42 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Serialise a C_XXX object structure to any format"
-	keywords:    "test, constraint model"
+	description: "Tests OG_PATH functions"
+	keywords:    "archetype, ontology, terminology"
+
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$URL"
+	revision:    "$LastChangedRevision"
+	last_change: "$LastChangedDate"
+	testing:     "type/manual"
 
-deferred class C_SERIALISER
+class
+	TEST_OG_PATH
 
 inherit
-	ANY_SERIALISER
+	OPENEHR_TEST_SET
 
-	C_VISITOR
-		rename
-			initialise as initialise_visitor
-		end
+feature -- Test routines
 
-feature -- Initialisation
-
-	initialise(an_ontology: attached ARCHETYPE_ONTOLOGY; a_lang: attached STRING)
-			-- set ontology required for serialising cADL, and perform basic initialisation
-		require
-			Language_valid: an_ontology.has_language (a_lang)
+	test_make_from_string
+			-- see if make_from_string parses properly
+		note
+			testing:  "covers/{OG_PATH}.make_from_string"
+		local
+			a_path_string: STRING
+			a_path: OG_PATH
 		do
-			reset
-			language := a_lang
-			initialise_visitor(an_ontology)
+			a_path_string := "/constraint_bindings[AIR93]/items"
+			create a_path.make_from_string(a_path_string)
+			assert_equal (True, a_path.as_string.is_equal(a_path_string))
+
+			a_path_string := "/constraint_bindings[AIR93(1.0.0)]/items"
+			create a_path.make_from_string(a_path_string)
+			assert_equal (True, a_path.as_string.is_equal(a_path_string))
 		end
-
-feature {NONE} -- Implementation
-
-	serialise_occurrences(a_node: C_OBJECT; depth: INTEGER)
-			-- any positive range
-		deferred
-		end
-
-	serialise_existence(a_node: C_ATTRIBUTE; depth: INTEGER)
-			-- can only  be a range of 0..1 or 1..1
-		deferred
-		end
-
-	serialise_cardinality(a_node: C_ATTRIBUTE; depth: INTEGER)
-			-- includes a range and possibly ordered, unique qualifiers
-		deferred
-		end
-
-	language: attached STRING
-			-- IETF RFC 5646 language tag; wll be an exact text match
-			-- for one of the 'languages' in the archetype
 
 end
 
@@ -71,7 +55,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is cadl_serialiser.e.
+--| The Original Code is test_interval.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

@@ -152,6 +152,44 @@
         remaining sections below describe how to see the ADL/AOM 1.5 changes using the archetypes you have configured
         above.</p>
 
+		<h3>The .cfg file</h3>
+		<p>The result of the above configuration creates entries in the application configuration file, which will be in one of the following places, depending on your operating system:</p>
+		<ul>
+		<li>Windows XP/Vista: C:\Documents and Settings\&lt;username&gt;\AppData\Local\openEHR\adl_workbench\adl_workbench.cfg</li>
+		<li>Windows 7: C:\Users\&lt;username&gt;\AppData\Local\openEHR\adl_workbench\adl_workbench.cfg</li>
+		<li>Mac OSX: $HOME/openEHR/adl_workbench/adl_workbench.cfg</li>
+		<li>Linux: $HOME/openEHR/adl_workbench/adl_workbench.cfg</li>
+		</ul>
+		<p>The contents of this file are currently formatted in the old Windows '.ini' style, and will typically include lines such as the following, corresponding to the above configuration.</p>
+<pre>
+rm_schemas_load_list=cen_rm_0.9,openehr_adltest_1.0.0,openehr_rm_1.0.3
+test_diff_directory=C:\Users\Thomas\AppData\Local\openEHR\adl_workbench\diff_test
+current_repository_profile=ADL15_test
+[profiles]
+CKM=C:\project\openehr\knowledge\archetypes\CKM,
+openEHR_examples=C:\project\openehr\knowledge2\TRUNK\archetypes\openEHR_examples\demographic_template\Reference,C:\project\openehr\knowledge2\TRUNK\archetypes\openEHR_examples\demographic_template\Working
+ADL15_test=C:\project\openehr\knowledge2\TRUNK\archetypes\ADL_1.5_test,
+EN13606_examples=C:\project\openehr\knowledge2\TRUNK\archetypes\en13606_examples,
+</pre>
+		<p>Each line in the profile section is of the form "profile_name=dir1, dri2", where "profile_name" is the logical name of the profile, and the two directories are respectively the reference and work directories for that profile. The latter of these is optional, as explained above. One of these profile names should be given as the value in the current_repository_profile setting, shown above the [profiles] section in the example above.</p>
+		<p>Other useful config file settings, shown with typical / reasonable values:</p>
+		<ul>
+			<li>adl_version_for_flat_output=1.5</li>
+ 		   <li>html_export_directory=C:\project\openehr\knowledge\archetypes\html</li>
+ 		   	<li>display_archetype_source=True</li>
+		    <li>current_language=en</li>
+  		  	<li>path_filter_combo_selection=All</li>
+		    <li>show_technical_view=False</li>
+   		 	<li>show_reference_model_view=False</li>
+		    <li>expand_node_tree=True</li>
+   		 	<li>show_entire_ontology=False</li>
+		    <li>validation_strict=True</li>
+    		<li>path_view_check_list_settings=Machine,Nat lang,RM Type</li>
+	  	  <li>show_line_numbers=False</li>
+    		<li>editor=C:\Program Files\Vim\vim72\gvim.exe</li>
+		</ul>
+		<p>The config file may also include numerous tool-set GUI settings, which you can usually ignore for manual setting.</p>
+
         <h2>ADL/AOM 1.5 - New features</h2>
 
         <h3>Unconstrained specialisation identifiers</h3>

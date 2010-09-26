@@ -29,7 +29,7 @@ feature -- Initialisation
 		do
 			serialiser := assertion_serialiser_for_format(format)
 			target := a_target
-			serialiser.initialise
+			serialiser.reset
 		end
 
 feature -- Command

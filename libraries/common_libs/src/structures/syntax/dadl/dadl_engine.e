@@ -114,7 +114,7 @@ feature -- Commands
 		do
 			if tree /= Void then
 				a_dt_serialiser := dt_serialiser_for_format (a_format)
-				a_dt_serialiser.initialise
+				a_dt_serialiser.reset
 				create a_dt_iterator.make (tree, a_dt_serialiser)
 				a_dt_iterator.do_all
 				serialised := a_dt_serialiser.last_result

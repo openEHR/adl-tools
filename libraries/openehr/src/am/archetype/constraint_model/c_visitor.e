@@ -15,14 +15,12 @@ deferred class C_VISITOR
 
 feature -- Initialisation
 
-	initialise(an_ontology: ARCHETYPE_ONTOLOGY)
+	initialise(an_ontology: attached ARCHETYPE_ONTOLOGY)
 			-- set ontology required for interpreting meaning of object nodes
-		require
-			Ontology_valid: an_ontology /= Void
 		do
 			create ontologies.make(0)
 			ontologies.extend(an_ontology)
-			is_differential := attached {DIFFERENTIAL_ARCHETYPE_ONTOLOGY} an_ontology as an_ont
+			is_differential := attached {DIFFERENTIAL_ARCHETYPE_ONTOLOGY} an_ontology
 		end
 
 feature -- Visitor
@@ -167,7 +165,7 @@ feature -- Finalisation
 
 feature {NONE} -- Implementation
 
-	ontologies: ARRAYED_STACK [ARCHETYPE_ONTOLOGY]
+	ontologies: attached ARRAYED_STACK [ARCHETYPE_ONTOLOGY]
 			-- we use a stack here to handle ontologies inside operational templates
 
 	ontology: attached ARCHETYPE_ONTOLOGY

@@ -344,7 +344,7 @@ feature -- Comparison
 			--	cardinality
 			--	existence
 		do
-			Result := existence_conforms_to (other) and ((is_single and other.is_single) or (is_multiple and cardinality_conforms_to (other)))
+			Result := existence_conforms_to (other) and ((is_single and other.is_single) or else (is_multiple and cardinality_conforms_to (other)))
 		end
 
 	existence_conforms_to (other: like Current): BOOLEAN
@@ -353,20 +353,15 @@ feature -- Comparison
 			other_exists: other /= Void
 			other_is_flat: other.existence /= Void
 		do
-			Result := existence = Void or
-					existence.equal_interval (other.existence) or
-					other.existence.contains (existence)
+			Result := existence = Void or else other.existence.contains (existence)
 		end
 
 	cardinality_conforms_to (other: like Current): BOOLEAN
-			-- True if the cardinality of this node conforms to other.cardinality
+			-- True if the cardinality of this node conforms to other.cardinality, if it exists
 		require
 			other_exists: other /= Void
-			other_is_flat: other.cardinality /= Void
 		do
-			Result := cardinality = Void or
-				cardinality.interval.equal_interval (other.cardinality.interval) or
-				other.cardinality.contains (cardinality)
+			Result := cardinality = Void or else other.cardinality = Void or else other.cardinality.contains (cardinality)
 		end
 
 feature -- Modification

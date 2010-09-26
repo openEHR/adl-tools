@@ -53,14 +53,8 @@ feature -- Initialisation
 					else
 						schema.dt_finalise
 						schema.validate
-						if schema.passed then
-							status.copy (schema.info.as_string)
-							status.append (schema.warnings.as_string)
-							is_valid := True
-						else
-							status.copy (schema.errors.as_string)
-							status.append (schema.warnings.as_string)
-						end
+						is_valid := schema.passed
+						status :=  schema.errors.as_string
 					end
 				else
 					status := create_message_content ("model_access_e2", <<a_schema_full_path, parser.errors.as_string>>)

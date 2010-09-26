@@ -581,7 +581,7 @@ feature {NONE} -- History events
 		do
 			if arch_dir.selection_history_has_previous then
 				arch_dir.selection_history_back
-				select_node_in_archetype_tree_view
+				go_to_node_in_archetype_tree_view
 			end
 		end
 
@@ -590,14 +590,14 @@ feature {NONE} -- History events
 		do
 			if arch_dir.selection_history_has_next then
 				arch_dir.selection_history_forth
-				select_node_in_archetype_tree_view
+				go_to_node_in_archetype_tree_view
 			end
 		end
 
 feature {NONE} -- Tools events
 
 	clean_generated_files
-			-- Remove all generated files below the repository directory.
+			-- Remove all generated files below the repository directory and repopulate from scratch
 		local
 			info_dialog: EV_INFORMATION_DIALOG
 		do
@@ -608,6 +608,7 @@ feature {NONE} -- Tools events
 			else
 				do_with_wait_cursor (agent arch_dir.do_all_archetypes (agent delete_generated_files))
 			end
+			populate_directory
 		end
 
 	delete_generated_files (ara: ARCH_REP_ARCHETYPE)
@@ -762,7 +763,7 @@ feature -- Archetype commands
 			if not arch_dir.has_selected_archetype or else not id.is_equal (arch_dir.selected_archetype.ontological_name) then
 				if arch_dir.archetype_index.has (id) then
 					arch_dir.set_selected_item_from_id (id)
-					select_node_in_archetype_tree_view
+					go_to_node_in_archetype_tree_view
 				end
 			else
 				-- discrete visual feedback for selecting same archetype as already selected?
@@ -787,7 +788,7 @@ feature -- Archetype commands
 	template_view_tree_item_select
 			-- Display details of `template_file_tree' when the user selects it.
 		do
-			if attached {EV_TREE_NODE} template_file_tree.selected_item as node and then attached {ARCH_REP_ARCHETYPE} node.data as ara then
+			if attached {ARCH_REP_ARCHETYPE} template_file_tree.selected_item.data as ara then
 				archetype_view_tree_control.ensure_item_visible(ara.ontological_name)
 			end
 			template_view_tree_control.display_details_of_selected_item_after_delay
@@ -799,12 +800,12 @@ feature -- Archetype commands
 			if gui_item /= Void then
 				if attached {ARCH_REP_ITEM} gui_item.data as ari then
 					arch_dir.set_selected_item (ari)
-					select_node_in_archetype_tree_view
+					go_to_node_in_archetype_tree_view
 				end
 			end
 		end
 
-	select_node_in_archetype_tree_view
+	go_to_node_in_archetype_tree_view
 			-- Select and display the node of `archetype_file_tree' corresponding to the selection in `archetype_directory'.
 		do
 			if arch_dir.has_selected_item then
@@ -1081,7 +1082,7 @@ feature {NONE} -- Implementation
 					clear_status_area
 					compiler_error_control.clear
 
-					select_node_in_archetype_tree_view
+					go_to_node_in_archetype_tree_view
 
 					append_status_area (create_message_line ("populating_directory_start", <<current_repository_profile>>))
 					app_root.use_current_profile

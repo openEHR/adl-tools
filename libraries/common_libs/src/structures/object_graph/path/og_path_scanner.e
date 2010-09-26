@@ -65,8 +65,8 @@ feature {NONE} -- Implementation
 	yy_execute_action (yy_act: INTEGER)
 			-- Execute semantic action.
 		do
-if yy_act <= 10 then
-if yy_act <= 5 then
+if yy_act <= 11 then
+if yy_act <= 6 then
 if yy_act <= 3 then
 if yy_act <= 2 then
 if yy_act = 1 then
@@ -90,6 +90,7 @@ end
 last_token := Left_bracket_code
 end
 else
+if yy_act <= 5 then
 if yy_act = 4 then
 --|#line 65 "og_path_scanner.l"
 debug ("GELEX")
@@ -103,23 +104,23 @@ debug ("GELEX")
 end
 last_token := Left_parenthesis_code
 end
-end
 else
-if yy_act <= 8 then
-if yy_act <= 7 then
-if yy_act = 6 then
 --|#line 68 "og_path_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 68")
 end
 last_token := Right_parenthesis_code
+end
+end
 else
+if yy_act <= 9 then
+if yy_act <= 8 then
+if yy_act = 7 then
 --|#line 70 "og_path_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 70")
 end
 last_token := SYM_MOVABLE_LEADER
-end
 else
 --|#line 73 "og_path_scanner.l"
 debug ("GELEX")
@@ -131,19 +132,29 @@ end
 			
 end
 else
-if yy_act = 9 then
 --|#line 79 "og_path_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 79")
+end
+
+					last_token := V_ANY_PREDICATE
+					last_string_value := text_substring (2, text_count - 1)
+			
+end
+else
+if yy_act = 10 then
+--|#line 85 "og_path_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 85")
 end
 
 					last_token := V_ATTRIBUTE_IDENTIFIER
 					last_string_value := text
 			
 else
---|#line 85 "og_path_scanner.l"
+--|#line 91 "og_path_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 85")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 91")
 end
 
 				last_token := V_STRING
@@ -153,13 +164,13 @@ end
 end
 end
 else
-if yy_act <= 15 then
+if yy_act <= 16 then
+if yy_act <= 14 then
 if yy_act <= 13 then
-if yy_act <= 12 then
-if yy_act = 11 then
---|#line 90 "og_path_scanner.l"
+if yy_act = 12 then
+--|#line 96 "og_path_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 90")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 96")
 end
 				-- beginning of a string
 				if text_count > 1 then
@@ -168,52 +179,52 @@ end
 				set_start_condition (IN_STR)
 			
 else
---|#line 98 "og_path_scanner.l"
+--|#line 104 "og_path_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 98")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 104")
 end
 in_buffer.append_character ('\')
 end
-else
---|#line 100 "og_path_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 100")
-end
-in_buffer.append_character ('"')
-end
-else
-if yy_act = 14 then
---|#line 102 "og_path_scanner.l"
-debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 102")
-end
-
-				in_buffer.append_string (text)
-	
 else
 --|#line 106 "og_path_scanner.l"
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 106")
 end
+in_buffer.append_character ('"')
+end
+else
+if yy_act = 15 then
+--|#line 108 "og_path_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 108")
+end
+
+				in_buffer.append_string (text)
+	
+else
+--|#line 112 "og_path_scanner.l"
+debug ("GELEX")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 112")
+end
 in_buffer.append_string (text)
 end
 end
 else
+if yy_act <= 19 then
 if yy_act <= 18 then
-if yy_act <= 17 then
-if yy_act = 16 then
---|#line 108 "og_path_scanner.l"
+if yy_act = 17 then
+--|#line 114 "og_path_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 108")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 114")
 end
 
 				in_lineno := in_lineno + 1	-- match LF in line
 				in_buffer.append_character ('%N')
 			
 else
---|#line 113 "og_path_scanner.l"
+--|#line 119 "og_path_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 113")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 119")
 end
 						-- match final end of string
 				last_token := V_STRING
@@ -230,9 +241,9 @@ end
 			
 end
 else
---|#line 126 "og_path_scanner.l"
+--|#line 132 "og_path_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 126")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 132")
 end
 	-- Catch-all rules (no backing up)
 				last_token := ERR_STRING
@@ -240,10 +251,10 @@ end
 			
 end
 else
-if yy_act = 19 then
---|#line 136 "og_path_scanner.l"
+if yy_act = 20 then
+--|#line 142 "og_path_scanner.l"
 debug ("GELEX")
-	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 136")
+	std.error.put_line ("Executing scanner user-code from file 'og_path_scanner.l' at line 142")
 end
 ;
 else
@@ -287,97 +298,103 @@ feature {NONE} -- Table templates
 	yy_nxt_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
-			    0,   48,   48,    7,    8,    9,   10,   28,   11,   12,
-			   25,   13,   25,   14,   32,   15,    7,    8,    9,   10,
-			   28,   11,   12,   31,   13,   28,   14,   29,   15,   17,
-			   18,   29,   29,   33,    6,    6,    6,   36,   19,   31,
-			   31,   34,   31,   40,   31,   20,   21,   22,   23,   24,
-			   17,   18,   38,   38,   36,   26,   29,   38,   38,   19,
-			   29,   29,   16,   16,   16,   32,   20,   21,   22,   23,
-			   24,   31,   30,   31,   30,   27,   26,   48,   48,   48,
-			   48,   48,   48,   35,   35,   35,   31,   48,   48,   48,
-			   48,   48,   48,   48,   48,   48,   48,   48,   37,   37,
+			    0,   28,   28,    7,    8,    9,   10,   33,   11,   12,
+			   25,   13,   25,   14,   25,   15,    7,    8,    9,   10,
+			   29,   11,   12,   32,   13,   29,   14,   30,   15,   17,
+			   18,   30,   30,   34,   32,   41,   26,   37,   19,   32,
+			   32,   35,   33,   32,   32,   20,   21,   22,   23,   24,
+			   17,   18,   39,   39,   37,   27,   30,   39,   39,   19,
+			   30,   30,   26,   50,   50,   50,   20,   21,   22,   23,
+			   24,   32,   31,   50,   31,   50,   31,   50,   50,   50,
+			   50,   50,   50,   36,   36,   36,   32,   50,   50,   50,
+			   50,   50,   50,   50,   50,   50,   50,   50,   38,   38,
 
-			   37,   31,   48,   48,   48,   48,   48,   48,   48,   48,
-			   48,   48,   48,   39,   39,   39,   31,   48,   48,   48,
-			   48,   48,   48,   48,   48,   48,   48,   48,   48,   48,
-			   48,   41,   42,   43,   44,   45,   31,   48,   48,   48,
-			   48,   48,   48,   48,   48,   48,   48,   48,   35,   35,
-			   35,   31,   48,   48,   48,   48,   48,   48,   48,   48,
-			   48,   48,   48,   35,   35,   35,   31,   48,   48,   48,
-			   48,   48,   48,   48,   48,   48,   48,   48,   46,   46,
-			   46,   31,   48,   48,   48,   48,   48,   48,   48,   48,
-			   48,   48,   48,   47,   47,   47,   31,   48,   48,   48,
+			   38,   32,   50,   50,   50,   50,   50,   50,   50,   50,
+			   50,   50,   50,   40,   40,   40,   29,   29,   50,   29,
+			   50,   50,   42,   29,   29,   32,   50,   50,   50,   50,
+			   50,   50,   50,   50,   50,   50,   50,   50,   50,   50,
+			   43,   44,   45,   46,   47,   32,   50,   50,   50,   50,
+			   50,   50,   50,   50,   50,   50,   50,   36,   36,   36,
+			   32,   50,   50,   50,   50,   50,   50,   50,   50,   50,
+			   50,   50,   36,   36,   36,   32,   50,   50,   50,   50,
+			   50,   50,   50,   50,   50,   50,   50,   48,   48,   48,
+			   32,   50,   50,   50,   50,   50,   50,   50,   50,   50,
 
-			   48,   48,   48,   48,   48,   48,   48,   48,   35,   35,
-			   35,   31,   48,   48,   48,   48,   48,   48,   48,   48,
-			   48,   48,   48,   37,   37,   37,   31,   48,   48,   48,
-			   48,   48,   48,   48,   48,   48,   48,   48,   39,   39,
-			   39,   31,   48,   48,   48,   48,   48,   48,   48,   48,
-			   48,   48,   48,   35,   35,   35,   31,   48,   48,   48,
-			   48,   48,   48,   48,   48,   48,   48,   48,   35,   35,
-			   35,    5,   48,   48,   48,   48,   48,   48,   48,   48,
-			   48,   48,   48,   48,   48,   48,   48,   48,   48,   48,
-			   48,   48,   48,   48,   48, yy_Dummy>>)
+			   50,   50,   49,   49,   49,   32,   50,   50,   50,   50,
+			   50,   50,   50,   50,   50,   50,   50,   36,   36,   36,
+			   32,   50,   50,   50,   50,   50,   50,   50,   50,   50,
+			   50,   50,   38,   38,   38,   32,   50,   50,   50,   50,
+			   50,   50,   50,   50,   50,   50,   50,   40,   40,   40,
+			   32,   50,   50,   50,   50,   50,   50,   50,   50,   50,
+			   50,   50,   36,   36,   36,   32,   50,   50,   50,   50,
+			   50,   50,   50,   50,   50,   50,   50,   36,   36,   36,
+			    6,    6,    6,    6,    6,   16,   16,   16,   16,   16,
+			    5,   50,   50,   50,   50,   50,   50,   50,   50,   50,
+
+			   50,   50,   50,   50,   50,   50,   50,   50,   50,   50,
+			   50,   50,   50,   50, yy_Dummy>>)
 		end
 
 	yy_chk_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
-			    0,    0,    0,    1,    1,    1,    1,   53,    1,    1,
-			   51,    1,   51,    1,   32,    1,    2,    2,    2,    2,
+			    0,   54,   54,    1,    1,    1,    1,   33,    1,    1,
+			   53,    1,   53,    1,   53,    1,    2,    2,    2,    2,
 			   13,    2,    2,   21,    2,   13,    2,   15,    2,    3,
-			    3,   15,   15,   19,   49,   49,   49,   21,    3,   23,
-			   42,   19,   30,   28,   44,    3,    3,    3,    3,    3,
-			    4,    4,   23,   23,   42,   25,   29,   44,   44,    4,
-			   29,   29,   50,   50,   50,   17,    4,    4,    4,    4,
-			    4,   20,   52,   16,   52,   12,    8,    5,    0,    0,
+			    3,   15,   15,   19,   31,   28,   25,   21,    3,   23,
+			   44,   19,   17,   16,   46,    3,    3,    3,    3,    3,
+			    4,    4,   23,   23,   44,   12,   30,   46,   46,    4,
+			   30,   30,    8,    5,    0,    0,    4,    4,    4,    4,
+			    4,   20,   55,    0,   55,    0,   55,    0,    0,    0,
 			    0,    0,    0,   20,   20,   20,   22,    0,    0,    0,
 			    0,    0,    0,    0,    0,    0,    0,    0,   22,   22,
 
 			   22,   24,    0,    0,    0,    0,    0,    0,    0,    0,
-			    0,    0,    0,   24,   24,   24,   35,    0,    0,    0,
+			    0,    0,    0,   24,   24,   24,   29,   29,    0,   29,
+			    0,    0,   29,   29,   29,   36,    0,    0,    0,    0,
 			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-			    0,   35,   35,   35,   35,   35,   36,    0,    0,    0,
-			    0,    0,    0,    0,    0,    0,    0,    0,   36,   36,
-			   36,   37,    0,    0,    0,    0,    0,    0,    0,    0,
-			    0,    0,    0,   37,   37,   37,   38,    0,    0,    0,
-			    0,    0,    0,    0,    0,    0,    0,    0,   38,   38,
-			   38,   39,    0,    0,    0,    0,    0,    0,    0,    0,
-			    0,    0,    0,   39,   39,   39,   41,    0,    0,    0,
+			   36,   36,   36,   36,   36,   37,    0,    0,    0,    0,
+			    0,    0,    0,    0,    0,    0,    0,   37,   37,   37,
+			   38,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+			    0,    0,   38,   38,   38,   39,    0,    0,    0,    0,
+			    0,    0,    0,    0,    0,    0,    0,   39,   39,   39,
+			   40,    0,    0,    0,    0,    0,    0,    0,    0,    0,
 
-			    0,    0,    0,    0,    0,    0,    0,    0,   41,   41,
-			   41,   43,    0,    0,    0,    0,    0,    0,    0,    0,
-			    0,    0,    0,   43,   43,   43,   45,    0,    0,    0,
-			    0,    0,    0,    0,    0,    0,    0,    0,   45,   45,
-			   45,   46,    0,    0,    0,    0,    0,    0,    0,    0,
-			    0,    0,    0,   46,   46,   46,   47,    0,    0,    0,
-			    0,    0,    0,    0,    0,    0,    0,    0,   47,   47,
-			   47,   48,   48,   48,   48,   48,   48,   48,   48,   48,
-			   48,   48,   48,   48,   48,   48,   48,   48,   48,   48,
-			   48,   48,   48,   48,   48, yy_Dummy>>)
+			    0,    0,   40,   40,   40,   43,    0,    0,    0,    0,
+			    0,    0,    0,    0,    0,    0,    0,   43,   43,   43,
+			   45,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+			    0,    0,   45,   45,   45,   47,    0,    0,    0,    0,
+			    0,    0,    0,    0,    0,    0,    0,   47,   47,   47,
+			   48,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+			    0,    0,   48,   48,   48,   49,    0,    0,    0,    0,
+			    0,    0,    0,    0,    0,    0,    0,   49,   49,   49,
+			   51,   51,   51,   51,   51,   52,   52,   52,   52,   52,
+			   50,   50,   50,   50,   50,   50,   50,   50,   50,   50,
+
+			   50,   50,   50,   50,   50,   50,   50,   50,   50,   50,
+			   50,   50,   50,   50, yy_Dummy>>)
 		end
 
 	yy_base_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
-			    0,    0,   13,   26,   47,   77,  271,  271,   72,  271,
-			  271,  271,   66,   10,  271,   17,   69,   63,  271,   29,
-			   67,   19,   82,   35,   97,   51,  271,  271,   30,   46,
-			   38,  271,   12,  271,  271,  112,  132,  147,  162,  177,
-			  271,  192,   36,  207,   40,  222,  237,  252,  271,   33,
-			   61,    9,   71,    4, yy_Dummy>>)
+			    0,    0,   13,   26,   47,   63,  290,  290,   58,  290,
+			  290,  290,   46,   10,  290,   17,   39,   40,  290,   29,
+			   67,   19,   82,   35,   97,   32,  290,  290,   22,  109,
+			   46,   30,  290,    5,  290,  290,  121,  141,  156,  171,
+			  186,  290,  290,  201,   36,  216,   40,  231,  246,  261,
+			  290,  279,  284,    9,    0,   71, yy_Dummy>>)
 		end
 
 	yy_def_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
-			    0,   49,   49,   50,   50,   48,   48,   48,   51,   48,
-			   48,   48,   48,   48,   48,   48,   52,   48,   48,   48,
-			   52,   52,   52,   52,   52,   51,   48,   48,   53,   48,
-			   52,   48,   48,   48,   48,   52,   52,   52,   52,   52,
-			   48,   52,   52,   52,   52,   52,   52,   52,    0,   48,
-			   48,   48,   48,   48, yy_Dummy>>)
+			    0,   51,   51,   52,   52,   50,   50,   50,   53,   50,
+			   50,   50,   50,   54,   50,   50,   55,   50,   50,   50,
+			   55,   55,   55,   55,   55,   53,   50,   50,   54,   54,
+			   50,   55,   50,   50,   50,   50,   55,   55,   55,   55,
+			   55,   50,   50,   55,   55,   55,   55,   55,   55,   55,
+			    0,   50,   50,   50,   50,   50, yy_Dummy>>)
 		end
 
 	yy_ec_template: SPECIAL [INTEGER]
@@ -416,31 +433,32 @@ feature {NONE} -- Table templates
 	yy_meta_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
-			    0,    1,    1,    2,    1,    1,    1,    3,    3,    1,
-			    3,    1,    2,    3,    3,    3,    1,    1,    1,    1,
+			    0,    1,    1,    2,    1,    1,    1,    1,    1,    1,
+			    1,    3,    4,    5,    1,    1,    1,    1,    1,    1,
 			    1,    1,    1,    1, yy_Dummy>>)
 		end
 
 	yy_accept_template: SPECIAL [INTEGER]
 		once
 			Result := yy_fixed_array (<<
-			    0,    0,    0,    0,    0,   21,   19,   20,   11,    5,
-			    6,    1,    2,    3,    4,    9,   15,   16,   17,   18,
-			   15,   15,   15,   15,   15,   11,   10,    7,    0,    9,
-			   15,   17,   16,   13,   12,   14,   15,   15,   15,   15,
-			    8,   15,   15,   15,   15,   15,   15,   15,    0, yy_Dummy>>)
+			    0,    0,    0,    0,    0,   22,   20,   21,   12,    5,
+			    6,    1,    2,    3,    4,   10,   16,   17,   18,   19,
+			   16,   16,   16,   16,   16,   12,   11,    7,    0,    0,
+			   10,   16,   18,   17,   14,   13,   15,   16,   16,   16,
+			   16,    9,    8,   16,   16,   16,   16,   16,   16,   16,
+			    0, yy_Dummy>>)
 		end
 
 feature {NONE} -- Constants
 
-	yyJam_base: INTEGER = 271
+	yyJam_base: INTEGER = 290
 			-- Position in `yy_nxt'/`yy_chk' tables
 			-- where default jam table starts
 
-	yyJam_state: INTEGER = 48
+	yyJam_state: INTEGER = 50
 			-- State id corresponding to jam state
 
-	yyTemplate_mark: INTEGER = 49
+	yyTemplate_mark: INTEGER = 51
 			-- Mark between normal states and templates
 
 	yyNull_equiv_class: INTEGER = 1
@@ -459,10 +477,10 @@ feature {NONE} -- Constants
 			-- regular expression with both leading
 			-- and trailing parts having variable length?
 
-	yyNb_rules: INTEGER = 20
+	yyNb_rules: INTEGER = 21
 			-- Number of rules
 
-	yyEnd_of_buffer: INTEGER = 21
+	yyEnd_of_buffer: INTEGER = 22
 			-- End of buffer rule code
 
 	yyLine_used: BOOLEAN = false

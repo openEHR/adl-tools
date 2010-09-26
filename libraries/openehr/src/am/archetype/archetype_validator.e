@@ -366,7 +366,6 @@ feature {NONE} -- Implementation
 			use_refs: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_INTERNAL_REF], STRING]
 		do
 			use_refs := target.use_node_index
-
 			from use_refs.start until use_refs.off loop
 				-- check on paths in the current archetype
 				if target.definition.has_path (use_refs.key_for_iteration) then
@@ -563,10 +562,10 @@ feature {NONE} -- Implementation
 
 	specialised_node_validate (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- validate nodes in differential specialised archetype
-			-- SIDE-EFFECT: sets is_mergeable markers on child archetype nodes
+			-- SIDE-EFFECT: sets is_path_compressible markers on child archetype nodes
 		local
 			co_parent_flat: attached C_OBJECT
-			co_parent_flat_detachable: detachable C_OBJECT
+--			co_parent_flat_detachable: detachable C_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
 			slot_id_index: DS_HASH_TABLE [ARRAYED_SET[STRING], STRING]
 		do
@@ -576,20 +575,48 @@ feature {NONE} -- Implementation
 					if not ca_child_diff.node_conforms_to(ca_parent_flat, rm_schema) then
 						if ca_child_diff.is_single and not ca_parent_flat.is_single then
 							add_error("VSAM1", <<ca_child_diff.path>>)
+
 						elseif not ca_child_diff.is_single and ca_parent_flat.is_single then
 							add_error("VSAM2", <<ca_child_diff.path>>)
-						elseif not ca_child_diff.existence_conforms_to (ca_parent_flat) then
-							add_error("VSANCE", <<ca_child_diff.path, ca_child_diff.existence.as_string,
-										ca_parent_flat.path, ca_parent_flat.existence.as_string>>)
-						elseif not ca_child_diff.cardinality_conforms_to (ca_parent_flat) then
-							add_error("VSANCC", <<ca_child_diff.path, ca_child_diff.cardinality.as_string,
-										ca_parent_flat.path, ca_parent_flat.cardinality.as_string>>)
+
+						elseif not ca_child_diff.existence_conforms_to (ca_parent_flat) or not ca_child_diff.cardinality_conforms_to (ca_parent_flat) then
+							if not ca_child_diff.existence_conforms_to (ca_parent_flat) then
+								if validation_strict then
+									add_error("VSANCE", <<ca_child_diff.path, ca_child_diff.existence.as_string, ca_parent_flat.path, ca_parent_flat.existence.as_string>>)
+								elseif ca_child_diff.existence.equal_interval (ca_parent_flat.existence) then
+									add_warning("VSANCE", <<ca_child_diff.path, ca_child_diff.existence.as_string, ca_parent_flat.path, ca_parent_flat.existence.as_string>>)
+									ca_child_diff.remove_existence
+									if ca_child_diff.parent.is_path_compressible then
+										debug ("validate")
+											io.put_string (" (setting is_path_compressible) %N")
+										end
+										ca_child_diff.set_is_path_compressible
+									end
+								end
+							end
+
+							if not ca_child_diff.cardinality_conforms_to (ca_parent_flat) then
+								if validation_strict then
+									add_error("VSANCC", <<ca_child_diff.path, ca_child_diff.cardinality.as_string, ca_parent_flat.path, ca_parent_flat.cardinality.as_string>>)
+								elseif ca_child_diff.cardinality.equal_interval (ca_parent_flat.cardinality) then
+									add_warning("VSANCC", <<ca_child_diff.path, ca_child_diff.cardinality.as_string, ca_parent_flat.path, ca_parent_flat.cardinality.as_string>>)
+									ca_child_diff.remove_cardinality
+									if ca_child_diff.parent.is_path_compressible then
+										debug ("validate")
+											io.put_string (" (setting is_path_compressible) %N")
+										end
+										ca_child_diff.set_is_path_compressible
+									end
+								end
+							end
+
 						else
 							add_error("compiler_unexpected_error", <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 1">>)
 						end
+
 					elseif ca_child_diff.node_congruent_to (ca_parent_flat, rm_schema) and ca_child_diff.parent.is_path_compressible then
 						debug ("validate")
-							io.put_string (">>>>> validate: C_ATTRIBUTE in child at " + ca_child_diff.path + " CONGRUENT to parent node " + ca_parent_flat.path + " (setting is_mergeable) %N")
+							io.put_string (">>>>> validate: C_ATTRIBUTE in child at " + ca_child_diff.path + " CONGRUENT to parent node " + ca_parent_flat.path + " (setting is_path_compressible) %N")
 						end
 						ca_child_diff.set_is_path_compressible
 					end
@@ -600,23 +627,27 @@ feature {NONE} -- Implementation
 			-- deal with C_ARCHETYPE_ROOT (slot filler) inheriting from ARCHETYPE_SLOT
 			elseif attached {C_ARCHETYPE_ROOT} a_c_node as car then
 				create apa.make_from_string (car.slot_path)
-				co_parent_flat_detachable := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
-				check co_parent_flat_detachable /= Void end
-				co_parent_flat := co_parent_flat_detachable
+				co_parent_flat := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
 
 				if attached {ARCHETYPE_SLOT} co_parent_flat as a_slot then
 					slot_id_index := target_descriptor.specialisation_parent.slot_id_index
 					if slot_id_index /= Void and then slot_id_index.has (a_slot.path) then
 						if not archetype_id_matches_slot (car.archetype_id, a_slot) then -- doesn't even match the slot definition
 							add_error("VARXS", <<car.path, car.archetype_id>>)
+
 						elseif not slot_id_index.item (a_slot.path).has (car.archetype_id) then -- matches def, but not found in actual list from current repo
 							add_error("VARXR", <<car.path, car.archetype_id>>)
-						elseif not (car.occurrences = Void or else a_slot.occurrences.contains (car.occurrences)) then
-							if validation_strict then
-								add_error("VSONCO", <<car.path, car.occurrences_as_string, a_slot.path, a_slot.occurrences.as_string>>)
+
+						elseif not car.occurrences_conforms_to (a_slot) then
+							if car.occurrences /= Void and then car.occurrences.equal_interval (co_parent_flat.occurrences) then
+								if validation_strict then
+									add_error("VSONCO", <<car.path, car.occurrences_as_string, a_slot.path, a_slot.occurrences.as_string>>)
+								else
+									add_warning("VSONCO", <<car.path, car.occurrences_as_string, a_slot.path, a_slot.occurrences.as_string>>)
+									car.remove_occurrences
+								end
 							else
-								add_warning("VSONCO", <<car.path, car.occurrences_as_string, a_slot.path, a_slot.occurrences.as_string>>)
-								car.remove_occurrences
+								add_error("VSONCO", <<car.path, car.occurrences_as_string, a_slot.path, a_slot.occurrences.as_string>>)
 							end
 						end
 					else
@@ -628,12 +659,13 @@ feature {NONE} -- Implementation
 
 			elseif attached {C_OBJECT} a_c_node as co_child_diff then
 				create apa.make_from_string (a_c_node.path)
-				co_parent_flat_detachable := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
-				check co_parent_flat_detachable /= Void end
-				co_parent_flat := co_parent_flat_detachable
+				co_parent_flat := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
+
+				debug ("validate")
+					io.put_string (">>>>> validate: C_OBJECT in child at " + co_child_diff.path)
+				end
 
 				-- meta-type (i.e. AOM type) checking...
-
 				-- this check sees if the node is a C_CODE_PHRASE redefinition of a CONSTRAINT_REF node, which is legal, since we say that
 				-- C_CODE_PHRASE conforms to CONSTRAINT_REF. Its validity is not testable in any way (sole exception in AOM) - just warn
 				if attached {CONSTRAINT_REF} co_parent_flat as ccr and then not attached {CONSTRAINT_REF} co_child_diff as ccr2 then
@@ -647,9 +679,7 @@ feature {NONE} -- Implementation
 					-- if the child is a redefine of a use_node (internal ref), then we have to do the comparison to the use_node target - so
 					-- we re-assign co_parent_flat to point to the target structure; unless they both are use_nodes, in which case leave them as is
 					if attached {ARCHETYPE_INTERNAL_REF} co_parent_flat as air_p and not attached {ARCHETYPE_INTERNAL_REF} co_child_diff as air_c then
-						co_parent_flat_detachable := flat_parent.c_object_at_path (air_p.path)
-						check co_parent_flat_detachable /= Void end
-						co_parent_flat := co_parent_flat_detachable
+						co_parent_flat := flat_parent.c_object_at_path (air_p.path)
 						if dynamic_type (co_child_diff) /= dynamic_type (co_parent_flat) then
 							add_error("VSUNT", <<co_child_diff.path, co_child_diff.generating_type, co_parent_flat.path, co_parent_flat.generating_type>>)
 						end
@@ -658,27 +688,54 @@ feature {NONE} -- Implementation
 					-- by here the AOM meta-types must be the same; if not, it is an error
 					if dynamic_type (co_child_diff) /= dynamic_type (co_parent_flat) then
 						add_error("VSONT", <<co_child_diff.path, co_child_diff.generating_type, co_parent_flat.path, co_parent_flat.generating_type>>)
+
 					-- they should also be conformant as defined by the node_conforms_to() function
 					elseif not co_child_diff.node_conforms_to(co_parent_flat, rm_schema) then
+
+						-- RM type non-conformance was the reason
 						if not co_child_diff.rm_type_conforms_to (co_parent_flat, rm_schema) then
 							add_error("VSONCT", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.path, co_parent_flat.rm_type_name>>)
+
+						-- occurrences non-conformance was the reason
 						elseif not co_child_diff.occurrences_conforms_to (co_parent_flat) then
-							add_error("VSONCO", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
-						elseif co_child_diff.node_id.is_equal(co_parent_flat.node_id) and co_child_diff.occurrences /= Void then
-							if validation_strict then
-								add_error("VSONIRocc", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
+							-- if the occurrences interval is just a copy of the one in the flat, treat it as an error only if
+							-- compiling strict, else remove the duplicate and just warn
+							if co_child_diff.occurrences /= Void and then co_child_diff.occurrences.equal_interval (co_parent_flat.occurrences) then
+								if validation_strict then
+									add_error("VSONCO", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
+								else
+									add_warning("VSONCO", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
+									co_child_diff.remove_occurrences
+									if co_child_diff.is_root or else co_child_diff.parent.is_path_compressible then
+										debug ("validate")
+											io.put_string (" (setting is_path_compressible) %N")
+										end
+										co_child_diff.set_is_path_compressible
+									end
+								end
 							else
-								add_warning("VSONIRocc", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
-								co_child_diff.remove_occurrences
+								add_error("VSONCO", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
 							end
+
+						-- node id non-conformance value mismatch was the reason
 						elseif co_child_diff.is_addressable then
 							if not co_child_diff.node_id_conforms_to (co_parent_flat) then
 								add_error("VSONCI", <<co_child_diff.path, co_child_diff.node_id, co_parent_flat.path, co_parent_flat.node_id>>)
 							elseif co_child_diff.node_id.is_equal(co_parent_flat.node_id) then -- id same, something else must be different
-								add_error("VSONIRrm", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
+								if not co_child_diff.rm_type_name.is_equal (co_parent_flat.rm_type_name) then -- has to be that RM type was redefined but at-code wasn't
+									add_error("VSONIRrm", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
+								else -- has to be the occurrences was redefined, but the at-code wasn't
+									add_error("VSONIRocc", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.occurrences_as_string, co_child_diff.node_id>>)
+								end
 							end
-						else
+
+						-- node id non-conformance presence / absence was the reason
+						elseif co_parent_flat.is_addressable then
 							add_error("VSONI", <<co_child_diff.rm_type_name, co_child_diff.path, co_parent_flat.rm_type_name, co_parent_flat.path>>)
+
+						-- could be a leaf object value redefinition
+						elseif attached {C_PRIMITIVE_OBJECT} co_child_diff as cpo_child and attached {C_PRIMITIVE_OBJECT} co_parent_flat as cpo_flat then
+							add_error("VPOV", <<cpo_child.rm_type_name, cpo_child.path, cpo_child.item.as_string, cpo_flat.item.as_string, cpo_flat.rm_type_name, cpo_flat.path>>)
 						end
 					else
 						-- nodes are at least conformant; Now check for congruence for C_COMPLEX_OBJECTs, i.e. if no changes at all, other than possible node_id redefinition,
@@ -689,17 +746,17 @@ feature {NONE} -- Implementation
 							debug ("validate")
 								io.put_string (">>>>> validate: C_OBJECT in child at " + co_child_diff.path + " CONGRUENT to parent node " + co_parent_flat.path)
 							end
-							-- if the parent C_ATTRIBUTE node of the object node in the flat parent has no children, this object can be assumed to be a total
+							-- if the parent C_ATTRIBUTE of the object node in the flat parent has no children, this object can be assumed to be a total
 							-- replacement, so don't mark it as an overlay
 							if attached {C_COMPLEX_OBJECT} co_parent_flat as cco_pf then
 								if co_child_diff.is_root or cco_pf.has_attributes then
 									co_child_diff.set_is_path_compressible
 									debug ("validate")
-										io.put_string (" (setting is_mergeable) %N")
+										io.put_string (" (setting is_path_compressible) %N")
 									end
 								else
 									debug ("validate")
-										io.put_string ("(not setting is_mergeable, due to being replacement)%N")
+										io.put_string ("(not setting is_path_compressible, due to being replacement)%N")
 									end
 								end
 							else
@@ -743,8 +800,9 @@ feature {NONE} -- Implementation
 					-- (used on non-coded nodes) or else codes that are either the same as the corresponding node in the parent flat,
 					-- or else a refinement of that (e.g. at0001.0.2), but not a new code (e.g. at0.0.1)
 					if attached {C_OBJECT} a_c_node as a_c_obj then
-						if not is_valid_code (a_c_obj.node_id) or else								-- node with no node_id OR
-									(specialisation_depth_from_code (a_c_obj.node_id) = 0 or else 	-- node with node_id unchanged from top-level archetype OR
+						if not is_valid_code (a_c_obj.node_id) or else								-- node with no node_id (= "unknown") OR
+									(specialisation_depth_from_code (a_c_obj.node_id)
+											<= flat_parent.specialisation_depth or else 			-- node with node_id from previous level OR
 									is_refined_code(a_c_obj.node_id)) then							-- node id refined (i.e. not new)
 
 							create apa.make_from_string(a_c_node.path)
@@ -768,6 +826,7 @@ feature {NONE} -- Implementation
 								io.put_string ("????? specialised_node_validate_test: C_OBJECT at " + a_c_node.path + " ignored %N")
 							end
 						end
+
 					elseif attached {C_ATTRIBUTE} a_c_node as ca then
 						create apa.make_from_string(a_c_node.path)
 						flat_parent_path := apa.path_at_level (flat_parent.specialisation_depth)
@@ -841,38 +900,28 @@ feature {NONE} -- Implementation
 				else
 					rm_prop_def := rm_schema.property_definition(arch_parent_attr_type, ca.rm_attribute_name)
 					if ca.existence /= Void then
-						if rm_prop_def.existence.contains(ca.existence) then
+						if not rm_prop_def.existence.contains(ca.existence) then
 							if rm_prop_def.existence.equal_interval(ca.existence) then
 								add_warning("WCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string>>)
 								if not validation_strict then
 									ca.remove_existence
 								end
-							end
-						else
-							if validation_strict then
-								add_error("VCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string, rm_prop_def.existence.as_string>>)
 							else
-								add_warning("VCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string, rm_prop_def.existence.as_string>>)
-								ca.remove_existence
+								add_error("VCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string, rm_prop_def.existence.as_string>>)
 							end
 						end
 					end
 					if ca.is_multiple then
 						if attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop then
 							if ca.cardinality /= Void then
-								if cont_prop.type.cardinality.contains(ca.cardinality.interval) then
+								if not cont_prop.type.cardinality.contains(ca.cardinality.interval) then
 									if cont_prop.type.cardinality.equal_interval(ca.cardinality.interval) then
 										add_warning("WCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string>>)
 										if not validation_strict then
 											ca.remove_cardinality
 										end
-									end
-								else -- archetype has cardinality not contained by RM
-									if validation_strict then
-										add_error("VCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string, cont_prop.type.cardinality.as_string>>)
 									else
-										add_warning("VCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string, cont_prop.type.cardinality.as_string>>)
-										ca.remove_cardinality
+										add_error("VCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string, cont_prop.type.cardinality.as_string>>)
 									end
 								end
 							end

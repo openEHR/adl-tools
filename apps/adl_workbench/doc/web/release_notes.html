@@ -32,7 +32,44 @@
       <div id="content">
         <h2>Release History</h2>
 
-        <h3>11 Aug 2010 ADL 1.5 beta Release (<a href=
+        <h3>30 Sep 2010 ADL 1.5 beta Release 2 (<a href=
+        "http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/1241/BRANCHES/specialisation/">SVN rev 1241</a>):</h3>
+
+        <ul>
+			<li value="0">Added regression testing facility so that any archetype can now include in its description section an expected compilation result, such as 'PASS', 'FAIL', or a validity code e.g. 'VSONIL'. This enables all the current test archetypes (found <a href="http://www.openehr.org/svn/knowledge2/TRUNK/archetypes/">here</a>) to be used by any compiler in any language in the same way. The ADL Workbench now has a button which turns on this facility on the test page. See <a href="test_tool.html">Test tool page</a> for details;</li>
+
+		  <li>Fixed bugs that prevented constraint bindings being read in correctly, and also errors being correctly reported from the parsing of the archetype ontology;</li>
+		  <li value="0">improve validation of languages, now minimally enforce IETF language-tag format (<a href="http://tools.ietf.org/html/rfc5646">RFC 5646</a> - this is the one that defines strings like "en" and "en-GB". This class contains functions for exact matching, validation and matching a language subtag e.g. "en" to a full tag e.g. "en" or "en-GB", "en-AU" etc);</li>
+
+          <li value="0">fixed a bug in the 2nd pass validator that was sometimes preventing subtrees in specialised archetypes from being correctly validated against their correspondents in parent archetypes</li>
+
+          <li value="0">Fix various launch / shut-down / minimise annoyances, especially on multiple screen systems;</li>
+
+          <li value="0">Fix node map rendering problem where multiple value attributes with existence = 1 not showing up in red but pink. Existence is now taken into account for this rendering.</li>
+
+          <li value="0">Added profile chooser combo box to archetype explorer on main page;</li>
+
+          <li value="0">Archetype id search facility added to id control on main page. This allows any id substring to be matched to available archetypes, generating a picklist for the user. E.g. the user could enter 'exam' and the list will show all archetypes containing this string;</li>
+
+          <li value="0">Improved validation for VSONIR cases; comparison of ranges for existence, occurrences and cardinality comparison in specialised archetype validation no longer treats equal ranges as a legal redefinition (since in terms of constraint logic, only strictly narrower ranges are valid redefinitions);</li>
+
+          <li value="0">moved error database to files under $app_install/error_db;</li>
+
+		  <li value="0">Addition and refactoring of code base to create new applications:
+		  	<ul>
+				<li>GUI Dadl testing app;</li>
+				<li>ADL compiler app simulating app, designed to show within the Eiffel environment what kind of calls an application (possibly written in another language) would make to use the compiler;</li>
+				<li>ADL compiler C lib-generating, which generates the compiler as a pure C library in both static and dynamic link forms, with all GUI removed. This can be directly inked in with applications written in C, C++, Java, via JNI, or any .Net language.</li>
+				<li>Example application written in C using the statically linked form of the above library, to illustrate its use.</li>
+			</ul>
+		  </li>
+
+          <li value="0">Release notes now displayed in default browser at installation time;</li>
+          <li value="0">Updates to help pages, including Mac installer and regression test facility.</li>
+        </ul>
+
+
+        <h3>11 Aug 2010 ADL 1.5 beta Release 1 (<a href=
         "http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/1105/BRANCHES/specialisation/">SVN rev 1105</a>):</h3>
 
         <ul>

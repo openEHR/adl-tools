@@ -17,6 +17,11 @@ class ERROR_ACCUMULATOR
 inherit
 	ERROR_SEVERITY_TYPES
 
+	SHARED_MESSAGE_DB
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -25,28 +30,19 @@ feature -- Initialisation
 	make
 		do
 			create list.make(0)
+		ensure
+			Default_error_reporting_level: error_reporting_level = error_type_warning
 		end
 
 feature -- Access
 
-	list: attached ARRAYED_LIST[ERROR_DESCRIPTOR]
-			-- error output of validator - things that must be corrected
-
-	as_string: STRING
-		do
-			create Result.make(0)
-			from list.start until list.off loop
-				Result.append(list.item.as_string)
-				list.forth
-			end
-		end
-
-	last: attached ERROR_DESCRIPTOR
+	last_added: attached ERROR_DESCRIPTOR
 		do
 			Result := list.last
 		end
 
-	error_codes: ARRAYED_LIST[STRING]
+	error_codes: attached ARRAYED_LIST[STRING]
+			-- list of all codes from errors currently in list
 		do
 			create Result.make(0)
 			Result.compare_objects
@@ -58,7 +54,8 @@ feature -- Access
 			end
 		end
 
-	warning_codes: ARRAYED_LIST[STRING]
+	warning_codes: attached ARRAYED_LIST[STRING]
+			-- list of all codes from warnings currently in list
 		do
 			create Result.make(0)
 			Result.compare_objects
@@ -68,6 +65,12 @@ feature -- Access
 				end
 				list.forth
 			end
+		end
+
+	error_reporting_level: INTEGER
+			-- at this level and above, list entries are included in `as_string' and any other output function
+		do
+			Result := error_reporting_level_cell.item
 		end
 
 feature -- Status Report
@@ -81,13 +84,45 @@ feature -- Status Report
 
 	has_warnings: BOOLEAN
 
+	has_info: BOOLEAN
+
+feature -- Status Setting
+
+	set_error_reporting_level (a_level: INTEGER)
+		require
+			valid_error_level: is_valid_error_type (a_level)
+		do
+			error_reporting_level_cell.put(a_level)
+		end
+
 feature -- Modification
+
+	add_error (a_code: attached STRING; args: ARRAY[STRING]; a_loc: STRING)
+		do
+			extend (create {ERROR_DESCRIPTOR}.make (a_code, error_type_error, create_message_content (a_code, args), a_loc))
+		end
+
+	add_warning (a_code: attached STRING; args: ARRAY[STRING]; a_loc: STRING)
+		do
+			extend (create {ERROR_DESCRIPTOR}.make (a_code, error_type_warning, create_message_content (a_code, args), a_loc))
+		end
+
+	add_info (a_code: attached STRING; args: ARRAY[STRING]; a_loc: STRING)
+		do
+			extend (create {ERROR_DESCRIPTOR}.make (a_code, error_type_info, create_message_content (a_code, args), a_loc))
+		end
+
+	add_debug (a_message: attached STRING; a_loc: STRING)
+		do
+			extend (create {ERROR_DESCRIPTOR}.make ("", error_type_debug, a_message, a_loc))
+		end
 
 	extend(err_desc: attached ERROR_DESCRIPTOR)
 		do
 			list.extend(err_desc)
 			has_errors := has_errors or err_desc.severity = Error_type_error
 			has_warnings := has_warnings or err_desc.severity = Error_type_warning
+			has_info := has_info or err_desc.severity = Error_type_info
 		end
 
 	append(other: attached ERROR_ACCUMULATOR)
@@ -95,12 +130,46 @@ feature -- Modification
 			list.append(other.list)
 			has_errors := has_errors or other.has_errors
 			has_warnings := has_warnings or other.has_warnings
+			has_info := has_info or other.has_info
 		end
 
 	wipe_out
 		do
 			list.wipe_out
+			has_errors := False
+			has_warnings := False
+			has_info := False
 		end
+
+feature -- Output
+
+	as_string: attached STRING
+			-- generate stringified version of contents, with newlines inserted after each entry
+		do
+			create Result.make(0)
+			from list.start until list.off loop
+				if list.item.severity >= error_reporting_level then
+					Result.append(list.item.as_string)
+					Result.append_character ('%N')
+				end
+				list.forth
+			end
+		end
+
+feature {ERROR_ACCUMULATOR} -- Implementation
+
+	list: attached ARRAYED_LIST[ERROR_DESCRIPTOR]
+			-- error output of validator - things that must be corrected
+
+	error_reporting_level_cell: CELL [INTEGER]
+		once
+			create Result.put (Error_type_warning)
+		end
+
+invariant
+	Valid_severity_reporting_level: is_valid_error_type (error_reporting_level)
+	Has_errors_consistency: has_errors implies list.there_exists (agent (e: ERROR_DESCRIPTOR): BOOLEAN do Result := e.severity = error_type_error end)
+	Has_warnings_consistency: has_warnings implies list.there_exists (agent (e: ERROR_DESCRIPTOR): BOOLEAN do Result := e.severity = error_type_warning end)
 
 end
 

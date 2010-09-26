@@ -79,7 +79,7 @@ feature -- Commands
 			class_def := arch_dir.selected_class.class_definition
 			class_def.do_supplier_closure(not in_differential_mode, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 			gui_tree.recursive_do_all (agent ev_tree_expand)
-			gui.select_node_in_archetype_tree_view
+			gui.go_to_node_in_archetype_tree_view
 		end
 
 feature {NONE} -- Implementation

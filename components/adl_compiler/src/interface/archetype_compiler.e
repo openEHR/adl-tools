@@ -191,7 +191,7 @@ feature {NONE} -- Implementation
 		do
 			status.wipe_out
 			is_interrupted := False
-			ara.archetype_lineage.do_all (action)
+			arch_dir.do_archetype_lineage(ara, action)
 		end
 
 	check_archetype_for_changes (from_scratch: BOOLEAN; ara: attached ARCH_REP_ARCHETYPE)
@@ -199,6 +199,7 @@ feature {NONE} -- Implementation
 		do
 			if not is_interrupted and ara.compile_attempted and ara.is_out_of_date then
 				ara.signal_source_edited
+				ara.initialise
 				if ara.ontology_location_changed then
 					arch_dir.update_archetype_id(ara)
 					-- FIXME - the directory data structure on which we are now traversing has changed;
@@ -209,51 +210,68 @@ feature {NONE} -- Implementation
 
 	build_archetype (from_scratch: BOOLEAN; ara: attached ARCH_REP_ARCHETYPE)
 			-- Build `ara' only if `from_scratch' is true, or if it is has changed since it was last validly built.
+		local
+			exception_encountered: BOOLEAN
 		do
-			if not is_interrupted then
-				if from_scratch or not ara.is_in_terminal_compilation_state then
-					status := create_message_line("compiler_compiling_archetype", <<ara.id.value>>)
-					call_visual_update_action (ara)
-					-- first phase; initially signal that any parents are compiled already
-					-- (this happens because this routine is being driven by `build_lineage', which
-					-- always comes down the specialisation lineage from the top. However... other
-					-- approaches might replace this one day.
-					if ara.compilation_state = Cs_lineage_known then
-						ara.signal_lineage_compilation
-					end
-					if not ara.is_in_terminal_compilation_state then
-						ara.compile
+			if not exception_encountered then
+				if not is_interrupted then
+					if from_scratch or not ara.is_in_terminal_compilation_state then
+						if ara.compilation_state = Cs_unread then
+							ara.initialise
+						end
 
-						-- second phase - needed if there are suppliers (i.e. slot-fillers or plain
-						-- external references to compile first
-						if ara.compilation_state = Cs_suppliers_known then
-							from ara.suppliers_index.start until ara.suppliers_index.off loop
-								build_lineage (ara.suppliers_index.item_for_iteration)
-								ara.suppliers_index.forth
-							end
+						status := create_message_line("compiler_compiling_archetype", <<ara.id.value>>)
+						call_visual_update_action (ara)
 
-							-- continue compilation - remaining steps after suppliers compilation
-							ara.signal_suppliers_compilation
-							if not ara.is_in_terminal_compilation_state then
-								ara.compile
+						-- first phase; initially signal that any parents are compiled already
+						-- (this happens because this routine is being driven by `build_lineage', which
+						-- always comes down the specialisation lineage from the top. However... other
+						-- approaches might replace this one day.
+						if ara.compilation_state = Cs_lineage_known then
+							ara.signal_lineage_compilation
+						end
+
+						if not ara.is_in_terminal_compilation_state then
+							ara.compile
+
+							-- second phase - needed if there are suppliers (i.e. slot-fillers or plain
+							-- external references to compile first
+							if ara.compilation_state = Cs_suppliers_known then
+								from ara.suppliers_index.start until ara.suppliers_index.off loop
+									build_lineage (ara.suppliers_index.item_for_iteration)
+									ara.suppliers_index.forth
+								end
+
+								-- continue compilation - remaining steps after suppliers compilation
+								ara.signal_suppliers_compilation
+								if not ara.is_in_terminal_compilation_state then
+									ara.compile
+								end
 							end
 						end
-					end
-					status := ara.errors.as_string
+						status := ara.errors.as_string
 
-				elseif ara.is_valid then
-					if not ara.errors.is_empty then
-						status := create_message_line ("compiler_already_attempted_validated_with_warnings", <<ara.id.value, ara.errors.as_string>>)
+					elseif ara.is_valid then
+						if not ara.errors.is_empty then
+							status := create_message_line ("compiler_already_attempted_validated_with_warnings", <<ara.id.value, ara.errors.as_string>>)
+						else
+							status := create_message_line ("compiler_already_attempted_validated", <<ara.id.value>>)
+						end
 					else
-						status := create_message_line ("compiler_already_attempted_validated", <<ara.id.value>>)
+						status := create_message_line ("compiler_already_attempted_failed", <<ara.id.value, ara.errors.as_string>>)
 					end
-				else
-					status := create_message_line ("compiler_already_attempted_failed", <<ara.id.value, ara.errors.as_string>>)
+					status.append (ara.status)
+					call_visual_update_action (ara)
 				end
-				status.append (ara.status)
-
+			else
+				status.append (billboard.content)
+				billboard.clear
 				call_visual_update_action (ara)
 			end
+		rescue
+			post_error(Current, "build_archetype", "compile_e3", <<ara.ontological_name, exception.out, exception_trace>>)
+			exception_encountered := True
+			retry
 		end
 
 	export_archetype_html (a_html_export_directory: STRING; build_too: BOOLEAN; ara: attached ARCH_REP_ARCHETYPE)

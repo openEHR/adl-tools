@@ -19,7 +19,7 @@ inherit
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all;
-			{ANY} valid_concept_code
+			{ANY} is_valid_concept_code
 		end
 
 create

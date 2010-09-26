@@ -35,17 +35,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_APP_RESOURCES
-		export
-			{NONE} all
-		end
-
 	SHARED_KNOWLEDGE_REPOSITORY
-		export
-			{NONE} all
-		end
-
-	STRING_UTILITIES
 		export
 			{NONE} all
 		end
@@ -76,10 +66,12 @@ feature -- Visitor
 				if a_node.any_allowed then
 					last_result.append (apply_style(symbol(SYM_ANY), STYLE_VALUE))
 				elseif a_node.is_addressable then
+					-- the valid_code() check below is to ensure we have an at-code not an archetype id, as can occur
+					-- in a template
 					s := a_node.node_id
-					if valid_concept_code (s) and then ontology.has_term_code(s) then
+					if is_valid_code(s) and ontology.has_term_code(s) then
 						last_result.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-							safe_comment(ontology.term_definition(current_language, s).item("text")), STYLE_COMMENT))
+							safe_comment(ontology.term_definition(language, s).item("text")), STYLE_COMMENT))
 					end
 					last_result.append (format_item(FMT_NEWLINE))
 				else
@@ -124,7 +116,7 @@ feature -- Visitor
 				s := a_node.node_id
 				if ontology.has_term_code(s) then
 					last_result.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-						safe_comment(ontology.term_definition(current_language, s).item("text")), STYLE_COMMENT))
+						safe_comment(ontology.term_definition(language, s).item("text")), STYLE_COMMENT))
 				end
 				last_result.append (format_item(FMT_NEWLINE))
 			else
@@ -224,7 +216,7 @@ feature -- Visitor
 			end
 			last_result.append (a_node.target_path)
 			last_result.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-						safe_comment(ontology.physical_to_logical_path (a_node.target_path, current_language) ), STYLE_COMMENT))
+						safe_comment(ontology.physical_to_logical_path (a_node.target_path, language) ), STYLE_COMMENT))
 			last_result.append (format_item(FMT_NEWLINE))
 		end
 
@@ -236,7 +228,7 @@ feature -- Visitor
 		do
 			ontologies.extend (arch_dir.archetype_index.item (a_node.archetype_id).flat_archetype.ontology)
 
-			if a_node.has_attributes then
+			if a_node.has_attributes then -- in flat mode
 				start_c_complex_object (a_node, depth)
 			else
 				last_result.append (create_indent(depth) + apply_style(symbol(SYM_USE_ARCHETYPE), STYLE_KEYWORD) + format_item(FMT_SPACE))
@@ -289,7 +281,7 @@ feature -- Visitor
 
 			-- add the comment
 			last_object_simple_buffer.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-					safe_comment(ontology.constraint_definition(current_language, a_node.target).item("text")), STYLE_COMMENT))
+					safe_comment(ontology.constraint_definition(language, a_node.target).item("text")), STYLE_COMMENT))
 			last_object_simple := True
 		end
 
@@ -330,7 +322,7 @@ feature -- Visitor
 				if not a_node.any_allowed and then (a_node.is_local and a_node.code_count = 1 and ontology.has_term_code(a_node.code_list.first)) then
 					last_object_simple_buffer.append (format_item(FMT_INDENT))
 
-					adl_term := ontology.term_definition(current_language, a_node.code_list.first)
+					adl_term := ontology.term_definition(language, a_node.code_list.first)
 					last_object_simple_buffer.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
 						safe_comment(adl_term.item("text")), STYLE_COMMENT))
 				end
@@ -355,7 +347,7 @@ feature -- Visitor
 					end
 
 					if a_node.is_local and ontology.has_term_code(a_node.code_list.item) then
-						adl_term := ontology.term_definition(current_language, a_node.code_list.item)
+						adl_term := ontology.term_definition(language, a_node.code_list.item)
 						last_result.append (format_item(FMT_INDENT) +
 							apply_style(format_item(FMT_COMMENT) +
 							safe_comment(adl_term.item("text")), STYLE_COMMENT))
@@ -391,7 +383,7 @@ feature -- Visitor
 				create last_object_simple_buffer.make(0)
 				if a_node.is_local then
 					last_object_simple_buffer.append (format_item(FMT_INDENT))
-					adl_term := ontology.term_definition(current_language, a_node.items.first.symbol.code_string)
+					adl_term := ontology.term_definition(language, a_node.items.first.symbol.code_string)
 					last_object_simple_buffer.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
 						safe_comment(adl_term.item("text")), STYLE_COMMENT))
 				end
@@ -413,7 +405,7 @@ feature -- Visitor
 						last_result.append (create {STRING}.make_filled (' ', format_item(FMT_LIST_ITEM_SEPARATOR).count))
 					end
 					if a_node.is_local then
-						adl_term := ontology.term_definition(current_language, a_node.items.item.symbol.code_string)
+						adl_term := ontology.term_definition(language, a_node.items.item.symbol.code_string)
 						last_result.append (format_item(FMT_INDENT) +
 							apply_style(format_item(FMT_COMMENT) +
 							safe_comment(adl_term.item("text")), STYLE_COMMENT))

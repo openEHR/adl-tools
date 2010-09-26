@@ -110,16 +110,17 @@ feature -- Commands
 			parse_succeeded or else tree = Void
 		end
 
-	serialise (a_format: STRING; an_ontology: attached ARCHETYPE_ONTOLOGY)
+	serialise (a_format, a_lang: attached STRING; an_ontology: attached ARCHETYPE_ONTOLOGY)
 			-- Serialise current artifact into `a_format'.
 		require
 			Format_valid: has_c_serialiser_format (a_format)
+			Language_valid: an_ontology.has_language (a_lang)
 		local
 			a_c_serialiser: C_SERIALISER
 			a_c_iterator: C_VISITOR_ITERATOR
 		do
 			a_c_serialiser := c_serialiser_for_format (a_format)
-			a_c_serialiser.initialise (an_ontology)
+			a_c_serialiser.initialise (an_ontology, a_lang)
 			create a_c_iterator.make (tree, a_c_serialiser)
 			a_c_iterator.do_all
 			a_c_serialiser.finalise

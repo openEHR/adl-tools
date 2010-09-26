@@ -53,7 +53,7 @@ feature -- Status Report
 		do
 			file_context.set_target (path)
 			file_context.read_file_timestamp
-			Result := file_context.file_timestamp /= timestamp
+			Result := file_context.file_timestamp > timestamp
 		end
 
 feature -- Commands

@@ -334,7 +334,7 @@ feature -- Comparison
 			end
 		end
 
-	valid_concept_code(a_code: STRING): BOOLEAN
+	is_valid_concept_code(a_code: STRING): BOOLEAN
 			-- check if `a_code' is a valid root concept code of an archetype
 			-- True if a_code has form at0000, or at0000.1, at0000.1.1 etc
 		require

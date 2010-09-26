@@ -662,6 +662,8 @@ feature {NONE} -- Implementation
 				if ca.is_multiple and ca.cardinality = Void then
 					if attached {BMM_CONTAINER_PROPERTY} rm_attr_desc as cont_prop then
 						ca.set_cardinality (create {CARDINALITY}.make(cont_prop.type.cardinality))
+					else -- should never get here
+					
 					end
 				end
 			elseif attached {C_OBJECT} a_c_node as co then

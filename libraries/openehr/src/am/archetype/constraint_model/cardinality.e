@@ -54,18 +54,24 @@ feature -- Status Report
 			Result := not is_ordered and not is_unique
 		end
 
-	contains (other: CARDINALITY): BOOLEAN
-			-- Does current cardinality contain `other'?
-		require
-			Other_exists: other /= void
-		do
-			Result := interval.contains(other.interval)
-		end
-
 	is_open: BOOLEAN
 			-- True if this interval imposes no constraints, i.e. is set to 0..*
 		do
 			Result := interval.is_open
+		end
+
+feature -- Comparison
+
+	equal_interval(other: attached CARDINALITY): BOOLEAN
+			-- is this and `other' the same interval
+		do
+			Result := interval.equal_interval (other.interval)
+		end
+
+	contains (other: attached CARDINALITY): BOOLEAN
+			-- Does current cardinality contain `other'?
+		do
+			Result := interval.contains(other.interval)
 		end
 
 feature -- Modification

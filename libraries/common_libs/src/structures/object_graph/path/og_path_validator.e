@@ -476,6 +476,39 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 122")
 end
 
+			create yyval3.make_with_object_id(yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
+			debug("OG_PATH_parse")
+				io.put_string("...path_segment: " + yyvs2.item (yyvsp2 - 1) + "[" + yyvs2.item (yyvsp2) + "]%N")
+			end
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 2
+	yyvsp3 := yyvsp3 + 1
+	yyvsp2 := yyvsp2 -2
+	if yyvsp3 >= yyvsc3 then
+		if yyvs3 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs3")
+			end
+			create yyspecial_routines3
+			yyvsc3 := yyInitial_yyvs_size
+			yyvs3 := yyspecial_routines3.make (yyvsc3)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs3")
+			end
+			yyvsc3 := yyvsc3 + yyInitial_yyvs_size
+			yyvs3 := yyspecial_routines3.resize (yyvs3, yyvsc3)
+		end
+	end
+	yyvs3.put (yyval3, yyvsp3)
+end
+when 13 then
+--|#line 129 "og_path_validator.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'og_path_validator.y' at line 129")
+end
+
 			create yyval3.make(yyvs2.item (yyvsp2))
 			debug("OG_PATH_parse")
 				io.put_string("...path_segment: " + yyvs2.item (yyvsp2) + "%N")
@@ -517,7 +550,7 @@ end
 			-- Execute error action.
 		do
 			inspect yy_act
-			when 16 then
+			when 17 then
 					-- End-of-file expected action.
 				report_eof_expected_error
 			else
@@ -536,7 +569,7 @@ feature {NONE} -- Table templates
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-			    2,    2,    2,    2,    2,    2,    2,    8,    2,    2,
+			    2,    2,    2,    2,    2,    2,    2,    9,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
@@ -560,15 +593,15 @@ feature {NONE} -- Table templates
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    1,    2,    3,    4,
-			    5,    6,    7, yyDummy>>)
+			    5,    6,    7,    8, yyDummy>>)
 		end
 
 	yyr1_template: SPECIAL [INTEGER]
 			-- Template for `yyr1'
 		once
 			Result := yyfixed_array (<<
-			    0,   13,   13,   13,   13,   11,   10,   10,   10,   12,
-			   12,    9,    9, yyDummy>>)
+			    0,   14,   14,   14,   14,   12,   11,   11,   11,   13,
+			   13,   10,   10,   10, yyDummy>>)
 		end
 
 	yytypes1_template: SPECIAL [INTEGER]
@@ -576,60 +609,62 @@ feature {NONE} -- Table templates
 		once
 			Result := yyfixed_array (<<
 			    1,    1,    1,    2,    1,    3,    4,    4,    4,    4,
-			    4,    2,    1,    1,    4,    3,    1,    1,    1, yyDummy>>)
+			    4,    2,    2,    1,    1,    4,    3,    1,    1,    1, yyDummy>>)
 		end
 
 	yytypes2_template: SPECIAL [INTEGER]
 			-- Template for `yytypes2'
 		once
 			Result := yyfixed_array (<<
-			    1,    1,    1,    2,    2,    2,    1,    1,    1, yyDummy>>)
+			    1,    1,    1,    2,    2,    2,    2,    1,    1,    1, yyDummy>>)
 		end
 
 	yydefact_template: SPECIAL [INTEGER]
 			-- Template for `yydefact'
 		once
 			Result := yyfixed_array (<<
-			    0,    6,    0,   12,    4,    9,    2,    1,    3,    7,
-			    5,   11,    0,    0,    8,   10,    0,    0,    0, yyDummy>>)
+			    0,    6,    0,   13,    4,    9,    2,    1,    3,    7,
+			    5,   12,   11,    0,    0,    8,   10,    0,    0,    0, yyDummy>>)
 		end
 
 	yydefgoto_template: SPECIAL [INTEGER]
 			-- Template for `yydefgoto'
 		once
 			Result := yyfixed_array (<<
-			    5,    6,    7,    8,   16, yyDummy>>)
+			    5,    6,    7,    8,   17, yyDummy>>)
 		end
 
 	yypact_template: SPECIAL [INTEGER]
 			-- Template for `yypact'
 		once
 			Result := yyfixed_array (<<
-			    1,    4,    4,    7, -32768, -32768,    2, -32768,   -2,   -2,
-			   -2, -32768,    4,    4,   -2, -32768,    5,    3, -32768, yyDummy>>)
+			    1,    5,    5,    0, -32768, -32768,    4, -32768,    2,    2,
+			    2, -32768, -32768,    5,    5,    2, -32768,    7,    3, -32768, yyDummy>>)
 		end
 
 	yypgoto_template: SPECIAL [INTEGER]
 			-- Template for `yypgoto'
 		once
 			Result := yyfixed_array (<<
-			    0, -32768, -32768,   -1, -32768, yyDummy>>)
+			    6, -32768, -32768,   -1, -32768, yyDummy>>)
 		end
 
 	yytable_template: SPECIAL [INTEGER]
 			-- Template for `yytable'
 		once
 			Result := yyfixed_array (<<
-			    9,   10,    4,   18,    3,   17,   13,    3,    2,    1,
-			   12,   14,   11,   15, yyDummy>>)
+			    9,   10,    4,   19,    3,   12,   11,   18,    3,    2,
+			    1,   14,   15,   13,    0,    0,    0,    0,    0,    0,
+			   16, yyDummy>>)
 		end
 
 	yycheck_template: SPECIAL [INTEGER]
 			-- Template for `yycheck'
 		once
 			Result := yyfixed_array (<<
-			    1,    2,    1,    0,    3,    0,    8,    3,    7,    8,
-			    8,   12,    5,   13, yyDummy>>)
+			    1,    2,    1,    0,    3,    5,    6,    0,    3,    8,
+			    9,    9,   13,    9,   -1,   -1,   -1,   -1,   -1,   -1,
+			   14, yyDummy>>)
 		end
 
 feature {NONE} -- Semantic value stacks
@@ -684,23 +719,23 @@ feature {NONE} -- Semantic value stacks
 
 feature {NONE} -- Constants
 
-	yyFinal: INTEGER = 18
+	yyFinal: INTEGER = 19
 			-- Termination state id
 
 	yyFlag: INTEGER = -32768
 			-- Most negative INTEGER
 
-	yyNtbase: INTEGER = 9
+	yyNtbase: INTEGER = 10
 			-- Number of tokens
 
-	yyLast: INTEGER = 13
+	yyLast: INTEGER = 20
 			-- Upper bound of `yytable' and `yycheck'
 
-	yyMax_token: INTEGER = 262
+	yyMax_token: INTEGER = 263
 			-- Maximum token id
 			-- (upper bound of `yytranslate'.)
 
-	yyNsyms: INTEGER = 14
+	yyNsyms: INTEGER = 15
 			-- Number of symbols
 			-- (terminal and nonterminal)
 
@@ -711,7 +746,7 @@ feature -- User-defined features
 feature -- Initialization
 
 	make
-			-- Create a new Eiffel parser.
+			-- Create a new parser.
 		do
 			make_scanner
 			make_parser_skeleton

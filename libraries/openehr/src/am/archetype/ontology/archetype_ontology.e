@@ -25,7 +25,7 @@ inherit
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all;
-			{ANY} valid_concept_code, is_valid_code, specialisation_depth_from_code, deep_twin
+			{ANY} is_valid_concept_code, is_valid_code, specialisation_depth_from_code, deep_twin
 		undefine
 			default_create
 		end
@@ -47,8 +47,7 @@ feature -- Initialisation
 	default_create
 			--
 		do
-			create errors.make (0)
-			create warnings.make (0)
+			create errors.make
 
 			create terminologies_available.make (0)
 			terminologies_available.compare_objects
@@ -74,7 +73,7 @@ feature -- Initialisation
 			Original_language_valid: an_original_lang /= Void and then not an_original_lang.is_empty
 			Tree_exists: a_dadl_tree /= Void
 			root_code_attached: a_concept_code /= Void
-			root_code_valid: valid_concept_code (a_concept_code)
+			root_code_valid: is_valid_concept_code (a_concept_code)
 		do
 			default_create
 			representation := a_dadl_tree
@@ -181,9 +180,7 @@ feature -- Access
 	term_attribute_names: ARRAYED_LIST[STRING]
 			-- the attribute names found in ARCHETYPE_TERM objects
 
-	errors: STRING
-
-	warnings: STRING
+	errors: ERROR_ACCUMULATOR
 
 	physical_to_logical_path(a_phys_path: STRING; a_language: STRING): STRING
 			-- generate a logical path in 'a_language' from a physical path
@@ -956,17 +953,16 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			an_attr_node: DT_ATTRIBUTE_NODE
 		do
 			an_attr_node := representation.attribute_node_at_path (terminology_path)
-
 			if an_attr_node.is_multiple then
 				from an_attr_node.start until an_attr_node.off loop
 					if attached {DT_PRIMITIVE_OBJECT} an_attr_node.item as a_simple_node then
 						if attached {CODE_PHRASE} a_simple_node.value as a_term then
 							term_bindings_one_terminology.force (a_term, a_simple_node.node_id)
 						else
-							errors.append ("Expecting CODE_PHRASE, e.g. <[terminology_id::code]>%N")
+							errors.add_error ("VONTBC", <<terminology_path>>, "ontology section " + an_attr_node.path)
 						end
 					else
-						errors.append ("Expecting primitive node containing CODE_PHRASE%N")
+						errors.add_warning ("VONG", <<terminology_path>>, "ontology section, path " + an_attr_node.path)
 					end
 					an_attr_node.forth
 				end
@@ -977,18 +973,20 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			--
 		local
 			an_attr_node: DT_ATTRIBUTE_NODE
+			a_path: STRING
 		do
-			an_attr_node := representation.attribute_node_at_path("/" + Sym_constraint_bindings + "[" + a_terminology + "]/items")
+			a_path := "/" + Sym_constraint_bindings + "[" + a_terminology + "]/items"
+			an_attr_node := representation.attribute_node_at_path(a_path)
 			if an_attr_node.is_multiple then
 				from an_attr_node.start until an_attr_node.off loop
 					if attached {DT_PRIMITIVE_OBJECT} an_attr_node.item as a_leaf_node then
 						if attached {URI} a_leaf_node.value as a_uri then
 							constraint_bindings_one_terminology.force(a_uri, a_leaf_node.node_id)
 						else
-							errors.append ("Expecting URI, e.g. <xxx://some.authority/x/y/z?query#fragment>%N")
+							errors.add_error ("VONCBU", <<a_path>>, "ontology section, path " + an_attr_node.path)
 						end
 					else
-						errors.append ("Expecting primitive node containing URI%N")
+						errors.add_warning ("VONG", <<a_path>>, "ontology section, path " + an_attr_node.path)
 					end
 					an_attr_node.forth
 				end
@@ -1132,7 +1130,7 @@ invariant
 	Term_bindings_exists: term_bindings /= Void
 	Constraint_bindings_exists: constraint_bindings /= Void
 	root_code_attached: concept_code /= Void
-	root_code_valid: valid_concept_code (concept_code)
+	root_code_valid: is_valid_concept_code (concept_code)
 	root_code_in_terms: term_codes.has (concept_code)
 	Term_attribute_names_valid: term_attribute_names /= Void
 

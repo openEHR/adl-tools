@@ -69,7 +69,7 @@ feature -- Commands
 				delay_to_make_keyboard_navigation_practical.actions.extend (agent
 					do
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
-						if attached {EV_TREE_NODE} gui_tree.selected_item as node and then attached {ARCH_REP_ARCHETYPE} node.data as ara then
+						if attached {ARCH_REP_ARCHETYPE} gui_tree.selected_item.data as ara then
 							arch_dir.set_selected_item (ara)
 							gui.parse_archetype
 							populate_template_nodes (ara)
@@ -87,7 +87,7 @@ feature -- Commands
 			gui_tree.wipe_out
  			create gui_tree_item_stack.make (0)
  			arch_dir.do_all_archetypes (agent populate_template_nodes)
-			gui.select_node_in_archetype_tree_view
+			gui.go_to_node_in_archetype_tree_view
 		end
 
 	update_tree_node_for_archetype (ara: ARCH_REP_ARCHETYPE)

@@ -234,7 +234,8 @@ feature -- Comparison
 		end
 
 	contains (other: like Current): BOOLEAN
-			-- Does current interval contain `other'?
+			-- Does current interval properly contain `other'? True if at least one limit of other
+			-- is stricly inside the limits of this interval
 		require
 			Other_exists: other /= void
 		do
@@ -242,12 +243,26 @@ feature -- Comparison
 				if other.upper_unbounded then
 					Result := lower_unbounded and upper_unbounded
 				else
-					Result := lower_unbounded and has(other.upper)
+					Result := lower_unbounded and other.upper < upper
 				end
 			elseif other.upper_unbounded then
-				Result := upper_unbounded and has(other.lower)
+				Result := upper_unbounded and lower < other.lower
+			elseif lower_unbounded then
+				if upper_unbounded then
+					Result := True
+				else
+					Result := other.upper <= upper
+				end
+			elseif upper_unbounded then
+				Result := lower <= other.lower
 			else
-				Result := has(other.lower) and has(other.upper)
+				if lower = other.lower then
+					Result := other.upper < upper
+				elseif upper = other.upper then
+					Result := lower < other.lower
+				else
+					Result :=  lower < other.lower and other.upper < upper
+				end
 			end
 		end
 

@@ -48,7 +48,7 @@ feature -- Initialisation
 		ensure
 			Primary_language_set: original_language = an_original_lang
 			Specialisation_level_set: specialisation_depth = at_specialisation_depth
-			Concept_code_set: valid_concept_code(concept_code) and specialisation_depth_from_code (concept_code) = at_specialisation_depth
+			Concept_code_set: is_valid_concept_code(concept_code) and specialisation_depth_from_code (concept_code) = at_specialisation_depth
 			Concept_code_in_terms: has_term_code (concept_code)
 			Concept_items_not_empty: not term_definition (original_language, concept_code).items.is_empty
 		end
@@ -63,8 +63,7 @@ feature -- Initialisation
 			a_flat_copy := a_flat.deep_twin
 			a_flat_copy.remove_inherited_codes
 
-			create errors.make (0)
-			create warnings.make (0)
+			create errors.make
 
 			concept_code := a_flat_copy.concept_code
 
@@ -506,7 +505,7 @@ feature -- Factory
 				i := i + 1
 			end
 		ensure
-			valid: valid_concept_code (Result)
+			valid: is_valid_concept_code (Result)
 			level_set: specialisation_depth_from_code (Result) = at_level
 		end
 
