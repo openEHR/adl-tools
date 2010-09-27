@@ -565,7 +565,6 @@ feature {NONE} -- Implementation
 			-- SIDE-EFFECT: sets is_path_compressible markers on child archetype nodes
 		local
 			co_parent_flat: attached C_OBJECT
---			co_parent_flat_detachable: detachable C_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
 			slot_id_index: DS_HASH_TABLE [ARRAYED_SET[STRING], STRING]
 		do
@@ -579,11 +578,11 @@ feature {NONE} -- Implementation
 						elseif not ca_child_diff.is_single and ca_parent_flat.is_single then
 							add_error("VSAM2", <<ca_child_diff.path>>)
 
-						elseif not ca_child_diff.existence_conforms_to (ca_parent_flat) or not ca_child_diff.cardinality_conforms_to (ca_parent_flat) then
+						else
 							if not ca_child_diff.existence_conforms_to (ca_parent_flat) then
-								if validation_strict then
+								if validation_strict or else not ca_child_diff.existence.equal_interval (ca_parent_flat.existence) then
 									add_error("VSANCE", <<ca_child_diff.path, ca_child_diff.existence.as_string, ca_parent_flat.path, ca_parent_flat.existence.as_string>>)
-								elseif ca_child_diff.existence.equal_interval (ca_parent_flat.existence) then
+								else
 									add_warning("VSANCE", <<ca_child_diff.path, ca_child_diff.existence.as_string, ca_parent_flat.path, ca_parent_flat.existence.as_string>>)
 									ca_child_diff.remove_existence
 									if ca_child_diff.parent.is_path_compressible then
@@ -596,9 +595,9 @@ feature {NONE} -- Implementation
 							end
 
 							if not ca_child_diff.cardinality_conforms_to (ca_parent_flat) then
-								if validation_strict then
+								if validation_strict or else not ca_child_diff.cardinality.equal_interval (ca_parent_flat.cardinality) then
 									add_error("VSANCC", <<ca_child_diff.path, ca_child_diff.cardinality.as_string, ca_parent_flat.path, ca_parent_flat.cardinality.as_string>>)
-								elseif ca_child_diff.cardinality.equal_interval (ca_parent_flat.cardinality) then
+								else
 									add_warning("VSANCC", <<ca_child_diff.path, ca_child_diff.cardinality.as_string, ca_parent_flat.path, ca_parent_flat.cardinality.as_string>>)
 									ca_child_diff.remove_cardinality
 									if ca_child_diff.parent.is_path_compressible then
@@ -609,9 +608,6 @@ feature {NONE} -- Implementation
 									end
 								end
 							end
-
-						else
-							add_error("compiler_unexpected_error", <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 1">>)
 						end
 
 					elseif ca_child_diff.node_congruent_to (ca_parent_flat, rm_schema) and ca_child_diff.parent.is_path_compressible then

@@ -47,6 +47,11 @@ feature -- Test routines
 			create inner.make_upper_unbounded (1, True)
 			assert_equal (False, outer.contains (inner))
 
+			-- 1..* does not contain 0..*
+			create outer.make_upper_unbounded (1, True)
+			create inner.make_upper_unbounded (0, True)
+			assert_equal (False, outer.contains (inner))
+
 			-- 1..* contains 1..5
 			create inner.make_bounded_included (1, 5)
 			assert_equal (True, outer.contains (inner))
