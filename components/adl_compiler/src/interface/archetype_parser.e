@@ -65,7 +65,7 @@ feature -- Access
 			-- Serialisation of the current archetype into `format'.
 		do
 			if attached flat_archetype then
-				Result := adl_engine.serialise (flat_archetype, format)
+				Result := adl_engine.serialise (flat_archetype, format, app_root.current_language)
 			else
 				Result.make_empty
 			end
