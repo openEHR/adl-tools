@@ -86,8 +86,6 @@ feature -- Events
 
 	select_explorer_item
 			-- Called by `select_actions' of `explorer_tree'.
-   		local
-			a_node: EV_TREE_ITEM
 		do
 			if attached {EV_TREE_NODE} explorer_tree.selected_item as node then
 				if attached {PROCEDURE [ANY, TUPLE[ANY]]} node.parent.data as test_proc then

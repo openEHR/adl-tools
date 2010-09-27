@@ -33,7 +33,7 @@ feature -- Initialisation
 		once
 			message_db.populate(Error_db_directory, locale_language_short)
 			if Message_db.database_loaded then
-				billboard.set_status_reporting_level(status_reporting_level)
+				billboard.set_error_reporting_level(error_reporting_level)
 				dt_serialisers.put(create {DADL_SYNTAX_SERIALISER}.make(create {NATIVE_DADL_SERIALISATION_PROFILE}.make("dadl")), "dadl")
 				initialised := True
 			end
