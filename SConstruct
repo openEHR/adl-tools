@@ -3,7 +3,7 @@ import os, shutil, re
 EnsurePythonVersion(2, 4)
 EnsureSConsVersion(1, 0, 0)
 
-env = Environment(ENV = os.environ, tools = ['Eiffel'], toolpath = ['.'])
+env = Environment(ENV = os.environ, tools = ['default', 'Eiffel'], toolpath = ['.'])
 
 if env['PLATFORM'] == 'win32': platform = 'windows'
 if env['PLATFORM'] == 'posix': platform = 'linux'
@@ -58,6 +58,23 @@ versioned_targets = [adl_workbench]
 if platform == 'windows':
 	adl_parser = eiffel('adl_parser', 'deployment/dotnet/dll/adl_parser.ecf')
 	versioned_targets += [adl_parser]
+
+eiffel('dadl_test', 'apps/dadl_test/app/dadl_test.ecf')
+eiffel('adl_compiler_app', 'apps/adl_compiler_app/app/adl_compiler_app.ecf')
+adl_compiler = eiffel('adl_compiler', 'deployment/c/adl_compiler/adl_compiler.ecf')
+
+# Define how to build the ADL compiler static library and its test C language wrapper.
+
+make = ['make']
+libs = []
+include = os.path.abspath(os.path.join(env.EiffelEnvironmentVariable('ISE_EIFFEL'), 'studio/spec/' + env.EiffelEnvironmentVariable('ISE_PLATFORM') + '/include'))
+
+if env.EiffelEnvironmentVariable('ISE_C_COMPILER') == 'msc':
+	make = ['nmake', '/nologo']
+	libs = ['ws2_32']
+
+adl_compiler_lib = env.Command('${SOURCE.dir}/lib${SOURCE.filebase}$LIBSUFFIX', adl_compiler, [make + ['cecil']], chdir = 1)
+env.Program(['deployment/c/c_tester_for_adl_compiler/adlc_test_app.c', adl_compiler_lib], CPPPATH=include, LIBS=libs)
 
 # Define how to put installers, etc., into the distribution directory.
 # These are not performed unless a path containing 'oe_distrib' is explicitly requested on the command line.
