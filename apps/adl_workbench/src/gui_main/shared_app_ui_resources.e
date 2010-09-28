@@ -27,17 +27,11 @@ inherit
 
 feature -- Definitions
 
-	ADL_help_page_url: STRING
+	ADL_help_page_url: STRING = "http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/adl_workbench/doc/web/index.html"
 			-- The URL to ADL Workbench's online help.
-		once
-			Result := "http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/adl_workbench/doc/web/index.html"
-		end
 
-	Release_notes_file_path: STRING
+	Release_notes_file_path: STRING = "http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/adl_workbench/doc/web/release_notes.html"
 			-- The path to ADL Workbench's release notes.
-		once
-			Result := file_system.pathname (file_system.pathname (file_system.pathname (application_startup_directory, "doc"), "web"), "release_notes.html")
-		end
 
 	clinical_knowledge_manager_url: STRING = "http://www.openehr.org/knowledge/"
 			-- The URL to CKM.
