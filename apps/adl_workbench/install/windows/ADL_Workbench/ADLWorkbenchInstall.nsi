@@ -23,7 +23,7 @@ Name "ADL Workbench"
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP "openEHR.bmp"
 !define MUI_FINISHPAGE_RUN "$INSTDIR\adl_workbench.exe"
-!define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\release_notes.html"
+!define MUI_FINISHPAGE_SHOWREADME "http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/adl_workbench/doc/web/release_notes.html"
 !define MUI_FINISHPAGE_SHOWREADME_TEXT "Show Release Notes"
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
@@ -76,7 +76,6 @@ Section -Main SEC0000
         File ..\..\..\app\EIFGENs\adl_workbench\F_code\adl_workbench.exe
     !endif
 
-    File ..\..\..\doc\web\release_notes.html
     File ..\..\..\app\ArchetypeRepositoryReport.xsl
     File ..\..\..\app\ArchetypeRepositoryReport.css
 
@@ -132,7 +131,6 @@ done${UNSECTION_ID}:
 Section /o un.Main UNSEC0000
 
     Delete /REBOOTOK $INSTDIR\adl_workbench.exe
-    Delete /REBOOTOK $INSTDIR\release_notes.html
     Delete /REBOOTOK $INSTDIR\ArchetypeRepositoryReport.xsl
     Delete /REBOOTOK $INSTDIR\ArchetypeRepositoryReport.css
     RMDir /r /REBOOTOK $INSTDIR\icons
