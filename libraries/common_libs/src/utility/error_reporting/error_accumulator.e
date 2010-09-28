@@ -30,8 +30,6 @@ feature -- Initialisation
 	make
 		do
 			create list.make(0)
-		ensure
-			Default_error_reporting_level: error_reporting_level = error_type_warning
 		end
 
 feature -- Access
