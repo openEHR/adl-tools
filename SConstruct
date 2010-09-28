@@ -75,7 +75,6 @@ for target in COMMAND_LINE_TARGETS:
 			s = os.path.dirname(s)
 
 if distrib and len(adl_workbench) > 0:
-	release_notes = 'apps/adl_workbench/doc/web/release_notes.html'
 	license = 'apps/adl_workbench/doc/LICENSE.txt'
 	xsl = 'apps/adl_workbench/app/ArchetypeRepositoryReport.xsl'
 	css = 'apps/adl_workbench/app/ArchetypeRepositoryReport.css'
@@ -84,7 +83,7 @@ if distrib and len(adl_workbench) > 0:
 	error_db = 'apps/adl_workbench/app/error_db'
 	vim = 'components/adl_compiler/etc/vim'
 	install = 'apps/adl_workbench/install/' + platform
-	adl_workbench_installer_sources = [adl_workbench[0], release_notes, license, xsl, css]
+	adl_workbench_installer_sources = [adl_workbench[0], license, xsl, css]
 
 	for dir in [icons, rm_schemas, error_db, vim, install]:
 		for source, dirnames, filenames in os.walk(dir):
@@ -111,7 +110,7 @@ if distrib and len(adl_workbench) > 0:
 			import tarfile
 			tar = tarfile.open(str(target[0]), 'w:bz2')
 
-			for src in [str(adl_workbench[0]), release_notes, license, xsl, css]:
+			for src in [str(adl_workbench[0]), license, xsl, css]:
 				tar.add(src, os.path.basename(src))
 
 			for root in [icons, rm_schemas, error_db, vim]:
@@ -151,11 +150,11 @@ if distrib and len(adl_workbench) > 0:
 				copy_tree(install, distrib)
 				copy_tree(vim, pkg_contents)
 
-				for src in [str(adl_workbench[0]), release_notes, license, xsl, css, icons, rm_schemas, error_db]:
+				for src in [str(adl_workbench[0]), license, xsl, css, icons, rm_schemas, error_db]:
 					copy_tree(src, pkg_contents + '/ADL Workbench.app/Contents/Resources/')
 
-				for src, dst in [[release_notes, 'Welcome.html'], ['apps/adl_workbench/doc/web/help-mac_install.html', 'ReadMe.html']]:
-					substitutions = 's|\</head\>|<base href="http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/apps/adl_workbench/doc/web/" /></head>|;'
+				for src, dst in [['apps/adl_workbench/doc/web/release_notes.html', 'Welcome.html'], ['apps/adl_workbench/doc/web/help-mac_install.html', 'ReadMe.html']]:
+					substitutions = 's|\</head\>|<base href="http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/adl_workbench/doc/web/" /></head>|;'
 					substitutions += 's|div id="header"|div style="display: none;"|'
 					f = open(pkg_resources + '/' + dst, 'w')
 					f.write(os.popen('sed -E \'' + substitutions + '\' ' + src).read())
