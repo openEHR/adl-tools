@@ -25,3 +25,4 @@ USE
 	The archetype files, GUI validator, and PDF manual can all be freely
 	distributed provided they are kept intact, and are accompanied by this
 	file. 
+
