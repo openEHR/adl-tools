@@ -29,6 +29,10 @@ feature -- Definitions
 
 	Other_details_dadl_name: STRING = "other_details"
 
+	Generated_flag_string: STRING = "generated"
+
+	Adl_version_string: STRING = "adl_version"
+
 	Dadl_left_delim: CHARACTER = '<'
 
 	Dadl_right_delim: CHARACTER = '>'
@@ -41,30 +45,15 @@ feature -- Definitions
 
 feature -- Access
 
-	last_archetype_id: STRING
-			-- archetype id read by last invocation of mini_parse_archetype
-
-	last_parent_archetype_id: STRING
-			-- parent archetype id read by last invocation of mini_parse_archetype if
-			-- `last_archetype_specialised' is True
+	last_archetype: ARCHETYPE_THUMBNAIL
+			-- thumbnail form of last parsed archetype
 
 	last_parse_fail_reason: STRING
-
-	last_archetype_artefact_type: INTEGER
 
 feature -- Status Report
 
 	last_parse_valid: BOOLEAN
 			-- True if last parse was ok
-
-	last_archetype_id_old_style: BOOLEAN
-			-- true if last archetype id is an old one containing 'draft'
-
-	last_archetype_specialised: BOOLEAN
-			-- true if archetype id read by last invocation of mini_parse_archetype
-
-	last_parent_archetype_id_old_style: BOOLEAN
-			-- true if last parent archetype id is an old one containing 'draft'
 
 feature -- Commands
 
@@ -77,10 +66,17 @@ feature -- Commands
 			lines: LIST [STRING]
 			artefact_types: ARTEFACT_TYPE
 			id_bad: BOOLEAN
+			lpos, rpos: INTEGER
+			adl_ver: STRING
 		do
 			last_parse_valid := False
-			last_archetype_specialised := False
+			create last_archetype
 			create artefact_types.default_create
+
+			-- determine from the path whether it is a differential (source form) archetype
+			if file_system.has_extension (a_full_path, archetype_source_file_extension) then
+				last_archetype.set_is_differential
+			end
 
 			-- read first 5 non-blank lines, returned left- and right-adjusted (whitespace-stripped)
 			file_context.set_target (a_full_path)
@@ -89,38 +85,55 @@ feature -- Commands
 
 			-- first line
 			if lines[1].has ('(') then
+				if lines[1].has_substring(Generated_flag_string) then
+					last_archetype.set_is_generated
+				end
+
+				-- extract ADL version
+				-- FIXME: uncomment the following if ADL version needed in thumbnail
+--				if lines[1].has_substring(Adl_version_string) then
+--					lpos := lines[1].substring_index (Adl_version_string, 1) + Adl_version_string.count
+--					lpos := lines[1].index_of ('=', lpos) + 1
+--					from rpos := lpos until lines[1].item (rpos) = ')' or lines[1].item (rpos) = ';' or else rpos > lines[1].count loop
+--						rpos := rpos + 1
+--					end
+--					adl_ver := lines[1].substring (lpos, rpos-1)
+--					adl_ver.left_adjust
+--					adl_ver.right_adjust
+--					last_archetype.set_adl_version (adl_ver)
+--				end
 				lines[1].remove_substring (lines[1].index_of ('(', 1), lines[1].count)
 				lines[1].right_adjust
 			end
+
+			-- now line[1] should contain only the artefact type, e.g. 'archetype', 'template'
 			if artefact_types.valid_type_name (lines[1]) then
-				last_archetype_artefact_type := artefact_types.type_name_to_type(lines[1])
+				last_archetype.set_artefact_type(lines[1])
 
 				-- get line 2 - should be archetype id
 				if (create {ARCHETYPE_ID}).valid_id(lines[2]) then
-					last_archetype_id_old_style := False
+					 -- ok
 				elseif old_archetype_id_pattern_regex.matches (lines[2]) then
-					last_archetype_id_old_style := True
-				else
-					-- something wrong with the id
+					last_archetype.set_archetype_id_is_old_style
+				else -- something wrong with the id
 					id_bad := True
 					last_parse_fail_reason := create_message_content("parse_archetype_e8", <<a_full_path, lines[2]>>)
 				end
 
 				if not id_bad then
-					last_archetype_id := lines[2]
+					last_archetype.set_archetype_id (lines[2])
 
 					-- get line 3 - should be either 'specialise' / 'specialize' or 'concept'
 					if lines[3].is_equal ("specialise") or lines[3].is_equal("specialize") then
-						last_parent_archetype_id := lines[4]
 						if (create {ARCHETYPE_ID}).valid_id(lines[4]) then
-							last_parent_archetype_id_old_style := False
+							last_archetype.set_parent_archetype_id (lines[4])
 						elseif old_archetype_id_pattern_regex.matches(lines[4]) then
-							last_parent_archetype_id_old_style := True
+							last_archetype.set_parent_archetype_id (lines[4])
+							last_archetype.set_parent_archetype_id_is_old_style
 						else
 							-- something wrong with the parent id
 							last_parse_fail_reason := create_message_content("parse_archetype_e10", <<a_full_path, lines[4]>>)
 						end
-						last_archetype_specialised := True
 					end
 					last_parse_valid := True
 				end

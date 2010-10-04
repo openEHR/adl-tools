@@ -372,7 +372,7 @@ feature {NONE} -- Tests
 			unused_at_codes, unused_ac_codes: ARRAYED_LIST [STRING]
 		do
 			Result := test_failed
-			archetype_compiler.rebuild_lineage (target)
+			archetype_compiler.rebuild_lineage (target, 0)
 			if target.is_valid then
 				Result := test_passed
 				test_status.append (" parse succeeded%N" + target.errors.as_string)

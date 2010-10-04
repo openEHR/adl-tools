@@ -109,11 +109,11 @@ feature {NONE} -- Initialization
 			archetype_explorer_pixmap.copy (pixmaps ["archetype_category"])
 			template_explorer_pixmap.copy (pixmaps ["template_category"])
 
---			if app_x_position > 0 and app_y_position > 0 then
+			if app_x_position > Sane_screen_coord and app_y_position > Sane_screen_coord then
 				set_position (app_x_position, app_y_position)
---			else
---				set_position (app_initial_x_position, app_initial_y_position)
---			end
+			else
+				set_position (app_initial_x_position, app_initial_y_position)
+			end
 
 			if app_width > 0 and app_height > 0 then
 				set_size (app_width, app_height)
@@ -133,7 +133,9 @@ feature -- Status setting
 	show
 			-- Do a few adjustments and load the repository before displaying the window.
 		do
-			archetype_compiler.set_visual_update_action (agent build_gui_update)
+			archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
+			archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
+
 			initialise_overall_appearance
 			path_map_control.initialise_controls
 
@@ -199,7 +201,7 @@ feature -- File events
 		do
 			if attached {ARCH_REP_ARCHETYPE} arch_dir.selected_archetype as ara then
 				clear_all_controls
-				do_with_wait_cursor (agent archetype_compiler.build_lineage (ara))
+				do_with_wait_cursor (agent archetype_compiler.build_lineage (ara, 0))
 			end
 		end
 
@@ -209,28 +211,25 @@ feature -- File events
 			question_dialog: EV_QUESTION_DIALOG
 			info_dialog: EV_INFORMATION_DIALOG
 			editors_dialog: ICON_DIALOG
-			path, flat, command: STRING
+			path, command: STRING
 			ara: ARCH_REP_ARCHETYPE
 			editors: LIST [STRING]
 			list: EV_LIST
 		do
 			ara := arch_dir.selected_archetype
-
 			if ara /= Void then
 				path := ara.differential_path
-				flat := file_system.basename (ara.legacy_flat_path)
-
 				if ara.has_differential_file and ara.has_legacy_flat_file then
-					create question_dialog.make_with_text (create_message_line("edit_which_file_question", <<file_system.basename (path), flat>>))
-					question_dialog.set_title ("Edit " + ara.id.as_string)
-					question_dialog.set_buttons (<<"Differential", "Flat (legacy)">>)
+					create question_dialog.make_with_text (create_message_line("edit_which_file_question", <<file_system.basename (path), file_system.basename (ara.legacy_flat_path)>>))
+					question_dialog.set_title ("Edit " + ara.ontological_name)
+					question_dialog.set_buttons (<<"Differential", "Legacy (flat)">>)
 					question_dialog.show_modal_to_window (Current)
 
-					if question_dialog.selected_button.starts_with ("F") then
+					if question_dialog.selected_button.starts_with ("L") then
 						path := ara.legacy_flat_path
 					end
 				elseif ara.has_legacy_flat_file then
-					create info_dialog.make_with_text (create_message_line("edit_legacy_file_info", <<flat>>))
+					create info_dialog.make_with_text (create_message_line("edit_legacy_file_info", <<file_system.basename (ara.legacy_flat_path)>>))
 					info_dialog.set_title ("Edit " + ara.id.as_string)
 					info_dialog.show_modal_to_window (Current)
 					path := ara.legacy_flat_path
@@ -607,8 +606,8 @@ feature {NONE} -- Tools events
 				info_dialog.show_modal_to_window (Current)
 			else
 				do_with_wait_cursor (agent arch_dir.do_all_archetypes (agent delete_generated_files))
+				populate_directory
 			end
-			populate_directory
 		end
 
 	delete_generated_files (ara: ARCH_REP_ARCHETYPE)
@@ -809,7 +808,7 @@ feature -- Archetype commands
 			-- Select and display the node of `archetype_file_tree' corresponding to the selection in `archetype_directory'.
 		do
 			if arch_dir.has_selected_item then
-				archetype_view_tree_control.ensure_item_visible(arch_dir.selected_item.ontological_name)
+				archetype_view_tree_control.select_item(arch_dir.selected_item.ontological_name)
 			end
 		end
 
@@ -1151,29 +1150,22 @@ feature {NONE} -- Implementation
 	populate_source_text (flat: BOOLEAN)
 			-- Display the selected archetype's differential or flat text in `source_rich_text', optionally with line numbers.
 		local
-			text: STRING
 			ara: ARCH_REP_ARCHETYPE
 		do
 			ara := arch_dir.selected_archetype
 			if attached ara then
 				if flat then
 					if ara.is_valid then
-						text := ara.flat_text
-						populate_source_text_with_line_numbers (text)
+						populate_source_text_with_line_numbers (ara.flat_text)
 					elseif ara.has_legacy_flat_file then
-						ara.read_legacy_flat
-						text := ara.legacy_flat_text
-						populate_source_text_with_line_numbers (text)
+						populate_source_text_with_line_numbers (ara.legacy_flat_text)
 					else -- not valid, but derived from differential source
 						source_rich_text.set_text (create_message_line ("compiler_no_flat_text", <<>>))
 					end
+				elseif ara.has_differential_file then
+					populate_source_text_with_line_numbers (ara.differential_text)
 				else
-					text := ara.differential_text
-					if text = Void then
-						source_rich_text.set_text (create_message_line ("compiler_no_source_text", <<>>))
-					else
-						populate_source_text_with_line_numbers (text)
-					end
+					source_rich_text.set_text (create_message_line ("compiler_no_source_text", <<>>))
 				end
 			else
 				source_rich_text.remove_text
@@ -1396,27 +1388,34 @@ feature {NONE} -- Build commands
 			retry
 		end
 
-	build_gui_update (ara: ARCH_REP_ARCHETYPE)
+	compiler_global_gui_update (msg: attached STRING)
 			-- Update GUI with progress on build.
 		do
-			append_status_area (archetype_compiler.status)
+			append_status_area (msg)
+			ev_application.process_events
+		end
 
-			if ara /= Void then
-				archetype_view_tree_control.update_tree_node_for_archetype (ara)
-				template_view_tree_control.update_tree_node_for_archetype (ara)
+	compiler_archetype_gui_update (msg: attached STRING; ara: attached ARCH_REP_ARCHETYPE; dependency_depth: INTEGER)
+			-- Update GUI with progress on build.
+		do
+			if not msg.is_empty then
+				append_status_area (indented (msg, create {STRING}.make_filled ('%T', dependency_depth)))
+			end
 
-				archetype_test_tree_control.do_row_for_item (ara, agent archetype_test_tree_control.set_row_pixmap)
+			archetype_view_tree_control.update_tree_node_for_archetype (ara)
+			template_view_tree_control.update_tree_node_for_archetype (ara)
 
-				if ara.last_compile_attempt_timestamp /= Void then
-					compiler_error_control.extend_and_select (ara)
-					populate_statistics
+			archetype_test_tree_control.do_row_for_item (ara, agent archetype_test_tree_control.set_row_pixmap)
 
-					if ara = arch_dir.selected_archetype then
-						populate_archetype_id
-						populate_adl_version
-						populate_languages
-						populate_archetype_view_controls
-					end
+			if ara.last_compile_attempt_timestamp /= Void then
+				compiler_error_control.extend_and_select (ara)
+				populate_statistics
+
+				if ara = arch_dir.selected_archetype then
+					populate_archetype_id
+					populate_adl_version
+					populate_languages
+					populate_archetype_view_controls
 				end
 			end
 

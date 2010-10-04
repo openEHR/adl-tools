@@ -112,7 +112,7 @@ feature -- Commands
 			end
 		end
 
-	ensure_item_visible (ari_ont_id: STRING)
+	select_item (ari_ont_id: STRING)
 			-- ensure node with ontological node id `ari_ont_id' is visible in the tree
 		require
 			ari_ont_id /= Void
@@ -120,6 +120,16 @@ feature -- Commands
 			if gui_node_descriptor_map.has(ari_ont_id) and gui_tree.is_displayed then
 				gui_tree.ensure_item_visible (gui_node_descriptor_map.item(ari_ont_id))
 				gui_node_descriptor_map.item(ari_ont_id).enable_select
+			end
+		end
+
+	ensure_item_visible (ari_ont_id: STRING)
+			-- ensure node with ontological node id `ari_ont_id' is visible in the tree
+		require
+			ari_ont_id /= Void
+		do
+			if gui_node_descriptor_map.has(ari_ont_id) and gui_tree.is_displayed then
+				gui_tree.ensure_item_visible (gui_node_descriptor_map.item(ari_ont_id))
 			end
 		end
 
@@ -196,7 +206,7 @@ feature {NONE} -- Implementation
 
 				if attached {ARCH_REP_ARCHETYPE} ari as ara then
 					tooltip := utf8 (ara.full_path)
-					if ara.legacy_is_primary and display_archetype_source then
+					if ara.has_legacy_flat_file and display_archetype_source then
 						text.prepend (utf8("(f) "))
 					end
 

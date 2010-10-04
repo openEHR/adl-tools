@@ -17,7 +17,7 @@ inherit
 	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all;
-			{ANY} deep_twin
+			{ANY} deep_twin, valid_adl_version
 		end
 
 	ARCHETYPE_TERM_CODE_TOOLS
@@ -260,19 +260,6 @@ feature -- Status Report
 
 	is_valid: BOOLEAN
 			-- True if archetype is completely validated, including with respect to specialisation parents, where they exist
-
-	valid_adl_version(a_ver: STRING): BOOLEAN
-			-- set adl_version with a string containing only '.' and numbers,
-			-- not commencing or finishing in '.'
-		require
-			Valid_string: a_ver /= Void and then not a_ver.is_empty
-		local
-			str: STRING
-		do
-			str := a_ver.twin
-			str.prune_all ('.')
-			Result := str.is_integer and a_ver.item(1) /= '.' and a_ver.item (a_ver.count) /= '.'
-		end
 
 	is_generated: BOOLEAN
 			-- True if this archetype was generated from another one, rather than being an original authored archetype

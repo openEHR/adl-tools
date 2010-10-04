@@ -89,6 +89,13 @@ feature -- Commands
 		deferred
 		end
 
+	delete_file (full_path: STRING)
+			-- Delete file designated by `full_path' on the repository medium.
+		require
+			path_valid: is_valid_directory_part (full_path)
+		deferred
+		end
+
 invariant
 	timestamp_natural: text_timestamp >= 0
 	group_id_valid: group_id > 0

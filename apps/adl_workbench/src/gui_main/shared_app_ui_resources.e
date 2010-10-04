@@ -27,6 +27,10 @@ inherit
 
 feature -- Definitions
 
+	Sane_screen_coord: INTEGER = -2500
+			-- assumed 'most negative' screen X or Y position that app could, due to use of multiple screens. If it is more negative
+			-- than this, at least on windows, assume that the app was minimised and start it in a default screen location instead
+
 	ADL_help_page_url: STRING = "http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/adl_workbench/doc/web/index.html"
 			-- The URL to ADL Workbench's online help.
 

@@ -108,16 +108,16 @@ feature -- Commands
 --			end
 		end
 
-	ensure_item_visible (ari_ont_id: STRING)
-			-- ensure node with ontological node id `ari_ont_id' is visible in the tree
-		require
-			ari_ont_id /= Void
-		do
-			if gui_node_descriptor_map.has(ari_ont_id) and gui_tree.is_displayed then
-				gui_tree.ensure_item_visible (gui_node_descriptor_map.item(ari_ont_id))
-				gui_node_descriptor_map.item(ari_ont_id).enable_select
-			end
-		end
+--	ensure_item_visible (ari_ont_id: STRING)
+--			-- ensure node with ontological node id `ari_ont_id' is visible in the tree
+--		require
+--			ari_ont_id /= Void
+--		do
+--			if gui_node_descriptor_map.has(ari_ont_id) and gui_tree.is_displayed then
+--				gui_tree.ensure_item_visible (gui_node_descriptor_map.item(ari_ont_id))
+--				gui_node_descriptor_map.item(ari_ont_id).enable_select
+--			end
+--		end
 
 feature {NONE} -- Implementation
 

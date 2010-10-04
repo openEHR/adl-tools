@@ -52,6 +52,21 @@ feature -- Definitions
 			Result := Adl_versions.last
 		end
 
+feature -- Comparison
+
+	valid_adl_version(a_ver: STRING): BOOLEAN
+			-- set adl_version with a string containing only '.' and numbers,
+			-- not commencing or finishing in '.'
+		require
+			Valid_string: a_ver /= Void and then not a_ver.is_empty
+		local
+			str: STRING
+		do
+			str := a_ver.twin
+			str.prune_all ('.')
+			Result := str.is_integer and a_ver.item(1) /= '.' and a_ver.item (a_ver.count) /= '.'
+		end
+
 end
 
 

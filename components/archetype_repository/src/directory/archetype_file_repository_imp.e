@@ -79,6 +79,12 @@ feature -- Commands
 			end
 		end
 
+	delete_file (full_path: STRING)
+			-- Delete file designated by `full_path' on the repository medium.
+		do
+			file_system.delete_file (full_path)
+		end
+
 feature {NONE} -- Implementation
 
 	file_context: attached FILE_CONTEXT
