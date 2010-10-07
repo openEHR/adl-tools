@@ -118,8 +118,8 @@ feature -- Commands
 			-- Build the sub-system at and below `archetype_directory.selected_node', but not artefacts that seem to be built already.
 		do
 			call_global_visual_update_action(create_message_line ("compiler_building_subtree", Void))
-			do_subtree (arch_dir.selected_item, agent check_currency (False, ?))
-			do_subtree (arch_dir.selected_item, agent build_archetype (?, 0))
+			do_subtree (current_arch_dir.selected_item, agent check_currency (False, ?))
+			do_subtree (current_arch_dir.selected_item, agent build_archetype (?, 0))
 			call_global_visual_update_action(create_message_line ("compiler_finished_building_subtree", Void))
 		end
 
@@ -127,8 +127,8 @@ feature -- Commands
 			-- Rebuild the sub-system at and below `archetype_directory.selected_node' from scratch, regardless of previous attempts.
 		do
 			call_global_visual_update_action(create_message_line ("compiler_rebuilding_subtree", Void))
-			do_subtree (arch_dir.selected_item, agent check_currency (True, ?))
-			do_subtree (arch_dir.selected_item, agent build_archetype (?, 0))
+			do_subtree (current_arch_dir.selected_item, agent check_currency (True, ?))
+			do_subtree (current_arch_dir.selected_item, agent build_archetype (?, 0))
 			call_global_visual_update_action(create_message_line ("compiler_finished_rebuilding_subtree", Void))
 		end
 
@@ -182,7 +182,7 @@ feature {NONE} -- Implementation
 		do
 			is_interrupted := False
 			build_completed := False
-			arch_dir.do_all_archetypes (action)
+			current_arch_dir.do_all_archetypes (action)
 			build_completed := not is_interrupted
 		end
 
@@ -193,7 +193,7 @@ feature {NONE} -- Implementation
 		do
 			is_interrupted := False
 			build_completed := False
-			arch_dir.do_archetypes (subtree, action)
+			current_arch_dir.do_archetypes (subtree, action)
 			build_completed := not is_interrupted
 		end
 
@@ -205,7 +205,7 @@ feature {NONE} -- Implementation
 			action_attached: action /= Void
 		do
 			is_interrupted := False
-			arch_dir.do_archetype_lineage(ara, action)
+			current_arch_dir.do_archetype_lineage(ara, action)
 		end
 
 	check_currency (from_scratch: BOOLEAN; ara: attached ARCH_REP_ARCHETYPE)
@@ -218,7 +218,7 @@ feature {NONE} -- Implementation
 					if ara.is_source_modified then
 						ara.signal_source_edited
 						if ara.ontology_location_changed then
-							arch_dir.update_archetype_id(ara)
+							current_arch_dir.update_archetype_id(ara)
 							-- FIXME - the directory data structure on which we are now traversing has changed;
 							-- could cause problems...
 						end

@@ -282,11 +282,7 @@ feature -- Commands
 
 			clone_ontology_prototype
 
-			from
-				source_repositories.repositories.start
-			until
-				source_repositories.repositories.off
-			loop
+			from source_repositories.repositories.start until source_repositories.repositories.off loop
 				source_repositories.repositories.item_for_iteration.populate
 				archs := source_repositories.repositories.item_for_iteration.fast_archetype_list
 

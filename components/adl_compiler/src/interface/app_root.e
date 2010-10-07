@@ -16,15 +16,11 @@ note
 class APP_ROOT
 
 inherit
-	SHARED_APP_RESOURCES
-
 	SHARED_KNOWLEDGE_REPOSITORY
 
 	SHARED_ARCHETYPE_COMPILER
 
 	SHARED_REFERENCE_MODEL_ACCESS
-
-	SHARED_SOURCE_REPOSITORIES
 
 	SHARED_ARCHETYPE_SERIALISERS
 		export
@@ -95,38 +91,6 @@ feature -- Initialisation
 				end
 
 				initialised := True
-			end
-		end
-
-	switch_to_profile (a_profile: attached STRING)
-			-- switch to `a_profile'
-		require
-			repository_profiles.has (a_profile)
-		do
-			if not a_profile.same_string (current_repository_profile) then
-				set_current_repository_profile(a_profile)
-				use_current_profile
-			end
-		end
-
-	use_current_profile
-			-- switch to current profile
-		do
-			if directory_exists (reference_repository_path) then
-				source_repositories.set_reference_repository (reference_repository_path)
-				if not work_repository_path.is_empty then
-					if source_repositories.valid_working_repository_path (work_repository_path) then
-						source_repositories.set_work_repository (work_repository_path)
-					else
-						post_error (Current, "switch_to_profile", "work_repo_not_found", <<work_repository_path>>)
-					end
-				else
-					source_repositories.remove_work_repository
-				end
-				arch_dir.clear
-				arch_dir.populate
-			else
-				post_error (Current, "switch_to_profile", "ref_repo_not_found", <<reference_repository_path>>)
 			end
 		end
 

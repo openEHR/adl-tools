@@ -17,11 +17,6 @@ deferred class
 inherit
 	ARCHETYPE_REPOSITORY_I
 
-	SHARED_KNOWLEDGE_REPOSITORY
-		export
-			{NONE} all
-		end
-
 	SHARED_APP_RESOURCES
 		rename
 			file_exists as is_valid_path,

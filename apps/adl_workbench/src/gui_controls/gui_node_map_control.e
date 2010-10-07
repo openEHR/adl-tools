@@ -149,11 +149,11 @@ feature -- Commands
 			archetype_tree_root_set := False
 			create tree_item_stack.make (0)
 
-			if arch_dir.has_validated_selected_archetype then
+			if current_arch_dir.has_validated_selected_archetype then
 				if in_differential_mode then
-					target_archetype := arch_dir.selected_archetype.differential_archetype
+					target_archetype := current_arch_dir.selected_archetype.differential_archetype
 				else
-					target_archetype := arch_dir.selected_archetype.flat_archetype
+					target_archetype := current_arch_dir.selected_archetype.flat_archetype
 				end
 				create ontologies.make(0)
 				ontologies.extend(target_archetype.ontology)
@@ -221,7 +221,7 @@ feature -- Commands
 						s ?= node_data
 
 						if s /= Void and then is_valid_code (s) then
-							if arch_dir.has_validated_selected_archetype then
+							if current_arch_dir.has_validated_selected_archetype then
 								if ontology.has_term_code (s) then
 									gui.ontology_controls.select_term (s)
 								end
@@ -288,7 +288,7 @@ feature -- Commands
 			-- roll the tree up so that nodes whose rolled_up_specialisation_status is
 			-- ss_inherited are closed, but nodes with
 		require
-			archetype_selected: arch_dir.has_validated_selected_archetype
+			archetype_selected: current_arch_dir.has_validated_selected_archetype
 		do
 			if target_archetype.is_specialised and not target_archetype.is_template then
 				create node_list.make(0)
@@ -309,7 +309,7 @@ feature {NONE} -- Implementation
 
 	rm_schema: SCHEMA_ACCESS
 		do
-			Result := arch_dir.selected_archetype.rm_schema
+			Result := current_arch_dir.selected_archetype.rm_schema
 		end
 
 	target_archetype: attached ARCHETYPE
@@ -326,7 +326,7 @@ feature {NONE} -- Implementation
 		do
 			Result := ontologies.item
 		ensure
-			has_language: arch_dir.has_validated_selected_archetype implies Result.has_language (current_language)
+			has_language: current_arch_dir.has_validated_selected_archetype implies Result.has_language (current_language)
 		end
 
 	gui: MAIN_WINDOW
@@ -358,7 +358,7 @@ feature {NONE} -- Implementation
 			create pixmap_ext.make (0)
 
 			-- Always colourise inherited & overidden nodes. If we want a switch for this, implement a new flag.
-			if arch_dir.has_validated_selected_archetype then
+			if current_arch_dir.has_validated_selected_archetype then
 				arch_const ?= an_og_node.content_item
 				spec_sts := arch_const.specialisation_status (target_archetype.specialisation_depth).value
 
@@ -450,7 +450,7 @@ feature {NONE} -- Implementation
 
 			elseif attached {C_ARCHETYPE_ROOT} an_og_node.content_item as car then
 				a_ti := attach_node(c_archetype_root_string(car), pixmaps.item(car.generating_type + occurrences_pixmap_string(car) + pixmap_ext), an_og_node)
-				ontologies.extend (arch_dir.archetype_index.item (car.archetype_id).flat_archetype.ontology)
+				ontologies.extend (current_arch_dir.archetype_index.item (car.archetype_id).flat_archetype.ontology)
 
 			elseif attached {C_COMPLEX_OBJECT} an_og_node.content_item as c_c_o then
 				a_ti := attach_node(c_complex_object_string(c_c_o), pixmaps.item(c_c_o.generating_type + occurrences_pixmap_string(c_c_o) + pixmap_ext), an_og_node)
@@ -538,7 +538,7 @@ feature {NONE} -- Implementation
 					if c_o /= Void then
 						if in_technical_mode then
 							a_ti.set_tooltip (utf8 (c_o.representation.path.as_string))
-						elseif arch_dir.has_validated_selected_archetype then
+						elseif current_arch_dir.has_validated_selected_archetype then
 							a_ti.set_tooltip (utf8 (ontology.physical_to_logical_path (c_o.representation.path.as_string, current_language)))
 						end
 					end
@@ -550,7 +550,7 @@ feature {NONE} -- Implementation
 						arch_const ?= a_node
 
 						if arch_const /= Void then
-							if arch_dir.has_validated_selected_archetype then
+							if current_arch_dir.has_validated_selected_archetype then
 								spec_sts := arch_const.specialisation_status (target_archetype.specialisation_depth).value
 
 								if spec_sts = ss_inherited or spec_sts = ss_redefined then
@@ -576,7 +576,7 @@ feature {NONE} -- Implementation
 								create pixmap_ext.make (0)
 
 								if in_differential_mode then
-									if arch_dir.has_validated_selected_archetype then
+									if current_arch_dir.has_validated_selected_archetype then
 										spec_sts := c_c_p.specialisation_status (target_archetype.specialisation_depth).value
 										if spec_sts = ss_inherited or spec_sts = ss_redefined then
 											pixmap_ext.append ("." + specialisation_status_names.item (spec_sts))
@@ -607,7 +607,7 @@ feature {NONE} -- Implementation
 						create pixmap_ext.make(0)
 
 						if in_differential_mode then
-							if arch_dir.has_validated_selected_archetype then
+							if current_arch_dir.has_validated_selected_archetype then
 								spec_sts := c_dv_ordinal.specialisation_status (target_archetype.specialisation_depth).value
 
 								if spec_sts = ss_inherited or spec_sts = ss_redefined then
@@ -633,7 +633,7 @@ feature {NONE} -- Implementation
 						if attached {EV_TREE_NODE} a_ti.parent as parent_ti then
 							if attached {C_DV_QUANTITY} parent_ti.data as c_q2 then
 								create pixmap_ext.make(0)
-								if in_differential_mode and arch_dir.has_validated_selected_archetype then
+								if in_differential_mode and current_arch_dir.has_validated_selected_archetype then
 									spec_sts := c_q2.specialisation_status (target_archetype.specialisation_depth).value
 									if spec_sts = ss_inherited or spec_sts = ss_redefined then
 										pixmap_ext.append ("." + specialisation_status_names.item(spec_sts))
@@ -650,7 +650,7 @@ feature {NONE} -- Implementation
 					elseif attached {C_ARCHETYPE_ROOT} a_node as car then
 						a_ti.set_text (utf8 (c_archetype_root_string (car)))
 						a_ti.set_pixmap(pixmaps.item(car.generating_type + occurrences_pixmap_string(car) + pixmap_ext))
-						ontologies.extend (arch_dir.archetype_index.item (car.archetype_id).flat_archetype.ontology)
+						ontologies.extend (current_arch_dir.archetype_index.item (car.archetype_id).flat_archetype.ontology)
 
 					elseif attached {C_COMPLEX_OBJECT} a_node as c_c_o then
 						a_ti.set_text (utf8 (c_complex_object_string (c_c_o)))
@@ -739,7 +739,7 @@ feature {NONE} -- Implementation
 
 			if in_technical_mode then
 				Result.set_tooltip (utf8 (an_og_node.path.as_string))
-			elseif arch_dir.has_validated_selected_archetype then
+			elseif current_arch_dir.has_validated_selected_archetype then
 				Result.set_tooltip (utf8 (ontology.physical_to_logical_path (an_og_node.path.as_string, current_language)))
 			end
 
@@ -927,7 +927,7 @@ feature {NONE} -- Implementation
 					Result.append (a_node.sibling_order.as_string + " ")
 				end
 
-				if arch_dir.has_validated_selected_archetype and ontology.has_term_code (a_node.node_id) then
+				if current_arch_dir.has_validated_selected_archetype and ontology.has_term_code (a_node.node_id) then
 					Result.append (" " + ontology.term_definition (current_language, a_node.node_id).item ("text"))
 				end
 
@@ -975,7 +975,7 @@ feature {NONE} -- Implementation
 					Result.append (a_node.sibling_order.as_string + " ")
 				end
 
-				if arch_dir.has_validated_selected_archetype and ontology.has_term_code (a_node.node_id) then
+				if current_arch_dir.has_validated_selected_archetype and ontology.has_term_code (a_node.node_id) then
 					Result.append (" " + ontology.term_definition (current_language, a_node.node_id).item ("text"))
 				end
 				if in_technical_mode then
@@ -1021,7 +1021,7 @@ feature {NONE} -- Implementation
 					Result.append ("[" + a_node.node_id + "]")
 				end
 				Result.append (" " + a_node.target_path)
-			elseif arch_dir.has_validated_selected_archetype then
+			elseif current_arch_dir.has_validated_selected_archetype then
 				Result.append ("use " + ontology.physical_to_logical_path (a_node.target_path, current_language))
 			end
 		end
@@ -1035,7 +1035,7 @@ feature {NONE} -- Implementation
 					Result.append (" {" + a_node.occurrences_as_string + "} ")
 				end
 			end
-			if arch_dir.has_validated_selected_archetype and a_node.slot_node_id /= Void then
+			if current_arch_dir.has_validated_selected_archetype and a_node.slot_node_id /= Void then
 				if ontology.has_term_code (a_node.slot_node_id) then
 					Result.append (ontology.term_definition (current_language, a_node.slot_node_id).item ("text"))
 				else
@@ -1058,7 +1058,7 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_empty
 
-			if arch_dir.has_validated_selected_archetype then
+			if current_arch_dir.has_validated_selected_archetype then
 				if local_flag then
 					if ontology.has_term_code (code) then
 						Result.append (" " + ontology.term_definition (current_language, code).item ("text"))
@@ -1083,7 +1083,7 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_empty
 
-			if arch_dir.has_validated_selected_archetype then
+			if current_arch_dir.has_validated_selected_archetype then
 				Result.append (" " + ontology.constraint_definition (current_language, a_constraint_ref.target).item ("text"))
 			end
 
@@ -1101,7 +1101,7 @@ feature {NONE} -- Implementation
 			code := an_ordinal.symbol.code_string
 			Result.append (an_ordinal.value.out + an_ordinal.separator.out)
 
-			if arch_dir.has_validated_selected_archetype then
+			if current_arch_dir.has_validated_selected_archetype then
 				if ontology.has_term_code (code) then
 					Result.append (" " + ontology.term_definition (current_language, code).item ("text"))
 				end
@@ -1143,7 +1143,7 @@ feature {NONE} -- Implementation
 		do
 			Result := an_inv.as_string
 
-			if arch_dir.has_validated_selected_archetype then
+			if current_arch_dir.has_validated_selected_archetype then
 				if not in_technical_mode then
 					Result := ontology.substitute_codes (Result, current_language)
 				end
@@ -1157,7 +1157,7 @@ feature {NONE} -- Implementation
 			invariants: ARRAYED_LIST[ASSERTION]
 			s: STRING
 		do
-			if arch_dir.has_validated_selected_archetype then
+			if current_arch_dir.has_validated_selected_archetype then
 				if target_archetype.has_invariants then
 					invariants := target_archetype.invariants
 					create a_ti_sub.make_with_text ("invariants:")

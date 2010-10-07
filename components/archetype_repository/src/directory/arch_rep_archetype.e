@@ -785,8 +785,8 @@ feature {NONE} -- Compilation
 				if differential_archetype.has_suppliers then
 					supp_idx := differential_archetype.suppliers_index
 					from supp_idx.start until supp_idx.off loop
-						if arch_dir.archetype_index.has (supp_idx.key_for_iteration) then
-							suppliers_index.put (arch_dir.archetype_index.item (supp_idx.key_for_iteration), supp_idx.key_for_iteration)
+						if current_arch_dir.archetype_index.has (supp_idx.key_for_iteration) then
+							suppliers_index.put (current_arch_dir.archetype_index.item (supp_idx.key_for_iteration), supp_idx.key_for_iteration)
 						end
 						supp_idx.forth
 					end
@@ -822,8 +822,8 @@ feature {NONE} -- Compilation
 				if validator.passed then
 					post_info (Current, "validate", "parse_archetype_i2", <<id.as_string>>)
 					compilation_state := Cs_validated
-					arch_dir.update_slot_statistics (Current)
-					arch_dir.update_terminology_bindings_info (Current)
+					current_arch_dir.update_slot_statistics (Current)
+					current_arch_dir.update_terminology_bindings_info (Current)
 				else
 					compilation_state := Cs_validate_failed
 				end
@@ -942,7 +942,7 @@ feature {NONE} -- Implementation
 			-- Set `compile_attempt_timestamp'
 		do
 			if last_compile_attempt_timestamp = Void then
-				arch_dir.update_compile_attempt_count
+				current_arch_dir.update_compile_attempt_count
 			end
 			create last_compile_attempt_timestamp.make_now
 		end
@@ -959,7 +959,7 @@ feature {NONE} -- Implementation
 			else
 				create arch_flattener.make_specialised (specialisation_parent, Current, rm_schema)
 			end
-			arch_flattener.flatten
+			arch_flattener.flatten(False)
 			flat_archetype_cache := arch_flattener.arch_output_flat
 		ensure
 			flat_archetype_cache_attached: flat_archetype_cache /= Void

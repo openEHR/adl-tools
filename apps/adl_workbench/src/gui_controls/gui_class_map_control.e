@@ -76,7 +76,7 @@ feature -- Commands
 			gui_tree.wipe_out
  			create gui_tree_item_stack.make (0)
 			populate_root_node
-			class_def := arch_dir.selected_class.class_definition
+			class_def := current_arch_dir.selected_class.class_definition
 			class_def.do_supplier_closure(not in_differential_mode, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 			gui_tree.recursive_do_all (agent ev_tree_expand)
 			gui.go_to_node_in_archetype_tree_view
@@ -97,8 +97,8 @@ feature {NONE} -- Implementation
 			a_ti: EV_TREE_ITEM
 		do
 			create a_ti
-			a_ti.set_text (arch_dir.selected_class.display_name)
-			a_ti.set_pixmap (pixmaps [arch_dir.selected_class.group_name])
+			a_ti.set_text (current_arch_dir.selected_class.display_name)
+			a_ti.set_pixmap (pixmaps [current_arch_dir.selected_class.group_name])
 			gui_tree.extend (a_ti)
 			gui_tree_item_stack.extend (a_ti)
 		end

@@ -16,12 +16,60 @@ note
 
 class SHARED_KNOWLEDGE_REPOSITORY
 
+inherit
+	SHARED_APP_RESOURCES
+
+	SHARED_SOURCE_REPOSITORIES
+
 feature -- Access
 
-	arch_dir: ARCHETYPE_DIRECTORY
+	current_arch_dir: ARCHETYPE_DIRECTORY
 			-- application-wide archetype directory access
+		do
+			Result := directories.item(current_repository_profile)
+		end
+
+	directories: HASH_TABLE[ARCHETYPE_DIRECTORY, STRING]
+			-- hash of all archetype directories used so far in the current session
 		once
-			create Result.make
+			create Result.make(0)
+		end
+
+--	switch_to_profile (a_profile: attached STRING)
+--			-- switch to `a_profile'
+--		require
+--			repository_profiles.has (a_profile)
+--		do
+--			if not a_profile.same_string (current_repository_profile) then
+--				set_current_repository_profile(a_profile)
+--				use_current_profile
+--			end
+--		end
+
+	use_current_profile (rebuild: BOOLEAN)
+			-- switch to current profile
+		local
+			new_dir: ARCHETYPE_DIRECTORY
+		do
+			if not directories.has(current_repository_profile) or else rebuild then
+				create new_dir.make
+				if directory_exists (reference_repository_path) then
+					source_repositories.set_reference_repository (reference_repository_path)
+					if not work_repository_path.is_empty then
+						if source_repositories.valid_working_repository_path (work_repository_path) then
+							source_repositories.set_work_repository (work_repository_path)
+						else
+							post_error (Current, "switch_to_profile", "work_repo_not_found", <<work_repository_path>>)
+						end
+					else
+						source_repositories.remove_work_repository
+					end
+					new_dir.populate
+					directories.force(new_dir, current_repository_profile)
+				else
+					post_error (Current, "switch_to_profile", "ref_repo_not_found", <<reference_repository_path>>)
+				end
+			end
 		end
 
 end

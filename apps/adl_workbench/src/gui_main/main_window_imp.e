@@ -238,6 +238,7 @@ feature {NONE}-- Initialization
 			test_split_area.extend (l_ev_horizontal_box_17)
 			l_ev_horizontal_box_17.extend (archetype_test_tree_grid)
 			l_ev_horizontal_box_17.extend (l_ev_vertical_box_16)
+			l_ev_vertical_box_16.extend (test_profile_combo)
 			l_ev_vertical_box_16.extend (remove_unused_codes_rb)
 			l_ev_vertical_box_16.extend (arch_test_tree_toggle_expand_bn)
 			l_ev_vertical_box_16.extend (arch_test_refresh_bn)
@@ -814,6 +815,7 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_16.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
+			l_ev_vertical_box_16.disable_item_expand (test_profile_combo)
 			l_ev_vertical_box_16.disable_item_expand (remove_unused_codes_rb)
 			l_ev_vertical_box_16.disable_item_expand (arch_test_tree_toggle_expand_bn)
 			l_ev_vertical_box_16.disable_item_expand (arch_test_refresh_bn)
@@ -821,6 +823,8 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_16.disable_item_expand (l_ev_horizontal_box_18)
 			l_ev_vertical_box_16.disable_item_expand (l_ev_horizontal_separator_1)
 			l_ev_vertical_box_16.disable_item_expand (archetype_test_go_bn)
+			test_profile_combo.set_tooltip ("Change repository profile")
+			test_profile_combo.disable_edit
 			remove_unused_codes_rb.set_text ("Remove unused codes")
 			remove_unused_codes_rb.set_tooltip ("Remove unused codes in archetypes on parse")
 			arch_test_tree_toggle_expand_bn.set_text ("Collapse Tree")
@@ -869,7 +873,7 @@ feature {NONE}-- Initialization
 			repository_menu_export_html.select_actions.extend (agent export_html)
 			repository_menu_export_repository_report.select_actions.extend (agent export_repository_report)
 			repository_menu_interrupt_build.select_actions.extend (agent interrupt_build)
-			repository_menu_refresh.select_actions.extend (agent populate_directory)
+			repository_menu_refresh.select_actions.extend (agent refresh_directory)
 			history_menu.select_actions.extend (agent on_history)
 			history_menu_back.select_actions.extend (agent on_back)
 			history_menu_forward.select_actions.extend (agent on_forward)
@@ -919,6 +923,7 @@ feature {NONE}-- Initialization
 			arch_slotted_count_tf.focus_in_actions.extend (agent on_select_all)
 			arch_used_by_count_tf.focus_in_actions.extend (agent on_select_all)
 			arch_bad_count_tf.focus_in_actions.extend (agent on_select_all)
+			test_profile_combo.select_actions.extend (agent select_profile)
 			arch_test_tree_toggle_expand_bn.select_actions.extend (agent archetype_test_tree_expand_toggle)
 			arch_test_refresh_bn.select_actions.extend (agent archetype_test_refresh)
 			regression_test_bn.select_actions.extend (agent archetype_test_regression_toggle)
@@ -1137,6 +1142,7 @@ feature {NONE}-- Initialization
 			create l_ev_horizontal_box_17
 			create archetype_test_tree_grid
 			create l_ev_vertical_box_16
+			create test_profile_combo
 			create remove_unused_codes_rb
 			create arch_test_tree_toggle_expand_bn
 			create arch_test_refresh_bn
@@ -1202,12 +1208,12 @@ feature -- Access
 	l_ev_tool_bar_separator_1,
 	l_ev_tool_bar_separator_2: EV_TOOL_BAR_SEPARATOR
 	archetype_id, language_combo, archetype_profile_combo,
-	path_analysis_row_filter_combo_box: EV_COMBO_BOX
-	adl_version_label, language_label, archetype_explorer_label,
-	template_explorer_label, arch_desc_auth_orig_auth_label, arch_desc_auth_contrib_label,
-	arch_desc_status_label, arch_desc_original_language_label, arch_translations_languages_label,
-	l_ev_label_1, l_ev_label_2, l_ev_label_3, arch_desc_purpose_label, arch_desc_use_label,
-	arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
+	path_analysis_row_filter_combo_box, test_profile_combo: EV_COMBO_BOX
+	adl_version_label, language_label,
+	archetype_explorer_label, template_explorer_label, arch_desc_auth_orig_auth_label,
+	arch_desc_auth_contrib_label, arch_desc_status_label, arch_desc_original_language_label,
+	arch_translations_languages_label, l_ev_label_1, l_ev_label_2, l_ev_label_3, arch_desc_purpose_label,
+	arch_desc_use_label, arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
 	arch_desc_resource_orig_res_label, arch_desc_copyright_label, l_ev_label_4, l_ev_label_5,
 	l_ev_label_6, l_ev_label_7, l_ev_label_8, l_ev_label_9: EV_LABEL
 	adl_version_text, arch_desc_status_text,
@@ -1341,7 +1347,7 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	populate_directory
+	refresh_directory
 			-- Called by `select_actions' of `repository_menu_refresh'.
 		deferred
 		end

@@ -45,11 +45,12 @@ feature -- Initialization
 					app_root.set_current_repository_profile (new_prof)
 
 					print ("Populating repository " + app_root.current_repository_profile + "...")
-					app_root.use_current_profile
+					app_root.use_current_profile(False)
 					print ("complete%N")
 
 					print("Doing complete build on current profile%N")
-					app_root.archetype_compiler.set_visual_update_action (agent build_ui_update)
+					app_root.archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
+					app_root.archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
 					app_root.archetype_compiler.build_all
 				else
 					print("No repository profiles found; add entries to .cfg file for current_repository_profile and [profiles] section%N")
@@ -59,10 +60,16 @@ feature -- Initialization
 			end
 		end
 
-	build_ui_update (ara: ARCH_REP_ARCHETYPE)
+	compiler_global_gui_update (msg: attached STRING)
 			-- Update UI with progress on build.
 		do
-			print (archetype_compiler.status)
+			print (msg)
+		end
+
+	compiler_archetype_gui_update (msg: attached STRING; ara: ARCH_REP_ARCHETYPE; depth: INTEGER)
+			-- Update UI with progress on build.
+		do
+			print (msg)
 		end
 
 end

@@ -159,7 +159,8 @@ feature -- Status setting
 				set_repository
 			else
 				populate_archetype_profile_combo
-				populate_directory
+				populate_test_profile_combo
+				populate_directory_controls(True)
 			end
 
 			append_billboard_to_status_area
@@ -186,7 +187,7 @@ feature -- File events
 					if not file_system.file_exists (fname) then
 						(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" not found.")).show_modal_to_window (Current)
 					else
-						arch_dir.add_adhoc_item (fname)
+						current_arch_dir.add_adhoc_item (fname)
 						archetype_view_tree_control.populate
 						append_status_area (billboard.content)
 					end
@@ -199,7 +200,7 @@ feature -- File events
 	parse_archetype
 			-- Load and parse the archetype currently selected in `archetype_directory'.
 		do
-			if attached {ARCH_REP_ARCHETYPE} arch_dir.selected_archetype as ara then
+			if attached {ARCH_REP_ARCHETYPE} current_arch_dir.selected_archetype as ara then
 				clear_all_controls
 				do_with_wait_cursor (agent archetype_compiler.build_lineage (ara, 0))
 			end
@@ -216,7 +217,7 @@ feature -- File events
 			editors: LIST [STRING]
 			list: EV_LIST
 		do
-			ara := arch_dir.selected_archetype
+			ara := current_arch_dir.selected_archetype
 			if ara /= Void then
 				path := ara.differential_path
 				if ara.has_differential_file and ara.has_legacy_flat_file then
@@ -276,8 +277,8 @@ feature -- File events
 			save_dialog: EV_FILE_SAVE_DIALOG
 			name, format: STRING
 		do
-			if arch_dir.has_validated_selected_archetype then
-				name := extension_replaced (arch_dir.selected_archetype.full_path, "")
+			if current_arch_dir.has_validated_selected_archetype then
+				name := extension_replaced (current_arch_dir.selected_archetype.full_path, "")
 
 				create save_dialog
 				save_dialog.set_title ("Save Archetype")
@@ -305,7 +306,7 @@ feature -- File events
 					create file.make (name)
 
 					if file.exists then
-						create question_dialog.make_with_text (create_message_line ("file_exists_replace_question", <<file_system.basename (name)>>))
+						create question_dialog.make_with_text (create_message_content ("file_exists_replace_question", <<file_system.basename (name)>>))
 						question_dialog.set_title ("Save as " + format.as_upper)
 						question_dialog.set_buttons (<<"Yes", "No">>)
 						question_dialog.show_modal_to_window (Current)
@@ -313,12 +314,12 @@ feature -- File events
 					end
 
 					if ok_to_write then
-						arch_dir.selected_archetype.save_differential_as (name, format)
-						append_status_area (arch_dir.selected_archetype.status)
+						current_arch_dir.selected_archetype.save_differential_as (name, format)
+						append_status_area (current_arch_dir.selected_archetype.status)
 					end
 				end
 			else
-				create error_dialog.make_with_text ("Must parse before serialising.")
+				create error_dialog.make_with_text (create_message_content ("compile_before_serialising", <<file_system.basename (name)>>))
 				error_dialog.show_modal_to_window (Current)
 			end
 		end
@@ -442,18 +443,28 @@ feature {NONE} -- Repository events
 			dialog.destroy
 
 			populate_archetype_profile_combo
+			populate_test_profile_combo
 
 			if use_changes_after_destroying_dialog then
-				populate_directory
+				populate_directory_controls(True)
 			end
 		end
 
 	select_profile
 			-- Called by `select_actions' of `archetype_profile_combo'.
 		do
-			if not archetype_profile_combo.text.same_string (current_repository_profile) then
-				set_current_repository_profile (archetype_profile_combo.text)
-				populate_directory
+			if archetype_profile_combo.is_displayed then
+				if not archetype_profile_combo.text.same_string (current_repository_profile) then
+					set_current_repository_profile (archetype_profile_combo.text)
+					populate_test_profile_combo
+					populate_directory_controls(False)
+				end
+			else
+				if not test_profile_combo.text.same_string (current_repository_profile) then
+					set_current_repository_profile (test_profile_combo.text)
+					populate_archetype_profile_combo
+					populate_directory_controls(False)
+				end
 			end
 		end
 
@@ -486,16 +497,20 @@ feature {NONE} -- Repository events
 			-- Generate HTML from flat archetypes into `html_export_directory'.
 		local
 			dialog: EV_QUESTION_DIALOG
+			yes_text, no_text: STRING
 		do
 			create dialog.make_with_text (create_message_line ("export_html_question", Void))
 			dialog.set_title ("Export HTML")
-			dialog.set_buttons (<<"Yes, Build and Export All", "No, Export only the built ones", "Cancel">>)
+			yes_text := create_message_content ("build_and_export_all", Void)
+			no_text := create_message_content ("export_only_built", Void)
+			dialog.set_buttons (<<yes_text, no_text, "Cancel">>)
+
 			dialog.set_default_cancel_button (dialog.button ("Cancel"))
 			dialog.show_modal_to_window (Current)
 
-			if dialog.selected_button.starts_with ("Yes") then
+			if dialog.selected_button.same_string (yes_text) then
 				do_build_action (agent archetype_compiler.build_and_export_all_html (html_export_directory))
-			elseif dialog.selected_button.starts_with ("No") then
+			elseif dialog.selected_button.same_string (no_text) then
 				do_build_action (agent archetype_compiler.export_all_html (html_export_directory))
 			end
 		end
@@ -554,6 +569,12 @@ feature {NONE} -- Repository events
 			archetype_compiler.interrupt
 		end
 
+	refresh_directory
+			-- reload current directory
+		do
+			populate_directory_controls(True)
+		end
+
 feature {NONE} -- History events
 
 	on_history
@@ -564,7 +585,7 @@ feature {NONE} -- History events
 			history_menu.extend (history_menu_forward)
 			history_menu.extend (history_menu_separator)
 
-			arch_dir.recently_selected_archetypes (20).do_all (agent (ara: attached ARCH_REP_ARCHETYPE)
+			current_arch_dir.recently_selected_archetypes (20).do_all (agent (ara: attached ARCH_REP_ARCHETYPE)
 				local
 					mi: EV_MENU_ITEM
 				do
@@ -578,8 +599,8 @@ feature {NONE} -- History events
 	on_back
 			-- Go back to the last archetype previously selected.
 		do
-			if arch_dir.selection_history_has_previous then
-				arch_dir.selection_history_back
+			if current_arch_dir.selection_history_has_previous then
+				current_arch_dir.selection_history_back
 				go_to_node_in_archetype_tree_view
 			end
 		end
@@ -587,8 +608,8 @@ feature {NONE} -- History events
 	on_forward
 			-- Go forth to the next archetype previously selected.
 		do
-			if arch_dir.selection_history_has_next then
-				arch_dir.selection_history_forth
+			if current_arch_dir.selection_history_has_next then
+				current_arch_dir.selection_history_forth
 				go_to_node_in_archetype_tree_view
 			end
 		end
@@ -605,8 +626,8 @@ feature {NONE} -- Tools events
 				info_dialog.set_title ("Information")
 				info_dialog.show_modal_to_window (Current)
 			else
-				do_with_wait_cursor (agent arch_dir.do_all_archetypes (agent delete_generated_files))
-				populate_directory
+				do_with_wait_cursor (agent current_arch_dir.do_all_archetypes (agent delete_generated_files))
+				populate_directory_controls(True)
 			end
 		end
 
@@ -642,7 +663,7 @@ feature {NONE} -- Tools events
 
 					-- FIXME: reset rm schema load list back?
 				else
-					populate_directory
+					populate_directory_controls(True)
 				end
 			end
 		end
@@ -651,7 +672,7 @@ feature {NONE} -- Tools events
 			-- user-initiated reload
 		do
 			rm_schemas_access.load_schemas
-			populate_directory
+			populate_directory_controls(True)
 		end
 
 feature {NONE} -- Help events
@@ -726,7 +747,7 @@ feature -- Archetype commands
 					select_archetype (key)
 				elseif key.count >= 3 then
 					 -- it is a partial id, get a list of candidates
-					matching_ids := arch_dir.matching_ids (regex_from_string(key), Void, Void)
+					matching_ids := current_arch_dir.matching_ids (regex_from_string(key), Void, Void)
 					if matching_ids.count > 0 then
 						archetype_id.set_strings (matching_ids)
 
@@ -759,9 +780,9 @@ feature -- Archetype commands
 	select_archetype (id: attached STRING)
 			-- Select `id' in the archetype directory.
 		do
-			if not arch_dir.has_selected_archetype or else not id.is_equal (arch_dir.selected_archetype.ontological_name) then
-				if arch_dir.archetype_index.has (id) then
-					arch_dir.set_selected_item_from_id (id)
+			if not current_arch_dir.has_selected_archetype or else not id.is_equal (current_arch_dir.selected_archetype.ontological_name) then
+				if current_arch_dir.archetype_index.has (id) then
+					current_arch_dir.set_selected_item_from_id (id)
 					go_to_node_in_archetype_tree_view
 				end
 			else
@@ -773,7 +794,7 @@ feature -- Archetype commands
 			-- Called by `select_actions' of `search_button'.
 		do
 			archetype_id.wipe_out
-			archetype_id.set_text ("enter search string")
+			archetype_id.set_text (create_message_content ("enter_search_string", Void))
 			archetype_id.set_focus
 			archetype_id.select_all
 		end
@@ -798,7 +819,7 @@ feature -- Archetype commands
 		do
 			if gui_item /= Void then
 				if attached {ARCH_REP_ITEM} gui_item.data as ari then
-					arch_dir.set_selected_item (ari)
+					current_arch_dir.set_selected_item (ari)
 					go_to_node_in_archetype_tree_view
 				end
 			end
@@ -807,28 +828,28 @@ feature -- Archetype commands
 	go_to_node_in_archetype_tree_view
 			-- Select and display the node of `archetype_file_tree' corresponding to the selection in `archetype_directory'.
 		do
-			if arch_dir.has_selected_item then
-				archetype_view_tree_control.select_item(arch_dir.selected_item.ontological_name)
+			if current_arch_dir.has_selected_item then
+				archetype_view_tree_control.select_item(current_arch_dir.selected_item.ontological_name)
 			end
 		end
 
 	on_node_map_shrink_tree_one_level
 		do
-			if arch_dir.has_validated_selected_archetype then
+			if current_arch_dir.has_validated_selected_archetype then
 				node_map_control.shrink_one_level
 			end
 		end
 
 	on_node_map_expand_tree_one_level
 		do
-			if arch_dir.has_validated_selected_archetype then
+			if current_arch_dir.has_validated_selected_archetype then
 				node_map_control.expand_one_level
 			end
 		end
 
 	on_node_map_toggle_expand_tree
 		do
-			if arch_dir.has_validated_selected_archetype then
+			if current_arch_dir.has_validated_selected_archetype then
 				node_map_control.toggle_expand_tree
 			end
 		end
@@ -842,7 +863,7 @@ feature -- Archetype commands
 	on_node_map_domain_selected
 			-- Hide technical details in `node_map_tree'.
 		do
-			if arch_dir.has_validated_selected_archetype then
+			if current_arch_dir.has_validated_selected_archetype then
 				node_map_control.set_domain_mode
 			end
 		end
@@ -850,7 +871,7 @@ feature -- Archetype commands
 	on_node_map_technical_selected
 			-- Display technical details in `node_map_tree'.
 		do
-			if arch_dir.has_validated_selected_archetype then
+			if current_arch_dir.has_validated_selected_archetype then
 				node_map_control.set_technical_mode
 			end
 		end
@@ -858,7 +879,7 @@ feature -- Archetype commands
 	on_node_map_reference_model_selected
 			-- turn on or off the display of reference model details in `node_map_tree'.
 		do
-			if arch_dir.has_validated_selected_archetype then
+			if current_arch_dir.has_validated_selected_archetype then
 				node_map_control.set_reference_model_mode
 			end
 		end
@@ -915,9 +936,9 @@ feature -- Archetype commands
 						other.prune (definition_notebook)
 						tab.extend (definition_notebook)
 						ev_application.process_graphical_events
-						if arch_dir.has_selected_archetype then
+						if current_arch_dir.has_selected_archetype then
 							populate_archetype_view_controls
-						elseif arch_dir.has_selected_class then
+						elseif current_arch_dir.has_selected_class then
 							display_class
 						end
 					end
@@ -936,7 +957,7 @@ feature -- Archetype commands
 	display_class
 			-- display the class currently selected in `archetype_directory'.
 		do
-			if arch_dir.has_selected_class then
+			if current_arch_dir.has_selected_class then
 				if definition_notebook.parent = differential_view_box then
 					class_map_control.set_differential_view
 				else
@@ -1061,44 +1082,47 @@ feature {NONE} -- Implementation
 				set_current_language (default_language)
 			else
 				set_current_language (language_combo.text.as_string_8)
-				if arch_dir.has_validated_selected_archetype then
+				if current_arch_dir.has_validated_selected_archetype then
 					populate_archetype_view_controls
 				end
 			end
 		end
 
-	populate_directory
+	populate_directory_controls (rebuild: BOOLEAN)
 			-- Rebuild archetype directory & repopulate relevant GUI parts.
 		do
-			do_with_wait_cursor (agent
-				do
-					if title.has_substring (" - ") then
-						set_title (title.substring (title.substring_index (" - ", 1) + 3, title.count))
-					end
+			do_with_wait_cursor (agent do_populate_directory_controls(rebuild))
+		end
 
-					set_title (reference_repository_path + " - " + title)
-					clear_all_controls
-					clear_status_area
-					compiler_error_control.clear
+	do_populate_directory_controls (rebuild: BOOLEAN)
+		do
+			if title.has_substring (" - ") then
+				set_title (title.substring (title.substring_index (" - ", 1) + 3, title.count))
+			end
 
-					go_to_node_in_archetype_tree_view
+			set_title (reference_repository_path + " - " + title)
+			clear_status_area
 
-					append_status_area (create_message_line ("populating_directory_start", <<current_repository_profile>>))
-					app_root.use_current_profile
-					append_status_area (create_message_line ("populating_directory_complete", Void))
+			append_status_area (create_message_line ("populating_directory_start", <<current_repository_profile>>))
+			use_current_profile(rebuild)
+			append_status_area (create_message_line ("populating_directory_complete", Void))
 
-					append_billboard_to_status_area
-					archetype_view_tree_control.populate
-					template_view_tree_control.populate
-					archetype_test_tree_control.populate
-					populate_statistics
-				end)
+			clear_all_controls
+			compiler_error_control.clear
+
+			go_to_node_in_archetype_tree_view
+
+			append_billboard_to_status_area
+			archetype_view_tree_control.populate
+			template_view_tree_control.populate
+			archetype_test_tree_control.populate
+			populate_statistics
 		end
 
 	clear_all_controls
 			-- Wipe out content from visual controls.
 		do
-			if arch_dir.selection_history_has_previous then
+			if current_arch_dir.selection_history_has_previous then
 				history_menu_back.enable_sensitive
 				history_back_button.enable_sensitive
 			else
@@ -1106,7 +1130,7 @@ feature {NONE} -- Implementation
 				history_back_button.disable_sensitive
 			end
 
-			if arch_dir.selection_history_has_next then
+			if current_arch_dir.selection_history_has_next then
 				history_menu_forward.enable_sensitive
 				history_forward_button.enable_sensitive
 			else
@@ -1152,7 +1176,7 @@ feature {NONE} -- Implementation
 		local
 			ara: ARCH_REP_ARCHETYPE
 		do
-			ara := arch_dir.selected_archetype
+			ara := current_arch_dir.selected_archetype
 			if attached ara then
 				if flat then
 					if ara.is_valid then
@@ -1220,8 +1244,8 @@ feature {NONE} -- Implementation
 		local
 			selected: ARCHETYPE_ID
 		do
-			if arch_dir.has_selected_archetype then
-				selected := arch_dir.selected_archetype.id
+			if current_arch_dir.has_selected_archetype then
+				selected := current_arch_dir.selected_archetype.id
 			end
 
 			archetype_id.wipe_out
@@ -1235,8 +1259,8 @@ feature {NONE} -- Implementation
 	populate_adl_version
 			-- Populate ADL version.
 		do
-			if arch_dir.has_validated_selected_archetype then
-				adl_version_text.set_text (utf8 (arch_dir.selected_archetype.differential_archetype.adl_version))
+			if current_arch_dir.has_validated_selected_archetype then
+				adl_version_text.set_text (utf8 (current_arch_dir.selected_archetype.differential_archetype.adl_version))
 			else
 				adl_version_text.remove_text
 			end
@@ -1249,8 +1273,8 @@ feature {NONE} -- Implementation
 		do
 			language_combo.select_actions.block
 
-			if arch_dir.has_validated_selected_archetype then
-				archetype := arch_dir.selected_archetype.differential_archetype
+			if current_arch_dir.has_validated_selected_archetype then
+				archetype := current_arch_dir.selected_archetype.differential_archetype
 
 				if not archetype.has_language (current_language) then
 					set_current_language (archetype.original_language.code_string)
@@ -1258,12 +1282,7 @@ feature {NONE} -- Implementation
 
 				language_combo.set_strings (archetype.languages_available)
 
-				language_combo.do_all (agent (li: EV_LIST_ITEM)
-					do
-						if li.text.same_string (current_language) then
-							li.enable_select
-						end
-					end)
+				language_combo.do_all (agent (li: EV_LIST_ITEM) do if li.text.same_string (current_language) then li.enable_select end end)
 			else
 				set_current_language (default_language)
 				language_combo.wipe_out
@@ -1273,33 +1292,36 @@ feature {NONE} -- Implementation
 		end
 
 	populate_archetype_profile_combo
+		do
+			populate_profile_combo(archetype_profile_combo)
+		end
+
+	populate_test_profile_combo
+		do
+			populate_profile_combo(test_profile_combo)
+		end
+
+	populate_profile_combo (a_combo: EV_COMBO_BOX)
 			-- Initialise the dialog's widgets from shared settings.
 		local
 			rep_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
 		do
 			rep_profiles := repository_profiles
-			archetype_profile_combo.select_actions.block
-			archetype_profile_combo.change_actions.block
+			a_combo.select_actions.block
+			a_combo.change_actions.block
 			if not rep_profiles.is_empty then
 				from rep_profiles.start until rep_profiles.off loop
-					populate_ev_combo_from_hash_keys (archetype_profile_combo, rep_profiles)
+					populate_ev_combo_from_hash_keys (a_combo, rep_profiles)
 					if not current_repository_profile.is_empty then
-						archetype_profile_combo.do_all (
-							agent (li: EV_LIST_ITEM)
-								do
-									if li.text.same_string (current_repository_profile) then
-										li.enable_select
-									end
-								end
-						)
+						a_combo.do_all (agent (li: EV_LIST_ITEM) do if li.text.same_string (current_repository_profile) then li.enable_select end end)
 					end
 					rep_profiles.forth
 				end
 			else
 				archetype_profile_combo.wipe_out
 			end
-			archetype_profile_combo.select_actions.resume
-			archetype_profile_combo.change_actions.resume
+			a_combo.select_actions.resume
+			a_combo.change_actions.resume
 		end
 
 	do_with_wait_cursor (action: PROCEDURE [ANY, TUPLE])
@@ -1325,27 +1347,27 @@ feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Statistics
 			list_row: EV_MULTI_COLUMN_LIST_ROW
 			i: INTEGER
 		do
-			arch_total_count_tf.set_text (arch_dir.total_archetype_count.out)
-			arch_spec_count_tf.set_text (arch_dir.specialised_archetype_count.out)
-			arch_slotted_count_tf.set_text (arch_dir.client_archetype_count.out)
-			arch_used_by_count_tf.set_text (arch_dir.supplier_archetype_count.out)
-			arch_bad_count_tf.set_text (arch_dir.bad_archetype_count.out)
+			arch_total_count_tf.set_text (current_arch_dir.total_archetype_count.out)
+			arch_spec_count_tf.set_text (current_arch_dir.specialised_archetype_count.out)
+			arch_slotted_count_tf.set_text (current_arch_dir.client_archetype_count.out)
+			arch_used_by_count_tf.set_text (current_arch_dir.supplier_archetype_count.out)
+			arch_bad_count_tf.set_text (current_arch_dir.bad_archetype_count.out)
 
 			-- do terminology bindings statistics
-			from arch_dir.terminology_bindings_info.start until arch_dir.terminology_bindings_info.off loop
+			from current_arch_dir.terminology_bindings_info.start until current_arch_dir.terminology_bindings_info.off loop
 				from terminology_bindings_info_list.start until terminology_bindings_info_list.off or
-					terminology_bindings_info_list.item.first.is_equal (arch_dir.terminology_bindings_info.key_for_iteration)
+					terminology_bindings_info_list.item.first.is_equal (current_arch_dir.terminology_bindings_info.key_for_iteration)
 				loop
 					terminology_bindings_info_list.forth
 				end
 				if not terminology_bindings_info_list.off then
 					terminology_bindings_info_list.item.finish
 					terminology_bindings_info_list.item.remove
-					terminology_bindings_info_list.item.extend (utf8 (arch_dir.terminology_bindings_info.item_for_iteration.count.out))
+					terminology_bindings_info_list.item.extend (utf8 (current_arch_dir.terminology_bindings_info.item_for_iteration.count.out))
 				else
 					create list_row
-					list_row.extend (utf8 (arch_dir.terminology_bindings_info.key_for_iteration))
-					list_row.extend (utf8 (arch_dir.terminology_bindings_info.item_for_iteration.count.out))
+					list_row.extend (utf8 (current_arch_dir.terminology_bindings_info.key_for_iteration))
+					list_row.extend (utf8 (current_arch_dir.terminology_bindings_info.item_for_iteration.count.out))
 					terminology_bindings_info_list.extend (list_row)
 					from i := 1 until i > terminology_bindings_info_list.column_count loop
 						terminology_bindings_info_list.resize_column_to_content (i)
@@ -1355,7 +1377,7 @@ feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Statistics
 						i := i + 1
 					end
 				end
-				arch_dir.terminology_bindings_info.forth
+				current_arch_dir.terminology_bindings_info.forth
 			end
 		end
 
@@ -1411,7 +1433,7 @@ feature {NONE} -- Build commands
 				compiler_error_control.extend_and_select (ara)
 				populate_statistics
 
-				if ara = arch_dir.selected_archetype then
+				if ara = current_arch_dir.selected_archetype then
 					populate_archetype_id
 					populate_adl_version
 					populate_languages

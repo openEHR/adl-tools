@@ -351,9 +351,8 @@ feature -- Comparison
 			-- True if the existence of this node conforms to other.existence
 		require
 			other_exists: other /= Void
-			other_is_flat: other.existence /= Void
 		do
-			Result := existence = Void or else other.existence.contains (existence)
+			Result := existence = Void or else other.existence = Void or else other.existence.contains (existence)
 		end
 
 	cardinality_conforms_to (other: like Current): BOOLEAN

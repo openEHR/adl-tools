@@ -182,7 +182,7 @@ feature -- Commands
 			col_csr: INTEGER
 		do
 			clear
- 			arch_dir.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+ 			current_arch_dir.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 
 			-- put names on columns
 			grid.column (1).set_title ("Archetypes - " + current_repository_profile)
