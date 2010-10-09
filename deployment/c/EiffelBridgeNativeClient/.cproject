@@ -54,6 +54,7 @@
 								</option>
 								<option id="gnu.cpp.link.option.paths.546864903" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files\Eiffel Software\EiffelStudio 6.6 GPL\gcc\windows\mingw\lib&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Program Files\Eiffel Software\EiffelStudio 6.6 GPL\examples\cecil\C2Eiffel\array\EIFGENs\classic\F_code&quot;"/>
 									<listOptionValue builtIn="false" value="C:\work\data\Eiffel\java\apps\adl_compiler_app\app\EIFGENs\adl_compiler_app\F_code"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files\Eiffel Software\EiffelStudio 6.6 GPL\studio\spec\windows\lib&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files\Eiffel Software\EiffelStudio 6.6 GPL\studio\spec\windows\lib\mingw&quot;"/>
