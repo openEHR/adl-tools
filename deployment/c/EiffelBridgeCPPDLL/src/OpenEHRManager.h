@@ -7,7 +7,12 @@
 
 #ifndef OPENEHRMANAGER_H_
 #define OPENEHRMANAGER_H_
+#include <string>
+#include <vector>
 #include "eif_eiffel.h" /* Exported functions of the Eiffel run-time */
+#include <iostream>
+
+using namespace std;
 
 class OpenEHRManager {
 public:
@@ -16,8 +21,10 @@ public:
 	void printAttributeValue();
 	static EIF_OBJECT eiffelObj;
 	static EIF_TYPE_ID tid;
-	static int counter;
 	void printFunctionCallResult();
+	void performParsing();
+	void callMake();
+	vector<string>* getArchetyepNames();
 	int getFunctionCallResult();
 private:
 

@@ -9,6 +9,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <vector>
 #include "uk_ac_ucl_chime_EiffelBridge.h"
 #include "OpenEHRManager.h"
 using namespace std;
@@ -28,4 +29,24 @@ JNIEXPORT jstring JNICALL Java_uk_ac_ucl_chime_EiffelBridge_getStringValue
 //	return testStr;
 	return testStr;
 
+}
+
+JNIEXPORT jobjectArray JNICALL Java_uk_ac_ucl_chime_EiffelBridge_getArchetypeNames(JNIEnv * env, jobject thisObj) {
+	if(manager == NULL)
+		manager = new OpenEHRManager();
+	vector<string>* archetypeNames = manager->getArchetyepNames();
+	jobjectArray arr;
+	int size = 5;
+	jsize len = archetypeNames->size();
+	arr = (jobjectArray)env->NewObjectArray(len, env->FindClass("java/lang/String"), env->NewStringUTF(""));
+	for(int i = 0; i < archetypeNames->size(); i++){
+//		stringstream indexStr;
+//		indexStr << i;
+//		string st("array member value ");
+//		st.append(indexStr.str().c_str());
+
+		jstring arrCellVal = env->NewStringUTF(archetypeNames->at(i).c_str());
+		env->SetObjectArrayElement(arr, i, arrCellVal);
+	}
+	return arr;
 }

@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT jstring JNICALL Java_uk_ac_ucl_chime_EiffelBridge_getStringValue
   (JNIEnv *, jobject);
 
+/*
+ * Class:     uk_ac_ucl_chime_EiffelBridge
+ * Method:    getArchetypeNames
+ * Signature: ()[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_uk_ac_ucl_chime_EiffelBridge_getArchetypeNames
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif
