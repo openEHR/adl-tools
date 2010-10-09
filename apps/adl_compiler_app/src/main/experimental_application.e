@@ -15,10 +15,14 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization for `Current'.
 		do
-			io.put_string ("in make now")
-			print("in make PRINT")
-			app_root.initialise
-			perform_parsing
+			Io.put_string ("Test for CECIL%N")
+			--io.put_integer (my_ret_type.count)
+
+
+
+			--io.put_integer (archetype_names.upper)
+			print(archetype_names[archetype_names.upper])
+			--perform_parsing
 		end
 feature		--Access
 
@@ -26,13 +30,46 @@ feature		--Access
 	once
 		create RESULT
 	end
+
 	application: APPLICATION
+
+	my_arr: MY_ARRAY[INTEGER]
+
+	my_ret_type: ARRAY[STRING]
+	do
+		create Result.make(0,10)
+	end
+
+	my_str_attr: STRING
+	do
+		Result := "sample value"
+	end
+
+	archetype_names: ARRAY[STRING]
+		-- get an array of archetype names in the repository
+		local
+			names_arr: ARRAY[STRING]
+			archetype_index: INTEGER_32
+		do
+			app_root.initialise
+			set_repository_profile
+			app_root.use_current_profile
+			create names_arr.make (0, app_root.arch_dir.archetype_index.count - 1)
+			archetype_index := 0
+			FROM app_root.arch_dir.archetype_index.start
+			until
+				app_root.arch_dir.archetype_index.after
+			loop
+				names_arr.put (app_root.arch_dir.archetype_index.key_for_iteration, archetype_index)
+				archetype_index := archetype_index + 1
+				app_root.arch_dir.archetype_index.forth
+			end
+			Result := names_arr
+		end
 
 feature
 	perform_parsing
 	local
-		repository_profiles: attached HASH_TABLE[ARRAYED_LIST[STRING], STRING]
-		new_prof: STRING
 		archetype_key: STRING
 		flattend_archetype : FLAT_ARCHETYPE
 		archetype_list: DS_HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
@@ -41,21 +78,7 @@ feature
 		print("app_root init call passed")
 		if app_root.initialised then
 			print("app root inited %N")
-			repository_profiles := app_root.repository_profiles
-			print("repo profiles count: ")
-			io.put_integer (repository_profiles.count)
-			from repository_profiles.start until repository_profiles.off loop
-						print(repository_profiles.key_for_iteration + "%N")
-						repository_profiles.forth
-			end
-			if app_root.current_repository_profile.is_empty then
-				repository_profiles.start
-				new_prof := repository_profiles.key_for_iteration
-			else
-				new_prof := app_root.current_repository_profile
-			end
-			app_root.set_current_repository_profile (new_prof)
-
+			set_repository_profile
 			print ("Populating repository " + app_root.current_repository_profile + "...")
 			app_root.use_current_profile
 			print ("complete%N")
@@ -67,8 +90,9 @@ feature
 			end
 			--from app_root.arch_dir.archetype_index.start until app_root.arch_dir.archetype_index.off loop
 			from archetype_list.start until archetype_list.off loop
+
 					archetype_key := archetype_list.key_for_iteration
-					print(archetype_key + "%N")
+					print(archetype_key.to_string_8 + "%N")
 					--set this one selected
 					app_root.arch_dir.set_selected_item (app_root.arch_dir.archetype_index.item (archetype_key))
 					--build selected one					
@@ -92,5 +116,32 @@ feature
 		do
 			print (app_root.archetype_compiler.status)
 		end
+
+
+
+	set_repository_profile
+			--assign one of the available profiles as the repository profile to use
+			local
+				repository_profiles: attached HASH_TABLE[ARRAYED_LIST[STRING], STRING]
+				new_prof: STRING
+			do
+				repository_profiles := app_root.repository_profiles
+				print("repo profiles count: ")
+				io.put_integer (repository_profiles.count)
+				from repository_profiles.start until repository_profiles.off loop
+							print(repository_profiles.key_for_iteration + "%N")
+							repository_profiles.forth
+				end
+				if app_root.current_repository_profile.is_empty then
+					repository_profiles.start
+					new_prof := repository_profiles.key_for_iteration
+				else
+					new_prof := app_root.current_repository_profile
+				end
+				app_root.set_current_repository_profile (new_prof)
+			end
+
+
+
 
 end

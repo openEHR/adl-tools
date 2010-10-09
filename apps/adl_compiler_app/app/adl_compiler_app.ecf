@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <system xmlns="http://www.eiffel.com/developers/xml/configuration-1-6-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-6-0 http://www.eiffel.com/developers/xml/configuration-1-6-0.xsd" name="adl_compiler_app" uuid="804BD2F5-8F3A-4D4D-8495-001FA30E2894">
 	<target name="adl_compiler_app">
-		<root class="EXPERIMENTAL_APPLICATION" feature="make"/>
+		<root cluster="app" class="EXPERIMENTAL_APPLICATION" feature="make"/>
 		<file_rule>
 			<exclude>/EIFGENs$</exclude>
 			<exclude>/CVS$</exclude>
 			<exclude>/.svn$</exclude>
 		</file_rule>
 		<option warning="true">
-			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
+			<assertions precondition="true"/>
 		</option>
 		<precompile name="base_pre" location="$ISE_PRECOMP\base.ecf"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf">
 			<renaming old_name="C_STRING" new_name="BASE_C_STRING"/>
+			<visible class="ARRAY"/>
+			<visible class="ANY"/>
+			<visible class="STRING_8" feature="to_c"/>
 		</library>
 		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
 		<library name="gobo_lexical" location="$ISE_LIBRARY\library\gobo\gobo_lexical.ecf"/>
@@ -27,7 +30,12 @@
 		</library>
 		<cluster name="adl_compiler" location="..\..\..\components\adl_compiler\src\" recursive="true"/>
 		<cluster name="app" location="..\src\" recursive="true">
+			<option>
+				<assertions precondition="true"/>
+			</option>
 			<visible class="EXPERIMENTAL_APPLICATION"/>
+			<visible class="MY_ARRAY"/>
+			<visible class="APPLICATION"/>
 		</cluster>
 		<cluster name="archetype_repository" location="..\..\..\components\archetype_repository\src\" recursive="true">
 			<option>
