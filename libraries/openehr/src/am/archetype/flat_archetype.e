@@ -54,7 +54,8 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			-- initialise from a differential archetype and its flat parent, as preparation
 			-- for generating a flat archetype. The items from the differential are used
 			-- except for the definition, which is the flat parent version, so that the
-			-- differential definition can be overlaid on it by a merging process.
+			-- differential definition can be overlaid on it by a merging process. The ontology
+			-- is converted to a form ready for overlaying as well.
 		do
 			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
 					a_diff.original_language.code_string,
@@ -79,29 +80,12 @@ feature -- Access
 
 	ontology: attached FLAT_ARCHETYPE_ONTOLOGY
 
-	component_ontologies: HASH_TABLE [FLAT_ARCHETYPE_ONTOLOGY, STRING]
-			-- Compendium of flattened ontologies of all archetypes/templates used in this
-			-- archetype/template, keyed by identifier
-
 feature -- Factory
 
 	to_differential: DIFFERENTIAL_ARCHETYPE
 			-- generate differential form of archetype if specialised, to be in differential form by removing inherited parts
 		do
 			create Result.make_from_flat(Current)
-		end
-
-feature -- Modification
-
-	add_component_ontology (an_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_archetype_id: STRING)
-		require
-			Ontology_attached: attached an_ontology
-			Archetype_id_attached: attached an_archetype_id and then not an_archetype_id.is_empty
-		do
-			if component_ontologies = Void then
-				create component_ontologies.make(0)
-			end
-			component_ontologies.put(an_ontology, an_archetype_id)
 		end
 
 end

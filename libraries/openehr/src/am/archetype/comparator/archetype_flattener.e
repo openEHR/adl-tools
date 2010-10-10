@@ -81,21 +81,28 @@ feature -- Access
 
 	arch_output_flat: FLAT_ARCHETYPE
 			-- generated flat archetype - logically an overlay of `arch_parent_flat' and `arch_child_diff'
+			-- if the `arch_child_diff' is a template, the dynamic type will be OPERATIONAL_TEMPLATE
 
 feature -- Commands
 
-	flatten
-			-- flatten archetype to `arch_output_flat'; if non-specialised, then flatten against reference model
-			-- (just pick up existence and cardinality); if specialised, flatten against a flat parent archetype
+	flatten (include_rm: BOOLEAN)
+			-- flatten archetype to `arch_output_flat'; if non-specialised and `include_rm' is True,
+			-- then flatten against reference model (to pick up existence and cardinality, and infer occurrences);
+			-- if specialised, flatten against a flat parent archetype
 		local
 			def_it: C_ITERATOR
 		do
 			if arch_child_diff.is_specialised then
-				debug ("flatten")
-					io.put_string ("============== flattening specialised archetype " + arch_child_diff.archetype_id.as_string + " with " +
-							arch_parent_flat.archetype_id.as_string + " ==============%N")
+debug ("flatten")
+	io.put_string ("============== flattening specialised archetype " +
+		arch_child_diff.archetype_id.as_string + " with " +
+		arch_parent_flat.archetype_id.as_string + " ==============%N")
+end
+				if arch_child_diff.is_template then
+					create {OPERATIONAL_TEMPLATE} arch_output_flat.make_staging (arch_child_diff, arch_parent_flat)
+				else
+					create arch_output_flat.make_staging (arch_child_diff, arch_parent_flat)
 				end
-				create arch_output_flat.make_staging (arch_child_diff, arch_parent_flat)
 				expand_definition_use_nodes
 				flatten_definition
 				flatten_invariants
@@ -109,8 +116,10 @@ feature -- Commands
 
 			-- flatten RM onto archetype; must do this at the end, since otherwise the existence etc set due to
 			-- this would look like duplicates during the flattening process
-			create def_it.make(arch_output_flat.definition)
-			def_it.do_all(agent rm_node_flatten_enter, agent rm_node_flatten_exit)
+			if include_rm then
+				create def_it.make(arch_output_flat.definition)
+				def_it.do_all(agent rm_node_flatten_enter, agent rm_node_flatten_exit)
+			end
 
 			-- now finalise template flattening
 			if arch_child_diff.is_template then
@@ -139,9 +148,9 @@ feature {NONE} -- Implementation
 			clone_performed: BOOLEAN
 		do
 			if not arch_output_flat.use_node_index.is_empty then
-				debug ("flatten")
-					io.put_string ("--> expand_definition_use_nodes%N")
-				end
+debug ("flatten")
+	io.put_string ("--> expand_definition_use_nodes%N")
+end
 				create child_paths_at_parent_level.make (0)
 				child_paths_at_parent_level.compare_objects
 				child_paths := arch_child_diff.physical_paths
@@ -163,16 +172,18 @@ feature {NONE} -- Implementation
 				from arch_output_flat.use_node_index.start until arch_output_flat.use_node_index.off loop
 					int_refs := arch_output_flat.use_node_index.item_for_iteration
 					from int_refs.start until int_refs.off loop
-						debug ("flatten")
-							io.put_string ("%T...checking flat parent use_node path " + int_refs.item.path + " against child path map%N")
-						end
+debug ("flatten")
+	io.put_string ("%T...checking flat parent use_node path " +
+	int_refs.item.path + " against child path map%N")
+end
 						clone_performed := False
 						from child_paths_at_parent_level.start until child_paths_at_parent_level.off or clone_performed loop
 							if child_paths_at_parent_level.item.starts_with (int_refs.item.path) then
-								debug ("flatten")
-									io.put_string ("%T...cloning node at " + arch_output_flat.use_node_index.key_for_iteration + " and replacing at " +
-											int_refs.item.path + "%N")
-								end
+debug ("flatten")
+	io.put_string ("%T...cloning node at " +
+	arch_output_flat.use_node_index.key_for_iteration +
+	" and replacing at " + int_refs.item.path + "%N")
+end
 								c_obj := arch_output_flat.c_object_at_path (arch_output_flat.use_node_index.key_for_iteration).safe_deep_twin
 								int_refs.item.parent.replace_child_by_id (c_obj, int_refs.item.node_id)
 								clone_performed := True
@@ -184,9 +195,9 @@ feature {NONE} -- Implementation
 					arch_output_flat.use_node_index.forth
 				end
 				arch_output_flat.rebuild
-				debug ("flatten")
-					io.put_string ("<-- expand_definition_use_nodes%N")
-				end
+debug ("flatten")
+	io.put_string ("<-- expand_definition_use_nodes%N")
+end
 			end
 		end
 
@@ -220,37 +231,39 @@ feature {NONE} -- Implementation
 			if attached {C_COMPLEX_OBJECT} a_c_node as cco_child_diff and not attached {C_ARCHETYPE_ROOT} a_c_node as car then
 				create apa.make_from_string (cco_child_diff.path)
 				a_path := apa.path_at_level (arch_parent_flat.specialisation_depth)
-				debug ("flatten")
-					io.put_string ("---------- at child differential object node " + cco_child_diff.path + " ---------%N")
-					io.put_string ("%Tsee if output object node at " + a_path + " exists in flat parent ... ")
-				end
+debug ("flatten")
+	io.put_string ("---------- at child differential object node " + cco_child_diff.path + " ---------%N")
+	io.put_string ("%Tsee if output object node at " + a_path + " exists in flat parent ... ")
+end
 
 				-- check that path exists (in nodes defined by value) in flat parent
 				if arch_output_flat.has_path (a_path) then
-					debug ("flatten")
-						io.put_string ("YES%N")
-					end
+debug ("flatten")
+	io.put_string ("YES%N")
+end
 
 					-- check for path that has been overlaid by a redefined node; have to graft in entire object as a sibling
 					if parent_path_list.has(a_path) then
-						debug ("flatten")
-							io.put_string ("%TObject in flat parent ALREADY REPLACED - grafting sibling object " + cco_child_diff.path + "%N")
-						end
+debug ("flatten")
+	io.put_string ("%TObject in flat parent ALREADY REPLACED - grafting sibling object " + cco_child_diff.path + "%N")
+end
 						ca_output := arch_output_flat.definition.c_attribute_at_path (cco_child_diff.parent.path)
 						ca_output.put_sibling_child (cco_child_diff.safe_deep_twin)
 						child_grafted_path_list.extend (cco_child_diff.path)
 					else
 						-- obtain the node in the flat output to start working at
 						cco_output_flat ?= arch_output_flat.c_object_at_path (a_path)
-						debug ("flatten")
-							io.put_string ("%TFirst replacement in flat parent " + cco_child_diff.path + "%N")
-						end
+debug ("flatten")
+	io.put_string ("%TFirst replacement in flat parent " +
+	cco_child_diff.path + "%N")
+end
 
 						-- if it is a node on which occurrences was set to 0, remove it from the flat.
 						if cco_child_diff.is_prohibited then
-							debug ("flatten")
-								io.put_string ("%T** child occurrences is {0} - REMOVING parent node [" + cco_output_flat.node_id + "]**%N")
-							end
+debug ("flatten")
+	io.put_string ("%T** child occurrences is {0} - REMOVING parent node [" +
+	cco_output_flat.node_id + "]**%N")
+end
 							if not cco_output_flat.is_root then
 								cco_output_flat.parent.remove_child_by_id (cco_output_flat.node_id)
 							end
@@ -259,9 +272,11 @@ feature {NONE} -- Implementation
 						-- and must therefore be intended as an override; if it wasn't, it will be treated as an alternative)
 						-- then replace it with a complete clone of the current child tree
 						elseif cco_output_flat.any_allowed and cco_output_flat.is_addressable then
-							debug ("flatten")
-								io.put_string ("%T** parent matches ANY - REPLACING node [" + cco_output_flat.node_id + "] with complete clone of child node [" + cco_child_diff.node_id + "]**%N")
-							end
+debug ("flatten")
+	io.put_string ("%T** parent matches ANY - REPLACING node [" +
+	cco_output_flat.node_id + "] with complete clone of child node [" +
+	cco_child_diff.node_id + "]**%N")
+end
 							if not cco_output_flat.is_root then
 								-- have to change the node id to the target node id, so that the replace will work
 								cco_output_flat.parent.replace_node_id (cco_output_flat.node_id, cco_child_diff.node_id)
@@ -269,14 +284,16 @@ feature {NONE} -- Implementation
 							else -- the child archetype object is the root object; copy all of its attributes into the target
 								from cco_child_diff.attributes.start until cco_child_diff.attributes.off loop
 									ca_child := cco_child_diff.attributes.item
-									debug ("flatten")
-										io.put_string ("%T%T~~~~ attribute = " + ca_child.rm_attribute_path + "%N")
-									end
+debug ("flatten")
+	io.put_string ("%T%T~~~~ attribute = " + ca_child.rm_attribute_path + "%N")
+end
 									ca_child_copy := ca_child.safe_deep_twin
-									debug ("flatten")
-										io.put_string ("%T%Tin child only; deep_clone attribute " + ca_child.rm_attribute_name + " at " + ca_child.path +
-											" from diff child and graft to " + cco_output_flat.path + " in output%N")
-									end
+debug ("flatten")
+	io.put_string ("%T%Tin child only; deep_clone attribute " +
+		ca_child.rm_attribute_name + " at " + ca_child.path +
+		" from diff child and graft to " + cco_output_flat.path +
+		" in output%N")
+end
 									cco_output_flat.put_attribute (ca_child_copy)
 									cco_child_diff.attributes.forth
 								end
@@ -285,9 +302,9 @@ feature {NONE} -- Implementation
 
 						else
 							-- firstly, add overrides from immediate child node to corresponding flat node
-							debug ("flatten")
-								io.put_string ("%TOVERLAY immediate node " + cco_child_diff.node_id + " on flat parent " + cco_output_flat.node_id + "%N")
-							end
+debug ("flatten")
+	io.put_string ("%TOVERLAY immediate node " + cco_child_diff.node_id + " on flat parent " + cco_output_flat.node_id + "%N")
+end
 							if cco_output_flat.parent /= Void then
 								cco_output_flat.parent.overlay_differential(cco_output_flat, cco_child_diff, rm_schema)
 							else
@@ -297,14 +314,14 @@ feature {NONE} -- Implementation
 							-- now iterate through child attributes and overlay a) new object nodes in existing container attributes,
 							-- and b) new attribute nodes from child. Note that these attributes are in general specified by paths,
 							-- so they can overlay arbitrarily deep points in the flat output structure.
-							debug ("flatten")
-								io.put_string ("%T%T~~~~~~~~ iterating cco_child_diff attributes ~~~~~~~~~%N")
-							end
+debug ("flatten")
+	io.put_string ("%T%T~~~~~~~~ iterating cco_child_diff attributes ~~~~~~~~~%N")
+end
 							from cco_child_diff.attributes.start until cco_child_diff.attributes.off loop
 								ca_child := cco_child_diff.attributes.item
-								debug ("flatten")
-									io.put_string ("%T%T~~~~ attribute = " + ca_child.rm_attribute_path + "%N")
-								end
+debug ("flatten")
+	io.put_string ("%T%T~~~~ attribute = " + ca_child.rm_attribute_path + "%N")
+end
 
 								-- now we have to figure out the 'proximate' C_COMPLEX_OBJECT in the flat parent - it is either the cco_output_flat that
 								-- corresponds to the parent object from the differential child with we started this routine, or if the current attribute
@@ -312,10 +329,11 @@ feature {NONE} -- Implementation
 								if ca_child.has_differential_path then
 									create apa.make_from_string (ca_child.differential_path)
 									cco_output_flat_proximate ?= arch_output_flat.c_object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth))
-									debug ("flatten")
-										io.put_string ("%T%Tchild has differential path " + ca_child.differential_path + "; flat proximate path = " +
-												cco_output_flat_proximate.path + "%N")
-									end
+debug ("flatten")
+	io.put_string ("%T%Tchild has differential path " +
+		ca_child.differential_path + "; flat proximate path = " +
+		cco_output_flat_proximate.path + "%N")
+end
 
 									-- there may be object ids on the path from the original parent attribute to the proximate attribute in the flat parent
 									-- that are overridden by object-ids in the differential path; for these we need to replace the node ids of the relevant
@@ -325,9 +343,10 @@ feature {NONE} -- Implementation
 									from cco_csr := cco_output_flat_proximate until cco_csr = cco_output_flat loop
 										if c_path_in_diff.item.is_addressable and then c_path_in_diff.item.object_id.count > cco_csr.node_id.count and then
 												c_path_in_diff.item.object_id.starts_with (cco_csr.node_id) then
-											debug ("flatten")
-												io.put_string ("%T%T%Treplacing node id " + cco_csr.node_id + " in flat structure with " + c_path_in_diff.item.object_id + "%N")
-											end
+debug ("flatten")
+	io.put_string ("%T%T%Treplacing node id " + cco_csr.node_id +
+		" in flat structure with " + c_path_in_diff.item.object_id + "%N")
+end
 											cco_csr.parent.replace_node_id (cco_csr.node_id, c_path_in_diff.item.object_id)
 										end
 										cco_csr := cco_csr.parent.parent
@@ -335,17 +354,19 @@ feature {NONE} -- Implementation
 									end
 								else
 									cco_output_flat_proximate := cco_output_flat
-									debug ("flatten")
-										io.put_string ("%T%Tchild has normal path; using flat path " + cco_output_flat_proximate.path + "%N")
-									end
+debug ("flatten")
+	io.put_string ("%T%Tchild has normal path; using flat path " +
+	cco_output_flat_proximate.path + "%N")
+end
 								end
 
 								-- for attributes that are found in the flat parent tree, we need to check which of their children
 								-- if any need to be cloned into the output
 								if cco_output_flat_proximate.has_attribute (ca_child.rm_attribute_name) then
-									debug ("flatten")
-										io.put_string ("%T%Tmatched attr " + ca_child.rm_attribute_name + " in parent object in flat archetype%N")
-									end
+debug ("flatten")
+	io.put_string ("%T%Tmatched attr " + ca_child.rm_attribute_name +
+	" in parent object in flat archetype%N")
+end
 
 									ca_output := cco_output_flat_proximate.c_attribute (ca_child.rm_attribute_name)
 
@@ -353,23 +374,25 @@ feature {NONE} -- Implementation
 										ca_output.parent.remove_attribute_by_name (ca_child.rm_attribute_name)
 									else
 										-- graft the existence if that has been changed
-										if ca_child.existence /= Void and then not ca_child.existence.equal_interval (ca_output.existence) then
+										if ca_child.existence /= Void then
 											ca_output.set_existence (ca_child.existence.deep_twin)
 										end
 										if ca_child.is_multiple then
 											-- for container attributes in the source archetype, we graft in new elements; overrides will be
 											-- handled by being traversed by this routine later; also graft the cardinality if that was changed
-											if ca_child.cardinality /= Void and then not ca_child.cardinality.interval.equal_interval (ca_output.cardinality.interval) then
+											if ca_child.cardinality /= Void then
 												ca_output.set_cardinality (ca_child.cardinality.deep_twin)
 											end
-											debug ("flatten")
-												io.put_string ("%T%T%Tmerge container attribute at " + ca_child.path + " into output%N")
-											end
+debug ("flatten")
+	io.put_string ("%T%T%Tmerge container attribute at " +
+	ca_child.path + " into output%N")
+end
 											merge_container_attribute(ca_output, ca_child)
 										else -- for single-valued attributes, have to merge any non-CCO children
-											debug ("flatten")
-												io.put_string ("%T%T%Tmerge single attribute at " + ca_child.path + " into output%N")
-											end
+debug ("flatten")
+	io.put_string ("%T%T%Tmerge single attribute at " +
+	ca_child.path + " into output%N")
+end
 											merge_single_attribute(ca_output, ca_child)
 										end
 									end
@@ -377,26 +400,28 @@ feature {NONE} -- Implementation
 									ca_child_copy := ca_child.safe_deep_twin
 									child_grafted_path_list.extend (ca_child.path)
 									ca_child_copy.clear_differential_path
-									debug ("flatten")
-										io.put_string ("%T%Tin child only; deep_clone attribute " + ca_child.rm_attribute_name + " at " + ca_child.path +
-											" from diff child and graft to " + cco_output_flat_proximate.path + " in output%N")
-									end
+debug ("flatten")
+	io.put_string ("%T%Tin child only; deep_clone attribute " +
+		ca_child.rm_attribute_name + " at " + ca_child.path +
+		" from diff child and graft to " + cco_output_flat_proximate.path +
+		" in output%N")
+end
 									cco_output_flat_proximate.put_attribute (ca_child_copy)
 								end
 								cco_child_diff.attributes.forth
 							end
-							debug ("flatten")
-								io.put_string ("%T%T~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%N")
-							end
+debug ("flatten")
+	io.put_string ("%T%T~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%N")
+end
 
 							-- record path in case sibling objects turn up
 						end
 						parent_path_list.extend (a_path)
 					end
 				else
-					debug ("flatten")
-						io.put_string ("NO - ERROR%N")
-					end
+debug ("flatten")
+	io.put_string ("NO - ERROR%N")
+end
 				end
 			end
 		end
@@ -663,7 +688,7 @@ feature {NONE} -- Implementation
 					if attached {BMM_CONTAINER_PROPERTY} rm_attr_desc as cont_prop then
 						ca.set_cardinality (create {CARDINALITY}.make(cont_prop.type.cardinality))
 					else -- should never get here
-					
+
 					end
 				end
 			elseif attached {C_OBJECT} a_c_node as co then
@@ -694,24 +719,26 @@ feature {NONE} -- Implementation
 			xref_idx: HASH_TABLE[ARRAYED_LIST[C_ARCHETYPE_ROOT], STRING]
 			xref_list: ARRAYED_LIST[C_ARCHETYPE_ROOT]
 		do
-			debug ("flatten")
-				io.put_string ("&&&&&& flattening template root nodes &&&&&&%N")
-			end
+debug ("flatten")
+	io.put_string ("&&&&&& flattening template root nodes &&&&&&%N")
+end
 			xref_idx := arch_output_flat.suppliers_index
 			from xref_idx.start until xref_idx.off loop
-				arch_root_cco := arch_dir.archetype_index.item (xref_idx.key_for_iteration).flat_archetype.definition
+				arch_root_cco := current_arch_dir.archetype_index.item (xref_idx.key_for_iteration).flat_archetype.definition
 				xref_list := xref_idx.item_for_iteration
 				from xref_list.start until xref_list.off loop
 					if not xref_list.item.has_attributes then -- it is empty and needs to be filled
-						debug ("flatten")
-							io.put_string ("%T node at " + xref_list.item.path + " with " + xref_idx.key_for_iteration + "%N")
-						end
+debug ("flatten")
+	io.put_string ("%T node at " + xref_list.item.path +
+	" with " + xref_idx.key_for_iteration + "%N")
+end
 						from arch_root_cco.attributes.start until arch_root_cco.attributes.off loop
 							ca_clone := arch_root_cco.attributes.item.safe_deep_twin
 							xref_list.item.put_attribute (ca_clone)
-							debug ("flatten")
-								io.put_string ("%T%T cloning attribute " + ca_clone.rm_attribute_path + "%N")
-							end
+debug ("flatten")
+	io.put_string ("%T%T cloning attribute " +
+	ca_clone.rm_attribute_path + "%N")
+end
 							arch_root_cco.attributes.forth
 						end
 					end
@@ -726,16 +753,19 @@ feature {NONE} -- Implementation
 		local
 			ont: FLAT_ARCHETYPE_ONTOLOGY
 		do
-			debug ("flatten")
-				io.put_string ("&&&&&& flattening template ontologies &&&&&&%N")
-			end
-			from child_desc.suppliers_index.start until child_desc.suppliers_index.off loop
-				ont := child_desc.suppliers_index.item_for_iteration.flat_archetype.ontology
-				arch_output_flat.add_component_ontology (ont, child_desc.suppliers_index.key_for_iteration)
-				debug ("flatten")
-					io.put_string ("%T adding ontology from " + child_desc.suppliers_index.key_for_iteration + "%N")
+debug ("flatten")
+	io.put_string ("&&&&&& flattening template ontologies &&&&&&%N")
+end
+			if attached {OPERATIONAL_TEMPLATE} arch_output_flat as opt then
+				from child_desc.suppliers_index.start until child_desc.suppliers_index.off loop
+					ont := child_desc.suppliers_index.item_for_iteration.flat_archetype.ontology
+					opt.add_component_ontology (ont, child_desc.suppliers_index.key_for_iteration)
+debug ("flatten")
+	io.put_string ("%T adding ontology from " +
+	child_desc.suppliers_index.key_for_iteration + "%N")
+end
+					child_desc.suppliers_index.forth
 				end
-				child_desc.suppliers_index.forth
 			end
 		end
 
