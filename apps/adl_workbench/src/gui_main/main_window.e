@@ -716,7 +716,7 @@ feature {NONE} -- Tools events
 		local
 			command: STRING
 		do
-			command := difftool_command + " " + left_dir + " " + right_dir
+			command := difftool_command + " %"" + left_dir + "%" %"" + right_dir + "%""
 			execution_environment.launch (command)
 		end
 
