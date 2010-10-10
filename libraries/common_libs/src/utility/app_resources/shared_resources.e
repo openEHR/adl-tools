@@ -30,6 +30,32 @@ feature -- Definitions
 
 	User_config_file_extension: STRING = ".cfg"
 
+	Default_editor_command: STRING
+			-- A reasonable name of an editor based on operating system.
+		once
+   			if is_windows then
+   				Result := "Notepad.exe,cmd /q /d /c start %"%" /b"
+			elseif is_mac_os_x then
+				Result := "open -t"
+			else
+   				Result := "vi"
+   			end
+   		end
+
+	Default_difftool_command: STRING
+			-- A reasonable diff tool based on operating system.
+		once
+   			if is_windows then
+   				-- /e = enable tool to be dismissed with single Esc keystroke, like a dialog
+   				-- /u means don't add any paths to Windows recent paths / places
+   				Result := "C:\Program Files\winmerge\winmerge.exe /e /u"
+			elseif is_mac_os_x then
+				Result := "diff"
+			else
+   				Result := "sdiff"
+   			end
+   		end
+
 feature {NONE} -- Access
 
 	resource_value (a_category, a_resource_name: STRING): attached STRING
@@ -245,18 +271,6 @@ feature -- Environment
 		once
 			Result := file_system.pathname(application_startup_directory, "error_db")
 		end
-
-	Default_editor_command: STRING
-			-- A reasonable name of an editor based on operating system.
-		once
-   			if is_windows then
-   				Result := "Notepad.exe,cmd /q /d /c start %"%" /b"
-			elseif is_mac_os_x then
-				Result := "open -t"
-			else
-   				Result := "vi"
-   			end
-   		end
 
 feature {NONE} -- Element Change
 

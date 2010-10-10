@@ -94,7 +94,22 @@ feature -- Access
 	last_tested_archetypes_count: INTEGER
 			-- Number of archetypes tested in last run.
 
+	diff_dir_source_orig: STRING
+			-- directory where copies of original .adls files go
+
+	diff_dir_source_new: STRING
+			-- directory where first generation serialised .adls files go
+
+	diff_dir_flat_orig: STRING
+			-- directory where copies of original legacy .adl files go
+
+	diff_dir_flat_new: STRING
+			-- directory where first generation serialised .adlf files go
+
 feature -- Status Setting
+
+	diff_dirs_available: BOOLEAN
+			-- flag to indicate whether output directories for diff files are available and writable
 
 	is_expanded: BOOLEAN
 			-- True if archetype tree is in expanded state
@@ -514,21 +529,6 @@ feature {NONE} -- Tests
 		end
 
 feature {NONE} -- Implementation
-
-	diff_dirs_available: BOOLEAN
-			-- flag to indicate whether output directories for diff files are available and writable
-
-	diff_dir_source_orig: STRING
-			-- directory where copies of original .adls files go
-
-	diff_dir_source_new: STRING
-			-- directory where first generation serialised .adls files go
-
-	diff_dir_flat_orig: STRING
-			-- directory where copies of original legacy .adl files go
-
-	diff_dir_flat_new: STRING
-			-- directory where first generation serialised .adlf files go
 
 	gui: MAIN_WINDOW
 			-- main window of system

@@ -515,6 +515,12 @@ feature -- Application Switches
 			Result := substitute_env_vars (resource_value ("default", "editor"))
 		end
 
+	difftool_command: attached STRING
+			-- Path of diff tool application for ADL files.
+		do
+			Result := substitute_env_vars (resource_value ("default", "difftool"))
+		end
+
 feature -- Application Switch Setting
 
 	set_current_work_directory (a_path: STRING)
@@ -536,6 +542,15 @@ feature -- Application Switch Setting
 			value_not_empty: not value.is_empty
 		do
 			set_resource_value("default", "editor", value)
+		end
+
+	set_difftool_command (value: STRING)
+			-- set editor
+		require
+			value_attached: value /= Void
+			value_not_empty: not value.is_empty
+		do
+			set_resource_value("default", "difftool", value)
 		end
 
 	set_main_notebook_tab_pos(a_tab_pos: INTEGER)

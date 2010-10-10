@@ -155,6 +155,10 @@ feature -- Status setting
 				set_editor_command (default_editor_command)
 			end
 
+			if difftool_command.is_empty then
+				set_difftool_command (default_difftool_command)
+			end
+
 			if reference_repository_path.is_empty then
 				set_repository
 			else
@@ -673,6 +677,47 @@ feature {NONE} -- Tools events
 		do
 			rm_schemas_access.load_schemas
 			populate_directory_controls(True)
+		end
+
+	on_diff_source
+		do
+			do_diff(True)
+		end
+
+	on_diff_flat
+		do
+			do_diff(False)
+		end
+
+	do_diff (source_flag: BOOLEAN)
+		local
+			info_dialog: EV_INFORMATION_DIALOG
+		do
+			if not difftool_command.is_empty then
+				if archetype_test_tree_control.diff_dirs_available then
+					if source_flag then
+						do_diff_command(archetype_test_tree_control.diff_dir_source_orig, archetype_test_tree_control.diff_dir_source_new)
+					else
+						do_diff_command(archetype_test_tree_control.diff_dir_flat_orig, archetype_test_tree_control.diff_dir_flat_new)
+					end
+				else
+					create info_dialog.make_with_text (create_message_line ("no_diff_dirs", Void))
+					info_dialog.set_title ("Information")
+					info_dialog.show_modal_to_window (Current)
+				end
+			else
+				create info_dialog.make_with_text (create_message_line ("no_diff_tool", Void))
+				info_dialog.set_title ("Information")
+				info_dialog.show_modal_to_window (Current)
+			end
+		end
+
+	do_diff_command (left_dir, right_dir: attached STRING)
+		local
+			command: STRING
+		do
+			command := difftool_command + " " + left_dir + " " + right_dir
+			execution_environment.launch (command)
 		end
 
 feature {NONE} -- Help events

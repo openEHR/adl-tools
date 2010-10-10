@@ -53,6 +53,7 @@ feature {NONE} -- Initialization
 			set_default_push_button (ok_button)
 			show_actions.extend (agent rm_schemas_checkable_list.set_focus)
 			editor_command_text.disable_word_wrapping
+			difftool_command_text.disable_word_wrapping
 			export_html_text.focus_in_actions.extend (agent on_select_all (export_html_text))
 			save_diff_path_text.focus_in_actions.extend (agent on_select_all (save_diff_path_text))
 			populate_controls
@@ -79,6 +80,10 @@ feature {NONE} -- Implementation
 			s := editor_command
 			s.replace_substring_all (",", "%N")
 			editor_command_text.set_text (s + "%N")
+
+			s := difftool_command
+			s.replace_substring_all (",", "%N")
+			difftool_command_text.set_text (s + "%N")
 
 			-- archetype viewing settings
 			if expand_node_tree then
@@ -163,6 +168,12 @@ feature {NONE} -- Implementation
 			s.replace_substring_all ("%N", ",")
 			set_editor_command (s)
 
+			s := difftool_command_text.text.as_string_8
+			s.left_adjust
+			s.right_adjust
+			s.replace_substring_all ("%N", ",")
+			set_difftool_command (s)
+
 			set_expand_node_tree (show_definition_tree_expanded_check_button.is_selected)
 			set_show_line_numbers (show_line_numbers_check_button.is_selected)
 			set_show_entire_ontology (show_entire_ontology_check_button.is_selected)
@@ -223,6 +234,31 @@ feature {NONE} -- Implementation
 			editor_command_text.insert_text (s + "%N")
 			editor_command_text.set_focus
 			editor_command_text.select_lines (editor_command_text.current_line_number, editor_command_text.current_line_number)
+		end
+
+	on_difftool_command_add
+			-- Add a new line to `difftool_command_text'.
+		do
+			difftool_command_text.append_text ("%N")
+			difftool_command_text.set_focus
+			difftool_command_text.select_lines (difftool_command_text.line_count, difftool_command_text.line_count + 1)
+		end
+
+	on_difftool_command_browse
+			-- Let the user browse for an application that will act as the external difftool.
+		local
+			s: STRING
+		do
+			difftool_command_text.select_lines (difftool_command_text.current_line_number, difftool_command_text.current_line_number)
+			s := get_file (difftool_command_text.selected_text.as_string_8, Current)
+
+			if difftool_command_text.has_selection then
+				difftool_command_text.delete_selection
+			end
+
+			difftool_command_text.insert_text (s + "%N")
+			difftool_command_text.set_focus
+			difftool_command_text.select_lines (difftool_command_text.current_line_number, difftool_command_text.current_line_number)
 		end
 
 	on_export_html_browse

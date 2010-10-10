@@ -248,6 +248,10 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_18.extend (arch_test_processed_count)
 			l_ev_vertical_box_16.extend (l_ev_horizontal_separator_1)
 			l_ev_vertical_box_16.extend (archetype_test_go_bn)
+			l_ev_vertical_box_16.extend (l_ev_cell_2)
+			l_ev_vertical_box_16.extend (l_ev_horizontal_separator_2)
+			l_ev_vertical_box_16.extend (diff_source_button)
+			l_ev_vertical_box_16.extend (diff_flat_button)
 			test_split_area.extend (test_status_area)
 
 			file_menu.set_text ("&File")
@@ -823,6 +827,9 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_16.disable_item_expand (l_ev_horizontal_box_18)
 			l_ev_vertical_box_16.disable_item_expand (l_ev_horizontal_separator_1)
 			l_ev_vertical_box_16.disable_item_expand (archetype_test_go_bn)
+			l_ev_vertical_box_16.disable_item_expand (l_ev_horizontal_separator_2)
+			l_ev_vertical_box_16.disable_item_expand (diff_source_button)
+			l_ev_vertical_box_16.disable_item_expand (diff_flat_button)
 			test_profile_combo.set_tooltip ("Change repository profile")
 			test_profile_combo.disable_edit
 			remove_unused_codes_rb.set_text ("Remove unused codes")
@@ -844,6 +851,10 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_separator_1.set_minimum_height (15)
 			archetype_test_go_bn.set_text ("Go")
 			archetype_test_go_bn.set_tooltip ("Start running tests")
+			diff_source_button.set_text ("Diff Source")
+			diff_source_button.set_tooltip ("Open diff tool on original and serialised .adls files")
+			diff_flat_button.set_text ("Diff flat")
+			diff_flat_button.set_tooltip ("Open diff tool on legacy and generated flat files")
 			integer_constant_set_procedures.extend (agent test_status_area.set_minimum_height (?))
 			integer_constant_retrieval_functions.extend (agent status_area_min_height)
 			test_status_area.disable_edit
@@ -929,6 +940,8 @@ feature {NONE}-- Initialization
 			regression_test_bn.select_actions.extend (agent archetype_test_regression_toggle)
 			arch_test_processed_count.focus_in_actions.extend (agent on_select_all)
 			archetype_test_go_bn.select_actions.extend (agent archetype_test_go_stop)
+			diff_source_button.select_actions.extend (agent on_diff_source)
+			diff_flat_button.select_actions.extend (agent on_diff_flat)
 			close_request_actions.extend (agent exit_app)
 
 				-- Call `user_initialization'.
@@ -1152,6 +1165,10 @@ feature {NONE}-- Initialization
 			create arch_test_processed_count
 			create l_ev_horizontal_separator_1
 			create archetype_test_go_bn
+			create l_ev_cell_2
+			create l_ev_horizontal_separator_2
+			create diff_source_button
+			create diff_flat_button
 			create test_status_area
 
 			create string_constant_set_procedures.make (10)
@@ -1241,16 +1258,16 @@ feature -- Access
 	parser_status_area, test_status_area: EV_TEXT
 	node_map_expand_button, node_map_expand_one_button,
 	node_map_collapse_one_button, arch_test_tree_toggle_expand_bn, arch_test_refresh_bn,
-	regression_test_bn, archetype_test_go_bn: EV_BUTTON
-	l_ev_cell_1: EV_CELL
-	node_map_domain_radio_button,
-	node_map_technical_radio_button, node_map_reference_model_radio_button: EV_RADIO_BUTTON
+	regression_test_bn, archetype_test_go_bn, diff_source_button, diff_flat_button: EV_BUTTON
+	l_ev_cell_1,
+	l_ev_cell_2: EV_CELL
+	node_map_domain_radio_button, node_map_technical_radio_button, node_map_reference_model_radio_button: EV_RADIO_BUTTON
 	path_analysis_column_view_checkable_list: EV_CHECKABLE_LIST
 	source_rich_text: EV_RICH_TEXT
 	compiler_output_grid,
 	archetype_test_tree_grid: EV_GRID
 	remove_unused_codes_rb: EV_CHECK_BUTTON
-	l_ev_horizontal_separator_1: EV_HORIZONTAL_SEPARATOR
+	l_ev_horizontal_separator_1, l_ev_horizontal_separator_2: EV_HORIZONTAL_SEPARATOR
 
 feature {NONE} -- Implementation
 
@@ -1524,6 +1541,16 @@ feature {NONE} -- Implementation
 	
 	archetype_test_go_stop
 			-- Called by `select_actions' of `archetype_test_go_bn'.
+		deferred
+		end
+	
+	on_diff_source
+			-- Called by `select_actions' of `diff_source_button'.
+		deferred
+		end
+	
+	on_diff_flat
+			-- Called by `select_actions' of `diff_flat_button'.
 		deferred
 		end
 	

@@ -40,6 +40,8 @@ templates = <
 		["build_and_export_all"] = <"Yes, Build and Export All">
 		["export_only_built"] = <"No, Export only the built ones">
 		["compile_before_serialising"] = <"Must compile before serialising">
+		["no_diff_tool"] = <"No diff tool must be configured; see Options">
+		["no_diff_dirs"] = <"No diff directories available; tests must be run on repository first">
 
 		-- ARCHETYPE compilation
 		["compile_legacy_i1"] = <"LEGACY Archetype $1 --> Parsed ok">
