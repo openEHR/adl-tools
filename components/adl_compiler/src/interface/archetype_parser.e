@@ -42,7 +42,7 @@ feature -- Access
 	selected_archetype: ARCH_REP_ARCHETYPE
 			-- The archetype currently selected in the archetype directory.
 		do
-			Result := arch_dir.selected_archetype
+			Result := current_arch_dir.selected_archetype
 		end
 
 	differential_archetype: DIFFERENTIAL_ARCHETYPE
@@ -82,7 +82,7 @@ feature -- Factory
 		do
 			app_root.set_current_language (primary_language)
 			create arch.make_new (id, source_repositories.adhoc_source_repository, {ARTEFACT_TYPE}.archetype, primary_language, 0)
-			arch_dir.set_selected_item (arch)
+			current_arch_dir.set_selected_item (arch)
 		ensure
 			language_set: app_root.current_language.same_string (primary_language)
 			archetype_attached: attached selected_archetype
