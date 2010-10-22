@@ -45,7 +45,8 @@ feature -- Initialisation
 			rep_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
 			dummy_error_accumulator: ERROR_ACCUMULATOR
 		once
-			message_db.populate(Error_db_directory, locale_language_short)
+			--message_db.populate(Error_db_directory, locale_language_short)
+			message_db.populate(error_db_directory_location, locale_language_short)
 			if message_db.database_loaded then
 
 				-- set error reporting level in billboard and all error accumulator objects
@@ -76,7 +77,8 @@ feature -- Initialisation
 				initialise_serialisers
 
 				-- set up the RM schemas
-				rm_schemas_access.initialise(default_rm_schema_directory, rm_schemas_load_list)
+				--rm_schemas_access.initialise(default_rm_schema_directory, rm_schemas_load_list)
+				rm_schemas_access.initialise (rm_schema_directory, rm_schemas_load_list)
 				rm_schemas_access.load_schemas
 
 				if not rm_schemas_access.found_valid_schemas then
@@ -138,6 +140,22 @@ feature -- Status Report
 feature {NONE} -- Implementation
 
 	strx: STRING
+
+feature --configuration
+
+	error_db_directory_location:STRING
+
+	rm_schema_directory:STRING
+
+	set_error_db_directory_location (path_of_dir:STRING)
+	do
+		error_db_directory_location := path_of_dir
+	end
+
+	set_rm_schema_directory (path_of_dir:STRING)
+	do
+		rm_schema_directory := path_of_dir
+	end
 
 end
 

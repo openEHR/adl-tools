@@ -47,6 +47,9 @@ feature		--Access
 
 	archetype_names: ARRAY[STRING]
 		-- get an array of archetype names in the repository
+		require
+			rm_schema_dir_initialized: app_root.rm_schema_directory /= Void
+			error_db_dir_initialized: app_root.error_db_directory /= Void
 		local
 			names_arr: ARRAY[STRING]
 			archetype_index: INTEGER_32
@@ -141,7 +144,17 @@ feature
 				app_root.set_current_repository_profile (new_prof)
 			end
 
+feature --configuration
 
+	set_error_db_dir_location (p_path:STRING)
+	do
+		app_root.set_error_db_directory_location (p_path)
+	end
+
+	set_rm_schema_dir_location (p_path:STRING)
+	do
+		app_root.set_rm_schema_directory (p_path)
+	end
 
 
 end
