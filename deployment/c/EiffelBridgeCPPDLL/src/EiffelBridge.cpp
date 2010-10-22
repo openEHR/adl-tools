@@ -50,3 +50,22 @@ JNIEXPORT jobjectArray JNICALL Java_uk_ac_ucl_chime_EiffelBridge_getArchetypeNam
 	}
 	return arr;
 }
+
+JNIEXPORT void JNICALL Java_uk_ac_ucl_chime_EiffelBridge_setErrorDBDirectoryPath(JNIEnv *env, jobject obj, jstring str){
+	if(manager == NULL)
+		manager = new OpenEHRManager();
+	const char* cStr = env->GetStringUTFChars(str, 0);
+	string cppStr(cStr);
+	manager->setErrorDBDirPath(cppStr);
+	env->ReleaseStringUTFChars(str, cStr);
+}
+
+JNIEXPORT void JNICALL Java_uk_ac_ucl_chime_EiffelBridge_setRMSchemaDirectoryPath(JNIEnv *env, jobject obj, jstring str){
+	if(manager == NULL)
+			manager = new OpenEHRManager();
+	const char* cStr = env->GetStringUTFChars(str, 0);
+	string cppStr(cStr);
+	manager->setRmSchemaDirPath(cppStr);
+	env->ReleaseStringUTFChars(str, cStr);
+}
+

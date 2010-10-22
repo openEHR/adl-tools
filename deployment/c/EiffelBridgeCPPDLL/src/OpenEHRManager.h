@@ -25,6 +25,8 @@ public:
 	void performParsing();
 	void callMake();
 	vector<string>* getArchetyepNames();
+	void setErrorDBDirPath(string&);
+	void setRmSchemaDirPath(string&);
 	int getFunctionCallResult();
 private:
 

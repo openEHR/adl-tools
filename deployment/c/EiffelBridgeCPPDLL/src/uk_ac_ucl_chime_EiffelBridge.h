@@ -23,6 +23,22 @@ JNIEXPORT jstring JNICALL Java_uk_ac_ucl_chime_EiffelBridge_getStringValue
 JNIEXPORT jobjectArray JNICALL Java_uk_ac_ucl_chime_EiffelBridge_getArchetypeNames
   (JNIEnv *, jobject);
 
+/*
+ * Class:     uk_ac_ucl_chime_EiffelBridge
+ * Method:    setErrorDBDirectoryPath
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_uk_ac_ucl_chime_EiffelBridge_setErrorDBDirectoryPath
+  (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     uk_ac_ucl_chime_EiffelBridge
+ * Method:    setRMSchemaDirectoryPath
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_uk_ac_ucl_chime_EiffelBridge_setRMSchemaDirectoryPath
+  (JNIEnv *, jobject, jstring);
+
 #ifdef __cplusplus
 }
 #endif
