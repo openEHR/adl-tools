@@ -27,8 +27,26 @@ OpenEHRManager::OpenEHRManager() {
 	eif_panic ("No type id.");
 	eiffelObj = eif_create (tid); /* Create eiffel object, returns an indirection. */
 	eif_enable_visible_exception();
-
 }
+
+void OpenEHRManager::setErrorDBDirPath(string& pPath){
+	EIF_PROCEDURE setErrorDBLoc = eif_procedure("set_error_db_dir_location", tid);
+	char* cStr = const_cast<char*>(pPath.c_str());
+	cout << "this is error db path: ";
+	cout << cStr << endl;
+//	setErrorDBLoc(eif_access(eiffelObj), eif_string("c:\\tmp\\error_db"));
+	setErrorDBLoc(eif_access(eiffelObj), eif_string(cStr));
+}
+
+void OpenEHRManager::setRmSchemaDirPath(string& pPath){
+	EIF_PROCEDURE setRMSchemaDirLoc = eif_procedure("set_rm_schema_dir_location", tid);
+	char* cStr = const_cast<char*>(pPath.c_str());
+	cout << "this is rm schema path: " << endl;
+	cout << cStr << endl;
+//	setRMSchemaDirLoc(eif_access(eiffelObj), eif_string("c:\\tmp\\rm_schemas"));
+	setRMSchemaDirLoc(eif_access(eiffelObj), eif_string(cStr));
+}
+
 void OpenEHRManager::printAttributeValue(){
 //	cout<< "initialization of EiffelRuntime";
 	int* status = NULL;
@@ -69,15 +87,15 @@ vector<string>* OpenEHRManager::getArchetyepNames(){
 	if (tid_any == EIF_NO_TYPE)
 			eif_panic ("No type id for ARRAY[STRING].");
 	ep = eif_procedure ("put", tid_any);
-	printf("I've accessed ep\n");
+//	printf("I've accessed ep\n");
 
 	EIF_REFERENCE_FUNCTION myArrayStrF = eif_reference_function("archetype_names", tid);
 	EIF_OBJECT arrObject = eif_protect((myArrayStrF)(eif_access(eiffelObj), NULL));
-	printf("I now have string array  from func\n");
+//	printf("I now have string array  from func\n");
 
 	EIF_INTEGER_FUNCTION countFunc = eif_integer_function("count", tid_any);
 	EIF_INTEGER countResult = (countFunc)(eif_access(arrObject),0);
-	printf("the length of array: %d\n", countResult);
+//	printf("the length of array: %d\n", countResult);
 
 	EIF_PROCEDURE epstr;
 	EIF_TYPE_ID tid_str;
@@ -85,7 +103,7 @@ vector<string>* OpenEHRManager::getArchetyepNames(){
 	if (tid_str == EIF_NO_TYPE)
 			eif_panic ("No type id for STRING.");
 	//ep = eif_procedure ("put", tid_str);
-	printf("I've accessed STRING TYPE ID\n");
+//	printf("I've accessed STRING TYPE ID\n");
 
 	vector<string>* archetypeNames = new vector<string>;
 	for(int i = 0; i < countResult; i++){
@@ -94,8 +112,8 @@ vector<string>* OpenEHRManager::getArchetyepNames(){
 
 		EIF_POINTER_FUNCTION charFunc = eif_pointer_function("to_c", tid_str);
 		EIF_POINTER strPtr = (charFunc)(eif_access(itemResult), NULL);
-		cout << ((char*)strPtr) << endl;
-		cout << i << endl;
+//		cout << ((char*)strPtr) << endl;
+//		cout << i << endl;
 
 		string* str = new string((char*)strPtr);
 		archetypeNames->push_back(*str);

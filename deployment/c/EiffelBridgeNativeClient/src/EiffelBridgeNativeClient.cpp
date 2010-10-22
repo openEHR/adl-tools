@@ -30,6 +30,7 @@ int main (int argc, char **argv, char **envp)
 	OpenEHRManager* manager = new OpenEHRManager();
 	vector<string>* names = manager->getArchetyepNames();
 	delete(manager);
+	cout << "completed";
 	return 0;
 }
 
