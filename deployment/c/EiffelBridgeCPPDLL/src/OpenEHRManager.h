@@ -27,7 +27,9 @@ public:
 	vector<string>* getArchetyepNames();
 	void setErrorDBDirPath(string&);
 	void setRmSchemaDirPath(string&);
+	void compileArchetype(string&);
 	int getFunctionCallResult();
+
 private:
 
 };

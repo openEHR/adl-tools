@@ -69,3 +69,12 @@ JNIEXPORT void JNICALL Java_uk_ac_ucl_chime_EiffelBridge_setRMSchemaDirectoryPat
 	env->ReleaseStringUTFChars(str, cStr);
 }
 
+JNIEXPORT void JNICALL Java_uk_ac_ucl_chime_EiffelBridge_compileArcheytpe(JNIEnv * env, jobject obj, jstring str){
+	if(manager == NULL)
+			manager = new OpenEHRManager();
+	const char* cStr = env->GetStringUTFChars(str, 0);
+	string cppStr(cStr);
+	manager->compileArchetype(cppStr);
+	env->ReleaseStringUTFChars(str, cStr);
+}
+
