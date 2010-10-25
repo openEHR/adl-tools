@@ -28,8 +28,16 @@
 int main (int argc, char **argv, char **envp)
 {
 	OpenEHRManager* manager = new OpenEHRManager();
+	string errorDir = string("c:\\tmp\\error_db");
+	manager->setErrorDBDirPath(errorDir);
+	string schemaDir = string("c:\\tmp\\rm_schemas");
+	manager->setRmSchemaDirPath(schemaDir);
 	vector<string>* names = manager->getArchetyepNames();
-	delete(manager);
+	string name = names->at(2);
+	cout << name;
+	string& arcNameToCompile = name;
+	manager->compileArchetype(arcNameToCompile);
+//	delete(manager);
 	cout << "completed";
 	return 0;
 }
