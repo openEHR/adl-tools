@@ -14,15 +14,20 @@ feature {NONE} -- Initialization
 
 	make
 			-- Initialization for `Current'.
+		local
+			archetype_names_in_repo:ARRAY[STRING]
 		do
-			Io.put_string ("Test for CECIL%N")
 			--io.put_integer (my_ret_type.count)
 
 
 
 			--io.put_integer (archetype_names.upper)
-			print(archetype_names[archetype_names.upper])
+			--print(archetype_names[archetype_names.upper])
 			--perform_parsing
+			app_root.set_error_db_directory_location ("c:\tmp\error_db")
+			app_root.set_rm_schema_directory_location ("c:\tmp\rm_schemas")
+			archetype_names_in_repo := archetype_names
+			compile_archetype (archetype_names_in_repo[2])
 		end
 feature		--Access
 
@@ -48,15 +53,13 @@ feature		--Access
 	archetype_names: ARRAY[STRING]
 		-- get an array of archetype names in the repository
 		require
-			rm_schema_dir_initialized: app_root.rm_schema_directory /= Void
-			error_db_dir_initialized: app_root.error_db_directory /= Void
+			rm_schema_dir_initialized: app_root.rm_schema_directory_location /= Void
+			error_db_dir_initialized: app_root.error_db_directory_location /= Void
 		local
 			names_arr: ARRAY[STRING]
 			archetype_index: INTEGER_32
 		do
-			app_root.initialise
-			set_repository_profile
-			app_root.use_current_profile
+			configure_archetype_repository
 			create names_arr.make (0, app_root.arch_dir.archetype_index.count - 1)
 			archetype_index := 0
 			FROM app_root.arch_dir.archetype_index.start
@@ -70,7 +73,28 @@ feature		--Access
 			Result := names_arr
 		end
 
-feature
+feature --process archetypes
+
+	compile_archetype (p_archetype_name:STRING)
+	--compile the archetype and save flattened form into a variable
+	require
+		rm_schema_dir_initialized: app_root.rm_schema_directory_location /= Void
+		error_db_dir_initialized: app_root.error_db_directory_location /= Void
+	local
+		flattened_archetype: FLAT_ARCHETYPE --TODO: will return this in the next version of this function, only for debugging purposes for now
+	do
+		configure_archetype_repository
+		app_root.arch_dir.set_selected_item (app_root.arch_dir.archetype_index.item (p_archetype_name))
+		app_root.archetype_compiler.build_lineage (app_root.arch_dir.selected_archetype)
+		if app_root.arch_dir.selected_archetype.is_valid then
+			flattened_archetype := app_root.arch_dir.selected_archetype.flat_archetype
+			io.put_string("Compiled archetype: " + p_archetype_name + "%N");
+			io.put_string("ADL version: " + flattened_archetype.adl_version + "%N")
+		else
+			io.put_string ("Archetype: " + p_archetype_name + " is not valid%N")
+		end
+	end
+
 	perform_parsing
 	local
 		archetype_key: STRING
@@ -153,8 +177,19 @@ feature --configuration
 
 	set_rm_schema_dir_location (p_path:STRING)
 	do
-		app_root.set_rm_schema_directory (p_path)
+		app_root.set_rm_schema_directory_location (p_path)
 	end
+
+	configure_archetype_repository
+	require
+		rm_schema_dir_initialized: app_root.rm_schema_directory_location /= Void
+		error_db_dir_initialized: app_root.error_db_directory_location /= Void
+	do
+		app_root.initialise
+		set_repository_profile
+		app_root.use_current_profile
+	end
+
 
 
 end
