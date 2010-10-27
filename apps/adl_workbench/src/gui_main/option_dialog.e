@@ -24,13 +24,6 @@ inherit
 			copy, default_create
 		end
 
-	SHARED_REFERENCE_MODEL_ACCESS
-		export
-			{NONE} all
-		undefine
-			copy, default_create
-		end
-
 	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
@@ -51,41 +44,40 @@ feature {NONE} -- Initialization
 			cancel_button.select_actions.extend (agent hide)
 			set_default_cancel_button (cancel_button)
 			set_default_push_button (ok_button)
-			show_actions.extend (agent rm_schemas_checkable_list.set_focus)
-			editor_command_text.disable_word_wrapping
-			difftool_command_text.disable_word_wrapping
+
 			export_html_text.focus_in_actions.extend (agent on_select_all (export_html_text))
 			save_diff_path_text.focus_in_actions.extend (agent on_select_all (save_diff_path_text))
+
+			text_editor_command_text.focus_in_actions.extend (agent on_select_all (text_editor_command_text))
+			editor_app_command_text.focus_in_actions.extend (agent on_select_all (editor_app_command_text))
+			difftool_command_text.focus_in_actions.extend (agent on_select_all (difftool_command_text))
+
 			populate_controls
 		end
 
 feature -- Status
 
-	has_changed_archetype_options: BOOLEAN
+	has_changed_ui_options: BOOLEAN
 			-- Has the user OK'ed changes?
 
 	has_changed_navigator_options: BOOLEAN
 			-- True if some option has changed that would require the navigator to be redrawn
 
-	has_changed_schema_load_list: BOOLEAN
-			-- Schema load list has changed; should refresh
-
 feature {NONE} -- Implementation
 
 	populate_controls
 			-- Set the dialog widgets from shared settings.
-		local
-			s: STRING
 		do
-			s := editor_command
-			s.replace_substring_all (",", "%N")
-			editor_command_text.set_text (s + "%N")
+			-- text editor command
+			text_editor_command_text.set_text (text_editor_command)
 
-			s := difftool_command
-			s.replace_substring_all (",", "%N")
-			difftool_command_text.set_text (s + "%N")
+			-- archetype editor app command
+			editor_app_command_text.set_text (editor_app_command)
 
-			-- archetype viewing settings
+			-- diff tool command
+			difftool_command_text.set_text (difftool_command)
+
+			-- GUI options
 			if expand_node_tree then
 				show_definition_tree_expanded_check_button.enable_select
 			else
@@ -111,7 +103,7 @@ feature {NONE} -- Implementation
 			end
 			old_show_entire_ontology := show_entire_ontology
 
-			-- compiler settings
+			-- compiler options
 			populate_ev_combo_from_ds_hash_keys (parser_error_reporting_level_combo_box, error_type_ids)
 			parser_error_reporting_level_combo_box.do_all (
 				agent (li: EV_LIST_ITEM)
@@ -138,127 +130,64 @@ feature {NONE} -- Implementation
 				validation_strict_check_button.disable_select
 			end
 
-			-- resource / directory settings
+			-- resource / directory options
 			export_html_text.set_text (html_export_directory)
 			save_diff_path_text.set_text (test_diff_directory)
-
-			populate_ev_list_from_hash_keys (rm_schemas_checkable_list, rm_schemas_access.schema_metadata_table)
-			rm_schemas_checkable_list.do_all (
-				agent (li: EV_LIST_ITEM)
-					do
-						if rm_schemas_load_list.has (li.text) or else rm_schemas_load_list.is_empty then
-							rm_schemas_checkable_list.check_item (li)
-						else
-							rm_schemas_checkable_list.uncheck_item (li)
-						end
-					end
-			)
 		end
 
 	on_ok
 			-- Set shared settings from the dialog widgets.
-		local
-			s: STRING
 		do
 			hide
 
-			s := editor_command_text.text.as_string_8
-			s.left_adjust
-			s.right_adjust
-			s.replace_substring_all ("%N", ",")
-			set_editor_command (s)
+			-- text editor command
+			set_text_editor_command (text_editor_command_text.text.as_string_8)
 
-			s := difftool_command_text.text.as_string_8
-			s.left_adjust
-			s.right_adjust
-			s.replace_substring_all ("%N", ",")
-			set_difftool_command (s)
+			-- archetype editor app command
+			set_editor_app_command (editor_app_command_text.text.as_string_8)
 
+			-- difftool command
+			set_difftool_command (difftool_command_text.text.as_string_8)
+
+			-- GUI options
+			has_changed_ui_options := True -- for now, just assume changes. since repainting archetype part of gui is cheap
 			set_expand_node_tree (show_definition_tree_expanded_check_button.is_selected)
 			set_show_line_numbers (show_line_numbers_check_button.is_selected)
-			set_show_entire_ontology (show_entire_ontology_check_button.is_selected)
 			set_display_archetype_source (display_archetype_source_check_button.is_selected)
-			set_validation_strict(validation_strict_check_button.is_selected)
-
-			set_status_reporting_level (error_type_ids.item (parser_error_reporting_level_combo_box.text.as_string_8))
-			billboard.set_error_reporting_level(error_reporting_level)
-
-			has_changed_archetype_options := True
+			set_show_entire_ontology (show_entire_ontology_check_button.is_selected)
 			if show_entire_ontology /= old_show_entire_ontology then
 				has_changed_navigator_options := True
+			else
+				has_changed_navigator_options := False
 			end
 
+			-- paths options: set directly; NO FURTHER ACTION REQUIRED IN GUI
 			set_html_export_directory (export_html_text.text.as_string_8)
 			set_test_diff_directory (save_diff_path_text.text.as_string_8)
 
+			-- compilation options: set directly; NO FURTHER ACTION REQUIRED IN GUI
 			set_adl_version_for_flat_output(adl_save_version_combo_box.text.as_string_8)
-
-			create {ARRAYED_LIST [STRING]} rm_schemas_ll.make (0)
-			rm_schemas_ll.compare_objects
-			rm_schemas_checkable_list.checked_items.do_all (
-				agent (li: EV_LIST_ITEM)
-					do
-						rm_schemas_ll.extend(li.text)
-					end
-			)
-
-			if rm_schemas_ll.is_equal (rm_schemas_load_list) then
-				has_changed_schema_load_list := False
-			else
-				set_rm_schemas_load_list (rm_schemas_ll)
-				rm_schemas_access.set_schema_load_list (rm_schemas_ll)
-				has_changed_schema_load_list := True
-			end
+			set_validation_strict(validation_strict_check_button.is_selected)
+			set_status_reporting_level (error_type_ids.item (parser_error_reporting_level_combo_box.text.as_string_8))
+			billboard.set_error_reporting_level(error_reporting_level)
 		end
 
-	on_editor_command_add
-			-- Add a new line to `editor_command_text'.
+	on_editor_app_command_browse
+			-- Let the user browse for an application that will act as the external archetype editor.
 		do
-			editor_command_text.append_text ("%N")
-			editor_command_text.set_focus
-			editor_command_text.select_lines (editor_command_text.line_count, editor_command_text.line_count + 1)
+			editor_app_command_text.set_text (get_file (editor_app_command_text.selected_text.as_string_8, Current))
 		end
 
-	on_editor_command_browse
-			-- Let the user browse for an application that will act as the external editor.
-		local
-			s: STRING
+	on_text_editor_command_browse
+			-- Let the user browse for a text editor to use in AWB
 		do
-			editor_command_text.select_lines (editor_command_text.current_line_number, editor_command_text.current_line_number)
-			s := get_file (editor_command_text.selected_text.as_string_8, Current)
-
-			if editor_command_text.has_selection then
-				editor_command_text.delete_selection
-			end
-
-			editor_command_text.insert_text (s + "%N")
-			editor_command_text.set_focus
-			editor_command_text.select_lines (editor_command_text.current_line_number, editor_command_text.current_line_number)
-		end
-
-	on_difftool_command_add
-			-- Add a new line to `difftool_command_text'.
-		do
-			difftool_command_text.append_text ("%N")
-			difftool_command_text.set_focus
-			difftool_command_text.select_lines (difftool_command_text.line_count, difftool_command_text.line_count + 1)
+			text_editor_command_text.set_text (get_file (text_editor_command_text.selected_text.as_string_8, Current))
 		end
 
 	on_difftool_command_browse
 			-- Let the user browse for an application that will act as the external difftool.
-		local
-			s: STRING
 		do
-			difftool_command_text.select_lines (difftool_command_text.current_line_number, difftool_command_text.current_line_number)
-			s := get_file (difftool_command_text.selected_text.as_string_8, Current)
-
-			if difftool_command_text.has_selection then
-				difftool_command_text.delete_selection
-			end
-
-			difftool_command_text.insert_text (s + "%N")
-			difftool_command_text.set_focus
-			difftool_command_text.select_lines (difftool_command_text.current_line_number, difftool_command_text.current_line_number)
+			difftool_command_text.set_text (get_file (difftool_command_text.text.as_string_8, Current))
 		end
 
 	on_export_html_browse
@@ -285,10 +214,6 @@ feature {NONE} -- Implementation
 
 	old_show_entire_ontology: BOOLEAN
 			-- value of show_entire_ontology prior to setting by optin dialog
-
-	rm_schemas_ll: LIST [STRING]
-			-- list of checked schemas in options dialog
-
 
 end
 

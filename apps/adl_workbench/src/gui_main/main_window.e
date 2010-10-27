@@ -49,6 +49,12 @@ inherit
 			copy, default_create
 		end
 
+feature -- Definitions
+
+	Diff_source: INTEGER = 1
+	Diff_flat: INTEGER = 2
+	Diff_source_flat: INTEGER = 3
+
 feature {NONE} -- Initialization
 
 	user_initialization
@@ -93,13 +99,13 @@ feature {NONE} -- Initialization
 			cur_title.replace_substring_all ("VER", latest_adl_version)
 			set_title (cur_title)
 
-			file_menu_open.set_pixmap (pixmaps ["archetype_1"])
+			file_menu_open.set_pixmap (pixmaps ["open_archetype"])
 			file_menu_parse.set_pixmap (pixmaps ["parse"])
 			file_menu_edit.set_pixmap (pixmaps ["edit"])
 			history_menu_back.set_pixmap (pixmaps ["history_back"])
 			history_menu_forward.set_pixmap (pixmaps ["history_forward"])
 
-			open_button.set_pixmap (pixmaps ["archetype_1"])
+			open_button.set_pixmap (pixmaps ["open_archetype"])
 			parse_button.set_pixmap (pixmaps ["parse"])
 			edit_button.set_pixmap (pixmaps ["edit"])
 			history_back_button.set_pixmap (pixmaps ["history_back"])
@@ -151,8 +157,12 @@ feature -- Status setting
 				maximize
 			end
 
-			if editor_command.is_empty then
-				set_editor_command (default_editor_command)
+			if text_editor_command.is_empty then
+				set_text_editor_command (default_text_editor_command)
+			end
+
+			if editor_app_command.is_empty then
+				set_editor_app_command (default_editor_app_command)
 			end
 
 			if difftool_command.is_empty then
@@ -216,10 +226,8 @@ feature -- File events
 			question_dialog: EV_QUESTION_DIALOG
 			info_dialog: EV_INFORMATION_DIALOG
 			editors_dialog: ICON_DIALOG
-			path, command: STRING
+			path: STRING
 			ara: ARCH_REP_ARCHETYPE
-			editors: LIST [STRING]
-			list: EV_LIST
 		do
 			ara := current_arch_dir.selected_archetype
 			if ara /= Void then
@@ -240,34 +248,7 @@ feature -- File events
 					path := ara.legacy_flat_path
 				end
 
-				command := editor_command
-				editors := command.split (',')
-
-				if editors.count > 1 then
-					create editors_dialog
-					editors_dialog.set_title ("Edit with which application?")
-					list := editors_dialog.icon_help_list
-					list.wipe_out
-
-					from editors.start until editors.off loop
-						command := editors.item
-						command.left_adjust
-						command.right_adjust
-
-						if not command.is_empty then
-							list.extend (create {EV_LIST_ITEM}.make_with_text (command))
-							list.last.set_pixmap (pixmaps ["edit"])
-						end
-
-						editors.forth
-					end
-
-					list.first.enable_select
-					editors_dialog.show_modal_to_window (Current)
-					command := list.selected_item.text.as_string_8
-				end
-
-				execution_environment.launch (command + " %"" + path + "%"")
+				execution_environment.launch (editor_app_command + " %"" + path + "%"")
 			end
 		end
 
@@ -455,7 +436,7 @@ feature {NONE} -- Repository events
 		end
 
 	select_profile
-			-- Called by `select_actions' of `archetype_profile_combo'.
+			-- Called by `select_actions' of `archetype_profile_combo' and `test_profile_combo'
 		do
 			if archetype_profile_combo.is_displayed then
 				if not archetype_profile_combo.text.same_string (current_repository_profile) then
@@ -650,7 +631,7 @@ feature {NONE} -- Tools events
 			create dialog
 			dialog.show_modal_to_window (Current)
 
-			if dialog.has_changed_archetype_options then
+			if dialog.has_changed_ui_options then
 				save_resources_and_show_status
 				populate_archetype_view_controls
 			end
@@ -659,6 +640,16 @@ feature {NONE} -- Tools events
 				template_view_tree_control.populate
 				archetype_test_tree_control.populate
 			end
+		end
+
+	set_rm_schemas
+			-- Called by `select_actions' of `tools_menu_rm_schemas'.
+		local
+			dialog: RM_SCHEMA_DIALOG
+		do
+			create dialog
+			dialog.show_modal_to_window (Current)
+
 			if dialog.has_changed_schema_load_list then
 				clear_status_area
 				rm_schemas_access.load_schemas
@@ -681,24 +672,32 @@ feature {NONE} -- Tools events
 
 	on_diff_source
 		do
-			do_diff(True)
+			do_diff(Diff_source)
 		end
 
 	on_diff_flat
 		do
-			do_diff(False)
+			do_diff(Diff_flat)
 		end
 
-	do_diff (source_flag: BOOLEAN)
+	on_diff_source_flat
+		do
+			do_diff(Diff_source_flat)
+		end
+
+	do_diff (diff_type: INTEGER)
 		local
 			info_dialog: EV_INFORMATION_DIALOG
 		do
 			if not difftool_command.is_empty then
 				if archetype_test_tree_control.diff_dirs_available then
-					if source_flag then
+					inspect diff_type
+					when Diff_source then
 						do_diff_command(archetype_test_tree_control.diff_dir_source_orig, archetype_test_tree_control.diff_dir_source_new)
-					else
+					when Diff_flat then
 						do_diff_command(archetype_test_tree_control.diff_dir_flat_orig, archetype_test_tree_control.diff_dir_flat_new)
+					else
+						do_diff_command(archetype_test_tree_control.diff_dir_source_flat_orig, archetype_test_tree_control.diff_dir_source_flat_new)
 					end
 				else
 					create info_dialog.make_with_text (create_message_line ("no_diff_dirs", Void))

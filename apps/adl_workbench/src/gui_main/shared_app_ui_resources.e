@@ -244,6 +244,7 @@ feature -- Access
 			Result.force (["stop.ico", Void], "stop")
 			Result.force (["parse.ico", Void], "parse")
 			Result.force (["edit.ico", Void], "edit")
+			Result.force (["open_archetype.ico", Void], "open_archetype")
 			Result.force (["history_back.ico", Void], "history_back")
 			Result.force (["history_forward.ico", Void], "history_forward")
 			Result.force (["magnifier.ico", Void], "magnifier")
@@ -299,9 +300,10 @@ feature -- Access
 			Result.append ("Funded by: OceanInformatics.com%N")
 			Result.append ("Author: Thomas Beale%N")
 			Result.append ("Contributors: Peter Gummer%N")
-			Result.append ("Built using%N")
+			Result.append ("Acknowledgements:%N")
 			Result.append ("- Eiffel Software Eiffel (http://www.eiffel.com)%N")
 			Result.append ("- Gobo parsing libraries & tools (http://www.gobosoft.com)%N")
+			Result.append ("- Jonas Rask Design icons (http://jonasraskdesign.com)%N")
 		ensure
 			not_empty: not Result.is_empty
 		end
@@ -509,10 +511,16 @@ feature -- Application Switches
 			no_empty_items: Result.for_all (agent (s: STRING): BOOLEAN do Result := attached s and then not s.is_empty end)
 		end
 
-	editor_command: attached STRING
+	text_editor_command: attached STRING
 			-- Path of editor application for ADL files.
 		do
-			Result := substitute_env_vars (resource_value ("default", "editor"))
+			Result := substitute_env_vars (resource_value ("default", "text_editor"))
+		end
+
+	editor_app_command: attached STRING
+			-- Path of editor application for ADL files.
+		do
+			Result := substitute_env_vars (resource_value ("default", "editor_app"))
 		end
 
 	difftool_command: attached STRING
@@ -535,13 +543,22 @@ feature -- Application Switch Setting
 			end
 		end
 
-	set_editor_command (value: STRING)
+	set_text_editor_command (value: STRING)
 			-- set editor
 		require
 			value_attached: value /= Void
 			value_not_empty: not value.is_empty
 		do
-			set_resource_value("default", "editor", value)
+			set_resource_value("default", "text_editor", value)
+		end
+
+	set_editor_app_command (value: STRING)
+			-- set editor
+		require
+			value_attached: value /= Void
+			value_not_empty: not value.is_empty
+		do
+			set_resource_value("default", "editor_app", value)
 		end
 
 	set_difftool_command (value: STRING)

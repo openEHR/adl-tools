@@ -14,7 +14,7 @@ note
 class ARTEFACT_TYPE
 
 create
-	default_create, make, make_from_type_name
+	default_create, make, make_from_type_name, make_operational_template
 
 feature -- Defnition
 
@@ -44,6 +44,11 @@ feature -- Initialisation
 			s /= Void and then valid_type_name (s)
 		do
 			value := types.item (s)
+		end
+
+	make_operational_template
+		do
+			value := operational_template
 		end
 
 feature -- Access

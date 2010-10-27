@@ -36,6 +36,13 @@ feature -- Definitions
 	Archetype_source_file_extension: STRING = ".adls"
 			-- Extension for source form (differential) archetype files.
 
+	Archetype_dummy_file_extension: STRING = ".adlx"
+			-- Extension for use with source/flat diff; we don't want to use
+			-- the legitimate extension on these files because one is source
+			-- and one is flat, and diff tools need to see the same extension;
+			-- also we don't want users to get confused about what kind of files
+			-- these are
+
 	Adl_versions: ARRAYED_LIST [STRING]
 			-- list of ADL versions known in this tool
 		once

@@ -66,8 +66,6 @@ feature -- Commands
 			lines: LIST [STRING]
 			artefact_types: ARTEFACT_TYPE
 			id_bad: BOOLEAN
-			lpos, rpos: INTEGER
-			adl_ver: STRING
 		do
 			last_parse_valid := False
 			create last_archetype

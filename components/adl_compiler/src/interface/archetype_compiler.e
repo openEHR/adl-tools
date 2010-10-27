@@ -100,7 +100,7 @@ feature -- Commands
 			-- Build the whole system, but not artefacts that seem to be built already.
 		do
 			call_global_visual_update_action(create_message_line ("compiler_building_system", Void))
-			do_all (agent check_currency (False, ?))
+			do_all (agent check_file_system_currency (False, ?))
 			do_all (agent build_archetype (?, 0))
 			call_global_visual_update_action(create_message_line ("compiler_finished_building_system", Void))
 		end
@@ -109,7 +109,7 @@ feature -- Commands
 			-- Rebuild the whole system from scratch, regardless of previous attempts.
 		do
 			call_global_visual_update_action(create_message_line ("compiler_rebuilding_system", Void))
-			do_all (agent check_currency (True, ?))
+			do_all (agent check_file_system_currency (True, ?))
 			do_all (agent build_archetype (?, 0))
 			call_global_visual_update_action(create_message_line ("compiler_finished_rebuilding_system", Void))
 		end
@@ -118,7 +118,7 @@ feature -- Commands
 			-- Build the sub-system at and below `archetype_directory.selected_node', but not artefacts that seem to be built already.
 		do
 			call_global_visual_update_action(create_message_line ("compiler_building_subtree", Void))
-			do_subtree (current_arch_dir.selected_item, agent check_currency (False, ?))
+			do_subtree (current_arch_dir.selected_item, agent check_file_system_currency (False, ?))
 			do_subtree (current_arch_dir.selected_item, agent build_archetype (?, 0))
 			call_global_visual_update_action(create_message_line ("compiler_finished_building_subtree", Void))
 		end
@@ -127,7 +127,7 @@ feature -- Commands
 			-- Rebuild the sub-system at and below `archetype_directory.selected_node' from scratch, regardless of previous attempts.
 		do
 			call_global_visual_update_action(create_message_line ("compiler_rebuilding_subtree", Void))
-			do_subtree (current_arch_dir.selected_item, agent check_currency (True, ?))
+			do_subtree (current_arch_dir.selected_item, agent check_file_system_currency (True, ?))
 			do_subtree (current_arch_dir.selected_item, agent build_archetype (?, 0))
 			call_global_visual_update_action(create_message_line ("compiler_finished_rebuilding_subtree", Void))
 		end
@@ -139,7 +139,7 @@ feature -- Commands
 		require
 			ara_attached: ara /= Void
 		do
-			do_lineage (ara, agent check_currency (False, ?))
+			do_lineage (ara, agent check_file_system_currency (False, ?))
 			do_lineage (ara, agent build_archetype (?, dependency_depth))
 		end
 
@@ -149,7 +149,7 @@ feature -- Commands
 		require
 			ara_attached: ara /= Void
 		do
-			do_lineage (ara, agent check_currency (True, ?))
+			do_lineage (ara, agent check_file_system_currency (True, ?))
 			do_lineage (ara, agent build_archetype (?, dependency_depth))
 		end
 
@@ -208,13 +208,13 @@ feature {NONE} -- Implementation
 			current_arch_dir.do_archetype_lineage(ara, action)
 		end
 
-	check_currency (from_scratch: BOOLEAN; ara: attached ARCH_REP_ARCHETYPE)
+	check_file_system_currency (from_scratch: BOOLEAN; ara: attached ARCH_REP_ARCHETYPE)
 			-- check archetype for anything that would require recompilation:
 			-- * editing changes, including anything that might cause reparenting
 			-- * user request to start from scratch
 		do
 			if not is_interrupted then
-				if not ara.compile_attempted then
+				if ara.compile_attempted then
 					if ara.is_source_modified then
 						ara.signal_source_edited
 						if ara.ontology_location_changed then
@@ -237,7 +237,7 @@ feature {NONE} -- Implementation
 		do
 			if not is_interrupted then
 				if not exception_encountered then
-					ara.check_currency
+					ara.check_compilation_currency
 					if not ara.is_in_terminal_compilation_state then
 						build_status := create_message_line("compiler_compiling_archetype", <<ara.artefact_name.as_upper, ara.id.value>>)
 						call_archetype_visual_update_action (build_status, ara, dependency_depth)

@@ -557,7 +557,7 @@ feature -- Compilation
 			Compilation_timestamped: last_compile_attempt_timestamp /= Void
 		end
 
-	check_currency
+	check_compilation_currency
 			-- if archetype has gone out of date due to parents or suppliers being recompiled more recently,
 			-- set state accordingly
 		do

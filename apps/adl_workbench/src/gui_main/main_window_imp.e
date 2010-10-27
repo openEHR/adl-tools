@@ -74,6 +74,7 @@ feature {NONE}-- Initialization
 			tools_menu.extend (tools_menu_reload_schemas)
 			tools_menu.extend (l_ev_menu_separator_9)
 			tools_menu.extend (tools_menu_options)
+			tools_menu.extend (tools_menu_rm_schemas)
 			menu.extend (help_menu)
 			help_menu.extend (help_menu_contents)
 			help_menu.extend (help_menu_release_notes)
@@ -250,8 +251,10 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_16.extend (archetype_test_go_bn)
 			l_ev_vertical_box_16.extend (l_ev_cell_2)
 			l_ev_vertical_box_16.extend (l_ev_horizontal_separator_2)
+			l_ev_vertical_box_16.extend (l_ev_label_10)
 			l_ev_vertical_box_16.extend (diff_source_button)
 			l_ev_vertical_box_16.extend (diff_flat_button)
+			l_ev_vertical_box_16.extend (diff_source_flat_button)
 			test_split_area.extend (test_status_area)
 
 			file_menu.set_text ("&File")
@@ -282,6 +285,7 @@ feature {NONE}-- Initialization
 			tools_menu_clean_generated_files.set_text ("&Clean Generated Files")
 			tools_menu_reload_schemas.set_text ("&Reload Schemas")
 			tools_menu_options.set_text ("&Options...")
+			tools_menu_rm_schemas.set_text ("&Schemas...")
 			help_menu.set_text ("&Help")
 			help_menu_contents.set_text ("&Contents")
 			help_menu_release_notes.set_text ("&Release Notes")
@@ -828,8 +832,10 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_16.disable_item_expand (l_ev_horizontal_separator_1)
 			l_ev_vertical_box_16.disable_item_expand (archetype_test_go_bn)
 			l_ev_vertical_box_16.disable_item_expand (l_ev_horizontal_separator_2)
+			l_ev_vertical_box_16.disable_item_expand (l_ev_label_10)
 			l_ev_vertical_box_16.disable_item_expand (diff_source_button)
 			l_ev_vertical_box_16.disable_item_expand (diff_flat_button)
+			l_ev_vertical_box_16.disable_item_expand (diff_source_flat_button)
 			test_profile_combo.set_tooltip ("Change repository profile")
 			test_profile_combo.disable_edit
 			remove_unused_codes_rb.set_text ("Remove unused codes")
@@ -851,10 +857,13 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_separator_1.set_minimum_height (15)
 			archetype_test_go_bn.set_text ("Go")
 			archetype_test_go_bn.set_tooltip ("Start running tests")
-			diff_source_button.set_text ("Diff Source")
-			diff_source_button.set_tooltip ("Open diff tool on original and serialised .adls files")
-			diff_flat_button.set_text ("Diff flat")
+			l_ev_label_10.set_text ("Diffs")
+			diff_source_button.set_text ("Source file v serial")
+			diff_source_button.set_tooltip ("Open diff tool on parsed and 1st generation serialised .adls files")
+			diff_flat_button.set_text ("Legacy v Flat")
 			diff_flat_button.set_tooltip ("Open diff tool on legacy and generated flat files")
+			diff_source_flat_button.set_text ("Source v Flat")
+			diff_source_flat_button.set_tooltip ("Open diff tool on source and flat files; for top-level archetypes, this shows the effect of flattening")
 			integer_constant_set_procedures.extend (agent test_status_area.set_minimum_height (?))
 			integer_constant_retrieval_functions.extend (agent status_area_min_height)
 			test_status_area.disable_edit
@@ -891,6 +900,7 @@ feature {NONE}-- Initialization
 			tools_menu_clean_generated_files.select_actions.extend (agent clean_generated_files)
 			tools_menu_reload_schemas.select_actions.extend (agent reload_schemas)
 			tools_menu_options.select_actions.extend (agent set_options)
+			tools_menu_rm_schemas.select_actions.extend (agent set_rm_schemas)
 			help_menu_contents.select_actions.extend (agent show_online_help)
 			help_menu_release_notes.select_actions.extend (agent show_release_notes)
 			help_menu_icons.select_actions.extend (agent show_icon_help)
@@ -942,6 +952,7 @@ feature {NONE}-- Initialization
 			archetype_test_go_bn.select_actions.extend (agent archetype_test_go_stop)
 			diff_source_button.select_actions.extend (agent on_diff_source)
 			diff_flat_button.select_actions.extend (agent on_diff_flat)
+			diff_source_flat_button.select_actions.extend (agent on_diff_source_flat)
 			close_request_actions.extend (agent exit_app)
 
 				-- Call `user_initialization'.
@@ -991,6 +1002,7 @@ feature {NONE}-- Initialization
 			create tools_menu_reload_schemas
 			create l_ev_menu_separator_9
 			create tools_menu_options
+			create tools_menu_rm_schemas
 			create help_menu
 			create help_menu_contents
 			create help_menu_release_notes
@@ -1167,8 +1179,10 @@ feature {NONE}-- Initialization
 			create archetype_test_go_bn
 			create l_ev_cell_2
 			create l_ev_horizontal_separator_2
+			create l_ev_label_10
 			create diff_source_button
 			create diff_flat_button
+			create diff_source_flat_button
 			create test_status_area
 
 			create string_constant_set_procedures.make (10)
@@ -1197,31 +1211,31 @@ feature -- Access
 	repository_menu_rebuild_all, repository_menu_build_subtree, repository_menu_rebuild_subtree,
 	repository_menu_export_html, repository_menu_export_repository_report, repository_menu_interrupt_build,
 	repository_menu_refresh, history_menu_back, history_menu_forward, tools_menu_clean_generated_files,
-	tools_menu_reload_schemas, tools_menu_options, help_menu_contents, help_menu_release_notes,
-	help_menu_icons, help_menu_clinical_knowledge_manager, help_menu_report_bug, help_menu_about: EV_MENU_ITEM
-	l_ev_menu_separator_1,
-	l_ev_menu_separator_2, l_ev_menu_separator_3, l_ev_menu_separator_4, l_ev_menu_separator_5,
-	l_ev_menu_separator_6, l_ev_menu_separator_7, l_ev_menu_separator_8, history_menu_separator,
-	l_ev_menu_separator_9, l_ev_menu_separator_10: EV_MENU_SEPARATOR
-	main_notebook, archetype_notebook,
-	definition_notebook, status_notebook: EV_NOTEBOOK
-	viewer_vbox, l_ev_vertical_box_1, l_ev_vertical_box_2,
-	description_box, arch_desc_auth_hbox, arch_desc_contrib_hbox, l_ev_vertical_box_3,
-	terminology_vbox, lang_vbox, l_ev_vertical_box_4, l_ev_vertical_box_5, l_ev_vertical_box_6,
-	l_ev_vertical_box_7, l_ev_vertical_box_8, differential_view_box, node_map_contols,
-	l_ev_vertical_box_9, l_ev_vertical_box_10, l_ev_vertical_box_11, l_ev_vertical_box_12,
-	terminology_area, flat_view_box, slots_box, l_ev_vertical_box_13, l_ev_vertical_box_14,
-	l_ev_vertical_box_15, l_ev_vertical_box_16: EV_VERTICAL_BOX
-	action_bar, l_ev_horizontal_box_1, l_ev_horizontal_box_2,
-	l_ev_horizontal_box_3, author_lang_term_hbox, l_ev_horizontal_box_4, l_ev_horizontal_box_5,
-	l_ev_horizontal_box_6, arch_desc_details_hbox, l_ev_horizontal_box_7, l_ev_horizontal_box_8,
-	l_ev_horizontal_box_9, l_ev_horizontal_box_10, l_ev_horizontal_box_11, arch_desc_copyright_hbox,
-	node_map, path_analysis, statistics_box, l_ev_horizontal_box_12, l_ev_horizontal_box_13,
-	l_ev_horizontal_box_14, l_ev_horizontal_box_15, l_ev_horizontal_box_16, l_ev_horizontal_box_17,
-	l_ev_horizontal_box_18: EV_HORIZONTAL_BOX
+	tools_menu_reload_schemas, tools_menu_options, tools_menu_rm_schemas, help_menu_contents,
+	help_menu_release_notes, help_menu_icons, help_menu_clinical_knowledge_manager, help_menu_report_bug,
+	help_menu_about: EV_MENU_ITEM
+	l_ev_menu_separator_1, l_ev_menu_separator_2, l_ev_menu_separator_3,
+	l_ev_menu_separator_4, l_ev_menu_separator_5, l_ev_menu_separator_6, l_ev_menu_separator_7,
+	l_ev_menu_separator_8, history_menu_separator, l_ev_menu_separator_9, l_ev_menu_separator_10: EV_MENU_SEPARATOR
+	main_notebook,
+	archetype_notebook, definition_notebook, status_notebook: EV_NOTEBOOK
+	viewer_vbox, l_ev_vertical_box_1,
+	l_ev_vertical_box_2, description_box, arch_desc_auth_hbox, arch_desc_contrib_hbox,
+	l_ev_vertical_box_3, terminology_vbox, lang_vbox, l_ev_vertical_box_4, l_ev_vertical_box_5,
+	l_ev_vertical_box_6, l_ev_vertical_box_7, l_ev_vertical_box_8, differential_view_box,
+	node_map_contols, l_ev_vertical_box_9, l_ev_vertical_box_10, l_ev_vertical_box_11,
+	l_ev_vertical_box_12, terminology_area, flat_view_box, slots_box, l_ev_vertical_box_13,
+	l_ev_vertical_box_14, l_ev_vertical_box_15, l_ev_vertical_box_16: EV_VERTICAL_BOX
+	action_bar, l_ev_horizontal_box_1,
+	l_ev_horizontal_box_2, l_ev_horizontal_box_3, author_lang_term_hbox, l_ev_horizontal_box_4,
+	l_ev_horizontal_box_5, l_ev_horizontal_box_6, arch_desc_details_hbox, l_ev_horizontal_box_7,
+	l_ev_horizontal_box_8, l_ev_horizontal_box_9, l_ev_horizontal_box_10, l_ev_horizontal_box_11,
+	arch_desc_copyright_hbox, node_map, path_analysis, statistics_box, l_ev_horizontal_box_12,
+	l_ev_horizontal_box_13, l_ev_horizontal_box_14, l_ev_horizontal_box_15, l_ev_horizontal_box_16,
+	l_ev_horizontal_box_17, l_ev_horizontal_box_18: EV_HORIZONTAL_BOX
 	l_ev_tool_bar_1, l_ev_tool_bar_4: EV_TOOL_BAR
-	open_button, parse_button,
-	edit_button, history_back_button, history_forward_button, search_button: EV_TOOL_BAR_BUTTON
+	open_button,
+	parse_button, edit_button, history_back_button, history_forward_button, search_button: EV_TOOL_BAR_BUTTON
 	l_ev_tool_bar_separator_1,
 	l_ev_tool_bar_separator_2: EV_TOOL_BAR_SEPARATOR
 	archetype_id, language_combo, archetype_profile_combo,
@@ -1232,21 +1246,22 @@ feature -- Access
 	arch_translations_languages_label, l_ev_label_1, l_ev_label_2, l_ev_label_3, arch_desc_purpose_label,
 	arch_desc_use_label, arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
 	arch_desc_resource_orig_res_label, arch_desc_copyright_label, l_ev_label_4, l_ev_label_5,
-	l_ev_label_6, l_ev_label_7, l_ev_label_8, l_ev_label_9: EV_LABEL
-	adl_version_text, arch_desc_status_text,
-	arch_desc_original_language_text, arch_desc_resource_package_text, arch_total_count_tf,
-	arch_spec_count_tf, arch_slotted_count_tf, arch_used_by_count_tf, arch_bad_count_tf,
-	arch_test_processed_count: EV_TEXT_FIELD
+	l_ev_label_6, l_ev_label_7, l_ev_label_8, l_ev_label_9, l_ev_label_10: EV_LABEL
+	adl_version_text,
+	arch_desc_status_text, arch_desc_original_language_text, arch_desc_resource_package_text,
+	arch_total_count_tf, arch_spec_count_tf, arch_slotted_count_tf, arch_used_by_count_tf,
+	arch_bad_count_tf, arch_test_processed_count: EV_TEXT_FIELD
 	explorer_split_area: EV_HORIZONTAL_SPLIT_AREA
-	archetype_template_split_area, total_split_area,
-	l_ev_vertical_split_area_1, test_split_area: EV_VERTICAL_SPLIT_AREA
-	archetype_explorer_pixmap, template_explorer_pixmap: EV_PIXMAP
-	archetype_file_tree,
-	template_file_tree, node_map_tree, slots_tree, used_by_tree: EV_TREE
-	arch_desc_auth_frame,
-	term_frame, arch_translations_frame, arch_desc_details_frame, arch_desc_resource_frame,
-	rm_visibility_controls, l_ev_frame_1, l_ev_frame_2, term_definitions_frame, constraint_definitions_frame,
-	l_ev_frame_3, l_ev_frame_4, l_ev_frame_5: EV_FRAME
+	archetype_template_split_area,
+	total_split_area, l_ev_vertical_split_area_1, test_split_area: EV_VERTICAL_SPLIT_AREA
+	archetype_explorer_pixmap,
+	template_explorer_pixmap: EV_PIXMAP
+	archetype_file_tree, template_file_tree, node_map_tree,
+	slots_tree, used_by_tree: EV_TREE
+	arch_desc_auth_frame, term_frame, arch_translations_frame,
+	arch_desc_details_frame, arch_desc_resource_frame, rm_visibility_controls, l_ev_frame_1,
+	l_ev_frame_2, term_definitions_frame, constraint_definitions_frame, l_ev_frame_3,
+	l_ev_frame_4, l_ev_frame_5: EV_FRAME
 	arch_desc_auth_orig_auth_mlist, arch_translations_author_mlist,
 	arch_translations_other_details_mlist, arch_desc_resource_orig_res_mlist, path_analysis_multi_column_list,
 	ontology_term_definitions_multi_column_list, ontology_constraint_definitions_multi_column_list,
@@ -1258,7 +1273,7 @@ feature -- Access
 	parser_status_area, test_status_area: EV_TEXT
 	node_map_expand_button, node_map_expand_one_button,
 	node_map_collapse_one_button, arch_test_tree_toggle_expand_bn, arch_test_refresh_bn,
-	regression_test_bn, archetype_test_go_bn, diff_source_button, diff_flat_button: EV_BUTTON
+	regression_test_bn, archetype_test_go_bn, diff_source_button, diff_flat_button, diff_source_flat_button: EV_BUTTON
 	l_ev_cell_1,
 	l_ev_cell_2: EV_CELL
 	node_map_domain_radio_button, node_map_technical_radio_button, node_map_reference_model_radio_button: EV_RADIO_BUTTON
@@ -1396,6 +1411,11 @@ feature {NONE} -- Implementation
 	
 	set_options
 			-- Called by `select_actions' of `tools_menu_options'.
+		deferred
+		end
+	
+	set_rm_schemas
+			-- Called by `select_actions' of `tools_menu_rm_schemas'.
 		deferred
 		end
 	
@@ -1551,6 +1571,11 @@ feature {NONE} -- Implementation
 	
 	on_diff_flat
 			-- Called by `select_actions' of `diff_flat_button'.
+		deferred
+		end
+	
+	on_diff_source_flat
+			-- Called by `select_actions' of `diff_source_flat_button'.
 		deferred
 		end
 	

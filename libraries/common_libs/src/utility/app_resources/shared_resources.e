@@ -30,13 +30,25 @@ feature -- Definitions
 
 	User_config_file_extension: STRING = ".cfg"
 
-	Default_editor_command: STRING
-			-- A reasonable name of an editor based on operating system.
+	Default_editor_app_command: STRING
+			-- An editor application based on operating system.
 		once
    			if is_windows then
-   				Result := "Notepad.exe,cmd /q /d /c start %"%" /b"
+   				Result := "cmd /q /d /c start %"%" /b"
 			elseif is_mac_os_x then
 				Result := "open -t"
+			else
+   				Result := "vi"
+   			end
+   		end
+
+	Default_text_editor_command: STRING
+			-- A reasonable name of a text editor based on operating system.
+		once
+   			if is_windows then
+   				Result := "Notepad.exe"
+			elseif is_mac_os_x then
+				Result := "vi"
 			else
    				Result := "vi"
    			end
