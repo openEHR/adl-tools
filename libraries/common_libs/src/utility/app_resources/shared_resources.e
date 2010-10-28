@@ -36,7 +36,7 @@ feature -- Definitions
    			if is_windows then
    				Result := "cmd /q /d /c start %"%" /b"
 			elseif is_mac_os_x then
-				Result := "open -t"
+				Result := "open"
 			else
    				Result := "vi"
    			end
@@ -48,7 +48,7 @@ feature -- Definitions
    			if is_windows then
    				Result := "Notepad.exe"
 			elseif is_mac_os_x then
-				Result := "vi"
+				Result := "open -t"
 			else
    				Result := "vi"
    			end
