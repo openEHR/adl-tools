@@ -1451,7 +1451,6 @@ class_definitions = <
 			["provider"] = (BMM_SINGLE_PROPERTY) <
 				name = <"provider">
 				type = </class_definitions["PARTY_PROXY"]>
-				is_mandatory = <True>
 			>
 			["other_participations"] = (BMM_CONTAINER_PROPERTY) <
 				name = <"other_participations">
