@@ -11,14 +11,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="application.cpp" />
     <ClCompile Include="EiffelBridge.cpp" />
     <ClCompile Include="MainOne.cpp" />
     <ClCompile Include="OpenEHRManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="application.h" />
     <ClInclude Include="MainOne.h" />
     <ClInclude Include="OpenEHRManager.h" />
     <ClInclude Include="uk_ac_ucl_chime_EiffelBridge.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NotesAboutProject-CompilerSetup.rtf" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B5CEE3BE-1581-4202-AABD-6D9E63F4D4C8}</ProjectGuid>
@@ -58,12 +63,14 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
+      <OmitDefaultLibName>true</OmitDefaultLibName>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Program Files\Eiffel Software\EiffelStudio 6.6 GPL\studio\spec\windows\lib\msc;C:\work\data\Eiffel\java\apps\adl_compiler_app\app\EIFGENs\adl_compiler_app\F_code</AdditionalLibraryDirectories>
-      <AdditionalDependencies>user32.lib;advapi32.lib;gdi32.lib;shell32.lib;msimg32.lib;comdlg32.lib;mpr.lib;ws2_32.lib;finalized.lib;libadl_compiler_app.lib</AdditionalDependencies>
+      <AdditionalDependencies>user32.lib;advapi32.lib;gdi32.lib;shell32.lib;msimg32.lib;comdlg32.lib;mpr.lib;ws2_32.lib;finalized.lib;libadl_compiler_app.lib;MSVCRTD.lib</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
