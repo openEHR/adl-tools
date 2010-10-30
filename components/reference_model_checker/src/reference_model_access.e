@@ -193,7 +193,7 @@ feature {NONE} -- Implementation
 			dir: DIRECTORY
 			dmp: DADL_MINI_PARSER
 			schema_name, schema_path: STRING
-		once
+		do
 			create schema_metadata_table.make(0)
 			create dir.make_open_read (schema_directory)
 			if not (dir.exists and dir.is_readable) then

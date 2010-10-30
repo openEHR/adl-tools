@@ -659,6 +659,8 @@ feature {NONE} -- Tools events
 				else
 					populate_directory_controls(True)
 				end
+			elseif dialog.has_changed_schema_dir then
+				populate_directory_controls(True)
 			end
 		end
 
@@ -1131,13 +1133,13 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_directory_controls (rebuild: BOOLEAN)
+	populate_directory_controls (refresh: BOOLEAN)
 			-- Rebuild archetype directory & repopulate relevant GUI parts.
 		do
-			do_with_wait_cursor (agent do_populate_directory_controls(rebuild))
+			do_with_wait_cursor (agent do_populate_directory_controls(refresh))
 		end
 
-	do_populate_directory_controls (rebuild: BOOLEAN)
+	do_populate_directory_controls (refresh: BOOLEAN)
 		do
 			if title.has_substring (" - ") then
 				set_title (title.substring (title.substring_index (" - ", 1) + 3, title.count))
@@ -1147,7 +1149,7 @@ feature {NONE} -- Implementation
 			clear_status_area
 
 			append_status_area (create_message_line ("populating_directory_start", <<current_repository_profile>>))
-			use_current_profile(rebuild)
+			use_current_profile(refresh)
 			append_status_area (create_message_line ("populating_directory_complete", Void))
 
 			clear_all_controls

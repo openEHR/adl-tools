@@ -105,6 +105,12 @@ feature -- Access
 			end
 		end
 
+	rm_schema_directory: attached STRING
+			-- Path of directory where RM schemas are found - note: this should be writable.
+		do
+			Result := substitute_env_vars (resource_value ("default", "rm_schema_directory"))
+		end
+
 	html_export_directory: attached STRING
 			-- Path of directory to which HTML is exported.
 		do
@@ -196,6 +202,14 @@ feature -- Application Switch Setting
 	remove_current_repository_profile
 		do
 			remove_resource("default", "current_repository_profile")
+		end
+
+	set_rm_schema_directory (value: attached STRING)
+			-- Set the path of directory where RM schemas are found; note - this should be writable
+		require
+			value_not_empty: not value.is_empty
+		do
+			set_resource_value("default", "rm_schema_directory", value)
 		end
 
 	set_rm_schemas_load_list (a_schema_list: attached LIST [STRING])

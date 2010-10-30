@@ -39,10 +39,15 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_1.extend (l_ev_label_1)
 			l_ev_vertical_box_1.extend (l_ev_cell_2)
 			l_ev_vertical_box_1.extend (grid)
+			l_ev_vertical_box_1.extend (l_ev_cell_3)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_1)
-			l_ev_horizontal_box_1.extend (l_ev_cell_3)
-			l_ev_horizontal_box_1.extend (ok_button)
-			l_ev_horizontal_box_1.extend (cancel_button)
+			l_ev_horizontal_box_1.extend (l_ev_label_2)
+			l_ev_horizontal_box_1.extend (rm_schema_dir_text)
+			l_ev_horizontal_box_1.extend (rm_schema_dir_button)
+			l_ev_vertical_box_1.extend (l_ev_horizontal_box_2)
+			l_ev_horizontal_box_2.extend (l_ev_cell_4)
+			l_ev_horizontal_box_2.extend (ok_button)
+			l_ev_horizontal_box_2.extend (cancel_button)
 
 			l_ev_vertical_box_1.set_minimum_width (360)
 			l_ev_vertical_box_1.set_minimum_height (150)
@@ -53,29 +58,48 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_1.disable_item_expand (l_ev_cell_1)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_label_1)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_cell_2)
+			l_ev_vertical_box_1.disable_item_expand (l_ev_cell_3)
 			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_1)
+			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_2)
 			l_ev_cell_1.set_minimum_height (20)
 			l_ev_label_1.set_text ("Reference Model schemas loaded shown below.%NCheck or uncheck to load as required.")
 			l_ev_cell_2.set_minimum_height (20)
-			l_ev_horizontal_box_1.set_minimum_height (34)
-			l_ev_horizontal_box_1.set_padding (15)
+			l_ev_cell_3.set_minimum_height (10)
+			l_ev_horizontal_box_1.set_minimum_width (350)
+			l_ev_horizontal_box_1.set_minimum_height (30)
+			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_1.set_padding (?))
+			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_1.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_horizontal_box_1.disable_item_expand (ok_button)
-			l_ev_horizontal_box_1.disable_item_expand (cancel_button)
-			l_ev_cell_3.set_minimum_width (100)
+			l_ev_horizontal_box_1.disable_item_expand (l_ev_label_2)
+			l_ev_horizontal_box_1.disable_item_expand (rm_schema_dir_button)
+			l_ev_label_2.set_text ("RM schema directory: ")
+			color_constant_set_procedures.extend (agent rm_schema_dir_text.set_background_color (?))
+			color_constant_retrieval_functions.extend (agent editable_colour)
+			rm_schema_dir_text.set_minimum_width (300)
+			rm_schema_dir_button.set_text ("Browse...")
+			rm_schema_dir_button.set_minimum_width (65)
+			l_ev_horizontal_box_2.set_minimum_height (34)
+			l_ev_horizontal_box_2.set_padding (15)
+			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_2.set_border_width (?))
+			integer_constant_retrieval_functions.extend (agent border_width)
+			l_ev_horizontal_box_2.disable_item_expand (ok_button)
+			l_ev_horizontal_box_2.disable_item_expand (cancel_button)
+			l_ev_cell_4.set_minimum_width (100)
 			ok_button.set_text ("OK")
 			ok_button.set_minimum_width (100)
 			ok_button.set_minimum_height (26)
 			cancel_button.set_text ("Cancel")
 			cancel_button.set_minimum_width (100)
 			cancel_button.set_minimum_height (26)
-			set_minimum_height (250)
+			set_minimum_width (550)
+			set_minimum_height (300)
 			set_title ("Display window")
 
 			set_all_attributes_using_constants
 			
 				-- Connect events.
+			rm_schema_dir_button.select_actions.extend (agent on_rm_schema_dir_browse)
 			ok_button.select_actions.extend (agent on_ok)
 
 				-- Call `user_initialization'.
@@ -92,8 +116,13 @@ feature {NONE}-- Initialization
 			create l_ev_label_1
 			create l_ev_cell_2
 			create grid
-			create l_ev_horizontal_box_1
 			create l_ev_cell_3
+			create l_ev_horizontal_box_1
+			create l_ev_label_2
+			create rm_schema_dir_text
+			create rm_schema_dir_button
+			create l_ev_horizontal_box_2
+			create l_ev_cell_4
 			create ok_button
 			create cancel_button
 
@@ -116,12 +145,14 @@ feature {NONE}-- Initialization
 feature -- Access
 
 	l_ev_vertical_box_1: EV_VERTICAL_BOX
-	l_ev_cell_1, l_ev_cell_2, l_ev_cell_3: EV_CELL
-	l_ev_label_1: EV_LABEL
+	l_ev_cell_1, l_ev_cell_2, l_ev_cell_3, l_ev_cell_4: EV_CELL
+	l_ev_label_1,
+	l_ev_label_2: EV_LABEL
 	grid: EV_GRID
-	l_ev_horizontal_box_1: EV_HORIZONTAL_BOX
-	ok_button,
-	cancel_button: EV_BUTTON
+	l_ev_horizontal_box_1, l_ev_horizontal_box_2: EV_HORIZONTAL_BOX
+	rm_schema_dir_text: EV_TEXT_FIELD
+	rm_schema_dir_button,
+	ok_button, cancel_button: EV_BUTTON
 
 feature {NONE} -- Implementation
 
@@ -135,6 +166,11 @@ feature {NONE} -- Implementation
 
 	user_initialization
 			-- Feature for custom initialization, called at end of `initialize'.
+		deferred
+		end
+	
+	on_rm_schema_dir_browse
+			-- Called by `select_actions' of `rm_schema_dir_button'.
 		deferred
 		end
 	

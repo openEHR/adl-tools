@@ -72,14 +72,17 @@ feature -- Initialisation
 				initialise_serialisers
 
 				-- set up the RM schemas
-				rm_schemas_access.initialise(default_rm_schema_directory, rm_schemas_load_list)
+				if rm_schema_directory.is_empty then
+					set_rm_schema_directory(default_rm_schema_directory)
+				end
+				rm_schemas_access.initialise(rm_schema_directory, rm_schemas_load_list)
 				rm_schemas_access.load_schemas
 
 				if not rm_schemas_access.found_valid_schemas then
 					create strx.make_empty
 					rm_schemas_load_list.do_all(agent (s: STRING) do strx.append(s + ", ") end)
 					strx.remove_tail (2) -- remove final ", "
-					post_warning (Current, "initialise", "model_access_e0", <<strx, default_rm_schema_directory>>)
+					post_warning (Current, "initialise", "model_access_e0", <<strx, rm_schema_directory>>)
 				end
 
 				-- adjust for repository profiles being out of sync with current profile setting (e.g. due to

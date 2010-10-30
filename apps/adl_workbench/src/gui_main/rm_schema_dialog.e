@@ -71,12 +71,6 @@ feature {NONE} -- Initialisation
 
 			populate_controls
 
-			-- set grid column titles
-			grid.column (Grid_name_col).set_title ("Name")
-		--	grid.column (Grid_loaded_col).set_title ("Loaded")
-			grid.column (Grid_status_col).set_title ("Status")
-		--	grid.column (Grid_edit_col).set_title ("Edit")
-
 			show_actions.extend (agent grid.set_focus)
 		end
 
@@ -84,6 +78,9 @@ feature -- Status
 
 	has_changed_schema_load_list: BOOLEAN
 			-- Schema load list has changed; should refresh
+
+	has_changed_schema_dir: BOOLEAN
+			-- Schema load directory has changed; should refresh
 
 feature {NONE} -- Implementation
 
@@ -132,11 +129,20 @@ feature {NONE} -- Implementation
 			end
 
 			-- make the columnn content visible
-			from i := 1 until i > Grid_max_cols loop
-				grid.column (i).resize_to_content
-				grid.column (i).set_width ((grid.column (i).width * 1.2).ceiling)
-				i := i + 1
+			if grid.row_count > 0 then
+				-- set grid column titles
+				grid.column (Grid_name_col).set_title ("Name")
+				grid.column (Grid_status_col).set_title ("Status")
+
+				from i := 1 until i > Grid_max_cols loop
+					grid.column (i).resize_to_content
+					grid.column (i).set_width ((grid.column (i).width * 1.2).ceiling)
+					i := i + 1
+				end
 			end
+
+			-- RM schema dir text field
+			rm_schema_dir_text.set_text(rm_schema_directory)
 		end
 
 	do_edit_schema(a_schema: STRING)
@@ -151,7 +157,8 @@ feature {NONE} -- Implementation
 			i: INTEGER
 		do
 			hide
-			-- RM schemas options
+
+			-- deal with load list Grid
 			create {ARRAYED_LIST [STRING]} rm_schemas_ll.make (0)
 			rm_schemas_ll.compare_objects
 			from i := 1 until i > grid.row_count loop
@@ -163,12 +170,39 @@ feature {NONE} -- Implementation
 				i := i + 1
 			end
 
-			if rm_schemas_ll.is_equal (rm_schemas_load_list) then
-				has_changed_schema_load_list := False
-			else
+			if not rm_schemas_ll.is_equal (rm_schemas_load_list) then
 				set_rm_schemas_load_list (rm_schemas_ll)
 				rm_schemas_access.set_schema_load_list (rm_schemas_ll)
 				has_changed_schema_load_list := True
+			end
+		end
+
+	on_rm_schema_dir_browse
+			-- Let the user browse for the directory where RM schemas are found.
+			-- if a change is made, reload schemas immediately, then repopulate this dialog
+		local
+			error_dialog: EV_INFORMATION_DIALOG
+		do
+			rm_schema_dir_text.set_text (get_directory (rm_schema_dir_text.text.as_string_8, Current))
+			ev_application.process_events
+			if not rm_schema_dir_text.text.is_equal(rm_schema_directory) then
+				rm_schemas_access.initialise(rm_schema_dir_text.text, rm_schemas_load_list)
+				rm_schemas_access.load_schemas
+
+				if not rm_schemas_access.found_valid_schemas then
+					create error_dialog.make_with_text (billboard.content)
+					billboard.clear
+					error_dialog.show_modal_to_window (Current)
+
+					-- revert to previous
+					rm_schema_dir_text.set_text (rm_schema_directory)
+					rm_schemas_access.initialise(rm_schema_directory, rm_schemas_load_list)
+					rm_schemas_access.load_schemas
+				else
+					set_rm_schema_directory(rm_schema_dir_text.text)
+					has_changed_schema_dir := True
+				end
+				populate_controls
 			end
 		end
 

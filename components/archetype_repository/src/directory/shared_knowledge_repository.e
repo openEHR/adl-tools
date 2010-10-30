@@ -46,12 +46,12 @@ feature -- Access
 --			end
 --		end
 
-	use_current_profile (rebuild: BOOLEAN)
-			-- switch to current profile
+	use_current_profile (refresh: BOOLEAN)
+			-- switch to current profile; refresh flag forces archetype in memory directory to be refreshed from source repository
 		local
 			new_dir: ARCHETYPE_DIRECTORY
 		do
-			if not directories.has(current_repository_profile) or else rebuild then
+			if not directories.has(current_repository_profile) or else refresh then
 				create new_dir.make
 				if directory_exists (reference_repository_path) then
 					source_repositories.set_reference_repository (reference_repository_path)

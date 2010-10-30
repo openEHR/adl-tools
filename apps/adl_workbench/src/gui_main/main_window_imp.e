@@ -285,7 +285,7 @@ feature {NONE}-- Initialization
 			tools_menu_clean_generated_files.set_text ("&Clean Generated Files")
 			tools_menu_reload_schemas.set_text ("&Reload Schemas")
 			tools_menu_options.set_text ("&Options...")
-			tools_menu_rm_schemas.set_text ("&Schemas...")
+			tools_menu_rm_schemas.set_text ("RM &Schemas...")
 			help_menu.set_text ("&Help")
 			help_menu_contents.set_text ("&Contents")
 			help_menu_release_notes.set_text ("&Release Notes")
