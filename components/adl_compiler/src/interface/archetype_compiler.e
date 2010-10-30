@@ -271,6 +271,7 @@ feature {NONE} -- Implementation
 					build_status.append (ara.status)
 					call_archetype_visual_update_action (build_status, ara, dependency_depth)
 				else
+					ara.signal_exception
 					call_archetype_visual_update_action (billboard.content, ara, dependency_depth)
 					billboard.clear
 				end

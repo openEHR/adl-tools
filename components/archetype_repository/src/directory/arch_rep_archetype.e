@@ -670,6 +670,17 @@ feature -- Compilation
 			Reset_if_differential_generated: differential_generated implies (differential_archetype = Void and compilation_state = Cs_unread)
 		end
 
+	signal_exception
+			-- signal exception caught by compiler during call to some routine here;
+			-- set archetype to invalid state.
+		do
+			compilation_state := cs_invalid
+			differential_archetype := Void
+			flat_archetype_cache := Void
+		ensure
+			Compilation_state_set: compilation_state = Cs_invalid
+		end
+
 feature {NONE} -- Compilation
 
 	reset

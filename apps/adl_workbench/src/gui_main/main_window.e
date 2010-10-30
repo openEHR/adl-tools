@@ -225,7 +225,6 @@ feature -- File events
 		local
 			question_dialog: EV_QUESTION_DIALOG
 			info_dialog: EV_INFORMATION_DIALOG
-			editors_dialog: ICON_DIALOG
 			path: STRING
 			ara: ARCH_REP_ARCHETYPE
 		do
