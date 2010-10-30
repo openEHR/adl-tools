@@ -69,7 +69,7 @@ feature -- Modification
 			create amp
 			amp.parse (full_path)
 			if amp.last_parse_valid then
-				if not amp.last_archetype.archetype_id_is_old_style then
+				if amp.last_archetype.archetype_id_is_old_style then
 					post_error (Current, "build_directory", "parse_archetype_e7", <<full_path>>)
 				elseif amp.last_archetype.is_specialised and then amp.last_archetype.parent_archetype_id_is_old_style then
 					post_error (Current, "build_directory", "parse_archetype_e11", <<full_path, amp.last_archetype.parent_archetype_id.as_string>>)
