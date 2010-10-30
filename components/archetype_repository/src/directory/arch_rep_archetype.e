@@ -574,6 +574,7 @@ feature -- Compilation
 		do
 			differential_archetype := Void
 			compilation_state := Cs_unread
+			last_compile_attempt_timestamp := Void
 		ensure
 			Differential_archetype_cleared: differential_archetype = Void
 			Compiler_state_set: compilation_state = Cs_unread

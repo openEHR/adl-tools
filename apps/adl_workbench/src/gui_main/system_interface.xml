@@ -418,7 +418,7 @@ Check or uncheck to load as required.</Text>
   </EV_SENSITIVE>
   <EV_WIDGET>
    <Minimum_width>600</Minimum_width>
-   <Minimum_height>450</Minimum_height>
+   <Minimum_height>480</Minimum_height>
   </EV_WIDGET>
   <EV_WINDOW>
    <Maximum_width>2000</Maximum_width>
@@ -2449,7 +2449,7 @@ Check or uncheck to load as required.</Text>
     <Internal_properties>
      <id>235</id>
      <name>viewer_vbox</name>
-     <Expanded>0</Expanded>
+     <Expanded>1</Expanded>
     </Internal_properties>
     <EV_COLORIZABLE>
     </EV_COLORIZABLE>
@@ -2468,7 +2468,7 @@ Check or uncheck to load as required.</Text>
      <Internal_properties>
       <id>101</id>
       <name>action_bar</name>
-      <Expanded>0</Expanded>
+      <Expanded>1</Expanded>
      </Internal_properties>
      <EV_COLORIZABLE>
       <Foreground_color>064000000</Foreground_color>

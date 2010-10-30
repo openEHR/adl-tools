@@ -280,7 +280,7 @@ feature {NONE}-- Initialization
 			cancel_button.set_minimum_width (100)
 			cancel_button.set_minimum_height (26)
 			set_minimum_width (600)
-			set_minimum_height (450)
+			set_minimum_height (480)
 			set_maximum_width (2000)
 			set_maximum_height (1200)
 			set_title ("ADL Workbench Options")
