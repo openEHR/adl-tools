@@ -83,7 +83,7 @@ Section -Main SEC0000
     File /r /x .svn ..\..\..\app\icons\*
 
     SetOutPath $INSTDIR\rm_schemas
-    File ..\..\..\app\rm_schemas\*
+    File ..\..\..\..\..\rm_schemas\*
 
     SetOutPath $INSTDIR\error_db
     File ..\..\..\app\error_db\*

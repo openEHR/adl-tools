@@ -96,7 +96,7 @@ if distrib and len(adl_workbench) > 0:
 	xsl = 'apps/adl_workbench/app/ArchetypeRepositoryReport.xsl'
 	css = 'apps/adl_workbench/app/ArchetypeRepositoryReport.css'
 	icons = 'apps/adl_workbench/app/icons'
-	rm_schemas = 'apps/adl_workbench/app/rm_schemas'
+	rm_schemas = 'rm_schemas'
 	error_db = 'apps/adl_workbench/app/error_db'
 	vim = 'components/adl_compiler/etc/vim'
 	install = 'apps/adl_workbench/install/' + platform
