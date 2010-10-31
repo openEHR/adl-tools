@@ -39,7 +39,7 @@ feature -- Visitor
 			end
 
 			if a_node.is_addressable then
-				last_result.append(apply_style("[%"" + a_node.node_id + "%"]", STYLE_IDENTIFIER))
+				last_result.append(apply_style("[%"" + clean (a_node.node_id) + "%"]", STYLE_IDENTIFIER))
 				last_result.append(format_item(FMT_SPACE))
 				last_result.append(apply_style(symbol(SYM_EQ), STYLE_OPERATOR) + format_item(FMT_SPACE))
 			end
@@ -139,7 +139,7 @@ feature {NONE} -- Implementation
 			s: STRING
 		do
 			if a_node.parent.is_multiple then
-				last_result.append(create_indent(depth//2 + multiple_attr_count) + apply_style("[%"" + a_node.node_id + "%"]", STYLE_IDENTIFIER))
+				last_result.append(create_indent(depth//2 + multiple_attr_count) + apply_style("[%"" + clean (a_node.node_id) + "%"]", STYLE_IDENTIFIER))
 				last_result.append(format_item(FMT_SPACE))
 				last_result.append(apply_style(symbol(SYM_EQ), STYLE_OPERATOR) + format_item(FMT_SPACE))
 			end
