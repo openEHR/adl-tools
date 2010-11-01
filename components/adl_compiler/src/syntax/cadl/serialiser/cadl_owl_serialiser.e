@@ -13,18 +13,18 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class CADL_OWL_SERIALISER 
+class CADL_OWL_SERIALISER
 
 inherit
-	CONSTRAINT_MODEL_SERIALISER
-	
+	C_SERIALISER
+
 	OWL_DEFINITIONS
-	
-	SHARED_ARCHETYPE_CONTEXT
+
+	SHARED_APPLICATION_CONTEXT
 		export
 			{NONE} all
 		end
-	
+
 create
 	make
 
@@ -52,18 +52,18 @@ feature -- Modification
 			--						restriction("ba:is_about" allValuesFrom("this:atNNNN")))
 			if a_node.is_addressable then
 				last_result.append(
-					symbol(SYM_CLASS) + symbol(SYM_OPEN_PAREN) + 
-					node_concept_ref + format_item(FMT_SPACE) + 
-					symbol(SYM_COMPLETE) + format_item(FMT_SPACE) + 
+					symbol(SYM_CLASS) + symbol(SYM_OPEN_PAREN) +
+					node_concept_ref + format_item(FMT_SPACE) +
+					symbol(SYM_COMPLETE) + format_item(FMT_SPACE) +
 					symbol(SYM_RESTRICTION) + symbol(SYM_OPEN_PAREN) +
-					"%"ba:is_about%"" + format_item(FMT_SPACE) + 
+					"%"ba:is_about%"" + format_item(FMT_SPACE) +
 					symbol(SYM_ALL_VALUES_FROM) + symbol(SYM_OPEN_PAREN) +
-					"%"this:" + a_node.node_id + "%"" + symbol(SYM_CLOSE_PAREN) + 
+					"%"this:" + a_node.node_id + "%"" + symbol(SYM_CLOSE_PAREN) +
 					symbol(SYM_CLOSE_PAREN) + symbol(SYM_CLOSE_PAREN)
 				)
 				last_result.append(format_item(FMT_NEWLINE))
 
-				-- output relationship to RM: Class("this:node-concept" partial "rm:SOME_CLASS" 
+				-- output relationship to RM: Class("this:node-concept" partial "rm:SOME_CLASS"
 				-- 	then, leave a space for restriction for each attribute e.g.
 				--						restriction("rm:attr_name" allValuesFrom("this:targ_node-concept"))
 				--	then: )
@@ -71,26 +71,26 @@ feature -- Modification
 				l_attr_pattern_key := "$attributes:" + a_node.node_id + "$"
 
 				last_result.append(
-					symbol(SYM_CLASS) + symbol(SYM_OPEN_PAREN) + 
-					node_concept_ref + format_item(FMT_SPACE) + 
-					symbol(SYM_PARTIAL) + format_item(FMT_SPACE) + 
-					"%"rm:" + a_node.rm_type_name + "%"" + 
+					symbol(SYM_CLASS) + symbol(SYM_OPEN_PAREN) +
+					node_concept_ref + format_item(FMT_SPACE) +
+					symbol(SYM_PARTIAL) + format_item(FMT_SPACE) +
+					"%"rm:" + a_node.rm_type_name + "%"" +
 					format_item(FMT_SPACE) + format_item(FMT_NEWLINE) +
-					l_attr_pattern_key + 
+					l_attr_pattern_key +
 					symbol(SYM_CLOSE_PAREN) + format_item(FMT_NEWLINE)
 				)
 			else
-				l_object_pattern_key := "$object:" + a_node.parent.parent.node_id + ":" + 
+				l_object_pattern_key := "$object:" + a_node.parent.parent.node_id + ":" +
 										a_node.parent.rm_attribute_name + "$"
 				-- non-addresable object will go inline into current attribute string
-				-- 		output: allValuesFrom(intersectionOf("rm:RM_TYPE_NAME" 
+				-- 		output: allValuesFrom(intersectionOf("rm:RM_TYPE_NAME"
 				-- for every attribute,
 				--		output: Restriction("rm:attr_name" "attr_value"
 				-- 		output: )
 				create l_obj_buffer.make(0)
 				l_obj_buffer.append(create_indent(2) +
-					symbol(SYM_ALL_VALUES_FROM) + symbol(SYM_OPEN_PAREN) + 
-					symbol(SYM_INTERSECTION_OF) + symbol(SYM_OPEN_PAREN) + 
+					symbol(SYM_ALL_VALUES_FROM) + symbol(SYM_OPEN_PAREN) +
+					symbol(SYM_INTERSECTION_OF) + symbol(SYM_OPEN_PAREN) +
 					"%"rm:" + a_node.rm_type_name + "%"" + format_item(FMT_NEWLINE)
 				)
 				from
@@ -109,32 +109,22 @@ feature -- Modification
 						l_prim_obj_value := "%"(non-primitive object)%""
 					end
 					l_obj_buffer.append(create_indent(3) +
-						symbol(SYM_RESTRICTION) + symbol(SYM_OPEN_PAREN) + 
+						symbol(SYM_RESTRICTION) + symbol(SYM_OPEN_PAREN) +
 						"%"rm:" + a_node.attributes.item.rm_attribute_name + "%"" + format_item(FMT_SPACE) +
 						l_prim_obj_value + symbol(SYM_CLOSE_PAREN) + format_item(FMT_NEWLINE)
 					)
 					a_node.attributes.forth
 				end
 
-				l_obj_buffer.append(create_indent(2) + symbol(SYM_CLOSE_PAREN) + 
+				l_obj_buffer.append(create_indent(2) + symbol(SYM_CLOSE_PAREN) +
 						symbol(SYM_CLOSE_PAREN) + format_item(FMT_NEWLINE))
 				last_result.replace_substring_all(l_object_pattern_key, l_obj_buffer)
 			end
-		end
-		
-	end_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER)
-			-- end serialising an C_COMPLEX_OBJECT
-		do	
 		end
 
 	start_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER)
 			-- start serialising an ARCHETYPE_SLOT
 		do
-		end
-		
-	end_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER)
-			-- end serialising an ARCHETYPE_SLOT
-		do	
 		end
 
 	start_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER)
@@ -150,15 +140,15 @@ feature -- Modification
 
 				-- Output single and multiple attribute as a series of:
 				--  restriction("rm:attr_name" someValuesFrom("this:targ_node-concept"))
-				from 
-					a_node.children.start 
+				from
+					a_node.children.start
 				until
 					a_node.children.off
 				loop
-					--  restriction("rm:attr_name" 
+					--  restriction("rm:attr_name"
 					l_attr_buffer.append(create_indent(1) +
-						symbol(SYM_RESTRICTION) + symbol(SYM_OPEN_PAREN) + 
-						"%"rm:" + a_node.rm_attribute_name + "%"" + 
+						symbol(SYM_RESTRICTION) + symbol(SYM_OPEN_PAREN) +
+						"%"rm:" + a_node.rm_attribute_name + "%"" +
 						format_item(FMT_SPACE) + format_item(FMT_NEWLINE)
 					)
 
@@ -166,14 +156,14 @@ feature -- Modification
 						--  someValuesFrom("this:targ_node-concept"))
 						node_concept_ref := ontology.term_definition(language, a_node.children.item.node_id).item("text")
 						l_attr_buffer.append(create_indent(2) +
-							symbol(SYM_SOME_VALUES_FROM) + symbol(SYM_OPEN_PAREN) + 
-								"%"this:" + node_concept_ref + "%"" 
+							symbol(SYM_SOME_VALUES_FROM) + symbol(SYM_OPEN_PAREN) +
+								"%"this:" + node_concept_ref + "%""
 								+ symbol(SYM_CLOSE_PAREN) + format_item(FMT_NEWLINE)
 						)
 					else
 						-- leave placeholder for each attribute child of this object child
 						-- 		output: $object:a_node.parent.node_id:a_node.rm_attribute_name$
-						l_object_pattern_key := "$object:" + a_node.parent.node_id + ":" + 
+						l_object_pattern_key := "$object:" + a_node.parent.node_id + ":" +
 													a_node.rm_attribute_name + "$"
 						l_attr_buffer.append(l_object_pattern_key)
 					end
@@ -184,22 +174,10 @@ feature -- Modification
 				last_result.replace_substring_all(l_attr_pattern_key, l_attr_buffer)
 			end
 		end
-		
-	end_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER)
-			-- end serialising an C_ATTRIBUTE
-		do
-			last_result.append(format_item(FMT_NEWLINE))
-		end
 
 	start_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
 			-- start serialising an ARCHETYPE_INTERNAL_REF
 		do
-		end
-		
-	end_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
-			-- end serialising an ARCHETYPE_INTERNAL_REF
-		do
-			-- nothing needed
 		end
 
 	start_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER)
@@ -207,38 +185,21 @@ feature -- Modification
 		do
 			last_object_simple := True
 		end
-		
-	end_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER)
-			-- end serialising a CONSTRAINT_REF
-		do
-		end
 
 	start_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- start serialising an C_PRIMITIVE_OBJECT
 		local
 			l_object_pattern_key: STRING
 		do
-			l_object_pattern_key := "$object:" + a_node.parent.parent.node_id + ":" + 
+			l_object_pattern_key := "$object:" + a_node.parent.parent.node_id + ":" +
 										a_node.parent.rm_attribute_name + "$"
 			if last_result.has_substring(l_object_pattern_key) then
 				last_result.replace_substring_all(l_object_pattern_key, "%"" + a_node.as_string + "%"")
 			end
 		end
-		
-	end_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
-			-- end serialising an C_PRIMITIVE_OBJECT
-		do
-			-- nothing needed
-			-- EXCEPTION TEST
-		end
 
 	start_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER)
 			-- start serialising an C_DOMAIN_TYPE
-		do
-		end
-		
-	end_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER)
-			-- end serialising an C_DOMAIN_TYPE
 		do
 		end
 
@@ -252,15 +213,15 @@ feature -- Modification
 				-- create last_object_simple_buffer.make(0)
 				if a_node.is_local and a_node.code_count = 1 then
 					-- last_object_simple_buffer.append(format_item(FMT_INDENT))
-					
+
 					adl_term := ontology.term_definition(language, a_node.code_list.first)
-					-- last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
+					-- last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
 					--	adl_term.item("text"), STYLE_COMMENT))			
-				end				
+				end
 				last_object_simple := True
-				
+
 			elseif a_node.code_count > 1 then
-				-- last_result.append(create_indent(depth) + apply_style(clean("[" + a_node.terminology_id.as_string + 
+				-- last_result.append(create_indent(depth) + apply_style(clean("[" + a_node.terminology_id.as_string +
 				--	a_node.separator), STYLE_TERM_REF) + format_item(FMT_NEWLINE))
 				from
 					a_node.code_list.start
@@ -275,23 +236,18 @@ feature -- Modification
 					end
 					if a_node.is_local then
 						adl_term := ontology.term_definition(language, a_node.code_list.item)
-						-- last_result.append(format_item(FMT_INDENT) + 
-							-- apply_style(format_item(FMT_COMMENT) + 
+						-- last_result.append(format_item(FMT_INDENT) +
+							-- apply_style(format_item(FMT_COMMENT) +
 							-- adl_term.item("text"), STYLE_COMMENT))			
 					end
 					-- last_result.append(format_item(FMT_NEWLINE))
 					a_node.code_list.forth
-				end				
-			end				
-		end
-		
-	end_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER)
-			-- end serialising an C_CODE_PHRASE
-		do
+				end
+			end
 		end
 
-	start_c_ordinal(a_node: C_ORDINAL; depth: INTEGER)
-			-- start serialising an C_ORDINAL
+	start_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER)
+			-- start serialising an C_DV_ORDINAL
 		local
 			adl_term: ARCHETYPE_TERM
 			i: INTEGER
@@ -302,9 +258,9 @@ feature -- Modification
 				if a_node.is_local then
 					-- last_object_simple_buffer.append(format_item(FMT_INDENT))
 					adl_term := ontology.term_definition(language, a_node.items.first.symbol.code_string)
-					-- last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) + 
+					-- last_object_simple_buffer.append(format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
 						-- adl_term.item("text"), STYLE_COMMENT))			
-				end				
+				end
 				last_object_simple := True
 			elseif a_node.items.count > 1 then
 				from
@@ -321,20 +277,15 @@ feature -- Modification
 					end
 					if a_node.is_local then
 						adl_term := ontology.term_definition(language, a_node.items.item.symbol.code_string)
-						-- last_result.append(format_item(FMT_INDENT) + 
-							-- apply_style(format_item(FMT_COMMENT) + 
+						-- last_result.append(format_item(FMT_INDENT) +
+							-- apply_style(format_item(FMT_COMMENT) +
 							-- adl_term.item("text"), STYLE_COMMENT))			
 					end
 					-- last_result.append(format_item(FMT_NEWLINE))
 					a_node.items.forth
 					i := i + 1
-				end				
-			end				
-		end
-		
-	end_c_ordinal(a_node: C_ORDINAL; depth: INTEGER)
-			-- end serialising an C_ORDINAL
-		do
+				end
+			end
 		end
 
 	serialise_occurrences(a_node: C_OBJECT; depth: INTEGER)
@@ -344,11 +295,11 @@ feature -- Modification
 				-- last_result.append(apply_style(symbol(SYM_OCCURRENCES), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				-- last_result.append(apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				-- s := a_node.occurrences.as_occurrences_string
-				-- last_result.append(symbol(SYM_START_CBLOCK) + apply_style(s, STYLE_VALUE) + 
+				-- last_result.append(symbol(SYM_START_CBLOCK) + apply_style(s, STYLE_VALUE) +
 					-- symbol(SYM_END_CBLOCK) + format_item(FMT_SPACE))				
 			end
 		end
-		
+
 	serialise_existence(a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- can only  be a range of 0..1 or 1..1
 		do
@@ -360,7 +311,7 @@ feature -- Modification
 					-- symbol(SYM_END_CBLOCK) + format_item(FMT_SPACE))
 			end
 		end
-		
+
 	serialise_cardinality(a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- includes a range and possibly ordered, unique qualifiers
 		local
@@ -375,15 +326,35 @@ feature -- Modification
 			end
 		end
 
+	start_c_leaf_object(a_node: C_LEAF_OBJECT; depth: INTEGER)
+			-- enter a C_LEAF_OBJECT
+		do
+		end
+
+	start_c_reference_object(a_node: C_REFERENCE_OBJECT; depth: INTEGER)
+			-- enter a C_REFERENCE_OBJECT
+		do
+		end
+
+	start_c_archetype_root(a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
+			-- enter a C_ARCHETYPE_ROOT
+		do
+		end
+
+	start_c_quantity(a_node: C_DV_QUANTITY; depth: INTEGER)
+			-- enter a C_DV_QUANTITY
+		do
+		end
+
 feature {NONE} -- Implementation
 
 	last_object_simple: BOOLEAN
 			-- True if last object traversed was an OBJECT_SIMPLE
-			
+
 	last_object_simple_buffer: STRING
-	
+
 	dadl_engine: DADL_ENGINE
-			
+
 end
 
 

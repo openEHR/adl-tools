@@ -1,4 +1,4 @@
-indexing	
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Shared access to archteype directory.
@@ -14,7 +14,7 @@ indexing
 	last_change: "$LastChangedDate$"
 
 
-class SHARED_ARCHETYPE_DIRECTORY 
+class SHARED_ARCHETYPE_DIRECTORY
 
 feature -- Access
 

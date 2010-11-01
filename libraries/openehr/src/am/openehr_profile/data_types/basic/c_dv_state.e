@@ -1,6 +1,6 @@
 note
 	component:   "openEHR Data Types Archetype Model"
-	
+
 	description: "[
 			 Constrainer type for DV_STATE instances. The attribute c_value defines 
 			 a state/event table which constrains the allowed values of the 
@@ -8,7 +8,7 @@ note
 			 transitions between values.
 			 ]"
 	keywords:    "archetype, state, data"
-	
+
 	design:      "openEHR Data Types Archetype Model 0.4"
 
 	author:      "Thomas Beale"
@@ -22,9 +22,6 @@ note
 
 class C_DV_STATE
 
-inherit
-	C_DATA_VALUE
-
 feature -- Access
 
 	default_value: DV_BOOLEAN
@@ -36,7 +33,7 @@ feature -- Access
 
 feature -- Status Report
 
-	valid_value (a_value: DV_STATE): BOOLEAN 
+	valid_value (a_value: DV_STATE): BOOLEAN
 		do
 		end
 

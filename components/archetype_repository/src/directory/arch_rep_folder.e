@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Descriptor of a folder in a directory of archetypes"
 	keywords:    "ADL, archetype"

@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Demographic Reference Model"
 
 	description: "[
@@ -19,7 +19,7 @@ indexing
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class AGENT
+class AGENT_
 
 inherit
 	ACTOR

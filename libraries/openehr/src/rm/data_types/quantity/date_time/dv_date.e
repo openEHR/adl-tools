@@ -23,19 +23,19 @@ inherit
 		undefine
 			out, infix "<", default_create
 		end
-		
+
 	ISO8601_DATE
 		undefine
 			default_create
 		end
 
-create 
+create
 	default_create, make_from_string, make_y, make_ym, make_ymd
 
 feature -- Definitions
 
 	Default_value: STRING = "1600-01-01"
-	
+
 feature -- Initialisation
 
 	default_create
@@ -67,7 +67,7 @@ feature -- Access
 		do
 			Result := to_days
 		end
-		
+
 feature -- Comparison
 
 	is_strictly_comparable_to (other: like Current): BOOLEAN
@@ -81,12 +81,12 @@ feature -- Basic Operations
 			-- Addition of a differential amount to this quantity.
 		do
 		end
-	
+
 	subtract (a_diff: like diff): like Current
 			-- Result of subtracting a differential amount from this quantity.
 		do
 		end
-	
+
 	diff (other: like Current): DV_DURATION
 			-- Difference of two quantities.
 		do
@@ -98,7 +98,7 @@ feature -- Output
 		do
 			Result := as_string
 		end
-	
+
 end
 
 

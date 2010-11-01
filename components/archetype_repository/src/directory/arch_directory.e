@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Archteype directory - a data structure containing archetypes found in one or more
@@ -150,7 +150,7 @@ feature -- Access
 			end
 		end
 
-	matching_ids (a_regex, an_rm_type: STRING): ARRAYED_LIST[STRING] is
+	matching_ids (a_regex, an_rm_type: STRING): ARRAYED_LIST[STRING]
 			-- generate list of archetype ids that match the pattern and optional rm_type. If rm_type is supplied,
 			-- we assume that the regex itself does not contain an rm type
 		require
@@ -247,7 +247,7 @@ feature -- Status Report
 			Result := selected_archetype /= Void
 		end
 
-	has_valid_selected_archetype: BOOLEAN is
+	has_valid_selected_archetype: BOOLEAN
 			-- Has a valid archetype been selected?
 		do
 			Result := selected_archetype /= Void and then selected_archetype.is_valid
