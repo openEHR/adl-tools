@@ -82,12 +82,18 @@ feature --process archetypes
 		error_db_dir_initialized: app_root.error_db_directory_location /= Void
 	local
 		flattened_archetype: FLAT_ARCHETYPE --TODO: will return this in the next version of this function, only for debugging purposes for now
+		bosphorus_visitor: BOSPHORUS_VISITOR
 	do
 		configure_archetype_repository
 		app_root.arch_dir.set_selected_item (app_root.arch_dir.archetype_index.item (p_archetype_name))
 		app_root.archetype_compiler.build_lineage (app_root.arch_dir.selected_archetype)
 		if app_root.arch_dir.selected_archetype.is_valid then
 			flattened_archetype := app_root.arch_dir.selected_archetype.flat_archetype
+			if flattened_archetype /= Void then
+				create bosphorus_visitor
+				bosphorus_visitor.initialise (flattened_archetype.ontology)
+				flattened_archetype.definition.enter_subtree (bosphorus_visitor, 0)
+			end
 			io.put_string("Compiled archetype: " + p_archetype_name + "%N");
 			io.put_string("ADL version: " + flattened_archetype.adl_version + "%N")
 		else
