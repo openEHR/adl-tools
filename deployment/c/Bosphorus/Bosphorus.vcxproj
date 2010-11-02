@@ -12,12 +12,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application.cpp" />
+    <ClCompile Include="ArchetypeVisitor.cpp" />
     <ClCompile Include="EiffelBridge.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="MainOne.cpp" />
     <ClCompile Include="OpenEHRManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h" />
+    <ClInclude Include="ArchetypeVisitor.h" />
+    <ClInclude Include="IArchetypeVisitor.h" />
     <ClInclude Include="MainOne.h" />
     <ClInclude Include="OpenEHRManager.h" />
     <ClInclude Include="uk_ac_ucl_chime_EiffelBridge.h" />

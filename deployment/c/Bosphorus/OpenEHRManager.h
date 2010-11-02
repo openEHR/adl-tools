@@ -11,6 +11,7 @@
 #include <vector>
 #include "eif_eiffel.h" /* Exported functions of the Eiffel run-time */
 #include <iostream>
+#include "ArchetypeVisitor.h"
 
 using namespace std;
 
@@ -27,7 +28,9 @@ public:
 	vector<string>* getArchetyepNames();
 	void setErrorDBDirPath(string&);
 	void setRmSchemaDirPath(string&);
+	void compileArchetype(string&);
 	int getFunctionCallResult();
+	void setVisitor(ArchetypeVisitor*);
 private:
 
 };

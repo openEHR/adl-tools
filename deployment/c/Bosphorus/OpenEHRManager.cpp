@@ -47,6 +47,19 @@ void OpenEHRManager::setRmSchemaDirPath(string& pPath){
 	setRMSchemaDirLoc(eif_access(eiffelObj), eif_string(cStr));
 }
 
+void OpenEHRManager::compileArchetype(string& pArchetypeName){
+	EIF_PROCEDURE compileArchetype = eif_procedure("compile_archetype", tid);
+	char* cStr = const_cast<char*>(pArchetypeName.c_str());
+	compileArchetype(eif_access(eiffelObj), eif_string(cStr));
+}
+
+void OpenEHRManager::setVisitor(ArchetypeVisitor *pVisitor){
+	EIF_PROCEDURE setCppObj = eif_procedure("save_cpp_visitor", tid);	
+	ArchetypeVisitor* visitor = new ArchetypeVisitor;
+	setCppObj(eif_access(eiffelObj), visitor);
+}
+
+
 void OpenEHRManager::printAttributeValue(){
 //	cout<< "initialization of EiffelRuntime";
 	int* status = NULL;
