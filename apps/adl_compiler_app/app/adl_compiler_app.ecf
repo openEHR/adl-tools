@@ -10,6 +10,7 @@
 		<option warning="true">
 			<assertions precondition="true"/>
 		</option>
+		<external_include location="../../../.."/>
 		<precompile name="base_pre" location="$ISE_PRECOMP\base.ecf"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf">
 			<renaming old_name="C_STRING" new_name="BASE_C_STRING"/>
@@ -36,6 +37,7 @@
 			<visible class="EXPERIMENTAL_APPLICATION"/>
 			<visible class="MY_ARRAY"/>
 			<visible class="APPLICATION"/>
+			<visible class="BOSPHORUS_VISITOR"/>
 		</cluster>
 		<cluster name="archetype_repository" location="..\..\..\components\archetype_repository\src\" recursive="true">
 			<option>

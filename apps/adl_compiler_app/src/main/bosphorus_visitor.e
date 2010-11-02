@@ -26,12 +26,32 @@ inherit
 		end_c_quantity
 	end
 
+feature
+	cpp_visitor: POINTER
+
+	set_cpp_visitor (p_cpp_visitor: POINTER)
+		--save cpp object to field
+	do
+		cpp_visitor := p_cpp_visitor
+	end
 
 feature
+
+	call_start_c_complex_object_on_cpp_obj (cpp_obj_to_use: POINTER; c_complex_object_pointer: POINTER; depth: POINTER)
+	external
+		"C++ inline use %"IArchetypeVisitor.h%""
+	alias
+		"[
+			IArchetypeVisitor *implementation = (IArchetypeVisitor *)$cpp_obj_to_use;
+			implementation->startCComplexObject((EIF_REFERENCE)$c_complex_object_pointer, (EIF_INTEGER)$depth );
+		]"
+	end
+
 	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- enter an C_COMPLEX_OBJECT
 		do
 			io.put_string (a_node.node_id + "%N")
+			call_start_c_complex_object_on_cpp_obj(cpp_visitor, $a_node, $depth)
 			from
 				a_node.attributes.start
 			until
@@ -135,6 +155,7 @@ feature
 	start_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- enter an C_PRIMITIVE_OBJECT
 		do
+			io.put_string (a_node.rm_type_name + "%N")
 		end
 
 	end_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)

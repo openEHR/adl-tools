@@ -29,7 +29,15 @@ feature {NONE} -- Initialization
 			archetype_names_in_repo := archetype_names
 			compile_archetype (archetype_names_in_repo[2])
 		end
+
 feature		--Access
+
+	cpp_visitor: POINTER
+
+	save_cpp_visitor (p_cpp_visitor: POINTER)
+	do
+		cpp_visitor := p_cpp_visitor
+	end
 
 	app_root: APP_ROOT
 	once
@@ -91,7 +99,9 @@ feature --process archetypes
 			flattened_archetype := app_root.arch_dir.selected_archetype.flat_archetype
 			if flattened_archetype /= Void then
 				create bosphorus_visitor
+				bosphorus_visitor.set_cpp_visitor (cpp_visitor)
 				bosphorus_visitor.initialise (flattened_archetype.ontology)
+				io.put_string ("now calling visitor")
 				flattened_archetype.definition.enter_subtree (bosphorus_visitor, 0)
 			end
 			io.put_string("Compiled archetype: " + p_archetype_name + "%N");
