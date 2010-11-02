@@ -20,6 +20,8 @@ OpenEHRManager::OpenEHRManager() {
 	char *argv[] = {"EiffelBridgeNativeClient", NULL};
 	char **envp = NULL;
 
+	archetypeVisitor = NULL;
+	logger = NULL;
 
 	EIF_INITIALIZE(failure)}//this is required due to way this macro is written
 	tid = eif_type_id ("EXPERIMENTAL_APPLICATION");
@@ -54,11 +56,31 @@ void OpenEHRManager::compileArchetype(string& pArchetypeName){
 }
 
 void OpenEHRManager::setVisitor(ArchetypeVisitor *pVisitor){
-	EIF_PROCEDURE setCppObj = eif_procedure("save_cpp_visitor", tid);	
-	ArchetypeVisitor* visitor = new ArchetypeVisitor;
-	setCppObj(eif_access(eiffelObj), visitor);
+	archetypeVisitor = pVisitor;
+	EIF_PROCEDURE setCppObj = eif_procedure("save_cpp_visitor", tid);		
+	setCppObj(eif_access(eiffelObj), pVisitor);
 }
 
+void OpenEHRManager::setLogger(ILogger *pLogger){
+	logger = pLogger;	
+}
+
+void OpenEHRManager::testLogger(){
+	if(logger != NULL){
+
+		EIF_TYPE_ID loggerTid = eif_type_id("LOGGER");
+
+		EIF_REFERENCE_FUNCTION getLogger = eif_reference_function("logger", tid);
+		EIF_OBJECT loggerObj = eif_protect(getLogger(eif_access(eiffelObj), NULL));
+
+		EIF_PROCEDURE setCppLogger = eif_procedure("set_cpp_logger", loggerTid);				
+		setCppLogger(eif_access(loggerObj), logger);
+
+		
+		EIF_PROCEDURE testLoggerCall = eif_procedure("test", loggerTid);
+		testLoggerCall(eif_access(loggerObj));
+	}
+}
 
 void OpenEHRManager::printAttributeValue(){
 //	cout<< "initialization of EiffelRuntime";
@@ -86,7 +108,7 @@ void OpenEHRManager::callMake(){
 	make(eif_access(eiffelObj));
 }
 
-vector<string>* OpenEHRManager::getArchetyepNames(){
+vector<string>* OpenEHRManager::getArchetypeNames(){
 //	string* s = new string("helo");
 //	vector<string> v;
 //	v.push_back(*s);
@@ -152,9 +174,11 @@ int OpenEHRManager::getFunctionCallResult(){
 }
 
 OpenEHRManager::~OpenEHRManager() {
+	if(archetypeVisitor != NULL)
+		delete archetypeVisitor;
+	if(logger != NULL)
+		delete logger;
 //	cout << "NOW DESTROYING EIFFEL RUNTIME";
 	reclaim();
 }
 
-EIF_OBJECT OpenEHRManager::eiffelObj;
-EIF_TYPE_ID OpenEHRManager::tid;

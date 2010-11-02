@@ -39,6 +39,14 @@ JNIEXPORT void JNICALL Java_uk_ac_ucl_chime_EiffelBridge_setErrorDBDirectoryPath
 JNIEXPORT void JNICALL Java_uk_ac_ucl_chime_EiffelBridge_setRMSchemaDirectoryPath
   (JNIEnv *, jobject, jstring);
 
+/*
+ * Class:     uk_ac_ucl_chime_EiffelBridge
+ * Method:    compileArcheytpe
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_uk_ac_ucl_chime_EiffelBridge_compileArcheytpe
+  (JNIEnv *, jobject, jstring);
+
 #ifdef __cplusplus
 }
 #endif

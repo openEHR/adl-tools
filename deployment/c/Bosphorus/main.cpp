@@ -5,6 +5,8 @@
 #include <string>
 #include <iostream>
 #include "OpenEHRManager.h"
+#include "JNILogger.h"
+#include "ArchetypeLogger.h"
 
 using namespace std;
 
@@ -15,16 +17,21 @@ int main (int argc,char **argv,char **envp) {
 	manager->setErrorDBDirPath(errorDir);
 	string schemaDir = string("c:\\tmp\\rm_schemas");
 	manager->setRmSchemaDirPath(schemaDir);
-	vector<string>* names = manager->getArchetyepNames();
+	vector<string>* names = manager->getArchetypeNames();
 	string name = names->at(2);
 	cout << name;
 	
 	ArchetypeVisitor* visitor = new ArchetypeVisitor;
 	manager->setVisitor(visitor);
 
+	ArchetypeLogger *logger = new ArchetypeLogger();
+	manager->setLogger(logger);
+	manager->testLogger();
+
 	string& arcNameToCompile = name;	
 	manager->compileArchetype(arcNameToCompile);
-//	delete(manager);	
+	
+	delete(manager);	
 	string someChars;
 	cout << "type something, and press enter" << endl;
 	cin >> someChars;

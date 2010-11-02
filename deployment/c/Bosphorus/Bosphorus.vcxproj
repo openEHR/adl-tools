@@ -12,16 +12,21 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application.cpp" />
+    <ClCompile Include="ArchetypeLogger.cpp" />
     <ClCompile Include="ArchetypeVisitor.cpp" />
     <ClCompile Include="EiffelBridge.cpp" />
+    <ClCompile Include="JNILogger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainOne.cpp" />
     <ClCompile Include="OpenEHRManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h" />
+    <ClInclude Include="ArchetypeLogger.h" />
     <ClInclude Include="ArchetypeVisitor.h" />
     <ClInclude Include="IArchetypeVisitor.h" />
+    <ClInclude Include="ILogger.h" />
+    <ClInclude Include="JNILogger.h" />
     <ClInclude Include="MainOne.h" />
     <ClInclude Include="OpenEHRManager.h" />
     <ClInclude Include="uk_ac_ucl_chime_EiffelBridge.h" />
@@ -36,7 +41,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>Windows7.1SDK</PlatformToolset>

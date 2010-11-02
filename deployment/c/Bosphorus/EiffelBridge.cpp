@@ -16,10 +16,17 @@ using namespace std;
 
 string st("dneme");
 OpenEHRManager* manager = NULL;
+
+void initManager(JNIEnv *env, jobject obj){
+	if(manager == NULL)
+			manager = new OpenEHRManager();
+	ArchetypeVisitor *visitor = new ArchetypeVisitor(env, obj);
+	manager->setVisitor(visitor);
+}
+
 JNIEXPORT jstring JNICALL Java_uk_ac_ucl_chime_EiffelBridge_getStringValue
   (JNIEnv * env, jobject thisObj){
-	 if(manager == NULL)
-		 manager = new OpenEHRManager();
+	  initManager(env, thisObj);
 //	int val = manager->getFunctionCallResult();
 	stringstream out;
 //	out << val;
@@ -32,9 +39,8 @@ JNIEXPORT jstring JNICALL Java_uk_ac_ucl_chime_EiffelBridge_getStringValue
 }
 
 JNIEXPORT jobjectArray JNICALL Java_uk_ac_ucl_chime_EiffelBridge_getArchetypeNames(JNIEnv * env, jobject thisObj) {
-	if(manager == NULL)
-		manager = new OpenEHRManager();
-	vector<string>* archetypeNames = manager->getArchetyepNames();
+	initManager(env, thisObj);
+	vector<string>* archetypeNames = manager->getArchetypeNames();
 	jobjectArray arr;
 	int size = 5;
 	jsize len = archetypeNames->size();
@@ -52,20 +58,30 @@ JNIEXPORT jobjectArray JNICALL Java_uk_ac_ucl_chime_EiffelBridge_getArchetypeNam
 }
 
 JNIEXPORT void JNICALL Java_uk_ac_ucl_chime_EiffelBridge_setErrorDBDirectoryPath(JNIEnv *env, jobject obj, jstring str){
-	if(manager == NULL)
-		manager = new OpenEHRManager();
+	initManager(env, obj);
 	const char* cStr = env->GetStringUTFChars(str, 0);
 	string cppStr(cStr);
 	manager->setErrorDBDirPath(cppStr);
 	env->ReleaseStringUTFChars(str, cStr);
+
+	
 }
 
 JNIEXPORT void JNICALL Java_uk_ac_ucl_chime_EiffelBridge_setRMSchemaDirectoryPath(JNIEnv *env, jobject obj, jstring str){
-	if(manager == NULL)
-			manager = new OpenEHRManager();
+	initManager(env, obj);
 	const char* cStr = env->GetStringUTFChars(str, 0);
 	string cppStr(cStr);
 	manager->setRmSchemaDirPath(cppStr);
 	env->ReleaseStringUTFChars(str, cStr);
 }
+
+JNIEXPORT void JNICALL Java_uk_ac_ucl_chime_EiffelBridge_compileArcheytpe(JNIEnv * env, jobject obj, jstring str){
+	initManager(env, obj);
+	const char* cStr = env->GetStringUTFChars(str, 0);
+	string cppStr(cStr);
+	manager->compileArchetype(cppStr);
+	env->ReleaseStringUTFChars(str, cStr);
+}
+
+
 

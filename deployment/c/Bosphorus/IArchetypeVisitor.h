@@ -14,7 +14,7 @@ public:
 	virtual void endCAttributeNode(EIF_REFERENCE, EIF_INTEGER) = 0;
 
 	virtual void startCPrimitiveObject(EIF_REFERENCE, EIF_INTEGER) = 0;
-	virtual void endCPrimitiveObject(EIF_REFERENCE, EIF_INTEGER) = 0;
+	virtual void endCPrimitiveObject(EIF_REFERENCE, EIF_INTEGER) = 0;	
 	
 };
 

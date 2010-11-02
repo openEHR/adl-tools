@@ -1,10 +1,19 @@
 #include "ArchetypeVisitor.h"
 #include <iostream>
+#include "JNILogger.h"
+#include <string>
 
 using namespace std;
 
 ArchetypeVisitor::ArchetypeVisitor(void)
 {
+	env = NULL;
+	obj = NULL;
+}
+
+ArchetypeVisitor::ArchetypeVisitor(JNIEnv* pEnv, jobject pJobject){
+	env = pEnv;
+	obj = pJobject;
 }
 
 
@@ -14,6 +23,13 @@ ArchetypeVisitor::~ArchetypeVisitor(void)
 
 void ArchetypeVisitor::startCComplexObject(EIF_REFERENCE pCComplexObject, EIF_INTEGER pDepth){
 	cout << "startCComplexObj" << endl;
+	
+	if(env != NULL && obj != NULL){
+		string valToPass("value from visitor");
+		string& passme = valToPass;
+		JNILogger::log(env, obj, passme);
+	}
+	
 }
 
 void ArchetypeVisitor::endCComplexObject(EIF_REFERENCE , EIF_INTEGER){
