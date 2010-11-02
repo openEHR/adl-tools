@@ -26,11 +26,17 @@ feature {NONE} -- Initialization
 			--perform_parsing
 			app_root.set_error_db_directory_location ("c:\tmp\error_db")
 			app_root.set_rm_schema_directory_location ("c:\tmp\rm_schemas")
+
 			archetype_names_in_repo := archetype_names
 			compile_archetype (archetype_names_in_repo[2])
 		end
 
 feature		--Access
+
+	logger: LOGGER
+	once
+		create Result.make
+	end
 
 	cpp_visitor: POINTER
 
@@ -88,6 +94,7 @@ feature --process archetypes
 	require
 		rm_schema_dir_initialized: app_root.rm_schema_directory_location /= Void
 		error_db_dir_initialized: app_root.error_db_directory_location /= Void
+		cpp_object_initialized: cpp_visitor /= Void
 	local
 		flattened_archetype: FLAT_ARCHETYPE --TODO: will return this in the next version of this function, only for debugging purposes for now
 		bosphorus_visitor: BOSPHORUS_VISITOR
@@ -99,9 +106,10 @@ feature --process archetypes
 			flattened_archetype := app_root.arch_dir.selected_archetype.flat_archetype
 			if flattened_archetype /= Void then
 				create bosphorus_visitor
+				bosphorus_visitor.set_logger (logger)
 				bosphorus_visitor.set_cpp_visitor (cpp_visitor)
 				bosphorus_visitor.initialise (flattened_archetype.ontology)
-				io.put_string ("now calling visitor")
+				logger.log ("now calling visitor")
 				flattened_archetype.definition.enter_subtree (bosphorus_visitor, 0)
 			end
 			io.put_string("Compiled archetype: " + p_archetype_name + "%N");

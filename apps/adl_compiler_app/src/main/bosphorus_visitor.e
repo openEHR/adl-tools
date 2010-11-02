@@ -27,6 +27,7 @@ inherit
 	end
 
 feature
+	--cpp fields
 	cpp_visitor: POINTER
 
 	set_cpp_visitor (p_cpp_visitor: POINTER)
@@ -36,7 +37,16 @@ feature
 	end
 
 feature
+	--logging
+	logger: LOGGER
 
+	set_logger(p_logger: LOGGER)
+	do
+		logger := p_logger
+	end
+
+feature
+	--visiting features
 	call_start_c_complex_object_on_cpp_obj (cpp_obj_to_use: POINTER; c_complex_object_pointer: POINTER; depth: POINTER)
 	external
 		"C++ inline use %"IArchetypeVisitor.h%""
@@ -50,7 +60,7 @@ feature
 	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- enter an C_COMPLEX_OBJECT
 		do
-			io.put_string (a_node.node_id + "%N")
+			logger.log(a_node.node_id )
 			call_start_c_complex_object_on_cpp_obj(cpp_visitor, $a_node, $depth)
 			from
 				a_node.attributes.start

@@ -38,6 +38,7 @@
 			<visible class="MY_ARRAY"/>
 			<visible class="APPLICATION"/>
 			<visible class="BOSPHORUS_VISITOR"/>
+			<visible class="LOGGER"/>
 		</cluster>
 		<cluster name="archetype_repository" location="..\..\..\components\archetype_repository\src\" recursive="true">
 			<option>
