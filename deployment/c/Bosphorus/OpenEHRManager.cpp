@@ -63,6 +63,17 @@ void OpenEHRManager::setVisitor(ArchetypeVisitor *pVisitor){
 
 void OpenEHRManager::setLogger(ILogger *pLogger){
 	logger = pLogger;	
+	
+	if(logger != NULL){
+
+		EIF_TYPE_ID loggerTid = eif_type_id("LOGGER");
+
+		EIF_REFERENCE_FUNCTION getLogger = eif_reference_function("logger", tid);
+		EIF_OBJECT loggerObj = eif_protect(getLogger(eif_access(eiffelObj), NULL));
+
+		EIF_PROCEDURE setCppLogger = eif_procedure("set_cpp_logger", loggerTid);				
+		setCppLogger(eif_access(loggerObj), logger);
+	}
 }
 
 void OpenEHRManager::testLogger(){
