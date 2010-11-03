@@ -101,7 +101,7 @@ templates = <
 		["validate_e1"] = <"specialisation parent is missing">
 		["validate_e3"] = <"archetype id in descriptor $1 does not match id at top of file $2">
 		["validation_strict"] = <"Validation level STRICT">
-		["validation_non_strict"] = <"Validation level NON-STRICT; non-coforming existence, occurrences & cardinality will be removed">
+		["validation_non_strict"] = <"Validation level NON-STRICT; non-conforming existence, occurrences & cardinality will be removed">
 
 		-- ARCHETYPE_COMPILER / ARCH_REP_ARCHETYPE
 		["compile_e1"] = <"specialisation parent $1 failed to validate">
