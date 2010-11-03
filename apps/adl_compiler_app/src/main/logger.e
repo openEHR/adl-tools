@@ -22,7 +22,7 @@ feature
 
 	log (p_text: STRING)
 	do
-		if attached cpp_logger  then
+		if  cpp_logger.to_integer_32 /= 0 then
 			log_using_cpp_object($p_text, cpp_logger)
 		end
 
