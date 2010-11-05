@@ -277,7 +277,7 @@ feature {NONE} -- Implementation
 				end
 			end
 		rescue
-			post_error(Current, "build_archetype", "compile_e3", <<ara.ontological_name, exception.out, exception_trace>>)
+			post_error(Current, "build_archetype", "compile_exception", <<ara.ontological_name, exception.out, exception_trace>>)
 			exception_encountered := True
 			retry
 		end
