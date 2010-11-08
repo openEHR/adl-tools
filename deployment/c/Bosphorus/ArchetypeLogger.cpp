@@ -12,8 +12,7 @@ ArchetypeLogger::~ArchetypeLogger(void)
 {
 }
 
-void ArchetypeLogger::log(EIF_REFERENCE pText){
-	cout << "here" << endl;
+void ArchetypeLogger::log(EIF_REFERENCE pText){	
 	EIF_PROCEDURE epstr;
 	EIF_TYPE_ID tid_str;
 	tid_str = eif_type_id ("STRING");

@@ -25,7 +25,7 @@ int main (int argc,char **argv,char **envp) {
 	manager->setVisitor(visitor);
 
 	ArchetypeLogger *logger = new ArchetypeLogger();
-	//manager->setLogger(logger);
+	manager->setLogger(logger);
 	//manager->testLogger();
 
 	string& arcNameToCompile = name;	

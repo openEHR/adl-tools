@@ -21,8 +21,7 @@ ArchetypeVisitor::~ArchetypeVisitor(void)
 {
 }
 
-void ArchetypeVisitor::startCComplexObject(EIF_REFERENCE pCComplexObject, EIF_INTEGER pDepth){
-	cout << "startCComplexObj" << endl;
+void ArchetypeVisitor::startCComplexObject(EIF_REFERENCE pCComplexObject, EIF_INTEGER pDepth){	
 	
 	if(env != NULL && obj != NULL){
 		string valToPass("value from visitor");
@@ -33,20 +32,103 @@ void ArchetypeVisitor::startCComplexObject(EIF_REFERENCE pCComplexObject, EIF_IN
 }
 
 void ArchetypeVisitor::endCComplexObject(EIF_REFERENCE , EIF_INTEGER){
-	cout << "endCComplexObj" << endl;
+	
 }
 
-void ArchetypeVisitor::startCAttributeNode(EIF_REFERENCE pCAttributeNode, EIF_INTEGER pDepth){
-	cout << "startCAttributeNode" << endl;
-}
-void ArchetypeVisitor::endCAttributeNode(EIF_REFERENCE pCAttributeNode, EIF_INTEGER pDepth){
-	cout << "endCAttrNode" << endl;
+void ArchetypeVisitor::startArchetypeSlot(EIF_REFERENCE, EIF_INTEGER){
+
 }
 
-void ArchetypeVisitor::startCPrimitiveObject(EIF_REFERENCE pCPrimitiveObject, EIF_INTEGER pDepth){
-	cout << "startCPrimitiveNode" << endl;
+void ArchetypeVisitor::endArchetypeSlot(EIF_REFERENCE, EIF_INTEGER){
+
 }
 
-void ArchetypeVisitor::endCPrimitiveObject(EIF_REFERENCE pCPrimitiveObject, EIF_INTEGER pDepth){
+
+void ArchetypeVisitor::startCAttribute(EIF_REFERENCE, EIF_INTEGER){
+
+}
+
+void ArchetypeVisitor::endCAttribute(EIF_REFERENCE, EIF_INTEGER){
+
+}
+
+
+void ArchetypeVisitor::startCLeafObject(EIF_REFERENCE, EIF_INTEGER){
+
+}
+
+void ArchetypeVisitor::endCLeafObject(EIF_REFERENCE, EIF_INTEGER){
+
+}
+
+void ArchetypeVisitor::startCReferenceObject(EIF_REFERENCE, EIF_INTEGER){
+
+}
+
+void ArchetypeVisitor::endCReferenceObject(EIF_REFERENCE, EIF_INTEGER){
+
+}
+
+void ArchetypeVisitor::startCArchetypeRoot(EIF_REFERENCE, EIF_INTEGER){
+
+}
+
+void ArchetypeVisitor::endCArchetypeRoot(EIF_REFERENCE, EIF_INTEGER){
+
+}
+
+void ArchetypeVisitor::startArchetypeInternalRef(EIF_REFERENCE, EIF_INTEGER){
+
+}
+
+void ArchetypeVisitor::endArchetypeInternalRef(EIF_REFERENCE, EIF_INTEGER){
+
+}
+
+void ArchetypeVisitor::startConstraintRef(EIF_REFERENCE, EIF_INTEGER){
+
+}
+
+void ArchetypeVisitor::endConstraintRef(EIF_REFERENCE, EIF_INTEGER){
+
+}
+
+void ArchetypeVisitor::startCPrimitiveObject(EIF_REFERENCE, EIF_INTEGER){
+
+}
+
+void ArchetypeVisitor::endCPrimitiveObject(EIF_REFERENCE, EIF_INTEGER){
+
+}
+
+void ArchetypeVisitor::startCDomainType(EIF_REFERENCE, EIF_INTEGER){
+
+}
+
+void ArchetypeVisitor::endCDomainType(EIF_REFERENCE, EIF_INTEGER){
+
+}
+
+void ArchetypeVisitor::startCCodePhrase(EIF_REFERENCE, EIF_INTEGER){
+
+}
+
+void ArchetypeVisitor::endCCodePhrase(EIF_REFERENCE, EIF_INTEGER){
+
+}
+
+void ArchetypeVisitor::startCOrdinal(EIF_REFERENCE, EIF_INTEGER){
+
+}
+
+void ArchetypeVisitor::endCOrdinal(EIF_REFERENCE, EIF_INTEGER){
+
+}
+
+void ArchetypeVisitor::startCQuantity(EIF_REFERENCE, EIF_INTEGER){
+
+}
+
+void ArchetypeVisitor::endCQuantity(EIF_REFERENCE, EIF_INTEGER){
 
 }
