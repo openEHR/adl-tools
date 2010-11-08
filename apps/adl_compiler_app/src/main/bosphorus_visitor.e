@@ -60,7 +60,7 @@ feature
 	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- enter an C_COMPLEX_OBJECT
 		do
-			logger.log(a_node.node_id )
+			logger.log("C complex obj node id: " + a_node.node_id )
 			call_start_c_complex_object_on_cpp_obj(cpp_visitor, $a_node, $depth)
 			from
 				a_node.attributes.start
@@ -77,9 +77,20 @@ feature
 		do
 		end
 
+	call_start_archeytpe_slot_on_cpp_obj(cpp_obj_to_use:POINTER; a_node: POINTER; depth:POINTER)
+	external
+		"C++ inline use %"IArchetypeVisitor.h%""
+	alias
+		"[
+			IArchetypeVisitor *implementation = (IArchetypeVisitor *)$cpp_obj_to_use;
+			implementation->startArchetypeSlot((EIF_REFERENCE)$a_node, (EIF_INTEGER)$depth );
+		]"
+	end
+
 	start_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER)
 			-- enter an ARCHETYPE_SLOT
 		do
+			call_start_archeytpe_slot_on_cpp_obj (cpp_visitor, $a_node, $depth)
 		end
 
 	end_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER)
@@ -87,18 +98,30 @@ feature
 		do
 		end
 
+	call_start_c_attribute_on_cpp_obj(cpp_obj_to_use:POINTER; a_node:POINTER; depth:POINTER)
+	external
+		"C++ inline use %"IArchetypeVisitor.h%""
+	alias
+		"[
+			IArchetypeVisitor *implementation = (IArchetypeVisitor *)$cpp_obj_to_use;
+			implementation->startCAttribute((EIF_REFERENCE)$a_node, (EIF_INTEGER)$depth );
+		]"
+	end
+
 	start_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- enter a C_ATTRIBUTE
 		do
+			--TODO: first call cpp here, then continue..
+			call_start_c_attribute_on_cpp_obj (cpp_visitor, $a_node, $depth)
 			from
 				a_node.children.start
 			until
 				a_node.children.off
 			loop
-				io.put_string (a_node.representation.node_id + "%N")
-				if attached {C_PRIMITIVE_OBJECT} a_node.children.item as attr_primite_child then
-					start_c_primitive_object (attr_primite_child, depth)
-				else
+					logger.log("node id: " + a_node.representation.node_id + "%N")
+					if attached {C_PRIMITIVE_OBJECT} a_node.children.item as attr_primite_child then
+						start_c_primitive_object (attr_primite_child, depth)
+					else
 					if attached {C_COMPLEX_OBJECT} a_node.children.item as attr_complex_child then
 						start_c_complex_object (attr_complex_child, depth)
 					end
@@ -112,9 +135,20 @@ feature
 		do
 		end
 
+	call_start_c_leaf_object_on_cpp_obj(cpp_obj_to_use:POINTER; a_node:POINTER; depth:POINTER)
+	external
+		"C++ inline use %"IArchetypeVisitor.h%""
+	alias
+		"[
+			IArchetypeVisitor *implementation = (IArchetypeVisitor *)$cpp_obj_to_use;
+			implementation->startCLeafObject((EIF_REFERENCE)$a_node, (EIF_INTEGER)$depth );
+		]"
+	end
+
 	start_c_leaf_object(a_node: C_LEAF_OBJECT; depth: INTEGER)
 			-- enter a C_LEAF_OBJECT
 		do
+			call_start_c_leaf_object_on_cpp_obj (cpp_visitor, $a_node, $depth)
 		end
 
 	end_c_leaf_object(a_node: C_LEAF_OBJECT; depth: INTEGER)
@@ -122,9 +156,20 @@ feature
 		do
 		end
 
+	call_start_c_reference_object_on_cpp_obj(cpp_obj_to_use:POINTER; a_node:POINTER; depth:POINTER)
+	external
+		"C++ inline use %"IArchetypeVisitor.h%""
+	alias
+		"[
+			IArchetypeVisitor *implementation = (IArchetypeVisitor *)$cpp_obj_to_use;
+			implementation->startCReferenceObject((EIF_REFERENCE)$a_node, (EIF_INTEGER)$depth );
+		]"
+	end
+
 	start_c_reference_object(a_node: C_REFERENCE_OBJECT; depth: INTEGER)
 			-- enter a C_REFERENCE_OBJECT
 		do
+			call_start_c_reference_object_on_cpp_obj (cpp_visitor, $a_node, $depth)
 		end
 
 	end_c_reference_object(a_node: C_REFERENCE_OBJECT; depth: INTEGER)
@@ -132,9 +177,20 @@ feature
 		do
 		end
 
+	call_start_c_archetype_root_on_cpp_obj(cpp_obj_to_use:POINTER; a_node:POINTER; depth:POINTER)
+	external
+		"C++ inline use %"IArchetypeVisitor.h%""
+	alias
+		"[
+			IArchetypeVisitor *implementation = (IArchetypeVisitor *)$cpp_obj_to_use;
+			implementation->startCArchetypeRoot((EIF_REFERENCE)$a_node, (EIF_INTEGER)$depth );
+		]"
+	end
+
 	start_c_archetype_root(a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- enter a C_ARCHETYPE_ROOT
 		do
+			call_start_c_archetype_root_on_cpp_obj (cpp_visitor, $a_node, $depth)
 		end
 
 	end_c_archetype_root(a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
@@ -142,9 +198,20 @@ feature
 		do
 		end
 
+	call_start_archetype_internal_ref_on_cpp_obj(cpp_obj_to_use:POINTER; a_node:POINTER; depth:POINTER)
+	external
+		"C++ inline use %"IArchetypeVisitor.h%""
+	alias
+		"[
+			IArchetypeVisitor *implementation = (IArchetypeVisitor *)$cpp_obj_to_use;
+			implementation->startArchetypeInternalRef((EIF_REFERENCE)$a_node, (EIF_INTEGER)$depth );
+		]"
+	end
+
 	start_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
 			-- enter an ARCHETYPE_INTERNAL_REF
 		do
+			call_start_archetype_internal_ref_on_cpp_obj (cpp_visitor, $a_node, $depth)
 		end
 
 	end_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
@@ -152,9 +219,20 @@ feature
 		do
 		end
 
+	call_start_constraint_ref_on_cpp_obj(cpp_obj_to_use:POINTER; a_node:POINTER; depth:POINTER)
+	external
+		"C++ inline use %"IArchetypeVisitor.h%""
+	alias
+		"[
+			IArchetypeVisitor *implementation = (IArchetypeVisitor *)$cpp_obj_to_use;
+			implementation->startConstraintRef((EIF_REFERENCE)$a_node, (EIF_INTEGER)$depth );
+		]"
+	end
+
 	start_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER)
 			-- enter a CONSTRAINT_REF
 		do
+			call_start_constraint_ref_on_cpp_obj (cpp_visitor, $a_node, $depth)
 		end
 
 	end_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER)
@@ -162,10 +240,21 @@ feature
 		do
 		end
 
+	call_start_c_primitive_object_on_cpp_obj(cpp_obj_to_use:POINTER; a_node:POINTER; depth:POINTER)
+	external
+		"C++ inline use %"IArchetypeVisitor.h%""
+	alias
+		"[
+			IArchetypeVisitor *implementation = (IArchetypeVisitor *)$cpp_obj_to_use;
+			implementation->startCPrimitiveObject((EIF_REFERENCE)$a_node, (EIF_INTEGER)$depth );
+		]"
+	end
+
 	start_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- enter an C_PRIMITIVE_OBJECT
 		do
-			io.put_string (a_node.rm_type_name + "%N")
+			logger.log ("RM Type Name: " + a_node.rm_type_name + "%N")
+			call_start_c_primitive_object_on_cpp_obj (cpp_visitor, $a_node, $depth)
 		end
 
 	end_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
@@ -173,9 +262,20 @@ feature
 		do
 		end
 
+	call_start_c_domain_type_on_cpp_obj(cpp_obj_to_use:POINTER; a_node:POINTER; depth:POINTER)
+	external
+		"C++ inline use %"IArchetypeVisitor.h%""
+	alias
+		"[
+			IArchetypeVisitor *implementation = (IArchetypeVisitor *)$cpp_obj_to_use;
+			implementation->startCDomainType((EIF_REFERENCE)$a_node, (EIF_INTEGER)$depth );
+		]"
+	end
+
 	start_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER)
 			-- enter an C_DOMAIN_TYPE
 		do
+			call_start_c_domain_type_on_cpp_obj (cpp_visitor, $a_node, $depth)
 		end
 
 	end_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER)
@@ -183,9 +283,20 @@ feature
 		do
 		end
 
+	call_start_c_code_phrase_on_cpp_obj(cpp_obj_to_use:POINTER; a_node:POINTER; depth:POINTER)
+	external
+		"C++ inline use %"IArchetypeVisitor.h%""
+	alias
+		"[
+			IArchetypeVisitor *implementation = (IArchetypeVisitor *)$cpp_obj_to_use;
+			implementation->startCCodePhrase((EIF_REFERENCE)$a_node, (EIF_INTEGER)$depth );
+		]"
+	end
+
 	start_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER)
 			-- enter an C_CODE_PHRASE
 		do
+			call_start_c_code_phrase_on_cpp_obj (cpp_visitor, $a_node, $depth)
 		end
 
 	end_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER)
@@ -193,9 +304,20 @@ feature
 		do
 		end
 
+	call_start_c_ordinal_on_cpp_obj(cpp_obj_to_use:POINTER; a_node:POINTER; depth:POINTER)
+	external
+		"C++ inline use %"IArchetypeVisitor.h%""
+	alias
+		"[
+			IArchetypeVisitor *implementation = (IArchetypeVisitor *)$cpp_obj_to_use;
+			implementation->startCOrdinal((EIF_REFERENCE)$a_node, (EIF_INTEGER)$depth );
+		]"
+	end
+
 	start_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER)
 			-- enter an C_DV_ORDINAL
 		do
+			call_start_c_ordinal_on_cpp_obj (cpp_visitor, $a_node, $depth)
 		end
 
 	end_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER)
@@ -203,9 +325,20 @@ feature
 		do
 		end
 
+	call_start_c_quantity_on_cpp_obj(cpp_obj_to_use:POINTER; a_node:POINTER; depth:POINTER)
+	external
+		"C++ inline use %"IArchetypeVisitor.h%""
+	alias
+		"[
+			IArchetypeVisitor *implementation = (IArchetypeVisitor *)$cpp_obj_to_use;
+			implementation->startCQuantity((EIF_REFERENCE)$a_node, (EIF_INTEGER)$depth );
+		]"
+	end
+
 	start_c_quantity(a_node: C_DV_QUANTITY; depth: INTEGER)
 			-- enter a C_DV_QUANTITY
 		do
+			call_start_c_quantity_on_cpp_obj (cpp_visitor, $a_node, $depth)
 		end
 
 	end_c_quantity(a_node: C_DV_QUANTITY; depth: INTEGER)
