@@ -31,104 +31,104 @@ void ArchetypeVisitor::startCComplexObject(EIF_REFERENCE pCComplexObject, EIF_IN
 	
 }
 
-void ArchetypeVisitor::endCComplexObject(EIF_REFERENCE , EIF_INTEGER){
+void ArchetypeVisitor::endCComplexObject(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 	
 }
 
-void ArchetypeVisitor::startArchetypeSlot(EIF_REFERENCE, EIF_INTEGER){
+void ArchetypeVisitor::startArchetypeSlot(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 
 }
 
-void ArchetypeVisitor::endArchetypeSlot(EIF_REFERENCE, EIF_INTEGER){
-
-}
-
-
-void ArchetypeVisitor::startCAttribute(EIF_REFERENCE, EIF_INTEGER){
-
-}
-
-void ArchetypeVisitor::endCAttribute(EIF_REFERENCE, EIF_INTEGER){
+void ArchetypeVisitor::endArchetypeSlot(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 
 }
 
 
-void ArchetypeVisitor::startCLeafObject(EIF_REFERENCE, EIF_INTEGER){
+void ArchetypeVisitor::startCAttribute(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 
 }
 
-void ArchetypeVisitor::endCLeafObject(EIF_REFERENCE, EIF_INTEGER){
+void ArchetypeVisitor::endCAttribute(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 
 }
 
-void ArchetypeVisitor::startCReferenceObject(EIF_REFERENCE, EIF_INTEGER){
+
+void ArchetypeVisitor::startCLeafObject(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 
 }
 
-void ArchetypeVisitor::endCReferenceObject(EIF_REFERENCE, EIF_INTEGER){
+void ArchetypeVisitor::endCLeafObject(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 
 }
 
-void ArchetypeVisitor::startCArchetypeRoot(EIF_REFERENCE, EIF_INTEGER){
+void ArchetypeVisitor::startCReferenceObject(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 
 }
 
-void ArchetypeVisitor::endCArchetypeRoot(EIF_REFERENCE, EIF_INTEGER){
+void ArchetypeVisitor::endCReferenceObject(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 
 }
 
-void ArchetypeVisitor::startArchetypeInternalRef(EIF_REFERENCE, EIF_INTEGER){
+void ArchetypeVisitor::startCArchetypeRoot(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 
 }
 
-void ArchetypeVisitor::endArchetypeInternalRef(EIF_REFERENCE, EIF_INTEGER){
+void ArchetypeVisitor::endCArchetypeRoot(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 
 }
 
-void ArchetypeVisitor::startConstraintRef(EIF_REFERENCE, EIF_INTEGER){
+void ArchetypeVisitor::startArchetypeInternalRef(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 
 }
 
-void ArchetypeVisitor::endConstraintRef(EIF_REFERENCE, EIF_INTEGER){
+void ArchetypeVisitor::endArchetypeInternalRef(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 
 }
 
-void ArchetypeVisitor::startCPrimitiveObject(EIF_REFERENCE, EIF_INTEGER){
+void ArchetypeVisitor::startConstraintRef(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 
 }
 
-void ArchetypeVisitor::endCPrimitiveObject(EIF_REFERENCE, EIF_INTEGER){
+void ArchetypeVisitor::endConstraintRef(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 
 }
 
-void ArchetypeVisitor::startCDomainType(EIF_REFERENCE, EIF_INTEGER){
+void ArchetypeVisitor::startCPrimitiveObject(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 
 }
 
-void ArchetypeVisitor::endCDomainType(EIF_REFERENCE, EIF_INTEGER){
+void ArchetypeVisitor::endCPrimitiveObject(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 
 }
 
-void ArchetypeVisitor::startCCodePhrase(EIF_REFERENCE, EIF_INTEGER){
+void ArchetypeVisitor::startCDomainType(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 
 }
 
-void ArchetypeVisitor::endCCodePhrase(EIF_REFERENCE, EIF_INTEGER){
+void ArchetypeVisitor::endCDomainType(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 
 }
 
-void ArchetypeVisitor::startCOrdinal(EIF_REFERENCE, EIF_INTEGER){
+void ArchetypeVisitor::startCCodePhrase(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 
 }
 
-void ArchetypeVisitor::endCOrdinal(EIF_REFERENCE, EIF_INTEGER){
+void ArchetypeVisitor::endCCodePhrase(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 
 }
 
-void ArchetypeVisitor::startCQuantity(EIF_REFERENCE, EIF_INTEGER){
+void ArchetypeVisitor::startCOrdinal(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 
 }
 
-void ArchetypeVisitor::endCQuantity(EIF_REFERENCE, EIF_INTEGER){
+void ArchetypeVisitor::endCOrdinal(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
+
+}
+
+void ArchetypeVisitor::startCQuantity(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
+
+}
+
+void ArchetypeVisitor::endCQuantity(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 
 }
