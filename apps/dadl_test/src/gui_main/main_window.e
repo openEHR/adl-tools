@@ -62,7 +62,7 @@ feature -- Status setting
 			end
 
 			if editor_command.is_empty then
-				set_editor_command (default_editor_command)
+				set_editor_command (default_text_editor_command)
 			end
 
 			populate_explorer
