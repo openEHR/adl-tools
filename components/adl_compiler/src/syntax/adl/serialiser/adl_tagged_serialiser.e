@@ -36,22 +36,22 @@ create
 
 feature -- Serialisation
 
-	serialise (a_target: ARCHETYPE; desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING)
+	serialise (a_target: ARCHETYPE; lang_serialised, desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING)
 		do
 			target := a_target
-			
+
 			serialise_initialise
 			serialise_archetype_id
 			serialise_archetype_specialise
 			serialise_archetype_concept
-			
+
 			if not desc_serialised.is_empty then
 				last_result.append(create_indent(1) + xml_tag_start(symbol(SYM_DESCRIPTION), Void) + format_item(FMT_NEWLINE))
-				last_result.append(desc_serialised)				
+				last_result.append(desc_serialised)
 				last_result.append(create_indent(1) + xml_tag_end(symbol(SYM_DESCRIPTION))
 					+ format_item(FMT_NEWLINE) + format_item(FMT_NEWLINE))
 			end
-			
+
 			if not def_serialised.is_empty then
 				last_result.append(create_indent(1) + xml_tag_start(symbol(SYM_DEFINITION), Void) + format_item(FMT_NEWLINE))
 				last_result.append(def_serialised)
@@ -59,7 +59,7 @@ feature -- Serialisation
 					+ format_item(FMT_NEWLINE)
 					+ format_item(FMT_NEWLINE))
 			end
-			
+
 			if inv_serialised /= Void then
 				last_result.append(create_indent(1) + xml_tag_start(symbol(SYM_INVARIANT), Void) + format_item(FMT_NEWLINE))
 				last_result.append(inv_serialised)
@@ -67,7 +67,7 @@ feature -- Serialisation
 					+ format_item(FMT_NEWLINE)
 					+ format_item(FMT_NEWLINE))
 			end
-			
+
 			if not ont_serialised.is_empty then
 				last_result.append(create_indent(1) + xml_tag_start(symbol(SYM_ONTOLOGY), Void) + format_item(FMT_NEWLINE))
 				last_result.append(ont_serialised)
@@ -75,7 +75,7 @@ feature -- Serialisation
 					+ format_item(FMT_NEWLINE)
 					+ format_item(FMT_NEWLINE))
 			end
-			
+
 			serialise_finalise
 		end
 
@@ -100,7 +100,7 @@ feature -- Serialisation
 		do
 			last_result.append(create_indent(1) + xml_tag_start(symbol(SYM_CONCEPT), Void) + format_item(FMT_NEWLINE))
 			last_result.append(create_indent(2) + xml_tag_enclose(tag(TAG_CODE), target.concept_code, Void) + format_item(FMT_NEWLINE))
-			last_result.append(create_indent(2) + xml_tag_enclose(tag(TAG_TEXT), 
+			last_result.append(create_indent(2) + xml_tag_enclose(tag(TAG_TEXT),
 				ontology.term_definition(language, target.concept_code).item("text"), Void) + format_item(FMT_NEWLINE))
 			last_result.append(create_indent(1) + xml_tag_end(symbol(SYM_CONCEPT)) + format_item(FMT_NEWLINE))
 		end
@@ -108,8 +108,8 @@ feature -- Serialisation
 	serialise_archetype_specialise
 		do
 			if target.is_specialised then
-				last_result.append(format_item(FMT_NEWLINE) + create_indent(1) + 
-					xml_tag_enclose(symbol(SYM_SPECIALIZE), target.parent_archetype_id.as_string, Void) + 
+				last_result.append(format_item(FMT_NEWLINE) + create_indent(1) +
+					xml_tag_enclose(symbol(SYM_SPECIALIZE), target.parent_archetype_id.as_string, Void) +
 					format_item(FMT_NEWLINE))
 			end
 			last_result.append(format_item(FMT_NEWLINE))
@@ -123,7 +123,7 @@ feature -- Serialisation
 feature {NONE} -- Implementation
 
 
-	experimental_message: STRING 
+	experimental_message: STRING
 		once
 			create Result.make(0)
 			Result.append("%N")

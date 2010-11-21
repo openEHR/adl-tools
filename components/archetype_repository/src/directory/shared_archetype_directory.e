@@ -18,7 +18,7 @@ class SHARED_ARCHETYPE_DIRECTORY
 
 feature -- Access
 
-	archetype_directory: ARCH_DIRECTORY is
+	archetype_directory: ARCH_DIRECTORY
 			-- application-wide archetype directory access
 		once
 			create Result.make

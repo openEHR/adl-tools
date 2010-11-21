@@ -26,7 +26,7 @@ inherit
 
 feature -- Access
 
-	current_language: STRING is
+	current_language: STRING
 		do
 			Result := cell_language.item
 		ensure

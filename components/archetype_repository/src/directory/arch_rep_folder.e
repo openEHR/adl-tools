@@ -48,6 +48,18 @@ feature -- Access
 			Result := "file_folder_" + file_repository.group_id.out
 		end
 
+	ontological_name: STRING
+			-- semantic name of this node, relative to parent concept, which is either class or package name, or else as concept name of archetype
+			-- used to generate ontological path
+
+	display_name: STRING
+			-- semantic name of this node to use in display context
+
+feature -- Status Report
+
+	has_artefacts: BOOLEAN
+			-- True if there are any artefacts at or below this point
+
 end
 
 

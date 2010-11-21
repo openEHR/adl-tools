@@ -27,6 +27,8 @@ inherit
 	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
+		undefine
+			current_language, set_current_language
 		end
 
 	STRING_UTILITIES

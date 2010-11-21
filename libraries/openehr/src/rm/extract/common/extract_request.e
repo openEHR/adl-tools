@@ -18,10 +18,13 @@ note
 	revision:    "$LastChangedRevision"
 	last_change: "$LastChangedDate"
 
-class EXTRACT_REQUEST [G->EXTRACT_SPEC]
+deferred class EXTRACT_REQUEST [G->EXTRACT_SPEC]
 
 inherit
 	LOCATABLE
+		redefine
+			uid
+		end
 
 feature -- Access
 

@@ -42,6 +42,8 @@ inherit
 	SHARED_RESOURCES
 		export
 			{NONE} all
+		undefine
+			error_reporting_level
 		end
 
 	ARCHETYPE_DEFINITIONS
@@ -52,6 +54,8 @@ inherit
 	MESSAGE_BILLBOARD
 		export
 			{NONE} all
+		undefine
+			make, clear
 		end
 
 create

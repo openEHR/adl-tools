@@ -18,9 +18,9 @@ note
 	revision:    "$LastChangedRevision"
 	last_change: "$LastChangedDate"
 
-class GENERIC_EXTRACT_REQUEST
+deferred class GENERIC_EXTRACT_REQUEST
 
-inherit 
+inherit
 	EXTRACT_REQUEST [GENERIC_EXTRACT_SPEC]
 
 feature -- Access

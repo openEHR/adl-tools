@@ -18,6 +18,15 @@ class CADL_TAGGED_SERIALISER
 
 inherit
 	C_SERIALISER
+		redefine
+			start_c_complex_object, end_c_complex_object,
+			start_c_attribute, end_c_attribute,
+			start_archetype_slot, end_archetype_slot,
+			start_archetype_internal_ref, start_constraint_ref,
+			start_c_archetype_root,
+			start_c_code_phrase, start_c_ordinal, start_c_quantity,
+			start_c_primitive_object
+		end
 
 	CADL_TOKENS
 		export
@@ -255,22 +264,11 @@ feature -- Modification
 			last_object_simple := True
 		end
 
-	end_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER)
-			-- end serialising an CONSTRAINT_REF
-		do
-		end
-
 	start_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
 			-- start serialising an ARCHETYPE_INTERNAL_REF
 		do
 --			last_result.append(create_indent(depth) + symbol(SYM_USE_NODE) + format_item(FMT_SPACE))
 --			last_result.append(a_node.rm_type_name + format_item(FMT_SPACE) + a_node.ref_path.as_string + format_item(FMT_NEWLINE))
-		end
-
-	end_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
-			-- end serialising an ARCHETYPE_INTERNAL_REF
-		do
-			-- nothing needed
 		end
 
 	start_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
@@ -281,20 +279,8 @@ feature -- Modification
 			last_object_simple := True
 		end
 
-	end_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
-			-- end serialising an C_PRIMITIVE_OBJECT
-		do
-			-- nothing needed
-			-- EXCEPTION TEST
-		end
-
 	start_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER)
 			-- start serialising an C_DOMAIN_TYPE
-		do
-		end
-
-	end_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER)
-			-- end serialising an C_DOMAIN_TYPE
 		do
 		end
 
@@ -355,11 +341,6 @@ feature -- Modification
 			end
 		end
 
-	end_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER)
-			-- end serialising an C_CODE_PHRASE
-		do
-		end
-
 	start_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER)
 			-- start serialising an C_DV_ORDINAL
 		local
@@ -402,8 +383,23 @@ feature -- Modification
 			end
 		end
 
-	end_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER)
-			-- end serialising an C_DV_ORDINAL
+	start_c_quantity(a_node: C_DV_QUANTITY; depth: INTEGER)
+			-- enter a C_DV_QUANTITY
+		do
+		end
+
+	start_c_leaf_object(a_node: C_LEAF_OBJECT; depth: INTEGER)
+			-- enter a C_LEAF_OBJECT
+		do
+		end
+
+	start_c_reference_object(a_node: C_REFERENCE_OBJECT; depth: INTEGER)
+			-- enter a C_REFERENCE_OBJECT
+		do
+		end
+
+	start_c_archetype_root(a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
+			-- enter a C_ARCHETYPE_ROOT
 		do
 		end
 

@@ -17,6 +17,9 @@ class
 
 inherit
 	EQA_TEST_SET
+		rename
+			file_system as test_file_system
+		end
 
 feature {NONE} -- Assertions
 

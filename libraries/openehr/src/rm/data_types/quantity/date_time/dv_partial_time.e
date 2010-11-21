@@ -27,12 +27,12 @@ inherit
 feature -- Access
 
 	minute_known: BOOLEAN
-			-- Indicates whether minute in hour is known. If so, the time 
+			-- Indicates whether minute in hour is known. If so, the time
 			-- is of the form y/m/?, if not, it is of the form y/?/
 
 	magnitude: DOUBLE
 		do
-		ensure
+		ensure then
 			Result = enclosing_interval.midpoint.magnitude
 		end
 
@@ -40,7 +40,7 @@ feature -- Access
 		do
 		ensure
 			minute_known implies Result.lower.second = 1 and Result.upper.second = seconds_in_minute
-			not minute_known implies Result.lower.minute = 1 and Result.upper.minute = Minutes_in_hour and 
+			not minute_known implies Result.lower.minute = 1 and Result.upper.minute = Minutes_in_hour and
 				Result.lower.second = 1 and Result.upper.second = seconds_in_minute
 		end
 

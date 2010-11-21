@@ -16,7 +16,7 @@ class
 	TEST_BMM
 
 inherit
-	EQA_TEST_SET
+	OPENEHR_TEST_SET
 		redefine
 			on_prepare
 		end

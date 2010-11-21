@@ -21,7 +21,7 @@ class DV_DATE
 inherit
 	DV_ABSOLUTE_QUANTITY
 		undefine
-			out, infix "<", default_create
+			out, is_less, default_create
 		end
 
 	ISO8601_DATE

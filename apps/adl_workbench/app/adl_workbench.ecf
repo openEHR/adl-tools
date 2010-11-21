@@ -91,6 +91,9 @@
 					<platform excluded_value="windows"/>
 				</condition>
 			</file_rule>
+			<file_rule>
+				<exclude>/testing$</exclude>
+			</file_rule>
 		</cluster>
 		<tests name="common_libs_tests" location="..\..\..\libraries\common_libs\tests\"/>
 		<cluster name="openehr" location="..\..\..\libraries\openehr\src\" recursive="true">
