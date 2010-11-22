@@ -55,7 +55,6 @@
 		<library name="gobo_xml" location="$ISE_LIBRARY\library\gobo\gobo_xml.ecf"/>
 		<library name="i18n" location="$ISE_LIBRARY\library\i18n\i18n.ecf"/>
 		<library name="process" location="$ISE_LIBRARY\library\process\process.ecf"/>
-		<library name="testing" location="$ISE_LIBRARY\library\testing\testing.ecf"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf">
 			<renaming old_name="C_DATE" new_name="TIME_C_DATE"/>
 			<renaming old_name="INTERVAL" new_name="TIME_INTERVAL"/>
@@ -81,7 +80,6 @@
 				</condition>
 			</file_rule>
 		</cluster>
-		<tests name="common_libs_tests" location="..\..\..\libraries\common_libs\tests\"/>
 		<cluster name="openehr" location="..\..\..\libraries\openehr\src\" recursive="true">
 			<option>
 				<assertions precondition="true" postcondition="true" check="true" loop="true" supplier_precondition="true"/>
@@ -101,7 +99,6 @@
 				</condition>
 			</file_rule>
 		</cluster>
-		<tests name="openehr_tests" location="..\..\..\libraries\openehr\tests\"/>
 		<cluster name="reference_model_checker" location="..\..\..\components\reference_model_checker\src\" recursive="true"/>
 		<override name="vendor_fixes" location="..\..\..\libraries\vendor-fixes\" recursive="true">
 			<file_rule>
