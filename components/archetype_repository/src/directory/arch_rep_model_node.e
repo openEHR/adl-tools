@@ -16,9 +16,6 @@ class ARCH_REP_MODEL_NODE
 
 inherit
 	ARCH_REP_ITEM
-		redefine
-			parent
-		end
 
 create
 	make_class, make_package, make_category
@@ -109,11 +106,6 @@ feature -- Status Report
 			end
 			Result := not subtree_artefact_counts.off
 		end
-
-feature {ARCH_REP_ITEM} -- Implementation
-
-	parent: ARCH_REP_MODEL_NODE
-			-- parent node
 
 invariant
 	Class_definition_validity: not (is_package and is_class)
