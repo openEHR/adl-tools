@@ -20,7 +20,7 @@ inherit
 			report_error
 		end
 
-creation
+create
 	make
 
 
