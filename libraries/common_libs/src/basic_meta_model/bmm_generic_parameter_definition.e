@@ -19,19 +19,24 @@ class BMM_GENERIC_PARAMETER_DEFINITION
 inherit
 	BMM_TYPE_SPECIFIER
 
-feature -- Access
+feature -- Access (attributes from schema)
 
 	name: STRING
 			-- name of the parameter, e.g. 'T' etc
 
-	conforms_to_type: BMM_CLASS_DEFINITION
+	conforms_to_type: STRING
+			-- optional conformance constraint
+
+feature -- Access
+
+	conforms_to_type_def: BMM_CLASS_DEFINITION
 			-- optional conformance constraint
 
 	flattened_conforms_to_type: BMM_CLASS_DEFINITION
 			-- get any ultimate type conformance constraint on this generic parameter due to inheritance
 		do
-			if conforms_to_type /= Void then
-				Result := conforms_to_type
+			if conforms_to_type_def /= Void then
+				Result := conforms_to_type_def
 			elseif inheritance_precursor /= Void then
 				Result := inheritance_precursor.flattened_conforms_to_type
 			end
@@ -63,10 +68,13 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_inheritance_precursor (a_gen_parm_def: BMM_GENERIC_PARAMETER_DEFINITION)
+	set_conforms_to_type_def (a_def: attached BMM_CLASS_DEFINITION)
+		do
+			conforms_to_type_def := a_def
+		end
+
+	set_inheritance_precursor (a_gen_parm_def: attached BMM_GENERIC_PARAMETER_DEFINITION)
 			-- set `inheritance_precursor'
-		require
-			a_gen_parm_def /= Void
 		do
 			inheritance_precursor := a_gen_parm_def
 		end
@@ -80,7 +88,7 @@ feature -- Output
 			Result.append(name)
 			if is_constrained then
 				Result.append_character(Generic_constraint_delimiter)
-				Result.append(conforms_to_type.as_type_string)
+				Result.append(conforms_to_type_def.as_type_string)
 			end
 		end
 

@@ -175,13 +175,13 @@ feature {NONE} -- Implementation
 	on_editor_app_command_browse
 			-- Let the user browse for an application that will act as the external archetype editor.
 		do
-			editor_app_command_text.set_text (get_file (editor_app_command_text.selected_text.as_string_8, Current))
+			editor_app_command_text.set_text (get_file (editor_app_command_text.text.as_string_8, Current))
 		end
 
 	on_text_editor_command_browse
 			-- Let the user browse for a text editor to use in AWB
 		do
-			text_editor_command_text.set_text (get_file (text_editor_command_text.selected_text.as_string_8, Current))
+			text_editor_command_text.set_text (get_file (text_editor_command_text.text.as_string_8, Current))
 		end
 
 	on_difftool_command_browse

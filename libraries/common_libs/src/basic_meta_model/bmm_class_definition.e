@@ -28,27 +28,44 @@ feature -- Initialisation
 			-- make in a safe way for DT building purposes
 		do
 			create properties.make (0)
-			create ancestors.make (0)
+			create ancestor_defs.make (0)
 			create all_ancestors.make (0)
 			all_ancestors.compare_objects
 			create immediate_descendants.make (0)
 		end
 
-feature -- Access
+feature -- Access (attributes from schema)
 
 	name: STRING
 			-- name of the class FROM SCHEMA
-			-- DON'T RENAME THIS ATTRIBUTE
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
 	generic_parameters: HASH_TABLE [BMM_GENERIC_PARAMETER_DEFINITION, STRING]
 			-- list of generic parameter definitions
 			-- FIXME: this won't function correctly unless ordering is guaranteed;
 			-- use DS_HASH_TABLE - but not yet supported by DT_OBJECT_CONVERTER
-			-- DON'T RENAME THIS ATTRIBUTE
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
-	ancestors: ARRAYED_LIST [BMM_CLASS_DEFINITION]
+	ancestors: ARRAYED_LIST [STRING]
 			-- list of immediate inheritance parents FROM SCHEMA
-			-- DON'T RENAME THIS ATTRIBUTE
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+	properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
+			-- list of attributes defined in this class FROM SCHEMA
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+	is_abstract: BOOLEAN
+			-- True if this is an abstract type
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+	is_generic: BOOLEAN
+			-- True if this class is a generic class
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+feature -- Access
+
+	ancestor_defs: ARRAYED_LIST [BMM_CLASS_DEFINITION]
+			-- list of immediate inheritance parents FROM SCHEMA
 
 	all_ancestors: ARRAYED_LIST [STRING]
 			-- list of all inheritance parent class names; derived in port-schema processing
@@ -56,10 +73,6 @@ feature -- Access
 	immediate_descendants: ARRAYED_LIST [BMM_CLASS_DEFINITION]
 			-- list of immediate inheritance descendants; set during post processing
 			-- by BMM_SCHEMA
-
-	properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
-			-- list of attributes defined in this class FROM SCHEMA
-			-- DON'T RENAME THIS ATTRIBUTE
 
 	immediate_suppliers: attached ARRAYED_SET [STRING]
 			-- list of names of immediate supplier classes, including concrete generic parameters and
@@ -82,7 +95,7 @@ feature -- Access
 				end
 				from properties.start until properties.off loop
 					-- get the statically defined type(s) of the property (could be >1 due to generics)
-					ftl := properties.item_for_iteration.type.flattened_type_list
+					ftl := properties.item_for_iteration.type_def.flattened_type_list
 					immediate_suppliers_cache.merge (ftl)
 
 					-- now get the descendant types
@@ -141,9 +154,9 @@ feature -- Access
 			if flat_properties_cache = Void then
 				create flat_properties_cache.make(0)
 				flat_properties_cache.compare_objects
-				from ancestors.start until ancestors.off loop
-					flat_properties_cache.merge (ancestors.item.flat_properties)
-					ancestors.forth
+				from ancestor_defs.start until ancestor_defs.off loop
+					flat_properties_cache.merge (ancestor_defs.item.flat_properties)
+					ancestor_defs.forth
 				end
 				flat_properties_cache.merge (properties)
 			end
@@ -181,7 +194,7 @@ feature -- Access
 				Result := flat_properties.item (a_prop_path.item.attr_name)
 				a_prop_path.forth
 				if not a_prop_path.off then
-					class_def := bmm_model.class_definition(Result.type.root_class)
+					class_def := bmm_model.class_definition(Result.type_def.root_class)
 					Result := class_def.property_definition_at_path(a_prop_path)
 				end
 			else -- look in the descendants
@@ -207,7 +220,7 @@ feature -- Access
 			gen_param_count: INTEGER
 		do
 			prop_def := flat_properties.item(a_prop_name)
-			prop_type := prop_def.type
+			prop_type := prop_def.type_def
 			if attached {BMM_GENERIC_PARAMETER_DEFINITION} prop_type as gen_prop_type then
 				gen_param_count := 1
 				from generic_parameters.start until generic_parameters.off or generic_parameters.item_for_iteration.name.is_equal(gen_prop_type.name) loop
@@ -222,12 +235,6 @@ feature -- Access
 
 feature -- Status Report
 
-	is_abstract: BOOLEAN
-			-- True if this is an abstract type
-
-	is_generic: BOOLEAN
-			-- True if this class is a generic class
-
 	has_property (a_prop_name: STRING): BOOLEAN
 			-- True if a_prop_name valid in this type, due to this type definition, or any ancestor
 		require
@@ -241,9 +248,9 @@ feature -- Status Report
 		require
 			Class_name_valid: a_class_name /= Void and then not a_class_name.is_empty
 		do
-			from ancestors.start until ancestors.off or Result loop
-				Result := ancestors.item.name.is_equal(a_class_name) or else ancestors.item.has_ancestor (a_class_name)
-				ancestors.forth
+			from ancestor_defs.start until ancestor_defs.off or Result loop
+				Result := ancestor_defs.item.name.is_equal(a_class_name) or else ancestor_defs.item.has_ancestor (a_class_name)
+				ancestor_defs.forth
 			end
 		end
 
@@ -271,7 +278,7 @@ feature -- Status Report
 		do
 			a_path_pos := a_path.items.index
 			if has_property (a_path.item.attr_name) then
-				class_def := bmm_model.class_definition(flat_properties.item (a_path.item.attr_name).type.root_class)
+				class_def := bmm_model.class_definition(flat_properties.item (a_path.item.attr_name).type_def.root_class)
 				a_path.forth
 				if not a_path.off then
 					Result := class_def.has_property_path(a_path)
@@ -287,6 +294,13 @@ feature -- Status Report
 			a_path.go_i_th (a_path_pos)
 		end
 
+feature -- Modification
+
+	set_ancestor_defs (a_def_list: attached ARRAYED_LIST [BMM_CLASS_DEFINITION])
+		do
+			ancestor_defs := a_def_list
+		end
+
 feature -- Commands
 
 	dt_finalise (a_bmmm: BMM_SCHEMA)
@@ -298,14 +312,14 @@ feature -- Commands
 
 			-- connect generic parm defs with defs in parent classes if any
 			-- first find a direct ancestor that has generic parameters
-			if is_generic and ancestors /= Void then
-				from ancestors.start until ancestors.off or ancestors.item.is_generic loop
-					ancestors.forth
+			if is_generic and ancestor_defs /= Void then
+				from ancestor_defs.start until ancestor_defs.off or ancestor_defs.item.is_generic loop
+					ancestor_defs.forth
 				end
-				if not ancestors.off then
+				if not ancestor_defs.off then
 					from generic_parameters.start until generic_parameters.off loop
-						if ancestors.item.generic_parameters.has (generic_parameters.key_for_iteration) then
-							generic_parameters.item_for_iteration.set_inheritance_precursor(ancestors.item.generic_parameters.item(generic_parameters.key_for_iteration))
+						if ancestor_defs.item.generic_parameters.has (generic_parameters.key_for_iteration) then
+							generic_parameters.item_for_iteration.set_inheritance_precursor(ancestor_defs.item.generic_parameters.item(generic_parameters.key_for_iteration))
 						end
 						generic_parameters.forth
 					end
@@ -329,7 +343,7 @@ feature -- Traversal
 
 			create supplier_closure_class_record.make(0)
 			supplier_closure_class_record.compare_objects
-			supplier_closure_class_record.extend(name)
+			supplier_closure_class_record.extIteratorend(name)
 
 			if flat_flag then
 				props := flat_properties
@@ -420,17 +434,17 @@ feature {NONE} -- Implementation
 		local
 			props: attached HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 		do
-			if not supplier_closure_stack.has(a_prop.type.root_class) then
-				supplier_closure_stack.extend(a_prop.type.root_class)
+			if not supplier_closure_stack.has(a_prop.type_def.root_class) then
+				supplier_closure_stack.extend(a_prop.type_def.root_class)
 
 				enter_action.call ([a_prop])
 
-				if not supplier_closure_class_record.has(a_prop.type.root_class) then
-					supplier_closure_class_record.extend(a_prop.type.root_class)
+				if not supplier_closure_class_record.has(a_prop.type_def.root_class) then
+					supplier_closure_class_record.extend(a_prop.type_def.root_class)
 					if flat_flag then
-						props := bmm_model.class_definition(a_prop.type.root_class).flat_properties
+						props := bmm_model.class_definition(a_prop.type_def.root_class).flat_properties
 					else
-						props := bmm_model.class_definition(a_prop.type.root_class).properties
+						props := bmm_model.class_definition(a_prop.type_def.root_class).properties
 					end
 
 					from props.start until props.off loop
@@ -454,7 +468,7 @@ feature {NONE} -- Implementation
 
 invariant
 	Properties_exists: properties /= Void
-	Ancestors_exists: ancestors /= Void
+	Ancestors_exists: ancestor_defs /= Void
 	Descendants_exists: immediate_descendants /= Void
 	Generic_validity: is_generic implies generic_parameters /= Void and then not generic_parameters.is_empty
 

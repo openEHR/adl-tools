@@ -27,6 +27,18 @@ feature -- Definitions
 
 	Any_type: STRING = "Any"
 
+	Metadata_model_publisher: STRING = "model_publisher"
+			-- dADL attribute name of logical attribute 'model_publisher' in schema file;
+			-- MUST correspond to attribute of same name in BMM_SCHEMA class
+
+	metadata_schema_name: STRING = "schema_name"
+			-- dADL attribute name of logical attribute 'schema_name' in schema file;
+			-- MUST correspond to attribute of same name in BMM_SCHEMA class
+
+	Metadata_model_release: STRING = "model_release"
+			-- dADL attribute name of logical attribute 'model_release' in schema file;
+			-- MUST correspond to attribute of same name in BMM_SCHEMA class
+
 	Metadata_schema_revision: STRING = "schema_revision"
 			-- dADL attribute name of logical attribute 'schema_revision' in schema file;
 			-- MUST correspond to attribute of same name in BMM_SCHEMA class
@@ -39,25 +51,13 @@ feature -- Definitions
 			-- dADL attribute name of logical attribute 'schema_description' in schema file;
 			-- MUST correspond to attribute of same name in BMM_SCHEMA class
 
-	Metadata_model_publisher: STRING = "model_publisher"
-			-- dADL attribute name of logical attribute 'model_publisher' in schema file;
-			-- MUST correspond to attribute of same name in BMM_SCHEMA class
-
-	Metadata_model_name: STRING = "model_name"
-			-- dADL attribute name of logical attribute 'model_name' in schema file;
-			-- MUST correspond to attribute of same name in BMM_SCHEMA class
-
-	Metadata_model_release: STRING = "model_release"
-			-- dADL attribute name of logical attribute 'model_release' in schema file;
-			-- MUST correspond to attribute of same name in BMM_SCHEMA class
-
 	Metadata_schema_path: STRING = "schema_path"
 			-- path of schema file
 
 	Schema_fast_parse_attrs: ARRAY [STRING]
 			-- attributes to retrieve for initial fast parse on schemas
 		once
-			Result := <<Metadata_schema_revision, Metadata_schema_lifecycle_state, Metadata_model_publisher, Metadata_model_name, Metadata_model_release>>
+			Result := <<Metadata_schema_revision, Metadata_schema_lifecycle_state, Metadata_model_publisher, metadata_schema_name, Metadata_model_release>>
 		end
 
 feature -- Comparison
@@ -88,8 +88,8 @@ feature -- Comparison
 
 feature -- Conversion
 
-	create_schema_name (a_model_publisher, a_model_name, a_model_release: STRING): attached STRING
-			-- Derived name of schema in 3 part form model_publisher '_' model_name '_' model_release.
+	create_schema_id (a_model_publisher, a_schema_name, a_model_release: STRING): attached STRING
+			-- Derived name of schema in 3 part form model_publisher '_' a_schema_name '_' model_release.
 			-- Any or all arguments can be Void or empty; for each missing element,
 			-- result contains "unknown", e.g. "unknown_test_1.0"
 			-- Result is lower case
@@ -102,10 +102,10 @@ feature -- Conversion
 			else
 				mp := a_model_publisher
 			end
-			if a_model_name = Void or a_model_name.is_empty then
+			if a_schema_name = Void or a_schema_name.is_empty then
 				mn := "unknown"
 			else
-				mn := a_model_name
+				mn := a_schema_name
 			end
 			if a_model_release = Void or a_model_release.is_empty then
 				mr := "unknown"

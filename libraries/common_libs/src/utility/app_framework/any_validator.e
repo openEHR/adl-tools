@@ -82,11 +82,16 @@ feature -- Status Report
 	passed: BOOLEAN
 			-- True if validation succeeded
 
+	ready_to_validate: BOOLEAN
+		do
+			Result := passed
+		end
+
 feature -- Validation
 
 	validate
 		require
-			passed
+			ready_to_validate
 		deferred
 		end
 

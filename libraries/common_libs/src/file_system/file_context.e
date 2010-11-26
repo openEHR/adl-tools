@@ -153,14 +153,15 @@ feature -- Commands
 
 	read_matching_lines (start_patterns: attached ARRAY[STRING]; ignore_pattern: STRING; max_lines: INTEGER)
 			-- Read lines starting with `start_patterns', ignoring lines starting with `ignore_pattern',
-			-- up to a maximum of `max_lines' non-ignored lines. Output line, if any, in `file_lines'
+			-- or only whitespace, up to a maximum of `max_lines' non-ignored lines. Output lines, if any,
+			-- in `file_lines'
 		require
 			Start_patterns_valid: not start_patterns.is_empty
 			Ignore_pattern_valid: attached ignore_pattern implies not ignore_pattern.is_empty
 			Valid_max_lines: max_lines > 0
 		local
 			in_file: PLAIN_TEXT_FILE
-			i, j: INTEGER
+			i, j, k: INTEGER
 			items_found: ARRAY[BOOLEAN]
    		do
    			last_op_failed := False
@@ -172,16 +173,25 @@ feature -- Commands
 				create items_found.make (start_patterns.lower, start_patterns.upper)
 				from i := 1 until i > max_lines or file_lines.count = start_patterns.count or in_file.end_of_file loop
 					in_file.read_line
-					if not in_file.last_string.starts_with (ignore_pattern) then
-						from j := start_patterns.lower until j > start_patterns.upper loop
-							if not items_found[j] and in_file.last_string.starts_with (start_patterns[j]) then
+
+					-- ignore if empty
+					if not in_file.last_string.is_empty and not in_file.last_string.starts_with (ignore_pattern) then
+						-- see if just whitespace
+						from k := 1 until not in_file.last_string.item (k).is_space or else k > in_file.last_string.count loop
+							k := k + 1
+						end
+
+						if k <= in_file.last_string.count then
+							from j := start_patterns.lower until j > start_patterns.upper or else (in_file.last_string.starts_with (start_patterns[j]) and not items_found[j]) loop
+								j := j + 1
+							end
+							if j <= start_patterns.upper then
 								file_lines.extend (in_file.last_string.twin)
 								file_lines.last.prune_all('%R')
 								items_found[j] := True
 							end
-							j := j + 1
+							i := i + 1
 						end
-						i := i + 1
 					end
 				end
 				in_file.close

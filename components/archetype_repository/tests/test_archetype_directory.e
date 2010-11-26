@@ -78,9 +78,9 @@ feature -- Test routines
 		note
 			testing: "covers/{ARCHETYPE_DIRECTORY}.add_adhoc_item"
 		do
-			assert_equal (False, arch_dir.has_selected_archetype)
-			arch_dir.add_adhoc_item (test_repository + "\basics\openehr-test_pkg-BOOK.structure_test1.v1.adls")
-			assert_equal (True, arch_dir.has_selected_archetype)
+			assert_equal (False, current_arch_dir.has_selected_archetype)
+			current_arch_dir.add_adhoc_item (test_repository + "\basics\openehr-test_pkg-BOOK.structure_test1.v1.adls")
+			assert_equal (True, current_arch_dir.has_selected_archetype)
 		end
 
 	test_validation
@@ -90,7 +90,7 @@ feature -- Test routines
 		do
 			set_status_reporting_level (Error_type_error)
 			source_repositories.set_reference_repository (test_repository)
-			arch_dir.populate
+			current_arch_dir.populate
 			assert ("Expected warning about ADL version", billboard.content.has_substring ("WARNING - Using ADL version"))
 			archetype_compiler.build_all
 			assert_equal (False, archetype_compiler.is_interrupted)

@@ -17,14 +17,14 @@ class BMM_SINGLE_PROPERTY_OPEN
 inherit
 	BMM_PROPERTY_DEFINITION
 		redefine
-			type
+			type_def
 		end
 
 feature -- Initialisation
 
 feature -- Access
 
-	type: BMM_GENERIC_PARAMETER_DEFINITION
+	type_def: BMM_GENERIC_PARAMETER_DEFINITION
 
 feature -- Status Report
 

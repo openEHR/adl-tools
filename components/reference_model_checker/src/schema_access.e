@@ -52,15 +52,21 @@ feature -- Initialisation
 						status := create_message_content ("model_access_e4", <<a_schema_full_path>>)
 					else
 						schema.dt_finalise
-						schema.validate
-						is_valid := schema.passed
-						status :=  schema.errors.as_string
 					end
 				else
 					status := create_message_content ("model_access_e2", <<a_schema_full_path, parser.errors.as_string>>)
 				end
 				model_file.close
 			end
+		end
+
+feature -- Commands
+
+	validate
+		do
+			schema.validate
+			is_valid := schema.passed
+			status :=  schema.errors.as_string
 		end
 
 feature -- Access
@@ -115,7 +121,7 @@ feature -- Access
 			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
 			Property_valid: a_property /= Void and then has_property(a_type_name, a_property)
 		do
-			Result := schema.property_definition (a_type_name, a_property).type.as_flattened_type_string
+			Result := schema.property_definition (a_type_name, a_property).type_def.as_flattened_type_string
 		ensure
 			Result_exists: Result /= Void
 		end
@@ -202,7 +208,7 @@ feature -- Status Report
 			Property_type_name_valid: a_property_type_name /= Void and then has_class_definition (a_property_type_name)
 		do
 			if schema.valid_type_for_class (a_type_name, a_type_name) and schema.valid_type_for_class(a_property_type_name, a_property_type_name) then
-				Result := type_conforms_to (a_property_type_name, schema.property_definition (a_type_name, a_property_name).type.as_flattened_type_string)
+				Result := type_conforms_to (a_property_type_name, schema.property_definition (a_type_name, a_property_name).type_def.as_flattened_type_string)
 			end
 		end
 

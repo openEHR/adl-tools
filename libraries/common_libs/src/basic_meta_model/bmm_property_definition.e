@@ -14,12 +14,31 @@ note
 
 deferred class BMM_PROPERTY_DEFINITION
 
-feature -- Access
+feature -- Access (attributes from schema)
 
 	name: STRING
 			-- name of this attribute
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
-	type: BMM_TYPE_SPECIFIER
+	type: STRING
+			-- type name of this attribute from dADL schema
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+	is_abstract: BOOLEAN
+			-- this property is abstract, i.e. whether it is computed or stored is not yet defined
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+	is_mandatory: BOOLEAN
+			-- True if this propert is mandatory in its class
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+	is_computed: BOOLEAN
+			-- True if this property is computed rather than stored in objects of this class
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+feature -- Access
+
+	type_def: BMM_TYPE_SPECIFIER
 			-- type of this attribute
 
 	existence: MULTIPLICITY_INTERVAL
@@ -34,21 +53,19 @@ feature -- Access
 
 feature -- Status Report
 
-	is_abstract: BOOLEAN
-			-- this property is abstract, i.e. whether it is computed or stored is not yet defined
-
-	is_mandatory: BOOLEAN
-			-- True if this propert is mandatory in its class
-
-	is_computed: BOOLEAN
-			-- True if this property is computed rather than stored in objects of this class
-
 	is_container: BOOLEAN
 			-- True if type is a container type
 		do
-			if attached {BMM_CONTAINER_TYPE_REFERENCE} type as a_cont then
+			if attached {BMM_CONTAINER_TYPE_REFERENCE} type_def as a_cont then
 				Result := True
 			end
+		end
+
+feature -- Modification
+
+	set_type_def (a_type_def: attached BMM_TYPE_SPECIFIER)
+		do
+			type_def := a_type_def
 		end
 
 invariant

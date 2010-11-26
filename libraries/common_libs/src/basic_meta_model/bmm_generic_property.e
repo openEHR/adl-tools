@@ -17,14 +17,14 @@ class BMM_GENERIC_PROPERTY
 inherit
 	BMM_PROPERTY_DEFINITION
 		redefine
-			type
+			type_def
 		end
 
 feature -- Initialisation
 
 feature -- Access
 
-	type: BMM_GENERIC_TYPE_REFERENCE
+	type_def: BMM_GENERIC_TYPE_REFERENCE
 			-- type of the container of this attribute
 
 feature -- Status Report

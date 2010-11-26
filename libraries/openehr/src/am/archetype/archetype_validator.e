@@ -178,6 +178,8 @@ feature {NONE} -- Implementation
 			-- into account validity with respect to parent archetypes.
 		do
 			if not target_descriptor.id.as_string.is_equal (target.archetype_id.as_string) then
+				-- this is a serious error, because it means that the archteype and its descriptor are
+				-- out of sync, due to some uncontrolled modification on the archetype
 				add_warning("validate_e3", <<target_descriptor.id.as_string, target.archetype_id.as_string>>)
 			elseif not target.definition.rm_type_name.is_equal (target.archetype_id.rm_entity) then
 				add_error("VARDT", <<target.archetype_id.rm_entity, target.definition.rm_type_name>>)
@@ -586,9 +588,9 @@ feature {NONE} -- Implementation
 									add_warning("VSANCE", <<ca_child_diff.path, ca_child_diff.existence.as_string, ca_parent_flat.path, ca_parent_flat.existence.as_string>>)
 									ca_child_diff.remove_existence
 									if ca_child_diff.parent.is_path_compressible then
-										debug ("validate")
-											io.put_string (" (setting is_path_compressible) %N")
-										end
+debug ("validate")
+	io.put_string (" (setting is_path_compressible) %N")
+end
 										ca_child_diff.set_is_path_compressible
 									end
 								end
@@ -601,9 +603,9 @@ feature {NONE} -- Implementation
 									add_warning("VSANCC", <<ca_child_diff.path, ca_child_diff.cardinality.as_string, ca_parent_flat.path, ca_parent_flat.cardinality.as_string>>)
 									ca_child_diff.remove_cardinality
 									if ca_child_diff.parent.is_path_compressible then
-										debug ("validate")
-											io.put_string (" (setting is_path_compressible) %N")
-										end
+debug ("validate")
+	io.put_string (" (setting is_path_compressible) %N")
+end
 										ca_child_diff.set_is_path_compressible
 									end
 								end
@@ -611,9 +613,11 @@ feature {NONE} -- Implementation
 						end
 
 					elseif ca_child_diff.node_congruent_to (ca_parent_flat, rm_schema) and ca_child_diff.parent.is_path_compressible then
-						debug ("validate")
-							io.put_string (">>>>> validate: C_ATTRIBUTE in child at " + ca_child_diff.path + " CONGRUENT to parent node " + ca_parent_flat.path + " (setting is_path_compressible) %N")
-						end
+debug ("validate")
+	io.put_string (">>>>> validate: C_ATTRIBUTE in child at " +
+	ca_child_diff.path + " CONGRUENT to parent node " +
+	ca_parent_flat.path + " (setting is_path_compressible) %N")
+end
 						ca_child_diff.set_is_path_compressible
 					end
 				else
@@ -657,9 +661,9 @@ feature {NONE} -- Implementation
 				create apa.make_from_string (a_c_node.path)
 				co_parent_flat := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
 
-				debug ("validate")
-					io.put_string (">>>>> validate: C_OBJECT in child at " + co_child_diff.path)
-				end
+debug ("validate")
+	io.put_string (">>>>> validate: C_OBJECT in child at " + co_child_diff.path)
+end
 
 				-- meta-type (i.e. AOM type) checking...
 				-- this check sees if the node is a C_CODE_PHRASE redefinition of a CONSTRAINT_REF node, which is legal, since we say that
@@ -703,9 +707,9 @@ feature {NONE} -- Implementation
 									add_warning("VSONCO", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
 									co_child_diff.remove_occurrences
 									if co_child_diff.is_root or else co_child_diff.parent.is_path_compressible then
-										debug ("validate")
-											io.put_string (" (setting is_path_compressible) %N")
-										end
+debug ("validate")
+	io.put_string (" (setting is_path_compressible) %N")
+end
 										co_child_diff.set_is_path_compressible
 									end
 								end
@@ -739,29 +743,33 @@ feature {NONE} -- Implementation
 						-- FIXME: NOTE that this only applies while uncompressed format differential archetypes are being created by e.g.
 						-- diff-tools taking legacy archetypes as input.
 						if attached {C_COMPLEX_OBJECT} co_child_diff as cco and co_child_diff.node_congruent_to (co_parent_flat, rm_schema) and (co_child_diff.is_root or else co_child_diff.parent.is_path_compressible) then
-							debug ("validate")
-								io.put_string (">>>>> validate: C_OBJECT in child at " + co_child_diff.path + " CONGRUENT to parent node " + co_parent_flat.path)
-							end
+debug ("validate")
+	io.put_string (">>>>> validate: C_OBJECT in child at " +
+	co_child_diff.path + " CONGRUENT to parent node " +
+	co_parent_flat.path)
+end
 							-- if the parent C_ATTRIBUTE of the object node in the flat parent has no children, this object can be assumed to be a total
 							-- replacement, so don't mark it as an overlay
 							if attached {C_COMPLEX_OBJECT} co_parent_flat as cco_pf then
 								if co_child_diff.is_root or cco_pf.has_attributes then
 									co_child_diff.set_is_path_compressible
-									debug ("validate")
-										io.put_string (" (setting is_path_compressible) %N")
-									end
+debug ("validate")
+	io.put_string (" (setting is_path_compressible) %N")
+end
 								else
-									debug ("validate")
-										io.put_string ("(not setting is_path_compressible, due to being replacement)%N")
-									end
+debug ("validate")
+	io.put_string ("(not setting is_path_compressible, due to being replacement)%N")
+end
 								end
 							else
 								add_error("compiler_unexpected_error", <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 4">>)
 							end
 						else
-							debug ("validate")
-								io.put_string (">>>>> validate: C_OBJECT in child at " + co_child_diff.path + " CONFORMANT to parent node " + co_parent_flat.path + " %N")
-							end
+debug ("validate")
+	io.put_string (">>>>> validate: C_OBJECT in child at " +
+	co_child_diff.path + " CONFORMANT to parent node " +
+	co_parent_flat.path + " %N")
+end
 						end
 
 						if co_child_diff.sibling_order /= Void and then not co_parent_flat.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) then
@@ -818,9 +826,9 @@ feature {NONE} -- Implementation
 								add_error("VSSM", <<a_c_obj.path, a_c_obj.sibling_order.sibling_node_id>>)
 							end
 						else
-							debug ("validate")
-								io.put_string ("????? specialised_node_validate_test: C_OBJECT at " + a_c_node.path + " ignored %N")
-							end
+debug ("validate")
+	io.put_string ("????? specialised_node_validate_test: C_OBJECT at " + a_c_node.path + " ignored %N")
+end
 						end
 
 					elseif attached {C_ATTRIBUTE} a_c_node as ca then
@@ -910,14 +918,14 @@ feature {NONE} -- Implementation
 					if ca.is_multiple then
 						if attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop then
 							if ca.cardinality /= Void then
-								if not cont_prop.type.cardinality.contains(ca.cardinality.interval) then
-									if cont_prop.type.cardinality.equal_interval(ca.cardinality.interval) then
+								if not cont_prop.type_def.cardinality.contains(ca.cardinality.interval) then
+									if cont_prop.type_def.cardinality.equal_interval(ca.cardinality.interval) then
 										add_warning("WCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string>>)
 										if not validation_strict then
 											ca.remove_cardinality
 										end
 									else
-										add_error("VCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string, cont_prop.type.cardinality.as_string>>)
+										add_error("VCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string, cont_prop.type_def.cardinality.as_string>>)
 									end
 								end
 							end
@@ -925,7 +933,7 @@ feature {NONE} -- Implementation
 							add_error("VCAM", <<ca.rm_attribute_name, ca.path, ca.cardinality.as_string, "(single-valued)">>)
 						end
 					elseif attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop_2 then
-						add_error("VCAM", <<ca.rm_attribute_name, ca.path, "(single-valued)", cont_prop_2.type.cardinality.as_string>>)
+						add_error("VCAM", <<ca.rm_attribute_name, ca.path, "(single-valued)", cont_prop_2.type_def.cardinality.as_string>>)
 					end
 					if rm_prop_def.is_computed then
 						-- flag if this is a computed property constraint (i.e. a constraint on a function from the RM)

@@ -114,7 +114,7 @@ feature {NONE} -- Implementation
 		do
 			create a_ti
 			a_ti.set_data (a_prop_def)
-			str := a_prop_def.name + ": " + a_prop_def.type.as_type_string
+			str := a_prop_def.name + ": " + a_prop_def.type_def.as_type_string
 			if a_prop_def.is_mandatory then
 				str.append (" [1]")
 			else

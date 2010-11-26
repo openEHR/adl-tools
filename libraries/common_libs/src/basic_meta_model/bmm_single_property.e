@@ -17,14 +17,14 @@ class BMM_SINGLE_PROPERTY
 inherit
 	BMM_PROPERTY_DEFINITION
 		redefine
-			type
+			type_def
 		end
 
 feature -- Initialisation
 
 feature -- Access
 
-	type: BMM_CLASS_DEFINITION
+	type_def: BMM_CLASS_DEFINITION
 
 feature -- Status Report
 

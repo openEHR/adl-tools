@@ -17,14 +17,21 @@ class BMM_CONTAINER_PROPERTY
 inherit
 	BMM_PROPERTY_DEFINITION
 		redefine
-			type
+			type_def
 		end
 
 feature -- Initialisation
 
+feature -- Access (attributes from schema)
+
+	cardinality: INTERVAL [INTEGER]
+			-- needs to be this basic type because this attribute is scanned in from schema, else would
+			-- have used MULTIPLICITY_INTERVAL
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
 feature -- Access
 
-	type: BMM_CONTAINER_TYPE_REFERENCE
+	type_def: BMM_CONTAINER_TYPE_REFERENCE
 
 end
 
