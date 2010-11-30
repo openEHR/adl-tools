@@ -525,7 +525,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation
 
-	resource_config_file: CONFIG_FILE_ACCESS
+	resource_config_file: INI_CONFIG_FILE_ACCESS
 		once
 			create Result.make(user_config_file_path)
 		end
