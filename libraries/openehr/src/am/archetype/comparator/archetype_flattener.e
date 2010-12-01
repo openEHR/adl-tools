@@ -116,7 +116,7 @@ end
 
 			-- flatten RM onto archetype; must do this at the end, since otherwise the existence etc set due to
 			-- this would look like duplicates during the flattening process
-			if include_rm then
+			if rm_flattening_on and include_rm then
 				create def_it.make(arch_output_flat.definition)
 				def_it.do_all(agent rm_node_flatten_enter, agent rm_node_flatten_exit)
 			end

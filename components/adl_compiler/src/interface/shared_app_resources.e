@@ -72,13 +72,9 @@ feature -- Application Switches
 	error_reporting_level: INTEGER
 			-- Level of error reporting required; see BILLBOARD_MESSAGE_TYPES for levels
 			-- all levels >= the one stored will be displayed; Info is the minimum.
-		local
-			str: STRING
 		do
-			str := app_cfg.string_value ("/general/error_reporting_level")
-			if attached str and str.is_integer and is_valid_error_type (str.to_integer) then
-				Result := str.to_integer
-			else
+			Result := app_cfg.integer_value ("/general/error_reporting_level")
+			if not is_valid_error_type (Result) then
 				Result := Error_type_info
 			end
 		end
@@ -243,6 +239,18 @@ feature -- Application Switches
 			-- Set flag for strict parser validation
 		do
 			app_cfg.put_value ("/compiler/validation_strict", flag)
+		end
+
+	rm_flattening_on: BOOLEAN
+			-- Set RM flattening on?
+		do
+			Result := app_cfg.boolean_value ("/compiler/rm_flattening")
+		end
+
+	set_rm_flattening_on (flag: BOOLEAN)
+			-- Set flag for RM flattening
+		do
+			app_cfg.put_value ("/compiler/rm_flattening", flag)
 		end
 
 	rm_schema_directory: attached STRING

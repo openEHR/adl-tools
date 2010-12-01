@@ -48,36 +48,37 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_2.extend (save_diff_path_text)
 			l_ev_horizontal_box_2.extend (save_diff_path_button)
 			l_ev_vertical_box_1.extend (compiler_settings_frame)
-			compiler_settings_frame.extend (l_ev_horizontal_box_3)
+			compiler_settings_frame.extend (l_ev_vertical_box_3)
+			l_ev_vertical_box_3.extend (l_ev_horizontal_box_3)
 			l_ev_horizontal_box_3.extend (l_ev_horizontal_box_4)
 			l_ev_horizontal_box_4.extend (l_ev_label_3)
 			l_ev_horizontal_box_4.extend (parser_error_reporting_level_combo_box)
 			l_ev_horizontal_box_3.extend (l_ev_horizontal_box_5)
 			l_ev_horizontal_box_5.extend (l_ev_label_4)
-			l_ev_horizontal_box_5.extend (validation_strict_check_button)
-			l_ev_horizontal_box_3.extend (l_ev_horizontal_box_6)
-			l_ev_horizontal_box_6.extend (l_ev_label_5)
-			l_ev_horizontal_box_6.extend (adl_save_version_combo_box)
+			l_ev_horizontal_box_5.extend (adl_save_version_combo_box)
+			l_ev_vertical_box_3.extend (l_ev_horizontal_box_6)
+			l_ev_horizontal_box_6.extend (validation_strict_check_button)
+			l_ev_horizontal_box_6.extend (rm_flattening_on_check_button)
 			l_ev_vertical_box_1.extend (archetype_view_frame)
-			archetype_view_frame.extend (l_ev_vertical_box_3)
-			l_ev_vertical_box_3.extend (l_ev_horizontal_box_7)
+			archetype_view_frame.extend (l_ev_vertical_box_4)
+			l_ev_vertical_box_4.extend (l_ev_horizontal_box_7)
 			l_ev_horizontal_box_7.extend (show_definition_tree_expanded_check_button)
 			l_ev_horizontal_box_7.extend (show_line_numbers_check_button)
-			l_ev_vertical_box_3.extend (l_ev_horizontal_box_8)
+			l_ev_vertical_box_4.extend (l_ev_horizontal_box_8)
 			l_ev_horizontal_box_8.extend (display_archetype_source_check_button)
 			l_ev_horizontal_box_8.extend (show_entire_ontology_check_button)
 			l_ev_vertical_box_1.extend (l_ev_frame_1)
-			l_ev_frame_1.extend (l_ev_vertical_box_4)
-			l_ev_vertical_box_4.extend (l_ev_horizontal_box_9)
-			l_ev_horizontal_box_9.extend (l_ev_label_6)
+			l_ev_frame_1.extend (l_ev_vertical_box_5)
+			l_ev_vertical_box_5.extend (l_ev_horizontal_box_9)
+			l_ev_horizontal_box_9.extend (l_ev_label_5)
 			l_ev_horizontal_box_9.extend (text_editor_command_text)
 			l_ev_horizontal_box_9.extend (text_editor_command_browse_button)
-			l_ev_vertical_box_4.extend (l_ev_horizontal_box_10)
-			l_ev_horizontal_box_10.extend (l_ev_label_7)
+			l_ev_vertical_box_5.extend (l_ev_horizontal_box_10)
+			l_ev_horizontal_box_10.extend (l_ev_label_6)
 			l_ev_horizontal_box_10.extend (editor_app_command_text)
 			l_ev_horizontal_box_10.extend (editor_app_command_browse_button)
-			l_ev_vertical_box_4.extend (l_ev_horizontal_box_11)
-			l_ev_horizontal_box_11.extend (l_ev_label_8)
+			l_ev_vertical_box_5.extend (l_ev_horizontal_box_11)
+			l_ev_horizontal_box_11.extend (l_ev_label_7)
 			l_ev_horizontal_box_11.extend (difftool_command_text)
 			l_ev_horizontal_box_11.extend (difftool_command_browse_button)
 			l_ev_vertical_box_1.extend (l_ev_horizontal_box_12)
@@ -143,15 +144,13 @@ feature {NONE}-- Initialization
 			internal_font.set_height_in_points (10)
 			compiler_settings_frame.set_font (internal_font)
 			compiler_settings_frame.set_text ("Compiler settings")
-			compiler_settings_frame.set_minimum_height (23)
-			l_ev_horizontal_box_3.set_minimum_height (23)
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_3.set_padding (?))
+			compiler_settings_frame.set_minimum_height (55)
+			integer_constant_set_procedures.extend (agent l_ev_vertical_box_3.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_3.set_border_width (?))
+			integer_constant_set_procedures.extend (agent l_ev_vertical_box_3.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_horizontal_box_3.disable_item_expand (l_ev_horizontal_box_4)
-			l_ev_horizontal_box_3.disable_item_expand (l_ev_horizontal_box_5)
-			l_ev_horizontal_box_3.disable_item_expand (l_ev_horizontal_box_6)
+			l_ev_vertical_box_3.disable_item_expand (l_ev_horizontal_box_3)
+			l_ev_vertical_box_3.disable_item_expand (l_ev_horizontal_box_6)
 			l_ev_horizontal_box_4.set_minimum_height (23)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_4.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
@@ -164,25 +163,24 @@ feature {NONE}-- Initialization
 			parser_error_reporting_level_combo_box.set_text ("Status Reporting Level")
 			parser_error_reporting_level_combo_box.set_tooltip ("Select the level of parser messages to display. All levels >= this level displayed.")
 			parser_error_reporting_level_combo_box.set_minimum_width (100)
-			l_ev_horizontal_box_5.set_minimum_height (23)
+			l_ev_horizontal_box_5.set_minimum_height (26)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_5.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_5.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
 			l_ev_horizontal_box_5.disable_item_expand (l_ev_label_4)
-			l_ev_horizontal_box_5.disable_item_expand (validation_strict_check_button)
-			l_ev_label_4.set_text ("Validation strict")
+			l_ev_horizontal_box_5.disable_item_expand (adl_save_version_combo_box)
+			l_ev_label_4.set_text ("ADL version for serialisation")
+			l_ev_label_4.set_tooltip ("which version of the ADL syntax to use when saving archetypes")
+			l_ev_label_4.set_minimum_height (14)
+			adl_save_version_combo_box.disable_edit
 			l_ev_horizontal_box_6.set_minimum_height (23)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_6.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_6.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_horizontal_box_6.disable_item_expand (l_ev_label_5)
-			l_ev_horizontal_box_6.disable_item_expand (adl_save_version_combo_box)
-			l_ev_label_5.set_text ("ADL version for serialisation")
-			l_ev_label_5.set_tooltip ("which version of the ADL syntax to use when saving archetypes")
-			l_ev_label_5.set_minimum_height (14)
-			adl_save_version_combo_box.disable_edit
+			validation_strict_check_button.set_text ("Validation strict")
+			rm_flattening_on_check_button.set_text ("RM flattening on")
 			create internal_font
 			internal_font.set_family ({EV_FONT_CONSTANTS}.Family_screen)
 			internal_font.set_weight ({EV_FONT_CONSTANTS}.Weight_regular)
@@ -190,14 +188,14 @@ feature {NONE}-- Initialization
 			internal_font.set_height_in_points (10)
 			archetype_view_frame.set_font (internal_font)
 			archetype_view_frame.set_text ("Archetype viewing settings")
-			archetype_view_frame.set_minimum_height (65)
-			l_ev_vertical_box_3.set_minimum_height (50)
-			integer_constant_set_procedures.extend (agent l_ev_vertical_box_3.set_padding (?))
+			archetype_view_frame.set_minimum_height (50)
+			l_ev_vertical_box_4.set_minimum_height (50)
+			integer_constant_set_procedures.extend (agent l_ev_vertical_box_4.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
-			integer_constant_set_procedures.extend (agent l_ev_vertical_box_3.set_border_width (?))
+			integer_constant_set_procedures.extend (agent l_ev_vertical_box_4.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_vertical_box_3.disable_item_expand (l_ev_horizontal_box_7)
-			l_ev_vertical_box_3.disable_item_expand (l_ev_horizontal_box_8)
+			l_ev_vertical_box_4.disable_item_expand (l_ev_horizontal_box_7)
+			l_ev_vertical_box_4.disable_item_expand (l_ev_horizontal_box_8)
 			l_ev_horizontal_box_7.set_minimum_height (25)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_7.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
@@ -222,23 +220,23 @@ feature {NONE}-- Initialization
 			l_ev_frame_1.set_text ("External Tools")
 			l_ev_frame_1.set_minimum_width (80)
 			l_ev_frame_1.set_minimum_height (90)
-			l_ev_vertical_box_4.set_minimum_height (90)
-			integer_constant_set_procedures.extend (agent l_ev_vertical_box_4.set_padding (?))
+			l_ev_vertical_box_5.set_minimum_height (90)
+			integer_constant_set_procedures.extend (agent l_ev_vertical_box_5.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			integer_constant_set_procedures.extend (agent l_ev_vertical_box_4.set_border_width (?))
+			integer_constant_set_procedures.extend (agent l_ev_vertical_box_5.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
-			l_ev_vertical_box_4.disable_item_expand (l_ev_horizontal_box_9)
-			l_ev_vertical_box_4.disable_item_expand (l_ev_horizontal_box_10)
-			l_ev_vertical_box_4.disable_item_expand (l_ev_horizontal_box_11)
+			l_ev_vertical_box_5.disable_item_expand (l_ev_horizontal_box_9)
+			l_ev_vertical_box_5.disable_item_expand (l_ev_horizontal_box_10)
+			l_ev_vertical_box_5.disable_item_expand (l_ev_horizontal_box_11)
 			l_ev_horizontal_box_9.set_minimum_width (80)
 			l_ev_horizontal_box_9.set_minimum_height (30)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_9.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_9.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_horizontal_box_9.disable_item_expand (l_ev_label_6)
+			l_ev_horizontal_box_9.disable_item_expand (l_ev_label_5)
 			l_ev_horizontal_box_9.disable_item_expand (text_editor_command_browse_button)
-			l_ev_label_6.set_text ("Text Editor: ")
+			l_ev_label_5.set_text ("Text Editor: ")
 			text_editor_command_text.set_minimum_height (22)
 			text_editor_command_browse_button.set_text ("Browse...")
 			text_editor_command_browse_button.set_minimum_width (65)
@@ -248,9 +246,9 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_10.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_horizontal_box_10.disable_item_expand (l_ev_label_7)
+			l_ev_horizontal_box_10.disable_item_expand (l_ev_label_6)
 			l_ev_horizontal_box_10.disable_item_expand (editor_app_command_browse_button)
-			l_ev_label_7.set_text (" ADL Editor:")
+			l_ev_label_6.set_text (" ADL Editor:")
 			editor_app_command_text.set_minimum_height (22)
 			editor_app_command_browse_button.set_text ("Browse...")
 			editor_app_command_browse_button.set_minimum_width (65)
@@ -260,9 +258,9 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_11.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_horizontal_box_11.disable_item_expand (l_ev_label_8)
+			l_ev_horizontal_box_11.disable_item_expand (l_ev_label_7)
 			l_ev_horizontal_box_11.disable_item_expand (difftool_command_browse_button)
-			l_ev_label_8.set_text ("    Diff Tool: ")
+			l_ev_label_7.set_text ("    Diff Tool: ")
 			difftool_command_text.set_minimum_height (22)
 			difftool_command_browse_button.set_text ("Browse...")
 			difftool_command_browse_button.set_minimum_width (65)
@@ -316,18 +314,19 @@ feature {NONE}-- Initialization
 			create save_diff_path_text
 			create save_diff_path_button
 			create compiler_settings_frame
+			create l_ev_vertical_box_3
 			create l_ev_horizontal_box_3
 			create l_ev_horizontal_box_4
 			create l_ev_label_3
 			create parser_error_reporting_level_combo_box
 			create l_ev_horizontal_box_5
 			create l_ev_label_4
-			create validation_strict_check_button
-			create l_ev_horizontal_box_6
-			create l_ev_label_5
 			create adl_save_version_combo_box
+			create l_ev_horizontal_box_6
+			create validation_strict_check_button
+			create rm_flattening_on_check_button
 			create archetype_view_frame
-			create l_ev_vertical_box_3
+			create l_ev_vertical_box_4
 			create l_ev_horizontal_box_7
 			create show_definition_tree_expanded_check_button
 			create show_line_numbers_check_button
@@ -335,17 +334,17 @@ feature {NONE}-- Initialization
 			create display_archetype_source_check_button
 			create show_entire_ontology_check_button
 			create l_ev_frame_1
-			create l_ev_vertical_box_4
+			create l_ev_vertical_box_5
 			create l_ev_horizontal_box_9
-			create l_ev_label_6
+			create l_ev_label_5
 			create text_editor_command_text
 			create text_editor_command_browse_button
 			create l_ev_horizontal_box_10
-			create l_ev_label_7
+			create l_ev_label_6
 			create editor_app_command_text
 			create editor_app_command_browse_button
 			create l_ev_horizontal_box_11
-			create l_ev_label_8
+			create l_ev_label_7
 			create difftool_command_text
 			create difftool_command_browse_button
 			create l_ev_horizontal_box_12
@@ -371,24 +370,25 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
-	l_ev_vertical_box_1, l_ev_vertical_box_2, l_ev_vertical_box_3, l_ev_vertical_box_4: EV_VERTICAL_BOX
-	paths_setting_frame,
-	compiler_settings_frame, archetype_view_frame, l_ev_frame_1: EV_FRAME
-	l_ev_horizontal_box_1,
-	l_ev_horizontal_box_2, l_ev_horizontal_box_3, l_ev_horizontal_box_4, l_ev_horizontal_box_5,
-	l_ev_horizontal_box_6, l_ev_horizontal_box_7, l_ev_horizontal_box_8, l_ev_horizontal_box_9,
-	l_ev_horizontal_box_10, l_ev_horizontal_box_11, l_ev_horizontal_box_12: EV_HORIZONTAL_BOX
-	l_ev_label_1,
-	l_ev_label_2, l_ev_label_3, l_ev_label_4, l_ev_label_5, l_ev_label_6, l_ev_label_7,
-	l_ev_label_8: EV_LABEL
-	export_html_text, save_diff_path_text, text_editor_command_text, editor_app_command_text,
-	difftool_command_text: EV_TEXT_FIELD
-	export_html_browse_button, save_diff_path_button, text_editor_command_browse_button,
-	editor_app_command_browse_button, difftool_command_browse_button, ok_button, cancel_button: EV_BUTTON
-	parser_error_reporting_level_combo_box,
-	adl_save_version_combo_box: EV_COMBO_BOX
-	validation_strict_check_button, show_definition_tree_expanded_check_button,
-	show_line_numbers_check_button, display_archetype_source_check_button, show_entire_ontology_check_button: EV_CHECK_BUTTON
+	l_ev_vertical_box_1, l_ev_vertical_box_2, l_ev_vertical_box_3, l_ev_vertical_box_4,
+	l_ev_vertical_box_5: EV_VERTICAL_BOX
+	paths_setting_frame, compiler_settings_frame, archetype_view_frame,
+	l_ev_frame_1: EV_FRAME
+	l_ev_horizontal_box_1, l_ev_horizontal_box_2, l_ev_horizontal_box_3,
+	l_ev_horizontal_box_4, l_ev_horizontal_box_5, l_ev_horizontal_box_6, l_ev_horizontal_box_7,
+	l_ev_horizontal_box_8, l_ev_horizontal_box_9, l_ev_horizontal_box_10, l_ev_horizontal_box_11,
+	l_ev_horizontal_box_12: EV_HORIZONTAL_BOX
+	l_ev_label_1, l_ev_label_2, l_ev_label_3, l_ev_label_4, l_ev_label_5,
+	l_ev_label_6, l_ev_label_7: EV_LABEL
+	export_html_text, save_diff_path_text, text_editor_command_text,
+	editor_app_command_text, difftool_command_text: EV_TEXT_FIELD
+	export_html_browse_button, save_diff_path_button,
+	text_editor_command_browse_button, editor_app_command_browse_button, difftool_command_browse_button,
+	ok_button, cancel_button: EV_BUTTON
+	parser_error_reporting_level_combo_box, adl_save_version_combo_box: EV_COMBO_BOX
+	validation_strict_check_button,
+	rm_flattening_on_check_button, show_definition_tree_expanded_check_button, show_line_numbers_check_button,
+	display_archetype_source_check_button, show_entire_ontology_check_button: EV_CHECK_BUTTON
 	l_ev_cell_1: EV_CELL
 
 feature {NONE} -- Implementation
