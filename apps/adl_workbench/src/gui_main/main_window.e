@@ -139,6 +139,8 @@ feature -- Status setting
 	show
 			-- Do a few adjustments and load the repository before displaying the window.
 		do
+			append_billboard_to_status_area
+
 			archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
 			archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
 
@@ -339,7 +341,7 @@ feature -- File events
 
 			set_path_view_check_list_settings (strs)
 
-			save_resources
+			app_cfg.save
 			ev_application.destroy
 		end
 
@@ -1106,7 +1108,7 @@ feature {NONE} -- Implementation
 	save_resources_and_show_status
 			-- Save the application configuration file and update the status area.
 		do
-			save_resources
+			app_cfg.save
 			post_info (Current, "save_resources_and_show_status", "cfg_file_i1", <<user_config_file_path>>)
 		end
 
@@ -1349,19 +1351,19 @@ feature {NONE} -- Implementation
 	populate_profile_combo (a_combo: EV_COMBO_BOX)
 			-- Initialise the dialog's widgets from shared settings.
 		local
-			rep_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
+			rep_profiles: attached REPOSITORY_PROFILE_CONFIG
 		do
 			rep_profiles := repository_profiles
 			a_combo.select_actions.block
 			a_combo.change_actions.block
 			if not rep_profiles.is_empty then
-				from rep_profiles.start until rep_profiles.off loop
-					populate_ev_combo_from_hash_keys (a_combo, rep_profiles)
+--				from rep_profiles.start until rep_profiles.off loop
+					populate_ev_combo_from_hash_keys (a_combo, rep_profiles.profiles)
 					if not current_repository_profile.is_empty then
 						a_combo.do_all (agent (li: EV_LIST_ITEM) do if li.text.same_string (current_repository_profile) then li.enable_select end end)
 					end
-					rep_profiles.forth
-				end
+--					rep_profiles.forth
+--				end
 			else
 				archetype_profile_combo.wipe_out
 			end

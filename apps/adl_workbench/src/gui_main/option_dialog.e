@@ -168,7 +168,7 @@ feature {NONE} -- Implementation
 			-- compilation options: set directly; NO FURTHER ACTION REQUIRED IN GUI
 			set_adl_version_for_flat_output(adl_save_version_combo_box.text.as_string_8)
 			set_validation_strict(validation_strict_check_button.is_selected)
-			set_status_reporting_level (error_type_ids.item (parser_error_reporting_level_combo_box.text.as_string_8))
+			set_error_reporting_level (error_type_ids.item (parser_error_reporting_level_combo_box.text.as_string_8))
 			billboard.set_error_reporting_level(error_reporting_level)
 		end
 

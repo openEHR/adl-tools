@@ -38,14 +38,14 @@ inherit
 
 feature -- Conversion
 
-	object_to_dt(an_obj: ANY): DT_COMPLEX_OBJECT_NODE
+	object_to_dt(an_obj: attached ANY): attached DT_COMPLEX_OBJECT_NODE
 			-- generate a DT_OBJECT from an Eiffel object; called only on top-level object
 		do
 			create Result.make_anonymous
 			populate_dt_from_object(an_obj, Result)
 		end
 
-	populate_dt_from_object (an_obj: ANY; a_dt_obj: DT_COMPLEX_OBJECT_NODE)
+	populate_dt_from_object (an_obj: attached ANY; a_dt_obj: attached DT_COMPLEX_OBJECT_NODE)
 			-- make a data tree from an object; this routine is recursive
 			-- TODO: this routine will not work properly for any structure that is not a proper tree; any cycles will cause
 			-- creation of copied data. This could be fixed by tracking ojbect references while generating the tree
@@ -132,19 +132,17 @@ end
 			end
 		end
 
-	dt_to_object_from_string(a_dt_obj: DT_COMPLEX_OBJECT_NODE; a_type_name: STRING): ANY
+	dt_to_object_from_string(a_dt_obj: attached DT_COMPLEX_OBJECT_NODE; a_type_name: attached STRING): ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		do
 			Result := dt_to_object(a_dt_obj, dynamic_type_from_string (a_type_name))
 		end
 
-	dt_to_object(a_dt_obj: DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER): ANY
+	dt_to_object(a_dt_obj: attached DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER): ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT; should be called only on top-level DT structure, but recursive calling
 			-- from populate_object_from_dt calling set_container_object_data_from_dt also occurs
-		require
-			Data_tree_valid: a_dt_obj /= Void
 		local
 			src_obj, targ_obj: ANY
 			src_obj_fld: INTEGER
@@ -281,8 +279,7 @@ end
 					-- we don't go through its fields, instead we just go to the next
 					-- object level down in the DT tree
 					if not a_dt_obj.is_empty then
-						a_dt_obj.start -- get first attribute
-						a_dt_attr := a_dt_obj.item
+						a_dt_attr := a_dt_obj.first
 						if a_dt_attr.is_generic then
 							set_container_object_data_from_dt (Result, a_dt_attr)
 						else

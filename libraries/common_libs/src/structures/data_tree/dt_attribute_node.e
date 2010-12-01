@@ -212,16 +212,42 @@ feature -- Modification
 			is_multiple
 		end
 
-	put_child(a_node: DT_OBJECT_ITEM)
+	put_child(a_node: attached DT_OBJECT_ITEM)
 			-- put a new child node
 		require
-			Node_valid: a_node /= Void and then not has_child(a_node)
+			Node_valid: not has_child(a_node)
 			Multiplicity_validity: is_multiple or else children.is_empty
 		do
 			representation.put_child (a_node.representation)
 			children.extend(a_node)
 			children_sorted.extend(a_node)
 			a_node.set_parent(Current)
+		ensure
+			Has_child: has_child(a_node)
+		end
+
+	remove_child(a_node: attached DT_OBJECT_ITEM)
+			-- remove child node
+		require
+			Node_valid: has_child(a_node)
+		do
+			representation.remove_child (a_node.representation)
+			children.prune_all(a_node)
+			children_sorted.prune_all(a_node)
+		ensure
+			Child_removed: not has_child(a_node)
+		end
+
+	remove_all_children
+			-- remove all children
+		do
+			if child_count > 0 then
+				representation.remove_all_children
+				children.wipe_out
+				children_sorted.wipe_out
+			end
+		ensure
+			Child_count: child_count = 0
 		end
 
 	use_children_sorted

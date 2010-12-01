@@ -38,7 +38,7 @@ feature -- Initialisation
 
 	initialise
 		local
-			rep_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
+			rep_profiles: attached REPOSITORY_PROFILE_CONFIG
 			dummy_error_accumulator: ERROR_ACCUMULATOR
 		once
 			message_db.populate(Error_db_directory, locale_language_short)
@@ -75,20 +75,23 @@ feature -- Initialisation
 				if rm_schema_directory.is_empty then
 					set_rm_schema_directory(default_rm_schema_directory)
 				end
-				rm_schemas_access.initialise(rm_schema_directory, rm_schemas_load_list)
-				rm_schemas_access.load_schemas
-
-				if not rm_schemas_access.found_valid_schemas then
-					create strx.make_empty
-					rm_schemas_load_list.do_all(agent (s: STRING) do strx.append(s + ", ") end)
-					strx.remove_tail (2) -- remove final ", "
-					post_warning (Current, "initialise", "model_access_e0", <<strx, rm_schema_directory>>)
+				if directory_exists (rm_schema_directory) then
+					rm_schemas_access.initialise(rm_schema_directory, rm_schemas_load_list)
+					rm_schemas_access.load_schemas
+					if not rm_schemas_access.found_valid_schemas then
+						create strx.make_empty
+						rm_schemas_load_list.do_all(agent (s: STRING) do strx.append(s + ", ") end)
+						strx.remove_tail (2) -- remove final ", "
+						post_warning (Current, "initialise", "model_access_e0", <<strx, rm_schema_directory>>)
+					end
+				else
+					post_warning (Current, "initialise", "model_access_e5", <<rm_schema_directory>>)
 				end
 
 				-- adjust for repository profiles being out of sync with current profile setting (e.g. due to
 				-- manual editing of .cfg file
 				rep_profiles := repository_profiles
-				if not rep_profiles.is_empty and not rep_profiles.has (current_repository_profile) then
+				if not rep_profiles.is_empty and not rep_profiles.has_profile (current_repository_profile) then
 					rep_profiles.start
 					set_current_repository_profile(rep_profiles.key_for_iteration)
 				end

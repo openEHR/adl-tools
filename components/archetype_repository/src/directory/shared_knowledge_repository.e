@@ -35,17 +35,6 @@ feature -- Access
 			create Result.make(0)
 		end
 
---	switch_to_profile (a_profile: attached STRING)
---			-- switch to `a_profile'
---		require
---			repository_profiles.has (a_profile)
---		do
---			if not a_profile.same_string (current_repository_profile) then
---				set_current_repository_profile(a_profile)
---				use_current_profile
---			end
---		end
-
 	use_current_profile (refresh: BOOLEAN)
 			-- switch to current profile; refresh flag forces archetype in memory directory to be refreshed from source repository
 		local
