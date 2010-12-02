@@ -32,24 +32,30 @@ inherit
 create
 	make
 
+feature -- Definitions
+
+	file_header_text: STRING = "[
+-- 
+-- Application configuration settings file (dADL format)
+--
+
+	]"
+
 feature -- Initialisation
 
 	make (a_file_path: attached STRING)
-		require
-			file_system.file_exists (a_file_path)
 		do
 			create requested_resources.make (0)
 			file_path := a_file_path
-			read
+			if file_system.file_exists (a_file_path) then
+				read
+			end
+			if not attached dt_tree then
+				create dt_tree.make_anonymous
+			end
 		end
 
 feature -- Access
-
-	is_valid: BOOLEAN
-			-- True if a config data is available
-
-	status: STRING
-			-- status of file loading operation
 
 	file_path: STRING
 			-- path to resource file
@@ -143,7 +149,7 @@ feature -- Status Report
 	has_resource (a_path: attached STRING): BOOLEAN
 			-- True if there is a resource at `a_path'
 		do
-			Result := is_valid and dt_tree.has_path (a_path)
+			Result := dt_tree.has_path (a_path)
 		end
 
 feature -- Modification
@@ -154,10 +160,6 @@ feature -- Modification
 			if has_resource(a_path) then
 				dt_tree.set_value_at_path (a_value, a_path)
 			else
-				if not is_valid then
-					create dt_tree.make_anonymous
-					is_valid := True
-				end
 				dt_tree.put_value_at_path (a_value, a_path)
 			end
 		end
@@ -175,10 +177,6 @@ feature -- Modification
 				dt_attr.remove_all_children
 				dt_attr.put_child (obj_dt_tree)
 			else
-				if not is_valid then
-					create dt_tree.make_anonymous
-					is_valid := True
-				end
 				dt_tree.put_object_at_path (obj_dt_tree, a_path)
 			end
 		end
@@ -201,6 +199,8 @@ feature -- Element Removal
 		end
 
 	read
+			-- read content from file and parse to Data Tree form.
+			-- if file not readable, or not there, do nothing.
 		local
 			res_file: PLAIN_TEXT_FILE
 			parser: DADL2_VALIDATOR
@@ -213,10 +213,6 @@ feature -- Element Removal
 				parser.execute(res_file.last_string, 1)
 				if not parser.syntax_error then
 					dt_tree := parser.output
-					is_valid := True
-				else
-					status := create_message_content ("config_file_access_e1", <<file_path, parser.errors.as_string>>)
-					is_valid := False
 				end
 				res_file.close
 			end
@@ -235,6 +231,7 @@ feature -- Element Removal
 			-- write to the config file
 			create res_file.make (file_path)
 			res_file.open_write
+			res_file.put_string (file_header_text)
 			res_file.put_string (dt_serialiser.last_result)
 			res_file.close
 		end

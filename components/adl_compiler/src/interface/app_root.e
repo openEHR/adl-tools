@@ -91,9 +91,9 @@ feature -- Initialisation
 				-- adjust for repository profiles being out of sync with current profile setting (e.g. due to
 				-- manual editing of .cfg file
 				rep_profiles := repository_profiles
-				if not rep_profiles.is_empty and not rep_profiles.has_profile (current_repository_profile) then
+				if not rep_profiles.is_empty and not rep_profiles.has_current_profile then
 					rep_profiles.start
-					set_current_repository_profile(rep_profiles.key_for_iteration)
+					set_current_profile(rep_profiles.key_for_iteration)
 				end
 
 				initialised := True

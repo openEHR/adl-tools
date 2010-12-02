@@ -148,23 +148,18 @@ feature -- Application Switches
 			app_cfg.put_object("/profile", repository_profiles_cache.item)
 		end
 
-	current_repository_profile: attached STRING
-		do
-			Result := repository_profiles.current_profile
-		end
-
-	set_current_repository_profile(a_profile_name: STRING)
+	set_current_profile(a_profile_name: STRING)
 		require
 			profile_name_valid: not a_profile_name.is_empty
 		do
-			repository_profiles.set_current_profile (a_profile_name)
-			app_cfg.put_object("/profile", repository_profiles_cache.item)
+			repository_profiles.set_current_profile_name (a_profile_name)
+			app_cfg.put_object("/profile", repository_profiles)
 		end
 
 	clear_current_repository_profile
 		do
 			repository_profiles.clear_current_profile
-			app_cfg.put_object("/profile", repository_profiles_cache.item)
+			app_cfg.put_object("/profile", repository_profiles)
 		end
 
 	adl_version_for_flat_output_numeric: INTEGER
@@ -207,26 +202,6 @@ feature -- Application Switches
 			value_not_empty: not a_value.is_empty
 		do
 			app_cfg.put_value("/compiler/adl_version_for_flat_output", a_value)
-		end
-
-	reference_repository_path: attached STRING
-			-- path of root of ADL file tree
-		do
-			if repository_profiles.has_profile (current_repository_profile) then
-				Result := repository_profiles.profile (current_repository_profile).reference_repository
-			else
-				create Result.make(0)
-			end
-		end
-
-	work_repository_path: attached STRING
-			-- path of root of ADL file tree
-		do
-			if repository_profiles.has_profile (current_repository_profile) and repository_profiles.profile (current_repository_profile).has_work_repository then
-				Result := repository_profiles.profile (current_repository_profile).work_repository
-			else
-				create Result.make(0)
-			end
 		end
 
 	validation_strict: BOOLEAN

@@ -44,6 +44,7 @@ feature -- Initialisation
 		do
 			create schemas.make(0)
 			create schemas_by_package.make(0)
+			create schema_metadata_table.make (0)
 		end
 
 	initialise (a_rm_dir: attached STRING; a_schemas_load_list: attached LIST [STRING])
@@ -60,11 +61,11 @@ feature -- Initialisation
 
 feature -- Access
 
-	schemas: HASH_TABLE [SCHEMA_ACCESS, STRING]
+	schemas: attached HASH_TABLE [SCHEMA_ACCESS, STRING]
 			-- schemas in use; schemas containing different variants of same model (i.e. model_publisher + model_name)
 			-- are considered duplicates. Table is keyed by logical schema_name, i.e. model_publisher '_' model_name, e.g. "openehr_rm"
 
-	schemas_by_package: HASH_TABLE [SCHEMA_ACCESS, STRING]
+	schemas_by_package: attached HASH_TABLE [SCHEMA_ACCESS, STRING]
 			-- schemas keyed by qualified package name, i.e. model_publisher '-' package_name, e.g. "openehr-ehr";
 			-- this matches the qualifide package name part of an ARCHETYPE_ID
 
@@ -81,7 +82,7 @@ feature -- Access
 
 	schema_directory: STRING
 
-	schema_metadata_table: HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
+	schema_metadata_table: attached HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
 			-- table of all schemas found in schema directory; format:
 			-- table of {schema meta-data items + path}, keyed by schema name
 			-- schema_name is created from

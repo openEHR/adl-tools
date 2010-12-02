@@ -53,8 +53,15 @@ feature -- Initialisation
 
 feature -- Access
 
-	current_profile: STRING
+	current_profile_name: STRING
 			-- name of profile that is currently in use
+
+	current_profile: REPOSITORY_PROFILE
+		do
+			if has_profile(current_profile_name) then
+				Result := profile(current_profile_name)
+			end
+		end
 
 	profiles: HASH_TABLE [REPOSITORY_PROFILE, STRING]
 
@@ -65,7 +72,32 @@ feature -- Access
 			Result := profiles.item(a_profile_name)
 		end
 
+	reference_repository_path: attached STRING
+			-- path of root of ADL file tree
+		do
+			if has_current_profile then
+				Result := current_profile.reference_repository
+			else
+				create Result.make(0)
+			end
+		end
+
+	work_repository_path: attached STRING
+			-- path of root of ADL file tree
+		do
+			if has_current_profile and current_profile.has_work_repository then
+				Result := current_profile.work_repository
+			else
+				create Result.make(0)
+			end
+		end
+
 feature -- Status Report
+
+	has_current_profile: BOOLEAN
+		do
+			Result := current_profile_name /= Void and then not current_profile_name.is_empty
+		end
 
 	has_profile (a_profile_name: attached STRING): BOOLEAN
 		do
@@ -127,15 +159,15 @@ feature -- Modification
 			profiles.replace_key(old_profile_name, new_profile_name)
 		end
 
-	set_current_profile (a_profile_name: attached STRING)
+	set_current_profile_name (a_profile_name: attached STRING)
 		do
-			current_profile := a_profile_name
+			current_profile_name := a_profile_name
 		end
 
 	clear_current_profile
 			-- remove the current profile so there is no current profile
 		do
-			current_profile := Void
+			current_profile_name := Void
 		end
 
 end
