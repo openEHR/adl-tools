@@ -1,46 +1,26 @@
 note
 	component:   "openEHR re-usable library"
-	description: "Abstract idea of specifying a type either by definition or by reference."
+	description: "Basic Meta-model model abstraction - 'include' specifier"
 	keywords:    "model, UML"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2009 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2010 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class BMM_TYPE_SPECIFIER
-
-inherit
-	BMM_DEFINITIONS
+class BMM_INCLUDE_SPEC
 
 feature -- Access
 
-	flattened_type_list: attached ARRAYED_LIST [STRING]
-			-- completely flattened list of type names, flattening out all generic parameters
-		deferred
-		end
+	id: STRING
+			-- id of schema
 
-	root_class: attached STRING
-			-- root class of type
-		do
-			Result := flattened_type_list.first
-		end
-
-feature -- Output
-
-	as_type_string: attached STRING
-			-- formal string form of the type
-		deferred
-		end
-
-	as_flattened_type_string: attached STRING
-			-- string form of the type for matching in archetypes - i.e. ignoring container type names
-		deferred
-		end
+	namespace: STRING
+			-- namespace under which types of included schema will be known in this schema
 
 end
 
@@ -59,10 +39,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is bmm_type_specifier.e.
+--| The Original Code is bmm_include_spec.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2009
+--| Portions created by the Initial Developer are Copyright (C) 2010
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

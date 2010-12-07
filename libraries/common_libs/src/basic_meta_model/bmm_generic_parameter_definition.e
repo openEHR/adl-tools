@@ -23,16 +23,23 @@ feature -- Access (attributes from schema)
 
 	name: STRING
 			-- name of the parameter, e.g. 'T' etc
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
 	conforms_to_type: STRING
 			-- optional conformance constraint
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+feature -- Access (attributes derived in post-schema processing)
+
+	conforms_to_type_def: BMM_CLASS_DEFINITION
+			-- optional conformance constraint derived from `conforms_to_type'
+
+	inheritance_precursor: BMM_GENERIC_PARAMETER_DEFINITION
+			-- if set, is the corresponding generic parameter definition in an ancestor class
 
 feature -- Access
 
-	conforms_to_type_def: BMM_CLASS_DEFINITION
-			-- optional conformance constraint
-
-	flattened_conforms_to_type: BMM_CLASS_DEFINITION
+	flattened_conforms_to_type: detachable BMM_CLASS_DEFINITION
 			-- get any ultimate type conformance constraint on this generic parameter due to inheritance
 		do
 			if conforms_to_type_def /= Void then
@@ -42,7 +49,7 @@ feature -- Access
 			end
 		end
 
-	flattened_type_list: ARRAYED_LIST [STRING]
+	flattened_type_list: attached ARRAYED_LIST [STRING]
 			-- completely flattened list of type names, flattening out all generic parameters
 			-- note that for this type, we output "ANY" if there is no constraint
 		do
@@ -55,9 +62,6 @@ feature -- Access
 			end
 		end
 
-	inheritance_precursor: BMM_GENERIC_PARAMETER_DEFINITION
-			-- if set, is the corresponding generic parameter definition in an ancestor class
-
 feature -- Status Report
 
 	is_constrained: BOOLEAN
@@ -66,12 +70,20 @@ feature -- Status Report
 			Result := flattened_conforms_to_type /= Void
 		end
 
-feature -- Modification
+feature -- Commands
 
-	set_conforms_to_type_def (a_def: attached BMM_CLASS_DEFINITION)
+	finalise_build (a_bmmm: attached BMM_SCHEMA; a_class_def: BMM_CLASS_DEFINITION; errors: ERROR_ACCUMULATOR)
 		do
-			conforms_to_type_def := a_def
+			if attached conforms_to_type then
+				if a_bmmm.has_class_definition (conforms_to_type) then
+					conforms_to_type_def := a_bmmm.class_definition (conforms_to_type)
+				else
+					errors.add_error ("BMM_GPCT", <<a_bmmm.schema_id, a_class_def.name, name, conforms_to_type>>, Void)
+				end
+			end
 		end
+
+feature -- Modification
 
 	set_inheritance_precursor (a_gen_parm_def: attached BMM_GENERIC_PARAMETER_DEFINITION)
 			-- set `inheritance_precursor'
@@ -97,10 +109,6 @@ feature -- Output
 		do
 			Result := as_type_string
 		end
-
-feature {NONE} -- Implementation
-
-	owning_class: BMM_CLASS_DEFINITION
 
 end
 

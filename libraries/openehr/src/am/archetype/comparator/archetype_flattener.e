@@ -686,7 +686,7 @@ end
 				end
 				if ca.is_multiple and ca.cardinality = Void then
 					if attached {BMM_CONTAINER_PROPERTY} rm_attr_desc as cont_prop then
-						ca.set_cardinality (create {CARDINALITY}.make(cont_prop.type_def.cardinality))
+						ca.set_cardinality (create {CARDINALITY}.make(cont_prop.cardinality))
 					else -- should never get here
 
 					end
@@ -697,10 +697,10 @@ end
 				if co.occurrences = Void and not co.is_root then
 					rm_attr_desc := rm_schema.property_definition (co.parent.parent.rm_type_name, co.parent.rm_attribute_name)
 					if attached {BMM_CONTAINER_PROPERTY} rm_attr_desc as cont_prop then
-						if cont_prop.type_def.cardinality.upper_unbounded then
+						if cont_prop.cardinality.upper_unbounded then
 							co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_upper_unbounded (0))
 						else
-							co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_bounded(0, cont_prop.type_def.cardinality.upper))
+							co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_bounded(0, cont_prop.cardinality.upper))
 						end
 					end
 				end

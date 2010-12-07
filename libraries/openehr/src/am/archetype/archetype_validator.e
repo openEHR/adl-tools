@@ -136,7 +136,7 @@ feature -- Validation
 			-- reference model validation - needed for all archetypes, top-level and
 			-- specialised, since specialised archetypes can contain new nodes that need to be
 			-- validated all the way through to the RM
-			if passed and rm_schema.is_valid and not target.is_specialised then
+			if passed and rm_schema.passed and not target.is_specialised then
 				validate_reference_model
 			end
 
@@ -846,7 +846,7 @@ end
 	validate_reference_model
 			-- validate definition of archetype against reference model
 		require
-			rm_schema.is_valid
+			rm_schema.passed
 		local
 			def_it: C_ITERATOR
 		do
@@ -918,14 +918,14 @@ end
 					if ca.is_multiple then
 						if attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop then
 							if ca.cardinality /= Void then
-								if not cont_prop.type_def.cardinality.contains(ca.cardinality.interval) then
-									if cont_prop.type_def.cardinality.equal_interval(ca.cardinality.interval) then
+								if not cont_prop.cardinality.contains(ca.cardinality.interval) then
+									if cont_prop.cardinality.equal_interval(ca.cardinality.interval) then
 										add_warning("WCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string>>)
 										if not validation_strict then
 											ca.remove_cardinality
 										end
 									else
-										add_error("VCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string, cont_prop.type_def.cardinality.as_string>>)
+										add_error("VCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string, cont_prop.cardinality.as_string>>)
 									end
 								end
 							end
@@ -933,7 +933,7 @@ end
 							add_error("VCAM", <<ca.rm_attribute_name, ca.path, ca.cardinality.as_string, "(single-valued)">>)
 						end
 					elseif attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop_2 then
-						add_error("VCAM", <<ca.rm_attribute_name, ca.path, "(single-valued)", cont_prop_2.type_def.cardinality.as_string>>)
+						add_error("VCAM", <<ca.rm_attribute_name, ca.path, "(single-valued)", cont_prop_2.cardinality.as_string>>)
 					end
 					if rm_prop_def.is_computed then
 						-- flag if this is a computed property constraint (i.e. a constraint on a function from the RM)

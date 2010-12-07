@@ -5,7 +5,7 @@
 		<file_rule>
 			<exclude>/\.svn$</exclude>
 		</file_rule>
-		<option trace="false" profile="false" debug="true" warning="true" full_class_checking="false" syntax="standard" namespace="openehr">
+		<option trace="false" profile="false" debug="false" warning="true" full_class_checking="false" syntax="standard" namespace="openehr">
 			<debug name="__unnamed_debug__" enabled="false"/>
 			<debug name="adl_invariant" enabled="false"/>
 			<debug name="adl_parse" enabled="false"/>
@@ -24,7 +24,7 @@
 			<debug name="include list" enabled="false"/>
 			<debug name="og_path_parse" enabled="false"/>
 			<debug name="refactor_fixme" enabled="false"/>
-			<debug name="rm_schema" enabled="true"/>
+			<debug name="rm_schema" enabled="false"/>
 			<debug name="validate" enabled="false"/>
 			<debug name="vision2_windows" enabled="false"/>
 			<debug name="vision2_windows_gdi" enabled="false"/>
@@ -65,7 +65,6 @@
 			<renaming old_name="C_DATE" new_name="TIME_C_DATE"/>
 			<renaming old_name="INTERVAL" new_name="TIME_INTERVAL"/>
 		</library>
-		<library name="uuid" location="$ISE_LIBRARY\library\uuid\uuid.ecf"/>
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf"/>
 		<cluster name="adl_compiler" location="..\..\..\components\adl_compiler\src\" recursive="true"/>
 		<cluster name="app" location="..\src\" recursive="true"/>

@@ -169,12 +169,14 @@ feature -- Status setting
 				set_difftool_command (default_difftool_command)
 			end
 
-			if reference_repository_path.is_empty then
-				set_repository
-			else
-				populate_archetype_profile_combo
-				populate_test_profile_combo
-				populate_directory_controls(True)
+			if rm_schemas_access.found_valid_schemas then
+				if repository_profiles.reference_repository_path.is_empty then
+					set_repository
+				else
+					populate_archetype_profile_combo
+					populate_test_profile_combo
+					populate_directory_controls(True)
+				end
 			end
 
 			append_billboard_to_status_area
@@ -314,6 +316,7 @@ feature -- File events
 			strs: ARRAYED_LIST [STRING]
 			ev_items: DYNAMIC_LIST [EV_LIST_ITEM]
 		do
+			-- gui settings
 			set_total_split_position (total_split_area.split_position)
 			set_test_split_position (test_split_area.split_position)
 			set_explorer_split_position (explorer_split_area.split_position)
@@ -339,7 +342,7 @@ feature -- File events
 
 			set_path_view_check_list_settings (strs)
 
-			save_resources
+			app_cfg.save
 			ev_application.destroy
 		end
 
@@ -438,14 +441,14 @@ feature {NONE} -- Repository events
 			-- Called by `select_actions' of `archetype_profile_combo' and `test_profile_combo'
 		do
 			if archetype_profile_combo.is_displayed then
-				if not archetype_profile_combo.text.same_string (current_repository_profile) then
-					set_current_repository_profile (archetype_profile_combo.text)
+				if not archetype_profile_combo.text.same_string (repository_profiles.current_profile_name) then
+					set_current_profile (archetype_profile_combo.text)
 					populate_test_profile_combo
 					populate_directory_controls(False)
 				end
 			else
-				if not test_profile_combo.text.same_string (current_repository_profile) then
-					set_current_repository_profile (test_profile_combo.text)
+				if not test_profile_combo.text.same_string (repository_profiles.current_profile_name) then
+					set_current_profile (test_profile_combo.text)
 					populate_archetype_profile_combo
 					populate_directory_controls(False)
 				end
@@ -1106,7 +1109,7 @@ feature {NONE} -- Implementation
 	save_resources_and_show_status
 			-- Save the application configuration file and update the status area.
 		do
-			save_resources
+			app_cfg.save
 			post_info (Current, "save_resources_and_show_status", "cfg_file_i1", <<user_config_file_path>>)
 		end
 
@@ -1145,10 +1148,10 @@ feature {NONE} -- Implementation
 				set_title (title.substring (title.substring_index (" - ", 1) + 3, title.count))
 			end
 
-			set_title (reference_repository_path + " - " + title)
+			set_title (repository_profiles.reference_repository_path + " - " + title)
 			clear_status_area
 
-			append_status_area (create_message_line ("populating_directory_start", <<current_repository_profile>>))
+			append_status_area (create_message_line ("populating_directory_start", <<repository_profiles.current_profile_name>>))
 			use_current_profile(refresh)
 			append_status_area (create_message_line ("populating_directory_complete", Void))
 
@@ -1348,19 +1351,13 @@ feature {NONE} -- Implementation
 
 	populate_profile_combo (a_combo: EV_COMBO_BOX)
 			-- Initialise the dialog's widgets from shared settings.
-		local
-			rep_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
 		do
-			rep_profiles := repository_profiles
 			a_combo.select_actions.block
 			a_combo.change_actions.block
-			if not rep_profiles.is_empty then
-				from rep_profiles.start until rep_profiles.off loop
-					populate_ev_combo_from_hash_keys (a_combo, rep_profiles)
-					if not current_repository_profile.is_empty then
-						a_combo.do_all (agent (li: EV_LIST_ITEM) do if li.text.same_string (current_repository_profile) then li.enable_select end end)
-					end
-					rep_profiles.forth
+			if not repository_profiles.is_empty then
+				populate_ev_combo_from_hash_keys (a_combo, repository_profiles.profiles)
+				if repository_profiles.has_current_profile then
+					a_combo.do_all (agent (li: EV_LIST_ITEM) do if li.text.same_string (repository_profiles.current_profile_name) then li.enable_select end end)
 				end
 			else
 				archetype_profile_combo.wipe_out

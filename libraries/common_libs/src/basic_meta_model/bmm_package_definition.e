@@ -27,7 +27,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	name: STRING
+	name: attached STRING
 
 	packages: HASH_TABLE [BMM_PACKAGE_DEFINITION, STRING]
 		-- child packages
@@ -35,6 +35,13 @@ feature -- Access
 	classes: ARRAYED_LIST [STRING]
 		-- list of classes in this package
 
+feature -- Status Report
+
+	has_classes: BOOLEAN
+		do
+			Result := attached classes
+		end
+		
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
 	persistent_attributes: ARRAYED_LIST[STRING]
@@ -42,9 +49,6 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			-- empty structure means all attributes
 		do
 		end
-
-invariant
-	Name_attached: name /= Void
 
 end
 

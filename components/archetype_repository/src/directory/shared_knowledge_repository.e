@@ -26,7 +26,7 @@ feature -- Access
 	current_arch_dir: ARCHETYPE_DIRECTORY
 			-- application-wide archetype directory access
 		do
-			Result := directories.item(current_repository_profile)
+			Result := directories.item(repository_profiles.current_profile_name)
 		end
 
 	directories: HASH_TABLE[ARCHETYPE_DIRECTORY, STRING]
@@ -35,39 +35,28 @@ feature -- Access
 			create Result.make(0)
 		end
 
---	switch_to_profile (a_profile: attached STRING)
---			-- switch to `a_profile'
---		require
---			repository_profiles.has (a_profile)
---		do
---			if not a_profile.same_string (current_repository_profile) then
---				set_current_repository_profile(a_profile)
---				use_current_profile
---			end
---		end
-
 	use_current_profile (refresh: BOOLEAN)
 			-- switch to current profile; refresh flag forces archetype in memory directory to be refreshed from source repository
 		local
 			new_dir: ARCHETYPE_DIRECTORY
 		do
-			if not directories.has(current_repository_profile) or else refresh then
+			if not directories.has(repository_profiles.current_profile_name) or else refresh then
 				create new_dir.make
-				if directory_exists (reference_repository_path) then
-					source_repositories.set_reference_repository (reference_repository_path)
-					if not work_repository_path.is_empty then
-						if source_repositories.valid_working_repository_path (work_repository_path) then
-							source_repositories.set_work_repository (work_repository_path)
+				if directory_exists (repository_profiles.reference_repository_path) then
+					source_repositories.set_reference_repository (repository_profiles.reference_repository_path)
+					if not repository_profiles.work_repository_path.is_empty then
+						if source_repositories.valid_working_repository_path (repository_profiles.work_repository_path) then
+							source_repositories.set_work_repository (repository_profiles.work_repository_path)
 						else
-							post_error (Current, "switch_to_profile", "work_repo_not_found", <<work_repository_path>>)
+							post_error (Current, "switch_to_profile", "work_repo_not_found", <<repository_profiles.work_repository_path>>)
 						end
 					else
 						source_repositories.remove_work_repository
 					end
 					new_dir.populate
-					directories.force(new_dir, current_repository_profile)
+					directories.force(new_dir, repository_profiles.current_profile_name)
 				else
-					post_error (Current, "switch_to_profile", "ref_repo_not_found", <<reference_repository_path>>)
+					post_error (Current, "switch_to_profile", "ref_repo_not_found", <<repository_profiles.reference_repository_path>>)
 				end
 			end
 		end

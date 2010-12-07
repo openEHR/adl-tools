@@ -1,48 +1,54 @@
 note
-	component:   "openEHR re-usable library"
-	description: "Abstract idea of specifying a type either by definition or by reference."
-	keywords:    "model, UML"
-
+	component:   "openEHR Archetype Project"
+	description: "Config of one repository profile."
+	keywords:    "test, dADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2009 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$URL"
+	revision:    "$LastChangedRevision"
+	last_change: "$LastChangedDate"
 
-deferred class BMM_TYPE_SPECIFIER
-
-inherit
-	BMM_DEFINITIONS
+class REPOSITORY_PROFILE
 
 feature -- Access
 
-	flattened_type_list: attached ARRAYED_LIST [STRING]
-			-- completely flattened list of type names, flattening out all generic parameters
-		deferred
-		end
+	reference_repository: STRING
+			-- path to reference repository
+			-- NOTE: this attribute is used for dADL persistence in the .cfg file
 
-	root_class: attached STRING
-			-- root class of type
+	work_repository: STRING
+			-- [optional] path to work repository
+			-- NOTE: this attribute is used for dADL persistence in the .cfg file
+
+feature -- Status Report
+
+	has_work_repository: BOOLEAN
+			-- True if there is a work_repository
 		do
-			Result := flattened_type_list.first
+			Result := attached work_repository and then not work_repository.is_empty
 		end
 
-feature -- Output
+feature -- Modification
 
-	as_type_string: attached STRING
-			-- formal string form of the type
-		deferred
+	set_reference_repository (a_path: attached STRING)
+		require
+			not a_path.is_empty
+		do
+			reference_repository := a_path
 		end
 
-	as_flattened_type_string: attached STRING
-			-- string form of the type for matching in archetypes - i.e. ignoring container type names
-		deferred
+	set_work_repository (a_path: attached STRING)
+		require
+			not a_path.is_empty
+		do
+			work_repository := a_path
 		end
 
 end
+
 
 
 --|
@@ -59,10 +65,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is bmm_type_specifier.e.
+--| The Original Code is shared_ui_resources.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2009
+--| Portions created by the Initial Developer are Copyright (C) 2003-2004
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

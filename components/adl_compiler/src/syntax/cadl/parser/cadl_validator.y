@@ -582,7 +582,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 					end
 					if bmm_prop_def.is_container then
 						if attached {BMM_CONTAINER_PROPERTY} bmm_prop_def as bmm_cont_prop and $3 /= Void then
-							if $3.interval.equal_interval(bmm_cont_prop.type.cardinality) and not validation_strict then
+							if $3.interval.equal_interval(bmm_cont_prop.cardinality) and not validation_strict then
 								-- $3 := Void -- throw out constraint that is same as RM
 							end
 						end
@@ -634,7 +634,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 					end
 					if bmm_prop_def.is_container then
 						if attached {BMM_CONTAINER_PROPERTY} bmm_prop_def as bmm_cont_prop and $3 /= Void then
-							if $3.interval.equal_interval(bmm_cont_prop.type.cardinality) and not validation_strict then
+							if $3.interval.equal_interval(bmm_cont_prop.cardinality) and not validation_strict then
 								-- $3 := Void -- throw out constraint that is same as RM
 							end
 						end

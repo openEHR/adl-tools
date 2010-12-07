@@ -36,14 +36,13 @@ feature -- Initialisation
 
 feature -- Access (attributes from schema)
 
-	name: STRING
+	name: attached STRING
 			-- name of the class FROM SCHEMA
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
-	generic_parameters: HASH_TABLE [BMM_GENERIC_PARAMETER_DEFINITION, STRING]
+	generic_parameter_defs: HASH_TABLE [BMM_GENERIC_PARAMETER_DEFINITION, STRING]
 			-- list of generic parameter definitions
 			-- FIXME: this won't function correctly unless ordering is guaranteed;
-			-- use DS_HASH_TABLE - but not yet supported by DT_OBJECT_CONVERTER
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
 	ancestors: ARRAYED_LIST [STRING]
@@ -62,17 +61,21 @@ feature -- Access (attributes from schema)
 			-- True if this class is a generic class
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
-feature -- Access
+feature -- Access (attributes derived in post-schema processing)
 
 	ancestor_defs: ARRAYED_LIST [BMM_CLASS_DEFINITION]
-			-- list of immediate inheritance parents FROM SCHEMA
+			-- list of immediate inheritance parents derived from `ancestors'in post-schema processing
+			-- by BMM_SCHEMA
 
 	all_ancestors: ARRAYED_LIST [STRING]
-			-- list of all inheritance parent class names; derived in port-schema processing
+			-- list of all inheritance parent class names; derived in post-schema processing
+			-- by BMM_SCHEMA
 
 	immediate_descendants: ARRAYED_LIST [BMM_CLASS_DEFINITION]
 			-- list of immediate inheritance descendants; set during post processing
 			-- by BMM_SCHEMA
+
+feature -- Access
 
 	immediate_suppliers: attached ARRAYED_SET [STRING]
 			-- list of names of immediate supplier classes, including concrete generic parameters and
@@ -171,9 +174,9 @@ feature -- Access
 			Result.compare_objects
 			Result.extend (name)
 			if is_generic then
-				from generic_parameters.start until generic_parameters.off loop
-					Result.append(generic_parameters.item_for_iteration.flattened_type_list)
-					generic_parameters.forth
+				from generic_parameter_defs.start until generic_parameter_defs.off loop
+					Result.append(generic_parameter_defs.item_for_iteration.flattened_type_list)
+					generic_parameter_defs.forth
 				end
 			end
 		end
@@ -223,9 +226,9 @@ feature -- Access
 			prop_type := prop_def.type_def
 			if attached {BMM_GENERIC_PARAMETER_DEFINITION} prop_type as gen_prop_type then
 				gen_param_count := 1
-				from generic_parameters.start until generic_parameters.off or generic_parameters.item_for_iteration.name.is_equal(gen_prop_type.name) loop
+				from generic_parameter_defs.start until generic_parameter_defs.off or generic_parameter_defs.item_for_iteration.name.is_equal(gen_prop_type.name) loop
 					gen_param_count := gen_param_count + 1
-					generic_parameters.forth
+					generic_parameter_defs.forth
 				end
 				Result := type_name_as_flattened_type_list (a_class_type_name).i_th (gen_param_count)
 			else
@@ -294,34 +297,51 @@ feature -- Status Report
 			a_path.go_i_th (a_path_pos)
 		end
 
-feature -- Modification
-
-	set_ancestor_defs (a_def_list: attached ARRAYED_LIST [BMM_CLASS_DEFINITION])
-		do
-			ancestor_defs := a_def_list
-		end
-
 feature -- Commands
 
-	dt_finalise (a_bmmm: BMM_SCHEMA)
+	finalise_build (a_bmmm: attached BMM_SCHEMA; errors: ERROR_ACCUMULATOR)
 			-- synchronise structures after creation by DT deserialiser
 		do
 			bmm_model := a_bmmm
+
+			-- populate references to ancestor classes; should be every class except Any
+			if attached ancestors then
+				from ancestors.start until ancestors.off loop
+					if bmm_model.has_class_definition (ancestors.item) then
+						ancestor_defs.extend (bmm_model.class_definition (ancestors.item))
+					end
+					ancestors.forth
+				end
+			end
+
+			-- post-process generic parameters if any
+			if is_generic then
+				from generic_parameter_defs.start until generic_parameter_defs.off loop
+					generic_parameter_defs.item_for_iteration.finalise_build (a_bmmm, Current, errors)
+					generic_parameter_defs.forth
+				end
+			end
+
+			-- post-process properties
+			from properties.start until properties.off loop
+				properties.item_for_iteration.finalise_build(a_bmmm, Current, errors)
+				properties.forth
+			end
 
 			-- connect attribute defs with parent attribute defs
 
 			-- connect generic parm defs with defs in parent classes if any
 			-- first find a direct ancestor that has generic parameters
-			if is_generic and ancestor_defs /= Void then
+			if is_generic and not ancestor_defs.is_empty then
 				from ancestor_defs.start until ancestor_defs.off or ancestor_defs.item.is_generic loop
 					ancestor_defs.forth
 				end
 				if not ancestor_defs.off then
-					from generic_parameters.start until generic_parameters.off loop
-						if ancestor_defs.item.generic_parameters.has (generic_parameters.key_for_iteration) then
-							generic_parameters.item_for_iteration.set_inheritance_precursor(ancestor_defs.item.generic_parameters.item(generic_parameters.key_for_iteration))
+					from generic_parameter_defs.start until generic_parameter_defs.off loop
+						if ancestor_defs.item.generic_parameter_defs.has (generic_parameter_defs.key_for_iteration) then
+							generic_parameter_defs.item_for_iteration.set_inheritance_precursor(ancestor_defs.item.generic_parameter_defs.item(generic_parameter_defs.key_for_iteration))
 						end
-						generic_parameters.forth
+						generic_parameter_defs.forth
 					end
 				end
 			end
@@ -343,7 +363,7 @@ feature -- Traversal
 
 			create supplier_closure_class_record.make(0)
 			supplier_closure_class_record.compare_objects
-			supplier_closure_class_record.extIteratorend(name)
+			supplier_closure_class_record.extend(name)
 
 			if flat_flag then
 				props := flat_properties
@@ -369,14 +389,14 @@ feature -- Output
 			if is_generic then
 				Result.append_character (generic_left_delim)
 				from
-					generic_parameters.start
+					generic_parameter_defs.start
 					i := 1
-				until generic_parameters.off loop
-					Result.append(generic_parameters.item_for_iteration.as_type_string)
-					if i < generic_parameters.count then
+				until generic_parameter_defs.off loop
+					Result.append(generic_parameter_defs.item_for_iteration.as_type_string)
+					if i < generic_parameter_defs.count then
 						Result.append_character(generic_separator)
 					end
-					generic_parameters.forth
+					generic_parameter_defs.forth
 					i := i + 1
 				end
 				Result.append_character (generic_right_delim)
@@ -467,10 +487,7 @@ feature {NONE} -- Implementation
 			-- list of classes already done, to prevent fully expanded form being generated after first instance
 
 invariant
-	Properties_exists: properties /= Void
-	Ancestors_exists: ancestor_defs /= Void
-	Descendants_exists: immediate_descendants /= Void
-	Generic_validity: is_generic implies generic_parameters /= Void and then not generic_parameters.is_empty
+	Generic_validity: is_generic implies generic_parameter_defs /= Void and then not generic_parameter_defs.is_empty
 
 end
 

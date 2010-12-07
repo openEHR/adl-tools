@@ -77,6 +77,12 @@ feature -- Modification
 			errors.extend(create {ERROR_DESCRIPTOR}.make_info(a_key, create_message_content(a_key, args), a_location))
 		end
 
+	merge_errors (other_errors: attached ERROR_ACCUMULATOR)
+		do
+			errors.append (other_errors)
+			passed := passed and not other_errors.has_errors
+		end
+
 feature -- Status Report
 
 	passed: BOOLEAN

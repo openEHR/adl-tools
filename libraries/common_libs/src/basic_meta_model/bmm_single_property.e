@@ -20,13 +20,20 @@ inherit
 			type_def
 		end
 
-feature -- Initialisation
-
-feature -- Access
+feature -- Access (attributes derived in post-schema processing)
 
 	type_def: BMM_CLASS_DEFINITION
 
-feature -- Status Report
+feature -- Commands
+
+	finalise_build (a_bmmm: attached BMM_SCHEMA; a_class_def: attached BMM_CLASS_DEFINITION; errors: ERROR_ACCUMULATOR)
+		do
+			if a_bmmm.has_class_definition (type) then
+				type_def := a_bmmm.class_definition (type)
+			else
+				errors.add_error ("BMM_SPT", <<a_bmmm.schema_id, a_class_def.name, name, type>>, Void)
+			end
+		end
 
 end
 

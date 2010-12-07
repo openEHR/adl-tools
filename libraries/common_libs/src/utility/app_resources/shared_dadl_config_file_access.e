@@ -1,49 +1,31 @@
 note
-	component:   "openEHR re-usable library"
-	description: "Abstract idea of specifying a type either by definition or by reference."
-	keywords:    "model, UML"
+	component:   "openEHR Libraries"
+	description: "Shared access to a configuration file access object."
+	keywords:    "config, file"
 
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2009 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2010 openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class BMM_TYPE_SPECIFIER
+class SHARED_DADL_CONFIG_FILE_ACCESS
 
 inherit
-	BMM_DEFINITIONS
+	SHARED_RESOURCES
 
 feature -- Access
 
-	flattened_type_list: attached ARRAYED_LIST [STRING]
-			-- completely flattened list of type names, flattening out all generic parameters
-		deferred
-		end
-
-	root_class: attached STRING
-			-- root class of type
-		do
-			Result := flattened_type_list.first
-		end
-
-feature -- Output
-
-	as_type_string: attached STRING
-			-- formal string form of the type
-		deferred
-		end
-
-	as_flattened_type_string: attached STRING
-			-- string form of the type for matching in archetypes - i.e. ignoring container type names
-		deferred
+	app_cfg: DADL_CONFIG_FILE_ACCESS
+			-- accessor object for application config file
+		once
+			create Result.make (user_config_file_path)
 		end
 
 end
-
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****
@@ -59,10 +41,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is bmm_type_specifier.e.
+--| The Original Code is shared_dadl_config_file_access.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2009
+--| Portions created by the Initial Developer are Copyright (C) 2003-2004
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

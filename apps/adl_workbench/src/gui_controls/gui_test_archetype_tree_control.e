@@ -155,7 +155,7 @@ feature -- Commands
  			current_arch_dir.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 
 			-- put names on columns
-			grid.column (1).set_title ("Archetypes - " + current_repository_profile)
+			grid.column (1).set_title ("Archetypes - " + repository_profiles.current_profile_name)
 			if grid.column_count >= first_test_col then
 				from
 					tests.start
@@ -574,7 +574,7 @@ feature {NONE} -- Implementation
 		local
 			diff_dir_root, diff_dir_source_root, diff_dir_flat_root, diff_dir_source_flat_root: STRING
 		do
-			diff_dir_root := file_system.pathname (test_diff_directory, current_repository_profile)
+			diff_dir_root := file_system.pathname (test_diff_directory, repository_profiles.current_profile_name)
 
 			-- source dif dirs
 			diff_dir_source_root := file_system.pathname (diff_dir_root, "source")

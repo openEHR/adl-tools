@@ -5,7 +5,7 @@ note
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2009 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2009-2010 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -20,13 +20,20 @@ inherit
 			type_def
 		end
 
-feature -- Initialisation
-
-feature -- Access
+feature -- Access (attributes derived in post-schema processing)
 
 	type_def: BMM_GENERIC_PARAMETER_DEFINITION
 
-feature -- Status Report
+feature -- Commands
+
+	finalise_build (a_bmmm: attached BMM_SCHEMA; a_class_def: attached BMM_CLASS_DEFINITION; errors: ERROR_ACCUMULATOR)
+		do
+			if a_class_def.generic_parameter_defs.has (type) then
+				type_def := a_class_def.generic_parameter_defs.item (type)
+			else
+				errors.add_error ("BMM_SPOT", <<a_bmmm.schema_id, a_class_def.name, name, type>>, Void)
+			end
+		end
 
 end
 

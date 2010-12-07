@@ -36,10 +36,12 @@ feature -- Access (attributes from schema)
 			-- True if this property is computed rather than stored in objects of this class
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
-feature -- Access
+feature -- Access (attributes derived in post-schema processing)
 
 	type_def: BMM_TYPE_SPECIFIER
 			-- type of this attribute
+
+feature -- Access
 
 	existence: MULTIPLICITY_INTERVAL
 			-- interval form of 0..1, 1..1 etc, generated from is_mandatory
@@ -61,15 +63,11 @@ feature -- Status Report
 			end
 		end
 
-feature -- Modification
+feature -- Commands
 
-	set_type_def (a_type_def: attached BMM_TYPE_SPECIFIER)
-		do
-			type_def := a_type_def
+	finalise_build (a_bmmm: attached BMM_SCHEMA; a_class_def: attached BMM_CLASS_DEFINITION; errors: ERROR_ACCUMULATOR)
+		deferred
 		end
-
-invariant
-	Name_exists: name /= Void
 
 end
 

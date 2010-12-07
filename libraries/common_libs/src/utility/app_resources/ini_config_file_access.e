@@ -19,7 +19,7 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class CONFIG_FILE_ACCESS
+class INI_CONFIG_FILE_ACCESS
 
 inherit
 	TEXT_FILE_ACCESS

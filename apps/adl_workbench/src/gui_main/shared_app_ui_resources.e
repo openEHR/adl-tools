@@ -242,6 +242,7 @@ feature -- Access
 
 			Result.force (["go.ico", Void], "go")
 			Result.force (["stop.ico", Void], "stop")
+			Result.force (["star.ico", Void], "star")
 			Result.force (["parse.ico", Void], "parse")
 			Result.force (["edit.ico", Void], "edit")
 			Result.force (["open_archetype.ico", Void], "open_archetype")
@@ -315,299 +316,23 @@ feature -- Application Switches
 			-- from GUI open and save buttons; automatic opens (due to clicking
 			-- on archetype name) still use main repository directory.
 		do
-			Result := resource_value ("default", "current_work_directory")
+			Result := app_cfg.string_value ("/file_system/current_work_directory")
+		end
+
+	set_current_work_directory (a_path: attached STRING)
+			-- set the directory where archetypes are currently being opened and saved.
+		do
+			if not a_path.is_empty then
+				app_cfg.put_value ("/file_system/current_work_directory", a_path)
+			else
+				app_cfg.remove_resource ("/file_system/current_work_directory")
+			end
 		end
 
 	app_width: INTEGER
 			-- application width
-		local
-			str: STRING
 		do
-			str := resource_value("default", "app_width")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	app_height: INTEGER
-			-- application height
-		local
-			str: STRING
-		do
-			str := resource_value("default", "app_height")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	app_x_position: INTEGER
-			-- application horizontal position
-		local
-			str: STRING
-		do
-			str := resource_value("default", "app_x_position")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	app_y_position: INTEGER
-			-- application vertical position
-		local
-			str: STRING
-		do
-			str := resource_value("default", "app_y_position")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	app_maximised: BOOLEAN
-			-- True if app should be maximised
-		local
-			str: STRING
-		do
-			str := resource_value("default", "app_maximised")
-			if str.is_boolean then
-				Result := str.to_boolean
-			end
-		end
-
-	total_split_position: INTEGER
-			-- Split position of outer vertical split control.
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "total_split_position")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	test_split_position: INTEGER
-			-- Split position of vertical split control in test tool.
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "test_split_position")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	explorer_split_position: INTEGER
-			-- Split position of explorer horizontal split control.
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "explorer_split_position")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	archetype_template_split_position: INTEGER
-			-- Split position of explorer horizontal split control.
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "archetype_template_split_position")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	main_notebook_tab_pos: INTEGER
-			-- which tab of the main notebook was visible at the end of the last session
-		local
-			str: STRING
-		do
-			str := resource_value("default", "main_notebook_tab_pos")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	expand_node_tree: BOOLEAN
-			-- Expand the archetype definition node tree by default?
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "expand_node_tree")
-
-			if str.is_boolean then
-				Result := str.to_boolean
-			end
-		end
-
-	show_technical_view: BOOLEAN
-			-- Display the technical view in the archetype definition node tree by default?
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "show_technical_view")
-			if str.is_boolean then
-				Result := str.to_boolean
-			end
-		end
-
-	show_reference_model_view: BOOLEAN
-			-- Display the reference model view in the archetype definition node tree by default?
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "show_reference_model_view")
-			if str.is_boolean then
-				Result := str.to_boolean
-			end
-		end
-
-	show_line_numbers: BOOLEAN
-			-- Display line numbers in the ADL source text box?
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "show_line_numbers")
-			if str.is_boolean then
-				Result := str.to_boolean
-			end
-		end
-
-	show_entire_ontology: BOOLEAN
-			-- Display the entire ontology class tree, even when classes have no archetypes
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "show_entire_ontology")
-			if str.is_boolean then
-				Result := str.to_boolean
-			end
-		end
-
-	display_archetype_source: BOOLEAN
-			-- Display "(f)" marker on archetypes created in flat form
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "display_archetype_source")
-			if str.is_boolean then
-				Result := str.to_boolean
-			end
-		end
-
-	path_filter_combo_selection: STRING
-			-- setting of path control filter combo-box
-		do
-			Result := resource_value ("default", "path_filter_combo_selection")
-		end
-
-	path_view_check_list_settings: LIST [STRING]
-			-- path view column settings
-		do
-			Result := resource_value_list ("default", "path_view_check_list_settings")
-		ensure
-			result_attached: attached Result
-			value_comparison: Result.object_comparison
-			no_empty_items: Result.for_all (agent (s: STRING): BOOLEAN do Result := attached s and then not s.is_empty end)
-		end
-
-	text_editor_command: attached STRING
-			-- Path of editor application for ADL files.
-		do
-			Result := substitute_env_vars (resource_value ("default", "text_editor"))
-		end
-
-	editor_app_command: attached STRING
-			-- Path of editor application for ADL files.
-		do
-			Result := substitute_env_vars (resource_value ("default", "editor_app"))
-		end
-
-	difftool_command: attached STRING
-			-- Path of diff tool application for ADL files.
-		do
-			Result := substitute_env_vars (resource_value ("default", "difftool"))
-		end
-
-feature -- Application Switch Setting
-
-	set_current_work_directory (a_path: STRING)
-			-- set the directory where archetypes are currently being opened and saved.
-		require
-			a_path_attached: a_path /= Void
-		do
-			if not a_path.is_empty then
-				set_resource_value ("default", "current_work_directory", a_path)
-			else
-				remove_resource ("default", "current_work_directory")
-			end
-		end
-
-	set_text_editor_command (value: STRING)
-			-- set editor
-		require
-			value_attached: value /= Void
-			value_not_empty: not value.is_empty
-		do
-			set_resource_value("default", "text_editor", value)
-		end
-
-	set_editor_app_command (value: STRING)
-			-- set editor
-		require
-			value_attached: value /= Void
-			value_not_empty: not value.is_empty
-		do
-			set_resource_value("default", "editor_app", value)
-		end
-
-	set_difftool_command (value: STRING)
-			-- set editor
-		require
-			value_attached: value /= Void
-			value_not_empty: not value.is_empty
-		do
-			set_resource_value("default", "difftool", value)
-		end
-
-	set_main_notebook_tab_pos(a_tab_pos: INTEGER)
-			-- set main notebook tab pos
-		require
-			a_tab_pos_valid: a_tab_pos > 0
-		do
-			set_resource_value("default", "main_notebook_tab_pos", a_tab_pos.out)
-		end
-
-	set_total_split_position (v: INTEGER)
-			-- Set split position of outer vertical split control.
-		require
-			v > 0
-		do
-			set_resource_value ("default", "total_split_position", v.out)
-		end
-
-	set_test_split_position (v: INTEGER)
-			-- Set split position of test tool vertical split control.
-		require
-			v > 0
-		do
-			set_resource_value ("default", "test_split_position", v.out)
-		end
-
-	set_explorer_split_position (v: INTEGER)
-			-- Set split position of explorer horizontal split control.
-		require
-			v > 0
-		do
-			set_resource_value ("default", "explorer_split_position", v.out)
-		end
-
-	set_archetype_template_split_position (v: INTEGER)
-			-- Set split position of explorer vertical split control.
-		require
-			v > 0
-		do
-			set_resource_value ("default", "archetype_template_split_position", v.out)
+			Result := app_cfg.integer_value ("/gui/app_width")
 		end
 
 	set_app_width (v: INTEGER)
@@ -615,7 +340,13 @@ feature -- Application Switch Setting
 		require
 			v > 0
 		do
-			set_resource_value("default", "app_width", v.out)
+			app_cfg.put_value ("/gui/app_width", v)
+		end
+
+	app_height: INTEGER
+			-- application height
+		do
+			Result := app_cfg.integer_value ("/gui/app_height")
 		end
 
 	set_app_height (v: INTEGER)
@@ -623,77 +354,259 @@ feature -- Application Switch Setting
 		require
 			v > 0
 		do
-			set_resource_value("default", "app_height", v.out)
+			app_cfg.put_value ("/gui/app_height", v)
+		end
+
+	app_x_position: INTEGER
+			-- application horizontal position
+		do
+			Result := app_cfg.integer_value ("/gui/app_x_position")
 		end
 
 	set_app_x_position (v: INTEGER)
 			-- set app x position
 		do
-			set_resource_value("default", "app_x_position", v.out)
+			app_cfg.put_value ("/gui/app_x_position", v)
+		end
+
+	app_y_position: INTEGER
+			-- application vertical position
+		do
+			Result := app_cfg.integer_value ("/gui/app_y_position")
 		end
 
 	set_app_y_position (v: INTEGER)
 			-- set app y position
 		do
-			set_resource_value("default", "app_y_position", v.out)
+			app_cfg.put_value ("/gui/app_y_position", v)
 		end
 
-	set_app_maximised (f: BOOLEAN)
+	app_maximised: BOOLEAN
+			-- True if app should be maximised
+		do
+			Result := app_cfg.boolean_value ("/gui/app_maximised")
+		end
+
+	set_app_maximised (flag: BOOLEAN)
 			-- set app maximised flag
 		do
-			set_resource_value("default", "app_maximised", f.out)
+			app_cfg.put_value("/gui/app_maximised", flag)
+		end
+
+	total_split_position: INTEGER
+			-- Split position of outer vertical split control.
+		do
+			Result := app_cfg.integer_value ("/gui/total_split_position")
+		end
+
+	set_total_split_position (v: INTEGER)
+			-- Set split position of outer vertical split control.
+		require
+			v > 0
+		do
+			app_cfg.put_value ("/gui/total_split_position", v)
+		end
+
+	test_split_position: INTEGER
+			-- Split position of vertical split control in test tool.
+		do
+			Result := app_cfg.integer_value ("/gui/test_split_position")
+		end
+
+	set_test_split_position (v: INTEGER)
+			-- Set split position of test tool vertical split control.
+		require
+			v > 0
+		do
+			app_cfg.put_value ("/gui/test_split_position", v)
+		end
+
+	explorer_split_position: INTEGER
+			-- Split position of explorer horizontal split control.
+		do
+			Result := app_cfg.integer_value ("/gui/explorer_split_position")
+		end
+
+	set_explorer_split_position (v: INTEGER)
+			-- Set split position of explorer horizontal split control.
+		require
+			v > 0
+		do
+			app_cfg.put_value ("/gui/explorer_split_position", v)
+		end
+
+	archetype_template_split_position: INTEGER
+			-- Split position of explorer horizontal split control.
+		do
+			Result := app_cfg.integer_value ("/gui/archetype_template_split_position")
+		end
+
+	set_archetype_template_split_position (v: INTEGER)
+			-- Set split position of explorer vertical split control.
+		require
+			v > 0
+		do
+			app_cfg.put_value ("/gui/archetype_template_split_position", v)
+		end
+
+	main_notebook_tab_pos: INTEGER
+			-- which tab of the main notebook was visible at the end of the last session
+		do
+			Result := app_cfg.integer_value ("/gui/main_notebook_tab_pos")
+		end
+
+	set_main_notebook_tab_pos(a_tab_pos: INTEGER)
+			-- set main notebook tab pos
+		require
+			a_tab_pos_valid: a_tab_pos > 0
+		do
+			app_cfg.put_value("/gui/main_notebook_tab_pos", a_tab_pos)
+		end
+
+	expand_node_tree: BOOLEAN
+			-- Expand the archetype definition node tree by default?
+		do
+			Result := app_cfg.boolean_value ("/gui/expand_node_tree")
 		end
 
 	set_expand_node_tree (flag: BOOLEAN)
 			-- Set flag for whether to expand the archetype definition node tree by default.
 		do
-			set_resource_value ("default", "expand_node_tree", flag.out)
+			app_cfg.put_value("/gui/expand_node_tree", flag)
+		end
+
+	show_technical_view: BOOLEAN
+			-- Display the technical view in the archetype definition node tree by default?
+		do
+			Result := app_cfg.boolean_value ("/gui/show_technical_view")
 		end
 
 	set_show_technical_view (flag: BOOLEAN)
 			-- Set flag for whether to show the technical view in the archetype definition node tree by default.
 		do
-			set_resource_value ("default", "show_technical_view", flag.out)
+			app_cfg.put_value("/gui/show_technical_view", flag)
+		end
+
+	show_reference_model_view: BOOLEAN
+			-- Display the reference model view in the archetype definition node tree by default?
+		do
+			Result := app_cfg.boolean_value ("/gui/show_reference_model_view")
 		end
 
 	set_show_reference_model_view (flag: BOOLEAN)
 			-- Set flag for whether to show the technical view in the archetype definition node tree by default.
 		do
-			set_resource_value ("default", "show_reference_model_view", flag.out)
+			app_cfg.put_value("/gui/show_reference_model_view", flag)
+		end
+
+	show_line_numbers: BOOLEAN
+			-- Display line numbers in the ADL source text box?
+		do
+			Result := app_cfg.boolean_value ("/gui/show_line_numbers")
 		end
 
 	set_show_line_numbers (flag: BOOLEAN)
 			-- Set flag for whether to show line numbers in the ADL source text box.
 		do
-			set_resource_value ("default", "show_line_numbers", flag.out)
+			app_cfg.put_value("/gui/show_line_numbers", flag)
+		end
+
+	show_entire_ontology: BOOLEAN
+			-- Display the entire ontology class tree, even when classes have no archetypes
+		do
+			Result := app_cfg.boolean_value ("/gui/show_entire_ontology")
 		end
 
 	set_show_entire_ontology (flag: BOOLEAN)
 			-- Set flag for show_entire_ontology.
 		do
-			set_resource_value ("default", "show_entire_ontology", flag.out)
+			app_cfg.put_value("/gui/show_entire_ontology", flag)
+		end
+
+	display_archetype_source: BOOLEAN
+			-- Display "(f)" marker on archetypes created in flat form
+		do
+			Result := app_cfg.boolean_value ("/gui/display_archetype_source")
 		end
 
 	set_display_archetype_source (flag: BOOLEAN)
 			-- Set flag for whether to display markers indicating archetype authoring form.
 		do
-			set_resource_value ("default", "display_archetype_source", flag.out)
+			app_cfg.put_value("/gui/display_archetype_source", flag)
+		end
+
+	path_filter_combo_selection: STRING
+			-- setting of path control filter combo-box
+		do
+			Result := app_cfg.string_value ("/gui/path_filter_combo_selection")
 		end
 
 	set_path_filter_combo_selection(str: STRING)
 			--
 		do
-			set_resource_value("default", "path_filter_combo_selection", str)
+			app_cfg.put_value("/gui/path_filter_combo_selection", str)
 		end
 
-	set_path_view_check_list_settings (strs: LIST [STRING])
+	path_view_check_list_settings: attached LIST [STRING]
+			-- path view column settings
+		do
+			Result := app_cfg.string_list_value ("/gui/path_view_check_list_settings")
+			Result.compare_objects
+		ensure
+			result_attached: attached Result
+			value_comparison: Result.object_comparison
+			no_empty_items: Result.for_all (agent (s: STRING): BOOLEAN do Result := attached s and then not s.is_empty end)
+		end
+
+	set_path_view_check_list_settings (strs: attached LIST [STRING])
 			-- save path view column settings
 		do
-			set_resource_value_list("default", "path_view_check_list_settings", strs)
+			app_cfg.put_value("/gui/path_view_check_list_settings", strs)
+		end
+
+	text_editor_command: attached STRING
+			-- Path of editor application for ADL files.
+		do
+			Result := app_cfg.string_value_env_var_sub ("/commands/text_editor_command")
+		end
+
+	set_text_editor_command (a_value: attached STRING)
+			-- set editor
+		require
+			value_not_empty: not a_value.is_empty
+		do
+			app_cfg.put_value ("/commands/text_editor_command", a_value)
+		end
+
+	editor_app_command: attached STRING
+			-- Path of editor application for ADL files.
+		do
+			Result := app_cfg.string_value_env_var_sub ("/commands/editor_app_command")
+		end
+
+	set_editor_app_command (a_value: attached STRING)
+			-- set editor
+		require
+			value_not_empty: not a_value.is_empty
+		do
+			app_cfg.put_value ("/commands/editor_app_command", a_value)
+		end
+
+	difftool_command: attached STRING
+			-- Path of diff tool application for ADL files.
+		do
+			Result := app_cfg.string_value_env_var_sub ("/commands/difftool_command")
+		end
+
+	set_difftool_command (a_value: attached STRING)
+			-- set editor
+		require
+			value_not_empty: not a_value.is_empty
+		do
+			app_cfg.put_value ("/commands/difftool_command", a_value)
 		end
 
 end
-
 
 
 --|

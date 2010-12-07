@@ -16,6 +16,8 @@ class BMM_DEFINITIONS
 
 feature -- Definitions
 
+	Package_name_delimiter: CHARACTER = '.'
+
 	Generic_left_delim: CHARACTER = '<'
 
 	Generic_right_delim: CHARACTER = '>'
@@ -26,6 +28,8 @@ feature -- Definitions
 			-- appears between 'T' and constraining type if there is one
 
 	Any_type: STRING = "Any"
+
+	Schema_file_extension: STRING = ".bmm"
 
 	Metadata_model_publisher: STRING = "model_publisher"
 			-- dADL attribute name of logical attribute 'model_publisher' in schema file;
@@ -118,13 +122,35 @@ feature -- Conversion
 			Result_not_empty: not Result.is_empty
 		end
 
-	package_class_name (a_package_name, a_class_name: attached STRING): STRING
+	terminal_package_name (a_package_name: attached STRING): attached STRING
+			-- package name might be of form xxx.yyy.zzz ; we only want 'zzz'
+		do
+			if a_package_name.has (package_name_delimiter) then
+				Result := a_package_name.split(Package_name_delimiter).last
+			else
+				Result := a_package_name
+			end
+		end
+
+	model_qualified_package_name (a_model_publisher, a_package_name: attached STRING): attached STRING
+			-- generate a lower-case standard model-package name string, e.g. "openehr-ehr" for use in finding RM schemas
+			-- uses `terminal_package_name' to guarantee terminal form of package name
+		require
+			Model_publisher_valid: not a_model_publisher.is_empty
+			Package_name_valid: not a_package_name.is_empty
+		do
+			Result := a_model_publisher + {ARCHETYPE_ID}.section_separator.out + terminal_package_name(a_package_name)
+			Result.to_lower
+		end
+
+	package_qualified_class_name (a_package_name, a_class_name: attached STRING): attached STRING
 			-- generate a standard package-class name string, e.g. "ehr-observation" for use in finding RM schemas
+			-- uses `terminal_package_name' to guarantee terminal form of package name
 		require
 			Package_name_valid: not a_package_name.is_empty
 			Class_name_valid: not a_class_name.is_empty
 		do
-			Result := a_package_name + {ARCHETYPE_ID}.section_separator.out + a_class_name
+			Result := terminal_package_name(a_package_name) + {ARCHETYPE_ID}.section_separator.out + a_class_name
 		end
 
 	type_name_as_flattened_type_list(a_type_name: STRING): ARRAYED_LIST [STRING]
