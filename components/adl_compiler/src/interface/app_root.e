@@ -38,7 +38,6 @@ feature -- Initialisation
 
 	initialise
 		local
-			rep_profiles: attached REPOSITORY_PROFILE_CONFIG
 			dummy_error_accumulator: ERROR_ACCUMULATOR
 		once
 			message_db.populate(Error_db_directory, locale_language_short)
@@ -90,10 +89,9 @@ feature -- Initialisation
 
 				-- adjust for repository profiles being out of sync with current profile setting (e.g. due to
 				-- manual editing of .cfg file
-				rep_profiles := repository_profiles
-				if not rep_profiles.is_empty and not rep_profiles.has_current_profile then
-					rep_profiles.start
-					set_current_profile(rep_profiles.key_for_iteration)
+				if not repository_profiles.is_empty and not repository_profiles.has_current_profile then
+					repository_profiles.start
+					set_current_profile(repository_profiles.key_for_iteration)
 				end
 
 				initialised := True

@@ -68,23 +68,21 @@ feature -- Access
 
 	parent: DT_COMPLEX_OBJECT_NODE
 
-	children: ARRAYED_LIST [DT_OBJECT_ITEM]
+	children: attached ARRAYED_LIST [DT_OBJECT_ITEM]
 			-- next nodes, keyed by node id or attribute name
 
-	children_sorted: SORTED_TWO_WAY_LIST[DT_OBJECT_ITEM]
+	children_sorted: attached SORTED_TWO_WAY_LIST[DT_OBJECT_ITEM]
 
-	rm_attr_name: STRING
+	rm_attr_name: attached STRING
 			-- attribute name in reference model
 		do
 			Result := representation.node_id
 		end
 
-	child_with_id(a_node_id: STRING): DT_OBJECT_ITEM
+	child_with_id(a_node_id: attached STRING): attached DT_OBJECT_ITEM
 			-- find the child node with `a_path_id'
 		do
 			Result ?= representation.child_with_id(a_node_id).content_item
-		ensure
-			Result_exists: Result /= Void
 		end
 
 	first_child: DT_OBJECT_ITEM
@@ -196,10 +194,10 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_attr_name (a_name: STRING)
+	set_attr_name (a_name: attached STRING)
 			-- set attr name
 		require
-			a_name_valid: a_name /= Void and then not a_name.is_empty
+			a_name_valid: not a_name.is_empty
 		do
 			representation.set_node_id(a_name)
 		end
@@ -276,7 +274,6 @@ feature -- Serialisation
 		end
 
 invariant
-	Children_exists: children /= Void
 	Generic_multiple_validity: is_generic implies is_multiple
 
 end

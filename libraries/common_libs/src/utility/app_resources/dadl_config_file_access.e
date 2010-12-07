@@ -34,12 +34,14 @@ create
 
 feature -- Definitions
 
-	file_header_text: STRING = "[
--- 
--- Application configuration settings file (dADL format)
---
-
-	]"
+	file_header_text: STRING
+		once
+			create Result.make(0)
+			Result.append("--%N")
+			Result.append("-- " + application_name + " configuration settings (dADL format)%N")
+			Result.append("--%N")
+			Result.append("%N")
+		end
 
 feature -- Initialisation
 
@@ -64,7 +66,7 @@ feature -- Access
 			-- paths that the application has requsted so far
 
 	integer_value (a_path: attached STRING): INTEGER
-			-- get the integer value for resource_name
+			-- get the integer value for resource at `a_path'
 		do
 			if has_resource(a_path) then
 				Result ?= dt_tree.value_at_path (a_path)
@@ -73,7 +75,7 @@ feature -- Access
 		end
 
 	boolean_value (a_path: attached STRING): BOOLEAN
-			-- get the boolean value for resource_name
+			-- get the boolean value for resource at `a_path'
 		do
 			if has_resource(a_path) then
 				Result ?= dt_tree.value_at_path (a_path)
@@ -82,7 +84,7 @@ feature -- Access
 		end
 
 	string_value (a_path: attached STRING): attached STRING
-			-- get the string value for `a_path'; return empty string if nothing found
+			-- get the string value for resource at `a_path'; return empty string if nothing found
 		do
 			if has_resource(a_path) then
 				Result ?= dt_tree.value_at_path (a_path)
@@ -165,7 +167,8 @@ feature -- Modification
 		end
 
 	put_object (a_path: attached STRING; a_value: attached ANY)
-			-- currently only works for single child paths, i.e. not where the paths ends with xxx[zzz]
+			-- convert a complex object to Data Tree form and put at `a_path' in current tree
+			-- FIXME: currently only works for single child paths, i.e. not where the paths ends with xxx[zzz]
 		local
 			obj_dt_tree: DT_COMPLEX_OBJECT_NODE
 			dt_obj: DT_OBJECT_ITEM
@@ -197,6 +200,8 @@ feature -- Element Removal
 		ensure
 			Path_removed: not has_resource(a_path)
 		end
+
+feature -- File system access
 
 	read
 			-- read content from file and parse to Data Tree form.

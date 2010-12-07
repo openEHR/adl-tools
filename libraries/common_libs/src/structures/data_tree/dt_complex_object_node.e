@@ -126,22 +126,39 @@ feature -- Access
 			Result_exists: Result.object_comparison
 		end
 
-	value_at_path(a_path: attached STRING): ANY
+	value_at_path(a_path: attached STRING): attached ANY
+			-- retrieve leaf value object, including list or interval object at `a_path'
 		require
 			Path_valid: valid_path_string(a_path) and has_path(a_path)
 		do
 			if attached {DT_PRIMITIVE_OBJECT} node_at_path(a_path) as a_primitive_node then
 				Result := a_primitive_node.value
+			elseif attached {DT_PRIMITIVE_OBJECT_LIST} node_at_path(a_path) as a_primitive_list_node then
+				Result := a_primitive_list_node.value
+			elseif attached {DT_PRIMITIVE_OBJECT_INTERVAL} node_at_path(a_path) as a_primitive_ivl_node then
+				Result := a_primitive_ivl_node.value
 			end
 		end
 
 	value_list_at_path(a_path: attached STRING): SEQUENCE[ANY]
-			-- get value list from path `a_path'
+			-- attempt to get list value from path `a_path'; relies on
+			-- prior knowledge that this path corresponds to a list object
 		require
 			Path_valid: valid_path_string(a_path) and has_path(a_path)
 		do
 			if attached {DT_PRIMITIVE_OBJECT_LIST} node_at_path(a_path) as a_primitive_list_node then
 				Result := a_primitive_list_node.value
+			end
+		end
+
+	value_interval_at_path(a_path: attached STRING): INTERVAL[PART_COMPARABLE]
+			-- attempt to get interval value from path `a_path'; relies on
+			-- prior knowledge that this path corresponds to an interval object
+		require
+			Path_valid: valid_path_string(a_path) and has_path(a_path)
+		do
+			if attached {DT_PRIMITIVE_OBJECT_INTERVAL} node_at_path(a_path) as a_primitive_ivl_node then
+				Result := a_primitive_ivl_node.value
 			end
 		end
 
@@ -223,17 +240,13 @@ feature -- Modification
 		do
 			if attached {DT_PRIMITIVE_OBJECT} node_at_path(a_path) as a_primitive_node then
 				a_primitive_node.set_value(a_value)
+			elseif attached {DT_PRIMITIVE_OBJECT_LIST} node_at_path(a_path) as a_primitive_list_node and attached {SEQUENCE[ANY]} a_value as a_sequence_value then
+				a_primitive_list_node.set_value (a_sequence_value)
+			elseif attached {DT_PRIMITIVE_OBJECT_INTERVAL} node_at_path(a_path) as a_primitive_ivl_node and attached {INTERVAL[PART_COMPARABLE]} a_value as an_interval_value then
+				a_primitive_ivl_node.set_value (an_interval_value)
 			end
-		end
-
-	set_value_list_at_path (a_value: attached LIST [ANY]; a_path: attached STRING)
-			-- set a leaf value at a path
-		require
-			Path_valid: has_path(a_path)
-		do
-			if attached {DT_PRIMITIVE_OBJECT_LIST} node_at_path(a_path) as a_primitive_node then
-				a_primitive_node.set_value(a_value)
-			end
+		ensure
+			Value_set: value_at_path (a_path) = a_value
 		end
 
 	put_value_at_path(a_value: attached ANY; a_path: attached STRING)
