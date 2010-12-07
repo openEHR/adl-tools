@@ -49,9 +49,13 @@ feature -- Definitions
 
 	Grid_loaded_col: INTEGER = 1
 	Grid_name_col: INTEGER = 2
-	Grid_status_col: INTEGER = 3
-	Grid_edit_col: INTEGER = 4
-	Grid_max_cols: INTEGER = 4
+	grid_lifecycle_state_col: INTEGER = 3
+	Grid_validated_col: INTEGER = 4
+	Grid_edit_col: INTEGER = 5
+	Grid_max_cols: INTEGER
+		once
+			Result := Grid_edit_col
+		end
 
 feature {NONE} -- Initialisation
 
@@ -90,49 +94,65 @@ feature {NONE} -- Implementation
 			gli: EV_GRID_LABEL_ITEM
 			row: EV_GRID_ROW
 			gcli: EV_GRID_CHECKABLE_LABEL_ITEM
-			schema_name: STRING
+			schema_id: STRING
 			i: INTEGER
+			schema_meta_data: HASH_TABLE [STRING, STRING]
 		do
 			-- get rid of previously defined rows
 			grid.wipe_out
 
 			-- create row containinng widgets for: check column, name column, status column, edit button column
-			from rm_schemas_access.schema_metadata_table.start until rm_schemas_access.schema_metadata_table.off loop
-				schema_name := rm_schemas_access.schema_metadata_table.key_for_iteration
+			from rm_schemas_access.all_schemas.start until rm_schemas_access.all_schemas.off loop
+				schema_id := rm_schemas_access.all_schemas.item_for_iteration.schema.schema_id
+				schema_meta_data := rm_schemas_access.schema_metadata_table.item (schema_id)
 
-				-- column 1 - check box to indicate loaded
-				create gcli
+				-- column 1 - check box to indicate loaded; only on top-level schemas
+				if rm_schemas_access.all_schemas.item_for_iteration.is_top_level then
+					create gcli.make_with_text ("        ")
+					gcli.set_is_checked (rm_schemas_load_list.has (schema_id))
 				grid.set_item (Grid_loaded_col, grid.row_count + 1, gcli)
-				gcli.set_is_checked (rm_schemas_load_list.has (schema_name))
 				row := gcli.row
+				else
+					create gli.make_with_text ("        ")
+					grid.set_item (Grid_loaded_col, grid.row_count + 1, gli)
+					row := gli.row
+				end
 
 				-- column 2 - RM schema name
-				create gli.make_with_text (schema_name)
-				gli.set_tooltip (rm_schemas_access.schema_metadata_table.item_for_iteration.item(metadata_schema_path))
+				create gli.make_with_text (schema_id)
+				gli.set_tooltip (schema_meta_data.item(metadata_schema_path))
 				row.set_item (Grid_name_col, gli)
 
-				-- column 3 - status
-				if rm_schemas_access.schema_metadata_table.item_for_iteration.has (Metadata_schema_lifecycle_state) then
-					create gli.make_with_text (rm_schemas_access.schema_metadata_table.item_for_iteration.item (Metadata_schema_lifecycle_state))
+				-- column 3 - lifecycle state
+				if schema_meta_data.has (Metadata_schema_lifecycle_state) then
+					create gli.make_with_text (schema_meta_data.item (Metadata_schema_lifecycle_state))
 				else
 					create gli.make_with_text ("(unknown)")
 				end
-				row.set_item (Grid_status_col, gli)
+				row.set_item (grid_lifecycle_state_col, gli)
 
-				-- column 4 - create edit button and add to row
+				-- column 4 - validated
+				create gli.make_with_text ("         ")
+				if rm_schemas_access.all_schemas.item_for_iteration.passed then
+					gli.set_pixmap (pixmaps["star"])
+				end
+				row.set_item (Grid_validated_col, gli)
+
+				-- column 5 - create edit button and add to row
 				create gli.make_with_text ("Edit")
 				gli.set_pixmap (pixmaps ["edit"])
-				gli.select_actions.extend (agent do_edit_schema(rm_schemas_access.schema_metadata_table.key_for_iteration))
+				gli.select_actions.extend (agent do_edit_schema(schema_id))
 				row.set_item (Grid_edit_col, gli)
-
-				rm_schemas_access.schema_metadata_table.forth
+				rm_schemas_access.all_schemas.forth
 			end
 
 			-- make the columnn content visible
 			if grid.row_count > 0 then
 				-- set grid column titles
+				grid.column (Grid_loaded_col).set_title ("Loaded")
 				grid.column (Grid_name_col).set_title ("Name")
-				grid.column (Grid_status_col).set_title ("Status")
+				grid.column (grid_lifecycle_state_col).set_title ("Lifecycle state")
+				grid.column (Grid_validated_col).set_title ("Validated")
 
 				from i := 1 until i > Grid_max_cols loop
 					grid.column (i).resize_to_content

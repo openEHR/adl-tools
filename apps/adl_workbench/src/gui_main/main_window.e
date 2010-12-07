@@ -171,12 +171,14 @@ feature -- Status setting
 				set_difftool_command (default_difftool_command)
 			end
 
-			if repository_profiles.reference_repository_path.is_empty then
-				set_repository
-			else
-				populate_archetype_profile_combo
-				populate_test_profile_combo
-				populate_directory_controls(True)
+			if rm_schemas_access.found_valid_schemas then
+				if repository_profiles.reference_repository_path.is_empty then
+					set_repository
+				else
+					populate_archetype_profile_combo
+					populate_test_profile_combo
+					populate_directory_controls(True)
+				end
 			end
 
 			append_billboard_to_status_area

@@ -60,7 +60,7 @@ feature -- Access
 
 	message: attached STRING
 
-	location: attached STRING
+	location: STRING
 
 feature -- Output
 
@@ -68,7 +68,7 @@ feature -- Output
 		do
 			create Result.make (0)
 			Result.append (error_type_names.item(severity) + " ")
-			if not location.is_empty then
+			if attached location and not location.is_empty then
 				Result.append (location + ": ")
 			end
 			Result.append ("(" + code + ") " + message)

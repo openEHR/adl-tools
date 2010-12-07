@@ -62,6 +62,11 @@ inherit
 			{NONE} all
 		end
 
+	BMM_DEFINITIONS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -599,17 +604,20 @@ feature {NONE} -- Implementation
 		do
 			create parent_node.make_category (Archetype_category.twin)
 			ontology_prototype.put (parent_node)
-			from rm_schemas_access.schemas.start until rm_schemas_access.schemas.off loop
-				pkgs := rm_schemas_access.schemas.item_for_iteration.schema.packages
+			from rm_schemas_access.top_level_schemas.start until rm_schemas_access.top_level_schemas.off loop
+				pkgs := rm_schemas_access.top_level_schemas.item_for_iteration.schema.packages
 				from pkgs.start until pkgs.off loop
-					pkg_name := pkgs.item_for_iteration.name.as_upper
+					if pkgs.item_for_iteration.has_classes then
+						-- package name might be of form xxx.yyy.zzz ; we only want 'zzz'
+						pkg_name := terminal_package_name(pkgs.item_for_iteration.name).as_upper
+
 					create arm.make_package(pkg_name)
 					parent_node.put_child (arm)
 
 					create supp_list.make (0)
 					supp_list.compare_objects
 					from pkgs.item_for_iteration.classes.start until pkgs.item_for_iteration.classes.off loop
-						supp_list.merge (rm_schemas_access.schemas.item_for_iteration.class_definition (pkgs.item_for_iteration.classes.item).all_suppliers)
+							supp_list.merge (rm_schemas_access.top_level_schemas.item_for_iteration.class_definition (pkgs.item_for_iteration.classes.item).all_suppliers)
 						supp_list.extend (pkgs.item_for_iteration.classes.item)
 						pkgs.item_for_iteration.classes.forth
 					end
@@ -617,9 +625,9 @@ feature {NONE} -- Implementation
 					-- now create a list of classes inheriting from LOCATABLE that are among the suppliers of
 					-- the top-level class of the package; this gives the classes that could be archetyped in
 					-- that package
-					if rm_schemas_access.schemas.item_for_iteration.has_class_definition ("LOCATABLE") then
+						if rm_schemas_access.top_level_schemas.item_for_iteration.has_class_definition ("LOCATABLE") then
 						from supp_list.start until supp_list.off loop
-							if not rm_schemas_access.schemas.item_for_iteration.is_descendant_of (supp_list.item, "LOCATABLE") then
+								if not rm_schemas_access.top_level_schemas.item_for_iteration.is_descendant_of (supp_list.item, "LOCATABLE") then
 								supp_list.remove
 							else
 								supp_list.forth
@@ -633,7 +641,7 @@ feature {NONE} -- Implementation
 					from supp_list.start until supp_list.off loop
 						removed := False
 						from supp_list_copy.start until supp_list_copy.off or removed loop
-							if rm_schemas_access.schemas.item_for_iteration.is_descendant_of (supp_list.item, supp_list_copy.item) then
+								if rm_schemas_access.top_level_schemas.item_for_iteration.is_descendant_of (supp_list.item, supp_list_copy.item) then
 								supp_list.remove
 								removed := True
 							end
@@ -648,13 +656,14 @@ feature {NONE} -- Implementation
 					-- convert to BMM_CLASS_DESCRIPTORs
 					create supp_class_list.make(0)
 					from supp_list.start until supp_list.off loop
-						supp_class_list.extend (rm_schemas_access.schemas.item_for_iteration.class_definition (supp_list.item))
+							supp_class_list.extend (rm_schemas_access.top_level_schemas.item_for_iteration.class_definition (supp_list.item))
 						supp_list.forth
 					end
 					add_child_nodes (pkg_name, supp_class_list, arm)
+					end
 					pkgs.forth
 				end
-				rm_schemas_access.schemas.forth
+				rm_schemas_access.top_level_schemas.forth
 			end
 		end
 

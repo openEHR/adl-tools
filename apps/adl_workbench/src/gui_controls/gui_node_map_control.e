@@ -703,7 +703,7 @@ feature {NONE} -- Implementation
 						from props.start until props.off loop
 							if not c_c_o.has_attribute(props.key_for_iteration) then
 								pixmap := pixmaps.item(rm_attribute_pixmap_string(props.item_for_iteration))
-								create attr_ti.make_with_text (utf8 (props.key_for_iteration + ": " + props.item_for_iteration.type.as_type_string))
+								create attr_ti.make_with_text (utf8 (props.key_for_iteration + ": " + props.item_for_iteration.type_def.as_type_string))
 								attr_ti.set_data (props.item_for_iteration)
 								attr_ti.set_pixmap (pixmap)
 								a_tree_node.extend (attr_ti)

@@ -17,19 +17,25 @@ class BMM_CONTAINER_TYPE_REFERENCE
 inherit
 	BMM_TYPE_REFERENCE
 
-feature -- Initialisation
+feature -- Access (attributes from schema)
 
-feature -- Access
+	type: STRING
+			-- the target type; this converts to the first parameter in generic_parameters in BMM_GENERIC_TYPE_SPECIFIER
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
-	cardinality: INTERVAL [INTEGER]
-			-- needs to be this basic type because this attribute is scanned in from schema, else would
-			-- have used MULTIPLICITY_INTERVAL
+	container_type: STRING
+			-- the type of the container. This converts to the root_type in BMM_GENERIC_TYPE_SPECIFIER
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
-	container_type: BMM_CLASS_DEFINITION
+feature -- Access (attributes derived in post-schema processing)
+
+	type_def: BMM_CLASS_DEFINITION
+			-- the target type; this converts to the first parameter in generic_parameters in BMM_GENERIC_TYPE_SPECIFIER
+
+	container_type_def: BMM_CLASS_DEFINITION
 			-- the type of the container. This converts to the root_type in BMM_GENERIC_TYPE_SPECIFIER
 
-	type: BMM_CLASS_DEFINITION
-			-- the target type; this converts to the first parameter in generic_parameters in BMM_GENERIC_TYPE_SPECIFIER
+feature -- Access
 
 	flattened_type_list: ARRAYED_LIST [STRING]
 			-- completely flattened list of type names, flattening out all generic parameters
@@ -38,10 +44,8 @@ feature -- Access
 		do
 			create Result.make(0)
 			Result.compare_objects
-			Result.append (type.flattened_type_list)
+			Result.append (type_def.flattened_type_list)
 		end
-
-feature -- Status Report
 
 feature -- Conversion
 
@@ -50,20 +54,36 @@ feature -- Conversion
 			-- create Result.make(container_type, <<type>>)
 		end
 
+feature -- Commands
+
+	finalise_build (a_bmmm: attached BMM_SCHEMA; a_class_def: attached BMM_CLASS_DEFINITION; a_prop_def: attached BMM_PROPERTY_DEFINITION; errors: ERROR_ACCUMULATOR)
+		do
+			if a_bmmm.has_class_definition(type) then
+				type_def := a_bmmm.class_definition (type)
+				if a_bmmm.has_class_definition(container_type) then
+					container_type_def := a_bmmm.class_definition (container_type)
+				else
+					errors.add_error ("BMM_CPCT", <<a_bmmm.schema_id, a_class_def.name, a_prop_def.name, container_type>>, Void)
+				end
+			else
+				errors.add_error ("BMM_CPTV", <<a_bmmm.schema_id, a_class_def.name, a_prop_def.name, type>>, Void)
+			end
+		end
+
 feature -- Output
 
 	as_type_string: STRING
 			-- formal name of the type
 		do
 			create Result.make (0)
-			Result.append (container_type.name + Generic_left_delim.out + type.name + Generic_right_delim.out)
+			Result.append (container_type + Generic_left_delim.out + type + Generic_right_delim.out)
 		end
 
 	as_flattened_type_string: STRING
 			-- name of the type
 		do
 			create Result.make (0)
-			Result.append (type.as_type_string)
+			Result.append (type_def.as_type_string)
 		end
 
 end

@@ -24,6 +24,7 @@
 			<debug name="include list" enabled="false"/>
 			<debug name="og_path_parse" enabled="false"/>
 			<debug name="refactor_fixme" enabled="false"/>
+			<debug name="rm_schema" enabled="false"/>
 			<debug name="validate" enabled="false"/>
 			<debug name="vision2_windows" enabled="false"/>
 			<debug name="vision2_windows_gdi" enabled="false"/>

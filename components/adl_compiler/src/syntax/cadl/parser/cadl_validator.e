@@ -1892,7 +1892,7 @@ end
 					end
 					if bmm_prop_def.is_container then
 						if attached {BMM_CONTAINER_PROPERTY} bmm_prop_def as bmm_cont_prop and yyvs17.item (yyvsp17) /= Void then
-							if yyvs17.item (yyvsp17).interval.equal_interval(bmm_cont_prop.type.cardinality) and not validation_strict then
+							if yyvs17.item (yyvsp17).interval.equal_interval(bmm_cont_prop.cardinality) and not validation_strict then
 								-- $3 := Void -- throw out constraint that is same as RM
 							end
 						end
@@ -1972,7 +1972,7 @@ end
 					end
 					if bmm_prop_def.is_container then
 						if attached {BMM_CONTAINER_PROPERTY} bmm_prop_def as bmm_cont_prop and yyvs17.item (yyvsp17) /= Void then
-							if yyvs17.item (yyvsp17).interval.equal_interval(bmm_cont_prop.type.cardinality) and not validation_strict then
+							if yyvs17.item (yyvsp17).interval.equal_interval(bmm_cont_prop.cardinality) and not validation_strict then
 								-- $3 := Void -- throw out constraint that is same as RM
 							end
 						end
