@@ -42,8 +42,6 @@ inherit
 	SHARED_RESOURCES
 		export
 			{NONE} all
-		undefine
-			error_reporting_level
 		end
 
 	ARCHETYPE_DEFINITIONS

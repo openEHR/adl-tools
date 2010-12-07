@@ -140,7 +140,7 @@ feature -- Output
 
 feature {NONE} -- Implementation
 
-	units_file:CONFIG_FILE_ACCESS
+	units_file: INI_CONFIG_FILE_ACCESS
 
 end
 

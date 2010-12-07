@@ -54,15 +54,15 @@ feature {NONE} -- Events
 		do
 			Precursor
 			application_developer_name.make_from_string ("openEHR")
-			resource_config_file.make (user_config_file_path)
+			app_cfg.make (user_config_file_path)
 			assert ("app_root initialisation failed", app_root.initialised)
 
-			if repository_profiles.has ("Test") then
-				test_repository := repository_profiles ["Test"].first
-			elseif repository_profiles.has ("test") then
-				test_repository := repository_profiles ["test"].first
+			if repository_profiles.has_profile ("Test") then
+				test_repository := repository_profiles.profile ("Test").reference_repository
+			elseif repository_profiles.has_profile ("test") then
+				test_repository := repository_profiles.profile ("test").reference_repository
 			else
-				assert ("Please define the %"Test%" repository profile in " + resource_config_file.file_name, False)
+				assert ("Please define the %"Test%" repository profile in " + app_cfg.file_path, False)
 			end
 		end
 
@@ -88,7 +88,7 @@ feature -- Test routines
 		note
 			testing: "covers/{ARCHETYPE_DIRECTORY}.populate"
 		do
-			set_status_reporting_level (Error_type_error)
+			set_error_reporting_level (Error_type_error)
 			source_repositories.set_reference_repository (test_repository)
 			current_arch_dir.populate
 			assert ("Expected warning about ADL version", billboard.content.has_substring ("WARNING - Using ADL version"))
