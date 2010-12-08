@@ -148,12 +148,12 @@ end
 					from schemas_load_list.start until schemas_load_list.off loop
 						if schema_metadata_table.has (schemas_load_list.item) then
 							load_list.extend(schemas_load_list.item)
-				else
+						else
 							post_warning (Current, "load_schemas", "model_access_w7", <<schemas_load_list.item>>)
-				end
+						end
 						schemas_load_list.forth
 					end
-					else
+				else
 					create load_list.make_from_array (schema_metadata_table.current_keys)
 					load_list.compare_objects
 					post_warning (Current, "load_schemas", "model_access_w6", Void)
@@ -169,7 +169,7 @@ end
 
 				-- mark the top level schemas
 				from all_schemas.start until all_schemas.off loop
-					if not schema_inclusion_map.has(all_schemas.item_for_iteration.schema.schema_id) then
+					if all_schemas.item_for_iteration.passed and not schema_inclusion_map.has(all_schemas.item_for_iteration.schema.schema_id) then
 						all_schemas.item_for_iteration.set_top_level
 					end
 					all_schemas.forth
@@ -211,9 +211,9 @@ end
 									schema_inclusion_map.item_for_iteration.forth
 								end
 							end
-							else
+						else
 							post_error (Current, "load_schemas", "model_access_e10", <<schema_inclusion_map.key_for_iteration>>)
-							end
+						end
 						schema_inclusion_map.forth
 					end
 					i := i + 1
@@ -238,13 +238,13 @@ end
 							if all_schemas.item_for_iteration.passed then
 								top_level_schemas.extend (all_schemas.item_for_iteration, all_schemas.key_for_iteration)
 								post_info (Current, "load_schemas", "general", <<all_schemas.item_for_iteration.errors.as_string>>)
-						else
+							else
 								post_error (Current, "load_schemas", "model_access_e9", <<all_schemas.key_for_iteration, all_schemas.item_for_iteration.errors.as_string>>)
+							end
 						end
 					end
-				end
 					all_schemas.forth
-			end
+				end
 			end
 
 			-- now populate the rm_schemas_by_package table
@@ -344,7 +344,7 @@ end
 			includers: ARRAYED_SET[STRING]
 		do
 			load_schema(a_schema_id)
-			if all_schemas.has(a_schema_id) then
+			if all_schemas.item(a_schema_id).passed then
 				includes := all_schemas.item(a_schema_id).schema.includes
 debug("rm_schema")
 	io.put_string ("%Tbuild include map for schema " +
@@ -383,11 +383,10 @@ debug("rm_schema")
 end
 			-- load the full schema
 			create ma.make(schema_path)
-			if ma.passed then
-				all_schemas.put (ma, a_schema_id)
-			else
+			if not ma.passed then
 				post_error (Current, "load_schemas", "model_access_e8", <<a_schema_id, ma.errors.as_string>>)
 			end
+			all_schemas.put (ma, a_schema_id)
 		end
 
 invariant

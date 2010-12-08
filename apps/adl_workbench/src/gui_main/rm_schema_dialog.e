@@ -104,15 +104,15 @@ feature {NONE} -- Implementation
 
 			-- create row containinng widgets for: check column, name column, status column, edit button column
 			from rm_schemas_access.all_schemas.start until rm_schemas_access.all_schemas.off loop
-				schema_id := rm_schemas_access.all_schemas.item_for_iteration.schema.schema_id
+				schema_id := rm_schemas_access.all_schemas.key_for_iteration
 				schema_meta_data := rm_schemas_access.schema_metadata_table.item (schema_id)
 
 				-- column 1 - check box to indicate loaded; only on top-level schemas
 				if rm_schemas_access.all_schemas.item_for_iteration.is_top_level then
 					create gcli.make_with_text ("        ")
 					gcli.set_is_checked (rm_schemas_load_list.has (schema_id))
-				grid.set_item (Grid_loaded_col, grid.row_count + 1, gcli)
-				row := gcli.row
+					grid.set_item (Grid_loaded_col, grid.row_count + 1, gcli)
+					row := gcli.row
 				else
 					create gli.make_with_text ("        ")
 					grid.set_item (Grid_loaded_col, grid.row_count + 1, gli)

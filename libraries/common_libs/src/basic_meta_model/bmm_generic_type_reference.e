@@ -63,8 +63,12 @@ feature -- Commands
 					if a_bmmm.has_class_definition(generic_parameters.item) then
 						generic_parameter_defs.extend(a_bmmm.class_definition(generic_parameters.item))
 					elseif root_type_def.is_generic then
-						if attached root_type_def.generic_parameter_defs and then root_type_def.generic_parameter_defs.has(generic_parameters.item) then
-							generic_parameter_defs.extend(root_type_def.generic_parameter_defs.item (generic_parameters.item))
+						if attached root_type_def.generic_parameter_defs then
+							if root_type_def.generic_parameter_defs.has(generic_parameters.item) then
+								generic_parameter_defs.extend(root_type_def.generic_parameter_defs.item (generic_parameters.item))
+							else
+								errors.add_error ("BMM_GPGPU", <<a_bmmm.schema_id, a_class_def.name, a_prop_def.name, root_type_def.name, generic_parameters.item>>, Void)
+							end
 						else
 							errors.add_error ("BMM_GPGPM", <<a_bmmm.schema_id, root_type_def.name>>, Void)
 						end

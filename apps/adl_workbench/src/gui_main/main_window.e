@@ -1151,7 +1151,7 @@ feature {NONE} -- Implementation
 			end
 
 			set_title (repository_profiles.reference_repository_path + " - " + title)
-			clear_status_area
+		--	clear_status_area
 
 			append_status_area (create_message_line ("populating_directory_start", <<repository_profiles.current_profile_name>>))
 			use_current_profile(refresh)

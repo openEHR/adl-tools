@@ -47,6 +47,7 @@ templates = <
 		["BMM_GPRT"] = <"Schema $1 class definition $2 generic property $3 root type $4 not found in schema">
 		["BMM_GPGPT"] = <"Schema $1 class definition $2 generic property $3 generic parameter $4 not found in schema or in containing class declarations (if open)">
 		["BMM_GPGPM"] = <"Schema $1 class definition $2 marked 'is_generic' but has no generic parameter declarations">
+		["BMM_GPGPU"] = <"Schema $1 class definition $2 generic property $3 type $4 parameter $5 not found in class definitions or $4 formal declaration">
 		["BMM_SPT"] = <"Schema $1 class definition $2 single-valued property $3 type $4 not found in schema">
 		["BMM_SPOT"] = <"Schema $1 class definition $2 single-valued property $3 open generic parameter $4 not found in containing class declarations">
 	>
