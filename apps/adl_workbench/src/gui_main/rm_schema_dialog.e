@@ -73,7 +73,8 @@ feature {NONE} -- Initialisation
 			set_default_cancel_button (cancel_button)
 			set_default_push_button (ok_button)
 
-			populate_controls
+			populate_grid
+			rm_schema_dir_text.set_text(rm_schema_directory)
 
 			show_actions.extend (agent grid.set_focus)
 		end
@@ -88,8 +89,8 @@ feature -- Status
 
 feature {NONE} -- Implementation
 
-	populate_controls
-			-- Set the dialog widgets from shared settings.
+	populate_grid
+			-- Set the grid from shared settings.
 		local
 			gli: EV_GRID_LABEL_ITEM
 			row: EV_GRID_ROW
@@ -160,9 +161,6 @@ feature {NONE} -- Implementation
 					i := i + 1
 				end
 			end
-
-			-- RM schema dir text field
-			rm_schema_dir_text.set_text(rm_schema_directory)
 		end
 
 	do_edit_schema(a_schema: STRING)
@@ -175,8 +173,19 @@ feature {NONE} -- Implementation
 			-- Set shared settings from the dialog widgets.
 		local
 			i: INTEGER
+			new_dir: STRING
 		do
 			hide
+
+			new_dir := rm_schema_dir_text.text.as_string_8
+
+			if not new_dir.same_string (rm_schema_directory) and directory_exists (new_dir) then
+				set_rm_schema_directory (new_dir)
+				has_changed_schema_dir := True
+				rm_schemas_access.initialise (new_dir, rm_schemas_load_list)
+				rm_schemas_access.load_schemas
+				populate_grid
+			end
 
 			-- deal with load list Grid
 			create {ARRAYED_LIST [STRING]} rm_schemas_ll.make (0)
@@ -190,15 +199,10 @@ feature {NONE} -- Implementation
 				i := i + 1
 			end
 
-			if not rm_schemas_ll.is_equal (rm_schemas_load_list) then
+			if not rm_schemas_ll.is_empty and not rm_schemas_ll.is_equal (rm_schemas_load_list) then
 				set_rm_schemas_load_list (rm_schemas_ll)
 				rm_schemas_access.set_schema_load_list (rm_schemas_ll)
 				has_changed_schema_load_list := True
-			end
-
-			if not rm_schema_dir_text.text.is_equal(rm_schema_directory) and directory_exists (rm_schema_dir_text.text) then
-				set_rm_schema_directory(rm_schema_dir_text.text)
-				has_changed_schema_dir := True
 			end
 		end
 
@@ -207,11 +211,14 @@ feature {NONE} -- Implementation
 			-- if a change is made, reload schemas immediately, then repopulate this dialog
 		local
 			error_dialog: EV_INFORMATION_DIALOG
+			new_dir: STRING
 		do
 			rm_schema_dir_text.set_text (get_directory (rm_schema_dir_text.text.as_string_8, Current))
 			ev_application.process_events
-			if not rm_schema_dir_text.text.is_equal(rm_schema_directory) then
-				rm_schemas_access.initialise(rm_schema_dir_text.text, rm_schemas_load_list)
+			new_dir := rm_schema_dir_text.text.as_string_8
+
+			if not new_dir.same_string (rm_schema_directory) then
+				rm_schemas_access.initialise (new_dir, rm_schemas_load_list)
 				rm_schemas_access.load_schemas
 
 				if not rm_schemas_access.found_valid_schemas then
@@ -224,7 +231,8 @@ feature {NONE} -- Implementation
 					rm_schemas_access.initialise(rm_schema_directory, rm_schemas_load_list)
 					rm_schemas_access.load_schemas
 				end
-				populate_controls
+
+				populate_grid
 			end
 		end
 
@@ -232,7 +240,6 @@ feature {NONE} -- Implementation
 
 	rm_schemas_ll: LIST [STRING]
 			-- list of checked schemas in options dialog
-
 
 end
 
