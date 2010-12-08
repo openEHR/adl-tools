@@ -26,6 +26,9 @@ templates = <
 		["add_one_profile_only"] = <"Can only add one profile at a time; hit OK or Cancel">
 		["cant_remove_with_add_pending"] = <"Previous add needs to be committed; hit OK or Cancel">
 
+		-- RM_SCHEMA_DIALOG
+		["rm_schema_dir_not_found"] = <"Directory $1 not found; please specify a valid directory">
+
 		-- MAIN_WINDOW
 		["clean_generated_files_info"] = <"System needs to be compiled before generated files can be deleted">
 		["export_repository_report_replace_info"] = <"Exported report to $1">

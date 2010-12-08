@@ -316,9 +316,29 @@ feature -- Commands
 
 			-- post-process generic parameters if any
 			if is_generic then
-				from generic_parameter_defs.start until generic_parameter_defs.off loop
-					generic_parameter_defs.item_for_iteration.finalise_build (a_bmmm, Current, errors)
-					generic_parameter_defs.forth
+				if attached generic_parameter_defs then
+					from generic_parameter_defs.start until generic_parameter_defs.off loop
+						generic_parameter_defs.item_for_iteration.finalise_build (a_bmmm, Current, errors)
+						generic_parameter_defs.forth
+					end
+
+					-- connect generic parm defs with defs in parent classes if any
+					-- first find a direct ancestor that has generic parameters
+					if not ancestor_defs.is_empty then
+						from ancestor_defs.start until ancestor_defs.off or ancestor_defs.item.is_generic loop
+							ancestor_defs.forth
+						end
+						if not ancestor_defs.off then
+							from generic_parameter_defs.start until generic_parameter_defs.off loop
+								if ancestor_defs.item.generic_parameter_defs.has (generic_parameter_defs.key_for_iteration) then
+									generic_parameter_defs.item_for_iteration.set_inheritance_precursor(ancestor_defs.item.generic_parameter_defs.item(generic_parameter_defs.key_for_iteration))
+								end
+								generic_parameter_defs.forth
+							end
+						end
+					end
+				else
+					errors.add_error ("BMM_GPGPM", <<a_bmmm.schema_id, name>>, Void)
 				end
 			end
 
@@ -329,22 +349,6 @@ feature -- Commands
 			end
 
 			-- connect attribute defs with parent attribute defs
-
-			-- connect generic parm defs with defs in parent classes if any
-			-- first find a direct ancestor that has generic parameters
-			if is_generic and not ancestor_defs.is_empty then
-				from ancestor_defs.start until ancestor_defs.off or ancestor_defs.item.is_generic loop
-					ancestor_defs.forth
-				end
-				if not ancestor_defs.off then
-					from generic_parameter_defs.start until generic_parameter_defs.off loop
-						if ancestor_defs.item.generic_parameter_defs.has (generic_parameter_defs.key_for_iteration) then
-							generic_parameter_defs.item_for_iteration.set_inheritance_precursor(ancestor_defs.item.generic_parameter_defs.item(generic_parameter_defs.key_for_iteration))
-						end
-						generic_parameter_defs.forth
-					end
-				end
-			end
 		end
 
 feature -- Traversal

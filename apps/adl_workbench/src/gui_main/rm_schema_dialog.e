@@ -195,6 +195,11 @@ feature {NONE} -- Implementation
 				rm_schemas_access.set_schema_load_list (rm_schemas_ll)
 				has_changed_schema_load_list := True
 			end
+
+			if not rm_schema_dir_text.text.is_equal(rm_schema_directory) and directory_exists (rm_schema_dir_text.text) then
+				set_rm_schema_directory(rm_schema_dir_text.text)
+				has_changed_schema_dir := True
+			end
 		end
 
 	on_rm_schema_dir_browse
@@ -218,9 +223,6 @@ feature {NONE} -- Implementation
 					rm_schema_dir_text.set_text (rm_schema_directory)
 					rm_schemas_access.initialise(rm_schema_directory, rm_schemas_load_list)
 					rm_schemas_access.load_schemas
-				else
-					set_rm_schema_directory(rm_schema_dir_text.text)
-					has_changed_schema_dir := True
 				end
 				populate_controls
 			end

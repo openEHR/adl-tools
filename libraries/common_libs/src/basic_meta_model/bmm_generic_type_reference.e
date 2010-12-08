@@ -66,7 +66,7 @@ feature -- Commands
 						if attached root_type_def.generic_parameter_defs and then root_type_def.generic_parameter_defs.has(generic_parameters.item) then
 							generic_parameter_defs.extend(root_type_def.generic_parameter_defs.item (generic_parameters.item))
 						else
-							errors.add_error ("BMM_GPGPM", <<a_bmmm.schema_id, a_class_def.name>>, Void)
+							errors.add_error ("BMM_GPGPM", <<a_bmmm.schema_id, root_type_def.name>>, Void)
 						end
 					else
 						errors.add_error ("BMM_GPGPT", <<a_bmmm.schema_id, a_class_def.name, a_prop_def.name, generic_parameters.item>>, Void)
