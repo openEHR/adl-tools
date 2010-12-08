@@ -164,7 +164,7 @@ feature -- Access
 			end
 		end
 
-	recently_selected_archetypes (n: INTEGER): attached ARRAYED_LIST [attached ARCH_REP_ARCHETYPE]
+	recently_selected_archetypes (n: INTEGER): attached ARRAYED_LIST [ARCH_REP_ARCHETYPE]
 			-- The `n' most recently used archetypes from `selection_history', excluding duplicates.
 		require
 			positive: n > 0

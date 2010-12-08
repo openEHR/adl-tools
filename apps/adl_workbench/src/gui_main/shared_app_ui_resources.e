@@ -243,6 +243,7 @@ feature -- Access
 			Result.force (["go.ico", Void], "go")
 			Result.force (["stop.ico", Void], "stop")
 			Result.force (["star.ico", Void], "star")
+			Result.force (["info.ico", Void], "info")
 			Result.force (["parse.ico", Void], "parse")
 			Result.force (["edit.ico", Void], "edit")
 			Result.force (["open_archetype.ico", Void], "open_archetype")

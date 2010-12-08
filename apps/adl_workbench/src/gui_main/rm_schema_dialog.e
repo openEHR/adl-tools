@@ -136,6 +136,9 @@ feature {NONE} -- Implementation
 				create gli.make_with_text ("         ")
 				if rm_schemas_access.all_schemas.item_for_iteration.passed then
 					gli.set_pixmap (pixmaps["star"])
+				else
+					gli.set_pixmap (pixmaps["info"])
+					gli.select_actions.extend (agent show_schema_validation(schema_id))
 				end
 				row.set_item (Grid_validated_col, gli)
 
@@ -163,10 +166,19 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	do_edit_schema(a_schema: STRING)
+	do_edit_schema(a_schema_id: STRING)
 			-- launch external editor with schema, or info box if none defined
 		do
-			execution_environment.launch (text_editor_command + " %"" + rm_schemas_access.schema_metadata_table.item (a_schema).item (metadata_schema_path) + "%"")
+			execution_environment.launch (text_editor_command + " %"" + rm_schemas_access.schema_metadata_table.item (a_schema_id).item (metadata_schema_path) + "%"")
+		end
+
+	show_schema_validation(a_schema_id: STRING)
+			-- display info dialog with validity report
+		local
+			info_dialog: EV_INFORMATION_DIALOG
+		do
+			create info_dialog.make_with_text (rm_schemas_access.all_schemas.item (a_schema_id).errors.as_string)
+			info_dialog.show_modal_to_window (Current)
 		end
 
 	on_ok
