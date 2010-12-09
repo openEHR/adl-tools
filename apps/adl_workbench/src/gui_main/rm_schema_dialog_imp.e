@@ -50,7 +50,7 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_2.extend (cancel_button)
 
 			l_ev_vertical_box_1.set_minimum_width (360)
-			l_ev_vertical_box_1.set_minimum_height (150)
+			l_ev_vertical_box_1.set_minimum_height (320)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_1.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_1.set_border_width (?))
@@ -64,6 +64,7 @@ feature {NONE}-- Initialization
 			l_ev_cell_1.set_minimum_height (20)
 			l_ev_label_1.set_text ("Reference Model schemas loaded shown below.%NCheck or uncheck to load as required.")
 			l_ev_cell_2.set_minimum_height (20)
+			grid.set_minimum_height (175)
 			l_ev_cell_3.set_minimum_height (10)
 			l_ev_horizontal_box_1.set_minimum_width (350)
 			l_ev_horizontal_box_1.set_minimum_height (30)
@@ -93,7 +94,7 @@ feature {NONE}-- Initialization
 			cancel_button.set_minimum_width (100)
 			cancel_button.set_minimum_height (26)
 			set_minimum_width (550)
-			set_minimum_height (300)
+			set_minimum_height (390)
 			set_title ("Display window")
 
 			set_all_attributes_using_constants

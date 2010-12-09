@@ -159,8 +159,8 @@ feature {NONE} -- Implementation
 				grid.column (Grid_validated_col).set_title ("Validated")
 
 				from i := 1 until i > Grid_max_cols loop
-					grid.column (i).resize_to_content
-					grid.column (i).set_width ((grid.column (i).width * 1.2).ceiling)
+					grid.column(i).resize_to_content
+					grid.column(i).set_width ((grid.column (i).width * 1.2).ceiling)
 					i := i + 1
 				end
 			end
