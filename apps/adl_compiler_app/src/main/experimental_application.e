@@ -28,7 +28,8 @@ feature {NONE} -- Initialization
 			app_root.set_rm_schema_directory_location ("c:\tmp\rm_schemas")
 
 			archetype_names_in_repo := archetype_names
-			compile_archetype (archetype_names_in_repo[2])
+			--compile_archetype (archetype_names_in_repo[2])
+			compile_and_test_visit_archetype (archetype_names_in_repo[2])
 		end
 
 feature		--Access
@@ -98,6 +99,7 @@ feature --process archetypes
 	local
 		flattened_archetype: FLAT_ARCHETYPE --TODO: will return this in the next version of this function, only for debugging purposes for now
 		bosphorus_visitor: BOSPHORUS_VISITOR
+		visitor_iterator: C_VISITOR_ITERATOR
 	do
 		configure_archetype_repository
 		app_root.arch_dir.set_selected_item (app_root.arch_dir.archetype_index.item (p_archetype_name))
@@ -108,12 +110,42 @@ feature --process archetypes
 				create bosphorus_visitor
 				bosphorus_visitor.set_logger (logger)
 				bosphorus_visitor.set_cpp_visitor (cpp_visitor)
-				bosphorus_visitor.initialise (flattened_archetype.ontology)
-				logger.log ("now calling visitor")
-				flattened_archetype.definition.enter_subtree (bosphorus_visitor, 0)
+				create visitor_iterator.make (flattened_archetype.definition, bosphorus_visitor)
+				visitor_iterator.do_all
+				--bosphorus_visitor.initialise (flattened_archetype.ontology)
+				--logger.log ("now calling visitor")
+				--flattened_archetype.definition.enter_subtree (bosphorus_visitor, 0)
 			end
 			io.put_string("Compiled archetype: " + p_archetype_name + "%N");
 			io.put_string("ADL version: " + flattened_archetype.adl_version + "%N")
+		else
+			io.put_string ("Archetype: " + p_archetype_name + " is not valid%N")
+		end
+	end
+
+	compile_and_test_visit_archetype (p_archetype_name:STRING)
+	--compile the archetype and save flattened form into a variable
+	require
+		rm_schema_dir_initialized: app_root.rm_schema_directory_location /= Void
+		error_db_dir_initialized: app_root.error_db_directory_location /= Void
+		cpp_object_initialized: cpp_visitor /= Void
+	local
+		flattened_archetype: FLAT_ARCHETYPE --TODO: will return this in the next version of this function, only for debugging purposes for now
+		test_visitor: AOM_VISITOR
+		visitor_iterator: C_VISITOR_ITERATOR
+	do
+		configure_archetype_repository
+		app_root.arch_dir.set_selected_item (app_root.arch_dir.archetype_index.item (p_archetype_name))
+		app_root.archetype_compiler.build_lineage (app_root.arch_dir.selected_archetype)
+		if app_root.arch_dir.selected_archetype.is_valid then
+			flattened_archetype := app_root.arch_dir.selected_archetype.flat_archetype
+			if flattened_archetype /= Void then
+				create test_visitor.make
+				--test_visitor.initialise (flattened_archetype.ontology)
+				create visitor_iterator.make (flattened_archetype.definition, test_visitor)
+				visitor_iterator.do_all
+			end
+			io.put_string ("done with visitor")
 		else
 			io.put_string ("Archetype: " + p_archetype_name + " is not valid%N")
 		end
