@@ -11,6 +11,7 @@
 using namespace std;
 
 int main (int argc,char **argv,char **envp) {
+	cout << "will fix the issue" << endl;
 	
 	OpenEHRManager* manager = new OpenEHRManager();
 	string errorDir = string("c:\\tmp\\error_db");
@@ -25,16 +26,18 @@ int main (int argc,char **argv,char **envp) {
 	manager->setVisitor(visitor);
 
 	ArchetypeLogger *logger = new ArchetypeLogger();
-	manager->setLogger(logger);
-	//manager->testLogger();
+	//manager->setLogger(logger);
+	manager->testLogger();
 
 	string& arcNameToCompile = name;	
 	manager->compileArchetype(arcNameToCompile);
 	
-	delete(manager);	
+	delete(manager);
 	string someChars;
 	cout << "type something, and press enter" << endl;
 	cin >> someChars;
+		
+	
 	return 0;	
 
 

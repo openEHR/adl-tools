@@ -1,6 +1,10 @@
 #pragma once
 #include "IArchetypeVisitor.h"
 #include "jni.h"
+#include "ExperimentalApplicationEiffelAccessHelper.h"
+#include <stack>
+
+using namespace std;
 
 //jni related resources should not be cached, so this visitor should be used per call from JAVA side
 class ArchetypeVisitor : public IArchetypeVisitor
@@ -9,6 +13,8 @@ public:
 	ArchetypeVisitor(void);
 	ArchetypeVisitor(JNIEnv*, jobject);
 	~ArchetypeVisitor(void);
+
+	void setExperimentalAppHelper(ExperimentalApplicationEiffelAccessHelper*);
 	
 	void startCComplexObject(EIF_REFERENCE, EIF_INTEGER);
 	void endCComplexObject(EIF_REFERENCE, EIF_INTEGER);
@@ -50,7 +56,14 @@ public:
 	void endCQuantity(EIF_REFERENCE, EIF_INTEGER);	
 
 private:	 
+	void backupAndResetObjectAttributes();
+	void restoreObjectAttributes();
+	string int2String(int);
+
 	JNIEnv* env;
 	jobject obj;
+	ExperimentalApplicationEiffelAccessHelper* helper;
+	std::stack<EIF_OBJECT> *objectAttributes;
+	std::stack<EIF_OBJECT> *tempObjectAttributes;
 };
 

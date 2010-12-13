@@ -47,6 +47,14 @@ JNIEXPORT void JNICALL Java_uk_ac_ucl_chime_EiffelBridge_setRMSchemaDirectoryPat
 JNIEXPORT void JNICALL Java_uk_ac_ucl_chime_EiffelBridge_compileArcheytpe
   (JNIEnv *, jobject, jstring);
 
+/*
+ * Class:     uk_ac_ucl_chime_EiffelBridge
+ * Method:    parseArchetype
+ * Signature: (Ljava/lang/String;)Lorg/openehr/am/archetype/constraintmodel/CComplexObject;
+ */
+JNIEXPORT jobject JNICALL Java_uk_ac_ucl_chime_EiffelBridge_parseArchetype
+  (JNIEnv *, jobject, jstring);
+
 #ifdef __cplusplus
 }
 #endif

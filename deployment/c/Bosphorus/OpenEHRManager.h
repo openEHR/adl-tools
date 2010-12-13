@@ -13,15 +13,14 @@
 #include <iostream>
 #include "ArchetypeVisitor.h"
 #include "ILogger.h"
+#include "ExperimentalApplicationEiffelAccessHelper.h"
 
 using namespace std;
 
-class OpenEHRManager {
+class OpenEHRManager{
 public:
 	OpenEHRManager();
 	virtual ~OpenEHRManager();
-	void printAttributeValue();	
-	void printFunctionCallResult();
 	void performParsing();
 	void callMake();
 	vector<string>* getArchetypeNames();
@@ -32,11 +31,14 @@ public:
 	void setVisitor(ArchetypeVisitor*);
 	void setLogger(ILogger*);
 	void testLogger();
+			
+
 private:
 	EIF_OBJECT eiffelObj;
 	EIF_TYPE_ID tid;
 	ArchetypeVisitor* archetypeVisitor;
 	ILogger* logger;
+	ExperimentalApplicationEiffelAccessHelper* experimentalAppHelper;
 };
 
 #endif /* OPENEHRMANAGER_H_ */

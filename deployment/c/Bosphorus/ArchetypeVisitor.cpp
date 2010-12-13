@@ -2,23 +2,64 @@
 #include <iostream>
 #include "JNILogger.h"
 #include <string>
+#include "eif_eiffel.h"
+#include <sstream>
+
+
 
 using namespace std;
 
 ArchetypeVisitor::ArchetypeVisitor(void)
 {
 	env = NULL;
-	obj = NULL;
+	obj = NULL;	
+	objectAttributes = new std::stack<EIF_OBJECT>();
+	tempObjectAttributes = new std::stack<EIF_OBJECT>();
 }
 
 ArchetypeVisitor::ArchetypeVisitor(JNIEnv* pEnv, jobject pJobject){
 	env = pEnv;
 	obj = pJobject;
+	objectAttributes = new std::stack<EIF_OBJECT>();
+	tempObjectAttributes = new std::stack<EIF_OBJECT>();
 }
 
 
 ArchetypeVisitor::~ArchetypeVisitor(void)
 {
+	if(objectAttributes != NULL)
+		delete objectAttributes;
+}
+
+void ArchetypeVisitor::setExperimentalAppHelper(ExperimentalApplicationEiffelAccessHelper* pHelper){
+	helper = pHelper;
+}
+
+void ArchetypeVisitor::backupAndResetObjectAttributes(){
+	while(tempObjectAttributes->size() > 0){
+		tempObjectAttributes->pop();
+	}
+	while(objectAttributes->size() > 0){
+		tempObjectAttributes->push(objectAttributes->top());
+		objectAttributes->pop();
+	}
+}
+
+void ArchetypeVisitor::restoreObjectAttributes(){
+	while(objectAttributes->size() > 0){
+		objectAttributes->pop();
+	}
+
+	while(tempObjectAttributes->size() > 0){
+		objectAttributes->push(tempObjectAttributes->top());
+		tempObjectAttributes->pop();
+	}
+}
+
+string ArchetypeVisitor::int2String(int pInt){
+	stringstream sstream;
+	sstream << pInt;
+	return sstream.str();
 }
 
 void ArchetypeVisitor::startCComplexObject(EIF_REFERENCE pCComplexObject, EIF_INTEGER pDepth){	
@@ -29,10 +70,28 @@ void ArchetypeVisitor::startCComplexObject(EIF_REFERENCE pCComplexObject, EIF_IN
 		JNILogger::log(env, obj, passme);
 	}
 	
+	EIF_OBJECT o = eif_protect(pCComplexObject);
+	string* str = helper->callStringFuncOnObj("node_id", o, "C_COMPLEX_OBJECT");
+	cout << "Node id: " + *str << endl;
+	string* rmTypeName = helper->getStringAttributeFromObj("rm_type_name", o, "asfafds");
+	cout << "Rm type name: " + *rmTypeName << endl;
+	//reset attributes stack
+	cout<< "calling stack backup" << endl;
+	backupAndResetObjectAttributes();
+	cout<< "called stack backup" << endl;
+	
 }
 
 void ArchetypeVisitor::endCComplexObject(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
-	
+	while(objectAttributes->size() > 0){
+		EIF_OBJECT attrObj = objectAttributes->top();
+		string* str = helper->callStringFuncOnObj("rm_attribute_name", attrObj, "C_ATTRIBUTE");
+		cout << "CComplexObject Attribute (" + int2String(pDepth) + ") :" + *str << endl;
+		delete str;
+		objectAttributes->pop();
+	}
+	//restore attributes
+	restoreObjectAttributes();
 }
 
 void ArchetypeVisitor::startArchetypeSlot(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
@@ -49,7 +108,8 @@ void ArchetypeVisitor::startCAttribute(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth
 }
 
 void ArchetypeVisitor::endCAttribute(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
-
+	EIF_OBJECT cattr = eif_protect(pEifRef);
+	objectAttributes->push(cattr);
 }
 
 

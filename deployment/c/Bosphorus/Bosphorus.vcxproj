@@ -15,6 +15,8 @@
     <ClCompile Include="ArchetypeLogger.cpp" />
     <ClCompile Include="ArchetypeVisitor.cpp" />
     <ClCompile Include="EiffelBridge.cpp" />
+    <ClCompile Include="ExperimentalApplicationEiffelAccessHelper.cpp" />
+    <ClCompile Include="JavaAOMHelper.cpp" />
     <ClCompile Include="JNILogger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainOne.cpp" />
@@ -24,8 +26,11 @@
     <ClInclude Include="application.h" />
     <ClInclude Include="ArchetypeLogger.h" />
     <ClInclude Include="ArchetypeVisitor.h" />
+    <ClInclude Include="ExperimentalApplicationEiffelAccessHelper.h" />
     <ClInclude Include="IArchetypeVisitor.h" />
+    <ClInclude Include="EiffelAccessHelper.h" />
     <ClInclude Include="ILogger.h" />
+    <ClInclude Include="JavaAOMHelper.h" />
     <ClInclude Include="JNILogger.h" />
     <ClInclude Include="MainOne.h" />
     <ClInclude Include="OpenEHRManager.h" />
