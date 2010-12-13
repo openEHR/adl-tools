@@ -74,8 +74,16 @@ string* ExperimentalApplicationEiffelAccessHelper::callStringFuncOnObj(char* pFu
 string* ExperimentalApplicationEiffelAccessHelper::getStringAttributeFromObj(char* pAttrName, EIF_OBJECT& pTargetObj, char* pTypeId){
 	int* status = NULL;
 	EIF_OBJECT eif_str = eif_protect(eif_attribute(eif_access(pTargetObj), pAttrName, EIF_REFERENCE, status));
+	if(*eif_str == NULL)
+		return	NULL;
 	string* ptr = getStringFromEiffelString(eif_str);
 	return ptr;
+}
+
+EIF_OBJECT ExperimentalApplicationEiffelAccessHelper::getObjectAttributeFromObj(char* pAttributeName, EIF_OBJECT &pTargetObj){
+	int* status = NULL;
+	EIF_OBJECT eif_obj = eif_protect(eif_attribute(eif_access(pTargetObj), pAttributeName, EIF_REFERENCE, status));
+	return eif_obj;
 }
 	
 EIF_INTEGER ExperimentalApplicationEiffelAccessHelper::callIntegerFuncOnObj(char* pFuncName, EIF_OBJECT& pTargetObj, char* pTypeName){

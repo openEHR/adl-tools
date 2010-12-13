@@ -38,6 +38,9 @@ public:
 	string* getStringAttributeFromObj(char* pAttrName, EIF_OBJECT& pTargetObj, char* pTypeId);
 	
 	void callEiffelProcedureOnObjWthEifObjParam(char*, EIF_OBJECT&, char*, ... );
+
+	EIF_OBJECT getObjectAttributeFromObj(char* , EIF_OBJECT&);
+
 	///EiffelHelper methods end
 
 private:

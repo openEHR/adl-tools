@@ -3,6 +3,7 @@
 #include "jni.h"
 #include "ExperimentalApplicationEiffelAccessHelper.h"
 #include <stack>
+#include "JavaAOMHelper.h"
 
 using namespace std;
 
@@ -58,6 +59,9 @@ public:
 private:	 
 	void backupAndResetObjectAttributes();
 	void restoreObjectAttributes();
+
+	void backupAndResetJavaAomHelpers();
+	void restoreJavaAomHelpers();
 	string int2String(int);
 
 	JNIEnv* env;
@@ -65,5 +69,7 @@ private:
 	ExperimentalApplicationEiffelAccessHelper* helper;
 	std::stack<EIF_OBJECT> *objectAttributes;
 	std::stack<EIF_OBJECT> *tempObjectAttributes;
+	std::stack<JavaAOMHelper*> *javaAomHelpers;
+	std::stack<JavaAOMHelper*> *tempJavaAomHelpers;
 };
 

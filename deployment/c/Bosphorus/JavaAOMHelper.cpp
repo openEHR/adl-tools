@@ -185,21 +185,22 @@ jobject JavaAOMHelper::buildCComplexObjectWthCComplexObjectFactory()
 	return cComplexObj;
 }
 
-jobject JavaAOMHelper::getCComplexObjectFactory(){
-	return _cComplexObjectFactory;
+jobject JavaAOMHelper::getLastBuiltCComplexObject()
+{
+	return _lastBuiltCComplexObject;
 }
 
-jobject JavaAOMHelper::getCAttributeFactory()
+jobject JavaAOMHelper::getLastBuiltCAttributeObject()
 {
-	return _cAttributeFactory;
+	return _lastBuiltCAttributeObject;
 }
 
-jobject JavaAOMHelper::getCPrimitiveObjectFactory()
+jobject JavaAOMHelper::getLastBuiltCPrimitiveObject()
 {
-	return _cPrimitiveObjectFactory;
+	return _lastBuiltCPrimitiveObject;
 }
 
-jobject JavaAOMHelper::getCPrimitiveFactory()
+jobject JavaAOMHelper::getLastBuiltCPrimitive()
 {
-	return _cPrimitiveFactory;
+	return _lastBuiltCPrimitiveObject;
 }

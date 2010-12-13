@@ -22,6 +22,8 @@ ArchetypeVisitor::ArchetypeVisitor(JNIEnv* pEnv, jobject pJobject){
 	obj = pJobject;
 	objectAttributes = new std::stack<EIF_OBJECT>();
 	tempObjectAttributes = new std::stack<EIF_OBJECT>();
+	javaAomHelpers = new std::stack<JavaAOMHelper*>();
+	tempJavaAomHelpers = new std::stack<JavaAOMHelper*>();
 }
 
 
@@ -53,6 +55,28 @@ void ArchetypeVisitor::restoreObjectAttributes(){
 	while(tempObjectAttributes->size() > 0){
 		objectAttributes->push(tempObjectAttributes->top());
 		tempObjectAttributes->pop();
+	}
+}
+
+void ArchetypeVisitor::backupAndResetJavaAomHelpers(){
+	while(tempJavaAomHelpers->size() > 0){
+		tempJavaAomHelpers->pop();
+	}
+	
+	while(javaAomHelpers->size() > 0){
+		tempJavaAomHelpers->push(javaAomHelpers->top());
+		javaAomHelpers->pop();
+	}
+}
+
+void ArchetypeVisitor::restoreJavaAomHelpers(){
+	while(javaAomHelpers->size() > 0){
+		javaAomHelpers->pop();
+	}
+
+	while(tempJavaAomHelpers->size() > 0){
+		javaAomHelpers->push(tempJavaAomHelpers->top());
+		tempJavaAomHelpers->pop();
 	}
 }
 
@@ -154,7 +178,14 @@ void ArchetypeVisitor::endConstraintRef(EIF_REFERENCE pEifRef, EIF_INTEGER pDept
 }
 
 void ArchetypeVisitor::startCPrimitiveObject(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
-
+	EIF_OBJECT pObj = eif_protect(pEifRef);
+	string* typeName = helper->getStringAttributeFromObj("rm_type_name", pObj, "does not matter");
+	cout << "C Primitive Object type name : " + *typeName << endl;
+	EIF_OBJECT item = helper->getObjectAttributeFromObj("item", pObj);
+	string *itemTypeName = helper->callStringFuncOnObj("out", item, "C_PRIMITIVE");
+	//string *itemTypeName = helper->getStringAttributeFromObj("out", item, "C_STRING");
+	if(itemTypeName != NULL)
+		cout << "C Primitive out attr : " + *itemTypeName << endl;
 }
 
 void ArchetypeVisitor::endCPrimitiveObject(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){

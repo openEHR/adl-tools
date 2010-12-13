@@ -41,12 +41,12 @@ public:
 	void createCPrimitiveFactory();
 	void setCPrimitiveFactoryCStringPattern(string&);
 	void addStringToCPrimitiveFactoryCStringList(string&);
-	jobject buildCStringWthCPrimitiveFactory();
+	jobject buildCStringWthCPrimitiveFactory();	
 
-	jobject getCComplexObjectFactory();
-	jobject getCAttributeFactory();
-	jobject getCPrimitiveObjectFactory();
-	jobject getCPrimitiveFactory();
+	jobject getLastBuiltCComplexObject();
+	jobject getLastBuiltCAttributeObject();
+	jobject getLastBuiltCPrimitiveObject();
+	jobject getLastBuiltCPrimitive();
 
 private:
 	
@@ -61,6 +61,11 @@ private:
 	jobject _cAttributeFactory;
 	jobject _cPrimitiveObjectFactory;
 	jobject _cPrimitiveFactory;
+
+	jobject _lastBuiltCComplexObject;
+	jobject _lastBuiltCAttributeObject;
+	jobject _lastBuiltCPrimitiveObject;
+	jobject _lastBuiltPrimitive;
 
 	string *_stringParamaterSignature;
 };
