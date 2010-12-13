@@ -74,6 +74,8 @@
 			<visible class="CODE_PHRASE"/>
 			<visible class="C_COMPLEX_OBJECT"/>
 			<visible class="C_ATTRIBUTE"/>
+			<visible class="C_PRIMITIVE_OBJECT"/>
+			<visible class="C_PRIMITIVE"/>
 		</cluster>
 		<cluster name="reference_model_checker" location="..\..\..\components\reference_model_checker\src\" recursive="true"/>
 		<cluster name="version" location="..\..\..\libraries\version\" recursive="true"/>

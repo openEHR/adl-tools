@@ -171,6 +171,9 @@ feature
 			-- enter an C_PRIMITIVE_OBJECT
 		do
 			io.put_string (depth.out + ": enter cprimitiveOb%N")
+			if attached {C_STRING} a_node.item  as c_prim then
+				io.put_string (c_prim.regexp)
+			end
 		end
 
 	end_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
