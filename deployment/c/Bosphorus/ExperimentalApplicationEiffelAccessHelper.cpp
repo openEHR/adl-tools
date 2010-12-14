@@ -67,6 +67,8 @@ EIF_POINTER ExperimentalApplicationEiffelAccessHelper::callPointerFuncOnObj(char
 string* ExperimentalApplicationEiffelAccessHelper::callStringFuncOnObj(char* pFuncName, EIF_OBJECT& pTargetObj, char* pTypeId){
 	EIF_REFERENCE_FUNCTION stringFunc = eif_reference_function(pFuncName, getEifTypeId(pTypeId));	
 	EIF_OBJECT stringObj = eif_protect(stringFunc(eif_access(pTargetObj),NULL));
+	if(*stringObj == NULL)
+		return NULL;
 	string* result = getStringFromEiffelString(stringObj);
 	return result;
 }
