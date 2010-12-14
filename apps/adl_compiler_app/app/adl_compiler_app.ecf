@@ -17,6 +17,7 @@
 			<visible class="ARRAY"/>
 			<visible class="ANY"/>
 			<visible class="STRING_8" feature="to_c"/>
+			<visible class="ARRAYED_LIST"/>
 		</library>
 		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
 		<library name="gobo_lexical" location="$ISE_LIBRARY\library\gobo\gobo_lexical.ecf"/>
