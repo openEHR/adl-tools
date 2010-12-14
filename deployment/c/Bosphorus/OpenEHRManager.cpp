@@ -84,7 +84,7 @@ vector<string>* OpenEHRManager::getArchetypeNames(){
 	EIF_INTEGER countResult = experimentalAppHelper->callIntegerFuncOnObj("count", arrObject, "ARRAY[STRING]");
 	
 	vector<string>* archetypeNames = new vector<string>;
-	for(int i = 0; i < countResult; i++){
+	for(int i = 0; i < countResult; i++){		
 		EIF_OBJECT itemResult = experimentalAppHelper->callReferenceFuncOnObjWthIntParam("item", i, arrObject, "ARRAY[STRING]");
 		string* str = experimentalAppHelper->getStringFromEiffelString(itemResult);
 		archetypeNames->push_back(*str);

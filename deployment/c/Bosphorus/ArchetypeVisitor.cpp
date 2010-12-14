@@ -97,7 +97,7 @@ void ArchetypeVisitor::startCComplexObject(EIF_REFERENCE pCComplexObject, EIF_IN
 	EIF_OBJECT o = eif_protect(pCComplexObject);
 	string* str = helper->callStringFuncOnObj("node_id", o, "C_COMPLEX_OBJECT");
 	cout << "Node id: " + *str << endl;
-	string* rmTypeName = helper->getStringAttributeFromObj("rm_type_name", o, "asfafds");
+	string* rmTypeName = helper->getStringAttributeFromObj("rm_type_name", o);
 	cout << "Rm type name: " + *rmTypeName << endl;
 	//reset attributes stack
 	cout<< "calling stack backup" << endl;
@@ -179,13 +179,30 @@ void ArchetypeVisitor::endConstraintRef(EIF_REFERENCE pEifRef, EIF_INTEGER pDept
 
 void ArchetypeVisitor::startCPrimitiveObject(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){
 	EIF_OBJECT pObj = eif_protect(pEifRef);
-	string* typeName = helper->getStringAttributeFromObj("rm_type_name", pObj, "does not matter");
+	string* typeName = helper->getStringAttributeFromObj("rm_type_name", pObj);
 	cout << "C Primitive Object type name : " + *typeName << endl;
-	EIF_OBJECT item = helper->getObjectAttributeFromObj("item", pObj);
-	string *itemTypeName = helper->callStringFuncOnObj("out", item, "C_PRIMITIVE");
-	//string *itemTypeName = helper->getStringAttributeFromObj("out", item, "C_STRING");
-	if(itemTypeName != NULL)
-		cout << "C Primitive out attr : " + *itemTypeName << endl;
+	
+	//handle item field, based on rm type name of CPrimitiveObject
+	if(*typeName == "STRING"){
+		EIF_OBJECT item = helper->getObjectAttributeFromObj("item", pObj);				
+		EIF_OBJECT strings = helper->getObjectAttributeFromObj("strings", item);//this is the array object
+
+		if(*strings != NULL){//this is arrayed_list						
+			EIF_OBJECT arr = helper->callReferenceFuncOnObj("to_array",strings, "ARRAYED_LIST[STRING]"); //this is an array
+			
+			if(*arr != NULL){
+				EIF_INTEGER lower = helper->getIntegerAttributeFromObj("lower", arr);
+				EIF_INTEGER upper = helper->getIntegerAttributeFromObj("upper", arr);
+				
+				for(int i = lower; i <= upper; i++){					
+					EIF_OBJECT eifStr = helper->callReferenceFuncOnObjWthIntParam("item", i, arr, "ARRAY[STRING]");
+					string* str = helper->getStringFromEiffelString(eifStr);				
+				}								
+			}						
+		}
+	}
+	
+	
 }
 
 void ArchetypeVisitor::endCPrimitiveObject(EIF_REFERENCE pEifRef, EIF_INTEGER pDepth){

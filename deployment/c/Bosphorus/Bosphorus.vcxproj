@@ -37,6 +37,7 @@
     <ClInclude Include="uk_ac_ucl_chime_EiffelBridge.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="NotesAboutCecilJNIetc.rtf" />
     <None Include="NotesAboutProject-CompilerSetup.rtf" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -27,7 +27,7 @@ public:
 	
 	EIF_INTEGER callIntegerFuncOnObj(char*, EIF_OBJECT&, char*);
 	
-	EIF_OBJECT callArrayFuncOnObj(char*, EIF_OBJECT&, EIF_TYPE_ID&);
+	EIF_OBJECT callReferenceFuncOnObj(char*, EIF_OBJECT&, char*);
 	
 	void callEiffelProcedure(char*);
 	
@@ -35,11 +35,13 @@ public:
 	
 	void callEiffelProcedureOnObj(char*, EIF_OBJECT&, char*);
 
-	string* getStringAttributeFromObj(char* pAttrName, EIF_OBJECT& pTargetObj, char* pTypeId);
+	string* getStringAttributeFromObj(char* pAttrName, EIF_OBJECT& pTargetObj);
 	
 	void callEiffelProcedureOnObjWthEifObjParam(char*, EIF_OBJECT&, char*, ... );
 
 	EIF_OBJECT getObjectAttributeFromObj(char* , EIF_OBJECT&);
+	
+	EIF_INTEGER getIntegerAttributeFromObj(char*, EIF_OBJECT&);
 
 	///EiffelHelper methods end
 

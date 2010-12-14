@@ -73,7 +73,7 @@ string* ExperimentalApplicationEiffelAccessHelper::callStringFuncOnObj(char* pFu
 	return result;
 }
 
-string* ExperimentalApplicationEiffelAccessHelper::getStringAttributeFromObj(char* pAttrName, EIF_OBJECT& pTargetObj, char* pTypeId){
+string* ExperimentalApplicationEiffelAccessHelper::getStringAttributeFromObj(char* pAttrName, EIF_OBJECT& pTargetObj){
 	int* status = NULL;
 	EIF_OBJECT eif_str = eif_protect(eif_attribute(eif_access(pTargetObj), pAttrName, EIF_REFERENCE, status));
 	if(*eif_str == NULL)
@@ -103,9 +103,9 @@ EIF_INTEGER ExperimentalApplicationEiffelAccessHelper::callIntegerFuncOnObj(char
 }
 
 
-EIF_OBJECT ExperimentalApplicationEiffelAccessHelper::callArrayFuncOnObj(char* pFuncName, EIF_OBJECT& pTargetObj, EIF_TYPE_ID& pTypeId){
-	EIF_REFERENCE_FUNCTION myArrayStrF = eif_reference_function(pFuncName, pTypeId);
-	EIF_OBJECT arrObject = eif_protect((myArrayStrF)(eif_access(eiffelObj), NULL));
+EIF_OBJECT ExperimentalApplicationEiffelAccessHelper::callReferenceFuncOnObj(char* pFuncName, EIF_OBJECT& pTargetObj, char* pTypeId){
+	EIF_REFERENCE_FUNCTION myArrayStrF = eif_reference_function(pFuncName, getEifTypeId(pTypeId));
+	EIF_OBJECT arrObject = eif_protect((myArrayStrF)(eif_access(pTargetObj), NULL));
 	return arrObject;
 }
 
@@ -116,4 +116,10 @@ EIF_TYPE_ID ExperimentalApplicationEiffelAccessHelper::getEifTypeId(char* pTypeN
 	if (tid_any == EIF_NO_TYPE)
 			eif_panic ("No type id for given type name");
 	return tid_any;
+}
+
+EIF_INTEGER ExperimentalApplicationEiffelAccessHelper::getIntegerAttributeFromObj(char* pAttributeName, EIF_OBJECT &pTargetObject){
+	int* status = NULL;
+	EIF_INTEGER val = eif_attribute(eif_access(pTargetObject), pAttributeName, EIF_INTEGER, status);	
+	return val;
 }
