@@ -260,7 +260,7 @@ def ecf_scanner(node, env, path):
 	result = []
 	ecf_as_xml = xml.dom.minidom.parse(str(node))
 
-	for tag in ['cluster', 'override', 'library', 'assembly', 'external_include', 'external_object']:
+	for tag in ['cluster', 'override', 'tests', 'library', 'assembly', 'external_include', 'external_object']:
 		for element in ecf_as_xml.getElementsByTagName(tag):
 			location = element_location(element)
 
