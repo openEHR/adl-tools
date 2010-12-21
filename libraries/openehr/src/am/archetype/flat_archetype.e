@@ -53,7 +53,7 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 	make_staging (a_diff: DIFFERENTIAL_ARCHETYPE; a_flat_parent: FLAT_ARCHETYPE)
 			-- initialise from a differential archetype and its flat parent, as preparation
 			-- for generating a flat archetype. The items from the differential are used
-			-- except for the definition, which is the flat parent version, so that the
+			-- except for the definition, invariants and annotations, which are the flat parent versions, so that the
 			-- differential definition can be overlaid on it by a merging process. The ontology
 			-- is converted to a form ready for overlaying as well.
 		do
@@ -65,8 +65,11 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			if a_diff.has_translations then
 				translations := a_diff.translations.deep_twin
 			end
-			if a_diff.has_invariants then
-				invariants := a_diff.invariants.deep_twin
+			if a_flat_parent.has_invariants then
+				invariants := a_flat_parent.invariants.deep_twin
+			end
+			if a_flat_parent.has_annotations then
+				annotations := a_flat_parent.annotations
 			end
 			rebuild
 			is_valid := True

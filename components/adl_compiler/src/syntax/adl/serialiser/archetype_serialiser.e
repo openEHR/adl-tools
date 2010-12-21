@@ -18,10 +18,8 @@ inherit
 
 feature -- Initialisation
 
-	initialise(an_ontology: ARCHETYPE_ONTOLOGY)
+	initialise(an_ontology: attached ARCHETYPE_ONTOLOGY)
 			-- set ontology required for serialising cADL, and perform basic initialisation
-		require
-			Ontology_valid: an_ontology /= Void
 		do
 			reset
 			ontology := an_ontology
@@ -29,13 +27,7 @@ feature -- Initialisation
 
 feature -- Serialisation
 
-	serialise (a_target: ARCHETYPE; lang_serialised, desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING)
-		require
-			a_target /= Void
-			lang_serialised /= Void
-			desc_serialised /= Void
-			def_serialised /= Void
-			ont_serialised /= Void
+	serialise (a_target: attached ARCHETYPE; lang_serialised, desc_serialised, def_serialised: attached STRING; inv_serialised: STRING; ont_serialised: attached STRING; ann_serialised: STRING)
 		deferred
 		end
 

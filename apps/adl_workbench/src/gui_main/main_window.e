@@ -3,7 +3,7 @@ note
 	description: "Main window"
 	keywords:    "test, ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -440,6 +440,7 @@ feature {NONE} -- Repository events
 			populate_test_profile_combo
 
 			if use_changes_after_destroying_dialog then
+				clear_status_area
 				populate_directory_controls(True)
 			end
 		end
@@ -449,12 +450,14 @@ feature {NONE} -- Repository events
 		do
 			if archetype_profile_combo.is_displayed then
 				if not archetype_profile_combo.text.same_string (repository_profiles.current_profile_name) then
+					clear_status_area
 					set_current_profile (archetype_profile_combo.text)
 					populate_test_profile_combo
 					populate_directory_controls(False)
 				end
 			else
 				if not test_profile_combo.text.same_string (repository_profiles.current_profile_name) then
+					clear_status_area
 					set_current_profile (test_profile_combo.text)
 					populate_archetype_profile_combo
 					populate_directory_controls(False)
@@ -1387,7 +1390,7 @@ feature {NONE} -- Implementation
 			a_combo.select_actions.block
 			a_combo.change_actions.block
 			if not repository_profiles.is_empty then
-				populate_ev_combo_from_hash_keys (a_combo, repository_profiles.profiles)
+				a_combo.set_strings (repository_profiles.profiles.current_keys)
 				if repository_profiles.has_current_profile then
 					a_combo.do_all (agent (li: EV_LIST_ITEM) do if li.text.same_string (repository_profiles.current_profile_name) then li.enable_select end end)
 				end

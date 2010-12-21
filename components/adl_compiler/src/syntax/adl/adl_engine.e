@@ -59,6 +59,7 @@ feature {NONE} -- Initialisation
 			create definition_context.make
 			create invariant_context.make
 			create ontology_context.make
+			create annotations_context.make
 		end
 
 feature -- Access
@@ -107,13 +108,18 @@ feature -- Commands
 
 			ontology_context.serialise(a_format)
 
+			if an_archetype.has_annotations then
+				annotations_context.serialise(a_format)
+			end
+
 			create serialiser_mgr.make(an_archetype, a_format, an_archetype.ontology)
 			serialiser_mgr.serialise(
 				language_context.serialised,
 				description_context.serialised,
 				definition_context.serialised,
 				invariant_context.serialised,
-				ontology_context.serialised)
+				ontology_context.serialised,
+				annotations_context.serialised)
 			Result := serialiser_mgr.last_result
 		end
 
@@ -124,6 +130,7 @@ feature {NONE} -- Implementation
 			-- structure. Then validate the tree
 		local
 			res_desc: RESOURCE_DESCRIPTION
+			ann_items: RESOURCE_ANNOTATIONS_HELPER
 			orig_lang_trans: LANGUAGE_TRANSLATIONS
 			differential_ontology: attached DIFFERENTIAL_ARCHETYPE_ONTOLOGY
 			flat_ontology: attached FLAT_ARCHETYPE_ONTOLOGY
@@ -145,7 +152,7 @@ feature {NONE} -- Implementation
 
 				if not errors.has_errors then
 					if language_context.tree /= Void then
-						orig_lang_trans ?= language_context.tree.as_object (trans_det_id)
+						orig_lang_trans ?= language_context.tree.as_object (({LANGUAGE_TRANSLATIONS}).type_id)
 					end
 
 					------------------- description section ---------------
@@ -161,7 +168,7 @@ feature {NONE} -- Implementation
 
 					if not errors.has_errors then
 						if description_context.tree /= Void then
-							res_desc ?= description_context.tree.as_object (res_desc_id)
+							res_desc ?= description_context.tree.as_object (({RESOURCE_DESCRIPTION}).type_id)
 						end
 
 						------------------- definition section ---------------
@@ -189,80 +196,104 @@ feature {NONE} -- Implementation
 								if not ontology_context.parse_succeeded then
 									errors.append(ontology_context.errors)
 
-								elseif attached {C_COMPLEX_OBJECT} definition_context.tree as definition and then attached {ARCHETYPE_ID} adl_parser.archetype_id as id then
-									convert_ontology_syntax(ontology_context.tree)  -- perform any version upgrade conversions
-									if differential_source_flag then
-										if orig_lang_trans /= Void then
-											create differential_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, definition.node_id)
-										else
-											create differential_ontology.make_from_tree (Void, ontology_context.tree, definition.node_id)
-											orig_lang_trans := original_language_and_translations_from_ontology (differential_ontology)
-										end
-
-										if not differential_ontology.errors.is_empty then
-											errors.append (differential_ontology.errors)
-										else
-											create {DIFFERENTIAL_ARCHETYPE} Result.make (
-												adl_parser.artefact_type,
-												id,
-												orig_lang_trans.original_language.code_string,
-												res_desc,	-- may be Void
-												definition,
-												differential_ontology
-											)
+								else
+									------------------- annotations section ---------------
+									if adl_parser.annotations_text /= Void and then not adl_parser.annotations_text.is_empty then
+										annotations_context.set_source(adl_parser.annotations_text, adl_parser.annotations_text_start_line)
+										annotations_context.parse
+										if not annotations_context.parse_succeeded then
+											errors.append (annotations_context.errors)
 										end
 									else
-										if orig_lang_trans /= Void then
-											create flat_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, definition.node_id)
-										else
-											create flat_ontology.make_from_tree (Void, ontology_context.tree, definition.node_id)
-											orig_lang_trans := original_language_and_translations_from_ontology (flat_ontology)
-										end
-
-										if not flat_ontology.errors.is_empty then
-											errors.append (flat_ontology.errors)
-										else
-											create {FLAT_ARCHETYPE} Result.make (
-												adl_parser.artefact_type,
-												id,
-												orig_lang_trans.original_language.code_string,
-												res_desc,	-- may be Void
-												definition,
-												flat_ontology
-											)
-										end
+										annotations_context.reset
 									end
 
 									if not errors.has_errors then
-										if attached {ARCHETYPE_ID} adl_parser.parent_archetype_id as parent_id then
-											Result.set_parent_archetype_id (parent_id)
+										if annotations_context.tree /= Void then
+											ann_items ?= annotations_context.tree.as_object (({RESOURCE_ANNOTATIONS_HELPER}).type_id)
 										end
 
-										if adl_parser.adl_version /= Void then
-											Result.set_adl_version(adl_parser.adl_version)
-										else
-											Result.set_adl_version(latest_adl_version)
-										end
+										------------------- build the archetype --------------					
+										if attached {C_COMPLEX_OBJECT} definition_context.tree as definition and then attached {ARCHETYPE_ID} adl_parser.archetype_id as id then
+											convert_ontology_syntax(ontology_context.tree)  -- perform any version upgrade conversions
+											if differential_source_flag then
+												if orig_lang_trans /= Void then
+													create differential_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, definition.node_id)
+												else
+													create differential_ontology.make_from_tree (Void, ontology_context.tree, definition.node_id)
+													orig_lang_trans := original_language_and_translations_from_ontology (differential_ontology)
+												end
 
-										if adl_parser.is_controlled then
-											Result.set_is_controlled
-										end
+												if not differential_ontology.errors.is_empty then
+													errors.append (differential_ontology.errors)
+												else
+													create {DIFFERENTIAL_ARCHETYPE} Result.make (
+														adl_parser.artefact_type,
+														id,
+														orig_lang_trans.original_language.code_string,
+														res_desc,	-- may be Void
+														definition,
+														differential_ontology
+													)
+												end
+											else
+												if orig_lang_trans /= Void then
+													create flat_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, definition.node_id)
+												else
+													create flat_ontology.make_from_tree (Void, ontology_context.tree, definition.node_id)
+													orig_lang_trans := original_language_and_translations_from_ontology (flat_ontology)
+												end
 
-										if adl_parser.is_generated then
-											Result.set_is_generated
-										end
+												if not flat_ontology.errors.is_empty then
+													errors.append (flat_ontology.errors)
+												else
+													create {FLAT_ARCHETYPE} Result.make (
+														adl_parser.artefact_type,
+														id,
+														orig_lang_trans.original_language.code_string,
+														res_desc,	-- may be Void
+														definition,
+														flat_ontology
+													)
+												end
+											end
 
-										-- if there was no language section, then create the equivalent object
-										-- and use it to paste translations into the archetype
-										if orig_lang_trans.translations /= Void then
-											Result.set_translations(orig_lang_trans.translations)
-										end
+											if not errors.has_errors then
+												if attached {ARCHETYPE_ID} adl_parser.parent_archetype_id as parent_id then
+													Result.set_parent_archetype_id (parent_id)
+												end
 
-										if invariant_context.tree /= Void then
-											Result.set_invariants(invariant_context.tree)
-										end
+												if adl_parser.adl_version /= Void then
+													Result.set_adl_version(adl_parser.adl_version)
+												else
+													Result.set_adl_version(latest_adl_version)
+												end
 
-										Result.rebuild
+												if adl_parser.is_controlled then
+													Result.set_is_controlled
+												end
+
+												if adl_parser.is_generated then
+													Result.set_is_generated
+												end
+
+												-- if there was no language section, then create the equivalent object
+												-- and use it to paste translations into the archetype
+												if orig_lang_trans.translations /= Void then
+													Result.set_translations(orig_lang_trans.translations)
+												end
+
+												if invariant_context.tree /= Void then
+													Result.set_invariants(invariant_context.tree)
+												end
+
+												if attached ann_items then
+													Result.set_annotations (ann_items.annotations)
+												end
+
+												Result.rebuild
+											end
+										end
 									end
 								end
 							end
@@ -286,20 +317,9 @@ feature {NONE} -- Implementation
 
 	ontology_context: DADL_ENGINE
 
+	annotations_context: DADL_ENGINE
+
 	rm_schema: SCHEMA_ACCESS
-
-	res_desc_id: INTEGER
-			-- dynamic type id of RESOURCE_DESCRIPTION type
-		once
-			Result := dynamic_type(create {RESOURCE_DESCRIPTION}.default_create)
-		end
-
-	trans_det_id: INTEGER
-			-- dynamic type id of dummy class containing translations: LIST [TRANSLATION_DETAILS], to
-			-- mimic AUTHORED_RESOURCE - only needed until ADL2
-		once
-			Result := dynamic_type(create {LANGUAGE_TRANSLATIONS}.make)
-		end
 
 	synchronise_from_archetype(an_archetype: ARCHETYPE)
 			-- synchronise archetype to processing engines

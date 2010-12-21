@@ -1,8 +1,7 @@
 note
-	component:   "openEHR Reusable Libraries"
-	description: "Error descriptor abstraction"
-	keywords:    "error status reporting"
-
+	component:   "openEHR Common Information Model"
+	description: "Model of annotations on a resource."
+	keywords:    "archetype"
 	author:      "Thomas Beale"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
@@ -12,72 +11,51 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class ERROR_DESCRIPTOR
-
-inherit
-	ERROR_SEVERITY_TYPES
+class RESOURCE_ANNOTATION_ITEMS
 
 create
-	make, make_error, make_warning, make_info, make_debug
+	make
 
-feature -- Initialisation
+feature -- initialisation
 
-	make_error (a_code, a_message: attached STRING; a_loc: STRING)
+	make
 		do
-			make (a_code, error_type_error, a_message, a_loc)
-		end
-
-	make_warning (a_code, a_message: attached STRING; a_loc: STRING)
-		do
-			make (a_code, error_type_warning, a_message, a_loc)
-		end
-
-	make_info (a_code, a_message: attached STRING; a_loc: STRING)
-		do
-			make (a_code, error_type_info, a_message, a_loc)
-		end
-
-	make_debug (a_message: attached STRING; a_loc: STRING)
-		do
-			make ("", error_type_debug, a_message, a_loc)
-		end
-
-	make (a_code: attached STRING; a_severity: INTEGER; a_message: attached STRING; a_loc: STRING)
-		require
-			Severity_valid: is_valid_error_type (a_severity)
-		do
-			code := a_code
-			severity := a_severity
-			message := a_message
-			location := a_loc
+			create items.make (0)
 		end
 
 feature -- Access
 
-	code: attached STRING
+	items: HASH_TABLE[STRING, STRING]
+			-- List of tagged values
 
-	severity: INTEGER
+feature -- Modification
 
-	message: attached STRING
-
-	location: STRING
+	add_item (a_tag, an_item: attached STRING)
+			-- add `an_item' at key `a_tag'; replace any existing at the same tag
+		do
+			items.force(an_item, a_tag)
+		end
 
 feature -- Output
 
 	as_string: attached STRING
+			-- generate a multi-line string of the form
+			-- 	tag1: val1
+			-- 	tag2: val2
+			-- etc
 		do
-			create Result.make (0)
-			Result.append (error_type_names.item(severity) + " ")
-			if attached location and not location.is_empty then
-				Result.append (location + ": ")
+			create Result.make_empty
+			from items.start until items.off loop
+				Result.append (items.key_for_iteration)
+				Result.append (": ")
+				Result.append (items.item_for_iteration)
+				Result.append_character ('%N')
+				items.forth
 			end
-			Result.append ("(" + code + ") " + message)
 		end
 
-invariant
-	is_valid_error_type (severity)
-
 end
+
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****
@@ -93,13 +71,14 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is error_descriptor.e.
+--| The Original Code is resource_annotations.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2010
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
+--|	Sam Heard
 --|
 --| Alternatively, the contents of this file may be used under the terms of
 --| either the GNU General Public License Version 2 or later (the 'GPL'), or
@@ -115,5 +94,3 @@ end
 --|
 --| ***** END LICENSE BLOCK *****
 --|
-
-

@@ -1,11 +1,9 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "[
-				 Types of compilation state of a single compilable artefact.
-				 ]"
+	description: "Types of compilation state of a single compilable artefact."
 	keywords:    "ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 

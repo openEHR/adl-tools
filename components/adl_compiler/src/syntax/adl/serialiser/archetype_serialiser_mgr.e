@@ -15,13 +15,13 @@ class ARCHETYPE_SERIALISER_MGR
 
 inherit
 	SHARED_ARCHETYPE_SERIALISERS
-	
+
 create
 	make
 
 feature -- Initialisation
 
-	make(a_target: ARCHETYPE; format: STRING; an_ontology: ARCHETYPE_ONTOLOGY) 
+	make(a_target: ARCHETYPE; format: STRING; an_ontology: ARCHETYPE_ONTOLOGY)
 			-- create a new manager targetted to the ADL archetype 'a_target'
 		require
 			Target_exists: a_target /= Void
@@ -35,28 +35,23 @@ feature -- Initialisation
 
 feature -- Command
 
-	serialise(lang_serialised, desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING)
+	serialise(lang_serialised, desc_serialised, def_serialised: attached STRING; inv_serialised: STRING; ont_serialised: attached STRING; ann_serialised: STRING)
 			-- start the serialisation process; the result will be in `serialiser_output'
-		require
-			lang_serialised /= Void
-			desc_serialised /= Void
-			def_serialised /= Void
-			ont_serialised /= Void
 		do
-			serialiser.serialise(target, lang_serialised, desc_serialised, def_serialised, inv_serialised, ont_serialised)
+			serialiser.serialise(target, lang_serialised, desc_serialised, def_serialised, inv_serialised, ont_serialised, ann_serialised)
 		end
 
 feature -- Access
 
 	target: ARCHETYPE
-	
-	last_result: STRING 
+
+	last_result: STRING
 		do
 			Result := serialiser.last_result
 		end
 
 feature {NONE} -- Implementation
-	
+
 	serialiser: ARCHETYPE_SERIALISER
 
 end

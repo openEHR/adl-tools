@@ -37,14 +37,13 @@ create
 
 feature -- Initialisation
 
-	make_specialised (a_flat_parent_desc, a_child_desc: ARCH_REP_ARCHETYPE; an_rm_schema: SCHEMA_ACCESS)
+	make_specialised (a_flat_parent_desc, a_child_desc: attached ARCH_REP_ARCHETYPE; an_rm_schema: attached SCHEMA_ACCESS)
 			-- create with flat archetype of parent and source (differential) archetype of
 			-- archetype for which we wish to generate a flat archetype
 		require
-			Flat_desc_valid: a_flat_parent_desc /= Void and a_flat_parent_desc.is_valid
-			Child_desc_valid: a_child_desc /= Void and a_child_desc.is_valid
+			Flat_desc_valid: a_flat_parent_desc.is_valid
+			Child_desc_valid: a_child_desc.is_valid
 			Child_parent_relation_valid: a_child_desc.differential_archetype.parent_archetype_id.as_string.is_equal (a_flat_parent_desc.flat_archetype.archetype_id.as_string)
-			Rm_schema_available: an_rm_schema /= Void
 		do
 			rm_schema := an_rm_schema
 			flat_parent_desc := a_flat_parent_desc
@@ -63,17 +62,17 @@ feature -- Initialisation
 
 feature -- Access
 
-	flat_parent_desc: ARCH_REP_ARCHETYPE
+	flat_parent_desc: attached ARCH_REP_ARCHETYPE
 
 	child_desc: attached ARCH_REP_ARCHETYPE
 
-	arch_parent_flat: FLAT_ARCHETYPE
+	arch_parent_flat: attached FLAT_ARCHETYPE
 			-- flat archetype of parent, if applicable
 		do
 			Result := flat_parent_desc.flat_archetype
 		end
 
-	arch_child_diff: DIFFERENTIAL_ARCHETYPE
+	arch_child_diff: attached DIFFERENTIAL_ARCHETYPE
 			-- archetype for which flat form is being generated
 		do
 			Result := child_desc.differential_archetype
@@ -107,6 +106,7 @@ end
 				flatten_definition
 				flatten_invariants
 				flatten_ontology
+				flatten_annotations
 				arch_output_flat.set_parent_archetype_id (arch_parent_flat.archetype_id)
 				arch_output_flat.set_is_valid (True)
 				arch_output_flat.rebuild
@@ -660,11 +660,9 @@ end
 	flatten_invariants
 			-- build the flat archetype invariants as the sum of parent and source invariants
 		do
-			if arch_parent_flat.has_invariants then
-				from arch_parent_flat.invariants.start until arch_parent_flat.invariants.off loop
-					arch_output_flat.add_invariant (arch_parent_flat.invariants.item.deep_twin)
-					arch_parent_flat.invariants.forth
-				end
+			from arch_child_diff.invariants.start until arch_child_diff.invariants.off loop
+				arch_output_flat.add_invariant (arch_child_diff.invariants.item.deep_twin)
+				arch_child_diff.invariants.forth
 			end
 		end
 
@@ -672,6 +670,12 @@ end
 			-- build the flat archetype ontology as the sum of parent and source ontologies
 		do
 			arch_output_flat.ontology.merge(arch_parent_flat.ontology)
+		end
+
+	flatten_annotations
+			-- build a flattened form of the annotations, by merging everything found in child into flat parent annotations
+		do
+			arch_output_flat.merge_annotations_from_resource (arch_child_diff)
 		end
 
 	rm_node_flatten_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)

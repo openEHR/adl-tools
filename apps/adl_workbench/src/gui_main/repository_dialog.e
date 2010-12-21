@@ -96,7 +96,7 @@ feature {NONE} -- Implementation
 			profile_combo_box.change_actions.block
 
 			from rep_profiles.start until rep_profiles.off loop
-				populate_ev_combo_from_hash_keys (profile_combo_box, rep_profiles.profiles)
+				profile_combo_box.set_strings (rep_profiles.profiles.current_keys)
 				if not rep_profiles.has_current_profile then
 					profile_combo_box.do_all (
 						agent (li: EV_LIST_ITEM)

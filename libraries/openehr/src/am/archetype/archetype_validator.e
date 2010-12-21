@@ -65,13 +65,11 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_target_desc: like target_descriptor; an_rm_schema: SCHEMA_ACCESS)
+	make (a_target_desc: attached like target_descriptor; an_rm_schema: attached SCHEMA_ACCESS)
 			-- set target_descriptor
 			-- initialise reporting variables
 		require
-			target_desc_attached: a_target_desc /= Void
-			target_desc_valid: a_target_desc.differential_archetype /= Void
-			Rm_schema_available: an_rm_schema /= Void
+			target_desc_valid: attached a_target_desc.differential_archetype
 		do
 			rm_schema := an_rm_schema
 			target_descriptor := a_target_desc
@@ -83,14 +81,11 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	target_descriptor: ARCH_REP_ARCHETYPE
+	target_descriptor: attached ARCH_REP_ARCHETYPE
 			-- differential archetype being validated
 
 	target: DIFFERENTIAL_ARCHETYPE
 			-- differential archetype being validated
-
-	compressed_definition: attached C_COMPLEX_OBJECT
-			-- path-compressed form of definition of target archetype
 
 	flat_parent: FLAT_ARCHETYPE
 			-- flat version of parent archetype, if target is specialised
@@ -166,12 +161,13 @@ feature -- Validation
 				end
 				validate_internal_references
 				validate_invariants
+				validate_annotations
 			end
 		end
 
 feature {NONE} -- Implementation
 
-	rm_schema: SCHEMA_ACCESS
+	rm_schema: attached SCHEMA_ACCESS
 
 	validate_basics
 			-- are basic features of archetype structurally intact and correct?
@@ -394,6 +390,28 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	validate_annotations
+			-- for each language, ensure that annotations are proper translations of each other (if present)
+		local
+			ann_for_lang: RESOURCE_ANNOTATIONS
+		do
+			if target.has_annotations then
+				from target.annotations.start until not passed or target.annotations.off loop
+					ann_for_lang := target.annotations.item_for_iteration
+					from ann_for_lang.items.start until not passed or ann_for_lang.items.off loop
+						-- firstly see if annotation path is valid
+						if not target.has_path(ann_for_lang.items.key_for_iteration) and not flat_parent.has_path (ann_for_lang.items.key_for_iteration) then
+							add_error("VRANP", <<target.annotations.key_for_iteration, ann_for_lang.items.key_for_iteration>>)
+						end
+
+						-- FIXME: now we should do some other checks to see if contents are of same structure as annotations in other languages
+						ann_for_lang.items.forth
+					end
+					target.annotations.forth
+				end
+			end
+		end
+
 	report_unused_ontology_codes
 			-- populate lists of at-codes and ac-codes found in ontology that
 			-- are not referenced anywhere in the archetype definition
@@ -483,14 +501,12 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	archetype_id_matches_slot (an_id: STRING; a_slot: ARCHETYPE_SLOT): BOOLEAN
+	archetype_id_matches_slot (an_id: attached STRING; a_slot: attached ARCHETYPE_SLOT): BOOLEAN
 			-- test an archetype id against slot spec (it might pass, even if no archetypes matching the slot were found)
 		require
-			Archetype_id_valid: an_id /= Void and then not an_id.is_empty
-			Slot_attached: a_slot /= Void
+			Archetype_id_valid: not an_id.is_empty
 		local
 			includes, excludes: ARRAYED_LIST[ASSERTION]
-			a_regex: STRING
 			regex_matcher: LX_DFA_REGULAR_EXPRESSION
 		do
 			-- process the includes
@@ -498,8 +514,7 @@ feature {NONE} -- Implementation
 			excludes := a_slot.excludes
 			if not includes.is_empty and not assertion_matches_any (includes.first) and not excludes.is_empty then
 				from includes.start until includes.off or Result loop
-					a_regex := extract_regex(includes.item)
-					if a_regex /= Void then
+					if attached {STRING} extract_regex(includes.item) as a_regex then
 						create regex_matcher.compile_case_insensitive (a_regex)
 						if regex_matcher.is_compiled then
 							Result := regex_matcher.matches (an_id)
@@ -509,8 +524,7 @@ feature {NONE} -- Implementation
 				end
 			elseif not excludes.is_empty and not assertion_matches_any (excludes.first) and includes.is_empty then
 				from excludes.start until excludes.off or not Result loop
-					a_regex := extract_regex(excludes.item)
-					if a_regex /= Void then
+					if attached {STRING} extract_regex(excludes.item) as a_regex then
 						create regex_matcher.compile_case_insensitive (a_regex)
 						if regex_matcher.is_compiled then
 							Result := not regex_matcher.matches (an_id)
@@ -535,7 +549,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	assertion_matches_any(an_assertion: ASSERTION): BOOLEAN
+	assertion_matches_any(an_assertion: attached ASSERTION): BOOLEAN
 			-- True if the regex = {/.*/} i.e. matches anything
 		do
 			Result := extract_regex(an_assertion).is_equal (Regex_any_pattern)
@@ -991,9 +1005,6 @@ end
 --	flat_node_exit (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 --		do
 --		end
-
-invariant
-	target_descriptor_attached: target_descriptor /= Void
 
 end
 

@@ -3,8 +3,8 @@ note
 	description: "node in ADL parse tree"
 	keywords:    "test, ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003. 2004 Ocean Informatics Pty Ltd"
+	support:     "http://www.openehr.org/issues/browse/AWBPR"
+	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -31,7 +31,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	child_with_id(a_node_key: STRING): like child_type
+	child_with_id (a_node_key: attached STRING): attached like child_type
 			-- find the child node with `a_node_key'
 		require
 			has_child_with_id(a_node_key)
@@ -43,8 +43,6 @@ feature -- Access
 			else
 				Result := children.item(a_node_key)
 			end
-		ensure
-			Result_exists: Result /= Void
 		end
 
 	first_child: like child_type
@@ -88,9 +86,7 @@ feature -- Status Report
 			Result := not children.is_empty
 		end
 
-	has_child_with_id(a_node_key: STRING): BOOLEAN
-		require
-			node_key_valid: a_node_key /= Void
+	has_child_with_id(a_node_key: attached STRING): BOOLEAN
 		do
 			-- FIXME: should just be able to search with node_key, but we are still
 			-- using the 'unknown' node_keys rather than empty strings
@@ -101,9 +97,7 @@ feature -- Status Report
 			end
 		end
 
-	has_child(a_node: like child_type): BOOLEAN
-		require
-			node_valid: a_node /= Void
+	has_child(a_node: attached like child_type): BOOLEAN
 		do
 			Result := children.has_item (a_node)
 		end
@@ -159,10 +153,10 @@ feature -- Cursor Movement
 
 feature -- Modification
 
-	put_child(a_node: like child_type)
+	put_child (a_node: attached like child_type)
 			-- put a new child node at the end of the list
 		require
-			Node_exists: a_node /= Void and then valid_child_for_insertion(a_node)
+			Node_exists: valid_child_for_insertion(a_node)
 		do
 			children.put(a_node, a_node.node_key)
 			a_node.set_parent(Current)
@@ -172,11 +166,11 @@ feature -- Modification
 			has_child (a_node)
 		end
 
-	put_child_left(a_node, before_node: like child_type)
+	put_child_left (a_node, before_node: attached like child_type)
 			-- insert a new child node before another node in the list
 		require
-			Node_valid: a_node /= Void and then valid_child_for_insertion(a_node)
-			Before_node_valid: before_node /= Void and then has_child(before_node)
+			Node_valid: valid_child_for_insertion(a_node)
+			Before_node_valid: has_child(before_node)
 		do
 			children.put(a_node, a_node.node_key)
 			a_node.set_parent(Current)
@@ -187,11 +181,11 @@ feature -- Modification
 			has_child (a_node)
 		end
 
-	put_child_right(a_node, after_node: like child_type)
+	put_child_right (a_node, after_node: attached like child_type)
 			-- insert a new child node before another node in the list
 		require
-			Node_valid: a_node /= Void and then valid_child_for_insertion(a_node)
-			After_node_valid: after_node /= Void and then has_child(after_node)
+			Node_valid: valid_child_for_insertion(a_node)
+			After_node_valid: has_child(after_node)
 		do
 			children.put(a_node, a_node.node_key)
 			a_node.set_parent(Current)
@@ -202,7 +196,7 @@ feature -- Modification
 			has_child (a_node)
 		end
 
-	replace_child_by_id(a_node: like child_type; an_id: STRING)
+	replace_child_by_id (a_node: like child_type; an_id: attached STRING)
 			-- replace node with id `an_id' by `an_obj'
 		do
 			children_ordered.go_i_th (children_ordered.index_of (child_with_id(an_id), 1))
@@ -213,10 +207,10 @@ feature -- Modification
 			a_node.set_parent(Current)
 		end
 
-	remove_child(a_node: like child_type)
+	remove_child (a_node: attached like child_type)
 			-- remove the child node `a_node'
 		require
-			Node_exists: a_node /= Void and then has_child(a_node)
+			Node_exists: has_child(a_node)
 		do
 			children_ordered.prune_all (a_node)
 			children_sorted.prune_all (a_node)
@@ -226,10 +220,10 @@ feature -- Modification
 			Child_removed: not has_child (a_node)
 		end
 
-	remove_child_by_id(a_node_key: STRING)
+	remove_child_by_id (a_node_key: attached STRING)
 			-- remove the child node identified by a_node_key
 		require
-			Node_exists: a_node_key /= Void and then has_child_with_id(a_node_key)
+			Node_exists: has_child_with_id(a_node_key)
 		local
 			c: OG_ITEM
 		do
@@ -249,7 +243,7 @@ feature -- Modification
 			Children_removed: children.is_empty
 		end
 
-	replace_node_id(an_old_node_key, a_new_node_key: STRING)
+	replace_node_id(an_old_node_key, a_new_node_key: attached STRING)
 			-- replace `an_old_node_key' with `a_new_node_key' in the children
 			-- this has the effect of making an object indexed by a new node id,
 			-- that it doesn't itself carry
@@ -263,10 +257,10 @@ feature -- Modification
 
 feature {OG_NODE} -- Implementation
 
-	children: HASH_TABLE [like child_type, STRING]
+	children: attached HASH_TABLE [like child_type, STRING]
 			-- next nodes, keyed by node id or attribute name
 
-	children_ordered: ARRAYED_LIST[like child_type]
+	children_ordered: attached ARRAYED_LIST[like child_type]
 			-- reference list of child, in order of insertion (i.e. order of original parsing)
 
 	children_sorted: SORTED_TWO_WAY_LIST[like child_type]
@@ -275,8 +269,6 @@ feature {OG_NODE} -- Implementation
 	child_type: OG_ITEM
 
 invariant
-	Children_exists: children /= Void
-	Childred_ordered_exists: children_ordered /= Void
 	Child_lists_valid: children.count = children_ordered.count
 
 end

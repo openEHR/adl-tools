@@ -25,6 +25,7 @@ templates = <
 		["SADF"] = <"Syntax error in definition section">
 		["SAIV"] = <"Syntax error in invariant section">
 		["SAON"] = <"Syntax error in ontology section">
+		["SAAN"] = <"Syntax error in annotations section">
 
 		["SDSF"] = <"Syntax error: differential syntax not allowed in top-level archetype">
 		["SDINV"] = <"Syntax error: invalid dADL section; error: $1">
@@ -81,6 +82,10 @@ templates = <
 		["VATDF2"] = <"node id at-code $1 not defined in ontology of current archetype">
 		["VACDF1"] = <"constraint code $1 from specialisation parent not defined in ontology of any parent archetype">
 		["VACDF2"] = <"constraint code $1 not found in ontology of current archetype">
+
+		-- annotations
+		["VRANP"] = <"Annotation at language $1 has invalid path $2">
+
 
 		-- C_ATTRIBUTE
 		["VSANCE"] = <"attribute at path $1 existence $2 does not conform to parent $3 existence $4">

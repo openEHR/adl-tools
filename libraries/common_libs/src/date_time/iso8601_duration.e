@@ -45,10 +45,9 @@ convert
 
 feature {NONE} -- Initialisation
 
-	make_from_string (str: STRING)
+	make_from_string (str: attached STRING)
 			-- Make from a valid ISO duration string.
 		require
-			str_attached: str /= Void
 			str_valid_duration: valid_iso8601_duration (str)
 		do
 			if valid_iso8601_duration (str) then
@@ -97,7 +96,7 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	value: STRING
+	value: attached STRING
 			-- ISO8601 string form of duration, always synchronised with as_string
 
 	years: INTEGER
@@ -156,11 +155,7 @@ feature -- Output
 			Result := Duration_leader.out
 
 			if is_zero then
-				if value /= Void then
-					Result := value
-				else
-					Result.append ("T0S")
-				end
+				Result := value
 			else
 				if years /= 0 then
 					Result.append (years.out + "Y")

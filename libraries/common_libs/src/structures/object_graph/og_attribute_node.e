@@ -229,11 +229,7 @@ feature {NONE} -- Implementation
 		do
 			p := parent
 			p.remove_child (Current)
-			from
-				csr := p
-			until
-				csr.parent = Void
-			loop
+			from csr := p until csr.parent = Void loop
 				if not csr.has_children then
 					csr.parent.remove_child (csr)
 				end

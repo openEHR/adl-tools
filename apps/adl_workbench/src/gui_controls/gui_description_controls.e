@@ -32,10 +32,8 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: MAIN_WINDOW)
+	make (a_main_window: attached MAIN_WINDOW)
 			-- Create to control `a_main_window'.
-		require
-			window_attached: a_main_window /= Void
 		do
 			gui := a_main_window
 			gui.arch_desc_resource_orig_res_mlist.hide_title_row
@@ -131,25 +129,23 @@ feature {NONE} -- Implementation
 			-- Populate details (language sensitive).
 		require
 			archetype_selected: current_arch_dir.has_selected_archetype
-		local
-			arch_desc_item: RESOURCE_DESCRIPTION_ITEM
 		do
-			arch_desc_item := current_arch_dir.selected_archetype.differential_archetype.description.details.item(current_language)
-
-			if arch_desc_item /= Void then
-				if arch_desc_item.purpose /= Void then
+			if attached {RESOURCE_DESCRIPTION_ITEM} current_arch_dir.selected_archetype.differential_archetype.description.details.item(current_language) as arch_desc_item then
+				if attached arch_desc_item.purpose then
 					gui.arch_desc_purpose_text.set_text (utf8 (arch_desc_item.purpose))
 				end
 
-				if arch_desc_item.use /= Void then
+				if attached arch_desc_item.use then
 					gui.arch_desc_use_text.set_text (utf8 (arch_desc_item.use))
 				end
 
-				if arch_desc_item.misuse /= Void then
+				if attached arch_desc_item.misuse then
 					gui.arch_desc_misuse_text.set_text (utf8 (arch_desc_item.misuse))
 				end
 
-				populate_ev_list_from_list(gui.arch_desc_keywords_list, arch_desc_item.keywords)
+				if attached arch_desc_item.keywords then
+					gui.arch_desc_keywords_list.set_strings (arch_desc_item.keywords)
+				end
 			end
 		end
 
@@ -157,19 +153,14 @@ feature {NONE} -- Implementation
 			-- populate resources fields
 		require
 			archetype_selected: current_arch_dir.has_selected_archetype
-		local
-			arch_pkg_uri: URI
-			arch_desc_item: RESOURCE_DESCRIPTION_ITEM
 		do
 			-- package URI
-			arch_pkg_uri := current_arch_dir.selected_archetype.differential_archetype.description.resource_package_uri
-			if arch_pkg_uri /= Void then
+			if attached {URI} current_arch_dir.selected_archetype.differential_archetype.description.resource_package_uri as arch_pkg_uri then
 				gui.arch_desc_resource_package_text.set_text (utf8 (arch_pkg_uri.out))
 			end
 
 			-- list of URI resources
-			arch_desc_item := current_arch_dir.selected_archetype.differential_archetype.description.details.item(current_language)
-			if arch_desc_item /= Void then
+			if attached {RESOURCE_DESCRIPTION_ITEM} current_arch_dir.selected_archetype.differential_archetype.description.details.item(current_language) as arch_desc_item then
 				populate_ev_multi_list_from_hash(gui.arch_desc_resource_orig_res_mlist, arch_desc_item.original_resource_uri)
 			end
 		end
@@ -178,11 +169,10 @@ feature {NONE} -- Implementation
 			-- populate copyright field
 		require
 			archetype_selected: current_arch_dir.has_selected_archetype
-		local
-			arch_desc_item: RESOURCE_DESCRIPTION_ITEM
 		do
-			arch_desc_item := current_arch_dir.selected_archetype.differential_archetype.description.details.item(current_language)
-			if arch_desc_item /= Void and then arch_desc_item.copyright /= Void then
+			if attached {RESOURCE_DESCRIPTION_ITEM} current_arch_dir.selected_archetype.differential_archetype.description.details.item(current_language) as arch_desc_item  and then
+				attached arch_desc_item.copyright
+			then
 				gui.arch_desc_copyright_text.set_text (utf8 (arch_desc_item.copyright))
 			end
 		end

@@ -77,15 +77,19 @@ feature {NONE} -- Implementation
 	yy_clear_value_stacks
 			-- Clear objects in semantic value stacks so that
 			-- they can be collected by the garbage collector.
+		local
+			l_yyvs1_default_item: ANY
+			l_yyvs2_default_item: INTEGER
+			l_yyvs3_default_item: STRING
 		do
 			if yyvs1 /= Void then
-				yyvs1.clear_all
+				yyvs1.fill_with (l_yyvs1_default_item, 0, yyvs1.upper)
 			end
 			if yyvs2 /= Void then
-				yyvs2.clear_all
+				yyvs2.fill_with (l_yyvs2_default_item, 0, yyvs2.upper)
 			end
 			if yyvs3 /= Void then
-				yyvs3.clear_all
+				yyvs3.fill_with (l_yyvs3_default_item, 0, yyvs3.upper)
 			end
 		end
 
@@ -226,7 +230,7 @@ debug ("GEYACC")
 end
 
 
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
 end
@@ -237,7 +241,7 @@ debug ("GEYACC")
 end
 
 
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
 end
@@ -249,7 +253,7 @@ end
 
 				create units.make(units_items)
 			
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
 end
@@ -261,7 +265,7 @@ end
 
 				create units.make(units_items)
 			
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -274,7 +278,7 @@ end
 
 				units_items.extend(units_item)
 			
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
 end
@@ -286,7 +290,7 @@ end
 
 				units_items.extend(units_item)
 			
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
 	yyvs1.put (yyval1, yyvsp1)
@@ -301,7 +305,7 @@ end
 				units_items.extend(units_item)
 				units_item.set_exponent(- units_item.exponent)
 			
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
 	yyvs1.put (yyval1, yyvsp1)
@@ -316,7 +320,7 @@ end
 				create units_item.make(unit_ref, 1)
 				yyval1 := units_item
 			
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
 end
@@ -330,7 +334,7 @@ end
 				create units_item.make(unit_ref, int_val)
 				yyval1 := units_item
 			
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
 	yyvs1.put (yyval1, yyvsp1)
@@ -347,7 +351,7 @@ end
 				create_unit_ref(str1, False)
 				yyval1 := unit_ref
 			
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp3 := yyvsp3 -1
@@ -379,7 +383,7 @@ end
 				create_unit_ref(str1, True)
 				yyval1 := unit_ref
 			
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp3 := yyvsp3 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -394,7 +398,7 @@ end
 				annot := str1.twin
 				yyval1 := annot
 			
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp3 := yyvsp3 -1
@@ -410,7 +414,7 @@ end
 				suffix := str1.twin
 				yyval1 := suffix
 			
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp3 := yyvsp3 -1
@@ -425,7 +429,7 @@ end
 				int_val := last_string_value.to_integer
 				yyval1 := int_val
 			
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
 	yyvsp2 := yyvsp2 -1
@@ -456,7 +460,7 @@ end
 				int_val := last_string_value.to_integer
 				yyval1 := int_val
 			
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -470,7 +474,7 @@ end
 				int_val := - last_string_value.to_integer
 				yyval1 := int_val
 			
-if yy_parsing_status = yyContinue then
+if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
 	yyvs1.put (yyval1, yyvsp1)
@@ -683,7 +687,7 @@ feature -- Initialization
 			make_parser_skeleton
 		end
 
-	execute(unit_text:STRING)
+	execute (unit_text:STRING)
 		require
 			Units_exist: unit_text /= Void and then not unit_text.is_empty
 		do
@@ -706,10 +710,10 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 
 feature -- Access
 
-	units:UNITS
+	units: UNITS
 			-- parsing result
 
-	output:STRING
+	output: STRING
 			-- parser output
 
 	error_message: STRING
@@ -717,7 +721,7 @@ feature -- Access
 
 feature {NONE} -- Implementation 
 
-	create_unit_ref(a_unit_name:STRING; suffix_flag:BOOLEAN)
+	create_unit_ref (a_unit_name: STRING; suffix_flag: BOOLEAN)
 			-- try and create a simple unit from a_unit_name, using unit database.
 			-- nothing created if unit not found
 		require
@@ -769,18 +773,18 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	str1, str2:STRING
-	unit_ref:UNIT_REFERENCE
-	units_item:UNITS_ITEM
-	units_items:ARRAYED_LIST[UNITS_ITEM]
-	annot:STRING
-	suffix:STRING
+	str1, str2: STRING
+	unit_ref: UNIT_REFERENCE
+	units_item: UNITS_ITEM
+	units_items: ARRAYED_LIST[UNITS_ITEM]
+	annot: STRING
+	suffix: STRING
 
-	int_val_str:STRING
-	int_val:INTEGER
+	int_val_str: STRING
+	int_val: INTEGER
 
-	pd:PREFIX_DESCRIPTOR
-	pf:PREFIXES
+	pd: PREFIX_DESCRIPTOR
+	pf: PREFIXES
 
 end
 

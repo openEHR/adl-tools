@@ -47,12 +47,12 @@ convert
 
 feature -- Initialisation
 
-	make_from_string(str: STRING)
+	make_from_string(str: attached STRING)
 			-- make from a time of form:
 			-- hhmmss[,sss][Z|+/-hhmm] or
 			-- hh:mm:ss[,sss][,sss][Z|+/-hhmm]
 		require
-			String_valid: str /= Void and valid_iso8601_time(str)
+			String_valid: valid_iso8601_time(str)
 		do
 			if valid_iso8601_time(str) then
 				deep_copy(iso8601_parser.cached_iso8601_time)
@@ -124,7 +124,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	value: STRING
+	value: attached STRING
 			-- ISO8601 string for time; always equal to result of as_string
 
 	hour: INTEGER
@@ -164,10 +164,8 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_timezone(a_tz: ISO8601_TIMEZONE)
+	set_timezone(a_tz: attached ISO8601_TIMEZONE)
 			-- set timezone
-		require
-			a_tz /= Void
 		do
 			timezone := a_tz
 			value := as_string
@@ -247,7 +245,7 @@ feature -- Conversion
 
 feature -- Output
 
-	as_string: STRING
+	as_string: attached STRING
 			-- express as ISO8601 format string "hh:mm:ss[,ssss]"
 		local
 			s: STRING
@@ -292,7 +290,7 @@ feature -- Output
 				Result.append(timezone.as_string)
 			end
 		ensure
-			Result_valid: Result /= Void and then valid_iso8601_time(Result)
+			Result_valid: valid_iso8601_time(Result)
 		end
 
 	out: STRING

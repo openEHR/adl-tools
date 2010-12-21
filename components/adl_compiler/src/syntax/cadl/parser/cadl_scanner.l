@@ -439,7 +439,7 @@ P[yY]?[mM]?[Ww]?[dD]? {
 						last_token := ERR_C_DOMAIN_TYPE
 					end
 				else
-					dadl_parser_error := dadl_parser.errors.last.message
+					dadl_parser_error := dadl_parser.errors.last_added.message
 					last_token := ERR_C_DOMAIN_TYPE
 				end
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-6-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-6-0 http://www.eiffel.com/developers/xml/configuration-1-6-0.xsd" name="adl_workbench" uuid="C99BD5CC-111C-4EE7-9BCF-337A924E2783">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-7-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-7-0 http://www.eiffel.com/developers/xml/configuration-1-7-0.xsd" name="adl_workbench" uuid="C99BD5CC-111C-4EE7-9BCF-337A924E2783">
 	<target name="adl_workbench">
 		<root class="GUI_APP_ROOT" feature="make_and_launch"/>
 		<file_rule>
@@ -22,6 +22,7 @@
 			<debug name="gelex" enabled="false"/>
 			<debug name="geyacc" enabled="false"/>
 			<debug name="include list" enabled="false"/>
+			<debug name="og_path" enabled="false"/>
 			<debug name="og_path_parse" enabled="false"/>
 			<debug name="refactor_fixme" enabled="false"/>
 			<debug name="rm_schema" enabled="false"/>
@@ -48,7 +49,7 @@
 		<setting name="inlining" value="false"/>
 		<setting name="inlining_size" value="4"/>
 		<setting name="line_generation" value="false"/>
-		<setting name="multithreaded" value="true"/>
+		<setting name="concurrency" value="thread"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf">
 			<renaming old_name="C_STRING" new_name="BASE_C_STRING"/>
 		</library>

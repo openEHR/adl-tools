@@ -6,8 +6,8 @@ note
 				 ]"
 	keywords:    "dADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2005-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -18,11 +18,6 @@ class DT_OBJECT_CONVERTER
 
 inherit
 	DT_FACTORY
-
-	TYPE_UTILITIES
-		export
-			{NONE} all
-		end
 
 	SHARED_MESSAGE_BILLBOARD
 		export
