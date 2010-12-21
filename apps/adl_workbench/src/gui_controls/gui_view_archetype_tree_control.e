@@ -66,11 +66,16 @@ feature -- Commands
 		do
 			if delay_to_make_keyboard_navigation_practical = Void then
 				create delay_to_make_keyboard_navigation_practical
+
 				delay_to_make_keyboard_navigation_practical.actions.extend (agent
 					do
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
+
 						if attached {ARCH_REP_ITEM} gui_tree.selected_item.data as ari then
-							current_arch_dir.set_selected_item (ari)
+							if attached current_arch_dir as dir then
+								dir.set_selected_item (ari)
+							end
+
 							if attached {ARCH_REP_ARCHETYPE} ari as ara then
 								gui.parse_archetype
 							else
@@ -79,6 +84,7 @@ feature -- Commands
 						end
 					end)
 			end
+
 			delay_to_make_keyboard_navigation_practical.set_interval (300)
 		end
 
@@ -89,7 +95,11 @@ feature -- Commands
 			create gui_node_descriptor_map.make(0)
 			gui_tree.wipe_out
  			create gui_tree_item_stack.make (0)
- 			current_arch_dir.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+
+ 			if attached current_arch_dir as dir then
+	 			dir.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+ 			end
+
 			gui_tree.recursive_do_all (agent ev_tree_expand)
 			gui.go_to_node_in_archetype_tree_view
 		end

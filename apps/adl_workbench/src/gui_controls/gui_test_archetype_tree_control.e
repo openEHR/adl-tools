@@ -152,27 +152,33 @@ feature -- Commands
 		do
 			clear
 			reset_output_directories
- 			current_arch_dir.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+
+ 			if attached current_arch_dir as dir then
+	 			dir.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+ 			end
 
 			-- put names on columns
-			grid.column (1).set_title ("Archetypes - " + repository_profiles.current_profile_name)
-			if grid.column_count >= first_test_col then
-				from
-					tests.start
-					col_csr := first_test_col
-				until
-					tests.off
-				loop
-					grid.column (col_csr).set_title (tests.key_for_iteration)
-					tests.forth
-					col_csr := col_csr + 1
-				end
-			end
+			if grid.column_count > 0 then
+				grid.column (1).set_title ("Archetypes - " + repository_profiles.current_profile_name)
 
-			is_expanded := False
-			toggle_expand_tree
-			grid.column (1).resize_to_content
-			grid.column (2).resize_to_content
+				if grid.column_count >= first_test_col then
+					from
+						tests.start
+						col_csr := first_test_col
+					until
+						tests.off
+					loop
+						grid.column (col_csr).set_title (tests.key_for_iteration)
+						tests.forth
+						col_csr := col_csr + 1
+					end
+				end
+
+				is_expanded := False
+				toggle_expand_tree
+				grid.column (1).resize_to_content
+				grid.column (2).resize_to_content
+			end
 
 			gui.arch_test_processed_count.set_text ("0")
 			gui.remove_unused_codes_rb.disable_select
@@ -574,16 +580,20 @@ feature {NONE} -- Implementation
 		local
 			diff_dir_root, diff_dir_source_root, diff_dir_flat_root, diff_dir_source_flat_root: STRING
 		do
-			diff_dir_root := file_system.pathname (test_diff_directory, repository_profiles.current_profile_name)
+			if attached repository_profiles.current_profile_name as profile_name then
+				diff_dir_root := file_system.pathname (test_diff_directory, profile_name)
 
-			-- source dif dirs
-			diff_dir_source_root := file_system.pathname (diff_dir_root, "source")
-			diff_dir_source_orig := file_system.pathname (diff_dir_source_root, "orig")
-			diff_dir_source_new := file_system.pathname (diff_dir_source_root, "new")
-			if not file_system.directory_exists (diff_dir_source_orig) then
-				file_system.recursive_create_directory (diff_dir_source_orig)
+				-- source dif dirs
+				diff_dir_source_root := file_system.pathname (diff_dir_root, "source")
+				diff_dir_source_orig := file_system.pathname (diff_dir_source_root, "orig")
+				diff_dir_source_new := file_system.pathname (diff_dir_source_root, "new")
+
+				if not file_system.directory_exists (diff_dir_source_orig) then
+					file_system.recursive_create_directory (diff_dir_source_orig)
+				end
 			end
-			if file_system.directory_exists (diff_dir_source_orig) then
+
+			if attached diff_dir_source_root and then file_system.directory_exists (diff_dir_source_orig) then
 				if not file_system.directory_exists (diff_dir_source_new) then
 					file_system.recursive_create_directory (diff_dir_source_new)
 				end

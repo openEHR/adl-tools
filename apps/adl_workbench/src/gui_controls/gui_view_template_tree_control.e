@@ -70,7 +70,10 @@ feature -- Commands
 					do
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
 						if attached {ARCH_REP_ARCHETYPE} gui_tree.selected_item.data as ara then
-							current_arch_dir.set_selected_item (ara)
+							if attached current_arch_dir as dir then
+								dir.set_selected_item (ara)
+							end
+
 							gui.parse_archetype
 							populate_template_nodes (ara)
 						end
@@ -86,7 +89,11 @@ feature -- Commands
 			create gui_node_descriptor_map.make(0)
 			gui_tree.wipe_out
  			create gui_tree_item_stack.make (0)
- 			current_arch_dir.do_all_archetypes (agent populate_template_nodes)
+
+ 			if attached current_arch_dir as dir then
+	 			dir.do_all_archetypes (agent populate_template_nodes)
+ 			end
+
 			gui.go_to_node_in_archetype_tree_view
 		end
 
@@ -199,8 +206,8 @@ feature {NONE} -- Implementation
 					if not c_attr.children.off then
 						attach_node(ca_path, pixmaps[c_attribute_pixmap_string(c_attr)], Void)
 					end
-				elseif attached {C_ARCHETYPE_ROOT} ca as car then
-					ara := current_arch_dir.archetype_index.item (car.archetype_id)
+				elseif attached {C_ARCHETYPE_ROOT} ca as car and attached current_arch_dir as dir then
+					ara := dir.archetype_index.item (car.archetype_id)
 					attach_node(ara.id.rm_entity + "." + ara.display_name, pixmaps[ara.group_name], ara)
 				end
 			end
