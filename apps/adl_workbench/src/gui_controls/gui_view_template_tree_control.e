@@ -66,19 +66,24 @@ feature -- Commands
 		do
 			if delay_to_make_keyboard_navigation_practical = Void then
 				create delay_to_make_keyboard_navigation_practical
+
 				delay_to_make_keyboard_navigation_practical.actions.extend (agent
 					do
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
-						if attached {ARCH_REP_ARCHETYPE} gui_tree.selected_item.data as ara then
-							if attached current_arch_dir as dir then
-								dir.set_selected_item (ara)
-							end
 
-							gui.parse_archetype
-							populate_template_nodes (ara)
+						if attached gui_tree.selected_item then
+							if attached {ARCH_REP_ARCHETYPE} gui_tree.selected_item.data as ara then
+								if attached current_arch_dir as dir then
+									dir.set_selected_item (ara)
+								end
+
+								gui.parse_archetype
+								populate_template_nodes (ara)
+							end
 						end
 					end)
 			end
+
 			delay_to_make_keyboard_navigation_practical.set_interval (300)
 		end
 

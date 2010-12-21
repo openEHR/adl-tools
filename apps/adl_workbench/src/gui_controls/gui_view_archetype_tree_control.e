@@ -71,15 +71,17 @@ feature -- Commands
 					do
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
 
-						if attached {ARCH_REP_ITEM} gui_tree.selected_item.data as ari then
-							if attached current_arch_dir as dir then
-								dir.set_selected_item (ari)
-							end
+						if attached gui_tree.selected_item then
+							if attached {ARCH_REP_ITEM} gui_tree.selected_item.data as ari then
+								if attached current_arch_dir as dir then
+									dir.set_selected_item (ari)
+								end
 
-							if attached {ARCH_REP_ARCHETYPE} ari as ara then
-								gui.parse_archetype
-							else
-								gui.display_class
+								if attached {ARCH_REP_ARCHETYPE} ari as ara then
+									gui.parse_archetype
+								else
+									gui.display_class
+								end
 							end
 						end
 					end)
