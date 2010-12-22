@@ -69,7 +69,7 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 				invariants := a_flat_parent.invariants.deep_twin
 			end
 			if a_flat_parent.has_annotations then
-				annotations := a_flat_parent.annotations
+				annotations := a_flat_parent.annotations.deep_twin
 			end
 			rebuild
 			is_valid := True

@@ -400,7 +400,7 @@ feature {NONE} -- Implementation
 					ann_for_lang := target.annotations.item_for_iteration
 					from ann_for_lang.items.start until not passed or ann_for_lang.items.off loop
 						-- firstly see if annotation path is valid
-						if not target.has_path(ann_for_lang.items.key_for_iteration) and not flat_parent.has_path (ann_for_lang.items.key_for_iteration) then
+						if not (target.has_path(ann_for_lang.items.key_for_iteration) or else (target.is_specialised and then flat_parent.has_path (ann_for_lang.items.key_for_iteration))) then
 							add_error("VRANP", <<target.annotations.key_for_iteration, ann_for_lang.items.key_for_iteration>>)
 						end
 

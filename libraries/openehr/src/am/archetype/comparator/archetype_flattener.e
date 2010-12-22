@@ -660,9 +660,11 @@ end
 	flatten_invariants
 			-- build the flat archetype invariants as the sum of parent and source invariants
 		do
-			from arch_child_diff.invariants.start until arch_child_diff.invariants.off loop
-				arch_output_flat.add_invariant (arch_child_diff.invariants.item.deep_twin)
-				arch_child_diff.invariants.forth
+			if arch_child_diff.has_invariants then
+				from arch_child_diff.invariants.start until arch_child_diff.invariants.off loop
+					arch_output_flat.add_invariant (arch_child_diff.invariants.item.deep_twin)
+					arch_child_diff.invariants.forth
+				end
 			end
 		end
 
