@@ -40,6 +40,9 @@ feature -- Initialisation
 			if a_diff.has_invariants then
 				invariants := a_diff.invariants.deep_twin
 			end
+			if a_diff.has_annotations then
+				annotations := a_diff.annotations.deep_twin
+			end
 			rebuild
 			is_valid := True
 			is_generated := True

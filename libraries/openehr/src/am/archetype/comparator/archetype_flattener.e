@@ -50,11 +50,10 @@ feature -- Initialisation
 			child_desc := a_child_desc
 		end
 
-	make_non_specialised (a_child_desc: ARCH_REP_ARCHETYPE; an_rm_schema: SCHEMA_ACCESS)
+	make_non_specialised (a_child_desc: attached ARCH_REP_ARCHETYPE; an_rm_schema: attached SCHEMA_ACCESS)
 			-- create with source (differential) archetype
 		require
-			Child_desc_attached: a_child_desc /= Void and a_child_desc.is_valid
-			Rm_schema_available: an_rm_schema /= Void
+			Child_desc_attached: a_child_desc.is_valid
 		do
 			rm_schema := an_rm_schema
 			child_desc := a_child_desc
