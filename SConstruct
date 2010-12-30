@@ -102,10 +102,10 @@ if distrib and len(adl_workbench) > 0:
 	install = 'apps/adl_workbench/install/' + platform
 	adl_workbench_installer_sources = [adl_workbench[0], license, xsl, css]
 
-	for dir in [icons, rm_schemas, error_db, vim, install]:
-		for source, dirnames, filenames in os.walk(dir):
+	for root in [icons, rm_schemas, error_db, vim, install]:
+		for dir, dirnames, filenames in os.walk(root):
 			if '.svn' in dirnames: dirnames.remove('.svn')
-			adl_workbench_installer_sources += env.Files(source + '/*')
+			adl_workbench_installer_sources += env.Files(dir + '/*')
 
 	if platform == 'windows':
 		Install(distrib + '/adl_parser/dotnet', adl_parser)
@@ -131,9 +131,17 @@ if distrib and len(adl_workbench) > 0:
 				tar.add(src, os.path.basename(src))
 
 			for root in [icons, rm_schemas, error_db, vim]:
+				root_dirname_length = len(os.path.dirname(root))
+
 				for dir, dirnames, filenames in os.walk(root):
-					if '.svn' in dirnames: dirnames.remove('.svn')
-					archived_dir = dir[len(os.path.dirname(root)) + 1:]
+					if '.svn' in dirnames:
+						dirnames.remove('.svn')
+
+					if root_dirname_length > 0:
+						archived_dir = dir[root_dirname_length + 1:]
+					else:
+						archived_dir = dir
+
 					for name in filenames: tar.add(os.path.join(dir, name), os.path.join(archived_dir, name))
 
 			tar.close()
