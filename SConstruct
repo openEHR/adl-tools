@@ -29,10 +29,7 @@ geyacc = Action([['geyacc', '--new_typing', '-v', '${TARGET.filebase}.txt', '-t'
 
 geyacc_html = Action([['geyacc', '--doc=html', '-o', '${TARGET.file}', '${SOURCE.file}']], chdir = 1)
 
-eiffel_syntax_updater = [
-	os.path.abspath(os.path.join(env.EiffelEnvironmentVariable('ISE_EIFFEL'), 'tools/spec/' + env.EiffelEnvironmentVariable('ISE_PLATFORM') + '/bin/syntax_updater')),
-	'${TARGET.dir}'
-	]
+eiffel_syntax_updater = [env.EiffelSpecPath('tools' , 'bin/syntax_updater'),  '${TARGET.dir}']
 
 for scanner, parser, tokens, dir in [
 	['adl_scanner', 'adl_validator', 'adl_tokens', 'components/adl_compiler/src/syntax/adl/parser/'],
@@ -67,7 +64,7 @@ adl_compiler = eiffel('adl_compiler', 'deployment/c/adl_compiler/adl_compiler.ec
 
 make = ['make']
 libs = []
-include = os.path.abspath(os.path.join(env.EiffelEnvironmentVariable('ISE_EIFFEL'), 'studio/spec/' + env.EiffelEnvironmentVariable('ISE_PLATFORM') + '/include'))
+include = env.EiffelSpecPath('studio', 'include')
 
 if env.EiffelEnvironmentVariable('ISE_C_COMPILER') == 'msc':
 	make = ['nmake', '/nologo']
