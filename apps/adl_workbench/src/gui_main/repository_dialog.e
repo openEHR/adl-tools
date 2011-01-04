@@ -61,7 +61,7 @@ feature {NONE} -- Initialization
 			repository_dialog_work_path_text.focus_in_actions.extend (agent on_select_all (repository_dialog_work_path_text))
 			rep_profiles := repository_profiles.deep_twin
 			populate_controls
-			selected_profile := profile_combo_box.text.as_string_8
+			select_profile
 		end
 
 	on_show
