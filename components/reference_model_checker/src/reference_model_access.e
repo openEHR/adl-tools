@@ -300,7 +300,7 @@ end
 			if not (dir.exists and dir.is_readable) then
 				post_error (Current, "initialise_schema_metadata_table", "model_access_e5", <<schema_directory>>)
 			elseif dir.is_empty then
-				post_error (Current, "initialise_schema_metadata_table", "model_access_e6", <<schema_directory>>)
+				post_error (Current, "initialise_schema_metadata_table", "model_access_e6", <<schema_directory, Schema_file_extension>>)
 			else
 				create dmp
 				from
@@ -332,7 +332,7 @@ end
 					dir.readentry
 				end
 				if schema_metadata_table.is_empty then
-					post_error (Current, "initialise_schema_metadata_table", "model_access_e6", <<schema_directory>>)
+					post_error (Current, "initialise_schema_metadata_table", "model_access_e6", <<schema_directory, Schema_file_extension>>)
 				end
 			end
 		end

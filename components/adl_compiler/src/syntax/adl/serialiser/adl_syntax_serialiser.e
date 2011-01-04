@@ -66,7 +66,7 @@ feature -- Serialisation
 			end
 
 			if attached ann_serialised then
-				last_result.append (format_item(FMT_NEWLINE) + apply_style(symbol(SYM_INVARIANT), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
+				last_result.append (format_item(FMT_NEWLINE) + apply_style(symbol(SYM_ANNOTATIONS), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
 				last_result.append (ann_serialised)
 			end
 

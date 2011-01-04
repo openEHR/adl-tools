@@ -503,10 +503,10 @@ end
 			-- the target (flat) output list, ignoring any redefined nodes - only merge new ones
 			--
 			from merge_list.start until merge_list.off loop
-				insert_obj ?= merge_list.item.reference_item(Md_tgt_list_merge_pos)
+				insert_obj ?= merge_list.item.insert_obj
 				-- this loop corresponds to the sublist of objects in the source container (i.e. child archetype container node) that are
 				-- to be merged either before or after the insert_obj in the flattened output.
-				from i := merge_list.item.integer_item(Md_src_list_start_pos) until i > merge_list.item.integer_item(Md_src_list_end_pos) loop
+				from i := merge_list.item.start_pos until i > merge_list.item.end_pos loop
 					if is_valid_code (ca_child.children.i_th(i).node_id) 																						-- identified nodes only
 								and specialisation_status_from_code (ca_child.children.i_th(i).node_id, arch_child_diff.specialisation_depth).value = ss_added 	-- that have been added
 								or attached {C_ARCHETYPE_ROOT} ca_child.children.i_th(i) as car then 															-- or else C_ARCHETYPE_ROOTs
@@ -519,7 +519,7 @@ end
 						else
 							merge_obj := ca_child.children.i_th(i).safe_deep_twin
 							merge_obj.clear_sibling_order -- no sibling_order markers in flat archetypes!
-							if merge_list.item.boolean_item(Md_insert_dir_flag) then -- True = insert before
+							if merge_list.item.before_flag then -- True = insert before
 								ca_output.put_child_left(merge_obj, insert_obj)
 							else
 								ca_output.put_child_right(merge_obj, insert_obj)
@@ -592,30 +592,23 @@ end
 			end
 		end
 
-	Md_src_list_start_pos: INTEGER = 1
-	Md_src_list_end_pos: INTEGER = 2
-	Md_tgt_list_merge_pos: INTEGER = 3
-	Md_insert_dir_flag: INTEGER = 4
-
-	merge_list: ARRAYED_LIST [TUPLE [INTEGER, INTEGER, C_OBJECT, BOOLEAN]]
+	merge_list: ARRAYED_LIST [like merge_desc]
 			-- merge descriptor list of TUPLEs of the following structure:
-			--	1	start pos in source list: INTEGER
-			--	2	end pos in source list: INTEGER
-			-- 	3	insert obj in target list: C_OBJECT (can't be an index, because insertions will make the list change)
-			-- 	4	operation: BOOLEAN; True = prepend before, False = append after
+			--	start pos in source list: INTEGER
+			--	end pos in source list: INTEGER
+			-- 	insert obj in target list: C_OBJECT (can't be an index, because insertions will make the list change)
+			-- 	operation: BOOLEAN; True = prepend before, False = append after
 
-	add_merge_desc (src_start_pos, src_end_pos: INTEGER; tgt_insert_obj: C_OBJECT; before_flag: BOOLEAN)
+	merge_desc: TUPLE [start_pos: INTEGER; end_pos: INTEGER; insert_obj: C_OBJECT; before_flag: BOOLEAN]
+
+	add_merge_desc (src_start_pos, src_end_pos: INTEGER; tgt_insert_obj: attached C_OBJECT; before_flag: BOOLEAN)
 			-- create a merge tuple for use in later merging
-		require
-			tgt_insert_obj /= Void
-		local
-			merge_desc: TUPLE [INTEGER, INTEGER, C_OBJECT, BOOLEAN]
 		do
 			create merge_desc
-			merge_desc.put_integer (src_start_pos, Md_src_list_start_pos) -- start position in source list
-			merge_desc.put_integer (src_end_pos, Md_src_list_end_pos) -- end position in source list
-			merge_desc.put_reference (tgt_insert_obj, Md_tgt_list_merge_pos)
-			merge_desc.put_boolean (before_flag, Md_insert_dir_flag)
+			merge_desc.start_pos := src_start_pos
+			merge_desc.end_pos := src_end_pos
+			merge_desc.insert_obj := tgt_insert_obj
+			merge_desc.before_flag := before_flag
 			merge_list.extend (merge_desc)
 			debug ("flatten")
 				io.put_string ("%T%T%T=== added MERGE DESC " + src_start_pos.out + ", " + src_end_pos.out + ", " + tgt_insert_obj.node_id + ", " + before_flag.out + "%N")

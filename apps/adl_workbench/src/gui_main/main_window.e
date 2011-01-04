@@ -691,16 +691,19 @@ feature {NONE} -- Tools events
 		end
 
 	on_diff_source
+			-- show diffs between input differential archetype and serialised output, from test diff dir
 		do
 			do_diff(Diff_source)
 		end
 
 	on_diff_flat
+			-- show diffs between input flat (legacy) archetype and serialised output, from test diff dir
 		do
 			do_diff(Diff_flat)
 		end
 
 	on_diff_source_flat
+			-- show diffs between input differential archetype and generated flat output, from test diff dir	
 		do
 			do_diff(Diff_source_flat)
 		end
