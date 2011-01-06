@@ -53,9 +53,6 @@ feature -- Access
 	build_completed: BOOLEAN
 			-- True if last attempt to build a subtree succeeded
 
-	status: STRING
-			-- Last status of compiler.
-
 	global_visual_update_action: PROCEDURE [ANY, TUPLE[STRING]]
 			-- Called after global processing to perform GUI updates
 

@@ -154,6 +154,8 @@ feature -- Application Switches
 		do
 			repository_profiles.set_current_profile_name (a_profile_name)
 			app_cfg.put_object("/profile", repository_profiles)
+		ensure
+			profile_set: repository_profiles.current_profile_name.same_string (a_profile_name)
 		end
 
 	clear_current_repository_profile

@@ -55,14 +55,20 @@ feature {NONE} -- Events
 			Precursor
 			application_developer_name.make_from_string ("openEHR")
 			app_cfg.make (user_config_file_path)
+			app_root.initialise
 			assert ("app_root initialisation failed", app_root.initialised)
 
 			if repository_profiles.has_profile ("Test") then
-				test_repository := repository_profiles.profile ("Test").reference_repository
+				set_current_profile ("Test")
 			elseif repository_profiles.has_profile ("test") then
-				test_repository := repository_profiles.profile ("test").reference_repository
+				set_current_profile ("test")
 			else
 				assert ("Please define the %"Test%" repository profile in " + app_cfg.file_path, False)
+			end
+
+			use_current_profile (True)
+			test_repository := repository_profiles.current_profile.reference_repository
+		debug
 			end
 		end
 
@@ -77,9 +83,23 @@ feature -- Test routines
 			-- Check that an ad-hoc archetype can be added.
 		note
 			testing: "covers/{ARCHETYPE_DIRECTORY}.add_adhoc_item"
+		local
+			adl: STRING
+			name: STRING
 		do
+			adl := "[
+				archetype (adl_version=1.5)
+					openehr-TEST_PKG-WHOLE.add_adhoc_item.v1
+				language original_language = <[ISO_639-1::en]>
+				description original_author = < ["name"] = <"unknown"> >
+				definition WHOLE[at0000] matches {*}
+				ontology term_definitions = < ["en"] = < items = < ["at0000"] = < description = <""> text = <""> > > > >
+				]"
+
+			name := file_system.pathname (test_directory, "openehr-TEST_PKG-WHOLE.add_adhoc_item.v1.adls")
+			file_context.save_file (name, adl)
 			assert_equal (False, current_arch_dir.has_selected_archetype)
-			current_arch_dir.add_adhoc_item (test_repository + "\basics\openehr-test_pkg-BOOK.structure_test1.v1.adls")
+			current_arch_dir.add_adhoc_item (name)
 			assert_equal (True, current_arch_dir.has_selected_archetype)
 		end
 
@@ -95,7 +115,6 @@ feature -- Test routines
 			archetype_compiler.build_all
 			assert_equal (False, archetype_compiler.is_interrupted)
 			assert_equal (True, archetype_compiler.build_completed)
-			assert ("Expected status message", archetype_compiler.status.has_substring ("finished building system"))
 		end
 
 end
