@@ -43,6 +43,10 @@ convert
 	make_date_time_duration ({DATE_TIME_DURATION}),
 	to_date_time_duration: {DATE_TIME_DURATION}
 
+feature -- Definitions
+
+	Default_zero_value: STRING = "PT0S"
+
 feature {NONE} -- Initialisation
 
 	make_from_string (str: attached STRING)
@@ -155,7 +159,7 @@ feature -- Output
 			Result := Duration_leader.out
 
 			if is_zero then
-				Result := value
+				Result := Default_zero_value
 			else
 				if years /= 0 then
 					Result.append (years.out + "Y")
