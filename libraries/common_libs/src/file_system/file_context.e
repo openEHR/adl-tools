@@ -177,7 +177,7 @@ feature -- Commands
 					-- ignore if empty
 					if not in_file.last_string.is_empty and not in_file.last_string.starts_with (ignore_pattern) then
 						-- see if just whitespace
-						from k := 1 until not in_file.last_string.item (k).is_space or else k > in_file.last_string.count loop
+						from k := 1 until k > in_file.last_string.count or else not in_file.last_string.item (k).is_space loop
 							k := k + 1
 						end
 
