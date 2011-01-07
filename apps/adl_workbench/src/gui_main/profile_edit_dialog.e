@@ -7,7 +7,7 @@ note
 	keywords:    "GUI, ADL, archetype"
 	author:      "Thomas Beale"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 20011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -148,7 +148,7 @@ feature -- Events
 					end
 					parent_dialog.rep_profiles_copy.put_profile (a_prof, prof_name)
 					has_changed_profiles := True
-					
+
 				else -- in edit existing situation, only do something if the paths have changed
 					-- if existing profile name was changed
 					if not prof_name.same_string (initial_profile_name) then

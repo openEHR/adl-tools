@@ -25,11 +25,13 @@ feature -- Access
 
 	current_arch_dir: ARCHETYPE_DIRECTORY
 			-- application-wide archetype directory access
+		require
+			repository_profiles.has_current_profile
 		do
 			Result := directories.item(repository_profiles.current_profile_name)
 		end
 
-	directories: HASH_TABLE[ARCHETYPE_DIRECTORY, STRING]
+	directories: attached HASH_TABLE [ARCHETYPE_DIRECTORY, STRING]
 			-- hash of all archetype directories used so far in the current session
 		once
 			create Result.make(0)

@@ -36,7 +36,7 @@
         <p>In order to work with the examples described below, the following configuration is advised. Experienced
         users may skip this step.</p>
 
-        <h3>Repository setup</h3>
+        <h3>Repository configuration</h3>
 
         <p>You should download the CKM and the <i>open</i>EHR test archetype repositories. The steps to do this are as
         follows.</p>
@@ -56,31 +56,37 @@
         actually more than one logical group of archetypes in the repository, so the configuration is as follows.</p>
 
         <ul>
-          <li value="0">In the AWB, select Repository &gt; Set Repository.</li>
-          <li value="0">On the dialog, use the large &#39;+&#39; button to add a new profile called &#39;ADL 1.5 test&#39; or similar.</li>
-          <li value="0">Set the Reference repository to $knowledge2/archetypes/ADL_1.5_test.</li>
-          <li value="0">Save the new profile.</li>
-          <li value="0">Repeat the above steps and create another new profile called &#39;openEHR examples&#39; or similar.</li>
-          <li value="0">Set the Reference Repository to $knowledge2/archetypes/openEHR_examples/demographic_template/Reference.</li>
-          <li value="0">Set the Work Repository to $knowledge2/archetypes/openEHR_examples/demographic_template/Working.</li>
+          <li value="0">In the AWB, select Repository &gt; Configure Repositories.</li>
+          <li value="0">On the dialog, use the Add button to add a new profile called &#39;ADL 1.5 test&#39; or similar. A sub-dialog will appear on which the paths can be edited</li>
+          <li value="0">Set the Reference repository path to $knowledge2/archetypes/ADL_1.5_test.</li>
+          <li value="0">Hit OK to save the new profile.</li>
+		  <li value="0">Repeat the above steps and create another new profile called &#39;openEHR examples&#39; or similar, with the following paths:
+			<ul>
+			  <li value="0">Set the Reference Repository to $knowledge2/archetypes/openEHR_examples/demographic_template/Reference.</li>
+			  <li value="0">Set the Work Repository to $knowledge2/archetypes/openEHR_examples/demographic_template/Working.</li>
+			</ul>
+		  </li>
           <li value="0">Save the new profile.</li>
         </ul>
 
         <p>If you are interested in EN 13606, you can use the above method to create a further profile called &#39;EN13606 examples&#39; or similar, using the Reference Repository path $knowledge2/archetypes/en13606_examples.</p>
+		<p>The Configure Repositories dialog can be used to add further profiles, remove profiles, and edit the details of a profile. The latter includes being able to rename a profile and/or change its paths.</p>
 
-        <h3>RM Schemas</h3>
+		<a name="rm_schema_configuration" /><h3>RM Schema configuration</h3>
 
-        <p>You will need to have all the relevant RM schemas selected for these profiles to work. Assuming you have followed the above instructions, you do this as follows:</p>
+			<p>Reference Model (RM) Schemas are used by the ADL Workbench to validate archetypes and templates. Schemas are currently expressed as dADL documents, whose structure follows a simple yet powerful meta-model (for those familiar with model infrastructures, neither UML/XMI nor Eclipse/EMF are currently used, because they lack proper semantics for generic types and some forms of type referencing common in object models). The schema files have a '.bmm' (basic meta-model) extension. The currently available RM schemas can be seen <a href="http://www.openehr.org/svn/knowledge2/TRUNK/rm_schemas/">here</a>. These schemas are defined in a nested way, with most files visible here being used as component schemas for a small number of top-level schemas representing the openEHR Reference Model, EN13606 model and so on.</p>
+
+        <p>You will need to have all the relevant RM schemas selected for the repository profiles described above to work. Assuming you have followed the above instructions, you do this as follows:</p>
 
         <ul>
-          <li value="0">Select Tools &gt; RM Schemas</li>
+          <li value="0">Select the RM Schemas menu &gt; Configure Schemas...</li>
           <li value="0">Ensure that the openehr, adltest, and en13606 (if relevant) schemas are checked, as shown <a href="images/options_rm_schema_config.png">here</a>.</li>
           <li value="0">Save the configuration.</li>
         </ul>
 
-        <p>You can now use the Repository &gt; Set Repository dialog to switch between the profiles at will. The remaining sections below describe how to see the ADL/AOM 1.5 changes using the archetypes you have configured above.</p>
+		<p>You can now use <a href="images/profile_combo.png">the profile combo selector above the archetype explorer</a> to switch between the profiles. The remaining sections below describe how to see the ADL/AOM 1.5 changes using the archetypes you have configured above.</p>
 
-		<h3>The .cfg file</h3>
+		<a name="cfg_file" /><h2>The .cfg file</h2>
 		<p>The result of the above configuration creates entries in the application configuration file, which will be in one of the following places, depending on your operating system:</p>
 		<ul>
 		<li>Windows XP/Vista: C:\Documents and Settings\&lt;username&gt;\AppData\Local\openEHR\adl_workbench\adl_workbench.cfg</li>
@@ -90,70 +96,70 @@
 		</ul>
 		<p>This file is in dADL format, and will typically include lines such as the following, corresponding to the above configuration.</p>
 <pre>
-	file_system = &lt;
-		html_export_directory = &lt;"C:\\Users\\Thomas\\AppData\\Local\\openEHR\\adl_workbench\\html"&gt;
-		test_diff_directory = &lt;"C:\\Users\\Thomas\\AppData\\Local\\openEHR\\adl_workbench\\diff_test"&gt;
-		rm_schema_directory = &lt;"C:\\project\\openehr\\knowledge2\\TRUNK\\rm_schemas"&gt;
-	&gt;
-	commands = &lt;
-		text_editor_command = &lt;"C:\\Program Files\\Vim\\vim72\\gvim.exe"&gt;
-		editor_app_command = &lt;"cmd /q /d /c start \"\" /b"&gt;
-		difftool_command = &lt;"\"C:\\Program Files\\winmerge\\winmerge.exe\" /e /u"&gt;
-	&gt;
-	profile = &lt;
-		current_profile_name = &lt;"adl_test"&gt;
-		profiles = &lt;
-			["CKM"] = &lt;
-				reference_repository = &lt;"C:\\project\\openehr\\knowledge\\archetypes\\CKM"&gt;
-			&gt;
-			["Singapore"] = &lt;
-				reference_repository = &lt;"C:\\project\\SG_MOHH\\controlled\\50.Deliverables\\07.Knowledge\\Repository\\Reference"&gt;
-				work_repository = &lt;"C:\\project\\SG_MOHH\\controlled\\50.Deliverables\\07.Knowledge\\Repository\\Working"&gt;
-			&gt;
-			["adl_test"] = &lt;
-				reference_repository = &lt;"C:\\project\\openehr\\knowledge2\\TRUNK\\archetypes\\ADL_1.5_test"&gt;
-				work_repository = &lt;""&gt;
-			&gt;
-			["EN13606"] = &lt;
-				reference_repository = &lt;"C:\\project\\openehr\\knowledge2\\TRUNK\\archetypes\\en13606_examples"&gt;
-			&gt;
-			["openEHR_examples"] = &lt;
-				reference_repository = &lt;"C:\\project\\openehr\\knowledge2\\TRUNK\\archetypes\\openEHR_examples"&gt;
-			&gt;
+file_system = &lt;
+	html_export_directory = &lt;"C:\\Users\\Thomas\\AppData\\Local\\openEHR\\adl_workbench\\html"&gt;
+	test_diff_directory = &lt;"C:\\Users\\Thomas\\AppData\\Local\\openEHR\\adl_workbench\\diff_test"&gt;
+	rm_schema_directory = &lt;"C:\\project\\openehr\\knowledge2\\TRUNK\\rm_schemas"&gt;
+&gt;
+commands = &lt;
+	text_editor_command = &lt;"C:\\Program Files\\Vim\\vim72\\gvim.exe"&gt;
+	editor_app_command = &lt;"cmd /q /d /c start \"\" /b"&gt;
+	difftool_command = &lt;"\"C:\\Program Files\\winmerge\\winmerge.exe\" /e /u"&gt;
+&gt;
+profile = &lt;
+	current_profile_name = &lt;"adl_test"&gt;
+	profiles = &lt;
+		["CKM"] = &lt;
+			reference_repository = &lt;"C:\\project\\openehr\\knowledge\\archetypes\\CKM"&gt;
+		&gt;
+		["Singapore"] = &lt;
+			reference_repository = &lt;"C:\\project\\SG_MOHH\\controlled\\50.Deliverables\\07.Knowledge\\Repository\\Reference"&gt;
+			work_repository = &lt;"C:\\project\\SG_MOHH\\controlled\\50.Deliverables\\07.Knowledge\\Repository\\Working"&gt;
+		&gt;
+		["adl_test"] = &lt;
+			reference_repository = &lt;"C:\\project\\openehr\\knowledge2\\TRUNK\\archetypes\\ADL_1.5_test"&gt;
+			work_repository = &lt;""&gt;
+		&gt;
+		["EN13606"] = &lt;
+			reference_repository = &lt;"C:\\project\\openehr\\knowledge2\\TRUNK\\archetypes\\en13606_examples"&gt;
+		&gt;
+		["openEHR_examples"] = &lt;
+			reference_repository = &lt;"C:\\project\\openehr\\knowledge2\\TRUNK\\archetypes\\openEHR_examples"&gt;
 		&gt;
 	&gt;
-	general = &lt;
-		current_language = &lt;"en"&gt;
-		error_reporting_level = &lt;9002&gt;
-	&gt;
-	gui = &lt;
-		total_split_position = &lt;551&gt;
-		test_split_position = &lt;617&gt;
-		explorer_split_position = &lt;298&gt;
-		archetype_template_split_position = &lt;599&gt;
-		app_width = &lt;1456&gt;
-		app_height = &lt;916&gt;
-		app_x_position = &lt;-8&gt;
-		app_y_position = &lt;-8&gt;
-		app_maximised = &lt;True&gt;
-		main_notebook_tab_pos = &lt;1&gt;
-		path_filter_combo_selection = &lt;"All"&gt;
-		path_view_check_list_settings = &lt;"Machine", "Nat lang", "RM Type"&gt;
-		expand_node_tree = &lt;True&gt;
-		show_line_numbers = &lt;False&gt;
-		display_archetype_source = &lt;True&gt;
-		show_entire_ontology = &lt;False&gt;
-		show_technical_view = &lt;True&gt;
-		show_reference_model_view = &lt;False&gt;
-	&gt;
-	compiler = &lt;
-		adl_version_for_flat_output = &lt;"1.5"&gt;
-		validation_strict = &lt;False&gt;
-		rm_flattening = &lt;False&gt;
-	&gt;
-	rm_schemas = &lt;
-		load_list = &lt;"openehr_adltest_1.0.0", "openehr_ehr_extract_2.0.0"&gt;
-	&gt;
+&gt;
+general = &lt;
+	current_language = &lt;"en"&gt;
+	error_reporting_level = &lt;9002&gt;
+&gt;
+gui = &lt;
+	total_split_position = &lt;551&gt;
+	test_split_position = &lt;617&gt;
+	explorer_split_position = &lt;298&gt;
+	archetype_template_split_position = &lt;599&gt;
+	app_width = &lt;1456&gt;
+	app_height = &lt;916&gt;
+	app_x_position = &lt;-8&gt;
+	app_y_position = &lt;-8&gt;
+	app_maximised = &lt;True&gt;
+	main_notebook_tab_pos = &lt;1&gt;
+	path_filter_combo_selection = &lt;"All"&gt;
+	path_view_check_list_settings = &lt;"Machine", "Nat lang", "RM Type"&gt;
+	expand_node_tree = &lt;True&gt;
+	show_line_numbers = &lt;False&gt;
+	display_archetype_source = &lt;True&gt;
+	show_entire_ontology = &lt;False&gt;
+	show_technical_view = &lt;True&gt;
+	show_reference_model_view = &lt;False&gt;
+&gt;
+compiler = &lt;
+	adl_version_for_flat_output = &lt;"1.5"&gt;
+	validation_strict = &lt;False&gt;
+	rm_flattening = &lt;False&gt;
+&gt;
+rm_schemas = &lt;
+	load_list = &lt;"openehr_adltest_1.0.0", "openehr_ehr_extract_2.0.0"&gt;
+&gt;
 </pre>
       </div>
     </div>

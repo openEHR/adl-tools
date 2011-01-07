@@ -79,12 +79,10 @@ feature -- Commands
 			archetype: ARCHETYPE
 		do
 			clear
-
 			if current_arch_dir.has_validated_selected_archetype then
 				archetype := current_arch_dir.selected_archetype.differential_archetype
 				gui.terminologies_list.set_strings (archetype.ontology.terminologies_available)
-
-				if archetype.description /= Void then
+				if attached archetype.description then
 					populate_authorship
 					populate_details
 					populate_resources

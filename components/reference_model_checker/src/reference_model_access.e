@@ -4,7 +4,7 @@ note
 	keywords:    "ADL, archetype, reference model"
 	author:      "Thomas Beale"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2010-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -261,7 +261,7 @@ end
 					if not schemas_by_package.has (qualified_pkg_name) then
 						schemas_by_package.put (top_level_schemas.item_for_iteration, qualified_pkg_name)
 					else
-						post_warning (Current, "rm_schemas", "model_access_w3", <<qualified_pkg_name, schemas_by_package.item (qualified_pkg_name).schema.schema_id,
+						post_info (Current, "rm_schemas", "model_access_w3", <<qualified_pkg_name, schemas_by_package.item (qualified_pkg_name).schema.schema_id,
 							top_level_schemas.item_for_iteration.schema.schema_id>>)
 					end
 					pkgs.forth

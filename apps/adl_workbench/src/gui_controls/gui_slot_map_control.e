@@ -3,8 +3,8 @@ note
 	description: "Slot map control - Visualise archetype ids matching slots"
 	keywords:    "archetype, slot, gui"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2008-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -44,10 +44,8 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: MAIN_WINDOW)
+	make (a_main_window: attached MAIN_WINDOW)
 			-- Create to control `a_main_window.slots_tree' and `a_main_window.used_by_tree'.
-		require
-			a_main_window /= Void
 		do
 			gui := a_main_window
 			gui.slots_tree.key_press_actions.force_extend (agent on_tree_key_press (gui.slots_tree, ?))
@@ -122,11 +120,8 @@ feature {NONE} -- Implementation
 	gui: MAIN_WINDOW
 			-- Main window of system.
 
-	append_tree (subtree: EV_TREE_NODE_LIST; ids: ARRAYED_LIST [STRING])
+	append_tree (subtree: attached EV_TREE_NODE_LIST; ids: attached ARRAYED_LIST [STRING])
 			-- Populate `subtree' from `ids'.
-		require
-			subtree_attached: subtree /= Void
-			ids_attached: ids /= Void
 		local
 			eti: EV_TREE_ITEM
 			ara: ARCH_REP_ARCHETYPE
@@ -179,10 +174,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is adl_node_map_control.e.
+--| The Original Code is gui_slot_map_control.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2003-2011
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

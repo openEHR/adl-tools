@@ -317,34 +317,38 @@
           "images/slot_filling.png">this</a>.</li>
         </ul>
 
-        <h3>Annotations section</h3>
+		<a name="annotations"/><h3>Annotations section</h3>
 
         <p>Annotations can now be added on a per-node basis, with each annotation having one or more facets
         (representation = Hash&lt;T&gt;). This supports fine-grained documentation of elements of archetypes and
         templates. A typical annotations section looks as follows:</p>
 		<pre>
-		annotations
-			annotations = &lt;
-				["en"] = &lt;
+annotations
+	annotations = &lt;
+		["en"] = &lt;
+			items = &lt;
+				["/data[at0001]/items[at0.8]"] = &lt;
 					items = &lt;
-						["/data[at0001]/items[at0.8]"] = &lt;
-							items = &lt;
-								["design note"] = &lt;"this is a design note on allergic reaction"&gt;
-								["requirements note"] = &lt;"this is a requirements note on allergic reaction"&gt;
-								["medline ref"] = &lt;"this is a medline ref on allergic reaction"&gt;
-							&gt;
-						&gt;
-						["/data[at0001]/items[at0.10]"] = &lt;
-							items = &lt;
-								["design note"] = &lt;"this is a design note on intelerance"&gt;
-								["requirements note"] = &lt;"this is a requirements note on intolerance"&gt;
-								["national data dictionary"] = &lt;"NDD ref for intoleranance"&gt;
-							&gt;
-						&gt;
+						["design note"] = &lt;"this is a design note on allergic reaction"&gt;
+						["requirements note"] = &lt;"this is a requirements note on allergic reaction"&gt;
+						["medline ref"] = &lt;"this is a medline ref on allergic reaction"&gt;
+					&gt;
+				&gt;
+				["/data[at0001]/items[at0.10]"] = &lt;
+					items = &lt;
+						["design note"] = &lt;"this is a design note on intelerance"&gt;
+						["requirements note"] = &lt;"this is a requirements note on intolerance"&gt;
+						["national data dictionary"] = &lt;"NDD ref for intoleranance"&gt;
 					&gt;
 				&gt;
 			&gt;
+		&gt;
+	&gt;
 		</pre>
+		<p>Currently, the annotations feature implements a simple Hash of Strings, with plain String keys. Other more
+		complex alternatives are available, e.g. where the keys are coded using at-codes, and then bound to globally
+		standard codes within SNOMED CT or some other terminology. A discussion of these possibilities can be found 
+		<a href="http://www.openehr.org/mailarchives/openehr-technical/msg05523.html" target="_blank">here</a>.</p>
 
         <h3>Default values (Not yet implemented)</h3>
 

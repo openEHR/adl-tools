@@ -664,9 +664,11 @@ feature {NONE} -- Tools events
 
 			if dialog.has_changed_ui_options then
 				save_resources_and_show_status
-				populate_archetype_view_controls
+				if repository_profiles.has_current_profile then
+					populate_archetype_view_controls
+				end
 			end
-			if dialog.has_changed_navigator_options then
+			if dialog.has_changed_navigator_options and repository_profiles.has_current_profile then
 				archetype_view_tree_control.populate
 				template_view_tree_control.populate
 				archetype_test_tree_control.populate
@@ -1253,6 +1255,8 @@ feature {NONE} -- Implementation
 
 	populate_archetype_view_controls
 			-- Populate content from visual controls.
+		require
+			repository_profiles.has_current_profile
 		do
 			description_controls.populate
 			translation_controls.populate
