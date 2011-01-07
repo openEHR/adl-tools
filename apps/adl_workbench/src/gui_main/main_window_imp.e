@@ -51,30 +51,31 @@ feature {NONE}-- Initialization
 			edit_menu.extend (l_ev_menu_separator_3)
 			edit_menu.extend (edit_menu_clipboard)
 			menu.extend (repository_menu)
-			repository_menu.extend (repository_menu_set_repository)
-			repository_menu.extend (l_ev_menu_separator_4)
 			repository_menu.extend (repository_menu_build_all)
 			repository_menu.extend (repository_menu_rebuild_all)
-			repository_menu.extend (l_ev_menu_separator_5)
+			repository_menu.extend (l_ev_menu_separator_4)
 			repository_menu.extend (repository_menu_build_subtree)
 			repository_menu.extend (repository_menu_rebuild_subtree)
-			repository_menu.extend (l_ev_menu_separator_6)
+			repository_menu.extend (l_ev_menu_separator_5)
 			repository_menu.extend (repository_menu_export_html)
 			repository_menu.extend (repository_menu_export_repository_report)
-			repository_menu.extend (l_ev_menu_separator_7)
+			repository_menu.extend (l_ev_menu_separator_6)
 			repository_menu.extend (repository_menu_interrupt_build)
-			repository_menu.extend (l_ev_menu_separator_8)
 			repository_menu.extend (repository_menu_refresh)
+			repository_menu.extend (l_ev_menu_separator_7)
+			repository_menu.extend (repository_menu_set_repository)
 			menu.extend (history_menu)
 			history_menu.extend (history_menu_back)
 			history_menu.extend (history_menu_forward)
 			history_menu.extend (history_menu_separator)
 			menu.extend (tools_menu)
 			tools_menu.extend (tools_menu_clean_generated_files)
-			tools_menu.extend (tools_menu_reload_schemas)
-			tools_menu.extend (l_ev_menu_separator_9)
+			tools_menu.extend (l_ev_menu_separator_8)
 			tools_menu.extend (tools_menu_options)
-			tools_menu.extend (tools_menu_rm_schemas)
+			menu.extend (rm_schemas_menu)
+			rm_schemas_menu.extend (rm_schemas_menu_reload_schemas)
+			rm_schemas_menu.extend (l_ev_menu_separator_9)
+			rm_schemas_menu.extend (rm_schemas_menu_configure_rm_schemas)
 			menu.extend (help_menu)
 			help_menu.extend (help_menu_contents)
 			help_menu.extend (help_menu_release_notes)
@@ -268,7 +269,6 @@ feature {NONE}-- Initialization
 			edit_menu_select_all.set_text ("Select &All")
 			edit_menu_clipboard.set_text ("Clip&board...")
 			repository_menu.set_text ("&Repository")
-			repository_menu_set_repository.set_text ("&Configure Repository Profiles...")
 			repository_menu_build_all.set_text ("&Build All")
 			repository_menu_rebuild_all.set_text ("&Rebuild All")
 			repository_menu_build_subtree.set_text ("Build Sub&tree")
@@ -278,14 +278,16 @@ feature {NONE}-- Initialization
 			repository_menu_interrupt_build.disable_sensitive
 			repository_menu_interrupt_build.set_text ("&Interrupt Build")
 			repository_menu_refresh.set_text ("Refresh Repository")
+			repository_menu_set_repository.set_text ("&Configure Repository Profiles...")
 			history_menu.set_text ("Hi&story")
 			history_menu_back.set_text ("&Back")
 			history_menu_forward.set_text ("&Forward")
 			tools_menu.set_text ("&Tools")
 			tools_menu_clean_generated_files.set_text ("&Clean Generated Files")
-			tools_menu_reload_schemas.set_text ("&Reload Schemas")
 			tools_menu_options.set_text ("&Options...")
-			tools_menu_rm_schemas.set_text ("RM &Schemas...")
+			rm_schemas_menu.set_text ("RM &Schemas")
+			rm_schemas_menu_reload_schemas.set_text ("&Reload Schemas")
+			rm_schemas_menu_configure_rm_schemas.set_text ("&Configure RM Schemas...")
 			help_menu.set_text ("&Help")
 			help_menu_contents.set_text ("&Contents")
 			help_menu_release_notes.set_text ("&Release Notes")
@@ -885,7 +887,6 @@ feature {NONE}-- Initialization
 			edit_menu_copy.select_actions.extend (agent on_copy)
 			edit_menu_select_all.select_actions.extend (agent on_select_all)
 			edit_menu_clipboard.select_actions.extend (agent show_clipboard)
-			repository_menu_set_repository.select_actions.extend (agent set_repository)
 			repository_menu_build_all.select_actions.extend (agent build_all)
 			repository_menu_rebuild_all.select_actions.extend (agent rebuild_all)
 			repository_menu_build_subtree.select_actions.extend (agent build_subtree)
@@ -894,13 +895,14 @@ feature {NONE}-- Initialization
 			repository_menu_export_repository_report.select_actions.extend (agent export_repository_report)
 			repository_menu_interrupt_build.select_actions.extend (agent interrupt_build)
 			repository_menu_refresh.select_actions.extend (agent refresh_directory)
+			repository_menu_set_repository.select_actions.extend (agent set_repository)
 			history_menu.select_actions.extend (agent on_history)
 			history_menu_back.select_actions.extend (agent on_back)
 			history_menu_forward.select_actions.extend (agent on_forward)
 			tools_menu_clean_generated_files.select_actions.extend (agent clean_generated_files)
-			tools_menu_reload_schemas.select_actions.extend (agent reload_schemas)
 			tools_menu_options.select_actions.extend (agent set_options)
-			tools_menu_rm_schemas.select_actions.extend (agent set_rm_schemas)
+			rm_schemas_menu_reload_schemas.select_actions.extend (agent reload_schemas)
+			rm_schemas_menu_configure_rm_schemas.select_actions.extend (agent set_rm_schemas)
 			help_menu_contents.select_actions.extend (agent show_online_help)
 			help_menu_release_notes.select_actions.extend (agent show_release_notes)
 			help_menu_icons.select_actions.extend (agent show_icon_help)
@@ -979,30 +981,31 @@ feature {NONE}-- Initialization
 			create l_ev_menu_separator_3
 			create edit_menu_clipboard
 			create repository_menu
-			create repository_menu_set_repository
-			create l_ev_menu_separator_4
 			create repository_menu_build_all
 			create repository_menu_rebuild_all
-			create l_ev_menu_separator_5
+			create l_ev_menu_separator_4
 			create repository_menu_build_subtree
 			create repository_menu_rebuild_subtree
-			create l_ev_menu_separator_6
+			create l_ev_menu_separator_5
 			create repository_menu_export_html
 			create repository_menu_export_repository_report
-			create l_ev_menu_separator_7
+			create l_ev_menu_separator_6
 			create repository_menu_interrupt_build
-			create l_ev_menu_separator_8
 			create repository_menu_refresh
+			create l_ev_menu_separator_7
+			create repository_menu_set_repository
 			create history_menu
 			create history_menu_back
 			create history_menu_forward
 			create history_menu_separator
 			create tools_menu
 			create tools_menu_clean_generated_files
-			create tools_menu_reload_schemas
-			create l_ev_menu_separator_9
+			create l_ev_menu_separator_8
 			create tools_menu_options
-			create tools_menu_rm_schemas
+			create rm_schemas_menu
+			create rm_schemas_menu_reload_schemas
+			create l_ev_menu_separator_9
+			create rm_schemas_menu_configure_rm_schemas
 			create help_menu
 			create help_menu_contents
 			create help_menu_release_notes
@@ -1204,38 +1207,39 @@ feature {NONE}-- Initialization
 feature -- Access
 
 	menu: EV_MENU_BAR
-	file_menu, edit_menu, repository_menu, history_menu, tools_menu, help_menu: EV_MENU
-	file_menu_open,
-	file_menu_parse, file_menu_edit, file_menu_save_as, file_menu_exit, edit_menu_copy,
-	edit_menu_select_all, edit_menu_clipboard, repository_menu_set_repository, repository_menu_build_all,
+	file_menu, edit_menu, repository_menu, history_menu, tools_menu, rm_schemas_menu,
+	help_menu: EV_MENU
+	file_menu_open, file_menu_parse, file_menu_edit, file_menu_save_as, file_menu_exit,
+	edit_menu_copy, edit_menu_select_all, edit_menu_clipboard, repository_menu_build_all,
 	repository_menu_rebuild_all, repository_menu_build_subtree, repository_menu_rebuild_subtree,
 	repository_menu_export_html, repository_menu_export_repository_report, repository_menu_interrupt_build,
-	repository_menu_refresh, history_menu_back, history_menu_forward, tools_menu_clean_generated_files,
-	tools_menu_reload_schemas, tools_menu_options, tools_menu_rm_schemas, help_menu_contents,
-	help_menu_release_notes, help_menu_icons, help_menu_clinical_knowledge_manager, help_menu_report_bug,
-	help_menu_about: EV_MENU_ITEM
-	l_ev_menu_separator_1, l_ev_menu_separator_2, l_ev_menu_separator_3,
-	l_ev_menu_separator_4, l_ev_menu_separator_5, l_ev_menu_separator_6, l_ev_menu_separator_7,
-	l_ev_menu_separator_8, history_menu_separator, l_ev_menu_separator_9, l_ev_menu_separator_10: EV_MENU_SEPARATOR
-	main_notebook,
-	archetype_notebook, definition_notebook, status_notebook: EV_NOTEBOOK
-	viewer_vbox, l_ev_vertical_box_1,
-	l_ev_vertical_box_2, description_box, arch_desc_auth_hbox, arch_desc_contrib_hbox,
-	l_ev_vertical_box_3, terminology_vbox, lang_vbox, l_ev_vertical_box_4, l_ev_vertical_box_5,
-	l_ev_vertical_box_6, l_ev_vertical_box_7, l_ev_vertical_box_8, differential_view_box,
-	node_map_contols, l_ev_vertical_box_9, l_ev_vertical_box_10, l_ev_vertical_box_11,
-	l_ev_vertical_box_12, terminology_area, flat_view_box, slots_box, l_ev_vertical_box_13,
-	l_ev_vertical_box_14, l_ev_vertical_box_15, l_ev_vertical_box_16: EV_VERTICAL_BOX
-	action_bar, l_ev_horizontal_box_1,
-	l_ev_horizontal_box_2, l_ev_horizontal_box_3, author_lang_term_hbox, l_ev_horizontal_box_4,
-	l_ev_horizontal_box_5, l_ev_horizontal_box_6, arch_desc_details_hbox, l_ev_horizontal_box_7,
-	l_ev_horizontal_box_8, l_ev_horizontal_box_9, l_ev_horizontal_box_10, l_ev_horizontal_box_11,
-	arch_desc_copyright_hbox, node_map, path_analysis, statistics_box, l_ev_horizontal_box_12,
-	l_ev_horizontal_box_13, l_ev_horizontal_box_14, l_ev_horizontal_box_15, l_ev_horizontal_box_16,
-	l_ev_horizontal_box_17, l_ev_horizontal_box_18: EV_HORIZONTAL_BOX
+	repository_menu_refresh, repository_menu_set_repository, history_menu_back, history_menu_forward,
+	tools_menu_clean_generated_files, tools_menu_options, rm_schemas_menu_reload_schemas,
+	rm_schemas_menu_configure_rm_schemas, help_menu_contents, help_menu_release_notes,
+	help_menu_icons, help_menu_clinical_knowledge_manager, help_menu_report_bug, help_menu_about: EV_MENU_ITEM
+	l_ev_menu_separator_1,
+	l_ev_menu_separator_2, l_ev_menu_separator_3, l_ev_menu_separator_4, l_ev_menu_separator_5,
+	l_ev_menu_separator_6, l_ev_menu_separator_7, history_menu_separator, l_ev_menu_separator_8,
+	l_ev_menu_separator_9, l_ev_menu_separator_10: EV_MENU_SEPARATOR
+	main_notebook, archetype_notebook,
+	definition_notebook, status_notebook: EV_NOTEBOOK
+	viewer_vbox, l_ev_vertical_box_1, l_ev_vertical_box_2,
+	description_box, arch_desc_auth_hbox, arch_desc_contrib_hbox, l_ev_vertical_box_3,
+	terminology_vbox, lang_vbox, l_ev_vertical_box_4, l_ev_vertical_box_5, l_ev_vertical_box_6,
+	l_ev_vertical_box_7, l_ev_vertical_box_8, differential_view_box, node_map_contols,
+	l_ev_vertical_box_9, l_ev_vertical_box_10, l_ev_vertical_box_11, l_ev_vertical_box_12,
+	terminology_area, flat_view_box, slots_box, l_ev_vertical_box_13, l_ev_vertical_box_14,
+	l_ev_vertical_box_15, l_ev_vertical_box_16: EV_VERTICAL_BOX
+	action_bar, l_ev_horizontal_box_1, l_ev_horizontal_box_2,
+	l_ev_horizontal_box_3, author_lang_term_hbox, l_ev_horizontal_box_4, l_ev_horizontal_box_5,
+	l_ev_horizontal_box_6, arch_desc_details_hbox, l_ev_horizontal_box_7, l_ev_horizontal_box_8,
+	l_ev_horizontal_box_9, l_ev_horizontal_box_10, l_ev_horizontal_box_11, arch_desc_copyright_hbox,
+	node_map, path_analysis, statistics_box, l_ev_horizontal_box_12, l_ev_horizontal_box_13,
+	l_ev_horizontal_box_14, l_ev_horizontal_box_15, l_ev_horizontal_box_16, l_ev_horizontal_box_17,
+	l_ev_horizontal_box_18: EV_HORIZONTAL_BOX
 	l_ev_tool_bar_1, l_ev_tool_bar_4: EV_TOOL_BAR
-	open_button,
-	parse_button, edit_button, history_back_button, history_forward_button, search_button: EV_TOOL_BAR_BUTTON
+	open_button, parse_button,
+	edit_button, history_back_button, history_forward_button, search_button: EV_TOOL_BAR_BUTTON
 	l_ev_tool_bar_separator_1,
 	l_ev_tool_bar_separator_2: EV_TOOL_BAR_SEPARATOR
 	archetype_id, language_combo, archetype_profile_combo,
@@ -1339,11 +1343,6 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	set_repository
-			-- Called by `select_actions' of `repository_menu_set_repository'.
-		deferred
-		end
-	
 	build_all
 			-- Called by `select_actions' of `repository_menu_build_all'.
 		deferred
@@ -1384,6 +1383,11 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
+	set_repository
+			-- Called by `select_actions' of `repository_menu_set_repository'.
+		deferred
+		end
+	
 	on_history
 			-- Called by `select_actions' of `history_menu'.
 		deferred
@@ -1404,18 +1408,18 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	reload_schemas
-			-- Called by `select_actions' of `tools_menu_reload_schemas'.
-		deferred
-		end
-	
 	set_options
 			-- Called by `select_actions' of `tools_menu_options'.
 		deferred
 		end
 	
+	reload_schemas
+			-- Called by `select_actions' of `rm_schemas_menu_reload_schemas'.
+		deferred
+		end
+	
 	set_rm_schemas
-			-- Called by `select_actions' of `tools_menu_rm_schemas'.
+			-- Called by `select_actions' of `rm_schemas_menu_configure_rm_schemas'.
 		deferred
 		end
 	

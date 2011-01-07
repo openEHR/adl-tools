@@ -19,12 +19,7 @@ templates = <
 		["ref_repo_not_found"] = <"Reference Repository $1 does not exist or not readable">
 		["work_repo_not_found"] = <"Work Repository $1 does not exist or not readable">
 		["work_repo_not_valid"] = <"Work Repository $1 is the same as or a child of the reference repository $2">
-		["existing_profile_changes_pending"] = <"Changes to current profile need to be committed; hit OK or Cancel">
-		["profile_not_yet_defined"] = <"Create a profile name before choosing directories">
-		["no_profile_to_remove"] = <"No profile available to remove">
-		["remove_profile_question"] = <"Remove profile $1?">
-		["add_one_profile_only"] = <"Can only add one profile at a time; hit OK or Cancel">
-		["cant_remove_with_add_pending"] = <"Previous add needs to be committed; hit OK or Cancel">
+		["cant_remove_last_profile"] = <"Last profile cannot be removed; use 'Edit' to reconfigure">
 		["duplicate_profile"] = <"New profile name $1 already used">
 
 		-- RM_SCHEMA_DIALOG

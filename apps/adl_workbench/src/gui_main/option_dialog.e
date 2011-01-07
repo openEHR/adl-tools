@@ -3,8 +3,8 @@ note
 	description: "Options dialog window"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -63,83 +63,7 @@ feature -- Status
 	has_changed_navigator_options: BOOLEAN
 			-- True if some option has changed that would require the navigator to be redrawn
 
-feature {NONE} -- Implementation
-
-	populate_controls
-			-- Set the dialog widgets from shared settings.
-		do
-			-- text editor command
-			text_editor_command_text.set_text (text_editor_command)
-
-			-- archetype editor app command
-			editor_app_command_text.set_text (editor_app_command)
-
-			-- diff tool command
-			difftool_command_text.set_text (difftool_command)
-
-			-- GUI options
-			if expand_node_tree then
-				show_definition_tree_expanded_check_button.enable_select
-			else
-				show_definition_tree_expanded_check_button.disable_select
-			end
-
-			if show_line_numbers then
-				show_line_numbers_check_button.enable_select
-			else
-				show_line_numbers_check_button.disable_select
-			end
-
-			if display_archetype_source then
-				display_archetype_source_check_button.enable_select
-			else
-				display_archetype_source_check_button.disable_select
-			end
-
-			if show_entire_ontology then
-				show_entire_ontology_check_button.enable_select
-			else
-				show_entire_ontology_check_button.disable_select
-			end
-			old_show_entire_ontology := show_entire_ontology
-
-			-- compiler options
-			populate_ev_combo_from_ds_hash_keys (parser_error_reporting_level_combo_box, error_type_ids)
-			parser_error_reporting_level_combo_box.do_all (
-				agent (li: EV_LIST_ITEM)
-					do
-						if li.text.same_string (error_type_names.item (error_reporting_level)) then
-							li.enable_select
-						end
-					end
-			)
-
-			adl_save_version_combo_box.set_strings(Adl_versions)
-			adl_save_version_combo_box.do_all (
-				agent (li: EV_LIST_ITEM)
-					do
-						if li.text.same_string (adl_version_for_flat_output) then
-							li.enable_select
-						end
-					end
-			)
-
-			if validation_strict then
-				validation_strict_check_button.enable_select
-			else
-				validation_strict_check_button.disable_select
-			end
-
-			if rm_flattening_on then
-				rm_flattening_on_check_button.enable_select
-			else
-				rm_flattening_on_check_button.disable_select
-			end
-
-			-- resource / directory options
-			export_html_text.set_text (html_export_directory)
-			save_diff_path_text.set_text (test_diff_directory)
-		end
+feature -- Events
 
 	on_ok
 			-- Set shared settings from the dialog widgets.
@@ -221,6 +145,82 @@ feature {NONE} -- Implementation
 
 	old_show_entire_ontology: BOOLEAN
 			-- value of show_entire_ontology prior to setting by optin dialog
+
+	populate_controls
+			-- Set the dialog widgets from shared settings.
+		do
+			-- text editor command
+			text_editor_command_text.set_text (text_editor_command)
+
+			-- archetype editor app command
+			editor_app_command_text.set_text (editor_app_command)
+
+			-- diff tool command
+			difftool_command_text.set_text (difftool_command)
+
+			-- GUI options
+			if expand_node_tree then
+				show_definition_tree_expanded_check_button.enable_select
+			else
+				show_definition_tree_expanded_check_button.disable_select
+			end
+
+			if show_line_numbers then
+				show_line_numbers_check_button.enable_select
+			else
+				show_line_numbers_check_button.disable_select
+			end
+
+			if display_archetype_source then
+				display_archetype_source_check_button.enable_select
+			else
+				display_archetype_source_check_button.disable_select
+			end
+
+			if show_entire_ontology then
+				show_entire_ontology_check_button.enable_select
+			else
+				show_entire_ontology_check_button.disable_select
+			end
+			old_show_entire_ontology := show_entire_ontology
+
+			-- compiler options
+			populate_ev_combo_from_ds_hash_keys (parser_error_reporting_level_combo_box, error_type_ids)
+			parser_error_reporting_level_combo_box.do_all (
+				agent (li: EV_LIST_ITEM)
+					do
+						if li.text.same_string (error_type_names.item (error_reporting_level)) then
+							li.enable_select
+						end
+					end
+			)
+
+			adl_save_version_combo_box.set_strings(Adl_versions)
+			adl_save_version_combo_box.do_all (
+				agent (li: EV_LIST_ITEM)
+					do
+						if li.text.same_string (adl_version_for_flat_output) then
+							li.enable_select
+						end
+					end
+			)
+
+			if validation_strict then
+				validation_strict_check_button.enable_select
+			else
+				validation_strict_check_button.disable_select
+			end
+
+			if rm_flattening_on then
+				rm_flattening_on_check_button.enable_select
+			else
+				rm_flattening_on_check_button.disable_select
+			end
+
+			-- resource / directory options
+			export_html_text.set_text (html_export_directory)
+			save_diff_path_text.set_text (test_diff_directory)
+		end
 
 end
 

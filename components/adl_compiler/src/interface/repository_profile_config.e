@@ -96,6 +96,11 @@ feature -- Access
 			end
 		end
 
+	count: INTEGER
+		do
+			Result := profiles.count
+		end
+
 feature -- Status Report
 
 	has_current_profile: BOOLEAN
@@ -147,6 +152,9 @@ feature -- Modification
 			-- put `a_profile', replacing any previous profile of that name
 		do
 			profiles.force(a_profile, a_profile_name)
+			if not has_current_profile then
+				current_profile_name := a_profile_name
+			end
 		end
 
 	remove_profile (a_profile_name: attached STRING)
@@ -154,6 +162,9 @@ feature -- Modification
 			has_profile(a_profile_name)
 		do
 			profiles.remove(a_profile_name)
+			if is_empty then
+				clear_current_profile
+			end
 		end
 
 	rename_profile (old_profile_name, new_profile_name: attached STRING)
@@ -178,6 +189,9 @@ feature -- Modification
 		do
 			current_profile_name := Void
 		end
+
+invariant
+--	Valid_current_profile: not is_empty implies has_current_profile
 
 end
 

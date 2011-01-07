@@ -84,7 +84,7 @@ feature -- Initialisation
 						post_warning (Current, "initialise", "model_access_e0", <<strx, rm_schema_directory>>)
 					end
 				else
-					post_warning (Current, "initialise", "model_access_e5", <<rm_schema_directory>>)
+					post_error (Current, "initialise", "model_access_e5", <<rm_schema_directory>>)
 				end
 
 				-- adjust for repository profiles being out of sync with current profile setting (e.g. due to

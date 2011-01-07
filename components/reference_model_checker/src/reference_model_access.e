@@ -4,7 +4,7 @@ note
 	keywords:    "ADL, archetype, reference model"
 	author:      "Thomas Beale"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -155,6 +155,7 @@ end
 					end
 				else
 					create load_list.make_from_array (schema_metadata_table.current_keys)
+			--		set_rm_schemas_load_list (load_list)
 					load_list.compare_objects
 					post_warning (Current, "load_schemas", "model_access_w6", Void)
 				end

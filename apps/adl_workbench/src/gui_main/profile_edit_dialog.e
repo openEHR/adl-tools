@@ -6,13 +6,13 @@ note
 				 ]"
 	keywords:    "GUI, ADL, archetype"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 20011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL"
-	revision:    "$LastChangedRevision"
-	last_change: "$LastChangedDate"
+	file:        "$URL$"
+	revision:    "$LastChangedRevision$"
+	last_change: "$LastChangedDate$"
 
 class
 	PROFILE_EDIT_DIALOG
@@ -52,14 +52,18 @@ feature {NONE} -- Initialization
 			initial_profile_name := an_existing_profile
 		end
 
-	make_new (a_parent_dialog: attached REPOSITORY_DIALOG; a_ref_path, a_work_path: attached STRING)
+	make_new (a_parent_dialog: attached REPOSITORY_DIALOG)
 			-- make with a ref to the object that this dialog and its parent are working on
 		do
 			default_create
 			parent_dialog := a_parent_dialog
 			profile_name_text.set_text (New_profile_name)
-			reference_path_text.set_text (a_ref_path)
-			work_path_text.set_text (a_work_path)
+			if parent_dialog.rep_profiles_copy.has_current_profile then
+				reference_path_text.set_text (parent_dialog.rep_profiles_copy.current_reference_repository_path)
+				work_path_text.set_text (parent_dialog.rep_profiles_copy.current_work_repository_path)
+			else
+				reference_path_text.set_text (user_config_file_directory)
+			end
 			is_new_profile := True
 		end
 
@@ -144,6 +148,7 @@ feature -- Events
 					end
 					parent_dialog.rep_profiles_copy.put_profile (a_prof, prof_name)
 					has_changed_profiles := True
+					
 				else -- in edit existing situation, only do something if the paths have changed
 					-- if existing profile name was changed
 					if not prof_name.same_string (initial_profile_name) then

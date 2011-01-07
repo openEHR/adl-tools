@@ -472,7 +472,6 @@ feature {NONE} -- Implementation
 	node_rebuild_enter_action(a_tree_node: attached EV_TREE_NODE)
 		local
 			a_type, s: STRING
-			parent: EV_TREE_NODE
 			assumed_flag: BOOLEAN
 			pixmap_ext: STRING
 			spec_sts: INTEGER

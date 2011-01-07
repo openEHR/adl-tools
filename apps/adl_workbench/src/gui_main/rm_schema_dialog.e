@@ -87,6 +87,81 @@ feature -- Status
 	has_changed_schema_dir: BOOLEAN
 			-- Schema load directory has changed; should refresh
 
+feature -- Events
+
+	on_ok
+			-- Set shared settings from the dialog widgets.
+		local
+			i: INTEGER
+			new_dir: STRING
+		do
+			hide
+
+			new_dir := rm_schema_dir_text.text.as_string_8
+
+			if not new_dir.same_string (rm_schema_directory) and directory_exists (new_dir) then
+				set_rm_schema_directory (new_dir)
+				has_changed_schema_dir := True
+				rm_schemas_access.initialise (new_dir, rm_schemas_load_list)
+				rm_schemas_access.load_schemas
+				populate_grid
+			end
+
+			-- deal with load list Grid
+			create {ARRAYED_LIST [STRING]} rm_schemas_ll.make (0)
+			rm_schemas_ll.compare_objects
+			from i := 1 until i > grid.row_count loop
+				if attached {EV_GRID_CHECKABLE_LABEL_ITEM} grid.row (i).item (Grid_loaded_col) as gcli and then gcli.is_checked then
+					if attached {EV_GRID_LABEL_ITEM} grid.row (i).item (Grid_name_col) as gli then
+						rm_schemas_ll.extend(gli.text)
+					end
+				end
+				i := i + 1
+			end
+
+			if not rm_schemas_ll.is_empty and not rm_schemas_ll.is_equal (rm_schemas_load_list) then
+				set_rm_schemas_load_list (rm_schemas_ll)
+				rm_schemas_access.set_schema_load_list (rm_schemas_ll)
+				has_changed_schema_load_list := True
+			end
+		end
+
+	on_rm_schema_dir_browse
+			-- Let the user browse for the directory where RM schemas are found.
+			-- if a change is made, reload schemas immediately, then repopulate this dialog
+		local
+			error_dialog: EV_INFORMATION_DIALOG
+			new_dir: STRING
+		do
+			rm_schema_dir_text.set_text (get_directory (rm_schema_dir_text.text.as_string_8, Current))
+			ev_application.process_events
+			new_dir := rm_schema_dir_text.text.as_string_8
+
+			if not new_dir.same_string (rm_schema_directory) then
+				ok_button.disable_sensitive
+				cancel_button.disable_sensitive
+
+				rm_schemas_access.initialise (new_dir, rm_schemas_load_list)
+				rm_schemas_access.load_schemas
+
+				if not rm_schemas_access.found_valid_schemas then
+					create error_dialog.make_with_text (billboard.content)
+					billboard.clear
+					error_dialog.show_modal_to_window (Current)
+
+					-- revert to previous
+					rm_schema_dir_text.set_text (rm_schema_directory)
+					rm_schemas_access.initialise(rm_schema_directory, rm_schemas_load_list)
+					rm_schemas_access.load_schemas
+				end
+
+				populate_grid
+
+				ok_button.enable_sensitive
+				cancel_button.enable_sensitive
+			end
+		end
+
 feature {NONE} -- Implementation
 
 	populate_grid
@@ -180,75 +255,6 @@ feature {NONE} -- Implementation
 			create info_dialog.make_with_text (rm_schemas_access.all_schemas.item (a_schema_id).errors.as_string)
 			info_dialog.show_modal_to_window (Current)
 		end
-
-	on_ok
-			-- Set shared settings from the dialog widgets.
-		local
-			i: INTEGER
-			new_dir: STRING
-		do
-			hide
-
-			new_dir := rm_schema_dir_text.text.as_string_8
-
-			if not new_dir.same_string (rm_schema_directory) and directory_exists (new_dir) then
-				set_rm_schema_directory (new_dir)
-				has_changed_schema_dir := True
-				rm_schemas_access.initialise (new_dir, rm_schemas_load_list)
-				rm_schemas_access.load_schemas
-				populate_grid
-			end
-
-			-- deal with load list Grid
-			create {ARRAYED_LIST [STRING]} rm_schemas_ll.make (0)
-			rm_schemas_ll.compare_objects
-			from i := 1 until i > grid.row_count loop
-				if attached {EV_GRID_CHECKABLE_LABEL_ITEM} grid.row (i).item (Grid_loaded_col) as gcli and then gcli.is_checked then
-					if attached {EV_GRID_LABEL_ITEM} grid.row (i).item (Grid_name_col) as gli then
-						rm_schemas_ll.extend(gli.text)
-					end
-				end
-				i := i + 1
-			end
-
-			if not rm_schemas_ll.is_empty and not rm_schemas_ll.is_equal (rm_schemas_load_list) then
-				set_rm_schemas_load_list (rm_schemas_ll)
-				rm_schemas_access.set_schema_load_list (rm_schemas_ll)
-				has_changed_schema_load_list := True
-			end
-		end
-
-	on_rm_schema_dir_browse
-			-- Let the user browse for the directory where RM schemas are found.
-			-- if a change is made, reload schemas immediately, then repopulate this dialog
-		local
-			error_dialog: EV_INFORMATION_DIALOG
-			new_dir: STRING
-		do
-			rm_schema_dir_text.set_text (get_directory (rm_schema_dir_text.text.as_string_8, Current))
-			ev_application.process_events
-			new_dir := rm_schema_dir_text.text.as_string_8
-
-			if not new_dir.same_string (rm_schema_directory) then
-				rm_schemas_access.initialise (new_dir, rm_schemas_load_list)
-				rm_schemas_access.load_schemas
-
-				if not rm_schemas_access.found_valid_schemas then
-					create error_dialog.make_with_text (billboard.content)
-					billboard.clear
-					error_dialog.show_modal_to_window (Current)
-
-					-- revert to previous
-					rm_schema_dir_text.set_text (rm_schema_directory)
-					rm_schemas_access.initialise(rm_schema_directory, rm_schemas_load_list)
-					rm_schemas_access.load_schemas
-				end
-
-				populate_grid
-			end
-		end
-
-feature {NONE} -- Implementation
 
 	rm_schemas_ll: LIST [STRING]
 			-- list of checked schemas in options dialog

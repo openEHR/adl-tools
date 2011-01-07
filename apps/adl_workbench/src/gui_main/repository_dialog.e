@@ -9,13 +9,13 @@ note
 				 ]"
 	keywords:    "GUI, ADL, archetype"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2008-2010 Ocean Informatics Pty Ltd"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2008-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL"
-	revision:    "$LastChangedRevision"
-	last_change: "$LastChangedDate"
+	file:        "$URL$"
+	revision:    "$LastChangedRevision$"
+	last_change: "$LastChangedDate$"
 
 class
 	REPOSITORY_DIALOG
@@ -91,14 +91,12 @@ feature {NONE} -- Events
 			-- Called by `select_actions' of `profile_add_button'.
 		local
 			edit_dialog: PROFILE_EDIT_DIALOG
-			new_prof: REPOSITORY_PROFILE
-			finished: BOOLEAN
-			error_dialog: EV_INFORMATION_DIALOG
 		do
-			create edit_dialog.make_new (Current, repository_profiles.current_reference_repository_path, repository_profiles.current_work_repository_path)
+			create edit_dialog.make_new (Current)
 			edit_dialog.show_modal_to_window (Current)
 			if edit_dialog.is_valid then
-				any_profile_changes_made_pending := edit_dialog.has_changed_profiles
+				any_profile_changes_made_pending := any_profile_changes_made_pending or edit_dialog.has_changed_profiles
+				current_profile_changed_pending := current_profile_changed_pending or not repository_profiles.current_profile_name.same_string (rep_profiles_copy.current_profile_name)
 				populate_controls
 			end
 			edit_dialog.destroy
@@ -113,8 +111,8 @@ feature {NONE} -- Events
 			if edit_dialog.is_valid then
 				if edit_dialog.has_changed_profiles then
 					populate_controls
-					current_profile_changed_pending := repository_profiles.current_profile_name /~ edit_dialog.initial_profile_name
-					any_profile_changes_made_pending := edit_dialog.has_changed_profiles
+					current_profile_changed_pending := current_profile_changed_pending or not repository_profiles.current_profile_name.same_string (edit_dialog.initial_profile_name)
+					any_profile_changes_made_pending := any_profile_changes_made_pending or edit_dialog.has_changed_profiles
 				end
 			end
 			edit_dialog.destroy
@@ -124,24 +122,31 @@ feature {NONE} -- Events
 			-- Called by `select_actions' of `profile_remove_button'.
 		local
 			prof_names: ARRAYED_LIST [STRING]
+			error_dialog: EV_INFORMATION_DIALOG
 		do
-			current_profile_removed_pending := repository_profiles.current_profile_name ~ selected_profile_key
-			rep_profiles_copy.remove_profile (selected_profile_key)
+			if rep_profiles_copy.count > 1 then
+				current_profile_removed_pending := current_profile_removed_pending or repository_profiles.current_profile_name.same_string (selected_profile_key)
+				rep_profiles_copy.remove_profile (selected_profile_key)
 
-			-- figure out which profile to make the new current one
-			prof_names := profile_names
-			prof_names.search (selected_profile_key)
-			prof_names.remove
-			if not prof_names.is_empty then
-				if prof_names.off then
-					prof_names.finish
+				-- figure out which profile to make the new current one
+				prof_names := profile_list.strings_8
+				prof_names.compare_objects
+				prof_names.search (selected_profile_key)
+				prof_names.remove
+				if not prof_names.is_empty then
+					if prof_names.off then
+						prof_names.finish
+					end
+					selected_profile_key := prof_names.item
+					rep_profiles_copy.set_current_profile_name (selected_profile_key)
+				else
+					selected_profile_key := Void
 				end
-				selected_profile_key := prof_names.item
-				rep_profiles_copy.set_current_profile_name (selected_profile_key)
+				populate_controls
 			else
-				selected_profile_key := Void
+				create error_dialog.make_with_text (create_message_line ("cant_remove_last_profile", Void))
+				error_dialog.show_modal_to_window (Current)
 			end
-			populate_controls
 		end
 
 feature {PROFILE_EDIT_DIALOG} -- Access
@@ -191,23 +196,14 @@ feature {NONE} -- Implementation
 			-- Has the user changed the paths or name for the current profile in use in the main application,
 			-- within the cached copy of the profiles?
 
-	profile_names: attached ARRAYED_LIST [STRING]
-			-- The names of all of the profiles displayed in `profile_list'.
-		do
-			Result := profile_list.strings_8
-			Result.compare_objects
-		ensure
-			comparing_objects: Result.object_comparison
-			correct_count: Result.count = profile_list.count
-		end
-
 	populate_controls
 			-- Initialise the dialog's widgets from shared settings.
 		do
 			profile_list.set_strings (rep_profiles_copy.profiles.current_keys)
-
 			if not profile_list.is_empty then
-				profile_list.i_th (profile_names.index_of (selected_profile_key, 1).max (1)).enable_select
+				if not attached selected_profile_key then
+					profile_list.first.enable_select
+				end
 				populate_path_controls
 			end
 		end

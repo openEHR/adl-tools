@@ -4,7 +4,7 @@ note
 	keywords:    "test, ADL"
 	author:      "Thomas Beale"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -83,7 +83,7 @@ feature {NONE} -- Initialization
 			add_menu_shortcut (repository_menu_interrupt_build, key_escape, False, False, True)
 			add_menu_shortcut (repository_menu_refresh, key_r, True, False, False)
 
-			add_menu_shortcut (tools_menu_reload_schemas, key_l, True, False, False)
+			add_menu_shortcut (rm_schemas_menu_reload_schemas, key_l, True, False, False)
 
 			add_menu_shortcut (history_menu_back, key_left, False, True, False)
 			add_menu_shortcut (history_menu_forward, key_right, False, True, False)
@@ -448,7 +448,7 @@ feature {NONE} -- Repository events
 			-- if the current profile changed or was removed, repopulate the explorers
 			if current_profile_removed or current_profile_changed then
 				clear_status_area
-				populate_directory_controls(True)
+				populate_directory_controls (True)
 			end
 		end
 
@@ -675,6 +675,8 @@ feature {NONE} -- Tools events
 			create dialog
 			dialog.show_modal_to_window (Current)
 
+			populate_archetype_profile_combo
+			populate_test_profile_combo
 			if dialog.has_changed_schema_load_list then
 				clear_status_area
 				rm_schemas_access.load_schemas
