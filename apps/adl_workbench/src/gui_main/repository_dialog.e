@@ -113,7 +113,7 @@ feature {NONE} -- Events
 			if edit_dialog.is_valid then
 				if edit_dialog.has_changed_profiles then
 					populate_controls
-					current_profile_changed_pending := not repository_profiles.current_profile_name.same_string (edit_dialog.initial_profile_name)
+					current_profile_changed_pending := repository_profiles.current_profile_name /~ edit_dialog.initial_profile_name
 					any_profile_changes_made_pending := edit_dialog.has_changed_profiles
 				end
 			end
@@ -125,12 +125,11 @@ feature {NONE} -- Events
 		local
 			prof_names: ARRAYED_LIST [STRING]
 		do
-			current_profile_removed_pending := repository_profiles.current_profile_name.same_string (selected_profile_key)
+			current_profile_removed_pending := repository_profiles.current_profile_name ~ selected_profile_key
 			rep_profiles_copy.remove_profile (selected_profile_key)
 
 			-- figure out which profile to make the new current one
-			prof_names := profile_list.strings_8
-			prof_names.compare_objects
+			prof_names := profile_names
 			prof_names.search (selected_profile_key)
 			prof_names.remove
 			if not prof_names.is_empty then
@@ -192,14 +191,23 @@ feature {NONE} -- Implementation
 			-- Has the user changed the paths or name for the current profile in use in the main application,
 			-- within the cached copy of the profiles?
 
+	profile_names: attached ARRAYED_LIST [STRING]
+			-- The names of all of the profiles displayed in `profile_list'.
+		do
+			Result := profile_list.strings_8
+			Result.compare_objects
+		ensure
+			comparing_objects: Result.object_comparison
+			correct_count: Result.count = profile_list.count
+		end
+
 	populate_controls
 			-- Initialise the dialog's widgets from shared settings.
 		do
 			profile_list.set_strings (rep_profiles_copy.profiles.current_keys)
+
 			if not profile_list.is_empty then
-				if not attached selected_profile_key then
-					profile_list.first.enable_select
-				end
+				profile_list.i_th (profile_names.index_of (selected_profile_key, 1).max (1)).enable_select
 				populate_path_controls
 			end
 		end

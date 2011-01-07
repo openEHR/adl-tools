@@ -65,6 +65,8 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent border_width)
 			profile_name_hbox.disable_item_expand (l_ev_label_1)
 			l_ev_label_1.set_text ("Profile Name:")
+			l_ev_label_1.set_minimum_width (90)
+			l_ev_label_1.align_text_right
 			ref_path_frame.set_text ("Reference Repository Path")
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_1.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
@@ -74,7 +76,8 @@ feature {NONE}-- Initialization
 			reference_path_text.set_minimum_width (300)
 			reference_path_browse_button.set_text ("Browse...")
 			reference_path_browse_button.set_tooltip ("Choose directory above where the archetypes are")
-			reference_path_browse_button.set_minimum_width (65)
+			reference_path_browse_button.set_minimum_width (90)
+			reference_path_browse_button.set_minimum_height (26)
 			work_path_frame.set_text ("Working Repository Path")
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_2.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
@@ -84,19 +87,22 @@ feature {NONE}-- Initialization
 			work_path_text.set_minimum_width (300)
 			work_path_browse_button.set_text ("Browse...")
 			work_path_browse_button.set_tooltip ("Choose directory above where the archetypes are")
-			work_path_browse_button.set_minimum_width (65)
+			work_path_browse_button.set_minimum_width (90)
+			work_path_browse_button.set_minimum_height (26)
 			l_ev_horizontal_box_3.set_padding (15)
 			l_ev_horizontal_box_3.set_border_width (10)
 			l_ev_horizontal_box_3.disable_item_expand (ok_button)
 			l_ev_horizontal_box_3.disable_item_expand (cancel_button)
-			ok_button.set_text ("Ok")
+			ok_button.set_text ("OK")
 			ok_button.set_minimum_width (100)
+			ok_button.set_minimum_height (26)
 			cancel_button.set_text ("Cancel")
 			cancel_button.set_minimum_width (100)
+			set_minimum_width (500)
 			set_minimum_height (215)
 			set_maximum_width (1000)
 			set_maximum_height (400)
-			set_title ("Display window")
+			set_title ("Edit Repository Profile")
 
 			set_all_attributes_using_constants
 			
@@ -104,6 +110,7 @@ feature {NONE}-- Initialization
 			reference_path_browse_button.select_actions.extend (agent get_reference_repository_path)
 			work_path_browse_button.select_actions.extend (agent get_work_repository_path)
 			ok_button.select_actions.extend (agent on_ok)
+			show_actions.extend (agent on_show)
 
 				-- Call `user_initialization'.
 			user_initialization
@@ -187,6 +194,11 @@ feature {NONE} -- Implementation
 	
 	on_ok
 			-- Called by `select_actions' of `ok_button'.
+		deferred
+		end
+	
+	on_show
+			-- Called by `show_actions' of `profile_edit_dialog'.
 		deferred
 		end
 	

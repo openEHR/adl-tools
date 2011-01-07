@@ -83,6 +83,12 @@ feature {NONE} -- Initialization
 
 feature -- Events
 
+	on_show
+			-- On showing the dialog, set focus to the profile name text box.
+		do
+			profile_name_text.set_focus
+		end
+
 	on_ok
 			-- Called by `select_actions' of `profile_edit_dialog_ok_button'.
 		local
