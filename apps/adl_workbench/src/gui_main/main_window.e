@@ -171,6 +171,12 @@ feature -- Status setting
 				set_difftool_command (default_difftool_command)
 			end
 
+			-- if no RM schemas yet available, ask user to configure
+			if not directory_exists (rm_schema_directory) or not rm_schemas_access.found_valid_schemas then
+				set_rm_schemas
+			end
+
+			-- if some RM schemas now found, set up a repository if necessary
 			if rm_schemas_access.found_valid_schemas then
 				if repository_profiles.current_reference_repository_path.is_empty then
 					set_repository
@@ -667,6 +673,8 @@ feature {NONE} -- Tools events
 			end
 		end
 
+feature -- RM Schemas Events
+
 	set_rm_schemas
 			-- Called by `select_actions' of `tools_menu_rm_schemas'.
 		local
@@ -698,6 +706,53 @@ feature {NONE} -- Tools events
 			rm_schemas_access.load_schemas
 			populate_directory_controls(True)
 		end
+
+feature {NONE} -- Help events
+
+	show_online_help
+			-- Display the application's online help in an external browser.
+		do
+			show_in_system_browser (adl_help_page_url)
+		end
+
+	show_icon_help
+			-- Display the icons help dialog.
+		do
+			(create {ICON_DIALOG}).show_modal_to_window (Current)
+		end
+
+	show_release_notes
+			-- Display news about the latest release.
+		do
+			show_in_system_browser (Release_notes_file_path)
+		end
+
+	show_clinical_knowledge_manager
+			-- Display CKM in an external browser.
+		do
+			show_in_system_browser (clinical_knowledge_manager_url)
+		end
+
+	show_bug_reporter
+			-- Display the problem reporter in an external browser.
+		do
+			show_in_system_browser (bug_reporter_url)
+		end
+
+	show_about
+			-- Display the application's About box.
+		local
+			dialog: EV_INFORMATION_DIALOG
+		do
+			create dialog.make_with_text (splash_text)
+			dialog.set_title ("About ADL Workbench")
+			dialog.set_pixmap (pixmaps ["openEHR_logo"])
+			dialog.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
+			dialog.set_position (app_x_position + (app_width - dialog.width) // 2, app_y_position + (app_height - dialog.height) // 2)
+			dialog.show_modal_to_window (Current)
+		end
+
+feature -- Test Screen Events
 
 	on_diff_source
 			-- show diffs between input differential archetype and serialised output, from test diff dir
@@ -749,51 +804,6 @@ feature {NONE} -- Tools events
 		do
 			command := difftool_command + " %"" + left_dir + "%" %"" + right_dir + "%""
 			execution_environment.launch (command)
-		end
-
-feature {NONE} -- Help events
-
-	show_online_help
-			-- Display the application's online help in an external browser.
-		do
-			show_in_system_browser (adl_help_page_url)
-		end
-
-	show_icon_help
-			-- Display the icons help dialog.
-		do
-			(create {ICON_DIALOG}).show_modal_to_window (Current)
-		end
-
-	show_release_notes
-			-- Display news about the latest release.
-		do
-			show_in_system_browser (Release_notes_file_path)
-		end
-
-	show_clinical_knowledge_manager
-			-- Display CKM in an external browser.
-		do
-			show_in_system_browser (clinical_knowledge_manager_url)
-		end
-
-	show_bug_reporter
-			-- Display the problem reporter in an external browser.
-		do
-			show_in_system_browser (bug_reporter_url)
-		end
-
-	show_about
-			-- Display the application's About box.
-		local
-			dialog: EV_INFORMATION_DIALOG
-		do
-			create dialog.make_with_text (splash_text)
-			dialog.set_title ("About ADL Workbench")
-			dialog.set_pixmap (pixmaps ["openEHR_logo"])
-			dialog.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
-			dialog.set_position (app_x_position + (app_width - dialog.width) // 2, app_y_position + (app_height - dialog.height) // 2)
-			dialog.show_modal_to_window (Current)
 		end
 
 feature -- Archetype commands

@@ -55,6 +55,7 @@ feature -- Initialisation
 		do
 			schema_directory := a_rm_dir
 			schemas_load_list := a_schemas_load_list
+			schemas_load_list.compare_objects
 			initialise_schema_metadata_table
 		ensure
 			Schemas_dir_set: schema_directory = a_rm_dir
@@ -94,6 +95,10 @@ feature -- Access
 			Result := schemas_by_package.item (a_qualified_package_name.as_lower)
 		end
 
+	schemas_load_list: LIST [STRING]
+			-- initial load list for this session, set during initialisation. This may initially be empty
+			-- or contain invalid entries; it will be modified to correctly list the actual schemas found
+
 	load_count: INTEGER
 			-- load counter so other parts of the application can see if anything has changed
 
@@ -124,7 +129,6 @@ feature -- Commands
 			-- populate the rm_schemas table by reading in schemas either specified in the 'rm_schemas_load_list'
 			-- config variable, or by reading all schemas found in the schema directory
 		local
-			load_list: ARRAYED_LIST [STRING]
 			model_publisher: STRING
 			qualified_pkg_name: STRING
 			pkgs: HASH_TABLE [BMM_PACKAGE_DEFINITION, STRING]
@@ -143,20 +147,17 @@ end
 
 				-- set list of schemas to load; used later to determine what to put in `top_level_schemas'
 				if not schemas_load_list.is_empty then
-					create load_list.make(0)
-					load_list.compare_objects
 					from schemas_load_list.start until schemas_load_list.off loop
-						if schema_metadata_table.has (schemas_load_list.item) then
-							load_list.extend(schemas_load_list.item)
-						else
+						if not schema_metadata_table.has (schemas_load_list.item) then
 							post_warning (Current, "load_schemas", "model_access_w7", <<schemas_load_list.item>>)
+							schemas_load_list.remove
+						else
+							schemas_load_list.forth
 						end
-						schemas_load_list.forth
 					end
 				else
-					create load_list.make_from_array (schema_metadata_table.current_keys)
-			--		set_rm_schemas_load_list (load_list)
-					load_list.compare_objects
+					create {ARRAYED_LIST[STRING]} schemas_load_list.make_from_array (schema_metadata_table.current_keys)
+					schemas_load_list.compare_objects
 					post_warning (Current, "load_schemas", "model_access_w6", Void)
 				end
 
@@ -225,7 +226,7 @@ end
 debug("rm_schema")
 	io.put_string ("%Tfinalising top-level schema " + all_schemas.key_for_iteration + "%N")
 end
-					if all_schemas.item_for_iteration.is_top_level and load_list.has (all_schemas.key_for_iteration) then
+					if all_schemas.item_for_iteration.is_top_level and schemas_load_list.has (all_schemas.key_for_iteration) then
 debug("rm_schema")
 	io.put_string ("%T%Tschema found in load list " + all_schemas.key_for_iteration + "%N")
 end
@@ -272,9 +273,6 @@ end
 		end
 
 feature {NONE} -- Implementation
-
-	schemas_load_list: LIST [STRING]
-			-- initial load list for this session, set during initialisation
 
 	schema_inclusion_map: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
 			-- map of inclusions among schemas found in the directory; structure:

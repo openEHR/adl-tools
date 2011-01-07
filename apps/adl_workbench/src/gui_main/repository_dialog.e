@@ -96,7 +96,8 @@ feature {NONE} -- Events
 			edit_dialog.show_modal_to_window (Current)
 			if edit_dialog.is_valid then
 				any_profile_changes_made_pending := any_profile_changes_made_pending or edit_dialog.has_changed_profiles
-				current_profile_changed_pending := current_profile_changed_pending or not repository_profiles.current_profile_name.same_string (rep_profiles_copy.current_profile_name)
+				-- if there was no profile initially, and one was just created => register change
+				current_profile_changed_pending := current_profile_changed_pending or not repository_profiles.has_current_profile
 				populate_controls
 			end
 			edit_dialog.destroy

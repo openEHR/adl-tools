@@ -107,7 +107,7 @@ feature -- Events
 				populate_grid
 			end
 
-			-- deal with load list Grid
+			-- get the user-chosen list of schemas from the load list Grid
 			create {ARRAYED_LIST [STRING]} rm_schemas_ll.make (0)
 			rm_schemas_ll.compare_objects
 			from i := 1 until i > grid.row_count loop
@@ -185,7 +185,7 @@ feature {NONE} -- Implementation
 				-- column 1 - check box to indicate loaded; only on top-level schemas
 				if rm_schemas_access.all_schemas.item_for_iteration.is_top_level then
 					create gcli.make_with_text ("        ")
-					gcli.set_is_checked (rm_schemas_load_list.has (schema_id))
+					gcli.set_is_checked (rm_schemas_access.schemas_load_list.has (schema_id))
 					grid.set_item (Grid_loaded_col, grid.row_count + 1, gcli)
 					row := gcli.row
 				else
