@@ -58,37 +58,41 @@ feature -- Access
 
 	current_profile: REPOSITORY_PROFILE
 		do
-			if has_profile(current_profile_name) then
+			if not is_empty then
+				if not has_profile(current_profile_name) then
+					profiles.start
+					current_profile_name := profiles.key_for_iteration
+				end
 				Result := profile(current_profile_name)
 			end
 		end
 
 	profiles: HASH_TABLE [REPOSITORY_PROFILE, STRING]
 
-	profile (a_profile_name: attached STRING): REPOSITORY_PROFILE
+	profile (a_profile_name: attached STRING): attached REPOSITORY_PROFILE
 		require
 			has_profile(a_profile_name)
 		do
 			Result := profiles.item(a_profile_name)
 		end
 
-	reference_repository_path: attached STRING
+	current_reference_repository_path: attached STRING
 			-- path of root of ADL file tree
 		do
 			if has_current_profile then
 				Result := current_profile.reference_repository
 			else
-				create Result.make(0)
+				create Result.make_empty
 			end
 		end
 
-	work_repository_path: attached STRING
+	current_work_repository_path: attached STRING
 			-- path of root of ADL file tree
 		do
 			if has_current_profile and current_profile.has_work_repository then
 				Result := current_profile.work_repository
 			else
-				create Result.make(0)
+				create Result.make_empty
 			end
 		end
 
@@ -156,10 +160,15 @@ feature -- Modification
 		require
 			has_profile(old_profile_name)
 		do
-			profiles.replace_key(old_profile_name, new_profile_name)
+			profiles.replace_key(new_profile_name, old_profile_name)
+			if attached current_profile_name and then current_profile_name.is_equal (old_profile_name) then
+				current_profile_name := new_profile_name
+			end
 		end
 
 	set_current_profile_name (a_profile_name: attached STRING)
+		require
+			has_profile(a_profile_name)
 		do
 			current_profile_name := a_profile_name
 		end
@@ -171,7 +180,6 @@ feature -- Modification
 		end
 
 end
-
 
 
 --|

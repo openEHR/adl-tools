@@ -172,7 +172,7 @@ feature -- Status setting
 			end
 
 			if rm_schemas_access.found_valid_schemas then
-				if repository_profiles.reference_repository_path.is_empty then
+				if repository_profiles.current_reference_repository_path.is_empty then
 					set_repository
 				else
 					populate_archetype_profile_combo
@@ -423,23 +423,30 @@ feature {NONE} -- Repository events
 			-- Display the Repository Settings dialog.
 		local
 			dialog: REPOSITORY_DIALOG
-			use_changes_after_destroying_dialog: BOOLEAN
+			any_profile_changes_made: BOOLEAN
+			current_profile_removed: BOOLEAN
+			current_profile_changed: BOOLEAN
 		do
 			create dialog
 			dialog.show_modal_to_window (Current)
 
-			if dialog.no_profiles_available then
+			any_profile_changes_made := dialog.any_profile_changes_made
+			if any_profile_changes_made then
+				current_profile_removed := dialog.current_profile_removed
+				current_profile_changed := dialog.current_profile_changed
 				save_resources_and_show_status
-			else
-				use_changes_after_destroying_dialog := dialog.has_changed_profile or dialog.has_changed_profile_paths
 			end
 
 			dialog.destroy
 
-			populate_archetype_profile_combo
-			populate_test_profile_combo
+			-- if anything changed, repopulate the profile combo box selectors
+			if dialog.any_profile_changes_made then
+				populate_archetype_profile_combo
+				populate_test_profile_combo
+			end
 
-			if use_changes_after_destroying_dialog then
+			-- if the current profile changed or was removed, repopulate the explorers
+			if current_profile_removed or current_profile_changed then
 				clear_status_area
 				populate_directory_controls(True)
 			end
@@ -1181,7 +1188,7 @@ feature {NONE} -- Implementation
 				set_title (title.substring (title.substring_index (" - ", 1) + 3, title.count))
 			end
 
-			set_title (repository_profiles.reference_repository_path + " - " + title)
+			set_title (repository_profiles.current_reference_repository_path + " - " + title)
 		--	clear_status_area
 
 			append_status_area (create_message_line ("populating_directory_start", <<repository_profiles.current_profile_name>>))

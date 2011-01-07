@@ -42,13 +42,13 @@ feature -- Access
 		do
 			if not directories.has(repository_profiles.current_profile_name) or else refresh then
 				create new_dir.make
-				if directory_exists (repository_profiles.reference_repository_path) then
-					source_repositories.set_reference_repository (repository_profiles.reference_repository_path)
-					if not repository_profiles.work_repository_path.is_empty then
-						if source_repositories.valid_working_repository_path (repository_profiles.work_repository_path) then
-							source_repositories.set_work_repository (repository_profiles.work_repository_path)
+				if directory_exists (repository_profiles.current_reference_repository_path) then
+					source_repositories.set_reference_repository (repository_profiles.current_reference_repository_path)
+					if not repository_profiles.current_work_repository_path.is_empty then
+						if source_repositories.valid_working_repository_path (repository_profiles.current_work_repository_path) then
+							source_repositories.set_work_repository (repository_profiles.current_work_repository_path)
 						else
-							post_error (Current, "switch_to_profile", "work_repo_not_found", <<repository_profiles.work_repository_path>>)
+							post_error (Current, "switch_to_profile", "work_repo_not_found", <<repository_profiles.current_work_repository_path>>)
 						end
 					else
 						source_repositories.remove_work_repository
@@ -56,7 +56,7 @@ feature -- Access
 					new_dir.populate
 					directories.force(new_dir, repository_profiles.current_profile_name)
 				else
-					post_error (Current, "switch_to_profile", "ref_repo_not_found", <<repository_profiles.reference_repository_path>>)
+					post_error (Current, "switch_to_profile", "ref_repo_not_found", <<repository_profiles.current_reference_repository_path>>)
 				end
 			end
 		end

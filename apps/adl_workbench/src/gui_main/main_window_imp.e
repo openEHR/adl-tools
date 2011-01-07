@@ -268,7 +268,7 @@ feature {NONE}-- Initialization
 			edit_menu_select_all.set_text ("Select &All")
 			edit_menu_clipboard.set_text ("Clip&board...")
 			repository_menu.set_text ("&Repository")
-			repository_menu_set_repository.set_text ("&Set Repository...")
+			repository_menu_set_repository.set_text ("&Configure Repository Profiles...")
 			repository_menu_build_all.set_text ("&Build All")
 			repository_menu_rebuild_all.set_text ("&Rebuild All")
 			repository_menu_build_subtree.set_text ("Build Sub&tree")
