@@ -25,7 +25,7 @@ templates = <
 		["remove_profile_question"] = <"Remove profile $1?">
 		["add_one_profile_only"] = <"Can only add one profile at a time; hit OK or Cancel">
 		["cant_remove_with_add_pending"] = <"Previous add needs to be committed; hit OK or Cancel">
-		["duplicate_profile"] = <"new profile name $1 already used">
+		["duplicate_profile"] = <"New profile name $1 already used">
 
 		-- RM_SCHEMA_DIALOG
 		["rm_schema_dir_not_found"] = <"Directory $1 not found; please specify a valid directory">
