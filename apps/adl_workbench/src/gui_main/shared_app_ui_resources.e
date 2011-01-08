@@ -263,6 +263,7 @@ feature -- Access
 			Result.force (["magnifier.ico", Void], "magnifier")
 
 			Result.force (["openEHR.png", Void], "openEHR_logo")
+			Result.force (["openehr_adl_workbench_logo.png", Void], "adl_workbench_logo")
 		ensure
 			not_empty: not Result.is_empty
 		end

@@ -764,7 +764,7 @@ feature {NONE} -- Help events
 		do
 			create dialog.make_with_text (splash_text)
 			dialog.set_title ("About ADL Workbench")
-			dialog.set_pixmap (pixmaps ["openEHR_logo"])
+			dialog.set_pixmap (pixmaps ["adl_workbench_logo"])
 			dialog.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
 			dialog.set_position (app_x_position + (app_width - dialog.width) // 2, app_y_position + (app_height - dialog.height) // 2)
 			dialog.show_modal_to_window (Current)
