@@ -127,7 +127,7 @@ feature {NONE} -- Initialization
 			archetype_explorer_pixmap.copy (pixmaps ["archetype_category"])
 			template_explorer_pixmap.copy (pixmaps ["template_category"])
 
-			archetype_notebook.item_tab (description_box).set_pixmap (pixmaps ["description"])
+			archetype_notebook.item_tab (description_notebook).set_pixmap (pixmaps ["description"])
 			archetype_notebook.item_tab (node_map).set_pixmap (pixmaps ["node_map"])
 			archetype_notebook.item_tab (path_analysis).set_pixmap (pixmaps ["paths"])
 			archetype_notebook.item_tab (source_rich_text).set_pixmap (pixmaps ["diff"])

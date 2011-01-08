@@ -55,7 +55,7 @@ feature -- Commands
 	clear
 			-- Wipe out content.
 		do
-			gui.terminologies_list.wipe_out
+			gui.description_term_mappings_list.wipe_out
 			gui.arch_desc_status_text.remove_text
 
 			gui.arch_desc_auth_orig_auth_mlist.wipe_out
@@ -83,7 +83,7 @@ feature -- Commands
 			clear
 			if current_arch_dir.has_validated_selected_archetype then
 				archetype := current_arch_dir.selected_archetype.differential_archetype
-				gui.terminologies_list.set_strings (archetype.ontology.terminologies_available)
+				gui.description_term_mappings_list.set_strings (archetype.ontology.terminologies_available)
 				if attached archetype.description then
 					populate_authorship
 					populate_details
