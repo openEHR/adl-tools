@@ -228,6 +228,7 @@ feature {NONE}-- Initialization
 			term_definitions_frame.extend (ontology_term_definitions_multi_column_list)
 			l_ev_vertical_split_area_1.extend (constraint_definitions_frame)
 			constraint_definitions_frame.extend (ontology_constraint_definitions_multi_column_list)
+			archetype_notebook.extend (annotations_grid)
 			archetype_notebook.extend (source_rich_text)
 			total_split_area.extend (status_notebook)
 			status_notebook.extend (parser_status_area)
@@ -435,7 +436,8 @@ feature {NONE}-- Initialization
 			archetype_notebook.set_item_text (path_analysis, "Paths")
 			archetype_notebook.set_item_text (slots_box, "Slots")
 			archetype_notebook.set_item_text (terminology_area, "Terminology")
-			archetype_notebook.set_item_text (source_rich_text, "ADL")
+			archetype_notebook.set_item_text (annotations_grid, "Annotations")
+			archetype_notebook.set_item_text (source_rich_text, "ADL (adls)")
 			description_notebook.set_item_text (description_admin_box, "Administrative")
 			description_notebook.set_item_text (description_desc_box, "Descriptive")
 			description_notebook.set_item_text (description_term_box, "Term bindings")
@@ -1197,6 +1199,7 @@ feature {NONE}-- Initialization
 			create ontology_term_definitions_multi_column_list
 			create constraint_definitions_frame
 			create ontology_constraint_definitions_multi_column_list
+			create annotations_grid
 			create source_rich_text
 			create status_notebook
 			create parser_status_area
@@ -1339,11 +1342,12 @@ feature -- Access
 	l_ev_cell_2: EV_CELL
 	node_map_domain_radio_button, node_map_technical_radio_button, node_map_reference_model_radio_button: EV_RADIO_BUTTON
 	path_analysis_column_view_checkable_list: EV_CHECKABLE_LIST
+	annotations_grid,
+	compiler_output_grid, archetype_test_tree_grid: EV_GRID
 	source_rich_text: EV_RICH_TEXT
-	compiler_output_grid,
-	archetype_test_tree_grid: EV_GRID
 	remove_unused_codes_rb: EV_CHECK_BUTTON
-	l_ev_horizontal_separator_1, l_ev_horizontal_separator_2: EV_HORIZONTAL_SEPARATOR
+	l_ev_horizontal_separator_1,
+	l_ev_horizontal_separator_2: EV_HORIZONTAL_SEPARATOR
 
 feature {NONE} -- Implementation
 

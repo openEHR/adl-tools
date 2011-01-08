@@ -1,10 +1,10 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Populate ontology controls in ADL test workbench"
+	description: "Test page in ADL test workbench"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -293,7 +293,7 @@ feature {NONE} -- Commands
 			if attached {EV_GRID_CHECKABLE_LABEL_ITEM} row.item (2) as checkbox and then checkbox.is_checked then
 				target ?= row.data
 
-				if target /= Void then
+				if attached target then
 					row.ensure_visible
 
 					from
@@ -466,7 +466,7 @@ feature {NONE} -- Tests
 		local
 			flat_path: STRING
 		do
-			Result := test_failed
+			Result := Test_failed
 			if target.is_valid then
 				if diff_dirs_available then
 					flat_path := file_system.pathname (diff_dir_flat_new, target.ontological_name + Archetype_flat_file_extension)
@@ -524,10 +524,8 @@ feature {NONE} -- Implementation
 	original_differential_text: STRING
 			-- copy of archetype text after successful parse; = what was on file
 
-	populate_gui_tree_node_enter (ari: ARCH_REP_ITEM)
+	populate_gui_tree_node_enter (ari: attached ARCH_REP_ITEM)
 			-- Add a node representing `an_item' to `gui_file_tree'.
-		require
-			ari /= Void
 		local
 			gli: EV_GRID_LABEL_ITEM
 			row: EV_GRID_ROW
@@ -567,7 +565,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_gui_tree_node_exit (an_item: ARCH_REP_ITEM)
+	populate_gui_tree_node_exit (an_item: attached ARCH_REP_ITEM)
 		do
 			if an_item.has_artefacts then
 				grid_row_stack.remove
@@ -653,15 +651,11 @@ feature {NONE} -- Implementation
 
 	on_grid_key_press (key: EV_KEY)
 			-- When the user presses the space key, toggle the selected check box.
-		local
-			checkbox: EV_GRID_CHECKABLE_LABEL_ITEM
 		do
 			Precursor (key)
-
 			if not (ev_application.shift_pressed or ev_application.alt_pressed or ev_application.ctrl_pressed) then
-				if key /= Void and then key.code = key_space then
-					checkbox ?= selected_cell
-					if checkbox /= Void then
+				if attached key and then key.code = key_space then
+					if attached {EV_GRID_CHECKABLE_LABEL_ITEM} selected_cell as checkbox then
 						checkbox.toggle_is_checked
 						set_checkboxes_recursively (checkbox)
 					end
@@ -669,27 +663,21 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	display_arrayed_list (str_lst: ARRAYED_LIST [STRING]): STRING
+	display_arrayed_list (str_lst: attached ARRAYED_LIST [STRING]): attached STRING
 			--
-		require
-			str_lst /= Void
 		do
 			create Result.make_empty
-
 			from str_lst.start until str_lst.off loop
 				if not str_lst.isfirst then
 					Result.append (", ")
 				end
-
 				Result.append (str_lst.item)
 				str_lst.forth
 			end
 		end
 
-	add_checkbox (row: EV_GRID_ROW)
+	add_checkbox (row: attached EV_GRID_ROW)
 			-- Add the checkbox column to `row' of a grid control
-		require
-			row_attached: row /= Void
 		local
 			item: EV_GRID_CHECKABLE_LABEL_ITEM
 		do
@@ -701,21 +689,17 @@ feature {NONE} -- Implementation
 			at_least_2_columns: row.count >= 2
 		end
 
-	set_checkboxes_recursively (item: EV_GRID_CHECKABLE_LABEL_ITEM)
+	set_checkboxes_recursively (item: attached EV_GRID_CHECKABLE_LABEL_ITEM)
 			-- For all sub-items of `item' in a grid control, set their check boxes to match `item', recursively.
-		require
-			item_attached: item /= Void
 		local
 			i: INTEGER
-			sub_item: EV_GRID_CHECKABLE_LABEL_ITEM
 		do
 			from i := item.row.subrow_count until i = 0 loop
-				sub_item ?= item.row.subrow (i).item (item.column.index)
-				i := i - 1
-				if sub_item /= Void then
+				if attached {EV_GRID_CHECKABLE_LABEL_ITEM} item.row.subrow (i).item (item.column.index) as sub_item then
 					sub_item.set_is_checked (item.is_checked)
 					set_checkboxes_recursively (sub_item)
 				end
+				i := i - 1
 			end
 		end
 

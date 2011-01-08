@@ -130,9 +130,11 @@ feature {NONE} -- Initialization
 			archetype_notebook.item_tab (description_notebook).set_pixmap (pixmaps ["description"])
 			archetype_notebook.item_tab (node_map).set_pixmap (pixmaps ["node_map"])
 			archetype_notebook.item_tab (path_analysis).set_pixmap (pixmaps ["paths"])
-			archetype_notebook.item_tab (source_rich_text).set_pixmap (pixmaps ["diff"])
 			archetype_notebook.item_tab (slots_box).set_pixmap (pixmaps ["archetype_slot"])
 			archetype_notebook.item_tab (terminology_area).set_pixmap (pixmaps ["terminology"])
+			archetype_notebook.item_tab (annotations_grid).set_pixmap (pixmaps ["annotations"])
+			archetype_notebook.item_tab (source_rich_text).set_pixmap (pixmaps ["diff"])
+			set_archetype_notebook_source_tab_text
 
 			if app_x_position > Sane_screen_coord and app_y_position > Sane_screen_coord then
 				set_position (app_x_position, app_y_position)
@@ -1052,6 +1054,7 @@ feature -- Archetype Events
 	on_flat_view
 			-- Called by `select_actions' of `flat_view_button'.
 		do
+
 			set_view (False)
 			if not flat_view_button.is_selected then
 				flat_view_button.enable_select
@@ -1069,14 +1072,17 @@ feature -- Archetype Events
 
 	set_view (differential_flag: BOOLEAN)
 			-- set view one way or the other
+		local
+			str: STRING
 		do
 			if (differential_flag and not differential_view) or -- changing from flat to diff
 				(not differential_flag and differential_view) then -- changing from diff to flat
 				set_differential_view (differential_flag)
-				if attached current_arch_dir as dir then
-					if dir.has_selected_archetype then
+				set_archetype_notebook_source_tab_text
+				if has_current_profile then
+					if current_arch_dir.has_selected_archetype then
 						populate_archetype_view_controls
-					elseif dir.has_selected_class then
+					elseif current_arch_dir.has_selected_class then
 						display_class
 					end
 				end
@@ -1186,6 +1192,22 @@ feature {NONE} -- Implementation
 			else
 				create Result.make_with_8_bit_rgb (240, 255, 255)
 			end
+		end
+
+	set_archetype_notebook_source_tab_text
+		local
+			tab_text, str: STRING
+		do
+			tab_text := "ADL ("
+			if differential_view then
+				str := archetype_source_file_extension.twin
+			else
+				str := archetype_flat_file_extension.twin
+			end
+			str.prune_all_leading ('.')
+			tab_text.append (str)
+			tab_text.append_character (')')
+			archetype_notebook.item_tab (source_rich_text).set_text (tab_text)
 		end
 
 	select_language

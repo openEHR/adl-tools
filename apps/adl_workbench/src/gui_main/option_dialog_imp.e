@@ -181,6 +181,7 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent border_width)
 			validation_strict_check_button.set_text ("Validation strict")
 			rm_flattening_on_check_button.set_text ("RM flattening on")
+			rm_flattening_on_check_button.set_tooltip ("Include RM class attribute existence and cardinality in flattened archetypes.")
 			create internal_font
 			internal_font.set_family ({EV_FONT_CONSTANTS}.Family_screen)
 			internal_font.set_weight ({EV_FONT_CONSTANTS}.Weight_regular)
@@ -209,8 +210,8 @@ feature {NONE}-- Initialization
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_8.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
 			display_archetype_source_check_button.set_text ("Indicate original creation form?")
-			show_entire_ontology_check_button.set_text ("Show entire ontology in explorer?")
-			show_entire_ontology_check_button.set_tooltip ("Show all classes in ontology even if there are no archetypes based on them in the current repository")
+			show_entire_ontology_check_button.set_text ("Show all classes in explorer?")
+			show_entire_ontology_check_button.set_tooltip ("Show all archetypable classes in RM even if there are no archetypes based on them in the current repository.")
 			create internal_font
 			internal_font.set_family ({EV_FONT_CONSTANTS}.Family_screen)
 			internal_font.set_weight ({EV_FONT_CONSTANTS}.Weight_regular)

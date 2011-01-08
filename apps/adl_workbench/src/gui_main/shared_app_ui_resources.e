@@ -249,6 +249,7 @@ feature -- Access
 			Result.force (["flat.ico", Void], "flat")
 			Result.force (["diff.ico", Void], "diff")
 			Result.force (["tools.ico", Void], "tools")
+			Result.force (["annotations.ico", Void], "annotations")
 
 			Result.force (["terminology.ico", Void], "terminology")
 			Result.force (["paths.ico", Void], "paths")

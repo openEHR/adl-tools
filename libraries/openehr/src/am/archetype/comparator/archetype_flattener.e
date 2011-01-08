@@ -133,6 +133,7 @@ end
 feature {NONE} -- Implementation
 
 	rm_schema: SCHEMA_ACCESS
+			-- utility reference to RM schema used for validation & flattening
 
 	expand_definition_use_nodes
 			-- if there are overrides in the specialised child that are located at use_node positions, we
@@ -216,7 +217,7 @@ end
 			def_it.do_until_surface(agent node_graft, agent node_test)
 		end
 
-	node_graft (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+	node_graft (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- perform grafts of node from differential archetype on corresponding node in flat parent
 			-- only interested in C_COMPLEX_OBJECTs; we deal with all the other node types by iterating the
 			-- children of C_COMPLEX_OBJECTs
@@ -425,7 +426,7 @@ end
 			end
 		end
 
-	merge_container_attribute(ca_output, ca_child: C_ATTRIBUTE)
+	merge_container_attribute(ca_output, ca_child: attached C_ATTRIBUTE)
 			-- merge objects in container attribute `a_src_attr' into the equivalent container attribute
 			-- `an_output_attr' in the output structure, using ordering information in source attribute
 			-- objects, and replacing or inserting as appropriate. Essentially, we can think of both the

@@ -95,7 +95,9 @@ feature {NONE}-- Initialization
 			cancel_button.set_minimum_height (26)
 			set_minimum_width (550)
 			set_minimum_height (390)
-			set_title ("Display window")
+			set_maximum_width (800)
+			set_maximum_height (800)
+			set_title ("ADL Workbench RM Schema Configuration")
 
 			set_all_attributes_using_constants
 			
