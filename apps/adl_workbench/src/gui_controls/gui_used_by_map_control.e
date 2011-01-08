@@ -41,37 +41,14 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: MAIN_WINDOW)
-		require
-			a_main_window /= Void
+	make (a_main_window: attached MAIN_WINDOW)
 		do
 			gui := a_main_window
 			gui_tree := gui.used_by_tree
 			gui_tree.pointer_double_press_actions.force_extend (agent select_node_in_archetype_tree_view)
-			in_differential_mode := True
 		end
-
-feature -- Status Report
-
-	in_differential_mode: BOOLEAN
-			-- True if node visualisation should show definition status of each node,
-			-- i.e. inherited, redefine etc
 
 feature -- Commands
-
-	set_differential
-			-- Set `in_differential_mode' on.
-		do
-			in_differential_mode := True
-			populate
-		end
-
-	set_flat
-			-- Set `in_differential_mode' off.
-		do
-			in_differential_mode := False
-			populate
-		end
 
 	clear
 		do
@@ -112,7 +89,7 @@ feature {NONE} -- Implementation
 		require
 			archetype_directory.has_selected_archetype
 		do
-			if in_differential_mode then
+			if differential_view then
 				Result := archetype_directory.selected_archetype.archetype_differential
 			else
 				Result := archetype_directory.selected_archetype.archetype_flat

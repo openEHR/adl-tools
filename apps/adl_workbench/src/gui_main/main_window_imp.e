@@ -331,11 +331,10 @@ feature {NONE}-- Initialization
 			archetype_id.set_tooltip ("Display or search for archetype id")
 			l_ev_tool_bar_4.set_minimum_width (20)
 			l_ev_tool_bar_4.set_minimum_height (20)
+			l_ev_tool_bar_4.disable_vertical_button_style
 			search_button.set_tooltip ("Search for archetype id")
-			view_label.set_text ("View")
-			differential_view_button.set_text ("Diff")
+			view_label.set_text ("View ")
 			differential_view_button.set_tooltip ("Set differential archetype view")
-			flat_view_button.set_text ("Flat")
 			flat_view_button.set_tooltip ("Set flat archetype view")
 			l_ev_horizontal_box_3.disable_item_expand (language_label)
 			l_ev_horizontal_box_3.disable_item_expand (language_combo)

@@ -111,6 +111,8 @@ feature {NONE} -- Initialization
 			history_back_button.set_pixmap (pixmaps ["history_back"])
 			history_forward_button.set_pixmap (pixmaps ["history_forward"])
 			search_button.set_pixmap (pixmaps ["magnifier"])
+			differential_view_button.set_pixmap (pixmaps ["diff"])
+			flat_view_button.set_pixmap (pixmaps ["flat"])
 
 			archetype_explorer_pixmap.copy (pixmaps ["archetype_category"])
 			template_explorer_pixmap.copy (pixmaps ["template_category"])

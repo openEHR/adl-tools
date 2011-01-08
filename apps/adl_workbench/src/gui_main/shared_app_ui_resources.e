@@ -246,6 +246,8 @@ feature -- Access
 			Result.force (["info.ico", Void], "info")
 			Result.force (["parse.ico", Void], "parse")
 			Result.force (["edit.ico", Void], "edit")
+			Result.force (["flat.ico", Void], "flat")
+			Result.force (["diff.ico", Void], "diff")
 			Result.force (["open_archetype.ico", Void], "open_archetype")
 			Result.force (["history_back.ico", Void], "history_back")
 			Result.force (["history_forward.ico", Void], "history_forward")
