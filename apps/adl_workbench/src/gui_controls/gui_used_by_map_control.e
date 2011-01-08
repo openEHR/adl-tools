@@ -59,14 +59,14 @@ feature -- Status Report
 
 feature -- Commands
 
-	set_differential_view
+	set_differential
 			-- Set `in_differential_mode' on.
 		do
 			in_differential_mode := True
 			populate
 		end
 
-	set_flat_view
+	set_flat
 			-- Set `in_differential_mode' off.
 		do
 			in_differential_mode := False
