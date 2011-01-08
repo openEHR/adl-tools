@@ -218,8 +218,8 @@ feature -- File events
 					set_current_work_directory (file_system.dirname (fname))
 					if not file_system.file_exists (fname) then
 						(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" not found.")).show_modal_to_window (Current)
-					elseif attached current_arch_dir as dir then
-						dir.add_adhoc_item (fname)
+					elseif has_current_profile then
+						current_arch_dir.add_adhoc_item (fname)
 						archetype_view_tree_control.populate
 						append_status_area (billboard.content)
 					end
@@ -232,11 +232,9 @@ feature -- File events
 	parse_archetype
 			-- Load and parse the archetype currently selected in `archetype_directory'.
 		do
-			if attached current_arch_dir as dir then
-				if attached {ARCH_REP_ARCHETYPE} dir.selected_archetype as ara then
-					clear_all_archetype_view_controls
-					do_with_wait_cursor (agent archetype_compiler.build_lineage (ara, 0))
-				end
+			if has_current_profile and then attached {ARCH_REP_ARCHETYPE} current_arch_dir.selected_archetype as ara then
+				clear_all_archetype_view_controls
+				do_with_wait_cursor (agent archetype_compiler.build_lineage (ara, 0))
 			end
 		end
 
@@ -246,13 +244,8 @@ feature -- File events
 			question_dialog: EV_QUESTION_DIALOG
 			info_dialog: EV_INFORMATION_DIALOG
 			path: STRING
-			ara: ARCH_REP_ARCHETYPE
 		do
-			if attached current_arch_dir as dir then
-				ara := dir.selected_archetype
-			end
-
-			if ara /= Void then
+			if has_current_profile and then attached {ARCH_REP_ARCHETYPE} current_arch_dir.selected_archetype as ara then
 				path := ara.differential_path
 				if ara.has_differential_file and ara.has_legacy_flat_file then
 					create question_dialog.make_with_text (create_message_line("edit_which_file_question", <<file_system.basename (path), file_system.basename (ara.legacy_flat_path)>>))
@@ -393,30 +386,26 @@ feature {NONE} -- Edit events
 		local
 			old_length: INTEGER
 		do
-			if focused_text /= Void then
-				if focused_text.is_editable then
-					on_delete
-					old_length := focused_text.text_length
-					focused_text.paste (focused_text.caret_position)
-					focused_text.set_caret_position (focused_text.caret_position + focused_text.text_length - old_length)
-				end
+			if attached focused_text and then focused_text.is_editable then
+				on_delete
+				old_length := focused_text.text_length
+				focused_text.paste (focused_text.caret_position)
+				focused_text.set_caret_position (focused_text.caret_position + focused_text.text_length - old_length)
 			end
 		end
 
 	on_delete
 			-- Delete the selected item, depending on which widget has focus.
 		do
-			if focused_text /= Void then
-				if focused_text.is_editable and focused_text.has_selection then
-					focused_text.delete_selection
-				end
+			if attached focused_text and then focused_text.is_editable and focused_text.has_selection then
+				focused_text.delete_selection
 			end
 		end
 
 	on_select_all
 			-- Select all text in the currently focused text box, if any.
 		do
-			if focused_text /= Void and then focused_text.text_length > 0 then
+			if attached focused_text and then focused_text.text_length > 0 then
 				focused_text.select_all
 			end
 		end
@@ -767,19 +756,19 @@ feature -- Test Screen Events
 	on_diff_source
 			-- show diffs between input differential archetype and serialised output, from test diff dir
 		do
-			do_diff(Diff_source)
+			do_diff (Diff_source)
 		end
 
 	on_diff_flat
 			-- show diffs between input flat (legacy) archetype and serialised output, from test diff dir
 		do
-			do_diff(Diff_flat)
+			do_diff (Diff_flat)
 		end
 
 	on_diff_source_flat
 			-- show diffs between input differential archetype and generated flat output, from test diff dir	
 		do
-			do_diff(Diff_source_flat)
+			do_diff (Diff_source_flat)
 		end
 
 	do_diff (diff_type: INTEGER)
@@ -1474,10 +1463,8 @@ feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Statistics
 
 feature {NONE} -- Build commands
 
-	do_build_action (action: PROCEDURE [ANY, TUPLE])
+	do_build_action (action: attached PROCEDURE [ANY, TUPLE])
 			-- Perform `action', with an hourglass mouse cursor and disabling the build menus, until done.
-		require
-			action_attached: action /= Void
 		local
 			menu_items: ARRAY [EV_MENU_ITEM]
 		do
@@ -1573,10 +1560,8 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 			end
 		end
 
-	focus_first_widget (widget: EV_WIDGET)
+	focus_first_widget (widget: attached EV_WIDGET)
 			-- Set focus to `widget' or to its first child widget that accepts focus.
-		require
-			widget_attached: widget /= Void
 		local
 			widgets: LINEAR [EV_WIDGET]
 		do
