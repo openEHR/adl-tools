@@ -54,16 +54,13 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: MAIN_WINDOW)
+	make (a_main_window: attached MAIN_WINDOW)
 			-- create tree control repersenting archetype files found in repository_path
-		require
-			a_main_window /= Void
 		do
 			gui := a_main_window
 			path_list := gui.path_analysis_multi_column_list
 			filter_combo := gui.path_analysis_row_filter_combo_box
 			column_check_list := gui.path_analysis_column_view_checkable_list
-			in_differential_mode := True
 		end
 
 feature -- Access
@@ -73,11 +70,6 @@ feature -- Access
 	filter_combo: EV_COMBO_BOX
 
 	column_check_list: EV_CHECKABLE_LIST
-
-feature -- Status
-
-	in_differential_mode: BOOLEAN
-			-- True if visualisation should show contents of differential archetype, else flat archetype
 
 feature -- Commands
 
@@ -137,7 +129,6 @@ feature -- Commands
 		local
 			list_row: EV_MULTI_COLUMN_LIST_ROW
 			p_paths, l_paths: ARRAYED_LIST[STRING]
-			c_o: C_OBJECT
 		do
 			path_list.wipe_out
 			path_list.set_column_titles (path_control_column_names)
@@ -160,9 +151,7 @@ feature -- Commands
 				until
 					p_paths.off
 				loop
-					c_o := target_archetype.c_object_at_path (p_paths.item)
-
-					if c_o /= Void then
+					if attached {C_OBJECT} target_archetype.c_object_at_path (p_paths.item) as c_o then
 						create list_row
 						list_row.extend (utf8 (p_paths.item))
 						list_row.extend (utf8 (l_paths.item))
@@ -177,20 +166,6 @@ feature -- Commands
 			end
 
 			adjust_columns
-		end
-
-	set_differential_view
-			-- Set `in_differential_mode' on.
-		do
-			in_differential_mode := True
-			populate
-		end
-
-	set_flat_view
-			-- Set `in_differential_mode' off.
-		do
-			in_differential_mode := False
-			populate
 		end
 
 	adjust_columns
@@ -250,11 +225,11 @@ feature {NONE} -- Implementation
 			-- main window of system
 
 	target_archetype: ARCHETYPE
-			-- differential or flat version of archetype, depending on setting of `in_differential_mode'
+			-- differential or flat version of archetype, depending on setting of `differential_view'
 		require
 			current_arch_dir.has_selected_archetype
 		do
-			if in_differential_mode then
+			if differential_view then
 				Result := current_arch_dir.selected_archetype.differential_archetype
 			else
 				Result := current_arch_dir.selected_archetype.flat_archetype

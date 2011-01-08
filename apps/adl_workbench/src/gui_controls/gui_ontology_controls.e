@@ -35,19 +35,11 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: MAIN_WINDOW)
-		require
-			a_main_window /= Void
+	make (a_main_window: attached MAIN_WINDOW)
 		do
 			gui := a_main_window
    			gui.terminology_area.set_minimum_height(gui.Status_area_min_height)
-			in_differential_mode := True
 		end
-
-feature -- Status
-
-	in_differential_mode: BOOLEAN
-			-- True if visualisation should show contents of differential archetype, else flat archetype
 
 feature -- Commands
 
@@ -69,20 +61,6 @@ feature -- Commands
 			end
 		end
 
-	set_differential_view
-			-- Set `in_differential_mode' on.
-		do
-			in_differential_mode := True
-			populate
-		end
-
-	set_flat_view
-			-- Set `in_differential_mode' off.
-		do
-			in_differential_mode := False
-			populate
-		end
-
 	select_term(a_term_code: STRING)
 			-- select row for a_term_code in term_definitions control
 		do
@@ -98,11 +76,11 @@ feature -- Commands
 feature {NONE} -- Implementation
 
 	target_archetype: ARCHETYPE
-			-- differential or flat version of archetype, depending on setting of `in_differential_mode'
+			-- differential or flat version of archetype, depending on setting of `differential_view'
 		require
 			current_arch_dir.has_selected_archetype
 		do
-			if in_differential_mode then
+			if differential_view then
 				Result := current_arch_dir.selected_archetype.differential_archetype
 			else
 				Result := current_arch_dir.selected_archetype.flat_archetype

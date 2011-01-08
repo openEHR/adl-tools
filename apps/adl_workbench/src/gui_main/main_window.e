@@ -131,6 +131,12 @@ feature {NONE} -- Initialization
 				main_notebook.select_item (main_notebook [main_notebook_tab_pos])
 			end
 
+			if differential_view then
+				differential_view_button.enable_select
+			else
+				flat_view_button.enable_select
+			end
+
 			terminology_bindings_info_list.set_column_titles (<<"terminology", "archetypes">>)
 		end
 
@@ -647,7 +653,7 @@ feature {NONE} -- Tools events
 			end
 		end
 
-	delete_generated_files (ara: ARCH_REP_ARCHETYPE)
+	delete_generated_files (ara: attached ARCH_REP_ARCHETYPE)
 			-- delete a generated file associated with `ara'
 		do
 			ara.clean_generated
@@ -808,7 +814,7 @@ feature -- Test Screen Events
 			execution_environment.launch (command)
 		end
 
-feature -- Archetype commands
+feature -- Archetype Events
 
 	find_archetype_by_key
 			-- Called by `return_actions' of `archetype_id'.
@@ -1021,30 +1027,6 @@ feature -- Archetype commands
 			path_map_control.set_filter
 		end
 
-	on_archetype_notebook_select
-			-- Display either the differential or flat view of the archetype depending on the tab selected in `arch_notebook'.
-		do
-			if attached {EV_VERTICAL_BOX} archetype_notebook.selected_item as tab and attached {EV_VERTICAL_BOX} definition_notebook.parent as other then
-				if tab /= other then
-					if (<<differential_view_box, flat_view_box>>).has (tab) then
-						other.prune (definition_notebook)
-						tab.extend (definition_notebook)
-						ev_application.process_graphical_events
-
-						if attached current_arch_dir as dir then
-							if dir.has_selected_archetype then
-								populate_archetype_view_controls
-							elseif dir.has_selected_class then
-								display_class
-							end
-						end
-					end
-				end
-			elseif archetype_notebook.selected_item = statistics_box then
-
-			end
-		end
-
 	translations_select_language
 			-- Called by `select_actions' of `arch_translations_languages_list'.
 		do
@@ -1054,12 +1036,34 @@ feature -- Archetype commands
 	display_class
 			-- display the class currently selected in `archetype_directory'.
 		do
-			if attached current_arch_dir as dir then
-				if dir.has_selected_class then
-					if definition_notebook.parent = differential_view_box then
-						class_map_control.set_differential_view
-					else
-						class_map_control.set_flat_view
+			if attached current_arch_dir as dir and then dir.has_selected_class then
+				class_map_control.populate
+			end
+		end
+
+	on_flat_view
+			-- Called by `select_actions' of `flat_view_button'.
+		do
+			set_view (False)
+		end
+
+	on_differential_view
+			-- Called by `select_actions' of `differential_view_button'.
+		do
+			set_view (True)
+		end
+
+	set_view (differential_flag: BOOLEAN)
+			-- set view one way or the other
+		do
+			if (differential_flag and not differential_view) or -- changing from flat to diff
+				(not differential_flag and differential_view) then -- changing from diff to flat
+				set_differential_view (differential_flag)
+				if attached current_arch_dir as dir then
+					if dir.has_selected_archetype then
+						populate_archetype_view_controls
+					elseif dir.has_selected_class then
+						display_class
 					end
 				end
 			end
@@ -1261,21 +1265,13 @@ feature {NONE} -- Implementation
 			description_controls.populate
 			translation_controls.populate
 			slot_map_control.populate
-
-			if definition_notebook.parent = differential_view_box then
-				node_map_control.set_differential_view
-				path_map_control.set_differential_view
-				ontology_controls.set_differential_view
-				populate_source_text (False)
-			else
-				node_map_control.set_flat_view
-				path_map_control.set_flat_view
-				ontology_controls.set_flat_view
-				populate_source_text (True)
-			end
+			node_map_control.populate
+			path_map_control.populate
+			ontology_controls.populate
+			populate_source_text
 		end
 
-	populate_source_text (flat: BOOLEAN)
+	populate_source_text
 			-- Display the selected archetype's differential or flat text in `source_rich_text', optionally with line numbers.
 		local
 			ara: ARCH_REP_ARCHETYPE
@@ -1285,7 +1281,7 @@ feature {NONE} -- Implementation
 			end
 
 			if attached ara then
-				if flat then
+				if not differential_view then
 					if ara.is_valid then
 						populate_source_text_with_line_numbers (ara.flat_text)
 					elseif ara.has_legacy_flat_file then

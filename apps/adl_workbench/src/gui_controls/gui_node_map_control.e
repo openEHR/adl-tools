@@ -41,13 +41,10 @@ create
 
 feature -- Initialisation
 
-	make (a_main_window: MAIN_WINDOW)
-		require
-			a_main_window /= Void
+	make (a_main_window: attached MAIN_WINDOW)
 		do
 			gui := a_main_window
 			gui_tree := gui.node_map_tree
-			in_differential_mode := True
 
 			in_technical_mode := show_technical_view
 			in_reference_model_mode := show_reference_model_view
@@ -75,10 +72,6 @@ feature -- Status Report
 
 	is_expanded: BOOLEAN
 			-- True if last whole tree operation was expand
-
-	in_differential_mode: BOOLEAN
-			-- True if node visualisation should show definition status of each node,
-			-- i.e. inherited, redefine etc
 
 feature -- Commands
 
@@ -121,20 +114,6 @@ feature -- Commands
 			repopulate
 		end
 
-	set_differential_view
-			-- Set `in_differential_mode' on.
-		do
-			in_differential_mode := True
-			populate
-		end
-
-	set_flat_view
-			-- Set `in_differential_mode' off.
-		do
-			in_differential_mode := False
-			populate
-		end
-
 	clear
 		do
 			gui_tree.wipe_out
@@ -150,7 +129,7 @@ feature -- Commands
 			create tree_item_stack.make (0)
 
 			if current_arch_dir.has_validated_selected_archetype then
-				if in_differential_mode then
+				if differential_view then
 					target_archetype := current_arch_dir.selected_archetype.differential_archetype
 				else
 					target_archetype := current_arch_dir.selected_archetype.flat_archetype
@@ -169,7 +148,7 @@ feature -- Commands
 				is_expanded := not expand_node_tree
 				toggle_expand_tree
 
-				if not in_differential_mode then
+				if not differential_view then
 					roll_up_to_specialisation_level
 				end
 			end
@@ -283,7 +262,7 @@ feature {NONE} -- Implementation
 		end
 
 	target_archetype: attached ARCHETYPE
-			-- Differential or flat version of archetype, depending on setting of `in_differential_mode'.
+			-- Differential or flat version of archetype, depending on setting of `differential_view'.
 
 	ontologies: ARRAYED_STACK [ARCHETYPE_ONTOLOGY]
 			-- we use a stack here to handle ontologies inside operational templates
@@ -524,7 +503,7 @@ feature {NONE} -- Implementation
 							a_ti.set_text (utf8 (object_term_item_string (s, assumed_flag, c_c_p.is_local)))
 							create pixmap_ext.make (0)
 
-							if in_differential_mode then
+							if differential_view then
 								if current_arch_dir.has_validated_selected_archetype then
 									spec_sts := c_c_p.specialisation_status (target_archetype.specialisation_depth).value
 									if spec_sts = ss_inherited or spec_sts = ss_redefined then
@@ -553,7 +532,7 @@ feature {NONE} -- Implementation
 						a_ti.set_text (utf8 (object_ordinal_item_string (an_ordinal, assumed_flag)))
 						create pixmap_ext.make(0)
 
-						if in_differential_mode then
+						if differential_view then
 							if current_arch_dir.has_validated_selected_archetype then
 								spec_sts := c_dv_ordinal.specialisation_status (target_archetype.specialisation_depth).value
 								if spec_sts = ss_inherited or spec_sts = ss_redefined then
@@ -580,7 +559,7 @@ feature {NONE} -- Implementation
 					if attached {EV_TREE_NODE} a_ti.parent as parent_ti then
 						if attached {C_DV_QUANTITY} parent_ti.data as c_q2 then
 							create pixmap_ext.make(0)
-							if in_differential_mode and current_arch_dir.has_validated_selected_archetype then
+							if differential_view and current_arch_dir.has_validated_selected_archetype then
 								spec_sts := c_q2.specialisation_status (target_archetype.specialisation_depth).value
 								if spec_sts = ss_inherited or spec_sts = ss_redefined then
 									pixmap_ext.append ("." + specialisation_status_names.item(spec_sts))
@@ -637,7 +616,7 @@ feature {NONE} -- Implementation
 				a_node := a_ti.data
 				if a_node /= Void and attached {C_COMPLEX_OBJECT} a_node as c_c_o then
 					if rm_schema.has_class_definition (c_c_o.rm_type_name) then
-						if in_differential_mode then
+						if differential_view then
 							props := rm_schema.properties_of(c_c_o.rm_type_name)
 						else
 							props := rm_schema.flat_properties_of(c_c_o.rm_type_name)
@@ -1157,7 +1136,6 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	gui_attached: gui /= Void
 	Three_value_logic: in_reference_model_mode implies in_technical_mode
 
 end

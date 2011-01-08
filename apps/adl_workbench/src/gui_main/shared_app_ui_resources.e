@@ -565,6 +565,18 @@ feature -- Application Switches
 			app_cfg.put_value("/gui/path_view_check_list_settings", strs)
 		end
 
+	differential_view: BOOLEAN
+			-- View archetypes in differential form
+		do
+			Result := app_cfg.boolean_value ("/gui/differential_view")
+		end
+
+	set_differential_view (flag: BOOLEAN)
+			-- Set flag for whether to displayView archetypes in differential or flat form.
+		do
+			app_cfg.put_value("/gui/differential_view", flag)
+		end
+
 	text_editor_command: attached STRING
 			-- Path of editor application for ADL files.
 		do
