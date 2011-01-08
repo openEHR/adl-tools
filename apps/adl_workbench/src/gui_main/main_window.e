@@ -76,7 +76,7 @@ feature {NONE} -- Initialization
 			add_menu_shortcut_for_action (edit_menu_copy, agent call_unless_text_focused (agent on_copy), key_c, True, False, False)
 			add_menu_shortcut (edit_menu_select_all, key_a, True, False, False)
 
-			add_menu_shortcut (view_menu_differential, key_t, True, False, True)
+			add_menu_shortcut (view_menu_differential, key_d, True, False, True)
 			add_menu_shortcut (view_menu_flat, key_f, True, False, True)
 
 			add_menu_shortcut (repository_menu_build_all, key_f7, False, False, False)
