@@ -248,6 +248,14 @@ feature -- Access
 			Result.force (["edit.ico", Void], "edit")
 			Result.force (["flat.ico", Void], "flat")
 			Result.force (["diff.ico", Void], "diff")
+			Result.force (["tools.ico", Void], "tools")
+
+			Result.force (["terminology.ico", Void], "terminology")
+			Result.force (["paths.ico", Void], "paths")
+			Result.force (["description.ico", Void], "description")
+			Result.force (["archetype_slot.ico", Void], "archetype_slot")
+			Result.force (["node_map.ico", Void], "node_map")
+
 			Result.force (["open_archetype.ico", Void], "open_archetype")
 			Result.force (["history_back.ico", Void], "history_back")
 			Result.force (["history_forward.ico", Void], "history_forward")

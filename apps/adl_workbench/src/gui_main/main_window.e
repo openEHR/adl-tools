@@ -76,6 +76,9 @@ feature {NONE} -- Initialization
 			add_menu_shortcut_for_action (edit_menu_copy, agent call_unless_text_focused (agent on_copy), key_c, True, False, False)
 			add_menu_shortcut (edit_menu_select_all, key_a, True, False, False)
 
+			add_menu_shortcut (view_menu_differential, key_t, True, False, True)
+			add_menu_shortcut (view_menu_flat, key_f, True, False, True)
+
 			add_menu_shortcut (repository_menu_build_all, key_f7, False, False, False)
 			add_menu_shortcut (repository_menu_rebuild_all, key_f7, False, False, True)
 			add_menu_shortcut (repository_menu_build_subtree, key_f7, True, False, False)
@@ -105,6 +108,13 @@ feature {NONE} -- Initialization
 			history_menu_back.set_pixmap (pixmaps ["history_back"])
 			history_menu_forward.set_pixmap (pixmaps ["history_forward"])
 
+			view_menu_differential.set_pixmap (pixmaps ["diff"])
+			view_menu_flat.set_pixmap (pixmaps ["flat"])
+
+			repository_menu_set_repository.set_pixmap (pixmaps ["tools"])
+			rm_schemas_menu_configure_rm_schemas.set_pixmap (pixmaps ["tools"])
+			tools_menu_options.set_pixmap (pixmaps ["tools"])
+
 			open_button.set_pixmap (pixmaps ["open_archetype"])
 			parse_button.set_pixmap (pixmaps ["parse"])
 			edit_button.set_pixmap (pixmaps ["edit"])
@@ -116,6 +126,13 @@ feature {NONE} -- Initialization
 
 			archetype_explorer_pixmap.copy (pixmaps ["archetype_category"])
 			template_explorer_pixmap.copy (pixmaps ["template_category"])
+
+			archetype_notebook.item_tab (description_box).set_pixmap (pixmaps ["description"])
+			archetype_notebook.item_tab (node_map).set_pixmap (pixmaps ["node_map"])
+			archetype_notebook.item_tab (path_analysis).set_pixmap (pixmaps ["paths"])
+			archetype_notebook.item_tab (source_rich_text).set_pixmap (pixmaps ["diff"])
+			archetype_notebook.item_tab (slots_box).set_pixmap (pixmaps ["archetype_slot"])
+			archetype_notebook.item_tab (terminology_area).set_pixmap (pixmaps ["terminology"])
 
 			if app_x_position > Sane_screen_coord and app_y_position > Sane_screen_coord then
 				set_position (app_x_position, app_y_position)
@@ -753,6 +770,31 @@ feature {NONE} -- Help events
 
 feature -- Test Screen Events
 
+	archetype_test_go_stop
+			-- start running tests in test page
+		do
+			archetype_test_tree_control.archetype_test_go_stop
+		end
+
+	archetype_test_tree_expand_toggle
+			-- toggle logical state of test page archetype tree expandedness
+		do
+			archetype_test_tree_control.toggle_expand_tree
+		end
+
+	archetype_test_refresh
+			-- refresh test environment back to vanilla state
+			-- i.e. synchronised with file system and with all
+			-- statuses cleared
+		do
+			archetype_test_tree_control.populate
+		end
+
+	archetype_test_regression_toggle
+		do
+			archetype_test_tree_control.toggle_test_regression
+		end
+
 	on_diff_source
 			-- show diffs between input differential archetype and serialised output, from test diff dir
 		do
@@ -975,31 +1017,6 @@ feature -- Archetype Events
 			end
 		end
 
-	archetype_test_go_stop
-			-- start running tests in test page
-		do
-			archetype_test_tree_control.archetype_test_go_stop
-		end
-
-	archetype_test_tree_expand_toggle
-			-- toggle logical state of test page archetype tree expandedness
-		do
-			archetype_test_tree_control.toggle_expand_tree
-		end
-
-	archetype_test_refresh
-			-- refresh test environment back to vanilla state
-			-- i.e. synchronised with file system and with all
-			-- statuses cleared
-		do
-			archetype_test_tree_control.populate
-		end
-
-	archetype_test_regression_toggle
-		do
-			archetype_test_tree_control.toggle_test_regression
-		end
-
 	path_column_select (a_list_item: EV_LIST_ITEM)
 			-- Show a column in the Path Analysis list after setting a check box in `path_view_check_list'.
 		do
@@ -1036,12 +1053,18 @@ feature -- Archetype Events
 			-- Called by `select_actions' of `flat_view_button'.
 		do
 			set_view (False)
+			if not flat_view_button.is_selected then
+				flat_view_button.enable_select
+			end
 		end
 
 	on_differential_view
 			-- Called by `select_actions' of `differential_view_button'.
 		do
 			set_view (True)
+			if not differential_view_button.is_selected then
+				differential_view_button.enable_select
+			end
 		end
 
 	set_view (differential_flag: BOOLEAN)

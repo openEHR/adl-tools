@@ -50,6 +50,13 @@ feature {NONE}-- Initialization
 			edit_menu.extend (edit_menu_select_all)
 			edit_menu.extend (l_ev_menu_separator_3)
 			edit_menu.extend (edit_menu_clipboard)
+			menu.extend (view_menu)
+			view_menu.extend (view_menu_differential)
+			view_menu.extend (view_menu_flat)
+			menu.extend (history_menu)
+			history_menu.extend (history_menu_back)
+			history_menu.extend (history_menu_forward)
+			history_menu.extend (history_menu_separator)
 			menu.extend (repository_menu)
 			repository_menu.extend (repository_menu_build_all)
 			repository_menu.extend (repository_menu_rebuild_all)
@@ -64,18 +71,14 @@ feature {NONE}-- Initialization
 			repository_menu.extend (repository_menu_refresh)
 			repository_menu.extend (l_ev_menu_separator_7)
 			repository_menu.extend (repository_menu_set_repository)
-			menu.extend (history_menu)
-			history_menu.extend (history_menu_back)
-			history_menu.extend (history_menu_forward)
-			history_menu.extend (history_menu_separator)
-			menu.extend (tools_menu)
-			tools_menu.extend (tools_menu_clean_generated_files)
-			tools_menu.extend (l_ev_menu_separator_8)
-			tools_menu.extend (tools_menu_options)
 			menu.extend (rm_schemas_menu)
 			rm_schemas_menu.extend (rm_schemas_menu_reload_schemas)
-			rm_schemas_menu.extend (l_ev_menu_separator_9)
+			rm_schemas_menu.extend (l_ev_menu_separator_8)
 			rm_schemas_menu.extend (rm_schemas_menu_configure_rm_schemas)
+			menu.extend (tools_menu)
+			tools_menu.extend (tools_menu_clean_generated_files)
+			tools_menu.extend (l_ev_menu_separator_9)
+			tools_menu.extend (tools_menu_options)
 			menu.extend (help_menu)
 			help_menu.extend (help_menu_contents)
 			help_menu.extend (help_menu_release_notes)
@@ -204,7 +207,6 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_10.extend (l_ev_frame_2)
 			l_ev_frame_2.extend (l_ev_vertical_box_12)
 			l_ev_vertical_box_12.extend (path_analysis_column_view_checkable_list)
-			archetype_notebook.extend (source_rich_text)
 			archetype_notebook.extend (slots_box)
 			slots_box.extend (l_ev_frame_3)
 			l_ev_frame_3.extend (l_ev_vertical_box_13)
@@ -218,6 +220,7 @@ feature {NONE}-- Initialization
 			term_definitions_frame.extend (ontology_term_definitions_multi_column_list)
 			l_ev_vertical_split_area_1.extend (constraint_definitions_frame)
 			constraint_definitions_frame.extend (ontology_constraint_definitions_multi_column_list)
+			archetype_notebook.extend (source_rich_text)
 			total_split_area.extend (status_notebook)
 			status_notebook.extend (parser_status_area)
 			status_notebook.extend (compiler_output_grid)
@@ -272,6 +275,12 @@ feature {NONE}-- Initialization
 			edit_menu_copy.set_text ("&Copy")
 			edit_menu_select_all.set_text ("Select &All")
 			edit_menu_clipboard.set_text ("Clip&board...")
+			view_menu.set_text ("&View")
+			view_menu_differential.set_text ("&Differential")
+			view_menu_flat.set_text ("&Flat")
+			history_menu.set_text ("H&istory")
+			history_menu_back.set_text ("&Back")
+			history_menu_forward.set_text ("&Forward")
 			repository_menu.set_text ("&Repository")
 			repository_menu_build_all.set_text ("&Build All")
 			repository_menu_rebuild_all.set_text ("&Rebuild All")
@@ -283,15 +292,12 @@ feature {NONE}-- Initialization
 			repository_menu_interrupt_build.set_text ("&Interrupt Build")
 			repository_menu_refresh.set_text ("Refresh Repository")
 			repository_menu_set_repository.set_text ("&Configure Repository Profiles...")
-			history_menu.set_text ("Hi&story")
-			history_menu_back.set_text ("&Back")
-			history_menu_forward.set_text ("&Forward")
-			tools_menu.set_text ("&Tools")
-			tools_menu_clean_generated_files.set_text ("&Clean Generated Files")
-			tools_menu_options.set_text ("&Options...")
 			rm_schemas_menu.set_text ("RM &Schemas")
 			rm_schemas_menu_reload_schemas.set_text ("&Reload Schemas")
 			rm_schemas_menu_configure_rm_schemas.set_text ("&Configure Schemas...")
+			tools_menu.set_text ("&Tools")
+			tools_menu_clean_generated_files.set_text ("&Clean Generated Files")
+			tools_menu_options.set_text ("&Options...")
 			help_menu.set_text ("&Help")
 			help_menu_contents.set_text ("&Contents")
 			help_menu_release_notes.set_text ("&Release Notes")
@@ -419,9 +425,9 @@ feature {NONE}-- Initialization
 			archetype_notebook.set_item_text (description_box, "Description")
 			archetype_notebook.set_item_text (node_map, "Definition")
 			archetype_notebook.set_item_text (path_analysis, "Paths")
-			archetype_notebook.set_item_text (source_rich_text, "Source")
 			archetype_notebook.set_item_text (slots_box, "Slots")
 			archetype_notebook.set_item_text (terminology_area, "Terminology")
+			archetype_notebook.set_item_text (source_rich_text, "ADL")
 			description_box.disable_item_expand (author_lang_term_hbox)
 			description_box.disable_item_expand (arch_translations_frame)
 			description_box.disable_item_expand (arch_desc_resource_frame)
@@ -715,7 +721,6 @@ feature {NONE}-- Initialization
 			path_analysis_column_view_checkable_list.set_tooltip ("Choose view of columns in the Path Analysis")
 			path_analysis_column_view_checkable_list.set_minimum_width (100)
 			path_analysis_column_view_checkable_list.set_minimum_height (30)
-			source_rich_text.disable_edit
 			integer_constant_set_procedures.extend (agent slots_box.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent slots_box.set_border_width (?))
@@ -740,6 +745,7 @@ feature {NONE}-- Initialization
 			ontology_constraint_definitions_multi_column_list.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			ontology_constraint_definitions_multi_column_list.set_minimum_width (1)
 			ontology_constraint_definitions_multi_column_list.set_minimum_height (1)
+			source_rich_text.disable_edit
 			status_notebook.set_item_text (parser_status_area, "Status")
 			status_notebook.set_item_text (compiler_output_grid, "Errors")
 			status_notebook.set_item_text (statistics_box, "Statistics")
@@ -884,6 +890,11 @@ feature {NONE}-- Initialization
 			edit_menu_copy.select_actions.extend (agent on_copy)
 			edit_menu_select_all.select_actions.extend (agent on_select_all)
 			edit_menu_clipboard.select_actions.extend (agent show_clipboard)
+			view_menu_differential.select_actions.extend (agent on_differential_view)
+			view_menu_flat.select_actions.extend (agent on_flat_view)
+			history_menu.select_actions.extend (agent on_history)
+			history_menu_back.select_actions.extend (agent on_back)
+			history_menu_forward.select_actions.extend (agent on_forward)
 			repository_menu_build_all.select_actions.extend (agent build_all)
 			repository_menu_rebuild_all.select_actions.extend (agent rebuild_all)
 			repository_menu_build_subtree.select_actions.extend (agent build_subtree)
@@ -893,13 +904,10 @@ feature {NONE}-- Initialization
 			repository_menu_interrupt_build.select_actions.extend (agent interrupt_build)
 			repository_menu_refresh.select_actions.extend (agent refresh_directory)
 			repository_menu_set_repository.select_actions.extend (agent set_repository)
-			history_menu.select_actions.extend (agent on_history)
-			history_menu_back.select_actions.extend (agent on_back)
-			history_menu_forward.select_actions.extend (agent on_forward)
-			tools_menu_clean_generated_files.select_actions.extend (agent clean_generated_files)
-			tools_menu_options.select_actions.extend (agent set_options)
 			rm_schemas_menu_reload_schemas.select_actions.extend (agent reload_schemas)
 			rm_schemas_menu_configure_rm_schemas.select_actions.extend (agent set_rm_schemas)
+			tools_menu_clean_generated_files.select_actions.extend (agent clean_generated_files)
+			tools_menu_options.select_actions.extend (agent set_options)
 			help_menu_contents.select_actions.extend (agent show_online_help)
 			help_menu_release_notes.select_actions.extend (agent show_release_notes)
 			help_menu_icons.select_actions.extend (agent show_icon_help)
@@ -978,6 +986,13 @@ feature {NONE}-- Initialization
 			create edit_menu_select_all
 			create l_ev_menu_separator_3
 			create edit_menu_clipboard
+			create view_menu
+			create view_menu_differential
+			create view_menu_flat
+			create history_menu
+			create history_menu_back
+			create history_menu_forward
+			create history_menu_separator
 			create repository_menu
 			create repository_menu_build_all
 			create repository_menu_rebuild_all
@@ -992,18 +1007,14 @@ feature {NONE}-- Initialization
 			create repository_menu_refresh
 			create l_ev_menu_separator_7
 			create repository_menu_set_repository
-			create history_menu
-			create history_menu_back
-			create history_menu_forward
-			create history_menu_separator
-			create tools_menu
-			create tools_menu_clean_generated_files
-			create l_ev_menu_separator_8
-			create tools_menu_options
 			create rm_schemas_menu
 			create rm_schemas_menu_reload_schemas
-			create l_ev_menu_separator_9
+			create l_ev_menu_separator_8
 			create rm_schemas_menu_configure_rm_schemas
+			create tools_menu
+			create tools_menu_clean_generated_files
+			create l_ev_menu_separator_9
+			create tools_menu_options
 			create help_menu
 			create help_menu_contents
 			create help_menu_release_notes
@@ -1132,7 +1143,6 @@ feature {NONE}-- Initialization
 			create l_ev_frame_2
 			create l_ev_vertical_box_12
 			create path_analysis_column_view_checkable_list
-			create source_rich_text
 			create slots_box
 			create l_ev_frame_3
 			create l_ev_vertical_box_13
@@ -1146,6 +1156,7 @@ feature {NONE}-- Initialization
 			create ontology_term_definitions_multi_column_list
 			create constraint_definitions_frame
 			create ontology_constraint_definitions_multi_column_list
+			create source_rich_text
 			create status_notebook
 			create parser_status_area
 			create compiler_output_grid
@@ -1209,55 +1220,56 @@ feature {NONE}-- Initialization
 feature -- Access
 
 	menu: EV_MENU_BAR
-	file_menu, edit_menu, repository_menu, history_menu, tools_menu, rm_schemas_menu,
-	help_menu: EV_MENU
-	file_menu_open, file_menu_parse, file_menu_edit, file_menu_save_as, file_menu_exit,
-	edit_menu_copy, edit_menu_select_all, edit_menu_clipboard, repository_menu_build_all,
+	file_menu, edit_menu, view_menu, history_menu, repository_menu, rm_schemas_menu,
+	tools_menu, help_menu: EV_MENU
+	file_menu_open, file_menu_parse, file_menu_edit, file_menu_save_as,
+	file_menu_exit, edit_menu_copy, edit_menu_select_all, edit_menu_clipboard, view_menu_differential,
+	view_menu_flat, history_menu_back, history_menu_forward, repository_menu_build_all,
 	repository_menu_rebuild_all, repository_menu_build_subtree, repository_menu_rebuild_subtree,
 	repository_menu_export_html, repository_menu_export_repository_report, repository_menu_interrupt_build,
-	repository_menu_refresh, repository_menu_set_repository, history_menu_back, history_menu_forward,
-	tools_menu_clean_generated_files, tools_menu_options, rm_schemas_menu_reload_schemas,
-	rm_schemas_menu_configure_rm_schemas, help_menu_contents, help_menu_release_notes,
-	help_menu_icons, help_menu_clinical_knowledge_manager, help_menu_report_bug, help_menu_about: EV_MENU_ITEM
-	l_ev_menu_separator_1,
-	l_ev_menu_separator_2, l_ev_menu_separator_3, l_ev_menu_separator_4, l_ev_menu_separator_5,
-	l_ev_menu_separator_6, l_ev_menu_separator_7, history_menu_separator, l_ev_menu_separator_8,
-	l_ev_menu_separator_9, l_ev_menu_separator_10: EV_MENU_SEPARATOR
-	main_notebook, archetype_notebook,
-	status_notebook: EV_NOTEBOOK
-	viewer_vbox, l_ev_vertical_box_1, l_ev_vertical_box_2, description_box,
-	arch_desc_auth_hbox, arch_desc_contrib_hbox, l_ev_vertical_box_3, terminology_vbox,
-	lang_vbox, l_ev_vertical_box_4, l_ev_vertical_box_5, l_ev_vertical_box_6, l_ev_vertical_box_7,
-	l_ev_vertical_box_8, node_map_contols, l_ev_vertical_box_9, l_ev_vertical_box_10,
-	l_ev_vertical_box_11, l_ev_vertical_box_12, slots_box, l_ev_vertical_box_13, l_ev_vertical_box_14,
-	terminology_area, l_ev_vertical_box_15, l_ev_vertical_box_16: EV_VERTICAL_BOX
-	action_bar, l_ev_horizontal_box_1,
-	l_ev_horizontal_box_2, l_ev_horizontal_box_3, l_ev_horizontal_box_4, l_ev_horizontal_box_5,
-	l_ev_horizontal_box_6, author_lang_term_hbox, l_ev_horizontal_box_7, l_ev_horizontal_box_8,
-	l_ev_horizontal_box_9, arch_desc_details_hbox, l_ev_horizontal_box_10, l_ev_horizontal_box_11,
-	l_ev_horizontal_box_12, l_ev_horizontal_box_13, l_ev_horizontal_box_14, arch_desc_copyright_hbox,
-	node_map, path_analysis, statistics_box, l_ev_horizontal_box_15, l_ev_horizontal_box_16,
-	l_ev_horizontal_box_17, l_ev_horizontal_box_18, l_ev_horizontal_box_19, l_ev_horizontal_box_20,
-	l_ev_horizontal_box_21: EV_HORIZONTAL_BOX
-	l_ev_tool_bar_1, l_ev_tool_bar_4, l_ev_tool_bar_5: EV_TOOL_BAR
-	open_button,
-	parse_button, edit_button, history_back_button, history_forward_button, search_button: EV_TOOL_BAR_BUTTON
-	l_ev_tool_bar_separator_1,
-	l_ev_tool_bar_separator_2: EV_TOOL_BAR_SEPARATOR
-	archetype_id, language_combo, archetype_profile_combo,
-	path_analysis_row_filter_combo_box, test_profile_combo: EV_COMBO_BOX
-	view_label, language_label,
-	adl_version_label, archetype_explorer_label, template_explorer_label, arch_desc_auth_orig_auth_label,
-	arch_desc_auth_contrib_label, arch_desc_status_label, arch_desc_original_language_label,
-	arch_translations_languages_label, l_ev_label_1, l_ev_label_2, l_ev_label_3, arch_desc_purpose_label,
-	arch_desc_use_label, arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
-	arch_desc_resource_orig_res_label, arch_desc_copyright_label, l_ev_label_4, l_ev_label_5,
-	l_ev_label_6, l_ev_label_7, l_ev_label_8, l_ev_label_9, l_ev_label_10: EV_LABEL
-	differential_view_button,
-	flat_view_button: EV_TOOL_BAR_RADIO_BUTTON
-	adl_version_text, arch_desc_status_text, arch_desc_original_language_text,
-	arch_desc_resource_package_text, arch_total_count_tf, arch_spec_count_tf, arch_slotted_count_tf,
-	arch_used_by_count_tf, arch_bad_count_tf, arch_test_processed_count: EV_TEXT_FIELD
+	repository_menu_refresh, repository_menu_set_repository, rm_schemas_menu_reload_schemas,
+	rm_schemas_menu_configure_rm_schemas, tools_menu_clean_generated_files, tools_menu_options,
+	help_menu_contents, help_menu_release_notes, help_menu_icons, help_menu_clinical_knowledge_manager,
+	help_menu_report_bug, help_menu_about: EV_MENU_ITEM
+	l_ev_menu_separator_1, l_ev_menu_separator_2,
+	l_ev_menu_separator_3, history_menu_separator, l_ev_menu_separator_4, l_ev_menu_separator_5,
+	l_ev_menu_separator_6, l_ev_menu_separator_7, l_ev_menu_separator_8, l_ev_menu_separator_9,
+	l_ev_menu_separator_10: EV_MENU_SEPARATOR
+	main_notebook, archetype_notebook, status_notebook: EV_NOTEBOOK
+	viewer_vbox,
+	l_ev_vertical_box_1, l_ev_vertical_box_2, description_box, arch_desc_auth_hbox, arch_desc_contrib_hbox,
+	l_ev_vertical_box_3, terminology_vbox, lang_vbox, l_ev_vertical_box_4, l_ev_vertical_box_5,
+	l_ev_vertical_box_6, l_ev_vertical_box_7, l_ev_vertical_box_8, node_map_contols,
+	l_ev_vertical_box_9, l_ev_vertical_box_10, l_ev_vertical_box_11, l_ev_vertical_box_12,
+	slots_box, l_ev_vertical_box_13, l_ev_vertical_box_14, terminology_area, l_ev_vertical_box_15,
+	l_ev_vertical_box_16: EV_VERTICAL_BOX
+	action_bar, l_ev_horizontal_box_1, l_ev_horizontal_box_2, l_ev_horizontal_box_3,
+	l_ev_horizontal_box_4, l_ev_horizontal_box_5, l_ev_horizontal_box_6, author_lang_term_hbox,
+	l_ev_horizontal_box_7, l_ev_horizontal_box_8, l_ev_horizontal_box_9, arch_desc_details_hbox,
+	l_ev_horizontal_box_10, l_ev_horizontal_box_11, l_ev_horizontal_box_12, l_ev_horizontal_box_13,
+	l_ev_horizontal_box_14, arch_desc_copyright_hbox, node_map, path_analysis, statistics_box,
+	l_ev_horizontal_box_15, l_ev_horizontal_box_16, l_ev_horizontal_box_17, l_ev_horizontal_box_18,
+	l_ev_horizontal_box_19, l_ev_horizontal_box_20, l_ev_horizontal_box_21: EV_HORIZONTAL_BOX
+	l_ev_tool_bar_1,
+	l_ev_tool_bar_4, l_ev_tool_bar_5: EV_TOOL_BAR
+	open_button, parse_button, edit_button, history_back_button,
+	history_forward_button, search_button: EV_TOOL_BAR_BUTTON
+	l_ev_tool_bar_separator_1, l_ev_tool_bar_separator_2: EV_TOOL_BAR_SEPARATOR
+	archetype_id,
+	language_combo, archetype_profile_combo, path_analysis_row_filter_combo_box, test_profile_combo: EV_COMBO_BOX
+	view_label,
+	language_label, adl_version_label, archetype_explorer_label, template_explorer_label,
+	arch_desc_auth_orig_auth_label, arch_desc_auth_contrib_label, arch_desc_status_label,
+	arch_desc_original_language_label, arch_translations_languages_label, l_ev_label_1,
+	l_ev_label_2, l_ev_label_3, arch_desc_purpose_label, arch_desc_use_label, arch_desc_misuse_label,
+	arch_desc_keywords_label, arch_desc_resource_package_label, arch_desc_resource_orig_res_label,
+	arch_desc_copyright_label, l_ev_label_4, l_ev_label_5, l_ev_label_6, l_ev_label_7,
+	l_ev_label_8, l_ev_label_9, l_ev_label_10: EV_LABEL
+	differential_view_button, flat_view_button: EV_TOOL_BAR_RADIO_BUTTON
+	adl_version_text,
+	arch_desc_status_text, arch_desc_original_language_text, arch_desc_resource_package_text,
+	arch_total_count_tf, arch_spec_count_tf, arch_slotted_count_tf, arch_used_by_count_tf,
+	arch_bad_count_tf, arch_test_processed_count: EV_TEXT_FIELD
 	explorer_split_area: EV_HORIZONTAL_SPLIT_AREA
 	archetype_template_split_area,
 	total_split_area, l_ev_vertical_split_area_1, test_split_area: EV_VERTICAL_SPLIT_AREA
@@ -1345,6 +1357,31 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
+	on_differential_view
+			-- Called by `select_actions' of `view_menu_differential'.
+		deferred
+		end
+	
+	on_flat_view
+			-- Called by `select_actions' of `view_menu_flat'.
+		deferred
+		end
+	
+	on_history
+			-- Called by `select_actions' of `history_menu'.
+		deferred
+		end
+	
+	on_back
+			-- Called by `select_actions' of `history_menu_back'.
+		deferred
+		end
+	
+	on_forward
+			-- Called by `select_actions' of `history_menu_forward'.
+		deferred
+		end
+	
 	build_all
 			-- Called by `select_actions' of `repository_menu_build_all'.
 		deferred
@@ -1390,18 +1427,13 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	on_history
-			-- Called by `select_actions' of `history_menu'.
+	reload_schemas
+			-- Called by `select_actions' of `rm_schemas_menu_reload_schemas'.
 		deferred
 		end
 	
-	on_back
-			-- Called by `select_actions' of `history_menu_back'.
-		deferred
-		end
-	
-	on_forward
-			-- Called by `select_actions' of `history_menu_forward'.
+	set_rm_schemas
+			-- Called by `select_actions' of `rm_schemas_menu_configure_rm_schemas'.
 		deferred
 		end
 	
@@ -1412,16 +1444,6 @@ feature {NONE} -- Implementation
 	
 	set_options
 			-- Called by `select_actions' of `tools_menu_options'.
-		deferred
-		end
-	
-	reload_schemas
-			-- Called by `select_actions' of `rm_schemas_menu_reload_schemas'.
-		deferred
-		end
-	
-	set_rm_schemas
-			-- Called by `select_actions' of `rm_schemas_menu_configure_rm_schemas'.
 		deferred
 		end
 	
@@ -1467,16 +1489,6 @@ feature {NONE} -- Implementation
 	
 	start_search_by_id
 			-- Called by `select_actions' of `search_button'.
-		deferred
-		end
-	
-	on_differential_view
-			-- Called by `select_actions' of `differential_view_button'.
-		deferred
-		end
-	
-	on_flat_view
-			-- Called by `select_actions' of `flat_view_button'.
 		deferred
 		end
 	
