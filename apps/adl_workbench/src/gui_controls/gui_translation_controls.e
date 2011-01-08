@@ -17,7 +17,8 @@ class GUI_TRANSLATION_CONTROLS
 inherit
 	SHARED_KNOWLEDGE_REPOSITORY
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} has_current_profile
 		end
 
 	GUI_UTILITIES
@@ -56,9 +57,10 @@ feature -- Commands
 
 	populate
 			-- populate controls
+		require
+			has_current_profile
 		do
 			clear
-
 			if current_arch_dir.has_validated_selected_archetype and then attached current_arch_dir.selected_archetype.differential_archetype.translations then
 				gui.arch_translations_languages_list.set_strings (current_arch_dir.selected_archetype.differential_archetype.translations.current_keys)
 				populate_items

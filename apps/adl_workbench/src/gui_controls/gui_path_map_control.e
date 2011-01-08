@@ -15,12 +15,13 @@ note
 class GUI_PATH_MAP_CONTROL
 
 inherit
-	SHARED_APP_UI_RESOURCES
+	SHARED_KNOWLEDGE_REPOSITORY
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} has_current_profile
 		end
 
-	SHARED_KNOWLEDGE_REPOSITORY
+	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
 		end
@@ -126,6 +127,8 @@ feature -- Commands
 
 	populate
 			-- Populate `path_list'.
+		require
+			has_current_profile
 		local
 			list_row: EV_MULTI_COLUMN_LIST_ROW
 			p_paths, l_paths: ARRAYED_LIST[STRING]

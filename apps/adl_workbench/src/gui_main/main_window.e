@@ -234,7 +234,7 @@ feature -- File events
 		do
 			if attached current_arch_dir as dir then
 				if attached {ARCH_REP_ARCHETYPE} dir.selected_archetype as ara then
-					clear_all_controls
+					clear_all_archetype_view_controls
 					do_with_wait_cursor (agent archetype_compiler.build_lineage (ara, 0))
 				end
 			end
@@ -919,7 +919,7 @@ feature -- Archetype Events
 	select_archetype_from_gui_data (gui_item: EV_ANY)
 			-- Select and display the node of `archetype_file_tree' corresponding to the folder or archetype attached to `gui_item'.
 		do
-			if attached gui_item and attached current_arch_dir as dir then
+			if attached gui_item and has_current_profile then
 				if attached {ARCH_REP_ITEM} gui_item.data as ari then
 					current_arch_dir.set_selected_item (ari)
 					go_to_node_in_archetype_tree_view
@@ -930,28 +930,28 @@ feature -- Archetype Events
 	go_to_node_in_archetype_tree_view
 			-- Select and display the node of `archetype_file_tree' corresponding to the selection in `archetype_directory'.
 		do
-			if attached current_arch_dir as dir and then dir.has_selected_item then
-				archetype_view_tree_control.select_item(dir.selected_item.ontological_name)
+			if has_current_profile and then current_arch_dir.has_selected_item then
+				archetype_view_tree_control.select_item(current_arch_dir.selected_item.ontological_name)
 			end
 		end
 
 	on_node_map_shrink_tree_one_level
 		do
-			if attached current_arch_dir as dir and then dir.has_validated_selected_archetype then
+			if has_current_profile and then current_arch_dir.has_validated_selected_archetype then
 				node_map_control.shrink_one_level
 			end
 		end
 
 	on_node_map_expand_tree_one_level
 		do
-			if attached current_arch_dir as dir and then dir.has_validated_selected_archetype then
+			if has_current_profile and then current_arch_dir.has_validated_selected_archetype then
 				node_map_control.expand_one_level
 			end
 		end
 
 	on_node_map_toggle_expand_tree
 		do
-			if attached current_arch_dir as dir and then dir.has_validated_selected_archetype then
+			if has_current_profile and then current_arch_dir.has_validated_selected_archetype then
 				node_map_control.toggle_expand_tree
 			end
 		end
@@ -965,7 +965,7 @@ feature -- Archetype Events
 	on_node_map_domain_selected
 			-- Hide technical details in `node_map_tree'.
 		do
-			if attached current_arch_dir as dir and then dir.has_validated_selected_archetype then
+			if has_current_profile and then current_arch_dir.has_validated_selected_archetype then
 				node_map_control.set_domain_mode
 			end
 		end
@@ -973,7 +973,7 @@ feature -- Archetype Events
 	on_node_map_technical_selected
 			-- Display technical details in `node_map_tree'.
 		do
-			if attached current_arch_dir as dir and then dir.has_validated_selected_archetype then
+			if has_current_profile and then current_arch_dir.has_validated_selected_archetype then
 				node_map_control.set_technical_mode
 			end
 		end
@@ -981,7 +981,7 @@ feature -- Archetype Events
 	on_node_map_reference_model_selected
 			-- turn on or off the display of reference model details in `node_map_tree'.
 		do
-			if attached current_arch_dir as dir and then dir.has_validated_selected_archetype then
+			if has_current_profile and then current_arch_dir.has_validated_selected_archetype then
 				node_map_control.set_reference_model_mode
 			end
 		end
@@ -1130,10 +1130,8 @@ feature -- Controls
 
 feature {NONE} -- Implementation
 
-	append_status_area (text: STRING)
+	append_status_area (text: attached STRING)
 			-- Append `text' to `parser_status_area'.
-		require
-			text_attached: text /= Void
 		do
 			parser_status_area.append_text (text)
 			parser_status_area.set_background_color (status_area_background_color)
@@ -1148,10 +1146,8 @@ feature {NONE} -- Implementation
 			ev_application.process_graphical_events
 		end
 
-	set_status_area (text: STRING)
+	set_status_area (text: attached STRING)
 			-- Set `parser_status_area' to `text'.
-		require
-			text_attached: text /= Void
 		do
 			parser_status_area.remove_text
 			append_status_area (text)
@@ -1209,13 +1205,12 @@ feature {NONE} -- Implementation
 			end
 
 			set_title (repository_profiles.current_reference_repository_path + " - " + title)
-		--	clear_status_area
 
 			append_status_area (create_message_line ("populating_directory_start", <<repository_profiles.current_profile_name>>))
 			use_current_profile(refresh)
 			append_status_area (create_message_line ("populating_directory_complete", Void))
 
-			clear_all_controls
+			clear_all_archetype_view_controls
 			compiler_error_control.clear
 
 			go_to_node_in_archetype_tree_view
@@ -1227,10 +1222,10 @@ feature {NONE} -- Implementation
 			populate_statistics
 		end
 
-	clear_all_controls
+	clear_all_archetype_view_controls
 			-- Wipe out content from visual controls.
 		do
-			if attached current_arch_dir as dir and then dir.selection_history_has_previous then
+			if has_current_profile and then current_arch_dir.selection_history_has_previous then
 				history_menu_back.enable_sensitive
 				history_back_button.enable_sensitive
 			else
@@ -1238,7 +1233,7 @@ feature {NONE} -- Implementation
 				history_back_button.disable_sensitive
 			end
 
-			if attached current_arch_dir as dir and then dir.selection_history_has_next then
+			if has_current_profile and then current_arch_dir.selection_history_has_next then
 				history_menu_forward.enable_sensitive
 				history_forward_button.enable_sensitive
 			else
@@ -1246,9 +1241,9 @@ feature {NONE} -- Implementation
 				history_forward_button.disable_sensitive
 			end
 
-			populate_archetype_id
-			populate_adl_version
-			populate_languages
+			archetype_id.remove_text
+			adl_version_text.remove_text
+			language_combo.wipe_out
 
 			source_rich_text.remove_text
 			description_controls.clear
@@ -1262,7 +1257,7 @@ feature {NONE} -- Implementation
 	populate_archetype_view_controls
 			-- Populate content from visual controls.
 		require
-			repository_profiles.has_current_profile
+			has_current_profile
 		do
 			description_controls.populate
 			translation_controls.populate
@@ -1275,14 +1270,10 @@ feature {NONE} -- Implementation
 
 	populate_source_text
 			-- Display the selected archetype's differential or flat text in `source_rich_text', optionally with line numbers.
-		local
-			ara: ARCH_REP_ARCHETYPE
+		require
+			has_current_profile
 		do
-			if attached current_arch_dir as dir then
-				ara := dir.selected_archetype
-			end
-
-			if attached ara then
+			if attached {ARCH_REP_ARCHETYPE} current_arch_dir.selected_archetype as ara then
 				if not differential_view then
 					if ara.is_valid then
 						populate_source_text_with_line_numbers (ara.flat_text)
@@ -1301,10 +1292,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_source_text_with_line_numbers (text: STRING)
+	populate_source_text_with_line_numbers (text: attached STRING)
 			-- Display `text' in `source_rich_text', optionally with each line preceded by line numbers.
-		require
-			text_attached: text /= Void
 		local
 			leader, s, number_string: STRING
 			len, left_pos, right_pos, number: INTEGER
@@ -1346,48 +1335,46 @@ feature {NONE} -- Implementation
 		end
 
 	populate_archetype_id
-		local
-			selected: ARCHETYPE_ID
+			-- populate Id control for currently selected archetype, or clear if none
+		require
+			has_current_profile
 		do
-			if attached current_arch_dir as dir then
-				if dir.has_selected_archetype then
-					selected := dir.selected_archetype.id
-				end
-			end
-
-			archetype_id.wipe_out
-			if selected /= Void then
-				archetype_id.set_text (utf8 (selected.as_string))
+			if attached {ARCH_REP_ARCHETYPE} current_arch_dir.selected_archetype as ara then
+					archetype_id.set_text (utf8 (ara.id.as_string))
 			else
 				archetype_id.remove_text
 			end
 		end
 
 	populate_adl_version
-			-- Populate ADL version.
+			-- Populate ADL version for currently selected archetype, or clear if none
+		require
+			has_current_profile
 		do
-			if attached current_arch_dir as dir and then dir.has_validated_selected_archetype then
-				adl_version_text.set_text (utf8 (dir.selected_archetype.differential_archetype.adl_version))
+			if current_arch_dir.has_validated_selected_archetype then
+				adl_version_text.set_text (utf8 (current_arch_dir.selected_archetype.differential_archetype.adl_version))
 			else
 				adl_version_text.remove_text
 			end
 		end
 
 	populate_languages
-			-- Populate `language_combo' in the toolbar.
+			-- Populate `language_combo' in the toolbar for currently selected archetype, or clear if none
+		require
+			has_current_profile
 		local
-			archetype: ARCHETYPE
+			arch: ARCHETYPE
 		do
 			language_combo.select_actions.block
 
-			if attached current_arch_dir as dir and then dir.has_validated_selected_archetype then
-				archetype := dir.selected_archetype.differential_archetype
+			if current_arch_dir.has_validated_selected_archetype then
+				arch := current_arch_dir.selected_archetype.differential_archetype
 
-				if not archetype.has_language (current_language) then
-					set_current_language (archetype.original_language.code_string)
+				if not arch.has_language (current_language) then
+					set_current_language (arch.original_language.code_string)
 				end
 
-				language_combo.set_strings (archetype.languages_available)
+				language_combo.set_strings (arch.languages_available)
 
 				language_combo.do_all (agent (li: EV_LIST_ITEM) do if li.text.same_string (current_language) then li.enable_select end end)
 			else
@@ -1400,12 +1387,12 @@ feature {NONE} -- Implementation
 
 	populate_archetype_profile_combo
 		do
-			populate_profile_combo(archetype_profile_combo)
+			populate_profile_combo (archetype_profile_combo)
 		end
 
 	populate_test_profile_combo
 		do
-			populate_profile_combo(test_profile_combo)
+			populate_profile_combo (test_profile_combo)
 		end
 
 	populate_profile_combo (a_combo: EV_COMBO_BOX)
@@ -1448,28 +1435,28 @@ feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Statistics
 			list_row: EV_MULTI_COLUMN_LIST_ROW
 			i: INTEGER
 		do
-			if attached current_arch_dir as dir then
-				arch_total_count_tf.set_text (dir.total_archetype_count.out)
-				arch_spec_count_tf.set_text (dir.specialised_archetype_count.out)
-				arch_slotted_count_tf.set_text (dir.client_archetype_count.out)
-				arch_used_by_count_tf.set_text (dir.supplier_archetype_count.out)
-				arch_bad_count_tf.set_text (dir.bad_archetype_count.out)
+			if has_current_profile then
+				arch_total_count_tf.set_text (current_arch_dir.total_archetype_count.out)
+				arch_spec_count_tf.set_text (current_arch_dir.specialised_archetype_count.out)
+				arch_slotted_count_tf.set_text (current_arch_dir.client_archetype_count.out)
+				arch_used_by_count_tf.set_text (current_arch_dir.supplier_archetype_count.out)
+				arch_bad_count_tf.set_text (current_arch_dir.bad_archetype_count.out)
 
 				-- do terminology bindings statistics
-				from dir.terminology_bindings_info.start until dir.terminology_bindings_info.off loop
+				from current_arch_dir.terminology_bindings_info.start until current_arch_dir.terminology_bindings_info.off loop
 					from terminology_bindings_info_list.start until terminology_bindings_info_list.off or
-						terminology_bindings_info_list.item.first.is_equal (dir.terminology_bindings_info.key_for_iteration)
+						terminology_bindings_info_list.item.first.is_equal (current_arch_dir.terminology_bindings_info.key_for_iteration)
 					loop
 						terminology_bindings_info_list.forth
 					end
 					if not terminology_bindings_info_list.off then
 						terminology_bindings_info_list.item.finish
 						terminology_bindings_info_list.item.remove
-						terminology_bindings_info_list.item.extend (utf8 (dir.terminology_bindings_info.item_for_iteration.count.out))
+						terminology_bindings_info_list.item.extend (utf8 (current_arch_dir.terminology_bindings_info.item_for_iteration.count.out))
 					else
 						create list_row
-						list_row.extend (utf8 (dir.terminology_bindings_info.key_for_iteration))
-						list_row.extend (utf8 (dir.terminology_bindings_info.item_for_iteration.count.out))
+						list_row.extend (utf8 (current_arch_dir.terminology_bindings_info.key_for_iteration))
+						list_row.extend (utf8 (current_arch_dir.terminology_bindings_info.item_for_iteration.count.out))
 						terminology_bindings_info_list.extend (list_row)
 						from i := 1 until i > terminology_bindings_info_list.column_count loop
 							terminology_bindings_info_list.resize_column_to_content (i)
@@ -1480,7 +1467,7 @@ feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Statistics
 						end
 					end
 
-					dir.terminology_bindings_info.forth
+					current_arch_dir.terminology_bindings_info.forth
 				end
 			end
 		end

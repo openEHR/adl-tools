@@ -17,7 +17,8 @@ class GUI_ONTOLOGY_CONTROLS
 inherit
 	SHARED_KNOWLEDGE_REPOSITORY
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} has_current_profile
 		end
 
 	SHARED_APP_UI_RESOURCES
@@ -52,6 +53,8 @@ feature -- Commands
 
 	populate
 			-- populate ontology controls
+		require
+			has_current_profile
 		do
 			clear
 

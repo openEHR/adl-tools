@@ -16,7 +16,8 @@ class GUI_SLOT_MAP_CONTROL
 inherit
 	SHARED_KNOWLEDGE_REPOSITORY
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} has_current_profile
 		end
 
 	SHARED_APP_UI_RESOURCES
@@ -67,6 +68,8 @@ feature -- Commands
 
 	populate
 			-- populate the ADL tree control by creating it from scratch
+		require
+			has_current_profile
 		local
 			eti: EV_TREE_ITEM
 			ara: ARCH_REP_ARCHETYPE

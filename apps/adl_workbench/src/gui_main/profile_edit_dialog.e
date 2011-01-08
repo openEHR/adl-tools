@@ -147,23 +147,23 @@ feature -- Events
 						a_prof.set_work_repository (work_path_text.text)
 					end
 					parent_dialog.rep_profiles_copy.put_profile (a_prof, prof_name)
-					has_changed_profiles := True
+					has_changed_profile := True
 
 				else -- in edit existing situation, only do something if the paths have changed
 					-- if existing profile name was changed
 					if not prof_name.same_string (initial_profile_name) then
 						parent_dialog.rep_profiles_copy.rename_profile (initial_profile_name, prof_name)
-						has_changed_profiles := True
+						has_changed_profile := True
 					end
 
 					a_prof := parent_dialog.rep_profiles_copy.profile (prof_name)
 					if not a_prof.reference_repository.same_string (reference_path_text.text) then
 						a_prof.set_reference_repository (reference_path_text.text)
-						has_changed_profiles := True
+						has_changed_profile := True
 					end
 					if a_prof.has_work_repository and then not a_prof.work_repository.same_string (work_path_text.text) then
 						a_prof.set_work_repository (work_path_text.text)
-						has_changed_profiles := True
+						has_changed_profile := True
 					end
 				end
 				parent_dialog.set_selected_profile_key(prof_name)
@@ -196,7 +196,7 @@ feature -- Status Report
 	is_valid: BOOLEAN
 			-- result of validation in `on_ok'
 
-	has_changed_profiles: BOOLEAN
+	has_changed_profile: BOOLEAN
 			-- True if this dialog has caused a change to the repository profiles copy in the parent diaog
 
 feature {NONE} -- Implementation

@@ -75,6 +75,8 @@ feature -- Commands
 
 	populate
 			-- Populate ontology controls.
+		require
+			has_current_profile
 		local
 			archetype: ARCHETYPE
 		do

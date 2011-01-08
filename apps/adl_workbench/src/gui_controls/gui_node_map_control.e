@@ -121,6 +121,8 @@ feature -- Commands
 
 	populate
 			-- populate the ADL tree control by creating it from scratch
+		require
+			has_current_profile
 		local
 			tree_iterator: OG_ITERATOR
 		do

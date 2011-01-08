@@ -26,15 +26,9 @@ feature -- Access
 	current_arch_dir: ARCHETYPE_DIRECTORY
 			-- application-wide archetype directory access
 		require
-			repository_profiles.has_current_profile
+			has_current_profile
 		do
-			Result := directories.item(repository_profiles.current_profile_name)
-		end
-
-	directories: attached HASH_TABLE [ARCHETYPE_DIRECTORY, STRING]
-			-- hash of all archetype directories used so far in the current session
-		once
-			create Result.make(0)
+			Result := arch_dirs.item(repository_profiles.current_profile_name)
 		end
 
 	use_current_profile (refresh: BOOLEAN)
@@ -42,7 +36,7 @@ feature -- Access
 		local
 			new_dir: ARCHETYPE_DIRECTORY
 		do
-			if not directories.has(repository_profiles.current_profile_name) or else refresh then
+			if not arch_dirs.has(repository_profiles.current_profile_name) or else refresh then
 				create new_dir.make
 				if directory_exists (repository_profiles.current_reference_repository_path) then
 					source_repositories.set_reference_repository (repository_profiles.current_reference_repository_path)
@@ -56,11 +50,26 @@ feature -- Access
 						source_repositories.remove_work_repository
 					end
 					new_dir.populate
-					directories.force(new_dir, repository_profiles.current_profile_name)
+					arch_dirs.force(new_dir, repository_profiles.current_profile_name)
 				else
 					post_error (Current, "switch_to_profile", "ref_repo_not_found", <<repository_profiles.current_reference_repository_path>>)
 				end
 			end
+		end
+
+feature -- Status Report
+
+	has_current_profile: BOOLEAN
+		do
+			Result := repository_profiles.has_current_profile
+		end
+
+feature {NONE} -- Implementation
+
+	arch_dirs: attached HASH_TABLE [ARCHETYPE_DIRECTORY, STRING]
+			-- hash of all archetype directories used so far in the current session
+		once
+			create Result.make(0)
 		end
 
 end

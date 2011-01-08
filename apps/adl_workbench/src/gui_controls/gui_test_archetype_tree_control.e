@@ -153,8 +153,8 @@ feature -- Commands
 			clear
 			reset_output_directories
 
- 			if attached current_arch_dir as dir then
-	 			dir.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+ 			if has_current_profile then
+	 			current_arch_dir.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
  			end
 
 			-- put names on columns

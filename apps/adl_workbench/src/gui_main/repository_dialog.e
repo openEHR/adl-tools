@@ -95,7 +95,7 @@ feature {NONE} -- Events
 			create edit_dialog.make_new (Current)
 			edit_dialog.show_modal_to_window (Current)
 			if edit_dialog.is_valid then
-				any_profile_changes_made_pending := any_profile_changes_made_pending or edit_dialog.has_changed_profiles
+				any_profile_changes_made_pending := any_profile_changes_made_pending or edit_dialog.has_changed_profile
 				-- if there was no profile initially, and one was just created => register change
 				current_profile_changed_pending := current_profile_changed_pending or not repository_profiles.has_current_profile
 				populate_controls
@@ -110,10 +110,11 @@ feature {NONE} -- Events
 			create edit_dialog.make_edit (Current, selected_profile_key)
 			edit_dialog.show_modal_to_window (Current)
 			if edit_dialog.is_valid then
-				if edit_dialog.has_changed_profiles then
+				if edit_dialog.has_changed_profile then
 					populate_controls
-					current_profile_changed_pending := current_profile_changed_pending or repository_profiles.current_profile_name /~ edit_dialog.initial_profile_name
-					any_profile_changes_made_pending := any_profile_changes_made_pending or edit_dialog.has_changed_profiles
+					current_profile_changed_pending := current_profile_changed_pending or
+						(repository_profiles.current_profile_name ~ edit_dialog.initial_profile_name and edit_dialog.has_changed_profile)
+					any_profile_changes_made_pending := any_profile_changes_made_pending or edit_dialog.has_changed_profile
 				end
 			end
 			edit_dialog.destroy

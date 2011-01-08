@@ -95,17 +95,14 @@ feature -- Commands
 			gui_tree.wipe_out
  			create gui_tree_item_stack.make (0)
 
- 			if attached current_arch_dir as dir then
-	 			dir.do_all_archetypes (agent populate_template_nodes)
- 			end
-
-			gui.go_to_node_in_archetype_tree_view
+ 			if has_current_profile then
+	 			current_arch_dir.do_all_archetypes (agent populate_template_nodes)
+ 				gui.go_to_node_in_archetype_tree_view
+			end
 		end
 
-	update_tree_node_for_archetype (ara: ARCH_REP_ARCHETYPE)
+	update_tree_node_for_archetype (ara: attached ARCH_REP_ARCHETYPE)
 			-- update Explorer tree node with changes in compilation status
-		require
-			Descriptor_valid: ara /= Void
 		local
 			an_id: STRING
 		do

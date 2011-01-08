@@ -98,12 +98,11 @@ feature -- Commands
 			gui_tree.wipe_out
  			create gui_tree_item_stack.make (0)
 
- 			if attached current_arch_dir as dir then
-	 			dir.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+ 			if has_current_profile then
+	 			current_arch_dir.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+				gui_tree.recursive_do_all (agent ev_tree_expand)
+				gui.go_to_node_in_archetype_tree_view
  			end
-
-			gui_tree.recursive_do_all (agent ev_tree_expand)
-			gui.go_to_node_in_archetype_tree_view
 		end
 
 	update_tree_node_for_archetype (ara: attached ARCH_REP_ARCHETYPE)
