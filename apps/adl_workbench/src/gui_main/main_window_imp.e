@@ -766,6 +766,10 @@ feature {NONE}-- Initialization
 			l_ev_frame_4.set_text ("Client Archetypes")
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_16.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
+			integer_constant_set_procedures.extend (agent terminology_area.set_padding (?))
+			integer_constant_retrieval_functions.extend (agent padding_width)
+			integer_constant_set_procedures.extend (agent terminology_area.set_border_width (?))
+			integer_constant_retrieval_functions.extend (agent border_width)
 			l_ev_vertical_split_area_1.enable_item_expand (term_definitions_frame)
 			l_ev_vertical_split_area_1.disable_item_expand (constraint_definitions_frame)
 			term_definitions_frame.set_text ("Term definitions and bindings")
@@ -1364,287 +1368,287 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	open_archetype
+	open_archetype is
 			-- Called by `select_actions' of `file_menu_open'.
 		deferred
 		end
 	
-	parse_archetype
+	parse_archetype is
 			-- Called by `select_actions' of `file_menu_parse'.
 		deferred
 		end
 	
-	edit_archetype
+	edit_archetype is
 			-- Called by `select_actions' of `file_menu_edit'.
 		deferred
 		end
 	
-	save_archetype_as
+	save_archetype_as is
 			-- Called by `select_actions' of `file_menu_save_as'.
 		deferred
 		end
 	
-	exit_app
+	exit_app is
 			-- Called by `select_actions' of `file_menu_exit'.
 		deferred
 		end
 	
-	on_copy
+	on_copy is
 			-- Called by `select_actions' of `edit_menu_copy'.
 		deferred
 		end
 	
-	on_select_all
+	on_select_all is
 			-- Called by `select_actions' of `edit_menu_select_all'.
 		deferred
 		end
 	
-	show_clipboard
+	show_clipboard is
 			-- Called by `select_actions' of `edit_menu_clipboard'.
 		deferred
 		end
 	
-	on_differential_view
+	on_differential_view is
 			-- Called by `select_actions' of `view_menu_differential'.
 		deferred
 		end
 	
-	on_flat_view
+	on_flat_view is
 			-- Called by `select_actions' of `view_menu_flat'.
 		deferred
 		end
 	
-	on_history
+	on_history is
 			-- Called by `select_actions' of `history_menu'.
 		deferred
 		end
 	
-	on_back
+	on_back is
 			-- Called by `select_actions' of `history_menu_back'.
 		deferred
 		end
 	
-	on_forward
+	on_forward is
 			-- Called by `select_actions' of `history_menu_forward'.
 		deferred
 		end
 	
-	build_all
+	build_all is
 			-- Called by `select_actions' of `repository_menu_build_all'.
 		deferred
 		end
 	
-	rebuild_all
+	rebuild_all is
 			-- Called by `select_actions' of `repository_menu_rebuild_all'.
 		deferred
 		end
 	
-	build_subtree
+	build_subtree is
 			-- Called by `select_actions' of `repository_menu_build_subtree'.
 		deferred
 		end
 	
-	rebuild_subtree
+	rebuild_subtree is
 			-- Called by `select_actions' of `repository_menu_rebuild_subtree'.
 		deferred
 		end
 	
-	export_html
+	export_html is
 			-- Called by `select_actions' of `repository_menu_export_html'.
 		deferred
 		end
 	
-	export_repository_report
+	export_repository_report is
 			-- Called by `select_actions' of `repository_menu_export_repository_report'.
 		deferred
 		end
 	
-	interrupt_build
+	interrupt_build is
 			-- Called by `select_actions' of `repository_menu_interrupt_build'.
 		deferred
 		end
 	
-	refresh_directory
+	refresh_directory is
 			-- Called by `select_actions' of `repository_menu_refresh'.
 		deferred
 		end
 	
-	set_repository
+	set_repository is
 			-- Called by `select_actions' of `repository_menu_set_repository'.
 		deferred
 		end
 	
-	reload_schemas
+	reload_schemas is
 			-- Called by `select_actions' of `rm_schemas_menu_reload_schemas'.
 		deferred
 		end
 	
-	set_rm_schemas
+	set_rm_schemas is
 			-- Called by `select_actions' of `rm_schemas_menu_configure_rm_schemas'.
 		deferred
 		end
 	
-	clean_generated_files
+	clean_generated_files is
 			-- Called by `select_actions' of `tools_menu_clean_generated_files'.
 		deferred
 		end
 	
-	set_options
+	set_options is
 			-- Called by `select_actions' of `tools_menu_options'.
 		deferred
 		end
 	
-	show_online_help
+	show_online_help is
 			-- Called by `select_actions' of `help_menu_contents'.
 		deferred
 		end
 	
-	show_release_notes
+	show_release_notes is
 			-- Called by `select_actions' of `help_menu_release_notes'.
 		deferred
 		end
 	
-	show_icon_help
+	show_icon_help is
 			-- Called by `select_actions' of `help_menu_icons'.
 		deferred
 		end
 	
-	show_clinical_knowledge_manager
+	show_clinical_knowledge_manager is
 			-- Called by `select_actions' of `help_menu_clinical_knowledge_manager'.
 		deferred
 		end
 	
-	show_bug_reporter
+	show_bug_reporter is
 			-- Called by `select_actions' of `help_menu_report_bug'.
 		deferred
 		end
 	
-	show_about
+	show_about is
 			-- Called by `select_actions' of `help_menu_about'.
 		deferred
 		end
 	
-	select_archetype_by_id
+	select_archetype_by_id is
 			-- Called by `select_actions' of `archetype_id'.
 		deferred
 		end
 	
-	find_archetype_by_key
+	find_archetype_by_key is
 			-- Called by `return_actions' of `archetype_id'.
 		deferred
 		end
 	
-	start_search_by_id
+	start_search_by_id is
 			-- Called by `select_actions' of `search_button'.
 		deferred
 		end
 	
-	select_language
+	select_language is
 			-- Called by `select_actions' of `language_combo'.
 		deferred
 		end
 	
-	select_profile
+	select_profile is
 			-- Called by `select_actions' of `archetype_profile_combo'.
 		deferred
 		end
 	
-	archetype_view_tree_item_select
+	archetype_view_tree_item_select is
 			-- Called by `select_actions' of `archetype_file_tree'.
 		deferred
 		end
 	
-	template_view_tree_item_select
+	template_view_tree_item_select is
 			-- Called by `select_actions' of `template_file_tree'.
 		deferred
 		end
 	
-	translations_select_language
+	translations_select_language is
 			-- Called by `select_actions' of `arch_translations_languages_list'.
 		deferred
 		end
 	
-	on_node_map_item_select
+	on_node_map_item_select is
 			-- Called by `select_actions' of `node_map_tree'.
 		deferred
 		end
 	
-	on_node_map_toggle_expand_tree
+	on_node_map_toggle_expand_tree is
 			-- Called by `select_actions' of `node_map_expand_button'.
 		deferred
 		end
 	
-	on_node_map_expand_tree_one_level
+	on_node_map_expand_tree_one_level is
 			-- Called by `select_actions' of `node_map_expand_one_button'.
 		deferred
 		end
 	
-	on_node_map_shrink_tree_one_level
+	on_node_map_shrink_tree_one_level is
 			-- Called by `select_actions' of `node_map_collapse_one_button'.
 		deferred
 		end
 	
-	on_node_map_domain_selected
+	on_node_map_domain_selected is
 			-- Called by `select_actions' of `node_map_domain_radio_button'.
 		deferred
 		end
 	
-	on_node_map_technical_selected
+	on_node_map_technical_selected is
 			-- Called by `select_actions' of `node_map_technical_radio_button'.
 		deferred
 		end
 	
-	on_node_map_reference_model_selected
+	on_node_map_reference_model_selected is
 			-- Called by `select_actions' of `node_map_reference_model_radio_button'.
 		deferred
 		end
 	
-	path_row_set_filter
+	path_row_set_filter is
 			-- Called by `select_actions' of `path_analysis_row_filter_combo_box'.
 		deferred
 		end
 	
-	path_column_select (a_list_item: EV_LIST_ITEM)
+	path_column_select (a_list_item: EV_LIST_ITEM) is
 			-- Called by `check_actions' of `path_analysis_column_view_checkable_list'.
 		deferred
 		end
 	
-	path_column_unselect (a_list_item: EV_LIST_ITEM)
+	path_column_unselect (a_list_item: EV_LIST_ITEM) is
 			-- Called by `uncheck_actions' of `path_analysis_column_view_checkable_list'.
 		deferred
 		end
 	
-	archetype_test_tree_expand_toggle
+	archetype_test_tree_expand_toggle is
 			-- Called by `select_actions' of `arch_test_tree_toggle_expand_bn'.
 		deferred
 		end
 	
-	archetype_test_refresh
+	archetype_test_refresh is
 			-- Called by `select_actions' of `arch_test_refresh_bn'.
 		deferred
 		end
 	
-	archetype_test_regression_toggle
+	archetype_test_regression_toggle is
 			-- Called by `select_actions' of `regression_test_bn'.
 		deferred
 		end
 	
-	archetype_test_go_stop
+	archetype_test_go_stop is
 			-- Called by `select_actions' of `archetype_test_go_bn'.
 		deferred
 		end
 	
-	on_diff_source
+	on_diff_source is
 			-- Called by `select_actions' of `diff_source_button'.
 		deferred
 		end
 	
-	on_diff_flat
+	on_diff_flat is
 			-- Called by `select_actions' of `diff_flat_button'.
 		deferred
 		end
 	
-	on_diff_source_flat
+	on_diff_source_flat is
 			-- Called by `select_actions' of `diff_source_flat_button'.
 		deferred
 		end

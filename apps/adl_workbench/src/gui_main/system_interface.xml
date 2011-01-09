@@ -5377,6 +5377,12 @@ Resources</Text>
         <EV_WIDGET>
         </EV_WIDGET>
         <EV_BOX>
+         <Padding>
+          <Constant>padding_width</Constant>
+         </Padding>
+         <Border>
+          <Constant>border_width</Constant>
+         </Border>
          <Is_item_expanded>1</Is_item_expanded>
         </EV_BOX>
         <EV_PIXMAPABLE>

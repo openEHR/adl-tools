@@ -182,22 +182,22 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	get_reference_repository_path
+	get_reference_repository_path is
 			-- Called by `select_actions' of `reference_path_browse_button'.
 		deferred
 		end
 	
-	get_work_repository_path
+	get_work_repository_path is
 			-- Called by `select_actions' of `work_path_browse_button'.
 		deferred
 		end
 	
-	on_ok
+	on_ok is
 			-- Called by `select_actions' of `ok_button'.
 		deferred
 		end
 	
-	on_show
+	on_show is
 			-- Called by `show_actions' of `profile_edit_dialog'.
 		deferred
 		end

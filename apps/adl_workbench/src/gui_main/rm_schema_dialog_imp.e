@@ -172,12 +172,12 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	on_rm_schema_dir_browse
+	on_rm_schema_dir_browse is
 			-- Called by `select_actions' of `rm_schema_dir_button'.
 		deferred
 		end
 	
-	on_ok
+	on_ok is
 			-- Called by `select_actions' of `ok_button'.
 		deferred
 		end
