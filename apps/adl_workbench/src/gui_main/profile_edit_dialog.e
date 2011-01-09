@@ -74,7 +74,7 @@ feature {NONE} -- Initialization
 			-- (due to regeneration of implementation class)
 			-- can be added here.
 		do
-			set_icon_pixmap (adl_workbench_ico)
+			set_icon_pixmap (adl_workbench_icon)
 			cancel_button.select_actions.extend (agent hide)
 			set_default_cancel_button (cancel_button)
 			set_default_push_button (ok_button)
@@ -203,8 +203,6 @@ feature {NONE} -- Implementation
 
 	get_reference_repository_path
 			-- Display a dialog for the user to select a new Reference Repository.
-		local
-			new_path: STRING
 		do
 			reference_path_text.set_text (get_directory (reference_path_text.text, Current))
 		end

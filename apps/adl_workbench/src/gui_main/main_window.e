@@ -97,7 +97,7 @@ feature {NONE} -- Initialization
 		local
 			cur_title: STRING
 		do
-			set_icon_pixmap (adl_workbench_ico)
+			set_icon_pixmap (adl_workbench_icon)
 			cur_title := title.twin.as_string_8
 			cur_title.replace_substring_all ("VER", latest_adl_version)
 			set_title (cur_title)
@@ -648,6 +648,27 @@ feature {NONE} -- History events
 
 feature {NONE} -- Tools events
 
+	set_options
+			-- Display the Options dialog.
+		local
+			dialog: OPTION_DIALOG
+		do
+			create dialog
+			dialog.show_modal_to_window (Current)
+
+			if dialog.has_changed_ui_options then
+				save_resources_and_show_status
+				if repository_profiles.has_current_profile then
+					populate_archetype_view_controls
+				end
+			end
+			if dialog.has_changed_navigator_options and repository_profiles.has_current_profile then
+				archetype_view_tree_control.populate
+				template_view_tree_control.populate
+				archetype_test_tree_control.populate
+			end
+		end
+
 	clean_generated_files
 			-- Remove all generated files below the repository directory and repopulate from scratch
 		local
@@ -668,27 +689,6 @@ feature {NONE} -- Tools events
 		do
 			ara.clean_generated
 			append_status_area (ara.status)
-		end
-
-	set_options
-			-- Display the Options dialog.
-		local
-			dialog: OPTION_DIALOG
-		do
-			create dialog
-			dialog.show_modal_to_window (Current)
-
-			if dialog.has_changed_ui_options then
-				save_resources_and_show_status
-				if repository_profiles.has_current_profile then
-					populate_archetype_view_controls
-				end
-			end
-			if dialog.has_changed_navigator_options and repository_profiles.has_current_profile then
-				archetype_view_tree_control.populate
-				template_view_tree_control.populate
-				archetype_test_tree_control.populate
-			end
 		end
 
 feature -- RM Schemas Events
@@ -1072,8 +1072,6 @@ feature -- Archetype Events
 
 	set_view (differential_flag: BOOLEAN)
 			-- set view one way or the other
-		local
-			str: STRING
 		do
 			if (differential_flag and not differential_view) or -- changing from flat to diff
 				(not differential_flag and differential_view) then -- changing from diff to flat

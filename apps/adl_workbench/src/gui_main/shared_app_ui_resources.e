@@ -45,6 +45,11 @@ feature -- Definitions
 
 feature -- Access
 
+	adl_workbench_icon: EV_PIXMAP
+		do
+			Result := pixmaps["adl_workbench_icon"]
+		end
+
 	icon_directory: attached STRING
 		once
 			Result := file_system.pathname (application_startup_directory, "icons")
@@ -59,213 +64,6 @@ feature -- Access
 		do
 			create a_dir.make(icon_directory)
 			Result := a_dir.exists
-		end
-
-	pixmap_table: attached DS_HASH_TABLE [TUPLE [file, help: STRING], STRING]
-			-- Table of pixmap file paths and help messages, keyed by icon key.
-		once
-			create Result.make (0)
-
-			Result.force (["archetype_category.ico", "archetype category"], "archetype_category")
-			Result.force (["template_category.ico", "template category"], "template_category")
-
-			Result.force (["class_concrete.ico", "concrete class from RM"], "class_concrete")
-			Result.force (["class_abstract.ico", "abstract class from RM"], "class_abstract")
-
-			Result.force (["archetype_1.ico", "Ad hoc archetype (not parsed yet)"], "archetype_1")
-			Result.force (["archetype_parsed_1.ico", "Ad hoc archetype (parsed but not compiled)"], "archetype_parsed_1")
-			Result.force (["archetype_parse_failed_1.ico", "Ad hoc archetype (parse failed)"], "archetype_parse_failed_1")
-			Result.force (["archetype_warning_1.ico", "Ad hoc archetype (parsed and compiled with warnings)"], "archetype_warning_1")
-			Result.force (["archetype_valid_1.ico", "Ad hoc archetype (parsed and compiled)"], "archetype_valid_1")
-
-			Result.force (["file_folder_2.ico", Void], "file_folder_2")
-			Result.force (["archetype_2.ico", "Archetype in the reference repository (not parsed yet)"], "archetype_2")
-			Result.force (["archetype_parsed_2.ico", "Archetype in the reference repository (parsed but not compiled)"], "archetype_parsed_2")
-			Result.force (["archetype_parse_failed_2.ico", "Archetype in the reference repository (parse failed)"], "archetype_parse_failed_2")
-			Result.force (["archetype_warning_2.ico", "Archetype in the reference repository (parsed and compiled with warnings)"], "archetype_warning_2")
-			Result.force (["archetype_valid_2.ico", "Archetype in the reference repository (parsed and compiled)"], "archetype_valid_2")
-
-			Result.force (["file_folder_3.ico", Void], "file_folder_3")
-			Result.force (["archetype_3.ico", "Archetype in the work repository (not parsed yet)"], "archetype_3")
-			Result.force (["archetype_parsed_3.ico", "Archetype in the work repository (parsed but not compiled)"], "archetype_parsed_3")
-			Result.force (["archetype_parse_failed_3.ico", "Archetype in the work repository (parse failed)"], "archetype_parse_failed_3")
-			Result.force (["archetype_warning_3.ico", "Archetype in the work repository (parsed and compiled with warnings)"], "archetype_warning_3")
-			Result.force (["archetype_valid_3.ico", "Archetype in the work repository (parsed and compiled)"], "archetype_valid_3")
-
-			Result.force ([Void, ""], "Gap 0 in the help")
-
-			Result.force (["template_1.ico", "Ad hoc template (not parsed yet)"], "template_1")
-			Result.force (["template_parsed_1.ico", "Ad hoc template (parsed but not compiled)"], "template_parsed_1")
-			Result.force (["template_parse_failed_1.ico", "Ad hoc template (parse failed)"], "template_parse_failed_1")
-			Result.force (["template_warning_1.ico", "Ad hoc template (parsed and compiled with warnings)"], "template_warning_1")
-			Result.force (["template_valid_1.ico", "Ad hoc template (parsed and compiled)"], "template_valid_1")
-
-			Result.force (["template_2.ico", "Template in the reference repository (not parsed yet)"], "template_2")
-			Result.force (["template_parsed_2.ico", "Template in the reference repository (parsed but not compiled)"], "template_parsed_2")
-			Result.force (["template_parse_failed_2.ico", "Template in the reference repository (parse failed)"], "template_parse_failed_2")
-			Result.force (["template_warning_2.ico", "Template in the reference repository (parsed and compiled with warnings)"], "template_warning_2")
-			Result.force (["template_valid_2.ico", "Template in the reference repository (parsed and compiled)"], "template_valid_2")
-
-			Result.force (["template_3.ico", "Template in the work repository (not parsed yet)"], "template_3")
-			Result.force (["template_parsed_3.ico", "Template in the work repository (parsed but not compiled)"], "template_parsed_3")
-			Result.force (["template_parse_failed_3.ico", "Template in the work repository (parse failed)"], "template_parse_failed_3")
-			Result.force (["template_warning_3.ico", "Template in the work repository (parsed and compiled with warnings)"], "template_warning_3")
-			Result.force (["template_valid_3.ico", "Template in the work repository (parsed and compiled)"], "template_valid_3")
-
-			Result.force (["template_component_1.ico", Void], "template_component_1")
-			Result.force (["template_component_parsed_1.ico", Void], "template_component_parsed_1")
-			Result.force (["template_component_parse_failed_1.ico", Void], "template_component_parse_failed_1")
-			Result.force (["template_component_warning_1.ico", Void], "template_component_warning_1")
-			Result.force (["template_component_valid_1.ico", Void], "template_component_valid_1")
-
-			Result.force (["template_component_2.ico", Void], "template_component_2")
-			Result.force (["template_component_parsed_2.ico", Void], "template_component_parsed_2")
-			Result.force (["template_component_parse_failed_2.ico", Void], "template_component_parse_failed_2")
-			Result.force (["template_component_warning_2.ico", Void], "template_component_warning_2")
-			Result.force (["template_component_valid_2.ico", Void], "template_component_valid_2")
-
-			Result.force (["template_component_3.ico", Void], "template_component_3")
-			Result.force (["template_component_parsed_3.ico", Void], "template_component_parsed_3")
-			Result.force (["template_component_parse_failed_3.ico", Void], "template_component_parse_failed_3")
-			Result.force (["template_component_warning_3.ico", Void], "template_component_warning_3")
-			Result.force (["template_component_valid_3.ico", Void], "template_component_valid_3")
-			Result.force ([Void, ""], "Gap 1 in the help")
-
-			Result.force (["node_normal/c_attribute.ico", "Single-valued attribute (mandatory)"], "C_ATTRIBUTE")
-			Result.force (["node_normal/c_attribute_optional.ico", "Single-valued attribute (optional)"], "C_ATTRIBUTE.optional")
-			Result.force (["node_normal/c_attribute_multiple.ico", "Container attribute (mandatory)"], "C_ATTRIBUTE.multiple")
-			Result.force (["node_normal/c_attribute_multiple_optional.ico", "Container attribute (optional)"], "C_ATTRIBUTE.multiple.optional")
-
-			Result.force (["node_reference_model/c_attribute.ico", "Single-valued RM attribute (mandatory)"], "C_ATTRIBUTE.reference_model")
-			Result.force (["node_reference_model/c_attribute_multiple.ico", "Container RM attribute (mandatory)"], "C_ATTRIBUTE.multiple.reference_model")
-			Result.force (["node_reference_model/c_attribute_optional.ico", "Single-valued RM attribute (optional)"], "C_ATTRIBUTE.optional.reference_model")
-			Result.force (["node_reference_model/c_attribute_multiple_optional.ico", "Container RM attribute (optional)"], "C_ATTRIBUTE.multiple.optional.reference_model")
-
-			Result.force ([Void, ""], "Gap 2 in the help")
-
-			Result.force (["node_normal/c_code_phrase.ico", "C_CODE_PHRASE (openEHR archetype profile)"], "C_CODE_PHRASE")
-			Result.force (["node_normal/c_dv_ordinal.ico", "C_DV_ORDINAL (openEHR archetype profile)"], "C_DV_ORDINAL")
-			Result.force (["node_normal/c_dv_quantity.ico", "C_DV_QUANTITY (openEHR archetype profile)"], "C_DV_QUANTITY")
-			Result.force (["node_normal/c_quantity_item.ico", "C_QUANTITY_ITEM (openEHR archetype profile)"], "C_QUANTITY_ITEM")
-			Result.force (["node_normal/c_primitive_object.ico", "C_PRIMITIVE_OBJECT - any type (openEHR AOM)"], "C_PRIMITIVE_OBJECT")
-
-			Result.force (["node_normal/archetype_slot.ico", "Archetype slot (mandatory)"], "ARCHETYPE_SLOT")
-			Result.force (["node_normal/archetype_slot_optional.ico", "Archetype slot (optional)"], "ARCHETYPE_SLOT.optional")
-			Result.force (["node_normal/cadl_include.ico", "Archetype slot allowed archetypes"], "CADL_INCLUDE")
-			Result.force (["node_normal/cadl_exclude.ico", "Archetype slot excluded archetypes"], "CADL_EXCLUDE")
-
-			Result.force (["node_normal/c_complex_object.ico", "Complex ref model object (mandatory, single occurrence)"], "C_COMPLEX_OBJECT")
-			Result.force (["node_normal/c_complex_object_multiple.ico", "Complex ref model object (mandatory, multiple occurrences)"], "C_COMPLEX_OBJECT.multiple")
-			Result.force (["node_normal/c_complex_object_optional.ico", "Complex ref model object (optional, single occurrence)"], "C_COMPLEX_OBJECT.optional")
-			Result.force (["node_normal/c_complex_object_multiple_optional.ico", "Complex ref model object (optional, multiple occurrences)"], "C_COMPLEX_OBJECT.multiple.optional")
-
-			Result.force (["node_normal/archetype_internal_ref.ico", "Archetype internal reference to previously defined node"], "ARCHETYPE_INTERNAL_REF")
-
-			Result.force (["node_normal/archetype_external_ref.ico", "Archetype reference to other archetype (mandatory, single occurrence)"], "C_ARCHETYPE_ROOT")
-			Result.force (["node_normal/archetype_external_ref_multiple.ico", "Archetype reference to other archetype (mandatory, multiple occurrences)"], "C_ARCHETYPE_ROOT.multiple")
-			Result.force (["node_normal/archetype_external_ref_optional.ico", "Archetype reference to other archetype (optional, single occurrence)"], "C_ARCHETYPE_ROOT.optional")
-			Result.force (["node_normal/archetype_external_ref_multiple_optional.ico", "Archetype reference to other archetype (optional, multiple occurrences)"], "C_ARCHETYPE_ROOT.multiple.optional")
-
-			Result.force (["node_normal/archetype_code_ref.ico", "Constraint reference (openEHR AOM)"], "CONSTRAINT_REF")
-
-			Result.force (["node_normal/term.ico", Void], "TERM")
-			Result.force (["node_normal/ordinal.ico", Void], "ORDINAL")
-			Result.force (["node_normal/cadl_invariant.ico", "Invariant section"], "CADL_INVARIANT")
-			Result.force (["node_normal/cadl_invariant_item.ico","Invariant section item"], "CADL_INVARIANT_ITEM")
-			Result.force (["node_inherited/icon_help_example.ico", "X is inherited from parent archetype"], "icon_help_example.inherited")
-			Result.force (["node_redefined/icon_help_example.ico", "X is redefined from parent archetype"], "icon_help_example.redefined")
-
-			Result.force (["node_inherited/c_attribute.ico", Void], "C_ATTRIBUTE.inherited")
-			Result.force (["node_inherited/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.inherited")
-			Result.force (["node_inherited/c_attribute.ico", Void], "C_ATTRIBUTE.optional.inherited")
-			Result.force (["node_inherited/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.optional.inherited")
-			Result.force (["node_inherited/c_code_phrase.ico", Void], "C_CODE_PHRASE.inherited")
-			Result.force (["node_inherited/c_dv_ordinal.ico", Void], "C_DV_ORDINAL.inherited")
-			Result.force (["node_inherited/c_dv_quantity.ico", Void], "C_DV_QUANTITY.inherited")
-			Result.force (["node_inherited/c_quantity_item.ico", Void], "C_QUANTITY_ITEM.inherited")
-			Result.force (["node_inherited/c_primitive_object.ico", Void], "C_PRIMITIVE_OBJECT.inherited")
-			Result.force (["node_inherited/archetype_code_ref.ico", Void], "CONSTRAINT_REF.inherited")
-			Result.force (["node_inherited/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.inherited")
-			Result.force (["node_inherited/archetype_slot.ico", Void], "ARCHETYPE_SLOT.inherited")
-
-			Result.force (["node_inherited/c_complex_object.ico", Void], "C_COMPLEX_OBJECT.inherited")
-			Result.force (["node_inherited/c_complex_object_multiple.ico", Void], "C_COMPLEX_OBJECT.multiple.inherited")
-			Result.force (["node_inherited/c_complex_object_optional.ico", Void], "C_COMPLEX_OBJECT.optional.inherited")
-			Result.force (["node_inherited/c_complex_object_multiple_optional.ico", Void], "C_COMPLEX_OBJECT.multiple.optional.inherited")
-
-			Result.force (["node_inherited/archetype_external_ref.ico", Void], "ARCHETYPE_EXTERNAL_REF.inherited")
-			Result.force (["node_inherited/archetype_external_ref_multiple.ico", Void], "ARCHETYPE_EXTERNAL_REF.multiple.inherited")
-			Result.force (["node_inherited/archetype_external_ref_optional.ico", Void], "ARCHETYPE_EXTERNAL_REF.optional.inherited")
-			Result.force (["node_inherited/archetype_external_ref_multiple_optional.ico", Void], "ARCHETYPE_EXTERNAL_REF.multiple.optional.inherited")
-
-			Result.force (["node_inherited/archetype_internal_ref.ico", Void], "ARCHETYPE_INTERNAL_REF.inherited")
-			Result.force (["node_inherited/archetype_external_ref.ico", Void], "ARCHETYPE_EXTERNAL_REF.inherited")
-			Result.force (["node_inherited/term.ico", Void], "TERM.inherited")
-			Result.force (["node_inherited/ordinal.ico", Void], "ORDINAL.inherited")
-			Result.force (["node_normal/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.inherited")
-
-			Result.force (["node_redefined/c_attribute.ico", Void], "C_ATTRIBUTE.redefined")
-			Result.force (["node_redefined/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.redefined")
-			Result.force (["node_redefined/c_attribute.ico", Void], "C_ATTRIBUTE.optional.redefined")
-			Result.force (["node_redefined/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.optional.redefined")
-			Result.force (["node_redefined/c_code_phrase.ico", Void], "C_CODE_PHRASE.redefined")
-			Result.force (["node_redefined/c_dv_ordinal.ico", Void], "C_DV_ORDINAL.redefined")
-			Result.force (["node_redefined/c_dv_quantity.ico", Void], "C_DV_QUANTITY.redefined")
-			Result.force (["node_redefined/c_quantity_item.ico", Void], "C_QUANTITY_ITEM.redefined")
-			Result.force (["node_redefined/c_primitive_object.ico", Void], "C_PRIMITIVE_OBJECT.redefined")
-			Result.force (["node_redefined/archetype_code_ref.ico", Void], "CONSTRAINT_REF.redefined")
-			Result.force (["node_redefined/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.redefined")
-			Result.force (["node_redefined/archetype_slot.ico", Void], "ARCHETYPE_SLOT.redefined")
-			Result.force (["node_redefined/c_complex_object.ico", Void], "C_COMPLEX_OBJECT.redefined")
-			Result.force (["node_redefined/c_complex_object_multiple.ico", Void], "C_COMPLEX_OBJECT.multiple.redefined")
-			Result.force (["node_redefined/c_complex_object_optional.ico", Void], "C_COMPLEX_OBJECT.optional.redefined")
-			Result.force (["node_redefined/c_complex_object_multiple_optional.ico", Void], "C_COMPLEX_OBJECT.multiple.optional.redefined")
-
-			Result.force (["node_redefined/archetype_external_ref.ico", Void], "ARCHETYPE_EXTERNAL_REF.redefined")
-			Result.force (["node_redefined/archetype_external_ref_multiple.ico", Void], "ARCHETYPE_EXTERNAL_REF.multiple.redefined")
-			Result.force (["node_redefined/archetype_external_ref_optional.ico", Void], "ARCHETYPE_EXTERNAL_REF.optional.redefined")
-			Result.force (["node_redefined/archetype_external_ref_multiple_optional.ico", Void], "ARCHETYPE_EXTERNAL_REF.multiple.optional.redefined")
-
-			Result.force (["node_redefined/archetype_internal_ref.ico", Void], "ARCHETYPE_INTERNAL_REF.redefined")
-			Result.force (["node_redefined/archetype_external_ref.ico", Void], "ARCHETYPE_EXTERNAL_REF.redefined")
-			Result.force (["node_redefined/term.ico", Void], "TERM.redefined")
-			Result.force (["node_redefined/ordinal.ico", Void], "ORDINAL.redefined")
-			Result.force (["node_normal/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.redefined")
-
-			Result.force (["pass.ico", Void], "test_passed")
-			Result.force (["fail.ico", Void], "test_failed")
-			Result.force (["not_applicable.ico", Void], "test_not_applicable")
-
-			Result.force (["parse_errors.ico", Void], "parse_errors")
-			Result.force (["validity_errors.ico", Void], "validity_errors")
-			Result.force (["warnings.ico", Void], "warnings")
-
-			Result.force (["go.ico", Void], "go")
-			Result.force (["stop.ico", Void], "stop")
-			Result.force (["star.ico", Void], "star")
-			Result.force (["info.ico", Void], "info")
-			Result.force (["parse.ico", Void], "parse")
-			Result.force (["edit.ico", Void], "edit")
-			Result.force (["flat.ico", Void], "flat")
-			Result.force (["diff.ico", Void], "diff")
-			Result.force (["tools.ico", Void], "tools")
-			Result.force (["annotations.ico", Void], "annotations")
-
-			Result.force (["terminology.ico", Void], "terminology")
-			Result.force (["paths.ico", Void], "paths")
-			Result.force (["description.ico", Void], "description")
-			Result.force (["archetype_slot.ico", Void], "archetype_slot")
-			Result.force (["node_map.ico", Void], "node_map")
-
-			Result.force (["open_archetype.ico", Void], "open_archetype")
-			Result.force (["history_back.ico", Void], "history_back")
-			Result.force (["history_forward.ico", Void], "history_forward")
-			Result.force (["magnifier.ico", Void], "magnifier")
-
-			Result.force (["openEHR.png", Void], "openEHR_logo")
-			Result.force (["openehr_adl_workbench_logo.png", Void], "adl_workbench_logo")
-		ensure
-			not_empty: not Result.is_empty
 		end
 
 	pixmaps: attached HASH_TABLE [EV_PIXMAP, STRING]
@@ -294,32 +92,6 @@ feature -- Access
 
 				pixmap_table.forth
 			end
-		end
-
-	splash_text: attached STRING
-			-- Text for splash screens, About boxes, etc.
-		local
-			version: OPENEHR_VERSION
-		once
-			create version
-			create Result.make_empty
-			Result.append ("ADL Workbench%N")
-			Result.append ("Version " + version.out + "%N")
-			Result.append ("(c) 2003-2010 openEHR Foundation%N")
-			Result.append ("ADL version: " + Latest_adl_version + "%N")
-			Result.append ("Source SVN - http://www.openehr.org/svn/ref_impl_eiffel%N%T" + version.last_changed + "%N")
-			Result.append ("Source license: Mozilla tri-license%N")
-			Result.append ("(http://www.mozilla.org/MPL/boilerplate-1.1/mpl-tri-license-txt)%N")
-			Result.append ("Support: http://www.openehr.org/issues/browse/AWBPR%N")
-			Result.append ("Funded by: OceanInformatics.com%N")
-			Result.append ("Author: Thomas Beale%N")
-			Result.append ("Contributors: Peter Gummer%N")
-			Result.append ("Acknowledgements:%N")
-			Result.append ("- Eiffel Software Eiffel (http://www.eiffel.com)%N")
-			Result.append ("- Gobo parsing libraries & tools (http://www.gobosoft.com)%N")
-			Result.append ("- Jonas Rask Design icons (http://jonasraskdesign.com)%N")
-		ensure
-			not_empty: not Result.is_empty
 		end
 
 feature -- Application Switches
@@ -629,6 +401,242 @@ feature -- Application Switches
 			value_not_empty: not a_value.is_empty
 		do
 			app_cfg.put_value ("/commands/difftool_command", a_value)
+		end
+
+feature {NONE} -- Implementation
+
+	pixmap_table: attached DS_HASH_TABLE [TUPLE [file, help: STRING], STRING]
+			-- Table of pixmap file paths and help messages, keyed by icon key.
+		once
+			create Result.make (0)
+
+			Result.force (["archetype_category.ico", "archetype category"], "archetype_category")
+			Result.force (["template_category.ico", "template category"], "template_category")
+
+			Result.force (["class_concrete.ico", "concrete class from RM"], "class_concrete")
+			Result.force (["class_abstract.ico", "abstract class from RM"], "class_abstract")
+
+			Result.force (["archetype_1.ico", "Ad hoc archetype (not parsed yet)"], "archetype_1")
+			Result.force (["archetype_parsed_1.ico", "Ad hoc archetype (parsed but not compiled)"], "archetype_parsed_1")
+			Result.force (["archetype_parse_failed_1.ico", "Ad hoc archetype (parse failed)"], "archetype_parse_failed_1")
+			Result.force (["archetype_warning_1.ico", "Ad hoc archetype (parsed and compiled with warnings)"], "archetype_warning_1")
+			Result.force (["archetype_valid_1.ico", "Ad hoc archetype (parsed and compiled)"], "archetype_valid_1")
+
+			Result.force (["file_folder_2.ico", Void], "file_folder_2")
+			Result.force (["archetype_2.ico", "Archetype in the reference repository (not parsed yet)"], "archetype_2")
+			Result.force (["archetype_parsed_2.ico", "Archetype in the reference repository (parsed but not compiled)"], "archetype_parsed_2")
+			Result.force (["archetype_parse_failed_2.ico", "Archetype in the reference repository (parse failed)"], "archetype_parse_failed_2")
+			Result.force (["archetype_warning_2.ico", "Archetype in the reference repository (parsed and compiled with warnings)"], "archetype_warning_2")
+			Result.force (["archetype_valid_2.ico", "Archetype in the reference repository (parsed and compiled)"], "archetype_valid_2")
+
+			Result.force (["file_folder_3.ico", Void], "file_folder_3")
+			Result.force (["archetype_3.ico", "Archetype in the work repository (not parsed yet)"], "archetype_3")
+			Result.force (["archetype_parsed_3.ico", "Archetype in the work repository (parsed but not compiled)"], "archetype_parsed_3")
+			Result.force (["archetype_parse_failed_3.ico", "Archetype in the work repository (parse failed)"], "archetype_parse_failed_3")
+			Result.force (["archetype_warning_3.ico", "Archetype in the work repository (parsed and compiled with warnings)"], "archetype_warning_3")
+			Result.force (["archetype_valid_3.ico", "Archetype in the work repository (parsed and compiled)"], "archetype_valid_3")
+
+			Result.force ([Void, ""], "Gap 0 in the help")
+
+			Result.force (["template_1.ico", "Ad hoc template (not parsed yet)"], "template_1")
+			Result.force (["template_parsed_1.ico", "Ad hoc template (parsed but not compiled)"], "template_parsed_1")
+			Result.force (["template_parse_failed_1.ico", "Ad hoc template (parse failed)"], "template_parse_failed_1")
+			Result.force (["template_warning_1.ico", "Ad hoc template (parsed and compiled with warnings)"], "template_warning_1")
+			Result.force (["template_valid_1.ico", "Ad hoc template (parsed and compiled)"], "template_valid_1")
+
+			Result.force (["template_2.ico", "Template in the reference repository (not parsed yet)"], "template_2")
+			Result.force (["template_parsed_2.ico", "Template in the reference repository (parsed but not compiled)"], "template_parsed_2")
+			Result.force (["template_parse_failed_2.ico", "Template in the reference repository (parse failed)"], "template_parse_failed_2")
+			Result.force (["template_warning_2.ico", "Template in the reference repository (parsed and compiled with warnings)"], "template_warning_2")
+			Result.force (["template_valid_2.ico", "Template in the reference repository (parsed and compiled)"], "template_valid_2")
+
+			Result.force (["template_3.ico", "Template in the work repository (not parsed yet)"], "template_3")
+			Result.force (["template_parsed_3.ico", "Template in the work repository (parsed but not compiled)"], "template_parsed_3")
+			Result.force (["template_parse_failed_3.ico", "Template in the work repository (parse failed)"], "template_parse_failed_3")
+			Result.force (["template_warning_3.ico", "Template in the work repository (parsed and compiled with warnings)"], "template_warning_3")
+			Result.force (["template_valid_3.ico", "Template in the work repository (parsed and compiled)"], "template_valid_3")
+
+			Result.force (["template_component_1.ico", Void], "template_component_1")
+			Result.force (["template_component_parsed_1.ico", Void], "template_component_parsed_1")
+			Result.force (["template_component_parse_failed_1.ico", Void], "template_component_parse_failed_1")
+			Result.force (["template_component_warning_1.ico", Void], "template_component_warning_1")
+			Result.force (["template_component_valid_1.ico", Void], "template_component_valid_1")
+
+			Result.force (["template_component_2.ico", Void], "template_component_2")
+			Result.force (["template_component_parsed_2.ico", Void], "template_component_parsed_2")
+			Result.force (["template_component_parse_failed_2.ico", Void], "template_component_parse_failed_2")
+			Result.force (["template_component_warning_2.ico", Void], "template_component_warning_2")
+			Result.force (["template_component_valid_2.ico", Void], "template_component_valid_2")
+
+			Result.force (["template_component_3.ico", Void], "template_component_3")
+			Result.force (["template_component_parsed_3.ico", Void], "template_component_parsed_3")
+			Result.force (["template_component_parse_failed_3.ico", Void], "template_component_parse_failed_3")
+			Result.force (["template_component_warning_3.ico", Void], "template_component_warning_3")
+			Result.force (["template_component_valid_3.ico", Void], "template_component_valid_3")
+			Result.force ([Void, ""], "Gap 1 in the help")
+
+			Result.force (["node_normal/c_attribute.ico", "Single-valued attribute (mandatory)"], "C_ATTRIBUTE")
+			Result.force (["node_normal/c_attribute_optional.ico", "Single-valued attribute (optional)"], "C_ATTRIBUTE.optional")
+			Result.force (["node_normal/c_attribute_multiple.ico", "Container attribute (mandatory)"], "C_ATTRIBUTE.multiple")
+			Result.force (["node_normal/c_attribute_multiple_optional.ico", "Container attribute (optional)"], "C_ATTRIBUTE.multiple.optional")
+
+			Result.force (["node_reference_model/c_attribute.ico", "Single-valued RM attribute (mandatory)"], "C_ATTRIBUTE.reference_model")
+			Result.force (["node_reference_model/c_attribute_multiple.ico", "Container RM attribute (mandatory)"], "C_ATTRIBUTE.multiple.reference_model")
+			Result.force (["node_reference_model/c_attribute_optional.ico", "Single-valued RM attribute (optional)"], "C_ATTRIBUTE.optional.reference_model")
+			Result.force (["node_reference_model/c_attribute_multiple_optional.ico", "Container RM attribute (optional)"], "C_ATTRIBUTE.multiple.optional.reference_model")
+
+			Result.force ([Void, ""], "Gap 2 in the help")
+
+			Result.force (["node_normal/c_code_phrase.ico", "C_CODE_PHRASE (openEHR archetype profile)"], "C_CODE_PHRASE")
+			Result.force (["node_normal/c_dv_ordinal.ico", "C_DV_ORDINAL (openEHR archetype profile)"], "C_DV_ORDINAL")
+			Result.force (["node_normal/c_dv_quantity.ico", "C_DV_QUANTITY (openEHR archetype profile)"], "C_DV_QUANTITY")
+			Result.force (["node_normal/c_quantity_item.ico", "C_QUANTITY_ITEM (openEHR archetype profile)"], "C_QUANTITY_ITEM")
+			Result.force (["node_normal/c_primitive_object.ico", "C_PRIMITIVE_OBJECT - any type (openEHR AOM)"], "C_PRIMITIVE_OBJECT")
+
+			Result.force (["node_normal/archetype_slot.ico", "Archetype slot (mandatory)"], "ARCHETYPE_SLOT")
+			Result.force (["node_normal/archetype_slot_optional.ico", "Archetype slot (optional)"], "ARCHETYPE_SLOT.optional")
+			Result.force (["node_normal/cadl_include.ico", "Archetype slot allowed archetypes"], "CADL_INCLUDE")
+			Result.force (["node_normal/cadl_exclude.ico", "Archetype slot excluded archetypes"], "CADL_EXCLUDE")
+
+			Result.force (["node_normal/c_complex_object.ico", "Complex ref model object (mandatory, single occurrence)"], "C_COMPLEX_OBJECT")
+			Result.force (["node_normal/c_complex_object_multiple.ico", "Complex ref model object (mandatory, multiple occurrences)"], "C_COMPLEX_OBJECT.multiple")
+			Result.force (["node_normal/c_complex_object_optional.ico", "Complex ref model object (optional, single occurrence)"], "C_COMPLEX_OBJECT.optional")
+			Result.force (["node_normal/c_complex_object_multiple_optional.ico", "Complex ref model object (optional, multiple occurrences)"], "C_COMPLEX_OBJECT.multiple.optional")
+
+			Result.force (["node_normal/archetype_internal_ref.ico", "Archetype internal reference to previously defined node"], "ARCHETYPE_INTERNAL_REF")
+
+			Result.force (["node_normal/archetype_external_ref.ico", "Archetype reference to other archetype (mandatory, single occurrence)"], "C_ARCHETYPE_ROOT")
+			Result.force (["node_normal/archetype_external_ref_multiple.ico", "Archetype reference to other archetype (mandatory, multiple occurrences)"], "C_ARCHETYPE_ROOT.multiple")
+			Result.force (["node_normal/archetype_external_ref_optional.ico", "Archetype reference to other archetype (optional, single occurrence)"], "C_ARCHETYPE_ROOT.optional")
+			Result.force (["node_normal/archetype_external_ref_multiple_optional.ico", "Archetype reference to other archetype (optional, multiple occurrences)"], "C_ARCHETYPE_ROOT.multiple.optional")
+
+			Result.force (["node_normal/archetype_code_ref.ico", "Constraint reference (openEHR AOM)"], "CONSTRAINT_REF")
+
+			Result.force (["node_normal/term.ico", Void], "TERM")
+			Result.force (["node_normal/ordinal.ico", Void], "ORDINAL")
+			Result.force (["node_normal/cadl_invariant.ico", "Invariant section"], "CADL_INVARIANT")
+			Result.force (["node_normal/cadl_invariant_item.ico","Invariant section item"], "CADL_INVARIANT_ITEM")
+			Result.force (["node_inherited/icon_help_example.ico", "X is inherited from parent archetype"], "icon_help_example.inherited")
+			Result.force (["node_redefined/icon_help_example.ico", "X is redefined from parent archetype"], "icon_help_example.redefined")
+
+			Result.force (["node_inherited/c_attribute.ico", Void], "C_ATTRIBUTE.inherited")
+			Result.force (["node_inherited/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.inherited")
+			Result.force (["node_inherited/c_attribute.ico", Void], "C_ATTRIBUTE.optional.inherited")
+			Result.force (["node_inherited/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.optional.inherited")
+			Result.force (["node_inherited/c_code_phrase.ico", Void], "C_CODE_PHRASE.inherited")
+			Result.force (["node_inherited/c_dv_ordinal.ico", Void], "C_DV_ORDINAL.inherited")
+			Result.force (["node_inherited/c_dv_quantity.ico", Void], "C_DV_QUANTITY.inherited")
+			Result.force (["node_inherited/c_quantity_item.ico", Void], "C_QUANTITY_ITEM.inherited")
+			Result.force (["node_inherited/c_primitive_object.ico", Void], "C_PRIMITIVE_OBJECT.inherited")
+			Result.force (["node_inherited/archetype_code_ref.ico", Void], "CONSTRAINT_REF.inherited")
+			Result.force (["node_inherited/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.inherited")
+			Result.force (["node_inherited/archetype_slot.ico", Void], "ARCHETYPE_SLOT.inherited")
+
+			Result.force (["node_inherited/c_complex_object.ico", Void], "C_COMPLEX_OBJECT.inherited")
+			Result.force (["node_inherited/c_complex_object_multiple.ico", Void], "C_COMPLEX_OBJECT.multiple.inherited")
+			Result.force (["node_inherited/c_complex_object_optional.ico", Void], "C_COMPLEX_OBJECT.optional.inherited")
+			Result.force (["node_inherited/c_complex_object_multiple_optional.ico", Void], "C_COMPLEX_OBJECT.multiple.optional.inherited")
+
+			Result.force (["node_inherited/archetype_external_ref.ico", Void], "ARCHETYPE_EXTERNAL_REF.inherited")
+			Result.force (["node_inherited/archetype_external_ref_multiple.ico", Void], "ARCHETYPE_EXTERNAL_REF.multiple.inherited")
+			Result.force (["node_inherited/archetype_external_ref_optional.ico", Void], "ARCHETYPE_EXTERNAL_REF.optional.inherited")
+			Result.force (["node_inherited/archetype_external_ref_multiple_optional.ico", Void], "ARCHETYPE_EXTERNAL_REF.multiple.optional.inherited")
+
+			Result.force (["node_inherited/archetype_internal_ref.ico", Void], "ARCHETYPE_INTERNAL_REF.inherited")
+			Result.force (["node_inherited/archetype_external_ref.ico", Void], "ARCHETYPE_EXTERNAL_REF.inherited")
+			Result.force (["node_inherited/term.ico", Void], "TERM.inherited")
+			Result.force (["node_inherited/ordinal.ico", Void], "ORDINAL.inherited")
+			Result.force (["node_normal/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.inherited")
+
+			Result.force (["node_redefined/c_attribute.ico", Void], "C_ATTRIBUTE.redefined")
+			Result.force (["node_redefined/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.redefined")
+			Result.force (["node_redefined/c_attribute.ico", Void], "C_ATTRIBUTE.optional.redefined")
+			Result.force (["node_redefined/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.optional.redefined")
+			Result.force (["node_redefined/c_code_phrase.ico", Void], "C_CODE_PHRASE.redefined")
+			Result.force (["node_redefined/c_dv_ordinal.ico", Void], "C_DV_ORDINAL.redefined")
+			Result.force (["node_redefined/c_dv_quantity.ico", Void], "C_DV_QUANTITY.redefined")
+			Result.force (["node_redefined/c_quantity_item.ico", Void], "C_QUANTITY_ITEM.redefined")
+			Result.force (["node_redefined/c_primitive_object.ico", Void], "C_PRIMITIVE_OBJECT.redefined")
+			Result.force (["node_redefined/archetype_code_ref.ico", Void], "CONSTRAINT_REF.redefined")
+			Result.force (["node_redefined/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.redefined")
+			Result.force (["node_redefined/archetype_slot.ico", Void], "ARCHETYPE_SLOT.redefined")
+			Result.force (["node_redefined/c_complex_object.ico", Void], "C_COMPLEX_OBJECT.redefined")
+			Result.force (["node_redefined/c_complex_object_multiple.ico", Void], "C_COMPLEX_OBJECT.multiple.redefined")
+			Result.force (["node_redefined/c_complex_object_optional.ico", Void], "C_COMPLEX_OBJECT.optional.redefined")
+			Result.force (["node_redefined/c_complex_object_multiple_optional.ico", Void], "C_COMPLEX_OBJECT.multiple.optional.redefined")
+
+			Result.force (["node_redefined/archetype_external_ref.ico", Void], "ARCHETYPE_EXTERNAL_REF.redefined")
+			Result.force (["node_redefined/archetype_external_ref_multiple.ico", Void], "ARCHETYPE_EXTERNAL_REF.multiple.redefined")
+			Result.force (["node_redefined/archetype_external_ref_optional.ico", Void], "ARCHETYPE_EXTERNAL_REF.optional.redefined")
+			Result.force (["node_redefined/archetype_external_ref_multiple_optional.ico", Void], "ARCHETYPE_EXTERNAL_REF.multiple.optional.redefined")
+
+			Result.force (["node_redefined/archetype_internal_ref.ico", Void], "ARCHETYPE_INTERNAL_REF.redefined")
+			Result.force (["node_redefined/archetype_external_ref.ico", Void], "ARCHETYPE_EXTERNAL_REF.redefined")
+			Result.force (["node_redefined/term.ico", Void], "TERM.redefined")
+			Result.force (["node_redefined/ordinal.ico", Void], "ORDINAL.redefined")
+			Result.force (["node_normal/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.redefined")
+
+			Result.force (["pass.ico", Void], "test_passed")
+			Result.force (["fail.ico", Void], "test_failed")
+			Result.force (["not_applicable.ico", Void], "test_not_applicable")
+
+			Result.force (["parse_errors.ico", Void], "parse_errors")
+			Result.force (["validity_errors.ico", Void], "validity_errors")
+			Result.force (["warnings.ico", Void], "warnings")
+
+			Result.force (["go.ico", Void], "go")
+			Result.force (["stop.ico", Void], "stop")
+			Result.force (["star.ico", Void], "star")
+			Result.force (["info.ico", Void], "info")
+			Result.force (["parse.ico", Void], "parse")
+			Result.force (["edit.ico", Void], "edit")
+			Result.force (["flat.ico", Void], "flat")
+			Result.force (["diff.ico", Void], "diff")
+			Result.force (["tools.ico", Void], "tools")
+			Result.force (["annotations.ico", Void], "annotations")
+
+			Result.force (["terminology.ico", Void], "terminology")
+			Result.force (["paths.ico", Void], "paths")
+			Result.force (["description.ico", Void], "description")
+			Result.force (["archetype_slot.ico", Void], "archetype_slot")
+			Result.force (["node_map.ico", Void], "node_map")
+
+			Result.force (["open_archetype.ico", Void], "open_archetype")
+			Result.force (["history_back.ico", Void], "history_back")
+			Result.force (["history_forward.ico", Void], "history_forward")
+			Result.force (["magnifier.ico", Void], "magnifier")
+
+			Result.force (["adl_workbench_logo.ico", Void], "adl_workbench_icon")
+			Result.force (["openEHR.png", Void], "openEHR_logo")
+			Result.force (["openehr_adl_workbench_logo.png", Void], "adl_workbench_logo")
+		ensure
+			not_empty: not Result.is_empty
+		end
+
+	splash_text: attached STRING
+			-- Text for splash screens, About boxes, etc.
+		local
+			version: OPENEHR_VERSION
+		once
+			create version
+			create Result.make_empty
+			Result.append ("ADL Workbench%N")
+			Result.append ("Version " + version.out + "%N")
+			Result.append ("(c) 2003-2010 openEHR Foundation%N")
+			Result.append ("ADL version: " + Latest_adl_version + "%N")
+			Result.append ("Source SVN - http://www.openehr.org/svn/ref_impl_eiffel%N%T" + version.last_changed + "%N")
+			Result.append ("Source license: Mozilla tri-license%N")
+			Result.append ("(http://www.mozilla.org/MPL/boilerplate-1.1/mpl-tri-license-txt)%N")
+			Result.append ("Support: http://www.openehr.org/issues/browse/AWBPR%N")
+			Result.append ("Funded by: OceanInformatics.com%N")
+			Result.append ("Author: Thomas Beale%N")
+			Result.append ("Contributors: Peter Gummer%N")
+			Result.append ("Acknowledgements:%N")
+			Result.append ("  - Eiffel Software (http://www.eiffel.com)%N")
+			Result.append ("  - Gobo parsing libraries & tools (http://www.gobosoft.com)%N")
+			Result.append ("  - Jonas Rask Design icons (http://jonasraskdesign.com)%N")
+		ensure
+			not_empty: not Result.is_empty
 		end
 
 end

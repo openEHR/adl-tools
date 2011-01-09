@@ -66,7 +66,7 @@ feature {NONE} -- Initialisation
 			-- (due to regeneration of implementation class)
 			-- can be added here.
 		do
-			set_icon_pixmap (adl_workbench_ico)
+			set_icon_pixmap (adl_workbench_icon)
 
 			-- set up other buttons
 			cancel_button.select_actions.extend (agent hide)

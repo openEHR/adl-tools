@@ -170,22 +170,6 @@
    <Name>app_initial_y_position</Name>
    <Value>10</Value>
   </Constant>
-  <Constant>
-   <type>PIXMAP</type>
-   <Name>adl_workbench_ico</Name>
-   <Value>C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons\openEHR.ico</Value>
-   <is_absolute>False</is_absolute>
-   <Directory>icons</Directory>
-   <Filename>openEHR.ico</Filename>
-  </Constant>
-  <Constant>
-   <type>PIXMAP</type>
-   <Name>ontology_category_ico</Name>
-   <Value>C:\project\openehr\ref_impl_eiffel\apps\adl_workbench\app\icons\ontology_category.ico</Value>
-   <is_absolute>False</is_absolute>
-   <Directory>icons</Directory>
-   <Filename>ontology_category.ico</Filename>
-  </Constant>
  </item>
  <item type="EV_DIALOG">
   <Internal_properties>

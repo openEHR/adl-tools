@@ -483,40 +483,6 @@ feature -- Access
 			create Result.put (10)
 		end
 
-	adl_workbench_ico: EV_PIXMAP
-			-- `Result' is EV_PIXMAP constant named `adl_workbench_ico'.
-		do
-			Result := adl_workbench_ico_cell.item
-		end
-
-	adl_workbench_ico_cell: CELL [EV_PIXMAP]
-			--`Result' is once access to a cell holding vale of `adl_workbench_ico'.
-		local
-			a_file_name: FILE_NAME
-		once
-			create Result.put (create {EV_PIXMAP})
-			create a_file_name.make_from_string (icons)
-			a_file_name.set_file_name ("openEHR.ico")
-			set_with_named_file (Result.item, a_file_name)
-		end
-
-	ontology_category_ico: EV_PIXMAP
-			-- `Result' is EV_PIXMAP constant named `ontology_category_ico'.
-		do
-			Result := ontology_category_ico_cell.item
-		end
-
-	ontology_category_ico_cell: CELL [EV_PIXMAP]
-			--`Result' is once access to a cell holding vale of `ontology_category_ico'.
-		local
-			a_file_name: FILE_NAME
-		once
-			create Result.put (create {EV_PIXMAP})
-			create a_file_name.make_from_string (icons)
-			a_file_name.set_file_name ("ontology_category.ico")
-			set_with_named_file (Result.item, a_file_name)
-		end
-
 feature -- Access
 
 --| FIXME `constant_by_name' and `has_constant' `constants_initialized' are only required until the complete change to
