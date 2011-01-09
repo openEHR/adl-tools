@@ -182,32 +182,32 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	on_select_profile is
+	on_select_profile
 			-- Called by `select_actions' of `profile_list'.
 		deferred
 		end
 	
-	add_new_profile is
+	add_new_profile
 			-- Called by `select_actions' of `profile_add_button'.
 		deferred
 		end
 	
-	remove_selected_profile is
+	remove_selected_profile
 			-- Called by `select_actions' of `profile_remove_button'.
 		deferred
 		end
 	
-	edit_selected_profile is
+	edit_selected_profile
 			-- Called by `select_actions' of `profile_edit_button'.
 		deferred
 		end
 	
-	on_ok is
+	on_ok
 			-- Called by `select_actions' of `ok_button'.
 		deferred
 		end
 	
-	on_show is
+	on_show
 			-- Called by `show_actions' of `repository_dialog'.
 		deferred
 		end
