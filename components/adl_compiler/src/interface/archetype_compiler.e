@@ -46,6 +46,7 @@ feature {NONE} -- Initialisation
 
 	make
 		do
+			is_interrupted := True
 		end
 
 feature -- Access
@@ -77,7 +78,7 @@ feature -- Status Setting
 
 feature -- Commands
 
-	set_global_visual_update_action (a_routine: PROCEDURE [ANY, TUPLE[STRING]])
+	set_global_visual_update_action (a_routine: attached PROCEDURE [ANY, TUPLE[STRING]])
 			-- Set `global_visual_update_action'.
 		do
 			global_visual_update_action := a_routine
@@ -85,7 +86,7 @@ feature -- Commands
 			global_visual_update_action_set: global_visual_update_action = a_routine
 		end
 
-	set_archetype_visual_update_action (a_routine: PROCEDURE [ANY, TUPLE [STRING, ARCH_REP_ARCHETYPE, INTEGER]])
+	set_archetype_visual_update_action (a_routine: attached PROCEDURE [ANY, TUPLE [STRING, ARCH_REP_ARCHETYPE, INTEGER]])
 			-- Set `archetype_visual_update_action'.
 		do
 			archetype_visual_update_action := a_routine
@@ -129,41 +130,33 @@ feature -- Commands
 			call_global_visual_update_action(create_message_line ("compiler_finished_rebuilding_subtree", Void))
 		end
 
-	build_lineage (ara: ARCH_REP_ARCHETYPE; dependency_depth: INTEGER)
+	build_lineage (ara: attached ARCH_REP_ARCHETYPE; dependency_depth: INTEGER)
 			-- Build the archetypes in the lineage containing `ara', except those that seem to be built already.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 			-- dependency depth indicates how many dependency relationships away from original artefact
-		require
-			ara_attached: ara /= Void
 		do
 			do_lineage (ara, agent check_file_system_currency (False, ?))
 			do_lineage (ara, agent build_archetype (?, dependency_depth))
 		end
 
-	rebuild_lineage (ara: ARCH_REP_ARCHETYPE; dependency_depth: INTEGER)
+	rebuild_lineage (ara: attached ARCH_REP_ARCHETYPE; dependency_depth: INTEGER)
 			-- Rebuild the archetypes in the lineage containing `ara'.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
-		require
-			ara_attached: ara /= Void
 		do
 			do_lineage (ara, agent check_file_system_currency (True, ?))
 			do_lineage (ara, agent build_archetype (?, dependency_depth))
 		end
 
-	export_all_html (a_html_export_directory: STRING)
+	export_all_html (a_html_export_directory: attached STRING)
 			-- Generate HTML under `html_export_directory' from all archetypes that have already been built.
-		require
-			directory_attached: a_html_export_directory /= Void
 		do
 			call_global_visual_update_action(create_message_line ("compiler_export_html", Void))
 			do_all (agent export_archetype_html (a_html_export_directory, False, ?))
 			call_global_visual_update_action(create_message_line ("compiler_finished_export_html", Void))
 		end
 
-	build_and_export_all_html (a_html_export_directory: STRING)
+	build_and_export_all_html (a_html_export_directory: attached STRING)
 			-- Generate HTML under `html_export_directory' from the whole system, building each archetype as necessary.
-		require
-			directory_attached: a_html_export_directory /= Void
 		do
 			call_global_visual_update_action(create_message_line ("compiler_build_and_export_html", Void))
 			do_all (agent export_archetype_html (a_html_export_directory, True, ?))
@@ -172,10 +165,8 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	do_all (action: PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
+	do_all (action: attached PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
 			-- Perform `action' on the sub-system at and below `subtree'.
-		require
-			action_attached: action /= Void
 		do
 			is_interrupted := False
 			build_completed := False
@@ -183,10 +174,8 @@ feature {NONE} -- Implementation
 			build_completed := not is_interrupted
 		end
 
-	do_subtree (subtree: ARCH_REP_ITEM; action: PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
+	do_subtree (subtree: ARCH_REP_ITEM; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
 			-- Perform `action' on the sub-system at and below `subtree'.
-		require
-			action_attached: action /= Void
 		do
 			is_interrupted := False
 			build_completed := False
@@ -194,12 +183,9 @@ feature {NONE} -- Implementation
 			build_completed := not is_interrupted
 		end
 
-	do_lineage (ara: ARCH_REP_ARCHETYPE; action: PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
+	do_lineage (ara: attached ARCH_REP_ARCHETYPE; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
 			-- Build the archetypes in the lineage containing `ara', possibly from scratch.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
-		require
-			ara_attached: ara /= Void
-			action_attached: action /= Void
 		do
 			is_interrupted := False
 			current_arch_dir.do_archetype_lineage(ara, action)

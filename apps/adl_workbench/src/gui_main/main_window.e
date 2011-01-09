@@ -115,6 +115,7 @@ feature {NONE} -- Initialization
 			rm_schemas_menu_configure_rm_schemas.set_pixmap (pixmaps ["tools"])
 			tools_menu_options.set_pixmap (pixmaps ["tools"])
 
+			compile_button.set_pixmap (pixmaps ["compile"])
 			open_button.set_pixmap (pixmaps ["open_archetype"])
 			parse_button.set_pixmap (pixmaps ["parse"])
 			edit_button.set_pixmap (pixmaps ["edit"])
@@ -519,6 +520,23 @@ feature {NONE} -- Repository events
 			do_build_action (agent archetype_compiler.rebuild_subtree)
 		end
 
+	compile
+		do
+			if not archetype_compiler.is_interrupted then
+				interrupt_build
+				compile_button.set_pixmap (pixmaps ["compile"])
+			else
+				compile_button.set_pixmap (pixmaps ["pause"])
+				build_all
+			end
+		end
+
+	interrupt_build
+			-- Cancel the build currently in progress.
+		do
+			archetype_compiler.interrupt
+		end
+
 	export_html
 			-- Generate HTML from flat archetypes into `html_export_directory'.
 		local
@@ -587,12 +605,6 @@ feature {NONE} -- Repository events
 					end
 				end
 			end
-		end
-
-	interrupt_build
-			-- Cancel the build currently in progress.
-		do
-			archetype_compiler.interrupt
 		end
 
 	refresh_directory

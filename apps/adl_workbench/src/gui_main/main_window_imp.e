@@ -91,22 +91,24 @@ feature {NONE}-- Initialization
 			main_notebook.extend (viewer_vbox)
 			viewer_vbox.extend (action_bar)
 			action_bar.extend (l_ev_tool_bar_1)
+			l_ev_tool_bar_1.extend (compile_button)
+			l_ev_tool_bar_1.extend (l_ev_tool_bar_separator_1)
 			l_ev_tool_bar_1.extend (open_button)
 			l_ev_tool_bar_1.extend (parse_button)
 			l_ev_tool_bar_1.extend (edit_button)
-			l_ev_tool_bar_1.extend (l_ev_tool_bar_separator_1)
-			l_ev_tool_bar_1.extend (history_back_button)
 			l_ev_tool_bar_1.extend (l_ev_tool_bar_separator_2)
+			l_ev_tool_bar_1.extend (history_back_button)
+			l_ev_tool_bar_1.extend (l_ev_tool_bar_separator_3)
 			l_ev_tool_bar_1.extend (history_forward_button)
 			action_bar.extend (l_ev_horizontal_box_1)
 			l_ev_horizontal_box_1.extend (archetype_id)
-			l_ev_horizontal_box_1.extend (l_ev_tool_bar_4)
-			l_ev_tool_bar_4.extend (search_button)
+			l_ev_horizontal_box_1.extend (l_ev_tool_bar_5)
+			l_ev_tool_bar_5.extend (search_button)
 			action_bar.extend (l_ev_horizontal_box_2)
 			l_ev_horizontal_box_2.extend (view_label)
-			l_ev_horizontal_box_2.extend (l_ev_tool_bar_5)
-			l_ev_tool_bar_5.extend (differential_view_button)
-			l_ev_tool_bar_5.extend (flat_view_button)
+			l_ev_horizontal_box_2.extend (l_ev_tool_bar_6)
+			l_ev_tool_bar_6.extend (differential_view_button)
+			l_ev_tool_bar_6.extend (flat_view_button)
 			action_bar.extend (l_ev_horizontal_box_3)
 			l_ev_horizontal_box_3.extend (language_label)
 			l_ev_horizontal_box_3.extend (language_combo)
@@ -334,6 +336,8 @@ feature {NONE}-- Initialization
 			action_bar.disable_item_expand (l_ev_horizontal_box_3)
 			action_bar.disable_item_expand (l_ev_horizontal_box_4)
 			l_ev_tool_bar_1.disable_vertical_button_style
+			compile_button.set_text ("Compile")
+			compile_button.set_tooltip ("Compile all archetypes (F7)")
 			open_button.set_text ("Open")
 			open_button.set_tooltip ("Open an ad hoc archetype")
 			parse_button.set_text ("Parse")
@@ -342,11 +346,11 @@ feature {NONE}-- Initialization
 			edit_button.set_tooltip ("Edit the current archetype with an external editor")
 			history_back_button.set_tooltip ("Go back one archetype")
 			history_forward_button.set_tooltip ("Go forward one archetype")
-			l_ev_horizontal_box_1.disable_item_expand (l_ev_tool_bar_4)
+			l_ev_horizontal_box_1.disable_item_expand (l_ev_tool_bar_5)
 			archetype_id.set_tooltip ("Display or search for archetype id")
-			l_ev_tool_bar_4.set_minimum_width (20)
-			l_ev_tool_bar_4.set_minimum_height (20)
-			l_ev_tool_bar_4.disable_vertical_button_style
+			l_ev_tool_bar_5.set_minimum_width (20)
+			l_ev_tool_bar_5.set_minimum_height (20)
+			l_ev_tool_bar_5.disable_vertical_button_style
 			search_button.set_tooltip ("Search for archetype id")
 			view_label.set_text ("View ")
 			differential_view_button.set_tooltip ("Set differential archetype view")
@@ -953,6 +957,7 @@ feature {NONE}-- Initialization
 			help_menu_clinical_knowledge_manager.select_actions.extend (agent show_clinical_knowledge_manager)
 			help_menu_report_bug.select_actions.extend (agent show_bug_reporter)
 			help_menu_about.select_actions.extend (agent show_about)
+			compile_button.select_actions.extend (agent compile)
 			open_button.select_actions.extend (agent open_archetype)
 			parse_button.select_actions.extend (agent parse_archetype)
 			edit_button.select_actions.extend (agent edit_archetype)
@@ -1066,20 +1071,22 @@ feature {NONE}-- Initialization
 			create viewer_vbox
 			create action_bar
 			create l_ev_tool_bar_1
+			create compile_button
+			create l_ev_tool_bar_separator_1
 			create open_button
 			create parse_button
 			create edit_button
-			create l_ev_tool_bar_separator_1
-			create history_back_button
 			create l_ev_tool_bar_separator_2
+			create history_back_button
+			create l_ev_tool_bar_separator_3
 			create history_forward_button
 			create l_ev_horizontal_box_1
 			create archetype_id
-			create l_ev_tool_bar_4
+			create l_ev_tool_bar_5
 			create search_button
 			create l_ev_horizontal_box_2
 			create view_label
-			create l_ev_tool_bar_5
+			create l_ev_tool_bar_6
 			create differential_view_button
 			create flat_view_button
 			create l_ev_horizontal_box_3
@@ -1300,26 +1307,27 @@ feature -- Access
 	description_term_box, node_map, path_analysis, statistics_box, l_ev_horizontal_box_16,
 	l_ev_horizontal_box_17, l_ev_horizontal_box_18, l_ev_horizontal_box_19, l_ev_horizontal_box_20,
 	l_ev_horizontal_box_21, l_ev_horizontal_box_22: EV_HORIZONTAL_BOX
-	l_ev_tool_bar_1, l_ev_tool_bar_4,
-	l_ev_tool_bar_5: EV_TOOL_BAR
-	open_button, parse_button, edit_button, history_back_button, history_forward_button,
-	search_button: EV_TOOL_BAR_BUTTON
-	l_ev_tool_bar_separator_1, l_ev_tool_bar_separator_2: EV_TOOL_BAR_SEPARATOR
-	archetype_id,
-	language_combo, archetype_profile_combo, path_analysis_row_filter_combo_box, test_profile_combo: EV_COMBO_BOX
-	view_label,
-	language_label, adl_version_label, archetype_explorer_label, template_explorer_label,
-	arch_desc_status_label, arch_desc_auth_orig_auth_label, arch_desc_auth_contrib_label,
-	arch_desc_original_language_label, arch_translations_languages_label, l_ev_label_1,
-	l_ev_label_2, l_ev_label_3, arch_desc_copyright_label, arch_desc_purpose_label, arch_desc_use_label,
-	arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
-	arch_desc_resource_orig_res_label, l_ev_label_4, l_ev_label_5, l_ev_label_6, l_ev_label_7,
-	l_ev_label_8, l_ev_label_9, l_ev_label_10, l_ev_label_11, l_ev_label_12: EV_LABEL
-	differential_view_button,
-	flat_view_button: EV_TOOL_BAR_RADIO_BUTTON
-	adl_version_text, arch_desc_status_text, arch_desc_original_language_text,
-	arch_desc_resource_package_text, arch_total_count_tf, arch_spec_count_tf, arch_slotted_count_tf,
-	arch_used_by_count_tf, arch_bad_count_tf, arch_test_processed_count: EV_TEXT_FIELD
+	l_ev_tool_bar_1, l_ev_tool_bar_5,
+	l_ev_tool_bar_6: EV_TOOL_BAR
+	compile_button, open_button, parse_button, edit_button, history_back_button,
+	history_forward_button, search_button: EV_TOOL_BAR_BUTTON
+	l_ev_tool_bar_separator_1, l_ev_tool_bar_separator_2,
+	l_ev_tool_bar_separator_3: EV_TOOL_BAR_SEPARATOR
+	archetype_id, language_combo, archetype_profile_combo,
+	path_analysis_row_filter_combo_box, test_profile_combo: EV_COMBO_BOX
+	view_label, language_label,
+	adl_version_label, archetype_explorer_label, template_explorer_label, arch_desc_status_label,
+	arch_desc_auth_orig_auth_label, arch_desc_auth_contrib_label, arch_desc_original_language_label,
+	arch_translations_languages_label, l_ev_label_1, l_ev_label_2, l_ev_label_3, arch_desc_copyright_label,
+	arch_desc_purpose_label, arch_desc_use_label, arch_desc_misuse_label, arch_desc_keywords_label,
+	arch_desc_resource_package_label, arch_desc_resource_orig_res_label, l_ev_label_4,
+	l_ev_label_5, l_ev_label_6, l_ev_label_7, l_ev_label_8, l_ev_label_9, l_ev_label_10,
+	l_ev_label_11, l_ev_label_12: EV_LABEL
+	differential_view_button, flat_view_button: EV_TOOL_BAR_RADIO_BUTTON
+	adl_version_text,
+	arch_desc_status_text, arch_desc_original_language_text, arch_desc_resource_package_text,
+	arch_total_count_tf, arch_spec_count_tf, arch_slotted_count_tf, arch_used_by_count_tf,
+	arch_bad_count_tf, arch_test_processed_count: EV_TEXT_FIELD
 	explorer_split_area: EV_HORIZONTAL_SPLIT_AREA
 	archetype_template_split_area,
 	total_split_area, l_ev_vertical_split_area_1, test_split_area: EV_VERTICAL_SPLIT_AREA
@@ -1525,6 +1533,11 @@ feature {NONE} -- Implementation
 	
 	show_about
 			-- Called by `select_actions' of `help_menu_about'.
+		deferred
+		end
+	
+	compile
+			-- Called by `select_actions' of `compile_button'.
 		deferred
 		end
 	

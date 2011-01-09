@@ -1351,7 +1351,7 @@
    <Internal_properties>
     <id>117</id>
     <name>menu</name>
-    <Expanded>1</Expanded>
+    <Expanded>0</Expanded>
    </Internal_properties>
    <item type="EV_MENU">
     <Internal_properties>
@@ -1669,7 +1669,7 @@
     <Internal_properties>
      <id>100</id>
      <name>repository_menu</name>
-     <Expanded>0</Expanded>
+     <Expanded>1</Expanded>
     </Internal_properties>
     <EV_SENSITIVE>
     </EV_SENSITIVE>
@@ -2185,7 +2185,7 @@
      <Internal_properties>
       <id>141</id>
       <name>action_bar</name>
-      <Expanded>0</Expanded>
+      <Expanded>1</Expanded>
      </Internal_properties>
      <EV_COLORIZABLE>
       <Foreground_color>064000000</Foreground_color>
@@ -2220,6 +2220,34 @@
       <EV_TOOL_BAR>
        <Has_vertical_button_style>False</Has_vertical_button_style>
       </EV_TOOL_BAR>
+      <item type="EV_TOOL_BAR_BUTTON">
+       <Internal_properties>
+        <id>352</id>
+        <name>compile_button</name>
+        <Expanded>0</Expanded>
+       </Internal_properties>
+       <EV_SENSITIVE>
+       </EV_SENSITIVE>
+       <EV_TEXTABLE>
+        <Text>Compile</Text>
+       </EV_TEXTABLE>
+       <EV_TOOLTIPABLE>
+        <Tooltip>Compile all archetypes (F7)</Tooltip>
+       </EV_TOOLTIPABLE>
+       <EV_PIXMAPABLE>
+       </EV_PIXMAPABLE>
+       <Events>
+        <Event>select_actions EV_TOOL_BAR_BUTTON_ACTION_SEQUENCES compile</Event>
+       </Events>
+      </item>
+      <item type="EV_TOOL_BAR_SEPARATOR">
+       <Internal_properties>
+        <id>121</id>
+        <Expanded>0</Expanded>
+       </Internal_properties>
+       <EV_PIXMAPABLE>
+       </EV_PIXMAPABLE>
+      </item>
       <item type="EV_TOOL_BAR_BUTTON">
        <Internal_properties>
         <id>118</id>
@@ -2282,7 +2310,7 @@
       </item>
       <item type="EV_TOOL_BAR_SEPARATOR">
        <Internal_properties>
-        <id>121</id>
+        <id>353</id>
         <Expanded>0</Expanded>
        </Internal_properties>
        <EV_PIXMAPABLE>
