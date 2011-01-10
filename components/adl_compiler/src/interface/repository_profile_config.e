@@ -33,7 +33,8 @@ class REPOSITORY_PROFILE_CONFIG
 inherit
 	DT_CONVERTIBLE
 		redefine
-			default_create
+			default_create,
+			finalise_dt
 		end
 
 create
@@ -45,11 +46,25 @@ feature -- Initialisation
 			-- Basic make routine to guarantee validity on creation.
 		do
 			create profiles.make (0)
+			profiles.compare_objects
+		ensure then
+			initially_empty: is_empty
 		end
 
 	make (a_profiles: HASH_TABLE [REPOSITORY_PROFILE, STRING])
+			-- Make from a given hash table of repository profiles.
+		require
+			profiles_compare_objects: a_profiles.object_comparison
 		do
 			profiles := a_profiles
+		ensure
+			profiles_set: profiles = a_profiles
+		end
+
+	finalise_dt
+			-- Basic make routine to guarantee validity on creation.
+		do
+			profiles.compare_objects
 		end
 
 feature -- Access
@@ -67,8 +82,6 @@ feature -- Access
 				Result := profile(current_profile_name)
 			end
 		end
-
-	profiles: attached HASH_TABLE [REPOSITORY_PROFILE, STRING]
 
 	profile (a_profile_name: attached STRING): attached REPOSITORY_PROFILE
 		require
@@ -98,8 +111,17 @@ feature -- Access
 		end
 
 	count: INTEGER
+			-- Number of profiles.
 		do
 			Result := profiles.count
+		end
+
+	names: attached ARRAY [STRING]
+			-- New array containing all profile names.
+		do
+			Result := profiles.current_keys
+		ensure
+			good_count: Result.count = count
 		end
 
 feature -- Status Report
@@ -156,11 +178,14 @@ feature -- Modification
 			if not has_current_profile then
 				current_profile_name := a_profile_name
 			end
+		ensure
+			has_profile: has_profile (a_profile_name)
+			current_profile_set: old not has_current_profile implies current_profile_name ~ a_profile_name
 		end
 
 	remove_profile (a_profile_name: attached STRING)
 		require
-			has_profile(a_profile_name)
+			has_profile (a_profile_name)
 		do
 			profiles.remove(a_profile_name)
 			if is_empty then
@@ -170,25 +195,33 @@ feature -- Modification
 
 	rename_profile (old_profile_name, new_profile_name: attached STRING)
 		require
-			has_profile(old_profile_name)
+			has_profile (old_profile_name)
 		do
 			profiles.replace_key(new_profile_name, old_profile_name)
-			if attached current_profile_name and then current_profile_name.is_equal (old_profile_name) then
+			if current_profile_name ~ old_profile_name then
 				current_profile_name := new_profile_name
 			end
+		ensure
+			old_name_gone: not has_profile (old_profile_name)
+			has_new_name: has_profile (new_profile_name)
+			current_name_replaced: old current_profile_name.twin ~ old_profile_name implies current_profile_name ~ new_profile_name
 		end
 
 	set_current_profile_name (a_profile_name: attached STRING)
 		require
-			has_profile(a_profile_name)
+			has_profile (a_profile_name)
 		do
 			current_profile_name := a_profile_name
+		ensure
+			current_name_set: current_profile_name ~ a_profile_name
 		end
 
 	clear_current_profile
 			-- remove the current profile so there is no current profile
 		do
 			current_profile_name := Void
+		ensure
+			current_name_void: not attached current_profile_name
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
@@ -199,8 +232,15 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 		do
 		end
 
+feature {NONE} -- Implementation
+
+	profiles: attached HASH_TABLE [REPOSITORY_PROFILE, STRING]
+			-- Hash table of profiles, keyed by their names.
+
 invariant
+-- FIXME: These are commented because we cannot satisfy the invariant immediately after creation via DT_OBJECT_CONVERTER:
 --	Valid_current_profile: not is_empty implies has_current_profile
+--	profiles_compare_objects: profiles.object_comparison
 
 end
 

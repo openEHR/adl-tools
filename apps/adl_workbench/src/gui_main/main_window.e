@@ -1445,7 +1445,7 @@ feature {NONE} -- Implementation
 			a_combo.select_actions.block
 			a_combo.change_actions.block
 			if not repository_profiles.is_empty then
-				a_combo.set_strings (repository_profiles.profiles.current_keys)
+				a_combo.set_strings (repository_profiles.names)
 				if repository_profiles.has_current_profile then
 					a_combo.do_all (agent (li: EV_LIST_ITEM) do if li.text.same_string (repository_profiles.current_profile_name) then li.enable_select end end)
 				end

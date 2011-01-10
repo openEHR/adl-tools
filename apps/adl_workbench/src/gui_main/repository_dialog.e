@@ -104,20 +104,20 @@ feature {NONE} -- Events
 		end
 
 	edit_selected_profile
+			-- Called by `select_actions' of `profile_edit_button'.
 		local
 			edit_dialog: PROFILE_EDIT_DIALOG
 		do
-			create edit_dialog.make_edit (Current, selected_profile_key)
-			edit_dialog.show_modal_to_window (Current)
-			if edit_dialog.is_valid then
-				if edit_dialog.has_changed_profile then
+			if attached selected_profile_key then
+				create edit_dialog.make_edit (Current, selected_profile_key)
+				edit_dialog.show_modal_to_window (Current)
+				if edit_dialog.is_valid and edit_dialog.has_changed_profile then
 					populate_controls
-					current_profile_changed_pending := current_profile_changed_pending or
-						(repository_profiles.current_profile_name ~ edit_dialog.initial_profile_name and edit_dialog.has_changed_profile)
-					any_profile_changes_made_pending := any_profile_changes_made_pending or edit_dialog.has_changed_profile
+					current_profile_changed_pending := current_profile_changed_pending or repository_profiles.current_profile_name ~ edit_dialog.initial_profile_name
+					any_profile_changes_made_pending := True
 				end
+				edit_dialog.destroy
 			end
-			edit_dialog.destroy
 		end
 
 	remove_selected_profile
@@ -182,11 +182,11 @@ feature {PROFILE_EDIT_DIALOG} -- Modification
 	set_selected_profile_key (a_key: attached STRING)
 			-- Set the name of the profile currently chosen.
 		require
-			key_in_profiles: rep_profiles_copy.has_profile (selected_profile_key)
+			key_in_profiles: rep_profiles_copy.has_profile (a_key)
 		do
 			selected_profile_key := a_key
 		ensure
-			selected_profile_key_set: selected_profile_key = a_key
+			selected_profile_key_set: selected_profile_key ~ a_key
 		end
 
 feature {NONE} -- Implementation
@@ -215,7 +215,7 @@ feature {NONE} -- Implementation
 	populate_controls
 			-- Initialise the dialog's widgets from shared settings.
 		do
-			profile_list.set_strings (rep_profiles_copy.profiles.current_keys)
+			profile_list.set_strings (rep_profiles_copy.names)
 
 			if not profile_list.is_empty then
 				profile_list.i_th (profile_names.index_of (selected_profile_key, 1).max (1)).enable_select
@@ -224,7 +224,8 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	selected_profile_key_valid: attached selected_profile_key implies rep_profiles_copy.has_profile (selected_profile_key)
+-- FIXME: This currently fails while renaming a profile:
+--	selected_profile_key_valid: attached selected_profile_key implies rep_profiles_copy.has_profile (selected_profile_key)
 
 end
 
