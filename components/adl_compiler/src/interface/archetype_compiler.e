@@ -46,7 +46,6 @@ feature {NONE} -- Initialisation
 
 	make
 		do
-			is_interrupt_requested := True
 		end
 
 feature -- Access
