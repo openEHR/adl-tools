@@ -65,10 +65,8 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: MAIN_WINDOW)
+	make (a_main_window: attached MAIN_WINDOW)
 			-- Create controller for the test grid.
-		require
-			a_main_window /= Void
 		do
 			gui := a_main_window
 			make_for_grid (gui.archetype_test_tree_grid)
@@ -151,7 +149,6 @@ feature -- Commands
 			col_csr: INTEGER
 		do
 			clear
-			reset_output_directories
 
  			if has_current_profile then
 	 			current_arch_dir.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
@@ -184,34 +181,26 @@ feature -- Commands
 			gui.remove_unused_codes_rb.disable_select
 		end
 
-   	set_row_pixmap (row: EV_GRID_ROW)
+   	set_row_pixmap (row: attached EV_GRID_ROW)
    			-- Set the icon appropriate to the item attached to `row'.
-		require
-			row_attached: row /= Void
-   		local
-			pixmap: EV_PIXMAP
    		do
 			if attached {EV_GRID_LABEL_ITEM} row.item (1) as gli and attached {ARCH_REP_ITEM} row.data as ari then
-				pixmap := pixmaps [ari.group_name]
-				if pixmap /= Void then
+				if attached {EV_PIXMAP} pixmaps [ari.group_name] as pixmap then
 					gli.set_pixmap (pixmap)
 				end
 			end
 		end
 
-	do_row_for_item (an_item: ARCH_REP_ITEM; action: PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
+	do_row_for_item (ari: ARCH_REP_ITEM; action: attached PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
    			-- Perform `action' for the row containing `an_item', if any.
-		require
-			action_attached: action /= Void
-   		local
+  		local
    			i: INTEGER
 			row: EV_GRID_ROW
    		do
-			if an_item /= Void then
+			if attached ari then
 				from i := grid.row_count until i = 0 loop
 					row := grid.row (i)
-
-					if row.data /= Void and then row.data.is_equal (an_item) then
+					if row.data /= Void and then row.data.is_equal (ari) then
 						action.call ([row])
 						i := 0
 					else
@@ -270,6 +259,7 @@ feature {NONE} -- Commands
 		local
 			row_csr: INTEGER
 		do
+			reset_output_directories
 			remove_unused_codes := gui.remove_unused_codes_rb.is_selected
 
 			last_tested_archetypes_count := 0
@@ -290,7 +280,7 @@ feature {NONE} -- Commands
 			res_label: STRING
 			test_result: INTEGER
 		do
-			if attached {EV_GRID_CHECKABLE_LABEL_ITEM} row.item (2) as checkbox and then checkbox.is_checked then
+			if attached {EV_GRID_CHECKABLE_LABEL_ITEM} row.item (2) as gcli and then gcli.is_checked then
 				target ?= row.data
 
 				if attached target then
@@ -337,7 +327,7 @@ feature {NONE} -- Commands
 					gui.arch_test_processed_count.set_text (last_tested_archetypes_count.out)
 				end
 
-				checkbox.set_is_checked (False)
+				gcli.set_is_checked (False)
 			end
 		end
 
@@ -573,15 +563,32 @@ feature {NONE} -- Implementation
 		end
 
 	reset_output_directories
-			-- set output directories, currently just the test diff output location.
-			-- this is test_diff_directory/$current_profile/orig and test_diff_directory/$current_profile/new
+			-- Set output directories, currently just the test diff output location.
+			-- Needs to be called if either different profile is selected, or if `test_diff_directory' is changed in user options.
+			-- Sets `diff_dirs_available' True if all directories can be found/created.
+			-- Resulting directory structure:
+			--
+			-- 		test_diff_directory
+			--			+---- $current_profile
+			--					+---- source
+			--					|		+---- new
+			--					|		+---- orig
+			--					+---- flat
+			--					|		+---- new
+			--					|		+---- orig
+			--					+---- source_flat
+			--							+---- new
+			--							+---- orig
+			--
 		local
 			diff_dir_root, diff_dir_source_root, diff_dir_flat_root, diff_dir_source_flat_root: STRING
 		do
+			diff_dirs_available := False
+
+			-- source diff dirs
 			if attached repository_profiles.current_profile_name as profile_name then
 				diff_dir_root := file_system.pathname (test_diff_directory, profile_name)
 
-				-- source dif dirs
 				diff_dir_source_root := file_system.pathname (diff_dir_root, "source")
 				diff_dir_source_orig := file_system.pathname (diff_dir_source_root, "orig")
 				diff_dir_source_new := file_system.pathname (diff_dir_source_root, "new")
@@ -589,19 +596,14 @@ feature {NONE} -- Implementation
 				if not file_system.directory_exists (diff_dir_source_orig) then
 					file_system.recursive_create_directory (diff_dir_source_orig)
 				end
-			end
-
-			if attached diff_dir_source_root and then file_system.directory_exists (diff_dir_source_orig) then
-				if not file_system.directory_exists (diff_dir_source_new) then
-					file_system.recursive_create_directory (diff_dir_source_new)
+				if file_system.directory_exists (diff_dir_source_orig) then
+					if not file_system.directory_exists (diff_dir_source_new) then
+						file_system.recursive_create_directory (diff_dir_source_new)
+					end
+					if file_system.directory_exists (diff_dir_source_new) then
+						diff_dirs_available := True
+					end
 				end
-				if not file_system.directory_exists (diff_dir_source_new) then
-					diff_dirs_available := False
-				else
-					diff_dirs_available := True
-				end
-			else
-				diff_dirs_available := False
 			end
 
 			-- legacy / flat diff dirs
@@ -655,9 +657,9 @@ feature {NONE} -- Implementation
 			Precursor (key)
 			if not (ev_application.shift_pressed or ev_application.alt_pressed or ev_application.ctrl_pressed) then
 				if attached key and then key.code = key_space then
-					if attached {EV_GRID_CHECKABLE_LABEL_ITEM} selected_cell as checkbox then
-						checkbox.toggle_is_checked
-						set_checkboxes_recursively (checkbox)
+					if attached {EV_GRID_CHECKABLE_LABEL_ITEM} selected_cell as gcli then
+						gcli.toggle_is_checked
+						set_checkboxes_recursively (gcli)
 					end
 				end
 			end
@@ -679,25 +681,25 @@ feature {NONE} -- Implementation
 	add_checkbox (row: attached EV_GRID_ROW)
 			-- Add the checkbox column to `row' of a grid control
 		local
-			item: EV_GRID_CHECKABLE_LABEL_ITEM
+			gcli: EV_GRID_CHECKABLE_LABEL_ITEM
 		do
-			create item
-			row.set_item (2, item)
-			item.set_is_checked (True)
-			item.pointer_button_press_actions.force_extend (agent set_checkboxes_recursively (item))
+			create gcli
+			row.set_item (2, gcli)
+			gcli.set_is_checked (True)
+			gcli.pointer_button_press_actions.force_extend (agent set_checkboxes_recursively (gcli))
 		ensure
 			at_least_2_columns: row.count >= 2
 		end
 
-	set_checkboxes_recursively (item: attached EV_GRID_CHECKABLE_LABEL_ITEM)
+	set_checkboxes_recursively (a_gcli: attached EV_GRID_CHECKABLE_LABEL_ITEM)
 			-- For all sub-items of `item' in a grid control, set their check boxes to match `item', recursively.
 		local
 			i: INTEGER
 		do
-			from i := item.row.subrow_count until i = 0 loop
-				if attached {EV_GRID_CHECKABLE_LABEL_ITEM} item.row.subrow (i).item (item.column.index) as sub_item then
-					sub_item.set_is_checked (item.is_checked)
-					set_checkboxes_recursively (sub_item)
+			from i := a_gcli.row.subrow_count until i = 0 loop
+				if attached {EV_GRID_CHECKABLE_LABEL_ITEM} a_gcli.row.subrow (i).item (a_gcli.column.index) as sub_gcli then
+					sub_gcli.set_is_checked (a_gcli.is_checked)
+					set_checkboxes_recursively (sub_gcli)
 				end
 				i := i - 1
 			end

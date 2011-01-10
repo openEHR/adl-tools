@@ -460,9 +460,9 @@ feature {NONE} -- Implementation
 				if not includes.is_empty and not assertion_matches_any (includes.first) then
 					if not excludes.is_empty then -- create specific match list from includes constraint
 						from includes.start until includes.off loop
-							a_regex := extract_regex(includes.item)
+							a_regex := extract_regex (includes.item)
 							if a_regex /= Void then
-								target_descriptor.add_slot_ids(current_arch_dir.matching_ids (a_regex, target.slot_index.item.rm_type_name, Void), target.slot_index.item.path)
+								target_descriptor.add_slot_ids (current_arch_dir.matching_ids (a_regex, target.slot_index.item.rm_type_name, Void), target.slot_index.item.path)
 							end
 							includes.forth
 						end
@@ -473,7 +473,7 @@ feature {NONE} -- Implementation
 					target_descriptor.add_slot_ids (current_arch_dir.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, Void), target.slot_index.item.path)
 					if not includes.is_empty then -- means excludes is not a recommendation; need to actually process it
 						from excludes.start until excludes.off loop
-							a_regex := extract_regex(excludes.item)
+							a_regex := extract_regex (excludes.item)
 							if a_regex /= Void then
 								id_list := current_arch_dir.matching_ids (a_regex, target.slot_index.item.rm_type_name, target.archetype_id.rm_name)
 								from id_list.start until id_list.off loop

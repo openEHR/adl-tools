@@ -75,9 +75,8 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_1.disable_item_expand (l_ev_label_2)
 			l_ev_horizontal_box_1.disable_item_expand (rm_schema_dir_button)
 			l_ev_label_2.set_text ("RM schema directory: ")
-			color_constant_set_procedures.extend (agent rm_schema_dir_text.set_background_color (?))
-			color_constant_retrieval_functions.extend (agent editable_colour)
 			rm_schema_dir_text.set_minimum_width (300)
+			rm_schema_dir_text.disable_edit
 			rm_schema_dir_button.set_text ("Browse...")
 			rm_schema_dir_button.set_minimum_width (65)
 			l_ev_horizontal_box_2.set_minimum_height (34)

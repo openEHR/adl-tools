@@ -137,6 +137,8 @@ feature {NONE} -- Initialization
 			archetype_notebook.item_tab (source_rich_text).set_pixmap (pixmaps ["diff"])
 			set_archetype_notebook_source_tab_text
 
+			source_rich_text.set_tab_width (4)
+
 			if app_x_position > Sane_screen_coord and app_y_position > Sane_screen_coord then
 				set_position (app_x_position, app_y_position)
 			else
@@ -483,14 +485,14 @@ feature {NONE} -- Repository events
 					clear_status_area
 					set_current_profile (archetype_profile_combo.text)
 					populate_test_profile_combo
-					populate_directory_controls(False)
+					populate_directory_controls (False)
 				end
-			else
+			else -- must be on test page
 				if not test_profile_combo.text.same_string (repository_profiles.current_profile_name) then
 					clear_status_area
 					set_current_profile (test_profile_combo.text)
 					populate_archetype_profile_combo
-					populate_directory_controls(False)
+					populate_directory_controls (False)
 				end
 			end
 		end
@@ -1454,6 +1456,15 @@ feature {NONE} -- Implementation
 			end
 			a_combo.select_actions.resume
 			a_combo.change_actions.resume
+		end
+
+	populate_compile_button
+		do
+			if archetype_compiler.is_interrupted then
+				compile_button.set_pixmap (pixmaps ["compile"])
+			else
+				compile_button.set_pixmap (pixmaps ["pause"])
+			end
 		end
 
 	do_with_wait_cursor (action: PROCEDURE [ANY, TUPLE])

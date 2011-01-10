@@ -181,7 +181,7 @@ feature -- Access (semantic)
 			flat_or_differential: Result = legacy_flat_path xor Result = differential_path
 		end
 
-	relative_path: STRING
+	relative_path: attached STRING
 			-- a path derived from the ontological path of the nearest folder node + archetype_id
 		local
 			csr: ARCH_REP_ITEM
@@ -193,11 +193,9 @@ feature -- Access (semantic)
 				csr := csr.parent
 			end
 			Result := arf.ontological_path + Ontological_path_separator + id.as_string
-		ensure
-			Result_exists: Result /= Void
 		end
 
-	differential_path: STRING
+	differential_path: attached STRING
 			-- Path of differential source file of archetype.
 
 	differential_text: attached STRING
@@ -338,7 +336,7 @@ feature -- Access (semantic)
 		end
 
 	slot_id_index: DS_HASH_TABLE [ARRAYED_SET[STRING], STRING]
-			-- list of Archetype ids matching slot, keyed by slot path
+			-- list of Archetype ids matching slots, keyed by slot path
 
 	display_language: STRING
 			-- generate a valid language to display this archetype in, either the current_language
@@ -891,7 +889,7 @@ feature -- Modification
 			file_repository.save_text_to_file (differential_path, adl_engine.serialise(differential_archetype, Archetype_native_syntax, current_archetype_language))
 		end
 
-	save_differential_as(a_full_path, serialise_format: attached STRING)
+	save_differential_as (a_full_path, serialise_format: attached STRING)
 			-- Save current source archetype to `a_full_path' in `serialise_format'.
 		require
 			Archetype_valid: is_valid
@@ -907,7 +905,7 @@ feature -- Modification
 			end
 		end
 
-	save_flat_as(a_full_path, serialise_format: attached STRING)
+	save_flat_as (a_full_path, serialise_format: attached STRING)
 			-- Save current flat archetype to `a_full_path' in `serialise_format'.
 		require
 			Archetype_valid: is_valid
@@ -921,7 +919,7 @@ feature -- Modification
 			end
 		end
 
-	save_legacy_to(a_full_path: attached STRING)
+	save_legacy_to (a_full_path: attached STRING)
 			-- Save current legacy archetype to `a_full_path' in `serialise_format'.
 		require
 			Archetype_valid: is_valid
@@ -933,7 +931,7 @@ feature -- Modification
 
 feature {NONE} -- Implementation
 
-	file_repository: ARCHETYPE_REPOSITORY_I
+	file_repository: attached ARCHETYPE_REPOSITORY_I
 			-- The repository on which this item is found.
 
 	current_archetype_language: STRING
@@ -985,11 +983,9 @@ feature {NONE} -- Implementation
 
 invariant
 	compilation_state_valid: valid_compilation_state (compilation_state)
-	repository_attached: file_repository /= Void
 
 	legacy_text_timestamp_valid: has_legacy_flat_file implies legacy_flat_text_timestamp > 0
 	differential_text_timestamp_valid: has_differential_file implies differential_text_timestamp > 0
-	differential_path_attached: differential_path /= Void
 
 	differential_archetype_attached_if_valid: is_valid implies differential_archetype /= Void
 	flat_archetype_attached_if_valid: is_valid implies flat_archetype /= Void

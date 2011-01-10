@@ -98,13 +98,9 @@ feature -- Events
 			hide
 
 			new_dir := rm_schema_dir_text.text.as_string_8
-
 			if not new_dir.same_string (rm_schema_directory) and directory_exists (new_dir) then
 				set_rm_schema_directory (new_dir)
 				has_changed_schema_dir := True
-				rm_schemas_access.initialise (new_dir, rm_schemas_load_list)
-				rm_schemas_access.load_schemas
-				populate_grid
 			end
 
 			-- get the user-chosen list of schemas from the load list Grid

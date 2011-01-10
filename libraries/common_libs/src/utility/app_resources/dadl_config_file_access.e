@@ -50,7 +50,7 @@ feature -- Initialisation
 		do
 			create requested_resources.make (0)
 			file_path := a_file_path
-			if file_system.file_exists (a_file_path) then
+			if file_system.file_exists (file_path) then
 				read
 			end
 			if not attached dt_tree then
@@ -69,7 +69,7 @@ feature -- Access
 	integer_value (a_path: attached STRING): INTEGER
 			-- get the integer value for resource at `a_path'
 		do
-			if has_resource(a_path) then
+			if has_resource (a_path) then
 				Result ?= dt_tree.value_at_path (a_path)
 			end
 			requested_resources.extend (a_path)
@@ -206,7 +206,7 @@ feature -- File system access
 
 	read
 			-- read content from file and parse to Data Tree form.
-			-- if file not readable, or not there, do nothing.
+			-- if file not readable, or not there, or in wrong syntax, do nothing.
 		local
 			res_file: PLAIN_TEXT_FILE
 			parser: DADL2_VALIDATOR
@@ -228,6 +228,7 @@ feature -- File system access
 		local
 			a_dt_iterator: DT_VISITOR_ITERATOR
 			res_file: PLAIN_TEXT_FILE
+			dir: STRING
 		do
 			-- serialise to a String
 			dt_serialiser.reset
@@ -236,7 +237,15 @@ feature -- File system access
 
 			-- write to the config file
 			create res_file.make (file_path)
-			res_file.open_write
+			if not file_system.file_exists (file_path) then
+				dir := file_system.dirname (file_path)
+				if not file_system.directory_exists (dir) then
+					file_system.recursive_create_directory (dir)
+				end
+				res_file.create_read_write
+			else
+				res_file.open_write
+			end
 			res_file.put_string (file_header_text)
 			res_file.put_string (dt_serialiser.last_result)
 			res_file.close
