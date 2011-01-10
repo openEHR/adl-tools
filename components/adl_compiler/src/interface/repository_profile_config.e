@@ -31,7 +31,7 @@ note
 class REPOSITORY_PROFILE_CONFIG
 
 inherit
-	ANY
+	DT_CONVERTIBLE
 		redefine
 			default_create
 		end
@@ -41,7 +41,8 @@ create
 
 feature -- Initialisation
 
-	default_create
+	default_create, make_dt
+			-- Basic make routine to guarantee validity on creation.
 		do
 			create profiles.make (0)
 		end
@@ -67,7 +68,7 @@ feature -- Access
 			end
 		end
 
-	profiles: HASH_TABLE [REPOSITORY_PROFILE, STRING]
+	profiles: attached HASH_TABLE [REPOSITORY_PROFILE, STRING]
 
 	profile (a_profile_name: attached STRING): attached REPOSITORY_PROFILE
 		require
@@ -188,6 +189,14 @@ feature -- Modification
 			-- remove the current profile so there is no current profile
 		do
 			current_profile_name := Void
+		end
+
+feature {DT_OBJECT_CONVERTER} -- Conversion
+
+	persistent_attributes: ARRAYED_LIST[STRING]
+			-- list of attribute names to persist as DT structure
+			-- empty structure means all attributes
+		do
 		end
 
 invariant

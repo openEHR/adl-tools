@@ -51,12 +51,12 @@ feature -- Finalisation
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	persistent_attributes: ARRAYED_LIST[STRING]
+	persistent_attributes: ARRAYED_LIST [STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		deferred
 		ensure
-			Result.object_comparison
+			attached Result implies Result.object_comparison
 		end
 
 end
