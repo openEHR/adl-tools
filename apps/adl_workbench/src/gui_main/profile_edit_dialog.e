@@ -154,17 +154,17 @@ feature -- Events
 
 				else -- in edit existing situation, only do something if the paths have changed
 					-- if existing profile name was changed
-					if not prof_name.same_string (initial_profile_name) then
+					if prof_name /~ initial_profile_name then
 						rep_profiles.rename_profile (initial_profile_name, prof_name)
 						has_changed_profile := True
 					end
 
 					a_prof := rep_profiles.profile (prof_name)
-					if not a_prof.reference_repository.same_string (reference_path_text.text) then
+					if a_prof.reference_repository /~ reference_path_text.text then
 						a_prof.set_reference_repository (reference_path_text.text)
 						has_changed_profile := True
 					end
-					if a_prof.has_work_repository and then not a_prof.work_repository.same_string (work_path_text.text) then
+					if a_prof.work_repository /~ work_path_text.text then
 						a_prof.set_work_repository (work_path_text.text)
 						has_changed_profile := True
 					end
