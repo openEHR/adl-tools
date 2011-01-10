@@ -185,7 +185,8 @@ feature -- Modification
 
 	rename_profile (old_profile_name, new_profile_name: attached STRING)
 		require
-			has_profile (old_profile_name)
+			has_old_name: has_profile (old_profile_name)
+			hasnt_new_name: not has_profile (new_profile_name)
 		do
 			profiles.replace_key(new_profile_name, old_profile_name)
 			if current_profile_name ~ old_profile_name then

@@ -114,7 +114,7 @@ feature -- Events
 
 			-- now validate the name with respect to existing profiles			
 			-- first see if it is unique
-			if is_new_profile and rep_profiles.has_profile (prof_name) then
+			if prof_name /~ initial_profile_name and rep_profiles.has_profile (prof_name) then
 				create error_dialog.make_with_text (create_message_content ("duplicate_profile", <<prof_name>>))
 				error_dialog.show_modal_to_window (Current)
 
@@ -222,6 +222,9 @@ feature {NONE} -- Implementation
 			end
 			work_path_text.set_text (get_directory (def_path, Current))
 		end
+
+invariant
+	initial_name_only_when_editing_existing_profile: is_new_profile implies initial_profile_name = Void
 
 end
 
