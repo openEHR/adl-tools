@@ -113,8 +113,8 @@ feature -- Test routines
 			current_arch_dir.populate
 			assert ("Expected warning about ADL version", billboard.content.has_substring ("WARNING - Using ADL version"))
 			archetype_compiler.build_all
-			assert_equal (False, archetype_compiler.is_interrupted)
-			assert_equal (True, archetype_compiler.build_completed)
+			assert_equal (False, archetype_compiler.is_interrupt_requested)
+			assert_equal (True, archetype_compiler.is_full_build_completed)
 		end
 
 end

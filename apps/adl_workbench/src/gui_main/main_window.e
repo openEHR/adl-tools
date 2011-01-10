@@ -115,7 +115,7 @@ feature {NONE} -- Initialization
 			rm_schemas_menu_configure_rm_schemas.set_pixmap (pixmaps ["tools"])
 			tools_menu_options.set_pixmap (pixmaps ["tools"])
 
-			compile_button.set_pixmap (pixmaps ["compile"])
+			populate_compile_button
 			open_button.set_pixmap (pixmaps ["open_archetype"])
 			parse_button.set_pixmap (pixmaps ["parse"])
 			edit_button.set_pixmap (pixmaps ["edit"])
@@ -524,11 +524,9 @@ feature {NONE} -- Repository events
 
 	compile
 		do
-			if not archetype_compiler.is_interrupted then
+			if archetype_compiler.is_building then
 				interrupt_build
-				compile_button.set_pixmap (pixmaps ["compile"])
 			else
-				compile_button.set_pixmap (pixmaps ["pause"])
 				build_all
 			end
 		end
@@ -536,7 +534,7 @@ feature {NONE} -- Repository events
 	interrupt_build
 			-- Cancel the build currently in progress.
 		do
-			archetype_compiler.interrupt
+			archetype_compiler.signal_interrupt
 		end
 
 	export_html
@@ -688,12 +686,12 @@ feature {NONE} -- Tools events
 		local
 			info_dialog: EV_INFORMATION_DIALOG
 		do
-			if not archetype_compiler.build_completed then
+			if not archetype_compiler.is_full_build_completed then
 				create info_dialog.make_with_text (create_message_line ("clean_generated_files_info", Void))
 				info_dialog.set_title ("Information")
 				info_dialog.show_modal_to_window (Current)
-			elseif attached current_arch_dir as dir then
-				do_with_wait_cursor (agent dir.do_all_archetypes (agent delete_generated_files))
+			elseif has_current_profile then
+				do_with_wait_cursor (agent current_arch_dir.do_all_archetypes (agent delete_generated_files))
 				populate_directory_controls(True)
 			end
 		end
@@ -1460,7 +1458,7 @@ feature {NONE} -- Implementation
 
 	populate_compile_button
 		do
-			if archetype_compiler.is_interrupted then
+			if not archetype_compiler.is_building then
 				compile_button.set_pixmap (pixmaps ["compile"])
 			else
 				compile_button.set_pixmap (pixmaps ["pause"])
@@ -1557,6 +1555,7 @@ feature {NONE} -- Build commands
 	compiler_global_gui_update (msg: attached STRING)
 			-- Update GUI with progress on build.
 		do
+			populate_compile_button
 			append_status_area (msg)
 			ev_application.process_events
 		end

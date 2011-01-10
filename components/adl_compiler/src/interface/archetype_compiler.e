@@ -46,13 +46,10 @@ feature {NONE} -- Initialisation
 
 	make
 		do
-			is_interrupted := True
+			is_interrupt_requested := True
 		end
 
 feature -- Access
-
-	build_completed: BOOLEAN
-			-- True if last attempt to build a subtree succeeded
 
 	global_visual_update_action: PROCEDURE [ANY, TUPLE[STRING]]
 			-- Called after global processing to perform GUI updates
@@ -62,21 +59,27 @@ feature -- Access
 
 feature -- Status
 
-	is_interrupted: BOOLEAN
+	is_full_build_completed: BOOLEAN
+			-- True if last attempt to build the whole system succeeded
+
+	is_building: BOOLEAN
+			-- is building underway?
+
+	is_interrupt_requested: BOOLEAN
 			-- Should building be cancelled immediately?
 
 feature -- Status Setting
 
-	interrupt
+	signal_interrupt
 			-- Cancel building immediately.
 		do
-			is_interrupted := True
+			is_interrupt_requested := True
 			call_global_visual_update_action ("************* interrupted *************%N")
 		ensure
-			interrupted: is_interrupted
+			interrupted: is_interrupt_requested
 		end
 
-feature -- Commands
+feature -- Modification
 
 	set_global_visual_update_action (a_routine: attached PROCEDURE [ANY, TUPLE[STRING]])
 			-- Set `global_visual_update_action'.
@@ -94,40 +97,54 @@ feature -- Commands
 			archetype_visual_update_action: archetype_visual_update_action = a_routine
 		end
 
+feature -- Commands
+
 	build_all
 			-- Build the whole system, but not artefacts that seem to be built already.
 		do
+			is_full_build_completed := False
+			is_building := True
 			call_global_visual_update_action(create_message_line ("compiler_building_system", Void))
 			do_all (agent check_file_system_currency (False, ?))
 			do_all (agent build_archetype (?, 0))
+			is_full_build_completed := not is_interrupt_requested
+			is_building := False
 			call_global_visual_update_action(create_message_line ("compiler_finished_building_system", Void))
 		end
 
 	rebuild_all
 			-- Rebuild the whole system from scratch, regardless of previous attempts.
 		do
+			is_full_build_completed := False
+			is_building := True
 			call_global_visual_update_action(create_message_line ("compiler_rebuilding_system", Void))
 			do_all (agent check_file_system_currency (True, ?))
 			do_all (agent build_archetype (?, 0))
+			is_full_build_completed := not is_interrupt_requested
+			is_building := False
 			call_global_visual_update_action(create_message_line ("compiler_finished_rebuilding_system", Void))
 		end
 
 	build_subtree
 			-- Build the sub-system at and below `archetype_directory.selected_node', but not artefacts that seem to be built already.
 		do
+			is_building := True
 			call_global_visual_update_action(create_message_line ("compiler_building_subtree", Void))
 			do_subtree (current_arch_dir.selected_item, agent check_file_system_currency (False, ?))
 			do_subtree (current_arch_dir.selected_item, agent build_archetype (?, 0))
+			is_building := False
 			call_global_visual_update_action(create_message_line ("compiler_finished_building_subtree", Void))
 		end
 
 	rebuild_subtree
 			-- Rebuild the sub-system at and below `archetype_directory.selected_node' from scratch, regardless of previous attempts.
 		do
+			is_building := True
 			call_global_visual_update_action(create_message_line ("compiler_rebuilding_subtree", Void))
 			do_subtree (current_arch_dir.selected_item, agent check_file_system_currency (True, ?))
 			do_subtree (current_arch_dir.selected_item, agent build_archetype (?, 0))
 			call_global_visual_update_action(create_message_line ("compiler_finished_rebuilding_subtree", Void))
+			is_building := False
 		end
 
 	build_lineage (ara: attached ARCH_REP_ARCHETYPE; dependency_depth: INTEGER)
@@ -135,16 +152,20 @@ feature -- Commands
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 			-- dependency depth indicates how many dependency relationships away from original artefact
 		do
+			is_building := True
 			do_lineage (ara, agent check_file_system_currency (False, ?))
 			do_lineage (ara, agent build_archetype (?, dependency_depth))
+			is_building := False
 		end
 
 	rebuild_lineage (ara: attached ARCH_REP_ARCHETYPE; dependency_depth: INTEGER)
 			-- Rebuild the archetypes in the lineage containing `ara'.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		do
+			is_building := True
 			do_lineage (ara, agent check_file_system_currency (True, ?))
 			do_lineage (ara, agent build_archetype (?, dependency_depth))
+			is_building := False
 		end
 
 	export_all_html (a_html_export_directory: attached STRING)
@@ -158,8 +179,12 @@ feature -- Commands
 	build_and_export_all_html (a_html_export_directory: attached STRING)
 			-- Generate HTML under `html_export_directory' from the whole system, building each archetype as necessary.
 		do
+			is_full_build_completed := False
+			is_building := True
 			call_global_visual_update_action(create_message_line ("compiler_build_and_export_html", Void))
 			do_all (agent export_archetype_html (a_html_export_directory, True, ?))
+			is_full_build_completed := not is_interrupt_requested
+			is_building := False
 			call_global_visual_update_action(create_message_line ("compiler_finished_build_and_export_html", Void))
 		end
 
@@ -168,26 +193,22 @@ feature {NONE} -- Implementation
 	do_all (action: attached PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
 			-- Perform `action' on the sub-system at and below `subtree'.
 		do
-			is_interrupted := False
-			build_completed := False
+			is_interrupt_requested := False
 			current_arch_dir.do_all_archetypes (action)
-			build_completed := not is_interrupted
 		end
 
 	do_subtree (subtree: ARCH_REP_ITEM; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
 			-- Perform `action' on the sub-system at and below `subtree'.
 		do
-			is_interrupted := False
-			build_completed := False
+			is_interrupt_requested := False
 			current_arch_dir.do_archetypes (subtree, action)
-			build_completed := not is_interrupted
 		end
 
 	do_lineage (ara: attached ARCH_REP_ARCHETYPE; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
 			-- Build the archetypes in the lineage containing `ara', possibly from scratch.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		do
-			is_interrupted := False
+			is_interrupt_requested := False
 			current_arch_dir.do_archetype_lineage(ara, action)
 		end
 
@@ -196,7 +217,7 @@ feature {NONE} -- Implementation
 			-- * editing changes, including anything that might cause reparenting
 			-- * user request to start from scratch
 		do
-			if not is_interrupted then
+			if not is_interrupt_requested then
 				if ara.compile_attempted then
 					if ara.is_source_modified then
 						ara.signal_source_edited
@@ -218,7 +239,7 @@ feature {NONE} -- Implementation
 			exception_encountered: BOOLEAN
 			build_status: STRING
 		do
-			if not is_interrupted then
+			if not is_interrupt_requested then
 				if not exception_encountered then
 					ara.check_compilation_currency
 					if not ara.is_in_terminal_compilation_state then
@@ -272,7 +293,7 @@ feature {NONE} -- Implementation
 		local
 			filename: STRING
 		do
-			if not is_interrupted then
+			if not is_interrupt_requested then
 				if build_too then
 					build_archetype (ara, 0)
 				end
@@ -286,7 +307,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	call_global_visual_update_action(msg: STRING)
+	call_global_visual_update_action (msg: STRING)
 			-- Call `global_visual_update_action', if it is attached.
 		do
 			if global_visual_update_action /= Void then
