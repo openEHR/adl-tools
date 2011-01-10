@@ -137,7 +137,7 @@ feature -- Events
 			ev_application.process_events
 			new_dir := rm_schema_dir_text.text.as_string_8
 
-			if not new_dir.same_string (rm_schema_directory) then
+			if not new_dir.same_string (rm_schema_directory) and directory_exists (new_dir) then
 				ok_button.disable_sensitive
 				cancel_button.disable_sensitive
 
