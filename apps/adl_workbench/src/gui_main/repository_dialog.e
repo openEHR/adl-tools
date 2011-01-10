@@ -37,6 +37,7 @@ feature {NONE} -- Initialization
 			set_default_cancel_button (cancel_button)
 			set_default_push_button (ok_button)
 			rep_profiles_copy := repository_profiles.deep_twin
+			selected_profile_key := rep_profiles_copy.current_profile_name
 			populate_controls
 		end
 
@@ -48,7 +49,6 @@ feature {NONE} -- Events
 			if rep_profiles_copy.is_empty then
 				add_new_profile
 			else
-				profile_list.first.enable_select
 				profile_list.set_focus
 			end
 		end
@@ -82,7 +82,7 @@ feature {NONE} -- Events
 				if rep_profiles_copy.profile (selected_profile_key).has_work_repository then
 					work_path_text.set_text (rep_profiles_copy.profile (selected_profile_key).work_repository)
 				else
-					work_path_text.set_text ("")
+					work_path_text.remove_text
 				end
 			end
 		end
@@ -180,8 +180,13 @@ feature -- Status
 feature {PROFILE_EDIT_DIALOG} -- Modification
 
 	set_selected_profile_key (a_key: attached STRING)
+			-- Set the name of the profile currently chosen.
+		require
+			key_in_profiles: rep_profiles_copy.has_profile (selected_profile_key)
 		do
 			selected_profile_key := a_key
+		ensure
+			selected_profile_key_set: selected_profile_key = a_key
 		end
 
 feature {NONE} -- Implementation
@@ -217,6 +222,9 @@ feature {NONE} -- Implementation
 				populate_path_controls
 			end
 		end
+
+invariant
+	selected_profile_key_valid: attached selected_profile_key implies rep_profiles_copy.has_profile (selected_profile_key)
 
 end
 
