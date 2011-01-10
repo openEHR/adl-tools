@@ -33,8 +33,7 @@ class REPOSITORY_PROFILE_CONFIG
 inherit
 	DT_CONVERTIBLE
 		redefine
-			default_create,
-			finalise_dt
+			default_create
 		end
 
 create
@@ -46,25 +45,16 @@ feature -- Initialisation
 			-- Basic make routine to guarantee validity on creation.
 		do
 			create profiles.make (0)
-			profiles.compare_objects
 		ensure then
 			initially_empty: is_empty
 		end
 
-	make (a_profiles: HASH_TABLE [REPOSITORY_PROFILE, STRING])
+	make (a_profiles: attached HASH_TABLE [REPOSITORY_PROFILE, STRING])
 			-- Make from a given hash table of repository profiles.
-		require
-			profiles_compare_objects: a_profiles.object_comparison
 		do
 			profiles := a_profiles
 		ensure
 			profiles_set: profiles = a_profiles
-		end
-
-	finalise_dt
-			-- Basic make routine to guarantee validity on creation.
-		do
-			profiles.compare_objects
 		end
 
 feature -- Access
@@ -238,9 +228,8 @@ feature {NONE} -- Implementation
 			-- Hash table of profiles, keyed by their names.
 
 invariant
--- FIXME: These are commented because we cannot satisfy the invariant immediately after creation via DT_OBJECT_CONVERTER:
+-- FIXME: This is commented because we cannot satisfy the invariant immediately after creation via DT_OBJECT_CONVERTER:
 --	Valid_current_profile: not is_empty implies has_current_profile
---	profiles_compare_objects: profiles.object_comparison
 
 end
 

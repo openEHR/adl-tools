@@ -36,35 +36,38 @@ feature -- Definition
 
 feature {NONE} -- Initialization
 
-	make_edit (a_parent_dialog: attached REPOSITORY_DIALOG; an_existing_profile: attached STRING)
-			-- make with a ref to the parent dialog so we can share state, and the
-			-- name of the profile being edited
+	make_edit (profiles: attached REPOSITORY_PROFILE_CONFIG; an_existing_profile: attached STRING)
+			-- Make with a reference to the table of profiles and the name of the profile being edited.
 		require
-			a_parent_dialog.rep_profiles_copy.has_profile (an_existing_profile)
+			profiles.has_profile (an_existing_profile)
 		do
 			default_create
-			parent_dialog := a_parent_dialog
+			rep_profiles := profiles
 			profile_name_text.set_text (an_existing_profile)
-			reference_path_text.set_text (parent_dialog.rep_profiles_copy.profile (an_existing_profile).reference_repository)
-			if parent_dialog.rep_profiles_copy.profile (an_existing_profile).has_work_repository then
-				work_path_text.set_text (parent_dialog.rep_profiles_copy.profile (an_existing_profile).work_repository)
+			reference_path_text.set_text (rep_profiles.profile (an_existing_profile).reference_repository)
+			if rep_profiles.profile (an_existing_profile).has_work_repository then
+				work_path_text.set_text (rep_profiles.profile (an_existing_profile).work_repository)
 			end
 			initial_profile_name := an_existing_profile
+		ensure
+			rep_profiles_set: rep_profiles = profiles
 		end
 
-	make_new (a_parent_dialog: attached REPOSITORY_DIALOG)
-			-- make with a ref to the object that this dialog and its parent are working on
+	make_new (profiles: attached REPOSITORY_PROFILE_CONFIG)
+			-- Make with a reference to the table of profiles being edited.
 		do
 			default_create
-			parent_dialog := a_parent_dialog
+			rep_profiles := profiles
 			profile_name_text.set_text (New_profile_name)
-			if parent_dialog.rep_profiles_copy.has_current_profile then
-				reference_path_text.set_text (parent_dialog.rep_profiles_copy.current_reference_repository_path)
-				work_path_text.set_text (parent_dialog.rep_profiles_copy.current_work_repository_path)
+			if rep_profiles.has_current_profile then
+				reference_path_text.set_text (rep_profiles.current_reference_repository_path)
+				work_path_text.set_text (rep_profiles.current_work_repository_path)
 			else
 				reference_path_text.set_text (user_config_file_directory)
 			end
 			is_new_profile := True
+		ensure
+			rep_profiles_set: rep_profiles = profiles
 		end
 
 	user_initialization
@@ -111,7 +114,7 @@ feature -- Events
 
 			-- now validate the name with respect to existing profiles			
 			-- first see if it is unique
-			if is_new_profile and parent_dialog.rep_profiles_copy.has_profile (prof_name) then
+			if is_new_profile and rep_profiles.has_profile (prof_name) then
 				create error_dialog.make_with_text (create_message_content ("duplicate_profile", <<prof_name>>))
 				error_dialog.show_modal_to_window (Current)
 
@@ -146,17 +149,17 @@ feature -- Events
 					if not work_path_text.text.is_empty then
 						a_prof.set_work_repository (work_path_text.text)
 					end
-					parent_dialog.rep_profiles_copy.put_profile (a_prof, prof_name)
+					rep_profiles.put_profile (a_prof, prof_name)
 					has_changed_profile := True
 
 				else -- in edit existing situation, only do something if the paths have changed
 					-- if existing profile name was changed
 					if not prof_name.same_string (initial_profile_name) then
-						parent_dialog.rep_profiles_copy.rename_profile (initial_profile_name, prof_name)
+						rep_profiles.rename_profile (initial_profile_name, prof_name)
 						has_changed_profile := True
 					end
 
-					a_prof := parent_dialog.rep_profiles_copy.profile (prof_name)
+					a_prof := rep_profiles.profile (prof_name)
 					if not a_prof.reference_repository.same_string (reference_path_text.text) then
 						a_prof.set_reference_repository (reference_path_text.text)
 						has_changed_profile := True
@@ -166,7 +169,8 @@ feature -- Events
 						has_changed_profile := True
 					end
 				end
-				parent_dialog.set_selected_profile_key(prof_name)
+
+				rep_profiles.set_current_profile_name (prof_name)
 				hide
 			end
 		end
@@ -181,12 +185,11 @@ feature -- Events
 
 feature -- Access
 
-	parent_dialog: attached REPOSITORY_DIALOG
-			-- ref to the object that this dialog and its parent are working on
+	rep_profiles: attached REPOSITORY_PROFILE_CONFIG
+			-- Profiles being edited, as a table of {{ref_path, working path}, prof_name}.
 
 	is_new_profile: BOOLEAN
-			-- True if the profile being specifide in this dialog is to be treated as a new entry
-			-- in `rep_profiles_copy'
+			-- True if the profile being specified in this dialog is to be treated as a new entry in `rep_profiles'.
 
 	initial_profile_name: STRING
 			-- copy of profile name if editing an existing one, used for checking if a rename has occurred in `on_ok'
@@ -197,7 +200,7 @@ feature -- Status Report
 			-- result of validation in `on_ok'
 
 	has_changed_profile: BOOLEAN
-			-- True if this dialog has caused a change to the repository profiles copy in the parent diaog
+			-- True if this dialog has caused a change to `rep_profiles'.
 
 feature {NONE} -- Implementation
 

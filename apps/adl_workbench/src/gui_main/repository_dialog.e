@@ -92,9 +92,10 @@ feature {NONE} -- Events
 		local
 			edit_dialog: PROFILE_EDIT_DIALOG
 		do
-			create edit_dialog.make_new (Current)
+			create edit_dialog.make_new (rep_profiles_copy)
 			edit_dialog.show_modal_to_window (Current)
 			if edit_dialog.is_valid then
+				selected_profile_key := rep_profiles_copy.current_profile_name
 				any_profile_changes_made_pending := any_profile_changes_made_pending or edit_dialog.has_changed_profile
 				-- if there was no profile initially, and one was just created => register change
 				current_profile_changed_pending := current_profile_changed_pending or not repository_profiles.has_current_profile
@@ -109,9 +110,10 @@ feature {NONE} -- Events
 			edit_dialog: PROFILE_EDIT_DIALOG
 		do
 			if attached selected_profile_key then
-				create edit_dialog.make_edit (Current, selected_profile_key)
+				create edit_dialog.make_edit (rep_profiles_copy, selected_profile_key)
 				edit_dialog.show_modal_to_window (Current)
 				if edit_dialog.is_valid and edit_dialog.has_changed_profile then
+					selected_profile_key := rep_profiles_copy.current_profile_name
 					populate_controls
 					current_profile_changed_pending := current_profile_changed_pending or repository_profiles.current_profile_name ~ edit_dialog.initial_profile_name
 					any_profile_changes_made_pending := True
@@ -150,7 +152,7 @@ feature {NONE} -- Events
 			end
 		end
 
-feature {PROFILE_EDIT_DIALOG} -- Access
+feature {NONE} -- Access
 
 	rep_profiles_copy: attached REPOSITORY_PROFILE_CONFIG
 			-- local copy of the state of profiles at dialog launch, as a table of
@@ -176,18 +178,6 @@ feature -- Status
 			-- have any changes been made at all (if so, resources should be saved in application)
 			-- Should only be set in `on_ok', because until changes are written from the profiles 'copy'
 			-- object to the real thing (done in `on_ok'), nothing has actually changed in the application
-
-feature {PROFILE_EDIT_DIALOG} -- Modification
-
-	set_selected_profile_key (a_key: attached STRING)
-			-- Set the name of the profile currently chosen.
-		require
-			key_in_profiles: rep_profiles_copy.has_profile (a_key)
-		do
-			selected_profile_key := a_key
-		ensure
-			selected_profile_key_set: selected_profile_key ~ a_key
-		end
 
 feature {NONE} -- Implementation
 
@@ -224,8 +214,7 @@ feature {NONE} -- Implementation
 		end
 
 invariant
--- FIXME: This currently fails while renaming a profile:
---	selected_profile_key_valid: attached selected_profile_key implies rep_profiles_copy.has_profile (selected_profile_key)
+	selected_profile_key_valid: attached selected_profile_key implies rep_profiles_copy.has_profile (selected_profile_key)
 
 end
 
