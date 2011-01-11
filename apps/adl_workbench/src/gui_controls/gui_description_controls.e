@@ -102,16 +102,12 @@ feature {NONE} -- Implementation
 			-- populate authorship fields
 		require
 			archetype_selected: current_arch_dir.has_selected_archetype
-		local
-			contribs: ARRAYED_LIST [STRING]
-			sts: STRING
 		do
 			-- original author: tagged list of strings
 			populate_ev_multi_list_from_hash (gui.arch_desc_auth_orig_auth_mlist, current_arch_dir.selected_archetype.differential_archetype.description.original_author)
 
 			-- status
-			sts := current_arch_dir.selected_archetype.differential_archetype.description.lifecycle_state
-			if sts /= Void then
+			if attached current_arch_dir.selected_archetype.differential_archetype.description.lifecycle_state as sts then
 				gui.arch_desc_status_text.set_text (utf8 (sts))
 			end
 
@@ -119,9 +115,10 @@ feature {NONE} -- Implementation
 			gui.arch_desc_original_language_text.set_text (utf8 (current_arch_dir.selected_archetype.differential_archetype.original_language.code_string))
 
 			-- contributors: list of strings
-			contribs := current_arch_dir.selected_archetype.differential_archetype.description.other_contributors
-			if contribs /= Void then
-				gui.arch_desc_auth_contrib_list.set_strings (contribs)
+			if attached current_arch_dir.selected_archetype.differential_archetype.description.other_contributors as contribs then
+				create utf_str_list.make (0)
+				contribs.do_all (agent (utf8_str: STRING) do utf_str_list.extend (utf8 (utf8_str)) end)
+				gui.arch_desc_auth_contrib_list.set_strings (utf_str_list)
 			end
 		end
 
@@ -130,7 +127,7 @@ feature {NONE} -- Implementation
 		require
 			archetype_selected: current_arch_dir.has_selected_archetype
 		do
-			if attached {RESOURCE_DESCRIPTION_ITEM} current_arch_dir.selected_archetype.differential_archetype.description.details.item(current_language) as arch_desc_item then
+			if attached current_arch_dir.selected_archetype.differential_archetype.description.details.item(current_language) as arch_desc_item then
 				if attached arch_desc_item.purpose then
 					gui.arch_desc_purpose_text.set_text (utf8 (arch_desc_item.purpose))
 				end
@@ -144,7 +141,9 @@ feature {NONE} -- Implementation
 				end
 
 				if attached arch_desc_item.keywords then
-					gui.arch_desc_keywords_list.set_strings (arch_desc_item.keywords)
+					create utf_str_list.make (0)
+					arch_desc_item.keywords.do_all (agent (utf8_str: STRING) do utf_str_list.extend (utf8 (utf8_str)) end)
+					gui.arch_desc_keywords_list.set_strings (utf_str_list)
 				end
 			end
 		end
@@ -155,13 +154,13 @@ feature {NONE} -- Implementation
 			archetype_selected: current_arch_dir.has_selected_archetype
 		do
 			-- package URI
-			if attached {URI} current_arch_dir.selected_archetype.differential_archetype.description.resource_package_uri as arch_pkg_uri then
+			if attached current_arch_dir.selected_archetype.differential_archetype.description.resource_package_uri as arch_pkg_uri then
 				gui.arch_desc_resource_package_text.set_text (utf8 (arch_pkg_uri.out))
 			end
 
 			-- list of URI resources
-			if attached {RESOURCE_DESCRIPTION_ITEM} current_arch_dir.selected_archetype.differential_archetype.description.details.item(current_language) as arch_desc_item then
-				populate_ev_multi_list_from_hash(gui.arch_desc_resource_orig_res_mlist, arch_desc_item.original_resource_uri)
+			if attached current_arch_dir.selected_archetype.differential_archetype.description.details.item(current_language) as arch_desc_item then
+				populate_ev_multi_list_from_hash (gui.arch_desc_resource_orig_res_mlist, arch_desc_item.original_resource_uri)
 			end
 		end
 
@@ -170,12 +169,16 @@ feature {NONE} -- Implementation
 		require
 			archetype_selected: current_arch_dir.has_selected_archetype
 		do
-			if attached {RESOURCE_DESCRIPTION_ITEM} current_arch_dir.selected_archetype.differential_archetype.description.details.item(current_language) as arch_desc_item  and then
+			if attached current_arch_dir.selected_archetype.differential_archetype.description.details.item(current_language) as arch_desc_item  and then
 				attached arch_desc_item.copyright
 			then
 				gui.arch_desc_copyright_text.set_text (utf8 (arch_desc_item.copyright))
 			end
 		end
+
+feature {NONE} -- Implementation
+
+	utf_str_list: ARRAYED_LIST [STRING_32]
 
 end
 
