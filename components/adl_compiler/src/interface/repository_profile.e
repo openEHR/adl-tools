@@ -34,6 +34,7 @@ feature -- Status Report
 feature -- Modification
 
 	set_reference_repository (a_path: attached STRING)
+			-- Set the path to the reference repository.
 		require
 			not a_path.is_empty
 		do
@@ -41,8 +42,7 @@ feature -- Modification
 		end
 
 	set_work_repository (a_path: attached STRING)
-		require
-			not a_path.is_empty
+			-- Set the path to the work repository.
 		do
 			work_repository := a_path
 		end
