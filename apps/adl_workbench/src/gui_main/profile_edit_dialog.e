@@ -113,8 +113,12 @@ feature -- Events
 			end
 
 			-- now validate the name with respect to existing profiles			
-			-- first see if it is unique
-			if prof_name /~ initial_profile_name and rep_profiles.has_profile (prof_name) then
+			-- first see if it is non-empty and unique
+			if prof_name.is_empty then
+				create error_dialog.make_with_text (create_message_content ("empty_profile", Void))
+				error_dialog.show_modal_to_window (Current)
+
+			elseif prof_name /~ initial_profile_name and rep_profiles.has_profile (prof_name) then
 				create error_dialog.make_with_text (create_message_content ("duplicate_profile", <<prof_name>>))
 				error_dialog.show_modal_to_window (Current)
 

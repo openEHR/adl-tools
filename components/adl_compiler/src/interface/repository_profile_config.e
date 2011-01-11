@@ -65,17 +65,17 @@ feature -- Access
 	current_profile: REPOSITORY_PROFILE
 		do
 			if not is_empty then
-				if not has_profile(current_profile_name) then
+				if not has_profile (current_profile_name) then
 					profiles.start
 					current_profile_name := profiles.key_for_iteration
 				end
-				Result := profile(current_profile_name)
+				Result := profile (current_profile_name)
 			end
 		end
 
 	profile (a_profile_name: attached STRING): attached REPOSITORY_PROFILE
 		require
-			has_profile(a_profile_name)
+			has_profile (a_profile_name)
 		do
 			Result := profiles.item(a_profile_name)
 		end
@@ -123,7 +123,7 @@ feature -- Status Report
 
 	has_profile (a_profile_name: attached STRING): BOOLEAN
 		do
-			Result := profiles.has(a_profile_name)
+			Result := profiles.has (a_profile_name)
 		end
 
 	is_empty: BOOLEAN
@@ -163,6 +163,8 @@ feature -- Modification
 
 	put_profile (a_profile: attached REPOSITORY_PROFILE; a_profile_name: attached STRING)
 			-- put `a_profile', replacing any previous profile of that name
+		require
+			name_not_empty: not a_profile_name.is_empty
 		do
 			profiles.force(a_profile, a_profile_name)
 			if not has_current_profile then
@@ -170,6 +172,7 @@ feature -- Modification
 			end
 		ensure
 			has_profile: has_profile (a_profile_name)
+			has_current_profile: has_current_profile
 			current_profile_set: old not has_current_profile implies current_profile_name ~ a_profile_name
 		end
 
@@ -185,6 +188,8 @@ feature -- Modification
 
 	rename_profile (old_profile_name, new_profile_name: attached STRING)
 		require
+			old_name_not_empty: not old_profile_name.is_empty
+			new_name_not_empty: not new_profile_name.is_empty
 			has_old_name: has_profile (old_profile_name)
 			hasnt_new_name: not has_profile (new_profile_name)
 		do
@@ -195,15 +200,18 @@ feature -- Modification
 		ensure
 			old_name_gone: not has_profile (old_profile_name)
 			has_new_name: has_profile (new_profile_name)
+			has_current_profile: has_current_profile
 			current_name_replaced: old current_profile_name.twin ~ old_profile_name implies current_profile_name ~ new_profile_name
 		end
 
 	set_current_profile_name (a_profile_name: attached STRING)
 		require
+			name_not_empty: not a_profile_name.is_empty
 			has_profile (a_profile_name)
 		do
 			current_profile_name := a_profile_name
 		ensure
+			has_current_profile: has_current_profile
 			current_name_set: current_profile_name ~ a_profile_name
 		end
 
@@ -212,6 +220,7 @@ feature -- Modification
 		do
 			current_profile_name := Void
 		ensure
+			hasnt_current_profile: not has_current_profile
 			current_name_void: not attached current_profile_name
 		end
 

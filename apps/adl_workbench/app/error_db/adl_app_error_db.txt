@@ -21,6 +21,7 @@ templates = <
 		["work_repo_not_valid"] = <"Work Repository $1 is the same as or a child of the reference repository $2">
 		["cant_remove_last_profile"] = <"Last profile cannot be removed; use 'Edit' to reconfigure">
 		["duplicate_profile"] = <"New profile name $1 already used">
+		["empty_profile"] = <"Profile name must not be empty">
 
 		-- RM_SCHEMA_DIALOG
 		["rm_schema_dir_not_found"] = <"Directory $1 not found; please specify a valid directory">
