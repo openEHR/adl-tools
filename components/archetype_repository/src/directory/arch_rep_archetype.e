@@ -570,6 +570,10 @@ feature -- Compilation
 			-- signal rebuild from scratch; this rebuilds from existing differential; it only uses legacy if no
 			-- differential yet available. This is because changes in legacy will be detected independently
 		do
+			if attached last_compile_attempt_timestamp then
+				current_arch_dir.decrement_compile_attempt_count
+			end
+
 			differential_archetype := Void
 			compilation_state := Cs_unread
 			last_compile_attempt_timestamp := Void

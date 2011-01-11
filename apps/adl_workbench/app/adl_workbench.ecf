@@ -68,6 +68,7 @@
 		</library>
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf"/>
 		<cluster name="adl_compiler" location="..\..\..\components\adl_compiler\src\" recursive="true"/>
+		<tests name="adl_compiler_tests" location="..\..\..\components\adl_compiler\tests\"/>
 		<cluster name="app" location="..\src\" recursive="true"/>
 		<cluster name="archetype_repository" location="..\..\..\components\archetype_repository\src\" recursive="true">
 			<option>

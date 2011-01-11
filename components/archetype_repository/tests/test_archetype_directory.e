@@ -27,21 +27,6 @@ inherit
 			default_create
 		end
 
-	SHARED_KNOWLEDGE_REPOSITORY
-		undefine
-			default_create
-		end
-
-	SHARED_SOURCE_REPOSITORIES
-		undefine
-			default_create
-		end
-
-	SHARED_ARCHETYPE_COMPILER
-		undefine
-			default_create
-		end
-
 	SHARED_APP_RESOURCES
 		undefine
 			default_create
@@ -66,10 +51,9 @@ feature {NONE} -- Events
 				assert ("Please define the %"Test%" repository profile in " + app_cfg.file_path, False)
 			end
 
+			set_error_reporting_level (Error_type_error)
 			use_current_profile (True)
 			test_repository := repository_profiles.current_profile.reference_repository
-		debug
-			end
 		end
 
 feature -- Access
@@ -103,18 +87,15 @@ feature -- Test routines
 			assert_equal (True, current_arch_dir.has_selected_archetype)
 		end
 
-	test_validation
-			-- Check that the expected errors occur when building the validation test archetypes.
+	test_populate
+			-- Check that the repository can be populated.
 		note
 			testing: "covers/{ARCHETYPE_DIRECTORY}.populate"
 		do
-			set_error_reporting_level (Error_type_error)
-			source_repositories.set_reference_repository (test_repository)
-			current_arch_dir.populate
+			assert_equal (test_repository, source_repositories.reference_repository.full_path)
+			assert_equal (0, current_arch_dir.compile_attempt_count)
+			assert_equal (Void, current_arch_dir.selected_item)
 			assert ("Expected warning about ADL version", billboard.content.has_substring ("WARNING - Using ADL version"))
-			archetype_compiler.build_all
-			assert_equal (False, archetype_compiler.is_interrupt_requested)
-			assert_equal (True, archetype_compiler.is_full_build_completed)
 		end
 
 end

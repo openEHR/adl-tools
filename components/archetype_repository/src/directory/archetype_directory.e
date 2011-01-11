@@ -387,6 +387,16 @@ feature -- Commands
 			incremented: compile_attempt_count = old compile_attempt_count + 1
 		end
 
+	decrement_compile_attempt_count
+			-- Decrement the count of archetypes for which parsing has been attempted.
+		require
+			can_decrement: compile_attempt_count > 0
+		do
+			compile_attempt_count := compile_attempt_count - 1
+		ensure
+			decremented: compile_attempt_count = old compile_attempt_count - 1
+		end
+
 	reset_statistics
 			-- Reset counters to zero.
 		do
