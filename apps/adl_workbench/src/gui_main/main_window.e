@@ -137,7 +137,7 @@ feature {NONE} -- Initialization
 			archetype_notebook.item_tab (source_rich_text).set_pixmap (pixmaps ["diff"])
 			set_archetype_notebook_source_tab_text
 
-			source_rich_text.set_tab_width (28)  -- this is in pixels, and assumes 7-pixel wide chars
+			source_rich_text.set_tab_width ((source_rich_text.tab_width/2).floor)  -- this is in pixels, and assumes 7-pixel wide chars
 
 			if app_x_position > Sane_screen_coord and app_y_position > Sane_screen_coord then
 				set_position (app_x_position, app_y_position)
