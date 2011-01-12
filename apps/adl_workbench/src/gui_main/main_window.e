@@ -1346,27 +1346,25 @@ feature {NONE} -- Implementation
 	populate_source_text_with_line_numbers (text: attached STRING)
 			-- Display `text' in `source_rich_text', optionally with each line preceded by line numbers.
 		local
-			leader, s, number_string: STRING
+			s: STRING
 			len, left_pos, right_pos, number: INTEGER
 		do
 			if show_line_numbers then
 				from
 					len := text.count
 					create s.make (len)
-					create leader.make_filled (' ', 4)
 					left_pos := 1
 					number := 1
 				until
 					left_pos > len
 				loop
-					number_string := number.out
+					s.append (number.out)
 
 					if number < 1000 then
-						leader.replace_substring (number_string, 1, number_string.count)
-						s.append (leader)
-					else
-						s.append (number_string + " ")
+						s.append ("%T")
 					end
+
+					s.append (" ")
 
 					right_pos := text.index_of ('%N', left_pos)
 
