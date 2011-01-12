@@ -1136,6 +1136,11 @@ feature -- Controls
 			create Result.make (Current)
 		end
 
+	annotations_control: GUI_ANNOTATIONS_CONTROL
+		once
+			create Result.make (Current)
+		end
+
 	archetype_view_tree_control: GUI_VIEW_ARCHETYPE_TREE_CONTROL
 		once
 			create Result.make (Current, archetype_file_tree, archetype_explorer_label, <<{ARTEFACT_TYPE}.archetype, {ARTEFACT_TYPE}.template_component, {ARTEFACT_TYPE}.template>>)
@@ -1296,6 +1301,7 @@ feature {NONE} -- Implementation
 			path_map_control.clear
 			ontology_controls.clear
 			slot_map_control.clear
+			annotations_control.clear
 		end
 
 	populate_archetype_view_controls
@@ -1308,6 +1314,7 @@ feature {NONE} -- Implementation
 			slot_map_control.populate
 			node_map_control.populate
 			path_map_control.populate
+			annotations_control.populate
 			ontology_controls.populate
 			populate_source_text
 		end
