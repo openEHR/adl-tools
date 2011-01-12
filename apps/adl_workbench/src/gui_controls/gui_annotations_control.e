@@ -117,6 +117,9 @@ feature -- Commands
 
 							ann_list.forth
 						end
+						if path_row.is_expandable then
+							path_row.expand
+						end
 						anns_by_path.forth
 					end
 

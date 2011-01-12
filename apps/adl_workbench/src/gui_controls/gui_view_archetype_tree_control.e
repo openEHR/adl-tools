@@ -44,12 +44,9 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: MAIN_WINDOW; a_tree_control: EV_TREE; a_label: EV_LABEL; artefact_types_list: ARRAY [INTEGER])
+	make (a_main_window: attached MAIN_WINDOW; a_tree_control: attached EV_TREE; a_label: attached EV_LABEL; artefact_types_list: ARRAY [INTEGER])
 			-- Create controller for the tree representing archetype files found in `archetype_directory'.
 		require
-			a_main_window /= Void
-			a_tree_control /= Void
-			a_label /= Void
 			valid_artefact_type: (create {ARTEFACT_TYPE}).valid_artefact_types(artefact_types_list)
 		do
 			gui := a_main_window

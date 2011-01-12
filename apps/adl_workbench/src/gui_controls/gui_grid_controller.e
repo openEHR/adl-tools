@@ -40,7 +40,7 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	grid: EV_GRID
+	grid: attached EV_GRID
 			-- The grid being controlled.
 
 	selected_cell: EV_GRID_ITEM
@@ -203,21 +203,14 @@ feature {NONE} -- Implementation
 			Result := indexes [(i + offset).max (1).min (indexes.count)]
 		end
 
-	expand_tree (row: EV_GRID_ROW)
+	expand_tree (row: attached EV_GRID_ROW)
 			-- Expand `row' and all of its sub-rows, recursively.
-		require
-			row_attached: row /= Void
 		local
 			i: INTEGER
 		do
 			if row.is_expandable then
 				row.expand
-
-				from
-					i := 1
-				until
-					i > row.subrow_count
-				loop
+				from i := 1 until i > row.subrow_count loop
 					expand_tree (row.subrow (i))
 					i := i + 1
 				end
@@ -226,29 +219,19 @@ feature {NONE} -- Implementation
 			row_expanded: row.is_expandable implies row.is_expanded
 		end
 
-	collapse_tree (row: EV_GRID_ROW)
+	collapse_tree (row: attached EV_GRID_ROW)
 			-- Collapse `row' and all of its sub-rows, recursively.
-		require
-			row_attached: row /= Void
 		local
 			i: INTEGER
 		do
-			from
-				i := 1
-			until
-				i > row.subrow_count
-			loop
+			from i := 1 until i > row.subrow_count loop
 				collapse_tree (row.subrow (i))
 				i := i + 1
 			end
-
 			row.collapse
 		ensure
 			row_collapsed: not row.is_expanded
 		end
-
-invariant
-	grid_attached: grid /= Void
 
 end
 
