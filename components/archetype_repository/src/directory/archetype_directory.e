@@ -296,7 +296,7 @@ feature -- Commands
 				-- -2 = failed (duplicate)
 				--  0 = not yet tried
 				-- +ve number = number of passes attempted with no success
-				create status_list.make (1, archs.count)
+				create status_list.make_filled (0, 1, archs.count)
 
 				from i := 0 until i > 0 and added_during_pass = 0 loop
 					added_during_pass := 0
