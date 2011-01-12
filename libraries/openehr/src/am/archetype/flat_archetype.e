@@ -20,14 +20,14 @@ inherit
 		end
 
 create
-	make, make_from_differential
+	make, make_non_specialised
 
 create {ARCHETYPE_FLATTENER}
-	make_staging
+	make_specialised
 
 feature -- Initialisation
 
-	make_from_differential (a_diff: DIFFERENTIAL_ARCHETYPE)
+	make_non_specialised (a_diff: DIFFERENTIAL_ARCHETYPE)
 			-- initialise from a differential archetype
 		do
 			make(a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
@@ -53,7 +53,7 @@ feature -- Initialisation
 
 feature {ARCHETYPE_FLATTENER} -- Initialisation
 
-	make_staging (a_diff: DIFFERENTIAL_ARCHETYPE; a_flat_parent: FLAT_ARCHETYPE)
+	make_specialised (a_diff: DIFFERENTIAL_ARCHETYPE; a_flat_parent: FLAT_ARCHETYPE)
 			-- initialise from a differential archetype and its flat parent, as preparation
 			-- for generating a flat archetype. The items from the differential are used
 			-- except for the definition, invariants and annotations, which are the flat parent versions, so that the

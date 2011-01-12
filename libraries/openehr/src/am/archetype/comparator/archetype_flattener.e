@@ -97,9 +97,9 @@ debug ("flatten")
 		arch_parent_flat.archetype_id.as_string + " ==============%N")
 end
 				if arch_child_diff.is_template then
-					create {OPERATIONAL_TEMPLATE} arch_output_flat.make_staging (arch_child_diff, arch_parent_flat)
+					create {OPERATIONAL_TEMPLATE} arch_output_flat.make_specialised (arch_child_diff, arch_parent_flat)
 				else
-					create arch_output_flat.make_staging (arch_child_diff, arch_parent_flat)
+					create arch_output_flat.make_specialised (arch_child_diff, arch_parent_flat)
 				end
 				expand_definition_use_nodes
 				flatten_definition
@@ -110,7 +110,7 @@ end
 				arch_output_flat.set_is_valid (True)
 				arch_output_flat.rebuild
 			else
-				create arch_output_flat.make_from_differential (arch_child_diff)
+				create arch_output_flat.make_non_specialised (arch_child_diff)
 			end
 
 			-- flatten RM onto archetype; must do this at the end, since otherwise the existence etc set due to

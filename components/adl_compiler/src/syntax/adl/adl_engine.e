@@ -5,8 +5,8 @@ note
 				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003-2007 Ocean Informatics Pty Ltd"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -69,21 +69,15 @@ feature -- Access
 
 feature -- Commands
 
-	parse_differential (text: STRING; an_rm_schema: SCHEMA_ACCESS): DIFFERENTIAL_ARCHETYPE
+	parse_differential (text: attached STRING; an_rm_schema: attached SCHEMA_ACCESS): DIFFERENTIAL_ARCHETYPE
 			-- parse text as differential archetype. If successful, `archetype' contains the parse structure.
-		require
-			Text_exists: text /= Void
-			Rm_schema_available: an_rm_schema /= Void
 		do
 			rm_schema := an_rm_schema
 			Result ?= parse(text, True)
 		end
 
-	parse_flat (text: STRING; an_rm_schema: SCHEMA_ACCESS): FLAT_ARCHETYPE
+	parse_flat (text: attached STRING; an_rm_schema: attached SCHEMA_ACCESS): FLAT_ARCHETYPE
 			-- parse text as flat archetype. If successful, `archetype' contains the parse structure.
-		require
-			Text_exists: text /= Void
-			Rm_schema_available: an_rm_schema /= Void
 		do
 			rm_schema := an_rm_schema
 			Result ?= parse(text, False)
@@ -97,23 +91,23 @@ feature -- Commands
 			Language_valid: an_archetype.has_language (a_lang)
 			format_valid: has_archetype_serialiser_format (a_format)
 		do
-			synchronise_from_archetype(an_archetype)
-			language_context.serialise(a_format)
-			description_context.serialise(a_format)
-			definition_context.serialise(a_format, a_lang, an_archetype.ontology)
+			synchronise_from_archetype (an_archetype)
+			language_context.serialise (a_format)
+			description_context.serialise (a_format)
+			definition_context.serialise (a_format, a_lang, an_archetype.ontology)
 
 			if an_archetype.has_invariants then
-				invariant_context.serialise(a_format)
+				invariant_context.serialise (a_format)
 			end
 
-			ontology_context.serialise(a_format)
+			ontology_context.serialise (a_format)
 
 			if an_archetype.has_annotations then
-				annotations_context.serialise(a_format)
+				annotations_context.serialise (a_format)
 			end
 
-			create serialiser_mgr.make(an_archetype, a_format, an_archetype.ontology)
-			serialiser_mgr.serialise(
+			create serialiser_mgr.make (an_archetype, a_format, an_archetype.ontology)
+			serialiser_mgr.serialise (
 				language_context.serialised,
 				description_context.serialised,
 				definition_context.serialised,

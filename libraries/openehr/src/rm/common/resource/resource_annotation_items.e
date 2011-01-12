@@ -1,6 +1,6 @@
 note
 	component:   "openEHR Common Information Model"
-	description: "Model of annotations on a resource."
+	description: "Model of annotations for a single path in a resource."
 	keywords:    "archetype"
 	author:      "Thomas Beale"
 	support:     "http://www.openehr.org/issues/browse/AWB"

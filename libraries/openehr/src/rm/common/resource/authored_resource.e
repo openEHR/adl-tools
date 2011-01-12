@@ -45,7 +45,7 @@ feature -- Access
 			-- The revision history of the resource. Only required if is_controlled = True
 			-- (avoids large revision histories for informal or private editing situations).
 
-	annotations: detachable HASH_TABLE [RESOURCE_ANNOTATIONS, STRING]
+	annotations: detachable HASH_TABLE [RESOURCE_ANNOTATION_TABLE, STRING]
 			-- list of annotations, keyed by language. Annotations may be present for only one or
 			-- some languages; if they are present for more than one, the structures must match
 
@@ -241,12 +241,12 @@ feature -- Modification
 				create annotations.make (0)
 			end
 			if not annotations.has (a_lang_tag) then
-				annotations.put (create {RESOURCE_ANNOTATIONS}.make, a_lang_tag)
+				annotations.put (create {RESOURCE_ANNOTATION_TABLE}.make, a_lang_tag)
 			end
 			annotations.item(a_lang_tag).merge_annotations(a_path, an_annotations)
 		end
 
-	set_annotations (an_annotations: attached HASH_TABLE [RESOURCE_ANNOTATIONS, STRING])
+	set_annotations (an_annotations: attached HASH_TABLE [RESOURCE_ANNOTATION_TABLE, STRING])
 			-- set annotations
 		do
 			annotations := an_annotations

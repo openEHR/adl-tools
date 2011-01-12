@@ -16,15 +16,15 @@ class OPERATIONAL_TEMPLATE
 inherit
 	FLAT_ARCHETYPE
 		redefine
-			make_staging
+			make_specialised
 		end
 
 create
-	make_staging
+	make_specialised
 
 feature -- Initialisation
 
-	make_staging (a_diff: DIFFERENTIAL_ARCHETYPE; a_flat_parent: FLAT_ARCHETYPE)
+	make_specialised (a_diff: DIFFERENTIAL_ARCHETYPE; a_flat_parent: FLAT_ARCHETYPE)
 		do
 			precursor (a_diff, a_flat_parent)
 			create artefact_type.make_operational_template

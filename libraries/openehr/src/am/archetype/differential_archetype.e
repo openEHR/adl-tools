@@ -24,11 +24,10 @@ create
 
 feature -- Initialisation
 
-	make_minimal (an_artefact_type: ARTEFACT_TYPE; an_id: like archetype_id; an_original_language: STRING; a_specialisation_depth: INTEGER)
+	make_minimal (an_artefact_type: attached ARTEFACT_TYPE; an_id: attached like archetype_id; an_original_language: attached STRING; a_specialisation_depth: INTEGER)
 			-- make a new differential form archetype
 		require
-			Artefact_type_attached: an_artefact_type /= Void
-			Language_valid: an_original_language /= Void and then not an_original_language.is_empty
+			Language_valid: not an_original_language.is_empty
 			Specialisation_depth_valid: a_specialisation_depth >= 0
 		do
 			artefact_type := an_artefact_type
@@ -50,10 +49,8 @@ feature -- Initialisation
 			Is_dirty: is_dirty
 		end
 
-	make_from_flat (a_flat: FLAT_ARCHETYPE)
+	make_from_flat (a_flat: attached FLAT_ARCHETYPE)
 			-- create from a flat archetype by cloning and then removing inherited parts
-		require
-			Flat_archetype_valid: a_flat /= Void
 		local
 			cco_prev, cco_next: C_OBJECT
 			c_it: C_ITERATOR

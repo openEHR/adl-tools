@@ -1,6 +1,6 @@
 note
 	component:   "openEHR Common Information Model"
-	description: "Model of annotations on a resource."
+	description: "Model of tables of annotations keyed by path for a resource."
 	keywords:    "archetype"
 	author:      "Thomas Beale"
 	support:     "http://www.openehr.org/issues/browse/AWB"
@@ -11,7 +11,7 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class RESOURCE_ANNOTATIONS
+class RESOURCE_ANNOTATION_TABLE
 
 create
 	make

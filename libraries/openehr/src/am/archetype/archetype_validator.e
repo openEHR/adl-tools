@@ -393,7 +393,7 @@ feature {NONE} -- Implementation
 	validate_annotations
 			-- for each language, ensure that annotations are proper translations of each other (if present)
 		local
-			ann_for_lang: RESOURCE_ANNOTATIONS
+			ann_for_lang: RESOURCE_ANNOTATION_TABLE
 		do
 			if target.has_annotations then
 				from target.annotations.start until not passed or target.annotations.off loop
