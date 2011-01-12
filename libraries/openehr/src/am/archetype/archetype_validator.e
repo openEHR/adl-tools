@@ -396,18 +396,18 @@ feature {NONE} -- Implementation
 			ann_for_lang: RESOURCE_ANNOTATION_TABLE
 		do
 			if target.has_annotations then
-				from target.annotations.start until not passed or target.annotations.off loop
-					ann_for_lang := target.annotations.item_for_iteration
+				from target.annotations.items.start until not passed or target.annotations.items.off loop
+					ann_for_lang := target.annotations.items.item_for_iteration
 					from ann_for_lang.items.start until not passed or ann_for_lang.items.off loop
 						-- firstly see if annotation path is valid
 						if not (target.has_path(ann_for_lang.items.key_for_iteration) or else (target.is_specialised and then flat_parent.has_path (ann_for_lang.items.key_for_iteration))) then
-							add_error("VRANP", <<target.annotations.key_for_iteration, ann_for_lang.items.key_for_iteration>>)
+							add_error("VRANP", <<target.annotations.items.key_for_iteration, ann_for_lang.items.key_for_iteration>>)
 						end
 
 						-- FIXME: now we should do some other checks to see if contents are of same structure as annotations in other languages
 						ann_for_lang.items.forth
 					end
-					target.annotations.forth
+					target.annotations.items.forth
 				end
 			end
 		end

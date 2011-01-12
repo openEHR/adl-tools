@@ -89,11 +89,11 @@ feature -- Commands
 				end
 
 				-- figure out if there are any annotations, and what actual language tag they are under
-				if target_archetype.has_annotations_language_matching_tag (current_language) then
-					lang_key := target_archetype.matching_annotations_language_tag (current_language)
+				if target_archetype.has_annotations and then target_archetype.annotations.has_matching_language_tag (current_language) then
+					lang_key := target_archetype.annotations.matching_language_tag (current_language)
 
 					-- populate grid
-					anns_by_path := target_archetype.annotations.item (lang_key).items
+					anns_by_path := target_archetype.annotations.annotation_table (lang_key).items
 					from anns_by_path.start until anns_by_path.off loop
 						-- put the path in the first column
 						create gli.make_with_text (anns_by_path.key_for_iteration)

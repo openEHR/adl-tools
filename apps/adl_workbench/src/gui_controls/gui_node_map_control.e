@@ -471,7 +471,7 @@ feature {NONE} -- Implementation
 
 					if target_archetype.has_annotation_at_path (current_language, c_o.path) then
 						tooltip_str.append ("%NAnnotations:%N")
-						tooltip_str.append (utf8 (target_archetype.annotation_at_path (current_language, c_o.path).as_string))
+						tooltip_str.append (utf8 (target_archetype.annotations.annotation_at_path (current_language, c_o.path).as_string))
 					end
 					a_ti.set_tooltip (tooltip_str)
 				end
@@ -669,7 +669,7 @@ feature {NONE} -- Implementation
 
 			if target_archetype.has_annotation_at_path (current_language, an_og_node.path.as_string) then
 				tooltip_str.append ("%N%NAnnotations:%N")
-				tooltip_str.append (utf8 (target_archetype.annotation_at_path (current_language, an_og_node.path.as_string).as_string))
+				tooltip_str.append (utf8 (target_archetype.annotations.annotation_at_path (current_language, an_og_node.path.as_string).as_string))
 			end
 			Result.set_tooltip (tooltip_str)
 

@@ -45,13 +45,13 @@ feature -- Status Report
 
 feature -- Modification
 
-	replace_annotations (a_path: attached STRING; an_annotations: attached RESOURCE_ANNOTATION_ITEMS)
+	replace_annotation_items (a_path: attached STRING; an_annotations: attached RESOURCE_ANNOTATION_ITEMS)
 			-- add `an_annotations' at key `a_path'; replace any existing at that path
 		do
 			items.force(an_annotations, a_path)
 		end
 
-	merge_annotations (a_path: attached STRING; an_annotations: attached RESOURCE_ANNOTATION_ITEMS)
+	merge_annotation_items (a_path: attached STRING; an_annotations: attached RESOURCE_ANNOTATION_ITEMS)
 			-- add `an_annotations' at key `a_path' to existing annotations
 		do
 			if not items.has (a_path) then

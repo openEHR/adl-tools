@@ -124,7 +124,7 @@ feature {NONE} -- Implementation
 			-- structure. Then validate the tree
 		local
 			res_desc: RESOURCE_DESCRIPTION
-			ann_items: RESOURCE_ANNOTATIONS_HELPER
+			annots: RESOURCE_ANNOTATIONS
 			orig_lang_trans: LANGUAGE_TRANSLATIONS
 			differential_ontology: attached DIFFERENTIAL_ARCHETYPE_ONTOLOGY
 			flat_ontology: attached FLAT_ARCHETYPE_ONTOLOGY
@@ -204,7 +204,7 @@ feature {NONE} -- Implementation
 
 									if not errors.has_errors then
 										if annotations_context.tree /= Void then
-											ann_items ?= annotations_context.tree.as_object (({RESOURCE_ANNOTATIONS_HELPER}).type_id)
+											annots ?= annotations_context.tree.as_object (({RESOURCE_ANNOTATIONS}).type_id)
 										end
 
 										------------------- build the archetype --------------					
@@ -258,9 +258,9 @@ feature {NONE} -- Implementation
 												end
 
 												if adl_parser.adl_version /= Void then
-													Result.set_adl_version(adl_parser.adl_version)
+													Result.set_adl_version (adl_parser.adl_version)
 												else
-													Result.set_adl_version(latest_adl_version)
+													Result.set_adl_version (latest_adl_version)
 												end
 
 												if adl_parser.is_controlled then
@@ -278,11 +278,11 @@ feature {NONE} -- Implementation
 												end
 
 												if invariant_context.tree /= Void then
-													Result.set_invariants(invariant_context.tree)
+													Result.set_invariants (invariant_context.tree)
 												end
 
-												if attached ann_items then
-													Result.set_annotations (ann_items.annotations)
+												if attached annots then
+													Result.set_annotations (annots)
 												end
 
 												Result.rebuild
@@ -315,7 +315,7 @@ feature {NONE} -- Implementation
 
 	rm_schema: SCHEMA_ACCESS
 
-	synchronise_from_archetype(an_archetype: ARCHETYPE)
+	synchronise_from_archetype (an_archetype: ARCHETYPE)
 			-- synchronise archetype to processing engines
 		do
 			an_archetype.synchronise
@@ -330,6 +330,9 @@ feature {NONE} -- Implementation
 				invariant_context.set_tree(an_archetype.invariants)
 			end
 			ontology_context.set_tree(an_archetype.ontology.representation)
+			if an_archetype.has_annotations then
+				annotations_context.set_tree (an_archetype.annotations.dt_representation)
+			end
 		end
 
 	original_language_and_translations_from_ontology (ontology: attached ARCHETYPE_ONTOLOGY): attached LANGUAGE_TRANSLATIONS
@@ -340,16 +343,11 @@ feature {NONE} -- Implementation
 			create Result.make
 			Result.set_original_language_from_string (ontology.original_language)
 
-			from
-				languages := ontology.languages_available
-				languages.start
-			until
-				languages.off
-			loop
+			languages := ontology.languages_available
+			from languages.start until languages.off loop
 				if not languages.item.is_equal (ontology.original_language) then
 					Result.add_new_translation (languages.item)
 				end
-
 				languages.forth
 			end
 		end

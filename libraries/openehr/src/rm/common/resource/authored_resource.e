@@ -45,7 +45,7 @@ feature -- Access
 			-- The revision history of the resource. Only required if is_controlled = True
 			-- (avoids large revision histories for informal or private editing situations).
 
-	annotations: detachable HASH_TABLE [RESOURCE_ANNOTATION_TABLE, STRING]
+	annotations: detachable RESOURCE_ANNOTATIONS
 			-- list of annotations, keyed by language. Annotations may be present for only one or
 			-- some languages; if they are present for more than one, the structures must match
 
@@ -101,26 +101,6 @@ feature -- Access
 			Result := languages_available.item
 		end
 
-	matching_annotations_language_tag (a_lang_tag: attached STRING): STRING
-			-- The actual language tag e.g. "en-GB" matching `a_lang_tag' in the annotations.
-		require
-			has_annotations_language_matching_tag (a_lang_tag)
-		do
-			if annotations.has (a_lang_tag) then
-				Result := a_lang_tag
-			else
-				Result := matching_language_tag (a_lang_tag)
-			end
-		end
-
-	annotation_at_path (a_lang, a_path: attached STRING): RESOURCE_ANNOTATION_ITEMS
-			-- Get annotations for `a_lang' at `a_path' from `annotations'
-		require
-			has_annotation_at_path (a_lang, a_path)
-		do
-			Result := annotations.item (a_lang).item_at_path(a_path)
-		end
-
 feature -- Status Report
 
 	is_controlled: BOOLEAN
@@ -145,15 +125,6 @@ feature -- Status Report
 			Result := not languages_available.off
 		end
 
-	has_annotations_language_matching_tag (a_lang_tag: attached STRING): BOOLEAN
-			-- True if either the annotations section has a_lang_tag, which it might not even if the language is available,
-			-- since this section is only optionally populated with respect to languages.
-		do
-			Result := has_annotations and then
-				(annotations.has (a_lang_tag) or else
-				has_matching_language_tag (a_lang_tag) and then annotations.has (matching_language_tag (a_lang_tag)))
-		end
-
 	has_translations: BOOLEAN
 			-- True if there are translations
 		do
@@ -175,7 +146,7 @@ feature -- Status Report
 	has_annotation_at_path (a_lang, a_path: attached STRING): BOOLEAN
 			-- True if `a_path' is found in  `annotations'
 		do
-			Result := has_annotations and then annotations.has (a_lang) and then annotations.item (a_lang).has_path(a_path)
+			Result := has_annotations and then annotations.has_language (a_lang) and then annotations.has_annotation_at_path (a_lang, a_path)
 		end
 
 	has_path (a_path: attached STRING): BOOLEAN
@@ -238,15 +209,15 @@ feature -- Modification
 			-- add `an_annotations' at key `a_path'; replace any existing at same path
 		do
 			if not has_annotations then
-				create annotations.make (0)
+				create annotations
 			end
-			if not annotations.has (a_lang_tag) then
-				annotations.put (create {RESOURCE_ANNOTATION_TABLE}.make, a_lang_tag)
+			if not annotations.has_language (a_lang_tag) then
+				annotations.add_annotation_table (create {RESOURCE_ANNOTATION_TABLE}.make, a_lang_tag)
 			end
-			annotations.item(a_lang_tag).merge_annotations(a_path, an_annotations)
+			annotations.merge_annotation_items (a_lang_tag, a_path, an_annotations)
 		end
 
-	set_annotations (an_annotations: attached HASH_TABLE [RESOURCE_ANNOTATION_TABLE, STRING])
+	set_annotations (an_annotations: attached RESOURCE_ANNOTATIONS)
 			-- set annotations
 		do
 			annotations := an_annotations
@@ -259,23 +230,14 @@ feature -- Modification
 				if not has_annotations then
 					annotations := other.annotations.deep_twin
 				else
-					-- iterate on languages
-					from other.annotations.start until other.annotations.off loop
-						-- iterate on paths
-						from other.annotations.item_for_iteration.items.start until other.annotations.item_for_iteration.items.off loop
-							merge_annotations (other.annotations.key_for_iteration, other.annotations.item_for_iteration.items.key_for_iteration,
-								other.annotations.item_for_iteration.items.item_for_iteration)
-							other.annotations.item_for_iteration.items.forth
-						end
-						other.annotations.forth
-					end
+					annotations.merge (other.annotations)
 				end
 			end
 		end
 
 feature {ADL_ENGINE} -- Construction
 
-	set_translations(a_trans: attached HASH_TABLE [TRANSLATION_DETAILS, STRING])
+	set_translations (a_trans: attached HASH_TABLE [TRANSLATION_DETAILS, STRING])
 			-- set translations
 		do
 			translations := a_trans
@@ -308,8 +270,7 @@ feature -- Output
 feature -- Serialisation
 
 	synchronise
-			-- synchronise object representation of resource to forms suitable for
-			-- serialisation
+			-- synchronise object representation of resource to forms suitable for serialisation
 		do
 			-- FIXME - translations are handled like this until ADL2, when the
 			-- whole archetype will just be a dADL doc
@@ -320,6 +281,9 @@ feature -- Serialisation
 			end
 			orig_lang_translations.synchronise_to_tree
 			description.synchronise_to_tree
+			if has_annotations then
+				annotations.synchronise_to_tree
+			end
 		end
 
 feature {ADL_ENGINE} -- Implementation
