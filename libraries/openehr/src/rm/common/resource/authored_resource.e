@@ -79,7 +79,7 @@ feature -- Access
 			not Result.is_empty
 		end
 
-	translation_for_language(a_lang: attached STRING): attached TRANSLATION_DETAILS
+	translation_for_language (a_lang: attached STRING): attached TRANSLATION_DETAILS
 			-- get translation details for a_lang
 			-- Void if nothing for that language
 		require
@@ -88,16 +88,29 @@ feature -- Access
 			Result := translations.item(a_lang)
 		end
 
-	matching_language_tag(a_lang: attached STRING): attached STRING
+	matching_language_tag (a_lang: attached STRING): attached STRING
 			-- Currently defined language tag for language `a_lang', e.g.
 			-- The current set might be {"en-GB", "es-CL"} and `a_lang' might be "es"
+			-- FIXME: this currently returns the FIRST matching tag
 		require
 			Valid_language: has_matching_language_tag (a_lang)
 		do
-			from languages_available.start until languages_available.off or language_tag_has_language(languages_available.item, a_lang) loop
+			from languages_available.start until languages_available.off or language_tag_has_language (languages_available.item, a_lang) loop
 				languages_available.forth
 			end
 			Result := languages_available.item
+		end
+
+	matching_annotations_language_tag (a_lang_tag: attached STRING): STRING
+			-- The actual language tag e.g. "en-GB" matching `a_lang_tag' in the annotations.
+		require
+			has_annotations_language_matching_tag (a_lang_tag)
+		do
+			if annotations.has (a_lang_tag) then
+				Result := a_lang_tag
+			else
+				Result := matching_language_tag (a_lang_tag)
+			end
 		end
 
 	annotation_at_path (a_lang, a_path: attached STRING): RESOURCE_ANNOTATION_ITEMS
@@ -114,22 +127,31 @@ feature -- Status Report
 			-- True if this resource is under any kind of change control (even file
 			-- copying), in which case revision history is created.
 
-	has_language(a_lang_tag: attached STRING): BOOLEAN
+	has_language (a_lang_tag: attached STRING): BOOLEAN
 			-- True if either original_language or translations has a_lang_tag
 		do
-			Result := original_language.code_string.is_equal(a_lang_tag) or else (has_translations and then translations.has(a_lang_tag))
+			Result := original_language.code_string.is_equal (a_lang_tag) or else (has_translations and then translations.has (a_lang_tag))
 		end
 
-	has_matching_language_tag(a_lang: attached STRING): BOOLEAN
+	has_matching_language_tag (a_lang: attached STRING): BOOLEAN
 			-- True if the currently defined language tags match the language `a_lang', e.g.
 			-- The current set might be {"en-GB", "es-CL"} and `a_lang' might be "es"
 		require
 			Valid_language: valid_language_pattern_tag (a_lang)
 		do
-			from languages_available.start until languages_available.off or language_tag_has_language(languages_available.item, a_lang) loop
+			from languages_available.start until languages_available.off or language_tag_has_language (languages_available.item, a_lang) loop
 				languages_available.forth
 			end
 			Result := not languages_available.off
+		end
+
+	has_annotations_language_matching_tag (a_lang_tag: attached STRING): BOOLEAN
+			-- True if either the annotations section has a_lang_tag, which it might not even if the language is available,
+			-- since this section is only optionally populated with respect to languages.
+		do
+			Result := has_annotations and then
+				(annotations.has (a_lang_tag) or else
+				has_matching_language_tag (a_lang_tag) and then annotations.has (matching_language_tag (a_lang_tag)))
 		end
 
 	has_translations: BOOLEAN
