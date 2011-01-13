@@ -141,10 +141,8 @@
           select the diagnosis node, which corresponds to the archetype
           openEHR-EHR-EVALUATION.problem-diagnosis.v1</li>
 
-          <li value="0">Select the &#39;Differential&#39; tab, and below it, in the &#39;Node map&#39; tab, you should
-          see <a href=
-          "images/problem-diagnosis_diff_view.png">
-          this</a></li>
+          <li value="0">Select the &#39;Differential&#39; tab, and below it, in the &#39;Definition&#39; tab, you should
+          see <a href="images/problem-diagnosis_diff_view.png">this</a></li>
 
           <li value="0">You will see that below the top &#39;Diagnosis&#39; node, the path
           &#39;/data[at0001]/items&#39; appears, and below that, one redefined object node and two new object node
@@ -210,7 +208,7 @@
               <li value="0">Navigate to the PERSON.t_patient_simple template in the template explorer and select it
               (click once).</li>
 
-              <li value="0">Select Differential View, Node Map. You should see <a href=
+              <li value="0">Select Differential View, Definition tab. You should see <a href=
               "images/existence_redef_diff.png">
               this</a>. You will see that the final &#39;relationships&#39; attribute has been removed by setting its
               existence to {0}.</li>
@@ -246,7 +244,7 @@
               various ways:
 
                 <ul>
-                  <li value="0">In the central archetype view area, select the &#39;Differential&#39; view Node map
+                  <li value="0">In the central archetype view area, select the &#39;Differential&#39; select Definition tab
                   with RM visibility = &#39;Hide&#39;, you should see <a href=
                   "images/occ_redef_0_simple_view.png">
                   this</a></li>
@@ -280,7 +278,7 @@
 
           <li value="0">Navigate to and select the COMPOSITION.t_ext_ref template</li>
 
-          <li value="0">Select Differential View, Node map, and you will see <a href=
+          <li value="0">Select Differential View, Definition tab, and you will see <a href=
           "images/ext_ref_diff.png">this</a>,
           which shows the use of the use_archetype statement to select two archetypes to be used under the attribute
           /content</li>
@@ -349,6 +347,8 @@ annotations
 		complex alternatives are available, e.g. where the keys are coded using at-codes, and then bound to globally
 		standard codes within SNOMED CT or some other terminology. A discussion of these possibilities can be found 
 		<a href="http://www.openehr.org/mailarchives/openehr-technical/msg05523.html" target="_blank">here</a>.</p>
+
+		<p>Annotations can be viewed in the Annotations tab in either differential or flat form. The example archetypes <a href="http://www.openehr.org/svn/knowledge2/TRUNK/archetypes/ADL_1.5_test/validity/annotations/">here</a>, are displayed in a grid, as in <a href="images/annotations_tab.png">this screenshot.</a></p>
 
         <h3>Default values (Not yet implemented)</h3>
 
