@@ -13,6 +13,10 @@
 
 templates = <
 	["en"] = <
+		-- DADL_CONFIG_FILE_ACCESS
+		["config_settings_line1"] = <"$1 configuration settings (dADL format)">
+		["config_settings_line2"] = <"Automatically written by application">
+
 		-- DT_OBJECT_CONVERTER.dt_to_object
 		["container_type_mismatch"] = <"Mismatch in data and model for field $1 in type $2. Parsed data implies container type but is not in model">
 		["interval_type_mismatch"] = <"Mismatch in data and model for field $1 in type $2. Parsed data implies interval type but is not in model">
