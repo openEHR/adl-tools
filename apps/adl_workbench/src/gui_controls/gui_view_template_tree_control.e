@@ -73,8 +73,8 @@ feature -- Commands
 
 						if attached gui_tree.selected_item then
 							if attached {ARCH_REP_ARCHETYPE} gui_tree.selected_item.data as ara then
-								if attached current_arch_dir as dir then
-									dir.set_selected_item (ara)
+								if attached current_arch_dir then
+									current_arch_dir.set_selected_item (ara)
 								end
 
 								gui.parse_archetype

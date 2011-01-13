@@ -949,16 +949,20 @@ feature -- Archetype Events
 	archetype_view_tree_item_select
 			-- Display details of `archetype_file_tree' when the user selects it.
 		do
-			archetype_view_tree_control.display_details_of_selected_item_after_delay
+			if attached archetype_file_tree.selected_item then
+				archetype_view_tree_control.display_details_of_selected_item_after_delay
+			end
 		end
 
 	template_view_tree_item_select
 			-- Display details of `template_file_tree' when the user selects it.
 		do
-			if attached {ARCH_REP_ARCHETYPE} template_file_tree.selected_item.data as ara then
-				archetype_view_tree_control.ensure_item_visible(ara.ontological_name)
+			if attached template_file_tree.selected_item then
+				if attached {ARCH_REP_ARCHETYPE} template_file_tree.selected_item.data as ara then
+					archetype_view_tree_control.ensure_item_visible(ara.ontological_name)
+				end
+				template_view_tree_control.display_details_of_selected_item_after_delay
 			end
-			template_view_tree_control.display_details_of_selected_item_after_delay
 		end
 
 	select_archetype_from_gui_data (gui_item: EV_ANY)
@@ -1581,8 +1585,8 @@ feature {NONE} -- Build commands
 				compiler_error_control.extend_and_select (ara)
 				populate_statistics
 
-				if attached current_arch_dir as dir then
-					if ara = dir.selected_archetype then
+				if attached current_arch_dir then
+					if ara = current_arch_dir.selected_archetype then
 						populate_archetype_id
 						populate_adl_version
 						populate_languages
