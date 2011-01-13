@@ -3,7 +3,7 @@ note
 	description: "Shared access to error and information messages."
 	keywords:    "logging"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 

@@ -1,11 +1,11 @@
 note
 	component:   "openEHR re-usable library"
-	description: "Subtype of GENERIC_PROPERTY_DEFINITION that represents a typical container type."
+	description: "Subtype of BMM_PROPERTY_DEFINITION that represents a typical container type."
 	keywords:    "model, UML"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2009 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2009-2010 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -17,14 +17,30 @@ class BMM_CONTAINER_PROPERTY
 inherit
 	BMM_PROPERTY_DEFINITION
 		redefine
-			type
+			type_def
 		end
 
-feature -- Initialisation
+feature -- Access (attributes from schema)
 
-feature -- Access
+	cardinality: INTERVAL [INTEGER]
+			-- needs to be this basic type because this attribute is scanned in from schema, else would
+			-- have used MULTIPLICITY_INTERVAL
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
-	type: BMM_CONTAINER_TYPE_REFERENCE
+	type_def: detachable BMM_CONTAINER_TYPE_REFERENCE
+			-- type of the contained type
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+feature -- Commands
+
+	finalise_build (a_bmmm: attached BMM_SCHEMA; a_class_def: attached BMM_CLASS_DEFINITION; errors: ERROR_ACCUMULATOR)
+		do
+			if attached type_def then
+				type_def.finalise_build(a_bmmm, a_class_def, Current, errors)
+			else
+				errors.add_error ("BMM_CPT", <<a_bmmm.schema_id, a_class_def.name, name>>, Void)
+			end
+		end
 
 end
 

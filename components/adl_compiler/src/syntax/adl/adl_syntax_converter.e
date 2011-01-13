@@ -39,10 +39,8 @@ feature -- Access
 
 feature -- ADL 1.4 conversions
 
-	convert_dadl_language(dadl_text: STRING)
+	convert_dadl_language(dadl_text: attached STRING)
 			-- converted language = <"xxx"> to language = <[ISO-639::xxx]>
-		require
-			dadl_text /= Void
 		local
 			pos, lpos, rpos: INTEGER
 			rep_str, lang: STRING
@@ -64,11 +62,9 @@ feature -- ADL 1.4 conversions
 			end
 		end
 
-	convert_c_dv_names(dadl_text: STRING)
+	convert_c_dv_names(dadl_text: attached STRING)
 			-- convert C_QUANTITY and C_ORDINAL in embedded dADL sections of cADL to
 			-- C_DV_QUANTITY and C_DV_ORDINAL
-		require
-			dadl_text /= Void
 		local
 			pos: INTEGER
 		do
@@ -87,7 +83,7 @@ feature -- ADL 1.4 conversions
 			end
 		end
 
-	convert_c_quantity_property(dadl_text: STRING)
+	convert_c_quantity_property(dadl_text: attached STRING)
 			-- convert an old style C_QUANTITY property dADL fragment from ADL 1.x
 			-- to ADL 1.4
 			-- The old fragment looks like this:
@@ -95,8 +91,6 @@ feature -- ADL 1.4 conversions
 			-- The new one looks like this:
 			--		property = <[openehr:xxxx]>
 			--
-		require
-			dadl_text /= Void
 		local
 			lpos, rpos: INTEGER
 			old_str, prop_name, new_str: STRING
@@ -118,12 +112,12 @@ feature -- ADL 1.4 conversions
 			end
 		end
 
-	convert_non_conforming_duration(a_str: STRING): STRING
+	convert_non_conforming_duration(a_str: attached STRING): STRING
 			-- fix an ISO8601-like duration string which is missing a 'T' character
 			-- called from cADL lexer, matched by pattern:
 			-- P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?([0-9]+h)?([0-9]+m)?([0-9]+s)?
 		require
-			a_str /= Void and then not a_str.is_empty
+			not a_str.is_empty
 		local
 			ind, i: INTEGER
 		do
@@ -165,11 +159,11 @@ feature -- ADL 1.4 conversions
 
 feature -- ADL 1.5 conversions
 
-	convert_dadl_type_name(a_type_name: STRING): STRING
+	convert_dadl_type_name(a_type_name: attached STRING): STRING
 			-- convert type name preceding <> dADL block to (typename), i.e. add parentheses
 			-- spec change is part of ADL 1.4.1, Release 1.0.2 of openEHR
 		require
-			type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
+			type_name_valid: not a_type_name.is_empty
 		do
 			if adl_version_for_flat_output_numeric >= 150 then
 				Result := "("
@@ -207,13 +201,13 @@ feature -- ADL 1.5 conversions
 --			end
 --		end
 
-	old_archetype_id_pattern_regex: LX_DFA_REGULAR_EXPRESSION
+	old_archetype_id_pattern_regex: attached LX_DFA_REGULAR_EXPRESSION
 			-- Pattern matcher for archetype ids with the 'draft' still in the version
 		once
 			create Result.compile_case_insensitive ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+){2}\.[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*\.v[1-9][0-9a-z]*$")
 		end
 
-	convert_ontology_syntax(dt: DT_COMPLEX_OBJECT_NODE)
+	convert_ontology_syntax(dt: attached DT_COMPLEX_OBJECT_NODE)
 		do
 			if dt.has_attribute ("term_binding") then
 				dt.replace_attribute_name ("term_binding", "term_bindings")
@@ -232,11 +226,7 @@ feature -- Path conversions
 			xpath: STRING
 		do
 			xpath := referree.definition.c_object_at_path (index_path).path
-			from
-				ref_node_list.start
-			until
-				ref_node_list.off
-			loop
+			from ref_node_list.start until ref_node_list.off loop
 				ref_node_list.item.set_target_path (xpath)
 				ref_node_list.forth
 			end
@@ -248,11 +238,7 @@ feature -- Path conversions
 		local
 			xpath, assertion_path: STRING
 		do
-			from
-				expr_node_list.start
-			until
-				expr_node_list.off
-			loop
+			from expr_node_list.start until expr_node_list.off loop
 				assertion_path ?= expr_node_list.item.item
 				xpath := referree.definition.c_object_at_path (assertion_path).path
 				expr_node_list.item.make_archetype_definition_ref (xpath)

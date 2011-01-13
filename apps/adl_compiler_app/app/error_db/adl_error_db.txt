@@ -37,26 +37,16 @@ templates = <
 		["clean_generated_file"] = <"Removing generated file $1">
 		["edit_which_file_question"] = <"Edit which file?%N%NDifferential: $1%N%NFlat (legacy): $2">
 		["edit_legacy_file_info"] = <"The Differential (.adls) file is not available.%N%NOpening the legacy flat file: $1%N">
+		["build_and_export_all"] = <"Yes, Build and Export All">
+		["export_only_built"] = <"No, Export only the built ones">
+		["compile_before_serialising"] = <"Must compile before serialising">
 
 		-- ARCHETYPE compilation
-		["create_new_archetype_1"] = <"CREATE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
-		["specialise_archetype_1"] = <"SPECIALISE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
-		["open_adl_file_1"] = <"%NOPEN FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
-		["save_archetype_i1"] = <"Serialised: $1 to file $2">
-		["save_archetype_e2"] = <"Serialisation failed (archetype not valid)">
-		["save_archetype_e3"] = <"%NSAVE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
-		["serialise_archetype_e1"] = <"Serialisation failed; archetype not valid: $1">
-		["serialise_archetype_e2"] = <"%NSERIALISE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
-
-		["compile_legacy_e1"] = <"$1 (Parse failed)">
-		["compile_legacy_e2"] = <"Parse LEGACY Archetype FAILED DUE TO EXCEPTION">
 		["compile_legacy_i1"] = <"LEGACY Archetype $1 --> Parsed ok">
 
 		["parse_i1"] = <"Archetype $1 --> parsed ok">
 		["parse_i2"] = <"Parsing Archetype differential file">
 		["parse_w1"] = <"Archetype $1 parent has changed from $2 to $3; refresh required (^R)">
-		["parse_e1"] = <"$1 (Parse failed)">
-		["parse_e3"] = <"PARSE FAILED DUE TO EXCEPTION; see 'status'; call 'reset' to clear">
 
 		["parse_archetype_i2"] = <"Archetype $1 semantics VALIDATED">
 		["parse_archetype_w2"] = <"Archetype $1 semantic validation Warnings:%N$2">
@@ -74,10 +64,29 @@ templates = <
 		["arch_context_make_flat_i1"] = <"Generated differential archetype from specialised flat archetype">
 		["compiler_status"] = <"=============== $1 ===============">
 		["compiler_finished_status"] = <"=============== finished $1 ===============">
-		["compiler_compiling_archetype"] = <"------------- $1: COMPILING -------------">
-		["compiler_already_attempted_failed"] = <"------------- $1 (already attempted - FAILED) -------------%N$2">
-		["compiler_already_attempted_validated"] = <"------------- $1 (already attempted - PASSED) -------------">
-		["compiler_already_attempted_validated_with_warnings"] = <"------------- $1 (already attempted - PASSED with warnings) -------------%N$2">
+
+		["compiler_building_system"] = <"=============== building system ===============">
+		["compiler_finished_building_system"] = <"=============== finished building system ===============">
+
+		["compiler_rebuilding_system"] = <"=============== rebuilding system from scratch ===============">
+		["compiler_finished_rebuilding_system"] = <"=============== finished rebuilding system from scratch ===============">
+
+		["compiler_building_subtree"] = <"=============== building sub-tree ===============">
+		["compiler_finished_building_subtree"] = <"=============== finished building sub-tree ===============">
+
+		["compiler_rebuilding_subtree"] = <"=============== rebuilding sub-tree from scratch ===============">
+		["compiler_finished_rebuilding_subtree"] = <"=============== finished rebuilding sub-tree from scratch ===============">
+
+		["compiler_export_html"] = <"=============== exporting built system as HTML ===============">
+		["compiler_finished_export_html"] = <"=============== finished exporting built system as HTML ===============">
+
+		["compiler_build_and_export_html"] = <"=============== building system and exporting as HTML ===============">
+		["compiler_finished_build_and_export_html"] = <"=============== finished building system and exporting as HTML ===============">
+
+		["compiler_compiling_archetype"] = <"------------- compiling $1 ---- $2 -------------">
+		["compiler_already_attempted_failed"] = <"------------- $1 ---- $2 (already attempted - FAILED) -------------%N$2">
+		["compiler_already_attempted_validated"] = <"------------- $1 ---- $2 (already attempted - PASSED) -------------">
+		["compiler_already_attempted_validated_with_warnings"] = <"------------- $1 ---- $2 (already attempted - PASSED with warnings) -------------%N$3">
 		["compiler_unexpected_error"] = <"Location: $1">
 		["compiler_no_flat_text"] = <"===================== No flat (.adlf) text available =======================">
 		["compiler_no_source_text"] = <"===================== No source (.adls) text available =======================">
@@ -88,10 +97,14 @@ templates = <
 
 		-- ARCHETYPE_VALIDATOR
 		["validate_e1"] = <"specialisation parent is missing">
-		["validate_e2"] = <"specialisation parent failed to validate">
 		["validate_e3"] = <"archetype id in descriptor $1 does not match id at top of file $2">
 		["validation_strict"] = <"Validation level STRICT">
-		["validation_non_strict"] = <"Validation level NON-STRICT; non-coforming existence, occurrences & cardinality will be removed">
+		["validation_non_strict"] = <"Validation level NON-STRICT; non-conforming existence, occurrences & cardinality will be removed">
+
+		-- ARCHETYPE_COMPILER / ARCH_REP_ARCHETYPE
+		["compile_e1"] = <"specialisation parent $1 failed to validate">
+		["compile_e2"] = <"component artefact $1 failed to validate">
+		["compile_e3"] = <"EXCEPTION in last operation on archetype $1; details = $2; stack = $3">
 
 		-- GUI controls, MAIN_WINDOW
 		["slots_incomplete_w1"] = <"this list may be incomplete. To be sure, run Build All under the Repository menu.">
@@ -202,8 +215,8 @@ templates = <
 
 		["VSONI"] = <"$1 object node at path $2 use of node identifier does not conform to $3 node at parent path $4">
 		["VSONIN"] = <"object node identifier $1 (RM type $2) at path $3 should have corresponding node in flat parent at $4 but doesn't">
-		["VSONIRocc"] = <"object node at path $1 (RM type $2) redefines parent node (RM type = $3) occurrences but node_id $4 not redefined">
-		["VSONIRrm"] = <"object node at path $1 (RM type $2) redefines parent node (RM type = $3) RM type but node_id $4 not redefined">
+		["VSONIRocc"] = <"object node at path $1 occurrences $2 redefines parent node occurrences $3 but node_id $4 not redefined">
+		["VSONIRrm"] = <"object node at path $1 RM type $2 redefines parent node RM type $3 but node_id $4 not redefined">
 		["VSCNR"] = <"illegal redefinition of $1 node at $2 in parent into $3 node at $4 in child">
 		["VCOCDocc"] = <"object node of RM type $1 at path $2 definition missing (empty definition only allowed when occurrences redefined in specialised child)">
 		["VSONT"] = <"object node at path $1 (AOM type $2) does not conform to node at parent path $3 AOM type $4">
@@ -229,9 +242,15 @@ templates = <
 		["VARXNC"] = <"slot node id of slot filler at $1 does not correspond to any ARCHETYPE slot in flat parent">
 		["VARXTV"] = <"RM type of slot filler $1 does not conform to RM type $2 of slot or attribute in flat parent">
 
+		-- C_PRIMITIVE_OBJECT
+		["VPOV"] = <"$1 object node at path $2 leaf value redefinition $3 does not conform to $4 in $5 node at parent path $6">
+
 		-- ontology-related validity
 		["VONSD"] = <"archetype code $1 in ontology more specialised than archetype">
 		["VONLC"] = <"archetype code $1 in ontology not present in language $2">
+		["VONCBU"] = <"Expecting URI e.g. <xxx:some.domain/x/y/z?query#fragment> at path $1">
+		["VONTBC"] = <"Expecting CODE_PHRASE, e.g. [terminology_id::code]">
+		["VONG"] = <"Expecting primitive object node at path $1">
 
 		-- description-related validity
 		["VDEOL"] = <"original_language section missing">

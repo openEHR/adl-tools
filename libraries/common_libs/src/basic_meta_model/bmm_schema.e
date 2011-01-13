@@ -26,6 +26,9 @@ inherit
 		end
 
 	ANY_VALIDATOR
+		redefine
+			ready_to_validate
+		end
 
 	DT_CONVERTIBLE
 
@@ -40,51 +43,92 @@ feature -- Initialisation
 			d: BMM_GENERIC_PROPERTY
 		do
 			reset
+			state := State_created
+			create primitive_types.make (0)
+			create class_definitions.make (0)
+			create packages.make (0)
+			create includes.make (0)
+			create includes_to_process.make(0)
+			includes_to_process.compare_objects
 		end
 
-feature -- Access
+feature -- Definitions
 
-	schema_name: STRING
-			-- derived name of schema, based on model publisher, model name, model release
-		do
-			Result := create_schema_name (model_publisher, model_name, model_release)
-		end
+	State_created: INTEGER = 1
 
-	schema_revision: STRING
-			-- revision of schema
+	State_loaded: INTEGER = 2
 
-	schema_lifecycle_state: STRING
-			-- lifecycle state of schema
+	State_includes_processed: INTEGER = 3
 
-	schema_description: STRING
-			-- description of schema
+	State_ready_to_validate: INTEGER = 4
+
+feature -- Identification (Attributes from schema)
 
 	model_publisher: STRING
 			-- publisher of model expressed in the schema
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
-	model_name: STRING
+	schema_name: STRING
 			-- name of model expressed in schema; a 'schema' usually contains all of the packages of one 'model' of a publisher.
 			-- A publisher with more than one model can have multiple schemas.
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
 	model_release: STRING
 			-- release of model expressed in the schema
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+	schema_id: STRING
+			-- derived name of schema, based on model publisher, model name, model release
+		do
+			Result := create_schema_id (model_publisher, schema_name, model_release)
+		end
+
+feature -- Schema documentation (Attributes from schema)
+
+	schema_revision: STRING
+			-- revision of schema
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+	schema_lifecycle_state: STRING
+			-- lifecycle state of schema
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+	schema_description: STRING
+			-- description of schema
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+feature -- Access (Attributes from schema)
+
+	includes: HASH_TABLE [BMM_INCLUDE_SPEC, STRING]
+			-- inclusion list, in the form of a hash of individual include specifications,
+			-- each of which at least specifies the id of another schema, and may specify
+			-- a namespace via which types from the included schemas are known in this schema
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
 	packages: HASH_TABLE [BMM_PACKAGE_DEFINITION, STRING]
 			-- hierarchical package structure; equivalent to a list of models included in schema
 			-- top-level packages are models on which archteypes are based, and their names correspond to the
 			-- second section of the 3-part archetype RM entity identifer, e.g. "EHR" in "openEHR-EHR"
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
 	primitive_types: HASH_TABLE [BMM_CLASS_DEFINITION, STRING]
 			-- types like Integer, Boolean etc
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
 	class_definitions: HASH_TABLE [BMM_CLASS_DEFINITION, STRING]
 			-- constructed classes
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
-	class_definition (a_type_name: STRING): BMM_CLASS_DEFINITION
+feature -- Access
+
+	state: INTEGER
+			-- state machine state for this schema
+
+	class_definition (a_type_name: attached STRING): attached BMM_CLASS_DEFINITION
 			-- retrieve the class definition corresponding to `a_type_name' (which contain a generic part)
 			-- from either `primitive_types' or `classes'
 		require
-			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
+			Type_name_valid: has_class_definition (a_type_name)
 		local
 			a_class_name: STRING
 		do
@@ -94,15 +138,13 @@ feature -- Access
 			else
 				Result := class_definitions.item (a_class_name)
 			end
-		ensure
-			Result_exists: Result /= Void
 		end
 
-	property_definition (a_type_name, a_prop_name: STRING): attached BMM_PROPERTY_DEFINITION
+	property_definition (a_type_name, a_prop_name: attached STRING): attached BMM_PROPERTY_DEFINITION
 			-- retrieve the property definition for `a_prop_name' in flattened class corresponding to `a_type_name'
 		require
-			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
-			Property_valid: a_prop_name /= Void and then has_property(a_type_name, a_prop_name)
+			Type_name_valid: has_class_definition (a_type_name)
+			Property_valid: has_property(a_type_name, a_prop_name)
 		local
 			class_def: BMM_CLASS_DEFINITION
 		do
@@ -110,12 +152,12 @@ feature -- Access
 			Result := class_def.flat_properties.item(a_prop_name)
 		end
 
-	property_type (a_type_name, a_prop_name: STRING): attached STRING
+	property_type (a_type_name, a_prop_name: attached STRING): attached STRING
 			-- retrieve the property type for `a_prop_name' in flattened class corresponding to `a_type_name'
 			-- same as property_definition.type, except if a_type_name is generic
 		require
-			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
-			Property_valid: a_prop_name /= Void and then has_property(a_type_name, a_prop_name)
+			Type_name_valid: has_class_definition (a_type_name)
+			Property_valid: has_property(a_type_name, a_prop_name)
 		local
 			class_def: BMM_CLASS_DEFINITION
 		do
@@ -123,11 +165,11 @@ feature -- Access
 			Result := class_def.property_type(a_type_name, a_prop_name)
 		end
 
-	property_definition_at_path (a_type_name, a_property_path: STRING): BMM_PROPERTY_DEFINITION
+	property_definition_at_path (a_type_name, a_property_path: attached STRING): BMM_PROPERTY_DEFINITION
 			-- retrieve the property definition for `a_property_path' in flattened class corresponding to `a_type_name'
 		require
-			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
-			Property_path_valid: a_property_path /= Void and then has_property_path(a_type_name, a_property_path)
+			Type_name_valid: has_class_definition (a_type_name)
+			Property_path_valid: has_property_path(a_type_name, a_property_path)
 		local
 			an_og_path: OG_PATH
 			class_def: BMM_CLASS_DEFINITION
@@ -140,24 +182,25 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	all_ancestor_classes_of (a_class_name: STRING): ARRAYED_LIST [STRING]
+	all_ancestor_classes_of (a_class_name: attached STRING): attached ARRAYED_LIST [STRING]
 			-- return all ancestor types of `a_class_name' up to root class (usually 'ANY', 'Object' or something similar)
 			-- does  not include current class. Returns empty list if none.
 		require
-			Type_valid: a_class_name /= Void and then has_class_definition (a_class_name)
+			Type_valid: has_class_definition (a_class_name)
 		do
 			Result := class_definition (a_class_name).all_ancestors
-		ensure
-			Result_exists: Result /= Void
 		end
+
+	includes_to_process: ARRAYED_LIST [STRING]
+			-- list of includes to process during setup
 
 feature -- Status Report
 
-	has_class_definition (a_type_name: STRING): BOOLEAN
+	has_class_definition (a_type_name: attached STRING): BOOLEAN
 			-- True if `a_type_name' has a class definition or is a primitive type in the model. Note that a_type_name
 			-- could be a generic type string; only the root class is considered
 		require
-			Type_valid: a_type_name /= Void and then not a_type_name.is_empty
+			Type_valid: not a_type_name.is_empty
 		local
 			a_class_name: STRING
 		do
@@ -165,11 +208,11 @@ feature -- Status Report
 			Result := primitive_types.has (a_class_name) or class_definitions.has (a_class_name)
 		end
 
-	has_property (a_type_name, a_prop_name: STRING): BOOLEAN
+	has_property (a_type_name, a_prop_name: attached STRING): BOOLEAN
 			-- True if `a_type_name'  (which contain a generic part) has an property named `a_prop_name'
 		require
-			Type_name_valid: a_type_name /= Void and then has_class_definition (a_type_name)
-			Property_valid: a_prop_name /= Void and then not a_prop_name.is_empty
+			Type_name_valid: has_class_definition (a_type_name)
+			Property_valid: not a_prop_name.is_empty
 		do
 			Result := class_definition (a_type_name).has_property(a_prop_name)
 		end
@@ -183,12 +226,9 @@ feature -- Status Report
 			Result := class_definition (a_class).all_ancestors.has (a_parent_class)
 		end
 
-	has_property_path (an_obj_type, a_property_path: STRING): BOOLEAN
+	has_property_path (an_obj_type, a_property_path: attached STRING): BOOLEAN
 			-- is `a_property_path' possible based on this reference model? Path format must be standard forward-slash
 			-- delimited path, or Xpath. Any predicates (i.e. [] sections) in an Xpath will be ignored.
-		require
-			path_attached: a_property_path /= Void
-			object_type_attached: an_obj_type /= Void
 		local
 			an_og_path: OG_PATH
 		do
@@ -199,12 +239,12 @@ feature -- Status Report
 			end
 		end
 
-	valid_type_for_class(a_class_name, a_type_name: STRING): BOOLEAN
-			-- True if `a_type_name' is valid with respect to this class. Will always be true for
+	valid_type_for_class(a_class_name, a_type_name: attached STRING): BOOLEAN
+			-- True if `a_type_name' is valid with respect to `a_class_name'. Will always be true for
 			-- non-generic types, but needs to be checked for generic / container types
 		require
-			A_class_name_valid: a_class_name /= Void and then not a_class_name.is_empty
-			A_type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
+			A_class_name_valid: not a_class_name.is_empty
+			A_type_name_valid: not a_type_name.is_empty
 		local
 			is_gen_type: BOOLEAN
 			type_strs: ARRAYED_LIST [STRING]
@@ -219,14 +259,14 @@ feature -- Status Report
 				if type_strs.item.is_equal (a_class_def.name) or class_definitions.item (type_strs.item).has_ancestor(a_class_def.name)  then
 					from
 						type_strs.forth
-						a_class_def.generic_parameters.start
+						a_class_def.generic_parameter_defs.start
 					until
 						type_strs.off or not has_class_definition (type_strs.item) or
-							(a_class_def.generic_parameters.item_for_iteration.is_constrained and then not
-							class_definitions.item (type_strs.item).has_ancestor (a_class_def.generic_parameters.item_for_iteration.conforms_to_type.name))
+							(a_class_def.generic_parameter_defs.item_for_iteration.is_constrained and then not
+							class_definitions.item (type_strs.item).has_ancestor (a_class_def.generic_parameter_defs.item_for_iteration.conforms_to_type_def.name))
 					loop
 						type_strs.forth
-						a_class_def.generic_parameters.forth
+						a_class_def.generic_parameter_defs.forth
 					end
 					Result := type_strs.off
 				end
@@ -235,11 +275,8 @@ feature -- Status Report
 			end
 		end
 
-	type_conforms_to (type_1, type_2: STRING): BOOLEAN
+	type_conforms_to (type_1, type_2: attached STRING): BOOLEAN
 			-- check conformance of type 1 to type 2
-		require
-			Type_1_exists: type_1 /= Void
-			Type_2_exists: type_2 /= Void
 		local
 			tlist1, tlist2: ARRAYED_LIST[STRING]
 		do
@@ -262,48 +299,17 @@ feature -- Status Report
 
 feature -- Commands
 
-	validate
-		local
-			class_def: BMM_CLASS_DEFINITION
-		do
-			-- check that all properties in every class have a type set, i.e. this checks that the schema is completely specified
-			-- FIXME: no do_all on HASH_TABLEs! Have to repeat this code...
-			from primitive_types.start until primitive_types.off loop
-				class_def := primitive_types.item_for_iteration
-				from class_def.properties.start until class_def.properties.off loop
-					if class_def.properties.item_for_iteration.type = Void then
-						passed := False
-						add_error("RMPTV", <<class_def.name, class_def.properties.item_for_iteration.name>>)
-					end
-					class_def.properties.forth
-				end
-				primitive_types.forth
-			end
-			from class_definitions.start until class_definitions.off loop
-				class_def := class_definitions.item_for_iteration
-				from class_def.properties.start until class_def.properties.off loop
-					if class_def.properties.item_for_iteration.type = Void then
-						passed := False
-						add_error("RMPTV", <<class_def.name, class_def.properties.item_for_iteration.name>>)
-					end
-					class_def.properties.forth
-				end
-				class_definitions.forth
-			end
-
-			if passed then
-				add_info ("model_access_i1", << schema_name, primitive_types.count.out, class_definitions.count.out >>)
-			end
-		end
-
 	dt_finalise
-			-- clean up after build of model
+			-- steps after load of this model, but before 'includes' processing
+			-- convert primitive type names of the form 'Integer' to all uppercase
+		require
+			state = State_created
 		local
 			keys: ARRAY [STRING]
 			i: INTEGER
 		do
-			-- convert primitive type names of the form 'Integer' to all uppercase; has to be done in
-			-- two gos, because changing keys messs with the table structure if done in one pass
+			-- has to be done in two gos, because changing keys messs with the table structure
+			-- if done in one pass			
 			from primitive_types.start until primitive_types.off loop
 				primitive_types.item_for_iteration.name.to_upper
 				primitive_types.forth
@@ -313,10 +319,104 @@ feature -- Commands
 				primitive_types.replace_key (keys.item(i).as_upper, keys.item(i))
 				i := i + 1
 			end
+			if includes.is_empty then
+				state := State_includes_processed
+			else
+				from includes.start until includes.off loop
+					includes_to_process.extend (includes.item_for_iteration.id)
+					includes.forth
+				end
+				state := State_loaded
+			end
+		ensure
+			state = State_loaded or state = State_includes_processed
+		end
 
-			-- now finalise all classes
+	finalise_schema
+			-- steps after 'includes' processing, which require all class definitions to be in place
+		require
+			state = State_includes_processed
+		do
 			finalise_classes(primitive_types)
 			finalise_classes(class_definitions)
+			state := State_ready_to_validate
+		ensure
+			state = State_ready_to_validate
+		end
+
+	validate
+			-- do some basic validation:
+			-- check that all properties in every class have a type set and that the type is defined somewhere else in the schema,
+			-- i.e. this checks that the schema is at least completely specified
+		local
+			class_def: BMM_CLASS_DEFINITION
+		do
+			if passed then
+			from primitive_types.start until primitive_types.off loop
+				class_def := primitive_types.item_for_iteration
+				from class_def.properties.start until class_def.properties.off loop
+						if class_def.properties.item_for_iteration.type_def = Void then
+						passed := False
+							add_error("BMM_PTV", <<class_def.name, class_def.properties.item_for_iteration.name>>)
+					end
+					class_def.properties.forth
+				end
+				primitive_types.forth
+			end
+			from class_definitions.start until class_definitions.off loop
+				class_def := class_definitions.item_for_iteration
+				from class_def.properties.start until class_def.properties.off loop
+						if class_def.properties.item_for_iteration.type_def = Void then
+						passed := False
+							add_error("BMM_PTV", <<class_def.name, class_def.properties.item_for_iteration.name>>)
+					end
+					class_def.properties.forth
+				end
+				class_definitions.forth
+			end
+			end
+
+			if passed then
+				add_info ("model_access_i1", << schema_id, primitive_types.count.out, class_definitions.count.out >>)
+			end
+		end
+
+	ready_to_validate: BOOLEAN
+		do
+			Result := precursor and state = State_ready_to_validate
+			end
+
+	merge_included_schema (other: attached BMM_SCHEMA)
+			-- merge in class and package definitions from `other', except where the current schema already has
+			-- a definition for the given type or package
+		require
+			includes_to_process.has (other.schema_id)
+		do
+			from other.primitive_types.start until other.primitive_types.after loop
+				-- note that `put' only puts the class defintion from the included schema only if the current one does not already
+				-- have a definition for that class name
+				primitive_types.put (other.primitive_types.item_for_iteration.deep_twin, other.primitive_types.key_for_iteration)
+				other.primitive_types.forth
+			end
+
+			from other.class_definitions.start until other.class_definitions.after loop
+				-- note that `put' only puts the class defintion from the included schema only if the current one does not already
+				-- have a definition for that class name
+				class_definitions.put (other.class_definitions.item_for_iteration.deep_twin, other.class_definitions.key_for_iteration)
+				other.class_definitions.forth
+		end
+
+			from other.packages.start until other.packages.after loop
+				-- note that `put' only puts the class defintion from the included schema only if the current one does not already
+				-- have a definition for that class name
+				packages.put (other.packages.item_for_iteration.deep_twin, other.packages.key_for_iteration)
+				other.packages.forth
+			end
+
+			includes_to_process.prune_all(other.schema_id)
+			if includes_to_process.is_empty then
+				state := State_includes_processed
+			end
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
@@ -329,10 +429,10 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 
 feature {NONE} -- Implementation
 
-	type_to_class (a_type_name: STRING): STRING
+	type_to_class (a_type_name: attached STRING): STRING
 			-- convert a type name which might have a generic part to a simple class name
 		require
-			Type_valid: a_type_name /= Void and then not a_type_name.is_empty
+			Type_valid: not a_type_name.is_empty
 		local
 			gen_pos: INTEGER
 		do
@@ -346,28 +446,37 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	finalise_classes (class_list: HASH_TABLE [BMM_CLASS_DEFINITION, STRING])
+	finalise_classes (class_list: attached HASH_TABLE [BMM_CLASS_DEFINITION, STRING])
+			-- build `immediate_descendants' and `all_ancestors' properties for each class in `class_list'
+		require
+			state = State_includes_processed
 		local
-			anc_list: ARRAYED_LIST [BMM_CLASS_DEFINITION]
+			imm_ancs: ARRAYED_LIST [BMM_CLASS_DEFINITION]
+			all_ancs: ARRAYED_LIST [STRING]
 		do
 			from class_list.start until class_list.off loop
-				class_list.item_for_iteration.dt_finalise(Current)
-				anc_list := class_list.item_for_iteration.ancestors
+				class_list.item_for_iteration.finalise_build(Current, errors)
 
-				-- set all class def immediate_descendants property; also build all_ancestors property
-				from anc_list.start until anc_list.off loop
-					anc_list.item.add_immediate_descendant (class_list.item_for_iteration)
+				-- populate class's immediate_descendants and all_ancestors lists
+				imm_ancs := class_list.item_for_iteration.ancestor_defs
+				all_ancs := class_list.item_for_iteration.all_ancestors
+				from imm_ancs.start until imm_ancs.off loop
+					-- add this class to the immediate ancestor's `immediate_descendant' list
+					imm_ancs.item.add_immediate_descendant (class_list.item_for_iteration)
 
-					if not class_list.item_for_iteration.all_ancestors.has(anc_list.item.name) then
-						class_list.item_for_iteration.all_ancestors.extend(anc_list.item.name)
+					-- add immediate ancestors to the `all_ancestors' list of this class
+					if not all_ancs.has(imm_ancs.item.name) then
+						all_ancs.extend(imm_ancs.item.name)
 					end
-					from anc_list.item.ancestors.start until anc_list.item.ancestors.off loop
-						if not class_list.item_for_iteration.all_ancestors.has(anc_list.item.ancestors.item.name) then
-							class_list.item_for_iteration.all_ancestors.extend(anc_list.item.ancestors.item.name)
+
+					-- add non-immediate ancestors to the `all_ancestors' list of this class
+					from imm_ancs.item.ancestor_defs.start until imm_ancs.item.ancestor_defs.off loop
+						if not all_ancs.has(imm_ancs.item.ancestor_defs.item.name) then
+							all_ancs.extend(imm_ancs.item.ancestor_defs.item.name)
 						end
-						anc_list.item.ancestors.forth
+						imm_ancs.item.ancestor_defs.forth
 					end
-					anc_list.forth
+					imm_ancs.forth
 				end
 				class_list.forth
 			end

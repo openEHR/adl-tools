@@ -16,7 +16,15 @@ class
 	OPENEHR_TEST_SET
 
 inherit
+	SHARED_RESOURCES
+		undefine
+			default_create
+		end
+
 	EQA_TEST_SET
+		rename
+			file_system as test_file_system
+		end
 
 feature {NONE} -- Assertions
 
@@ -42,6 +50,21 @@ feature {NONE} -- Assertions
 			end
 
 			assert (tag, actual ~ expected)
+		end
+
+feature {NONE} -- Access
+
+	file_context: attached FILE_CONTEXT
+			-- Access to the file system.
+		once
+			create Result.make
+		end
+
+	test_directory: attached STRING
+			-- A directory for temporary test files.
+		once
+			Result := file_system.pathname (user_config_file_directory, "autotest")
+			file_system.recursive_create_directory (Result)
 		end
 
 end

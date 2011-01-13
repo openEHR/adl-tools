@@ -3,8 +3,8 @@ note
 	description: "shared access to DT_OBJECT_CONVERTER"
 	keywords:    "dADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2005-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -14,7 +14,7 @@ note
 class SHARED_DT_OBJECT_CONVERTER
 
 feature -- Access
-	
+
 	object_converter: DT_OBJECT_CONVERTER
 		once
 			create Result

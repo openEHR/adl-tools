@@ -3,7 +3,7 @@ note
 	description: "node in ADL parse tree"
 	keywords:    "test, ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003-2005 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -68,23 +68,21 @@ feature -- Access
 
 	parent: DT_COMPLEX_OBJECT_NODE
 
-	children: ARRAYED_LIST [DT_OBJECT_ITEM]
+	children: attached ARRAYED_LIST [DT_OBJECT_ITEM]
 			-- next nodes, keyed by node id or attribute name
 
-	children_sorted: SORTED_TWO_WAY_LIST[DT_OBJECT_ITEM]
+	children_sorted: attached SORTED_TWO_WAY_LIST[DT_OBJECT_ITEM]
 
-	rm_attr_name: STRING
+	rm_attr_name: attached STRING
 			-- attribute name in reference model
 		do
 			Result := representation.node_id
 		end
 
-	child_with_id(a_node_id: STRING): DT_OBJECT_ITEM
+	child_with_id(a_node_id: attached STRING): attached DT_OBJECT_ITEM
 			-- find the child node with `a_path_id'
 		do
 			Result ?= representation.child_with_id(a_node_id).content_item
-		ensure
-			Result_exists: Result /= Void
 		end
 
 	first_child: DT_OBJECT_ITEM
@@ -196,10 +194,10 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_attr_name (a_name: STRING)
+	set_attr_name (a_name: attached STRING)
 			-- set attr name
 		require
-			a_name_valid: a_name /= Void and then not a_name.is_empty
+			a_name_valid: not a_name.is_empty
 		do
 			representation.set_node_id(a_name)
 		end
@@ -212,16 +210,42 @@ feature -- Modification
 			is_multiple
 		end
 
-	put_child(a_node: DT_OBJECT_ITEM)
+	put_child(a_node: attached DT_OBJECT_ITEM)
 			-- put a new child node
 		require
-			Node_valid: a_node /= Void and then not has_child(a_node)
+			Node_valid: not has_child(a_node)
 			Multiplicity_validity: is_multiple or else children.is_empty
 		do
 			representation.put_child (a_node.representation)
 			children.extend(a_node)
 			children_sorted.extend(a_node)
 			a_node.set_parent(Current)
+		ensure
+			Has_child: has_child(a_node)
+		end
+
+	remove_child(a_node: attached DT_OBJECT_ITEM)
+			-- remove child node
+		require
+			Node_valid: has_child(a_node)
+		do
+			representation.remove_child (a_node.representation)
+			children.prune_all(a_node)
+			children_sorted.prune_all(a_node)
+		ensure
+			Child_removed: not has_child(a_node)
+		end
+
+	remove_all_children
+			-- remove all children
+		do
+			if child_count > 0 then
+				representation.remove_all_children
+				children.wipe_out
+				children_sorted.wipe_out
+			end
+		ensure
+			Child_count: child_count = 0
 		end
 
 	use_children_sorted
@@ -250,7 +274,6 @@ feature -- Serialisation
 		end
 
 invariant
-	Children_exists: children /= Void
 	Generic_multiple_validity: is_generic implies is_multiple
 
 end

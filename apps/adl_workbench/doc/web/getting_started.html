@@ -26,10 +26,9 @@
       <div id="wrapper">
         <div id="content">
           <h2>Setting RM Schemas</h2>
-          <p>You may want to check which Reference Model schemas are enabled initially. Choose Tools &gt; Options to do this. The options dialog looks as follows.</p>
-          <a href="images/options.png">
-            <img border="0" alt="Options dialog" src="images/tn_options.jpg" width="200" height="187"/> </a>
-          <p>You can check all RM schemas that apply to archetypes in any repository you might define. The only time you would leave a schema unchecked is if you have more than one version of the same schema and you want to choose a specific one. Several RM schemas are provided with the AWB, which are copies of the controlled versions found in the <i>open</i>EHR knowledge2 SVN repository.</p>
+          <p>You may want to check which Reference Model schemas are enabled initially. Choose RM Schemas &gt; Configure Schemas to do this. The dialog looks as follows.</p>
+          <a href="images/options_rm_schema_config.png"><img border="0" alt="Options dialog" src="images/tn_options_rm_schema_config.jpg" width="200" height="187"/> </a>
+		<p>You can check all RM schemas that apply to archetypes in any repository you might define. The only time you would leave a schema unchecked is if you have more than one version of the same schema and you want to choose a specific one. Several RM schemas are provided with the AWB, which are copies of the controlled versions found in the <i>open</i>EHR knowledge2 SVN repository. See the <a href="tool_configuration.html#rm_schema_configuration">Tool Configuration section</a> for details on configuring RM schemas.</p>
           <h2>Setting and changing repository profiles</h2>
           <p>The first time you start the tool if you are a new user, you will be asked for a repository. The screen will look like this:<br/></p>
           <a href="images/startup_repository.png">
@@ -44,10 +43,28 @@
           <a href="images/overview.png">
             <img border="0" alt="Overview" src="images/tn_overview.jpg" width="200" height="159"/> </a>
           <h3>Archetype and template explorers</h3>
-          <p>On the left side of the tool are two explorers. The upper one is used to navigate all archetypes and templates, within the class hierarchy of the reference model on which the archetypes are based. Reference and working repository artefacts are merged in this view, and colourised so that the origin remains visible. The 'show entire ontology' option on the options panel can be used to force all classes in the hierarchy to be shown rather than just those which have archetypes in the current repository. Archetypes that appear below other archetypes are either specialisations, templates or template components. (Remember that the latter artefact types are technically just specialised archetypes.)</p>
+		  <p>On the left side of the tool are two <a href="images/explorers.png">explorers</a>. The upper one is used to navigate all archetypes and templates, within the class hierarchy of the reference model on which the archetypes are based. Reference and working repository artefacts are merged in this view, and colourised so that the origin remains visible. The 'show entire ontology' option on the options panel can be used to force all classes in the hierarchy to be shown rather than just those which have archetypes in the current repository. Archetypes that appear below other archetypes are either specialisations, templates or template components. (Remember that the latter artefact types are technically just specialised archetypes.)</p>
           <p>The lower explorer is used exclusively for templates and template components, and shows compositional relationships due to slot-filling, rather than specialisation in its hierarchy. The two explorers are linked, so that choosing an artefact node in the lower one automatically chooses the same artefact in the upper one, allowing its lineage to be visible.</p>
           <h3>Archetype view area and controls</h3>
-          <p>The middle area of the screen is dedicated to a view of a single archetype or template. The 'aspect view' controls across the top control whether the archetype is seen in 'differential' or 'flat' mode, and under these, which physical view is shown - the node map (structure view), paths, ontology etc. A second set of controls on the right hand side determines the visibility of the node map, and the level of detail shown for each node.</p>
+		  <p>The controls in the middle area of the screen is dedicated to viewing a single archetype or template. The 'View' toolbar checkboxes (to the right of the Archetype id text box) allows selection of differential and flat views. With one of these selected, the main notebook tab controls allow viewing of the following aspects of an archetype:</p>
+
+          <a href="images/archetype_view_controls.png">
+          <img border="0" alt="Archetype view controls" src="images/archetype_view_controls.png" width=500/>
+	  </a>
+		  <ul>
+			  <li>the <em>Description view</em>: the Administrative and Descriptive meta-data of the archetype, as well as the terminology binding summary;</li>
+			  <li>the <em>Definition view</em>: a 'node map' visualising the formal definition of the archetype, including various controls on the right side;</li>
+		  <li>the <em>Paths view</em>: all paths extracted from the archetype, with various controls for fine-tuning the view;</li>
+		  <li>the <em>Slots view</em>: a two-part view, consisting of:
+			      <ul>
+					  <li>the slots in the archetype, with the archetypes from the rest of the repository that match the slot constraints;</li>
+					  <li>other archetypes whose slots the current archetype can fill;</li>
+				  </ul>
+			   </li>
+			   <li>the <em>Terminology view</em>: a structured view of the ontology section of the archetype or template, including term bindings and ref set bindings;</li>
+		   <li>the <em>Annotations view</em>: a structured view of archetype annotations, for those archetypes that include them;</li>
+	   <li>the <em>ADL view</em>: a view showing the ADL text in either the source differential form or of the generated flat archetype.</li>
+		   </ul>
           <h2>Artefact overview</h2>
           <p>The ADL Workbench is designed to parse and validate archetypes. Technically speaking, 'archetypes' are any artefact conforming to the <i>open</i>EHR Archetype Definition Language (ADL) and Archetype Object Model (AOM) specifications (see lower part of the <a href="http://www.openehr.org/svn/specification/TRUNK/publishing/roadmap.html">specifications page</a>), or the older EN13606-2 specification, which is a snapshot of the <i>open</i>EHR AOM 1.4 specification. The latest ADL 1.5 specification defines 4 logical kinds of artefact. These include three kinds of archetype, and the 'operational template'. The latter is generated from a template, and is used as the basis for all further downstream transformations. The various artefact types and their file formats are shown below.</p>
           <div style="TEXT-ALIGN: left; PADDING-BOTTOM: 0px; TEXT-INDENT: 0px; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px">
@@ -102,22 +119,15 @@
       </div>    <div id="navigation">
       <h2>Contents</h2>
       <ul>
-        <li value="0">
-          <a href="index.html">Home</a> </li>
-        <li value="0">
-          <a href="getting_started.html">Getting started</a> </li>
-        <li value="0">
-          <a href="browsing_archetypes.html">Browsing and compiling</a> </li>
-        <li value="0">
-          <a href="learning_adl_15.html">Learning about ADL 1.5</a> </li>
-        <li value="0">
-          <a href="templates.html">Working with templates</a> </li>
-        <li value="0">
-          <a href="test_tool.html">The test tool</a> </li>
-        <li value="0">
-          <a href="en13606.html">EN13606</a> </li>
-        <li value="0">
-          <a href="support.html">Support and contributing</a> </li>
+        <li value="0"> <a href="index.html">Home</a> </li>
+        <li value="0"> <a href="getting_started.html">Getting started</a> </li>
+        <li value="0"> <a href="browsing_archetypes.html">Browsing and compiling</a> </li>
+        <li value="0"><a href="tool_configuration.html">Tool Configuration</a></li>
+        <li value="0"> <a href="learning_adl_15.html">Learning about ADL 1.5</a> </li>
+        <li value="0"> <a href="templates.html">Working with templates</a> </li>
+        <li value="0"> <a href="test_tool.html">The test tool</a> </li>
+        <li value="0"> <a href="en13606.html">EN13606</a> </li>
+        <li value="0"> <a href="support.html">Support and contributing</a> </li>
         <li value="0"> <a href="release_notes.html">Release notes</a> </li>
       </ul>
     </div><!--       <div id="extra">
@@ -125,25 +135,18 @@
 	<p>xxxxx.</p>
 </div> --><div id="footer">
       <ul>
-        <li value="0">
-          <a href="index.html">Home</a> </li>
-        <li value="0">
-          <a href="getting_started.html">Getting started</a> </li>
-        <li value="0">
-          <a href="browsing_archetypes.html">Browsing and compiling</a> </li>
-        <li value="0">
-          <a href="learning_adl_15.html">Learning about ADL 1.5</a> </li>
-        <li value="0">
-          <a href="templates.html">Working with templates</a> </li>
-        <li value="0">
-          <a href="test_tool.html">The test tool</a> </li>
-        <li value="0">
-          <a href="en13606.html">EN13606</a> </li>
-        <li value="0">
-          <a href="support.html">Support and contributing</a> </li>
+        <li value="0"> <a href="index.html">Home</a> </li>
+        <li value="0"> <a href="getting_started.html">Getting started</a> </li>
+        <li value="0"> <a href="browsing_archetypes.html">Browsing and compiling</a> </li>
+        <li value="0"><a href="tool_configuration.html">Tool Configuration</a></li>
+        <li value="0"> <a href="learning_adl_15.html">Learning about ADL 1.5</a> </li>
+        <li value="0"> <a href="templates.html">Working with templates</a> </li>
+        <li value="0"> <a href="test_tool.html">The test tool</a> </li>
+        <li value="0"> <a href="en13606.html">EN13606</a> </li>
+        <li value="0"> <a href="support.html">Support and contributing</a> </li>
         <li value="0"> <a href="release_notes.html">Release notes</a> </li>
       </ul>
-      <p>Copyright 2010 openEHR Foundation - $LastChangedDate$ $LastChangedRevision$</p>
+      <p>Copyright 2010-2011 openEHR Foundation - $LastChangedDate$ $LastChangedRevision$</p>
     </div></div>
   </body>
 </html>

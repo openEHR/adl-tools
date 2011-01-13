@@ -31,7 +31,7 @@ create
 
 feature -- Serialisation
 
-	serialise (a_target: ARCHETYPE; lang_serialised, desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING)
+	serialise (a_target: attached ARCHETYPE; lang_serialised, desc_serialised, def_serialised: attached STRING; inv_serialised: STRING; ont_serialised: attached STRING; ann_serialised: STRING)
 		do
 			target := a_target
 
@@ -55,7 +55,7 @@ feature -- Serialisation
 				last_result.append (def_serialised)
 			end
 
-			if inv_serialised /= Void then
+			if attached inv_serialised then
 				last_result.append (format_item(FMT_NEWLINE) + apply_style(symbol(SYM_INVARIANT), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
 				last_result.append (inv_serialised)
 			end
@@ -63,6 +63,11 @@ feature -- Serialisation
 			if not ont_serialised.is_empty then
 				last_result.append (format_item(FMT_NEWLINE) + apply_style(symbol(SYM_ONTOLOGY), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
 				last_result.append (ont_serialised)
+			end
+
+			if attached ann_serialised then
+				last_result.append (format_item(FMT_NEWLINE) + apply_style(symbol(SYM_ANNOTATIONS), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
+				last_result.append (ann_serialised)
 			end
 
 			serialise_finalise

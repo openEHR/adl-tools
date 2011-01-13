@@ -3,8 +3,8 @@ note
 	description: "Main window"
 	keywords:    "test, ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -49,6 +49,12 @@ inherit
 			copy, default_create
 		end
 
+feature -- Definitions
+
+	Diff_source: INTEGER = 1
+	Diff_flat: INTEGER = 2
+	Diff_source_flat: INTEGER = 3
+
 feature {NONE} -- Initialization
 
 	user_initialization
@@ -70,6 +76,9 @@ feature {NONE} -- Initialization
 			add_menu_shortcut_for_action (edit_menu_copy, agent call_unless_text_focused (agent on_copy), key_c, True, False, False)
 			add_menu_shortcut (edit_menu_select_all, key_a, True, False, False)
 
+			add_menu_shortcut (view_menu_differential, key_d, True, False, True)
+			add_menu_shortcut (view_menu_flat, key_f, True, False, True)
+
 			add_menu_shortcut (repository_menu_build_all, key_f7, False, False, False)
 			add_menu_shortcut (repository_menu_rebuild_all, key_f7, False, False, True)
 			add_menu_shortcut (repository_menu_build_subtree, key_f7, True, False, False)
@@ -77,7 +86,7 @@ feature {NONE} -- Initialization
 			add_menu_shortcut (repository_menu_interrupt_build, key_escape, False, False, True)
 			add_menu_shortcut (repository_menu_refresh, key_r, True, False, False)
 
-			add_menu_shortcut (tools_menu_reload_schemas, key_l, True, False, False)
+			add_menu_shortcut (rm_schemas_menu_reload_schemas, key_l, True, False, False)
 
 			add_menu_shortcut (history_menu_back, key_left, False, True, False)
 			add_menu_shortcut (history_menu_forward, key_right, False, True, False)
@@ -88,32 +97,53 @@ feature {NONE} -- Initialization
 		local
 			cur_title: STRING
 		do
-			set_icon_pixmap (adl_workbench_ico)
+			set_icon_pixmap (adl_workbench_icon)
 			cur_title := title.twin.as_string_8
 			cur_title.replace_substring_all ("VER", latest_adl_version)
 			set_title (cur_title)
 
-			file_menu_open.set_pixmap (pixmaps ["archetype_1"])
+			file_menu_open.set_pixmap (pixmaps ["open_archetype"])
 			file_menu_parse.set_pixmap (pixmaps ["parse"])
 			file_menu_edit.set_pixmap (pixmaps ["edit"])
 			history_menu_back.set_pixmap (pixmaps ["history_back"])
 			history_menu_forward.set_pixmap (pixmaps ["history_forward"])
 
-			open_button.set_pixmap (pixmaps ["archetype_1"])
+			view_menu_differential.set_pixmap (pixmaps ["diff"])
+			view_menu_flat.set_pixmap (pixmaps ["flat"])
+
+			repository_menu_set_repository.set_pixmap (pixmaps ["tools"])
+			rm_schemas_menu_configure_rm_schemas.set_pixmap (pixmaps ["tools"])
+			tools_menu_options.set_pixmap (pixmaps ["tools"])
+
+			populate_compile_button
+			open_button.set_pixmap (pixmaps ["open_archetype"])
 			parse_button.set_pixmap (pixmaps ["parse"])
 			edit_button.set_pixmap (pixmaps ["edit"])
 			history_back_button.set_pixmap (pixmaps ["history_back"])
 			history_forward_button.set_pixmap (pixmaps ["history_forward"])
 			search_button.set_pixmap (pixmaps ["magnifier"])
+			differential_view_button.set_pixmap (pixmaps ["diff"])
+			flat_view_button.set_pixmap (pixmaps ["flat"])
 
 			archetype_explorer_pixmap.copy (pixmaps ["archetype_category"])
 			template_explorer_pixmap.copy (pixmaps ["template_category"])
 
---			if app_x_position > 0 and app_y_position > 0 then
+			archetype_notebook.item_tab (description_notebook).set_pixmap (pixmaps ["description"])
+			archetype_notebook.item_tab (node_map).set_pixmap (pixmaps ["node_map"])
+			archetype_notebook.item_tab (path_analysis).set_pixmap (pixmaps ["paths"])
+			archetype_notebook.item_tab (slots_box).set_pixmap (pixmaps ["archetype_slot"])
+			archetype_notebook.item_tab (terminology_area).set_pixmap (pixmaps ["terminology"])
+			archetype_notebook.item_tab (annotations_grid).set_pixmap (pixmaps ["annotations"])
+			archetype_notebook.item_tab (source_rich_text).set_pixmap (pixmaps ["diff"])
+			set_archetype_notebook_source_tab_text
+
+			source_rich_text.set_tab_width ((source_rich_text.tab_width/2).floor)  -- this is in pixels, and assumes 7-pixel wide chars
+
+			if app_x_position > Sane_screen_coord and app_y_position > Sane_screen_coord then
 				set_position (app_x_position, app_y_position)
---			else
---				set_position (app_initial_x_position, app_initial_y_position)
---			end
+			else
+				set_position (app_initial_x_position, app_initial_y_position)
+			end
 
 			if app_width > 0 and app_height > 0 then
 				set_size (app_width, app_height)
@@ -125,6 +155,12 @@ feature {NONE} -- Initialization
 				main_notebook.select_item (main_notebook [main_notebook_tab_pos])
 			end
 
+			if differential_view then
+				differential_view_button.enable_select
+			else
+				flat_view_button.enable_select
+			end
+
 			terminology_bindings_info_list.set_column_titles (<<"terminology", "archetypes">>)
 		end
 
@@ -133,7 +169,11 @@ feature -- Status setting
 	show
 			-- Do a few adjustments and load the repository before displaying the window.
 		do
-			archetype_compiler.set_visual_update_action (agent build_gui_update)
+			append_billboard_to_status_area
+
+			archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
+			archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
+
 			initialise_overall_appearance
 			path_map_control.initialise_controls
 
@@ -149,15 +189,32 @@ feature -- Status setting
 				maximize
 			end
 
-			if editor_command.is_empty then
-				set_editor_command (default_editor_command)
+			if text_editor_command.is_empty then
+				set_text_editor_command (default_text_editor_command)
 			end
 
-			if reference_repository_path.is_empty then
-				set_repository
-			else
-				populate_archetype_profile_combo
-				populate_directory
+			if editor_app_command.is_empty then
+				set_editor_app_command (default_editor_app_command)
+			end
+
+			if difftool_command.is_empty then
+				set_difftool_command (default_difftool_command)
+			end
+
+			-- if no RM schemas yet available, ask user to configure
+			if not directory_exists (rm_schema_directory) or not rm_schemas_access.found_valid_schemas then
+				set_rm_schemas
+			end
+
+			-- if some RM schemas now found, set up a repository if necessary
+			if rm_schemas_access.found_valid_schemas then
+				if repository_profiles.current_reference_repository_path.is_empty then
+					set_repository
+				else
+					populate_archetype_profile_combo
+					populate_test_profile_combo
+					populate_directory_controls(True)
+				end
 			end
 
 			append_billboard_to_status_area
@@ -183,8 +240,8 @@ feature -- File events
 					set_current_work_directory (file_system.dirname (fname))
 					if not file_system.file_exists (fname) then
 						(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" not found.")).show_modal_to_window (Current)
-					else
-						arch_dir.add_adhoc_item (fname)
+					elseif has_current_profile then
+						current_arch_dir.add_adhoc_item (fname)
 						archetype_view_tree_control.populate
 						append_status_area (billboard.content)
 					end
@@ -197,9 +254,9 @@ feature -- File events
 	parse_archetype
 			-- Load and parse the archetype currently selected in `archetype_directory'.
 		do
-			if attached {ARCH_REP_ARCHETYPE} arch_dir.selected_archetype as ara then
-				clear_all_controls
-				do_with_wait_cursor (agent archetype_compiler.build_lineage (ara))
+			if has_current_profile and then attached {ARCH_REP_ARCHETYPE} current_arch_dir.selected_archetype as ara then
+				clear_all_archetype_view_controls
+				do_with_wait_cursor (agent archetype_compiler.build_lineage (ara, 0))
 			end
 		end
 
@@ -208,62 +265,27 @@ feature -- File events
 		local
 			question_dialog: EV_QUESTION_DIALOG
 			info_dialog: EV_INFORMATION_DIALOG
-			editors_dialog: ICON_DIALOG
-			path, flat, command: STRING
-			ara: ARCH_REP_ARCHETYPE
-			editors: LIST [STRING]
-			list: EV_LIST
+			path: STRING
 		do
-			ara := arch_dir.selected_archetype
-
-			if ara /= Void then
+			if has_current_profile and then attached {ARCH_REP_ARCHETYPE} current_arch_dir.selected_archetype as ara then
 				path := ara.differential_path
-				flat := file_system.basename (ara.legacy_flat_path)
-
 				if ara.has_differential_file and ara.has_legacy_flat_file then
-					create question_dialog.make_with_text (create_message_line("edit_which_file_question", <<file_system.basename (path), flat>>))
-					question_dialog.set_title ("Edit " + ara.id.as_string)
-					question_dialog.set_buttons (<<"Differential", "Flat (legacy)">>)
+					create question_dialog.make_with_text (create_message_line("edit_which_file_question", <<file_system.basename (path), file_system.basename (ara.legacy_flat_path)>>))
+					question_dialog.set_title ("Edit " + ara.ontological_name)
+					question_dialog.set_buttons (<<"Differential", "Legacy (flat)">>)
 					question_dialog.show_modal_to_window (Current)
 
-					if question_dialog.selected_button.starts_with ("F") then
+					if question_dialog.selected_button.starts_with ("L") then
 						path := ara.legacy_flat_path
 					end
 				elseif ara.has_legacy_flat_file then
-					create info_dialog.make_with_text (create_message_line("edit_legacy_file_info", <<flat>>))
+					create info_dialog.make_with_text (create_message_line("edit_legacy_file_info", <<file_system.basename (ara.legacy_flat_path)>>))
 					info_dialog.set_title ("Edit " + ara.id.as_string)
 					info_dialog.show_modal_to_window (Current)
 					path := ara.legacy_flat_path
 				end
 
-				command := editor_command
-				editors := command.split (',')
-
-				if editors.count > 1 then
-					create editors_dialog
-					editors_dialog.set_title ("Edit with which application?")
-					list := editors_dialog.icon_help_list
-					list.wipe_out
-
-					from editors.start until editors.off loop
-						command := editors.item
-						command.left_adjust
-						command.right_adjust
-
-						if not command.is_empty then
-							list.extend (create {EV_LIST_ITEM}.make_with_text (command))
-							list.last.set_pixmap (pixmaps ["edit"])
-						end
-
-						editors.forth
-					end
-
-					list.first.enable_select
-					editors_dialog.show_modal_to_window (Current)
-					command := list.selected_item.text.as_string_8
-				end
-
-				execution_environment.launch (command + " %"" + path + "%"")
+				execution_environment.launch (editor_app_command + " %"" + path + "%"")
 			end
 		end
 
@@ -277,8 +299,8 @@ feature -- File events
 			save_dialog: EV_FILE_SAVE_DIALOG
 			name, format: STRING
 		do
-			if arch_dir.has_validated_selected_archetype then
-				name := extension_replaced (arch_dir.selected_archetype.full_path, "")
+			if attached current_arch_dir as dir and then dir.has_validated_selected_archetype then
+				name := extension_replaced (dir.selected_archetype.full_path, "")
 
 				create save_dialog
 				save_dialog.set_title ("Save Archetype")
@@ -306,7 +328,7 @@ feature -- File events
 					create file.make (name)
 
 					if file.exists then
-						create question_dialog.make_with_text (create_message_line ("file_exists_replace_question", <<file_system.basename (name)>>))
+						create question_dialog.make_with_text (create_message_content ("file_exists_replace_question", <<file_system.basename (name)>>))
 						question_dialog.set_title ("Save as " + format.as_upper)
 						question_dialog.set_buttons (<<"Yes", "No">>)
 						question_dialog.show_modal_to_window (Current)
@@ -314,12 +336,12 @@ feature -- File events
 					end
 
 					if ok_to_write then
-						arch_dir.selected_archetype.save_differential_as (name, format)
-						append_status_area (arch_dir.selected_archetype.status)
+						dir.selected_archetype.save_differential_as (name, format)
+						append_status_area (dir.selected_archetype.status)
 					end
 				end
 			else
-				create error_dialog.make_with_text ("Must parse before serialising.")
+				create error_dialog.make_with_text (create_message_content ("compile_before_serialising", <<file_system.basename (name)>>))
 				error_dialog.show_modal_to_window (Current)
 			end
 		end
@@ -330,6 +352,7 @@ feature -- File events
 			strs: ARRAYED_LIST [STRING]
 			ev_items: DYNAMIC_LIST [EV_LIST_ITEM]
 		do
+			-- gui settings
 			set_total_split_position (total_split_area.split_position)
 			set_test_split_position (test_split_area.split_position)
 			set_explorer_split_position (explorer_split_area.split_position)
@@ -355,7 +378,7 @@ feature -- File events
 
 			set_path_view_check_list_settings (strs)
 
-			save_resources
+			app_cfg.save
 			ev_application.destroy
 		end
 
@@ -385,30 +408,26 @@ feature {NONE} -- Edit events
 		local
 			old_length: INTEGER
 		do
-			if focused_text /= Void then
-				if focused_text.is_editable then
-					on_delete
-					old_length := focused_text.text_length
-					focused_text.paste (focused_text.caret_position)
-					focused_text.set_caret_position (focused_text.caret_position + focused_text.text_length - old_length)
-				end
+			if attached focused_text and then focused_text.is_editable then
+				on_delete
+				old_length := focused_text.text_length
+				focused_text.paste (focused_text.caret_position)
+				focused_text.set_caret_position (focused_text.caret_position + focused_text.text_length - old_length)
 			end
 		end
 
 	on_delete
 			-- Delete the selected item, depending on which widget has focus.
 		do
-			if focused_text /= Void then
-				if focused_text.is_editable and focused_text.has_selection then
-					focused_text.delete_selection
-				end
+			if attached focused_text and then focused_text.is_editable and focused_text.has_selection then
+				focused_text.delete_selection
 			end
 		end
 
 	on_select_all
 			-- Select all text in the currently focused text box, if any.
 		do
-			if focused_text /= Void and then focused_text.text_length > 0 then
+			if attached focused_text and then focused_text.text_length > 0 then
 				focused_text.select_all
 			end
 		end
@@ -429,32 +448,52 @@ feature {NONE} -- Repository events
 			-- Display the Repository Settings dialog.
 		local
 			dialog: REPOSITORY_DIALOG
-			use_changes_after_destroying_dialog: BOOLEAN
+			any_profile_changes_made: BOOLEAN
+			current_profile_removed: BOOLEAN
+			current_profile_changed: BOOLEAN
 		do
 			create dialog
 			dialog.show_modal_to_window (Current)
 
-			if dialog.no_profiles_available then
+			any_profile_changes_made := dialog.any_profile_changes_made
+			if any_profile_changes_made then
+				current_profile_removed := dialog.current_profile_removed
+				current_profile_changed := dialog.current_profile_changed
 				save_resources_and_show_status
-			else
-				use_changes_after_destroying_dialog := dialog.has_changed_profile or dialog.has_changed_profile_paths
 			end
 
 			dialog.destroy
 
-			populate_archetype_profile_combo
+			-- if anything changed, repopulate the profile combo box selectors
+			if dialog.any_profile_changes_made then
+				populate_archetype_profile_combo
+				populate_test_profile_combo
+			end
 
-			if use_changes_after_destroying_dialog then
-				populate_directory
+			-- if the current profile changed or was removed, repopulate the explorers
+			if current_profile_removed or current_profile_changed then
+				clear_status_area
+				populate_directory_controls (True)
 			end
 		end
 
 	select_profile
-			-- Called by `select_actions' of `archetype_profile_combo'.
+			-- Called by `select_actions' of `archetype_profile_combo' and `test_profile_combo'
 		do
-			if not archetype_profile_combo.text.same_string (current_repository_profile) then
-				set_current_repository_profile (archetype_profile_combo.text)
-				populate_directory
+			if archetype_profile_combo.is_displayed then
+				if not archetype_profile_combo.text.same_string (repository_profiles.current_profile_name) then
+					clear_status_area
+					set_current_profile (archetype_profile_combo.text)
+					populate_test_profile_combo
+					populate_directory_controls (False)
+				end
+			else -- must be on test page
+				if not test_profile_combo.text.same_string (repository_profiles.current_profile_name) then
+					clear_status_area
+					set_current_profile (test_profile_combo.text)
+					populate_archetype_profile_combo
+					populate_directory_controls (False)
+				end
 			end
 		end
 
@@ -483,20 +522,39 @@ feature {NONE} -- Repository events
 			do_build_action (agent archetype_compiler.rebuild_subtree)
 		end
 
+	compile
+		do
+			if archetype_compiler.is_building then
+				interrupt_build
+			else
+				build_all
+			end
+		end
+
+	interrupt_build
+			-- Cancel the build currently in progress.
+		do
+			archetype_compiler.signal_interrupt
+		end
+
 	export_html
 			-- Generate HTML from flat archetypes into `html_export_directory'.
 		local
 			dialog: EV_QUESTION_DIALOG
+			yes_text, no_text: STRING
 		do
 			create dialog.make_with_text (create_message_line ("export_html_question", Void))
 			dialog.set_title ("Export HTML")
-			dialog.set_buttons (<<"Yes, Build and Export All", "No, Export only the built ones", "Cancel">>)
+			yes_text := create_message_content ("build_and_export_all", Void)
+			no_text := create_message_content ("export_only_built", Void)
+			dialog.set_buttons (<<yes_text, no_text, "Cancel">>)
+
 			dialog.set_default_cancel_button (dialog.button ("Cancel"))
 			dialog.show_modal_to_window (Current)
 
-			if dialog.selected_button.starts_with ("Yes") then
+			if dialog.selected_button.same_string (yes_text) then
 				do_build_action (agent archetype_compiler.build_and_export_all_html (html_export_directory))
-			elseif dialog.selected_button.starts_with ("No") then
+			elseif dialog.selected_button.same_string (no_text) then
 				do_build_action (agent archetype_compiler.export_all_html (html_export_directory))
 			end
 		end
@@ -549,10 +607,10 @@ feature {NONE} -- Repository events
 			end
 		end
 
-	interrupt_build
-			-- Cancel the build currently in progress.
+	refresh_directory
+			-- reload current directory
 		do
-			archetype_compiler.interrupt
+			populate_directory_controls(True)
 		end
 
 feature {NONE} -- History events
@@ -565,58 +623,42 @@ feature {NONE} -- History events
 			history_menu.extend (history_menu_forward)
 			history_menu.extend (history_menu_separator)
 
-			arch_dir.recently_selected_archetypes (20).do_all (agent (ara: attached ARCH_REP_ARCHETYPE)
-				local
-					mi: EV_MENU_ITEM
-				do
-					create mi.make_with_text (ara.id.as_string)
-					mi.select_actions.extend (agent select_archetype_from_gui_data (mi))
-					mi.set_data (ara)
-					history_menu.extend (mi)
-				end)
+			if attached current_arch_dir as dir then
+				dir.recently_selected_archetypes (20).do_all (agent (ara: attached ARCH_REP_ARCHETYPE)
+					local
+						mi: EV_MENU_ITEM
+					do
+						create mi.make_with_text (ara.id.as_string)
+						mi.select_actions.extend (agent select_archetype_from_gui_data (mi))
+						mi.set_data (ara)
+						history_menu.extend (mi)
+					end)
+			end
 		end
 
 	on_back
 			-- Go back to the last archetype previously selected.
 		do
-			if arch_dir.selection_history_has_previous then
-				arch_dir.selection_history_back
-				go_to_node_in_archetype_tree_view
+			if attached current_arch_dir as dir then
+				if dir.selection_history_has_previous then
+					dir.selection_history_back
+					go_to_node_in_archetype_tree_view
+				end
 			end
 		end
 
 	on_forward
 			-- Go forth to the next archetype previously selected.
 		do
-			if arch_dir.selection_history_has_next then
-				arch_dir.selection_history_forth
-				go_to_node_in_archetype_tree_view
+			if attached current_arch_dir as dir then
+				if dir.selection_history_has_next then
+					dir.selection_history_forth
+					go_to_node_in_archetype_tree_view
+				end
 			end
 		end
 
 feature {NONE} -- Tools events
-
-	clean_generated_files
-			-- Remove all generated files below the repository directory and repopulate from scratch
-		local
-			info_dialog: EV_INFORMATION_DIALOG
-		do
-			if not archetype_compiler.build_completed then
-				create info_dialog.make_with_text (create_message_line ("clean_generated_files_info", Void))
-				info_dialog.set_title ("Information")
-				info_dialog.show_modal_to_window (Current)
-			else
-				do_with_wait_cursor (agent arch_dir.do_all_archetypes (agent delete_generated_files))
-			end
-			populate_directory
-		end
-
-	delete_generated_files (ara: ARCH_REP_ARCHETYPE)
-			-- delete a generated file associated with `ara'
-		do
-			ara.clean_generated
-			append_status_area (ara.status)
-		end
 
 	set_options
 			-- Display the Options dialog.
@@ -626,15 +668,53 @@ feature {NONE} -- Tools events
 			create dialog
 			dialog.show_modal_to_window (Current)
 
-			if dialog.has_changed_archetype_options then
+			if dialog.has_changed_ui_options then
 				save_resources_and_show_status
-				populate_archetype_view_controls
+				if repository_profiles.has_current_profile then
+					populate_archetype_view_controls
+				end
 			end
-			if dialog.has_changed_navigator_options then
+			if dialog.has_changed_navigator_options and repository_profiles.has_current_profile then
 				archetype_view_tree_control.populate
 				template_view_tree_control.populate
 				archetype_test_tree_control.populate
 			end
+		end
+
+	clean_generated_files
+			-- Remove all generated files below the repository directory and repopulate from scratch
+		local
+			info_dialog: EV_INFORMATION_DIALOG
+		do
+			if not archetype_compiler.is_full_build_completed then
+				create info_dialog.make_with_text (create_message_line ("clean_generated_files_info", Void))
+				info_dialog.set_title ("Information")
+				info_dialog.show_modal_to_window (Current)
+			elseif has_current_profile then
+				do_with_wait_cursor (agent current_arch_dir.do_all_archetypes (agent delete_generated_files))
+				populate_directory_controls(True)
+			end
+		end
+
+	delete_generated_files (ara: attached ARCH_REP_ARCHETYPE)
+			-- delete a generated file associated with `ara'
+		do
+			ara.clean_generated
+			append_status_area (ara.status)
+		end
+
+feature -- RM Schemas Events
+
+	set_rm_schemas
+			-- Called by `select_actions' of `tools_menu_rm_schemas'.
+		local
+			dialog: RM_SCHEMA_DIALOG
+		do
+			create dialog
+			dialog.show_modal_to_window (Current)
+
+			populate_archetype_profile_combo
+			populate_test_profile_combo
 			if dialog.has_changed_schema_load_list then
 				clear_status_area
 				rm_schemas_access.load_schemas
@@ -643,8 +723,10 @@ feature {NONE} -- Tools events
 
 					-- FIXME: reset rm schema load list back?
 				else
-					populate_directory
+					populate_directory_controls(True)
 				end
+			elseif dialog.has_changed_schema_dir then
+				populate_directory_controls(True)
 			end
 		end
 
@@ -652,7 +734,7 @@ feature {NONE} -- Tools events
 			-- user-initiated reload
 		do
 			rm_schemas_access.load_schemas
-			populate_directory
+			populate_directory_controls(True)
 		end
 
 feature {NONE} -- Help events
@@ -694,175 +776,13 @@ feature {NONE} -- Help events
 		do
 			create dialog.make_with_text (splash_text)
 			dialog.set_title ("About ADL Workbench")
-			dialog.set_pixmap (pixmaps ["openEHR_logo"])
+			dialog.set_pixmap (pixmaps ["adl_workbench_logo"])
 			dialog.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
 			dialog.set_position (app_x_position + (app_width - dialog.width) // 2, app_y_position + (app_height - dialog.height) // 2)
 			dialog.show_modal_to_window (Current)
 		end
 
-feature -- Archetype commands
-
-	find_archetype_by_key
-			-- Called by `return_actions' of `archetype_id'.
-		local
-			key: STRING
-			arch_id: ARCHETYPE_ID
-			matching_ids: attached ARRAYED_SET[STRING]
-		do
-			key := archetype_id.text
-
-			if is_windows and archetype_id.is_list_shown then
-				if attached {EV_COMBO_BOX_IMP} archetype_id.implementation as imp then
-					(create {GUI_PLATFORM_SPECIFIC_TOOLS}).hide_combo_box_list (imp)
-				end
-				select_archetype (key)
-
-			elseif key.count > 0 then
-				archetype_id.select_actions.block
-
-				-- check if it is a full archetype id, e.g. created by slightly modifying current archetype id
-				create arch_id.default_create
-
-				if arch_id.valid_id (key) then
-					select_archetype (key)
-				elseif key.count >= 3 then
-					 -- it is a partial id, get a list of candidates
-					matching_ids := arch_dir.matching_ids (regex_from_string(key), Void, Void)
-					if matching_ids.count > 0 then
-						archetype_id.set_strings (matching_ids)
-
-						if attached {EV_COMBO_BOX_IMP} archetype_id.implementation as imp then
-							(create {GUI_PLATFORM_SPECIFIC_TOOLS}).show_combo_box_list (imp)
-						end
-					else
-						-- discrete visual feedback for no match?
-					end
-					if archetype_id.count = 1 then
-						select_archetype (key)
-					end
-				else -- key too short
-					-- visual feedback?
-				end
-
-				archetype_id.select_actions.resume
-			end
-		end
-
-	select_archetype_by_id
-			-- Called by `select_actions' of `archetype_id'.
-			-- archetype_id.text is guaranteed to be a valid archetype id, and one that is in the current repository
-		do
-			if not (is_windows and archetype_id.is_list_shown) then
-				select_archetype (archetype_id.text)
-			end
-		end
-
-	select_archetype (id: attached STRING)
-			-- Select `id' in the archetype directory.
-		do
-			if not arch_dir.has_selected_archetype or else not id.is_equal (arch_dir.selected_archetype.ontological_name) then
-				if arch_dir.archetype_index.has (id) then
-					arch_dir.set_selected_item_from_id (id)
-					go_to_node_in_archetype_tree_view
-				end
-			else
-				-- discrete visual feedback for selecting same archetype as already selected?
-			end
-		end
-
-	start_search_by_id
-			-- Called by `select_actions' of `search_button'.
-		do
-			archetype_id.wipe_out
-			archetype_id.set_text ("enter search string")
-			archetype_id.set_focus
-			archetype_id.select_all
-		end
-
-	archetype_view_tree_item_select
-			-- Display details of `archetype_file_tree' when the user selects it.
-		do
-			archetype_view_tree_control.display_details_of_selected_item_after_delay
-		end
-
-	template_view_tree_item_select
-			-- Display details of `template_file_tree' when the user selects it.
-		do
-			if attached {ARCH_REP_ARCHETYPE} template_file_tree.selected_item.data as ara then
-				archetype_view_tree_control.ensure_item_visible(ara.ontological_name)
-			end
-			template_view_tree_control.display_details_of_selected_item_after_delay
-		end
-
-	select_archetype_from_gui_data (gui_item: EV_ANY)
-			-- Select and display the node of `archetype_file_tree' corresponding to the folder or archetype attached to `gui_item'.
-		do
-			if gui_item /= Void then
-				if attached {ARCH_REP_ITEM} gui_item.data as ari then
-					arch_dir.set_selected_item (ari)
-					go_to_node_in_archetype_tree_view
-				end
-			end
-		end
-
-	go_to_node_in_archetype_tree_view
-			-- Select and display the node of `archetype_file_tree' corresponding to the selection in `archetype_directory'.
-		do
-			if arch_dir.has_selected_item then
-				archetype_view_tree_control.ensure_item_visible(arch_dir.selected_item.ontological_name)
-			end
-		end
-
-	on_node_map_shrink_tree_one_level
-		do
-			if arch_dir.has_validated_selected_archetype then
-				node_map_control.shrink_one_level
-			end
-		end
-
-	on_node_map_expand_tree_one_level
-		do
-			if arch_dir.has_validated_selected_archetype then
-				node_map_control.expand_one_level
-			end
-		end
-
-	on_node_map_toggle_expand_tree
-		do
-			if arch_dir.has_validated_selected_archetype then
-				node_map_control.toggle_expand_tree
-			end
-		end
-
-	on_node_map_item_select
-			-- When the user selects a node in `node_map_tree'.
-		do
-			node_map_control.item_select
-		end
-
-	on_node_map_domain_selected
-			-- Hide technical details in `node_map_tree'.
-		do
-			if arch_dir.has_validated_selected_archetype then
-				node_map_control.set_domain_mode
-			end
-		end
-
-	on_node_map_technical_selected
-			-- Display technical details in `node_map_tree'.
-		do
-			if arch_dir.has_validated_selected_archetype then
-				node_map_control.set_technical_mode
-			end
-		end
-
-	on_node_map_reference_model_selected
-			-- turn on or off the display of reference model details in `node_map_tree'.
-		do
-			if arch_dir.has_validated_selected_archetype then
-				node_map_control.set_reference_model_mode
-			end
-		end
+feature -- Test Screen Events
 
 	archetype_test_go_stop
 			-- start running tests in test page
@@ -889,6 +809,232 @@ feature -- Archetype commands
 			archetype_test_tree_control.toggle_test_regression
 		end
 
+	on_diff_source
+			-- show diffs between input differential archetype and serialised output, from test diff dir
+		do
+			do_diff (Diff_source)
+		end
+
+	on_diff_flat
+			-- show diffs between input flat (legacy) archetype and serialised output, from test diff dir
+		do
+			do_diff (Diff_flat)
+		end
+
+	on_diff_source_flat
+			-- show diffs between input differential archetype and generated flat output, from test diff dir	
+		do
+			do_diff (Diff_source_flat)
+		end
+
+	do_diff (diff_type: INTEGER)
+		local
+			info_dialog: EV_INFORMATION_DIALOG
+		do
+			if not difftool_command.is_empty then
+				if archetype_test_tree_control.diff_dirs_available then
+					inspect diff_type
+					when Diff_source then
+						do_diff_command(archetype_test_tree_control.diff_dir_source_orig, archetype_test_tree_control.diff_dir_source_new)
+					when Diff_flat then
+						do_diff_command(archetype_test_tree_control.diff_dir_flat_orig, archetype_test_tree_control.diff_dir_flat_new)
+					else
+						do_diff_command(archetype_test_tree_control.diff_dir_source_flat_orig, archetype_test_tree_control.diff_dir_source_flat_new)
+					end
+				else
+					create info_dialog.make_with_text (create_message_line ("no_diff_dirs", Void))
+					info_dialog.set_title ("Information")
+					info_dialog.show_modal_to_window (Current)
+				end
+			else
+				create info_dialog.make_with_text (create_message_line ("no_diff_tool", Void))
+				info_dialog.set_title ("Information")
+				info_dialog.show_modal_to_window (Current)
+			end
+		end
+
+	do_diff_command (left_dir, right_dir: attached STRING)
+		local
+			command: STRING
+		do
+			command := difftool_command + " %"" + left_dir + "%" %"" + right_dir + "%""
+			execution_environment.launch (command)
+		end
+
+feature -- Archetype Events
+
+	find_archetype_by_key
+			-- Called by `return_actions' of `archetype_id'.
+		local
+			key: STRING
+			arch_id: ARCHETYPE_ID
+			matching_ids: attached ARRAYED_SET[STRING]
+		do
+			key := archetype_id.text
+
+			if is_windows and archetype_id.is_list_shown then
+				if attached {EV_COMBO_BOX_IMP} archetype_id.implementation as imp then
+					(create {GUI_PLATFORM_SPECIFIC_TOOLS}).hide_combo_box_list (imp)
+				end
+				select_archetype (key)
+
+			elseif key.count > 0 then
+				archetype_id.select_actions.block
+
+				-- check if it is a full archetype id, e.g. created by slightly modifying current archetype id
+				create arch_id.default_create
+
+				if arch_id.valid_id (key) then
+					select_archetype (key)
+				elseif key.count >= 3 then
+					 -- it is a partial id, get a list of candidates
+					if attached current_arch_dir as dir then
+						matching_ids := dir.matching_ids (regex_from_string(key), Void, Void)
+
+						if matching_ids.count > 0 then
+							archetype_id.set_strings (matching_ids)
+
+							if attached {EV_COMBO_BOX_IMP} archetype_id.implementation as imp then
+								(create {GUI_PLATFORM_SPECIFIC_TOOLS}).show_combo_box_list (imp)
+							end
+						else
+							-- discrete visual feedback for no match?
+						end
+					end
+
+					if archetype_id.count = 1 then
+						select_archetype (key)
+					end
+				else -- key too short
+					-- visual feedback?
+				end
+
+				archetype_id.select_actions.resume
+			end
+		end
+
+	select_archetype_by_id
+			-- Called by `select_actions' of `archetype_id'.
+			-- archetype_id.text is guaranteed to be a valid archetype id, and one that is in the current repository
+		do
+			if not (is_windows and archetype_id.is_list_shown) then
+				select_archetype (archetype_id.text)
+			end
+		end
+
+	select_archetype (id: attached STRING)
+			-- Select `id' in the archetype directory.
+		require
+			has_current_arch_dir: attached current_arch_dir
+		do
+			if not current_arch_dir.has_selected_archetype or else not id.is_equal (current_arch_dir.selected_archetype.ontological_name) then
+				if current_arch_dir.archetype_index.has (id) then
+					current_arch_dir.set_selected_item_from_id (id)
+					go_to_node_in_archetype_tree_view
+				end
+			else
+				-- discrete visual feedback for selecting same archetype as already selected?
+			end
+		end
+
+	start_search_by_id
+			-- Called by `select_actions' of `search_button'.
+		do
+			archetype_id.wipe_out
+			archetype_id.set_text (create_message_content ("enter_search_string", Void))
+			archetype_id.set_focus
+			archetype_id.select_all
+		end
+
+	archetype_view_tree_item_select
+			-- Display details of `archetype_file_tree' when the user selects it.
+		do
+			if attached archetype_file_tree.selected_item then
+				archetype_view_tree_control.display_details_of_selected_item_after_delay
+			end
+		end
+
+	template_view_tree_item_select
+			-- Display details of `template_file_tree' when the user selects it.
+		do
+			if attached template_file_tree.selected_item then
+				if attached {ARCH_REP_ARCHETYPE} template_file_tree.selected_item.data as ara then
+					archetype_view_tree_control.ensure_item_visible(ara.ontological_name)
+				end
+				template_view_tree_control.display_details_of_selected_item_after_delay
+			end
+		end
+
+	select_archetype_from_gui_data (gui_item: EV_ANY)
+			-- Select and display the node of `archetype_file_tree' corresponding to the folder or archetype attached to `gui_item'.
+		do
+			if attached gui_item and has_current_profile then
+				if attached {ARCH_REP_ITEM} gui_item.data as ari then
+					current_arch_dir.set_selected_item (ari)
+					go_to_node_in_archetype_tree_view
+				end
+			end
+		end
+
+	go_to_node_in_archetype_tree_view
+			-- Select and display the node of `archetype_file_tree' corresponding to the selection in `archetype_directory'.
+		do
+			if has_current_profile and then current_arch_dir.has_selected_item then
+				archetype_view_tree_control.select_item(current_arch_dir.selected_item.ontological_name)
+			end
+		end
+
+	on_node_map_shrink_tree_one_level
+		do
+			if has_current_profile and then current_arch_dir.has_validated_selected_archetype then
+				node_map_control.shrink_one_level
+			end
+		end
+
+	on_node_map_expand_tree_one_level
+		do
+			if has_current_profile and then current_arch_dir.has_validated_selected_archetype then
+				node_map_control.expand_one_level
+			end
+		end
+
+	on_node_map_toggle_expand_tree
+		do
+			if has_current_profile and then current_arch_dir.has_validated_selected_archetype then
+				node_map_control.toggle_expand_tree
+			end
+		end
+
+	on_node_map_item_select
+			-- When the user selects a node in `node_map_tree'.
+		do
+			node_map_control.item_select
+		end
+
+	on_node_map_domain_selected
+			-- Hide technical details in `node_map_tree'.
+		do
+			if has_current_profile and then current_arch_dir.has_validated_selected_archetype then
+				node_map_control.set_domain_mode
+			end
+		end
+
+	on_node_map_technical_selected
+			-- Display technical details in `node_map_tree'.
+		do
+			if has_current_profile and then current_arch_dir.has_validated_selected_archetype then
+				node_map_control.set_technical_mode
+			end
+		end
+
+	on_node_map_reference_model_selected
+			-- turn on or off the display of reference model details in `node_map_tree'.
+		do
+			if has_current_profile and then current_arch_dir.has_validated_selected_archetype then
+				node_map_control.set_reference_model_mode
+			end
+		end
+
 	path_column_select (a_list_item: EV_LIST_ITEM)
 			-- Show a column in the Path Analysis list after setting a check box in `path_view_check_list'.
 		do
@@ -907,27 +1053,6 @@ feature -- Archetype commands
 			path_map_control.set_filter
 		end
 
-	on_archetype_notebook_select
-			-- Display either the differential or flat view of the archetype depending on the tab selected in `arch_notebook'.
-		do
-			if attached {EV_VERTICAL_BOX} archetype_notebook.selected_item as tab and attached {EV_VERTICAL_BOX} definition_notebook.parent as other then
-				if tab /= other then
-					if (<<differential_view_box, flat_view_box>>).has (tab) then
-						other.prune (definition_notebook)
-						tab.extend (definition_notebook)
-						ev_application.process_graphical_events
-						if arch_dir.has_selected_archetype then
-							populate_archetype_view_controls
-						elseif arch_dir.has_selected_class then
-							display_class
-						end
-					end
-				end
-			elseif archetype_notebook.selected_item = statistics_box then
-
-			end
-		end
-
 	translations_select_language
 			-- Called by `select_actions' of `arch_translations_languages_list'.
 		do
@@ -937,11 +1062,43 @@ feature -- Archetype commands
 	display_class
 			-- display the class currently selected in `archetype_directory'.
 		do
-			if arch_dir.has_selected_class then
-				if definition_notebook.parent = differential_view_box then
-					class_map_control.set_differential_view
-				else
-					class_map_control.set_flat_view
+			if attached current_arch_dir as dir and then dir.has_selected_class then
+				class_map_control.populate
+			end
+		end
+
+	on_flat_view
+			-- Called by `select_actions' of `flat_view_button'.
+		do
+
+			set_view (False)
+			if not flat_view_button.is_selected then
+				flat_view_button.enable_select
+			end
+		end
+
+	on_differential_view
+			-- Called by `select_actions' of `differential_view_button'.
+		do
+			set_view (True)
+			if not differential_view_button.is_selected then
+				differential_view_button.enable_select
+			end
+		end
+
+	set_view (differential_flag: BOOLEAN)
+			-- set view one way or the other
+		do
+			if (differential_flag and not differential_view) or -- changing from flat to diff
+				(not differential_flag and differential_view) then -- changing from diff to flat
+				set_differential_view (differential_flag)
+				set_archetype_notebook_source_tab_text
+				if has_current_profile then
+					if current_arch_dir.has_selected_archetype then
+						populate_archetype_view_controls
+					elseif current_arch_dir.has_selected_class then
+						display_class
+					end
 				end
 			end
 		end
@@ -983,6 +1140,11 @@ feature -- Controls
 			create Result.make (Current)
 		end
 
+	annotations_control: GUI_ANNOTATIONS_CONTROL
+		once
+			create Result.make (Current)
+		end
+
 	archetype_view_tree_control: GUI_VIEW_ARCHETYPE_TREE_CONTROL
 		once
 			create Result.make (Current, archetype_file_tree, archetype_explorer_label, <<{ARTEFACT_TYPE}.archetype, {ARTEFACT_TYPE}.template_component, {ARTEFACT_TYPE}.template>>)
@@ -1005,10 +1167,8 @@ feature -- Controls
 
 feature {NONE} -- Implementation
 
-	append_status_area (text: STRING)
+	append_status_area (text: attached STRING)
 			-- Append `text' to `parser_status_area'.
-		require
-			text_attached: text /= Void
 		do
 			parser_status_area.append_text (text)
 			parser_status_area.set_background_color (status_area_background_color)
@@ -1023,10 +1183,8 @@ feature {NONE} -- Implementation
 			ev_application.process_graphical_events
 		end
 
-	set_status_area (text: STRING)
+	set_status_area (text: attached STRING)
 			-- Set `parser_status_area' to `text'.
-		require
-			text_attached: text /= Void
 		do
 			parser_status_area.remove_text
 			append_status_area (text)
@@ -1041,7 +1199,7 @@ feature {NONE} -- Implementation
 	save_resources_and_show_status
 			-- Save the application configuration file and update the status area.
 		do
-			save_resources
+			app_cfg.save
 			post_info (Current, "save_resources_and_show_status", "cfg_file_i1", <<user_config_file_path>>)
 		end
 
@@ -1055,6 +1213,22 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	set_archetype_notebook_source_tab_text
+		local
+			tab_text, str: STRING
+		do
+			tab_text := "ADL ("
+			if differential_view then
+				str := archetype_source_file_extension.twin
+			else
+				str := archetype_flat_file_extension.twin
+			end
+			str.prune_all_leading ('.')
+			tab_text.append (str)
+			tab_text.append_character (')')
+			archetype_notebook.item_tab (source_rich_text).set_text (tab_text)
+		end
+
 	select_language
 			-- Repopulate the view of the archetype when the user selects a different language.
 		do
@@ -1062,44 +1236,49 @@ feature {NONE} -- Implementation
 				set_current_language (default_language)
 			else
 				set_current_language (language_combo.text.as_string_8)
-				if arch_dir.has_validated_selected_archetype then
-					populate_archetype_view_controls
+
+				if attached current_arch_dir as dir then
+					if dir.has_validated_selected_archetype then
+						populate_archetype_view_controls
+					end
 				end
 			end
 		end
 
-	populate_directory
+	populate_directory_controls (refresh: BOOLEAN)
 			-- Rebuild archetype directory & repopulate relevant GUI parts.
 		do
-			do_with_wait_cursor (agent
-				do
-					if title.has_substring (" - ") then
-						set_title (title.substring (title.substring_index (" - ", 1) + 3, title.count))
-					end
-
-					set_title (reference_repository_path + " - " + title)
-					clear_all_controls
-					clear_status_area
-					compiler_error_control.clear
-
-					go_to_node_in_archetype_tree_view
-
-					append_status_area (create_message_line ("populating_directory_start", <<current_repository_profile>>))
-					app_root.use_current_profile
-					append_status_area (create_message_line ("populating_directory_complete", Void))
-
-					append_billboard_to_status_area
-					archetype_view_tree_control.populate
-					template_view_tree_control.populate
-					archetype_test_tree_control.populate
-					populate_statistics
-				end)
+			do_with_wait_cursor (agent do_populate_directory_controls(refresh))
 		end
 
-	clear_all_controls
+	do_populate_directory_controls (refresh: BOOLEAN)
+		do
+			if title.has_substring (" - ") then
+				set_title (title.substring (title.substring_index (" - ", 1) + 3, title.count))
+			end
+
+			set_title (repository_profiles.current_reference_repository_path + " - " + title)
+
+			append_status_area (create_message_line ("populating_directory_start", <<repository_profiles.current_profile_name>>))
+			use_current_profile(refresh)
+			append_status_area (create_message_line ("populating_directory_complete", Void))
+
+			clear_all_archetype_view_controls
+			compiler_error_control.clear
+
+			go_to_node_in_archetype_tree_view
+
+			append_billboard_to_status_area
+			archetype_view_tree_control.populate
+			template_view_tree_control.populate
+			archetype_test_tree_control.populate
+			populate_statistics
+		end
+
+	clear_all_archetype_view_controls
 			-- Wipe out content from visual controls.
 		do
-			if arch_dir.selection_history_has_previous then
+			if has_current_profile and then current_arch_dir.selection_history_has_previous then
 				history_menu_back.enable_sensitive
 				history_back_button.enable_sensitive
 			else
@@ -1107,7 +1286,7 @@ feature {NONE} -- Implementation
 				history_back_button.disable_sensitive
 			end
 
-			if arch_dir.selection_history_has_next then
+			if has_current_profile and then current_arch_dir.selection_history_has_next then
 				history_menu_forward.enable_sensitive
 				history_forward_button.enable_sensitive
 			else
@@ -1115,9 +1294,9 @@ feature {NONE} -- Implementation
 				history_forward_button.disable_sensitive
 			end
 
-			populate_archetype_id
-			populate_adl_version
-			populate_languages
+			archetype_id.remove_text
+			adl_version_text.remove_text
+			language_combo.wipe_out
 
 			source_rich_text.remove_text
 			description_controls.clear
@@ -1126,86 +1305,70 @@ feature {NONE} -- Implementation
 			path_map_control.clear
 			ontology_controls.clear
 			slot_map_control.clear
+			annotations_control.clear
 		end
 
 	populate_archetype_view_controls
 			-- Populate content from visual controls.
+		require
+			has_current_profile
 		do
 			description_controls.populate
 			translation_controls.populate
 			slot_map_control.populate
-
-			if definition_notebook.parent = differential_view_box then
-				node_map_control.set_differential_view
-				path_map_control.set_differential_view
-				ontology_controls.set_differential_view
-				populate_source_text (False)
-			else
-				node_map_control.set_flat_view
-				path_map_control.set_flat_view
-				ontology_controls.set_flat_view
-				populate_source_text (True)
-			end
+			node_map_control.populate
+			path_map_control.populate
+			annotations_control.populate
+			ontology_controls.populate
+			populate_source_text
 		end
 
-	populate_source_text (flat: BOOLEAN)
+	populate_source_text
 			-- Display the selected archetype's differential or flat text in `source_rich_text', optionally with line numbers.
-		local
-			text: STRING
-			ara: ARCH_REP_ARCHETYPE
+		require
+			has_current_profile
 		do
-			ara := arch_dir.selected_archetype
-			if attached ara then
-				if flat then
+			if attached {ARCH_REP_ARCHETYPE} current_arch_dir.selected_archetype as ara then
+				if not differential_view then
 					if ara.is_valid then
-						text := ara.flat_text
-						populate_source_text_with_line_numbers (text)
+						populate_source_text_with_line_numbers (ara.flat_text)
 					elseif ara.has_legacy_flat_file then
-						ara.read_legacy_flat
-						text := ara.legacy_flat_text
-						populate_source_text_with_line_numbers (text)
+						populate_source_text_with_line_numbers (ara.legacy_flat_text)
 					else -- not valid, but derived from differential source
 						source_rich_text.set_text (create_message_line ("compiler_no_flat_text", <<>>))
 					end
+				elseif ara.has_differential_file then
+					populate_source_text_with_line_numbers (ara.differential_text)
 				else
-					text := ara.differential_text
-					if text = Void then
-						source_rich_text.set_text (create_message_line ("compiler_no_source_text", <<>>))
-					else
-						populate_source_text_with_line_numbers (text)
-					end
+					source_rich_text.set_text (create_message_line ("compiler_no_source_text", <<>>))
 				end
 			else
 				source_rich_text.remove_text
 			end
 		end
 
-	populate_source_text_with_line_numbers (text: STRING)
+	populate_source_text_with_line_numbers (text: attached STRING)
 			-- Display `text' in `source_rich_text', optionally with each line preceded by line numbers.
-		require
-			text_attached: text /= Void
 		local
-			leader, s, number_string: STRING
+			s: STRING
 			len, left_pos, right_pos, number: INTEGER
 		do
 			if show_line_numbers then
 				from
 					len := text.count
 					create s.make (len)
-					create leader.make_filled (' ', 4)
 					left_pos := 1
 					number := 1
 				until
 					left_pos > len
 				loop
-					number_string := number.out
+					s.append (number.out)
 
 					if number < 1000 then
-						leader.replace_substring (number_string, 1, number_string.count)
-						s.append (leader)
-					else
-						s.append (number_string + " ")
+						s.append ("%T")
 					end
+
+					s.append (" ")
 
 					right_pos := text.index_of ('%N', left_pos)
 
@@ -1225,53 +1388,48 @@ feature {NONE} -- Implementation
 		end
 
 	populate_archetype_id
-		local
-			selected: ARCHETYPE_ID
+			-- populate Id control for currently selected archetype, or clear if none
+		require
+			has_current_profile
 		do
-			if arch_dir.has_selected_archetype then
-				selected := arch_dir.selected_archetype.id
-			end
-
-			archetype_id.wipe_out
-			if selected /= Void then
-				archetype_id.set_text (utf8 (selected.as_string))
+			if attached {ARCH_REP_ARCHETYPE} current_arch_dir.selected_archetype as ara then
+					archetype_id.set_text (utf8 (ara.id.as_string))
 			else
 				archetype_id.remove_text
 			end
 		end
 
 	populate_adl_version
-			-- Populate ADL version.
+			-- Populate ADL version for currently selected archetype, or clear if none
+		require
+			has_current_profile
 		do
-			if arch_dir.has_validated_selected_archetype then
-				adl_version_text.set_text (utf8 (arch_dir.selected_archetype.differential_archetype.adl_version))
+			if current_arch_dir.has_validated_selected_archetype then
+				adl_version_text.set_text (utf8 (current_arch_dir.selected_archetype.differential_archetype.adl_version))
 			else
 				adl_version_text.remove_text
 			end
 		end
 
 	populate_languages
-			-- Populate `language_combo' in the toolbar.
+			-- Populate `language_combo' in the toolbar for currently selected archetype, or clear if none
+		require
+			has_current_profile
 		local
-			archetype: ARCHETYPE
+			arch: ARCHETYPE
 		do
 			language_combo.select_actions.block
 
-			if arch_dir.has_validated_selected_archetype then
-				archetype := arch_dir.selected_archetype.differential_archetype
+			if current_arch_dir.has_validated_selected_archetype then
+				arch := current_arch_dir.selected_archetype.differential_archetype
 
-				if not archetype.has_language (current_language) then
-					set_current_language (archetype.original_language.code_string)
+				if not arch.has_language (current_language) then
+					set_current_language (arch.original_language.code_string)
 				end
 
-				language_combo.set_strings (archetype.languages_available)
+				language_combo.set_strings (arch.languages_available)
 
-				language_combo.do_all (agent (li: EV_LIST_ITEM)
-					do
-						if li.text.same_string (current_language) then
-							li.enable_select
-						end
-					end)
+				language_combo.do_all (agent (li: EV_LIST_ITEM) do if li.text.same_string (current_language) then li.enable_select end end)
 			else
 				set_current_language (default_language)
 				language_combo.wipe_out
@@ -1281,33 +1439,39 @@ feature {NONE} -- Implementation
 		end
 
 	populate_archetype_profile_combo
-			-- Initialise the dialog's widgets from shared settings.
-		local
-			rep_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
 		do
-			rep_profiles := repository_profiles
-			archetype_profile_combo.select_actions.block
-			archetype_profile_combo.change_actions.block
-			if not rep_profiles.is_empty then
-				from rep_profiles.start until rep_profiles.off loop
-					populate_ev_combo_from_hash_keys (archetype_profile_combo, rep_profiles)
-					if not current_repository_profile.is_empty then
-						archetype_profile_combo.do_all (
-							agent (li: EV_LIST_ITEM)
-								do
-									if li.text.same_string (current_repository_profile) then
-										li.enable_select
-									end
-								end
-						)
-					end
-					rep_profiles.forth
+			populate_profile_combo (archetype_profile_combo)
+		end
+
+	populate_test_profile_combo
+		do
+			populate_profile_combo (test_profile_combo)
+		end
+
+	populate_profile_combo (a_combo: EV_COMBO_BOX)
+			-- Initialise the dialog's widgets from shared settings.
+		do
+			a_combo.select_actions.block
+			a_combo.change_actions.block
+			if not repository_profiles.is_empty then
+				a_combo.set_strings (repository_profiles.names)
+				if repository_profiles.has_current_profile then
+					a_combo.do_all (agent (li: EV_LIST_ITEM) do if li.text.same_string (repository_profiles.current_profile_name) then li.enable_select end end)
 				end
 			else
 				archetype_profile_combo.wipe_out
 			end
-			archetype_profile_combo.select_actions.resume
-			archetype_profile_combo.change_actions.resume
+			a_combo.select_actions.resume
+			a_combo.change_actions.resume
+		end
+
+	populate_compile_button
+		do
+			if not archetype_compiler.is_building then
+				compile_button.set_pixmap (pixmaps ["compile"])
+			else
+				compile_button.set_pixmap (pixmaps ["pause"])
+			end
 		end
 
 	do_with_wait_cursor (action: PROCEDURE [ANY, TUPLE])
@@ -1333,46 +1497,47 @@ feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Statistics
 			list_row: EV_MULTI_COLUMN_LIST_ROW
 			i: INTEGER
 		do
-			arch_total_count_tf.set_text (arch_dir.total_archetype_count.out)
-			arch_spec_count_tf.set_text (arch_dir.specialised_archetype_count.out)
-			arch_slotted_count_tf.set_text (arch_dir.client_archetype_count.out)
-			arch_used_by_count_tf.set_text (arch_dir.supplier_archetype_count.out)
-			arch_bad_count_tf.set_text (arch_dir.bad_archetype_count.out)
+			if has_current_profile then
+				arch_total_count_tf.set_text (current_arch_dir.total_archetype_count.out)
+				arch_spec_count_tf.set_text (current_arch_dir.specialised_archetype_count.out)
+				arch_slotted_count_tf.set_text (current_arch_dir.client_archetype_count.out)
+				arch_used_by_count_tf.set_text (current_arch_dir.supplier_archetype_count.out)
+				arch_bad_count_tf.set_text (current_arch_dir.bad_archetype_count.out)
 
-			-- do terminology bindings statistics
-			from arch_dir.terminology_bindings_info.start until arch_dir.terminology_bindings_info.off loop
-				from terminology_bindings_info_list.start until terminology_bindings_info_list.off or
-					terminology_bindings_info_list.item.first.is_equal (arch_dir.terminology_bindings_info.key_for_iteration)
-				loop
-					terminology_bindings_info_list.forth
-				end
-				if not terminology_bindings_info_list.off then
-					terminology_bindings_info_list.item.finish
-					terminology_bindings_info_list.item.remove
-					terminology_bindings_info_list.item.extend (utf8 (arch_dir.terminology_bindings_info.item_for_iteration.count.out))
-				else
-					create list_row
-					list_row.extend (utf8 (arch_dir.terminology_bindings_info.key_for_iteration))
-					list_row.extend (utf8 (arch_dir.terminology_bindings_info.item_for_iteration.count.out))
-					terminology_bindings_info_list.extend (list_row)
-					from i := 1 until i > terminology_bindings_info_list.column_count loop
-						terminology_bindings_info_list.resize_column_to_content (i)
-						if terminology_bindings_info_list.column_width (i) < 100 then
-							terminology_bindings_info_list.set_column_width (100, i)
-						end
-						i := i + 1
+				-- do terminology bindings statistics
+				from current_arch_dir.terminology_bindings_info.start until current_arch_dir.terminology_bindings_info.off loop
+					from terminology_bindings_info_list.start until terminology_bindings_info_list.off or
+						terminology_bindings_info_list.item.first.is_equal (current_arch_dir.terminology_bindings_info.key_for_iteration)
+					loop
+						terminology_bindings_info_list.forth
 					end
+					if not terminology_bindings_info_list.off then
+						terminology_bindings_info_list.item.finish
+						terminology_bindings_info_list.item.remove
+						terminology_bindings_info_list.item.extend (utf8 (current_arch_dir.terminology_bindings_info.item_for_iteration.count.out))
+					else
+						create list_row
+						list_row.extend (utf8 (current_arch_dir.terminology_bindings_info.key_for_iteration))
+						list_row.extend (utf8 (current_arch_dir.terminology_bindings_info.item_for_iteration.count.out))
+						terminology_bindings_info_list.extend (list_row)
+						from i := 1 until i > terminology_bindings_info_list.column_count loop
+							terminology_bindings_info_list.resize_column_to_content (i)
+							if terminology_bindings_info_list.column_width (i) < 100 then
+								terminology_bindings_info_list.set_column_width (100, i)
+							end
+							i := i + 1
+						end
+					end
+
+					current_arch_dir.terminology_bindings_info.forth
 				end
-				arch_dir.terminology_bindings_info.forth
 			end
 		end
 
 feature {NONE} -- Build commands
 
-	do_build_action (action: PROCEDURE [ANY, TUPLE])
+	do_build_action (action: attached PROCEDURE [ANY, TUPLE])
 			-- Perform `action', with an hourglass mouse cursor and disabling the build menus, until done.
-		require
-			action_attached: action /= Void
 		local
 			menu_items: ARRAY [EV_MENU_ITEM]
 		do
@@ -1396,22 +1561,32 @@ feature {NONE} -- Build commands
 			retry
 		end
 
-	build_gui_update (ara: ARCH_REP_ARCHETYPE)
+	compiler_global_gui_update (msg: attached STRING)
 			-- Update GUI with progress on build.
 		do
-			append_status_area (archetype_compiler.status)
+			populate_compile_button
+			append_status_area (msg)
+			ev_application.process_events
+		end
 
-			if ara /= Void then
-				archetype_view_tree_control.update_tree_node_for_archetype (ara)
-				template_view_tree_control.update_tree_node_for_archetype (ara)
+	compiler_archetype_gui_update (msg: attached STRING; ara: attached ARCH_REP_ARCHETYPE; dependency_depth: INTEGER)
+			-- Update GUI with progress on build.
+		do
+			if not msg.is_empty then
+				append_status_area (indented (msg, create {STRING}.make_filled ('%T', dependency_depth)))
+			end
 
-				archetype_test_tree_control.do_row_for_item (ara, agent archetype_test_tree_control.set_row_pixmap)
+			archetype_view_tree_control.update_tree_node_for_archetype (ara)
+			template_view_tree_control.update_tree_node_for_archetype (ara)
 
-				if ara.last_compile_attempt_timestamp /= Void then
-					compiler_error_control.extend_and_select (ara)
-					populate_statistics
+			archetype_test_tree_control.do_row_for_item (ara, agent archetype_test_tree_control.set_row_pixmap)
 
-					if ara = arch_dir.selected_archetype then
+			if ara.last_compile_attempt_timestamp /= Void then
+				compiler_error_control.extend_and_select (ara)
+				populate_statistics
+
+				if attached current_arch_dir then
+					if ara = current_arch_dir.selected_archetype then
 						populate_archetype_id
 						populate_adl_version
 						populate_languages
@@ -1459,10 +1634,8 @@ feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be manag
 			end
 		end
 
-	focus_first_widget (widget: EV_WIDGET)
+	focus_first_widget (widget: attached EV_WIDGET)
 			-- Set focus to `widget' or to its first child widget that accepts focus.
-		require
-			widget_attached: widget /= Void
 		local
 			widgets: LINEAR [EV_WIDGET]
 		do

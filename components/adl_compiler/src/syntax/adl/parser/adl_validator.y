@@ -50,7 +50,7 @@ create
 
 %token SYM_ARCHETYPE SYM_TEMPLATE SYM_TEMPLATE_COMPONENT SYM_OPERATIONAL_TEMPLATE
 %token SYM_CONCEPT SYM_SPECIALIZE
-%token SYM_DEFINITION SYM_LANGUAGE
+%token SYM_DEFINITION SYM_LANGUAGE SYM_ANNOTATIONS
 %token SYM_DESCRIPTION SYM_ONTOLOGY SYM_INVARIANT
 %token SYM_ADL_VERSION SYM_IS_CONTROLLED SYM_IS_GENERATED
 
@@ -74,6 +74,7 @@ archetype: arch_identification
 		arch_definition 
 		arch_invariant
 		arch_ontology
+		arch_annotations
 	;
 
 arch_identification: arch_head arch_meta_data V_ARCHETYPE_ID 
@@ -240,6 +241,19 @@ arch_ontology: SYM_ONTOLOGY V_DADL_TEXT
 		}
 	;
 
+arch_annotations: -- no meta-data ok
+	| SYM_ANNOTATIONS V_DADL_TEXT 
+		{ 
+			annotations_text := $2
+		}
+	| SYM_ANNOTATIONS error
+		{
+			raise_error
+			report_error(create_message_line("SAAS", Void))
+			abort
+		}
+	;
+		
 %%
 
 feature -- Initialization
@@ -311,6 +325,8 @@ feature -- Parse Output
 	invariant_text: STRING
 	
 	ontology_text: STRING
+
+	annotations_text: STRING
 
 feature {NONE} -- Implementation 
 

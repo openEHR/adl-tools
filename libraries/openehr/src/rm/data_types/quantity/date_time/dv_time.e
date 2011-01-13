@@ -20,7 +20,7 @@ class DV_TIME
 inherit
 	DV_ABSOLUTE_QUANTITY
 		undefine
-			out, infix "<", default_create
+			out, is_less, default_create
 		end
 
 	ISO8601_TIME
@@ -28,13 +28,13 @@ inherit
 			default_create
 		end
 
-create 
+create
 	default_create, make_from_string, make_from_canonical_string, make_h, make_hm, make_hms, make_hmsf
 
 feature -- Definitions
 
 	Default_value: STRING = "00:00:00"
-	
+
 feature -- Initialisation
 
 	default_create
@@ -72,12 +72,12 @@ feature -- Basic Operations
 			-- Addition of a differential amount to this quantity.
 		do
 		end
-	
+
 	subtract (a_diff: like diff): like Current
 			-- Result of subtracting a differential amount from this quantity.
 		do
 		end
-	
+
 	diff (other: like Current): DV_DURATION
 			-- Difference of two quantities.
 		do
@@ -97,7 +97,7 @@ feature -- Output
 		do
 			Result := as_string
 		end
-	
+
 end
 
 

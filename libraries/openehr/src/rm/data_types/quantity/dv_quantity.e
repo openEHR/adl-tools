@@ -148,7 +148,7 @@ feature -- Basic Operations
 		do
 			create Result.make (-magnitude, units.twin, precision)
 		ensure
-			attached: Result /= Void
+			not_void: Result /= Void
 			minus_magnitude: (magnitude + Result.magnitude).abs < accuracy
 			same_units: units.same_string (Result.units)
 			same_precision: precision = Result.precision

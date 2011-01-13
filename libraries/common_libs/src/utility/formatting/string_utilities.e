@@ -128,39 +128,41 @@ feature -- Element Change
 			Result_exists: Result /= Void
 		end
 
-	indented (s, indent: STRING): STRING
+	indented (s, indent: attached STRING): attached STRING
 			-- indent every line in 's' by 'indent' and return result
-		require
-			String_exists: s /= Void
-			Indent_exists: indent /= Void
 		local
-			insert_str: STRING
-			final_return: BOOLEAN
+			indent_str: STRING
+			tail_return_count: INTEGER
 		do
-			Result := s.twin
-			create insert_str.make(0)
-			insert_str.append(indent)
+			if not indent.is_empty then
+				create Result.make (s.count)
 
-			-- indent first line
-			Result.prepend(insert_str)
+				-- indent first line
+				Result.append(indent)
 
-			if not Result.is_empty then
-				-- if last character is a %N, remove it for the moment
-				if Result.item(Result.count).is_equal('%N') then
-					Result.keep_head(Result.count - 1)
-					final_return := True
+				-- add the contents
+				Result.append(s)
+
+				-- create the indent string
+				create indent_str.make(1 + indent.count)
+				indent_str.append_character('%N')
+				indent_str.append(indent)
+
+				-- temporarily remove final %N chars
+				from until Result.item(Result.count) /= '%N' or else Result.is_empty loop
+					Result.remove_tail (1)
+					tail_return_count := tail_return_count + 1
 				end
 
-				-- no indent all intervening lines
-				insert_str.prepend("%N")
-				Result.replace_substring_all("%N", insert_str)
+				-- now indent all intervening lines
+				Result.replace_substring_all("%N", indent_str)
 
-				if final_return then
-					Result.append_character('%N')
+				if tail_return_count > 0 then
+					Result.append(create {STRING}.make_filled('%N', tail_return_count))
 				end
+			else
+				Result := s
 			end
-		ensure
-			Result_exists: Result /= Void
 		end
 
 feature -- Unicode

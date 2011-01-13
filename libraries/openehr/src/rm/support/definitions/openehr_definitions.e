@@ -1,6 +1,6 @@
-indexing
+note
 	component:   "openEHR common definitions"
-	
+
 	description: "Definitions of constant values for the openEHR models"
 	keywords:    "definitions"
 
@@ -18,10 +18,6 @@ class OPENEHR_DEFINITIONS
 inherit
 	BASIC_DEFINITIONS
 
-feature -- Definitions
-	
-	Default_language: STRING is "en"
-	
 end
 
 

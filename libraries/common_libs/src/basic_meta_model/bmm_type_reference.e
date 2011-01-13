@@ -22,6 +22,12 @@ deferred class BMM_TYPE_REFERENCE
 inherit
 	BMM_TYPE_SPECIFIER
 
+feature -- Commands
+
+	finalise_build (a_bmmm: attached BMM_SCHEMA; a_class_def: attached BMM_CLASS_DEFINITION; a_prop_def: attached BMM_PROPERTY_DEFINITION; errors: ERROR_ACCUMULATOR)
+		deferred
+		end
+
 end
 
 

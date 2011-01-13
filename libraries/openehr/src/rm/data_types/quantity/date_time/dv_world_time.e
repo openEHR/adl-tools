@@ -22,11 +22,12 @@ note
 deferred class DV_WORLD_TIME
 
 inherit
-	DV_CUSTOMARY_QUANTITY
-		
+	DV_QUANTITY
+
 	DATE_TIME_CONSTANTS
 		undefine
-			is_equal
+			is_equal,
+			default_create
 		end
 
 feature -- Access
@@ -46,18 +47,10 @@ feature -- Access
 			Result.as_string.is_equal("12:00:00")
 		end
 
-	timezone: DV_DURATION	
-			-- offset from Universal Coordinated Time, in the range -1200 - +1200 
+	timezone: DV_DURATION
+			-- offset from Universal Coordinated Time, in the range -1200 - +1200
 			-- (note that this can affect the date even if no time is recorded).
 
-feature -- Comparison
-
-	is_strictly_comparable_to (other: like Current): BOOLEAN
-			-- True for all date/time types
-		do
-			Result := True
-		end
-		
 invariant
 	timezone_valid: timezone /= Void and then (timezone >= Min_timezone and timezone <= Max_timezone)
 

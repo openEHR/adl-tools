@@ -1,10 +1,10 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Populate ontology controls in ADL test workbench"
+	description: "Test page in ADL test workbench"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -28,8 +28,6 @@ inherit
 	SHARED_ARCHETYPE_COMPILER
 		export
 			{NONE} all
-		undefine
-			copy, default_create
 		end
 
 	SHARED_APP_UI_RESOURCES
@@ -67,10 +65,8 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: MAIN_WINDOW)
+	make (a_main_window: attached MAIN_WINDOW)
 			-- Create controller for the test grid.
-		require
-			a_main_window /= Void
 		do
 			gui := a_main_window
 			make_for_grid (gui.archetype_test_tree_grid)
@@ -94,7 +90,31 @@ feature -- Access
 	last_tested_archetypes_count: INTEGER
 			-- Number of archetypes tested in last run.
 
+	diff_dir_source_orig: STRING
+			-- directory where copies of original .adls files go
+
+	diff_dir_source_new: STRING
+			-- directory where first generation serialised .adls files go
+
+	diff_dir_flat_orig: STRING
+			-- directory where copies of original legacy .adl files go
+
+	diff_dir_flat_new: STRING
+			-- directory where first generation serialised .adlf files go
+
+	diff_dir_source_flat_orig: STRING
+			-- directory where copies of original .adls files go, renamed to .adlx,
+			-- for comparison with flat form, non-specialised only. This diff will
+			-- show expanded internal refs
+
+	diff_dir_source_flat_new: STRING
+			-- directory where flat files go, renamed to .adlx, for source/flat
+			-- comparison, non-specialised archetypes only
+
 feature -- Status Setting
+
+	diff_dirs_available: BOOLEAN
+			-- flag to indicate whether output directories for diff files are available and writable
 
 	is_expanded: BOOLEAN
 			-- True if archetype tree is in expanded state
@@ -123,102 +143,108 @@ feature -- Commands
 			create grid_row_stack.make(0)
 		end
 
-	reset_output_directories
-			-- set output directories, currently just the test diff output location.
-			-- this is test_diff_directory/$current_profile/orig and test_diff_directory/$current_profile/new
-		local
-			diff_dir_root: STRING
-			diff_dir_source_root: STRING
-			diff_dir_flat_root: STRING
-		do
-			diff_dir_root := file_system.pathname (test_diff_directory, current_repository_profile)
-
-			-- source dif dirs
-			diff_dir_source_root := file_system.pathname (diff_dir_root, "source")
-			diff_dir_source_orig := file_system.pathname (diff_dir_source_root, "orig")
-			diff_dir_source_new := file_system.pathname (diff_dir_source_root, "new")
-			if not file_system.directory_exists (diff_dir_source_orig) then
-				file_system.recursive_create_directory (diff_dir_source_orig)
-			end
-			if file_system.directory_exists (diff_dir_source_orig) then
-				if not file_system.directory_exists (diff_dir_source_new) then
-					file_system.recursive_create_directory (diff_dir_source_new)
-				end
-				if not file_system.directory_exists (diff_dir_source_new) then
-					diff_dirs_available := False
-				else
-					diff_dirs_available := True
-				end
-			else
-				diff_dirs_available := False
-			end
-
-			-- legacy / flat diff dirs
-			if diff_dirs_available then
-				diff_dir_flat_root := file_system.pathname (diff_dir_root, "flat")
-				diff_dir_flat_orig := file_system.pathname (diff_dir_flat_root, "orig")
-				diff_dir_flat_new := file_system.pathname (diff_dir_flat_root, "new")
-				if not file_system.directory_exists (diff_dir_flat_orig) then
-					file_system.recursive_create_directory (diff_dir_flat_orig)
-				end
-				if file_system.directory_exists (diff_dir_flat_orig) then
-					if not file_system.directory_exists (diff_dir_flat_new) then
-						file_system.recursive_create_directory (diff_dir_flat_new)
-					end
-					if not file_system.directory_exists (diff_dir_flat_new) then
-						diff_dirs_available := False
-					else
-						diff_dirs_available := True
-					end
-				else
-					diff_dirs_available := False
-				end
-			end
-		end
-
 	populate
 			-- populate the ADL tree control by creating it from scratch
 		local
 			col_csr: INTEGER
 		do
 			clear
- 			arch_dir.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+
+ 			if has_current_profile then
+	 			current_arch_dir.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+ 			end
 
 			-- put names on columns
-			grid.column (1).set_title ("Archetypes - " + current_repository_profile)
-			if grid.column_count >= first_test_col then
-				from
-					tests.start
-					col_csr := first_test_col
-				until
-					tests.off
-				loop
-					grid.column (col_csr).set_title (tests.key_for_iteration)
-					tests.forth
-					col_csr := col_csr + 1
-				end
-			end
+			if grid.column_count > 0 then
+				grid.column (1).set_title ("Archetypes - " + repository_profiles.current_profile_name)
 
-			is_expanded := False
-			toggle_expand_tree
-			grid.column (1).resize_to_content
-			grid.column (2).resize_to_content
+				if grid.column_count >= first_test_col then
+					from
+						tests.start
+						col_csr := first_test_col
+					until
+						tests.off
+					loop
+						grid.column (col_csr).set_title (tests.key_for_iteration)
+						tests.forth
+						col_csr := col_csr + 1
+					end
+				end
+
+				is_expanded := False
+				toggle_expand_tree
+				grid.column (1).resize_to_content
+				grid.column (2).resize_to_content
+			end
 
 			gui.arch_test_processed_count.set_text ("0")
 			gui.remove_unused_codes_rb.disable_select
 		end
 
+   	set_row_pixmap (row: attached EV_GRID_ROW)
+   			-- Set the icon appropriate to the item attached to `row'.
+   		do
+			if attached {EV_GRID_LABEL_ITEM} row.item (1) as gli and attached {ARCH_REP_ITEM} row.data as ari then
+				if attached {EV_PIXMAP} pixmaps [ari.group_name] as pixmap then
+					gli.set_pixmap (pixmap)
+				end
+			end
+		end
+
+	do_row_for_item (ari: ARCH_REP_ITEM; action: attached PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
+   			-- Perform `action' for the row containing `an_item', if any.
+  		local
+   			i: INTEGER
+			row: EV_GRID_ROW
+   		do
+			if attached ari then
+				from i := grid.row_count until i = 0 loop
+					row := grid.row (i)
+					if row.data /= Void and then row.data.is_equal (ari) then
+						action.call ([row])
+						i := 0
+					else
+						i := i - 1
+					end
+				end
+			end
+		end
+
+	toggle_expand_tree
+			-- toggle expanded status of tree view
+		do
+			if is_expanded then
+				collapse_tree (grid.row (1))
+				gui.arch_test_tree_toggle_expand_bn.set_text ("Expand Tree")
+				is_expanded := False
+			else
+				expand_tree (grid.row (1))
+				gui.arch_test_tree_toggle_expand_bn.set_text ("Collapse Tree")
+				is_expanded := True
+			end
+		end
+
+	toggle_test_regression
+		do
+			if regression_test_on then
+				gui.regression_test_bn.set_text ("Regression off")
+				regression_test_on := False
+			else
+				gui.regression_test_bn.set_text ("Regression on")
+				regression_test_on := True
+			end
+		end
+
 	archetype_test_go_stop
 			-- Start or stop a test run.
 		do
-			reset_output_directories
 			if test_execution_underway then
 				test_stop_requested := True
 			else
 				test_stop_requested := False
 				test_execution_underway := True
 				gui.archetype_test_go_bn.set_pixmap (pixmaps ["stop"])
-				gui.archetype_test_go_bn.set_text ("Stop")
+				gui.archetype_test_go_bn.set_text ("Pause")
 				run_tests
 				test_execution_underway := False
 				gui.archetype_test_go_bn.set_pixmap (pixmaps ["go"])
@@ -226,11 +252,14 @@ feature -- Commands
 			end
 		end
 
+feature {NONE} -- Commands
+
 	run_tests
 			-- Execute tests on all marked archetypes.
 		local
 			row_csr: INTEGER
 		do
+			reset_output_directories
 			remove_unused_codes := gui.remove_unused_codes_rb.is_selected
 
 			last_tested_archetypes_count := 0
@@ -251,10 +280,10 @@ feature -- Commands
 			res_label: STRING
 			test_result: INTEGER
 		do
-			if attached {EV_GRID_CHECKABLE_LABEL_ITEM} row.item (2) as checkbox and then checkbox.is_checked then
+			if attached {EV_GRID_CHECKABLE_LABEL_ITEM} row.item (2) as gcli and then gcli.is_checked then
 				target ?= row.data
 
-				if target /= Void then
+				if attached target then
 					row.ensure_visible
 
 					from
@@ -298,69 +327,7 @@ feature -- Commands
 					gui.arch_test_processed_count.set_text (last_tested_archetypes_count.out)
 				end
 
-				checkbox.set_is_checked (False)
-			end
-		end
-
-	toggle_expand_tree
-			-- toggle expanded status of tree view
-		do
-			if is_expanded then
-				collapse_tree (grid.row (1))
-				gui.arch_test_tree_toggle_expand_bn.set_text ("Expand Tree")
-				is_expanded := False
-			else
-				expand_tree (grid.row (1))
-				gui.arch_test_tree_toggle_expand_bn.set_text ("Collapse Tree")
-				is_expanded := True
-			end
-		end
-
-	toggle_test_regression
-		do
-			if regression_test_on then
-				gui.regression_test_bn.set_text ("Regression off")
-				regression_test_on := False
-			else
-				gui.regression_test_bn.set_text ("Regression on")
-				regression_test_on := True
-			end
-		end
-
-   	set_row_pixmap (row: EV_GRID_ROW)
-   			-- Set the icon appropriate to the item attached to `row'.
-		require
-			row_attached: row /= Void
-   		local
-			pixmap: EV_PIXMAP
-   		do
-			if attached {EV_GRID_LABEL_ITEM} row.item (1) as gli and attached {ARCH_REP_ITEM} row.data as ari then
-				pixmap := pixmaps [ari.group_name]
-				if pixmap /= Void then
-					gli.set_pixmap (pixmap)
-				end
-			end
-		end
-
-	do_row_for_item (an_item: ARCH_REP_ITEM; action: PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
-   			-- Perform `action' for the row containing `an_item', if any.
-		require
-			action_attached: action /= Void
-   		local
-   			i: INTEGER
-			row: EV_GRID_ROW
-   		do
-			if an_item /= Void then
-				from i := grid.row_count until i = 0 loop
-					row := grid.row (i)
-
-					if row.data /= Void and then row.data.is_equal (an_item) then
-						action.call ([row])
-						i := 0
-					else
-						i := i - 1
-					end
-				end
+				gcli.set_is_checked (False)
 			end
 		end
 
@@ -370,9 +337,10 @@ feature {NONE} -- Tests
 			-- parse archetype and return result
 		local
 			unused_at_codes, unused_ac_codes: ARRAYED_LIST [STRING]
+			serialised_source_path: STRING
 		do
 			Result := test_failed
-			archetype_compiler.rebuild_lineage (target)
+			archetype_compiler.rebuild_lineage (target, 0)
 			if target.is_valid then
 				Result := test_passed
 				test_status.append (" parse succeeded%N" + target.errors.as_string)
@@ -399,7 +367,14 @@ feature {NONE} -- Tests
 					file_system.copy_file(target.differential_path, file_system.pathname (diff_dir_source_orig, target.ontological_name + Archetype_source_file_extension))
 
 					-- this save causes serialisation to rewrite target.differential_text, which gives us something to compare to what was captured above
-					target.save_differential_as (file_system.pathname (diff_dir_source_new, target.ontological_name + Archetype_source_file_extension), Archetype_native_syntax)
+					serialised_source_path := file_system.pathname (diff_dir_source_new, target.ontological_name + Archetype_source_file_extension)
+					target.save_differential_as (serialised_source_path, Archetype_native_syntax)
+
+					-- for top-level archetypes only, copy above serialised source to $profile/source_flat/orig area as well, using extension .adlx
+					-- (flat also uses this - diff tool needs to see same extensions or else it gets confused)
+					if not target.is_specialised then
+						file_system.copy_file(serialised_source_path, file_system.pathname (diff_dir_source_flat_orig, target.ontological_name + Archetype_dummy_file_extension))
+					end
 				end
 			else
 				test_status.append (" parse failed%N" + target.errors.as_string)
@@ -459,7 +434,7 @@ feature {NONE} -- Tests
 	val_code: STRING
 
 	test_save_legacy: INTEGER
-			-- parse archetype, save in source form and return result
+			-- parse legacy archetype, save in source form and return result
 		do
 			Result := test_failed
 			if target.is_valid and target.has_legacy_flat_file then
@@ -478,11 +453,20 @@ feature {NONE} -- Tests
 
 	test_save_flat: INTEGER
 			-- parse archetype, save in source form and return result
+		local
+			flat_path: STRING
 		do
-			Result := test_failed
+			Result := Test_failed
 			if target.is_valid then
 				if diff_dirs_available then
-					target.save_flat_as (file_system.pathname (diff_dir_flat_new, target.ontological_name + Archetype_flat_file_extension), Archetype_native_syntax)
+					flat_path := file_system.pathname (diff_dir_flat_new, target.ontological_name + Archetype_flat_file_extension)
+					target.save_flat_as (flat_path, Archetype_native_syntax)
+
+					if not target.is_specialised then
+						-- copy above flat file to $profile/source_flat/orig area as well, using extension .adlx (flat also uses this - diff tool needs to see same
+						-- extensions or else it gets confused)
+						file_system.copy_file(flat_path, file_system.pathname (diff_dir_source_flat_new, target.ontological_name + Archetype_dummy_file_extension))
+					end
 				end
 				if target.status.is_empty then
 					Result := test_passed
@@ -515,21 +499,6 @@ feature {NONE} -- Tests
 
 feature {NONE} -- Implementation
 
-	diff_dirs_available: BOOLEAN
-			-- flag to indicate whether output directories for diff files are available and writable
-
-	diff_dir_source_orig: STRING
-			-- directory where copies of original .adls files go
-
-	diff_dir_source_new: STRING
-			-- directory where first generation serialised .adls files go
-
-	diff_dir_flat_orig: STRING
-			-- directory where copies of original legacy .adl files go
-
-	diff_dir_flat_new: STRING
-			-- directory where first generation serialised .adlf files go
-
 	gui: MAIN_WINDOW
 			-- main window of system
 
@@ -545,10 +514,8 @@ feature {NONE} -- Implementation
 	original_differential_text: STRING
 			-- copy of archetype text after successful parse; = what was on file
 
-	populate_gui_tree_node_enter (ari: ARCH_REP_ITEM)
+	populate_gui_tree_node_enter (ari: attached ARCH_REP_ITEM)
 			-- Add a node representing `an_item' to `gui_file_tree'.
-		require
-			ari /= Void
 		local
 			gli: EV_GRID_LABEL_ITEM
 			row: EV_GRID_ROW
@@ -588,78 +555,153 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_gui_tree_node_exit (an_item: ARCH_REP_ITEM)
+	populate_gui_tree_node_exit (an_item: attached ARCH_REP_ITEM)
 		do
 			if an_item.has_artefacts then
 				grid_row_stack.remove
 			end
 		end
 
-	add_checkbox (row: EV_GRID_ROW)
-			-- Add the checkbox column to `row'.
-		require
-			row_attached: row /= Void
+	reset_output_directories
+			-- Set output directories, currently just the test diff output location.
+			-- Needs to be called if either different profile is selected, or if `test_diff_directory' is changed in user options.
+			-- Sets `diff_dirs_available' True if all directories can be found/created.
+			-- Resulting directory structure:
+			--
+			-- 		test_diff_directory
+			--			+---- $current_profile
+			--					+---- source
+			--					|		+---- new
+			--					|		+---- orig
+			--					+---- flat
+			--					|		+---- new
+			--					|		+---- orig
+			--					+---- source_flat
+			--							+---- new
+			--							+---- orig
+			--
 		local
-			item: EV_GRID_CHECKABLE_LABEL_ITEM
+			diff_dir_root, diff_dir_source_root, diff_dir_flat_root, diff_dir_source_flat_root: STRING
 		do
-			create item
-			row.set_item (2, item)
-			item.set_is_checked (True)
-			item.pointer_button_press_actions.force_extend (agent set_checkboxes_recursively (item))
-		ensure
-			at_least_2_columns: row.count >= 2
-		end
+			diff_dirs_available := False
 
-	set_checkboxes_recursively (item: EV_GRID_CHECKABLE_LABEL_ITEM)
-			-- For all sub-items of `item', set their check boxes to match `item', recursively.
-		require
-			item_attached: item /= Void
-		local
-			i: INTEGER
-			sub_item: EV_GRID_CHECKABLE_LABEL_ITEM
-		do
-			from i := item.row.subrow_count until i = 0 loop
-				sub_item ?= item.row.subrow (i).item (item.column.index)
-				i := i - 1
-				if sub_item /= Void then
-					sub_item.set_is_checked (item.is_checked)
-					set_checkboxes_recursively (sub_item)
+			-- source diff dirs
+			if attached repository_profiles.current_profile_name as profile_name then
+				diff_dir_root := file_system.pathname (test_diff_directory, profile_name)
+
+				diff_dir_source_root := file_system.pathname (diff_dir_root, "source")
+				diff_dir_source_orig := file_system.pathname (diff_dir_source_root, "orig")
+				diff_dir_source_new := file_system.pathname (diff_dir_source_root, "new")
+
+				if not file_system.directory_exists (diff_dir_source_orig) then
+					file_system.recursive_create_directory (diff_dir_source_orig)
+				end
+				if file_system.directory_exists (diff_dir_source_orig) then
+					if not file_system.directory_exists (diff_dir_source_new) then
+						file_system.recursive_create_directory (diff_dir_source_new)
+					end
+					if file_system.directory_exists (diff_dir_source_new) then
+						diff_dirs_available := True
+					end
+				end
+			end
+
+			-- legacy / flat diff dirs
+			if diff_dirs_available then
+				diff_dir_flat_root := file_system.pathname (diff_dir_root, "flat")
+				diff_dir_flat_orig := file_system.pathname (diff_dir_flat_root, "orig")
+				diff_dir_flat_new := file_system.pathname (diff_dir_flat_root, "new")
+				if not file_system.directory_exists (diff_dir_flat_orig) then
+					file_system.recursive_create_directory (diff_dir_flat_orig)
+				end
+				if file_system.directory_exists (diff_dir_flat_orig) then
+					if not file_system.directory_exists (diff_dir_flat_new) then
+						file_system.recursive_create_directory (diff_dir_flat_new)
+					end
+					if not file_system.directory_exists (diff_dir_flat_new) then
+						diff_dirs_available := False
+					else
+						diff_dirs_available := True
+					end
+				else
+					diff_dirs_available := False
+				end
+			end
+
+			-- source / flat diff dirs
+			if diff_dirs_available then
+				diff_dir_source_flat_root := file_system.pathname (diff_dir_root, "source_flat")
+				diff_dir_source_flat_orig := file_system.pathname (diff_dir_source_flat_root, "orig")
+				diff_dir_source_flat_new := file_system.pathname (diff_dir_source_flat_root, "new")
+				if not file_system.directory_exists (diff_dir_source_flat_orig) then
+					file_system.recursive_create_directory (diff_dir_source_flat_orig)
+				end
+				if file_system.directory_exists (diff_dir_source_flat_orig) then
+					if not file_system.directory_exists (diff_dir_source_flat_new) then
+						file_system.recursive_create_directory (diff_dir_source_flat_new)
+					end
+					if not file_system.directory_exists (diff_dir_source_flat_new) then
+						diff_dirs_available := False
+					else
+						diff_dirs_available := True
+					end
+				else
+					diff_dirs_available := False
 				end
 			end
 		end
 
 	on_grid_key_press (key: EV_KEY)
 			-- When the user presses the space key, toggle the selected check box.
-		local
-			checkbox: EV_GRID_CHECKABLE_LABEL_ITEM
 		do
 			Precursor (key)
-
 			if not (ev_application.shift_pressed or ev_application.alt_pressed or ev_application.ctrl_pressed) then
-				if key /= Void and then key.code = key_space then
-					checkbox ?= selected_cell
-					if checkbox /= Void then
-						checkbox.toggle_is_checked
-						set_checkboxes_recursively (checkbox)
+				if attached key and then key.code = key_space then
+					if attached {EV_GRID_CHECKABLE_LABEL_ITEM} selected_cell as gcli then
+						gcli.toggle_is_checked
+						set_checkboxes_recursively (gcli)
 					end
 				end
 			end
 		end
 
-	display_arrayed_list (str_lst: ARRAYED_LIST [STRING]): STRING
+	display_arrayed_list (str_lst: attached ARRAYED_LIST [STRING]): attached STRING
 			--
-		require
-			str_lst /= Void
 		do
 			create Result.make_empty
-
 			from str_lst.start until str_lst.off loop
 				if not str_lst.isfirst then
 					Result.append (", ")
 				end
-
 				Result.append (str_lst.item)
 				str_lst.forth
+			end
+		end
+
+	add_checkbox (row: attached EV_GRID_ROW)
+			-- Add the checkbox column to `row' of a grid control
+		local
+			gcli: EV_GRID_CHECKABLE_LABEL_ITEM
+		do
+			create gcli
+			row.set_item (2, gcli)
+			gcli.set_is_checked (True)
+			gcli.pointer_button_press_actions.force_extend (agent set_checkboxes_recursively (gcli))
+		ensure
+			at_least_2_columns: row.count >= 2
+		end
+
+	set_checkboxes_recursively (a_gcli: attached EV_GRID_CHECKABLE_LABEL_ITEM)
+			-- For all sub-items of `item' in a grid control, set their check boxes to match `item', recursively.
+		local
+			i: INTEGER
+		do
+			from i := a_gcli.row.subrow_count until i = 0 loop
+				if attached {EV_GRID_CHECKABLE_LABEL_ITEM} a_gcli.row.subrow (i).item (a_gcli.column.index) as sub_gcli then
+					sub_gcli.set_is_checked (a_gcli.is_checked)
+					set_checkboxes_recursively (sub_gcli)
+				end
+				i := i - 1
 			end
 		end
 

@@ -44,12 +44,9 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: MAIN_WINDOW; a_tree_control: EV_TREE; a_label: EV_LABEL; artefact_types_list: ARRAY [INTEGER])
+	make (a_main_window: attached MAIN_WINDOW; a_tree_control: attached EV_TREE; a_label: attached EV_LABEL; artefact_types_list: ARRAY [INTEGER])
 			-- Create controller for the tree representing archetype files found in `archetype_directory'.
 		require
-			a_main_window /= Void
-			a_tree_control /= Void
-			a_label /= Void
 			valid_artefact_type: (create {ARTEFACT_TYPE}).valid_artefact_types(artefact_types_list)
 		do
 			gui := a_main_window
@@ -66,19 +63,27 @@ feature -- Commands
 		do
 			if delay_to_make_keyboard_navigation_practical = Void then
 				create delay_to_make_keyboard_navigation_practical
+
 				delay_to_make_keyboard_navigation_practical.actions.extend (agent
 					do
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
-						if attached {ARCH_REP_ITEM} gui_tree.selected_item.data as ari then
-							arch_dir.set_selected_item (ari)
-							if attached {ARCH_REP_ARCHETYPE} ari as ara then
-								gui.parse_archetype
-							else
-								gui.display_class
+
+						if attached gui_tree.selected_item then
+							if attached {ARCH_REP_ITEM} gui_tree.selected_item.data as ari then
+								if attached current_arch_dir as dir then
+									dir.set_selected_item (ari)
+								end
+
+								if attached {ARCH_REP_ARCHETYPE} ari as ara then
+									gui.parse_archetype
+								else
+									gui.display_class
+								end
 							end
 						end
 					end)
 			end
+
 			delay_to_make_keyboard_navigation_practical.set_interval (300)
 		end
 
@@ -89,15 +94,16 @@ feature -- Commands
 			create gui_node_descriptor_map.make(0)
 			gui_tree.wipe_out
  			create gui_tree_item_stack.make (0)
- 			arch_dir.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
-			gui_tree.recursive_do_all (agent ev_tree_expand)
-			gui.go_to_node_in_archetype_tree_view
+
+ 			if has_current_profile then
+	 			current_arch_dir.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+				gui_tree.recursive_do_all (agent ev_tree_expand)
+				gui.go_to_node_in_archetype_tree_view
+ 			end
 		end
 
-	update_tree_node_for_archetype (ara: ARCH_REP_ARCHETYPE)
+	update_tree_node_for_archetype (ara: attached ARCH_REP_ARCHETYPE)
 			-- update Explorer tree node with changes in compilation status
-		require
-			Descriptor_valid: ara /= Void
 		local
 			an_id: STRING
 		do
@@ -112,14 +118,20 @@ feature -- Commands
 			end
 		end
 
-	ensure_item_visible (ari_ont_id: STRING)
+	select_item (ari_ont_id: attached STRING)
 			-- ensure node with ontological node id `ari_ont_id' is visible in the tree
-		require
-			ari_ont_id /= Void
 		do
 			if gui_node_descriptor_map.has(ari_ont_id) and gui_tree.is_displayed then
 				gui_tree.ensure_item_visible (gui_node_descriptor_map.item(ari_ont_id))
 				gui_node_descriptor_map.item(ari_ont_id).enable_select
+			end
+		end
+
+	ensure_item_visible (ari_ont_id: attached STRING)
+			-- ensure node with ontological node id `ari_ont_id' is visible in the tree
+		do
+			if gui_node_descriptor_map.has(ari_ont_id) and gui_tree.is_displayed then
+				gui_tree.ensure_item_visible (gui_node_descriptor_map.item(ari_ont_id))
 			end
 		end
 
@@ -128,16 +140,16 @@ feature {NONE} -- Implementation
 	gui_node_descriptor_map: HASH_TABLE [EV_TREE_ITEM, STRING]
 			-- list of GUI explorer nodes, keyed by artefact id
 
-	artefact_types: ARRAY [INTEGER]
+	artefact_types: attached ARRAY [INTEGER]
 			-- types of artefact in this view
 
 	explorer_label: EV_LABEL
 			-- label of explorer control in GUI
 
-	gui: MAIN_WINDOW
+	gui: attached MAIN_WINDOW
 			-- Main window of system.
 
-	gui_tree: EV_TREE
+	gui_tree: attached EV_TREE
 			-- reference to MAIN_WINDOW.archetype_file_tree
 
 	gui_tree_item_stack: ARRAYED_STACK [EV_TREE_ITEM]
@@ -146,10 +158,8 @@ feature {NONE} -- Implementation
 	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
 			-- Timer to delay a moment before calling `display_details_of_selected_item'.
 
-   	populate_gui_tree_node_enter (ari: ARCH_REP_ITEM)
+   	populate_gui_tree_node_enter (ari: attached ARCH_REP_ITEM)
    			-- Add a node representing `an_item' to `gui_file_tree'.
-		require
-			item_attached: ari /= Void
    		local
 			node: EV_TREE_ITEM
 		do
@@ -160,6 +170,7 @@ feature {NONE} -- Implementation
 
 	 			if attached {ARCH_REP_ARCHETYPE} ari as ara then
 	 				gui_node_descriptor_map.put (node, ara.ontological_name)
+					node.set_configurable_target_menu_handler (agent on_ara_context_menu_pop_up)
 	 			end
 
 	 			update_tree_node (node)
@@ -171,10 +182,11 @@ feature {NONE} -- Implementation
 				end
 
 				gui_tree_item_stack.extend (node)
+
 			end
 		end
 
-   	populate_gui_tree_node_exit (ari: ARCH_REP_ITEM)
+   	populate_gui_tree_node_exit (ari: attached ARCH_REP_ITEM)
    		do
 			if not ari.is_root and (ari.sub_tree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
 								(attached {ARCH_REP_ARCHETYPE} ari as ara and then artefact_types.has(ara.artefact_type))) then
@@ -183,10 +195,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-   	update_tree_node (node: EV_TREE_NODE)
+   	update_tree_node (node: attached EV_TREE_NODE)
    			-- Set the text, tooltip and icon appropriate to the item attached to `node'.
-		require
-			node_attached: node /= Void
    		local
 			text, tooltip: STRING_32
 			pixmap: EV_PIXMAP
@@ -196,7 +206,7 @@ feature {NONE} -- Implementation
 
 				if attached {ARCH_REP_ARCHETYPE} ari as ara then
 					tooltip := utf8 (ara.full_path)
-					if ara.legacy_is_primary and display_archetype_source then
+					if ara.has_legacy_flat_file and display_archetype_source then
 						text.prepend (utf8("(f) "))
 					end
 
@@ -230,10 +240,27 @@ feature {NONE} -- Implementation
 	 		end
 		end
 
+	on_ara_context_menu_pop_up (menu: EV_MENU; target_data: ARRAYED_LIST [EV_PND_TARGET_DATA]; source: EV_PICK_AND_DROPABLE; source_pebble: ANY)
+			-- creates the context menu for a right click action for an ARCH_REP_ARCHETYPE node
+		do
+			if attached {EV_TREE_ITEM} source as eti then
+				create_context_menu (menu)
+			end
+		end
+
+	context_menu_agent: PROCEDURE [ANY, TUPLE [EV_MENU]]
+			-- Procedure that sets up a context menu
+
+	create_context_menu (menu: EV_MENU)
+			-- dynamically initializes the context menu for this tree
+		do
+	--		menu.last.destroy
+			menu.extend (create {EV_MENU_ITEM}.make_with_text_and_action ("Edit", agent do_nothing))
+	    	menu.extend (create {EV_MENU_ITEM}.make_with_text_and_action ("Parse", agent do_nothing))
+		end
+
 invariant
-	gui_attached: gui /= Void
-	tree_attached: gui_tree /= Void
-	valid_artefact_types: artefact_types /= Void and then (create {ARTEFACT_TYPE}).valid_artefact_types(artefact_types)
+	valid_artefact_types: (create {ARTEFACT_TYPE}).valid_artefact_types(artefact_types)
 
 end
 

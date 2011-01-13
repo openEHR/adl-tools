@@ -11,8 +11,8 @@ note
 	design:      "openEHR Common Reference Model 2.0"
 
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2005 The openEHR Foundation <http://www.openEHR.org>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2005-2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -21,11 +21,9 @@ note
 
 class REVISION_HISTORY
 
-feature -- Initialization
-
 feature -- Access
 
-	items: LIST [REVISION_HISTORY_ITEM]
+	items: attached LIST [REVISION_HISTORY_ITEM]
 			-- Complete history of items
 
 	item_count: INTEGER
@@ -33,23 +31,22 @@ feature -- Access
 		do
 			Result := items.count
 		end
-		
+
 	most_recent_version: STRING
 			-- The version id of the most recent item, as a String.
 		do
+			Result := items.last.version_id.value
 		ensure
-			Result.is_equal (items.last.version_id.value)	
+			Result.is_equal (items.last.version_id.value)
 		end
-		
+
 	most_recent_version_time_committed: STRING
 			-- The commit date/time of the most recent item, as a String.
 		do
+			Result := items.last.audits.first.time_committed.value
 		ensure
 			Result.is_equal (items.last.audits.first.time_committed.value)
 		end
-
-invariant
-	Items_exist: items /= Void
 
 end
 

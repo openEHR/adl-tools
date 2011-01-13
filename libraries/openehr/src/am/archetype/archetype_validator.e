@@ -8,8 +8,8 @@ note
 		         ]"
 	keywords:    "constraint model"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2007-2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -65,13 +65,11 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_target_desc: like target_descriptor; an_rm_schema: SCHEMA_ACCESS)
+	make (a_target_desc: attached like target_descriptor; an_rm_schema: attached SCHEMA_ACCESS)
 			-- set target_descriptor
 			-- initialise reporting variables
 		require
-			target_desc_attached: a_target_desc /= Void
-			target_desc_valid: a_target_desc.differential_archetype /= Void
-			Rm_schema_available: an_rm_schema /= Void
+			target_desc_valid: attached a_target_desc.differential_archetype
 		do
 			rm_schema := an_rm_schema
 			target_descriptor := a_target_desc
@@ -83,14 +81,11 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	target_descriptor: ARCH_REP_ARCHETYPE
+	target_descriptor: attached ARCH_REP_ARCHETYPE
 			-- differential archetype being validated
 
 	target: DIFFERENTIAL_ARCHETYPE
 			-- differential archetype being validated
-
-	compressed_definition: attached C_COMPLEX_OBJECT
-			-- path-compressed form of definition of target archetype
 
 	flat_parent: FLAT_ARCHETYPE
 			-- flat version of parent archetype, if target is specialised
@@ -136,7 +131,7 @@ feature -- Validation
 			-- reference model validation - needed for all archetypes, top-level and
 			-- specialised, since specialised archetypes can contain new nodes that need to be
 			-- validated all the way through to the RM
-			if passed and rm_schema.is_valid and not target.is_specialised then
+			if passed and rm_schema.passed and not target.is_specialised then
 				validate_reference_model
 			end
 
@@ -166,18 +161,21 @@ feature -- Validation
 				end
 				validate_internal_references
 				validate_invariants
+				validate_annotations
 			end
 		end
 
 feature {NONE} -- Implementation
 
-	rm_schema: SCHEMA_ACCESS
+	rm_schema: attached SCHEMA_ACCESS
 
 	validate_basics
 			-- are basic features of archetype structurally intact and correct?
 			-- into account validity with respect to parent archetypes.
 		do
 			if not target_descriptor.id.as_string.is_equal (target.archetype_id.as_string) then
+				-- this is a serious error, because it means that the archteype and its descriptor are
+				-- out of sync, due to some uncontrolled modification on the archetype
 				add_warning("validate_e3", <<target_descriptor.id.as_string, target.archetype_id.as_string>>)
 			elseif not target.definition.rm_type_name.is_equal (target.archetype_id.rm_entity) then
 				add_error("VARDT", <<target.archetype_id.rm_entity, target.definition.rm_type_name>>)
@@ -243,7 +241,7 @@ feature {NONE} -- Implementation
 			filler_id: ARCHETYPE_ID
 		do
 			from target.suppliers_index.start until target.suppliers_index.off loop
-				if not arch_dir.archetype_index.has (target.suppliers_index.key_for_iteration) then
+				if not current_arch_dir.archetype_index.has (target.suppliers_index.key_for_iteration) then
 					add_error("VARXR", <<target.suppliers_index.item_for_iteration.first.parent.path, target.suppliers_index.key_for_iteration>>)
 				end
 
@@ -392,6 +390,28 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	validate_annotations
+			-- for each language, ensure that annotations are proper translations of each other (if present)
+		local
+			ann_for_lang: RESOURCE_ANNOTATION_TABLE
+		do
+			if target.has_annotations then
+				from target.annotations.items.start until not passed or target.annotations.items.off loop
+					ann_for_lang := target.annotations.items.item_for_iteration
+					from ann_for_lang.items.start until not passed or ann_for_lang.items.off loop
+						-- firstly see if annotation path is valid
+						if not (target.has_path(ann_for_lang.items.key_for_iteration) or else (target.is_specialised and then flat_parent.has_path (ann_for_lang.items.key_for_iteration))) then
+							add_error("VRANP", <<target.annotations.items.key_for_iteration, ann_for_lang.items.key_for_iteration>>)
+						end
+
+						-- FIXME: now we should do some other checks to see if contents are of same structure as annotations in other languages
+						ann_for_lang.items.forth
+					end
+					target.annotations.items.forth
+				end
+			end
+		end
+
 	report_unused_ontology_codes
 			-- populate lists of at-codes and ac-codes found in ontology that
 			-- are not referenced anywhere in the archetype definition
@@ -440,22 +460,22 @@ feature {NONE} -- Implementation
 				if not includes.is_empty and not assertion_matches_any (includes.first) then
 					if not excludes.is_empty then -- create specific match list from includes constraint
 						from includes.start until includes.off loop
-							a_regex := extract_regex(includes.item)
+							a_regex := extract_regex (includes.item)
 							if a_regex /= Void then
-								target_descriptor.add_slot_ids(arch_dir.matching_ids (a_regex, target.slot_index.item.rm_type_name, Void), target.slot_index.item.path)
+								target_descriptor.add_slot_ids (current_arch_dir.matching_ids (a_regex, target.slot_index.item.rm_type_name, Void), target.slot_index.item.path)
 							end
 							includes.forth
 						end
 					else -- excludes = empty ==> includes is just a recommendation => match all archetype ids of RM type
-						target_descriptor.add_slot_ids (arch_dir.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, target.archetype_id.rm_name), target.slot_index.item.path)
+						target_descriptor.add_slot_ids (current_arch_dir.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, target.archetype_id.rm_name), target.slot_index.item.path)
 					end
 				elseif not excludes.is_empty and not assertion_matches_any (excludes.first) then
-					target_descriptor.add_slot_ids (arch_dir.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, Void), target.slot_index.item.path)
+					target_descriptor.add_slot_ids (current_arch_dir.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, Void), target.slot_index.item.path)
 					if not includes.is_empty then -- means excludes is not a recommendation; need to actually process it
 						from excludes.start until excludes.off loop
-							a_regex := extract_regex(excludes.item)
+							a_regex := extract_regex (excludes.item)
 							if a_regex /= Void then
-								id_list := arch_dir.matching_ids (a_regex, target.slot_index.item.rm_type_name, target.archetype_id.rm_name)
+								id_list := current_arch_dir.matching_ids (a_regex, target.slot_index.item.rm_type_name, target.archetype_id.rm_name)
 								from id_list.start until id_list.off loop
 									target_descriptor.slot_id_index.item (target.slot_index.item.path).prune (id_list.item)
 									id_list.forth
@@ -465,13 +485,13 @@ feature {NONE} -- Implementation
 						end
 					end
 				else
-					target_descriptor.add_slot_ids (arch_dir.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, target.archetype_id.rm_name), target.slot_index.item.path)
+					target_descriptor.add_slot_ids (current_arch_dir.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, target.archetype_id.rm_name), target.slot_index.item.path)
 				end
 
 				-- now post the results in the reverse indexes
 				id_list := target_descriptor.slot_id_index.item (target.slot_index.item.path)
 				from id_list.start until id_list.off loop
-					ara := arch_dir.archetype_index.item (id_list.item)
+					ara := current_arch_dir.archetype_index.item (id_list.item)
 					if not ara.is_supplier or else not ara.clients_index.has (target.archetype_id.as_string) then
 						ara.add_client (target.archetype_id.as_string)
 					end
@@ -481,14 +501,12 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	archetype_id_matches_slot (an_id: STRING; a_slot: ARCHETYPE_SLOT): BOOLEAN
+	archetype_id_matches_slot (an_id: attached STRING; a_slot: attached ARCHETYPE_SLOT): BOOLEAN
 			-- test an archetype id against slot spec (it might pass, even if no archetypes matching the slot were found)
 		require
-			Archetype_id_valid: an_id /= Void and then not an_id.is_empty
-			Slot_attached: a_slot /= Void
+			Archetype_id_valid: not an_id.is_empty
 		local
 			includes, excludes: ARRAYED_LIST[ASSERTION]
-			a_regex: STRING
 			regex_matcher: LX_DFA_REGULAR_EXPRESSION
 		do
 			-- process the includes
@@ -496,8 +514,7 @@ feature {NONE} -- Implementation
 			excludes := a_slot.excludes
 			if not includes.is_empty and not assertion_matches_any (includes.first) and not excludes.is_empty then
 				from includes.start until includes.off or Result loop
-					a_regex := extract_regex(includes.item)
-					if a_regex /= Void then
+					if attached {STRING} extract_regex(includes.item) as a_regex then
 						create regex_matcher.compile_case_insensitive (a_regex)
 						if regex_matcher.is_compiled then
 							Result := regex_matcher.matches (an_id)
@@ -507,8 +524,7 @@ feature {NONE} -- Implementation
 				end
 			elseif not excludes.is_empty and not assertion_matches_any (excludes.first) and includes.is_empty then
 				from excludes.start until excludes.off or not Result loop
-					a_regex := extract_regex(excludes.item)
-					if a_regex /= Void then
+					if attached {STRING} extract_regex(excludes.item) as a_regex then
 						create regex_matcher.compile_case_insensitive (a_regex)
 						if regex_matcher.is_compiled then
 							Result := not regex_matcher.matches (an_id)
@@ -533,7 +549,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	assertion_matches_any(an_assertion: ASSERTION): BOOLEAN
+	assertion_matches_any(an_assertion: attached ASSERTION): BOOLEAN
 			-- True if the regex = {/.*/} i.e. matches anything
 		do
 			Result := extract_regex(an_assertion).is_equal (Regex_any_pattern)
@@ -586,9 +602,9 @@ feature {NONE} -- Implementation
 									add_warning("VSANCE", <<ca_child_diff.path, ca_child_diff.existence.as_string, ca_parent_flat.path, ca_parent_flat.existence.as_string>>)
 									ca_child_diff.remove_existence
 									if ca_child_diff.parent.is_path_compressible then
-										debug ("validate")
-											io.put_string (" (setting is_path_compressible) %N")
-										end
+debug ("validate")
+	io.put_string (" (setting is_path_compressible) %N")
+end
 										ca_child_diff.set_is_path_compressible
 									end
 								end
@@ -601,9 +617,9 @@ feature {NONE} -- Implementation
 									add_warning("VSANCC", <<ca_child_diff.path, ca_child_diff.cardinality.as_string, ca_parent_flat.path, ca_parent_flat.cardinality.as_string>>)
 									ca_child_diff.remove_cardinality
 									if ca_child_diff.parent.is_path_compressible then
-										debug ("validate")
-											io.put_string (" (setting is_path_compressible) %N")
-										end
+debug ("validate")
+	io.put_string (" (setting is_path_compressible) %N")
+end
 										ca_child_diff.set_is_path_compressible
 									end
 								end
@@ -611,9 +627,11 @@ feature {NONE} -- Implementation
 						end
 
 					elseif ca_child_diff.node_congruent_to (ca_parent_flat, rm_schema) and ca_child_diff.parent.is_path_compressible then
-						debug ("validate")
-							io.put_string (">>>>> validate: C_ATTRIBUTE in child at " + ca_child_diff.path + " CONGRUENT to parent node " + ca_parent_flat.path + " (setting is_path_compressible) %N")
-						end
+debug ("validate")
+	io.put_string (">>>>> validate: C_ATTRIBUTE in child at " +
+	ca_child_diff.path + " CONGRUENT to parent node " +
+	ca_parent_flat.path + " (setting is_path_compressible) %N")
+end
 						ca_child_diff.set_is_path_compressible
 					end
 				else
@@ -657,9 +675,9 @@ feature {NONE} -- Implementation
 				create apa.make_from_string (a_c_node.path)
 				co_parent_flat := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
 
-				debug ("validate")
-					io.put_string (">>>>> validate: C_OBJECT in child at " + co_child_diff.path)
-				end
+debug ("validate")
+	io.put_string (">>>>> validate: C_OBJECT in child at " + co_child_diff.path)
+end
 
 				-- meta-type (i.e. AOM type) checking...
 				-- this check sees if the node is a C_CODE_PHRASE redefinition of a CONSTRAINT_REF node, which is legal, since we say that
@@ -703,9 +721,9 @@ feature {NONE} -- Implementation
 									add_warning("VSONCO", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
 									co_child_diff.remove_occurrences
 									if co_child_diff.is_root or else co_child_diff.parent.is_path_compressible then
-										debug ("validate")
-											io.put_string (" (setting is_path_compressible) %N")
-										end
+debug ("validate")
+	io.put_string (" (setting is_path_compressible) %N")
+end
 										co_child_diff.set_is_path_compressible
 									end
 								end
@@ -739,29 +757,33 @@ feature {NONE} -- Implementation
 						-- FIXME: NOTE that this only applies while uncompressed format differential archetypes are being created by e.g.
 						-- diff-tools taking legacy archetypes as input.
 						if attached {C_COMPLEX_OBJECT} co_child_diff as cco and co_child_diff.node_congruent_to (co_parent_flat, rm_schema) and (co_child_diff.is_root or else co_child_diff.parent.is_path_compressible) then
-							debug ("validate")
-								io.put_string (">>>>> validate: C_OBJECT in child at " + co_child_diff.path + " CONGRUENT to parent node " + co_parent_flat.path)
-							end
+debug ("validate")
+	io.put_string (">>>>> validate: C_OBJECT in child at " +
+	co_child_diff.path + " CONGRUENT to parent node " +
+	co_parent_flat.path)
+end
 							-- if the parent C_ATTRIBUTE of the object node in the flat parent has no children, this object can be assumed to be a total
 							-- replacement, so don't mark it as an overlay
 							if attached {C_COMPLEX_OBJECT} co_parent_flat as cco_pf then
 								if co_child_diff.is_root or cco_pf.has_attributes then
 									co_child_diff.set_is_path_compressible
-									debug ("validate")
-										io.put_string (" (setting is_path_compressible) %N")
-									end
+debug ("validate")
+	io.put_string (" (setting is_path_compressible) %N")
+end
 								else
-									debug ("validate")
-										io.put_string ("(not setting is_path_compressible, due to being replacement)%N")
-									end
+debug ("validate")
+	io.put_string ("(not setting is_path_compressible, due to being replacement)%N")
+end
 								end
 							else
 								add_error("compiler_unexpected_error", <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 4">>)
 							end
 						else
-							debug ("validate")
-								io.put_string (">>>>> validate: C_OBJECT in child at " + co_child_diff.path + " CONFORMANT to parent node " + co_parent_flat.path + " %N")
-							end
+debug ("validate")
+	io.put_string (">>>>> validate: C_OBJECT in child at " +
+	co_child_diff.path + " CONFORMANT to parent node " +
+	co_parent_flat.path + " %N")
+end
 						end
 
 						if co_child_diff.sibling_order /= Void and then not co_parent_flat.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) then
@@ -818,9 +840,9 @@ feature {NONE} -- Implementation
 								add_error("VSSM", <<a_c_obj.path, a_c_obj.sibling_order.sibling_node_id>>)
 							end
 						else
-							debug ("validate")
-								io.put_string ("????? specialised_node_validate_test: C_OBJECT at " + a_c_node.path + " ignored %N")
-							end
+debug ("validate")
+	io.put_string ("????? specialised_node_validate_test: C_OBJECT at " + a_c_node.path + " ignored %N")
+end
 						end
 
 					elseif attached {C_ATTRIBUTE} a_c_node as ca then
@@ -838,7 +860,7 @@ feature {NONE} -- Implementation
 	validate_reference_model
 			-- validate definition of archetype against reference model
 		require
-			rm_schema.is_valid
+			rm_schema.passed
 		local
 			def_it: C_ITERATOR
 		do
@@ -910,14 +932,14 @@ feature {NONE} -- Implementation
 					if ca.is_multiple then
 						if attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop then
 							if ca.cardinality /= Void then
-								if not cont_prop.type.cardinality.contains(ca.cardinality.interval) then
-									if cont_prop.type.cardinality.equal_interval(ca.cardinality.interval) then
+								if not cont_prop.cardinality.contains(ca.cardinality.interval) then
+									if cont_prop.cardinality.equal_interval(ca.cardinality.interval) then
 										add_warning("WCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string>>)
 										if not validation_strict then
 											ca.remove_cardinality
 										end
 									else
-										add_error("VCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string, cont_prop.type.cardinality.as_string>>)
+										add_error("VCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string, cont_prop.cardinality.as_string>>)
 									end
 								end
 							end
@@ -925,7 +947,7 @@ feature {NONE} -- Implementation
 							add_error("VCAM", <<ca.rm_attribute_name, ca.path, ca.cardinality.as_string, "(single-valued)">>)
 						end
 					elseif attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop_2 then
-						add_error("VCAM", <<ca.rm_attribute_name, ca.path, "(single-valued)", cont_prop_2.type.cardinality.as_string>>)
+						add_error("VCAM", <<ca.rm_attribute_name, ca.path, "(single-valued)", cont_prop_2.cardinality.as_string>>)
 					end
 					if rm_prop_def.is_computed then
 						-- flag if this is a computed property constraint (i.e. a constraint on a function from the RM)
@@ -983,9 +1005,6 @@ feature {NONE} -- Implementation
 --	flat_node_exit (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 --		do
 --		end
-
-invariant
-	target_descriptor_attached: target_descriptor /= Void
 
 end
 

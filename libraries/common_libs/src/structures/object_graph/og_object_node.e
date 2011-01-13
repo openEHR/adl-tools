@@ -249,7 +249,6 @@ feature {OG_OBJECT_NODE} -- Implementation
 			a_path: OG_PATH
 			child_objs: HASH_TABLE [OG_OBJECT, STRING]
 			child_obj: OG_OBJECT
-			child_obj_node: OG_OBJECT_NODE
 			obj_predicate_required, created_attr_path: BOOLEAN
 		do
 			create Result.make(0)
@@ -257,36 +256,23 @@ feature {OG_OBJECT_NODE} -- Implementation
 
 			-- get the attributes of this object
 			if has_children then
-				from
-					children.start
-				until
-					children.off
-				loop
+				from children.start until children.off loop
 					attr_node := children.item_for_iteration
 
 					-- get the objects of this attribute
 					child_objs := attr_node.children
 					created_attr_path := False
-					from
-						child_objs.start
-					until
-						child_objs.off
-					loop
+					from child_objs.start until child_objs.off loop
 						child_obj ?= child_objs.item_for_iteration
 						obj_predicate_required := is_unique or
 												(attr_node.is_single and child_obj.is_addressable) or
-											-- use this line of code te get rid of node ids on single nodes	
-											--	(attr_node.is_single and attr_node.child_count > 1 and child_obj.is_addressable) or
+												-- use this line of code te get rid of node ids on single nodes	
+												--	(attr_node.is_single and attr_node.child_count > 1 and child_obj.is_addressable) or
 												attr_node.is_multiple
-						child_obj_node ?= child_obj
-						if child_obj_node /= Void then
+						if attached {OG_OBJECT_NODE} child_obj as child_obj_node then
 							child_paths := child_obj_node.all_paths
-							from
-								child_paths.start
-							until
-								child_paths.off
-							loop
-								a_path := child_paths.key_for_iteration
+							from child_paths.start until child_paths.off loop
+								a_path := child_paths.key_for_iteration.twin
 								if obj_predicate_required then
 									a_path.prepend_segment(create {OG_PATH_ITEM}.make_with_object_id(attr_node.node_id, child_obj_node.node_id))
 								else
@@ -310,6 +296,9 @@ feature {OG_OBJECT_NODE} -- Implementation
 							create a_path.make_relative(create {OG_PATH_ITEM}.make(attr_node.node_id))
 							created_attr_path := True -- this kind of path (with no node id) is the same as the path to the attribute...
 						end
+						if attr_node.has_differential_path then
+							a_path.prepend_path(attr_node.differential_path.deep_twin)
+						end
 						if is_root then
 							a_path.set_absolute
 						end
@@ -329,12 +318,12 @@ feature {OG_OBJECT_NODE} -- Implementation
 			end
 		end
 
-	compress_path(a_path: OG_PATH): OG_PATH
+	compress_path(a_path: attached OG_PATH): attached OG_PATH
 			-- if there is an attribute under this object node with a differential path matching `a_path',
 			-- generate a new path whose first attribute contains the differential section in it;
 			-- else return the original `a_path'
 		require
-			Path_valid: a_path /= Void and not a_path.is_compressed
+			Path_valid: not a_path.is_compressed
 		local
 			cand_path, a_path_str: STRING
 		do
@@ -363,8 +352,6 @@ feature {OG_OBJECT_NODE} -- Implementation
 			else
 				Result := a_path
 			end
-		ensure
-			Result_exists: Result /= Void
 		end
 
 end

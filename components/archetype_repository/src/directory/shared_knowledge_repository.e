@@ -5,7 +5,7 @@ note
 				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2006-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -16,12 +16,60 @@ note
 
 class SHARED_KNOWLEDGE_REPOSITORY
 
+inherit
+	SHARED_APP_RESOURCES
+
+	SHARED_SOURCE_REPOSITORIES
+
 feature -- Access
 
-	arch_dir: ARCHETYPE_DIRECTORY
+	current_arch_dir: ARCHETYPE_DIRECTORY
 			-- application-wide archetype directory access
+		require
+			has_current_profile
+		do
+			Result := arch_dirs.item(repository_profiles.current_profile_name)
+		end
+
+	use_current_profile (refresh: BOOLEAN)
+			-- switch to current profile; refresh flag forces archetype in memory directory to be refreshed from source repository
+		local
+			new_dir: ARCHETYPE_DIRECTORY
+		do
+			if not arch_dirs.has(repository_profiles.current_profile_name) or else refresh then
+				create new_dir.make
+				if directory_exists (repository_profiles.current_reference_repository_path) then
+					source_repositories.set_reference_repository (repository_profiles.current_reference_repository_path)
+					if not repository_profiles.current_work_repository_path.is_empty then
+						if source_repositories.valid_working_repository_path (repository_profiles.current_work_repository_path) then
+							source_repositories.set_work_repository (repository_profiles.current_work_repository_path)
+						else
+							post_error (Current, "switch_to_profile", "work_repo_not_found", <<repository_profiles.current_work_repository_path>>)
+						end
+					else
+						source_repositories.remove_work_repository
+					end
+					new_dir.populate
+					arch_dirs.force(new_dir, repository_profiles.current_profile_name)
+				else
+					post_error (Current, "switch_to_profile", "ref_repo_not_found", <<repository_profiles.current_reference_repository_path>>)
+				end
+			end
+		end
+
+feature -- Status Report
+
+	has_current_profile: BOOLEAN
+		do
+			Result := repository_profiles.has_current_profile
+		end
+
+feature {NONE} -- Implementation
+
+	arch_dirs: attached HASH_TABLE [ARCHETYPE_DIRECTORY, STRING]
+			-- hash of all archetype directories used so far in the current session
 		once
-			create Result.make
+			create Result.make(0)
 		end
 
 end

@@ -25,10 +25,10 @@ create
 
 feature -- Initialisation
 
-	make_category (a_name: STRING)
+	make_category (a_name: attached STRING)
 			-- create with ontological name of artefact category
 		require
-			a_name_valid: a_name /= Void and then not a_name.is_empty
+			a_name_valid: not a_name.is_empty
 		do
 			make
 			ontological_name := a_name
@@ -40,30 +40,29 @@ feature -- Initialisation
 			display_name_set: display_name = ontological_name
 		end
 
-	make_package (a_name: STRING)
+	make_package (a_package_name: attached STRING)
 			-- create with ontological name
 		require
-			a_name_valid: a_name /= Void and then not a_name.is_empty
+			a_package_name_valid: not a_package_name.is_empty
 		do
 			make
-			ontological_name := a_name
-			display_name := a_name
+			ontological_name := a_package_name
+			display_name := a_package_name
 			group_name := "file_folder_2"
 			is_package := True
 		ensure
-			ontological_name_set: ontological_name.is_equal (a_name)
-			display_name_set: display_name = ontological_name
+			ontological_name_set: ontological_name.is_equal (a_package_name)
+			display_name_set: display_name = a_package_name
 		end
 
-	make_class (a_package: STRING; a_class_desc: BMM_CLASS_DEFINITION)
-			-- create with ontological name
+	make_class (a_package_name: attached STRING; a_class_desc: attached BMM_CLASS_DEFINITION)
+			-- create with package name and class def
 		require
-			a_package_valid: a_package /= Void and then not a_package.is_empty
-			a_desc_valid: a_class_desc.name /= Void
+			a_package_valid: not a_package_name.is_empty and not a_package_name.has (Package_name_delimiter)
 		do
 			make
 			class_definition := a_class_desc
-			ontological_name := package_class_name (a_package, class_definition.name).as_upper
+			ontological_name := package_qualified_class_name (a_package_name, class_definition.name).as_upper
 			display_name := class_definition.name
 			if class_definition.is_abstract then
 				group_name := "class_abstract"
@@ -71,7 +70,7 @@ feature -- Initialisation
 				group_name := "class_concrete"
 			end
 		ensure
-			ontological_name_set: ontological_name.is_equal (a_package + {ARCHETYPE_ID}.section_separator.out +  class_definition.name)
+			ontological_name_set: ontological_name.is_equal (a_package_name + {ARCHETYPE_ID}.section_separator.out +  class_definition.name)
 			display_name_set: display_name = class_definition.name
 		end
 

@@ -35,20 +35,20 @@ feature -- Access
 
 feature -- Element change
 
-	set_client(a_client:A_CLIENT) is
+	set_client(a_client:A_CLIENT)
 			--
 		do
 			my_client := a_client
 		end
 
-	set_self_reference is
+	set_self_reference
 			--
 		do
 			myself := current
 		end
 
 
-	init_array is
+	init_array
 			--
 		do
 			create my_array.make (1, 5)
@@ -57,7 +57,7 @@ feature -- Element change
 			my_array.put (my_client, 3)
 		end
 
-	init_array2 is
+	init_array2
 			--
 		local
 			list:LINKED_LIST[TUPLE[A_CLIENT]]
@@ -72,7 +72,7 @@ feature -- Element change
 			my_array2.put (list, 1)
 		end
 
-	init_tuple is
+	init_tuple
 			--
 		do
 			create my_tuple
@@ -80,14 +80,14 @@ feature -- Element change
 			my_tuple.put_integer (100, 2)
 		end
 
-	init_list is
+	init_list
 			--
 		do
 			create my_list.make
 			my_list.extend ([my_client])
 		end
 
-	init_pointer is
+	init_pointer
 			--
 		local
 			integer:INTEGER
@@ -96,13 +96,13 @@ feature -- Element change
 			my_pointer.set_item (my_client.default_pointer)
 		end
 
-	init_empty is
+	init_empty
 			--
 		do
 			create my_empty
 		end
 
-	init_array3 is
+	init_array3
 			--
 		do
 			create my_array3.make(5)
@@ -110,7 +110,7 @@ feature -- Element change
 			my_array3.extend(2)
 		end
 
-	init_table is
+	init_table
 			--
 		do
 			create my_table.make(5)
@@ -118,7 +118,7 @@ feature -- Element change
 			my_table.put(3,4)
 		end
 
-	init_table2 is
+	init_table2
 			--
 		do
 			create my_table2.make(5)

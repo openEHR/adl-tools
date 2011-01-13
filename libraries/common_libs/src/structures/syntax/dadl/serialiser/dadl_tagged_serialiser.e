@@ -11,11 +11,11 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class DADL_TAGGED_SERIALISER 
+class DADL_TAGGED_SERIALISER
 
 inherit
 	DT_SERIALISER
-	
+
 	XML_TOOLS
 		export
 			{NONE} all
@@ -23,7 +23,7 @@ inherit
 
 create
 	make
-	
+
 feature -- Modification
 
 	start_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER)
@@ -34,7 +34,7 @@ feature -- Modification
 			if not a_node.is_root and then a_node.parent.is_multiple then
 				last_result.append(create_indent(depth//2 + 1))
 			end
-			
+
 			if a_node.is_addressable and not a_node.is_root then
 				create attrs.make(0)
 				attrs.put(a_node.node_id, "id")
@@ -44,10 +44,10 @@ feature -- Modification
 				last_result.append(format_item(FMT_NEWLINE))
 			end
 		end
-		
+
 	end_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER)
 			-- end serialising an DT_COMPLEX_OBJECT_NODE
-		do	
+		do
 			last_result.append(create_indent(depth//2))
 			if a_node.is_addressable and not a_node.is_root then
 				last_result.append(xml_tag_end("item") + format_item(FMT_NEWLINE))
@@ -59,7 +59,7 @@ feature -- Modification
 		do
 			last_result.append(create_indent(depth//2) + xml_tag_start(a_node.rm_attr_name, Void) + format_item(FMT_NEWLINE))
 		end
-		
+
 	end_attribute_node(a_node: DT_ATTRIBUTE_NODE; depth: INTEGER)
 			-- end serialising an DT_ATTRIBUTE_NODE
 		do
@@ -76,7 +76,7 @@ feature -- Modification
 			start_object_leaf(a_node, depth)
 			last_object_simple := True
 		end
-		
+
 	end_primitive_object(a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- end serialising a DT_PRIMITIVE_OBJECT
 		do
@@ -91,7 +91,7 @@ feature -- Modification
 			start_object_leaf(a_node, depth)
 			last_object_simple := True
 		end
-		
+
 	end_primitive_object_list(a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER)
 			-- end serialising an DT_PRIMITIVE_OBJECT_LIST
 		do
@@ -106,7 +106,7 @@ feature -- Modification
 			start_object_leaf(a_node, depth)
 			last_object_simple := True
 		end
-		
+
 	end_primitive_object_interval(a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER)
 			-- end serialising a DT_PRIMITIVE_OBJECT_INTERVAL
 		do
@@ -115,11 +115,31 @@ feature -- Modification
 			end
 		end
 
+	start_object_reference(a_node: DT_OBJECT_REFERENCE; depth: INTEGER)
+			-- start serialising a DT_OBJECT_REFERENCE
+		do
+		end
+
+	end_object_reference(a_node: DT_OBJECT_REFERENCE; depth: INTEGER)
+			-- end serialising a DT_OBJECT_REFERENCE
+		do
+		end
+
+	start_object_reference_list(a_node: DT_OBJECT_REFERENCE_LIST; depth: INTEGER)
+			-- start serialising a DT_OBJECT_REFERENCE_LIST
+		do
+		end
+
+	end_object_reference_list(a_node: DT_OBJECT_REFERENCE_LIST; depth: INTEGER)
+			-- end serialising a DT_OBJECT_REFERENCE_LIST
+		do
+		end
+
 feature {NONE} -- Implementation
 
 	last_object_simple: BOOLEAN
 			-- True if last object traversed was an OBJECT_SIMPLE
-			
+
 	start_object_leaf(a_node: DT_OBJECT_LEAF; depth: INTEGER)
 			-- start serialising a DT_OBJECT_LEAF
 		local

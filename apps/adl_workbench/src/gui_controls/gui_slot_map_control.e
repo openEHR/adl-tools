@@ -3,8 +3,8 @@ note
 	description: "Slot map control - Visualise archetype ids matching slots"
 	keywords:    "archetype, slot, gui"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2008-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -16,7 +16,8 @@ class GUI_SLOT_MAP_CONTROL
 inherit
 	SHARED_KNOWLEDGE_REPOSITORY
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} has_current_profile
 		end
 
 	SHARED_APP_UI_RESOURCES
@@ -44,10 +45,8 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: MAIN_WINDOW)
+	make (a_main_window: attached MAIN_WINDOW)
 			-- Create to control `a_main_window.slots_tree' and `a_main_window.used_by_tree'.
-		require
-			a_main_window /= Void
 		do
 			gui := a_main_window
 			gui.slots_tree.key_press_actions.force_extend (agent on_tree_key_press (gui.slots_tree, ?))
@@ -69,6 +68,8 @@ feature -- Commands
 
 	populate
 			-- populate the ADL tree control by creating it from scratch
+		require
+			has_current_profile
 		local
 			eti: EV_TREE_ITEM
 			ara: ARCH_REP_ARCHETYPE
@@ -76,8 +77,8 @@ feature -- Commands
 		do
 			clear
 
-			if arch_dir.has_selected_archetype then
-				ara := arch_dir.selected_archetype
+			if current_arch_dir.has_selected_archetype then
+				ara := current_arch_dir.selected_archetype
 
 				if ara.has_slots then
 					slot_index := ara.slot_id_index
@@ -96,7 +97,7 @@ feature -- Commands
 					end
 				end
 
-				if arch_dir.compile_attempt_count < arch_dir.total_archetype_count then
+				if current_arch_dir.compile_attempt_count < current_arch_dir.total_archetype_count then
 					gui.used_by_tree.extend (create {EV_TREE_ITEM}.make_with_text (create_message_line ("slots_incomplete_w1", <<>>)))
 				end
 
@@ -122,19 +123,16 @@ feature {NONE} -- Implementation
 	gui: MAIN_WINDOW
 			-- Main window of system.
 
-	append_tree (subtree: EV_TREE_NODE_LIST; ids: ARRAYED_LIST [STRING])
+	append_tree (subtree: attached EV_TREE_NODE_LIST; ids: attached ARRAYED_LIST [STRING])
 			-- Populate `subtree' from `ids'.
-		require
-			subtree_attached: subtree /= Void
-			ids_attached: ids /= Void
 		local
 			eti: EV_TREE_ITEM
 			ara: ARCH_REP_ARCHETYPE
 		do
 			from ids.start until ids.off loop
 				create eti.make_with_text (utf8 (ids.item))
-				if arch_dir.archetype_index.has(ids.item) then
-					ara := arch_dir.archetype_index.item (ids.item)
+				if current_arch_dir.archetype_index.has(ids.item) then
+					ara := current_arch_dir.archetype_index.item (ids.item)
 					eti.set_pixmap (pixmaps [ara.group_name])
 					eti.set_data (ara)
 				end
@@ -179,10 +177,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is adl_node_map_control.e.
+--| The Original Code is gui_slot_map_control.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2003-2011
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

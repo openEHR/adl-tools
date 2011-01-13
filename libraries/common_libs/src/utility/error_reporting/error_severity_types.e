@@ -6,7 +6,7 @@ note
 	keywords:    "error status reporting"
 
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 

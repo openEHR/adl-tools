@@ -44,6 +44,7 @@ feature {NONE} -- Implementation
 			Result.put("definition",	SYM_DEFINITION)
 			Result.put("invariant",		SYM_INVARIANT)
 			Result.put("ontology",		SYM_ONTOLOGY)
+			Result.put("annotations",	SYM_ANNOTATIONS)
 		end
 
 end

@@ -3,7 +3,7 @@ note
 	description: "Populate various Eiffel Vision2 standard controls from standard EiffelBase data structures"
 	keywords:    "EiffelVision, GUI"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -49,10 +49,8 @@ feature {NONE} -- Implementation
    			end
 		end
 
-	get_file (init_value: STRING; a_parent_window: EV_WINDOW): STRING
+	get_file (init_value: STRING; a_parent_window: attached EV_WINDOW): STRING
 			-- get a file path from user
-		require
-			parent_window_valid: a_parent_window /= Void
 		local
 			dialog: EV_FILE_OPEN_DIALOG
 			a_file: RAW_FILE
@@ -96,10 +94,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	get_directory (init_value: STRING; a_parent_window: EV_WINDOW): STRING
+	get_directory (init_value: STRING; a_parent_window: attached EV_WINDOW): STRING
 			-- get a directory from user
-		require
-			parent_window_valid: a_parent_window /= Void
 		local
 			dialog: EV_DIRECTORY_DIALOG
 			a_dir: DIRECTORY
@@ -134,11 +130,9 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_ev_multi_list_from_hash(ev_mlist: EV_MULTI_COLUMN_LIST; ht: HASH_TABLE [ANY, STRING])
+	populate_ev_multi_list_from_hash(ev_mlist: attached EV_MULTI_COLUMN_LIST; ht: HASH_TABLE [ANY, STRING])
 			-- populate rows of a multi-column list with name - value pairs in a HASH_TABLE
 			-- Note that the value type is assumed to have a sensible outpur from its 'out' function
-		require
-			ev_mlist_valid: ev_mlist /= Void
 		local
 			ev_list_row: EV_MULTI_COLUMN_LIST_ROW
 			i: INTEGER
@@ -164,25 +158,25 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_ev_list_from_list(ev_list: EV_LIST; a_list: ARRAYED_LIST [STRING])
-			-- populate rows of a list with items from a ARRAYED_LIST [STRING]
-		require
-			ev_list_valid: ev_list /= Void
-		local
-			ev_list_item: EV_LIST_ITEM
-		do
-			if a_list /= Void then
-				from
-					a_list.start
-				until
-					a_list.off
-				loop
-					create ev_list_item.make_with_text (utf8 (a_list.item))
-					ev_list.extend(ev_list_item)
-					a_list.forth
-				end
-			end
-		end
+--	populate_ev_list_from_list(ev_list: EV_LIST; a_list: ARRAYED_LIST [STRING])
+--			-- populate rows of a list with items from a ARRAYED_LIST [STRING]
+--		require
+--			ev_list_valid: ev_list /= Void
+--		local
+--			ev_list_item: EV_LIST_ITEM
+--		do
+--			if a_list /= Void then
+--				from
+--					a_list.start
+--				until
+--					a_list.off
+--				loop
+--					create ev_list_item.make_with_text (utf8 (a_list.item))
+--					ev_list.extend(ev_list_item)
+--					a_list.forth
+--				end
+--			end
+--		end
 
 	populate_ev_list_from_hash_keys(ev_list: EV_LIST; ht: HASH_TABLE [ANY, STRING])
 			-- populate list from hash table keys
@@ -211,24 +205,6 @@ feature {NONE} -- Implementation
 				end
 			end
 			ev_combo.set_strings (strs)
-		end
-
-	populate_ev_combo_from_hash_keys(ev_combo: EV_COMBO_BOX; ht: HASH_TABLE [ANY, STRING])
-			-- populate combo from hash table items
-		local
-			strs: ARRAYED_LIST [STRING_32]
-			csr: CURSOR
-		do
-			csr := ht.cursor
-			create strs.make (0)
-			if ht /= Void then
-				from ht.start until ht.off loop
-					strs.extend (utf8 (ht.key_for_iteration))
-					ht.forth
-				end
-			end
-			ev_combo.set_strings (strs)
-			ht.go_to (csr)
 		end
 
 	initialise_splitter (split: EV_SPLIT_AREA; position: INTEGER)

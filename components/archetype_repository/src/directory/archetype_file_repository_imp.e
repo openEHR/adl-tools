@@ -17,11 +17,6 @@ deferred class
 inherit
 	ARCHETYPE_REPOSITORY_I
 
-	SHARED_KNOWLEDGE_REPOSITORY
-		export
-			{NONE} all
-		end
-
 	SHARED_APP_RESOURCES
 		rename
 			file_exists as is_valid_path,
@@ -77,6 +72,12 @@ feature -- Commands
 			else
 				post_error (Current, "save_as", "save_as_e1", <<full_path>>)
 			end
+		end
+
+	delete_file (full_path: STRING)
+			-- Delete file designated by `full_path' on the repository medium.
+		do
+			file_system.delete_file (full_path)
 		end
 
 feature {NONE} -- Implementation

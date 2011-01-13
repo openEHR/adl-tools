@@ -32,29 +32,42 @@
       <div id="content">
         <h2>Release History</h2>
 
-        <h3>28 Sep 2010 ADL 1.5 beta Release 2 (<a href=
-        "http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/1241/BRANCHES/specialisation/">SVN rev 1247</a>):</h3>
+        <h3>14 Jan 2011 ADL 1.5 beta Release 3 (<a href="http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/1405/BRANCHES/adl1.5/">SVN rev 1405</a>):</h3>
+		<ul>
+			<li>Archetype annotations implemented:
+				<ul>
+					<li><a href="learning_adl_15.html#annotations">details</a>;</li>
+					<li><a href="http://www.openehr.org/svn/knowledge2/TRUNK/archetypes/ADL_1.5_test/validity/annotations/">example archetypes</a>;</li>
+					<li>specifications: <a href="http://www.openehr.org/svn/specification/TRUNK/publishing/architecture/rm/common_im.pdf">common IM (section 7)</a>, <a href="http://www.openehr.org/svn/specification/TRUNK/publishing/architecture/am/adl1.5.pdf">ADL 1.5 (section 9.8)</a>;</li>
+				</ul>
+			<li>More flexible RM schemas, now nestable and clearer syntax (<a href="tool_configuration.html#rm_schema_configuration">details</a>);</li>
+			<li>Signficantly improved GUI:
+				<ul>
+					<li><a href="images/overview.png">main screen</a>;</li>
+					<li>Easier loading and viewing of RM schema files, with <a href="images/options_rm_schema_config.png">new dedicated dialog</a>;</li>
+					<li><a href="images/repository_setting.png">Improved dialog</a> for configuring repository profiles;</li>
+					<li>fixed various bugs, including wrong UTF rendering in keywords and contributors, archetype and template selection problems;</li>
+				</ul>
+			</li>
+			<li>Added initial version of OPERATIONAL_TEMPLATE class;</li>
+			<li>Fixed a bug in path generation;</li>
+			<li>Migrate to dADL format configuration .cfg file, providing greater readability and flexibility <a href="tool_configuration.html#cfg_file">(details)</a>;</li>
+			<li>Upgraded source code to Eiffel 6.7.</li>
+		</ul>
+        <h3>28 Sep 2010 ADL 1.5 beta Release 2 (<a href="http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/1247/BRANCHES/specialisation/">SVN rev 1247</a>):</h3>
 
         <ul>
 			<li value="0">Added regression testing facility so that any archetype can now include in its description section an expected compilation result, such as 'PASS', 'FAIL', or a validity code e.g. 'VSONIL'. This enables all the current test archetypes (found <a href="http://www.openehr.org/svn/knowledge2/TRUNK/archetypes/">here</a>) to be used by any compiler in any language in the same way. The ADL Workbench now has a button which turns on this facility on the test page. See <a href="test_tool.html">Test tool page</a> for details;</li>
 
 		  <li>Fixed bugs that prevented constraint bindings being read in correctly, and also errors being correctly reported from the parsing of the archetype ontology;</li>
 		  <li value="0">improve validation of languages, now minimally enforce IETF language-tag format (<a href="http://tools.ietf.org/html/rfc5646">RFC 5646</a> - this is the one that defines strings like "en" and "en-GB". This class contains functions for exact matching, validation and matching a language subtag e.g. "en" to a full tag e.g. "en" or "en-GB", "en-AU" etc);</li>
-
           <li value="0">fixed a bug in the 2nd pass validator that was sometimes preventing subtrees in specialised archetypes from being correctly validated against their correspondents in parent archetypes</li>
-
           <li value="0">Fix various launch / shut-down / minimise annoyances, especially on multiple screen systems;</li>
-
           <li value="0">Fix node map rendering problem where multiple value attributes with existence = 1 not showing up in red but pink. Existence is now taken into account for this rendering.</li>
-
           <li value="0">Added profile chooser combo box to archetype explorer on main page;</li>
-
           <li value="0">Archetype id search facility added to id control on main page. This allows any id substring to be matched to available archetypes, generating a picklist for the user. E.g. the user could enter 'exam' and the list will show all archetypes containing this string;</li>
-
           <li value="0">Improved validation for VSONIR cases; comparison of ranges for existence, occurrences and cardinality comparison in specialised archetype validation no longer treats equal ranges as a legal redefinition (since in terms of constraint logic, only strictly narrower ranges are valid redefinitions);</li>
-
           <li value="0">moved error database to files under $app_install/error_db;</li>
-
 		  <li value="0">Addition and refactoring of code base to create new applications:
 		  	<ul>
 				<li>GUI Dadl testing app;</li>
@@ -73,27 +86,15 @@
         "http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/1105/BRANCHES/specialisation/">SVN rev 1105</a>):</h3>
 
         <ul>
-          <li value="0">Improved validation, with code-based error messages matching ADL and AOM 1.5 <a href=
-          "http://www.openehr.org/svn/specification/TRUNK/publishing/roadmap.html">draft&nbsp;specifications</a> (see
-          bottom of page);</li>
-
+          <li value="0">Improved validation, with code-based error messages matching ADL and AOM 1.5 <a href="http://www.openehr.org/svn/specification/TRUNK/publishing/roadmap.html">draft&nbsp;specifications</a> (see bottom of page);</li>
           <li value="0">Support for referencing from one archetype to another without slots;</li>
-
           <li value="0">Support for ADL 1.5 templates, including slot-filling and exclusions;</li>
-
           <li value="0">Separate explorers for archetypes and templates;</li>
-
           <li value="0">Multiple RM schemas can be loaded and managed in the options dialog;</li>
-
-          <li value="0">Archetype files can now be arranged anywhere on the file-system; compiler uses RM and
-          specialisation relationships to build directory in tool;</li>
-
+          <li value="0">Archetype files can now be arranged anywhere on the file-system; compiler uses RM and specialisation relationships to build directory in tool;</li>
           <li value="0">Repositories are now defined / selected using profiles;</li>
-
           <li value="0">Archetype search facility;</li>
-
           <li value="0">An initial 13606 schema is available, allowing validation of EN 13606 archetypes.</li>
-
           <li value="0">Test function changed to prevent any .adl file overwriting; instead, outputs files for viewing
           in diff tools.</li>
         </ul>
@@ -788,21 +789,14 @@
 
       <ul>
         <li value="0"><a href="index.html">Home</a></li>
-
         <li value="0"><a href="getting_started.html">Getting started</a></li>
-
         <li value="0"><a href="browsing_archetypes.html">Browsing and compiling</a></li>
-
+        <li value="0"><a href="tool_configuration.html">Tool Configuration</a></li>
         <li value="0"><a href="learning_adl_15.html">Learning about ADL 1.5</a></li>
-
         <li value="0"><a href="templates.html">Working with templates</a></li>
-
         <li value="0"><a href="test_tool.html">The test tool</a></li>
-
         <li value="0"><a href="en13606.html">EN13606</a></li>
-
         <li value="0"><a href="support.html">Support and contributing</a></li>
-
         <li value="0"><a href="release_notes.html">Release notes</a></li>
       </ul>
     </div><!--       <div id="extra">
@@ -813,25 +807,18 @@
     <div id="footer">
       <ul>
         <li value="0"><a href="index.html">Home</a></li>
-
         <li value="0"><a href="getting_started.html">Getting started</a></li>
-
         <li value="0"><a href="browsing_archetypes.html">Browsing and compiling</a></li>
-
+        <li value="0"><a href="tool_configuration.html">Tool Configuration</a></li>
         <li value="0"><a href="learning_adl_15.html">Learning about ADL 1.5</a></li>
-
         <li value="0"><a href="templates.html">Working with templates</a></li>
-
         <li value="0"><a href="test_tool.html">The test tool</a></li>
-
         <li value="0"><a href="en13606.html">EN13606</a></li>
-
         <li value="0"><a href="support.html">Support and contributing</a></li>
-
         <li value="0"><a href="release_notes.html">Release notes</a></li>
       </ul>
 
-      <p>Copyright 2010 openEHR Foundation - $LastChangedDate$
+      <p>Copyright 2010-2011 openEHR Foundation - $LastChangedDate$
       $LastChangedRevision$</p>
     </div>
   </div>

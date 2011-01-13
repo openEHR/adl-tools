@@ -3,7 +3,7 @@ note
 	description: "Populate translation controls in ADL editor"
 	keywords:    "test, ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -17,7 +17,8 @@ class GUI_TRANSLATION_CONTROLS
 inherit
 	SHARED_KNOWLEDGE_REPOSITORY
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} has_current_profile
 		end
 
 	GUI_UTILITIES
@@ -30,9 +31,7 @@ create
 
 feature -- Initialisation
 
-	make(a_main_window: MAIN_WINDOW)
-		require
-			a_main_window /= Void
+	make(a_main_window: attached MAIN_WINDOW)
 		do
 			gui := a_main_window
 			gui.arch_translations_author_mlist.hide_title_row
@@ -58,14 +57,13 @@ feature -- Commands
 
 	populate
 			-- populate controls
+		require
+			has_current_profile
 		do
 			clear
-
-			if arch_dir.has_validated_selected_archetype then
-				if arch_dir.selected_archetype.differential_archetype.translations /= Void then
-					populate_ev_list_from_hash_keys (gui.arch_translations_languages_list, arch_dir.selected_archetype.differential_archetype.translations)
-					populate_items
-				end
+			if current_arch_dir.has_validated_selected_archetype and then attached current_arch_dir.selected_archetype.differential_archetype.translations then
+				gui.arch_translations_languages_list.set_strings (current_arch_dir.selected_archetype.differential_archetype.translations.current_keys)
+				populate_items
 			end
 		end
 
@@ -83,8 +81,8 @@ feature -- Commands
 				translation_language := gui.arch_translations_languages_list.selected_item.text.as_string_8
 			end
 
-			if arch_dir.has_validated_selected_archetype then
-				trans_item := arch_dir.selected_archetype.differential_archetype.translations.item(translation_language)
+			if current_arch_dir.has_validated_selected_archetype then
+				trans_item := current_arch_dir.selected_archetype.differential_archetype.translations.item(translation_language)
 
 				-- populate author hash
 				populate_ev_multi_list_from_hash(gui.arch_translations_author_mlist, trans_item.author)

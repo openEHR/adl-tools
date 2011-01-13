@@ -19,31 +19,27 @@ inherit
 
 feature -- Access
 
-	flattened_type_list: ARRAYED_LIST [STRING]
+	flattened_type_list: attached ARRAYED_LIST [STRING]
 			-- completely flattened list of type names, flattening out all generic parameters
 		deferred
 		end
 
-	root_class: STRING
+	root_class: attached STRING
 			-- root class of type
 		do
 			Result := flattened_type_list.first
 		end
-		
+
 feature -- Output
 
-	as_type_string: STRING
+	as_type_string: attached STRING
 			-- formal string form of the type
 		deferred
-		ensure
-			Result /= Void
 		end
 
-	as_flattened_type_string: STRING
+	as_flattened_type_string: attached STRING
 			-- string form of the type for matching in archetypes - i.e. ignoring container type names
 		deferred
-		ensure
-			Result /= Void
 		end
 
 end

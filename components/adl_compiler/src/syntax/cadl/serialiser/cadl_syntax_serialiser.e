@@ -226,7 +226,7 @@ feature -- Visitor
 		local
 			id: STRING
 		do
-			ontologies.extend (arch_dir.archetype_index.item (a_node.archetype_id).flat_archetype.ontology)
+			ontologies.extend (current_arch_dir.archetype_index.item (a_node.archetype_id).flat_archetype.ontology)
 
 			if a_node.has_attributes then -- in flat mode
 				start_c_complex_object (a_node, depth)

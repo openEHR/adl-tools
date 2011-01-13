@@ -17,7 +17,8 @@ class GUI_ONTOLOGY_CONTROLS
 inherit
 	SHARED_KNOWLEDGE_REPOSITORY
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} has_current_profile
 		end
 
 	SHARED_APP_UI_RESOURCES
@@ -35,19 +36,11 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: MAIN_WINDOW)
-		require
-			a_main_window /= Void
+	make (a_main_window: attached MAIN_WINDOW)
 		do
 			gui := a_main_window
    			gui.terminology_area.set_minimum_height(gui.Status_area_min_height)
-			in_differential_mode := True
 		end
-
-feature -- Status
-
-	in_differential_mode: BOOLEAN
-			-- True if visualisation should show contents of differential archetype, else flat archetype
 
 feature -- Commands
 
@@ -60,27 +53,15 @@ feature -- Commands
 
 	populate
 			-- populate ontology controls
+		require
+			has_current_profile
 		do
 			clear
 
-			if arch_dir.has_validated_selected_archetype then
+			if current_arch_dir.has_validated_selected_archetype then
 				populate_term_definitions
 				populate_constraint_definitions
 			end
-		end
-
-	set_differential_view
-			-- Set `in_differential_mode' on.
-		do
-			in_differential_mode := True
-			populate
-		end
-
-	set_flat_view
-			-- Set `in_differential_mode' off.
-		do
-			in_differential_mode := False
-			populate
 		end
 
 	select_term(a_term_code: STRING)
@@ -98,14 +79,14 @@ feature -- Commands
 feature {NONE} -- Implementation
 
 	target_archetype: ARCHETYPE
-			-- differential or flat version of archetype, depending on setting of `in_differential_mode'
+			-- differential or flat version of archetype, depending on setting of `differential_view'
 		require
-			arch_dir.has_selected_archetype
+			current_arch_dir.has_selected_archetype
 		do
-			if in_differential_mode then
-				Result := arch_dir.selected_archetype.differential_archetype
+			if differential_view then
+				Result := current_arch_dir.selected_archetype.differential_archetype
 			else
-				Result := arch_dir.selected_archetype.flat_archetype
+				Result := current_arch_dir.selected_archetype.flat_archetype
 			end
 		end
 
@@ -115,7 +96,7 @@ feature {NONE} -- Implementation
 	ontology: attached ARCHETYPE_ONTOLOGY
 			-- access to ontology of selected archetype
 		require
-			archetype_selected: arch_dir.has_selected_archetype
+			archetype_selected: current_arch_dir.has_selected_archetype
 		do
 			Result := target_archetype.ontology
 		end
@@ -123,7 +104,7 @@ feature {NONE} -- Implementation
 	populate_term_definitions
 			-- Populate the Term Definitions list.
 		require
-			archetype_selected: arch_dir.has_selected_archetype
+			archetype_selected: current_arch_dir.has_selected_archetype
 		local
 			col_titles: ARRAYED_LIST [STRING_32]
 			pl: EV_MULTI_COLUMN_LIST
@@ -187,7 +168,7 @@ feature {NONE} -- Implementation
 	populate_constraint_definitions
 			-- Populate the Constraint Definitions list
 		require
-			archetype_selected: arch_dir.has_selected_archetype
+			archetype_selected: current_arch_dir.has_selected_archetype
 		local
 			col_titles: ARRAYED_LIST [STRING_32]
 			pl: EV_MULTI_COLUMN_LIST

@@ -260,7 +260,7 @@ def ecf_scanner(node, env, path):
 	result = []
 	ecf_as_xml = xml.dom.minidom.parse(str(node))
 
-	for tag in ['cluster', 'override', 'library', 'assembly', 'external_include', 'external_object']:
+	for tag in ['cluster', 'override', 'tests', 'library', 'assembly', 'external_include', 'external_object']:
 		for element in ecf_as_xml.getElementsByTagName(tag):
 			location = element_location(element)
 
@@ -269,7 +269,7 @@ def ecf_scanner(node, env, path):
 			elif tag == 'external_include':
 				result += files(env, location + '/*.h') + files(env, location + '/*.hpp')
 			elif element.attributes.get('recursive', None):
-				result += eiffel_classes_in_cluster(env, location)
+				result += classes_in_cluster(env, location)
 			else:
 				result += files(env, location + '/*.e')
 
@@ -281,8 +281,14 @@ def ecf_target(target, source = None, env = None):
 
 def generate(env):
 	"""Add a Builder and construction variables for Eiffel to the given Environment."""
+	default_ec_path = env.WhereIs('ec')
+
+	if not default_ec_path:
+		default_ec_path = spec_path(env, 'studio', 'bin/ec')
+		if default_ec_path == '': default_ec_path = 'ec'
+
 	vars = Variables()
-	vars.Add('EC', "The Eiffel command-line compiler.", 'ec')
+	vars.Add('EC', "The Eiffel command-line compiler.", default_ec_path)
 	vars.Add('ECFLAGS', "Use ec -help to see possible options.", '-finalize -clean -c_compile')
 	vars.Add('ECLOG', "File to log Eiffel compiler output.", 'SCons.Eiffel.log')
 	vars.Update(env)
@@ -292,7 +298,12 @@ def generate(env):
 	env.Append(SCANNERS = Scanner(ecf_scanner, skeys = ['.ecf']))
 	env.AddMethod(environment_variable, "EiffelEnvironmentVariable")
 	env.AddMethod(files, "Files")
-	env.AddMethod(eiffel_classes_in_cluster, "EiffelClassesInCluster")
+	env.AddMethod(classes_in_cluster, "EiffelClassesInCluster")
+	env.AddMethod(spec_path, "EiffelSpecPath")
+
+	for v in ['ISE_EIFFEL', 'ISE_PLATFORM', 'ISE_C_COMPILER']:
+		if not environment_variable(env, v):
+			print '****** WARNING! Undefined Eiffel environment variable ' + v + '.'
 
 def exists(env):
 	"""Is the Eiffel compiler available?"""
@@ -323,7 +334,7 @@ def environment_variable(env, var):
 		else:
 			result = 'gcc'
 	elif var == 'ISE_EIFFEL':
-		result = env.WhereIs(env['EC'])
+		if env.has_key('EC'): result = env.WhereIs(env['EC'])
 		if result: result = os.path.abspath(dirname(result, 5))
 	elif var == 'ISE_LIBRARY':
 		result = environment_variable(env, 'ISE_EIFFEL')
@@ -334,13 +345,32 @@ def files(env, pattern):
 	"""All files matching a pattern, excluding directories."""
 	return [file for file in glob.glob(pattern) if os.path.isfile(file)]
 
-def eiffel_classes_in_cluster(env, cluster):
+def classes_in_cluster(env, cluster):
 	"""All Eiffel class files in the given cluster and its subclusters."""
 	result = []
 
 	for root, dirnames, filenames in os.walk(cluster):
 		if '.svn' in dirnames: dirnames.remove('.svn')
 		result += files(env, root + '/*.e')
+
+	return result
+
+def spec_path(env, mid_part, tail):
+	"""
+	A platform-dependent path in the EiffelStudio installation directory of the form:
+	$ISE_EIFFEL + mid_part + '/spec/' + $ISE_PLATFORM + '/' + tail
+	If either of these environment variables is undefined, then the result is an empty string.
+	"""
+	result = ''
+	ise_eiffel = environment_variable(env, 'ISE_EIFFEL')
+	ise_platform = environment_variable(env, 'ISE_PLATFORM')
+
+	if ise_eiffel and ise_platform:
+		result = os.path.join(ise_eiffel, mid_part)
+		result = os.path.join(result, 'spec')
+		result = os.path.join(result, ise_platform)
+		result = os.path.join(result, tail)
+		result = os.path.abspath(result)
 
 	return result
 

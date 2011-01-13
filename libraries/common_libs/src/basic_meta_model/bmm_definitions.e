@@ -4,7 +4,7 @@ note
 	keywords:    "model, UML"
 
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2009 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
@@ -16,6 +16,8 @@ class BMM_DEFINITIONS
 
 feature -- Definitions
 
+	Package_name_delimiter: CHARACTER = '.'
+
 	Generic_left_delim: CHARACTER = '<'
 
 	Generic_right_delim: CHARACTER = '>'
@@ -26,6 +28,20 @@ feature -- Definitions
 			-- appears between 'T' and constraining type if there is one
 
 	Any_type: STRING = "Any"
+
+	Schema_file_extension: STRING = ".bmm"
+
+	Metadata_model_publisher: STRING = "model_publisher"
+			-- dADL attribute name of logical attribute 'model_publisher' in schema file;
+			-- MUST correspond to attribute of same name in BMM_SCHEMA class
+
+	metadata_schema_name: STRING = "schema_name"
+			-- dADL attribute name of logical attribute 'schema_name' in schema file;
+			-- MUST correspond to attribute of same name in BMM_SCHEMA class
+
+	Metadata_model_release: STRING = "model_release"
+			-- dADL attribute name of logical attribute 'model_release' in schema file;
+			-- MUST correspond to attribute of same name in BMM_SCHEMA class
 
 	Metadata_schema_revision: STRING = "schema_revision"
 			-- dADL attribute name of logical attribute 'schema_revision' in schema file;
@@ -39,25 +55,13 @@ feature -- Definitions
 			-- dADL attribute name of logical attribute 'schema_description' in schema file;
 			-- MUST correspond to attribute of same name in BMM_SCHEMA class
 
-	Metadata_model_publisher: STRING = "model_publisher"
-			-- dADL attribute name of logical attribute 'model_publisher' in schema file;
-			-- MUST correspond to attribute of same name in BMM_SCHEMA class
-
-	Metadata_model_name: STRING = "model_name"
-			-- dADL attribute name of logical attribute 'model_name' in schema file;
-			-- MUST correspond to attribute of same name in BMM_SCHEMA class
-
-	Metadata_model_release: STRING = "model_release"
-			-- dADL attribute name of logical attribute 'model_release' in schema file;
-			-- MUST correspond to attribute of same name in BMM_SCHEMA class
-
 	Metadata_schema_path: STRING = "schema_path"
 			-- path of schema file
 
 	Schema_fast_parse_attrs: ARRAY [STRING]
 			-- attributes to retrieve for initial fast parse on schemas
 		once
-			Result := <<Metadata_schema_revision, Metadata_schema_lifecycle_state, Metadata_model_publisher, Metadata_model_name, Metadata_model_release>>
+			Result := <<Metadata_schema_revision, Metadata_schema_lifecycle_state, Metadata_model_publisher, metadata_schema_name, Metadata_model_release>>
 		end
 
 feature -- Comparison
@@ -88,8 +92,8 @@ feature -- Comparison
 
 feature -- Conversion
 
-	create_schema_name (a_model_publisher, a_model_name, a_model_release: STRING): attached STRING
-			-- Derived name of schema in 3 part form model_publisher '_' model_name '_' model_release.
+	create_schema_id (a_model_publisher, a_schema_name, a_model_release: STRING): attached STRING
+			-- Derived name of schema in 3 part form model_publisher '_' a_schema_name '_' model_release.
 			-- Any or all arguments can be Void or empty; for each missing element,
 			-- result contains "unknown", e.g. "unknown_test_1.0"
 			-- Result is lower case
@@ -102,10 +106,10 @@ feature -- Conversion
 			else
 				mp := a_model_publisher
 			end
-			if a_model_name = Void or a_model_name.is_empty then
+			if a_schema_name = Void or a_schema_name.is_empty then
 				mn := "unknown"
 			else
-				mn := a_model_name
+				mn := a_schema_name
 			end
 			if a_model_release = Void or a_model_release.is_empty then
 				mr := "unknown"
@@ -118,13 +122,35 @@ feature -- Conversion
 			Result_not_empty: not Result.is_empty
 		end
 
-	package_class_name (a_package_name, a_class_name: attached STRING): STRING
+	terminal_package_name (a_package_name: attached STRING): attached STRING
+			-- package name might be of form xxx.yyy.zzz ; we only want 'zzz'
+		do
+			if a_package_name.has (package_name_delimiter) then
+				Result := a_package_name.split(Package_name_delimiter).last
+			else
+				Result := a_package_name
+			end
+		end
+
+	model_qualified_package_name (a_model_publisher, a_package_name: attached STRING): attached STRING
+			-- generate a lower-case standard model-package name string, e.g. "openehr-ehr" for use in finding RM schemas
+			-- uses `terminal_package_name' to guarantee terminal form of package name
+		require
+			Model_publisher_valid: not a_model_publisher.is_empty
+			Package_name_valid: not a_package_name.is_empty
+		do
+			Result := a_model_publisher + {ARCHETYPE_ID}.section_separator.out + terminal_package_name(a_package_name)
+			Result.to_lower
+		end
+
+	package_qualified_class_name (a_package_name, a_class_name: attached STRING): attached STRING
 			-- generate a standard package-class name string, e.g. "ehr-observation" for use in finding RM schemas
+			-- uses `terminal_package_name' to guarantee terminal form of package name
 		require
 			Package_name_valid: not a_package_name.is_empty
 			Class_name_valid: not a_class_name.is_empty
 		do
-			Result := a_package_name + {ARCHETYPE_ID}.section_separator.out + a_class_name
+			Result := terminal_package_name(a_package_name) + {ARCHETYPE_ID}.section_separator.out + a_class_name
 		end
 
 	type_name_as_flattened_type_list(a_type_name: STRING): ARRAYED_LIST [STRING]

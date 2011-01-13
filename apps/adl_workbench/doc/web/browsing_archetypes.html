@@ -108,8 +108,8 @@
           </div>
           <h3>Source (differential) and flat forms</h3>
           <p>A key point to understand is that in most views, the archetype is visible in either source (differential) or flat form. For non-specialised archetypes, the two forms are structurally the same. For specialised archetypes and templates, the source form is the same idea as for object-oriented class files (e.g. in Java, .NET, etc), i.e. it contains only differences with respect to the immediate specialisation parent. For both, the source form is the 'authored' form. The flat form is the result of 'compressing' an archetype through its specialisation lineage, i.e. the 'operational' form of the archetype at runtime. This 'flattening' is the same thing that happens in all object-oriented programming technologies. Due to flattening, we often speak of the 'flat parent' with respect to a differential archetype, which denotes all constraints so far in the lineage.</p>
-          <p>From the point of view of the AWB, you can see both the differential and flat forms of an archetype visualised. Most of the views below can be seen in differential and flat form. Use the Differential and Flat View tabs at the top to switch.</p>
-          <h3>Node map</h3>
+		  <p>In the AWB, you can see both the differential and flat forms of an archetype visualised. Most of the views below can be seen in differential and flat form. Use the <a href="images/archetype_view_controls.png">'View' Differential and Flat toolbar check boxes</a> at the top to switch.</p>
+          <h3>Definition node map</h3>
           <p>The node map is a way of viewing the definition part of the archetype structurally. The definition section contains the main definitional statements of the archetype, and can be thought of as a visualisation of an AOM structure, that is to say, each node corresponds to an AOM node type. In the differential form, the node map shows only those constraints introduced by the archetype on its own. If it is a non-specialised archetype, these constraints are in addition to constraints implied by the reference model (cardinality, types etc). For a specialised archetype, the constraints are in addition to the 'flat parent', i.e. the notional sum of constraints so far in the specialisation lineage. You will notice in particular that specialised archetypes have constraints whose parent attributes are not just a single attribute name like 'items', but are a path, like '/protocol', '/data/events[at0010]/items[at0023]' and so on.</p>
           <p>You can use the radio button controls on the right to show each node in more or less detail. The last radio button control adds in the reference model attributes that have not been archetyped, but will/can be in the runtime data.</p>
           <div style="TEXT-ALIGN: left; PADDING-BOTTOM: 0px; TEXT-INDENT: 0px; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px">
@@ -191,8 +191,12 @@
             <img border="0" src="images/tn_slots_1.jpg" width="180" height="200"/> </a>
           <h3>Terminology</h3>
           <p>All archetypes contain an internal terminology, consisting of one or more 'at-codes'. They may also include constraint codes ('ac-codes'), and bindings between both of these and external terminologies and other ontology resources. These elements are found in the 'ontology' section of the archetype, such as shown here.</p>
-          <a href="images/ontology.png">
-            <img border="0" src="images/tn_ontology.jpg" width="200" height="116"/> </a>
+          <a href="images/ontology.png"><img border="0" src="images/tn_ontology.jpg" width="200" height="116"/> </a>
+
+		<h3>Annotations</h3>
+		<p>Annotations can be viewed in the Annotations tab in either differential or flat form.<a href="learning_adl_15.html">More details</a></p>
+          <a href="images/annotations_tab.png"><img border="0" src="images/tn_annotations_tab.jpg" width="200" height="116"/> </a>
+
           <h3>Source view</h3>
           <p>Archetypes can be viewed in the source form in the AWB, which is useful to verify other visual renderings, or understand how ADL works. The following is a typical example.</p>
           <a href="images/source_1.png">
@@ -204,6 +208,7 @@
         <li value="0"> <a href="index.html">Home</a> </li>
         <li value="0"> <a href="getting_started.html">Getting started</a> </li>
         <li value="0"> <a href="browsing_archetypes.html">Browsing and compiling</a> </li>
+        <li value="0"><a href="tool_configuration.html">Tool Configuration</a></li>
         <li value="0"> <a href="learning_adl_15.html">Learning about ADL 1.5</a> </li>
         <li value="0"> <a href="templates.html">Working with templates</a> </li>
         <li value="0"> <a href="test_tool.html">The test tool</a> </li>
@@ -219,6 +224,7 @@
         <li value="0"> <a href="index.html">Home</a> </li>
         <li value="0"> <a href="getting_started.html">Getting started</a> </li>
         <li value="0"> <a href="browsing_archetypes.html">Browsing and compiling</a> </li>
+        <li value="0"><a href="tool_configuration.html">Tool Configuration</a></li>
         <li value="0"> <a href="learning_adl_15.html">Learning about ADL 1.5</a> </li>
         <li value="0"> <a href="templates.html">Working with templates</a> </li>
         <li value="0"> <a href="test_tool.html">The test tool</a> </li>

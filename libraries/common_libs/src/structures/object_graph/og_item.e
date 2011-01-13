@@ -22,14 +22,6 @@ inherit
 			is_equal
 		end
 
-	ARCHETYPE_TERM_CODE_TOOLS
-		export
-			{NONE} all;
-			{ANY} specialisation_depth_from_code, is_valid_code;
-		undefine
-			is_equal
-		end
-
 	COMPARABLE
 
 feature -- Definitions
@@ -85,14 +77,6 @@ feature -- Access
 		end
 
 	parent: OG_NODE
-
-	specialisation_depth: INTEGER
-			-- specialisation level of this node if identified
-		require
-			is_valid_code (node_id)
-		do
-			Result := specialisation_depth_from_code(node_id)
-		end
 
 	ultimate_parent: OG_NODE
 			-- return the root node of the tree

@@ -18,6 +18,9 @@ class IN_MEMORY_MESSAGE_DB
 
 inherit
 	MESSAGE_DB
+		redefine
+			populate
+		end
 
 create
 	make
@@ -35,7 +38,7 @@ feature -- Modification
 			--		>
 			--	>
 			-- caller should check database_loaded after call.
-		require
+		require else
 			Valid_message_string: attached a_dadl_str
 			Valid_local_lang: attached a_locale_lang and then not a_locale_lang.is_empty
 		local

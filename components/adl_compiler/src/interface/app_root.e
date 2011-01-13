@@ -5,7 +5,7 @@ note
 				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -16,15 +16,11 @@ note
 class APP_ROOT
 
 inherit
-	SHARED_APP_RESOURCES
-
 	SHARED_KNOWLEDGE_REPOSITORY
 
 	SHARED_ARCHETYPE_COMPILER
 
 	SHARED_REFERENCE_MODEL_ACCESS
-
-	SHARED_SOURCE_REPOSITORIES
 
 	SHARED_ARCHETYPE_SERIALISERS
 		export
@@ -42,7 +38,6 @@ feature -- Initialisation
 
 	initialise
 		local
-			rep_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
 			dummy_error_accumulator: ERROR_ACCUMULATOR
 		once
 			message_db.populate(Error_db_directory, locale_language_short)
@@ -76,57 +71,30 @@ feature -- Initialisation
 				initialise_serialisers
 
 				-- set up the RM schemas
-				rm_schemas_access.initialise(default_rm_schema_directory, rm_schemas_load_list)
-				rm_schemas_access.load_schemas
-
-				if not rm_schemas_access.found_valid_schemas then
-					create strx.make_empty
-					rm_schemas_load_list.do_all(agent (s: STRING) do strx.append(s + ", ") end)
-					strx.remove_tail (2) -- remove final ", "
-					post_warning (Current, "initialise", "model_access_e0", <<strx, default_rm_schema_directory>>)
+				if rm_schema_directory.is_empty then
+					set_rm_schema_directory(default_rm_schema_directory)
+				end
+				if directory_exists (rm_schema_directory) then
+					rm_schemas_access.initialise(rm_schema_directory, rm_schemas_load_list)
+					rm_schemas_access.load_schemas
+					if not rm_schemas_access.found_valid_schemas then
+						create strx.make_empty
+						rm_schemas_load_list.do_all(agent (s: STRING) do strx.append(s + ", ") end)
+						strx.remove_tail (2) -- remove final ", "
+						post_warning (Current, "initialise", "model_access_e0", <<strx, rm_schema_directory>>)
+					end
+				else
+					post_error (Current, "initialise", "model_access_e5", <<rm_schema_directory>>)
 				end
 
 				-- adjust for repository profiles being out of sync with current profile setting (e.g. due to
 				-- manual editing of .cfg file
-				rep_profiles := repository_profiles
-				if not rep_profiles.is_empty and not rep_profiles.has (current_repository_profile) then
-					rep_profiles.start
-					set_current_repository_profile(rep_profiles.key_for_iteration)
+				if not repository_profiles.is_empty and not repository_profiles.has_current_profile then
+					repository_profiles.start
+					set_current_profile(repository_profiles.key_for_iteration)
 				end
 
 				initialised := True
-			end
-		end
-
-	switch_to_profile (a_profile: attached STRING)
-			-- switch to `a_profile'
-		require
-			repository_profiles.has (a_profile)
-		do
-			if not a_profile.same_string (current_repository_profile) then
-				set_current_repository_profile(a_profile)
-				use_current_profile
-			end
-		end
-
-	use_current_profile
-			-- switch to current profile
-		do
-			if directory_exists (reference_repository_path) then
-				source_repositories.set_reference_repository (reference_repository_path)
-				if not work_repository_path.is_empty then
-					if source_repositories.valid_working_repository_path (work_repository_path) then
-						source_repositories.set_work_repository (work_repository_path)
-					else
-						post_error (Current, "switch_to_profile", "work_repo_not_found", <<work_repository_path>>)
-					end
-				else
-					source_repositories.remove_work_repository
-				end
-				arch_dir.clear
-				arch_dir.populate
-			else
-				post_error (Current, "switch_to_profile", "ref_repo_not_found", <<reference_repository_path>>)
 			end
 		end
 

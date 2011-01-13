@@ -4,7 +4,7 @@ note
 	keywords:    "error status reporting"
 
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -60,7 +60,7 @@ feature -- Access
 
 	message: attached STRING
 
-	location: attached STRING
+	location: STRING
 
 feature -- Output
 
@@ -68,7 +68,7 @@ feature -- Output
 		do
 			create Result.make (0)
 			Result.append (error_type_names.item(severity) + " ")
-			if not location.is_empty then
+			if attached location and not location.is_empty then
 				Result.append (location + ": ")
 			end
 			Result.append ("(" + code + ") " + message)

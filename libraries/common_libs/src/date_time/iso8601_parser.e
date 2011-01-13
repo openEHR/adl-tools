@@ -306,10 +306,8 @@ feature -- Status Report
 			end
 		end
 
-	valid_iso8601_duration(str: STRING): BOOLEAN
+	valid_iso8601_duration(str: attached STRING): BOOLEAN
 			-- True if string in form "PnYnMnWnDTnHnMnS"
-		require
-			str /= Void
 		local
 			str1, ymd_part, hms_part: STRING
 			yr, mo, wk, dy, hr, mi, sec: INTEGER

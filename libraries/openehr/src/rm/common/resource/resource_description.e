@@ -3,8 +3,8 @@ note
 	description: "Resource descriptive meta-data"
 	keywords:    "resource, meta-data"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2006-2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -55,11 +55,11 @@ feature -- Initialisation
 			default_create
 		end
 
-	make(an_author_name, orig_lang: STRING)
+	make(an_author_name, orig_lang: attached STRING)
 			-- make an empty description
 		require
-			An_author_name_exists: an_author_name /= Void and then not an_author_name.is_empty
-			Language_valid: orig_lang /= Void and then not orig_lang.is_empty
+			An_author_name_exists: not an_author_name.is_empty
+			Language_valid: not orig_lang.is_empty
 		do
 			default_create
 			add_original_author_item("name", an_author_name)
@@ -71,17 +71,17 @@ feature -- Initialisation
 
 feature -- Access
 
-	original_author: HASH_TABLE [STRING, STRING]
+	original_author: attached HASH_TABLE [STRING, STRING]
 			-- Original author of this archetype, with all relevant details,
 			-- including organisation.
 
 	resource_package_uri: URI
 			-- URI of archetype package
 
-	details: HASH_TABLE [RESOURCE_DESCRIPTION_ITEM, STRING]
+	details: attached HASH_TABLE [RESOURCE_DESCRIPTION_ITEM, STRING]
 			-- list of descriptive details, keyed by language
 
-	lifecycle_state: STRING
+	lifecycle_state: attached STRING
 			-- Lifecycle state of the archetype. Includes states such as
 			-- submitted, experimental, awaiting_approval, approved,
 			-- superseded, obsolete. State machine defined by archetype system
@@ -94,24 +94,20 @@ feature -- Access
 	parent_resource: AUTHORED_RESOURCE
 			-- Reference to owning resource.
 
-	languages: ARRAYED_SET[STRING]
+	languages: attached ARRAYED_SET[STRING]
 			-- list of all languages in details
 		do
 			create Result.make(0)
-			from
-				details.start
-			until
-				details.off
-			loop
+			from details.start until details.off loop
 				Result.extend (details.key_for_iteration.twin)
 				details.forth
 			end
 		end
 
-	detail_for_language(a_lang: STRING): RESOURCE_DESCRIPTION_ITEM
+	detail_for_language(a_lang: attached STRING): RESOURCE_DESCRIPTION_ITEM
 			-- get the RESOURCE_DESCRIPTION_ITEM for a_lang
 		require
-			Language_valid: a_lang /= Void and then details.has (a_lang)
+			Language_valid: details.has (a_lang)
 		do
 			Result := details.item(a_lang)
 		end
@@ -121,12 +117,10 @@ feature -- Access
 
 feature -- Comparison
 
-	valid_detail(a_detail: RESOURCE_DESCRIPTION_ITEM): BOOLEAN
+	valid_detail(a_detail: attached RESOURCE_DESCRIPTION_ITEM): BOOLEAN
 			-- is a_detail valid to be added to details list? Checks to see
 			-- that two detail objects both with is_original_language set
 			-- cannot be added.
-		require
-			a_detail /= Void
 		do
 			if not details.has (a_detail.language.code_string) then
 				if a_detail.is_original_language then
@@ -144,11 +138,11 @@ feature -- Comparison
 
 feature -- Modification
 
-	add_original_author_item(a_key, a_value: STRING)
+	add_original_author_item(a_key, a_value: attached STRING)
 			-- add the key, value pair to original_author
 		require
-			Key_valid: a_key /= Void and then not a_key.is_empty
-			Value_valid: a_value /= Void and then not a_value.is_empty
+			Key_valid: not a_key.is_empty
+			Value_valid: not a_value.is_empty
 		do
 			original_author.force(a_value, a_key)
 		ensure
@@ -161,10 +155,10 @@ feature -- Modification
 			create original_author.make(0)
 		end
 
-	add_other_contributor(a_contributor: STRING)
+	add_other_contributor(a_contributor: attached STRING)
 			-- add a_contributor to add_other_contributor
 		require
-			Contributor_valid: a_contributor /= Void and then not a_contributor.is_empty
+			Contributor_valid: not a_contributor.is_empty
 		do
 			if other_contributors = Void then
 				create other_contributors.make(0)
@@ -180,49 +174,49 @@ feature -- Modification
 			create other_contributors.make(0)
 		end
 
-	set_resource_package_uri(a_uri: STRING)
+	set_resource_package_uri(a_uri: attached STRING)
 			-- set resource_package_uri
 		require
-			Uri_valid: a_uri /= Void and then not a_uri.is_empty
+			Uri_valid: not a_uri.is_empty
 		do
 			create resource_package_uri.make_from_string(a_uri)
 		ensure
 			Archetype_package_uri_set: resource_package_uri.out.is_equal(a_uri)
 		end
 
-	set_lifecycle_state(a_lifecycle_state: STRING)
+	set_lifecycle_state(a_lifecycle_state: attached STRING)
 			-- set lifecycle_state
 		require
-			Lifecycle_state_valid: a_lifecycle_state /= Void and then not a_lifecycle_state.is_empty
+			Lifecycle_state_valid: not a_lifecycle_state.is_empty
 		do
 			lifecycle_state := a_lifecycle_state
 		ensure
 			Lifecycle_state_set: lifecycle_state = a_lifecycle_state
 		end
 
-	add_detail(a_detail: RESOURCE_DESCRIPTION_ITEM)
+	add_detail(a_detail: attached RESOURCE_DESCRIPTION_ITEM)
 			-- Add a language, value pair to `details'.
 		require
-			Detail_valid: a_detail /= Void and then valid_detail(a_detail)
+			Detail_valid: valid_detail(a_detail)
 		do
 			details.force(a_detail, a_detail.language.code_string)
 		ensure
 			Details_set: details.has(a_detail.language.code_string)
 		end
 
-	add_language(a_new_lang: STRING)
+	add_language(a_new_lang: attached STRING)
 			-- add a new details object created from the object for orig_lang,
 			-- with all string fields ready for translation
 		require
-			New_lang_valid: a_new_lang /= Void and then not details.has(a_new_lang)
+			New_lang_valid: not details.has(a_new_lang)
 		do
 			add_detail(details.item (original_language.code_string).translated_copy (a_new_lang))
 		end
 
-	remove_detail, remove_language(a_lang: STRING)
+	remove_detail, remove_language(a_lang: attached STRING)
 			-- remove details item for a_lang from the resource
 		require
-			Lang_valid: a_lang /= Void and then details.has(a_lang)
+			Lang_valid: details.has(a_lang)
 		do
 			details.remove (a_lang)
 		end
@@ -233,11 +227,10 @@ feature -- Modification
 			create details.make(0)
 		end
 
-	add_other_detail (a_key, a_value: STRING)
+	add_other_detail (a_key, a_value: attached STRING)
 			-- Add the key, value pair to `other_details'.
 		require
-			Key_valid: a_key /= Void and then not a_key.is_empty
-			value_attached: a_value /= Void
+			Key_valid: not a_key.is_empty
 		do
 			if other_details = Void then
 				create other_details.make (0)
@@ -249,15 +242,13 @@ feature -- Modification
 				other_details.remove (a_key)
 			end
 		ensure
-			other_details_attached: other_details /= Void
+			other_details_attached: attached other_details
 			other_details_set: not a_value.is_empty implies other_details.item (a_key) = a_value
 			other_details_removed: a_value.is_empty implies not other_details.has (a_key)
 		end
 
-	set_parent_resource(a_res: AUTHORED_RESOURCE)
+	set_parent_resource(a_res: attached AUTHORED_RESOURCE)
 			-- set parent_resource
-		require
-			a_res /= Void
 		do
 			parent_resource := a_res
 		ensure
@@ -281,12 +272,11 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 		end
 
 invariant
-	Original_author_valid: original_author /= Void and then not original_author.is_empty
-	Lifecycle_state_valid: lifecycle_state /= Void and then not lifecycle_state.is_empty
-	Details_valid: details /= Void
+	Original_author_valid: not original_author.is_empty
+	Lifecycle_state_valid: not lifecycle_state.is_empty
 	Parent_resource_valid: parent_resource /= Void implies parent_resource.description = Current
---	Language_valid: parent_resource /= Void implies details.linear_representation.for_all
---		(parent_resource.languages_available.has(?.language.code_string))
+	Language_valid: parent_resource /= Void implies details.linear_representation.for_all
+		(agent (rdi: RESOURCE_DESCRIPTION_ITEM):BOOLEAN do Result := parent_resource.languages_available.has(rdi.language.code_string) end)
 
 end
 

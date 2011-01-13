@@ -16,7 +16,7 @@ class
 	TEST_BMM
 
 inherit
-	EQA_TEST_SET
+	OPENEHR_TEST_SET
 		redefine
 			on_prepare
 		end
@@ -41,6 +41,7 @@ feature {NONE} -- Events
 	on_prepare
 			-- <Precursor>
 		do
+			app_root.initialise
 			assert ("app_root initialisation failed", app_root.initialised)
 			assert ("No RM schemas", rm_schemas_access.found_valid_schemas)
 			rm_schema := rm_schemas_access.schema_for_package ("openehr-ehr")

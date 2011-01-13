@@ -44,10 +44,10 @@ convert
 
 feature -- Initialisation
 
-	make_from_string(str: STRING)
+	make_from_string(str: attached STRING)
 			-- make from any valid ISO date/time string
 		require
-			String_valid: str /= Void and valid_iso8601_date_time(str)
+			String_valid: valid_iso8601_date_time(str)
 		do
 			if valid_iso8601_date_time(str) then
 				deep_copy(iso8601_parser.cached_iso8601_date_time)
@@ -55,11 +55,10 @@ feature -- Initialisation
 			value := as_string
 		end
 
-	make_date_and_time(a_date: ISO8601_DATE; a_time: ISO8601_TIME)
+	make_date_and_time(a_date: attached ISO8601_DATE; a_time: ISO8601_TIME)
 			-- create from date and time parts
 		require
-			Date_valid: a_date /= Void
-			Partial_validity: not a_date.is_partial
+			Date_validity: not a_date.is_partial
 			Extended_validity: a_time /= Void implies (a_date.is_extended = a_time.is_extended)
 		do
 			date_part := a_date
@@ -69,8 +68,6 @@ feature -- Initialisation
 
 	make_date_time (a_dt: attached DATE_TIME)
 			-- make from a DATE_TIME object
-		require
-			a_dt /= Void
 		do
 			make_date_and_time(create {ISO8601_DATE}.make_date(a_dt.date), create {ISO8601_TIME}.make_time(a_dt.time))
 		end
@@ -201,7 +198,7 @@ feature -- Conversion
 
 feature -- Output
 
-	as_string: STRING
+	as_string: attached STRING
 			-- express as ISO8601 format string
 		do
 			create Result.make(0)
@@ -221,7 +218,7 @@ feature -- Output
 
 feature {ISO8601_DATE_TIME} -- Implementation
 
-	date_part: ISO8601_DATE
+	date_part: attached ISO8601_DATE
 
 	time_part: ISO8601_TIME
 

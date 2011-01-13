@@ -5,7 +5,7 @@ note
 				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2006-2009 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -36,6 +36,13 @@ feature -- Definitions
 	Archetype_source_file_extension: STRING = ".adls"
 			-- Extension for source form (differential) archetype files.
 
+	Archetype_dummy_file_extension: STRING = ".adlx"
+			-- Extension for use with source/flat diff; we don't want to use
+			-- the legitimate extension on these files because one is source
+			-- and one is flat, and diff tools need to see the same extension;
+			-- also we don't want users to get confused about what kind of files
+			-- these are
+
 	Adl_versions: ARRAYED_LIST [STRING]
 			-- list of ADL versions known in this tool
 		once
@@ -50,6 +57,21 @@ feature -- Definitions
 			-- return current latest known ADL version in this tool
 		once
 			Result := Adl_versions.last
+		end
+
+feature -- Comparison
+
+	valid_adl_version(a_ver: STRING): BOOLEAN
+			-- set adl_version with a string containing only '.' and numbers,
+			-- not commencing or finishing in '.'
+		require
+			Valid_string: a_ver /= Void and then not a_ver.is_empty
+		local
+			str: STRING
+		do
+			str := a_ver.twin
+			str.prune_all ('.')
+			Result := str.is_integer and a_ver.item(1) /= '.' and a_ver.item (a_ver.count) /= '.'
 		end
 
 end

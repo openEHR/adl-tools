@@ -3,8 +3,8 @@ note
 	description: "interface class to ADL parser and parse tree"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -71,10 +71,9 @@ feature -- Commands
 			serialised := Void
 		end
 
-	set_source (in_text: STRING; a_source_start_line: INTEGER)
+	set_source (in_text: attached STRING; a_source_start_line: INTEGER)
 			-- Set `in_text' as working artifact.
 		require
-			text_attached: in_text /= Void
 			start_line_positive: a_source_start_line > 0
 		do
 			source := in_text
@@ -103,7 +102,7 @@ feature -- Commands
 			parse_succeeded or else tree = Void
 		end
 
-	serialise (a_format: STRING)
+	serialise (a_format: attached STRING)
 			-- Serialise current artifact into `a_format'.
 		require
 			Format_valid: has_dt_serialiser_format (a_format)
@@ -125,10 +124,8 @@ feature -- Commands
 			serialised_attached: serialised /= Void
 		end
 
-	set_tree (a_node: DT_COMPLEX_OBJECT_NODE)
+	set_tree (a_node: attached DT_COMPLEX_OBJECT_NODE)
 			-- Set root node of `tree' from e.g. GUI tool.
-		require
-			node_attached: a_node /= Void
 		do
 			tree := a_node
 			in_parse_mode := False

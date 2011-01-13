@@ -36,37 +36,15 @@ create
 
 feature -- Initialisation
 
-	make (a_main_window: MAIN_WINDOW)
-		require
-			a_main_window /= Void
+	make (a_main_window: attached MAIN_WINDOW)
 		do
 			gui := a_main_window
 			gui_tree := gui.node_map_tree
-			in_differential_mode := True
 		ensure
 			gui_set: gui = a_main_window
 		end
 
-feature -- Status Report
-
-	in_differential_mode: BOOLEAN
-			-- True if not in inheritance compressed view mode
-
 feature -- Commands
-
-	set_differential_view
-			-- Set `in_differential_mode' on.
-		do
-			in_differential_mode := True
-			populate
-		end
-
-	set_flat_view
-			-- Set `in_differential_mode' off.
-		do
-			in_differential_mode := False
-			populate
-		end
 
 	populate
 			-- populate the ADL tree control by creating it from scratch
@@ -76,8 +54,8 @@ feature -- Commands
 			gui_tree.wipe_out
  			create gui_tree_item_stack.make (0)
 			populate_root_node
-			class_def := arch_dir.selected_class.class_definition
-			class_def.do_supplier_closure(not in_differential_mode, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+			class_def := current_arch_dir.selected_class.class_definition
+			class_def.do_supplier_closure(not differential_view, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 			gui_tree.recursive_do_all (agent ev_tree_expand)
 			gui.go_to_node_in_archetype_tree_view
 		end
@@ -97,8 +75,8 @@ feature {NONE} -- Implementation
 			a_ti: EV_TREE_ITEM
 		do
 			create a_ti
-			a_ti.set_text (arch_dir.selected_class.display_name)
-			a_ti.set_pixmap (pixmaps [arch_dir.selected_class.group_name])
+			a_ti.set_text (current_arch_dir.selected_class.display_name)
+			a_ti.set_pixmap (pixmaps [current_arch_dir.selected_class.group_name])
 			gui_tree.extend (a_ti)
 			gui_tree_item_stack.extend (a_ti)
 		end
@@ -114,7 +92,7 @@ feature {NONE} -- Implementation
 		do
 			create a_ti
 			a_ti.set_data (a_prop_def)
-			str := a_prop_def.name + ": " + a_prop_def.type.as_type_string
+			str := a_prop_def.name + ": " + a_prop_def.type_def.as_type_string
 			if a_prop_def.is_mandatory then
 				str.append (" [1]")
 			else
@@ -154,9 +132,6 @@ feature {NONE} -- Implementation
 				node.expand
  			end
 		end
-
-invariant
-	gui_attached: gui /= Void
 
 end
 

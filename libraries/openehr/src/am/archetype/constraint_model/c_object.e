@@ -26,7 +26,7 @@ inherit
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all;
-			{ANY} specialisation_depth_from_code;
+			{ANY} specialisation_depth_from_code, is_valid_code;
 		end
 
 feature -- Access
@@ -50,8 +50,10 @@ feature -- Access
 
 	specialisation_depth: INTEGER
 			-- specialisation level of this node if identified
+		require
+			is_valid_code (node_id)
 		do
-			Result := representation.specialisation_depth
+			Result := specialisation_depth_from_code(node_id)
 		end
 
 	specialisation_status (spec_level: INTEGER): SPECIALISATION_STATUS

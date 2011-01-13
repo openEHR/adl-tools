@@ -22,9 +22,30 @@ inherit
 
 	SHARED_MESSAGE_BILLBOARD
 
+	SHARED_DADL_CONFIG_FILE_ACCESS
+
 feature -- Access
 
-feature -- Application Switch Setting
+	error_reporting_level: INTEGER
+			-- Level of error reporting required; see BILLBOARD_MESSAGE_TYPES for levels
+			-- all levels >= the one stored will be displayed; Info is the minimum.
+		local
+			str: STRING
+		do
+			str := app_cfg.string_value ("/general/status_reporting_level")
+			if attached str and str.is_integer and is_valid_error_type (str.to_integer) then
+				Result := str.to_integer
+			else
+				Result := Error_type_info
+			end
+		end
+
+	Error_db_directory: STRING
+			-- directory of error database files in .dadl format e.g.
+			-- .../error_db/dadl_errors.txt etc
+		once
+			Result := file_system.pathname(application_startup_directory, "error_db")
+		end
 
 end
 

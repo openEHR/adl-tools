@@ -64,27 +64,22 @@ feature -- Modification
 			hasnt_path: not has_path (full_path)
 		local
 			ara: ARCH_REP_ARCHETYPE
-			arch_id, parent_arch_id: ARCHETYPE_ID
 			amp: ARCHETYPE_MINI_PARSER
 		do
 			create amp
 			amp.parse (full_path)
 			if amp.last_parse_valid then
-				if not amp.last_archetype_id_old_style then
-					create arch_id.make_from_string(amp.last_archetype_id)
-					if not archetype_id_index.has (amp.last_archetype_id) then
-						if amp.last_archetype_specialised then
-							create parent_arch_id.make_from_string(amp.last_parent_archetype_id)
-							create ara.make_specialised (full_path, arch_id, parent_arch_id, Current, amp.last_archetype_artefact_type)
-						else
-							create ara.make (full_path, arch_id, Current, amp.last_archetype_artefact_type)
-						end
+				if amp.last_archetype.archetype_id_is_old_style then
+					post_error (Current, "build_directory", "parse_archetype_e7", <<full_path>>)
+				elseif amp.last_archetype.is_specialised and then amp.last_archetype.parent_archetype_id_is_old_style then
+					post_error (Current, "build_directory", "parse_archetype_e11", <<full_path, amp.last_archetype.parent_archetype_id.as_string>>)
+				else
+					if not archetype_id_index.has (amp.last_archetype.archetype_id.as_string) then
+						create ara.make (full_path, Current, amp.last_archetype)
 						archetype_id_index.force (ara, full_path)
 					else
 						post_info (Current, "build_directory", "pair_filename_i1", <<full_path>>)
 					end
-				else
-					post_warning (Current, "build_directory", "parse_archetype_e7", <<full_path>>)
 				end
 			else
 				post_error (Current, "build_directory", "parse_archetype_e5", <<full_path>>)

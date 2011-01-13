@@ -17,9 +17,9 @@ note
 	revision:    "$LastChangedRevision"
 	last_change: "$LastChangedDate"
 
-class EHR_EXTRACT_REQUEST
+deferred class EHR_EXTRACT_REQUEST
 
-inherit 
+inherit
 	EXTRACT_REQUEST [EHR_EXTRACT_SPEC]
 
 feature -- Access

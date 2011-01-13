@@ -58,12 +58,10 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: MAIN_WINDOW)
+	make (a_main_window: attached MAIN_WINDOW)
 			-- Create to control `a_main_window.compiler_output_grid'.
-		require
-			a_main_window /= Void
 		do
-			create categories.make (Err_type_valid, Err_type_warning)
+			create categories.make_filled (Void, Err_type_valid, Err_type_warning)
 			gui := a_main_window
 			make_for_grid (gui.compiler_output_grid)
 			grid.enable_tree
@@ -91,10 +89,8 @@ feature -- Commands
 			update_errors_tab_label
 		end
 
-	extend_and_select (ara: ARCH_REP_ARCHETYPE)
+	extend_and_select (ara: attached ARCH_REP_ARCHETYPE)
 			-- Add a node representing the errors or warnings of the archetype, if any.
-		require
-			ara_attached: ara /= Void
 		local
 			gli: EV_GRID_LABEL_ITEM
 			cat_row, row, subrow: EV_GRID_ROW
@@ -207,11 +203,11 @@ feature -- Commands
 				end
 
 			create statistics_element.make_last (root, "statistics", ns)
-			create_category_element.call ([statistics_element, "Total Archetypes", arch_dir.total_archetype_count])
-			create_category_element.call ([statistics_element, "Specialised Archetypes", arch_dir.specialised_archetype_count])
-			create_category_element.call ([statistics_element, "Archetypes with slots", arch_dir.client_archetype_count])
-			create_category_element.call ([statistics_element, "Archetypes used by others", arch_dir.supplier_archetype_count])
-			create_category_element.call ([statistics_element, "Bad Archetypes", arch_dir.bad_archetype_count])
+			create_category_element.call ([statistics_element, "Total Archetypes", current_arch_dir.total_archetype_count])
+			create_category_element.call ([statistics_element, "Specialised Archetypes", current_arch_dir.specialised_archetype_count])
+			create_category_element.call ([statistics_element, "Archetypes with slots", current_arch_dir.client_archetype_count])
+			create_category_element.call ([statistics_element, "Archetypes used by others", current_arch_dir.supplier_archetype_count])
+			create_category_element.call ([statistics_element, "Bad Archetypes", current_arch_dir.bad_archetype_count])
 
 			from
 				err_type := categories.lower
@@ -299,7 +295,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	gui: MAIN_WINDOW
+	gui: attached MAIN_WINDOW
 			-- Main window of system.
 
 	on_grid_key_press (key: EV_KEY)
@@ -371,10 +367,8 @@ feature {NONE} -- Implementation
 			category_row_attached: categories [err_type] /= Void
 		end
 
-	remove_archetype_row_if_in_wrong_category (ara: ARCH_REP_ARCHETYPE)
+	remove_archetype_row_if_in_wrong_category (ara: attached ARCH_REP_ARCHETYPE)
 			-- Remove the row representing `ara' from `grid' if it is under the wrong category.
-		require
-			ara_attached: ara /= Void
 		local
 			cat_row, row: EV_GRID_ROW
 			row_idx: INTEGER
@@ -425,7 +419,6 @@ feature {NONE} -- Implementation
 			-- Rows containing category grouper in column 1.
 
 invariant
-	gui_attached: gui /= Void
 	correct_grid: grid = gui.compiler_output_grid
 
 end

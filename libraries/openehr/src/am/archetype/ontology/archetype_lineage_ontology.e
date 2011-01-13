@@ -21,12 +21,6 @@ class ARCHETYPE_LINEAGE_ONTOLOGY
 
 inherit
 	ARCHETYPE_TERM_CODE_TOOLS
-		export
-			{NONE} all;
-			{ANY} valid_concept_code
-		undefine
-			default_create
-		end
 
 create
 	make
@@ -66,7 +60,7 @@ feature -- Modification
 			-- add an ontology that is from a parent archetype of the original ontology used in make()
 		require
 			Ontology_valid: an_ontology /= Void and then an_ontology.is_differential
-				and then not has_ontology(an_ontology) 
+				and then not has_ontology(an_ontology)
 				and then not has_specialisation_level(an_ontology.specialisation_level)
 		do
 			ontologies.put(an_ontology, an_ontology.specialisation_level)

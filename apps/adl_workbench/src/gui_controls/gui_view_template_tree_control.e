@@ -66,16 +66,24 @@ feature -- Commands
 		do
 			if delay_to_make_keyboard_navigation_practical = Void then
 				create delay_to_make_keyboard_navigation_practical
+
 				delay_to_make_keyboard_navigation_practical.actions.extend (agent
 					do
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
-						if attached {ARCH_REP_ARCHETYPE} gui_tree.selected_item.data as ara then
-							arch_dir.set_selected_item (ara)
-							gui.parse_archetype
-							populate_template_nodes (ara)
+
+						if attached gui_tree.selected_item then
+							if attached {ARCH_REP_ARCHETYPE} gui_tree.selected_item.data as ara then
+								if attached current_arch_dir then
+									current_arch_dir.set_selected_item (ara)
+								end
+
+								gui.parse_archetype
+								populate_template_nodes (ara)
+							end
 						end
 					end)
 			end
+
 			delay_to_make_keyboard_navigation_practical.set_interval (300)
 		end
 
@@ -86,14 +94,15 @@ feature -- Commands
 			create gui_node_descriptor_map.make(0)
 			gui_tree.wipe_out
  			create gui_tree_item_stack.make (0)
- 			arch_dir.do_all_archetypes (agent populate_template_nodes)
-			gui.go_to_node_in_archetype_tree_view
+
+ 			if has_current_profile then
+	 			current_arch_dir.do_all_archetypes (agent populate_template_nodes)
+ 				gui.go_to_node_in_archetype_tree_view
+			end
 		end
 
-	update_tree_node_for_archetype (ara: ARCH_REP_ARCHETYPE)
+	update_tree_node_for_archetype (ara: attached ARCH_REP_ARCHETYPE)
 			-- update Explorer tree node with changes in compilation status
-		require
-			Descriptor_valid: ara /= Void
 		local
 			an_id: STRING
 		do
@@ -108,16 +117,16 @@ feature -- Commands
 --			end
 		end
 
-	ensure_item_visible (ari_ont_id: STRING)
-			-- ensure node with ontological node id `ari_ont_id' is visible in the tree
-		require
-			ari_ont_id /= Void
-		do
-			if gui_node_descriptor_map.has(ari_ont_id) and gui_tree.is_displayed then
-				gui_tree.ensure_item_visible (gui_node_descriptor_map.item(ari_ont_id))
-				gui_node_descriptor_map.item(ari_ont_id).enable_select
-			end
-		end
+--	ensure_item_visible (ari_ont_id: STRING)
+--			-- ensure node with ontological node id `ari_ont_id' is visible in the tree
+--		require
+--			ari_ont_id /= Void
+--		do
+--			if gui_node_descriptor_map.has(ari_ont_id) and gui_tree.is_displayed then
+--				gui_tree.ensure_item_visible (gui_node_descriptor_map.item(ari_ont_id))
+--				gui_node_descriptor_map.item(ari_ont_id).enable_select
+--			end
+--		end
 
 feature {NONE} -- Implementation
 
@@ -199,8 +208,8 @@ feature {NONE} -- Implementation
 					if not c_attr.children.off then
 						attach_node(ca_path, pixmaps[c_attribute_pixmap_string(c_attr)], Void)
 					end
-				elseif attached {C_ARCHETYPE_ROOT} ca as car then
-					ara := arch_dir.archetype_index.item (car.archetype_id)
+				elseif attached {C_ARCHETYPE_ROOT} ca as car and attached current_arch_dir as dir then
+					ara := dir.archetype_index.item (car.archetype_id)
 					attach_node(ara.id.rm_entity + "." + ara.display_name, pixmaps[ara.group_name], ara)
 				end
 			end

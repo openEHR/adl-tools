@@ -21,31 +21,35 @@ create
 
 feature -- Serialisation
 
-	serialise (a_target: ARCHETYPE; desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING)
+	serialise (a_target: attached ARCHETYPE; lang_serialised, desc_serialised, def_serialised: attached STRING; inv_serialised: STRING; ont_serialised: attached STRING; ann_serialised: STRING)
 		do
 			target := a_target
-			
+
 			serialise_initialise
 			serialise_archetype_id
 			serialise_archetype_specialise
 			serialise_archetype_concept
-			
+
 			if not desc_serialised.is_empty then
-				last_result.append(desc_serialised)				
+				last_result.append(desc_serialised)
 			end
-			
+
 			if not def_serialised.is_empty then
 				last_result.append(def_serialised)
 			end
-			
-			if inv_serialised /= Void then
+
+			if attached inv_serialised then
 				last_result.append(inv_serialised)
 			end
-			
+
 			if not ont_serialised.is_empty then
 				last_result.append(ont_serialised)
 			end
-			
+
+			if attached ann_serialised then
+				last_result.append(ont_serialised)
+			end
+
 			serialise_finalise
 		end
 
@@ -59,7 +63,7 @@ feature -- Serialisation
 			last_result.append(format_item(FMT_NEWLINE))
 			last_result.append("Namespace(rdfs = http://www.w3.org/2002/07/owl#)")
 			last_result.append(format_item(FMT_NEWLINE))
-			
+
 			last_result.append("Namespace(ba = http://www.openEHR.org/base_archetype#)")
 			last_result.append(format_item(FMT_NEWLINE))
 			last_result.append("Namespace(rm = http://www.openEHR.org/rm/release0.9#)")
