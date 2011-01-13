@@ -138,6 +138,7 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_3.extend (l_ev_horizontal_box_7)
 			l_ev_horizontal_box_7.extend (arch_desc_status_label)
 			l_ev_horizontal_box_7.extend (arch_desc_status_text)
+			l_ev_horizontal_box_7.extend (l_ev_cell_1)
 			l_ev_vertical_box_3.extend (l_ev_horizontal_box_8)
 			l_ev_horizontal_box_8.extend (arch_desc_auth_hbox)
 			arch_desc_auth_hbox.extend (arch_desc_auth_orig_auth_label)
@@ -202,7 +203,7 @@ feature {NONE}-- Initialization
 			node_map_contols.extend (node_map_expand_button)
 			node_map_contols.extend (node_map_expand_one_button)
 			node_map_contols.extend (node_map_collapse_one_button)
-			node_map_contols.extend (l_ev_cell_1)
+			node_map_contols.extend (l_ev_cell_2)
 			node_map_contols.extend (rm_visibility_controls)
 			rm_visibility_controls.extend (l_ev_vertical_box_11)
 			l_ev_vertical_box_11.extend (node_map_domain_radio_button)
@@ -268,7 +269,7 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_22.extend (arch_test_processed_count)
 			l_ev_vertical_box_18.extend (l_ev_horizontal_separator_1)
 			l_ev_vertical_box_18.extend (archetype_test_go_bn)
-			l_ev_vertical_box_18.extend (l_ev_cell_2)
+			l_ev_vertical_box_18.extend (l_ev_cell_3)
 			l_ev_vertical_box_18.extend (l_ev_horizontal_separator_2)
 			l_ev_vertical_box_18.extend (l_ev_label_12)
 			l_ev_vertical_box_18.extend (diff_source_button)
@@ -466,8 +467,6 @@ feature {NONE}-- Initialization
 			l_ev_horizontal_box_7.disable_item_expand (arch_desc_status_label)
 			l_ev_horizontal_box_7.disable_item_expand (arch_desc_status_text)
 			arch_desc_status_label.set_text ("Lifecycle State:")
-			integer_constant_set_procedures.extend (agent arch_desc_status_label.set_minimum_width (?))
-			integer_constant_retrieval_functions.extend (agent desc_label_width)
 			color_constant_set_procedures.extend (agent arch_desc_status_text.set_background_color (?))
 			color_constant_retrieval_functions.extend (agent editable_colour)
 			arch_desc_status_text.set_minimum_width (70)
@@ -705,7 +704,7 @@ feature {NONE}-- Initialization
 			node_map_contols.disable_item_expand (node_map_expand_button)
 			node_map_contols.disable_item_expand (node_map_expand_one_button)
 			node_map_contols.disable_item_expand (node_map_collapse_one_button)
-			node_map_contols.disable_item_expand (l_ev_cell_1)
+			node_map_contols.disable_item_expand (l_ev_cell_2)
 			node_map_contols.disable_item_expand (rm_visibility_controls)
 			node_map_expand_button.set_text ("Expand All")
 			node_map_expand_button.set_tooltip ("Completely expand or collapse the Node Map")
@@ -719,7 +718,7 @@ feature {NONE}-- Initialization
 			node_map_collapse_one_button.set_tooltip ("Collapse one level of the Node Map")
 			integer_constant_set_procedures.extend (agent node_map_collapse_one_button.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent tree_control_panel_width)
-			l_ev_cell_1.set_minimum_height (20)
+			l_ev_cell_2.set_minimum_height (20)
 			rm_visibility_controls.set_text ("RM visibility")
 			rm_visibility_controls.set_minimum_width (100)
 			rm_visibility_controls.set_minimum_height (95)
@@ -1118,6 +1117,7 @@ feature {NONE}-- Initialization
 			create l_ev_horizontal_box_7
 			create arch_desc_status_label
 			create arch_desc_status_text
+			create l_ev_cell_1
 			create l_ev_horizontal_box_8
 			create arch_desc_auth_hbox
 			create arch_desc_auth_orig_auth_label
@@ -1182,7 +1182,7 @@ feature {NONE}-- Initialization
 			create node_map_expand_button
 			create node_map_expand_one_button
 			create node_map_collapse_one_button
-			create l_ev_cell_1
+			create l_ev_cell_2
 			create rm_visibility_controls
 			create l_ev_vertical_box_11
 			create node_map_domain_radio_button
@@ -1248,7 +1248,7 @@ feature {NONE}-- Initialization
 			create arch_test_processed_count
 			create l_ev_horizontal_separator_1
 			create archetype_test_go_bn
-			create l_ev_cell_2
+			create l_ev_cell_3
 			create l_ev_horizontal_separator_2
 			create l_ev_label_12
 			create diff_source_button
@@ -1338,9 +1338,11 @@ feature -- Access
 	arch_desc_auth_frame, arch_languages_frame, arch_desc_details_frame,
 	arch_desc_resource_frame, rm_visibility_controls, l_ev_frame_1, l_ev_frame_2, l_ev_frame_3,
 	l_ev_frame_4, term_definitions_frame, constraint_definitions_frame, l_ev_frame_5: EV_FRAME
-	arch_desc_auth_orig_auth_mlist,
-	arch_translations_author_mlist, arch_translations_other_details_mlist, arch_desc_resource_orig_res_mlist,
-	path_analysis_multi_column_list, ontology_term_definitions_multi_column_list, ontology_constraint_definitions_multi_column_list,
+	l_ev_cell_1,
+	l_ev_cell_2, l_ev_cell_3: EV_CELL
+	arch_desc_auth_orig_auth_mlist, arch_translations_author_mlist,
+	arch_translations_other_details_mlist, arch_desc_resource_orig_res_mlist, path_analysis_multi_column_list,
+	ontology_term_definitions_multi_column_list, ontology_constraint_definitions_multi_column_list,
 	terminology_bindings_info_list: EV_MULTI_COLUMN_LIST
 	arch_desc_auth_contrib_list, arch_translations_languages_list,
 	arch_desc_keywords_list, description_term_mappings_list, description_refset_bindings_list: EV_LIST
@@ -1350,9 +1352,8 @@ feature -- Access
 	node_map_expand_button, node_map_expand_one_button,
 	node_map_collapse_one_button, arch_test_tree_toggle_expand_bn, arch_test_refresh_bn,
 	regression_test_bn, archetype_test_go_bn, diff_source_button, diff_flat_button, diff_source_flat_button: EV_BUTTON
-	l_ev_cell_1,
-	l_ev_cell_2: EV_CELL
-	node_map_domain_radio_button, node_map_technical_radio_button, node_map_reference_model_radio_button: EV_RADIO_BUTTON
+	node_map_domain_radio_button,
+	node_map_technical_radio_button, node_map_reference_model_radio_button: EV_RADIO_BUTTON
 	path_analysis_column_view_checkable_list: EV_CHECKABLE_LIST
 	annotations_grid,
 	compiler_output_grid, archetype_test_tree_grid: EV_GRID

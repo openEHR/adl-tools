@@ -25,7 +25,7 @@ feature -- initialisation
 
 feature -- Access
 
-	items: HASH_TABLE[STRING, STRING]
+	items: HASH_TABLE [STRING, STRING]
 			-- List of tagged values
 
 feature -- Modification

@@ -110,16 +110,8 @@ feature -- Status Report
 			-- since this section is only optionally populated with respect to languages, or has a matching tag, e.g.
 			-- "en-GB"
 		do
-			Result := items.has (a_lang_tag)
-			-- the following would be preferable, but the agent mechanism is not smart enough
-			-- or else
-			--	items.current_keys.there_exists (agent (a_lang_key: STRING) do language_tag_has_language (a_lang_key, a_lang_tag) end)
-			if not Result then
-				from items.start until items.off or language_tag_has_language (items.key_for_iteration, a_lang_tag) loop
-					items.forth
-				end
-				Result := not items.off
-			end
+			Result := items.has (a_lang_tag) or else
+				items.current_keys.there_exists (agent language_tag_has_language (?, a_lang_tag))
 		end
 
 	has_annotation_at_path (a_lang, a_path: attached STRING): BOOLEAN
