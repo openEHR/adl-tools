@@ -173,8 +173,6 @@ feature -- Events
 						has_changed_profile := True
 					end
 				end
-
-				rep_profiles.set_current_profile_name (prof_name)
 				hide
 			end
 		end
