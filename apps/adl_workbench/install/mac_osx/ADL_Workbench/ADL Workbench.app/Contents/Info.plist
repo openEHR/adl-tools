@@ -5,7 +5,7 @@
 	<key>CFBundleExecutable</key>
 	<string>launcher.sh</string>
 	<key>CFBundleGetInfoString</key>
-	<string>1.5.0.0, Copyright © 2003-2010 openEHR Foundation</string>
+	<string>1.5.0.0, Copyright © 2003-2011 openEHR Foundation</string>
 	<key>CFBundleIconFile</key>
 	<string>openEHR.icns</string>
 	<key>CFBundleIdentifier</key>

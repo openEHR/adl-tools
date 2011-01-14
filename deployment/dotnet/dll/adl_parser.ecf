@@ -2,7 +2,7 @@
 <system xmlns="http://www.eiffel.com/developers/xml/configuration-1-6-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-6-0 http://www.eiffel.com/developers/xml/configuration-1-6-0.xsd" name="adl_parser" uuid="F1152FD5-F5A8-4937-8866-6F615D6F326C">
 	<target name="adl_parser">
 		<root class="ARCHETYPE_PARSER"/>
-		<version major="1" minor="5" release="0" build="0" company="Ocean Informatics" product="ADL Parser" copyright="Ocean Informatics, 2003-2010"/>
+		<version major="1" minor="5" release="0" build="0" company="Ocean Informatics" product="ADL Parser" copyright="Ocean Informatics, 2003-2011"/>
 		<file_rule>
 			<exclude>/\.svn$</exclude>
 		</file_rule>
