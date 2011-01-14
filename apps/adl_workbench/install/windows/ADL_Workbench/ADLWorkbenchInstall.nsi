@@ -11,6 +11,7 @@ Name "ADL Workbench"
 
 # MUI defines
 !define MUI_ICON "..\..\..\app\icons\openEHR.ico"
+!define MUI_UNICON "..\..\..\app\icons\openEHR.ico"
 !define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of the openEHR Foundation's $(^Name).\r\n\r\nClick Next to continue."
 !define MUI_LICENSEPAGE_RADIOBUTTONS
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
@@ -18,7 +19,6 @@ Name "ADL Workbench"
 !define MUI_STARTMENUPAGE_REGISTRY_KEY ${REGKEY}
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME StartMenuGroup
 !define MUI_STARTMENUPAGE_DEFAULTFOLDER "openEHR\ADL Workbench"
-!define MUI_UNICON "..\..\..\app\icons\openEHR.ico"
 !define MUI_WELCOMEFINISHPAGE_BITMAP "birds_vertical.bmp"
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP "openEHR.bmp"
@@ -60,7 +60,7 @@ VIAddVersionKey CompanyName "${COMPANY}"
 VIAddVersionKey CompanyWebsite "${URL}"
 VIAddVersionKey FileVersion "${VERSION}"
 VIAddVersionKey FileDescription "ADL Workbench Installer"
-VIAddVersionKey LegalCopyright "Copyright 2003-2010 openEHR Foundation"
+VIAddVersionKey LegalCopyright "Copyright 2003-2011 openEHR Foundation"
 InstallDirRegKey HKLM "${REGKEY}" Path
 ShowUninstDetails show
 
