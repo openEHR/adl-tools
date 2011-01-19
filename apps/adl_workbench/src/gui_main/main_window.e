@@ -341,7 +341,7 @@ feature -- File events
 					end
 				end
 			else
-				create error_dialog.make_with_text (create_message_content ("compile_before_serialising", <<file_system.basename (name)>>))
+				create error_dialog.make_with_text (create_message_content ("compile_before_serialising", Void))
 				error_dialog.show_modal_to_window (Current)
 			end
 		end
