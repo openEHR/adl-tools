@@ -52,44 +52,49 @@ feature -- Visitor
 
 	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- start serialising an C_COMPLEX_OBJECT
-		local
-			s: STRING
 		do
 			serialise_sibling_order(a_node, depth)
 			last_result.append (create_indent (depth))
 			serialise_type_node_id (a_node, depth)
 			serialise_occurrences(a_node, depth)
-			if not a_node.is_prohibited then
+			if a_node.is_prohibited then
+				-- output a comment if the node is addressable
+				serialise_comment (a_node)
+
+			elseif a_node.any_allowed then
+				-- output 'maches {*'
 				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				last_result.append (symbol(SYM_START_CBLOCK))
+				last_result.append (apply_style(symbol(SYM_ANY), STYLE_VALUE))
 
-				if a_node.any_allowed then
-					last_result.append (apply_style(symbol(SYM_ANY), STYLE_VALUE))
-				elseif a_node.is_addressable then
-					-- the valid_code() check below is to ensure we have an at-code not an archetype id, as can occur
-					-- in a template
-					s := a_node.node_id
-					if is_valid_code(s) and ontology.has_term_code(s) then
-						last_result.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-							safe_comment(ontology.term_definition(language, s).item("text")), STYLE_COMMENT))
-					end
-					last_result.append (format_item(FMT_NEWLINE))
-				else
-					last_result.append (format_item(FMT_NEWLINE))
-				end
+			else
+				-- output  'matches {%N' or 'matches { -- comment%N'
+				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
+				last_result.append (symbol(SYM_START_CBLOCK))
+				serialise_comment (a_node)
+				last_result.append (format_item(FMT_NEWLINE))
 			end
 		end
 
 	end_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- end serialising an C_COMPLEX_OBJECT
 		do
-			if not a_node.is_prohibited then
-				if not a_node.any_allowed then
-					last_result.append (create_indent(depth))
-				end
+			if a_node.is_prohibited then
+				-- output final '%N'
+				last_result.append (format_item(FMT_NEWLINE))
+
+			elseif a_node.any_allowed then
+				-- output '}%N' or '} -- comment%N'
 				last_result.append (symbol(SYM_END_CBLOCK))
+				serialise_comment (a_node)
+				last_result.append (format_item(FMT_NEWLINE))
+
+			else
+				-- output '%T}%N'
+				last_result.append (create_indent(depth))
+				last_result.append (symbol(SYM_END_CBLOCK))
+				last_result.append (format_item(FMT_NEWLINE))
 			end
-			last_result.append (format_item(FMT_NEWLINE))
 		end
 
 	start_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER)
@@ -104,22 +109,22 @@ feature -- Visitor
 			serialise_occurrences(a_node, depth)
 
 			if a_node.is_closed then
+				-- output 'closed ' or 'closed -- comment'
 				last_result.append (apply_style(symbol(SYM_CLOSED), STYLE_KEYWORD) + format_item(FMT_SPACE))
-			end
+				serialise_comment (a_node)
 
-			last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
-			last_result.append (symbol(SYM_START_CBLOCK))
-
-			if a_node.any_allowed then
+			elseif a_node.any_allowed then
+				-- output 'matches {*'
+				-- (comment has to be serialised in end_ routine)
+				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
+				last_result.append (symbol(SYM_START_CBLOCK))
 				last_result.append (apply_style(symbol(SYM_ANY), STYLE_VALUE))
-			elseif a_node.is_addressable then
-				s := a_node.node_id
-				if ontology.has_term_code(s) then
-					last_result.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-						safe_comment(ontology.term_definition(language, s).item("text")), STYLE_COMMENT))
-				end
-				last_result.append (format_item(FMT_NEWLINE))
+
 			else
+				-- output 'matches { -- comment%N' or 'matches {%N'
+				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
+				last_result.append (symbol(SYM_START_CBLOCK))
+				serialise_comment (a_node)
 				last_result.append (format_item(FMT_NEWLINE))
 			end
 		end
@@ -129,8 +134,13 @@ feature -- Visitor
 		local
 			invs: ARRAYED_LIST[ASSERTION]
 		do
-			-- output includes & excludes, indent the end block, since must be on new line
-			if not a_node.any_allowed then
+			if a_node.any_allowed then
+				-- output '}%N' or '} -- comment%N'
+				last_result.append (symbol(SYM_END_CBLOCK))
+				serialise_comment (a_node)
+				last_result.append (format_item(FMT_NEWLINE))
+
+			else -- output includes & excludes, indent the end block, since must be on new line
 				-- includes section
 				if a_node.has_includes then
 					last_result.append (create_indent(depth+1) + apply_style(symbol(SYM_INCLUDE), STYLE_KEYWORD) +
@@ -138,8 +148,7 @@ feature -- Visitor
 
 					invs := a_node.includes
 					from invs.start until invs.off loop
-						last_result.append (create_indent(depth+2) +
-							invs.item.expression.as_string + format_item(FMT_NEWLINE))
+						last_result.append (create_indent(depth+2) + invs.item.expression.as_string + format_item(FMT_NEWLINE))
 						invs.forth
 					end
 				end
@@ -151,16 +160,13 @@ feature -- Visitor
 
 					invs := a_node.excludes
 					from invs.start until invs.off loop
-						last_result.append (create_indent(depth+2) +
-							invs.item.expression.as_string + format_item(FMT_NEWLINE))
+						last_result.append (create_indent(depth+2) + invs.item.expression.as_string + format_item(FMT_NEWLINE))
 						invs.forth
 					end
 				end
 				last_result.append (create_indent(depth))
+				last_result.append (format_item(FMT_NEWLINE))
 			end
-			last_result.append (symbol(SYM_END_CBLOCK))
-
-			last_result.append (format_item(FMT_NEWLINE))
 		end
 
 	start_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER)
@@ -228,14 +234,18 @@ feature -- Visitor
 		do
 			ontologies.extend (current_arch_dir.archetype_index.item (a_node.archetype_id).flat_archetype.ontology)
 
-			if a_node.has_attributes then -- in flat mode
+			if a_node.has_attributes then -- in flat mode; treat like normal C_COMPLEX_OBJECT with children
 				start_c_complex_object (a_node, depth)
-			else
+
+			else -- it is in source mode, there are no children, only slot fillers
+
+				-- output '%Tuse_archetype TYPE[at_code, archetype_id] <occurrences>%N'
+				-- or '%Tuse_archetype TYPE[archetype_id] <occurrences>%N'
 				last_result.append (create_indent(depth) + apply_style(symbol(SYM_USE_ARCHETYPE), STYLE_KEYWORD) + format_item(FMT_SPACE))
 				last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
 				id := "["
 				if a_node.is_addressable then
-					id.append (a_node.node_id + ", ")
+					id.append (a_node.slot_node_id + ", ")
 				end
 				id.append (a_node.archetype_id + "]")
 				last_result.append (apply_style(id, STYLE_TERM_REF))
@@ -517,6 +527,21 @@ feature {NONE} -- Implementation
 				Result := style_redefined_identifier
 			else
 				Result := style_identifier
+			end
+		end
+
+	serialise_comment (a_node: attached C_OBJECT)
+			-- the valid_code() check below is to ensure we have an at-code not an archetype id,
+			-- as can occur in a template
+		local
+			s: STRING
+		do
+			if a_node.is_addressable then
+				s := a_node.node_id
+				if is_valid_code(s) and ontology.has_term_code(s) then
+					last_result.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
+						safe_comment(ontology.term_definition(language, s).item("text")), STYLE_COMMENT))
+				end
 			end
 		end
 

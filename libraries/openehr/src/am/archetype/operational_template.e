@@ -16,7 +16,7 @@ class OPERATIONAL_TEMPLATE
 inherit
 	FLAT_ARCHETYPE
 		redefine
-			make_specialised
+			make_specialised, synchronise
 		end
 
 create
@@ -24,7 +24,7 @@ create
 
 feature -- Initialisation
 
-	make_specialised (a_diff: DIFFERENTIAL_ARCHETYPE; a_flat_parent: FLAT_ARCHETYPE)
+	make_specialised (a_diff: attached DIFFERENTIAL_ARCHETYPE; a_flat_parent: attached FLAT_ARCHETYPE)
 		do
 			precursor (a_diff, a_flat_parent)
 			create artefact_type.make_operational_template
@@ -38,15 +38,27 @@ feature -- Access
 
 feature -- Modification
 
-	add_component_ontology (an_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_archetype_id: STRING)
+	add_component_ontology (an_ontology: attached FLAT_ARCHETYPE_ONTOLOGY; an_archetype_id: attached STRING)
 		require
-			Ontology_attached: attached an_ontology
-			Archetype_id_attached: attached an_archetype_id and then not an_archetype_id.is_empty
+			Archetype_id_attached: not an_archetype_id.is_empty
 		do
-			if component_ontologies = Void then
+			if not attached component_ontologies then
 				create component_ontologies.make(0)
 			end
 			component_ontologies.put(an_ontology, an_archetype_id)
+		end
+
+feature -- Serialisation
+
+	synchronise
+			-- synchronise object representation of archetype to forms suitable for
+			-- serialisation
+		do
+			precursor
+			from component_ontologies.start until component_ontologies.off loop
+				component_ontologies.item_for_iteration.synchronise_to_tree
+				component_ontologies.forth
+			end
 		end
 
 end

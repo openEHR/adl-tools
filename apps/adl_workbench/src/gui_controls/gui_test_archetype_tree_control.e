@@ -103,9 +103,8 @@ feature -- Access
 			-- directory where first generation serialised .adlf files go
 
 	diff_dir_source_flat_orig: STRING
-			-- directory where copies of original .adls files go, renamed to .adlx,
-			-- for comparison with flat form, non-specialised only. This diff will
-			-- show expanded internal refs
+			-- directory where copies of original .adls files go, renamed to .adlx, for comparison with flat form
+			-- This diff will show expanded internal refs
 
 	diff_dir_source_flat_new: STRING
 			-- directory where flat files go, renamed to .adlx, for source/flat
@@ -372,9 +371,9 @@ feature {NONE} -- Tests
 
 					-- for top-level archetypes only, copy above serialised source to $profile/source_flat/orig area as well, using extension .adlx
 					-- (flat also uses this - diff tool needs to see same extensions or else it gets confused)
-					if not target.is_specialised then
+				--	if not target.is_specialised then
 						file_system.copy_file(serialised_source_path, file_system.pathname (diff_dir_source_flat_orig, target.ontological_name + Archetype_dummy_file_extension))
-					end
+				--	end
 				end
 			else
 				test_status.append (" parse failed%N" + target.errors.as_string)
@@ -462,11 +461,11 @@ feature {NONE} -- Tests
 					flat_path := file_system.pathname (diff_dir_flat_new, target.ontological_name + Archetype_flat_file_extension)
 					target.save_flat_as (flat_path, Archetype_native_syntax)
 
-					if not target.is_specialised then
+				--	if not target.is_specialised then
 						-- copy above flat file to $profile/source_flat/orig area as well, using extension .adlx (flat also uses this - diff tool needs to see same
 						-- extensions or else it gets confused)
 						file_system.copy_file(flat_path, file_system.pathname (diff_dir_source_flat_new, target.ontological_name + Archetype_dummy_file_extension))
-					end
+				--	end
 				end
 				if target.status.is_empty then
 					Result := test_passed

@@ -835,11 +835,11 @@ feature -- Test Screen Events
 				if archetype_test_tree_control.diff_dirs_available then
 					inspect diff_type
 					when Diff_source then
-						do_diff_command(archetype_test_tree_control.diff_dir_source_orig, archetype_test_tree_control.diff_dir_source_new)
+						do_diff_command (archetype_test_tree_control.diff_dir_source_orig, archetype_test_tree_control.diff_dir_source_new)
 					when Diff_flat then
-						do_diff_command(archetype_test_tree_control.diff_dir_flat_orig, archetype_test_tree_control.diff_dir_flat_new)
+						do_diff_command (archetype_test_tree_control.diff_dir_flat_orig, archetype_test_tree_control.diff_dir_flat_new)
 					else
-						do_diff_command(archetype_test_tree_control.diff_dir_source_flat_orig, archetype_test_tree_control.diff_dir_source_flat_new)
+						do_diff_command (archetype_test_tree_control.diff_dir_source_flat_orig, archetype_test_tree_control.diff_dir_source_flat_new)
 					end
 				else
 					create info_dialog.make_with_text (create_message_line ("no_diff_dirs", Void))

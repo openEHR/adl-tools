@@ -34,21 +34,21 @@ create
 
 feature -- Initialisation
 
-	make (a_rm_type_name, an_archetype_id: STRING)
+	make (a_rm_type_name, an_archetype_id: attached STRING)
 			-- make as an archetype external reference
 		require
-			Rm_type_name_valid: a_rm_type_name /= Void and then not a_rm_type_name.is_empty
-			Archetype_id_valid: an_archetype_id /= Void and then (create {ARCHETYPE_ID}).valid_id(an_archetype_id)
+			Rm_type_name_valid: not a_rm_type_name.is_empty
+			Archetype_id_valid: (create {ARCHETYPE_ID}).valid_id(an_archetype_id)
 		do
 			cco_make_identified(a_rm_type_name, an_archetype_id)
 		end
 
-	make_with_slot_id (a_rm_type_name, a_slot_node_id, an_archetype_id: STRING)
+	make_with_slot_id (a_rm_type_name, a_slot_node_id, an_archetype_id: attached STRING)
 			-- make as a slot filler, specialising a slot
 		require
-			Rm_type_name_valid: a_rm_type_name /= Void and then not a_rm_type_name.is_empty
-			Archetype_id_valid: an_archetype_id /= Void and then (create {ARCHETYPE_ID}).valid_id(an_archetype_id)
-			Slot_id_valid: a_slot_node_id /= Void and then not a_slot_node_id.is_empty
+			Rm_type_name_valid: not a_rm_type_name.is_empty
+			Archetype_id_valid: (create {ARCHETYPE_ID}).valid_id(an_archetype_id)
+			Slot_id_valid: not a_slot_node_id.is_empty
 		do
 			cco_make_identified (a_rm_type_name, an_archetype_id)
 			slot_node_id := a_slot_node_id

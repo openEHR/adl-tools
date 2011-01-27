@@ -320,10 +320,7 @@ feature {NONE} -- Implementation
 		do
 			an_archetype.synchronise
 
-		-- FIXME: currently translations and original_language from archetype are serialsed together	
-		--	if archetype.translations /= Void then
-				language_context.set_tree (an_archetype.orig_lang_translations.dt_representation)
-		--	end
+			language_context.set_tree (an_archetype.orig_lang_translations.dt_representation)
 			description_context.set_tree(an_archetype.description.dt_representation)
 			definition_context.set_tree(an_archetype.definition)
 			if an_archetype.has_invariants then
