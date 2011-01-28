@@ -87,12 +87,12 @@ feature -- Access
 			-- top-level (root) schemas in use. Table is keyed by logical schema_name, i.e. model_publisher '_' model_name, e.g. "openehr_rm"
 			-- Schemas containing different variants of same model (i.e. model_publisher + model_name) are considered duplicates
 
-	schema_for_package (a_qualified_package_name: STRING): SCHEMA_ACCESS
+	schema_for_package (a_qualified_package_name: STRING): BMM_SCHEMA
 			-- Return schema containing the package-class key `a_qualified_package_name', e.g. "openEHR-EHR"
 		require
 			has_schema_for_package (a_qualified_package_name.as_lower)
 		do
-			Result := schemas_by_package.item (a_qualified_package_name.as_lower)
+			Result := schemas_by_package.item (a_qualified_package_name.as_lower).schema
 		end
 
 	schemas_load_list: LIST [STRING]
