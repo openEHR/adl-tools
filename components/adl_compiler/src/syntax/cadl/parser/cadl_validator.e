@@ -8410,9 +8410,7 @@ feature -- Initialization
 			make_parser_skeleton
 		end
 
-	execute (in_text:STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: SCHEMA_ACCESS)
-		require
-			Rm_schema_available: an_rm_schema /= Void
+	execute (in_text:STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: attached BMM_SCHEMA)
 		do
 			reset
 			rm_schema := an_rm_schema
@@ -8469,7 +8467,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	rm_schema: SCHEMA_ACCESS
+	rm_schema: BMM_SCHEMA
 
 	safe_put_c_attribute_child (an_attr: C_ATTRIBUTE; an_obj: C_OBJECT)
 			-- check child object for validity and then put as new child

@@ -189,7 +189,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	node_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
+	node_conforms_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
 			-- True if this node is a subset, i.e. a redefinition of, `other'. Evaluated as True if
 			-- 	a) this node contains codes already in `other' (but with some removed) and/or
 			--	b) this node contains redefinitions of codes found in `other'

@@ -44,12 +44,12 @@ feature {NONE} -- Events
 			app_root.initialise
 			assert ("app_root initialisation failed", app_root.initialised)
 			assert ("No RM schemas", rm_schemas_access.found_valid_schemas)
-			rm_schema := rm_schemas_access.schema_for_package ("openehr-ehr")
+			rm_schema := rm_schemas_access.schema_for_package ("openehr-ehr").schema
 		end
 
 feature -- Access
 
-	rm_schema: SCHEMA_ACCESS
+	rm_schema: BMM_SCHEMA
 			-- set if this archetype has a valid package-class_name
 
 feature -- Test routines

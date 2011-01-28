@@ -273,7 +273,7 @@ feature -- Access (semantic)
 	legacy_flat_text_timestamp: INTEGER
 			-- File modification date/time when legacy flat file was last read
 
-	rm_schema: SCHEMA_ACCESS
+	rm_schema: BMM_SCHEMA
 			-- set if this archetype has a valid package-class_name
 
 	artefact_type: INTEGER
@@ -493,13 +493,13 @@ feature -- Status Report - Semantic
 	has_slots: BOOLEAN
 			-- Does this archetype have any slots?
 		do
-			Result := slot_id_index /= Void
+			Result := attached slot_id_index
 		end
 
 	is_supplier: BOOLEAN
 			-- Is this archetype used by any other archetypes (i.e. matches any of their slots)?
 		do
-			Result := clients_index /= Void
+			Result := attached clients_index
 		end
 
 	differential_generated: BOOLEAN
@@ -705,7 +705,7 @@ feature {NONE} -- Compilation
 			reset
 			if rm_schema = Void then
 				if rm_schemas_access.has_schema_for_package (id.qualified_package_name) then
-					rm_schema := rm_schemas_access.schema_for_package (id.qualified_package_name)
+					rm_schema := rm_schemas_access.schema_for_package (id.qualified_package_name).schema
 				else
 					compilation_state := Cs_rm_class_unknown
 					errors.add_error("model_access_e7", <<id.qualified_rm_name>>, "")

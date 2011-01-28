@@ -313,10 +313,8 @@ feature -- Status Report
 			Result := not children.off
 		end
 
-	has_child (a_node: C_OBJECT): BOOLEAN
+	has_child (a_node: attached C_OBJECT): BOOLEAN
 			-- True if a_node is actually one of the children
-		require
-			Node_valid: a_node /= Void
 		do
 			Result := children.has (a_node)
 		end
@@ -332,13 +330,13 @@ feature -- Status Report
 
 feature -- Comparison
 
-	node_congruent_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
+	node_congruent_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other'.
 		do
 			Result := existence = Void and ((is_single and other.is_single) or (is_multiple and other.is_multiple and cardinality = Void))
 		end
 
-	node_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
+	node_conforms_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
 			-- Returns False if any of the following is incompatible:
 			--	cardinality
@@ -347,36 +345,28 @@ feature -- Comparison
 			Result := existence_conforms_to (other) and ((is_single and other.is_single) or else (is_multiple and cardinality_conforms_to (other)))
 		end
 
-	existence_conforms_to (other: like Current): BOOLEAN
+	existence_conforms_to (other: attached like Current): BOOLEAN
 			-- True if the existence of this node conforms to other.existence
-		require
-			other_exists: other /= Void
 		do
 			Result := existence = Void or else other.existence = Void or else other.existence.contains (existence)
 		end
 
-	cardinality_conforms_to (other: like Current): BOOLEAN
+	cardinality_conforms_to (other: attached like Current): BOOLEAN
 			-- True if the cardinality of this node conforms to other.cardinality, if it exists
-		require
-			other_exists: other /= Void
 		do
 			Result := cardinality = Void or else other.cardinality = Void or else other.cardinality.contains (cardinality)
 		end
 
 feature -- Modification
 
-	set_existence(an_interval: MULTIPLICITY_INTERVAL)
+	set_existence(an_interval: attached MULTIPLICITY_INTERVAL)
 			-- set existence constraint on this relation - applies whether single or multiple
-		require
-			Interval_exists: an_interval /= Void
 		do
 			existence := an_interval
 		end
 
-	set_cardinality(a_cardinality: CARDINALITY)
+	set_cardinality(a_cardinality: attached CARDINALITY)
 			--
-		require
-			cardinality_exists: a_cardinality /= Void
 		do
 			cardinality := a_cardinality
 		end
@@ -395,10 +385,10 @@ feature -- Modification
 			existence = Void
 		end
 
-	set_differential_path(a_path: STRING)
+	set_differential_path(a_path: attached STRING)
 			-- set `differential_path'
 		require
-			Path_valid: a_path /= Void and then not a_path.is_empty
+			Path_valid: not a_path.is_empty
 		do
 			representation.set_differential_path(create {OG_PATH}.make_from_string (a_path))
 		end
@@ -422,21 +412,21 @@ feature -- Modification
 			Differential_path_set: differential_path /= Void
 		end
 
-	put_child (an_obj: C_OBJECT)
+	put_child (an_obj: attached C_OBJECT)
 			-- put a new child node
 		require
-			Object_valid: an_obj /= Void and then valid_new_child (an_obj)
+			Object_valid: valid_new_child (an_obj)
 		do
 			representation.put_child (an_obj.representation)
 			children.extend (an_obj)
 			an_obj.set_parent(Current)
 		end
 
-	put_child_left(an_obj, before_obj: C_OBJECT)
+	put_child_left(an_obj, before_obj: attached C_OBJECT)
 			-- insert a new child node before another node
 		require
-			Object_valid: an_obj /= Void and then valid_new_child (an_obj)
-			Before_obj_valid: before_obj /= Void and then has_child (before_obj)
+			Object_valid: valid_new_child (an_obj)
+			Before_obj_valid: has_child (before_obj)
 		do
 			representation.put_child_left(an_obj.representation, before_obj.representation)
 			children.go_i_th (children.index_of (before_obj, 1))
@@ -444,11 +434,11 @@ feature -- Modification
 			an_obj.set_parent(Current)
 		end
 
-	put_child_right(an_obj, after_obj: C_OBJECT)
+	put_child_right(an_obj, after_obj: attached C_OBJECT)
 			-- insert a new child node after another node
 		require
-			Object_valid: an_obj /= Void and then valid_new_child (an_obj)
-			After_obj_valid: after_obj /= Void and then has_child (after_obj)
+			Object_valid: valid_new_child (an_obj)
+			After_obj_valid: has_child (after_obj)
 		do
 			representation.put_child_right(an_obj.representation, after_obj.representation)
 			children.go_i_th (children.index_of (after_obj, 1))
@@ -456,13 +446,13 @@ feature -- Modification
 			an_obj.set_parent(Current)
 		end
 
-	put_sibling_child (an_obj: C_OBJECT)
+	put_sibling_child (an_obj: attached C_OBJECT)
 			-- put a new child node after any sibling that is already there
 			-- 'sibling' is defined as an object with a node_id with the same parent as the node_id of `an_obj';
 			-- usually it is a specialised node id with a common parent, but may be a top level id
 			-- put `an_obj' at end if no sibling found
 		require
-			Object_valid: an_obj /= Void and then valid_new_child (an_obj)
+			Object_valid: valid_new_child (an_obj)
 		local
 			parent_id: STRING
 			siblings: ARRAYED_LIST [C_OBJECT]
@@ -476,11 +466,11 @@ feature -- Modification
 			end
 		end
 
-	replace_child_by_id (an_obj: C_OBJECT; an_id: STRING)
+	replace_child_by_id (an_obj: attached C_OBJECT; an_id: attached STRING)
 			-- replace node with id `an_id' by `an_obj'
 		require
-			Object_valid: an_obj /= Void and then valid_replacement_child (an_obj)
-			Id_valid: an_id /= Void and then has_child_with_id (an_id)
+			Object_valid: valid_replacement_child (an_obj)
+			Id_valid: has_child_with_id (an_id)
 		do
 			children.go_i_th (children.index_of (child_with_id (an_id), 1))
 			children.replace (an_obj)
@@ -488,11 +478,11 @@ feature -- Modification
 			an_obj.set_parent(Current)
 		end
 
-	replace_child_by_rm_type_name(an_obj: C_OBJECT)
+	replace_child_by_rm_type_name(an_obj: attached C_OBJECT)
 			-- replace node with rm_type_name `a_type_name' by `an_obj'
 		require
 			Attribute_validity: is_single
-			Object_valid: an_obj /= Void and then valid_replacement_child (an_obj)
+			Object_valid: valid_replacement_child (an_obj)
 		do
 			representation.replace_child_by_id (an_obj.representation, child_with_rm_type_name(an_obj.rm_type_name).representation.node_key)
 			children.go_i_th (children.index_of (child_with_rm_type_name(an_obj.rm_type_name), 1))
@@ -500,19 +490,19 @@ feature -- Modification
 			an_obj.set_parent(Current)
 		end
 
-	remove_child (an_obj: C_OBJECT)
+	remove_child (an_obj: attached C_OBJECT)
 			-- remove an existing child node
 		require
-			Object_valid: an_obj /= Void and then has_child (an_obj)
+			Object_valid: has_child (an_obj)
 		do
 			representation.remove_child_by_id (an_obj.node_id)
 			children.prune_all(an_obj)
 		end
 
-	remove_child_by_id (an_id: STRING)
+	remove_child_by_id (an_id: attached STRING)
 			-- remove an existing child node
 		require
-			Id_valid: an_id /= Void and then has_child_with_id (an_id)
+			Id_valid: has_child_with_id (an_id)
 		local
 			an_obj: C_OBJECT
 		do
@@ -521,11 +511,11 @@ feature -- Modification
 			children.prune_all(an_obj)
 		end
 
-	replace_node_id (old_id, new_id: STRING)
+	replace_node_id (old_id, new_id: attached STRING)
 			-- replace old_id with new_id in relevant child node, and also in attribute parent list
 		require
-			Old_id_valid: old_id /= Void and then has_child_with_id (old_id)
-			New_id_valid: new_id /= Void and then not new_id.is_empty
+			Old_id_valid: has_child_with_id (old_id)
+			New_id_valid: not new_id.is_empty
 		do
 			representation.replace_node_id (old_id, new_id)
 			representation.child_with_id (new_id).set_node_id (new_id)
@@ -533,11 +523,11 @@ feature -- Modification
 			has_child_with_id (new_id)
 		end
 
-	overlay_differential(a_flat_obj, diff_obj: C_OBJECT; an_rm_schema: SCHEMA_ACCESS)
+	overlay_differential(a_flat_obj, diff_obj: attached C_OBJECT; an_rm_schema: attached BMM_SCHEMA)
 			-- apply any differences from `diff_obj' to `an_obj' node including node_id
 		require
 			Flat_obj_valid: has_child (a_flat_obj)
-			Diff_obj_valid: diff_obj /= Void and then diff_obj.node_conforms_to (a_flat_obj, an_rm_schema)
+			Diff_obj_valid: diff_obj.node_conforms_to (a_flat_obj, an_rm_schema)
 		do
 			if not a_flat_obj.node_id.is_equal(diff_obj.node_id) then
 				representation.replace_node_id (a_flat_obj.node_id, diff_obj.node_id)
@@ -547,10 +537,8 @@ feature -- Modification
 
 feature -- Validation
 
-	valid_new_child (an_obj: C_OBJECT): BOOLEAN
+	valid_new_child (an_obj: attached C_OBJECT): BOOLEAN
 			-- test an_obj for addition as a new child node (including for replacement)
-		require
-			Object_exists: an_obj /= Void
 		do
 			Result := valid_child (an_obj)
 			if Result then
@@ -563,10 +551,8 @@ feature -- Validation
 			end
 		end
 
-	valid_replacement_child (an_obj: C_OBJECT): BOOLEAN
+	valid_replacement_child (an_obj: attached C_OBJECT): BOOLEAN
 			-- test an_obj for addition as a new child node (including for replacement)
-		require
-			Object_exists: an_obj /= Void
 		do
 			Result := valid_child (an_obj)
 			if Result then

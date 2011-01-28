@@ -65,7 +65,7 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_target_desc: attached like target_descriptor; an_rm_schema: attached SCHEMA_ACCESS)
+	make (a_target_desc: attached like target_descriptor; an_rm_schema: attached BMM_SCHEMA)
 			-- set target_descriptor
 			-- initialise reporting variables
 		require
@@ -167,7 +167,7 @@ feature -- Validation
 
 feature {NONE} -- Implementation
 
-	rm_schema: attached SCHEMA_ACCESS
+	rm_schema: attached BMM_SCHEMA
 
 	validate_basics
 			-- are basic features of archetype structurally intact and correct?

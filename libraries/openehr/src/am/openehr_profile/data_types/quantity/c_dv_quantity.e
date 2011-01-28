@@ -133,7 +133,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	node_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
+	node_conforms_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
 			-- True if this node is a subset, i.e. a redefinition of, `other' in the ADL constraint sense, i.e. that all
 			-- aspects of the definition of this node and all child nodes define a narrower, wholly
 			-- contained instance space of `other'.

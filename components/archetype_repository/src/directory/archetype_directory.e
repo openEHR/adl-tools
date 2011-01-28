@@ -627,7 +627,7 @@ feature {NONE} -- Implementation
 					create supp_list.make (0)
 					supp_list.compare_objects
 					from pkgs.item_for_iteration.classes.start until pkgs.item_for_iteration.classes.off loop
-							supp_list.merge (rm_schemas_access.top_level_schemas.item_for_iteration.class_definition (pkgs.item_for_iteration.classes.item).all_suppliers)
+							supp_list.merge (rm_schemas_access.top_level_schemas.item_for_iteration.schema.class_definition (pkgs.item_for_iteration.classes.item).all_suppliers)
 						supp_list.extend (pkgs.item_for_iteration.classes.item)
 						pkgs.item_for_iteration.classes.forth
 					end
@@ -635,9 +635,9 @@ feature {NONE} -- Implementation
 					-- now create a list of classes inheriting from LOCATABLE that are among the suppliers of
 					-- the top-level class of the package; this gives the classes that could be archetyped in
 					-- that package
-						if rm_schemas_access.top_level_schemas.item_for_iteration.has_class_definition ("LOCATABLE") then
+					if rm_schemas_access.top_level_schemas.item_for_iteration.schema.has_class_definition ("LOCATABLE") then
 						from supp_list.start until supp_list.off loop
-								if not rm_schemas_access.top_level_schemas.item_for_iteration.is_descendant_of (supp_list.item, "LOCATABLE") then
+								if not rm_schemas_access.top_level_schemas.item_for_iteration.schema.is_descendant_of (supp_list.item, "LOCATABLE") then
 								supp_list.remove
 							else
 								supp_list.forth
@@ -651,7 +651,7 @@ feature {NONE} -- Implementation
 					from supp_list.start until supp_list.off loop
 						removed := False
 						from supp_list_copy.start until supp_list_copy.off or removed loop
-								if rm_schemas_access.top_level_schemas.item_for_iteration.is_descendant_of (supp_list.item, supp_list_copy.item) then
+								if rm_schemas_access.top_level_schemas.item_for_iteration.schema.is_descendant_of (supp_list.item, supp_list_copy.item) then
 								supp_list.remove
 								removed := True
 							end
@@ -666,7 +666,7 @@ feature {NONE} -- Implementation
 					-- convert to BMM_CLASS_DESCRIPTORs
 					create supp_class_list.make(0)
 					from supp_list.start until supp_list.off loop
-							supp_class_list.extend (rm_schemas_access.top_level_schemas.item_for_iteration.class_definition (supp_list.item))
+							supp_class_list.extend (rm_schemas_access.top_level_schemas.item_for_iteration.schema.class_definition (supp_list.item))
 						supp_list.forth
 					end
 					add_child_nodes (pkg_name, supp_class_list, arm)

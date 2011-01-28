@@ -92,20 +92,14 @@ feature -- Status report
 
 feature -- Comparison
 
-	node_congruent_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
+	node_congruent_to (other: attached like Current; an_rm_schema: attached BMM_SCHEMA): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other'.
-		require
-			other /= Void
-			Schema_attached: an_rm_schema /= Void
 		deferred
 		end
 
-	node_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
+	node_conforms_to (other: attached like Current; an_rm_schema: attached BMM_SCHEMA): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
 			-- An error message can be obtained by calling node_conformance_failure_reason
-		require
-			Other_attached: other /= Void
-			Schema_attached: an_rm_schema /= Void
 		deferred
 		end
 

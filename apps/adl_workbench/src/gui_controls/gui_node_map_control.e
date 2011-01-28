@@ -258,7 +258,7 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	rm_schema: SCHEMA_ACCESS
+	rm_schema: BMM_SCHEMA
 		do
 			Result := current_arch_dir.selected_archetype.rm_schema
 		end
@@ -619,9 +619,9 @@ feature {NONE} -- Implementation
 				if a_node /= Void and attached {C_COMPLEX_OBJECT} a_node as c_c_o then
 					if rm_schema.has_class_definition (c_c_o.rm_type_name) then
 						if differential_view then
-							props := rm_schema.properties_of(c_c_o.rm_type_name)
+							props := rm_schema.class_definition (c_c_o.rm_type_name).properties
 						else
-							props := rm_schema.flat_properties_of(c_c_o.rm_type_name)
+							props := rm_schema.class_definition (c_c_o.rm_type_name).flat_properties
 						end
 						from props.start until props.off loop
 							if not c_c_o.has_attribute(props.key_for_iteration) then

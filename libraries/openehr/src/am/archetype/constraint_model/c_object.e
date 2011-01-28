@@ -82,7 +82,7 @@ feature -- Status report
 
 feature -- Comparison
 
-	node_congruent_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
+	node_congruent_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other', other than
 			-- possible redefinition of the node id, which doesn't matter, since this won't get lost in a compressed path.
 			-- `other' is assumed to be in a flat archetype
@@ -95,7 +95,7 @@ feature -- Comparison
 			Result := rm_type_name.is_equal (other.rm_type_name) and occurrences = Void and node_id_conforms_to (other) and sibling_order = Void
 		end
 
-	node_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
+	node_conforms_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
 			-- `other' is assumed to be in a flat archetype.
 			-- Returns True only when the following is True:
@@ -115,7 +115,7 @@ feature -- Comparison
 			end
 		end
 
-	rm_type_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
+	rm_type_conforms_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
 			-- True if this node rm_type_name conforms to other.rm_type_name by either being equal, or being a subtype
 			-- according to the underlying reference model; `other' is assumed to be in a flat archetype
 		do
@@ -203,14 +203,14 @@ feature -- Modification
 			representation.set_node_id (an_object_id)
 		end
 
-	overlay_differential (other: like Current; an_rm_schema: SCHEMA_ACCESS)
+	overlay_differential (other: attached like Current; an_rm_schema: BMM_SCHEMA)
 			-- apply any differences from `other' to this object node including:
 			-- 	node_id
 			-- 	overridden rm_type_name
 			-- 	occurrences
 			-- Current is assumed to be in a flat archetype
 		require
-			Other_valid: other /= Void and then other.node_conforms_to (Current, an_rm_schema)
+			Other_valid: other.node_conforms_to (Current, an_rm_schema)
 		do
 			if not other.node_id.is_equal(node_id) then
 				set_node_id (other.node_id.twin)

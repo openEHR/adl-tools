@@ -62,6 +62,18 @@ feature -- Definitions
 
 	State_ready_to_validate: INTEGER = 4
 
+	substitutions: attached HASH_TABLE [STRING, STRING]
+			-- allowed type substitutions due to archetyping as a table of
+			-- allowable substitution keyed by expected type
+		once
+			create Result.make(0)
+			Result.put("STRING", "ISO8601_DURATION")
+			Result.put("STRING", "ISO8601_DATE")
+			Result.put("STRING", "ISO8601_DATE_TIME")
+			Result.put("STRING", "ISO8601_TIME")
+			Result.put("DOUBLE", "REAL")
+		end
+
 feature -- Identification (Attributes from schema)
 
 	model_publisher: STRING
@@ -217,11 +229,11 @@ feature -- Status Report
 			Result := class_definition (a_type_name).has_property(a_prop_name)
 		end
 
-	is_descendant_of (a_class, a_parent_class: STRING): BOOLEAN
+	is_descendant_of (a_class, a_parent_class: attached STRING): BOOLEAN
 			-- True if `a_class' is a descendant in the model of `a_parent_class'
 		require
-			Sub_class_valid: a_class /= Void not a_class.is_empty
-			Parent_class_valid: a_parent_class /= Void and then has_class_definition (a_parent_class)
+			Sub_class_valid: not a_class.is_empty
+			Parent_class_valid: has_class_definition (a_parent_class)
 		do
 			Result := class_definition (a_class).all_ancestors.has (a_parent_class)
 		end
@@ -272,6 +284,18 @@ feature -- Status Report
 				end
 			elseif not a_class_def.is_generic and not is_gen_type then
 				Result := a_type_name.is_equal (a_class_def.name)
+			end
+		end
+
+	valid_property_type (a_type_name, a_property_name, a_property_type_name: attached STRING): BOOLEAN
+			-- True if `a_property_type_name' is a valid dynamic type for `a_property' in class `a_type_name'
+		require
+			Type_name_valid: has_class_definition (a_type_name)
+			Property_valid: has_property(a_type_name, a_property_name)
+			Property_type_name_valid: has_class_definition (a_property_type_name)
+		do
+			if valid_type_for_class (a_type_name, a_type_name) and valid_type_for_class(a_property_type_name, a_property_type_name) then
+				Result := type_conforms_to (a_property_type_name, property_definition (a_type_name, a_property_name).type_def.as_flattened_type_string)
 			end
 		end
 
@@ -352,28 +376,28 @@ feature -- Commands
 			class_def: BMM_CLASS_DEFINITION
 		do
 			if passed then
-			from primitive_types.start until primitive_types.off loop
-				class_def := primitive_types.item_for_iteration
-				from class_def.properties.start until class_def.properties.off loop
-						if class_def.properties.item_for_iteration.type_def = Void then
-						passed := False
-							add_error("BMM_PTV", <<class_def.name, class_def.properties.item_for_iteration.name>>)
+				from primitive_types.start until primitive_types.off loop
+					class_def := primitive_types.item_for_iteration
+					from class_def.properties.start until class_def.properties.off loop
+							if class_def.properties.item_for_iteration.type_def = Void then
+							passed := False
+								add_error("BMM_PTV", <<class_def.name, class_def.properties.item_for_iteration.name>>)
+						end
+						class_def.properties.forth
 					end
-					class_def.properties.forth
+					primitive_types.forth
 				end
-				primitive_types.forth
-			end
-			from class_definitions.start until class_definitions.off loop
-				class_def := class_definitions.item_for_iteration
-				from class_def.properties.start until class_def.properties.off loop
-						if class_def.properties.item_for_iteration.type_def = Void then
-						passed := False
-							add_error("BMM_PTV", <<class_def.name, class_def.properties.item_for_iteration.name>>)
+				from class_definitions.start until class_definitions.off loop
+					class_def := class_definitions.item_for_iteration
+					from class_def.properties.start until class_def.properties.off loop
+							if class_def.properties.item_for_iteration.type_def = Void then
+							passed := False
+								add_error("BMM_PTV", <<class_def.name, class_def.properties.item_for_iteration.name>>)
+						end
+						class_def.properties.forth
 					end
-					class_def.properties.forth
+					class_definitions.forth
 				end
-				class_definitions.forth
-			end
 			end
 
 			if passed then
@@ -384,7 +408,7 @@ feature -- Commands
 	ready_to_validate: BOOLEAN
 		do
 			Result := precursor and state = State_ready_to_validate
-			end
+		end
 
 	merge_included_schema (other: attached BMM_SCHEMA)
 			-- merge in class and package definitions from `other', except where the current schema already has
@@ -404,7 +428,7 @@ feature -- Commands
 				-- have a definition for that class name
 				class_definitions.put (other.class_definitions.item_for_iteration.deep_twin, other.class_definitions.key_for_iteration)
 				other.class_definitions.forth
-		end
+			end
 
 			from other.packages.start until other.packages.after loop
 				-- note that `put' only puts the class defintion from the included schema only if the current one does not already

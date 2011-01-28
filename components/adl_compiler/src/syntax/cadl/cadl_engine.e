@@ -73,12 +73,10 @@ feature -- Commands
 			serialised := Void
 		end
 
-	set_source (in_text: STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: SCHEMA_ACCESS)
+	set_source (in_text: attached STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: attached BMM_SCHEMA)
 			-- Set `in_text' as working artifact.
 		require
-			text_attached: in_text /= Void
 			start_line_positive: a_source_start_line > 0
-			Rm_schema_available: an_rm_schema /= Void
 		do
 			rm_schema := an_rm_schema
 			source := in_text
@@ -95,7 +93,7 @@ feature -- Commands
 	parse
 			-- Parse artifact into `tree', then validate the artifact.
 		require
-			source_attached: source /= Void
+			source_attached: attached source
 			parsing: in_parse_mode
 		do
 			tree := Void
@@ -107,7 +105,7 @@ feature -- Commands
 				tree := parser.output
 			end
 		ensure
-			parse_succeeded or else tree = Void
+			parse_succeeded or else attached tree
 		end
 
 	serialise (a_format, a_lang: attached STRING; an_ontology: attached ARCHETYPE_ONTOLOGY)
@@ -145,7 +143,7 @@ feature {NONE} -- Implementation
 
 	parser: CADL_VALIDATOR
 
-	rm_schema: SCHEMA_ACCESS
+	rm_schema: BMM_SCHEMA
 
 end
 

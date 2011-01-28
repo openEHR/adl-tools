@@ -69,14 +69,14 @@ feature -- Access
 
 feature -- Commands
 
-	parse_differential (text: attached STRING; an_rm_schema: attached SCHEMA_ACCESS): DIFFERENTIAL_ARCHETYPE
+	parse_differential (text: attached STRING; an_rm_schema: attached BMM_SCHEMA): detachable DIFFERENTIAL_ARCHETYPE
 			-- parse text as differential archetype. If successful, `archetype' contains the parse structure.
 		do
 			rm_schema := an_rm_schema
 			Result ?= parse(text, True)
 		end
 
-	parse_flat (text: attached STRING; an_rm_schema: attached SCHEMA_ACCESS): FLAT_ARCHETYPE
+	parse_flat (text: attached STRING; an_rm_schema: attached BMM_SCHEMA): detachable FLAT_ARCHETYPE
 			-- parse text as flat archetype. If successful, `archetype' contains the parse structure.
 		do
 			rm_schema := an_rm_schema
@@ -313,7 +313,7 @@ feature {NONE} -- Implementation
 
 	annotations_context: DADL_ENGINE
 
-	rm_schema: SCHEMA_ACCESS
+	rm_schema: BMM_SCHEMA
 
 	synchronise_from_archetype (an_archetype: ARCHETYPE)
 			-- synchronise archetype to processing engines

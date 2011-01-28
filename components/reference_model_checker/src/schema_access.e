@@ -31,7 +31,7 @@ create
 
 feature -- Initialisation
 
-	make(a_schema_full_path: attached STRING)
+	make (a_schema_full_path: attached STRING)
 			-- set up model from full path to model file
 		local
 			model_file: PLAIN_TEXT_FILE
@@ -65,152 +65,13 @@ feature -- Initialisation
 
 feature -- Access
 
-	class_definition (a_type_name: attached STRING): attached BMM_CLASS_DEFINITION
-			-- definition of  `a_type' has a property named `a_property'
-		require
-			Model_loaded: passed
-			Type_name_valid: has_class_definition (a_type_name)
-		do
-			Result := schema.class_definition (a_type_name)
-		end
-
-	all_ancestor_classes_of (a_class_name: attached STRING): attached ARRAYED_LIST [STRING]
-			-- return all ancestor types of `a_class_name' up to root class (usually 'ANY', 'Object' or something similar)
-			-- does  not include current class. Returns empty list if none.
-		require
-			Model_loaded: passed
-			Type_valid: has_class_definition (a_class_name)
-		do
-			Result := schema.all_ancestor_classes_of(a_class_name)
-		end
-
-	properties_of (a_type_name: attached STRING): attached HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
-			-- return properties defined directly on class.
-		require
-			Model_loaded: passed
-			Type_name_valid: has_class_definition (a_type_name)
-		do
-			Result := schema.class_definition (a_type_name).properties
-		end
-
-	flat_properties_of (a_type_name: attached STRING): attached HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
-			-- return all properties of inheritance-flattened class.
-		require
-			Model_loaded: passed
-			Type_name_valid: has_class_definition (a_type_name)
-		do
-			Result := schema.class_definition (a_type_name).flat_properties
-		end
-
-	property_type (a_type_name, a_property: attached STRING): attached STRING
-			-- Type of `an a_property' in class corresponding to `a_type_name'
-		require
-			Model_loaded: passed
-			Type_name_valid: has_class_definition (a_type_name)
-			Property_valid: has_property(a_type_name, a_property)
-		do
-			Result := schema.property_definition (a_type_name, a_property).type_def.as_flattened_type_string
-		end
-
-	property_definition (a_type_name, a_property: attached STRING): attached BMM_PROPERTY_DEFINITION
-			-- definition of  `a_type' has a property named `a_property'
-		require
-			Model_loaded: passed
-			Type_name_valid: has_class_definition (a_type_name)
-			Property_valid: has_property(a_type_name, a_property)
-		do
-			Result := schema.property_definition(a_type_name, a_property)
-		end
-
-	property_definition_at_path (a_type_name, a_property_path: attached STRING): attached BMM_PROPERTY_DEFINITION
-			-- retrieve the property definition for `a_property_path' in flattened class corresponding to `a_type_name'
-		require
-			Model_loaded: passed
-			Type_name_valid: has_class_definition (a_type_name)
-			Property_path_valid: has_property_path(a_type_name, a_property_path)
-		do
-			Result := schema.property_definition_at_path (a_type_name, a_property_path)
-		end
-
 	schema: detachable BMM_SCHEMA
 			-- computable form of model
-
-	substitutions: attached HASH_TABLE [STRING, STRING]
-			-- allowed type substitutions due to archetyping as a table of
-			-- allowable substitution keyed by expected type
-		once
-			create Result.make(0)
-			Result.put("STRING", "ISO8601_DURATION")
-			Result.put("STRING", "ISO8601_DATE")
-			Result.put("STRING", "ISO8601_DATE_TIME")
-			Result.put("STRING", "ISO8601_TIME")
-			Result.put("DOUBLE", "REAL")
-		end
 
 feature -- Status Report
 
 	is_top_level: BOOLEAN
 			-- True if this is a top-level schema, i.e. not included by some other schema
-
-	is_descendant_of (a_sub_type, a_parent_type: attached STRING): BOOLEAN
-			-- True if `a_subclass' is a sub-class in the model of `a_parent_type'
-		require
-			Model_loaded: passed
-			Sub_type_valid: not a_sub_type.is_empty
-			Parent_type_valid: not a_parent_type.is_empty
-		do
-			Result := schema.has_class_definition (a_parent_type) and then schema.is_descendant_of (a_sub_type, a_parent_type)
-		end
-
-	has_property (a_type_name, a_property: attached STRING): BOOLEAN
-			-- True if `a_type_name' has a property named `a_property'
-		require
-			Model_loaded: passed
-			Type_name_valid: has_class_definition (a_type_name)
-			Property_valid: not a_property.is_empty
-		do
-			Result := schema.has_property(a_type_name, a_property)
-		end
-
-	has_class_definition (a_type_name: attached STRING): BOOLEAN
-			-- True if `a_type_name' has a class definition in the model. Note that a_type_name
-			-- could be a generic type string; only the root class is considered
-		require
-			Model_loaded: passed
-			Type_valid: not a_type_name.is_empty
-		do
-			Result := schema.has_class_definition (a_type_name)
-		end
-
-	valid_property_type (a_type_name, a_property_name, a_property_type_name: attached STRING): BOOLEAN
-			-- True if `a_property_type_name' is a valid dynamic type for `a_property' in class `a_type_name'
-		require
-			Model_loaded: passed
-			Type_name_valid: has_class_definition (a_type_name)
-			Property_valid: has_property(a_type_name, a_property_name)
-			Property_type_name_valid: has_class_definition (a_property_type_name)
-		do
-			if schema.valid_type_for_class (a_type_name, a_type_name) and schema.valid_type_for_class(a_property_type_name, a_property_type_name) then
-				Result := type_conforms_to (a_property_type_name, schema.property_definition (a_type_name, a_property_name).type_def.as_flattened_type_string)
-			end
-		end
-
-	type_conforms_to (type_1, type_2: attached STRING): BOOLEAN
-			-- check conformance of type 1 to type 2
-		require
-			Model_loaded: passed
-		do
-			Result := schema.type_conforms_to (type_1, type_2)
-		end
-
-	has_property_path (an_obj_type, a_path: attached STRING): BOOLEAN
-			-- is `a_path' possible based on this reference model? Path format must be standard forward-slash
-			-- delimited path, or Xpath. Any predicates (i.e. [] sections) in an Xpath will be ignored.
-		require
-			Model_loaded: passed
-		do
-			Result := schema.has_property_path (an_obj_type, a_path)
-		end
 
 feature -- Modification
 

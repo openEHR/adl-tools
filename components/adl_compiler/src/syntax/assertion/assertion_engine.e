@@ -45,7 +45,7 @@ feature -- Access
 	source_start_line: INTEGER
 			-- defaults to 0; can be set to line number of input text inside some other document
 
-	tree: ARRAYED_LIST [ASSERTION]
+	tree: detachable ARRAYED_LIST [ASSERTION]
 			-- set if parse succeeded
 
 	serialised: STRING
@@ -64,7 +64,7 @@ feature -- Status Report
 	parse_succeeded: BOOLEAN
 			-- True if parse succeeded; call after parse()
 		do
-			Result := tree /= Void
+			Result := attached tree
 		end
 
 	is_differential: BOOLEAN
@@ -72,12 +72,11 @@ feature -- Status Report
 
 feature -- Commands
 
-	set_source(in_text: STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: SCHEMA_ACCESS)
+	set_source(in_text: attached STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: attached BMM_SCHEMA)
 			-- set `in_text' as working artifact
 		require
-			Text_valid: in_text /= Void and then not in_text.is_empty
+			Text_valid: not in_text.is_empty
 			Start_line_valid: a_source_start_line > 0
-			Rm_schema_available: an_rm_schema /= Void
 		do
 			rm_schema := an_rm_schema
 			source := in_text
@@ -93,7 +92,7 @@ feature -- Commands
 			-- parse artifact. If successful, `tree' contains the parse
 			-- structure. Then validate the artifact
 		require
-			Source_exists: source /= Void
+			Source_exists: attached source
 			in_parse_mode
 		do
 			tree := Void
@@ -104,7 +103,7 @@ feature -- Commands
 				tree := parser.assertion_list
 			end
 		ensure
-			parse_succeeded or else tree = Void
+			parse_succeeded or else attached tree
 		end
 
 	serialise(a_format: STRING)
@@ -134,7 +133,7 @@ feature {NONE} -- Implementation
 
 	serialiser_mgr: ASSERTION_SERIALISER_MGR
 
-	rm_schema: SCHEMA_ACCESS
+	rm_schema: BMM_SCHEMA
 
 end
 
