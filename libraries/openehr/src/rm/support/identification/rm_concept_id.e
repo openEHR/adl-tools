@@ -43,14 +43,14 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (a_rm_originator, a_rm_name, a_rm_entity, a_domain_concept, a_version_id: STRING)
+	make (a_rm_originator, a_rm_name, a_rm_entity, a_domain_concept, a_version_id: attached STRING)
 			-- Create from "rm_originator-rm_name-rm_entity.domain_concept.ver_id".
 		require
-			a_rm_originator /= Void and then not a_rm_originator.is_empty
-			a_rm_name /= Void and then not a_rm_name.is_empty
-			a_rm_entity /= Void and then not a_rm_entity.is_empty
-			a_domain_concept /= Void and then not a_domain_concept.is_empty
-			a_version_id /= Void and then not a_version_id.is_empty
+			not a_rm_originator.is_empty
+			not a_rm_name.is_empty
+			not a_rm_entity.is_empty
+			not a_domain_concept.is_empty
+			not a_version_id.is_empty
 		do
 			create value.make(0)
 			value.append (a_rm_originator)
@@ -66,10 +66,10 @@ feature -- Initialisation
 			value.append (a_version_id)
 		end
 
-	make_from_string (an_id: STRING)
+	make_from_string (an_id: attached STRING)
 			-- Create from "rm_entity.domain_concept.ver_id".
 		require
-			an_id /= Void and then valid_id (an_id)
+			valid_id (an_id)
 		do
 			value := an_id
 		end
@@ -236,7 +236,7 @@ feature -- Access
 
 feature -- Status Report
 
-	valid_id (an_id: STRING): BOOLEAN
+	valid_id (an_id: attached STRING): BOOLEAN
 			-- Does `an_id' have the correct form for an archetype id?
 		do
 			Result := id_pattern_regex.matches (an_id)

@@ -137,7 +137,7 @@ feature -- Events
 				ok_button.disable_sensitive
 				cancel_button.disable_sensitive
 
-				rm_schemas_access.initialise (new_dir, rm_schemas_load_list)
+				rm_schemas_access.initialise_with_load_list (new_dir, rm_schemas_load_list)
 				rm_schemas_access.load_schemas
 
 				if not rm_schemas_access.found_valid_schemas then
@@ -147,7 +147,7 @@ feature -- Events
 
 					-- revert to previous
 					rm_schema_dir_text.set_text (rm_schema_directory)
-					rm_schemas_access.initialise(rm_schema_directory, rm_schemas_load_list)
+					rm_schemas_access.initialise_with_load_list(rm_schema_directory, rm_schemas_load_list)
 					rm_schemas_access.load_schemas
 				end
 

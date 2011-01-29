@@ -46,9 +46,23 @@ feature -- Initialisation
 			create top_level_schemas.make(0)
 			create schema_inclusion_map.make(0)
 			create schemas_by_package.make(0)
+			create {ARRAYED_LIST[STRING]} schemas_load_list.make(0)
+			schemas_load_list.compare_objects
 		end
 
-	initialise (a_rm_dir: attached STRING; a_schemas_load_list: attached LIST [STRING])
+	initialise (a_rm_dir: attached STRING)
+		require
+			Rm_dir_valid: directory_exists (a_rm_dir)
+		do
+			schema_directory := a_rm_dir
+			load_schema_descriptors
+		ensure
+			Schemas_dir_set: schema_directory = a_rm_dir
+		end
+
+	initialise_with_load_list (a_rm_dir: attached STRING; a_schemas_load_list: attached LIST [STRING])
+			-- initialise with a specific schema load list, usually a sub-set of schemas that will be
+			-- found in the directory `a_rm_dir'
 		require
 			Rm_dir_valid: directory_exists (a_rm_dir)
 		do
@@ -86,7 +100,7 @@ feature -- Access
 			Result := schemas_by_package.item (a_qualified_package_name.as_lower).schema
 		end
 
-	schemas_load_list: LIST [STRING]
+	schemas_load_list: attached LIST [STRING]
 			-- initial load list for this session, set during initialisation. This may initially be empty
 			-- or contain invalid entries; it will be modified to correctly list the actual schemas found
 
@@ -193,7 +207,7 @@ feature -- Commands
 					i := i + 1
 				end
 
-				-- finalise and the top-level schemas on the load list (if there is one)
+				-- finalise the top-level schemas on the load list (if there is one)
 				from all_schemas.start until all_schemas.off loop
 					if all_schemas.item_for_iteration.is_top_level and schemas_load_list.has (all_schemas.key_for_iteration) then
 						all_schemas.item_for_iteration.schema.finalise_schema

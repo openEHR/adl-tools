@@ -40,7 +40,7 @@ feature -- Initialisation
 		local
 			dummy_error_accumulator: ERROR_ACCUMULATOR
 		once
-			message_db.populate(Error_db_directory, locale_language_short)
+			message_db.populate (Error_db_directory, locale_language_short)
 			if message_db.database_loaded then
 
 				-- set error reporting level in billboard and all error accumulator objects
@@ -72,14 +72,14 @@ feature -- Initialisation
 
 				-- set up the RM schemas
 				if rm_schema_directory.is_empty then
-					set_rm_schema_directory(default_rm_schema_directory)
+					set_rm_schema_directory (default_rm_schema_directory)
 				end
 				if directory_exists (rm_schema_directory) then
-					rm_schemas_access.initialise(rm_schema_directory, rm_schemas_load_list)
+					rm_schemas_access.initialise_with_load_list(rm_schema_directory, rm_schemas_load_list)
 					rm_schemas_access.load_schemas
 					if not rm_schemas_access.found_valid_schemas then
 						create strx.make_empty
-						rm_schemas_load_list.do_all(agent (s: STRING) do strx.append(s + ", ") end)
+						rm_schemas_load_list.do_all (agent (s: STRING) do strx.append(s + ", ") end)
 						strx.remove_tail (2) -- remove final ", "
 						post_warning (Current, "initialise", "model_access_e0", <<strx, rm_schema_directory>>)
 					end
