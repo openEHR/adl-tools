@@ -56,6 +56,7 @@ if platform == 'windows':
 	adl_parser = eiffel('adl_parser', 'deployment/dotnet/dll/adl_parser.ecf')
 	versioned_targets += [adl_parser]
 
+eiffel('bmm_demo', 'apps/bmm_demo/app/bmm_demo.ecf')
 eiffel('dadl_test', 'apps/dadl_test/app/dadl_test.ecf')
 eiffel('adl_compiler_app', 'apps/adl_compiler_app/app/adl_compiler_app.ecf')
 adl_compiler = eiffel('adl_compiler', 'deployment/c/adl_compiler/adl_compiler.ecf')
