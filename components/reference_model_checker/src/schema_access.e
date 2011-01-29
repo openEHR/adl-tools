@@ -1,9 +1,8 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-	             Service interface to an object model access for types and attributes defined in a schema representing an 
-	             object model, or 'reference model'. One instance of this class corresponds to one model; multiple intances
-	             might be created in a system, one for each reference model.
+				 Descriptor for a BMM schema. Contains a meta-data table of attributes obtained from a mini-dadl parse of the 
+				 schema file.
 	             ]"
 	keywords:    "ADL, archetype, reference model"
 	author:      "Thomas Beale"
@@ -16,7 +15,7 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class SCHEMA_ACCESS
+class SCHEMA_DESCRIPTOR
 
 inherit
 	SHARED_MESSAGE_DB
@@ -26,47 +25,41 @@ inherit
 
 	ANY_VALIDATOR
 
+	BMM_DEFINITIONS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
 feature -- Initialisation
 
-	make (a_schema_full_path: attached STRING)
-			-- set up model from full path to model file
-		local
-			model_file: PLAIN_TEXT_FILE
-			dt_tree: DT_COMPLEX_OBJECT_NODE
-			parser: DADL2_VALIDATOR
+	make (a_meta_data: attached HASH_TABLE [STRING, STRING])
 		do
-			reset
-			create model_file.make (a_schema_full_path)
-			if not model_file.exists or else not model_file.is_readable then
-				add_error ("model_access_e1", <<a_schema_full_path>>)
-			else
-				model_file.open_read
-				model_file.read_stream (model_file.count)
-				create parser.make
-				parser.execute(model_file.last_string, 1)
-				if not parser.syntax_error then
-					dt_tree := parser.output
-					schema ?= dt_tree.as_object_from_string("BMM_SCHEMA")
-					if schema = Void then
-						add_error ("model_access_e4", <<a_schema_full_path>>)
-					else
-						passed := True
-						schema.dt_finalise
-					end
-				else
-					add_error ("model_access_e2", <<a_schema_full_path, parser.errors.as_string>>)
-				end
-				model_file.close
-			end
+			meta_data := a_meta_data
+			schema_id := create_schema_id (meta_data.item (Metadata_model_publisher), meta_data.item (metadata_schema_name), meta_data.item (Metadata_model_release))
 		end
 
 feature -- Access
 
 	schema: detachable BMM_SCHEMA
 			-- computable form of model
+
+	schema_id: attached STRING
+			-- schema id, formed from:
+			-- meta_data(Metadata_model_publisher) '-' meta_data(metadata_schema_name) '-' meta_data(Metadata_model_release)
+			--	 e.g. openehr_rm_1.0.3, openehr_test_1.0.1, iso_13606-1_2008
+
+	meta_data: attached HASH_TABLE [STRING, STRING]
+			-- table of {key, value} pairs of schema meta-data, keys as follows:
+			-- "model_publisher",
+			-- "schema_name",
+			-- "model_release",
+			-- "schema_revision",
+			-- "schema_lifecycle_state",
+			-- "schema_description",
+			-- "schema_path"
 
 feature -- Status Report
 
@@ -81,6 +74,38 @@ feature -- Modification
 		end
 
 feature -- Commands
+
+	load
+			-- load schema into in-memory form
+		local
+			model_file: PLAIN_TEXT_FILE
+			dt_tree: DT_COMPLEX_OBJECT_NODE
+			parser: DADL2_VALIDATOR
+		do
+			reset
+			create model_file.make (meta_data.item (Metadata_schema_path))
+			if not model_file.exists or else not model_file.is_readable then
+				add_error ("model_access_e1", <<meta_data.item (Metadata_schema_path)>>)
+			else
+				model_file.open_read
+				model_file.read_stream (model_file.count)
+				create parser.make
+				parser.execute(model_file.last_string, 1)
+				if not parser.syntax_error then
+					dt_tree := parser.output
+					schema ?= dt_tree.as_object_from_string("BMM_SCHEMA")
+					if schema = Void then
+						add_error ("model_access_e4", <<meta_data.item (Metadata_schema_path)>>)
+					else
+						passed := True
+						schema.dt_finalise
+					end
+				else
+					add_error ("model_access_e2", <<meta_data.item (Metadata_schema_path), parser.errors.as_string>>)
+				end
+				model_file.close
+			end
+		end
 
 	validate
 		do

@@ -176,7 +176,7 @@ feature {NONE} -- Implementation
 			-- create row containinng widgets for: check column, name column, status column, edit button column
 			from rm_schemas_access.all_schemas.start until rm_schemas_access.all_schemas.off loop
 				schema_id := rm_schemas_access.all_schemas.key_for_iteration
-				schema_meta_data := rm_schemas_access.schema_metadata_table.item (schema_id)
+				schema_meta_data := rm_schemas_access.all_schemas.item (schema_id).meta_data
 
 				-- column 1 - check box to indicate loaded; only on top-level schemas
 				if rm_schemas_access.all_schemas.item_for_iteration.is_top_level then
@@ -240,7 +240,7 @@ feature {NONE} -- Implementation
 	do_edit_schema(a_schema_id: STRING)
 			-- launch external editor with schema, or info box if none defined
 		do
-			execution_environment.launch (text_editor_command + " %"" + rm_schemas_access.schema_metadata_table.item (a_schema_id).item (metadata_schema_path) + "%"")
+			execution_environment.launch (text_editor_command + " %"" + rm_schemas_access.all_schemas.item (a_schema_id).meta_data.item (metadata_schema_path) + "%"")
 		end
 
 	show_schema_validation(a_schema_id: STRING)
