@@ -1,0 +1,614 @@
+-- 
+-- 	component:   openEHR Archetype Project
+-- 	description: openEHR Reference Model schema. This file is a DADL serialisation of the BMM object meta-model classes found at 
+--               http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/libraries/common_libs/src/basic_meta_model
+--				 This schema is an unofficial upgrade of the Release 1.0.2 schema, with various changes documented below.
+-- 	keywords:    reference model, meta-model, archetypes
+-- 	author:      Thomas Beale
+-- 	support:     Ocean Informatics <support@OceanInformatics.com>
+-- 	copyright:   Copyright (c) 2009 openEHR Foundation
+-- 	license:     See end of file
+-- 
+-- 	file:        $URL$
+-- 	revision:    $LastChangedRevision$
+-- 	last_change: $LastChangedDate$
+-- 
+
+------------------------------------------------------
+-- schema identification
+-- (schema_id computed as <model_publisher>_<schema_name>_<model_release>)
+------------------------------------------------------
+model_publisher = <"openehr">
+schema_name = <"ehr_extract">
+model_release = <"2.0.0">
+
+------------------------------------------------------
+-- schema documentation
+------------------------------------------------------
+
+schema_revision = <"$LastChangedRevision$">
+schema_lifecycle_state = <"experimental">
+schema_description = <"openEHR experimental EHR Extract information model
+					 described at http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/libraries/common_libs/src/basic_meta_model
+					 Changes with respect to Release 1.0.2:
+						- LINK is LOCATABLE
+						- DV_EHR_URI (used in LINK) has an added computable property 'target_type' enabling constraint to e.g. 'OBSERVATION' etc
+						- PARTICIPATION class made abstract
+						- a new S_PARTICIPATION class added
+						- a new X_PARTICIPATION class added
+						- addition of unofficial EHR Extract package and classes
+						- addition of 'realm' attribute to DV_IDENTIFIER
+						- addition of 'identifiers' container attribute to PARTY
+						- PARTY.identifiers cardinality changed from 1..* to 0..*">
+
+------------------------------------------------------
+-- inclusions
+------------------------------------------------------
+includes = <
+	["1"] = <
+		id = <"openehr_ehr_1.0.2">
+	>
+	["2"] = <
+		id = <"openehr_demographic_1.0.2">
+	>
+>
+
+------------------------------------------------------
+-- packages
+------------------------------------------------------
+
+packages = <
+	["rm.ehr_extract"] = <
+		name = <"rm.ehr_extract">
+		classes = <"EXTRACT", ...> 
+	>
+>
+
+
+------------------------------------------------------
+-- classes
+------------------------------------------------------
+
+class_definitions = <
+
+	--
+	--------------------- rm.data_types.basic ------------------
+	--
+
+	["DV_IDENTIFIER"] = <
+		name = <"DV_IDENTIFIER">
+		ancestors = <"DATA_VALUE", ...>
+		properties = <
+			["issuer"] = (BMM_SINGLE_PROPERTY) <
+				name = <"issuer">
+				type = <"String">
+				is_mandatory = <True>
+			>
+			["id"] = (BMM_SINGLE_PROPERTY) <
+				name = <"id">
+				type = <"String">
+				is_mandatory = <True>
+			>
+			["type"] = (BMM_SINGLE_PROPERTY) <
+				name = <"type">
+				type = <"String">
+				is_mandatory = <True>
+			>
+			["assigner"] = (BMM_SINGLE_PROPERTY) <
+				name = <"assigner">
+				type = <"String">
+				is_mandatory = <True>
+			>
+			["realm"] = (BMM_SINGLE_PROPERTY) <
+				name = <"realm">
+				type = <"String">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	--
+	--------------------- rm.data_types.uri ------------------
+	--
+
+	["DV_EHR_URI"] = <
+		name = <"DV_EHR_URI">
+		ancestors = <"DV_URI", ...>
+		properties = <
+			["target_type"] = (BMM_SINGLE_PROPERTY) <
+				name = <"target_type">
+				is_computed = <True>
+				type = <"String">
+			>
+		>
+	>
+
+	------------------------------------------------------------
+	---------------------- rm.common.generic -------------------
+	------------------------------------------------------------
+
+	["PARTICIPATION"] = <
+		name = <"PARTICIPATION">
+		ancestors = <"Any", ...>
+		is_abstract = <True>
+		properties = <
+			["function"] = (BMM_SINGLE_PROPERTY) <
+				name = <"function">
+				type = <"DV_TEXT">
+				is_mandatory = <True>
+			>
+			["time"] = (BMM_GENERIC_PROPERTY) <
+				name = <"time">
+				type_def = <
+					root_type = <"DV_INTERVAL">
+					generic_parameters = <"DV_DATE">
+				>
+			>
+			["mode"] = (BMM_SINGLE_PROPERTY) <
+				name = <"mode">
+				type = <"DV_CODED_TEXT">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["S_PARTICIPATION"] = <
+		name = <"S_PARTICIPATION">
+		ancestors = <"PARTICIPATION", ...>
+		properties = <
+			["performer"] = (BMM_SINGLE_PROPERTY) <
+				name = <"performer">
+				type = <"PARTY_PROXY">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	------------------------------------------------------------
+	--------------------- rm.common.archetyped -----------------
+	------------------------------------------------------------
+
+	["LINK"] = <
+		name = <"LINK">
+		ancestors = <"LOCATABLE", ...>
+		properties = <
+			["meaning"] = (BMM_SINGLE_PROPERTY) <
+				name = <"meaning">
+				type = <"DV_TEXT">
+				is_mandatory = <True>
+			>
+			["type"] = (BMM_SINGLE_PROPERTY) <
+				name = <"type">
+				type = <"DV_TEXT">
+				is_mandatory = <True>
+			>
+			["target"] = (BMM_SINGLE_PROPERTY) <
+				name = <"target">
+				type = <"DV_EHR_URI">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	------------------------------------------------------------
+	----------------------- rm.demographics --------------------
+	------------------------------------------------------------
+   
+	["PARTY"] = <
+		name = <"PARTY">
+		is_abstract = <True>
+		ancestors = <"LOCATABLE", ...>
+		properties = <
+			["details"] = (BMM_SINGLE_PROPERTY) <
+				name = <"details">
+				type = <"ITEM_STRUCTURE">
+			>
+			["identities"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"identities">
+				type_def = <
+					type = <"PARTY_IDENTITY">
+					container_type = <"Set">
+				>
+				cardinality = <|>=0|>
+			>
+			["identifiers"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"identifiers">
+				type_def = <
+					type = <"DV_IDENTIFIER">
+					container_type = <"Set">
+				>
+				cardinality = <|>=1|>
+			>
+			["contacts"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"contacts">
+				type_def = <
+					type = <"CONTACT">
+					container_type = <"Set">
+				>
+				cardinality = <|>=0|>
+			>
+			["relationships"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"relationships">
+				type_def = <
+					type = <"PARTY_RELATIONSHIP">
+					container_type = <"Set">
+				>
+				cardinality = <|>=0|>
+			>
+			["reverse_relationships"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"reverse_relationships">
+				type_def = <
+					type = <"LOCATABLE_REF">
+					container_type = <"Set">
+				>
+				cardinality = <|>=0|>
+			>
+			["type"] = (BMM_SINGLE_PROPERTY) <
+				name = <"type">
+				type = <"DV_TEXT">
+				is_computed = <True>
+			>
+		>
+	>
+    
+	------------------------------------------------------------
+	----------------------- rm.ehr_extract --------------------
+	------------------------------------------------------------
+
+	["EXTRACT"] = <
+		name = <"EXTRACT">
+		ancestors = <"LOCATABLE", ...>
+		properties = <
+			["request_id"] = (BMM_SINGLE_PROPERTY) <
+				name = <"request_id">
+				type = <"HIER_OBJECT_ID">
+			>
+			["time_created"] = (BMM_SINGLE_PROPERTY) <
+				name = <"time_created">
+				type = <"ISO8601_DATE_TIME">
+				is_mandatory = <True>
+			>
+			["system_id"] = (BMM_SINGLE_PROPERTY) <
+				name = <"system_id">
+				type = <"HIER_OBJECT_ID">
+				is_mandatory = <True>
+			>
+			["sequence_nr"] = (BMM_SINGLE_PROPERTY) <
+				name = <"sequence_nr">
+				type = <"Integer">
+				is_mandatory = <True>
+			>
+			["specification"] = (BMM_SINGLE_PROPERTY) <
+				name = <"specification">
+				type = <"EXTRACT_SPEC">
+			>
+			["chapters"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"chapters">
+				type_def = <
+					type = <"EXTRACT_CHAPTER">
+					container_type = <"List">
+				>
+				cardinality = <|>=0|>
+			>
+			["participations"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"participations">
+				type_def = <
+					type = <"X_PARTICIPATION">
+					container_type = <"List">
+				>
+				cardinality = <|>=0|>
+			>
+		>
+	>
+
+	["EXTRACT_SPEC"] = <
+		name = <"EXTRACT_SPEC">
+		ancestors = <"Any", ...>
+		properties = <
+			["extract_type"] = (BMM_SINGLE_PROPERTY) <
+				name = <"extract_type">
+				type = <"DV_CODED_TEXT">
+				is_mandatory = <True>
+			>
+			["include_multimedia"] = (BMM_SINGLE_PROPERTY) <
+				name = <"include_multimedia">
+				type = <"Boolean">
+				is_mandatory = <True>
+			>
+			["priority"] = (BMM_SINGLE_PROPERTY) <
+				name = <"priority">
+				type = <"Integer">
+				is_mandatory = <True>
+			>
+			["link_depth"] = (BMM_SINGLE_PROPERTY) <
+				name = <"link_depth">
+				type = <"Integer">
+				is_mandatory = <True>
+			>
+			["criteria"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"criteria">
+				type_def = <
+					type = <"DV_PARSABLE">
+					container_type = <"List">
+				>
+				cardinality = <|>=0|>
+			>
+			["manifest"] = (BMM_SINGLE_PROPERTY) <
+				name = <"manifest">
+				type = <"EXTRACT_MANIFEST">
+			>
+			["version_spec"] = (BMM_SINGLE_PROPERTY) <
+				name = <"version_spec">
+				type = <"EXTRACT_VERSION_SPEC">
+			>
+		>
+	>
+
+	["EXTRACT_MANIFEST"] = <
+		name = <"EXTRACT_MANIFEST">
+		ancestors = <"Any", ...>
+		properties = <
+			["entities"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"entities">
+				type_def = <
+					type = <"EXTRACT_ENTITY_MANIFEST">
+					container_type = <"List">
+				>
+				cardinality = <|>=1|>
+			>
+		>
+	>
+
+	["EXTRACT_ENTITY_MANIFEST"] = <
+		name = <"EXTRACT_ENTITY_MANIFEST">
+		ancestors = <"Any", ...>
+		properties = <
+			["extract_id_key"] = (BMM_SINGLE_PROPERTY) <
+				name = <"extract_id_key">
+				type = <"String">
+				is_mandatory = <True>
+			>
+			["ehr_id"] = (BMM_SINGLE_PROPERTY) <
+				name = <"ehr_id">
+				type = <"String">
+			>
+			["subject_id"] = (BMM_SINGLE_PROPERTY) <
+				name = <"subject_id">
+				type = <"String">
+			>
+			["other_ids"] = (BMM_GENERIC_PROPERTY) <
+				name = <"other_ids">
+				type_def = <
+					root_type = <"Hash">
+					generic_parameters = <"String", "String">
+				>
+			>
+			["item_list"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"item_list">
+				type_def = <
+					type = <"OBJECT_REF">
+					container_type = <"List">
+				>
+				cardinality = <|>=0|>
+			>
+		>
+	>
+
+	["EXTRACT_VERSION_SPEC"] = <
+		name = <"EXTRACT_VERSION_SPEC">
+		ancestors = <"Any", ...>
+		properties = <
+			["include_all_versions"] = (BMM_SINGLE_PROPERTY) <
+				name = <"include_all_versions">
+				type = <"Boolean">
+				is_mandatory = <True>
+			>
+			["commit_time_interval"] = (BMM_GENERIC_PROPERTY) <
+				name = <"commit_time_interval">
+				type_def = <
+					root_type = <"Interval">
+					generic_parameters = <"ISO8601_DATE_TIME">
+				>
+			>
+			["include_revision_history"] = (BMM_SINGLE_PROPERTY) <
+				name = <"include_revision_history">
+				type = <"Boolean">
+				is_mandatory = <True>
+			>
+			["include_data"] = (BMM_SINGLE_PROPERTY) <
+				name = <"include_data">
+				type = <"Boolean">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["EXTRACT_CHAPTER"] = <
+		name = <"EXTRACT_CHAPTER">
+		ancestors = <"LOCATABLE", ...>
+		properties = <
+			["items"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"items">
+				type_def = <
+					type = <"EXTRACT_ITEM">
+					container_type = <"List">
+				>
+				cardinality = <|>=0|>
+			>
+		>
+	>
+
+	["EXTRACT_ENTITY_CHAPTER"] = <
+		name = <"EXTRACT_ENTITY_CHAPTER">
+		ancestors = <"EXTRACT_CHAPTER", ...>
+		properties = <
+			["extract_id_key"] = (BMM_SINGLE_PROPERTY) <
+				name = <"extract_id_key">
+				type = <"String">
+				is_mandatory = <True>
+			>
+		>
+	>
+   
+	["EXTRACT_ITEM"] = <
+		name = <"EXTRACT_ITEM">
+		ancestors = <"LOCATABLE", ...>
+		is_abstract = <True>
+	>
+   
+	["EXTRACT_FOLDER"] = <
+		name = <"EXTRACT_FOLDER">
+		ancestors = <"EXTRACT_ITEM", ...>
+		properties = <
+			["items"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"items">
+				type_def = <
+					type = <"EXTRACT_ITEM">
+					container_type = <"List">
+				>
+				cardinality = <|>=0|>
+			>
+		>
+	>
+
+	["EXTRACT_CONTENT_ITEM"] = <
+		name = <"EXTRACT_CONTENT_ITEM">
+		ancestors = <"EXTRACT_ITEM", ...>
+		is_abstract = <True>
+		properties = <
+			["uid"] = (BMM_SINGLE_PROPERTY) <
+				name = <"uid">
+				type = <"HIER_OBJECT_ID">
+				is_mandatory = <True>
+			>
+			["is_primary"] = (BMM_SINGLE_PROPERTY) <
+				name = <"is_primary">
+				type = <"Boolean">
+				is_mandatory = <True>
+			>
+			["is_changed"] = (BMM_SINGLE_PROPERTY) <
+				name = <"is_changed">
+				type = <"Boolean">
+			>
+			["is_masked"] = (BMM_SINGLE_PROPERTY) <
+				name = <"is_masked">
+				type = <"Boolean">
+			>
+			["item"] = (BMM_SINGLE_PROPERTY) <
+				name = <"item">
+				type = <"Any">
+			>
+		>
+	>
+
+	["GENERIC_CONTENT_ITEM"] = <
+		name = <"GENERIC_CONTENT_ITEM">
+		ancestors = <"EXTRACT_CONTENT_ITEM", ...>
+		properties = <
+			["item_type"] = (BMM_SINGLE_PROPERTY) <
+				name = <"item_type">
+				type = <"DV_CODED_TEXT">
+			>
+			["item_type_version"] = (BMM_SINGLE_PROPERTY) <
+				name = <"item_type_version">
+				type = <"String">
+			>
+			["author"] = (BMM_SINGLE_PROPERTY) <
+				name = <"author">
+				type = <"X_PARTICIPATION">
+			>
+			["creation_time"] = (BMM_SINGLE_PROPERTY) <
+				name = <"creation_time">
+				type = <"ISO8601_DATE_TIME">
+			>
+			["authoriser"] = (BMM_SINGLE_PROPERTY) <
+				name = <"authoriser">
+				type = <"X_PARTICIPATION">
+			>
+			["authorisation_time"] = (BMM_SINGLE_PROPERTY) <
+				name = <"authorisation_time">
+				type = <"ISO8601_DATE_TIME">
+			>
+			["item_status"] = (BMM_SINGLE_PROPERTY) <
+				name = <"item_status">
+				type = <"DV_CODED_TEXT">
+			>
+			["version_id"] = (BMM_SINGLE_PROPERTY) <
+				name = <"version_id">
+				type = <"String">
+			>
+			["version_set_id"] = (BMM_SINGLE_PROPERTY) <
+				name = <"version_set_id">
+				type = <"String">
+			>
+			["system_id"] = (BMM_SINGLE_PROPERTY) <
+				name = <"system_id">
+				type = <"String">
+			>
+			["other_details"] = (BMM_GENERIC_PROPERTY) <
+				name = <"other_details">
+				type_def = <
+					root_type = <"Hash">
+					generic_parameters = <"String", "String">
+				>
+			>
+			["item"] = (BMM_SINGLE_PROPERTY) <
+				name = <"item">
+				type = <"LOCATABLE">
+			>
+		>
+	>
+
+	["X_PARTICIPATION"] = <
+		name = <"X_PARTICIPATION">
+		ancestors = <"PARTICIPATION", ...>
+		properties = <
+			["performer"] = (BMM_SINGLE_PROPERTY) <
+				name = <"performer">
+				type = <"String">
+			>
+			["relationship"] = (BMM_SINGLE_PROPERTY) <
+				name = <"relationship">
+				type = <"DV_CODED_TEXT">
+			>
+		>
+	>
+>
+
+--|
+--| ***** BEGIN LICENSE BLOCK *****
+--| Version: MPL 1.1/GPL 2.0/LGPL 2.1
+--|
+--| The contents of this file are subject to the Mozilla Public License Version
+--| 1.1 (the 'License'); you may not use this file except in compliance with
+--| the License. You may obtain a copy of the License at
+--| http://www.mozilla.org/MPL/
+--|
+--| Software distributed under the License is distributed on an 'AS IS' basis,
+--| WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+--| for the specific language governing rights and limitations under the
+--| License.
+--|
+--| The Original Code is openehr_extract_200.dadl
+--|
+--| The Initial Developer of the Original Code is Thomas Beale.
+--| Portions created by the Initial Developer are Copyright (C) 2009
+--| the Initial Developer. All Rights Reserved.
+--|
+--| Contributor(s):
+--|
+--| Alternatively, the contents of this file may be used under the terms of
+--| either the GNU General Public License Version 2 or later (the 'GPL'), or
+--| the GNU Lesser General Public License Version 2.1 or later (the 'LGPL'),
+--| in which case the provisions of the GPL or the LGPL are applicable instead
+--| of those above. If you wish to allow use of your version of this file only
+--| under the terms of either the GPL or the LGPL, and not to allow others to
+--| use your version of this file under the terms of the MPL, indicate your
+--| decision by deleting the provisions above and replace them with the notice
+--| and other provisions required by the GPL or the LGPL. If you do not delete
+--| the provisions above, a recipient may use your version of this file under
+--| the terms of any one of the MPL, the GPL or the LGPL.
+--|
+--| ***** END LICENSE BLOCK *****
+--|
+
