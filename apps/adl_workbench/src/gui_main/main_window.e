@@ -950,7 +950,9 @@ feature -- Archetype Events
 			-- Display details of `archetype_file_tree' when the user selects it.
 		do
 			if attached archetype_file_tree.selected_item then
-				archetype_view_tree_control.display_details_of_selected_item_after_delay
+				if attached current_arch_dir as dir and then dir.selected_item /= archetype_file_tree.selected_item.data then
+					archetype_view_tree_control.display_details_of_selected_item_after_delay
+				end
 			end
 		end
 
@@ -961,7 +963,10 @@ feature -- Archetype Events
 				if attached {ARCH_REP_ARCHETYPE} template_file_tree.selected_item.data as ara then
 					archetype_view_tree_control.ensure_item_visible(ara.ontological_name)
 				end
-				template_view_tree_control.display_details_of_selected_item_after_delay
+
+				if attached current_arch_dir as dir and then dir.selected_item /= template_file_tree.selected_item.data then
+					template_view_tree_control.display_details_of_selected_item_after_delay
+				end
 			end
 		end
 
