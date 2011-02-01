@@ -53,7 +53,7 @@ feature -- Initialisation
 			not is_typed
 		end
 
-	make_identified(a_node_id: attached STRING)
+	make_identified (a_node_id: attached STRING)
 			-- set node id, type_name = 'unknown'
 		require
 			Node_id_valid: not a_node_id.is_empty
@@ -364,7 +364,7 @@ feature -- Conversion
 			--
 		do
 			create Result.make(0)
-			Result.append(rm_type_name + "[" + node_id + "] ")
+			Result.append (rm_type_name + "[" + node_id + "] ")
 		end
 
 	as_object (a_type_id: INTEGER; make_args: ARRAY[ANY]): ANY
@@ -389,16 +389,16 @@ feature -- Representation
 
 feature -- Serialisation
 
-	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
+	enter_subtree (serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at start of block for this node
 		do
-			serialiser.start_complex_object_node(Current, depth)
+			serialiser.start_complex_object_node (Current, depth)
 		end
 
-	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
+	exit_subtree (serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at end of block for this node
 		do
-			serialiser.end_complex_object_node(Current, depth)
+			serialiser.end_complex_object_node (Current, depth)
 		end
 
 end

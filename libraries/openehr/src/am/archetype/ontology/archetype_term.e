@@ -136,30 +136,6 @@ feature -- Modification
 			description_set: description.same_string (a_description)
 		end
 
---feature -- Output
-
---	out: attached STRING
---			-- output term in standard dADL form (not the archetype form):
---			--  code = <"somecode">
---			--  items = <
---			--		["key1"] = <"value1">
---			--		["key2"] = <"value2">
---			--		etc
---			--	>
---		local
---			keys_list: ARRAYED_LIST[STRING]
---		do
---			keys_list := keys
---			create Result.make(0)
---			Result.append ("code = <%"" + code + "%">%N")
---			Result.append ("items = <%N")
---			from keys_list.start until keys_list.off loop
---				Result.append ("%T[%"" + keys_list.item + "%"] = <%"" + items.item(keys_list.item) + "%">%N")
---				keys_list.forth
---			end
---			Result.append (">%N")
---		end
-
 feature -- Factory
 
 	create_translated_term (a_lang: attached STRING): ARCHETYPE_TERM

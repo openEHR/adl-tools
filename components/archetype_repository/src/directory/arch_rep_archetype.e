@@ -243,7 +243,7 @@ feature -- Access (semantic)
 		require
 			is_valid
 		do
-			Result := adl_engine.serialise(flat_archetype, Archetype_native_syntax, current_archetype_language)
+			Result := adl15_engine.serialise(flat_archetype, Archetype_native_syntax, current_archetype_language)
 		end
 
 	legacy_flat_path: STRING
@@ -739,10 +739,10 @@ feature {NONE} -- Compilation
 		local
 			legacy_flat_archetype: FLAT_ARCHETYPE
 		do
-			legacy_flat_archetype := adl_engine.parse_flat (legacy_flat_text, rm_schema)
+			legacy_flat_archetype := adl15_engine.parse_flat (legacy_flat_text, rm_schema)
 			flat_archetype_cache := Void
 			if legacy_flat_archetype = Void then
-				errors.append(adl_engine.errors)
+				errors.append(adl15_engine.errors)
 			 	compilation_state := Cs_convert_legacy_failed
 			else
 				post_info (Current, "compile_legacy", "compile_legacy_i1", <<id.as_string>>)
@@ -784,10 +784,10 @@ feature {NONE} -- Compilation
 			supp_idx: HASH_TABLE[ARRAYED_LIST[C_ARCHETYPE_ROOT], STRING]
 		do
 			post_info (Current, "parse", "parse_i2", Void)
-			differential_archetype := adl_engine.parse_differential (differential_text, rm_schema)
+			differential_archetype := adl15_engine.parse_differential (differential_text, rm_schema)
 			flat_archetype_cache := Void
 			if differential_archetype = Void then
-				errors.append (adl_engine.errors)
+				errors.append (adl15_engine.errors)
 				compilation_state := Cs_parse_failed
 			else
 				if is_specialised and not parent_id.is_equal(differential_archetype.parent_archetype_id) then
@@ -890,7 +890,7 @@ feature -- Modification
 		require
 			is_valid
 		do
-			file_repository.save_text_to_file (differential_path, adl_engine.serialise(differential_archetype, Archetype_native_syntax, current_archetype_language))
+			file_repository.save_text_to_file (differential_path, adl15_engine.serialise(differential_archetype, Archetype_native_syntax, current_archetype_language))
 		end
 
 	save_differential_as (a_full_path, serialise_format: attached STRING)
@@ -903,9 +903,9 @@ feature -- Modification
 			if serialise_format.same_string (Archetype_native_syntax) then
 				-- replace the extension because we want it to be clear that it is a source file; but maybe the caller should just be trusted?
 				file_repository.save_text_to_file (extension_replaced (a_full_path, archetype_source_file_extension),
-					adl_engine.serialise(differential_archetype, Archetype_native_syntax, current_archetype_language))
+					adl15_engine.serialise(differential_archetype, Archetype_native_syntax, current_archetype_language))
 			else
-				file_repository.save_text_to_file (a_full_path, adl_engine.serialise(differential_archetype, serialise_format, current_archetype_language))
+				file_repository.save_text_to_file (a_full_path, adl15_engine.serialise(differential_archetype, serialise_format, current_archetype_language))
 			end
 		end
 
@@ -919,7 +919,7 @@ feature -- Modification
 			if serialise_format.same_string (Archetype_native_syntax) then
 				file_repository.save_text_to_file (a_full_path, flat_text)
 			else
-				file_repository.save_text_to_file (a_full_path, adl_engine.serialise(flat_archetype, serialise_format, current_archetype_language))
+				file_repository.save_text_to_file (a_full_path, adl15_engine.serialise(flat_archetype, serialise_format, current_archetype_language))
 			end
 		end
 

@@ -125,7 +125,7 @@ end
 			end
 		end
 
-	dt_to_object_from_string(a_dt_obj: attached DT_COMPLEX_OBJECT_NODE; a_type_name: attached STRING; make_args: ARRAY[ANY]): ANY
+	dt_to_object_from_string (a_dt_obj: attached DT_COMPLEX_OBJECT_NODE; a_type_name: attached STRING; make_args: ARRAY[ANY]): ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		do

@@ -235,7 +235,7 @@ feature -- Modification
 			end
 		end
 
-feature {ADL_ENGINE} -- Construction
+feature {ADL15_ENGINE} -- Construction
 
 	set_translations (a_trans: attached HASH_TABLE [TRANSLATION_DETAILS, STRING])
 			-- set translations
@@ -286,7 +286,7 @@ feature -- Serialisation
 			end
 		end
 
-feature {ADL_ENGINE} -- Implementation
+feature {ADL15_ENGINE} -- Implementation
 
 	orig_lang_translations: LANGUAGE_TRANSLATIONS
 			-- holds a copy of translations for purposes of DT object/dADL reading and writing

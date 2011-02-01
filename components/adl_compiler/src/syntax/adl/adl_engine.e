@@ -1,7 +1,7 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-				 This class knows how to parse an ADL text, and serialise an ARCHETYPE object.
+				 This class knows how to parse an ADL text, and serialise an ARCHETYPE object in ADL 1.5 style.
 				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
@@ -13,7 +13,7 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class ADL_ENGINE
+class ADL15_ENGINE
 
 inherit
 	SHARED_ARCHETYPE_SERIALISERS

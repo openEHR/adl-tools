@@ -67,7 +67,7 @@ feature -- Initialisation
 			Is_dirty: is_dirty
 		end
 
-	make_all(an_artefact_type: attached ARTEFACT_TYPE;
+	make_all (an_artefact_type: attached ARTEFACT_TYPE;
 			an_adl_version: STRING;
 			an_id: like archetype_id;
 			a_parent_archetype_id: ARCHETYPE_ID;
@@ -77,7 +77,8 @@ feature -- Initialisation
 			a_description: RESOURCE_DESCRIPTION;
 			a_definition: like definition;
 			an_invariants: ARRAYED_LIST[ASSERTION];
-			an_ontology: like ontology)
+			an_ontology: like ontology;
+			an_annotations: RESOURCE_ANNOTATIONS)
 				-- make from all possible items
 		require
 			Language_valid: not an_original_language.is_empty
@@ -92,6 +93,7 @@ feature -- Initialisation
 			adl_version := an_adl_version
 			is_controlled := is_controlled_flag
 			invariants := an_invariants
+			annotations := an_annotations
 		ensure
 			Artefact_type_set: artefact_type = an_artefact_type
 			Adl_version_set: adl_version = an_adl_version
