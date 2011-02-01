@@ -1,6 +1,6 @@
 note
 	component:   "openEHR Data Types"
-	
+
 	description: "[
 	             Used to record pure ratios, such as titers, concentration ratios (e.g. Na:K) etc.
 				 ]"
@@ -19,7 +19,7 @@ class DV_PROPORTION
 
 inherit
 	DV_QUANTIFIED
-	
+
 	PROPORTION_KIND
 		undefine
 			is_equal
@@ -27,16 +27,16 @@ inherit
 
 create
 	make, make_from_string, make_from_canonical_string
-	
+
 feature -- Initialization
-	
+
 	make(a_numerator, a_denominator: REAL)
 			-- make from a numerator, denominator
 		do
 			numerator := a_numerator
 			denominator := a_denominator
 		end
-		
+
 	make_from_string(str:STRING)
 		do
 		end
@@ -51,7 +51,7 @@ feature -- Status Report
 			-- True if str contains required tags
 		do
 		end
-		
+
 feature -- Access
 
 	numerator: REAL
@@ -65,7 +65,7 @@ feature -- Access
 
 	type: INTEGER
 			-- Indicates semantic type of proportion, including percent, unitary etc.
-			
+
 	magnitude: REAL_REF
 			-- value of numerator/denominator
 		do
@@ -74,7 +74,7 @@ feature -- Access
 
 	diff_type: DV_PROPORTION
 			-- type of difference for this quantity
-		
+
 feature -- Comparison
 
 	is_strictly_comparable_to (other: DV_PROPORTION): BOOLEAN
@@ -85,12 +85,12 @@ feature -- Comparison
 
 feature -- Basic Operations
 
-	infix "+" (diff_val: like diff_type): like Current
+	plus alias "+" (diff_val: like diff_type): like Current
 			-- addition
 		do
 		end
 
-	infix "-" (other: like Current): like diff_type
+	minus alias "-" (other: like Current): like diff_type
 			-- difference
 		do
 		end
@@ -103,13 +103,13 @@ feature -- Conversion
 			Result.append(numerator.out)
 			Result.append(denominator.out)
 		end
-	
+
 	as_canonical_string: STRING
 		do
 			Result := "<numerator>" + numerator.out + "</numerator>" +
 					"<denominator>" + denominator.out + "</denominator>"
 		end
-	
+
 	magnitude_as_string: STRING
 			-- output the magnitude in its natural form
 		do
@@ -122,7 +122,7 @@ invariant
 	Fraction_validity: (type = pk_fraction or type = pk_integer_fraction) implies is_integral
 	Unitary_validity: type = pk_unitary implies denominator = 1
 	Percent_validity: type = pk_percent implies denominator = 100
-	
+
 end
 
 

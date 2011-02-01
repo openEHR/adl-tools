@@ -31,9 +31,12 @@ create
 
 feature -- Serialisation
 
-	serialise (a_target: attached ARCHETYPE; lang_serialised, desc_serialised, def_serialised: attached STRING; inv_serialised: STRING; ont_serialised: attached STRING; ann_serialised: STRING)
+	serialise (an_archetype: attached ARCHETYPE;
+				lang_serialised, desc_serialised, def_serialised: attached STRING;
+				inv_serialised: STRING; ont_serialised: attached STRING;
+				ann_serialised, comp_onts_serialised: STRING)
 		do
-			target := a_target
+			archetype := an_archetype
 
 			serialise_initialise
 			serialise_archetype_id
@@ -70,6 +73,11 @@ feature -- Serialisation
 				last_result.append (ann_serialised)
 			end
 
+			if attached comp_onts_serialised then
+				last_result.append (format_item(FMT_NEWLINE) + apply_style(symbol(SYM_COMPONENT_ONTOLOGIES), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
+				last_result.append (comp_onts_serialised)
+			end
+
 			serialise_finalise
 		end
 
@@ -82,7 +90,7 @@ feature -- Serialisation
 
 			-- title
 			s := format_item(FMT_START_TITLE).twin
-			s.replace_substring_all("$title", target.artefact_type.type_name + " " + target.archetype_id.as_string)
+			s.replace_substring_all("$title", archetype.artefact_type.type_name + " " + archetype.archetype_id.as_string)
 			s.append (format_item(FMT_END_TITLE))
 
 			-- meta-data
@@ -99,17 +107,17 @@ feature -- Serialisation
 			arch_kw_str: STRING
 		do
 			arch_kw_str := symbol(SYM_ARCHETYPE).twin
-			if target.has_adl_version or target.is_controlled or target.is_generated then
+			if archetype.has_adl_version or archetype.is_controlled or archetype.is_generated then
 				arch_kw_str.append (" (")
-				if target.has_adl_version then
-					if attached {DIFFERENTIAL_ARCHETYPE} target as diff_arch1 then
-						arch_kw_str.append (symbol(SYM_ADL_VERSION) + "=" + target.adl_version)
+				if archetype.has_adl_version then
+					if attached {DIFFERENTIAL_ARCHETYPE} archetype as diff_arch1 then
+						arch_kw_str.append (symbol(SYM_ADL_VERSION) + "=" + archetype.adl_version)
 					else
 						arch_kw_str.append (symbol(SYM_ADL_VERSION) + "=" + adl_version_for_flat_output)
 					end
 				end
-				if target.is_controlled then
-					if target.has_adl_version then
+				if archetype.is_controlled then
+					if archetype.has_adl_version then
 						arch_kw_str.append ("; ")
 					end
 					arch_kw_str.append (symbol(SYM_IS_CONTROLLED))
@@ -118,8 +126,8 @@ feature -- Serialisation
 				-- something like a table of small functions, and the lowest ADL version each one should be used at
 				-- but this appears to be the sole non-1.4 syntax item that is not handled by ADL_SYNTAX_CONVERTER
 				-- so for now we will just do this and hope not too many people see the horror.....
-				if attached {DIFFERENTIAL_ARCHETYPE} target as diff_arch2 or (target.is_generated and adl_version_for_flat_output_numeric > 141) then
-					if target.has_adl_version or target.is_controlled then
+				if attached {DIFFERENTIAL_ARCHETYPE} archetype as diff_arch2 or (archetype.is_generated and adl_version_for_flat_output_numeric > 141) then
+					if archetype.has_adl_version or archetype.is_controlled then
 						arch_kw_str.append ("; ")
 					end
 					arch_kw_str.append (symbol(SYM_IS_GENERATED))
@@ -128,7 +136,7 @@ feature -- Serialisation
 			end
 			last_result.append (apply_style(arch_kw_str, STYLE_KEYWORD) + format_item(FMT_NEWLINE))
 
-			last_result.append (create_indent(1) + apply_style(target.archetype_id.as_string, STYLE_IDENTIFIER) +
+			last_result.append (create_indent(1) + apply_style(archetype.archetype_id.as_string, STYLE_IDENTIFIER) +
 				format_item(FMT_NEWLINE))
 		end
 
@@ -136,13 +144,13 @@ feature -- Serialisation
 		local
 			s: STRING
 		do
-			if adl_version_for_flat_output_numeric < 150 and attached {FLAT_ARCHETYPE} target as fa then
+			if adl_version_for_flat_output_numeric < 150 and attached {FLAT_ARCHETYPE} archetype as fa then
 				last_result.append (apply_style(symbol(SYM_CONCEPT), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
-				last_result.append (create_indent(1) + apply_style("[" + target.concept + "]", STYLE_TERM_REF))
+				last_result.append (create_indent(1) + apply_style("[" + archetype.concept + "]", STYLE_TERM_REF))
 
-				s := target.concept
+				s := archetype.concept
 				last_result.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-					 safe_comment(ontology.term_definition(current_language, s).item("text")), STYLE_COMMENT))
+					 safe_comment(archetype.ontology.term_definition(current_language, s).text), STYLE_COMMENT))
 
 				last_result.append (format_item(FMT_NEWLINE))
 			end
@@ -150,9 +158,9 @@ feature -- Serialisation
 
 	serialise_archetype_specialise
 		do
-			if target.is_specialised then
+			if archetype.is_specialised then
 				last_result.append (apply_style(symbol(SYM_SPECIALIZE), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
-				last_result.append (create_indent(1) + target.parent_archetype_id.as_string + format_item(FMT_NEWLINE))
+				last_result.append (create_indent(1) + archetype.parent_archetype_id.as_string + format_item(FMT_NEWLINE))
 			end
 			last_result.append (format_item(FMT_NEWLINE))
 		end

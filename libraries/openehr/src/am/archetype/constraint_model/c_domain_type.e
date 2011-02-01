@@ -51,7 +51,7 @@ feature -- Initialisation
 			Any_allowed: any_allowed
 		end
 
-	make_dt
+	make_dt (make_args: ARRAY[ANY])
 			-- make used by DT_OBJECT_CONVERTER
 		do
 			make
@@ -84,7 +84,7 @@ feature -- Conversion
 
 feature -- Representation
 
-	representation: attached OG_OBJECT_LEAF
+	representation: OG_OBJECT_LEAF
 
 feature -- Synchronisation
 

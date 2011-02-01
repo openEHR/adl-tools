@@ -16,7 +16,7 @@
 			<debug name="compress" enabled="false"/>
 			<debug name="dadl_parse" enabled="false"/>
 			<debug name="dlg_dispatcher" enabled="false"/>
-			<debug name="dt" enabled="false"/>
+			<debug name="dt" enabled="true"/>
 			<debug name="exclude list" enabled="false"/>
 			<debug name="flatten" enabled="false"/>
 			<debug name="gelex" enabled="false"/>

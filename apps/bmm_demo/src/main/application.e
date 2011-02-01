@@ -1,9 +1,9 @@
 note
 	component:   "openEHR Components Project"
-	description : "[
-				   This application demonstrates loading a set of BMM (basic meta-model) schemas into memory and
-				   accessing them using the BMM classes.
-				   ]"
+	description: "[
+				 This application demonstrates loading a set of BMM (basic meta-model) schemas into memory and
+				 accessing them using the BMM classes.
+				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
 	support:     "http://www.openehr.org/issues/browse/AWB"

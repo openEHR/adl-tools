@@ -16,19 +16,12 @@ deferred class ARCHETYPE_SERIALISER
 inherit
 	ANY_SERIALISER
 
-feature -- Initialisation
-
-	initialise(an_ontology: attached ARCHETYPE_ONTOLOGY)
-			-- set ontology required for serialising cADL, and perform basic initialisation
-		do
-			reset
-			ontology := an_ontology
-		end
-
 feature -- Serialisation
 
-	serialise (a_target: attached ARCHETYPE; lang_serialised, desc_serialised, def_serialised: attached STRING; inv_serialised: STRING; ont_serialised: attached STRING; ann_serialised: STRING)
+	serialise (an_archetype: attached ARCHETYPE; lang_serialised, desc_serialised, def_serialised: attached STRING; inv_serialised: STRING; ont_serialised: attached STRING; ann_serialised, comp_onts_serialised: STRING)
 		deferred
+		ensure
+			attached archetype
 		end
 
 	serialise_initialise
@@ -53,9 +46,7 @@ feature -- Serialisation
 
 feature {NONE} -- Access
 
-	target: ARCHETYPE
-
-	ontology: ARCHETYPE_ONTOLOGY
+	archetype: ARCHETYPE
 
 end
 

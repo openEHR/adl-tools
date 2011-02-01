@@ -23,14 +23,14 @@ inherit
 
 feature -- Initialisation
 
-	initialise (an_ontology: attached ARCHETYPE_ONTOLOGY; a_lang: attached STRING)
+	initialise (an_archetype: attached ARCHETYPE; a_lang: attached STRING)
 			-- set ontology required for serialising cADL, and perform basic initialisation
 		require
-			Language_valid: an_ontology.has_language (a_lang)
+			Language_valid: an_archetype.has_language (a_lang)
 		do
 			reset
 			language := a_lang
-			initialise_visitor (an_ontology)
+			initialise_visitor (an_archetype)
 		end
 
 feature {NONE} -- Implementation

@@ -50,7 +50,7 @@ feature -- Initialisation
 			create language.make (default_language_code_set, a_lang)
 		end
 
-	make_dt
+	make_dt (make_args: ARRAY[ANY])
 			-- make used by DT_OBJECT_CONVERTER
 		do
 			default_create

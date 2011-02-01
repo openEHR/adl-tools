@@ -51,10 +51,10 @@ feature -- Access
 			Result := generate_all_paths(True)
 		end
 
-	object_node_at_path(a_path: OG_PATH): OG_OBJECT
+	object_node_at_path (a_path: attached OG_PATH): attached OG_OBJECT
 			-- find the object node at the relative path `a_path'
 		require
-			Path_valid: a_path /= Void and then has_path(a_path)
+			Path_valid: has_path(a_path)
 		local
 			s_path: OG_PATH
 		do
@@ -66,14 +66,12 @@ feature -- Access
 				s_path.start
 				Result := internal_object_node_at_path(s_path)
 			end
-		ensure
-			Result_exists: Result /= Void
 		end
 
-	attribute_node_at_path(a_path: OG_PATH): OG_ATTRIBUTE_NODE
+	attribute_node_at_path (a_path: attached OG_PATH): attached OG_ATTRIBUTE_NODE
 			-- find the attribute node corresponding the the terminal segment of `a_path'
 		require
-			Path_valid: a_path /= Void and then has_path(a_path)
+			Path_valid: has_path(a_path)
 		local
 			s_path: OG_PATH
 		do
@@ -81,16 +79,14 @@ feature -- Access
 			s_path := compress_path(a_path)
 			s_path.start
 			Result := internal_attribute_node_at_path(s_path)
-		ensure
-			Result_exists: Result /= Void
 		end
 
 feature -- Status Report
 
-	has_path(a_path: OG_PATH): BOOLEAN
+	has_path (a_path: attached OG_PATH): BOOLEAN
 			-- `a_path' exists in object structure
 		require
-			Path_valid: a_path /= Void and then a_path.is_absolute implies is_root
+			Path_valid: a_path.is_absolute implies is_root
 		local
 			s_path: OG_PATH
 		do
@@ -104,10 +100,10 @@ feature -- Status Report
 			end
 		end
 
-	has_object_path(a_path: OG_PATH): BOOLEAN
+	has_object_path (a_path: attached OG_PATH): BOOLEAN
 			-- `a_path' refers to an object node in structure
 		require
-			Path_valid: a_path /= Void and then a_path.is_absolute implies is_root
+			Path_valid: a_path.is_absolute implies is_root
 		local
 			s_path: OG_PATH
 		do
@@ -121,10 +117,10 @@ feature -- Status Report
 			end
 		end
 
-	has_attribute_path(a_path: OG_PATH): BOOLEAN
+	has_attribute_path (a_path: attached OG_PATH): BOOLEAN
 			-- `a_path' refers to an attribute node in structure
 		require
-			Path_valid: a_path /= Void and then a_path.is_absolute implies is_root
+			Path_valid: a_path.is_absolute implies is_root
 		local
 			s_path: OG_PATH
 		do
@@ -140,11 +136,11 @@ feature -- Status Report
 
 feature -- Modification
 
-	replace_attribute_name(old_name, new_name: STRING)
+	replace_attribute_name (old_name, new_name: attached STRING)
 			-- change the name of an attribute
 		require
-			Old_name_valid: old_name /= Void and then has_child_with_id (old_name)
-			New_name_valid: new_name /= Void and then not new_name.is_empty
+			Old_name_valid: has_child_with_id (old_name)
+			New_name_valid: not new_name.is_empty
 		do
 			child_with_id (old_name).set_node_id (new_name)
 			children.replace_key (new_name, old_name)
@@ -155,7 +151,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 	child_type: OG_ATTRIBUTE_NODE
 			-- relationship target type
 
-	internal_has_path(a_path: OG_PATH): BOOLEAN
+	internal_has_path (a_path: OG_PATH): BOOLEAN
 			-- find the child at the path `a_path'
 		local
 			child_obj_node: OG_OBJECT_NODE
@@ -179,7 +175,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 			end
 		end
 
-	internal_object_node_at_path(a_path: OG_PATH): OG_OBJECT
+	internal_object_node_at_path (a_path: OG_PATH): OG_OBJECT
 			-- find the child at the path `a_path'
 		local
 			child_obj: OG_OBJECT

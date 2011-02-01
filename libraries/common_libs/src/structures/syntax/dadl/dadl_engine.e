@@ -88,7 +88,7 @@ feature -- Commands
 	parse
 			-- Parse artifact into `tree', then validate the artifact.
 		require
-			source_attached: source /= Void
+			source_attached: attached source
 			parsing: in_parse_mode
 		do
 			tree := Void
@@ -99,19 +99,19 @@ feature -- Commands
 				tree := parser.output
 			end
 		ensure
-			parse_succeeded or else tree = Void
+			parse_succeeded implies attached tree
 		end
 
 	serialise (a_format: attached STRING)
 			-- Serialise current artifact into `a_format'.
 		require
 			Format_valid: has_dt_serialiser_format (a_format)
-			Archetype_valid: tree /= Void implies tree.is_valid
+			Archetype_valid: attached tree implies tree.is_valid
 		local
 			a_dt_serialiser: DT_SERIALISER
 			a_dt_iterator: DT_VISITOR_ITERATOR
 		do
-			if tree /= Void then
+			if attached tree then
 				a_dt_serialiser := dt_serialiser_for_format (a_format)
 				a_dt_serialiser.reset
 				create a_dt_iterator.make (tree, a_dt_serialiser)
@@ -121,7 +121,7 @@ feature -- Commands
 				create serialised.make_empty
 			end
 		ensure
-			serialised_attached: serialised /= Void
+			serialised_attached: attached serialised
 		end
 
 	set_tree (a_node: attached DT_COMPLEX_OBJECT_NODE)

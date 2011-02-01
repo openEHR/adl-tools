@@ -367,19 +367,19 @@ feature -- Conversion
 			Result.append(rm_type_name + "[" + node_id + "] ")
 		end
 
-	as_object(a_type_id: INTEGER): ANY
+	as_object (a_type_id: INTEGER; make_args: ARRAY[ANY]): ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		do
-			Result := object_converter.dt_to_object(Current, a_type_id)
+			Result := object_converter.dt_to_object (Current, a_type_id, make_args)
 			as_object_ref := Result
 		end
 
-	as_object_from_string(a_type_name: STRING): ANY
+	as_object_from_string (a_type_name: attached STRING; make_args: ARRAY[ANY]): ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		do
-			Result := object_converter.dt_to_object_from_string(Current, a_type_name)
+			Result := object_converter.dt_to_object_from_string(Current, a_type_name, make_args)
 			as_object_ref := Result
 		end
 

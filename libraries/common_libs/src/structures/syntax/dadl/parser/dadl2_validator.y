@@ -4,9 +4,9 @@ note
 	description: "Validating parser for Archetype Description Language (ADL)"
 	keywords:    "ADL, dADL"
 	
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2004-2009 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2004-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -24,6 +24,11 @@ inherit
 		end
 
 	DATE_TIME_ROUTINES
+		export
+			{NONE} all
+		end
+
+	OG_DEFINITIONS
 		export
 			{NONE} all
 		end
@@ -184,7 +189,13 @@ attr_id: V_ATTRIBUTE_IDENTIFIER
 			debug("dADL_parse")
 				io.put_string(indent + "attr_id: create_attr_node.make_single(<<" + $1 + ">>)%N")
 			end
-			create attr_node.make_single($1)
+
+			-- if we got "_items" then it is a container attribute
+			if $1.is_equal (Container_attr_name) then
+				create attr_node.make_multiple_generic
+			else
+				create attr_node.make_single($1)
+			end
 
 			debug("dADL_parse")
 				io.put_string(indent + "attr_id: complex_object_nodes.item(" + complex_object_nodes.item.node_id + 
@@ -270,6 +281,21 @@ untyped_multiple_attr_object_block: multiple_attr_object_block_head keyed_object
 		}
 	;
 
+-- 
+-- this rule only exists to support dADL nestings of the form. This will probably be an outmoded form of 
+-- dADL in the future, but we keep it for now.
+--	<
+--		[key1] = <
+--			[keyA] = <...>
+--			[keyB] = <...>
+--			[keyZ] = <...>
+--		>
+--		[key2] = <...>
+--			[keyA] = <...>
+--			[keyB] = <...>
+--		>
+--	>
+-- 
 multiple_attr_object_block_head: SYM_START_DBLOCK
 		{
 			if obj_id /= Void then
@@ -277,43 +303,43 @@ multiple_attr_object_block_head: SYM_START_DBLOCK
 				-- so create the object with the key id
 				create complex_object_node.make_identified(obj_id)
 				if not attr_nodes.item.has_child_with_id(complex_object_node.node_id) then
-					debug("dADL_parse")
-						io.put_string(indent + "multiple_attr_object_block_head; attr_nodes(<<" + 
-							attr_nodes.item.rm_attr_name + ">>).item.put_child(complex_object_node(" + 
-							complex_object_node.node_id + "))%N")
-					end
+debug("dADL_parse")
+	io.put_string(indent + "multiple_attr_object_block_head; attr_nodes(<<" + 
+		attr_nodes.item.rm_attr_name + ">>).item.put_child(complex_object_node(" + 
+		complex_object_node.node_id + "))%N")
+end
 					attr_nodes.item.put_child(complex_object_node)
 				else
 					abort_with_error("VOKU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>)
 				end
 
-				debug("dADL_parse")
-					io.put_string(indent + "multiple_attr_object_block_head: PUSH Obj node%N")
-					indent.append("%T")
-				end
+debug("dADL_parse")
+	io.put_string(indent + "multiple_attr_object_block_head: PUSH Obj node%N")
+	indent.append("%T")
+end
 				complex_object_nodes.extend(complex_object_node)
 
 				-- now create a generic attribute node to stand for the hidden attribute of the 
 				-- generic object, e.g. it might be List<T>.items or whatever
-				debug("dADL_parse")
-					io.put_string(indent + "multiple_attr_object_block_head: create_attr_node.make_multiple_generic%N")
-				end
+debug("dADL_parse")
+	io.put_string(indent + "multiple_attr_object_block_head: create_attr_node.make_multiple_generic%N")
+end
 				create attr_node.make_multiple_generic
 
-				debug("dADL_parse")
-					io.put_string(indent + "multiple_attr_object_block_head: complex_object_node(" + 
-							complex_object_node.node_id + ").put_attribute(" + attr_node.rm_attr_name + ")%N")
-				end
+debug("dADL_parse")
+	io.put_string(indent + "multiple_attr_object_block_head: complex_object_node(" + 
+			complex_object_node.node_id + ").put_attribute(" + attr_node.rm_attr_name + ")%N")
+end
 				if not complex_object_node.has_attribute(attr_node.rm_attr_name) then
 					complex_object_node.put_attribute(attr_node)
 				else
 					abort_with_error("VDATU", <<attr_node.rm_attr_name>>)
 				end
 
-				debug("dADL_parse")
-					io.put_string(indent + "multiple_attr_object_block_head: PUSH attr node%N")
-					indent.append("%T")
-				end
+debug("dADL_parse")
+	io.put_string(indent + "multiple_attr_object_block_head: PUSH attr node%N")
+	indent.append("%T")
+end
 				attr_nodes.extend(attr_node)
 			end
 		}

@@ -34,7 +34,7 @@ inherit
 
 feature -- Initialisation
 
-	make_dt
+	make_dt (make_args: ARRAY[ANY])
 			-- make in a safe way for DT building purposes
 		local
 			a: BMM_SINGLE_PROPERTY
@@ -265,7 +265,7 @@ feature -- Status Report
 			is_gen_type := is_well_formed_generic_type_name (a_type_name)
 			a_class_def := class_definition (a_class_name)
 			if a_class_def.is_generic then
-				type_strs := type_name_as_flattened_type_list(a_type_name)
+				type_strs := type_name_as_flattened_list(a_type_name)
 				type_strs.compare_objects
 				type_strs.start
 				if type_strs.item.is_equal (a_class_def.name) or class_definitions.item (type_strs.item).has_ancestor(a_class_def.name)  then
@@ -304,8 +304,8 @@ feature -- Status Report
 		local
 			tlist1, tlist2: ARRAYED_LIST[STRING]
 		do
-			tlist1 := type_name_as_flattened_type_list (type_1)
-			tlist2 := type_name_as_flattened_type_list (type_2)
+			tlist1 := type_name_as_flattened_list (type_1)
+			tlist2 := type_name_as_flattened_list (type_2)
 			Result := True
 			from
 				tlist1.start

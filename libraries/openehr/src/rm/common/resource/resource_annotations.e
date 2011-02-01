@@ -54,7 +54,7 @@ feature -- Initialisation
 			create items.make (0)
 		end
 
-	make_dt
+	make_dt (make_args: ARRAY[ANY])
 			-- make used by DT_OBJECT_CONVERTER
 		do
 			default_create

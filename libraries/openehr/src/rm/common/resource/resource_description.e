@@ -49,7 +49,7 @@ feature -- Initialisation
 			lifecycle_state_set: lifecycle_state.is_equal(Default_lifecycle_state)
 		end
 
-	make_dt
+	make_dt (make_args: ARRAY[ANY])
 			-- make used by DT_OBJECT_CONVERTER
 		do
 			default_create

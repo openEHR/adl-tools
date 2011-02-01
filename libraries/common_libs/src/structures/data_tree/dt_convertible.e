@@ -24,7 +24,7 @@ deferred class DT_CONVERTIBLE
 
 feature -- Initialisation
 
-	make_dt
+	make_dt (make_args: ARRAY[ANY])
 			-- basic make routine to guarantee validity on creation
 		deferred
 		end
@@ -39,13 +39,13 @@ feature -- Synchronisation
 	synchronise_to_tree
 			-- synchronise to parse tree representation
 		do
-			create dt_representation.make_from_object(Current)
+			create dt_representation.make_from_object (Current)
 		end
 
 feature -- Finalisation
 
 	finalise_dt
-			-- finalisation routine to guarantee validity on creation
+			-- finalisation routine to guarantee validity on creation from dt
 		do
 		end
 

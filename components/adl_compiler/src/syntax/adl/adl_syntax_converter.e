@@ -207,19 +207,47 @@ feature -- ADL 1.5 conversions
 			create Result.compile_case_insensitive ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+){2}\.[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*\.v[1-9][0-9a-z]*$")
 		end
 
-	convert_ontology_syntax(dt: attached DT_COMPLEX_OBJECT_NODE)
+	convert_ontology_syntax (dt: attached DT_COMPLEX_OBJECT_NODE)
 		do
+			-- convert top-level attribute names
 			if dt.has_attribute ("term_binding") then
 				dt.replace_attribute_name ("term_binding", "term_bindings")
 			end
 			if dt.has_attribute ("constraint_binding") then
 				dt.replace_attribute_name ("constraint_binding", "constraint_bindings")
 			end
+
+			-- convert 'items' nodes to generic '_items' nodes
+			convert_ontology_items_to_generic (dt, "term_definitions")
+			convert_ontology_items_to_generic (dt, "constraint_definitions")
+			convert_ontology_items_to_generic (dt, "term_bindings")
+			convert_ontology_items_to_generic (dt, "constraint_bindings")
+		end
+
+	convert_ontology_items_to_generic (dt: attached DT_COMPLEX_OBJECT_NODE; attr_name: attached STRING)
+			-- convert 'items' nodes in ontology to '_items' and set them generic; this is
+			-- to simulate having been parsed that way in the first place, which is what
+			-- will happen in ADL 2.
+		local
+			dt_attr: DT_ATTRIBUTE_NODE
+			dt_objs: ARRAYED_LIST [DT_OBJECT_ITEM]
+		do
+			if dt.has_attribute (attr_name) then
+				dt_objs := dt.attribute_node (attr_name).children
+				from dt_objs.start until dt_objs.off loop
+					if attached {DT_COMPLEX_OBJECT_NODE} dt_objs.item as dt_co and then dt_co.has_attribute ("items") then
+						dt_attr := dt_co.attribute_node ("items")
+						dt_attr.set_generic
+						dt_co.replace_attribute_name ("items", "_items")
+					end
+					dt_objs.forth
+				end
+			end
 		end
 
 feature -- Path conversions
 
-	convert_use_ref_paths(ref_node_list: ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]; index_path: STRING; referree: ARCHETYPE)
+	convert_use_ref_paths (ref_node_list: attached ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]; index_path: attached STRING; referree: attached ARCHETYPE)
 			-- FIXME: the following only needed while old use_ref paths containing redundant node_ids are in existence
 			-- rewrite target path into standard Xpath format, removing [atnnn] predicates on objects below single attributes
 		local
@@ -232,7 +260,7 @@ feature -- Path conversions
 			end
 		end
 
-	convert_invariant_paths(expr_node_list: ARRAYED_LIST[EXPR_LEAF]; referree: ARCHETYPE)
+	convert_invariant_paths (expr_node_list: attached ARRAYED_LIST[EXPR_LEAF]; referree: attached ARCHETYPE)
 			-- FIXME: the following only needed while old invariant paths containing redundant node_ids are in existence
 			-- rewrite target path into standard Xpath format, removing [atnnn] predicates on objects below single attributes
 		local

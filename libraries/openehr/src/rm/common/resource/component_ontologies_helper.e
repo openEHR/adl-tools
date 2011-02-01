@@ -1,45 +1,61 @@
 note
-	component:   "openEHR re-usable library"
-	description: "Abstraction of a package as a tree structure whose nodes can contain "
-	keywords:    "model, UML"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2010 The openEHR Foundation <http://www.openEHR.org>"
+	component:   "openEHR Common Information Model"
+	description: "[
+				 Helper class containing just the component_ontologies part of an OPERATIONAL_TEMPLATE.
+				 Used to facilitate serialisation until ADL2 dADL serialisation is adopted.
+				 ]"
+	keywords:    "helper, serialisation"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class BMM_PACKAGE_DEFINITION
+class COMPONENT_ONTOLOGIES_HELPER
 
 inherit
 	DT_CONVERTIBLE
+		redefine
+			default_create
+		end
+
+create
+	make, make_dt
 
 feature -- Initialisation
 
-	make_dt (make_args: ARRAY[ANY])
-			-- make in a safe way for DT building purposes
+	default_create
+			--
 		do
-			create name.make (0)
+		end
+
+	make
+			-- default make
+		do
+			default_create
+		end
+
+	make_dt (make_args: ARRAY[ANY])
+			-- make used by DT_OBJECT_CONVERTER
+		do
+			make
 		end
 
 feature -- Access
 
-	name: attached STRING
+	component_ontologies: attached HASH_TABLE [FLAT_ARCHETYPE_ONTOLOGY, STRING]
+			-- Compendium of flattened ontologies of all archetypes/templates used in this
+			-- archetype/template, keyed by identifier
 
-	packages: HASH_TABLE [BMM_PACKAGE_DEFINITION, STRING]
-		-- child packages
+feature -- Modification
 
-	classes: ARRAYED_LIST [STRING]
-		-- list of classes in this package
-
-feature -- Status Report
-
-	has_classes: BOOLEAN
+	set_component_ontologies (comp_onts: like component_ontologies)
 		do
-			Result := attached classes
+			component_ontologies := comp_onts
+
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
@@ -47,7 +63,10 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 	persistent_attributes: ARRAYED_LIST[STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
-		do
+		once
+			create Result.make(0)
+			Result.extend ("component_ontologies")
+			Result.compare_objects
 		end
 
 end
@@ -67,13 +86,14 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is bmm_package_definition.e.
+--| The Original Code is adl_archetype.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2010
+--| Portions created by the Initial Developer are Copyright (C) 2003-2004
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
+--|	Sam Heard
 --|
 --| Alternatively, the contents of this file may be used under the terms of
 --| either the GNU General Public License Version 2 or later (the 'GPL'), or

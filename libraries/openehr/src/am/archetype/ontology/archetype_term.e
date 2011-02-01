@@ -2,9 +2,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Archetype notion of a coded term"
 	keywords:    "archetype, coded term"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003-2005 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -16,262 +16,198 @@ class ARCHETYPE_TERM
 inherit
 	ARCHETYPE_TERM_CODE_TOOLS
 		redefine
-			out, default_create
+			default_create
+		end
+
+	DT_CONVERTIBLE
+		undefine
+			default_create
 		end
 
 create
-	make_default, make, make_from_string, make_from_data_tree
+	make, make_all, default_create --, make_from_string, make_from_data_tree
+
+feature -- Definitions
+
+	Unknown_value: STRING = "-"
+
+	Keys: ARRAYED_LIST [STRING]
+		once
+			create Result.make_from_array (<<"text", "description">>)
+			Result.compare_objects
+		end
 
 feature -- Initialisation
+
+	make_dt (make_args: ARRAY[ANY])
+			-- basic make routine to guarantee validity on creation
+		do
+			default_create
+		end
 
 	default_create
 			-- basic creation
 		do
-			create code.make(0)
-			create items.make(0)
-		end
-
-	make_default
-			-- create a default version with code at0000 and text and description
-			-- both set to "unknown"
-		do
-			default_create
-			code.append (Default_concept_code)
-			add_item("text", "unknown")
-			add_item("description", "unknown")
-		ensure
+			set_code (Default_concept_code)
+			set_text (Unknown_value)
+			set_description (Unknown_value)
+		ensure then
 			code_set: code.same_string (default_concept_code)
-			items_not_empty: not items.is_empty
 		end
 
-	make (a_code: STRING)
+	make (a_code: attached STRING)
 		require
-			Code_valid: a_code /= Void and then not a_code.is_empty
+			Code_valid: not a_code.is_empty
 		do
 			default_create
 			code := a_code
 		ensure
 			code_set: code.same_string (a_code)
-			items_empty: items.is_empty
+			text_set: text.same_string (Unknown_value)
+			description_set: description.same_string (Unknown_value)
 		end
 
-	make_from_string (a_str: STRING)
-			-- make from string in dADL form used in archetypes (same as .out form):
-			--  [code] = <key1 = <"value1">, key2 = <"value2">, key3 = <"value3">>
+	make_all (a_code, a_text, a_description: attached STRING)
 		require
-			Code_valid: a_str /= Void and then not a_str.is_empty
+			Code_valid: not a_code.is_empty
+			Text_valid: not a_text.is_empty
+			Description_valid: not a_description.is_empty
 		do
-			default_create
-			dadl_validator.reset
-			dadl_validator.execute(a_str, 1)
-			if not dadl_validator.syntax_error then
-				make_from_data_tree(dadl_validator.output)
-			else
-				-- FIXME: do something with dadl_validator.error_text
-			end
-		end
-
-	make_from_data_tree (a_dt: DT_COMPLEX_OBJECT_NODE)
-			-- make from a data tree
-		local
-			dt_property: DT_PRIMITIVE_OBJECT
-			items_path: STRING
-			dt_list_attr: DT_ATTRIBUTE_NODE
-			path_list_item: STRING
-			l_key, l_item: STRING
-		do
-			default_create
-			if a_dt.has_path("/code/") then
-				dt_property ?= a_dt.node_at_path ("/code/")
-				code ?= dt_property.value
-
-				create items_path.make(0)
-				items_path.append ("/items")
-				if a_dt.has_path(items_path) then
-					dt_list_attr ?= a_dt.node_at_path (items_path)
-					if dt_list_attr.is_multiple then
-						from dt_list_attr.start until dt_list_attr.off loop
-							create path_list_item.make(0)
-							l_key := dt_list_attr.item.node_id
-							path_list_item.append ("/items[" + l_key + "]/")
-							dt_property ?= a_dt.node_at_path(path_list_item)
-							l_item ?= dt_property.value
-							add_item(l_key, l_item)
-							dt_list_attr.forth
-						end
-					else
-						-- report error - "%"/items%" children must be a list (using [] keys)"
-					end
-				end
-			else
-				-- report error "path %"/code%" not found"
-			end
+			code := a_code
+			text := a_text
+			description := a_description
+		ensure
+			code_set: code.same_string (a_code)
+			text_set: text.same_string (a_text)
+			description_set: description.same_string (a_description)
 		end
 
 feature -- Access
 
-	code: STRING
+	code: attached STRING
 
-	keys: ARRAYED_LIST [STRING]
-			-- return all attribute keys for this term
+	text: attached STRING
+
+	description: attached STRING
+
+--	provenance: attached STRING
+
+	item (a_key: attached STRING): STRING
+		require
+			keys.has (a_key)
 		do
-			create Result.make(0)
-			from items.start until items.off loop
-				Result.extend (items.key_for_iteration)
-				items.forth
+			if a_key.same_string ("text") then
+				Result := text
+			elseif a_key.same_string ("description") then
+				Result := description
+--			elseif a_key.same_string ("provenance") then
+--				Result := provenance
+			else
+				check False end
 			end
-		end
-
-	items: DS_HASH_TABLE [STRING, STRING]
-			-- DS_HASH_TABLE maintains chronological order of insertion
-
-	item (a_key: STRING): STRING
-			--
-		require
-			a_key /= Void and then has_key(a_key)
-		do
-			Result := items.item(a_key)
-		end
-
-feature -- Status Report
-
-	has_key (a_key: STRING): BOOLEAN
-			--
-		require
-			a_key /= Void and then not a_key.is_empty
-		do
-			Result := items.has(a_key)
 		end
 
 feature -- Modification
 
-	add_item (a_key, value: STRING)
+	set_code (a_code: attached STRING)
 		require
-			Key_valid: a_key /= Void and then not has_key(a_key)
-			Value_valid: value /= Void and then not value.is_empty
+			Code_valid: not a_code.is_empty
 		do
-			items.force(value, a_key)
+			code := a_code
+		ensure
+			code_set: code.same_string (a_code)
 		end
 
-	replace_item (a_key, value: STRING)
+	set_text (a_text: attached STRING)
 		require
-			Key_valid: a_key /= Void and then has_key(a_key)
-			Value_valid: value /= Void and then not value.is_empty
+			Text_valid: not a_text.is_empty
 		do
-			items.replace(value, a_key)
+			text := a_text
+		ensure
+			text_set: text.same_string (a_text)
 		end
 
-	set_items (ht: DS_HASH_TABLE [STRING, STRING])
+	set_description (a_description: attached STRING)
 		require
-			ht /= Void
+			Description_valid: not a_description.is_empty
 		do
-			items := ht
+			description := a_description
+		ensure
+			description_set: description.same_string (a_description)
 		end
 
-feature -- Output
+--feature -- Output
 
-	out: STRING
-			-- output term in standard dADL form (not the archetype form):
-			--  code = <"somecode">
-			--  items = <
-			--		["key1"] = <"value1">
-			--		["key2"] = <"value2">
-			--		etc
-			--	>
-		local
-			keys_list: ARRAYED_LIST[STRING]
-		do
-			keys_list := keys
-			create Result.make(0)
-			Result.append ("code = <%"" + code + "%">%N")
-			Result.append ("items = <%N")
-			from
-				keys_list.start
-			until
-				keys_list.off
-			loop
-				Result.append ("%T[%"" + keys_list.item + "%"] = <%"" + items.item(keys_list.item) + "%">%N")
-				keys_list.forth
-			end
-			Result.append (">%N")
-		end
+--	out: attached STRING
+--			-- output term in standard dADL form (not the archetype form):
+--			--  code = <"somecode">
+--			--  items = <
+--			--		["key1"] = <"value1">
+--			--		["key2"] = <"value2">
+--			--		etc
+--			--	>
+--		local
+--			keys_list: ARRAYED_LIST[STRING]
+--		do
+--			keys_list := keys
+--			create Result.make(0)
+--			Result.append ("code = <%"" + code + "%">%N")
+--			Result.append ("items = <%N")
+--			from keys_list.start until keys_list.off loop
+--				Result.append ("%T[%"" + keys_list.item + "%"] = <%"" + items.item(keys_list.item) + "%">%N")
+--				keys_list.forth
+--			end
+--			Result.append (">%N")
+--		end
 
 feature -- Factory
 
-	create_translated_term (a_lang: STRING): ARCHETYPE_TERM
+	create_translated_term (a_lang: attached STRING): ARCHETYPE_TERM
 			-- create a new ARCHETYPE_TERM whose members are the same as those in the current object,
 			-- with '*' prepended and '(lang)' appended - this acts as an obvious
 			-- placeholder for translation. The lang is the original lang of a_term.
 		require
-			Lang_valid: a_lang /= Void and then not a_lang.is_empty
+			Lang_valid: not a_lang.is_empty
 		do
-			-- make a new term from the old term, with every item wrapped using "*xxx(lang)"
 			create Result.make (code)
-
-			from
-				items.start
-			until
-				items.off
-			loop
-				Result.add_item (items.key_for_iteration, "*" + items.item_for_iteration + "(" + a_lang + ")")
-				items.forth
-			end
+			Result.set_text ("*" + text + "(" + a_lang + ")")
+			Result.set_description ("*" + description + "(" + a_lang + ")")
 		ensure
 			same_code: Result.code.same_string (code)
-			same_keys: Result.keys.is_deep_equal (keys)
-			different_items: keys.for_all (
-								agent (key: STRING; original_items, new_items: like items): BOOLEAN
-									local
-										original, new: STRING
-									do
-										original := original_items.item (key)
-										new := new_items.item (key)
-										Result := new.has_substring (original) and not new.is_equal (original)
-									end (?, items, Result.items))
+			translated_text: Result.text.has_substring (text) and not Result.text.is_equal (text)
+			translated_description: Result.description.has_substring (description) and not Result.description.is_equal (description)
 		end
 
-	create_derived_term (a_code: STRING): ARCHETYPE_TERM
+	create_derived_term (a_code: attached STRING): attached ARCHETYPE_TERM
 			-- create a new ARCHETYPE_TERM whose members are the same as those in the current object,
-			-- with an '!' appended to each term to indicate that it needs to be edited.
+			-- with an '!' prepended and appended to each term to indicate that it needs to be edited.
 			-- The new term has the code `a_code'.
 		require
-			Code_valid: a_code /= Void and then not a_code.is_empty
+			Code_valid: not a_code.is_empty
 		do
-			create Result.make (a_code)
-
-			from
-				items.start
-			until
-				items.off
-			loop
-				Result.add_item (items.key_for_iteration, items.item_for_iteration + "!")
-				items.forth
-			end
+			create Result.make (code)
+			Result.set_text ("!" + text + "!")
+			Result.set_description ("!" + description + "!")
 		ensure
-			code_set: Result.code.same_string (a_code)
-			same_keys: Result.keys.is_deep_equal (keys)
-			different_items: keys.for_all (
-								agent (key: STRING; original_items, new_items: like items): BOOLEAN
-									local
-										original, new: STRING
-									do
-										original := original_items.item (key)
-										new := new_items.item (key)
-										Result := new.has_substring (original) and not new.is_equal (original)
-									end (?, items, Result.items))
+			same_code: Result.code.same_string (code)
+			derived_text: Result.text.has_substring (text) and not Result.text.is_equal (text)
+			derived_description: Result.description.has_substring (description) and not Result.description.is_equal (description)
 		end
 
-feature {NONE} -- Implementation
+feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	dadl_validator: DADL2_VALIDATOR
-			-- shared dADL2_validator for all ARCHETYPE_TERM instances
+	persistent_attributes: ARRAYED_LIST[STRING]
+			-- list of attribute names to persist as DT structure
+			-- empty structure means all attributes
 		once
-			create Result.make
+			create Result.make (0)
+			Result.compare_objects
+			Result.extend ("text")
+			Result.extend ("description")
 		end
 
 invariant
-	Code_valid: code /= Void and then not code.is_empty
-	Items_exists: items /= Void
+	Code_valid: not code.is_empty
 
 end
 

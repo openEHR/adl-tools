@@ -125,7 +125,7 @@ feature -- Conversion
 			Result_not_empty: not Result.is_empty
 		end
 
-	terminal_package_name (a_package_name: attached STRING): attached STRING
+	package_base_name (a_package_name: attached STRING): attached STRING
 			-- package name might be of form xxx.yyy.zzz ; we only want 'zzz'
 		do
 			if a_package_name.has (package_name_delimiter) then
@@ -142,7 +142,7 @@ feature -- Conversion
 			Model_publisher_valid: not a_model_publisher.is_empty
 			Package_name_valid: not a_package_name.is_empty
 		do
-			Result := a_model_publisher + section_separator.out + terminal_package_name(a_package_name)
+			Result := a_model_publisher + section_separator.out + package_base_name(a_package_name)
 			Result.to_lower
 		end
 
@@ -153,10 +153,10 @@ feature -- Conversion
 			Package_name_valid: not a_package_name.is_empty
 			Class_name_valid: not a_class_name.is_empty
 		do
-			Result := terminal_package_name(a_package_name) + section_separator.out + a_class_name
+			Result := package_base_name(a_package_name) + section_separator.out + a_class_name
 		end
 
-	type_name_as_flattened_type_list(a_type_name: attached STRING): ARRAYED_LIST [STRING]
+	type_name_as_flattened_list (a_type_name: attached STRING): attached ARRAYED_LIST [STRING]
 			-- convert a type name to a flat set of strings
 		require
 			Valid_type_name: is_well_formed_type_name(a_type_name)
@@ -179,11 +179,7 @@ feature -- Conversion
 			if is_gen_type then
 				stype.replace_substring_all (generic_left_delim.out, Generic_separator.out)
 				stype.replace_substring_all (generic_right_delim.out, Generic_separator.out)
-				from
-					lpos := rpos + 2
-				until
-					lpos > stype.count
-				loop
+				from lpos := rpos + 2 until lpos > stype.count loop
 					rpos := stype.index_of (Generic_separator, lpos) - 1
 					Result.extend(stype.substring (lpos, rpos))
 					lpos := rpos + 2

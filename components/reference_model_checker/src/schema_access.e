@@ -93,7 +93,7 @@ feature -- Commands
 				parser.execute(model_file.last_string, 1)
 				if not parser.syntax_error then
 					dt_tree := parser.output
-					schema ?= dt_tree.as_object_from_string("BMM_SCHEMA")
+					schema ?= dt_tree.as_object_from_string("BMM_SCHEMA", Void)
 					if schema = Void then
 						add_error ("model_access_e4", <<meta_data.item (Metadata_schema_path)>>)
 					else

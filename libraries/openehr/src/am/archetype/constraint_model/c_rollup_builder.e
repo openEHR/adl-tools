@@ -28,10 +28,8 @@ class C_ROLLUP_BUILDER
 
 inherit
 	C_VISITOR
-		rename
-			initialise as initialise_visitor
 		redefine
-			end_c_complex_object, end_c_attribute
+			initialise, end_c_complex_object, end_c_attribute
 		end
 
 	SPECIALISATION_STATUSES
@@ -41,16 +39,13 @@ inherit
 
 feature -- Initialisation
 
-	initialise(an_ontology: ARCHETYPE_ONTOLOGY; an_archetype_specialisation_level: INTEGER)
+	initialise (an_archetype: attached ARCHETYPE)
 			-- set ontology required for interpreting meaning of object nodes
 			-- archetype is required as well since it contains the xref tables that are
 			-- populated by this visitor
-		require
-			Ontology_valid: an_ontology /= Void
-			Archetype_specialisation_level_valid: an_archetype_specialisation_level >= 0
 		do
-			initialise_visitor(an_ontology)
-			archetype_specialisation_level := an_archetype_specialisation_level
+			precursor (an_archetype)
+			archetype_specialisation_level := an_archetype.specialisation_depth
 		end
 
 feature -- Visitor

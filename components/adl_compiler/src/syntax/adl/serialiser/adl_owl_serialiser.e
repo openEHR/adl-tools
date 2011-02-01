@@ -21,9 +21,13 @@ create
 
 feature -- Serialisation
 
-	serialise (a_target: attached ARCHETYPE; lang_serialised, desc_serialised, def_serialised: attached STRING; inv_serialised: STRING; ont_serialised: attached STRING; ann_serialised: STRING)
+	serialise (an_archetype: attached ARCHETYPE;
+				lang_serialised, desc_serialised, def_serialised: attached STRING;
+				inv_serialised: STRING;
+				ont_serialised: attached STRING;
+				ann_serialised, comp_onts_serialised: STRING)
 		do
-			target := a_target
+			archetype := an_archetype
 
 			serialise_initialise
 			serialise_archetype_id
@@ -47,7 +51,11 @@ feature -- Serialisation
 			end
 
 			if attached ann_serialised then
-				last_result.append(ont_serialised)
+				last_result.append(ann_serialised)
+			end
+
+			if attached comp_onts_serialised then
+				last_result.append(comp_onts_serialised)
 			end
 
 			serialise_finalise

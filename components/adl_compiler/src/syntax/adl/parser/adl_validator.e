@@ -852,9 +852,9 @@ feature {NONE} -- Table templates
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-			   25,   26,    2,    2,    2,    2,    2,    2,    2,    2,
-			    2,    2,    2,    2,    2,    2,    2,    2,    2,   27,
-			    2,   28,    2,    2,    2,    2,    2,    2,    2,    2,
+			   26,   27,    2,    2,    2,    2,    2,    2,    2,    2,
+			    2,    2,    2,    2,    2,    2,    2,    2,    2,   28,
+			    2,   29,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
@@ -877,17 +877,18 @@ feature {NONE} -- Table templates
 			    2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 			    2,    2,    2,    2,    2,    2,    1,    2,    3,    4,
 			    5,    6,    7,    8,    9,   10,   11,   12,   13,   14,
-			   15,   16,   17,   18,   19,   20,   21,   22,   23,   24, yyDummy>>)
+			   15,   16,   17,   18,   19,   20,   21,   22,   23,   24,
+			   25, yyDummy>>)
 		end
 
 	yyr1_template: SPECIAL [INTEGER]
 			-- Template for `yyr1'
 		once
 			Result := yyfixed_array (<<
-			    0,   29,   29,   30,   31,   31,   40,   40,   40,   40,
-			   41,   41,   42,   42,   43,   43,   43,   32,   32,   32,
-			   33,   33,   33,   34,   34,   34,   35,   35,   35,   36,
-			   36,   37,   37,   37,   38,   38,   39,   39,   39, yyDummy>>)
+			    0,   30,   30,   31,   32,   32,   41,   41,   41,   41,
+			   42,   42,   43,   43,   44,   44,   44,   33,   33,   33,
+			   34,   34,   34,   35,   35,   35,   36,   36,   36,   37,
+			   37,   38,   38,   38,   39,   39,   40,   40,   40, yyDummy>>)
 		end
 
 	yytypes1_template: SPECIAL [INTEGER]
@@ -908,7 +909,7 @@ feature {NONE} -- Table templates
 			Result := yyfixed_array (<<
 			    1,    1,    1,    2,    2,    2,    2,    2,    2,    2,
 			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1,    1,    1,    1,    1,    1, yyDummy>>)
+			    1,    1,    1,    1,    1,    1,    1,    1,    1,    1, yyDummy>>)
 		end
 
 	yydefact_template: SPECIAL [INTEGER]
@@ -935,12 +936,12 @@ feature {NONE} -- Table templates
 			-- Template for `yypact'
 		once
 			Result := yyfixed_array (<<
-			    0, -32768, -32768, -32768, -32768, -32768, -32768,   27,   -1,    3,
-			   23,    4, -32768,   31, -32768, -32768,   24,   26, -32768, -32768,
-			    5,  -21, -32768, -32768, -32768, -32768,   17,   21,   25,    4,
+			    0, -32768, -32768, -32768, -32768, -32768, -32768,   25,   -1,    3,
+			   27,    6, -32768,   31, -32768, -32768,   23,   22, -32768, -32768,
+			    8,  -22, -32768, -32768, -32768, -32768,   17,   18,   24,    6,
 			 -32768, -32768, -32768,   16,   20, -32768, -32768, -32768, -32768,    7,
-			   18, -32768, -32768,    1,   12, -32768, -32768,   15,   13, -32768,
-			 -32768,   14, -32768, -32768, -32768,   30,   19, -32768, yyDummy>>)
+			   12, -32768, -32768,    1,   11, -32768, -32768,   15,    9, -32768,
+			 -32768,   14, -32768, -32768, -32768,   26,   19, -32768, yyDummy>>)
 		end
 
 	yypgoto_template: SPECIAL [INTEGER]
@@ -948,7 +949,7 @@ feature {NONE} -- Table templates
 		once
 			Result := yyfixed_array (<<
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768,    9, yyDummy>>)
+			 -32768, -32768, -32768, -32768,   13, yyDummy>>)
 		end
 
 	yytable_template: SPECIAL [INTEGER]
@@ -957,20 +958,20 @@ feature {NONE} -- Table templates
 			Result := yyfixed_array (<<
 			   12,    5,   46,  -10,   15,   30,   29,   14,   42,   45,
 			    4,    3,    2,    1,   41,   54,   50,   38,   32,   57,
-			   53,   49,   37,   31,   11,   25,   20,   19,   18,   24,
-			   56,   51,   47,   28,   35,   23,   39,   16,   36,   43,
-			   33,    0,    9,   26, yyDummy>>)
+			   53,   49,   37,   31,   25,   11,   56,   51,   24,   20,
+			   19,   18,   47,   35,   43,   23,   39,   28,   33,   26,
+			    9,   16,   36, yyDummy>>)
 		end
 
 	yycheck_template: SPECIAL [INTEGER]
 			-- Template for `yycheck'
 		once
 			Result := yyfixed_array (<<
-			    1,    1,    1,    4,    1,   26,   27,    4,    1,    8,
+			    1,    1,    1,    4,    1,   27,   28,    4,    1,    8,
 			   10,   11,   12,   13,    7,    1,    1,    1,    1,    0,
-			    6,    6,    6,    6,   25,    1,   22,   23,   24,    5,
-			    0,   18,   20,   28,    9,    4,   16,   14,   29,   21,
-			   19,   -1,   15,   17, yyDummy>>)
+			    6,    6,    6,    6,    1,   26,    0,   18,    5,   23,
+			   24,   25,   21,    9,   22,    4,   16,   29,   20,   17,
+			   15,   14,   29, yyDummy>>)
 		end
 
 feature {NONE} -- Semantic value stacks
@@ -1007,17 +1008,17 @@ feature {NONE} -- Constants
 	yyFlag: INTEGER = -32768
 			-- Most negative INTEGER
 
-	yyNtbase: INTEGER = 29
+	yyNtbase: INTEGER = 30
 			-- Number of tokens
 
-	yyLast: INTEGER = 43
+	yyLast: INTEGER = 42
 			-- Upper bound of `yytable' and `yycheck'
 
-	yyMax_token: INTEGER = 279
+	yyMax_token: INTEGER = 280
 			-- Maximum token id
 			-- (upper bound of `yytranslate'.)
 
-	yyNsyms: INTEGER = 44
+	yyNsyms: INTEGER = 45
 			-- Number of symbols
 			-- (terminal and nonterminal)
 

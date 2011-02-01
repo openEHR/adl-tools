@@ -57,7 +57,7 @@ feature -- Status Report
 	parse_succeeded: BOOLEAN
 			-- True if parse succeeded; call after parse()
 		do
-			Result := tree /= Void
+			Result := attached tree
 		end
 
 	is_differential: BOOLEAN
@@ -108,29 +108,27 @@ feature -- Commands
 			parse_succeeded or else attached tree
 		end
 
-	serialise (a_format, a_lang: attached STRING; an_ontology: attached ARCHETYPE_ONTOLOGY)
+	serialise (an_archetype: attached ARCHETYPE; a_format, a_lang: attached STRING)
 			-- Serialise current artifact into `a_format'.
 		require
 			Format_valid: has_c_serialiser_format (a_format)
-			Language_valid: an_ontology.has_language (a_lang)
+			Language_valid: an_archetype.has_language (a_lang)
 		local
 			a_c_serialiser: C_SERIALISER
 			a_c_iterator: C_VISITOR_ITERATOR
 		do
 			a_c_serialiser := c_serialiser_for_format (a_format)
-			a_c_serialiser.initialise (an_ontology, a_lang)
+			a_c_serialiser.initialise (an_archetype, a_lang)
 			create a_c_iterator.make (tree, a_c_serialiser)
 			a_c_iterator.do_all
 			a_c_serialiser.finalise
 			serialised := a_c_serialiser.last_result
 		ensure
-			serialised_attached: serialised /= Void
+			serialised_attached: attached serialised
 		end
 
-	set_tree (a_node: C_COMPLEX_OBJECT)
+	set_tree (a_node: attached C_COMPLEX_OBJECT)
 			-- Set root node of `tree' from e.g. GUI tool.
-		require
-			node_attached: a_node /= Void
 		do
 			tree := a_node
 			in_parse_mode := False

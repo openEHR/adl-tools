@@ -31,10 +31,10 @@ feature -- Initialisation
 			create children_sorted.make
 		end
 
-	make_single (a_name: STRING)
+	make_single (a_name: attached STRING)
 			-- make as a single relationship; set attr name
 		require
-			a_name_valid: a_name /= Void and then not a_name.is_empty
+			a_name_valid: not a_name.is_empty
 		do
 			default_create
 			create representation.make_single (a_name, Current)
@@ -43,10 +43,10 @@ feature -- Initialisation
 			not is_generic
 		end
 
-	make_multiple (a_name: STRING)
+	make_multiple (a_name: attached STRING)
 			-- make as a multiple relationship; set attr name
 		require
-			a_name_valid: a_name /= Void and then not a_name.is_empty
+			a_name_valid: not a_name.is_empty
 		do
 			default_create
 			create representation.make_multiple (a_name, Current)
@@ -206,6 +206,14 @@ feature -- Modification
 			-- set an attribute created single to be multiple
 		do
 			representation.set_multiple
+		ensure
+			is_multiple
+		end
+
+	set_generic
+			-- set an attribute created single to be generic
+		do
+			representation.set_generic
 		ensure
 			is_multiple
 		end

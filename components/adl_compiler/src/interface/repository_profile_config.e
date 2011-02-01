@@ -41,10 +41,18 @@ create
 
 feature -- Initialisation
 
-	default_create, make_dt
+	default_create
 			-- Basic make routine to guarantee validity on creation.
 		do
 			create profiles.make (0)
+		ensure then
+			initially_empty: is_empty
+		end
+
+	make_dt (make_args: ARRAY[ANY])
+			-- Basic make routine to guarantee validity on creation.
+		do
+			default_create
 		ensure then
 			initially_empty: is_empty
 		end

@@ -2,9 +2,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Serialiser Manager for all ADL serialiser types"
 	keywords:    "test, CADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -21,31 +21,29 @@ create
 
 feature -- Initialisation
 
-	make(a_target: ARCHETYPE; format: STRING; an_ontology: ARCHETYPE_ONTOLOGY)
+	make (an_archetype: attached ARCHETYPE; format: attached STRING)
 			-- create a new manager targetted to the ADL archetype 'a_target'
 		require
-			Target_exists: a_target /= Void
-			Format_valid: format /= Void and then has_archetype_serialiser_format(format)
-			Ontology_valid: an_ontology /= Void
+			Format_valid: has_archetype_serialiser_format (format)
 		do
-			target := a_target
-			serialiser := archetype_serialiser_for_format(format)
-			serialiser.initialise(an_ontology)
+			target := an_archetype
+			serialiser := archetype_serialiser_for_format (format)
+			serialiser.reset
 		end
 
 feature -- Command
 
-	serialise(lang_serialised, desc_serialised, def_serialised: attached STRING; inv_serialised: STRING; ont_serialised: attached STRING; ann_serialised: STRING)
+	serialise (lang_serialised, desc_serialised, def_serialised: attached STRING; inv_serialised: STRING; ont_serialised: attached STRING; ann_serialised, comp_onts_serialised: STRING)
 			-- start the serialisation process; the result will be in `serialiser_output'
 		do
-			serialiser.serialise(target, lang_serialised, desc_serialised, def_serialised, inv_serialised, ont_serialised, ann_serialised)
+			serialiser.serialise (target, lang_serialised, desc_serialised, def_serialised, inv_serialised, ont_serialised, ann_serialised, comp_onts_serialised)
 		end
 
 feature -- Access
 
 	target: ARCHETYPE
 
-	last_result: STRING
+	last_result: attached STRING
 		do
 			Result := serialiser.last_result
 		end

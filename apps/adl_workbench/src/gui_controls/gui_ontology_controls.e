@@ -133,14 +133,9 @@ feature {NONE} -- Implementation
 				create list_row
 				list_row.extend (utf8 (ontology.term_codes.item))
 				a_term := ontology.term_definition(current_language, ontology.term_codes.item)
-
-				from ontology.term_attribute_names.start until ontology.term_attribute_names.off loop
-					if a_term.has_key (ontology.term_attribute_names.item) then
-						list_row.extend (utf8 (a_term.item(ontology.term_attribute_names.item)))
-					else
-						list_row.extend (" - ")
-					end
-					ontology.term_attribute_names.forth
+				from a_term.keys.start until a_term.keys.off loop
+					list_row.extend (utf8 (a_term.item (a_term.keys.item)))
+					a_term.keys.forth
 				end
 
 				-- populate bindings
@@ -198,13 +193,9 @@ feature {NONE} -- Implementation
 				-- populate constraint codes
 				list_row.extend (utf8 (ontology.constraint_codes.item))
 				a_term := ontology.constraint_definition(current_language, ontology.constraint_codes.item)
-				from ontology.term_attribute_names.start until ontology.term_attribute_names.off loop
-					if a_term.has_key (ontology.term_attribute_names.item) then
-						list_row.extend (utf8 (a_term.item (ontology.term_attribute_names.item)))
-					else
-						list_row.extend (" - ")
-					end
-					ontology.term_attribute_names.forth
+				from a_term.keys.start until a_term.keys.off loop
+					list_row.extend (utf8 (a_term.item (a_term.keys.item)))
+					a_term.keys.forth
 				end
 
 				-- populate bindings

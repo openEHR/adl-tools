@@ -4,7 +4,7 @@ note
 				 This class knows how to parse an ADL text, and serialise an ARCHETYPE object.
 				 ]"
 	keywords:    "ADL"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
@@ -33,6 +33,11 @@ inherit
 		end
 
 	ADL_SYNTAX_CONVERTER
+		export
+			{NONE} all
+		end
+
+	SHARED_DT_OBJECT_CONVERTER
 		export
 			{NONE} all
 		end
@@ -69,57 +74,98 @@ feature -- Access
 
 feature -- Commands
 
-	parse_differential (text: attached STRING; an_rm_schema: attached BMM_SCHEMA): detachable DIFFERENTIAL_ARCHETYPE
+	parse_differential (a_text: attached STRING; an_rm_schema: attached BMM_SCHEMA): detachable DIFFERENTIAL_ARCHETYPE
 			-- parse text as differential archetype. If successful, `archetype' contains the parse structure.
 		do
 			rm_schema := an_rm_schema
-			Result ?= parse(text, True)
+			Result ?= parse (a_text, True)
 		end
 
-	parse_flat (text: attached STRING; an_rm_schema: attached BMM_SCHEMA): detachable FLAT_ARCHETYPE
+	parse_flat (a_text: attached STRING; an_rm_schema: attached BMM_SCHEMA): detachable FLAT_ARCHETYPE
 			-- parse text as flat archetype. If successful, `archetype' contains the parse structure.
 		do
 			rm_schema := an_rm_schema
-			Result ?= parse(text, False)
+			Result ?= parse (a_text, False)
 		end
 
-	serialise (an_archetype: attached ARCHETYPE; a_format, a_lang: attached STRING): STRING
+	serialise (an_archetype: attached ARCHETYPE; a_format, a_lang: attached STRING): attached STRING
 			-- serialise current archetype into format, using the supplied ontology. For serialising
 			-- any form of archetype, the flat-form ontology has to be supplied
 		require
 			archetype_valid: an_archetype.is_valid
 			Language_valid: an_archetype.has_language (a_lang)
 			format_valid: has_archetype_serialiser_format (a_format)
+		local
+			arch_ont_serialised, comp_onts_serialised: STRING
+--			comp_onts: HASH_TABLE [STRING, STRING]
+			comp_onts_helper: COMPONENT_ONTOLOGIES_HELPER
+--			comp_onts_dt: DT_COMPLEX_OBJECT_NODE
 		do
-			synchronise_from_archetype (an_archetype)
-			language_context.serialise (a_format)
-			description_context.serialise (a_format)
-			definition_context.serialise (a_format, a_lang, an_archetype.ontology)
+			an_archetype.synchronise
 
+			-- language section
+			language_context.set_tree (an_archetype.orig_lang_translations.dt_representation)
+			language_context.serialise (a_format)
+
+			-- description section
+			description_context.set_tree (an_archetype.description.dt_representation)
+			description_context.serialise (a_format)
+
+			-- definition section
+			definition_context.set_tree (an_archetype.definition)
+			definition_context.serialise (an_archetype, a_format, a_lang)
+
+			-- rules section
 			if an_archetype.has_invariants then
+				invariant_context.set_tree (an_archetype.invariants)
 				invariant_context.serialise (a_format)
 			end
 
+			-- ontology section
+			ontology_context.set_tree (an_archetype.ontology.dt_representation)
 			ontology_context.serialise (a_format)
+			arch_ont_serialised := ontology_context.serialised
 
+			-- OPT only: component_ontologies section
+			if attached {OPERATIONAL_TEMPLATE} an_archetype as opt then
+--				create comp_onts.make (0)
+--				from opt.component_ontologies.start until opt.component_ontologies.off loop
+--					ontology_context.set_tree (opt.component_ontologies.item_for_iteration.representation)
+--					ontology_context.serialise (a_format)
+--					comp_onts.put (ontology_context.serialised, opt.component_ontologies.key_for_iteration)
+--					opt.component_ontologies.forth
+--				end
+				create comp_onts_helper.make
+				comp_onts_helper.set_component_ontologies (opt.component_ontologies)
+				ontology_context.set_tree (object_converter.object_to_dt (comp_onts_helper))
+				ontology_context.serialise (a_format)
+				comp_onts_serialised := ontology_context.serialised
+			end
+
+			-- annotations section
 			if an_archetype.has_annotations then
+				annotations_context.set_tree (an_archetype.annotations.dt_representation)
 				annotations_context.serialise (a_format)
 			end
 
-			create serialiser_mgr.make (an_archetype, a_format, an_archetype.ontology)
+			-- perform the pasting together of pieces to make ADL archetype
+			create serialiser_mgr.make (an_archetype, a_format)
 			serialiser_mgr.serialise (
 				language_context.serialised,
 				description_context.serialised,
 				definition_context.serialised,
 				invariant_context.serialised,
-				ontology_context.serialised,
-				annotations_context.serialised)
+				arch_ont_serialised,
+				annotations_context.serialised,
+				comp_onts_serialised
+			)
+
 			Result := serialiser_mgr.last_result
 		end
 
 feature {NONE} -- Implementation
 
-	parse (text: attached STRING; differential_source_flag: BOOLEAN): ARCHETYPE
+	parse (a_text: attached STRING; differential_source_flag: BOOLEAN): ARCHETYPE
 			-- parse tree. If successful, `archetype' contains the parse
 			-- structure. Then validate the tree
 		local
@@ -130,7 +176,7 @@ feature {NONE} -- Implementation
 			flat_ontology: attached FLAT_ARCHETYPE_ONTOLOGY
 		do
 			create adl_parser.make
-			adl_parser.execute(text)
+			adl_parser.execute(a_text)
 
 			create errors.make
 
@@ -138,7 +184,7 @@ feature {NONE} -- Implementation
 				errors.append (adl_parser.errors)
 			else
 				------------------- language section ---------------
-				language_context.set_source(adl_parser.language_text, adl_parser.language_text_start_line)
+				language_context.set_source (adl_parser.language_text, adl_parser.language_text_start_line)
 				language_context.parse
 				if not language_context.parse_succeeded then
 					errors.append (language_context.errors)
@@ -146,12 +192,12 @@ feature {NONE} -- Implementation
 
 				if not errors.has_errors then
 					if language_context.tree /= Void then
-						orig_lang_trans ?= language_context.tree.as_object (({LANGUAGE_TRANSLATIONS}).type_id)
+						orig_lang_trans ?= language_context.tree.as_object (({LANGUAGE_TRANSLATIONS}).type_id, Void)
 					end
 
 					------------------- description section ---------------
 					if adl_parser.description_text /= Void and then not adl_parser.description_text.is_empty then
-						description_context.set_source(adl_parser.description_text, adl_parser.description_text_start_line)
+						description_context.set_source (adl_parser.description_text, adl_parser.description_text_start_line)
 						description_context.parse
 						if not description_context.parse_succeeded then
 							errors.append (description_context.errors)
@@ -162,7 +208,7 @@ feature {NONE} -- Implementation
 
 					if not errors.has_errors then
 						if description_context.tree /= Void then
-							res_desc ?= description_context.tree.as_object (({RESOURCE_DESCRIPTION}).type_id)
+							res_desc ?= description_context.tree.as_object (({RESOURCE_DESCRIPTION}).type_id, Void)
 						end
 
 						------------------- definition section ---------------
@@ -204,18 +250,19 @@ feature {NONE} -- Implementation
 
 									if not errors.has_errors then
 										if annotations_context.tree /= Void then
-											annots ?= annotations_context.tree.as_object (({RESOURCE_ANNOTATIONS}).type_id)
+											annots ?= annotations_context.tree.as_object (({RESOURCE_ANNOTATIONS}).type_id, Void)
 										end
 
 										------------------- build the archetype --------------					
 										if attached {C_COMPLEX_OBJECT} definition_context.tree as definition and then attached {ARCHETYPE_ID} adl_parser.archetype_id as id then
-											convert_ontology_syntax(ontology_context.tree)  -- perform any version upgrade conversions
+											convert_ontology_syntax (ontology_context.tree)  -- perform any version upgrade conversions
 											if differential_source_flag then
 												if orig_lang_trans /= Void then
-													create differential_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, definition.node_id)
+												--	create differential_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, definition.node_id)
+													differential_ontology ?= ontology_context.tree.as_object (({DIFFERENTIAL_ARCHETYPE_ONTOLOGY}).type_id, <<orig_lang_trans.original_language.code_string, definition.node_id>>)
 												else
-													create differential_ontology.make_from_tree (Void, ontology_context.tree, definition.node_id)
-													orig_lang_trans := original_language_and_translations_from_ontology (differential_ontology)
+--													create differential_ontology.make_from_tree (Void, ontology_context.tree, definition.node_id)
+--													orig_lang_trans := original_language_and_translations_from_ontology (differential_ontology)
 												end
 
 												if not differential_ontology.errors.is_empty then
@@ -232,10 +279,11 @@ feature {NONE} -- Implementation
 												end
 											else
 												if orig_lang_trans /= Void then
-													create flat_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, definition.node_id)
+												--	create flat_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, definition.node_id)
+													flat_ontology ?= ontology_context.tree.as_object (({FLAT_ARCHETYPE_ONTOLOGY}).type_id, <<orig_lang_trans.original_language.code_string, definition.node_id>>)
 												else
-													create flat_ontology.make_from_tree (Void, ontology_context.tree, definition.node_id)
-													orig_lang_trans := original_language_and_translations_from_ontology (flat_ontology)
+--													create flat_ontology.make_from_tree (Void, ontology_context.tree, definition.node_id)
+--													orig_lang_trans := original_language_and_translations_from_ontology (flat_ontology)
 												end
 
 												if not flat_ontology.errors.is_empty then
@@ -314,23 +362,6 @@ feature {NONE} -- Implementation
 	annotations_context: DADL_ENGINE
 
 	rm_schema: BMM_SCHEMA
-
-	synchronise_from_archetype (an_archetype: ARCHETYPE)
-			-- synchronise archetype to processing engines
-		do
-			an_archetype.synchronise
-
-			language_context.set_tree (an_archetype.orig_lang_translations.dt_representation)
-			description_context.set_tree(an_archetype.description.dt_representation)
-			definition_context.set_tree(an_archetype.definition)
-			if an_archetype.has_invariants then
-				invariant_context.set_tree(an_archetype.invariants)
-			end
-			ontology_context.set_tree(an_archetype.ontology.representation)
-			if an_archetype.has_annotations then
-				annotations_context.set_tree (an_archetype.annotations.dt_representation)
-			end
-		end
 
 	original_language_and_translations_from_ontology (ontology: attached ARCHETYPE_ONTOLOGY): attached LANGUAGE_TRANSLATIONS
 			-- The original language and translations, mined from `ontology'.

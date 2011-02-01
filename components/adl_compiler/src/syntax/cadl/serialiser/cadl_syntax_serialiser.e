@@ -1,15 +1,15 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-			 Serialise CADL archetype to any syntax format, i.e. where the
-			 output reflects the tree hierarchy of the parse tree inline - nodes
-			 are presented in the order of the tree traversal, and the semantics 
-			 of the tree are output as language syntax keywords, symbols etc.
+			 	 Serialise CADL archetype to any syntax format, i.e. where the
+			 	 output reflects the tree hierarchy of the parse tree inline - nodes
+			 	 are presented in the order of the tree traversal, and the semantics 
+			 	 of the tree are output as language syntax keywords, symbols etc.
 	             ]"
 	keywords:    "serialiser, CADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -50,7 +50,7 @@ create
 
 feature -- Visitor
 
-	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER)
+	start_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- start serialising an C_COMPLEX_OBJECT
 		do
 			serialise_sibling_order(a_node, depth)
@@ -76,7 +76,7 @@ feature -- Visitor
 			end
 		end
 
-	end_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER)
+	end_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- end serialising an C_COMPLEX_OBJECT
 		do
 			if a_node.is_prohibited then
@@ -97,10 +97,8 @@ feature -- Visitor
 			end
 		end
 
-	start_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER)
+	start_archetype_slot (a_node: ARCHETYPE_SLOT; depth: INTEGER)
 			-- start serialising an ARCHETYPE_SLOT
-		local
-			s: STRING
 		do
 			serialise_sibling_order(a_node, depth)
 			last_result.append (create_indent (depth))
@@ -129,7 +127,7 @@ feature -- Visitor
 			end
 		end
 
-	end_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER)
+	end_archetype_slot (a_node: ARCHETYPE_SLOT; depth: INTEGER)
 			-- end serialising an ARCHETYPE_SLOT
 		local
 			invs: ARRAYED_LIST[ASSERTION]
@@ -169,7 +167,7 @@ feature -- Visitor
 			end
 		end
 
-	start_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER)
+	start_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- start serialising an C_ATTRIBUTE
 		local
 			p: STRING
@@ -192,7 +190,7 @@ feature -- Visitor
 			end
 		end
 
-	end_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER)
+	end_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- end serialising an C_ATTRIBUTE
 		do
 			if not last_object_simple and not a_node.any_allowed then
@@ -212,7 +210,7 @@ feature -- Visitor
 			last_result.append (format_item(FMT_NEWLINE))
 		end
 
-	start_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
+	start_archetype_internal_ref (a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
 			-- start serialising an ARCHETYPE_INTERNAL_REF
 		do
 			last_result.append (create_indent(depth) + apply_style(symbol(SYM_USE_NODE), STYLE_KEYWORD) + format_item(FMT_SPACE))
@@ -226,19 +224,20 @@ feature -- Visitor
 			last_result.append (format_item(FMT_NEWLINE))
 		end
 
-	start_c_archetype_root(a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
+	start_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- enter a C_ARCHETYPE_ROOT
 			-- if there are no children, it must be in differential mode, else it is in flat mode
 		local
 			id: STRING
 		do
+			-- have to obtain the ontology from the main archetype directory because the archetype being serialised
+			-- here might be in differential form, and have no component_ontologies aet up
 			ontologies.extend (current_arch_dir.archetype_index.item (a_node.archetype_id).flat_archetype.ontology)
 
 			if a_node.has_attributes then -- in flat mode; treat like normal C_COMPLEX_OBJECT with children
 				start_c_complex_object (a_node, depth)
 
 			else -- it is in source mode, there are no children, only slot fillers
-
 				-- output '%Tuse_archetype TYPE[at_code, archetype_id] <occurrences>%N'
 				-- or '%Tuse_archetype TYPE[archetype_id] <occurrences>%N'
 				last_result.append (create_indent(depth) + apply_style(symbol(SYM_USE_ARCHETYPE), STYLE_KEYWORD) + format_item(FMT_SPACE))
@@ -257,7 +256,7 @@ feature -- Visitor
 			end
 		end
 
-	end_c_archetype_root(a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
+	end_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- exit a C_ARCHETYPE_ROOT
 		do
 			if a_node.has_attributes then
@@ -266,22 +265,22 @@ feature -- Visitor
 			ontologies.remove
 		end
 
-	start_c_reference_object(a_node: C_REFERENCE_OBJECT; depth: INTEGER)
+	start_c_reference_object (a_node: C_REFERENCE_OBJECT; depth: INTEGER)
 			-- enter a C_REFERENCE_OBJECT
 		do
 		end
 
-	start_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER)
+	start_c_domain_type (a_node: C_DOMAIN_TYPE; depth: INTEGER)
 			-- enter an C_DOMAIN_TYPE
 		do
 		end
 
-	start_c_leaf_object(a_node: C_LEAF_OBJECT; depth: INTEGER)
+	start_c_leaf_object (a_node: C_LEAF_OBJECT; depth: INTEGER)
 			-- enter a C_LEAF_OBJECT
 		do
 		end
 
-	start_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER)
+	start_constraint_ref (a_node: CONSTRAINT_REF; depth: INTEGER)
 			-- start serialising a CONSTRAINT_REF
 		do
 			last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	
@@ -291,11 +290,11 @@ feature -- Visitor
 
 			-- add the comment
 			last_object_simple_buffer.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-					safe_comment(ontology.constraint_definition(language, a_node.target).item("text")), STYLE_COMMENT))
+					safe_comment(ontology.constraint_definition(language, a_node.target).text), STYLE_COMMENT))
 			last_object_simple := True
 		end
 
-	start_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
+	start_c_primitive_object (a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- start serialising an C_PRIMITIVE_OBJECT
 		local
 			s: STRING
@@ -310,7 +309,7 @@ feature -- Visitor
 			last_object_simple := True
 		end
 
-	start_c_quantity(a_node: C_DV_QUANTITY; depth: INTEGER)
+	start_c_quantity (a_node: C_DV_QUANTITY; depth: INTEGER)
 			-- start serialising an C_DV_QUANTITY; note that the following code is generic to all
 			-- C_DOMAIN_TYPEs not having a special syntax like C_CODE_PHRASE and C_DV_ORDINAL (and note
 			-- that in some archetypes, these types can be represented with dADL blocks)
@@ -320,7 +319,7 @@ feature -- Visitor
 			last_result.append ((create {STRING_UTILITIES}).indented (dadl_engine.serialised, create_indent(depth)))
 		end
 
-	start_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER)
+	start_c_code_phrase (a_node: C_CODE_PHRASE; depth: INTEGER)
 			-- start serialising an C_CODE_PHRASE
 		local
 			adl_term: ARCHETYPE_TERM
@@ -334,7 +333,7 @@ feature -- Visitor
 
 					adl_term := ontology.term_definition(language, a_node.code_list.first)
 					last_object_simple_buffer.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-						safe_comment(adl_term.item("text")), STYLE_COMMENT))
+						safe_comment(adl_term.text), STYLE_COMMENT))
 				end
 				last_object_simple := True
 
@@ -360,7 +359,7 @@ feature -- Visitor
 						adl_term := ontology.term_definition(language, a_node.code_list.item)
 						last_result.append (format_item(FMT_INDENT) +
 							apply_style(format_item(FMT_COMMENT) +
-							safe_comment(adl_term.item("text")), STYLE_COMMENT))
+							safe_comment(adl_term.text), STYLE_COMMENT))
 					end
 					last_result.append (format_item(FMT_NEWLINE))
 					a_node.code_list.forth
@@ -376,7 +375,7 @@ feature -- Visitor
 			end
 		end
 
-	start_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER)
+	start_c_ordinal (a_node: C_DV_ORDINAL; depth: INTEGER)
 			-- start serialising an C_DV_ORDINAL
 		local
 			adl_term: ARCHETYPE_TERM
@@ -395,7 +394,7 @@ feature -- Visitor
 					last_object_simple_buffer.append (format_item(FMT_INDENT))
 					adl_term := ontology.term_definition(language, a_node.items.first.symbol.code_string)
 					last_object_simple_buffer.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-						safe_comment(adl_term.item("text")), STYLE_COMMENT))
+						safe_comment(adl_term.text), STYLE_COMMENT))
 				end
 				last_object_simple := True
 
@@ -418,7 +417,7 @@ feature -- Visitor
 						adl_term := ontology.term_definition(language, a_node.items.item.symbol.code_string)
 						last_result.append (format_item(FMT_INDENT) +
 							apply_style(format_item(FMT_COMMENT) +
-							safe_comment(adl_term.item("text")), STYLE_COMMENT))
+							safe_comment(adl_term.text), STYLE_COMMENT))
 					end
 					last_result.append (format_item(FMT_NEWLINE))
 					a_node.items.forth
@@ -435,7 +434,7 @@ feature -- Visitor
 			end
 		end
 
-	serialise_occurrences(a_node: C_OBJECT; depth: INTEGER)
+	serialise_occurrences (a_node: C_OBJECT; depth: INTEGER)
 			-- any positive range
 		local
 			s: STRING
@@ -449,7 +448,7 @@ feature -- Visitor
 			end
 		end
 
-	serialise_existence(a_node: C_ATTRIBUTE; depth: INTEGER)
+	serialise_existence (a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- can only  be a range of 0..1 or 1..1
 		local
 			s: STRING
@@ -463,7 +462,7 @@ feature -- Visitor
 			end
 		end
 
-	serialise_cardinality(a_node: C_ATTRIBUTE; depth: INTEGER)
+	serialise_cardinality (a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- includes a range and possibly ordered, unique qualifiers
 		local
 			s: STRING
@@ -479,7 +478,7 @@ feature -- Visitor
 
 feature {NONE} -- Implementation
 
-	serialise_sibling_order(a_node: C_OBJECT; depth: INTEGER)
+	serialise_sibling_order (a_node: C_OBJECT; depth: INTEGER)
 			-- serialise C_OBJECT.sibling_order if this is a differential archetype (it should not be there otherwise)
 		do
 			if is_differential and a_node.sibling_order /= Void then
@@ -540,7 +539,7 @@ feature {NONE} -- Implementation
 				s := a_node.node_id
 				if is_valid_code(s) and ontology.has_term_code(s) then
 					last_result.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-						safe_comment(ontology.term_definition(language, s).item("text")), STYLE_COMMENT))
+						safe_comment(ontology.term_definition(language, s).text), STYLE_COMMENT))
 				end
 			end
 		end

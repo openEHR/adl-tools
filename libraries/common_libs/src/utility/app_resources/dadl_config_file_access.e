@@ -141,7 +141,7 @@ feature -- Access
 		do
 			if has_resource(a_path) then
 				if attached {DT_COMPLEX_OBJECT_NODE} dt_tree.node_at_path (a_path) as dt_obj then
-					Result := dt_obj.as_object_from_string (a_type_name)
+					Result := dt_obj.as_object_from_string (a_type_name, Void)
 				end
 			end
 			requested_resources.extend (a_path)

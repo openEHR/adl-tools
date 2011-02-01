@@ -71,7 +71,7 @@ feature -- Access
 		local
 			og_path: OG_PATH
 		do
-			if slot_node_id /= Void then
+			if attached slot_node_id then
 				og_path := representation.path
 				og_path.last.set_object_id (slot_node_id)
 				Result := og_path.as_string
@@ -91,7 +91,7 @@ feature -- Output
 				Result.append(node_id + ", ")
 			end
 			Result.append(archetype_id + "] ")
-			if occurrences /= Void then
+			if attached occurrences then
 				Result.append(occurrences.as_string)
 			end
 		end

@@ -849,7 +849,7 @@ feature {NONE} -- Implementation
 				end
 
 				if current_arch_dir.has_validated_selected_archetype and ontology.has_term_code (c_c_o.node_id) then
-					Result.append (" " + ontology.term_definition (current_language, c_c_o.node_id).item ("text"))
+					Result.append (" " + ontology.term_definition (current_language, c_c_o.node_id).text)
 				end
 
 				if in_technical_mode then
@@ -897,7 +897,7 @@ feature {NONE} -- Implementation
 				end
 
 				if current_arch_dir.has_validated_selected_archetype and ontology.has_term_code (a_node.node_id) then
-					Result.append (" " + ontology.term_definition (current_language, a_node.node_id).item ("text"))
+					Result.append (" " + ontology.term_definition (current_language, a_node.node_id).text)
 				end
 				if in_technical_mode then
 					Result.append (": " + a_node.rm_type_name + "[" + a_node.node_id + "]")
@@ -958,7 +958,7 @@ feature {NONE} -- Implementation
 			end
 			if current_arch_dir.has_validated_selected_archetype and attached a_node.slot_node_id then
 				if ontology.has_term_code (a_node.slot_node_id) then
-					Result.append (ontology.term_definition (current_language, a_node.slot_node_id).item ("text"))
+					Result.append (ontology.term_definition (current_language, a_node.slot_node_id).text)
 				else
 					Result.append ("(unknown)")
 				end
@@ -982,7 +982,7 @@ feature {NONE} -- Implementation
 			if current_arch_dir.has_validated_selected_archetype then
 				if local_flag then
 					if ontology.has_term_code (code) then
-						Result.append (" " + ontology.term_definition (current_language, code).item ("text"))
+						Result.append (" " + ontology.term_definition (current_language, code).text)
 					end
 				else
 					-- need a way to get it out of an external terminology; for the moment, just show code
@@ -1005,7 +1005,7 @@ feature {NONE} -- Implementation
 			create Result.make_empty
 
 			if current_arch_dir.has_validated_selected_archetype then
-				Result.append (" " + ontology.constraint_definition (current_language, a_constraint_ref.target).item ("text"))
+				Result.append (" " + ontology.constraint_definition (current_language, a_constraint_ref.target).text)
 			end
 
 			if in_technical_mode then
@@ -1024,7 +1024,7 @@ feature {NONE} -- Implementation
 
 			if current_arch_dir.has_validated_selected_archetype then
 				if ontology.has_term_code (code) then
-					Result.append (" " + ontology.term_definition (current_language, code).item ("text"))
+					Result.append (" " + ontology.term_definition (current_language, code).text)
 				end
 			end
 

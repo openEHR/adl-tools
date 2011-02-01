@@ -80,7 +80,7 @@ feature -- Representation
 
 feature -- Conversion
 
-	as_object(a_type_id: INTEGER): ANY
+	as_object (a_type_id: INTEGER; make_args: ARRAY[ANY]): ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		do
@@ -90,9 +90,7 @@ feature -- Conversion
 
 feature -- Modification
 
-	set_value(a_value: like value)
-		require
-			Item_valid: a_value /= Void
+	set_value (a_value: attached like value)
 		deferred
 		ensure
 			Value_set: value = a_value
@@ -100,10 +98,8 @@ feature -- Modification
 
 feature -- Output
 
-	as_string: STRING
+	as_string: attached STRING
 		deferred
-		ensure
-			Result_exists: Result /= Void
 		end
 
 end

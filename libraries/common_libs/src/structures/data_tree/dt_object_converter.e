@@ -33,7 +33,7 @@ inherit
 
 feature -- Conversion
 
-	object_to_dt(an_obj: attached ANY): attached DT_COMPLEX_OBJECT_NODE
+	object_to_dt (an_obj: attached ANY): attached DT_COMPLEX_OBJECT_NODE
 			-- generate a DT_OBJECT from an Eiffel object; called only on top-level object
 		do
 			create Result.make_anonymous
@@ -47,8 +47,7 @@ feature -- Conversion
 		local
 			a_dt_attr: DT_ATTRIBUTE_NODE
 			fld_dynamic_type, i: INTEGER
-			fld_val: ANY
-			fld_name: STRING
+			eif_fld_name: STRING
 			fld_lst: ARRAYED_LIST[STRING]
 		do
 			a_dt_obj.set_type_name(an_obj.generating_type)
@@ -68,57 +67,56 @@ end
 					fld_lst := dt_conv.persistent_attributes
 				end
 				from i := 1 until i > field_count(an_obj) loop
-					fld_val := field(i, an_obj)
-					if fld_val /= Void then
-						fld_name := field_name(i, an_obj)
-						if fld_lst = Void or else fld_lst.has(fld_name) then
+					eif_fld_name := field_name(i, an_obj)
+-- enable following line when transient attirbutes working then	
+--					if attached {ANY} field(i, an_obj) as eif_fld_val and not is_field_transient (i, an_obj) then
+					if attached {ANY} field(i, an_obj) as eif_fld_val and (not attached fld_lst or else fld_lst.has(eif_fld_name)) then
 debug ("DT")
-	io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: field_name = " + fld_name + "%N")
+	io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: field_name = " + eif_fld_name + "%N")
 end
-							fld_dynamic_type := dynamic_type(fld_val)
+						fld_dynamic_type := dynamic_type(eif_fld_val)
 
-							-- now set the value inside the DT_ATTRIBUTE by creating the correct sort of DT_PRIMITIVE subtype
-							if is_dt_primitive_interval_type (fld_dynamic_type) then -- it is an INTERVAL[some primitive or leaf type]; convert to DT_PRIMITIVE_OBJECT_INTERVAL
-								if attached {INTERVAL[PART_COMPARABLE]} fld_val as v_typed then
-									create a_dt_attr.make_single(fld_name)
-									a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT_INTERVAL}.make_anonymous(v_typed))
-									a_dt_obj.put_attribute(a_dt_attr)
-								end
-
-							elseif is_dt_primitive_sequence_conforming_type(fld_dynamic_type) then -- it is a SEQUENCE of some DT primitive type
-								if attached {SEQUENCE[ANY]} fld_val as v_typed then
-									create a_dt_attr.make_single(fld_name)
-									a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT_LIST}.make_anonymous(v_typed))
-									a_dt_obj.put_attribute(a_dt_attr)
-								end
-
-							elseif is_dt_primitive_atomic_type(fld_dynamic_type) then -- it is a DT primitive type then
-								create a_dt_attr.make_single(fld_name)
-								a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT}.make_anonymous(fld_val))
+						-- now set the value inside the DT_ATTRIBUTE by creating the correct sort of DT_PRIMITIVE subtype
+						if is_dt_primitive_interval_type (fld_dynamic_type) then -- it is an INTERVAL[some primitive or leaf type]; convert to DT_PRIMITIVE_OBJECT_INTERVAL
+							if attached {INTERVAL[PART_COMPARABLE]} eif_fld_val as eif_prim_ivl then
+								create a_dt_attr.make_single(eif_fld_name)
+								a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT_INTERVAL}.make_anonymous(eif_prim_ivl))
 								a_dt_obj.put_attribute(a_dt_attr)
+							end
 
-							else -- its a complex object, or else a SEQUENCE or HASH_TABLE of a complex object
+						elseif is_dt_primitive_sequence_conforming_type(fld_dynamic_type) then -- it is a SEQUENCE of some DT primitive type
+							if attached {SEQUENCE[ANY]} eif_fld_val as eif_prim_seq then
+								create a_dt_attr.make_single(eif_fld_name)
+								a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT_LIST}.make_anonymous(eif_prim_seq))
+								a_dt_obj.put_attribute(a_dt_attr)
+							end
+
+						elseif is_dt_primitive_atomic_type(fld_dynamic_type) then -- it is a DT primitive type then
+							create a_dt_attr.make_single(eif_fld_name)
+							a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT}.make_anonymous(eif_fld_val))
+							a_dt_obj.put_attribute(a_dt_attr)
+
+						else -- its a complex object, or else a SEQUENCE or HASH_TABLE of a complex object
 debug ("DT")
 	io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: (complex or container type)%N")
 end
-								if attached {HASH_TABLE [ANY, HASHABLE]} fld_val as a_hash_table2 or attached {SEQUENCE[ANY]} fld_val as a_sequence2 then
+							if attached {HASH_TABLE [ANY, HASHABLE]} eif_fld_val as a_hash_table2 or attached {SEQUENCE[ANY]} eif_fld_val as a_sequence2 then
 debug ("DT")
 	io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: (container type)%N")
 end
-									create a_dt_attr.make_multiple(fld_name)
-									create_dt_from_container_obj(a_dt_attr, fld_val)
-									if not a_dt_attr.is_empty then
-										a_dt_obj.put_attribute(a_dt_attr)
-									end
-								else
+								create a_dt_attr.make_multiple(eif_fld_name)
+								create_dt_from_container_obj(a_dt_attr, eif_fld_val)
+								if not a_dt_attr.is_empty then
+									a_dt_obj.put_attribute(a_dt_attr)
+								end
+							else
 debug ("DT")
 	io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: (normal complex type)%N")
 end
-									-- it's a normal complex object
-									create a_dt_attr.make_single(fld_name)
-									populate_dt_from_object(fld_val, create_complex_object_node(a_dt_attr, Void))
-									a_dt_obj.put_attribute(a_dt_attr)
-								end
+								-- it's a normal complex object
+								create a_dt_attr.make_single(eif_fld_name)
+								populate_dt_from_object(eif_fld_val, create_complex_object_node(a_dt_attr, Void))
+								a_dt_obj.put_attribute(a_dt_attr)
 							end
 						end
 					end
@@ -127,17 +125,18 @@ end
 			end
 		end
 
-	dt_to_object_from_string(a_dt_obj: attached DT_COMPLEX_OBJECT_NODE; a_type_name: attached STRING): ANY
+	dt_to_object_from_string(a_dt_obj: attached DT_COMPLEX_OBJECT_NODE; a_type_name: attached STRING; make_args: ARRAY[ANY]): ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		do
-			Result := dt_to_object(a_dt_obj, dynamic_type_from_string (a_type_name))
+			Result := dt_to_object (a_dt_obj, dynamic_type_from_string (a_type_name), make_args)
 		end
 
-	dt_to_object(a_dt_obj: attached DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER): ANY
+	dt_to_object (a_dt_obj: attached DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER; make_args: ARRAY[ANY]): ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT; should be called only on top-level DT structure, but recursive calling
 			-- from populate_object_from_dt calling set_container_object_data_from_dt also occurs
+			-- The main job of this routine is to set up cross references.
 		local
 			src_obj, targ_obj: ANY
 			src_obj_fld: INTEGER
@@ -150,7 +149,7 @@ end
 					create object_ref_list.make(0)
 				end
 
-				Result := populate_object_from_dt(a_dt_obj, a_type_id)
+				Result := populate_object_from_dt(a_dt_obj, a_type_id, make_args)
 
 				-- if there were object references in the DT structure, process them now
 				if a_dt_obj.is_root and not object_ref_list.is_empty then
@@ -219,7 +218,7 @@ end
 			retry
 		end
 
-	populate_object_from_dt(a_dt_obj: DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER): ANY
+	populate_object_from_dt (a_dt_obj: attached DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER; make_args: ARRAY[ANY]): ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT; recursive. Be careful of the 3 'kinds' of type id in Eiffel:
 			-- an 'abstract type' is defined in INTERNAL; all ref types have one abstract type
@@ -239,13 +238,13 @@ end
 debug ("DT")
 	io.put_string("DT_OBJECT_CONVERTER.populate_object_from_dt: ENTER%N")
 end
-			if is_special_any_type(a_type_id) then
+			if is_special_any_type (a_type_id) then
 				-- FIXME: how to determine the length of the SPECIAL?
 debug ("DT")
 	io.put_string("%Tabout to call new_special_any_instance(" +
 		type_name_of_type(a_type_id) + ")%N")
 end
-				Result := new_special_any_instance(a_type_id, 1)
+				Result := new_special_any_instance (a_type_id, 1)
 debug ("DT")
 	io.put_string("%T(return)%N")
 end
@@ -254,7 +253,7 @@ debug ("DT")
 	io.put_string("%Tabout to call new_instance_of(" +
 		type_name_of_type(a_type_id) + ")%N")
 end
-				Result := new_instance_of(a_type_id)
+				Result := new_instance_of (a_type_id)
 debug ("DT")
 	io.put_string("%T(return)%N")
 end
@@ -263,7 +262,7 @@ end
 				-- reliably call a reasonable make function? Should call at least 'default_create'
 				-- Eiffel does not allow this at the moment.
 				if attached {DT_CONVERTIBLE} Result as a_dt_conv then
-					a_dt_conv.make_dt
+					a_dt_conv.make_dt (make_args)
 				end
 			end
 
@@ -481,7 +480,7 @@ end
 									if a_dt_attr.item.type_visible then
 										fld_type_id := dynamic_type_from_string (a_dt_attr.item.rm_type_name)
 									end
-									set_reference_field(i, Result, populate_object_from_dt(a_dt_complex_obj, fld_type_id))
+									set_reference_field(i, Result, populate_object_from_dt(a_dt_complex_obj, fld_type_id, Void))
 								end
 							end
 						end
@@ -632,7 +631,7 @@ feature {NONE} -- Implementation
 							dynamic_object_type_id := static_object_type_id
 						end
 						if dynamic_object_type_id > 0 then
-							a_hash_table.extend(a_dt_attr.item.as_object (dynamic_object_type_id), a_dt_attr.item.node_id)
+							a_hash_table.extend(a_dt_attr.item.as_object (dynamic_object_type_id, Void), a_dt_attr.item.node_id)
 						end
 					end
 					a_dt_attr.forth
@@ -659,7 +658,7 @@ feature {NONE} -- Implementation
 							dynamic_object_type_id := static_object_type_id
 						end
 						if dynamic_object_type_id > 0 then
-							a_sequence.extend(a_dt_attr.item.as_object (dynamic_object_type_id))
+							a_sequence.extend(a_dt_attr.item.as_object (dynamic_object_type_id, Void))
 						end
 					end
 					a_dt_attr.forth

@@ -38,7 +38,7 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make_dt
+	make_dt (make_args: ARRAY[ANY])
 			--
 		do
 			language := Default_language_code

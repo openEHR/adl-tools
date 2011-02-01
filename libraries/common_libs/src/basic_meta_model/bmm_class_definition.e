@@ -24,7 +24,7 @@ inherit
 
 feature -- Initialisation
 
-	make_dt
+	make_dt  (make_args: ARRAY[ANY])
 			-- make in a safe way for DT building purposes
 		do
 			create properties.make (0)
@@ -230,7 +230,7 @@ feature -- Access
 					gen_param_count := gen_param_count + 1
 					generic_parameter_defs.forth
 				end
-				Result := type_name_as_flattened_type_list (a_class_type_name).i_th (gen_param_count)
+				Result := type_name_as_flattened_list (a_class_type_name).i_th (gen_param_count)
 			else
 				Result := prop_type.as_type_string
 			end

@@ -104,7 +104,7 @@ feature -- Access
 				Result := selection_history.item
 			end
 		ensure
-			consistent_with_history: Result /= Void implies Result = selection_history.item
+			consistent_with_history: attached Result implies Result = selection_history.item
 		end
 
 	selected_archetype: ARCH_REP_ARCHETYPE
@@ -112,7 +112,7 @@ feature -- Access
 		do
 			Result ?= selected_item
 		ensure
-			consistent_with_history: Result /= Void implies Result = selected_item
+			consistent_with_history: attached Result implies Result = selected_item
 		end
 
 	selected_class: ARCH_REP_MODEL_NODE
@@ -123,14 +123,14 @@ feature -- Access
 				Result := Void
 			end
 		ensure
-			consistent_with_history: Result /= Void implies Result = selected_item
+			consistent_with_history: attached Result implies Result = selected_item
 		end
 
-	matching_ids (a_regex, an_rm_type, an_rm_package: STRING): attached ARRAYED_SET[STRING]
-			-- generate list of archetype ids that match the pattern and optional rm_type. If rm_type is supplied,
+	matching_ids (a_regex: attached STRING; an_rm_type, an_rm_package: STRING): attached ARRAYED_SET[STRING]
+			-- generate list of archetype ids that match the regex pattern and optional rm_type. If rm_type is supplied,
 			-- we assume that the regex itself does not contain an rm type
 		require
-			Regex_valid: a_regex /= Void and then not a_regex.is_empty
+			Regex_valid: not a_regex.is_empty
 			Rm_type_valid: an_rm_type /= Void implies not an_rm_type.is_empty
 			Rm_package_valid: an_rm_package /= Void implies not an_rm_package.is_empty
 		local
@@ -221,25 +221,25 @@ feature -- Status Report
 	has_selected_item: BOOLEAN
 			-- Has an item been selected?
 		do
-			Result := selected_item /= Void
+			Result := attached selected_item
 		end
 
 	has_selected_archetype: BOOLEAN
 			-- Has an archetype been selected?
 		do
-			Result := selected_archetype /= Void
+			Result := attached selected_archetype
 		end
 
 	has_validated_selected_archetype: BOOLEAN
 			-- Has a valid archetype been selected?
 		do
-			Result := selected_archetype /= Void and then selected_archetype.is_valid
+			Result := attached selected_archetype and then selected_archetype.is_valid
 		end
 
 	has_selected_class: BOOLEAN
 			-- Has a class been selected?
 		do
-			Result := selected_class /= Void
+			Result := attached selected_class
 		end
 
 	selection_history_has_previous: BOOLEAN
@@ -341,7 +341,7 @@ feature -- Commands
 			end
 		end
 
-	update_basic_statistics (ara: ARCH_REP_ARCHETYPE)
+	update_basic_statistics (ara: attached ARCH_REP_ARCHETYPE)
 			-- Update statistics counters.
 		do
 			total_archetype_count := total_archetype_count + 1
@@ -350,7 +350,7 @@ feature -- Commands
 			end
 		end
 
-	update_slot_statistics (ara: ARCH_REP_ARCHETYPE)
+	update_slot_statistics (ara: attached ARCH_REP_ARCHETYPE)
 			-- Update slot-related statistics counters.
 		do
 			if ara.has_slots then
@@ -362,7 +362,7 @@ feature -- Commands
 			end
 		end
 
-	update_terminology_bindings_info (ara: ARCH_REP_ARCHETYPE)
+	update_terminology_bindings_info (ara: attached ARCH_REP_ARCHETYPE)
 			-- Update term binding info
 		local
 			terminologies: ARRAYED_LIST [STRING]
@@ -492,11 +492,10 @@ feature -- Modification
 			end
 		end
 
-	update_archetype_id(ara: ARCH_REP_ARCHETYPE)
+	update_archetype_id (ara: attached ARCH_REP_ARCHETYPE)
 			-- move `ara' in tree according to its current and old ids
 		require
-			ara_attached: ara /= Void
-			old_id_valid: ara.old_id /= Void and then archetype_index.has (ara.old_id.as_string) and then archetype_index.item (ara.old_id.as_string) = ara
+			old_id_valid: attached ara.old_id and then archetype_index.has (ara.old_id.as_string) and then archetype_index.item (ara.old_id.as_string) = ara
 			new_id_valid: not archetype_index.has(ara.id.as_string)
 			ontological_parent_exists: ontology_index.has(ara.ontological_parent_name)
 		do
@@ -518,24 +517,24 @@ feature -- Traversal
 	do_all (enter_action, exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]])
 			-- On all nodes in tree, execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 		require
-			enter_action_attached: enter_action /= Void
+			enter_action_attached: attached enter_action
 		do
 			do_subtree (ontology, enter_action, exit_action)
 		end
 
-	do_archetypes (ari: ARCH_REP_ITEM; action: PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]])
+	do_archetypes (ari: ARCH_REP_ITEM; action: attached PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]])
 			-- On all archetype nodes in tree, execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 		do
 			do_subtree (ari, agent do_if_archetype (?, action), Void)
 		end
 
-	do_all_archetypes (action: PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
+	do_all_archetypes (action: attached PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
 			-- On all archetype nodes in tree, execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 		do
 			do_subtree (ontology, agent do_if_archetype (?, action), Void)
 		end
 
-	do_if_archetype (ari: ARCH_REP_ITEM; action: PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
+	do_if_archetype (ari: ARCH_REP_ITEM; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
 			-- If `ari' is an archetype, perform `action' on it.
 		do
 			if attached {ARCH_REP_ARCHETYPE} ari as ara then
@@ -543,7 +542,7 @@ feature -- Traversal
 			end
 		end
 
-	do_archetype_lineage (ara: ARCH_REP_ARCHETYPE; action: PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
+	do_archetype_lineage (ara: ARCH_REP_ARCHETYPE; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
 			-- On all archetype nodes from top to , execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 		local
 			csr: ARCH_REP_ARCHETYPE
@@ -564,7 +563,7 @@ feature {NONE} -- Implementation
 		require
 			enter_action_attached: enter_action /= Void
 		do
-			if node /= Void then
+			if attached node then
 	 			debug("arch_dir")
 					shifter.extend ('%T')
 				end
@@ -619,57 +618,57 @@ feature {NONE} -- Implementation
 				from pkgs.start until pkgs.off loop
 					if pkgs.item_for_iteration.has_classes then
 						-- package name might be of form xxx.yyy.zzz ; we only want 'zzz'
-						pkg_name := terminal_package_name(pkgs.item_for_iteration.name).as_upper
+						pkg_name := package_base_name (pkgs.item_for_iteration.name).as_upper
 
-					create arm.make_package(pkg_name)
-					parent_node.put_child (arm)
+						create arm.make_package(pkg_name)
+						parent_node.put_child (arm)
 
-					create supp_list.make (0)
-					supp_list.compare_objects
-					from pkgs.item_for_iteration.classes.start until pkgs.item_for_iteration.classes.off loop
+						create supp_list.make (0)
+						supp_list.compare_objects
+						from pkgs.item_for_iteration.classes.start until pkgs.item_for_iteration.classes.off loop
 							supp_list.merge (rm_schemas_access.top_level_schemas.item_for_iteration.schema.class_definition (pkgs.item_for_iteration.classes.item).all_suppliers)
-						supp_list.extend (pkgs.item_for_iteration.classes.item)
-						pkgs.item_for_iteration.classes.forth
-					end
+							supp_list.extend (pkgs.item_for_iteration.classes.item)
+							pkgs.item_for_iteration.classes.forth
+						end
 
-					-- now create a list of classes inheriting from LOCATABLE that are among the suppliers of
-					-- the top-level class of the package; this gives the classes that could be archetyped in
-					-- that package
-					if rm_schemas_access.top_level_schemas.item_for_iteration.schema.has_class_definition ("LOCATABLE") then
-						from supp_list.start until supp_list.off loop
+						-- now create a list of classes inheriting from LOCATABLE that are among the suppliers of
+						-- the top-level class of the package; this gives the classes that could be archetyped in
+						-- that package
+						if rm_schemas_access.top_level_schemas.item_for_iteration.schema.has_class_definition ("LOCATABLE") then
+							from supp_list.start until supp_list.off loop
 								if not rm_schemas_access.top_level_schemas.item_for_iteration.schema.is_descendant_of (supp_list.item, "LOCATABLE") then
-								supp_list.remove
-							else
+									supp_list.remove
+								else
+									supp_list.forth
+								end
+							end
+						end
+
+						-- clean suppliers list so that only highest class in any inheritance subtree remains
+						supp_list.start
+						supp_list_copy := supp_list.duplicate (supp_list.count)
+						from supp_list.start until supp_list.off loop
+							removed := False
+							from supp_list_copy.start until supp_list_copy.off or removed loop
+								if rm_schemas_access.top_level_schemas.item_for_iteration.schema.is_descendant_of (supp_list.item, supp_list_copy.item) then
+									supp_list.remove
+									removed := True
+								end
+								supp_list_copy.forth
+							end
+
+							if not removed then
 								supp_list.forth
 							end
 						end
-					end
 
-					-- clean suppliers list so that only highest class in any inheritance subtree remains
-					supp_list.start
-					supp_list_copy := supp_list.duplicate (supp_list.count)
-					from supp_list.start until supp_list.off loop
-						removed := False
-						from supp_list_copy.start until supp_list_copy.off or removed loop
-								if rm_schemas_access.top_level_schemas.item_for_iteration.schema.is_descendant_of (supp_list.item, supp_list_copy.item) then
-								supp_list.remove
-								removed := True
-							end
-							supp_list_copy.forth
-						end
-
-						if not removed then
+						-- convert to BMM_CLASS_DESCRIPTORs
+						create supp_class_list.make(0)
+						from supp_list.start until supp_list.off loop
+							supp_class_list.extend (rm_schemas_access.top_level_schemas.item_for_iteration.schema.class_definition (supp_list.item))
 							supp_list.forth
 						end
-					end
-
-					-- convert to BMM_CLASS_DESCRIPTORs
-					create supp_class_list.make(0)
-					from supp_list.start until supp_list.off loop
-							supp_class_list.extend (rm_schemas_access.top_level_schemas.item_for_iteration.schema.class_definition (supp_list.item))
-						supp_list.forth
-					end
-					add_child_nodes (pkg_name, supp_class_list, arm)
+						add_child_nodes (pkg_name, supp_class_list, arm)
 					end
 					pkgs.forth
 				end

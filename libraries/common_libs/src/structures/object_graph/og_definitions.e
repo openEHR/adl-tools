@@ -1,54 +1,28 @@
 note
-	component:   "openEHR re-usable library"
-	description: "Abstraction of a package as a tree structure whose nodes can contain "
-	keywords:    "model, UML"
-
+	component:   "openEHR Archetype Project"
+	description: "Definitions for OG_ classes."
+	keywords:    "dADL, object graph"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2010 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class BMM_PACKAGE_DEFINITION
+class OG_DEFINITIONS
 
-inherit
-	DT_CONVERTIBLE
+feature -- Definitions
 
-feature -- Initialisation
+	movable_leader: STRING = "//"
 
-	make_dt (make_args: ARRAY[ANY])
-			-- make in a safe way for DT building purposes
-		do
-			create name.make (0)
-		end
+	segment_separator: CHARACTER = '/'
 
-feature -- Access
+	feature_call_separator: CHARACTER = '/'
 
-	name: attached STRING
-
-	packages: HASH_TABLE [BMM_PACKAGE_DEFINITION, STRING]
-		-- child packages
-
-	classes: ARRAYED_LIST [STRING]
-		-- list of classes in this package
-
-feature -- Status Report
-
-	has_classes: BOOLEAN
-		do
-			Result := attached classes
-		end
-
-feature {DT_OBJECT_CONVERTER} -- Conversion
-
-	persistent_attributes: ARRAYED_LIST[STRING]
-			-- list of attribute names to persist as DT structure
-			-- empty structure means all attributes
-		do
-		end
+	Container_attr_name: STRING = "_items"
+			-- name assumed for internal attribute of any container type represented in OG, DT or DADL structure
 
 end
 
@@ -67,10 +41,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is bmm_package_definition.e.
+--| The Original Code is og_definitions.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2010
+--| Portions created by the Initial Developer are Copyright (C) 2011
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

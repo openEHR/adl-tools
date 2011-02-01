@@ -18,29 +18,29 @@ inherit
 	ARCHETYPE_ONTOLOGY
 
 create
-	make_from_tree
+	make
 
 feature -- Access
 
-	term_definition(a_language, a_code: STRING): attached ARCHETYPE_TERM
+	term_definition (a_language, a_code: STRING): attached ARCHETYPE_TERM
 			-- retrieve the term definition in language `a_language' for code `a_code'
 		do
 			Result := term_definitions.item(a_language).item(a_code)
 		end
 
-	constraint_definition(a_language, a_code: STRING): attached ARCHETYPE_TERM
+	constraint_definition (a_language, a_code: STRING): attached ARCHETYPE_TERM
 			-- retrieve the constraint definition in language `a_language' for code `a_code'
 		do
 			Result := constraint_definitions.item(a_language).item(a_code)
 		end
 
-	term_binding(a_terminology, a_code: STRING): attached CODE_PHRASE
+	term_binding (a_terminology, a_code: STRING): attached CODE_PHRASE
 			-- retrieve the term binding from terminology `a_terminology' for code `a_code'
 		do
 			Result := term_bindings.item(a_terminology).item(a_code)
 		end
 
-	constraint_binding(a_terminology, a_code: STRING): attached URI
+	constraint_binding (a_terminology, a_code: STRING): attached URI
 			-- retrieve the constraint binding from terminology `a_terminology' for code `a_code'
 			-- in form of a string: "service::query"
 		do
@@ -55,13 +55,13 @@ feature -- Access
 
 feature -- Status Report
 
-	has_term_code(a_code: STRING): BOOLEAN
+	has_term_code (a_code: STRING): BOOLEAN
 			-- is `a_code' known in this ontology
 		do
 			Result := term_codes.has(a_code)
 		end
 
-	has_constraint_code(a_code: STRING): BOOLEAN
+	has_constraint_code (a_code: STRING): BOOLEAN
 			--
 		do
 			Result := constraint_codes.has(a_code)
@@ -79,7 +79,7 @@ feature -- Status Report
 			Result := constraint_definitions.has (a_language) and then constraint_definitions.item(a_language).has(a_code)
 		end
 
-	has_any_term_binding(a_code: STRING): BOOLEAN
+	has_any_term_binding (a_code: STRING): BOOLEAN
 			-- true if there is any term binding for code `a_code'
 		local
 			p: ARRAYED_LIST_CURSOR
@@ -93,13 +93,13 @@ feature -- Status Report
 			terminologies_available.go_to (p)
 		end
 
-	has_term_binding(a_terminology, a_code: STRING): BOOLEAN
+	has_term_binding (a_terminology, a_code: STRING): BOOLEAN
 			-- true if there is a term binding for code `a_code' in `a_terminology'
 		do
 			Result := term_bindings.has(a_terminology) and then term_bindings.item(a_terminology).has(a_code)
 		end
 
-	has_any_constraint_binding(a_code: STRING): BOOLEAN
+	has_any_constraint_binding (a_code: STRING): BOOLEAN
 			-- true if there is any constraint binding for code `a_code'
 		local
 			p: ARRAYED_LIST_CURSOR
@@ -113,7 +113,7 @@ feature -- Status Report
 			terminologies_available.go_to (p)
 		end
 
-	has_constraint_binding(a_terminology, a_code: STRING): BOOLEAN
+	has_constraint_binding (a_terminology, a_code: STRING): BOOLEAN
 			-- true if there is a term binding for code `a_code' in `a_terminology'
 		do
 			Result := constraint_bindings.has(a_terminology) and then constraint_bindings.item(a_terminology).has(a_code)
@@ -133,11 +133,11 @@ feature -- Status Report
 
 feature -- Modification
 
-	merge(other: FLAT_ARCHETYPE_ONTOLOGY)
+	merge (other: attached FLAT_ARCHETYPE_ONTOLOGY)
 			-- append all the codes from the other ontology to this one; used to create the ontology for flat-form archetypes
 			-- only languages that exist in the current ontology are merged from `other'
 		require
-			Other_valid: other /= Void and then semantically_conforms_to(other)
+			Other_valid: semantically_conforms_to(other)
 		local
 			lang_terms: HASH_TABLE [ARCHETYPE_TERM, STRING_8]
 			cons_bindings_1: HASH_TABLE [URI, STRING_8]
@@ -169,7 +169,7 @@ feature -- Modification
 				a_lang := other.constraint_definitions.key_for_iteration
 				if has_language (a_lang) then
 					if not constraint_definitions.has (a_lang) then
-						constraint_definitions.put(create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), a_lang)
+						constraint_definitions.put (create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), a_lang)
 					end
 					lang_terms := other.constraint_definitions.item_for_iteration
 					from lang_terms.start until lang_terms.off loop

@@ -36,7 +36,7 @@ feature {NONE} -- Implementation
 			Result.put("archetype",		SYM_ARCHETYPE)
 			Result.put("adl_version",	SYM_ADL_VERSION)
 			Result.put("controlled",	SYM_IS_CONTROLLED)
-			Result.put("generated",	SYM_IS_GENERATED)
+			Result.put("generated",	    SYM_IS_GENERATED)
 			Result.put("concept",		SYM_CONCEPT)
 			Result.put("specialize",	SYM_SPECIALIZE)
 			Result.put("language",		SYM_LANGUAGE)
@@ -45,6 +45,7 @@ feature {NONE} -- Implementation
 			Result.put("invariant",		SYM_INVARIANT)
 			Result.put("ontology",		SYM_ONTOLOGY)
 			Result.put("annotations",	SYM_ANNOTATIONS)
+			Result.put("component_ontologies",	SYM_COMPONENT_ONTOLOGIES)
 		end
 
 end

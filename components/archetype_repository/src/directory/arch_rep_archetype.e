@@ -2,9 +2,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Descriptor of an archetype in a directory of archetypes"
 	keywords:    "ADL, archetype"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2006-2010 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2006-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -855,7 +855,7 @@ feature {NONE} -- Compilation
 
 feature {ARCHETYPE_VALIDATOR} -- Modification
 
-	add_slot_ids (a_list: ARRAYED_SET[STRING]; a_slot_path: STRING)
+	add_slot_ids (a_list: attached ARRAYED_SET[STRING]; a_slot_path: attached STRING)
 			-- add list of matching archetypes to ids recorded for slot at a_slot_path
 		do
 			if slot_id_index = Void then

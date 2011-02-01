@@ -5,9 +5,9 @@ note
 				 specialised, its flat parent.
 		         ]"
 	keywords:    "archetype, comparison, constraint model"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2008-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -116,8 +116,8 @@ end
 			-- flatten RM onto archetype; must do this at the end, since otherwise the existence etc set due to
 			-- this would look like duplicates during the flattening process
 			if rm_flattening_on and include_rm then
-				create def_it.make(arch_output_flat.definition)
-				def_it.do_all(agent rm_node_flatten_enter, agent rm_node_flatten_exit)
+				create def_it.make (arch_output_flat.definition)
+				def_it.do_all (agent rm_node_flatten_enter, agent rm_node_flatten_exit)
 			end
 
 			-- now finalise template flattening
@@ -127,7 +127,7 @@ end
 				template_overlay_target_ontologies
 			end
 		ensure
-			arch_output_flat /= Void
+			attached arch_output_flat
 		end
 
 feature {NONE} -- Implementation

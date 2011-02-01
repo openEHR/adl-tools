@@ -129,16 +129,14 @@ feature -- Access
 
 feature -- Basic Operations
 
-	infix "+" (other: like Current): like Current
+	plus alias "+" (other: like Current): like Current
 			-- Addition.
-			-- FIXME: "infix" is not part of ECMA Eiffel. Use plus alias "+".
 		do
 			create Result.make (magnitude + other.magnitude, units, precision)
 		end
 
-	infix "-" (other: like Current): like Current
+	minus alias "-" (other: like Current): like Current
 			-- Subtraction.
-			-- FIXME: "infix" is not part of ECMA Eiffel. Use minus alias "-".
 		do
 			create Result.make (magnitude - other.magnitude, units, precision)
 		end

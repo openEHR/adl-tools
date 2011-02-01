@@ -2,9 +2,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Operational template abstraction"
 	keywords:    "archetype"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2010-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -28,11 +28,12 @@ feature -- Initialisation
 		do
 			precursor (a_diff, a_flat_parent)
 			create artefact_type.make_operational_template
+			create component_ontologies.make(0)
 		end
 
 feature -- Access
 
-	component_ontologies: HASH_TABLE [FLAT_ARCHETYPE_ONTOLOGY, STRING]
+	component_ontologies: attached HASH_TABLE [FLAT_ARCHETYPE_ONTOLOGY, STRING]
 			-- Compendium of flattened ontologies of all archetypes/templates used in this
 			-- archetype/template, keyed by identifier
 
@@ -42,10 +43,7 @@ feature -- Modification
 		require
 			Archetype_id_attached: not an_archetype_id.is_empty
 		do
-			if not attached component_ontologies then
-				create component_ontologies.make(0)
-			end
-			component_ontologies.put(an_ontology, an_archetype_id)
+			component_ontologies.put (an_ontology, an_archetype_id)
 		end
 
 feature -- Serialisation

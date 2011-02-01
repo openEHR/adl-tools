@@ -423,7 +423,7 @@ P[yY]?[mM]?[Ww]?[dD]? {
 					if dadl_parser.output.is_typed then
 						tid := dynamic_type_from_string(dadl_parser.output.rm_type_name)
 						if tid >= 0 then
-							c_domain_type ?= dadl_parser.output.as_object(tid)
+							c_domain_type ?= dadl_parser.output.as_object(tid, Void)
 							if c_domain_type /= Void then
 								last_token := V_C_DOMAIN_TYPE
 							else
