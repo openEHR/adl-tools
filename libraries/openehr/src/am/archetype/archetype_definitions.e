@@ -51,6 +51,7 @@ feature -- Definitions
 			Result.extend("1.4")
 			Result.extend("1.4.1")
 			Result.extend("1.5")
+			Result.extend("2.0")
 		end
 
 	Latest_adl_version: STRING
@@ -61,11 +62,11 @@ feature -- Definitions
 
 feature -- Comparison
 
-	valid_adl_version(a_ver: STRING): BOOLEAN
+	valid_adl_version (a_ver: attached STRING): BOOLEAN
 			-- set adl_version with a string containing only '.' and numbers,
 			-- not commencing or finishing in '.'
 		require
-			Valid_string: a_ver /= Void and then not a_ver.is_empty
+			Valid_string: not a_ver.is_empty
 		local
 			str: STRING
 		do

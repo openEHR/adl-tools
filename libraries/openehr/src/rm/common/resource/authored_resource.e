@@ -128,19 +128,19 @@ feature -- Status Report
 	has_translations: BOOLEAN
 			-- True if there are translations
 		do
-			Result := translations /= Void
+			Result := attached translations
 		end
 
 	has_revision_history: BOOLEAN
 			-- True if there is a revision_history
 		do
-			Result := revision_history /= Void
+			Result := attached revision_history
 		end
 
 	has_annotations: BOOLEAN
 			-- True if there is a revision_history
 		do
-			Result := annotations /= Void
+			Result := attached annotations
 		end
 
 	has_annotation_at_path (a_lang, a_path: attached STRING): BOOLEAN
@@ -158,7 +158,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_description(a_desc: attached RESOURCE_DESCRIPTION)
+	set_description (a_desc: attached RESOURCE_DESCRIPTION)
 		require
 			Description_valid: a_desc.languages.is_equal(languages_available)
 		do
@@ -235,7 +235,7 @@ feature -- Modification
 			end
 		end
 
-feature {ADL15_ENGINE} -- Construction
+feature {ADL15_ENGINE, ADL2_ENGINE} -- Modification
 
 	set_translations (a_trans: attached HASH_TABLE [TRANSLATION_DETAILS, STRING])
 			-- set translations
@@ -286,7 +286,7 @@ feature -- Serialisation
 			end
 		end
 
-feature {ADL15_ENGINE} -- Implementation
+feature {ADL15_ENGINE, ADL2_ENGINE} -- Implementation
 
 	orig_lang_translations: LANGUAGE_TRANSLATIONS
 			-- holds a copy of translations for purposes of DT object/dADL reading and writing
@@ -300,8 +300,7 @@ feature {NONE} -- Implementation
 invariant
 	Original_language_valid: code_set(Code_set_id_languages).has(original_language)
 	Revision_history_valid: is_controlled xor revision_history = Void
-	Current_revision_valid: current_revision /= Void and not is_controlled
-		implies current_revision.is_equal(Uncontrolled_revision_name)
+	Current_revision_valid: not is_controlled implies current_revision.is_equal(Uncontrolled_revision_name)
 	Translations_valid: has_translations implies (not translations.is_empty and
 		not translations.has(original_language.code_string))
 --	Description_valid: has_translations implies (description.details.for_all

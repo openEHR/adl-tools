@@ -97,9 +97,7 @@ feature -- Commands
 			format_valid: has_archetype_serialiser_format (a_format)
 		local
 			arch_ont_serialised, comp_onts_serialised: STRING
---			comp_onts: HASH_TABLE [STRING, STRING]
 			comp_onts_helper: COMPONENT_ONTOLOGIES_HELPER
---			comp_onts_dt: DT_COMPLEX_OBJECT_NODE
 		do
 			an_archetype.synchronise
 
@@ -128,13 +126,6 @@ feature -- Commands
 
 			-- OPT only: component_ontologies section
 			if attached {OPERATIONAL_TEMPLATE} an_archetype as opt then
---				create comp_onts.make (0)
---				from opt.component_ontologies.start until opt.component_ontologies.off loop
---					ontology_context.set_tree (opt.component_ontologies.item_for_iteration.representation)
---					ontology_context.serialise (a_format)
---					comp_onts.put (ontology_context.serialised, opt.component_ontologies.key_for_iteration)
---					opt.component_ontologies.forth
---				end
 				create comp_onts_helper.make
 				comp_onts_helper.set_component_ontologies (opt.component_ontologies)
 				ontology_context.set_tree (object_converter.object_to_dt (comp_onts_helper))
@@ -258,7 +249,6 @@ feature {NONE} -- Implementation
 											convert_ontology_syntax (ontology_context.tree)  -- perform any version upgrade conversions
 											if differential_source_flag then
 												if orig_lang_trans /= Void then
-												--	create differential_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, definition.node_id)
 													differential_ontology ?= ontology_context.tree.as_object (({DIFFERENTIAL_ARCHETYPE_ONTOLOGY}).type_id, <<orig_lang_trans.original_language.code_string, definition.node_id>>)
 												else
 --													create differential_ontology.make_from_tree (Void, ontology_context.tree, definition.node_id)
@@ -279,7 +269,6 @@ feature {NONE} -- Implementation
 												end
 											else
 												if orig_lang_trans /= Void then
-												--	create flat_ontology.make_from_tree (orig_lang_trans.original_language.code_string, ontology_context.tree, definition.node_id)
 													flat_ontology ?= ontology_context.tree.as_object (({FLAT_ARCHETYPE_ONTOLOGY}).type_id, <<orig_lang_trans.original_language.code_string, definition.node_id>>)
 												else
 --													create flat_ontology.make_from_tree (Void, ontology_context.tree, definition.node_id)
