@@ -246,7 +246,7 @@ feature -- Test procedures
 			dadl_engine.parse
 			if dadl_engine.parse_succeeded then
 				-- display tree in node explorer
-				new_obj := dadl_engine.tree.as_object_from_string (an_obj.generator)
+				new_obj := dadl_engine.tree.as_object_from_string (an_obj.generator, Void)
 				if attached new_obj then
 					append_status("%TSuccessfully created " + new_obj.generator + " object from DADL%N")
 				else
