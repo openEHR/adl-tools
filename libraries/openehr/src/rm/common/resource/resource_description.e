@@ -55,7 +55,7 @@ feature -- Initialisation
 			default_create
 		end
 
-	make(an_author_name, orig_lang: attached STRING)
+	make (an_author_name, orig_lang: attached STRING)
 			-- make an empty description
 		require
 			An_author_name_exists: not an_author_name.is_empty
@@ -262,13 +262,13 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			-- empty structure means all attributes
 		once
 			create Result.make(0)
+			Result.compare_objects
 			Result.extend ("original_author")
 			Result.extend ("other_contributors")
 			Result.extend ("resource_package_uri")
 			Result.extend ("details")
 			Result.extend ("lifecycle_state")
 			Result.extend ("other_details")
-			Result.compare_objects
 		end
 
 invariant

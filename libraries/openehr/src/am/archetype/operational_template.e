@@ -16,7 +16,7 @@ class OPERATIONAL_TEMPLATE
 inherit
 	FLAT_ARCHETYPE
 		redefine
-			make_specialised, synchronise
+			make_specialised, synchronise_to_tree, persistent_attributes
 		end
 
 create
@@ -48,7 +48,7 @@ feature -- Modification
 
 feature -- Serialisation
 
-	synchronise
+	synchronise_to_tree
 			-- synchronise object representation of archetype to forms suitable for
 			-- serialisation
 		do
@@ -57,6 +57,16 @@ feature -- Serialisation
 				component_ontologies.item_for_iteration.synchronise_to_tree
 				component_ontologies.forth
 			end
+		end
+
+feature {DT_OBJECT_CONVERTER} -- Conversion
+
+	persistent_attributes: ARRAYED_LIST [STRING]
+			-- list of attribute names to persist as DT structure
+			-- empty structure means all attributes
+		once
+			Result := precursor
+			Result.extend ("component_ontologies")
 		end
 
 end

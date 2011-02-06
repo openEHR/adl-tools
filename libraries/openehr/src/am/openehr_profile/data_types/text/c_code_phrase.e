@@ -324,10 +324,10 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			-- empty structure means all attributes
 		once
 			create Result.make (0)
+			Result.compare_objects
 			Result.extend ("terminology_id")
 			Result.extend ("code_list")
 			Result.extend ("assumed_value")
-			Result.compare_objects
 		end
 
 feature {NONE} -- Implementation

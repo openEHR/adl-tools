@@ -21,11 +21,9 @@ inherit
 
 feature -- Access
 
-	prototype_value: ANY
+	prototype_value: attached ANY
 			-- 	generate a default value from this constraint object
 		deferred
-		ensure
-			Result /= Void
 		end
 
     assumed_value: like prototype_value
@@ -38,9 +36,7 @@ feature -- Status Report
 		deferred
 		end
 
-	valid_value (a_value: like prototype_value): BOOLEAN
-		require
-			a_value /= Void
+	valid_value (a_value: attached like prototype_value): BOOLEAN
 		deferred
 		end
 

@@ -40,7 +40,7 @@ feature -- Initialisation
 			Rm_type_name_valid: not a_rm_type_name.is_empty
 			Archetype_id_valid: (create {ARCHETYPE_ID}).valid_id(an_archetype_id)
 		do
-			cco_make_identified(a_rm_type_name, an_archetype_id)
+			cco_make_identified (a_rm_type_name, an_archetype_id)
 		end
 
 	make_with_slot_id (a_rm_type_name, a_slot_node_id, an_archetype_id: attached STRING)

@@ -170,7 +170,7 @@ feature -- Commands
 
 			if in_file.exists then
 				in_file.open_read
-				create items_found.make (start_patterns.lower, start_patterns.upper)
+				create items_found.make_filled (False, start_patterns.lower, start_patterns.upper)
 				from i := 1 until i > max_lines or file_lines.count = start_patterns.count or in_file.end_of_file loop
 					in_file.read_line
 

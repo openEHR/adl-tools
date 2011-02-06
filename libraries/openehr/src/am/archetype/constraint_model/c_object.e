@@ -31,7 +31,7 @@ inherit
 
 feature -- Access
 
-	rm_type_name: STRING
+	rm_type_name: attached STRING
 			-- type name from reference model, of object to instantiate
 
 	node_id: STRING
@@ -43,6 +43,10 @@ feature -- Access
 	occurrences: MULTIPLICITY_INTERVAL
 
 	parent: C_ATTRIBUTE
+		note
+			option: transient
+		attribute
+		end
 
 	sibling_order: SIBLING_ORDER
 			-- set if this node should be ordered with respect to an inherited sibling; only settable
@@ -238,9 +242,13 @@ feature -- Output
 feature -- Representation
 
 	representation: attached OG_OBJECT
+		note
+			option: transient
+		attribute
+		end
 
 invariant
-	rm_type_name_valid: rm_type_name /= Void and then not rm_type_name.is_empty
+	rm_type_name_valid: not rm_type_name.is_empty
 	Occurrences_validity: occurrences /= Void implies valid_occurrences(occurrences)
 
 end

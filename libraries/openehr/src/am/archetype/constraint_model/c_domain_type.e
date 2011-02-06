@@ -85,6 +85,10 @@ feature -- Conversion
 feature -- Representation
 
 	representation: OG_OBJECT_LEAF
+		note
+			option: transient
+		attribute
+		end
 
 feature -- Synchronisation
 

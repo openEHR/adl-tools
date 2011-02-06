@@ -96,63 +96,11 @@ feature -- Commands
 			archetype_valid: an_archetype.is_valid
 			Language_valid: an_archetype.has_language (a_lang)
 			format_valid: has_archetype_serialiser_format (a_format)
-		local
-			arch_ont_serialised, comp_onts_serialised: STRING
-			comp_onts_helper: COMPONENT_ONTOLOGIES_HELPER
 		do
-			an_archetype.synchronise
-
-			-- language section
-			language_context.set_tree (an_archetype.orig_lang_translations.dt_representation)
-			language_context.serialise (a_format)
-
-			-- description section
-			description_context.set_tree (an_archetype.description.dt_representation)
-			description_context.serialise (a_format)
-
-			-- definition section
-			definition_context.set_tree (an_archetype.definition)
-			definition_context.serialise (an_archetype, a_format, a_lang)
-
-			-- rules section
-			if an_archetype.has_invariants then
-				invariant_context.set_tree (an_archetype.invariants)
-				invariant_context.serialise (a_format)
-			end
-
-			-- ontology section
-			ontology_context.set_tree (an_archetype.ontology.dt_representation)
-			ontology_context.serialise (a_format)
-			arch_ont_serialised := ontology_context.serialised
-
-			-- OPT only: component_ontologies section
-			if attached {OPERATIONAL_TEMPLATE} an_archetype as opt then
-				create comp_onts_helper.make
-				comp_onts_helper.set_component_ontologies (opt.component_ontologies)
-				ontology_context.set_tree (object_converter.object_to_dt (comp_onts_helper))
-				ontology_context.serialise (a_format)
-				comp_onts_serialised := ontology_context.serialised
-			end
-
-			-- annotations section
-			if an_archetype.has_annotations then
-				annotations_context.set_tree (an_archetype.annotations.dt_representation)
-				annotations_context.serialise (a_format)
-			end
-
-			-- perform the pasting together of pieces to make ADL archetype
-			create serialiser_mgr.make (an_archetype, a_format)
-			serialiser_mgr.serialise (
-				language_context.serialised,
-				description_context.serialised,
-				definition_context.serialised,
-				invariant_context.serialised,
-				arch_ont_serialised,
-				annotations_context.serialised,
-				comp_onts_serialised
-			)
-
-			Result := serialiser_mgr.last_result
+			an_archetype.synchronise_to_tree
+			archetype_context.set_tree (an_archetype.dt_representation)
+			archetype_context.serialise (a_format)
+			Result := archetype_context.serialised
 		end
 
 feature {NONE} -- Implementation

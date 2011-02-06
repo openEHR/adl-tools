@@ -209,6 +209,13 @@ feature -- Access (semantic)
 			differential_text_timestamp := differential_file_timestamp
 		end
 
+	differential_text_adl2: attached STRING
+		require
+			is_valid
+		do
+			Result := adl2_engine.serialise (differential_archetype, Archetype_native_syntax, current_archetype_language)
+		end
+
 	differential_text_timestamp: INTEGER
 			-- Modification timestamp of source file at last read
 
@@ -243,7 +250,14 @@ feature -- Access (semantic)
 		require
 			is_valid
 		do
-			Result := adl15_engine.serialise(flat_archetype, Archetype_native_syntax, current_archetype_language)
+			Result := adl15_engine.serialise (flat_archetype, Archetype_native_syntax, current_archetype_language)
+		end
+
+	flat_text_adl2: attached STRING
+		require
+			is_valid
+		do
+			Result := adl2_engine.serialise (flat_archetype, Archetype_native_syntax, current_archetype_language)
 		end
 
 	legacy_flat_path: STRING
@@ -890,7 +904,7 @@ feature -- Modification
 		require
 			is_valid
 		do
-			file_repository.save_text_to_file (differential_path, adl15_engine.serialise(differential_archetype, Archetype_native_syntax, current_archetype_language))
+			file_repository.save_text_to_file (differential_path, adl15_engine.serialise (differential_archetype, Archetype_native_syntax, current_archetype_language))
 		end
 
 	save_differential_as (a_full_path, serialise_format: attached STRING)

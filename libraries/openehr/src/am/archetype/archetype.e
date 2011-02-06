@@ -14,6 +14,11 @@ note
 deferred class ARCHETYPE
 
 inherit
+	DT_CONVERTIBLE
+		redefine
+			synchronise_to_tree --, default_create, finalise_dt,
+		end
+
 	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all;
@@ -27,11 +32,16 @@ inherit
 		end
 
 	AUTHORED_RESOURCE
-		rename
-			synchronise as synchronise_authored_resource
+		redefine
+			synchronise_adl15
 		end
 
 feature -- Initialisation
+
+	make_dt (make_args: ARRAY[ANY])
+			-- basic make routine to guarantee validity on creation
+		do
+		end
 
 	make (an_artefact_type: attached ARTEFACT_TYPE;
 			an_id: like archetype_id;
@@ -440,11 +450,20 @@ feature -- Output
 
 feature -- Serialisation
 
-	synchronise
+	synchronise_to_tree
+			-- synchronise to parse tree representation
+		do
+			create dt_representation.make_from_object (Current)
+			ontology.synchronise_to_tree
+		end
+
+feature {ADL15_ENGINE} -- ADL 1.5 Serialisation
+
+	synchronise_adl15
 			-- synchronise object representation of archetype to forms suitable for
 			-- serialisation
 		do
-			synchronise_authored_resource
+			precursor
 			ontology.synchronise_to_tree
 		end
 
@@ -551,6 +570,30 @@ feature {NONE} -- Implementation
 				end
 				path_list.forth
 			end
+		end
+
+feature {DT_OBJECT_CONVERTER} -- Conversion
+
+	persistent_attributes: ARRAYED_LIST [STRING]
+			-- list of attribute names to persist as DT structure
+			-- empty structure means all attributes
+		once
+			create Result.make(0)
+			Result.compare_objects
+			Result.extend ("artefact_type")
+			Result.extend ("adl_version")
+			Result.extend ("is_generated")
+			Result.extend ("is_controlled")
+			Result.extend ("archetype_id")
+			Result.extend ("parent_archetype_id")
+			Result.extend ("original_language")
+			Result.extend ("translations")
+			Result.extend ("description")
+			Result.extend ("definition")
+			Result.extend ("invariants")
+			Result.extend ("ontology")
+			Result.extend ("annotations")
+			Result.extend ("revision_history")
 		end
 
 invariant

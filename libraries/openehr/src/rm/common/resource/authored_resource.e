@@ -165,7 +165,7 @@ feature -- Modification
 			description := a_desc
 		end
 
-	add_default_translation(a_lang_tag: attached STRING)
+	add_default_translation (a_lang_tag: attached STRING)
 			-- add a blank translation object for a_lang_tag
 		require
 			Lang_tag_valid: valid_language_tag(a_lang_tag)
@@ -178,7 +178,7 @@ feature -- Modification
 			add_translation (a_trans)
 		end
 
-	add_translation(a_trans: attached TRANSLATION_DETAILS)
+	add_translation (a_trans: attached TRANSLATION_DETAILS)
 			-- add a translation for a_lang
 		require
 			Translation_valid: not languages_available.has(a_trans.language.code_string)
@@ -192,7 +192,7 @@ feature -- Modification
 			languages_available.has(a_trans.language.code_string)
 		end
 
-	add_language_tag(a_lang_tag: attached STRING)
+	add_language_tag (a_lang_tag: attached STRING)
 			-- add a new translation language to the resource, creating appropriate copies
 		require
 			Lang_tag_valid: valid_language_tag(a_lang_tag)
@@ -235,15 +235,6 @@ feature -- Modification
 			end
 		end
 
-feature {ADL15_ENGINE, ADL2_ENGINE} -- Modification
-
-	set_translations (a_trans: attached HASH_TABLE [TRANSLATION_DETAILS, STRING])
-			-- set translations
-		do
-			translations := a_trans
-			languages_available_cache := Void
-		end
-
 feature -- Status setting
 
 	set_is_controlled
@@ -267,9 +258,9 @@ feature -- Output
 			end
 		end
 
-feature -- Serialisation
+feature {ADL15_ENGINE, ADL2_ENGINE} -- Implementation
 
-	synchronise
+	synchronise_adl15
 			-- synchronise object representation of resource to forms suitable for serialisation
 		do
 			-- FIXME - translations are handled like this until ADL2, when the
@@ -286,16 +277,29 @@ feature -- Serialisation
 			end
 		end
 
-feature {ADL15_ENGINE, ADL2_ENGINE} -- Implementation
+	set_translations (a_trans: attached HASH_TABLE [TRANSLATION_DETAILS, STRING])
+			-- set translations
+		do
+			translations := a_trans
+			languages_available_cache := Void
+		end
 
 	orig_lang_translations: LANGUAGE_TRANSLATIONS
 			-- holds a copy of translations for purposes of DT object/dADL reading and writing
+		note
+			option: transient
+		attribute
+		end
 
 feature {NONE} -- Implementation
 
 	languages_available_cache: ARRAYED_SET [STRING]
 			-- Total list of languages available in this resource, derived from
 			-- original_language and translations. Guaranteed to at least include original_language
+		note
+			option: transient
+		attribute
+		end
 
 invariant
 	Original_language_valid: code_set(Code_set_id_languages).has(original_language)

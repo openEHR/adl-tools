@@ -44,10 +44,10 @@ feature -- Initialisation
 			create children.make (0)
 		end
 
-	make_single(a_name: STRING; an_existence: MULTIPLICITY_INTERVAL)
+	make_single (a_name: attached STRING; an_existence: MULTIPLICITY_INTERVAL)
 			-- make representing a single-valued attribute with attr name and optional existence
 		require
-			a_name_valid: a_name /= Void and then not a_name.is_empty
+			a_name_valid: not a_name.is_empty
 		do
 			default_create
 			create representation.make_single (a_name, Current)
@@ -57,10 +57,10 @@ feature -- Initialisation
 			Existence_set: existence = an_existence
 		end
 
-	make_multiple(a_name: STRING; an_existence: MULTIPLICITY_INTERVAL; a_cardinality: CARDINALITY)
+	make_multiple (a_name: attached STRING; an_existence: MULTIPLICITY_INTERVAL; a_cardinality: CARDINALITY)
 			-- make representing a container attribute with attr name & optional existence and cardinality
 		require
-			a_name_valid: a_name /= Void and then not a_name.is_empty
+			a_name_valid: not a_name.is_empty
 		do
 			default_create
 			create representation.make_multiple (a_name, Current)
@@ -141,6 +141,10 @@ feature -- Access
 		end
 
 	parent: C_COMPLEX_OBJECT
+		note
+			option: transient
+		attribute
+		end
 
 	child_count: INTEGER
 			-- number of children; 0 if any_allowed is True
@@ -210,16 +214,12 @@ feature -- Access
 			Result_exists: Result /= Void
 		end
 
-	child_with_rm_type_name (an_rm_type: STRING): C_OBJECT
+	child_with_rm_type_name (an_rm_type: attached STRING): C_OBJECT
 			-- return a child node with rm_type_name = `an_rm_type'
 		require
-			Rm_type_valid: an_rm_type /= void and then has_child_with_rm_type_name(an_rm_type)
+			Rm_type_valid: has_child_with_rm_type_name(an_rm_type)
 		do
-			from
-				children.start
-			until
-				children.off or children.item.rm_type_name.is_equal (an_rm_type)
-			loop
+			from children.start until children.off or children.item.rm_type_name.is_equal (an_rm_type) loop
 				children.forth
 			end
 			Result := children.item
@@ -290,24 +290,20 @@ feature -- Status Report
 			Result := differential_path /= Void
 		end
 
-	has_child_with_id (a_node_id: STRING): BOOLEAN
+	has_child_with_id (a_node_id: attached STRING): BOOLEAN
 			-- has a child node with id a_node_id
 		require
-			Node_id_valid: a_node_id /= void and then not a_node_id.is_empty
+			Node_id_valid: not a_node_id.is_empty
 		do
 			Result := representation.has_child_with_id (a_node_id)
 		end
 
-	has_child_with_rm_type_name (a_type_name: STRING): BOOLEAN
+	has_child_with_rm_type_name (a_type_name: attached STRING): BOOLEAN
 			-- has a child node with rm_type_name = `a_type_name'
 		require
-			Type_name_valid: a_type_name /= void and then not a_type_name.is_empty
+			Type_name_valid: not a_type_name.is_empty
 		do
-			from
-				children.start
-			until
-				children.off or children.item.rm_type_name.is_equal (a_type_name)
-			loop
+			from children.start until children.off or children.item.rm_type_name.is_equal (a_type_name) loop
 				children.forth
 			end
 			Result := not children.off
@@ -359,13 +355,13 @@ feature -- Comparison
 
 feature -- Modification
 
-	set_existence(an_interval: attached MULTIPLICITY_INTERVAL)
+	set_existence (an_interval: attached MULTIPLICITY_INTERVAL)
 			-- set existence constraint on this relation - applies whether single or multiple
 		do
 			existence := an_interval
 		end
 
-	set_cardinality(a_cardinality: attached CARDINALITY)
+	set_cardinality (a_cardinality: attached CARDINALITY)
 			--
 		do
 			cardinality := a_cardinality
@@ -385,12 +381,12 @@ feature -- Modification
 			existence = Void
 		end
 
-	set_differential_path(a_path: attached STRING)
+	set_differential_path (a_path: attached STRING)
 			-- set `differential_path'
 		require
 			Path_valid: not a_path.is_empty
 		do
-			representation.set_differential_path(create {OG_PATH}.make_from_string (a_path))
+			representation.set_differential_path (create {OG_PATH}.make_from_string (a_path))
 		end
 
 	clear_differential_path
@@ -404,7 +400,7 @@ feature -- Modification
 		require
 			not has_differential_path
 		do
-			representation.set_differential_path(representation.parent.path)
+			representation.set_differential_path (representation.parent.path)
 			if not parent.is_root then
 				reparent_to_root
 			end
@@ -583,6 +579,10 @@ feature -- Validation
 feature -- Representation
 
 	representation: attached OG_ATTRIBUTE_NODE
+		note
+			option: transient
+		attribute
+		end
 
 feature -- Serialisation
 

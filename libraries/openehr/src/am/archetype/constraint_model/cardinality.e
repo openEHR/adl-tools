@@ -18,10 +18,10 @@ create
 
 feature -- Initialisation
 
-	make(an_interval: MULTIPLICITY_INTERVAL)
+	make (an_interval: attached MULTIPLICITY_INTERVAL)
 			--
 		require
-			Interval_exists: an_interval /= Void and then not an_interval.lower_unbounded
+			Interval_exists: not an_interval.lower_unbounded
 		do
 			interval := an_interval
 			is_ordered := True
@@ -88,7 +88,7 @@ feature -- Modification
 
 feature -- Output
 
-	as_string: STRING
+	as_string: attached STRING
 			-- output as a string, excluding default items
 		do
 			create Result.make(0)

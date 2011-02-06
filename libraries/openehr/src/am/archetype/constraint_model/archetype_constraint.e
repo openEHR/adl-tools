@@ -25,6 +25,10 @@ inherit
 feature -- Access
 
 	parent: ARCHETYPE_CONSTRAINT
+		note
+			option: transient
+		attribute
+		end
 
 	path: STRING
 			-- path to this object in the tree with respect to root
@@ -52,6 +56,10 @@ feature -- Source Control
 			-- status of this node taking into consideration effective_specialisation_status of
 			-- all sub-nodes. Used to roll up nodes on visualisation, and also to decide which
 			-- subtree to remove to convert an archetype to differential form
+		note
+			option: transient
+		attribute
+		end
 
 	set_rolled_up_specialisation_status (a_status: SPECIALISATION_STATUS)
 		require
@@ -66,6 +74,10 @@ feature -- Status report
 			-- flag to indicate this node is in a specialised archetype and makes no changes
 			-- to the corresponding node in the flat parent, and therefore, this node can be
 			-- compressed .
+		note
+			option: transient
+		attribute
+		end
 
 	is_leaf: BOOLEAN
 			-- True if this node is a terminal node
@@ -124,6 +136,10 @@ feature {ARCHETYPE_CONSTRAINT} -- Modification
 feature -- Representation
 
 	representation: attached OG_ITEM
+		note
+			option: transient
+		attribute
+		end
 
 feature {OG_ITEM} -- Implementation
 

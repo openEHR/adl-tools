@@ -138,6 +138,7 @@ feature {NONE} -- Initialization
 			set_archetype_notebook_source_tab_text
 
 			source_rich_text.set_tab_width ((source_rich_text.tab_width/2).floor)  -- this is in pixels, and assumes 7-pixel wide chars
+			adl2_rich_text.set_tab_width ((source_rich_text.tab_width/2).floor)
 
 			if app_x_position > Sane_screen_coord and app_y_position > Sane_screen_coord then
 				set_position (app_x_position, app_y_position)
@@ -1326,6 +1327,7 @@ feature {NONE} -- Implementation
 			annotations_control.populate
 			ontology_controls.populate
 			populate_source_text
+			populate_adl2_text
 		end
 
 	populate_source_text
@@ -1349,6 +1351,26 @@ feature {NONE} -- Implementation
 				end
 			else
 				source_rich_text.remove_text
+			end
+		end
+
+	populate_adl2_text
+			-- Display the selected archetype's differential or flat text in `adl2_rich_text', in ADL2 format.
+		require
+			has_current_profile
+		do
+			if attached {ARCH_REP_ARCHETYPE} current_arch_dir.selected_archetype as ara then
+				if ara.is_valid then
+					if differential_view then
+						adl2_rich_text.set_text (ara.differential_text_adl2)
+					else
+						adl2_rich_text.set_text (ara.flat_text_adl2)
+					end
+				else
+					adl2_rich_text.set_text (create_message_line ("compiler_no_source_text", <<>>))
+				end
+			else
+				adl2_rich_text.remove_text
 			end
 		end
 
