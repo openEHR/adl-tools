@@ -25,7 +25,17 @@ inherit
 
 	SHARED_RESOURCES
 		export
-			{NONE} all
+			{ANY} os_directory_separator
+		end
+
+	INI_CONFIG_FILE_ACCESS
+		rename
+			make as config_file_make,
+			file_name as config_file_name,
+			writable as config_file_writable,
+			is_valid as config_file_is_valid
+		undefine
+			execution_environment
 		end
 
 	SHARED_EVENT_LOG
