@@ -86,6 +86,14 @@
 
 		<p>You can now use <a href="images/profile_combo.png">the profile combo selector above the archetype explorer</a> to switch between the profiles. The remaining sections below describe how to see the ADL/AOM 1.5 changes using the archetypes you have configured above.</p>
 
+		<a name="arch_ed_config" /><h3>Using the Archetype Editor with the AWB</h3>
+		 <p>The <a href="http://www.openehr.org/svn/knowledge_tools_dotnet/TRUNK/ArchetypeEditor/Help/index.html">Archetype Editor</a> can be configured as the standard editor for individual archetypes, when the 'Edit' button is selected. All that is required is that the Archetype Editor is installed, and it is associated with files of the '.adl' extension. Then the following configuration variable can be set to use the standard launch command for a file of the given extension:</p>
+<pre>
+commands = &lt;
+	editor_app_command = &lt;"cmd /q /d /c start \"\" /b"&gt;
+&gt;
+</pre>
+		<p>With this set, if the user clicks on the 'Edit' button for any archetype for which there is a legacy (.adl, i.e. pre-ADL 1.5) expression, then this command will be run for that file. If another tool were to be associated with the .adl extension, it would be run instead.</p>
 		<a name="cfg_file" /><h2>The .cfg file</h2>
 		<p>The result of the above configuration creates entries in the application configuration file, which will be in one of the following places, depending on your operating system:</p>
 		<ul>
