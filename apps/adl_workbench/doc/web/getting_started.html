@@ -25,11 +25,12 @@
       </table>
       <div id="wrapper">
         <div id="content">
-          <h2>Setting RM Schemas</h2>
+          <h2>Some Basic Configuration</h2>
+          <h3>Setting RM Schemas</h3>
           <p>You may want to check which Reference Model schemas are enabled initially. Choose RM Schemas &gt; Configure Schemas to do this. The dialog looks as follows.</p>
           <a href="images/options_rm_schema_config.png"><img border="0" alt="Options dialog" src="images/tn_options_rm_schema_config.jpg" width="200" height="187"/> </a>
 		<p>You can check all RM schemas that apply to archetypes in any repository you might define. The only time you would leave a schema unchecked is if you have more than one version of the same schema and you want to choose a specific one. Several RM schemas are provided with the AWB, which are copies of the controlled versions found in the <i>open</i>EHR knowledge2 SVN repository. See the <a href="tool_configuration.html#rm_schema_configuration">Tool Configuration section</a> for details on configuring RM schemas.</p>
-          <h2>Setting and changing repository profiles</h2>
+          <h3>Setting and changing repository profiles</h3>
           <p>The first time you start the tool if you are a new user, you will be asked for a repository. The screen will look like this:<br/></p>
           <a href="images/startup_repository.png">
             <img border="0" alt="Repository dialog at startup" src="images/tn_startup_repository.jpg" width="200" height="151"/> </a>
@@ -38,7 +39,7 @@
           <p>
             <b>New users and anyone wanting to experiment with ADL/AOM 1.5 are advised to follow the setup described <a href="learning_adl_15.html">here</a>. This is the setup the tool authors most often use!</b>
           </p>
-          <h2>Tool overview</h2>
+          <h2>Using the Tool</h2>
           <p>The AWB has two tools, the archetype viewer and the 'tester'. These are available via the tabs on the right top side of the tool. The Viewer looks as follows.</p>
           <a href="images/overview.png">
             <img border="0" alt="Overview" src="images/tn_overview.jpg" width="200" height="159"/> </a>
@@ -65,6 +66,8 @@
 		   <li>the <em>Annotations view</em>: a structured view of archetype annotations, for those archetypes that include them;</li>
 	   <li>the <em>ADL view</em>: a view showing the ADL text in either the source differential form or of the generated flat archetype.</li>
 		   </ul>
+          <h3>Using the ADL Workbench with the Archetype Editor</h3>
+		  <p>You can use the ADL Workbench as a convenient way to launch the <a href="http://www.openehr.org/svn/knowledge_tools_dotnet/TRUNK/ArchetypeEditor/Help/index.html">Archetype Editor</a> on individual archetypes. The AWB provides an easy way to see all archetypes, as well as performing ADL 1.5 validation, not currently available in the Archetype Editor. Firstly, download the <a href="http://www.openehr.org/svn/knowledge_tools_dotnet/TRUNK/ArchetypeEditor/Help/index.html">Archetype Editor</a>, and then configure it as the editor for archetypes, as described <a href = "tool_configuration.html#arch_ed_config">here</a>.</p>
           <h2>Artefact overview</h2>
           <p>The ADL Workbench is designed to parse and validate archetypes. Technically speaking, 'archetypes' are any artefact conforming to the <i>open</i>EHR Archetype Definition Language (ADL) and Archetype Object Model (AOM) specifications (see lower part of the <a href="http://www.openehr.org/svn/specification/TRUNK/publishing/roadmap.html">specifications page</a>), or the older EN13606-2 specification, which is a snapshot of the <i>open</i>EHR AOM 1.4 specification. The latest ADL 1.5 specification defines 4 logical kinds of artefact. These include three kinds of archetype, and the 'operational template'. The latter is generated from a template, and is used as the basis for all further downstream transformations. The various artefact types and their file formats are shown below.</p>
           <div style="TEXT-ALIGN: left; PADDING-BOTTOM: 0px; TEXT-INDENT: 0px; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px">
