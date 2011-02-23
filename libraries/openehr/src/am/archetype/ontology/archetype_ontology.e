@@ -783,7 +783,6 @@ feature -- Finalisation
 		local
 			code: STRING
 			done: BOOLEAN
-			strings: ARRAYED_LIST [STRING]
 		do
 			-- populate term code list & set codes in ARCHETYPE_TERM objects
 			from term_definitions.start until term_definitions.off loop
@@ -820,25 +819,7 @@ feature -- Finalisation
 
 			-- populate term attribute names (assumed to be the same for terms and constraints)
 			term_attribute_names := (create {ARCHETYPE_TERM}.default_create).Keys
-
-			-- Use object comparison on several string collections, but we have to clear them while doing so.
-			create strings.make (0)
-			strings.append (terminologies_available)
-			terminologies_available.wipe_out
 			terminologies_available.compare_objects
-			terminologies_available.append (strings)
-
-			create strings.make (0)
-			strings.append (term_codes)
-			term_codes.wipe_out
-			term_codes.compare_objects
-			term_codes.append (strings)
-
-			create strings.make (0)
-			strings.append (constraint_codes)
-			constraint_codes.wipe_out
-			constraint_codes.compare_objects
-			constraint_codes.append (strings)
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
