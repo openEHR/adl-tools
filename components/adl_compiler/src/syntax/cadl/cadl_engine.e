@@ -104,8 +104,6 @@ feature -- Commands
 			if not parser.syntax_error then
 				tree := parser.output
 			end
-		ensure
-			parse_succeeded or else attached tree
 		end
 
 	serialise (an_archetype: attached ARCHETYPE; a_format, a_lang: attached STRING)
