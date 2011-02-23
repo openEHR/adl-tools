@@ -215,7 +215,7 @@ feature -- Modification
 		do
 			representation.set_generic
 		ensure
-			is_multiple
+			is_generic
 		end
 
 	put_child(a_node: attached DT_OBJECT_ITEM)
