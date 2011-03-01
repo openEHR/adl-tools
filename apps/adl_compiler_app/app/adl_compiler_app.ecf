@@ -64,6 +64,8 @@
 					<platform excluded_value="windows"/>
 				</condition>
 			</file_rule>
+			<visible class="MULTIPLICITY_INTERVAL"/>
+			<visible class="INTERVAL"/>
 		</cluster>
 		<cluster name="openehr" location="..\..\..\libraries\openehr\src\" recursive="true">
 			<option>
@@ -77,6 +79,8 @@
 			<visible class="C_ATTRIBUTE"/>
 			<visible class="C_PRIMITIVE_OBJECT"/>
 			<visible class="C_PRIMITIVE"/>
+			<visible class="ARCHETYPE_CONSTRAINT"/>
+			<visible class="C_OBJECT"/>
 		</cluster>
 		<cluster name="reference_model_checker" location="..\..\..\components\reference_model_checker\src\" recursive="true"/>
 		<cluster name="version" location="..\..\..\libraries\version\" recursive="true"/>

@@ -29,7 +29,8 @@ feature {NONE} -- Initialization
 
 			archetype_names_in_repo := archetype_names
 			--compile_archetype (archetype_names_in_repo[2])
-			compile_and_test_visit_archetype (archetype_names_in_repo[2])
+			io.put_string (archetype_names_in_repo[3])
+			compile_and_test_visit_archetype (archetype_names_in_repo[3])
 		end
 
 feature		--Access
@@ -128,7 +129,7 @@ feature --process archetypes
 	require
 		rm_schema_dir_initialized: app_root.rm_schema_directory_location /= Void
 		error_db_dir_initialized: app_root.error_db_directory_location /= Void
-		cpp_object_initialized: cpp_visitor /= Void
+		--cpp_object_initialized: cpp_visitor /= Void
 	local
 		flattened_archetype: FLAT_ARCHETYPE --TODO: will return this in the next version of this function, only for debugging purposes for now
 		test_visitor: AOM_VISITOR
@@ -144,6 +145,7 @@ feature --process archetypes
 				--test_visitor.initialise (flattened_archetype.ontology)
 				create visitor_iterator.make (flattened_archetype.definition, test_visitor)
 				visitor_iterator.do_all
+				io.put_string (test_visitor.root_tag)
 			end
 			io.put_string ("done with visitor")
 		else

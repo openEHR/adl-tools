@@ -253,6 +253,12 @@ feature
 			-- enter an C_PRIMITIVE_OBJECT
 		do
 			logger.log ("RM Type Name: " + a_node.rm_type_name + "%N")
+			print("cprimitiveobject node id : " + a_node.node_id + "%N")
+			if a_node.occurrences = Void then
+				print("occurences is null in cprimitiveobject%N")
+			else
+				print("occurences not null in cprimitiveobject%N")
+			end
 			call_start_c_primitive_object_on_cpp_obj (cpp_visitor, $a_node, depth)
 		end
 
