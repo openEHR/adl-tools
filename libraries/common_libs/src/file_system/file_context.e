@@ -171,6 +171,7 @@ feature -- Commands
 			if in_file.exists then
 				in_file.open_read
 				create items_found.make_filled (False, start_patterns.lower, start_patterns.upper)
+
 				from i := 1 until i > max_lines or file_lines.count = start_patterns.count or in_file.end_of_file loop
 					in_file.read_line
 
@@ -190,10 +191,11 @@ feature -- Commands
 								file_lines.last.prune_all('%R')
 								items_found[j] := True
 							end
-						i := i + 1
+							i := i + 1
+						end
 					end
 				end
-				end
+
 				in_file.close
 				if file_lines.count >= 1 then
 					clean_utf(file_lines[1])
