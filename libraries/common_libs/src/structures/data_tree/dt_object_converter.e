@@ -5,9 +5,9 @@ note
 				 model reported in last_op_fail and fail_reason.
 				 ]"
 	keywords:    "dADL"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2005-2010 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2005-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
