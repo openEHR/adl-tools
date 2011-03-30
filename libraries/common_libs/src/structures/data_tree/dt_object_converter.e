@@ -488,12 +488,12 @@ end
 													-- FIXME: the code below deals with conversion of an atom to a list OR a ISO8601 date/tme
 													-- type to an Eiffel type, but not both at once yet!!!
 
-													if is_eiffel_container_type(fld_type_id) then
+													if is_eiffel_container_type (fld_type_id) then
 														set_primitive_sequence_field (i, Result, fld_type_id, a_dt_obj_leaf.value)
 													elseif attached type_converted(a_dt_obj_leaf.value) as tc_val then
 														set_reference_field (i, Result, tc_val)
 													else
-														post_error(Current, "populate_object_from_dt", "atomic_type_mismatch",
+														post_error (Current, "populate_object_from_dt", "atomic_type_mismatch",
 															<<type_name_of_type(fld_type_id), type_name_of_type(dyn_dt_val_type_id)>>
 														)
 													end
@@ -573,47 +573,55 @@ feature {NONE} -- Conversion to object
 			set_reference_field (i, object, v)
 		end
 
-	set_primitive_sequence_field (i: INTEGER; object: attached ANY; fld_type:INTEGER; dt_seq_value: ANY)
-			-- set i-th field of object which is some kind of sequence of a DT primitive type,
-			-- from a value which is either an ARRAYED_LIST or a single object like an INTEGER,
-			-- which we want to turn into the member of a new sequence
+	set_primitive_sequence_field (i: INTEGER; object: attached ANY; eif_fld_type:INTEGER; dt_seq_value: ANY)
+			-- set i-th field of an Eiffel object which is some kind of sequence of a DT primitive type,
+			-- from a DT value which is either an ARRAYED_LIST or a single object like an INTEGER,
+			-- which we want to turn into the member of a new sequence. The latter case caters for
+			-- converting single values in DADL syntax to SEQUENCE objects in Eiffel, for lists with
+			-- only one member.
 		require
-			fld_type_valid: fld_type > 0
+			eif_fld_type_valid: eif_fld_type > 0
 			index_large_enough: i >= 1
 		local
 			converting_element_types: BOOLEAN
+			dt_seq_content_type_id: INTEGER
 		do
-			if dynamic_type(dt_seq_value) = fld_type then
+			if dynamic_type (dt_seq_value) = eif_fld_type then
 				set_reference_field (i, object, dt_seq_value)
 			else
 debug ("DT")
 	io.put_string("DT_OBJECT_CONVERTER.set_primitive_sequence_field: about to call new_instance_of(" +
-		type_name_of_type(fld_type) + ")%N")
+		type_name_of_type (eif_fld_type) + ")%N")
 end
-				set_reference_field (i, object, new_instance_of(fld_type))
+				set_reference_field (i, object, new_instance_of (eif_fld_type))
 debug ("DT")
 	io.put_string("%T(return)%N")
 end
 
 				-- if it was an arrayed_list, call its make routine to get it into a decent state
-				if attached {ARRAYED_LIST[ANY]} field(i, object) as arr_list_field then
+				if attached {ARRAYED_LIST[ANY]} field (i, object) as arr_list_field then
 					arr_list_field.make(0)
 				else
 					-- FIXME should do something about other types
 				end
 
 				-- now copy the values in
-				if attached {SEQUENCE[ANY]} field(i, object) as seq then
-					-- check if element type in DT list conform to that in object list; if not turn on flag to convert types
-					if not type_conforms_to (generic_dynamic_type (dt_seq_value, 1), generic_dynamic_type (seq, 1))  then
+				if attached {SEQUENCE[ANY]} field (i, object) as eif_seq then
+					-- check if element type in DT list conforms to that in object list; if not turn on flag to convert types
+					if generic_count (dt_seq_value) > 0 then
+						dt_seq_content_type_id := generic_dynamic_type (dt_seq_value, 1)
+					else
+						dt_seq_content_type_id := dynamic_type (dt_seq_value)
+					end
+					if not type_conforms_to (dt_seq_content_type_id, generic_dynamic_type (eif_seq, 1))  then
 						converting_element_types := True
 					end
 					if attached {ARRAYED_LIST[ANY]} dt_seq_value as dt_seq_arr_list then
 						from dt_seq_arr_list.start until dt_seq_arr_list.off loop
 							if converting_element_types then
-								seq.extend (type_converted (dt_seq_arr_list.item))
+								eif_seq.extend (type_converted (dt_seq_arr_list.item))
 							else
-								seq.extend (dt_seq_arr_list.item)
+								eif_seq.extend (dt_seq_arr_list.item)
 							end
 							dt_seq_arr_list.forth
 						end
@@ -624,9 +632,9 @@ end
 						-- show it is a list, but this is often forgotten
 						-- So...we do a conversion
 						if converting_element_types then
-							seq.extend (type_converted (dt_seq_value))
+							eif_seq.extend (type_converted (dt_seq_value))
 						else
-							seq.extend (dt_seq_value)
+							eif_seq.extend (dt_seq_value)
 						end
 					end
 				end
