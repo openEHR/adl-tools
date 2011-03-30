@@ -177,40 +177,39 @@ attr_id: V_ATTRIBUTE_IDENTIFIER
 		{
 			-- create first anonymous object
 			if complex_object_nodes.is_empty then
-				debug("dADL_parse")
-					io.put_string(indent + "attr_id: create complex_object_node.make_anonymous%N")
-					io.put_string(indent + "attr_id: PUSH Object node%N")
-					indent.append("%T")
-				end
+debug("dADL_parse")
+	io.put_string(indent + "attr_id: create complex_object_node.make_anonymous%N")
+	io.put_string(indent + "attr_id: PUSH Object node%N")
+	indent.append("%T")
+end
 				create complex_object_node.make_anonymous
 				complex_object_nodes.extend(complex_object_node)
-			end
-
-			debug("dADL_parse")
-				io.put_string(indent + "attr_id: create_attr_node.make_single(<<" + $1 + ">>)%N")
 			end
 
 			-- if we got "_items" then it is a container attribute
 			if $1.is_equal (Container_attr_name) then
 				create attr_node.make_multiple_generic
 			else
+debug("dADL_parse")
+	io.put_string(indent + "attr_id: create_attr_node.make_single(<<" + $1 + ">>)%N")
+end
 				create attr_node.make_single($1)
 			end
 
-			debug("dADL_parse")
-				io.put_string(indent + "attr_id: complex_object_nodes.item(" + complex_object_nodes.item.node_id + 
-						").put_attribute(<<" + attr_node.rm_attr_name + ">>)%N")
-			end
 			if not complex_object_nodes.item.has_attribute(attr_node.rm_attr_name) then
+debug("dADL_parse")
+	io.put_string(indent + "attr_id: complex_object_nodes.item(" + complex_object_nodes.item.node_id + 
+			").put_attribute(<<" + attr_node.rm_attr_name + ">>)%N")
+end
 				complex_object_nodes.item.put_attribute(attr_node)
 			else
 				abort_with_error("VDATU", <<attr_node.rm_attr_name>>)
 			end
 
-			debug("dADL_parse")
-				io.put_string(indent + "attr_id: PUSH attr node%N")
-				indent.append("%T")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "attr_id: PUSH attr node%N")
+	indent.append("%T")
+end
 			attr_nodes.extend(attr_node)
 			obj_id := Void
 		}

@@ -221,7 +221,7 @@ P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])? {
 					last_string_value := text
 			}
 
-[a-z]{IDCHAR}*	{
+[_a-z]{IDCHAR}*	{
 					last_token := V_ATTRIBUTE_IDENTIFIER
 					last_string_value := text
 			}

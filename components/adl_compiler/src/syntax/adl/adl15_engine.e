@@ -99,7 +99,7 @@ feature -- Commands
 			arch_ont_serialised, comp_onts_serialised: STRING
 			comp_onts_helper: COMPONENT_ONTOLOGIES_HELPER
 		do
-			an_archetype.synchronise
+			an_archetype.synchronise_adl15
 
 			-- language section
 			language_context.set_tree (an_archetype.orig_lang_translations.dt_representation)
@@ -267,7 +267,7 @@ feature {NONE} -- Implementation
 														differential_ontology
 													)
 												end
-											else
+											else -- legacy archetype
 												if orig_lang_trans /= Void then
 													flat_ontology ?= ontology_context.tree.as_object (({FLAT_ARCHETYPE_ONTOLOGY}).type_id, <<orig_lang_trans.original_language.code_string, definition.node_id>>)
 												else

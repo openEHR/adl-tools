@@ -235,15 +235,6 @@ feature -- Modification
 			end
 		end
 
-feature {ADL15_ENGINE, ADL2_ENGINE} -- Modification
-
-	set_translations (a_trans: attached HASH_TABLE [TRANSLATION_DETAILS, STRING])
-			-- set translations
-		do
-			translations := a_trans
-			languages_available_cache := Void
-		end
-
 feature -- Status setting
 
 	set_is_controlled
@@ -267,9 +258,9 @@ feature -- Output
 			end
 		end
 
-feature -- Serialisation
+feature {ADL15_ENGINE, ADL2_ENGINE} -- Implementation
 
-	synchronise
+	synchronise_adl15
 			-- synchronise object representation of resource to forms suitable for serialisation
 		do
 			-- FIXME - translations are handled like this until ADL2, when the
@@ -286,7 +277,12 @@ feature -- Serialisation
 			end
 		end
 
-feature {ADL15_ENGINE, ADL2_ENGINE} -- Implementation
+	set_translations (a_trans: attached HASH_TABLE [TRANSLATION_DETAILS, STRING])
+			-- set translations
+		do
+			translations := a_trans
+			languages_available_cache := Void
+		end
 
 	orig_lang_translations: LANGUAGE_TRANSLATIONS
 			-- holds a copy of translations for purposes of DT object/dADL reading and writing

@@ -27,8 +27,8 @@ inherit
 		end
 
 	AUTHORED_RESOURCE
-		rename
-			synchronise as synchronise_authored_resource
+		redefine
+			synchronise_adl15
 		end
 
 feature -- Initialisation
@@ -440,11 +440,11 @@ feature -- Output
 
 feature -- Serialisation
 
-	synchronise
+	synchronise_adl15
 			-- synchronise object representation of archetype to forms suitable for
 			-- serialisation
 		do
-			synchronise_authored_resource
+			precursor
 			ontology.synchronise_to_tree
 		end
 
