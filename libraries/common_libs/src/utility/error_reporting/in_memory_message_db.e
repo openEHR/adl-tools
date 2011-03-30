@@ -42,7 +42,7 @@ feature -- Modification
 			Valid_message_string: attached a_dadl_str
 			Valid_local_lang: attached a_locale_lang and then not a_locale_lang.is_empty
 		local
-			parser: DADL2_VALIDATOR
+			parser: DADL_VALIDATOR
 			dt_tree: DT_COMPLEX_OBJECT_NODE
 			init_helper: IN_MEMORY_MESSAGE_DB_INITIALISER
 		do

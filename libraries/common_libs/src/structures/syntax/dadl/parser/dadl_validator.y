@@ -13,7 +13,7 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class DADL2_VALIDATOR
+class DADL_VALIDATOR
 
 inherit
 	YY_PARSER_SKELETON
