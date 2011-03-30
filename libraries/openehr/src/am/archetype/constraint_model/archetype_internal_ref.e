@@ -71,10 +71,6 @@ feature -- Modification
 feature -- Representation
 
 	representation: attached OG_OBJECT_LEAF
-		note
-			option: transient
-		attribute
-		end
 
 feature -- Visitor
 

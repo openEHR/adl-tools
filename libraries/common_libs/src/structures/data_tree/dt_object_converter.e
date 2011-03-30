@@ -43,10 +43,10 @@ feature -- Conversion
 	populate_dt_from_object (an_obj: attached ANY; a_dt_obj: attached DT_COMPLEX_OBJECT_NODE)
 			-- make a data tree from an object; this routine is recursive
 			-- TODO: this routine will not work properly for any structure that is not a proper tree; any cycles will cause
-			-- creation of copied data. This could be fixed by tracking ojbect references while generating the tree
+			-- creation of copies of data. This could be fixed by tracking ojbect references while generating the tree
 		local
 			a_dt_attr: DT_ATTRIBUTE_NODE
-			fld_dynamic_type, i: INTEGER
+			eif_fld_dynamic_type, i: INTEGER
 			eif_fld_name: STRING
 			fld_lst: ARRAYED_LIST[STRING]
 		do
@@ -56,13 +56,28 @@ debug ("DT")
 		an_obj.generating_type + "%N")
 end
 
-			-- it is a container object itself, have to deal with specially
-			if attached {HASH_TABLE [ANY, HASHABLE]} an_obj as a_hash_table or attached {SEQUENCE[ANY]} an_obj as a_sequence then
+			-- the first two cases here enable nested containers to be dealt with...
+			-- object is a HASH_TABLE of non DT-primitive type, deal with by creating a DT_ATTRIBUTE representing the
+			-- container, and DT_OBJECTs underneath
+			if attached {HASH_TABLE [ANY, HASHABLE]} an_obj as eif_hash_obj then
+debug ("DT")
+	io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: an_obj is a HASH_TABLE%N")
+end
 				create a_dt_attr.make_multiple_generic
-				create_dt_from_container_obj(a_dt_attr, an_obj)
+				populate_dt_attr_from_eif_hash(a_dt_attr, eif_hash_obj)
 				a_dt_obj.put_attribute(a_dt_attr)
 
-			else -- it's not a container object
+			-- object is a SEQUENCE of non DT-primitive type, deal with by creating a DT_ATTRIBUTE representing the
+			-- container, and DT_OBJECTs underneath
+			elseif attached {SEQUENCE[ANY]} an_obj as eif_seq_obj then
+debug ("DT")
+	io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: an_obj is a SEQUENCE%N")
+end
+				create a_dt_attr.make_multiple_generic
+				populate_dt_attr_from_eif_sequence(a_dt_attr, eif_seq_obj)
+				a_dt_obj.put_attribute(a_dt_attr)
+
+			else -- it's not a container
 				if attached {DT_CONVERTIBLE} an_obj as dt_conv then
 					fld_lst := dt_conv.persistent_attributes
 				end
@@ -80,24 +95,24 @@ end
 debug ("DT")
 	io.put_string("(persistent) &&&&&&&&&&&& %N")
 end
-						fld_dynamic_type := dynamic_type(eif_fld_val)
+						eif_fld_dynamic_type := dynamic_type(eif_fld_val)
 
 						-- now set the value inside the DT_ATTRIBUTE by creating the correct sort of DT_PRIMITIVE subtype
-						if is_dt_primitive_interval_type (fld_dynamic_type) then -- it is an INTERVAL[some primitive or leaf type]; convert to DT_PRIMITIVE_OBJECT_INTERVAL
+						if is_dt_primitive_interval_type (eif_fld_dynamic_type) then -- it is an INTERVAL[some primitive or leaf type]; convert to DT_PRIMITIVE_OBJECT_INTERVAL
 							if attached {INTERVAL[PART_COMPARABLE]} eif_fld_val as eif_prim_ivl then
 								create a_dt_attr.make_single(eif_fld_name)
 								a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT_INTERVAL}.make_anonymous(eif_prim_ivl))
 								a_dt_obj.put_attribute(a_dt_attr)
 							end
 
-						elseif is_dt_primitive_sequence_conforming_type(fld_dynamic_type) then -- it is a SEQUENCE of some DT primitive type
+						elseif is_dt_primitive_sequence_conforming_type(eif_fld_dynamic_type) then -- it is a SEQUENCE of some DT primitive type
 							if attached {SEQUENCE[ANY]} eif_fld_val as eif_prim_seq then
 								create a_dt_attr.make_single(eif_fld_name)
 								a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT_LIST}.make_anonymous(eif_prim_seq))
 								a_dt_obj.put_attribute(a_dt_attr)
 							end
 
-						elseif is_dt_primitive_atomic_type(fld_dynamic_type) then -- it is a DT primitive type then
+						elseif is_dt_primitive_atomic_type(eif_fld_dynamic_type) then -- it is a DT primitive type then
 							create a_dt_attr.make_single(eif_fld_name)
 							a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT}.make_anonymous(eif_fld_val))
 							a_dt_obj.put_attribute(a_dt_attr)
@@ -106,12 +121,22 @@ end
 debug ("DT")
 	io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: (complex or container type)%N")
 end
-							if attached {HASH_TABLE [ANY, HASHABLE]} eif_fld_val as a_hash_table2 or attached {SEQUENCE[ANY]} eif_fld_val as a_sequence2 then
+							if attached {HASH_TABLE [ANY, HASHABLE]} eif_fld_val as eif_hash_fld_val then
 debug ("DT")
-	io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: (container type)%N")
+	io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: (HASH_TABLE type)%N")
 end
 								create a_dt_attr.make_multiple(eif_fld_name)
-								create_dt_from_container_obj(a_dt_attr, eif_fld_val)
+								populate_dt_attr_from_eif_hash(a_dt_attr, eif_hash_fld_val)
+								if not a_dt_attr.is_empty then
+									a_dt_obj.put_attribute(a_dt_attr)
+								end
+
+							elseif attached {SEQUENCE[ANY]} eif_fld_val as eif_seq_fld_val then
+debug ("DT")
+	io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: (SEQUENCE type)%N")
+end
+								create a_dt_attr.make_multiple(eif_fld_name)
+								populate_dt_attr_from_eif_sequence(a_dt_attr, eif_seq_fld_val)
 								if not a_dt_attr.is_empty then
 									a_dt_obj.put_attribute(a_dt_attr)
 								end
@@ -144,8 +169,9 @@ end
 
 	dt_to_object (a_dt_obj: attached DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER; make_args: ARRAY[ANY]): ANY
 			-- make an object whose classes and attributes correspond to the structure
-			-- of this DT_OBJECT; should be called only on top-level DT structure, but recursive calling
-			-- from populate_object_from_dt calling set_container_object_data_from_dt also occurs
+			-- of this DT_OBJECT; should be called externally only on top-level DT structure;
+			-- recursive calling from populate_object_from_dt calling
+			-- set_container_object_data_from_dt also occurs.
 			-- The main job of this routine is to set up cross references.
 		local
 			src_obj, targ_obj: ANY
@@ -184,6 +210,7 @@ end
 						elseif attached {DT_OBJECT_REFERENCE_LIST} object_ref_list.item as a_dt_obj_ref_list then
 							-- make the generic container, it will be a SEQUENCE (some kind of list)
 							if attached {SEQUENCE[ANY]} new_instance_of(field_static_type_of_type (src_obj_fld, dynamic_type (src_obj))) as a_sequence2 then
+								-- do a reasonable make call on it
 								if attached {ARRAYED_LIST[ANY]} a_sequence2 as an_arr_list then
 									an_arr_list.make(0)
 								end
@@ -209,8 +236,6 @@ end
 									set_reference_field(src_obj_fld, src_obj, a_sequence2)
 								end
 							end
-						else
-							-- should never arrive here
 						end
 
 						object_ref_list.forth
@@ -242,7 +267,7 @@ end
 			a_dt_obj_leaf: DT_OBJECT_LEAF
 			fld_name: STRING
 			abstract_fld_type_id, fld_type_id, dyn_dt_val_type_id, i: INTEGER
-			a_gen_field, v: ANY
+			a_gen_field: ANY
 			exception_caught: BOOLEAN
 		do
 debug ("DT")
@@ -285,17 +310,21 @@ end
 					if not a_dt_obj.is_empty then
 						a_dt_attr := a_dt_obj.first
 						if a_dt_attr.is_generic then
-							set_container_object_data_from_dt (Result, a_dt_attr)
+							populate_eif_container_from_dt (Result, a_dt_attr)
 						else
 							-- should never get here: it means that the DT data parsed as a
 							-- nested generic, but that the corresponding object types are not
 						end
 					else -- even if it is empty, we still have to create the generic object properly
 						-- note that the invariants of the containing business object might easily not be satisfied
-						make_empty_container_object (Result)
+						if attached {HASH_TABLE [ANY, HASHABLE]} Result as a_hash_table then
+							a_hash_table.make(0)
+						elseif attached {ARRAYED_LIST[ANY]} Result as an_arrayed_list then
+							an_arrayed_list.make(0)
+						end
 					end
 				else
-					-- for each field in the object
+					-- for each field in the Eiffel object
 					from i := 1 until i > field_count(Result) loop
 						fld_name := field_name(i, Result)
 
@@ -320,7 +349,7 @@ end
 									set_reference_field(i, Result, a_gen_field)
 
 									-- FIXME: can only deal with one generic parameter for the moment
-									set_container_object_data_from_dt (a_gen_field, a_dt_attr)
+									populate_eif_container_from_dt (a_gen_field, a_dt_attr)
 
 								else -- type in parsed DT is container, but not in Eiffel class		
 									post_error(Current, "populate_object_from_dt", "container_type_mismatch",
@@ -461,21 +490,12 @@ end
 
 													if is_eiffel_container_type(fld_type_id) then
 														set_primitive_sequence_field (i, Result, fld_type_id, a_dt_obj_leaf.value)
+													elseif attached type_converted(a_dt_obj_leaf.value) as tc_val then
+														set_reference_field (i, Result, tc_val)
 													else
-														if attached {ISO8601_DATE} a_dt_obj_leaf.value as iso_date then
-															v := iso_date.to_date
-														elseif attached {ISO8601_TIME} a_dt_obj_leaf.value as iso_time then
-															v := iso_time.to_time
-														elseif attached {ISO8601_DATE_TIME} a_dt_obj_leaf.value as iso_date_time then
-															v := iso_date_time.to_date_time
-														elseif attached {ISO8601_DURATION} a_dt_obj_leaf.value as iso_duration then
-															v := iso_duration.to_date_time_duration
-														else
-															post_error(Current, "populate_object_from_dt", "atomic_type_mismatch",
-																<<type_name_of_type(fld_type_id), type_name_of_type(dyn_dt_val_type_id)>>
-															)
-														end
-														set_reference_field (i, Result, v)
+														post_error(Current, "populate_object_from_dt", "atomic_type_mismatch",
+															<<type_name_of_type(fld_type_id), type_name_of_type(dyn_dt_val_type_id)>>
+														)
 													end
 												end
 											end
@@ -512,12 +532,11 @@ end
 
 feature {NONE} -- Conversion to object
 
-	set_primitive_interval_field (i: INTEGER; object: ANY; fld_type:INTEGER; value: ANY)
+	set_primitive_interval_field (i: INTEGER; object: attached ANY; fld_type:INTEGER; value: ANY)
 			-- set a field of a specific Eiffel type like INTERVAL[INTEGER_8] from the parsed form, which is always (currently)
 			-- INTERVAL[INTEGER_32] (larger numbers will have to be parsed as INTERVAL[INTEGER_64]; same for large reals => REAL_64).
 			-- This is currently a total hack, awaiting ES to implement INTEGER_GENERAL, REAL_GENERAL etc from the ECMA spec.
 		require
-			object_not_void: object /= Void
 			index_large_enough: i >= 1
 		local
 			v: ANY
@@ -526,48 +545,46 @@ feature {NONE} -- Conversion to object
 
 			if attached {INTERVAL[INTEGER]} value as src_ivl_int then
 				if attached {INTERVAL[INTEGER_8]} v as targ_ivl_int_8 then
-					targ_ivl_int_8.make_from_other (src_ivl_int.lower.as_integer_8, src_ivl_int.upper.as_integer_8, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
+					targ_ivl_int_8.make (src_ivl_int.lower.as_integer_8, src_ivl_int.upper.as_integer_8, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
 				elseif attached {INTERVAL[INTEGER_16]} v as targ_ivl_int_16 then
-					targ_ivl_int_16.make_from_other (src_ivl_int.lower.as_integer_16, src_ivl_int.upper.as_integer_16, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
+					targ_ivl_int_16.make (src_ivl_int.lower.as_integer_16, src_ivl_int.upper.as_integer_16, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
 				elseif attached {INTERVAL[INTEGER_32]} v as targ_ivl_int_32 then
-					targ_ivl_int_32.make_from_other (src_ivl_int.lower, src_ivl_int.upper, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
+					targ_ivl_int_32.make (src_ivl_int.lower, src_ivl_int.upper, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
 				elseif attached {INTERVAL[INTEGER_64]} v as targ_ivl_int_64 then
-					targ_ivl_int_64.make_from_other (src_ivl_int.lower, src_ivl_int.upper, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
+					targ_ivl_int_64.make (src_ivl_int.lower, src_ivl_int.upper, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
 				elseif attached {INTERVAL[NATURAL_8]} v as targ_ivl_nat_8 then
-					targ_ivl_nat_8.make_from_other (src_ivl_int.lower.as_natural_8, src_ivl_int.upper.as_natural_8, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
+					targ_ivl_nat_8.make (src_ivl_int.lower.as_natural_8, src_ivl_int.upper.as_natural_8, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
 				elseif attached {INTERVAL[NATURAL_16]} v as targ_ivl_nat_16 then
-					targ_ivl_nat_16.make_from_other (src_ivl_int.lower.as_natural_16, src_ivl_int.upper.as_natural_16, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
+					targ_ivl_nat_16.make (src_ivl_int.lower.as_natural_16, src_ivl_int.upper.as_natural_16, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
 				elseif attached {INTERVAL[NATURAL_32]} v as targ_ivl_nat_32 then
-					targ_ivl_nat_32.make_from_other (src_ivl_int.lower.as_natural_32, src_ivl_int.upper.as_natural_32, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
+					targ_ivl_nat_32.make (src_ivl_int.lower.as_natural_32, src_ivl_int.upper.as_natural_32, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
 				elseif attached {INTERVAL[NATURAL_64]} v as targ_ivl_nat_64 then
-					targ_ivl_nat_64.make_from_other (src_ivl_int.lower.as_natural_64, src_ivl_int.upper.as_natural_64, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
+					targ_ivl_nat_64.make (src_ivl_int.lower.as_natural_64, src_ivl_int.upper.as_natural_64, src_ivl_int.lower_unbounded, src_ivl_int.upper_unbounded, src_ivl_int.lower_included, src_ivl_int.upper_included)
 				end
 
 			elseif attached {INTERVAL[REAL]} value as src_ivl_real then
 				if attached {INTERVAL[REAL_32]} v as targ_ivl_real_32 then
-					targ_ivl_real_32.make_from_other (src_ivl_real.lower, src_ivl_real.upper, src_ivl_real.lower_unbounded, src_ivl_real.upper_unbounded, src_ivl_real.lower_included, src_ivl_real.upper_included)
+					targ_ivl_real_32.make (src_ivl_real.lower, src_ivl_real.upper, src_ivl_real.lower_unbounded, src_ivl_real.upper_unbounded, src_ivl_real.lower_included, src_ivl_real.upper_included)
 				elseif attached {INTERVAL[REAL_64]} v as targ_ivl_int_64 then
-					targ_ivl_int_64.make_from_other (src_ivl_real.lower, src_ivl_real.upper, src_ivl_real.lower_unbounded, src_ivl_real.upper_unbounded, src_ivl_real.lower_included, src_ivl_real.upper_included)
+					targ_ivl_int_64.make (src_ivl_real.lower, src_ivl_real.upper, src_ivl_real.lower_unbounded, src_ivl_real.upper_unbounded, src_ivl_real.lower_included, src_ivl_real.upper_included)
 				end
 			end
 
 			set_reference_field (i, object, v)
 		end
 
-	set_primitive_sequence_field (i: INTEGER; object: ANY; fld_type:INTEGER; value: ANY)
+	set_primitive_sequence_field (i: INTEGER; object: attached ANY; fld_type:INTEGER; dt_seq_value: ANY)
 			-- set i-th field of object which is some kind of sequence of a DT primitive type,
 			-- from a value which is either an ARRAYED_LIST or a single object like an INTEGER,
 			-- which we want to turn into the member of a new sequence
 		require
-			object_not_void: object /= Void
 			fld_type_valid: fld_type > 0
 			index_large_enough: i >= 1
 		local
-			val_type: INTEGER
+			converting_element_types: BOOLEAN
 		do
-			val_type := dynamic_type(value)
-			if val_type = fld_type then
-				set_reference_field (i, object, value)
+			if dynamic_type(dt_seq_value) = fld_type then
+				set_reference_field (i, object, dt_seq_value)
 			else
 debug ("DT")
 	io.put_string("DT_OBJECT_CONVERTER.set_primitive_sequence_field: about to call new_instance_of(" +
@@ -579,18 +596,26 @@ debug ("DT")
 end
 
 				-- if it was an arrayed_list, call its make routine to get it into a decent state
-				if attached {ARRAYED_LIST[ANY]} field(i, object) as al_field then
-					al_field.make(0)
+				if attached {ARRAYED_LIST[ANY]} field(i, object) as arr_list_field then
+					arr_list_field.make(0)
 				else
 					-- FIXME should do something about other types
 				end
 
 				-- now copy the values in
 				if attached {SEQUENCE[ANY]} field(i, object) as seq then
-					if attached {ARRAYED_LIST[ANY]} value as al_val then
-						from al_val.start until al_val.off loop
-							seq.extend(al_val.item)
-							al_val.forth
+					-- check if element type in DT list conform to that in object list; if not turn on flag to convert types
+					if not type_conforms_to (generic_dynamic_type (dt_seq_value, 1), generic_dynamic_type (seq, 1))  then
+						converting_element_types := True
+					end
+					if attached {ARRAYED_LIST[ANY]} dt_seq_value as dt_seq_arr_list then
+						from dt_seq_arr_list.start until dt_seq_arr_list.off loop
+							if converting_element_types then
+								seq.extend (type_converted (dt_seq_arr_list.item))
+							else
+								seq.extend (dt_seq_arr_list.item)
+							end
+							dt_seq_arr_list.forth
 						end
 					else
 						-- this means we have an object whose field type is a container, but
@@ -598,7 +623,11 @@ end
 						-- any list of one item. The dADL syntax is to use "<xx, ...>" to
 						-- show it is a list, but this is often forgotten
 						-- So...we do a conversion
-						seq.extend(value)
+						if converting_element_types then
+							seq.extend (type_converted (dt_seq_value))
+						else
+							seq.extend (dt_seq_value)
+						end
 					end
 				end
 			end
@@ -610,12 +639,11 @@ feature {NONE} -- Implementation
 			-- list of DT_OBJECT_REFERENCE and DT_OBJECT_REFERENCE_LIST objects found in last top-level
 			-- call to `dt_to_object'
 
-	set_container_object_data_from_dt (a_gen_obj: ANY; a_dt_attr: DT_ATTRIBUTE_NODE)
+	populate_eif_container_from_dt (a_gen_obj: attached ANY; a_dt_attr: attached DT_ATTRIBUTE_NODE)
 			-- set generic values in a generic object, from a_dt_attr
 			-- only deals with first generic parameter; generally safe for HASH_TABLE and LIST types
 		require
-			Obj_exists: a_gen_obj /= Void
-			Dt_attr_node_valid: a_dt_attr /= Void and then a_dt_attr.is_multiple
+			Dt_attr_node_multiple: a_dt_attr.is_multiple
 		local
 			static_object_type_id, dynamic_object_type_id: INTEGER
 		do
@@ -680,130 +708,127 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	make_empty_container_object (a_gen_obj: ANY)
-			-- just make sure make() is called so the object is in some sort of safe shape
-			-- only deals with first generic parameter; generally safe for HASH_TABLE and LIST types
-		require
-			Obj_exists: a_gen_obj /= Void
+	populate_dt_attr_from_eif_hash (a_dt_attr: DT_ATTRIBUTE_NODE; a_hash_table: HASH_TABLE [ANY, HASHABLE])
+			-- populate DT_ATTRIBUTE with DT_OBJECT child nodes corresponding to members of `a_hash_table';
+			-- if those members are themselves DT-primitive type (including INTERVAL or SEQUENCE), use DT_PRIMITIVE_* types;
+			-- if those members are themselves normal complex objects, call `populate_dt_from_object'
 		local
-			a_sequence: SEQUENCE[ANY]
-			an_arrayed_list: ARRAYED_LIST[ANY]
-			a_hash_table: HASH_TABLE [ANY, HASHABLE]
+			generic_param_type: INTEGER
 		do
-			-- determine dynamic type of generic type
-			a_hash_table ?= a_gen_obj
-			if a_hash_table /= Void then
-				a_hash_table.make(0)
-			else
-				a_sequence ?= a_gen_obj
-				if a_sequence /= Void then
-					an_arrayed_list ?= a_sequence
-					if an_arrayed_list /= Void then
-						an_arrayed_list.make(0)
+			generic_param_type := generic_dynamic_type(a_hash_table, 1)
+			if is_dt_primitive_interval_type (generic_param_type) then -- it is an INTERVAL[some primitive or leaf type]; convert to DT_PRIMITIVE_OBJECT_INTERVAL
+				from a_hash_table.start until a_hash_table.off loop
+debug ("DT")
+	io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj: from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
+		a_dt_attr.rm_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
+		", " + a_hash_table.key_for_iteration.out + ")%N")
+end
+					if attached {INTERVAL[PART_COMPARABLE]} a_hash_table.item_for_iteration as eif_prim_ivl then
+						a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT_INTERVAL}.make_identified(eif_prim_ivl, a_hash_table.key_for_iteration.out))
 					end
+					a_hash_table.forth
+				end
+
+			elseif is_dt_primitive_sequence_conforming_type (generic_param_type) then -- it is a SEQUENCE of some DT primitive type
+				from a_hash_table.start until a_hash_table.off loop
+debug ("DT")
+	io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj: from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
+		a_dt_attr.rm_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
+		", " + a_hash_table.key_for_iteration.out + ")%N")
+end
+					if attached {SEQUENCE[ANY]} a_hash_table.item_for_iteration as eif_prim_seq then
+						a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT_LIST}.make_identified(eif_prim_seq, a_hash_table.key_for_iteration.out))
+					end
+					a_hash_table.forth
+				end
+
+			elseif is_dt_primitive_atomic_type (generic_param_type) then -- it is a DT primitive type then
+				from a_hash_table.start until a_hash_table.off loop
+debug ("DT")
+	io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj: from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
+		a_dt_attr.rm_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
+		", " + a_hash_table.key_for_iteration.out + ")%N")
+end
+					a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT}.make_identified(a_hash_table.item_for_iteration, a_hash_table.key_for_iteration.out))
+					a_hash_table.forth
+				end
+
+			else
+				from a_hash_table.start until a_hash_table.off loop
+					populate_dt_from_object(a_hash_table.item_for_iteration,
+						create_complex_object_node(a_dt_attr, a_hash_table.key_for_iteration.out))
+					a_hash_table.forth
 				end
 			end
+debug ("DT")
+	io.put_string("%T(return)%N")
+end
 		end
 
-	create_dt_from_container_obj (a_dt_attr: DT_ATTRIBUTE_NODE; an_obj: ANY)
+	populate_dt_attr_from_eif_sequence (a_dt_attr: DT_ATTRIBUTE_NODE; a_sequence: SEQUENCE[ANY])
 			-- FIXME: only deal with the 1st generic param at the moment
 		local
 			generic_param_type: INTEGER
 		do
-			generic_param_type := generic_dynamic_type(an_obj, 1)
-			if attached {HASH_TABLE [ANY, HASHABLE]} an_obj as a_hash_table then
-				if is_dt_primitive_interval_type (generic_param_type) then -- it is an INTERVAL[some primitive or leaf type]; convert to DT_PRIMITIVE_OBJECT_INTERVAL
-					from a_hash_table.start until a_hash_table.off loop
+			generic_param_type := generic_dynamic_type(a_sequence, 1)
+			if is_dt_primitive_interval_type (generic_param_type) then -- contained type is an INTERVAL[some primitive or leaf type]; convert to DT_PRIMITIVE_OBJECT_INTERVAL
+				from a_sequence.start until a_sequence.off loop
 debug ("DT")
-	io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj: from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
-		a_dt_attr.rm_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
-		", " + a_hash_table.key_for_iteration.out + ")%N")
+	io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj(2): from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
+		a_dt_attr.rm_attr_name + "), " + a_sequence.item.generating_type + ", " + a_sequence.index.out + ")%N")
 end
-						if attached {INTERVAL[PART_COMPARABLE]} a_hash_table.item_for_iteration as v_typed then
-							a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT_INTERVAL}.make_identified(v_typed, a_hash_table.key_for_iteration.out))
-						end
-						a_hash_table.forth
+					if attached {INTERVAL[PART_COMPARABLE]} a_sequence.item as v_typed then
+						a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT_INTERVAL}.make_identified(v_typed, a_sequence.index.out))
 					end
-
-				elseif is_dt_primitive_sequence_conforming_type(generic_param_type) then -- it is a SEQUENCE of some DT primitive type
-					from a_hash_table.start until a_hash_table.off loop
-debug ("DT")
-	io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj: from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
-		a_dt_attr.rm_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
-		", " + a_hash_table.key_for_iteration.out + ")%N")
-end
-						if attached {SEQUENCE[ANY]} a_hash_table.item_for_iteration as v_typed then
-							a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT_LIST}.make_identified(v_typed, a_hash_table.key_for_iteration.out))
-						end
-						a_hash_table.forth
-					end
-
-				elseif is_dt_primitive_atomic_type(generic_param_type) then -- it is a DT primitive type then
-					from a_hash_table.start until a_hash_table.off loop
-debug ("DT")
-	io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj: from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
-		a_dt_attr.rm_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
-		", " + a_hash_table.key_for_iteration.out + ")%N")
-end
-						a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT}.make_identified(a_hash_table.item_for_iteration, a_hash_table.key_for_iteration.out))
-						a_hash_table.forth
-					end
-
-				else
-					from a_hash_table.start until a_hash_table.off loop
-						populate_dt_from_object(a_hash_table.item_for_iteration,
-							create_complex_object_node(a_dt_attr, a_hash_table.key_for_iteration.out))
-						a_hash_table.forth
-					end
+					a_sequence.forth
 				end
+
+			elseif is_dt_primitive_sequence_conforming_type(generic_param_type) then -- contained type is a SEQUENCE of some DT primitive type
+				from a_sequence.start until a_sequence.off loop
+debug ("DT")
+	io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj(2): from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
+		a_dt_attr.rm_attr_name + "), " + a_sequence.item.generating_type + ", " + a_sequence.index.out + ")%N")
+end
+					if attached {SEQUENCE[ANY]} a_sequence.item as v_typed then
+						a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT_LIST}.make_identified(v_typed, a_sequence.index.out))
+					end
+					a_sequence.forth
+				end
+
+			elseif is_dt_primitive_atomic_type(generic_param_type) then -- contained type is a DT primitive type then
+				from a_sequence.start until a_sequence.off loop
+debug ("DT")
+	io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj(2): from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
+		a_dt_attr.rm_attr_name + "), " + a_sequence.item.generating_type + ", " + a_sequence.index.out + ")%N")
+end
+					a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT}.make_identified(a_sequence.item, a_sequence.index.out))
+					a_sequence.forth
+				end
+
+			else
+				from a_sequence.start until a_sequence.off loop
+					populate_dt_from_object(a_sequence.item, create_complex_object_node(a_dt_attr, a_sequence.index.out))
+					a_sequence.forth
+				end
+			end
 debug ("DT")
 	io.put_string("%T(return)%N")
 end
+		end
 
-			elseif attached {SEQUENCE[ANY]} an_obj as a_sequence then
-				if is_dt_primitive_interval_type (generic_param_type) then -- it is an INTERVAL[some primitive or leaf type]; convert to DT_PRIMITIVE_OBJECT_INTERVAL
-					from a_sequence.start until a_sequence.off loop
-debug ("DT")
-	io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj(2): from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
-		a_dt_attr.rm_attr_name + "), " + a_sequence.item.generating_type + ", " + a_sequence.index.out + ")%N")
-end
-						if attached {INTERVAL[PART_COMPARABLE]} a_sequence.item as v_typed then
-							a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT_INTERVAL}.make_identified(v_typed, a_sequence.index.out))
-						end
-						a_sequence.forth
-					end
-
-				elseif is_dt_primitive_sequence_conforming_type(generic_param_type) then -- it is a SEQUENCE of some DT primitive type
-					from a_sequence.start until a_sequence.off loop
-debug ("DT")
-	io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj(2): from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
-		a_dt_attr.rm_attr_name + "), " + a_sequence.item.generating_type + ", " + a_sequence.index.out + ")%N")
-end
-						if attached {SEQUENCE[ANY]} a_sequence.item as v_typed then
-							a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT_LIST}.make_identified(v_typed, a_sequence.index.out))
-						end
-						a_sequence.forth
-					end
-
-				elseif is_dt_primitive_atomic_type(generic_param_type) then -- it is a DT primitive type then
-					from a_sequence.start until a_sequence.off loop
-debug ("DT")
-	io.put_string("DT_OBJECT_CONVERTER.create_dt_from_generic_obj(2): from_obj_proc.call([DT_ATTRIBUTE_NODE(" +
-		a_dt_attr.rm_attr_name + "), " + a_sequence.item.generating_type + ", " + a_sequence.index.out + ")%N")
-end
-						a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT}.make_identified(a_sequence.item, a_sequence.index.out))
-						a_sequence.forth
-					end
-
-				else
-					from a_sequence.start until a_sequence.off loop
-						populate_dt_from_object(a_sequence.item, create_complex_object_node(a_dt_attr, a_sequence.index.out))
-						a_sequence.forth
-					end
-				end
-debug ("DT")
-	io.put_string("%T(return)%N")
-end
+	type_converted (dt_val: ANY): ANY
+			-- infer some other type that dt_val must be. For now, the mappings are 1:1, e.g.
+			-- ISO8601_DATE => DATE, but in the future more field information may be needed to make
+			-- the correct inference. If no type match can be made, Result is Void
+		do
+			if attached {ISO8601_DATE} dt_val as iso_date then
+				Result := iso_date.to_date
+			elseif attached {ISO8601_TIME} dt_val as iso_time then
+				Result := iso_time.to_time
+			elseif attached {ISO8601_DATE_TIME} dt_val as iso_date_time then
+				Result := iso_date_time.to_date_time
+			elseif attached {ISO8601_DURATION} dt_val as iso_duration then
+				Result := iso_duration.to_date_time_duration
 			end
 		end
 

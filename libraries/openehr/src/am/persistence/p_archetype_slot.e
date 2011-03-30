@@ -1,73 +1,56 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "A node that contains a list of references to other nodes, implemented by paths. Serialises an object non-containment reference list."
-	keywords:    "data tree, serialisation, ADL"
+	description: "Persistent form of ARCHETYPE_SLOT."
+	keywords:    "persistence, ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2009 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$URL"
+	revision:    "$LastChangedRevision"
+	last_change: "$LastChangedDate"
 
-class DT_OBJECT_REFERENCE_LIST
+class P_ARCHETYPE_SLOT
 
 inherit
-	DT_REFERENCE
-
-	DT_OBJECT_LEAF
-		export
-			{NONE} as_object
-		undefine
-			default_create
+	P_C_OBJECT
+		redefine
+			make
 		end
 
 create
-	make_anonymous, make_identified
+	make
+
+feature -- Initialisation
+
+	make (an_as: ARCHETYPE_SLOT)
+		do
+			precursor (an_as)
+			if an_as.has_includes then
+				create includes.make (0)
+				from an_as.includes.start until an_as.includes.off loop
+					includes.extend (an_as.includes.item.as_string)
+					an_as.includes.forth
+				end
+			end
+			if an_as.has_excludes then
+				create excludes.make (0)
+				from an_as.excludes.start until an_as.excludes.off loop
+					excludes.extend (an_as.excludes.item.as_string)
+					an_as.excludes.forth
+				end
+			end
+			is_closed := an_as.is_closed
+		end
 
 feature -- Access
 
-	value: SEQUENCE[OG_PATH]
-			-- list of path references
+	includes: ARRAYED_LIST [STRING]
 
-feature -- Modification
+	excludes: ARRAYED_LIST [STRING]
 
-	set_value(a_value: like value)
-		do
-			value := a_value
-		end
-
-feature -- Output
-
-	as_string: STRING
-		do
-			create Result.make(0)
-			from value.start until value.off loop
-				if value.index > 1 then
-					Result.append(", ")
-				end
-					Result.append(value.item.as_string)
-				value.forth
-			end
-			if value.count = 1 then -- append syntactic indication of list continuation
-				Result.append(", ...")
-			end
-		end
-
-feature -- Serialisation
-
-	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
-			-- perform serialisation at start of block for this node
-		do
-			serialiser.start_object_reference_list(Current, depth)
-		end
-
-	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
-			-- perform serialisation at end of block for this node
-		do
-			serialiser.end_object_reference_list(Current, depth)
-		end
+	is_closed: BOOLEAN
 
 end
 
@@ -86,10 +69,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is dt_object_reference.e.
+--| The Original Code is p_archetype_slot.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2009
+--| Portions created by the Initial Developer are Copyright (C) 2011
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

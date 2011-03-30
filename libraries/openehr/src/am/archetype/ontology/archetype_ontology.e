@@ -605,7 +605,7 @@ feature -- Conversion
 			end
 		end
 
-feature {ARCHETYPE_ONTOLOGY} -- Implementation
+feature {ARCHETYPE_ONTOLOGY, P_ARCHETYPE_ONTOLOGY} -- Implementation
 
 	has_path (a_path: attached STRING): BOOLEAN
 			-- True if path `a_path' exists in structure

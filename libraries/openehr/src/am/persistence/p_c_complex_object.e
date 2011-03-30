@@ -1,73 +1,44 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "A node that contains a list of references to other nodes, implemented by paths. Serialises an object non-containment reference list."
-	keywords:    "data tree, serialisation, ADL"
+	description: "Persistent form of C_COMPLEX_OBJECT"
+	keywords:    "persistence, ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2009 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class DT_OBJECT_REFERENCE_LIST
+class P_C_COMPLEX_OBJECT
 
 inherit
-	DT_REFERENCE
-
-	DT_OBJECT_LEAF
-		export
-			{NONE} as_object
-		undefine
-			default_create
+	P_C_DEFINED_OBJECT
+		redefine
+			make
 		end
 
 create
-	make_anonymous, make_identified
+	make
+
+feature -- Initialisation
+
+	make (a_cco: attached C_COMPLEX_OBJECT)
+		do
+			precursor (a_cco)
+			if a_cco.has_attributes then
+				create attributes.make (0)
+				from a_cco.attributes.start until a_cco.attributes.off loop
+					attributes.extend (create {P_C_ATTRIBUTE}.make(a_cco.attributes.item))
+					a_cco.attributes.forth
+				end
+			end
+		end
 
 feature -- Access
 
-	value: SEQUENCE[OG_PATH]
-			-- list of path references
-
-feature -- Modification
-
-	set_value(a_value: like value)
-		do
-			value := a_value
-		end
-
-feature -- Output
-
-	as_string: STRING
-		do
-			create Result.make(0)
-			from value.start until value.off loop
-				if value.index > 1 then
-					Result.append(", ")
-				end
-					Result.append(value.item.as_string)
-				value.forth
-			end
-			if value.count = 1 then -- append syntactic indication of list continuation
-				Result.append(", ...")
-			end
-		end
-
-feature -- Serialisation
-
-	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
-			-- perform serialisation at start of block for this node
-		do
-			serialiser.start_object_reference_list(Current, depth)
-		end
-
-	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
-			-- perform serialisation at end of block for this node
-		do
-			serialiser.end_object_reference_list(Current, depth)
-		end
+	attributes: attached ARRAYED_LIST [P_C_ATTRIBUTE]
 
 end
 
@@ -86,10 +57,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is dt_object_reference.e.
+--| The Original Code is p_c_complex_objecct.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2009
+--| Portions created by the Initial Developer are Copyright (C) 2011
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

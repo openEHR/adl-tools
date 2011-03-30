@@ -43,10 +43,6 @@ feature -- Access
 	occurrences: MULTIPLICITY_INTERVAL
 
 	parent: C_ATTRIBUTE
-		note
-			option: transient
-		attribute
-		end
 
 	sibling_order: SIBLING_ORDER
 			-- set if this node should be ordered with respect to an inherited sibling; only settable
@@ -181,23 +177,25 @@ feature -- Modification
 		do
 			create sibling_order.make_before (a_node_id)
 		ensure
-			sibling_order_set: sibling_order /= Void and (sibling_order.is_before and sibling_order.sibling_node_id.is_equal (a_node_id))
+			sibling_order_set: attached sibling_order and (sibling_order.is_before and sibling_order.sibling_node_id.is_equal (a_node_id))
 		end
 
-	set_sibling_order_after (a_node_id: STRING)
+	set_sibling_order_after (a_node_id: attached STRING)
 			-- set sibling order of this node to be after the inherited sibling node with id a_node_id
 		require
-			a_node_id /= Void and specialisation_depth_from_code (a_node_id) < specialisation_depth
+			specialisation_depth_from_code (a_node_id) < specialisation_depth
 		do
 			create sibling_order.make_after (a_node_id)
 		ensure
-			sibling_order_set: sibling_order /= Void and (sibling_order.is_after and sibling_order.sibling_node_id.is_equal (a_node_id))
+			sibling_order_set: attached sibling_order and (sibling_order.is_after and sibling_order.sibling_node_id.is_equal (a_node_id))
 		end
 
 	clear_sibling_order
 			-- remove sibling order
 		do
 			sibling_order := Void
+		ensure
+			not attached sibling_order
 		end
 
 	set_node_id (an_object_id: STRING)
@@ -222,7 +220,7 @@ feature -- Modification
 			if not other.rm_type_name.is_equal(rm_type_name) then
 				rm_type_name := other.rm_type_name.twin
 			end
-			if other.occurrences /= Void then
+			if attached other.occurrences then
 				set_occurrences (other.occurrences.deep_twin)
 			end
 		end
@@ -242,10 +240,6 @@ feature -- Output
 feature -- Representation
 
 	representation: attached OG_OBJECT
-		note
-			option: transient
-		attribute
-		end
 
 invariant
 	rm_type_name_valid: not rm_type_name.is_empty

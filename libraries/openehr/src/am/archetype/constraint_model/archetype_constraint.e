@@ -25,10 +25,6 @@ inherit
 feature -- Access
 
 	parent: ARCHETYPE_CONSTRAINT
-		note
-			option: transient
-		attribute
-		end
 
 	path: STRING
 			-- path to this object in the tree with respect to root
@@ -39,7 +35,7 @@ feature -- Access
 	path_to_node (a_node: ARCHETYPE_CONSTRAINT): STRING
 			-- path from this node to `a_node'
 		do
-			Result := representation.path_to_node(a_node.representation).as_string
+			Result := representation.path_to_node (a_node.representation).as_string
 		end
 
 feature -- Source Control
@@ -136,10 +132,6 @@ feature {ARCHETYPE_CONSTRAINT} -- Modification
 feature -- Representation
 
 	representation: attached OG_ITEM
-		note
-			option: transient
-		attribute
-		end
 
 feature {OG_ITEM} -- Implementation
 

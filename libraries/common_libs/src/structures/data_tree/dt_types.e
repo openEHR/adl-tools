@@ -22,6 +22,7 @@ inherit
 feature {NONE} -- Definitions
 
 	dt_primitive_atomic_types: ARRAYED_LIST [INTEGER]
+			-- all primitive atomic types used in dADL / DT structures
 		once
 			create Result.make (0)
 			Result.compare_objects
@@ -149,28 +150,81 @@ feature {NONE} -- Definitions
 			Result.extend (({INTERVAL [ISO8601_DURATION]}).type_id)
 		end
 
+	dadl_inferred_primitive_atomic_types: ARRAYED_LIST [INTEGER]
+			-- list of all primitive atomic types whose Eiffel type can safely be inferred from dADL text,
+			-- without type information being explicitly supplied. E.g. in dADL:
+			--  "some_int = <123>" ==> infer INTEGER, i.e. INTEGER_32
+			--  "some_real = <1.5>" ==> infer REAL, i.e. REAL_32
+			--  "some_string = <"absndf">" ==> infer STRING, i.e. STRING_8
+			-- etc
+		once
+			create Result.make (0)
+			Result.extend (({INTEGER}).type_id)
+			Result.extend (({REAL}).type_id)
+			Result.extend (({BOOLEAN}).type_id)
+			Result.extend (({CHARACTER}).type_id)
+			Result.extend (({STRING}).type_id)
+			Result.extend (({ISO8601_DATE}).type_id)
+			Result.extend (({ISO8601_DATE_TIME}).type_id)
+			Result.extend (({ISO8601_TIME}).type_id)
+			Result.extend (({ISO8601_DURATION}).type_id)
+		end
+
+	dadl_inferred_primitive_sequence_types: ARRAYED_LIST [INTEGER]
+			-- list of all primitive sequence types whose Eiffel type can safely be inferred from dADL text,
+			-- without type information being explicitly supplied. E.g. in dADL:
+			--  "some_arr_list_of_int = <1, 2, 3>" ==> infer ARRAYED_LIST[INTEGER]
+			--  any SEQUENCE type declared in the object structured can be handled, because 'extend' works for
+			-- populating it.
+		once
+			create Result.make (0)
+			Result.extend (({SEQUENCE [INTEGER]}).type_id)
+			Result.extend (({SEQUENCE [REAL]}).type_id)
+			Result.extend (({SEQUENCE [BOOLEAN]}).type_id)
+			Result.extend (({SEQUENCE [CHARACTER]}).type_id)
+			Result.extend (({SEQUENCE [STRING]}).type_id)
+			Result.extend (({SEQUENCE [ISO8601_DATE]}).type_id)
+			Result.extend (({SEQUENCE [ISO8601_DATE_TIME]}).type_id)
+			Result.extend (({SEQUENCE [ISO8601_TIME]}).type_id)
+			Result.extend (({SEQUENCE [ISO8601_DURATION]}).type_id)
+		end
+
+	dadl_inferred_primitive_interval_types: ARRAYED_LIST [INTEGER]
+			-- list of all primitive interval types whose Eiffel type can safely be inferred from dADL text,
+			-- without type information being explicitly supplied. E.g. in dADL:
+			--  "some_ivl_of_int = <|1..3|>" ==> infer INTERVAL[INTEGER]
+			-- etc
+		once
+			create Result.make (0)
+			Result.extend (({INTERVAL [INTEGER]}).type_id)
+			Result.extend (({INTERVAL [REAL]}).type_id)
+			Result.extend (({INTERVAL [ISO8601_DATE]}).type_id)
+			Result.extend (({INTERVAL [ISO8601_DATE_TIME]}).type_id)
+			Result.extend (({INTERVAL [ISO8601_TIME]}).type_id)
+			Result.extend (({INTERVAL [ISO8601_DURATION]}).type_id)
+		end
+
 feature -- Access
 
-	dt_primitive_sequence_conforming_type(a_type_id: INTEGER): INTEGER
+	dt_primitive_sequence_conforming_type (a_type_id: INTEGER): INTEGER
 			-- Type which is the primitive_sequence type to which a_type_id (a concrete type, e.g. some kind of
 			-- sorted list or whatever) conforms. Returns 0 if not found
 		require
 			Type_valid: a_type_id >= 0
 		do
-			if type_conforms_to(a_type_id, sequence_any_type_id) then
-				if dt_primitive_sequence_conforming_types.has(a_type_id) then
-					Result := dt_primitive_sequence_conforming_types.item(a_type_id)
+			if dt_primitive_sequence_conforming_types.has(a_type_id) then
+				Result := dt_primitive_sequence_conforming_types.item(a_type_id)
+			else
+				if dt_primitive_sequence_types.has(a_type_id) then
+					Result := a_type_id
 				else
-					if dt_primitive_sequence_types.has(a_type_id) then
-						Result := a_type_id
-					else
-						from dt_primitive_sequence_types.start until dt_primitive_sequence_types.off or Result /= 0 loop
+					from dt_primitive_sequence_types.start until dt_primitive_sequence_types.off or Result /= 0 loop
 debug ("DT")
 	io.put_string(generator + ".primitive_sequence_conforming_type: call to type_conforms_to(" +
 		type_name_of_type(a_type_id) + ", " + type_name_of_type(dt_primitive_sequence_types.item) + "):")
 end
-							if type_conforms_to(a_type_id, dt_primitive_sequence_types.item) then
-								Result := dt_primitive_sequence_types.item
+						if type_conforms_to(a_type_id, dt_primitive_sequence_types.item) then
+							Result := dt_primitive_sequence_types.item
 debug ("DT")
 	io.put_string(" True%N")
 end
@@ -178,62 +232,17 @@ else
 debug ("DT")
 	io.put_string(" False%N")
 end
-							end
-							dt_primitive_sequence_types.forth
 						end
+						dt_primitive_sequence_types.forth
 					end
-					if Result /= 0 then
-						dt_primitive_sequence_conforming_types.put(Result, a_type_id)
-					end
+				end
+				if Result /= 0 then
+					dt_primitive_sequence_conforming_types.put(Result, a_type_id)
 				end
 			end
 		end
 
---	any_dt_primitive_conforming_type(a_type_id: INTEGER): INTEGER
---			-- Returns a_type_id if in any of the DT primitive types, or if this doesn't match
---			-- it returns the primitive DT type to which `a_type_id' formally conforms; at the
---			-- moment, this only makes a difference for SEQUENCE[ANY] conforming types; for all
---			-- the rest, a direct match is needed. We might have to support types conforming to
---			-- INTERVAL[ANY] one day as well.
---			-- Returns 0 if not found
---		require
---			Type_valid: a_type_id >= 0
---		do
---debug ("DT")
---	io.put_string("--->ENTER any_primitive_conforming_type(" + a_type_id.out + ")%N")
---end
---			if is_any_dt_primitive_type(a_type_id) then
---				Result := a_type_id
---			elseif generic_count_of_type(a_type_id) > 0 then
---				Result := dt_primitive_sequence_conforming_type(a_type_id)
---			end
---debug ("DT")
---	io.put_string("<---EXIT any_primitive_conforming_type(" + a_type_id.out + ")=" + Result.out + "%N")
---end
---		end
-
 feature -- Status Report
-
---	is_any_dt_primitive_type(a_type_id: INTEGER): BOOLEAN
---			-- True if a_type_id is any of the primitive, primitive_sequence or
---			-- primitive_interval types
---		require
---			Type_valid: a_type_id >= 0
---		do
---			Result := is_dt_primitive_atomic_type(a_type_id)
---			if not Result and generic_count_of_type(a_type_id) > 0 then
---				Result := dt_primitive_sequence_types.has(a_type_id) or dt_primitive_interval_types.has(a_type_id)
---			end
---		end
-
---	is_any_primitive_conforming_type(a_type_id: INTEGER): BOOLEAN
---			-- True if a_type_id is any of the primitive, primitive_sequence or
---			-- primitive_interval types, or conforms to one of those
---		require
---			Type_valid: a_type_id >= 0
---		do
---			Result := any_dt_primitive_conforming_type(a_type_id) /= 0
---		end
 
 	is_dt_primitive_atomic_type(a_type_id: INTEGER): BOOLEAN
 			-- True if one of the types STRING, INTEGER, REAL, BOOLEAN, CHARACTER,
@@ -330,34 +339,57 @@ debug ("DT")
 end
 		end
 
+	is_dadl_inferred_primitive_sequence_type (type_id: INTEGER): BOOLEAN
+		do
+			Result := dadl_inferred_primitive_sequence_types.has(type_id) or dadl_inferred_primitive_sequence_conforming_types.has(type_id)
+			if not Result then
+				from dadl_inferred_primitive_sequence_types.start until dadl_inferred_primitive_sequence_types.off or type_conforms_to (type_id, dadl_inferred_primitive_sequence_types.item) loop
+					dadl_inferred_primitive_sequence_types.forth
+				end
+				Result := not dadl_inferred_primitive_sequence_types.off
+				if Result then
+					dadl_inferred_primitive_sequence_conforming_types.put(dadl_inferred_primitive_sequence_types.item, type_id)
+				end
+			end
+		end
+
 feature {NONE} -- Implementation
 
 	sequence_any_type_id: INTEGER
 			-- dynamic type of SEQUENCE[ANY] in this system
 		once
-			Result := dynamic_type_from_string("SEQUENCE[ANY]")
+			Result := ({SEQUENCE [ANY]}).type_id
 		end
 
 	interval_any_type_id: INTEGER
 			-- dynamic type of INTERVAL [PART_COMPARABLE] in this system
 		once
-			Result := dynamic_type (create {INTERVAL [PART_COMPARABLE]}.default_create)
+			Result := ({INTERVAL [PART_COMPARABLE]}).type_id
 		end
 
 	arrayed_list_any_type_id: INTEGER
 			-- dynamic type of ARRAYED_LIST[ANY] in this system
 		once
-			Result := dynamic_type (create {ARRAYED_LIST[ANY]}.make(0))
+			Result := ({ARRAYED_LIST[ANY]}).type_id
 		end
 
 	hash_table_any_hashable_type_id: INTEGER
 			-- dynamic type of HASH_TABLE[ANY, HASHABLE] in this system
 		once
-			Result := dynamic_type (create {HASH_TABLE [ANY, HASHABLE]}.make (0))
+			Result := ({HASH_TABLE [ANY, HASHABLE]}).type_id
 		end
 
 	dt_primitive_sequence_conforming_types: HASH_TABLE [INTEGER, INTEGER]
 			-- this table contains abstract DT primitive sequence types found in `dt_primitive_sequence_types'
+			-- keyed by concrete types which conform to them, e.g. LINKED_LIST [INTEGER] etc. It is populated
+			-- due to repeated calling, thus only contains type ids of types that actually get converted
+			-- into DT/DADL format.
+		once
+			create Result.make(0)
+		end
+
+	dadl_inferred_primitive_sequence_conforming_types: HASH_TABLE [INTEGER, INTEGER]
+			-- this table contains abstract DT primitive sequence types found in `dadl_inferred_primitive_sequence_types'
 			-- keyed by concrete types which conform to them, e.g. LINKED_LIST [INTEGER] etc. It is populated
 			-- due to repeated calling, thus only contains type ids of types that actually get converted
 			-- into DT/DADL format.

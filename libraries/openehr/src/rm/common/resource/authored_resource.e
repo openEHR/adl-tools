@@ -25,6 +25,18 @@ feature -- Definitions
 
 	Uncontrolled_revision_name: STRING = "(uncontrolled)"
 
+feature -- Initialisation
+
+	make_from_other (other: attached AUTHORED_RESOURCE)
+		do
+			is_controlled := other.is_controlled
+			original_language := other.original_language
+			translations := other.translations
+			description := other.description
+			revision_history := other.revision_history
+			annotations := other.annotations
+		end
+
 feature -- Access
 
 	original_language: attached CODE_PHRASE
@@ -286,20 +298,12 @@ feature {ADL15_ENGINE, ADL2_ENGINE} -- Implementation
 
 	orig_lang_translations: LANGUAGE_TRANSLATIONS
 			-- holds a copy of translations for purposes of DT object/dADL reading and writing
-		note
-			option: transient
-		attribute
-		end
 
 feature {NONE} -- Implementation
 
 	languages_available_cache: ARRAYED_SET [STRING]
 			-- Total list of languages available in this resource, derived from
 			-- original_language and translations. Guaranteed to at least include original_language
-		note
-			option: transient
-		attribute
-		end
 
 invariant
 	Original_language_valid: code_set(Code_set_id_languages).has(original_language)

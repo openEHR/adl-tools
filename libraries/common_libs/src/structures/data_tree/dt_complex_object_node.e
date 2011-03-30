@@ -379,7 +379,7 @@ feature -- Conversion
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		do
-			Result := object_converter.dt_to_object_from_string(Current, a_type_name, make_args)
+			Result := object_converter.dt_to_object_from_string (Current, a_type_name, make_args)
 			as_object_ref := Result
 		end
 

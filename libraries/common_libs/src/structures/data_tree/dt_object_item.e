@@ -38,11 +38,11 @@ feature -- Access
 		end
 
 	parent: DT_ATTRIBUTE_NODE
-			-- parent of all object types must be a REL_NODE
+			-- parent of all object types must be an attribute node
 
 	rm_type_name: attached STRING
-			-- reference model type name of object to instantiate - can only be determined by inference
-			-- from inspecting oject model - not from parsing dADL text
+			-- reference model type name of object to instantiate - can be inferred
+			-- from object model, or set from parsing dADL text
 
 feature -- Comparison
 
@@ -65,26 +65,26 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_node_id (a_node_id: STRING)
+	set_node_id (a_node_id: attached STRING)
 			-- set node id
 		require
-			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
+			Node_id_valid: not a_node_id.is_empty
 		do
 			representation.set_node_id(a_node_id)
 		end
 
-	set_type_name (a_type_name: STRING)
+	set_type_name (a_type_name: attached STRING)
 			-- set type name
 		require
-			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
+			Type_name_valid: not a_type_name.is_empty
 		do
 			rm_type_name := a_type_name
 		end
 
-	set_visible_type_name (a_type_name: STRING)
+	set_visible_type_name (a_type_name: attached STRING)
 			-- set type name
 		require
-			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
+			Type_name_valid: not a_type_name.is_empty
 		do
 			set_type_name(a_type_name)
 			set_type_visible

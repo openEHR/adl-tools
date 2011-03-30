@@ -238,10 +238,6 @@ feature -- Output
 feature -- Representation
 
 	representation: attached OG_OBJECT_NODE
-		note
-			option: transient
-		attribute
-		end
 
 feature -- Visitor
 

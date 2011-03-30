@@ -14,11 +14,6 @@ note
 deferred class ARCHETYPE
 
 inherit
-	DT_CONVERTIBLE
-		redefine
-			synchronise_to_tree --, default_create, finalise_dt,
-		end
-
 	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all;
@@ -448,15 +443,6 @@ feature -- Output
 			Result.append(display_paths(logical_paths("en", False)))
 		end
 
-feature -- Serialisation
-
-	synchronise_to_tree
-			-- synchronise to parse tree representation
-		do
-			create dt_representation.make_from_object (Current)
-			ontology.synchronise_to_tree
-		end
-
 feature {ADL15_ENGINE} -- ADL 1.5 Serialisation
 
 	synchronise_adl15
@@ -570,30 +556,6 @@ feature {NONE} -- Implementation
 				end
 				path_list.forth
 			end
-		end
-
-feature {DT_OBJECT_CONVERTER} -- Conversion
-
-	persistent_attributes: ARRAYED_LIST [STRING]
-			-- list of attribute names to persist as DT structure
-			-- empty structure means all attributes
-		once
-			create Result.make(0)
-			Result.compare_objects
-			Result.extend ("artefact_type")
-			Result.extend ("adl_version")
-			Result.extend ("is_generated")
-			Result.extend ("is_controlled")
-			Result.extend ("archetype_id")
-			Result.extend ("parent_archetype_id")
-			Result.extend ("original_language")
-			Result.extend ("translations")
-			Result.extend ("description")
-			Result.extend ("definition")
-			Result.extend ("invariants")
-			Result.extend ("ontology")
-			Result.extend ("annotations")
-			Result.extend ("revision_history")
 		end
 
 invariant

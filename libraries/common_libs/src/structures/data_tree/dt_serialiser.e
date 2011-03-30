@@ -18,6 +18,17 @@ inherit
 
 	DT_VISITOR
 
+feature -- Access
+
+	full_type_marking_on: BOOLEAN
+
+feature -- Modification
+
+	set_full_type_marking_on
+		do
+			full_type_marking_on := True
+		end
+
 end
 
 

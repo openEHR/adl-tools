@@ -32,7 +32,7 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make_from_terminology_id (a_terminology_id: STRING)
+	make_from_terminology_id (a_terminology_id: attached STRING)
 			-- Make from `terminology_id'.
 		do
 			default_create
@@ -42,17 +42,17 @@ feature -- Initialisation
 			Terminology_id_set: terminology_id.value.is_equal (a_terminology_id)
 		end
 
-	make_from_pattern (a_pattern: STRING)
+	make_from_pattern (a_pattern: attached STRING)
 			-- Make from pattern of form "terminology_id::code, code, ... [; code]".
 			-- Pattern "terminology_id::" is legal.
 		require
-			a_pattern /= Void and then valid_pattern (a_pattern)
+			valid_pattern (a_pattern)
 		do
 			default_create
 			initialise_from_pattern (a_pattern)
 		ensure
 			Not_any_allowed: not any_allowed
-			Terminology_id_exists: terminology_id /= Void
+			Terminology_id_exists: attached terminology_id
 		end
 
 feature -- Access
@@ -227,11 +227,7 @@ feature -- Source Control
 		do
 			create Result.make (ss_propagated)
 			if not any_allowed and terminology_id.is_local and code_list /= Void then
-				from
-					code_list.start
-				until
-					code_list.off
-				loop
+				from code_list.start until code_list.off loop
 					Result := Result.specialisation_dominant_status (specialisation_status_from_code (code_list.item, spec_level))
 					code_list.forth
 				end
@@ -240,11 +236,11 @@ feature -- Source Control
 
 feature -- Modification
 
-	add_code (a_code: STRING)
+	add_code (a_code: attached STRING)
 			-- 	add a term to the list
 		require
 			Not_any_allowed: not any_allowed
-			Code_valid: a_code /= Void and not has_code (a_code)
+			Code_valid: not has_code (a_code)
 		do
 			if code_list = Void then
 				create code_list.make (0)
@@ -332,11 +328,11 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 
 feature {NONE} -- Implementation
 
-	initialise_from_pattern (a_pattern: STRING)
+	initialise_from_pattern (a_pattern: attached STRING)
 			-- parse pattern of form "terminology_id::code, code, ... [; code]"
 			-- Pattern "terminology_id::" is legal
 		require
-			a_pattern /= Void and then valid_pattern(a_pattern)
+			valid_pattern(a_pattern)
 		local
 			sep_pos, end_pos: INTEGER
 			str: STRING

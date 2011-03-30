@@ -96,9 +96,12 @@ feature -- Commands
 			archetype_valid: an_archetype.is_valid
 			Language_valid: an_archetype.has_language (a_lang)
 			format_valid: has_archetype_serialiser_format (a_format)
+		local
+			p_a: P_ARCHETYPE
 		do
-			an_archetype.synchronise_to_tree
-			archetype_context.set_tree (an_archetype.dt_representation)
+			create p_a.make (an_archetype)
+			p_a.synchronise_to_tree
+			archetype_context.set_tree (p_a.dt_representation)
 			archetype_context.serialise (a_format)
 			Result := archetype_context.serialised
 		end

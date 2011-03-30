@@ -1362,9 +1362,9 @@ feature {NONE} -- Implementation
 			if attached {ARCH_REP_ARCHETYPE} current_arch_dir.selected_archetype as ara then
 				if ara.is_valid then
 					if differential_view then
-						adl2_rich_text.set_text (ara.differential_text_adl2)
+						adl2_rich_text.set_text (utf8 (ara.differential_text_adl2))
 					else
-						adl2_rich_text.set_text (ara.flat_text_adl2)
+						adl2_rich_text.set_text (utf8 (ara.flat_text_adl2))
 					end
 				else
 					adl2_rich_text.set_text (create_message_line ("compiler_no_source_text", <<>>))

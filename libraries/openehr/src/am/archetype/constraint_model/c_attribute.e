@@ -113,7 +113,7 @@ feature -- Access
 			end
 		end
 
-	occurrences_total_range: MULTIPLICITY_INTERVAL
+	occurrences_total_range: attached MULTIPLICITY_INTERVAL
 			-- calculate total possible cardinality range based on occurrences of all children
 			-- only valid on flat archetypes
 		require
@@ -136,15 +136,9 @@ feature -- Access
 			else
 				create Result.make_bounded (a_lower, an_upper)
 			end
-		ensure
-			Result_attached: Result /= Void
 		end
 
 	parent: C_COMPLEX_OBJECT
-		note
-			option: transient
-		attribute
-		end
 
 	child_count: INTEGER
 			-- number of children; 0 if any_allowed is True
@@ -152,10 +146,10 @@ feature -- Access
 			Result := children.count
 		end
 
-	child_before(an_obj: C_OBJECT): C_OBJECT
+	child_before(an_obj: attached C_OBJECT): C_OBJECT
 			-- return child node before `an_obj' if there is one, else Void
 		require
-			Object_valid: an_obj /= Void and then has_child (an_obj)
+			Object_valid: has_child (an_obj)
 		local
 			pos: INTEGER
 		do
@@ -164,13 +158,13 @@ feature -- Access
 				Result := children.i_th (pos-1)
 			end
 		ensure
-			has_result: Result /= Void implies has_child (Result)
+			has_result: attached Result implies has_child (Result)
 		end
 
-	child_after(an_obj: C_OBJECT): C_OBJECT
+	child_after (an_obj: attached C_OBJECT): C_OBJECT
 			-- return child node after `an_obj' if there is one, else Void
 		require
-			Object_valid: an_obj /= Void and then has_child (an_obj)
+			Object_valid: has_child (an_obj)
 		local
 			pos: INTEGER
 		do
@@ -179,10 +173,10 @@ feature -- Access
 				Result := children.i_th (pos+1)
 			end
 		ensure
-			has_result: Result /= Void implies has_child (Result)
+			has_result: attached Result implies has_child (Result)
 		end
 
-	child_with_id (a_node_id: STRING): C_OBJECT
+	child_with_id (a_node_id: attached STRING): attached C_OBJECT
 			-- find the child node with `a_node_id'
 		require
 			has_child_with_id (a_node_id)
@@ -195,11 +189,9 @@ feature -- Access
 				children.forth
 			end
 			Result := children.item
-		ensure
-			Result_exists: Result /= Void
 		end
 
-	children_matching_id (a_node_id: STRING): ARRAYED_LIST[C_OBJECT]
+	children_matching_id (a_node_id: attached STRING): attached ARRAYED_LIST[C_OBJECT]
 			-- find child nodes with node_ids that contain `a_node_id', e.g. 'at0013' would match
 			-- nodes with ids 'at0013.1', 'at0013.2', 'at0013.1.5' and so on
 		do
@@ -210,8 +202,6 @@ feature -- Access
  				end
 				children.forth
 			end
-		ensure
-			Result_exists: Result /= Void
 		end
 
 	child_with_rm_type_name (an_rm_type: attached STRING): C_OBJECT
@@ -579,10 +569,6 @@ feature -- Validation
 feature -- Representation
 
 	representation: attached OG_ATTRIBUTE_NODE
-		note
-			option: transient
-		attribute
-		end
 
 feature -- Serialisation
 
