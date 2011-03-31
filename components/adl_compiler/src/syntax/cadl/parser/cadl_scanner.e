@@ -3363,7 +3363,7 @@ feature {NONE} -- Implementation
 	Init_buffer_size: INTEGER = 256
 				-- Initial size for `in_buffer'
 
-	dadl_parser: DADL2_VALIDATOR
+	dadl_parser: DADL_VALIDATOR
 		once
 			create Result.make
 		end

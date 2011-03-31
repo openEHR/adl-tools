@@ -80,7 +80,7 @@ feature -- Commands
 		local
 			model_file: PLAIN_TEXT_FILE
 			dt_tree: DT_COMPLEX_OBJECT_NODE
-			parser: DADL2_VALIDATOR
+			parser: DADL_VALIDATOR
 		do
 			reset
 			create model_file.make (meta_data.item (Metadata_schema_path))

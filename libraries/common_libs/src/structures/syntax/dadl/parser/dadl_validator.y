@@ -83,7 +83,7 @@ create
 %type <URI> uri_value
 
 %type <DT_COMPLEX_OBJECT_NODE> single_attr_object_block, untyped_single_attr_object_block
-%type <DT_COMPLEX_OBJECT_NODE> multiple_attr_object_block, untyped_multiple_attr_object_block
+%type <DT_COMPLEX_OBJECT_NODE> container_attr_object_block, untyped_container_attr_object_block
 %type <DT_COMPLEX_OBJECT_NODE> complex_object_block
 %type <DT_OBJECT_LEAF> untyped_primitive_object_block, primitive_object_block object_reference_block
 %type <DT_OBJECT_LEAF> primitive_object absolute_path_object_value
@@ -214,7 +214,7 @@ debug("dADL_parse")
 	indent.append("%T")
 end
 			attr_nodes.extend(attr_node)
-			obj_id := Void
+			obj_key := Void
 		}
 	| V_ATTRIBUTE_IDENTIFIER error
 		{
@@ -228,14 +228,17 @@ end
 object_block: complex_object_block
 	| primitive_object_block
 	| object_reference_block
-	| SYM_START_DBLOCK SYM_END_DBLOCK -- effectively ignore empty objects
+	| SYM_START_DBLOCK SYM_END_DBLOCK -- empty object
+		{
+			complex_object_nodes.item.remove_attribute(attr_node.rm_attr_name)
+		}
 	;
 
 complex_object_block: single_attr_object_block
 		{
 			$$ := $1
 		}
-	| multiple_attr_object_block
+	| container_attr_object_block
 		{
 			$$ := $1
 		}
@@ -244,11 +247,11 @@ complex_object_block: single_attr_object_block
 --
 -- --------------------------- multiple attr objects -------------------------------
 --
-multiple_attr_object_block: untyped_multiple_attr_object_block 
+container_attr_object_block: untyped_container_attr_object_block 
 		{
 			$$ := $1
 		}
-	| type_identifier untyped_multiple_attr_object_block
+	| type_identifier untyped_container_attr_object_block
 		{
 			-- probably should set type name on owning attribute - it doesn't belong on each 
 			-- object, since it is essentially a constraint
@@ -257,26 +260,26 @@ multiple_attr_object_block: untyped_multiple_attr_object_block
 	;
 
 --
--- An untyped_multiple_attr_object_block is a block of the form:
+-- An untyped_container_attr_object_block is a block of the form:
 --	<
 --		[key1] = <...>
 --		[key2] = <...>
 --		[keyN] = <...>
 --	>
 --
-untyped_multiple_attr_object_block: multiple_attr_object_block_head keyed_objects SYM_END_DBLOCK
+untyped_container_attr_object_block: container_attr_object_block_head keyed_objects SYM_END_DBLOCK
 		{
 			if complex_object_nodes.item.is_addressable and attr_nodes.item.is_generic then
 				-- pop the generic attr node
 debug("dADL_parse")
-	io.put_string(indent + "multiple_attr_object_block: POP attr node (" +  
+	io.put_string(indent + "container_attr_object_block: POP attr node (" +  
 		attr_nodes.item.rm_attr_name+ ")%N")
 	indent.remove_tail(1)
 end
 				attr_nodes.remove
 
 debug("dADL_parse")
-	io.put_string(indent + "multiple_attr_object_block: POP Object node(" + 
+	io.put_string(indent + "container_attr_object_block: POP Object node(" + 
 		complex_object_nodes.item.node_id + ")%N")
 	indent.remove_tail(1)
 end
@@ -301,15 +304,15 @@ end
 --		>
 --	>
 -- 
-multiple_attr_object_block_head: SYM_START_DBLOCK
+container_attr_object_block_head: SYM_START_DBLOCK
 		{
-			if obj_id /= Void then
+			if obj_key /= Void then
 				-- we are in a multi-block which is the value of a keyed object
 				-- so create the object with the key id
-				create complex_object_node.make_identified(obj_id)
+				create complex_object_node.make_identified(obj_key)
 				if not attr_nodes.item.has_child_with_id(complex_object_node.node_id) then
 debug("dADL_parse")
-	io.put_string(indent + "multiple_attr_object_block_head; attr_nodes(<<" + 
+	io.put_string(indent + "container_attr_object_block_head; attr_nodes(<<" + 
 		attr_nodes.item.rm_attr_name + ">>).item.put_child(complex_object_node(" + 
 		complex_object_node.node_id + "))%N")
 end
@@ -319,7 +322,7 @@ end
 				end
 
 debug("dADL_parse")
-	io.put_string(indent + "multiple_attr_object_block_head: PUSH Obj node%N")
+	io.put_string(indent + "container_attr_object_block_head: PUSH Obj node%N")
 	indent.append("%T")
 end
 				complex_object_nodes.extend(complex_object_node)
@@ -327,12 +330,12 @@ end
 				-- now create a generic attribute node to stand for the hidden attribute of the 
 				-- generic object, e.g. it might be List<T>.items or whatever
 debug("dADL_parse")
-	io.put_string(indent + "multiple_attr_object_block_head: create_attr_node.make_multiple_generic%N")
+	io.put_string(indent + "container_attr_object_block_head: create_attr_node.make_multiple_generic%N")
 end
 				create attr_node.make_multiple_generic
 
 debug("dADL_parse")
-	io.put_string(indent + "multiple_attr_object_block_head: complex_object_node(" + 
+	io.put_string(indent + "container_attr_object_block_head: complex_object_node(" + 
 			complex_object_node.node_id + ").put_attribute(" + attr_node.rm_attr_name + ")%N")
 end
 				if not complex_object_node.has_attribute(attr_node.rm_attr_name) then
@@ -342,7 +345,7 @@ end
 				end
 
 debug("dADL_parse")
-	io.put_string(indent + "multiple_attr_object_block_head: PUSH attr node%N")
+	io.put_string(indent + "container_attr_object_block_head: PUSH attr node%N")
 	indent.append("%T")
 end
 				attr_nodes.extend(attr_node)
@@ -374,10 +377,10 @@ end
 
 object_key: '[' primitive_value ']'
 		{
-			obj_id := $2.out
+			obj_key := $2.out
 
 debug("dADL_parse")
-	io.put_string(indent + "object_key: " + obj_id + 
+	io.put_string(indent + "object_key: " + obj_key + 
 		" (setting " + attr_nodes.item.rm_attr_name + " to Multiple)%N")
 end
 			if not attr_nodes.is_empty then
@@ -439,10 +442,10 @@ end
 				create complex_object_node.make_anonymous
 			else
 debug("dADL_parse")
-	io.put_string(indent + "single_attr_object_complex_head: create complex_object_node.make (" + obj_id + ")%N")
+	io.put_string(indent + "single_attr_object_complex_head: create complex_object_node.make (" + obj_key + ")%N")
 end
-				create complex_object_node.make_identified(obj_id)
-				obj_id := Void
+				create complex_object_node.make_identified(obj_key)
+				obj_key := Void
 			end
 
 			-- now put the new object under its attribute, if one exists
@@ -510,45 +513,45 @@ end
 
 primitive_object: primitive_value
 		{
-			if obj_id /= Void then
-				create {DT_PRIMITIVE_OBJECT} $$.make_identified($1, obj_id)
-				obj_id := Void
+			if obj_key /= Void then
+				create {DT_PRIMITIVE_OBJECT} $$.make_identified($1, obj_key)
+				obj_key := Void
 			else
 				create {DT_PRIMITIVE_OBJECT} $$.make_anonymous($1)
 			end
 		}
 	| primitive_list_value
 		{
-			if obj_id /= Void then
-				create {DT_PRIMITIVE_OBJECT_LIST} $$.make_identified($1, obj_id)
-				obj_id := Void
+			if obj_key /= Void then
+				create {DT_PRIMITIVE_OBJECT_LIST} $$.make_identified($1, obj_key)
+				obj_key := Void
 			else
 				create {DT_PRIMITIVE_OBJECT_LIST} $$.make_anonymous($1)
 			end
 		}
 	| primitive_interval_value
 		{
-			if obj_id /= Void then
-				create {DT_PRIMITIVE_OBJECT_INTERVAL} $$.make_identified($1, obj_id)
-				obj_id := Void
+			if obj_key /= Void then
+				create {DT_PRIMITIVE_OBJECT_INTERVAL} $$.make_identified($1, obj_key)
+				obj_key := Void
 			else
 				create {DT_PRIMITIVE_OBJECT_INTERVAL} $$.make_anonymous($1)
 			end
 		}
 	| term_code
 		{
-			if obj_id /= Void then
-				create {DT_PRIMITIVE_OBJECT} $$.make_identified($1, obj_id)
-				obj_id := Void
+			if obj_key /= Void then
+				create {DT_PRIMITIVE_OBJECT} $$.make_identified($1, obj_key)
+				obj_key := Void
 			else
 				create {DT_PRIMITIVE_OBJECT} $$.make_anonymous($1)
 			end
 		}
 	| term_code_list_value
 		{
-			if obj_id /= Void then
-				create {DT_PRIMITIVE_OBJECT_LIST} $$.make_identified($1, obj_id)
-				obj_id := Void
+			if obj_key /= Void then
+				create {DT_PRIMITIVE_OBJECT_LIST} $$.make_identified($1, obj_key)
+				obj_key := Void
 			else
 				create {DT_PRIMITIVE_OBJECT_LIST} $$.make_anonymous($1)
 			end
@@ -1366,18 +1369,18 @@ end
 
 absolute_path_object_value: absolute_path
 		{
-			if obj_id /= Void then
-				create {DT_OBJECT_REFERENCE} $$.make_identified($1, obj_id)
-				obj_id := Void
+			if obj_key /= Void then
+				create {DT_OBJECT_REFERENCE} $$.make_identified($1, obj_key)
+				obj_key := Void
 			else
 				create {DT_OBJECT_REFERENCE} $$.make_anonymous($1)
 			end
 		}
 	| absolute_path_list
 		{
-			if obj_id /= Void then
-				create {DT_OBJECT_REFERENCE_LIST} $$.make_identified($1, obj_id)
-				obj_id := Void
+			if obj_key /= Void then
+				create {DT_OBJECT_REFERENCE_LIST} $$.make_identified($1, obj_key)
+				obj_key := Void
 			else
 				create {DT_OBJECT_REFERENCE_LIST} $$.make_anonymous($1)
 			end
@@ -1534,7 +1537,7 @@ feature {NONE} -- Parse Tree
 	attr_nodes: ARRAYED_STACK [DT_ATTRIBUTE_NODE]
 	attr_node: DT_ATTRIBUTE_NODE
 
-	obj_id: STRING
+	obj_key: STRING
 			-- qualifier of last rel name; use for next object creation
 
 	rm_attr_name: STRING

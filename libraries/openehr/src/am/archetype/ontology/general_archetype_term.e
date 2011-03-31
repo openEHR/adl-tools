@@ -228,14 +228,14 @@ feature -- Factory
 			code_set: Result.code.same_string (a_code)
 			same_keys: Result.keys.is_deep_equal (keys)
 			different_items: keys.for_all (
-								agent (key: STRING; original_items, new_items: like items): BOOLEAN
-									local
-										original, new: STRING
-									do
-										original := original_items.item (key)
-										new := new_items.item (key)
-										Result := new.has_substring (original) and not new.is_equal (original)
-									end (?, items, Result.items))
+				agent (key: STRING; original_items, new_items: like items): BOOLEAN
+					local
+						original, new: STRING
+					do
+						original := original_items.item (key)
+						new := new_items.item (key)
+						Result := new.has_substring (original) and not new.is_equal (original)
+					end (?, items, Result.items))
 		end
 
 feature {NONE} -- Implementation
