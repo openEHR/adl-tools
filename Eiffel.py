@@ -236,12 +236,15 @@ def ecf_scanner(node, env, path):
 		 * If 'location' is a nested cluster, prefixing with the location of the parent element (recursively).
 		"""
 		result = ''
+		ecf_config_path = os.path.dirname(os.path.abspath(str(node)))
 
 		for token in ecf_environment_variable_regex.findall(element.attributes['location'].value):
 			if token[0] <> r'$':
 				result += token
 			elif token == r'$|':
 				result += element_location(element.parentNode) + '/'
+			elif token == r'$ECF_CONFIG_PATH':
+				result += ecf_config_path
 			else:
 				s = environment_variable(env, token)
 
@@ -253,9 +256,9 @@ def ecf_scanner(node, env, path):
 		result = result.replace('\\', '/')
 
 		if not os.path.isabs(result):
-			result = os.path.join(os.path.dirname(str(node)), result)
+			result = os.path.join(ecf_config_path, result)
 
-		return os.path.abspath(result)
+		return result
 
 	result = []
 	ecf_as_xml = xml.dom.minidom.parse(str(node))
