@@ -3,7 +3,7 @@ import os, shutil, re
 EnsurePythonVersion(2, 4)
 EnsureSConsVersion(1, 0, 0)
 
-env = Environment(ENV = os.environ, tools = ['default', 'Eiffel'], toolpath = ['.'])
+env = Environment(ENV = os.environ, tools = ['default', 'Eiffel'], toolpath = ['scripts'])
 
 if env['PLATFORM'] == 'win32': platform = 'windows'
 if env['PLATFORM'] == 'posix': platform = 'linux'
