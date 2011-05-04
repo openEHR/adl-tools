@@ -84,7 +84,9 @@ feature -- Initialisation
 			-- Once resources and event log are initialised, call `application_initialise', to be defined by
 			-- descendant applications. If that works, open all media.
 		do
+			config_file_make (user_config_file_path)
 			application_register
+
 			if not application_registering then
 				app_env_initialise
 				if app_env_is_valid then
