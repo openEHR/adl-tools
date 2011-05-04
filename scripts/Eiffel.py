@@ -320,7 +320,7 @@ def environment_variable(env, var):
 	If undefined and it is one of the standard EiffelStudio variables, a sensible platform-specific assumption is used; else None.
 	"""
 	result = None
-	var = var.lstrip('$(').rstrip(')')
+	var = var.lstrip('$').lstrip('(').rstrip(')')
 
 	if env['ENV'].has_key(var):
 		result = env['ENV'][var]
