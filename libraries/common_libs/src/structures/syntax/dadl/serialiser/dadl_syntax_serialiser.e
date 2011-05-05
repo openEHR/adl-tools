@@ -57,27 +57,23 @@ feature -- Visitor
 	start_attribute_node (a_node: DT_ATTRIBUTE_NODE; depth: INTEGER)
 			-- start serialising a DT_ATTRIBUTE_NODE
 		do
-	--		if not a_node.is_generic then
-				last_result.append(create_indent(depth//2 + multiple_attr_count) +
-						apply_style(a_node.rm_attr_name, STYLE_IDENTIFIER) +  format_item(FMT_SPACE))
-				last_result.append(apply_style(symbol(SYM_EQ), STYLE_OPERATOR) + format_item(FMT_SPACE))
-				if a_node.is_multiple then
-					multiple_attr_count := multiple_attr_count + 1
-					last_result.append(symbol(SYM_START_DBLOCK) + format_item(FMT_NEWLINE))
-				end
-	--		end
+			last_result.append(create_indent(depth//2 + multiple_attr_count) +
+					apply_style(a_node.rm_attr_name, STYLE_IDENTIFIER) +  format_item(FMT_SPACE))
+			last_result.append(apply_style(symbol(SYM_EQ), STYLE_OPERATOR) + format_item(FMT_SPACE))
+			if a_node.is_multiple then
+				multiple_attr_count := multiple_attr_count + 1
+				last_result.append(symbol(SYM_START_DBLOCK) + format_item(FMT_NEWLINE))
+			end
 		end
 
 	end_attribute_node (a_node: DT_ATTRIBUTE_NODE; depth: INTEGER)
 			-- end serialising an DT_ATTRIBUTE_NODE
 		do
 			last_object_simple := False
-	--		if not a_node.is_generic then
-				if a_node.is_multiple then
-					multiple_attr_count := multiple_attr_count - 1
-					last_result.append(create_indent(depth//2 + multiple_attr_count) + symbol(SYM_END_DBLOCK) + format_item(FMT_NEWLINE))
-				end
-	--		end
+			if a_node.is_multiple then
+				multiple_attr_count := multiple_attr_count - 1
+				last_result.append(create_indent(depth//2 + multiple_attr_count) + symbol(SYM_END_DBLOCK) + format_item(FMT_NEWLINE))
+			end
 		end
 
 	start_primitive_object (a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER)

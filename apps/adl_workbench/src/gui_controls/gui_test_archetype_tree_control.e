@@ -63,6 +63,10 @@ feature -- Definitions
 
 	Regression_test_key: STRING = "Regression"
 
+	Regression_fail_code: STRING = "FAIL"
+
+	Regression_pass_code: STRING = "PASS"
+
 feature {NONE} -- Initialisation
 
 	make (a_main_window: attached MAIN_WINDOW)
@@ -388,7 +392,7 @@ feature {NONE} -- Tests
 			amp: ARCHETYPE_MINI_PARSER
 		do
 			if regression_test_on then
-				val_code := ""
+				create val_code.make_empty
 				create amp
 				if target.has_legacy_flat_file then
 					other_details := amp.extract_other_details (target.legacy_flat_text)
@@ -405,10 +409,10 @@ feature {NONE} -- Tests
 				-- is in the errors or warnings list from a recent compilation. This list may contain slight variants of the
 				-- official codes, e.g. "VSONIRocc" which are used to distinguish multiple error messages to do with the same
 				-- validity condition. Therefore the comparison is not as simple as just doing compiler_result_codes.has(test_code)
-				if attached val_code then
+				if not val_code.is_empty then
 					if target.is_valid then
-						if not val_code.is_equal ("FAIL") and
-							(val_code.is_equal ("PASS") or target.errors.warning_codes.there_exists (agent (str: STRING):BOOLEAN do Result := str.starts_with (val_code) end)) and
+						if not val_code.is_equal (Regression_fail_code) and
+							(val_code.is_equal (Regression_pass_code) or target.errors.warning_codes.there_exists (agent (str: STRING):BOOLEAN do Result := str.starts_with (val_code) end)) and
 							not target.errors.has_errors
 						then
 							Result := test_passed
@@ -416,7 +420,7 @@ feature {NONE} -- Tests
 							Result := test_failed
 						end
 					else
-						if (val_code.is_equal ("FAIL") or target.errors.error_codes.there_exists (agent (str: STRING):BOOLEAN do Result := str.starts_with (val_code) end)) then
+						if (val_code.is_equal (Regression_fail_code) or target.errors.error_codes.there_exists (agent (str: STRING):BOOLEAN do Result := str.starts_with (val_code) end)) then
 							Result := test_passed
 						else
 							Result := test_failed

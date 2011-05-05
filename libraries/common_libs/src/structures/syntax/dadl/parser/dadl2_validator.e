@@ -538,9 +538,9 @@ debug ("GEYACC")
 end
 
 			output := complex_object_nodes.item
-			debug("dADL_parse")
-				io.put_string("Object data definition validated (non-delimited)%N")
-			end
+debug("dADL_parse")
+	io.put_string("Object data definition validated (non-delimited)%N")
+end
 			accept
 		
 if yy_parsing_status >= yyContinue then
@@ -554,9 +554,9 @@ debug ("GEYACC")
 end
 
 			output := yyvs13.item (yyvsp13)
-			debug("dADL_parse")
-				io.put_string("Object data definition validated%N")
-			end
+debug("dADL_parse")
+	io.put_string("Object data definition validated%N")
+end
 			accept
 		
 if yy_parsing_status >= yyContinue then
@@ -587,9 +587,9 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 133")
 end
 
-			debug("dADL_parse")
-				io.put_string("dADL text NOT validated%N")
-			end
+debug("dADL_parse")
+	io.put_string("dADL text NOT validated%N")
+end
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -602,9 +602,9 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 145")
 end
 
-			debug("dADL_parse")
-				io.put_string(indent + "attr_val complete%N")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "attr_val complete%N")
+end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -616,9 +616,9 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 151")
 end
 
-			debug("dADL_parse")
-				io.put_string(indent + "attr_val complete%N")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "attr_val complete%N")
+end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -631,9 +631,9 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 157")
 end
 
-			debug("dADL_parse")
-				io.put_string(indent + "attr_val complete%N")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "attr_val complete%N")
+end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
@@ -646,10 +646,10 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 166")
 end
 
-			debug("dADL_parse")
-				io.put_string(indent + "attr_val: POP attr node (" +  attr_nodes.item.rm_attr_name+ ")%N")
-				indent.remove_tail(1)
-			end
+debug("dADL_parse")
+	io.put_string(indent + "attr_val: POP attr node (" +  attr_nodes.item.rm_attr_name+ ")%N")
+	indent.remove_tail(1)
+end
 			attr_nodes.remove
 		
 if yy_parsing_status >= yyContinue then
@@ -674,21 +674,16 @@ end
 				complex_object_nodes.extend(complex_object_node)
 			end
 
-			-- if we got "_items" then it is a container attribute
-			if yyvs4.item (yyvsp4).is_equal (Container_attr_name) then
-				create attr_node.make_multiple_generic
-			else
 debug("dADL_parse")
 	io.put_string(indent + "attr_id: create_attr_node.make_single(<<" + yyvs4.item (yyvsp4) + ">>)%N")
 end
-				create attr_node.make_single(yyvs4.item (yyvsp4))
-			end
+			create attr_node.make_single(yyvs4.item (yyvsp4))
 
-			if not complex_object_nodes.item.has_attribute(attr_node.rm_attr_name) then
 debug("dADL_parse")
 	io.put_string(indent + "attr_id: complex_object_nodes.item(" + complex_object_nodes.item.node_id + 
 			").put_attribute(<<" + attr_node.rm_attr_name + ">>)%N")
 end
+			if not complex_object_nodes.item.has_attribute(attr_node.rm_attr_name) then
 				complex_object_nodes.item.put_attribute(attr_node)
 			else
 				abort_with_error("VDATU", <<attr_node.rm_attr_name>>)
@@ -699,7 +694,7 @@ debug("dADL_parse")
 	indent.append("%T")
 end
 			attr_nodes.extend(attr_node)
-			obj_id := Void
+			obj_key := Void
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -724,9 +719,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 9 then
---|#line 216 "dadl2_validator.y"
+--|#line 211 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 216")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 211")
 end
 
 			abort_with_error("SDAT", Void)
@@ -737,9 +732,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 10 then
---|#line 225 "dadl2_validator.y"
+--|#line 220 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 225")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 220")
 end
 
 
@@ -766,9 +761,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 11 then
---|#line 226 "dadl2_validator.y"
+--|#line 221 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 226")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 221")
 end
 
 
@@ -795,9 +790,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 12 then
---|#line 227 "dadl2_validator.y"
+--|#line 222 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 227")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 222")
 end
 
 
@@ -824,21 +819,22 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 13 then
---|#line 230 "dadl2_validator.y"
+--|#line 223 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 230")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 223")
 end
 
-			yyval13 := yyvs13.item (yyvsp13)
+			complex_object_nodes.item.remove_attribute(attr_node.rm_attr_name)
 		
 if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvs13.put (yyval13, yyvsp13)
+	yyssp := yyssp - 2
+	yyvsp1 := yyvsp1 -1
+	yyvs1.put (yyval1, yyvsp1)
 end
 when 14 then
---|#line 234 "dadl2_validator.y"
+--|#line 229 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 234")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 229")
 end
 
 			yyval13 := yyvs13.item (yyvsp13)
@@ -848,9 +844,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs13.put (yyval13, yyvsp13)
 end
 when 15 then
---|#line 243 "dadl2_validator.y"
+--|#line 233 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 243")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 233")
 end
 
 			yyval13 := yyvs13.item (yyvsp13)
@@ -860,9 +856,21 @@ if yy_parsing_status >= yyContinue then
 	yyvs13.put (yyval13, yyvsp13)
 end
 when 16 then
---|#line 247 "dadl2_validator.y"
+--|#line 242 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 247")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 242")
+end
+
+			yyval13 := yyvs13.item (yyvsp13)
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvs13.put (yyval13, yyvsp13)
+end
+when 17 then
+--|#line 246 "dadl2_validator.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 246")
 end
 
 			-- probably should set type name on owning attribute - it doesn't belong on each 
@@ -874,24 +882,26 @@ if yy_parsing_status >= yyContinue then
 	yyvsp4 := yyvsp4 -1
 	yyvs13.put (yyval13, yyvsp13)
 end
-when 17 then
---|#line 263 "dadl2_validator.y"
+when 18 then
+--|#line 265 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 263")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 265")
 end
 
 			if complex_object_nodes.item.is_addressable and attr_nodes.item.is_generic then
 				-- pop the generic attr node
-				debug("dADL_parse")
-					io.put_string(indent + "multiple_attr_object_block: POP attr node (" +  attr_nodes.item.rm_attr_name+ ")%N")
-					indent.remove_tail(1)
-				end
+debug("dADL_parse")
+	io.put_string(indent + "container_attr_object_block: POP attr node (" +  
+		attr_nodes.item.rm_attr_name+ ")%N")
+	indent.remove_tail(1)
+end
 				attr_nodes.remove
 
-				debug("dADL_parse")
-					io.put_string(indent + "multiple_attr_object_block: POP Object node(" + complex_object_nodes.item.node_id + ")%N")
-					indent.remove_tail(1)
-				end
+debug("dADL_parse")
+	io.put_string(indent + "container_attr_object_block: POP Object node(" + 
+		complex_object_nodes.item.node_id + ")%N")
+	indent.remove_tail(1)
+end
 				yyval13 := complex_object_nodes.item
 				complex_object_nodes.remove
 			end
@@ -918,19 +928,18 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs13.put (yyval13, yyvsp13)
 end
-when 18 then
---|#line 298 "dadl2_validator.y"
+when 19 then
+--|#line 309 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 298")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 309")
 end
 
-			if obj_id /= Void then
-				-- we are in a multi-block which is the value of a keyed object
-				-- so create the object with the key id
-				create complex_object_node.make_identified(obj_id)
+			-- if obj_key is set, it means we are inside a keyed object, and we have hit more keyed objects
+			if obj_key /= Void then
+				create complex_object_node.make_identified(obj_key)
 				if not attr_nodes.item.has_child_with_id(complex_object_node.node_id) then
 debug("dADL_parse")
-	io.put_string(indent + "multiple_attr_object_block_head; attr_nodes(<<" + 
+	io.put_string(indent + "container_attr_object_block_head; attr_nodes(<<" + 
 		attr_nodes.item.rm_attr_name + ">>).item.put_child(complex_object_node(" + 
 		complex_object_node.node_id + "))%N")
 end
@@ -940,7 +949,7 @@ end
 				end
 
 debug("dADL_parse")
-	io.put_string(indent + "multiple_attr_object_block_head: PUSH Obj node%N")
+	io.put_string(indent + "container_attr_object_block_head: PUSH Obj node%N")
 	indent.append("%T")
 end
 				complex_object_nodes.extend(complex_object_node)
@@ -948,39 +957,21 @@ end
 				-- now create a generic attribute node to stand for the hidden attribute of the 
 				-- generic object, e.g. it might be List<T>.items or whatever
 debug("dADL_parse")
-	io.put_string(indent + "multiple_attr_object_block_head: create_attr_node.make_multiple_generic%N")
+	io.put_string(indent + "container_attr_object_block_head: create_attr_node.make_multiple_generic%N")
 end
 				create attr_node.make_multiple_generic
 
 debug("dADL_parse")
-	io.put_string(indent + "multiple_attr_object_block_head: complex_object_node(" + 
+	io.put_string(indent + "container_attr_object_block_head: complex_object_node(" + 
 			complex_object_node.node_id + ").put_attribute(" + attr_node.rm_attr_name + ")%N")
 end
-				if not complex_object_node.has_attribute(attr_node.rm_attr_name) then
-					complex_object_node.put_attribute(attr_node)
-				else
-					abort_with_error("VDATU", <<attr_node.rm_attr_name>>)
-				end
+				complex_object_node.put_attribute(attr_node)
 
 debug("dADL_parse")
-	io.put_string(indent + "multiple_attr_object_block_head: PUSH attr node%N")
+	io.put_string(indent + "container_attr_object_block_head: PUSH attr node%N")
 	indent.append("%T")
 end
 				attr_nodes.extend(attr_node)
-			end
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvs1.put (yyval1, yyvsp1)
-end
-when 19 then
---|#line 347 "dadl2_validator.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 347")
-end
-
-			debug("dADL_parse")
-				io.put_string(indent + "one keyed object%N")
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -993,42 +984,56 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 353")
 end
 
-			debug("dADL_parse")
-				io.put_string(indent + "multiple keyed objects%N")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "one keyed object%N")
+end
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvs1.put (yyval1, yyvsp1)
+end
+when 21 then
+--|#line 359 "dadl2_validator.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 359")
+end
+
+debug("dADL_parse")
+	io.put_string(indent + "multiple keyed objects%N")
+end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
 	yyvs1.put (yyval1, yyvsp1)
 end
-when 21 then
---|#line 361 "dadl2_validator.y"
+when 22 then
+--|#line 367 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 361")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 367")
 end
 
-			debug("dADL_parse")
-				io.put_string(indent + "(keyed object)%N")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "(keyed object)%N")
+end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
 	yyvs1.put (yyval1, yyvsp1)
 end
-when 22 then
---|#line 369 "dadl2_validator.y"
+when 23 then
+--|#line 375 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 369")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 375")
 end
 
-			obj_id := yyvs1.item (yyvsp1 - 1).out
+			obj_key := yyvs1.item (yyvsp1 - 1).out
 
-			debug("dADL_parse")
-				io.put_string(indent + "object_key: " + obj_id + 
-					" (setting " + attr_nodes.item.rm_attr_name + " to Multiple)%N")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "object_key: " + obj_key + 
+		" (setting " + attr_nodes.item.rm_attr_name + " to Multiple)%N")
+end
 			if not attr_nodes.is_empty then
 				attr_nodes.item.set_multiple
 			else
@@ -1040,30 +1045,30 @@ if yy_parsing_status >= yyContinue then
 	yyvsp1 := yyvsp1 -2
 	yyvs1.put (yyval1, yyvsp1)
 end
-when 23 then
---|#line 389 "dadl2_validator.y"
+when 24 then
+--|#line 395 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 389")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 395")
 end
 
-			debug("dADL_parse")
-				io.put_string(indent + "untyped single_attr_object_block%N")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "untyped single_attr_object_block%N")
+end
 			yyval13 := yyvs13.item (yyvsp13)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs13.put (yyval13, yyvsp13)
 end
-when 24 then
---|#line 396 "dadl2_validator.y"
+when 25 then
+--|#line 402 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 396")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 402")
 end
 
-			debug("dADL_parse")
-				io.put_string(indent + "typed single_attr_object_block; type = " + yyvs4.item (yyvsp4) + "%N")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "typed single_attr_object_block; type = " + yyvs4.item (yyvsp4) + "%N")
+end
 			yyvs13.item (yyvsp13).set_visible_type_name(yyvs4.item (yyvsp4))
 			yyval13 := yyvs13.item (yyvsp13)
 		
@@ -1072,53 +1077,17 @@ if yy_parsing_status >= yyContinue then
 	yyvsp4 := yyvsp4 -1
 	yyvs13.put (yyval13, yyvsp13)
 end
-when 25 then
---|#line 414 "dadl2_validator.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 414")
-end
-
-			debug("dADL_parse")
-				io.put_string(indent + "empty_object_complex_body: POP Object node(" + 
-					complex_object_nodes.item.node_id + ")%N")
-				indent.remove_tail(1)
-			end
-			yyval13 := complex_object_nodes.item
-			complex_object_nodes.remove
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 2
-	yyvsp13 := yyvsp13 + 1
-	yyvsp1 := yyvsp1 -2
-	if yyvsp13 >= yyvsc13 then
-		if yyvs13 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs13")
-			end
-			create yyspecial_routines13
-			yyvsc13 := yyInitial_yyvs_size
-			yyvs13 := yyspecial_routines13.make (yyvsc13)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs13")
-			end
-			yyvsc13 := yyvsc13 + yyInitial_yyvs_size
-			yyvs13 := yyspecial_routines13.resize (yyvs13, yyvsc13)
-		end
-	end
-	yyvs13.put (yyval13, yyvsp13)
-end
 when 26 then
---|#line 424 "dadl2_validator.y"
+--|#line 420 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 424")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 420")
 end
 
-			debug("dADL_parse")
-				io.put_string(indent + "single_attr_object_complex_body: POP Object node(" + 
-					complex_object_nodes.item.node_id + ")%N")
-				indent.remove_tail(1)
-			end
+debug("dADL_parse")
+	io.put_string(indent + "single_attr_object_complex_body: POP Object node(" + 
+		complex_object_nodes.item.node_id + ")%N")
+	indent.remove_tail(1)
+end
 			yyval13 := complex_object_nodes.item
 			complex_object_nodes.remove
 		
@@ -1145,33 +1114,33 @@ if yy_parsing_status >= yyContinue then
 	yyvs13.put (yyval13, yyvsp13)
 end
 when 27 then
---|#line 436 "dadl2_validator.y"
+--|#line 432 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 436")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 432")
 end
 
 			-- if parent attr is not multiple, create an anon object; else an object identified by a key
 			if attr_nodes.is_empty or else not attr_nodes.item.is_multiple then
-				debug("dADL_parse")
-					io.put_string(indent + "single_attr_object_complex_head: create complex_object_node.make_anonymous%N")
-				end
+debug("dADL_parse")
+	io.put_string(indent + "single_attr_object_complex_head: create complex_object_node.make_anonymous%N")
+end
 				create complex_object_node.make_anonymous
 			else
-				debug("dADL_parse")
-					io.put_string(indent + "single_attr_object_complex_head: create complex_object_node.make (" + obj_id + ")%N")
-				end
-				create complex_object_node.make_identified(obj_id)
-				obj_id := Void
+debug("dADL_parse")
+	io.put_string(indent + "single_attr_object_complex_head: create complex_object_node.make (" + obj_key + ")%N")
+end
+				create complex_object_node.make_identified(obj_key)
+				obj_key := Void
 			end
 
 			-- now put the new object under its attribute, if one exists
 			if not attr_nodes.is_empty then
 				if not attr_nodes.item.has_child_with_id(complex_object_node.node_id) then
-					debug("dADL_parse")
-						io.put_string(indent + "single_attr_object_complex_head: attr_nodes(<<" + 
-							attr_nodes.item.rm_attr_name + ">>).item.put_child(complex_object_node(" + 
-							complex_object_node.node_id + "))%N")
-					end
+debug("dADL_parse")
+	io.put_string(indent + "single_attr_object_complex_head: attr_nodes(<<" + 
+		attr_nodes.item.rm_attr_name + ">>).item.put_child(complex_object_node(" + 
+		complex_object_node.node_id + "))%N")
+end
 					attr_nodes.item.put_child(complex_object_node)
 				else
 					abort_with_error("VOKU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>)
@@ -1179,10 +1148,10 @@ end
 			end
 
 			-- finally, put the new object on the object stack
-			debug("dADL_parse")
-				io.put_string(indent + "single_attr_object_complex_head: PUSH Obj node%N")
-				indent.append("%T")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "single_attr_object_complex_head: PUSH Obj node%N")
+	indent.append("%T")
+end
 			complex_object_nodes.extend(complex_object_node)
 		
 if yy_parsing_status >= yyContinue then
@@ -1190,14 +1159,14 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 28 then
---|#line 478 "dadl2_validator.y"
+--|#line 474 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 478")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 474")
 end
 
-			debug("dADL_parse")
-				io.put_string(indent + "untyped primitive_object_block%N")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "untyped primitive_object_block%N")
+end
 			yyval14 := yyvs14.item (yyvsp14)
 		
 if yy_parsing_status >= yyContinue then
@@ -1205,14 +1174,14 @@ if yy_parsing_status >= yyContinue then
 	yyvs14.put (yyval14, yyvsp14)
 end
 when 29 then
---|#line 485 "dadl2_validator.y"
+--|#line 481 "dadl2_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 485")
+	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 481")
 end
 
-			debug("dADL_parse")
-				io.put_string(indent + "typed primitive_object_block; type = " + yyvs4.item (yyvsp4) + "%N")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "typed primitive_object_block; type = " + yyvs4.item (yyvsp4) + "%N")
+end
 			yyvs14.item (yyvsp14).set_visible_type_name(yyvs4.item (yyvsp4))
 			yyval14 := yyvs14.item (yyvsp14)
 		
@@ -1227,11 +1196,11 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 495")
 end
 
-			debug("dADL_parse")
-				io.put_string(indent + "untyped_primitive_object_block; attr_nodes(<<" + 
-						attr_nodes.item.rm_attr_name + ">>).item.put_child(<<" + 
-						yyvs14.item (yyvsp14).as_string + ">>)%N")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "untyped_primitive_object_block; attr_nodes(<<" + 
+			attr_nodes.item.rm_attr_name + ">>).item.put_child(<<" + 
+			yyvs14.item (yyvsp14).as_string + ">>)%N")
+end
 			if not attr_nodes.item.has_child_with_id(yyvs14.item (yyvsp14).node_id) then
 				attr_nodes.item.put_child(yyvs14.item (yyvsp14))
 				yyval14 := yyvs14.item (yyvsp14)
@@ -1250,9 +1219,9 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 511")
 end
 
-			if obj_id /= Void then
-				create {DT_PRIMITIVE_OBJECT} yyval14.make_identified(yyvs1.item (yyvsp1), obj_id)
-				obj_id := Void
+			if obj_key /= Void then
+				create {DT_PRIMITIVE_OBJECT} yyval14.make_identified(yyvs1.item (yyvsp1), obj_key)
+				obj_key := Void
 			else
 				create {DT_PRIMITIVE_OBJECT} yyval14.make_anonymous(yyvs1.item (yyvsp1))
 			end
@@ -1285,9 +1254,9 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 520")
 end
 
-			if obj_id /= Void then
-				create {DT_PRIMITIVE_OBJECT_LIST} yyval14.make_identified(yyvs28.item (yyvsp28), obj_id)
-				obj_id := Void
+			if obj_key /= Void then
+				create {DT_PRIMITIVE_OBJECT_LIST} yyval14.make_identified(yyvs28.item (yyvsp28), obj_key)
+				obj_key := Void
 			else
 				create {DT_PRIMITIVE_OBJECT_LIST} yyval14.make_anonymous(yyvs28.item (yyvsp28))
 			end
@@ -1320,9 +1289,9 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 529")
 end
 
-			if obj_id /= Void then
-				create {DT_PRIMITIVE_OBJECT_INTERVAL} yyval14.make_identified(yyvs36.item (yyvsp36), obj_id)
-				obj_id := Void
+			if obj_key /= Void then
+				create {DT_PRIMITIVE_OBJECT_INTERVAL} yyval14.make_identified(yyvs36.item (yyvsp36), obj_key)
+				obj_key := Void
 			else
 				create {DT_PRIMITIVE_OBJECT_INTERVAL} yyval14.make_anonymous(yyvs36.item (yyvsp36))
 			end
@@ -1355,9 +1324,9 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 538")
 end
 
-			if obj_id /= Void then
-				create {DT_PRIMITIVE_OBJECT} yyval14.make_identified(yyvs11.item (yyvsp11), obj_id)
-				obj_id := Void
+			if obj_key /= Void then
+				create {DT_PRIMITIVE_OBJECT} yyval14.make_identified(yyvs11.item (yyvsp11), obj_key)
+				obj_key := Void
 			else
 				create {DT_PRIMITIVE_OBJECT} yyval14.make_anonymous(yyvs11.item (yyvsp11))
 			end
@@ -1390,9 +1359,9 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 547")
 end
 
-			if obj_id /= Void then
-				create {DT_PRIMITIVE_OBJECT_LIST} yyval14.make_identified(yyvs27.item (yyvsp27), obj_id)
-				obj_id := Void
+			if obj_key /= Void then
+				create {DT_PRIMITIVE_OBJECT_LIST} yyval14.make_identified(yyvs27.item (yyvsp27), obj_key)
+				obj_key := Void
 			else
 				create {DT_PRIMITIVE_OBJECT_LIST} yyval14.make_anonymous(yyvs27.item (yyvsp27))
 			end
@@ -5237,11 +5206,11 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1351")
 end
 
-			debug("dADL_parse")
-				io.put_string(indent + "object_reference_block; attr_nodes(<<" + 
-						attr_nodes.item.rm_attr_name + ">>).item.put_child(<<" + 
-						yyvs14.item (yyvsp14).as_string + ">>)%N")
-			end
+debug("dADL_parse")
+	io.put_string(indent + "object_reference_block; attr_nodes(<<" + 
+			attr_nodes.item.rm_attr_name + ">>).item.put_child(<<" + 
+			yyvs14.item (yyvsp14).as_string + ">>)%N")
+end
 			if not attr_nodes.item.has_child_with_id(yyvs14.item (yyvsp14).node_id) then
 				attr_nodes.item.put_child(yyvs14.item (yyvsp14))
 				yyval14 := yyvs14.item (yyvsp14)
@@ -5260,9 +5229,9 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1367")
 end
 
-			if obj_id /= Void then
-				create {DT_OBJECT_REFERENCE} yyval14.make_identified(yyvs15.item (yyvsp15), obj_id)
-				obj_id := Void
+			if obj_key /= Void then
+				create {DT_OBJECT_REFERENCE} yyval14.make_identified(yyvs15.item (yyvsp15), obj_key)
+				obj_key := Void
 			else
 				create {DT_OBJECT_REFERENCE} yyval14.make_anonymous(yyvs15.item (yyvsp15))
 			end
@@ -5295,9 +5264,9 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'dadl2_validator.y' at line 1376")
 end
 
-			if obj_id /= Void then
-				create {DT_OBJECT_REFERENCE_LIST} yyval14.make_identified(yyvs17.item (yyvsp17), obj_id)
-				obj_id := Void
+			if obj_key /= Void then
+				create {DT_OBJECT_REFERENCE_LIST} yyval14.make_identified(yyvs17.item (yyvsp17), obj_key)
+				obj_key := Void
 			else
 				create {DT_OBJECT_REFERENCE_LIST} yyval14.make_anonymous(yyvs17.item (yyvsp17))
 			end
@@ -5411,9 +5380,9 @@ debug ("GEYACC")
 end
 
 			create yyval15.make_root
-			debug("OG_PATH_parse")
-				io.put_string("....absolute_path (root); %N")
-			end
+debug("OG_PATH_parse")
+	io.put_string("....absolute_path (root); %N")
+end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -5445,9 +5414,9 @@ end
 
 			yyval15 := yyvs15.item (yyvsp15)
 			yyval15.set_absolute
-			debug("OG_PATH_parse")
-				io.put_string("....absolute_path; %N")
-			end
+debug("OG_PATH_parse")
+	io.put_string("....absolute_path; %N")
+end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -5462,9 +5431,9 @@ end
 
 			yyval15 := yyvs15.item (yyvsp15 - 1)
 			yyval15.append_path(yyvs15.item (yyvsp15))
-			debug("OG_PATH_parse")
-				io.put_string("....absolute_path (appended relative path); %N")
-			end
+debug("OG_PATH_parse")
+	io.put_string("....absolute_path (appended relative path); %N")
+end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
@@ -5524,9 +5493,9 @@ debug ("GEYACC")
 end
 
 			create yyval16.make_with_object_id(yyvs4.item (yyvsp4 - 1), yyvs4.item (yyvsp4))
-			debug("OG_PATH_parse")
-				io.put_string("...path_segment: " + yyvs4.item (yyvsp4 - 1) + "[" + yyvs4.item (yyvsp4) + "]%N")
-			end
+debug("OG_PATH_parse")
+	io.put_string("...path_segment: " + yyvs4.item (yyvsp4 - 1) + "[" + yyvs4.item (yyvsp4) + "]%N")
+end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 4
@@ -5558,9 +5527,9 @@ debug ("GEYACC")
 end
 
 			create yyval16.make(yyvs4.item (yyvsp4))
-			debug("OG_PATH_parse")
-				io.put_string("...path_segment: " + yyvs4.item (yyvsp4) + "%N")
-			end
+debug("OG_PATH_parse")
+	io.put_string("...path_segment: " + yyvs4.item (yyvsp4) + "%N")
+end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -5652,8 +5621,8 @@ feature {NONE} -- Table templates
 		once
 			Result := yyfixed_array (<<
 			    0,   90,   90,   90,   91,   91,   91,   92,   93,   93,
-			   94,   94,   94,   62,   62,   60,   60,   61,   95,   96,
-			   96,   97,   98,   58,   58,   59,   59,  100,   64,   64,
+			   94,   94,   94,   94,   62,   62,   60,   60,   61,   95,
+			   96,   96,   97,   98,   58,   58,   59,  100,   64,   64,
 			   63,   66,   66,   66,   66,   66,   99,   99,   99,   99,
 			   99,   99,   99,   99,   99,   99,   82,   82,   82,   82,
 			   82,   82,   82,   82,   82,   89,   89,   89,   89,   89,
@@ -5679,11 +5648,11 @@ feature {NONE} -- Table templates
 			    1,    1,    1,    4,    4,    4,    1,    4,   13,   13,
 			   13,   13,   13,    1,    1,    1,    1,    1,    4,    4,
 			    1,   13,   13,    1,    1,    1,    1,    1,    1,    1,
-			    1,    1,    1,    1,    1,    1,    4,   13,   14,   14,
-			   14,    1,    1,    1,    1,    1,    5,    4,    4,    4,
-			    4,    4,    4,    3,    2,    2,    3,    6,    5,    7,
-			    8,    9,   10,   12,    1,    1,    1,    1,    1,    1,
-			    1,    4,    1,    4,    4,    2,    3,    6,    5,    7,
+			    1,    1,    1,    1,    1,    4,   13,   14,   14,   14,
+			    1,    1,    1,    1,    1,    5,    4,    4,    4,    4,
+			    4,    4,    3,    2,    2,    3,    6,    5,    7,    8,
+			    9,   10,   12,    1,    1,    1,    1,    1,    1,    1,
+			    4,    1,    1,    4,    4,    2,    3,    6,    5,    7,
 			    8,    9,   10,   11,   14,   14,   15,   17,   18,   19,
 			   20,   21,   22,   23,   24,   25,   26,   27,   28,   29,
 
@@ -5729,19 +5698,19 @@ feature {NONE} -- Table templates
 			-- Template for `yydefact'
 		once
 			Result := yyfixed_array (<<
-			    0,    0,   27,    0,   64,   63,    3,    0,   13,   23,
-			   14,   15,    2,    1,    4,    0,    0,    0,    0,    0,
-			    9,   24,   16,    0,    5,    0,    0,    0,   19,    0,
-			   25,    0,   62,   61,    6,   27,    0,   10,   28,   11,
-			   12,    7,    0,    0,  100,   99,  104,  165,  147,  134,
-			  121,  108,   65,   84,   69,   37,   38,   39,   40,   41,
-			   43,   42,   44,   45,    0,   36,   17,   20,    0,   26,
-			  172,  161,    0,  160,   65,   37,   38,   39,   40,   41,
+			    0,    0,   27,    0,   64,   63,    3,    0,   14,   24,
+			   15,   16,    2,    1,    4,    0,    0,    0,    0,    0,
+			    9,   25,   17,    0,    5,    0,    0,    0,   20,    0,
+			    0,   62,   61,    6,   27,    0,   10,   28,   11,   12,
+			    7,    0,    0,  100,   99,  104,  165,  147,  134,  121,
+			  108,   65,   84,   69,   37,   38,   39,   40,   41,   43,
+			   42,   44,   45,    0,   36,   18,   21,    0,   26,  172,
+			  161,    0,   13,  160,   65,   37,   38,   39,   40,   41,
 			   43,   42,   44,   34,    0,    0,  167,  168,   46,   47,
 			   48,   50,   49,   51,   52,   53,   54,   35,   32,   55,
 
 			   56,   58,   57,   59,   60,   33,   31,   27,   29,   86,
-			   71,   85,   70,   22,   21,  178,  173,  175,    0,    0,
+			   71,   85,   70,   23,   22,  178,  173,  175,    0,    0,
 			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
 			    0,    0,    0,    0,    0,    0,    0,    0,   30,  166,
 			    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
@@ -5771,162 +5740,162 @@ feature {NONE} -- Table templates
 			-- Template for `yydefgoto'
 		once
 			Result := yyfixed_array (<<
-			   36,   75,   76,   77,   78,   79,   80,   81,   82,   83,
-			   63,    8,    9,   10,   11,   37,   38,   39,   40,   84,
+			   35,   75,   76,   77,   78,   79,   80,   81,   82,   83,
+			   62,    8,    9,   10,   11,   36,   37,   38,   39,   84,
 			   85,   86,  116,  117,   87,   88,   89,   90,   91,   92,
 			   93,   94,   95,   96,   97,   98,   99,  100,  101,  102,
-			  103,  104,  105,  322,   13,   14,   15,   41,   16,   27,
-			   28,   29,  106,   17,   65, yyDummy>>)
+			  103,  104,  105,  322,   13,   14,   15,   40,   16,   27,
+			   28,   29,  106,   17,   64, yyDummy>>)
 		end
 
 	yypact_template: SPECIAL [INTEGER]
 			-- Template for `yypact'
 		once
 			Result := yyfixed_array (<<
-			  183,  263,  347,  122, -32768, -32768, -32768,  345, -32768, -32768,
-			 -32768, -32768, -32768,    6, -32768,  348,  346,  196,  342,  340,
-			 -32768, -32768, -32768,  341, -32768,  195,  271,  100, -32768,  344,
-			 -32768,    2, -32768, -32768, -32768,   20,  343, -32768, -32768, -32768,
-			 -32768, -32768,  262,  251, -32768, -32768, -32768, -32768, -32768, -32768,
+			   70,  144,  343,  120, -32768, -32768, -32768,  348, -32768, -32768,
+			 -32768, -32768, -32768,    4, -32768,  341,  342,  339,  338,  337,
+			 -32768, -32768, -32768,  339, -32768,   68,  271,  162, -32768,  340,
+			  149, -32768, -32768, -32768,  168,  336, -32768, -32768, -32768, -32768,
+			 -32768,  111,   87, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768,  290, -32768, -32768, -32768,  195, -32768,
-			  319, -32768,  291, -32768,  338,  337,  336,  335,  334,  333,
-			  332,  330,  329,  328,  327,  326,  207,  325,  324,  323,
-			  320,  318,  317,  316,  315,  314,  311,  298, -32768, -32768,
+			 -32768, -32768, -32768,  298, -32768, -32768, -32768,   68, -32768,  311,
+			 -32768,  291, -32768, -32768,  335,  334,  333,  332,  331,  330,
+			  329,  328,  327,  326,  325,  324,  108,  323,  322,  321,
+			  320,  317,  316,  315,  314,  313,  297,  296, -32768, -32768,
 
-			 -32768, -32768, -32768, -32768, -32768, -32768, -32768,  168, -32768, -32768,
-			 -32768, -32768, -32768, -32768, -32768,  310,  250, -32768,    7,    7,
-			    7,    7,  221,  219,  217,  215,  213,  204,   64,   18,
-			  129,   56,   91,   -8,  133,  188,  182,   55, -32768, -32768,
-			  319,  -21,  281,  331,   36,   29,  322,   58,  261,  144,
-			  210,   -5,   52,  321,  319,  313,  312,  309,  308,  307,
-			  306,  303,  300,  299,  294,  293,  292,  198,  197,  193,
-			  184,  128,   93,  289,  288,  287,  286,  285,  284, -32768,
-			   31, -32768,  118, -32768,  112, -32768,  170, -32768,   61, -32768,
-			  179, -32768, -32768,  305,  304, -32768, -32768,  302,  301, -32768,
+			 -32768, -32768, -32768, -32768, -32768, -32768, -32768,   23, -32768, -32768,
+			 -32768, -32768, -32768, -32768, -32768,  310,  263, -32768,   11,   11,
+			   11,   11,  221,  219,  217,  215,  213,  211,  136,    2,
+			  129,  -10,   62,   35,  194,  196,  187,  166, -32768, -32768,
+			  311,   -7,  295,  319,   16,   20,  290,   55,  262,  257,
+			  258,  133,  103,  318,  311,  312,  309,  308,  307,  306,
+			  305,  304,  303,  300,  299,  294,  292,  204,  200,  199,
+			  198,   98,  -15,  289,  288,  287,  286,  285,  281, -32768,
+			   34, -32768,  118, -32768,   57, -32768,  180, -32768,  155, -32768,
+			  186, -32768, -32768,  302,  301, -32768, -32768,  293,  283, -32768,
 
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768, -32768,  250, -32768,  241,  241, -32768,
-			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,  236,
+			 -32768, -32768, -32768, -32768, -32768,  263, -32768,  261,  261, -32768,
+			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,  256,
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768,   24, -32768,  113, -32768,   48, -32768,
-			  140, -32768,   32, -32768,  153, -32768, -32768, -32768, -32768, -32768,
-			 -32768,   36,  279,   29,  272,  261,  268,  210,  267,  144,
-			  265,   -5,  260, -32768,   36,  259,   29,  252,  261,  242,
-			  210,  238,  144,  234,   -5,  232,  227, -32768,  223, -32768,
-			  208, -32768,  206, -32768,  202, -32768,  200, -32768,  192, -32768,
+			 -32768, -32768, -32768, -32768,   25, -32768,  113, -32768,   43, -32768,
+			  179, -32768,  138, -32768,  182, -32768, -32768, -32768, -32768, -32768,
+			 -32768,   16,  268,   20,  267,  262,  265,  258,  260,  257,
+			  259,  133,  252, -32768,   16,  251,   20,  247,  262,  245,
+			  258,  243,  257,  241,  133,  240,  238, -32768,  234, -32768,
+			  232, -32768,  230, -32768,  227, -32768,  225, -32768,  223, -32768,
 
-			  185, -32768,  162, -32768,  150, -32768,  123, -32768,   86, -32768,
+			  206, -32768,  202, -32768,  191, -32768,  175, -32768,  150, -32768,
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768,   14,    5, -32768, yyDummy>>)
+			 -32768, -32768,   84,    9, -32768, yyDummy>>)
 		end
 
 	yypgoto_template: SPECIAL [INTEGER]
 			-- Template for `yypgoto'
 		once
 			Result := yyfixed_array (<<
-			  351,   17,   10,  -23,  -20,  -14,  -18,  -22,  -26,    8,
-			 -32768, -32768,   19, -32768,   13,  350,  352, -32768, -32768, -32768,
-			 -32768,  130,  205,  189, -32768, -32768, -32768, -32768, -32768, -32768,
+			  352,   17,   10,  -23,  -20,  -14,  -18,  -22,  -26,   66,
+			 -32768, -32768,   -5, -32768,   -6,  350,  349, -32768, -32768, -32768,
+			 -32768,  112,  207,  189, -32768, -32768, -32768, -32768, -32768, -32768,
 			 -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768, -32768,
-			 -32768, -32768, -32768, -32768,  339,  136, -32768,  274, -32768, -32768,
-			  360, -32768,  357, -32768, -32768, yyDummy>>)
+			 -32768, -32768, -32768, -32768,  351,  130, -32768,  275, -32768, -32768,
+			  358, -32768,  357, -32768, -32768, yyDummy>>)
 		end
 
 	yytable_template: SPECIAL [INTEGER]
 			-- Template for `yytable'
 		once
 			Result := yyfixed_array (<<
-			   62,   51,  216,   57,   61,  324,   58,   48,   60,    3,
-			   54,   53,   59,    3,  323,  205,   51,   50,   49,   48,
-			   22,   54,   69,   54,   53,   70,   21,   54,   74,   51,
-			   50,   49,   48,   53,   54,   73,   56,   47,   46,   54,
-			   23,  195,   50,   55,   23,   72,  127,   45,   44,   22,
-			  126,   43,   42,  274,  125,   21,   71,   51,  124,  -18,
-			  261,  282,  194,  193,   43,   42,   70,   73,  194,  193,
-			   73,   50,  192,  198,  197,  194,  193,  278,  213,  201,
-			  194,  193,  123,   45,   44,   45,   44,  191,   71,  122,
-			  269,   71,  160,  166,  172,  178,  159,  165,  171,  177,
+			   61,   22,   21,   56,   60,   53,   57,  254,   59,  324,
+			  253,    3,   58,  201,   53,   52,  216,   44,   43,   53,
+			   50,   49,   48,   47,   52,  195,   53,   52,   53,   22,
+			   21,   74,   50,   49,   48,   47,   55,   53,   73,   69,
+			   46,   45,   23,   54,   50,  127,  194,  193,   71,  126,
+			   44,   43,   50,  125,  274,   42,   41,  124,  205,   70,
+			  194,  193,  -19,  261,  198,  197,   50,   42,   41,  194,
+			  193,    6,  278,    5,    4,    5,    4,    3,  194,  193,
+			   45,  123,   44,   43,  323,  203,  265,   34,  122,    2,
+			  112,  111,  160,  166,  172,  178,  159,  165,  171,  177,
 
-			  158,  164,  170,  176,  157,  163,  169,  175,  202,   46,
-			  212,  321,  204,  210,  203,  254,  208,   53,  253,  206,
-			   66,   51,   53,   20,  223,  227,  222,  225,  156,  162,
-			  168,  174,  226,   53,  224,  155,  161,  167,  173,   26,
-			  200,  265,  276,   -8,   49,  214,  196,  263,  320,   24,
-			  252,   49,  199,  251,   50,  221,  207,  198,  197,   34,
-			  228,  220,  198,  197,  272,   48,  270,   24,  268,  280,
-			  266,   54,   53,  198,  197,  319,   74,   51,   50,   49,
-			   48,   49,  284,   73,    6,   47,   46,  318,    5,    4,
-			    3,   48,  264,   72,   48,   45,   44,  262,   50,  267,
+			  158,  164,  170,  176,  157,  163,  169,  175,  202,    1,
+			  212,    1,  204,  210,  110,  109,  208,   52,   73,  206,
+			  252,   20,   52,  251,  223,  227,  222,  225,  156,  162,
+			  168,  174,  226,   52,  224,  155,  161,  167,  173,   70,
+			  200,   -8,  276,   24,  192,   47,  196,  263,   49,   19,
+			   18,  141,  199,   33,  140,  221,    3,  198,  197,  191,
+			   24,  220,  198,  197,  272,   49,  270,  282,  268,   68,
+			  266,   53,   52,  198,  197,  321,   74,   50,   49,   48,
+			   47,   73,   65,   73,  269,   46,   45,   23,   72,  213,
+			   48,   48,  264,   71,   47,   44,   43,  262,   47,   47,
 
-			    5,    4,    2,    3,   71,  211,  250,  -18,  271,  249,
-			  317,  209,   43,   42,   35,  248,   30,  316,  247,  246,
-			  244,   49,  245,  243,    1,  315,  190,  314,  285,  189,
-			  283,  313,  281,  312,  279,  188,    1,  186,  187,  184,
-			  185,  182,  183,  180,  181,  296,  179,  294,  311,  292,
-			  141,  290,  310,  140,  112,  111,  277,  309,  308,  307,
-			  306,  275,  304,  305,  302,  110,  109,  303,   19,   18,
-			   51,  217,  218,  288,   54,   53,  273,  301,  286,   52,
-			   51,   50,   49,   48,  299,  297,  300,  140,   47,   46,
-			  295,  298,  293,  291,   54,   53,  154,  289,   45,   44,
+			  320,   26,   70,  214,   70,   48,   49,  -19,  280,  267,
+			  211,  284,   42,   41,   69,  271,  319,  207,  228,  209,
+			  250,  248,  246,  249,  247,  245,  244,  318,  285,  243,
+			  283,  317,  281,  190,  279,  188,  189,  186,  187,  184,
+			  185,  182,  183,  180,  181,  296,  179,  294,  316,  292,
+			  315,  290,  314,  217,  218,  313,  277,  312,  308,  311,
+			  306,  275,  304,  310,  302,  309,  307,   49,  305,   48,
+			  303,   50,  301,  288,   53,   52,  299,  297,  286,   51,
+			   50,   49,   48,   47,  295,  293,  300,  111,   46,   45,
+			  291,  298,  289,  287,   53,   52,  273,  109,   44,   43,
 
-			   51,   50,   49,   48,  287,  111,  109,  112,  110,  260,
-			  259,  258,  257,  256,  255,   43,   42,  242,  241,  240,
-			  121,  120,  119,  118,  239,  238,  115,   70,  237,  229,
-			  113,  236,  235,  234,  233,   43,   42,  232,  231,  219,
-			   46,  152,  114,  230,    0,  215,  139,  138,    3,  153,
-			   12,    7,    0,    0,  151,    0,   31,  150,  149,  148,
-			  147,  146,  107,  145,    2,   68,  144,  143,  142,   25,
-			    0,  137,  136,  135,    0,  134,  133,  132,  131,  130,
-			  129,  128,   33,   64,   32,   26,  -18,   67,  108, yyDummy>>)
+			   50,   49,   48,   47,  112,  110,  260,  140,   45,  154,
+			  259,  258,  257,  256,  255,   42,   41,  242,  115,  241,
+			  121,  120,  119,  118,  240,  239,  229,  219,  238,  237,
+			  236,  235,  234,  233,  232,   42,   41,  231,  113,  152,
+			  151,   69,  114,  230,  139,  138,    3,  215,    0,  153,
+			   12,    0,    7,    0,    0,  107,  150,  149,  148,  147,
+			  146,   67,   25,  145,  144,  143,  142,    2,   30,  137,
+			  136,  135,  134,  133,  132,  131,  130,  129,  128,   32,
+			   31,   26,  -19,   63,  108,   66, yyDummy>>)
 		end
 
 	yycheck_template: SPECIAL [INTEGER]
 			-- Template for `yycheck'
 		once
 			Result := yyfixed_array (<<
-			   26,    9,   23,   26,   26,    0,   26,   12,   26,    7,
-			    3,    4,   26,    7,    0,   23,    9,   10,   11,   12,
-			    7,    3,   20,    3,    4,   46,    7,    3,    8,    9,
-			   10,   11,   12,    4,    3,   15,   26,   17,   18,    3,
-			   38,   23,   10,   26,   38,   25,   72,   27,   28,   36,
-			   72,   44,   45,   29,   72,   36,   36,    9,   72,   39,
-			   29,   29,   44,   45,   44,   45,   46,   15,   44,   45,
-			   15,   10,    8,   44,   45,   44,   45,   29,   23,   23,
-			   44,   45,   72,   27,   28,   27,   28,   23,   36,   72,
-			   29,   36,  118,  119,  120,  121,  118,  119,  120,  121,
+			   26,    7,    7,   26,   26,    3,   26,   22,   26,    0,
+			   25,    7,   26,   23,    3,    4,   23,   27,   28,    3,
+			    9,   10,   11,   12,    4,   23,    3,    4,    3,   35,
+			   35,    8,    9,   10,   11,   12,   26,    3,   15,   46,
+			   17,   18,   38,   26,    9,   71,   44,   45,   25,   71,
+			   27,   28,    9,   71,   29,   44,   45,   71,   23,   36,
+			   44,   45,   39,   29,   44,   45,    9,   44,   45,   44,
+			   45,    1,   29,    5,    6,    5,    6,    7,   44,   45,
+			   18,   71,   27,   28,    0,   23,   29,   19,   71,   19,
+			    3,    4,  118,  119,  120,  121,  118,  119,  120,  121,
 
-			  118,  119,  120,  121,  118,  119,  120,  121,  131,   18,
-			  136,   25,  132,  135,   23,   22,  134,    4,   25,  133,
-			   20,    9,    4,    1,  147,  151,  146,  149,  118,  119,
-			  120,  121,  150,    4,  148,  118,  119,  120,  121,   39,
-			  130,   29,   29,   21,   11,  137,  129,   29,   25,   13,
-			   22,   11,   23,   25,   10,  145,   23,   44,   45,   23,
-			  152,  144,   44,   45,  190,   12,  188,   31,  186,   29,
+			  118,  119,  120,  121,  118,  119,  120,  121,  131,   41,
+			  136,   41,  132,  135,    3,    4,  134,    4,   15,  133,
+			   22,    1,    4,   25,  147,  151,  146,  149,  118,  119,
+			  120,  121,  150,    4,  148,  118,  119,  120,  121,   36,
+			  130,   21,   29,   13,    8,   12,  129,   29,   10,    5,
+			    6,   43,   23,   23,   46,  145,    7,   44,   45,   23,
+			   30,  144,   44,   45,  190,   10,  188,   29,  186,   20,
 			  184,    3,    4,   44,   45,   25,    8,    9,   10,   11,
-			   12,   11,   29,   15,    1,   17,   18,   25,    5,    6,
-			    7,   12,  182,   25,   12,   27,   28,  180,   10,   29,
+			   12,   15,   20,   15,   29,   17,   18,   38,   20,   23,
+			   11,   11,  182,   25,   12,   27,   28,  180,   12,   12,
 
-			    5,    6,   19,    7,   36,   23,   22,   39,   29,   25,
-			   25,   23,   44,   45,   19,   22,   20,   25,   25,   22,
-			   22,   11,   25,   25,   41,   25,   22,   25,  254,   25,
-			  252,   25,  250,   25,  248,   22,   41,   22,   25,   22,
+			   25,   39,   36,  137,   36,   11,   10,   39,   29,   29,
+			   23,   29,   44,   45,   46,   29,   25,   23,  152,   23,
+			   22,   22,   22,   25,   25,   25,   22,   25,  254,   25,
+			  252,   25,  250,   22,  248,   22,   25,   22,   25,   22,
 			   25,   22,   25,   22,   25,  271,   25,  269,   25,  267,
-			   43,  265,   25,   46,    3,    4,  246,   25,  284,   25,
-			  282,  244,  280,   25,  278,    3,    4,   25,    5,    6,
-			    9,  141,  142,  263,    3,    4,   40,   25,  261,    8,
-			    9,   10,   11,   12,   25,   25,  276,   46,   17,   18,
-			   25,  274,   25,   25,    3,    4,   46,   25,   27,   28,
+			   25,  265,   25,  141,  142,   25,  246,   25,  284,   25,
+			  282,  244,  280,   25,  278,   25,   25,   10,   25,   11,
+			   25,    9,   25,  263,    3,    4,   25,   25,  261,    8,
+			    9,   10,   11,   12,   25,   25,  276,    4,   17,   18,
+			   25,  274,   25,   25,    3,    4,   40,    4,   27,   28,
 
-			    9,   10,   11,   12,   25,    4,    4,    3,    3,   25,
-			   25,   25,   25,   25,   25,   44,   45,   25,   25,   25,
-			   29,   30,   31,   32,   25,   25,    7,   46,   25,    8,
-			   40,   25,   25,   25,   25,   44,   45,   25,   25,    8,
-			   18,   43,   68,  154,   -1,  140,   20,   20,    7,   39,
-			    0,    0,   -1,   -1,   43,   -1,   17,   43,   43,   43,
-			   43,   43,   19,   43,   19,   21,   43,   43,   43,   21,
-			   -1,   43,   43,   43,   -1,   43,   43,   43,   43,   43,
-			   43,   43,   42,   26,   42,   39,   39,   27,   36, yyDummy>>)
+			    9,   10,   11,   12,    3,    3,   25,   46,   18,   46,
+			   25,   25,   25,   25,   25,   44,   45,   25,    7,   25,
+			   29,   30,   31,   32,   25,   25,    8,    8,   25,   25,
+			   25,   25,   25,   25,   25,   44,   45,   25,   40,   43,
+			   43,   46,   67,  154,   20,   20,    7,  140,   -1,   39,
+			    0,   -1,    0,   -1,   -1,   19,   43,   43,   43,   43,
+			   43,   21,   21,   43,   43,   43,   43,   19,   17,   43,
+			   43,   43,   43,   43,   43,   43,   43,   43,   43,   42,
+			   42,   39,   39,   26,   35,   27, yyDummy>>)
 		end
 
 feature {NONE} -- Semantic value stacks
@@ -6374,7 +6343,7 @@ feature {NONE} -- Constants
 	yyNtbase: INTEGER = 47
 			-- Number of tokens
 
-	yyLast: INTEGER = 388
+	yyLast: INTEGER = 385
 			-- Upper bound of `yytable' and `yycheck'
 
 	yyMax_token: INTEGER = 292
@@ -6457,7 +6426,7 @@ feature {NONE} -- Parse Tree
 	attr_nodes: ARRAYED_STACK [DT_ATTRIBUTE_NODE]
 	attr_node: DT_ATTRIBUTE_NODE
 
-	obj_id: STRING
+	obj_key: STRING
 			-- qualifier of last rel name; use for next object creation
 
 	rm_attr_name: STRING

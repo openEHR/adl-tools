@@ -560,10 +560,9 @@ feature -- Compilation
 			-- set state accordingly
 		do
 			if is_out_of_date then
-				compilation_state := Cs_ready_to_validate
+				compilation_state := Cs_unread
+				initialise
 			end
-		ensure
-			Compiler_state_set: is_out_of_date implies compilation_state = Cs_ready_to_validate
 		end
 
 	signal_from_scratch

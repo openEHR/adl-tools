@@ -21,7 +21,7 @@ feature -- Definitions
 
 	feature_call_separator: CHARACTER = '/'
 
-	Container_attr_name: STRING = "_items"
+	Container_attr_name: STRING = "items"
 			-- name assumed for internal attribute of any container type represented in OG, DT or DADL structure
 
 end

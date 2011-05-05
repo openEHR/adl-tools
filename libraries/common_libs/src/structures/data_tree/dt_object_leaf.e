@@ -21,28 +21,23 @@ inherit
 
 feature -- Initialisation
 
-	make_identified(a_value: like value; a_node_id: STRING)
+	make_identified (a_value: attached like value; a_node_id: attached STRING)
 		require
-			Item_valid: a_value /= Void
-			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
+			Node_id_valid: not a_node_id.is_empty
 		do
 			default_create
 			create representation.make(a_node_id, Current)
 			set_value(a_value)
 		ensure
-			is_typed
 			is_addressable
 		end
 
-	make_anonymous(a_value: like value)
-		require
-			Item_valid: a_value /= Void
+	make_anonymous (a_value: attached like value)
 		do
 			default_create
 			create representation.make_anonymous(Current)
 			set_value(a_value)
 		ensure
-			is_typed
 			not is_addressable
 		end
 

@@ -77,7 +77,7 @@ feature -- Commands
 		do
 			clear
 
-			if current_arch_dir.has_selected_archetype then
+			if current_arch_dir.has_validated_selected_archetype then
 				ara := current_arch_dir.selected_archetype
 
 				if ara.has_slots then

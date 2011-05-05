@@ -163,6 +163,7 @@ feature -- Visitor
 					end
 				end
 				last_result.append (create_indent(depth))
+				last_result.append (symbol(SYM_END_CBLOCK))
 				last_result.append (format_item(FMT_NEWLINE))
 			end
 		end
@@ -243,7 +244,7 @@ feature -- Visitor
 				last_result.append (create_indent(depth) + apply_style(symbol(SYM_USE_ARCHETYPE), STYLE_KEYWORD) + format_item(FMT_SPACE))
 				last_result.append (apply_style (a_node.rm_type_name, identifier_style (a_node)))
 				id := "["
-				if a_node.is_addressable then
+				if attached a_node.slot_node_id then
 					id.append (a_node.slot_node_id + ", ")
 				end
 				id.append (a_node.archetype_id + "]")
