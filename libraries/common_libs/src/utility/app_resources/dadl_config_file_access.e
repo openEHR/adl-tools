@@ -172,7 +172,6 @@ feature -- Modification
 			-- FIXME: currently only works for single child paths, i.e. not where the paths ends with xxx[zzz]
 		local
 			obj_dt_tree: DT_COMPLEX_OBJECT_NODE
-			dt_obj: DT_OBJECT_ITEM
 			dt_attr: DT_ATTRIBUTE_NODE
 		do
 			obj_dt_tree := object_converter.object_to_dt(a_value)

@@ -58,7 +58,7 @@ feature -- Initialisation
 			-- make as a multiple generic relationship;
 		do
 			default_create
-			create representation.make_generic (Current)
+			create representation.make_multiple_generic (Current)
 		ensure
 			is_multiple
 			is_generic
@@ -210,11 +210,12 @@ feature -- Modification
 			is_multiple
 		end
 
-	set_generic
-			-- set an attribute created single to be generic
+	set_multiple_generic
+			-- set an attribute created single to be multiple and generic, i.e. a container attribute
 		do
-			representation.set_generic
+			representation.set_multiple_generic
 		ensure
+			is_multiple
 			is_generic
 		end
 

@@ -238,7 +238,7 @@ feature -- ADL 1.5 conversions
 					if attached {DT_COMPLEX_OBJECT_NODE} dt_objs.item as dt_co and then dt_co.has_attribute ("items") then
 						dt_attr := dt_co.attribute_node ("items")
 						dt_attr.set_multiple
-						dt_attr.set_generic
+						dt_attr.set_multiple_generic
 					end
 					dt_objs.forth
 				end

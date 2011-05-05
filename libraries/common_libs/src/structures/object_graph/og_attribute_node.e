@@ -32,7 +32,7 @@ inherit
 		end
 
 create
-	make_single, make_multiple, make_generic
+	make_single, make_multiple, make_multiple_generic
 
 feature -- Initialisation
 
@@ -57,7 +57,7 @@ feature -- Initialisation
 			Is_multiple: is_multiple
 		end
 
-	make_generic (a_content_item: VISITABLE)
+	make_multiple_generic (a_content_item: VISITABLE)
 			-- create with pseudo-node id indicating that it is an unnamed
 			-- container attribute of a generic type
 		do
@@ -137,7 +137,7 @@ feature -- Status Setting
 			is_multiple := True
 		end
 
-	set_generic
+	set_multiple_generic
 			-- set `is_generic' True (sometimes discovered after make is done)
 		do
 			is_generic := True
@@ -145,7 +145,7 @@ feature -- Status Setting
 
 feature -- Modification
 
-	put_child(obj_node: like child_type)
+	put_child (obj_node: attached like child_type)
 			-- put a new child node
 			-- if new child is an OBJECT_NODE id is already known in children, generate a unique id for it
 		local
@@ -159,7 +159,7 @@ feature -- Modification
 			precursor(obj_node)
 		end
 
-	put_child_left(obj_node, before_obj_node: like child_type)
+	put_child_left (obj_node, before_obj_node: attached like child_type)
 			-- insert a new child node before another object node
 			-- if new child is an OBJECT_NODE id is already known in children, generate a unique id for it
 		local
@@ -173,7 +173,7 @@ feature -- Modification
 			precursor(obj_node, before_obj_node)
 		end
 
-	put_child_right(obj_node, after_obj_node: like child_type)
+	put_child_right (obj_node, after_obj_node: attached like child_type)
 			-- insert a new child node before another object node
 			-- if new child is an OBJECT_NODE id is already known in children, generate a unique id for it
 		local
@@ -187,10 +187,8 @@ feature -- Modification
 			precursor(obj_node, after_obj_node)
 		end
 
-	set_differential_path(a_path: OG_PATH)
+	set_differential_path (a_path: attached OG_PATH)
 			-- set `differential_path'
-		require
-			Path_attached: a_path /= Void
 		do
 			differential_path := a_path
 			if parent /= Void then
