@@ -32,7 +32,7 @@ inherit
 		end
 
 create
-	make_single, make_multiple, make_generic
+	make_single, make_multiple, make_multiple_generic
 
 feature -- Initialisation
 
@@ -57,7 +57,7 @@ feature -- Initialisation
 			Is_multiple: is_multiple
 		end
 
-	make_generic (a_content_item: VISITABLE)
+	make_multiple_generic (a_content_item: VISITABLE)
 			-- create with pseudo-node id indicating that it is an unnamed
 			-- container attribute of a generic type
 		do
@@ -67,7 +67,7 @@ feature -- Initialisation
 			is_generic := True
 			is_multiple := True
 		ensure
-			Node_id_set: node_id.is_equal(Container_attr_name)
+			Node_id_set: node_id.is_equal (Container_attr_name)
 			Is_generic: is_generic
 			Is_multiple: is_multiple
 		end
@@ -137,15 +137,16 @@ feature -- Status Setting
 			is_multiple := True
 		end
 
-	set_generic
+	set_multiple_generic
 			-- set `is_generic' True (sometimes discovered after make is done)
 		do
 			is_generic := True
+			is_multiple := True
 		end
 
 feature -- Modification
 
-	put_child(obj_node: like child_type)
+	put_child (obj_node: attached like child_type)
 			-- put a new child node
 			-- if new child is an OBJECT_NODE id is already known in children, generate a unique id for it
 		local
@@ -159,7 +160,7 @@ feature -- Modification
 			precursor(obj_node)
 		end
 
-	put_child_left(obj_node, before_obj_node: like child_type)
+	put_child_left (obj_node, before_obj_node: attached like child_type)
 			-- insert a new child node before another object node
 			-- if new child is an OBJECT_NODE id is already known in children, generate a unique id for it
 		local
@@ -173,7 +174,7 @@ feature -- Modification
 			precursor(obj_node, before_obj_node)
 		end
 
-	put_child_right(obj_node, after_obj_node: like child_type)
+	put_child_right (obj_node, after_obj_node: attached like child_type)
 			-- insert a new child node before another object node
 			-- if new child is an OBJECT_NODE id is already known in children, generate a unique id for it
 		local
@@ -187,10 +188,8 @@ feature -- Modification
 			precursor(obj_node, after_obj_node)
 		end
 
-	set_differential_path(a_path: OG_PATH)
+	set_differential_path (a_path: attached OG_PATH)
 			-- set `differential_path'
-		require
-			Path_attached: a_path /= Void
 		do
 			differential_path := a_path
 			if parent /= Void then
@@ -247,7 +246,7 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	Generic_validity: not (is_generic xor node_id.is_equal(Container_attr_name))
+	Generic_validity: not (is_generic xor node_id.is_equal (Container_attr_name))
 
 end
 
@@ -266,10 +265,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is cadl_rel_node.e.
+--| The Original Code is og_attribute_node.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2003-2011
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

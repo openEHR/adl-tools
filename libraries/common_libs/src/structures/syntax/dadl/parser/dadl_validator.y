@@ -186,18 +186,10 @@ end
 				complex_object_nodes.extend(complex_object_node)
 			end
 
-			-- if we got "_items" then it is a container attribute
-			if $1.is_equal (Container_attr_name) then
-debug("dADL_parse")
-	io.put_string(indent + "attr_id: create_attr_node.make_multiple_generic(<<" + $1 + ">>)%N")
-end
-				create attr_node.make_multiple_generic
-			else
 debug("dADL_parse")
 	io.put_string(indent + "attr_id: create_attr_node.make_single(<<" + $1 + ">>)%N")
 end
-				create attr_node.make_single($1)
-			end
+			create attr_node.make_single($1)
 
 debug("dADL_parse")
 	io.put_string(indent + "attr_id: complex_object_nodes.item(" + complex_object_nodes.item.node_id + 
@@ -267,6 +259,9 @@ container_attr_object_block: untyped_container_attr_object_block
 --		[keyN] = <...>
 --	>
 --
+-- Here we pop the current attribute node off if it was a synthesised container node,
+-- i.e. created by a call DT_ATTRIBUTE.make_multiple_generic
+--
 untyped_container_attr_object_block: container_attr_object_block_head keyed_objects SYM_END_DBLOCK
 		{
 			if complex_object_nodes.item.is_addressable and attr_nodes.item.is_generic then
@@ -290,9 +285,9 @@ end
 	;
 
 -- 
--- this rule only exists to support dADL nestings of the form. This will probably be an outmoded form of 
--- dADL in the future, but we keep it for now.
---	<
+-- This rule supports nestings of container types in dADL of the form:
+--
+--	xxx = <
 --		[key1] = <
 --			[keyA] = <...>
 --			[keyB] = <...>
@@ -304,11 +299,17 @@ end
 --		>
 --	>
 -- 
+-- The above corresponds to the type structure:
+-- 	class X
+--		xxx: CONTAINER_TYPE [CONTAINER_TYPE [LEAF_TYPE]]
+--	end
+--
+--	Where CONTAINER_TYPE is typically ARRAYED_LIST, HASH_TABLE etc
+--
 container_attr_object_block_head: SYM_START_DBLOCK
 		{
+			-- if obj_key is set, it means we are inside a keyed object, and we have hit more keyed objects
 			if obj_key /= Void then
-				-- we are in a multi-block which is the value of a keyed object
-				-- so create the object with the key id
 				create complex_object_node.make_identified(obj_key)
 				if not attr_nodes.item.has_child_with_id(complex_object_node.node_id) then
 debug("dADL_parse")
@@ -338,11 +339,7 @@ debug("dADL_parse")
 	io.put_string(indent + "container_attr_object_block_head: complex_object_node(" + 
 			complex_object_node.node_id + ").put_attribute(" + attr_node.rm_attr_name + ")%N")
 end
-				if not complex_object_node.has_attribute(attr_node.rm_attr_name) then
-					complex_object_node.put_attribute(attr_node)
-				else
-					abort_with_error("VDATU", <<attr_node.rm_attr_name>>)
-				end
+				complex_object_node.put_attribute(attr_node)
 
 debug("dADL_parse")
 	io.put_string(indent + "container_attr_object_block_head: PUSH attr node%N")
@@ -423,7 +420,7 @@ end
 untyped_single_attr_object_block: single_attr_object_complex_head attr_vals SYM_END_DBLOCK
 		{
 debug("dADL_parse")
-	io.put_string(indent + "single_attr_object_complex_body: POP Object node(" + 
+	io.put_string(indent + "single_attr_object_complex_block: POP Object node(" + 
 		complex_object_nodes.item.node_id + ")%N")
 	indent.remove_tail(1)
 end

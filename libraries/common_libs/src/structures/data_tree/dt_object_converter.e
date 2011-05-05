@@ -63,9 +63,11 @@ end
 debug ("DT")
 	io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: an_obj is a HASH_TABLE%N")
 end
-				create a_dt_attr.make_multiple_generic
-				populate_dt_attr_from_eif_hash(a_dt_attr, eif_hash_obj)
-				a_dt_obj.put_attribute(a_dt_attr)
+				if not eif_hash_obj.is_empty  then
+					create a_dt_attr.make_multiple_generic
+					populate_dt_attr_from_eif_hash(a_dt_attr, eif_hash_obj)
+					a_dt_obj.put_attribute(a_dt_attr)
+				end
 
 			-- object is a SEQUENCE of non DT-primitive type, deal with by creating a DT_ATTRIBUTE representing the
 			-- container, and DT_OBJECTs underneath
@@ -73,9 +75,11 @@ end
 debug ("DT")
 	io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: an_obj is a SEQUENCE%N")
 end
-				create a_dt_attr.make_multiple_generic
-				populate_dt_attr_from_eif_sequence(a_dt_attr, eif_seq_obj)
-				a_dt_obj.put_attribute(a_dt_attr)
+				if not eif_seq_obj.is_empty then
+					create a_dt_attr.make_multiple_generic
+					populate_dt_attr_from_eif_sequence(a_dt_attr, eif_seq_obj)
+					a_dt_obj.put_attribute(a_dt_attr)
+				end
 
 			else -- it's not a container
 				if attached {DT_CONVERTIBLE} an_obj as dt_conv then
@@ -106,7 +110,7 @@ end
 							end
 
 						elseif is_dt_primitive_sequence_conforming_type(eif_fld_dynamic_type) then -- it is a SEQUENCE of some DT primitive type
-							if attached {SEQUENCE[ANY]} eif_fld_val as eif_prim_seq then
+							if attached {SEQUENCE[ANY]} eif_fld_val as eif_prim_seq and then not eif_prim_seq.is_empty then -- only include it if non-empty
 								create a_dt_attr.make_single(eif_fld_name)
 								a_dt_attr.put_child(create {DT_PRIMITIVE_OBJECT_LIST}.make_anonymous(eif_prim_seq))
 								a_dt_obj.put_attribute(a_dt_attr)
@@ -125,20 +129,24 @@ end
 debug ("DT")
 	io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: (HASH_TABLE type)%N")
 end
-								create a_dt_attr.make_multiple(eif_fld_name)
-								populate_dt_attr_from_eif_hash(a_dt_attr, eif_hash_fld_val)
-								if not a_dt_attr.is_empty then
-									a_dt_obj.put_attribute(a_dt_attr)
+								if not eif_hash_fld_val.is_empty  then
+									create a_dt_attr.make_multiple(eif_fld_name)
+									populate_dt_attr_from_eif_hash(a_dt_attr, eif_hash_fld_val)
+									if not a_dt_attr.is_empty then
+										a_dt_obj.put_attribute(a_dt_attr)
+									end
 								end
 
 							elseif attached {SEQUENCE[ANY]} eif_fld_val as eif_seq_fld_val then
 debug ("DT")
 	io.put_string("DT_OBJECT_CONVERTER.populate_dt_from_object: (SEQUENCE type)%N")
 end
-								create a_dt_attr.make_multiple(eif_fld_name)
-								populate_dt_attr_from_eif_sequence(a_dt_attr, eif_seq_fld_val)
-								if not a_dt_attr.is_empty then
-									a_dt_obj.put_attribute(a_dt_attr)
+								if not eif_seq_fld_val.is_empty then
+									create a_dt_attr.make_multiple(eif_fld_name)
+									populate_dt_attr_from_eif_sequence(a_dt_attr, eif_seq_fld_val)
+									if not a_dt_attr.is_empty then
+										a_dt_obj.put_attribute(a_dt_attr)
+									end
 								end
 							else
 debug ("DT")
@@ -253,7 +261,34 @@ end
 			retry
 		end
 
-	populate_object_from_dt (a_dt_obj: attached DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER; make_args: ARRAY[ANY]): ANY
+	object_from_dt_types_conform (a_dt_co: attached DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER): BOOLEAN
+			-- check that the type of object in `a_dt_co' conforms to `a_type_id';
+			-- if `a_type_id' corresponds to a container type, then we look at the types of the object children of
+			-- a single DT_ATTRIBUTE under `a_dt_co'
+		local
+			src_type_id, static_eif_container_content_type_id: INTEGER
+			a_dt_attr: DT_ATTRIBUTE_NODE
+		do
+			if generic_count_of_type (a_type_id) > 0 then
+				-- we are on a container object, and the correspoding DT object must
+				-- have a single attribute which is_generic and is_multiple
+				-- we don't go through its fields, instead we just go to the next
+				-- object level down in the DT tree
+				if not a_dt_co.is_empty then
+					a_dt_attr := a_dt_co.first
+					if a_dt_attr.is_generic and not a_dt_attr.is_empty then
+						src_type_id := dynamic_type_from_string (a_dt_attr.first_child.rm_type_name)
+						static_eif_container_content_type_id := generic_dynamic_type_of_type (a_type_id, 1)
+						Result := type_conforms_to (src_type_id, static_eif_container_content_type_id)
+					end
+				end
+			else
+				src_type_id := dynamic_type_from_string (a_dt_co.rm_type_name)
+				Result := type_conforms_to (src_type_id, a_type_id)
+			end
+		end
+
+	populate_object_from_dt (a_dt_co: attached DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER; make_args: ARRAY[ANY]): ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT; recursive. Be careful of the 3 'kinds' of type id in Eiffel:
 			-- an 'abstract type' is defined in INTERNAL; all ref types have one abstract type
@@ -261,37 +296,32 @@ end
 			-- a 'dynamic type' is the actual type of an object at runtime;
 			-- static and dynamic type numbers come from the same series;
 			-- abstract type numbers are completely separate
+		require
+			object_from_dt_types_conform (a_dt_co, a_type_id)
 		local
 			a_dt_attr: DT_ATTRIBUTE_NODE
-			a_dt_complex_obj: DT_COMPLEX_OBJECT_NODE
 			a_dt_obj_leaf: DT_OBJECT_LEAF
 			fld_name: STRING
-			abstract_fld_type_id, fld_type_id, dyn_dt_val_type_id, i: INTEGER
+			eif_abstract_fld_type_id, fld_type_id, dyn_dt_val_type_id, i: INTEGER
 			a_gen_field: ANY
 			exception_caught: BOOLEAN
 		do
 debug ("DT")
-	io.put_string("DT_OBJECT_CONVERTER.populate_object_from_dt: ENTER%N")
+	io.put_string ("DT_OBJECT_CONVERTER.populate_object_from_dt: ENTER%N")
 end
 			if is_special_any_type (a_type_id) then
 				-- FIXME: how to determine the length of the SPECIAL?
 debug ("DT")
-	io.put_string("%Tabout to call new_special_any_instance(" +
-		type_name_of_type(a_type_id) + ")%N")
+	io.put_string ("%Tabout to call new_special_any_instance(" +
+		type_name_of_type (a_type_id) + ")%N")
 end
 				Result := new_special_any_instance (a_type_id, 1)
-debug ("DT")
-	io.put_string("%T(return)%N")
-end
 			else
 debug ("DT")
-	io.put_string("%Tabout to call new_instance_of(" +
-		type_name_of_type(a_type_id) + ")%N")
+	io.put_string ("%Tabout to call new_instance_of(" +
+		type_name_of_type (a_type_id) + ")%N")
 end
 				Result := new_instance_of (a_type_id)
-debug ("DT")
-	io.put_string("%T(return)%N")
-end
 
 				-- FIXME: the following is a hacker's attempt to
 				-- reliably call a reasonable make function? Should call at least 'default_create'
@@ -302,13 +332,13 @@ end
 			end
 
 			if not exception_caught then
-				if generic_count_of_type(a_type_id) > 0 then
-					-- we are on a generic object, and the correspoding DT object must
+				if generic_count_of_type (a_type_id) > 0 then
+					-- we are on a container object, and the correspoding DT object must
 					-- have a single attribute which is_generic and is_multiple
 					-- we don't go through its fields, instead we just go to the next
 					-- object level down in the DT tree
-					if not a_dt_obj.is_empty then
-						a_dt_attr := a_dt_obj.first
+					if not a_dt_co.is_empty then
+						a_dt_attr := a_dt_co.first
 						if a_dt_attr.is_generic then
 							populate_eif_container_from_dt (Result, a_dt_attr)
 						else
@@ -325,11 +355,11 @@ end
 					end
 				else
 					-- for each field in the Eiffel object
-					from i := 1 until i > field_count(Result) loop
-						fld_name := field_name(i, Result)
+					from i := 1 until i > field_count (Result) loop
+						fld_name := field_name (i, Result)
 
-						if a_dt_obj.has_attribute(fld_name) then
-							a_dt_attr := a_dt_obj.attribute_node (fld_name)
+						if a_dt_co.has_attribute (fld_name) then
+							a_dt_attr := a_dt_co.attribute_node (fld_name)
 							fld_type_id := field_static_type_of_type(i, a_type_id)
 
 debug ("DT")
@@ -338,22 +368,22 @@ end
 
 							-- Test if DT object is a multiple-valued attribute of a complex type (i.e. not a list or hash of primitive types; see below for that)
 							if a_dt_attr.is_multiple and not a_dt_attr.is_empty then
-								if is_eiffel_container_type(fld_type_id) then -- so is Eiffel object field; create container object
+								if is_eiffel_container_type (fld_type_id) then -- so is Eiffel object field; create container object
 debug ("DT")
-	io.put_string("%T%TDT type is multiple, and Eiffel field type is container; about to call (2) new_instance_of(" + type_name_of_type(fld_type_id) + ")%N")
+	io.put_string ("%T%TDT type is multiple, and Eiffel field type is container; about to call (2) new_instance_of(" + type_name_of_type (fld_type_id) + ")%N")
 end
-									a_gen_field := new_instance_of(fld_type_id)
+									a_gen_field := new_instance_of (fld_type_id)
 debug ("DT")
-	io.put_string("%T%T(return)%N")
+	io.put_string ("%T%T(return)%N")
 end
-									set_reference_field(i, Result, a_gen_field)
+									set_reference_field (i, Result, a_gen_field)
 
 									-- FIXME: can only deal with one generic parameter for the moment
 									populate_eif_container_from_dt (a_gen_field, a_dt_attr)
 
 								else -- type in parsed DT is container, but not in Eiffel class		
-									post_error(Current, "populate_object_from_dt", "container_type_mismatch",
-										<<type_name_of_type(fld_type_id), type_name_of_type(a_type_id)>>
+									post_error (Current, "populate_object_from_dt", "container_type_mismatch",
+										<<type_name_of_type (fld_type_id), type_name_of_type (a_type_id)>>
 									)
 								end
 
@@ -374,16 +404,16 @@ end
 
 									-- it is a proper value field of some kind
 									else
-										abstract_fld_type_id := field_type_of_type (i, a_type_id)
+										eif_abstract_fld_type_id := field_type_of_type (i, a_type_id)
 
 										-- Eiffel type of field must be an Eiffel primitive type; DT type should correspond
 										-- This only deals with those types that Eiffel considers 'value' types, not the extended
 										-- list that DT/dadl consider as 'primitive' types, see below for that
-										if abstract_fld_type_id /= reference_type then
+										if eif_abstract_fld_type_id /= reference_type then
 debug ("DT")
-	io.put_string ("%T%TEiffel primitive field " + fld_name + " (abstract type = " + abstract_fld_type_id.out + ")%N")
+	io.put_string ("%T%TEiffel primitive field " + fld_name + " (abstract type = " + eif_abstract_fld_type_id.out + ")%N")
 end
-											inspect abstract_fld_type_id
+											inspect eif_abstract_fld_type_id
 											when character_8_type then -- = Character_type
 												if attached {CHARACTER} a_dt_obj_leaf.value as v_typed then
 													set_character_field (i, Result, v_typed)
@@ -456,21 +486,21 @@ end
 											-- DT side are SEQUENCE or a HASH_TABLE. For both cases, special processing is needed.
 
 											if attached {DT_PRIMITIVE_OBJECT_LIST} a_dt_obj_leaf then
-												if is_eiffel_container_type(fld_type_id) then -- Eiffel field type is compatible
+												if is_eiffel_container_type (fld_type_id) then -- Eiffel field type is compatible
 													set_primitive_sequence_field (i, Result, fld_type_id, a_dt_obj_leaf.value)
 												else -- type in parsed DT is container, but not in Eiffel class		
-													post_error(Current, "populate_object_from_dt", "container_type_mismatch",
-														<<type_name_of_type(fld_type_id), type_name_of_type(dyn_dt_val_type_id)>>
+													post_error (Current, "populate_object_from_dt", "container_type_mismatch",
+														<<type_name_of_type (fld_type_id), type_name_of_type (dyn_dt_val_type_id)>>
 													)
 												end
 
 											-- it is an INTERVAL[primitive type]
 											elseif attached {DT_PRIMITIVE_OBJECT_INTERVAL} a_dt_obj_leaf then
-												if is_eiffel_interval_type(fld_type_id) then -- Eiffel field type is compatible
+												if is_eiffel_interval_type (fld_type_id) then -- Eiffel field type is compatible
 													set_primitive_interval_field (i, Result, fld_type_id, a_dt_obj_leaf.value)
 												else -- type in parsed DT is INTERVAL, but not in Eiffel class		
-													post_error(Current, "populate_object_from_dt", "interval_type_mismatch",
-														<<type_name_of_type(fld_type_id), type_name_of_type(dyn_dt_val_type_id)>>
+													post_error (Current, "populate_object_from_dt", "interval_type_mismatch",
+														<<type_name_of_type (fld_type_id), type_name_of_type (dyn_dt_val_type_id)>>
 													)
 												end
 
@@ -490,11 +520,11 @@ end
 
 													if is_eiffel_container_type (fld_type_id) then
 														set_primitive_sequence_field (i, Result, fld_type_id, a_dt_obj_leaf.value)
-													elseif attached type_converted(a_dt_obj_leaf.value) as tc_val then
+													elseif attached type_converted (a_dt_obj_leaf.value) as tc_val then
 														set_reference_field (i, Result, tc_val)
 													else
 														post_error (Current, "populate_object_from_dt", "atomic_type_mismatch",
-															<<type_name_of_type(fld_type_id), type_name_of_type(dyn_dt_val_type_id)>>
+															<<type_name_of_type(fld_type_id), type_name_of_type (dyn_dt_val_type_id)>>
 														)
 													end
 												end
@@ -503,14 +533,13 @@ end
 									end
 
 								-- must be a reference type field of type DT_COMPLEX_OBJECT
-								else
+								elseif attached {DT_COMPLEX_OBJECT_NODE} a_dt_attr.item as a_dt_co_fld then
 									-- this is where the recursive call is
 									-- first, check if the static type is overridden by a type specified in the DT tree
-									a_dt_complex_obj ?= a_dt_attr.item
 									if a_dt_attr.item.type_visible then
 										fld_type_id := dynamic_type_from_string (a_dt_attr.item.rm_type_name)
 									end
-									set_reference_field(i, Result, populate_object_from_dt(a_dt_complex_obj, fld_type_id, Void))
+									set_reference_field (i, Result, populate_object_from_dt (a_dt_co_fld, fld_type_id, Void))
 								end
 							end
 						end
@@ -523,8 +552,8 @@ end
 			end
 		rescue
 			if dyn_dt_val_type_id /= 0 then -- this must have been an argument type mismatch which killed the from_dt_proc.call[]
-				post_error(Current, "populate_object_from_dt", "dt_proc_arg_type_mismatch",
-					<<type_name_of_type(a_type_id), fld_name, type_name_of_type(fld_type_id), type_name(a_dt_obj_leaf.value)>>)
+				post_error (Current, "populate_object_from_dt", "dt_proc_arg_type_mismatch",
+					<<type_name_of_type (a_type_id), fld_name, type_name_of_type (fld_type_id), type_name (a_dt_obj_leaf.value)>>)
 			end
 			exception_caught := True
 			retry
@@ -653,9 +682,9 @@ feature {NONE} -- Implementation
 		require
 			Dt_attr_node_multiple: a_dt_attr.is_multiple
 		local
-			static_object_type_id, dynamic_object_type_id: INTEGER
+			static_eif_container_content_type_id, dynamic_object_type_id: INTEGER
 		do
-			static_object_type_id := generic_dynamic_type(a_gen_obj, 1)
+			static_eif_container_content_type_id := generic_dynamic_type (a_gen_obj, 1)
 
 			-- determine dynamic type of generic type
 			if attached {HASH_TABLE [ANY, HASHABLE]} a_gen_obj as a_hash_table then -- it is a HASH_TABLE
@@ -666,18 +695,18 @@ feature {NONE} -- Implementation
 							io.put_string ("%TDT_REFERENCE (inside HASH_TABLE DT_ATTRIBUTE)" + a_dt_ref.as_string + "%N")
 						end
 						a_dt_ref.set_hash_table_source_object_details (a_hash_table, a_dt_attr.item.node_id)
-						object_ref_list.extend(a_dt_ref)
+						object_ref_list.extend (a_dt_ref)
 					else -- the static type may be overridden by a type specified in the DT tree
 						if a_dt_attr.item.type_visible then
 							dynamic_object_type_id := dynamic_type_from_string (a_dt_attr.item.rm_type_name)
 							if dynamic_object_type_id <= 0 then
-								post_error(Current, "set_container_object_data_from_dt", "model_access_e3", <<a_dt_attr.item.rm_type_name>>)
+								post_error (Current, "set_container_object_data_from_dt", "model_access_e3", <<a_dt_attr.item.rm_type_name>>)
 							end
 						else
-							dynamic_object_type_id := static_object_type_id
+							dynamic_object_type_id := static_eif_container_content_type_id
 						end
 						if dynamic_object_type_id > 0 then
-							a_hash_table.extend(a_dt_attr.item.as_object (dynamic_object_type_id, Void), a_dt_attr.item.node_id)
+							a_hash_table.extend (a_dt_attr.item.as_object (dynamic_object_type_id, Void), a_dt_attr.item.node_id)
 						end
 					end
 					a_dt_attr.forth
@@ -698,13 +727,13 @@ feature {NONE} -- Implementation
 						if a_dt_attr.item.type_visible then
 							dynamic_object_type_id := dynamic_type_from_string (a_dt_attr.item.rm_type_name)
 							if dynamic_object_type_id <= 0 then
-								post_error(Current, "set_container_object_data_from_dt", "model_access_e3", <<a_dt_attr.item.rm_type_name>>)
+								post_error (Current, "set_container_object_data_from_dt", "model_access_e3", <<a_dt_attr.item.rm_type_name>>)
 							end
 						else
-							dynamic_object_type_id := static_object_type_id
+							dynamic_object_type_id := static_eif_container_content_type_id
 						end
 						if dynamic_object_type_id > 0 then
-							a_sequence.extend(a_dt_attr.item.as_object (dynamic_object_type_id, Void))
+							a_sequence.extend (a_dt_attr.item.as_object (dynamic_object_type_id, Void))
 						end
 					end
 					a_dt_attr.forth

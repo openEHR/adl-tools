@@ -307,33 +307,33 @@ feature -- Status Report
 			Result := is_dt_primitive_interval_type(dynamic_type(an_obj))
 		end
 
-	is_eiffel_container_type(a_type_id: INTEGER): BOOLEAN
+	is_eiffel_container_type (a_type_id: INTEGER): BOOLEAN
 			-- True if a_type_id is of a type which is a SEQUENCE or HASH_TABLE, which are the only
 			-- Eiffel CONTAINERs mapped by DT structures
 		do
 debug ("DT")
 	io.put_string(generator +
-	".is_container_type: call to type_conforms_to(" + type_name_of_type(a_type_id) + ", " +
-	type_name_of_type(sequence_any_type_id) + "), type_conforms_to(" + type_name_of_type(a_type_id) + ", " +
-	type_name_of_type(hash_table_any_hashable_type_id) + ")%N")
+	".is_container_type: call to type_conforms_to(" + type_name_of_type (a_type_id) + ", " +
+	type_name_of_type (sequence_any_type_id) + "), type_conforms_to(" + type_name_of_type (a_type_id) + ", " +
+	type_name_of_type (hash_table_any_hashable_type_id) + ")%N")
 end
-			Result := type_conforms_to(a_type_id, sequence_any_type_id) or
-				type_conforms_to(a_type_id, hash_table_any_hashable_type_id)
+			Result := type_conforms_to (a_type_id, sequence_any_type_id) or
+				type_conforms_to (a_type_id, hash_table_any_hashable_type_id)
 debug ("DT")
 	io.put_string("%T(Result = " + Result.out + ")%N")
 end
 		end
 
-	is_eiffel_interval_type(a_type_id: INTEGER): BOOLEAN
+	is_eiffel_interval_type (a_type_id: INTEGER): BOOLEAN
 			-- True if a_type_id is of a type which conforms to INTERVAL[ANY]
 		do
 debug ("DT")
 	io.put_string(generator +
-	".is_container_type: call to type_conforms_to(" + type_name_of_type(a_type_id) + ", " +
-	type_name_of_type(sequence_any_type_id) + "), type_conforms_to(" + type_name_of_type(a_type_id) + ", " +
-	type_name_of_type(hash_table_any_hashable_type_id) + ")%N")
+	".is_container_type: call to type_conforms_to(" + type_name_of_type (a_type_id) + ", " +
+	type_name_of_type (sequence_any_type_id) + "), type_conforms_to(" + type_name_of_type (a_type_id) + ", " +
+	type_name_of_type (hash_table_any_hashable_type_id) + ")%N")
 end
-			Result := type_conforms_to(a_type_id, interval_any_type_id)
+			Result := type_conforms_to (a_type_id, interval_any_type_id)
 debug ("DT")
 	io.put_string("%T(Result = " + Result.out + ")%N")
 end
@@ -341,14 +341,14 @@ end
 
 	is_dadl_inferred_primitive_sequence_type (type_id: INTEGER): BOOLEAN
 		do
-			Result := dadl_inferred_primitive_sequence_types.has(type_id) or dadl_inferred_primitive_sequence_conforming_types.has(type_id)
+			Result := dadl_inferred_primitive_sequence_types.has (type_id) or dadl_inferred_primitive_sequence_conforming_types.has (type_id)
 			if not Result then
 				from dadl_inferred_primitive_sequence_types.start until dadl_inferred_primitive_sequence_types.off or type_conforms_to (type_id, dadl_inferred_primitive_sequence_types.item) loop
 					dadl_inferred_primitive_sequence_types.forth
 				end
 				Result := not dadl_inferred_primitive_sequence_types.off
 				if Result then
-					dadl_inferred_primitive_sequence_conforming_types.put(dadl_inferred_primitive_sequence_types.item, type_id)
+					dadl_inferred_primitive_sequence_conforming_types.put (dadl_inferred_primitive_sequence_types.item, type_id)
 				end
 			end
 		end

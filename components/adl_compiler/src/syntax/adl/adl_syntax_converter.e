@@ -210,12 +210,12 @@ feature -- ADL 1.5 conversions
 	convert_ontology_syntax (dt: attached DT_COMPLEX_OBJECT_NODE)
 		do
 			-- convert top-level attribute names
-			if dt.has_attribute ("term_binding") then
-				dt.replace_attribute_name ("term_binding", "term_bindings")
-			end
-			if dt.has_attribute ("constraint_binding") then
-				dt.replace_attribute_name ("constraint_binding", "constraint_bindings")
-			end
+--			if dt.has_attribute ("term_binding") then
+--				dt.replace_attribute_name ("term_binding", "term_bindings")
+--			end
+--			if dt.has_attribute ("constraint_binding") then
+--				dt.replace_attribute_name ("constraint_binding", "constraint_bindings")
+--			end
 
 			-- convert 'items' nodes to generic '_items' nodes
 			convert_ontology_items_to_generic (dt, "term_definitions")
@@ -237,9 +237,7 @@ feature -- ADL 1.5 conversions
 				from dt_objs.start until dt_objs.off loop
 					if attached {DT_COMPLEX_OBJECT_NODE} dt_objs.item as dt_co and then dt_co.has_attribute ("items") then
 						dt_attr := dt_co.attribute_node ("items")
-						dt_attr.set_generic
-						dt_attr.set_multiple
-						dt_co.replace_attribute_name ("items", "_items")
+						dt_attr.set_multiple_generic
 					end
 					dt_objs.forth
 				end

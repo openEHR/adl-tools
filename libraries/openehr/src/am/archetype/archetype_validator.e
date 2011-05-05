@@ -919,7 +919,7 @@ end
 					rm_prop_def := rm_schema.property_definition(arch_parent_attr_type, ca.rm_attribute_name)
 					if ca.existence /= Void then
 						if not rm_prop_def.existence.contains(ca.existence) then
-							if rm_prop_def.existence.equal_interval(ca.existence) then
+							if not target.is_specialised and rm_prop_def.existence.equal_interval(ca.existence) then
 								add_warning("WCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string>>)
 								if not validation_strict then
 									ca.remove_existence
@@ -933,7 +933,7 @@ end
 						if attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop then
 							if ca.cardinality /= Void then
 								if not cont_prop.cardinality.contains(ca.cardinality.interval) then
-									if cont_prop.cardinality.equal_interval(ca.cardinality.interval) then
+									if not target.is_specialised and cont_prop.cardinality.equal_interval(ca.cardinality.interval) then
 										add_warning("WCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string>>)
 										if not validation_strict then
 											ca.remove_cardinality

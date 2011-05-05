@@ -87,10 +87,12 @@ feature -- Output
 		do
 			create Result.make(0)
 			Result.append(rm_type_name + "[")
-			if is_addressable then
-				Result.append(node_id + ", ")
+			if attached slot_node_id then
+				Result.append(slot_node_id + ", ")
 			end
-			Result.append(archetype_id + "] ")
+			if is_addressable then
+				Result.append(archetype_id + ", ")
+			end
 			if attached occurrences then
 				Result.append(occurrences.as_string)
 			end
@@ -109,6 +111,9 @@ feature -- Visitor
 		do
 			visitor.end_c_archetype_root(Current, depth)
 		end
+
+invariant
+	is_addressable: is_addressable
 
 end
 
