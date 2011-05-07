@@ -65,26 +65,26 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_node_id (a_node_id: STRING)
+	set_node_id (a_node_id: attached STRING)
 			-- set node id
 		require
-			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
+			Node_id_valid: not a_node_id.is_empty
 		do
 			representation.set_node_id(a_node_id)
 		end
 
-	set_type_name (a_type_name: STRING)
+	set_type_name (a_type_name: attached STRING)
 			-- set type name
 		require
-			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
+			Type_name_valid: not a_type_name.is_empty
 		do
 			rm_type_name := a_type_name
 		end
 
-	set_visible_type_name (a_type_name: STRING)
+	set_visible_type_name (a_type_name: attached STRING)
 			-- set type name
 		require
-			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
+			Type_name_valid: not a_type_name.is_empty
 		do
 			set_type_name(a_type_name)
 			set_type_visible

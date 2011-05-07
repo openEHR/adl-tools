@@ -40,7 +40,7 @@ create
 	make_upper_unbounded,
 	make_unbounded,
 	make_point,
-	make_from_other
+	make
 
 feature -- Initialization
 
@@ -145,7 +145,7 @@ feature -- Initialization
 			Upper_unbounded: upper_unbounded
 		end
 
-	make_from_other (a_lower, an_upper: G; a_lower_unbounded, an_upper_unbounded, a_lower_included, an_upper_included: BOOLEAN)
+	make (a_lower, an_upper: G; a_lower_unbounded, an_upper_unbounded, a_lower_included, an_upper_included: BOOLEAN)
 			-- make from parts of another interval
 		do
 			lower := a_lower
