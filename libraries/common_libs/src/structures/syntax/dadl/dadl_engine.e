@@ -136,7 +136,7 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	parser: attached DADL2_VALIDATOR
+	parser: attached DADL_VALIDATOR
 			-- dADL parser.
 
 end

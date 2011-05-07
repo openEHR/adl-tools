@@ -54,7 +54,7 @@ inherit
 	KL_SHARED_ARGUMENTS
 
 	ADL_SYNTAX_CONVERTER
-		export
+		export 
 			{NONE} all
 		end
 
@@ -597,7 +597,7 @@ end
 
 					last_token := V_QUALIFIED_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
-
+			
 end
 else
 if yy_act = 65 then
@@ -608,7 +608,7 @@ end
 
 					last_token := ERR_V_QUALIFIED_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
-
+			
 else
 --|#line 215 "cadl_scanner.l"
 debug ("GELEX")
@@ -617,7 +617,7 @@ end
 
 					last_token := V_LOCAL_TERM_CODE_REF
 					last_string_value := text_substring (2, text_count - 1)
-
+			
 end
 end
 end
@@ -641,7 +641,7 @@ end
 				set_start_condition (IN_TERM_CONSTRAINT)
 				term_code_count := 0
 				assumed_term_code_index := 0
-
+			
 else
 --|#line 239 "cadl_scanner.l"
 debug ("GELEX")
@@ -652,7 +652,7 @@ end
 				in_buffer.append(text)
 				term_code_count := term_code_count + 1
 				assumed_term_code_index := term_code_count
-
+			
 end
 else
 --|#line 246 "cadl_scanner.l"
@@ -663,7 +663,7 @@ end
 				str_ := text
 				in_buffer.append(text)
 				term_code_count := term_code_count + 1
-
+			
 end
 else
 if yy_act = 70 then
@@ -702,7 +702,7 @@ end
 					last_token := V_TERM_CODE_CONSTRAINT
 				end
 				set_start_condition (INITIAL)
-
+			
 else
 --|#line 279 "cadl_scanner.l"
 debug ("GELEX")
@@ -711,7 +711,7 @@ end
 
 				last_token := V_LOCAL_CODE
 				last_string_value := text
-
+		
 end
 else
 if yy_act = 74 then
@@ -722,7 +722,7 @@ end
 
 					last_token := V_ARCHETYPE_ID
 					last_string_value := text
-
+			
 else
 --|#line 292 "cadl_scanner.l"
 debug ("GELEX")
@@ -731,7 +731,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_DATE_TIME
 				last_string_value := text
-
+		
 end
 end
 end
@@ -746,7 +746,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_DATE_TIME
 				last_string_value := text
-
+		
 else
 --|#line 294 "cadl_scanner.l"
 debug ("GELEX")
@@ -755,7 +755,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_DATE_TIME
 				last_string_value := text
-
+		
 end
 else
 if yy_act = 78 then
@@ -766,7 +766,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_TIME
 				last_string_value := text
-
+		
 else
 --|#line 302 "cadl_scanner.l"
 debug ("GELEX")
@@ -775,7 +775,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_TIME
 				last_string_value := text
-
+		
 end
 end
 else
@@ -788,7 +788,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_DATE
 				last_string_value := text
-
+		
 else
 --|#line 310 "cadl_scanner.l"
 debug ("GELEX")
@@ -797,7 +797,7 @@ end
 
 				last_token := V_ISO8601_EXTENDED_DATE
 				last_string_value := text
-
+		
 end
 else
 if yy_act = 82 then
@@ -808,7 +808,7 @@ end
 
 				last_token := V_ISO8601_DURATION
 				last_string_value := text
-
+			
 else
 --|#line 318 "cadl_scanner.l"
 debug ("GELEX")
@@ -817,7 +817,7 @@ end
 
 				last_token := V_ISO8601_DURATION
 				last_string_value := text
-
+			
 end
 end
 end
@@ -834,7 +834,7 @@ end
 
 				last_token := V_ISO8601_DURATION
 				last_string_value := convert_non_conforming_duration(text)
-
+			
 else
 --|#line 337 "cadl_scanner.l"
 debug ("GELEX")
@@ -843,7 +843,7 @@ end
 
 				last_token := V_ISO8601_DATE_CONSTRAINT_PATTERN
 				last_string_value := text
-
+			
 end
 else
 if yy_act = 86 then
@@ -854,7 +854,7 @@ end
 
 				last_token := V_ISO8601_TIME_CONSTRAINT_PATTERN
 				last_string_value := text_substring(2, text_count)
-
+			
 else
 --|#line 352 "cadl_scanner.l"
 debug ("GELEX")
@@ -863,7 +863,7 @@ end
 
 				last_token := V_ISO8601_TIME_CONSTRAINT_PATTERN
 				last_string_value := text
-
+			
 end
 end
 else
@@ -877,7 +877,7 @@ end
 				last_token := V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 				last_string_value := text
 				last_string_value.put('T', last_string_value.index_of(' ', 1))
-
+			
 else
 --|#line 368 "cadl_scanner.l"
 debug ("GELEX")
@@ -886,7 +886,7 @@ end
 
 				last_token := V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
 				last_string_value := text
-
+			
 end
 else
 if yy_act = 90 then
@@ -897,7 +897,7 @@ end
 
 				last_token := V_ISO8601_DURATION_CONSTRAINT_PATTERN
 				last_string_value := text
-
+			
 else
 --|#line 379 "cadl_scanner.l"
 debug ("GELEX")
@@ -906,7 +906,7 @@ end
 
 				last_token := V_ISO8601_DURATION_CONSTRAINT_PATTERN
 				last_string_value := text
-
+			
 end
 end
 end
@@ -921,7 +921,7 @@ end
 	-- match a pattern like 'Type_Identifier whitespace <'
 				set_start_condition (IN_C_DOMAIN_TYPE)
 				in_buffer.append_string (text)
-
+			
 else
 --|#line 399 "cadl_scanner.l"
 debug ("GELEX")
@@ -930,7 +930,7 @@ end
 	-- match a pattern like '(Type_Identifier) whitespace <'
 				set_start_condition (IN_C_DOMAIN_TYPE)
 				in_buffer.append_string (text)
-
+			
 end
 else
 if yy_act = 94 then
@@ -938,9 +938,9 @@ if yy_act = 94 then
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'cadl_scanner.l' at line 405")
 end
- -- match up to next > not followed by a '}' or '>'
+ -- match up to next > not followed by a '}' or '>' 
  				in_buffer.append_string (text)
-
+ 			
 else
 --|#line 409 "cadl_scanner.l"
 debug ("GELEX")
@@ -949,7 +949,7 @@ end
  -- final section - '...> whitespace } or beginning of a type identifier'
 				-- get the entire section of dADL
 				in_buffer.append_string (text)
-				unread_character(in_buffer.item(in_buffer.count)) -- put back the last character
+				unread_character(in_buffer.item(in_buffer.count)) -- put back the last character 
 				in_buffer.remove_tail(1) -- get rid of the "}" from the buffer
 				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
@@ -985,7 +985,7 @@ end
 
 				in_buffer.wipe_out
 				set_start_condition (INITIAL)
-
+ 			
 end
 end
 else
@@ -997,7 +997,7 @@ debug ("GELEX")
 end
  -- match up to next '}' not preceded by a '>'
  				in_buffer.append_string (text)
-
+  			
 else
 --|#line 456 "cadl_scanner.l"
 debug ("GELEX")
@@ -1006,7 +1006,7 @@ end
 
 					last_token := V_TYPE_IDENTIFIER
 					last_string_value := text
-
+			
 end
 else
 if yy_act = 98 then
@@ -1017,7 +1017,7 @@ end
 
 					last_token := V_GENERIC_TYPE_IDENTIFIER
 					last_string_value := text
-
+			
 else
 --|#line 468 "cadl_scanner.l"
 debug ("GELEX")
@@ -1027,7 +1027,7 @@ end
 					last_token := V_FEATURE_CALL_IDENTIFIER
 					last_string_value := text_substring(1, text_count - 2)
 					last_string_value.right_adjust
-
+			
 end
 end
 end
@@ -1046,7 +1046,7 @@ end
 
 					last_token := V_ATTRIBUTE_IDENTIFIER
 					last_string_value := text
-
+			
 else
 --|#line 481 "cadl_scanner.l"
 debug ("GELEX")
@@ -1056,7 +1056,7 @@ end
 				last_token := SYM_START_CBLOCK
 				set_start_condition (IN_REGEXP1)
 				in_buffer.append_character ('/')
-
+			
 end
 else
 if yy_act = 102 then
@@ -1066,7 +1066,7 @@ debug ("GELEX")
 end
  		-- match any segments with quoted slashes
 				in_buffer.append_string (text)
-
+			
 else
 --|#line 492 "cadl_scanner.l"
 debug ("GELEX")
@@ -1080,7 +1080,7 @@ end
  				last_string_value := str_
  				last_token := V_REGEXP
 				set_start_condition (INITIAL)
-
+ 			
 end
 end
 else
@@ -1093,7 +1093,7 @@ end
 	-- regexp formed using '^' delimiters
  				last_token := V_REGEXP
  				last_string_value := text
-
+			
 else
 --|#line 510 "cadl_scanner.l"
 debug ("GELEX")
@@ -1102,7 +1102,7 @@ end
 
 					last_token := V_INTEGER
 					last_integer_value := text.to_integer
-
+			
 end
 else
 if yy_act = 106 then
@@ -1121,7 +1121,7 @@ end
 					end
 					last_integer_value := in_buffer.to_integer
 					in_buffer.wipe_out
-
+			
 else
 	yy_end := yy_end - 1
 --|#line 530 "cadl_scanner.l"
@@ -1131,7 +1131,7 @@ end
 
 						last_token := V_REAL
 						last_real_value := text.to_real
-
+					
 end
 end
 end
@@ -1146,7 +1146,7 @@ end
 
 						last_token := V_REAL
 						last_real_value := text.to_real
-
+					
 else
 --|#line 532 "cadl_scanner.l"
 debug ("GELEX")
@@ -1155,7 +1155,7 @@ end
 
 						last_token := V_REAL
 						last_real_value := text.to_real
-
+					
 end
 else
 if yy_act = 110 then
@@ -1177,7 +1177,7 @@ end
 						end
 						last_real_value := in_buffer.to_real
 						in_buffer.wipe_out
-
+					
 else
 --|#line 537 "cadl_scanner.l"
 debug ("GELEX")
@@ -1196,7 +1196,7 @@ end
 						end
 						last_real_value := in_buffer.to_real
 						in_buffer.wipe_out
-
+					
 end
 end
 else
@@ -1219,7 +1219,7 @@ end
 						end
 						last_real_value := in_buffer.to_real
 						in_buffer.wipe_out
-
+					
 else
 --|#line 558 "cadl_scanner.l"
 debug ("GELEX")
@@ -1228,7 +1228,7 @@ end
 
 				last_token := V_STRING
 				last_string_value := text_substring (2, text_count - 1)
-
+			
 end
 else
 if yy_act = 114 then
@@ -1241,7 +1241,7 @@ end
 					in_buffer.append_string (text_substring (2, text_count))
 				end
 				set_start_condition (IN_STR)
-
+			
 else
 --|#line 571 "cadl_scanner.l"
 debug ("GELEX")
@@ -1269,7 +1269,7 @@ debug ("GELEX")
 end
 
 				in_buffer.append_string (text)
-
+	
 end
 else
 if yy_act = 118 then
@@ -1286,7 +1286,7 @@ end
 
 				in_lineno := in_lineno + 1	-- match LF in line
 				in_buffer.append_character ('%N')
-
+			
 end
 end
 else
@@ -1306,7 +1306,7 @@ end
 				in_buffer.wipe_out
 				last_string_value := str_
 				set_start_condition (INITIAL)
-
+			
 else
 --|#line 597 "cadl_scanner.l"
 debug ("GELEX")
@@ -1315,7 +1315,7 @@ end
 	-- Catch-all rules (no backing up)
 				last_token := ERR_STRING
 				set_start_condition (INITIAL)
-
+			
 end
 else
 if yy_act = 122 then
@@ -1419,7 +1419,7 @@ end
 	-- Catch-all rules (no backing up)
 				last_token := ERR_STRING
 				set_start_condition (INITIAL)
-
+			
 			else
 				terminate
 			end
@@ -3363,7 +3363,7 @@ feature {NONE} -- Implementation
 	Init_buffer_size: INTEGER = 256
 				-- Initial size for `in_buffer'
 
-	dadl_parser: DADL2_VALIDATOR
+	dadl_parser: DADL_VALIDATOR
 		once
 			create Result.make
 		end

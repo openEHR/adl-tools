@@ -13,6 +13,6 @@
 #	last_change: "$LastChangedDate$"
 #
 
-$GOBO/bin/geyacc --new_typing -v parser2_errs.txt -t DADL_TOKENS -o dadl2_validator.e dadl2_validator.y
+$GOBO/bin/geyacc --new_typing -v parser_errs.txt -t DADL_TOKENS -o dadl_validator.e dadl_validator.y
 
-$GOBO/bin/geyacc --doc=html -v parser2_errs.txt -t DADL_TOKENS -o dadl2_validator.html dadl2_validator.y
+$GOBO/bin/geyacc --doc=html -v parser_errs.txt -t DADL_TOKENS -o dadl_validator.html dadl_validator.y

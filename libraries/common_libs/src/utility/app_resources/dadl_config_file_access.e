@@ -208,7 +208,7 @@ feature -- File system access
 			-- if file not readable, or not there, or in wrong syntax, do nothing.
 		local
 			res_file: PLAIN_TEXT_FILE
-			parser: DADL2_VALIDATOR
+			parser: DADL_VALIDATOR
 		do
 			create res_file.make (file_path)
 			if res_file.exists and res_file.is_readable then

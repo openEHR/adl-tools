@@ -142,7 +142,7 @@ feature -- Modification
 			Valid_message_string:  not a_dadl_str.is_empty
 			Valid_local_lang: not a_locale_lang.is_empty
 		local
-			parser: DADL2_VALIDATOR
+			parser: DADL_VALIDATOR
 			dt_tree: DT_COMPLEX_OBJECT_NODE
 			init_helper: IN_MEMORY_MESSAGE_DB_INITIALISER
 		do
