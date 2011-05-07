@@ -243,7 +243,7 @@ def ecf_scanner(node, env, path):
 				result += token
 			elif token == r'$|':
 				result += element_location(element.parentNode) + '/'
-			elif token == r'$ECF_CONFIG_PATH':
+			elif token == r'$ECF_CONFIG_PATH' or token == r'$(ECF_CONFIG_PATH)':
 				result += ecf_config_path
 			else:
 				s = environment_variable(env, token)
