@@ -21,79 +21,38 @@ feature --- Initiatialisation
 
 	app_env_initialise
 		local
-			cfg_file_full_path: STRING
-			cfg_file: PLAIN_TEXT_FILE
-			found_cfg_file: BOOLEAN
+			path: STRING
+			file: PLAIN_TEXT_FILE
 		do
 			-- set command line args option switch
-			execution_environment.command_line.set_option_sign(app_cmd_line_option_sign)
+			execution_environment.command_line.set_option_sign (app_cmd_line_option_sign)
 
 			-- search for config file as follows:
 			-- in a place specified on command line with -cfg option
 			-- else in .exe startup directory
-			-- else in /etc
-			cfg_file_full_path := execution_environment.command_line.separate_word_option_value("cfg")
-			if cfg_file_full_path = Void or else cfg_file_full_path.is_empty then
+			path := execution_environment.command_line.separate_word_option_value ("cfg")
+
+			if path = Void or else path.is_empty then
 				-- try application startup directory
-				cfg_file_full_path := default_resource_config_file_full_path
-				create cfg_file.make (cfg_file_full_path)
-				if not cfg_file.exists then
-					-- try /etc
-					cfg_file_full_path := default_global_resource_config_file_full_path
-					create cfg_file.make (cfg_file_full_path)
-					if cfg_file.exists then
-						if cfg_file.is_readable then
-							found_cfg_file := True
-						else
-							app_env_fail_reason.append("Config file " + cfg_file_full_path + " exists but not readable")
-						end
-					else
-						app_env_fail_reason.append("No config file found; checked " + default_resource_config_file_full_path + 
-							" and " + default_global_resource_config_file_full_path)
-					end
-					elseif not cfg_file.is_readable then
-					app_env_fail_reason.append("Config file " + cfg_file_full_path + " exists but not readable")
-				else
-					found_cfg_file := True
-				end
-			else -- make sure it exists
-				create cfg_file.make (cfg_file_full_path)
-				if not (cfg_file.exists and cfg_file.is_readable) then
-					app_env_fail_reason.append("Config file " + cfg_file_full_path + 
-						" specified on command line, but file doesn't exist or is not readable")
-				else
-					found_cfg_file := True
-				end
+				path := extension_replaced (application_full_path, User_config_file_extension)
 			end
 
-			-- read in resources
-			if found_cfg_file then
-				initialise_resource_config_file_name(cfg_file_full_path)
+			create file.make (path)
+
+			if not (file.exists and file.is_readable) then
+				app_env_fail_reason.append ("Config file " + path + " does not exist or is not readable")
+			else
+				create resource_config_file.make (path)
+
 				if not resource_config_file.is_valid then
-					app_env_fail_reason.append(resource_config_file.fail_reason)
+					app_env_fail_reason.append (resource_config_file.fail_reason)
 				end
 			end
 		end
 
-feature -- Application Resources
+feature {NONE} -- Resource Configuration
 
-	app_cfg_file_name:STRING 
-		once 
-			create Result.make(0)
-			Result.append(Default_cfg_file_name)
-		end
-
-feature -- Resource Configuration
-
-	app_cmd_line_option_sign:CHARACTER 
-		once
-			Result := Default_cmd_line_option_sign
-		end
-
-	app_cfg_file_cmt_char:CHARACTER 
-		once 
-			Result := Default_cfg_file_cmt_char
-		end
+	resource_config_file: INI_CONFIG_FILE_ACCESS
 
 end
 
