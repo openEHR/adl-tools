@@ -16,7 +16,7 @@ note
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
-	
+
 deferred class APP_ENVIRONMENT
 
 inherit
@@ -26,59 +26,48 @@ feature -- Definitions
 
 	Default_cmd_line_option_sign: CHARACTER = '-'
 
-	Default_cfg_file_name: STRING = "default.cfg"
-			-- default config filename is name of app + ".cfg"
-
 	Default_cfg_file_cmt_char: CHARACTER = ';'
 
 feature --- Initiatialisation
 
 	app_env_initialise
-			-- initialise the application environment; set
-			-- 'app_env_fail_reason' if encountered problems
+			-- initialise the application environment; set `app_env_fail_reason' if encountered problems
 		deferred
-		ensure
-			Status_recorded: not app_env_is_valid implies not app_env_fail_reason.is_empty
-		end
-
-feature -- Application Resources
-
-	app_cfg_file_name: STRING 
-			-- application config file full pathname
-		deferred 
 		end
 
 feature -- Resource Configuration
 
-	app_cmd_line_option_sign: CHARACTER 
-		deferred
+	app_cmd_line_option_sign: CHARACTER
+		once
+			Result := Default_cmd_line_option_sign
 		end
 
-	app_cfg_file_cmt_char: CHARACTER 
-		deferred 
+	app_cfg_file_cmt_char: CHARACTER
+		once
+			Result := Default_cfg_file_cmt_char
 		end
 
 feature -- Environment Status
 
 	app_env_is_valid: BOOLEAN
-	        -- if not True, look at app_init_fail_reason
-	    do
-	        Result := app_env_fail_reason.is_empty
-	    end
+			-- if not True, look at `app_env_fail_reason'.
+		do
+			Result := app_env_fail_reason.is_empty
+		end
 
 	app_env_fail_reason: STRING
- 	    once
-	        create Result.make(0)
-	    end
+		once
+			create Result.make (0)
+		end
 
 feature -- Miscellaneous
 
-	close_console:BOOLEAN
-            external
-                "C | <wincon.h> , <wtypes.h>"
-            alias
-                "FreeConsole"
-            end
+	close_console: BOOLEAN
+		external
+			"C | <wincon.h> , <wtypes.h>"
+		alias
+			"FreeConsole"
+		end
 
 end
 

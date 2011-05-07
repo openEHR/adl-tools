@@ -38,7 +38,7 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (a_file_name: STRING)
+	make (a_file_name: attached STRING)
 		do
 			create resources.make(0)
 			create requested_resources.make(0)
