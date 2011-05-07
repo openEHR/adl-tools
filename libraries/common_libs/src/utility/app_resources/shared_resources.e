@@ -150,7 +150,7 @@ feature -- Environment
 		once
 			path := file_system.string_to_pathname (file_system.absolute_pathname (execution_environment.command_line.command_name))
 			path.set_canonical
-	    	Result := file_system.pathname_to_string (path)
+			Result := file_system.pathname_to_string (path)
 
 			if path.count > 3 then
 				dir := path.item (path.count - 1)

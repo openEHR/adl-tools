@@ -21,10 +21,10 @@ inherit
 
 feature -- Initialisation
 
-	make (a_file_name: STRING)
+	make (a_file_name: attached STRING)
 			-- initialise config file
 		require
-			Args_valid: a_file_name /= Void and then not a_file_name.is_empty
+			file_name_not_empty: not a_file_name.is_empty
 		do
 			file_name := a_file_name.twin
 			file_cmt_char := file_default_cmt_char

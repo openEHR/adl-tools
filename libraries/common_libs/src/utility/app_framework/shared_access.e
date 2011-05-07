@@ -8,27 +8,19 @@ note
 	copyright:   "Copyright (c) 2000 The openEHR Foundation, Australasia"
 	licence:     "The openEHR Open Source Licence"
 
---	file:        "%M%"
---	version:     "%I%"
---	last_change: "%E% %U%"
+	file:        "$URL$"
+	revision:    "$LastChangedRevision$"
+	last_change: "$LastChangedDate$"
 
 class SHARED_ACCESS
 
 inherit
 	SHARED_EVENT_LOG
-		export 
+		export
 			{NONE} all
 		end
 
 	SHARED_RESOURCES
-		export 
-			{NONE} all
-		end
-
-	SHARED_LOCALE
-		export 
-			{NONE} all
-		end
 
 end
 
