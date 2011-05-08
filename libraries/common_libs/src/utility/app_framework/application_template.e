@@ -24,9 +24,6 @@ inherit
 		end
 
 	FILE_APP_ENVIRONMENT
-		export
-			{ANY} os_directory_separator
-		end
 
 feature -- Template
 
