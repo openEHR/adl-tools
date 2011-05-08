@@ -42,17 +42,31 @@ feature --- Initiatialisation
 			if not (file.exists and file.is_readable) then
 				app_env_fail_reason.append ("Config file " + path + " does not exist or is not readable")
 			else
-				create resource_config_file.make (path)
+				resource_config_file_implementation.put (create {INI_CONFIG_FILE_ACCESS}.make (path))
 
 				if not resource_config_file.is_valid then
 					app_env_fail_reason.append (resource_config_file.fail_reason)
 				end
 			end
+		ensure then
+			resource_config_file_else_fail: attached resource_config_file xor not app_env_is_valid
 		end
 
-feature {NONE} -- Resource Configuration
+feature -- Resource Configuration
 
 	resource_config_file: INI_CONFIG_FILE_ACCESS
+			-- The application configuration file.
+		do
+			Result := resource_config_file_implementation.item
+		end
+
+feature {NONE} -- Implementation
+
+	resource_config_file_implementation: CELL [INI_CONFIG_FILE_ACCESS]
+			-- Access to the shared instance of the application configuration file.
+		once
+	        create Result.put (Void)
+		end
 
 end
 
