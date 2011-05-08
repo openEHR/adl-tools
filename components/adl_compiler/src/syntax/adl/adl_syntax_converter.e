@@ -218,16 +218,16 @@ feature -- ADL 1.5 conversions
 --			end
 
 			-- convert 'items' nodes to generic '_items' nodes
-			convert_ontology_items_to_generic (dt, "term_definitions")
-			convert_ontology_items_to_generic (dt, "constraint_definitions")
-			convert_ontology_items_to_generic (dt, "term_bindings")
-			convert_ontology_items_to_generic (dt, "constraint_bindings")
+			convert_ontology_items_to_nested (dt, "term_definitions")
+			convert_ontology_items_to_nested (dt, "constraint_definitions")
+			convert_ontology_items_to_nested (dt, "term_bindings")
+			convert_ontology_items_to_nested (dt, "constraint_bindings")
 		end
 
-	convert_ontology_items_to_generic (dt: attached DT_COMPLEX_OBJECT_NODE; attr_name: attached STRING)
-			-- convert 'items' nodes in ontology to '_items' and set them generic; this is
-			-- to simulate having been parsed that way in the first place, which is what
-			-- will happen in ADL 2.
+	convert_ontology_items_to_nested (dt: attached DT_COMPLEX_OBJECT_NODE; attr_name: attached STRING)
+			-- mark 'items' attribute nodes in ontology section as being nested_container; this is
+			-- to simulate having been parsed that way in the first place, so that these structures
+			-- will be correctly converted by DT_OBJECT_CONVERTER into nested HASH_TABLEs
 		local
 			dt_attr: DT_ATTRIBUTE_NODE
 			dt_objs: ARRAYED_LIST [DT_OBJECT_ITEM]
@@ -237,7 +237,7 @@ feature -- ADL 1.5 conversions
 				from dt_objs.start until dt_objs.off loop
 					if attached {DT_COMPLEX_OBJECT_NODE} dt_objs.item as dt_co and then dt_co.has_attribute ("items") then
 						dt_attr := dt_co.attribute_node ("items")
-						dt_attr.set_multiple_generic
+						dt_attr.set_nested_container
 					end
 					dt_objs.forth
 				end

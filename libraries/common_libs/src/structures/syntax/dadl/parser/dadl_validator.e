@@ -888,7 +888,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'dadl_validator.y' at line 265")
 end
 
-			if complex_object_nodes.item.is_addressable and attr_nodes.item.is_generic then
+			if complex_object_nodes.item.is_addressable and attr_nodes.item.is_nested then
 				-- pop the generic attr node
 debug("dADL_parse")
 	io.put_string(indent + "container_attr_object_block: POP attr node (" +  
@@ -959,7 +959,7 @@ end
 debug("dADL_parse")
 	io.put_string(indent + "container_attr_object_block_head: create_attr_node.make_multiple_generic%N")
 end
-				create attr_node.make_multiple_generic
+				create attr_node.make_nested_container
 
 debug("dADL_parse")
 	io.put_string(indent + "container_attr_object_block_head: complex_object_node(" + 
@@ -1035,7 +1035,7 @@ debug("dADL_parse")
 		" (setting " + attr_nodes.item.rm_attr_name + " to Multiple)%N")
 end
 			if not attr_nodes.is_empty then
-				attr_nodes.item.set_multiple
+				attr_nodes.item.set_container_type
 			else
 				abort_with_error("SGEE", <<attr_node.rm_attr_name>>)
 			end
@@ -1120,7 +1120,7 @@ debug ("GEYACC")
 end
 
 			-- if parent attr is not multiple, create an anon object; else an object identified by a key
-			if attr_nodes.is_empty or else not attr_nodes.item.is_multiple then
+			if attr_nodes.is_empty or else not attr_nodes.item.is_container_type then
 debug("dADL_parse")
 	io.put_string(indent + "single_attr_object_complex_head: create complex_object_node.make_anonymous%N")
 end
