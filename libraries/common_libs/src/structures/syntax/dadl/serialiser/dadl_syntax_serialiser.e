@@ -29,7 +29,7 @@ feature -- Visitor
 	start_complex_object_node (a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER)
 			-- start serialising a DT_COMPLEX_OBJECT_NODE
 		do
-			if not a_node.is_root and then a_node.parent.is_multiple then
+			if not a_node.is_root and then a_node.parent.is_container_type then
 				last_result.append (create_indent (depth//2 + multiple_attr_count))
 			end
 			if a_node.is_addressable then
@@ -57,12 +57,14 @@ feature -- Visitor
 	start_attribute_node (a_node: DT_ATTRIBUTE_NODE; depth: INTEGER)
 			-- start serialising a DT_ATTRIBUTE_NODE
 		do
-			last_result.append (create_indent (depth//2 + multiple_attr_count) +
-					apply_style (a_node.rm_attr_name, STYLE_IDENTIFIER) +  format_item (FMT_SPACE))
-			last_result.append (apply_style (symbol (SYM_EQ), STYLE_OPERATOR) + format_item (FMT_SPACE))
-			if a_node.is_multiple then
-				multiple_attr_count := multiple_attr_count + 1
-				last_result.append (symbol (SYM_START_DBLOCK) + format_item (FMT_NEWLINE))
+			if not a_node.is_nested then -- don't output anything if nested - generate nested keyed objects
+				last_result.append (create_indent (depth//2 + multiple_attr_count) +
+						apply_style (a_node.rm_attr_name, STYLE_IDENTIFIER) +  format_item (FMT_SPACE))
+				last_result.append (apply_style (symbol (SYM_EQ), STYLE_OPERATOR) + format_item (FMT_SPACE))
+				if a_node.is_container_type then
+					multiple_attr_count := multiple_attr_count + 1
+					last_result.append (symbol (SYM_START_DBLOCK) + format_item (FMT_NEWLINE))
+				end
 			end
 		end
 
@@ -70,9 +72,11 @@ feature -- Visitor
 			-- end serialising an DT_ATTRIBUTE_NODE
 		do
 			last_object_simple := False
-			if a_node.is_multiple then
-				multiple_attr_count := multiple_attr_count - 1
-				last_result.append (create_indent (depth//2 + multiple_attr_count) + symbol (SYM_END_DBLOCK) + format_item (FMT_NEWLINE))
+			if not a_node.is_nested then -- don't output anything if nested - generate nested keyed objects
+				if a_node.is_container_type then
+					multiple_attr_count := multiple_attr_count - 1
+					last_result.append (create_indent (depth//2 + multiple_attr_count) + symbol (SYM_END_DBLOCK) + format_item (FMT_NEWLINE))
+				end
 			end
 		end
 
@@ -154,7 +158,7 @@ feature {NONE} -- Implementation
 		local
 			s: STRING
 		do
-			if a_node.parent.is_multiple then
+			if a_node.parent.is_container_type then
 				last_result.append (create_indent (depth//2 + multiple_attr_count) + apply_style ("[%"" + clean (a_node.node_id) + "%"]", STYLE_IDENTIFIER))
 				last_result.append (format_item (FMT_SPACE))
 				last_result.append (apply_style (symbol (SYM_EQ), STYLE_OPERATOR) + format_item (FMT_SPACE))

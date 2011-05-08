@@ -65,7 +65,7 @@ debug ("DT")
 	io.put_string ("DT_OBJECT_CONVERTER.populate_dt_from_object: an_obj is a HASH_TABLE%N")
 end
 				if not eif_hash_obj.is_empty  then
-					create a_dt_attr.make_multiple_generic
+					create a_dt_attr.make_nested_container
 					populate_dt_attr_from_eif_hash (a_dt_attr, eif_hash_obj)
 					a_dt_co.put_attribute (a_dt_attr)
 				end
@@ -77,7 +77,7 @@ debug ("DT")
 	io.put_string ("DT_OBJECT_CONVERTER.populate_dt_from_object: an_obj is a SEQUENCE%N")
 end
 				if not eif_seq_obj.is_empty then
-					create a_dt_attr.make_multiple_generic
+					create a_dt_attr.make_nested_container
 					populate_dt_attr_from_eif_sequence (a_dt_attr, eif_seq_obj)
 					a_dt_co.put_attribute (a_dt_attr)
 				end
@@ -131,7 +131,7 @@ debug ("DT")
 	io.put_string ("DT_OBJECT_CONVERTER.populate_dt_from_object: (HASH_TABLE type)%N")
 end
 								if not eif_hash_fld_val.is_empty  then
-									create a_dt_attr.make_multiple (eif_fld_name)
+									create a_dt_attr.make_container (eif_fld_name)
 									populate_dt_attr_from_eif_hash (a_dt_attr, eif_hash_fld_val)
 									if not a_dt_attr.is_empty then
 										a_dt_co.put_attribute (a_dt_attr)
@@ -143,7 +143,7 @@ debug ("DT")
 	io.put_string ("DT_OBJECT_CONVERTER.populate_dt_from_object: (SEQUENCE type)%N")
 end
 								if not eif_seq_fld_val.is_empty then
-									create a_dt_attr.make_multiple (eif_fld_name)
+									create a_dt_attr.make_container (eif_fld_name)
 									populate_dt_attr_from_eif_sequence (a_dt_attr, eif_seq_fld_val)
 									if not a_dt_attr.is_empty then
 										a_dt_co.put_attribute (a_dt_attr)
@@ -312,7 +312,7 @@ end
 					-- object level down in the DT tree
 					if not a_dt_co.is_empty then
 						a_dt_attr := a_dt_co.first
-						if a_dt_attr.is_generic then
+						if a_dt_attr.is_nested then
 							populate_eif_container_from_dt (Result, a_dt_attr)
 						else
 							-- should never get here: it means that the DT data parsed as a
@@ -340,7 +340,7 @@ debug ("DT")
 end
 
 							-- Test if DT object is a multiple-valued attribute of a complex type (i.e. not a list or hash of primitive types; see below for that)
-							if a_dt_attr.is_multiple and not a_dt_attr.is_empty then
+							if a_dt_attr.is_container_type and not a_dt_attr.is_empty then
 								if is_eiffel_container_type (fld_type_id) then -- so is Eiffel object field; create container object
 debug ("DT")
 	io.put_string ("%T%TDT type is multiple, and Eiffel field type is container; about to call (2) new_instance_of (" + type_name_of_type (fld_type_id) + ")%N")
@@ -653,7 +653,7 @@ feature {NONE} -- Implementation
 			-- set generic values in a generic object, from a_dt_attr
 			-- only deals with first generic parameter; generally safe for HASH_TABLE and LIST types
 		require
-			Dt_attr_node_multiple: a_dt_attr.is_multiple
+			Dt_attr_node_multiple: a_dt_attr.is_container_type
 		local
 			static_eif_container_content_type_id, dynamic_object_type_id: INTEGER
 		do

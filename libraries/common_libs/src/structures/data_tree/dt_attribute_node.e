@@ -19,8 +19,15 @@ inherit
 			parent, representation, default_create
 		end
 
+	DT_DEFINITIONS
+		export
+			{NONE} all
+		undefine
+			default_create
+		end
+
 create
-	make_single, make_multiple, make_multiple_generic
+	make_single, make_container, make_nested_container
 
 feature -- Initialisation
 
@@ -32,36 +39,38 @@ feature -- Initialisation
 		end
 
 	make_single (a_name: attached STRING)
-			-- make as a single relationship; set attr name
+			-- make as a single type attribute; set attr name
 		require
 			a_name_valid: not a_name.is_empty
 		do
 			default_create
 			create representation.make_single (a_name, Current)
 		ensure
-			not is_multiple
-			not is_generic
+			not is_container_type
+			not is_nested
 		end
 
-	make_multiple (a_name: attached STRING)
-			-- make as a multiple relationship; set attr name
+	make_container (a_name: attached STRING)
+			-- make as a container type attribute; set attr name
 		require
 			a_name_valid: not a_name.is_empty
 		do
 			default_create
 			create representation.make_multiple (a_name, Current)
 		ensure
-			is_multiple
+			is_container_type
+			not is_nested
 		end
 
-	make_multiple_generic
-			-- make as a multiple generic relationship;
+	make_nested_container
+			-- make as a container type attribute representing the implied attirbute of a container object, typically
+			-- called something like 'items', 'values', 'elements' etc
 		do
-			default_create
-			create representation.make_multiple_generic (Current)
+			make_container (Container_attr_name)
+			is_nested := True
 		ensure
-			is_multiple
-			is_generic
+			is_container_type
+			is_nested
 		end
 
 feature -- Access
@@ -79,7 +88,7 @@ feature -- Access
 			Result := representation.node_id
 		end
 
-	child_with_id(a_node_id: attached STRING): attached DT_OBJECT_ITEM
+	child_with_id (a_node_id: attached STRING): attached DT_OBJECT_ITEM
 			-- find the child node with `a_path_id'
 		do
 			Result ?= representation.child_with_id(a_node_id).content_item
@@ -137,18 +146,14 @@ feature -- Iteration
 
 feature -- Status Report
 
-	is_multiple: BOOLEAN
-			-- True if relationship is 1:N
+	is_container_type: BOOLEAN
+			-- True if type of this attribute in model is a container
 		do
 			Result := representation.is_multiple
 		end
 
-	is_generic: BOOLEAN
-			-- True if relationship represents an assumed
-			-- attribute of a container class
-		do
-			Result := representation.is_generic
-		end
+	is_nested: BOOLEAN
+			-- True if this attribute represents an assumed attribute of a parent container object
 
 	is_valid: BOOLEAN
 			-- report on validity
@@ -202,28 +207,29 @@ feature -- Modification
 			representation.set_node_id(a_name)
 		end
 
-	set_multiple
+	set_container_type
 			-- set an attribute created single to be multiple
 		do
 			representation.set_multiple
 		ensure
-			is_multiple
+			is_container_type
 		end
 
-	set_multiple_generic
+	set_nested_container
 			-- set an attribute created single to be multiple and generic, i.e. a container attribute
 		do
-			representation.set_multiple_generic
+			representation.set_multiple
+			is_nested := True
 		ensure
-			is_multiple
-			is_generic
+			is_container_type
+			is_nested
 		end
 
 	put_child(a_node: attached DT_OBJECT_ITEM)
 			-- put a new child node
 		require
 			Node_valid: not has_child(a_node)
-			Multiplicity_validity: is_multiple or else children.is_empty
+			Multiplicity_validity: is_container_type or else children.is_empty
 		do
 			representation.put_child (a_node.representation)
 			children.extend(a_node)
@@ -283,7 +289,7 @@ feature -- Serialisation
 		end
 
 invariant
-	Generic_multiple_validity: is_generic implies is_multiple
+	Nested_container_validity: is_nested implies is_container_type
 
 end
 

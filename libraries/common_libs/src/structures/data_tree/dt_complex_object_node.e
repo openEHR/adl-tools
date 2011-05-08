@@ -301,7 +301,7 @@ feature -- Modification
 				-- deal with the attribute
 				if not parent_dt_obj.has_attribute (an_og_path.item.attr_name) then
 					if an_og_path.item.is_addressable then
-						create dt_attr.make_multiple (an_og_path.item.attr_name)
+						create dt_attr.make_container (an_og_path.item.attr_name)
 					else
 						create dt_attr.make_single (an_og_path.item.attr_name)
 					end
@@ -314,14 +314,14 @@ feature -- Modification
 				if an_og_path.is_last then
 					dt_attr.put_child (new_dt_obj)
 				else -- any interior path node must be a DT_COMPLEX_OBJECT
-					if dt_attr.is_multiple and an_og_path.item.is_addressable then
+					if dt_attr.is_container_type and an_og_path.item.is_addressable then
 						if dt_attr.has_child_with_id (an_og_path.item.object_id) then
 							dt_obj := dt_attr.child_with_id (an_og_path.item.object_id)
 						else
 							create {DT_COMPLEX_OBJECT_NODE} dt_obj.make_identified (an_og_path.item.object_id)
 							dt_attr.put_child (dt_obj)
 						end
-					elseif not dt_attr.is_multiple and not an_og_path.item.is_addressable then
+					elseif not dt_attr.is_container_type and not an_og_path.item.is_addressable then
 						if dt_attr.children.count = 1 then
 							dt_obj := dt_attr.first_child
 						else

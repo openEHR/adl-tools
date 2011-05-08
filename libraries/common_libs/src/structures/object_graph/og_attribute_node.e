@@ -24,15 +24,8 @@ inherit
 			parent, child_type, put_child, put_child_left, put_child_right, valid_child_for_insertion, node_key
 		end
 
-	OG_DEFINITIONS
-		export
-			{NONE} all
-		undefine
-			is_equal, default_create
-		end
-
 create
-	make_single, make_multiple, make_multiple_generic
+	make_single, make_multiple
 
 feature -- Initialisation
 
@@ -54,21 +47,6 @@ feature -- Initialisation
 			make_og_node (a_node_id, a_content_item)
 			is_multiple := True
 		ensure
-			Is_multiple: is_multiple
-		end
-
-	make_multiple_generic (a_content_item: VISITABLE)
-			-- create with pseudo-node id indicating that it is an unnamed
-			-- container attribute of a generic type
-		do
-			default_create
-			node_id := Container_attr_name.twin
-			content_item := a_content_item
-			is_generic := True
-			is_multiple := True
-		ensure
-			Node_id_set: node_id.is_equal(Container_attr_name)
-			Is_generic: is_generic
 			Is_multiple: is_multiple
 		end
 
@@ -108,10 +86,6 @@ feature -- Status Report
 			Result := not is_multiple
 		end
 
-	is_generic: BOOLEAN
-			-- True if this attribute is a created pseudo attribute
-			-- representing an unnamed attribute in a generic class like List<T>
-
 	is_addressable: BOOLEAN = True
 			-- True if this node has a non-anonymous node_id
 
@@ -135,12 +109,6 @@ feature -- Status Setting
 			-- set `is_multiple' True (sometimes discovered after make is done)
 		do
 			is_multiple := True
-		end
-
-	set_multiple_generic
-			-- set `is_generic' True (sometimes discovered after make is done)
-		do
-			is_generic := True
 		end
 
 feature -- Modification
@@ -243,9 +211,6 @@ feature {NONE} -- Implementation
 			end
 			csr.put_child (Current)
 		end
-
-invariant
-	Generic_validity: not (is_generic xor node_id.is_equal(Container_attr_name))
 
 end
 

@@ -37,7 +37,7 @@ feature -- Access
 			rel_name_valid: a_rel_name /= Void
 		do
 			if is_multiple then
-				create Result.make_multiple(a_rel_name)
+				create Result.make_container(a_rel_name)
 			else
 				create Result.make_single(a_rel_name)
 			end

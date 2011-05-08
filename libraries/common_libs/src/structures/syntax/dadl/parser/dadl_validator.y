@@ -260,11 +260,11 @@ container_attr_object_block: untyped_container_attr_object_block
 --	>
 --
 -- Here we pop the current attribute node off if it was a synthesised container node,
--- i.e. created by a call DT_ATTRIBUTE.make_multiple_generic
+-- i.e. created by a call DT_ATTRIBUTE.make_nested_container
 --
 untyped_container_attr_object_block: container_attr_object_block_head keyed_objects SYM_END_DBLOCK
 		{
-			if complex_object_nodes.item.is_addressable and attr_nodes.item.is_generic then
+			if complex_object_nodes.item.is_addressable and attr_nodes.item.is_nested then
 				-- pop the generic attr node
 debug("dADL_parse")
 	io.put_string(indent + "container_attr_object_block: POP attr node (" +  
@@ -331,9 +331,9 @@ end
 				-- now create a generic attribute node to stand for the hidden attribute of the 
 				-- generic object, e.g. it might be List<T>.items or whatever
 debug("dADL_parse")
-	io.put_string(indent + "container_attr_object_block_head: create_attr_node.make_multiple_generic%N")
+	io.put_string(indent + "container_attr_object_block_head: create_attr_node.make_nested_container%N")
 end
-				create attr_node.make_multiple_generic
+				create attr_node.make_nested_container
 
 debug("dADL_parse")
 	io.put_string(indent + "container_attr_object_block_head: complex_object_node(" + 
@@ -381,7 +381,7 @@ debug("dADL_parse")
 		" (setting " + attr_nodes.item.rm_attr_name + " to Multiple)%N")
 end
 			if not attr_nodes.is_empty then
-				attr_nodes.item.set_multiple
+				attr_nodes.item.set_container_type
 			else
 				abort_with_error("SGEE", <<attr_node.rm_attr_name>>)
 			end
@@ -432,7 +432,7 @@ end
 single_attr_object_complex_head: SYM_START_DBLOCK
 		{
 			-- if parent attr is not multiple, create an anon object; else an object identified by a key
-			if attr_nodes.is_empty or else not attr_nodes.item.is_multiple then
+			if attr_nodes.is_empty or else not attr_nodes.item.is_container_type then
 debug("dADL_parse")
 	io.put_string(indent + "single_attr_object_complex_head: create complex_object_node.make_anonymous%N")
 end
