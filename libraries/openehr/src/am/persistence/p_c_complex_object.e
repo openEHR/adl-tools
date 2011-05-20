@@ -16,7 +16,7 @@ class P_C_COMPLEX_OBJECT
 inherit
 	P_C_DEFINED_OBJECT
 		redefine
-			make
+			make, populate_c_instance
 		end
 
 create
@@ -38,7 +38,31 @@ feature -- Initialisation
 
 feature -- Access
 
-	attributes: attached ARRAYED_LIST [P_C_ATTRIBUTE]
+	attributes: ARRAYED_LIST [P_C_ATTRIBUTE]
+
+feature -- Factory
+
+	create_c_complex_object: attached C_COMPLEX_OBJECT
+		do
+			if attached node_id then
+				create Result.make_identified (rm_type_name, node_id)
+			else
+				create Result.make_anonymous (rm_type_name)
+			end
+			populate_c_instance (Result)
+		end
+
+	populate_c_instance (a_c_o: attached C_COMPLEX_OBJECT)
+			-- populate fields not already populated from creation of a C_XXX instance
+		do
+			precursor (a_c_o)
+			if attached attributes then
+				from attributes.start until attributes.off loop
+					a_c_o.put_attribute (attributes.item.create_c_attribute)
+					attributes.forth
+				end
+			end
+		end
 
 end
 

@@ -93,7 +93,7 @@ feature -- Synchronisation
 		do
 			precursor
 			dt_representation.set_type_visible
-			if node_id = Void or node_id.is_empty then
+			if node_id = Void or else node_id.is_empty then
 				if dt_representation.has_attribute ("node_id") then
 					dt_representation.remove_attribute ("node_id")
 				end

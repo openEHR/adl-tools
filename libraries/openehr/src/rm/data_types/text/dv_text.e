@@ -54,7 +54,7 @@ inherit
 
 create
 	default_create,
-	make, make_from_string, make_from_canonical_string
+	make, make_from_string
 
 feature -- Definitions
 
@@ -80,81 +80,9 @@ feature -- Initialization
 			Value_set: value.is_equal(str)
 		end
 
-	make_from_canonical_string (str: STRING)
-			-- make from a string of the form
-			-- <value>xxxx</value>
-			-- <language>
-			-- 		<terminology_id>
-			--			<name>string</name>
-			-- 			[<version_id>string</version_id>]
-			-- 		</terminology_id>
-			-- 		<code_string>string</code_string>
-			-- </language>
-			-- <charset>
-			-- 		<terminology_id>
-			--			<name>string</name>
-			-- 			[<version_id>string</version_id>]
-			-- 		</terminology_id>
-			-- 		<code_string>string</code_string>
-			-- </charset>
-			-- [<hyperlink>DV_URI</hyperlink>]
-			-- [<formatting>xxxx</formatting>]
-			-- [<mappings>
-			--		<item>
-			-- 			<target>
-			-- 				<terminology_id>
-			--					<name>string</name>
-			-- 					[<version_id>string</version_id>]
-			-- 				</terminology_id>
-			-- 				<code_string>string</code_string>
-			-- 			</target>
-			-- 			<match>character</match>
-			-- 			[<purpose>DV_CODED_TEXT</purpose>]			
-			-- 		</item>
-			--		<item>TERM_MAPPING</item>
-			-- <mappings>]
-		local
-			a_tm: TERM_MAPPING
-			csr: INTEGER
-		do
-			value := xml_extract_from_tags(str, "value", 1)
-			create language.make_from_canonical_string(xml_extract_from_tags(str, "language", 1))
-			create encoding.make_from_canonical_string(xml_extract_from_tags(str, "encoding", 1))
-
-			if xml_has_tag(str, "hyperlink", 1) then
-				create hyperlink.make_from_canonical_string(xml_extract_from_tags(str, "hyperlink", 1))
-			end
-
-			if xml_has_tag(str, "formatting", 1) then
-				formatting := xml_extract_from_tags(str, "formatting", 1)
-			end
-
-			csr := xml_tag_position(str, "mappings", 1)
-			if csr > 0 then
-				create mappings.make
-				from
-					csr := xml_tag_position(str, "item", csr)
-				until
-					csr = 0
-				loop
-					create a_tm.make_from_canonical_string(xml_extract_from_tags(str, "item", csr))
-					mappings.extend (a_tm)
-					csr := xml_tag_position(str, "item", csr)
-				end
-			end
-		end
-
-feature -- Status Report
-
-	valid_canonical_string (str: STRING): BOOLEAN
-			-- True if str contains required tags
-		do
-			Result := xml_has_tag(str, "value", 1) and xml_has_tag(str, "language", 1) and xml_has_tag(str, "charset", 1)
-		end
-
 feature -- Access
 
-	value: STRING
+	value: attached STRING
 			-- displayable rendition of the item, regardless of its underlying structure
 
 	mappings: LINKED_LIST [TERM_MAPPING]
@@ -168,25 +96,21 @@ feature -- Access
 	hyperlink: DV_URI
 			-- optional link behind this item of text
 
-	language: CODE_PHRASE
+	language: attached CODE_PHRASE
 			-- The localised language in which the value is written. Coded from
 			-- openEHR Code Set “languages”.
 
-	encoding: CODE_PHRASE
+	encoding: attached CODE_PHRASE
 			-- Name of character set in which value expressed. Coded from openEHR
 			-- Code Set “character sets”.
 
 feature -- Status Report
 
-	has_mapping (other: CODE_PHRASE): BOOLEAN
+	has_mapping (other: attached CODE_PHRASE): BOOLEAN
 			-- True if there is any mapping `other' in the list of mappings
 		do
-			if mappings /= void then
-				from
-					mappings.start
-				until
-					mappings.off or else mappings.item.target.is_equal(other)
-				loop
+			if attached mappings then
+				from mappings.start until mappings.off or else mappings.item.target.is_equal(other) loop
 					mappings.forth
 				end
 				Result := not mappings.off
@@ -227,35 +151,6 @@ feature -- Output
 
 		end
 
-	as_canonical_string: STRING
-		do
-			create Result.make(0)
-			Result.append ("<value>" + value + "</value>")
-			if language /= Void then
-				Result.append ("<language>" + language.as_canonical_string + "</language>")
-			end
-			if encoding /= Void then
-				Result.append ("<encoding>" + encoding.as_canonical_string + "</encoding>")
-			end
-
-			if mappings /= Void then
-				Result.append ("<mappings>")
-				from mappings.start
-				until mappings.off
-				loop Result.append ("<item>" + mappings.item.as_canonical_string + "</item>")
-				end
-				Result.append ("</mappings>")
-			end
-
-			if formatting /= Void then
-				Result.append ("<formatting>" + formatting + "</formatting>")
-			end
-
-			if hyperlink /= Void then
-				Result.append ("<hyperlink>" + hyperlink.as_canonical_string + "</hyperlink>")
-			end
-		end
-
 feature {DV_TEXT} -- Implementation
 
 	hash_code: INTEGER
@@ -264,13 +159,13 @@ feature {DV_TEXT} -- Implementation
 		end
 
 invariant
-	Value_valid: value /= void and then not value.is_empty and then not
+	Value_valid: not value.is_empty and then not
 		(value.has(CR) or value.has(LF))
 	Mappings_valid: mappings /= void implies not mappings.is_empty
 	Formatting_valid: formatting /= void implies not formatting.is_empty
 
-	Language_valid: language /= Void and then code_set(Code_set_id_languages).has(language)
-	Encoding_valid: encoding /= Void and then code_set(Code_set_id_character_sets).has(encoding)
+	Language_valid: code_set(Code_set_id_languages).has(language)
+	Encoding_valid: code_set(Code_set_id_character_sets).has(encoding)
 
 end
 

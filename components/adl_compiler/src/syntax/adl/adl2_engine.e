@@ -60,6 +60,8 @@ feature {NONE} -- Initialisation
 	make
 		do
 			create archetype_context.make
+			archetype_context.set_output_typed_encapsulated
+
 			create language_context.make
 			create description_context.make
 			create definition_context.make

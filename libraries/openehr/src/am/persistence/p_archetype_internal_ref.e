@@ -28,7 +28,6 @@ feature -- Initialisation
 		do
 			precursor (a_air)
 			target_path := a_air.target_path
-			use_target_occurrences := a_air.use_target_occurrences
 		end
 
 feature -- Access
@@ -36,11 +35,16 @@ feature -- Access
 	target_path: STRING
 			-- path to the referenced node
 
-feature -- Status Report
+feature -- Factory
 
-	use_target_occurrences: BOOLEAN
-			-- True if target occurrences are to be used as the value of occurrences in this object;
-			-- by the time of runtime use, the target occurrences value has to be set into this object
+	create_archetype_internal_ref: attached ARCHETYPE_INTERNAL_REF
+		do
+			create Result.make (rm_type_name, target_path)
+			if attached node_id then
+				Result.set_node_id (node_id)
+			end
+			populate_c_instance (Result)
+		end
 
 end
 

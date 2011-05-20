@@ -54,6 +54,17 @@ feature -- Initialisation
 				end
 
 				-- set a reasonable default for diff test file directory (where files are written from test page for comparison with a diff tool)
+				if compiler_gen_directory.is_empty then
+					set_compiler_gen_directory (file_system.pathname (user_config_file_directory, "gen"))
+				end
+				if not file_system.directory_exists (compiler_gen_source_directory) then
+					file_system.recursive_create_directory (compiler_gen_source_directory)
+				end
+				if not file_system.directory_exists (compiler_gen_flat_directory) then
+					file_system.recursive_create_directory (compiler_gen_flat_directory)
+				end
+
+				-- set a reasonable default for diff test file directory (where files are written from test page for comparison with a diff tool)
 				if test_diff_directory.is_empty then
 					set_test_diff_directory (file_system.pathname (user_config_file_directory, "diff_test"))
 				end

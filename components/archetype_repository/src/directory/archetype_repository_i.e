@@ -42,54 +42,54 @@ feature {ARCHETYPE_DIRECTORY} -- Access
 
 feature -- Status Report
 
-	is_valid_path (path: STRING): BOOLEAN
+	is_valid_path (path: attached STRING): BOOLEAN
 			-- Is `path' a valid, existing file on the repository medium?
 		deferred
 		ensure
-			false_if_void: Result implies path /= Void
+			false_if_void: Result implies attached path
 		end
 
-	is_valid_directory (path: STRING): BOOLEAN
+	is_valid_directory (path: attached STRING): BOOLEAN
 			-- Is `path' a valid, existing directory on the repository medium?
 		deferred
 		ensure
-			false_if_void: Result implies path /= Void
+			false_if_void: Result implies attached path
 		end
 
 	is_valid_directory_part (path: STRING): BOOLEAN
 			-- Is the directory part of `path' valid on the repository medium?
 		deferred
 		ensure
-			false_if_void: Result implies path /= Void
+			false_if_void: Result implies attached path
 		end
 
-	has_file_changed_on_disk (a_path: STRING; a_timestamp: INTEGER): BOOLEAN
+	has_file_changed_on_disk (a_path: attached STRING; a_timestamp: INTEGER): BOOLEAN
 			-- Has the loaded archetype designated by `path' changed on disk since last read?
 		require
-			path_valid: a_path /= Void and then not a_path.is_empty
+			path_valid: not a_path.is_empty
 		deferred
 		end
 
 feature -- Commands
 
-	read_text_from_file (full_path: STRING)
+	read_text_from_file (full_path: attached STRING)
 			-- Read `text' and `text_timestamp' from the file designated by `full_path' on the repository medium.
 		require
 			path_valid: is_valid_directory_part (full_path)
 		deferred
 		ensure
-			text_attached: text /= Void
+			text_attached: attached text
 		end
 
-	save_text_to_file (full_path, a_text: STRING)
+	save_text_to_file (full_path, a_text: attached STRING)
 			-- Save `a_text' to the file designated by `full_path' on the repository medium.
 		require
 			path_valid: is_valid_directory_part (full_path)
-			text_valid: a_text /= Void and then not a_text.is_empty
+			text_valid: not a_text.is_empty
 		deferred
 		end
 
-	delete_file (full_path: STRING)
+	delete_file (full_path: attached STRING)
 			-- Delete file designated by `full_path' on the repository medium.
 		require
 			path_valid: is_valid_directory_part (full_path)

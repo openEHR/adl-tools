@@ -28,12 +28,26 @@ feature -- Initiaisation
 	make (a_c_dvo: C_DV_ORDINAL)
 		do
 			precursor (a_c_dvo)
-			items := a_c_dvo.items
+			if attached a_c_dvo.items then
+				create items.make (0)
+				items.append (a_c_dvo.items)
+			end
 		end
 
 feature -- Access
 
-	items: LINKED_SET [ORDINAL]
+	items: ARRAYED_LIST [ORDINAL]
+
+feature -- Factory
+
+	create_c_dv_ordinal: attached C_DV_ORDINAL
+		do
+			create Result.make
+			if attached items then
+				Result.set_items (items)
+			end
+			populate_c_instance (Result)
+		end
 
 end
 

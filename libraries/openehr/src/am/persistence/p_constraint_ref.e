@@ -30,7 +30,7 @@ feature -- Initialisation
 			precursor (a_cr)
 			target := a_cr.target
 			if attached a_cr.external_reference then
-				external_reference := a_cr.external_reference.as_string
+				external_reference := a_cr.external_reference
 			end
 		end
 
@@ -38,7 +38,18 @@ feature -- Access
 
 	target: attached STRING
 
-	external_reference: STRING
+	external_reference: DV_PARSABLE
+
+feature -- Factory
+
+	create_constraint_ref: attached CONSTRAINT_REF
+		do
+			create Result.make (target)
+			populate_c_instance (Result)
+			if attached external_reference then
+				Result.set_external_reference (external_reference)
+			end
+		end
 
 end
 

@@ -40,6 +40,18 @@ feature -- Access
 	list: ARRAYED_LIST [C_QUANTITY_ITEM]
 			-- list of items constraining magnitude/units pairs
 
+feature -- Factory
+
+	create_c_dv_quantity: attached C_DV_QUANTITY
+		do
+			create Result.make
+			Result.set_property (create {CODE_PHRASE}.make_from_string(property))
+			if attached list then
+				Result.set_list (list)
+			end
+			populate_c_instance (Result)
+		end
+
 end
 
 --|

@@ -35,7 +35,7 @@ feature -- Access
 
 feature -- Status Report
 
-	is_valid_directory_part (path: STRING): BOOLEAN
+	is_valid_directory_part (path: attached STRING): BOOLEAN
 			-- Is the directory part of `path', whose last section is a filename, valid on the repository medium?
 		do
 			if path /= Void and then not path.is_empty then
@@ -43,7 +43,7 @@ feature -- Status Report
 			end
 		end
 
-	has_file_changed_on_disk (path: STRING; timestamp: INTEGER): BOOLEAN
+	has_file_changed_on_disk (path: attached STRING; timestamp: INTEGER): BOOLEAN
 			-- Has the loaded archetype designated by `path' changed on disk since last read?
 		do
 			file_context.set_target (path)
@@ -53,7 +53,7 @@ feature -- Status Report
 
 feature -- Commands
 
-	read_text_from_file (full_path: STRING)
+	read_text_from_file (full_path: attached STRING)
 			-- Read `text' and `text_timestamp' from the file designated by `full_path' on the repository medium.
 		do
 			file_context.set_target (full_path)
@@ -62,7 +62,7 @@ feature -- Commands
 			text_timestamp := file_context.file_timestamp
 		end
 
-	save_text_to_file (full_path, a_text: STRING)
+	save_text_to_file (full_path, a_text: attached STRING)
 			-- Save `a_text' to the file designated by `full_path' on the repository medium.
 		do
 			if file_context.file_writable (full_path) then
@@ -74,7 +74,7 @@ feature -- Commands
 			end
 		end
 
-	delete_file (full_path: STRING)
+	delete_file (full_path: attached STRING)
 			-- Delete file designated by `full_path' on the repository medium.
 		do
 			file_system.delete_file (full_path)

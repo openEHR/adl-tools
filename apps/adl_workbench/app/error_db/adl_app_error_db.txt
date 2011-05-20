@@ -43,6 +43,7 @@ templates = <
 		["populating_directory_complete"] = <"...complete; compile with F7 or other options under Repository menu">
 		["compiler_no_flat_text"] = <"===================== No flat (.adlf) text available =======================">
 		["compiler_no_source_text"] = <"===================== No source (.adls) text available =======================">
+		["compiler_no_dadl_text"] = <"===================== No dADL (.dadl) text available =======================">
 
 		-- GUI_SOT_MAP_CONTROL
 		["slots_incomplete_w1"] = <"this list may be incomplete. To be sure, run Build All under the Repository menu.">

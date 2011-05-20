@@ -32,7 +32,17 @@ feature -- Initialisation
 
 feature -- Access
 
-	item: attached C_PRIMITIVE
+	item: C_PRIMITIVE
+
+feature -- Factory
+
+	create_c_primitive_object: attached C_PRIMITIVE_OBJECT
+		do
+			if attached item then
+				create Result.make (item)
+			end
+			populate_c_instance (Result)
+		end
 
 end
 

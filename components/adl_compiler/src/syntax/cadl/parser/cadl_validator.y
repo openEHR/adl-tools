@@ -2400,7 +2400,8 @@ feature {NONE} -- Implementation
 			elseif an_attr.is_multiple then
 				if an_attr.cardinality /= Void and an_obj.occurrences /= Void and (
 					not an_attr.cardinality.interval.upper_unbounded and (an_obj.occurrences.upper_unbounded or 
-								an_attr.cardinality.interval.upper < an_obj.occurrences.upper)) then
+								an_attr.cardinality.interval.upper < an_obj.occurrences.upper)) 
+				then
 					ar.extend(an_attr.cardinality.interval.as_string)
 					ar.extend(an_obj.occurrences.as_string)
 					err_code := "VACMC1"

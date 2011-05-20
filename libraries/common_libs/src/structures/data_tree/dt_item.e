@@ -1,10 +1,10 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "item in an ADL parse tree"
-	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	description: "Any node in a data tree"
+	keywords:    "dADL"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -19,9 +19,16 @@ inherit
 			{NONE} all
 		end
 
+feature -- Definitions
+
+	Unknown_type_name: STRING = "UNKNOWN"
+
 feature -- Access
 
 	parent: DT_ITEM
+
+	rm_type_name: STRING
+			-- reference model type name of object to instantiate
 
 	invalid_reason: STRING
 
@@ -32,6 +39,15 @@ feature -- Access
 		end
 
 feature -- Status Report
+
+	is_typed: BOOLEAN
+			-- True if this node has a known type
+		do
+			Result := attached rm_type_name and then not rm_type_name.is_equal (Unknown_type_name)
+		end
+
+	type_visible: BOOLEAN
+			-- True if type names are to be shown in serialised forms
 
 	is_addressable: BOOLEAN
 			-- True if this node has a non-anonymous node_id
@@ -50,6 +66,33 @@ feature -- Status Report
 		deferred
 		ensure
 			not Result implies invalid_reason /= Void and then not invalid_reason.is_empty
+		end
+
+	set_type_name (a_type_name: attached STRING)
+			-- set type name
+		require
+			Type_name_valid: not a_type_name.is_empty
+		do
+			rm_type_name := a_type_name
+		end
+
+feature -- Modification
+
+	set_visible_type_name (a_type_name: attached STRING)
+			-- set type name
+		require
+			Type_name_valid: not a_type_name.is_empty
+		do
+			set_type_name (a_type_name)
+			set_type_visible
+		end
+
+	set_type_visible
+			-- show type of this object in generated form like dADL
+		require
+			is_typed
+		do
+			type_visible := True
 		end
 
 feature {DT_ITEM} -- Modification
@@ -75,6 +118,9 @@ feature -- Serialisation
 			-- perform serialisation at end of block for this node
 		deferred
 		end
+
+invariant
+	Rm_type_name_validity:	attached rm_type_name implies not rm_type_name.is_empty
 
 end
 

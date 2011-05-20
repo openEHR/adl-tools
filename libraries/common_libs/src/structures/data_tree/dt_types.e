@@ -204,7 +204,7 @@ feature {NONE} -- Definitions
 			Result.extend (({INTERVAL [ISO8601_DURATION]}).type_id)
 		end
 
-feature -- Access
+feature -- Conversion
 
 	dt_primitive_sequence_conforming_type (a_type_id: INTEGER): INTEGER
 			-- Type which is the primitive_sequence type to which a_type_id (a concrete type, e.g. some kind of
@@ -219,17 +219,17 @@ feature -- Access
 					Result := a_type_id
 				else
 					from dt_primitive_sequence_types.start until dt_primitive_sequence_types.off or Result /= 0 loop
-debug ("DT")
+debug ("DT-types")
 	io.put_string(generator + ".primitive_sequence_conforming_type: call to type_conforms_to(" +
 		type_name_of_type(a_type_id) + ", " + type_name_of_type(dt_primitive_sequence_types.item) + "):")
 end
 						if type_conforms_to(a_type_id, dt_primitive_sequence_types.item) then
 							Result := dt_primitive_sequence_types.item
-debug ("DT")
+debug ("DT-types")
 	io.put_string(" True%N")
 end
 else
-debug ("DT")
+debug ("DT-types")
 	io.put_string(" False%N")
 end
 						end
@@ -240,6 +240,14 @@ end
 					dt_primitive_sequence_conforming_types.put(Result, a_type_id)
 				end
 			end
+		end
+
+	dt_dynamic_type_from_string (a_type_str: attached STRING): INTEGER
+		do
+			if not dt_dynamic_types.has (a_type_str) then
+				dt_dynamic_types.put (dynamic_type_from_string (a_type_str), a_type_str)
+			end
+			Result := dt_dynamic_types.item (a_type_str)
 		end
 
 feature -- Status Report
@@ -311,7 +319,7 @@ feature -- Status Report
 			-- True if a_type_id is of a type which is a SEQUENCE or HASH_TABLE, which are the only
 			-- Eiffel CONTAINERs mapped by DT structures
 		do
-debug ("DT")
+debug ("DT-types")
 	io.put_string(generator +
 	".is_container_type: call to type_conforms_to(" + type_name_of_type (a_type_id) + ", " +
 	type_name_of_type (sequence_any_type_id) + "), type_conforms_to(" + type_name_of_type (a_type_id) + ", " +
@@ -319,7 +327,7 @@ debug ("DT")
 end
 			Result := type_conforms_to (a_type_id, sequence_any_type_id) or
 				type_conforms_to (a_type_id, hash_table_any_hashable_type_id)
-debug ("DT")
+debug ("DT-types")
 	io.put_string("%T(Result = " + Result.out + ")%N")
 end
 		end
@@ -327,14 +335,14 @@ end
 	is_eiffel_interval_type (a_type_id: INTEGER): BOOLEAN
 			-- True if a_type_id is of a type which conforms to INTERVAL[ANY]
 		do
-debug ("DT")
+debug ("DT-types")
 	io.put_string(generator +
 	".is_container_type: call to type_conforms_to(" + type_name_of_type (a_type_id) + ", " +
 	type_name_of_type (sequence_any_type_id) + "), type_conforms_to(" + type_name_of_type (a_type_id) + ", " +
 	type_name_of_type (hash_table_any_hashable_type_id) + ")%N")
 end
 			Result := type_conforms_to (a_type_id, interval_any_type_id)
-debug ("DT")
+debug ("DT-types")
 	io.put_string("%T(Result = " + Result.out + ")%N")
 end
 		end
@@ -395,6 +403,13 @@ feature {NONE} -- Implementation
 			-- into DT/DADL format.
 		once
 			create Result.make(0)
+		end
+
+	dt_dynamic_types: HASH_TABLE [INTEGER, STRING]
+		once
+			create Result.make(0)
+			Result.put (({C_STRING}).type_id, "C_STRING")
+			Result.put (({C_DATE}).type_id, "C_DATE")
 		end
 
 end

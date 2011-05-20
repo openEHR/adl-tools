@@ -16,7 +16,7 @@ deferred class P_C_DEFINED_OBJECT
 inherit
 	P_C_OBJECT
 		redefine
-			make
+			make, populate_c_instance
 		end
 
 feature -- Initialisation
@@ -31,6 +31,17 @@ feature -- Access
 
     assumed_value: ANY
             -- value to be assumed if none sent in data
+
+feature -- Factory
+
+	populate_c_instance (a_c_o: attached C_DEFINED_OBJECT)
+			-- populate fields not already populated from creation of a C_XXX instance
+		do
+			precursor (a_c_o)
+			if attached assumed_value then
+				a_c_o.set_assumed_value (assumed_value)
+			end
+		end
 
 end
 

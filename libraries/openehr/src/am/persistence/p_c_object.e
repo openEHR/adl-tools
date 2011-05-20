@@ -21,7 +21,9 @@ feature -- Initialisation
 	make (a_co: attached C_OBJECT)
 		do
 			rm_type_name := a_co.rm_type_name
-			node_id := a_co.node_id
+			if a_co.is_addressable then
+				node_id := a_co.node_id
+			end
 			if attached a_co.occurrences then
 				occurrences := a_co.occurrences.as_string
 			end
@@ -40,6 +42,19 @@ feature -- Access
 	sibling_order: SIBLING_ORDER
 			-- set if this node should be ordered with respect to an inherited sibling; only settable
 			-- on specialised nodes
+
+feature -- Factory
+
+	populate_c_instance (a_c_o: attached C_OBJECT)
+			-- populate fields not already populated from creation of a C_XXX instance
+		do
+			if attached occurrences then
+				a_c_o.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_from_string (occurrences))
+			end
+			if attached sibling_order then
+				a_c_o.set_sibling_order (sibling_order)
+			end
+		end
 
 end
 

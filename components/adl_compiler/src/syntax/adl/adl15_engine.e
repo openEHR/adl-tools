@@ -98,16 +98,17 @@ feature -- Commands
 		local
 			arch_ont_serialised, comp_onts_serialised: STRING
 			comp_onts_helper: COMPONENT_ONTOLOGIES_HELPER
+			dt_ont: DT_COMPLEX_OBJECT_NODE
 		do
 			an_archetype.synchronise_adl15
 
 			-- language section
 			language_context.set_tree (an_archetype.orig_lang_translations.dt_representation)
-			language_context.serialise (a_format)
+			language_context.serialise (a_format, False, False)
 
 			-- description section
 			description_context.set_tree (an_archetype.description.dt_representation)
-			description_context.serialise (a_format)
+			description_context.serialise (a_format, False, False)
 
 			-- definition section
 			definition_context.set_tree (an_archetype.definition)
@@ -120,8 +121,14 @@ feature -- Commands
 			end
 
 			-- ontology section
-			ontology_context.set_tree (an_archetype.ontology.dt_representation)
-			ontology_context.serialise (a_format)
+			dt_ont := an_archetype.ontology.dt_representation
+	-- this is a hack which causes ontology section to be output as dADL with the 'items' attributes
+	-- rather than the native nested structure
+	convert_ontology_to_unnested (dt_ont)
+			ontology_context.set_tree (dt_ont)
+			ontology_context.serialise (a_format, False, False)
+	-- and this puts the in-memory structure back to native form so things work correctly from here
+	convert_ontology_to_nested (dt_ont)
 			arch_ont_serialised := ontology_context.serialised
 
 			-- OPT only: component_ontologies section
@@ -129,14 +136,14 @@ feature -- Commands
 				create comp_onts_helper.make
 				comp_onts_helper.set_component_ontologies (opt.component_ontologies)
 				ontology_context.set_tree (object_converter.object_to_dt (comp_onts_helper))
-				ontology_context.serialise (a_format)
+				ontology_context.serialise (a_format, False, False)
 				comp_onts_serialised := ontology_context.serialised
 			end
 
 			-- annotations section
 			if an_archetype.has_annotations then
 				annotations_context.set_tree (an_archetype.annotations.dt_representation)
-				annotations_context.serialise (a_format)
+				annotations_context.serialise (a_format, False, False)
 			end
 
 			-- perform the pasting together of pieces to make ADL archetype
@@ -246,7 +253,7 @@ feature {NONE} -- Implementation
 
 										------------------- build the archetype --------------					
 										if attached {C_COMPLEX_OBJECT} definition_context.tree as definition and then attached {ARCHETYPE_ID} adl_parser.archetype_id as id then
-											convert_ontology_syntax (ontology_context.tree)  -- perform any version upgrade conversions
+											convert_ontology_to_nested (ontology_context.tree)  -- perform any version upgrade conversions
 											if differential_source_flag then
 												if orig_lang_trans /= Void then
 													differential_ontology ?= ontology_context.tree.as_object (({DIFFERENTIAL_ARCHETYPE_ONTOLOGY}).type_id, <<orig_lang_trans.original_language.code_string, definition.node_id>>)
@@ -261,7 +268,7 @@ feature {NONE} -- Implementation
 													create {DIFFERENTIAL_ARCHETYPE} Result.make (
 														adl_parser.artefact_type,
 														id,
-														orig_lang_trans.original_language.code_string,
+														orig_lang_trans.original_language,
 														res_desc,	-- may be Void
 														definition,
 														differential_ontology
@@ -281,7 +288,7 @@ feature {NONE} -- Implementation
 													create {FLAT_ARCHETYPE} Result.make (
 														adl_parser.artefact_type,
 														id,
-														orig_lang_trans.original_language.code_string,
+														orig_lang_trans.original_language,
 														res_desc,	-- may be Void
 														definition,
 														flat_ontology

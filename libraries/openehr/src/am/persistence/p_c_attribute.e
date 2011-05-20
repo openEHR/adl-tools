@@ -26,6 +26,7 @@ feature -- Initialisation
 		do
 			rm_attribute_name := a_ca.rm_attribute_name
 			differential_path := a_ca.differential_path
+			is_multiple := a_ca.is_multiple
 			if attached a_ca.existence then
 				existence := a_ca.existence.as_string
 			end
@@ -70,6 +71,60 @@ feature -- Access
 	existence: STRING
 
 	cardinality: STRING
+
+feature -- Status Report
+
+	is_multiple: BOOLEAN
+
+feature -- Factory
+
+	create_c_attribute: attached C_ATTRIBUTE
+			-- recreate original C_ATTRIBUTE
+		local
+			ex: MULTIPLICITY_INTERVAL
+			card: CARDINALITY
+		do
+			if attached existence then
+				create ex.make_from_string (existence)
+			end
+			if is_multiple then
+				if attached cardinality then
+					create card.make_from_string (cardinality)
+				end
+				create Result.make_multiple (rm_attribute_name, ex, card)
+			else
+				create Result.make_single (rm_attribute_name, ex)
+			end
+
+			if attached differential_path then
+				Result.set_differential_path (differential_path)
+			end
+
+			if attached children then
+				from children.start until children.off loop
+					if attached {P_C_ARCHETYPE_ROOT} children.item as p_c_ar then
+						Result.put_child (p_c_ar.create_c_archetype_root)
+					elseif attached {P_C_COMPLEX_OBJECT} children.item as p_c_co then
+						Result.put_child (p_c_co.create_c_complex_object)
+					elseif attached {P_ARCHETYPE_SLOT} children.item as p_a_s then
+						Result.put_child (p_a_s.create_archetype_slot)
+					elseif attached {P_ARCHETYPE_INTERNAL_REF} children.item as p_a_ir then
+						Result.put_child (p_a_ir.create_archetype_internal_ref)
+					elseif attached {P_CONSTRAINT_REF} children.item as p_cr then
+						Result.put_child (p_cr.create_constraint_ref)
+					elseif attached {P_C_CODE_PHRASE} children.item as p_c_cp then
+						Result.put_child (p_c_cp.create_c_code_phrase)
+					elseif attached {P_C_DV_ORDINAL} children.item as p_c_dvo then
+						Result.put_child (p_c_dvo.create_c_dv_ordinal)
+					elseif attached {P_C_DV_QUANTITY} children.item as p_c_dvq then
+						Result.put_child (p_c_dvq.create_c_dv_quantity)
+					elseif attached {P_C_PRIMITIVE_OBJECT} children.item as p_c_po then
+						Result.put_child (p_c_po.create_c_primitive_object)
+					end
+					children.forth
+				end
+			end
+		end
 
 end
 

@@ -37,16 +37,14 @@ create
 
 feature -- Initialisation
 
-	make_range(an_interval: INTERVAL[ISO8601_DATE])
-		require
-			Interval_exists: an_interval /= Void
+	make_range (an_interval: attached INTERVAL[ISO8601_DATE])
 		do
 			range := an_interval
 		ensure
 			range = an_interval
 		end
 
-	make_string_range(a_lower, an_upper: STRING)
+	make_string_range (a_lower, an_upper: STRING)
 			-- make from two iso8601 strings. Either but not both may be Void, indicating an
 			-- open-ended interval; they may also be the same, meaning a single point.
 			-- Limits are automatically included in the range

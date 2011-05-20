@@ -186,7 +186,7 @@ feature -- Access
 
 	errors: ERROR_ACCUMULATOR
 
-	physical_to_logical_path(a_phys_path, a_language: attached STRING): attached STRING
+	physical_to_logical_path (a_phys_path, a_language: attached STRING): attached STRING
 			-- generate a logical path in 'a_language' from a physical path
 		require
 			a_lang_valid: not a_language.is_empty
@@ -577,6 +577,36 @@ feature -- Modification
 			Binding_removed: not has_constraint_binding(a_terminology, a_code)
 		end
 
+	set_terminologies_available (a_terminologies_avialable: attached ARRAYED_LIST [STRING])
+		do
+			terminologies_available := a_terminologies_avialable
+		end
+
+	set_term_definitions (a_term_defs: attached HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING])
+		do
+			term_definitions := a_term_defs
+		end
+
+	set_constraint_definitions (a_constraint_defs: attached HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING])
+		do
+			constraint_definitions := a_constraint_defs
+		end
+
+	set_term_bindings (a_term_bindings: attached HASH_TABLE [HASH_TABLE [CODE_PHRASE, STRING], STRING])
+		do
+			term_bindings := a_term_bindings
+		end
+
+	set_constraint_bindings (a_constraint_bindings: attached HASH_TABLE [HASH_TABLE [URI, STRING], STRING])
+		do
+			constraint_bindings := a_constraint_bindings
+		end
+
+	set_terminology_extracts (a_term_extracts: attached HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING])
+		do
+			terminology_extracts := a_term_extracts
+		end
+
 feature -- Conversion
 
 	substitute_codes (str, lang: attached STRING): attached STRING
@@ -760,7 +790,7 @@ feature {ARCHETYPE_ONTOLOGY, P_ARCHETYPE_ONTOLOGY} -- Implementation
 			end
 		end
 
-	valid_constraint_code(a_code: attached STRING): BOOLEAN
+	valid_constraint_code (a_code: attached STRING): BOOLEAN
 			-- True if `a_code' is found in all languages
 		require
 			Code_valid: not a_code.is_empty

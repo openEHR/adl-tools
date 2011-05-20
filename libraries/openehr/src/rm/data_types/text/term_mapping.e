@@ -22,8 +22,6 @@ class TERM_MAPPING
 inherit
 	EXTERNAL_ENVIRONMENT_ACCESS
 
-	CANONICAL_FRAGMENT
-
 	MATCH_CODES
 		export
 			{NONE} all;
@@ -31,16 +29,14 @@ inherit
 		end
 
 create
-	make, make_from_canonical_string
+	make
 
 feature -- Initialization
 
-	make(a_target: CODE_PHRASE; a_match: CHARACTER; a_purpose: DV_CODED_TEXT)
+	make (a_target: attached CODE_PHRASE; a_match: CHARACTER; a_purpose: attached DV_CODED_TEXT)
 			--
 		require
-			Term_exists: a_target /= Void
 			Valid_match_code: is_valid_match_code(a_match)
-			Purpose_valid: a_purpose /= Void
 		do
 			target := a_target
 			match := a_match
@@ -51,37 +47,9 @@ feature -- Initialization
 			Purpose_set: purpose = a_purpose
 		end
 
-	make_from_canonical_string(str: STRING)
-			-- make from a string of the form:
-			--
-			-- <target>
-			-- 		<terminology_id>
-			--			<name>string</name>
-			-- 			[<version_id>string</version_id>]
-			-- 		</terminology_id>
-			-- 		<code_string>string</code_string>
-			-- </target>
-			-- <match>character</match>
-			-- [<purpose>DV_CODED_TEXT</purpose>]
-		do
-			create target.make_from_canonical_string(xml_extract_from_tags(str, "target", 1))
-			match := xml_extract_from_tags(str, "match", 1).item(1)
-			if xml_has_tag(str, "purpose", 1) then
-				create purpose.make_from_canonical_string(xml_extract_from_tags(str, "purpose", 1))
-			end
-		end
-
-feature -- Status Report
-
-	valid_canonical_string(str: STRING): BOOLEAN
-			-- True if str contains required tags
-		do
-			Result := xml_has_tag(str, "target", 1) and xml_has_tag(str, "match", 1)
-		end
-
 feature -- Access
 
-	target: CODE_PHRASE
+	target: attached CODE_PHRASE
 
 	match: CHARACTER
 			-- The relative match of the target term with respect to the mapped text item.
@@ -112,19 +80,7 @@ feature -- Output
 			end
 		end
 
-	as_canonical_string: STRING
-			-- Result in canonical form
-		do
-			create Result.make(0)
-			Result.append ("<target>" + target.as_canonical_string + "</target>")
-			Result.append ("<match>" + match.out + "</match>")
-			if purpose /= Void then
-				Result.append ("<purpose>" + purpose.as_canonical_string + "</purpose>")
-			end
-		end
-
 invariant
-	Target_exists: target /= Void
 	Match_valid: is_valid_match_code(match)
 	Purpose_valid: purpose /= Void implies
 		terminology(terminology_id_openehr).has_code_for_group_id (Group_id_term_mapping_purpose, purpose.defining_code)

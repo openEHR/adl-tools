@@ -22,7 +22,7 @@ inherit
 
 feature -- Initialisation
 
-	make(an_op: OPERATOR_KIND)
+	make (an_op: OPERATOR_KIND)
 		require
 			an_op_exists: an_op /= Void
    		do

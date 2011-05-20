@@ -80,10 +80,8 @@ feature {NONE} -- Initialisation
 			interval_if_lower_or_upper: (a_lower /= Void or an_upper /= Void) xor range = Void
 		end
 
-	make_range (an_interval: like range)
+	make_range (an_interval: attached like range)
 			-- Create from an ISO8601-based interval.
-		require
-			interval_attached: an_interval /= Void
 		do
 			range := an_interval
 		ensure
@@ -91,10 +89,9 @@ feature {NONE} -- Initialisation
 			pattern_void: pattern = Void
 		end
 
-	make_from_pattern (a_pattern: STRING)
+	make_from_pattern (a_pattern: attached STRING)
 			-- Create from an ISO8601-based pattern.
 		require
-			a_pattern_attached: a_pattern /= Void
 			a_pattern_valid: valid_iso8601_duration_constraint_pattern (a_pattern)
 		do
 			pattern := a_pattern
@@ -103,12 +100,10 @@ feature {NONE} -- Initialisation
 			interval_void: range = Void
 		end
 
-	make_pattern_with_range (a_pattern: STRING; an_interval: like range)
+	make_pattern_with_range (a_pattern: attached STRING; an_interval: attached like range)
 			-- Create from an ISO8601-based pattern, together with an ISO8601-based interval.
 		require
-			a_pattern_attached: a_pattern /= Void
 			a_pattern_valid: valid_iso8601_duration_constraint_pattern (a_pattern)
-			interval_attached: an_interval /= Void
 		do
 			pattern := a_pattern
 			range := an_interval
@@ -192,13 +187,6 @@ feature -- Output
 				Result.append ("; " + assumed_value.as_string)
 			end
 		ensure then
-			not_empty: not Result.is_empty
-		end
-
-	as_canonical_string: attached STRING
-		do
-			Result := range.as_string
-		ensure
 			not_empty: not Result.is_empty
 		end
 

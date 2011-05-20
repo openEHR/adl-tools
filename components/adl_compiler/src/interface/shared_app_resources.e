@@ -148,7 +148,7 @@ feature -- Application Switches
 			app_cfg.put_object("/profile", repository_profiles_cache.item)
 		end
 
-	set_current_profile(a_profile_name: STRING)
+	set_current_profile (a_profile_name: attached STRING)
 		require
 			profile_name_valid: not a_profile_name.is_empty
 		do
@@ -270,6 +270,32 @@ feature -- Application Switches
 			path_not_empty: not a_path.is_empty
 		do
 			app_cfg.put_value("/file_system/test_diff_directory", a_path)
+		end
+
+	compiler_gen_directory: attached STRING
+			-- Path of directory where compiler generated files go
+		do
+			Result := app_cfg.string_value_env_var_sub ("/file_system/compiler_gen_directory")
+		end
+
+	compiler_gen_source_directory: attached STRING
+			-- Path of directory where compiled source files go in dADL serialisation form
+		do
+			Result := file_system.pathname (compiler_gen_directory, "source")
+		end
+
+	compiler_gen_flat_directory: attached STRING
+			-- Path of directory where compiled flat files go in dADL serialisation form
+		do
+			Result := file_system.pathname (compiler_gen_directory, "flat")
+		end
+
+	set_compiler_gen_directory (a_path: attached STRING)
+			-- Set the path of directory where compiler generated files go
+		require
+			path_not_empty: not a_path.is_empty
+		do
+			app_cfg.put_value("/file_system/compiler_gen_directory", a_path)
 		end
 
 	repository_profiles_cache: CELL[REPOSITORY_PROFILE_CONFIG]

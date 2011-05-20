@@ -31,6 +31,8 @@ feature -- Initialisation
 	make (an_archetype: attached ARCHETYPE)
 			-- basic make routine to guarantee validity on creation
 		do
+			artefact_object_type := an_archetype.generating_type
+
 			make_from_other (an_archetype)
 
 			archetype_id := an_archetype.archetype_id.as_string
@@ -41,15 +43,12 @@ feature -- Initialisation
 				parent_archetype_id := an_archetype.parent_archetype_id.as_string
 			end
 
+			is_valid := an_archetype.is_valid
+			is_generated := an_archetype.is_generated
+
 			create definition.make (an_archetype.definition)
 
-			if an_archetype.has_invariants then
-				create invariants.make (0)
-				from an_archetype.invariants.start until an_archetype.invariants.off loop
-					invariants.extend (an_archetype.invariants.item.as_string)
-					an_archetype.invariants.forth
-				end
-			end
+			invariants := an_archetype.invariants
 
 			create ontology.make (an_archetype.ontology)
 
@@ -64,6 +63,9 @@ feature -- Initialisation
 
 feature -- Access
 
+	artefact_object_type: STRING
+			-- records object model type of the original artefact
+
 	archetype_id: attached STRING
 
 	adl_version: attached STRING
@@ -77,7 +79,7 @@ feature -- Access
 
 	definition: attached P_C_COMPLEX_OBJECT
 
-	invariants: ARRAYED_LIST [STRING]
+	invariants: ARRAYED_LIST [ASSERTION]
 
 	ontology: attached P_ARCHETYPE_ONTOLOGY
 
@@ -85,9 +87,72 @@ feature -- Access
 
 feature -- Status Report
 
+	is_generated: BOOLEAN
+
+	is_valid: BOOLEAN
+
 	has_path (a_path: attached STRING): BOOLEAN
 			-- True if `a_path' is found in resource; define in descendants
 		do
+		end
+
+feature -- Factory
+
+	create_archetype: ARCHETYPE
+		local
+			parent_arch_id: ARCHETYPE_ID
+			diff_arch_ont: DIFFERENTIAL_ARCHETYPE_ONTOLOGY
+			flat_arch_ont: FLAT_ARCHETYPE_ONTOLOGY
+		do
+			if artefact_object_type.same_string ("DIFFERENTIAL_ARCHETYPE") then
+				if attached parent_archetype_id then
+					create parent_arch_id.make_from_string (parent_archetype_id)
+				end
+				create diff_arch_ont.make (original_language.as_string, definition.node_id)
+				ontology.populate_ontology (diff_arch_ont)
+				diff_arch_ont.finalise_dt
+
+				create {DIFFERENTIAL_ARCHETYPE} Result.make_all (
+					create {ARTEFACT_TYPE}.make_from_type_name (artefact_type),
+					adl_version,
+					create {ARCHETYPE_ID}.make_from_string (archetype_id),
+					parent_arch_id,
+					is_controlled,
+					original_language,
+					translations,
+					description,
+					definition.create_c_complex_object,
+					invariants,
+					diff_arch_ont,
+					annotations
+				)
+
+			elseif artefact_object_type.same_string ("FLAT_ARCHETYPE") then
+				if attached parent_archetype_id then
+					create parent_arch_id.make_from_string (parent_archetype_id)
+				end
+				create flat_arch_ont.make (original_language.as_string, definition.node_id)
+				ontology.populate_ontology (flat_arch_ont)
+				flat_arch_ont.finalise_dt
+
+				create {FLAT_ARCHETYPE} Result.make_all (
+					create {ARTEFACT_TYPE}.make_from_type_name (artefact_type),
+					adl_version,
+					create {ARCHETYPE_ID}.make_from_string (archetype_id),
+					parent_arch_id,
+					is_controlled,
+					original_language,
+					translations,
+					description,
+					definition.create_c_complex_object,
+					invariants,
+					flat_arch_ont,
+					annotations
+				)
+			end
+
+			Result.set_is_valid (is_valid)
+			Result.set_is_generated
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion

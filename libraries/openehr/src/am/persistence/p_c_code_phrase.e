@@ -40,6 +40,17 @@ feature -- Access
 	code_list: ARRAYED_LIST [STRING]
 			-- list of codes in terminology designated by terminology_id
 
+feature -- Factory
+
+	create_c_code_phrase: attached C_CODE_PHRASE
+		do
+			create Result.make_from_terminology_id (terminology_id)
+			if attached code_list then
+				Result.set_code_list (code_list)
+			end
+			populate_c_instance (Result)
+		end
+
 end
 
 

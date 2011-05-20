@@ -316,7 +316,7 @@ feature -- Visitor
 			-- that in some archetypes, these types can be represented with dADL blocks)
 		do
 			dadl_engine.set_tree (a_node.dt_representation)
-			dadl_engine.serialise (output_format)
+			dadl_engine.serialise (output_format, False, True)
 			last_result.append ((create {STRING_UTILITIES}).indented (dadl_engine.serialised, create_indent(depth)))
 		end
 
@@ -385,7 +385,7 @@ feature -- Visitor
 			if a_node.any_allowed then
 				-- output in C_DV_ORDINAL style
 				dadl_engine.set_tree (a_node.dt_representation)
-				dadl_engine.serialise (output_format)
+				dadl_engine.serialise (output_format, False, True)
 				last_result.append ((create {STRING_UTILITIES}).indented (dadl_engine.serialised, create_indent(depth)))
 			elseif a_node.items.count = 1 then
 				last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	

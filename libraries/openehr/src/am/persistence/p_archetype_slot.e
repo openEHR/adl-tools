@@ -27,30 +27,39 @@ feature -- Initialisation
 	make (an_as: ARCHETYPE_SLOT)
 		do
 			precursor (an_as)
-			if an_as.has_includes then
-				create includes.make (0)
-				from an_as.includes.start until an_as.includes.off loop
-					includes.extend (an_as.includes.item.as_string)
-					an_as.includes.forth
-				end
-			end
-			if an_as.has_excludes then
-				create excludes.make (0)
-				from an_as.excludes.start until an_as.excludes.off loop
-					excludes.extend (an_as.excludes.item.as_string)
-					an_as.excludes.forth
-				end
-			end
+			includes := an_as.includes
+			excludes := an_as.excludes
 			is_closed := an_as.is_closed
 		end
 
 feature -- Access
 
-	includes: ARRAYED_LIST [STRING]
+	includes: ARRAYED_LIST [ASSERTION]
 
-	excludes: ARRAYED_LIST [STRING]
+	excludes: ARRAYED_LIST [ASSERTION]
 
 	is_closed: BOOLEAN
+
+feature -- Factory
+
+	create_archetype_slot: attached ARCHETYPE_SLOT
+		do
+			if attached node_id then
+				create Result.make_identified (rm_type_name, node_id)
+			else
+				create Result.make_anonymous (rm_type_name)
+			end
+			populate_c_instance (Result)
+			if attached includes then
+				Result.set_includes (includes)
+			end
+			if attached excludes then
+				Result.set_excludes (excludes)
+			end
+			if is_closed then
+				Result.set_closed
+			end
+		end
 
 end
 

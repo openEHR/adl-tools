@@ -26,11 +26,9 @@ inherit
 
 feature -- Access
 
-	prototype_value: ANY
+	prototype_value: attached ANY
 			-- 	generate a prototype value from this constraint object
 		deferred
-		ensure
-			Result /= Void
 		end
 
 	assumed_value: like prototype_value
@@ -48,9 +46,7 @@ feature -- Access
 
 feature -- Status Report
 
-	valid_value (a_value: like prototype_value): BOOLEAN
-		require
-			a_value /= Void
+	valid_value (a_value: attached like prototype_value): BOOLEAN
 		deferred
 		end
 
@@ -62,10 +58,10 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_assumed_value(a_value: like assumed_value)
+	set_assumed_value(a_value: attached like assumed_value)
 			-- set `assumed_value'
 		require
-			a_value /= Void and then valid_value(a_value)
+			valid_value(a_value)
 		do
 			assumed_value := a_value
 		ensure
@@ -74,10 +70,8 @@ feature -- Modification
 
 feature -- Comparison
 
-	node_conforms_to (other: like Current): BOOLEAN
+	node_conforms_to (other: attached like Current): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
-		require
-			other /= Void
 		deferred
 		end
 

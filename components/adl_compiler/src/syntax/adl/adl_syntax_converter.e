@@ -207,7 +207,15 @@ feature -- ADL 1.5 conversions
 			create Result.compile_case_insensitive ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+){2}\.[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*\.v[1-9][0-9a-z]*$")
 		end
 
-	convert_ontology_syntax (dt: attached DT_COMPLEX_OBJECT_NODE)
+	convert_ontology_to_nested (dt: attached DT_COMPLEX_OBJECT_NODE)
+			-- convert 'items' nodes in ontology to nested form, corresponding to declaration like
+			-- HASH_TABLE [HASH_TABLE [ARCHETPE_TERM, STRING]]; the ADL way of expression ontology
+			-- has nested structures in the AOM, but non-nested structures in the dADL, due to
+			-- intervening 'items' attributes. This routine converts the parsed structure so that
+			-- these attributes are marked in the correct way to indicate nesting of container structures
+			-- which then enables the DT_OBJECT_CONVERTER to correctly generate such structures.
+			-- A reverse routine below does the opposite, so that serialisation back out to ADL 1.4 archetypes
+			-- looks the way it always has. One day, we will change the ADL standard on this...
 		do
 			-- convert top-level attribute names
 --			if dt.has_attribute ("term_binding") then
@@ -217,7 +225,6 @@ feature -- ADL 1.5 conversions
 --				dt.replace_attribute_name ("constraint_binding", "constraint_bindings")
 --			end
 
-			-- convert 'items' nodes to generic '_items' nodes
 			convert_ontology_items_to_nested (dt, "term_definitions")
 			convert_ontology_items_to_nested (dt, "constraint_definitions")
 			convert_ontology_items_to_nested (dt, "term_bindings")
@@ -238,6 +245,36 @@ feature -- ADL 1.5 conversions
 					if attached {DT_COMPLEX_OBJECT_NODE} dt_objs.item as dt_co and then dt_co.has_attribute ("items") then
 						dt_attr := dt_co.attribute_node ("items")
 						dt_attr.set_nested_container
+					end
+					dt_objs.forth
+				end
+			end
+		end
+
+	convert_ontology_to_unnested (dt: attached DT_COMPLEX_OBJECT_NODE)
+			-- routine to reverse effects of `convert_ontology_to_nested' for
+			-- standard ADL1.4 style serialisation
+		do
+			convert_ontology_items_to_unnested (dt, "term_definitions")
+			convert_ontology_items_to_unnested (dt, "constraint_definitions")
+			convert_ontology_items_to_unnested (dt, "term_bindings")
+			convert_ontology_items_to_unnested (dt, "constraint_bindings")
+		end
+
+	convert_ontology_items_to_unnested (dt: attached DT_COMPLEX_OBJECT_NODE; attr_name: attached STRING)
+			-- mark 'items' attribute nodes in ontology section as being nested_container; this is
+			-- to simulate having been parsed that way in the first place, so that these structures
+			-- will be correctly converted by DT_OBJECT_CONVERTER into nested HASH_TABLEs
+		local
+			dt_attr: DT_ATTRIBUTE_NODE
+			dt_objs: ARRAYED_LIST [DT_OBJECT_ITEM]
+		do
+			if dt.has_attribute (attr_name) then
+				dt_objs := dt.attribute_node (attr_name).children
+				from dt_objs.start until dt_objs.off loop
+					if attached {DT_COMPLEX_OBJECT_NODE} dt_objs.item as dt_co and then dt_co.has_attribute ("items") then
+						dt_attr := dt_co.attribute_node ("items")
+						dt_attr.unset_nested
 					end
 					dt_objs.forth
 				end

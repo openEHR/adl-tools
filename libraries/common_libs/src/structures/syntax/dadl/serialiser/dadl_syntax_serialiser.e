@@ -29,15 +29,20 @@ feature -- Visitor
 	start_complex_object_node (a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER)
 			-- start serialising a DT_COMPLEX_OBJECT_NODE
 		do
+			-- output indent for objects inside a container
 			if not a_node.is_root and then a_node.parent.is_container_type then
 				last_result.append(create_indent(depth//2 + multiple_attr_count))
 			end
+
+			-- for objects inside a container, output: ["key"] =
 			if a_node.is_addressable then
 				last_result.append(apply_style("[%"" + clean (a_node.node_id) + "%"]", STYLE_IDENTIFIER))
 				last_result.append(format_item(FMT_SPACE))
 				last_result.append(apply_style(symbol(SYM_EQ), STYLE_OPERATOR) + format_item(FMT_SPACE))
 			end
-			if a_node.is_typed and a_node.type_visible then
+
+			-- output the type information if required, then the opening '<'
+			if a_node.is_typed and (a_node.type_visible or full_type_marking_on or a_node.is_root and output_typed_encapsulated) then
 				last_result.append("(" + a_node.rm_type_name + ")" + format_item(FMT_SPACE) + symbol(SYM_START_DBLOCK) +
 					format_item(FMT_NEWLINE))
 			elseif not a_node.is_root then
@@ -49,7 +54,7 @@ feature -- Visitor
 			-- end serialising a DT_COMPLEX_OBJECT_NODE
 		do
 			last_result.append(create_indent(depth//2 + multiple_attr_count))
-			if not a_node.is_root or else (a_node.is_typed and a_node.type_visible) then -- and a_node.is_addressable) then
+			if not a_node.is_root or else a_node.is_typed and (a_node.type_visible or full_type_marking_on or a_node.is_root and output_typed_encapsulated) then
 				last_result.append(symbol(SYM_END_DBLOCK) + format_item(FMT_NEWLINE))
 			end
 		end
@@ -62,6 +67,9 @@ feature -- Visitor
 						apply_style (a_node.rm_attr_name, STYLE_IDENTIFIER) +  format_item (FMT_SPACE))
 				last_result.append (apply_style (symbol (SYM_EQ), STYLE_OPERATOR) + format_item (FMT_SPACE))
 				if a_node.is_container_type then
+					if a_node.is_typed and (a_node.type_visible or full_type_marking_on) then
+						last_result.append("(" + a_node.rm_type_name + ")" + format_item(FMT_SPACE))
+					end
 					multiple_attr_count := multiple_attr_count + 1
 					last_result.append (symbol (SYM_START_DBLOCK) + format_item (FMT_NEWLINE))
 				end
