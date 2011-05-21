@@ -154,8 +154,23 @@ feature -- Application Switches
 		do
 			repository_profiles.set_current_profile_name (a_profile_name)
 			app_cfg.put_object("/profile", repository_profiles)
+
+			initialise_current_profile
 		ensure
 			profile_set: repository_profiles.current_profile_name.same_string (a_profile_name)
+		end
+
+	initialise_current_profile
+		do
+			compiler_gen_source_directory.copy (file_system.pathname (file_system.pathname (compiler_gen_directory, repository_profiles.current_profile_name), "source"))
+			if not file_system.directory_exists (compiler_gen_source_directory) then
+				file_system.recursive_create_directory (compiler_gen_source_directory)
+			end
+
+			compiler_gen_flat_directory.copy (file_system.pathname (file_system.pathname (compiler_gen_directory, repository_profiles.current_profile_name), "flat"))
+			if not file_system.directory_exists (compiler_gen_flat_directory) then
+				file_system.recursive_create_directory (compiler_gen_flat_directory)
+			end
 		end
 
 	clear_current_repository_profile
@@ -280,14 +295,14 @@ feature -- Application Switches
 
 	compiler_gen_source_directory: attached STRING
 			-- Path of directory where compiled source files go in dADL serialisation form
-		do
-			Result := file_system.pathname (compiler_gen_directory, "source")
+		once
+			create Result.make_empty
 		end
 
 	compiler_gen_flat_directory: attached STRING
 			-- Path of directory where compiled flat files go in dADL serialisation form
-		do
-			Result := file_system.pathname (compiler_gen_directory, "flat")
+		once
+			create Result.make_empty
 		end
 
 	set_compiler_gen_directory (a_path: attached STRING)

@@ -152,7 +152,9 @@ feature -- Factory
 			end
 
 			Result.set_is_valid (is_valid)
-			Result.set_is_generated
+			if is_generated then
+				Result.set_is_generated
+			end
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion

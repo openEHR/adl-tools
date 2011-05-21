@@ -274,12 +274,12 @@ feature -- Modification
 			end
 		end
 
-feature {ARCHETYPE_VALIDATOR} -- Implementation
+feature {ARCHETYPE_VALIDATOR, ARCH_REP_ARCHETYPE} -- Implementation
 
-	set_parent_archetype (an_archetype: DIFFERENTIAL_ARCHETYPE)
+	set_parent_archetype (an_archetype: attached DIFFERENTIAL_ARCHETYPE)
 			-- set `parent_archetype'
 		require
-			Archetype_valid: an_archetype /= Void and then an_archetype.specialisation_depth + 1 = specialisation_depth
+			Archetype_valid: an_archetype.specialisation_depth + 1 = specialisation_depth
 		do
 			parent_archetype := an_archetype
 			ontology.set_parent_ontology (an_archetype.ontology)

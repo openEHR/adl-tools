@@ -273,7 +273,7 @@ feature -- Status Report
 
 feature -- Status Setting
 
-	set_is_valid(a_validity: BOOLEAN)
+	set_is_valid (a_validity: BOOLEAN)
 			-- set is_valid flag
 		do
 			is_valid := a_validity

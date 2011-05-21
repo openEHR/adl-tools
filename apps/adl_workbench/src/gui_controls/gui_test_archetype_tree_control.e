@@ -91,10 +91,10 @@ feature -- Access
 			create Result.make (0)
 			Result.force (agent test_parse, "Parse")
 			Result.force (agent regression_test, Regression_test_key)
-			Result.force (agent test_save_flat, "-> .adlf")
+			Result.force (agent test_save_flat, "->adlf")
 			Result.force (agent test_source_compare, "Compare .adls")
-			Result.force (agent test_save_source_dadl, "src AOM -> dADL")
-			Result.force (agent test_read_source_dadl, "src AOM <- dADL")
+			Result.force (agent test_save_source_dadl, "src AOM->dADL")
+			Result.force (agent test_read_source_dadl, "src AOM<-dADL")
 		end
 
 	last_tested_archetypes_count: INTEGER
@@ -361,7 +361,9 @@ feature {NONE} -- Tests
 			serialised_source_path: STRING
 		do
 			Result := test_failed
-			archetype_compiler.rebuild_lineage (target, 0)
+			if not target.compile_attempted then
+				archetype_compiler.rebuild_lineage (target, 0)
+			end
 			if target.is_valid then
 				Result := test_passed
 				test_status.append (" parse succeeded%N" + target.errors.as_string)

@@ -349,7 +349,7 @@ c_archetype_root: SYM_USE_ARCHETYPE type_identifier '[' V_ARCHETYPE_ID ']' c_occ
 	| SYM_USE_ARCHETYPE type_identifier '[' V_LOCAL_CODE ',' V_ARCHETYPE_ID ']' c_occurrences
 		{
 			if (create {ARCHETYPE_ID}).valid_id($6) then
-				create $$.make_with_slot_id($2, $4, $6)
+				create $$.make_with_slot_id($2, $6, $4)
 				if $8 /= Void then
 					$$.set_occurrences($8)
 				end

@@ -1017,7 +1017,6 @@ feature -- Modification
 		local
 			fd: PLAIN_TEXT_FILE
 			dadl_text: STRING
-			an_arch: ARCHETYPE
 		do
 			if file_system.file_exists (differential_compiled_path) then
 				-- read the serialised P_ARCHETYPE (dADL format) file
@@ -1031,10 +1030,12 @@ feature -- Modification
 				p_archetype_converter.parse
 				if p_archetype_converter.parse_succeeded then
 					if attached {P_ARCHETYPE} p_archetype_converter.tree.as_object (({P_ARCHETYPE}).type_id, <<>>) as p_archetype then
-						an_arch := p_archetype.create_archetype
-
-						-- seriliase into normal ADL format
-						if attached an_arch then
+						if attached {DIFFERENTIAL_ARCHETYPE} p_archetype.create_archetype as an_arch then
+							if an_arch.is_specialised then
+								an_arch.set_parent_archetype (specialisation_parent.differential_archetype)
+							end
+							
+							-- seriliase into normal ADL format
 							Result := adl15_engine.serialise (an_arch, Archetype_native_syntax, current_archetype_language)
 						end
 					end
@@ -1046,10 +1047,18 @@ feature -- Modification
 		require
 			Archetype_valid: is_valid
 		local
+			p_a: P_ARCHETYPE
 			fd: PLAIN_TEXT_FILE
+			p_arch_serialised: STRING
 		do
+			create p_a.make (flat_archetype)
+			p_a.synchronise_to_tree
+			p_archetype_converter.set_tree (p_a.dt_representation)
+			p_archetype_converter.serialise (Archetype_native_syntax, False, True)
+			p_arch_serialised := p_archetype_converter.serialised
+
 			create fd.make_create_read_write (flat_compiled_path)
-			fd.put_string (flat_text_dadl)
+			fd.put_string (p_arch_serialised)
 			fd.close
 		end
 
