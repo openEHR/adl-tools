@@ -22,11 +22,6 @@ feature {NONE} -- Implementation
 			create Result.make
 		end
 
-	adl2_engine: attached ADL2_ENGINE
-		once
-			create Result.make
-		end
-
 end
 
 

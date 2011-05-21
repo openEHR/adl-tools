@@ -218,11 +218,20 @@ end
 -- An object_block is any block enclosed in <> with optional leading type name
 --
 object_block: complex_object_block
+		{
+			-- if object_block was an empty object then get rid of it from parent attribute
+			if complex_object_nodes.item.is_empty then
+				attr_nodes.item.remove_child (complex_object_nodes.item)
+			end
+		}
 	| primitive_object_block
 	| object_reference_block
 	| SYM_START_DBLOCK SYM_END_DBLOCK -- empty object
 		{
-			complex_object_nodes.item.remove_attribute(attr_node.rm_attr_name)
+			-- for single-valued attributes, remove the attribute
+			if obj_key = Void then
+				complex_object_nodes.item.remove_attribute(attr_node.rm_attr_name)
+			end
 		}
 	;
 
@@ -264,6 +273,14 @@ container_attr_object_block: untyped_container_attr_object_block
 --
 untyped_container_attr_object_block: container_attr_object_block_head keyed_objects SYM_END_DBLOCK
 		{
+			-- if the keyed_objects were all empty, then the attribute can be thrown away 
+			-- as well, since we don't create void object structures
+			if attr_nodes.item.is_empty then
+				attr_nodes.item.parent.remove_attribute (attr_nodes.item.rm_attr_name)
+			end
+
+			-- if the current C_ATTRIBUTE_NODE is a synthesised one, under a keyed object,
+			-- then pop it off the attribute stack, and also pop off its parent object
 			if complex_object_nodes.item.is_addressable and attr_nodes.item.is_nested then
 				-- pop the generic attr node
 debug("dADL_parse")

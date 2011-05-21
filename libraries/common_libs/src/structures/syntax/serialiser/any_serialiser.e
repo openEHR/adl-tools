@@ -33,12 +33,12 @@ feature -- Initialisation
 			reset
 		end
 
-feature -- Element Change
+feature -- Commands
 
 	reset
 			-- set up serialiser
 		do
-			create last_result.make(Buffer_size)
+			create last_result.make (Buffer_size)
 		end
 
 feature -- Access

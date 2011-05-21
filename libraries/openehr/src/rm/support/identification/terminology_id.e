@@ -30,18 +30,13 @@ note
 class TERMINOLOGY_ID
 
 inherit
-	CANONICAL_FRAGMENT
-		undefine
-			default_create, is_equal
-		end
-
 	OBJECT_ID
 		redefine
 			default_create
 		end
 
 create
-	make, default_create, make_from_canonical_string
+	make, default_create
 
 feature -- Definitions
 
@@ -62,50 +57,31 @@ feature -- Initialization
 		do
 			value := default_value.twin
 		ensure then
-			value.is_equal(default_value)
+			value.is_equal (default_value)
 		end
 
-	make (a_terminology_id: STRING)
+	make (a_terminology_id: attached STRING)
 		require
-			Id_exists: a_terminology_id /= Void and then not a_terminology_id.is_empty
+			Id_exists: not a_terminology_id.is_empty
 		do
 			create value.make(0)
 			value.append (a_terminology_id)
 		ensure
-			value.is_equal(a_terminology_id)
-		end
-
-	make_from_canonical_string (str: STRING)
-			-- make from string of form:
-			-- <name>string</name>
-			-- [<version_id>string</version_id>]
-		do
-			value := xml_extract_from_tags(str, "name", 1)
-			if xml_has_tag(str, "version_id", 1) then
-				value.append (Version_id_left_delimiter + xml_extract_from_tags(str, "version_id", 1) +
-						Version_id_right_delimiter)
-			end
-		end
-
-	valid_canonical_string(str:STRING):BOOLEAN
-		do
-			Result := xml_has_tag(str, "name", 1)
+			value.is_equal (a_terminology_id)
 		end
 
 feature -- Access
 
-	name: STRING
+	name: attached STRING
 			-- Return the terminology id (which includes the "version" in some cases). Distinct names
 			-- correspond to distinct (i.e. non-compatible) terminologies. Thus the names "ICD10AM" and "ICD10"
 			-- refer to distinct terminologies.
 		do
 			if has_version_id then
-				Result := value.substring(1, value.substring_index(Version_id_left_delimiter, 1)-1)
+				Result := value.substring (1, value.substring_index (Version_id_left_delimiter, 1)-1)
 			else
 				Result := value.twin
 			end
-		ensure
-			Result /= Void
 		end
 
 	version_id: STRING
@@ -132,7 +108,7 @@ feature -- Status Report
 			Result := left_pos > 0 and right_pos > left_pos
 		end
 
-	valid_id (an_id: STRING): BOOLEAN
+	valid_id (an_id: attached STRING): BOOLEAN
 			--
 		do
 		end
@@ -140,20 +116,7 @@ feature -- Status Report
 	is_local: BOOLEAN
 			-- True if this terminology id = "local"
 		do
-			Result := name.is_equal(Local_terminology_id)
-		end
-
-feature -- Output
-
-	as_canonical_string: STRING
-			-- standardised form of string guaranteed to contain all information
-			-- in data item
-		do
-			create Result.make(0)
-			Result.append ("<name>" + name + "</name>")
-			if not version_id.is_empty then
-				Result.append ("<version_id>" + version_id + "</version_id>")
-			end
+			Result := name.is_equal (Local_terminology_id)
 		end
 
 end

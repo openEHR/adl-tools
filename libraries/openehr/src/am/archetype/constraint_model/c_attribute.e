@@ -572,9 +572,9 @@ feature -- Validation
 				if is_single then
 					Result := an_obj.occurrences = Void or else (not an_obj.occurrences.upper_unbounded and an_obj.occurrences.upper <= 1)
 				else
-					Result := an_obj.occurrences = Void or cardinality = Void or else
+					Result := (an_obj.occurrences = Void or cardinality = Void or else
 						(cardinality.interval.upper_unbounded or (not an_obj.occurrences.upper_unbounded and
-						cardinality.interval.upper >= an_obj.occurrences.upper)) and
+						cardinality.interval.upper >= an_obj.occurrences.upper))) and
 						an_obj.is_addressable
 				end
 			end

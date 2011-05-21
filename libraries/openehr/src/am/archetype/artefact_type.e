@@ -39,9 +39,9 @@ feature -- Initialisation
 			value := i
 		end
 
-	make_from_type_name (s: STRING)
+	make_from_type_name (s: attached STRING)
 		require
-			s /= Void and then valid_type_name (s)
+			valid_type_name (s)
 		do
 			value := types.item (s)
 		end
@@ -81,9 +81,9 @@ feature -- Access
 			Result.extend("operational_template", operational_template)
 		end
 
-	type_name_to_type (a_name: STRING): INTEGER
+	type_name_to_type (a_name: attached STRING): INTEGER
 		require
-			a_name /= Void and then valid_type_name(a_name)
+			valid_type_name(a_name)
 		do
 			Result := types.item (a_name)
 		end
@@ -111,10 +111,10 @@ feature -- Validation
 			Result := types.has_item (n)
 		end
 
-	valid_type_name (s: STRING): BOOLEAN
+	valid_type_name (s: attached STRING): BOOLEAN
 			-- Function to test validity of string name of value
 		require
-			s /= Void and then not s.is_empty
+			not s.is_empty
 		do
 			Result := types.has_key(s)
 		end

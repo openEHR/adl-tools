@@ -27,8 +27,6 @@ feature -- Definitions
 
 	Anonymous_node_id: STRING = "unknown"
 
-	Unknown_type_name: STRING = "UNKNOWN"
-
 feature -- Access
 
 	node_id: attached STRING
@@ -40,10 +38,6 @@ feature -- Access
 	parent: DT_ATTRIBUTE_NODE
 			-- parent of all object types must be a REL_NODE
 
-	rm_type_name: attached STRING
-			-- reference model type name of object to instantiate - can only be determined by inference
-			-- from inspecting oject model - not from parsing dADL text
-
 feature -- Comparison
 
 	is_less alias "<" (other: like Current): BOOLEAN
@@ -51,17 +45,6 @@ feature -- Comparison
 		do
 			Result := node_id < other.node_id
 		end
-
-feature -- Status Report
-
-	is_typed: BOOLEAN
-			-- True if this node has a known type
-		do
-			Result := not rm_type_name.is_equal(Unknown_type_name)
-		end
-
-	type_visible: BOOLEAN
-			-- True if type names are to be shown in serialised forms
 
 feature -- Modification
 
@@ -71,29 +54,6 @@ feature -- Modification
 			Node_id_valid: not a_node_id.is_empty
 		do
 			representation.set_node_id(a_node_id)
-		end
-
-	set_type_name (a_type_name: attached STRING)
-			-- set type name
-		require
-			Type_name_valid: not a_type_name.is_empty
-		do
-			rm_type_name := a_type_name
-		end
-
-	set_visible_type_name (a_type_name: attached STRING)
-			-- set type name
-		require
-			Type_name_valid: not a_type_name.is_empty
-		do
-			set_type_name(a_type_name)
-			set_type_visible
-		end
-
-	set_type_visible
-			-- show type of this object in generated form like dADL
-		do
-			type_visible := True
 		end
 
 feature -- Conversion
@@ -116,7 +76,6 @@ feature -- Representation
 	representation: OG_OBJECT
 
 invariant
-	Type_name_valid: not rm_type_name.is_empty
 	Node_id_valid: not node_id.is_empty
 
 end

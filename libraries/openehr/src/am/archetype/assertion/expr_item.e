@@ -18,7 +18,7 @@ inherit
 
 feature -- Access
 
-	type: STRING
+	type: attached STRING
 			-- Type name of this item in the mathematical sense. For leaf nodes,
 			-- must be the name of a primitive type, or else a reference model type.
 			-- The type for any relational or boolean operator will be "Boolean",
@@ -26,15 +26,13 @@ feature -- Access
 
 feature -- Conversion
 
-	as_string: STRING
+	as_string: attached STRING
 			-- output expression as a string
 		deferred
-		ensure
-			Result /= Void
 		end
 
 invariant
-	Type_valid: type /= Void and then not type.is_empty
+	Type_valid: not type.is_empty
 
 end
 

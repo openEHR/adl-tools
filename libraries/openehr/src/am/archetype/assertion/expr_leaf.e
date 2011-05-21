@@ -44,11 +44,11 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make_archetype_ref(a_ref: STRING)
+	make_archetype_ref (a_ref: attached STRING)
 			-- node refers to a feature in the main part of an archetype
 			-- (not the definition section)
 		require
-			ref_exists: a_ref /= Void and then not a_ref.is_empty
+			ref_exists: not a_ref.is_empty
 		do
 			item := a_ref
 			type := "String" -- FIXME: need access to ref model to know what type it really is
@@ -57,10 +57,10 @@ feature -- Initialisation
 			is_archetype_ref
 		end
 
-	make_archetype_definition_ref(a_ref: STRING)
+	make_archetype_definition_ref (a_ref: attached STRING)
 			-- node refers to a feature in the archetype definition
 		require
-			ref_exists: a_ref /= Void and then not a_ref.is_empty
+			ref_exists: not a_ref.is_empty
 		do
 			item := a_ref
 			type := "Any" -- FIXME: need access to ref model to know what type it really is
@@ -69,7 +69,7 @@ feature -- Initialisation
 			is_archetype_definition_ref
 		end
 
-	make_boolean(an_item: BOOLEAN)
+	make_boolean (an_item: BOOLEAN)
 			-- node is a boolean value
    		do
 			item := an_item
@@ -77,7 +77,7 @@ feature -- Initialisation
 			reference_type := Ref_type_constant.twin
 		end
 
-	make_real(an_item: REAL)
+	make_real (an_item: REAL)
 			-- node is a real value
    		do
 			item := an_item
@@ -85,7 +85,7 @@ feature -- Initialisation
 			reference_type := Ref_type_constant.twin
 		end
 
-	make_integer(an_item: INTEGER)
+	make_integer (an_item: INTEGER)
 			-- node is an integer value
    		do
 			item := an_item
@@ -93,17 +93,15 @@ feature -- Initialisation
 			reference_type := Ref_type_constant.twin
 		end
 
-	make_string(an_item: STRING)
+	make_string (an_item: attached STRING)
 			-- node is a string value
-		require
-			Item_exists: an_item /= Void
    		do
 			item := an_item
 			type := "String"
 			reference_type := Ref_type_constant
 		end
 
-	make_character(an_item: CHARACTER)
+	make_character (an_item: attached CHARACTER)
 			-- node is a character value
    		do
 			item := an_item
@@ -111,30 +109,24 @@ feature -- Initialisation
 			reference_type := Ref_type_constant
 		end
 
-	make_ordinal(an_item: ORDINAL)
+	make_ordinal (an_item: attached ORDINAL)
 			-- node is a ordinal value
-		require
-			Item_exists: an_item /= Void
    		do
 			item := an_item
 			type := "ORDINAL"
 			reference_type := Ref_type_constant
 		end
 
-	make_coded_term(an_item: CODE_PHRASE)
+	make_coded_term (an_item: attached CODE_PHRASE)
 			-- node is a term value
-		require
-			Item_exists: an_item /= Void
    		do
 			item := an_item
 			type := "CODE_PHRASE"
 			reference_type := Ref_type_constraint
 		end
 
-	make_constraint(an_item: C_PRIMITIVE)
+	make_constraint (an_item: attached C_PRIMITIVE)
 			-- node is a constraint on a primitive type; can only be used with "matches" function
-		require
-			Item_exists: an_item /= Void
    		do
 			item := an_item
 			type := an_item.generator
@@ -196,13 +188,13 @@ feature -- Conversion
 
 feature -- Visitor
 
-	enter_subtree(visitor: EXPR_VISITOR; depth: INTEGER)
+	enter_subtree (visitor: EXPR_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
 			visitor.start_expr_leaf (Current, depth)
 		end
 
-	exit_subtree(visitor: EXPR_VISITOR; depth: INTEGER)
+	exit_subtree (visitor: EXPR_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
 			visitor.end_expr_leaf (Current, depth)

@@ -349,7 +349,7 @@ c_archetype_root: SYM_USE_ARCHETYPE type_identifier '[' V_ARCHETYPE_ID ']' c_occ
 	| SYM_USE_ARCHETYPE type_identifier '[' V_LOCAL_CODE ',' V_ARCHETYPE_ID ']' c_occurrences
 		{
 			if (create {ARCHETYPE_ID}).valid_id($6) then
-				create $$.make_with_slot_id($2, $4, $6)
+				create $$.make_with_slot_id($2, $6, $4)
 				if $8 /= Void then
 					$$.set_occurrences($8)
 				end
@@ -2400,7 +2400,8 @@ feature {NONE} -- Implementation
 			elseif an_attr.is_multiple then
 				if an_attr.cardinality /= Void and an_obj.occurrences /= Void and (
 					not an_attr.cardinality.interval.upper_unbounded and (an_obj.occurrences.upper_unbounded or 
-								an_attr.cardinality.interval.upper < an_obj.occurrences.upper)) then
+								an_attr.cardinality.interval.upper < an_obj.occurrences.upper)) 
+				then
 					ar.extend(an_attr.cardinality.interval.as_string)
 					ar.extend(an_obj.occurrences.as_string)
 					err_code := "VACMC1"

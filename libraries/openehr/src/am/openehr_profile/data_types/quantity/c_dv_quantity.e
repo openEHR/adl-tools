@@ -93,6 +93,13 @@ feature -- Modification
 			default_units := units_for_property (a_property).first
 		end
 
+	set_list (an_list: attached ARRAYED_LIST [C_QUANTITY_ITEM])
+		do
+			list := an_list
+		ensure
+			list = an_list
+		end
+
 	set_assumed_value_from_units_magnitude (a_units: STRING; a_magnitude: REAL; a_precision: INTEGER)
 			-- Set `assumed_value'; set precision to -1 if no precision.
 		require

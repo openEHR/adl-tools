@@ -34,6 +34,8 @@ feature {NONE} -- Implementation
 		once
 			create Result.make(0)
 			Result.put("archetype",		SYM_ARCHETYPE)
+			Result.put("template",		SYM_TEMPLATE)
+			Result.put("template_component",		SYM_TEMPLATE_COMPONENT)
 			Result.put("adl_version",	SYM_ADL_VERSION)
 			Result.put("controlled",	SYM_IS_CONTROLLED)
 			Result.put("generated",	    SYM_IS_GENERATED)

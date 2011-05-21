@@ -26,13 +26,6 @@ note
 class CODE_PHRASE
 
 inherit
-	CANONICAL_FRAGMENT
-		undefine
-			is_equal, default_create
-		redefine
-			out
-		end
-
 	COMPARABLE
 		undefine
 			out
@@ -42,7 +35,7 @@ inherit
 
 create
 	default_create,
-	make, make_from_string, make_from_canonical_string
+	make, make_from_string
 
 feature -- Definitions
 
@@ -57,54 +50,38 @@ feature -- Initialization
 			create terminology_id.default_create
 			code_string := default_code_string.twin
 		ensure then
-			Terminology_id_set: terminology_id /= Void
-			Code_string_set: code_string.is_equal(default_code_string)
+			Code_string_set: code_string.is_equal (default_code_string)
 		end
 
-	make_from_string(a_key: STRING)
+	make_from_string (a_key: attached STRING)
 			-- make from a string of the form terminology_id::code_string, e.g. ICD10(1998)::M10
 			-- the form terminology_id:: is also allowable, in which case the default_code_string will
 			-- be used
 		require
-			Key_valid: a_key /= Void and then not a_key.is_empty
+			Key_valid: not a_key.is_empty
 		local
 			sep_pos: INTEGER
 		do
-			sep_pos := a_key.substring_index(separator, 1)
-			create terminology_id.make(a_key.substring(1, sep_pos-1))
+			sep_pos := a_key.substring_index (separator, 1)
+			create terminology_id.make (a_key.substring (1, sep_pos-1))
 			if a_key.count > sep_pos + 1 then
-				code_string := a_key.substring(sep_pos+separator.count, a_key.count)
+				code_string := a_key.substring (sep_pos+separator.count, a_key.count)
 			else
 				code_string := default_code_string.twin
 			end
-		ensure
-			Terminology_id_set: terminology_id /= Void
-			Code_string_set: code_string /= Void
 		end
 
-	make(a_terminology_id, a_code_string: STRING)
+	make (a_terminology_id, a_code_string: attached STRING)
 			-- make from two strings
 		require
-			Terminology_id_valid: a_terminology_id /= Void and then not a_terminology_id.is_empty
-			Code_string_valid: a_code_string /= Void and then not a_code_string.is_empty
+			Terminology_id_valid: not a_terminology_id.is_empty
+			Code_string_valid: not a_code_string.is_empty
 		do
 			create terminology_id.make (a_terminology_id)
 			code_string := a_code_string
 		ensure
 			Terminology_id_set: terminology_id.value.is_equal(a_terminology_id)
 			Code_string_set: code_string = a_code_string
-		end
-
-	make_from_canonical_string (str: STRING)
-			-- make from string of form:
-			-- <terminology_id>
-			--		<name>string</name>
-			-- 		[<version_id>string</version_id>]
-			-- </terminology_id>
-			-- <code_string>string</code_string>
-		do
-			create terminology_id.make_from_canonical_string(xml_extract_from_tags(str, "terminology_id", 1))
-			code_string := xml_extract_from_tags(str, "code_string", 1)
 		end
 
 feature -- Status Report
@@ -115,19 +92,13 @@ feature -- Status Report
 			Result := terminology_id.is_local
 		end
 
-	valid_canonical_string(str: STRING): BOOLEAN
-			-- True if str contains required tags
-		do
-			Result := xml_has_tag(str, "terminology_id", 1) and xml_has_tag(str, "code_string", 1)
-		end
-
 feature -- Access
 
-	terminology_id: TERMINOLOGY_ID
+	terminology_id: attached TERMINOLOGY_ID
 			-- Identifier of the distinct terminology from which the code_string
 			-- (or its elements) was extracted
 
-	code_string: STRING
+	code_string: attached STRING
 			-- The key used by the terminology service to identify a concept or
 			-- coordination of concepts. This string is most likely parsable inside
 			-- the terminology service, but nothing can be assumed about its syntax
@@ -168,18 +139,8 @@ feature -- Output
 			Result := "[" + as_string + "]"
 		end
 
-
-	as_canonical_string: STRING
-			-- standardised form of string guaranteed to contain all information
-			-- in data item
-		do
-			Result := "<terminology_id>" + terminology_id.as_canonical_string + "</terminology_id>" +
-				"<code_string>" + code_string + "</code_string>"
-		end
-
 invariant
-	terminology_id_exists: terminology_id /= Void
-	code_string_valid: code_string /= Void and then not code_string.is_empty
+	code_string_valid: not code_string.is_empty
 
 end
 

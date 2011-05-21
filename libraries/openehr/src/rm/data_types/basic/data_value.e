@@ -19,8 +19,6 @@ note
 deferred class DATA_VALUE
 
 inherit
-	CANONICAL_FRAGMENT
-
 	EXTERNAL_ENVIRONMENT_ACCESS
 		export
 			{NONE} all
@@ -28,19 +26,15 @@ inherit
 
 feature -- Initialization
 
-	make_from_string (a_str: STRING)
-		require
-			String_exists: a_str /= Void
+	make_from_string (a_str: attached STRING)
 		deferred
 		end
 
 feature -- Output
 
-	as_string: STRING
+	as_string: attached STRING
 			-- string form displayable for humans
 		deferred
-		ensure
-			Result_exists: Result /= Void
 		end
 
 end

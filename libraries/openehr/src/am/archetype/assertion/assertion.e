@@ -18,11 +18,10 @@ create
 
 feature -- Initialisation
 
-	make (an_expr: EXPR_ITEM; a_tag: STRING)
+	make (an_expr: attached EXPR_ITEM; a_tag: STRING)
 			-- make assertion with an expression and an optional tag
 		require
-			Tag_valid: a_tag /= Void implies not a_tag.is_empty
-			Expr_valid: an_expr /= Void
+			Tag_valid: attached a_tag implies not a_tag.is_empty
    		do
 			tag := a_tag
 			expression := an_expr
@@ -33,7 +32,7 @@ feature -- Access
 	tag: STRING
 			-- tag name of assertion
 
-	expression: EXPR_ITEM
+	expression: attached EXPR_ITEM
 
 feature -- Output
 
@@ -44,8 +43,7 @@ feature -- Output
 		end
 
 invariant
-	Tag_valid: tag /= Void implies not tag.is_empty
-	Expression_valid: expression /= Void
+	Tag_valid: attached tag implies not tag.is_empty
 
 end
 

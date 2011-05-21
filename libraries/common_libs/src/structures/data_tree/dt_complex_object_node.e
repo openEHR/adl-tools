@@ -72,11 +72,11 @@ feature -- Initialisation
 			not is_typed
 		end
 
-	make_from_object (an_obj: ANY)
+	make_from_object (an_obj: attached ANY)
 			-- make a data tree from an object
 		do
 			make_anonymous
-			object_converter.populate_dt_from_object(an_obj, Current)
+			object_converter.populate_dt_from_root_object (an_obj, Current)
 		end
 
 feature -- Access
@@ -126,7 +126,7 @@ feature -- Access
 			Result_exists: Result.object_comparison
 		end
 
-	value_at_path(a_path: attached STRING): attached ANY
+	value_at_path (a_path: attached STRING): attached ANY
 			-- retrieve leaf value object, including list or interval object at `a_path'
 		require
 			Path_valid: valid_path_string(a_path) and has_path(a_path)
@@ -140,7 +140,7 @@ feature -- Access
 			end
 		end
 
-	value_list_at_path(a_path: attached STRING): SEQUENCE[ANY]
+	value_list_at_path (a_path: attached STRING): SEQUENCE[ANY]
 			-- attempt to get list value from path `a_path'; relies on
 			-- prior knowledge that this path corresponds to a list object
 		require
@@ -151,7 +151,7 @@ feature -- Access
 			end
 		end
 
-	value_interval_at_path(a_path: attached STRING): INTERVAL[PART_COMPARABLE]
+	value_interval_at_path (a_path: attached STRING): INTERVAL[PART_COMPARABLE]
 			-- attempt to get interval value from path `a_path'; relies on
 			-- prior knowledge that this path corresponds to an interval object
 		require

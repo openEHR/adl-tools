@@ -52,10 +52,10 @@ feature -- Access
 			Result := current_directory + operating_environment.Directory_separator.out + current_file_name
 		end
 
-	current_directory: STRING
+	current_directory: attached STRING
 			-- directory name only
 
-	current_file_name: STRING
+	current_file_name: attached STRING
 			-- name of fle only
 
 	has_byte_order_marker: BOOLEAN
@@ -63,9 +63,9 @@ feature -- Access
 
 	last_op_failed: BOOLEAN
 
-	last_op_fail_reason: STRING
+	last_op_fail_reason: attached STRING
 
-	file_content: STRING
+	file_content: attached STRING
 			-- Text from current file as a string.
 
 	file_lines: ARRAYED_LIST [STRING]
@@ -76,10 +76,8 @@ feature -- Access
 
 feature -- Status Report
 
-	has_file (a_file_name: STRING): BOOLEAN
+	has_file (a_file_name: attached STRING): BOOLEAN
 			-- Does `a_file_name' exist in `current_directory'?
-		require
-			File_name_valid: a_file_name /= Void
 		local
 			a_file: PLAIN_TEXT_FILE
    		do
@@ -87,10 +85,10 @@ feature -- Status Report
 			Result := a_file.exists
 		end
 
-	file_writable (a_file_name: STRING): BOOLEAN
+	file_writable (a_file_name: attached STRING): BOOLEAN
 			-- True if named file is writable, or else doesn't exist
 		require
-			File_name_valid: a_file_name /= Void and then not a_file_name.is_empty
+			File_name_valid: not a_file_name.is_empty
 		local
 			fd: PLAIN_TEXT_FILE
    		do
@@ -244,11 +242,9 @@ feature -- Commands
 			file_content_empty_on_failure: last_op_failed implies file_content.is_empty
 		end
 
-	save_file (a_file_name, content: STRING)
+	save_file (a_file_name, content: attached STRING)
 			-- Write `content' out to file `a_file_name' in `current_directory'.
 		require
-			Arch_id_valid: a_file_name /= Void
-			Content_valid: content /= Void
 			File_writable: file_writable (a_file_name)
 		local
 			out_file: PLAIN_TEXT_FILE
@@ -275,10 +271,10 @@ feature -- Commands
 			end
 		end
 
-	set_target (a_file_path: STRING)
+	set_target (a_file_path: attached STRING)
 			-- set context to `a_file_path'
 		require
-			a_file_path_valid: a_file_path /= Void and then not a_file_path.is_empty
+			a_file_path_valid: not a_file_path.is_empty
 		local
 			sep_pos: INTEGER
 		do
@@ -293,16 +289,16 @@ feature -- Commands
 			end
 		end
 
-	set_current_file_name (a_file_name: STRING)
+	set_current_file_name (a_file_name: attached STRING)
 		require
-			a_file_name_valid: a_file_name /= Void and then not a_file_name.is_empty
+			a_file_name_valid: not a_file_name.is_empty
 		do
 			current_file_name := a_file_name
 		end
 
-	set_current_directory (a_dir: STRING)
+	set_current_directory (a_dir: attached STRING)
 		require
-			a_dir_valid: a_dir /= Void and then not a_dir.is_empty
+			a_dir_valid: not a_dir.is_empty
 		do
 			current_directory := a_dir
 		end
@@ -321,10 +317,6 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	directory_attached: current_directory /= Void
-	file_name_attached: current_file_name /= Void
-	last_op_fail_reason_attached: last_op_fail_reason /= Void
-	content_attached: file_content /= Void
 	timestamp_natural: file_timestamp >= 0
 
 end

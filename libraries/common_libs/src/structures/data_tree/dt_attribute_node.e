@@ -216,13 +216,24 @@ feature -- Modification
 		end
 
 	set_nested_container
-			-- set an attribute created single to be multiple and generic, i.e. a container attribute
+			-- set an attribute created single to be multiple and nested, i.e. a container attribute
 		do
 			representation.set_multiple
 			is_nested := True
 		ensure
 			is_container_type
 			is_nested
+		end
+
+	unset_nested
+			-- unset `is_nested' marker, so that structure is treated like a non-nested container
+		require
+			is_container_type
+		do
+			is_nested := False
+		ensure
+			is_container_type
+			not is_nested
 		end
 
 	put_child(a_node: attached DT_OBJECT_ITEM)

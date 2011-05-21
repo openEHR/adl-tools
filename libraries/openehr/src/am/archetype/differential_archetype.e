@@ -58,7 +58,7 @@ feature -- Initialisation
 		do
 			a_flat_copy := a_flat.deep_twin
 			make_all (a_flat.artefact_type, Latest_adl_version, a_flat_copy.archetype_id, a_flat_copy.parent_archetype_id, a_flat_copy.is_controlled,
-					a_flat_copy.original_language.code_string, a_flat_copy.translations,
+					a_flat_copy.original_language, a_flat_copy.translations,
 					a_flat_copy.description, a_flat_copy.definition, a_flat_copy.invariants,
 					a_flat_copy.ontology.to_differential, a_flat_copy.annotations)
 
@@ -274,12 +274,12 @@ feature -- Modification
 			end
 		end
 
-feature {ARCHETYPE_VALIDATOR} -- Implementation
+feature {ARCHETYPE_VALIDATOR, ARCH_REP_ARCHETYPE} -- Implementation
 
-	set_parent_archetype (an_archetype: DIFFERENTIAL_ARCHETYPE)
+	set_parent_archetype (an_archetype: attached DIFFERENTIAL_ARCHETYPE)
 			-- set `parent_archetype'
 		require
-			Archetype_valid: an_archetype /= Void and then an_archetype.specialisation_depth + 1 = specialisation_depth
+			Archetype_valid: an_archetype.specialisation_depth + 1 = specialisation_depth
 		do
 			parent_archetype := an_archetype
 			ontology.set_parent_ontology (an_archetype.ontology)

@@ -27,14 +27,12 @@ inherit
 	DV_ORDERED
 
 create
-	make, make_from_string, make_from_canonical_string
+	make, make_from_string
 
 feature -- Initialization
 
-	make(a_value: INTEGER; a_symbol: DV_CODED_TEXT)
+	make (a_value: INTEGER; a_symbol: attached DV_CODED_TEXT)
 			-- make from a value/symbol pair
-		require
-			a_symbol_valid: a_symbol /= Void
 		do
 			value := a_value
 			symbol := a_symbol
@@ -47,28 +45,17 @@ feature -- Initialization
 		do
 		end
 
-	make_from_canonical_string (str: STRING)
-		do
-		end
-
-feature -- Status Report
-
-	valid_canonical_string (str: STRING): BOOLEAN
-			-- True if str contains required tags
-		do
-		end
-
 feature -- Access
 
 	value: INTEGER
 			-- ordinal value of this datum
 
-	symbol: DV_CODED_TEXT
+	symbol: attached DV_CODED_TEXT
 			-- symbolic representation of this value in the enumeration,
 			-- which may be strings made from “+” symbols, or other enumerations
 			-- of terms such as “mild”, “moderate”, “severe”.
 
-	limits: REFERENCE_RANGE [DV_ORDINAL]
+	limits: attached REFERENCE_RANGE [DV_ORDINAL]
 			-- limits of the ordinal enumeration, to allow comparison of an ordinal value to its limits.
 		do
 		end
@@ -95,16 +82,9 @@ feature -- Conversion
 			Result.append (symbol.as_string)
 		end
 
-	as_canonical_string: STRING
-		do
-			Result := "<value>" + value.out + "</value>" +
-					"<symbol>" + symbol.as_canonical_string + "</symbol>"
-		end
-
 invariant
 	Value_validity: value > 0
-	Symbol_valid: symbol /= Void
-	Limits_valid: limits /= Void and then limits.meaning.value.is_equal("limits")
+	Limits_valid: limits.meaning.value.is_equal("limits")
 	Reference_range_valid: other_reference_ranges /= Void and then other_reference_ranges.has(limits)
 
 end

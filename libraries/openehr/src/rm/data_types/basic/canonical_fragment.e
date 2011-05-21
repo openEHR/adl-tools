@@ -16,7 +16,7 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class CANONICAL_FRAGMENT
+deferred class X_CANONICAL_FRAGMENT
 
 inherit
 	XML_TOOLS
@@ -25,27 +25,25 @@ inherit
 
 feature -- Initialization
 
-	make_from_canonical_string (str: STRING)
+	make_from_canonical_string (str: attached STRING)
 		require
-			String_exists: str /= Void and then valid_canonical_string(str)
+			String_exists: valid_canonical_string(str)
 		deferred
 		end
 
 feature -- Status Report
 
-	valid_canonical_string (str: STRING): BOOLEAN
+	valid_canonical_string (str: attached STRING): BOOLEAN
 			-- True if str contains required tags
 		deferred
 		end
 
 feature -- Output
 
-	as_canonical_string: STRING
+	as_canonical_string: attached STRING
 			-- standardised form of string guaranteed to contain all information
 			-- in data item
 		deferred
-		ensure
-			Result_exists: Result /= Void
 		end
 
 end

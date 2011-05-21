@@ -1191,7 +1191,7 @@ debug ("GEYACC")
 end
 
 			if (create {ARCHETYPE_ID}).valid_id(yyvs2.item (yyvsp2)) then
-				create yyval9.make_with_slot_id(yyvs2.item (yyvsp2 - 2), yyvs2.item (yyvsp2 - 1), yyvs2.item (yyvsp2))
+				create yyval9.make_with_slot_id(yyvs2.item (yyvsp2 - 2), yyvs2.item (yyvsp2), yyvs2.item (yyvsp2 - 1))
 				if yyvs13.item (yyvsp13) /= Void then
 					yyval9.set_occurrences(yyvs13.item (yyvsp13))
 				end
@@ -8505,7 +8505,8 @@ feature {NONE} -- Implementation
 			elseif an_attr.is_multiple then
 				if an_attr.cardinality /= Void and an_obj.occurrences /= Void and (
 					not an_attr.cardinality.interval.upper_unbounded and (an_obj.occurrences.upper_unbounded or 
-								an_attr.cardinality.interval.upper < an_obj.occurrences.upper)) then
+								an_attr.cardinality.interval.upper < an_obj.occurrences.upper)) 
+				then
 					ar.extend(an_attr.cardinality.interval.as_string)
 					ar.extend(an_obj.occurrences.as_string)
 					err_code := "VACMC1"

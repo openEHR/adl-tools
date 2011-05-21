@@ -20,7 +20,7 @@ inherit
 		end
 
 create
-	make, make_non_specialised
+	make, make_non_specialised, make_all
 
 create {ARCHETYPE_FLATTENER}
 	make_specialised
@@ -31,7 +31,7 @@ feature -- Initialisation
 			-- initialise from a differential archetype
 		do
 			make(a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
-					a_diff.original_language.code_string,
+					a_diff.original_language.deep_twin,
 					a_diff.description.deep_twin,
 					a_diff.definition.deep_twin, a_diff.ontology.to_flat)
 			if a_diff.has_translations then
@@ -61,7 +61,7 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			-- is converted to a form ready for overlaying as well.
 		do
 			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
-					a_diff.original_language.code_string,
+					a_diff.original_language.deep_twin,
 					a_diff.description.deep_twin,
 					a_flat_parent.definition.deep_twin,
 					a_diff.ontology.to_flat)

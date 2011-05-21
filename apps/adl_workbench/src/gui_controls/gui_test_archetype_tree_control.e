@@ -35,6 +35,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_ADL_ENGINE
+		export
+			{NONE} all
+		end
+
 	STRING_UTILITIES
 		export
 			{NONE} all
@@ -86,9 +91,10 @@ feature -- Access
 			create Result.make (0)
 			Result.force (agent test_parse, "Parse")
 			Result.force (agent regression_test, Regression_test_key)
-			Result.force (agent test_save_legacy, "Save legacy")
-			Result.force (agent test_save_flat, "Save flat")
-			Result.force (agent test_source_compare, "Compare src")
+			Result.force (agent test_save_flat, "->adlf")
+			Result.force (agent test_source_compare, "Compare .adls")
+			Result.force (agent test_save_source_dadl, "src AOM->dADL")
+			Result.force (agent test_read_source_dadl, "src AOM<-dADL")
 		end
 
 	last_tested_archetypes_count: INTEGER
@@ -113,6 +119,18 @@ feature -- Access
 	diff_dir_source_flat_new: STRING
 			-- directory where flat files go, renamed to .adlx, for source/flat
 			-- comparison, non-specialised archetypes only
+
+	dadl_source_dir: STRING
+			-- directory where dADL files from source form archetypes are saved
+
+	dadl_flat_dir: STRING
+			-- directory where dADL files from flat form archetypes are saved
+
+	dadl_adl_root: STRING
+
+	diff_dadl_round_trip_source_orig_dir: STRING
+
+	diff_dadl_round_trip_source_new_dir: STRING
 
 feature -- Status Setting
 
@@ -343,7 +361,9 @@ feature {NONE} -- Tests
 			serialised_source_path: STRING
 		do
 			Result := test_failed
-			archetype_compiler.rebuild_lineage (target, 0)
+			if not target.compile_attempted then
+				archetype_compiler.rebuild_lineage (target, 0)
+			end
 			if target.is_valid then
 				Result := test_passed
 				test_status.append (" parse succeeded%N" + target.errors.as_string)
@@ -367,7 +387,7 @@ feature {NONE} -- Tests
 				-- save source as serialised to $profile/source/new area
 				if diff_dirs_available then
 					-- save source as read in (not serialised) to $profile/source/orig area
-					file_system.copy_file(target.differential_path, file_system.pathname (diff_dir_source_orig, target.ontological_name + Archetype_source_file_extension))
+					file_system.copy_file (target.differential_path, file_system.pathname (diff_dir_source_orig, target.ontological_name + Archetype_source_file_extension))
 
 					-- this save causes serialisation to rewrite target.differential_text, which gives us something to compare to what was captured above
 					serialised_source_path := file_system.pathname (diff_dir_source_new, target.ontological_name + Archetype_source_file_extension)
@@ -376,8 +396,13 @@ feature {NONE} -- Tests
 					-- for top-level archetypes only, copy above serialised source to $profile/source_flat/orig area as well, using extension .adlx
 					-- (flat also uses this - diff tool needs to see same extensions or else it gets confused)
 				--	if not target.is_specialised then
-						file_system.copy_file(serialised_source_path, file_system.pathname (diff_dir_source_flat_orig, target.ontological_name + Archetype_dummy_file_extension))
+						file_system.copy_file (serialised_source_path, file_system.pathname (diff_dir_source_flat_orig, target.ontological_name + Archetype_dummy_file_extension))
 				--	end
+
+					-- save legacy ADL
+					if target.has_legacy_flat_file then
+						target.save_legacy_to (file_system.pathname (diff_dir_flat_orig, target.ontological_name + Archetype_flat_file_extension))
+					end
 				end
 			else
 				test_status.append (" parse failed%N" + target.errors.as_string)
@@ -436,24 +461,6 @@ feature {NONE} -- Tests
 
 	val_code: STRING
 
-	test_save_legacy: INTEGER
-			-- parse legacy archetype, save in source form and return result
-		do
-			Result := test_failed
-			if target.is_valid and target.has_legacy_flat_file then
-				if diff_dirs_available then
-					target.save_legacy_to (file_system.pathname (diff_dir_flat_orig, target.ontological_name + Archetype_flat_file_extension))
-				end
-				if target.status.is_empty then
-					Result := test_passed
-				else
-					test_status.append (target.status + "%N")
-				end
-			else
-				Result := test_not_applicable
-			end
-		end
-
 	test_save_flat: INTEGER
 			-- parse archetype, save in source form and return result
 		local
@@ -465,11 +472,9 @@ feature {NONE} -- Tests
 					flat_path := file_system.pathname (diff_dir_flat_new, target.ontological_name + Archetype_flat_file_extension)
 					target.save_flat_as (flat_path, Archetype_native_syntax)
 
-				--	if not target.is_specialised then
-						-- copy above flat file to $profile/source_flat/orig area as well, using extension .adlx (flat also uses this - diff tool needs to see same
-						-- extensions or else it gets confused)
-						file_system.copy_file(flat_path, file_system.pathname (diff_dir_source_flat_new, target.ontological_name + Archetype_dummy_file_extension))
-				--	end
+					-- copy above flat file to $profile/source_flat/orig area as well, using extension .adlx (flat also uses this - diff tool needs to see same
+					-- extensions or else it gets confused)
+					file_system.copy_file (flat_path, file_system.pathname (diff_dir_source_flat_new, target.ontological_name + Archetype_dummy_file_extension))
 				end
 				if target.status.is_empty then
 					Result := test_passed
@@ -494,6 +499,41 @@ feature {NONE} -- Tests
 					end
 				else
 					test_status.append (create_message_line ("Test_arch_compare_i2", <<original_differential_text.count.out, target.differential_text.count.out>>))
+				end
+			else
+				Result := test_not_applicable
+			end
+		end
+
+	test_save_source_dadl: INTEGER
+			-- serialise differential archetype to dADL format, and copy to test area for later diffing
+		do
+			Result := Test_failed
+			if target.is_valid then
+				target.save_compiled_differential
+				file_system.copy_file (target.differential_compiled_path, file_system.pathname (dadl_source_dir, target.ontological_name + Archetype_dadl_file_extension))
+				Result := test_passed
+			else
+				Result := test_not_applicable
+			end
+		end
+
+	test_read_source_dadl: INTEGER
+		local
+			fd: PLAIN_TEXT_FILE
+		do
+			Result := Test_failed
+			if target.is_valid then
+				if attached target.read_compiled_differential as adl_text then
+					-- original .adls file, for diffing
+					file_system.copy_file (target.differential_path, file_system.pathname (diff_dadl_round_trip_source_orig_dir, target.ontological_name + Archetype_source_file_extension))
+
+					-- post-dadl round-tripped file
+					create fd.make_create_read_write (file_system.pathname (diff_dadl_round_trip_source_new_dir, target.ontological_name + Archetype_source_file_extension))
+					fd.put_string (adl_text)
+					fd.close
+
+					Result := test_passed
 				end
 			else
 				Result := test_not_applicable
@@ -574,17 +614,27 @@ feature {NONE} -- Implementation
 			-- 		test_diff_directory
 			--			+---- $current_profile
 			--					+---- source
-			--					|		+---- new
 			--					|		+---- orig
+			--					|		+---- new
+			--					|
 			--					+---- flat
+			--					|		+---- orig
+			--					|		+---- new
+			--					|
+			--					+---- source_flat
 			--					|		+---- new
 			--					|		+---- orig
-			--					+---- source_flat
-			--							+---- new
+			--					|
+			--					+---- dadl
+			--					|		+---- source
+			--					|		+---- flat
+			--					|
+			--					+---- dadl_adl
 			--							+---- orig
+			--							+---- new
 			--
 		local
-			diff_dir_root, diff_dir_source_root, diff_dir_flat_root, diff_dir_source_flat_root: STRING
+			diff_dir_root, diff_dir_source_root, diff_dir_flat_root, diff_dir_source_flat_root, dadl_root: STRING
 		do
 			diff_dirs_available := False
 
@@ -651,6 +701,31 @@ feature {NONE} -- Implementation
 				else
 					diff_dirs_available := False
 				end
+			end
+
+			-- dadl serialisation source and flat dirs
+			dadl_root := file_system.pathname (diff_dir_root, "dadl")
+			dadl_source_dir := file_system.pathname (dadl_root, "source")
+			if not file_system.directory_exists (dadl_source_dir) then
+				file_system.recursive_create_directory (dadl_source_dir)
+			end
+
+			dadl_flat_dir := file_system.pathname (dadl_root, "flat")
+			if not file_system.directory_exists (dadl_flat_dir) then
+				file_system.recursive_create_directory (dadl_flat_dir)
+			end
+
+			-- dirs for adl files produced by serialised first to dadl, reading back dadl,
+			-- deserialising then reserialising as adls
+			dadl_adl_root := file_system.pathname (diff_dir_root, "dadl_adl")
+			diff_dadl_round_trip_source_orig_dir := file_system.pathname (dadl_adl_root, "orig")
+			if not file_system.directory_exists (diff_dadl_round_trip_source_orig_dir) then
+				file_system.recursive_create_directory (diff_dadl_round_trip_source_orig_dir)
+			end
+
+			diff_dadl_round_trip_source_new_dir := file_system.pathname (dadl_adl_root, "new")
+			if not file_system.directory_exists (diff_dadl_round_trip_source_new_dir) then
+				file_system.recursive_create_directory (diff_dadl_round_trip_source_new_dir)
 			end
 		end
 

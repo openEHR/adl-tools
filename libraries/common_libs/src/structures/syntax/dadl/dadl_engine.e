@@ -102,8 +102,11 @@ feature -- Commands
 			parse_succeeded implies attached tree
 		end
 
-	serialise (a_format: attached STRING)
+	serialise (a_format: attached STRING; full_type_marking_on, output_typed_encapsulated: BOOLEAN)
 			-- Serialise current artifact into `a_format'.
+			-- `full_type_marking_on' = True if type marking even for inferrable primitive types should be added to serialised output
+			-- `output_typed_encapsulated' = True: output with typed object wrapper, rather than just the series of attributes innside the object
+
 		require
 			Format_valid: has_dt_serialiser_format (a_format)
 			Archetype_valid: attached tree implies tree.is_valid
@@ -114,6 +117,12 @@ feature -- Commands
 			if attached tree then
 				a_dt_serialiser := dt_serialiser_for_format (a_format)
 				a_dt_serialiser.reset
+				if full_type_marking_on then
+					a_dt_serialiser.set_full_type_marking_on
+				end
+				if output_typed_encapsulated then
+					a_dt_serialiser.set_output_typed_encapsulated
+				end
 				create a_dt_iterator.make (tree, a_dt_serialiser)
 				a_dt_iterator.do_all
 				serialised := a_dt_serialiser.last_result

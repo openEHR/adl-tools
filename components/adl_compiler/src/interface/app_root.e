@@ -53,6 +53,11 @@ feature -- Initialisation
 					set_html_export_directory (file_system.pathname (user_config_file_directory, "html"))
 				end
 
+				-- set a reasonable default for compiler generated artefacts directory
+				if compiler_gen_directory.is_empty then
+					set_compiler_gen_directory (file_system.pathname (user_config_file_directory, "gen"))
+				end
+
 				-- set a reasonable default for diff test file directory (where files are written from test page for comparison with a diff tool)
 				if test_diff_directory.is_empty then
 					set_test_diff_directory (file_system.pathname (user_config_file_directory, "diff_test"))
@@ -91,8 +96,9 @@ feature -- Initialisation
 				-- manual editing of .cfg file
 				if not repository_profiles.is_empty and not repository_profiles.has_current_profile then
 					repository_profiles.start
-					set_current_profile(repository_profiles.key_for_iteration)
+					set_current_profile (repository_profiles.key_for_iteration)
 				end
+				initialise_current_profile
 
 				initialised := True
 			end

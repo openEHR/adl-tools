@@ -40,10 +40,8 @@ feature -- Initialization
 			is_open := True
 		end
 
-	make_from_string(str: STRING)
+	make_from_string (str: attached STRING)
 			-- make from a single string
-		require
-			str /= Void
 		do
 			create strings.make(0)
 			strings.extend(str)
@@ -54,12 +52,10 @@ feature -- Initialization
 			str_valid: valid_value (str)
 		end
 
-	make_from_regexp(str: STRING; using_default_delimiter: BOOLEAN)
+	make_from_regexp (str: attached STRING; using_default_delimiter: BOOLEAN)
 			-- make from a regular expression contained in 'str' (not including delimiters);
 			-- if `using_default_delimiter' is True, the '/' delimiter is being used,
 			-- else the '^' delimiter is being used
-		require
-			str /= Void
 		do
 			regexp := str.twin
 			regexp_default_delimiter := using_default_delimiter
@@ -73,9 +69,7 @@ feature -- Initialization
 			regexp.is_equal(str) xor regexp.is_equal(Regexp_compile_error)
 		end
 
-	make_from_string_list(lst: LIST[STRING])
-		require
-			lst /= Void
+	make_from_string_list (lst: attached LIST[STRING])
 		do
 			create strings.make(0)
 			strings.fill(lst)
@@ -92,10 +86,9 @@ feature -- Modification
 			is_open := True
 		end
 
-	add_string(str: STRING)
+	add_string (str: attached STRING)
 		require
-			str_attached: str /= Void
-			strings_attached: strings /= Void
+			strings_attached: attached strings
 		do
 			strings.extend(str)
 		ensure
@@ -249,6 +242,10 @@ feature -- Output
 feature {NONE} -- Implementation
 
 	regexp_parser: LX_DFA_REGULAR_EXPRESSION
+		note
+			option: transient
+		attribute
+		end
 
 invariant
 	strings_regexp_mutex: strings /= Void xor regexp /= Void

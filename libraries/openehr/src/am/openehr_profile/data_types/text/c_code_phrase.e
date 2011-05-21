@@ -256,6 +256,12 @@ feature -- Modification
 			Not_any_allowed: not any_allowed
 		end
 
+	set_code_list (a_code_list: attached ARRAYED_LIST[STRING])
+		do
+			code_list := a_code_list
+			code_list.compare_objects
+		end
+
 feature -- Conversion
 
 	as_string: STRING

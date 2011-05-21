@@ -233,6 +233,7 @@ feature {NONE}-- Initialization
 			constraint_definitions_frame.extend (ontology_constraint_definitions_multi_column_list)
 			archetype_notebook.extend (annotations_grid)
 			archetype_notebook.extend (source_rich_text)
+			archetype_notebook.extend (dadl_rich_text)
 			total_split_area.extend (status_notebook)
 			status_notebook.extend (parser_status_area)
 			status_notebook.extend (compiler_output_grid)
@@ -275,6 +276,7 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_18.extend (diff_source_button)
 			l_ev_vertical_box_18.extend (diff_flat_button)
 			l_ev_vertical_box_18.extend (diff_source_flat_button)
+			l_ev_vertical_box_18.extend (diff_source_round_trip_button)
 			test_split_area.extend (test_status_area)
 
 			file_menu.set_text ("&File")
@@ -443,6 +445,7 @@ feature {NONE}-- Initialization
 			archetype_notebook.set_item_text (terminology_area, "Terminology")
 			archetype_notebook.set_item_text (annotations_grid, "Annotations")
 			archetype_notebook.set_item_text (source_rich_text, "ADL (adls)")
+			archetype_notebook.set_item_text (dadl_rich_text, "dADL")
 			description_notebook.set_item_text (description_admin_box, "Administrative")
 			description_notebook.set_item_text (description_desc_box, "Descriptive")
 			description_notebook.set_item_text (description_term_box, "Term bindings")
@@ -788,6 +791,7 @@ feature {NONE}-- Initialization
 			ontology_constraint_definitions_multi_column_list.set_minimum_width (1)
 			ontology_constraint_definitions_multi_column_list.set_minimum_height (1)
 			source_rich_text.disable_edit
+			dadl_rich_text.disable_edit
 			status_notebook.set_item_text (parser_status_area, "Status")
 			status_notebook.set_item_text (compiler_output_grid, "Errors")
 			status_notebook.set_item_text (statistics_box, "Statistics")
@@ -883,6 +887,7 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_18.disable_item_expand (diff_source_button)
 			l_ev_vertical_box_18.disable_item_expand (diff_flat_button)
 			l_ev_vertical_box_18.disable_item_expand (diff_source_flat_button)
+			l_ev_vertical_box_18.disable_item_expand (diff_source_round_trip_button)
 			test_profile_combo.set_tooltip ("Change repository profile")
 			test_profile_combo.disable_edit
 			remove_unused_codes_rb.set_text ("Remove unused codes")
@@ -911,6 +916,8 @@ feature {NONE}-- Initialization
 			diff_flat_button.set_tooltip ("Open diff tool on legacy and generated flat files")
 			diff_source_flat_button.set_text ("Source v gen'd Flat")
 			diff_source_flat_button.set_tooltip ("Open diff tool on source and generated flat files; for top-level archetypes, this shows the effect of flattening the RM, if that option is turned on.")
+			diff_source_round_trip_button.set_text ("Source v R-trip")
+			diff_source_round_trip_button.set_tooltip ("Open diff tool on source and archetype round-tripped through dADL P_* objects")
 			integer_constant_set_procedures.extend (agent test_status_area.set_minimum_height (?))
 			integer_constant_retrieval_functions.extend (agent status_area_min_height)
 			test_status_area.disable_edit
@@ -974,6 +981,7 @@ feature {NONE}-- Initialization
 			archetype_file_tree.focus_in_actions.extend (agent archetype_view_tree_item_select)
 			template_file_tree.select_actions.extend (agent template_view_tree_item_select)
 			template_file_tree.focus_in_actions.extend (agent template_view_tree_item_select)
+			archetype_notebook.selection_actions.extend (agent on_select_archetype_notebook)
 			arch_desc_status_text.focus_in_actions.extend (agent on_select_all)
 			arch_desc_original_language_text.focus_in_actions.extend (agent on_select_all)
 			arch_translations_languages_list.select_actions.extend (agent translations_select_language)
@@ -1006,6 +1014,7 @@ feature {NONE}-- Initialization
 			diff_source_button.select_actions.extend (agent on_diff_source)
 			diff_flat_button.select_actions.extend (agent on_diff_flat)
 			diff_source_flat_button.select_actions.extend (agent on_diff_source_flat)
+			diff_source_round_trip_button.select_actions.extend (agent on_diff_round_trip)
 			close_request_actions.extend (agent exit_app)
 
 				-- Call `user_initialization'.
@@ -1214,6 +1223,7 @@ feature {NONE}-- Initialization
 			create ontology_constraint_definitions_multi_column_list
 			create annotations_grid
 			create source_rich_text
+			create dadl_rich_text
 			create status_notebook
 			create parser_status_area
 			create compiler_output_grid
@@ -1256,6 +1266,7 @@ feature {NONE}-- Initialization
 			create diff_source_button
 			create diff_flat_button
 			create diff_source_flat_button
+			create diff_source_round_trip_button
 			create test_status_area
 
 			create string_constant_set_procedures.make (10)
@@ -1353,13 +1364,14 @@ feature -- Access
 	parser_status_area, test_status_area: EV_TEXT
 	node_map_expand_button, node_map_expand_one_button,
 	node_map_collapse_one_button, arch_test_tree_toggle_expand_bn, arch_test_refresh_bn,
-	regression_test_bn, archetype_test_go_bn, diff_source_button, diff_flat_button, diff_source_flat_button: EV_BUTTON
-	node_map_domain_radio_button,
-	node_map_technical_radio_button, node_map_reference_model_radio_button: EV_RADIO_BUTTON
+	regression_test_bn, archetype_test_go_bn, diff_source_button, diff_flat_button, diff_source_flat_button,
+	diff_source_round_trip_button: EV_BUTTON
+	node_map_domain_radio_button, node_map_technical_radio_button,
+	node_map_reference_model_radio_button: EV_RADIO_BUTTON
 	path_analysis_column_view_checkable_list: EV_CHECKABLE_LIST
 	annotations_grid,
 	compiler_output_grid, archetype_test_tree_grid: EV_GRID
-	source_rich_text: EV_RICH_TEXT
+	source_rich_text, dadl_rich_text: EV_RICH_TEXT
 	remove_unused_codes_rb: EV_CHECK_BUTTON
 	l_ev_horizontal_separator_1,
 	l_ev_horizontal_separator_2: EV_HORIZONTAL_SEPARATOR
@@ -1579,6 +1591,11 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
+	on_select_archetype_notebook
+			-- Called by `selection_actions' of `archetype_notebook'.
+		deferred
+		end
+	
 	translations_select_language
 			-- Called by `select_actions' of `arch_translations_languages_list'.
 		deferred
@@ -1666,6 +1683,11 @@ feature {NONE} -- Implementation
 	
 	on_diff_source_flat
 			-- Called by `select_actions' of `diff_source_flat_button'.
+		deferred
+		end
+	
+	on_diff_round_trip
+			-- Called by `select_actions' of `diff_source_round_trip_button'.
 		deferred
 		end
 	

@@ -54,6 +54,7 @@ feature -- Definitions
 	Diff_source: INTEGER = 1
 	Diff_flat: INTEGER = 2
 	Diff_source_flat: INTEGER = 3
+	Diff_round_trip: INTEGER = 4
 
 feature {NONE} -- Initialization
 
@@ -136,8 +137,10 @@ feature {NONE} -- Initialization
 			archetype_notebook.item_tab (annotations_grid).set_pixmap (pixmaps ["annotations"])
 			archetype_notebook.item_tab (source_rich_text).set_pixmap (pixmaps ["diff"])
 			set_archetype_notebook_source_tab_text
+			set_archetype_notebook_dadl_tab_text
 
 			source_rich_text.set_tab_width ((source_rich_text.tab_width/2).floor)  -- this is in pixels, and assumes 7-pixel wide chars
+			dadl_rich_text.set_tab_width ((source_rich_text.tab_width/2).floor)
 
 			if app_x_position > Sane_screen_coord and app_y_position > Sane_screen_coord then
 				set_position (app_x_position, app_y_position)
@@ -257,6 +260,7 @@ feature -- File events
 			if has_current_profile and then attached {ARCH_REP_ARCHETYPE} current_arch_dir.selected_archetype as ara then
 				clear_all_archetype_view_controls
 				do_with_wait_cursor (agent archetype_compiler.build_lineage (ara, 0))
+				on_select_archetype_notebook
 			end
 		end
 
@@ -380,6 +384,18 @@ feature -- File events
 
 			app_cfg.save
 			ev_application.destroy
+		end
+
+feature {NONE} -- GUI Events
+
+	on_select_archetype_notebook
+			-- Called by `selection_actions' of `archetype_notebook'.
+		do
+			if archetype_notebook.selected_item = source_rich_text then
+				populate_source_text
+			elseif archetype_notebook.selected_item = dadl_rich_text then
+				populate_dadl_text
+			end
 		end
 
 feature {NONE} -- Edit events
@@ -692,7 +708,7 @@ feature {NONE} -- Tools events
 				info_dialog.show_modal_to_window (Current)
 			elseif has_current_profile then
 				do_with_wait_cursor (agent current_arch_dir.do_all_archetypes (agent delete_generated_files))
-				populate_directory_controls(True)
+				populate_directory_controls (True)
 			end
 		end
 
@@ -827,6 +843,12 @@ feature -- Test Screen Events
 			do_diff (Diff_source_flat)
 		end
 
+	on_diff_round_trip
+			-- show diffs between input differential archetype and generated flat output, from test diff dir	
+		do
+			do_diff (Diff_round_trip)
+		end
+
 	do_diff (diff_type: INTEGER)
 		local
 			info_dialog: EV_INFORMATION_DIALOG
@@ -838,8 +860,12 @@ feature -- Test Screen Events
 						do_diff_command (archetype_test_tree_control.diff_dir_source_orig, archetype_test_tree_control.diff_dir_source_new)
 					when Diff_flat then
 						do_diff_command (archetype_test_tree_control.diff_dir_flat_orig, archetype_test_tree_control.diff_dir_flat_new)
-					else
+					when Diff_source_flat then
 						do_diff_command (archetype_test_tree_control.diff_dir_source_flat_orig, archetype_test_tree_control.diff_dir_source_flat_new)
+					when Diff_round_trip then
+						do_diff_command (archetype_test_tree_control.diff_dadl_round_trip_source_orig_dir, archetype_test_tree_control.diff_dadl_round_trip_source_new_dir)
+					else
+						-- do nothing
 					end
 				else
 					create info_dialog.make_with_text (create_message_line ("no_diff_dirs", Void))
@@ -1098,9 +1124,11 @@ feature -- Archetype Events
 				(not differential_flag and differential_view) then -- changing from diff to flat
 				set_differential_view (differential_flag)
 				set_archetype_notebook_source_tab_text
+				set_archetype_notebook_dadl_tab_text
 				if has_current_profile then
 					if current_arch_dir.has_selected_archetype then
 						populate_archetype_view_controls
+						on_select_archetype_notebook
 					elseif current_arch_dir.has_selected_class then
 						display_class
 					end
@@ -1188,13 +1216,6 @@ feature {NONE} -- Implementation
 			ev_application.process_graphical_events
 		end
 
-	set_status_area (text: attached STRING)
-			-- Set `parser_status_area' to `text'.
-		do
-			parser_status_area.remove_text
-			append_status_area (text)
-		end
-
 	clear_status_area
 			-- clear `parser_status_area'
 		do
@@ -1234,6 +1255,15 @@ feature {NONE} -- Implementation
 			archetype_notebook.item_tab (source_rich_text).set_text (tab_text)
 		end
 
+	set_archetype_notebook_dadl_tab_text
+		do
+			if differential_view then
+				archetype_notebook.item_tab (dadl_rich_text).set_text ("dADL (src)")
+			else
+				archetype_notebook.item_tab (dadl_rich_text).set_text ("dADL (flat)")
+			end
+		end
+
 	select_language
 			-- Repopulate the view of the archetype when the user selects a different language.
 		do
@@ -1253,7 +1283,7 @@ feature {NONE} -- Implementation
 	populate_directory_controls (refresh: BOOLEAN)
 			-- Rebuild archetype directory & repopulate relevant GUI parts.
 		do
-			do_with_wait_cursor (agent do_populate_directory_controls(refresh))
+			do_with_wait_cursor (agent do_populate_directory_controls (refresh))
 		end
 
 	do_populate_directory_controls (refresh: BOOLEAN)
@@ -1265,7 +1295,7 @@ feature {NONE} -- Implementation
 			set_title (repository_profiles.current_reference_repository_path + " - " + title)
 
 			append_status_area (create_message_line ("populating_directory_start", <<repository_profiles.current_profile_name>>))
-			use_current_profile(refresh)
+			use_current_profile (refresh)
 			append_status_area (create_message_line ("populating_directory_complete", Void))
 
 			clear_all_archetype_view_controls
@@ -1325,7 +1355,6 @@ feature {NONE} -- Implementation
 			path_map_control.populate
 			annotations_control.populate
 			ontology_controls.populate
-			populate_source_text
 		end
 
 	populate_source_text
@@ -1349,6 +1378,26 @@ feature {NONE} -- Implementation
 				end
 			else
 				source_rich_text.remove_text
+			end
+		end
+
+	populate_dadl_text
+			-- Display the selected archetype's differential or flat text in `dadl_rich_text', in dADL format.
+		require
+			has_current_profile
+		do
+			if attached {ARCH_REP_ARCHETYPE} current_arch_dir.selected_archetype as ara then
+				if ara.is_valid then
+					if differential_view then
+						dadl_rich_text.set_text (utf8 (ara.differential_text_dadl))
+					else
+						dadl_rich_text.set_text (utf8 (ara.flat_text_dadl))
+					end
+				else
+					dadl_rich_text.set_text (create_message_line ("compiler_no_dadl_text", <<>>))
+				end
+			else
+				dadl_rich_text.remove_text
 			end
 		end
 

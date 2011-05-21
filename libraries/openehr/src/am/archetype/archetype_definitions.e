@@ -43,6 +43,9 @@ feature -- Definitions
 			-- also we don't want users to get confused about what kind of files
 			-- these are
 
+	Archetype_dadl_file_extension: STRING = ".dadl"
+			-- Extension for ADL2 format archetype files.
+
 	Adl_versions: ARRAYED_LIST [STRING]
 			-- list of ADL versions known in this tool
 		once
@@ -51,7 +54,6 @@ feature -- Definitions
 			Result.extend("1.4")
 			Result.extend("1.4.1")
 			Result.extend("1.5")
-			Result.extend("2.0")
 		end
 
 	Latest_adl_version: STRING

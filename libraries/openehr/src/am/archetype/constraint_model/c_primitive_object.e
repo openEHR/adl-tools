@@ -28,9 +28,7 @@ create
 
 feature -- Initialisation
 
-	make(an_item: C_PRIMITIVE)
-		require
-			an_item /= Void
+	make (an_item: attached C_PRIMITIVE)
 		do
 			default_create
 			item := an_item
@@ -78,11 +76,9 @@ feature -- Comparison
 
 feature -- Output
 
-	as_string: STRING
+	as_string: attached STRING
 		do
 			Result := item.as_string
-		ensure
-			Result_exists: Result /= Void
 		end
 
 	out: STRING

@@ -38,17 +38,15 @@ create
 
 feature -- Initialisation
 
-	make_range(an_interval: INTERVAL[ISO8601_TIME])
+	make_range (an_interval: attached INTERVAL[ISO8601_TIME])
 			-- make from a time interval
-		require
-			an_interval_exists: an_interval /= Void
 		do
 			range := an_interval
 		ensure
 			Interval_set: range = an_interval
 		end
 
-	make_string_range(a_lower, an_upper: STRING)
+	make_string_range (a_lower, an_upper: STRING)
 			-- make from two iso8601 strings. Either may be Void, indicating an open-ended interval;
 			-- they may also be the same, meaning a single point. Limits, where provided are automatically
 			-- included in the interval

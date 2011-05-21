@@ -34,10 +34,8 @@ feature -- Initialisation
 			rm_type_name := (create {CODE_PHRASE}.default_create).generator
 		end
 
-	make(a_code: STRING)
+	make (a_code: attached STRING)
 			-- make from pattern of form "[acNNNN[.NN[etc]]]"
-		require
-			Code_exists: a_code /= Void and then not a_code.is_empty
 		do
 			default_create
 			create representation.make_anonymous(Current)
@@ -89,7 +87,7 @@ feature -- Conversion
 
 feature -- Modification
 
-	set_external_reference (an_ext_ref, a_syntax: STRING)
+	set_external_reference_from_string (an_ext_ref, a_syntax: attached STRING)
 			-- set `external_reference' from two parameters - the actual reference (e.g. a URI string)
 			-- and a syntax model, used to help interpret the reference structure
 		require
@@ -97,6 +95,11 @@ feature -- Modification
 			Syntax_valid: a_syntax /= Void and then not a_syntax.is_empty
 		do
 			create external_reference.make (an_ext_ref, a_syntax)
+		end
+
+	set_external_reference (an_ext_ref: attached DV_PARSABLE)
+		do
+			external_reference := an_ext_ref
 		end
 
 feature -- Representation

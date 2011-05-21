@@ -35,18 +35,16 @@ feature -- Initialisation
 
 	make (an_artefact_type: attached ARTEFACT_TYPE;
 			an_id: like archetype_id;
-			an_original_language: attached STRING;
+			an_original_language: attached CODE_PHRASE;
 			a_description: RESOURCE_DESCRIPTION;
 			a_definition: like definition;
 			an_ontology: like ontology)
 				-- make from pieces obtained by parsing
-		require
-			Language_valid: not an_original_language.is_empty
 		do
 			artefact_type := an_artefact_type
 			adl_version := 	Latest_adl_version
 			archetype_id := an_id
-			create original_language.make (Default_language_code_set, an_original_language)
+			original_language := an_original_language
 
 			if a_description = Void then
 				create description.default_create
@@ -61,7 +59,7 @@ feature -- Initialisation
 			Artefact_type_set: artefact_type = an_artefact_type
 			Adl_version_set: adl_version = Latest_adl_version
 			Id_set: archetype_id = an_id
-			Original_language_set: original_language.code_string.is_equal (an_original_language)
+			Original_language_set: original_language = an_original_language
 			Definition_set: definition = a_definition
 			Ontology_set: ontology = an_ontology
 			Is_dirty: is_dirty
@@ -72,7 +70,7 @@ feature -- Initialisation
 			an_id: like archetype_id;
 			a_parent_archetype_id: ARCHETYPE_ID;
 			is_controlled_flag: BOOLEAN;
-			an_original_language: attached STRING;
+			an_original_language: attached CODE_PHRASE;
 			a_translations: HASH_TABLE [TRANSLATION_DETAILS, STRING];
 			a_description: RESOURCE_DESCRIPTION;
 			a_definition: like definition;
@@ -81,7 +79,6 @@ feature -- Initialisation
 			an_annotations: RESOURCE_ANNOTATIONS)
 				-- make from all possible items
 		require
-			Language_valid: not an_original_language.is_empty
 			Translations_valid: a_translations /= Void implies not a_translations.is_empty
 			Invariants_valid: an_invariants /= Void implies not an_invariants.is_empty
 		do
@@ -100,7 +97,7 @@ feature -- Initialisation
 			Is_controlled_set: is_controlled = is_controlled_flag
 			Id_set: archetype_id = an_id
 			Parent_id_set: parent_archetype_id = a_parent_archetype_id
-			Original_language_set: original_language.code_string.is_equal (an_original_language)
+			Original_language_set: original_language.as_string.same_string (an_original_language.as_string)
 			Translations_set: translations = a_translations
 			Definition_set: definition = a_definition
 			Invariants_set: invariants = an_invariants
@@ -271,7 +268,7 @@ feature -- Status Report
 
 feature -- Status Setting
 
-	set_is_valid(a_validity: BOOLEAN)
+	set_is_valid (a_validity: BOOLEAN)
 			-- set is_valid flag
 		do
 			is_valid := a_validity

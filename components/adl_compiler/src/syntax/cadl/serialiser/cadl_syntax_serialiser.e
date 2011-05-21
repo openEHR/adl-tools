@@ -56,19 +56,26 @@ feature -- Visitor
 			serialise_sibling_order(a_node, depth)
 			last_result.append (create_indent (depth))
 			serialise_type_node_id (a_node, depth)
+
+			-- output occurrences
 			serialise_occurrences(a_node, depth)
+
+			-- for prohibited nodes, just output the comment if available
 			if a_node.is_prohibited then
-				-- output a comment if the node is addressable
 				serialise_comment (a_node)
 
+			-- output 'matches {*' if any_allowed, and no occurrences defined or node_id redefinition
 			elseif a_node.any_allowed then
-				-- output 'maches {*'
-				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
-				last_result.append (symbol(SYM_START_CBLOCK))
-				last_result.append (apply_style(symbol(SYM_ANY), STYLE_VALUE))
+				if not (attached a_node.occurrences or
+					a_node.is_addressable and archetype.is_specialised and then specialisation_depth_from_code (a_node.node_id) = archetype.specialisation_depth)
+				then
+					last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
+					last_result.append (symbol(SYM_START_CBLOCK))
+					last_result.append (apply_style(symbol(SYM_ANY), STYLE_VALUE))
+				end
 
+			-- output  'matches {%N' or 'matches { -- comment%N'
 			else
-				-- output  'matches {%N' or 'matches { -- comment%N'
 				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				last_result.append (symbol(SYM_START_CBLOCK))
 				serialise_comment (a_node)
@@ -80,21 +87,24 @@ feature -- Visitor
 			-- end serialising an C_COMPLEX_OBJECT
 		do
 			if a_node.is_prohibited then
-				-- output final '%N'
-				last_result.append (format_item(FMT_NEWLINE))
+				-- output final '%N' (done below)
 
 			elseif a_node.any_allowed then
 				-- output '}%N' or '} -- comment%N'
-				last_result.append (symbol(SYM_END_CBLOCK))
+				if not (attached a_node.occurrences or
+					a_node.is_addressable and archetype.is_specialised and then specialisation_depth_from_code (a_node.node_id) = archetype.specialisation_depth)
+				then
+					last_result.append (symbol(SYM_END_CBLOCK))
+				end
 				serialise_comment (a_node)
-				last_result.append (format_item(FMT_NEWLINE))
 
 			else
 				-- output '%T}%N'
 				last_result.append (create_indent(depth))
 				last_result.append (symbol(SYM_END_CBLOCK))
-				last_result.append (format_item(FMT_NEWLINE))
 			end
+
+			last_result.append (format_item(FMT_NEWLINE))
 		end
 
 	start_archetype_slot (a_node: ARCHETYPE_SLOT; depth: INTEGER)
@@ -114,9 +124,13 @@ feature -- Visitor
 			elseif a_node.any_allowed then
 				-- output 'matches {*'
 				-- (comment has to be serialised in end_ routine)
-				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
-				last_result.append (symbol(SYM_START_CBLOCK))
-				last_result.append (apply_style(symbol(SYM_ANY), STYLE_VALUE))
+				if not (attached a_node.occurrences or
+					a_node.is_addressable and archetype.is_specialised and then specialisation_depth_from_code (a_node.node_id) = archetype.specialisation_depth)
+				then
+					last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
+					last_result.append (symbol(SYM_START_CBLOCK))
+					last_result.append (apply_style(symbol(SYM_ANY), STYLE_VALUE))
+				end
 
 			else
 				-- output 'matches { -- comment%N' or 'matches {%N'
@@ -134,7 +148,11 @@ feature -- Visitor
 		do
 			if a_node.any_allowed then
 				-- output '}%N' or '} -- comment%N'
-				last_result.append (symbol(SYM_END_CBLOCK))
+				if not (attached a_node.occurrences or
+					a_node.is_addressable and archetype.is_specialised and then specialisation_depth_from_code (a_node.node_id) = archetype.specialisation_depth)
+				then
+					last_result.append (symbol(SYM_END_CBLOCK))
+				end
 				serialise_comment (a_node)
 				last_result.append (format_item(FMT_NEWLINE))
 
@@ -180,13 +198,19 @@ feature -- Visitor
 				p := a_node.rm_attribute_name
 			end
 			last_result.append (create_indent(depth) + apply_style(p, identifier_style (a_node)) + format_item(FMT_SPACE))
+
 			serialise_existence(a_node, depth)
 			serialise_cardinality(a_node, depth)
-			last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
-			last_result.append (symbol(SYM_START_CBLOCK))
+
 			if a_node.any_allowed then
-				last_result.append (symbol(SYM_ANY))
+				if not attached a_node.existence and not attached a_node.cardinality then
+					last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
+					last_result.append (symbol(SYM_START_CBLOCK))
+					last_result.append (symbol(SYM_ANY))
+				end
 			else
+				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
+				last_result.append (symbol(SYM_START_CBLOCK))
 				last_result.append (format_item(FMT_NEWLINE))
 			end
 		end
@@ -194,18 +218,22 @@ feature -- Visitor
 	end_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- end serialising an C_ATTRIBUTE
 		do
-			if not last_object_simple and not a_node.any_allowed then
-				last_result.append (create_indent(depth))
-			end
-
-			last_result.append (symbol(SYM_END_CBLOCK))
-
 			if last_object_simple then
+				last_result.append (symbol(SYM_END_CBLOCK))
 				if last_object_simple_buffer /= Void then
 					last_result.append (last_object_simple_buffer)
 					last_object_simple_buffer.wipe_out
 				end
 				last_object_simple := False
+
+			elseif a_node.any_allowed then
+				if not attached a_node.existence and not attached a_node.cardinality then
+					last_result.append (symbol(SYM_END_CBLOCK))
+				end
+
+			else
+				last_result.append (create_indent(depth))
+				last_result.append (symbol(SYM_END_CBLOCK))
 			end
 
 			last_result.append (format_item(FMT_NEWLINE))
@@ -316,7 +344,7 @@ feature -- Visitor
 			-- that in some archetypes, these types can be represented with dADL blocks)
 		do
 			dadl_engine.set_tree (a_node.dt_representation)
-			dadl_engine.serialise (output_format)
+			dadl_engine.serialise (output_format, False, True)
 			last_result.append ((create {STRING_UTILITIES}).indented (dadl_engine.serialised, create_indent(depth)))
 		end
 
@@ -385,7 +413,7 @@ feature -- Visitor
 			if a_node.any_allowed then
 				-- output in C_DV_ORDINAL style
 				dadl_engine.set_tree (a_node.dt_representation)
-				dadl_engine.serialise (output_format)
+				dadl_engine.serialise (output_format, False, True)
 				last_result.append ((create {STRING_UTILITIES}).indented (dadl_engine.serialised, create_indent(depth)))
 			elseif a_node.items.count = 1 then
 				last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	

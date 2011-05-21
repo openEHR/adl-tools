@@ -26,36 +26,32 @@ create
 
 feature -- Initialisation
 
-	make_range(an_interval: INTERVAL[REAL])
-		require
-			Interval_exists: an_interval /= Void
+	make_range (an_interval: attached INTERVAL[REAL])
 		do
 			range := an_interval
 		end
 
-	make_list(a_list: LIST[REAL])
+	make_list (a_list: attached LIST[REAL])
 			-- make from a list of integers
 		require
-			a_list_exists: a_list /= Void and then not a_list.is_empty
+			a_list_valid: not a_list.is_empty
 		do
-			list := a_list
-		ensure
-			List_set: list = a_list
+			create list.make(0)
+			list.append (a_list)
 		end
 
 feature -- Access
 
-	range: INTERVAL[REAL]
+	range: INTERVAL [REAL]
 
-	list: LIST[REAL]
+	list: ARRAYED_LIST [REAL]
 
 	prototype_value: REAL_REF
 		do
-			create Result
-			if range /= Void then
-				Result.set_item(range.lower)
+			if attached range then
+				Result := range.lower
 			else
-				Result.set_item(list.first)
+				Result := list.first
 			end
 		end
 
@@ -63,10 +59,10 @@ feature -- Status Report
 
 	valid_value (a_value: REAL_REF): BOOLEAN
 		do
-			if range /= Void then
-				Result := range.has(a_value.item)
+			if attached range then
+				Result := range.has (a_value)
 			else
-				Result := list.has(a_value.item)
+				Result := list.has (a_value)
 			end
 		end
 
@@ -75,14 +71,10 @@ feature -- Comparison
 	node_conforms_to (other: like Current): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		do
-			if range /= Void and other.range /= Void then
+			if attached range and attached other.range then
 				Result := other.range.contains (range)
-			elseif list /= Void and other.list /= Void then
-				from
-					list.start
-				until
-					list.off or not other.list.has (list.item)
-				loop
+			elseif attached list and attached other.list then
+				from list.start until list.off or not other.list.has (list.item) loop
 					list.forth
 				end
 				Result := list.off
@@ -96,14 +88,10 @@ feature -- Output
 			out_val: STRING
 		do
 			create Result.make(0)
-			if range /= Void then
+			if attached range then
 				Result.append ("|" + range.as_string + "|")
 			else
-				from
-					list.start
-				until
-					list.off
-				loop
+				from list.start until list.off loop
 					if not list.isfirst then
 						Result.append (", ")
 					end
@@ -118,7 +106,7 @@ feature -- Output
 					list.forth
 				end
 			end
-			if assumed_value /= Void then
+			if attached assumed_value then
 				-- FIXME: REAL.out is broken; forgets to output '.0'
 				out_val := assumed_value.out
 				if out_val.index_of('.', 1) = 0 then
@@ -128,13 +116,8 @@ feature -- Output
 			end
 		end
 
-	as_canonical_string: STRING
-		do
-			Result := as_string
-		end
-
 invariant
-	range /= Void xor list /= Void
+	attached range xor attached list
 
 end
 

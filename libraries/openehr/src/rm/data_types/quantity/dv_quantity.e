@@ -25,13 +25,11 @@ class
 inherit
 	DV_AMOUNT
 		redefine
-			default_create,
-			as_canonical_string
+			default_create
 		end
 
 create
 	make_from_string,
-	make_from_canonical_string,
 	make,
 	default_create
 
@@ -55,9 +53,8 @@ feature {NONE} -- Initialisation
 			precision_set_to_default: precision = default_precision
 		end
 
-	make (a_magnitude: like magnitude; a_units: like units; n: like precision)
+	make (a_magnitude: like magnitude; a_units: attached like units; n: like precision)
 		require
-			units_attached: a_units /= Void
 			units_not_empty: not a_units.is_empty
 			precision_valid: n >= 1
 		do
@@ -70,44 +67,11 @@ feature {NONE} -- Initialisation
 			precision_set: precision = n
 		end
 
-	make_from_string, make_from_canonical_string (str: STRING)
-			-- make from string of form:
-			-- <magnitude>real</magnitude>
-			-- <units>string</units>
-			-- [<accuracy>real</accuracy>
-			-- <accuracy_is_percent>boolean</accuracy_is_percent>]
-			-- <precision>integer</precision>
-		local
-			s: STRING
+	make_from_string (str: attached STRING)
 		do
-			s := xml_extract_from_tags (str, "magnitude", 1)
-			create magnitude
-			magnitude.set_item (s.to_double)
-
-			if xml_has_tag (str, "accuracy", 1) then
-				s := xml_extract_from_tags (str, "accuracy_is_percent", 1)
-
-				if s.is_boolean then
-					accuracy_is_percent := s.to_boolean
-				end
-
-				s := xml_extract_from_tags(str, "accuracy", 1)
-
-				if s.is_integer then
-					accuracy := s.to_integer
-				end
-			end
-
-			set_units (xml_extract_from_tags (str, "units", 1))
 		end
 
 feature -- Status Report
-
-	valid_canonical_string (str: STRING): BOOLEAN
-			-- True if `str' contains required tags.
-		do
-			Result := xml_has_tag (str, "magnitude", 1)
-		end
 
 	is_integral: BOOLEAN
 			-- True if precision = 0.
@@ -120,8 +84,8 @@ feature -- Access
 	magnitude: REAL_REF
 			-- Numeric value of the quantity.
 
-	units: STRING
-			-- Stringified units, expressed in UCUM unit syntax, e.g. "kg/m2", “mm[Hg]", "ms-1", "km/h".
+	units: attached STRING
+			-- Stringified units, expressed in UCUM unit syntax, e.g. "kg/m^2", “mm[Hg]", "ms-1", "km/h".
 
 	precision: INTEGER
 			-- Precision  to  which  the  value  of  the  quantity  is expressed, in
@@ -129,24 +93,23 @@ feature -- Access
 
 feature -- Basic Operations
 
-	plus alias "+" (other: like Current): like Current
+	plus alias "+" (other: attached like Current): attached like Current
 			-- Addition.
 		do
 			create Result.make (magnitude + other.magnitude, units, precision)
 		end
 
-	minus alias "-" (other: like Current): like Current
+	minus alias "-" (other: attached like Current): attached like Current
 			-- Subtraction.
 		do
 			create Result.make (magnitude - other.magnitude, units, precision)
 		end
 
-	negated alias "-": like Current
+	negated alias "-": attached like Current
 			-- Unary minus.
 		do
 			create Result.make (-magnitude, units.twin, precision)
 		ensure
-			not_void: Result /= Void
 			minus_magnitude: (magnitude + Result.magnitude).abs < accuracy
 			same_units: units.same_string (Result.units)
 			same_precision: precision = Result.precision
@@ -154,10 +117,9 @@ feature -- Basic Operations
 
 feature -- Modification
 
-	set_units (a_units: STRING)
+	set_units (a_units: attached STRING)
 			-- Set units.
 		require
-			units_attached: a_units /= Void
 			units_not_empty: not a_units.is_empty
 		local
 			parser: UNITS_PARSER
@@ -185,7 +147,7 @@ feature -- Modification
 
 feature -- Comparison
 
-	is_strictly_comparable_to (other: like Current): BOOLEAN
+	is_strictly_comparable_to (other: attached like Current): BOOLEAN
 			-- two quantities are strictly comparable if they are measuring the same property
 			-- Ideally, we would allow different units within the same property, but there is
 			-- no converter currently implemented, so we also require that the units are identical
@@ -196,15 +158,6 @@ feature -- Comparison
 		end
 
 feature -- Output
-
-	as_canonical_string: STRING
-			-- standardised form of string guaranteed to contain all information
-			-- in data item
-		do
-			Result := Precursor
-			Result.append ("<units>" + units + "</units>")
-			Result.append ("<precision>" + precision.out + "</precision>")
-		end
 
 	magnitude_as_string: STRING
 			-- The magnitude in its natural form.
@@ -227,7 +180,7 @@ feature {NONE} -- Implementation
 
 invariant
 	precision_valid: precision >= -1
-	units_valid: units /= void and then not units.is_empty
+	units_valid: not units.is_empty
 
 end
 
