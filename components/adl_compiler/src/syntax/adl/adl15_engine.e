@@ -99,7 +99,11 @@ feature -- Commands
 			arch_ont_serialised, comp_onts_serialised: STRING
 			comp_onts_helper: COMPONENT_ONTOLOGIES_HELPER
 			dt_ont: DT_COMPLEX_OBJECT_NODE
+			generate_adl14_ontology: BOOLEAN
 		do
+			-- set a flag for use below, to generate old-style flat archetypes for old tools
+			generate_adl14_ontology := attached {FLAT_ARCHETYPE} an_archetype and adl_version_for_flat_output_numeric = 140
+
 			an_archetype.synchronise_adl15
 
 			-- language section
@@ -124,11 +128,15 @@ feature -- Commands
 			dt_ont := an_archetype.ontology.dt_representation
 	-- this is a hack which causes ontology section to be output as dADL with the 'items' attributes
 	-- rather than the native nested structure
-	convert_ontology_to_unnested (dt_ont)
+	if generate_adl14_ontology then
+		convert_ontology_to_unnested (dt_ont)
+	end
 			ontology_context.set_tree (dt_ont)
 			ontology_context.serialise (a_format, False, False)
 	-- and this puts the in-memory structure back to native form so things work correctly from here
-	convert_ontology_to_nested (dt_ont)
+	if generate_adl14_ontology then
+		convert_ontology_to_nested (dt_ont)
+	end
 			arch_ont_serialised := ontology_context.serialised
 
 			-- OPT only: component_ontologies section
@@ -253,13 +261,11 @@ feature {NONE} -- Implementation
 
 										------------------- build the archetype --------------					
 										if attached {C_COMPLEX_OBJECT} definition_context.tree as definition and then attached {ARCHETYPE_ID} adl_parser.archetype_id as id then
-											convert_ontology_to_nested (ontology_context.tree)  -- perform any version upgrade conversions
+						-- needed on ADL 1.4 style archetypes that have 'items' in the ontology
+						convert_ontology_to_nested (ontology_context.tree)  -- perform any version upgrade conversions
 											if differential_source_flag then
 												if orig_lang_trans /= Void then
 													differential_ontology ?= ontology_context.tree.as_object (({DIFFERENTIAL_ARCHETYPE_ONTOLOGY}).type_id, <<orig_lang_trans.original_language.code_string, definition.node_id>>)
-												else
---													create differential_ontology.make_from_tree (Void, ontology_context.tree, definition.node_id)
---													orig_lang_trans := original_language_and_translations_from_ontology (differential_ontology)
 												end
 
 												if not differential_ontology.errors.is_empty then
@@ -277,9 +283,6 @@ feature {NONE} -- Implementation
 											else
 												if orig_lang_trans /= Void then
 													flat_ontology ?= ontology_context.tree.as_object (({FLAT_ARCHETYPE_ONTOLOGY}).type_id, <<orig_lang_trans.original_language.code_string, definition.node_id>>)
-												else
---													create flat_ontology.make_from_tree (Void, ontology_context.tree, definition.node_id)
---													orig_lang_trans := original_language_and_translations_from_ontology (flat_ontology)
 												end
 
 												if not flat_ontology.errors.is_empty then

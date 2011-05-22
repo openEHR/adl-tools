@@ -43,6 +43,10 @@ feature -- Access
 	occurrences: MULTIPLICITY_INTERVAL
 
 	parent: C_ATTRIBUTE
+		note
+			option: transient
+		attribute
+		end
 
 	sibling_order: SIBLING_ORDER
 			-- set if this node should be ordered with respect to an inherited sibling; only settable

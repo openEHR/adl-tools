@@ -59,7 +59,7 @@ feature -- Access
 			-- OG_ATTRIBUTE_NODE to stand as a 'path-compressed' replacement for a string of OG_OBJECT_NODE/
 			-- OG_ATTRIBUTE_NODE objects. Only valid in differential archetypes and templates.
 
-	node_key: STRING
+	node_key: attached STRING
 			-- uses differential path if it exists
 		do
 			if has_differential_path then

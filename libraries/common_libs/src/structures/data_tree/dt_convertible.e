@@ -33,6 +33,10 @@ feature -- Representation
 
 	dt_representation: DT_COMPLEX_OBJECT_NODE
 			-- representation as a data tree
+		note
+			option: transient
+		attribute
+		end
 
 feature -- Synchronisation
 

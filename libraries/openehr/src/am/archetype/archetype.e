@@ -33,11 +33,6 @@ inherit
 
 feature -- Initialisation
 
-	make_dt (make_args: ARRAY[ANY])
-			-- basic make routine to guarantee validity on creation
-		do
-		end
-
 	make (an_artefact_type: attached ARTEFACT_TYPE;
 			an_id: like archetype_id;
 			an_original_language: attached CODE_PHRASE;

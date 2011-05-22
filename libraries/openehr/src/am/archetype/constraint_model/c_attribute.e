@@ -74,20 +74,20 @@ feature -- Initialisation
 
 feature -- Access
 
-	rm_attribute_name: STRING
+	rm_attribute_name: attached STRING
 			-- name of this attribute in reference model
 		do
 			Result := representation.node_id
 		end
 
-	rm_attribute_path: STRING
+	rm_attribute_path: attached STRING
 			-- path of this attribute with respect to owning C_OBJECT,
 			-- including differential path where applicable
 		do
 			Result := representation.node_key
 		end
 
-	children: ARRAYED_LIST [C_OBJECT]
+	children: attached ARRAYED_LIST [C_OBJECT]
 
 	existence: MULTIPLICITY_INTERVAL
 
@@ -624,8 +624,7 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	Rm_attribute_name_valid: rm_attribute_name /= Void and then not rm_attribute_name.is_empty
-	Children_validity: children /= Void
+	Rm_attribute_name_valid: not rm_attribute_name.is_empty
 	Any_allowed_validity: any_allowed xor not children.is_empty
 --	Children_occurrences_validity: cardinality /= Void implies cardinality.interval.contains (occurrences_total_range)
 	Differential_path_valid: differential_path /= Void implies not differential_path.is_empty

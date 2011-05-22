@@ -70,10 +70,6 @@ feature -- Status report
 			-- flag to indicate this node is in a specialised archetype and makes no changes
 			-- to the corresponding node in the flat parent, and therefore, this node can be
 			-- compressed .
-		note
-			option: transient
-		attribute
-		end
 
 	is_leaf: BOOLEAN
 			-- True if this node is a terminal node

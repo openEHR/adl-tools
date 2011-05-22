@@ -241,7 +241,7 @@ feature -- Factory
 feature {NONE} -- Implementation
 
 	dadl_validator: DADL_VALIDATOR
-			-- shared dADL2_validator for all ARCHETYPE_TERM instances
+			-- shared dADL_validator for all ARCHETYPE_TERM instances
 		once
 			create Result.make
 		end

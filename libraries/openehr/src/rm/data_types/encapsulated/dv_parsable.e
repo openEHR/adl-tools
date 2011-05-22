@@ -43,17 +43,6 @@ feature -- Initialization
 		do
 		end
 
-	make_from_canonical_string (str:STRING)
-		do
-		end
-
-feature -- Status Report
-
-	valid_canonical_string (str: STRING): BOOLEAN
-			-- True if str contains required tags
-		do
-		end
-
 feature -- Access
 
 	value: attached STRING
@@ -66,12 +55,6 @@ feature -- Output
 
 	as_string: STRING
 			-- string form displayable for humans
-		do
-		end
-
-	as_canonical_string: STRING
-			-- standardised form of string guaranteed to contain all information
-			-- in data item
 		do
 		end
 

@@ -48,10 +48,10 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_assumed_value(a_value: like assumed_value)
+	set_assumed_value (a_value: attached like assumed_value)
 			-- set `assumed_value'
 		require
-			a_value /= Void and then valid_value(a_value)
+			valid_value(a_value)
 		do
 			assumed_value := a_value
 		ensure

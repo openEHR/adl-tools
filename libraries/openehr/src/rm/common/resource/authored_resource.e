@@ -270,7 +270,7 @@ feature -- Output
 			end
 		end
 
-feature {ADL15_ENGINE, ADL2_ENGINE} -- Implementation
+feature {ADL15_ENGINE} -- Implementation
 
 	synchronise_adl15
 			-- synchronise object representation of resource to forms suitable for serialisation
