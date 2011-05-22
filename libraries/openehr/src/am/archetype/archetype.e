@@ -97,7 +97,7 @@ feature -- Initialisation
 			Is_controlled_set: is_controlled = is_controlled_flag
 			Id_set: archetype_id = an_id
 			Parent_id_set: parent_archetype_id = a_parent_archetype_id
-			Original_language_set: original_language.as_string.same_string (an_original_language.as_string)
+			Original_language_set: original_language = an_original_language
 			Translations_set: translations = a_translations
 			Definition_set: definition = a_definition
 			Invariants_set: invariants = an_invariants

@@ -235,10 +235,6 @@ feature -- Output
 
 		end
 
-	as_canonical_string: STRING
-		do
-		end
-
 feature {NONE} -- Implementation
 
 	regexp_parser: LX_DFA_REGULAR_EXPRESSION

@@ -361,6 +361,15 @@ end
 			end
 		end
 
+feature -- Modification
+
+	add_custom_dt_dynamic_type_from_string (a_type_str: attached STRING; a_type_id: INTEGER)
+			-- add any custom correspondences that will fail due to INTERNAL.dynamic_type_from_string being
+			-- used on raw type strings read from the environment, e.g. files
+		do
+			dt_dynamic_types.force (a_type_id, a_type_str)
+		end
+
 feature {NONE} -- Implementation
 
 	sequence_any_type_id: INTEGER
@@ -408,8 +417,6 @@ feature {NONE} -- Implementation
 	dt_dynamic_types: HASH_TABLE [INTEGER, STRING]
 		once
 			create Result.make(0)
-			Result.put (({C_STRING}).type_id, "C_STRING")
-			Result.put (({C_DATE}).type_id, "C_DATE")
 		end
 
 end

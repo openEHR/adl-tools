@@ -220,7 +220,7 @@ end
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		do
-			Result := dt_to_object (a_dt_co, dynamic_type_from_string (a_type_name), make_args)
+			Result := dt_to_object (a_dt_co, dt_dynamic_type_from_string (a_type_name), make_args)
 		end
 
 	dt_to_object (a_dt_co: attached DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER; make_args: ARRAY[ANY]): ANY
@@ -725,7 +725,7 @@ feature {NONE} -- Implementation
 						object_ref_list.extend (a_dt_ref)
 					else -- the static type may be overridden by a type specified in the DT tree
 						if a_dt_attr.item.type_visible then
-							dynamic_object_type_id := dynamic_type_from_string (a_dt_attr.item.rm_type_name)
+							dynamic_object_type_id := dt_dynamic_type_from_string (a_dt_attr.item.rm_type_name)
 							if dynamic_object_type_id <= 0 then
 								post_error (Current, "set_container_object_data_from_dt", "model_access_e3", <<a_dt_attr.item.rm_type_name>>)
 							end
@@ -752,7 +752,7 @@ feature {NONE} -- Implementation
 					else
 						-- the static type may be overridden by a type specified in the DT tree
 						if a_dt_attr.item.type_visible then
-							dynamic_object_type_id := dynamic_type_from_string (a_dt_attr.item.rm_type_name)
+							dynamic_object_type_id := dt_dynamic_type_from_string (a_dt_attr.item.rm_type_name)
 							if dynamic_object_type_id <= 0 then
 								post_error (Current, "set_container_object_data_from_dt", "model_access_e3", <<a_dt_attr.item.rm_type_name>>)
 							end
