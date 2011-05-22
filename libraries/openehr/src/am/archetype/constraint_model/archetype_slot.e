@@ -50,10 +50,10 @@ feature -- Initialisation
 			rm_type_name := a_rm_type_name
 		end
 
-	make_anonymous (a_rm_type_name: STRING)
+	make_anonymous (a_rm_type_name: attached STRING)
 			-- set type name
 		require
-			Rm_type_name_valid: a_rm_type_name /= Void and then not a_rm_type_name.is_empty
+			Rm_type_name_valid: not a_rm_type_name.is_empty
 		do
 			default_create
 			create representation.make_anonymous(Current)
@@ -62,11 +62,11 @@ feature -- Initialisation
 
 feature -- Access
 
-	includes: ARRAYED_LIST [ASSERTION]
+	includes: attached ARRAYED_LIST [ASSERTION]
 			-- list of assertions on archetypes of type 'type_name' defining
 			-- allowed archetypes
 
-	excludes: ARRAYED_LIST [ASSERTION]
+	excludes: attached ARRAYED_LIST [ASSERTION]
 			-- list of assertions on archetypes of type 'type_name' defining
 			-- excluded archetypes
 
@@ -82,13 +82,13 @@ feature -- Status Report
 	has_includes: BOOLEAN
 			-- true if there are invariants
 		do
-			Result := includes /= Void and then includes.count > 0
+			Result := includes.count > 0
 		end
 
 	has_excludes: BOOLEAN
 			-- true if there are invariants
 		do
-			Result := excludes /= Void and then excludes.count > 0
+			Result := excludes.count > 0
 		end
 
 	is_closed: BOOLEAN
@@ -112,44 +112,30 @@ feature -- Comparison
 
 feature -- Modification
 
-	add_include(assn: ASSERTION)
+	add_include (assn: attached ASSERTION)
 			-- add includes constraint
-		require
-			assn /= Void
 		do
-			if includes = Void then
-				create includes.make(0)
-			end
 			includes.extend (assn)
 		ensure
 			includes.has(assn)
 		end
 
-	add_exclude(assn: ASSERTION)
+	add_exclude (assn: attached ASSERTION)
 			-- add excludes constraint
-		require
-			assn /= Void
 		do
-			if excludes = Void then
-				create excludes.make(0)
-			end
 			excludes.extend (assn)
 		ensure
 			excludes.has(assn)
 		end
 
-	set_includes(assn_list: ARRAYED_LIST[ASSERTION])
+	set_includes(assn_list: attached ARRAYED_LIST[ASSERTION])
 			-- set includes constraints
-		require
-			assn_list /= Void
 		do
 			includes := assn_list
 		end
 
-	set_excludes(assn_list: ARRAYED_LIST[ASSERTION])
+	set_excludes (assn_list: attached ARRAYED_LIST[ASSERTION])
 			-- set excludes constraints
-		require
-			assn_list /= Void
 		do
 			excludes := assn_list
 		end
@@ -167,8 +153,8 @@ feature -- Output
 		do
 			create Result.make(0)
 			Result.append (rm_type_name + "[" + representation.node_id + "] ")
-			if occurrences /= Void then
-				Result.append(occurrences.as_string)
+			if attached occurrences then
+				Result.append (occurrences.as_string)
 			end
 		end
 
@@ -191,10 +177,6 @@ feature -- Visitor
 			precursor(visitor, depth)
 			visitor.end_archetype_slot(Current, depth)
 		end
-
-invariant
-	includes_valid: includes /= Void
-	excludes_valid: excludes /= Void
 
 end
 

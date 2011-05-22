@@ -60,7 +60,7 @@ feature -- Definitions
    			if is_windows then
    				-- /e = enable tool to be dismissed with single Esc keystroke, like a dialog
    				-- /u means don't add any paths to Windows recent paths / places
-   				Result := "%"C:\Program Files\winmerge\winmergeU.exe%" /e /u"
+   				Result := "%"C:\Program Files\winmerge\winmergeU.exe%" /e /u /f *.*"
 			else
    				Result := "sdiff"
    			end

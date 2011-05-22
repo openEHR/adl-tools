@@ -44,8 +44,7 @@ feature -- Initialisation
 	default_create
 			-- create with unknown type
 		do
-			create rm_type_name.make(0)
-			rm_type_name.append(Unknown_type_name)
+			rm_type_name := Unknown_type_name.twin
 		end
 
 feature -- Access

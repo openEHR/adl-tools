@@ -48,7 +48,7 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make_bounded(a_lower, an_upper: INTEGER)
+	make_bounded (a_lower, an_upper: INTEGER)
 			-- make with both limits set
 		require
 			Valid_order: a_lower <= an_upper
@@ -211,7 +211,7 @@ feature -- Operations
 
 feature -- Comparison
 
-	equal_interval(other: attached  INTERVAL [INTEGER]): BOOLEAN
+	equal_interval (other: attached  INTERVAL [INTEGER]): BOOLEAN
 			-- True if current object's interval is same as `other'
 		do
 			Result := lower = other.lower and
@@ -228,11 +228,11 @@ feature -- Output
 		do
 			create Result.make(0)
 			if upper_unbounded then
-				Result.append(atomic_value_to_string(lower) + "..*")
+				Result.append (atomic_value_to_string(lower) + "..*")
 			elseif not limits_equal then
-				Result.append(atomic_value_to_string(lower) + ".." + atomic_value_to_string(upper))
+				Result.append (atomic_value_to_string(lower) + ".." + atomic_value_to_string(upper))
 			else
-				Result.append(atomic_value_to_string(lower))
+				Result.append (atomic_value_to_string(lower))
 			end
 		end
 

@@ -23,12 +23,12 @@ inherit
 			report_error
 		end
 
-	DATE_TIME_ROUTINES
+	OG_DEFINITIONS
 		export
 			{NONE} all
 		end
 
-	OG_DEFINITIONS
+	DATE_TIME_ROUTINES
 		export
 			{NONE} all
 		end
@@ -437,7 +437,7 @@ end
 untyped_single_attr_object_block: single_attr_object_complex_head attr_vals SYM_END_DBLOCK
 		{
 debug("dADL_parse")
-	io.put_string(indent + "single_attr_object_complex_body: POP Object node(" + 
+	io.put_string(indent + "single_attr_object_complex_block: POP Object node(" + 
 		complex_object_nodes.item.node_id + ")%N")
 	indent.remove_tail(1)
 end

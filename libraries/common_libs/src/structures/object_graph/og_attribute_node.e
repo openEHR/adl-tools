@@ -59,7 +59,7 @@ feature -- Access
 			-- OG_ATTRIBUTE_NODE to stand as a 'path-compressed' replacement for a string of OG_OBJECT_NODE/
 			-- OG_ATTRIBUTE_NODE objects. Only valid in differential archetypes and templates.
 
-	node_key: STRING
+	node_key: attached STRING
 			-- uses differential path if it exists
 		do
 			if has_differential_path then
@@ -229,10 +229,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is cadl_rel_node.e.
+--| The Original Code is og_attribute_node.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2003-2011
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

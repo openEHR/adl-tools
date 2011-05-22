@@ -702,11 +702,7 @@ feature {NONE} -- Tools events
 		local
 			info_dialog: EV_INFORMATION_DIALOG
 		do
-			if not archetype_compiler.is_full_build_completed then
-				create info_dialog.make_with_text (create_message_line ("clean_generated_files_info", Void))
-				info_dialog.set_title ("Information")
-				info_dialog.show_modal_to_window (Current)
-			elseif has_current_profile then
+			if has_current_profile then
 				do_with_wait_cursor (agent current_arch_dir.do_all_archetypes (agent delete_generated_files))
 				populate_directory_controls (True)
 			end

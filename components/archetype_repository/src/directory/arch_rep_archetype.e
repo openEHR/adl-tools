@@ -96,6 +96,7 @@ feature {NONE} -- Initialisation
 			end
 			artefact_type := arch_thumbnail.artefact_type
 			artefact_name := (create {ARTEFACT_TYPE}).type_names.item(artefact_type)
+			differential_generated := True
 
 			legacy_flat_path := a_path
 			legacy_flat_text_timestamp := legacy_flat_file_timestamp
@@ -1034,7 +1035,7 @@ feature -- Modification
 							if an_arch.is_specialised then
 								an_arch.set_parent_archetype (specialisation_parent.differential_archetype)
 							end
-							
+
 							-- seriliase into normal ADL format
 							Result := adl15_engine.serialise (an_arch, Archetype_native_syntax, current_archetype_language)
 						end

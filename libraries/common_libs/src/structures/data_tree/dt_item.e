@@ -97,10 +97,8 @@ feature -- Modification
 
 feature {DT_ITEM} -- Modification
 
-	set_parent(a_node: like parent)
+	set_parent (a_node: attached like parent)
 			-- connect child to parent
-		require
-			a_node /= Void
 		do
 			parent := a_node
 		end

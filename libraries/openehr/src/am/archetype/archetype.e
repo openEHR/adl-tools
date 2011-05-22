@@ -435,7 +435,7 @@ feature -- Output
 			Result.append(display_paths(logical_paths("en", False)))
 		end
 
-feature -- Serialisation
+feature {ADL15_ENGINE} -- ADL 1.5 Serialisation
 
 	synchronise_adl15
 			-- synchronise object representation of archetype to forms suitable for

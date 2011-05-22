@@ -36,7 +36,7 @@ feature -- Access
 		end
 
 	parent: DT_ATTRIBUTE_NODE
-			-- parent of all object types must be a REL_NODE
+			-- parent of all object types must be an attribute node
 
 feature -- Comparison
 

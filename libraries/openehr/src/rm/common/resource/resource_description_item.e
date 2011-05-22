@@ -241,6 +241,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			-- empty structure means all attributes
 		once
 			create Result.make(0)
+			Result.compare_objects
 			Result.extend("language")
 			Result.extend("purpose")
 			Result.extend("use")
@@ -249,7 +250,6 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			Result.extend("original_resource_uri")
 			Result.extend("copyright")
 			Result.extend("other_details")
-			Result.compare_objects
 		end
 
 invariant

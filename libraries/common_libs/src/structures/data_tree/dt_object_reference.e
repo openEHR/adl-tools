@@ -36,7 +36,6 @@ feature -- Modification
 	set_value(a_value: like value)
 		do
 			value := a_value
-			set_type_name (Reference_pseudo_type)
 		end
 
 feature -- Output

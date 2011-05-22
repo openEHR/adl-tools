@@ -31,31 +31,31 @@ feature -- Visitor
 		do
 			-- output indent for objects inside a container
 			if not a_node.is_root and then a_node.parent.is_container_type then
-				last_result.append (create_indent (depth//2 + multiple_attr_count))
+				last_result.append(create_indent(depth//2 + multiple_attr_count))
 			end
 
 			-- for objects inside a container, output: ["key"] =
 			if a_node.is_addressable then
-				last_result.append (apply_style ("[%"" + clean (a_node.node_id) + "%"]", STYLE_IDENTIFIER))
-				last_result.append (format_item (FMT_SPACE))
-				last_result.append (apply_style (symbol (SYM_EQ), STYLE_OPERATOR) + format_item (FMT_SPACE))
+				last_result.append(apply_style("[%"" + clean (a_node.node_id) + "%"]", STYLE_IDENTIFIER))
+				last_result.append(format_item(FMT_SPACE))
+				last_result.append(apply_style(symbol(SYM_EQ), STYLE_OPERATOR) + format_item(FMT_SPACE))
 			end
 
 			-- output the type information if required, then the opening '<'
 			if a_node.is_typed and (a_node.type_visible or full_type_marking_on or a_node.is_root and output_typed_encapsulated) then
-				last_result.append ("(" + a_node.rm_type_name + ")" + format_item (FMT_SPACE) + symbol (SYM_START_DBLOCK) +
-					format_item (FMT_NEWLINE))
+				last_result.append("(" + a_node.rm_type_name + ")" + format_item(FMT_SPACE) + symbol(SYM_START_DBLOCK) +
+					format_item(FMT_NEWLINE))
 			elseif not a_node.is_root then
-				last_result.append (symbol (SYM_START_DBLOCK) + format_item (FMT_NEWLINE))
+				last_result.append(symbol(SYM_START_DBLOCK) + format_item(FMT_NEWLINE))
 			end
 		end
 
 	end_complex_object_node (a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER)
 			-- end serialising a DT_COMPLEX_OBJECT_NODE
 		do
-			last_result.append (create_indent (depth//2 + multiple_attr_count))
+			last_result.append(create_indent(depth//2 + multiple_attr_count))
 			if not a_node.is_root or else a_node.is_typed and (a_node.type_visible or full_type_marking_on or a_node.is_root and output_typed_encapsulated) then
-				last_result.append (symbol (SYM_END_DBLOCK) + format_item (FMT_NEWLINE))
+				last_result.append(symbol(SYM_END_DBLOCK) + format_item(FMT_NEWLINE))
 			end
 		end
 
@@ -91,66 +91,66 @@ feature -- Visitor
 	start_primitive_object (a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- start serialising a DT_PRIMITIVE_OBJECT
 		do
-			start_object_leaf (a_node, depth)
+			start_object_leaf(a_node, depth)
 			last_object_simple := True
 		end
 
 	end_primitive_object (a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- end serialising a DT_PRIMITIVE_OBJECT
 		do
-			last_result.append (symbol (SYM_END_DBLOCK) + format_item (FMT_NEWLINE))
+			last_result.append(symbol(SYM_END_DBLOCK) + format_item(FMT_NEWLINE))
 		end
 
 	start_primitive_object_list (a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER)
 			-- start serialising an DT_PRIMITIVE_OBJECT_LIST
 		do
-			start_object_leaf (a_node, depth)
+			start_object_leaf(a_node, depth)
 			last_object_simple := True
 		end
 
 	end_primitive_object_list (a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER)
 			-- end serialising an DT_PRIMITIVE_OBJECT_LIST
 		do
-			last_result.append (symbol (SYM_END_DBLOCK) + format_item (FMT_NEWLINE))
+			last_result.append(symbol(SYM_END_DBLOCK) + format_item(FMT_NEWLINE))
 		end
 
 	start_primitive_object_interval (a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER)
 			-- start serialising a DT_PRIMITIVE_OBJECT_INTERVAL
 		do
-			start_object_leaf (a_node, depth)
+			start_object_leaf(a_node, depth)
 			last_object_simple := True
 		end
 
 	end_primitive_object_interval (a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER)
 			-- end serialising a DT_PRIMITIVE_OBJECT_INTERVAL
 		do
-			last_result.append (symbol (SYM_END_DBLOCK) + format_item (FMT_NEWLINE))
+			last_result.append(symbol(SYM_END_DBLOCK) + format_item(FMT_NEWLINE))
 		end
 
 	start_object_reference (a_node: DT_OBJECT_REFERENCE; depth: INTEGER)
 			-- start serialising a DT_OBJECT_REFERENCE
 		do
-			start_object_leaf (a_node, depth)
+			start_object_leaf(a_node, depth)
 			last_object_simple := True
 		end
 
 	end_object_reference (a_node: DT_OBJECT_REFERENCE; depth: INTEGER)
 			-- end serialising a DT_OBJECT_REFERENCE
 		do
-			last_result.append (symbol (SYM_END_DBLOCK) + format_item (FMT_NEWLINE))
+			last_result.append(symbol(SYM_END_DBLOCK) + format_item(FMT_NEWLINE))
 		end
 
 	start_object_reference_list (a_node: DT_OBJECT_REFERENCE_LIST; depth: INTEGER)
 			-- start serialising a DT_OBJECT_REFERENCE_LIST
 		do
-			start_object_leaf (a_node, depth)
+			start_object_leaf(a_node, depth)
 			last_object_simple := True
 		end
 
 	end_object_reference_list (a_node: DT_OBJECT_REFERENCE_LIST; depth: INTEGER)
 			-- end serialising a DT_OBJECT_REFERENCE_LIST
 		do
-			last_result.append (symbol (SYM_END_DBLOCK) + format_item (FMT_NEWLINE))
+			last_result.append(symbol(SYM_END_DBLOCK) + format_item(FMT_NEWLINE))
 		end
 
 feature {NONE} -- Implementation
@@ -167,22 +167,22 @@ feature {NONE} -- Implementation
 			s: STRING
 		do
 			if a_node.parent.is_container_type then
-				last_result.append (create_indent (depth//2 + multiple_attr_count) + apply_style ("[%"" + clean (a_node.node_id) + "%"]", STYLE_IDENTIFIER))
-				last_result.append (format_item (FMT_SPACE))
-				last_result.append (apply_style (symbol (SYM_EQ), STYLE_OPERATOR) + format_item (FMT_SPACE))
+				last_result.append(create_indent(depth//2 + multiple_attr_count) + apply_style("[%"" + clean (a_node.node_id) + "%"]", STYLE_IDENTIFIER))
+				last_result.append(format_item(FMT_SPACE))
+				last_result.append(apply_style(symbol(SYM_EQ), STYLE_OPERATOR) + format_item(FMT_SPACE))
 			end
 
-			last_result.append (symbol (SYM_START_DBLOCK))
+			last_result.append(symbol(SYM_START_DBLOCK))
 
 			if attached {DT_PRIMITIVE_OBJECT} a_node as a_dt_p_o then
-				s := a_dt_p_o.clean_as_string (agent clean)
+				s := a_dt_p_o.clean_as_string(agent clean)
 			elseif attached {DT_PRIMITIVE_OBJECT_LIST} a_node as a_dt_p_o_l then
-				s := a_dt_p_o_l.clean_as_string (agent clean)
+				s := a_dt_p_o_l.clean_as_string(agent clean)
 			else
 				s := a_node.as_string
 			end
 
-			last_result.append (apply_style (s, STYLE_VALUE))
+			last_result.append(apply_style(s, STYLE_VALUE))
 		end
 
 end

@@ -140,17 +140,10 @@ feature -- Serialisation
 		end
 
 	serialise_archetype_concept
-		local
-			s: STRING
 		do
 			if adl_version_for_flat_output_numeric < 150 and attached {FLAT_ARCHETYPE} archetype as fa then
 				last_result.append (apply_style(symbol(SYM_CONCEPT), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
 				last_result.append (create_indent(1) + apply_style("[" + archetype.concept + "]", STYLE_TERM_REF))
-
-				s := archetype.concept
-				last_result.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-					 safe_comment(archetype.ontology.term_definition(current_language, s).text), STYLE_COMMENT))
-
 				last_result.append (format_item(FMT_NEWLINE))
 			end
 		end

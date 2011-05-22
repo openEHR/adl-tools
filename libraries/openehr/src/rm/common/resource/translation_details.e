@@ -2,9 +2,9 @@ note
 	component:   "openEHR Common Information Model"
 	description: "Resource translation meta-data"
 	keywords:    "resource, meta-data, translation"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2006-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -41,10 +41,10 @@ feature -- Initialisation
 			add_author_detail ("name", "????")
 		end
 
-	make_from_language(a_lang: STRING)
+	make_from_language(a_lang: attached STRING)
 			-- make
 		require
-			Language_valid: a_lang /= Void and then not a_lang.is_empty
+			Language_valid: not a_lang.is_empty
 		do
 			default_create
 			create language.make (default_language_code_set, a_lang)
@@ -58,10 +58,10 @@ feature -- Initialisation
 
 feature -- Access
 
-	language: CODE_PHRASE
+	language: attached CODE_PHRASE
 			-- Language of translation
 
-	author: HASH_TABLE [STRING, STRING]
+	author: attached HASH_TABLE [STRING, STRING]
 			-- Translator name and other demographic details
 
 	accreditation: STRING
@@ -72,26 +72,24 @@ feature -- Access
 
 feature -- Modification
 
-	set_language(a_lang: CODE_PHRASE)
+	set_language (a_lang: attached CODE_PHRASE)
 			-- set language
-		require
-			a_lang /= Void
 		do
 			language := a_lang
 		end
 
-	set_author(auth_details: HASH_TABLE [STRING, STRING])
+	set_author (auth_details: attached HASH_TABLE [STRING, STRING])
 			-- set author from a complete hash table
 		require
-			auth_details /= Void and then not auth_details.is_empty
+			not auth_details.is_empty
 		do
 			author := auth_details
 		end
 
-	set_accreditation(an_accreditation: STRING)
+	set_accreditation (an_accreditation: attached STRING)
 			-- set accreditation
 		require
-			an_accreditation /= Void and then not an_accreditation.is_empty
+			not an_accreditation.is_empty
 		do
 			accreditation := an_accreditation
 		ensure
@@ -106,20 +104,20 @@ feature -- Modification
 			accreditation = Void
 		end
 
-	add_author_detail(a_det_key, a_det_value: STRING)
+	add_author_detail (a_det_key, a_det_value: attached STRING)
 			-- set key=value pair into author
 		require
-			Key_valid: a_det_key /= Void and then not a_det_key.is_empty
-			Value_valid: a_det_value /= Void and then not a_det_value.is_empty
+			Key_valid: not a_det_key.is_empty
+			Value_valid: not a_det_value.is_empty
 		do
 			author.force (a_det_value, a_det_key)
 		end
 
-	add_other_detail(a_det_key, a_det_value: STRING)
+	add_other_detail (a_det_key, a_det_value: attached STRING)
 			-- set key=value pair into other_details
 		require
-			Key_valid: a_det_key /= Void and then not a_det_key.is_empty
-			Value_valid: a_det_value /= Void and then not a_det_value.is_empty
+			Key_valid: not a_det_key.is_empty
+			Value_valid: not a_det_value.is_empty
 		do
 			if other_details = Void then
 				create other_details.make (0)
@@ -127,18 +125,18 @@ feature -- Modification
 			other_details.force (a_det_value, a_det_key)
 		end
 
-	remove_author_detail(a_det_key: STRING)
+	remove_author_detail (a_det_key: attached STRING)
 			-- remove key=value pair from author
 		require
-			Key_valid: a_det_key /= Void and then author.has(a_det_key)
+			Key_valid: author.has(a_det_key)
 		do
 			author.remove (a_det_key)
 		end
 
-	remove_other_detail(a_det_key, a_det_value: STRING)
+	remove_other_detail (a_det_key: attached STRING)
 			-- set key=value pair into other_details
 		require
-			Key_valid: a_det_key /= Void and then other_details.has(a_det_key)
+			Key_valid: other_details.has(a_det_key)
 		do
 			other_details.remove (a_det_key)
 			if other_details.is_empty then
@@ -155,16 +153,15 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			-- empty structure means all attributes
 		once
 			create Result.make(0)
+			Result.compare_objects
 			Result.extend ("language")
 			Result.extend ("author")
 			Result.extend ("accreditation")
 			Result.extend ("other_details")
-			Result.compare_objects
 		end
 
 invariant
-	Language_valid: language /= Void and then code_set(code_set_id_languages).has(language)
-	Author_valid: author /= Void
+	Language_valid: code_set(code_set_id_languages).has(language)
 
 end
 

@@ -28,7 +28,7 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make(an_interval: MULTIPLICITY_INTERVAL)
+	make (an_interval: attached MULTIPLICITY_INTERVAL)
 			-- default status is: ordered, not unique, i.e., a list
 		require
 			Interval_valid: not an_interval.lower_unbounded
@@ -120,7 +120,7 @@ feature -- Modification
 
 feature -- Output
 
-	as_string: STRING
+	as_string: attached STRING
 			-- output as a string, excluding default items
 		do
 			create Result.make(0)

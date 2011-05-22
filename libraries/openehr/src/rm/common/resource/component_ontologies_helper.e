@@ -65,8 +65,8 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			-- empty structure means all attributes
 		once
 			create Result.make(0)
-			Result.extend ("component_ontologies")
 			Result.compare_objects
+			Result.extend ("component_ontologies")
 		end
 
 end

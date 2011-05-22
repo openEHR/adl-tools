@@ -2,9 +2,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Abstract model of any archetype constraint"
 	keywords:    "archetype, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2004-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -35,7 +35,7 @@ feature -- Access
 	path_to_node (a_node: ARCHETYPE_CONSTRAINT): STRING
 			-- path from this node to `a_node'
 		do
-			Result := representation.path_to_node(a_node.representation).as_string
+			Result := representation.path_to_node (a_node.representation).as_string
 		end
 
 feature -- Source Control
@@ -52,6 +52,10 @@ feature -- Source Control
 			-- status of this node taking into consideration effective_specialisation_status of
 			-- all sub-nodes. Used to roll up nodes on visualisation, and also to decide which
 			-- subtree to remove to convert an archetype to differential form
+		note
+			option: transient
+		attribute
+		end
 
 	set_rolled_up_specialisation_status (a_status: SPECIALISATION_STATUS)
 		require

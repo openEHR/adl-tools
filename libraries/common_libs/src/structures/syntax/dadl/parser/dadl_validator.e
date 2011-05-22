@@ -741,7 +741,7 @@ end
 			if complex_object_nodes.item.is_empty then
 				attr_nodes.item.remove_child (complex_object_nodes.item)
 			end
-		
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -895,7 +895,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'dadl_validator.y' at line 274")
 end
 
-			-- if the keyed_objects were all empty, then the attribute can be thrown away 
+			-- if the keyed_objects were all empty, then the attribute can be thrown away
 			-- as well, since we don't create void object structures
 			if attr_nodes.item.is_empty then
 				attr_nodes.item.parent.remove_attribute (attr_nodes.item.rm_attr_name)
@@ -1099,7 +1099,7 @@ debug ("GEYACC")
 end
 
 debug("dADL_parse")
-	io.put_string(indent + "single_attr_object_complex_body: POP Object node(" +
+	io.put_string(indent + "single_attr_object_complex_block: POP Object node(" + 
 		complex_object_nodes.item.node_id + ")%N")
 	indent.remove_tail(1)
 end

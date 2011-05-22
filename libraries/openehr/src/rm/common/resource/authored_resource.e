@@ -177,7 +177,7 @@ feature -- Modification
 			description := a_desc
 		end
 
-	add_default_translation(a_lang_tag: attached STRING)
+	add_default_translation (a_lang_tag: attached STRING)
 			-- add a blank translation object for a_lang_tag
 		require
 			Lang_tag_valid: valid_language_tag(a_lang_tag)
@@ -190,7 +190,7 @@ feature -- Modification
 			add_translation (a_trans)
 		end
 
-	add_translation(a_trans: attached TRANSLATION_DETAILS)
+	add_translation (a_trans: attached TRANSLATION_DETAILS)
 			-- add a translation for a_lang
 		require
 			Translation_valid: not languages_available.has(a_trans.language.code_string)
@@ -204,7 +204,7 @@ feature -- Modification
 			languages_available.has(a_trans.language.code_string)
 		end
 
-	add_language_tag(a_lang_tag: attached STRING)
+	add_language_tag (a_lang_tag: attached STRING)
 			-- add a new translation language to the resource, creating appropriate copies
 		require
 			Lang_tag_valid: valid_language_tag(a_lang_tag)
@@ -270,7 +270,7 @@ feature -- Output
 			end
 		end
 
-feature {ADL15_ENGINE, ADL2_ENGINE} -- Implementation
+feature {ADL15_ENGINE} -- Implementation
 
 	synchronise_adl15
 			-- synchronise object representation of resource to forms suitable for serialisation
