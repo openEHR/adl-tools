@@ -24,6 +24,9 @@ feature -- Definitions
 	Archetype_web_syntax: STRING = "html"
 			-- Name of web publishing syntax type.
 
+	Archetype_xml_syntax: STRING = "xml"
+			-- Name of XML syntax type.
+
 	Archetype_web_page_extension: STRING = ".html"
 			-- Extension of web publishing syntax type.
 

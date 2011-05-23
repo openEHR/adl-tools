@@ -27,6 +27,13 @@ inherit
 			{NONE} all
 		end
 
+	-- FIXME: this is a hack to allow add_custom_dt_dynamic_type_from_string to be called, adding in some
+	-- type correspondences that otherwise the runtime gets wrong if just INTERNAL.type_fromtype_name() is used
+	DT_TYPES
+		export
+			{NONE} all
+		end
+
 feature -- Initialisation
 
 	set_application_developer_name (a_name: attached STRING)
@@ -40,6 +47,11 @@ feature -- Initialisation
 		local
 			dummy_error_accumulator: ERROR_ACCUMULATOR
 		once
+			-- see DT_TYPES note above; a hack needed to make string name -> type_id work for class names
+			-- that clash with Eiffel type names
+			add_custom_dt_dynamic_type_from_string ("C_STRING", ({C_STRING}).type_id)
+			add_custom_dt_dynamic_type_from_string ("C_DATE", ({C_DATE}).type_id)
+
 			message_db.populate (Error_db_directory, locale_language_short)
 			if message_db.database_loaded then
 

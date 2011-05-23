@@ -49,6 +49,7 @@ feature -- Initialisation
 
 			dt_serialisers.put(create {DADL_SYNTAX_SERIALISER}.make(create {NATIVE_DADL_SERIALISATION_PROFILE}.make(Archetype_native_syntax)), Archetype_native_syntax)
 			dt_serialisers.put(create {DADL_SYNTAX_SERIALISER}.make(create {HTML_DADL_SERIALISATION_PROFILE}.make(Archetype_web_syntax)), Archetype_web_syntax)
+			dt_serialisers.put(create {DADL_TAGGED_SERIALISER}.make(create {HTML_DADL_SERIALISATION_PROFILE}.make(Archetype_xml_syntax)), Archetype_xml_syntax)
 		end
 
 feature -- Access

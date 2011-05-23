@@ -26,62 +26,62 @@ create
 
 feature -- Modification
 
-	start_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER)
+	start_complex_object_node (a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER)
 			-- start serialising an DT_COMPLEX_OBJECT_NODE
 		local
 			attrs: HASH_TABLE [STRING, STRING]
 		do
-			if not a_node.is_root and then a_node.parent.is_multiple then
-				last_result.append(create_indent(depth//2 + 1))
+			if not a_node.is_root and then a_node.parent.is_container_type then
+				last_result.append (create_indent (depth//2 + 1))
 			end
 
 			if a_node.is_addressable and not a_node.is_root then
-				create attrs.make(0)
-				attrs.put(a_node.node_id, "id")
-				last_result.append(xml_tag_start("item", attrs))
+				create attrs.make (0)
+				attrs.put (a_node.node_id, "id")
+				last_result.append (xml_tag_start("item", attrs))
 			end
 			if not a_node.is_root then
-				last_result.append(format_item(FMT_NEWLINE))
+				last_result.append (format_item(FMT_NEWLINE))
 			end
 		end
 
-	end_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER)
+	end_complex_object_node (a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER)
 			-- end serialising an DT_COMPLEX_OBJECT_NODE
 		do
-			last_result.append(create_indent(depth//2))
+			last_result.append (create_indent(depth//2))
 			if a_node.is_addressable and not a_node.is_root then
-				last_result.append(xml_tag_end("item") + format_item(FMT_NEWLINE))
+				last_result.append (xml_tag_end("item") + format_item(FMT_NEWLINE))
 			end
 		end
 
-	start_attribute_node(a_node: DT_ATTRIBUTE_NODE; depth: INTEGER)
+	start_attribute_node (a_node: DT_ATTRIBUTE_NODE; depth: INTEGER)
 			-- start serialising an DT_ATTRIBUTE_NODE
 		do
-			last_result.append(create_indent(depth//2) + xml_tag_start(a_node.rm_attr_name, Void) + format_item(FMT_NEWLINE))
+			last_result.append (create_indent(depth//2) + xml_tag_start (a_node.rm_attr_name, Void) + format_item(FMT_NEWLINE))
 		end
 
-	end_attribute_node(a_node: DT_ATTRIBUTE_NODE; depth: INTEGER)
+	end_attribute_node (a_node: DT_ATTRIBUTE_NODE; depth: INTEGER)
 			-- end serialising an DT_ATTRIBUTE_NODE
 		do
-			if a_node.is_multiple then
-				last_result.append(create_indent(depth//2))
+			if a_node.is_container_type then
+				last_result.append (create_indent(depth//2))
 			end
-			last_result.append(xml_tag_end(a_node.rm_attr_name) + format_item(FMT_NEWLINE))
+			last_result.append (xml_tag_end (a_node.rm_attr_name) + format_item(FMT_NEWLINE))
 			last_object_simple := False
 		end
 
-	start_primitive_object(a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER)
+	start_primitive_object (a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- start serialising a DT_PRIMITIVE_OBJECT
 		do
-			start_object_leaf(a_node, depth)
+			start_object_leaf (a_node, depth)
 			last_object_simple := True
 		end
 
-	end_primitive_object(a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER)
+	end_primitive_object (a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- end serialising a DT_PRIMITIVE_OBJECT
 		do
-			if a_node.parent.is_multiple then
-				last_result.append(xml_tag_end("item") + format_item(FMT_NEWLINE))
+			if a_node.parent.is_container_type then
+				last_result.append (xml_tag_end("item") + format_item(FMT_NEWLINE))
 			end
 		end
 
@@ -95,7 +95,7 @@ feature -- Modification
 	end_primitive_object_list(a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER)
 			-- end serialising an DT_PRIMITIVE_OBJECT_LIST
 		do
-			if a_node.parent.is_multiple then
+			if a_node.parent.is_container_type then
 				last_result.append(xml_tag_end("item") + format_item(FMT_NEWLINE))
 			end
 		end
@@ -110,7 +110,7 @@ feature -- Modification
 	end_primitive_object_interval(a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER)
 			-- end serialising a DT_PRIMITIVE_OBJECT_INTERVAL
 		do
-			if a_node.parent.is_multiple then
+			if a_node.parent.is_container_type then
 				last_result.append(xml_tag_end("item") + format_item(FMT_NEWLINE))
 			end
 		end
@@ -120,17 +120,17 @@ feature -- Modification
 		do
 		end
 
-	end_object_reference(a_node: DT_OBJECT_REFERENCE; depth: INTEGER)
+	end_object_reference (a_node: DT_OBJECT_REFERENCE; depth: INTEGER)
 			-- end serialising a DT_OBJECT_REFERENCE
 		do
 		end
 
-	start_object_reference_list(a_node: DT_OBJECT_REFERENCE_LIST; depth: INTEGER)
+	start_object_reference_list (a_node: DT_OBJECT_REFERENCE_LIST; depth: INTEGER)
 			-- start serialising a DT_OBJECT_REFERENCE_LIST
 		do
 		end
 
-	end_object_reference_list(a_node: DT_OBJECT_REFERENCE_LIST; depth: INTEGER)
+	end_object_reference_list (a_node: DT_OBJECT_REFERENCE_LIST; depth: INTEGER)
 			-- end serialising a DT_OBJECT_REFERENCE_LIST
 		do
 		end
@@ -140,12 +140,12 @@ feature {NONE} -- Implementation
 	last_object_simple: BOOLEAN
 			-- True if last object traversed was an OBJECT_SIMPLE
 
-	start_object_leaf(a_node: DT_OBJECT_LEAF; depth: INTEGER)
+	start_object_leaf (a_node: DT_OBJECT_LEAF; depth: INTEGER)
 			-- start serialising a DT_OBJECT_LEAF
 		local
 			attrs: HASH_TABLE [STRING, STRING]
 		do
-			if a_node.parent.is_multiple then
+			if a_node.parent.is_container_type then
 				create attrs.make(0)
 				attrs.put(a_node.node_id, "id")
 				last_result.append(create_indent(depth//2 + 1) + xml_tag_start("item", attrs))

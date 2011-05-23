@@ -163,6 +163,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			Result.compare_objects
 			Result.extend ("items")
 		end
+
 end
 
 

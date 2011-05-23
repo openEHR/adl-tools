@@ -16,13 +16,13 @@ class XML_TOOLS
 
 feature -- Access
 
-	xml_tag_position (a_str, tag: STRING; start: INTEGER): INTEGER
+	xml_tag_position (a_str, tag: attached STRING; start: INTEGER): INTEGER
 			-- Position of "<" character of leading tag 'tag' in 'a_str'
 			-- 'a_str' must contain a matching pair of tags
 		require
-			a_str /= Void and then not a_str.is_empty
-			start >= 1 and start <= a_str.count
-			tag /= Void and then not tag.is_empty
+			Str_valid: not a_str.is_empty
+			Start_valid: start >= 1 and start <= a_str.count
+			Tag_valid: not tag.is_empty
 		local
 			lpos, rpos: INTEGER
 		do
@@ -33,12 +33,12 @@ feature -- Access
 			end
 		end
 
-	xml_has_tag (a_str, tag: STRING; start: INTEGER): BOOLEAN
+	xml_has_tag (a_str, tag: attached STRING; start: INTEGER): BOOLEAN
 			-- True if a_str has the tag pair <tag></tag> at or after position start
 		require
-			a_str /= Void and then not a_str.is_empty
-			start >= 1 and start <= a_str.count
-			tag /= Void and then not tag.is_empty
+			Str_valid: not a_str.is_empty
+			Start_valid: start >= 1 and start <= a_str.count
+			Tag_valid: not tag.is_empty
 		local
 			lpos, rpos: INTEGER
 		do
@@ -47,7 +47,7 @@ feature -- Access
 			Result := lpos > 1 and rpos > lpos
 		end
 
-	xml_extract_from_tags (a_str, tag: STRING; start: INTEGER): STRING
+	xml_extract_from_tags (a_str, tag: attached STRING; start: INTEGER): attached STRING
 			-- extract string xxx from first occurrence of matching tags
 			-- pair "<tag>xxx</tag>" starting from 'start'
 		require
@@ -68,14 +68,12 @@ feature -- Access
 			end
 
 			Result := a_str.substring(lpos, rpos)
-		ensure
-			Result /= Void
 		end
 
-	xml_remove_tags (a_str: STRING): STRING
+	xml_remove_tags (a_str: attached STRING): attached STRING
 			-- remove outer level of XML-style tags from string
 		require
-			String_exists: a_str /= Void and then xml_tag_pattern.matches(a_str)
+			String_exists: xml_tag_pattern.matches(a_str)
 		do
 			Result := a_str.twin
 			Result.left_adjust
@@ -92,10 +90,8 @@ feature -- Access
 			create Result.compile("<..*>..*<\/..*>", False)
 		end
 
-	xml_tag_indent (xml_string: STRING): STRING
+	xml_tag_indent (xml_string: attached STRING): attached STRING
 			-- indented output for XML
-		require
-			xml_string /= Void
 		local
 			csr, tag_depth: INTEGER
 			in_start_tag: BOOLEAN
@@ -139,49 +135,40 @@ feature -- Access
 			end
 		end
 
-	xml_tag_start (tag_name: STRING; attributes: HASH_TABLE [STRING, STRING]): STRING
+	xml_tag_start (tag_name: attached STRING; attributes: HASH_TABLE [STRING, STRING]): attached STRING
 			-- output opening tag `content' in tags of `tag_name', optionally with attributes in the
 			-- lead tag, e.g. '<tag_name attr1="val_1" attr2="val_2">'
 		require
-			Tag_name_valid: tag_name /= Void and then not tag_name.is_empty
+			Tag_name_valid: not tag_name.is_empty
 		do
 			create Result.make(0)
 
 			Result.append("<" + tag_name)
 
 			if attributes /= Void then
-				from
-					attributes.start
-				until
-					attributes.off
-				loop
+				from attributes.start until attributes.off loop
 					Result.append(" " + attributes.key_for_iteration + "=%"" + attributes.item_for_iteration + "%"")
 					attributes.forth
 				end
 			end
 			Result.append(">")
-		ensure
-			Result_exists: Result /= Void
 		end
 
-	xml_tag_end (tag_name: STRING): STRING
+	xml_tag_end (tag_name: attached STRING): attached STRING
 			-- output closing tag  `tag_name'; use for finishing a block
 		require
-			Tag_name_valid: tag_name /= Void and then not tag_name.is_empty
+			Tag_name_valid: not tag_name.is_empty
 		do
 			create Result.make(0)
 			Result.append("</" + tag_name + ">")
-		ensure
-			Result_exists: Result /= Void
 		end
 
-	xml_tag_enclose (tag_name, content: STRING; attributes: HASH_TABLE [STRING, STRING]): STRING
+	xml_tag_enclose (tag_name, content: attached STRING; attributes: HASH_TABLE [STRING, STRING]): attached STRING
 			-- enclose `content' in tags of `tag_name' in inline style,
 			-- optionally with attributes in the lead tag, e.g.
 			-- 	'<tag_name attr1="val_1" attr2="val_2">content</tag_name>'
 		require
-			Content_exists: content /= Void
-			Tag_name_valid: tag_name /= Void and then not tag_name.is_empty
+			Tag_name_valid: not tag_name.is_empty
 		do
 			-- lead tag
 			Result := xml_tag_start(tag_name, attributes)
@@ -191,8 +178,6 @@ feature -- Access
 
 			-- trailing tag
 			Result.append(xml_tag_end(tag_name))
-		ensure
-			Result_exists: Result /= Void
 		end
 
 end
