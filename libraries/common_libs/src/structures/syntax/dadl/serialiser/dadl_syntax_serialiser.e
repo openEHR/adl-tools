@@ -181,7 +181,7 @@ feature {NONE} -- Implementation
 				s := a_node.as_string
 			end
 
-			last_result.append(apply_style(a_node.as_string, STYLE_VALUE))
+			last_result.append (apply_style(s, STYLE_VALUE))
 		end
 
 end
