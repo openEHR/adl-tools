@@ -136,7 +136,8 @@ feature -- Output
 	out: STRING
 			-- '['  + `as_string' + ']'
 		do
-			Result := "[" + as_string + "]"
+			Result := as_string
+		--	Result := "[" + as_string + "]"
 		end
 
 invariant

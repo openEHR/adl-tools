@@ -114,6 +114,7 @@ feature -- Factory
 					end
 					term_bindings.forth
 				end
+				an_ont.set_term_bindings (tb_ont)
 			end
 
 			if attached constraint_bindings then
@@ -128,6 +129,7 @@ feature -- Factory
 					end
 					constraint_bindings.forth
 				end
+				an_ont.set_constraint_bindings (cb_ont)
 			end
 		end
 

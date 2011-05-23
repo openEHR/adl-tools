@@ -180,6 +180,14 @@ feature -- Access
 			Result.append(xml_tag_end(tag_name))
 		end
 
+	xml_quote (str: attached STRING): attached STRING
+			-- quote string using XML rules
+		do
+			create Result.make(0)
+			-- FIXME: to be implemented
+			Result.append(str)
+		end
+
 end
 
 --|

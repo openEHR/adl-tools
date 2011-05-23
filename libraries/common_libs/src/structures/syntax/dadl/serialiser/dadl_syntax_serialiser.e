@@ -21,6 +21,11 @@ inherit
 			{NONE} all
 		end
 
+	STRING_UTILITIES
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -36,7 +41,7 @@ feature -- Visitor
 
 			-- for objects inside a container, output: ["key"] =
 			if a_node.is_addressable then
-				last_result.append (apply_style("[%"" + clean (a_node.node_id) + "%"]", STYLE_IDENTIFIER))
+				last_result.append (apply_style("[%"" + dadl_clean (a_node.node_id) + "%"]", STYLE_IDENTIFIER))
 				last_result.append (format_item(FMT_SPACE))
 				last_result.append (apply_style(symbol(SYM_EQ), STYLE_OPERATOR) + format_item(FMT_SPACE))
 			end
@@ -166,22 +171,22 @@ feature {NONE} -- Implementation
 			s: STRING
 		do
 			if a_node.parent.is_container_type then
-				last_result.append(create_indent(depth//2 + multiple_attr_count) + apply_style("[%"" + clean (a_node.node_id) + "%"]", STYLE_IDENTIFIER))
-				last_result.append(format_item(FMT_SPACE))
-				last_result.append(apply_style(symbol(SYM_EQ), STYLE_OPERATOR) + format_item(FMT_SPACE))
+				last_result.append (create_indent(depth//2 + multiple_attr_count) + apply_style("[%"" + dadl_clean (a_node.node_id) + "%"]", STYLE_IDENTIFIER))
+				last_result.append (format_item(FMT_SPACE))
+				last_result.append (apply_style(symbol(SYM_EQ), STYLE_OPERATOR) + format_item(FMT_SPACE))
 			end
 
 			last_result.append(symbol(SYM_START_DBLOCK))
 
 			if attached {DT_PRIMITIVE_OBJECT} a_node as a_dt_p_o then
-				s := a_dt_p_o.clean_as_string(agent clean)
+				s := a_dt_p_o.as_serialised_string (agent primitive_value_to_dadl_string, agent dadl_clean)
 			elseif attached {DT_PRIMITIVE_OBJECT_LIST} a_node as a_dt_p_o_l then
-				s := a_dt_p_o_l.clean_as_string(agent clean)
+				s := a_dt_p_o_l.as_serialised_string (agent primitive_value_to_dadl_string, agent dadl_clean)
 			else
 				s := a_node.as_string
 			end
 
-			last_result.append (apply_style(s, STYLE_VALUE))
+			last_result.append (apply_style (s, STYLE_VALUE))
 		end
 
 end

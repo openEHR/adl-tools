@@ -29,7 +29,7 @@ feature -- Access
 
 feature -- Modification
 
-	set_value(a_value: like value)
+	set_value (a_value: like value)
 		do
 			value := a_value
 			rm_type_name := a_value.generating_type
@@ -41,22 +41,22 @@ feature -- Conversion
 		do
 			create Result.make_empty
 			Result.append_character ('|')
-			Result.append(value.as_string)
+			Result.append (value.as_string)
 			Result.append_character ('|')
 		end
 
 feature -- Serialisation
 
-	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
+	enter_subtree (serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at start of block for this node
 		do
-			serialiser.start_primitive_object_interval(Current, depth)
+			serialiser.start_primitive_object_interval (Current, depth)
 		end
 
-	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
+	exit_subtree (serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at end of block for this node
 		do
-			serialiser.end_primitive_object_interval(Current, depth)
+			serialiser.end_primitive_object_interval (Current, depth)
 		end
 
 end

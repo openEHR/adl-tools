@@ -123,7 +123,7 @@ feature -- Factory
 			Result := profile.apply_style(elem, a_style)
 		end
 
-	clean (elem: attached STRING): attached STRING
+	dadl_clean (elem: attached STRING): attached STRING
 			-- clean `elem' using quoting rules of ADL
 		require
 		do

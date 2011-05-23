@@ -330,7 +330,7 @@ feature -- Visitor
 		do
 			last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE
 			if attached {C_STRING} a_node.item as c_str and then c_str.strings /= Void then
-				s := c_str.clean_as_string(agent clean)
+				s := c_str.clean_as_string(agent dadl_clean)
 			else
 				s := a_node.as_string
 			end
@@ -370,11 +370,8 @@ feature -- Visitor
 				last_result.append (create_indent(depth) + apply_style("[" +
 					a_node.terminology_id.value + a_node.separator, STYLE_TERM_REF) +
 					format_item(FMT_NEWLINE))
-				from
-					a_node.code_list.start
-				until
-					a_node.code_list.off
-				loop
+
+				from a_node.code_list.start until a_node.code_list.off loop
 					last_result.append (create_indent(depth) + apply_style(a_node.code_list.item, STYLE_TERM_REF))
 					if not a_node.code_list.islast then
 						last_result.append (format_item(FMT_LIST_ITEM_SEPARATOR))
@@ -417,7 +414,7 @@ feature -- Visitor
 				last_result.append ((create {STRING_UTILITIES}).indented (dadl_engine.serialised, create_indent(depth)))
 			elseif a_node.items.count = 1 then
 				last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	
-				last_result.append (apply_style(clean(a_node.as_string), STYLE_TERM_REF))
+				last_result.append (apply_style(dadl_clean(a_node.as_string), STYLE_TERM_REF))
 				create last_object_simple_buffer.make(0)
 				if a_node.is_local then
 					last_object_simple_buffer.append (format_item(FMT_INDENT))

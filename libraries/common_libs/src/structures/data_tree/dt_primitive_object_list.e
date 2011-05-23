@@ -32,11 +32,11 @@ create
 
 feature -- Access
 
-	value: SEQUENCE[ANY]
+	value: SEQUENCE [ANY]
 
 feature -- Modification
 
-	set_value(a_value: like value)
+	set_value (a_value: like value)
 		do
 			value := a_value
 			rm_type_name := a_value.generating_type
@@ -51,7 +51,7 @@ feature -- Conversion
 				if value.index > 1 then
 					Result.append(", ")
 				end
-				Result.append (atomic_value_to_string(value.item))
+				Result.append (primitive_value_to_dadl_string(value.item))
 				value.forth
 			end
 			if value.count = 1 then -- append syntactic indication of list continuation
@@ -59,23 +59,23 @@ feature -- Conversion
 			end
 		end
 
-	clean_as_string (cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
+	as_serialised_string (string_converter: attached FUNCTION [ANY, TUPLE [ANY], STRING]; cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
 			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
 		do
-			if attached {SEQUENCE[STRING]} value as str_seq then
-				create Result.make(0)
-				from value.start until value.off loop
-					if value.index > 1 then
-						Result.append(", ")
-					end
-					Result.append(atomic_value_to_string(cleaner.item([value.item.out])))
-					value.forth
+			create Result.make(0)
+			from value.start until value.off loop
+				if value.index > 1 then
+					Result.append(", ")
 				end
-				if value.count = 1 then -- append syntactic indication of list continuation
-					Result.append(", ...")
+				if attached {STRING} value.item as s and attached cleaner then
+					Result.append (string_converter.item ([cleaner.item ([s])]))
+				else
+					Result.append (string_converter.item ([value.item]))
 				end
-			else
-				Result := as_string
+				value.forth
+			end
+			if value.count = 1 then -- append syntactic indication of list continuation
+				Result.append(", ...")
 			end
 		end
 

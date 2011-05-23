@@ -228,11 +228,11 @@ feature -- Output
 		do
 			create Result.make(0)
 			if upper_unbounded then
-				Result.append (atomic_value_to_string(lower) + "..*")
+				Result.append (primitive_value_to_dadl_string(lower) + "..*")
 			elseif not limits_equal then
-				Result.append (atomic_value_to_string(lower) + ".." + atomic_value_to_string(upper))
+				Result.append (primitive_value_to_dadl_string(lower) + ".." + primitive_value_to_dadl_string(upper))
 			else
-				Result.append (atomic_value_to_string(lower))
+				Result.append (primitive_value_to_dadl_string(lower))
 			end
 		end
 

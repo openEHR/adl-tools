@@ -41,7 +41,7 @@ feature -- Initialisation
 			add_author_detail ("name", "????")
 		end
 
-	make_from_language(a_lang: attached STRING)
+	make_from_language (a_lang: attached STRING)
 			-- make
 		require
 			Language_valid: not a_lang.is_empty

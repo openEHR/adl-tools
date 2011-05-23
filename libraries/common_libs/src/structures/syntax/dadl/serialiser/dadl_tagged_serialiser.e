@@ -21,6 +21,11 @@ inherit
 			{NONE} all
 		end
 
+	STRING_UTILITIES
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -83,7 +88,10 @@ feature -- Modification
 			if not a_node.is_nested and a_node.is_container_type then
 				multiple_attr_count := multiple_attr_count - 1
 			end
-			last_result.append (create_indent (depth//2 + multiple_attr_count) + xml_tag_end (a_node.rm_attr_name) + format_item(FMT_NEWLINE))
+			if not last_object_simple or a_node.is_container_type then
+				last_result.append (create_indent (depth//2 + multiple_attr_count))
+			end
+			last_result.append (xml_tag_end (a_node.rm_attr_name) + format_item(FMT_NEWLINE))
 			last_object_simple := False
 		end
 
@@ -102,14 +110,14 @@ feature -- Modification
 			end
 		end
 
-	start_primitive_object_list(a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER)
+	start_primitive_object_list (a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER)
 			-- start serialising an DT_PRIMITIVE_OBJECT_LIST
 		do
 			start_object_leaf (a_node, depth)
 			last_object_simple := True
 		end
 
-	end_primitive_object_list(a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER)
+	end_primitive_object_list (a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER)
 			-- end serialising an DT_PRIMITIVE_OBJECT_LIST
 		do
 			if a_node.parent.is_container_type then
@@ -117,14 +125,14 @@ feature -- Modification
 			end
 		end
 
-	start_primitive_object_interval(a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER)
+	start_primitive_object_interval (a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER)
 			-- start serialising a DT_PRIMITIVE_OBJECT_INTERVAL
 		do
 			start_object_leaf (a_node, depth)
 			last_object_simple := True
 		end
 
-	end_primitive_object_interval(a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER)
+	end_primitive_object_interval (a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER)
 			-- end serialising a DT_PRIMITIVE_OBJECT_INTERVAL
 		do
 			if a_node.parent.is_container_type then
@@ -185,16 +193,14 @@ feature {NONE} -- Implementation
 				last_result.remove_tail (format_item (FMT_NEWLINE).count)
 			end
 
-			-- get the stringified value
 			if attached {DT_PRIMITIVE_OBJECT} a_node as a_dt_p_o then
-				s := a_dt_p_o.clean_as_string (agent clean)
+				s := a_dt_p_o.as_serialised_string (agent primitive_value_to_simple_string, agent xml_quote)
 			elseif attached {DT_PRIMITIVE_OBJECT_LIST} a_node as a_dt_p_o_l then
-				s := a_dt_p_o_l.clean_as_string (agent clean)
+				s := a_dt_p_o_l.as_serialised_string (agent primitive_value_to_simple_string, agent xml_quote)
 			else
 				s := a_node.as_string
 			end
-
-			last_result.append (clean (a_node.as_string))
+			last_result.append (s)
 		end
 
 end

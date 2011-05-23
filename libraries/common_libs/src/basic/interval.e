@@ -301,28 +301,28 @@ feature -- Output
 			create Result.make(0)
 			if lower_unbounded then
 				if upper_included then
-					Result.append("<=" + atomic_value_to_string(upper))
+					Result.append("<=" + primitive_value_to_simple_string (upper))
 				else
-					Result.append("<" + atomic_value_to_string(upper))
+					Result.append("<" + primitive_value_to_simple_string (upper))
 				end
 			elseif upper_unbounded then
 				if lower_included then
-					Result.append(">=" + atomic_value_to_string(lower))
+					Result.append(">=" + primitive_value_to_simple_string (lower))
 				else
-					Result.append(">" + atomic_value_to_string(lower))
+					Result.append(">" + primitive_value_to_simple_string (lower))
 				end
 			elseif not limits_equal then
 				if lower_included and upper_included then
-					Result.append(atomic_value_to_string(lower) + ".." + atomic_value_to_string(upper))
+					Result.append(primitive_value_to_simple_string (lower) + ".." + primitive_value_to_simple_string (upper))
 				elseif lower_included then
-					Result.append(atomic_value_to_string(lower) + "..<" + atomic_value_to_string(upper))
+					Result.append(primitive_value_to_simple_string (lower) + "..<" + primitive_value_to_simple_string (upper))
 				elseif upper_included then
-					Result.append(">" + atomic_value_to_string(lower) + ".." + atomic_value_to_string(upper))
+					Result.append(">" + primitive_value_to_simple_string (lower) + ".." + primitive_value_to_simple_string (upper))
 				else
-					Result.append(">" + atomic_value_to_string(lower) + "..<" + atomic_value_to_string(upper))
+					Result.append(">" + primitive_value_to_simple_string (lower) + "..<" + primitive_value_to_simple_string (upper))
 				end
 			else
-				Result.append(atomic_value_to_string(lower))
+				Result.append(primitive_value_to_dadl_string(lower))
 			end
 		end
 

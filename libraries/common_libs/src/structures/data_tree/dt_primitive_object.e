@@ -46,17 +46,21 @@ feature -- Conversion
 
 	as_string: STRING
 		do
-			Result := atomic_value_to_string (value)
+			Result := primitive_value_to_dadl_string (value)
 		end
 
-	clean_as_string (cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
+	as_serialised_string (string_converter: attached FUNCTION [ANY, TUPLE [ANY], STRING]; cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
 			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
+		local
+			v: ANY
 		do
-			if attached {STRING} value as str then
-				Result := atomic_value_to_string (cleaner.item ([str]))
+			-- if cleaning string, do it first before converting
+			if attached {STRING} value as s and attached cleaner then
+				v := cleaner.item ([s])
 			else
-				Result := as_string
+				v := value
 			end
+			Result := string_converter.item ([v])
 		end
 
 feature -- Serialisation
