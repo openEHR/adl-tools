@@ -138,6 +138,7 @@ feature {NONE} -- Initialization
 			archetype_notebook.item_tab (source_rich_text).set_pixmap (pixmaps ["diff"])
 			set_archetype_notebook_source_tab_text
 			set_archetype_notebook_dadl_tab_text
+			set_archetype_notebook_xml_tab_text
 
 			source_rich_text.set_tab_width ((source_rich_text.tab_width/2).floor)  -- this is in pixels, and assumes 7-pixel wide chars
 			dadl_rich_text.set_tab_width ((source_rich_text.tab_width/2).floor)
@@ -395,6 +396,8 @@ feature {NONE} -- GUI Events
 				populate_source_text
 			elseif archetype_notebook.selected_item = dadl_rich_text then
 				populate_dadl_text
+			elseif archetype_notebook.selected_item = xml_rich_text then
+				populate_xml_text
 			end
 		end
 
@@ -1260,6 +1263,15 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	set_archetype_notebook_xml_tab_text
+		do
+			if differential_view then
+				archetype_notebook.item_tab (xml_rich_text).set_text ("XML (src)")
+			else
+				archetype_notebook.item_tab (xml_rich_text).set_text ("XML (flat)")
+			end
+		end
+
 	select_language
 			-- Repopulate the view of the archetype when the user selects a different language.
 		do
@@ -1394,6 +1406,26 @@ feature {NONE} -- Implementation
 				end
 			else
 				dadl_rich_text.remove_text
+			end
+		end
+
+	populate_xml_text
+			-- Display the selected archetype's differential or flat text in `dadl_xml_text', in XML format.
+		require
+			has_current_profile
+		do
+			if attached {ARCH_REP_ARCHETYPE} current_arch_dir.selected_archetype as ara then
+				if ara.is_valid then
+					if differential_view then
+						xml_rich_text.set_text (utf8 (ara.differential_text_xml))
+					else
+						xml_rich_text.set_text (utf8 (ara.flat_text_xml))
+					end
+				else
+					xml_rich_text.set_text (create_message_line ("compiler_no_xml_text", <<>>))
+				end
+			else
+				xml_rich_text.remove_text
 			end
 		end
 

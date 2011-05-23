@@ -394,6 +394,32 @@ feature -- Access (semantic)
 			Result := p_archetype_converter.serialised
 		end
 
+	differential_text_xml: attached STRING
+		require
+			Archetype_valid: is_valid
+		local
+			p_a: P_ARCHETYPE
+		do
+			create p_a.make (differential_archetype)
+			p_a.synchronise_to_tree
+			p_archetype_converter.set_tree (p_a.dt_representation)
+			p_archetype_converter.serialise (archetype_xml_syntax, False, True)
+			Result := p_archetype_converter.serialised
+		end
+
+	flat_text_xml: attached STRING
+		require
+			Archetype_valid: is_valid
+		local
+			p_a: P_ARCHETYPE
+		do
+			create p_a.make (flat_archetype)
+			p_a.synchronise_to_tree
+			p_archetype_converter.set_tree (p_a.dt_representation)
+			p_archetype_converter.serialise (archetype_xml_syntax, False, True)
+			Result := p_archetype_converter.serialised
+		end
+
 feature -- Access (compiler)
 
 	compilation_state: INTEGER

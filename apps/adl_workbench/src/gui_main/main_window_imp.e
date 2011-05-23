@@ -234,6 +234,7 @@ feature {NONE}-- Initialization
 			archetype_notebook.extend (annotations_grid)
 			archetype_notebook.extend (source_rich_text)
 			archetype_notebook.extend (dadl_rich_text)
+			archetype_notebook.extend (xml_rich_text)
 			total_split_area.extend (status_notebook)
 			status_notebook.extend (parser_status_area)
 			status_notebook.extend (compiler_output_grid)
@@ -446,6 +447,7 @@ feature {NONE}-- Initialization
 			archetype_notebook.set_item_text (annotations_grid, "Annotations")
 			archetype_notebook.set_item_text (source_rich_text, "ADL (adls)")
 			archetype_notebook.set_item_text (dadl_rich_text, "dADL")
+			archetype_notebook.set_item_text (xml_rich_text, "XML")
 			description_notebook.set_item_text (description_admin_box, "Administrative")
 			description_notebook.set_item_text (description_desc_box, "Descriptive")
 			description_notebook.set_item_text (description_term_box, "Term bindings")
@@ -792,6 +794,7 @@ feature {NONE}-- Initialization
 			ontology_constraint_definitions_multi_column_list.set_minimum_height (1)
 			source_rich_text.disable_edit
 			dadl_rich_text.disable_edit
+			xml_rich_text.disable_edit
 			status_notebook.set_item_text (parser_status_area, "Status")
 			status_notebook.set_item_text (compiler_output_grid, "Errors")
 			status_notebook.set_item_text (statistics_box, "Statistics")
@@ -1224,6 +1227,7 @@ feature {NONE}-- Initialization
 			create annotations_grid
 			create source_rich_text
 			create dadl_rich_text
+			create xml_rich_text
 			create status_notebook
 			create parser_status_area
 			create compiler_output_grid
@@ -1371,10 +1375,10 @@ feature -- Access
 	path_analysis_column_view_checkable_list: EV_CHECKABLE_LIST
 	annotations_grid,
 	compiler_output_grid, archetype_test_tree_grid: EV_GRID
-	source_rich_text, dadl_rich_text: EV_RICH_TEXT
+	source_rich_text, dadl_rich_text,
+	xml_rich_text: EV_RICH_TEXT
 	remove_unused_codes_rb: EV_CHECK_BUTTON
-	l_ev_horizontal_separator_1,
-	l_ev_horizontal_separator_2: EV_HORIZONTAL_SEPARATOR
+	l_ev_horizontal_separator_1, l_ev_horizontal_separator_2: EV_HORIZONTAL_SEPARATOR
 
 feature {NONE} -- Implementation
 
