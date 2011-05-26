@@ -82,8 +82,8 @@ feature -- Access
 
 	children_sorted: attached SORTED_TWO_WAY_LIST[DT_OBJECT_ITEM]
 
-	rm_attr_name: attached STRING
-			-- attribute name in reference model
+	im_attr_name: attached STRING
+			-- attribute name in information model
 		do
 			Result := representation.node_id
 		end
@@ -159,7 +159,7 @@ feature -- Status Report
 			-- report on validity
 		do
 			create invalid_reason.make(0)
-			invalid_reason.append(rm_attr_name)
+			invalid_reason.append(im_attr_name)
 			Result := True
 			if not children.is_empty then
 				from

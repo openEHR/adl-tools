@@ -1,9 +1,9 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Persistent form of ARCHETYPE_SLOT."
-	keywords:    "persistence, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	description: "Object containing rules for controlling XML serialisation of DT graphs. Designed to be populated by reading a dADL file."
+	keywords:    "serialisation, XML"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "openEHR AWB project <http://www.openehr.org/issues/browse/AWB>"
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -11,55 +11,22 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class P_ARCHETYPE_SLOT
-
-inherit
-	P_C_OBJECT
-		redefine
-			make
-		end
+class XML_RULES
 
 create
 	make
 
 feature -- Initialisation
 
-	make (an_as: ARCHETYPE_SLOT)
+	make
 		do
-			precursor (an_as)
-			includes := an_as.includes
-			excludes := an_as.excludes
-			is_closed := an_as.is_closed
+			create serialisation_rules.make (0)
 		end
 
 feature -- Access
 
-	includes: ARRAYED_LIST [ASSERTION]
-
-	excludes: ARRAYED_LIST [ASSERTION]
-
-	is_closed: BOOLEAN
-
-feature -- Factory
-
-	create_archetype_slot: attached ARCHETYPE_SLOT
-		do
-			if attached node_id then
-				create Result.make_identified (rm_type_name, node_id)
-			else
-				create Result.make_anonymous (rm_type_name)
-			end
-			populate_c_instance (Result)
-			if attached includes then
-				Result.set_includes (includes)
-			end
-			if attached excludes then
-				Result.set_excludes (excludes)
-			end
-			if is_closed then
-				Result.set_closed
-			end
-		end
+	serialisation_rules: HASH_TABLE [XML_SERIALISATION_RULES, STRING]
+			-- set of rules, keyed by class name to which they apply
 
 end
 
@@ -78,7 +45,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is p_archetype_slot.e.
+--| The Original Code is xml_conversion_rules.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2011

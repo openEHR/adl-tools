@@ -107,7 +107,7 @@ feature -- Environment
 	user_config_file_path: attached STRING
 			-- Full path to resource configuration file.
 		do
-			Result := file_system.pathname (user_config_file_directory, extension_replaced(application_name, User_config_file_extension))
+			Result := file_system.pathname (user_config_file_directory, extension_replaced (application_name, User_config_file_extension))
 		ensure
 			not_empty: not Result.is_empty
 		end

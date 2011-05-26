@@ -677,7 +677,14 @@ feature {NONE} -- History events
 			end
 		end
 
-feature {NONE} -- Tools events
+feature {NONE} -- XML Menu events
+
+	set_xml_rules
+			-- Called by `select_actions' of `xml_menu_conv_rules'.
+		do
+		end
+
+feature {NONE} -- Tools menu events
 
 	set_options
 			-- Display the Options dialog.
@@ -702,8 +709,6 @@ feature {NONE} -- Tools events
 
 	clean_generated_files
 			-- Remove all generated files below the repository directory and repopulate from scratch
-		local
-			info_dialog: EV_INFORMATION_DIALOG
 		do
 			if has_current_profile then
 				do_with_wait_cursor (agent current_arch_dir.do_all_archetypes (agent delete_generated_files))

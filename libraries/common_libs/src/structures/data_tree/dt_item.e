@@ -27,7 +27,7 @@ feature -- Access
 
 	parent: DT_ITEM
 
-	rm_type_name: STRING
+	im_type_name: STRING
 			-- reference model type name of object to instantiate
 
 	invalid_reason: STRING
@@ -43,7 +43,7 @@ feature -- Status Report
 	is_typed: BOOLEAN
 			-- True if this node has a known type
 		do
-			Result := attached rm_type_name and then not rm_type_name.is_equal (Unknown_type_name)
+			Result := attached im_type_name and then not im_type_name.is_equal (Unknown_type_name)
 		end
 
 	type_visible: BOOLEAN
@@ -73,7 +73,7 @@ feature -- Status Report
 		require
 			Type_name_valid: not a_type_name.is_empty
 		do
-			rm_type_name := a_type_name
+			im_type_name := a_type_name
 		end
 
 feature -- Modification
@@ -120,7 +120,7 @@ feature -- Serialisation
 		end
 
 invariant
-	Rm_type_name_validity:	attached rm_type_name implies not rm_type_name.is_empty
+	Rm_type_name_validity:	attached im_type_name implies not im_type_name.is_empty
 
 end
 

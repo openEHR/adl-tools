@@ -647,7 +647,7 @@ debug ("GEYACC")
 end
 
 debug("dADL_parse")
-	io.put_string(indent + "attr_val: POP attr node (" +  attr_nodes.item.rm_attr_name+ ")%N")
+	io.put_string(indent + "attr_val: POP attr node (" +  attr_nodes.item.im_attr_name+ ")%N")
 	indent.remove_tail(1)
 end
 			attr_nodes.remove
@@ -681,12 +681,12 @@ end
 
 debug("dADL_parse")
 	io.put_string(indent + "attr_id: complex_object_nodes.item(" + complex_object_nodes.item.node_id +
-			").put_attribute(<<" + attr_node.rm_attr_name + ">>)%N")
+			").put_attribute(<<" + attr_node.im_attr_name + ">>)%N")
 end
-			if not complex_object_nodes.item.has_attribute(attr_node.rm_attr_name) then
+			if not complex_object_nodes.item.has_attribute(attr_node.im_attr_name) then
 				complex_object_nodes.item.put_attribute(attr_node)
 			else
-				abort_with_error("VDATU", <<attr_node.rm_attr_name>>)
+				abort_with_error("VDATU", <<attr_node.im_attr_name>>)
 			end
 
 debug("dADL_parse")
@@ -830,7 +830,7 @@ end
 
 			-- for single-valued attributes, remove the attribute
 			if obj_key = Void then
-				complex_object_nodes.item.remove_attribute(attr_node.rm_attr_name)
+				complex_object_nodes.item.remove_attribute(attr_node.im_attr_name)
 			end
 
 if yy_parsing_status >= yyContinue then
@@ -898,7 +898,7 @@ end
 			-- if the keyed_objects were all empty, then the attribute can be thrown away
 			-- as well, since we don't create void object structures
 			if attr_nodes.item.is_empty then
-				attr_nodes.item.parent.remove_attribute (attr_nodes.item.rm_attr_name)
+				attr_nodes.item.parent.remove_attribute (attr_nodes.item.im_attr_name)
 			end
 
 			-- if the current C_ATTRIBUTE_NODE is a synthesised one, under a keyed object,
@@ -907,7 +907,7 @@ end
 				-- pop the generic attr node
 debug("dADL_parse")
 	io.put_string(indent + "container_attr_object_block: POP attr node (" +
-		attr_nodes.item.rm_attr_name+ ")%N")
+		attr_nodes.item.im_attr_name+ ")%N")
 	indent.remove_tail(1)
 end
 				attr_nodes.remove
@@ -955,12 +955,12 @@ end
 				if not attr_nodes.item.has_child_with_id(complex_object_node.node_id) then
 debug("dADL_parse")
 	io.put_string(indent + "container_attr_object_block_head; attr_nodes(<<" +
-		attr_nodes.item.rm_attr_name + ">>).item.put_child(complex_object_node(" +
+		attr_nodes.item.im_attr_name + ">>).item.put_child(complex_object_node(" +
 		complex_object_node.node_id + "))%N")
 end
 					attr_nodes.item.put_child(complex_object_node)
 				else
-					abort_with_error("VOKU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>)
+					abort_with_error("VOKU", <<complex_object_node.node_id, attr_nodes.item.im_attr_name >>)
 				end
 
 debug("dADL_parse")
@@ -978,7 +978,7 @@ end
 
 debug("dADL_parse")
 	io.put_string(indent + "container_attr_object_block_head: complex_object_node(" +
-			complex_object_node.node_id + ").put_attribute(" + attr_node.rm_attr_name + ")%N")
+			complex_object_node.node_id + ").put_attribute(" + attr_node.im_attr_name + ")%N")
 end
 				complex_object_node.put_attribute(attr_node)
 
@@ -1047,12 +1047,12 @@ end
 
 debug("dADL_parse")
 	io.put_string(indent + "object_key: " + obj_key +
-		" (setting " + attr_nodes.item.rm_attr_name + " to Multiple)%N")
+		" (setting " + attr_nodes.item.im_attr_name + " to Multiple)%N")
 end
 			if not attr_nodes.is_empty then
 				attr_nodes.item.set_container_type
 			else
-				abort_with_error("SGEE", <<attr_node.rm_attr_name>>)
+				abort_with_error("SGEE", <<attr_node.im_attr_name>>)
 			end
 
 if yy_parsing_status >= yyContinue then
@@ -1153,12 +1153,12 @@ end
 				if not attr_nodes.item.has_child_with_id(complex_object_node.node_id) then
 debug("dADL_parse")
 	io.put_string(indent + "single_attr_object_complex_head: attr_nodes(<<" +
-		attr_nodes.item.rm_attr_name + ">>).item.put_child(complex_object_node(" +
+		attr_nodes.item.im_attr_name + ">>).item.put_child(complex_object_node(" +
 		complex_object_node.node_id + "))%N")
 end
 					attr_nodes.item.put_child(complex_object_node)
 				else
-					abort_with_error("VOKU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>)
+					abort_with_error("VOKU", <<complex_object_node.node_id, attr_nodes.item.im_attr_name >>)
 				end
 			end
 
@@ -1213,14 +1213,14 @@ end
 
 debug("dADL_parse")
 	io.put_string(indent + "untyped_primitive_object_block; attr_nodes(<<" +
-			attr_nodes.item.rm_attr_name + ">>).item.put_child(<<" +
+			attr_nodes.item.im_attr_name + ">>).item.put_child(<<" +
 			yyvs14.item (yyvsp14).as_string + ">>)%N")
 end
 			if not attr_nodes.item.has_child_with_id(yyvs14.item (yyvsp14).node_id) then
 				attr_nodes.item.put_child(yyvs14.item (yyvsp14))
 				yyval14 := yyvs14.item (yyvsp14)
 			else
-				abort_with_error("VOKU", <<yyvs14.item (yyvsp14).node_id, attr_nodes.item.rm_attr_name >>)
+				abort_with_error("VOKU", <<yyvs14.item (yyvsp14).node_id, attr_nodes.item.im_attr_name >>)
 			end
 
 if yy_parsing_status >= yyContinue then
@@ -5223,14 +5223,14 @@ end
 
 debug("dADL_parse")
 	io.put_string(indent + "object_reference_block; attr_nodes(<<" +
-			attr_nodes.item.rm_attr_name + ">>).item.put_child(<<" +
+			attr_nodes.item.im_attr_name + ">>).item.put_child(<<" +
 			yyvs14.item (yyvsp14).as_string + ">>)%N")
 end
 			if not attr_nodes.item.has_child_with_id(yyvs14.item (yyvsp14).node_id) then
 				attr_nodes.item.put_child(yyvs14.item (yyvsp14))
 				yyval14 := yyvs14.item (yyvsp14)
 			else
-				abort_with_error("VOKU", <<yyvs14.item (yyvsp14).node_id, attr_nodes.item.rm_attr_name >>)
+				abort_with_error("VOKU", <<yyvs14.item (yyvsp14).node_id, attr_nodes.item.im_attr_name >>)
 			end
 
 if yy_parsing_status >= yyContinue then

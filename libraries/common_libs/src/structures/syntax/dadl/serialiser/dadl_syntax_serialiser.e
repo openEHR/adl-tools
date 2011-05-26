@@ -11,7 +11,7 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class DADL_SYNTAX_SERIALISER
+class DT_DADL_SERIALISER
 
 inherit
 	DT_SERIALISER
@@ -48,7 +48,7 @@ feature -- Visitor
 
 			-- output the type information if required, then the opening '<'
 			if a_node.is_typed and (a_node.type_visible or full_type_marking_on or a_node.is_root and output_typed_encapsulated) then
-				last_result.append ("(" + a_node.rm_type_name + ")" + format_item(FMT_SPACE) + symbol(SYM_START_DBLOCK) + format_item (FMT_NEWLINE))
+				last_result.append ("(" + a_node.im_type_name + ")" + format_item(FMT_SPACE) + symbol(SYM_START_DBLOCK) + format_item (FMT_NEWLINE))
 			elseif not a_node.is_root then
 				last_result.append (symbol(SYM_START_DBLOCK) + format_item(FMT_NEWLINE))
 			end
@@ -68,11 +68,11 @@ feature -- Visitor
 		do
 			if not a_node.is_nested then -- don't output anything if nested - generate nested keyed objects
 				last_result.append (create_indent (depth//2 + multiple_attr_count) +
-						apply_style (a_node.rm_attr_name, STYLE_IDENTIFIER) +  format_item (FMT_SPACE))
+						apply_style (a_node.im_attr_name, STYLE_IDENTIFIER) +  format_item (FMT_SPACE))
 				last_result.append (apply_style (symbol (SYM_EQ), STYLE_OPERATOR) + format_item (FMT_SPACE))
 				if a_node.is_container_type then
 					if a_node.is_typed and (a_node.type_visible or full_type_marking_on) then
-						last_result.append("(" + a_node.rm_type_name + ")" + format_item(FMT_SPACE))
+						last_result.append("(" + a_node.im_type_name + ")" + format_item(FMT_SPACE))
 					end
 					multiple_attr_count := multiple_attr_count + 1
 					last_result.append (symbol (SYM_START_DBLOCK) + format_item (FMT_NEWLINE))
@@ -83,7 +83,7 @@ feature -- Visitor
 	end_attribute_node (a_node: DT_ATTRIBUTE_NODE; depth: INTEGER)
 			-- end serialising an DT_ATTRIBUTE_NODE
 		do
-			last_object_simple := False
+			last_object_primitive := False
 			if not a_node.is_nested then -- don't output anything if nested - generate nested keyed objects
 				if a_node.is_container_type then
 					multiple_attr_count := multiple_attr_count - 1
@@ -96,7 +96,7 @@ feature -- Visitor
 			-- start serialising a DT_PRIMITIVE_OBJECT
 		do
 			start_object_leaf(a_node, depth)
-			last_object_simple := True
+			last_object_primitive := True
 		end
 
 	end_primitive_object (a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER)
@@ -109,7 +109,7 @@ feature -- Visitor
 			-- start serialising an DT_PRIMITIVE_OBJECT_LIST
 		do
 			start_object_leaf(a_node, depth)
-			last_object_simple := True
+			last_object_primitive := True
 		end
 
 	end_primitive_object_list (a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER)
@@ -122,7 +122,7 @@ feature -- Visitor
 			-- start serialising a DT_PRIMITIVE_OBJECT_INTERVAL
 		do
 			start_object_leaf(a_node, depth)
-			last_object_simple := True
+			last_object_primitive := True
 		end
 
 	end_primitive_object_interval (a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER)
@@ -135,7 +135,7 @@ feature -- Visitor
 			-- start serialising a DT_OBJECT_REFERENCE
 		do
 			start_object_leaf(a_node, depth)
-			last_object_simple := True
+			last_object_primitive := True
 		end
 
 	end_object_reference (a_node: DT_OBJECT_REFERENCE; depth: INTEGER)
@@ -148,7 +148,7 @@ feature -- Visitor
 			-- start serialising a DT_OBJECT_REFERENCE_LIST
 		do
 			start_object_leaf(a_node, depth)
-			last_object_simple := True
+			last_object_primitive := True
 		end
 
 	end_object_reference_list (a_node: DT_OBJECT_REFERENCE_LIST; depth: INTEGER)
@@ -162,7 +162,7 @@ feature {NONE} -- Implementation
 	multiple_attr_count: INTEGER
 			-- counter for how many multiple attributes at the current point
 
-	last_object_simple: BOOLEAN
+	last_object_primitive: BOOLEAN
 			-- True if last object traversed was an OBJECT_SIMPLE
 
 	start_object_leaf (a_node: DT_OBJECT_LEAF; depth: INTEGER)
@@ -181,7 +181,7 @@ feature {NONE} -- Implementation
 			if attached {DT_PRIMITIVE_OBJECT} a_node as a_dt_p_o then
 				s := a_dt_p_o.as_serialised_string (agent primitive_value_to_dadl_string, agent dadl_clean)
 			elseif attached {DT_PRIMITIVE_OBJECT_LIST} a_node as a_dt_p_o_l then
-				s := a_dt_p_o_l.as_serialised_string (agent primitive_value_to_dadl_string, agent dadl_clean)
+				s := a_dt_p_o_l.as_serialised_string (agent primitive_value_to_dadl_string, ", ", ", ...", agent dadl_clean)
 			else
 				s := a_node.as_string
 			end

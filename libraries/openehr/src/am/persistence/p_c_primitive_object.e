@@ -7,9 +7,9 @@ note
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL"
-	revision:    "$LastChangedRevision"
-	last_change: "$LastChangedDate"
+	file:        "$URL$"
+	revision:    "$LastChangedRevision$"
+	last_change: "$LastChangedDate$"
 
 class P_C_PRIMITIVE_OBJECT
 

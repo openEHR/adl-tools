@@ -559,7 +559,7 @@ end
 									-- this is where the recursive call is
 									-- first, check if the static type is overridden by a type specified in the DT tree
 									if a_dt_attr.item.type_visible then
-										fld_type_id := dt_dynamic_type_from_string (a_dt_attr.item.rm_type_name)
+										fld_type_id := dt_dynamic_type_from_string (a_dt_attr.item.im_type_name)
 									end
 									set_reference_field (i, Result, populate_object_from_dt (a_dt_co_fld, fld_type_id, Void))
 								end
@@ -725,9 +725,9 @@ feature {NONE} -- Implementation
 						object_ref_list.extend (a_dt_ref)
 					else -- the static type may be overridden by a type specified in the DT tree
 						if a_dt_attr.item.type_visible then
-							dynamic_object_type_id := dt_dynamic_type_from_string (a_dt_attr.item.rm_type_name)
+							dynamic_object_type_id := dt_dynamic_type_from_string (a_dt_attr.item.im_type_name)
 							if dynamic_object_type_id <= 0 then
-								post_error (Current, "set_container_object_data_from_dt", "model_access_e3", <<a_dt_attr.item.rm_type_name>>)
+								post_error (Current, "set_container_object_data_from_dt", "model_access_e3", <<a_dt_attr.item.im_type_name>>)
 							end
 						else
 							dynamic_object_type_id := static_eif_container_content_type_id
@@ -752,9 +752,9 @@ feature {NONE} -- Implementation
 					else
 						-- the static type may be overridden by a type specified in the DT tree
 						if a_dt_attr.item.type_visible then
-							dynamic_object_type_id := dt_dynamic_type_from_string (a_dt_attr.item.rm_type_name)
+							dynamic_object_type_id := dt_dynamic_type_from_string (a_dt_attr.item.im_type_name)
 							if dynamic_object_type_id <= 0 then
-								post_error (Current, "set_container_object_data_from_dt", "model_access_e3", <<a_dt_attr.item.rm_type_name>>)
+								post_error (Current, "set_container_object_data_from_dt", "model_access_e3", <<a_dt_attr.item.im_type_name>>)
 							end
 						else
 							dynamic_object_type_id := static_eif_container_content_type_id
@@ -784,7 +784,7 @@ feature {NONE} -- Implementation
 				from a_hash_table.start until a_hash_table.off loop
 debug ("DT")
 	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj: from_obj_proc.call ([DT_ATTRIBUTE_NODE(" +
-		a_dt_attr.rm_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
+		a_dt_attr.im_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
 		", " + a_hash_table.key_for_iteration.out + ")%N")
 end
 					if attached {INTERVAL[PART_COMPARABLE]} a_hash_table.item_for_iteration as eif_prim_ivl then
@@ -797,7 +797,7 @@ end
 				from a_hash_table.start until a_hash_table.off loop
 debug ("DT")
 	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj: from_obj_proc.call ([DT_ATTRIBUTE_NODE(" +
-		a_dt_attr.rm_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
+		a_dt_attr.im_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
 		", " + a_hash_table.key_for_iteration.out + ")%N")
 end
 					if attached {SEQUENCE[ANY]} a_hash_table.item_for_iteration as eif_prim_seq then
@@ -810,7 +810,7 @@ end
 				from a_hash_table.start until a_hash_table.off loop
 debug ("DT")
 	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj: from_obj_proc.call ([DT_ATTRIBUTE_NODE(" +
-		a_dt_attr.rm_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
+		a_dt_attr.im_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
 		", " + a_hash_table.key_for_iteration.out + ")%N")
 end
 					a_dt_attr.put_child (create {DT_PRIMITIVE_OBJECT}.make_identified (a_hash_table.item_for_iteration, a_hash_table.key_for_iteration.out))
@@ -840,7 +840,7 @@ end
 				from a_sequence.start until a_sequence.off loop
 debug ("DT")
 	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj (2): from_obj_proc.call ([DT_ATTRIBUTE_NODE(" +
-		a_dt_attr.rm_attr_name + "), " + a_sequence.item.generating_type + ", " + a_sequence.index.out + ")%N")
+		a_dt_attr.im_attr_name + "), " + a_sequence.item.generating_type + ", " + a_sequence.index.out + ")%N")
 end
 					if attached {INTERVAL[PART_COMPARABLE]} a_sequence.item as v_typed then
 						a_dt_attr.put_child (create {DT_PRIMITIVE_OBJECT_INTERVAL}.make_identified (v_typed, a_sequence.index.out))
@@ -852,7 +852,7 @@ end
 				from a_sequence.start until a_sequence.off loop
 debug ("DT")
 	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj (2): from_obj_proc.call ([DT_ATTRIBUTE_NODE(" +
-		a_dt_attr.rm_attr_name + "), " + a_sequence.item.generating_type + ", " + a_sequence.index.out + ")%N")
+		a_dt_attr.im_attr_name + "), " + a_sequence.item.generating_type + ", " + a_sequence.index.out + ")%N")
 end
 					if attached {SEQUENCE[ANY]} a_sequence.item as v_typed then
 						a_dt_attr.put_child (create {DT_PRIMITIVE_OBJECT_LIST}.make_identified (v_typed, a_sequence.index.out))
@@ -864,7 +864,7 @@ end
 				from a_sequence.start until a_sequence.off loop
 debug ("DT")
 	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj (2): from_obj_proc.call ([DT_ATTRIBUTE_NODE(" +
-		a_dt_attr.rm_attr_name + "), " + a_sequence.item.generating_type + ", " + a_sequence.index.out + ")%N")
+		a_dt_attr.im_attr_name + "), " + a_sequence.item.generating_type + ", " + a_sequence.index.out + ")%N")
 end
 					a_dt_attr.put_child (create {DT_PRIMITIVE_OBJECT}.make_identified (a_sequence.item, a_sequence.index.out))
 					a_sequence.forth

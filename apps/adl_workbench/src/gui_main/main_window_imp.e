@@ -75,15 +75,18 @@ feature {NONE}-- Initialization
 			rm_schemas_menu.extend (rm_schemas_menu_reload_schemas)
 			rm_schemas_menu.extend (l_ev_menu_separator_8)
 			rm_schemas_menu.extend (rm_schemas_menu_configure_rm_schemas)
+			menu.extend (xml_menu)
+			xml_menu.extend (l_ev_menu_separator_9)
+			xml_menu.extend (xml_menu_conv_rules)
 			menu.extend (tools_menu)
 			tools_menu.extend (tools_menu_clean_generated_files)
-			tools_menu.extend (l_ev_menu_separator_9)
+			tools_menu.extend (l_ev_menu_separator_10)
 			tools_menu.extend (tools_menu_options)
 			menu.extend (help_menu)
 			help_menu.extend (help_menu_contents)
 			help_menu.extend (help_menu_release_notes)
 			help_menu.extend (help_menu_icons)
-			help_menu.extend (l_ev_menu_separator_10)
+			help_menu.extend (l_ev_menu_separator_11)
 			help_menu.extend (help_menu_clinical_knowledge_manager)
 			help_menu.extend (help_menu_report_bug)
 			help_menu.extend (help_menu_about)
@@ -310,6 +313,8 @@ feature {NONE}-- Initialization
 			rm_schemas_menu.set_text ("RM &Schemas")
 			rm_schemas_menu_reload_schemas.set_text ("&Reload Schemas")
 			rm_schemas_menu_configure_rm_schemas.set_text ("&Configure Schemas...")
+			xml_menu.set_text ("&XML")
+			xml_menu_conv_rules.set_text ("&Conversion Rules...")
 			tools_menu.set_text ("&Tools")
 			tools_menu_clean_generated_files.set_text ("&Clean Generated Files")
 			tools_menu_options.set_text ("&Options...")
@@ -958,6 +963,7 @@ feature {NONE}-- Initialization
 			repository_menu_set_repository.select_actions.extend (agent set_repository)
 			rm_schemas_menu_reload_schemas.select_actions.extend (agent reload_schemas)
 			rm_schemas_menu_configure_rm_schemas.select_actions.extend (agent set_rm_schemas)
+			xml_menu_conv_rules.select_actions.extend (agent set_xml_rules)
 			tools_menu_clean_generated_files.select_actions.extend (agent clean_generated_files)
 			tools_menu_options.select_actions.extend (agent set_options)
 			help_menu_contents.select_actions.extend (agent show_online_help)
@@ -1068,15 +1074,18 @@ feature {NONE}-- Initialization
 			create rm_schemas_menu_reload_schemas
 			create l_ev_menu_separator_8
 			create rm_schemas_menu_configure_rm_schemas
+			create xml_menu
+			create l_ev_menu_separator_9
+			create xml_menu_conv_rules
 			create tools_menu
 			create tools_menu_clean_generated_files
-			create l_ev_menu_separator_9
+			create l_ev_menu_separator_10
 			create tools_menu_options
 			create help_menu
 			create help_menu_contents
 			create help_menu_release_notes
 			create help_menu_icons
-			create l_ev_menu_separator_10
+			create l_ev_menu_separator_11
 			create help_menu_clinical_knowledge_manager
 			create help_menu_report_bug
 			create help_menu_about
@@ -1293,58 +1302,58 @@ feature -- Access
 
 	menu: EV_MENU_BAR
 	file_menu, edit_menu, view_menu, history_menu, repository_menu, rm_schemas_menu,
-	tools_menu, help_menu: EV_MENU
-	file_menu_open, file_menu_parse, file_menu_edit, file_menu_save_as,
-	file_menu_exit, edit_menu_copy, edit_menu_select_all, edit_menu_clipboard, view_menu_differential,
-	view_menu_flat, history_menu_back, history_menu_forward, repository_menu_build_all,
-	repository_menu_rebuild_all, repository_menu_build_subtree, repository_menu_rebuild_subtree,
-	repository_menu_export_html, repository_menu_export_repository_report, repository_menu_interrupt_build,
-	repository_menu_refresh, repository_menu_set_repository, rm_schemas_menu_reload_schemas,
-	rm_schemas_menu_configure_rm_schemas, tools_menu_clean_generated_files, tools_menu_options,
-	help_menu_contents, help_menu_release_notes, help_menu_icons, help_menu_clinical_knowledge_manager,
-	help_menu_report_bug, help_menu_about: EV_MENU_ITEM
-	l_ev_menu_separator_1, l_ev_menu_separator_2,
-	l_ev_menu_separator_3, history_menu_separator, l_ev_menu_separator_4, l_ev_menu_separator_5,
-	l_ev_menu_separator_6, l_ev_menu_separator_7, l_ev_menu_separator_8, l_ev_menu_separator_9,
-	l_ev_menu_separator_10: EV_MENU_SEPARATOR
-	main_notebook, archetype_notebook, description_notebook,
-	status_notebook: EV_NOTEBOOK
-	viewer_vbox, l_ev_vertical_box_1, l_ev_vertical_box_2, description_admin_box,
-	l_ev_vertical_box_3, arch_desc_auth_hbox, arch_desc_contrib_hbox, l_ev_vertical_box_4,
-	lang_vbox, l_ev_vertical_box_5, l_ev_vertical_box_6, description_desc_box, l_ev_vertical_box_7,
-	l_ev_vertical_box_8, l_ev_vertical_box_9, terminology_vbox, l_ev_vertical_box_10,
-	node_map_contols, l_ev_vertical_box_11, l_ev_vertical_box_12, l_ev_vertical_box_13,
-	l_ev_vertical_box_14, slots_box, l_ev_vertical_box_15, l_ev_vertical_box_16, terminology_area,
-	l_ev_vertical_box_17, l_ev_vertical_box_18: EV_VERTICAL_BOX
-	action_bar, l_ev_horizontal_box_1, l_ev_horizontal_box_2,
-	l_ev_horizontal_box_3, l_ev_horizontal_box_4, l_ev_horizontal_box_5, l_ev_horizontal_box_6,
-	author_lang_term_hbox, l_ev_horizontal_box_7, l_ev_horizontal_box_8, l_ev_horizontal_box_9,
-	l_ev_horizontal_box_10, arch_desc_copyright_hbox, arch_desc_details_hbox, l_ev_horizontal_box_11,
-	l_ev_horizontal_box_12, l_ev_horizontal_box_13, l_ev_horizontal_box_14, l_ev_horizontal_box_15,
-	description_term_box, node_map, path_analysis, statistics_box, l_ev_horizontal_box_16,
-	l_ev_horizontal_box_17, l_ev_horizontal_box_18, l_ev_horizontal_box_19, l_ev_horizontal_box_20,
-	l_ev_horizontal_box_21, l_ev_horizontal_box_22: EV_HORIZONTAL_BOX
-	l_ev_tool_bar_1, l_ev_tool_bar_5,
-	l_ev_tool_bar_6: EV_TOOL_BAR
-	compile_button, open_button, parse_button, edit_button, history_back_button,
-	history_forward_button, search_button: EV_TOOL_BAR_BUTTON
-	l_ev_tool_bar_separator_1, l_ev_tool_bar_separator_2,
-	l_ev_tool_bar_separator_3: EV_TOOL_BAR_SEPARATOR
-	archetype_id, language_combo, archetype_profile_combo,
-	path_analysis_row_filter_combo_box, test_profile_combo: EV_COMBO_BOX
-	view_label, language_label,
-	adl_version_label, archetype_explorer_label, template_explorer_label, arch_desc_status_label,
-	arch_desc_auth_orig_auth_label, arch_desc_auth_contrib_label, arch_desc_original_language_label,
-	arch_translations_languages_label, l_ev_label_1, l_ev_label_2, l_ev_label_3, arch_desc_copyright_label,
-	arch_desc_purpose_label, arch_desc_use_label, arch_desc_misuse_label, arch_desc_keywords_label,
-	arch_desc_resource_package_label, arch_desc_resource_orig_res_label, l_ev_label_4,
-	l_ev_label_5, l_ev_label_6, l_ev_label_7, l_ev_label_8, l_ev_label_9, l_ev_label_10,
-	l_ev_label_11, l_ev_label_12: EV_LABEL
-	differential_view_button, flat_view_button: EV_TOOL_BAR_RADIO_BUTTON
-	adl_version_text,
-	arch_desc_status_text, arch_desc_original_language_text, arch_desc_resource_package_text,
-	arch_total_count_tf, arch_spec_count_tf, arch_slotted_count_tf, arch_used_by_count_tf,
-	arch_bad_count_tf, arch_test_processed_count: EV_TEXT_FIELD
+	xml_menu, tools_menu, help_menu: EV_MENU
+	file_menu_open, file_menu_parse, file_menu_edit,
+	file_menu_save_as, file_menu_exit, edit_menu_copy, edit_menu_select_all, edit_menu_clipboard,
+	view_menu_differential, view_menu_flat, history_menu_back, history_menu_forward,
+	repository_menu_build_all, repository_menu_rebuild_all, repository_menu_build_subtree,
+	repository_menu_rebuild_subtree, repository_menu_export_html, repository_menu_export_repository_report,
+	repository_menu_interrupt_build, repository_menu_refresh, repository_menu_set_repository,
+	rm_schemas_menu_reload_schemas, rm_schemas_menu_configure_rm_schemas, xml_menu_conv_rules,
+	tools_menu_clean_generated_files, tools_menu_options, help_menu_contents, help_menu_release_notes,
+	help_menu_icons, help_menu_clinical_knowledge_manager, help_menu_report_bug, help_menu_about: EV_MENU_ITEM
+	l_ev_menu_separator_1,
+	l_ev_menu_separator_2, l_ev_menu_separator_3, history_menu_separator, l_ev_menu_separator_4,
+	l_ev_menu_separator_5, l_ev_menu_separator_6, l_ev_menu_separator_7, l_ev_menu_separator_8,
+	l_ev_menu_separator_9, l_ev_menu_separator_10, l_ev_menu_separator_11: EV_MENU_SEPARATOR
+	main_notebook,
+	archetype_notebook, description_notebook, status_notebook: EV_NOTEBOOK
+	viewer_vbox, l_ev_vertical_box_1,
+	l_ev_vertical_box_2, description_admin_box, l_ev_vertical_box_3, arch_desc_auth_hbox,
+	arch_desc_contrib_hbox, l_ev_vertical_box_4, lang_vbox, l_ev_vertical_box_5, l_ev_vertical_box_6,
+	description_desc_box, l_ev_vertical_box_7, l_ev_vertical_box_8, l_ev_vertical_box_9,
+	terminology_vbox, l_ev_vertical_box_10, node_map_contols, l_ev_vertical_box_11, l_ev_vertical_box_12,
+	l_ev_vertical_box_13, l_ev_vertical_box_14, slots_box, l_ev_vertical_box_15, l_ev_vertical_box_16,
+	terminology_area, l_ev_vertical_box_17, l_ev_vertical_box_18: EV_VERTICAL_BOX
+	action_bar, l_ev_horizontal_box_1,
+	l_ev_horizontal_box_2, l_ev_horizontal_box_3, l_ev_horizontal_box_4, l_ev_horizontal_box_5,
+	l_ev_horizontal_box_6, author_lang_term_hbox, l_ev_horizontal_box_7, l_ev_horizontal_box_8,
+	l_ev_horizontal_box_9, l_ev_horizontal_box_10, arch_desc_copyright_hbox, arch_desc_details_hbox,
+	l_ev_horizontal_box_11, l_ev_horizontal_box_12, l_ev_horizontal_box_13, l_ev_horizontal_box_14,
+	l_ev_horizontal_box_15, description_term_box, node_map, path_analysis, statistics_box,
+	l_ev_horizontal_box_16, l_ev_horizontal_box_17, l_ev_horizontal_box_18, l_ev_horizontal_box_19,
+	l_ev_horizontal_box_20, l_ev_horizontal_box_21, l_ev_horizontal_box_22: EV_HORIZONTAL_BOX
+	l_ev_tool_bar_1,
+	l_ev_tool_bar_5, l_ev_tool_bar_6: EV_TOOL_BAR
+	compile_button, open_button, parse_button, edit_button,
+	history_back_button, history_forward_button, search_button: EV_TOOL_BAR_BUTTON
+	l_ev_tool_bar_separator_1,
+	l_ev_tool_bar_separator_2, l_ev_tool_bar_separator_3: EV_TOOL_BAR_SEPARATOR
+	archetype_id, language_combo,
+	archetype_profile_combo, path_analysis_row_filter_combo_box, test_profile_combo: EV_COMBO_BOX
+	view_label,
+	language_label, adl_version_label, archetype_explorer_label, template_explorer_label,
+	arch_desc_status_label, arch_desc_auth_orig_auth_label, arch_desc_auth_contrib_label,
+	arch_desc_original_language_label, arch_translations_languages_label, l_ev_label_1,
+	l_ev_label_2, l_ev_label_3, arch_desc_copyright_label, arch_desc_purpose_label, arch_desc_use_label,
+	arch_desc_misuse_label, arch_desc_keywords_label, arch_desc_resource_package_label,
+	arch_desc_resource_orig_res_label, l_ev_label_4, l_ev_label_5, l_ev_label_6, l_ev_label_7,
+	l_ev_label_8, l_ev_label_9, l_ev_label_10, l_ev_label_11, l_ev_label_12: EV_LABEL
+	differential_view_button,
+	flat_view_button: EV_TOOL_BAR_RADIO_BUTTON
+	adl_version_text, arch_desc_status_text, arch_desc_original_language_text,
+	arch_desc_resource_package_text, arch_total_count_tf, arch_spec_count_tf, arch_slotted_count_tf,
+	arch_used_by_count_tf, arch_bad_count_tf, arch_test_processed_count: EV_TEXT_FIELD
 	explorer_split_area: EV_HORIZONTAL_SPLIT_AREA
 	archetype_template_split_area,
 	total_split_area, l_ev_vertical_split_area_1, test_split_area: EV_VERTICAL_SPLIT_AREA
@@ -1512,6 +1521,11 @@ feature {NONE} -- Implementation
 	
 	set_rm_schemas
 			-- Called by `select_actions' of `rm_schemas_menu_configure_rm_schemas'.
+		deferred
+		end
+	
+	set_xml_rules
+			-- Called by `select_actions' of `xml_menu_conv_rules'.
 		deferred
 		end
 	

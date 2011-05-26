@@ -1,68 +1,31 @@
 note
-	component:   "openEHR Archetype Project"
-	description: "Persistent form of ARCHETYPE_SLOT."
-	keywords:    "persistence, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
+	component:   "openEHR Libraries"
+	description: "Shared access to dADL->XML conversion rules file access object."
+	keywords:    "config, XML, serialisation"
+
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011 openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class P_ARCHETYPE_SLOT
+class SHARED_XML_RULES_FILE_ACCESS
 
 inherit
-	P_C_OBJECT
-		redefine
-			make
-		end
-
-create
-	make
-
-feature -- Initialisation
-
-	make (an_as: ARCHETYPE_SLOT)
-		do
-			precursor (an_as)
-			includes := an_as.includes
-			excludes := an_as.excludes
-			is_closed := an_as.is_closed
-		end
+	SHARED_APP_RESOURCES
 
 feature -- Access
 
-	includes: ARRAYED_LIST [ASSERTION]
-
-	excludes: ARRAYED_LIST [ASSERTION]
-
-	is_closed: BOOLEAN
-
-feature -- Factory
-
-	create_archetype_slot: attached ARCHETYPE_SLOT
-		do
-			if attached node_id then
-				create Result.make_identified (rm_type_name, node_id)
-			else
-				create Result.make_anonymous (rm_type_name)
-			end
-			populate_c_instance (Result)
-			if attached includes then
-				Result.set_includes (includes)
-			end
-			if attached excludes then
-				Result.set_excludes (excludes)
-			end
-			if is_closed then
-				Result.set_closed
-			end
+	xml_rules_cfg: DADL_CONFIG_FILE_ACCESS
+			-- accessor object for application config file
+		once
+			create Result.make (xml_rules_file_path)
 		end
 
 end
-
 
 --|
 --| ***** BEGIN LICENSE BLOCK *****
@@ -78,10 +41,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is p_archetype_slot.e.
+--| The Original Code is shared_dadl_config_file_access.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2011
+--| Portions created by the Initial Developer are Copyright (C) 2003-2004
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

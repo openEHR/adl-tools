@@ -32,7 +32,7 @@ feature -- Modification
 	set_value (a_value: like value)
 		do
 			value := a_value
-			rm_type_name := a_value.generating_type
+			im_type_name := a_value.generating_type
 		end
 
 feature -- Conversion

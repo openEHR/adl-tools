@@ -12,7 +12,7 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class SHARED_DADL_CONFIG_FILE_ACCESS
+class SHARED_APP_CONFIG_FILE_ACCESS
 
 inherit
 	SHARED_RESOURCES

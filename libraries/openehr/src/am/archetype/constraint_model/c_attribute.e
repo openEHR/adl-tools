@@ -146,7 +146,7 @@ feature -- Access
 			Result := children.count
 		end
 
-	child_before(an_obj: attached C_OBJECT): C_OBJECT
+	child_before (an_obj: attached C_OBJECT): C_OBJECT
 			-- return child node before `an_obj' if there is one, else Void
 		require
 			Object_valid: has_child (an_obj)
@@ -408,7 +408,7 @@ feature -- Modification
 			an_obj.set_parent(Current)
 		end
 
-	put_child_left(an_obj, before_obj: attached C_OBJECT)
+	put_child_left (an_obj, before_obj: attached C_OBJECT)
 			-- insert a new child node before another node
 		require
 			Object_valid: valid_new_child (an_obj)
@@ -420,7 +420,7 @@ feature -- Modification
 			an_obj.set_parent(Current)
 		end
 
-	put_child_right(an_obj, after_obj: attached C_OBJECT)
+	put_child_right (an_obj, after_obj: attached C_OBJECT)
 			-- insert a new child node after another node
 		require
 			Object_valid: valid_new_child (an_obj)
@@ -464,7 +464,7 @@ feature -- Modification
 			an_obj.set_parent(Current)
 		end
 
-	replace_child_by_rm_type_name(an_obj: attached C_OBJECT)
+	replace_child_by_rm_type_name (an_obj: attached C_OBJECT)
 			-- replace node with rm_type_name `a_type_name' by `an_obj'
 		require
 			Attribute_validity: is_single
@@ -509,7 +509,7 @@ feature -- Modification
 			has_child_with_id (new_id)
 		end
 
-	overlay_differential(a_flat_obj, diff_obj: attached C_OBJECT; an_rm_schema: attached BMM_SCHEMA)
+	overlay_differential (a_flat_obj, diff_obj: attached C_OBJECT; an_rm_schema: attached BMM_SCHEMA)
 			-- apply any differences from `diff_obj' to `an_obj' node including node_id
 		require
 			Flat_obj_valid: has_child (a_flat_obj)
@@ -572,13 +572,13 @@ feature -- Representation
 
 feature -- Serialisation
 
-	enter_subtree(visitor: C_VISITOR; depth: INTEGER)
+	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform serialisation at start of block for this node
 		do
 			visitor.start_c_attribute(Current, depth)
 		end
 
-	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
+	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform serialisation at end of block for this node
 		do
 			visitor.end_c_attribute(Current, depth)

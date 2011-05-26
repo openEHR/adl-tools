@@ -18,7 +18,10 @@ inherit
 
 feature -- Serialisation
 
-	serialise (an_archetype: attached ARCHETYPE; lang_serialised, desc_serialised, def_serialised: attached STRING; inv_serialised: STRING; ont_serialised: attached STRING; ann_serialised, comp_onts_serialised: STRING)
+	serialise_from_parts (an_archetype: attached ARCHETYPE;
+			lang_serialised, desc_serialised, def_serialised: attached STRING;
+			inv_serialised: STRING; ont_serialised: attached STRING;
+			ann_serialised, comp_onts_serialised: STRING)
 		deferred
 		ensure
 			attached archetype

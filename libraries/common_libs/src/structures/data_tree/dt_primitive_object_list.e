@@ -39,7 +39,7 @@ feature -- Modification
 	set_value (a_value: like value)
 		do
 			value := a_value
-			rm_type_name := a_value.generating_type
+			im_type_name := a_value.generating_type
 		end
 
 feature -- Conversion
@@ -59,13 +59,13 @@ feature -- Conversion
 			end
 		end
 
-	as_serialised_string (string_converter: attached FUNCTION [ANY, TUPLE [ANY], STRING]; cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
+	as_serialised_string (string_converter: attached FUNCTION [ANY, TUPLE [ANY], STRING]; delimiter, end_delimiter: STRING; cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
 			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
 		do
 			create Result.make(0)
 			from value.start until value.off loop
-				if value.index > 1 then
-					Result.append(", ")
+				if attached delimiter and value.index > 1 then
+					Result.append (delimiter)
 				end
 				if attached {STRING} value.item as s and attached cleaner then
 					Result.append (string_converter.item ([cleaner.item ([s])]))
@@ -74,23 +74,23 @@ feature -- Conversion
 				end
 				value.forth
 			end
-			if value.count = 1 then -- append syntactic indication of list continuation
-				Result.append(", ...")
+			if attached end_delimiter and value.count = 1 then -- append syntactic indication of list continuation
+				Result.append (end_delimiter)
 			end
 		end
 
 feature -- Serialisation
 
-	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
+	enter_subtree (serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at start of block for this node
 		do
-			serialiser.start_primitive_object_list(Current, depth)
+			serialiser.start_primitive_object_list (Current, depth)
 		end
 
-	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
+	exit_subtree (serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at end of block for this node
 		do
-			serialiser.end_primitive_object_list(Current, depth)
+			serialiser.end_primitive_object_list (Current, depth)
 		end
 
 end

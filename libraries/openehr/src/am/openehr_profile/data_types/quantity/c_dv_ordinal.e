@@ -112,7 +112,7 @@ feature -- Comparison
 			-- contained instance space of `other'.
 			-- Returns False if they are the same, or if they do not correspond
 		do
-			if precursor(other, an_rm_schema) then
+			if precursor (other, an_rm_schema) then
 				if other.any_allowed then
 					Result := True
 				elseif not any_allowed then

@@ -14,7 +14,10 @@ note
 class SHARED_APP_RESOURCES
 
 inherit
-	SHARED_DADL_CONFIG_FILE_ACCESS
+	SHARED_APP_CONFIG_FILE_ACCESS
+		export
+			{NONE} all
+		end
 
 	BASIC_DEFINITIONS
 		export
@@ -38,7 +41,7 @@ inherit
 
 feature -- Definitions
 
-	Default_rm_schema_directory: STRING
+	Default_rm_schema_directory: attached STRING
 			-- directory of Reference Model schema files; same as full path to app + "/rm_schemas";
 			-- contains schema files in .dadl format e.g.
 			-- .../rm_schemas/openehr_rm_102.dadl
@@ -47,16 +50,24 @@ feature -- Definitions
 			Result.append(os_directory_separator.out + "rm_schemas")
 		end
 
-	Error_db_directory: STRING
+	Error_db_directory: attached STRING
 			-- directory of error database files in .dadl format e.g.
 			-- .../error_db/dadl_errors.txt etc
 		once
-			Result := file_system.pathname(application_startup_directory, "error_db")
+			Result := file_system.pathname (application_startup_directory, "error_db")
+		end
+
+	xml_rules_file_path: attached STRING
+			-- Full path to XML rules file.
+		do
+			Result := file_system.pathname (user_config_file_directory, extension_replaced ("xml_rules", User_config_file_extension))
+		ensure
+			not_empty: not Result.is_empty
 		end
 
 feature -- Application Switches
 
-	current_language: STRING
+	current_language: attached STRING
 		do
 			Result := app_cfg.string_value ("/general/current_language")
 		end
@@ -123,10 +134,10 @@ feature -- Application Switches
 			--
 		do
 			if not attached repository_profiles_cache.item then
-				if attached {REPOSITORY_PROFILE_CONFIG} app_cfg.object_value("/profile", "REPOSITORY_PROFILE_CONFIG") as p then
-					repository_profiles_cache.put(p)
+				if attached {REPOSITORY_PROFILE_CONFIG} app_cfg.object_value ("/profile", "REPOSITORY_PROFILE_CONFIG") as p then
+					repository_profiles_cache.put (p)
 				else
-					repository_profiles_cache.put(create {REPOSITORY_PROFILE_CONFIG}.default_create)
+					repository_profiles_cache.put (create {REPOSITORY_PROFILE_CONFIG}.default_create)
 				end
 			end
 			Result := repository_profiles_cache.item

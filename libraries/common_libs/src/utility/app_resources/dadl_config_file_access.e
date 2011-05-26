@@ -52,9 +52,9 @@ feature -- Initialisation
 			file_path := a_file_path
 			if file_system.file_exists (file_path) then
 				read
-			end
-			if not attached dt_tree then
-				create dt_tree.make_anonymous
+				if not attached dt_tree then
+					create_default_dt_tree
+				end
 			end
 		end
 
@@ -152,7 +152,7 @@ feature -- Status Report
 	has_resource (a_path: attached STRING): BOOLEAN
 			-- True if there is a resource at `a_path'
 		do
-			Result := dt_tree.has_path (a_path)
+			Result := attached dt_tree and then dt_tree.has_path (a_path)
 		end
 
 feature -- Modification
@@ -160,6 +160,9 @@ feature -- Modification
 	put_value (a_path: attached STRING; a_value: attached ANY)
 			-- put an instance of any dADL leaf value type
 		do
+			if not attached dt_tree then
+				create_default_dt_tree
+			end
 			if has_resource(a_path) then
 				dt_tree.set_value_at_path (a_value, a_path)
 			else
@@ -174,6 +177,9 @@ feature -- Modification
 			obj_dt_tree: DT_COMPLEX_OBJECT_NODE
 			dt_attr: DT_ATTRIBUTE_NODE
 		do
+			if not attached dt_tree then
+				create_default_dt_tree
+			end
 			obj_dt_tree := object_converter.object_to_dt(a_value)
 			if has_resource(a_path) then
 				dt_attr := dt_tree.attribute_node_at_path (a_path)
@@ -262,9 +268,14 @@ feature {NONE} -- Implementation
 
 	dt_tree: DT_COMPLEX_OBJECT_NODE
 
-	dt_serialiser: attached DADL_SYNTAX_SERIALISER
+	dt_serialiser: attached DT_DADL_SERIALISER
 		once
 			create Result.make(create {NATIVE_DADL_SERIALISATION_PROFILE}.make("dadl"))
+		end
+
+	create_default_dt_tree
+		do
+			create dt_tree.make_anonymous
 		end
 
 end

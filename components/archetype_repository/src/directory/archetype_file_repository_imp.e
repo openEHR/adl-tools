@@ -38,7 +38,7 @@ feature -- Status Report
 	is_valid_directory_part (path: attached STRING): BOOLEAN
 			-- Is the directory part of `path', whose last section is a filename, valid on the repository medium?
 		do
-			if path /= Void and then not path.is_empty then
+			if not path.is_empty then
 				Result := is_valid_directory (file_system.dirname (path))
 			end
 		end

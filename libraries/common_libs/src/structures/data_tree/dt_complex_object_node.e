@@ -47,8 +47,8 @@ feature -- Initialisation
 			--
 		do
 			create attributes.make(0)
-			create rm_type_name.make(0)
-			rm_type_name.append(Unknown_type_name)
+			create im_type_name.make(0)
+			im_type_name.append(Unknown_type_name)
 		ensure then
 			not is_typed
 		end
@@ -211,7 +211,7 @@ feature -- Status Report
 			-- report on validity
 		do
 			create invalid_reason.make(0)
-			invalid_reason.append(rm_type_name + node_id + ":")
+			invalid_reason.append(im_type_name + node_id + ":")
 			Result := True
 		end
 
@@ -226,7 +226,7 @@ feature -- Modification
 	put_attribute(an_attr_node: attached DT_ATTRIBUTE_NODE)
 			-- put a new child node
 		require
-			Node_exists: not has_attribute(an_attr_node.rm_attr_name)
+			Node_exists: not has_attribute(an_attr_node.im_attr_name)
 		do
 			representation.put_child (an_attr_node.representation)
 			attributes.extend(an_attr_node)
@@ -364,7 +364,7 @@ feature -- Conversion
 			--
 		do
 			create Result.make(0)
-			Result.append (rm_type_name + "[" + node_id + "] ")
+			Result.append (im_type_name + "[" + node_id + "] ")
 		end
 
 	as_object (a_type_id: INTEGER; make_args: ARRAY[ANY]): ANY

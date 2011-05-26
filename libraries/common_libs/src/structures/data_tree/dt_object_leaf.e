@@ -44,7 +44,7 @@ feature -- Initialisation
 	default_create
 			-- create with unknown type
 		do
-			rm_type_name := Unknown_type_name.twin
+			im_type_name := Unknown_type_name.twin
 		end
 
 feature -- Access
@@ -60,7 +60,7 @@ feature -- Status Report
 			-- report on validity
 		do
 			create invalid_reason.make(0)
-			invalid_reason.append(rm_type_name + ": ")
+			invalid_reason.append(im_type_name + ": ")
 			if value = Void then
 				invalid_reason.append("leaf value Void")
 			else

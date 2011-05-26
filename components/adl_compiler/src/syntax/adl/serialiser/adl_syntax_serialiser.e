@@ -11,7 +11,7 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class ADL_SYNTAX_SERIALISER
+class ARCHETYPE_ADL_SERIALISER
 
 inherit
 	ARCHETYPE_SERIALISER
@@ -31,7 +31,7 @@ create
 
 feature -- Serialisation
 
-	serialise (an_archetype: attached ARCHETYPE;
+	serialise_from_parts (an_archetype: attached ARCHETYPE;
 				lang_serialised, desc_serialised, def_serialised: attached STRING;
 				inv_serialised: STRING; ont_serialised: attached STRING;
 				ann_serialised, comp_onts_serialised: STRING)
