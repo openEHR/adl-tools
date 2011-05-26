@@ -1129,6 +1129,7 @@ feature -- Archetype Events
 				set_differential_view (differential_flag)
 				set_archetype_notebook_source_tab_text
 				set_archetype_notebook_dadl_tab_text
+				set_archetype_notebook_xml_tab_text
 				if has_current_profile then
 					if current_arch_dir.has_selected_archetype then
 						populate_archetype_view_controls
