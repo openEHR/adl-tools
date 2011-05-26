@@ -238,7 +238,7 @@ feature -- Test procedures
 
 			append_status("Serialise Data Tree to dADL%N")
 			dadl_engine.set_tree (dt)
-			dadl_engine.serialise ("dadl")
+			dadl_engine.serialise ("dadl", False, True)
 			set_source_text (dadl_engine.serialised)
 
 			append_status("Parse dADL%N")

@@ -22,7 +22,7 @@ inherit
 
 	SHARED_MESSAGE_BILLBOARD
 
-	SHARED_DADL_CONFIG_FILE_ACCESS
+	SHARED_APP_CONFIG_FILE_ACCESS
 
 feature -- Access
 
@@ -44,7 +44,7 @@ feature -- Access
 			-- directory of error database files in .dadl format e.g.
 			-- .../error_db/dadl_errors.txt etc
 		once
-			Result := file_system.pathname(application_startup_directory, "error_db")
+			Result := file_system.pathname (application_startup_directory, "error_db")
 		end
 
 end

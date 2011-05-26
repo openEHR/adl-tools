@@ -21,7 +21,7 @@ create
 
 feature -- Serialisation
 
-	serialise (an_archetype: attached ARCHETYPE;
+	serialise_from_parts (an_archetype: attached ARCHETYPE;
 				lang_serialised, desc_serialised, def_serialised: attached STRING;
 				inv_serialised: STRING;
 				ont_serialised: attached STRING;

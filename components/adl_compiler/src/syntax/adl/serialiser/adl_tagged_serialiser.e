@@ -36,7 +36,7 @@ create
 
 feature -- Serialisation
 
-	serialise (an_archetype: ARCHETYPE; lang_serialised, desc_serialised, def_serialised, inv_serialised, ont_serialised, ann_serialised, comp_onts_serialised: STRING)
+	serialise_from_parts (an_archetype: ARCHETYPE; lang_serialised, desc_serialised, def_serialised, inv_serialised, ont_serialised, ann_serialised, comp_onts_serialised: STRING)
 		do
 			archetype := a_target
 
