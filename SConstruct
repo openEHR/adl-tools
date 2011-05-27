@@ -93,12 +93,13 @@ if distrib and len(adl_workbench) > 0:
 	license = 'apps/adl_workbench/doc/LICENSE.txt'
 	xsl = 'apps/adl_workbench/app/ArchetypeRepositoryReport.xsl'
 	css = 'apps/adl_workbench/app/ArchetypeRepositoryReport.css'
+	xml_rules = 'apps/adl_workbench/app/sample_xml_rules.cfg'
 	icons = 'apps/adl_workbench/app/icons'
 	rm_schemas = 'rm_schemas'
 	error_db = 'apps/adl_workbench/app/error_db'
 	vim = 'components/adl_compiler/etc/vim'
 	install = 'apps/adl_workbench/install/' + platform
-	adl_workbench_installer_sources = [adl_workbench[0], license, xsl, css]
+	adl_workbench_installer_sources = [adl_workbench[0], license, xsl, css, xml_rules]
 
 	for root in [icons, rm_schemas, error_db, vim, install]:
 		for dir, dirnames, filenames in os.walk(root):
@@ -125,7 +126,7 @@ if distrib and len(adl_workbench) > 0:
 			import tarfile
 			tar = tarfile.open(str(target[0]), 'w:bz2')
 
-			for src in [str(adl_workbench[0]), license, xsl, css]:
+			for src in [str(adl_workbench[0]), license, xsl, css, xml_rules]:
 				tar.add(src, os.path.basename(src))
 
 			for root in [icons, rm_schemas, error_db, vim]:
@@ -173,7 +174,7 @@ if distrib and len(adl_workbench) > 0:
 				copy_tree(install, distrib)
 				copy_tree(vim, pkg_contents)
 
-				for src in [str(adl_workbench[0]), license, xsl, css, icons, rm_schemas, error_db]:
+				for src in [str(adl_workbench[0]), license, xsl, css, xml_rules, icons, rm_schemas, error_db]:
 					copy_tree(src, pkg_contents + '/ADL Workbench.app/Contents/Resources/')
 
 				for src, dst in [['apps/adl_workbench/doc/web/release_notes.html', 'Welcome.html'], ['apps/adl_workbench/doc/web/help-mac_install.html', 'ReadMe.html']]:

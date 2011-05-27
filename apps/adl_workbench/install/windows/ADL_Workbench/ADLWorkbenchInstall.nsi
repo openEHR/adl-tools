@@ -78,6 +78,7 @@ Section -Main SEC0000
 
     File ..\..\..\app\ArchetypeRepositoryReport.xsl
     File ..\..\..\app\ArchetypeRepositoryReport.css
+    File ..\..\..\app\sample_xml_rules.cfg
 
     SetOutPath $INSTDIR\icons
     File /r /x .svn ..\..\..\app\icons\*
@@ -90,6 +91,11 @@ Section -Main SEC0000
 
     SetOutPath $INSTDIR\vim
     File ..\..\..\..\..\components\adl_compiler\etc\vim\*
+
+    SetOverwrite off
+    SetOutPath $LOCALAPPDATA\openEHR\adl_workbench
+    File /oname=xml_rules.cfg ..\..\..\app\sample_xml_rules.cfg
+    SetOverwrite ifnewer
 
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
 SectionEnd
