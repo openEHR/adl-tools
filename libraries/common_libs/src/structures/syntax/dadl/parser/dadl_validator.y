@@ -166,7 +166,7 @@ end
 attr_val: attr_id SYM_EQ object_block -- could be a single or multiple attr
 		{
 debug("dADL_parse")
-	io.put_string(indent + "attr_val: POP attr node (" +  attr_nodes.item.rm_attr_name+ ")%N")
+	io.put_string(indent + "attr_val: POP attr node (" +  attr_nodes.item.im_attr_name+ ")%N")
 	indent.remove_tail(1)
 end
 			attr_nodes.remove
@@ -192,13 +192,13 @@ end
 			create attr_node.make_single($1)
 
 debug("dADL_parse")
-	io.put_string(indent + "attr_id: complex_object_nodes.item(" + complex_object_nodes.item.node_id + 
-			").put_attribute(<<" + attr_node.rm_attr_name + ">>)%N")
+	io.put_string(indent + "attr_id: complex_object_nodes.item(" + complex_object_nodes.item.id + 
+			").put_attribute(<<" + attr_node.im_attr_name + ">>)%N")
 end
-			if not complex_object_nodes.item.has_attribute(attr_node.rm_attr_name) then
+			if not complex_object_nodes.item.has_attribute(attr_node.im_attr_name) then
 				complex_object_nodes.item.put_attribute(attr_node)
 			else
-				abort_with_error("VDATU", <<attr_node.rm_attr_name>>)
+				abort_with_error("VDATU", <<attr_node.im_attr_name>>)
 			end
 
 debug("dADL_parse")
@@ -230,7 +230,7 @@ object_block: complex_object_block
 		{
 			-- for single-valued attributes, remove the attribute
 			if obj_key = Void then
-				complex_object_nodes.item.remove_attribute(attr_node.rm_attr_name)
+				complex_object_nodes.item.remove_attribute(attr_node.im_attr_name)
 			end
 		}
 	;
@@ -276,7 +276,7 @@ untyped_container_attr_object_block: container_attr_object_block_head keyed_obje
 			-- if the keyed_objects were all empty, then the attribute can be thrown away 
 			-- as well, since we don't create void object structures
 			if attr_nodes.item.is_empty then
-				attr_nodes.item.parent.remove_attribute (attr_nodes.item.rm_attr_name)
+				attr_nodes.item.parent.remove_attribute (attr_nodes.item.im_attr_name)
 			end
 
 			-- if the current C_ATTRIBUTE_NODE is a synthesised one, under a keyed object,
@@ -285,14 +285,14 @@ untyped_container_attr_object_block: container_attr_object_block_head keyed_obje
 				-- pop the generic attr node
 debug("dADL_parse")
 	io.put_string(indent + "container_attr_object_block: POP attr node (" +  
-		attr_nodes.item.rm_attr_name+ ")%N")
+		attr_nodes.item.im_attr_name+ ")%N")
 	indent.remove_tail(1)
 end
 				attr_nodes.remove
 
 debug("dADL_parse")
 	io.put_string(indent + "container_attr_object_block: POP Object node(" + 
-		complex_object_nodes.item.node_id + ")%N")
+		complex_object_nodes.item.id + ")%N")
 	indent.remove_tail(1)
 end
 				$$ := complex_object_nodes.item
@@ -328,15 +328,15 @@ container_attr_object_block_head: SYM_START_DBLOCK
 			-- if obj_key is set, it means we are inside a keyed object, and we have hit more keyed objects
 			if obj_key /= Void then
 				create complex_object_node.make_identified(obj_key)
-				if not attr_nodes.item.has_child_with_id(complex_object_node.node_id) then
+				if not attr_nodes.item.has_child_with_id(complex_object_node.id) then
 debug("dADL_parse")
 	io.put_string(indent + "container_attr_object_block_head; attr_nodes(<<" + 
-		attr_nodes.item.rm_attr_name + ">>).item.put_child(complex_object_node(" + 
-		complex_object_node.node_id + "))%N")
+		attr_nodes.item.im_attr_name + ">>).item.put_child(complex_object_node(" + 
+		complex_object_node.id + "))%N")
 end
 					attr_nodes.item.put_child(complex_object_node)
 				else
-					abort_with_error("VOKU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>)
+					abort_with_error("VOKU", <<complex_object_node.id, attr_nodes.item.im_attr_name >>)
 				end
 
 debug("dADL_parse")
@@ -354,7 +354,7 @@ end
 
 debug("dADL_parse")
 	io.put_string(indent + "container_attr_object_block_head: complex_object_node(" + 
-			complex_object_node.node_id + ").put_attribute(" + attr_node.rm_attr_name + ")%N")
+			complex_object_node.id + ").put_attribute(" + attr_node.im_attr_name + ")%N")
 end
 				complex_object_node.put_attribute(attr_node)
 
@@ -395,12 +395,12 @@ object_key: '[' primitive_value ']'
 
 debug("dADL_parse")
 	io.put_string(indent + "object_key: " + obj_key + 
-		" (setting " + attr_nodes.item.rm_attr_name + " to Multiple)%N")
+		" (setting " + attr_nodes.item.im_attr_name + " to Multiple)%N")
 end
 			if not attr_nodes.is_empty then
 				attr_nodes.item.set_container_type
 			else
-				abort_with_error("SGEE", <<attr_node.rm_attr_name>>)
+				abort_with_error("SGEE", <<attr_node.im_attr_name>>)
 			end
 		}
 	;
@@ -438,7 +438,7 @@ untyped_single_attr_object_block: single_attr_object_complex_head attr_vals SYM_
 		{
 debug("dADL_parse")
 	io.put_string(indent + "single_attr_object_complex_block: POP Object node(" + 
-		complex_object_nodes.item.node_id + ")%N")
+		complex_object_nodes.item.id + ")%N")
 	indent.remove_tail(1)
 end
 			$$ := complex_object_nodes.item
@@ -464,15 +464,15 @@ end
 
 			-- now put the new object under its attribute, if one exists
 			if not attr_nodes.is_empty then
-				if not attr_nodes.item.has_child_with_id(complex_object_node.node_id) then
+				if not attr_nodes.item.has_child_with_id(complex_object_node.id) then
 debug("dADL_parse")
 	io.put_string(indent + "single_attr_object_complex_head: attr_nodes(<<" + 
-		attr_nodes.item.rm_attr_name + ">>).item.put_child(complex_object_node(" + 
-		complex_object_node.node_id + "))%N")
+		attr_nodes.item.im_attr_name + ">>).item.put_child(complex_object_node(" + 
+		complex_object_node.id + "))%N")
 end
 					attr_nodes.item.put_child(complex_object_node)
 				else
-					abort_with_error("VOKU", <<complex_object_node.node_id, attr_nodes.item.rm_attr_name >>)
+					abort_with_error("VOKU", <<complex_object_node.id, attr_nodes.item.im_attr_name >>)
 				end
 			end
 
@@ -513,14 +513,14 @@ untyped_primitive_object_block: SYM_START_DBLOCK primitive_object SYM_END_DBLOCK
 		{
 debug("dADL_parse")
 	io.put_string(indent + "untyped_primitive_object_block; attr_nodes(<<" + 
-			attr_nodes.item.rm_attr_name + ">>).item.put_child(<<" + 
+			attr_nodes.item.im_attr_name + ">>).item.put_child(<<" + 
 			$2.as_string + ">>)%N")
 end
-			if not attr_nodes.item.has_child_with_id($2.node_id) then
+			if not attr_nodes.item.has_child_with_id($2.id) then
 				attr_nodes.item.put_child($2)
 				$$ := $2
 			else
-				abort_with_error("VOKU", <<$2.node_id, attr_nodes.item.rm_attr_name >>)
+				abort_with_error("VOKU", <<$2.id, attr_nodes.item.im_attr_name >>)
 			end
 		}
 	;
@@ -1369,14 +1369,14 @@ object_reference_block: SYM_START_DBLOCK absolute_path_object_value SYM_END_DBLO
 		{
 debug("dADL_parse")
 	io.put_string(indent + "object_reference_block; attr_nodes(<<" + 
-			attr_nodes.item.rm_attr_name + ">>).item.put_child(<<" + 
+			attr_nodes.item.im_attr_name + ">>).item.put_child(<<" + 
 			$2.as_string + ">>)%N")
 end
-			if not attr_nodes.item.has_child_with_id($2.node_id) then
+			if not attr_nodes.item.has_child_with_id($2.id) then
 				attr_nodes.item.put_child($2)
 				$$ := $2
 			else
-				abort_with_error("VOKU", <<$2.node_id, attr_nodes.item.rm_attr_name >>)
+				abort_with_error("VOKU", <<$2.id, attr_nodes.item.im_attr_name >>)
 			end
 		}
 	;
@@ -1554,9 +1554,7 @@ feature {NONE} -- Parse Tree
 	obj_key: STRING
 			-- qualifier of last rel name; use for next object creation
 
-	rm_attr_name: STRING
-	node_type: STRING
-	node_id: STRING
+	im_attr_name: STRING
 
 	time_vc: TIME_VALIDITY_CHECKER
 	date_vc: DATE_VALIDITY_CHECKER

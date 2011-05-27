@@ -53,13 +53,13 @@ feature -- Initialisation
 			not is_typed
 		end
 
-	make_identified (a_node_id: attached STRING)
+	make_identified (an_id: attached STRING)
 			-- set node id, type_name = 'unknown'
 		require
-			Node_id_valid: not a_node_id.is_empty
+			Id_valid: not an_id.is_empty
 		do
 			default_create
-			create representation.make (a_node_id, Current)
+			create representation.make (an_id, Current)
 		ensure
 			not is_typed
 		end
@@ -94,7 +94,7 @@ feature -- Access
 			Result ?= representation.child_with_id(an_attr_name).content_item
 		end
 
-	node_at_path(a_path: attached STRING): attached DT_OBJECT_ITEM
+	node_at_path (a_path: attached STRING): attached DT_OBJECT_ITEM
 			-- find the child at the relative path `a_path'; paths can only ever return an object
 		require
 			Path_valid: has_path(a_path)
@@ -102,7 +102,7 @@ feature -- Access
 			Result ?= representation.object_node_at_path(create {OG_PATH}.make_from_string(a_path)).content_item
 		end
 
-	attribute_node_at_path(a_path: attached STRING): attached DT_ATTRIBUTE_NODE
+	attribute_node_at_path (a_path: attached STRING): attached DT_ATTRIBUTE_NODE
 			-- find the child at the relative path `a_path'; paths can only ever return an object
 		require
 			Path_valid: has_path(a_path)
@@ -191,12 +191,12 @@ feature -- Iteration
 
 feature -- Status Report
 
-	has_path(a_path: attached STRING): BOOLEAN
+	has_path (a_path: attached STRING): BOOLEAN
 			-- find the child at the relative path `a_path'
 		require
 			Path_valid: not a_path.is_empty
 		do
-			Result := representation.has_path(create {OG_PATH}.make_from_string(a_path))
+			Result := representation.has_path (create {OG_PATH}.make_from_string (a_path))
 		end
 
 	has_attribute (an_attr_name: attached STRING): BOOLEAN
@@ -211,7 +211,7 @@ feature -- Status Report
 			-- report on validity
 		do
 			create invalid_reason.make(0)
-			invalid_reason.append(im_type_name + node_id + ":")
+			invalid_reason.append (im_type_name + id + ":")
 			Result := True
 		end
 
@@ -226,11 +226,11 @@ feature -- Modification
 	put_attribute(an_attr_node: attached DT_ATTRIBUTE_NODE)
 			-- put a new child node
 		require
-			Node_exists: not has_attribute(an_attr_node.im_attr_name)
+			Node_exists: not has_attribute (an_attr_node.im_attr_name)
 		do
 			representation.put_child (an_attr_node.representation)
-			attributes.extend(an_attr_node)
-			an_attr_node.set_parent(Current)
+			attributes.extend (an_attr_node)
+			an_attr_node.set_parent (Current)
 		end
 
 	set_value_at_path (a_value: attached ANY; a_path: attached STRING)
@@ -249,7 +249,7 @@ feature -- Modification
 			Value_set: value_at_path (a_path) = a_value
 		end
 
-	put_value_at_path(a_value: attached ANY; a_path: attached STRING)
+	put_value_at_path (a_value: attached ANY; a_path: attached STRING)
 			-- create a new set of objects corresponding to `a_path'. At least the final segment
 			-- of `a_path' does not already exist in the structure below the current object node
 		require
@@ -282,7 +282,7 @@ feature -- Modification
 			put_object_at_path (dt_obj, a_path)
 		end
 
-	put_object_at_path(new_dt_obj: attached DT_OBJECT_ITEM; a_path: attached STRING)
+	put_object_at_path (new_dt_obj: attached DT_OBJECT_ITEM; a_path: attached STRING)
 			-- put `an_obj' at `a_path'; create the intervening structure if it doesn't already exist
 			-- At least the final segment of `a_path' does not already exist in the structure below
 			-- the current object node
@@ -337,7 +337,7 @@ feature -- Modification
 			end
 		end
 
-	replace_attribute_name(old_name, new_name: attached STRING)
+	replace_attribute_name (old_name, new_name: attached STRING)
 			-- change the name of an attribute
 		require
 			Old_name_valid: has_attribute(old_name)
@@ -364,7 +364,7 @@ feature -- Conversion
 			--
 		do
 			create Result.make(0)
-			Result.append (im_type_name + "[" + node_id + "] ")
+			Result.append (im_type_name + "[" + id + "] ")
 		end
 
 	as_object (a_type_id: INTEGER; make_args: ARRAY[ANY]): ANY

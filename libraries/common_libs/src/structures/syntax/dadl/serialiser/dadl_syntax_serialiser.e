@@ -41,7 +41,7 @@ feature -- Visitor
 
 			-- for objects inside a container, output: ["key"] =
 			if a_node.is_addressable then
-				last_result.append (apply_style("[%"" + dadl_clean (a_node.node_id) + "%"]", STYLE_IDENTIFIER))
+				last_result.append (apply_style("[%"" + dadl_clean (a_node.id) + "%"]", STYLE_IDENTIFIER))
 				last_result.append (format_item(FMT_SPACE))
 				last_result.append (apply_style(symbol(SYM_EQ), STYLE_OPERATOR) + format_item(FMT_SPACE))
 			end
@@ -171,7 +171,7 @@ feature {NONE} -- Implementation
 			s: STRING
 		do
 			if a_node.parent.is_container_type then
-				last_result.append (create_indent(depth//2 + multiple_attr_count) + apply_style("[%"" + dadl_clean (a_node.node_id) + "%"]", STYLE_IDENTIFIER))
+				last_result.append (create_indent(depth//2 + multiple_attr_count) + apply_style("[%"" + dadl_clean (a_node.id) + "%"]", STYLE_IDENTIFIER))
 				last_result.append (format_item(FMT_SPACE))
 				last_result.append (apply_style(symbol(SYM_EQ), STYLE_OPERATOR) + format_item(FMT_SPACE))
 			end

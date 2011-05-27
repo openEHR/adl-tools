@@ -721,7 +721,7 @@ feature {NONE} -- Implementation
 						debug ("DT")
 							io.put_string ("%TDT_REFERENCE (inside HASH_TABLE DT_ATTRIBUTE)" + a_dt_ref.as_string + "%N")
 						end
-						a_dt_ref.set_hash_table_source_object_details (a_hash_table, a_dt_attr.item.node_id)
+						a_dt_ref.set_hash_table_source_object_details (a_hash_table, a_dt_attr.item.id)
 						object_ref_list.extend (a_dt_ref)
 					else -- the static type may be overridden by a type specified in the DT tree
 						if a_dt_attr.item.type_visible then
@@ -733,7 +733,7 @@ feature {NONE} -- Implementation
 							dynamic_object_type_id := static_eif_container_content_type_id
 						end
 						if dynamic_object_type_id > 0 then
-							a_hash_table.extend (a_dt_attr.item.as_object (dynamic_object_type_id, Void), a_dt_attr.item.node_id)
+							a_hash_table.extend (a_dt_attr.item.as_object (dynamic_object_type_id, Void), a_dt_attr.item.id)
 						end
 					end
 					a_dt_attr.forth

@@ -29,7 +29,7 @@ feature -- Definitions
 
 feature -- Access
 
-	node_id: attached STRING
+	id: attached STRING
 			-- locally unique node id
 		do
 			Result := representation.node_id
@@ -43,17 +43,17 @@ feature -- Comparison
 	is_less alias "<" (other: like Current): BOOLEAN
 			-- compare based on node_id
 		do
-			Result := node_id < other.node_id
+			Result := id < other.id
 		end
 
 feature -- Modification
 
-	set_node_id (a_node_id: attached STRING)
+	set_id (an_id: attached STRING)
 			-- set node id
 		require
-			Node_id_valid: not a_node_id.is_empty
+			Id_valid: not an_id.is_empty
 		do
-			representation.set_node_id(a_node_id)
+			representation.set_node_id (an_id)
 		end
 
 feature -- Conversion
@@ -76,7 +76,7 @@ feature -- Representation
 	representation: OG_OBJECT
 
 invariant
-	Node_id_valid: not node_id.is_empty
+	Id_valid: not id.is_empty
 
 end
 

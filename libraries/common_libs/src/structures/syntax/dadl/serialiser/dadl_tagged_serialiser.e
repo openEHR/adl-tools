@@ -42,7 +42,6 @@ feature -- Modification
 	start_complex_object_node (a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER)
 			-- start serialising an DT_COMPLEX_OBJECT_NODE
 		local
-			xml_attrs: HASH_TABLE [STRING, STRING]
 			doc_attr_name, doc_hdr: STRING
 		do
 			if not checked_for_rules and not attached serialisation_rules then
@@ -83,11 +82,9 @@ feature -- Modification
 
 			-- only output object-level tag for object inside a container
 			elseif a_node.parent.is_container_type then
-				-- get any XML attributes
-				xml_attrs := xml_attrs_for_dt_obj (a_node)
-
 				-- output the starting tag with attributes
-				last_result.append (create_indent (depth//2) + xml_tag_start (a_node.parent.im_attr_name, xml_attrs) + format_item(FMT_NEWLINE))
+				last_result.append (create_indent (depth//2) + xml_tag_start (a_node.parent.im_attr_name,
+					xml_attrs_for_dt_complex_object (a_node)) + format_item(FMT_NEWLINE))
 			end
 		end
 
@@ -128,7 +125,7 @@ feature -- Modification
 					-- if we are on single-valued node, look at child, and see if there are
 					-- any rules for that type in the rule set for the overall context
 					if attached {DT_COMPLEX_OBJECT_NODE} a_node.first_child as dt_obj then
-						xml_attrs := xml_attrs_for_dt_obj (dt_obj)
+						xml_attrs := xml_attrs_for_dt_complex_object (dt_obj)
 					end
 					last_result.append (create_indent (depth//2) + xml_tag_start (a_node.im_attr_name, xml_attrs) +
 						format_item(FMT_NEWLINE))
@@ -161,7 +158,8 @@ feature -- Modification
 			if not ignoring_dt_objects then
 				-- generate an XML tag if object in a container
 				if a_node.parent.is_container_type then
-					last_result.append (create_indent (depth//2) + xml_tag_start (a_node.parent.im_attr_name, Void))
+					-- output indent + tag
+					last_result.append (create_indent (depth//2) + xml_tag_start (a_node.parent.im_attr_name, xml_attrs_for_dt_primitive_object (a_node)))
 				else
 					last_result.remove_tail (format_item (FMT_NEWLINE).count)
 				end
@@ -283,7 +281,7 @@ feature {NONE} -- Implementation
 			last_result.append (a_node.as_string)
 		end
 
-	xml_attrs_for_dt_obj (a_dt_obj: DT_COMPLEX_OBJECT_NODE): HASH_TABLE [STRING, STRING]
+	xml_attrs_for_dt_complex_object (a_dt_obj: DT_COMPLEX_OBJECT_NODE): HASH_TABLE [STRING, STRING]
 			-- generate XML attribute table for `a_dt_obj' based on XML rules, if any found
 		local
 			attr_name: STRING
@@ -297,6 +295,9 @@ feature {NONE} -- Implementation
 						Result.put (a_dt_obj.im_type_name, "im:type")
 					end
 				end
+
+				-- put the DT node id in the result
+				Result.put (a_dt_obj.id, "id")
 
 				-- for each rule of type 'convert object value to XML attribute', see if the attribute exists
 				-- and if so, construct the appropriate XML attribute information to put into the tag, below
@@ -312,6 +313,26 @@ feature {NONE} -- Implementation
 						srt.convert_to_xml_attr_attr_names.forth
 					end
 				end
+			end
+		end
+
+	xml_attrs_for_dt_primitive_object (a_dt_obj: DT_PRIMITIVE_OBJECT): HASH_TABLE [STRING, STRING]
+			-- generate XML attribute table for `a_dt_obj' based on XML rules, if any found
+		local
+			attr_name: STRING
+		do
+			if attached serialisation_rules.rules_for_type (a_dt_obj.im_type_name) as srt then
+				create Result.make (0)
+
+				-- put the DT node id in the result
+				Result.put (a_dt_obj.id, "id")
+
+--				-- put the IM type name in the result
+--				if srt.output_dt_im_type_name_as_xml_attr then
+--					if a_dt_obj.is_typed then
+--						Result.put (a_dt_obj.im_type_name, "im:type")
+--					end
+--				end
 			end
 		end
 
