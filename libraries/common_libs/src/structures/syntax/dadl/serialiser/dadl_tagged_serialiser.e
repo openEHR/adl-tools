@@ -296,8 +296,12 @@ feature {NONE} -- Implementation
 					end
 				end
 
-				-- put the DT node id in the result
-				Result.put (a_dt_obj.id, "id")
+				-- put the DT node id in the result for ids that are not just numbers (numbers are generated in
+				-- the DT structure for any LIST structure, i.e. where there are no available keys).
+				-- Currently just do this if there is a rule of any kind, without checking any details.
+				if a_dt_obj.is_addressable and not a_dt_obj.id.is_integer then
+					Result.put (a_dt_obj.id, "id")
+				end
 
 				-- for each rule of type 'convert object value to XML attribute', see if the attribute exists
 				-- and if so, construct the appropriate XML attribute information to put into the tag, below
@@ -324,8 +328,12 @@ feature {NONE} -- Implementation
 			if attached serialisation_rules.rules_for_type (a_dt_obj.im_type_name) as srt then
 				create Result.make (0)
 
-				-- put the DT node id in the result
-				Result.put (a_dt_obj.id, "id")
+				-- put the DT node id in the result for ids that are not just numbers (numbers are generated in
+				-- the DT structure for any LIST structure, i.e. where there are no available keys).
+				-- Currently just do this if there is a rule of any kind, without checking any details.
+				if a_dt_obj.is_addressable and not a_dt_obj.id.is_integer then
+					Result.put (a_dt_obj.id, "id")
+				end
 
 --				-- put the IM type name in the result
 --				if srt.output_dt_im_type_name_as_xml_attr then
