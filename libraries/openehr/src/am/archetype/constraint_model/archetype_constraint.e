@@ -22,6 +22,8 @@ inherit
 			{ANY} valid_specialisation_status
 		end
 
+	HASHABLE
+
 feature -- Access
 
 	parent: ARCHETYPE_CONSTRAINT
@@ -36,6 +38,12 @@ feature -- Access
 			-- path from this node to `a_node'
 		do
 			Result := representation.path_to_node (a_node.representation).as_string
+		end
+
+	hash_code: INTEGER
+			-- Hash code value
+		do
+			Result := path.hash_code
 		end
 
 feature -- Source Control

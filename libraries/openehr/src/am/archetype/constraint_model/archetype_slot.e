@@ -39,14 +39,14 @@ feature -- Initialisation
 			create excludes.make(0)
 		end
 
-	make_identified (a_rm_type_name, an_object_id: STRING)
+	make_identified (a_rm_type_name, an_object_id: attached STRING)
 			-- set type name, object_id
 		require
-			Rm_type_name_valid: a_rm_type_name /= Void and then not a_rm_type_name.is_empty
-			Object_id_valid: an_object_id /= Void and then not an_object_id.is_empty
+			Rm_type_name_valid: not a_rm_type_name.is_empty
+			Object_id_valid: not an_object_id.is_empty
 		do
 			default_create
-			create representation.make(an_object_id, Current)
+			create representation.make (an_object_id, Current)
 			rm_type_name := a_rm_type_name
 		end
 
@@ -56,7 +56,7 @@ feature -- Initialisation
 			Rm_type_name_valid: not a_rm_type_name.is_empty
 		do
 			default_create
-			create representation.make_anonymous(Current)
+			create representation.make_anonymous (Current)
 			rm_type_name := a_rm_type_name
 		end
 
@@ -167,15 +167,15 @@ feature -- Visitor
 	enter_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
-			precursor(visitor, depth)
-			visitor.start_archetype_slot(Current, depth)
+			precursor (visitor, depth)
+			visitor.start_archetype_slot (Current, depth)
 		end
 
 	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
-			precursor(visitor, depth)
-			visitor.end_archetype_slot(Current, depth)
+			precursor (visitor, depth)
+			visitor.end_archetype_slot (Current, depth)
 		end
 
 end
