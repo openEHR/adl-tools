@@ -86,15 +86,15 @@ feature -- Output
 			-- stringify for GUI use
 		do
 			create Result.make(0)
-			Result.append(rm_type_name + "[")
+			Result.append (rm_type_name + "[")
 			if attached slot_node_id then
-				Result.append(slot_node_id + ", ")
+				Result.append (slot_node_id + ", ")
 			end
 			if is_addressable then
-				Result.append(archetype_id + ", ")
+				Result.append (archetype_id + ", ")
 			end
 			if attached occurrences then
-				Result.append(occurrences.as_string)
+				Result.append (occurrences.as_string)
 			end
 		end
 

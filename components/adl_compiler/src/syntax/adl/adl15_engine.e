@@ -65,6 +65,9 @@ feature {NONE} -- Initialisation
 			create invariant_context.make
 			create ontology_context.make
 			create annotations_context.make
+
+			create differential_validator
+			create flat_validator
 		end
 
 feature -- Access
@@ -72,7 +75,7 @@ feature -- Access
 	errors: attached ERROR_ACCUMULATOR
 			-- errors of last parse
 
-feature -- Commands
+feature -- Parsing
 
 	parse_differential (a_text: attached STRING; an_rm_schema: attached BMM_SCHEMA): detachable DIFFERENTIAL_ARCHETYPE
 			-- parse text as differential archetype. If successful, `archetype' contains the parse structure.
@@ -87,6 +90,8 @@ feature -- Commands
 			rm_schema := an_rm_schema
 			Result ?= parse (a_text, False)
 		end
+
+feature -- Serialisation
 
 	serialise (an_archetype: attached ARCHETYPE; a_format, a_lang: attached STRING): attached STRING
 			-- serialise current archetype into format, using the supplied ontology. For serialising
@@ -169,7 +174,36 @@ feature -- Commands
 			Result := serialiser_mgr.last_result
 		end
 
-feature {NONE} -- Implementation
+	serialiser_mgr: ARCHETYPE_SERIALISER_MGR
+
+feature -- Validation
+
+	validate_differential (ara: ARCH_REP_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
+		do
+			validation_passed := False
+			differential_validator.initialise (ara, an_rm_schema)
+			differential_validator.validate
+			validation_passed := differential_validator.passed
+			errors := differential_validator.errors
+		end
+
+	validate_flat (ara: ARCH_REP_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
+		do
+			validation_passed := False
+			flat_validator.initialise (ara, an_rm_schema)
+			flat_validator.validate
+			validation_passed := flat_validator.passed
+			errors := flat_validator.errors
+		end
+
+	validation_passed: BOOLEAN
+			-- result of last validation
+
+	differential_validator: ARCHETYPE_SOURCE_VALIDATOR
+
+	flat_validator: ARCHETYPE_FLAT_VALIDATOR
+
+feature {NONE} -- Parsing
 
 	parse (a_text: attached STRING; differential_source_flag: BOOLEAN): ARCHETYPE
 			-- parse tree. If successful, `archetype' contains the parse
@@ -345,8 +379,6 @@ feature {NONE} -- Implementation
 		end
 
 	adl_parser: ADL_VALIDATOR
-
-	serialiser_mgr: ARCHETYPE_SERIALISER_MGR
 
 	language_context: DADL_ENGINE
 

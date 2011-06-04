@@ -18,7 +18,7 @@ inherit
 
 feature {NONE} -- Initialisation
 
-	make (a_target: attached like target)
+	initialise (a_target: attached like target)
 			-- set target and initialise reporting variables
 		do
 			target := a_target

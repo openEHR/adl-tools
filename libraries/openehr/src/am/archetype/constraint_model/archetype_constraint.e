@@ -91,12 +91,6 @@ feature -- Status report
 			Result := representation.is_root
 		end
 
-	is_addressable: BOOLEAN
-			-- True if this node has a non-anonymous node_id
-		do
-			Result := representation.is_addressable
-		end
-
 	is_prohibited: BOOLEAN
 			-- True if node is prohibited, i.e. excluded
 		deferred

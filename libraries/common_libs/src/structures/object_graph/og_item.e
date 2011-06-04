@@ -238,7 +238,7 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	Node_id_exists: not node_id.is_empty
+	Node_id_valid: not node_id.is_empty
 
 end
 

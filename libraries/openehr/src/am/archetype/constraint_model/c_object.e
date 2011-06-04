@@ -78,6 +78,12 @@ feature -- Access
 
 feature -- Status report
 
+	is_addressable: BOOLEAN
+			-- True if this node has a non-anonymous node_id
+		do
+			Result := representation.is_addressable
+		end
+
 	is_prohibited: BOOLEAN
 			-- True if occurrences set to {0} i.e. prohibited
 		do

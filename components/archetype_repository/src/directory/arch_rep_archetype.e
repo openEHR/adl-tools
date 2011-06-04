@@ -912,14 +912,17 @@ feature {NONE} -- Compilation
 			--	validate failed: Cs_ready_to_validate --> Cs_validate_failed
 		require
 			Initial_state: compilation_state = Cs_ready_to_validate
-		local
-			validator: ARCHETYPE_VALIDATOR
 		do
 			flat_archetype_cache := Void
-			create validator.make (Current, rm_schema)
-			if validator.passed then
-				validator.validate
-				if validator.passed then
+			adl15_engine.validate_differential (Current, rm_schema)
+			errors.append (adl15_engine.errors)
+			if adl15_engine.validation_passed then
+				if is_specialised then
+					differential_archetype.set_parent_archetype (specialisation_parent.differential_archetype)
+	 			end
+				adl15_engine.validate_flat (Current, rm_schema)
+				errors.append (adl15_engine.errors)
+				if adl15_engine.validation_passed then
 					post_info (Current, "validate", "parse_archetype_i2", <<id.as_string>>)
 					compilation_state := Cs_validated
 					current_arch_dir.update_slot_statistics (Current)
@@ -930,8 +933,7 @@ feature {NONE} -- Compilation
 			else
 				compilation_state := Cs_validate_failed
 			end
-			errors.append (validator.errors)
-			differential_archetype.set_is_valid (validator.passed)
+			differential_archetype.set_is_valid (adl15_engine.validation_passed)
 
 			status.copy (billboard.content)
 			billboard.clear
