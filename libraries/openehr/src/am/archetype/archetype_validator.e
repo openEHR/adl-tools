@@ -73,7 +73,7 @@ feature {NONE} -- Initialisation
 		do
 			rm_schema := an_rm_schema
 			target_descriptor := a_target_desc
-			make_authored_resource(target_descriptor.differential_archetype)
+			make_authored_resource (target_descriptor.differential_archetype)
 		ensure
 			target_descriptor_set: target_descriptor = a_target_desc
 			target_set: target = a_target_desc.differential_archetype
@@ -216,7 +216,6 @@ feature {NONE} -- Implementation
 			includes, excludes: ARRAYED_LIST[ASSERTION]
 		do
 			from target.slot_index.start until target.slot_index.off loop
-				-- process the includes
 				includes := target.slot_index.item.includes
 				excludes := target.slot_index.item.excludes
 
@@ -537,7 +536,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	extract_regex(an_assertion: ASSERTION): STRING
+	extract_regex (an_assertion: attached ASSERTION): STRING
 			-- extract regex from id matches {/regex/} style assertion used in slots
 		do
 			if attached {EXPR_BINARY_OPERATOR} an_assertion.expression as bin_op and then bin_op.operator.value = op_matches then
@@ -572,8 +571,8 @@ feature {NONE} -- Implementation
 		local
 			def_it: C_ITERATOR
 		do
-			create def_it.make(target.definition)
-			def_it.do_until_surface(agent specialised_node_validate, agent specialised_node_validate_test)
+			create def_it.make (target.definition)
+			def_it.do_until_surface (agent specialised_node_validate, agent specialised_node_validate_test)
 		end
 
 	specialised_node_validate (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)

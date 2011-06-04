@@ -206,10 +206,8 @@ feature -- Commands
 				end
 
 			elseif attached {STRING} gui_tree.selected_item.data as str and then is_valid_code (str) then
-				if current_arch_dir.has_validated_selected_archetype then
-					if ontology.has_term_code (str) then
-						gui.ontology_controls.select_term (str)
-					end
+				if ontology.has_term_code (str) then
+					gui.ontology_controls.select_term (str)
 				end
 			end
 		end
@@ -307,7 +305,7 @@ feature {NONE} -- Implementation
 
 	tree_item_stack: ARRAYED_STACK[EV_TREE_ITEM]
 
-	node_add_rm_attributes(a_tree_node: attached EV_TREE_NODE)
+	node_add_rm_attributes (a_tree_node: attached EV_TREE_NODE)
 		local
 			pixmap: EV_PIXMAP
 			props: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
@@ -322,7 +320,7 @@ feature {NONE} -- Implementation
 					end
 					from props.start until props.off loop
 						if not c_c_o.has_attribute (props.key_for_iteration) then
-							pixmap := pixmaps.item (rm_attribute_pixmap_string(props.item_for_iteration))
+							pixmap := pixmaps.item (rm_attribute_pixmap_string (props.item_for_iteration))
 							create attr_ti.make_with_text (utf8 (props.key_for_iteration + ": " + props.item_for_iteration.type_def.as_type_string))
 							attr_ti.set_data (props.item_for_iteration)
 							attr_ti.set_pixmap (pixmap)
@@ -334,7 +332,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	node_remove_rm_attributes(a_tree_node: attached EV_TREE_NODE)
+	node_remove_rm_attributes (a_tree_node: attached EV_TREE_NODE)
 		do
 			if attached {C_COMPLEX_OBJECT} a_tree_node.data as c_c_o then
 				from a_tree_node.start until a_tree_node.off loop
@@ -363,38 +361,33 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	ev_tree_item_shrink_to_level(a_type: attached STRING; an_ev_tree_node: attached EV_TREE_NODE)
+	ev_tree_item_shrink_to_level (a_level: attached STRING; an_ev_tree_node: attached EV_TREE_NODE)
 			--
-		local
-			node_type: STRING
-			an_obj_node: C_COMPLEX_OBJECT
 		do
-			if attached an_ev_tree_node.data as node_data then
-				node_type := node_data.generating_type
-				if node_type.is_equal("C_ATTRIBUTE") and an_ev_tree_node.is_expandable then
+			if attached an_ev_tree_node.data then
+				if attached {C_ATTRIBUTE} an_ev_tree_node.data and an_ev_tree_node.is_expandable then
 					an_ev_tree_node.expand
 				elseif an_ev_tree_node.is_expandable then
-					an_obj_node ?= an_ev_tree_node
-					if a_type.is_equal("addressable") then
-						if an_obj_node /= Void and then an_obj_node.is_addressable then
+					if a_level.is_equal("addressable") then
+						if attached {C_COMPLEX_OBJECT} an_ev_tree_node as an_obj_node and then an_obj_node.is_addressable then
 							an_ev_tree_node.expand
 						else
 							an_ev_tree_node.collapse
 						end
-					elseif a_type.is_equal("anonymous") then
-						if an_obj_node /= Void then
+					elseif a_level.is_equal("anonymous") then
+						if attached {C_COMPLEX_OBJECT} an_ev_tree_node then
 							an_ev_tree_node.expand
 						else
 							an_ev_tree_node.collapse
 						end
-					elseif a_type.is_equal("simple") then
+					elseif a_level.is_equal("simple") then
 						an_ev_tree_node.expand
 					end
 				end
 			end
 		end
 
-	ev_tree_item_expand_one_level(an_ev_tree_node: attached EV_TREE_NODE)
+	ev_tree_item_expand_one_level (an_ev_tree_node: attached EV_TREE_NODE)
 			--
 		do
 			if an_ev_tree_node.is_expanded then
@@ -409,7 +402,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	ev_tree_item_collapse_one_level(an_ev_tree_node: attached EV_TREE_NODE)
+	ev_tree_item_collapse_one_level (an_ev_tree_node: attached EV_TREE_NODE)
 			--
 		do
 			if an_ev_tree_node.is_expanded then
@@ -423,7 +416,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	ev_tree_item_roll_up(an_ev_tree_node: attached EV_TREE_NODE)
+	ev_tree_item_roll_up (an_ev_tree_node: attached EV_TREE_NODE)
 			-- close nodes that have rolled_up_specialisation_status = ss_inherited; open others
 		do
 			if an_ev_tree_node.is_expandable then
@@ -437,9 +430,9 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	node_list: ARRAYED_LIST[EV_TREE_NODE]
+	node_list: ARRAYED_LIST [EV_TREE_NODE]
 
-	rm_attribute_pixmap_string(rm_attr: attached BMM_PROPERTY_DEFINITION): attached STRING
+	rm_attribute_pixmap_string (rm_attr: attached BMM_PROPERTY_DEFINITION): attached STRING
 			-- string name of pixmap for attribute rm_attr
 		do
 			create Result.make_empty
@@ -453,7 +446,7 @@ feature {NONE} -- Implementation
 			Result.append (".reference_model")
 		end
 
-	object_invariant_string(an_inv: attached ASSERTION): attached STRING
+	object_invariant_string (an_inv: attached ASSERTION): attached STRING
 			-- generate string form of node or object for use in tree node
 		do
 			Result := an_inv.as_string
@@ -470,30 +463,28 @@ feature {NONE} -- Implementation
 			invariants: ARRAYED_LIST[ASSERTION]
 			s: STRING
 		do
-			if current_arch_dir.has_validated_selected_archetype then
-				if target_archetype.has_invariants then
-					invariants := target_archetype.invariants
-					create a_ti_sub.make_with_text ("invariants:")
-					a_ti_sub.set_pixmap(pixmaps.item ("CADL_INVARIANT"))
-					gui_tree.extend (a_ti_sub)
+			if target_archetype.has_invariants then
+				invariants := target_archetype.invariants
+				create a_ti_sub.make_with_text ("invariants:")
+				a_ti_sub.set_pixmap(pixmaps.item ("CADL_INVARIANT"))
+				gui_tree.extend (a_ti_sub)
 
-					from invariants.start until invariants.off loop
-						create s.make_empty
+				from invariants.start until invariants.off loop
+					create s.make_empty
 
-						if invariants.item.tag /= Void then
-							s.append (invariants.item.tag + ": ")
-						end
-
-						s.append (object_invariant_string (invariants.item))
-						create a_ti_sub2.make_with_text (utf8 (s))
-						a_ti_sub2.set_pixmap (pixmaps.item ("CADL_INVARIANT_ITEM"))
-						a_ti_sub2.set_data (invariants.item)
-						a_ti_sub.extend (a_ti_sub2)
-						invariants.forth
+					if invariants.item.tag /= Void then
+						s.append (invariants.item.tag + ": ")
 					end
 
-					-- FIXME: TO BE IMPLEM - need to add sub nodes for each assertion
+					s.append (object_invariant_string (invariants.item))
+					create a_ti_sub2.make_with_text (utf8 (s))
+					a_ti_sub2.set_pixmap (pixmaps.item ("CADL_INVARIANT_ITEM"))
+					a_ti_sub2.set_data (invariants.item)
+					a_ti_sub.extend (a_ti_sub2)
+					invariants.forth
 				end
+
+				-- FIXME: TO BE IMPLEM - need to add sub nodes for each assertion
 			end
 		end
 

@@ -28,7 +28,7 @@ feature -- Initialisation
 	make_anonymous(a_content_item: VISITABLE)
 			-- make an anonymous node with optional content item
 		do
-			make(Anonymous_node_id, a_content_item)
+			make (Anonymous_node_id, a_content_item)
 		end
 
 feature -- Access

@@ -30,10 +30,10 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (a_node_id: STRING; a_content_item: VISITABLE)
+	make (a_node_id: attached STRING; a_content_item: VISITABLE)
 			-- create with node id and optional content_item
 		require
-			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
+			Node_id_valid: not a_node_id.is_empty
 		do
 			default_create
 			node_id := a_node_id
@@ -44,10 +44,10 @@ feature -- Initialisation
 
 feature -- Access
 
-	node_id: STRING
+	node_id: attached STRING
 				-- id of this node
 
-	node_key: STRING
+	node_key: attached STRING
 			-- uses compressed path if it exists
 		do
 			Result := node_id
@@ -59,21 +59,19 @@ feature -- Access
 	path: OG_PATH
 			-- absolute path of this node relative to the root; may produce non-unique paths
 		do
-			Result := generate_path(False, Void)
+			Result := generate_path (False, Void)
 		end
 
-	path_to_node (a_node: OG_ITEM): OG_PATH
+	path_to_node (a_node: attached OG_ITEM): OG_PATH
 			-- absolute path of this node relative to the root; may produce non-unique paths
-		require
-			a_node_attachde: attached a_node
 		do
-			Result := generate_path(False, a_node)
+			Result := generate_path (False, a_node)
 		end
 
 	unique_path: OG_PATH
 			-- absolute unique path of this node relative to the root
 		do
-			Result := generate_path(True, Void)
+			Result := generate_path (True, Void)
 		end
 
 	parent: OG_NODE
@@ -83,28 +81,18 @@ feature -- Access
 		require
 			not is_root
 		do
-			from
-				Result := parent
-			until
-				Result.is_root
-			loop
+			from Result := parent until Result.is_root loop
 				Result := Result.parent
 			end
 		end
 
-	has_parent(a_node: OG_NODE): BOOLEAN
+	has_parent(a_node: attached OG_NODE): BOOLEAN
 			-- return True if `a_node' found in line of parent nodes back to ultimate_parent,
 			-- including if it is the immediate parent
-		require
-			a_node /= Void
 		local
 			csr: OG_NODE
 		do
-			from
-				csr := parent
-			until
-				csr.is_root or csr = a_node
-			loop
+			from csr := parent until csr.is_root or csr = a_node loop
 				csr := csr.parent
 			end
 			Result := csr = a_node
@@ -151,25 +139,21 @@ feature -- Modification
 			is_root
 		end
 
-	set_node_id (a_node_id: STRING)
+	set_node_id (a_node_id: attached STRING)
 		require
-			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
+			Node_id_valid: not a_node_id.is_empty
 		do
 			node_id := a_node_id
 		end
 
-	set_parent (a_node: like parent)
+	set_parent (a_node: attached like parent)
 			-- connect child to parent
-		require
-			a_node /= Void
 		do
 			parent := a_node
 		end
 
-	set_content (a_content_item: VISITABLE)
+	set_content (a_content_item: attached VISITABLE)
 			-- set item
-		require
-			Content_item_valid: a_content_item /= Void
 		do
 			content_item := a_content_item
 		ensure
@@ -178,27 +162,25 @@ feature -- Modification
 
 feature -- Serialisation
 
-	enter_subtree(visitor: ANY; depth: INTEGER)
+	enter_subtree (visitor: attached ANY; depth: INTEGER)
 			-- perform action at start of block for this node
 		require
-			Visitor_exists: visitor /= Void
 			Depth_valid: depth >= 0
 		do
-			content_item.enter_subtree(visitor, depth)
+			content_item.enter_subtree (visitor, depth)
 		end
 
-	exit_subtree(visitor: ANY; depth: INTEGER)
+	exit_subtree (visitor: attached ANY; depth: INTEGER)
 			-- perform action at end of block for this node
 		require
-			Visitor_exists: visitor /= Void
 			Depth_valid: depth >= 0
 		do
-			content_item.exit_subtree(visitor, depth)
+			content_item.exit_subtree (visitor, depth)
 		end
 
 feature {NONE} -- Implementation
 
-	generate_path(unique_flag: BOOLEAN; stop_node: OG_ITEM): OG_PATH
+	generate_path (unique_flag: BOOLEAN; stop_node: OG_ITEM): attached OG_PATH
 			-- absolute path of this node relative to the root; if unique_flag set then
 			-- generate a completely unique path by including the "unknown" ids that are
 			-- automatically set at node-creation time on nodes that otherwise would have no id
@@ -211,7 +193,7 @@ feature {NONE} -- Implementation
 			-- get the node list from here back up to the root, but don't include the root OG_OBJECT_NODE
 			create og_nodes.make(0)
 			if parent /= Void then
-				og_nodes.extend(Current)
+				og_nodes.extend (Current)
 				from csr := parent until csr.parent = Void or csr ~ stop_node loop
 					og_nodes.put_front(csr)
 					csr := csr.parent
@@ -233,7 +215,7 @@ feature {NONE} -- Implementation
 					-- now on an OG_ATTR_NODE
 					og_attr ?= og_nodes.item
 					create a_path_item.make(og_attr.node_id)
-					if Result = Void then
+					if not attached Result then
 						create Result.make_absolute(a_path_item)
 					else
 						Result.append_segment (a_path_item)
@@ -256,7 +238,7 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	Node_id_exists: node_id /= Void and then not node_id.is_empty
+	Node_id_exists: not node_id.is_empty
 
 end
 

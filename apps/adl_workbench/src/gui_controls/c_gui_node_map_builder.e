@@ -176,10 +176,13 @@ feature -- Visitor
 			if in_technical_mode then
 				create s.make_empty
 				if attached a_node.existence then
-					s.append (a_node.existence.as_string)
+					s.append ("Ex: " + a_node.existence.as_string)
 				end
 				if a_node.is_multiple and attached a_node.cardinality then
-				 	s.append ("; " + a_node.cardinality.as_string)
+					if attached a_node.existence then
+					 	s.append ("; ")
+					end
+				 	s.append ("Card: " + a_node.cardinality.as_string)
 				end
 				if not s.is_empty then
 					gui_node_text.append ("{" + s + "} ")
