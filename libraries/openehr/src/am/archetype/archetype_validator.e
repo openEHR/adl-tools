@@ -9,14 +9,14 @@ note
 	keywords:    "constraint model"
 	author:      "Thomas Beale"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2007-2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2007-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class ARCHETYPE_VALIDATOR
+deferred class ARCHETYPE_VALIDATOR
 
 inherit
 	AUTHORED_RESOURCE_VALIDATOR
@@ -42,18 +42,18 @@ feature -- Definitions
 
 feature {ADL15_ENGINE} -- Initialisation
 
-	initialise (a_target_desc: attached like target_descriptor; an_rm_schema: attached BMM_SCHEMA)
+	initialise (ara: attached ARCH_REP_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
 			-- set target_descriptor
 			-- initialise reporting variables
 		require
-			target_desc_valid: attached a_target_desc.differential_archetype
+			valid_candidate: validation_candidiate (ara)
 		do
 			rm_schema := an_rm_schema
-			target_descriptor := a_target_desc
+			target_descriptor := ara
 			initialise_authored_resource (target_descriptor.differential_archetype)
 		ensure
-			target_descriptor_set: target_descriptor = a_target_desc
-			target_set: target = a_target_desc.differential_archetype
+			target_descriptor_set: target_descriptor = ara
+			target_set: attached target
 		end
 
 feature -- Access
@@ -68,6 +68,12 @@ feature -- Access
 			-- The ontology of the current archetype.
 		do
 			Result := target.ontology
+		end
+
+feature -- Status Report
+
+	validation_candidiate (ara: attached ARCH_REP_ARCHETYPE): BOOLEAN
+		deferred
 		end
 
 feature {NONE} -- Implementation

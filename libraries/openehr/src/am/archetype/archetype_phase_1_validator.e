@@ -42,6 +42,13 @@ feature -- Access
 	target: DIFFERENTIAL_ARCHETYPE
 			-- differential archetype being validated
 
+feature -- Status Report
+
+	validation_candidiate (ara: attached ARCH_REP_ARCHETYPE): BOOLEAN
+		do
+			Result := attached ara.differential_archetype
+		end
+
 feature -- Validation
 
 	validate

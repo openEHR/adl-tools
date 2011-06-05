@@ -66,8 +66,9 @@ feature {NONE} -- Initialisation
 			create ontology_context.make
 			create annotations_context.make
 
-			create differential_validator
-			create flat_validator
+			create phase_1_validator
+			create phase_2_validator
+			create phase_3_validator
 		end
 
 feature -- Access
@@ -178,30 +179,41 @@ feature -- Serialisation
 
 feature -- Validation
 
-	validate_differential (ara: ARCH_REP_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
+	phase_1_validate (ara: ARCH_REP_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
 		do
 			validation_passed := False
-			differential_validator.initialise (ara, an_rm_schema)
-			differential_validator.validate
-			validation_passed := differential_validator.passed
-			errors := differential_validator.errors
+			phase_1_validator.initialise (ara, an_rm_schema)
+			phase_1_validator.validate
+			validation_passed := phase_1_validator.passed
+			errors := phase_1_validator.errors
 		end
 
-	validate_flat (ara: ARCH_REP_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
+	phase_2_validate (ara: ARCH_REP_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
 		do
 			validation_passed := False
-			flat_validator.initialise (ara, an_rm_schema)
-			flat_validator.validate
-			validation_passed := flat_validator.passed
-			errors := flat_validator.errors
+			phase_2_validator.initialise (ara, an_rm_schema)
+			phase_2_validator.validate
+			validation_passed := phase_2_validator.passed
+			errors := phase_2_validator.errors
 		end
+
+	phase_3_validate (ara: ARCH_REP_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
+		do
+			validation_passed := False
+			phase_3_validator.initialise (ara, an_rm_schema)
+			phase_3_validator.validate
+			validation_passed := phase_3_validator.passed
+			errors := phase_3_validator.errors
+		end
+
+	phase_1_validator: ARCHETYPE_PHASE_1_VALIDATOR
+
+	phase_2_validator: ARCHETYPE_PHASE_2_VALIDATOR
+
+	phase_3_validator: ARCHETYPE_PHASE_3_VALIDATOR
 
 	validation_passed: BOOLEAN
 			-- result of last validation
-
-	differential_validator: ARCHETYPE_PHASE_1_VALIDATOR
-
-	flat_validator: ARCHETYPE_PHASE_2_VALIDATOR
 
 feature {NONE} -- Parsing
 

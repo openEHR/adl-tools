@@ -243,7 +243,7 @@ feature -- Access (semantic)
 	flat_archetype: attached FLAT_ARCHETYPE
 			-- inheritance-flattened form of archetype
 		require
-			is_valid
+			compilation_state = Cs_validated_phase_2 or compilation_state = Cs_validated
 		do
 			if flat_archetype_cache = Void then
 				flatten
@@ -254,7 +254,7 @@ feature -- Access (semantic)
 	flat_text: STRING
 			-- The serialised text of the flat form of the archetype
 		require
-			is_valid
+			compilation_state = Cs_validated_phase_2 or compilation_state = Cs_validated
 		do
 			Result := adl15_engine.serialise(flat_archetype, Archetype_native_syntax, current_archetype_language)
 		end
@@ -914,19 +914,34 @@ feature {NONE} -- Compilation
 			Initial_state: compilation_state = Cs_ready_to_validate
 		do
 			flat_archetype_cache := Void
-			adl15_engine.validate_differential (Current, rm_schema)
+
+			-- phase 1: validate archetype stand-alone
+			adl15_engine.phase_1_validate (Current, rm_schema)
 			errors.append (adl15_engine.errors)
+
 			if adl15_engine.validation_passed then
+				compilation_state := Cs_validated_phase_1
 				if is_specialised then
 					differential_archetype.set_parent_archetype (specialisation_parent.differential_archetype)
 	 			end
-				adl15_engine.validate_flat (Current, rm_schema)
+	 			-- phase 2: validate archetype against flat parent
+				adl15_engine.phase_2_validate (Current, rm_schema)
 				errors.append (adl15_engine.errors)
+
 				if adl15_engine.validation_passed then
-					post_info (Current, "validate", "parse_archetype_i2", <<id.as_string>>)
-					compilation_state := Cs_validated
-					current_arch_dir.update_slot_statistics (Current)
-					current_arch_dir.update_terminology_bindings_info (Current)
+					compilation_state := Cs_validated_phase_2
+
+					-- phase 3: validate flattened archetype
+					adl15_engine.phase_3_validate (Current, rm_schema)
+					errors.append (adl15_engine.errors)
+					if adl15_engine.validation_passed then
+						post_info (Current, "validate", "parse_archetype_i2", <<id.as_string>>)
+						compilation_state := Cs_validated
+						current_arch_dir.update_slot_statistics (Current)
+						current_arch_dir.update_terminology_bindings_info (Current)
+					else
+						compilation_state := Cs_validate_failed
+					end
 				else
 					compilation_state := Cs_validate_failed
 				end

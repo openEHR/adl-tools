@@ -113,9 +113,9 @@ feature -- Access
 			end
 		end
 
-	occurrences_total_range: attached MULTIPLICITY_INTERVAL
+	occurrences_max_range: attached MULTIPLICITY_INTERVAL
 			-- calculate total possible cardinality range based on occurrences of all children
-			-- only valid on flat archetypes
+			-- only meaningful on flat archetypes
 		require
 			all_children_have_occurrences: all_children_have_occurrences
 		local
@@ -123,7 +123,7 @@ feature -- Access
 			an_upper_unbounded: BOOLEAN
 		do
 			from children.start until children.off loop
-				a_lower := a_lower + children.item.occurrences.lower
+				-- a_lower := a_lower + children.item.occurrences.lower
 				an_upper_unbounded := children.item.occurrences.upper_unbounded
 				if not an_upper_unbounded then
 					an_upper := an_upper + children.item.occurrences.upper

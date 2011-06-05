@@ -45,8 +45,12 @@ feature -- Access
 	flat_parent: detachable FLAT_ARCHETYPE
 			-- flat version of parent archetype, if target is specialised
 
-	target_flat: detachable FLAT_ARCHETYPE
-			-- reference to the flat form of this archetype, once flattened
+feature -- Status Report
+
+	validation_candidiate (ara: attached ARCH_REP_ARCHETYPE): BOOLEAN
+		do
+			Result := attached ara.differential_archetype
+		end
 
 feature -- Validation
 
