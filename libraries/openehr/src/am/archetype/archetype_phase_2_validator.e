@@ -1,7 +1,7 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Validator of archetype with respect to flat parent archetype, in the case 
+				 Phase 2 validation: validate archetype with respect to flat parent archetype, in the case 
 				 of specialised archetypes.
 		         ]"
 	keywords:    "constraint model"
@@ -14,12 +14,12 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class ARCHETYPE_FLAT_VALIDATOR
+class ARCHETYPE_PHASE_2_VALIDATOR
 
 inherit
 	ARCHETYPE_VALIDATOR
 		redefine
-			validate
+			validate, target
 		end
 
 	ARCHETYPE_TERM_CODE_TOOLS
@@ -38,6 +38,9 @@ inherit
 		end
 
 feature -- Access
+
+	target: DIFFERENTIAL_ARCHETYPE
+			-- differential archetype being validated
 
 	flat_parent: detachable FLAT_ARCHETYPE
 			-- flat version of parent archetype, if target is specialised

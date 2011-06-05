@@ -14,12 +14,12 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class ARCHETYPE_SOURCE_VALIDATOR
+class ARCHETYPE_PHASE_1_VALIDATOR
 
 inherit
 	ARCHETYPE_VALIDATOR
 		redefine
-			validate
+			validate, target
 		end
 
 	ARCHETYPE_TERM_CODE_TOOLS
@@ -36,6 +36,11 @@ inherit
 		export
 			{NONE} all
 		end
+
+feature -- Access
+
+	target: DIFFERENTIAL_ARCHETYPE
+			-- differential archetype being validated
 
 feature -- Validation
 
@@ -66,7 +71,7 @@ feature -- Validation
 				validate_ontology_code_spec_levels
 			end
 
-			-- set up slots map
+			-- build slots map
 			if passed and target.has_slots then
 				build_slot_id_index
 			end

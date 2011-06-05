@@ -199,9 +199,9 @@ feature -- Validation
 	validation_passed: BOOLEAN
 			-- result of last validation
 
-	differential_validator: ARCHETYPE_SOURCE_VALIDATOR
+	differential_validator: ARCHETYPE_PHASE_1_VALIDATOR
 
-	flat_validator: ARCHETYPE_FLAT_VALIDATOR
+	flat_validator: ARCHETYPE_PHASE_2_VALIDATOR
 
 feature {NONE} -- Parsing
 

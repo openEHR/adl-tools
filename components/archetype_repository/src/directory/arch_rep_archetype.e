@@ -943,7 +943,7 @@ feature {NONE} -- Compilation
 
 feature {ARCHETYPE_VALIDATOR} -- Modification
 
-	add_slot_ids (a_list: attached ARRAYED_SET[STRING]; a_slot_path: attached STRING)
+	add_slot_ids (a_list: attached ARRAYED_SET [STRING]; a_slot_path: attached STRING)
 			-- add list of matching archetypes to ids recorded for slot at a_slot_path
 		do
 			if slot_id_index = Void then

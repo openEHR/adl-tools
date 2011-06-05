@@ -61,7 +61,7 @@ feature -- Access
 	target_descriptor: attached ARCH_REP_ARCHETYPE
 			-- differential archetype being validated
 
-	target: DIFFERENTIAL_ARCHETYPE
+	target: ARCHETYPE
 			-- differential archetype being validated
 
 	ontology: attached ARCHETYPE_ONTOLOGY
