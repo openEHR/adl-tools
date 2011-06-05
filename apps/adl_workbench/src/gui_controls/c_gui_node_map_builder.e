@@ -481,7 +481,7 @@ feature -- Visitor
 			gui_node, gui_sub_node: EV_TREE_ITEM
 		do
 			-- node text
-			gui_node_text.make_empty
+			create gui_node_text.make_empty
 			if in_technical_mode then
 				gui_node_text.append (a_node.rm_type_name)
 			end
@@ -516,7 +516,7 @@ feature -- Visitor
 			else
 				-- pixmap name extension
 				pixmap_ext := create_pixmap_ext (a_node)
-				create_node(gui_node_text, a_node.generating_type + pixmap_ext, a_node)
+				create_node (gui_node_text, a_node.generating_type + pixmap_ext, a_node)
 
 				-- child nodes
 				if attached a_node.list then
