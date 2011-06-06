@@ -258,7 +258,7 @@ feature -- File events
 	parse_archetype
 			-- Load and parse the archetype currently selected in `archetype_directory'.
 		do
-			if has_current_profile and then attached {ARCH_REP_ARCHETYPE} current_arch_dir.selected_archetype as ara then
+			if has_current_profile and then attached {ARCH_CAT_ARCHETYPE} current_arch_dir.selected_archetype as ara then
 				clear_all_archetype_view_controls
 				do_with_wait_cursor (agent archetype_compiler.build_lineage (ara, 0))
 				on_select_archetype_notebook
@@ -272,7 +272,7 @@ feature -- File events
 			info_dialog: EV_INFORMATION_DIALOG
 			path: STRING
 		do
-			if has_current_profile and then attached {ARCH_REP_ARCHETYPE} current_arch_dir.selected_archetype as ara then
+			if has_current_profile and then attached {ARCH_CAT_ARCHETYPE} current_arch_dir.selected_archetype as ara then
 				path := ara.differential_path
 				if ara.has_differential_file and ara.has_legacy_flat_file then
 					create question_dialog.make_with_text (create_message_line("edit_which_file_question", <<file_system.basename (path), file_system.basename (ara.legacy_flat_path)>>))
@@ -643,7 +643,7 @@ feature {NONE} -- History events
 			history_menu.extend (history_menu_separator)
 
 			if attached current_arch_dir as dir then
-				dir.recently_selected_archetypes (20).do_all (agent (ara: attached ARCH_REP_ARCHETYPE)
+				dir.recently_selected_archetypes (20).do_all (agent (ara: attached ARCH_CAT_ARCHETYPE)
 					local
 						mi: EV_MENU_ITEM
 					do
@@ -716,7 +716,7 @@ feature {NONE} -- Tools menu events
 			end
 		end
 
-	delete_generated_files (ara: attached ARCH_REP_ARCHETYPE)
+	delete_generated_files (ara: attached ARCH_CAT_ARCHETYPE)
 			-- delete a generated file associated with `ara'
 		do
 			ara.clean_generated
@@ -990,7 +990,7 @@ feature -- Archetype Events
 			-- Display details of `template_file_tree' when the user selects it.
 		do
 			if attached template_file_tree.selected_item then
-				if attached {ARCH_REP_ARCHETYPE} template_file_tree.selected_item.data as ara then
+				if attached {ARCH_CAT_ARCHETYPE} template_file_tree.selected_item.data as ara then
 					archetype_view_tree_control.ensure_item_visible(ara.ontological_name)
 				end
 
@@ -1004,7 +1004,7 @@ feature -- Archetype Events
 			-- Select and display the node of `archetype_file_tree' corresponding to the folder or archetype attached to `gui_item'.
 		do
 			if attached gui_item and has_current_profile then
-				if attached {ARCH_REP_ITEM} gui_item.data as ari then
+				if attached {ARCH_CAT_ITEM} gui_item.data as ari then
 					current_arch_dir.set_selected_item (ari)
 					go_to_node_in_archetype_tree_view
 				end
@@ -1376,7 +1376,7 @@ feature {NONE} -- Implementation
 		require
 			has_current_profile
 		do
-			if attached {ARCH_REP_ARCHETYPE} current_arch_dir.selected_archetype as ara then
+			if attached {ARCH_CAT_ARCHETYPE} current_arch_dir.selected_archetype as ara then
 				if not differential_view then
 					if ara.is_valid then
 						populate_source_text_with_line_numbers (ara.flat_text)
@@ -1400,7 +1400,7 @@ feature {NONE} -- Implementation
 		require
 			has_current_profile
 		do
-			if attached {ARCH_REP_ARCHETYPE} current_arch_dir.selected_archetype as ara then
+			if attached {ARCH_CAT_ARCHETYPE} current_arch_dir.selected_archetype as ara then
 				if ara.is_valid then
 					if differential_view then
 						dadl_rich_text.set_text (utf8 (ara.differential_text_dadl))
@@ -1420,7 +1420,7 @@ feature {NONE} -- Implementation
 		require
 			has_current_profile
 		do
-			if attached {ARCH_REP_ARCHETYPE} current_arch_dir.selected_archetype as ara then
+			if attached {ARCH_CAT_ARCHETYPE} current_arch_dir.selected_archetype as ara then
 				if ara.is_valid then
 					if differential_view then
 						xml_rich_text.set_text (utf8 (ara.differential_text_xml))
@@ -1480,7 +1480,7 @@ feature {NONE} -- Implementation
 		require
 			has_current_profile
 		do
-			if attached {ARCH_REP_ARCHETYPE} current_arch_dir.selected_archetype as ara then
+			if attached {ARCH_CAT_ARCHETYPE} current_arch_dir.selected_archetype as ara then
 					archetype_id.set_text (utf8 (ara.id.as_string))
 			else
 				archetype_id.remove_text
@@ -1657,7 +1657,7 @@ feature {NONE} -- Build commands
 			ev_application.process_events
 		end
 
-	compiler_archetype_gui_update (msg: attached STRING; ara: attached ARCH_REP_ARCHETYPE; dependency_depth: INTEGER)
+	compiler_archetype_gui_update (msg: attached STRING; ara: attached ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
 			-- Update GUI with progress on build.
 		do
 			if not msg.is_empty then

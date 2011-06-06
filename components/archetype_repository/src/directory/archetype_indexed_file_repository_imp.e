@@ -31,7 +31,7 @@ feature {NONE} -- Implementation
 			a_dir: DIRECTORY
 			fs_node_names: ARRAYED_LIST [STRING]
 			dir_name_index: SORTED_TWO_WAY_LIST [STRING]
-			ara: ARCH_REP_ARCHETYPE
+			ara: ARCH_CAT_ARCHETYPE
 			amp: ARCHETYPE_MINI_PARSER
    		do
    			-- generate lists of immediate child directory and archetype file names

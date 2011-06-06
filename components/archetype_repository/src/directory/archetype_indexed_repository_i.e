@@ -39,9 +39,9 @@ feature -- Access
 	full_path: STRING
 			-- Path of file-system repository of archetypes.
 
-feature {ARCHETYPE_DIRECTORY} -- Access
+feature {ARCHETYPE_CATALOGUE} -- Access
 
-	fast_archetype_list: ARRAYED_LIST [ARCH_REP_ARCHETYPE]
+	fast_archetype_list: ARRAYED_LIST [ARCH_CAT_ARCHETYPE]
 			-- linear index list for efficient processing
 
 feature -- Commands

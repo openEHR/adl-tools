@@ -72,7 +72,7 @@ feature -- Commands
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
 
 						if attached gui_tree.selected_item then
-							if attached {ARCH_REP_ARCHETYPE} gui_tree.selected_item.data as ara then
+							if attached {ARCH_CAT_ARCHETYPE} gui_tree.selected_item.data as ara then
 								if attached current_arch_dir then
 									current_arch_dir.set_selected_item (ara)
 								end
@@ -101,7 +101,7 @@ feature -- Commands
 			end
 		end
 
-	update_tree_node_for_archetype (ara: attached ARCH_REP_ARCHETYPE)
+	update_tree_node_for_archetype (ara: attached ARCH_CAT_ARCHETYPE)
 			-- update Explorer tree node with changes in compilation status
 		local
 			an_id: STRING
@@ -151,7 +151,7 @@ feature {NONE} -- Implementation
 	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
 			-- Timer to delay a moment before calling `display_details_of_selected_item'.
 
-   	populate_template_nodes (ara: ARCH_REP_ARCHETYPE)
+   	populate_template_nodes (ara: ARCH_CAT_ARCHETYPE)
    			-- Add a node representing `an_item' to `gui_file_tree'.
 		require
 			item_attached: ara /= Void
@@ -184,7 +184,7 @@ feature {NONE} -- Implementation
 		require
 			Node_exists: an_og_node /= Void
 		local
-			ara: ARCH_REP_ARCHETYPE
+			ara: ARCH_CAT_ARCHETYPE
 			ca_path: STRING
 			csr: ARCHETYPE_CONSTRAINT
 		do
@@ -250,7 +250,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	attach_node(str: STRING; pixmap: EV_PIXMAP; ara: ARCH_REP_ARCHETYPE)
+	attach_node(str: STRING; pixmap: EV_PIXMAP; ara: ARCH_CAT_ARCHETYPE)
 			-- attach a node into the tree
 		local
 			a_ti: EV_TREE_ITEM

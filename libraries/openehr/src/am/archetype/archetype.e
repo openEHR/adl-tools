@@ -281,7 +281,7 @@ feature -- Status Setting
 			is_generated := True
 		end
 
-feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUILDER, ARCH_REP_ARCHETYPE} -- Validation
+feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUILDER, ARCH_CAT_ARCHETYPE} -- Validation
 
 	build_xrefs
 			-- build definition / ontology cross reference tables used for validation and

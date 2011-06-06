@@ -159,7 +159,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER} -- Validation
 			end
 		end
 
-feature {ARCH_REP_ARCHETYPE} -- Structure
+feature {ARCH_CAT_ARCHETYPE} -- Structure
 
 	convert_to_differential_paths
 			-- FIXME: only needed while differential archetype source is being created in uncompressed form
@@ -274,7 +274,7 @@ feature -- Modification
 			end
 		end
 
-feature {ARCHETYPE_VALIDATOR, ARCH_REP_ARCHETYPE} -- Implementation
+feature {ARCHETYPE_VALIDATOR, ARCH_CAT_ARCHETYPE} -- Implementation
 
 	set_parent_archetype (an_archetype: attached DIFFERENTIAL_ARCHETYPE)
 			-- set `parent_archetype'

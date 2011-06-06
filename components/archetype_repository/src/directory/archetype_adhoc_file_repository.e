@@ -39,7 +39,7 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	item (full_path: STRING): ARCH_REP_ARCHETYPE
+	item (full_path: STRING): ARCH_CAT_ARCHETYPE
 			-- The archetype at `full_path'.
 		require
 			has_full_path: has_path (full_path)
@@ -63,7 +63,7 @@ feature -- Modification
 			path_valid: is_valid_path (full_path)
 			hasnt_path: not has_path (full_path)
 		local
-			ara: ARCH_REP_ARCHETYPE
+			ara: ARCH_CAT_ARCHETYPE
 			amp: ARCHETYPE_MINI_PARSER
 		do
 			create amp

@@ -37,7 +37,7 @@ feature -- Access
 
 feature -- Status Report
 
-	validation_candidiate (ara: attached ARCH_REP_ARCHETYPE): BOOLEAN
+	validation_candidiate (ara: attached ARCH_CAT_ARCHETYPE): BOOLEAN
 		do
 			Result := attached ara.flat_archetype
 		end
@@ -62,17 +62,17 @@ feature {NONE} -- Implementation
 		end
 
 	flat_node_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
-		local
-			sum_occ_ivl: MULTIPLICITY_INTERVAL
+--		local
+--			sum_occ_ivl: MULTIPLICITY_INTERVAL
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca then
 				if attached ca.cardinality and ca.all_children_have_occurrences then
-					sum_occ_ivl := ca.occurrences_max_range
-					if (sum_occ_ivl.upper_unbounded and not ca.cardinality.interval.upper_unbounded) or else -- occ is n..*, card is n..m
-						(not sum_occ_ivl.upper_unbounded and not ca.cardinality.interval.upper_unbounded and -- occ.max > card.max
-							sum_occ_ivl.upper > ca.cardinality.interval.upper)
-					then
-						add_error ("VACMC2", <<ca.path, ca.cardinality.as_string>>)
+--					sum_occ_ivl := ca.occurrences_total_range
+--					if (sum_occ_ivl.upper_unbounded and not ca.cardinality.interval.upper_unbounded) or else -- occ is n..*, card is n..m
+--						(not sum_occ_ivl.upper_unbounded and not ca.cardinality.interval.upper_unbounded and -- occ.max > card.max
+--							sum_occ_ivl.upper > ca.cardinality.interval.upper)
+					if not ca.occurrences_total_range.intersects (ca.cardinality.interval) then
+						add_error("VACMC2", <<ca.path, ca.cardinality.as_string>>)
 					end
 				end
 			end

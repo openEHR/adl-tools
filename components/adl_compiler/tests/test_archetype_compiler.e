@@ -53,7 +53,7 @@ feature {NONE} -- Implementation
 	errors: STRING
 		-- Error messages during compilation.
 
-	on_archetype_update (msg: attached STRING; ara: attached ARCH_REP_ARCHETYPE; dependency_depth: INTEGER)
+	on_archetype_update (msg: attached STRING; ara: attached ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
 			-- Update with progress on build.
 		do
 			if ara.compilation_state = ara.cs_invalid then

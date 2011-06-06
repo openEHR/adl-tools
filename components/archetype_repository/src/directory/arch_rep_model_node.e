@@ -12,10 +12,10 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class ARCH_REP_MODEL_NODE
+class ARCH_CAT_MODEL_NODE
 
 inherit
-	ARCH_REP_ITEM
+	ARCH_CAT_ITEM
 		redefine
 			parent
 		end
@@ -109,9 +109,9 @@ feature -- Status Report
 			Result := not subtree_artefact_counts.off
 		end
 
-feature {ARCH_REP_ITEM} -- Implementation
+feature {ARCH_CAT_ITEM} -- Implementation
 
-	parent: ARCH_REP_MODEL_NODE
+	parent: ARCH_CAT_MODEL_NODE
 			-- parent node
 
 invariant

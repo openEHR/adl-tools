@@ -39,7 +39,7 @@ feature -- Definitions
 
 feature -- Access
 
-	selected_archetype: ARCH_REP_ARCHETYPE
+	selected_archetype: ARCH_CAT_ARCHETYPE
 			-- The archetype currently selected in the archetype directory.
 		do
 			Result := current_arch_dir.selected_archetype
@@ -78,11 +78,11 @@ feature -- Factory
 		require
 			primary_language_not_empty: not primary_language.is_empty
 		local
-			arch: ARCH_REP_ARCHETYPE
+			aca: ARCH_CAT_ARCHETYPE
 		do
 			app_root.set_current_language (primary_language)
 			create arch.make_new (id, source_repositories.adhoc_source_repository, {ARTEFACT_TYPE}.archetype, primary_language, 0)
-			current_arch_dir.set_selected_item (arch)
+			current_arch_dir.set_selected_item (aca)
 		ensure
 			language_set: app_root.current_language.same_string (primary_language)
 			archetype_attached: attached selected_archetype

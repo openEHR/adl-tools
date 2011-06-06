@@ -72,7 +72,7 @@ feature -- Commands
 			has_current_profile
 		local
 			eti: EV_TREE_ITEM
-			ara: ARCH_REP_ARCHETYPE
+			ara: ARCH_CAT_ARCHETYPE
 			slot_index: DS_HASH_TABLE [ARRAYED_LIST [STRING], STRING]
 		do
 			clear
@@ -127,7 +127,7 @@ feature {NONE} -- Implementation
 			-- Populate `subtree' from `ids'.
 		local
 			eti: EV_TREE_ITEM
-			ara: ARCH_REP_ARCHETYPE
+			ara: ARCH_CAT_ARCHETYPE
 		do
 			from ids.start until ids.off loop
 				create eti.make_with_text (utf8 (ids.item))

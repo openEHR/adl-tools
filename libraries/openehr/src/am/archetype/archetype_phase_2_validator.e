@@ -47,7 +47,7 @@ feature -- Access
 
 feature -- Status Report
 
-	validation_candidiate (ara: attached ARCH_REP_ARCHETYPE): BOOLEAN
+	validation_candidiate (ara: attached ARCH_CAT_ARCHETYPE): BOOLEAN
 		do
 			Result := attached ara.differential_archetype
 		end

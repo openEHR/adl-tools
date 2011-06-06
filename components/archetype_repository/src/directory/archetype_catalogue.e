@@ -1,17 +1,17 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Archetype repository - a data structure containing archetypes (of any kind) found
+				 Archetype catalogue - a data structure containing archetypes (of any kind) found
 				 in one or more physical locations, each of which is on some medium, such as the 
 				 file system or a web-accessible repository. 
 				 
-				 The structure of the directory is a list of top-level packages, each containing
+				 The structure of the catalogue is a list of top-level packages, each containing
 				 an inheritance tree of first degree descendants of the LOCATABLE class.
 				 The contents of the structure consist of archetypes found in the reference and
 				 working repositories, and are subsequently attached into the structure.
 				 Archetypes opened adhoc are also grafted here.
 				 
-				 The directory is populated at startup, using the source repository paths stored in a
+				 The catalogue is populated at startup, using the source repository paths stored in a
 				 configuration file or elsewhere.
 				 
 				 Archetypes can also be explicitly chosen by the user at runtime, outside of the 
@@ -19,7 +19,7 @@ note
 				 stored in /tmp. These archetypes are remembered on the 'adhoc_repository', and this 
 				 is also merged into the directory by 'grafting'.
 				 
-				 In the resulting directory, the archetype descriptors from each repository are marked
+				 In the resulting catalogue, the archetype descriptors from each repository are marked
 				 so that calling routines can distinguish them, e.g. to use different coloured icons on 
 				 the screen.
 				 ]"
@@ -34,7 +34,7 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class ARCHETYPE_DIRECTORY
+class ARCHETYPE_CATALOGUE
 
 inherit
 	SHARED_RESOURCES
@@ -89,15 +89,15 @@ feature -- Initialisation
 
 feature -- Access
 
-	archetype_index: attached DS_HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
+	archetype_index: attached DS_HASH_TABLE [ARCH_CAT_ARCHETYPE, STRING]
 			-- index of archetype descriptors. Used in rest of application
 
-	ontology_index: attached DS_HASH_TABLE [ARCH_REP_ITEM, STRING]
+	ontology_index: attached DS_HASH_TABLE [ARCH_CAT_ITEM, STRING]
 			-- Index of archetype & class nodes, keyed by ontology concept. Used during construction of `directory'
 			-- For class nodes, this will be package_name-class_name, e.g. DEMOGRAPHIC-PARTY.
 			-- For archetype nodes, this will be the archetype id.
 
-	selected_item: ARCH_REP_ITEM
+	selected_item: ARCH_CAT_ITEM
 			-- The folder or archetype at `selected_node'.
 		do
 			if not selection_history.off then
@@ -107,7 +107,7 @@ feature -- Access
 			consistent_with_history: attached Result implies Result = selection_history.item
 		end
 
-	selected_archetype: ARCH_REP_ARCHETYPE
+	selected_archetype: ARCH_CAT_ARCHETYPE
 			-- The archetype at `selected_node'.
 		do
 			Result ?= selected_item
@@ -115,7 +115,7 @@ feature -- Access
 			consistent_with_history: attached Result implies Result = selected_item
 		end
 
-	selected_class: ARCH_REP_MODEL_NODE
+	selected_class: ARCH_CAT_MODEL_NODE
 			-- The model node at `selected_node'.
 		do
 			Result ?= selected_item
@@ -164,12 +164,12 @@ feature -- Access
 			end
 		end
 
-	recently_selected_archetypes (n: INTEGER): attached ARRAYED_LIST [ARCH_REP_ARCHETYPE]
+	recently_selected_archetypes (n: INTEGER): attached ARRAYED_LIST [ARCH_CAT_ARCHETYPE]
 			-- The `n' most recently used archetypes from `selection_history', excluding duplicates.
 		require
 			positive: n > 0
 		local
-			cursor: LINKED_LIST_CURSOR [attached ARCH_REP_ITEM]
+			cursor: LINKED_LIST_CURSOR [attached ARCH_CAT_ITEM]
 		do
 			create Result.make (n)
 
@@ -179,7 +179,7 @@ feature -- Access
 			until
 				selection_history.off or Result.full
 			loop
-				if attached {ARCH_REP_ARCHETYPE} selection_history.item as ara then
+				if attached {ARCH_CAT_ARCHETYPE} selection_history.item as ara then
 					if not Result.has (ara) then
 						Result.extend (ara)
 					end
@@ -275,7 +275,7 @@ feature -- Commands
 	populate
 			-- Rebuild `archetype_index' and `ontology_index' from source repositories.
 		local
-			archs: ARRAYED_LIST [ARCH_REP_ARCHETYPE]
+			archs: ARRAYED_LIST [ARCH_CAT_ARCHETYPE]
 			parent_key, child_key: STRING
 			added_during_pass: INTEGER
 			status_list: ARRAY[INTEGER]
@@ -341,7 +341,7 @@ feature -- Commands
 			end
 		end
 
-	update_basic_statistics (ara: attached ARCH_REP_ARCHETYPE)
+	update_basic_statistics (ara: attached ARCH_CAT_ARCHETYPE)
 			-- Update statistics counters.
 		do
 			total_archetype_count := total_archetype_count + 1
@@ -350,7 +350,7 @@ feature -- Commands
 			end
 		end
 
-	update_slot_statistics (ara: attached ARCH_REP_ARCHETYPE)
+	update_slot_statistics (ara: attached ARCH_CAT_ARCHETYPE)
 			-- Update slot-related statistics counters.
 		do
 			if ara.has_slots then
@@ -362,7 +362,7 @@ feature -- Commands
 			end
 		end
 
-	update_terminology_bindings_info (ara: attached ARCH_REP_ARCHETYPE)
+	update_terminology_bindings_info (ara: attached ARCH_CAT_ARCHETYPE)
 			-- Update term binding info
 		local
 			terminologies: ARRAYED_LIST [STRING]
@@ -411,7 +411,7 @@ feature -- Commands
 
 feature -- Modification
 
-	set_selected_item (an_item: attached ARCH_REP_ITEM)
+	set_selected_item (an_item: attached ARCH_CAT_ITEM)
 			-- Append `an_item' to `selection_history' and select it.
 		do
 			if selected_item /= an_item then
@@ -461,7 +461,7 @@ feature -- Modification
 			path_valid: adhoc_path_valid (full_path)
 		local
 			parent_key, child_key: STRING
-			ara: ARCH_REP_ARCHETYPE
+			ara: ARCH_CAT_ARCHETYPE
 		do
 			if ontology_index.is_empty then
 				clone_ontology_prototype
@@ -492,7 +492,7 @@ feature -- Modification
 			end
 		end
 
-	update_archetype_id (ara: attached ARCH_REP_ARCHETYPE)
+	update_archetype_id (ara: attached ARCH_CAT_ARCHETYPE)
 			-- move `ara' in tree according to its current and old ids
 		require
 			old_id_valid: attached ara.old_id and then archetype_index.has (ara.old_id.as_string) and then archetype_index.item (ara.old_id.as_string) = ara
@@ -514,7 +514,7 @@ feature -- Modification
 
 feature -- Traversal
 
-	do_all (enter_action, exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]])
+	do_all (enter_action, exit_action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ITEM]])
 			-- On all nodes in tree, execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 		require
 			enter_action_attached: attached enter_action
@@ -522,31 +522,31 @@ feature -- Traversal
 			do_subtree (ontology, enter_action, exit_action)
 		end
 
-	do_archetypes (ari: ARCH_REP_ITEM; action: attached PROCEDURE [ANY, TUPLE [ARCH_REP_ARCHETYPE]])
+	do_archetypes (ari: ARCH_CAT_ITEM; action: attached PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]])
 			-- On all archetype nodes in tree, execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 		do
 			do_subtree (ari, agent do_if_archetype (?, action), Void)
 		end
 
-	do_all_archetypes (action: attached PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
+	do_all_archetypes (action: attached PROCEDURE [ANY, TUPLE [attached ARCH_CAT_ARCHETYPE]])
 			-- On all archetype nodes in tree, execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 		do
 			do_subtree (ontology, agent do_if_archetype (?, action), Void)
 		end
 
-	do_if_archetype (ari: ARCH_REP_ITEM; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
+	do_if_archetype (ari: ARCH_CAT_ITEM; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_CAT_ARCHETYPE]])
 			-- If `ari' is an archetype, perform `action' on it.
 		do
-			if attached {ARCH_REP_ARCHETYPE} ari as ara then
+			if attached {ARCH_CAT_ARCHETYPE} ari as ara then
 				action.call ([ara])
 			end
 		end
 
-	do_archetype_lineage (ara: ARCH_REP_ARCHETYPE; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
+	do_archetype_lineage (ara: ARCH_CAT_ARCHETYPE; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_CAT_ARCHETYPE]])
 			-- On all archetype nodes from top to , execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 		local
-			csr: ARCH_REP_ARCHETYPE
-			lineage: attached ARRAYED_LIST [ARCH_REP_ARCHETYPE]
+			csr: ARCH_CAT_ARCHETYPE
+			lineage: attached ARRAYED_LIST [ARCH_CAT_ARCHETYPE]
 		do
 			create lineage.make (1)
 			from csr := ara until csr = Void loop
@@ -558,7 +558,7 @@ feature -- Traversal
 
 feature {NONE} -- Implementation
 
-	do_subtree (node: ARCH_REP_ITEM; enter_action, exit_action: PROCEDURE [ANY, TUPLE [ARCH_REP_ITEM]])
+	do_subtree (node: ARCH_CAT_ITEM; enter_action, exit_action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ITEM]])
 			-- On `node', execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 		require
 			enter_action_attached: enter_action /= Void
@@ -583,10 +583,10 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	selection_history: attached LINKED_LIST [attached ARCH_REP_ITEM]
+	selection_history: attached LINKED_LIST [attached ARCH_CAT_ITEM]
 			-- The history in which archetypes and folders have been selected, from earliest to most recent.
 
-	ontology: ARCH_REP_MODEL_NODE
+	ontology: ARCH_CAT_MODEL_NODE
 			-- The logical directory of archetypes, whose structure is derived directly from the
 			-- reference model. The structure is a list of top-level packages, each containing
 			-- an inheritance tree of first degree descendants of the LOCATABLE class.
@@ -594,7 +594,7 @@ feature {NONE} -- Implementation
 			-- working repositories, and are subsequently attached into the structure.
 			-- Archetypes opened adhoc are also grafted here.
 
-	ontology_prototype: CELL [ARCH_REP_MODEL_NODE]
+	ontology_prototype: CELL [ARCH_CAT_MODEL_NODE]
 			-- pure ontology structure created from RM schemas; to be used to create a copy for each refresh of the repository
 			-- We use a CELL here because we only want one of these shared between all instances
 		once
@@ -605,7 +605,7 @@ feature {NONE} -- Implementation
 			-- rebuild `initialise_ontology_prototype'
 		local
 			pkgs: HASH_TABLE [BMM_PACKAGE_DEFINITION, STRING]
-			parent_node, arm: ARCH_REP_MODEL_NODE
+			parent_node, arm: ARCH_CAT_MODEL_NODE
 			pkg_name: STRING
 			supp_list, supp_list_copy: ARRAYED_SET[STRING]
 			supp_class_list: ARRAYED_LIST [BMM_CLASS_DEFINITION]
@@ -676,13 +676,13 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_child_nodes (a_package: STRING; class_list: ARRAYED_LIST [BMM_CLASS_DEFINITION]; a_parent_node: ARCH_REP_MODEL_NODE)
+	add_child_nodes (a_package: STRING; class_list: ARRAYED_LIST [BMM_CLASS_DEFINITION]; a_parent_node: ARCH_CAT_MODEL_NODE)
 			-- populate child nodes of a node in directory with immediate descendants of `a_class'
 			-- put each node into `ontology_index', keyed by a_package + '-' + `a_class',
 			-- which will match with corresponding part of archetype identifier
 		local
 			children: ARRAYED_LIST [BMM_CLASS_DEFINITION]
-			arm: ARCH_REP_MODEL_NODE
+			arm: ARCH_CAT_MODEL_NODE
 		do
 			from class_list.start until class_list.off loop
 				create arm.make_class(a_package, class_list.item)
@@ -698,7 +698,7 @@ feature {NONE} -- Implementation
 		do
 			ontology := ontology_prototype.item.deep_twin
 			create ontology_index.make (0)
-			do_all (agent (ari: attached ARCH_REP_ITEM) do ontology_index.force (ari, ari.ontological_name) end, Void)
+			do_all (agent (ari: attached ARCH_CAT_ITEM) do ontology_index.force (ari, ari.ontological_name) end, Void)
 		end
 
 	schema_load_counter: INTEGER

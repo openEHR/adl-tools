@@ -44,7 +44,7 @@ feature -- Access
 
 feature -- Status Report
 
-	validation_candidiate (ara: attached ARCH_REP_ARCHETYPE): BOOLEAN
+	validation_candidiate (ara: attached ARCH_CAT_ARCHETYPE): BOOLEAN
 		do
 			Result := attached ara.differential_archetype
 		end
@@ -250,7 +250,7 @@ feature {NONE} -- Implementation
 			includes, excludes: ARRAYED_LIST[ASSERTION]
 			a_regex: STRING
 			id_list: ARRAYED_LIST[STRING]
-			ara: ARCH_REP_ARCHETYPE
+			ara: ARCH_CAT_ARCHETYPE
 		do
 			from target.slot_index.start until target.slot_index.off loop
 				-- process the includes

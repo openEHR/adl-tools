@@ -12,7 +12,7 @@ note
 	last_change: "$LastChangedDate$"
 
 
-deferred class ARCH_REP_ITEM
+deferred class ARCH_CAT_ITEM
 
 inherit
 	SHARED_RESOURCES
@@ -59,7 +59,7 @@ feature -- Access
 			not_empty: not Result.is_empty
 		end
 
-	ontological_name: STRING
+	ontological_name: attached STRING
 			-- semantic name of this node, relative to parent concept, which is either class or package name, or else as concept name of archetype
 			-- used to generate ontological path
 			-- For Classes, will be the name of the top-level package & class e.g. EHR-OBSERVATION
@@ -111,7 +111,7 @@ feature -- Access
 																	subtree_artefact_counts_cache.key_for_iteration)
 							subtree_artefact_counts_cache.forth
 						end
-						if attached {ARCH_REP_ARCHETYPE} children.item as ara then
+						if attached {ARCH_CAT_ARCHETYPE} children.item as ara then
 							subtree_artefact_counts_cache.replace(subtree_artefact_counts_cache.item(ara.artefact_type) + 1, ara.artefact_type)
 						end
 						children.forth
@@ -121,10 +121,8 @@ feature -- Access
 			Result := subtree_artefact_counts_cache
 		end
 
-   	sub_tree_artefact_count (artefact_types: ARRAY [INTEGER]): INTEGER
+   	sub_tree_artefact_count (artefact_types: attached ARRAY [INTEGER]): INTEGER
    			-- number of artefacts below this node of the types mentioned in `artefact_types'
-		require
-			artefact_types_attached: artefact_types /= Void
    		local
 			i: INTEGER
 		do
@@ -153,9 +151,7 @@ feature -- Status Report
 			Result := parent = Void
 		end
 
-	has_child (a_child: like child_type): BOOLEAN
-		require
-			a_child /= Void
+	has_child (a_child: attached like child_type): BOOLEAN
 		do
 			if children /= Void then
 				Result := children.has(a_child)
@@ -193,31 +189,27 @@ feature -- Iteration
 			Result := children.item
 		end
 
-feature {ARCHETYPE_DIRECTORY} -- Modification
+feature {ARCHETYPE_CATALOGUE} -- Modification
 
-	put_child (a_child: like child_type)
-		require
-			a_child /= Void
+	put_child (a_child: attached like child_type)
 		do
 			if children = Void then
 				create children.make
 			end
 			children.extend (a_child)
-			a_child.set_parent(Current)
+			a_child.set_parent (Current)
 		end
 
-	remove_child (a_child: like child_type)
+	remove_child (a_child: attached like child_type)
 		require
-			a_child /= Void and then has_child(a_child)
+			has_child (a_child)
 		do
 			children.prune (a_child)
 		end
 
-feature {ARCH_REP_ITEM} -- Modification
+feature {ARCH_CAT_ITEM} -- Modification
 
-	set_parent (a_parent: ARCH_REP_ITEM)
-		require
-			a_parent /= Void
+	set_parent (a_parent: attached ARCH_CAT_ITEM)
 		do
 			parent := a_parent
 		end
@@ -230,23 +222,20 @@ feature -- Comparison
 			Result := ontological_name < other.ontological_name
 		end
 
-feature {ARCH_REP_ITEM, ARCHETYPE_DIRECTORY} -- Implementation
+feature {ARCH_CAT_ITEM, ARCHETYPE_CATALOGUE} -- Implementation
 
 	children: SORTED_TWO_WAY_LIST [like child_type]
 			-- list of child nodes
 
-	child_type: ARCH_REP_ITEM
+	child_type: ARCH_CAT_ITEM
 			-- type of allowable child node
 
-	parent: ARCH_REP_ITEM
+	parent: ARCH_CAT_ITEM
 			-- parent node
 
 	subtree_artefact_counts_cache: HASH_TABLE [INTEGER, INTEGER]
 			-- stored counter of archetype child objects, keyed by artefact type,
 			-- i.e. archetype & template counts stored separately
-
-invariant
-	ontological_name_attached: ontological_name /= Void
 
 end
 

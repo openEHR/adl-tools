@@ -69,12 +69,12 @@ feature -- Commands
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
 
 						if attached gui_tree.selected_item then
-							if attached {ARCH_REP_ITEM} gui_tree.selected_item.data as ari then
+							if attached {ARCH_CAT_ITEM} gui_tree.selected_item.data as ari then
 								if attached current_arch_dir as dir then
 									dir.set_selected_item (ari)
 								end
 
-								if attached {ARCH_REP_ARCHETYPE} ari as ara then
+								if attached {ARCH_CAT_ARCHETYPE} ari as ara then
 									gui.parse_archetype
 								else
 									gui.display_class
@@ -102,7 +102,7 @@ feature -- Commands
  			end
 		end
 
-	update_tree_node_for_archetype (ara: attached ARCH_REP_ARCHETYPE)
+	update_tree_node_for_archetype (ara: attached ARCH_CAT_ARCHETYPE)
 			-- update Explorer tree node with changes in compilation status
 		local
 			an_id: STRING
@@ -158,17 +158,17 @@ feature {NONE} -- Implementation
 	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
 			-- Timer to delay a moment before calling `display_details_of_selected_item'.
 
-   	populate_gui_tree_node_enter (ari: attached ARCH_REP_ITEM)
+   	populate_gui_tree_node_enter (ari: attached ARCH_CAT_ITEM)
    			-- Add a node representing `an_item' to `gui_file_tree'.
    		local
 			node: EV_TREE_ITEM
 		do
 			if not ari.is_root and (ari.sub_tree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
-								(attached {ARCH_REP_ARCHETYPE} ari as ara and then artefact_types.has(ara.artefact_type))) then
+								(attached {ARCH_CAT_ARCHETYPE} ari as ara and then artefact_types.has(ara.artefact_type))) then
 				create node
 	 			node.set_data (ari)
 
-	 			if attached {ARCH_REP_ARCHETYPE} ari as ara then
+	 			if attached {ARCH_CAT_ARCHETYPE} ari as ara then
 	 				gui_node_descriptor_map.put (node, ara.ontological_name)
 					node.set_configurable_target_menu_handler (agent on_ara_context_menu_pop_up)
 	 			end
@@ -186,10 +186,10 @@ feature {NONE} -- Implementation
 			end
 		end
 
-   	populate_gui_tree_node_exit (ari: attached ARCH_REP_ITEM)
+   	populate_gui_tree_node_exit (ari: attached ARCH_CAT_ITEM)
    		do
 			if not ari.is_root and (ari.sub_tree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
-								(attached {ARCH_REP_ARCHETYPE} ari as ara and then artefact_types.has(ara.artefact_type))) then
+								(attached {ARCH_CAT_ARCHETYPE} ari as ara and then artefact_types.has(ara.artefact_type))) then
 
 				gui_tree_item_stack.remove
 			end
@@ -201,13 +201,13 @@ feature {NONE} -- Implementation
 			text, tooltip: STRING_32
 			pixmap: EV_PIXMAP
 		do
-			if attached {ARCH_REP_ITEM} node.data as ari then
+			if attached {ARCH_CAT_ITEM} node.data as ari then
 				text := utf8 (ari.display_name)
 
-				if attached {ARCH_REP_ARCHETYPE} ari as ara then
+				if attached {ARCH_CAT_ARCHETYPE} ari as ara then
 					tooltip := utf8 (ara.full_path)
 					if ara.has_legacy_flat_file and display_archetype_source then
-						text.prepend (utf8("(f) "))
+						text.prepend (utf8("(lf) "))
 					end
 
 					if ara.has_slots then
@@ -230,10 +230,10 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	ev_tree_expand(node: EV_TREE_NODE)
+	ev_tree_expand (node: EV_TREE_NODE)
 			--
 		do
-	 		if attached {ARCH_REP_MODEL_NODE} node.data as arf then
+	 		if attached {ARCH_CAT_MODEL_NODE} node.data as arf then
 	 			if (arf.is_abstract_class or arf.is_package) and node.is_expandable then
 					node.expand
 	 			end

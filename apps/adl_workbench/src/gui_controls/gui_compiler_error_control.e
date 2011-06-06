@@ -89,7 +89,7 @@ feature -- Commands
 			update_errors_tab_label
 		end
 
-	extend_and_select (ara: attached ARCH_REP_ARCHETYPE)
+	extend_and_select (ara: attached ARCH_CAT_ARCHETYPE)
 			-- Add a node representing the errors or warnings of the archetype, if any.
 		local
 			gli: EV_GRID_LABEL_ITEM
@@ -115,7 +115,7 @@ feature -- Commands
 						row := cat_row.subrow (row_idx)
 						row.collapse
 
-						if attached {ARCH_REP_ARCHETYPE} row.data as other then
+						if attached {ARCH_CAT_ARCHETYPE} row.data as other then
 							i := ara.id.three_way_comparison (other.id)
 						end
 					else
@@ -229,7 +229,7 @@ feature -- Commands
 					loop
 						i := i + 1
 
-						if attached {ARCH_REP_ARCHETYPE} row.subrow (i).data as ara then
+						if attached {ARCH_CAT_ARCHETYPE} row.subrow (i).data as ara then
 							create archetype_element.make_last (category_element, "archetype", ns)
 							create attr.make_last ("id", ns, ara.id.as_string, archetype_element)
 
@@ -367,7 +367,7 @@ feature {NONE} -- Implementation
 			category_row_attached: categories [err_type] /= Void
 		end
 
-	remove_archetype_row_if_in_wrong_category (ara: attached ARCH_REP_ARCHETYPE)
+	remove_archetype_row_if_in_wrong_category (ara: attached ARCH_CAT_ARCHETYPE)
 			-- Remove the row representing `ara' from `grid' if it is under the wrong category.
 		local
 			cat_row, row: EV_GRID_ROW
@@ -381,7 +381,7 @@ feature {NONE} -- Implementation
 				row := grid.row (row_idx)
 				row_idx := row_idx - 1
 
-				if attached {ARCH_REP_ARCHETYPE} row.data as other then
+				if attached {ARCH_CAT_ARCHETYPE} row.data as other then
 					if ara.id.is_equal (other.id) then
 						row_idx := 0
 						cat_row := row.parent_row

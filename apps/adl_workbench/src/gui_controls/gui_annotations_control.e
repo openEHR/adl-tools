@@ -139,7 +139,7 @@ feature -- Commands
    	set_row_pixmap (row: attached EV_GRID_ROW)
    			-- Set the icon appropriate to the item attached to `row'.
    		do
-			if attached {EV_GRID_LABEL_ITEM} row.item (1) as gli and attached {ARCH_REP_ITEM} row.data as ari then
+			if attached {EV_GRID_LABEL_ITEM} row.item (1) as gli and attached {ARCH_CAT_ITEM} row.data as ari then
 				if attached {EV_PIXMAP} pixmaps [ari.group_name] as pixmap then
 					gli.set_pixmap (pixmap)
 				end

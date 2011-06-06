@@ -12,10 +12,10 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class ARCH_REP_FOLDER
+class ARCH_CAT_FOLDER
 
 inherit
-	ARCH_REP_ITEM
+	ARCH_CAT_ITEM
 
 create
 	make

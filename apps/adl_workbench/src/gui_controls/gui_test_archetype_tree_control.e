@@ -205,14 +205,14 @@ feature -- Commands
    	set_row_pixmap (row: attached EV_GRID_ROW)
    			-- Set the icon appropriate to the item attached to `row'.
    		do
-			if attached {EV_GRID_LABEL_ITEM} row.item (1) as gli and attached {ARCH_REP_ITEM} row.data as ari then
+			if attached {EV_GRID_LABEL_ITEM} row.item (1) as gli and attached {ARCH_CAT_ITEM} row.data as ari then
 				if attached {EV_PIXMAP} pixmaps [ari.group_name] as pixmap then
 					gli.set_pixmap (pixmap)
 				end
 			end
 		end
 
-	do_row_for_item (ari: ARCH_REP_ITEM; action: attached PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
+	do_row_for_item (ari: ARCH_CAT_ITEM; action: attached PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
    			-- Perform `action' for the row containing `an_item', if any.
   		local
    			i: INTEGER
@@ -551,13 +551,13 @@ feature {NONE} -- Implementation
 	test_status: STRING
 			-- Cumulative status message during running of test.
 
-	target: ARCH_REP_ARCHETYPE
+	target: ARCH_CAT_ARCHETYPE
 			-- current target of compilation operation
 
 	original_differential_text: STRING
 			-- copy of archetype text after successful parse; = what was on file
 
-	populate_gui_tree_node_enter (ari: attached ARCH_REP_ITEM)
+	populate_gui_tree_node_enter (ari: attached ARCH_CAT_ITEM)
 			-- Add a node representing `an_item' to `gui_file_tree'.
 		local
 			gli: EV_GRID_LABEL_ITEM
@@ -586,7 +586,7 @@ feature {NONE} -- Implementation
 				set_row_pixmap (row)
 				grid_row_stack.extend (row)
 
-				if attached {ARCH_REP_ARCHETYPE} ari as ara then
+				if attached {ARCH_CAT_ARCHETYPE} ari as ara then
 					gli.set_tooltip (utf8 (ara.full_path))
 					col_csr := first_test_col
 					from tests.start until tests.off loop
@@ -598,7 +598,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_gui_tree_node_exit (an_item: attached ARCH_REP_ITEM)
+	populate_gui_tree_node_exit (an_item: attached ARCH_CAT_ITEM)
 		do
 			if an_item.has_artefacts then
 				grid_row_stack.remove

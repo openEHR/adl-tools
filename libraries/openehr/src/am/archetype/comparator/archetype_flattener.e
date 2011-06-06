@@ -37,7 +37,7 @@ create
 
 feature -- Initialisation
 
-	make_specialised (a_flat_parent_desc, a_child_desc: attached ARCH_REP_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
+	make_specialised (a_flat_parent_desc, a_child_desc: attached ARCH_CAT_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
 			-- create with flat archetype of parent and source (differential) archetype of
 			-- archetype for which we wish to generate a flat archetype
 		require
@@ -50,7 +50,7 @@ feature -- Initialisation
 			child_desc := a_child_desc
 		end
 
-	make_non_specialised (a_child_desc: attached ARCH_REP_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
+	make_non_specialised (a_child_desc: attached ARCH_CAT_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
 			-- create with source (differential) archetype
 		require
 			Child_desc_attached: a_child_desc.is_valid
@@ -61,9 +61,9 @@ feature -- Initialisation
 
 feature -- Access
 
-	flat_parent_desc: attached ARCH_REP_ARCHETYPE
+	flat_parent_desc: attached ARCH_CAT_ARCHETYPE
 
-	child_desc: attached ARCH_REP_ARCHETYPE
+	child_desc: attached ARCH_CAT_ARCHETYPE
 
 	arch_parent_flat: attached FLAT_ARCHETYPE
 			-- flat archetype of parent, if applicable

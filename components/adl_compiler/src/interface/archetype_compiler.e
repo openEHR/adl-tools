@@ -53,7 +53,7 @@ feature -- Access
 	global_visual_update_action: PROCEDURE [ANY, TUPLE[STRING]]
 			-- Called after global processing to perform GUI updates
 
-	archetype_visual_update_action: PROCEDURE [ANY, TUPLE [STRING, ARCH_REP_ARCHETYPE, INTEGER]]
+	archetype_visual_update_action: PROCEDURE [ANY, TUPLE [STRING, ARCH_CAT_ARCHETYPE, INTEGER]]
 			-- Called after processing each archetype (to perform GUI updates during processing).
 
 feature -- Status
@@ -88,7 +88,7 @@ feature -- Modification
 			global_visual_update_action_set: global_visual_update_action = a_routine
 		end
 
-	set_archetype_visual_update_action (a_routine: attached PROCEDURE [ANY, TUPLE [STRING, ARCH_REP_ARCHETYPE, INTEGER]])
+	set_archetype_visual_update_action (a_routine: attached PROCEDURE [ANY, TUPLE [STRING, ARCH_CAT_ARCHETYPE, INTEGER]])
 			-- Set `archetype_visual_update_action'.
 		do
 			archetype_visual_update_action := a_routine
@@ -146,7 +146,7 @@ feature -- Commands
 			is_building := False
 		end
 
-	build_lineage (ara: attached ARCH_REP_ARCHETYPE; dependency_depth: INTEGER)
+	build_lineage (ara: attached ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
 			-- Build the archetypes in the lineage containing `ara', except those that seem to be built already.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 			-- dependency depth indicates how many dependency relationships away from original artefact
@@ -157,7 +157,7 @@ feature -- Commands
 			is_building := False
 		end
 
-	rebuild_lineage (ara: attached ARCH_REP_ARCHETYPE; dependency_depth: INTEGER)
+	rebuild_lineage (ara: attached ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
 			-- Rebuild the archetypes in the lineage containing `ara'.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		do
@@ -189,21 +189,21 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	do_all (action: attached PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
+	do_all (action: attached PROCEDURE [ANY, TUPLE [attached ARCH_CAT_ARCHETYPE]])
 			-- Perform `action' on the sub-system at and below `subtree'.
 		do
 			is_interrupt_requested := False
 			current_arch_dir.do_all_archetypes (action)
 		end
 
-	do_subtree (subtree: ARCH_REP_ITEM; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
+	do_subtree (subtree: ARCH_CAT_ITEM; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_CAT_ARCHETYPE]])
 			-- Perform `action' on the sub-system at and below `subtree'.
 		do
 			is_interrupt_requested := False
 			current_arch_dir.do_archetypes (subtree, action)
 		end
 
-	do_lineage (ara: attached ARCH_REP_ARCHETYPE; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_REP_ARCHETYPE]])
+	do_lineage (ara: attached ARCH_CAT_ARCHETYPE; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_CAT_ARCHETYPE]])
 			-- Build the archetypes in the lineage containing `ara', possibly from scratch.
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		do
@@ -211,7 +211,7 @@ feature {NONE} -- Implementation
 			current_arch_dir.do_archetype_lineage(ara, action)
 		end
 
-	check_file_system_currency (from_scratch: BOOLEAN; ara: attached ARCH_REP_ARCHETYPE)
+	check_file_system_currency (from_scratch: BOOLEAN; ara: attached ARCH_CAT_ARCHETYPE)
 			-- check archetype for anything that would require recompilation:
 			-- * editing changes, including anything that might cause reparenting
 			-- * user request to start from scratch
@@ -232,7 +232,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	build_archetype (ara: attached ARCH_REP_ARCHETYPE; dependency_depth: INTEGER)
+	build_archetype (ara: attached ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
 			-- Build `ara' only if `from_scratch' is true, or if it is has changed since it was last validly built.
 		local
 			exception_encountered: BOOLEAN
@@ -285,7 +285,7 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	export_archetype_html (a_html_export_directory: STRING; build_too: BOOLEAN; ara: attached ARCH_REP_ARCHETYPE)
+	export_archetype_html (a_html_export_directory: STRING; build_too: BOOLEAN; ara: attached ARCH_CAT_ARCHETYPE)
 			-- Generate HTML under `html_export_directory' from `ara', optionally building it first if necessary.
 		require
 			directory_attached: a_html_export_directory /= Void
@@ -314,7 +314,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	call_archetype_visual_update_action (msg: STRING; ara: ARCH_REP_ARCHETYPE; dependency_depth: INTEGER)
+	call_archetype_visual_update_action (msg: STRING; ara: ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
 			-- Call `archetype_visual_update_action', if it is attached.
 		do
 			if archetype_visual_update_action /= Void then

@@ -1,7 +1,10 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Shared access to archteype directory.
+				 Shared access to 'archteype directories'. An archetype directory is an in-memory logical catalogue of
+				 archetypes & templates corresponding to a single 'profile'. Each profile may reference one or more 
+				 source locations, providing reference and working repositories, with the pseudo-location 'adhoc'
+				 enabling archetypes to be added adhoc to a directory.
 				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
@@ -23,20 +26,20 @@ inherit
 
 feature -- Access
 
-	current_arch_dir: ARCHETYPE_DIRECTORY
+	current_arch_dir: ARCHETYPE_CATALOGUE
 			-- application-wide archetype directory access
 		require
 			has_current_profile
 		do
-			Result := arch_dirs.item(repository_profiles.current_profile_name)
+			Result := arch_dirs.item (repository_profiles.current_profile_name)
 		end
 
 	use_current_profile (refresh: BOOLEAN)
 			-- switch to current profile; refresh flag forces archetype in memory directory to be refreshed from source repository
 		local
-			new_dir: ARCHETYPE_DIRECTORY
+			new_dir: ARCHETYPE_CATALOGUE
 		do
-			if not arch_dirs.has(repository_profiles.current_profile_name) or else refresh then
+			if not arch_dirs.has (repository_profiles.current_profile_name) or else refresh then
 				create new_dir.make
 				if directory_exists (repository_profiles.current_reference_repository_path) then
 					source_repositories.set_reference_repository (repository_profiles.current_reference_repository_path)
@@ -66,7 +69,7 @@ feature -- Status Report
 
 feature {NONE} -- Implementation
 
-	arch_dirs: attached HASH_TABLE [ARCHETYPE_DIRECTORY, STRING]
+	arch_dirs: attached HASH_TABLE [ARCHETYPE_CATALOGUE, STRING]
 			-- hash of all archetype directories used so far in the current session
 		once
 			create Result.make(0)

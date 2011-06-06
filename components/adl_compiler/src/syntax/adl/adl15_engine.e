@@ -179,7 +179,7 @@ feature -- Serialisation
 
 feature -- Validation
 
-	phase_1_validate (ara: ARCH_REP_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
+	phase_1_validate (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
 		do
 			validation_passed := False
 			phase_1_validator.initialise (ara, an_rm_schema)
@@ -188,7 +188,7 @@ feature -- Validation
 			errors := phase_1_validator.errors
 		end
 
-	phase_2_validate (ara: ARCH_REP_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
+	phase_2_validate (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
 		do
 			validation_passed := False
 			phase_2_validator.initialise (ara, an_rm_schema)
@@ -197,7 +197,7 @@ feature -- Validation
 			errors := phase_2_validator.errors
 		end
 
-	phase_3_validate (ara: ARCH_REP_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
+	phase_3_validate (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
 		do
 			validation_passed := False
 			phase_3_validator.initialise (ara, an_rm_schema)

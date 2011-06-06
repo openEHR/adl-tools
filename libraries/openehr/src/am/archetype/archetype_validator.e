@@ -42,7 +42,7 @@ feature -- Definitions
 
 feature {ADL15_ENGINE} -- Initialisation
 
-	initialise (ara: attached ARCH_REP_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
+	initialise (ara: attached ARCH_CAT_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
 			-- set target_descriptor
 			-- initialise reporting variables
 		require
@@ -58,7 +58,7 @@ feature {ADL15_ENGINE} -- Initialisation
 
 feature -- Access
 
-	target_descriptor: attached ARCH_REP_ARCHETYPE
+	target_descriptor: attached ARCH_CAT_ARCHETYPE
 			-- differential archetype being validated
 
 	target: ARCHETYPE
@@ -72,7 +72,7 @@ feature -- Access
 
 feature -- Status Report
 
-	validation_candidiate (ara: attached ARCH_REP_ARCHETYPE): BOOLEAN
+	validation_candidiate (ara: attached ARCH_CAT_ARCHETYPE): BOOLEAN
 		deferred
 		end
 
