@@ -426,9 +426,9 @@ end
 			end
 		end
 
-	merge_container_attribute(ca_output, ca_child: attached C_ATTRIBUTE)
-			-- merge objects in container attribute `a_src_attr' into the equivalent container attribute
-			-- `an_output_attr' in the output structure, using ordering information in source attribute
+	merge_container_attribute (ca_output, ca_child: attached C_ATTRIBUTE)
+			-- merge objects in container attribute `ca_child' into the equivalent container attribute
+			-- `ca_output' in the output structure, using ordering information in source attribute
 			-- objects, and replacing or inserting as appropriate. Essentially, we can think of both the
 			-- source and output structures as two linear lists of objects; the challenge is to figure out
 			-- how to merge those from the source structure that are NEW only. Overrides are ignored here,
@@ -521,9 +521,9 @@ end
 							merge_obj := ca_child.children.i_th(i).safe_deep_twin
 							merge_obj.clear_sibling_order -- no sibling_order markers in flat archetypes!
 							if merge_list.item.before_flag then -- True = insert before
-								ca_output.put_child_left(merge_obj, insert_obj)
+								ca_output.put_child_left (merge_obj, insert_obj)
 							else
-								ca_output.put_child_right(merge_obj, insert_obj)
+								ca_output.put_child_right (merge_obj, insert_obj)
 								insert_obj := ca_output.child_after (insert_obj) -- move 1 to the right, so adding occurs after
 							end
 						end
@@ -533,7 +533,7 @@ end
 						if arch_slot.is_closed then
 							ca_output.remove_child_by_id (code_at_level (ca_child.children.i_th(i).node_id, arch_parent_flat.specialisation_depth))
 						else
-							ca_output.replace_child_by_id (ca_child.children.item.safe_deep_twin,
+							ca_output.replace_child_by_id (ca_child.children.i_th(i).safe_deep_twin,
 									code_at_level (ca_child.children.i_th(i).node_id, arch_parent_flat.specialisation_depth))
 						end
 					else

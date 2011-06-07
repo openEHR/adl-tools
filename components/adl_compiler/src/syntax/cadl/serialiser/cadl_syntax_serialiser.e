@@ -565,7 +565,7 @@ feature {NONE} -- Implementation
 				s := a_node.node_id
 				if is_valid_code(s) and ontology.has_term_code(s) then
 					last_result.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-						safe_comment(ontology.term_definition(language, s).text), STYLE_COMMENT))
+						safe_comment (ontology.term_definition(language, s).text), STYLE_COMMENT))
 				end
 			end
 		end
