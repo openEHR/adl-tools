@@ -238,7 +238,7 @@ feature -- Visitor
 		do
 			-- have to obtain the ontology from the main archetype directory because the archetype being serialised
 			-- here might be in differential form, and have no component_ontologies aet up
-			ontologies.extend (current_arch_dir.archetype_index.item (a_node.archetype_id).flat_archetype.ontology)
+			ontologies.extend (current_arch_cat.archetype_index.item (a_node.archetype_id).flat_archetype.ontology)
 
 			gui_node_text := c_archetype_root_string (a_node)
 			if updating then
@@ -279,7 +279,7 @@ feature -- Visitor
 					gui_node_text.append ("[" + a_node.node_id + "]")
 				end
 				gui_node_text.append (" " + a_node.target_path)
-			elseif current_arch_dir.has_validated_selected_archetype then
+			elseif current_arch_cat.has_validated_selected_archetype then
 				gui_node_text.append ("use " + ontology.physical_to_logical_path (a_node.target_path, language))
 			end
 
@@ -690,7 +690,7 @@ feature {NONE} -- Implementation
 			code := an_ordinal.symbol.code_string
 			Result.append (an_ordinal.value.out + an_ordinal.separator.out)
 
-			if current_arch_dir.has_validated_selected_archetype then
+			if current_arch_cat.has_validated_selected_archetype then
 				if ontology.has_term_code (code) then
 					Result.append (" " + ontology.term_definition (language, code).text)
 				end
@@ -712,7 +712,7 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_empty
 
-			if current_arch_dir.has_validated_selected_archetype then
+			if current_arch_cat.has_validated_selected_archetype then
 				if local_flag then
 					if ontology.has_term_code (code) then
 						Result.append (" " + ontology.term_definition (language, code).text)
@@ -767,7 +767,7 @@ feature {NONE} -- Implementation
 			-- generate string form of node or object for use in tree node
 		do
 			Result := an_inv.as_string
-			if current_arch_dir.has_validated_selected_archetype then
+			if current_arch_cat.has_validated_selected_archetype then
 				if not in_technical_mode then
 					Result := ontology.substitute_codes (Result, language)
 				end

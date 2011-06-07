@@ -139,7 +139,7 @@ feature -- Commands
 			-- Add am empty column at the end so the width of the true last column can be set to zero on all platforms.
 			path_list.set_column_title ("", path_control_column_names.count + 1)
 
-			if current_arch_dir.has_validated_selected_archetype then
+			if current_arch_cat.has_validated_selected_archetype then
 				if filter_combo.text.is_equal ("All") then
 					p_paths := target_archetype.physical_paths
 					l_paths := target_archetype.logical_paths (current_language, False)
@@ -230,12 +230,12 @@ feature {NONE} -- Implementation
 	target_archetype: ARCHETYPE
 			-- differential or flat version of archetype, depending on setting of `differential_view'
 		require
-			current_arch_dir.has_selected_archetype
+			current_arch_cat.has_selected_archetype
 		do
 			if differential_view then
-				Result := current_arch_dir.selected_archetype.differential_archetype
+				Result := current_arch_cat.selected_archetype.differential_archetype
 			else
-				Result := current_arch_dir.selected_archetype.flat_archetype
+				Result := current_arch_cat.selected_archetype.flat_archetype
 			end
 		end
 

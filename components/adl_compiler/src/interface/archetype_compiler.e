@@ -129,8 +129,8 @@ feature -- Commands
 		do
 			is_building := True
 			call_global_visual_update_action(create_message_line ("compiler_building_subtree", Void))
-			do_subtree (current_arch_dir.selected_item, agent check_file_system_currency (False, ?))
-			do_subtree (current_arch_dir.selected_item, agent build_archetype (?, 0))
+			do_subtree (current_arch_cat.selected_item, agent check_file_system_currency (False, ?))
+			do_subtree (current_arch_cat.selected_item, agent build_archetype (?, 0))
 			is_building := False
 			call_global_visual_update_action(create_message_line ("compiler_finished_building_subtree", Void))
 		end
@@ -140,8 +140,8 @@ feature -- Commands
 		do
 			is_building := True
 			call_global_visual_update_action(create_message_line ("compiler_rebuilding_subtree", Void))
-			do_subtree (current_arch_dir.selected_item, agent check_file_system_currency (True, ?))
-			do_subtree (current_arch_dir.selected_item, agent build_archetype (?, 0))
+			do_subtree (current_arch_cat.selected_item, agent check_file_system_currency (True, ?))
+			do_subtree (current_arch_cat.selected_item, agent build_archetype (?, 0))
 			call_global_visual_update_action(create_message_line ("compiler_finished_rebuilding_subtree", Void))
 			is_building := False
 		end
@@ -193,14 +193,14 @@ feature {NONE} -- Implementation
 			-- Perform `action' on the sub-system at and below `subtree'.
 		do
 			is_interrupt_requested := False
-			current_arch_dir.do_all_archetypes (action)
+			current_arch_cat.do_all_archetypes (action)
 		end
 
 	do_subtree (subtree: ARCH_CAT_ITEM; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_CAT_ARCHETYPE]])
 			-- Perform `action' on the sub-system at and below `subtree'.
 		do
 			is_interrupt_requested := False
-			current_arch_dir.do_archetypes (subtree, action)
+			current_arch_cat.do_archetypes (subtree, action)
 		end
 
 	do_lineage (ara: attached ARCH_CAT_ARCHETYPE; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_CAT_ARCHETYPE]])
@@ -208,7 +208,7 @@ feature {NONE} -- Implementation
 			-- Go down as far as `ara'. Don't build sibling branches since this would create errors in unrelated archetypes.
 		do
 			is_interrupt_requested := False
-			current_arch_dir.do_archetype_lineage(ara, action)
+			current_arch_cat.do_archetype_lineage(ara, action)
 		end
 
 	check_file_system_currency (from_scratch: BOOLEAN; ara: attached ARCH_CAT_ARCHETYPE)
@@ -221,7 +221,7 @@ feature {NONE} -- Implementation
 					if ara.is_source_modified then
 						ara.signal_source_edited
 						if ara.ontology_location_changed then
-							current_arch_dir.update_archetype_id(ara)
+							current_arch_cat.update_archetype_id(ara)
 							-- FIXME - the directory data structure on which we are now traversing has changed;
 							-- could cause problems...
 						end

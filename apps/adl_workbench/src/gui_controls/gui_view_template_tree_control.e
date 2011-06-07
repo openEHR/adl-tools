@@ -73,8 +73,8 @@ feature -- Commands
 
 						if attached gui_tree.selected_item then
 							if attached {ARCH_CAT_ARCHETYPE} gui_tree.selected_item.data as ara then
-								if attached current_arch_dir then
-									current_arch_dir.set_selected_item (ara)
+								if attached current_arch_cat then
+									current_arch_cat.set_selected_item (ara)
 								end
 
 								gui.parse_archetype
@@ -96,7 +96,7 @@ feature -- Commands
  			create gui_tree_item_stack.make (0)
 
  			if has_current_profile then
-	 			current_arch_dir.do_all_archetypes (agent populate_template_nodes)
+	 			current_arch_cat.do_all_archetypes (agent populate_template_nodes)
  				gui.go_to_node_in_archetype_tree_view
 			end
 		end
@@ -208,7 +208,7 @@ feature {NONE} -- Implementation
 					if not c_attr.children.off then
 						attach_node(ca_path, pixmaps[c_attribute_pixmap_string(c_attr)], Void)
 					end
-				elseif attached {C_ARCHETYPE_ROOT} ca as car and attached current_arch_dir as dir then
+				elseif attached {C_ARCHETYPE_ROOT} ca as car and attached current_arch_cat as dir then
 					ara := dir.archetype_index.item (car.archetype_id)
 					attach_node(ara.id.rm_entity + "." + ara.display_name, pixmaps[ara.group_name], ara)
 				end

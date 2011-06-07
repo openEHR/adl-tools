@@ -61,8 +61,8 @@ feature -- Commands
 			has_current_profile
 		do
 			clear
-			if current_arch_dir.has_validated_selected_archetype and then attached current_arch_dir.selected_archetype.differential_archetype.translations then
-				gui.arch_translations_languages_list.set_strings (current_arch_dir.selected_archetype.differential_archetype.translations.current_keys)
+			if current_arch_cat.has_validated_selected_archetype and then attached current_arch_cat.selected_archetype.differential_archetype.translations then
+				gui.arch_translations_languages_list.set_strings (current_arch_cat.selected_archetype.differential_archetype.translations.current_keys)
 				populate_items
 			end
 		end
@@ -81,8 +81,8 @@ feature -- Commands
 				translation_language := gui.arch_translations_languages_list.selected_item.text.as_string_8
 			end
 
-			if current_arch_dir.has_validated_selected_archetype then
-				trans_item := current_arch_dir.selected_archetype.differential_archetype.translations.item(translation_language)
+			if current_arch_cat.has_validated_selected_archetype then
+				trans_item := current_arch_cat.selected_archetype.differential_archetype.translations.item(translation_language)
 
 				-- populate author hash
 				populate_ev_multi_list_from_hash(gui.arch_translations_author_mlist, trans_item.author)

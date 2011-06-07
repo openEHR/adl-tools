@@ -81,8 +81,8 @@ feature -- Commands
 			archetype: ARCHETYPE
 		do
 			clear
-			if current_arch_dir.has_validated_selected_archetype then
-				archetype := current_arch_dir.selected_archetype.differential_archetype
+			if current_arch_cat.has_validated_selected_archetype then
+				archetype := current_arch_cat.selected_archetype.differential_archetype
 				gui.description_term_mappings_list.set_strings (archetype.ontology.terminologies_available)
 				if attached archetype.description then
 					populate_authorship
@@ -101,21 +101,21 @@ feature {NONE} -- Implementation
 	populate_authorship
 			-- populate authorship fields
 		require
-			archetype_selected: current_arch_dir.has_selected_archetype
+			archetype_selected: current_arch_cat.has_selected_archetype
 		do
 			-- original author: tagged list of strings
-			populate_ev_multi_list_from_hash (gui.arch_desc_auth_orig_auth_mlist, current_arch_dir.selected_archetype.differential_archetype.description.original_author)
+			populate_ev_multi_list_from_hash (gui.arch_desc_auth_orig_auth_mlist, current_arch_cat.selected_archetype.differential_archetype.description.original_author)
 
 			-- status
-			if attached current_arch_dir.selected_archetype.differential_archetype.description.lifecycle_state as sts then
+			if attached current_arch_cat.selected_archetype.differential_archetype.description.lifecycle_state as sts then
 				gui.arch_desc_status_text.set_text (utf8 (sts))
 			end
 
 			-- original language
-			gui.arch_desc_original_language_text.set_text (utf8 (current_arch_dir.selected_archetype.differential_archetype.original_language.code_string))
+			gui.arch_desc_original_language_text.set_text (utf8 (current_arch_cat.selected_archetype.differential_archetype.original_language.code_string))
 
 			-- contributors: list of strings
-			if attached current_arch_dir.selected_archetype.differential_archetype.description.other_contributors as contribs then
+			if attached current_arch_cat.selected_archetype.differential_archetype.description.other_contributors as contribs then
 				create utf_str_list.make (0)
 				contribs.do_all (agent (utf8_str: STRING) do utf_str_list.extend (utf8 (utf8_str)) end)
 				gui.arch_desc_auth_contrib_list.set_strings (utf_str_list)
@@ -125,9 +125,9 @@ feature {NONE} -- Implementation
 	populate_details
 			-- Populate details (language sensitive).
 		require
-			archetype_selected: current_arch_dir.has_selected_archetype
+			archetype_selected: current_arch_cat.has_selected_archetype
 		do
-			if attached current_arch_dir.selected_archetype.differential_archetype.description.details.item(current_language) as arch_desc_item then
+			if attached current_arch_cat.selected_archetype.differential_archetype.description.details.item(current_language) as arch_desc_item then
 				if attached arch_desc_item.purpose then
 					gui.arch_desc_purpose_text.set_text (utf8 (arch_desc_item.purpose))
 				end
@@ -151,15 +151,15 @@ feature {NONE} -- Implementation
 	populate_resources
 			-- populate resources fields
 		require
-			archetype_selected: current_arch_dir.has_selected_archetype
+			archetype_selected: current_arch_cat.has_selected_archetype
 		do
 			-- package URI
-			if attached current_arch_dir.selected_archetype.differential_archetype.description.resource_package_uri as arch_pkg_uri then
+			if attached current_arch_cat.selected_archetype.differential_archetype.description.resource_package_uri as arch_pkg_uri then
 				gui.arch_desc_resource_package_text.set_text (utf8 (arch_pkg_uri.out))
 			end
 
 			-- list of URI resources
-			if attached current_arch_dir.selected_archetype.differential_archetype.description.details.item(current_language) as arch_desc_item then
+			if attached current_arch_cat.selected_archetype.differential_archetype.description.details.item(current_language) as arch_desc_item then
 				populate_ev_multi_list_from_hash (gui.arch_desc_resource_orig_res_mlist, arch_desc_item.original_resource_uri)
 			end
 		end
@@ -167,9 +167,9 @@ feature {NONE} -- Implementation
 	populate_copyright
 			-- populate copyright field
 		require
-			archetype_selected: current_arch_dir.has_selected_archetype
+			archetype_selected: current_arch_cat.has_selected_archetype
 		do
-			if attached current_arch_dir.selected_archetype.differential_archetype.description.details.item(current_language) as arch_desc_item  and then
+			if attached current_arch_cat.selected_archetype.differential_archetype.description.details.item(current_language) as arch_desc_item  and then
 				attached arch_desc_item.copyright
 			then
 				gui.arch_desc_copyright_text.set_text (utf8 (arch_desc_item.copyright))

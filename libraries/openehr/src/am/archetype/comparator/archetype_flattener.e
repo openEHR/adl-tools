@@ -723,7 +723,7 @@ debug ("flatten")
 end
 			xref_idx := arch_output_flat.suppliers_index
 			from xref_idx.start until xref_idx.off loop
-				arch_root_cco := current_arch_dir.archetype_index.item (xref_idx.key_for_iteration).flat_archetype.definition
+				arch_root_cco := current_arch_cat.archetype_index.item (xref_idx.key_for_iteration).flat_archetype.definition
 				xref_list := xref_idx.item_for_iteration
 				from xref_list.start until xref_list.off loop
 					if not xref_list.item.has_attributes then -- it is empty and needs to be filled

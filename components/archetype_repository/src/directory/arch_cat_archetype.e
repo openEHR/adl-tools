@@ -655,7 +655,7 @@ feature -- Compilation
 			-- differential yet available. This is because changes in legacy will be detected independently
 		do
 			if attached last_compile_attempt_timestamp then
-				current_arch_dir.decrement_compile_attempt_count
+				current_arch_cat.decrement_compile_attempt_count
 			end
 
 			differential_archetype := Void
@@ -884,8 +884,8 @@ feature {NONE} -- Compilation
 				if differential_archetype.has_suppliers then
 					supp_idx := differential_archetype.suppliers_index
 					from supp_idx.start until supp_idx.off loop
-						if current_arch_dir.archetype_index.has (supp_idx.key_for_iteration) then
-							suppliers_index.put (current_arch_dir.archetype_index.item (supp_idx.key_for_iteration), supp_idx.key_for_iteration)
+						if current_arch_cat.archetype_index.has (supp_idx.key_for_iteration) then
+							suppliers_index.put (current_arch_cat.archetype_index.item (supp_idx.key_for_iteration), supp_idx.key_for_iteration)
 						end
 						supp_idx.forth
 					end
@@ -937,8 +937,8 @@ feature {NONE} -- Compilation
 					if adl15_engine.validation_passed then
 						post_info (Current, "validate", "parse_archetype_i2", <<id.as_string>>)
 						compilation_state := Cs_validated
-						current_arch_dir.update_slot_statistics (Current)
-						current_arch_dir.update_terminology_bindings_info (Current)
+						current_arch_cat.update_slot_statistics (Current)
+						current_arch_cat.update_terminology_bindings_info (Current)
 					else
 						compilation_state := Cs_validate_failed
 					end
@@ -1129,7 +1129,7 @@ feature {NONE} -- Implementation
 			-- Set `compile_attempt_timestamp'
 		do
 			if last_compile_attempt_timestamp = Void then
-				current_arch_dir.update_compile_attempt_count
+				current_arch_cat.update_compile_attempt_count
 			end
 			create last_compile_attempt_timestamp.make_now
 		end

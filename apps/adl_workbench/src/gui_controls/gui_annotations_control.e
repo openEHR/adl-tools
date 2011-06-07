@@ -81,11 +81,11 @@ feature -- Commands
 			clear
 
 			-- set `target_archetype'
-			if current_arch_dir.has_validated_selected_archetype then
+			if current_arch_cat.has_validated_selected_archetype then
 				if differential_view then
-					target_archetype := current_arch_dir.selected_archetype.differential_archetype
+					target_archetype := current_arch_cat.selected_archetype.differential_archetype
 				else
-					target_archetype := current_arch_dir.selected_archetype.flat_archetype
+					target_archetype := current_arch_cat.selected_archetype.flat_archetype
 				end
 
 				-- figure out if there are any annotations, and what actual language tag they are under

@@ -52,7 +52,6 @@ feature -- Initialisation
 	make_from_flat (a_flat: attached FLAT_ARCHETYPE)
 			-- create from a flat archetype by cloning and then removing inherited parts
 		local
-			cco_prev, cco_next: C_OBJECT
 			c_it: C_ITERATOR
 			a_flat_copy: FLAT_ARCHETYPE
 		do
@@ -80,13 +79,15 @@ feature -- Initialisation
 						-- FIXME: in the following statement, we are assuming that if the cardinality of the parent attribute
 						-- does not exist (typical for a differential archetype), that it is ordered; really we should look up
 						-- the RM schema
-						if cco_1.parent /= Void and (cco_1.parent.cardinality = Void or cco_1.parent.is_ordered) then
-							cco_next := cco_1.parent.child_after (cco_1)
-							if cco_next /= Void and cco_next.specialisation_status (specialisation_depth).value = ss_added then
+						if attached cco_1.parent and (cco_1.parent.cardinality = Void or cco_1.parent.is_ordered) then
+							if attached {C_OBJECT} cco_1.parent.child_after (cco_1) as cco_next and then
+								cco_next.specialisation_status (specialisation_depth).value = ss_added
+							then
 								cco_next.set_sibling_order_after (cco_1.node_id)
 							end
-							cco_prev := cco_1.parent.child_before (cco_1)
-							if cco_prev /= Void and cco_prev.specialisation_status (specialisation_depth).value = ss_added then
+							if attached {C_OBJECT} cco_1.parent.child_before (cco_1) as cco_prev and then
+								cco_prev.specialisation_status (specialisation_depth).value = ss_added
+							then
 								cco_prev.set_sibling_order_before (cco_1.node_id)
 							end
 						end

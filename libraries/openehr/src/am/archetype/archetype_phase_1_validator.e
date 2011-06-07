@@ -163,7 +163,7 @@ feature {NONE} -- Implementation
 			filler_id: ARCHETYPE_ID
 		do
 			from target.suppliers_index.start until target.suppliers_index.off loop
-				if not current_arch_dir.archetype_index.has (target.suppliers_index.key_for_iteration) then
+				if not current_arch_cat.archetype_index.has (target.suppliers_index.key_for_iteration) then
 					add_error("VARXR", <<target.suppliers_index.item_for_iteration.first.parent.path, target.suppliers_index.key_for_iteration>>)
 				end
 
@@ -261,20 +261,20 @@ feature {NONE} -- Implementation
 						from includes.start until includes.off loop
 							a_regex := extract_regex (includes.item)
 							if a_regex /= Void then
-								target_descriptor.add_slot_ids (current_arch_dir.matching_ids (a_regex, target.slot_index.item.rm_type_name, Void), target.slot_index.item.path)
+								target_descriptor.add_slot_ids (current_arch_cat.matching_ids (a_regex, target.slot_index.item.rm_type_name, Void), target.slot_index.item.path)
 							end
 							includes.forth
 						end
 					else -- excludes = empty ==> includes is just a recommendation => match all archetype ids of RM type
-						target_descriptor.add_slot_ids (current_arch_dir.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, target.archetype_id.rm_name), target.slot_index.item.path)
+						target_descriptor.add_slot_ids (current_arch_cat.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, target.archetype_id.rm_name), target.slot_index.item.path)
 					end
 				elseif not excludes.is_empty and not assertion_matches_any (excludes.first) then
-					target_descriptor.add_slot_ids (current_arch_dir.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, Void), target.slot_index.item.path)
+					target_descriptor.add_slot_ids (current_arch_cat.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, Void), target.slot_index.item.path)
 					if not includes.is_empty then -- means excludes is not a recommendation; need to actually process it
 						from excludes.start until excludes.off loop
 							a_regex := extract_regex (excludes.item)
 							if a_regex /= Void then
-								id_list := current_arch_dir.matching_ids (a_regex, target.slot_index.item.rm_type_name, target.archetype_id.rm_name)
+								id_list := current_arch_cat.matching_ids (a_regex, target.slot_index.item.rm_type_name, target.archetype_id.rm_name)
 								from id_list.start until id_list.off loop
 									target_descriptor.slot_id_index.item (target.slot_index.item.path).prune (id_list.item)
 									id_list.forth
@@ -284,13 +284,13 @@ feature {NONE} -- Implementation
 						end
 					end
 				else
-					target_descriptor.add_slot_ids (current_arch_dir.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, target.archetype_id.rm_name), target.slot_index.item.path)
+					target_descriptor.add_slot_ids (current_arch_cat.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, target.archetype_id.rm_name), target.slot_index.item.path)
 				end
 
 				-- now post the results in the reverse indexes
 				id_list := target_descriptor.slot_id_index.item (target.slot_index.item.path)
 				from id_list.start until id_list.off loop
-					ara := current_arch_dir.archetype_index.item (id_list.item)
+					ara := current_arch_cat.archetype_index.item (id_list.item)
 					if not ara.is_supplier or else not ara.clients_index.has (target.archetype_id.as_string) then
 						ara.add_client (target.archetype_id.as_string)
 					end

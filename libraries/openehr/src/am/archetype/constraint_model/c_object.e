@@ -65,11 +65,11 @@ feature -- Access
 			-- specialisation hierarchy. Values are defined in SPECIALISATION_STATUSES
 			-- detects specialisation status for identified nodes
 		do
-			if not is_valid_code(node_id) then
-				create Result.make(ss_propagated)
+			if not is_valid_code (node_id) then
+				create Result.make (ss_propagated)
 			else
 				if specialisation_depth < spec_level then
-					create Result.make(ss_inherited)
+					create Result.make (ss_inherited)
 				else
 					Result := specialisation_status_from_code (node_id, spec_level)
 				end
@@ -145,18 +145,18 @@ feature -- Comparison
 			Result := codes_conformant (node_id, other.node_id)
 		end
 
-	valid_occurrences(occ: attached MULTIPLICITY_INTERVAL): BOOLEAN
+	valid_occurrences (occ: attached MULTIPLICITY_INTERVAL): BOOLEAN
 			-- check if `occ' is valid to be set as occurrences on this object
 		do
-			Result := parent /= Void and parent.is_single implies occ.upper <= 1
+			Result := attached parent and parent.is_single implies occ.upper <= 1
 		end
 
 feature -- Modification
 
-	set_occurrences(occ: attached MULTIPLICITY_INTERVAL)
+	set_occurrences (occ: attached MULTIPLICITY_INTERVAL)
 			--
 		require
-			Occurrences_valid: valid_occurrences(occ)
+			Occurrences_valid: valid_occurrences (occ)
 		do
 			occurrences := occ
 		ensure
@@ -208,9 +208,9 @@ feature -- Modification
 			not attached sibling_order
 		end
 
-	set_node_id (an_object_id: STRING)
+	set_node_id (an_object_id: attached STRING)
 		require
-			Object_id_valid: an_object_id /= Void and then not an_object_id.is_empty
+			Object_id_valid: not an_object_id.is_empty
 		do
 			representation.set_node_id (an_object_id)
 		end
@@ -224,10 +224,10 @@ feature -- Modification
 		require
 			Other_valid: other.node_conforms_to (Current, an_rm_schema)
 		do
-			if not other.node_id.is_equal(node_id) then
+			if not other.node_id.is_equal (node_id) then
 				set_node_id (other.node_id.twin)
 			end
-			if not other.rm_type_name.is_equal(rm_type_name) then
+			if not other.rm_type_name.is_equal (rm_type_name) then
 				rm_type_name := other.rm_type_name.twin
 			end
 			if attached other.occurrences then
@@ -253,7 +253,7 @@ feature -- Representation
 
 invariant
 	rm_type_name_valid: not rm_type_name.is_empty
-	Occurrences_validity: occurrences /= Void implies valid_occurrences(occurrences)
+	Occurrences_validity: attached occurrences implies valid_occurrences (occurrences)
 
 end
 

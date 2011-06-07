@@ -132,14 +132,14 @@ feature -- Commands
 			create tree_item_stack.make (0)
 			create gui_node_map.make(0)
 
-			if current_arch_dir.has_validated_selected_archetype then
+			if current_arch_cat.has_validated_selected_archetype then
 				-- get the archetype
 				if differential_view then
-					target_archetype := current_arch_dir.selected_archetype.differential_archetype
+					target_archetype := current_arch_cat.selected_archetype.differential_archetype
 				else
-					target_archetype := current_arch_dir.selected_archetype.flat_archetype
+					target_archetype := current_arch_cat.selected_archetype.flat_archetype
 				end
-				rm_schema := current_arch_dir.selected_archetype.rm_schema
+				rm_schema := current_arch_cat.selected_archetype.rm_schema
 
 				-- populate from definition
 				create c_node_map_builder
@@ -260,7 +260,7 @@ feature -- Commands
 			-- roll the tree up so that nodes whose rolled_up_specialisation_status is
 			-- ss_inherited are closed, but nodes with
 		require
-			archetype_selected: current_arch_dir.has_validated_selected_archetype
+			archetype_selected: current_arch_cat.has_validated_selected_archetype
 		do
 			if target_archetype.is_specialised and not target_archetype.is_template then
 				create node_list.make(0)
@@ -291,7 +291,7 @@ feature {NONE} -- Implementation
 		do
 			Result := ontologies.item
 		ensure
-			has_language: current_arch_dir.has_validated_selected_archetype implies Result.has_language (current_language)
+			has_language: current_arch_cat.has_validated_selected_archetype implies Result.has_language (current_language)
 		end
 
 	gui: MAIN_WINDOW

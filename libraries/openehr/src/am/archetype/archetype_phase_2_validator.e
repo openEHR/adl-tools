@@ -105,13 +105,13 @@ feature {NONE} -- Implementation
 			from langs.start until langs.off loop
 				from ontology.term_codes.start until ontology.term_codes.off loop
 					if not ontology.has_term_definition (langs.item, ontology.term_codes.item) then
-						add_error("VONLC", <<ontology.term_codes.item, langs.item>>)
+						add_error ("VONLC", <<ontology.term_codes.item, langs.item>>)
 					end
 					ontology.term_codes.forth
 				end
 				from ontology.constraint_codes.start until ontology.constraint_codes.off loop
 					if not ontology.has_constraint_definition (langs.item, ontology.constraint_codes.item) then
-						add_error("VONLC", <<ontology.constraint_codes.item, langs.item>>)
+						add_error ("VONLC", <<ontology.constraint_codes.item, langs.item>>)
 					end
 					ontology.constraint_codes.forth
 				end
@@ -134,13 +134,13 @@ feature {NONE} -- Implementation
 			from a_codes.start until a_codes.off loop
 				code_depth := specialisation_depth_from_code (a_codes.key_for_iteration)
 				if code_depth > depth then
-					add_error("VONSD", <<a_codes.key_for_iteration>>)
+					add_error ("VONSD", <<a_codes.key_for_iteration>>)
 				elseif code_depth < depth then
 					if not flat_parent.ontology.has_term_code (a_codes.key_for_iteration) then
-						add_error("VATDF1", <<a_codes.key_for_iteration>>)
+						add_error ("VATDF1", <<a_codes.key_for_iteration>>)
 					end
 				elseif not ontology.has_term_code (a_codes.key_for_iteration) then
-					add_error("VATDF2", <<a_codes.key_for_iteration>>)
+					add_error ("VATDF2", <<a_codes.key_for_iteration>>)
 				end
 				a_codes.forth
 			end
@@ -150,13 +150,13 @@ feature {NONE} -- Implementation
 			from a_codes.start until a_codes.off loop
 				code_depth := specialisation_depth_from_code (a_codes.key_for_iteration)
 				if code_depth > depth then
-					add_error("VATCD", <<a_codes.key_for_iteration>>)
+					add_error ("VATCD", <<a_codes.key_for_iteration>>)
 				elseif code_depth < depth then
 					if not flat_parent.ontology.has_term_code (a_codes.key_for_iteration) then
-						add_error("VATDF1", <<a_codes.key_for_iteration>>)
+						add_error ("VATDF1", <<a_codes.key_for_iteration>>)
 					end
 				elseif not ontology.has_term_code (a_codes.key_for_iteration) then
-					add_error("VATDF2", <<a_codes.key_for_iteration>>)
+					add_error ("VATDF2", <<a_codes.key_for_iteration>>)
 				end
 				a_codes.forth
 			end
@@ -166,13 +166,13 @@ feature {NONE} -- Implementation
 			from a_codes.start until a_codes.off loop
 				code_depth := specialisation_depth_from_code (a_codes.key_for_iteration)
 				if code_depth > depth then
-					add_error("VATCD", <<a_codes.key_for_iteration>>)
+					add_error ("VATCD", <<a_codes.key_for_iteration>>)
 				elseif code_depth < depth then
 					if not flat_parent.ontology.has_constraint_code (a_codes.key_for_iteration) then
-						add_error("VACDF1", <<a_codes.key_for_iteration>>)
+						add_error ("VACDF1", <<a_codes.key_for_iteration>>)
 					end
 				elseif not ontology.has_constraint_code (a_codes.key_for_iteration) then
-					add_error("VACDF2", <<a_codes.key_for_iteration>>)
+					add_error ("VACDF2", <<a_codes.key_for_iteration>>)
 				end
 				a_codes.forth
 			end
@@ -192,7 +192,7 @@ feature {NONE} -- Implementation
 				elseif target.is_specialised and flat_parent.definition.has_path (use_refs.key_for_iteration) then
 					convert_use_ref_paths (use_refs.item_for_iteration, use_refs.key_for_iteration, flat_parent)
 				else
-					add_error("VUNP", <<use_refs.key_for_iteration>>)
+					add_error ("VUNP", <<use_refs.key_for_iteration>>)
 				end
 				use_refs.forth
 			end
@@ -212,7 +212,7 @@ feature {NONE} -- Implementation
 						if not (target.has_path (ann_for_lang.items.key_for_iteration) or else (target.is_specialised and then
 							flat_parent.has_path (ann_for_lang.items.key_for_iteration)))
 						then
-							add_error("VRANP", <<target.annotations.items.key_for_iteration, ann_for_lang.items.key_for_iteration>>)
+							add_error ("VRANP", <<target.annotations.items.key_for_iteration, ann_for_lang.items.key_for_iteration>>)
 						end
 
 						-- FIXME: now we should do some other checks to see if contents are of same structure as annotations in other languages
@@ -229,7 +229,7 @@ feature {NONE} -- Implementation
 			Target_specialised: target.is_specialised
 		do
 			if not target.languages_available.is_subset (flat_parent.languages_available) then
-				add_error("VALC", <<target.languages_available_out, flat_parent.languages_available_out>>)
+				add_error ("VALC", <<target.languages_available_out, flat_parent.languages_available_out>>)
 			end
 		end
 
@@ -257,17 +257,17 @@ feature {NONE} -- Implementation
 				if attached {C_ATTRIBUTE} flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth)) as ca_parent_flat then
 					if not ca_child_diff.node_conforms_to(ca_parent_flat, rm_schema) then
 						if ca_child_diff.is_single and not ca_parent_flat.is_single then
-							add_error("VSAM1", <<ca_child_diff.path>>)
+							add_error ("VSAM1", <<ca_child_diff.path>>)
 
 						elseif not ca_child_diff.is_single and ca_parent_flat.is_single then
-							add_error("VSAM2", <<ca_child_diff.path>>)
+							add_error ("VSAM2", <<ca_child_diff.path>>)
 
 						else
 							if not ca_child_diff.existence_conforms_to (ca_parent_flat) then
 								if validation_strict or else not ca_child_diff.existence.equal_interval (ca_parent_flat.existence) then
-									add_error("VSANCE", <<ca_child_diff.path, ca_child_diff.existence.as_string, ca_parent_flat.path, ca_parent_flat.existence.as_string>>)
+									add_error ("VSANCE", <<ca_child_diff.path, ca_child_diff.existence.as_string, ca_parent_flat.path, ca_parent_flat.existence.as_string>>)
 								else
-									add_warning("VSANCE", <<ca_child_diff.path, ca_child_diff.existence.as_string, ca_parent_flat.path, ca_parent_flat.existence.as_string>>)
+									add_warning ("VSANCE", <<ca_child_diff.path, ca_child_diff.existence.as_string, ca_parent_flat.path, ca_parent_flat.existence.as_string>>)
 									ca_child_diff.remove_existence
 									if ca_child_diff.parent.is_path_compressible then
 debug ("validate")
@@ -280,9 +280,9 @@ end
 
 							if not ca_child_diff.cardinality_conforms_to (ca_parent_flat) then
 								if validation_strict or else not ca_child_diff.cardinality.equal_interval (ca_parent_flat.cardinality) then
-									add_error("VSANCC", <<ca_child_diff.path, ca_child_diff.cardinality.as_string, ca_parent_flat.path, ca_parent_flat.cardinality.as_string>>)
+									add_error ("VSANCC", <<ca_child_diff.path, ca_child_diff.cardinality.as_string, ca_parent_flat.path, ca_parent_flat.cardinality.as_string>>)
 								else
-									add_warning("VSANCC", <<ca_child_diff.path, ca_child_diff.cardinality.as_string, ca_parent_flat.path, ca_parent_flat.cardinality.as_string>>)
+									add_warning ("VSANCC", <<ca_child_diff.path, ca_child_diff.cardinality.as_string, ca_parent_flat.path, ca_parent_flat.cardinality.as_string>>)
 									ca_child_diff.remove_cardinality
 									if ca_child_diff.parent.is_path_compressible then
 debug ("validate")
@@ -303,7 +303,7 @@ end
 						ca_child_diff.set_is_path_compressible
 					end
 				else
-					add_error("compiler_unexpected_error", <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 2">>)
+					add_error ("compiler_unexpected_error", <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 2">>)
 				end
 
 			-- deal with C_ARCHETYPE_ROOT (slot filler) inheriting from ARCHETYPE_SLOT
@@ -313,30 +313,30 @@ end
 
 				if attached {ARCHETYPE_SLOT} co_parent_flat as a_slot then
 					slot_id_index := target_descriptor.specialisation_parent.slot_id_index
-					if slot_id_index /= Void and then slot_id_index.has (a_slot.path) then
+					if attached slot_id_index and then slot_id_index.has (a_slot.path) then
 						if not archetype_id_matches_slot (car.archetype_id, a_slot) then -- doesn't even match the slot definition
-							add_error("VARXS", <<car.path, car.archetype_id>>)
+							add_error ("VARXS", <<car.path, car.archetype_id>>)
 
 						elseif not slot_id_index.item (a_slot.path).has (car.archetype_id) then -- matches def, but not found in actual list from current repo
-							add_error("VARXR", <<car.path, car.archetype_id>>)
+							add_error ("VARXR", <<car.path, car.archetype_id>>)
 
 						elseif not car.occurrences_conforms_to (a_slot) then
-							if car.occurrences /= Void and then car.occurrences.equal_interval (co_parent_flat.occurrences) then
+							if attached car.occurrences and then car.occurrences.equal_interval (co_parent_flat.occurrences) then
 								if validation_strict then
-									add_error("VSONCO", <<car.path, car.occurrences_as_string, a_slot.path, a_slot.occurrences.as_string>>)
+									add_error ("VSONCO", <<car.path, car.occurrences_as_string, a_slot.path, a_slot.occurrences.as_string>>)
 								else
-									add_warning("VSONCO", <<car.path, car.occurrences_as_string, a_slot.path, a_slot.occurrences.as_string>>)
+									add_warning ("VSONCO", <<car.path, car.occurrences_as_string, a_slot.path, a_slot.occurrences.as_string>>)
 									car.remove_occurrences
 								end
 							else
-								add_error("VSONCO", <<car.path, car.occurrences_as_string, a_slot.path, a_slot.occurrences.as_string>>)
+								add_error ("VSONCO", <<car.path, car.occurrences_as_string, a_slot.path, a_slot.occurrences.as_string>>)
 							end
 						end
 					else
-						add_error("compiler_unexpected_error", <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 3; descriptor does not have slot match list">>)
+						add_error ("compiler_unexpected_error", <<"ARCHETYPE_VALIDATOR.specialised_node_validate location 3; descriptor does not have slot match list">>)
 					end
 				else
-					add_error("VARXV", <<car.path>>)
+					add_error ("VARXV", <<car.path>>)
 				end
 
 			elseif attached {C_OBJECT} a_c_node as co_child_diff then
@@ -352,9 +352,9 @@ end
 				-- C_CODE_PHRASE conforms to CONSTRAINT_REF. Its validity is not testable in any way (sole exception in AOM) - just warn
 				if attached {CONSTRAINT_REF} co_parent_flat as ccr and then not attached {CONSTRAINT_REF} co_child_diff as ccr2 then
 					if attached {C_CODE_PHRASE} co_child_diff as ccp then
-						add_warning("WCRC", <<co_child_diff.path>>)
+						add_warning ("WCRC", <<co_child_diff.path>>)
 					else
-						add_error("VSCNR", <<co_parent_flat.generating_type, co_parent_flat.path, co_child_diff.generating_type, co_child_diff.path>>)
+						add_error ("VSCNR", <<co_parent_flat.generating_type, co_parent_flat.path, co_child_diff.generating_type, co_child_diff.path>>)
 					end
 
 				else
@@ -363,20 +363,20 @@ end
 					if attached {ARCHETYPE_INTERNAL_REF} co_parent_flat as air_p and not attached {ARCHETYPE_INTERNAL_REF} co_child_diff as air_c then
 						co_parent_flat := flat_parent.c_object_at_path (air_p.path)
 						if dynamic_type (co_child_diff) /= dynamic_type (co_parent_flat) then
-							add_error("VSUNT", <<co_child_diff.path, co_child_diff.generating_type, co_parent_flat.path, co_parent_flat.generating_type>>)
+							add_error ("VSUNT", <<co_child_diff.path, co_child_diff.generating_type, co_parent_flat.path, co_parent_flat.generating_type>>)
 						end
 					end
 
 					-- by here the AOM meta-types must be the same; if not, it is an error
 					if dynamic_type (co_child_diff) /= dynamic_type (co_parent_flat) then
-						add_error("VSONT", <<co_child_diff.path, co_child_diff.generating_type, co_parent_flat.path, co_parent_flat.generating_type>>)
+						add_error ("VSONT", <<co_child_diff.path, co_child_diff.generating_type, co_parent_flat.path, co_parent_flat.generating_type>>)
 
 					-- they should also be conformant as defined by the node_conforms_to() function
 					elseif not co_child_diff.node_conforms_to(co_parent_flat, rm_schema) then
 
 						-- RM type non-conformance was the reason
 						if not co_child_diff.rm_type_conforms_to (co_parent_flat, rm_schema) then
-							add_error("VSONCT", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.path, co_parent_flat.rm_type_name>>)
+							add_error ("VSONCT", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.path, co_parent_flat.rm_type_name>>)
 
 						-- occurrences non-conformance was the reason
 						elseif not co_child_diff.occurrences_conforms_to (co_parent_flat) then
@@ -384,9 +384,9 @@ end
 							-- compiling strict, else remove the duplicate and just warn
 							if co_child_diff.occurrences /= Void and then co_child_diff.occurrences.equal_interval (co_parent_flat.occurrences) then
 								if validation_strict then
-									add_error("VSONCO", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
+									add_error ("VSONCO", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
 								else
-									add_warning("VSONCO", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
+									add_warning ("VSONCO", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
 									co_child_diff.remove_occurrences
 									if co_child_diff.is_root or else co_child_diff.parent.is_path_compressible then
 debug ("validate")
@@ -396,18 +396,18 @@ end
 									end
 								end
 							else
-								add_error("VSONCO", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
+								add_error ("VSONCO", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.path, co_parent_flat.occurrences.as_string>>)
 							end
 
 						-- node id non-conformance value mismatch was the reason
 						elseif co_child_diff.is_addressable then
 							if not co_child_diff.node_id_conforms_to (co_parent_flat) then
-								add_error("VSONCI", <<co_child_diff.path, co_child_diff.node_id, co_parent_flat.path, co_parent_flat.node_id>>)
+								add_error ("VSONCI", <<co_child_diff.path, co_child_diff.node_id, co_parent_flat.path, co_parent_flat.node_id>>)
 							elseif co_child_diff.node_id.is_equal(co_parent_flat.node_id) then -- id same, something else must be different
 								if not co_child_diff.rm_type_name.is_equal (co_parent_flat.rm_type_name) then -- has to be that RM type was redefined but at-code wasn't
-									add_error("VSONIRrm", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
+									add_error ("VSONIRrm", <<co_child_diff.path, co_child_diff.rm_type_name, co_parent_flat.rm_type_name, co_child_diff.node_id>>)
 								else -- has to be the occurrences was redefined, but the at-code wasn't
-									add_error("VSONIRocc", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.occurrences_as_string, co_child_diff.node_id>>)
+									add_error ("VSONIRocc", <<co_child_diff.path, co_child_diff.occurrences_as_string, co_parent_flat.occurrences_as_string, co_child_diff.node_id>>)
 								end
 							end
 
@@ -424,7 +424,9 @@ end
 						-- occurred on this node. This enables the node to be skipped and a compressed path created instead in the final archetype.
 						-- FIXME: NOTE that this only applies while uncompressed format differential archetypes are being created by e.g.
 						-- diff-tools taking legacy archetypes as input.
-						if attached {C_COMPLEX_OBJECT} co_child_diff as cco and co_child_diff.node_congruent_to (co_parent_flat, rm_schema) and (co_child_diff.is_root or else co_child_diff.parent.is_path_compressible) then
+						if attached {C_COMPLEX_OBJECT} co_child_diff as cco and co_child_diff.node_congruent_to (co_parent_flat, rm_schema) and
+							(co_child_diff.is_root or else co_child_diff.parent.is_path_compressible)
+						then
 debug ("validate")
 	io.put_string (">>>>> validate: C_OBJECT in child at " +
 	co_child_diff.path + " CONGRUENT to parent node " +
@@ -454,8 +456,8 @@ debug ("validate")
 end
 						end
 
-						if co_child_diff.sibling_order /= Void and then not co_parent_flat.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) then
-							add_error("VSSM", <<co_child_diff.path, co_child_diff.sibling_order.sibling_node_id>>)
+						if attached co_child_diff.sibling_order and then not co_parent_flat.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) then
+							add_error ("VSSM", <<co_child_diff.path, co_child_diff.sibling_order.sibling_node_id>>)
 						end
 					end
 				end
@@ -471,7 +473,7 @@ end
 			ca_parent_flat: attached C_ATTRIBUTE
 			flat_parent_path: STRING
 		do
-			-- if it is a C_ARCHETYPE_ROOT, it s either a slot filler or an external reference. If the former, it is
+			-- if it is a C_ARCHETYPE_ROOT, it is either a slot filler or an external reference. If the former, it is
 			-- redefining an ARCHETYPE_SLOT node, and needs to be validated; if the latter it is a new node, and will
 			-- only have been RM-validated. Either way, we need to use the slot path it replaces rather than its literal path,
 			-- to determine if it has a corresponding node in the flat parent.
@@ -495,7 +497,7 @@ end
 							flat_parent_path := apa.path_at_level (flat_parent.specialisation_depth)
 							Result := flat_parent.has_path (flat_parent_path)
 							if not Result and a_c_obj.is_addressable then -- if it is an addressable node it should have a matching node in flat parent
-								add_error("VSONIN", <<a_c_obj.node_id, a_c_obj.rm_type_name, a_c_obj.path, flat_parent_path>>)
+								add_error ("VSONIN", <<a_c_obj.node_id, a_c_obj.rm_type_name, a_c_obj.path, flat_parent_path>>)
 							end
 
 						-- special check: if it is a non-overlay node, but it has a sibling order, then we need to check that the
@@ -505,7 +507,7 @@ end
 							create apa.make_from_string(a_c_node.parent.path)
 							ca_parent_flat := flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth))
 							if not ca_parent_flat.has_child_with_id (a_c_obj.sibling_order.sibling_node_id) then
-								add_error("VSSM", <<a_c_obj.path, a_c_obj.sibling_order.sibling_node_id>>)
+								add_error ("VSSM", <<a_c_obj.path, a_c_obj.sibling_order.sibling_node_id>>)
 							end
 						else
 debug ("validate")
@@ -518,7 +520,7 @@ end
 						flat_parent_path := apa.path_at_level (flat_parent.specialisation_depth)
 						Result := flat_parent.has_path (flat_parent_path)
 						if not Result and ca.has_differential_path then
-							add_error("VDIFP1", <<ca.path, flat_parent_path>>)
+							add_error ("VDIFP1", <<ca.path, flat_parent_path>>)
 						end
 					end
 				end
@@ -534,8 +536,8 @@ end
 		do
 			create invalid_types.make(0)
 			invalid_types.compare_objects
-			create def_it.make(target.definition)
-			def_it.do_until_surface(agent rm_node_validate, agent rm_node_validate_test)
+			create def_it.make (target.definition)
+			def_it.do_until_surface (agent rm_node_validate, agent rm_node_validate_test)
 		end
 
 	rm_node_validate (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
@@ -564,10 +566,10 @@ end
 
 							-- flag if constraint is equal to reference model; FUTURE: remove if equal
 							if rm_schema.substitutions.has (co.rm_type_name) and then rm_schema.substitutions.item (co.rm_type_name).is_equal (model_attr_class) then
-								add_info("ICORMTS", <<co.rm_type_name, co.path, model_attr_class,
+								add_info ("ICORMTS", <<co.rm_type_name, co.path, model_attr_class,
 									arch_parent_attr_type, co.parent.rm_attribute_name>>)
 							else
-								add_error("VCORMT", <<co.rm_type_name, co.path, model_attr_class, arch_parent_attr_type, co.parent.rm_attribute_name>>)
+								add_error ("VCORMT", <<co.rm_type_name, co.path, model_attr_class, arch_parent_attr_type, co.parent.rm_attribute_name>>)
 								invalid_types.extend (co.rm_type_name)
 							end
 						end
@@ -582,44 +584,44 @@ end
 					arch_parent_attr_type := ca.parent.rm_type_name -- can be a generic type like DV_INTERVAL <DV_QUANTITY>
 				end
 				if not rm_schema.has_property(arch_parent_attr_type, ca.rm_attribute_name) then
-					add_error("VCARM", <<ca.rm_attribute_name, ca.path, arch_parent_attr_type>>)
+					add_error ("VCARM", <<ca.rm_attribute_name, ca.path, arch_parent_attr_type>>)
 				else
 					rm_prop_def := rm_schema.property_definition(arch_parent_attr_type, ca.rm_attribute_name)
-					if ca.existence /= Void then
+					if attached ca.existence then
 						if not rm_prop_def.existence.contains(ca.existence) then
 							if not target.is_specialised and rm_prop_def.existence.equal_interval(ca.existence) then
-								add_warning("WCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string>>)
+								add_warning ("WCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string>>)
 								if not validation_strict then
 									ca.remove_existence
 								end
 							else
-								add_error("VCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string, rm_prop_def.existence.as_string>>)
+								add_error ("VCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string, rm_prop_def.existence.as_string>>)
 							end
 						end
 					end
 					if ca.is_multiple then
 						if attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop then
-							if ca.cardinality /= Void then
+							if attached ca.cardinality then
 								if not cont_prop.cardinality.contains(ca.cardinality.interval) then
 									if not target.is_specialised and cont_prop.cardinality.equal_interval(ca.cardinality.interval) then
-										add_warning("WCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string>>)
+										add_warning ("WCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string>>)
 										if not validation_strict then
 											ca.remove_cardinality
 										end
 									else
-										add_error("VCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string, cont_prop.cardinality.as_string>>)
+										add_error ("VCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string, cont_prop.cardinality.as_string>>)
 									end
 								end
 							end
 						else -- archetype has multiple attribute but RM does not
-							add_error("VCAM", <<ca.rm_attribute_name, ca.path, ca.cardinality.as_string, "(single-valued)">>)
+							add_error ("VCAM", <<ca.rm_attribute_name, ca.path, ca.cardinality.as_string, "(single-valued)">>)
 						end
 					elseif attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop_2 then
-						add_error("VCAM", <<ca.rm_attribute_name, ca.path, "(single-valued)", cont_prop_2.cardinality.as_string>>)
+						add_error ("VCAM", <<ca.rm_attribute_name, ca.path, "(single-valued)", cont_prop_2.cardinality.as_string>>)
 					end
 					if rm_prop_def.is_computed then
 						-- flag if this is a computed property constraint (i.e. a constraint on a function from the RM)
-						add_warning("WCARMC", <<ca.rm_attribute_name, ca.path, arch_parent_attr_type>>)
+						add_warning ("WCARMC", <<ca.rm_attribute_name, ca.path, arch_parent_attr_type>>)
 					end
 				end
 			end
@@ -634,45 +636,13 @@ end
 			if attached {C_OBJECT} a_c_node as co then
 				if not rm_schema.has_class_definition(co.rm_type_name) then
 					if not invalid_types.has(co.rm_type_name) then
-						add_error("VCORM", <<co.rm_type_name, co.path>>)
+						add_error ("VCORM", <<co.rm_type_name, co.path>>)
 						invalid_types.extend (co.rm_type_name)
 					end
 					Result := False
 				end
 			end
 		end
-
-
---
--- It doesn't really make sense to do this strict occurrences / cardinality evaluation because it prevents
--- easy redefinition of cardinality in specialised archetypes
---
---	validate_occurrences
---			-- validate occurrences under container attributes, in flat definition
---		require
---			target_flat /= Void
---		local
---			def_it: C_ITERATOR
---		do
---			create def_it.make(target_flat.definition)
---			def_it.do_all(agent flat_node_enter, agent flat_node_exit)
---		end
-
---	flat_node_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
---			-- basic validation of any node
---		do
---			if attached {C_ATTRIBUTE} a_c_node as ca then
---				if ca.is_multiple then
---					if not ca.occurrences_total_range.intersects (ca.cardinality.interval) then
---						add_error("VACMC2", <<ca.path, ca.cardinality.as_string>>)
---					end
---				end
---			end
---		end
-
---	flat_node_exit (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
---		do
---		end
 
 end
 
@@ -691,10 +661,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is archetype_flat_validator.e.
+--| The Original Code is archetype_phase_2_validator.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2007
+--| Portions created by the Initial Developer are Copyright (C) 2007-2011
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

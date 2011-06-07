@@ -26,12 +26,12 @@ inherit
 
 feature -- Access
 
-	current_arch_dir: ARCHETYPE_CATALOGUE
+	current_arch_cat: ARCHETYPE_CATALOGUE
 			-- application-wide archetype directory access
 		require
 			has_current_profile
 		do
-			Result := arch_dirs.item (repository_profiles.current_profile_name)
+			Result := arch_cats.item (repository_profiles.current_profile_name)
 		end
 
 	use_current_profile (refresh: BOOLEAN)
@@ -39,7 +39,7 @@ feature -- Access
 		local
 			new_dir: ARCHETYPE_CATALOGUE
 		do
-			if not arch_dirs.has (repository_profiles.current_profile_name) or else refresh then
+			if not arch_cats.has (repository_profiles.current_profile_name) or else refresh then
 				create new_dir.make
 				if directory_exists (repository_profiles.current_reference_repository_path) then
 					source_repositories.set_reference_repository (repository_profiles.current_reference_repository_path)
@@ -53,7 +53,7 @@ feature -- Access
 						source_repositories.remove_work_repository
 					end
 					new_dir.populate
-					arch_dirs.force(new_dir, repository_profiles.current_profile_name)
+					arch_cats.force(new_dir, repository_profiles.current_profile_name)
 				else
 					post_error (Current, "switch_to_profile", "ref_repo_not_found", <<repository_profiles.current_reference_repository_path>>)
 				end
@@ -69,7 +69,7 @@ feature -- Status Report
 
 feature {NONE} -- Implementation
 
-	arch_dirs: attached HASH_TABLE [ARCHETYPE_CATALOGUE, STRING]
+	arch_cats: attached HASH_TABLE [ARCHETYPE_CATALOGUE, STRING]
 			-- hash of all archetype directories used so far in the current session
 		once
 			create Result.make(0)

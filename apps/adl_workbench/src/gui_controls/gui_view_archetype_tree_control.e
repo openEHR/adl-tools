@@ -69,12 +69,12 @@ feature -- Commands
 						delay_to_make_keyboard_navigation_practical.set_interval (0)
 
 						if attached gui_tree.selected_item then
-							if attached {ARCH_CAT_ITEM} gui_tree.selected_item.data as ari then
-								if attached current_arch_dir as dir then
-									dir.set_selected_item (ari)
+							if attached {ARCH_CAT_ITEM} gui_tree.selected_item.data as aci then
+								if attached current_arch_cat as dir then
+									dir.set_selected_item (aci)
 								end
 
-								if attached {ARCH_CAT_ARCHETYPE} ari as ara then
+								if attached {ARCH_CAT_ARCHETYPE} aci then
 									gui.parse_archetype
 								else
 									gui.display_class
@@ -96,24 +96,24 @@ feature -- Commands
  			create gui_tree_item_stack.make (0)
 
  			if has_current_profile then
-	 			current_arch_dir.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+	 			current_arch_cat.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 				gui_tree.recursive_do_all (agent ev_tree_expand)
 				gui.go_to_node_in_archetype_tree_view
  			end
 		end
 
-	update_tree_node_for_archetype (ara: attached ARCH_CAT_ARCHETYPE)
+	update_tree_node_for_archetype (aca: attached ARCH_CAT_ARCHETYPE)
 			-- update Explorer tree node with changes in compilation status
 		local
 			an_id: STRING
 		do
-			an_id := ara.id.as_string
+			an_id := aca.id.as_string
 			if gui_node_descriptor_map.has (an_id) then
-				update_tree_node (gui_node_descriptor_map.item (ara.ontological_name))
-			elseif attached ara.old_id then
-				if gui_node_descriptor_map.has (ara.old_id.as_string) then
-					gui_node_descriptor_map.replace_key (ara.ontological_name, ara.old_id.as_string)
-					update_tree_node (gui_node_descriptor_map.item (ara.ontological_name))
+				update_tree_node (gui_node_descriptor_map.item (aca.ontological_name))
+			elseif attached aca.old_id then
+				if gui_node_descriptor_map.has (aca.old_id.as_string) then
+					gui_node_descriptor_map.replace_key (aca.ontological_name, aca.old_id.as_string)
+					update_tree_node (gui_node_descriptor_map.item (aca.ontological_name))
 				end
 			end
 		end
@@ -158,19 +158,21 @@ feature {NONE} -- Implementation
 	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
 			-- Timer to delay a moment before calling `display_details_of_selected_item'.
 
-   	populate_gui_tree_node_enter (ari: attached ARCH_CAT_ITEM)
+   	populate_gui_tree_node_enter (aci: attached ARCH_CAT_ITEM)
    			-- Add a node representing `an_item' to `gui_file_tree'.
    		local
 			node: EV_TREE_ITEM
 		do
-			if not ari.is_root and (ari.sub_tree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
-								(attached {ARCH_CAT_ARCHETYPE} ari as ara and then artefact_types.has(ara.artefact_type))) then
+			if not aci.is_root and (aci.sub_tree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
+								(attached {ARCH_CAT_ARCHETYPE} aci as aca and then artefact_types.has(aca.artefact_type))) then
 				create node
-	 			node.set_data (ari)
+	 			node.set_data (aci)
 
-	 			if attached {ARCH_CAT_ARCHETYPE} ari as ara then
-	 				gui_node_descriptor_map.put (node, ara.ontological_name)
-					node.set_configurable_target_menu_handler (agent on_ara_context_menu_pop_up)
+	 			if attached {ARCH_CAT_ARCHETYPE} aci as aca then
+	 				gui_node_descriptor_map.put (node, aca.ontological_name)
+		 			node.set_pebble_function (agent pebble_function)
+					node.set_configurable_target_menu_handler (agent context_menu_handler)
+					node.set_configurable_target_menu_mode
 	 			end
 
 	 			update_tree_node (node)
@@ -186,11 +188,11 @@ feature {NONE} -- Implementation
 			end
 		end
 
-   	populate_gui_tree_node_exit (ari: attached ARCH_CAT_ITEM)
+   	populate_gui_tree_node_exit (aci: attached ARCH_CAT_ITEM)
    		do
-			if not ari.is_root and (ari.sub_tree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
-								(attached {ARCH_CAT_ARCHETYPE} ari as ara and then artefact_types.has(ara.artefact_type))) then
-
+			if not aci.is_root and (aci.sub_tree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
+				(attached {ARCH_CAT_ARCHETYPE} aci as aca and then artefact_types.has (aca.artefact_type)))
+			then
 				gui_tree_item_stack.remove
 			end
 		end
@@ -201,29 +203,29 @@ feature {NONE} -- Implementation
 			text, tooltip: STRING_32
 			pixmap: EV_PIXMAP
 		do
-			if attached {ARCH_CAT_ITEM} node.data as ari then
-				text := utf8 (ari.display_name)
+			if attached {ARCH_CAT_ITEM} node.data as aci then
+				text := utf8 (aci.display_name)
 
-				if attached {ARCH_CAT_ARCHETYPE} ari as ara then
-					tooltip := utf8 (ara.full_path)
-					if ara.has_legacy_flat_file and display_archetype_source then
+				if attached {ARCH_CAT_ARCHETYPE} aci as aca then
+					tooltip := utf8 (aca.full_path)
+					if aca.has_legacy_flat_file and display_archetype_source then
 						text.prepend (utf8("(lf) "))
 					end
 
-					if ara.has_slots then
+					if aca.has_slots then
 						text.append_code (Right_arrow_char)	-- Unicode character: an arrow pointing right
 					end
 
-					if not ara.errors.is_empty then
-						tooltip.append (utf8 ("%N%N" + ara.errors.as_string))
+					if not aca.errors.is_empty then
+						tooltip.append (utf8 ("%N%N" + aca.errors.as_string))
 					end
 	 				node.set_tooltip (tooltip)
 	 			else -- it is a model node
-	 				text.append (utf8(" (" + ari.sub_tree_artefact_count (artefact_types).out + ")"))
+	 				text.append (utf8(" (" + aci.sub_tree_artefact_count (artefact_types).out + ")"))
 				end
 
 				node.set_text (text)
-				pixmap := pixmaps [ari.group_name]
+				pixmap := pixmaps [aci.group_name]
 				if pixmap /= Void then
 					node.set_pixmap (pixmap)
 				end
@@ -240,23 +242,35 @@ feature {NONE} -- Implementation
 	 		end
 		end
 
-	on_ara_context_menu_pop_up (menu: EV_MENU; target_data: ARRAYED_LIST [EV_PND_TARGET_DATA]; source: EV_PICK_AND_DROPABLE; source_pebble: ANY)
+	context_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
 			-- creates the context menu for a right click action for an ARCH_REP_ARCHETYPE node
 		do
-			if attached {EV_TREE_ITEM} source as eti then
-				create_context_menu (menu)
+			if attached {EV_TREE_ITEM} a_source as eti and then attached {ARCH_CAT_ARCHETYPE} eti.data as aca then
+				create_context_menu (a_menu, aca.ontological_name, a_pebble)
 			end
 		end
 
-	context_menu_agent: PROCEDURE [ANY, TUPLE [EV_MENU]]
-			-- Procedure that sets up a context menu
+--	context_menu_agent: PROCEDURE [ANY, TUPLE [EV_MENU]]
+--			-- Procedure that sets up a context menu
 
-	create_context_menu (menu: EV_MENU)
+	create_context_menu (menu: EV_MENU; arch_id: STRING; a_pebble: ANY)
 			-- dynamically initializes the context menu for this tree
+		local
+			parse_mi, edit_source_mi: EV_MENU_ITEM
 		do
-	--		menu.last.destroy
-			menu.extend (create {EV_MENU_ITEM}.make_with_text_and_action ("Edit", agent do_nothing))
-	    	menu.extend (create {EV_MENU_ITEM}.make_with_text_and_action ("Parse", agent do_nothing))
+			create parse_mi.make_with_text_and_action ("Parse", agent gui.parse_archetype)
+			parse_mi.set_pixmap (pixmaps ["parse"])
+			create edit_source_mi.make_with_text_and_action ("Edit source", agent gui.edit_archetype)
+			edit_source_mi.set_pixmap (pixmaps ["edit"])
+
+	    	menu.extend (parse_mi)
+			menu.extend (edit_source_mi)
+		end
+
+	pebble_function (a_x, a_y: INTEGER): ANY
+			-- Pebble function for pebble source
+		do
+			Result := "pebble"
 		end
 
 invariant
