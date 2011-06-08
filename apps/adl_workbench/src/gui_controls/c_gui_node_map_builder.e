@@ -38,6 +38,11 @@ inherit
 			{NONE} all
 		end
 
+	ARCHETYPE_TERM_CODE_TOOLS
+		export
+			{NONE} all
+		end
+
 	SHARED_KNOWLEDGE_REPOSITORY
 
 	SPECIALISATION_STATUSES
@@ -638,7 +643,7 @@ feature {NONE} -- Implementation
 					Result.append (a_node.sibling_order.as_string + " ")
 				end
 
-				if ontology.has_term_code (a_node.node_id) then
+				if is_valid_code (a_node.node_id) and then ontology.has_term_code (a_node.node_id) then
 					Result.append (" " + ontology.term_definition (language, a_node.node_id).text)
 				end
 
