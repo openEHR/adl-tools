@@ -130,9 +130,7 @@ feature -- Modification
 invariant
 	adhoc_source_repository_group_id: adhoc_source_repository.group_id = 1
 	repositories_group_ids: repositories.for_all (agent (repository: attached ARCHETYPE_INDEXED_REPOSITORY_I): BOOLEAN
-		do
-			Result := repository.group_id > 1
-		end)
+		do Result := repository.group_id > 1 end)
 
 end
 

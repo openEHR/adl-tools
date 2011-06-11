@@ -455,7 +455,7 @@ feature -- Modification
 			history_isnt_first: selection_history_has_previous
 		end
 
-	add_adhoc_item (full_path: STRING)
+	add_adhoc_item (full_path: attached STRING)
 			-- Add the archetype designated by `full_path' to the ad hoc repository, and graft it into `directory'.
 		require
 			path_valid: adhoc_path_valid (full_path)
@@ -564,9 +564,6 @@ feature {NONE} -- Implementation
 			enter_action_attached: enter_action /= Void
 		do
 			if attached node then
-	 			debug("arch_dir")
-					shifter.extend ('%T')
-				end
 				enter_action.call ([node])
 				if node.has_children then
 					from node.child_start until node.child_off loop
@@ -574,11 +571,8 @@ feature {NONE} -- Implementation
 						node.child_forth
 					end
 				end
-				if exit_action /= Void then
+				if attached exit_action then
 					exit_action.call ([node])
-				end
-				debug("arch_dir")
-					shifter.remove_tail (1)
 				end
 			end
 		end
@@ -602,7 +596,7 @@ feature {NONE} -- Implementation
 		end
 
 	initialise_ontology_prototype
-			-- rebuild `initialise_ontology_prototype'
+			-- rebuild ``'ontology_prototype'
 		local
 			pkgs: HASH_TABLE [BMM_PACKAGE_DEFINITION, STRING]
 			parent_node, arm: ARCH_CAT_MODEL_NODE

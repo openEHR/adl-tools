@@ -21,7 +21,7 @@ inherit
 
 feature {NONE} -- Initialisation
 
-	make (dir_name: STRING; a_group_id: INTEGER)
+	make (dir_name: attached STRING; a_group_id: INTEGER)
 			-- Create as part of `a_group_id', based on valid directory path.
 		require
 			dir_name_valid: is_valid_directory (dir_name)
@@ -50,21 +50,21 @@ feature -- Commands
 			-- Make based on `root_path'.
 		do
 			create archetype_id_index.make (0)
-			create fast_archetype_list.make(0)
+			create fast_archetype_list.make (0)
 			get_archetypes_in_folder (full_path)
 			from archetype_id_index.start until archetype_id_index.off loop
-				fast_archetype_list.extend(archetype_id_index.item_for_iteration)
+				fast_archetype_list.extend (archetype_id_index.item_for_iteration)
 				archetype_id_index.forth
 			end
 		end
 
 feature {NONE} -- Implementation
 
-	get_archetypes_in_folder (a_path: STRING)
+	get_archetypes_in_folder (a_path: attached STRING)
 			-- Build a literal representation of the archetype and folder structure
 			-- in the repository path, as a tree; each node carries some meta-data.
 		require
-			Path_valid: a_path /= Void and then not a_path.is_empty
+			Path_valid: not a_path.is_empty
    		deferred
 		end
 

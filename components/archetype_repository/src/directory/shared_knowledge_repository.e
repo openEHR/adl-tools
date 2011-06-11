@@ -37,10 +37,10 @@ feature -- Access
 	use_current_profile (refresh: BOOLEAN)
 			-- switch to current profile; refresh flag forces archetype in memory directory to be refreshed from source repository
 		local
-			new_dir: ARCHETYPE_CATALOGUE
+			new_cat: ARCHETYPE_CATALOGUE
 		do
 			if not arch_cats.has (repository_profiles.current_profile_name) or else refresh then
-				create new_dir.make
+				create new_cat.make
 				if directory_exists (repository_profiles.current_reference_repository_path) then
 					source_repositories.set_reference_repository (repository_profiles.current_reference_repository_path)
 					if not repository_profiles.current_work_repository_path.is_empty then
@@ -52,8 +52,8 @@ feature -- Access
 					else
 						source_repositories.remove_work_repository
 					end
-					new_dir.populate
-					arch_cats.force(new_dir, repository_profiles.current_profile_name)
+					new_cat.populate
+					arch_cats.force (new_cat, repository_profiles.current_profile_name) -- replace original copy if it was there
 				else
 					post_error (Current, "switch_to_profile", "ref_repo_not_found", <<repository_profiles.current_reference_repository_path>>)
 				end

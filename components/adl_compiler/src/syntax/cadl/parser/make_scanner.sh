@@ -13,4 +13,4 @@
 #	last_change: "$LastChangedDate$"
 #
 
-$GOBO/bin/gelex cadl_scanner.l
+gelex cadl_scanner.l
