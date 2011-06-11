@@ -118,8 +118,6 @@ feature {NONE} -- Initialization
 
 			populate_compile_button
 			open_button.set_pixmap (pixmaps ["open_archetype"])
-			parse_button.set_pixmap (pixmaps ["parse"])
-			edit_button.set_pixmap (pixmaps ["edit"])
 			history_back_button.set_pixmap (pixmaps ["history_back"])
 			history_forward_button.set_pixmap (pixmaps ["history_forward"])
 			search_button.set_pixmap (pixmaps ["magnifier"])
@@ -1562,19 +1560,17 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	do_with_wait_cursor (action: PROCEDURE [ANY, TUPLE])
+	do_with_wait_cursor (action: attached PROCEDURE [ANY, TUPLE])
 			-- Perform `action' with an hourglass mouse cursor, restoring the cursor when done.
-		require
-			action_attached: action /= Void
 		local
-			cursor: EV_CURSOR
+			ptr_style: EV_POINTER_STYLE
 		do
-			cursor := pointer_style
+			ptr_style := pointer_style
 			set_pointer_style (wait_cursor)
 			action.call ([])
-			set_pointer_style (cursor)
+			set_pointer_style (ptr_style)
 		rescue
-			set_pointer_style (cursor)
+			set_pointer_style (ptr_style)
 		end
 
 feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Statistics
