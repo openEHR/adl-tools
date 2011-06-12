@@ -79,6 +79,11 @@ feature {NONE} -- Initialisation
 			show_actions.extend (agent grid.set_focus)
 		end
 
+	user_create_interface_objects
+			-- Feature for custom user interface object creation, called at end of `create_interface_objects'.
+		do
+		end
+
 feature -- Status
 
 	has_changed_schema_load_list: BOOLEAN

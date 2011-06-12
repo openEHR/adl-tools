@@ -66,6 +66,11 @@ feature {NONE} -- Initialization
 			initialise_accelerators
 		end
 
+	user_create_interface_objects
+			-- Feature for custom user interface object creation, called at end of `create_interface_objects'.
+		do
+		end
+
 	initialise_accelerators
 			-- Initialise keyboard accelerators for various widgets.
 		do
@@ -127,19 +132,7 @@ feature {NONE} -- Initialization
 			archetype_explorer_pixmap.copy (pixmaps ["archetype_category"])
 			template_explorer_pixmap.copy (pixmaps ["template_category"])
 
-			archetype_notebook.item_tab (description_notebook).set_pixmap (pixmaps ["description"])
-			archetype_notebook.item_tab (node_map).set_pixmap (pixmaps ["node_map"])
-			archetype_notebook.item_tab (path_analysis).set_pixmap (pixmaps ["paths"])
-			archetype_notebook.item_tab (slots_box).set_pixmap (pixmaps ["archetype_slot"])
-			archetype_notebook.item_tab (terminology_area).set_pixmap (pixmaps ["terminology"])
-			archetype_notebook.item_tab (annotations_grid).set_pixmap (pixmaps ["annotations"])
-			archetype_notebook.item_tab (source_rich_text).set_pixmap (pixmaps ["diff"])
-			set_archetype_notebook_source_tab_text
-			set_archetype_notebook_dadl_tab_text
-			set_archetype_notebook_xml_tab_text
-
-			source_rich_text.set_tab_width ((source_rich_text.tab_width/2).floor)  -- this is in pixels, and assumes 7-pixel wide chars
-			dadl_rich_text.set_tab_width ((source_rich_text.tab_width/2).floor)
+			arch_notebook.set_tab_texts
 
 			if app_x_position > Sane_screen_coord and app_y_position > Sane_screen_coord then
 				set_position (app_x_position, app_y_position)
@@ -166,6 +159,18 @@ feature {NONE} -- Initialization
 			terminology_bindings_info_list.set_column_titles (<<"terminology", "archetypes">>)
 		end
 
+feature -- Status Report
+
+	ctrl_or_alt_or_shift_pressed: BOOLEAN
+		do
+			Result := ev_application.shift_pressed or ev_application.alt_pressed or ev_application.ctrl_pressed
+		end
+
+	ctrl_pressed: BOOLEAN
+		do
+			Result := ev_application.ctrl_pressed
+		end
+
 feature -- Status setting
 
 	show
@@ -177,7 +182,6 @@ feature -- Status setting
 			archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
 
 			initialise_overall_appearance
-			path_map_control.initialise_controls
 
 			Precursor
 
@@ -215,7 +219,7 @@ feature -- Status setting
 				else
 					populate_archetype_profile_combo
 					populate_test_profile_combo
-					populate_directory_controls(True)
+					populate_directory_controls (True)
 				end
 			end
 
@@ -259,7 +263,7 @@ feature -- File events
 			if has_current_profile and then attached {ARCH_CAT_ARCHETYPE} current_arch_cat.selected_archetype as ara then
 				clear_all_archetype_view_controls
 				do_with_wait_cursor (agent archetype_compiler.build_lineage (ara, 0))
-				on_select_archetype_notebook
+				arch_notebook.on_select_archetype_notebook
 			end
 		end
 
@@ -351,9 +355,6 @@ feature -- File events
 
 	exit_app
 			-- Terminate the application, saving the window location.
-		local
-			strs: ARRAYED_LIST [STRING]
-			ev_items: DYNAMIC_LIST [EV_LIST_ITEM]
 		do
 			-- gui settings
 			set_total_split_position (total_split_area.split_position)
@@ -369,37 +370,14 @@ feature -- File events
 			set_app_maximised (is_maximized)
 			set_main_notebook_tab_pos (main_notebook.selected_item_index)
 
-			set_path_filter_combo_selection (path_analysis_row_filter_combo_box.selected_item.text.as_string_8)
-
-			ev_items := path_analysis_column_view_checkable_list.checked_items
-			create strs.make (0)
-
-			from ev_items.start until ev_items.off loop
-				strs.extend (ev_items.item.text.as_string_8)
-				ev_items.forth
-			end
-
-			set_path_view_check_list_settings (strs)
+			set_path_filter_combo_selection (arch_notebook.selected_path_filter)
+			set_path_view_check_list_settings (arch_notebook.path_map_selected_columns)
 
 			app_cfg.save
 			ev_application.destroy
 		end
 
-feature {NONE} -- GUI Events
-
-	on_select_archetype_notebook
-			-- Called by `selection_actions' of `archetype_notebook'.
-		do
-			if archetype_notebook.selected_item = source_rich_text then
-				populate_source_text
-			elseif archetype_notebook.selected_item = dadl_rich_text then
-				populate_dadl_text
-			elseif archetype_notebook.selected_item = xml_rich_text then
-				populate_xml_text
-			end
-		end
-
-feature {NONE} -- Edit events
+feature {GUI_ARCH_NOTEBOOK_CONTROL} -- Edit events
 
 	on_cut
 			-- Cut the selected item, depending on which widget has focus.
@@ -411,12 +389,8 @@ feature {NONE} -- Edit events
 	on_copy
 			-- Copy the selected item, depending on which widget has focus.
 		do
-			if path_analysis_multi_column_list.has_focus then
-				path_map_control.copy_path_to_clipboard
-			elseif focused_text /= Void then
-				if focused_text.has_selection then
-					focused_text.copy_selection
-				end
+			if attached focused_text and then focused_text.has_selection then
+				focused_text.copy_selection
 			end
 		end
 
@@ -457,6 +431,11 @@ feature {NONE} -- Edit events
 			create dialog.make_with_text (ev_application.clipboard.text)
 			dialog.set_title ("Clipboard Contents")
 			dialog.show_modal_to_window (Current)
+		end
+
+	copy_text_to_clipboard (str: attached STRING)
+		do
+			ev_application.clipboard.set_text (str)
 		end
 
 feature {NONE} -- Repository events
@@ -627,7 +606,7 @@ feature {NONE} -- Repository events
 	refresh_directory
 			-- reload current directory
 		do
-			populate_directory_controls(True)
+			populate_directory_controls (True)
 		end
 
 feature {NONE} -- History events
@@ -1017,81 +996,6 @@ feature -- Archetype Events
 			end
 		end
 
-	on_node_map_shrink_tree_one_level
-		do
-			if has_current_profile and then current_arch_cat.has_validated_selected_archetype then
-				node_map_control.shrink_one_level
-			end
-		end
-
-	on_node_map_expand_tree_one_level
-		do
-			if has_current_profile and then current_arch_cat.has_validated_selected_archetype then
-				node_map_control.expand_one_level
-			end
-		end
-
-	on_node_map_toggle_expand_tree
-		do
-			if has_current_profile and then current_arch_cat.has_validated_selected_archetype then
-				node_map_control.toggle_expand_tree
-			end
-		end
-
-	on_node_map_item_select
-			-- When the user selects a node in `node_map_tree'.
-		do
-			node_map_control.item_select
-		end
-
-	on_node_map_domain_selected
-			-- Hide technical details in `node_map_tree'.
-		do
-			if has_current_profile and then current_arch_cat.has_validated_selected_archetype then
-				node_map_control.set_domain_mode
-			end
-		end
-
-	on_node_map_technical_selected
-			-- Display technical details in `node_map_tree'.
-		do
-			if has_current_profile and then current_arch_cat.has_validated_selected_archetype then
-				node_map_control.set_technical_mode
-			end
-		end
-
-	on_node_map_reference_model_selected
-			-- turn on or off the display of reference model details in `node_map_tree'.
-		do
-			if has_current_profile and then current_arch_cat.has_validated_selected_archetype then
-				node_map_control.set_reference_model_mode
-			end
-		end
-
-	path_column_select (a_list_item: EV_LIST_ITEM)
-			-- Show a column in the Path Analysis list after setting a check box in `path_view_check_list'.
-		do
-			path_map_control.adjust_columns
-		end
-
-	path_column_unselect (a_list_item: EV_LIST_ITEM)
-			-- Hide a column in the Path Analysis list after clearing a check box in `path_view_check_list'.
-		do
-			path_map_control.adjust_columns
-		end
-
-	path_row_set_filter
-			-- Called by `select_actions' of `path_filter_combo'.
-		do
-			path_map_control.set_filter
-		end
-
-	translations_select_language
-			-- Called by `select_actions' of `arch_translations_languages_list'.
-		do
-			translation_controls.populate_items
-		end
-
 	display_class
 			-- display the class currently selected in `archetype_directory'.
 		do
@@ -1125,13 +1029,11 @@ feature -- Archetype Events
 			if (differential_flag and not differential_view) or -- changing from flat to diff
 				(not differential_flag and differential_view) then -- changing from diff to flat
 				set_differential_view (differential_flag)
-				set_archetype_notebook_source_tab_text
-				set_archetype_notebook_dadl_tab_text
-				set_archetype_notebook_xml_tab_text
+				arch_notebook.set_tab_texts
 				if has_current_profile then
 					if current_arch_cat.has_selected_archetype then
 						populate_archetype_view_controls
-						on_select_archetype_notebook
+						arch_notebook.on_select_archetype_notebook
 					elseif current_arch_cat.has_selected_class then
 						display_class
 					end
@@ -1140,46 +1042,6 @@ feature -- Archetype Events
 		end
 
 feature -- Controls
-
-	ontology_controls: GUI_ONTOLOGY_CONTROLS
-		once
-			create Result.make (Current)
-		end
-
-	description_controls: GUI_DESCRIPTION_CONTROLS
-		once
-			create Result.make (Current)
-		end
-
-	translation_controls: GUI_TRANSLATION_CONTROLS
-		once
-			create Result.make (Current)
-		end
-
-	node_map_control: GUI_NODE_MAP_CONTROL
-		once
-			create Result.make (Current)
-		end
-
-	class_map_control: GUI_CLASS_MAP_CONTROL
-		once
-			create Result.make (Current)
-		end
-
-	path_map_control: GUI_PATH_MAP_CONTROL
-		once
-			create Result.make (Current)
-		end
-
-	slot_map_control: GUI_SLOT_MAP_CONTROL
-		once
-			create Result.make (Current)
-		end
-
-	annotations_control: GUI_ANNOTATIONS_CONTROL
-		once
-			create Result.make (Current)
-		end
 
 	archetype_view_tree_control: GUI_VIEW_ARCHETYPE_TREE_CONTROL
 		once
@@ -1197,6 +1059,16 @@ feature -- Controls
 		end
 
 	compiler_error_control: GUI_COMPILER_ERROR_CONTROL
+		once
+			create Result.make (Current)
+		end
+
+	arch_notebook: GUI_ARCH_NOTEBOOK_CONTROL
+		once
+			create Result.make (Current)
+		end
+
+	class_map_control: GUI_CLASS_MAP_CONTROL
 		once
 			create Result.make (Current)
 		end
@@ -1239,40 +1111,6 @@ feature {NONE} -- Implementation
 				create Result.make_with_8_bit_rgb (255, 224, 224)
 			else
 				create Result.make_with_8_bit_rgb (240, 255, 255)
-			end
-		end
-
-	set_archetype_notebook_source_tab_text
-		local
-			tab_text, str: STRING
-		do
-			tab_text := "ADL ("
-			if differential_view then
-				str := archetype_source_file_extension.twin
-			else
-				str := archetype_flat_file_extension.twin
-			end
-			str.prune_all_leading ('.')
-			tab_text.append (str)
-			tab_text.append_character (')')
-			archetype_notebook.item_tab (source_rich_text).set_text (tab_text)
-		end
-
-	set_archetype_notebook_dadl_tab_text
-		do
-			if differential_view then
-				archetype_notebook.item_tab (dadl_rich_text).set_text ("dADL (src)")
-			else
-				archetype_notebook.item_tab (dadl_rich_text).set_text ("dADL (flat)")
-			end
-		end
-
-	set_archetype_notebook_xml_tab_text
-		do
-			if differential_view then
-				archetype_notebook.item_tab (xml_rich_text).set_text ("XML (src)")
-			else
-				archetype_notebook.item_tab (xml_rich_text).set_text ("XML (flat)")
 			end
 		end
 
@@ -1345,14 +1183,7 @@ feature {NONE} -- Implementation
 			adl_version_text.remove_text
 			language_combo.wipe_out
 
-			source_rich_text.remove_text
-			description_controls.clear
-			translation_controls.clear
-			node_map_control.clear
-			path_map_control.clear
-			ontology_controls.clear
-			slot_map_control.clear
-			annotations_control.clear
+			arch_notebook.clear_controls
 		end
 
 	populate_archetype_view_controls
@@ -1360,117 +1191,7 @@ feature {NONE} -- Implementation
 		require
 			has_current_profile
 		do
-			description_controls.populate
-			translation_controls.populate
-			slot_map_control.populate
-			node_map_control.populate
-			path_map_control.populate
-			annotations_control.populate
-			ontology_controls.populate
-		end
-
-	populate_source_text
-			-- Display the selected archetype's differential or flat text in `source_rich_text', optionally with line numbers.
-		require
-			has_current_profile
-		do
-			if attached {ARCH_CAT_ARCHETYPE} current_arch_cat.selected_archetype as ara then
-				if not differential_view then
-					if ara.is_valid then
-						populate_source_text_with_line_numbers (ara.flat_text)
-					elseif ara.has_legacy_flat_file then
-						populate_source_text_with_line_numbers (ara.legacy_flat_text)
-					else -- not valid, but derived from differential source
-						source_rich_text.set_text (create_message_line ("compiler_no_flat_text", <<>>))
-					end
-				elseif ara.has_differential_file then
-					populate_source_text_with_line_numbers (ara.differential_text)
-				else
-					source_rich_text.set_text (create_message_line ("compiler_no_source_text", <<>>))
-				end
-			else
-				source_rich_text.remove_text
-			end
-		end
-
-	populate_dadl_text
-			-- Display the selected archetype's differential or flat text in `dadl_rich_text', in dADL format.
-		require
-			has_current_profile
-		do
-			if attached {ARCH_CAT_ARCHETYPE} current_arch_cat.selected_archetype as ara then
-				if ara.is_valid then
-					if differential_view then
-						dadl_rich_text.set_text (utf8 (ara.differential_text_dadl))
-					else
-						dadl_rich_text.set_text (utf8 (ara.flat_text_dadl))
-					end
-				else
-					dadl_rich_text.set_text (create_message_line ("compiler_no_dadl_text", <<>>))
-				end
-			else
-				dadl_rich_text.remove_text
-			end
-		end
-
-	populate_xml_text
-			-- Display the selected archetype's differential or flat text in `dadl_xml_text', in XML format.
-		require
-			has_current_profile
-		do
-			if attached {ARCH_CAT_ARCHETYPE} current_arch_cat.selected_archetype as ara then
-				if ara.is_valid then
-					if differential_view then
-						xml_rich_text.set_text (utf8 (ara.differential_text_xml))
-					else
-						xml_rich_text.set_text (utf8 (ara.flat_text_xml))
-					end
-				else
-					xml_rich_text.set_text (create_message_line ("compiler_no_xml_text", <<>>))
-				end
-			else
-				xml_rich_text.remove_text
-			end
-		end
-
-	populate_source_text_with_line_numbers (text: attached STRING)
-			-- Display `text' in `source_rich_text', optionally with each line preceded by line numbers.
-		local
-			s: STRING
-			len, left_pos, right_pos, number: INTEGER
-		do
-			if show_line_numbers then
-				from
-					len := text.count
-					create s.make (len)
-					left_pos := 1
-					number := 1
-				until
-					left_pos > len
-				loop
-					s.append (number.out)
-
-					if number < 1000 then
-						s.append ("%T")
-					end
-
-					s.append (" ")
-
-					right_pos := text.index_of ('%N', left_pos)
-
-					if right_pos = 0 then
-						right_pos := len
-					end
-
-					s.append (text.substring (left_pos, right_pos))
-					left_pos := right_pos + 1
-					number := number + 1
-				end
-			else
-				s := text
-			end
-
-			source_rich_text.set_text (utf8 (s))
+			arch_notebook.populate_controls
 		end
 
 	populate_archetype_id

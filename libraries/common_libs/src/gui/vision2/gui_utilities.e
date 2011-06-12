@@ -130,7 +130,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_ev_multi_list_from_hash(ev_mlist: attached EV_MULTI_COLUMN_LIST; ht: HASH_TABLE [ANY, STRING])
+	populate_ev_multi_list_from_hash (ev_mlist: attached EV_MULTI_COLUMN_LIST; ht: HASH_TABLE [ANY, STRING])
 			-- populate rows of a multi-column list with name - value pairs in a HASH_TABLE
 			-- Note that the value type is assumed to have a sensible outpur from its 'out' function
 		local
@@ -158,27 +158,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
---	populate_ev_list_from_list(ev_list: EV_LIST; a_list: ARRAYED_LIST [STRING])
---			-- populate rows of a list with items from a ARRAYED_LIST [STRING]
---		require
---			ev_list_valid: ev_list /= Void
---		local
---			ev_list_item: EV_LIST_ITEM
---		do
---			if a_list /= Void then
---				from
---					a_list.start
---				until
---					a_list.off
---				loop
---					create ev_list_item.make_with_text (utf8 (a_list.item))
---					ev_list.extend(ev_list_item)
---					a_list.forth
---				end
---			end
---		end
-
-	populate_ev_list_from_hash_keys(ev_list: EV_LIST; ht: HASH_TABLE [ANY, STRING])
+	populate_ev_list_from_hash_keys (ev_list: EV_LIST; ht: HASH_TABLE [ANY, STRING])
 			-- populate list from hash table keys
 		local
 			ev_list_item: EV_LIST_ITEM
@@ -192,7 +172,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_ev_combo_from_ds_hash_keys(ev_combo: EV_COMBO_BOX; ht: DS_HASH_TABLE [ANY, STRING])
+	populate_ev_combo_from_ds_hash_keys (ev_combo: EV_COMBO_BOX; ht: DS_HASH_TABLE [ANY, STRING])
 			-- populate combo from hash table items
 		local
 			strs: ARRAYED_LIST [STRING_32]

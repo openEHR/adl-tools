@@ -309,7 +309,7 @@ feature {NONE} -- Implementation
 	call_global_visual_update_action (msg: STRING)
 			-- Call `global_visual_update_action', if it is attached.
 		do
-			if global_visual_update_action /= Void then
+			if attached global_visual_update_action then
 				global_visual_update_action.call ([msg])
 			end
 		end
@@ -317,7 +317,7 @@ feature {NONE} -- Implementation
 	call_archetype_visual_update_action (msg: STRING; ara: ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
 			-- Call `archetype_visual_update_action', if it is attached.
 		do
-			if archetype_visual_update_action /= Void then
+			if attached archetype_visual_update_action then
 				archetype_visual_update_action.call ([msg, ara, dependency_depth])
 			end
 		end

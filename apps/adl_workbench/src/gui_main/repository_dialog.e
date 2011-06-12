@@ -41,6 +41,11 @@ feature {NONE} -- Initialization
 			populate_controls
 		end
 
+	user_create_interface_objects
+			-- Feature for custom user interface object creation, called at end of `create_interface_objects'.
+		do
+		end
+
 feature {NONE} -- Events
 
 	on_show

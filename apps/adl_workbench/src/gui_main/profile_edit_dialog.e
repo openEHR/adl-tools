@@ -88,6 +88,11 @@ feature {NONE} -- Initialization
 			reference_path_text.set_text (user_config_file_directory)
 		end
 
+	user_create_interface_objects
+			-- Feature for custom user interface object creation, called at end of `create_interface_objects'.
+		do
+		end
+
 feature -- Events
 
 	on_show

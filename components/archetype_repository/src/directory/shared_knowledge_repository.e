@@ -26,11 +26,14 @@ inherit
 
 feature -- Access
 
-	current_arch_cat: ARCHETYPE_CATALOGUE
+	current_arch_cat: attached ARCHETYPE_CATALOGUE
 			-- application-wide archetype directory access
 		require
 			has_current_profile
 		do
+			if not arch_cats.has (repository_profiles.current_profile_name) then
+				use_current_profile (False)
+			end
 			Result := arch_cats.item (repository_profiles.current_profile_name)
 		end
 

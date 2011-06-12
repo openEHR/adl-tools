@@ -21,12 +21,12 @@ inherit
 			{ANY} has_current_profile
 		end
 
-	SHARED_APP_UI_RESOURCES
+	CONSTANTS
 		export
 			{NONE} all
 		end
 
-	EV_SHARED_APPLICATION
+	EV_KEY_CONSTANTS
 		export
 			{NONE} all
 		end
@@ -55,22 +55,101 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: attached MAIN_WINDOW)
+	make
 			-- create tree control repersenting archetype files found in repository_path
 		do
-			gui := a_main_window
-			path_list := gui.path_analysis_multi_column_list
-			filter_combo := gui.path_analysis_row_filter_combo_box
-			column_check_list := gui.path_analysis_column_view_checkable_list
+			-- create widgets
+			create hbox
+			create path_list
+			create vbox
+			create row_frame
+			create row_vbox
+			create filter_combo
+			create col_frame
+			create col_vbox
+			create column_check_list
+
+			-- connect them together
+			hbox.extend (path_list)
+			hbox.extend (vbox)
+			vbox.extend (row_frame)
+			row_frame.extend (row_vbox)
+			row_vbox.extend (filter_combo)
+			vbox.extend (col_frame)
+			col_frame.extend (col_vbox)
+			col_vbox.extend (column_check_list)
+
+			-- set visual characteristics
+			hbox.set_minimum_width (140)
+			hbox.set_minimum_height (93)
+			hbox.disable_item_expand (vbox)
+			path_list.set_background_color (editable_colour)
+			path_list.set_minimum_width (1)
+			path_list.set_minimum_height (1)
+			vbox.set_minimum_width (140)
+			vbox.set_minimum_height (93)
+			vbox.set_padding (3)
+			vbox.set_border_width (4)
+			vbox.disable_item_expand (row_frame)
+			vbox.disable_item_expand (col_frame)
+			row_frame.set_text ("Row Filter")
+			row_vbox.set_border_width (border_width)
+			filter_combo.set_tooltip ("Filter which rows are shown in the Path Analysis")
+			filter_combo.set_minimum_width (80)
+			filter_combo.disable_edit
+			col_frame.set_text ("Column View")
+			col_frame.set_minimum_height (150)
+			col_vbox.set_border_width (border_width)
+			column_check_list.set_tooltip ("Choose view of columns in the Path Analysis")
+			column_check_list.set_minimum_width (100)
+			column_check_list.set_minimum_height (30)
+
+			-- set events
+			filter_combo.select_actions.extend (agent path_row_set_filter)
+			column_check_list.check_actions.extend (agent path_column_select)
+			column_check_list.uncheck_actions.extend (agent path_column_unselect)
+
+			initialise_controls
 		end
 
 feature -- Access
 
-	path_list: EV_MULTI_COLUMN_LIST
+	vbox, row_vbox, col_vbox: EV_VERTICAL_BOX
+
+	hbox: EV_HORIZONTAL_BOX
 
 	filter_combo: EV_COMBO_BOX
 
+	row_frame, col_frame: EV_FRAME
+
 	column_check_list: EV_CHECKABLE_LIST
+
+	path_list: EV_MULTI_COLUMN_LIST
+
+	selected_filter: STRING
+		do
+			Result := filter_combo.selected_item.text.as_string_8
+		end
+
+feature -- Events
+
+	path_column_select (a_list_item: EV_LIST_ITEM)
+			-- Show a column in the Path Analysis list after setting a check box in `path_view_check_list'.
+		do
+			adjust_columns
+		end
+
+	path_column_unselect (a_list_item: EV_LIST_ITEM)
+			-- Hide a column in the Path Analysis list after clearing a check box in `path_view_check_list'.
+		do
+			adjust_columns
+		end
+
+	path_row_set_filter
+			-- Called by `select_actions' of `path_filter_combo'.
+		do
+			set_filter
+		end
 
 feature -- Commands
 
@@ -198,34 +277,28 @@ feature -- Commands
 			end
 		end
 
-	copy_path_to_clipboard
+	selected_text: STRING
 			-- copy a selected path row from the paths control to the OS clipboard
 		local
 			ev_rows: DYNAMIC_LIST[EV_MULTI_COLUMN_LIST_ROW]
 			ev_col: EV_MULTI_COLUMN_LIST_ROW
-			copy_text: STRING_32
 		do
 			ev_rows := path_list.selected_items
-			create copy_text.make (0)
+			create Result.make (0)
 
 			if not ev_rows.is_empty then
 				from ev_rows.start until ev_rows.off loop
 					ev_col := ev_rows.item
 					from ev_col.start until ev_col.off loop
-						copy_text.append (ev_col.item.string + "%N")
+						Result.append (ev_col.item.string + "%N")
 						ev_col.forth
 					end
 					ev_rows.forth
 				end
 			end
-
-			ev_application.clipboard.set_text (copy_text)
 		end
 
 feature {NONE} -- Implementation
-
-	gui: MAIN_WINDOW
-			-- main window of system
 
 	target_archetype: ARCHETYPE
 			-- differential or flat version of archetype, depending on setting of `differential_view'

@@ -27,9 +27,6 @@ inherit
 		end
 
 	GUI_GRID_CONTROLLER
-		export
-			{NONE} all
-		end
 
 	SHARED_APP_UI_RESOURCES
 		export
@@ -47,17 +44,13 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: attached MAIN_WINDOW)
-			-- Create controller for the test grid.
+	make
+			-- Create controller for the annotations grid.
 		do
-			gui := a_main_window
-			make_for_grid (gui.annotations_grid)
+			-- set visual characteristics & events
+			make_for_grid (create {EV_GRID})
 			grid.enable_tree
 		end
-
-feature -- Access
-
-feature -- Status Setting
 
 feature -- Commands
 
@@ -160,9 +153,6 @@ feature {NONE} -- Commands
 
 
 feature {NONE} -- Implementation
-
-	gui: MAIN_WINDOW
-			-- main window of system
 
 	target_archetype: attached ARCHETYPE
 			-- Differential or flat version of archetype, depending on setting of `differential_view'.

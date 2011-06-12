@@ -14,11 +14,6 @@ note
 class GUI_NODE_MAP_CONTROL
 
 inherit
-	SHARED_APP_UI_RESOURCES
-		export
-			{NONE} all
-		end
-
 	SPECIALISATION_STATUSES
 		export
 			{NONE} all
@@ -36,28 +31,123 @@ inherit
 			{NONE} all
 		end
 
+	CONSTANTS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
 feature -- Initialisation
 
-	make (a_main_window: attached MAIN_WINDOW)
+	make (a_code_select_action: PROCEDURE [ANY, TUPLE [STRING]])
 		do
-			gui := a_main_window
-			gui_tree := gui.node_map_tree
+			code_select_action := a_code_select_action
+
+			-- create widgets
+			create hbox
+			create gui_tree
+			create view_controls_vbox
+			create expand_button
+			create expand_one_button
+			create collapse_one_button
+			create l_ev_cell_2
+			create rm_visibility_controls
+			create rm_visibility_vbox
+			create rm_off_rb
+			create rm_classes_on_rb
+			create rm_attrs_on_rb
+
+			-- connect them together
+			hbox.extend (gui_tree)
+			hbox.extend (view_controls_vbox)
+			view_controls_vbox.extend (expand_button)
+			view_controls_vbox.extend (expand_one_button)
+			view_controls_vbox.extend (collapse_one_button)
+			view_controls_vbox.extend (l_ev_cell_2)
+			view_controls_vbox.extend (rm_visibility_controls)
+			rm_visibility_controls.extend (rm_visibility_vbox)
+			rm_visibility_vbox.extend (rm_off_rb)
+			rm_visibility_vbox.extend (rm_classes_on_rb)
+			rm_visibility_vbox.extend (rm_attrs_on_rb)
+
+			-- set visual characteristics
+			hbox.set_minimum_width (1)
+			hbox.set_minimum_height (160)
+			hbox.disable_item_expand (view_controls_vbox)
+			gui_tree.set_background_color (editable_colour)
+--			gui_tree.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
+			gui_tree.set_minimum_width (arch_tree_min_width)
+			gui_tree.set_minimum_height (60)
+			view_controls_vbox.set_minimum_width (140)
+			view_controls_vbox.set_minimum_height (170)
+			view_controls_vbox.set_padding (padding_width)
+			view_controls_vbox.set_border_width (border_width)
+			view_controls_vbox.disable_item_expand (expand_button)
+			view_controls_vbox.disable_item_expand (expand_one_button)
+			view_controls_vbox.disable_item_expand (collapse_one_button)
+			view_controls_vbox.disable_item_expand (l_ev_cell_2)
+			view_controls_vbox.disable_item_expand (rm_visibility_controls)
+			expand_button.set_text ("Expand All")
+			expand_button.set_tooltip ("Completely expand or collapse the Node Map")
+			expand_button.set_minimum_width (tree_control_panel_width)
+			expand_one_button.set_text ("Expand One")
+			expand_one_button.set_tooltip ("Expand one level of the Node Map")
+			expand_one_button.set_minimum_width (tree_control_panel_width)
+			collapse_one_button.set_text ("Collapse One")
+			collapse_one_button.set_tooltip ("Collapse one level of the Node Map")
+			collapse_one_button.set_minimum_width (tree_control_panel_width)
+			l_ev_cell_2.set_minimum_height (20)
+			rm_visibility_controls.set_text ("RM visibility")
+			rm_visibility_controls.set_minimum_width (100)
+			rm_visibility_controls.set_minimum_height (95)
+			rm_visibility_vbox.set_minimum_height (70)
+			rm_visibility_vbox.set_border_width (border_width)
+			rm_off_rb.set_text ("Hide")
+			rm_off_rb.set_tooltip ("Hide RM details of the archetyped nodes")
+			rm_classes_on_rb.set_text ("+ class names")
+			rm_classes_on_rb.set_tooltip ("Display RM class names of archetyped nodes")
+			rm_attrs_on_rb.set_text ("+ class properties")
+			rm_attrs_on_rb.set_tooltip ("Show non-archetyped RM properties")
+			rm_attrs_on_rb.set_minimum_width (60)
+			rm_attrs_on_rb.set_minimum_height (23)
+
+			-- set events
+			gui_tree.select_actions.extend (agent on_item_select)
+			expand_button.select_actions.extend (agent on_toggle_expand_tree)
+			expand_one_button.select_actions.extend (agent on_expand_tree_one_level)
+			collapse_one_button.select_actions.extend (agent on_shrink_tree_one_level)
+			rm_off_rb.select_actions.extend (agent on_domain_selected)
+			rm_classes_on_rb.select_actions.extend (agent on_technical_selected)
+			rm_attrs_on_rb.select_actions.extend (agent on_reference_model_selected)
 
 			in_technical_mode := show_technical_view
 			in_reference_model_mode := show_reference_model_view
 			if in_reference_model_mode then
-				gui.node_map_reference_model_radio_button.enable_select
+				rm_attrs_on_rb.enable_select
 			elseif in_technical_mode then
-				gui.node_map_technical_radio_button.enable_select
+				rm_classes_on_rb.enable_select
 			else
-				gui.node_map_domain_radio_button.enable_select
+				rm_off_rb.enable_select
 			end
-		ensure
-			gui_set: gui = a_main_window
 		end
+
+feature -- Access
+
+	hbox: EV_HORIZONTAL_BOX
+
+	gui_tree: EV_TREE
+
+	expand_button, expand_one_button, collapse_one_button: EV_BUTTON
+
+	rm_off_rb, rm_classes_on_rb, rm_attrs_on_rb: EV_RADIO_BUTTON
+
+	view_controls_vbox, rm_visibility_vbox: EV_VERTICAL_BOX
+
+	rm_visibility_controls: EV_FRAME
+
+	l_ev_cell_2: EV_CELL
 
 feature -- Status Report
 
@@ -72,6 +162,62 @@ feature -- Status Report
 
 	is_expanded: BOOLEAN
 			-- True if last whole tree operation was expand
+
+feature -- Events
+
+	on_shrink_tree_one_level
+		do
+			if has_current_profile and then current_arch_cat.has_validated_selected_archetype then
+				shrink_one_level
+			end
+		end
+
+	on_expand_tree_one_level
+		do
+			if has_current_profile and then current_arch_cat.has_validated_selected_archetype then
+				expand_one_level
+			end
+		end
+
+	on_toggle_expand_tree
+		do
+			if has_current_profile and then current_arch_cat.has_validated_selected_archetype then
+				toggle_expand_tree
+			end
+		end
+
+	on_item_select
+			-- When the user selects a node in `gui_tree'.
+		do
+			item_select
+		end
+
+	on_domain_selected
+			-- Hide technical details in `gui_tree'.
+		do
+			if has_current_profile and then current_arch_cat.has_validated_selected_archetype then
+				set_domain_mode
+			end
+		end
+
+	on_technical_selected
+			-- Display technical details in `gui_tree'.
+		do
+			if has_current_profile and then current_arch_cat.has_validated_selected_archetype then
+				set_technical_mode
+			end
+		end
+
+	on_reference_model_selected
+			-- turn on or off the display of reference model details in `gui_tree'.
+		do
+			if has_current_profile and then current_arch_cat.has_validated_selected_archetype then
+				set_reference_model_mode
+			end
+		end
+
+	code_select_action: PROCEDURE [ANY, TUPLE [STRING]]
+			-- actoin to perform when node is selected in tree
 
 feature -- Commands
 
@@ -194,20 +340,20 @@ feature -- Commands
 		do
 			if attached {C_COMPLEX_OBJECT} gui_tree.selected_item.data as c_c_o then
 				if c_c_o.is_addressable then
-					gui.ontology_controls.select_term(c_c_o.node_id)
+					call_code_select_action (c_c_o.node_id)
 				end
 
 			elseif attached {CONSTRAINT_REF} gui_tree.selected_item.data as c_r then
-				gui.ontology_controls.select_constraint(c_r.target)
+				call_code_select_action (c_r.target)
 
 			elseif attached {ORDINAL} gui_tree.selected_item.data as ord then
 				if ord.symbol.terminology_id.is_local then
-					gui.ontology_controls.select_term(ord.symbol.code_string)
+					call_code_select_action (ord.symbol.code_string)
 				end
 
 			elseif attached {STRING} gui_tree.selected_item.data as str and then is_valid_code (str) then
 				if ontology.has_term_code (str) then
-					gui.ontology_controls.select_term (str)
+					call_code_select_action (str)
 				end
 			end
 		end
@@ -219,10 +365,10 @@ feature -- Commands
 
 			if is_expanded then
 				gui_tree.recursive_do_all (agent ev_tree_item_expand)
-				gui.node_map_expand_button.set_text ("Collapse All")
+				expand_button.set_text ("Collapse All")
 			else
 				gui_tree.recursive_do_all (agent ev_tree_item_shrink)
-				gui.node_map_expand_button.set_text ("Expand All")
+				expand_button.set_text ("Expand All")
 			end
 		end
 
@@ -293,11 +439,6 @@ feature {NONE} -- Implementation
 		ensure
 			has_language: current_arch_cat.has_validated_selected_archetype implies Result.has_language (current_language)
 		end
-
-	gui: MAIN_WINDOW
-			-- main window of system
-
-	gui_tree: EV_TREE
 
 	gui_node_map: HASH_TABLE [EV_TREE_ITEM, ARCHETYPE_CONSTRAINT]
 			-- xref table from archetype definition nodes to GUI nodes (note that some C_X
@@ -505,6 +646,14 @@ feature {NONE} -- Implementation
 				a_target.forth
 			end
 			node_exit_action.call ([a_target])
+		end
+
+	call_code_select_action (a_code: STRING)
+			-- Call `code_select_action', if it is attached.
+		do
+			if attached code_select_action then
+				code_select_action.call ([a_code])
+			end
 		end
 
 invariant

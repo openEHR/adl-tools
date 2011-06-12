@@ -20,7 +20,7 @@ inherit
 			{ANY} has_current_profile
 		end
 
-	SHARED_APP_UI_RESOURCES
+	CONSTANTS
 		export
 			{NONE} all
 		end
@@ -45,25 +45,55 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: attached MAIN_WINDOW)
-			-- Create to control `a_main_window.slots_tree' and `a_main_window.used_by_tree'.
+	make (a_visual_update_action: PROCEDURE [ANY, TUPLE [INTEGER, INTEGER]])
 		do
-			gui := a_main_window
-			gui.slots_tree.key_press_actions.force_extend (agent on_tree_key_press (gui.slots_tree, ?))
-			gui.used_by_tree.key_press_actions.force_extend (agent on_tree_key_press (gui.used_by_tree, ?))
-		ensure
-			gui_set: gui = a_main_window
+			-- create widgets
+			create ev_slots_vbox
+			create suppliers_tree
+			create clients_tree
+			create supplier_frame
+			create supplier_vbox
+			create client_frame
+			create client_vbox
+
+			-- connect them together
+			ev_slots_vbox.extend (supplier_frame)
+			supplier_frame.extend (supplier_vbox)
+			supplier_vbox.extend (suppliers_tree)
+			ev_slots_vbox.extend (client_frame)
+			client_frame.extend (client_vbox)
+			client_vbox.extend (clients_tree)
+
+			-- set visual characteristics
+			ev_slots_vbox.set_padding (padding_width)
+			ev_slots_vbox.set_border_width (border_width)
+			supplier_frame.set_text ("Supplier Archetypes")
+			supplier_vbox.set_border_width (border_width)
+			client_frame.set_text ("Client Archetypes")
+			client_vbox.set_border_width (border_width)
+
+			visual_update_action := a_visual_update_action
 		end
+
+feature -- Access
+
+	ev_slots_vbox: EV_VERTICAL_BOX
+	supplier_vbox, client_vbox: EV_VERTICAL_BOX
+	supplier_frame, client_frame: EV_FRAME
+	suppliers_tree, clients_tree: EV_TREE
+
+feature -- UI Feedback
+
+	visual_update_action: PROCEDURE [ANY, TUPLE [INTEGER, INTEGER]]
+			-- Called after processing each archetype (to perform GUI updates during processing).
 
 feature -- Commands
 
 	clear
 		do
-			gui.slots_tree.wipe_out
-			gui.used_by_tree.wipe_out
-			slots_count := 0
-			used_by_count := 0
-			update_slots_tab_label
+			suppliers_tree.wipe_out
+			clients_tree.wipe_out
+			call_visual_update_action (0, 0)
 		end
 
 	populate
@@ -74,6 +104,8 @@ feature -- Commands
 			eti: EV_TREE_ITEM
 			ara: ARCH_CAT_ARCHETYPE
 			slot_index: DS_HASH_TABLE [ARRAYED_LIST [STRING], STRING]
+			slots_count: INTEGER
+			used_by_count: INTEGER
 		do
 			clear
 
@@ -85,7 +117,7 @@ feature -- Commands
 					from slot_index.start until slot_index.off loop
 						create eti.make_with_text (utf8 (ara.differential_archetype.ontology.physical_to_logical_path (slot_index.key_for_iteration, ara.display_language)))
 						eti.set_pixmap (pixmaps ["ARCHETYPE_SLOT"])
-						gui.slots_tree.extend (eti)
+						suppliers_tree.extend (eti)
 						append_tree (eti, slot_index.item_for_iteration)
 						slots_count := slots_count + eti.count
 
@@ -98,30 +130,19 @@ feature -- Commands
 				end
 
 				if current_arch_cat.compile_attempt_count < current_arch_cat.total_archetype_count then
-					gui.used_by_tree.extend (create {EV_TREE_ITEM}.make_with_text (create_message_line ("slots_incomplete_w1", <<>>)))
+					clients_tree.extend (create {EV_TREE_ITEM}.make_with_text (create_message_line ("slots_incomplete_w1", <<>>)))
 				end
 
 				if ara.is_supplier then
-					append_tree (gui.used_by_tree, ara.clients_index)
-					used_by_count := used_by_count + gui.used_by_tree.count
+					append_tree (clients_tree, ara.clients_index)
+					used_by_count := used_by_count + clients_tree.count
 				end
 
-				update_slots_tab_label
+				call_visual_update_action (slots_count, used_by_count)
 			end
 		end
 
-feature -- Access
-
-	slots_count: INTEGER
-			-- Number of slots in the current archetype.
-
-	used_by_count: INTEGER
-			-- Number of archetypes that use the current archetype.
-
 feature {NONE} -- Implementation
-
-	gui: MAIN_WINDOW
-			-- Main window of system.
 
 	append_tree (subtree: attached EV_TREE_NODE_LIST; ids: attached ARRAYED_LIST [STRING])
 			-- Populate `subtree' from `ids'.
@@ -136,7 +157,7 @@ feature {NONE} -- Implementation
 					eti.set_pixmap (pixmaps [ara.group_name])
 					eti.set_data (ara)
 				end
-				eti.pointer_double_press_actions.force_extend (agent gui.select_archetype_from_gui_data (eti))
+	--			eti.pointer_double_press_actions.force_extend (agent gui.select_archetype_from_gui_data (eti))
 				subtree.extend (eti)
 				ids.forth
 			end
@@ -144,19 +165,11 @@ feature {NONE} -- Implementation
 			appended: subtree.count = old subtree.count + ids.count
 		end
 
-	update_slots_tab_label
-			-- On the Slots tab, indicate the numbers of slots and used-by's.
+	call_visual_update_action (val1, val2: INTEGER)
+			-- Call `visual_update_action', if it is attached.
 		do
-			gui.archetype_notebook.set_item_text (gui.slots_box, "Slots (" + slots_count.out + "/" + used_by_count.out + ")")
-		end
-
-	on_tree_key_press (tree: EV_TREE; key: EV_KEY)
-			-- When the user presses Enter on an archetype, select it in the main window's explorer tree.
-		do
-			if not (ev_application.shift_pressed or ev_application.alt_pressed or ev_application.ctrl_pressed) then
-				if key /= Void and then key.code = key_enter then
-					gui.select_archetype_from_gui_data (tree.selected_item)
-				end
+			if attached visual_update_action then
+				visual_update_action.call ([val1, val2])
 			end
 		end
 

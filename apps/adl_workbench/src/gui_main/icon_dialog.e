@@ -33,6 +33,11 @@ feature {NONE} -- Initialization
 			show_actions.extend (agent icon_help_list.set_focus)
 		end
 
+	user_create_interface_objects
+			-- Feature for custom user interface object creation, called at end of `create_interface_objects'.
+		do
+		end
+
 feature {NONE} -- Implementation
 
 	add_help_items

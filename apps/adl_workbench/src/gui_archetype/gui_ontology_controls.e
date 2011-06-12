@@ -21,12 +21,12 @@ inherit
 			{ANY} has_current_profile
 		end
 
-	SHARED_APP_UI_RESOURCES
+	STRING_UTILITIES
 		export
 			{NONE} all
 		end
 
-	STRING_UTILITIES
+	CONSTANTS
 		export
 			{NONE} all
 		end
@@ -36,19 +36,58 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: attached MAIN_WINDOW)
+	make
 		do
-			gui := a_main_window
-   			gui.terminology_area.set_minimum_height(gui.Status_area_min_height)
+			-- create widgets
+			create vbox
+			create vsplit
+			create term_defs_frame
+			create term_defs_mlist
+			create constraint_defs_frame
+			create constraint_defs_mlist
+
+			-- connect them together
+			vbox.extend (vsplit)
+			vsplit.extend (term_defs_frame)
+			term_defs_frame.extend (term_defs_mlist)
+			vsplit.extend (constraint_defs_frame)
+			constraint_defs_frame.extend (constraint_defs_mlist)
+
+			-- set visual characteristics
+			vbox.set_padding (padding_width)
+			vbox.set_border_width (border_width)
+   			vbox.set_minimum_height(Status_area_min_height)
+			vsplit.enable_item_expand (term_defs_frame)
+			vsplit.disable_item_expand (constraint_defs_frame)
+			term_defs_frame.set_text ("Term definitions and bindings")
+			term_defs_mlist.set_background_color (editable_colour)
+			term_defs_mlist.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
+			term_defs_mlist.set_minimum_width (1)
+			term_defs_mlist.set_minimum_height (1)
+			constraint_defs_frame.set_text ("Constraint definitions and bindings")
+			constraint_defs_mlist.set_background_color (editable_colour)
+			constraint_defs_mlist.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
+			constraint_defs_mlist.set_minimum_width (1)
+			constraint_defs_mlist.set_minimum_height (1)
 		end
+
+feature -- Access
+
+	term_defs_mlist, constraint_defs_mlist, bindings_info_list: EV_MULTI_COLUMN_LIST
+
+	vsplit: EV_VERTICAL_SPLIT_AREA
+
+	term_defs_frame, constraint_defs_frame: EV_FRAME
+
+	vbox: EV_VERTICAL_BOX
 
 feature -- Commands
 
 	clear
 			-- wipe out content from ontology-related controls
 		do
-			gui.ontology_term_definitions_multi_column_list.wipe_out
-			gui.ontology_constraint_definitions_multi_column_list.wipe_out
+			term_defs_mlist.wipe_out
+			constraint_defs_mlist.wipe_out
 		end
 
 	populate
@@ -67,13 +106,13 @@ feature -- Commands
 	select_term(a_term_code: STRING)
 			-- select row for a_term_code in term_definitions control
 		do
-			select_coded_term_row (a_term_code, gui.ontology_term_definitions_multi_column_list)
+			select_coded_term_row (a_term_code, term_defs_mlist)
 		end
 
 	select_constraint(a_term_code: STRING)
 			-- select row for a_term_code in term_definitions control
 		do
-			select_coded_term_row (a_term_code, gui.ontology_constraint_definitions_multi_column_list)
+			select_coded_term_row (a_term_code, constraint_defs_mlist)
 		end
 
 feature {NONE} -- Implementation
@@ -89,9 +128,6 @@ feature {NONE} -- Implementation
 				Result := current_arch_cat.selected_archetype.flat_archetype
 			end
 		end
-
-	gui: MAIN_WINDOW
-			-- main window of system
 
 	ontology: attached ARCHETYPE_ONTOLOGY
 			-- access to ontology of selected archetype
@@ -113,7 +149,7 @@ feature {NONE} -- Implementation
 			i: INTEGER
 		do
 			-- populate column titles
-			pl := gui.ontology_term_definitions_multi_column_list
+			pl := term_defs_mlist
 			create col_titles.make(0)
 			col_titles.extend ("code")
 			from ontology.term_attribute_names.start until ontology.term_attribute_names.off loop
@@ -172,7 +208,7 @@ feature {NONE} -- Implementation
 			i: INTEGER
 		do
 			-- build columns
-			pl := gui.ontology_constraint_definitions_multi_column_list
+			pl := constraint_defs_mlist
 			create col_titles.make(0)
 			col_titles.extend ("code")
 			from ontology.term_attribute_names.start until ontology.term_attribute_names.off loop
@@ -235,11 +271,7 @@ feature {NONE} -- Implementation
 		do
 			list_control.remove_selection
 
-			from
-				list_control.start
-			until
-				list_control.off
-			loop
+			from list_control.start until list_control.off loop
 				if list_control.item.first.is_equal (a_term_code) then
 					list_control.item.enable_select
 
@@ -273,7 +305,7 @@ end
 --| The Original Code is adl_ontology_controls.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2003-2011
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

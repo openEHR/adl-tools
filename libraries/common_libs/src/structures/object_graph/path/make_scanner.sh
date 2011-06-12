@@ -12,4 +12,4 @@
 #	last_change: "$LastChangedDate$"
 #
 
-$GOBO/bin/gelex og_path_scanner.l
+gelex og_path_scanner.l

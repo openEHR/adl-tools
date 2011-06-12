@@ -240,6 +240,18 @@ feature -- Access
 
 feature -- Comparison
 
+	is_term_code (a_code: attached STRING): BOOLEAN
+			-- Is `a_code' an "at" code?
+		do
+			Result := a_code.starts_with (term_code_leader)
+		end
+
+	is_constraint_code (a_code: attached STRING): BOOLEAN
+			-- Is `a_code' an "ac" code?
+		do
+			Result := a_code.starts_with (constraint_code_leader)
+		end
+
 	is_valid_code (a_code: attached STRING): BOOLEAN
 			-- Is `a_code' a valid "at" or "ac" code? It can be any of:
 			-- at0000
