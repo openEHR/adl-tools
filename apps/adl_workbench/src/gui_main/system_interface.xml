@@ -2706,7 +2706,6 @@ Check or uncheck to load as required.</Text>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_COLORIZABLE>
-      <Foreground_color>064000000</Foreground_color>
      </EV_COLORIZABLE>
      <EV_SENSITIVE>
      </EV_SENSITIVE>
@@ -2874,7 +2873,7 @@ Check or uncheck to load as required.</Text>
       <Internal_properties>
        <id>116</id>
        <name>arch_id_hbox</name>
-       <Expanded>0</Expanded>
+       <Expanded>1</Expanded>
       </Internal_properties>
       <EV_COLORIZABLE>
       </EV_COLORIZABLE>
@@ -3056,7 +3055,7 @@ Check or uncheck to load as required.</Text>
       <Internal_properties>
        <id>124</id>
        <name>arch_lang_hbox</name>
-       <Expanded>0</Expanded>
+       <Expanded>1</Expanded>
       </Internal_properties>
       <EV_COLORIZABLE>
       </EV_COLORIZABLE>
@@ -3078,7 +3077,6 @@ Check or uncheck to load as required.</Text>
         <Expanded>0</Expanded>
        </Internal_properties>
        <EV_COLORIZABLE>
-        <Foreground_color>064000000</Foreground_color>
        </EV_COLORIZABLE>
        <EV_FONTABLE>
        </EV_FONTABLE>
@@ -3107,7 +3105,6 @@ Check or uncheck to load as required.</Text>
         <Background_color>
          <Constant>editable_colour</Constant>
         </Background_color>
-        <Foreground_color>064000000</Foreground_color>
        </EV_COLORIZABLE>
        <EV_FONTABLE>
        </EV_FONTABLE>
@@ -3229,7 +3226,7 @@ Check or uncheck to load as required.</Text>
       <Internal_properties>
        <id>139</id>
        <name>archetype_template_split_area</name>
-       <Expanded>1</Expanded>
+       <Expanded>0</Expanded>
       </Internal_properties>
       <EV_COLORIZABLE>
       </EV_COLORIZABLE>
@@ -3316,10 +3313,6 @@ Check or uncheck to load as required.</Text>
          <EV_COLORIZABLE>
          </EV_COLORIZABLE>
          <EV_FONTABLE>
-          <Family>1</Family>
-          <Weight>7</Weight>
-          <Shape>10</Shape>
-          <Height_in_points>10</Height_in_points>
          </EV_FONTABLE>
          <EV_SENSITIVE>
          </EV_SENSITIVE>
@@ -3431,10 +3424,6 @@ Check or uncheck to load as required.</Text>
          <EV_COLORIZABLE>
          </EV_COLORIZABLE>
          <EV_FONTABLE>
-          <Family>1</Family>
-          <Weight>7</Weight>
-          <Shape>10</Shape>
-          <Height_in_points>10</Height_in_points>
          </EV_FONTABLE>
          <EV_SENSITIVE>
          </EV_SENSITIVE>
@@ -3500,28 +3489,18 @@ Check or uncheck to load as required.</Text>
       </EV_PIXMAPABLE>
       <EV_CONTAINER>
       </EV_CONTAINER>
-      <item type="EV_NOTEBOOK">
+      <item type="EV_CELL">
        <Internal_properties>
-        <id>245</id>
-        <name>archetype_notebook</name>
-        <Expanded>1</Expanded>
+        <id>359</id>
+        <name>archetype_tool_cell</name>
+        <Expanded>0</Expanded>
        </Internal_properties>
        <EV_COLORIZABLE>
        </EV_COLORIZABLE>
-       <EV_FONTABLE>
-       </EV_FONTABLE>
        <EV_SENSITIVE>
        </EV_SENSITIVE>
        <EV_WIDGET>
-        <Minimum_width>
-         <Constant>app_min_width</Constant>
-        </Minimum_width>
-        <Minimum_height>
-         <Constant>arch_notebook_min_height</Constant>
-        </Minimum_height>
        </EV_WIDGET>
-       <EV_NOTEBOOK>
-       </EV_NOTEBOOK>
        <EV_PIXMAPABLE>
        </EV_PIXMAPABLE>
        <EV_CONTAINER>
@@ -3531,7 +3510,7 @@ Check or uncheck to load as required.</Text>
        <Internal_properties>
         <id>267</id>
         <name>status_notebook</name>
-        <Expanded>1</Expanded>
+        <Expanded>0</Expanded>
        </Internal_properties>
        <EV_COLORIZABLE>
        </EV_COLORIZABLE>
@@ -3561,8 +3540,6 @@ Check or uncheck to load as required.</Text>
          <Expanded>0</Expanded>
         </Internal_properties>
         <EV_COLORIZABLE>
-         <Background_color>240240240</Background_color>
-         <Foreground_color>064000000</Foreground_color>
         </EV_COLORIZABLE>
         <EV_FONTABLE>
         </EV_FONTABLE>
@@ -3589,7 +3566,6 @@ Check or uncheck to load as required.</Text>
          <Expanded>0</Expanded>
         </Internal_properties>
         <EV_COLORIZABLE>
-         <Background_color>240240240</Background_color>
         </EV_COLORIZABLE>
         <EV_SENSITIVE>
         </EV_SENSITIVE>
@@ -3605,8 +3581,8 @@ Check or uncheck to load as required.</Text>
        <item type="EV_HORIZONTAL_BOX">
         <Internal_properties>
          <id>266</id>
-         <name>statistics_box</name>
-         <Expanded>0</Expanded>
+         <name>statistics_hbox</name>
+         <Expanded>1</Expanded>
         </Internal_properties>
         <EV_COLORIZABLE>
         </EV_COLORIZABLE>
@@ -3631,6 +3607,7 @@ Check or uncheck to load as required.</Text>
         <item type="EV_VERTICAL_BOX">
          <Internal_properties>
           <id>263</id>
+          <name>statistics_vbox</name>
           <Expanded>1</Expanded>
          </Internal_properties>
          <EV_COLORIZABLE>
@@ -3656,7 +3633,8 @@ Check or uncheck to load as required.</Text>
          <item type="EV_HORIZONTAL_BOX">
           <Internal_properties>
            <id>250</id>
-           <Expanded>0</Expanded>
+           <name>arch_total_count_hbox</name>
+           <Expanded>1</Expanded>
           </Internal_properties>
           <EV_COLORIZABLE>
           </EV_COLORIZABLE>
@@ -3731,6 +3709,7 @@ Check or uncheck to load as required.</Text>
          <item type="EV_HORIZONTAL_BOX">
           <Internal_properties>
            <id>253</id>
+           <name>arch_spec_count_hbox</name>
            <Expanded>1</Expanded>
           </Internal_properties>
           <EV_COLORIZABLE>
@@ -3806,6 +3785,7 @@ Check or uncheck to load as required.</Text>
          <item type="EV_HORIZONTAL_BOX">
           <Internal_properties>
            <id>256</id>
+           <name>arch_slotted_count_hbox</name>
            <Expanded>1</Expanded>
           </Internal_properties>
           <EV_COLORIZABLE>
@@ -3881,6 +3861,7 @@ Check or uncheck to load as required.</Text>
          <item type="EV_HORIZONTAL_BOX">
           <Internal_properties>
            <id>259</id>
+           <name>arch_used_by_count_hbox</name>
            <Expanded>1</Expanded>
           </Internal_properties>
           <EV_COLORIZABLE>
@@ -3958,6 +3939,7 @@ Check or uncheck to load as required.</Text>
          <item type="EV_HORIZONTAL_BOX">
           <Internal_properties>
            <id>262</id>
+           <name>arch_bad_count_hbox</name>
            <Expanded>1</Expanded>
           </Internal_properties>
           <EV_COLORIZABLE>
@@ -4034,6 +4016,7 @@ Check or uncheck to load as required.</Text>
         <item type="EV_FRAME">
          <Internal_properties>
           <id>265</id>
+          <name>term_bindings_info_frame</name>
           <Expanded>1</Expanded>
          </Internal_properties>
          <EV_COLORIZABLE>
@@ -4058,7 +4041,7 @@ Check or uncheck to load as required.</Text>
          <item type="EV_MULTI_COLUMN_LIST">
           <Internal_properties>
            <id>264</id>
-           <name>terminology_bindings_info_list</name>
+           <name>term_bindings_info_list</name>
            <Expanded>0</Expanded>
           </Internal_properties>
           <EV_COLORIZABLE>
@@ -4083,7 +4066,7 @@ Check or uncheck to load as required.</Text>
     <Internal_properties>
      <id>292</id>
      <name>test_split_area</name>
-     <Expanded>1</Expanded>
+     <Expanded>0</Expanded>
     </Internal_properties>
     <EV_COLORIZABLE>
     </EV_COLORIZABLE>

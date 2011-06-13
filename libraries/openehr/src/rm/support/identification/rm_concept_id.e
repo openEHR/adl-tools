@@ -259,6 +259,18 @@ feature -- Output
 			not_empty: not Result.is_empty
 		end
 
+	as_abbreviated_string: attached STRING
+			-- generate a shortened form suitable for use in GUI widgets
+			-- made up of shortened rm_entity '.' shortened domain_concept '.' version
+		do
+			create Result.make_empty
+			Result.append (rm_entity.substring (1, 3))
+			Result.append_character (axis_separator)
+			Result.append (domain_concept.substring (1, domain_concept.count.min (8)))
+			Result.append_character (axis_separator)
+			Result.append (version_id)
+		end
+
 feature {NONE} -- Implementation
 
 	id_pattern_regex: attached LX_DFA_REGULAR_EXPRESSION

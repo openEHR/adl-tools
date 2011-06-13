@@ -62,7 +62,48 @@ feature {NONE} -- Initialization
 			-- called by `initialize'.
 			-- Any custom user initialization that could not be performed in `initialize',
 			-- (due to regeneration of implementation class) can be added here.
+		local
+			cur_title: STRING
 		do
+			-- set up docking
+			create docking_manager.make (archetype_tool_cell, Current)
+			attached_docking_manager.contents.extend (archetype_tool.docking_pane)
+
+			-- set visual characteristics
+			set_icon_pixmap (adl_workbench_icon)
+			cur_title := title.twin.as_string_8
+			cur_title.replace_substring_all ("VER", latest_adl_version)
+			set_title (cur_title)
+
+			file_menu_open.set_pixmap (pixmaps ["open_archetype"])
+			file_menu_parse.set_pixmap (pixmaps ["parse"])
+			file_menu_edit.set_pixmap (pixmaps ["edit"])
+			history_menu_back.set_pixmap (pixmaps ["history_back"])
+			history_menu_forward.set_pixmap (pixmaps ["history_forward"])
+
+			view_menu_differential.set_pixmap (pixmaps ["diff"])
+			view_menu_flat.set_pixmap (pixmaps ["flat"])
+
+			repository_menu_set_repository.set_pixmap (pixmaps ["tools"])
+			rm_schemas_menu_configure_rm_schemas.set_pixmap (pixmaps ["tools"])
+			tools_menu_options.set_pixmap (pixmaps ["tools"])
+
+			open_button.set_pixmap (pixmaps ["open_archetype"])
+			history_back_button.set_pixmap (pixmaps ["history_back"])
+			history_forward_button.set_pixmap (pixmaps ["history_forward"])
+			search_button.set_pixmap (pixmaps ["magnifier"])
+			differential_view_button.set_pixmap (pixmaps ["diff"])
+			flat_view_button.set_pixmap (pixmaps ["flat"])
+
+			archetype_explorer_pixmap.copy (pixmaps ["archetype_category"])
+			template_explorer_pixmap.copy (pixmaps ["template_category"])
+
+			term_bindings_info_list.set_column_titles (<<"terminology", "archetypes">>)
+
+			-- set UI feedback handlers
+			archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
+			archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
+
 			initialise_accelerators
 		end
 
@@ -98,42 +139,9 @@ feature {NONE} -- Initialization
 			add_menu_shortcut (history_menu_forward, key_right, False, True, False)
 		end
 
-	initialise_overall_appearance
-			-- Initialise the main properties of the window (size, appearance, title, etc.).
-		local
-			cur_title: STRING
+	initialise_session_appearance
+			-- initialise visual settings of window remembered from previous session
 		do
-			set_icon_pixmap (adl_workbench_icon)
-			cur_title := title.twin.as_string_8
-			cur_title.replace_substring_all ("VER", latest_adl_version)
-			set_title (cur_title)
-
-			file_menu_open.set_pixmap (pixmaps ["open_archetype"])
-			file_menu_parse.set_pixmap (pixmaps ["parse"])
-			file_menu_edit.set_pixmap (pixmaps ["edit"])
-			history_menu_back.set_pixmap (pixmaps ["history_back"])
-			history_menu_forward.set_pixmap (pixmaps ["history_forward"])
-
-			view_menu_differential.set_pixmap (pixmaps ["diff"])
-			view_menu_flat.set_pixmap (pixmaps ["flat"])
-
-			repository_menu_set_repository.set_pixmap (pixmaps ["tools"])
-			rm_schemas_menu_configure_rm_schemas.set_pixmap (pixmaps ["tools"])
-			tools_menu_options.set_pixmap (pixmaps ["tools"])
-
-			populate_compile_button
-			open_button.set_pixmap (pixmaps ["open_archetype"])
-			history_back_button.set_pixmap (pixmaps ["history_back"])
-			history_forward_button.set_pixmap (pixmaps ["history_forward"])
-			search_button.set_pixmap (pixmaps ["magnifier"])
-			differential_view_button.set_pixmap (pixmaps ["diff"])
-			flat_view_button.set_pixmap (pixmaps ["flat"])
-
-			archetype_explorer_pixmap.copy (pixmaps ["archetype_category"])
-			template_explorer_pixmap.copy (pixmaps ["template_category"])
-
-			arch_notebook.set_tab_texts
-
 			if app_x_position > Sane_screen_coord and app_y_position > Sane_screen_coord then
 				set_position (app_x_position, app_y_position)
 			else
@@ -150,13 +158,23 @@ feature {NONE} -- Initialization
 				main_notebook.select_item (main_notebook [main_notebook_tab_pos])
 			end
 
+			populate_compile_button
+
 			if differential_view then
 				differential_view_button.enable_select
 			else
 				flat_view_button.enable_select
 			end
 
-			terminology_bindings_info_list.set_column_titles (<<"terminology", "archetypes">>)
+			initialise_splitter (test_split_area, test_split_position)
+			initialise_splitter (explorer_split_area, explorer_split_position)
+			initialise_splitter (total_split_area, total_split_position)
+			initialise_splitter (archetype_template_split_area, archetype_template_split_position)
+			focus_first_widget (main_notebook.selected_item)
+
+			if app_maximised then
+				maximize
+			end
 		end
 
 feature -- Status Report
@@ -178,22 +196,9 @@ feature -- Status setting
 		do
 			append_billboard_to_status_area
 
-			archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
-			archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
-
-			initialise_overall_appearance
-
 			Precursor
 
-			initialise_splitter (test_split_area, test_split_position)
-			initialise_splitter (explorer_split_area, explorer_split_position)
-			initialise_splitter (total_split_area, total_split_position)
-			initialise_splitter (archetype_template_split_area, archetype_template_split_position)
-			focus_first_widget (main_notebook.selected_item)
-
-			if app_maximised then
-				maximize
-			end
+			initialise_session_appearance
 
 			if text_editor_command.is_empty then
 				set_text_editor_command (default_text_editor_command)
@@ -263,7 +268,7 @@ feature -- File events
 			if has_current_profile and then attached {ARCH_CAT_ARCHETYPE} current_arch_cat.selected_archetype as ara then
 				clear_all_archetype_view_controls
 				do_with_wait_cursor (agent archetype_compiler.build_lineage (ara, 0))
-				arch_notebook.on_select_archetype_notebook
+				archetype_tool.on_select_archetype_notebook
 			end
 		end
 
@@ -370,14 +375,14 @@ feature -- File events
 			set_app_maximised (is_maximized)
 			set_main_notebook_tab_pos (main_notebook.selected_item_index)
 
-			set_path_filter_combo_selection (arch_notebook.selected_path_filter)
-			set_path_view_check_list_settings (arch_notebook.path_map_selected_columns)
+			set_path_filter_combo_selection (archetype_tool.selected_path_filter)
+			set_path_view_check_list_settings (archetype_tool.path_map_selected_columns)
 
 			app_cfg.save
 			ev_application.destroy
 		end
 
-feature {GUI_ARCH_NOTEBOOK_CONTROL} -- Edit events
+feature {GUI_ARCHETYPE_TOOL} -- Edit events
 
 	on_cut
 			-- Cut the selected item, depending on which widget has focus.
@@ -992,7 +997,7 @@ feature -- Archetype Events
 			-- Select and display the node of `archetype_file_tree' corresponding to the selection in `archetype_directory'.
 		do
 			if has_current_profile and then current_arch_cat.has_selected_item then
-				archetype_view_tree_control.select_item(current_arch_cat.selected_item.ontological_name)
+				archetype_view_tree_control.select_item (current_arch_cat.selected_item.ontological_name)
 			end
 		end
 
@@ -1029,17 +1034,39 @@ feature -- Archetype Events
 			if (differential_flag and not differential_view) or -- changing from flat to diff
 				(not differential_flag and differential_view) then -- changing from diff to flat
 				set_differential_view (differential_flag)
-				arch_notebook.set_tab_texts
+				archetype_tool.set_dynamic_tab_texts
 				if has_current_profile then
 					if current_arch_cat.has_selected_archetype then
 						populate_archetype_view_controls
-						arch_notebook.on_select_archetype_notebook
+						archetype_tool.on_select_archetype_notebook
 					elseif current_arch_cat.has_selected_class then
 						display_class
 					end
 				end
 			end
 		end
+
+feature -- Docking controls
+
+	attached_docking_manager: SD_DOCKING_MANAGER
+			-- Attached `manager'
+		require
+			not_void: docking_manager /= Void
+		local
+			l_result: like docking_manager
+		do
+			l_result := docking_manager
+			check l_result /= Void end -- Implied by precondition `not_void'
+			Result := l_result
+		ensure
+			not_void: Result /= Void
+		end
+
+	docking_manager: detachable SD_DOCKING_MANAGER
+			-- Docking manager
+
+	tool_bar_content: detachable SD_TOOL_BAR_CONTENT
+			-- Tool bar content
 
 feature -- Controls
 
@@ -1063,7 +1090,7 @@ feature -- Controls
 			create Result.make (Current)
 		end
 
-	arch_notebook: GUI_ARCH_NOTEBOOK_CONTROL
+	archetype_tool: GUI_ARCHETYPE_TOOL
 		once
 			create Result.make (Current)
 		end
@@ -1122,10 +1149,8 @@ feature {NONE} -- Implementation
 			else
 				set_current_language (language_combo.text.as_string_8)
 
-				if attached current_arch_cat as dir then
-					if dir.has_validated_selected_archetype then
-						populate_archetype_view_controls
-					end
+				if attached current_arch_cat as dir and then dir.has_validated_selected_archetype then
+					populate_archetype_view_controls
 				end
 			end
 		end
@@ -1183,7 +1208,7 @@ feature {NONE} -- Implementation
 			adl_version_text.remove_text
 			language_combo.wipe_out
 
-			arch_notebook.clear_controls
+			archetype_tool.clear_controls
 		end
 
 	populate_archetype_view_controls
@@ -1191,7 +1216,7 @@ feature {NONE} -- Implementation
 		require
 			has_current_profile
 		do
-			arch_notebook.populate_controls
+			archetype_tool.populate_controls
 		end
 
 	populate_archetype_id
@@ -1199,8 +1224,8 @@ feature {NONE} -- Implementation
 		require
 			has_current_profile
 		do
-			if attached {ARCH_CAT_ARCHETYPE} current_arch_cat.selected_archetype as ara then
-					archetype_id.set_text (utf8 (ara.id.as_string))
+			if attached current_arch_cat.selected_archetype as aca then
+				archetype_id.set_text (utf8 (aca.id.as_string))
 			else
 				archetype_id.remove_text
 			end
@@ -1311,24 +1336,24 @@ feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Statistics
 
 				-- do terminology bindings statistics
 				from current_arch_cat.terminology_bindings_info.start until current_arch_cat.terminology_bindings_info.off loop
-					from terminology_bindings_info_list.start until terminology_bindings_info_list.off or
-						terminology_bindings_info_list.item.first.is_equal (current_arch_cat.terminology_bindings_info.key_for_iteration)
+					from term_bindings_info_list.start until term_bindings_info_list.off or
+						term_bindings_info_list.item.first.is_equal (current_arch_cat.terminology_bindings_info.key_for_iteration)
 					loop
-						terminology_bindings_info_list.forth
+						term_bindings_info_list.forth
 					end
-					if not terminology_bindings_info_list.off then
-						terminology_bindings_info_list.item.finish
-						terminology_bindings_info_list.item.remove
-						terminology_bindings_info_list.item.extend (utf8 (current_arch_cat.terminology_bindings_info.item_for_iteration.count.out))
+					if not term_bindings_info_list.off then
+						term_bindings_info_list.item.finish
+						term_bindings_info_list.item.remove
+						term_bindings_info_list.item.extend (utf8 (current_arch_cat.terminology_bindings_info.item_for_iteration.count.out))
 					else
 						create list_row
 						list_row.extend (utf8 (current_arch_cat.terminology_bindings_info.key_for_iteration))
 						list_row.extend (utf8 (current_arch_cat.terminology_bindings_info.item_for_iteration.count.out))
-						terminology_bindings_info_list.extend (list_row)
-						from i := 1 until i > terminology_bindings_info_list.column_count loop
-							terminology_bindings_info_list.resize_column_to_content (i)
-							if terminology_bindings_info_list.column_width (i) < 100 then
-								terminology_bindings_info_list.set_column_width (100, i)
+						term_bindings_info_list.extend (list_row)
+						from i := 1 until i > term_bindings_info_list.column_count loop
+							term_bindings_info_list.resize_column_to_content (i)
+							if term_bindings_info_list.column_width (i) < 100 then
+								term_bindings_info_list.set_column_width (100, i)
 							end
 							i := i + 1
 						end

@@ -11,7 +11,7 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class GUI_ARCH_NOTEBOOK_CONTROL
+class GUI_ARCHETYPE_TOOL
 
 inherit
 	CONSTANTS
@@ -45,51 +45,48 @@ feature {NONE}-- Initialization
 		do
 			gui := a_main_window
 
-			archetype_notebook := a_main_window.archetype_notebook
-
 			-- create widgets
+			create notebook
 			create source_rich_text
 			create dadl_rich_text
 			create xml_rich_text
 
 			-- connect widgets
-			archetype_notebook.extend (description_controls.notebook)
-			archetype_notebook.extend (node_map_control.hbox)
-			archetype_notebook.extend (path_map_control.hbox)
-			archetype_notebook.extend (slot_map_control.ev_slots_vbox)
-			archetype_notebook.extend (ontology_controls.vbox)
-			archetype_notebook.extend (annotations_control.grid)
-			archetype_notebook.extend (source_rich_text)
-			archetype_notebook.extend (dadl_rich_text)
-			archetype_notebook.extend (xml_rich_text)
+			notebook.extend (description_controls.notebook)
+			notebook.extend (node_map_control.hbox)
+			notebook.extend (ontology_controls.vbox)
+			notebook.extend (annotations_control.grid)
+			notebook.extend (path_map_control.hbox)
+			notebook.extend (slot_map_control.ev_slots_vbox)
+			notebook.extend (source_rich_text)
+			notebook.extend (dadl_rich_text)
+			notebook.extend (xml_rich_text)
 
 			-- set visual characteristics
-			archetype_notebook.set_minimum_width (app_min_width)
-			archetype_notebook.set_minimum_height (arch_notebook_min_height)
+			notebook.set_minimum_width (app_min_width)
+			notebook.set_minimum_height (arch_notebook_min_height)
 
-			archetype_notebook.set_item_text (description_controls.notebook, "Description")
-			archetype_notebook.item_tab (description_controls.notebook).set_pixmap (pixmaps ["description"])
+			notebook.set_item_text (description_controls.notebook, "Description")
+			notebook.item_tab (description_controls.notebook).set_pixmap (pixmaps ["description"])
 
-			archetype_notebook.set_item_text (node_map_control.hbox, "Definition")
-			archetype_notebook.item_tab (node_map_control.hbox).set_pixmap (pixmaps ["node_map"])
+			notebook.set_item_text (node_map_control.hbox, "Definition")
+			notebook.item_tab (node_map_control.hbox).set_pixmap (pixmaps ["node_map"])
 
-			archetype_notebook.set_item_text (path_map_control.hbox, "Paths")
-			archetype_notebook.item_tab (path_map_control.hbox).set_pixmap (pixmaps ["paths"])
+			notebook.set_item_text (path_map_control.hbox, "Paths")
+			notebook.item_tab (path_map_control.hbox).set_pixmap (pixmaps ["paths"])
 
-			archetype_notebook.set_item_text (slot_map_control.ev_slots_vbox, "Slots")
-			archetype_notebook.item_tab (slot_map_control.ev_slots_vbox).set_pixmap (pixmaps ["archetype_slot"])
+			notebook.set_item_text (slot_map_control.ev_slots_vbox, "Slots")
+			notebook.item_tab (slot_map_control.ev_slots_vbox).set_pixmap (pixmaps ["archetype_slot"])
 
-			archetype_notebook.set_item_text (ontology_controls.vbox, "Terminology")
-			archetype_notebook.item_tab (ontology_controls.vbox).set_pixmap (pixmaps ["terminology"])
+			notebook.set_item_text (ontology_controls.vbox, "Terminology")
+			notebook.item_tab (ontology_controls.vbox).set_pixmap (pixmaps ["terminology"])
 
-			archetype_notebook.set_item_text (annotations_control.grid, "Annotations")
-			archetype_notebook.item_tab (annotations_control.grid).set_pixmap (pixmaps ["annotations"])
+			notebook.set_item_text (annotations_control.grid, "Annotations")
+			notebook.item_tab (annotations_control.grid).set_pixmap (pixmaps ["annotations"])
 
-			archetype_notebook.set_item_text (source_rich_text, "ADL (adls)")
-			archetype_notebook.item_tab (source_rich_text).set_pixmap (pixmaps ["diff"])
+			notebook.item_tab (source_rich_text).set_pixmap (pixmaps ["diff"])
 
-			archetype_notebook.set_item_text (dadl_rich_text, "dADL")
-			archetype_notebook.set_item_text (xml_rich_text, "XML")
+			set_dynamic_tab_texts
 
 			source_rich_text.disable_edit
 			source_rich_text.set_tab_width ((source_rich_text.tab_width/2).floor)  -- this is in pixels, and assumes 7-pixel wide chars
@@ -99,8 +96,6 @@ feature {NONE}-- Initialization
 
 			xml_rich_text.disable_edit
 
-			set_tab_texts
-
 			-- set events: press Enter on Slots map trees
 			slot_map_control.suppliers_tree.key_press_actions.force (agent on_slot_map_suppliers_tree_key_press)
 			slot_map_control.clients_tree.key_press_actions.force (agent on_slot_map_clients_tree_key_press)
@@ -108,11 +103,13 @@ feature {NONE}-- Initialization
 			slot_map_control.clients_tree.pointer_double_press_actions.force (agent on_slot_map_clients_tree_double_click)
 
 			-- set events: select a notebook tab
-			archetype_notebook.selection_actions.extend (agent on_select_archetype_notebook)
+			notebook.selection_actions.extend (agent on_select_archetype_notebook)
 
 			-- set events: path map
 			path_map_control.path_list.key_press_actions.extend (agent on_path_map_key_press)
 
+			-- docking container
+			create docking_pane.make_with_widget (notebook, "ARCH_TOOL")
 		end
 
 feature -- Access
@@ -120,7 +117,9 @@ feature -- Access
 	gui: MAIN_WINDOW
 			-- FIXME keep here until refactoring finished
 
-	archetype_notebook: EV_NOTEBOOK
+	docking_pane: SD_CONTENT
+
+	notebook: EV_NOTEBOOK
 
 	description_controls: GUI_DESCRIPTION_CONTROLS
 		once
@@ -178,11 +177,11 @@ feature -- Events
 	on_select_archetype_notebook
 			-- Called by `selection_actions' of `archetype_notebook'.
 		do
-			if archetype_notebook.selected_item = source_rich_text then
+			if notebook.selected_item = source_rich_text then
 				populate_source_text
-			elseif archetype_notebook.selected_item = dadl_rich_text then
+			elseif notebook.selected_item = dadl_rich_text then
 				populate_dadl_text
-			elseif archetype_notebook.selected_item = xml_rich_text then
+			elseif notebook.selected_item = xml_rich_text then
 				populate_xml_text
 			end
 		end
@@ -232,7 +231,7 @@ feature -- UI Feedback
 	update_slots_tab_label (slots_count, used_by_count: INTEGER)
 			-- On the Slots tab, indicate the numbers of slots and used-by's.
 		do
-			archetype_notebook.set_item_text (slot_map_control.ev_slots_vbox, "Slots (" + slots_count.out + "/" + used_by_count.out + ")")
+			notebook.set_item_text (slot_map_control.ev_slots_vbox, "Slots (" + slots_count.out + "/" + used_by_count.out + ")")
 		end
 
 	select_ontology_item_from_code (a_code: attached STRING)
@@ -261,8 +260,14 @@ feature -- Commands
 	populate_controls
 			-- Populate content from visual controls.
 		require
-			has_current_profile
+			has_profile: has_current_profile
+			has_selected_archetype: current_arch_cat.has_selected_archetype
 		do
+			docking_pane.set_long_title (current_arch_cat.selected_archetype.id.as_string)
+			docking_pane.set_short_title (current_arch_cat.selected_archetype.id.as_abbreviated_string)
+			docking_pane.set_top ({SD_ENUMERATION}.top)
+			docking_pane.set_split_proportion (1)
+
 			description_controls.populate
 			slot_map_control.populate
 			node_map_control.populate
@@ -375,7 +380,7 @@ feature -- Commands
 			source_rich_text.set_text (utf8 (s))
 		end
 
-	set_tab_texts
+	set_dynamic_tab_texts
 			-- set taxt on tabs depending on view
 		local
 			tab_text, str: STRING
@@ -390,20 +395,20 @@ feature -- Commands
 			str.prune_all_leading ('.')
 			tab_text.append (str)
 			tab_text.append_character (')')
-			archetype_notebook.item_tab (source_rich_text).set_text (tab_text)
+			notebook.item_tab (source_rich_text).set_text (tab_text)
 
 			-- dadl_tab_text
 			if differential_view then
-				archetype_notebook.item_tab (dadl_rich_text).set_text ("dADL (src)")
+				notebook.item_tab (dadl_rich_text).set_text ("dADL (src)")
 			else
-				archetype_notebook.item_tab (dadl_rich_text).set_text ("dADL (flat)")
+				notebook.item_tab (dadl_rich_text).set_text ("dADL (flat)")
 			end
 
 			-- xml_tab_text
 			if differential_view then
-				archetype_notebook.item_tab (xml_rich_text).set_text ("XML (src)")
+				notebook.item_tab (xml_rich_text).set_text ("XML (src)")
 			else
-				archetype_notebook.item_tab (xml_rich_text).set_text ("XML (flat)")
+				notebook.item_tab (xml_rich_text).set_text ("XML (flat)")
 			end
 		end
 
