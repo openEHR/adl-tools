@@ -102,6 +102,7 @@ feature {NONE} -- Initialization
 
 			-- set up docking
 			create docking_manager.make (archetype_tool_cell, Current)
+			docking_manager.minimize_editor_area
 			create_new_archetype_tool
 
 			-- accelerators
@@ -1101,6 +1102,7 @@ feature -- Controls
 		local
 			arch_tool: GUI_ARCHETYPE_TOOL
 			docking_pane: SD_CONTENT
+			keys: ARRAYED_LIST [INTEGER]
 		do
 			current_archetype_tool_id := archetype_tools.count + 1
 			create arch_tool.make (Current, current_archetype_tool_id)
@@ -1109,13 +1111,18 @@ feature -- Controls
 			create docking_pane.make_with_widget_title_pixmap (arch_tool.notebook, pixmaps ["archetype_2"], current_archetype_tool_id.out)
 			attached_docking_manager.contents.extend (docking_pane)
 			docking_pane.set_top ({SD_ENUMERATION}.top)
-			docking_pane.set_auto_hide ({SD_ENUMERATION}.top)
+			docking_pane.set_type ({SD_ENUMERATION}.editor)
+			if archetype_tools.count > 0 then
+				create keys.make_from_array (archetype_tools.current_keys)
+				docking_pane.set_tab_with (archetype_tools.item (keys.last).docking_pane, False)
+			end
+--			docking_pane.set_auto_hide ({SD_ENUMERATION}.top)
 --			docking_pane.set_split_proportion (1.0)
 			docking_pane.close_request_actions.extend (agent remove_archetype_tool (current_archetype_tool_id))
-			docking_pane.show_actions.extend (agent select_archetype_tool (current_archetype_tool_id))
+			docking_pane.focus_in_actions.extend (agent select_archetype_tool (current_archetype_tool_id))
 			archetype_tools.put ([arch_tool, docking_pane], current_archetype_tool_id)
 		ensure
-			archetype_tools.count = old archetype_tools.count + 1
+--			archetype_tools.count = old archetype_tools.count + 1
 			has_current_archetype_tool
 		end
 
