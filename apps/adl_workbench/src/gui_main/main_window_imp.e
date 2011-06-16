@@ -53,6 +53,7 @@ feature {NONE}-- Initialization
 			menu.extend (view_menu)
 			view_menu.extend (view_menu_differential)
 			view_menu.extend (view_menu_flat)
+			view_menu.extend (view_menu_new_tab)
 			menu.extend (history_menu)
 			history_menu.extend (history_menu_back)
 			history_menu.extend (history_menu_forward)
@@ -189,6 +190,7 @@ feature {NONE}-- Initialization
 			view_menu.set_text ("&View")
 			view_menu_differential.set_text ("&Differential")
 			view_menu_flat.set_text ("&Flat")
+			view_menu_new_tab.set_text ("New &Tab")
 			history_menu.set_text ("H&istory")
 			history_menu_back.set_text ("&Back")
 			history_menu_forward.set_text ("&Forward")
@@ -467,6 +469,7 @@ feature {NONE}-- Initialization
 			edit_menu_clipboard.select_actions.extend (agent show_clipboard)
 			view_menu_differential.select_actions.extend (agent on_differential_view)
 			view_menu_flat.select_actions.extend (agent on_flat_view)
+			view_menu_new_tab.select_actions.extend (agent on_new_arch_tool_request)
 			history_menu.select_actions.extend (agent on_history)
 			history_menu_back.select_actions.extend (agent on_back)
 			history_menu_forward.select_actions.extend (agent on_forward)
@@ -548,6 +551,7 @@ feature {NONE}-- Initialization
 			create view_menu
 			create view_menu_differential
 			create view_menu_flat
+			create view_menu_new_tab
 			create history_menu
 			create history_menu_back
 			create history_menu_forward
@@ -695,7 +699,7 @@ feature -- Access
 	xml_menu, tools_menu, help_menu: EV_MENU
 	file_menu_open, file_menu_parse, file_menu_edit,
 	file_menu_save_as, file_menu_exit, edit_menu_copy, edit_menu_select_all, edit_menu_clipboard,
-	view_menu_differential, view_menu_flat, history_menu_back, history_menu_forward,
+	view_menu_differential, view_menu_flat, view_menu_new_tab, history_menu_back, history_menu_forward,
 	repository_menu_build_all, repository_menu_rebuild_all, repository_menu_build_subtree,
 	repository_menu_rebuild_subtree, repository_menu_export_html, repository_menu_export_repository_report,
 	repository_menu_interrupt_build, repository_menu_refresh, repository_menu_set_repository,
@@ -812,6 +816,11 @@ feature {NONE} -- Implementation
 	
 	on_flat_view
 			-- Called by `select_actions' of `view_menu_flat'.
+		deferred
+		end
+	
+	on_new_arch_tool_request
+			-- Called by `select_actions' of `view_menu_new_tab'.
 		deferred
 		end
 	

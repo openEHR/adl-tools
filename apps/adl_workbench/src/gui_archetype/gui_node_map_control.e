@@ -113,15 +113,6 @@ feature -- Initialisation
 			rm_attrs_on_rb.set_minimum_width (60)
 			rm_attrs_on_rb.set_minimum_height (23)
 
-			-- set events
-			gui_tree.select_actions.extend (agent on_item_select)
-			expand_button.select_actions.extend (agent on_toggle_expand_tree)
-			expand_one_button.select_actions.extend (agent on_expand_tree_one_level)
-			collapse_one_button.select_actions.extend (agent on_shrink_tree_one_level)
-			rm_off_rb.select_actions.extend (agent on_domain_selected)
-			rm_classes_on_rb.select_actions.extend (agent on_technical_selected)
-			rm_attrs_on_rb.select_actions.extend (agent on_reference_model_selected)
-
 			in_technical_mode := show_technical_view
 			in_reference_model_mode := show_reference_model_view
 			if in_reference_model_mode then
@@ -131,6 +122,16 @@ feature -- Initialisation
 			else
 				rm_off_rb.enable_select
 			end
+
+			-- set events
+			gui_tree.select_actions.extend (agent on_item_select)
+			expand_button.select_actions.extend (agent on_toggle_expand_tree)
+			expand_one_button.select_actions.extend (agent on_expand_tree_one_level)
+			collapse_one_button.select_actions.extend (agent on_shrink_tree_one_level)
+			rm_off_rb.select_actions.extend (agent on_domain_selected)
+			rm_classes_on_rb.select_actions.extend (agent on_technical_selected)
+			rm_attrs_on_rb.select_actions.extend (agent on_reference_model_selected)
+
 		end
 
 feature -- Access
@@ -148,6 +149,9 @@ feature -- Access
 	rm_visibility_controls: EV_FRAME
 
 	l_ev_cell_2: EV_CELL
+
+	target_archetype: attached ARCHETYPE
+			-- Differential or flat version of archetype, depending on setting of `differential_view'.
 
 feature -- Status Report
 
@@ -313,7 +317,8 @@ feature -- Commands
 
 	repopulate
 		require
-			has_current_profile
+			Profile_exists: has_current_profile
+			Already_populated: attached target_archetype
 		local
 			a_c_iterator: C_VISITOR_ITERATOR
 			c_node_map_builder: C_GUI_NODE_MAP_BUILDER
@@ -422,9 +427,6 @@ feature -- Commands
 feature {NONE} -- Implementation
 
 	rm_schema: BMM_SCHEMA
-
-	target_archetype: attached ARCHETYPE
-			-- Differential or flat version of archetype, depending on setting of `differential_view'.
 
 	ontologies: ARRAYED_STACK [ARCHETYPE_ONTOLOGY]
 			-- we use a stack here to handle ontologies inside operational templates

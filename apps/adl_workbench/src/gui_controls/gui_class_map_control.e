@@ -39,7 +39,7 @@ feature -- Initialisation
 	make (a_main_window: attached MAIN_WINDOW)
 		do
 			gui := a_main_window
-			gui_tree := gui.archetype_tool.node_map_control.gui_tree
+			gui_tree := gui.current_archetype_tool.node_map_control.gui_tree
 		ensure
 			gui_set: gui = a_main_window
 		end

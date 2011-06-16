@@ -41,12 +41,18 @@ create
 
 feature {NONE}-- Initialization
 
-	make (a_main_window: attached MAIN_WINDOW)
+	make (a_main_window: attached MAIN_WINDOW; tool_id: INTEGER)
 		do
 			gui := a_main_window
 
 			-- create widgets
 			create notebook
+			create description_controls.make (agent gui.on_select_all)
+			create node_map_control.make (agent select_ontology_item_from_code)
+			create path_map_control.make
+			create slot_map_control.make (agent update_slots_tab_label)
+			create ontology_controls.make
+			create annotations_control.make
 			create source_rich_text
 			create dadl_rich_text
 			create xml_rich_text
@@ -107,9 +113,6 @@ feature {NONE}-- Initialization
 
 			-- set events: path map
 			path_map_control.path_list.key_press_actions.extend (agent on_path_map_key_press)
-
-			-- docking container
-			create docking_pane.make_with_widget (notebook, "ARCH_TOOL")
 		end
 
 feature -- Access
@@ -117,39 +120,19 @@ feature -- Access
 	gui: MAIN_WINDOW
 			-- FIXME keep here until refactoring finished
 
-	docking_pane: SD_CONTENT
-
 	notebook: EV_NOTEBOOK
 
 	description_controls: GUI_DESCRIPTION_CONTROLS
-		once
-			create Result.make (agent gui.on_select_all)
-		end
 
 	node_map_control: GUI_NODE_MAP_CONTROL
-		once
-			create Result.make (agent select_ontology_item_from_code)
-		end
 
 	path_map_control: GUI_PATH_MAP_CONTROL
-		once
-			create Result.make
-		end
 
 	slot_map_control: GUI_SLOT_MAP_CONTROL
-		once
-			create Result.make (agent update_slots_tab_label)
-		end
 
 	ontology_controls: GUI_ONTOLOGY_CONTROLS
-		once
-			create Result.make
-		end
 
 	annotations_control: GUI_ANNOTATIONS_CONTROL
-		once
-			create Result.make
-		end
 
 	source_rich_text, dadl_rich_text, xml_rich_text: EV_RICH_TEXT
 
@@ -177,7 +160,15 @@ feature -- Events
 	on_select_archetype_notebook
 			-- Called by `selection_actions' of `archetype_notebook'.
 		do
-			if notebook.selected_item = source_rich_text then
+			if notebook.selected_item = slot_map_control.ev_slots_vbox then
+				slot_map_control.populate
+			elseif notebook.selected_item = path_map_control.hbox then
+				path_map_control.populate
+			elseif notebook.selected_item = annotations_control.grid then
+				annotations_control.populate
+			elseif notebook.selected_item = ontology_controls.vbox then
+				ontology_controls.populate
+			elseif notebook.selected_item = source_rich_text then
 				populate_source_text
 			elseif notebook.selected_item = dadl_rich_text then
 				populate_dadl_text
@@ -248,13 +239,16 @@ feature -- Commands
 	clear_controls
 			-- Wipe out content from visual controls.
 		do
-			source_rich_text.remove_text
 			description_controls.clear
 			node_map_control.clear
 			path_map_control.clear
 			ontology_controls.clear
 			slot_map_control.clear
 			annotations_control.clear
+
+			source_rich_text.remove_text
+			dadl_rich_text.remove_text
+			xml_rich_text.remove_text
 		end
 
 	populate_controls
@@ -263,17 +257,9 @@ feature -- Commands
 			has_profile: has_current_profile
 			has_selected_archetype: current_arch_cat.has_selected_archetype
 		do
-			docking_pane.set_long_title (current_arch_cat.selected_archetype.id.as_string)
-			docking_pane.set_short_title (current_arch_cat.selected_archetype.id.as_abbreviated_string)
-			docking_pane.set_top ({SD_ENUMERATION}.top)
-			docking_pane.set_split_proportion (1)
-
+			clear_controls
 			description_controls.populate
-			slot_map_control.populate
 			node_map_control.populate
-			path_map_control.populate
-			annotations_control.populate
-			ontology_controls.populate
 		end
 
 	populate_source_text

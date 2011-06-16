@@ -1826,13 +1826,13 @@ Check or uncheck to load as required.</Text>
    <Internal_properties>
     <id>103</id>
     <name>menu</name>
-    <Expanded>0</Expanded>
+    <Expanded>1</Expanded>
    </Internal_properties>
    <item type="EV_MENU">
     <Internal_properties>
      <id>57</id>
      <name>file_menu</name>
-     <Expanded>0</Expanded>
+     <Expanded>1</Expanded>
     </Internal_properties>
     <EV_SENSITIVE>
     </EV_SENSITIVE>
@@ -2075,6 +2075,23 @@ Check or uncheck to load as required.</Text>
       <Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES on_flat_view</Event>
      </Events>
     </item>
+    <item type="EV_MENU_ITEM">
+     <Internal_properties>
+      <id>360</id>
+      <name>view_menu_new_tab</name>
+      <Expanded>0</Expanded>
+     </Internal_properties>
+     <EV_SENSITIVE>
+     </EV_SENSITIVE>
+     <EV_TEXTABLE>
+      <Text>New &amp;Tab</Text>
+     </EV_TEXTABLE>
+     <EV_PIXMAPABLE>
+     </EV_PIXMAPABLE>
+     <Events>
+      <Event>select_actions EV_MENU_ITEM_ACTION_SEQUENCES on_new_arch_tool_request</Event>
+     </Events>
+    </item>
    </item>
    <item type="EV_MENU">
     <Internal_properties>
@@ -2144,7 +2161,7 @@ Check or uncheck to load as required.</Text>
     <Internal_properties>
      <id>83</id>
      <name>repository_menu</name>
-     <Expanded>0</Expanded>
+     <Expanded>1</Expanded>
     </Internal_properties>
     <EV_SENSITIVE>
     </EV_SENSITIVE>

@@ -65,10 +65,6 @@ feature {NONE} -- Initialization
 		local
 			cur_title: STRING
 		do
-			-- set up docking
-			create docking_manager.make (archetype_tool_cell, Current)
-			attached_docking_manager.contents.extend (archetype_tool.docking_pane)
-
 			-- set visual characteristics
 			set_icon_pixmap (adl_workbench_icon)
 			cur_title := title.twin.as_string_8
@@ -104,6 +100,11 @@ feature {NONE} -- Initialization
 			archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
 			archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
 
+			-- set up docking
+			create docking_manager.make (archetype_tool_cell, Current)
+			create_new_archetype_tool
+
+			-- accelerators
 			initialise_accelerators
 		end
 
@@ -125,6 +126,7 @@ feature {NONE} -- Initialization
 
 			add_menu_shortcut (view_menu_differential, key_d, True, False, True)
 			add_menu_shortcut (view_menu_flat, key_f, True, False, True)
+			add_menu_shortcut (view_menu_new_tab, key_t, True, False, False)
 
 			add_menu_shortcut (repository_menu_build_all, key_f7, False, False, False)
 			add_menu_shortcut (repository_menu_rebuild_all, key_f7, False, False, True)
@@ -268,7 +270,7 @@ feature -- File events
 			if has_current_profile and then attached {ARCH_CAT_ARCHETYPE} current_arch_cat.selected_archetype as ara then
 				clear_all_archetype_view_controls
 				do_with_wait_cursor (agent archetype_compiler.build_lineage (ara, 0))
-				archetype_tool.on_select_archetype_notebook
+				current_archetype_tool.on_select_archetype_notebook
 			end
 		end
 
@@ -375,8 +377,8 @@ feature -- File events
 			set_app_maximised (is_maximized)
 			set_main_notebook_tab_pos (main_notebook.selected_item_index)
 
-			set_path_filter_combo_selection (archetype_tool.selected_path_filter)
-			set_path_view_check_list_settings (archetype_tool.path_map_selected_columns)
+	--		set_path_filter_combo_selection (archetype_tool.selected_path_filter)
+	--		set_path_view_check_list_settings (archetype_tool.path_map_selected_columns)
 
 			app_cfg.save
 			ev_application.destroy
@@ -679,7 +681,7 @@ feature {NONE} -- Tools menu events
 			if dialog.has_changed_ui_options then
 				save_resources_and_show_status
 				if repository_profiles.has_current_profile then
-					populate_archetype_view_controls
+					populate_archetype_tool
 				end
 			end
 			if dialog.has_changed_navigator_options and repository_profiles.has_current_profile then
@@ -1034,11 +1036,11 @@ feature -- Archetype Events
 			if (differential_flag and not differential_view) or -- changing from flat to diff
 				(not differential_flag and differential_view) then -- changing from diff to flat
 				set_differential_view (differential_flag)
-				archetype_tool.set_dynamic_tab_texts
+				current_archetype_tool.set_dynamic_tab_texts
 				if has_current_profile then
 					if current_arch_cat.has_selected_archetype then
-						populate_archetype_view_controls
-						archetype_tool.on_select_archetype_notebook
+						populate_archetype_tool
+						current_archetype_tool.on_select_archetype_notebook
 					elseif current_arch_cat.has_selected_class then
 						display_class
 					end
@@ -1090,9 +1092,94 @@ feature -- Controls
 			create Result.make (Current)
 		end
 
-	archetype_tool: GUI_ARCHETYPE_TOOL
+	archetype_tools: HASH_TABLE [TUPLE [tool: GUI_ARCHETYPE_TOOL; docking_pane: SD_CONTENT], INTEGER]
 		once
-			create Result.make (Current)
+			create Result.make (0)
+		end
+
+	create_new_archetype_tool
+		local
+			arch_tool: GUI_ARCHETYPE_TOOL
+			docking_pane: SD_CONTENT
+		do
+			current_archetype_tool_id := archetype_tools.count + 1
+			create arch_tool.make (Current, current_archetype_tool_id)
+
+			-- set up docking container
+			create docking_pane.make_with_widget_title_pixmap (arch_tool.notebook, pixmaps ["archetype_2"], current_archetype_tool_id.out)
+			attached_docking_manager.contents.extend (docking_pane)
+			docking_pane.set_top ({SD_ENUMERATION}.top)
+			docking_pane.set_auto_hide ({SD_ENUMERATION}.top)
+--			docking_pane.set_split_proportion (1.0)
+			docking_pane.close_request_actions.extend (agent remove_archetype_tool (current_archetype_tool_id))
+			docking_pane.show_actions.extend (agent select_archetype_tool (current_archetype_tool_id))
+			archetype_tools.put ([arch_tool, docking_pane], current_archetype_tool_id)
+		ensure
+			archetype_tools.count = old archetype_tools.count + 1
+			has_current_archetype_tool
+		end
+
+	remove_archetype_tool (tool_id: INTEGER)
+		require
+			valid_tool_id: archetype_tools.has (tool_id)
+		local
+			docking_pane: SD_CONTENT
+			keys: ARRAYED_LIST [INTEGER]
+		do
+			-- work out a sensible value for new current_archetype_tool_id
+			create keys.make_from_array (archetype_tools.current_keys)
+			from keys.start until keys.off or keys.item = tool_id loop
+				keys.forth
+			end
+			if keys.isfirst then
+				if keys.count = 1 then
+					current_archetype_tool_id := 0
+				else
+					current_archetype_tool_id := keys.i_th (2)
+				end
+			else
+				keys.back
+				current_archetype_tool_id := keys.item
+			end
+
+			-- destroy the docking pane and archetype tool controls
+			docking_pane := archetype_tools.item (tool_id).docking_pane
+			docking_pane.close
+			docking_pane.destroy
+			archetype_tools.remove (tool_id)
+		end
+
+	select_archetype_tool (tool_id: INTEGER)
+		require
+			valid_tool_id: archetype_tools.has (tool_id)
+		do
+			current_archetype_tool_id := tool_id
+		end
+
+	current_archetype_tool: GUI_ARCHETYPE_TOOL
+			-- get currently active tool
+		require
+			has_current_archetype_tool
+		do
+			Result := archetype_tools.item (current_archetype_tool_id).tool
+		end
+
+	has_current_archetype_tool: BOOLEAN
+		do
+			Result := archetype_tools.has (current_archetype_tool_id)
+		end
+
+	current_archetype_docking_pane: SD_CONTENT
+		do
+			Result := archetype_tools.item (current_archetype_tool_id).docking_pane
+		end
+
+	current_archetype_tool_id: INTEGER
+			-- id of archetype tool currently in use
+
+	on_new_arch_tool_request
+		do
+			create_new_archetype_tool
 		end
 
 	class_map_control: GUI_CLASS_MAP_CONTROL
@@ -1150,7 +1237,7 @@ feature {NONE} -- Implementation
 				set_current_language (language_combo.text.as_string_8)
 
 				if attached current_arch_cat as dir and then dir.has_validated_selected_archetype then
-					populate_archetype_view_controls
+					populate_archetype_tool
 				end
 			end
 		end
@@ -1207,16 +1294,20 @@ feature {NONE} -- Implementation
 			archetype_id.remove_text
 			adl_version_text.remove_text
 			language_combo.wipe_out
-
-			archetype_tool.clear_controls
 		end
 
-	populate_archetype_view_controls
+	populate_archetype_tool
 			-- Populate content from visual controls.
 		require
 			has_current_profile
 		do
-			archetype_tool.populate_controls
+			if not has_current_archetype_tool then
+				create_new_archetype_tool
+			end
+			current_archetype_docking_pane.set_long_title (current_arch_cat.selected_archetype.id.as_string)
+			current_archetype_docking_pane.set_short_title (current_arch_cat.selected_archetype.id.as_abbreviated_string)
+			current_archetype_docking_pane.set_pixmap (pixmaps [current_arch_cat.selected_archetype.group_name])
+			current_archetype_tool.populate_controls
 		end
 
 	populate_archetype_id
@@ -1420,7 +1511,7 @@ feature {NONE} -- Build commands
 						populate_archetype_id
 						populate_adl_version
 						populate_languages
-						populate_archetype_view_controls
+						populate_archetype_tool
 					end
 				end
 			end
