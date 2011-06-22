@@ -46,7 +46,7 @@ feature -- Initialisation
 			code_select_action := a_code_select_action
 
 			-- create widgets
-			create hbox
+			create ev_root_container
 			create gui_tree
 			create view_controls_vbox
 			create expand_button
@@ -60,8 +60,8 @@ feature -- Initialisation
 			create rm_attrs_on_rb
 
 			-- connect them together
-			hbox.extend (gui_tree)
-			hbox.extend (view_controls_vbox)
+			ev_root_container.extend (gui_tree)
+			ev_root_container.extend (view_controls_vbox)
 			view_controls_vbox.extend (expand_button)
 			view_controls_vbox.extend (expand_one_button)
 			view_controls_vbox.extend (collapse_one_button)
@@ -73,9 +73,9 @@ feature -- Initialisation
 			rm_visibility_vbox.extend (rm_attrs_on_rb)
 
 			-- set visual characteristics
-			hbox.set_minimum_width (1)
-			hbox.set_minimum_height (160)
-			hbox.disable_item_expand (view_controls_vbox)
+			ev_root_container.set_minimum_width (1)
+			ev_root_container.set_minimum_height (160)
+			ev_root_container.disable_item_expand (view_controls_vbox)
 			gui_tree.set_background_color (editable_colour)
 --			gui_tree.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			gui_tree.set_minimum_width (arch_tree_min_width)
@@ -136,24 +136,26 @@ feature -- Initialisation
 
 feature -- Access
 
-	hbox: EV_HORIZONTAL_BOX
+	ev_root_container: EV_HORIZONTAL_BOX
 
-	gui_tree: EV_TREE
+	target_archetype: ARCHETYPE
+			-- differential or flat version of archetype, depending on setting of `differential_view'
+		do
+			if differential_view then
+				Result := target_archetype_descriptor.differential_archetype
+			else
+				Result := target_archetype_descriptor.flat_archetype
+			end
+		end
 
-	expand_button, expand_one_button, collapse_one_button: EV_BUTTON
+	target_archetype_descriptor: ARCH_CAT_ARCHETYPE
+			-- archetype to which this tool is targetted
 
-	rm_off_rb, rm_classes_on_rb, rm_attrs_on_rb: EV_RADIO_BUTTON
-
-	view_controls_vbox, rm_visibility_vbox: EV_VERTICAL_BOX
-
-	rm_visibility_controls: EV_FRAME
-
-	l_ev_cell_2: EV_CELL
-
-	target_archetype: attached ARCHETYPE
-			-- Differential or flat version of archetype, depending on setting of `differential_view'.
+	selected_language: STRING
 
 feature -- Status Report
+
+	differential_view: BOOLEAN
 
 	in_technical_mode: BOOLEAN
 			-- If True, show more technical detail on each node
@@ -235,7 +237,7 @@ feature -- Commands
 			in_reference_model_mode := False
 			set_show_reference_model_view (False)
 
-			repopulate
+			repopulate (selected_language)
 		end
 
 	set_technical_mode
@@ -248,7 +250,7 @@ feature -- Commands
 			in_reference_model_mode := False
 			set_show_reference_model_view (False)
 
-			repopulate
+			repopulate (selected_language)
 		end
 
 	set_reference_model_mode
@@ -261,7 +263,7 @@ feature -- Commands
 			in_reference_model_mode := True
 			set_show_reference_model_view (True)
 
-			repopulate
+			repopulate (selected_language)
 		end
 
 	clear
@@ -269,63 +271,61 @@ feature -- Commands
 			gui_tree.wipe_out
 		end
 
-	populate
+	populate (aca: attached ARCH_CAT_ARCHETYPE; differential_view_flag: BOOLEAN; a_language: attached STRING)
 			-- build definition / ontology cross reference tables used for validation and
 			-- other purposes
 		require
-			has_current_profile
+			aca.is_valid
 		local
 			a_c_iterator: C_VISITOR_ITERATOR
 			c_node_map_builder: C_GUI_NODE_MAP_BUILDER
 		do
+			target_archetype_descriptor := aca
+			differential_view := differential_view_flag
+			selected_language := a_language
+
 			clear
 			create tree_item_stack.make (0)
 			create gui_node_map.make(0)
 
-			if current_arch_cat.has_validated_selected_archetype then
-				-- get the archetype
-				if differential_view then
-					target_archetype := current_arch_cat.selected_archetype.differential_archetype
-				else
-					target_archetype := current_arch_cat.selected_archetype.flat_archetype
-				end
-				rm_schema := current_arch_cat.selected_archetype.rm_schema
+			rm_schema := target_archetype_descriptor.rm_schema
 
-				-- populate from definition
-				create c_node_map_builder
-				c_node_map_builder.initialise (target_archetype, current_language, gui_tree, in_technical_mode, False, gui_node_map)
-				create a_c_iterator.make (target_archetype.definition, c_node_map_builder)
-				a_c_iterator.do_all
+			-- populate from definition
+			create c_node_map_builder
+			c_node_map_builder.initialise (target_archetype, selected_language, gui_tree, in_technical_mode, False, gui_node_map)
+			create a_c_iterator.make (target_archetype.definition, c_node_map_builder)
+			a_c_iterator.do_all
 
-				-- add RM attributes if in RM mode
-				if in_reference_model_mode then
-					gui_tree.recursive_do_all (agent node_add_rm_attributes (?))
-				end
+			-- add RM attributes if in RM mode
+			if in_reference_model_mode then
+				gui_tree.recursive_do_all (agent node_add_rm_attributes (?))
+			end
 
-				-- populate from invariants
-				populate_invariants
+			-- populate from invariants
+			populate_invariants
 
-				-- make visualisation adjustments
-				is_expanded := not expand_node_tree
-				toggle_expand_tree
+			-- make visualisation adjustments
+			is_expanded := not expand_node_tree
+			toggle_expand_tree
 
-				if not differential_view then
-					roll_up_to_specialisation_level
-				end
+			if not differential_view then
+				roll_up_to_specialisation_level
 			end
 		end
 
-	repopulate
+	repopulate (a_language: attached STRING)
+			-- repopulate if view has changed
 		require
-			Profile_exists: has_current_profile
 			Already_populated: attached target_archetype
 		local
 			a_c_iterator: C_VISITOR_ITERATOR
 			c_node_map_builder: C_GUI_NODE_MAP_BUILDER
 		do
+			selected_language := a_language
+
 			-- repopulate from definition
 			create c_node_map_builder
-			c_node_map_builder.initialise (target_archetype, current_language, gui_tree, in_technical_mode, True, gui_node_map)
+			c_node_map_builder.initialise (target_archetype, selected_language, gui_tree, in_technical_mode, True, gui_node_map)
 			create a_c_iterator.make (target_archetype.definition, c_node_map_builder)
 			a_c_iterator.do_all
 
@@ -425,6 +425,18 @@ feature -- Commands
 		end
 
 feature {NONE} -- Implementation
+
+	gui_tree: EV_TREE
+
+	expand_button, expand_one_button, collapse_one_button: EV_BUTTON
+
+	rm_off_rb, rm_classes_on_rb, rm_attrs_on_rb: EV_RADIO_BUTTON
+
+	view_controls_vbox, rm_visibility_vbox: EV_VERTICAL_BOX
+
+	rm_visibility_controls: EV_FRAME
+
+	l_ev_cell_2: EV_CELL
 
 	rm_schema: BMM_SCHEMA
 

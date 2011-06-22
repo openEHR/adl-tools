@@ -98,7 +98,7 @@ feature -- Commands
  			if has_current_profile then
 	 			current_arch_cat.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 				gui_tree.recursive_do_all (agent ev_tree_expand)
-				gui.go_to_node_in_archetype_tree_view
+				gui.go_to_selected_archetype
  			end
 		end
 
@@ -121,9 +121,9 @@ feature -- Commands
 	select_item (ari_ont_id: attached STRING)
 			-- ensure node with ontological node id `ari_ont_id' is visible in the tree
 		do
-			if gui_node_descriptor_map.has(ari_ont_id) and gui_tree.is_displayed then
-				gui_tree.ensure_item_visible (gui_node_descriptor_map.item(ari_ont_id))
-				gui_node_descriptor_map.item(ari_ont_id).enable_select
+			if gui_node_descriptor_map.has (ari_ont_id) and gui_tree.is_displayed then
+				gui_tree.ensure_item_visible (gui_node_descriptor_map.item (ari_ont_id))
+				gui_node_descriptor_map.item (ari_ont_id).enable_select
 			end
 		end
 
@@ -131,7 +131,7 @@ feature -- Commands
 			-- ensure node with ontological node id `ari_ont_id' is visible in the tree
 		do
 			if gui_node_descriptor_map.has(ari_ont_id) and gui_tree.is_displayed then
-				gui_tree.ensure_item_visible (gui_node_descriptor_map.item(ari_ont_id))
+				gui_tree.ensure_item_visible (gui_node_descriptor_map.item (ari_ont_id))
 			end
 		end
 
@@ -256,15 +256,19 @@ feature {NONE} -- Implementation
 	create_context_menu (menu: EV_MENU; arch_id: STRING; a_pebble: ANY)
 			-- dynamically initializes the context menu for this tree
 		local
-			parse_mi, edit_source_mi: EV_MENU_ITEM
+			parse_mi, edit_source_mi, new_tool_mi: EV_MENU_ITEM
 		do
 			create parse_mi.make_with_text_and_action ("Parse", agent gui.parse_archetype)
 			parse_mi.set_pixmap (pixmaps ["parse"])
+	    	menu.extend (parse_mi)
+
 			create edit_source_mi.make_with_text_and_action ("Edit source", agent gui.edit_archetype)
 			edit_source_mi.set_pixmap (pixmaps ["edit"])
-
-	    	menu.extend (parse_mi)
 			menu.extend (edit_source_mi)
+
+			create new_tool_mi.make_with_text_and_action ("New tool", agent gui.create_and_populate_new_archetype_tool)
+			new_tool_mi.set_pixmap (pixmaps ["archetype_2"])
+			menu.extend (new_tool_mi)
 		end
 
 	pebble_function (a_x, a_y: INTEGER): ANY

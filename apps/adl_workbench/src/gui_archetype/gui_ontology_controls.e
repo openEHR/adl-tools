@@ -39,108 +39,110 @@ feature {NONE} -- Initialisation
 	make
 		do
 			-- create widgets
-			create vbox
-			create vsplit
-			create term_defs_frame
-			create term_defs_mlist
-			create constraint_defs_frame
-			create constraint_defs_mlist
+			create ev_root_container
+			create ev_vsplit
+			create ev_term_defs_frame
+			create ev_term_defs_mlist
+			create ev_constraint_defs_frame
+			create ev_constraint_defs_mlist
 
 			-- connect them together
-			vbox.extend (vsplit)
-			vsplit.extend (term_defs_frame)
-			term_defs_frame.extend (term_defs_mlist)
-			vsplit.extend (constraint_defs_frame)
-			constraint_defs_frame.extend (constraint_defs_mlist)
+			ev_root_container.extend (ev_vsplit)
+			ev_vsplit.extend (ev_term_defs_frame)
+			ev_term_defs_frame.extend (ev_term_defs_mlist)
+			ev_vsplit.extend (ev_constraint_defs_frame)
+			ev_constraint_defs_frame.extend (ev_constraint_defs_mlist)
 
 			-- set visual characteristics
-			vbox.set_padding (padding_width)
-			vbox.set_border_width (border_width)
-   			vbox.set_minimum_height(Status_area_min_height)
-			vsplit.enable_item_expand (term_defs_frame)
-			vsplit.disable_item_expand (constraint_defs_frame)
-			term_defs_frame.set_text ("Term definitions and bindings")
-			term_defs_mlist.set_background_color (editable_colour)
-			term_defs_mlist.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
-			term_defs_mlist.set_minimum_width (1)
-			term_defs_mlist.set_minimum_height (1)
-			constraint_defs_frame.set_text ("Constraint definitions and bindings")
-			constraint_defs_mlist.set_background_color (editable_colour)
-			constraint_defs_mlist.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
-			constraint_defs_mlist.set_minimum_width (1)
-			constraint_defs_mlist.set_minimum_height (1)
+			ev_root_container.set_padding (padding_width)
+			ev_root_container.set_border_width (border_width)
+			ev_vsplit.enable_item_expand (ev_term_defs_frame)
+			ev_vsplit.disable_item_expand (ev_constraint_defs_frame)
+			ev_term_defs_frame.set_text ("Term definitions and bindings")
+			ev_term_defs_mlist.set_background_color (editable_colour)
+			ev_term_defs_mlist.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
+			ev_term_defs_mlist.set_minimum_width (1)
+			ev_term_defs_mlist.set_minimum_height (1)
+			ev_constraint_defs_frame.set_text ("Constraint definitions and bindings")
+			ev_constraint_defs_mlist.set_background_color (editable_colour)
+			ev_constraint_defs_mlist.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
+			ev_constraint_defs_mlist.set_minimum_width (1)
+			ev_constraint_defs_mlist.set_minimum_height (1)
 		end
 
 feature -- Access
 
-	term_defs_mlist, constraint_defs_mlist, bindings_info_list: EV_MULTI_COLUMN_LIST
+	ev_root_container: EV_VERTICAL_BOX
 
-	vsplit: EV_VERTICAL_SPLIT_AREA
+	target_archetype: ARCHETYPE
+			-- differential or flat version of archetype, depending on setting of `differential_view'
+		do
+			if differential_view then
+				Result := target_archetype_descriptor.differential_archetype
+			else
+				Result := target_archetype_descriptor.flat_archetype
+			end
+		end
 
-	term_defs_frame, constraint_defs_frame: EV_FRAME
+	target_archetype_descriptor: ARCH_CAT_ARCHETYPE
+			-- archetype to which this tool is targetted
 
-	vbox: EV_VERTICAL_BOX
+	selected_language: attached STRING
+
+feature -- Status Report
+
+	differential_view: BOOLEAN
 
 feature -- Commands
 
 	clear
 			-- wipe out content from ontology-related controls
 		do
-			term_defs_mlist.wipe_out
-			constraint_defs_mlist.wipe_out
+			ev_term_defs_mlist.wipe_out
+			ev_constraint_defs_mlist.wipe_out
 		end
 
-	populate
+	populate (aca: attached ARCH_CAT_ARCHETYPE; differential_view_flag: BOOLEAN; a_selected_language: attached STRING)
 			-- populate ontology controls
 		require
-			has_current_profile
+			aca.is_valid
 		do
+			target_archetype_descriptor := aca
+			selected_language := a_selected_language
+			differential_view := differential_view_flag
 			clear
-
-			if current_arch_cat.has_validated_selected_archetype then
-				populate_term_definitions
-				populate_constraint_definitions
-			end
+			populate_term_definitions
+			populate_constraint_definitions
 		end
 
-	select_term(a_term_code: STRING)
+	select_term (a_term_code: attached STRING)
 			-- select row for a_term_code in term_definitions control
 		do
-			select_coded_term_row (a_term_code, term_defs_mlist)
+			select_coded_term_row (a_term_code, ev_term_defs_mlist)
 		end
 
-	select_constraint(a_term_code: STRING)
+	select_constraint (a_term_code: attached STRING)
 			-- select row for a_term_code in term_definitions control
 		do
-			select_coded_term_row (a_term_code, constraint_defs_mlist)
+			select_coded_term_row (a_term_code, ev_constraint_defs_mlist)
 		end
 
 feature {NONE} -- Implementation
 
-	target_archetype: ARCHETYPE
-			-- differential or flat version of archetype, depending on setting of `differential_view'
-		require
-			current_arch_cat.has_selected_archetype
-		do
-			if differential_view then
-				Result := current_arch_cat.selected_archetype.differential_archetype
-			else
-				Result := current_arch_cat.selected_archetype.flat_archetype
-			end
-		end
+	ev_term_defs_mlist, ev_constraint_defs_mlist: EV_MULTI_COLUMN_LIST
+
+	ev_vsplit: EV_VERTICAL_SPLIT_AREA
+
+	ev_term_defs_frame, ev_constraint_defs_frame: EV_FRAME
 
 	ontology: attached ARCHETYPE_ONTOLOGY
 			-- access to ontology of selected archetype
-		require
-			archetype_selected: current_arch_cat.has_selected_archetype
 		do
 			Result := target_archetype.ontology
 		end
 
 	populate_term_definitions
 			-- Populate the Term Definitions list.
-		require
-			archetype_selected: current_arch_cat.has_selected_archetype
 		local
 			col_titles: ARRAYED_LIST [STRING_32]
 			pl: EV_MULTI_COLUMN_LIST
@@ -149,7 +151,7 @@ feature {NONE} -- Implementation
 			i: INTEGER
 		do
 			-- populate column titles
-			pl := term_defs_mlist
+			pl := ev_term_defs_mlist
 			create col_titles.make(0)
 			col_titles.extend ("code")
 			from ontology.term_attribute_names.start until ontology.term_attribute_names.off loop
@@ -168,7 +170,7 @@ feature {NONE} -- Implementation
 			from ontology.term_codes.start until ontology.term_codes.off loop
 				create list_row
 				list_row.extend (utf8 (ontology.term_codes.item))
-				a_term := ontology.term_definition(current_language, ontology.term_codes.item)
+				a_term := ontology.term_definition(selected_language, ontology.term_codes.item)
 				from a_term.keys.start until a_term.keys.off loop
 					list_row.extend (utf8 (a_term.item (a_term.keys.item)))
 					a_term.keys.forth
@@ -198,8 +200,6 @@ feature {NONE} -- Implementation
 
 	populate_constraint_definitions
 			-- Populate the Constraint Definitions list
-		require
-			archetype_selected: current_arch_cat.has_selected_archetype
 		local
 			col_titles: ARRAYED_LIST [STRING_32]
 			pl: EV_MULTI_COLUMN_LIST
@@ -208,7 +208,7 @@ feature {NONE} -- Implementation
 			i: INTEGER
 		do
 			-- build columns
-			pl := constraint_defs_mlist
+			pl := ev_constraint_defs_mlist
 			create col_titles.make(0)
 			col_titles.extend ("code")
 			from ontology.term_attribute_names.start until ontology.term_attribute_names.off loop
@@ -228,7 +228,7 @@ feature {NONE} -- Implementation
 
 				-- populate constraint codes
 				list_row.extend (utf8 (ontology.constraint_codes.item))
-				a_term := ontology.constraint_definition(current_language, ontology.constraint_codes.item)
+				a_term := ontology.constraint_definition(selected_language, ontology.constraint_codes.item)
 				from a_term.keys.start until a_term.keys.off loop
 					list_row.extend (utf8 (a_term.item (a_term.keys.item)))
 					a_term.keys.forth

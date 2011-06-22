@@ -36,38 +36,152 @@ create
 
 feature -- Initialisation
 
-	make (a_main_window: attached MAIN_WINDOW)
+	make (a_archetype_explorer_select_agent: PROCEDURE [ANY, TUPLE])
 		do
-			gui := a_main_window
-			gui_tree := gui.current_archetype_tool.node_map_control.gui_tree
-		ensure
-			gui_set: gui = a_main_window
+			-- create root widget
+			create ev_root_container
+			create action_bar
+			create ev_class_id
+			create view_label
+			create ev_view_tool_bar
+			create differential_view_button
+			create flat_view_button
+			create ev_tree
+
+			-- connect widgets
+			ev_root_container.extend (action_bar)
+			ev_root_container.extend (ev_tree)
+
+			action_bar.extend (ev_class_id)
+			action_bar.extend (view_label)
+			action_bar.extend (ev_view_tool_bar)
+			ev_view_tool_bar.extend (differential_view_button)
+			ev_view_tool_bar.extend (flat_view_button)
+
+			-- visual characteristics
+			ev_root_container.disable_item_expand (action_bar)
+			action_bar.set_padding (10)
+			action_bar.set_border_width (4)
+			action_bar.disable_item_expand (view_label)
+			action_bar.disable_item_expand (ev_view_tool_bar)
+			ev_class_id.disable_edit
+			view_label.set_text ("View ")
+			differential_view_button.set_pixmap (pixmaps ["diff"])
+			flat_view_button.set_pixmap (pixmaps ["flat"])
+			differential_view_button.set_tooltip ("Set differential archetype view")
+			flat_view_button.set_tooltip ("Set flat archetype view")
+
+			-- set events: action bar
+			differential_view_button.select_actions.extend (agent on_differential_view)
+			flat_view_button.select_actions.extend (agent on_flat_view)
+
+			-- set GUI feedback
+			archetype_explorer_select_agent := a_archetype_explorer_select_agent
+
+			differential_view := True
+			differential_view_button.enable_select
+		end
+
+feature -- Access
+
+	ev_root_container: EV_VERTICAL_BOX
+
+	ev_class_id: EV_TEXT_FIELD
+
+	ev_tree: EV_TREE
+
+	class_def: BMM_CLASS_DEFINITION
+
+feature -- Status Report
+
+	differential_view: BOOLEAN
+
+feature -- Events
+
+	on_flat_view
+			-- Called by `select_actions' of `flat_view_button'.
+		do
+			set_view (False)
+		end
+
+	on_differential_view
+			-- Called by `select_actions' of `differential_view_button'.
+		do
+			set_view (True)
+		end
+
+	set_view (differential_flag: BOOLEAN)
+			-- set view one way or the other
+		do
+			if (differential_flag and not differential_view) or -- changing from flat to diff
+				(not differential_flag and differential_view)  -- changing from diff to flat
+			then
+				differential_view := differential_flag
+				repopulate
+			end
 		end
 
 feature -- Commands
 
-	populate
-			-- populate the ADL tree control by creating it from scratch
-		local
-			class_def: attached BMM_CLASS_DEFINITION
+	clear
 		do
-			gui_tree.wipe_out
- 			create gui_tree_item_stack.make (0)
+			ev_tree.wipe_out
+ 			ev_class_id.remove_text
+		end
+
+	populate (a_class_def: attached BMM_CLASS_DEFINITION)
+			-- populate the ADL tree control by creating it from scratch
+		do
+			class_def := a_class_def
+			repopulate
+		end
+
+	repopulate
+		do
+			clear
+ 			create ev_tree_item_stack.make (0)
+
+ 			ev_class_id.set_text (class_def.name)
 			populate_root_node
-			class_def := current_arch_cat.selected_class.class_definition
-			class_def.do_supplier_closure(not differential_view, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
-			gui_tree.recursive_do_all (agent ev_tree_expand)
-			gui.go_to_node_in_archetype_tree_view
+
+			class_def.do_supplier_closure (not differential_view, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+			ev_tree.recursive_do_all (agent ev_tree_expand)
+			if attached archetype_explorer_select_agent then
+				archetype_explorer_select_agent.call ([])
+			end
+		end
+
+	select_flat_view
+			-- Called by `select_actions' of `flat_view_button'.
+		do
+			if not flat_view_button.is_selected then
+				flat_view_button.enable_select
+				set_view (False)
+			end
+		end
+
+	select_differential_view
+			-- Called by `select_actions' of `differential_view_button'.
+		do
+			if not differential_view_button.is_selected then
+				differential_view_button.enable_select
+				set_view (True)
+			end
 		end
 
 feature {NONE} -- Implementation
 
-	gui: MAIN_WINDOW
-			-- main window of system
+	action_bar: EV_HORIZONTAL_BOX
 
-	gui_tree: EV_TREE
+	ev_view_tool_bar: EV_TOOL_BAR
 
-	gui_tree_item_stack: ARRAYED_STACK[EV_TREE_ITEM]
+	differential_view_button, flat_view_button: EV_TOOL_BAR_RADIO_BUTTON
+
+	view_label: EV_LABEL
+
+	ev_tree_item_stack: ARRAYED_STACK[EV_TREE_ITEM]
+
+	archetype_explorer_select_agent: PROCEDURE [ANY, TUPLE]
 
    	populate_root_node
 			-- Add root node representing class to `gui_file_tree'.
@@ -77,8 +191,8 @@ feature {NONE} -- Implementation
 			create a_ti
 			a_ti.set_text (current_arch_cat.selected_class.display_name)
 			a_ti.set_pixmap (pixmaps [current_arch_cat.selected_class.group_name])
-			gui_tree.extend (a_ti)
-			gui_tree_item_stack.extend (a_ti)
+			ev_tree.extend (a_ti)
+			ev_tree_item_stack.extend (a_ti)
 		end
 
    	populate_gui_tree_node_enter (a_prop_def: BMM_PROPERTY_DEFINITION)
@@ -102,13 +216,13 @@ feature {NONE} -- Implementation
 
 			pixmap := pixmaps.item(rm_attribute_pixmap_string(a_prop_def))
 			a_ti.set_pixmap (pixmap)
-			gui_tree_item_stack.item.extend (a_ti)
-			gui_tree_item_stack.extend (a_ti)
+			ev_tree_item_stack.item.extend (a_ti)
+			ev_tree_item_stack.extend (a_ti)
 		end
 
    	populate_gui_tree_node_exit (a_prop_def: BMM_PROPERTY_DEFINITION)
    		do
-			gui_tree_item_stack.remove
+			ev_tree_item_stack.remove
 		end
 
 	rm_attribute_pixmap_string(rm_attr: BMM_PROPERTY_DEFINITION): STRING

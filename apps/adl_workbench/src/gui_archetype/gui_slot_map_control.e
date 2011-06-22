@@ -48,25 +48,25 @@ feature {NONE} -- Initialisation
 	make (a_visual_update_action: PROCEDURE [ANY, TUPLE [INTEGER, INTEGER]])
 		do
 			-- create widgets
-			create ev_slots_vbox
-			create suppliers_tree
-			create clients_tree
+			create ev_root_container
+			create ev_suppliers_tree
+			create ev_clients_tree
 			create supplier_frame
 			create supplier_vbox
 			create client_frame
 			create client_vbox
 
 			-- connect them together
-			ev_slots_vbox.extend (supplier_frame)
+			ev_root_container.extend (supplier_frame)
 			supplier_frame.extend (supplier_vbox)
-			supplier_vbox.extend (suppliers_tree)
-			ev_slots_vbox.extend (client_frame)
+			supplier_vbox.extend (ev_suppliers_tree)
+			ev_root_container.extend (client_frame)
 			client_frame.extend (client_vbox)
-			client_vbox.extend (clients_tree)
+			client_vbox.extend (ev_clients_tree)
 
 			-- set visual characteristics
-			ev_slots_vbox.set_padding (padding_width)
-			ev_slots_vbox.set_border_width (border_width)
+			ev_root_container.set_padding (padding_width)
+			ev_root_container.set_border_width (border_width)
 			supplier_frame.set_text ("Supplier Archetypes")
 			supplier_vbox.set_border_width (border_width)
 			client_frame.set_text ("Client Archetypes")
@@ -77,10 +77,9 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	ev_slots_vbox: EV_VERTICAL_BOX
-	supplier_vbox, client_vbox: EV_VERTICAL_BOX
-	supplier_frame, client_frame: EV_FRAME
-	suppliers_tree, clients_tree: EV_TREE
+	ev_root_container: EV_VERTICAL_BOX
+
+	ev_suppliers_tree, ev_clients_tree: EV_TREE
 
 feature -- UI Feedback
 
@@ -91,58 +90,57 @@ feature -- Commands
 
 	clear
 		do
-			suppliers_tree.wipe_out
-			clients_tree.wipe_out
+			ev_suppliers_tree.wipe_out
+			ev_clients_tree.wipe_out
 			call_visual_update_action (0, 0)
 		end
 
-	populate
+	populate (aca: attached ARCH_CAT_ARCHETYPE; a_language: attached STRING)
 			-- populate the ADL tree control by creating it from scratch
 		require
-			has_current_profile
+			aca.is_valid
 		local
 			eti: EV_TREE_ITEM
-			ara: ARCH_CAT_ARCHETYPE
 			slot_index: DS_HASH_TABLE [ARRAYED_LIST [STRING], STRING]
 			slots_count: INTEGER
 			used_by_count: INTEGER
 		do
 			clear
 
-			if current_arch_cat.has_validated_selected_archetype then
-				ara := current_arch_cat.selected_archetype
+			if aca.has_slots then
+				slot_index := aca.slot_id_index
+				from slot_index.start until slot_index.off loop
+					create eti.make_with_text (utf8 (aca.differential_archetype.ontology.physical_to_logical_path (slot_index.key_for_iteration, a_language)))
+					eti.set_pixmap (pixmaps ["ARCHETYPE_SLOT"])
+					ev_suppliers_tree.extend (eti)
+					append_tree (eti, slot_index.item_for_iteration)
+					slots_count := slots_count + eti.count
 
-				if ara.has_slots then
-					slot_index := ara.slot_id_index
-					from slot_index.start until slot_index.off loop
-						create eti.make_with_text (utf8 (ara.differential_archetype.ontology.physical_to_logical_path (slot_index.key_for_iteration, ara.display_language)))
-						eti.set_pixmap (pixmaps ["ARCHETYPE_SLOT"])
-						suppliers_tree.extend (eti)
-						append_tree (eti, slot_index.item_for_iteration)
-						slots_count := slots_count + eti.count
-
-						if eti.is_expandable then
-							eti.expand
-						end
-
-						slot_index.forth
+					if eti.is_expandable then
+						eti.expand
 					end
-				end
 
-				if current_arch_cat.compile_attempt_count < current_arch_cat.total_archetype_count then
-					clients_tree.extend (create {EV_TREE_ITEM}.make_with_text (create_message_line ("slots_incomplete_w1", <<>>)))
+					slot_index.forth
 				end
-
-				if ara.is_supplier then
-					append_tree (clients_tree, ara.clients_index)
-					used_by_count := used_by_count + clients_tree.count
-				end
-
-				call_visual_update_action (slots_count, used_by_count)
 			end
+
+			if current_arch_cat.compile_attempt_count < current_arch_cat.total_archetype_count then
+				ev_clients_tree.extend (create {EV_TREE_ITEM}.make_with_text (create_message_line ("slots_incomplete_w1", <<>>)))
+			end
+
+			if aca.is_supplier then
+				append_tree (ev_clients_tree, aca.clients_index)
+				used_by_count := used_by_count + ev_clients_tree.count
+			end
+
+			call_visual_update_action (slots_count, used_by_count)
 		end
 
 feature {NONE} -- Implementation
+
+	supplier_vbox, client_vbox: EV_VERTICAL_BOX
+
+	supplier_frame, client_frame: EV_FRAME
 
 	append_tree (subtree: attached EV_TREE_NODE_LIST; ids: attached ARRAYED_LIST [STRING])
 			-- Populate `subtree' from `ids'.
@@ -157,7 +155,6 @@ feature {NONE} -- Implementation
 					eti.set_pixmap (pixmaps [ara.group_name])
 					eti.set_data (ara)
 				end
-	--			eti.pointer_double_press_actions.force_extend (agent gui.select_archetype_from_gui_data (eti))
 				subtree.extend (eti)
 				ids.forth
 			end

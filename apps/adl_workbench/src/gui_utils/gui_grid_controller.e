@@ -49,7 +49,6 @@ feature -- Access
 			items: ARRAYED_LIST [EV_GRID_ITEM]
 		do
 			items := grid.selected_items
-
 			if not items.is_empty then
 				Result := items.first
 			end

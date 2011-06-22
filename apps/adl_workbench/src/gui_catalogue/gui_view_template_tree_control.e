@@ -97,7 +97,7 @@ feature -- Commands
 
  			if has_current_profile then
 	 			current_arch_cat.do_all_archetypes (agent populate_template_nodes)
- 				gui.go_to_node_in_archetype_tree_view
+ 				gui.go_to_selected_archetype
 			end
 		end
 

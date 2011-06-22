@@ -35,7 +35,7 @@ feature {NONE} -- Initialisation
 	make (a_text_box_select_all_handler: PROCEDURE [ANY, TUPLE])
 		do
 			-- create widgets
-			create notebook
+			create ev_notebook
 			create admin_vbox
 			create author_lang_term_hbox
 			create auth_frame
@@ -104,7 +104,7 @@ feature {NONE} -- Initialisation
 			create refset_bindings_list
 
 			-- connect them together
-			notebook.extend (admin_vbox)
+			ev_notebook.extend (admin_vbox)
 			admin_vbox.extend (author_lang_term_hbox)
 			author_lang_term_hbox.extend (auth_frame)
 			auth_frame.extend (status_auth_contrib_vbox)
@@ -139,7 +139,7 @@ feature {NONE} -- Initialisation
 			admin_vbox.extend (copyright_hbox)
 			copyright_hbox.extend (copyright_label)
 			copyright_hbox.extend (copyright_text)
-			notebook.extend (desc_box)
+			ev_notebook.extend (desc_box)
 			desc_box.extend (details_frame)
 			details_frame.extend (details_hbox)
 			details_hbox.extend (purpose_use_misuse_vbox)
@@ -163,7 +163,7 @@ feature {NONE} -- Initialisation
 			resource_vbox.extend (resource_orig_res_hbox)
 			resource_orig_res_hbox.extend (resource_orig_res_label)
 			resource_orig_res_hbox.extend (resource_orig_res_mlist)
-			notebook.extend (term_hbox)
+			ev_notebook.extend (term_hbox)
 			term_hbox.extend (terminology_vbox)
 			terminology_vbox.extend (l_ev_label_4)
 			terminology_vbox.extend (term_mappings_list)
@@ -172,9 +172,9 @@ feature {NONE} -- Initialisation
 			refset_vbox.extend (refset_bindings_list)
 
 			-- set visual characteristics
-			notebook.set_item_text (admin_vbox, "Administrative")
-			notebook.set_item_text (desc_box, "Descriptive")
-			notebook.set_item_text (term_hbox, "Term bindings")
+			ev_notebook.set_item_text (admin_vbox, "Administrative")
+			ev_notebook.set_item_text (desc_box, "Descriptive")
+			ev_notebook.set_item_text (term_hbox, "Term bindings")
 			admin_vbox.disable_item_expand (copyright_hbox)
 			author_lang_term_hbox.set_padding (padding_width)
 			author_lang_term_hbox.set_border_width (border_width)
@@ -366,7 +366,64 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	notebook: EV_NOTEBOOK
+	ev_notebook: EV_NOTEBOOK
+
+	selected_language: STRING
+
+feature -- Commands
+
+	clear
+			-- Wipe out content.
+		do
+			term_mappings_list.wipe_out
+			status_text.remove_text
+
+			auth_orig_auth_mlist.wipe_out
+			auth_contrib_list.wipe_out
+			original_language_text.remove_text
+
+			purpose_text.remove_text
+			use_text.remove_text
+			misuse_text.remove_text
+			keywords_list.wipe_out
+
+			resource_package_text.remove_text
+			resource_orig_res_mlist.wipe_out
+
+			copyright_text.remove_text
+
+			clear_translations
+		end
+
+	populate (an_archetype: attached ARCHETYPE; a_language: attached STRING)
+			-- Populate ontology controls.
+		require
+			an_archetype.is_valid
+		local
+			archetype: ARCHETYPE
+		do
+			target_archetype := an_archetype
+			selected_language := a_language
+			clear
+			term_mappings_list.set_strings (target_archetype.ontology.terminologies_available)
+			if attached target_archetype.description then
+				populate_authorship
+				populate_details
+				populate_resources
+				populate_copyright
+				populate_translations
+			end
+		end
+
+feature -- Events
+
+	translations_select_language
+			-- Called by `select_actions' of `trans_languages_list'.
+		do
+			populate_translation_items
+		end
+
+feature {NONE} -- Implementation
 
 	admin_vbox, status_auth_contrib_vbox, auth_orig_auth_vbox,
 	contrib_vbox, lang_vbox, trans_languages_vbox, trans_author_vbox,
@@ -399,80 +456,22 @@ feature -- Access
 	trans_accreditation_text, copyright_text, purpose_text, use_text,
 	misuse_text: EV_TEXT
 
-feature -- Commands
-
-	clear
-			-- Wipe out content.
-		do
-			term_mappings_list.wipe_out
-			status_text.remove_text
-
-			auth_orig_auth_mlist.wipe_out
-			auth_contrib_list.wipe_out
-			original_language_text.remove_text
-
-			purpose_text.remove_text
-			use_text.remove_text
-			misuse_text.remove_text
-			keywords_list.wipe_out
-
-			resource_package_text.remove_text
-			resource_orig_res_mlist.wipe_out
-
-			copyright_text.remove_text
-
-			clear_translations
-		end
-
-	populate
-			-- Populate ontology controls.
-		require
-			has_current_profile
-		local
-			archetype: ARCHETYPE
-		do
-			clear
-			if current_arch_cat.has_validated_selected_archetype then
-				archetype := current_arch_cat.selected_archetype.differential_archetype
-				term_mappings_list.set_strings (archetype.ontology.terminologies_available)
-				if attached archetype.description then
-					populate_authorship
-					populate_details
-					populate_resources
-					populate_copyright
-					populate_translations
-				end
-			end
-		end
-
-feature -- Events
-
-	translations_select_language
-			-- Called by `select_actions' of `trans_languages_list'.
-		do
-			populate_translation_items
-		end
-
-feature {NONE} -- Implementation
-
 	populate_authorship
 			-- populate authorship fields
-		require
-			archetype_selected: current_arch_cat.has_selected_archetype
 		do
 			-- original author: tagged list of strings
-			populate_ev_multi_list_from_hash (auth_orig_auth_mlist, current_arch_cat.selected_archetype.differential_archetype.description.original_author)
+			populate_ev_multi_list_from_hash (auth_orig_auth_mlist, target_archetype.description.original_author)
 
 			-- status
-			if attached current_arch_cat.selected_archetype.differential_archetype.description.lifecycle_state as sts then
+			if attached target_archetype.description.lifecycle_state as sts then
 				status_text.set_text (utf8 (sts))
 			end
 
 			-- original language
-			original_language_text.set_text (utf8 (current_arch_cat.selected_archetype.differential_archetype.original_language.code_string))
+			original_language_text.set_text (utf8 (target_archetype.original_language.code_string))
 
 			-- contributors: list of strings
-			if attached current_arch_cat.selected_archetype.differential_archetype.description.other_contributors as contribs then
+			if attached target_archetype.description.other_contributors as contribs then
 				create utf_str_list.make (0)
 				contribs.do_all (agent (utf8_str: STRING) do utf_str_list.extend (utf8 (utf8_str)) end)
 				auth_contrib_list.set_strings (utf_str_list)
@@ -481,10 +480,8 @@ feature {NONE} -- Implementation
 
 	populate_details
 			-- Populate details (language sensitive).
-		require
-			archetype_selected: current_arch_cat.has_selected_archetype
 		do
-			if attached current_arch_cat.selected_archetype.differential_archetype.description.details.item(current_language) as item then
+			if attached target_archetype.description.details.item(current_language) as item then
 				if attached item.purpose then
 					purpose_text.set_text (utf8 (item.purpose))
 				end
@@ -507,26 +504,22 @@ feature {NONE} -- Implementation
 
 	populate_resources
 			-- populate resources fields
-		require
-			archetype_selected: current_arch_cat.has_selected_archetype
 		do
 			-- package URI
-			if attached current_arch_cat.selected_archetype.differential_archetype.description.resource_package_uri as arch_pkg_uri then
+			if attached target_archetype.description.resource_package_uri as arch_pkg_uri then
 				resource_package_text.set_text (utf8 (arch_pkg_uri.out))
 			end
 
 			-- list of URI resources
-			if attached current_arch_cat.selected_archetype.differential_archetype.description.details.item(current_language) as item then
+			if attached target_archetype.description.details.item(current_language) as item then
 				populate_ev_multi_list_from_hash (resource_orig_res_mlist, item.original_resource_uri)
 			end
 		end
 
 	populate_copyright
 			-- populate copyright field
-		require
-			archetype_selected: current_arch_cat.has_validated_selected_archetype
 		do
-			if attached current_arch_cat.selected_archetype.differential_archetype.description.details.item(current_language) as item  and then
+			if attached target_archetype.description.details.item(current_language) as item  and then
 				attached item.copyright
 			then
 				copyright_text.set_text (utf8 (item.copyright))
@@ -535,12 +528,10 @@ feature {NONE} -- Implementation
 
 	populate_translations
 			-- populate controls
-		require
-			archetype_selected: current_arch_cat.has_validated_selected_archetype
 		do
 			clear_translations
-			if attached current_arch_cat.selected_archetype.differential_archetype.translations then
-				trans_languages_list.set_strings (current_arch_cat.selected_archetype.differential_archetype.translations.current_keys)
+			if attached target_archetype.translations then
+				trans_languages_list.set_strings (target_archetype.translations.current_keys)
 				populate_translation_items
 			end
 		end
@@ -564,19 +555,17 @@ feature {NONE} -- Implementation
 				translation_language := trans_languages_list.selected_item.text.as_string_8
 			end
 
-			if current_arch_cat.has_validated_selected_archetype then
-				trans_item := current_arch_cat.selected_archetype.differential_archetype.translations.item(translation_language)
+			trans_item := target_archetype.translations.item(translation_language)
 
-				-- populate author hash
-				populate_ev_multi_list_from_hash (trans_author_mlist, trans_item.author)
+			-- populate author hash
+			populate_ev_multi_list_from_hash (trans_author_mlist, trans_item.author)
 
-				if trans_item.accreditation /= Void then
-					trans_accreditation_text.set_text (utf8 (trans_item.accreditation))
-				end
-
-				-- populate other_details
-				populate_ev_multi_list_from_hash (trans_other_details_mlist, trans_item.other_details)
+			if trans_item.accreditation /= Void then
+				trans_accreditation_text.set_text (utf8 (trans_item.accreditation))
 			end
+
+			-- populate other_details
+			populate_ev_multi_list_from_hash (trans_other_details_mlist, trans_item.other_details)
 		end
 
 	clear_translation_items
@@ -587,12 +576,12 @@ feature {NONE} -- Implementation
 			trans_other_details_mlist.wipe_out
 		end
 
-feature {NONE} -- Implementation
-
 	utf_str_list: ARRAYED_LIST [STRING_32]
 
 	translation_language: STRING
 			-- currently selected translation language
+
+	target_archetype: ARCHETYPE
 
 end
 

@@ -93,88 +93,27 @@ feature {NONE}-- Initialization
 			help_menu.extend (help_menu_about)
 			extend (main_notebook)
 			main_notebook.extend (viewer_vbox)
-			viewer_vbox.extend (action_bar)
-			action_bar.extend (archetype_profile_combo)
-			action_bar.extend (l_ev_tool_bar_1)
-			l_ev_tool_bar_1.extend (compile_button)
-			l_ev_tool_bar_1.extend (l_ev_tool_bar_separator_1)
-			l_ev_tool_bar_1.extend (open_button)
-			l_ev_tool_bar_1.extend (l_ev_tool_bar_separator_2)
-			l_ev_tool_bar_1.extend (history_back_button)
-			l_ev_tool_bar_1.extend (l_ev_tool_bar_separator_3)
-			l_ev_tool_bar_1.extend (history_forward_button)
-			action_bar.extend (arch_id_hbox)
-			arch_id_hbox.extend (archetype_id)
-			arch_id_hbox.extend (l_ev_tool_bar_5)
-			l_ev_tool_bar_5.extend (search_button)
-			action_bar.extend (arch_view_hbox)
-			arch_view_hbox.extend (view_label)
-			arch_view_hbox.extend (l_ev_tool_bar_6)
-			l_ev_tool_bar_6.extend (differential_view_button)
-			l_ev_tool_bar_6.extend (flat_view_button)
-			action_bar.extend (arch_lang_hbox)
-			arch_lang_hbox.extend (language_label)
-			arch_lang_hbox.extend (language_combo)
-			action_bar.extend (arch_ver_hbox)
-			arch_ver_hbox.extend (adl_version_label)
-			arch_ver_hbox.extend (adl_version_text)
-			viewer_vbox.extend (explorer_split_area)
-			explorer_split_area.extend (archetype_template_split_area)
-			archetype_template_split_area.extend (l_ev_vertical_box_1)
-			l_ev_vertical_box_1.extend (l_ev_horizontal_box_1)
-			l_ev_horizontal_box_1.extend (archetype_explorer_pixmap)
-			l_ev_horizontal_box_1.extend (archetype_explorer_label)
-			l_ev_vertical_box_1.extend (archetype_file_tree)
-			archetype_template_split_area.extend (l_ev_vertical_box_2)
-			l_ev_vertical_box_2.extend (l_ev_horizontal_box_2)
-			l_ev_horizontal_box_2.extend (template_explorer_pixmap)
-			l_ev_horizontal_box_2.extend (template_explorer_label)
-			l_ev_vertical_box_2.extend (template_file_tree)
-			explorer_split_area.extend (total_split_area)
-			total_split_area.extend (archetype_tool_cell)
-			total_split_area.extend (status_notebook)
-			status_notebook.extend (parser_status_area)
-			status_notebook.extend (compiler_output_grid)
-			status_notebook.extend (statistics_hbox)
-			statistics_hbox.extend (statistics_vbox)
-			statistics_vbox.extend (arch_total_count_hbox)
-			arch_total_count_hbox.extend (l_ev_label_1)
-			arch_total_count_hbox.extend (arch_total_count_tf)
-			statistics_vbox.extend (arch_spec_count_hbox)
-			arch_spec_count_hbox.extend (l_ev_label_2)
-			arch_spec_count_hbox.extend (arch_spec_count_tf)
-			statistics_vbox.extend (arch_slotted_count_hbox)
-			arch_slotted_count_hbox.extend (l_ev_label_3)
-			arch_slotted_count_hbox.extend (arch_slotted_count_tf)
-			statistics_vbox.extend (arch_used_by_count_hbox)
-			arch_used_by_count_hbox.extend (l_ev_label_4)
-			arch_used_by_count_hbox.extend (arch_used_by_count_tf)
-			statistics_vbox.extend (arch_bad_count_hbox)
-			arch_bad_count_hbox.extend (l_ev_label_5)
-			arch_bad_count_hbox.extend (arch_bad_count_tf)
-			statistics_hbox.extend (term_bindings_info_frame)
-			term_bindings_info_frame.extend (term_bindings_info_list)
 			main_notebook.extend (test_split_area)
-			test_split_area.extend (l_ev_horizontal_box_3)
-			l_ev_horizontal_box_3.extend (archetype_test_tree_grid)
-			l_ev_horizontal_box_3.extend (l_ev_vertical_box_3)
-			l_ev_vertical_box_3.extend (test_profile_combo)
-			l_ev_vertical_box_3.extend (remove_unused_codes_rb)
-			l_ev_vertical_box_3.extend (arch_test_tree_toggle_expand_bn)
-			l_ev_vertical_box_3.extend (arch_test_refresh_bn)
-			l_ev_vertical_box_3.extend (regression_test_bn)
-			l_ev_vertical_box_3.extend (l_ev_horizontal_box_4)
-			l_ev_horizontal_box_4.extend (l_ev_label_6)
-			l_ev_horizontal_box_4.extend (arch_test_processed_count)
-			l_ev_vertical_box_3.extend (l_ev_horizontal_separator_1)
-			l_ev_vertical_box_3.extend (archetype_test_go_bn)
-			l_ev_vertical_box_3.extend (l_ev_cell_1)
-			l_ev_vertical_box_3.extend (l_ev_horizontal_separator_2)
-			l_ev_vertical_box_3.extend (l_ev_label_7)
-			l_ev_vertical_box_3.extend (diff_source_button)
-			l_ev_vertical_box_3.extend (diff_flat_button)
-			l_ev_vertical_box_3.extend (diff_source_flat_button)
-			l_ev_vertical_box_3.extend (diff_source_round_trip_button)
+			test_split_area.extend (l_ev_horizontal_box_1)
+			l_ev_horizontal_box_1.extend (archetype_test_tree_grid)
+			l_ev_horizontal_box_1.extend (l_ev_vertical_box_1)
+			l_ev_vertical_box_1.extend (test_profile_combo)
+			l_ev_vertical_box_1.extend (remove_unused_codes_rb)
+			l_ev_vertical_box_1.extend (arch_test_tree_toggle_expand_bn)
+			l_ev_vertical_box_1.extend (arch_test_refresh_bn)
+			l_ev_vertical_box_1.extend (regression_test_bn)
+			l_ev_vertical_box_1.extend (l_ev_horizontal_box_2)
+			l_ev_horizontal_box_2.extend (l_ev_label_1)
+			l_ev_horizontal_box_2.extend (arch_test_processed_count)
+			l_ev_vertical_box_1.extend (l_ev_horizontal_separator_1)
+			l_ev_vertical_box_1.extend (archetype_test_go_bn)
+			l_ev_vertical_box_1.extend (l_ev_cell_1)
+			l_ev_vertical_box_1.extend (l_ev_horizontal_separator_2)
+			l_ev_vertical_box_1.extend (l_ev_label_2)
+			l_ev_vertical_box_1.extend (diff_source_button)
+			l_ev_vertical_box_1.extend (diff_flat_button)
+			l_ev_vertical_box_1.extend (diff_source_flat_button)
+			l_ev_vertical_box_1.extend (diff_source_round_trip_button)
 			test_split_area.extend (test_status_area)
 
 			file_menu.set_text ("&File")
@@ -230,193 +169,29 @@ feature {NONE}-- Initialization
 			main_notebook.set_tab_position (2)
 			main_notebook.set_item_text (viewer_vbox, "Viewer")
 			main_notebook.set_item_text (test_split_area, "Test")
-			viewer_vbox.disable_item_expand (action_bar)
-			action_bar.set_minimum_width (800)
-			action_bar.set_padding (10)
-			action_bar.set_border_width (4)
-			action_bar.disable_item_expand (archetype_profile_combo)
-			action_bar.disable_item_expand (l_ev_tool_bar_1)
-			action_bar.disable_item_expand (arch_view_hbox)
-			action_bar.disable_item_expand (arch_lang_hbox)
-			action_bar.disable_item_expand (arch_ver_hbox)
-			archetype_profile_combo.set_tooltip ("Select repository profile")
-			archetype_profile_combo.set_minimum_width (160)
-			archetype_profile_combo.disable_edit
-			l_ev_tool_bar_1.disable_vertical_button_style
-			compile_button.set_text ("Compile")
-			compile_button.set_tooltip ("Compile all archetypes (F7)")
-			open_button.set_text ("Open")
-			open_button.set_tooltip ("Open an ad hoc archetype")
-			history_back_button.set_tooltip ("Go back one archetype")
-			history_forward_button.set_tooltip ("Go forward one archetype")
-			arch_id_hbox.disable_item_expand (l_ev_tool_bar_5)
-			archetype_id.set_tooltip ("Display or search for archetype id")
-			l_ev_tool_bar_5.set_minimum_width (20)
-			l_ev_tool_bar_5.set_minimum_height (20)
-			l_ev_tool_bar_5.disable_vertical_button_style
-			search_button.set_tooltip ("Search for archetype id")
-			view_label.set_text ("View ")
-			differential_view_button.set_tooltip ("Set differential archetype view")
-			flat_view_button.set_tooltip ("Set flat archetype view")
-			arch_lang_hbox.disable_item_expand (language_label)
-			arch_lang_hbox.disable_item_expand (language_combo)
-			language_label.set_text ("Language:")
-			language_label.set_minimum_width (70)
-			language_label.set_minimum_height (23)
-			language_label.align_text_right
-			color_constant_set_procedures.extend (agent language_combo.set_background_color (?))
-			color_constant_retrieval_functions.extend (agent editable_colour)
-			language_combo.set_tooltip ("Select display language")
-			integer_constant_set_procedures.extend (agent language_combo.set_minimum_width (?))
-			integer_constant_retrieval_functions.extend (agent min_combo_box_width)
-			language_combo.set_minimum_height (23)
-			language_combo.disable_edit
-			arch_ver_hbox.disable_item_expand (adl_version_label)
-			arch_ver_hbox.disable_item_expand (adl_version_text)
-			adl_version_label.set_text ("ADL Version:")
-			adl_version_label.set_minimum_width (80)
-			adl_version_label.align_text_right
-			integer_constant_set_procedures.extend (agent explorer_split_area.set_minimum_width (?))
-			integer_constant_retrieval_functions.extend (agent app_min_width)
-			integer_constant_set_procedures.extend (agent explorer_split_area.set_minimum_height (?))
-			integer_constant_retrieval_functions.extend (agent main_hbox_min_height)
-			explorer_split_area.enable_item_expand (archetype_template_split_area)
-			explorer_split_area.disable_item_expand (total_split_area)
-			archetype_template_split_area.enable_item_expand (l_ev_vertical_box_2)
-			archetype_template_split_area.disable_item_expand (l_ev_vertical_box_1)
-			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_1)
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_1.set_padding (?))
-			integer_constant_retrieval_functions.extend (agent padding_width)
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_1.set_border_width (?))
-			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_horizontal_box_1.disable_item_expand (archetype_explorer_pixmap)
-			archetype_explorer_pixmap.set_minimum_width (16)
-			archetype_explorer_pixmap.set_minimum_height (16)
-			archetype_explorer_label.set_text ("ADL 1.5 Archetypes")
-			archetype_explorer_label.align_text_left
-			color_constant_set_procedures.extend (agent archetype_file_tree.set_background_color (?))
-			color_constant_retrieval_functions.extend (agent editable_colour)
-			archetype_file_tree.set_minimum_width (60)
-			l_ev_vertical_box_2.disable_item_expand (l_ev_horizontal_box_2)
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_2.set_padding (?))
-			integer_constant_retrieval_functions.extend (agent padding_width)
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_2.set_border_width (?))
-			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_horizontal_box_2.disable_item_expand (template_explorer_pixmap)
-			template_explorer_pixmap.set_minimum_width (16)
-			template_explorer_pixmap.set_minimum_height (16)
-			template_explorer_label.set_text ("ADL 1.5 Templates")
-			template_explorer_label.align_text_left
-			color_constant_set_procedures.extend (agent template_file_tree.set_background_color (?))
-			color_constant_retrieval_functions.extend (agent editable_colour)
-			template_file_tree.set_minimum_width (60)
-			integer_constant_set_procedures.extend (agent total_split_area.set_minimum_width (?))
-			integer_constant_retrieval_functions.extend (agent app_min_width)
-			integer_constant_set_procedures.extend (agent total_split_area.set_minimum_height (?))
-			integer_constant_retrieval_functions.extend (agent app_min_height)
-			total_split_area.enable_item_expand (archetype_tool_cell)
-			total_split_area.disable_item_expand (status_notebook)
-			status_notebook.set_item_text (parser_status_area, "Status")
-			status_notebook.set_item_text (compiler_output_grid, "Errors")
-			status_notebook.set_item_text (statistics_hbox, "Statistics")
-			parser_status_area.set_minimum_width (1)
-			integer_constant_set_procedures.extend (agent parser_status_area.set_minimum_height (?))
-			integer_constant_retrieval_functions.extend (agent status_area_min_height)
-			parser_status_area.disable_edit
-			integer_constant_set_procedures.extend (agent statistics_hbox.set_minimum_height (?))
-			integer_constant_retrieval_functions.extend (agent status_area_min_height)
-			integer_constant_set_procedures.extend (agent statistics_hbox.set_padding (?))
-			integer_constant_retrieval_functions.extend (agent padding_width)
-			statistics_hbox.set_border_width (15)
-			statistics_hbox.disable_item_expand (statistics_vbox)
-			statistics_vbox.set_minimum_width (250)
-			integer_constant_set_procedures.extend (agent statistics_vbox.set_padding (?))
-			integer_constant_retrieval_functions.extend (agent padding_width)
-			integer_constant_set_procedures.extend (agent statistics_vbox.set_border_width (?))
-			integer_constant_retrieval_functions.extend (agent border_width)
-			statistics_vbox.disable_item_expand (arch_total_count_hbox)
-			statistics_vbox.disable_item_expand (arch_spec_count_hbox)
-			statistics_vbox.disable_item_expand (arch_slotted_count_hbox)
-			statistics_vbox.disable_item_expand (arch_used_by_count_hbox)
-			statistics_vbox.disable_item_expand (arch_bad_count_hbox)
-			arch_total_count_hbox.set_padding (10)
-			integer_constant_set_procedures.extend (agent arch_total_count_hbox.set_border_width (?))
-			integer_constant_retrieval_functions.extend (agent border_width)
-			arch_total_count_hbox.disable_item_expand (arch_total_count_tf)
-			l_ev_label_1.set_text ("Total Archetypes:")
-			l_ev_label_1.set_minimum_width (140)
-			l_ev_label_1.align_text_right
-			arch_total_count_tf.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (240, 240, 240))
-			arch_total_count_tf.disable_edit
-			arch_total_count_tf.align_text_right
-			arch_spec_count_hbox.set_padding (10)
-			integer_constant_set_procedures.extend (agent arch_spec_count_hbox.set_border_width (?))
-			integer_constant_retrieval_functions.extend (agent border_width)
-			arch_spec_count_hbox.disable_item_expand (arch_spec_count_tf)
-			l_ev_label_2.set_text ("Specialised Archetypes:")
-			l_ev_label_2.set_minimum_width (140)
-			l_ev_label_2.align_text_right
-			arch_spec_count_tf.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (240, 240, 240))
-			arch_spec_count_tf.disable_edit
-			arch_spec_count_tf.align_text_right
-			arch_slotted_count_hbox.set_padding (10)
-			integer_constant_set_procedures.extend (agent arch_slotted_count_hbox.set_border_width (?))
-			integer_constant_retrieval_functions.extend (agent border_width)
-			arch_slotted_count_hbox.disable_item_expand (arch_slotted_count_tf)
-			l_ev_label_3.set_text ("Archetypes Containing Slots:")
-			l_ev_label_3.set_minimum_width (140)
-			l_ev_label_3.align_text_right
-			arch_slotted_count_tf.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (240, 240, 240))
-			arch_slotted_count_tf.disable_edit
-			arch_slotted_count_tf.align_text_right
-			integer_constant_set_procedures.extend (agent arch_used_by_count_hbox.set_padding (?))
-			integer_constant_retrieval_functions.extend (agent padding_width)
-			integer_constant_set_procedures.extend (agent arch_used_by_count_hbox.set_border_width (?))
-			integer_constant_retrieval_functions.extend (agent border_width)
-			arch_used_by_count_hbox.disable_item_expand (arch_used_by_count_tf)
-			l_ev_label_4.set_text ("Archetypes Used In Slots:")
-			l_ev_label_4.set_minimum_width (140)
-			l_ev_label_4.align_text_right
-			arch_used_by_count_tf.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (240, 240, 240))
-			arch_used_by_count_tf.disable_edit
-			arch_used_by_count_tf.align_text_right
-			arch_bad_count_hbox.set_padding (10)
-			integer_constant_set_procedures.extend (agent arch_bad_count_hbox.set_border_width (?))
-			integer_constant_retrieval_functions.extend (agent border_width)
-			arch_bad_count_hbox.disable_item_expand (arch_bad_count_tf)
-			l_ev_label_5.set_text ("Invalid Archetype Files:")
-			l_ev_label_5.set_minimum_width (140)
-			l_ev_label_5.align_text_right
-			arch_bad_count_tf.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (240, 240, 240))
-			arch_bad_count_tf.disable_edit
-			arch_bad_count_tf.align_text_right
-			term_bindings_info_frame.set_text ("Terminology Bindings")
-			term_bindings_info_list.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (240, 240, 240))
-			term_bindings_info_list.set_minimum_width (200)
-			term_bindings_info_list.set_minimum_height (100)
 			integer_constant_set_procedures.extend (agent test_split_area.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent app_min_width)
-			test_split_area.enable_item_expand (l_ev_horizontal_box_3)
+			test_split_area.enable_item_expand (l_ev_horizontal_box_1)
 			test_split_area.disable_item_expand (test_status_area)
-			l_ev_horizontal_box_3.disable_item_expand (l_ev_vertical_box_3)
-			integer_constant_set_procedures.extend (agent l_ev_vertical_box_3.set_padding (?))
+			l_ev_horizontal_box_1.disable_item_expand (l_ev_vertical_box_1)
+			integer_constant_set_procedures.extend (agent l_ev_vertical_box_1.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
-			integer_constant_set_procedures.extend (agent l_ev_vertical_box_3.set_border_width (?))
+			integer_constant_set_procedures.extend (agent l_ev_vertical_box_1.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_vertical_box_3.disable_item_expand (test_profile_combo)
-			l_ev_vertical_box_3.disable_item_expand (remove_unused_codes_rb)
-			l_ev_vertical_box_3.disable_item_expand (arch_test_tree_toggle_expand_bn)
-			l_ev_vertical_box_3.disable_item_expand (arch_test_refresh_bn)
-			l_ev_vertical_box_3.disable_item_expand (regression_test_bn)
-			l_ev_vertical_box_3.disable_item_expand (l_ev_horizontal_box_4)
-			l_ev_vertical_box_3.disable_item_expand (l_ev_horizontal_separator_1)
-			l_ev_vertical_box_3.disable_item_expand (archetype_test_go_bn)
-			l_ev_vertical_box_3.disable_item_expand (l_ev_horizontal_separator_2)
-			l_ev_vertical_box_3.disable_item_expand (l_ev_label_7)
-			l_ev_vertical_box_3.disable_item_expand (diff_source_button)
-			l_ev_vertical_box_3.disable_item_expand (diff_flat_button)
-			l_ev_vertical_box_3.disable_item_expand (diff_source_flat_button)
-			l_ev_vertical_box_3.disable_item_expand (diff_source_round_trip_button)
+			l_ev_vertical_box_1.disable_item_expand (test_profile_combo)
+			l_ev_vertical_box_1.disable_item_expand (remove_unused_codes_rb)
+			l_ev_vertical_box_1.disable_item_expand (arch_test_tree_toggle_expand_bn)
+			l_ev_vertical_box_1.disable_item_expand (arch_test_refresh_bn)
+			l_ev_vertical_box_1.disable_item_expand (regression_test_bn)
+			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_2)
+			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_separator_1)
+			l_ev_vertical_box_1.disable_item_expand (archetype_test_go_bn)
+			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_separator_2)
+			l_ev_vertical_box_1.disable_item_expand (l_ev_label_2)
+			l_ev_vertical_box_1.disable_item_expand (diff_source_button)
+			l_ev_vertical_box_1.disable_item_expand (diff_flat_button)
+			l_ev_vertical_box_1.disable_item_expand (diff_source_flat_button)
+			l_ev_vertical_box_1.disable_item_expand (diff_source_round_trip_button)
 			test_profile_combo.set_tooltip ("Change repository profile")
 			test_profile_combo.disable_edit
 			remove_unused_codes_rb.set_text ("Remove unused codes")
@@ -427,18 +202,18 @@ feature {NONE}-- Initialization
 			arch_test_refresh_bn.set_tooltip ("Resync to file system and reset statuses")
 			regression_test_bn.set_text ("Regression off")
 			regression_test_bn.set_tooltip ("Turn regression testing on for test archetypes")
-			l_ev_horizontal_box_4.set_minimum_width (110)
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_4.set_padding (?))
+			l_ev_horizontal_box_2.set_minimum_width (110)
+			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_2.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent padding_width)
-			l_ev_horizontal_box_4.disable_item_expand (l_ev_label_6)
-			l_ev_label_6.set_text ("Processed:")
-			l_ev_label_6.set_minimum_width (80)
-			l_ev_label_6.align_text_right
+			l_ev_horizontal_box_2.disable_item_expand (l_ev_label_1)
+			l_ev_label_1.set_text ("Processed:")
+			l_ev_label_1.set_minimum_width (80)
+			l_ev_label_1.align_text_right
 			arch_test_processed_count.disable_edit
 			l_ev_horizontal_separator_1.set_minimum_height (15)
 			archetype_test_go_bn.set_text ("Go")
 			archetype_test_go_bn.set_tooltip ("Start running tests")
-			l_ev_label_7.set_text ("Diffs")
+			l_ev_label_2.set_text ("Diffs")
 			diff_source_button.set_text ("Source file v Serialised")
 			diff_source_button.set_tooltip ("Open diff tool on parsed and 1st generation serialised .adls files")
 			diff_flat_button.set_text ("Legacy v gen'd Flat")
@@ -464,12 +239,7 @@ feature {NONE}-- Initialization
 			file_menu_edit.select_actions.extend (agent edit_archetype)
 			file_menu_save_as.select_actions.extend (agent save_archetype_as)
 			file_menu_exit.select_actions.extend (agent exit_app)
-			edit_menu_copy.select_actions.extend (agent on_copy)
-			edit_menu_select_all.select_actions.extend (agent on_select_all)
 			edit_menu_clipboard.select_actions.extend (agent show_clipboard)
-			view_menu_differential.select_actions.extend (agent on_differential_view)
-			view_menu_flat.select_actions.extend (agent on_flat_view)
-			view_menu_new_tab.select_actions.extend (agent on_new_arch_tool_request)
 			history_menu.select_actions.extend (agent on_history)
 			history_menu_back.select_actions.extend (agent on_back)
 			history_menu_forward.select_actions.extend (agent on_forward)
@@ -493,31 +263,10 @@ feature {NONE}-- Initialization
 			help_menu_clinical_knowledge_manager.select_actions.extend (agent show_clinical_knowledge_manager)
 			help_menu_report_bug.select_actions.extend (agent show_bug_reporter)
 			help_menu_about.select_actions.extend (agent show_about)
-			archetype_profile_combo.select_actions.extend (agent select_profile)
-			compile_button.select_actions.extend (agent compile)
-			open_button.select_actions.extend (agent open_archetype)
-			history_back_button.select_actions.extend (agent on_back)
-			history_forward_button.select_actions.extend (agent on_forward)
-			archetype_id.select_actions.extend (agent select_archetype_by_id)
-			archetype_id.return_actions.extend (agent find_archetype_by_key)
-			search_button.select_actions.extend (agent start_search_by_id)
-			differential_view_button.select_actions.extend (agent on_differential_view)
-			flat_view_button.select_actions.extend (agent on_flat_view)
-			language_combo.select_actions.extend (agent select_language)
-			archetype_file_tree.select_actions.extend (agent archetype_view_tree_item_select)
-			archetype_file_tree.focus_in_actions.extend (agent archetype_view_tree_item_select)
-			template_file_tree.select_actions.extend (agent template_view_tree_item_select)
-			template_file_tree.focus_in_actions.extend (agent template_view_tree_item_select)
-			arch_total_count_tf.focus_in_actions.extend (agent on_select_all)
-			arch_spec_count_tf.focus_in_actions.extend (agent on_select_all)
-			arch_slotted_count_tf.focus_in_actions.extend (agent on_select_all)
-			arch_used_by_count_tf.focus_in_actions.extend (agent on_select_all)
-			arch_bad_count_tf.focus_in_actions.extend (agent on_select_all)
 			test_profile_combo.select_actions.extend (agent select_profile)
 			arch_test_tree_toggle_expand_bn.select_actions.extend (agent archetype_test_tree_expand_toggle)
 			arch_test_refresh_bn.select_actions.extend (agent archetype_test_refresh)
 			regression_test_bn.select_actions.extend (agent archetype_test_regression_toggle)
-			arch_test_processed_count.focus_in_actions.extend (agent on_select_all)
 			archetype_test_go_bn.select_actions.extend (agent archetype_test_go_stop)
 			diff_source_button.select_actions.extend (agent on_diff_source)
 			diff_flat_button.select_actions.extend (agent on_diff_flat)
@@ -591,84 +340,23 @@ feature {NONE}-- Initialization
 			create help_menu_about
 			create main_notebook
 			create viewer_vbox
-			create action_bar
-			create archetype_profile_combo
-			create l_ev_tool_bar_1
-			create compile_button
-			create l_ev_tool_bar_separator_1
-			create open_button
-			create l_ev_tool_bar_separator_2
-			create history_back_button
-			create l_ev_tool_bar_separator_3
-			create history_forward_button
-			create arch_id_hbox
-			create archetype_id
-			create l_ev_tool_bar_5
-			create search_button
-			create arch_view_hbox
-			create view_label
-			create l_ev_tool_bar_6
-			create differential_view_button
-			create flat_view_button
-			create arch_lang_hbox
-			create language_label
-			create language_combo
-			create arch_ver_hbox
-			create adl_version_label
-			create adl_version_text
-			create explorer_split_area
-			create archetype_template_split_area
-			create l_ev_vertical_box_1
-			create l_ev_horizontal_box_1
-			create archetype_explorer_pixmap
-			create archetype_explorer_label
-			create archetype_file_tree
-			create l_ev_vertical_box_2
-			create l_ev_horizontal_box_2
-			create template_explorer_pixmap
-			create template_explorer_label
-			create template_file_tree
-			create total_split_area
-			create archetype_tool_cell
-			create status_notebook
-			create parser_status_area
-			create compiler_output_grid
-			create statistics_hbox
-			create statistics_vbox
-			create arch_total_count_hbox
-			create l_ev_label_1
-			create arch_total_count_tf
-			create arch_spec_count_hbox
-			create l_ev_label_2
-			create arch_spec_count_tf
-			create arch_slotted_count_hbox
-			create l_ev_label_3
-			create arch_slotted_count_tf
-			create arch_used_by_count_hbox
-			create l_ev_label_4
-			create arch_used_by_count_tf
-			create arch_bad_count_hbox
-			create l_ev_label_5
-			create arch_bad_count_tf
-			create term_bindings_info_frame
-			create term_bindings_info_list
 			create test_split_area
-			create l_ev_horizontal_box_3
+			create l_ev_horizontal_box_1
 			create archetype_test_tree_grid
-			create l_ev_vertical_box_3
+			create l_ev_vertical_box_1
 			create test_profile_combo
 			create remove_unused_codes_rb
 			create arch_test_tree_toggle_expand_bn
 			create arch_test_refresh_bn
 			create regression_test_bn
-			create l_ev_horizontal_box_4
-			create l_ev_label_6
+			create l_ev_horizontal_box_2
+			create l_ev_label_1
 			create arch_test_processed_count
 			create l_ev_horizontal_separator_1
 			create archetype_test_go_bn
 			create l_ev_cell_1
 			create l_ev_horizontal_separator_2
-			create l_ev_label_7
+			create l_ev_label_2
 			create diff_source_button
 			create diff_flat_button
 			create diff_source_flat_button
@@ -710,46 +398,23 @@ feature -- Access
 	l_ev_menu_separator_2, l_ev_menu_separator_3, history_menu_separator, l_ev_menu_separator_4,
 	l_ev_menu_separator_5, l_ev_menu_separator_6, l_ev_menu_separator_7, l_ev_menu_separator_8,
 	l_ev_menu_separator_9, l_ev_menu_separator_10, l_ev_menu_separator_11: EV_MENU_SEPARATOR
-	main_notebook,
-	status_notebook: EV_NOTEBOOK
-	viewer_vbox, l_ev_vertical_box_1, l_ev_vertical_box_2, statistics_vbox,
-	l_ev_vertical_box_3: EV_VERTICAL_BOX
-	action_bar, arch_id_hbox, arch_view_hbox, arch_lang_hbox, arch_ver_hbox,
-	l_ev_horizontal_box_1, l_ev_horizontal_box_2, statistics_hbox, arch_total_count_hbox,
-	arch_spec_count_hbox, arch_slotted_count_hbox, arch_used_by_count_hbox, arch_bad_count_hbox,
-	l_ev_horizontal_box_3, l_ev_horizontal_box_4: EV_HORIZONTAL_BOX
-	archetype_profile_combo, archetype_id,
-	language_combo, test_profile_combo: EV_COMBO_BOX
-	l_ev_tool_bar_1, l_ev_tool_bar_5, l_ev_tool_bar_6: EV_TOOL_BAR
-	compile_button,
-	open_button, history_back_button, history_forward_button, search_button: EV_TOOL_BAR_BUTTON
-	l_ev_tool_bar_separator_1,
-	l_ev_tool_bar_separator_2, l_ev_tool_bar_separator_3: EV_TOOL_BAR_SEPARATOR
-	view_label, language_label,
-	adl_version_label, adl_version_text, archetype_explorer_label, template_explorer_label,
-	l_ev_label_1, l_ev_label_2, l_ev_label_3, l_ev_label_4, l_ev_label_5, l_ev_label_6,
-	l_ev_label_7: EV_LABEL
-	differential_view_button, flat_view_button: EV_TOOL_BAR_RADIO_BUTTON
-	explorer_split_area: EV_HORIZONTAL_SPLIT_AREA
-	archetype_template_split_area,
-	total_split_area, test_split_area: EV_VERTICAL_SPLIT_AREA
-	archetype_explorer_pixmap, template_explorer_pixmap: EV_PIXMAP
-	archetype_file_tree,
-	template_file_tree: EV_TREE
-	archetype_tool_cell, l_ev_cell_1: EV_CELL
-	parser_status_area, test_status_area: EV_TEXT
-	compiler_output_grid,
+	main_notebook: EV_NOTEBOOK
+	viewer_vbox,
+	l_ev_vertical_box_1: EV_VERTICAL_BOX
+	test_split_area: EV_VERTICAL_SPLIT_AREA
+	l_ev_horizontal_box_1, l_ev_horizontal_box_2: EV_HORIZONTAL_BOX
 	archetype_test_tree_grid: EV_GRID
-	arch_total_count_tf, arch_spec_count_tf, arch_slotted_count_tf,
-	arch_used_by_count_tf, arch_bad_count_tf, arch_test_processed_count: EV_TEXT_FIELD
-	term_bindings_info_frame: EV_FRAME
-	term_bindings_info_list: EV_MULTI_COLUMN_LIST
+	test_profile_combo: EV_COMBO_BOX
 	remove_unused_codes_rb: EV_CHECK_BUTTON
 	arch_test_tree_toggle_expand_bn,
 	arch_test_refresh_bn, regression_test_bn, archetype_test_go_bn, diff_source_button,
 	diff_flat_button, diff_source_flat_button, diff_source_round_trip_button: EV_BUTTON
-	l_ev_horizontal_separator_1,
-	l_ev_horizontal_separator_2: EV_HORIZONTAL_SEPARATOR
+	l_ev_label_1,
+	l_ev_label_2: EV_LABEL
+	arch_test_processed_count: EV_TEXT_FIELD
+	l_ev_horizontal_separator_1, l_ev_horizontal_separator_2: EV_HORIZONTAL_SEPARATOR
+	l_ev_cell_1: EV_CELL
+	test_status_area: EV_TEXT
 
 feature {NONE} -- Implementation
 
@@ -794,33 +459,8 @@ feature {NONE} -- Implementation
 		deferred
 		end
 	
-	on_copy
-			-- Called by `select_actions' of `edit_menu_copy'.
-		deferred
-		end
-	
-	on_select_all
-			-- Called by `select_actions' of `edit_menu_select_all'.
-		deferred
-		end
-	
 	show_clipboard
 			-- Called by `select_actions' of `edit_menu_clipboard'.
-		deferred
-		end
-	
-	on_differential_view
-			-- Called by `select_actions' of `view_menu_differential'.
-		deferred
-		end
-	
-	on_flat_view
-			-- Called by `select_actions' of `view_menu_flat'.
-		deferred
-		end
-	
-	on_new_arch_tool_request
-			-- Called by `select_actions' of `view_menu_new_tab'.
 		deferred
 		end
 	
@@ -940,42 +580,7 @@ feature {NONE} -- Implementation
 		end
 	
 	select_profile
-			-- Called by `select_actions' of `archetype_profile_combo'.
-		deferred
-		end
-	
-	compile
-			-- Called by `select_actions' of `compile_button'.
-		deferred
-		end
-	
-	select_archetype_by_id
-			-- Called by `select_actions' of `archetype_id'.
-		deferred
-		end
-	
-	find_archetype_by_key
-			-- Called by `return_actions' of `archetype_id'.
-		deferred
-		end
-	
-	start_search_by_id
-			-- Called by `select_actions' of `search_button'.
-		deferred
-		end
-	
-	select_language
-			-- Called by `select_actions' of `language_combo'.
-		deferred
-		end
-	
-	archetype_view_tree_item_select
-			-- Called by `select_actions' of `archetype_file_tree'.
-		deferred
-		end
-	
-	template_view_tree_item_select
-			-- Called by `select_actions' of `template_file_tree'.
+			-- Called by `select_actions' of `test_profile_combo'.
 		deferred
 		end
 	

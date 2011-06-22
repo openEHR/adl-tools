@@ -4,7 +4,7 @@ note
 	keywords:    "test, ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -65,7 +65,37 @@ feature {NONE} -- Initialization
 		local
 			cur_title: STRING
 		do
-			-- set visual characteristics
+			-- connect controls
+			viewer_vbox.extend (action_bar)
+			action_bar.extend (archetype_profile_combo)
+			action_bar.extend (arch_compile_tool_bar)
+			arch_compile_tool_bar.extend (compile_button)
+			arch_compile_tool_bar.extend (tool_bar_sep_1)
+			arch_compile_tool_bar.extend (open_button)
+			arch_compile_tool_bar.extend (tool_bar_sep_2)
+			arch_compile_tool_bar.extend (history_back_button)
+			arch_compile_tool_bar.extend (tool_bar_sep_3)
+			arch_compile_tool_bar.extend (history_forward_button)
+			action_bar.extend (arch_id_hbox)
+			arch_id_hbox.extend (archetype_search_combo)
+			arch_id_hbox.extend (arch_search_tool_bar)
+			arch_search_tool_bar.extend (search_button)
+
+			viewer_vbox.extend (explorer_split_area)
+			explorer_split_area.extend (archetype_template_split_area)
+			archetype_template_split_area.extend (archetype_explorer_vbox)
+			archetype_explorer_vbox.extend (archetype_explorer_hbox)
+			archetype_explorer_hbox.extend (archetype_explorer_pixmap)
+			archetype_explorer_hbox.extend (archetype_explorer_label)
+			archetype_explorer_vbox.extend (archetype_file_tree)
+			archetype_template_split_area.extend (template_explorer_vbox)
+			template_explorer_vbox.extend (template_explorer_hbox)
+			template_explorer_hbox.extend (template_explorer_pixmap)
+			template_explorer_hbox.extend (template_explorer_label)
+			template_explorer_vbox.extend (template_file_tree)
+			explorer_split_area.extend (viewer_main_cell)
+
+			-- set visual characteristics - menu
 			set_icon_pixmap (adl_workbench_icon)
 			cur_title := title.twin.as_string_8
 			cur_title.replace_substring_all ("VER", latest_adl_version)
@@ -84,26 +114,99 @@ feature {NONE} -- Initialization
 			rm_schemas_menu_configure_rm_schemas.set_pixmap (pixmaps ["tools"])
 			tools_menu_options.set_pixmap (pixmaps ["tools"])
 
+			-- set visual characteristics - action bar
+			viewer_vbox.disable_item_expand (action_bar)
+			action_bar.set_minimum_width (800)
+			action_bar.set_padding (10)
+			action_bar.set_border_width (4)
+			action_bar.disable_item_expand (archetype_profile_combo)
+			action_bar.disable_item_expand (arch_compile_tool_bar)
+			archetype_profile_combo.set_tooltip ("Select repository profile")
+			archetype_profile_combo.set_minimum_width (160)
+			archetype_profile_combo.disable_edit
+			arch_compile_tool_bar.disable_vertical_button_style
+			compile_button.set_text ("Compile")
+			compile_button.set_tooltip ("Compile all archetypes (F7)")
+			open_button.set_text ("Open")
+			open_button.set_tooltip ("Open an ad hoc archetype")
+			history_back_button.set_tooltip ("Go back one archetype")
+			history_forward_button.set_tooltip ("Go forward one archetype")
+			arch_id_hbox.disable_item_expand (arch_search_tool_bar)
+			archetype_search_combo.set_tooltip ("Display or search for archetype id")
+			archetype_search_combo.set_minimum_width (600)
+			arch_search_tool_bar.set_minimum_width (20)
+			arch_search_tool_bar.set_minimum_height (20)
+			arch_search_tool_bar.disable_vertical_button_style
+			search_button.set_tooltip ("Search for archetype id")
+
 			open_button.set_pixmap (pixmaps ["open_archetype"])
 			history_back_button.set_pixmap (pixmaps ["history_back"])
 			history_forward_button.set_pixmap (pixmaps ["history_forward"])
 			search_button.set_pixmap (pixmaps ["magnifier"])
-			differential_view_button.set_pixmap (pixmaps ["diff"])
-			flat_view_button.set_pixmap (pixmaps ["flat"])
 
+			-- set visual characteristics - archetype/template explorers
+			explorer_split_area.set_minimum_width (app_min_width)
+			explorer_split_area.set_minimum_height (main_hbox_min_height)
+			explorer_split_area.enable_item_expand (viewer_main_cell)
+			explorer_split_area.disable_item_expand (archetype_template_split_area)
+			archetype_template_split_area.enable_item_expand (template_explorer_vbox)
+			archetype_template_split_area.disable_item_expand (archetype_explorer_vbox)
+			archetype_explorer_vbox.disable_item_expand (archetype_explorer_hbox)
+			archetype_explorer_hbox.set_padding (padding_width)
+			archetype_explorer_hbox.set_border_width (border_width)
+			archetype_explorer_hbox.disable_item_expand (archetype_explorer_pixmap)
+			archetype_explorer_pixmap.set_minimum_width (16)
+			archetype_explorer_pixmap.set_minimum_height (16)
+			archetype_explorer_label.set_text ("ADL 1.5 Archetypes")
+			archetype_explorer_label.align_text_left
+			archetype_file_tree.set_background_color (editable_colour)
+			archetype_file_tree.set_minimum_width (60)
+			template_explorer_vbox.disable_item_expand (template_explorer_hbox)
+			template_explorer_hbox.set_padding (padding_width)
+			template_explorer_hbox.set_border_width (border_width)
+			template_explorer_hbox.disable_item_expand (template_explorer_pixmap)
+			template_explorer_pixmap.set_minimum_width (16)
+			template_explorer_pixmap.set_minimum_height (16)
+			template_explorer_label.set_text ("ADL 1.5 Templates")
+			template_explorer_label.align_text_left
+			template_file_tree.set_background_color (editable_colour)
+			template_file_tree.set_minimum_width (60)
 			archetype_explorer_pixmap.copy (pixmaps ["archetype_category"])
 			template_explorer_pixmap.copy (pixmaps ["template_category"])
 
-			term_bindings_info_list.set_column_titles (<<"terminology", "archetypes">>)
+			-- set up docking
+			create docking_manager.make (viewer_main_cell, Current)
+			create_new_statistics_tool
+			create_new_status_tool
+			archetype_tools.create_new_tool
+	--		docking_manager.minimize_editor_area
+
+			-- set up events
+			edit_menu_copy.select_actions.extend (agent text_widget_handler.on_copy)
+			edit_menu_select_all.select_actions.extend (agent text_widget_handler.on_select_all)
+			arch_test_processed_count.focus_in_actions.extend (agent text_widget_handler.on_select_all)
+
+			view_menu_differential.select_actions.extend (agent on_differential_view)
+			view_menu_flat.select_actions.extend (agent on_flat_view)
+			view_menu_new_tab.select_actions.extend (agent archetype_tools.create_new_tool)
+
+			compile_button.select_actions.extend (agent compile)
+			open_button.select_actions.extend (agent open_archetype)
+			history_back_button.select_actions.extend (agent on_back)
+			history_forward_button.select_actions.extend (agent on_forward)
+			archetype_search_combo.select_actions.extend (agent select_archetype_from_search_key)
+			archetype_search_combo.return_actions.extend (agent find_archetype_by_key)
+			search_button.select_actions.extend (agent start_search_by_id)
+			archetype_profile_combo.select_actions.extend (agent select_profile)
+
+			archetype_file_tree.select_actions.extend (agent archetype_view_tree_item_select)
+			archetype_file_tree.focus_in_actions.extend (agent archetype_view_tree_item_select)
+			template_file_tree.select_actions.extend (agent template_view_tree_item_select)
+			template_file_tree.focus_in_actions.extend (agent template_view_tree_item_select)
 
 			-- set UI feedback handlers
 			archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
 			archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
-
-			-- set up docking
-			create docking_manager.make (archetype_tool_cell, Current)
-			docking_manager.minimize_editor_area
-			create_new_archetype_tool
 
 			-- accelerators
 			initialise_accelerators
@@ -112,17 +215,45 @@ feature {NONE} -- Initialization
 	user_create_interface_objects
 			-- Feature for custom user interface object creation, called at end of `create_interface_objects'.
 		do
+			create action_bar
+			create archetype_profile_combo
+			create arch_compile_tool_bar
+			create compile_button
+			create tool_bar_sep_1
+			create open_button
+			create tool_bar_sep_2
+			create history_back_button
+			create tool_bar_sep_3
+			create history_forward_button
+			create arch_id_hbox
+			create archetype_search_combo
+			create arch_search_tool_bar
+			create search_button
+
+			create explorer_split_area
+			create archetype_template_split_area
+			create archetype_explorer_vbox
+			create archetype_explorer_hbox
+			create archetype_explorer_pixmap
+			create archetype_explorer_label
+			create archetype_file_tree
+			create template_explorer_vbox
+			create template_explorer_hbox
+			create template_explorer_pixmap
+			create template_explorer_label
+			create template_file_tree
+			create viewer_main_cell
 		end
 
 	initialise_accelerators
 			-- Initialise keyboard accelerators for various widgets.
 		do
-			add_shortcut (agent step_focused_notebook_tab (1), key_tab, True, False, False)
-			add_shortcut (agent step_focused_notebook_tab (-1), key_tab, True, False, True)
+			add_shortcut (agent text_widget_handler.step_focused_notebook_tab (1), key_tab, True, False, False)
+			add_shortcut (agent text_widget_handler.step_focused_notebook_tab (-1), key_tab, True, False, True)
 
 			add_menu_shortcut (file_menu_open, key_o, True, False, False)
 			add_menu_shortcut (file_menu_save_as, key_s, True, False, False)
-			add_menu_shortcut_for_action (edit_menu_copy, agent call_unless_text_focused (agent on_copy), key_c, True, False, False)
+			add_menu_shortcut_for_action (edit_menu_copy, agent text_widget_handler.call_unless_text_focused (agent text_widget_handler.on_copy), key_c, True, False, False)
 			add_menu_shortcut (edit_menu_select_all, key_a, True, False, False)
 
 			add_menu_shortcut (view_menu_differential, key_d, True, False, True)
@@ -163,33 +294,14 @@ feature {NONE} -- Initialization
 
 			populate_compile_button
 
-			if differential_view then
-				differential_view_button.enable_select
-			else
-				flat_view_button.enable_select
-			end
-
 			initialise_splitter (test_split_area, test_split_position)
 			initialise_splitter (explorer_split_area, explorer_split_position)
-			initialise_splitter (total_split_area, total_split_position)
 			initialise_splitter (archetype_template_split_area, archetype_template_split_position)
-			focus_first_widget (main_notebook.selected_item)
+			text_widget_handler.focus_first_widget (main_notebook.selected_item)
 
 			if app_maximised then
 				maximize
 			end
-		end
-
-feature -- Status Report
-
-	ctrl_or_alt_or_shift_pressed: BOOLEAN
-		do
-			Result := ev_application.shift_pressed or ev_application.alt_pressed or ev_application.ctrl_pressed
-		end
-
-	ctrl_pressed: BOOLEAN
-		do
-			Result := ev_application.ctrl_pressed
 		end
 
 feature -- Status setting
@@ -257,7 +369,7 @@ feature -- File events
 					elseif has_current_profile then
 						current_arch_cat.add_adhoc_item (fname)
 						archetype_view_tree_control.populate
-						append_status_area (billboard.content)
+						status_tool.append_status_text (billboard.content)
 					end
 				else
 					(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" already added.")).show_modal_to_window (Current)
@@ -271,7 +383,7 @@ feature -- File events
 			if has_current_profile and then attached {ARCH_CAT_ARCHETYPE} current_arch_cat.selected_archetype as ara then
 				clear_all_archetype_view_controls
 				do_with_wait_cursor (agent archetype_compiler.build_lineage (ara, 0))
-				current_archetype_tool.on_select_archetype_notebook
+				archetype_tools.current_tool.on_select_archetype_notebook
 			end
 		end
 
@@ -352,7 +464,7 @@ feature -- File events
 
 					if ok_to_write then
 						dir.selected_archetype.save_differential_as (name, format)
-						append_status_area (dir.selected_archetype.status)
+						status_tool.append_status_text (dir.selected_archetype.status)
 					end
 				end
 			else
@@ -365,7 +477,6 @@ feature -- File events
 			-- Terminate the application, saving the window location.
 		do
 			-- gui settings
-			set_total_split_position (total_split_area.split_position)
 			set_test_split_position (test_split_area.split_position)
 			set_explorer_split_position (explorer_split_area.split_position)
 			set_archetype_template_split_position (archetype_template_split_area.split_position)
@@ -385,65 +496,20 @@ feature -- File events
 			ev_application.destroy
 		end
 
-feature {GUI_ARCHETYPE_TOOL} -- Edit events
+feature -- View Events
 
-	on_cut
-			-- Cut the selected item, depending on which widget has focus.
+	on_differential_view
 		do
-			on_copy
-			on_delete
-		end
-
-	on_copy
-			-- Copy the selected item, depending on which widget has focus.
-		do
-			if attached focused_text and then focused_text.has_selection then
-				focused_text.copy_selection
+			if archetype_tools.has_current_tool then
+				archetype_tools.current_tool.select_differential_view
 			end
 		end
 
-	on_paste
-			-- Paste an item, depending on which widget has focus.
-		local
-			old_length: INTEGER
+	on_flat_view
 		do
-			if attached focused_text and then focused_text.is_editable then
-				on_delete
-				old_length := focused_text.text_length
-				focused_text.paste (focused_text.caret_position)
-				focused_text.set_caret_position (focused_text.caret_position + focused_text.text_length - old_length)
+			if archetype_tools.has_current_tool then
+				archetype_tools.current_tool.select_flat_view
 			end
-		end
-
-	on_delete
-			-- Delete the selected item, depending on which widget has focus.
-		do
-			if attached focused_text and then focused_text.is_editable and focused_text.has_selection then
-				focused_text.delete_selection
-			end
-		end
-
-	on_select_all
-			-- Select all text in the currently focused text box, if any.
-		do
-			if attached focused_text and then focused_text.text_length > 0 then
-				focused_text.select_all
-			end
-		end
-
-	show_clipboard
-			-- Display the current contents of the clipboard.
-		local
-			dialog: EV_INFORMATION_DIALOG
-		do
-			create dialog.make_with_text (ev_application.clipboard.text)
-			dialog.set_title ("Clipboard Contents")
-			dialog.show_modal_to_window (Current)
-		end
-
-	copy_text_to_clipboard (str: attached STRING)
-		do
-			ev_application.clipboard.set_text (str)
 		end
 
 feature {NONE} -- Repository events
@@ -476,7 +542,7 @@ feature {NONE} -- Repository events
 
 			-- if the current profile changed or was removed, repopulate the explorers
 			if current_profile_removed or current_profile_changed then
-				clear_status_area
+				status_tool.clear_status_area
 				populate_directory_controls (True)
 			end
 		end
@@ -486,19 +552,19 @@ feature {NONE} -- Repository events
 		do
 			if archetype_profile_combo.is_displayed then
 				if not archetype_profile_combo.text.same_string (repository_profiles.current_profile_name) then
-					clear_status_area
+					status_tool.clear_status_area
 					set_current_profile (archetype_profile_combo.text)
 					populate_test_profile_combo
-					populate_directory_controls (False)
 				end
 			else -- must be on test page
 				if not test_profile_combo.text.same_string (repository_profiles.current_profile_name) then
-					clear_status_area
+					status_tool.clear_status_area
 					set_current_profile (test_profile_combo.text)
 					populate_archetype_profile_combo
-					populate_directory_controls (False)
 				end
 			end
+			populate_directory_controls (False)
+			clear_all_tools
 		end
 
 	build_all
@@ -510,7 +576,7 @@ feature {NONE} -- Repository events
 	rebuild_all
 			-- Force the whole system to rebuild.
 		do
-			compiler_error_control.clear
+			status_tool.clear_compiler_errors
 			do_build_action (agent archetype_compiler.rebuild_all)
 		end
 
@@ -599,13 +665,13 @@ feature {NONE} -- Repository events
 				end
 
 				if ok_to_write then
-					do_with_wait_cursor (agent compiler_error_control.export_repository_report (xml_name))
+					do_with_wait_cursor (agent status_tool.export_repository_report (xml_name))
 
 					if file.exists then
-						append_status_area (create_message_line ("export_repository_report_replace_info", <<xml_name>>))
+						status_tool.append_status_text (create_message_line ("export_repository_report_replace_info", <<xml_name>>))
 						show_in_system_browser (xml_name)
 					else
-						append_status_area (create_message_line ("export_repository_report_replace_err", <<xml_name>>))
+						status_tool.append_status_text (create_message_line ("export_repository_report_replace_err", <<xml_name>>))
 					end
 				end
 			end
@@ -627,14 +693,14 @@ feature {NONE} -- History events
 			history_menu.extend (history_menu_forward)
 			history_menu.extend (history_menu_separator)
 
-			if attached current_arch_cat as dir then
-				dir.recently_selected_archetypes (20).do_all (agent (ara: attached ARCH_CAT_ARCHETYPE)
+			if attached current_arch_cat as cat then
+				cat.recently_selected_archetypes (20).do_all (agent (aca: attached ARCH_CAT_ARCHETYPE)
 					local
 						mi: EV_MENU_ITEM
 					do
-						create mi.make_with_text (ara.id.as_string)
+						create mi.make_with_text (aca.id.as_string)
 						mi.select_actions.extend (agent select_archetype_from_gui_data (mi))
-						mi.set_data (ara)
+						mi.set_data (aca)
 						history_menu.extend (mi)
 					end)
 			end
@@ -643,10 +709,11 @@ feature {NONE} -- History events
 	on_back
 			-- Go back to the last archetype previously selected.
 		do
-			if attached current_arch_cat as dir then
-				if dir.selection_history_has_previous then
-					dir.selection_history_back
-					go_to_node_in_archetype_tree_view
+			if attached current_arch_cat as cat then
+				if cat.selection_history_has_previous then
+					cat.selection_history_back
+					go_to_selected_archetype
+					populate_history_controls
 				end
 			end
 		end
@@ -654,10 +721,11 @@ feature {NONE} -- History events
 	on_forward
 			-- Go forth to the next archetype previously selected.
 		do
-			if attached current_arch_cat as dir then
-				if dir.selection_history_has_next then
-					dir.selection_history_forth
-					go_to_node_in_archetype_tree_view
+			if attached current_arch_cat as cat then
+				if cat.selection_history_has_next then
+					cat.selection_history_forth
+					go_to_selected_archetype
+					populate_history_controls
 				end
 			end
 		end
@@ -682,7 +750,7 @@ feature {NONE} -- Tools menu events
 			if dialog.has_changed_ui_options then
 				save_resources_and_show_status
 				if repository_profiles.has_current_profile then
-					populate_archetype_tool
+					archetype_tools.populate_current_tool
 				end
 			end
 			if dialog.has_changed_navigator_options and repository_profiles.has_current_profile then
@@ -705,7 +773,7 @@ feature {NONE} -- Tools menu events
 			-- delete a generated file associated with `ara'
 		do
 			ara.clean_generated
-			append_status_area (ara.status)
+			status_tool.append_status_text (ara.status)
 		end
 
 feature -- RM Schemas Events
@@ -721,7 +789,7 @@ feature -- RM Schemas Events
 			populate_archetype_profile_combo
 			populate_test_profile_combo
 			if dialog.has_changed_schema_load_list then
-				clear_status_area
+				status_tool.clear_status_area
 				rm_schemas_access.load_schemas
 				if not rm_schemas_access.found_valid_schemas then
 					append_billboard_to_status_area
@@ -879,37 +947,32 @@ feature -- Test Screen Events
 feature -- Archetype Events
 
 	find_archetype_by_key
-			-- Called by `return_actions' of `archetype_id'.
+			-- Called by `return_actions' of `archetype_search_combo'.
 		local
 			key: STRING
-			arch_id: ARCHETYPE_ID
 			matching_ids: attached ARRAYED_SET[STRING]
 		do
-			key := archetype_id.text
+			key := archetype_search_combo.text
 
-			if is_windows and archetype_id.is_list_shown then
-				if attached {EV_COMBO_BOX_IMP} archetype_id.implementation as imp then
+			if is_windows and archetype_search_combo.is_list_shown then
+				if attached {EV_COMBO_BOX_IMP} archetype_search_combo.implementation as imp then
 					(create {GUI_PLATFORM_SPECIFIC_TOOLS}).hide_combo_box_list (imp)
 				end
 				select_archetype (key)
 
 			elseif key.count > 0 then
-				archetype_id.select_actions.block
+				archetype_search_combo.select_actions.block
 
 				-- check if it is a full archetype id, e.g. created by slightly modifying current archetype id
-				create arch_id.default_create
-
-				if arch_id.valid_id (key) then
+				if (create {ARCHETYPE_ID}.default_create).valid_id (key) then
 					select_archetype (key)
 				elseif key.count >= 3 then
 					 -- it is a partial id, get a list of candidates
 					if attached current_arch_cat as dir then
 						matching_ids := dir.matching_ids (regex_from_string(key), Void, Void)
-
 						if matching_ids.count > 0 then
-							archetype_id.set_strings (matching_ids)
-
-							if attached {EV_COMBO_BOX_IMP} archetype_id.implementation as imp then
+							archetype_search_combo.set_strings (matching_ids)
+							if attached {EV_COMBO_BOX_IMP} archetype_search_combo.implementation as imp then
 								(create {GUI_PLATFORM_SPECIFIC_TOOLS}).show_combo_box_list (imp)
 							end
 						else
@@ -917,35 +980,34 @@ feature -- Archetype Events
 						end
 					end
 
-					if archetype_id.count = 1 then
+					if archetype_search_combo.count = 1 then
 						select_archetype (key)
 					end
 				else -- key too short
 					-- visual feedback?
 				end
 
-				archetype_id.select_actions.resume
+				archetype_search_combo.select_actions.resume
 			end
 		end
 
-	select_archetype_by_id
-			-- Called by `select_actions' of `archetype_id'.
-			-- archetype_id.text is guaranteed to be a valid archetype id, and one that is in the current repository
+	select_archetype_from_search_key
+			-- Called by `select_actions' of `archetype_search_combo'.
+			-- archetype_search_combo.text is guaranteed to be a valid archetype id, and one that is in the current repository
 		do
-			if not (is_windows and archetype_id.is_list_shown) then
-				select_archetype (archetype_id.text)
+			if not (is_windows and archetype_search_combo.is_list_shown) then
+				select_archetype (archetype_search_combo.text)
 			end
 		end
 
 	select_archetype (id: attached STRING)
-			-- Select `id' in the archetype directory.
+			-- Select `id' in the archetype catalogue and go to its node in explorer tree
 		require
 			has_current_arch_dir: attached current_arch_cat
 		do
 			if not current_arch_cat.has_selected_archetype or else not id.is_equal (current_arch_cat.selected_archetype.ontological_name) then
 				if current_arch_cat.archetype_index.has (id) then
-					current_arch_cat.set_selected_item_from_id (id)
-					go_to_node_in_archetype_tree_view
+					archetype_view_tree_control.select_item (id)
 				end
 			else
 				-- discrete visual feedback for selecting same archetype as already selected?
@@ -955,17 +1017,17 @@ feature -- Archetype Events
 	start_search_by_id
 			-- Called by `select_actions' of `search_button'.
 		do
-			archetype_id.wipe_out
-			archetype_id.set_text (create_message_content ("enter_search_string", Void))
-			archetype_id.set_focus
-			archetype_id.select_all
+			archetype_search_combo.wipe_out
+			archetype_search_combo.set_text (create_message_content ("enter_search_string", Void))
+			archetype_search_combo.set_focus
+			archetype_search_combo.select_all
 		end
 
 	archetype_view_tree_item_select
 			-- Display details of `archetype_file_tree' when the user selects it.
 		do
 			if attached archetype_file_tree.selected_item then
-				if attached current_arch_cat as dir and then dir.selected_item /= archetype_file_tree.selected_item.data then
+				if attached current_arch_cat as cat and then cat.selected_item /= archetype_file_tree.selected_item.data then
 					archetype_view_tree_control.display_details_of_selected_item_after_delay
 				end
 			end
@@ -979,7 +1041,7 @@ feature -- Archetype Events
 					archetype_view_tree_control.ensure_item_visible(ara.ontological_name)
 				end
 
-				if attached current_arch_cat as dir and then dir.selected_item /= template_file_tree.selected_item.data then
+				if attached current_arch_cat as cat and then cat.selected_item /= template_file_tree.selected_item.data then
 					template_view_tree_control.display_details_of_selected_item_after_delay
 				end
 			end
@@ -989,15 +1051,16 @@ feature -- Archetype Events
 			-- Select and display the node of `archetype_file_tree' corresponding to the folder or archetype attached to `gui_item'.
 		do
 			if attached gui_item and has_current_profile then
-				if attached {ARCH_CAT_ITEM} gui_item.data as ari then
-					current_arch_cat.set_selected_item (ari)
-					go_to_node_in_archetype_tree_view
+				if attached {ARCH_CAT_ITEM} gui_item.data as aci then
+					current_arch_cat.set_selected_item (aci)
+					go_to_selected_archetype
 				end
 			end
 		end
 
-	go_to_node_in_archetype_tree_view
-			-- Select and display the node of `archetype_file_tree' corresponding to the selection in `archetype_directory'.
+	go_to_selected_archetype
+			-- Select and display the node of `archetype_file_tree' corresponding to the selection in `archetype_catalogue'.
+			-- No events will be processed because archetype selected in ARCHETYPE_CATALOGUE already matches selected tree node
 		do
 			if has_current_profile and then current_arch_cat.has_selected_item then
 				archetype_view_tree_control.select_item (current_arch_cat.selected_item.ontological_name)
@@ -1005,47 +1068,10 @@ feature -- Archetype Events
 		end
 
 	display_class
-			-- display the class currently selected in `archetype_directory'.
+			-- display the class currently selected in `archetype_catalogue'.
 		do
-			if attached current_arch_cat as dir and then dir.has_selected_class then
-				class_map_control.populate
-			end
-		end
-
-	on_flat_view
-			-- Called by `select_actions' of `flat_view_button'.
-		do
-
-			set_view (False)
-			if not flat_view_button.is_selected then
-				flat_view_button.enable_select
-			end
-		end
-
-	on_differential_view
-			-- Called by `select_actions' of `differential_view_button'.
-		do
-			set_view (True)
-			if not differential_view_button.is_selected then
-				differential_view_button.enable_select
-			end
-		end
-
-	set_view (differential_flag: BOOLEAN)
-			-- set view one way or the other
-		do
-			if (differential_flag and not differential_view) or -- changing from flat to diff
-				(not differential_flag and differential_view) then -- changing from diff to flat
-				set_differential_view (differential_flag)
-				current_archetype_tool.set_dynamic_tab_texts
-				if has_current_profile then
-					if current_arch_cat.has_selected_archetype then
-						populate_archetype_tool
-						current_archetype_tool.on_select_archetype_notebook
-					elseif current_arch_cat.has_selected_class then
-						display_class
-					end
-				end
+			if attached current_arch_cat as cat and then cat.has_selected_class then
+				populate_class_map_tool
 			end
 		end
 
@@ -1088,134 +1114,134 @@ feature -- Controls
 			create Result.make (Current)
 		end
 
-	compiler_error_control: GUI_COMPILER_ERROR_CONTROL
+	archetype_tools: GUI_ARCHETYPE_TOOLS_CONTROLLER
 		once
-			create Result.make (Current)
+			create Result.make (attached_docking_manager, agent select_archetype_from_gui_data)
 		end
 
-	archetype_tools: HASH_TABLE [TUPLE [tool: GUI_ARCHETYPE_TOOL; docking_pane: SD_CONTENT], INTEGER]
-		once
-			create Result.make (0)
-		end
-
-	create_new_archetype_tool
-		local
-			arch_tool: GUI_ARCHETYPE_TOOL
-			docking_pane: SD_CONTENT
-			keys: ARRAYED_LIST [INTEGER]
+	create_and_populate_new_archetype_tool
 		do
-			current_archetype_tool_id := archetype_tools.count + 1
-			create arch_tool.make (Current, current_archetype_tool_id)
+			archetype_tools.create_new_tool
+			archetype_tools.populate_current_tool
+		end
 
-			-- set up docking container
-			create docking_pane.make_with_widget_title_pixmap (arch_tool.notebook, pixmaps ["archetype_2"], current_archetype_tool_id.out)
+feature -- Status Tool
+
+	status_tool: GUI_STATUS_TOOL
+		once
+			create Result.make (agent select_archetype_from_gui_data)
+		end
+
+	create_new_status_tool
+		local
+			docking_pane: SD_CONTENT
+		do
+			create docking_pane.make_with_widget_title_pixmap (status_tool.ev_notebook, pixmaps ["validity_errors"], "Status")
 			attached_docking_manager.contents.extend (docking_pane)
-			docking_pane.set_top ({SD_ENUMERATION}.top)
-			docking_pane.set_type ({SD_ENUMERATION}.editor)
-			if archetype_tools.count > 0 then
-				create keys.make_from_array (archetype_tools.current_keys)
-				docking_pane.set_tab_with (archetype_tools.item (keys.last).docking_pane, False)
-			end
---			docking_pane.set_auto_hide ({SD_ENUMERATION}.top)
---			docking_pane.set_split_proportion (1.0)
-			docking_pane.close_request_actions.extend (agent remove_archetype_tool (current_archetype_tool_id))
-			docking_pane.focus_in_actions.extend (agent select_archetype_tool (current_archetype_tool_id))
-			archetype_tools.put ([arch_tool, docking_pane], current_archetype_tool_id)
-		ensure
---			archetype_tools.count = old archetype_tools.count + 1
-			has_current_archetype_tool
+			docking_pane.set_type ({SD_ENUMERATION}.tool)
+			docking_pane.set_long_title ("Status")
+			docking_pane.set_short_title ("Status")
+			docking_pane.set_top ({SD_ENUMERATION}.bottom)
+	--		docking_pane.set_auto_hide ({SD_ENUMERATION}.bottom)
 		end
 
-	remove_archetype_tool (tool_id: INTEGER)
-		require
-			valid_tool_id: archetype_tools.has (tool_id)
+feature -- Statistics Tool
+
+	statistics_tool: GUI_STATISTICS_TOOL
+		once
+			create Result.make
+		end
+
+	create_new_statistics_tool
 		local
 			docking_pane: SD_CONTENT
-			keys: ARRAYED_LIST [INTEGER]
 		do
-			-- work out a sensible value for new current_archetype_tool_id
-			create keys.make_from_array (archetype_tools.current_keys)
-			from keys.start until keys.off or keys.item = tool_id loop
-				keys.forth
-			end
-			if keys.isfirst then
-				if keys.count = 1 then
-					current_archetype_tool_id := 0
-				else
-					current_archetype_tool_id := keys.i_th (2)
-				end
+			create docking_pane.make_with_widget_title_pixmap (statistics_tool.ev_root_container, pixmaps ["star"], "Statistics")
+			attached_docking_manager.contents.extend (docking_pane)
+			docking_pane.set_type ({SD_ENUMERATION}.tool)
+			docking_pane.set_long_title ("Statistics")
+			docking_pane.set_short_title ("Statistics")
+			docking_pane.set_auto_hide ({SD_ENUMERATION}.bottom)
+		end
+
+feature -- Class map tool
+
+	class_map_tool: GUI_CLASS_MAP_CONTROL
+
+	create_new_class_map_tool
+		do
+			create class_map_tool.make (agent go_to_selected_archetype)
+			create class_map_docking_pane.make_with_widget_title_pixmap (class_map_tool.ev_root_container, pixmaps ["class_concrete"], "Class map")
+			attached_docking_manager.contents.extend (class_map_docking_pane)
+			class_map_docking_pane.close_request_actions.extend (agent remove_class_tool)
+			class_map_docking_pane.set_type ({SD_ENUMERATION}.editor)
+			if archetype_tools.tools_count > 0 then
+				class_map_docking_pane.set_tab_with (archetype_tools.last_tool.docking_pane, False)
 			else
-				keys.back
-				current_archetype_tool_id := keys.item
+				class_map_docking_pane.set_top ({SD_ENUMERATION}.top)
 			end
-
-			-- destroy the docking pane and archetype tool controls
-			docking_pane := archetype_tools.item (tool_id).docking_pane
-			docking_pane.close
-			docking_pane.destroy
-			archetype_tools.remove (tool_id)
 		end
 
-	select_archetype_tool (tool_id: INTEGER)
+	class_map_docking_pane: SD_CONTENT
+
+	populate_class_map_tool
+			-- Populate content from visual controls.
 		require
-			valid_tool_id: archetype_tools.has (tool_id)
+			has_current_profile
 		do
-			current_archetype_tool_id := tool_id
+			if not attached class_map_docking_pane then
+				create_new_class_map_tool
+			end
+			class_map_docking_pane.set_long_title (current_arch_cat.selected_class.ontological_name)
+			class_map_docking_pane.set_short_title (current_arch_cat.selected_class.ontological_name.substring (1, current_arch_cat.selected_class.ontological_name.count.min (10)))
+			class_map_docking_pane.set_pixmap (pixmaps [current_arch_cat.selected_class.group_name])
+			class_map_tool.populate (current_arch_cat.selected_class.class_definition)
 		end
 
-	current_archetype_tool: GUI_ARCHETYPE_TOOL
-			-- get currently active tool
-		require
-			has_current_archetype_tool
+	clear_class_map_tool
+			-- Populate content from visual controls.
 		do
-			Result := archetype_tools.item (current_archetype_tool_id).tool
+			if attached class_map_tool then
+				class_map_docking_pane.set_long_title ("")
+				class_map_docking_pane.set_short_title ("")
+				class_map_docking_pane.set_pixmap (pixmaps ["class_concrete"])
+				class_map_tool.clear
+			end
 		end
 
-	has_current_archetype_tool: BOOLEAN
+	remove_class_tool
 		do
-			Result := archetype_tools.has (current_archetype_tool_id)
+			class_map_docking_pane.close
+			class_map_docking_pane.destroy
+			class_map_docking_pane := Void
 		end
 
-	current_archetype_docking_pane: SD_CONTENT
+feature -- Clipboard
+
+	show_clipboard
+			-- Display the current contents of the clipboard.
+		local
+			dialog: EV_INFORMATION_DIALOG
 		do
-			Result := archetype_tools.item (current_archetype_tool_id).docking_pane
-		end
-
-	current_archetype_tool_id: INTEGER
-			-- id of archetype tool currently in use
-
-	on_new_arch_tool_request
-		do
-			create_new_archetype_tool
-		end
-
-	class_map_control: GUI_CLASS_MAP_CONTROL
-		once
-			create Result.make (Current)
+			create dialog.make_with_text (ev_application.clipboard.text)
+			dialog.set_title ("Clipboard Contents")
+			dialog.show_modal_to_window (Current)
 		end
 
 feature {NONE} -- Implementation
 
-	append_status_area (text: attached STRING)
-			-- Append `text' to `parser_status_area'.
-		do
-			parser_status_area.append_text (text)
-			parser_status_area.set_background_color (status_area_background_color)
-			ev_application.process_graphical_events
+	text_widget_handler: GUI_TEXT_WIDGET_HANDLER
+			-- FIXME: this is a hack to get round lack of standard behaviour in Vision2 for
+			-- focussed text widgets & cut & paste behaviours
+		once
+			create Result.make (Current)
 		end
 
 	append_billboard_to_status_area
 			-- Append bilboard contents to `parser_status_area' and clear billboard.
 		do
-			parser_status_area.append_text (billboard.content)
+			status_tool.append_status_text (billboard.content)
 			billboard.clear
-			ev_application.process_graphical_events
-		end
-
-	clear_status_area
-			-- clear `parser_status_area'
-		do
-			parser_status_area.remove_text
 		end
 
 	save_resources_and_show_status
@@ -1223,30 +1249,6 @@ feature {NONE} -- Implementation
 		do
 			app_cfg.save
 			post_info (Current, "save_resources_and_show_status", "cfg_file_i1", <<user_config_file_path>>)
-		end
-
-	status_area_background_color: EV_COLOR
-			-- The colour for the background of `parser_status_area'.
-		do
-			if billboard.has_errors then
-				create Result.make_with_8_bit_rgb (255, 224, 224)
-			else
-				create Result.make_with_8_bit_rgb (240, 255, 255)
-			end
-		end
-
-	select_language
-			-- Repopulate the view of the archetype when the user selects a different language.
-		do
-			if language_combo.text.is_empty then
-				set_current_language (default_language)
-			else
-				set_current_language (language_combo.text.as_string_8)
-
-				if attached current_arch_cat as dir and then dir.has_validated_selected_archetype then
-					populate_archetype_tool
-				end
-			end
 		end
 
 	populate_directory_controls (refresh: BOOLEAN)
@@ -1263,109 +1265,33 @@ feature {NONE} -- Implementation
 
 			set_title (repository_profiles.current_reference_repository_path + " - " + title)
 
-			append_status_area (create_message_line ("populating_directory_start", <<repository_profiles.current_profile_name>>))
+			status_tool.append_status_text (create_message_line ("populating_directory_start", <<repository_profiles.current_profile_name>>))
 			use_current_profile (refresh)
-			append_status_area (create_message_line ("populating_directory_complete", Void))
+			status_tool.append_status_text (create_message_line ("populating_directory_complete", Void))
 
 			clear_all_archetype_view_controls
-			compiler_error_control.clear
+			status_tool.clear_compiler_errors
 
-			go_to_node_in_archetype_tree_view
+			go_to_selected_archetype
 
 			append_billboard_to_status_area
 			archetype_view_tree_control.populate
 			template_view_tree_control.populate
 			archetype_test_tree_control.populate
-			populate_statistics
+			statistics_tool.populate
 		end
 
 	clear_all_archetype_view_controls
 			-- Wipe out content from visual controls.
 		do
-			if has_current_profile and then current_arch_cat.selection_history_has_previous then
-				history_menu_back.enable_sensitive
-				history_back_button.enable_sensitive
-			else
-				history_menu_back.disable_sensitive
-				history_back_button.disable_sensitive
-			end
-
-			if has_current_profile and then current_arch_cat.selection_history_has_next then
-				history_menu_forward.enable_sensitive
-				history_forward_button.enable_sensitive
-			else
-				history_menu_forward.disable_sensitive
-				history_forward_button.disable_sensitive
-			end
-
-			archetype_id.remove_text
-			adl_version_text.remove_text
-			language_combo.wipe_out
+			populate_history_controls
+			archetype_search_combo.remove_text
 		end
 
-	populate_archetype_tool
-			-- Populate content from visual controls.
-		require
-			has_current_profile
+	clear_all_tools
 		do
-			if not has_current_archetype_tool then
-				create_new_archetype_tool
-			end
-			current_archetype_docking_pane.set_long_title (current_arch_cat.selected_archetype.id.as_string)
-			current_archetype_docking_pane.set_short_title (current_arch_cat.selected_archetype.id.as_abbreviated_string)
-			current_archetype_docking_pane.set_pixmap (pixmaps [current_arch_cat.selected_archetype.group_name])
-			current_archetype_tool.populate_controls
-		end
-
-	populate_archetype_id
-			-- populate Id control for currently selected archetype, or clear if none
-		require
-			has_current_profile
-		do
-			if attached current_arch_cat.selected_archetype as aca then
-				archetype_id.set_text (utf8 (aca.id.as_string))
-			else
-				archetype_id.remove_text
-			end
-		end
-
-	populate_adl_version
-			-- Populate ADL version for currently selected archetype, or clear if none
-		require
-			has_current_profile
-		do
-			if current_arch_cat.has_validated_selected_archetype then
-				adl_version_text.set_text (utf8 (current_arch_cat.selected_archetype.differential_archetype.adl_version))
-			else
-				adl_version_text.remove_text
-			end
-		end
-
-	populate_languages
-			-- Populate `language_combo' in the toolbar for currently selected archetype, or clear if none
-		require
-			has_current_profile
-		local
-			arch: ARCHETYPE
-		do
-			language_combo.select_actions.block
-
-			if current_arch_cat.has_validated_selected_archetype then
-				arch := current_arch_cat.selected_archetype.differential_archetype
-
-				if not arch.has_language (current_language) then
-					set_current_language (arch.original_language.code_string)
-				end
-
-				language_combo.set_strings (arch.languages_available)
-
-				language_combo.do_all (agent (li: EV_LIST_ITEM) do if li.text.same_string (current_language) then li.enable_select end end)
-			else
-				set_current_language (default_language)
-				language_combo.wipe_out
-			end
-
-			language_combo.select_actions.resume
+			clear_class_map_tool
+			archetype_tools.clear
 		end
 
 	populate_archetype_profile_combo
@@ -1404,6 +1330,25 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	populate_history_controls
+		do
+			if has_current_profile and then current_arch_cat.selection_history_has_previous then
+				history_menu_back.enable_sensitive
+				history_back_button.enable_sensitive
+			else
+				history_menu_back.disable_sensitive
+				history_back_button.disable_sensitive
+			end
+
+			if has_current_profile and then current_arch_cat.selection_history_has_next then
+				history_menu_forward.enable_sensitive
+				history_forward_button.enable_sensitive
+			else
+				history_menu_forward.disable_sensitive
+				history_forward_button.disable_sensitive
+			end
+		end
+
 	do_with_wait_cursor (action: attached PROCEDURE [ANY, TUPLE])
 			-- Perform `action' with an hourglass mouse cursor, restoring the cursor when done.
 		local
@@ -1421,45 +1366,8 @@ feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Statistics
 
 	populate_statistics
 			-- Populate the statistics tab.
-		local
-			list_row: EV_MULTI_COLUMN_LIST_ROW
-			i: INTEGER
 		do
-			if has_current_profile then
-				arch_total_count_tf.set_text (current_arch_cat.total_archetype_count.out)
-				arch_spec_count_tf.set_text (current_arch_cat.specialised_archetype_count.out)
-				arch_slotted_count_tf.set_text (current_arch_cat.client_archetype_count.out)
-				arch_used_by_count_tf.set_text (current_arch_cat.supplier_archetype_count.out)
-				arch_bad_count_tf.set_text (current_arch_cat.bad_archetype_count.out)
-
-				-- do terminology bindings statistics
-				from current_arch_cat.terminology_bindings_info.start until current_arch_cat.terminology_bindings_info.off loop
-					from term_bindings_info_list.start until term_bindings_info_list.off or
-						term_bindings_info_list.item.first.is_equal (current_arch_cat.terminology_bindings_info.key_for_iteration)
-					loop
-						term_bindings_info_list.forth
-					end
-					if not term_bindings_info_list.off then
-						term_bindings_info_list.item.finish
-						term_bindings_info_list.item.remove
-						term_bindings_info_list.item.extend (utf8 (current_arch_cat.terminology_bindings_info.item_for_iteration.count.out))
-					else
-						create list_row
-						list_row.extend (utf8 (current_arch_cat.terminology_bindings_info.key_for_iteration))
-						list_row.extend (utf8 (current_arch_cat.terminology_bindings_info.item_for_iteration.count.out))
-						term_bindings_info_list.extend (list_row)
-						from i := 1 until i > term_bindings_info_list.column_count loop
-							term_bindings_info_list.resize_column_to_content (i)
-							if term_bindings_info_list.column_width (i) < 100 then
-								term_bindings_info_list.set_column_width (100, i)
-							end
-							i := i + 1
-						end
-					end
-
-					current_arch_cat.terminology_bindings_info.forth
-				end
-			end
+			statistics_tool.populate
 		end
 
 feature {NONE} -- Build commands
@@ -1493,32 +1401,29 @@ feature {NONE} -- Build commands
 			-- Update GUI with progress on build.
 		do
 			populate_compile_button
-			append_status_area (msg)
+			status_tool.append_status_text (msg)
 			ev_application.process_events
 		end
 
-	compiler_archetype_gui_update (msg: attached STRING; ara: attached ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
+	compiler_archetype_gui_update (msg: attached STRING; aca: attached ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
 			-- Update GUI with progress on build.
 		do
 			if not msg.is_empty then
-				append_status_area (indented (msg, create {STRING}.make_filled ('%T', dependency_depth)))
+				status_tool.append_status_text (indented (msg, create {STRING}.make_filled ('%T', dependency_depth)))
 			end
 
-			archetype_view_tree_control.update_tree_node_for_archetype (ara)
-			template_view_tree_control.update_tree_node_for_archetype (ara)
+			archetype_view_tree_control.update_tree_node_for_archetype (aca)
+			template_view_tree_control.update_tree_node_for_archetype (aca)
 
-			archetype_test_tree_control.do_row_for_item (ara, agent archetype_test_tree_control.set_row_pixmap)
+			archetype_test_tree_control.do_row_for_item (aca, agent archetype_test_tree_control.set_row_pixmap)
 
-			if ara.last_compile_attempt_timestamp /= Void then
-				compiler_error_control.extend_and_select (ara)
-				populate_statistics
+			if aca.last_compile_attempt_timestamp /= Void then
+				status_tool.add_compiler_error (aca)
+				statistics_tool.populate
 
 				if attached current_arch_cat then
-					if ara = current_arch_cat.selected_archetype then
-						populate_archetype_id
-						populate_adl_version
-						populate_languages
-						populate_archetype_tool
+					if aca = current_arch_cat.selected_archetype then
+						archetype_tools.populate_current_tool
 					end
 				end
 			end
@@ -1526,92 +1431,23 @@ feature {NONE} -- Build commands
 			ev_application.process_events
 		end
 
-feature {NONE} -- Standard Windows behaviour that EiffelVision ought to be managing automatically
+feature {NONE} -- GUI Widgets
 
-	step_focused_notebook_tab (step: INTEGER)
-			-- Switch forward or back from the current tab page of the currently focused notebook.
-		require
-			valid_step: step.abs <= 1
-		local
-			notebook: EV_NOTEBOOK
-			widget: EV_WIDGET
-		do
-			notebook := notebook_containing_focused_widget
+	action_bar, arch_id_hbox: EV_HORIZONTAL_BOX
+	archetype_profile_combo, archetype_search_combo: EV_COMBO_BOX
+	arch_compile_tool_bar, arch_search_tool_bar: EV_TOOL_BAR
+	compile_button, open_button, history_back_button, history_forward_button, search_button: EV_TOOL_BAR_BUTTON
+	tool_bar_sep_1, tool_bar_sep_2, tool_bar_sep_3: EV_TOOL_BAR_SEPARATOR
 
-			if notebook /= Void then
-				widget := notebook [1 + (step + notebook.selected_item_index - 1 + notebook.count) \\ notebook.count]
-				notebook.select_item (widget)
-				focus_first_widget (widget)
-			end
-		end
+	explorer_split_area: EV_HORIZONTAL_SPLIT_AREA
+	archetype_template_split_area: EV_VERTICAL_SPLIT_AREA
+	archetype_explorer_pixmap, template_explorer_pixmap: EV_PIXMAP
+	archetype_explorer_label, template_explorer_label: EV_LABEL
+	archetype_file_tree, template_file_tree: EV_TREE
+	viewer_main_cell: EV_CELL
 
-	notebook_containing_focused_widget: EV_NOTEBOOK
-			-- The notebook, if any, containing the currently focused widget.
-		local
-			container: EV_CONTAINER
-		do
-			if has_recursive (ev_application.focused_widget) then
-				from
-					container := ev_application.focused_widget.parent
-				until
-					container = Void or Result /= Void
-				loop
-					Result ?= container
-					container := container.parent
-				end
-			end
-		end
-
-	focus_first_widget (widget: attached EV_WIDGET)
-			-- Set focus to `widget' or to its first child widget that accepts focus.
-		local
-			widgets: LINEAR [EV_WIDGET]
-		do
-			if attached {EV_CONTAINER} widget as container and not attached {EV_GRID} widget as grid then
-				from
-					widgets := container.linear_representation
-					widgets.start
-				until
-					widgets.off or container.has_recursive (ev_application.focused_widget)
-				loop
-					focus_first_widget (widgets.item)
-					widgets.forth
-				end
-			elseif widget.is_displayed and widget.is_sensitive then
-				if not attached {EV_LABEL} widget as label and not attached {EV_TOOL_BAR} widget as toolbar then
-					widget.set_focus
-				end
-			end
-		end
-
-	focused_text: EV_TEXT_COMPONENT
-			-- The currently focused text widget, if any.
-		do
-			Result ?= ev_application.focused_widget
-
-			if not has_recursive (Result) then
-				Result := Void
-			end
-		ensure
-			focused: Result /= Void implies Result.has_focus
-			in_this_window: Result /= Void implies has_recursive (Result)
-		end
-
-	call_unless_text_focused (action: PROCEDURE [ANY, TUPLE])
-			-- Some of the edit shortcuts are implemented automatically for text boxes (although not for rich text
-			-- boxes, or at least not on Windows).
-			-- If called from a keyboard shortcut, execute the action unless a text box is focused.
-			-- Executing it within a text box would cause it to be performed twice.
-			-- For some actions this wouldn't really matter (cut, copy), but for paste it would be a blatant bug.
-		local
-			t: EV_TEXT_COMPONENT
-		do
-			t := focused_text
-
-			if t = Void or attached {EV_RICH_TEXT} t then
-				action.call ([])
-			end
-		end
+	archetype_explorer_vbox, template_explorer_vbox: EV_VERTICAL_BOX
+	archetype_explorer_hbox, template_explorer_hbox: EV_HORIZONTAL_BOX
 
 end
 

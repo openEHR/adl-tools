@@ -27,6 +27,11 @@ inherit
 			on_grid_key_press
 		end
 
+	EV_SHARED_APPLICATION
+		export
+			{NONE} all
+		end
+
 	SHARED_KNOWLEDGE_REPOSITORY
 		export
 			{NONE} all
@@ -58,17 +63,17 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: attached MAIN_WINDOW)
+	make (a_select_archetype_from_gui_data_agent: like select_archetype_from_gui_data;
+			an_update_gui_with_compiler_error_counts_agent: like update_gui_with_compiler_error_counts)
 			-- Create to control `a_main_window.compiler_output_grid'.
 		do
+			select_archetype_from_gui_data := a_select_archetype_from_gui_data_agent
+			update_gui_with_compiler_error_counts := an_update_gui_with_compiler_error_counts_agent
 			create categories.make_filled (Void, Err_type_valid, Err_type_warning)
-			gui := a_main_window
-			make_for_grid (gui.compiler_output_grid)
+			make_for_grid (create {EV_GRID})
 			grid.enable_tree
 			grid.disable_row_height_fixed
 			grid.hide_tree_node_connectors
-		ensure
-			gui_set: gui = a_main_window
 		end
 
 feature -- Commands
@@ -166,11 +171,10 @@ feature -- Commands
 			update_errors_tab_label
 		end
 
-	export_repository_report (xml_name: STRING)
-			-- Export the contents of the grid and other statistics to XML in `xml_name'.
+	export_repository_report (xml_file_name: attached STRING)
+			-- Export the contents of the grid and other statistics to XML file `xml_name'.
 		require
-			xml_name_attached: xml_name /= Void
-			xml_name_not_empty: not xml_name.is_empty
+			xml_file_name_valid: not xml_file_name.is_empty
 		local
 			err_type, i: INTEGER
 			category: STRING
@@ -250,7 +254,7 @@ feature -- Commands
 				end
 			end
 
-			create file.make (xml_name)
+			create file.make (xml_file_name)
 			file.open_write
 
 			if file.is_open_write then
@@ -261,7 +265,7 @@ feature -- Commands
 				file.close
 
 				name1 := file_system.pathname (application_startup_directory, "ArchetypeRepositoryReport.css")
-				name2 := file_system.pathname (file_system.dirname (xml_name), "ArchetypeRepositoryReport.css")
+				name2 := file_system.pathname (file_system.dirname (xml_file_name), "ArchetypeRepositoryReport.css")
 				file_system.copy_file (name1, name2)
 				file_system.copy_file (extension_replaced (name1, ".xsl"), extension_replaced (name2, ".xsl"))
 			end
@@ -269,34 +273,32 @@ feature -- Commands
 
 feature -- Access
 
-	parse_error_count: INTEGER
+	parse_error_count: NATURAL
 			-- Number of parser errors.
 		do
 			Result := count_for_category (err_type_parse_error)
-		ensure
-			natural: Result >= 0
 		end
 
-	validity_error_count: INTEGER
+	validity_error_count: NATURAL
 			-- Number of parser errors.
 		do
 			Result := count_for_category (err_type_validity_error)
-		ensure
-			natural: Result >= 0
 		end
 
-	warning_count: INTEGER
+	warning_count: NATURAL
 			-- Number of parser errors.
 		do
 			Result := count_for_category (err_type_warning)
-		ensure
-			natural: Result >= 0
 		end
 
 feature {NONE} -- Implementation
 
-	gui: attached MAIN_WINDOW
-			-- Main window of system.
+	select_archetype_from_gui_data: PROCEDURE [ANY, TUPLE [EV_ANY]]
+			-- agent provided by upper level of GUI for doing something
+			-- when an archetype in this tool is selected
+
+	update_gui_with_compiler_error_counts: PROCEDURE [ANY, TUPLE [NATURAL, NATURAL, NATURAL]]
+			-- agent provided by upper GUI for providing feedback about current error counts
 
 	on_grid_key_press (key: EV_KEY)
 			-- When the user presses Enter on an archetype, select it in the main window's explorer tree.
@@ -314,14 +316,16 @@ feature {NONE} -- Implementation
 			-- Select the archetype represented by `selected_cell' in the main window's explorer tree.
 		do
 			if selected_cell /= Void and then selected_cell.column.index = Col_location then
-				gui.select_archetype_from_gui_data (selected_cell.row)
+				select_archetype_from_gui_data.call ([selected_cell.row])
 			end
 		end
 
 	update_errors_tab_label
 			-- On the Errors tab, indicate parse errors, validity errors and warnings.
 		do
-			gui.status_notebook.set_item_text (gui.compiler_output_grid, "Errors (" + parse_error_count.out + "/" + validity_error_count.out + "/" + warning_count.out + ")")
+			if attached update_gui_with_compiler_error_counts then
+				update_gui_with_compiler_error_counts.call ([parse_error_count, validity_error_count, warning_count])
+			end
 		end
 
 	ensure_row_for_category (err_type: INTEGER)
@@ -402,24 +406,19 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	count_for_category (err_type: INTEGER): INTEGER
+	count_for_category (err_type: INTEGER): NATURAL
 			-- Number of parser errors.
 		require
 			not_too_small: err_type >= categories.lower
 			not_too_big: err_type <= categories.upper
 		do
 			if attached {EV_GRID_ROW} categories [err_type] as row then
-				Result := row.subrow_count
+				Result := row.subrow_count.as_natural_32
 			end
-		ensure
-			natural: Result >= 0
 		end
 
 	categories: attached ARRAY [EV_GRID_ROW]
 			-- Rows containing category grouper in column 1.
-
-invariant
-	correct_grid: grid = gui.compiler_output_grid
 
 end
 

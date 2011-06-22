@@ -178,20 +178,6 @@ feature -- Application Switches
 			app_cfg.put_value("/gui/app_maximised", flag)
 		end
 
-	total_split_position: INTEGER
-			-- Split position of outer vertical split control.
-		do
-			Result := app_cfg.integer_value ("/gui/total_split_position")
-		end
-
-	set_total_split_position (v: INTEGER)
-			-- Set split position of outer vertical split control.
-		require
-			v > 0
-		do
-			app_cfg.put_value ("/gui/total_split_position", v)
-		end
-
 	test_split_position: INTEGER
 			-- Split position of vertical split control in test tool.
 		do
@@ -347,18 +333,6 @@ feature -- Application Switches
 			-- save path view column settings
 		do
 			app_cfg.put_value("/gui/path_view_check_list_settings", strs)
-		end
-
-	differential_view: BOOLEAN
-			-- View archetypes in differential form
-		do
-			Result := app_cfg.boolean_value ("/gui/differential_view")
-		end
-
-	set_differential_view (flag: BOOLEAN)
-			-- Set flag for whether to displayView archetypes in differential or flat form.
-		do
-			app_cfg.put_value("/gui/differential_view", flag)
 		end
 
 	text_editor_command: attached STRING

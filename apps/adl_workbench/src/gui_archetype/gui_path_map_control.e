@@ -55,81 +55,78 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make
+	make (on_path_map_key_press_agent: PROCEDURE [ANY, TUPLE [EV_KEY]])
 			-- create tree control repersenting archetype files found in repository_path
 		do
 			-- create widgets
-			create hbox
-			create path_list
-			create vbox
-			create row_frame
-			create row_vbox
-			create filter_combo
-			create col_frame
-			create col_vbox
-			create column_check_list
+			create ev_root_container
+			create ev_path_list
+			create ev_vbox
+			create ev_row_frame
+			create ev_row_vbox
+			create ev_filter_combo
+			create ev_col_frame
+			create ev_col_vbox
+			create ev_column_check_list
 
 			-- connect them together
-			hbox.extend (path_list)
-			hbox.extend (vbox)
-			vbox.extend (row_frame)
-			row_frame.extend (row_vbox)
-			row_vbox.extend (filter_combo)
-			vbox.extend (col_frame)
-			col_frame.extend (col_vbox)
-			col_vbox.extend (column_check_list)
+			ev_root_container.extend (ev_path_list)
+			ev_root_container.extend (ev_vbox)
+			ev_vbox.extend (ev_row_frame)
+			ev_row_frame.extend (ev_row_vbox)
+			ev_row_vbox.extend (ev_filter_combo)
+			ev_vbox.extend (ev_col_frame)
+			ev_col_frame.extend (ev_col_vbox)
+			ev_col_vbox.extend (ev_column_check_list)
 
 			-- set visual characteristics
-			hbox.set_minimum_width (140)
-			hbox.set_minimum_height (93)
-			hbox.disable_item_expand (vbox)
-			path_list.set_background_color (editable_colour)
-			path_list.set_minimum_width (1)
-			path_list.set_minimum_height (1)
-			vbox.set_minimum_width (140)
-			vbox.set_minimum_height (93)
-			vbox.set_padding (3)
-			vbox.set_border_width (4)
-			vbox.disable_item_expand (row_frame)
-			vbox.disable_item_expand (col_frame)
-			row_frame.set_text ("Row Filter")
-			row_vbox.set_border_width (border_width)
-			filter_combo.set_tooltip ("Filter which rows are shown in the Path Analysis")
-			filter_combo.set_minimum_width (80)
-			filter_combo.disable_edit
-			col_frame.set_text ("Column View")
-			col_frame.set_minimum_height (150)
-			col_vbox.set_border_width (border_width)
-			column_check_list.set_tooltip ("Choose view of columns in the Path Analysis")
-			column_check_list.set_minimum_width (100)
-			column_check_list.set_minimum_height (30)
+			ev_root_container.set_minimum_width (140)
+			ev_root_container.set_minimum_height (93)
+			ev_root_container.disable_item_expand (ev_vbox)
+			ev_path_list.set_background_color (editable_colour)
+			ev_path_list.set_minimum_width (1)
+			ev_path_list.set_minimum_height (1)
+			ev_vbox.set_minimum_width (140)
+			ev_vbox.set_minimum_height (93)
+			ev_vbox.set_padding (3)
+			ev_vbox.set_border_width (4)
+			ev_vbox.disable_item_expand (ev_row_frame)
+			ev_vbox.disable_item_expand (ev_col_frame)
+			ev_row_frame.set_text ("Row Filter")
+			ev_row_vbox.set_border_width (border_width)
+			ev_filter_combo.set_tooltip ("Filter which rows are shown in the Path Analysis")
+			ev_filter_combo.set_minimum_width (80)
+			ev_filter_combo.disable_edit
+			ev_col_frame.set_text ("Column View")
+			ev_col_frame.set_minimum_height (150)
+			ev_col_vbox.set_border_width (border_width)
+			ev_column_check_list.set_tooltip ("Choose view of columns in the Path Analysis")
+			ev_column_check_list.set_minimum_width (100)
+			ev_column_check_list.set_minimum_height (30)
 
 			-- set events
-			filter_combo.select_actions.extend (agent path_row_set_filter)
-			column_check_list.check_actions.extend (agent path_column_select)
-			column_check_list.uncheck_actions.extend (agent path_column_unselect)
+			ev_filter_combo.select_actions.extend (agent path_row_set_filter)
+			ev_column_check_list.check_actions.extend (agent path_column_select)
+			ev_column_check_list.uncheck_actions.extend (agent path_column_unselect)
+
+			-- set events: path map
+			ev_path_list.key_press_actions.extend (on_path_map_key_press_agent)
 
 			initialise_controls
 		end
 
 feature -- Access
 
-	vbox, row_vbox, col_vbox: EV_VERTICAL_BOX
+	ev_root_container: EV_HORIZONTAL_BOX
 
-	hbox: EV_HORIZONTAL_BOX
-
-	filter_combo: EV_COMBO_BOX
-
-	row_frame, col_frame: EV_FRAME
-
-	column_check_list: EV_CHECKABLE_LIST
-
-	path_list: EV_MULTI_COLUMN_LIST
+	ev_column_check_list: EV_CHECKABLE_LIST
 
 	selected_filter: STRING
 		do
-			Result := filter_combo.selected_item.text.as_string_8
+			Result := ev_filter_combo.selected_item.text.as_string_8
 		end
+
+	selected_language: STRING
 
 feature -- Events
 
@@ -153,98 +150,61 @@ feature -- Events
 
 feature -- Commands
 
-	initialise_controls
-			-- Initialise widgets associated with the Path Analysis.
-		local
-			filter_combo_index: INTEGER
-			strs: LIST [STRING]
-		do
-			path_list.enable_multiple_selection
-			filter_combo.set_strings (path_control_filter_names)
-
-			if not filter_combo.is_empty then
-				from
-					filter_combo_index := 1
-				until
-					filter_combo_index > path_control_filter_names.count or
-					path_control_filter_names [filter_combo_index].is_equal (path_filter_combo_selection)
-				loop
-					filter_combo_index := filter_combo_index + 1
-				end
-
-				if filter_combo_index > path_control_filter_names.count then -- non-existent string in session file
-					filter_combo_index := 1
-				end
-			else
-				filter_combo_index := 1
-			end
-
-			filter_combo [filter_combo_index].enable_select
-
-			column_check_list.set_strings (path_control_column_names)
-			strs := path_view_check_list_settings
-
-			if not strs.is_empty then
-				from column_check_list.start until column_check_list.off loop
-					if strs.has (column_check_list.item.text.as_string_8) then
-						column_check_list.check_item (column_check_list.item)
-					end
-
-					column_check_list.forth
-				end
-			else -- default to physical paths
-				column_check_list.check_item (column_check_list [2])
-				column_check_list.check_item (column_check_list [3])
-			end
-		end
-
 	clear
 			-- wipe out content from controls
 		do
-			path_list.wipe_out
+			ev_path_list.wipe_out
 		end
 
-	populate
+	populate (an_archetype: attached ARCHETYPE; a_language: attached STRING)
 			-- Populate `path_list'.
 		require
-			has_current_profile
+			an_archetype.is_valid
 		local
 			list_row: EV_MULTI_COLUMN_LIST_ROW
 			p_paths, l_paths: ARRAYED_LIST[STRING]
 		do
-			path_list.wipe_out
-			path_list.set_column_titles (path_control_column_names)
+			target_archetype := an_archetype
+			selected_language := a_language
+			repopulate (selected_language)
+		end
+
+	repopulate (a_language: attached STRING)
+		local
+			list_row: EV_MULTI_COLUMN_LIST_ROW
+			p_paths, l_paths: ARRAYED_LIST[STRING]
+		do
+			ev_path_list.wipe_out
+			ev_path_list.set_column_titles (path_control_column_names)
 
 			-- Add am empty column at the end so the width of the true last column can be set to zero on all platforms.
-			path_list.set_column_title ("", path_control_column_names.count + 1)
+			ev_path_list.set_column_title ("", path_control_column_names.count + 1)
 
-			if current_arch_cat.has_validated_selected_archetype then
-				if filter_combo.text.is_equal ("All") then
-					p_paths := target_archetype.physical_paths
-					l_paths := target_archetype.logical_paths (current_language, False)
-				else
-					p_paths := target_archetype.physical_leaf_paths
-					l_paths := target_archetype.logical_paths (current_language, True)
+			if ev_filter_combo.text.is_equal ("All") then
+				p_paths := target_archetype.physical_paths
+				l_paths := target_archetype.logical_paths (selected_language, False)
+			else
+				p_paths := target_archetype.physical_leaf_paths
+				l_paths := target_archetype.logical_paths (selected_language, True)
+			end
+
+			from
+				p_paths.start
+				l_paths.start
+			until
+				p_paths.off
+			loop
+				if attached {C_OBJECT} target_archetype.c_object_at_path (p_paths.item) as c_o then
+					create list_row
+					list_row.extend (utf8 (p_paths.item))
+					list_row.extend (utf8 (l_paths.item))
+					list_row.extend (utf8 (c_o.rm_type_name))
+					list_row.extend (utf8 (c_o.generating_type))
+					ev_path_list.extend (list_row)
 				end
 
-				from
-					p_paths.start
-					l_paths.start
-				until
-					p_paths.off
-				loop
-					if attached {C_OBJECT} target_archetype.c_object_at_path (p_paths.item) as c_o then
-						create list_row
-						list_row.extend (utf8 (p_paths.item))
-						list_row.extend (utf8 (l_paths.item))
-						list_row.extend (utf8 (c_o.rm_type_name))
-						list_row.extend (utf8 (c_o.generating_type))
-						path_list.extend (list_row)
-					end
-
-					p_paths.forth
-					l_paths.forth
-				end
+				p_paths.forth
+				l_paths.forth
 			end
 
 			adjust_columns
@@ -255,13 +215,13 @@ feature -- Commands
 		local
 			i: INTEGER
 		do
-			from i := 1 until i > path_list.column_count loop
-				if i > column_check_list.count or else not column_check_list.is_item_checked (column_check_list [i]) then
-					path_list.set_column_width (0, i)
+			from i := 1 until i > ev_path_list.column_count loop
+				if i > ev_column_check_list.count or else not ev_column_check_list.is_item_checked (ev_column_check_list [i]) then
+					ev_path_list.set_column_width (0, i)
 				else
-					path_list.resize_column_to_content (i)
-					if path_list.column_width (i) < 100 then
-						path_list.set_column_width (100, i)
+					ev_path_list.resize_column_to_content (i)
+					if ev_path_list.column_width (i) < 100 then
+						ev_path_list.set_column_width (100, i)
 					end
 				end
 
@@ -272,8 +232,8 @@ feature -- Commands
 	set_filter
 			-- Called by `select_actions' of `filter_combo'.
 		do
-			if path_list.is_displayed then
-				populate
+			if ev_path_list.is_displayed then
+				repopulate (selected_language)
 			end
 		end
 
@@ -283,7 +243,7 @@ feature -- Commands
 			ev_rows: DYNAMIC_LIST[EV_MULTI_COLUMN_LIST_ROW]
 			ev_col: EV_MULTI_COLUMN_LIST_ROW
 		do
-			ev_rows := path_list.selected_items
+			ev_rows := ev_path_list.selected_items
 			create Result.make (0)
 
 			if not ev_rows.is_empty then
@@ -300,15 +260,58 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
+	ev_vbox, ev_row_vbox, ev_col_vbox: EV_VERTICAL_BOX
+
+	ev_filter_combo: EV_COMBO_BOX
+
+	ev_row_frame, ev_col_frame: EV_FRAME
+
+	ev_path_list: EV_MULTI_COLUMN_LIST
+
 	target_archetype: ARCHETYPE
-			-- differential or flat version of archetype, depending on setting of `differential_view'
-		require
-			current_arch_cat.has_selected_archetype
+
+	initialise_controls
+			-- Initialise widgets associated with the Path Analysis.
+		local
+			filter_combo_index: INTEGER
+			strs: LIST [STRING]
 		do
-			if differential_view then
-				Result := current_arch_cat.selected_archetype.differential_archetype
+			ev_path_list.enable_multiple_selection
+			ev_filter_combo.set_strings (path_control_filter_names)
+
+			if not ev_filter_combo.is_empty then
+				from
+					filter_combo_index := 1
+				until
+					filter_combo_index > path_control_filter_names.count or
+					path_control_filter_names [filter_combo_index].is_equal (path_filter_combo_selection)
+				loop
+					filter_combo_index := filter_combo_index + 1
+				end
+
+				if filter_combo_index > path_control_filter_names.count then -- non-existent string in session file
+					filter_combo_index := 1
+				end
 			else
-				Result := current_arch_cat.selected_archetype.flat_archetype
+				filter_combo_index := 1
+			end
+
+			ev_filter_combo [filter_combo_index].enable_select
+
+			ev_column_check_list.set_strings (path_control_column_names)
+			strs := path_view_check_list_settings
+
+			if not strs.is_empty then
+				from ev_column_check_list.start until ev_column_check_list.off loop
+					if strs.has (ev_column_check_list.item.text.as_string_8) then
+						ev_column_check_list.check_item (ev_column_check_list.item)
+					end
+
+					ev_column_check_list.forth
+				end
+			else -- default to physical paths
+				ev_column_check_list.check_item (ev_column_check_list [2])
+				ev_column_check_list.check_item (ev_column_check_list [3])
 			end
 		end
 

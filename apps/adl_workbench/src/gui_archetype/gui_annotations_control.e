@@ -11,7 +11,6 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-
 class GUI_ANNOTATIONS_CONTROL
 
 inherit
@@ -52,6 +51,10 @@ feature {NONE} -- Initialisation
 			grid.enable_tree
 		end
 
+feature -- Status Report
+
+	differential_view: BOOLEAN
+
 feature -- Commands
 
 	clear
@@ -60,10 +63,10 @@ feature -- Commands
 			grid.wipe_out
 		end
 
-	populate
+	populate (aca: attached ARCH_CAT_ARCHETYPE; differential_view_flag: BOOLEAN; selected_language: attached STRING)
 			-- populate the ADL tree control by creating it from scratch
 		require
-			has_current_profile
+			aca.is_valid
 		local
 			lang_key: STRING
 			anns_by_path: HASH_TABLE [RESOURCE_ANNOTATION_ITEMS, STRING]
@@ -71,60 +74,54 @@ feature -- Commands
 			gli: EV_GRID_LABEL_ITEM
 			path_row, ann_row: EV_GRID_ROW
 		do
+			target_archetype_descriptor := aca
+			differential_view := differential_view_flag
+
 			clear
 
-			-- set `target_archetype'
-			if current_arch_cat.has_validated_selected_archetype then
-				if differential_view then
-					target_archetype := current_arch_cat.selected_archetype.differential_archetype
-				else
-					target_archetype := current_arch_cat.selected_archetype.flat_archetype
+			-- figure out if there are any annotations, and what actual language tag they are under
+			if target_archetype.has_annotations and then target_archetype.annotations.has_matching_language_tag (selected_language) then
+				lang_key := target_archetype.annotations.matching_language_tag (selected_language)
+
+				-- populate grid
+				anns_by_path := target_archetype.annotations.annotation_table (lang_key).items
+				from anns_by_path.start until anns_by_path.off loop
+					-- put the path in the first column
+					create gli.make_with_text (anns_by_path.key_for_iteration)
+					grid.set_item (Grid_path_col, grid.row_count + 1, gli)
+					path_row := gli.row
+
+					-- for each item in the annotations list, add a sub-row with the key in col 2 and the value in col 3
+					ann_list := anns_by_path.item_for_iteration.items
+					from ann_list.start until ann_list.off loop
+
+						-- create a new sub row
+						path_row.insert_subrow (path_row.subrow_count + 1)
+
+						-- get the sub row
+						ann_row := path_row.subrow (path_row.subrow_count)
+						create gli.make_with_text (ann_list.key_for_iteration)
+						ann_row.set_item (Grid_ann_key_col, gli)
+
+						create gli.make_with_text (ann_list.item_for_iteration)
+						ann_row.set_item (Grid_ann_value_col, gli)
+
+						ann_list.forth
+					end
+					if path_row.is_expandable then
+						path_row.expand
+					end
+					anns_by_path.forth
 				end
 
-				-- figure out if there are any annotations, and what actual language tag they are under
-				if target_archetype.has_annotations and then target_archetype.annotations.has_matching_language_tag (current_language) then
-					lang_key := target_archetype.annotations.matching_language_tag (current_language)
-
-					-- populate grid
-					anns_by_path := target_archetype.annotations.annotation_table (lang_key).items
-					from anns_by_path.start until anns_by_path.off loop
-						-- put the path in the first column
-						create gli.make_with_text (anns_by_path.key_for_iteration)
-						grid.set_item (Grid_path_col, grid.row_count + 1, gli)
-						path_row := gli.row
-
-						-- for each item in the annotations list, add a sub-row with the key in col 2 and the value in col 3
-						ann_list := anns_by_path.item_for_iteration.items
-						from ann_list.start until ann_list.off loop
-
-							-- create a new sub row
-							path_row.insert_subrow (path_row.subrow_count + 1)
-
-							-- get the sub row
-							ann_row := path_row.subrow (path_row.subrow_count)
-							create gli.make_with_text (ann_list.key_for_iteration)
-							ann_row.set_item (Grid_ann_key_col, gli)
-
-							create gli.make_with_text (ann_list.item_for_iteration)
-							ann_row.set_item (Grid_ann_value_col, gli)
-
-							ann_list.forth
-						end
-						if path_row.is_expandable then
-							path_row.expand
-						end
-						anns_by_path.forth
-					end
-
-					-- put names on columns
-					if grid.column_count > 0 then
-						grid.column (Grid_path_col).set_title ("Path")
-						grid.column (Grid_path_col).resize_to_content
-						grid.column (Grid_ann_key_col).set_title ("Annotation key")
-						grid.column (Grid_ann_key_col).resize_to_content
-						grid.column (Grid_ann_value_col).set_title ("Annotation value")
-						grid.column (Grid_ann_value_col).resize_to_content
-					end
+				-- put names on columns
+				if grid.column_count > 0 then
+					grid.column (Grid_path_col).set_title ("Path")
+					grid.column (Grid_path_col).resize_to_content
+					grid.column (Grid_ann_key_col).set_title ("Annotation key")
+					grid.column (Grid_ann_key_col).resize_to_content
+					grid.column (Grid_ann_value_col).set_title ("Annotation value")
+					grid.column (Grid_ann_value_col).resize_to_content
 				end
 			end
 		end
@@ -149,13 +146,20 @@ feature -- Commands
 --			end
 		end
 
-feature {NONE} -- Commands
-
-
 feature {NONE} -- Implementation
 
-	target_archetype: attached ARCHETYPE
-			-- Differential or flat version of archetype, depending on setting of `differential_view'.
+	target_archetype: ARCHETYPE
+			-- differential or flat version of archetype, depending on setting of `differential_view'
+		do
+			if differential_view then
+				Result := target_archetype_descriptor.differential_archetype
+			else
+				Result := target_archetype_descriptor.flat_archetype
+			end
+		end
+
+	target_archetype_descriptor: ARCH_CAT_ARCHETYPE
+			-- archetype to which this tool is targetted
 
 end
 
