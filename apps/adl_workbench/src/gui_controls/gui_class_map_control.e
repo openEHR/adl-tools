@@ -87,7 +87,7 @@ feature -- Access
 
 	ev_tree: EV_TREE
 
-	class_def: BMM_CLASS_DEFINITION
+	class_desc: ARCH_CAT_MODEL_NODE
 
 feature -- Status Report
 
@@ -126,10 +126,10 @@ feature -- Commands
  			ev_class_id.remove_text
 		end
 
-	populate (a_class_def: attached BMM_CLASS_DEFINITION)
+	populate (a_class_desc: attached ARCH_CAT_MODEL_NODE)
 			-- populate the ADL tree control by creating it from scratch
 		do
-			class_def := a_class_def
+			class_desc := a_class_desc
 			repopulate
 		end
 
@@ -138,10 +138,10 @@ feature -- Commands
 			clear
  			create ev_tree_item_stack.make (0)
 
- 			ev_class_id.set_text (class_def.name)
+ 			ev_class_id.set_text (class_desc.class_definition.name)
 			populate_root_node
 
-			class_def.do_supplier_closure (not differential_view, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+			class_desc.class_definition.do_supplier_closure (not differential_view, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 			ev_tree.recursive_do_all (agent ev_tree_expand)
 		end
 
@@ -181,8 +181,8 @@ feature {NONE} -- Implementation
 			a_ti: EV_TREE_ITEM
 		do
 			create a_ti
-			a_ti.set_text (current_arch_cat.selected_class.display_name)
-			a_ti.set_pixmap (pixmaps [current_arch_cat.selected_class.group_name])
+			a_ti.set_text (class_desc.class_definition.name)
+			a_ti.set_pixmap (pixmaps [class_desc.group_name])
 			ev_tree.extend (a_ti)
 			ev_tree_item_stack.extend (a_ti)
 		end
@@ -206,7 +206,7 @@ feature {NONE} -- Implementation
 			end
 			a_ti.set_text (utf8 (str))
 
-			pixmap := pixmaps.item(rm_attribute_pixmap_string(a_prop_def))
+			pixmap := pixmaps.item (rm_attribute_pixmap_string(a_prop_def))
 			a_ti.set_pixmap (pixmap)
 			ev_tree_item_stack.item.extend (a_ti)
 			ev_tree_item_stack.extend (a_ti)

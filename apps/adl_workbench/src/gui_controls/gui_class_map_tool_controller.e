@@ -56,7 +56,7 @@ feature -- Commands
 			docking_pane.set_long_title (current_arch_cat.selected_class.display_name)
 			docking_pane.set_short_title (current_arch_cat.selected_class.display_name.substring (1, current_arch_cat.selected_class.display_name.count.min (10)))
 			docking_pane.set_pixmap (pixmaps [current_arch_cat.selected_class.group_name])
-			tool.populate (current_arch_cat.selected_class.class_definition)
+			tool.populate (current_arch_cat.selected_class)
 			docking_pane.set_focus
 		end
 
