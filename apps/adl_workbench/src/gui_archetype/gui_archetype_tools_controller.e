@@ -88,18 +88,19 @@ feature -- Commands
 		local
 			arch_tool: GUI_ARCHETYPE_TOOL
 			docking_pane: SD_CONTENT
-			keys: ARRAYED_LIST [INTEGER]
+			last_ed: SD_CONTENT
 		do
+			last_ed := docking_manager_last_editor
+
 			current_tool_id := tools.count + 1
 			create arch_tool.make (current_tool_id, select_archetype_from_gui_data)
 
 			-- set up docking container
-			create docking_pane.make_with_widget_title_pixmap (arch_tool.ev_root_container, pixmaps ["archetype_2"], current_tool_id.out)
+			create docking_pane.make_with_widget_title_pixmap (arch_tool.ev_root_container, pixmaps ["archetype_2"], "archetype tool #" + current_tool_id.out)
 			docking_manager.contents.extend (docking_pane)
 			docking_pane.set_type ({SD_ENUMERATION}.editor)
-			if tools.count > 0 then
-				create keys.make_from_array (tools.current_keys)
-				docking_pane.set_tab_with (tools.item (keys.last).docking_pane, False)
+			if attached last_ed then
+				docking_pane.set_tab_with (last_ed, False)
 			else
 				docking_pane.set_top ({SD_ENUMERATION}.top)
 			end
@@ -159,6 +160,7 @@ feature -- Commands
 			current_docking_pane.set_short_title (current_arch_cat.selected_archetype.id.as_abbreviated_string)
 			current_docking_pane.set_pixmap (pixmaps [current_arch_cat.selected_archetype.group_name])
 			current_tool.populate (current_arch_cat.selected_archetype)
+			current_docking_pane.set_focus
 		end
 
 	clear
@@ -177,6 +179,18 @@ feature {NONE} -- Implementation
 	tools: HASH_TABLE [TUPLE [tool: GUI_ARCHETYPE_TOOL; docking_pane: SD_CONTENT], INTEGER]
 
 	docking_manager: attached SD_DOCKING_MANAGER
+
+	docking_manager_last_editor: SD_CONTENT
+			-- obtain last (i.e. rightmost) editor from docking manager
+			-- FIXME: should be managed inside SD_DOCKING_MANAGER
+		do
+			from docking_manager.contents.start until docking_manager.contents.off loop
+				if docking_manager.contents.item.type = {SD_ENUMERATION}.editor then
+					Result := docking_manager.contents.item
+				end
+				docking_manager.contents.forth
+			end
+		end
 
 	select_archetype_from_gui_data: PROCEDURE [ANY, TUPLE [EV_ANY]]
 			-- agent provided by upper level of GUI for doing something

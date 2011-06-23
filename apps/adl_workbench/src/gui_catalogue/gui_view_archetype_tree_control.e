@@ -277,6 +277,12 @@ feature {NONE} -- Implementation
 			Result := "pebble"
 		end
 
+	on_pointer_button (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
+		do
+
+		end
+
+
 invariant
 	valid_artefact_types: (create {ARTEFACT_TYPE}).valid_artefact_types(artefact_types)
 

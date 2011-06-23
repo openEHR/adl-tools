@@ -179,7 +179,6 @@ feature {NONE} -- Initialization
 			create_new_statistics_tool
 			create_new_status_tool
 			archetype_tools.create_new_tool
-	--		docking_manager.minimize_editor_area
 
 			-- set up events
 			edit_menu_copy.select_actions.extend (agent text_widget_handler.on_copy)
@@ -976,7 +975,9 @@ feature -- Archetype Events
 								(create {GUI_PLATFORM_SPECIFIC_TOOLS}).show_combo_box_list (imp)
 							end
 						else
-							-- discrete visual feedback for no match?
+							archetype_search_combo.set_text (create_message_content ("no_match_found", Void))
+							archetype_search_combo.set_focus
+							archetype_search_combo.select_all
 						end
 					end
 
@@ -984,7 +985,9 @@ feature -- Archetype Events
 						select_archetype (key)
 					end
 				else -- key too short
-					-- visual feedback?
+					archetype_search_combo.set_text (create_message_content ("key_too_short", Void))
+					archetype_search_combo.set_focus
+					archetype_search_combo.select_all
 				end
 
 				archetype_search_combo.select_actions.resume
@@ -1071,7 +1074,7 @@ feature -- Archetype Events
 			-- display the class currently selected in `archetype_catalogue'.
 		do
 			if attached current_arch_cat as cat and then cat.has_selected_class then
-				populate_class_map_tool
+				class_map_tool.populate
 			end
 		end
 
@@ -1125,6 +1128,13 @@ feature -- Controls
 			archetype_tools.populate_current_tool
 		end
 
+feature -- Class map tool
+
+	class_map_tool: GUI_CLASS_MAP_TOOL_CONTROLLER
+		once
+			create Result.make (attached_docking_manager)
+		end
+
 feature -- Status Tool
 
 	status_tool: GUI_STATUS_TOOL
@@ -1142,7 +1152,7 @@ feature -- Status Tool
 			docking_pane.set_long_title ("Status")
 			docking_pane.set_short_title ("Status")
 			docking_pane.set_top ({SD_ENUMERATION}.bottom)
-	--		docking_pane.set_auto_hide ({SD_ENUMERATION}.bottom)
+			docking_pane.set_auto_hide ({SD_ENUMERATION}.bottom)
 		end
 
 feature -- Statistics Tool
@@ -1162,58 +1172,6 @@ feature -- Statistics Tool
 			docking_pane.set_long_title ("Statistics")
 			docking_pane.set_short_title ("Statistics")
 			docking_pane.set_auto_hide ({SD_ENUMERATION}.bottom)
-		end
-
-feature -- Class map tool
-
-	class_map_tool: GUI_CLASS_MAP_CONTROL
-
-	create_new_class_map_tool
-		do
-			create class_map_tool.make (agent go_to_selected_archetype)
-			create class_map_docking_pane.make_with_widget_title_pixmap (class_map_tool.ev_root_container, pixmaps ["class_concrete"], "Class map")
-			attached_docking_manager.contents.extend (class_map_docking_pane)
-			class_map_docking_pane.close_request_actions.extend (agent remove_class_tool)
-			class_map_docking_pane.set_type ({SD_ENUMERATION}.editor)
-			if archetype_tools.tools_count > 0 then
-				class_map_docking_pane.set_tab_with (archetype_tools.last_tool.docking_pane, False)
-			else
-				class_map_docking_pane.set_top ({SD_ENUMERATION}.top)
-			end
-		end
-
-	class_map_docking_pane: SD_CONTENT
-
-	populate_class_map_tool
-			-- Populate content from visual controls.
-		require
-			has_current_profile
-		do
-			if not attached class_map_docking_pane then
-				create_new_class_map_tool
-			end
-			class_map_docking_pane.set_long_title (current_arch_cat.selected_class.ontological_name)
-			class_map_docking_pane.set_short_title (current_arch_cat.selected_class.ontological_name.substring (1, current_arch_cat.selected_class.ontological_name.count.min (10)))
-			class_map_docking_pane.set_pixmap (pixmaps [current_arch_cat.selected_class.group_name])
-			class_map_tool.populate (current_arch_cat.selected_class.class_definition)
-		end
-
-	clear_class_map_tool
-			-- Populate content from visual controls.
-		do
-			if attached class_map_tool then
-				class_map_docking_pane.set_long_title ("")
-				class_map_docking_pane.set_short_title ("")
-				class_map_docking_pane.set_pixmap (pixmaps ["class_concrete"])
-				class_map_tool.clear
-			end
-		end
-
-	remove_class_tool
-		do
-			class_map_docking_pane.close
-			class_map_docking_pane.destroy
-			class_map_docking_pane := Void
 		end
 
 feature -- Clipboard
@@ -1290,7 +1248,7 @@ feature {NONE} -- Implementation
 
 	clear_all_tools
 		do
-			clear_class_map_tool
+			class_map_tool.clear
 			archetype_tools.clear
 		end
 

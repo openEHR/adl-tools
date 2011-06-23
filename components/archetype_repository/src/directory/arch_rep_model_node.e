@@ -83,8 +83,10 @@ feature -- Access
 	class_definition: BMM_CLASS_DEFINITION
 
 	ontological_name: STRING
+			-- package_name '-' class_name
 
 	display_name: STRING
+			-- class_name
 
 feature -- Status Report
 

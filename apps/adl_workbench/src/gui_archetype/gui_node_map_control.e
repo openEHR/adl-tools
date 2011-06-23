@@ -4,7 +4,7 @@ note
 	keywords:    "archetype, cadl, gui"
 	author:      "Thomas Beale"
 	support:     "http://www.openehr.org/issues/browse/AWBPR"
-	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -47,91 +47,90 @@ feature -- Initialisation
 
 			-- create widgets
 			create ev_root_container
-			create gui_tree
-			create view_controls_vbox
-			create expand_button
-			create expand_one_button
-			create collapse_one_button
-			create l_ev_cell_2
-			create rm_visibility_controls
-			create rm_visibility_vbox
-			create rm_off_rb
-			create rm_classes_on_rb
-			create rm_attrs_on_rb
+			create ev_tree
+			create ev_view_controls_vbox
+			create ev_expand_button
+			create ev_expand_one_button
+			create ev_collapse_one_button
+			create ev_cell
+			create ev_rm_visibility_controls
+			create ev_rm_visibility_vbox
+			create ev_rm_off_rb
+			create ev_rm_classes_on_rb
+			create ev_rm_attrs_on_rb
 
 			-- connect them together
-			ev_root_container.extend (gui_tree)
-			ev_root_container.extend (view_controls_vbox)
-			view_controls_vbox.extend (expand_button)
-			view_controls_vbox.extend (expand_one_button)
-			view_controls_vbox.extend (collapse_one_button)
-			view_controls_vbox.extend (l_ev_cell_2)
-			view_controls_vbox.extend (rm_visibility_controls)
-			rm_visibility_controls.extend (rm_visibility_vbox)
-			rm_visibility_vbox.extend (rm_off_rb)
-			rm_visibility_vbox.extend (rm_classes_on_rb)
-			rm_visibility_vbox.extend (rm_attrs_on_rb)
+			ev_root_container.extend (ev_tree)
+			ev_root_container.extend (ev_view_controls_vbox)
+			ev_view_controls_vbox.extend (ev_expand_button)
+			ev_view_controls_vbox.extend (ev_expand_one_button)
+			ev_view_controls_vbox.extend (ev_collapse_one_button)
+			ev_view_controls_vbox.extend (ev_cell)
+			ev_view_controls_vbox.extend (ev_rm_visibility_controls)
+			ev_rm_visibility_controls.extend (ev_rm_visibility_vbox)
+			ev_rm_visibility_vbox.extend (ev_rm_off_rb)
+			ev_rm_visibility_vbox.extend (ev_rm_classes_on_rb)
+			ev_rm_visibility_vbox.extend (ev_rm_attrs_on_rb)
 
 			-- set visual characteristics
 			ev_root_container.set_minimum_width (1)
 			ev_root_container.set_minimum_height (160)
-			ev_root_container.disable_item_expand (view_controls_vbox)
-			gui_tree.set_background_color (editable_colour)
+			ev_root_container.disable_item_expand (ev_view_controls_vbox)
+			ev_tree.set_background_color (editable_colour)
 --			gui_tree.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
-			gui_tree.set_minimum_width (arch_tree_min_width)
-			gui_tree.set_minimum_height (60)
-			view_controls_vbox.set_minimum_width (140)
-			view_controls_vbox.set_minimum_height (170)
-			view_controls_vbox.set_padding (padding_width)
-			view_controls_vbox.set_border_width (border_width)
-			view_controls_vbox.disable_item_expand (expand_button)
-			view_controls_vbox.disable_item_expand (expand_one_button)
-			view_controls_vbox.disable_item_expand (collapse_one_button)
-			view_controls_vbox.disable_item_expand (l_ev_cell_2)
-			view_controls_vbox.disable_item_expand (rm_visibility_controls)
-			expand_button.set_text ("Expand All")
-			expand_button.set_tooltip ("Completely expand or collapse the Node Map")
-			expand_button.set_minimum_width (tree_control_panel_width)
-			expand_one_button.set_text ("Expand One")
-			expand_one_button.set_tooltip ("Expand one level of the Node Map")
-			expand_one_button.set_minimum_width (tree_control_panel_width)
-			collapse_one_button.set_text ("Collapse One")
-			collapse_one_button.set_tooltip ("Collapse one level of the Node Map")
-			collapse_one_button.set_minimum_width (tree_control_panel_width)
-			l_ev_cell_2.set_minimum_height (20)
-			rm_visibility_controls.set_text ("RM visibility")
-			rm_visibility_controls.set_minimum_width (100)
-			rm_visibility_controls.set_minimum_height (95)
-			rm_visibility_vbox.set_minimum_height (70)
-			rm_visibility_vbox.set_border_width (border_width)
-			rm_off_rb.set_text ("Hide")
-			rm_off_rb.set_tooltip ("Hide RM details of the archetyped nodes")
-			rm_classes_on_rb.set_text ("+ class names")
-			rm_classes_on_rb.set_tooltip ("Display RM class names of archetyped nodes")
-			rm_attrs_on_rb.set_text ("+ class properties")
-			rm_attrs_on_rb.set_tooltip ("Show non-archetyped RM properties")
-			rm_attrs_on_rb.set_minimum_width (60)
-			rm_attrs_on_rb.set_minimum_height (23)
+			ev_tree.set_minimum_width (arch_tree_min_width)
+			ev_tree.set_minimum_height (60)
+			ev_view_controls_vbox.set_minimum_width (140)
+			ev_view_controls_vbox.set_minimum_height (170)
+			ev_view_controls_vbox.set_padding (padding_width)
+			ev_view_controls_vbox.set_border_width (border_width)
+			ev_view_controls_vbox.disable_item_expand (ev_expand_button)
+			ev_view_controls_vbox.disable_item_expand (ev_expand_one_button)
+			ev_view_controls_vbox.disable_item_expand (ev_collapse_one_button)
+			ev_view_controls_vbox.disable_item_expand (ev_cell)
+			ev_view_controls_vbox.disable_item_expand (ev_rm_visibility_controls)
+			ev_expand_button.set_text (create_message_content ("expand_collapse_complete_button_text", Void))
+			ev_expand_button.set_tooltip (create_message_content ("expand_collapse_complete_tooltip", Void))
+			ev_expand_button.set_minimum_width (tree_control_panel_width)
+			ev_expand_one_button.set_text (create_message_content ("expand_one_level_button_text", Void))
+			ev_expand_one_button.set_tooltip (create_message_content ("expand_one_level_tooltip", Void))
+			ev_expand_one_button.set_minimum_width (tree_control_panel_width)
+			ev_collapse_one_button.set_text (create_message_content ("collapse_one_level_button_text", Void))
+			ev_collapse_one_button.set_tooltip (create_message_content ("collapse_one_level_tooltip", Void))
+			ev_collapse_one_button.set_minimum_width (tree_control_panel_width)
+			ev_cell.set_minimum_height (20)
+			ev_rm_visibility_controls.set_text ("RM visibility")
+			ev_rm_visibility_controls.set_minimum_width (100)
+			ev_rm_visibility_controls.set_minimum_height (95)
+			ev_rm_visibility_vbox.set_minimum_height (70)
+			ev_rm_visibility_vbox.set_border_width (border_width)
+			ev_rm_off_rb.set_text (create_message_content ("hide_rm_details_button_text", Void))
+			ev_rm_off_rb.set_tooltip (create_message_content ("hide_rm_details_tooltip", Void))
+			ev_rm_classes_on_rb.set_text (create_message_content ("display_rm_class_names_button_text", Void))
+			ev_rm_classes_on_rb.set_tooltip (create_message_content ("display_rm_class_names_tooltip", Void))
+			ev_rm_attrs_on_rb.set_text (create_message_content ("show_rm_properties_button_text", Void))
+			ev_rm_attrs_on_rb.set_tooltip (create_message_content ("show_rm_properties_tooltip", Void))
+			ev_rm_attrs_on_rb.set_minimum_width (60)
+			ev_rm_attrs_on_rb.set_minimum_height (23)
 
 			in_technical_mode := show_technical_view
 			in_reference_model_mode := show_reference_model_view
 			if in_reference_model_mode then
-				rm_attrs_on_rb.enable_select
+				ev_rm_attrs_on_rb.enable_select
 			elseif in_technical_mode then
-				rm_classes_on_rb.enable_select
+				ev_rm_classes_on_rb.enable_select
 			else
-				rm_off_rb.enable_select
+				ev_rm_off_rb.enable_select
 			end
 
 			-- set events
-			gui_tree.select_actions.extend (agent on_item_select)
-			expand_button.select_actions.extend (agent on_toggle_expand_tree)
-			expand_one_button.select_actions.extend (agent on_expand_tree_one_level)
-			collapse_one_button.select_actions.extend (agent on_shrink_tree_one_level)
-			rm_off_rb.select_actions.extend (agent on_domain_selected)
-			rm_classes_on_rb.select_actions.extend (agent on_technical_selected)
-			rm_attrs_on_rb.select_actions.extend (agent on_reference_model_selected)
-
+			ev_tree.select_actions.extend (agent on_item_select)
+			ev_expand_button.select_actions.extend (agent on_toggle_expand_tree)
+			ev_expand_one_button.select_actions.extend (agent on_expand_tree_one_level)
+			ev_collapse_one_button.select_actions.extend (agent on_shrink_tree_one_level)
+			ev_rm_off_rb.select_actions.extend (agent on_domain_selected)
+			ev_rm_classes_on_rb.select_actions.extend (agent on_technical_selected)
+			ev_rm_attrs_on_rb.select_actions.extend (agent on_reference_model_selected)
 		end
 
 feature -- Access
@@ -268,7 +267,7 @@ feature -- Commands
 
 	clear
 		do
-			gui_tree.wipe_out
+			ev_tree.wipe_out
 		end
 
 	populate (aca: attached ARCH_CAT_ARCHETYPE; differential_view_flag: BOOLEAN; a_language: attached STRING)
@@ -292,13 +291,13 @@ feature -- Commands
 
 			-- populate from definition
 			create c_node_map_builder
-			c_node_map_builder.initialise (target_archetype, selected_language, gui_tree, in_technical_mode, False, gui_node_map)
+			c_node_map_builder.initialise (target_archetype, selected_language, ev_tree, in_technical_mode, False, gui_node_map)
 			create a_c_iterator.make (target_archetype.definition, c_node_map_builder)
 			a_c_iterator.do_all
 
 			-- add RM attributes if in RM mode
 			if in_reference_model_mode then
-				gui_tree.recursive_do_all (agent node_add_rm_attributes (?))
+				ev_tree.recursive_do_all (agent node_add_rm_attributes (?))
 			end
 
 			-- populate from invariants
@@ -325,16 +324,16 @@ feature -- Commands
 
 			-- repopulate from definition
 			create c_node_map_builder
-			c_node_map_builder.initialise (target_archetype, selected_language, gui_tree, in_technical_mode, True, gui_node_map)
+			c_node_map_builder.initialise (target_archetype, selected_language, ev_tree, in_technical_mode, True, gui_node_map)
 			create a_c_iterator.make (target_archetype.definition, c_node_map_builder)
 			a_c_iterator.do_all
 
 			-- update reference mode nodes
 			if in_reference_model_mode_changed then
 				if in_reference_model_mode then
-					gui_tree.recursive_do_all (agent node_add_rm_attributes (?))
+					ev_tree.recursive_do_all (agent node_add_rm_attributes (?))
 				else
-					gui_tree.recursive_do_all (agent node_remove_rm_attributes (?))
+					ev_tree.recursive_do_all (agent node_remove_rm_attributes (?))
 				end
 				in_reference_model_mode_changed := False
 			end
@@ -343,20 +342,20 @@ feature -- Commands
 	item_select
 			-- Do something when an item is selected.
 		do
-			if attached {C_COMPLEX_OBJECT} gui_tree.selected_item.data as c_c_o then
+			if attached {C_COMPLEX_OBJECT} ev_tree.selected_item.data as c_c_o then
 				if c_c_o.is_addressable then
 					call_code_select_action (c_c_o.node_id)
 				end
 
-			elseif attached {CONSTRAINT_REF} gui_tree.selected_item.data as c_r then
+			elseif attached {CONSTRAINT_REF} ev_tree.selected_item.data as c_r then
 				call_code_select_action (c_r.target)
 
-			elseif attached {ORDINAL} gui_tree.selected_item.data as ord then
+			elseif attached {ORDINAL} ev_tree.selected_item.data as ord then
 				if ord.symbol.terminology_id.is_local then
 					call_code_select_action (ord.symbol.code_string)
 				end
 
-			elseif attached {STRING} gui_tree.selected_item.data as str and then is_valid_code (str) then
+			elseif attached {STRING} ev_tree.selected_item.data as str and then is_valid_code (str) then
 				if ontology.has_term_code (str) then
 					call_code_select_action (str)
 				end
@@ -369,25 +368,25 @@ feature -- Commands
 			is_expanded := not is_expanded
 
 			if is_expanded then
-				gui_tree.recursive_do_all (agent ev_tree_item_expand)
-				expand_button.set_text ("Collapse All")
+				ev_tree.recursive_do_all (agent ev_tree_item_expand)
+				ev_expand_button.set_text ("Collapse All")
 			else
-				gui_tree.recursive_do_all (agent ev_tree_item_shrink)
-				expand_button.set_text ("Expand All")
+				ev_tree.recursive_do_all (agent ev_tree_item_shrink)
+				ev_expand_button.set_text ("Expand All")
 			end
 		end
 
 	shrink_to_level (a_type: STRING)
 			-- Shrink the tree control up to items of type `a_type'.
 		do
-			gui_tree.recursive_do_all (agent ev_tree_item_shrink_to_level (a_type, ?))
+			ev_tree.recursive_do_all (agent ev_tree_item_shrink_to_level (a_type, ?))
 		end
 
 	expand_one_level
 			-- Expand the tree control one level further.
 		do
 			create node_list.make (0)
-			gui_tree.recursive_do_all (agent ev_tree_item_expand_one_level)
+			ev_tree.recursive_do_all (agent ev_tree_item_expand_one_level)
 
 			from node_list.start until node_list.off loop
 				node_list.item.expand
@@ -399,7 +398,7 @@ feature -- Commands
 			-- Shrink the tree control one level further.
 		do
 			create node_list.make (0)
-			gui_tree.recursive_do_all (agent ev_tree_item_collapse_one_level)
+			ev_tree.recursive_do_all (agent ev_tree_item_collapse_one_level)
 
 			from node_list.start until node_list.off loop
 				node_list.item.collapse
@@ -415,7 +414,7 @@ feature -- Commands
 		do
 			if target_archetype.is_specialised and not target_archetype.is_template then
 				create node_list.make(0)
-				gui_tree.recursive_do_all(agent ev_tree_item_roll_up(?))
+				ev_tree.recursive_do_all(agent ev_tree_item_roll_up(?))
 
 				from node_list.start until node_list.off loop
 					node_list.item.collapse
@@ -426,17 +425,17 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	gui_tree: EV_TREE
+	ev_tree: EV_TREE
 
-	expand_button, expand_one_button, collapse_one_button: EV_BUTTON
+	ev_expand_button, ev_expand_one_button, ev_collapse_one_button: EV_BUTTON
 
-	rm_off_rb, rm_classes_on_rb, rm_attrs_on_rb: EV_RADIO_BUTTON
+	ev_rm_off_rb, ev_rm_classes_on_rb, ev_rm_attrs_on_rb: EV_RADIO_BUTTON
 
-	view_controls_vbox, rm_visibility_vbox: EV_VERTICAL_BOX
+	ev_view_controls_vbox, ev_rm_visibility_vbox: EV_VERTICAL_BOX
 
-	rm_visibility_controls: EV_FRAME
+	ev_rm_visibility_controls: EV_FRAME
 
-	l_ev_cell_2: EV_CELL
+	ev_cell: EV_CELL
 
 	rm_schema: BMM_SCHEMA
 
@@ -552,7 +551,7 @@ feature {NONE} -- Implementation
 					end
 					an_ev_tree_node.forth
 				end
-			elseif an_ev_tree_node = gui_tree.item then
+			elseif an_ev_tree_node = ev_tree.item then
 				node_list.extend (an_ev_tree_node)
 			end
 		end
@@ -622,7 +621,7 @@ feature {NONE} -- Implementation
 				invariants := target_archetype.invariants
 				create a_ti_sub.make_with_text ("invariants:")
 				a_ti_sub.set_pixmap(pixmaps.item ("CADL_INVARIANT"))
-				gui_tree.extend (a_ti_sub)
+				ev_tree.extend (a_ti_sub)
 
 				from invariants.start until invariants.off loop
 					create s.make_empty
@@ -646,9 +645,9 @@ feature {NONE} -- Implementation
 	ev_tree_do_all(node_enter_action, node_exit_action: attached PROCEDURE[ANY, TUPLE [EV_TREE_NODE]])
 			-- do enter_action and exit_action to all nodes in the structure
 		do
-			from gui_tree.start until gui_tree.off loop
-				ev_tree_do_all_nodes (gui_tree.item, node_enter_action, node_exit_action)
-				gui_tree.forth
+			from ev_tree.start until ev_tree.off loop
+				ev_tree_do_all_nodes (ev_tree.item, node_enter_action, node_exit_action)
+				ev_tree.forth
 			end
 		end
 

@@ -36,50 +36,47 @@ create
 
 feature -- Initialisation
 
-	make (a_archetype_explorer_select_agent: PROCEDURE [ANY, TUPLE])
+	make
 		do
 			-- create root widget
 			create ev_root_container
-			create action_bar
+			create ev_action_bar
 			create ev_class_id
-			create view_label
+			create ev_view_label
 			create ev_view_tool_bar
-			create differential_view_button
-			create flat_view_button
+			create ev_differential_view_button
+			create ev_flat_view_button
 			create ev_tree
 
 			-- connect widgets
-			ev_root_container.extend (action_bar)
+			ev_root_container.extend (ev_action_bar)
 			ev_root_container.extend (ev_tree)
 
-			action_bar.extend (ev_class_id)
-			action_bar.extend (view_label)
-			action_bar.extend (ev_view_tool_bar)
-			ev_view_tool_bar.extend (differential_view_button)
-			ev_view_tool_bar.extend (flat_view_button)
+			ev_action_bar.extend (ev_class_id)
+			ev_action_bar.extend (ev_view_label)
+			ev_action_bar.extend (ev_view_tool_bar)
+			ev_view_tool_bar.extend (ev_differential_view_button)
+			ev_view_tool_bar.extend (ev_flat_view_button)
 
 			-- visual characteristics
-			ev_root_container.disable_item_expand (action_bar)
-			action_bar.set_padding (10)
-			action_bar.set_border_width (4)
-			action_bar.disable_item_expand (view_label)
-			action_bar.disable_item_expand (ev_view_tool_bar)
+			ev_root_container.disable_item_expand (ev_action_bar)
+			ev_action_bar.set_padding (10)
+			ev_action_bar.set_border_width (4)
+			ev_action_bar.disable_item_expand (ev_view_label)
+			ev_action_bar.disable_item_expand (ev_view_tool_bar)
 			ev_class_id.disable_edit
-			view_label.set_text ("View ")
-			differential_view_button.set_pixmap (pixmaps ["diff"])
-			flat_view_button.set_pixmap (pixmaps ["flat"])
-			differential_view_button.set_tooltip ("Set differential archetype view")
-			flat_view_button.set_tooltip ("Set flat archetype view")
+			ev_view_label.set_text ("View ")
+			ev_differential_view_button.set_pixmap (pixmaps ["diff"])
+			ev_flat_view_button.set_pixmap (pixmaps ["flat"])
+			ev_differential_view_button.set_tooltip (create_message_content ("Set differential archetype view", Void))
+			ev_flat_view_button.set_tooltip (create_message_content ("Set flat archetype view", Void))
 
 			-- set events: action bar
-			differential_view_button.select_actions.extend (agent on_differential_view)
-			flat_view_button.select_actions.extend (agent on_flat_view)
-
-			-- set GUI feedback
-			archetype_explorer_select_agent := a_archetype_explorer_select_agent
+			ev_differential_view_button.select_actions.extend (agent on_differential_view)
+			ev_flat_view_button.select_actions.extend (agent on_flat_view)
 
 			differential_view := True
-			differential_view_button.enable_select
+			ev_differential_view_button.enable_select
 		end
 
 feature -- Access
@@ -146,16 +143,13 @@ feature -- Commands
 
 			class_def.do_supplier_closure (not differential_view, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 			ev_tree.recursive_do_all (agent ev_tree_expand)
-			if attached archetype_explorer_select_agent then
-				archetype_explorer_select_agent.call ([])
-			end
 		end
 
 	select_flat_view
 			-- Called by `select_actions' of `flat_view_button'.
 		do
-			if not flat_view_button.is_selected then
-				flat_view_button.enable_select
+			if not ev_flat_view_button.is_selected then
+				ev_flat_view_button.enable_select
 				set_view (False)
 			end
 		end
@@ -163,25 +157,23 @@ feature -- Commands
 	select_differential_view
 			-- Called by `select_actions' of `differential_view_button'.
 		do
-			if not differential_view_button.is_selected then
-				differential_view_button.enable_select
+			if not ev_differential_view_button.is_selected then
+				ev_differential_view_button.enable_select
 				set_view (True)
 			end
 		end
 
 feature {NONE} -- Implementation
 
-	action_bar: EV_HORIZONTAL_BOX
+	ev_action_bar: EV_HORIZONTAL_BOX
 
 	ev_view_tool_bar: EV_TOOL_BAR
 
-	differential_view_button, flat_view_button: EV_TOOL_BAR_RADIO_BUTTON
+	ev_differential_view_button, ev_flat_view_button: EV_TOOL_BAR_RADIO_BUTTON
 
-	view_label: EV_LABEL
+	ev_view_label: EV_LABEL
 
 	ev_tree_item_stack: ARRAYED_STACK[EV_TREE_ITEM]
-
-	archetype_explorer_select_agent: PROCEDURE [ANY, TUPLE]
 
    	populate_root_node
 			-- Add root node representing class to `gui_file_tree'.

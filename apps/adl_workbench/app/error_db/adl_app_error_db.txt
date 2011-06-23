@@ -48,9 +48,32 @@ templates = <
 		-- GUI_SOT_MAP_CONTROL
 		["slots_incomplete_w1"] = <"this list may be incomplete. To be sure, run Build All under the Repository menu.">
 
+		-- GUI_NODE_MAP_CONTROL 
+		["expand_collapse_complete_button_text"] = <"Expand All">
+		["expand_collapse_complete_tooltip"] = <"Completely expand or collapse the Node Map">
+
+		["expand_one_level_button_text"] = <"Expand One">
+		["expand_one_level_tooltip"] = <"Expand one level of the Node Map">
+
+		["collapse_one_level_button_text"] = <"Collapse One">
+		["collapse_one_level_tooltip"] = <"Collapse one level of the Node Map">
+
+		["hide_rm_details_button_text"] = <"Hide">
+		["hide_rm_details_tooltip"] = <"Hide RM details of the archetyped nodes">
+
+		["display_rm_class_names_button_text"] = <"+ class names">
+		["display_rm_class_names_tooltip"] = <"Display RM class names of archetyped nodes">
+
+		["show_rm_properties_button_text"] = <"+ RM properties">
+		["show_rm_properties_tooltip"] = <"Show non-archetyped RM properties">
+
 		-- GUI_TEST_ARCHETYPE_TREE_CONTROL
 		["Test_arch_compare_i1"] = <"Archetype source lengths same but texts differ">
 		["Test_arch_compare_i2"] = <"Archetype source lengths differ: original =  $1; new = $2">
+
+		-- GUI_CLASS_MAP_CONTROL
+		["set_differential_archetype_view"] = <"Set differential archetype view">
+		["set_flat_archetype_view"] = <"Set flat archetype view">
 
 		-- ARCHETYPE_COMPILER
 		["arch_context_make_flat_i1"] = <"Generated differential archetype from specialised flat archetype">
