@@ -24,7 +24,7 @@ inherit
 			{NONE} all
 		end
 
-	GUI_UTILITIES
+	STRING_UTILITIES
 		export
 			{NONE} all
 		end
@@ -38,8 +38,6 @@ inherit
 		export
 			{NONE} all
 		end
-
-	SHARED_KNOWLEDGE_REPOSITORY
 
 create
 	make

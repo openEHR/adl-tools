@@ -30,16 +30,6 @@ inherit
 			{NONE} all
 		end
 
-	EV_KEY_CONSTANTS
-		export
-			{NONE} all
-		end
-
-	EV_SHARED_APPLICATION
-		export
-			{NONE} all
-		end
-
 create
 	make
 

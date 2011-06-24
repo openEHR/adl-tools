@@ -47,7 +47,10 @@ feature -- Definitions
 			-- these are
 
 	Archetype_dadl_file_extension: STRING = ".dadl"
-			-- Extension for ADL2 format archetype files.
+			-- Extension for dADL format archetype files.
+
+	Archetype_xml_file_extension: STRING = ".xml"
+			-- Extension for XML format archetype files.
 
 	Adl_versions: ARRAYED_LIST [STRING]
 			-- list of ADL versions known in this tool

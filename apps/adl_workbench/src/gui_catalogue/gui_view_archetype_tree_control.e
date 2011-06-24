@@ -15,20 +15,7 @@ note
 class GUI_VIEW_ARCHETYPE_TREE_CONTROL
 
 inherit
-	SHARED_APP_UI_RESOURCES
-		export
-			{NONE} all
-		end
-
-	SHARED_KNOWLEDGE_REPOSITORY
-		export
-			{NONE} all
-		end
-
-	SHARED_REFERENCE_MODEL_ACCESS
-		export
-			{NONE} all
-		end
+	GUI_ARTEFACT_TREE_CONTROL
 
 	STRING_UTILITIES
 		export
@@ -44,63 +31,21 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: attached MAIN_WINDOW; a_tree_control: attached EV_TREE; a_label: attached EV_LABEL; artefact_types_list: ARRAY [INTEGER])
+	make (a_parse_archetype_agent, an_edit_archetype_agent, a_select_archetype_agent, a_select_class_agent: PROCEDURE [ANY, TUPLE])
 			-- Create controller for the tree representing archetype files found in `archetype_directory'.
-		require
-			valid_artefact_type: (create {ARTEFACT_TYPE}).valid_artefact_types(artefact_types_list)
 		do
-			gui := a_main_window
-   			gui_tree := a_tree_control
-   			explorer_label := a_label
-   			gui_tree.set_minimum_width (gui.max_arch_explorer_width)
-   			artefact_types := artefact_types_list
+			parse_archetype_agent := a_parse_archetype_agent
+			edit_archetype_agent := an_edit_archetype_agent
+			select_archetype_agent := a_select_archetype_agent
+			select_class_agent := a_select_class_agent
+
+			-- make UI
+			make_ui ("ADL 1.5 Archetypes", pixmaps ["archetype_category"])
+
+			artefact_types := <<{ARTEFACT_TYPE}.archetype, {ARTEFACT_TYPE}.template_component, {ARTEFACT_TYPE}.template>>
 		end
 
 feature -- Commands
-
-	display_details_of_selected_item_after_delay
-			-- When the user selects an item in `gui_file_tree', delay before displaying it.
-		do
-			if delay_to_make_keyboard_navigation_practical = Void then
-				create delay_to_make_keyboard_navigation_practical
-
-				delay_to_make_keyboard_navigation_practical.actions.extend (agent
-					do
-						delay_to_make_keyboard_navigation_practical.set_interval (0)
-
-						if attached gui_tree.selected_item then
-							if attached {ARCH_CAT_ITEM} gui_tree.selected_item.data as aci then
-								if attached current_arch_cat as dir then
-									dir.set_selected_item (aci)
-								end
-
-								if attached {ARCH_CAT_ARCHETYPE} aci then
-									gui.parse_archetype
-								else
-									gui.display_class
-								end
-							end
-						end
-					end)
-			end
-
-			delay_to_make_keyboard_navigation_practical.set_interval (300)
-		end
-
-	populate
-			-- Populate `gui_file_tree' from `archetype_directory'.
-		do
-			-- update tree
-			create gui_node_descriptor_map.make(0)
-			gui_tree.wipe_out
- 			create gui_tree_item_stack.make (0)
-
- 			if has_current_profile then
-	 			current_arch_cat.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
-				gui_tree.recursive_do_all (agent ev_tree_expand)
-				gui.go_to_selected_archetype
- 			end
-		end
 
 	update_tree_node_for_archetype (aca: attached ARCH_CAT_ARCHETYPE)
 			-- update Explorer tree node with changes in compilation status
@@ -108,12 +53,12 @@ feature -- Commands
 			an_id: STRING
 		do
 			an_id := aca.id.as_string
-			if gui_node_descriptor_map.has (an_id) then
-				update_tree_node (gui_node_descriptor_map.item (aca.ontological_name))
+			if ev_node_descriptor_map.has (an_id) then
+				update_tree_node (ev_node_descriptor_map.item (aca.ontological_name))
 			elseif attached aca.old_id then
-				if gui_node_descriptor_map.has (aca.old_id.as_string) then
-					gui_node_descriptor_map.replace_key (aca.ontological_name, aca.old_id.as_string)
-					update_tree_node (gui_node_descriptor_map.item (aca.ontological_name))
+				if ev_node_descriptor_map.has (aca.old_id.as_string) then
+					ev_node_descriptor_map.replace_key (aca.ontological_name, aca.old_id.as_string)
+					update_tree_node (ev_node_descriptor_map.item (aca.ontological_name))
 				end
 			end
 		end
@@ -121,79 +66,95 @@ feature -- Commands
 	select_item (ari_ont_id: attached STRING)
 			-- ensure node with ontological node id `ari_ont_id' is visible in the tree
 		do
-			if gui_node_descriptor_map.has (ari_ont_id) and gui_tree.is_displayed then
-				gui_tree.ensure_item_visible (gui_node_descriptor_map.item (ari_ont_id))
-				gui_node_descriptor_map.item (ari_ont_id).enable_select
+			if ev_node_descriptor_map.has (ari_ont_id) and ev_tree.is_displayed then
+				ev_tree.ensure_item_visible (ev_node_descriptor_map.item (ari_ont_id))
+				ev_node_descriptor_map.item (ari_ont_id).enable_select
 			end
 		end
 
 	ensure_item_visible (ari_ont_id: attached STRING)
 			-- ensure node with ontological node id `ari_ont_id' is visible in the tree
 		do
-			if gui_node_descriptor_map.has(ari_ont_id) and gui_tree.is_displayed then
-				gui_tree.ensure_item_visible (gui_node_descriptor_map.item (ari_ont_id))
+			if ev_node_descriptor_map.has(ari_ont_id) and ev_tree.is_displayed then
+				ev_tree.ensure_item_visible (ev_node_descriptor_map.item (ari_ont_id))
+			end
+		end
+
+feature -- Events
+
+	tree_item_select
+			-- Display details of `archetype_file_tree' when the user selects it.
+		do
+			if attached ev_tree.selected_item then
+				if attached current_arch_cat as cat and then cat.selected_item /= ev_tree.selected_item.data then
+					display_selected_item_after_delay
+				end
 			end
 		end
 
 feature {NONE} -- Implementation
 
-	gui_node_descriptor_map: HASH_TABLE [EV_TREE_ITEM, STRING]
-			-- list of GUI explorer nodes, keyed by artefact id
+	parse_archetype_agent, edit_archetype_agent, select_archetype_agent, select_class_agent: PROCEDURE [ANY, TUPLE]
 
-	artefact_types: attached ARRAY [INTEGER]
-			-- types of artefact in this view
-
-	explorer_label: EV_LABEL
-			-- label of explorer control in GUI
-
-	gui: attached MAIN_WINDOW
-			-- Main window of system.
-
-	gui_tree: attached EV_TREE
-			-- reference to MAIN_WINDOW.archetype_file_tree
-
-	gui_tree_item_stack: ARRAYED_STACK [EV_TREE_ITEM]
-			-- Stack used during `populate_gui_tree_node_enter'.
-
-	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
-			-- Timer to delay a moment before calling `display_details_of_selected_item'.
-
-   	populate_gui_tree_node_enter (aci: attached ARCH_CAT_ITEM)
-   			-- Add a node representing `an_item' to `gui_file_tree'.
-   		local
-			node: EV_TREE_ITEM
+	display_selected_item
 		do
-			if not aci.is_root and (aci.sub_tree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
-								(attached {ARCH_CAT_ARCHETYPE} aci as aca and then artefact_types.has(aca.artefact_type))) then
-				create node
-	 			node.set_data (aci)
+			delay_to_make_keyboard_navigation_practical.set_interval (0)
+			if attached ev_tree.selected_item then
+				if attached {ARCH_CAT_ITEM} ev_tree.selected_item.data as aci then
+					if attached current_arch_cat as dir then
+						dir.set_selected_item (aci)
+					end
 
-	 			if attached {ARCH_CAT_ARCHETYPE} aci as aca then
-	 				gui_node_descriptor_map.put (node, aca.ontological_name)
-		 			node.set_pebble_function (agent pebble_function)
-					node.set_configurable_target_menu_handler (agent context_menu_handler)
-					node.set_configurable_target_menu_mode
-	 			end
-
-	 			update_tree_node (node)
-
-				if gui_tree_item_stack.is_empty then
-					gui_tree.extend (node)
-				else
-					gui_tree_item_stack.item.extend (node)
+					if attached {ARCH_CAT_ARCHETYPE} aci then
+						parse_archetype_agent.call ([])
+					else
+						select_class_agent.call ([])
+					end
 				end
-
-				gui_tree_item_stack.extend (node)
-
 			end
 		end
 
-   	populate_gui_tree_node_exit (aci: attached ARCH_CAT_ITEM)
+	populate_tree
+		do
+	 		current_arch_cat.do_all (agent ev_tree_node_populate_enter, agent ev_tree_node_populate_exit)
+			ev_tree.recursive_do_all (agent ev_tree_expand)
+		end
+
+   	ev_tree_node_populate_enter (aci: attached ARCH_CAT_ITEM)
+   			-- Add a node representing `an_item' to `gui_file_tree'.
+   		local
+			ev_node: EV_TREE_ITEM
+		do
+			if not aci.is_root and (aci.sub_tree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
+								(attached {ARCH_CAT_ARCHETYPE} aci as aca and then artefact_types.has(aca.artefact_type))) then
+				create ev_node
+	 			ev_node.set_data (aci)
+
+	 			if attached {ARCH_CAT_ARCHETYPE} aci as aca then
+	 				ev_node_descriptor_map.put (ev_node, aca.ontological_name)
+		 			ev_node.set_pebble_function (agent pebble_function)
+					ev_node.set_configurable_target_menu_handler (agent context_menu_handler)
+					ev_node.set_configurable_target_menu_mode
+	 			end
+
+	 			update_tree_node (ev_node)
+
+				if ev_tree_item_stack.is_empty then
+					ev_tree.extend (ev_node)
+				else
+					ev_tree_item_stack.item.extend (ev_node)
+				end
+
+				ev_tree_item_stack.extend (ev_node)
+			end
+		end
+
+   	ev_tree_node_populate_exit (aci: attached ARCH_CAT_ITEM)
    		do
 			if not aci.is_root and (aci.sub_tree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
 				(attached {ARCH_CAT_ARCHETYPE} aci as aca and then artefact_types.has (aca.artefact_type)))
 			then
-				gui_tree_item_stack.remove
+				ev_tree_item_stack.remove
 			end
 		end
 
@@ -258,15 +219,15 @@ feature {NONE} -- Implementation
 		local
 			parse_mi, edit_source_mi, new_tool_mi: EV_MENU_ITEM
 		do
-			create parse_mi.make_with_text_and_action ("Parse", agent gui.parse_archetype)
+			create parse_mi.make_with_text_and_action ("Parse", parse_archetype_agent)
 			parse_mi.set_pixmap (pixmaps ["parse"])
 	    	menu.extend (parse_mi)
 
-			create edit_source_mi.make_with_text_and_action ("Edit source", agent gui.edit_archetype)
+			create edit_source_mi.make_with_text_and_action ("Edit source", edit_archetype_agent)
 			edit_source_mi.set_pixmap (pixmaps ["edit"])
 			menu.extend (edit_source_mi)
 
-			create new_tool_mi.make_with_text_and_action ("New tool", agent gui.create_and_populate_new_archetype_tool)
+			create new_tool_mi.make_with_text_and_action ("New tool", select_archetype_agent)
 			new_tool_mi.set_pixmap (pixmaps ["archetype_2"])
 			menu.extend (new_tool_mi)
 		end
@@ -281,10 +242,6 @@ feature {NONE} -- Implementation
 		do
 
 		end
-
-
-invariant
-	valid_artefact_types: (create {ARTEFACT_TYPE}).valid_artefact_types(artefact_types)
 
 end
 

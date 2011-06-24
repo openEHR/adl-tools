@@ -26,11 +26,6 @@ inherit
 			{NONE} all
 		end
 
-	EV_KEY_CONSTANTS
-		export
-			{NONE} all
-		end
-
 	STRING_UTILITIES
 		export
 			{NONE} all

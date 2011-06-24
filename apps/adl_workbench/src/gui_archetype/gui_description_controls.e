@@ -20,8 +20,6 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_KNOWLEDGE_REPOSITORY
-
 	CONSTANTS
 		export
 			{NONE} all

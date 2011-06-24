@@ -83,16 +83,8 @@ feature {NONE} -- Initialization
 
 			viewer_vbox.extend (explorer_split_area)
 			explorer_split_area.extend (archetype_template_split_area)
-			archetype_template_split_area.extend (archetype_explorer_vbox)
-			archetype_explorer_vbox.extend (archetype_explorer_hbox)
-			archetype_explorer_hbox.extend (archetype_explorer_pixmap)
-			archetype_explorer_hbox.extend (archetype_explorer_label)
-			archetype_explorer_vbox.extend (archetype_file_tree)
-			archetype_template_split_area.extend (template_explorer_vbox)
-			template_explorer_vbox.extend (template_explorer_hbox)
-			template_explorer_hbox.extend (template_explorer_pixmap)
-			template_explorer_hbox.extend (template_explorer_label)
-			template_explorer_vbox.extend (template_file_tree)
+			archetype_template_split_area.extend (archetype_explorer.ev_root_container)
+			archetype_template_split_area.extend (template_explorer.ev_root_container)
 			explorer_split_area.extend (viewer_main_cell)
 
 			-- set visual characteristics - menu
@@ -149,30 +141,8 @@ feature {NONE} -- Initialization
 			explorer_split_area.set_minimum_height (main_hbox_min_height)
 			explorer_split_area.enable_item_expand (viewer_main_cell)
 			explorer_split_area.disable_item_expand (archetype_template_split_area)
-			archetype_template_split_area.enable_item_expand (template_explorer_vbox)
-			archetype_template_split_area.disable_item_expand (archetype_explorer_vbox)
-			archetype_explorer_vbox.disable_item_expand (archetype_explorer_hbox)
-			archetype_explorer_hbox.set_padding (padding_width)
-			archetype_explorer_hbox.set_border_width (border_width)
-			archetype_explorer_hbox.disable_item_expand (archetype_explorer_pixmap)
-			archetype_explorer_pixmap.set_minimum_width (16)
-			archetype_explorer_pixmap.set_minimum_height (16)
-			archetype_explorer_label.set_text ("ADL 1.5 Archetypes")
-			archetype_explorer_label.align_text_left
-			archetype_file_tree.set_background_color (editable_colour)
-			archetype_file_tree.set_minimum_width (60)
-			template_explorer_vbox.disable_item_expand (template_explorer_hbox)
-			template_explorer_hbox.set_padding (padding_width)
-			template_explorer_hbox.set_border_width (border_width)
-			template_explorer_hbox.disable_item_expand (template_explorer_pixmap)
-			template_explorer_pixmap.set_minimum_width (16)
-			template_explorer_pixmap.set_minimum_height (16)
-			template_explorer_label.set_text ("ADL 1.5 Templates")
-			template_explorer_label.align_text_left
-			template_file_tree.set_background_color (editable_colour)
-			template_file_tree.set_minimum_width (60)
-			archetype_explorer_pixmap.copy (pixmaps ["archetype_category"])
-			template_explorer_pixmap.copy (pixmaps ["template_category"])
+			archetype_template_split_area.enable_item_expand (template_explorer.ev_root_container)
+			archetype_template_split_area.disable_item_expand (archetype_explorer.ev_root_container)
 
 			-- set up docking
 			create docking_manager.make (viewer_main_cell, Current)
@@ -197,11 +167,6 @@ feature {NONE} -- Initialization
 			archetype_search_combo.return_actions.extend (agent find_archetype_by_key)
 			search_button.select_actions.extend (agent start_search_by_id)
 			archetype_profile_combo.select_actions.extend (agent select_profile)
-
-			archetype_file_tree.select_actions.extend (agent archetype_view_tree_item_select)
-			archetype_file_tree.focus_in_actions.extend (agent archetype_view_tree_item_select)
-			template_file_tree.select_actions.extend (agent template_view_tree_item_select)
-			template_file_tree.focus_in_actions.extend (agent template_view_tree_item_select)
 
 			-- set UI feedback handlers
 			archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
@@ -231,16 +196,6 @@ feature {NONE} -- Initialization
 
 			create explorer_split_area
 			create archetype_template_split_area
-			create archetype_explorer_vbox
-			create archetype_explorer_hbox
-			create archetype_explorer_pixmap
-			create archetype_explorer_label
-			create archetype_file_tree
-			create template_explorer_vbox
-			create template_explorer_hbox
-			create template_explorer_pixmap
-			create template_explorer_label
-			create template_file_tree
 			create viewer_main_cell
 		end
 
@@ -367,7 +322,7 @@ feature -- File events
 						(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" not found.")).show_modal_to_window (Current)
 					elseif has_current_profile then
 						current_arch_cat.add_adhoc_item (fname)
-						archetype_view_tree_control.populate
+						archetype_explorer.populate
 						status_tool.append_status_text (billboard.content)
 					end
 				else
@@ -753,8 +708,9 @@ feature {NONE} -- Tools menu events
 				end
 			end
 			if dialog.has_changed_navigator_options and repository_profiles.has_current_profile then
-				archetype_view_tree_control.populate
-				template_view_tree_control.populate
+				archetype_explorer.populate
+				template_explorer.populate
+				go_to_selected_archetype
 				archetype_test_tree_control.populate
 			end
 		end
@@ -1010,7 +966,7 @@ feature -- Archetype Events
 		do
 			if not current_arch_cat.has_selected_archetype or else not id.is_equal (current_arch_cat.selected_archetype.ontological_name) then
 				if current_arch_cat.archetype_index.has (id) then
-					archetype_view_tree_control.select_item (id)
+					archetype_explorer.select_item (id)
 				end
 			else
 				-- discrete visual feedback for selecting same archetype as already selected?
@@ -1024,30 +980,6 @@ feature -- Archetype Events
 			archetype_search_combo.set_text (create_message_content ("enter_search_string", Void))
 			archetype_search_combo.set_focus
 			archetype_search_combo.select_all
-		end
-
-	archetype_view_tree_item_select
-			-- Display details of `archetype_file_tree' when the user selects it.
-		do
-			if attached archetype_file_tree.selected_item then
-				if attached current_arch_cat as cat and then cat.selected_item /= archetype_file_tree.selected_item.data then
-					archetype_view_tree_control.display_details_of_selected_item_after_delay
-				end
-			end
-		end
-
-	template_view_tree_item_select
-			-- Display details of `template_file_tree' when the user selects it.
-		do
-			if attached template_file_tree.selected_item then
-				if attached {ARCH_CAT_ARCHETYPE} template_file_tree.selected_item.data as ara then
-					archetype_view_tree_control.ensure_item_visible(ara.ontological_name)
-				end
-
-				if attached current_arch_cat as cat and then cat.selected_item /= template_file_tree.selected_item.data then
-					template_view_tree_control.display_details_of_selected_item_after_delay
-				end
-			end
 		end
 
 	select_archetype_from_gui_data (gui_item: EV_ANY)
@@ -1066,7 +998,7 @@ feature -- Archetype Events
 			-- No events will be processed because archetype selected in ARCHETYPE_CATALOGUE already matches selected tree node
 		do
 			if has_current_profile and then current_arch_cat.has_selected_item then
-				archetype_view_tree_control.select_item (current_arch_cat.selected_item.ontological_name)
+				archetype_explorer.select_item (current_arch_cat.selected_item.ontological_name)
 			end
 		end
 
@@ -1102,14 +1034,14 @@ feature -- Docking controls
 
 feature -- Controls
 
-	archetype_view_tree_control: GUI_VIEW_ARCHETYPE_TREE_CONTROL
+	archetype_explorer: GUI_VIEW_ARCHETYPE_TREE_CONTROL
 		once
-			create Result.make (Current, archetype_file_tree, archetype_explorer_label, <<{ARTEFACT_TYPE}.archetype, {ARTEFACT_TYPE}.template_component, {ARTEFACT_TYPE}.template>>)
+			create Result.make (agent parse_archetype, agent edit_archetype, agent create_and_populate_new_archetype_tool, agent display_class)
 		end
 
-	template_view_tree_control: GUI_VIEW_TEMPLATE_TREE_CONTROL
+	template_explorer: GUI_VIEW_TEMPLATE_TREE_CONTROL
 		once
-			create Result.make (Current, template_file_tree, template_explorer_label, <<{ARTEFACT_TYPE}.template>>)
+			create Result.make (agent parse_archetype, agent archetype_explorer.ensure_item_visible)
 		end
 
 	archetype_test_tree_control: GUI_TEST_ARCHETYPE_TREE_CONTROL
@@ -1233,8 +1165,11 @@ feature {NONE} -- Implementation
 			go_to_selected_archetype
 
 			append_billboard_to_status_area
-			archetype_view_tree_control.populate
-			template_view_tree_control.populate
+
+			archetype_explorer.populate
+			template_explorer.populate
+			go_to_selected_archetype
+
 			archetype_test_tree_control.populate
 			statistics_tool.populate
 		end
@@ -1370,8 +1305,8 @@ feature {NONE} -- Build commands
 				status_tool.append_status_text (indented (msg, create {STRING}.make_filled ('%T', dependency_depth)))
 			end
 
-			archetype_view_tree_control.update_tree_node_for_archetype (aca)
-			template_view_tree_control.update_tree_node_for_archetype (aca)
+			archetype_explorer.update_tree_node_for_archetype (aca)
+			template_explorer.update_tree_node_for_archetype (aca)
 
 			archetype_test_tree_control.do_row_for_item (aca, agent archetype_test_tree_control.set_row_pixmap)
 
@@ -1399,13 +1334,7 @@ feature {NONE} -- GUI Widgets
 
 	explorer_split_area: EV_HORIZONTAL_SPLIT_AREA
 	archetype_template_split_area: EV_VERTICAL_SPLIT_AREA
-	archetype_explorer_pixmap, template_explorer_pixmap: EV_PIXMAP
-	archetype_explorer_label, template_explorer_label: EV_LABEL
-	archetype_file_tree, template_file_tree: EV_TREE
 	viewer_main_cell: EV_CELL
-
-	archetype_explorer_vbox, template_explorer_vbox: EV_VERTICAL_BOX
-	archetype_explorer_hbox, template_explorer_hbox: EV_HORIZONTAL_BOX
 
 end
 

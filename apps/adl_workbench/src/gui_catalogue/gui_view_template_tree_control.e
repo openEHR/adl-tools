@@ -15,20 +15,7 @@ note
 class GUI_VIEW_TEMPLATE_TREE_CONTROL
 
 inherit
-	SHARED_APP_UI_RESOURCES
-		export
-			{NONE} all
-		end
-
-	SHARED_KNOWLEDGE_REPOSITORY
-		export
-			{NONE} all
-		end
-
-	SHARED_REFERENCE_MODEL_ACCESS
-		export
-			{NONE} all
-		end
+	GUI_ARTEFACT_TREE_CONTROL
 
 	STRING_UTILITIES
 		export
@@ -38,68 +25,21 @@ inherit
 create
 	make
 
-feature -- Definitions
-
-	Right_arrow_char: NATURAL_32 = 0x279C
-
 feature {NONE} -- Initialisation
 
-	make (a_main_window: MAIN_WINDOW; a_tree_control: EV_TREE; a_label: EV_LABEL; artefact_types_list: ARRAY [INTEGER])
+	make (a_parse_archetype_agent: like parse_archetype_agent; a_select_archetype_agent: like select_archetype_agent)
 			-- Create controller for the tree representing archetype files found in `archetype_directory'.
-		require
-			a_main_window /= Void
-			a_tree_control /= Void
-			a_label /= Void
-			valid_artefact_type: (create {ARTEFACT_TYPE}).valid_artefact_types(artefact_types_list)
 		do
-			gui := a_main_window
-   			gui_tree := a_tree_control
-   			explorer_label := a_label
-   			gui_tree.set_minimum_width (gui.max_arch_explorer_width)
-   			artefact_types := artefact_types_list
+			parse_archetype_agent := a_parse_archetype_agent
+			select_archetype_agent := a_select_archetype_agent
+
+			-- make UI
+			make_ui ("ADL 1.5 Templates", pixmaps ["template_category"])
+
+			artefact_types := <<{ARTEFACT_TYPE}.template>>
 		end
 
 feature -- Commands
-
-	display_details_of_selected_item_after_delay
-			-- When the user selects an item in `gui_file_tree', delay before displaying it.
-		do
-			if delay_to_make_keyboard_navigation_practical = Void then
-				create delay_to_make_keyboard_navigation_practical
-
-				delay_to_make_keyboard_navigation_practical.actions.extend (agent
-					do
-						delay_to_make_keyboard_navigation_practical.set_interval (0)
-
-						if attached gui_tree.selected_item then
-							if attached {ARCH_CAT_ARCHETYPE} gui_tree.selected_item.data as ara then
-								if attached current_arch_cat then
-									current_arch_cat.set_selected_item (ara)
-								end
-
-								gui.parse_archetype
-								populate_template_nodes (ara)
-							end
-						end
-					end)
-			end
-
-			delay_to_make_keyboard_navigation_practical.set_interval (300)
-		end
-
-	populate
-			-- Populate `gui_file_tree' from `archetype_directory'.
-		do
-			-- update tree
-			create gui_node_descriptor_map.make(0)
-			gui_tree.wipe_out
- 			create gui_tree_item_stack.make (0)
-
- 			if has_current_profile then
-	 			current_arch_cat.do_all_archetypes (agent populate_template_nodes)
- 				gui.go_to_selected_archetype
-			end
-		end
 
 	update_tree_node_for_archetype (ara: attached ARCH_CAT_ARCHETYPE)
 			-- update Explorer tree node with changes in compilation status
@@ -108,7 +48,7 @@ feature -- Commands
 		do
 			an_id := ara.id.as_string
 --			if gui_node_descriptor_map.has (an_id) then
-				populate_template_nodes (ara)
+				ev_tree_node_populate (ara)
 --			elseif attached ara.old_id then
 --				if gui_node_descriptor_map.has (ara.old_id.as_string) then
 --					gui_node_descriptor_map.replace_key (ara.id.as_string, ara.old_id.as_string)
@@ -117,41 +57,50 @@ feature -- Commands
 --			end
 		end
 
---	ensure_item_visible (ari_ont_id: STRING)
---			-- ensure node with ontological node id `ari_ont_id' is visible in the tree
---		require
---			ari_ont_id /= Void
---		do
---			if gui_node_descriptor_map.has(ari_ont_id) and gui_tree.is_displayed then
---				gui_tree.ensure_item_visible (gui_node_descriptor_map.item(ari_ont_id))
---				gui_node_descriptor_map.item(ari_ont_id).enable_select
---			end
---		end
+feature -- Events
+
+	tree_item_select
+			-- Display details of `template_file_tree' when the user selects it.
+		do
+			if attached ev_tree.selected_item then
+				if attached {ARCH_CAT_ARCHETYPE} ev_tree.selected_item.data as ara then
+					select_archetype_agent.call ([ara.ontological_name])
+				end
+
+				if attached current_arch_cat as cat and then cat.selected_item /= ev_tree.selected_item.data then
+					display_selected_item_after_delay
+				end
+			end
+		end
 
 feature {NONE} -- Implementation
 
-	gui_node_descriptor_map: HASH_TABLE [EV_TREE_ITEM, STRING]
-			-- list of GUI explorer nodes, keyed by artefact id
+	parse_archetype_agent: PROCEDURE [ANY, TUPLE]
 
-	artefact_types: ARRAY [INTEGER]
-			-- types of artefact in this view
+	select_archetype_agent: PROCEDURE [ANY, TUPLE [STRING]]
 
-	explorer_label: EV_LABEL
-			-- label of explorer control in GUI
+	display_selected_item
+		do
+			delay_to_make_keyboard_navigation_practical.set_interval (0)
 
-	gui: MAIN_WINDOW
-			-- Main window of system.
+			if attached ev_tree.selected_item then
+				if attached {ARCH_CAT_ARCHETYPE} ev_tree.selected_item.data as ara then
+					if attached current_arch_cat then
+						current_arch_cat.set_selected_item (ara)
+					end
 
-	gui_tree: EV_TREE
-			-- reference to MAIN_WINDOW.archetype_file_tree
+					parse_archetype_agent.call ([])
+					ev_tree_node_populate (ara)
+				end
+			end
+		end
 
-	gui_tree_item_stack: ARRAYED_STACK [EV_TREE_ITEM]
-			-- Stack used during `populate_gui_tree_node_enter'.
+	populate_tree
+		do
+ 			current_arch_cat.do_all_archetypes (agent ev_tree_node_populate)
+		end
 
-	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
-			-- Timer to delay a moment before calling `display_details_of_selected_item'.
-
-   	populate_template_nodes (ara: ARCH_CAT_ARCHETYPE)
+   	ev_tree_node_populate (ara: ARCH_CAT_ARCHETYPE)
    			-- Add a node representing `an_item' to `gui_file_tree'.
 		require
 			item_attached: ara /= Void
@@ -161,28 +110,26 @@ feature {NONE} -- Implementation
 			-- make sure it is a template of some kind
 			if artefact_types.has(ara.artefact_type) then
 				-- if it is compiled & valid, display its flat filler structure
-				if gui_node_descriptor_map.has (ara.ontological_name) then
+				if ev_node_descriptor_map.has (ara.ontological_name) then
 					if ara.is_valid then
-						gui_tree_item_stack.extend (gui_node_descriptor_map.item (ara.ontological_name))
-						gui_tree_item_stack.item.wipe_out
-						gui_tree_item_stack.item.set_pixmap (pixmaps[ara.group_name])
+						ev_tree_item_stack.extend (ev_node_descriptor_map.item (ara.ontological_name))
+						ev_tree_item_stack.item.wipe_out
+						ev_tree_item_stack.item.set_pixmap (pixmaps[ara.group_name])
 						create tree_iterator.make (ara.flat_archetype.definition.representation)
-						tree_iterator.do_all (agent node_build_enter_action (?, ?), agent node_build_exit_action (?, ?))
-						gui_tree_item_stack.remove
+						tree_iterator.do_all (agent ev_node_build_enter_action (?, ?), agent ev_node_build_exit_action (?, ?))
+						ev_tree_item_stack.remove
 					else
-						gui_node_descriptor_map.item (ara.ontological_name).set_pixmap (pixmaps[ara.group_name])
+						ev_node_descriptor_map.item (ara.ontological_name).set_pixmap (pixmaps[ara.group_name])
 					end
 				else -- otherwise just display the template root
 					attach_node(ara.id.rm_entity + "." + ara.display_name, pixmaps[ara.group_name], ara)
-					gui_node_descriptor_map.force (gui_tree_item_stack.item, ara.ontological_name)
-					gui_tree_item_stack.remove
+					ev_node_descriptor_map.force (ev_tree_item_stack.item, ara.ontological_name)
+					ev_tree_item_stack.remove
 				end
 			end
 		end
 
-	node_build_enter_action (an_og_node: OG_ITEM; indent_level: INTEGER)
-		require
-			Node_exists: an_og_node /= Void
+	ev_node_build_enter_action (an_og_node: attached OG_ITEM; indent_level: INTEGER)
 		local
 			ara: ARCH_CAT_ARCHETYPE
 			ca_path: STRING
@@ -215,23 +162,21 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	node_build_exit_action(an_og_node: OG_ITEM; indent_level: INTEGER)
-		require
-			Node_exists: an_og_node /= Void
+	ev_node_build_exit_action (an_og_node: attached OG_ITEM; indent_level: INTEGER)
 		do
 			if attached {C_ATTRIBUTE} an_og_node.content_item as c_attr then
 				from c_attr.children.start until c_attr.children.off or attached {C_ARCHETYPE_ROOT} c_attr.children.item as car loop
 					c_attr.children.forth
 				end
 				if not c_attr.children.off then
-					gui_tree_item_stack.remove
+					ev_tree_item_stack.remove
 				end
 			elseif attached {C_ARCHETYPE_ROOT} an_og_node.content_item as car then
-				gui_tree_item_stack.remove
+				ev_tree_item_stack.remove
 			end
 		end
 
-	c_attribute_pixmap_string(c_attr: C_ATTRIBUTE): STRING
+	c_attribute_pixmap_string (c_attr: C_ATTRIBUTE): STRING
 			-- string name of pixmap for attribute c_attr
 			-- FIXME: this is a straight copy from GUI_NODE_MAP_CONTROL and should be consolidated at some point
 		do
@@ -250,7 +195,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	attach_node(str: STRING; pixmap: EV_PIXMAP; ara: ARCH_CAT_ARCHETYPE)
+	attach_node (str: STRING; pixmap: EV_PIXMAP; ara: ARCH_CAT_ARCHETYPE)
 			-- attach a node into the tree
 		local
 			a_ti: EV_TREE_ITEM
@@ -258,21 +203,16 @@ feature {NONE} -- Implementation
 			create a_ti.make_with_text (utf8 (str))
 			if attached ara then
 				a_ti.set_data (ara)
-				gui_node_descriptor_map.force (a_ti, ara.ontological_name)
+				ev_node_descriptor_map.force (a_ti, ara.ontological_name)
 			end
 			a_ti.set_pixmap (pixmap)
-			if gui_tree_item_stack.is_empty then
-				gui_tree.extend (a_ti)
+			if ev_tree_item_stack.is_empty then
+				ev_tree.extend (a_ti)
 			else
-				gui_tree_item_stack.item.extend (a_ti)
+				ev_tree_item_stack.item.extend (a_ti)
 			end
-			gui_tree_item_stack.extend (a_ti)
+			ev_tree_item_stack.extend (a_ti)
 		end
-
-invariant
-	gui_attached: gui /= Void
-	tree_attached: gui_tree /= Void
-	valid_artefact_types: artefact_types /= Void and then (create {ARTEFACT_TYPE}).valid_artefact_types(artefact_types)
 
 end
 

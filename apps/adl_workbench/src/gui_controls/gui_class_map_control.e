@@ -19,13 +19,6 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_KNOWLEDGE_REPOSITORY
-
-	SHARED_REFERENCE_MODEL_ACCESS
-		export
-			{NONE} all
-		end
-
 	STRING_UTILITIES
 		export
 			{NONE} all

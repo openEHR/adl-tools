@@ -15,12 +15,6 @@ note
 class GUI_ONTOLOGY_CONTROLS
 
 inherit
-	SHARED_KNOWLEDGE_REPOSITORY
-		export
-			{NONE} all;
-			{ANY} has_current_profile
-		end
-
 	STRING_UTILITIES
 		export
 			{NONE} all

@@ -1001,14 +1001,14 @@ feature -- Modification
 		require
 			Archetype_valid: is_valid
 			path_valid: not a_full_path.is_empty
-			Serialise_format_valid: has_archetype_serialiser_format(serialise_format)
+			Serialise_format_valid: has_archetype_serialiser_format (serialise_format)
 		do
 			if serialise_format.same_string (Archetype_native_syntax) then
 				-- replace the extension because we want it to be clear that it is a source file; but maybe the caller should just be trusted?
 				file_repository.save_text_to_file (extension_replaced (a_full_path, archetype_source_file_extension),
 					adl15_engine.serialise(differential_archetype, Archetype_native_syntax, current_archetype_language))
 			else
-				file_repository.save_text_to_file (a_full_path, adl15_engine.serialise(differential_archetype, serialise_format, current_archetype_language))
+				file_repository.save_text_to_file (a_full_path, adl15_engine.serialise (differential_archetype, serialise_format, current_archetype_language))
 			end
 		end
 

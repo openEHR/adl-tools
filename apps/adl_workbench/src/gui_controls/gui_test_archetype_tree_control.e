@@ -77,6 +77,9 @@ feature {NONE} -- Initialisation
 	make (a_main_window: attached MAIN_WINDOW)
 			-- Create controller for the test grid.
 		do
+			-- create widgets
+
+			-- connect widgets
 			gui := a_main_window
 			make_for_grid (gui.archetype_test_tree_grid)
 			grid.enable_tree
