@@ -1011,7 +1011,9 @@ feature -- Controls
 	create_and_populate_new_archetype_tool
 		do
 			archetype_tools.create_new_tool
-			archetype_tools.populate_current_tool
+			if current_arch_cat.has_selected_archetype then
+				archetype_tools.populate_current_tool
+			end
 		end
 
 feature -- Class map tool

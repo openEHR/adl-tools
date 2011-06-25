@@ -153,6 +153,7 @@ feature -- Commands
 			-- Populate content from visual controls.
 		require
 			has_current_profile
+			current_arch_cat.has_selected_archetype
 		do
 			if not has_current_tool then
 				create_new_tool
