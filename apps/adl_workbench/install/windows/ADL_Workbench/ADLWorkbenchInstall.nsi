@@ -79,6 +79,7 @@ Section -Main SEC0000
     File ..\..\..\app\ArchetypeRepositoryReport.xsl
     File ..\..\..\app\ArchetypeRepositoryReport.css
     File ..\..\..\app\sample_xml_rules.cfg
+    File ..\..\..\app\default_ui_config.cfg
 
     SetOutPath $INSTDIR\icons
     File /r /x .svn ..\..\..\app\icons\*
@@ -139,6 +140,8 @@ Section /o un.Main UNSEC0000
     Delete /REBOOTOK $INSTDIR\adl_workbench.exe
     Delete /REBOOTOK $INSTDIR\ArchetypeRepositoryReport.xsl
     Delete /REBOOTOK $INSTDIR\ArchetypeRepositoryReport.css
+    Delete /REBOOTOK $INSTDIR\sample_xml_rules.cfg
+    Delete /REBOOTOK $INSTDIR\default_ui_config.cfg
     RMDir /r /REBOOTOK $INSTDIR\icons
     RMDir /r /REBOOTOK $INSTDIR\rm_schemas
     RMDir /r /REBOOTOK $INSTDIR\error_db
