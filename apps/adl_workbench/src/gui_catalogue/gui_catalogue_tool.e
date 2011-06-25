@@ -52,6 +52,8 @@ feature {NONE} -- Initialisation
 			-- docking
 			create docking_pane.make_with_widget_title_pixmap (ev_root_container, pixmaps ["archetype_category"], "Catalogue")
 			a_docking_manager.contents.extend (docking_pane)
+			docking_pane.set_long_title ("Catalogue")
+			docking_pane.set_short_title ("Catalogue")
 			docking_pane.set_type ({SD_ENUMERATION}.tool)
 			docking_pane.set_top ({SD_ENUMERATION}.left)
 		end

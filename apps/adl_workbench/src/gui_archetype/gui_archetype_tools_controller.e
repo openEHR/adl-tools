@@ -20,10 +20,6 @@ inherit
 		end
 
 	SHARED_KNOWLEDGE_REPOSITORY
-		export
-			{NONE} all;
-			{ANY} has_current_profile
-		end
 
 create
 	make
