@@ -27,11 +27,11 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_parse_archetype_agent: like parse_archetype_agent; a_select_archetype_agent: like select_archetype_agent)
+	make (a_select_archetype_agent: like select_archetype_agent; a_focus_archetype_agent: like focus_archetype_agent)
 			-- Create controller for the tree representing archetype files found in `archetype_directory'.
 		do
-			parse_archetype_agent := a_parse_archetype_agent
 			select_archetype_agent := a_select_archetype_agent
+			focus_archetype_agent := a_focus_archetype_agent
 
 			-- make UI
 			make_ui ("ADL 1.5 Templates", pixmaps ["template_category"])
@@ -64,7 +64,7 @@ feature -- Events
 		do
 			if attached ev_tree.selected_item then
 				if attached {ARCH_CAT_ARCHETYPE} ev_tree.selected_item.data as ara then
-					select_archetype_agent.call ([ara.ontological_name])
+					focus_archetype_agent.call ([ara.ontological_name])
 				end
 
 				if attached current_arch_cat as cat and then cat.selected_item /= ev_tree.selected_item.data then
@@ -75,9 +75,9 @@ feature -- Events
 
 feature {NONE} -- Implementation
 
-	parse_archetype_agent: PROCEDURE [ANY, TUPLE]
+	select_archetype_agent: PROCEDURE [ANY, TUPLE]
 
-	select_archetype_agent: PROCEDURE [ANY, TUPLE [STRING]]
+	focus_archetype_agent: PROCEDURE [ANY, TUPLE [STRING]]
 
 	display_selected_item
 		do
@@ -89,7 +89,7 @@ feature {NONE} -- Implementation
 						current_arch_cat.set_selected_item (ara)
 					end
 
-					parse_archetype_agent.call ([])
+					select_archetype_agent.call ([])
 					ev_tree_node_populate (ara)
 				end
 			end

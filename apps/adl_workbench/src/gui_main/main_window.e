@@ -80,12 +80,7 @@ feature {NONE} -- Initialization
 			arch_id_hbox.extend (archetype_search_combo)
 			arch_id_hbox.extend (arch_search_tool_bar)
 			arch_search_tool_bar.extend (search_button)
-
-			viewer_vbox.extend (explorer_split_area)
-			explorer_split_area.extend (archetype_template_split_area)
-			archetype_template_split_area.extend (archetype_explorer.ev_root_container)
-			archetype_template_split_area.extend (template_explorer.ev_root_container)
-			explorer_split_area.extend (viewer_main_cell)
+			viewer_vbox.extend (viewer_main_cell)
 
 			-- set visual characteristics - menu
 			set_icon_pixmap (adl_workbench_icon)
@@ -136,16 +131,9 @@ feature {NONE} -- Initialization
 			history_forward_button.set_pixmap (pixmaps ["history_forward"])
 			search_button.set_pixmap (pixmaps ["magnifier"])
 
-			-- set visual characteristics - archetype/template explorers
-			explorer_split_area.set_minimum_width (app_min_width)
-			explorer_split_area.set_minimum_height (main_hbox_min_height)
-			explorer_split_area.enable_item_expand (viewer_main_cell)
-			explorer_split_area.disable_item_expand (archetype_template_split_area)
-			archetype_template_split_area.enable_item_expand (template_explorer.ev_root_container)
-			archetype_template_split_area.disable_item_expand (archetype_explorer.ev_root_container)
-
 			-- set up docking
 			create docking_manager.make (viewer_main_cell, Current)
+			create_new_catalogue_tool
 			create_new_statistics_tool
 			create_new_status_tool
 			archetype_tools.create_new_tool
@@ -194,8 +182,6 @@ feature {NONE} -- Initialization
 			create arch_search_tool_bar
 			create search_button
 
-			create explorer_split_area
-			create archetype_template_split_area
 			create viewer_main_cell
 		end
 
@@ -249,8 +235,6 @@ feature {NONE} -- Initialization
 			populate_compile_button
 
 			initialise_splitter (test_split_area, test_split_position)
-			initialise_splitter (explorer_split_area, explorer_split_position)
-			initialise_splitter (archetype_template_split_area, archetype_template_split_position)
 			text_widget_handler.focus_first_widget (main_notebook.selected_item)
 
 			if app_maximised then
@@ -322,7 +306,7 @@ feature -- File events
 						(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" not found.")).show_modal_to_window (Current)
 					elseif has_current_profile then
 						current_arch_cat.add_adhoc_item (fname)
-						archetype_explorer.populate
+						catalogue_tool.populate
 						status_tool.append_status_text (billboard.content)
 					end
 				else
@@ -432,8 +416,6 @@ feature -- File events
 		do
 			-- gui settings
 			set_test_split_position (test_split_area.split_position)
-			set_explorer_split_position (explorer_split_area.split_position)
-			set_archetype_template_split_position (archetype_template_split_area.split_position)
 			set_app_width (width)
 			set_app_height (height)
 			if not is_minimized then
@@ -666,7 +648,7 @@ feature {NONE} -- History events
 			if attached current_arch_cat as cat then
 				if cat.selection_history_has_previous then
 					cat.selection_history_back
-					go_to_selected_archetype
+					catalogue_tool.go_to_selected_archetype
 					populate_history_controls
 				end
 			end
@@ -678,7 +660,7 @@ feature {NONE} -- History events
 			if attached current_arch_cat as cat then
 				if cat.selection_history_has_next then
 					cat.selection_history_forth
-					go_to_selected_archetype
+					catalogue_tool.go_to_selected_archetype
 					populate_history_controls
 				end
 			end
@@ -708,9 +690,7 @@ feature {NONE} -- Tools menu events
 				end
 			end
 			if dialog.has_changed_navigator_options and repository_profiles.has_current_profile then
-				archetype_explorer.populate
-				template_explorer.populate
-				go_to_selected_archetype
+				catalogue_tool.populate
 				archetype_test_tree_control.populate
 			end
 		end
@@ -913,14 +893,14 @@ feature -- Archetype Events
 				if attached {EV_COMBO_BOX_IMP} archetype_search_combo.implementation as imp then
 					(create {GUI_PLATFORM_SPECIFIC_TOOLS}).hide_combo_box_list (imp)
 				end
-				select_archetype (key)
+				catalogue_tool.select_archetype (key)
 
 			elseif key.count > 0 then
 				archetype_search_combo.select_actions.block
 
 				-- check if it is a full archetype id, e.g. created by slightly modifying current archetype id
 				if (create {ARCHETYPE_ID}.default_create).valid_id (key) then
-					select_archetype (key)
+					catalogue_tool.select_archetype (key)
 				elseif key.count >= 3 then
 					 -- it is a partial id, get a list of candidates
 					if attached current_arch_cat as dir then
@@ -938,7 +918,7 @@ feature -- Archetype Events
 					end
 
 					if archetype_search_combo.count = 1 then
-						select_archetype (key)
+						catalogue_tool.select_archetype (key)
 					end
 				else -- key too short
 					archetype_search_combo.set_text (create_message_content ("key_too_short", Void))
@@ -955,21 +935,7 @@ feature -- Archetype Events
 			-- archetype_search_combo.text is guaranteed to be a valid archetype id, and one that is in the current repository
 		do
 			if not (is_windows and archetype_search_combo.is_list_shown) then
-				select_archetype (archetype_search_combo.text)
-			end
-		end
-
-	select_archetype (id: attached STRING)
-			-- Select `id' in the archetype catalogue and go to its node in explorer tree
-		require
-			has_current_arch_dir: attached current_arch_cat
-		do
-			if not current_arch_cat.has_selected_archetype or else not id.is_equal (current_arch_cat.selected_archetype.ontological_name) then
-				if current_arch_cat.archetype_index.has (id) then
-					archetype_explorer.select_item (id)
-				end
-			else
-				-- discrete visual feedback for selecting same archetype as already selected?
+				catalogue_tool.select_archetype (archetype_search_combo.text)
 			end
 		end
 
@@ -988,17 +954,8 @@ feature -- Archetype Events
 			if attached gui_item and has_current_profile then
 				if attached {ARCH_CAT_ITEM} gui_item.data as aci then
 					current_arch_cat.set_selected_item (aci)
-					go_to_selected_archetype
+					catalogue_tool.go_to_selected_archetype
 				end
-			end
-		end
-
-	go_to_selected_archetype
-			-- Select and display the node of `archetype_file_tree' corresponding to the selection in `archetype_catalogue'.
-			-- No events will be processed because archetype selected in ARCHETYPE_CATALOGUE already matches selected tree node
-		do
-			if has_current_profile and then current_arch_cat.has_selected_item then
-				archetype_explorer.select_item (current_arch_cat.selected_item.ontological_name)
 			end
 		end
 
@@ -1034,14 +991,11 @@ feature -- Docking controls
 
 feature -- Controls
 
-	archetype_explorer: GUI_VIEW_ARCHETYPE_TREE_CONTROL
-		once
-			create Result.make (agent parse_archetype, agent edit_archetype, agent create_and_populate_new_archetype_tool, agent display_class)
-		end
+	catalogue_tool: GUI_CATALOGUE_TOOL
 
-	template_explorer: GUI_VIEW_TEMPLATE_TREE_CONTROL
-		once
-			create Result.make (agent parse_archetype, agent archetype_explorer.ensure_item_visible)
+	create_new_catalogue_tool
+		do
+			create catalogue_tool.make (attached_docking_manager, agent parse_archetype, agent edit_archetype, agent create_and_populate_new_archetype_tool, agent display_class)
 		end
 
 	archetype_test_tree_control: GUI_TEST_ARCHETYPE_TREE_CONTROL
@@ -1162,14 +1116,9 @@ feature {NONE} -- Implementation
 			clear_all_archetype_view_controls
 			status_tool.clear_compiler_errors
 
-			go_to_selected_archetype
-
 			append_billboard_to_status_area
 
-			archetype_explorer.populate
-			template_explorer.populate
-			go_to_selected_archetype
-
+			catalogue_tool.populate
 			archetype_test_tree_control.populate
 			statistics_tool.populate
 		end
@@ -1305,8 +1254,7 @@ feature {NONE} -- Build commands
 				status_tool.append_status_text (indented (msg, create {STRING}.make_filled ('%T', dependency_depth)))
 			end
 
-			archetype_explorer.update_tree_node_for_archetype (aca)
-			template_explorer.update_tree_node_for_archetype (aca)
+			catalogue_tool.update (aca)
 
 			archetype_test_tree_control.do_row_for_item (aca, agent archetype_test_tree_control.set_row_pixmap)
 
@@ -1332,8 +1280,6 @@ feature {NONE} -- GUI Widgets
 	compile_button, open_button, history_back_button, history_forward_button, search_button: EV_TOOL_BAR_BUTTON
 	tool_bar_sep_1, tool_bar_sep_2, tool_bar_sep_3: EV_TOOL_BAR_SEPARATOR
 
-	explorer_split_area: EV_HORIZONTAL_SPLIT_AREA
-	archetype_template_split_area: EV_VERTICAL_SPLIT_AREA
 	viewer_main_cell: EV_CELL
 
 end

@@ -31,12 +31,12 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_parse_archetype_agent, an_edit_archetype_agent, a_select_archetype_agent, a_select_class_agent: PROCEDURE [ANY, TUPLE])
+	make (a_select_archetype_agent, an_edit_archetype_agent, a_select_archetype_in_new_tool_agent, a_select_class_agent: PROCEDURE [ANY, TUPLE])
 			-- Create controller for the tree representing archetype files found in `archetype_directory'.
 		do
-			parse_archetype_agent := a_parse_archetype_agent
-			edit_archetype_agent := an_edit_archetype_agent
 			select_archetype_agent := a_select_archetype_agent
+			edit_archetype_agent := an_edit_archetype_agent
+			select_archetype_in_new_tool_agent := a_select_archetype_in_new_tool_agent
 			select_class_agent := a_select_class_agent
 
 			-- make UI
@@ -94,7 +94,7 @@ feature -- Events
 
 feature {NONE} -- Implementation
 
-	parse_archetype_agent, edit_archetype_agent, select_archetype_agent, select_class_agent: PROCEDURE [ANY, TUPLE]
+	select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent, select_class_agent: PROCEDURE [ANY, TUPLE]
 
 	display_selected_item
 		do
@@ -106,7 +106,7 @@ feature {NONE} -- Implementation
 					end
 
 					if attached {ARCH_CAT_ARCHETYPE} aci then
-						parse_archetype_agent.call ([])
+						select_archetype_agent.call ([])
 					else
 						select_class_agent.call ([])
 					end
@@ -219,7 +219,7 @@ feature {NONE} -- Implementation
 		local
 			parse_mi, edit_source_mi, new_tool_mi: EV_MENU_ITEM
 		do
-			create parse_mi.make_with_text_and_action ("Parse", parse_archetype_agent)
+			create parse_mi.make_with_text_and_action ("Parse", select_archetype_agent)
 			parse_mi.set_pixmap (pixmaps ["parse"])
 	    	menu.extend (parse_mi)
 
@@ -227,7 +227,7 @@ feature {NONE} -- Implementation
 			edit_source_mi.set_pixmap (pixmaps ["edit"])
 			menu.extend (edit_source_mi)
 
-			create new_tool_mi.make_with_text_and_action ("New tool", select_archetype_agent)
+			create new_tool_mi.make_with_text_and_action ("New tool", select_archetype_in_new_tool_agent)
 			new_tool_mi.set_pixmap (pixmaps ["archetype_2"])
 			menu.extend (new_tool_mi)
 		end

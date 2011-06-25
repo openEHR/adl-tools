@@ -47,13 +47,13 @@ feature {NONE} -- Initialisation
 			ev_hbox.set_padding (padding_width)
 			ev_hbox.set_border_width (border_width)
 			ev_hbox.disable_item_expand (ev_pixmap)
---			ev_pixmap.set_minimum_width (16)
---			ev_pixmap.set_minimum_height (16)
+			ev_pixmap.set_minimum_width (16)
+			ev_pixmap.set_minimum_height (16)
+			ev_pixmap.copy (a_pixmap)
 			ev_label.set_text (a_label)
 			ev_label.align_text_left
 			ev_tree.set_background_color (editable_colour)
 			ev_tree.set_minimum_width (60)
-			ev_pixmap.copy (a_pixmap)
   			ev_tree.set_minimum_width (max_arch_explorer_width)
 
 			-- events

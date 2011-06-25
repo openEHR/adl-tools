@@ -30,7 +30,8 @@ create
 
 feature -- Initialisation
 
-	make (a_docking_manager: attached SD_DOCKING_MANAGER; a_select_archetype_from_gui_data_agent: like select_archetype_from_gui_data)
+	make (a_docking_manager: attached SD_DOCKING_MANAGER;
+			a_select_archetype_from_gui_data_agent: like select_archetype_from_gui_data)
 		do
 			create tools.make (0)
 			docking_manager := a_docking_manager
@@ -102,7 +103,7 @@ feature -- Commands
 			if attached last_ed then
 				docking_pane.set_tab_with (last_ed, False)
 			else
-				docking_pane.set_top ({SD_ENUMERATION}.top)
+				docking_pane.set_default_editor_position
 			end
 			docking_pane.close_request_actions.extend (agent remove_tool (current_tool_id))
 			docking_pane.focus_in_actions.extend (agent select_tool (current_tool_id))
