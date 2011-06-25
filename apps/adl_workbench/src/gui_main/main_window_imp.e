@@ -28,8 +28,6 @@ feature {NONE}-- Initialization
 
 	frozen initialize
 			-- Initialize `Current'.
-		local
-			internal_font: EV_FONT
 		do
 			Precursor {EV_TITLED_WINDOW}
 			initialize_constants
@@ -91,30 +89,7 @@ feature {NONE}-- Initialization
 			help_menu.extend (help_menu_clinical_knowledge_manager)
 			help_menu.extend (help_menu_report_bug)
 			help_menu.extend (help_menu_about)
-			extend (main_notebook)
-			main_notebook.extend (viewer_vbox)
-			main_notebook.extend (test_split_area)
-			test_split_area.extend (l_ev_horizontal_box_1)
-			l_ev_horizontal_box_1.extend (archetype_test_tree_grid)
-			l_ev_horizontal_box_1.extend (l_ev_vertical_box_1)
-			l_ev_vertical_box_1.extend (test_profile_combo)
-			l_ev_vertical_box_1.extend (remove_unused_codes_rb)
-			l_ev_vertical_box_1.extend (arch_test_tree_toggle_expand_bn)
-			l_ev_vertical_box_1.extend (arch_test_refresh_bn)
-			l_ev_vertical_box_1.extend (regression_test_bn)
-			l_ev_vertical_box_1.extend (l_ev_horizontal_box_2)
-			l_ev_horizontal_box_2.extend (l_ev_label_1)
-			l_ev_horizontal_box_2.extend (arch_test_processed_count)
-			l_ev_vertical_box_1.extend (l_ev_horizontal_separator_1)
-			l_ev_vertical_box_1.extend (archetype_test_go_bn)
-			l_ev_vertical_box_1.extend (l_ev_cell_1)
-			l_ev_vertical_box_1.extend (l_ev_horizontal_separator_2)
-			l_ev_vertical_box_1.extend (l_ev_label_2)
-			l_ev_vertical_box_1.extend (diff_source_button)
-			l_ev_vertical_box_1.extend (diff_flat_button)
-			l_ev_vertical_box_1.extend (diff_source_flat_button)
-			l_ev_vertical_box_1.extend (diff_source_round_trip_button)
-			test_split_area.extend (test_status_area)
+			extend (ev_main_vbox)
 
 			file_menu.set_text ("&File")
 			file_menu_open.set_text ("&Open...")
@@ -159,72 +134,6 @@ feature {NONE}-- Initialization
 			help_menu_clinical_knowledge_manager.set_text ("Clinical &Knowledge Manager")
 			help_menu_report_bug.set_text ("Report a &Bug")
 			help_menu_about.set_text ("&About ADL Workbench")
-			create internal_font
-			internal_font.set_family ({EV_FONT_CONSTANTS}.Family_sans)
-			internal_font.set_weight ({EV_FONT_CONSTANTS}.Weight_bold)
-			internal_font.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
-			internal_font.set_height_in_points (8)
-			internal_font.preferred_families.extend ("System")
-			main_notebook.set_font (internal_font)
-			main_notebook.set_tab_position (2)
-			main_notebook.set_item_text (viewer_vbox, "Viewer")
-			main_notebook.set_item_text (test_split_area, "Test")
-			integer_constant_set_procedures.extend (agent test_split_area.set_minimum_width (?))
-			integer_constant_retrieval_functions.extend (agent app_min_width)
-			test_split_area.enable_item_expand (l_ev_horizontal_box_1)
-			test_split_area.disable_item_expand (test_status_area)
-			l_ev_horizontal_box_1.disable_item_expand (l_ev_vertical_box_1)
-			integer_constant_set_procedures.extend (agent l_ev_vertical_box_1.set_padding (?))
-			integer_constant_retrieval_functions.extend (agent padding_width)
-			integer_constant_set_procedures.extend (agent l_ev_vertical_box_1.set_border_width (?))
-			integer_constant_retrieval_functions.extend (agent border_width)
-			l_ev_vertical_box_1.disable_item_expand (test_profile_combo)
-			l_ev_vertical_box_1.disable_item_expand (remove_unused_codes_rb)
-			l_ev_vertical_box_1.disable_item_expand (arch_test_tree_toggle_expand_bn)
-			l_ev_vertical_box_1.disable_item_expand (arch_test_refresh_bn)
-			l_ev_vertical_box_1.disable_item_expand (regression_test_bn)
-			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_box_2)
-			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_separator_1)
-			l_ev_vertical_box_1.disable_item_expand (archetype_test_go_bn)
-			l_ev_vertical_box_1.disable_item_expand (l_ev_horizontal_separator_2)
-			l_ev_vertical_box_1.disable_item_expand (l_ev_label_2)
-			l_ev_vertical_box_1.disable_item_expand (diff_source_button)
-			l_ev_vertical_box_1.disable_item_expand (diff_flat_button)
-			l_ev_vertical_box_1.disable_item_expand (diff_source_flat_button)
-			l_ev_vertical_box_1.disable_item_expand (diff_source_round_trip_button)
-			test_profile_combo.set_tooltip ("Change repository profile")
-			test_profile_combo.disable_edit
-			remove_unused_codes_rb.set_text ("Remove unused codes")
-			remove_unused_codes_rb.set_tooltip ("Remove unused codes in archetypes on parse")
-			arch_test_tree_toggle_expand_bn.set_text ("Collapse Tree")
-			arch_test_tree_toggle_expand_bn.set_tooltip ("Expand or collapse directory tree")
-			arch_test_refresh_bn.set_text ("Refresh")
-			arch_test_refresh_bn.set_tooltip ("Resync to file system and reset statuses")
-			regression_test_bn.set_text ("Regression off")
-			regression_test_bn.set_tooltip ("Turn regression testing on for test archetypes")
-			l_ev_horizontal_box_2.set_minimum_width (110)
-			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_2.set_padding (?))
-			integer_constant_retrieval_functions.extend (agent padding_width)
-			l_ev_horizontal_box_2.disable_item_expand (l_ev_label_1)
-			l_ev_label_1.set_text ("Processed:")
-			l_ev_label_1.set_minimum_width (80)
-			l_ev_label_1.align_text_right
-			arch_test_processed_count.disable_edit
-			l_ev_horizontal_separator_1.set_minimum_height (15)
-			archetype_test_go_bn.set_text ("Go")
-			archetype_test_go_bn.set_tooltip ("Start running tests")
-			l_ev_label_2.set_text ("Diffs")
-			diff_source_button.set_text ("Source file v Serialised")
-			diff_source_button.set_tooltip ("Open diff tool on parsed and 1st generation serialised .adls files")
-			diff_flat_button.set_text ("Legacy v gen'd Flat")
-			diff_flat_button.set_tooltip ("Open diff tool on legacy and generated flat files")
-			diff_source_flat_button.set_text ("Source v gen'd Flat")
-			diff_source_flat_button.set_tooltip ("Open diff tool on source and generated flat files; for top-level archetypes, this shows the effect of flattening the RM, if that option is turned on.")
-			diff_source_round_trip_button.set_text ("Source v R-trip")
-			diff_source_round_trip_button.set_tooltip ("Open diff tool on source and archetype round-tripped through dADL P_* objects")
-			integer_constant_set_procedures.extend (agent test_status_area.set_minimum_height (?))
-			integer_constant_retrieval_functions.extend (agent status_area_min_height)
-			test_status_area.disable_edit
 			set_minimum_width (500)
 			set_minimum_height (350)
 			set_maximum_width (2000)
@@ -263,15 +172,6 @@ feature {NONE}-- Initialization
 			help_menu_clinical_knowledge_manager.select_actions.extend (agent show_clinical_knowledge_manager)
 			help_menu_report_bug.select_actions.extend (agent show_bug_reporter)
 			help_menu_about.select_actions.extend (agent show_about)
-			test_profile_combo.select_actions.extend (agent select_profile)
-			arch_test_tree_toggle_expand_bn.select_actions.extend (agent archetype_test_tree_expand_toggle)
-			arch_test_refresh_bn.select_actions.extend (agent archetype_test_refresh)
-			regression_test_bn.select_actions.extend (agent archetype_test_regression_toggle)
-			archetype_test_go_bn.select_actions.extend (agent archetype_test_go_stop)
-			diff_source_button.select_actions.extend (agent on_diff_source)
-			diff_flat_button.select_actions.extend (agent on_diff_flat)
-			diff_source_flat_button.select_actions.extend (agent on_diff_source_flat)
-			diff_source_round_trip_button.select_actions.extend (agent on_diff_round_trip)
 			close_request_actions.extend (agent exit_app)
 
 				-- Call `user_initialization'.
@@ -338,30 +238,7 @@ feature {NONE}-- Initialization
 			create help_menu_clinical_knowledge_manager
 			create help_menu_report_bug
 			create help_menu_about
-			create main_notebook
-			create viewer_vbox
-			create test_split_area
-			create l_ev_horizontal_box_1
-			create archetype_test_tree_grid
-			create l_ev_vertical_box_1
-			create test_profile_combo
-			create remove_unused_codes_rb
-			create arch_test_tree_toggle_expand_bn
-			create arch_test_refresh_bn
-			create regression_test_bn
-			create l_ev_horizontal_box_2
-			create l_ev_label_1
-			create arch_test_processed_count
-			create l_ev_horizontal_separator_1
-			create archetype_test_go_bn
-			create l_ev_cell_1
-			create l_ev_horizontal_separator_2
-			create l_ev_label_2
-			create diff_source_button
-			create diff_flat_button
-			create diff_source_flat_button
-			create diff_source_round_trip_button
-			create test_status_area
+			create ev_main_vbox
 
 			create string_constant_set_procedures.make (10)
 			create string_constant_retrieval_functions.make (10)
@@ -398,23 +275,7 @@ feature -- Access
 	l_ev_menu_separator_2, l_ev_menu_separator_3, history_menu_separator, l_ev_menu_separator_4,
 	l_ev_menu_separator_5, l_ev_menu_separator_6, l_ev_menu_separator_7, l_ev_menu_separator_8,
 	l_ev_menu_separator_9, l_ev_menu_separator_10, l_ev_menu_separator_11: EV_MENU_SEPARATOR
-	main_notebook: EV_NOTEBOOK
-	viewer_vbox,
-	l_ev_vertical_box_1: EV_VERTICAL_BOX
-	test_split_area: EV_VERTICAL_SPLIT_AREA
-	l_ev_horizontal_box_1, l_ev_horizontal_box_2: EV_HORIZONTAL_BOX
-	archetype_test_tree_grid: EV_GRID
-	test_profile_combo: EV_COMBO_BOX
-	remove_unused_codes_rb: EV_CHECK_BUTTON
-	arch_test_tree_toggle_expand_bn,
-	arch_test_refresh_bn, regression_test_bn, archetype_test_go_bn, diff_source_button,
-	diff_flat_button, diff_source_flat_button, diff_source_round_trip_button: EV_BUTTON
-	l_ev_label_1,
-	l_ev_label_2: EV_LABEL
-	arch_test_processed_count: EV_TEXT_FIELD
-	l_ev_horizontal_separator_1, l_ev_horizontal_separator_2: EV_HORIZONTAL_SEPARATOR
-	l_ev_cell_1: EV_CELL
-	test_status_area: EV_TEXT
+	ev_main_vbox: EV_VERTICAL_BOX
 
 feature {NONE} -- Implementation
 
@@ -576,51 +437,6 @@ feature {NONE} -- Implementation
 	
 	show_about
 			-- Called by `select_actions' of `help_menu_about'.
-		deferred
-		end
-	
-	select_profile
-			-- Called by `select_actions' of `test_profile_combo'.
-		deferred
-		end
-	
-	archetype_test_tree_expand_toggle
-			-- Called by `select_actions' of `arch_test_tree_toggle_expand_bn'.
-		deferred
-		end
-	
-	archetype_test_refresh
-			-- Called by `select_actions' of `arch_test_refresh_bn'.
-		deferred
-		end
-	
-	archetype_test_regression_toggle
-			-- Called by `select_actions' of `regression_test_bn'.
-		deferred
-		end
-	
-	archetype_test_go_stop
-			-- Called by `select_actions' of `archetype_test_go_bn'.
-		deferred
-		end
-	
-	on_diff_source
-			-- Called by `select_actions' of `diff_source_button'.
-		deferred
-		end
-	
-	on_diff_flat
-			-- Called by `select_actions' of `diff_flat_button'.
-		deferred
-		end
-	
-	on_diff_source_flat
-			-- Called by `select_actions' of `diff_source_flat_button'.
-		deferred
-		end
-	
-	on_diff_round_trip
-			-- Called by `select_actions' of `diff_source_round_trip_button'.
 		deferred
 		end
 	

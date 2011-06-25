@@ -49,13 +49,6 @@ inherit
 			copy, default_create
 		end
 
-feature -- Definitions
-
-	Diff_source: INTEGER = 1
-	Diff_flat: INTEGER = 2
-	Diff_source_flat: INTEGER = 3
-	Diff_round_trip: INTEGER = 4
-
 feature {NONE} -- Initialization
 
 	user_initialization
@@ -66,7 +59,7 @@ feature {NONE} -- Initialization
 			cur_title: STRING
 		do
 			-- connect controls
-			viewer_vbox.extend (action_bar)
+			ev_main_vbox.extend (action_bar)
 			action_bar.extend (archetype_profile_combo)
 			action_bar.extend (arch_compile_tool_bar)
 			arch_compile_tool_bar.extend (compile_button)
@@ -80,7 +73,7 @@ feature {NONE} -- Initialization
 			arch_id_hbox.extend (archetype_search_combo)
 			arch_id_hbox.extend (arch_search_tool_bar)
 			arch_search_tool_bar.extend (search_button)
-			viewer_vbox.extend (viewer_main_cell)
+			ev_main_vbox.extend (viewer_main_cell)
 
 			-- set visual characteristics - menu
 			set_icon_pixmap (adl_workbench_icon)
@@ -102,7 +95,7 @@ feature {NONE} -- Initialization
 			tools_menu_options.set_pixmap (pixmaps ["tools"])
 
 			-- set visual characteristics - action bar
-			viewer_vbox.disable_item_expand (action_bar)
+			ev_main_vbox.disable_item_expand (action_bar)
 			action_bar.set_minimum_width (800)
 			action_bar.set_padding (10)
 			action_bar.set_border_width (4)
@@ -113,6 +106,7 @@ feature {NONE} -- Initialization
 			archetype_profile_combo.disable_edit
 			arch_compile_tool_bar.disable_vertical_button_style
 			compile_button.set_text ("Compile")
+			compile_button.set_pixmap (pixmaps ["compile"])
 			compile_button.set_tooltip ("Compile all archetypes (F7)")
 			open_button.set_text ("Open")
 			open_button.set_tooltip ("Open an ad hoc archetype")
@@ -136,12 +130,12 @@ feature {NONE} -- Initialization
 			create_new_catalogue_tool
 			create_new_statistics_tool
 			create_new_status_tool
+			create_new_test_tool
 			archetype_tools.create_new_tool
 
 			-- set up events
 			edit_menu_copy.select_actions.extend (agent text_widget_handler.on_copy)
 			edit_menu_select_all.select_actions.extend (agent text_widget_handler.on_select_all)
-			arch_test_processed_count.focus_in_actions.extend (agent text_widget_handler.on_select_all)
 
 			view_menu_differential.select_actions.extend (agent on_differential_view)
 			view_menu_flat.select_actions.extend (agent on_flat_view)
@@ -159,6 +153,9 @@ feature {NONE} -- Initialization
 			-- set UI feedback handlers
 			archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
 			archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
+
+			-- text widget handling
+			text_widget_handler.focus_first_widget (viewer_main_cell)
 
 			-- accelerators
 			initialise_accelerators
@@ -213,7 +210,7 @@ feature {NONE} -- Initialization
 			add_menu_shortcut (history_menu_forward, key_right, False, True, False)
 		end
 
-	initialise_session_appearance
+	initialise_session_ui_basic
 			-- initialise visual settings of window remembered from previous session
 		do
 			if app_x_position > Sane_screen_coord and app_y_position > Sane_screen_coord then
@@ -227,19 +224,29 @@ feature {NONE} -- Initialization
 			else
 				set_size (app_initial_width, app_initial_height)
 			end
+		end
 
-			if main_notebook_tab_pos > 1 then
-				main_notebook.select_item (main_notebook [main_notebook_tab_pos])
-			end
-
-			populate_compile_button
-
-			initialise_splitter (test_split_area, test_split_position)
-			text_widget_handler.focus_first_widget (main_notebook.selected_item)
-
+	initialise_session_ui_layout
+			-- initialise visual settings of window remembered from previous session
+		do
 			if app_maximised then
 				maximize
 			end
+
+			-- Docking layout
+			if file_system.file_exists (user_docking_layout_file_path) then
+				if not docking_manager.open_config (user_docking_layout_file_path) then
+					status_tool.append_status_text ("Read from docking config file " + user_docking_layout_file_path + "failed")
+				end
+			elseif file_system.file_exists (default_docking_layout_file_path) then
+				if not docking_manager.open_config (default_docking_layout_file_path) then
+					status_tool.append_status_text ("Read from docking config file " + default_docking_layout_file_path + "failed")
+				end
+			end
+
+			-- Splitter layout
+			initialise_splitter (test_tool.ev_root_container, test_split_position)
+			initialise_splitter (catalogue_tool.ev_root_container, catalogue_split_position)
 		end
 
 feature -- Status setting
@@ -249,9 +256,9 @@ feature -- Status setting
 		do
 			append_billboard_to_status_area
 
+			initialise_session_ui_basic
 			Precursor
-
-			initialise_session_appearance
+			initialise_session_ui_layout
 
 			if text_editor_command.is_empty then
 				set_text_editor_command (default_text_editor_command)
@@ -276,7 +283,6 @@ feature -- Status setting
 					set_repository
 				else
 					populate_archetype_profile_combo
-					populate_test_profile_combo
 					populate_directory_controls (True)
 				end
 			end
@@ -414,8 +420,6 @@ feature -- File events
 	exit_app
 			-- Terminate the application, saving the window location.
 		do
-			-- gui settings
-			set_test_split_position (test_split_area.split_position)
 			set_app_width (width)
 			set_app_height (height)
 			if not is_minimized then
@@ -423,12 +427,14 @@ feature -- File events
 				set_app_y_position (y_position)
 			end
 			set_app_maximised (is_maximized)
-			set_main_notebook_tab_pos (main_notebook.selected_item_index)
-
-	--		set_path_filter_combo_selection (archetype_tool.selected_path_filter)
-	--		set_path_view_check_list_settings (archetype_tool.path_map_selected_columns)
+			set_test_split_position (test_tool.ev_root_container.split_position)
+			set_catalogue_split_position (catalogue_tool.ev_root_container.split_position)
 
 			app_cfg.save
+
+			if docking_manager.save_data (user_docking_layout_file_path) then
+			end
+
 			ev_application.destroy
 		end
 
@@ -473,7 +479,6 @@ feature {NONE} -- Repository events
 			-- if anything changed, repopulate the profile combo box selectors
 			if dialog.any_profile_changes_made then
 				populate_archetype_profile_combo
-				populate_test_profile_combo
 			end
 
 			-- if the current profile changed or was removed, repopulate the explorers
@@ -486,18 +491,9 @@ feature {NONE} -- Repository events
 	select_profile
 			-- Called by `select_actions' of `archetype_profile_combo' and `test_profile_combo'
 		do
-			if archetype_profile_combo.is_displayed then
-				if not archetype_profile_combo.text.same_string (repository_profiles.current_profile_name) then
-					status_tool.clear_status_area
-					set_current_profile (archetype_profile_combo.text)
-					populate_test_profile_combo
-				end
-			else -- must be on test page
-				if not test_profile_combo.text.same_string (repository_profiles.current_profile_name) then
-					status_tool.clear_status_area
-					set_current_profile (test_profile_combo.text)
-					populate_archetype_profile_combo
-				end
+			if not archetype_profile_combo.text.same_string (repository_profiles.current_profile_name) then
+				status_tool.clear_status_area
+				set_current_profile (archetype_profile_combo.text)
 			end
 			populate_directory_controls (False)
 			clear_all_tools
@@ -691,7 +687,7 @@ feature {NONE} -- Tools menu events
 			end
 			if dialog.has_changed_navigator_options and repository_profiles.has_current_profile then
 				catalogue_tool.populate
-				archetype_test_tree_control.populate
+				test_tool.populate
 			end
 		end
 
@@ -722,7 +718,6 @@ feature -- RM Schemas Events
 			dialog.show_modal_to_window (Current)
 
 			populate_archetype_profile_combo
-			populate_test_profile_combo
 			if dialog.has_changed_schema_load_list then
 				status_tool.clear_status_area
 				rm_schemas_access.load_schemas
@@ -788,95 +783,6 @@ feature {NONE} -- Help events
 			dialog.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
 			dialog.set_position (app_x_position + (app_width - dialog.width) // 2, app_y_position + (app_height - dialog.height) // 2)
 			dialog.show_modal_to_window (Current)
-		end
-
-feature -- Test Screen Events
-
-	archetype_test_go_stop
-			-- start running tests in test page
-		do
-			archetype_test_tree_control.archetype_test_go_stop
-		end
-
-	archetype_test_tree_expand_toggle
-			-- toggle logical state of test page archetype tree expandedness
-		do
-			archetype_test_tree_control.toggle_expand_tree
-		end
-
-	archetype_test_refresh
-			-- refresh test environment back to vanilla state
-			-- i.e. synchronised with file system and with all
-			-- statuses cleared
-		do
-			archetype_test_tree_control.populate
-		end
-
-	archetype_test_regression_toggle
-		do
-			archetype_test_tree_control.toggle_test_regression
-		end
-
-	on_diff_source
-			-- show diffs between input differential archetype and serialised output, from test diff dir
-		do
-			do_diff (Diff_source)
-		end
-
-	on_diff_flat
-			-- show diffs between input flat (legacy) archetype and serialised output, from test diff dir
-		do
-			do_diff (Diff_flat)
-		end
-
-	on_diff_source_flat
-			-- show diffs between input differential archetype and generated flat output, from test diff dir	
-		do
-			do_diff (Diff_source_flat)
-		end
-
-	on_diff_round_trip
-			-- show diffs between input differential archetype and generated flat output, from test diff dir	
-		do
-			do_diff (Diff_round_trip)
-		end
-
-	do_diff (diff_type: INTEGER)
-		local
-			info_dialog: EV_INFORMATION_DIALOG
-		do
-			if not difftool_command.is_empty then
-				if archetype_test_tree_control.diff_dirs_available then
-					inspect diff_type
-					when Diff_source then
-						do_diff_command (archetype_test_tree_control.diff_dir_source_orig, archetype_test_tree_control.diff_dir_source_new)
-					when Diff_flat then
-						do_diff_command (archetype_test_tree_control.diff_dir_flat_orig, archetype_test_tree_control.diff_dir_flat_new)
-					when Diff_source_flat then
-						do_diff_command (archetype_test_tree_control.diff_dir_source_flat_orig, archetype_test_tree_control.diff_dir_source_flat_new)
-					when Diff_round_trip then
-						do_diff_command (archetype_test_tree_control.diff_dadl_round_trip_source_orig_dir, archetype_test_tree_control.diff_dadl_round_trip_source_new_dir)
-					else
-						-- do nothing
-					end
-				else
-					create info_dialog.make_with_text (create_message_line ("no_diff_dirs", Void))
-					info_dialog.set_title ("Information")
-					info_dialog.show_modal_to_window (Current)
-				end
-			else
-				create info_dialog.make_with_text (create_message_line ("no_diff_tool", Void))
-				info_dialog.set_title ("Information")
-				info_dialog.show_modal_to_window (Current)
-			end
-		end
-
-	do_diff_command (left_dir, right_dir: attached STRING)
-		local
-			command: STRING
-		do
-			command := difftool_command + " %"" + left_dir + "%" %"" + right_dir + "%""
-			execution_environment.launch (command)
 		end
 
 feature -- Archetype Events
@@ -1010,9 +916,21 @@ feature -- Catalogue tool
 
 feature -- Test tool
 
-	archetype_test_tree_control: GUI_TEST_ARCHETYPE_TREE_CONTROL
+	test_tool: GUI_TEST_ARCHETYPE_TREE_CONTROL
 		once
-			create Result.make (Current)
+			create Result.make (agent statistics_tool.populate, agent info_feedback)
+		end
+
+	create_new_test_tool
+		local
+			a_docking_pane: SD_CONTENT
+		do
+			create a_docking_pane.make_with_widget_title_pixmap (test_tool.ev_root_container, pixmaps ["tools"], "Test")
+			attached_docking_manager.contents.extend (a_docking_pane)
+			a_docking_pane.set_long_title ("Test")
+			a_docking_pane.set_short_title ("Test")
+			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
+			a_docking_pane.set_auto_hide ({SD_ENUMERATION}.right)
 		end
 
 feature -- Archetype tools
@@ -1090,6 +1008,15 @@ feature -- Clipboard
 
 feature {NONE} -- Implementation
 
+	info_feedback (a_message: attached STRING)
+		local
+			info_dialog: EV_INFORMATION_DIALOG
+		do
+			create info_dialog.make_with_text (a_message)
+			info_dialog.set_title ("Information")
+			info_dialog.show_modal_to_window (Current)
+		end
+
 	text_widget_handler: GUI_TEXT_WIDGET_HANDLER
 			-- FIXME: this is a hack to get round lack of standard behaviour in Vision2 for
 			-- focussed text widgets & cut & paste behaviours
@@ -1135,7 +1062,7 @@ feature {NONE} -- Implementation
 			append_billboard_to_status_area
 
 			catalogue_tool.populate
-			archetype_test_tree_control.populate
+			test_tool.populate
 			statistics_tool.populate
 		end
 
@@ -1153,30 +1080,20 @@ feature {NONE} -- Implementation
 		end
 
 	populate_archetype_profile_combo
-		do
-			populate_profile_combo (archetype_profile_combo)
-		end
-
-	populate_test_profile_combo
-		do
-			populate_profile_combo (test_profile_combo)
-		end
-
-	populate_profile_combo (a_combo: EV_COMBO_BOX)
 			-- Initialise the dialog's widgets from shared settings.
 		do
-			a_combo.select_actions.block
-			a_combo.change_actions.block
+			archetype_profile_combo.select_actions.block
+			archetype_profile_combo.change_actions.block
 			if not repository_profiles.is_empty then
-				a_combo.set_strings (repository_profiles.names)
+				archetype_profile_combo.set_strings (repository_profiles.names)
 				if repository_profiles.has_current_profile then
-					a_combo.do_all (agent (li: EV_LIST_ITEM) do if li.text.same_string (repository_profiles.current_profile_name) then li.enable_select end end)
+					archetype_profile_combo.do_all (agent (li: EV_LIST_ITEM) do if li.text.same_string (repository_profiles.current_profile_name) then li.enable_select end end)
 				end
 			else
 				archetype_profile_combo.wipe_out
 			end
-			a_combo.select_actions.resume
-			a_combo.change_actions.resume
+			archetype_profile_combo.select_actions.resume
+			archetype_profile_combo.change_actions.resume
 		end
 
 	populate_compile_button
@@ -1272,7 +1189,7 @@ feature {NONE} -- Build commands
 
 			catalogue_tool.update (aca)
 
-			archetype_test_tree_control.do_row_for_item (aca, agent archetype_test_tree_control.set_row_pixmap)
+			test_tool.do_row_for_item (aca)
 
 			if aca.last_compile_attempt_timestamp /= Void then
 				status_tool.add_compiler_error (aca)

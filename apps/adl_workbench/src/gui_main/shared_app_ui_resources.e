@@ -43,6 +43,22 @@ feature -- Definitions
 	bug_reporter_url: STRING = "http://www.openehr.org/issues/browse/AWBPR/"
 			-- The URL to ADL Workbench's problem reporter.
 
+	user_docking_layout_file_path: attached STRING
+			-- Full path to docking layout configuration file.
+		do
+			Result := file_system.pathname (user_config_file_directory, extension_replaced ("ui_config", User_config_file_extension))
+		ensure
+			not_empty: not Result.is_empty
+		end
+
+	default_docking_layout_file_path: attached STRING
+			-- Full path to docking layout configuration file.
+		do
+			Result := file_system.pathname (application_startup_directory, extension_replaced ("default_ui_config", User_config_file_extension))
+		ensure
+			not_empty: not Result.is_empty
+		end
+
 feature -- Access
 
 	adl_workbench_icon: EV_PIXMAP
@@ -192,46 +208,18 @@ feature -- Application Switches
 			app_cfg.put_value ("/gui/test_split_position", v)
 		end
 
-	explorer_split_position: INTEGER
+	catalogue_split_position: INTEGER
 			-- Split position of explorer horizontal split control.
 		do
-			Result := app_cfg.integer_value ("/gui/explorer_split_position")
+			Result := app_cfg.integer_value ("/gui/catalogue_split_position")
 		end
 
-	set_explorer_split_position (v: INTEGER)
-			-- Set split position of explorer horizontal split control.
-		require
-			v > 0
-		do
-			app_cfg.put_value ("/gui/explorer_split_position", v)
-		end
-
-	archetype_template_split_position: INTEGER
-			-- Split position of explorer horizontal split control.
-		do
-			Result := app_cfg.integer_value ("/gui/archetype_template_split_position")
-		end
-
-	set_archetype_template_split_position (v: INTEGER)
+	set_catalogue_split_position (v: INTEGER)
 			-- Set split position of explorer vertical split control.
 		require
 			v > 0
 		do
-			app_cfg.put_value ("/gui/archetype_template_split_position", v)
-		end
-
-	main_notebook_tab_pos: INTEGER
-			-- which tab of the main notebook was visible at the end of the last session
-		do
-			Result := app_cfg.integer_value ("/gui/main_notebook_tab_pos")
-		end
-
-	set_main_notebook_tab_pos(a_tab_pos: INTEGER)
-			-- set main notebook tab pos
-		require
-			a_tab_pos_valid: a_tab_pos > 0
-		do
-			app_cfg.put_value("/gui/main_notebook_tab_pos", a_tab_pos)
+			app_cfg.put_value ("/gui/catalogue_split_position", v)
 		end
 
 	expand_node_tree: BOOLEAN

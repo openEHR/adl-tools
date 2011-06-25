@@ -50,10 +50,20 @@ inherit
 			{NONE} all
 		end
 
+	CONSTANTS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
 feature -- Definitions
+
+	Diff_source: INTEGER = 1
+	Diff_flat: INTEGER = 2
+	Diff_source_flat: INTEGER = 3
+	Diff_round_trip: INTEGER = 4
 
 	First_test_col: INTEGER = 3
 			-- Number of first column in grid to be used for test results.
@@ -74,19 +84,124 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_main_window: attached MAIN_WINDOW)
+	make (a_populate_statistics_agent: like populate_statistics_agent; an_info_feedback_agent: like info_feedback_agent)
 			-- Create controller for the test grid.
 		do
+			populate_statistics_agent := a_populate_statistics_agent
+			info_feedback_agent := an_info_feedback_agent
+
 			-- create widgets
+			create ev_root_container
+			create ev_test_hbox
+			create ev_test_vbox
+			create remove_unused_codes_rb
+			create arch_test_tree_toggle_expand_bn
+			create arch_test_refresh_bn
+			create regression_test_bn
+			create ev_processed_hbox
+			create ev_processed_label
+			create arch_test_processed_count
+			create ev_hsep_1
+			create archetype_test_go_bn
+			create ev_spacer_cell
+			create ev_hsep_2
+			create ev_diff_label
+			create diff_source_button
+			create diff_flat_button
+			create diff_source_flat_button
+			create diff_source_round_trip_button
+			create test_status_area
+			make_for_grid (create {EV_GRID})
 
 			-- connect widgets
-			gui := a_main_window
-			make_for_grid (gui.archetype_test_tree_grid)
+			ev_root_container.extend (ev_test_hbox)
+			ev_test_hbox.extend (grid)
+			ev_test_hbox.extend (ev_test_vbox)
+			ev_test_vbox.extend (remove_unused_codes_rb)
+			ev_test_vbox.extend (arch_test_tree_toggle_expand_bn)
+			ev_test_vbox.extend (arch_test_refresh_bn)
+			ev_test_vbox.extend (regression_test_bn)
+			ev_test_vbox.extend (ev_processed_hbox)
+			ev_processed_hbox.extend (ev_processed_label)
+			ev_processed_hbox.extend (arch_test_processed_count)
+			ev_test_vbox.extend (ev_hsep_1)
+			ev_test_vbox.extend (archetype_test_go_bn)
+			ev_test_vbox.extend (ev_spacer_cell)
+			ev_test_vbox.extend (ev_hsep_2)
+			ev_test_vbox.extend (ev_diff_label)
+			ev_test_vbox.extend (diff_source_button)
+			ev_test_vbox.extend (diff_flat_button)
+			ev_test_vbox.extend (diff_source_flat_button)
+			ev_test_vbox.extend (diff_source_round_trip_button)
+			ev_root_container.extend (test_status_area)
+
+			-- set visual characteristics
+			ev_root_container.set_minimum_width (app_min_width)
+			ev_root_container.enable_item_expand (ev_test_hbox)
+			ev_root_container.disable_item_expand (test_status_area)
+			ev_test_hbox.disable_item_expand (ev_test_vbox)
+			ev_test_vbox.set_padding (padding_width)
+			ev_test_vbox.set_border_width (border_width)
+			ev_test_vbox.disable_item_expand (remove_unused_codes_rb)
+			ev_test_vbox.disable_item_expand (arch_test_tree_toggle_expand_bn)
+			ev_test_vbox.disable_item_expand (arch_test_refresh_bn)
+			ev_test_vbox.disable_item_expand (regression_test_bn)
+			ev_test_vbox.disable_item_expand (ev_processed_hbox)
+			ev_test_vbox.disable_item_expand (ev_hsep_1)
+			ev_test_vbox.disable_item_expand (archetype_test_go_bn)
+			ev_test_vbox.disable_item_expand (ev_hsep_2)
+			ev_test_vbox.disable_item_expand (ev_diff_label)
+			ev_test_vbox.disable_item_expand (diff_source_button)
+			ev_test_vbox.disable_item_expand (diff_flat_button)
+			ev_test_vbox.disable_item_expand (diff_source_flat_button)
+			ev_test_vbox.disable_item_expand (diff_source_round_trip_button)
+			remove_unused_codes_rb.set_text ("Remove unused codes")
+			remove_unused_codes_rb.set_tooltip ("Remove unused codes in archetypes on parse")
+			arch_test_tree_toggle_expand_bn.set_text ("Collapse Tree")
+			arch_test_tree_toggle_expand_bn.set_tooltip ("Expand or collapse directory tree")
+			arch_test_refresh_bn.set_text ("Refresh")
+			arch_test_refresh_bn.set_tooltip ("Resync to file system and reset statuses")
+			regression_test_bn.set_text ("Regression off")
+			regression_test_bn.set_tooltip ("Turn regression testing on for test archetypes")
+			ev_processed_hbox.set_minimum_width (110)
+			ev_processed_hbox.set_padding (padding_width)
+			ev_processed_hbox.disable_item_expand (ev_processed_label)
+			ev_processed_label.set_text ("Processed:")
+			ev_processed_label.set_minimum_width (80)
+			ev_processed_label.align_text_right
+			arch_test_processed_count.disable_edit
+			ev_hsep_1.set_minimum_height (15)
+			archetype_test_go_bn.set_text ("Go")
+			archetype_test_go_bn.set_tooltip ("Start running tests")
+			ev_diff_label.set_text ("Diffs")
+			diff_source_button.set_text ("Source file v Serialised")
+			diff_source_button.set_tooltip ("Open diff tool on parsed and 1st generation serialised .adls files")
+			diff_flat_button.set_text ("Legacy v gen'd Flat")
+			diff_flat_button.set_tooltip ("Open diff tool on legacy and generated flat files")
+			diff_source_flat_button.set_text ("Source v gen'd Flat")
+			diff_source_flat_button.set_tooltip ("Open diff tool on source and generated flat files; for top-level archetypes, this shows the effect of flattening the RM, if that option is turned on.")
+			diff_source_round_trip_button.set_text ("Source v R-trip")
+			diff_source_round_trip_button.set_tooltip ("Open diff tool on source and archetype round-tripped through dADL P_* objects")
+			test_status_area.set_minimum_height (status_area_min_height)
+			test_status_area.disable_edit
 			grid.enable_tree
-			gui.archetype_test_go_bn.set_pixmap (pixmaps ["go"])
+			archetype_test_go_bn.set_pixmap (pixmaps ["go"])
+
+			-- set up events
+			arch_test_tree_toggle_expand_bn.select_actions.extend (agent toggle_expand_tree)
+			arch_test_refresh_bn.select_actions.extend (agent populate)
+			regression_test_bn.select_actions.extend (agent toggle_test_regression)
+			archetype_test_go_bn.select_actions.extend (agent archetype_test_go_stop)
+			diff_source_button.select_actions.extend (agent on_diff_source)
+			diff_flat_button.select_actions.extend (agent on_diff_flat)
+			diff_source_flat_button.select_actions.extend (agent on_diff_source_flat)
+			diff_source_round_trip_button.select_actions.extend (agent on_diff_round_trip)
+	--		arch_test_processed_count.focus_in_actions.extend (agent text_widget_handler.on_select_all)
 		end
 
 feature -- Access
+
+	ev_root_container: EV_VERTICAL_SPLIT_AREA
 
 	tests: DS_HASH_TABLE [FUNCTION [ANY, TUPLE, INTEGER], STRING]
 			-- table of test routines
@@ -163,7 +278,7 @@ feature -- Commands
 			-- Wipe out content from widgets.
 		do
 			grid.wipe_out
-			gui.test_status_area.remove_text
+			test_status_area.remove_text
 			create grid_row_stack.make(0)
 		end
 
@@ -201,8 +316,8 @@ feature -- Commands
 				grid.column (2).resize_to_content
 			end
 
-			gui.arch_test_processed_count.set_text ("0")
-			gui.remove_unused_codes_rb.disable_select
+			arch_test_processed_count.set_text ("0")
+			remove_unused_codes_rb.disable_select
 		end
 
    	set_row_pixmap (row: attached EV_GRID_ROW)
@@ -215,7 +330,7 @@ feature -- Commands
 			end
 		end
 
-	do_row_for_item (ari: ARCH_CAT_ITEM; action: attached PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
+	do_row_for_item (ari: ARCH_CAT_ITEM)
    			-- Perform `action' for the row containing `an_item', if any.
   		local
    			i: INTEGER
@@ -225,7 +340,7 @@ feature -- Commands
 				from i := grid.row_count until i = 0 loop
 					row := grid.row (i)
 					if row.data /= Void and then row.data.is_equal (ari) then
-						action.call ([row])
+						set_row_pixmap (row)
 						i := 0
 					else
 						i := i - 1
@@ -234,16 +349,18 @@ feature -- Commands
 			end
 		end
 
+feature -- Events
+
 	toggle_expand_tree
 			-- toggle expanded status of tree view
 		do
 			if is_expanded then
 				collapse_tree (grid.row (1))
-				gui.arch_test_tree_toggle_expand_bn.set_text ("Expand Tree")
+				arch_test_tree_toggle_expand_bn.set_text ("Expand Tree")
 				is_expanded := False
 			else
 				expand_tree (grid.row (1))
-				gui.arch_test_tree_toggle_expand_bn.set_text ("Collapse Tree")
+				arch_test_tree_toggle_expand_bn.set_text ("Collapse Tree")
 				is_expanded := True
 			end
 		end
@@ -251,10 +368,10 @@ feature -- Commands
 	toggle_test_regression
 		do
 			if regression_test_on then
-				gui.regression_test_bn.set_text ("Regression off")
+				regression_test_bn.set_text ("Regression off")
 				regression_test_on := False
 			else
-				gui.regression_test_bn.set_text ("Regression on")
+				regression_test_bn.set_text ("Regression on")
 				regression_test_on := True
 			end
 		end
@@ -267,13 +384,69 @@ feature -- Commands
 			else
 				test_stop_requested := False
 				test_execution_underway := True
-				gui.archetype_test_go_bn.set_pixmap (pixmaps ["stop"])
-				gui.archetype_test_go_bn.set_text ("Pause")
+				archetype_test_go_bn.set_pixmap (pixmaps ["stop"])
+				archetype_test_go_bn.set_text ("Pause")
 				run_tests
 				test_execution_underway := False
-				gui.archetype_test_go_bn.set_pixmap (pixmaps ["go"])
-				gui.archetype_test_go_bn.set_text ("Go")
+				archetype_test_go_bn.set_pixmap (pixmaps ["go"])
+				archetype_test_go_bn.set_text ("Go")
 			end
+		end
+
+	on_diff_source
+			-- show diffs between input differential archetype and serialised output, from test diff dir
+		do
+			do_diff (Diff_source)
+		end
+
+	on_diff_flat
+			-- show diffs between input flat (legacy) archetype and serialised output, from test diff dir
+		do
+			do_diff (Diff_flat)
+		end
+
+	on_diff_source_flat
+			-- show diffs between input differential archetype and generated flat output, from test diff dir	
+		do
+			do_diff (Diff_source_flat)
+		end
+
+	on_diff_round_trip
+			-- show diffs between input differential archetype and generated flat output, from test diff dir	
+		do
+			do_diff (Diff_round_trip)
+		end
+
+	do_diff (diff_type: INTEGER)
+		do
+			if not difftool_command.is_empty then
+				if diff_dirs_available then
+					inspect diff_type
+					when Diff_source then
+						do_diff_command (diff_dir_source_orig, diff_dir_source_new)
+					when Diff_flat then
+						do_diff_command (diff_dir_flat_orig, diff_dir_flat_new)
+					when Diff_source_flat then
+						do_diff_command (diff_dir_source_flat_orig, diff_dir_source_flat_new)
+					when Diff_round_trip then
+						do_diff_command (diff_dadl_round_trip_source_orig_dir, diff_dadl_round_trip_source_new_dir)
+					else
+						-- do nothing
+					end
+				else
+					call_info_feedback_agent ("no_diff_dirs")
+				end
+			else
+				call_info_feedback_agent ("no_diff_tool")
+			end
+		end
+
+	do_diff_command (left_dir, right_dir: attached STRING)
+		local
+			command: STRING
+		do
+			command := difftool_command + " %"" + left_dir + "%" %"" + right_dir + "%""
+			execution_environment.launch (command)
 		end
 
 feature {NONE} -- Commands
@@ -284,7 +457,7 @@ feature {NONE} -- Commands
 			row_csr: INTEGER
 		do
 			reset_output_directories
-			remove_unused_codes := gui.remove_unused_codes_rb.is_selected
+			remove_unused_codes := remove_unused_codes_rb.is_selected
 
 			last_tested_archetypes_count := 0
 			from row_csr := 1 until row_csr > grid.row_count or test_stop_requested loop
@@ -292,8 +465,8 @@ feature {NONE} -- Commands
 				row_csr := row_csr + 1
 			end
 
-			gui.test_status_area.append_text ("****** Executed tests on " + last_tested_archetypes_count.out + " Archetypes ******%N")
-			gui.populate_statistics
+			test_status_area.append_text ("****** Executed tests on " + last_tested_archetypes_count.out + " Archetypes ******%N")
+			populate_statistics_agent.call ([])
 		end
 
 	run_tests_on_row (row: EV_GRID_ROW)
@@ -339,7 +512,7 @@ feature {NONE} -- Commands
 						row.set_item (col_csr, gli)
 
 						if not test_status.is_empty then
-							gui.test_status_area.append_text ("--------------- " + target.id.as_string + " -----------------%N" + test_status)
+							test_status_area.append_text ("--------------- " + target.id.as_string + " -----------------%N" + test_status)
 						end
 
 						ev_application.process_events
@@ -348,7 +521,7 @@ feature {NONE} -- Commands
 					end
 
 					last_tested_archetypes_count := last_tested_archetypes_count + 1
-					gui.arch_test_processed_count.set_text (last_tested_archetypes_count.out)
+					arch_test_processed_count.set_text (last_tested_archetypes_count.out)
 				end
 
 				gcli.set_is_checked (False)
@@ -545,8 +718,28 @@ feature {NONE} -- Tests
 
 feature {NONE} -- Implementation
 
-	gui: MAIN_WINDOW
-			-- main window of system
+	ev_test_vbox: EV_VERTICAL_BOX
+	ev_test_hbox, ev_processed_hbox: EV_HORIZONTAL_BOX
+	remove_unused_codes_rb: EV_CHECK_BUTTON
+	arch_test_tree_toggle_expand_bn,
+	arch_test_refresh_bn, regression_test_bn, archetype_test_go_bn, diff_source_button,
+	diff_flat_button, diff_source_flat_button, diff_source_round_trip_button: EV_BUTTON
+	ev_processed_label, ev_diff_label: EV_LABEL
+	arch_test_processed_count: EV_TEXT_FIELD
+	ev_hsep_1, ev_hsep_2: EV_HORIZONTAL_SEPARATOR
+	ev_spacer_cell: EV_CELL
+	test_status_area: EV_TEXT
+
+	populate_statistics_agent: PROCEDURE [ANY, TUPLE]
+
+	info_feedback_agent: PROCEDURE [ANY, TUPLE [STRING]]
+
+	call_info_feedback_agent (a_message: attached STRING)
+		do
+			if attached info_feedback_agent then
+				info_feedback_agent.call ([create_message_line (a_message, Void)])
+			end
+		end
 
 	grid_row_stack: ARRAYED_STACK [EV_GRID_ROW]
 			-- Stack used during `populate_gui_tree_node_enter'.

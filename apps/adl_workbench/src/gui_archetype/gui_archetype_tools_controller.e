@@ -158,6 +158,9 @@ feature -- Commands
 			current_docking_pane.set_short_title (current_arch_cat.selected_archetype.id.as_abbreviated_string)
 			current_docking_pane.set_pixmap (pixmaps [current_arch_cat.selected_archetype.group_name])
 			current_tool.populate (current_arch_cat.selected_archetype)
+			if not current_docking_pane.is_visible then
+				current_docking_pane.show
+			end
 			current_docking_pane.set_focus
 		end
 
