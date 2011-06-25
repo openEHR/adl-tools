@@ -989,19 +989,33 @@ feature -- Docking controls
 	tool_bar_content: detachable SD_TOOL_BAR_CONTENT
 			-- Tool bar content
 
-feature -- Controls
+feature -- Catalogue tool
 
 	catalogue_tool: GUI_CATALOGUE_TOOL
+		once
+			create Result.make (agent parse_archetype, agent edit_archetype, agent create_and_populate_new_archetype_tool, agent display_class)
+		end
 
 	create_new_catalogue_tool
+		local
+			a_docking_pane: SD_CONTENT
 		do
-			create catalogue_tool.make (attached_docking_manager, agent parse_archetype, agent edit_archetype, agent create_and_populate_new_archetype_tool, agent display_class)
+			create a_docking_pane.make_with_widget_title_pixmap (catalogue_tool.ev_root_container, pixmaps ["archetype_category"], "Catalogue")
+			attached_docking_manager.contents.extend (a_docking_pane)
+			a_docking_pane.set_long_title ("Catalogue")
+			a_docking_pane.set_short_title ("Catalogue")
+			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
+			a_docking_pane.set_top ({SD_ENUMERATION}.left)
 		end
+
+feature -- Test tool
 
 	archetype_test_tree_control: GUI_TEST_ARCHETYPE_TREE_CONTROL
 		once
 			create Result.make (Current)
 		end
+
+feature -- Archetype tools
 
 	archetype_tools: GUI_ARCHETYPE_TOOLS_CONTROLLER
 		once

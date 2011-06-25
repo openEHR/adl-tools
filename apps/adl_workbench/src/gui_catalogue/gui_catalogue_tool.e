@@ -15,10 +15,10 @@ note
 class GUI_CATALOGUE_TOOL
 
 inherit
-	SHARED_APP_UI_RESOURCES
-		export
-			{NONE} all
-		end
+--	SHARED_APP_UI_RESOURCES
+--		export
+--			{NONE} all
+--		end
 
 	SHARED_KNOWLEDGE_REPOSITORY
 
@@ -27,8 +27,7 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_docking_manager: attached SD_DOCKING_MANAGER;
-			a_select_archetype_agent, an_edit_archetype_agent,
+	make (a_select_archetype_agent, an_edit_archetype_agent,
 			a_select_archetype_in_new_tool_agent, a_select_class_agent: PROCEDURE [ANY, TUPLE])
 		do
 			select_archetype_agent := a_select_archetype_agent
@@ -46,23 +45,11 @@ feature {NONE} -- Initialisation
 			-- visual characteristics
 			ev_root_container.enable_item_expand (template_explorer.ev_root_container)
 			ev_root_container.disable_item_expand (archetype_explorer.ev_root_container)
-
-			-- events
-
-			-- docking
-			create docking_pane.make_with_widget_title_pixmap (ev_root_container, pixmaps ["archetype_category"], "Catalogue")
-			a_docking_manager.contents.extend (docking_pane)
-			docking_pane.set_long_title ("Catalogue")
-			docking_pane.set_short_title ("Catalogue")
-			docking_pane.set_type ({SD_ENUMERATION}.tool)
-			docking_pane.set_top ({SD_ENUMERATION}.left)
 		end
 
 feature -- Access
 
 	ev_root_container: EV_VERTICAL_SPLIT_AREA
-
-	docking_pane: SD_CONTENT
 
 feature -- Commands
 
