@@ -12,7 +12,7 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class GUI_STATUS_TOOL
+class GUI_CONSOLE_TOOL
 
 inherit
 	CONSTANTS
@@ -30,73 +30,32 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (select_archetype_from_gui_data: PROCEDURE [ANY, TUPLE [EV_ANY]])
+	make
 		do
-			-- create lower down controls
-			create compiler_error_control.make (select_archetype_from_gui_data, agent update_with_compiler_errors)
-
 			-- create widgets
-			create ev_notebook
-			create ev_status_area
-
-			-- connect them together
-			ev_notebook.extend (ev_status_area)
-			ev_notebook.extend (compiler_error_control.grid)
+			create ev_console
 
 			-- set visual characteristics
-			ev_notebook.set_item_text (ev_status_area, "Console")
-			ev_notebook.set_item_text (compiler_error_control.grid, "Errors")
-			ev_status_area.set_minimum_height (200)
-			ev_status_area.disable_edit
+			ev_console.set_minimum_height (200)
+			ev_console.disable_edit
 		end
 
 feature -- Access
 
-	ev_notebook: EV_NOTEBOOK
+	ev_console: EV_TEXT
 
 feature -- Commands
 
-	append_status_text (a_text: attached STRING)
+	append_text (a_text: attached STRING)
 		do
-			ev_status_area.append_text (a_text)
+			ev_console.append_text (a_text)
 			ev_application.process_graphical_events
 		end
 
-	clear_status_area
+	clear
 		do
-			ev_status_area.remove_text
+			ev_console.remove_text
 		end
-
-	add_compiler_error (aca: attached ARCH_CAT_ARCHETYPE)
-		do
-			compiler_error_control.extend_and_select (aca)
-		end
-
-	clear_compiler_errors
-		do
-			compiler_error_control.clear
-		end
-
-	export_repository_report (xml_file_name: attached STRING)
-			-- Export the contents of the grid and other statistics to XML in `xml_name'.
-		require
-			xml_file_name_valid: not xml_file_name.is_empty
-		do
-			compiler_error_control.export_repository_report (xml_file_name)
-		end
-
-feature -- GUI feedback
-
-	update_with_compiler_errors (parse_error_count, validity_error_count, warning_count: NATURAL)
-		do
-			ev_notebook.set_item_text (compiler_error_control.grid, "Errors (" + parse_error_count.out + "/" + validity_error_count.out + "/" + warning_count.out + ")")
-		end
-
-feature {NONE} -- Implementation
-
-	ev_status_area: EV_TEXT
-
-	compiler_error_control: GUI_COMPILER_ERROR_CONTROL
 
 end
 

@@ -19,7 +19,7 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class GUI_COMPILER_ERROR_CONTROL
+class GUI_ERROR_TOOL
 
 inherit
 	GUI_GRID_CONTROLLER

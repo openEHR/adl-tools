@@ -569,6 +569,8 @@ feature {NONE} -- Implementation
 			Result.force (["history_back.ico", Void], "history_back")
 			Result.force (["history_forward.ico", Void], "history_forward")
 			Result.force (["magnifier.ico", Void], "magnifier")
+			Result.force (["console.ico", Void], "console")
+			Result.force (["errors.ico", Void], "errors")
 
 			Result.force (["adl_workbench_logo.ico", Void], "adl_workbench_icon")
 			Result.force (["openEHR.png", Void], "openEHR_logo")

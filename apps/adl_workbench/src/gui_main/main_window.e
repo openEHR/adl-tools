@@ -128,8 +128,9 @@ feature {NONE} -- Initialization
 			-- set up docking
 			create docking_manager.make (viewer_main_cell, Current)
 			create_new_catalogue_tool
+			create_new_console_tool
+			create_new_error_tool
 			create_new_statistics_tool
-			create_new_status_tool
 			create_new_test_tool
 			archetype_tools.create_new_tool
 
@@ -236,11 +237,11 @@ feature {NONE} -- Initialization
 			-- Docking layout
 			if file_system.file_exists (user_docking_layout_file_path) then
 				if not docking_manager.open_config (user_docking_layout_file_path) then
-					status_tool.append_status_text ("Read from docking config file " + user_docking_layout_file_path + "failed")
+					console_tool.append_text ("Read from docking config file " + user_docking_layout_file_path + "failed")
 				end
 			elseif file_system.file_exists (default_docking_layout_file_path) then
 				if not docking_manager.open_config (default_docking_layout_file_path) then
-					status_tool.append_status_text ("Read from docking config file " + default_docking_layout_file_path + "failed")
+					console_tool.append_text ("Read from docking config file " + default_docking_layout_file_path + "failed")
 				end
 			end
 
@@ -313,7 +314,7 @@ feature -- File events
 					elseif has_current_profile then
 						current_arch_cat.add_adhoc_item (fname)
 						catalogue_tool.populate
-						status_tool.append_status_text (billboard.content)
+						console_tool.append_text (billboard.content)
 					end
 				else
 					(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" already added.")).show_modal_to_window (Current)
@@ -408,7 +409,7 @@ feature -- File events
 
 					if ok_to_write then
 						dir.selected_archetype.save_differential_as (name, format)
-						status_tool.append_status_text (dir.selected_archetype.status)
+						console_tool.append_text (dir.selected_archetype.status)
 					end
 				end
 			else
@@ -483,7 +484,7 @@ feature {NONE} -- Repository events
 
 			-- if the current profile changed or was removed, repopulate the explorers
 			if current_profile_removed or current_profile_changed then
-				status_tool.clear_status_area
+				console_tool.clear
 				populate_directory_controls (True)
 			end
 		end
@@ -492,7 +493,7 @@ feature {NONE} -- Repository events
 			-- Called by `select_actions' of `archetype_profile_combo' and `test_profile_combo'
 		do
 			if not archetype_profile_combo.text.same_string (repository_profiles.current_profile_name) then
-				status_tool.clear_status_area
+				console_tool.clear
 				set_current_profile (archetype_profile_combo.text)
 			end
 			populate_directory_controls (False)
@@ -508,7 +509,7 @@ feature {NONE} -- Repository events
 	rebuild_all
 			-- Force the whole system to rebuild.
 		do
-			status_tool.clear_compiler_errors
+			error_tool.clear
 			do_build_action (agent archetype_compiler.rebuild_all)
 		end
 
@@ -597,13 +598,13 @@ feature {NONE} -- Repository events
 				end
 
 				if ok_to_write then
-					do_with_wait_cursor (agent status_tool.export_repository_report (xml_name))
+					do_with_wait_cursor (agent error_tool.export_repository_report (xml_name))
 
 					if file.exists then
-						status_tool.append_status_text (create_message_line ("export_repository_report_replace_info", <<xml_name>>))
+						console_tool.append_text (create_message_line ("export_repository_report_replace_info", <<xml_name>>))
 						show_in_system_browser (xml_name)
 					else
-						status_tool.append_status_text (create_message_line ("export_repository_report_replace_err", <<xml_name>>))
+						console_tool.append_text (create_message_line ("export_repository_report_replace_err", <<xml_name>>))
 					end
 				end
 			end
@@ -704,7 +705,7 @@ feature {NONE} -- Tools menu events
 			-- delete a generated file associated with `ara'
 		do
 			ara.clean_generated
-			status_tool.append_status_text (ara.status)
+			console_tool.append_text (ara.status)
 		end
 
 feature -- RM Schemas Events
@@ -719,7 +720,7 @@ feature -- RM Schemas Events
 
 			populate_archetype_profile_combo
 			if dialog.has_changed_schema_load_list then
-				status_tool.clear_status_area
+				console_tool.clear
 				rm_schemas_access.load_schemas
 				if not rm_schemas_access.found_valid_schemas then
 					append_billboard_to_status_area
@@ -955,24 +956,48 @@ feature -- Class map tool
 			create Result.make (attached_docking_manager)
 		end
 
-feature -- Status Tool
+feature -- Console Tool
 
-	status_tool: GUI_STATUS_TOOL
+	console_tool: GUI_CONSOLE_TOOL
 		once
-			create Result.make (agent select_archetype_from_gui_data)
+			create Result.make
 		end
 
-	create_new_status_tool
+	create_new_console_tool
 		local
 			docking_pane: SD_CONTENT
 		do
-			create docking_pane.make_with_widget_title_pixmap (status_tool.ev_notebook, pixmaps ["validity_errors"], "Status")
+			create docking_pane.make_with_widget_title_pixmap (console_tool.ev_console, pixmaps ["console"], "Console")
 			attached_docking_manager.contents.extend (docking_pane)
 			docking_pane.set_type ({SD_ENUMERATION}.tool)
-			docking_pane.set_long_title ("Status")
-			docking_pane.set_short_title ("Status")
-			docking_pane.set_top ({SD_ENUMERATION}.bottom)
+			docking_pane.set_long_title ("Console")
+			docking_pane.set_short_title ("Console")
 			docking_pane.set_auto_hide ({SD_ENUMERATION}.bottom)
+		end
+
+feature -- Error Tool
+
+	error_tool: GUI_ERROR_TOOL
+		once
+			create Result.make (agent select_archetype_from_gui_data, agent error_tool_title_update)
+		end
+
+	error_docking_pane: SD_CONTENT
+
+	create_new_error_tool
+		do
+			create error_docking_pane.make_with_widget_title_pixmap (error_tool.grid, pixmaps ["errors"], "Errors")
+			attached_docking_manager.contents.extend (error_docking_pane)
+			error_docking_pane.set_type ({SD_ENUMERATION}.tool)
+			error_docking_pane.set_long_title ("Errors")
+			error_docking_pane.set_short_title ("Errors")
+			error_docking_pane.set_auto_hide ({SD_ENUMERATION}.bottom)
+		end
+
+	error_tool_title_update (parse_error_count, validity_error_count, warning_count: NATURAL)
+		do
+			error_docking_pane.set_short_title ("Errors (" + parse_error_count.out + "/" + validity_error_count.out + "/" + warning_count.out + ")")
+			error_docking_pane.set_long_title ("Errors (" + parse_error_count.out + "/" + validity_error_count.out + "/" + warning_count.out + ")")
 		end
 
 feature -- Statistics Tool
@@ -986,7 +1011,7 @@ feature -- Statistics Tool
 		local
 			docking_pane: SD_CONTENT
 		do
-			create docking_pane.make_with_widget_title_pixmap (statistics_tool.ev_root_container, pixmaps ["star"], "Statistics")
+			create docking_pane.make_with_widget_title_pixmap (statistics_tool.ev_root_container, pixmaps ["info"], "Statistics")
 			attached_docking_manager.contents.extend (docking_pane)
 			docking_pane.set_type ({SD_ENUMERATION}.tool)
 			docking_pane.set_long_title ("Statistics")
@@ -1027,7 +1052,7 @@ feature {NONE} -- Implementation
 	append_billboard_to_status_area
 			-- Append bilboard contents to `parser_status_area' and clear billboard.
 		do
-			status_tool.append_status_text (billboard.content)
+			console_tool.append_text (billboard.content)
 			billboard.clear
 		end
 
@@ -1052,12 +1077,12 @@ feature {NONE} -- Implementation
 
 			set_title (repository_profiles.current_reference_repository_path + " - " + title)
 
-			status_tool.append_status_text (create_message_line ("populating_directory_start", <<repository_profiles.current_profile_name>>))
+			console_tool.append_text (create_message_line ("populating_directory_start", <<repository_profiles.current_profile_name>>))
 			use_current_profile (refresh)
-			status_tool.append_status_text (create_message_line ("populating_directory_complete", Void))
+			console_tool.append_text (create_message_line ("populating_directory_complete", Void))
 
 			clear_all_archetype_view_controls
-			status_tool.clear_compiler_errors
+			error_tool.clear
 
 			append_billboard_to_status_area
 
@@ -1176,7 +1201,7 @@ feature {NONE} -- Build commands
 			-- Update GUI with progress on build.
 		do
 			populate_compile_button
-			status_tool.append_status_text (msg)
+			console_tool.append_text (msg)
 			ev_application.process_events
 		end
 
@@ -1184,7 +1209,7 @@ feature {NONE} -- Build commands
 			-- Update GUI with progress on build.
 		do
 			if not msg.is_empty then
-				status_tool.append_status_text (indented (msg, create {STRING}.make_filled ('%T', dependency_depth)))
+				console_tool.append_text (indented (msg, create {STRING}.make_filled ('%T', dependency_depth)))
 			end
 
 			catalogue_tool.update (aca)
@@ -1192,7 +1217,7 @@ feature {NONE} -- Build commands
 			test_tool.do_row_for_item (aca)
 
 			if aca.last_compile_attempt_timestamp /= Void then
-				status_tool.add_compiler_error (aca)
+				error_tool.extend_and_select (aca)
 				statistics_tool.populate
 
 				if attached current_arch_cat then
