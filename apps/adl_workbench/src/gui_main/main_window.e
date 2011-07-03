@@ -301,8 +301,8 @@ feature -- File events
 		do
 			create dialog
 			dialog.set_start_directory (current_work_directory)
-			dialog.filters.extend (["*" + archetype_source_file_extension, "ADL source files"])
-			dialog.filters.extend (["*" + archetype_legacy_file_extension, "ADL legacy flat files"])
+			dialog.filters.extend (["*" + File_ext_archetype_source, "ADL source files"])
+			dialog.filters.extend (["*" + File_ext_archetype_adl14, "ADL legacy flat files"])
 			dialog.show_modal_to_window (Current)
 			fname := dialog.file_name.as_string_8
 

@@ -18,39 +18,42 @@ class ARCHETYPE_DEFINITIONS
 
 feature -- Definitions
 
-	Archetype_native_syntax: STRING = "adl"
+	Syntax_type_adl: STRING = "adl"
 			-- Name of native ADL syntax type.
 
-	Archetype_web_syntax: STRING = "html"
+	Syntax_type_dadl: STRING = "dadl"
+			-- Name of native dADL syntax type.
+
+	Syntax_type_adl_html: STRING = "html"
 			-- Name of web publishing syntax type.
 
-	Archetype_xml_syntax: STRING = "xml"
+	Syntax_type_xml: STRING = "xml"
 			-- Name of XML syntax type.
 
-	Archetype_web_page_extension: STRING = ".html"
-			-- Extension of web publishing syntax type.
+	File_ext_archetype_web_page: STRING = ".html"
+			-- Extension of web page containing ADL syntax
 
-	Archetype_legacy_file_extension: STRING = ".adl"
-			-- Extension for legacy flat form archetype files.
+	File_ext_archetype_adl14: STRING = ".adl"
+			-- Extension for legacy flat form archetype files in ADL 1.4 syntax
 
-	Archetype_flat_file_extension: STRING = ".adlf"
-			-- Extension for legacy flat form archetype files.
+	File_ext_archetype_flat: STRING = ".adlf"
+			-- Extension for legacy flat form archetype files in ADL syntax
 
-	Archetype_source_file_extension: STRING = ".adls"
-			-- Extension for source form (differential) archetype files.
+	File_ext_archetype_source: STRING = ".adls"
+			-- Extension for source form (differential) archetype files in ADL 1.5 syntax
 
-	Archetype_dummy_file_extension: STRING = ".adlx"
+	File_ext_archetype_adl_diff: STRING = ".adlx"
 			-- Extension for use with source/flat diff; we don't want to use
 			-- the legitimate extension on these files because one is source
 			-- and one is flat, and diff tools need to see the same extension;
 			-- also we don't want users to get confused about what kind of files
 			-- these are
 
-	Archetype_dadl_file_extension: STRING = ".dadl"
-			-- Extension for dADL format archetype files.
+	File_ext_dadl: STRING = ".dadl"
+			-- Default extension for dADL format files that don't have some other extension
 
-	Archetype_xml_file_extension: STRING = ".xml"
-			-- Extension for XML format archetype files.
+	File_ext_xml_default: STRING = ".xml"
+			-- Default extension for XML format archetype files that don't have some other extension
 
 	Adl_versions: ARRAYED_LIST [STRING]
 			-- list of ADL versions known in this tool

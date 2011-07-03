@@ -72,7 +72,7 @@ feature -- Commands
 			create artefact_types.default_create
 
 			-- determine from the path whether it is a differential (source form) archetype
-			if file_system.has_extension (a_full_path, archetype_source_file_extension) then
+			if file_system.has_extension (a_full_path, File_ext_archetype_source) then
 				last_archetype.set_is_differential
 			end
 

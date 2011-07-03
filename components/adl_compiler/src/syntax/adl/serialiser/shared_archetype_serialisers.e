@@ -38,18 +38,18 @@ feature -- Initialisation
 
 	initialise_serialisers
 		once
-			archetype_serialisers.put(create {ARCHETYPE_ADL_SERIALISER}.make(create {NATIVE_ADL_SERIALISATION_PROFILE}.make(Archetype_native_syntax)), Archetype_native_syntax)
-			archetype_serialisers.put(create {ARCHETYPE_ADL_SERIALISER}.make(create {HTML_ADL_SERIALISATION_PROFILE}.make(Archetype_web_syntax)), Archetype_web_syntax)
+			archetype_serialisers.put(create {ARCHETYPE_ADL_SERIALISER}.make(create {NATIVE_ADL_SERIALISATION_PROFILE}.make(Syntax_type_adl)), Syntax_type_adl)
+			archetype_serialisers.put(create {ARCHETYPE_ADL_SERIALISER}.make(create {HTML_ADL_SERIALISATION_PROFILE}.make(Syntax_type_adl_html)), Syntax_type_adl_html)
 
-			c_serialisers.put(create {CADL_SYNTAX_SERIALISER}.make(create {NATIVE_CADL_SERIALISATION_PROFILE}.make(Archetype_native_syntax)), Archetype_native_syntax)
-			c_serialisers.put(create {CADL_SYNTAX_SERIALISER}.make(create {HTML_CADL_SERIALISATION_PROFILE}.make(Archetype_web_syntax)), Archetype_web_syntax)
+			c_serialisers.put(create {CADL_SYNTAX_SERIALISER}.make(create {NATIVE_CADL_SERIALISATION_PROFILE}.make(Syntax_type_adl)), Syntax_type_adl)
+			c_serialisers.put(create {CADL_SYNTAX_SERIALISER}.make(create {HTML_CADL_SERIALISATION_PROFILE}.make(Syntax_type_adl_html)), Syntax_type_adl_html)
 
-			assertion_serialisers.put(create {ASSERTION_SYNTAX_SERIALISER}.make(create {NATIVE_CADL_SERIALISATION_PROFILE}.make(Archetype_native_syntax)), Archetype_native_syntax)
-			assertion_serialisers.put(create {ASSERTION_SYNTAX_SERIALISER}.make(create {HTML_CADL_SERIALISATION_PROFILE}.make(Archetype_web_syntax)), Archetype_web_syntax)
+			assertion_serialisers.put(create {ASSERTION_SYNTAX_SERIALISER}.make(create {NATIVE_CADL_SERIALISATION_PROFILE}.make(Syntax_type_adl)), Syntax_type_adl)
+			assertion_serialisers.put(create {ASSERTION_SYNTAX_SERIALISER}.make(create {HTML_CADL_SERIALISATION_PROFILE}.make(Syntax_type_adl_html)), Syntax_type_adl_html)
 
-			dt_serialisers.put(create {DT_DADL_SERIALISER}.make(create {NATIVE_DADL_SERIALISATION_PROFILE}.make(Archetype_native_syntax)), Archetype_native_syntax)
-			dt_serialisers.put(create {DT_DADL_SERIALISER}.make(create {HTML_DADL_SERIALISATION_PROFILE}.make(Archetype_web_syntax)), Archetype_web_syntax)
-			dt_serialisers.put(create {DT_XML_SERIALISER}.make(create {HTML_DADL_SERIALISATION_PROFILE}.make(Archetype_xml_syntax)), Archetype_xml_syntax)
+			dt_serialisers.put(create {DT_DADL_SERIALISER}.make(create {NATIVE_DADL_SERIALISATION_PROFILE}.make(Syntax_type_adl)), Syntax_type_adl)
+			dt_serialisers.put(create {DT_DADL_SERIALISER}.make(create {HTML_DADL_SERIALISATION_PROFILE}.make(Syntax_type_adl_html)), Syntax_type_adl_html)
+			dt_serialisers.put(create {DT_XML_SERIALISER}.make(create {XML_DT_SERIALISATION_PROFILE}.make(Syntax_type_xml)), Syntax_type_xml)
 		end
 
 feature -- Access
@@ -83,9 +83,9 @@ feature -- Access
 			-- File extensions for logical serialisation formats.
 		once
 			create Result.make (0)
-			Result.put (Archetype_source_file_extension, Archetype_native_syntax)
-			Result.put (Archetype_web_page_extension, Archetype_web_syntax)
-			Result.put (Archetype_xml_file_extension, Archetype_xml_syntax)
+			Result.put (File_ext_archetype_source, Syntax_type_adl)
+			Result.put (File_ext_archetype_web_page, Syntax_type_adl_html)
+			Result.put (File_ext_xml_default, Syntax_type_xml)
 		ensure
 			not_empty: not Result.is_empty
 		end

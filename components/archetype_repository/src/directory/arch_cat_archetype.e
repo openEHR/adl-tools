@@ -100,7 +100,7 @@ feature {NONE} -- Initialisation
 
 			legacy_flat_path := a_path
 			legacy_flat_text_timestamp := legacy_flat_file_timestamp
-			differential_path := extension_replaced (a_path, archetype_source_file_extension)
+			differential_path := extension_replaced (a_path, File_ext_archetype_source)
 			if has_differential_file then
 				differential_text_timestamp := differential_file_timestamp
 			end
@@ -131,7 +131,7 @@ feature {NONE} -- Initialisation
 			differential_generated := arch_thumbnail.differential_generated
 
 			differential_path := a_path
-			differential_path := extension_replaced (a_path, archetype_source_file_extension)
+			differential_path := extension_replaced (a_path, File_ext_archetype_source)
 			differential_text_timestamp := differential_file_timestamp
 
 			finalise_make
@@ -155,7 +155,7 @@ feature {NONE} -- Initialisation
 			id := an_id
 
 			-- FIXME what is correct path?
-			differential_path := id.as_string + archetype_source_file_extension
+			differential_path := id.as_string + File_ext_archetype_source
 			file_repository := a_repository
 
 			create at.make (an_artefact_type)
@@ -172,8 +172,8 @@ feature {NONE} -- Initialisation
 
 	finalise_make
 		do
-			differential_compiled_path := file_system.pathname (compiler_gen_source_directory, id.as_string + Archetype_dadl_file_extension)
-			flat_compiled_path := file_system.pathname (compiler_gen_flat_directory, id.as_string + Archetype_dadl_file_extension)
+			differential_compiled_path := file_system.pathname (compiler_gen_source_directory, id.as_string + File_ext_dadl)
+			flat_compiled_path := file_system.pathname (compiler_gen_flat_directory, id.as_string + File_ext_dadl)
 
 			compilation_state := Cs_unread
 		end
@@ -256,7 +256,7 @@ feature -- Access (semantic)
 		require
 			compilation_state = Cs_validated_phase_2 or compilation_state = Cs_validated
 		do
-			Result := adl15_engine.serialise(flat_archetype, Archetype_native_syntax, current_archetype_language)
+			Result := adl15_engine.serialise(flat_archetype, Syntax_type_adl, current_archetype_language)
 		end
 
 	legacy_flat_path: STRING
@@ -697,7 +697,7 @@ feature -- Compilation
 			-- FIXME: The following code is only needed for a period of time during which legacy users
 			-- may have generated .adlf files into their source repositories; in the future, this will
 			-- never happen, so the code below can be removed (e.g. at release following ADL 1.5 release)
-			flat_path := extension_replaced (differential_path, archetype_flat_file_extension)
+			flat_path := extension_replaced (differential_path, File_ext_archetype_flat)
 			if file_repository.is_valid_path (flat_path) then
 				file_repository.delete_file (flat_path)
 			end
@@ -943,7 +943,7 @@ feature -- File Operations
 		require
 			is_valid
 		do
-			file_repository.save_text_to_file (differential_path, adl15_engine.serialise(differential_archetype, Archetype_native_syntax, current_archetype_language))
+			file_repository.save_text_to_file (differential_path, adl15_engine.serialise(differential_archetype, Syntax_type_adl, current_archetype_language))
 		end
 
 	save_differential_as (a_full_path, serialise_format: attached STRING)
@@ -953,10 +953,10 @@ feature -- File Operations
 			path_valid: not a_full_path.is_empty
 			Serialise_format_valid: has_archetype_serialiser_format (serialise_format)
 		do
-			if serialise_format.same_string (Archetype_native_syntax) then
+			if serialise_format.same_string (Syntax_type_adl) then
 				-- replace the extension because we want it to be clear that it is a source file; but maybe the caller should just be trusted?
-				file_repository.save_text_to_file (extension_replaced (a_full_path, archetype_source_file_extension),
-					adl15_engine.serialise(differential_archetype, Archetype_native_syntax, current_archetype_language))
+				file_repository.save_text_to_file (extension_replaced (a_full_path, File_ext_archetype_source),
+					adl15_engine.serialise(differential_archetype, Syntax_type_adl, current_archetype_language))
 			else
 				file_repository.save_text_to_file (a_full_path, adl15_engine.serialise (differential_archetype, serialise_format, current_archetype_language))
 			end
@@ -969,7 +969,7 @@ feature -- File Operations
 			path_valid: not a_full_path.is_empty
 			Serialise_format_valid: has_archetype_serialiser_format(serialise_format)
 		do
-			if serialise_format.same_string (Archetype_native_syntax) then
+			if serialise_format.same_string (Syntax_type_adl) then
 				file_repository.save_text_to_file (a_full_path, flat_text)
 			else
 				file_repository.save_text_to_file (a_full_path, adl15_engine.serialise(flat_archetype, serialise_format, current_archetype_language))
@@ -977,7 +977,7 @@ feature -- File Operations
 		end
 
 	save_legacy_to (a_full_path: attached STRING)
-			-- Save current legacy archetype to `a_full_path' in `serialise_format'.
+			-- Save current legacy archetype, if it exists to `a_full_path' in `serialise_format'.
 		require
 			Archetype_valid: is_valid
 			Archetype_has_legacy: has_legacy_flat_file
@@ -987,21 +987,14 @@ feature -- File Operations
 		end
 
 	save_compiled_differential
+			-- save validated differential archetype in fast-retrieve form (dADL)
 		require
 			Archetype_valid: is_valid
 		local
-			p_a: P_ARCHETYPE
 			fd: PLAIN_TEXT_FILE
-			p_arch_serialised: STRING
 		do
-			create p_a.make (differential_archetype)
-			p_a.synchronise_to_tree
-			p_archetype_converter.set_tree (p_a.dt_representation)
-			p_archetype_converter.serialise (Archetype_native_syntax, False, True)
-			p_arch_serialised := p_archetype_converter.serialised
-
 			create fd.make_create_read_write (differential_compiled_path)
-			fd.put_string (p_arch_serialised)
+			fd.put_string (serialise (False, Syntax_type_adl))
 			fd.close
 		end
 
@@ -1030,7 +1023,7 @@ feature -- File Operations
 							end
 
 							-- seriliase into normal ADL format
-							Result := adl15_engine.serialise (an_arch, Archetype_native_syntax, current_archetype_language)
+							Result := adl15_engine.serialise (an_arch, Syntax_type_adl, current_archetype_language)
 						end
 					end
 				end
@@ -1048,7 +1041,7 @@ feature -- File Operations
 			create p_a.make (flat_archetype)
 			p_a.synchronise_to_tree
 			p_archetype_converter.set_tree (p_a.dt_representation)
-			p_archetype_converter.serialise (Archetype_native_syntax, False, True)
+			p_archetype_converter.serialise (Syntax_type_adl, False, True)
 			p_arch_serialised := p_archetype_converter.serialised
 
 			create fd.make_create_read_write (flat_compiled_path)

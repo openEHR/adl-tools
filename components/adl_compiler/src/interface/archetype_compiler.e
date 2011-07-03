@@ -298,9 +298,9 @@ feature {NONE} -- Implementation
 				end
 
 				if ara.is_valid then
-					filename := file_system.pathname (a_html_export_directory, ara.relative_path) + Archetype_web_page_extension
+					filename := file_system.pathname (a_html_export_directory, ara.relative_path) + File_ext_archetype_web_page
 					file_system.recursive_create_directory (file_system.dirname (filename))
-					ara.save_flat_as (filename, Archetype_web_syntax)
+					ara.save_flat_as (filename, Syntax_type_adl_html)
 					call_archetype_visual_update_action (ara.status, ara, 0)
 				end
 			end

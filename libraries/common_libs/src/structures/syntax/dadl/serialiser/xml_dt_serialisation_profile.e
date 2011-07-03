@@ -1,17 +1,17 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Common routines for HTML ADL serialisation"
-	keywords:    "test, ADL"
+	description: "Definitions used in XML serialisation"
+	keywords:    "XML, archetype, serialisation, serialiser"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class XML_DADL_SERIALISATION_PROFILE
+class XML_DT_SERIALISATION_PROFILE
 
 inherit
 	XML_SERIALISATION_PROFILE
@@ -23,23 +23,20 @@ inherit
 
 create
 	make
-	
+
 feature {NONE} -- Implementation
 
 	symbols: HASH_TABLE[STRING, INTEGER]
 			-- keywords in this format, keyed by logical name
 		once
 			create Result.make(0)
-			Result.put("=",				SYM_EQ)
-			Result.put("&lt;",			SYM_START_DBLOCK)
-			Result.put("&gt;",			SYM_END_DBLOCK)
-		end	
-	
+		end
+
 	tags: HASH_TABLE[STRING, INTEGER]
 			-- keywords in this format, keyed by logical name
 		once
 			create Result.make(0)
-		end	
+		end
 
 end
 
