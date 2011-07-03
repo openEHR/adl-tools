@@ -44,7 +44,7 @@ inherit
 	SHARED_ARCHETYPE_SERIALISERS
 		export
 			{NONE} all
-			{ANY} has_archetype_serialiser_format, archetype_serialiser_formats
+			{ANY} has_archetype_serialiser_format, archetype_serialiser_formats, has_dt_serialiser_format
 		undefine
 			is_equal
 		end
@@ -367,58 +367,6 @@ feature -- Access (semantic)
 
 	flat_compiled_path: STRING
 			-- path to persisted compiled flat form of archetype
-
-	differential_text_dadl: attached STRING
-		require
-			Archetype_valid: is_valid
-		local
-			p_a: P_ARCHETYPE
-		do
-			create p_a.make (differential_archetype)
-			p_a.synchronise_to_tree
-			p_archetype_converter.set_tree (p_a.dt_representation)
-			p_archetype_converter.serialise (Archetype_native_syntax, False, True)
-			Result := p_archetype_converter.serialised
-		end
-
-	flat_text_dadl: attached STRING
-		require
-			Archetype_valid: is_valid
-		local
-			p_a: P_ARCHETYPE
-		do
-			create p_a.make (flat_archetype)
-			p_a.synchronise_to_tree
-			p_archetype_converter.set_tree (p_a.dt_representation)
-			p_archetype_converter.serialise (Archetype_native_syntax, False, True)
-			Result := p_archetype_converter.serialised
-		end
-
-	differential_text_xml: attached STRING
-		require
-			Archetype_valid: is_valid
-		local
-			p_a: P_ARCHETYPE
-		do
-			create p_a.make (differential_archetype)
-			p_a.synchronise_to_tree
-			p_archetype_converter.set_tree (p_a.dt_representation)
-			p_archetype_converter.serialise (archetype_xml_syntax, False, True)
-			Result := p_archetype_converter.serialised
-		end
-
-	flat_text_xml: attached STRING
-		require
-			Archetype_valid: is_valid
-		local
-			p_a: P_ARCHETYPE
-		do
-			create p_a.make (flat_archetype)
-			p_a.synchronise_to_tree
-			p_archetype_converter.set_tree (p_a.dt_representation)
-			p_archetype_converter.serialise (archetype_xml_syntax, False, True)
-			Result := p_archetype_converter.serialised
-		end
 
 feature -- Access (compiler)
 
@@ -988,6 +936,8 @@ feature -- Modification
 			old_ontological_parent_name := Void
 		end
 
+feature -- File Operations
+
 	save_differential
 			-- Save archetype to its file in its source form
 		require
@@ -1104,6 +1054,26 @@ feature -- Modification
 			create fd.make_create_read_write (flat_compiled_path)
 			fd.put_string (p_arch_serialised)
 			fd.close
+		end
+
+feature -- Output
+
+	serialise (flat_flag: BOOLEAN; a_format: attached STRING): attached STRING
+		require
+			Archetype_valid: is_valid
+			Format_valid: has_dt_serialiser_format (a_format)
+		local
+			p_a: P_ARCHETYPE
+		do
+			if flat_flag then
+				create p_a.make (flat_archetype)
+			else
+				create p_a.make (differential_archetype)
+			end
+			p_a.synchronise_to_tree
+			p_archetype_converter.set_tree (p_a.dt_representation)
+			p_archetype_converter.serialise (a_format, False, True)
+			Result := p_archetype_converter.serialised
 		end
 
 feature {NONE} -- Implementation

@@ -30,10 +30,10 @@ feature -- Definitions
 	Archetype_web_page_extension: STRING = ".html"
 			-- Extension of web publishing syntax type.
 
-	archetype_legacy_file_extension: STRING = ".adl"
+	Archetype_legacy_file_extension: STRING = ".adl"
 			-- Extension for legacy flat form archetype files.
 
-	archetype_flat_file_extension: STRING = ".adlf"
+	Archetype_flat_file_extension: STRING = ".adlf"
 			-- Extension for legacy flat form archetype files.
 
 	Archetype_source_file_extension: STRING = ".adls"

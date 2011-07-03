@@ -39,6 +39,11 @@ inherit
 			{NONE} all
 		end
 
+	ARCHETYPE_DEFINITIONS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -526,9 +531,9 @@ feature {NONE} -- Implementation
 		do
 			if target_archetype_descriptor.is_valid then
 				if differential_view then
-					ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.differential_text_dadl))
+					ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.serialise (False, archetype_native_syntax)))
 				else
-					ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.flat_text_dadl))
+					ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.serialise (True, archetype_native_syntax)))
 				end
 			else
 				ev_serialised_rich_text.set_text (create_message_line ("compiler_no_dadl_text", <<>>))
@@ -540,9 +545,9 @@ feature {NONE} -- Implementation
 		do
 			if target_archetype_descriptor.is_valid then
 				if differential_view then
-					ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.differential_text_xml))
+					ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.serialise (False, archetype_xml_syntax)))
 				else
-					ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.flat_text_xml))
+					ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.serialise (True, archetype_xml_syntax)))
 				end
 			else
 				ev_serialised_rich_text.set_text (create_message_line ("compiler_no_xml_text", <<>>))
