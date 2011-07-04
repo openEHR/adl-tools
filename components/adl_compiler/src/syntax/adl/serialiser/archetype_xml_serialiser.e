@@ -1,7 +1,7 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Serialiser Manager for all ADL serialiser types"
-	keywords:    "test, CADL"
+	description: "parent of all XML serialisers"
+	keywords:    "serialisation, XML"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
@@ -11,46 +11,34 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class ARCHETYPE_SERIALISER_MGR
+class ARCHETYPE_XML_SERIALISER
 
 inherit
-	SHARED_ARCHETYPE_SERIALISERS
+	ARCHETYPE_SERIALISER
+
+	ADL_TOKENS
+		export
+			{NONE} all
+		end
+
+	XML_TOOLS
+		export
+			{NONE} all
+		end
+
+	XML_SERIALISER_DEFINITIONS
+		export
+			{NONE} all
+		end
 
 create
 	make
 
-feature -- Initialisation
+feature -- Serialisation
 
-	make (an_archetype: attached ARCHETYPE; format: attached STRING)
-			-- create a new manager targetted to the ADL archetype 'a_target'
-		require
-			Format_valid: has_archetype_serialiser_format (format)
+	serialise (an_archetype: attached ARCHETYPE)
 		do
-			target := an_archetype
-			serialiser := archetype_serialiser_for_format (format)
-			serialiser.reset
 		end
-
-feature -- Command
-
-	serialise (lang_serialised, desc_serialised, def_serialised: attached STRING; inv_serialised: STRING; ont_serialised: attached STRING; ann_serialised, comp_onts_serialised: STRING)
-			-- start the serialisation process; the result will be in `serialiser_output'
-		do
-			serialiser.serialise_from_parts (target, lang_serialised, desc_serialised, def_serialised, inv_serialised, ont_serialised, ann_serialised, comp_onts_serialised)
-		end
-
-feature -- Access
-
-	target: ARCHETYPE
-
-	last_result: attached STRING
-		do
-			Result := serialiser.last_result
-		end
-
-feature {NONE} -- Implementation
-
-	serialiser: ARCHETYPE_MULTIPART_SERIALISER
 
 end
 
@@ -69,7 +57,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is adl_serialiser_mgr.e.
+--| The Original Code is adl_serialiser.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

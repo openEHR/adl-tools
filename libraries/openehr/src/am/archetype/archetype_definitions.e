@@ -21,11 +21,11 @@ feature -- Definitions
 	Syntax_type_adl: STRING = "adl"
 			-- Name of native ADL syntax type.
 
-	Syntax_type_dadl: STRING = "dadl"
-			-- Name of native dADL syntax type.
-
 	Syntax_type_adl_html: STRING = "html"
 			-- Name of web publishing syntax type.
+
+	Syntax_type_dadl: STRING = "dadl"
+			-- Name of native dADL syntax type.
 
 	Syntax_type_xml: STRING = "xml"
 			-- Name of XML syntax type.

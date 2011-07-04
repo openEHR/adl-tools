@@ -92,91 +92,6 @@ feature -- Parsing
 			Result ?= parse (a_text, False)
 		end
 
-feature -- Serialisation
-
-	serialise (an_archetype: attached ARCHETYPE; a_format, a_lang: attached STRING): attached STRING
-			-- serialise current archetype into format, using the supplied ontology. For serialising
-			-- any form of archetype, the flat-form ontology has to be supplied
-		require
-			archetype_valid: an_archetype.is_valid
-			Language_valid: an_archetype.has_language (a_lang)
-			format_valid: has_archetype_serialiser_format (a_format)
-		local
-			arch_ont_serialised, comp_onts_serialised: STRING
-			comp_onts_helper: COMPONENT_ONTOLOGIES_HELPER
-			dt_ont: DT_COMPLEX_OBJECT_NODE
-			generate_adl14_ontology: BOOLEAN
-		do
-			-- set a flag for use below, to generate old-style flat archetypes for old tools
-			generate_adl14_ontology := attached {FLAT_ARCHETYPE} an_archetype and adl_version_for_flat_output_numeric = 140
-
-			an_archetype.synchronise_adl15
-
-			-- language section
-			language_context.set_tree (an_archetype.orig_lang_translations.dt_representation)
-			language_context.serialise (a_format, False, False)
-
-			-- description section
-			description_context.set_tree (an_archetype.description.dt_representation)
-			description_context.serialise (a_format, False, False)
-
-			-- definition section
-			definition_context.set_tree (an_archetype.definition)
-			definition_context.serialise (an_archetype, a_format, a_lang)
-
-			-- rules section
-			if an_archetype.has_invariants then
-				invariant_context.set_tree (an_archetype.invariants)
-				invariant_context.serialise (a_format)
-			end
-
-			-- ontology section
-			dt_ont := an_archetype.ontology.dt_representation
-	-- this is a hack which causes ontology section to be output as dADL with the 'items' attributes
-	-- rather than the native nested structure
-	if generate_adl14_ontology then
-		convert_ontology_to_unnested (dt_ont)
-	end
-			ontology_context.set_tree (dt_ont)
-			ontology_context.serialise (a_format, False, False)
-	-- and this puts the in-memory structure back to native form so things work correctly from here
-	if generate_adl14_ontology then
-		convert_ontology_to_nested (dt_ont)
-	end
-			arch_ont_serialised := ontology_context.serialised
-
-			-- OPT only: component_ontologies section
-			if attached {OPERATIONAL_TEMPLATE} an_archetype as opt then
-				create comp_onts_helper.make
-				comp_onts_helper.set_component_ontologies (opt.component_ontologies)
-				ontology_context.set_tree (object_converter.object_to_dt (comp_onts_helper))
-				ontology_context.serialise (a_format, False, False)
-				comp_onts_serialised := ontology_context.serialised
-			end
-
-			-- annotations section
-			if an_archetype.has_annotations then
-				annotations_context.set_tree (an_archetype.annotations.dt_representation)
-				annotations_context.serialise (a_format, False, False)
-			end
-
-			-- perform the pasting together of pieces to make ADL archetype
-			create serialiser_mgr.make (an_archetype, a_format)
-			serialiser_mgr.serialise (
-				language_context.serialised,
-				description_context.serialised,
-				definition_context.serialised,
-				invariant_context.serialised,
-				arch_ont_serialised,
-				annotations_context.serialised,
-				comp_onts_serialised
-			)
-
-			Result := serialiser_mgr.last_result
-		end
-
-	serialiser_mgr: ARCHETYPE_SERIALISER_MGR
-
 feature -- Validation
 
 	phase_1_validate (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
@@ -215,7 +130,19 @@ feature -- Validation
 	validation_passed: BOOLEAN
 			-- result of last validation
 
-feature {NONE} -- Parsing
+feature -- Serialisation
+
+	serialise (an_archetype: attached ARCHETYPE; a_format, a_lang: attached STRING): attached STRING
+			-- serialise current archetype into format, using the supplied ontology. For serialising
+			-- any form of archetype, the flat-form ontology has to be supplied
+		require
+			archetype_valid: an_archetype.is_valid
+			Language_valid: an_archetype.has_language (a_lang)
+			format_valid: has_archetype_serialiser_format (a_format)
+		do
+		end
+
+feature {NONE} -- Implementation
 
 	parse (a_text: attached STRING; differential_source_flag: BOOLEAN): ARCHETYPE
 			-- parse tree. If successful, `archetype' contains the parse
@@ -422,6 +349,85 @@ feature {NONE} -- Parsing
 				languages.forth
 			end
 		end
+
+	serialise_multi_part (an_archetype: attached ARCHETYPE; a_format, a_lang: attached STRING): attached STRING
+			-- serialise current archetype into format, using the supplied ontology. For serialising
+			-- any form of archetype, the flat-form ontology has to be supplied
+		local
+			arch_ont_serialised, comp_onts_serialised: STRING
+			comp_onts_helper: COMPONENT_ONTOLOGIES_HELPER
+			dt_ont: DT_COMPLEX_OBJECT_NODE
+			generate_adl14_ontology: BOOLEAN
+		do
+			-- set a flag for use below, to generate old-style flat archetypes for old tools
+			generate_adl14_ontology := attached {FLAT_ARCHETYPE} an_archetype and adl_version_for_flat_output_numeric = 140
+
+			an_archetype.synchronise_adl15
+
+			-- language section
+			language_context.set_tree (an_archetype.orig_lang_translations.dt_representation)
+			language_context.serialise (a_format, False, False)
+
+			-- description section
+			description_context.set_tree (an_archetype.description.dt_representation)
+			description_context.serialise (a_format, False, False)
+
+			-- definition section
+			definition_context.set_tree (an_archetype.definition)
+			definition_context.serialise (an_archetype, a_format, a_lang)
+
+			-- rules section
+			if an_archetype.has_invariants then
+				invariant_context.set_tree (an_archetype.invariants)
+				invariant_context.serialise (a_format)
+			end
+
+			-- ontology section
+			dt_ont := an_archetype.ontology.dt_representation
+	-- this is a hack which causes ontology section to be output as dADL with the 'items' attributes
+	-- rather than the native nested structure
+	if generate_adl14_ontology then
+		convert_ontology_to_unnested (dt_ont)
+	end
+			ontology_context.set_tree (dt_ont)
+			ontology_context.serialise (a_format, False, False)
+	-- and this puts the in-memory structure back to native form so things work correctly from here
+	if generate_adl14_ontology then
+		convert_ontology_to_nested (dt_ont)
+	end
+			arch_ont_serialised := ontology_context.serialised
+
+			-- OPT only: component_ontologies section
+			if attached {OPERATIONAL_TEMPLATE} an_archetype as opt then
+				create comp_onts_helper.make
+				comp_onts_helper.set_component_ontologies (opt.component_ontologies)
+				ontology_context.set_tree (object_converter.object_to_dt (comp_onts_helper))
+				ontology_context.serialise (a_format, False, False)
+				comp_onts_serialised := ontology_context.serialised
+			end
+
+			-- annotations section
+			if an_archetype.has_annotations then
+				annotations_context.set_tree (an_archetype.annotations.dt_representation)
+				annotations_context.serialise (a_format, False, False)
+			end
+
+			-- perform the pasting together of pieces to make ADL archetype
+			create serialiser_mgr.make (an_archetype, a_format)
+			serialiser_mgr.serialise (
+				language_context.serialised,
+				description_context.serialised,
+				definition_context.serialised,
+				invariant_context.serialised,
+				arch_ont_serialised,
+				annotations_context.serialised,
+				comp_onts_serialised
+			)
+
+			Result := serialiser_mgr.last_result
+		end
+
+	serialiser_mgr: ARCHETYPE_SERIALISER_MGR
 
 end
 

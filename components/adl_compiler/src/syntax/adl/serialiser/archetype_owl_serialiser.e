@@ -1,25 +1,29 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "parent of all ADL serialisers"
-	keywords:    "ADL, serialiser"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	description: "OWL archetype serialiser"
+	keywords:    "serialisation, OWL"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class ADL_OWL_SERIALISER
+class ARCHETYPE_OWL_SERIALISER
 
 inherit
-	ARCHETYPE_SERIALISER
+	ARCHETYPE_MULTIPART_SERIALISER
 
 create
 	make
 
 feature -- Serialisation
+
+	serialise (an_archetype: attached ARCHETYPE)
+		do
+		end
 
 	serialise_from_parts (an_archetype: attached ARCHETYPE;
 				lang_serialised, desc_serialised, def_serialised: attached STRING;

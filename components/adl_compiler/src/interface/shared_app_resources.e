@@ -41,6 +41,15 @@ inherit
 
 feature -- Definitions
 
+	ADL_help_page_url: STRING = "http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/adl_workbench/doc/web/index.html"
+			-- The URL to ADL Workbench's online help.
+
+	Release_notes_file_path: STRING = "http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/adl_workbench/doc/web/release_notes.html"
+			-- The path to ADL Workbench's release notes.
+
+	clinical_knowledge_manager_url: STRING = "http://www.openehr.org/knowledge/"
+			-- The URL to CKM.
+
 	Default_rm_schema_directory: attached STRING
 			-- directory of Reference Model schema files; same as full path to app + "/rm_schemas";
 			-- contains schema files in .dadl format e.g.

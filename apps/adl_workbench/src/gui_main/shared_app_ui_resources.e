@@ -2,9 +2,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Shared UI resources"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale "
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -30,15 +30,6 @@ feature -- Definitions
 	Sane_screen_coord: INTEGER = -2500
 			-- assumed 'most negative' screen X or Y position that app could, due to use of multiple screens. If it is more negative
 			-- than this, at least on windows, assume that the app was minimised and start it in a default screen location instead
-
-	ADL_help_page_url: STRING = "http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/adl_workbench/doc/web/index.html"
-			-- The URL to ADL Workbench's online help.
-
-	Release_notes_file_path: STRING = "http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/adl_workbench/doc/web/release_notes.html"
-			-- The path to ADL Workbench's release notes.
-
-	clinical_knowledge_manager_url: STRING = "http://www.openehr.org/knowledge/"
-			-- The URL to CKM.
 
 	bug_reporter_url: STRING = "http://www.openehr.org/issues/browse/AWBPR/"
 			-- The URL to ADL Workbench's problem reporter.

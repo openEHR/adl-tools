@@ -1,20 +1,20 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "parent of all ADL serialisers"
-	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003,2004 Ocean Informatics Pty Ltd"
+	description: "Parent of ADL multi-part serialisers, where serialisation is done by separate serialisation of pieces, followed by concatenation"
+	keywords:    "serialisation, ADL"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class ARCHETYPE_SERIALISER
+deferred class ARCHETYPE_MULTIPART_SERIALISER
 
 inherit
-	ANY_SERIALISER
+	ARCHETYPE_SERIALISER
 
 feature -- Serialisation
 
@@ -46,10 +46,6 @@ feature -- Serialisation
 	serialise_finalise
 		deferred
 		end
-
-feature {NONE} -- Access
-
-	archetype: ARCHETYPE
 
 end
 

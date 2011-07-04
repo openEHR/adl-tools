@@ -2,9 +2,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "cADL serialisers"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -71,7 +71,7 @@ feature -- Access
 				end)
 		end
 
-	archetype_serialiser_for_format (a_format: attached STRING): attached ARCHETYPE_SERIALISER
+	archetype_serialiser_for_format (a_format: attached STRING): attached ARCHETYPE_MULTIPART_SERIALISER
 			-- The archetype serialiser for `a_format'.
 		require
 			format_valid: has_archetype_serialiser_format (a_format)
@@ -100,7 +100,7 @@ feature -- Status Report
 
 feature {NONE} -- Implementation
 
-	archetype_serialisers: attached HASH_TABLE [ARCHETYPE_SERIALISER, STRING]
+	archetype_serialisers: attached HASH_TABLE [ARCHETYPE_MULTIPART_SERIALISER, STRING]
 			-- The supported archetype serialisers.
 		once
 			create Result.make (0)

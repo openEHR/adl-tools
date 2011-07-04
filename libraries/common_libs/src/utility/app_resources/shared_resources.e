@@ -1,11 +1,11 @@
 note
 	component:   "openEHR Reusable Libraries"
-	description: "Shared access to a .ini style configuration file."
+	description: "Shared access to application-wide configuration settings for any Eiffel app, stored in a config file."
 	keywords:    "config, resources"
 
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003-2010 openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2003-2011 openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
