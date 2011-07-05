@@ -507,7 +507,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	ev_tree_item_shrink(an_ev_tree_node: attached EV_TREE_NODE)
+	ev_tree_item_shrink (an_ev_tree_node: attached EV_TREE_NODE)
 			--
 		do
 			if an_ev_tree_node.is_expandable then -- and node_data.is_addressable then

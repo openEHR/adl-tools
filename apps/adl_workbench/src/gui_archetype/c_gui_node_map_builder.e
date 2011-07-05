@@ -83,6 +83,7 @@ feature -- Visitor
 
 			if updating then
 				gui_node_map.item (a_node).set_text (utf8 (gui_node_text))
+				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
 			else
 				create_node (gui_node_text, a_node.generating_type + occurrences_pixmap_string (a_node) + create_pixmap_ext (a_node), a_node)
 
@@ -119,6 +120,7 @@ feature -- Visitor
 				-- update the text
 				gui_node := gui_node_map.item (a_node)
 				gui_node.set_text (utf8 (gui_node_text))
+				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
 
 				-- update the children
 				if a_node.has_includes or a_node.has_excludes then
@@ -203,6 +205,7 @@ feature -- Visitor
 			if updating then
 				-- update the text
 				gui_node_map.item (a_node).set_text (utf8 (gui_node_text))
+				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
 			else
 				-- pixmap name
 				pixmap_name := "C_ATTRIBUTE"
@@ -249,6 +252,7 @@ feature -- Visitor
 			if updating then
 				-- update the text
 				gui_node_map.item (a_node).set_text (utf8 (gui_node_text))
+				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
 			else
 				-- in flat mode; treat like normal C_COMPLEX_OBJECT with children
 				if a_node.has_attributes then
@@ -291,6 +295,7 @@ feature -- Visitor
 			-- do the work
 			if updating then
 				gui_node_map.item (a_node).set_text (utf8 (gui_node_text))
+				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
 			else
 				create_node (gui_node_text, a_node.generating_type + create_pixmap_ext (a_node), a_node)
 			end
@@ -317,6 +322,7 @@ feature -- Visitor
 
 			if updating then
 				gui_node_map.item (a_node).set_text (utf8 (gui_node_text))
+				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
 			else
 				create_node (gui_node_text, a_node.generating_type + create_pixmap_ext (a_node), a_node)
 			end
@@ -352,6 +358,7 @@ feature -- Visitor
 			-- do the work
 			if updating then
 				gui_node_map.item (a_node).set_text (utf8 (gui_node_text))
+				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
 			else
 				create_node (gui_node_text, a_node.generating_type + create_pixmap_ext (a_node), a_node)
 			end
@@ -381,6 +388,7 @@ feature -- Visitor
 			if updating then
 				-- update the text
 				gui_node := gui_node_map.item (a_node)
+				gui_node.set_tooltip (node_tooltip_str (a_node))
 
 				-- update the children
 				if a_node.code_count > 0 then
@@ -439,6 +447,7 @@ feature -- Visitor
 		do
 			if updating then
 				gui_node := gui_node_map.item (a_node)
+				gui_node.set_tooltip (node_tooltip_str (a_node))
 				-- update the children
 				if not a_node.any_allowed then
 					from
@@ -498,6 +507,7 @@ feature -- Visitor
 				-- update the text
 				gui_node := gui_node_map.item (a_node)
 				gui_node.set_text (gui_node_text)
+				gui_node.set_tooltip (node_tooltip_str (a_node))
 
 				-- update the child nodes
 				if attached a_node.list then
@@ -584,16 +594,7 @@ feature {NONE} -- Implementation
 			last_gui_node.set_pixmap (pixmaps.item (a_pixmap_name))
 
 			-- set the tooltip
-			if in_technical_mode then
-				tooltip_str := utf8 (a_node.path)
-			else
-				tooltip_str := utf8 (ontology.physical_to_logical_path (a_node.path, language))
-			end
-			if archetype.has_annotation_at_path (language, a_node.path) then
-				tooltip_str.append ("%N%NAnnotations:%N")
-				tooltip_str.append (utf8 (archetype.annotations.annotation_at_path (language, a_node.path).as_string))
-			end
-			last_gui_node.set_tooltip (tooltip_str)
+			last_gui_node.set_tooltip (node_tooltip_str (a_node))
 
 			-- attach into GUI tree
 			if not gui_nodes.is_empty then
@@ -603,6 +604,20 @@ feature {NONE} -- Implementation
 
 			-- record in GUI node map
 			gui_node_map.put (last_gui_node, a_node)
+		end
+
+	node_tooltip_str (a_node: attached ARCHETYPE_CONSTRAINT): STRING
+			-- generate a tooltip for this node
+		do
+			if in_technical_mode then
+				Result := utf8 (a_node.path)
+			else
+				Result := utf8 (ontology.physical_to_logical_path (a_node.path, language))
+			end
+			if archetype.has_annotation_at_path (language, a_node.path) then
+				Result.append ("%N%NAnnotations:%N")
+				Result.append (utf8 (archetype.annotations.annotation_at_path (language, a_node.path).as_string))
+			end
 		end
 
 	last_gui_node: EV_TREE_ITEM

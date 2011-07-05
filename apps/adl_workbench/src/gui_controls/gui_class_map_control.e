@@ -135,7 +135,12 @@ feature -- Commands
 			populate_root_node
 
 			class_desc.class_definition.do_supplier_closure (not differential_view, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
-			ev_tree.recursive_do_all (agent ev_tree_expand)
+
+			-- now collapse the tree, and then expand out just the top node
+			ev_tree.recursive_do_all (agent ev_tree_collapse)
+			if not ev_tree.is_empty and then ev_tree.first.is_expandable then
+				ev_tree.first.expand
+			end
 		end
 
 	select_flat_view
@@ -168,6 +173,8 @@ feature {NONE} -- Implementation
 
 	ev_tree_item_stack: ARRAYED_STACK[EV_TREE_ITEM]
 
+	node_path: OG_PATH
+
    	populate_root_node
 			-- Add root node representing class to `gui_file_tree'.
    		local
@@ -178,19 +185,22 @@ feature {NONE} -- Implementation
 			a_ti.set_pixmap (pixmaps [class_desc.group_name])
 			ev_tree.extend (a_ti)
 			ev_tree_item_stack.extend (a_ti)
+			create node_path.make_root
 		end
 
-   	populate_gui_tree_node_enter (a_prop_def: BMM_PROPERTY_DEFINITION)
+   	populate_gui_tree_node_enter (a_prop_def: attached BMM_PROPERTY_DEFINITION)
    			-- Add a node representing `a_prop_def' to `gui_file_tree'.
-		require
-			item_attached: a_prop_def /= Void
    		local
 			a_ti: EV_TREE_ITEM
 			pixmap: EV_PIXMAP
 			str: STRING
 		do
 			create a_ti
+
+			-- node data = BMM property definition
 			a_ti.set_data (a_prop_def)
+
+			-- node text
 			str := a_prop_def.name + ": " + a_prop_def.type_def.as_type_string
 			if a_prop_def.is_mandatory then
 				str.append (" [1]")
@@ -199,14 +209,21 @@ feature {NONE} -- Implementation
 			end
 			a_ti.set_text (utf8 (str))
 
+			-- set the tooltip
+			node_path.append_segment (create {OG_PATH_ITEM}.make (a_prop_def.name))
+			a_ti.set_tooltip (node_path.as_string)
+
+			-- pixmap
 			pixmap := pixmaps.item (rm_attribute_pixmap_string(a_prop_def))
 			a_ti.set_pixmap (pixmap)
+
 			ev_tree_item_stack.item.extend (a_ti)
 			ev_tree_item_stack.extend (a_ti)
 		end
 
-   	populate_gui_tree_node_exit (a_prop_def: BMM_PROPERTY_DEFINITION)
+   	populate_gui_tree_node_exit (a_prop_def: attached BMM_PROPERTY_DEFINITION)
    		do
+			node_path.remove_last
 			ev_tree_item_stack.remove
 		end
 
@@ -224,11 +241,11 @@ feature {NONE} -- Implementation
 			Result.append (".reference_model")
 		end
 
-	ev_tree_expand(node: EV_TREE_NODE)
+	ev_tree_collapse (node: EV_TREE_NODE)
 			--
 		do
  			if node.is_expandable then
-				node.expand
+				node.collapse
  			end
 		end
 

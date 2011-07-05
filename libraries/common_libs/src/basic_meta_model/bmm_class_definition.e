@@ -449,33 +449,30 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 
 feature {NONE} -- Implementation
 
-	do_property_supplier_closure (a_prop: BMM_PROPERTY_DEFINITION; flat_flag: BOOLEAN; enter_action, exit_action: PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION]])
+	do_property_supplier_closure (a_prop: attached BMM_PROPERTY_DEFINITION; flat_flag: BOOLEAN; enter_action: attached PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION]]; exit_action: PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION]])
 			-- On all nodes in supplier closure of `a_prop', execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 			-- If `flat_flag' = True, use the inheritance-flattened closure
-		require
-			propert_attached: a_prop /= Void
-			enter_action_attached: enter_action /= Void
 		local
 			props: attached HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 		do
-			if not supplier_closure_stack.has(a_prop.type_def.root_class) then
-				supplier_closure_stack.extend(a_prop.type_def.root_class)
+			if not supplier_closure_stack.has (a_prop.type_def.root_class) then
+				supplier_closure_stack.extend (a_prop.type_def.root_class)
 
 				enter_action.call ([a_prop])
 
-				if not supplier_closure_class_record.has(a_prop.type_def.root_class) then
-					supplier_closure_class_record.extend(a_prop.type_def.root_class)
+		--		if not supplier_closure_class_record.has (a_prop.type_def.root_class) then
+		--			supplier_closure_class_record.extend (a_prop.type_def.root_class)
 					if flat_flag then
-						props := bmm_model.class_definition(a_prop.type_def.root_class).flat_properties
+						props := bmm_model.class_definition (a_prop.type_def.root_class).flat_properties
 					else
-						props := bmm_model.class_definition(a_prop.type_def.root_class).properties
+						props := bmm_model.class_definition (a_prop.type_def.root_class).properties
 					end
 
 					from props.start until props.off loop
 						do_property_supplier_closure (props.item_for_iteration, flat_flag, enter_action, exit_action)
 						props.forth
 					end
-				end
+		--		end
 
 				if exit_action /= Void then
 					exit_action.call ([a_prop])
@@ -488,7 +485,7 @@ feature {NONE} -- Implementation
 			-- list of classes on this tree branch, to prevent cycling
 
 	supplier_closure_class_record: ARRAYED_LIST [STRING]
-			-- list of classes already done, to prevent fully expanded form being generated after first instance
+			-- list of classes already done, to prevent fully expanded form of each class being generated after its first occurrence
 
 invariant
 	Generic_validity: is_generic implies generic_parameter_defs /= Void and then not generic_parameter_defs.is_empty
