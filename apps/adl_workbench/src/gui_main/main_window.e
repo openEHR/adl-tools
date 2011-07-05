@@ -237,11 +237,11 @@ feature {NONE} -- Initialization
 			-- Docking layout
 			if file_system.file_exists (user_docking_layout_file_path) then
 				if not docking_manager.open_config (user_docking_layout_file_path) then
-					console_tool.append_text ("Read from docking config file " + user_docking_layout_file_path + "failed")
+					console_tool.append_text (create_message_line ("read_docking_file_failed", <<user_docking_layout_file_path>>))
 				end
 			elseif file_system.file_exists (default_docking_layout_file_path) then
 				if not docking_manager.open_config (default_docking_layout_file_path) then
-					console_tool.append_text ("Read from docking config file " + default_docking_layout_file_path + "failed")
+					console_tool.append_text (create_message_line ("read_docking_file_failed", <<default_docking_layout_file_path>>))
 				end
 			end
 
@@ -454,6 +454,20 @@ feature -- View Events
 				archetype_tools.current_tool.select_flat_view
 			end
 		end
+
+	on_reset_tool_layout
+			-- Called by `select_actions' of `view_menu_reset_layout'.
+			-- reset visual settings of window remembered to something sane
+		do
+			-- reset Docking layout
+			if file_system.file_exists (default_docking_layout_file_path) then
+				file_system.copy_file (default_docking_layout_file_path, user_docking_layout_file_path)
+				initialise_session_ui_layout
+			else
+				console_tool.append_text (create_message_line ("read_docking_file_failed", <<default_docking_layout_file_path>>))
+			end
+		end
+
 
 feature {NONE} -- Repository events
 

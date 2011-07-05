@@ -44,6 +44,7 @@ templates = <
 		["compiler_no_flat_text"] = <"===================== No flat (.adlf) text available =======================">
 		["compiler_no_source_text"] = <"===================== No source (.adls) text available =======================">
 		["compiler_no_dadl_text"] = <"===================== No dADL (.dadl) text available =======================">
+		["read_docking_file_failed"] = <"Read from docking config file $1 failed">
 
 		-- GUI_SOT_MAP_CONTROL
 		["slots_incomplete_w1"] = <"this list may be incomplete. To be sure, run Build All under the Repository menu.">

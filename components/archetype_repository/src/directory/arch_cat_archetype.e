@@ -943,36 +943,36 @@ feature -- File Operations
 		require
 			is_valid
 		do
-			file_repository.save_text_to_file (differential_path, adl15_engine.serialise(differential_archetype, Syntax_type_adl, current_archetype_language))
+			file_repository.save_text_to_file (differential_path, adl15_engine.serialise (differential_archetype, Syntax_type_adl, current_archetype_language))
 		end
 
-	save_differential_as (a_full_path, serialise_format: attached STRING)
-			-- Save current source archetype to `a_full_path' in `serialise_format'.
+	save_differential_as (a_full_path, a_format: attached STRING)
+			-- Save current source archetype to `a_full_path' in `a_format'.
 		require
 			Archetype_valid: is_valid
 			path_valid: not a_full_path.is_empty
-			Serialise_format_valid: has_archetype_serialiser_format (serialise_format)
+			Serialise_format_valid: has_archetype_serialiser_format (a_format) or has_dt_serialiser_format (a_format)
 		do
-			if serialise_format.same_string (Syntax_type_adl) then
-				-- replace the extension because we want it to be clear that it is a source file; but maybe the caller should just be trusted?
-				file_repository.save_text_to_file (extension_replaced (a_full_path, File_ext_archetype_source),
-					adl15_engine.serialise(differential_archetype, Syntax_type_adl, current_archetype_language))
-			else
-				file_repository.save_text_to_file (a_full_path, adl15_engine.serialise (differential_archetype, serialise_format, current_archetype_language))
+			if has_archetype_serialiser_format (a_format) then
+				file_repository.save_text_to_file (a_full_path, adl15_engine.serialise (differential_archetype, a_format, current_archetype_language))
+			else -- must be a DT serialisation format
+				file_repository.save_text_to_file (a_full_path, serialise_object (False, a_format))
 			end
 		end
 
-	save_flat_as (a_full_path, serialise_format: attached STRING)
-			-- Save current flat archetype to `a_full_path' in `serialise_format'.
+	save_flat_as (a_full_path, a_format: attached STRING)
+			-- Save current flat archetype to `a_full_path' in `a_format'.
 		require
 			Archetype_valid: is_valid
 			path_valid: not a_full_path.is_empty
-			Serialise_format_valid: has_archetype_serialiser_format(serialise_format)
+			Serialise_format_valid: has_archetype_serialiser_format (a_format) or has_dt_serialiser_format (a_format)
 		do
-			if serialise_format.same_string (Syntax_type_adl) then
+			if a_format.same_string (Syntax_type_adl) then
 				file_repository.save_text_to_file (a_full_path, flat_text)
-			else
-				file_repository.save_text_to_file (a_full_path, adl15_engine.serialise(flat_archetype, serialise_format, current_archetype_language))
+			elseif has_archetype_serialiser_format (a_format) then
+				file_repository.save_text_to_file (a_full_path, adl15_engine.serialise (flat_archetype, a_format, current_archetype_language))
+			else -- must be a DT serialisation format
+				file_repository.save_text_to_file (a_full_path, serialise_object (True, a_format))
 			end
 		end
 
@@ -994,7 +994,18 @@ feature -- File Operations
 			fd: PLAIN_TEXT_FILE
 		do
 			create fd.make_create_read_write (differential_compiled_path)
-			fd.put_string (serialise (False, Syntax_type_adl))
+			fd.put_string (serialise_object (False, Syntax_type_dadl))
+			fd.close
+		end
+
+	save_compiled_flat
+		require
+			Archetype_valid: is_valid
+		local
+			fd: PLAIN_TEXT_FILE
+		do
+			create fd.make_create_read_write (flat_compiled_path)
+			fd.put_string (serialise_object (True, Syntax_type_dadl))
 			fd.close
 		end
 
@@ -1022,7 +1033,7 @@ feature -- File Operations
 								an_arch.set_parent_archetype (specialisation_parent.differential_archetype)
 							end
 
-							-- seriliase into normal ADL format
+							-- serialise into normal ADL format
 							Result := adl15_engine.serialise (an_arch, Syntax_type_adl, current_archetype_language)
 						end
 					end
@@ -1030,28 +1041,11 @@ feature -- File Operations
 			end
 		end
 
-	save_compiled_flat
-		require
-			Archetype_valid: is_valid
-		local
-			p_a: P_ARCHETYPE
-			fd: PLAIN_TEXT_FILE
-			p_arch_serialised: STRING
-		do
-			create p_a.make (flat_archetype)
-			p_a.synchronise_to_tree
-			p_archetype_converter.set_tree (p_a.dt_representation)
-			p_archetype_converter.serialise (Syntax_type_adl, False, True)
-			p_arch_serialised := p_archetype_converter.serialised
-
-			create fd.make_create_read_write (flat_compiled_path)
-			fd.put_string (p_arch_serialised)
-			fd.close
-		end
-
 feature -- Output
 
-	serialise (flat_flag: BOOLEAN; a_format: attached STRING): attached STRING
+	serialise_object (flat_flag: BOOLEAN; a_format: attached STRING): attached STRING
+			-- serialise internal structure in a brute-force object way, using
+			-- format like dADL, XML, JSON etc
 		require
 			Archetype_valid: is_valid
 			Format_valid: has_dt_serialiser_format (a_format)

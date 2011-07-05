@@ -52,6 +52,8 @@ feature {NONE}-- Initialization
 			view_menu.extend (view_menu_differential)
 			view_menu.extend (view_menu_flat)
 			view_menu.extend (view_menu_new_tab)
+			view_menu.extend (l_ev_menu_separator_4)
+			view_menu.extend (view_menu_reset_layout)
 			menu.extend (history_menu)
 			history_menu.extend (history_menu_back)
 			history_menu.extend (history_menu_forward)
@@ -59,33 +61,33 @@ feature {NONE}-- Initialization
 			menu.extend (repository_menu)
 			repository_menu.extend (repository_menu_build_all)
 			repository_menu.extend (repository_menu_rebuild_all)
-			repository_menu.extend (l_ev_menu_separator_4)
+			repository_menu.extend (l_ev_menu_separator_5)
 			repository_menu.extend (repository_menu_build_subtree)
 			repository_menu.extend (repository_menu_rebuild_subtree)
-			repository_menu.extend (l_ev_menu_separator_5)
+			repository_menu.extend (l_ev_menu_separator_6)
 			repository_menu.extend (repository_menu_export_html)
 			repository_menu.extend (repository_menu_export_repository_report)
-			repository_menu.extend (l_ev_menu_separator_6)
+			repository_menu.extend (l_ev_menu_separator_7)
 			repository_menu.extend (repository_menu_interrupt_build)
 			repository_menu.extend (repository_menu_refresh)
-			repository_menu.extend (l_ev_menu_separator_7)
+			repository_menu.extend (l_ev_menu_separator_8)
 			repository_menu.extend (repository_menu_set_repository)
 			menu.extend (rm_schemas_menu)
 			rm_schemas_menu.extend (rm_schemas_menu_reload_schemas)
-			rm_schemas_menu.extend (l_ev_menu_separator_8)
+			rm_schemas_menu.extend (l_ev_menu_separator_9)
 			rm_schemas_menu.extend (rm_schemas_menu_configure_rm_schemas)
 			menu.extend (xml_menu)
-			xml_menu.extend (l_ev_menu_separator_9)
+			xml_menu.extend (l_ev_menu_separator_10)
 			xml_menu.extend (xml_menu_conv_rules)
 			menu.extend (tools_menu)
 			tools_menu.extend (tools_menu_clean_generated_files)
-			tools_menu.extend (l_ev_menu_separator_10)
+			tools_menu.extend (l_ev_menu_separator_11)
 			tools_menu.extend (tools_menu_options)
 			menu.extend (help_menu)
 			help_menu.extend (help_menu_contents)
 			help_menu.extend (help_menu_release_notes)
 			help_menu.extend (help_menu_icons)
-			help_menu.extend (l_ev_menu_separator_11)
+			help_menu.extend (l_ev_menu_separator_12)
 			help_menu.extend (help_menu_clinical_knowledge_manager)
 			help_menu.extend (help_menu_report_bug)
 			help_menu.extend (help_menu_about)
@@ -105,6 +107,7 @@ feature {NONE}-- Initialization
 			view_menu_differential.set_text ("&Differential")
 			view_menu_flat.set_text ("&Flat")
 			view_menu_new_tab.set_text ("New &Tab")
+			view_menu_reset_layout.set_text ("&Reset tool layout")
 			history_menu.set_text ("H&istory")
 			history_menu_back.set_text ("&Back")
 			history_menu_forward.set_text ("&Forward")
@@ -149,6 +152,7 @@ feature {NONE}-- Initialization
 			file_menu_save_as.select_actions.extend (agent save_archetype_as)
 			file_menu_exit.select_actions.extend (agent exit_app)
 			edit_menu_clipboard.select_actions.extend (agent show_clipboard)
+			view_menu_reset_layout.select_actions.extend (agent on_reset_tool_layout)
 			history_menu.select_actions.extend (agent on_history)
 			history_menu_back.select_actions.extend (agent on_back)
 			history_menu_forward.select_actions.extend (agent on_forward)
@@ -201,6 +205,8 @@ feature {NONE}-- Initialization
 			create view_menu_differential
 			create view_menu_flat
 			create view_menu_new_tab
+			create l_ev_menu_separator_4
+			create view_menu_reset_layout
 			create history_menu
 			create history_menu_back
 			create history_menu_forward
@@ -208,33 +214,33 @@ feature {NONE}-- Initialization
 			create repository_menu
 			create repository_menu_build_all
 			create repository_menu_rebuild_all
-			create l_ev_menu_separator_4
+			create l_ev_menu_separator_5
 			create repository_menu_build_subtree
 			create repository_menu_rebuild_subtree
-			create l_ev_menu_separator_5
+			create l_ev_menu_separator_6
 			create repository_menu_export_html
 			create repository_menu_export_repository_report
-			create l_ev_menu_separator_6
+			create l_ev_menu_separator_7
 			create repository_menu_interrupt_build
 			create repository_menu_refresh
-			create l_ev_menu_separator_7
+			create l_ev_menu_separator_8
 			create repository_menu_set_repository
 			create rm_schemas_menu
 			create rm_schemas_menu_reload_schemas
-			create l_ev_menu_separator_8
+			create l_ev_menu_separator_9
 			create rm_schemas_menu_configure_rm_schemas
 			create xml_menu
-			create l_ev_menu_separator_9
+			create l_ev_menu_separator_10
 			create xml_menu_conv_rules
 			create tools_menu
 			create tools_menu_clean_generated_files
-			create l_ev_menu_separator_10
+			create l_ev_menu_separator_11
 			create tools_menu_options
 			create help_menu
 			create help_menu_contents
 			create help_menu_release_notes
 			create help_menu_icons
-			create l_ev_menu_separator_11
+			create l_ev_menu_separator_12
 			create help_menu_clinical_knowledge_manager
 			create help_menu_report_bug
 			create help_menu_about
@@ -264,17 +270,18 @@ feature -- Access
 	xml_menu, tools_menu, help_menu: EV_MENU
 	file_menu_open, file_menu_parse, file_menu_edit,
 	file_menu_save_as, file_menu_exit, edit_menu_copy, edit_menu_select_all, edit_menu_clipboard,
-	view_menu_differential, view_menu_flat, view_menu_new_tab, history_menu_back, history_menu_forward,
-	repository_menu_build_all, repository_menu_rebuild_all, repository_menu_build_subtree,
-	repository_menu_rebuild_subtree, repository_menu_export_html, repository_menu_export_repository_report,
-	repository_menu_interrupt_build, repository_menu_refresh, repository_menu_set_repository,
-	rm_schemas_menu_reload_schemas, rm_schemas_menu_configure_rm_schemas, xml_menu_conv_rules,
-	tools_menu_clean_generated_files, tools_menu_options, help_menu_contents, help_menu_release_notes,
-	help_menu_icons, help_menu_clinical_knowledge_manager, help_menu_report_bug, help_menu_about: EV_MENU_ITEM
-	l_ev_menu_separator_1,
-	l_ev_menu_separator_2, l_ev_menu_separator_3, history_menu_separator, l_ev_menu_separator_4,
-	l_ev_menu_separator_5, l_ev_menu_separator_6, l_ev_menu_separator_7, l_ev_menu_separator_8,
-	l_ev_menu_separator_9, l_ev_menu_separator_10, l_ev_menu_separator_11: EV_MENU_SEPARATOR
+	view_menu_differential, view_menu_flat, view_menu_new_tab, view_menu_reset_layout,
+	history_menu_back, history_menu_forward, repository_menu_build_all, repository_menu_rebuild_all,
+	repository_menu_build_subtree, repository_menu_rebuild_subtree, repository_menu_export_html,
+	repository_menu_export_repository_report, repository_menu_interrupt_build, repository_menu_refresh,
+	repository_menu_set_repository, rm_schemas_menu_reload_schemas, rm_schemas_menu_configure_rm_schemas,
+	xml_menu_conv_rules, tools_menu_clean_generated_files, tools_menu_options, help_menu_contents,
+	help_menu_release_notes, help_menu_icons, help_menu_clinical_knowledge_manager, help_menu_report_bug,
+	help_menu_about: EV_MENU_ITEM
+	l_ev_menu_separator_1, l_ev_menu_separator_2, l_ev_menu_separator_3,
+	l_ev_menu_separator_4, history_menu_separator, l_ev_menu_separator_5, l_ev_menu_separator_6,
+	l_ev_menu_separator_7, l_ev_menu_separator_8, l_ev_menu_separator_9, l_ev_menu_separator_10,
+	l_ev_menu_separator_11, l_ev_menu_separator_12: EV_MENU_SEPARATOR
 	ev_main_vbox: EV_VERTICAL_BOX
 
 feature {NONE} -- Implementation
@@ -322,6 +329,11 @@ feature {NONE} -- Implementation
 	
 	show_clipboard
 			-- Called by `select_actions' of `edit_menu_clipboard'.
+		deferred
+		end
+	
+	on_reset_tool_layout
+			-- Called by `select_actions' of `view_menu_reset_layout'.
 		deferred
 		end
 	
