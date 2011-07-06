@@ -11,7 +11,7 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class GUI_CLASS_MAP_CONTROL
+class GUI_CLASS_MAP_TOOL
 
 inherit
 	SHARED_APP_UI_RESOURCES
@@ -19,7 +19,12 @@ inherit
 			{NONE} all
 		end
 
-	STRING_UTILITIES
+	GUI_UTILITIES
+		export
+			{NONE} all
+		end
+
+	BMM_DEFINITIONS
 		export
 			{NONE} all
 		end
@@ -128,6 +133,11 @@ feature -- Commands
 
 	repopulate
 		do
+			do_with_wait_cursor (ev_root_container, agent do_repopulate)
+		end
+
+	do_repopulate
+		do
 			clear
  			create ev_tree_item_stack.make (0)
 
@@ -192,42 +202,74 @@ feature {NONE} -- Implementation
    			-- Add a node representing `a_prop_def' to `gui_file_tree'.
    		local
 			a_ti: EV_TREE_ITEM
-			pixmap: EV_PIXMAP
-			str: STRING
+			prop_str, type_str: STRING
+			type_category: STRING
+			is_terminal: BOOLEAN
 		do
-			create a_ti
+			-- update path value
+			prop_str := a_prop_def.name.twin
+			node_path.append_segment (create {OG_PATH_ITEM}.make (prop_str))
 
-			-- node data = BMM property definition
-			a_ti.set_data (a_prop_def)
+			-- determine data for property and one or more (in the case of generics with > 1 param) class nodes
+			if attached {BMM_CLASS_DEFINITION} a_prop_def.type_def as bmm_class_def then
+				if bmm_class_def.is_terminal_type then
+					prop_str.append (": " + bmm_class_def.name)
+					is_terminal := True
+				else
+					type_str := bmm_class_def.name
+				end
 
-			-- node text
-			str := a_prop_def.name + ": " + a_prop_def.type_def.as_type_string
-			if a_prop_def.is_mandatory then
-				str.append (" [1]")
-			else
-				str.append (" [0..1]")
+			elseif attached {BMM_CONTAINER_TYPE_REFERENCE} a_prop_def.type_def as bmm_cont_type_ref then
+				-- assume first gen param is only type of interest
+				prop_str.append (": " + bmm_cont_type_ref.container_type + Generic_left_delim.out + Generic_right_delim.out)
+				type_str := bmm_cont_type_ref.type
+
+			elseif attached {BMM_GENERIC_TYPE_REFERENCE} a_prop_def.type_def as bmm_gen_type_ref then
+				type_str := bmm_gen_type_ref.as_type_string
+
+			elseif attached {BMM_GENERIC_PARAMETER_DEFINITION} a_prop_def.type_def as bmm_gen_parm_def then -- type is T, U etc
+				type_str := bmm_gen_parm_def.name
+				if bmm_gen_parm_def.is_constrained then
+					type_str.append (": " + bmm_gen_parm_def.conforms_to_type)
+				end
 			end
-			a_ti.set_text (utf8 (str))
+			if a_prop_def.is_mandatory then
+				prop_str.append (" [1]")
+			else
+				prop_str.append (" [0..1]")
+			end
 
-			-- set the tooltip
-			node_path.append_segment (create {OG_PATH_ITEM}.make (a_prop_def.name))
-			a_ti.set_tooltip (node_path.as_string)
-
-			-- pixmap
-			pixmap := pixmaps.item (rm_attribute_pixmap_string(a_prop_def))
-			a_ti.set_pixmap (pixmap)
-
+			-- property node
+			create a_ti
+			a_ti.set_data (a_prop_def)							-- node data = BMM property definition
+			a_ti.set_text (prop_str)							-- node text
+			a_ti.set_tooltip (node_path.as_string)				-- tooltip
+			a_ti.set_pixmap (pixmaps [rm_attribute_pixmap_string (a_prop_def)])	-- pixmap
 			ev_tree_item_stack.item.extend (a_ti)
 			ev_tree_item_stack.extend (a_ti)
+
+			if not is_terminal then
+				-- class / type node(s)
+				type_category := a_prop_def.type_def.type_category
+				create a_ti
+				a_ti.set_data (a_prop_def.type_def)				-- node data
+				a_ti.set_text (type_str)						-- node text
+				a_ti.set_pixmap (pixmaps [type_category])		-- pixmap
+				ev_tree_item_stack.item.extend (a_ti)
+				ev_tree_item_stack.extend (a_ti)
+			end
 		end
 
    	populate_gui_tree_node_exit (a_prop_def: attached BMM_PROPERTY_DEFINITION)
    		do
 			node_path.remove_last
 			ev_tree_item_stack.remove
+			if not attached {BMM_CLASS_DEFINITION} a_prop_def.type_def as bmm_class_def or else not bmm_class_def.is_terminal_type then
+				ev_tree_item_stack.remove
+			end
 		end
 
-	rm_attribute_pixmap_string(rm_attr: BMM_PROPERTY_DEFINITION): STRING
+	rm_attribute_pixmap_string (rm_attr: attached BMM_PROPERTY_DEFINITION): STRING
 			-- string name of pixmap for attribute rm_attr
 		do
 			create Result.make(0)
@@ -241,7 +283,7 @@ feature {NONE} -- Implementation
 			Result.append (".reference_model")
 		end
 
-	ev_tree_collapse (node: EV_TREE_NODE)
+	ev_tree_collapse (node: attached EV_TREE_NODE)
 			--
 		do
  			if node.is_expandable then

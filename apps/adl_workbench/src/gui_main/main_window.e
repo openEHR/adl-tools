@@ -42,13 +42,6 @@ inherit
 			copy, default_create
 		end
 
-	STRING_UTILITIES
-		export
-			{NONE} all
-		undefine
-			copy, default_create
-		end
-
 feature {NONE} -- Initialization
 
 	user_initialization
@@ -327,7 +320,7 @@ feature -- File events
 		do
 			if has_current_profile and then attached {ARCH_CAT_ARCHETYPE} current_arch_cat.selected_archetype as ara then
 				clear_all_archetype_view_controls
-				do_with_wait_cursor (agent archetype_compiler.build_lineage (ara, 0))
+				do_with_wait_cursor (Current, agent archetype_compiler.build_lineage (ara, 0))
 				archetype_tools.current_tool.on_select_archetype_notebook
 			end
 		end
@@ -612,7 +605,7 @@ feature {NONE} -- Repository events
 				end
 
 				if ok_to_write then
-					do_with_wait_cursor (agent error_tool.export_repository_report (xml_name))
+					do_with_wait_cursor (Current, agent error_tool.export_repository_report (xml_name))
 
 					if file.exists then
 						console_tool.append_text (create_message_line ("export_repository_report_replace_info", <<xml_name>>))
@@ -710,7 +703,7 @@ feature {NONE} -- Tools menu events
 			-- Remove all generated files below the repository directory and repopulate from scratch
 		do
 			if has_current_profile then
-				do_with_wait_cursor (agent current_arch_cat.do_all_archetypes (agent delete_generated_files))
+				do_with_wait_cursor (Current, agent current_arch_cat.do_all_archetypes (agent delete_generated_files))
 				populate_directory_controls (True)
 			end
 		end
@@ -1080,7 +1073,7 @@ feature {NONE} -- Implementation
 	populate_directory_controls (refresh: BOOLEAN)
 			-- Rebuild archetype directory & repopulate relevant GUI parts.
 		do
-			do_with_wait_cursor (agent do_populate_directory_controls (refresh))
+			do_with_wait_cursor (Current, agent do_populate_directory_controls (refresh))
 		end
 
 	do_populate_directory_controls (refresh: BOOLEAN)
@@ -1163,19 +1156,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	do_with_wait_cursor (action: attached PROCEDURE [ANY, TUPLE])
-			-- Perform `action' with an hourglass mouse cursor, restoring the cursor when done.
-		local
-			ptr_style: EV_POINTER_STYLE
-		do
-			ptr_style := pointer_style
-			set_pointer_style (wait_cursor)
-			action.call ([])
-			set_pointer_style (ptr_style)
-		rescue
-			set_pointer_style (ptr_style)
-		end
-
 feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Statistics
 
 	populate_statistics
@@ -1202,7 +1182,7 @@ feature {NONE} -- Build commands
 
 				menu_items.do_all (agent {EV_MENU_ITEM}.disable_sensitive)
 				repository_menu_interrupt_build.enable_sensitive
-				do_with_wait_cursor (action)
+				do_with_wait_cursor (Current, action)
 			end
 
 			menu_items.do_all (agent {EV_MENU_ITEM}.enable_sensitive)

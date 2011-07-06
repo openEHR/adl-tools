@@ -47,6 +47,16 @@ feature -- Access
 			Result.append (type_def.flattened_type_list)
 		end
 
+	type_category: STRING
+			-- generate a type category of main target type from Type_cat_xx values
+		do
+			if type_def.is_abstract or container_type_def.is_abstract then
+				Result := Type_cat_abstract_class
+			else
+				Result := Type_cat_concrete_class
+			end
+		end
+
 feature -- Conversion
 
 	as_generic_type_specifier: BMM_GENERIC_TYPE_REFERENCE

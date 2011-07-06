@@ -368,6 +368,8 @@ feature {NONE} -- Implementation
 
 			Result.force (["class_concrete.ico", "concrete class from RM"], "class_concrete")
 			Result.force (["class_abstract.ico", "abstract class from RM"], "class_abstract")
+			Result.force (["generic_parameter.ico", "generic parameter from RM type"], "generic_parameter")
+			Result.force (["generic_parameter.ico", "constrained generic parameter from RM type"], "constrained_generic_parameter")
 
 			Result.force (["archetype_1.ico", "Ad hoc archetype (not parsed yet)"], "archetype_1")
 			Result.force (["archetype_parsed_1.ico", "Ad hoc archetype (parsed but not compiled)"], "archetype_parsed_1")

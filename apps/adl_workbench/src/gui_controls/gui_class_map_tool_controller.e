@@ -37,7 +37,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	tool: GUI_CLASS_MAP_CONTROL
+	tool: GUI_CLASS_MAP_TOOL
 
 	docking_pane: SD_CONTENT
 

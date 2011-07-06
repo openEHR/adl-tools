@@ -30,6 +30,11 @@ feature -- Access
 			Result := flattened_type_list.first
 		end
 
+	type_category: STRING
+			-- generate a type category of main target type from Type_category_xx values
+		deferred
+		end
+
 feature -- Output
 
 	as_type_string: attached STRING
@@ -41,6 +46,9 @@ feature -- Output
 			-- string form of the type for matching in archetypes - i.e. ignoring container type names
 		deferred
 		end
+
+invariant
+	type_category_valid: Type_categories.has (type_category)
 
 end
 

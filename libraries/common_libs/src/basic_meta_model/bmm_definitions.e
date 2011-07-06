@@ -32,6 +32,21 @@ feature -- Definitions
 
 	Any_type: STRING = "Any"
 
+	Type_cat_concrete_class: STRING = "class_concrete"
+	Type_cat_abstract_class: STRING = "class_abstract"
+	Type_cat_generic_parameter: STRING = "generic_parameter"
+	Type_cat_constrained_generic_parameter: STRING = "constrained_generic_parameter"
+
+	Type_categories: ARRAYED_LIST [STRING]
+		once
+			create Result.make (0)
+			Result.compare_objects
+			Result.extend (Type_cat_concrete_class)
+			Result.extend (Type_cat_abstract_class)
+			Result.extend (Type_cat_generic_parameter)
+			Result.extend (Type_cat_constrained_generic_parameter)
+		end
+
 	Schema_file_extension: STRING = ".bmm"
 
 	Metadata_model_publisher: STRING = "model_publisher"

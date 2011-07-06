@@ -397,8 +397,6 @@ feature -- Commands
 			-- Populate ontology controls.
 		require
 			an_archetype.is_valid
-		local
-			archetype: ARCHETYPE
 		do
 			target_archetype := an_archetype
 			selected_language := a_language

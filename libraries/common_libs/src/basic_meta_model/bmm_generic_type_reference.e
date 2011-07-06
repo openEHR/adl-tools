@@ -52,6 +52,24 @@ feature -- Access
 			end
 		end
 
+	type_category: STRING
+			-- generate a type category of main target type from Type_cat_xx values
+		local
+			has_abstract_gen_parms: BOOLEAN
+		do
+			from generic_parameter_defs.start until generic_parameter_defs.off loop
+				if not generic_parameter_defs.item.type_category.is_equal (Type_cat_concrete_class) then
+					has_abstract_gen_parms := True
+				end
+				generic_parameter_defs.forth
+			end
+			if root_type_def.is_abstract and has_abstract_gen_parms then
+				Result := Type_cat_abstract_class
+			else
+				Result := Type_cat_concrete_class
+			end
+		end
+
 feature -- Commands
 
 	finalise_build (a_bmmm: attached BMM_SCHEMA; a_class_def: attached BMM_CLASS_DEFINITION; a_prop_def: attached BMM_PROPERTY_DEFINITION; errors: ERROR_ACCUMULATOR)

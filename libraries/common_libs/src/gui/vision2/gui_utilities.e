@@ -17,6 +17,21 @@ class GUI_UTILITIES
 inherit
 	STRING_UTILITIES
 
+feature -- Commands
+
+	do_with_wait_cursor (an_ev_widget: EV_WIDGET; action: attached PROCEDURE [ANY, TUPLE])
+			-- Perform `action' with an hourglass mouse cursor, restoring the cursor when done.
+		local
+			ptr_style: EV_POINTER_STYLE
+		do
+			ptr_style := an_ev_widget.pointer_style
+			an_ev_widget.set_pointer_style ((create {EV_STOCK_PIXMAPS}).wait_cursor)
+			action.call ([])
+			an_ev_widget.set_pointer_style (ptr_style)
+		rescue
+			an_ev_widget.set_pointer_style (ptr_style)
+		end
+
 feature {NONE} -- Implementation
 
 	show_in_system_browser (url: attached STRING)
