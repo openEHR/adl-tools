@@ -72,7 +72,19 @@ feature -- Access
 			end
 		end
 
+	type_substitutions: ARRAYED_SET [STRING]
+		do
+			if is_constrained then
+				Result := conforms_to_type_def.type_substitutions
+			else
+				Result := bmm_model.any_class_definition.type_substitutions
+			end
+		end
+
 feature -- Status Report
+
+	has_type_substitutions: BOOLEAN = True
+			-- True if there are types subsitutable for this one according to the model
 
 	is_constrained: BOOLEAN
 			-- True if this generic parameter has a type constraint
@@ -84,11 +96,12 @@ feature -- Commands
 
 	finalise_build (a_bmmm: attached BMM_SCHEMA; a_class_def: BMM_CLASS_DEFINITION; errors: ERROR_ACCUMULATOR)
 		do
+			bmm_model := a_bmmm
 			if attached conforms_to_type then
-				if a_bmmm.has_class_definition (conforms_to_type) then
-					conforms_to_type_def := a_bmmm.class_definition (conforms_to_type)
+				if bmm_model.has_class_definition (conforms_to_type) then
+					conforms_to_type_def := bmm_model.class_definition (conforms_to_type)
 				else
-					errors.add_error ("BMM_GPCT", <<a_bmmm.schema_id, a_class_def.name, name, conforms_to_type>>, Void)
+					errors.add_error ("BMM_GPCT", <<bmm_model.schema_id, a_class_def.name, name, conforms_to_type>>, Void)
 				end
 			end
 		end

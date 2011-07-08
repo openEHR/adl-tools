@@ -65,38 +65,73 @@ feature -- Access
 			end
 			if root_type_def.is_abstract and has_abstract_gen_parms then
 				Result := Type_cat_abstract_class
+			elseif has_type_substitutions then
+				Result := Type_cat_concrete_class_supertype
 			else
 				Result := Type_cat_concrete_class
 			end
+		end
+
+	type_substitutions: ARRAYED_SET [STRING]
+			-- just generate permutations of one generic parameter for now
+		local
+			root_sub_type_list, gen_param_sub_type_list: ARRAYED_SET [STRING]
+		do
+			root_sub_type_list := root_type_def.type_substitutions
+			if root_sub_type_list.is_empty then
+				root_sub_type_list.extend (root_type_def.name)
+			end
+
+			gen_param_sub_type_list := generic_parameter_defs.first.type_substitutions
+			if gen_param_sub_type_list.is_empty then
+				gen_param_sub_type_list.extend (generic_parameter_defs.first.as_type_string)
+			end
+
+			create Result.make (0)
+			from root_sub_type_list.start until root_sub_type_list.off loop
+				from gen_param_sub_type_list.start until gen_param_sub_type_list.off loop
+					Result.extend (root_sub_type_list.item + generic_left_delim.out + gen_param_sub_type_list.item + generic_right_delim.out)
+					gen_param_sub_type_list.forth
+				end
+				root_sub_type_list.forth
+			end
+		end
+
+feature -- Status Report
+
+	has_type_substitutions: BOOLEAN
+		do
+			Result := root_type_def.has_type_substitutions or generic_parameter_defs.first.has_type_substitutions
 		end
 
 feature -- Commands
 
 	finalise_build (a_bmmm: attached BMM_SCHEMA; a_class_def: attached BMM_CLASS_DEFINITION; a_prop_def: attached BMM_PROPERTY_DEFINITION; errors: ERROR_ACCUMULATOR)
 		do
-			if a_bmmm.has_class_definition(root_type) then
-				root_type_def := a_bmmm.class_definition (root_type)
+			bmm_model := a_bmmm
+			if bmm_model.has_class_definition (root_type) then
+				root_type_def := bmm_model.class_definition (root_type)
 				create generic_parameter_defs.make (0)
 				from generic_parameters.start until generic_parameters.off loop
-					if a_bmmm.has_class_definition(generic_parameters.item) then
-						generic_parameter_defs.extend(a_bmmm.class_definition(generic_parameters.item))
+					if bmm_model.has_class_definition (generic_parameters.item) then
+						generic_parameter_defs.extend (bmm_model.class_definition (generic_parameters.item))
 					elseif root_type_def.is_generic then
 						if attached root_type_def.generic_parameter_defs then
-							if root_type_def.generic_parameter_defs.has(generic_parameters.item) then
-								generic_parameter_defs.extend(root_type_def.generic_parameter_defs.item (generic_parameters.item))
+							if root_type_def.generic_parameter_defs.has (generic_parameters.item) then
+								generic_parameter_defs.extend (root_type_def.generic_parameter_defs.item (generic_parameters.item))
 							else
-								errors.add_error ("BMM_GPGPU", <<a_bmmm.schema_id, a_class_def.name, a_prop_def.name, root_type_def.name, generic_parameters.item>>, Void)
+								errors.add_error ("BMM_GPGPU", <<bmm_model.schema_id, a_class_def.name, a_prop_def.name, root_type_def.name, generic_parameters.item>>, Void)
 							end
 						else
-							errors.add_error ("BMM_GPGPM", <<a_bmmm.schema_id, root_type_def.name>>, Void)
+							errors.add_error ("BMM_GPGPM", <<bmm_model.schema_id, root_type_def.name>>, Void)
 						end
 					else
-						errors.add_error ("BMM_GPGPT", <<a_bmmm.schema_id, a_class_def.name, a_prop_def.name, generic_parameters.item>>, Void)
+						errors.add_error ("BMM_GPGPT", <<bmm_model.schema_id, a_class_def.name, a_prop_def.name, generic_parameters.item>>, Void)
 					end
 					generic_parameters.forth
 				end
 			else
-				errors.add_error ("BMM_GPRT", <<a_bmmm.schema_id, a_class_def.name, a_prop_def.name, root_type>>, Void)
+				errors.add_error ("BMM_GPRT", <<bmm_model.schema_id, a_class_def.name, a_prop_def.name, root_type>>, Void)
 			end
 		end
 

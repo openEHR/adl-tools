@@ -19,6 +19,9 @@ inherit
 
 feature -- Access
 
+	bmm_model: BMM_SCHEMA
+			-- reverse reference, set after initialisation from input schema
+
 	flattened_type_list: attached ARRAYED_LIST [STRING]
 			-- completely flattened list of type names, flattening out all generic parameters
 		deferred
@@ -32,6 +35,16 @@ feature -- Access
 
 	type_category: STRING
 			-- generate a type category of main target type from Type_category_xx values
+		deferred
+		end
+
+	type_substitutions: ARRAYED_SET [STRING]
+		deferred
+		end
+
+feature -- Status Report
+
+	has_type_substitutions: BOOLEAN
 		deferred
 		end
 

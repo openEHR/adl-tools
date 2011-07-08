@@ -80,16 +80,11 @@ feature -- Access (attributes derived in post-schema processing)
 		do
 			if is_abstract then
 				Result := Type_cat_abstract_class
+			elseif has_type_substitutions then
+				Result := Type_cat_concrete_class_supertype
 			else
 				Result := Type_cat_concrete_class
 			end
-		end
-
-	is_terminal_type: BOOLEAN
-			-- True if this type has no properties, and will therefore be a terminal node in
-			-- a model graph
-		do
-			Result := properties.is_empty
 		end
 
 feature -- Access
@@ -142,9 +137,9 @@ feature -- Access
 				create prim_types.make (0)
 				prim_types.compare_objects
 				prim_types.merge (bmm_model.primitive_types.current_keys)
-				create immediate_suppliers_non_primitive_cache.make(0)
+				create immediate_suppliers_non_primitive_cache.make (0)
 				immediate_suppliers_non_primitive_cache.compare_objects
-				immediate_suppliers_non_primitive_cache.merge(immediate_suppliers)
+				immediate_suppliers_non_primitive_cache.merge (immediate_suppliers)
 				immediate_suppliers_non_primitive_cache.subtract (prim_types)
 			end
 			Result := immediate_suppliers_non_primitive_cache
@@ -253,7 +248,22 @@ feature -- Access
 			end
 		end
 
+	type_substitutions: ARRAYED_SET [STRING]
+		do
+			create Result.make(0)
+			from immediate_descendants.start until immediate_descendants.off loop
+				Result.extend (immediate_descendants.item.name)
+				Result.merge (immediate_descendants.item.type_substitutions)
+				immediate_descendants.forth
+			end
+		end
+
 feature -- Status Report
+
+	has_type_substitutions: BOOLEAN
+		do
+			Result := is_abstract or else not immediate_descendants.is_empty
+		end
 
 	has_property (a_prop_name: STRING): BOOLEAN
 			-- True if a_prop_name valid in this type, due to this type definition, or any ancestor
@@ -348,7 +358,7 @@ feature -- Commands
 						if not ancestor_defs.off then
 							from generic_parameter_defs.start until generic_parameter_defs.off loop
 								if ancestor_defs.item.generic_parameter_defs.has (generic_parameter_defs.key_for_iteration) then
-									generic_parameter_defs.item_for_iteration.set_inheritance_precursor(ancestor_defs.item.generic_parameter_defs.item(generic_parameter_defs.key_for_iteration))
+									generic_parameter_defs.item_for_iteration.set_inheritance_precursor (ancestor_defs.item.generic_parameter_defs.item (generic_parameter_defs.key_for_iteration))
 								end
 								generic_parameter_defs.forth
 							end
@@ -361,7 +371,7 @@ feature -- Commands
 
 			-- post-process properties
 			from properties.start until properties.off loop
-				properties.item_for_iteration.finalise_build(a_bmmm, Current, errors)
+				properties.item_for_iteration.finalise_build (a_bmmm, Current, errors)
 				properties.forth
 			end
 
@@ -451,9 +461,6 @@ feature {BMM_CLASS_DEFINITION} -- Implementation
 
 	all_suppliers_cache: ARRAYED_SET [STRING]
 			-- cache for `suppliers'
-
-	bmm_model: BMM_SCHEMA
-			-- reverse reference, set after initialisation from input schema
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
 

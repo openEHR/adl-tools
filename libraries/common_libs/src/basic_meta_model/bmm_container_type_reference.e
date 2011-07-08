@@ -52,9 +52,42 @@ feature -- Access
 		do
 			if type_def.is_abstract or container_type_def.is_abstract then
 				Result := Type_cat_abstract_class
+			elseif has_type_substitutions then
+				Result := Type_cat_concrete_class_supertype
 			else
 				Result := Type_cat_concrete_class
 			end
+		end
+
+	type_substitutions: ARRAYED_SET [STRING]
+		local
+			cont_sub_type_list, item_sub_type_list: ARRAYED_LIST [STRING]
+		do
+			cont_sub_type_list := container_type_def.type_substitutions
+			if cont_sub_type_list.is_empty then
+				cont_sub_type_list.extend (container_type_def.name)
+			end
+
+			item_sub_type_list := type_def.type_substitutions
+			if item_sub_type_list.is_empty then
+				item_sub_type_list.extend (type_def.name)
+			end
+
+			create Result.make (0)
+			from cont_sub_type_list.start until cont_sub_type_list.off loop
+				from item_sub_type_list.start until item_sub_type_list.off loop
+					Result.extend (cont_sub_type_list.item + generic_left_delim.out + item_sub_type_list.item + generic_right_delim.out)
+					item_sub_type_list.forth
+				end
+				cont_sub_type_list.forth
+			end
+		end
+
+feature -- Status Report
+
+	has_type_substitutions: BOOLEAN
+		do
+			Result := container_type_def.has_type_substitutions or type_def.has_type_substitutions
 		end
 
 feature -- Conversion
@@ -68,15 +101,16 @@ feature -- Commands
 
 	finalise_build (a_bmmm: attached BMM_SCHEMA; a_class_def: attached BMM_CLASS_DEFINITION; a_prop_def: attached BMM_PROPERTY_DEFINITION; errors: ERROR_ACCUMULATOR)
 		do
-			if a_bmmm.has_class_definition(type) then
-				type_def := a_bmmm.class_definition (type)
-				if a_bmmm.has_class_definition(container_type) then
-					container_type_def := a_bmmm.class_definition (container_type)
+			bmm_model := a_bmmm
+			if bmm_model.has_class_definition(type) then
+				type_def := bmm_model.class_definition (type)
+				if bmm_model.has_class_definition(container_type) then
+					container_type_def := bmm_model.class_definition (container_type)
 				else
-					errors.add_error ("BMM_CPCT", <<a_bmmm.schema_id, a_class_def.name, a_prop_def.name, container_type>>, Void)
+					errors.add_error ("BMM_CPCT", <<bmm_model.schema_id, a_class_def.name, a_prop_def.name, container_type>>, Void)
 				end
 			else
-				errors.add_error ("BMM_CPTV", <<a_bmmm.schema_id, a_class_def.name, a_prop_def.name, type>>, Void)
+				errors.add_error ("BMM_CPTV", <<bmm_model.schema_id, a_class_def.name, a_prop_def.name, type>>, Void)
 			end
 		end
 

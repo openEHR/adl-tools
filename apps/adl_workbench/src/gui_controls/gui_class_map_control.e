@@ -203,8 +203,8 @@ feature {NONE} -- Implementation
    		local
 			a_ti: EV_TREE_ITEM
 			prop_str, type_str: STRING
-			type_category: STRING
 			is_terminal: BOOLEAN
+			has_type_subs: BOOLEAN
 		do
 			-- update path value
 			prop_str := a_prop_def.name.twin
@@ -212,27 +212,32 @@ feature {NONE} -- Implementation
 
 			-- determine data for property and one or more (in the case of generics with > 1 param) class nodes
 			if attached {BMM_CLASS_DEFINITION} a_prop_def.type_def as bmm_class_def then
-				if bmm_class_def.is_terminal_type then
+				if bmm_class_def.bmm_model.primitive_types.has (bmm_class_def.name) then
 					prop_str.append (": " + bmm_class_def.name)
 					is_terminal := True
 				else
 					type_str := bmm_class_def.name
 				end
+				has_type_subs := bmm_class_def.has_type_substitutions
 
 			elseif attached {BMM_CONTAINER_TYPE_REFERENCE} a_prop_def.type_def as bmm_cont_type_ref then
 				-- assume first gen param is only type of interest
 				prop_str.append (": " + bmm_cont_type_ref.container_type + Generic_left_delim.out + Generic_right_delim.out)
 				type_str := bmm_cont_type_ref.type
+				has_type_subs := bmm_cont_type_ref.type_def.has_type_substitutions
 
 			elseif attached {BMM_GENERIC_TYPE_REFERENCE} a_prop_def.type_def as bmm_gen_type_ref then
 				type_str := bmm_gen_type_ref.as_type_string
+				has_type_subs := bmm_gen_type_ref.has_type_substitutions
 
 			elseif attached {BMM_GENERIC_PARAMETER_DEFINITION} a_prop_def.type_def as bmm_gen_parm_def then -- type is T, U etc
-				type_str := bmm_gen_parm_def.name
+				type_str := bmm_gen_parm_def.name.twin
 				if bmm_gen_parm_def.is_constrained then
 					type_str.append (": " + bmm_gen_parm_def.conforms_to_type)
 				end
+				has_type_subs := bmm_gen_parm_def.has_type_substitutions
 			end
+
 			if a_prop_def.is_mandatory then
 				prop_str.append (" [1]")
 			else
@@ -250,13 +255,27 @@ feature {NONE} -- Implementation
 
 			if not is_terminal then
 				-- class / type node(s)
-				type_category := a_prop_def.type_def.type_category
 				create a_ti
-				a_ti.set_data (a_prop_def.type_def)				-- node data
-				a_ti.set_text (type_str)						-- node text
-				a_ti.set_pixmap (pixmaps [type_category])		-- pixmap
+				set_class_node_details (a_ti, a_prop_def.type_def, type_str, has_type_subs)
+
 				ev_tree_item_stack.item.extend (a_ti)
 				ev_tree_item_stack.extend (a_ti)
+			end
+		end
+
+	set_class_node_details (a_ti: EV_TREE_ITEM; a_type_spec: BMM_TYPE_SPECIFIER; a_type_str: STRING; has_type_subs: BOOLEAN)
+		local
+			type_category: STRING
+		do
+			type_category := a_type_spec.type_category
+			a_ti.set_data (a_type_spec)						-- node data
+			a_ti.set_text (a_type_str)						-- node text
+			a_ti.set_pixmap (pixmaps [type_category])		-- pixmap
+
+			if has_type_subs then
+	 			a_ti.set_pebble_function (agent pebble_function)
+				a_ti.set_configurable_target_menu_handler (agent context_menu_handler)
+				a_ti.set_configurable_target_menu_mode
 			end
 		end
 
@@ -264,7 +283,7 @@ feature {NONE} -- Implementation
    		do
 			node_path.remove_last
 			ev_tree_item_stack.remove
-			if not attached {BMM_CLASS_DEFINITION} a_prop_def.type_def as bmm_class_def or else not bmm_class_def.is_terminal_type then
+			if not attached {BMM_CLASS_DEFINITION} a_prop_def.type_def as bmm_class_def or else not bmm_class_def.bmm_model.primitive_types.has (bmm_class_def.name) then
 				ev_tree_item_stack.remove
 			end
 		end
@@ -289,6 +308,69 @@ feature {NONE} -- Implementation
  			if node.is_expandable then
 				node.collapse
  			end
+		end
+
+	context_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
+			-- creates the context menu for a right click action for class node
+		local
+			subs: ARRAYED_SET[STRING]
+		do
+			if attached {EV_TREE_ITEM} a_source as eti then
+				if attached {BMM_CLASS_DEFINITION} eti.data as bmm_class_def then
+					subs := bmm_class_def.type_substitutions
+
+				elseif attached {BMM_CONTAINER_TYPE_REFERENCE} eti.data as bmm_cont_type_ref then
+					subs := bmm_cont_type_ref.type_def.type_substitutions
+
+				elseif attached {BMM_GENERIC_TYPE_REFERENCE} eti.data as bmm_gen_type_ref then
+					subs := bmm_gen_type_ref.type_substitutions
+
+				elseif attached {BMM_GENERIC_PARAMETER_DEFINITION} eti.data as bmm_gen_parm_def then -- type is T, U etc
+					subs := bmm_gen_parm_def.type_substitutions
+				end
+				if not subs.is_empty then
+					create_context_menu (a_menu, subs, a_source, a_pebble)
+				end
+			end
+		end
+
+	create_context_menu (menu: EV_MENU; a_substitutions: ARRAYED_SET[STRING]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
+			-- dynamically initializes the context menu for this tree
+		local
+			an_mi: EV_MENU_ITEM
+			sub_menu: EV_MENU
+		do
+			if attached {EV_TREE_ITEM} a_source as a_ti then
+				create sub_menu.make_with_text ("subtypes")
+				from a_substitutions.start until a_substitutions.off loop
+					create an_mi.make_with_text_and_action (a_substitutions.item, agent rebuild_from_interior_node (a_substitutions.item, a_ti))
+					an_mi.set_pixmap (pixmaps ["class_concrete"])
+		    		sub_menu.extend (an_mi)
+					a_substitutions.forth
+				end
+				menu.extend (sub_menu)
+			end
+		end
+
+	rebuild_from_interior_node (a_class_name: attached STRING; a_ti: EV_TREE_ITEM)
+			-- rebuild EV tree from interior node of class with a new tree of selected subtype
+		local
+			bmm_class_def: BMM_CLASS_DEFINITION
+		do
+			a_ti.wipe_out
+			ev_tree_item_stack.extend (a_ti)
+			if attached {BMM_TYPE_SPECIFIER} a_ti.data as a_type_spec then
+				bmm_class_def := a_type_spec.bmm_model.class_definition (a_class_name)
+				set_class_node_details (a_ti, bmm_class_def, a_class_name, True)
+				bmm_class_def.do_supplier_closure (not differential_view, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+			end
+			ev_tree_item_stack.remove
+		end
+
+	pebble_function (a_x, a_y: INTEGER): ANY
+			-- Pebble function for pebble source
+		do
+			Result := "pebble"
 		end
 
 end

@@ -367,6 +367,7 @@ feature {NONE} -- Implementation
 			Result.force (["template_category.ico", "template category"], "template_category")
 
 			Result.force (["class_concrete.ico", "concrete class from RM"], "class_concrete")
+			Result.force (["class_concrete_supertype.ico", "concrete class from RM"], "class_concrete_supertype")
 			Result.force (["class_abstract.ico", "abstract class from RM"], "class_abstract")
 			Result.force (["generic_parameter.ico", "generic parameter from RM type"], "generic_parameter")
 			Result.force (["generic_parameter.ico", "constrained generic parameter from RM type"], "constrained_generic_parameter")

@@ -136,6 +136,12 @@ feature -- Access
 	state: INTEGER
 			-- state machine state for this schema
 
+	any_class_definition: attached BMM_CLASS_DEFINITION
+			-- retrieve the class definition corresponding to the top `Any' class
+		do
+			Result := primitive_types.item (any_type)
+		end
+
 	class_definition (a_type_name: attached STRING): attached BMM_CLASS_DEFINITION
 			-- retrieve the class definition corresponding to `a_type_name' (which contain a generic part)
 			-- from either `primitive_types' or `classes'
@@ -479,7 +485,7 @@ feature {NONE} -- Implementation
 			all_ancs: ARRAYED_LIST [STRING]
 		do
 			from class_list.start until class_list.off loop
-				class_list.item_for_iteration.finalise_build(Current, errors)
+				class_list.item_for_iteration.finalise_build (Current, errors)
 
 				-- populate class's immediate_descendants and all_ancestors lists
 				imm_ancs := class_list.item_for_iteration.ancestor_defs

@@ -33,6 +33,7 @@ feature -- Definitions
 	Any_type: STRING = "Any"
 
 	Type_cat_concrete_class: STRING = "class_concrete"
+	Type_cat_concrete_class_supertype: STRING = "class_concrete_supertype"
 	Type_cat_abstract_class: STRING = "class_abstract"
 	Type_cat_generic_parameter: STRING = "generic_parameter"
 	Type_cat_constrained_generic_parameter: STRING = "constrained_generic_parameter"
