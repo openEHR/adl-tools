@@ -15,11 +15,6 @@ note
 class GUI_CATALOGUE_TOOL
 
 inherit
---	SHARED_APP_UI_RESOURCES
---		export
---			{NONE} all
---		end
-
 	SHARED_KNOWLEDGE_REPOSITORY
 
 create

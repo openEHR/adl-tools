@@ -357,6 +357,7 @@ feature {NONE} -- Implementation
 		local
 			bmm_class_def: BMM_CLASS_DEFINITION
 		do
+			a_ti.enable_select
 			a_ti.wipe_out
 			ev_tree_item_stack.extend (a_ti)
 			if attached {BMM_TYPE_SPECIFIER} a_ti.data as a_type_spec then

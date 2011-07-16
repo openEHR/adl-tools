@@ -207,14 +207,14 @@ feature {NONE} -- Implementation
 			-- creates the context menu for a right click action for an ARCH_REP_ARCHETYPE node
 		do
 			if attached {EV_TREE_ITEM} a_source as eti and then attached {ARCH_CAT_ARCHETYPE} eti.data as aca then
-				create_context_menu (a_menu, aca.ontological_name, a_pebble)
+				create_context_menu (a_menu, aca.ontological_name, a_source, a_pebble)
 			end
 		end
 
 --	context_menu_agent: PROCEDURE [ANY, TUPLE [EV_MENU]]
 --			-- Procedure that sets up a context menu
 
-	create_context_menu (menu: EV_MENU; arch_id: STRING; a_pebble: ANY)
+	create_context_menu (menu: EV_MENU; arch_id: STRING; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
 			-- dynamically initializes the context menu for this tree
 		local
 			parse_mi, edit_source_mi, new_tool_mi: EV_MENU_ITEM
@@ -227,7 +227,7 @@ feature {NONE} -- Implementation
 			edit_source_mi.set_pixmap (pixmaps ["edit"])
 			menu.extend (edit_source_mi)
 
-			create new_tool_mi.make_with_text_and_action ("New tool", select_archetype_in_new_tool_agent)
+			create new_tool_mi.make_with_text_and_action ("New tool", agent display_context_selected_item (a_source))
 			new_tool_mi.set_pixmap (pixmaps ["archetype_2"])
 			menu.extend (new_tool_mi)
 		end
@@ -241,6 +241,17 @@ feature {NONE} -- Implementation
 	on_pointer_button (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
 		do
 
+		end
+
+	display_context_selected_item (a_source: EV_PICK_AND_DROPABLE)
+		do
+			if attached {EV_TREE_NODE} a_source as ev_tn then
+				ev_tn.enable_select
+				if attached {ARCH_CAT_ARCHETYPE} ev_tn.data as aca then
+					current_arch_cat.set_selected_item (aca)
+					select_archetype_in_new_tool_agent.call ([])
+				end
+			end
 		end
 
 end
