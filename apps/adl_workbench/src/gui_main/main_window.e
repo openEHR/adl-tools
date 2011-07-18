@@ -35,6 +35,11 @@ inherit
 			copy, default_create
 		end
 
+	SHARED_XML_RULES
+		undefine
+			copy, default_create
+		end
+
 	GUI_UTILITIES
 		export
 			{NONE} all
@@ -675,6 +680,8 @@ feature {NONE} -- XML Menu events
 	set_xml_rules
 			-- Called by `select_actions' of `xml_menu_conv_rules'.
 		do
+			execution_environment.launch (text_editor_command + " %"" + xml_rules_file_path + "%"")
+			mark_xml_rules_put_of_date -- assume that the user makes a change; not very scientific, but good enough for now
 		end
 
 feature {NONE} -- Tools menu events

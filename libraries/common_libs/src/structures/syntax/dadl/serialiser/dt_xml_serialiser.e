@@ -44,7 +44,7 @@ feature -- Modification
 		local
 			doc_attr_name, doc_hdr: STRING
 		do
-			if not checked_for_rules and not attached serialisation_rules then
+			if not checked_for_rules and not attached serialisation_rules or xml_rules_out_of_date then
 				if xml_rules.serialisation_rules.has (a_node.im_type_name) then
 					serialisation_rules := xml_rules.serialisation_rules.item (a_node.im_type_name)
 				else

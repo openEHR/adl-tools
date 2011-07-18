@@ -126,7 +126,7 @@ feature {NONE}-- Initialization
 			rm_schemas_menu_reload_schemas.set_text ("&Reload Schemas")
 			rm_schemas_menu_configure_rm_schemas.set_text ("&Configure Schemas...")
 			xml_menu.set_text ("&XML")
-			xml_menu_conv_rules.set_text ("&Conversion Rules...")
+			xml_menu_conv_rules.set_text ("Edit &Conversion Rules...")
 			tools_menu.set_text ("&Tools")
 			tools_menu_clean_generated_files.set_text ("&Clean Generated Files")
 			tools_menu_options.set_text ("&Options...")

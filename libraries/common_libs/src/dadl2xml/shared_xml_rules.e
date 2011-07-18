@@ -24,7 +24,7 @@ feature -- Access
 	xml_rules: XML_RULES
 			-- set of rules to do with IM class, keyed by class name to which they apply
 		do
-			if not attached xml_rules_cache.item then
+			if xml_rules_out_of_date then
 				if attached {XML_RULES} xml_rules_cfg.object_value ("/", "XML_RULES") as x then
 					xml_rules_cache.put(x)
 				else
@@ -37,6 +37,22 @@ feature -- Access
 	xml_rules_cache: CELL [XML_RULES]
 		once
 			create Result.put (Void)
+		end
+
+feature -- Status Report
+
+	xml_rules_out_of_date: BOOLEAN
+			-- True if rules have changed and need to be reread
+		do
+			Result := not attached xml_rules_cache.item
+		end
+
+feature -- Element change
+
+	mark_xml_rules_put_of_date
+			-- force later re-read of rules; assumes changes have not been committed yet, but will be
+		do
+			xml_rules_cache.put (Void)
 		end
 
 end

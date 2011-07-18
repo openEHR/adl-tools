@@ -21,7 +21,7 @@ feature -- Access
 
 	xml_rules_cfg: DADL_CONFIG_FILE_ACCESS
 			-- accessor object for application config file
-		once
+		do
 			create Result.make (xml_rules_file_path)
 		end
 

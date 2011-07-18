@@ -68,7 +68,7 @@ feature -- Definitions
 
 	xml_rules_file_path: attached STRING
 			-- Full path to XML rules file.
-		do
+		once
 			Result := file_system.pathname (user_config_file_directory, extension_replaced ("xml_rules", User_config_file_extension))
 		ensure
 			not_empty: not Result.is_empty
