@@ -110,11 +110,11 @@ feature -- Commands
 
 				-- put names on columns
 				if grid.column_count > 0 then
-					grid.column (Grid_path_col).set_title ("Path")
+					grid.column (Grid_path_col).set_title (create_message_content ("annotation_path_text", Void))
 					grid.column (Grid_path_col).resize_to_content
-					grid.column (Grid_ann_key_col).set_title ("Annotation key")
+					grid.column (Grid_ann_key_col).set_title (create_message_content ("annotation_key_text", Void))
 					grid.column (Grid_ann_key_col).resize_to_content
-					grid.column (Grid_ann_value_col).set_title ("Annotation value")
+					grid.column (Grid_ann_value_col).set_title (create_message_content ("annotation_value_text", Void))
 					grid.column (Grid_ann_value_col).resize_to_content
 				end
 			end

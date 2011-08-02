@@ -59,12 +59,12 @@ feature {NONE} -- Initialisation
 			create trans_languages_label
 			create trans_languages_list
 			create trans_author_vbox
-			create l_ev_label_1
+			create ev_author_label
 			create trans_author_mlist
-			create l_ev_label_2
+			create ev_accreditation_label
 			create trans_accreditation_text
 			create trans_other_deails_vbox
-			create l_ev_label_3
+			create ev_other_details_label
 			create trans_other_details_mlist
 			create copyright_hbox
 			create copyright_label
@@ -95,10 +95,10 @@ feature {NONE} -- Initialisation
 			create resource_orig_res_mlist
 			create term_hbox
 			create terminology_vbox
-			create l_ev_label_4
+			create ev_terminology_label
 			create term_mappings_list
 			create refset_vbox
-			create l_ev_label_5
+			create ev_refset_bindings_label
 			create refset_bindings_list
 
 			-- connect them together
@@ -127,12 +127,12 @@ feature {NONE} -- Initialisation
 			trans_languages_vbox.extend (trans_languages_label)
 			trans_languages_vbox.extend (trans_languages_list)
 			lang_translations_hbox.extend (trans_author_vbox)
-			trans_author_vbox.extend (l_ev_label_1)
+			trans_author_vbox.extend (ev_author_label)
 			trans_author_vbox.extend (trans_author_mlist)
-			trans_author_vbox.extend (l_ev_label_2)
+			trans_author_vbox.extend (ev_accreditation_label)
 			trans_author_vbox.extend (trans_accreditation_text)
 			lang_translations_hbox.extend (trans_other_deails_vbox)
-			trans_other_deails_vbox.extend (l_ev_label_3)
+			trans_other_deails_vbox.extend (ev_other_details_label)
 			trans_other_deails_vbox.extend (trans_other_details_mlist)
 			admin_vbox.extend (copyright_hbox)
 			copyright_hbox.extend (copyright_label)
@@ -163,21 +163,21 @@ feature {NONE} -- Initialisation
 			resource_orig_res_hbox.extend (resource_orig_res_mlist)
 			ev_notebook.extend (term_hbox)
 			term_hbox.extend (terminology_vbox)
-			terminology_vbox.extend (l_ev_label_4)
+			terminology_vbox.extend (ev_terminology_label)
 			terminology_vbox.extend (term_mappings_list)
 			term_hbox.extend (refset_vbox)
-			refset_vbox.extend (l_ev_label_5)
+			refset_vbox.extend (ev_refset_bindings_label)
 			refset_vbox.extend (refset_bindings_list)
 
 			-- set visual characteristics
-			ev_notebook.set_item_text (admin_vbox, "Administrative")
-			ev_notebook.set_item_text (desc_box, "Descriptive")
-			ev_notebook.set_item_text (term_hbox, "Term bindings")
+			ev_notebook.set_item_text (admin_vbox, create_message_content ("administrative_tab_text", Void))
+			ev_notebook.set_item_text (desc_box, create_message_content ("descriptive_tab_text", Void))
+			ev_notebook.set_item_text (term_hbox, create_message_content ("term_bindings_tab_text", Void))
 			admin_vbox.disable_item_expand (copyright_hbox)
 			author_lang_term_hbox.set_padding (padding_width)
 			author_lang_term_hbox.set_border_width (border_width)
 
-			auth_frame.set_text ("Authorship")
+			auth_frame.set_text (create_message_content ("auth_frame_text", Void))
 			auth_frame.set_minimum_height (70)
 			auth_frame.set_style (1)
 			status_auth_contrib_vbox.set_minimum_height (65)
@@ -188,7 +188,7 @@ feature {NONE} -- Initialisation
 			status_hbox.set_border_width (border_width)
 			status_hbox.disable_item_expand (status_label)
 			status_hbox.disable_item_expand (status_text)
-			status_label.set_text ("Lifecycle State:")
+			status_label.set_text (create_message_content ("status_label_text", Void))
 			status_text.set_background_color (editable_colour)
 			status_text.set_minimum_width (70)
 			status_text.disable_edit
@@ -199,7 +199,7 @@ feature {NONE} -- Initialisation
 			auth_orig_auth_vbox.set_padding (padding_width)
 			auth_orig_auth_vbox.set_border_width (border_width)
 			auth_orig_auth_vbox.disable_item_expand (auth_orig_auth_label)
-			auth_orig_auth_label.set_text ("Original Author")
+			auth_orig_auth_label.set_text (create_message_content ("auth_orig_auth_label_text", Void))
 			auth_orig_auth_label.set_minimum_width (desc_label_width)
 			auth_orig_auth_mlist.set_background_color (editable_colour)
 			auth_orig_auth_mlist.set_minimum_width (min_entry_control_width)
@@ -208,12 +208,12 @@ feature {NONE} -- Initialisation
 			contrib_vbox.set_padding (padding_width)
 			contrib_vbox.set_border_width (border_width)
 			contrib_vbox.disable_item_expand (auth_contrib_label)
-			auth_contrib_label.set_text ("Contributors")
+			auth_contrib_label.set_text (create_message_content ("auth_contrib_label_text", Void))
 			auth_contrib_label.set_minimum_width (desc_label_width)
 			auth_contrib_list.set_background_color (editable_colour)
 			auth_contrib_list.set_minimum_width (min_entry_control_width)
 			auth_contrib_list.set_minimum_height (30)
-			lang_frame.set_text ("Languages")
+			lang_frame.set_text (create_message_content ("lang_frame_text", Void))
 			lang_frame.set_minimum_height (130)
 			lang_frame.set_style (1)
 			lang_vbox.disable_item_expand (original_languages_hbox)
@@ -221,7 +221,7 @@ feature {NONE} -- Initialisation
 			original_languages_hbox.set_border_width (border_width)
 			original_languages_hbox.disable_item_expand (original_language_label)
 			original_languages_hbox.disable_item_expand (original_language_text)
-			original_language_label.set_text ("Original language:")
+			original_language_label.set_text (create_message_content ("original_language_label_text", Void))
 			original_language_text.set_minimum_width (35)
 			original_language_text.disable_edit
 			lang_translations_hbox.set_padding (padding_width)
@@ -231,7 +231,7 @@ feature {NONE} -- Initialisation
 			trans_languages_vbox.set_padding (padding_width)
 			trans_languages_vbox.set_border_width (border_width)
 			trans_languages_vbox.disable_item_expand (trans_languages_label)
-			trans_languages_label.set_text ("Translations")
+			trans_languages_label.set_text (create_message_content ("trans_languages_label_text", Void))
 			trans_languages_label.set_minimum_width (desc_label_width)
 			trans_languages_list.set_background_color (editable_colour)
 			trans_languages_list.set_minimum_width (100)
@@ -239,30 +239,30 @@ feature {NONE} -- Initialisation
 			trans_author_vbox.set_minimum_height (110)
 			trans_author_vbox.set_padding (padding_width)
 			trans_author_vbox.set_border_width (border_width)
-			trans_author_vbox.disable_item_expand (l_ev_label_1)
-			trans_author_vbox.disable_item_expand (l_ev_label_2)
-			l_ev_label_1.set_text ("Author")
+			trans_author_vbox.disable_item_expand (ev_author_label)
+			trans_author_vbox.disable_item_expand (ev_accreditation_label)
+			ev_author_label.set_text (create_message_content ("author_label_text", Void))
 			trans_author_mlist.set_minimum_height (min_text_height)
-			l_ev_label_2.set_text ("Accreditation")
+			ev_accreditation_label.set_text (create_message_content ("acreditation_label_text", Void))
 			trans_accreditation_text.set_background_color (editable_colour)
 			trans_accreditation_text.set_minimum_width (min_entry_control_width)
 			trans_accreditation_text.set_minimum_height (min_text_height)
 			trans_accreditation_text.disable_edit
 			trans_other_deails_vbox.set_padding (padding_width)
 			trans_other_deails_vbox.set_border_width (border_width)
-			trans_other_deails_vbox.disable_item_expand (l_ev_label_3)
-			l_ev_label_3.set_text ("Other Details")
+			trans_other_deails_vbox.disable_item_expand (ev_other_details_label)
+			ev_other_details_label.set_text (create_message_content ("other_details_label_text", Void))
 			trans_other_details_mlist.set_minimum_height (40)
 			copyright_hbox.set_padding (padding_width)
 			copyright_hbox.set_border_width (border_width)
 			copyright_hbox.disable_item_expand (copyright_label)
-			copyright_label.set_text ("Copyright:")
+			copyright_label.set_text (create_message_content ("copyright_label_text", Void))
 			copyright_label.set_minimum_width (desc_label_width)
 			copyright_text.set_background_color (editable_colour)
 			copyright_text.set_minimum_height (44)
 			copyright_text.disable_edit
 			desc_box.disable_item_expand (resource_frame)
-			details_frame.set_text ("Archetype Details")
+			details_frame.set_text (create_message_content ("archetype_details_label_text", Void))
 			details_frame.set_minimum_height (150)
 			details_frame.set_style (1)
 			details_hbox.set_padding (padding_width)
@@ -271,21 +271,21 @@ feature {NONE} -- Initialisation
 			purpose_use_misuse_vbox.set_padding (padding_width)
 			purpose_use_misuse_vbox.set_border_width (border_width)
 			purpose_hbox.disable_item_expand (purpose_label)
-			purpose_label.set_text ("Purpose")
+			purpose_label.set_text (create_message_content ("purpose_label_text", Void))
 			purpose_label.set_minimum_width (desc_label_width)
 			purpose_text.set_background_color (editable_colour)
 			purpose_text.set_minimum_width (min_entry_control_width)
 			purpose_text.set_minimum_height (min_text_height)
 			purpose_text.disable_edit
 			use_hbox.disable_item_expand (use_label)
-			use_label.set_text ("Use")
+			use_label.set_text (create_message_content ("use_label_text", Void))
 			use_label.set_minimum_width (desc_label_width)
 			use_text.set_background_color (editable_colour)
 			use_text.set_minimum_width (min_entry_control_width)
 			use_text.set_minimum_height (min_text_height)
 			use_text.disable_edit
 			misuse_hbox.disable_item_expand (misuse_label)
-			misuse_label.set_text ("Misuse")
+			misuse_label.set_text (create_message_content ("misuse_label_text", Void))
 			misuse_label.set_minimum_width (desc_label_width)
 			misuse_text.set_background_color (editable_colour)
 			misuse_text.set_minimum_width (min_entry_control_width)
@@ -294,19 +294,19 @@ feature {NONE} -- Initialisation
 			keywords_vbox.set_padding (padding_width)
 			keywords_vbox.set_border_width (border_width)
 			keywords_vbox.disable_item_expand (keywords_label)
-			keywords_label.set_text ("Keywords")
+			keywords_label.set_text (create_message_content ("keywords_label_text", Void))
 			keywords_label.set_minimum_width (75)
 			keywords_list.set_background_color (editable_colour)
 			keywords_list.set_minimum_width (100)
 			keywords_list.set_minimum_height (min_list_height)
-			resource_frame.set_text ("Resources")
+			resource_frame.set_text (create_message_content ("resources_label_text", Void))
 			resource_frame.set_style (1)
 			resource_vbox.disable_item_expand (resource_package_hbox)
 			resource_vbox.disable_item_expand (resource_orig_res_hbox)
 			resource_package_hbox.set_padding (padding_width)
 			resource_package_hbox.set_border_width (border_width)
 			resource_package_hbox.disable_item_expand (resource_package_label)
-			resource_package_label.set_text ("Package")
+			resource_package_label.set_text (create_message_content ("packages_label_text", Void))
 			resource_package_label.set_minimum_width (desc_label_width)
 			resource_package_text.set_background_color (editable_colour)
 			resource_package_text.set_minimum_width (min_entry_control_width)
@@ -314,7 +314,7 @@ feature {NONE} -- Initialisation
 			resource_orig_res_hbox.set_padding (padding_width)
 			resource_orig_res_hbox.set_border_width (border_width)
 			resource_orig_res_hbox.disable_item_expand (resource_orig_res_label)
-			resource_orig_res_label.set_text ("Original%NResources")
+			resource_orig_res_label.set_text (create_message_content ("resource_orig_res_label_text", Void))
 			resource_orig_res_label.set_minimum_width (desc_label_width)
 			resource_orig_res_mlist.set_background_color (editable_colour)
 			resource_orig_res_mlist.set_minimum_width (min_entry_control_width)
@@ -322,16 +322,16 @@ feature {NONE} -- Initialisation
 			terminology_vbox.set_minimum_height (40)
 			terminology_vbox.set_padding (padding_width)
 			terminology_vbox.set_border_width (border_width)
-			terminology_vbox.disable_item_expand (l_ev_label_4)
-			l_ev_label_4.set_text ("Terminology mappings")
+			terminology_vbox.disable_item_expand (ev_terminology_label)
+			ev_terminology_label.set_text (create_message_content ("terminology_label_text", Void))
 			term_mappings_list.set_background_color (editable_colour)
 			term_mappings_list.set_minimum_width (100)
 			term_mappings_list.set_minimum_height (min_list_height)
 			refset_vbox.set_minimum_height (40)
 			refset_vbox.set_padding (padding_width)
 			refset_vbox.set_border_width (border_width)
-			refset_vbox.disable_item_expand (l_ev_label_5)
-			l_ev_label_5.set_text ("Refset bindings")
+			refset_vbox.disable_item_expand (ev_refset_bindings_label)
+			ev_refset_bindings_label.set_text (create_message_content ("refset_bindings_label_text", Void))
 			refset_bindings_list.set_background_color (editable_colour)
 			refset_bindings_list.set_minimum_width (100)
 			refset_bindings_list.set_minimum_height (min_list_height)
@@ -433,9 +433,9 @@ feature {NONE} -- Implementation
 
 	status_label, auth_orig_auth_label,
 	auth_contrib_label, original_language_label, trans_languages_label,
-	l_ev_label_1, l_ev_label_2, l_ev_label_3, copyright_label, purpose_label,
+	ev_author_label, ev_accreditation_label, ev_other_details_label, copyright_label, purpose_label,
 	use_label, misuse_label, keywords_label, resource_package_label,
-	resource_orig_res_label, l_ev_label_4, l_ev_label_5: EV_LABEL
+	resource_orig_res_label, ev_terminology_label, ev_refset_bindings_label: EV_LABEL
 
 	auth_frame, lang_frame, details_frame, resource_frame: EV_FRAME
 

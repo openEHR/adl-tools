@@ -99,7 +99,7 @@ feature -- Initialisation
 			ev_collapse_one_button.set_tooltip (create_message_content ("collapse_one_level_tooltip", Void))
 			ev_collapse_one_button.set_minimum_width (tree_control_panel_width)
 			ev_cell.set_minimum_height (20)
-			ev_rm_visibility_controls.set_text ("RM visibility")
+			ev_rm_visibility_controls.set_text (create_message_content ("rm_visibility_controls_text", Void))
 			ev_rm_visibility_controls.set_minimum_width (100)
 			ev_rm_visibility_controls.set_minimum_height (95)
 			ev_rm_visibility_vbox.set_minimum_height (70)
@@ -369,10 +369,10 @@ feature -- Commands
 
 			if is_expanded then
 				ev_tree.recursive_do_all (agent ev_tree_item_expand)
-				ev_expand_button.set_text ("Collapse All")
+				ev_expand_button.set_text (create_message_content ("expand_button_collapse_text", Void))
 			else
 				ev_tree.recursive_do_all (agent ev_tree_item_shrink)
-				ev_expand_button.set_text ("Expand All")
+				ev_expand_button.set_text (create_message_content ("expand_button_expand_text", Void))
 			end
 		end
 
@@ -522,19 +522,19 @@ feature {NONE} -- Implementation
 				if attached {C_ATTRIBUTE} an_ev_tree_node.data and an_ev_tree_node.is_expandable then
 					an_ev_tree_node.expand
 				elseif an_ev_tree_node.is_expandable then
-					if a_level.is_equal("addressable") then
+					if a_level.is_equal ("addressable") then
 						if attached {C_COMPLEX_OBJECT} an_ev_tree_node as an_obj_node and then an_obj_node.is_addressable then
 							an_ev_tree_node.expand
 						else
 							an_ev_tree_node.collapse
 						end
-					elseif a_level.is_equal("anonymous") then
+					elseif a_level.is_equal ("anonymous") then
 						if attached {C_COMPLEX_OBJECT} an_ev_tree_node then
 							an_ev_tree_node.expand
 						else
 							an_ev_tree_node.collapse
 						end
-					elseif a_level.is_equal("simple") then
+					elseif a_level.is_equal ("simple") then
 						an_ev_tree_node.expand
 					end
 				end

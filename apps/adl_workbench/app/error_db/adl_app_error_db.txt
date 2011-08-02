@@ -48,6 +48,13 @@ templates = <
 
 		-- GUI_SOT_MAP_CONTROL
 		["slots_incomplete_w1"] = <"this list may be incomplete. To be sure, run Build All under the Repository menu.">
+		["supplier_frame_text"] = <"Supplier Archetypes">
+		["client_frame_text"] = <"Client Archetypes">
+
+		-- GUI_ANNOTATIONS_CONTROL 
+		["annotation_path_text"] = <"Path">
+		["annotation_key_text"] = <"Annotation key">
+		["annotation_value_text"] = <"Annotation value">
 
 		-- GUI_NODE_MAP_CONTROL 
 		["expand_collapse_complete_button_text"] = <"Expand All">
@@ -68,6 +75,11 @@ templates = <
 		["show_rm_properties_button_text"] = <"+ RM properties">
 		["show_rm_properties_tooltip"] = <"Show non-archetyped RM properties">
 
+		["rm_visibility_controls_text_visibility_controls_text"] = <"RM visibility">
+
+		["expand_button_collapse_text"] = <"Collapse All">
+		["expand_button_expand_text"] = <"Expand ALl">
+
 		-- GUI_TEST_ARCHETYPE_TREE_CONTROL
 		["Test_arch_compare_i1"] = <"Archetype source lengths same but texts differ">
 		["Test_arch_compare_i2"] = <"Archetype source lengths differ: original =  $1; new = $2">
@@ -75,6 +87,57 @@ templates = <
 		-- GUI_CLASS_MAP_CONTROL
 		["set_differential_archetype_view"] = <"Set differential archetype view">
 		["set_flat_archetype_view"] = <"Set flat archetype view">
+
+		-- GUI_ARCHETYPE_TOOL
+		["differential_view_button_tooltip"] = <"Set differential archetype view">
+		["flat_view_button_tooltip"] = <"Set flat archetype view">
+
+		["language_label"] = <"Language:">
+		["language_combo_tooltip"] = <"Select display language">
+
+		["adl_version_label"] = <"ADL Version:">
+		["adl_version_label_tooltip"] = <"ADL/AOM version in which archetype was authored">
+
+		["description_tab_text"] = <"Description">
+		["definition_tab_text"] = <"Definition">
+		["paths_tab_text"] = <"Paths">
+		["slots_tab_text"] = <"Slots">
+		["terminology_tab_text"] = <"Terminology">
+		["annotations_tab_text"] = <"Annotations">
+		["serialised_tab_text"] = <"Serialised">
+
+		["serialise_frame_text"] = <"Output Format">
+
+		["show_adl_serialisation_tooltip"] = <"Show ADL $1 serialisation">
+		["show_dadl_serialisation_tooltip"] = <"Show dADL $1 serialisation">
+		["show_xml_serialisation_tooltip"] = <"Show XML $1 serialisation">
+
+		-- GUI_DESCRIPTION_CONTROL
+		["administrative_tab_text"] = <"Administration">
+		["descriptive_tab_text"] = <"Descriptive">
+		["term_bindings_tab_text"] = <"Term Bindings">
+
+		["status_label_text"] = <"Lifecycle state:">
+		["auth_frame_text"] = <"Authorship">
+		["auth_orig_auth_label_text"] = <"Original Author">
+		["auth_contrib_label_text"] = <"Contributors">
+		["lang_frame_text"] = <"Languages">
+		["original_language_label_text"] = <"Original language:">
+		["trans_languages_label_text"] = <"Translations">
+		["author_label_text"] = <"Author">
+		["acreditation_label_text"] = <"Accreditation">
+		["other_details_label_text"] = <"Other Details">
+		["copyright_label_text"] = <"Copyright:">
+		["archetype_details_label_text"] = <"Archetype Details">
+		["purpose_label_text"] = <"Purpose">
+		["use_label_text"] = <"Use">
+		["misuse_label_text"] = <"Misuse">
+		["keywords_label_text"] = <"Keywords">
+		["resources_label_text"] = <"Resources">
+		["packages_label_text"] = <"Package">
+		["resource_orig_res_label_text"] = <"Original%NResources">
+		["terminology_label_text"] = <"Terminology mappings">
+		["refset_bindings_label_text"] = <"Refset bindings">
 
 		-- ARCHETYPE_COMPILER
 		["arch_context_make_flat_i1"] = <"Generated differential archetype from specialised flat archetype">

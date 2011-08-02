@@ -134,42 +134,43 @@ feature {NONE}-- Initialization
 			ev_view_label.set_text ("View ")
 			ev_differential_view_button.set_pixmap (pixmaps ["diff"])
 			ev_flat_view_button.set_pixmap (pixmaps ["flat"])
-			ev_differential_view_button.set_tooltip ("Set differential archetype view")
-			ev_flat_view_button.set_tooltip ("Set flat archetype view")
-			ev_language_label.set_text ("Language:")
+			ev_differential_view_button.set_tooltip (create_message_content ("differential_view_button_tooltip", Void))
+			ev_flat_view_button.set_tooltip (create_message_content ("flat_view_button_tooltip", Void))
+			ev_language_label.set_text (create_message_content ("language_label", Void))
 			ev_language_label.set_minimum_width (70)
 			ev_language_label.set_minimum_height (23)
 			ev_language_label.align_text_right
-			ev_language_combo.set_tooltip ("Select display language")
+			ev_language_combo.set_tooltip (create_message_content ("language_combo_tooltip", Void))
 			ev_language_combo.set_minimum_width (min_combo_box_width)
 			ev_language_combo.set_minimum_height (23)
 			ev_language_combo.disable_edit
-			ev_adl_version_label.set_text ("ADL Version:")
+			ev_adl_version_label.set_text (create_message_content ("adl_version_label", Void))
 			ev_adl_version_label.set_minimum_width (80)
 			ev_adl_version_label.align_text_right
+			ev_adl_version_label.set_tooltip (create_message_content ("adl_version_label_tooltip", Void))
 
 			ev_notebook.set_minimum_width (app_min_width)
 			ev_notebook.set_minimum_height (arch_notebook_min_height)
 
-			ev_notebook.set_item_text (description_controls.ev_notebook, "Description")
+			ev_notebook.set_item_text (description_controls.ev_notebook, create_message_content ("description_tab_text", Void))
 			ev_notebook.item_tab (description_controls.ev_notebook).set_pixmap (pixmaps ["description"])
 
-			ev_notebook.set_item_text (node_map_control.ev_root_container, "Definition")
+			ev_notebook.set_item_text (node_map_control.ev_root_container, create_message_content ("definition_tab_text", Void))
 			ev_notebook.item_tab (node_map_control.ev_root_container).set_pixmap (pixmaps ["node_map"])
 
-			ev_notebook.set_item_text (path_map_control.ev_root_container, "Paths")
+			ev_notebook.set_item_text (path_map_control.ev_root_container, create_message_content ("paths_tab_text", Void))
 			ev_notebook.item_tab (path_map_control.ev_root_container).set_pixmap (pixmaps ["paths"])
 
-			ev_notebook.set_item_text (slot_map_control.ev_root_container, "Slots")
+			ev_notebook.set_item_text (slot_map_control.ev_root_container, create_message_content ("slots_tab_text", Void))
 			ev_notebook.item_tab (slot_map_control.ev_root_container).set_pixmap (pixmaps ["archetype_slot"])
 
-			ev_notebook.set_item_text (ontology_controls.ev_root_container, "Terminology")
+			ev_notebook.set_item_text (ontology_controls.ev_root_container, create_message_content ("terminology_tab_text", Void))
 			ev_notebook.item_tab (ontology_controls.ev_root_container).set_pixmap (pixmaps ["terminology"])
 
-			ev_notebook.set_item_text (annotations_control.grid, "Annotations")
+			ev_notebook.set_item_text (annotations_control.grid, create_message_content ("annotations_tab_text", Void))
 			ev_notebook.item_tab (annotations_control.grid).set_pixmap (pixmaps ["annotations"])
 
-			ev_notebook.set_item_text (ev_serialised_hbox, "Serialised")
+			ev_notebook.set_item_text (ev_serialised_hbox, create_message_content ("serialised_tab_text", Void))
 			ev_notebook.item_tab (ev_serialised_hbox).set_pixmap (pixmaps ["diff"])
 
 			ev_serialised_rich_text.disable_edit
@@ -182,15 +183,10 @@ feature {NONE}-- Initialization
 			ev_serialise_rb_vbox.disable_item_expand (ev_adl_rb)
 			ev_serialise_rb_vbox.disable_item_expand (ev_dadl_rb)
 			ev_serialise_rb_vbox.disable_item_expand (ev_xml_rb)
-			ev_serialise_controls_frame.set_text ("Format")
-			ev_serialise_controls_frame.set_minimum_width (100)
+			ev_serialise_controls_frame.set_text (create_message_content ("serialise_frame_text", Void))
+			ev_serialise_controls_frame.set_minimum_width (125)
 			ev_serialise_controls_frame.set_minimum_height (95)
-			ev_adl_rb.set_text ("ADL")
-			ev_adl_rb.set_tooltip ("Show ADL serialisation")
-			ev_dadl_rb.set_text ("dADL")
-			ev_dadl_rb.set_tooltip ("Show dADL serialisation")
-			ev_xml_rb.set_text ("XML")
-			ev_xml_rb.set_tooltip ("Show XML serialisation")
+			set_serialisation_control_texts
 
 			-- set events: action bar
 			ev_differential_view_button.select_actions.extend (agent on_differential_view)
@@ -249,23 +245,26 @@ feature -- Events
 			-- Called by `selection_actions' of `archetype_notebook'.
 		do
 			if ev_notebook.selected_item = slot_map_control.ev_root_container then
-				if target_archetype_descriptor.is_valid then
+				if attached target_archetype_descriptor and then target_archetype_descriptor.is_valid then
 					slot_map_control.populate (target_archetype_descriptor, selected_language)
 				end
 			elseif ev_notebook.selected_item = path_map_control.ev_root_container then
-				if target_archetype_descriptor.is_valid then
+				if attached target_archetype_descriptor and then target_archetype_descriptor.is_valid then
 					path_map_control.populate (target_archetype, selected_language)
 				end
 			elseif ev_notebook.selected_item = annotations_control.grid then
-				if target_archetype_descriptor.is_valid then
+				if attached target_archetype_descriptor and then target_archetype_descriptor.is_valid then
 					annotations_control.populate (target_archetype_descriptor, differential_view, selected_language)
 				end
 			elseif ev_notebook.selected_item = ontology_controls.ev_root_container then
-				if target_archetype_descriptor.is_valid then
+				if attached target_archetype_descriptor and then target_archetype_descriptor.is_valid then
 					ontology_controls.populate (target_archetype_descriptor, differential_view, selected_language)
 				end
 			elseif ev_notebook.selected_item = ev_serialised_hbox then
-				populate_serialised
+				if attached target_archetype_descriptor and then target_archetype_descriptor.is_valid then
+					set_serialisation_control_texts
+					populate_serialised
+				end
 			end
 		end
 
@@ -347,7 +346,7 @@ feature -- UI Feedback
 	update_slots_tab_label (slots_count, used_by_count: INTEGER)
 			-- On the Slots tab, indicate the numbers of slots and used-by's.
 		do
-			ev_notebook.set_item_text (slot_map_control.ev_root_container, "Slots (" + slots_count.out + "/" + used_by_count.out + ")")
+			ev_notebook.set_item_text (slot_map_control.ev_root_container, create_message_content ("slots_tab_text", Void) + " (" + slots_count.out + "/" + used_by_count.out + ")")
 		end
 
 	select_ontology_item_from_code (a_code: attached STRING)
@@ -510,6 +509,8 @@ feature {NONE} -- Implementation
 
 	populate_source_text
 			-- Display the selected archetype's differential or flat text in `source_rich_text', optionally with line numbers.
+		require
+			attached target_archetype_descriptor
 		do
 			if not differential_view then
 				if target_archetype_descriptor.is_valid then
@@ -528,6 +529,8 @@ feature {NONE} -- Implementation
 
 	populate_dadl_text
 			-- Display the selected archetype's differential or flat text in `ev_serialised_rich_text', in dADL format.
+		require
+			attached target_archetype_descriptor
 		do
 			if target_archetype_descriptor.is_valid then
 				if differential_view then
@@ -542,6 +545,8 @@ feature {NONE} -- Implementation
 
 	populate_xml_text
 			-- Display the selected archetype's differential or flat text in `ev_serialised_rich_text', in XML format.
+		require
+			attached target_archetype_descriptor
 		do
 			if target_archetype_descriptor.is_valid then
 				if differential_view then
@@ -603,6 +608,16 @@ feature {NONE} -- Implementation
 			else
 				ev_notebook.set_item_text (ev_serialised_hbox, "Serialised (flat)")
 			end
+		end
+
+	set_serialisation_control_texts
+		do
+			ev_adl_rb.set_text ("ADL " + adl_version_for_flat_output)
+			ev_adl_rb.set_tooltip (create_message_content ("show_adl_serialisation_tooltip", <<adl_version_for_flat_output>>))
+			ev_dadl_rb.set_text ("dADL " + adl_version_for_flat_output)
+			ev_dadl_rb.set_tooltip (create_message_content ("show_dadl_serialisation_tooltip", <<adl_version_for_flat_output>>))
+			ev_xml_rb.set_text ("XML " + adl_version_for_flat_output)
+			ev_xml_rb.set_tooltip (create_message_content ("show_xml_serialisation_tooltip", <<adl_version_for_flat_output>>))
 		end
 
 end

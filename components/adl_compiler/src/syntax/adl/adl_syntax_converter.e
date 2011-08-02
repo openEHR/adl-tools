@@ -29,17 +29,15 @@ inherit
 
 feature -- Access
 
-	perform_syntax_upgrade(dadl_text: STRING)
+	perform_syntax_upgrade (dadl_text: attached STRING)
 			-- perform any upgrades likely to be required on older archetypes
 			-- dadl_text will be of form "C_SOME_TYPE <xxxxx>"
-		require
-			dadl_text /= Void
 		do
 		end
 
 feature -- ADL 1.4 conversions
 
-	convert_dadl_language(dadl_text: attached STRING)
+	convert_dadl_language (dadl_text: attached STRING)
 			-- converted language = <"xxx"> to language = <[ISO-639::xxx]>
 		local
 			pos, lpos, rpos: INTEGER
@@ -62,7 +60,7 @@ feature -- ADL 1.4 conversions
 			end
 		end
 
-	convert_c_dv_names(dadl_text: attached STRING)
+	convert_c_dv_names (dadl_text: attached STRING)
 			-- convert C_QUANTITY and C_ORDINAL in embedded dADL sections of cADL to
 			-- C_DV_QUANTITY and C_DV_ORDINAL
 		local
@@ -83,7 +81,7 @@ feature -- ADL 1.4 conversions
 			end
 		end
 
-	convert_c_quantity_property(dadl_text: attached STRING)
+	convert_c_quantity_property (dadl_text: attached STRING)
 			-- convert an old style C_QUANTITY property dADL fragment from ADL 1.x
 			-- to ADL 1.4
 			-- The old fragment looks like this:
@@ -112,7 +110,7 @@ feature -- ADL 1.4 conversions
 			end
 		end
 
-	convert_non_conforming_duration(a_str: attached STRING): STRING
+	convert_non_conforming_duration (a_str: attached STRING): STRING
 			-- fix an ISO8601-like duration string which is missing a 'T' character
 			-- called from cADL lexer, matched by pattern:
 			-- P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?([0-9]+h)?([0-9]+m)?([0-9]+s)?
@@ -159,7 +157,7 @@ feature -- ADL 1.4 conversions
 
 feature -- ADL 1.5 conversions
 
-	convert_dadl_type_name(a_type_name: attached STRING): STRING
+	convert_dadl_type_name (a_type_name: attached STRING): STRING
 			-- convert type name preceding <> dADL block to (typename), i.e. add parentheses
 			-- spec change is part of ADL 1.4.1, Release 1.0.2 of openEHR
 		require
