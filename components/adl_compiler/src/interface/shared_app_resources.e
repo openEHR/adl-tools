@@ -205,7 +205,7 @@ feature -- Application Switches
 			-- '1.4.1' -> 141
 		local
 			s: STRING
-		once
+		do
 			if Adl_versions.has (adl_version_for_flat_output) then
 				s := adl_version_for_flat_output.twin
 			else
