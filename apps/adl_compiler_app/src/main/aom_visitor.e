@@ -27,6 +27,8 @@ inherit
 create
 	make
 feature
+	root_obj:CCOMPLEXOBJECT_WRAPPER_GEN
+feature
 	make
 	do
 		create object_attributes.make (0)

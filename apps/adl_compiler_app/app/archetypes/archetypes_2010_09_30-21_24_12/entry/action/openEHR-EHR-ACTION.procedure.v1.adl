@@ -1,0 +1,457 @@
+﻿archetype (adl_version=1.4)
+	openEHR-EHR-ACTION.procedure.v1
+
+concept
+	[at0000]	-- Procedure undertaken
+language
+	original_language = <[ISO_639-1::en]>
+description
+	original_author = <
+		["name"] = <"Ian McNicoll">
+		["organisation"] = <"Ocean Informatics, United Kingdom">
+		["email"] = <"ian.mcnicoll@oceaninformatics.com">
+		["date"] = <"03/12/2009">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"To record details about a procedure that has been performed.">
+			use = <"Use to record detailed information about the procedure that has been carried out on an individual. 
+Information about activities related to the procedure, such as anaesthesia or administration of medications, should be recorded in separate ACTION archetypes.">
+			keywords = <"procedure", ...>
+			misuse = <"">
+			copyright = <"copyright (c) 2010 openEHR Foundation">
+		>
+	>
+	lifecycle_state = <"AuthorDraft">
+	other_contributors = <"Heather Leslie, Ocean Informatics, Australia", ...>
+	other_details = <
+		["MD5-CAM-1.0.1"] = <"13AC57E24981E8F1CE18CAC11A69E21B">
+		["references"] = <"">
+	>
+
+definition
+	ACTION[at0000] matches {	-- Procedure undertaken
+		ism_transition matches {
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::524]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0034]}		-- Request initiated
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::524]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0035]}		-- Request sent
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::527]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0038]}		-- Request postponed
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::528]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0039]}		-- Request cancelled
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::529]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0036]}		-- Procedure scheduled
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::245]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0047]}		-- In progress
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::530]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0040]}		-- Procedure suspended
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::531]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0041]}		-- Procedure aborted
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::532]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0043]}		-- Completed
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::532]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0044]}		-- Report authored
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::532]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0045]}		-- Report attested
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::532]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0046]}		-- Report sent
+					}
+				}
+			}
+		}
+		description matches {
+			ITEM_TREE[at0001] matches {	-- Tree
+				items cardinality matches {1..*; unordered} matches {
+					ELEMENT[at0002] matches {	-- Procedure
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+					ELEMENT[at0014] occurrences matches {0..*} matches {	-- Reason/s for procedure
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+					ELEMENT[at0051] occurrences matches {0..*} matches {	-- Method/Technique
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+					ELEMENT[at0049] occurrences matches {0..1} matches {	-- Description
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+					allow_archetype CLUSTER[at0003] occurrences matches {0..1} matches {	-- Procedure Details
+						include
+							archetype_id/value matches {/.*/}
+					}
+					allow_archetype CLUSTER[at0050] occurrences matches {0..1} matches {	-- Anatomical site details
+						include
+							archetype_id/value matches {/.*/}
+					}
+					CLUSTER[at0030] occurrences matches {0..1} matches {	-- Additional tasks
+						items cardinality matches {1..*; unordered} matches {
+							ELEMENT[at0052] occurrences matches {0..1} matches {	-- Task
+								value matches {
+									DV_TEXT matches {*}
+								}
+							}
+							ELEMENT[at0031] occurrences matches {0..*} matches {	-- Task description
+								value matches {
+									DV_TEXT matches {*}
+								}
+							}
+							ELEMENT[at0032] occurrences matches {0..*} matches {	-- Record of additional task
+								value matches {
+									DV_EHR_URI matches {*}
+								}
+							}
+						}
+					}
+					ELEMENT[at0048] occurrences matches {0..1} matches {	-- Outcome
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+					ELEMENT[at0004] occurrences matches {0..1} matches {	-- Procedure unsuccessful
+						value matches {
+							DV_BOOLEAN matches {
+								value matches {True}
+							}
+						}
+					}
+					ELEMENT[at0018] occurrences matches {0..1} matches {*}
+					ELEMENT[at0015] occurrences matches {0..*} matches {	-- Unplanned event
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+					ELEMENT[at0006] occurrences matches {0..*} matches {	-- Complication
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+					ELEMENT[at0058] occurrences matches {0..1} matches {	-- Emergency?
+						value matches {
+							DV_BOOLEAN matches {
+								value matches {True, False}
+							}
+						}
+					}
+					ELEMENT[at0005] occurrences matches {0..1} matches {	-- Comments
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+					ELEMENT[at0013] occurrences matches {0..*} matches {	-- Multimedia
+						value matches {
+							DV_MULTIMEDIA matches {
+								media_type matches {[openEHR::]}
+							}
+						}
+					}
+				}
+			}
+		}
+		protocol matches {
+			ITEM_TREE[at0053] matches {	-- Tree
+				items cardinality matches {0..*; unordered} matches {
+					ELEMENT[at0054] occurrences matches {0..1} matches {	-- Requestor order identifier
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+					allow_archetype CLUSTER[at0055] occurrences matches {0..1} matches {	-- Requestor
+						include
+							archetype_id/value matches {/.*/}
+					}
+					ELEMENT[at0056] occurrences matches {0..1} matches {	-- Receiver order identifier
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+					allow_archetype CLUSTER[at0057] occurrences matches {0..1} matches {	-- Receiver
+						include
+							archetype_id/value matches {/.*/}
+					}
+				}
+			}
+		}
+	}
+
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					text = <"Procedure undertaken">
+					description = <"A clinical activity that has been carried out for therapeutic or diagnostic purposes.">
+				>
+				["at0001"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Procedure">
+					description = <"The name of the procedure.">
+				>
+				["at0003"] = <
+					text = <"Procedure Details">
+					description = <"Detailed structure describing the procedure carried out, including preparation and details about the method and equipment/devices used.">
+				>
+				["at0004"] = <
+					text = <"Procedure unsuccessful">
+					description = <"Was the procedure ultimately unsuccessful? True if unsuccessful.">
+				>
+				["at0005"] = <
+					text = <"Comments">
+					description = <"Comments about the procedure.">
+				>
+				["at0006"] = <
+					text = <"Complication">
+					description = <"Details about any complication arising from the procedure.">
+				>
+				["at0013"] = <
+					text = <"Multimedia">
+					description = <"Multimedia representation of the procedure, including images.">
+				>
+				["at0014"] = <
+					text = <"Reason/s for procedure">
+					description = <"The reason or indication for the procedure.">
+				>
+				["at0015"] = <
+					text = <"Unplanned event">
+					description = <"An unplanned event prior to or related to the procedure, which may affect its execution e.g patient self-removed cannula.">
+				>
+				["at0018"] = <
+					text = <"Failed attempts">
+					description = <"The number of failed attempts to perform the procedure.">
+				>
+				["at0030"] = <
+					text = <"Additional tasks">
+					description = <"Record information about unplanned or unexpected activities that needed to be done during the procedure. Record the name of the task and a description within this archetype, but detail should be recorded in specific linked INSTRUCTION or ACTION archetypes.">
+				>
+				["at0031"] = <
+					text = <"Task description">
+					description = <"Description of additional task performed during the procedure.">
+				>
+				["at0032"] = <
+					text = <"Record of additional task">
+					description = <"Link to a detailed record of the additional task.">
+				>
+				["at0034"] = <
+					text = <"Request initiated">
+					description = <"Request for procedure is initiated.">
+				>
+				["at0035"] = <
+					text = <"Request sent">
+					description = <"Request for procedure sent.">
+				>
+				["at0036"] = <
+					text = <"Procedure scheduled">
+					description = <"Procedure has been scheduled.">
+				>
+				["at0038"] = <
+					text = <"Request postponed">
+					description = <"Request for procedure is postponed.">
+				>
+				["at0039"] = <
+					text = <"Request cancelled">
+					description = <"Procedure request has been cancelled.">
+				>
+				["at0040"] = <
+					text = <"Procedure suspended">
+					description = <"Procedure has been suspended.">
+				>
+				["at0041"] = <
+					text = <"Procedure aborted">
+					description = <"Procedure has been aborted.">
+				>
+				["at0043"] = <
+					text = <"Completed">
+					description = <"Procedure has been completed.">
+				>
+				["at0044"] = <
+					text = <"Report authored">
+					description = <"Procedure report has been written.">
+				>
+				["at0045"] = <
+					text = <"Report attested">
+					description = <"Procedure report has been attested.">
+				>
+				["at0046"] = <
+					text = <"Report sent">
+					description = <"Procedure report has been distributed.">
+				>
+				["at0047"] = <
+					text = <"In progress">
+					description = <"Procedure is being carried out.">
+				>
+				["at0048"] = <
+					text = <"Outcome">
+					description = <"Outcome of procedure performed.">
+				>
+				["at0049"] = <
+					text = <"Description">
+					description = <"Narrative description about the procedure carried out.">
+				>
+				["at0050"] = <
+					text = <"Anatomical site details">
+					description = <"Details about the anatomical site of procedure.">
+				>
+				["at0051"] = <
+					text = <"Method/Technique">
+					description = <"Identification of specific method or technique used for procedure.">
+				>
+				["at0052"] = <
+					text = <"Task">
+					description = <"Name of additional task performed during the procedure.">
+				>
+				["at0053"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0054"] = <
+					text = <"Requestor order identifier">
+					description = <"The local ID assigned to the order by the healthcare provider or organisation requesting the service.">
+				>
+				["at0055"] = <
+					text = <"Requestor">
+					description = <"Details about the healthcare provider or organisation requesting the service.">
+				>
+				["at0056"] = <
+					text = <"Receiver order identifier">
+					description = <"The ID assigned to the order by the healthcare provider or organisation receiving the request for service. This is also referred to as Filler Order Identifier.">
+				>
+				["at0057"] = <
+					text = <"Receiver">
+					description = <"Details about the healthcare provider or organisation receiving the request for service.">
+				>
+				["at0058"] = <
+					text = <"Emergency?">
+					description = <"Was this procedure performed as an emergency? True if Yes.">
+				>
+			>
+		>
+	>

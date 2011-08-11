@@ -1,0 +1,280 @@
+﻿archetype (adl_version=1.4)
+	openEHR-EHR-ACTION.intravenous_fluid_administration.v1
+
+concept
+	[at0000]	-- Intravenous fluid administration
+language
+	original_language = <[ISO_639-1::en]>
+	translations = <
+		["de"] = <
+			language = <[ISO_639-1::de]>
+			author = <
+				["name"] = <"Jasmin Buck">
+			>
+		>
+	>
+description
+	original_author = <
+		["name"] = <"Heather Leslie">
+		["organisation"] = <"Ocean Informatics">
+		["email"] = <"heather.leslie@oceaninformatics.com">
+		["date"] = <"10/04/2007">
+	>
+	details = <
+		["de"] = <
+			language = <[ISO_639-1::de]>
+			purpose = <"Zur Dokumentation der intravenösen Verabreichung einer verordneten Flüssigkeit.">
+			use = <"">
+			keywords = <"intravenös", "Flüssigkeit", "Verabreichung">
+			misuse = <"">
+			copyright = <"copyright (c) 2010 openEHR Foundation">
+		>
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"To record the administration of an intravenous fluid order">
+			use = <"">
+			keywords = <"intravenous", "fluid", "administration">
+			misuse = <"">
+			copyright = <"copyright (c) 2010 openEHR Foundation">
+		>
+	>
+	lifecycle_state = <"AuthorDraft">
+	other_contributors = <>
+	other_details = <
+		["references"] = <"">
+	>
+
+definition
+	ACTION[at0000] matches {	-- Intravenous fluid administration
+		ism_transition matches {
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::524]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0003]}		-- Plan IV fluid administration
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::524]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0004]}		-- Order IV fluids
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::527]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0001]}		-- Postpone IV fluid administration
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::528]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0007]}		-- Cancel administration of IV fluids
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::529]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0005]}		-- Schedule start of IV fluid administration
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::245]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0006]}		-- Commence administration of IV fluids
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::245]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0009]}		-- Monitor administration of IV fluids
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::530]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0002]}		-- Suspend IV fluid administration
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::531]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0008]}		-- Abort administration of IV fluids
+					}
+				}
+			}
+			ISM_TRANSITION matches {
+				current_state matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::532]}
+					}
+				}
+				careflow_step matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[local::at0010]}		-- Complete administration of IV fluids
+					}
+				}
+			}
+		}
+		description matches {
+			allow_archetype ITEM_TREE occurrences matches {0..1} matches {
+				include
+					archetype_id/value matches {/openEHR-EHR-ITEM_TREE\.intravenous_fluids\.v1/}
+				exclude
+					archetype_id/value matches {/.*/}
+			}
+		}
+	}
+
+
+ontology
+	term_definitions = <
+		["de"] = <
+			items = <
+				["at0000"] = <
+					text = <"Intravenöse Verabreichung einer Flüssigkeit">
+					description = <"Dokumentation der intravenösen Verabreichung einer Flüssigkeit.">
+				>
+				["at0001"] = <
+					text = <"Verschobene intravenöse Verabreichung von Flüssigkeiten">
+					description = <"*">
+				>
+				["at0002"] = <
+					text = <"Eingestellte intravenöse Verabreichung von Flüssigkeiten">
+					description = <"*">
+				>
+				["at0003"] = <
+					text = <"Geplante intravenöse Verabreichung von Flüssigkeiten">
+					description = <"*">
+				>
+				["at0004"] = <
+					text = <"Verschreibung von intravenösen Flüssigkeiten">
+					description = <"*">
+				>
+				["at0005"] = <
+					text = <"Geplanter Beginn der intravenösen Verabreichung einer Flüssigkeit">
+					description = <"*">
+				>
+				["at0006"] = <
+					text = <"Intravenöse Verabreichung von Flüssigkeiten begonnen ">
+					description = <"*">
+				>
+				["at0007"] = <
+					text = <"Intravenöse Verabreichung von Flüssigkeiten abgebrochen">
+					description = <"*">
+				>
+				["at0008"] = <
+					text = <"Beenden der intravenösen Verabreichung von Flüssigkeiten">
+					description = <"*">
+				>
+				["at0009"] = <
+					text = <"Überwachung der intravenösen Verabreichung von Flüssigkeiten">
+					description = <"*">
+				>
+				["at0010"] = <
+					text = <"Vollständige intravenöse Verabreichung von Flüssigkeiten">
+					description = <"*">
+				>
+			>
+		>
+		["en"] = <
+			items = <
+				["at0000"] = <
+					text = <"Intravenous fluid administration">
+					description = <"Record of intravenous fluid administration">
+				>
+				["at0001"] = <
+					text = <"Postpone IV fluid administration">
+					description = <"*">
+				>
+				["at0002"] = <
+					text = <"Suspend IV fluid administration">
+					description = <"*">
+				>
+				["at0003"] = <
+					text = <"Plan IV fluid administration">
+					description = <"*">
+				>
+				["at0004"] = <
+					text = <"Order IV fluids">
+					description = <"*">
+				>
+				["at0005"] = <
+					text = <"Schedule start of IV fluid administration">
+					description = <"*">
+				>
+				["at0006"] = <
+					text = <"Commence administration of IV fluids">
+					description = <"*">
+				>
+				["at0007"] = <
+					text = <"Cancel administration of IV fluids">
+					description = <"*">
+				>
+				["at0008"] = <
+					text = <"Abort administration of IV fluids">
+					description = <"*">
+				>
+				["at0009"] = <
+					text = <"Monitor administration of IV fluids">
+					description = <"*">
+				>
+				["at0010"] = <
+					text = <"Complete administration of IV fluids">
+					description = <"*">
+				>
+			>
+		>
+	>

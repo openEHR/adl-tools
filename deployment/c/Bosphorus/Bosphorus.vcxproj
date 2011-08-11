@@ -79,6 +79,7 @@
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
       <OmitDefaultLibName>true</OmitDefaultLibName>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

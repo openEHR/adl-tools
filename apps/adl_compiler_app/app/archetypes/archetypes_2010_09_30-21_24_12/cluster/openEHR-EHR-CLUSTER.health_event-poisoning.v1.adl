@@ -1,0 +1,249 @@
+﻿archetype (adl_version=1.4)
+	openEHR-EHR-CLUSTER.health_event-poisoning.v1
+specialise
+	openEHR-EHR-CLUSTER.health_event.v1
+
+concept
+	[at0000.1]	-- Poisoning or overdose
+language
+	original_language = <[ISO_639-1::en]>
+description
+	original_author = <
+		["name"] = <"unknown">
+		["date"] = <"12/03/2007">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"For recording details of a poisoning or overdose.">
+			use = <"">
+			keywords = <"OD", "drug", "overdose", "poisoning">
+			misuse = <"">
+			copyright = <"copyright (c) 2010 openEHR Foundation">
+		>
+	>
+	lifecycle_state = <"AuthorDraft">
+	other_contributors = <>
+	other_details = <
+		["MD5-CAM-1.0.1"] = <"E988C9E50A92CBB75C5785820EF014A1">
+		["references"] = <"">
+	>
+
+definition
+	CLUSTER[at0000.1] matches {	-- Poisoning or overdose
+		items cardinality matches {1..*; unordered} matches {
+			ELEMENT[at0001] matches {	-- Event
+				value matches {
+					DV_TEXT matches {*}
+				}
+			}
+			ELEMENT[at0009] occurrences matches {0..1} matches {	-- Clinical description
+				value matches {
+					DV_TEXT matches {*}
+				}
+			}
+			CLUSTER[at0.21] occurrences matches {0..1} matches {	-- Details
+				items cardinality matches {1..*; unordered} matches {
+					ELEMENT[at0.15] occurrences matches {0..1} matches {	-- Substance
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+					ELEMENT[at0.20] occurrences matches {0..1} matches {	-- Amount of substance
+						value matches {
+							C_DV_QUANTITY <
+								property = <[openehr::124]>
+								list = <
+									["1"] = <
+										units = <"mg">
+										magnitude = <|>=0.0|>
+										precision = <|1|>
+									>
+									["2"] = <
+										units = <"gm">
+										magnitude = <|>=0.0|>
+										precision = <|1|>
+									>
+								>
+							>
+						}
+					}
+					ELEMENT[at0.16] occurrences matches {0..1} matches {	-- Route
+						value matches {
+							DV_CODED_TEXT matches {
+								defining_code matches {
+									[local::
+									at0.17, 	-- Inhaled
+									at0.18, 	-- Ingested
+									at0.19, 	-- Injected
+									at0.22]	-- Body surface
+								}
+							}
+						}
+					}
+				}
+			}
+			CLUSTER[at0010] occurrences matches {0..1} matches {	-- Occurrence
+				items cardinality matches {1..*; unordered} matches {
+					ELEMENT[at0011] occurrences matches {0..1} matches {	-- How long ago
+						value matches {
+							DV_DURATION matches {*}
+						}
+					}
+				}
+			}
+			CLUSTER[at0004] occurrences matches {0..1} matches {	-- Other parties
+				items cardinality matches {1..*; unordered} matches {
+					ELEMENT[at0002] occurrences matches {0..1} matches {	-- Witness
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+					ELEMENT[at0003] occurrences matches {0..*} matches {	-- Perpetrator
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+				}
+			}
+			ELEMENT[at0007] occurrences matches {0..1} matches {	-- Circumstances
+				value matches {
+					DV_TEXT matches {*}
+				}
+			}
+			CLUSTER[at0008] occurrences matches {0..1} matches {	-- Preceding symptoms and events
+				items cardinality matches {1..*; unordered} matches {
+					allow_archetype CLUSTER[at0016] occurrences matches {0..*} matches {	-- Cluster: Preceding symptoms and events
+						include
+							archetype_id/value matches {/openEHR-EHR-CLUSTER\.symptom\.v1|openEHR-EHR-CLUSTER\.health_event\.v1/}
+					}
+				}
+			}
+			CLUSTER[at0012] occurrences matches {0..1} matches {	-- Associated symptoms and events
+				items cardinality matches {1..*; unordered} matches {
+					allow_archetype CLUSTER[at0017] occurrences matches {0..*} matches {	-- Cluster: Preceding and associated symptoms and events
+						include
+							archetype_id/value matches {/openEHR-EHR-CLUSTER\.health_event\.v1|openEHR-EHR-CLUSTER\.symptom-pain\.v1|openEHR-EHR-CLUSTER\.symptom\.v1/}
+					}
+				}
+			}
+			CLUSTER[at0013] occurrences matches {0..1} matches {	-- Contributing factors
+				items cardinality matches {1..*; unordered} matches {
+					ELEMENT[at0014] occurrences matches {0..*} matches {	-- Contributing factor
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0.15"] = <
+					text = <"Substance">
+					description = <"The substance ingested, injected or inhaled.">
+				>
+				["at0.16"] = <
+					text = <"Route">
+					description = <"The route of administration.">
+				>
+				["at0.17"] = <
+					text = <"Inhaled">
+					description = <"By inhalation.">
+				>
+				["at0.18"] = <
+					text = <"Ingested">
+					description = <"Swallowed or via the oral mucosa.">
+				>
+				["at0.19"] = <
+					text = <"Injected">
+					description = <"Injected into the body.">
+				>
+				["at0.20"] = <
+					text = <"Amount of substance">
+					description = <"The total amount of the substance taken.">
+				>
+				["at0.21"] = <
+					text = <"Details">
+					description = <"Details of the poisoning or overdose.">
+				>
+				["at0.22"] = <
+					text = <"Body surface">
+					description = <"Exposure via the surface of the body.">
+				>
+				["at0000"] = <
+					text = <"Health event">
+					description = <"A recording about a health related event.">
+				>
+				["at0000.1"] = <
+					text = <"Poisoning or overdose">
+					description = <"A recording about a poisoning or overdose.">
+				>
+				["at0001"] = <
+					text = <"Event">
+					description = <"The type of event that has occurred.">
+				>
+				["at0002"] = <
+					text = <"Witness">
+					description = <"Who witnessed the event other than the patient.">
+				>
+				["at0003"] = <
+					text = <"Perpetrator">
+					description = <"Any person involved in causing the event.">
+				>
+				["at0004"] = <
+					text = <"Other parties">
+					description = <"Information about other parties.">
+				>
+				["at0007"] = <
+					text = <"Circumstances">
+					description = <"Information about the circumstances surrounding the event.">
+				>
+				["at0008"] = <
+					text = <"Preceding symptoms and events">
+					description = <"Symptoms and events which preceded the index event.">
+				>
+				["at0009"] = <
+					text = <"Clinical description">
+					description = <"A clinical description of what happenned.">
+				>
+				["at0010"] = <
+					text = <"Occurrence">
+					description = <"The timing of the event in relation to the observation.">
+				>
+				["at0011"] = <
+					text = <"How long ago">
+					description = <"The time between the event and the observation time.">
+				>
+				["at0012"] = <
+					text = <"Associated symptoms and events">
+					description = <"Grouping of associated symptoms and events.">
+				>
+				["at0013"] = <
+					text = <"Contributing factors">
+					description = <"Factors contributing to the event or likelihood of the event.">
+				>
+				["at0014"] = <
+					text = <"Contributing factor">
+					description = <"A factor contributing to the event.">
+				>
+				["at0015"] = <
+					text = <"Event details">
+					description = <"*">
+				>
+				["at0016"] = <
+					text = <"Cluster: Preceding symptoms and events">
+					description = <"Symptoms and events which preceded the index event.">
+				>
+				["at0017"] = <
+					text = <"Cluster: Preceding and associated symptoms and events">
+					description = <"Symptoms and events which preceded the index event.">
+				>
+			>
+		>
+	>

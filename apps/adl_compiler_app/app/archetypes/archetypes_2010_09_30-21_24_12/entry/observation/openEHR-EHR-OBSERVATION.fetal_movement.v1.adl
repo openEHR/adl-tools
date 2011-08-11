@@ -1,0 +1,391 @@
+﻿archetype (adl_version=1.4)
+	openEHR-EHR-OBSERVATION.fetal_movement.v1
+
+concept
+	[at0000]	-- Movement of the fetus
+language
+	original_language = <[ISO_639-1::en]>
+	translations = <
+		["es-cl"] = <
+			language = <[ISO_639-1::es-cl]>
+			author = <
+				["name"] = <"?">
+			>
+		>
+	>
+description
+	original_author = <
+		["name"] = <"Sam Heard">
+		["organisation"] = <"Ocean Informatics">
+		["email"] = <"sam.heard@oceaninformatics.biz">
+		["date"] = <"4/03/2007">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"To record the presence and intensity of fetal movements as a fetal movement chart for the mother or for use by the clinician.">
+			use = <"">
+			keywords = <"fetal", "kicks", "movements">
+			misuse = <"">
+			copyright = <"copyright (c) 2010 openEHR Foundation">
+		>
+		["es-cl"] = <
+			language = <[ISO_639-1::es-cl]>
+			purpose = <"Registrar la presencia y la intensidad de movimientos fetales como un gráfico del movimiento fetal para la madre o para el uso del clínico.
+
+
+
+
+
+
+">
+			use = <"">
+			keywords = <"Fetal (es)", "Movimientos (es)", "Patadas (es)">
+			misuse = <"">
+			copyright = <"copyright (c) 2010 openEHR Foundation">
+		>
+	>
+	lifecycle_state = <"Initial">
+	other_contributors = <>
+	other_details = <
+		["references"] = <"">
+	>
+
+definition
+	OBSERVATION[at0000] matches {	-- Movement of the fetus
+		subject matches {
+			PARTY_RELATED matches {
+				relationship matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[openehr::3]}
+					}
+				}
+			}
+		}
+		data matches {
+			HISTORY[at0001] matches {	-- Event Series
+				events cardinality matches {1..*; unordered} matches {
+					EVENT[at0002] occurrences matches {0..1} matches {	-- Any event
+						data matches {
+							ITEM_LIST[at0003] matches {	-- List
+								items cardinality matches {0..*; unordered} matches {
+									ELEMENT[at0025] occurrences matches {0..1} matches {	-- Time since last movement
+										value matches {
+											C_DV_QUANTITY <
+												property = <[openehr::128]>
+												list = <
+													["1"] = <
+														units = <"d">
+													>
+													["2"] = <
+														units = <"min">
+													>
+													["3"] = <
+														units = <"mo">
+													>
+													["4"] = <
+														units = <"s">
+													>
+													["5"] = <
+														units = <"wk">
+													>
+												>
+											>
+										}
+									}
+									ELEMENT[at0004] occurrences matches {0..1} matches {	-- Presence
+										value matches {
+											DV_CODED_TEXT matches {
+												defining_code matches {
+													[local::
+													at0007, 	-- Fetal movements felt
+													at0010, 	-- Uncertain
+													at0011]	-- Fetal movements not felt
+												}
+											}
+										}
+									}
+									ELEMENT[at0005] occurrences matches {0..1} matches {	-- Occurring now
+										value matches {
+											DV_BOOLEAN matches {
+												value matches {True, False}
+											}
+										}
+									}
+									ELEMENT[at0026] occurrences matches {0..1} matches {	-- Changed or reduced fetal movements
+										value matches {
+											DV_BOOLEAN matches {
+												value matches {True, False}
+											}
+										}
+									}
+									ELEMENT[at0006] occurrences matches {0..1} matches {	-- Number of occurrences
+										value matches {
+											DV_COUNT matches {
+												magnitude matches {|>=0|}
+											}
+										}
+									}
+									ELEMENT[at0019] occurrences matches {0..1} matches {	-- Pattern
+										value matches {
+											DV_CODED_TEXT matches {
+												defining_code matches {
+													[local::
+													at0020, 	-- Baby kicks a lot
+													at0021, 	-- Fetal movements increased
+													at0022, 	-- Normal fetal movements
+													at0023, 	-- Baby not moving
+													at0024]	-- Fetal movements reduced
+												}
+											}
+										}
+									}
+									ELEMENT[at0012] occurrences matches {0..1} matches {	-- Intensity
+										value matches {
+											0|[local::at0013], 	-- Not felt
+											1|[local::at0014], 	-- Barely felt
+											2|[local::at0015], 	-- Weak
+											3|[local::at0016], 	-- Normal
+											4|[local::at0017], 	-- Strong
+											5|[local::at0018]  	-- Very strong
+										}
+									}
+								}
+							}
+						}
+					}
+					INTERVAL_EVENT[at0027] occurrences matches {0..1} matches {	-- Movement monitoring period
+						math_function matches {
+							DV_CODED_TEXT matches {
+								defining_code matches {[openehr::148]}
+							}
+						}
+						data matches {
+							use_node ITEM_LIST /data[at0001]/events[at0002]/data[at0003]
+						}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					text = <"Movement of the fetus">
+					description = <"The spontaneous movements of the fetus in utero">
+				>
+				["at0001"] = <
+					text = <"Event Series">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Any event">
+					description = <"*">
+				>
+				["at0003"] = <
+					text = <"List">
+					description = <"@ internal @">
+				>
+				["at0004"] = <
+					text = <"Presence">
+					description = <"The presence of spontaneous movements">
+				>
+				["at0005"] = <
+					text = <"Occurring now">
+					description = <"Are fetal movements currently occurring">
+				>
+				["at0006"] = <
+					text = <"Number of occurrences">
+					description = <"The number of occurrences for use over a timed duration">
+				>
+				["at0007"] = <
+					text = <"Fetal movements felt">
+					description = <"Fetal movements felt">
+				>
+				["at0010"] = <
+					text = <"Uncertain">
+					description = <"Fetal movements possibly felt, not sure">
+				>
+				["at0011"] = <
+					text = <"Fetal movements not felt">
+					description = <"The fetal movements have not been felt">
+				>
+				["at0012"] = <
+					text = <"Intensity">
+					description = <"The intensity of fetal movements (if present)">
+				>
+				["at0013"] = <
+					text = <"Not felt">
+					description = <"Fetal movements cannot be felt">
+				>
+				["at0014"] = <
+					text = <"Barely felt">
+					description = <"Fetal movements can only just be felt">
+				>
+				["at0015"] = <
+					text = <"Weak">
+					description = <"Fetal movements felt but not as strongly as expected">
+				>
+				["at0016"] = <
+					text = <"Normal">
+					description = <"Fetal movements can be felt as expected">
+				>
+				["at0017"] = <
+					text = <"Strong">
+					description = <"Fetal movements are felt and are stronger than expected">
+				>
+				["at0018"] = <
+					text = <"Very strong">
+					description = <"Fetal movements are much stronger than expected">
+				>
+				["at0019"] = <
+					text = <"Pattern">
+					description = <"Pattern of fetal movements">
+				>
+				["at0020"] = <
+					text = <"Baby kicks a lot">
+					description = <"The baby is moving more than expected">
+				>
+				["at0021"] = <
+					text = <"Fetal movements increased">
+					description = <"Fetal movements occuring more frequently than expected">
+				>
+				["at0022"] = <
+					text = <"Normal fetal movements">
+					description = <"The fetus is moving and kicking normally">
+				>
+				["at0023"] = <
+					text = <"Baby not moving">
+					description = <"The baby is not moving as expected">
+				>
+				["at0024"] = <
+					text = <"Fetal movements reduced">
+					description = <"The fetal movements are reduced">
+				>
+				["at0025"] = <
+					text = <"Time since last movement">
+					description = <"Length of time since last fetal movement was felt">
+				>
+				["at0026"] = <
+					text = <"Changed or reduced fetal movements">
+					description = <"Has fetal movement pattern changed or reduced in number">
+				>
+				["at0027"] = <
+					text = <"Movement monitoring period">
+					description = <"Period of time over which the number of fetal movements are counted">
+				>
+			>
+		>
+		["es-cl"] = <
+			items = <
+				["at0000"] = <
+					text = <"Movimiento del feto">
+					description = <"Los movimientos espontáneos del feto in utero
+">
+				>
+				["at0001"] = <
+					text = <"*Serie de eventos (es)">
+					description = <"*@ interno @(es)">
+				>
+				["at0002"] = <
+					text = <"Cualquier evento">
+					description = <"*">
+				>
+				["at0003"] = <
+					text = <"*Lista (es)">
+					description = <"*@ interno @(en)">
+				>
+				["at0004"] = <
+					text = <"Presencia">
+					description = <"La presencia de  movimientos espontáneos">
+				>
+				["at0005"] = <
+					text = <"Ocurren ahora">
+					description = <"Son los movimietnos fetales que ocurren actualmente">
+				>
+				["at0006"] = <
+					text = <"Número de ocurrencias">
+					description = <"El número  de ocurrencias  en un tiempo determinado">
+				>
+				["at0007"] = <
+					text = <"Movimientos fetal sentidos">
+					description = <"Movimientos fetales sentidos">
+				>
+				["at0010"] = <
+					text = <"Inciertos">
+					description = <"Movimientos fetales posiblemente sentidos, no seguro">
+				>
+				["at0011"] = <
+					text = <"Movimientos Fetal no sentidos">
+					description = <"No se sienten los movimientos fetales">
+				>
+				["at0012"] = <
+					text = <"Intensidad">
+					description = <"La intensidad de los movimientos fetales (si están presentes)">
+				>
+				["at0013"] = <
+					text = <"No sentidos">
+					description = <"*Los movimientos fetales no pueden ser sentidos (es)">
+				>
+				["at0014"] = <
+					text = <"Apenas sentidos">
+					description = <"*Los movimientos fetales pueden ser solamente apenas sentidos (es)">
+				>
+				["at0015"] = <
+					text = <"Debil">
+					description = <"*Los movimientos fetales sentidos  pero no tan fuerte como lo esperado (es)">
+				>
+				["at0016"] = <
+					text = <"Normal">
+					description = <"*Los movimientos fetales pueden ser sentidos según lo esperado (es)">
+				>
+				["at0017"] = <
+					text = <"Fuertes">
+					description = <"*Los movimientos fetales se siente y son más fuertes que lo esperado (es)">
+				>
+				["at0018"] = <
+					text = <"Muy fuertes">
+					description = <"*Los moviminetos fetales son mucho más fuertes que lo esperado (es)">
+				>
+				["at0019"] = <
+					text = <"Patrón">
+					description = <"Patrón de movimientos fetales">
+				>
+				["at0020"] = <
+					text = <"Muchas patadas del bebe">
+					description = <"El bebé se mueve más que lo esperado">
+				>
+				["at0021"] = <
+					text = <"Movimientos fetales aumentados">
+					description = <"Los movimientos fetales ocurren más frecuentemente que lo esperado">
+				>
+				["at0022"] = <
+					text = <"Movimientos fetales  normales">
+					description = <"El feto se mueve y patea normalmente">
+				>
+				["at0023"] = <
+					text = <"Bebe no se mueve">
+					description = <"El bebé no se está moviendo segun lo esperado">
+				>
+				["at0024"] = <
+					text = <"Movimientos fetales disminuidos">
+					description = <"Se reducen los movimientos fetales">
+				>
+				["at0025"] = <
+					text = <"Tiempo pasado desde el último movimiento">
+					description = <"Tiempo transcurrido desde el último movimiento fetal  sentido">
+				>
+				["at0026"] = <
+					text = <"Movimientos fetales cambiantes o reducidos">
+					description = <"El patrón de movimientos ha cambiado o se ha reducido en número">
+				>
+				["at0027"] = <
+					text = <"Período de monitoreo de los movimientos">
+					description = <"Período de tiempo en que se contabiliza el número de movimientos fetales">
+				>
+			>
+		>
+	>

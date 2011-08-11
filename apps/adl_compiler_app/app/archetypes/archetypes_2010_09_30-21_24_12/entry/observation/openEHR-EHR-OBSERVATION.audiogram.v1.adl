@@ -1,0 +1,616 @@
+﻿archetype (adl_version=1.4)
+	openEHR-EHR-OBSERVATION.audiogram.v1
+
+concept
+	[at0000]	-- Audiogram result
+language
+	original_language = <[ISO_639-1::en]>
+	translations = <
+		["ru"] = <
+			language = <[ISO_639-1::ru]>
+			author = <
+				["name"] = <"Igor Lizunov">
+				["email"] = <"i.lizunov@infinnity.ru">
+			>
+		>
+	>
+description
+	original_author = <
+		["name"] = <"Heather Leslie">
+		["organisation"] = <"NHS CFH/Ocean Informatics">
+		["email"] = <"heather.leslie@oceaninformatics.com">
+		["date"] = <"6/11/2007">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"To record the findings of a Pure Tone Audiogram">
+			use = <"">
+			keywords = <"hearing", "test", "audiogram">
+			misuse = <"">
+			copyright = <"copyright (c) 2010 openEHR Foundation">
+		>
+		["ru"] = <
+			language = <[ISO_639-1::ru]>
+			purpose = <"Для записи результатов аудиограммы(ru)">
+			use = <"">
+			keywords = <"слух(ru)", "аудиграмма(ru)">
+			misuse = <"">
+			copyright = <"copyright (c) 2010 openEHR Foundation">
+		>
+	>
+	lifecycle_state = <"AuthorDraft">
+	other_contributors = <>
+	other_details = <
+		["MD5-CAM-1.0.1"] = <"B7E5B99DC65B5DD6DD6D86653E29517B">
+	>
+
+definition
+	OBSERVATION[at0000] matches {	-- Результат аудиограммы
+		data matches {
+			HISTORY[at0001] matches {	-- Серия событий
+				events cardinality matches {1..*; unordered} matches {
+					POINT_EVENT[at0002] occurrences matches {0..1} matches {	-- Любое событие
+						data matches {
+							ITEM_TREE[at0003] matches {	-- Дерево
+								items cardinality matches {0..*; unordered} matches {
+									ELEMENT[at0037] occurrences matches {0..1} matches {	-- Тест
+										value matches {
+											DV_CODED_TEXT matches {
+												defining_code matches {
+													[local::
+													at0038, 	-- Чистым тоном
+													at0039, 	-- С визуальным сопровождением
+													at0043]	-- Особые условия
+												}
+											}
+										}
+									}
+									CLUSTER[at0005] occurrences matches {0..1} matches {	-- Нормальные показания
+										items cardinality matches {1..*; unordered} matches {
+											ELEMENT[at0004] occurrences matches {0..*} matches {	-- Нормальное показание
+												value matches {
+													DV_CODED_TEXT matches {
+														defining_code matches {
+															[local::
+															at0044, 	-- Оба уха НОРМА
+															at0045, 	-- Левое ухо НОРМА
+															at0046]	-- Правое ухо НОРМА
+														}
+													}
+												}
+											}
+										}
+									}
+									CLUSTER[at0006] occurrences matches {0..2} matches {	-- Заключение
+										items cardinality matches {2..*; unordered} matches {
+											ELEMENT[at0007] occurrences matches {0..1} matches {	-- Ухо
+												value matches {
+													DV_CODED_TEXT matches {
+														defining_code matches {
+															[local::
+															at0008, 	-- Левое
+															at0009]	-- Правое
+														}
+													}
+												}
+											}
+											ELEMENT[at0011] matches {	-- Частота
+												value matches {
+													C_DV_QUANTITY <
+														property = <[openehr::382]>
+														list = <
+															["1"] = <
+																units = <"Hz">
+																magnitude = <|0.0..16000.0|>
+																precision = <|0|>
+															>
+														>
+													>
+													DV_CODED_TEXT matches {
+														defining_code matches {
+															[local::
+															at0015, 	-- 250Гц
+															at0016, 	-- 500Гц
+															at0017, 	-- 1000Гц
+															at0018, 	-- 2000Гц
+															at0019, 	-- 4000Гц
+															at0020]	-- 8000Гц
+														}
+													}
+												}
+											}
+											ELEMENT[at0012] matches {	-- Уровень слуха
+												value matches {
+													C_DV_QUANTITY <
+														property = <[openehr::123]>
+														list = <
+															["1"] = <
+																units = <"dB">
+															>
+														>
+													>
+												}
+											}
+										}
+									}
+									ELEMENT[at0026] occurrences matches {0..1} matches {	-- Изображение результата аудиограммы
+										value matches {
+											DV_MULTIMEDIA matches {
+												media_type matches {
+													[openEHR::
+													425, 
+													426, 
+													427, 
+													428, 
+													429]
+												}
+											}
+										}
+									}
+									ELEMENT[at0027] occurrences matches {0..1} matches {	-- Комментарии
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+								}
+							}
+						}
+						state matches {
+							ITEM_TREE[at0013] matches {	-- Дерево
+								items cardinality matches {0..*; unordered} matches {
+									ELEMENT[at0014] occurrences matches {0..1} matches {	-- Маска
+										value matches {
+											DV_CODED_TEXT matches {
+												defining_code matches {
+													[local::
+													at0021, 	-- Маскированный
+													at0022]	-- Немаскированный
+												}
+											}
+										}
+									}
+									ELEMENT[at0023] occurrences matches {0..1} matches {	-- Показ стимула
+										value matches {
+											DV_CODED_TEXT matches {
+												defining_code matches {
+													[local::
+													at0024, 	-- Воздушная проводимость
+													at0025, 	-- Костная проводимость
+													at0031]	-- Звуковое поле
+												}
+											}
+										}
+									}
+									ELEMENT[at0028] occurrences matches {0..1} matches {	-- Автоматизировано
+										value matches {
+											DV_CODED_TEXT matches {
+												defining_code matches {
+													[local::
+													at0029, 	-- Автоматизировано
+													at0030]	-- Без посторонней помощи
+												}
+											}
+										}
+									}
+									ELEMENT[at0040] occurrences matches {0..1} matches {	-- Ребёнок сотрудничает
+										value matches {
+											DV_CODED_TEXT matches {
+												defining_code matches {
+													[local::
+													at0041, 	-- Сотрудничающий
+													at0042]	-- Несотрудничающий
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		protocol matches {
+			ITEM_TREE[at0032] matches {	-- Дерево
+				items cardinality matches {0..*; unordered} matches {
+					ELEMENT[at0034] occurrences matches {0..1} matches {	-- Стимул
+						value matches {
+							DV_CODED_TEXT matches {
+								defining_code matches {
+									[local::
+									at0035, 	-- Живой звук
+									at0036]	-- Запись/CD
+								}
+							}
+						}
+					}
+					allow_archetype CLUSTER[at0047] occurrences matches {0..*} matches {	-- *Device(en)
+						include
+							archetype_id/value matches {/openEHR-EHR-CLUSTER\.device(-[a-zA-Z0-9_]+)*\.v1/}
+					}
+				}
+			}
+		}
+	}
+
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					text = <"Audiogram result">
+					description = <"Record Audiogram findings">
+				>
+				["at0001"] = <
+					text = <"Event Series">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Any event">
+					description = <"*">
+				>
+				["at0003"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0004"] = <
+					text = <"Normal Statement">
+					description = <"Normal statement about Audiogram results.">
+				>
+				["at0005"] = <
+					text = <"Normal Statements">
+					description = <"*">
+				>
+				["at0006"] = <
+					text = <"Findings">
+					description = <"All Audiogram findings.">
+				>
+				["at0007"] = <
+					text = <"Ear">
+					description = <"Identify the ear tested.">
+				>
+				["at0008"] = <
+					text = <"Left">
+					description = <"The left ear.">
+				>
+				["at0009"] = <
+					text = <"Right">
+					description = <"The right ear.">
+				>
+				["at0011"] = <
+					text = <"Frequency">
+					description = <"Frequency tested.">
+				>
+				["at0012"] = <
+					text = <"Hearing level">
+					description = <"Threshold at which the sound frequency was heard.">
+				>
+				["at0013"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0014"] = <
+					text = <"Masking">
+					description = <"*">
+				>
+				["at0015"] = <
+					text = <"250Hz">
+					description = <"*">
+				>
+				["at0016"] = <
+					text = <"500Hz">
+					description = <"*">
+				>
+				["at0017"] = <
+					text = <"1000Hz">
+					description = <"*">
+				>
+				["at0018"] = <
+					text = <"2000Hz">
+					description = <"*">
+				>
+				["at0019"] = <
+					text = <"4000Hz">
+					description = <"*">
+				>
+				["at0020"] = <
+					text = <"8000Hz">
+					description = <"*">
+				>
+				["at0021"] = <
+					text = <"Masked">
+					description = <"*">
+				>
+				["at0022"] = <
+					text = <"Unmasked">
+					description = <"*">
+				>
+				["at0023"] = <
+					text = <"Stimulus Presentation">
+					description = <"*">
+				>
+				["at0024"] = <
+					text = <"Air conduction">
+					description = <"*">
+				>
+				["at0025"] = <
+					text = <"Bone Conduction">
+					description = <"*">
+				>
+				["at0026"] = <
+					text = <"Image of audiogram result">
+					description = <"Image of audiogram.">
+				>
+				["at0027"] = <
+					text = <"Comment">
+					description = <"Comment on test.">
+				>
+				["at0028"] = <
+					text = <"Aided">
+					description = <"*">
+				>
+				["at0029"] = <
+					text = <"Aided">
+					description = <"*">
+				>
+				["at0030"] = <
+					text = <"Unaided">
+					description = <"*">
+				>
+				["at0031"] = <
+					text = <"Sound field">
+					description = <"*">
+				>
+				["at0032"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0034"] = <
+					text = <"Stimulus">
+					description = <"*">
+				>
+				["at0035"] = <
+					text = <"Live Voice">
+					description = <"*">
+				>
+				["at0036"] = <
+					text = <"Tape/CD">
+					description = <"*">
+				>
+				["at0037"] = <
+					text = <"Test">
+					description = <"Identify test performed.">
+				>
+				["at0038"] = <
+					text = <"Pure Tone Audiometry">
+					description = <"Conventional Audiologic Assessment.">
+				>
+				["at0039"] = <
+					text = <"Visual Reinforcement Audiometry (VRA)">
+					description = <"*">
+				>
+				["at0040"] = <
+					text = <"Child cooperation">
+					description = <"Indication of cooperation of patient which may have impact on outcome of test.">
+				>
+				["at0041"] = <
+					text = <"Cooperative">
+					description = <"*">
+				>
+				["at0042"] = <
+					text = <"Uncooperative">
+					description = <"*">
+				>
+				["at0043"] = <
+					text = <"Conditioned Play Audiometry">
+					description = <"*">
+				>
+				["at0044"] = <
+					text = <"Both ears normal">
+					description = <"Both ears test normally by the audiogram.">
+				>
+				["at0045"] = <
+					text = <"Left ear normal">
+					description = <"The audiogram is normal for the left ear.">
+				>
+				["at0046"] = <
+					text = <"Right ear normal">
+					description = <"The audiogram is normal for the right ear.">
+				>
+				["at0047"] = <
+					text = <"Device">
+					description = <"Details of audiometer used to record audiogram.">
+				>
+			>
+		>
+		["ru"] = <
+			items = <
+				["at0000"] = <
+					text = <"Результат аудиограммы">
+					description = <"Record Audiogram findings.">
+				>
+				["at0001"] = <
+					text = <"Серия событий">
+					description = <"Внутренний элемент.">
+				>
+				["at0002"] = <
+					text = <"Любое событие">
+					description = <"**(ru)">
+				>
+				["at0003"] = <
+					text = <"Дерево">
+					description = <"Внутренний элемент.">
+				>
+				["at0004"] = <
+					text = <"Нормальное показание">
+					description = <"Нормальные показания результатов аудиограммы.">
+				>
+				["at0005"] = <
+					text = <"Нормальные показания">
+					description = <"**(ru)">
+				>
+				["at0006"] = <
+					text = <"Заключение">
+					description = <"Заключение всей аудиограммы.">
+				>
+				["at0007"] = <
+					text = <"Ухо">
+					description = <"Определение испытуемого уха.">
+				>
+				["at0008"] = <
+					text = <"Левое">
+					description = <"Левое ухо.">
+				>
+				["at0009"] = <
+					text = <"Правое">
+					description = <"Правое ухо.">
+				>
+				["at0011"] = <
+					text = <"Частота">
+					description = <"Тестируемая частота.">
+				>
+				["at0012"] = <
+					text = <"Уровень слуха">
+					description = <"Порог, при котором звук (частота) становиится слышимым.">
+				>
+				["at0013"] = <
+					text = <"Дерево">
+					description = <"Внутренний элемент.">
+				>
+				["at0014"] = <
+					text = <"Маска">
+					description = <"**(ru)">
+				>
+				["at0015"] = <
+					text = <"250Гц">
+					description = <"**(ru)">
+				>
+				["at0016"] = <
+					text = <"500Гц">
+					description = <"**(ru)">
+				>
+				["at0017"] = <
+					text = <"1000Гц">
+					description = <"**(ru)">
+				>
+				["at0018"] = <
+					text = <"2000Гц">
+					description = <"**(ru)">
+				>
+				["at0019"] = <
+					text = <"4000Гц">
+					description = <"**(ru)">
+				>
+				["at0020"] = <
+					text = <"8000Гц">
+					description = <"**(ru)">
+				>
+				["at0021"] = <
+					text = <"Маскированный">
+					description = <"**(ru)">
+				>
+				["at0022"] = <
+					text = <"Немаскированный">
+					description = <"**(ru)">
+				>
+				["at0023"] = <
+					text = <"Показ стимула">
+					description = <"**(ru)">
+				>
+				["at0024"] = <
+					text = <"Воздушная проводимость">
+					description = <"**(ru)">
+				>
+				["at0025"] = <
+					text = <"Костная проводимость">
+					description = <"**(ru)">
+				>
+				["at0026"] = <
+					text = <"Изображение результата аудиограммы">
+					description = <"Изображение аудиограммы.">
+				>
+				["at0027"] = <
+					text = <"Комментарии">
+					description = <"Коммментарии к исследованию(.">
+				>
+				["at0028"] = <
+					text = <"Автоматизировано">
+					description = <"**(ru)">
+				>
+				["at0029"] = <
+					text = <"Автоматизировано">
+					description = <"**(ru)">
+				>
+				["at0030"] = <
+					text = <"Без посторонней помощи">
+					description = <"**(ru)">
+				>
+				["at0031"] = <
+					text = <"Звуковое поле">
+					description = <"**(ru)">
+				>
+				["at0032"] = <
+					text = <"Дерево">
+					description = <"Внутренний элемент.">
+				>
+				["at0034"] = <
+					text = <"Стимул">
+					description = <"**(ru)">
+				>
+				["at0035"] = <
+					text = <"Живой звук">
+					description = <"**(ru)">
+				>
+				["at0036"] = <
+					text = <"Запись/CD">
+					description = <"**(ru)">
+				>
+				["at0037"] = <
+					text = <"Тест">
+					description = <"Идентификатор выполненного теста.">
+				>
+				["at0038"] = <
+					text = <"Чистым тоном">
+					description = <"Обычная аудиологическая оценка.">
+				>
+				["at0039"] = <
+					text = <"С визуальным сопровождением">
+					description = <"**(ru)">
+				>
+				["at0040"] = <
+					text = <"Ребёнок сотрудничает">
+					description = <"Отметка, что пациент понимает и выполняет требования исследователя.">
+				>
+				["at0041"] = <
+					text = <"Сотрудничающий">
+					description = <"**(ru)">
+				>
+				["at0042"] = <
+					text = <"Несотрудничающий">
+					description = <"**(ru)">
+				>
+				["at0043"] = <
+					text = <"Особые условия">
+					description = <"**(ru)">
+				>
+				["at0044"] = <
+					text = <"Оба уха НОРМА">
+					description = <"Аудиограмма нормальная для обоих ушей.">
+				>
+				["at0045"] = <
+					text = <"Левое ухо НОРМА">
+					description = <"Аудиограмма нормальная для левого уха.">
+				>
+				["at0046"] = <
+					text = <"Правое ухо НОРМА">
+					description = <"Аудиограмма нормальная для правого уха.">
+				>
+				["at0047"] = <
+					text = <"*Device(en)">
+					description = <"**(en)">
+				>
+			>
+		>
+	>

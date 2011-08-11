@@ -1,0 +1,743 @@
+﻿archetype (adl_version=1.4)
+	openEHR-EHR-CLUSTER.symptom-pain.v1
+specialise
+	openEHR-EHR-CLUSTER.symptom.v1
+
+concept
+	[at0000.1]	-- Pain symptom
+language
+	original_language = <[ISO_639-1::en]>
+description
+	original_author = <
+		["name"] = <"NHS archetype project">
+		["organisation"] = <"UK NHS, Connecting for Health">
+		["email"] = <"tony.shannon@nhs.net">
+		["date"] = <"20/02/2007">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"A specialised archetype for recording pain symptoms and information about these symptoms. This archetype allows a statement to be made that the patient does not have this symptom (without any other information) or more detailed statements as required. The reason that a general negative statement can be made or a more detailed statement is to ensure that there is no possibility for error with negative statements about the symptom mixed with details of a symptom that is clearly positive.">
+			use = <"For recording information about pain(s). The information can be coded and structured if required or utilise the free text description of the symptom with detail as clinical description if required.">
+			keywords = <"complaint", ...>
+			misuse = <"">
+			copyright = <"copyright (c) 2010 openEHR Foundation">
+		>
+	>
+	lifecycle_state = <"OrganisationDraft">
+	other_contributors = <"Sam Heard, Ocean Informatics", ...>
+	other_details = <
+		["MD5-CAM-1.0.1"] = <"9BACFDC4BDCB223189F723B07EEC9929">
+		["references"] = <"">
+	>
+
+definition
+	CLUSTER[at0000.1] matches {	-- Pain symptom
+		items cardinality matches {1..*; unordered} matches {
+			ELEMENT[at0001] matches {	-- Symptom
+				value matches {
+					DV_TEXT matches {*}
+				}
+			}
+			ELEMENT[at0035] occurrences matches {0..1} matches {	-- Nil significant
+				value matches {
+					DV_BOOLEAN matches {
+						value matches {True}
+					}
+				}
+			}
+			CLUSTER[at0034] occurrences matches {0..1} matches {	-- Features
+				items cardinality matches {0..*; unordered} matches {
+					ELEMENT[at0002] occurrences matches {0..1} matches {	-- Clinical description
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+					CLUSTER[at0113] occurrences matches {0..1} matches {	-- Locations
+						items cardinality matches {0..*; unordered} matches {
+							CLUSTER[at0148] occurrences matches {0..*} matches {	-- Location
+								items cardinality matches {0..*; unordered} matches {
+									allow_archetype CLUSTER[at0147] occurrences matches {0..1} matches {	-- Location in body
+										include
+											archetype_id/value matches {/openEHR-EHR-CLUSTER\.anatomical_location(-[a-zA-Z0-9_]+)*\.v1/}
+										exclude
+											archetype_id/value matches {/.*/}
+									}
+								}
+							}
+							ELEMENT[at0.117] occurrences matches {0..1} matches {	-- Radiating to
+								value matches {
+									DV_TEXT matches {*}
+								}
+							}
+						}
+					}
+					ELEMENT[at0021] occurrences matches {0..1} matches {	-- Severity
+						value matches {
+							1|[local::at0044], 	-- trivial
+							2|[local::at0023], 	-- mild
+							5|[local::at0024], 	-- moderate
+							8|[local::at0025], 	-- severe
+							9|[local::at0045]  	-- very severe
+						}
+					}
+					CLUSTER[at0046] occurrences matches {0..1} matches {	-- Current intensity
+						items cardinality matches {0..*; unordered} matches {
+							ELEMENT[at0047] occurrences matches {0..1} matches {	-- Degree
+								value matches {
+									0|[local::at0022], 	-- not present
+									1|[local::at0044], 	-- trivial
+									2|[local::at0023], 	-- mild
+									5|[local::at0024], 	-- moderate
+									8|[local::at0025], 	-- severe
+									9|[local::at0045]  	-- very severe
+								}
+							}
+							ELEMENT[at0026.1] occurrences matches {0..1} matches {	-- Pain score
+								value matches {
+									DV_COUNT matches {
+										magnitude matches {|0..10|}
+									}
+								}
+							}
+							ELEMENT[at0150] occurrences matches {0..1} matches {	-- New element
+								value matches {
+									DV_PROPORTION matches {
+										type matches {0}
+									}
+								}
+							}
+						}
+					}
+					ELEMENT[at0028] occurrences matches {0..1} matches {	-- Duration
+						value matches {
+							DV_DURATION matches {*}
+						}
+					}
+					ELEMENT[at0031] occurrences matches {0..1} matches {	-- Number of occurrences
+						value matches {
+							DV_COUNT matches {*}
+						}
+					}
+					ELEMENT[at0032] occurrences matches {0..1} matches {	-- Character
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+					ELEMENT[at0003] occurrences matches {0..1} matches {	-- Variation
+						value matches {
+							DV_CODED_TEXT matches {
+								defining_code matches {
+									[local::
+									at0004, 	-- Constant
+									at0005, 	-- Intermittent
+									at0006]	-- Fluctuating
+								}
+							}
+						}
+					}
+					CLUSTER[at0058] occurrences matches {0..1} matches {	-- Previous episodes
+						items cardinality matches {1..*; unordered} matches {
+							ELEMENT[at0059] matches {	-- Any previous episodes
+								value matches {
+									DV_BOOLEAN matches {
+										value matches {True, False}
+									}
+								}
+							}
+							CLUSTER[at0090] occurrences matches {0..*} matches {	-- Previous episode
+								items cardinality matches {0..*; unordered} matches {
+									ELEMENT[at0142] occurrences matches {0..1} matches {	-- Date / time of previous episode 
+										value matches {
+											DV_DATE_TIME matches {*}
+										}
+									}
+									ELEMENT[at0057] occurrences matches {0..1} matches {	-- Details
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+									ELEMENT[at0143] occurrences matches {0..1} matches {	-- Comparison
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+									allow_archetype CLUSTER[at0146] occurrences matches {0..1} matches {	-- Details
+										include
+											archetype_id/value matches {/openEHR-EHR-CLUSTER\.symptom\.v1/}
+									}
+								}
+							}
+							ELEMENT[at0098] occurrences matches {0..1} matches {	-- Number of previous episodes
+								value matches {
+									DV_COUNT matches {
+										magnitude matches {|>=0|}
+									}
+								}
+							}
+						}
+					}
+					CLUSTER[at0033] occurrences matches {0..1} matches {	-- Course
+						items cardinality matches {0..*; unordered} matches {
+							ELEMENT[at0008] occurrences matches {0..1} matches {	-- Onset type
+								value matches {
+									DV_CODED_TEXT matches {
+										defining_code matches {
+											[local::
+											at0009, 	-- Gradual
+											at0036, 	-- Rapid
+											at0010]	-- Sudden
+										}
+									}
+								}
+							}
+							ELEMENT[at0060] occurrences matches {0..1} matches {	-- Onset description
+								value matches {
+									DV_TEXT matches {*}
+								}
+							}
+							ELEMENT[at0030] occurrences matches {0..1} matches {	-- Time of maximum intensity
+								value matches {
+									DV_DATE_TIME matches {*}
+								}
+							}
+							ELEMENT[at0037] occurrences matches {0..1} matches {	-- Progression
+								value matches {
+									DV_CODED_TEXT matches {
+										defining_code matches {
+											[local::
+											at0038, 	-- improving
+											at0039, 	-- decreasing
+											at0040, 	-- stable
+											at0041, 	-- increasing
+											at0042, 	-- worsening
+											at0043]	-- has resolved
+										}
+									}
+								}
+							}
+							ELEMENT[at0011] occurrences matches {0..1} matches {	-- Cessation
+								value matches {
+									DV_CODED_TEXT matches {
+										defining_code matches {
+											[local::
+											at0009, 	-- Gradual
+											at0036, 	-- Rapid
+											at0010]	-- Sudden
+										}
+									}
+								}
+							}
+						}
+					}
+					CLUSTER[at0014] occurrences matches {0..1} matches {	-- Precipitating factors
+						items cardinality matches {1..*; unordered} matches {
+							ELEMENT[at0015] occurrences matches {1..*} matches {	-- Precipitating factor
+								value matches {
+									DV_TEXT matches {*}
+								}
+							}
+						}
+					}
+					CLUSTER[at0016] occurrences matches {0..1} matches {	-- Modification
+						items cardinality matches {1..*; unordered} matches {
+							CLUSTER[at0018] occurrences matches {0..1} matches {	-- Modifying factor
+								items cardinality matches {1..*; unordered} matches {
+									ELEMENT[at0019] occurrences matches {0..*} matches {	-- Factor
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+									ELEMENT[at0017] occurrences matches {0..1} matches {	-- Change
+										value matches {
+											-3|[local::at0048], 	-- Relieved completely
+											-2|[local::at0049], 	-- Made better
+											-1|[local::at0050], 	-- Somewhat improved
+											0|[local::at0051], 	-- No change
+											1|[local::at0052], 	-- Somewhat worse
+											2|[local::at0053], 	-- Made worse
+											3|[local::at0054]  	-- Much worse
+										}
+									}
+									ELEMENT[at0056] occurrences matches {0..1} matches {	-- Details
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+								}
+							}
+						}
+					}
+					CLUSTER[at0020] occurrences matches {0..1} matches {	-- Associated symptoms
+						items cardinality matches {0..*; unordered} matches {
+							allow_archetype CLUSTER[at0063] occurrences matches {0..*} matches {	-- Cluster: Associated symptoms
+								include
+									archetype_id/value matches {/openEHR-EHR-CLUSTER\.symptom\.v1|openEHR-EHR-CLUSTER\.symptom-pain\.v1/}
+								exclude
+									archetype_id/value matches {/.*/}
+							}
+						}
+					}
+					CLUSTER[at0061] occurrences matches {0..1} matches {	-- Features not present
+						items cardinality matches {0..*; unordered} matches {
+							ELEMENT[at0062] occurrences matches {0..*} matches {	-- Absent feature
+								value matches {
+									DV_TEXT matches {*}
+								}
+							}
+						}
+					}
+					CLUSTER[at0.119] occurrences matches {0..1} matches {	-- Character
+						items cardinality matches {0..*; unordered} matches {
+							ELEMENT[at0032] occurrences matches {0..1} matches {	-- Character
+								value matches {
+									DV_CODED_TEXT matches {
+										defining_code matches {
+											[local::
+											at0.121, 	-- Crushing
+											at0.122, 	-- Burning
+											at0.123, 	-- Cramping
+											at0.124, 	-- Colicky
+											at0.125, 	-- Deep
+											at0.126, 	-- Diffuse
+											at0.127, 	-- Dull ache
+											at0.128, 	-- Shooting
+											at0.129, 	-- Superficial
+											at0.130, 	-- Throbbing
+											at0.131, 	-- Sharp
+											at0.132, 	-- Heavy
+											at0.133, 	-- Tearing
+											at0.134, 	-- Squeezing
+											at0.144, 	-- Stabbing
+											at0.145]	-- Griping
+										}
+									}
+								}
+							}
+							ELEMENT[at0.120] occurrences matches {0..1} matches {	-- Description of character
+								value matches {
+									DV_TEXT matches {*}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+ontology
+	terminologies_available = <"SNOMED-CT", ...>
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0.117"] = <
+					text = <"Radiating to">
+					description = <"The site(s) that the pain radiates towards">
+				>
+				["at0.119"] = <
+					text = <"Character">
+					description = <"The character of the pain - crushing, burning, etc">
+				>
+				["at0.120"] = <
+					text = <"Description of character">
+					description = <"Free text description of the character">
+				>
+				["at0.121"] = <
+					text = <"Crushing">
+					description = <"*">
+				>
+				["at0.122"] = <
+					text = <"Burning">
+					description = <"*">
+				>
+				["at0.123"] = <
+					text = <"Cramping">
+					description = <"*">
+				>
+				["at0.124"] = <
+					text = <"Colicky">
+					description = <"*">
+				>
+				["at0.125"] = <
+					text = <"Deep">
+					description = <"*">
+				>
+				["at0.126"] = <
+					text = <"Diffuse">
+					description = <"*">
+				>
+				["at0.127"] = <
+					text = <"Dull ache">
+					description = <"*">
+				>
+				["at0.128"] = <
+					text = <"Shooting">
+					description = <"*">
+				>
+				["at0.129"] = <
+					text = <"Superficial">
+					description = <"*">
+				>
+				["at0.130"] = <
+					text = <"Throbbing">
+					description = <"*">
+				>
+				["at0.131"] = <
+					text = <"Sharp">
+					description = <"*">
+				>
+				["at0.132"] = <
+					text = <"Heavy">
+					description = <"*">
+				>
+				["at0.133"] = <
+					text = <"Tearing">
+					description = <"*">
+				>
+				["at0.134"] = <
+					text = <"Squeezing">
+					description = <"*">
+				>
+				["at0.135"] = <
+					text = <"Activity level at onset">
+					description = <"*">
+				>
+				["at0.136"] = <
+					text = <"Activity level description">
+					description = <"*">
+				>
+				["at0.137"] = <
+					text = <"Activity level">
+					description = <"*">
+				>
+				["at0.138"] = <
+					text = <"at rest">
+					description = <"*">
+				>
+				["at0.139"] = <
+					text = <"lying flat">
+					description = <"*">
+				>
+				["at0.140"] = <
+					text = <"during sleep">
+					description = <"*">
+				>
+				["at0.141"] = <
+					text = <"on exertion">
+					description = <"*">
+				>
+				["at0.144"] = <
+					text = <"Stabbing">
+					description = <"*">
+				>
+				["at0.145"] = <
+					text = <"Griping">
+					description = <"*">
+				>
+				["at0000"] = <
+					text = <"Symptom">
+					description = <"A symptom experienced by the patient">
+				>
+				["at0000.1"] = <
+					text = <"Pain symptom">
+					description = <"A pain symptom experienced by the person">
+				>
+				["at0001"] = <
+					text = <"Symptom">
+					description = <"The symptom experienced">
+				>
+				["at0002"] = <
+					text = <"Clinical description">
+					description = <"Description of the symptom">
+				>
+				["at0003"] = <
+					text = <"Variation">
+					description = <"The variation of the symptom">
+				>
+				["at0004"] = <
+					text = <"Constant">
+					description = <"The symptom is constantly present">
+				>
+				["at0005"] = <
+					text = <"Intermittent">
+					description = <"The symptom is present at times and not at others">
+				>
+				["at0006"] = <
+					text = <"Fluctuating">
+					description = <"The symptom varys considerably but is almost always present">
+				>
+				["at0008"] = <
+					text = <"Onset type">
+					description = <"The nature of the onset of the symptom">
+				>
+				["at0009"] = <
+					text = <"Gradual">
+					description = <"Over a longer period of time">
+				>
+				["at0010"] = <
+					text = <"Sudden">
+					description = <"Almost immediate">
+				>
+				["at0011"] = <
+					text = <"Cessation">
+					description = <"The nature of the cessation of the symptom">
+				>
+				["at0014"] = <
+					text = <"Precipitating factors">
+					description = <"Factors that trigger or bring on the symptom">
+				>
+				["at0015"] = <
+					text = <"Precipitating factor">
+					description = <"An event or activity that brings on or triggers the symptom">
+				>
+				["at0016"] = <
+					text = <"Modification">
+					description = <"Factors that change the level of intensity of the symptom">
+				>
+				["at0017"] = <
+					text = <"Change">
+					description = <"An event or activity that makes the symptom worse">
+				>
+				["at0018"] = <
+					text = <"Modifying factor">
+					description = <"Information about a specific factor that changes the symptom">
+				>
+				["at0019"] = <
+					text = <"Factor">
+					description = <"An event or activity that modifies the symptom">
+				>
+				["at0020"] = <
+					text = <"Associated symptoms">
+					description = <"Symptoms associated with this symptom">
+				>
+				["at0021"] = <
+					text = <"Severity">
+					description = <"The severity of the symptom">
+				>
+				["at0022"] = <
+					text = <"not present">
+					description = <"the symptom is not present">
+				>
+				["at0023"] = <
+					text = <"mild">
+					description = <"the symptom does not interfere greatly with day to day activities">
+				>
+				["at0024"] = <
+					text = <"moderate">
+					description = <"the symptom interferes with day to day activities">
+				>
+				["at0025"] = <
+					text = <"severe">
+					description = <"the symptom prohibits some key daily activities">
+				>
+				["at0026"] = <
+					text = <"Visual analogue score">
+					description = <"A score from 0 (not present) to 10 (as bad as it could be)">
+				>
+				["at0026.1"] = <
+					text = <"Pain score">
+					description = <"A score from 0 (not present) to 10 (as bad as it could be)">
+				>
+				["at0028"] = <
+					text = <"Duration">
+					description = <"The duration of the symptom since onset">
+				>
+				["at0030"] = <
+					text = <"Time of maximum intensity">
+					description = <"The time (and/or date) of maximum intensity of the symptom">
+				>
+				["at0031"] = <
+					text = <"Number of occurrences">
+					description = <"The number of times this symptom has occurred">
+				>
+				["at0032"] = <
+					text = <"Character">
+					description = <"The character of the symptom">
+				>
+				["at0033"] = <
+					text = <"Course">
+					description = <"Features of the course of the symptom">
+				>
+				["at0034"] = <
+					text = <"Features">
+					description = <"The features of the symptom">
+				>
+				["at0035"] = <
+					text = <"Nil significant">
+					description = <"The person has not had any significant experience of the symptom.">
+				>
+				["at0036"] = <
+					text = <"Rapid">
+					description = <"Over a short period of time">
+				>
+				["at0037"] = <
+					text = <"Progression">
+					description = <"The progress of the symptom relative to the past">
+				>
+				["at0038"] = <
+					text = <"improving">
+					description = <"The symptom has improved over time">
+				>
+				["at0039"] = <
+					text = <"decreasing">
+					description = <"The symptom is decreasing in intensity over time">
+				>
+				["at0040"] = <
+					text = <"stable">
+					description = <"The symptom has not changed over time">
+				>
+				["at0041"] = <
+					text = <"increasing">
+					description = <"The symptom is increasing in intensity over time">
+				>
+				["at0042"] = <
+					text = <"worsening">
+					description = <"The symptom is getting worse over time">
+				>
+				["at0043"] = <
+					text = <"has resolved">
+					description = <"The symptom has resolved over time">
+				>
+				["at0044"] = <
+					text = <"trivial">
+					description = <"the symptom is trivial and causes no problems">
+				>
+				["at0045"] = <
+					text = <"very severe">
+					description = <"the symptom is almost maximum possible intensity and prohibits any activity">
+				>
+				["at0046"] = <
+					text = <"Current intensity">
+					description = <"Measures of the intensity of the symptom at this time">
+				>
+				["at0047"] = <
+					text = <"Degree">
+					description = <"The degree the symptom is bothering the patient">
+				>
+				["at0048"] = <
+					text = <"Relieved completely">
+					description = <"The symptom is relieved by this factor">
+				>
+				["at0049"] = <
+					text = <"Made better">
+					description = <"The symptom is made better by this factor">
+				>
+				["at0050"] = <
+					text = <"Somewhat improved">
+					description = <"The symptom is somewhat improved by this factor">
+				>
+				["at0051"] = <
+					text = <"No change">
+					description = <"The symptom is not modified by this factor">
+				>
+				["at0052"] = <
+					text = <"Somewhat worse">
+					description = <"The symptom is made somewhat worse by this factor">
+				>
+				["at0053"] = <
+					text = <"Made worse">
+					description = <"The symptom is made worse by this factor">
+				>
+				["at0054"] = <
+					text = <"Much worse">
+					description = <"The symptom is made much worse by this factor">
+				>
+				["at0056"] = <
+					text = <"Details">
+					description = <"Details of the effect">
+				>
+				["at0057"] = <
+					text = <"Details">
+					description = <"Details of previous symptoms and comparison to this episode">
+				>
+				["at0058"] = <
+					text = <"Previous episodes">
+					description = <"Details about previous episodes">
+				>
+				["at0059"] = <
+					text = <"Any previous episodes">
+					description = <"Have there been any previous episodes of this symptom">
+				>
+				["at0060"] = <
+					text = <"Onset description">
+					description = <"Activity or situation at and details of onset">
+				>
+				["at0061"] = <
+					text = <"Features not present">
+					description = <"*">
+				>
+				["at0062"] = <
+					text = <"Absent feature">
+					description = <"A feature that is not present">
+				>
+				["at0063"] = <
+					text = <"Cluster: Associated symptoms">
+					description = <"Associated symptoms">
+				>
+				["at0090"] = <
+					text = <"Previous episode">
+					description = <"Details about a specific episode">
+				>
+				["at0098"] = <
+					text = <"Number of previous episodes">
+					description = <"Number of previous episodes">
+				>
+				["at0113"] = <
+					text = <"Locations">
+					description = <"Locations in the body where the symptom is experienced.">
+				>
+				["at0142"] = <
+					text = <"Date / time of previous episode ">
+					description = <"Date/time of previous episode">
+				>
+				["at0143"] = <
+					text = <"Comparison">
+					description = <"How the previous episode compares with this one">
+				>
+				["at0146"] = <
+					text = <"Details">
+					description = <"Structured details of symptoms in previous episodes">
+				>
+				["at0147"] = <
+					text = <"Location in body">
+					description = <"Details of the location in the body. ">
+				>
+				["at0148"] = <
+					text = <"Location">
+					description = <"Single location in the body where the symptom is experienced.">
+				>
+				["at0150"] = <
+					text = <"New element">
+					description = <"*">
+				>
+			>
+		>
+	>
+	term_bindings = <
+		["SNOMED-CT"] = <
+			items = <
+				["at0000"] = <[SNOMED-CT::19019007]>
+				["at0002"] = <[SNOMED-CT::162408000]>
+				["at0014"] = <[SNOMED-CT::57465006]>
+				["at0015"] = <[SNOMED-CT::57465006]>
+				["at0016"] = <[SNOMED-CT::68027008]>
+				["at0021"] = <[SNOMED-CT::162465004]>
+				["at0023"] = <[SNOMED-CT::162468002]>
+				["at0024"] = <[SNOMED-CT::162469005]>
+				["at0025"] = <[SNOMED-CT::162470006]>
+				["at0026"] = <[SNOMED-CT::273903006]>
+				["at0028"] = <[SNOMED-CT::162442009]>
+				["at0033"] = <[SNOMED-CT::260908002]>
+				["at0038"] = <[SNOMED-CT::385633008]>
+				["at0039"] = <[SNOMED-CT::260371004]>
+				["at0040"] = <[SNOMED-CT::58158008]>
+				["at0041"] = <[SNOMED-CT::260369004]>
+				["at0042"] = <[SNOMED-CT::230993007]>
+				["at0043"] = <[SNOMED-CT::370996005]>
+				["at0044"] = <[SNOMED-CT::162466003]>
+				["at0045"] = <[SNOMED-CT::162471005]>
+			>
+		>
+	>

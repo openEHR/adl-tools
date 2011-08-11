@@ -1,0 +1,260 @@
+﻿archetype (adl_version=1.4)
+	openEHR-EHR-EVALUATION.alert.v1
+
+concept
+	[at0000]	-- Alert
+language
+	original_language = <[ISO_639-1::en]>
+	translations = <
+		["de"] = <
+			language = <[ISO_639-1::de]>
+			author = <
+				["name"] = <"Jasmin Buck, Sebastian Garde">
+				["organisation"] = <"University of Heidelberg, Central Queensland University">
+			>
+		>
+	>
+description
+	original_author = <
+		["name"] = <"Sam Heard">
+		["organisation"] = <"Ocean Informatics">
+		["email"] = <"sam.heard@oceaninformatics.biz">
+		["date"] = <"23/04/2006">
+	>
+	details = <
+		["de"] = <
+			language = <[ISO_639-1::de]>
+			purpose = <"Zur Dokumentation beliebiger Warnungen in der Patientenakte">
+			use = <"">
+			keywords = <"notabene", "Warnung">
+			misuse = <"">
+			copyright = <"copyright (c) 2010 openEHR Foundation">
+		>
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"For recording alerts of any kind in the health record">
+			use = <"">
+			keywords = <"nota bene", "warning">
+			misuse = <"">
+			copyright = <"copyright (c) 2010 openEHR Foundation">
+		>
+	>
+	lifecycle_state = <"AuthorDraft">
+	other_contributors = <"NEHTA data groups (Australia)", ...>
+
+definition
+	EVALUATION[at0000] matches {	-- Alert
+		data matches {
+			ITEM_LIST[at0001] matches {	-- List
+				items cardinality matches {0..*; unordered} matches {
+					ELEMENT[at0002] occurrences matches {0..1} matches {	-- Category
+						value matches {
+							DV_CODED_TEXT matches {
+								defining_code matches {[ac0001]}		-- A category of alert based
+							}
+						}
+					}
+					ELEMENT[at0003] matches {	-- Description
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+					ELEMENT[at0004] occurrences matches {0..1} matches {	-- Start of alert
+						value matches {
+							DV_DATE_TIME matches {
+								value matches {yyyy-??-??T??:??:??}
+							}
+						}
+					}
+					ELEMENT[at0005] occurrences matches {0..1} matches {	-- Certainty
+						value matches {
+							DV_CODED_TEXT matches {
+								defining_code matches {
+									[local::
+									at0006, 	-- Confirmed
+									at0007, 	-- Suspected
+									at0008]	-- Discounted
+								}
+							}
+						}
+					}
+					ELEMENT[at0009] occurrences matches {0..1} matches {	-- Status
+						value matches {
+							DV_CODED_TEXT matches {
+								defining_code matches {
+									[local::
+									at0011, 	-- Active
+									at0012, 	-- Inactive
+									at0013]	-- Resolved
+								}
+							}
+						}
+					}
+					ELEMENT[at0010] occurrences matches {0..1} matches {	-- Review on
+						value matches {
+							DV_DATE_TIME matches {
+								value matches {yyyy-??-??T??:??:??}
+							}
+						}
+					}
+					ELEMENT[at0014] occurrences matches {0..1} matches {	-- End of alert
+						value matches {
+							DV_DATE_TIME matches {
+								value matches {yyyy-??-??T??:??:??}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["de"] = <
+			items = <
+				["at0000"] = <
+					text = <"Warnung">
+					description = <"Informationen, die eine zu behandelnde Person betreffen und besondere Betrachtung eines Klinikers benötigen, bevor über seine/ihre Handlungen entschieden wird, um ein ungewolltes Ereignis zu verhindern, oder Informationen bezüglich der Sicherheit der zu behandelnden Person oder der Gesundheitsdienstleister oder bezüglich besonderer Umstände, die für die Leistungserbringung von Bedeutung sind.">
+				>
+				["at0001"] = <
+					text = <"Liste">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Kategorie">
+					description = <"Die Kategorie der Warnung">
+				>
+				["at0003"] = <
+					text = <"Beschreibung">
+					description = <"Einzelheiten der Warnung">
+				>
+				["at0004"] = <
+					text = <"Start der Warnung">
+					description = <"Datum und Zeitpunkt, zu dem das Problem oder Ereignis begonnen hat">
+				>
+				["at0005"] = <
+					text = <"Sicherheit">
+					description = <"Ein Hinweis auf das Vertrauen bezüglich des Vorliegens der Warnung">
+				>
+				["at0006"] = <
+					text = <"Bestätigt">
+					description = <"Das Ereignis oder die Warnung wurde bestätigt">
+				>
+				["at0007"] = <
+					text = <"Vermuted">
+					description = <"Das Problem oder Ereignis wird vermutet">
+				>
+				["at0008"] = <
+					text = <"Unwahrscheinlich">
+					description = <"Das Problem oder Ereignis ist unwahrscheinlich">
+				>
+				["at0009"] = <
+					text = <"Zustand">
+					description = <"Ein Hinweis, ob die Warnung als aktives oder inaktives Problem angesehen wird">
+				>
+				["at0010"] = <
+					text = <"Kontrollzeitpunkt">
+					description = <"Das Datum und der Zeitpunkt, wann die Warnung eine Kontrolle erfordert">
+				>
+				["at0011"] = <
+					text = <"Aktiv">
+					description = <"Die Warnung ist aktiv">
+				>
+				["at0012"] = <
+					text = <"Inaktiv">
+					description = <"Die Warnung ist momentan inaktiv">
+				>
+				["at0013"] = <
+					text = <"Aufgehoben">
+					description = <"Die Warnung wurde aufgehoben">
+				>
+				["at0014"] = <
+					text = <"Ende der Warnung">
+					description = <"Das Ende das Warnzeitraumes, falls bekannt">
+				>
+			>
+		>
+		["en"] = <
+			items = <
+				["at0000"] = <
+					text = <"Alert">
+					description = <"Information pertaining to a subject of care that may need special consideration by a healthcare provider before making a decision about his/her actions in order to avert an unfavourable healthcare event, or relate to the safety of subject or providers, or pertain to special circumstances relevant to the delivery of care">
+				>
+				["at0001"] = <
+					text = <"List">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Category">
+					description = <"The category of alert">
+				>
+				["at0003"] = <
+					text = <"Description">
+					description = <"Details of the alert">
+				>
+				["at0004"] = <
+					text = <"Start of alert">
+					description = <"The date/time tat the issue or event commenced">
+				>
+				["at0005"] = <
+					text = <"Certainty">
+					description = <"An indication of confidence concerning the existence of the alert">
+				>
+				["at0006"] = <
+					text = <"Confirmed">
+					description = <"The event or alert has been confirmed">
+				>
+				["at0007"] = <
+					text = <"Suspected">
+					description = <"The issue or event is suspected to be present">
+				>
+				["at0008"] = <
+					text = <"Discounted">
+					description = <"The issue or event has been discounted">
+				>
+				["at0009"] = <
+					text = <"Status">
+					description = <"An indication of whether the alert is considered to be an active or inactive issue">
+				>
+				["at0010"] = <
+					text = <"Review on">
+					description = <"The date and time the alert requires review">
+				>
+				["at0011"] = <
+					text = <"Active">
+					description = <"The alert is active">
+				>
+				["at0012"] = <
+					text = <"Inactive">
+					description = <"The alert is not active at present">
+				>
+				["at0013"] = <
+					text = <"Resolved">
+					description = <"The alert has resolved">
+				>
+				["at0014"] = <
+					text = <"End of alert">
+					description = <"The end of the alert period if known">
+				>
+			>
+		>
+	>
+	constraint_definitions = <
+		["de"] = <
+			items = <
+				["ac0001"] = <
+					text = <"Eine Kategorie von Warnungen">
+					description = <"Kodierte Kategorien von Warnungen, basierend auf einem Domänenvokabular">
+				>
+			>
+		>
+		["en"] = <
+			items = <
+				["ac0001"] = <
+					text = <"A category of alert based">
+					description = <"Coded categories of alerts based on a domain vocabulary">
+				>
+			>
+		>
+	>

@@ -1,0 +1,74 @@
+﻿archetype (adl_version=1.4)
+	openEHR-EHR-EVALUATION.reason_for_encounter.v1
+
+concept
+	[at0000]	-- Reason for encounter
+language
+	original_language = <[ISO_639-1::en]>
+description
+	original_author = <
+		["name"] = <"Heather Leslie">
+		["organisation"] = <"Ocean Informatics">
+		["email"] = <"heather.leslie@oceaninformatics.com">
+		["date"] = <"19/04/2007">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"To record the reason for presentation of a person to a health care provider">
+			use = <"To record a persistent summary of the reason for the presentation of a person requesting health care. Further details should be recorded in OBSERVATION archetypes eg OBSERVATION.story and the clusters that are included eg CLUSTER.symptom, CLUSTER.event and CLUSTER.issue.">
+			keywords = <"presentation", "presenting complaint", "reason for encounter", "reason", "chief complaint", "visit">
+			misuse = <"">
+			copyright = <"copyright (c) 2010 openEHR Foundation">
+		>
+	>
+	lifecycle_state = <"Initial">
+	other_contributors = <>
+	other_details = <
+		["references"] = <"">
+	>
+
+definition
+	EVALUATION[at0000] matches {	-- Reason for encounter
+		data matches {
+			ITEM_TREE[at0001] matches {	-- Tree
+				items cardinality matches {0..*; unordered} matches {
+					ELEMENT[at0002] occurrences matches {0..1} matches {	-- Reason for encounter
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+					ELEMENT[at0003] occurrences matches {0..1} matches {	-- Comments
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					text = <"Reason for encounter">
+					description = <"Record reason that person has attended - can be an evaluation by the person/patient or by clinician">
+				>
+				["at0001"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Reason for encounter">
+					description = <"Reason for presentation for a clinical encounter">
+				>
+				["at0003"] = <
+					text = <"Comments">
+					description = <"Comments on the reason for encounter">
+				>
+			>
+		>
+	>

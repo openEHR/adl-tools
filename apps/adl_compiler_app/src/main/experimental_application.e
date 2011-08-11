@@ -17,20 +17,13 @@ feature {NONE} -- Initialization
 		local
 			archetype_names_in_repo:ARRAY[STRING]
 		do
-			--io.put_integer (my_ret_type.count)
-
-
-
-			--io.put_integer (archetype_names.upper)
-			--print(archetype_names[archetype_names.upper])
-			--perform_parsing
 			app_root.set_error_db_directory_location ("c:\tmp\error_db")
 			app_root.set_rm_schema_directory_location ("c:\tmp\rm_schemas")
+			configure_archetype_repository
 
 			archetype_names_in_repo := archetype_names
-			--compile_archetype (archetype_names_in_repo[2])
-			io.put_string (archetype_names_in_repo[3])
-			compile_and_test_visit_archetype (archetype_names_in_repo[3])
+			io.put_string ("Using archetype: " + archetype_names_in_repo[3])
+			compile_and_test_visit_archetype (archetype_names_in_repo[3]).do_nothing
 		end
 
 feature		--Access
@@ -124,33 +117,46 @@ feature --process archetypes
 		end
 	end
 
-	compile_and_test_visit_archetype (p_archetype_name:STRING)
-	--compile the archetype and save flattened form into a variable
+	initialize
 	require
 		rm_schema_dir_initialized: app_root.rm_schema_directory_location /= Void
 		error_db_dir_initialized: app_root.error_db_directory_location /= Void
-		--cpp_object_initialized: cpp_visitor /= Void
-	local
-		flattened_archetype: FLAT_ARCHETYPE --TODO: will return this in the next version of this function, only for debugging purposes for now
-		test_visitor: AOM_VISITOR
-		visitor_iterator: C_VISITOR_ITERATOR
 	do
 		configure_archetype_repository
-		app_root.arch_dir.set_selected_item (app_root.arch_dir.archetype_index.item (p_archetype_name))
-		app_root.archetype_compiler.build_lineage (app_root.arch_dir.selected_archetype)
-		if app_root.arch_dir.selected_archetype.is_valid then
-			flattened_archetype := app_root.arch_dir.selected_archetype.flat_archetype
-			if flattened_archetype /= Void then
-				create test_visitor.make
-				--test_visitor.initialise (flattened_archetype.ontology)
-				create visitor_iterator.make (flattened_archetype.definition, test_visitor)
-				visitor_iterator.do_all
-				io.put_string (test_visitor.root_tag)
-			end
-			io.put_string ("done with visitor")
-		else
-			io.put_string ("Archetype: " + p_archetype_name + " is not valid%N")
-		end
+	end
+
+	compile_and_test_visit_archetype (p_archetype_name:STRING):CCOMPLEXOBJECT_WRAPPER_GEN
+	--compile the archetype and save flattened form into a variable	
+--	local
+--		flattened_archetype: FLAT_ARCHETYPE
+--		visitor_iterator: C_VISITOR_ITERATOR
+--		test_visitor: BOSPHORUS_PB_VISITOR
+--		root_obj: CCOMPLEXOBJECT_WRAPPER_GEN
+	do
+--		io.put_string ("compiling and using archetype: " + p_archetype_name + "%N")
+--		app_root.arch_dir.set_selected_item (app_root.arch_dir.archetype_index.item (p_archetype_name))
+--		app_root.archetype_compiler.build_lineage (app_root.arch_dir.selected_archetype)
+--		if app_root.arch_dir.selected_archetype.is_valid then
+--			flattened_archetype := app_root.arch_dir.selected_archetype.flat_archetype
+--			if flattened_archetype /= Void then
+--				create test_visitor.make
+--				--test_visitor.initialise (flattened_archetype.ontology)
+--				create visitor_iterator.make (flattened_archetype.definition, test_visitor)
+--				visitor_iterator.do_all
+--				--io.put_string (test_visitor.root_tag)
+--			end
+--			io.put_string ("done with visitor%N")
+--			root_obj := test_visitor.root
+--			if attached root_obj.get_singleatributes (root_obj.get_singleatributes_lower_index) as satr then
+--				io.put_string (satr.get_rmattributename + "%N")
+--			end
+--			if attached root_obj.get_multipleatributes (root_obj.get_multipleatributes_lower_index) as matr then
+--				io.put_string (matr.get_rmattributename + "%N")
+--			end
+
+--		else
+--			io.put_string ("Archetype: " + p_archetype_name + " is not valid%N")
+--		end
 	end
 
 	perform_parsing

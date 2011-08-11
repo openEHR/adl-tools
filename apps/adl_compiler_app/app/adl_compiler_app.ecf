@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <system xmlns="http://www.eiffel.com/developers/xml/configuration-1-6-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-6-0 http://www.eiffel.com/developers/xml/configuration-1-6-0.xsd" name="adl_compiler_app" uuid="804BD2F5-8F3A-4D4D-8495-001FA30E2894">
 	<target name="adl_compiler_app">
-		<root cluster="app" class="EXPERIMENTAL_APPLICATION" feature="make"/>
+		<root cluster="app" class="SERVER_APPLICATION" feature="make"/>
 		<file_rule>
 			<exclude>/EIFGENs$</exclude>
 			<exclude>/CVS$</exclude>
@@ -26,10 +26,12 @@
 		<library name="gobo_utility" location="$ISE_LIBRARY\library\gobo\gobo_utility.ecf"/>
 		<library name="gobo_xml" location="$ISE_LIBRARY\library\gobo\gobo_xml.ecf"/>
 		<library name="i18n" location="$ISE_LIBRARY\library\i18n\i18n.ecf"/>
+		<library name="protocol_puffer_wrappers" location="C:\work\data\eiffel\Eiffel-PB-ZMQ-Wrappers\generated-pb-proxies\PBWrappers\Protocol_Buffer_Wrappers.ecf"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf">
 			<renaming old_name="C_DATE" new_name="TIME_C_DATE"/>
 			<renaming old_name="INTERVAL" new_name="TIME_INTERVAL"/>
 		</library>
+		<library name="zqm-cpp-wrapper" location="C:\work\data\eiffel\Eiffel-PB-ZMQ-Wrappers\zmq-cpp-wrapper\zqm-cpp-wrapper.ecf"/>
 		<cluster name="adl_compiler" location="..\..\..\components\adl_compiler\src\" recursive="true"/>
 		<cluster name="app" location="..\src\" recursive="true">
 			<option>
@@ -40,6 +42,7 @@
 			<visible class="APPLICATION"/>
 			<visible class="BOSPHORUS_VISITOR"/>
 			<visible class="LOGGER"/>
+			<visible class="DISPATCHER"/>
 		</cluster>
 		<cluster name="archetype_repository" location="..\..\..\components\archetype_repository\src\" recursive="true">
 			<option>
@@ -64,8 +67,6 @@
 					<platform excluded_value="windows"/>
 				</condition>
 			</file_rule>
-			<visible class="MULTIPLICITY_INTERVAL"/>
-			<visible class="INTERVAL"/>
 		</cluster>
 		<cluster name="openehr" location="..\..\..\libraries\openehr\src\" recursive="true">
 			<option>
@@ -79,8 +80,6 @@
 			<visible class="C_ATTRIBUTE"/>
 			<visible class="C_PRIMITIVE_OBJECT"/>
 			<visible class="C_PRIMITIVE"/>
-			<visible class="ARCHETYPE_CONSTRAINT"/>
-			<visible class="C_OBJECT"/>
 		</cluster>
 		<cluster name="reference_model_checker" location="..\..\..\components\reference_model_checker\src\" recursive="true"/>
 		<cluster name="version" location="..\..\..\libraries\version\" recursive="true"/>
