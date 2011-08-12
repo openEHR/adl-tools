@@ -119,10 +119,8 @@ feature -- Modification
 
 feature {ARCHETYPE_CONSTRAINT} -- Modification
 
-	set_parent(a_node: like parent)
+	set_parent(a_node: attached like parent)
 			-- set parent
-		require
-			Node_exists: a_node /= Void
 		do
 			parent := a_node
 		end
@@ -130,6 +128,10 @@ feature {ARCHETYPE_CONSTRAINT} -- Modification
 feature -- Representation
 
 	representation: attached OG_ITEM
+		note
+			option: transient
+		attribute
+		end
 
 feature {OG_ITEM} -- Implementation
 

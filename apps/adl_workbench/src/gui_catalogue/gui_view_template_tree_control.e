@@ -34,7 +34,7 @@ feature {NONE} -- Initialisation
 			focus_archetype_agent := a_focus_archetype_agent
 
 			-- make UI
-			make_ui ("ADL 1.5 Templates", pixmaps ["template_category"])
+			make_ui ("Templates", pixmaps ["template_category"])
 
 			artefact_types := <<{ARTEFACT_TYPE}.template>>
 		end

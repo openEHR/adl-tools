@@ -40,11 +40,13 @@ feature {NONE} -- Initialization
 			-- (due to regeneration of implementation class)
 			-- can be added here.
 		do
+			-- set visual properties
 			set_icon_pixmap (adl_workbench_icon)
 			cancel_button.select_actions.extend (agent hide)
 			set_default_cancel_button (cancel_button)
 			set_default_push_button (ok_button)
 
+			-- set events
 			export_html_text.focus_in_actions.extend (agent on_select_all (export_html_text))
 			save_diff_path_text.focus_in_actions.extend (agent on_select_all (save_diff_path_text))
 
@@ -52,6 +54,7 @@ feature {NONE} -- Initialization
 			editor_app_command_text.focus_in_actions.extend (agent on_select_all (editor_app_command_text))
 			difftool_command_text.focus_in_actions.extend (agent on_select_all (difftool_command_text))
 
+			-- populate
 			populate_controls
 		end
 

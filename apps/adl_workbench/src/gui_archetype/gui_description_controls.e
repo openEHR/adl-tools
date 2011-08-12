@@ -477,7 +477,7 @@ feature {NONE} -- Implementation
 	populate_details
 			-- Populate details (language sensitive).
 		do
-			if attached target_archetype.description.details.item(current_language) as item then
+			if attached target_archetype.description.details.item(selected_language) as item then
 				if attached item.purpose then
 					purpose_text.set_text (utf8 (item.purpose))
 				end
@@ -507,7 +507,7 @@ feature {NONE} -- Implementation
 			end
 
 			-- list of URI resources
-			if attached target_archetype.description.details.item(current_language) as item then
+			if attached target_archetype.description.details.item(selected_language) as item then
 				populate_ev_multi_list_from_hash (resource_orig_res_mlist, item.original_resource_uri)
 			end
 		end
@@ -515,7 +515,7 @@ feature {NONE} -- Implementation
 	populate_copyright
 			-- populate copyright field
 		do
-			if attached target_archetype.description.details.item(current_language) as item  and then
+			if attached target_archetype.description.details.item(selected_language) as item  and then
 				attached item.copyright
 			then
 				copyright_text.set_text (utf8 (item.copyright))
@@ -551,7 +551,7 @@ feature {NONE} -- Implementation
 				translation_language := trans_languages_list.selected_item.text.as_string_8
 			end
 
-			trans_item := target_archetype.translations.item(translation_language)
+			trans_item := target_archetype.translations.item (translation_language)
 
 			-- populate author hash
 			populate_ev_multi_list_from_hash (trans_author_mlist, trans_item.author)

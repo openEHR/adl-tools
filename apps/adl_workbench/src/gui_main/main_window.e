@@ -55,6 +55,7 @@ feature {NONE} -- Initialization
 			-- (due to regeneration of implementation class) can be added here.
 		local
 			cur_title: STRING
+			dv_q: DV_QUANTITY
 		do
 			-- connect controls
 			ev_main_vbox.extend (action_bar)
@@ -71,6 +72,12 @@ feature {NONE} -- Initialization
 			arch_id_hbox.extend (archetype_search_combo)
 			arch_id_hbox.extend (arch_search_tool_bar)
 			arch_search_tool_bar.extend (search_button)
+
+			-- ADL output version combo
+			action_bar.extend (arch_output_version_hbox)
+			arch_output_version_hbox.extend (arch_output_version_label)
+			arch_output_version_hbox.extend (arch_output_version_combo)
+
 			ev_main_vbox.extend (viewer_main_cell)
 
 			-- set visual characteristics - menu
@@ -123,6 +130,15 @@ feature {NONE} -- Initialization
 			history_forward_button.set_pixmap (pixmaps ["history_forward"])
 			search_button.set_pixmap (pixmaps ["magnifier"])
 
+			action_bar.disable_item_expand (arch_output_version_hbox)
+			arch_output_version_hbox.disable_item_expand (arch_output_version_label)
+			arch_output_version_hbox.disable_item_expand (arch_output_version_combo)
+			arch_output_version_combo.set_minimum_width (50)
+			arch_output_version_label.set_text ("ADL output version: ")
+			arch_output_version_label.set_tooltip ("Release of ADL and AOM XSD to use in output serialisation")
+			arch_output_version_combo.set_strings (Adl_versions)
+			populate_arch_output_version_combo
+
 			-- set up docking
 			create docking_manager.make (viewer_main_cell, Current)
 			create_new_catalogue_tool
@@ -148,6 +164,8 @@ feature {NONE} -- Initialization
 			archetype_search_combo.return_actions.extend (agent find_archetype_by_key)
 			search_button.select_actions.extend (agent start_search_by_id)
 			archetype_profile_combo.select_actions.extend (agent select_profile)
+
+			arch_output_version_combo.select_actions.extend (agent set_adl_version_from_combo)
 
 			-- set UI feedback handlers
 			archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
@@ -177,6 +195,10 @@ feature {NONE} -- Initialization
 			create archetype_search_combo
 			create arch_search_tool_bar
 			create search_button
+
+			create arch_output_version_hbox
+			create arch_output_version_label
+			create arch_output_version_combo
 
 			create viewer_main_cell
 		end
@@ -696,7 +718,8 @@ feature {NONE} -- Tools menu events
 
 			if dialog.has_changed_ui_options then
 				save_resources_and_show_status
-				if repository_profiles.has_current_profile then
+				populate_arch_output_version_combo
+				if repository_profiles.has_current_profile and then current_arch_cat.has_selected_archetype then
 					archetype_tools.populate_current_tool
 				end
 			end
@@ -884,7 +907,7 @@ feature -- Archetype Events
 			-- display the class currently selected in `archetype_catalogue'.
 		do
 			if attached current_arch_cat as cat and then cat.has_selected_class then
-				class_map_tool.populate
+				class_map_tools.populate_current_tool
 			end
 		end
 
@@ -914,7 +937,7 @@ feature -- Catalogue tool
 
 	catalogue_tool: GUI_CATALOGUE_TOOL
 		once
-			create Result.make (agent parse_archetype, agent edit_archetype, agent create_and_populate_new_archetype_tool, agent display_class)
+			create Result.make (agent parse_archetype, agent edit_archetype, agent create_and_populate_new_archetype_tool, agent display_class, agent create_and_populate_new_class_tool)
 		end
 
 	create_new_catalogue_tool
@@ -965,9 +988,17 @@ feature -- Archetype tools
 
 feature -- Class map tool
 
-	class_map_tool: GUI_CLASS_MAP_TOOL_CONTROLLER
+	class_map_tools: GUI_CLASS_MAP_TOOL_CONTROLLER
 		once
 			create Result.make (attached_docking_manager)
+		end
+
+	create_and_populate_new_class_tool
+		do
+			class_map_tools.create_new_tool
+			if current_arch_cat.has_selected_class then
+				class_map_tools.populate_current_tool
+			end
 		end
 
 feature -- Console Tool
@@ -1114,7 +1145,7 @@ feature {NONE} -- Implementation
 
 	clear_all_tools
 		do
-			class_map_tool.clear
+			class_map_tools.clear
 			archetype_tools.clear
 		end
 
@@ -1161,6 +1192,18 @@ feature {NONE} -- Implementation
 				history_menu_forward.disable_sensitive
 				history_forward_button.disable_sensitive
 			end
+		end
+
+	populate_arch_output_version_combo
+		do
+			arch_output_version_combo.do_all (
+				agent (li: EV_LIST_ITEM)
+					do
+						if li.text.same_string (adl_version_for_flat_output) then
+							li.enable_select
+						end
+					end
+			)
 		end
 
 feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Statistics
@@ -1231,13 +1274,20 @@ feature {NONE} -- Build commands
 			ev_application.process_events
 		end
 
+	set_adl_version_from_combo
+			-- set ADL version
+		do
+			set_adl_version_for_flat_output (arch_output_version_combo.selected_text.as_string_8)
+		end
+
 feature {NONE} -- GUI Widgets
 
-	action_bar, arch_id_hbox: EV_HORIZONTAL_BOX
-	archetype_profile_combo, archetype_search_combo: EV_COMBO_BOX
+	action_bar, arch_id_hbox, arch_output_version_hbox: EV_HORIZONTAL_BOX
+	archetype_profile_combo, archetype_search_combo, arch_output_version_combo: EV_COMBO_BOX
 	arch_compile_tool_bar, arch_search_tool_bar: EV_TOOL_BAR
 	compile_button, open_button, history_back_button, history_forward_button, search_button: EV_TOOL_BAR_BUTTON
 	tool_bar_sep_1, tool_bar_sep_2, tool_bar_sep_3: EV_TOOL_BAR_SEPARATOR
+	arch_output_version_label: EV_LABEL
 
 	viewer_main_cell: EV_CELL
 

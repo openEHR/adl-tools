@@ -32,6 +32,45 @@
       <div id="content">
         <h2>Release History</h2>
 
+		<h3>15 Aug 2011 ADL 1.5 beta Release 4 (<a href="http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/1530/BRANCHES/adl1.5/">SVN rev 1530</a>) (<a href="http://www.openehr.org/issues/secure/IssueNavigator.jspa?reset=true&mode=hide&sorter/order=DESC&sorter/field=priority&resolution=-1&pid=10070&fixfor=10073">Jira</a>)</h3>
+		<ul>
+			<li>GUI changes
+				<ul>
+					<li>The <b>GUI is now docking-based</b>, allowing greater flexibility in placement of visual components.  Visually, multiple archetypes can now be loaded simultaneously, and docked side-by-side for visual comparison. This visual layout is essentially the same model used in most modern tabbed editing and browsing tools. Underneath, the tool now properly supports multiple open archetypes and templates.
+						<ul>
+							<li>The archetype identifier text box now performs only the search function, since individual archetype ids are now displayed in each tabbed tool, i.e. it now performs a similar function to the address box in a browser.</li>
+							<li>A new archetype tool is created either using ctrl-T (as for most web browsers) or from the new context (right click) menu available on an archetype or template in the explorer tol on the left.</li>
+							<li>The language choice combo, and flat/differential view button are therefore now on each individual archetype tool, rather than being tool-wide.</li>
+							<li>The status, error and statistics tools are now docked along the bottom and popup on left-click, in the manner typical of most programming IDEs.</li>
+							<li>The profile chooser has moved to the top-left, in the place typically used to select 'projects' in most IDEs</li>
+							<li>The 'test' tool is now shown as a docked component minimised on the right hand side, where it used to be. However, now it is a normal dockable component, so can be arranged in the same screen space as the other components, or even popped out into its own independent window, e.g. to be displayed on a separate screen.</li>
+							<li>The docking tool layout is currently remembered across sessoins by being saved in its own file. Because of the inherent complexity of docking and interaction with the operating system, the layout can occasionally disappear or seem non-sensical, usually due to a problem with the file. A 'reset visual layout' option is available from the View menu to correct this.</li>
+						</ul>
+					</li>
+					<li><b>Reference model class tool significantly enhancemed</b>: 
+						<ul>
+							<li>Left-clicking on a class node in the explorer on the left populates the 'class tool' (just another tool, tabbed with the archetype tools) with the compositional 'closure' of the chosen class. This is visualised as a tree of alternating type nodes and property nodes, in a similar to the node visualisation of an archetype.</li>
+							<li>Some of the class nodes are abstract, or even if concrete, have subtypes defined. Right-clicking on these nodes in the class tool, brings up a context meny containing the subtypes defined in the reference model, and selecting one causes re-population of that node in the tree downward with the chosen type.</li>
+							<li>As with the archetype tool, right clicking on a class node allows a new tool to be created instead of populating the existing one. Class tools can also be delted from the docking container.</li>
+						</ul>
+					</li>
+					<li>ADL/XML serialisation version now choosable in main GUI window, rather than only in the options. This option changes the format of ADL and XML output to conform to the chosen ADL release (1.4 or 1.5)</li>
+				</ul>
+				<li><b>Serialisation: dADL and rule-driven XML added</b>:
+					<ul>
+						<li>Empty items are no longer populated, e.g. 'contributors'.</li>
+						<li>Added dADL (the openEHR object serialisation syntax, identical in aim to JSON) serialisation, where an archetype object (AOM) structure can be serialised to a pure dADL structure. A special set of P_XXX classes were added to simplify some fields, e.g. occurrences etc to Strings, since otherwise they take up many lines of dADL. The use of this feature is for post-parsed archetypes to be stored in a pure object format for fast retrieval later, bypassing the main compiler.</li>
+						<li>Added proof-of-concept XML serialisation, also based on the P_XXX classes, as well as a rule file which enables control over XML what object properties are output as XML attributes, and other options. This XML is not currently synchronsed to either the published ADL 1.4 XSD, or any ADL 1.5 XSD.</li>
+					</ul>
+				</li>
+				<li>Compiler
+					<ul>
+						<li>Archetype validation is now 3 phases, where the last phase operates on the flattened archetype.</li>
+					</ul>
+				</li>
+			</li>
+			<li>Source code: tools upgraded to Eiffel 6.8 GPL.</li>
+		</ul>
 		<h3>14 Jan 2011 ADL 1.5 beta Release 3 (<a href="http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/1405/BRANCHES/adl1.5/">SVN rev 1405</a>) (<a href="http://www.openehr.org/issues/secure/IssueNavigator.jspa?reset=true&mode=hide&sorter/order=DESC&sorter/field=priority&resolution=-1&pid=10070&fixfor=10073">Jira</a>)</h3>
 		<ul>
 			<li>Archetype annotations implemented:

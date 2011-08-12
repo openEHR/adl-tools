@@ -14,6 +14,11 @@ note
 class GUI_CLASS_MAP_TOOL
 
 inherit
+	GUI_TOOL
+		redefine
+			ev_root_container
+		end
+
 	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
@@ -25,6 +30,11 @@ inherit
 		end
 
 	BMM_DEFINITIONS
+		export
+			{NONE} all
+		end
+
+	SHARED_REFERENCE_MODEL_ACCESS
 		export
 			{NONE} all
 		end
@@ -344,7 +354,13 @@ feature {NONE} -- Implementation
 				create sub_menu.make_with_text ("subtypes")
 				from a_substitutions.start until a_substitutions.off loop
 					create an_mi.make_with_text_and_action (a_substitutions.item, agent rebuild_from_interior_node (a_substitutions.item, a_ti))
-					an_mi.set_pixmap (pixmaps ["class_concrete"])
+					if attached {BMM_TYPE_SPECIFIER} a_ti.data as a_type_spec then
+						if a_type_spec.bmm_model.class_definition (a_substitutions.item).is_abstract then
+							an_mi.set_pixmap (pixmaps ["class_abstract"])
+						else
+							an_mi.set_pixmap (pixmaps ["class_concrete"])
+						end
+					end
 		    		sub_menu.extend (an_mi)
 					a_substitutions.forth
 				end
@@ -363,7 +379,10 @@ feature {NONE} -- Implementation
 			if attached {BMM_TYPE_SPECIFIER} a_ti.data as a_type_spec then
 				bmm_class_def := a_type_spec.bmm_model.class_definition (a_class_name)
 				set_class_node_details (a_ti, bmm_class_def, a_class_name, True)
-				bmm_class_def.do_supplier_closure (not differential_view, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+				if attached {EV_TREE_ITEM} a_ti.parent as a_parent_ti then
+					create node_path.make_from_string (a_parent_ti.tooltip)
+				end
+				do_with_wait_cursor (ev_root_container, agent bmm_class_def.do_supplier_closure (not differential_view, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit))
 			end
 			ev_tree_item_stack.remove
 		end

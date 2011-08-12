@@ -31,16 +31,17 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_select_archetype_agent, an_edit_archetype_agent, a_select_archetype_in_new_tool_agent, a_select_class_agent: PROCEDURE [ANY, TUPLE])
+	make (a_select_archetype_agent, an_edit_archetype_agent, a_select_archetype_in_new_tool_agent, a_select_class_agent, a_select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE])
 			-- Create controller for the tree representing archetype files found in `archetype_directory'.
 		do
 			select_archetype_agent := a_select_archetype_agent
 			edit_archetype_agent := an_edit_archetype_agent
 			select_archetype_in_new_tool_agent := a_select_archetype_in_new_tool_agent
 			select_class_agent := a_select_class_agent
+			select_class_in_new_tool_agent := a_select_class_in_new_tool_agent
 
 			-- make UI
-			make_ui ("ADL 1.5 Archetypes", pixmaps ["archetype_category"])
+			make_ui ("Archetypes", pixmaps ["archetype_category"])
 
 			artefact_types := <<{ARTEFACT_TYPE}.archetype, {ARTEFACT_TYPE}.template_component, {ARTEFACT_TYPE}.template>>
 		end
@@ -94,7 +95,7 @@ feature -- Events
 
 feature {NONE} -- Implementation
 
-	select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent, select_class_agent: PROCEDURE [ANY, TUPLE]
+	select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent, select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE]
 
 	display_selected_item
 		do
@@ -130,12 +131,10 @@ feature {NONE} -- Implementation
 				create ev_node
 	 			ev_node.set_data (aci)
 
-	 			if attached {ARCH_CAT_ARCHETYPE} aci as aca then
-	 				ev_node_descriptor_map.put (ev_node, aca.ontological_name)
-		 			ev_node.set_pebble_function (agent pebble_function)
-					ev_node.set_configurable_target_menu_handler (agent context_menu_handler)
-					ev_node.set_configurable_target_menu_mode
-	 			end
+ 				ev_node_descriptor_map.put (ev_node, aci.ontological_name)
+	 			ev_node.set_pebble_function (agent pebble_function)
+				ev_node.set_configurable_target_menu_handler (agent context_menu_handler)
+				ev_node.set_configurable_target_menu_mode
 
 	 			update_tree_node (ev_node)
 
@@ -206,15 +205,19 @@ feature {NONE} -- Implementation
 	context_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
 			-- creates the context menu for a right click action for an ARCH_REP_ARCHETYPE node
 		do
-			if attached {EV_TREE_ITEM} a_source as eti and then attached {ARCH_CAT_ARCHETYPE} eti.data as aca then
-				create_context_menu (a_menu, aca.ontological_name, a_source, a_pebble)
+			if attached {EV_TREE_ITEM} a_source as eti then
+				if attached {ARCH_CAT_ARCHETYPE} eti.data as aca then
+					create_archetype_context_menu (a_menu, aca.ontological_name, a_source, a_pebble)
+				elseif attached {ARCH_CAT_MODEL_NODE} eti.data as acmn then
+					create_class_context_menu (a_menu, acmn.ontological_name, a_source, a_pebble)
+				end
 			end
 		end
 
 --	context_menu_agent: PROCEDURE [ANY, TUPLE [EV_MENU]]
 --			-- Procedure that sets up a context menu
 
-	create_context_menu (menu: EV_MENU; arch_id: STRING; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
+	create_archetype_context_menu (menu: EV_MENU; arch_id: STRING; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
 			-- dynamically initializes the context menu for this tree
 		local
 			parse_mi, edit_source_mi, new_tool_mi: EV_MENU_ITEM
@@ -227,8 +230,20 @@ feature {NONE} -- Implementation
 			edit_source_mi.set_pixmap (pixmaps ["edit"])
 			menu.extend (edit_source_mi)
 
-			create new_tool_mi.make_with_text_and_action ("New tool", agent display_context_selected_item (a_source))
+			create new_tool_mi.make_with_text_and_action ("New tool", agent display_context_selected_archetype (a_source))
 			new_tool_mi.set_pixmap (pixmaps ["archetype_2"])
+			menu.extend (new_tool_mi)
+		end
+
+	create_class_context_menu (menu: EV_MENU; arch_id: STRING; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
+			-- dynamically initializes the context menu for this tree
+		local
+			display_mi, new_tool_mi: EV_MENU_ITEM
+		do
+			create display_mi.make_with_text_and_action ("Display", select_class_agent)
+	    	menu.extend (display_mi)
+
+			create new_tool_mi.make_with_text_and_action ("Display in new tool", agent display_context_selected_class (a_source))
 			menu.extend (new_tool_mi)
 		end
 
@@ -243,13 +258,24 @@ feature {NONE} -- Implementation
 
 		end
 
-	display_context_selected_item (a_source: EV_PICK_AND_DROPABLE)
+	display_context_selected_archetype (a_source: EV_PICK_AND_DROPABLE)
 		do
 			if attached {EV_TREE_NODE} a_source as ev_tn then
 				ev_tn.enable_select
 				if attached {ARCH_CAT_ARCHETYPE} ev_tn.data as aca then
 					current_arch_cat.set_selected_item (aca)
 					select_archetype_in_new_tool_agent.call ([])
+				end
+			end
+		end
+
+	display_context_selected_class (a_source: EV_PICK_AND_DROPABLE)
+		do
+			if attached {EV_TREE_NODE} a_source as ev_tn then
+				ev_tn.enable_select
+				if attached {ARCH_CAT_MODEL_NODE} ev_tn.data as acmn then
+					current_arch_cat.set_selected_item (acmn)
+					select_class_in_new_tool_agent.call ([])
 				end
 			end
 		end

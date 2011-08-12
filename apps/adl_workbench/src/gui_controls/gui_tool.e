@@ -1,84 +1,33 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Controller for multiple archetype tools within a docking area."
-	keywords:    "ADL, archetype"
+	description: "Abstract idea of a GUI tool in docking arrangement"
+	keywords:    "GUI, ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class GUI_ARCHETYPE_TOOLS_CONTROLLER
+deferred class GUI_TOOL
 
-inherit
-	GUI_DOCKING_EDITOR_CONTROLLER
-		redefine
-			Editor_group_name, Editor_pixmap, tool_type
-		end
+feature -- Access
 
-	SHARED_APP_UI_RESOURCES
-		export
-			{NONE} all
-		end
-
-	SHARED_KNOWLEDGE_REPOSITORY
-
-create
-	make
-
-feature -- Definitions
-
-	Editor_group_name: STRING = "archetype tool"
-
-	Editor_pixmap: EV_PIXMAP
-		once
-			Result := pixmaps ["archetype_2"]
-		end
-
-feature -- Initialisation
-
-	make (a_docking_manager: attached SD_DOCKING_MANAGER;
-			a_select_archetype_from_gui_data_agent: like select_archetype_from_gui_data)
-		do
-			make_docking (a_docking_manager)
-			select_archetype_from_gui_data := a_select_archetype_from_gui_data_agent
-		end
+	ev_root_container: EV_CONTAINER
 
 feature -- Commands
 
-	create_new_tool
-		local
-			new_tool: like tool_type
-		do
-			create new_tool.make (select_archetype_from_gui_data)
-			create_new_docking_editor (new_tool)
+	clear
+			-- Wipe out content from visual controls.
+		deferred
 		end
 
-	populate_current_tool
-			-- Populate content from visual controls.
-		require
-			has_current_profile
-			current_arch_cat.has_selected_archetype
-		do
-			if not has_current_tool then
-				create_new_tool
-			end
-			current_tool.populate (current_arch_cat.selected_archetype)
-			populate_current_editor_docking_pane (current_arch_cat.selected_archetype.id.as_string,
-				current_arch_cat.selected_archetype.id.as_abbreviated_string,
-				pixmaps [current_arch_cat.selected_archetype.group_name])
+	repopulate
+			-- repopulate if differential / flat view changed
+		deferred
 		end
-
-feature {NONE} -- Implementation
-
-	tool_type: GUI_ARCHETYPE_TOOL
-
-	select_archetype_from_gui_data: PROCEDURE [ANY, TUPLE [EV_ANY]]
-			-- agent provided by upper level of GUI for doing something
-			-- when an archetype in this tool is selected
 
 end
 
@@ -97,10 +46,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is gui_arhetype_tools_controller.e
+--| The Original Code is gui_archetype_tool.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2011
+--| Portions created by the Initial Developer are Copyright (C) 20011
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

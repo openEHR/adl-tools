@@ -14,6 +14,11 @@ note
 class GUI_ARCHETYPE_TOOL
 
 inherit
+	GUI_TOOL
+		redefine
+			ev_root_container
+		end
+
 	CONSTANTS
 		export
 			{NONE} all
@@ -49,7 +54,7 @@ create
 
 feature {NONE}-- Initialization
 
-	make (tool_id: INTEGER; a_select_archetype_from_gui_data_agent: like select_archetype_from_gui_data)
+	make (a_select_archetype_from_gui_data_agent: like select_archetype_from_gui_data)
 		do
 			select_archetype_from_gui_data := a_select_archetype_from_gui_data_agent
 

@@ -14,102 +14,67 @@ note
 class GUI_CLASS_MAP_TOOL_CONTROLLER
 
 inherit
+	GUI_DOCKING_EDITOR_CONTROLLER
+		redefine
+			Editor_group_name, Editor_pixmap, tool_type
+		end
+
 	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
 		end
 
 	SHARED_KNOWLEDGE_REPOSITORY
-		export
-			{NONE} all;
-			{ANY} has_current_profile
-		end
 
 create
 	make
+
+feature -- Definitions
+
+	Editor_group_name: STRING = "class tool"
+
+	Editor_pixmap: EV_PIXMAP
+		once
+			Result := pixmaps ["class_concrete"]
+		end
 
 feature -- Initialisation
 
 	make (a_docking_manager: attached SD_DOCKING_MANAGER)
 		do
-			docking_manager := a_docking_manager
+			make_docking (a_docking_manager)
 		end
-
-feature -- Access
-
-	tool: GUI_CLASS_MAP_TOOL
-
-	docking_pane: SD_CONTENT
-
-feature -- Status Report
 
 feature -- Commands
 
-	populate
+	create_new_tool
+		local
+			new_tool: like tool_type
+		do
+			create new_tool.make
+			create_new_docking_editor (new_tool)
+		end
+
+	populate_current_tool
 			-- Populate content from visual controls.
 		require
 			has_current_profile
+			current_arch_cat.has_selected_class
 		do
-			if not attached docking_pane then
+			if not has_current_tool then
 				create_new_tool
 			end
-			docking_pane.set_long_title (current_arch_cat.selected_class.display_name)
-			docking_pane.set_short_title (current_arch_cat.selected_class.display_name.substring (1, current_arch_cat.selected_class.display_name.count.min (10)))
-			docking_pane.set_pixmap (pixmaps [current_arch_cat.selected_class.group_name])
-			tool.populate (current_arch_cat.selected_class)
-			docking_pane.set_focus
-		end
 
-	clear
-			-- Populate content from visual controls.
-		do
-			if attached tool then
-				docking_pane.set_long_title ("")
-				docking_pane.set_short_title ("")
-				docking_pane.set_pixmap (pixmaps ["class_concrete"])
-				tool.clear
-			end
-		end
-
-	remove
-		do
-			docking_pane.close
-			docking_pane.destroy
-			docking_pane := Void
+			current_tool.populate (current_arch_cat.selected_class)
+			populate_current_editor_docking_pane (current_arch_cat.selected_class.display_name,
+				current_arch_cat.selected_class.display_name.substring (1,
+					current_arch_cat.selected_class.display_name.count.min (10)),
+				pixmaps [current_arch_cat.selected_class.group_name])
 		end
 
 feature {NONE} -- Implementation
 
-	docking_manager: attached SD_DOCKING_MANAGER
-
-	docking_manager_last_editor: SD_CONTENT
-			-- obtain last (i.e. rightmost) editor from docking manager
-			-- FIXME: should be managed inside SD_DOCKING_MANAGER
-		do
-			from docking_manager.contents.start until docking_manager.contents.off loop
-				if docking_manager.contents.item.type = {SD_ENUMERATION}.editor then
-					Result := docking_manager.contents.item
-				end
-				docking_manager.contents.forth
-			end
-		end
-
-	create_new_tool
-		local
-			last_ed: SD_CONTENT
-		do
-			last_ed := docking_manager_last_editor
-			create tool.make
-			create docking_pane.make_with_widget_title_pixmap (tool.ev_root_container, pixmaps ["class_concrete"], "Class map")
-			docking_manager.contents.extend (docking_pane)
-			docking_pane.close_request_actions.extend (agent remove)
-			docking_pane.set_type ({SD_ENUMERATION}.editor)
-			if attached last_ed then
-				docking_pane.set_tab_with (last_ed, False)
-			else
-				docking_pane.set_top ({SD_ENUMERATION}.top)
-			end
-		end
+	tool_type: GUI_CLASS_MAP_TOOL
 
 end
 

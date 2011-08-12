@@ -1024,10 +1024,10 @@ feature -- File Operations
 				fd.close
 
 				-- parse the dADL to DT then materialise to AOM
-				p_archetype_converter.set_source (dadl_text, 1)
-				p_archetype_converter.parse
-				if p_archetype_converter.parse_succeeded then
-					if attached {P_ARCHETYPE} p_archetype_converter.tree.as_object (({P_ARCHETYPE}).type_id, <<>>) as p_archetype then
+				archetype_serialise_engine.set_source (dadl_text, 1)
+				archetype_serialise_engine.parse
+				if archetype_serialise_engine.parse_succeeded then
+					if attached {P_ARCHETYPE} archetype_serialise_engine.tree.as_object (({P_ARCHETYPE}).type_id, <<>>) as p_archetype then
 						if attached {DIFFERENTIAL_ARCHETYPE} p_archetype.create_archetype as an_arch then
 							if an_arch.is_specialised then
 								an_arch.set_parent_archetype (specialisation_parent.differential_archetype)
@@ -1050,17 +1050,27 @@ feature -- Output
 			Archetype_valid: is_valid
 			Format_valid: has_dt_serialiser_format (a_format)
 		local
-			p_a: P_ARCHETYPE
+			dt_arch: DT_CONVERTIBLE
 		do
-			if flat_flag then
-				create p_a.make (flat_archetype)
+			if adl_version_for_flat_output_numeric < 150 then
+				-- FIXME: to be implemented
+				if flat_flag then
+					Result := "ADL 1.4-based flat object serialisation available in next AWB release"
+				else
+					Result := "ADL 1.4-based source object serialisation available in next AWB release"
+				end
 			else
-				create p_a.make (differential_archetype)
+				if flat_flag then
+					create {P_ARCHETYPE} dt_arch.make (flat_archetype)
+				else
+					create{P_ARCHETYPE} dt_arch.make (differential_archetype)
+				end
+
+				dt_arch.synchronise_to_tree
+				archetype_serialise_engine.set_tree (dt_arch.dt_representation)
+				archetype_serialise_engine.serialise (a_format, False, True)
+				Result := archetype_serialise_engine.serialised
 			end
-			p_a.synchronise_to_tree
-			p_archetype_converter.set_tree (p_a.dt_representation)
-			p_archetype_converter.serialise (a_format, False, True)
-			Result := p_archetype_converter.serialised
 		end
 
 feature {NONE} -- Implementation
@@ -1115,7 +1125,7 @@ feature {NONE} -- Implementation
 	child_type: ARCH_CAT_ARCHETYPE
 			-- child node type
 
-	p_archetype_converter: attached DADL_ENGINE
+	archetype_serialise_engine: attached DADL_ENGINE
 		once
 			create Result.make
 		end
