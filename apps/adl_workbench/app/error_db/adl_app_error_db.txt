@@ -75,10 +75,10 @@ templates = <
 		["show_rm_properties_button_text"] = <"+ RM properties">
 		["show_rm_properties_tooltip"] = <"Show non-archetyped RM properties">
 
-		["rm_visibility_controls_text_visibility_controls_text"] = <"RM visibility">
+		["rm_visibility_controls_text"] = <"RM visibility">
 
 		["expand_button_collapse_text"] = <"Collapse All">
-		["expand_button_expand_text"] = <"Expand ALl">
+		["expand_button_expand_text"] = <"Expand All">
 
 		-- GUI_TEST_ARCHETYPE_TREE_CONTROL
 		["Test_arch_compare_i1"] = <"Archetype source lengths same but texts differ">

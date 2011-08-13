@@ -47,23 +47,23 @@ feature {NONE} -- Implementation
 			help: STRING
 		do
 			from
-				pixmap_table.start
+				semantic_icon_table.start
 			until
-				pixmap_table.off
+				semantic_icon_table.off
 			loop
-				help := pixmap_table.item_for_iteration.help
+				help := semantic_icon_table.item_for_iteration.help
 
 				if help /= Void then
 					create list_item.make_with_text (help)
 
-					if pixmaps.has (pixmap_table.key_for_iteration) then
-						list_item.set_pixmap (pixmaps [pixmap_table.key_for_iteration])
+					if pixmaps.has (semantic_icon_table.key_for_iteration) then
+						list_item.set_pixmap (pixmaps [semantic_icon_table.key_for_iteration])
 					end
 
 					icon_help_list.extend (list_item)
 				end
 
-				pixmap_table.forth
+				semantic_icon_table.forth
 			end
 		end
 

@@ -77,9 +77,10 @@ feature -- Initialisation
 			ev_root_container.set_minimum_height (160)
 			ev_root_container.disable_item_expand (ev_view_controls_vbox)
 			ev_tree.set_background_color (editable_colour)
---			gui_tree.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			ev_tree.set_minimum_width (arch_tree_min_width)
 			ev_tree.set_minimum_height (60)
+
+			-- right hand side viewing controls
 			ev_view_controls_vbox.set_minimum_width (140)
 			ev_view_controls_vbox.set_minimum_height (170)
 			ev_view_controls_vbox.set_padding (padding_width)

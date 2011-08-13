@@ -342,8 +342,20 @@ feature -- Events
 			-- Repopulate the view of the archetype when the user selects a different language.
 		do
 			selected_language := ev_language_combo.text.as_string_8
-			repopulate
+			if target_archetype_descriptor.is_valid then
+				description_controls.populate (target_archetype, selected_language)
+				node_map_control.repopulate (selected_language)
+			end
 			on_select_archetype_notebook
+		end
+
+	repopulate
+		do
+			clear_content
+			if target_archetype_descriptor.is_valid then
+				description_controls.populate (target_archetype, selected_language)
+				node_map_control.populate (target_archetype_descriptor, differential_view, selected_language)
+			end
 		end
 
 feature -- UI Feedback
@@ -398,16 +410,6 @@ feature -- Commands
 				ev_adl_version_text.set_text (target_archetype_descriptor.differential_archetype.adl_version)
 				selected_language := target_archetype_descriptor.differential_archetype.original_language.code_string
 				populate_languages
-				description_controls.populate (target_archetype, selected_language)
-				node_map_control.populate (target_archetype_descriptor, differential_view, selected_language)
-			end
-		end
-
-	repopulate
-			-- repopulate if differential / flat view changed
-		do
-			clear_content
-			if target_archetype_descriptor.is_valid then
 				description_controls.populate (target_archetype, selected_language)
 				node_map_control.populate (target_archetype_descriptor, differential_view, selected_language)
 			end

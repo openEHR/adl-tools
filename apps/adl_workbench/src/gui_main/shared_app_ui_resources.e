@@ -56,7 +56,7 @@ feature -- Access
 
 	adl_workbench_icon: EV_PIXMAP
 		do
-			Result := pixmaps["adl_workbench_icon"]
+			Result := pixmaps["adl_workbench_logo"]
 		end
 
 	icon_directory: attached STRING
@@ -76,22 +76,28 @@ feature -- Access
 		end
 
 	pixmaps: attached HASH_TABLE [EV_PIXMAP, STRING]
-			-- Table of pixmap file paths keyed by logical name.
+			-- Table of pixmap file paths keyed by logical name; constructed from pixmaps
+			-- mentioned in `pixmap_table' and also any other pixmaps (icons) found in the
+			-- icon root directory, which will be keyed by their file name minus '.ico'
+			-- This means practically, that if an icon is general purpose, does't need a
+			-- help entry, then don't bother listing it in the `pixmap_table', just put
+			-- it in the icons root directory and the app will find it on startup.
 		require
 			has_icon_directory
 		local
 			file: RAW_FILE
 			pixmap: EV_PIXMAP
-			fname: STRING
+			ico_fname, path, pixmap_key: STRING
+			dir: DIRECTORY
 		once
 			create Result.make (0)
 
-			from pixmap_table.start until pixmap_table.off loop
-				if pixmap_table.item_for_iteration.file /= Void then
-					fname := file_system.pathname (icon_directory, pixmap_table.item_for_iteration.file)
-					create file.make (fname)
+			from semantic_icon_table.start until semantic_icon_table.off loop
+				if semantic_icon_table.item_for_iteration.file /= Void then
+					ico_fname := file_system.pathname (icon_directory, semantic_icon_table.item_for_iteration.file)
+					create file.make (ico_fname)
 					create pixmap
-					Result [pixmap_table.key_for_iteration] := pixmap
+					Result [semantic_icon_table.key_for_iteration] := pixmap
 
 					if file.exists then
 						pixmap.set_with_named_file (file.name)
@@ -101,7 +107,29 @@ feature -- Access
 					end
 				end
 
-				pixmap_table.forth
+				semantic_icon_table.forth
+			end
+
+			-- now go and collect any other pixmaps found in the icon directory and put them in
+			-- this table, keyed by the filename name with '.ico' removed
+			create dir.make_open_read (icon_directory)
+			from
+				dir.start
+				dir.readentry
+			until
+				dir.lastentry = Void
+			loop
+				if dir.lastentry.ends_with (icon_extension) then
+					pixmap_key := dir.lastentry.substring (1, dir.lastentry.count - icon_extension.count)
+					if not Result.has (pixmap_key) then
+						create pixmap
+						Result.put (pixmap, pixmap_key)
+						ico_fname := file_system.pathname (dir.name, dir.lastentry)
+						pixmap.set_with_named_file (ico_fname)
+						pixmap.set_minimum_size (pixmap.width, pixmap.height)
+					end
+				end
+				dir.readentry
 			end
 		end
 
@@ -421,13 +449,10 @@ feature -- Application Switches
 
 feature {NONE} -- Implementation
 
-	pixmap_table: attached DS_HASH_TABLE [TUPLE [file, help: STRING], STRING]
+	semantic_icon_table: attached DS_HASH_TABLE [TUPLE [file, help: STRING], STRING]
 			-- Table of pixmap file paths and help messages, keyed by icon key.
 		once
 			create Result.make (0)
-
-			Result.force (["archetype_category.ico", "archetype category"], "archetype_category")
-			Result.force (["template_category.ico", "template category"], "template_category")
 
 			Result.force (["class_concrete.ico", "concrete class from RM"], "class_concrete")
 			Result.force (["class_concrete_supertype.ico", "concrete class from RM"], "class_concrete_supertype")
@@ -441,14 +466,12 @@ feature {NONE} -- Implementation
 			Result.force (["archetype_warning_1.ico", "Ad hoc archetype (parsed and compiled with warnings)"], "archetype_warning_1")
 			Result.force (["archetype_valid_1.ico", "Ad hoc archetype (parsed and compiled)"], "archetype_valid_1")
 
-			Result.force (["file_folder_2.ico", Void], "file_folder_2")
 			Result.force (["archetype_2.ico", "Archetype in the reference repository (not parsed yet)"], "archetype_2")
 			Result.force (["archetype_parsed_2.ico", "Archetype in the reference repository (parsed but not compiled)"], "archetype_parsed_2")
 			Result.force (["archetype_parse_failed_2.ico", "Archetype in the reference repository (parse failed)"], "archetype_parse_failed_2")
 			Result.force (["archetype_warning_2.ico", "Archetype in the reference repository (parsed and compiled with warnings)"], "archetype_warning_2")
 			Result.force (["archetype_valid_2.ico", "Archetype in the reference repository (parsed and compiled)"], "archetype_valid_2")
 
-			Result.force (["file_folder_3.ico", Void], "file_folder_3")
 			Result.force (["archetype_3.ico", "Archetype in the work repository (not parsed yet)"], "archetype_3")
 			Result.force (["archetype_parsed_3.ico", "Archetype in the work repository (parsed but not compiled)"], "archetype_parsed_3")
 			Result.force (["archetype_parse_failed_3.ico", "Archetype in the work repository (parse failed)"], "archetype_parse_failed_3")
@@ -475,23 +498,6 @@ feature {NONE} -- Implementation
 			Result.force (["template_warning_3.ico", "Template in the work repository (parsed and compiled with warnings)"], "template_warning_3")
 			Result.force (["template_valid_3.ico", "Template in the work repository (parsed and compiled)"], "template_valid_3")
 
-			Result.force (["template_component_1.ico", Void], "template_component_1")
-			Result.force (["template_component_parsed_1.ico", Void], "template_component_parsed_1")
-			Result.force (["template_component_parse_failed_1.ico", Void], "template_component_parse_failed_1")
-			Result.force (["template_component_warning_1.ico", Void], "template_component_warning_1")
-			Result.force (["template_component_valid_1.ico", Void], "template_component_valid_1")
-
-			Result.force (["template_component_2.ico", Void], "template_component_2")
-			Result.force (["template_component_parsed_2.ico", Void], "template_component_parsed_2")
-			Result.force (["template_component_parse_failed_2.ico", Void], "template_component_parse_failed_2")
-			Result.force (["template_component_warning_2.ico", Void], "template_component_warning_2")
-			Result.force (["template_component_valid_2.ico", Void], "template_component_valid_2")
-
-			Result.force (["template_component_3.ico", Void], "template_component_3")
-			Result.force (["template_component_parsed_3.ico", Void], "template_component_parsed_3")
-			Result.force (["template_component_parse_failed_3.ico", Void], "template_component_parse_failed_3")
-			Result.force (["template_component_warning_3.ico", Void], "template_component_warning_3")
-			Result.force (["template_component_valid_3.ico", Void], "template_component_valid_3")
 			Result.force ([Void, ""], "Gap 1 in the help")
 
 			Result.force (["node_normal/c_attribute.ico", "Single-valued attribute (mandatory)"], "C_ATTRIBUTE")
@@ -599,37 +605,6 @@ feature {NONE} -- Implementation
 			Result.force (["fail.ico", Void], "test_failed")
 			Result.force (["not_applicable.ico", Void], "test_not_applicable")
 
-			Result.force (["parse_errors.ico", Void], "parse_errors")
-			Result.force (["validity_errors.ico", Void], "validity_errors")
-			Result.force (["warnings.ico", Void], "warnings")
-
-			Result.force (["go.ico", Void], "go")
-			Result.force (["stop.ico", Void], "stop")
-			Result.force (["star.ico", Void], "star")
-			Result.force (["info.ico", Void], "info")
-			Result.force (["parse.ico", Void], "parse")
-			Result.force (["edit.ico", Void], "edit")
-			Result.force (["flat.ico", Void], "flat")
-			Result.force (["diff.ico", Void], "diff")
-			Result.force (["tools.ico", Void], "tools")
-			Result.force (["compile.ico", Void], "compile")
-			Result.force (["pause.ico", Void], "pause")
-			Result.force (["annotations.ico", Void], "annotations")
-
-			Result.force (["terminology.ico", Void], "terminology")
-			Result.force (["paths.ico", Void], "paths")
-			Result.force (["description.ico", Void], "description")
-			Result.force (["archetype_slot.ico", Void], "archetype_slot")
-			Result.force (["node_map.ico", Void], "node_map")
-
-			Result.force (["open_archetype.ico", Void], "open_archetype")
-			Result.force (["history_back.ico", Void], "history_back")
-			Result.force (["history_forward.ico", Void], "history_forward")
-			Result.force (["magnifier.ico", Void], "magnifier")
-			Result.force (["console.ico", Void], "console")
-			Result.force (["errors.ico", Void], "errors")
-
-			Result.force (["adl_workbench_logo.ico", Void], "adl_workbench_icon")
 			Result.force (["openEHR.png", Void], "openEHR_logo")
 			Result.force (["openehr_adl_workbench_logo.png", Void], "adl_workbench_logo")
 		ensure

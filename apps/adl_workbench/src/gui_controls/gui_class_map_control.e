@@ -74,8 +74,8 @@ feature -- Initialisation
 			ev_action_bar.disable_item_expand (ev_view_tool_bar)
 			ev_class_id.disable_edit
 			ev_view_label.set_text ("View ")
-			ev_differential_view_button.set_pixmap (pixmaps ["diff"])
-			ev_flat_view_button.set_pixmap (pixmaps ["flat"])
+			ev_differential_view_button.set_pixmap (pixmaps ["diff_class"])
+			ev_flat_view_button.set_pixmap (pixmaps ["flat_class"])
 			ev_differential_view_button.set_tooltip (create_message_content ("Set differential archetype view", Void))
 			ev_flat_view_button.set_tooltip (create_message_content ("Set flat archetype view", Void))
 
