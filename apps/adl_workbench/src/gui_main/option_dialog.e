@@ -92,6 +92,7 @@ feature -- Events
 			set_expand_node_tree (show_definition_tree_expanded_check_button.is_selected)
 			set_show_line_numbers (show_line_numbers_check_button.is_selected)
 			set_display_archetype_source (display_archetype_source_check_button.is_selected)
+			set_use_rm_pixmaps (use_rm_pixmaps_check_button.is_selected)
 			set_show_entire_ontology (show_entire_ontology_check_button.is_selected)
 			if show_entire_ontology /= old_show_entire_ontology then
 				has_changed_navigator_options := True
@@ -183,6 +184,12 @@ feature {NONE} -- Implementation
 				display_archetype_source_check_button.enable_select
 			else
 				display_archetype_source_check_button.disable_select
+			end
+
+			if use_rm_pixmaps then
+				use_rm_pixmaps_check_button.enable_select
+			else
+				use_rm_pixmaps_check_button.disable_select
 			end
 
 			if show_entire_ontology then

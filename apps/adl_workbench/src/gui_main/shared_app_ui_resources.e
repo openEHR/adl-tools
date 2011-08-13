@@ -50,6 +50,8 @@ feature -- Definitions
 			not_empty: not Result.is_empty
 		end
 
+	icon_extension: STRING = ".ico"
+
 feature -- Access
 
 	adl_workbench_icon: EV_PIXMAP
@@ -80,12 +82,14 @@ feature -- Access
 		local
 			file: RAW_FILE
 			pixmap: EV_PIXMAP
+			fname: STRING
 		once
 			create Result.make (0)
 
 			from pixmap_table.start until pixmap_table.off loop
 				if pixmap_table.item_for_iteration.file /= Void then
-					create file.make (icon_directory + "/" + pixmap_table.item_for_iteration.file)
+					fname := file_system.pathname (icon_directory, pixmap_table.item_for_iteration.file)
+					create file.make (fname)
 					create pixmap
 					Result [pixmap_table.key_for_iteration] := pixmap
 
@@ -98,6 +102,52 @@ feature -- Access
 				end
 
 				pixmap_table.forth
+			end
+		end
+
+	rm_pixmaps: attached HASH_TABLE [HASH_TABLE [EV_PIXMAP, STRING], STRING]
+			-- Table of pixmap tables, each table for a given reference model;
+			-- each table has the structure {PIXMAP, RM class name}
+			-- these pixmaps can be used for RM-specific visualisation of the archetype definition
+		require
+			has_icon_directory
+		local
+			rm_ico_file: RAW_FILE
+			pixmap: EV_PIXMAP
+			path, ico_fname: STRING
+			dir, rm_ico_dir: DIRECTORY
+			rm_ico_map: HASH_TABLE [EV_PIXMAP, STRING]
+		once
+			create Result.make (0)
+			path := file_system.pathname (icon_directory, "rm")
+			create dir.make_open_read (path)
+			from
+				dir.start
+				dir.readentry
+			until
+				dir.lastentry = Void
+			loop
+				if not dir.lastentry.ends_with (".") then
+					create rm_ico_map.make(0)
+					Result.put (rm_ico_map, dir.lastentry)
+					create rm_ico_dir.make_open_read (file_system.pathname (path, dir.lastentry))
+					from
+						rm_ico_dir.start
+						rm_ico_dir.readentry
+					until
+						rm_ico_dir.lastentry = Void
+					loop
+						if rm_ico_dir.lastentry.ends_with (icon_extension) then
+							create pixmap
+							rm_ico_map.put (pixmap, rm_ico_dir.lastentry.substring (1, rm_ico_dir.lastentry.count - icon_extension.count).as_upper)
+							ico_fname := file_system.pathname (rm_ico_dir.name, rm_ico_dir.lastentry)
+							pixmap.set_with_named_file (ico_fname)
+							pixmap.set_minimum_size (pixmap.width, pixmap.height)
+						end
+						rm_ico_dir.readentry
+					end
+				end
+				dir.readentry
 			end
 		end
 
@@ -282,7 +332,7 @@ feature -- Application Switches
 	set_display_archetype_source (flag: BOOLEAN)
 			-- Set flag for whether to display markers indicating archetype authoring form.
 		do
-			app_cfg.put_value("/gui/display_archetype_source", flag)
+			app_cfg.put_value ("/gui/display_archetype_source", flag)
 		end
 
 	path_filter_combo_selection: STRING
@@ -295,6 +345,19 @@ feature -- Application Switches
 			--
 		do
 			app_cfg.put_value("/gui/path_filter_combo_selection", str)
+		end
+
+	use_rm_pixmaps: BOOLEAN
+			-- if True, substitute RM pixmaps, if any found, below icon directory, during
+			-- archetype definition visualisation
+		do
+			Result := app_cfg.boolean_value ("/gui/use_rm_pixmaps")
+		end
+
+	set_use_rm_pixmaps (flag: BOOLEAN)
+			--
+		do
+			app_cfg.put_value ("/gui/use_rm_pixmaps", flag)
 		end
 
 	path_view_check_list_settings: attached LIST [STRING]

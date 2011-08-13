@@ -65,6 +65,7 @@ feature -- Initialisation
 			in_technical_mode := technical_mode_flag
 			updating := update_flag
 			language := a_lang
+			rm_name := an_archetype.archetype_id.rm_originator.as_lower
 			create gui_nodes.make (0)
 		end
 
@@ -74,6 +75,7 @@ feature -- Visitor
 			-- enter n C_COMPLEX_OBJECT
 		local
 			gui_node_text: STRING
+			pixmap: EV_PIXMAP
 		do
 			-- node text
 			gui_node_text := c_object_string (a_node)
@@ -85,7 +87,12 @@ feature -- Visitor
 				gui_node_map.item (a_node).set_text (utf8 (gui_node_text))
 				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
 			else
-				create_node (gui_node_text, a_node.generating_type + occurrences_pixmap_string (a_node) + create_pixmap_ext (a_node), a_node)
+				if use_rm_pixmaps and then rm_pixmaps.has (rm_name) and then rm_pixmaps.item (rm_name).has (a_node.rm_type_name) then
+					pixmap := rm_pixmaps.item (rm_name).item (a_node.rm_type_name)
+				else
+					pixmap := pixmaps.item(a_node.generating_type + occurrences_pixmap_string (a_node) + create_pixmap_ext (a_node))
+				end
+				create_node (gui_node_text, pixmap, a_node)
 
 				-- attach into GUI tree
 				if a_node.is_root then
@@ -109,6 +116,7 @@ feature -- Visitor
 			pixmap_name: STRING
 			gui_node_text: STRING
 			gui_node, gui_sub_node: EV_TREE_ITEM
+			pixmap: EV_PIXMAP
 		do
 			-- node text
 			gui_node_text := c_object_string (a_node)
@@ -132,14 +140,18 @@ feature -- Visitor
 					end
 				end
 			else
-				-- pixmap name
-				pixmap_name := a_node.generating_type
-				if not attached a_node.occurrences or else a_node.occurrences.lower = 0 then
-					pixmap_name.append (".optional")
+				-- pixmap
+				if use_rm_pixmaps and then rm_pixmaps.has (rm_name) and then rm_pixmaps.item (rm_name).has (a_node.rm_type_name) then
+					pixmap := rm_pixmaps.item (rm_name).item (a_node.rm_type_name)
+				else
+					pixmap_name := a_node.generating_type
+					if not attached a_node.occurrences or else a_node.occurrences.lower = 0 then
+						pixmap_name.append (".optional")
+					end
+					pixmap_name.append (create_pixmap_ext (a_node))
+					pixmap := pixmaps.item (pixmap_name)
 				end
-				pixmap_name.append (create_pixmap_ext (a_node))
-
-				create_node (gui_node_text, pixmap_name, a_node)
+				create_node (gui_node_text, pixmap, a_node)
 
 				-- create child nodes for includes & excludes
 				if a_node.has_includes then
@@ -177,6 +189,7 @@ feature -- Visitor
 		local
 			pixmap_name: STRING
 			gui_node_text, s: STRING
+			pixmap: EV_PIXMAP
 		do
 			-- node text
 			create gui_node_text.make_empty
@@ -208,16 +221,23 @@ feature -- Visitor
 				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
 			else
 				-- pixmap name
-				pixmap_name := "C_ATTRIBUTE"
-				if a_node.is_multiple then
-					pixmap_name.append (".multiple")
+				if use_rm_pixmaps and not a_node.is_multiple and then rm_pixmaps.has (rm_name) and then rm_pixmaps.item (rm_name).has ("C_ATTRIBUTE") then
+					pixmap := rm_pixmaps.item (rm_name).item ("C_ATTRIBUTE")
+				elseif use_rm_pixmaps and a_node.is_multiple and then rm_pixmaps.has (rm_name) and then rm_pixmaps.item (rm_name).has ("C_ATTRIBUTE_MULTIPLE") then
+					pixmap := rm_pixmaps.item (rm_name).item ("C_ATTRIBUTE_MULTIPLE")
+				else
+					pixmap_name := "C_ATTRIBUTE"
+					if a_node.is_multiple then
+						pixmap_name.append (".multiple")
+					end
+					if a_node.existence = Void or else a_node.existence.lower = 0 then
+						pixmap_name.append (".optional")
+					end
+					pixmap_name.append (create_pixmap_ext (a_node))
+					pixmap := pixmaps.item(pixmap_name)
 				end
-				if a_node.existence = Void or else a_node.existence.lower = 0 then
-					pixmap_name.append (".optional")
-				end
-				pixmap_name.append (create_pixmap_ext (a_node))
 
-				create_node (gui_node_text, pixmap_name, a_node)
+				create_node (gui_node_text, pixmap, a_node)
 			end
 		end
 
@@ -243,6 +263,7 @@ feature -- Visitor
 			-- enter a C_ARCHETYPE_ROOT
 		local
 			gui_node_text: STRING
+			pixmap: EV_PIXMAP
 		do
 			-- have to obtain the ontology from the main archetype directory because the archetype being serialised
 			-- here might be in differential form, and have no component_ontologies aet up
@@ -258,7 +279,12 @@ feature -- Visitor
 				if a_node.has_attributes then
 					start_c_complex_object (a_node, depth)
 				else -- it is in source mode, there are no children, only slot fillers
-					create_node (gui_node_text, a_node.generating_type + occurrences_pixmap_string (a_node) + create_pixmap_ext (a_node), a_node)
+					if use_rm_pixmaps and then rm_pixmaps.has (rm_name) and then rm_pixmaps.item (rm_name).has (a_node.rm_type_name) then
+						pixmap := rm_pixmaps.item (rm_name).item (a_node.rm_type_name)
+					else
+						pixmap := pixmaps.item(a_node.generating_type + occurrences_pixmap_string (a_node) + create_pixmap_ext (a_node))
+					end
+					create_node (gui_node_text, pixmap, a_node)
 				end
 			end
 		end
@@ -297,7 +323,7 @@ feature -- Visitor
 				gui_node_map.item (a_node).set_text (utf8 (gui_node_text))
 				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
 			else
-				create_node (gui_node_text, a_node.generating_type + create_pixmap_ext (a_node), a_node)
+				create_node (gui_node_text, pixmaps.item(a_node.generating_type + create_pixmap_ext (a_node)), a_node)
 			end
 		end
 
@@ -324,7 +350,7 @@ feature -- Visitor
 				gui_node_map.item (a_node).set_text (utf8 (gui_node_text))
 				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
 			else
-				create_node (gui_node_text, a_node.generating_type + create_pixmap_ext (a_node), a_node)
+				create_node (gui_node_text, pixmaps.item(a_node.generating_type + create_pixmap_ext (a_node)), a_node)
 			end
 		end
 
@@ -360,7 +386,7 @@ feature -- Visitor
 				gui_node_map.item (a_node).set_text (utf8 (gui_node_text))
 				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
 			else
-				create_node (gui_node_text, a_node.generating_type + create_pixmap_ext (a_node), a_node)
+				create_node (gui_node_text, pixmaps.item(a_node.generating_type + create_pixmap_ext (a_node)), a_node)
 			end
 		end
 
@@ -414,7 +440,7 @@ feature -- Visitor
 					gui_node_text.append (a_node.terminology_id.value)
 				end
 
-				create_node (gui_node_text, a_node.generating_type + pixmap_ext, a_node)
+				create_node (gui_node_text, pixmaps.item(a_node.generating_type + pixmap_ext), a_node)
 
 				-- child nodes for each code
 				if a_node.code_count > 0 then
@@ -465,7 +491,7 @@ feature -- Visitor
 			else
 				-- pixmap name extension
 				pixmap_ext := create_pixmap_ext (a_node)
-				create_node (a_node.rm_type_name, a_node.generating_type + pixmap_ext, a_node)
+				create_node (a_node.rm_type_name, pixmaps.item(a_node.generating_type + pixmap_ext), a_node)
 				if not a_node.any_allowed then
 					from a_node.items.start until a_node.items.off loop
 						assumed_flag := a_node.has_assumed_value and then a_node.assumed_value.value = a_node.items.item.value
@@ -531,7 +557,7 @@ feature -- Visitor
 			else
 				-- pixmap name extension
 				pixmap_ext := create_pixmap_ext (a_node)
-				create_node (gui_node_text, a_node.generating_type + pixmap_ext, a_node)
+				create_node (gui_node_text, pixmaps.item(a_node.generating_type + pixmap_ext), a_node)
 
 				-- child nodes
 				if attached a_node.list then
@@ -579,10 +605,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	create_node (a_text, a_pixmap_name: attached STRING; a_node: attached ARCHETYPE_CONSTRAINT)
+	create_node (a_text: STRING; a_pixmap: attached EV_PIXMAP; a_node: attached ARCHETYPE_CONSTRAINT)
 			-- attach a node into the tree
-		local
-			tooltip_str: STRING
 		do
 			-- create and set the text
 			create last_gui_node.make_with_text (utf8 (a_text))
@@ -591,7 +615,7 @@ feature {NONE} -- Implementation
 			last_gui_node.set_data (a_node)
 
 			-- set the pixmap
-			last_gui_node.set_pixmap (pixmaps.item (a_pixmap_name))
+			last_gui_node.set_pixmap (a_pixmap)
 
 			-- set the tooltip
 			last_gui_node.set_tooltip (node_tooltip_str (a_node))
@@ -633,6 +657,9 @@ feature {NONE} -- Implementation
 			-- reference copied from GUI_NODE_MAP_CONTROL
 
 	in_technical_mode: BOOLEAN
+
+	rm_name: STRING
+			-- name of reference model of this archetype, for the purpose of finding pixmaps for RM-specific visualisation
 
 	updating: BOOLEAN
 			-- True indicates that the visitor is just updating the text value of the nodes

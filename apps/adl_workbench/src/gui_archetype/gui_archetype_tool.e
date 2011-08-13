@@ -431,6 +431,15 @@ feature -- Commands
 			end
 		end
 
+	change_adl_serialisation_version
+			-- call this if changing it becase control labels and contents need to be repopulated
+		do
+			set_serialisation_control_texts
+			if attached target_archetype_descriptor then
+				populate_serialised
+			end
+		end
+
 feature {NONE} -- Implementation
 
 	text_widget_handler: GUI_TEXT_WIDGET_HANDLER
@@ -502,6 +511,8 @@ feature {NONE} -- Implementation
 		end
 
 	populate_serialised
+		require
+			attached target_archetype_descriptor
 		do
 			if ev_adl_rb.is_selected then
 				populate_source_text
@@ -604,6 +615,16 @@ feature {NONE} -- Implementation
 			ev_serialised_rich_text.set_text (utf8 (s))
 		end
 
+	set_serialisation_control_texts
+		do
+			ev_adl_rb.set_text ("ADL " + adl_version_for_flat_output)
+			ev_adl_rb.set_tooltip (create_message_content ("show_adl_serialisation_tooltip", <<adl_version_for_flat_output>>))
+			ev_dadl_rb.set_text ("dADL " + adl_version_for_flat_output)
+			ev_dadl_rb.set_tooltip (create_message_content ("show_dadl_serialisation_tooltip", <<adl_version_for_flat_output>>))
+			ev_xml_rb.set_text ("XML " + adl_version_for_flat_output)
+			ev_xml_rb.set_tooltip (create_message_content ("show_xml_serialisation_tooltip", <<adl_version_for_flat_output>>))
+		end
+
 	set_tab_texts
 			-- set taxt on tabs depending on view
 		do
@@ -613,16 +634,6 @@ feature {NONE} -- Implementation
 			else
 				ev_notebook.set_item_text (ev_serialised_hbox, "Serialised (flat)")
 			end
-		end
-
-	set_serialisation_control_texts
-		do
-			ev_adl_rb.set_text ("ADL " + adl_version_for_flat_output)
-			ev_adl_rb.set_tooltip (create_message_content ("show_adl_serialisation_tooltip", <<adl_version_for_flat_output>>))
-			ev_dadl_rb.set_text ("dADL " + adl_version_for_flat_output)
-			ev_dadl_rb.set_tooltip (create_message_content ("show_dadl_serialisation_tooltip", <<adl_version_for_flat_output>>))
-			ev_xml_rb.set_text ("XML " + adl_version_for_flat_output)
-			ev_xml_rb.set_tooltip (create_message_content ("show_xml_serialisation_tooltip", <<adl_version_for_flat_output>>))
 		end
 
 end

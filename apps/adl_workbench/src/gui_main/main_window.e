@@ -137,7 +137,6 @@ feature {NONE} -- Initialization
 			arch_output_version_label.set_text ("ADL output version: ")
 			arch_output_version_label.set_tooltip ("Release of ADL and AOM XSD to use in output serialisation")
 			arch_output_version_combo.set_strings (Adl_versions)
-			populate_arch_output_version_combo
 
 			-- set up docking
 			create docking_manager.make (viewer_main_cell, Current)
@@ -147,6 +146,9 @@ feature {NONE} -- Initialization
 			create_new_statistics_tool
 			create_new_test_tool
 			archetype_tools.create_new_tool
+
+			-- populate any statically populated controls
+			populate_ui_arch_output_version
 
 			-- set up events
 			edit_menu_copy.select_actions.extend (agent text_widget_handler.on_copy)
@@ -718,7 +720,7 @@ feature {NONE} -- Tools menu events
 
 			if dialog.has_changed_ui_options then
 				save_resources_and_show_status
-				populate_arch_output_version_combo
+				populate_ui_arch_output_version
 				if repository_profiles.has_current_profile and then current_arch_cat.has_selected_archetype then
 					archetype_tools.populate_current_tool
 				end
@@ -1194,8 +1196,10 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_arch_output_version_combo
+	populate_ui_arch_output_version
+			-- populate ADL output version wherever it appears in the UI
 		do
+			-- main form combo
 			arch_output_version_combo.do_all (
 				agent (li: EV_LIST_ITEM)
 					do
@@ -1204,6 +1208,11 @@ feature {NONE} -- Implementation
 						end
 					end
 			)
+
+			-- archetype tool
+			if archetype_tools.has_current_tool then
+				archetype_tools.current_tool.change_adl_serialisation_version
+			end
 		end
 
 feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Statistics
@@ -1276,8 +1285,22 @@ feature {NONE} -- Build commands
 
 	set_adl_version_from_combo
 			-- set ADL version
+		local
+			info_dialog: EV_INFORMATION_DIALOG
 		do
 			set_adl_version_for_flat_output (arch_output_version_combo.selected_text.as_string_8)
+
+			-- update archetype tool
+			if archetype_tools.has_current_tool then
+				archetype_tools.current_tool.change_adl_serialisation_version
+			end
+
+			-- for the moment, post a message about ADL 1.4 XML not being available
+			if adl_version_for_flat_output_numeric < 150 then
+				create info_dialog.make_with_text ("XML based on ADL 1.4 available in next release")
+				info_dialog.set_title ("Configuration warning")
+				info_dialog.show_modal_to_window (Current)
+			end
 		end
 
 feature {NONE} -- GUI Widgets

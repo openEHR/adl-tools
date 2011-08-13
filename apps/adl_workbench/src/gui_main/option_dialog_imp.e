@@ -67,6 +67,7 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_4.extend (l_ev_horizontal_box_8)
 			l_ev_horizontal_box_8.extend (display_archetype_source_check_button)
 			l_ev_horizontal_box_8.extend (show_entire_ontology_check_button)
+			l_ev_horizontal_box_8.extend (use_rm_pixmaps_check_button)
 			l_ev_vertical_box_1.extend (l_ev_frame_1)
 			l_ev_frame_1.extend (l_ev_vertical_box_5)
 			l_ev_vertical_box_5.extend (l_ev_horizontal_box_9)
@@ -188,7 +189,7 @@ feature {NONE}-- Initialization
 			internal_font.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
 			internal_font.set_height_in_points (10)
 			archetype_view_frame.set_font (internal_font)
-			archetype_view_frame.set_text ("Archetype viewing settings")
+			archetype_view_frame.set_text ("User interface settings")
 			archetype_view_frame.set_minimum_height (50)
 			l_ev_vertical_box_4.set_minimum_height (50)
 			integer_constant_set_procedures.extend (agent l_ev_vertical_box_4.set_padding (?))
@@ -209,9 +210,12 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent padding_width)
 			integer_constant_set_procedures.extend (agent l_ev_horizontal_box_8.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent border_width)
-			display_archetype_source_check_button.set_text ("Indicate original creation form?")
+			display_archetype_source_check_button.set_text ("Show original creation form?")
+			display_archetype_source_check_button.set_tooltip ("Indicate original format  - ADL 1.4 legacy flat, ADL 1.5, etc")
 			show_entire_ontology_check_button.set_text ("Show all classes in explorer?")
 			show_entire_ontology_check_button.set_tooltip ("Show all archetypable classes in RM even if there are no archetypes based on them in the current repository.")
+			use_rm_pixmaps_check_button.set_text ("Use RM icons?")
+			use_rm_pixmaps_check_button.set_tooltip ("Use RM-specific icons in visualisation of archetype definition?")
 			create internal_font
 			internal_font.set_family ({EV_FONT_CONSTANTS}.Family_screen)
 			internal_font.set_weight ({EV_FONT_CONSTANTS}.Weight_regular)
@@ -334,6 +338,7 @@ feature {NONE}-- Initialization
 			create l_ev_horizontal_box_8
 			create display_archetype_source_check_button
 			create show_entire_ontology_check_button
+			create use_rm_pixmaps_check_button
 			create l_ev_frame_1
 			create l_ev_vertical_box_5
 			create l_ev_horizontal_box_9
@@ -390,7 +395,7 @@ feature -- Access
 	parser_error_reporting_level_combo_box, adl_save_version_combo_box: EV_COMBO_BOX
 	validation_strict_check_button,
 	rm_flattening_on_check_button, show_definition_tree_expanded_check_button, show_line_numbers_check_button,
-	display_archetype_source_check_button, show_entire_ontology_check_button: EV_CHECK_BUTTON
+	display_archetype_source_check_button, show_entire_ontology_check_button, use_rm_pixmaps_check_button: EV_CHECK_BUTTON
 	l_ev_cell_1: EV_CELL
 
 feature {NONE} -- Implementation

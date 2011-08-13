@@ -1052,12 +1052,12 @@ feature -- Output
 		local
 			dt_arch: DT_CONVERTIBLE
 		do
-			if adl_version_for_flat_output_numeric < 150 then
+			if adl_version_for_flat_output_numeric < 150 and a_format.is_equal (Syntax_type_xml) then
 				-- FIXME: to be implemented
 				if flat_flag then
-					Result := "ADL 1.4-based flat object serialisation available in next AWB release"
+					Result := "ADL 1.4-based flat object XML serialisation available in next AWB release"
 				else
-					Result := "ADL 1.4-based source object serialisation available in next AWB release"
+					Result := "ADL 1.4-based source object XML serialisation available in next AWB release"
 				end
 			else
 				if flat_flag then
