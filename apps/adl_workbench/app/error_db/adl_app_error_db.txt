@@ -66,16 +66,19 @@ templates = <
 		["collapse_one_level_button_text"] = <"Collapse One">
 		["collapse_one_level_tooltip"] = <"Collapse one level of the Node Map">
 
-		["hide_rm_details_button_text"] = <"Hide">
-		["hide_rm_details_tooltip"] = <"Hide RM details of the archetyped nodes">
+		["hide_rm_details_button_text"] = <"Domain">
+		["hide_rm_details_tooltip"] = <"Show domain view; hide RM details of the archetyped nodes">
 
-		["display_rm_class_names_button_text"] = <"+ class names">
-		["display_rm_class_names_tooltip"] = <"Display RM class names of archetyped nodes">
+		["display_rm_class_names_button_text"] = <"Technical">
+		["display_rm_class_names_tooltip"] = <"Display RM class names and attribute details of archetyped nodes">
 
-		["show_rm_properties_button_text"] = <"+ RM properties">
+		["show_rm_properties_button_text"] = <"Show RM properties">
 		["show_rm_properties_tooltip"] = <"Show non-archetyped RM properties">
 
-		["rm_visibility_controls_text"] = <"RM visibility">
+		["use_rm_icons_button_text"] = <"Use RM icons">
+		["use_rm_icons_button_tooltip"] = <"Use RM-specific icons">
+
+		["rm_visibility_controls_text"] = <"Viewing mode">
 
 		["expand_button_collapse_text"] = <"Collapse All">
 		["expand_button_expand_text"] = <"Expand All">

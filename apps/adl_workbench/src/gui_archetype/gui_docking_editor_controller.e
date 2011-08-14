@@ -43,6 +43,18 @@ feature -- Access
 			Result := docking_editors.item (current_docking_editor_id).tool
 		end
 
+	all_tools: ARRAYED_LIST [like tool_type]
+			-- list of all tools currently in existence at the moment
+		require
+			has_current_tool
+		do
+			create Result.make (0)
+			from docking_editors.start until docking_editors.off loop
+				Result.extend (docking_editors.item_for_iteration.tool)
+				docking_editors.forth
+			end
+		end
+
 feature -- Status Report
 
 	has_current_tool: BOOLEAN
@@ -61,6 +73,12 @@ feature -- Commands
 				docking_editors.item_for_iteration.tool.clear
 				docking_editors.forth
 			end
+		end
+
+	do_all_tools (an_agent: PROCEDURE [ANY, TUPLE [like tool_type]])
+			-- execute `an_agent' on all of the tools currently existing
+		do
+			all_tools.do_all (an_agent)
 		end
 
 feature {NONE} -- Implementation

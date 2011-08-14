@@ -41,10 +41,12 @@ feature -- Definitions
 feature -- Initialisation
 
 	make (a_docking_manager: attached SD_DOCKING_MANAGER;
-			a_select_archetype_from_gui_data_agent: like select_archetype_from_gui_data)
+			a_select_archetype_from_gui_data_agent: like select_archetype_from_gui_data;
+			a_update_all_tools_rm_icons_setting_agent: like update_all_tools_rm_icons_setting_agent)
 		do
 			make_docking (a_docking_manager)
 			select_archetype_from_gui_data := a_select_archetype_from_gui_data_agent
+			update_all_tools_rm_icons_setting_agent := a_update_all_tools_rm_icons_setting_agent
 		end
 
 feature -- Commands
@@ -53,7 +55,7 @@ feature -- Commands
 		local
 			new_tool: like tool_type
 		do
-			create new_tool.make (select_archetype_from_gui_data)
+			create new_tool.make (select_archetype_from_gui_data, update_all_tools_rm_icons_setting_agent)
 			create_new_docking_editor (new_tool)
 		end
 
@@ -79,6 +81,8 @@ feature {NONE} -- Implementation
 	select_archetype_from_gui_data: PROCEDURE [ANY, TUPLE [EV_ANY]]
 			-- agent provided by upper level of GUI for doing something
 			-- when an archetype in this tool is selected
+
+	update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]
 
 end
 

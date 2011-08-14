@@ -54,7 +54,8 @@ create
 
 feature {NONE}-- Initialization
 
-	make (a_select_archetype_from_gui_data_agent: like select_archetype_from_gui_data)
+	make (a_select_archetype_from_gui_data_agent: like select_archetype_from_gui_data;
+			a_update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE])
 		do
 			select_archetype_from_gui_data := a_select_archetype_from_gui_data_agent
 
@@ -78,7 +79,7 @@ feature {NONE}-- Initialization
 
 			create ev_notebook
 			create description_controls.make (agent text_widget_handler.on_select_all)
-			create node_map_control.make (agent select_ontology_item_from_code)
+			create node_map_control.make (agent select_ontology_item_from_code, a_update_all_tools_rm_icons_setting_agent)
 			create path_map_control.make (agent on_path_map_key_press)
 			create slot_map_control.make (agent update_slots_tab_label)
 			create ontology_controls.make
@@ -440,6 +441,12 @@ feature -- Commands
 			if attached target_archetype_descriptor then
 				populate_serialised
 			end
+		end
+
+	update_rm_icons_setting
+			-- call this routine if rm_icons setting changed elsewhere in tool
+		do
+			node_map_control.update_rm_icons_cb
 		end
 
 feature {NONE} -- Implementation

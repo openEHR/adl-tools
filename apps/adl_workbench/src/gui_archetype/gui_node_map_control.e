@@ -41,9 +41,11 @@ create
 
 feature -- Initialisation
 
-	make (a_code_select_action: PROCEDURE [ANY, TUPLE [STRING]])
+	make (a_code_select_action_agent: like code_select_action_agent;
+			a_update_all_tools_rm_icons_setting_agent: like update_all_tools_rm_icons_setting_agent)
 		do
-			code_select_action := a_code_select_action
+			code_select_action_agent := a_code_select_action_agent
+			update_all_tools_rm_icons_setting_agent := a_update_all_tools_rm_icons_setting_agent
 
 			-- create widgets
 			create ev_root_container
@@ -57,7 +59,8 @@ feature -- Initialisation
 			create ev_rm_visibility_vbox
 			create ev_rm_off_rb
 			create ev_rm_classes_on_rb
-			create ev_rm_attrs_on_rb
+			create ev_rm_attrs_on_cb
+			create ev_use_rm_icons_cb
 
 			-- connect them together
 			ev_root_container.extend (ev_tree)
@@ -70,7 +73,8 @@ feature -- Initialisation
 			ev_rm_visibility_controls.extend (ev_rm_visibility_vbox)
 			ev_rm_visibility_vbox.extend (ev_rm_off_rb)
 			ev_rm_visibility_vbox.extend (ev_rm_classes_on_rb)
-			ev_rm_visibility_vbox.extend (ev_rm_attrs_on_rb)
+			ev_view_controls_vbox.extend (ev_rm_attrs_on_cb)
+			ev_view_controls_vbox.extend (ev_use_rm_icons_cb)
 
 			-- set visual characteristics
 			ev_root_container.set_minimum_width (1)
@@ -80,7 +84,7 @@ feature -- Initialisation
 			ev_tree.set_minimum_width (arch_tree_min_width)
 			ev_tree.set_minimum_height (60)
 
-			-- right hand side viewing controls
+			-- right hand side tree expand/collapse controls
 			ev_view_controls_vbox.set_minimum_width (140)
 			ev_view_controls_vbox.set_minimum_height (170)
 			ev_view_controls_vbox.set_padding (padding_width)
@@ -90,6 +94,8 @@ feature -- Initialisation
 			ev_view_controls_vbox.disable_item_expand (ev_collapse_one_button)
 			ev_view_controls_vbox.disable_item_expand (ev_cell)
 			ev_view_controls_vbox.disable_item_expand (ev_rm_visibility_controls)
+			ev_view_controls_vbox.disable_item_expand (ev_rm_attrs_on_cb)
+			ev_view_controls_vbox.disable_item_expand (ev_use_rm_icons_cb)
 			ev_expand_button.set_text (create_message_content ("expand_collapse_complete_button_text", Void))
 			ev_expand_button.set_tooltip (create_message_content ("expand_collapse_complete_tooltip", Void))
 			ev_expand_button.set_minimum_width (tree_control_panel_width)
@@ -100,28 +106,33 @@ feature -- Initialisation
 			ev_collapse_one_button.set_tooltip (create_message_content ("collapse_one_level_tooltip", Void))
 			ev_collapse_one_button.set_minimum_width (tree_control_panel_width)
 			ev_cell.set_minimum_height (20)
+
+			-- right hand side visibility controls
 			ev_rm_visibility_controls.set_text (create_message_content ("rm_visibility_controls_text", Void))
 			ev_rm_visibility_controls.set_minimum_width (100)
-			ev_rm_visibility_controls.set_minimum_height (95)
-			ev_rm_visibility_vbox.set_minimum_height (70)
+			ev_rm_visibility_controls.set_minimum_height (85)
 			ev_rm_visibility_vbox.set_border_width (border_width)
 			ev_rm_off_rb.set_text (create_message_content ("hide_rm_details_button_text", Void))
 			ev_rm_off_rb.set_tooltip (create_message_content ("hide_rm_details_tooltip", Void))
 			ev_rm_classes_on_rb.set_text (create_message_content ("display_rm_class_names_button_text", Void))
 			ev_rm_classes_on_rb.set_tooltip (create_message_content ("display_rm_class_names_tooltip", Void))
-			ev_rm_attrs_on_rb.set_text (create_message_content ("show_rm_properties_button_text", Void))
-			ev_rm_attrs_on_rb.set_tooltip (create_message_content ("show_rm_properties_tooltip", Void))
-			ev_rm_attrs_on_rb.set_minimum_width (60)
-			ev_rm_attrs_on_rb.set_minimum_height (23)
+			ev_rm_attrs_on_cb.set_text (create_message_content ("show_rm_properties_button_text", Void))
+			ev_rm_attrs_on_cb.set_tooltip (create_message_content ("show_rm_properties_tooltip", Void))
+			ev_use_rm_icons_cb.set_text (create_message_content ("use_rm_icons_button_text", Void))
+			ev_use_rm_icons_cb.set_tooltip (create_message_content ("use_rm_icons_button_tooltip", Void))
 
-			in_technical_mode := show_technical_view
 			in_reference_model_mode := show_reference_model_view
 			if in_reference_model_mode then
-				ev_rm_attrs_on_rb.enable_select
-			elseif in_technical_mode then
+				ev_rm_attrs_on_cb.enable_select
+			end
+			in_technical_mode := show_technical_view
+			if in_technical_mode then
 				ev_rm_classes_on_rb.enable_select
 			else
 				ev_rm_off_rb.enable_select
+			end
+			if use_rm_pixmaps then
+				ev_use_rm_icons_cb.enable_select
 			end
 
 			-- set events
@@ -131,7 +142,8 @@ feature -- Initialisation
 			ev_collapse_one_button.select_actions.extend (agent on_shrink_tree_one_level)
 			ev_rm_off_rb.select_actions.extend (agent on_domain_selected)
 			ev_rm_classes_on_rb.select_actions.extend (agent on_technical_selected)
-			ev_rm_attrs_on_rb.select_actions.extend (agent on_reference_model_selected)
+			ev_rm_attrs_on_cb.select_actions.extend (agent on_reference_model_selected)
+			ev_use_rm_icons_cb.select_actions.extend (agent on_ev_use_rm_icons_cb_selected)
 		end
 
 feature -- Access
@@ -173,21 +185,21 @@ feature -- Events
 
 	on_shrink_tree_one_level
 		do
-			if has_current_profile and then current_arch_cat.has_validated_selected_archetype then
+			if attached target_archetype_descriptor then
 				shrink_one_level
 			end
 		end
 
 	on_expand_tree_one_level
 		do
-			if has_current_profile and then current_arch_cat.has_validated_selected_archetype then
+			if attached target_archetype_descriptor then
 				expand_one_level
 			end
 		end
 
 	on_toggle_expand_tree
 		do
-			if has_current_profile and then current_arch_cat.has_validated_selected_archetype then
+			if attached target_archetype_descriptor then
 				toggle_expand_tree
 			end
 		end
@@ -201,7 +213,7 @@ feature -- Events
 	on_domain_selected
 			-- Hide technical details in `gui_tree'.
 		do
-			if has_current_profile and then current_arch_cat.has_validated_selected_archetype then
+			if attached target_archetype_descriptor then
 				set_domain_mode
 			end
 		end
@@ -209,7 +221,7 @@ feature -- Events
 	on_technical_selected
 			-- Display technical details in `gui_tree'.
 		do
-			if has_current_profile and then current_arch_cat.has_validated_selected_archetype then
+			if attached target_archetype_descriptor then
 				set_technical_mode
 			end
 		end
@@ -217,13 +229,47 @@ feature -- Events
 	on_reference_model_selected
 			-- turn on or off the display of reference model details in `gui_tree'.
 		do
-			if has_current_profile and then current_arch_cat.has_validated_selected_archetype then
-				set_reference_model_mode
+			if attached target_archetype_descriptor then
+				if ev_rm_attrs_on_cb.is_selected then
+					set_reference_model_mode
+				else
+					unset_reference_model_mode
+				end
 			end
 		end
 
-	code_select_action: PROCEDURE [ANY, TUPLE [STRING]]
-			-- actoin to perform when node is selected in tree
+	code_select_action_agent: PROCEDURE [ANY, TUPLE [STRING]]
+			-- action to perform when node is selected in tree
+
+	on_ev_use_rm_icons_cb_selected
+		do
+			if attached target_archetype_descriptor then
+				set_use_rm_pixmaps (ev_use_rm_icons_cb.is_selected)
+				repopulate (selected_language)
+
+				-- reflect change to other editor tools
+				if attached update_all_tools_rm_icons_setting_agent then
+					update_all_tools_rm_icons_setting_agent.call ([])
+				end
+			end
+		end
+
+	update_rm_icons_cb
+			-- update and repopulate if this setting was changed elsewhere in the tool
+		do
+			if attached target_archetype_descriptor and use_rm_pixmaps /= ev_use_rm_icons_cb.is_selected then
+				if use_rm_pixmaps then
+					ev_use_rm_icons_cb.enable_select
+				else
+					ev_use_rm_icons_cb.disable_select
+				end
+				repopulate (selected_language)
+			end
+		end
+
+	update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]
+			-- if this is set, it is an agent that takes one argument of a routine
+			-- to execute on all other editors, to sync them to a change in this current one
 
 feature -- Commands
 
@@ -232,11 +278,6 @@ feature -- Commands
 		do
 			in_technical_mode := False
 			set_show_technical_view (False)
-
-			in_reference_model_mode_changed := in_reference_model_mode
-			in_reference_model_mode := False
-			set_show_reference_model_view (False)
-
 			repopulate (selected_language)
 		end
 
@@ -245,24 +286,24 @@ feature -- Commands
 		do
 			in_technical_mode := True
 			set_show_technical_view (True)
-
-			in_reference_model_mode_changed := in_reference_model_mode
-			in_reference_model_mode := False
-			set_show_reference_model_view (False)
-
 			repopulate (selected_language)
 		end
 
 	set_reference_model_mode
-			-- View domain names + RM classes + other RM attributes; Set `in_technical_mode' on, `in_reference_model_mode' on.
+			-- Show unarchetyped RM attributes
 		do
-			in_technical_mode := True
-			set_show_technical_view (True)
-
 			in_reference_model_mode_changed := not in_reference_model_mode
 			in_reference_model_mode := True
 			set_show_reference_model_view (True)
+			repopulate (selected_language)
+		end
 
+	unset_reference_model_mode
+			-- Disable showing of unarchetyped RM attributes
+		do
+			in_reference_model_mode_changed := in_reference_model_mode
+			in_reference_model_mode := False
+			set_show_reference_model_view (False)
 			repopulate (selected_language)
 		end
 
@@ -411,7 +452,7 @@ feature -- Commands
 			-- roll the tree up so that nodes whose rolled_up_specialisation_status is
 			-- ss_inherited are closed, but nodes with
 		require
-			archetype_selected: current_arch_cat.has_validated_selected_archetype
+			archetype_selected: attached target_archetype_descriptor
 		do
 			if target_archetype.is_specialised and not target_archetype.is_template then
 				create node_list.make(0)
@@ -430,7 +471,9 @@ feature {NONE} -- Implementation
 
 	ev_expand_button, ev_expand_one_button, ev_collapse_one_button: EV_BUTTON
 
-	ev_rm_off_rb, ev_rm_classes_on_rb, ev_rm_attrs_on_rb: EV_RADIO_BUTTON
+	ev_rm_off_rb, ev_rm_classes_on_rb: EV_RADIO_BUTTON
+
+	ev_rm_attrs_on_cb, ev_use_rm_icons_cb: EV_CHECK_BUTTON
 
 	ev_view_controls_vbox, ev_rm_visibility_vbox: EV_VERTICAL_BOX
 
@@ -450,8 +493,6 @@ feature {NONE} -- Implementation
 			ontologies_has_item: not ontologies.off
 		do
 			Result := ontologies.item
-		ensure
-			has_language: current_arch_cat.has_validated_selected_archetype implies Result.has_language (current_language)
 		end
 
 	gui_node_map: HASH_TABLE [EV_TREE_ITEM, ARCHETYPE_CONSTRAINT]
@@ -591,14 +632,13 @@ feature {NONE} -- Implementation
 			-- string name of pixmap for attribute rm_attr
 		do
 			create Result.make_empty
-			Result.append ("C_ATTRIBUTE")
+			Result.append ("c_attribute")
 			if rm_attr.is_container then
 				Result.append (".multiple")
 			end
 			if not rm_attr.is_mandatory then
 				Result.append (".optional")
 			end
-			Result.append (".reference_model")
 		end
 
 	object_invariant_string (an_inv: attached ASSERTION): attached STRING
@@ -663,15 +703,12 @@ feature {NONE} -- Implementation
 		end
 
 	call_code_select_action (a_code: STRING)
-			-- Call `code_select_action', if it is attached.
+			-- Call `code_select_action_agent', if it is attached.
 		do
-			if attached code_select_action then
-				code_select_action.call ([a_code])
+			if attached code_select_action_agent then
+				code_select_action_agent.call ([a_code])
 			end
 		end
-
-invariant
-	Three_value_logic: in_reference_model_mode implies in_technical_mode
 
 end
 

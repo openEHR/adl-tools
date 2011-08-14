@@ -721,14 +721,20 @@ feature {NONE} -- Tools menu events
 			if dialog.has_changed_ui_options then
 				save_resources_and_show_status
 				populate_ui_arch_output_version
-				if repository_profiles.has_current_profile and then current_arch_cat.has_selected_archetype then
-					archetype_tools.populate_current_tool
+				if archetype_tools.has_current_tool then
+					update_all_tools_rm_icons_setting
 				end
 			end
 			if dialog.has_changed_navigator_options and repository_profiles.has_current_profile then
+				save_resources_and_show_status
 				catalogue_tool.populate
 				test_tool.populate
 			end
+		end
+
+	update_all_tools_rm_icons_setting
+		do
+			archetype_tools.do_all_tools (agent (a_tool: GUI_ARCHETYPE_TOOL) do a_tool.update_rm_icons_setting end)
 		end
 
 	clean_generated_files
@@ -977,7 +983,7 @@ feature -- Archetype tools
 
 	archetype_tools: GUI_ARCHETYPE_TOOLS_CONTROLLER
 		once
-			create Result.make (attached_docking_manager, agent select_archetype_from_gui_data)
+			create Result.make (attached_docking_manager, agent select_archetype_from_gui_data, agent update_all_tools_rm_icons_setting)
 		end
 
 	create_and_populate_new_archetype_tool

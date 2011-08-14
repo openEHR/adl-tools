@@ -500,16 +500,6 @@ feature {NONE} -- Implementation
 
 			Result.force ([Void, ""], "Gap 1 in the help")
 
-			Result.force (["node_normal/c_attribute.ico", "Single-valued attribute (mandatory)"], "C_ATTRIBUTE")
-			Result.force (["node_normal/c_attribute_optional.ico", "Single-valued attribute (optional)"], "C_ATTRIBUTE.optional")
-			Result.force (["node_normal/c_attribute_multiple.ico", "Container attribute (mandatory)"], "C_ATTRIBUTE.multiple")
-			Result.force (["node_normal/c_attribute_multiple_optional.ico", "Container attribute (optional)"], "C_ATTRIBUTE.multiple.optional")
-
-			Result.force (["node_reference_model/c_attribute.ico", "Single-valued RM attribute (mandatory)"], "C_ATTRIBUTE.reference_model")
-			Result.force (["node_reference_model/c_attribute_multiple.ico", "Container RM attribute (mandatory)"], "C_ATTRIBUTE.multiple.reference_model")
-			Result.force (["node_reference_model/c_attribute_optional.ico", "Single-valued RM attribute (optional)"], "C_ATTRIBUTE.optional.reference_model")
-			Result.force (["node_reference_model/c_attribute_multiple_optional.ico", "Container RM attribute (optional)"], "C_ATTRIBUTE.multiple.optional.reference_model")
-
 			Result.force ([Void, ""], "Gap 2 in the help")
 
 			Result.force (["node_normal/c_code_phrase.ico", "C_CODE_PHRASE (openEHR archetype profile)"], "C_CODE_PHRASE")
@@ -544,10 +534,6 @@ feature {NONE} -- Implementation
 			Result.force (["node_inherited/icon_help_example.ico", "X is inherited from parent archetype"], "icon_help_example.inherited")
 			Result.force (["node_redefined/icon_help_example.ico", "X is redefined from parent archetype"], "icon_help_example.redefined")
 
-			Result.force (["node_inherited/c_attribute.ico", Void], "C_ATTRIBUTE.inherited")
-			Result.force (["node_inherited/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.inherited")
-			Result.force (["node_inherited/c_attribute.ico", Void], "C_ATTRIBUTE.optional.inherited")
-			Result.force (["node_inherited/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.optional.inherited")
 			Result.force (["node_inherited/c_code_phrase.ico", Void], "C_CODE_PHRASE.inherited")
 			Result.force (["node_inherited/c_dv_ordinal.ico", Void], "C_DV_ORDINAL.inherited")
 			Result.force (["node_inherited/c_dv_quantity.ico", Void], "C_DV_QUANTITY.inherited")
@@ -573,10 +559,6 @@ feature {NONE} -- Implementation
 			Result.force (["node_inherited/ordinal.ico", Void], "ORDINAL.inherited")
 			Result.force (["node_normal/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.inherited")
 
-			Result.force (["node_redefined/c_attribute.ico", Void], "C_ATTRIBUTE.redefined")
-			Result.force (["node_redefined/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.redefined")
-			Result.force (["node_redefined/c_attribute.ico", Void], "C_ATTRIBUTE.optional.redefined")
-			Result.force (["node_redefined/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.optional.redefined")
 			Result.force (["node_redefined/c_code_phrase.ico", Void], "C_CODE_PHRASE.redefined")
 			Result.force (["node_redefined/c_dv_ordinal.ico", Void], "C_DV_ORDINAL.redefined")
 			Result.force (["node_redefined/c_dv_quantity.ico", Void], "C_DV_QUANTITY.redefined")

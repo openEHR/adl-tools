@@ -83,15 +83,18 @@ feature -- Visitor
 				gui_node_text.append (" = *")
 			end
 
+			-- pixmap
+			if use_rm_pixmaps and then rm_pixmaps.has (rm_name) and then rm_pixmaps.item (rm_name).has (a_node.rm_type_name) then
+				pixmap := rm_pixmaps.item (rm_name).item (a_node.rm_type_name)
+			else
+				pixmap := pixmaps.item(a_node.generating_type + occurrences_pixmap_string (a_node) + create_pixmap_ext (a_node))
+			end
+
 			if updating then
 				gui_node_map.item (a_node).set_text (utf8 (gui_node_text))
 				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
+				gui_node_map.item (a_node).set_pixmap (pixmap)
 			else
-				if use_rm_pixmaps and then rm_pixmaps.has (rm_name) and then rm_pixmaps.item (rm_name).has (a_node.rm_type_name) then
-					pixmap := rm_pixmaps.item (rm_name).item (a_node.rm_type_name)
-				else
-					pixmap := pixmaps.item(a_node.generating_type + occurrences_pixmap_string (a_node) + create_pixmap_ext (a_node))
-				end
 				create_node (gui_node_text, pixmap, a_node)
 
 				-- attach into GUI tree
@@ -124,11 +127,24 @@ feature -- Visitor
 				gui_node_text.append (" = *")
 			end
 
+			-- pixmap
+			if use_rm_pixmaps and then rm_pixmaps.has (rm_name) and then rm_pixmaps.item (rm_name).has (a_node.rm_type_name) then
+				pixmap := rm_pixmaps.item (rm_name).item (a_node.rm_type_name)
+			else
+				pixmap_name := a_node.generating_type
+				if not attached a_node.occurrences or else a_node.occurrences.lower = 0 then
+					pixmap_name.append (".optional")
+				end
+				pixmap_name.append (create_pixmap_ext (a_node))
+				pixmap := pixmaps.item (pixmap_name)
+			end
+
 			if updating then
 				-- update the text
 				gui_node := gui_node_map.item (a_node)
 				gui_node.set_text (utf8 (gui_node_text))
 				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
+				gui_node_map.item (a_node).set_pixmap (pixmap)
 
 				-- update the children
 				if a_node.has_includes or a_node.has_excludes then
@@ -140,17 +156,6 @@ feature -- Visitor
 					end
 				end
 			else
-				-- pixmap
-				if use_rm_pixmaps and then rm_pixmaps.has (rm_name) and then rm_pixmaps.item (rm_name).has (a_node.rm_type_name) then
-					pixmap := rm_pixmaps.item (rm_name).item (a_node.rm_type_name)
-				else
-					pixmap_name := a_node.generating_type
-					if not attached a_node.occurrences or else a_node.occurrences.lower = 0 then
-						pixmap_name.append (".optional")
-					end
-					pixmap_name.append (create_pixmap_ext (a_node))
-					pixmap := pixmaps.item (pixmap_name)
-				end
 				create_node (gui_node_text, pixmap, a_node)
 
 				-- create child nodes for includes & excludes
@@ -221,21 +226,14 @@ feature -- Visitor
 				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
 			else
 				-- pixmap name
-				if use_rm_pixmaps and not a_node.is_multiple and then rm_pixmaps.has (rm_name) and then rm_pixmaps.item (rm_name).has ("C_ATTRIBUTE") then
-					pixmap := rm_pixmaps.item (rm_name).item ("C_ATTRIBUTE")
-				elseif use_rm_pixmaps and a_node.is_multiple and then rm_pixmaps.has (rm_name) and then rm_pixmaps.item (rm_name).has ("C_ATTRIBUTE_MULTIPLE") then
-					pixmap := rm_pixmaps.item (rm_name).item ("C_ATTRIBUTE_MULTIPLE")
-				else
-					pixmap_name := "C_ATTRIBUTE"
-					if a_node.is_multiple then
-						pixmap_name.append (".multiple")
-					end
-					if a_node.existence = Void or else a_node.existence.lower = 0 then
-						pixmap_name.append (".optional")
-					end
-					pixmap_name.append (create_pixmap_ext (a_node))
-					pixmap := pixmaps.item(pixmap_name)
+				pixmap_name := "c_attribute"
+				if a_node.is_multiple then
+					pixmap_name.append (".multiple")
 				end
+				if a_node.existence = Void or else a_node.existence.lower = 0 then
+					pixmap_name.append (".optional")
+				end
+				pixmap := pixmaps.item(pixmap_name)
 
 				create_node (gui_node_text, pixmap, a_node)
 			end
@@ -269,21 +267,26 @@ feature -- Visitor
 			-- here might be in differential form, and have no component_ontologies aet up
 			ontologies.extend (current_arch_cat.archetype_index.item (a_node.archetype_id).flat_archetype.ontology)
 
+			-- node text
 			gui_node_text := c_archetype_root_string (a_node)
+
+			-- pixmap
+			if use_rm_pixmaps and then rm_pixmaps.has (rm_name) and then rm_pixmaps.item (rm_name).has (a_node.rm_type_name) then
+				pixmap := rm_pixmaps.item (rm_name).item (a_node.rm_type_name)
+			else
+				pixmap := pixmaps.item(a_node.generating_type + occurrences_pixmap_string (a_node) + create_pixmap_ext (a_node))
+			end
+
 			if updating then
 				-- update the text
 				gui_node_map.item (a_node).set_text (utf8 (gui_node_text))
 				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
+				gui_node_map.item (a_node).set_pixmap (pixmap)
 			else
 				-- in flat mode; treat like normal C_COMPLEX_OBJECT with children
 				if a_node.has_attributes then
 					start_c_complex_object (a_node, depth)
 				else -- it is in source mode, there are no children, only slot fillers
-					if use_rm_pixmaps and then rm_pixmaps.has (rm_name) and then rm_pixmaps.item (rm_name).has (a_node.rm_type_name) then
-						pixmap := rm_pixmaps.item (rm_name).item (a_node.rm_type_name)
-					else
-						pixmap := pixmaps.item(a_node.generating_type + occurrences_pixmap_string (a_node) + create_pixmap_ext (a_node))
-					end
 					create_node (gui_node_text, pixmap, a_node)
 				end
 			end
