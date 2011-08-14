@@ -184,7 +184,7 @@ feature {NONE}-- Initialization
 			ev_serialised_hbox.set_border_width (border_width)
 			ev_serialised_hbox.set_padding_width (padding_width)
 			ev_serialise_rb_vbox.set_border_width (border_width)
-			ev_serialised_rich_text.set_tab_width ((ev_serialised_rich_text.tab_width/2).floor)  -- this is in pixels, and assumes 7-pixel wide chars
+			ev_serialised_rich_text.set_tab_width ((ev_serialised_rich_text.tab_width/2).floor.max (1))  -- this is in pixels, and assumes 7-pixel wide chars
 			ev_serialise_rb_vbox.disable_item_expand (ev_adl_rb)
 			ev_serialise_rb_vbox.disable_item_expand (ev_dadl_rb)
 			ev_serialise_rb_vbox.disable_item_expand (ev_xml_rb)
