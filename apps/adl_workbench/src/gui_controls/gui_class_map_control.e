@@ -97,6 +97,9 @@ feature -- Access
 
 	class_desc: ARCH_CAT_MODEL_NODE
 
+	model_publisher: STRING
+			-- name of publisher, e.g. 'openehr', which is the key to RM-specific icons
+
 feature -- Status Report
 
 	differential_view: BOOLEAN
@@ -138,6 +141,7 @@ feature -- Commands
 			-- populate the ADL tree control by creating it from scratch
 		do
 			class_desc := a_class_desc
+			model_publisher := class_desc.class_definition.bmm_model.model_publisher
 			repopulate
 		end
 
@@ -202,7 +206,11 @@ feature {NONE} -- Implementation
 		do
 			create a_ti
 			a_ti.set_text (class_desc.class_definition.name)
-			a_ti.set_pixmap (pixmaps [class_desc.group_name])
+			if use_rm_pixmaps and then rm_pixmaps.has (model_publisher) and then rm_pixmaps.item (model_publisher).has (class_desc.class_definition.name) then
+				a_ti.set_pixmap (rm_pixmaps.item (model_publisher).item (class_desc.class_definition.name))
+			else
+				a_ti.set_pixmap (pixmaps [class_desc.group_name])
+			end
 			ev_tree.extend (a_ti)
 			ev_tree_item_stack.extend (a_ti)
 			create node_path.make_root
@@ -276,11 +284,17 @@ feature {NONE} -- Implementation
 	set_class_node_details (a_ti: EV_TREE_ITEM; a_type_spec: BMM_TYPE_SPECIFIER; a_type_str: STRING; has_type_subs: BOOLEAN)
 		local
 			type_category: STRING
+			root_class: STRING
 		do
 			type_category := a_type_spec.type_category
 			a_ti.set_data (a_type_spec)						-- node data
 			a_ti.set_text (a_type_str)						-- node text
-			a_ti.set_pixmap (pixmaps [type_category])		-- pixmap
+			root_class := type_name_root_type (a_type_str)
+			if use_rm_pixmaps and then rm_pixmaps.has (model_publisher) and then rm_pixmaps.item (model_publisher).has (root_class) then
+				a_ti.set_pixmap (rm_pixmaps.item (model_publisher).item (root_class))
+			else
+				a_ti.set_pixmap (pixmaps [type_category])		-- pixmap
+			end
 
 			if has_type_subs then
 	 			a_ti.set_pebble_function (agent pebble_function)

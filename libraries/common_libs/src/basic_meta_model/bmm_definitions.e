@@ -203,6 +203,26 @@ feature -- Conversion
 			end
 		end
 
+	type_name_root_type (a_type_name: attached STRING): attached STRING
+			-- return the root type of `a_type_name', which is itself for non-generic types, or else
+			-- the first type for generic types
+		require
+			Valid_type_name: is_well_formed_type_name (a_type_name)
+		local
+			delim_pos, i: INTEGER
+		do
+			delim_pos := a_type_name.index_of (generic_left_delim, 1)
+			if delim_pos = 0 then
+				Result := a_type_name
+			else
+				create Result.make(0)
+				from i := 1 until a_type_name[i] = generic_left_delim or a_type_name[i] = ' ' loop
+					Result.append_character (a_type_name[i])
+					i := i + 1
+				end
+			end
+		end
+
 feature {NONE} -- Implementation
 
 	well_formed_type_name_regex: attached LX_DFA_REGULAR_EXPRESSION
