@@ -110,7 +110,6 @@ feature -- Initialisation
 					repository_profiles.start
 					set_current_profile (repository_profiles.key_for_iteration)
 				end
-				initialise_current_profile
 
 				initialised := True
 			end

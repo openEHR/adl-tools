@@ -36,7 +36,7 @@
 		<ul>
 			<li>GUI changes
 				<ul>
-					<li>The <b>GUI is now docking-based</b>, allowing greater flexibility in placement of visual components.  Visually, multiple archetypes can now be loaded simultaneously, and docked side-by-side for visual comparison. This visual layout is essentially the same model used in most modern tabbed editing and browsing tools. Underneath, the tool now properly supports multiple open archetypes and templates.
+					<li>The <b>GUI is now docking-based</b>, allowing greater flexibility in placement of visual components.  Visually, multiple archetypes can now be loaded simultaneously, and docked side-by-side for visual comparison. This visual layout is the same model used in most modern tabbed editing and browsing tools. Underneath, the tool now properly supports multiple open archetypes and templates.
 						<ul>
 							<li>The archetype identifier text box now performs only the search function, since individual archetype ids are now displayed in each tabbed tool, i.e. it now performs a similar function to the address box in a browser.</li>
 							<li>A new archetype tool is created either using ctrl-T (as for most web browsers) or from the new context (right click) menu available on an archetype or template in the explorer tol on the left.</li>
@@ -47,7 +47,13 @@
 							<li>The docking tool layout is currently remembered across sessions by being saved in its own file. Because of the inherent complexity of docking and interaction with the operating system, the layout can occasionally disappear or seem non-sensical, usually due to a problem with the file. A 'reset visual layout' option is available from the View menu to correct this.</li>
 						</ul>
 					</li>
-					<li><b>Reference model class tool significantly enhancemed</b>: 
+					<li><b>Archetype definition visualisation enhanced</b>: 
+						<ul>
+							<li>It is not possible to include a set of RM-specific icons for visualising the definition tree. These icons have to be located in the install area icons/<rm_name> directory, e.g. icons/openehr. Viewing with these icons or the generic ones is now an option available from the option dialog and also from the definition node tree.</li>
+							<li>The reference model attributes can be added independently of other vhanges to the view.</li>
+						</ul>
+					</li>
+					<li><b>Reference model class tool enhancemed</b>: 
 						<ul>
 							<li>Left-clicking on a class node in the explorer on the left populates the 'class tool' (just another tool, tabbed with the archetype tools) with the compositional 'closure' of the chosen class. This is visualised as a tree of alternating type nodes and property nodes, in a similar to the node visualisation of an archetype.</li>
 							<li>Some of the class nodes are abstract, or even if concrete, have subtypes defined. Right-clicking on these nodes in the class tool, brings up a context meny containing the subtypes defined in the reference model, and selecting one causes re-population of that node in the tree downward with the chosen type.</li>

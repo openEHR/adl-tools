@@ -153,7 +153,7 @@ feature {NONE} -- Implementation
 						ca_path := c_attr.path
 					end
 					if not c_attr.children.off then
-						attach_node(ca_path, pixmaps[c_attribute_pixmap_string(c_attr)], Void)
+						attach_node(ca_path, pixmaps [c_attribute_pixmap_string(c_attr)], Void)
 					end
 				elseif attached {C_ARCHETYPE_ROOT} ca as car and attached current_arch_cat as dir then
 					ara := dir.archetype_index.item (car.archetype_id)
@@ -181,7 +181,7 @@ feature {NONE} -- Implementation
 			-- FIXME: this is a straight copy from GUI_NODE_MAP_CONTROL and should be consolidated at some point
 		do
 			create Result.make(0)
-			Result.append ("C_ATTRIBUTE")
+			Result.append ("c_attribute")
 			if c_attr.is_multiple then
 				if c_attr.cardinality = Void or else c_attr.cardinality.interval.lower = 0 then
 					Result.append (".multiple.optional")

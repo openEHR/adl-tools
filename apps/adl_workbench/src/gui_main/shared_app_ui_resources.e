@@ -50,7 +50,9 @@ feature -- Definitions
 			not_empty: not Result.is_empty
 		end
 
-	icon_extension: STRING = ".ico"
+	icon_ico_extension: STRING = ".ico"
+
+	icon_png_extension: STRING = ".png"
 
 feature -- Access
 
@@ -87,7 +89,7 @@ feature -- Access
 		local
 			file: RAW_FILE
 			pixmap: EV_PIXMAP
-			ico_fname, path, pixmap_key: STRING
+			ico_fname, pixmap_key: STRING
 			dir: DIRECTORY
 		once
 			create Result.make (0)
@@ -119,8 +121,8 @@ feature -- Access
 			until
 				dir.lastentry = Void
 			loop
-				if dir.lastentry.ends_with (icon_extension) then
-					pixmap_key := dir.lastentry.substring (1, dir.lastentry.count - icon_extension.count)
+				if dir.lastentry.ends_with (icon_ico_extension) then
+					pixmap_key := dir.lastentry.substring (1, dir.lastentry.count - icon_ico_extension.count)
 					if not Result.has (pixmap_key) then
 						create pixmap
 						Result.put (pixmap, pixmap_key)
@@ -137,6 +139,7 @@ feature -- Access
 			-- Table of pixmap tables, each table for a given reference model;
 			-- each table has the structure {PIXMAP, RM class name}
 			-- these pixmaps can be used for RM-specific visualisation of the archetype definition
+			-- the source files can be .ico or .png
 		require
 			has_icon_directory
 		local
@@ -165,9 +168,9 @@ feature -- Access
 					until
 						rm_ico_dir.lastentry = Void
 					loop
-						if rm_ico_dir.lastentry.ends_with (icon_extension) then
+						if rm_ico_dir.lastentry.ends_with (icon_ico_extension) or rm_ico_dir.lastentry.ends_with (icon_png_extension) then
 							create pixmap
-							rm_ico_map.put (pixmap, rm_ico_dir.lastentry.substring (1, rm_ico_dir.lastentry.count - icon_extension.count).as_upper)
+							rm_ico_map.put (pixmap, rm_ico_dir.lastentry.substring (1, rm_ico_dir.lastentry.count - icon_ico_extension.count).as_upper)
 							ico_fname := file_system.pathname (rm_ico_dir.name, rm_ico_dir.lastentry)
 							pixmap.set_with_named_file (ico_fname)
 							pixmap.set_minimum_size (pixmap.width, pixmap.height)

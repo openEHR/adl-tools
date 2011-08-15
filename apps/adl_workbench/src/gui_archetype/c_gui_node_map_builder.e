@@ -695,7 +695,9 @@ feature {NONE} -- Implementation
 				if in_technical_mode then
 					Result.append (": " + a_node.rm_type_name + "[" + a_node.node_id + "]")
 				end
-			else -- put type even when not in technical mode
+				
+			elseif not use_rm_pixmaps then
+				 -- put type even when not in technical mode
 				Result.append (a_node.rm_type_name)
 			end
 		end

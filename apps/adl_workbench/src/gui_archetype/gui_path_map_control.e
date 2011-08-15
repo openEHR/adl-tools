@@ -155,9 +155,6 @@ feature -- Commands
 			-- Populate `path_list'.
 		require
 			an_archetype.is_valid
-		local
-			list_row: EV_MULTI_COLUMN_LIST_ROW
-			p_paths, l_paths: ARRAYED_LIST[STRING]
 		do
 			target_archetype := an_archetype
 			selected_language := a_language
