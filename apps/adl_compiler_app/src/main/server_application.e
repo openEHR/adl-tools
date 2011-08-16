@@ -22,18 +22,18 @@ feature
 		schema_name:STRING
 	do
 		create repo_manager.make
---		create dispatcher.make (repo_manager)
---		dispatcher.zmq_wrap
-		schema_name := "openehr_rm"
-		io.put_string ("listing schema info:%N")
-		list_schema_info
-		io.put_string ("listing packages and classes of schema " + schema_name + " :%N")
-		if attached {SCHEMA_ACCESS} repo_manager.app_root.rm_schemas_access.schemas.at (schema_name) as rm then
-			list_packages(rm.schema)
-			--list_classes_in_package(rm.schema.packages.at ("ehr"))
-			list_classes_in_schema(rm.schema)
---			rm.class_definition ("COMPOSITIION").make_dt
-		end
+		create dispatcher.make (repo_manager)
+		dispatcher.zmq_wrap
+--		schema_name := "openehr_rm"
+--		io.put_string ("listing schema info:%N")
+--		list_schema_info
+--		io.put_string ("listing packages and classes of schema " + schema_name + " :%N")
+--		if attached {SCHEMA_ACCESS} repo_manager.app_root.rm_schemas_access.schemas.at (schema_name) as rm then
+--			list_packages(rm.schema)
+--			--list_classes_in_package(rm.schema.packages.at ("ehr"))
+--			list_classes_in_schema(rm.schema)
+----			rm.class_definition ("COMPOSITIION").make_dt
+--		end
 	end
 
 	list_classes_in_schema(p_schema:BMM_SCHEMA)

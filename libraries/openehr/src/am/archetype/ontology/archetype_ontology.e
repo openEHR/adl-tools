@@ -731,7 +731,7 @@ feature {ADL_ENGINE} -- Representation
 	representation: DT_COMPLEX_OBJECT_NODE
 			-- root node of DADL objects representing this ontology
 
-feature {ARCHETYPE_ONTOLOGY} -- Implementation
+feature --{ARCHETYPE_ONTOLOGY} -- Implementation --changed by SEREF ARIKAN, NEEDED FOR COPYING ONTOLOGY TO PROTOCOL BUFFER WRAPPERS
 
 	has_path(a_path: STRING): BOOLEAN
 			-- True if path `a_path' exists in structure

@@ -66,32 +66,37 @@ feature
 			else
 				--there must be a wrapper for the parent attribute in the stack
 				if attached {CMULTIPLEATTRIBUTE_WRAPPER_GEN} wrapper_stack.linear_representation.first as multiple_atr then
-					wrapper := multiple_atr.get_cattributeinheritedfields.add_children.get_ccomplexobjectfield
+					wrapper := multiple_atr.add_children.get_ccomplexobjectfield
 				end
 				if attached {CSINGLEATTRIBUTE_WRAPPER_GEN} wrapper_stack.linear_representation.first as single_atr then
-					wrapper := single_atr.get_cattributeinheritedfields.add_children.get_ccomplexobjectfield
+					wrapper := single_atr.add_children.get_ccomplexobjectfield
 				end
 			end
 --			--fill fields in the wrapper			
-			wrapper.get_cobjectinheritedfields.set_rmtypename (a_node.rm_type_name)
-			wrapper.get_cobjectinheritedfields.set_nodeid (a_node.node_id)
+			wrapper.set_rmtypename (a_node.rm_type_name)
+			wrapper.set_nodeid (a_node.node_id)
 
 			if attached a_node.occurrences then
-				copy_multiplicity_interval (wrapper.get_cobjectinheritedfields.get_occurrences, a_node.occurrences)
+				copy_multiplicity_interval (wrapper.get_occurrences, a_node.occurrences)
+			else
+				get_default_interval_of_int (wrapper.get_occurrences)
 			end
 				--query RM for occurences info IF the object is in a container
-			if not attached a_node.occurrences and a_node.parent /= void then
-				schema := repo_manager.app_root.rm_schemas_access.schemas.at ("openehr_rm")
-				class_def := schema.class_definition (a_node.rm_type_name)
-				
-			end
+--			if not attached a_node.occurrences and not attached a_node.parent then
+--				schema := repo_manager.app_root.rm_schemas_access.schemas.at ("openehr_rm")
+--				class_def := schema.class_definition (a_node.rm_type_name)
 
-
+--			end
 
 --			--place in the stack
 			wrapper_stack.put (wrapper)
 --			io.put_string ("placed complex obj wrapper in stack: " + wrapper.get_path + "%N")
 		end
+
+	get_default_interval_of_int(p_wrapper:INTERVALOFINTEGER_WRAPPER_GEN)
+	do
+		p_wrapper.set_lower (0)
+	end
 
 	copy_multiplicity_interval(p_pb_interval:INTERVALOFINTEGER_WRAPPER_GEN; p_aom_interval:MULTIPLICITY_INTERVAL)
 	require
@@ -100,10 +105,10 @@ feature
 		if p_aom_interval /= void then
 			p_pb_interval.set_lower (p_aom_interval.lower)
 			p_pb_interval.set_upper (p_aom_interval.upper)
-			p_pb_interval.get_intervalinheritedfields.set_lowerincluded (p_aom_interval.lower_included)
-			p_pb_interval.get_intervalinheritedfields.set_upperincluded (p_aom_interval.upper_included)
-			p_pb_interval.get_intervalinheritedfields.set_lowerunbounded (p_aom_interval.lower_unbounded)
-			p_pb_interval.get_intervalinheritedfields.set_upperunbounded (p_aom_interval.upper_unbounded)
+			p_pb_interval.set_lowerincluded (p_aom_interval.lower_included)
+			p_pb_interval.set_upperincluded (p_aom_interval.upper_included)
+			p_pb_interval.set_lowerunbounded (p_aom_interval.lower_unbounded)
+			p_pb_interval.set_upperunbounded (p_aom_interval.upper_unbounded)
 		end
 	end
 
@@ -122,19 +127,21 @@ feature
 			assertion_wrapper:ASSERTION_WRAPPER_GEN
 		do
 			if attached {CSINGLEATTRIBUTE_WRAPPER_GEN} wrapper_stack.linear_representation.first as single_attribute then
-				slot := single_attribute.get_cattributeinheritedfields.add_children.get_archetypeslotfield
+				slot := single_attribute.add_children.get_archetypeslotfield
 			elseif attached {CMULTIPLEATTRIBUTE_WRAPPER_GEN} wrapper_stack.linear_representation.first as multi_attribute then
-				slot := multi_attribute.get_cattributeinheritedfields.add_children.get_archetypeslotfield
+				slot := multi_attribute.add_children.get_archetypeslotfield
 			else
 				io.put_string ("Error: unexpected state in Boshporus visitor: start_archetype_slot")
 			end
 
 			if slot /= void then
-				slot.get_cobjectinheritedfields.set_rmtypename (a_node.rm_type_name)
-				slot.get_cobjectinheritedfields.set_nodeid (a_node.node_id)
+				slot.set_rmtypename (a_node.rm_type_name)
+				slot.set_nodeid (a_node.node_id)
 				--occurences, if not null
 				if attached a_node.occurrences then
-					copy_multiplicity_interval (slot.get_cobjectinheritedfields.get_occurrences, a_node.occurrences)
+					copy_multiplicity_interval (slot.get_occurrences, a_node.occurrences)
+				else
+					get_default_interval_of_int(slot.get_occurrences)
 				end
 				--includes
 				from
@@ -181,25 +188,25 @@ feature
 	--this is an EXPR_ITEM known to be a either an  EXPR_UNARY_OPERATOR OR EXPR_BINARY_OPERATOR so configure accordingly
 	do
 		if attached {EXPR_UNARY_OPERATOR} p_operand as unary_op then
-			p_wrapper.get_exprunaryoperatorfield.get_expriteminheritedfields.set_type (unary_op.type)
-			p_wrapper.get_exprunaryoperatorfield.get_exproperatorinheritedfields.set_precedenceoverridden (unary_op.precedence_overridden)
+			p_wrapper.get_exprunaryoperatorfield.set_type (unary_op.type)
+			p_wrapper.get_exprunaryoperatorfield.set_precedenceoverridden (unary_op.precedence_overridden)
 			--operator of unary operator
-			p_wrapper.get_exprunaryoperatorfield.get_exproperatorinheritedfields.set_operator_ (unary_op.operator.out)--TODO: BIG INT MUST BE HANDLED IN EIFFEL CODE GENERATOR (int to str conversion at the moment)
+			p_wrapper.get_exprunaryoperatorfield.set_operator_ (unary_op.operator.out)--TODO: BIG INT MUST BE HANDLED IN EIFFEL CODE GENERATOR (int to str conversion at the moment)
 			--operand of unary operator may be unary, binary  or leaf. Recursion would handle it
 			copy_expr_item(p_wrapper.get_exprunaryoperatorfield.get_operand, unary_op.operand)
 		elseif attached {EXPR_BINARY_OPERATOR} p_operand as binary_op then
-			p_wrapper.get_exprbinaryoperatorfield.get_expriteminheritedfields.set_type (binary_op.type)
-			p_wrapper.get_exprbinaryoperatorfield.get_exproperatorinheritedfields.set_precedenceoverridden (binary_op.precedence_overridden)
+			p_wrapper.get_exprbinaryoperatorfield.set_type (binary_op.type)
+			p_wrapper.get_exprbinaryoperatorfield.set_precedenceoverridden (binary_op.precedence_overridden)
 			--operator of binary operator
-			p_wrapper.get_exprbinaryoperatorfield.get_exproperatorinheritedfields.set_operator_ (binary_op.operator.out)--TODO: BIG INT MUST BE HANDLED IN EIFFEL CODE GENERATOR (int to str conversion at the moment)
+			p_wrapper.get_exprbinaryoperatorfield.set_operator_ (binary_op.operator.out)--TODO: BIG INT MUST BE HANDLED IN EIFFEL CODE GENERATOR (int to str conversion at the moment)
 			--left operand of binary operator
 			copy_expr_item(p_wrapper.get_exprbinaryoperatorfield.get_leftoperand,binary_op.left_operand)
 			--right operand of binary operator
-			copy_expr_item(p_wrapper.get_exprbinaryoperatorfield.get_leftoperand,binary_op.right_operand)
+			copy_expr_item(p_wrapper.get_exprbinaryoperatorfield.get_rightoperand,binary_op.right_operand)
 		elseif attached {EXPR_LEAF} p_operand as leaf then
 			p_wrapper.get_exprleaffield.set_item ("NOT IMPLEMENTED YET: ITEM IN EXPR_LEAF; SHOULD BE SERIALIZED BYTE ARR WITH TYPE INFO")
 			p_wrapper.get_exprleaffield.set_referencetype (leaf.reference_type)
-			p_wrapper.get_exprleaffield.get_expriteminheritedfields.set_type (leaf.type)
+			p_wrapper.get_exprleaffield.set_type (leaf.type)
 		end
 	end
 
@@ -227,20 +234,30 @@ feature
 					cardinality.set_isunique (a_node.cardinality.is_unique)
 
 					--back to cmultipleattr
-					c_multi_atr.get_cattributeinheritedfields.set_rmattributename (a_node.rm_attribute_name)
+					c_multi_atr.set_rmattributename (a_node.rm_attribute_name)
 					--existence
-					interval_of_int_existence := c_multi_atr.get_cattributeinheritedfields.get_existence
+					interval_of_int_existence := c_multi_atr.get_existence
 --					copy_interval_of_int (interval_of_int_existence, a_node.existence)
-					copy_multiplicity_interval (interval_of_int_existence, a_node.existence)
+					if attached a_node.existence then
+						copy_multiplicity_interval (interval_of_int_existence, a_node.existence)
+					else
+						get_default_interval_of_int (interval_of_int_existence)
+					end
+
 					--cmultipleattribute.children will be handled by its own visit method in this visitor
 
 					wrapper_stack.put (c_multi_atr)
 --					io.put_string ("placed multi atr in stack: " + c_multi_atr.get_rmattributename + "%N")
 				else
 					c_single_atr := complex_wrapper.add_attributes.get_csingleattributefield
-					c_single_atr.get_cattributeinheritedfields.set_rmattributename (a_node.rm_attribute_name)
-					single_atr_existence := c_single_atr.get_cattributeinheritedfields.get_existence
-					copy_multiplicity_interval (single_atr_existence, a_node.existence)
+					c_single_atr.set_rmattributename (a_node.rm_attribute_name)
+					single_atr_existence := c_single_atr.get_existence
+					if attached a_node.existence then
+						copy_multiplicity_interval (single_atr_existence, a_node.existence)
+					else
+						get_default_interval_of_int (single_atr_existence)
+					end
+
 					--children of this csingleatr will be handled by the visit method in this visitor
 
 					wrapper_stack.put (c_single_atr)
@@ -341,16 +358,21 @@ feature
 			--since primitive object can not be the root, we will assume there is a parent in the stack
 			--there must be a wrapper for the parent attribute in the stack
 			if attached {CMULTIPLEATTRIBUTE_WRAPPER_GEN} wrapper_stack.linear_representation.first as multiple_atr then
-				wrapper := multiple_atr.get_cattributeinheritedfields.add_children.get_cprimitiveobjectfield
+				wrapper := multiple_atr.add_children.get_cprimitiveobjectfield
 			end
 			if attached {CSINGLEATTRIBUTE_WRAPPER_GEN} wrapper_stack.linear_representation.first as single_atr then
-				wrapper := single_atr.get_cattributeinheritedfields.add_children.get_cprimitiveobjectfield
+				wrapper := single_atr.add_children.get_cprimitiveobjectfield
 			end
 
-			wrapper.get_cobjectinheritedfields.set_nodeid (a_node.node_id)
-			occurrences := wrapper.get_cobjectinheritedfields.get_occurrences
-			copy_multiplicity_interval (occurrences, a_node.occurrences)
-			wrapper.get_cobjectinheritedfields.set_rmtypename (a_node.rm_type_name)
+			wrapper.set_nodeid (a_node.node_id)
+			occurrences := wrapper.get_occurrences
+			if attached a_node.occurrences then
+				copy_multiplicity_interval (occurrences, a_node.occurrences)
+			else
+				get_default_interval_of_int (occurrences)
+			end
+
+			wrapper.set_rmtypename (a_node.rm_type_name)
 
 			wrapper.get_item.get_cstringfield.set_pattern (primitive_regex)
 
