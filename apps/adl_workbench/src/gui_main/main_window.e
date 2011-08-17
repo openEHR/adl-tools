@@ -95,7 +95,7 @@ feature {NONE} -- Initialization
 			history_menu_forward.set_pixmap (pixmaps ["history_forward"])
 
 			view_menu_differential.set_pixmap (pixmaps ["diff_class"])
-			view_menu_flat.set_pixmap (pixmaps ["diff_class"])
+			view_menu_flat.set_pixmap (pixmaps ["flat_class"])
 
 			repository_menu_set_repository.set_pixmap (pixmaps ["tools"])
 			rm_schemas_menu_configure_rm_schemas.set_pixmap (pixmaps ["tools"])

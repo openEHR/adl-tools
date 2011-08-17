@@ -139,7 +139,7 @@ feature {NONE}-- Initialization
 			ev_archetype_id.disable_edit
 			ev_view_label.set_text ("View ")
 			ev_differential_view_button.set_pixmap (pixmaps ["diff_class"])
-			ev_flat_view_button.set_pixmap (pixmaps ["diff_class"])
+			ev_flat_view_button.set_pixmap (pixmaps ["flat_class"])
 			ev_differential_view_button.set_tooltip (create_message_content ("differential_view_button_tooltip", Void))
 			ev_flat_view_button.set_tooltip (create_message_content ("flat_view_button_tooltip", Void))
 			ev_language_label.set_text (create_message_content ("language_label", Void))
