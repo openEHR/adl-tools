@@ -136,7 +136,7 @@ feature -- Initialisation
 			end
 
 			-- set events
-			ev_tree.select_actions.extend (agent on_item_select)
+			ev_tree.select_actions.extend (agent on_tree_item_select)
 			ev_expand_button.select_actions.extend (agent on_toggle_expand_tree)
 			ev_expand_one_button.select_actions.extend (agent on_expand_tree_one_level)
 			ev_collapse_one_button.select_actions.extend (agent on_shrink_tree_one_level)
@@ -181,131 +181,7 @@ feature -- Status Report
 	is_expanded: BOOLEAN
 			-- True if last whole tree operation was expand
 
-feature -- Events
-
-	on_shrink_tree_one_level
-		do
-			if attached target_archetype_descriptor then
-				shrink_one_level
-			end
-		end
-
-	on_expand_tree_one_level
-		do
-			if attached target_archetype_descriptor then
-				expand_one_level
-			end
-		end
-
-	on_toggle_expand_tree
-		do
-			if attached target_archetype_descriptor then
-				toggle_expand_tree
-			end
-		end
-
-	on_item_select
-			-- When the user selects a node in `gui_tree'.
-		do
-			item_select
-		end
-
-	on_domain_selected
-			-- Hide technical details in `gui_tree'.
-		do
-			if attached target_archetype_descriptor then
-				set_domain_mode
-			end
-		end
-
-	on_technical_selected
-			-- Display technical details in `gui_tree'.
-		do
-			if attached target_archetype_descriptor then
-				set_technical_mode
-			end
-		end
-
-	on_reference_model_selected
-			-- turn on or off the display of reference model details in `gui_tree'.
-		do
-			if attached target_archetype_descriptor then
-				if ev_rm_attrs_on_cb.is_selected then
-					set_reference_model_mode
-				else
-					unset_reference_model_mode
-				end
-			end
-		end
-
-	code_select_action_agent: PROCEDURE [ANY, TUPLE [STRING]]
-			-- action to perform when node is selected in tree
-
-	on_ev_use_rm_icons_cb_selected
-		do
-			if attached target_archetype_descriptor then
-				set_use_rm_pixmaps (ev_use_rm_icons_cb.is_selected)
-				repopulate (selected_language)
-
-				-- reflect change to other editor tools
-				if attached update_all_tools_rm_icons_setting_agent then
-					update_all_tools_rm_icons_setting_agent.call ([])
-				end
-			end
-		end
-
-	update_rm_icons_cb
-			-- update and repopulate if this setting was changed elsewhere in the tool
-		do
-			if attached target_archetype_descriptor and use_rm_pixmaps /= ev_use_rm_icons_cb.is_selected then
-				if use_rm_pixmaps then
-					ev_use_rm_icons_cb.enable_select
-				else
-					ev_use_rm_icons_cb.disable_select
-				end
-				repopulate (selected_language)
-			end
-		end
-
-	update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]
-			-- if this is set, it is an agent that takes one argument of a routine
-			-- to execute on all other editors, to sync them to a change in this current one
-
 feature -- Commands
-
-	set_domain_mode
-			-- View only domain names; Set `in_technical_mode' off.
-		do
-			in_technical_mode := False
-			set_show_technical_view (False)
-			repopulate (selected_language)
-		end
-
-	set_technical_mode
-			-- View domain names + RM classes; Set `in_technical_mode' on.
-		do
-			in_technical_mode := True
-			set_show_technical_view (True)
-			repopulate (selected_language)
-		end
-
-	set_reference_model_mode
-			-- Show unarchetyped RM attributes
-		do
-			in_reference_model_mode_changed := not in_reference_model_mode
-			in_reference_model_mode := True
-			set_show_reference_model_view (True)
-			repopulate (selected_language)
-		end
-
-	unset_reference_model_mode
-			-- Disable showing of unarchetyped RM attributes
-		do
-			in_reference_model_mode_changed := in_reference_model_mode
-			in_reference_model_mode := False
-			set_show_reference_model_view (False)
-			repopulate (selected_language)
-		end
 
 	clear
 		do
@@ -355,7 +231,7 @@ feature -- Commands
 		end
 
 	repopulate (a_language: attached STRING)
-			-- repopulate if view has changed
+			-- repopulate and/or refresh visual appearance if diff/flat view has changed or RM icons setting changed
 		require
 			Already_populated: attached target_archetype
 		local
@@ -364,7 +240,7 @@ feature -- Commands
 		do
 			selected_language := a_language
 
-			-- repopulate from definition
+			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
 			create c_node_map_builder
 			c_node_map_builder.initialise (target_archetype, selected_language, ev_tree, in_technical_mode, True, gui_node_map)
 			create a_c_iterator.make (target_archetype.definition, c_node_map_builder)
@@ -381,8 +257,56 @@ feature -- Commands
 			end
 		end
 
-	item_select
-			-- Do something when an item is selected.
+	update_rm_icons_cb
+			-- update and repopulate if this setting was changed elsewhere in the tool
+		do
+			if attached target_archetype_descriptor and use_rm_pixmaps /= ev_use_rm_icons_cb.is_selected then
+				if use_rm_pixmaps then
+					ev_use_rm_icons_cb.enable_select
+				else
+					ev_use_rm_icons_cb.disable_select
+				end
+				repopulate (selected_language)
+			end
+		end
+
+feature {NONE} -- Events
+
+	on_shrink_tree_one_level
+		do
+			if attached target_archetype_descriptor then
+				create node_list.make (0)
+				ev_tree.recursive_do_all (agent ev_tree_item_collapse_one_level)
+
+				from node_list.start until node_list.off loop
+					node_list.item.collapse
+					node_list.forth
+				end
+			end
+		end
+
+	on_expand_tree_one_level
+		do
+			if attached target_archetype_descriptor then
+				create node_list.make (0)
+				ev_tree.recursive_do_all (agent ev_tree_item_expand_one_level)
+
+				from node_list.start until node_list.off loop
+					node_list.item.expand
+					node_list.forth
+				end
+			end
+		end
+
+	on_toggle_expand_tree
+		do
+			if attached target_archetype_descriptor then
+				toggle_expand_tree
+			end
+		end
+
+	on_tree_item_select
+			-- When the user selects a node in `gui_tree'.
 		do
 			if attached {C_COMPLEX_OBJECT} ev_tree.selected_item.data as c_c_o then
 				if c_c_o.is_addressable then
@@ -404,63 +328,55 @@ feature -- Commands
 			end
 		end
 
-	toggle_expand_tree
-			-- Expand or shrink the tree control.
+	on_domain_selected
+			-- Hide technical details in `gui_tree'.
 		do
-			is_expanded := not is_expanded
-
-			if is_expanded then
-				ev_tree.recursive_do_all (agent ev_tree_item_expand)
-				ev_expand_button.set_text (create_message_content ("expand_button_collapse_text", Void))
-			else
-				ev_tree.recursive_do_all (agent ev_tree_item_shrink)
-				ev_expand_button.set_text (create_message_content ("expand_button_expand_text", Void))
+			if attached target_archetype_descriptor then
+				in_technical_mode := False
+				set_show_technical_view (False)
+				repopulate (selected_language)
 			end
 		end
 
-	shrink_to_level (a_type: STRING)
-			-- Shrink the tree control up to items of type `a_type'.
+	on_technical_selected
+			-- Display technical details in `gui_tree'.
 		do
-			ev_tree.recursive_do_all (agent ev_tree_item_shrink_to_level (a_type, ?))
-		end
-
-	expand_one_level
-			-- Expand the tree control one level further.
-		do
-			create node_list.make (0)
-			ev_tree.recursive_do_all (agent ev_tree_item_expand_one_level)
-
-			from node_list.start until node_list.off loop
-				node_list.item.expand
-				node_list.forth
+			if attached target_archetype_descriptor then
+				in_technical_mode := True
+				set_show_technical_view (True)
+				repopulate (selected_language)
 			end
 		end
 
-	shrink_one_level
-			-- Shrink the tree control one level further.
+	on_reference_model_selected
+			-- turn on or off the display of reference model details in `gui_tree'.
 		do
-			create node_list.make (0)
-			ev_tree.recursive_do_all (agent ev_tree_item_collapse_one_level)
-
-			from node_list.start until node_list.off loop
-				node_list.item.collapse
-				node_list.forth
+			if attached target_archetype_descriptor then
+				if ev_rm_attrs_on_cb.is_selected then
+					in_reference_model_mode_changed := not in_reference_model_mode
+					in_reference_model_mode := True
+					set_show_reference_model_view (True)
+				else
+					in_reference_model_mode_changed := in_reference_model_mode
+					in_reference_model_mode := False
+					set_show_reference_model_view (False)
+				end
+				repopulate (selected_language)
 			end
 		end
 
-	roll_up_to_specialisation_level
-			-- roll the tree up so that nodes whose rolled_up_specialisation_status is
-			-- ss_inherited are closed, but nodes with
-		require
-			archetype_selected: attached target_archetype_descriptor
-		do
-			if target_archetype.is_specialised and not target_archetype.is_template then
-				create node_list.make(0)
-				ev_tree.recursive_do_all(agent ev_tree_item_roll_up(?))
+	code_select_action_agent: PROCEDURE [ANY, TUPLE [STRING]]
+			-- action to perform when node is selected in tree
 
-				from node_list.start until node_list.off loop
-					node_list.item.collapse
-					node_list.forth
+	on_ev_use_rm_icons_cb_selected
+		do
+			if attached target_archetype_descriptor then
+				set_use_rm_pixmaps (ev_use_rm_icons_cb.is_selected)
+				repopulate (selected_language)
+
+				-- reflect change to other editor tools
+				if attached update_all_tools_rm_icons_setting_agent then
+					update_all_tools_rm_icons_setting_agent.call ([])
 				end
 			end
 		end
@@ -480,6 +396,10 @@ feature {NONE} -- Implementation
 	ev_rm_visibility_controls: EV_FRAME
 
 	ev_cell: EV_CELL
+
+	update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]
+			-- if this is set, it is an agent that takes one argument of a routine
+			-- to execute on all other editors, to sync them to a change in this current one
 
 	rm_schema: BMM_SCHEMA
 
@@ -541,19 +461,54 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	ev_tree_item_expand (an_ev_tree_node: attached EV_TREE_NODE)
-			--
+	toggle_expand_tree
+			-- Expand or shrink the tree control.
 		do
-			if an_ev_tree_node.is_expandable then -- and node_data.is_addressable then
-				an_ev_tree_node.expand
+			is_expanded := not is_expanded
+
+			if is_expanded then
+				ev_tree.recursive_do_all (
+					agent (an_ev_tree_node: attached EV_TREE_NODE)
+						do
+							if an_ev_tree_node.is_expandable then
+								an_ev_tree_node.expand
+							end
+						end
+				)
+				ev_expand_button.set_text (create_message_content ("expand_button_collapse_text", Void))
+			else
+				ev_tree.recursive_do_all (
+					agent (an_ev_tree_node: attached EV_TREE_NODE)
+						do
+							if an_ev_tree_node.is_expandable then
+								an_ev_tree_node.collapse
+							end
+						end
+				)
+				ev_expand_button.set_text (create_message_content ("expand_button_expand_text", Void))
 			end
 		end
 
-	ev_tree_item_shrink (an_ev_tree_node: attached EV_TREE_NODE)
-			--
+	shrink_to_level (a_type: STRING)
+			-- Shrink the tree control up to items of type `a_type'.
 		do
-			if an_ev_tree_node.is_expandable then -- and node_data.is_addressable then
-				an_ev_tree_node.collapse
+			ev_tree.recursive_do_all (agent ev_tree_item_shrink_to_level (a_type, ?))
+		end
+
+	roll_up_to_specialisation_level
+			-- roll the tree up so that nodes whose rolled_up_specialisation_status is
+			-- ss_inherited are closed, but nodes with
+		require
+			archetype_selected: attached target_archetype_descriptor
+		do
+			if target_archetype.is_specialised and not target_archetype.is_template then
+				create node_list.make(0)
+				ev_tree.recursive_do_all(agent ev_tree_item_roll_up(?))
+
+				from node_list.start until node_list.off loop
+					node_list.item.collapse
+					node_list.forth
+				end
 			end
 		end
 
@@ -602,7 +557,11 @@ feature {NONE} -- Implementation
 			--
 		do
 			if an_ev_tree_node.is_expanded then
-				from an_ev_tree_node.start until an_ev_tree_node.off or else (an_ev_tree_node.item.is_expandable and then an_ev_tree_node.item.is_expanded) loop
+				from
+					an_ev_tree_node.start
+				until
+					an_ev_tree_node.off or else (an_ev_tree_node.item.is_expandable and then an_ev_tree_node.item.is_expanded)
+				loop
 					an_ev_tree_node.forth
 				end
 

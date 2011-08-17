@@ -138,8 +138,8 @@ feature {NONE}-- Initialization
 			ev_action_bar.disable_item_expand (ev_adl_version_text)
 			ev_archetype_id.disable_edit
 			ev_view_label.set_text ("View ")
-			ev_differential_view_button.set_pixmap (pixmaps ["diff"])
-			ev_flat_view_button.set_pixmap (pixmaps ["flat"])
+			ev_differential_view_button.set_pixmap (pixmaps ["diff_class"])
+			ev_flat_view_button.set_pixmap (pixmaps ["diff_class"])
 			ev_differential_view_button.set_tooltip (create_message_content ("differential_view_button_tooltip", Void))
 			ev_flat_view_button.set_tooltip (create_message_content ("flat_view_button_tooltip", Void))
 			ev_language_label.set_text (create_message_content ("language_label", Void))
@@ -274,6 +274,123 @@ feature -- Events
 			end
 		end
 
+feature -- UI Feedback
+
+	update_slots_tab_label (slots_count, used_by_count: INTEGER)
+			-- On the Slots tab, indicate the numbers of slots and used-by's.
+		do
+			ev_notebook.set_item_text (slot_map_control.ev_root_container, create_message_content ("slots_tab_text", Void) + " (" + slots_count.out + "/" + used_by_count.out + ")")
+		end
+
+	select_ontology_item_from_code (a_code: attached STRING)
+			-- if a code is selected in teh archetype definition tree, select the code in the ontology part of the UI
+		do
+			if is_term_code (a_code) then
+				ontology_controls.select_term (a_code)
+			elseif is_constraint_code (a_code) then
+				ontology_controls.select_constraint (a_code)
+			end
+		end
+
+feature -- Commands
+
+	clear
+			-- Wipe out content from visual controls.
+		do
+			ev_archetype_id.remove_text
+			ev_adl_version_text.remove_text
+			ev_language_combo.wipe_out
+			ev_language_combo.remove_text
+			clear_content
+			differential_view := True
+ 			ev_differential_view_button.enable_select
+ 		end
+
+	populate (aca: attached ARCH_CAT_ARCHETYPE)
+			-- Populate content from visual controls.
+		do
+			target_archetype_descriptor := aca
+			clear
+			if target_archetype_descriptor.is_valid then
+				ev_archetype_id.set_text (target_archetype_descriptor.ontological_name)
+				ev_adl_version_text.set_text (target_archetype_descriptor.differential_archetype.adl_version)
+				selected_language := target_archetype_descriptor.differential_archetype.original_language.code_string
+				populate_languages
+				description_controls.populate (target_archetype, selected_language)
+				node_map_control.populate (target_archetype_descriptor, differential_view, selected_language)
+			end
+		end
+
+	repopulate
+			-- repopulate from current archetype
+		do
+			clear_content
+			if target_archetype_descriptor.is_valid then
+				description_controls.populate (target_archetype, selected_language)
+				node_map_control.populate (target_archetype_descriptor, differential_view, selected_language)
+			end
+		end
+
+	select_flat_view
+			-- Called from MAIN_WINDOW View menu
+		do
+			if not ev_flat_view_button.is_selected then
+				ev_flat_view_button.enable_select
+				set_view (False)
+			end
+		end
+
+	select_differential_view
+			-- Called from MAIN_WINDOW View menu
+		do
+			if not ev_differential_view_button.is_selected then
+				ev_differential_view_button.enable_select
+				set_view (True)
+			end
+		end
+
+	change_adl_serialisation_version
+			-- call this if changing it becase control labels and contents need to be repopulated
+		do
+			set_serialisation_control_texts
+			if attached target_archetype_descriptor then
+				populate_serialised
+			end
+		end
+
+	update_rm_icons_setting
+			-- call this routine if rm_icons setting changed elsewhere in tool
+		do
+			node_map_control.update_rm_icons_cb
+		end
+
+feature {NONE} -- Events
+
+	on_flat_view
+			-- Called by `select_actions' of `ev_flat_view_button' in this tool
+		do
+			set_view (False)
+		end
+
+	on_differential_view
+			-- Called by `select_actions' of `ev_differential_view_button' in this tool
+		do
+			set_view (True)
+		end
+
+	set_view (differential_flag: BOOLEAN)
+			-- set view one way or the other
+		do
+			if (differential_flag and not differential_view) or -- changing from flat to diff
+				(not differential_flag and differential_view)  -- changing from diff to flat
+			then
+				differential_view := differential_flag
+				set_tab_texts
+				repopulate
+				on_select_archetype_notebook
+			end
+		end
+
 	on_slot_map_suppliers_tree_key_press (key: EV_KEY)
 			-- When the user presses Enter on an archetype, select it in the main window's explorer tree.
 		do
@@ -314,31 +431,6 @@ feature -- Events
 			end
 		end
 
-	on_flat_view
-			-- Called by `select_actions' of `flat_view_button'.
-		do
-			set_view (False)
-		end
-
-	on_differential_view
-			-- Called by `select_actions' of `differential_view_button'.
-		do
-			set_view (True)
-		end
-
-	set_view (differential_flag: BOOLEAN)
-			-- set view one way or the other
-		do
-			if (differential_flag and not differential_view) or -- changing from flat to diff
-				(not differential_flag and differential_view)  -- changing from diff to flat
-			then
-				differential_view := differential_flag
-				set_tab_texts
-				repopulate
-				on_select_archetype_notebook
-			end
-		end
-
 	on_select_language
 			-- Repopulate the view of the archetype when the user selects a different language.
 		do
@@ -348,105 +440,6 @@ feature -- Events
 				node_map_control.repopulate (selected_language)
 			end
 			on_select_archetype_notebook
-		end
-
-	repopulate
-		do
-			clear_content
-			if target_archetype_descriptor.is_valid then
-				description_controls.populate (target_archetype, selected_language)
-				node_map_control.populate (target_archetype_descriptor, differential_view, selected_language)
-			end
-		end
-
-feature -- UI Feedback
-
-	update_slots_tab_label (slots_count, used_by_count: INTEGER)
-			-- On the Slots tab, indicate the numbers of slots and used-by's.
-		do
-			ev_notebook.set_item_text (slot_map_control.ev_root_container, create_message_content ("slots_tab_text", Void) + " (" + slots_count.out + "/" + used_by_count.out + ")")
-		end
-
-	select_ontology_item_from_code (a_code: attached STRING)
-		do
-			if is_term_code (a_code) then
-				ontology_controls.select_term (a_code)
-			elseif is_constraint_code (a_code) then
-				ontology_controls.select_constraint (a_code)
-			end
-		end
-
-feature -- Commands
-
-	clear
-			-- Wipe out content from visual controls.
-		do
-			ev_archetype_id.remove_text
-			ev_adl_version_text.remove_text
-			ev_language_combo.wipe_out
-			ev_language_combo.remove_text
-			clear_content
-		end
-
-	clear_content
-			-- Wipe out content from visual controls.
-		do
-			description_controls.clear
-			node_map_control.clear
-			path_map_control.clear
-			ontology_controls.clear
-			slot_map_control.clear
-			annotations_control.clear
-
-			ev_serialised_rich_text.remove_text
-		end
-
-	populate (aca: attached ARCH_CAT_ARCHETYPE)
-			-- Populate content from visual controls.
-		do
-			target_archetype_descriptor := aca
-			clear
-			if target_archetype_descriptor.is_valid then
-				ev_archetype_id.set_text (target_archetype_descriptor.ontological_name)
-				ev_adl_version_text.set_text (target_archetype_descriptor.differential_archetype.adl_version)
-				selected_language := target_archetype_descriptor.differential_archetype.original_language.code_string
-				populate_languages
-				description_controls.populate (target_archetype, selected_language)
-				node_map_control.populate (target_archetype_descriptor, differential_view, selected_language)
-			end
-		end
-
-	select_flat_view
-			-- Called by `select_actions' of `flat_view_button'.
-		do
-			if not ev_flat_view_button.is_selected then
-				ev_flat_view_button.enable_select
-				set_view (False)
-			end
-		end
-
-	select_differential_view
-			-- Called by `select_actions' of `differential_view_button'.
-		do
-			if not ev_differential_view_button.is_selected then
-				ev_differential_view_button.enable_select
-				set_view (True)
-			end
-		end
-
-	change_adl_serialisation_version
-			-- call this if changing it becase control labels and contents need to be repopulated
-		do
-			set_serialisation_control_texts
-			if attached target_archetype_descriptor then
-				populate_serialised
-			end
-		end
-
-	update_rm_icons_setting
-			-- call this routine if rm_icons setting changed elsewhere in tool
-		do
-			node_map_control.update_rm_icons_cb
 		end
 
 feature {NONE} -- Implementation
@@ -509,6 +502,19 @@ feature {NONE} -- Implementation
 	select_archetype_from_gui_data: PROCEDURE [ANY, TUPLE [EV_ANY]]
 			-- agent provided by upper level of GUI for doing something
 			-- when an archetype in this tool is selected
+
+	clear_content
+			-- Wipe out content from visual controls.
+		do
+			description_controls.clear
+			node_map_control.clear
+			path_map_control.clear
+			ontology_controls.clear
+			slot_map_control.clear
+			annotations_control.clear
+
+			ev_serialised_rich_text.remove_text
+		end
 
 	populate_languages
 			-- Populate `language_combo' in the toolbar for currently selected archetype

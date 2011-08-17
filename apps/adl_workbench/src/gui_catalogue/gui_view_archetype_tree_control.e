@@ -49,7 +49,7 @@ feature {NONE} -- Initialisation
 feature -- Commands
 
 	update_tree_node_for_archetype (aca: attached ARCH_CAT_ARCHETYPE)
-			-- update Explorer tree node with changes in compilation status
+			-- update Catalogue tree node with changes in compilation status
 		local
 			an_id: STRING
 		do
@@ -162,31 +162,45 @@ feature {NONE} -- Implementation
    		local
 			text, tooltip: STRING_32
 			pixmap: EV_PIXMAP
+			model_publisher: STRING
 		do
 			if attached {ARCH_CAT_ITEM} node.data as aci then
 				text := utf8 (aci.display_name)
 
-				if attached {ARCH_CAT_ARCHETYPE} aci as aca then
-					tooltip := utf8 (aca.full_path)
+				if attached {ARCH_CAT_ARCHETYPE} aci as aca then -- archetype / template node
+					-- text
 					if aca.has_legacy_flat_file and display_archetype_source then
 						text.prepend (utf8("(lf) "))
 					end
-
 					if aca.has_slots then
 						text.append_code (Right_arrow_char)	-- Unicode character: an arrow pointing right
 					end
 
+					-- tooltip
+					tooltip := utf8 (aca.full_path)
 					if not aca.errors.is_empty then
 						tooltip.append (utf8 ("%N%N" + aca.errors.as_string))
 					end
 	 				node.set_tooltip (tooltip)
-	 			else -- it is a model node
-	 				text.append (utf8(" (" + aci.sub_tree_artefact_count (artefact_types).out + ")"))
+
+					-- pixmap
+					pixmap := pixmaps [aci.group_name]
+
+	 			elseif attached {ARCH_CAT_MODEL_NODE} aci as acmn then -- it is a model node
+	 				-- text
+	 				text.append (utf8(" (" + acmn.sub_tree_artefact_count (artefact_types).out + ")"))
+
+					-- pixmap
+					if acmn.is_class then
+						pixmap := object_node_pixmap (acmn)
+					else
+						pixmap := pixmaps [aci.group_name]
+					end
 				end
 
+				-- set text
 				node.set_text (text)
-				pixmap := pixmaps [aci.group_name]
-				if pixmap /= Void then
+				if attached pixmap then
 					node.set_pixmap (pixmap)
 				end
 			end

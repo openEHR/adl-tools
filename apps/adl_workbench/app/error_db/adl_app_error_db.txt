@@ -75,6 +75,12 @@ templates = <
 		["show_rm_properties_button_text"] = <"Show RM properties">
 		["show_rm_properties_tooltip"] = <"Show non-archetyped RM properties">
 
+		["closure_depth_spin_button_text"] = <"Depth">
+		["closure_depth_spin_button_tooltip"] = <"Depth of closure to explore; this computation can be long for depths > 5">
+
+		["closure_depth_recompute_button_text"] = <"Recompute">
+		["closure_depth_recompute_button_tooltip"] = <"Recompute with new depth">
+
 		["use_rm_icons_button_text"] = <"Use RM icons">
 		["use_rm_icons_button_tooltip"] = <"Use RM-specific icons">
 

@@ -65,7 +65,7 @@ feature -- Initialisation
 			in_technical_mode := technical_mode_flag
 			updating := update_flag
 			language := a_lang
-			rm_name := an_archetype.archetype_id.rm_originator.as_lower
+			rm_publisher := an_archetype.archetype_id.rm_originator.as_lower
 			create gui_nodes.make (0)
 		end
 
@@ -84,8 +84,8 @@ feature -- Visitor
 			end
 
 			-- pixmap
-			if use_rm_pixmaps and then rm_pixmaps.has (rm_name) and then rm_pixmaps.item (rm_name).has (a_node.rm_type_name) then
-				pixmap := rm_pixmaps.item (rm_name).item (a_node.rm_type_name)
+			if use_rm_pixmaps and then rm_pixmaps.has (rm_publisher) and then rm_pixmaps.item (rm_publisher).has (a_node.rm_type_name) then
+				pixmap := rm_pixmaps.item (rm_publisher).item (a_node.rm_type_name)
 			else
 				pixmap := pixmaps.item(a_node.generating_type + occurrences_pixmap_string (a_node) + create_pixmap_ext (a_node))
 			end
@@ -128,8 +128,8 @@ feature -- Visitor
 			end
 
 			-- pixmap
-			if use_rm_pixmaps and then rm_pixmaps.has (rm_name) and then rm_pixmaps.item (rm_name).has (a_node.rm_type_name) then
-				pixmap := rm_pixmaps.item (rm_name).item (a_node.rm_type_name)
+			if use_rm_pixmaps and then rm_pixmaps.has (rm_publisher) and then rm_pixmaps.item (rm_publisher).has (a_node.rm_type_name) then
+				pixmap := rm_pixmaps.item (rm_publisher).item (a_node.rm_type_name)
 			else
 				pixmap_name := a_node.generating_type
 				if not attached a_node.occurrences or else a_node.occurrences.lower = 0 then
@@ -271,8 +271,8 @@ feature -- Visitor
 			gui_node_text := c_archetype_root_string (a_node)
 
 			-- pixmap
-			if use_rm_pixmaps and then rm_pixmaps.has (rm_name) and then rm_pixmaps.item (rm_name).has (a_node.rm_type_name) then
-				pixmap := rm_pixmaps.item (rm_name).item (a_node.rm_type_name)
+			if use_rm_pixmaps and then rm_pixmaps.has (rm_publisher) and then rm_pixmaps.item (rm_publisher).has (a_node.rm_type_name) then
+				pixmap := rm_pixmaps.item (rm_publisher).item (a_node.rm_type_name)
 			else
 				pixmap := pixmaps.item(a_node.generating_type + occurrences_pixmap_string (a_node) + create_pixmap_ext (a_node))
 			end
@@ -661,7 +661,7 @@ feature {NONE} -- Implementation
 
 	in_technical_mode: BOOLEAN
 
-	rm_name: STRING
+	rm_publisher: STRING
 			-- name of reference model of this archetype, for the purpose of finding pixmaps for RM-specific visualisation
 
 	updating: BOOLEAN

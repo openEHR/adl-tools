@@ -90,9 +90,20 @@ feature -- Commands
 			end
 		end
 
+	refresh
+			-- repopulate to update GUI settings
+		do
+			ev_tree.recursive_do_all (agent update_tree_node)
+		end
+
 	update_tree_node_for_archetype (ara: attached ARCH_CAT_ARCHETYPE)
 			-- update Explorer tree node with changes in compilation status
 		deferred
+		end
+
+	update_rm_icons_setting
+		do
+			refresh
 		end
 
 feature -- Events
@@ -130,6 +141,30 @@ feature {NONE} -- Implementation
 
 	populate_tree
 		deferred
+		end
+
+   	update_tree_node (node: attached EV_TREE_NODE)
+   		deferred
+   		end
+
+	update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]
+			-- if this is set, it is an agent that takes one argument of a routine
+			-- to execute on all other editors, to sync them to a change in this current one
+
+	object_node_pixmap (ara: ARCH_CAT_ITEM): EV_PIXMAP
+		local
+			rm_publisher: STRING
+		do
+			if attached {ARCH_CAT_MODEL_NODE} ara as acmn and then acmn.is_class then
+				rm_publisher := acmn.class_definition.bmm_model.model_publisher
+				if use_rm_pixmaps and then rm_pixmaps.has (rm_publisher) and then rm_pixmaps.item (rm_publisher).has (acmn.display_name) then
+					Result := rm_pixmaps.item (rm_publisher).item (acmn.display_name)
+				else
+					Result := pixmaps [ara.group_name]
+				end
+			else
+				Result := pixmaps [ara.group_name]
+			end
 		end
 
 invariant

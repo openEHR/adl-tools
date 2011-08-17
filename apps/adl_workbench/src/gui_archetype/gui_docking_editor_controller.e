@@ -1,6 +1,10 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Controller for multiple editor tools within a docking area."
+	description: "[
+				 Controller for multiple editor tools within a docking area. Note that within this interface,
+				 all tools are technically 'editors' in the docking sense, and also that the docking manager
+				 puts its own 'tools' in which are not editors.
+				 ]"
 	keywords:    "GUI, docking"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
@@ -29,67 +33,77 @@ feature -- Initialisation
 
 	make_docking (a_docking_manager: attached SD_DOCKING_MANAGER)
 		do
-			create docking_editors.make (0)
+			create docking_tools.make (0)
 			docking_manager := a_docking_manager
 		end
 
 feature -- Access
 
-	current_tool: like tool_type
+	currently_selected_tool: like tool_type
 			-- get currently active tool
 		require
-			has_current_tool
+			has_tools
 		do
-			Result := docking_editors.item (current_docking_editor_id).tool
-		end
-
-	all_tools: ARRAYED_LIST [like tool_type]
-			-- list of all tools currently in existence at the moment
-		require
-			has_current_tool
-		do
-			create Result.make (0)
-			from docking_editors.start until docking_editors.off loop
-				Result.extend (docking_editors.item_for_iteration.tool)
-				docking_editors.forth
-			end
+			Result := docking_tools.item (currently_selected_tool_id).tool
 		end
 
 feature -- Status Report
 
-	has_current_tool: BOOLEAN
+	has_tools: BOOLEAN
+			-- True if there are any tools here
 		do
-			Result := docking_editors.has (current_docking_editor_id)
+			Result := not docking_tools.is_empty
+		end
+
+	has_visible_tools: BOOLEAN
+			-- is there any tool whose content is displayed?
+		do
+			from docking_tools.start until docking_tools.off or docking_tools.item_for_iteration.tool.ev_root_container.is_displayed loop
+				docking_tools.forth
+			end
+			Result := not docking_tools.off
 		end
 
 feature -- Commands
 
-	clear
+	clear_all_tools_content
 		do
-			from docking_editors.start until docking_editors.off loop
-				docking_editors.item_for_iteration.docking_pane.set_long_title ("")
-				docking_editors.item_for_iteration.docking_pane.set_short_title ("")
-				docking_editors.item_for_iteration.docking_pane.set_pixmap (Editor_pixmap)
-				docking_editors.item_for_iteration.tool.clear
-				docking_editors.forth
+			from docking_tools.start until docking_tools.off loop
+				docking_tools.item_for_iteration.docking_pane.set_long_title ("")
+				docking_tools.item_for_iteration.docking_pane.set_short_title ("")
+				docking_tools.item_for_iteration.docking_pane.set_pixmap (Editor_pixmap)
+				docking_tools.item_for_iteration.tool.clear
+				docking_tools.forth
 			end
 		end
 
 	do_all_tools (an_agent: PROCEDURE [ANY, TUPLE [like tool_type]])
-			-- execute `an_agent' on all of the tools currently existing
+			-- execute `an_agent' on all of the tools currently existing (do nothing if none there)
 		do
-			all_tools.do_all (an_agent)
+			if has_tools then
+				all_tools (False).do_all (an_agent)
+			end
+		end
+
+	do_all_visible_tools (an_agent: PROCEDURE [ANY, TUPLE [like tool_type]])
+			-- execute `an_agent' on all of the tools currently visible on screen (do nothing if none there)
+		do
+			if has_tools then
+				all_tools (True).do_all (an_agent)
+			end
 		end
 
 feature {NONE} -- Implementation
 
 	tool_type: GUI_TOOL
+			-- redefine in descendants
 
-	docking_editors: HASH_TABLE [TUPLE [tool: like tool_type; docking_pane: SD_CONTENT], INTEGER]
+	docking_tools: HASH_TABLE [TUPLE [tool: like tool_type; docking_pane: SD_CONTENT], INTEGER]
+			-- table of [GUI_TOOL, docking pane} tuples keyed by tool id
 
 	docking_manager: attached SD_DOCKING_MANAGER
 
-	docking_manager_last_editor: SD_CONTENT
+	docking_manager_last_tool: SD_CONTENT
 			-- obtain last (i.e. rightmost) editor from docking manager
 			-- FIXME: should be managed inside SD_DOCKING_MANAGER
 		do
@@ -101,20 +115,35 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	current_docking_editor_id: INTEGER
+	all_tools (only_visible_tools: BOOLEAN): ARRAYED_LIST [like tool_type]
+			-- list of all tools currently in existence at the moment
+			-- if `only_visible_tools' set, only get visible tools
+		require
+			has_tools
+		do
+			create Result.make (0)
+			from docking_tools.start until docking_tools.off loop
+				if not only_visible_tools or else docking_tools.item_for_iteration.tool.ev_root_container.is_displayed then
+					Result.extend (docking_tools.item_for_iteration.tool)
+				end
+				docking_tools.forth
+			end
+		end
+
+	currently_selected_tool_id: INTEGER
 			-- id of editor tool currently in use
 
-	current_docking_editor: SD_CONTENT
+	currently_selected_tool_docking_pane: SD_CONTENT
 		do
-			Result := docking_editors.item (current_docking_editor_id).docking_pane
+			Result := docking_tools.item (currently_selected_tool_id).docking_pane
 		end
 
-	has_docking_editor (a_tool_id: INTEGER): BOOLEAN
+	has_tool (a_tool_id: INTEGER): BOOLEAN
 		do
-			Result := docking_editors.has (a_tool_id)
+			Result := docking_tools.has (a_tool_id)
 		end
 
-	create_new_docking_editor (a_gui_tool: like tool_type)
+	add_new_tool (a_gui_tool: like tool_type)
 			-- set up docking container
 		local
 			docking_pane: SD_CONTENT
@@ -126,9 +155,9 @@ feature {NONE} -- Implementation
 			a_gui_tool_dummy := a_gui_tool
 
 			-- find out what the current last editor in the docking panel is, before making a new one
-			last_ed := docking_manager_last_editor
-			current_docking_editor_id := docking_editors.count + 1
-			create docking_pane.make_with_widget_title_pixmap (a_gui_tool.ev_root_container, Editor_pixmap, Editor_group_name + " #" + current_docking_editor_id.out)
+			last_ed := docking_manager_last_tool
+			currently_selected_tool_id := docking_tools.count + 1
+			create docking_pane.make_with_widget_title_pixmap (a_gui_tool.ev_root_container, Editor_pixmap, Editor_group_name + " #" + currently_selected_tool_id.out)
 			docking_manager.contents.extend (docking_pane)
 			docking_pane.set_type ({SD_ENUMERATION}.editor)
 			if attached last_ed then
@@ -136,62 +165,62 @@ feature {NONE} -- Implementation
 			else
 				docking_pane.set_default_editor_position
 			end
-			docking_pane.close_request_actions.extend (agent remove_docking_editor (current_docking_editor_id))
-			docking_pane.focus_in_actions.extend (agent select_docking_editor (current_docking_editor_id))
-			docking_editors.put ([a_gui_tool_dummy, docking_pane], current_docking_editor_id) -- ***********
+			docking_pane.close_request_actions.extend (agent remove_tool (currently_selected_tool_id))
+			docking_pane.focus_in_actions.extend (agent select_tool (currently_selected_tool_id))
+			docking_tools.put ([a_gui_tool_dummy, docking_pane], currently_selected_tool_id) -- ***********
 		ensure
-			has_current_tool
+			docking_tools.has (currently_selected_tool_id) and then docking_tools.item (currently_selected_tool_id).tool = a_gui_tool
 		end
 
-	remove_docking_editor (tool_id: INTEGER)
+	remove_tool (tool_id: INTEGER)
 		require
-			valid_tool_id: has_docking_editor (tool_id)
+			valid_tool_id: has_tool (tool_id)
 		local
 			docking_pane: SD_CONTENT
 			keys: ARRAYED_LIST [INTEGER]
 		do
 			-- work out a sensible value for new current_archetype_tool_id
-			create keys.make_from_array (docking_editors.current_keys)
+			create keys.make_from_array (docking_tools.current_keys)
 			from keys.start until keys.off or keys.item = tool_id loop
 				keys.forth
 			end
 			if keys.isfirst then
 				if keys.count = 1 then
-					current_docking_editor_id := 0
+					currently_selected_tool_id := 0
 				else
-					current_docking_editor_id := keys.i_th (2)
+					currently_selected_tool_id := keys.i_th (2)
 				end
 			else
 				keys.back
-				current_docking_editor_id := keys.item
+				currently_selected_tool_id := keys.item
 			end
 
 			-- destroy the docking pane and archetype tool controls
-			docking_pane := docking_editors.item (tool_id).docking_pane
+			docking_pane := docking_tools.item (tool_id).docking_pane
 			docking_pane.close
 			docking_pane.destroy
-			docking_editors.remove (tool_id)
+			docking_tools.remove (tool_id)
 		ensure
-			not has_docking_editor (tool_id)
+			not has_tool (tool_id)
 		end
 
-	select_docking_editor (a_tool_id: INTEGER)
+	select_tool (a_tool_id: INTEGER)
 		require
-			valid_tool_id: has_docking_editor (a_tool_id)
+			valid_tool_id: has_tool (a_tool_id)
 		do
-			current_docking_editor_id := a_tool_id
+			currently_selected_tool_id := a_tool_id
 		end
 
-	populate_current_editor_docking_pane (a_long_title, a_short_title: STRING; a_pixmap: EV_PIXMAP)
+	populate_currently_selected_tool (a_long_title, a_short_title: STRING; a_pixmap: EV_PIXMAP)
 			-- Populate content from visual controls.
 		do
-			current_docking_editor.set_long_title (a_long_title)
-			current_docking_editor.set_short_title (a_short_title)
-			current_docking_editor.set_pixmap (a_pixmap)
-			if not current_docking_editor.is_visible then
-				current_docking_editor.show
+			currently_selected_tool_docking_pane.set_long_title (a_long_title)
+			currently_selected_tool_docking_pane.set_short_title (a_short_title)
+			currently_selected_tool_docking_pane.set_pixmap (a_pixmap)
+			if not currently_selected_tool_docking_pane.is_visible then
+				currently_selected_tool_docking_pane.show
 			end
-			current_docking_editor.set_focus
+			currently_selected_tool_docking_pane.set_focus
 		end
 
 end

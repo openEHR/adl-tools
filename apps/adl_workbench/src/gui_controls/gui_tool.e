@@ -20,7 +20,7 @@ feature -- Access
 feature -- Commands
 
 	clear
-			-- Wipe out content from visual controls.
+			-- Wipe out content from visual controls and reset controls to reasoonable state
 		deferred
 		end
 

@@ -16,6 +16,8 @@ class
 
 inherit
 	MAIN_WINDOW_IMP
+		rename
+			set_repository as configure_profiles
 		redefine
 			show
 		end
@@ -92,8 +94,8 @@ feature {NONE} -- Initialization
 			history_menu_back.set_pixmap (pixmaps ["history_back"])
 			history_menu_forward.set_pixmap (pixmaps ["history_forward"])
 
-			view_menu_differential.set_pixmap (pixmaps ["diff"])
-			view_menu_flat.set_pixmap (pixmaps ["flat"])
+			view_menu_differential.set_pixmap (pixmaps ["diff_class"])
+			view_menu_flat.set_pixmap (pixmaps ["diff_class"])
 
 			repository_menu_set_repository.set_pixmap (pixmaps ["tools"])
 			rm_schemas_menu_configure_rm_schemas.set_pixmap (pixmaps ["tools"])
@@ -158,7 +160,7 @@ feature {NONE} -- Initialization
 			view_menu_flat.select_actions.extend (agent on_flat_view)
 			view_menu_new_tab.select_actions.extend (agent archetype_tools.create_new_tool)
 
-			compile_button.select_actions.extend (agent compile)
+			compile_button.select_actions.extend (agent compile_toggle)
 			open_button.select_actions.extend (agent open_archetype)
 			history_back_button.select_actions.extend (agent on_back)
 			history_forward_button.select_actions.extend (agent on_forward)
@@ -277,7 +279,7 @@ feature -- Status setting
 	show
 			-- Do a few adjustments and load the repository before displaying the window.
 		do
-			append_billboard_to_status_area
+			append_billboard_to_console
 
 			initialise_session_ui_basic
 			Precursor
@@ -303,14 +305,14 @@ feature -- Status setting
 			-- if some RM schemas now found, set up a repository if necessary
 			if rm_schemas_access.found_valid_schemas then
 				if repository_profiles.current_reference_repository_path.is_empty then
-					set_repository
+					configure_profiles
 				else
 					populate_archetype_profile_combo
-					populate_directory_controls (True)
+					refresh_profile_context (True)
 				end
 			end
 
-			append_billboard_to_status_area
+			append_billboard_to_console
 		end
 
 feature -- File events
@@ -348,9 +350,9 @@ feature -- File events
 			-- Load and parse the archetype currently selected in `archetype_directory'.
 		do
 			if has_current_profile and then attached {ARCH_CAT_ARCHETYPE} current_arch_cat.selected_archetype as ara then
-				clear_all_archetype_view_controls
+				clear_toolbar_controls
 				do_with_wait_cursor (Current, agent archetype_compiler.build_lineage (ara, 0))
-				archetype_tools.current_tool.on_select_archetype_notebook
+				archetype_tools.currently_selected_tool.on_select_archetype_notebook
 			end
 		end
 
@@ -464,17 +466,25 @@ feature -- File events
 feature -- View Events
 
 	on_differential_view
+			-- set differential view on currently visible Archetype and Class Tools
 		do
-			if archetype_tools.has_current_tool then
-				archetype_tools.current_tool.select_differential_view
-			end
+			archetype_tools.do_all_visible_tools (agent
+				(a_tool: GUI_ARCHETYPE_TOOL) do a_tool.select_differential_view end
+			)
+			class_map_tools.do_all_visible_tools (agent
+				(a_tool: GUI_CLASS_MAP_TOOL) do a_tool.select_differential_view end
+			)
 		end
 
 	on_flat_view
+			-- set flat view on currently visible Tool
 		do
-			if archetype_tools.has_current_tool then
-				archetype_tools.current_tool.select_flat_view
-			end
+			archetype_tools.do_all_visible_tools (agent
+				(a_tool: GUI_ARCHETYPE_TOOL) do a_tool.select_flat_view end
+			)
+			class_map_tools.do_all_visible_tools (agent
+				(a_tool: GUI_CLASS_MAP_TOOL) do a_tool.select_flat_view end
+			)
 		end
 
 	on_reset_tool_layout
@@ -493,8 +503,11 @@ feature -- View Events
 
 feature {NONE} -- Repository events
 
-	set_repository
-			-- Display the Repository Settings dialog.
+	configure_profiles
+			-- Display the Repository Settings dialog. This dialog allows changing of
+			-- the repository profiles, adding new ones and removal. Removal of the current
+			-- repository or changing current repository paths will cause visual update;
+			-- adding a new profile won't - the current selection stays.
 		local
 			dialog: REPOSITORY_DIALOG
 			any_profile_changes_made: BOOLEAN
@@ -508,12 +521,12 @@ feature {NONE} -- Repository events
 			if any_profile_changes_made then
 				current_profile_removed := dialog.current_profile_removed
 				current_profile_changed := dialog.current_profile_changed
-				save_resources_and_show_status
+				save_resources
 			end
 
 			dialog.destroy
 
-			-- if anything changed, repopulate the profile combo box selectors
+			-- if the list of profiles changed, repopulate the profile combo box selectors
 			if dialog.any_profile_changes_made then
 				populate_archetype_profile_combo
 			end
@@ -521,18 +534,18 @@ feature {NONE} -- Repository events
 			-- if the current profile changed or was removed, repopulate the explorers
 			if current_profile_removed or current_profile_changed then
 				console_tool.clear
-				populate_directory_controls (True)
+				refresh_profile_context (True)
 			end
 		end
 
 	select_profile
-			-- Called by `select_actions' of `archetype_profile_combo' and `test_profile_combo'
+			-- Called by `select_actions' of profile selector
 		do
 			if not archetype_profile_combo.text.same_string (repository_profiles.current_profile_name) then
 				console_tool.clear
 				set_current_profile (archetype_profile_combo.text)
 			end
-			populate_directory_controls (False)
+			refresh_profile_context (False)
 			clear_all_tools
 		end
 
@@ -561,7 +574,8 @@ feature {NONE} -- Repository events
 			do_build_action (agent archetype_compiler.rebuild_subtree)
 		end
 
-	compile
+	compile_toggle
+			-- start or stop current compilation
 		do
 			if archetype_compiler.is_building then
 				interrupt_build
@@ -649,7 +663,7 @@ feature {NONE} -- Repository events
 	refresh_directory
 			-- reload current directory
 		do
-			populate_directory_controls (True)
+			refresh_profile_context (True)
 		end
 
 feature {NONE} -- History events
@@ -719,14 +733,14 @@ feature {NONE} -- Tools menu events
 			dialog.show_modal_to_window (Current)
 
 			if dialog.has_changed_ui_options then
-				save_resources_and_show_status
+				save_resources
 				populate_ui_arch_output_version
-				if archetype_tools.has_current_tool then
+				if archetype_tools.has_tools then
 					update_all_tools_rm_icons_setting
 				end
 			end
 			if dialog.has_changed_navigator_options and repository_profiles.has_current_profile then
-				save_resources_and_show_status
+				save_resources
 				catalogue_tool.populate
 				test_tool.populate
 			end
@@ -735,6 +749,8 @@ feature {NONE} -- Tools menu events
 	update_all_tools_rm_icons_setting
 		do
 			archetype_tools.do_all_tools (agent (a_tool: GUI_ARCHETYPE_TOOL) do a_tool.update_rm_icons_setting end)
+			class_map_tools.do_all_tools (agent (a_tool: GUI_CLASS_MAP_TOOL) do a_tool.update_rm_icons_cb end)
+			catalogue_tool.update_rm_icons_setting
 		end
 
 	clean_generated_files
@@ -742,7 +758,7 @@ feature {NONE} -- Tools menu events
 		do
 			if has_current_profile then
 				do_with_wait_cursor (Current, agent current_arch_cat.do_all_archetypes (agent delete_generated_files))
-				populate_directory_controls (True)
+				refresh_profile_context (True)
 			end
 		end
 
@@ -768,14 +784,14 @@ feature -- RM Schemas Events
 				console_tool.clear
 				rm_schemas_access.load_schemas
 				if not rm_schemas_access.found_valid_schemas then
-					append_billboard_to_status_area
+					append_billboard_to_console
 
 					-- FIXME: reset rm schema load list back?
 				else
-					populate_directory_controls(True)
+					refresh_profile_context (True)
 				end
 			elseif dialog.has_changed_schema_dir then
-				populate_directory_controls(True)
+				refresh_profile_context (True)
 			end
 		end
 
@@ -783,7 +799,7 @@ feature -- RM Schemas Events
 			-- user-initiated reload
 		do
 			rm_schemas_access.load_schemas
-			populate_directory_controls(True)
+			refresh_profile_context (True)
 		end
 
 feature {NONE} -- Help events
@@ -945,7 +961,11 @@ feature -- Catalogue tool
 
 	catalogue_tool: GUI_CATALOGUE_TOOL
 		once
-			create Result.make (agent parse_archetype, agent edit_archetype, agent create_and_populate_new_archetype_tool, agent display_class, agent create_and_populate_new_class_tool)
+			create Result.make (agent parse_archetype,
+					agent edit_archetype,
+					agent create_and_populate_new_archetype_tool,
+					agent display_class,
+					agent create_and_populate_new_class_tool)
 		end
 
 	create_new_catalogue_tool
@@ -958,25 +978,6 @@ feature -- Catalogue tool
 			a_docking_pane.set_short_title ("Catalogue")
 			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
 			a_docking_pane.set_top ({SD_ENUMERATION}.left)
-		end
-
-feature -- Test tool
-
-	test_tool: GUI_TEST_ARCHETYPE_TREE_CONTROL
-		once
-			create Result.make (agent statistics_tool.populate, agent info_feedback)
-		end
-
-	create_new_test_tool
-		local
-			a_docking_pane: SD_CONTENT
-		do
-			create a_docking_pane.make_with_widget_title_pixmap (test_tool.ev_root_container, pixmaps ["tools"], "Test")
-			attached_docking_manager.contents.extend (a_docking_pane)
-			a_docking_pane.set_long_title ("Test")
-			a_docking_pane.set_short_title ("Test")
-			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
-			a_docking_pane.set_auto_hide ({SD_ENUMERATION}.right)
 		end
 
 feature -- Archetype tools
@@ -998,7 +999,7 @@ feature -- Class map tool
 
 	class_map_tools: GUI_CLASS_MAP_TOOL_CONTROLLER
 		once
-			create Result.make (attached_docking_manager)
+			create Result.make (attached_docking_manager, agent update_all_tools_rm_icons_setting)
 		end
 
 	create_and_populate_new_class_tool
@@ -1007,6 +1008,25 @@ feature -- Class map tool
 			if current_arch_cat.has_selected_class then
 				class_map_tools.populate_current_tool
 			end
+		end
+
+feature -- Test tool
+
+	test_tool: GUI_TEST_ARCHETYPE_TREE_CONTROL
+		once
+			create Result.make (agent statistics_tool.populate, agent info_feedback)
+		end
+
+	create_new_test_tool
+		local
+			a_docking_pane: SD_CONTENT
+		do
+			create a_docking_pane.make_with_widget_title_pixmap (test_tool.ev_root_container, pixmaps ["tools"], "Test")
+			attached_docking_manager.contents.extend (a_docking_pane)
+			a_docking_pane.set_long_title ("Test")
+			a_docking_pane.set_short_title ("Test")
+			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
+			a_docking_pane.set_auto_hide ({SD_ENUMERATION}.right)
 		end
 
 feature -- Console Tool
@@ -1102,27 +1122,27 @@ feature {NONE} -- Implementation
 			create Result.make (Current)
 		end
 
-	append_billboard_to_status_area
-			-- Append bilboard contents to `parser_status_area' and clear billboard.
+	append_billboard_to_console
+			-- Append bilboard contents to console and clear billboard.
 		do
 			console_tool.append_text (billboard.content)
 			billboard.clear
 		end
 
-	save_resources_and_show_status
+	save_resources
 			-- Save the application configuration file and update the status area.
 		do
 			app_cfg.save
 			post_info (Current, "save_resources_and_show_status", "cfg_file_i1", <<user_config_file_path>>)
 		end
 
-	populate_directory_controls (refresh: BOOLEAN)
+	refresh_profile_context (refresh_from_repository: BOOLEAN)
 			-- Rebuild archetype directory & repopulate relevant GUI parts.
 		do
-			do_with_wait_cursor (Current, agent do_populate_directory_controls (refresh))
+			do_with_wait_cursor (Current, agent do_refresh_profile_context (refresh_from_repository))
 		end
 
-	do_populate_directory_controls (refresh: BOOLEAN)
+	do_refresh_profile_context (refresh_from_repository: BOOLEAN)
 		do
 			if title.has_substring (" - ") then
 				set_title (title.substring (title.substring_index (" - ", 1) + 3, title.count))
@@ -1131,20 +1151,20 @@ feature {NONE} -- Implementation
 			set_title (repository_profiles.current_reference_repository_path + " - " + title)
 
 			console_tool.append_text (create_message_line ("populating_directory_start", <<repository_profiles.current_profile_name>>))
-			use_current_profile (refresh)
+			use_current_profile (refresh_from_repository)
 			console_tool.append_text (create_message_line ("populating_directory_complete", Void))
 
-			clear_all_archetype_view_controls
+			clear_toolbar_controls
 			error_tool.clear
 
-			append_billboard_to_status_area
+			append_billboard_to_console
 
 			catalogue_tool.populate
 			test_tool.populate
 			statistics_tool.populate
 		end
 
-	clear_all_archetype_view_controls
+	clear_toolbar_controls
 			-- Wipe out content from visual controls.
 		do
 			populate_history_controls
@@ -1153,8 +1173,8 @@ feature {NONE} -- Implementation
 
 	clear_all_tools
 		do
-			class_map_tools.clear
-			archetype_tools.clear
+			class_map_tools.clear_all_tools_content
+			archetype_tools.clear_all_tools_content
 		end
 
 	populate_archetype_profile_combo
@@ -1216,8 +1236,8 @@ feature {NONE} -- Implementation
 			)
 
 			-- archetype tool
-			if archetype_tools.has_current_tool then
-				archetype_tools.current_tool.change_adl_serialisation_version
+			if archetype_tools.has_tools then
+				archetype_tools.currently_selected_tool.change_adl_serialisation_version
 			end
 		end
 
@@ -1297,8 +1317,8 @@ feature {NONE} -- Build commands
 			set_adl_version_for_flat_output (arch_output_version_combo.selected_text.as_string_8)
 
 			-- update archetype tool
-			if archetype_tools.has_current_tool then
-				archetype_tools.current_tool.change_adl_serialisation_version
+			if archetype_tools.has_tools then
+				archetype_tools.currently_selected_tool.change_adl_serialisation_version
 			end
 
 			-- for the moment, post a message about ADL 1.4 XML not being available

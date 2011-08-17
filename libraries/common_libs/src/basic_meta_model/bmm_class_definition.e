@@ -193,12 +193,12 @@ feature -- Access
 			end
 		end
 
-	property_definition_at_path (a_prop_path: OG_PATH): attached BMM_PROPERTY_DEFINITION
+	property_definition_at_path (a_prop_path: attached OG_PATH): attached BMM_PROPERTY_DEFINITION
 			-- retrieve the property definition for `a_prop_path' in flattened class corresponding to `a_type_name'
 			-- note that the internal cursor of the path is used to know how much to read - from cursor to end (this allows
 			-- recursive evaluation)
 		require
-			Property_path_valid: a_prop_path /= Void and then has_property_path(a_prop_path)
+			Property_path_valid: has_property_path(a_prop_path)
 		local
 			a_path_pos: INTEGER
 			class_def: BMM_CLASS_DEFINITION
@@ -223,12 +223,12 @@ feature -- Access
 			a_prop_path.go_i_th (a_path_pos)
 		end
 
-	property_type (a_class_type_name, a_prop_name: STRING): attached STRING
+	property_type (a_class_type_name, a_prop_name: attached STRING): attached STRING
 			-- retrieve the property type for `a_prop_name' in class corresponding to `a_type_name'
 			-- same as property_definition.type, except if a_type_name is generic
 		require
-			Type_name_valid: a_class_type_name /= Void and then is_well_formed_type_name (a_class_type_name)
-			Property_valid: a_prop_name /= Void and then has_property(a_prop_name)
+			Type_name_valid: is_well_formed_type_name (a_class_type_name)
+			Property_valid: has_property(a_prop_name)
 		local
 			prop_def: BMM_PROPERTY_DEFINITION
 			prop_type: BMM_TYPE_SPECIFIER
@@ -273,10 +273,10 @@ feature -- Status Report
 			Result := flat_properties.has (a_prop_name)
 		end
 
-	has_ancestor (a_class_name: STRING): BOOLEAN
+	has_ancestor (a_class_name: attached STRING): BOOLEAN
 			-- True if a_class_name is among the ancestor classes
 		require
-			Class_name_valid: a_class_name /= Void and then not a_class_name.is_empty
+			Class_name_valid: not a_class_name.is_empty
 		do
 			from ancestor_defs.start until ancestor_defs.off or Result loop
 				Result := ancestor_defs.item.name.is_equal(a_class_name) or else ancestor_defs.item.has_ancestor (a_class_name)
@@ -380,9 +380,11 @@ feature -- Commands
 
 feature -- Traversal
 
-	do_supplier_closure (flat_flag: BOOLEAN; enter_action, exit_action: PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION]])
+	do_supplier_closure (flat_flag: BOOLEAN; max_depth: INTEGER;
+		enter_action: PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION, INTEGER]]; exit_action: PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION]])
 			-- On all nodes in supplier closure of this class, execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 			-- If `flat_flag' = True, use the inheritance-flattened closure
+			-- THIS CAN BE AN EXPENSIVE COMPUTATION, so it is limited by the max_depth argument
 		require
 			enter_action_attached: enter_action /= Void
 		local
@@ -403,7 +405,7 @@ feature -- Traversal
 			end
 
 			from props.start until props.off loop
-				do_property_supplier_closure (props.item_for_iteration, flat_flag, enter_action, exit_action)
+				do_property_supplier_closure (props.item_for_iteration, flat_flag, max_depth, enter_action, exit_action)
 				props.forth
 			end
 		end
@@ -473,28 +475,32 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 
 feature {NONE} -- Implementation
 
-	do_property_supplier_closure (a_prop: attached BMM_PROPERTY_DEFINITION; flat_flag: BOOLEAN; enter_action: attached PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION]]; exit_action: PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION]])
+	do_property_supplier_closure (a_prop: attached BMM_PROPERTY_DEFINITION; flat_flag: BOOLEAN; max_depth: INTEGER;
+		enter_action: attached PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION, INTEGER]]; exit_action: PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION]])
 			-- On all nodes in supplier closure of `a_prop', execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 			-- If `flat_flag' = True, use the inheritance-flattened closure
+			-- THIS CAN BE AN EXPENSIVE COMPUTATION, so it is limited by the max_depth argument
 		local
 			props: attached HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 		do
 			if not supplier_closure_stack.has (a_prop.type_def.root_class) then
 				supplier_closure_stack.extend (a_prop.type_def.root_class)
 
-				enter_action.call ([a_prop])
+				enter_action.call ([a_prop, max_depth])
 
 		--		if not supplier_closure_class_record.has (a_prop.type_def.root_class) then
 		--			supplier_closure_class_record.extend (a_prop.type_def.root_class)
-					if flat_flag then
-						props := bmm_model.class_definition (a_prop.type_def.root_class).flat_properties
-					else
-						props := bmm_model.class_definition (a_prop.type_def.root_class).properties
-					end
+					if max_depth > 0 then
+						if flat_flag then
+							props := bmm_model.class_definition (a_prop.type_def.root_class).flat_properties
+						else
+							props := bmm_model.class_definition (a_prop.type_def.root_class).properties
+						end
 
-					from props.start until props.off loop
-						do_property_supplier_closure (props.item_for_iteration, flat_flag, enter_action, exit_action)
-						props.forth
+						from props.start until props.off loop
+							do_property_supplier_closure (props.item_for_iteration, flat_flag, max_depth - 1, enter_action, exit_action)
+							props.forth
+						end
 					end
 		--		end
 

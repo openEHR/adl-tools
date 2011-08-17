@@ -40,9 +40,11 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (a_docking_manager: attached SD_DOCKING_MANAGER)
+	make (a_docking_manager: attached SD_DOCKING_MANAGER;
+			a_update_all_tools_rm_icons_setting_agent: like update_all_tools_rm_icons_setting_agent)
 		do
 			make_docking (a_docking_manager)
+			update_all_tools_rm_icons_setting_agent := a_update_all_tools_rm_icons_setting_agent
 		end
 
 feature -- Commands
@@ -51,8 +53,8 @@ feature -- Commands
 		local
 			new_tool: like tool_type
 		do
-			create new_tool.make
-			create_new_docking_editor (new_tool)
+			create new_tool.make (update_all_tools_rm_icons_setting_agent)
+			add_new_tool (new_tool)
 		end
 
 	populate_current_tool
@@ -61,12 +63,12 @@ feature -- Commands
 			has_current_profile
 			current_arch_cat.has_selected_class
 		do
-			if not has_current_tool then
+			if not has_tools then
 				create_new_tool
 			end
 
-			current_tool.populate (current_arch_cat.selected_class)
-			populate_current_editor_docking_pane (current_arch_cat.selected_class.display_name,
+			currently_selected_tool.populate (current_arch_cat.selected_class)
+			populate_currently_selected_tool (current_arch_cat.selected_class.display_name,
 				current_arch_cat.selected_class.display_name.substring (1,
 					current_arch_cat.selected_class.display_name.count.min (10)),
 				pixmaps [current_arch_cat.selected_class.group_name])
@@ -75,6 +77,8 @@ feature -- Commands
 feature {NONE} -- Implementation
 
 	tool_type: GUI_CLASS_MAP_TOOL
+
+	update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]
 
 end
 

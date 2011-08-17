@@ -56,7 +56,7 @@ feature -- Commands
 			new_tool: like tool_type
 		do
 			create new_tool.make (select_archetype_from_gui_data, update_all_tools_rm_icons_setting_agent)
-			create_new_docking_editor (new_tool)
+			add_new_tool (new_tool)
 		end
 
 	populate_current_tool
@@ -65,11 +65,11 @@ feature -- Commands
 			has_current_profile
 			current_arch_cat.has_selected_archetype
 		do
-			if not has_current_tool then
+			if not has_tools then
 				create_new_tool
 			end
-			current_tool.populate (current_arch_cat.selected_archetype)
-			populate_current_editor_docking_pane (current_arch_cat.selected_archetype.id.as_string,
+			currently_selected_tool.populate (current_arch_cat.selected_archetype)
+			populate_currently_selected_tool (current_arch_cat.selected_archetype.id.as_string,
 				current_arch_cat.selected_archetype.id.as_abbreviated_string,
 				pixmaps [current_arch_cat.selected_archetype.group_name])
 		end

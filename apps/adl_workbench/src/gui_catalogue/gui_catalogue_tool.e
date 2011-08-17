@@ -86,6 +86,12 @@ feature -- Commands
 			end
 		end
 
+	update_rm_icons_setting
+		do
+			archetype_explorer.update_rm_icons_setting
+			template_explorer.update_rm_icons_setting
+		end
+
 feature {NONE} -- Implementation
 
 	archetype_explorer: GUI_VIEW_ARCHETYPE_TREE_CONTROL

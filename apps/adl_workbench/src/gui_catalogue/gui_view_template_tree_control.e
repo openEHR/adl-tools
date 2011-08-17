@@ -100,29 +100,27 @@ feature {NONE} -- Implementation
  			current_arch_cat.do_all_archetypes (agent ev_tree_node_populate)
 		end
 
-   	ev_tree_node_populate (ara: ARCH_CAT_ARCHETYPE)
+   	ev_tree_node_populate (ara: attached ARCH_CAT_ARCHETYPE)
    			-- Add a node representing `an_item' to `gui_file_tree'.
-		require
-			item_attached: ara /= Void
    		local
 			tree_iterator: OG_ITERATOR
 		do
 			-- make sure it is a template of some kind
-			if artefact_types.has(ara.artefact_type) then
+			if artefact_types.has (ara.artefact_type) then
 				-- if it is compiled & valid, display its flat filler structure
 				if ev_node_descriptor_map.has (ara.ontological_name) then
 					if ara.is_valid then
 						ev_tree_item_stack.extend (ev_node_descriptor_map.item (ara.ontological_name))
 						ev_tree_item_stack.item.wipe_out
-						ev_tree_item_stack.item.set_pixmap (pixmaps[ara.group_name])
+						ev_tree_item_stack.item.set_pixmap (object_node_pixmap (ara))
 						create tree_iterator.make (ara.flat_archetype.definition.representation)
 						tree_iterator.do_all (agent ev_node_build_enter_action (?, ?), agent ev_node_build_exit_action (?, ?))
 						ev_tree_item_stack.remove
 					else
-						ev_node_descriptor_map.item (ara.ontological_name).set_pixmap (pixmaps[ara.group_name])
+						ev_node_descriptor_map.item (ara.ontological_name).set_pixmap (object_node_pixmap (ara))
 					end
 				else -- otherwise just display the template root
-					attach_node(ara.id.rm_entity + "." + ara.display_name, pixmaps[ara.group_name], ara)
+					attach_node (ara.id.rm_entity + "." + ara.display_name, object_node_pixmap (ara), ara)
 					ev_node_descriptor_map.force (ev_tree_item_stack.item, ara.ontological_name)
 					ev_tree_item_stack.remove
 				end
@@ -153,11 +151,11 @@ feature {NONE} -- Implementation
 						ca_path := c_attr.path
 					end
 					if not c_attr.children.off then
-						attach_node(ca_path, pixmaps [c_attribute_pixmap_string(c_attr)], Void)
+						attach_node (ca_path, pixmaps [c_attribute_pixmap_string(c_attr)], Void)
 					end
 				elseif attached {C_ARCHETYPE_ROOT} ca as car and attached current_arch_cat as dir then
 					ara := dir.archetype_index.item (car.archetype_id)
-					attach_node(ara.id.rm_entity + "." + ara.display_name, pixmaps[ara.group_name], ara)
+					attach_node (ara.id.rm_entity + "." + ara.display_name, object_node_pixmap (ara), ara)
 				end
 			end
 		end
@@ -212,6 +210,16 @@ feature {NONE} -- Implementation
 				ev_tree_item_stack.item.extend (a_ti)
 			end
 			ev_tree_item_stack.extend (a_ti)
+		end
+
+   	update_tree_node (node: attached EV_TREE_NODE)
+   			-- Set the icon appropriate to the item attached to `node'.
+		do
+ 			if attached {ARCH_CAT_MODEL_NODE} node.data as acmn then -- it is a model node
+				if acmn.is_class then
+					node.set_pixmap (object_node_pixmap (acmn))
+				end
+			end
 		end
 
 end
