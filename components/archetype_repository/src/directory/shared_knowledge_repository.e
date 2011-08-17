@@ -42,6 +42,7 @@ feature -- Access
 		local
 			new_cat: ARCHETYPE_CATALOGUE
 		do
+			init_gen_dirs_from_current_profile
 			if not arch_cats.has (repository_profiles.current_profile_name) or else refresh then
 				create new_cat.make
 				if directory_exists (repository_profiles.current_reference_repository_path) then
