@@ -157,7 +157,8 @@ feature --methods
 		request_content.deserialize_from_byte_arr(p_request_content)
 
 		--create response object first, and later the header
-		response_wrapper := repo_manager.compile_and_visit_archetype (request_content.get_content_at (0))
+		--response_wrapper := repo_manager.compile_and_visit_archetype (request_content.get_content_at (0))
+		response_wrapper := repo_manager.get_archetype_wrapper (request_content.get_content_at (0))
 		if response_wrapper = void then
 			--just put an empty header instead of response: TODO: REPLACE WITH DUMMY RESPONSE OBJECT
 			response_wrapper := create_response_header ("something went wrong")

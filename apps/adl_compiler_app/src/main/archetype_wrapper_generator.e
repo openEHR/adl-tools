@@ -13,6 +13,8 @@ create
 feature
 	archetype:ARCHETYPE
 
+	a_wrapper: ARCHETYPE_WRAPPER_GEN
+
 feature {NONE} -- Initialization
 
 	make(p_archetype:ARCHETYPE )
@@ -20,37 +22,46 @@ feature {NONE} -- Initialization
 			param_not_null: attached p_archetype
 		do
 			archetype := p_archetype
+			create a_wrapper.make
+			a_wrapper.init_pb_obj
+			a_wrapper.set_is_root_object (true)
 		end
 
 feature
-	get_archetype_wrapper:ARCHETYPE_WRAPPER_GEN
-	local
-		wrapper:ARCHETYPE_WRAPPER_GEN
+	get_archetype_definition_wrapper:CCOMPLEXOBJECT_WRAPPER_GEN
 	do
-		wrapper.make
-		wrapper.init_pb_obj
-		wrapper.set_is_root_object (true)
+		Result := a_wrapper.get_definition
+	end
+
+	get_archetype_wrapper:ARCHETYPE_WRAPPER_GEN
+	do
+		Result := a_wrapper
+	end
+
+	fill_archetype_wrapper
+	do
+
 
 		--copy fields other than the definition field: that will be filled by the visitor
 		--adlversion
 		if archetype.version /= void then
-			wrapper.set_adlversion (archetype.version)
+			a_wrapper.set_adlversion (archetype.version)
 		end
 
 		--archetypeId
 		if archetype.archetype_id /= void then
-			copy_archetype_id(wrapper.get_archetypeid, archetype.archetype_id)
+			copy_archetype_id(a_wrapper.get_archetypeid, archetype.archetype_id)
 		end
 
 		--concept
 		if archetype.concept /= void then
-			wrapper.set_concept (archetype.concept)
+			a_wrapper.set_concept (archetype.concept)
 		end
 
 		--definition:TODO: WILL BE FILLED BY THE VISITOR
 		--description
 		if archetype.description /= void then
-			copy_description(wrapper.get_description, archetype.description)
+			copy_description(a_wrapper.get_description, archetype.description)
 		end
 
 		--invariants
@@ -60,31 +71,31 @@ feature
 			until
 				invariants.after
 			loop
-				copy_assertion (wrapper.add_invariants, invariants.item_for_iteration)
+				copy_assertion (a_wrapper.add_invariants, invariants.item_for_iteration)
 				invariants.forth
 			end
 		end
 
 		--iscontrolled
-		wrapper.set_iscontrolled (archetype.is_controlled)
+		a_wrapper.set_iscontrolled (archetype.is_controlled)
 		--ontology
 		if archetype.ontology /= void then
-			copy_archetype_ontology(wrapper.get_ontology, archetype.ontology)
+			copy_archetype_ontology(a_wrapper.get_ontology, archetype.ontology)
 		end
 
 		--originallanguage
 		if archetype.original_language /= void then
-			copy_code_phrase (wrapper.get_originallanguage, archetype.original_language)
+			copy_code_phrase (a_wrapper.get_originallanguage, archetype.original_language)
 		end
 
 		--parentarchetypeid
 		if archetype.parent_archetype_id /= void then
-			copy_archetype_id (wrapper.get_parentarchetypeid, archetype.parent_archetype_id)
+			copy_archetype_id (a_wrapper.get_parentarchetypeid, archetype.parent_archetype_id)
 		end
 
 		--revisionhistory
 		if archetype.revision_history /= void then
-			copy_revision_history (wrapper.get_revisionhistory, archetype.revision_history)
+			copy_revision_history (a_wrapper.get_revisionhistory, archetype.revision_history)
 		end
 
 		--translations
@@ -94,7 +105,7 @@ feature
 			until
 				archetype.translations.after
 			loop
-				copy_translation_details(wrapper.add_translations,archetype.translations.item_for_iteration)
+				copy_translation_details(a_wrapper.add_translations,archetype.translations.item_for_iteration)
 
 				archetype.translations.forth
 			end
@@ -1454,8 +1465,8 @@ feature
 			term_bindings_item := term_bindings.item_for_iteration
 			term_bindings_wrapper := p_wrapper.add_termbindings
 			--terminology
-			if term_bindings_item.key_for_iteration /= void then
-				term_bindings_wrapper.set_terminology (term_bindings_item.key_for_iteration)--TODO: IS THIS THE TERMINOLOGY?
+			if term_bindings.key_for_iteration /= void then
+				term_bindings_wrapper.set_terminology (term_bindings.key_for_iteration)--TODO: IS THIS THE TERMINOLOGY?
 			end
 
 			--items
@@ -1490,8 +1501,8 @@ feature
 			term_definition_item := term_definitions.item_for_iteration
 			term_definitions_wrapper := p_wrapper.add_termdefinitions
 			--language
-			if term_definition_item.key_for_iteration /= void then
-				term_definitions_wrapper.set_language (term_definition_item.key_for_iteration)--TODO: IS THIS THE LANGUAGE?
+			if term_definitions.key_for_iteration /= void then
+				term_definitions_wrapper.set_language (term_definitions.key_for_iteration)--TODO: IS THIS THE LANGUAGE?
 			end
 
 			--items
@@ -1570,18 +1581,20 @@ feature
 		end
 
 		--otherdetails
-		from
+		if p_trans_details.other_details /= void then
+			from
 			p_trans_details.other_details.start
-		until
-			p_trans_details.other_details.after
-		loop
-			string_dict_item_wrapper := p_wrapper.add_otherdetails
-			if p_trans_details.other_details.key_for_iteration /= void and p_trans_details.other_details.item_for_iteration /= void then
-				string_dict_item_wrapper.set_value (p_trans_details.other_details.item_for_iteration)
-				string_dict_item_wrapper.set_id (p_trans_details.other_details.key_for_iteration) --TODO: IS THIS THE ID?
-			end
+			until
+				p_trans_details.other_details.after
+			loop
+				string_dict_item_wrapper := p_wrapper.add_otherdetails
+				if p_trans_details.other_details.key_for_iteration /= void and p_trans_details.other_details.item_for_iteration /= void then
+					string_dict_item_wrapper.set_value (p_trans_details.other_details.item_for_iteration)
+					string_dict_item_wrapper.set_id (p_trans_details.other_details.key_for_iteration) --TODO: IS THIS THE ID?
+				end
 
-			p_trans_details.other_details.forth
+				p_trans_details.other_details.forth
+			end
 		end
 	end
 

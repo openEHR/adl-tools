@@ -68,17 +68,37 @@ feature
 				create visitor_iterator.make (flattened_archetype.definition, test_visitor)
 				visitor_iterator.do_all
 			end
---			io.put_string ("done with visitor%N")
+
 			root_obj := test_visitor.root
 			root_obj.set_is_root_object (true)
---			if attached root_obj.get_singleatributes (root_obj.get_singleatributes_lower_index) as satr then
---				io.put_string (satr.get_rmattributename + "%N")
---			end
---			if attached root_obj.get_multipleatributes (root_obj.get_multipleatributes_lower_index) as matr then
---				io.put_string (matr.get_rmattributename + "%N")
---			end
 			Result := root_obj
 
+		else
+--			io.put_string ("Archetype: " + p_archetype_name + " is not valid%N")
+		end
+	end
+
+	get_archetype_wrapper (p_archetype_name:STRING):ARCHETYPE_WRAPPER_GEN
+	--compile the archetype, create a wrapper using visitor,  and return the wrapper
+	local
+		flattened_archetype: FLAT_ARCHETYPE
+		visitor_iterator: C_VISITOR_ITERATOR
+		test_visitor: BOSPHORUS_PB_VISITOR
+		arch_wrapper_generator: ARCHETYPE_WRAPPER_GENERATOR
+	do
+--		io.put_string ("compiling and using archetype: " + p_archetype_name + "%N")
+		app_root.arch_dir.set_selected_item (app_root.arch_dir.archetype_index.item (p_archetype_name))
+		app_root.archetype_compiler.build_lineage (app_root.arch_dir.selected_archetype)
+		if app_root.arch_dir.selected_archetype.is_valid then
+			flattened_archetype := app_root.arch_dir.selected_archetype.flat_archetype
+			if flattened_archetype /= Void then
+				create arch_wrapper_generator.make (flattened_archetype)
+				arch_wrapper_generator.fill_archetype_wrapper
+				create test_visitor.make_with_root_ccomplexobj_wrapper (current,arch_wrapper_generator.get_archetype_definition_wrapper)
+				create visitor_iterator.make (flattened_archetype.definition, test_visitor)
+				visitor_iterator.do_all
+				Result := arch_wrapper_generator.get_archetype_wrapper
+			end
 		else
 --			io.put_string ("Archetype: " + p_archetype_name + " is not valid%N")
 		end

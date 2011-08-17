@@ -26,7 +26,7 @@ inherit
 	end
 
 create
-	make
+	make, make_with_root_ccomplexobj_wrapper
 
 feature
 	wrapper_stack:ARRAYED_STACK[ANY]
@@ -39,11 +39,19 @@ feature
 	make(p_repo_manager:REPOSITORY_MANAGER)
 	require
 		manager_not_null : p_repo_manager /= void
-		manager_initialized:
 	do
 		create wrapper_stack.make(0)
 		repo_manager := p_repo_manager
 	end
+
+	make_with_root_ccomplexobj_wrapper(p_repo_manager:REPOSITORY_MANAGER; p_ccomplex_obj_wrapper: CCOMPLEXOBJECT_WRAPPER_GEN)
+	require
+		p_not_null: p_repo_manager /= void and p_ccomplex_obj_wrapper /= void
+	do
+		root := p_ccomplex_obj_wrapper
+		make(p_repo_manager)
+	end
+
 
 
 feature
@@ -56,15 +64,21 @@ feature
 			class_def:BMM_CLASS_DEFINITION
 		do
 --			io.put_string ("start c_complex: " + a_node.rm_type_name + ":" + a_node.node_id + "%N")
-			if a_node.parent = void then
+			if root = void then --IF THE VISITOR DOES NOT HAVE A PRE SET CCOMPLEXOBJECT_WRAPPER FOR ROOT, IT WILL CREATE ONE
 				--root ccomplexobj must be initialized
 				create wrapper.make
 				--ccomplexobj should end up in an archetype, so don't declare it root for the garbage collector
 				--wrapper.set_is_root_object (true)
 				wrapper.init_pb_obj
 				root := wrapper
-			else
-				--there must be a wrapper for the parent attribute in the stack
+			end
+
+			if a_node.parent = void and root /= void then --first ever ccomplexobject visit, this must be the root
+				wrapper := root
+			end
+
+			if a_node.parent /= void then
+			--there must be a wrapper for the parent attribute in the stack
 				if attached {CMULTIPLEATTRIBUTE_WRAPPER_GEN} wrapper_stack.linear_representation.first as multiple_atr then
 					wrapper := multiple_atr.add_children.get_ccomplexobjectfield
 				end
@@ -72,6 +86,7 @@ feature
 					wrapper := single_atr.add_children.get_ccomplexobjectfield
 				end
 			end
+
 --			--fill fields in the wrapper			
 			wrapper.set_rmtypename (a_node.rm_type_name)
 			wrapper.set_nodeid (a_node.node_id)
