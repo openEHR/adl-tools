@@ -524,7 +524,7 @@ feature {NONE} -- Implementation
 				if attached {BMM_TYPE_SPECIFIER} eti.data as bmm_type_spec then
 					-- add a context menu item for expanding node, if depth limit reached
 					if eti.is_empty then
-						add_expand_context_menu (a_menu, bmm_type_spec.root_class, a_source, a_pebble)
+						add_expand_context_menu (a_menu, bmm_type_spec.root_class, eti)
 					end
 
 					-- if there are type substitutions available, add menu for that
@@ -538,35 +538,36 @@ feature {NONE} -- Implementation
 						subs := bmm_gen_parm_def.type_substitutions
 					end
 					if not subs.is_empty then
-						add_subtype_context_menu (a_menu, subs, a_source, a_pebble)
+						add_subtype_context_menu (a_menu, subs, eti)
 					end
 				end
 			end
 		end
 
-	add_subtype_context_menu (menu: EV_MENU; a_substitutions: ARRAYED_SET[STRING]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
+	add_subtype_context_menu (menu: EV_MENU; a_substitutions: ARRAYED_SET[STRING]; a_ti: EV_TREE_ITEM)
 			-- dynamically initializes the context menu for this tree
 		local
 			an_mi: EV_MENU_ITEM
 			chg_sub_menu: EV_MENU
 		do
-			if attached {EV_TREE_ITEM} a_source as a_ti then
-				-- create sub menu listing subtypes to change current node into
-				create chg_sub_menu.make_with_text ("=> subtype")
-				from a_substitutions.start until a_substitutions.off loop
-					create an_mi.make_with_text_and_action (a_substitutions.item, agent rebuild_from_interior_node (a_substitutions.item, a_ti, True))
-					if attached {BMM_TYPE_SPECIFIER} a_ti.data as a_type_spec then
-						if a_type_spec.bmm_model.class_definition (a_substitutions.item).is_abstract then
-							an_mi.set_pixmap (pixmaps ["class_abstract"])
-						else
-							an_mi.set_pixmap (pixmaps ["class_concrete"])
-						end
+			-- create sub menu listing subtypes to change current node into
+			create chg_sub_menu.make_with_text ("=> subtype")
+			from a_substitutions.start until a_substitutions.off loop
+				create an_mi.make_with_text_and_action (a_substitutions.item, agent rebuild_from_interior_node (a_substitutions.item, a_ti, True))
+				if attached {BMM_TYPE_SPECIFIER} a_ti.data as a_type_spec then
+					if a_type_spec.bmm_model.class_definition (a_substitutions.item).is_abstract then
+						an_mi.set_pixmap (pixmaps ["class_abstract"])
+					else
+						an_mi.set_pixmap (pixmaps ["class_concrete"])
 					end
-		    		chg_sub_menu.extend (an_mi)
-					a_substitutions.forth
 				end
-				menu.extend (chg_sub_menu)
+	    		chg_sub_menu.extend (an_mi)
+				a_substitutions.forth
+			end
+			menu.extend (chg_sub_menu)
 
+			-- if owning attribute is multiple, allow adding of sibling nodes
+			if a_ti.has_parent and then attached {BMM_PROPERTY_DEFINITION} a_ti.parent.data as a_prop_def and then a_prop_def.is_container then
 				-- create sub menu listing subtypes to add to parent node
 				create chg_sub_menu.make_with_text ("+ subtype")
 				from a_substitutions.start until a_substitutions.off loop
@@ -585,15 +586,13 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_expand_context_menu (menu: EV_MENU; a_class_name: STRING; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
+	add_expand_context_menu (menu: EV_MENU; a_class_name: STRING; a_ti: EV_TREE_ITEM)
 			-- dynamically initializes the context menu for this tree
 		local
 			an_mi: EV_MENU_ITEM
 		do
-			if attached {EV_TREE_ITEM} a_source as a_ti then
-				create an_mi.make_with_text_and_action ("Expand", agent rebuild_from_interior_node (a_class_name, a_ti, True))
-				menu.extend (an_mi)
-			end
+			create an_mi.make_with_text_and_action ("Expand", agent rebuild_from_interior_node (a_class_name, a_ti, True))
+			menu.extend (an_mi)
 		end
 
 	rebuild_from_interior_node (a_class_name: attached STRING; a_ti: EV_TREE_ITEM; replace_mode: BOOLEAN)
