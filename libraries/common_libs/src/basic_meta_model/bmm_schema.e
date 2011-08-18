@@ -424,14 +424,16 @@ feature -- Commands
 		do
 			from other.primitive_types.start until other.primitive_types.after loop
 				-- note that `put' only puts the class defintion from the included schema only if the current one does not already
-				-- have a definition for that class name
+				-- have a definition for that class name. Since higher-level schemas are processed first, any over-rides they
+				-- contain will stay, with the classes being overridden being ignored - which is the desired behaviour.
 				primitive_types.put (other.primitive_types.item_for_iteration.deep_twin, other.primitive_types.key_for_iteration)
 				other.primitive_types.forth
 			end
 
 			from other.class_definitions.start until other.class_definitions.after loop
 				-- note that `put' only puts the class defintion from the included schema only if the current one does not already
-				-- have a definition for that class name
+				-- have a definition for that class name. Since higher-level schemas are processed first, any over-rides they
+				-- contain will stay, with the classes being overridden being ignored - which is the desired behaviour.
 				class_definitions.put (other.class_definitions.item_for_iteration.deep_twin, other.class_definitions.key_for_iteration)
 				other.class_definitions.forth
 			end

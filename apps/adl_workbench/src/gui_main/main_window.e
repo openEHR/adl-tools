@@ -1155,6 +1155,7 @@ feature {NONE} -- Implementation
 
 			set_title (repository_profiles.current_reference_repository_path + " - " + title)
 
+			console_tool.show
 			console_tool.append_text (create_message_line ("populating_directory_start", <<repository_profiles.current_profile_name>>))
 			use_current_profile (refresh_from_repository)
 			console_tool.append_text (create_message_line ("populating_directory_complete", Void))
