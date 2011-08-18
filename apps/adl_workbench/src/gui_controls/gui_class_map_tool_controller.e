@@ -57,7 +57,7 @@ feature -- Commands
 			add_new_tool (new_tool)
 		end
 
-	populate_current_tool
+	populate_active_tool
 			-- Populate content from visual controls.
 		require
 			has_current_profile
@@ -67,8 +67,8 @@ feature -- Commands
 				create_new_tool
 			end
 
-			currently_selected_tool.populate (current_arch_cat.selected_class)
-			populate_currently_selected_tool (current_arch_cat.selected_class.display_name,
+			active_tool.populate (current_arch_cat.selected_class)
+			populate_active_tool_pane (current_arch_cat.selected_class.display_name,
 				current_arch_cat.selected_class.display_name.substring (1,
 					current_arch_cat.selected_class.display_name.count.min (10)),
 				pixmaps [current_arch_cat.selected_class.group_name])

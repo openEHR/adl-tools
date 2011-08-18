@@ -283,11 +283,15 @@ feature -- Commands
 		end
 
 	do_populate
+		local
+			str: STRING
 		do
 			ev_tree.wipe_out
  			create ev_tree_item_stack.make (0)
-
- 			ev_class_id.set_text (class_desc.class_definition.name)
+			str := class_desc.ontological_name.twin
+			str.replace_substring_all (class_desc.Section_separator.out, class_desc.package_name_delimiter.out)
+			str.prepend (class_desc.class_definition.bmm_model.model_publisher + class_desc.package_name_delimiter.out)
+ 			ev_class_id.set_text (str)
 			populate_root_node
 
 			class_desc.class_definition.do_supplier_closure (not differential_view, ev_closure_depth_spin_button.value-1, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)

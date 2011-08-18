@@ -59,7 +59,7 @@ feature -- Commands
 			add_new_tool (new_tool)
 		end
 
-	populate_current_tool
+	populate_active_tool
 			-- Populate content from visual controls.
 		require
 			has_current_profile
@@ -68,8 +68,8 @@ feature -- Commands
 			if not has_tools then
 				create_new_tool
 			end
-			currently_selected_tool.populate (current_arch_cat.selected_archetype)
-			populate_currently_selected_tool (current_arch_cat.selected_archetype.id.as_string,
+			active_tool.populate (current_arch_cat.selected_archetype)
+			populate_active_tool_pane (current_arch_cat.selected_archetype.id.as_string,
 				current_arch_cat.selected_archetype.id.as_abbreviated_string,
 				pixmaps [current_arch_cat.selected_archetype.group_name])
 		end

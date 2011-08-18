@@ -219,11 +219,11 @@ feature {NONE} -- Implementation
 	context_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
 			-- creates the context menu for a right click action for an ARCH_REP_ARCHETYPE node
 		do
-			if attached {EV_TREE_ITEM} a_source as eti then
-				if attached {ARCH_CAT_ARCHETYPE} eti.data as aca then
-					create_archetype_context_menu (a_menu, aca.ontological_name, a_source, a_pebble)
-				elseif attached {ARCH_CAT_MODEL_NODE} eti.data as acmn then
-					create_class_context_menu (a_menu, acmn.ontological_name, a_source, a_pebble)
+			if attached {EV_TREE_ITEM} a_source as ev_ti then
+				if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
+					create_archetype_context_menu (a_menu, aca.ontological_name, ev_ti)
+				elseif attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
+					create_class_context_menu (a_menu, acmn.ontological_name, ev_ti)
 				end
 			end
 		end
@@ -231,33 +231,33 @@ feature {NONE} -- Implementation
 --	context_menu_agent: PROCEDURE [ANY, TUPLE [EV_MENU]]
 --			-- Procedure that sets up a context menu
 
-	create_archetype_context_menu (menu: EV_MENU; arch_id: STRING; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
+	create_archetype_context_menu (menu: EV_MENU; arch_id: STRING; ev_ti: EV_TREE_ITEM)
 			-- dynamically initializes the context menu for this tree
 		local
 			parse_mi, edit_source_mi, new_tool_mi: EV_MENU_ITEM
 		do
-			create parse_mi.make_with_text_and_action ("Parse", select_archetype_agent)
+			create parse_mi.make_with_text_and_action ("Compile and Display", agent display_context_selected_archetype_in_active_tool (ev_ti))
 			parse_mi.set_pixmap (pixmaps ["parse"])
 	    	menu.extend (parse_mi)
+
+			create new_tool_mi.make_with_text_and_action ("Display in new tool", agent display_context_selected_archetype_in_new_tool (ev_ti))
+			new_tool_mi.set_pixmap (pixmaps ["archetype_2"])
+			menu.extend (new_tool_mi)
 
 			create edit_source_mi.make_with_text_and_action ("Edit source", edit_archetype_agent)
 			edit_source_mi.set_pixmap (pixmaps ["edit"])
 			menu.extend (edit_source_mi)
-
-			create new_tool_mi.make_with_text_and_action ("New tool", agent display_context_selected_archetype (a_source))
-			new_tool_mi.set_pixmap (pixmaps ["archetype_2"])
-			menu.extend (new_tool_mi)
 		end
 
-	create_class_context_menu (menu: EV_MENU; arch_id: STRING; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
+	create_class_context_menu (menu: EV_MENU; arch_id: STRING; ev_ti: EV_TREE_ITEM)
 			-- dynamically initializes the context menu for this tree
 		local
 			display_mi, new_tool_mi: EV_MENU_ITEM
 		do
-			create display_mi.make_with_text_and_action ("Display", select_class_agent)
+			create display_mi.make_with_text_and_action ("Display", agent display_context_selected_class_in_active_tool (ev_ti))
 	    	menu.extend (display_mi)
 
-			create new_tool_mi.make_with_text_and_action ("Display in new tool", agent display_context_selected_class (a_source))
+			create new_tool_mi.make_with_text_and_action ("Display in new tool", agent display_context_selected_class_in_new_tool (ev_ti))
 			menu.extend (new_tool_mi)
 		end
 
@@ -272,25 +272,39 @@ feature {NONE} -- Implementation
 
 		end
 
-	display_context_selected_archetype (a_source: EV_PICK_AND_DROPABLE)
+	display_context_selected_archetype_in_active_tool (ev_ti: EV_TREE_ITEM)
 		do
-			if attached {EV_TREE_NODE} a_source as ev_tn then
-				ev_tn.enable_select
-				if attached {ARCH_CAT_ARCHETYPE} ev_tn.data as aca then
-					current_arch_cat.set_selected_item (aca)
-					select_archetype_in_new_tool_agent.call ([])
-				end
+			ev_ti.enable_select
+			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
+				current_arch_cat.set_selected_item (aca)
+				select_archetype_agent.call ([])
 			end
 		end
 
-	display_context_selected_class (a_source: EV_PICK_AND_DROPABLE)
+	display_context_selected_class_in_active_tool (ev_ti: EV_TREE_ITEM)
 		do
-			if attached {EV_TREE_NODE} a_source as ev_tn then
-				ev_tn.enable_select
-				if attached {ARCH_CAT_MODEL_NODE} ev_tn.data as acmn then
-					current_arch_cat.set_selected_item (acmn)
-					select_class_in_new_tool_agent.call ([])
-				end
+			ev_ti.enable_select
+			if attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
+				current_arch_cat.set_selected_item (acmn)
+				select_class_agent.call ([])
+			end
+		end
+
+	display_context_selected_archetype_in_new_tool (ev_ti: EV_TREE_ITEM)
+		do
+			ev_ti.enable_select
+			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
+				current_arch_cat.set_selected_item (aca)
+				select_archetype_in_new_tool_agent.call ([])
+			end
+		end
+
+	display_context_selected_class_in_new_tool (ev_ti: EV_TREE_ITEM)
+		do
+			ev_ti.enable_select
+			if attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
+				current_arch_cat.set_selected_item (acmn)
+				select_class_in_new_tool_agent.call ([])
 			end
 		end
 

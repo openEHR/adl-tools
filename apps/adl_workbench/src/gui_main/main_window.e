@@ -352,7 +352,7 @@ feature -- File events
 			if has_current_profile and then attached {ARCH_CAT_ARCHETYPE} current_arch_cat.selected_archetype as ara then
 				clear_toolbar_controls
 				do_with_wait_cursor (Current, agent archetype_compiler.build_lineage (ara, 0))
-				archetype_tools.currently_selected_tool.on_select_archetype_notebook
+				archetype_tools.active_tool.on_select_archetype_notebook
 			end
 		end
 
@@ -931,7 +931,7 @@ feature -- Archetype Events
 			-- display the class currently selected in `archetype_catalogue'.
 		do
 			if attached current_arch_cat as cat and then cat.has_selected_class then
-				class_map_tools.populate_current_tool
+				class_map_tools.populate_active_tool
 			end
 		end
 
@@ -991,7 +991,7 @@ feature -- Archetype tools
 		do
 			archetype_tools.create_new_tool
 			if current_arch_cat.has_selected_archetype then
-				archetype_tools.populate_current_tool
+				archetype_tools.populate_active_tool
 			end
 		end
 
@@ -1006,7 +1006,7 @@ feature -- Class map tool
 		do
 			class_map_tools.create_new_tool
 			if current_arch_cat.has_selected_class then
-				class_map_tools.populate_current_tool
+				class_map_tools.populate_active_tool
 			end
 		end
 
@@ -1237,7 +1237,7 @@ feature {NONE} -- Implementation
 
 			-- archetype tool
 			if archetype_tools.has_tools then
-				archetype_tools.currently_selected_tool.change_adl_serialisation_version
+				archetype_tools.active_tool.change_adl_serialisation_version
 			end
 		end
 
@@ -1301,7 +1301,7 @@ feature {NONE} -- Build commands
 
 				if attached current_arch_cat then
 					if aca = current_arch_cat.selected_archetype then
-						archetype_tools.populate_current_tool
+						archetype_tools.populate_active_tool
 					end
 				end
 			end
@@ -1318,7 +1318,7 @@ feature {NONE} -- Build commands
 
 			-- update archetype tool
 			if archetype_tools.has_tools then
-				archetype_tools.currently_selected_tool.change_adl_serialisation_version
+				archetype_tools.active_tool.change_adl_serialisation_version
 			end
 
 			-- for the moment, post a message about ADL 1.4 XML not being available

@@ -39,12 +39,12 @@ feature -- Initialisation
 
 feature -- Access
 
-	currently_selected_tool: like tool_type
+	active_tool: like tool_type
 			-- get currently active tool
 		require
 			has_tools
 		do
-			Result := docking_tools.item (currently_selected_tool_id).tool
+			Result := docking_tools.item (active_tool_id).tool
 		end
 
 feature -- Status Report
@@ -130,12 +130,12 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	currently_selected_tool_id: INTEGER
+	active_tool_id: INTEGER
 			-- id of editor tool currently in use
 
-	currently_selected_tool_docking_pane: SD_CONTENT
+	active_tool_docking_pane: SD_CONTENT
 		do
-			Result := docking_tools.item (currently_selected_tool_id).docking_pane
+			Result := docking_tools.item (active_tool_id).docking_pane
 		end
 
 	has_tool (a_tool_id: INTEGER): BOOLEAN
@@ -156,8 +156,8 @@ feature {NONE} -- Implementation
 
 			-- find out what the current last editor in the docking panel is, before making a new one
 			last_ed := docking_manager_last_tool
-			currently_selected_tool_id := docking_tools.count + 1
-			create docking_pane.make_with_widget_title_pixmap (a_gui_tool.ev_root_container, Editor_pixmap, Editor_group_name + " #" + currently_selected_tool_id.out)
+			active_tool_id := docking_tools.count + 1
+			create docking_pane.make_with_widget_title_pixmap (a_gui_tool.ev_root_container, Editor_pixmap, Editor_group_name + " #" + active_tool_id.out)
 			docking_manager.contents.extend (docking_pane)
 			docking_pane.set_type ({SD_ENUMERATION}.editor)
 			if attached last_ed then
@@ -165,62 +165,64 @@ feature {NONE} -- Implementation
 			else
 				docking_pane.set_default_editor_position
 			end
-			docking_pane.close_request_actions.extend (agent remove_tool (currently_selected_tool_id))
-			docking_pane.focus_in_actions.extend (agent select_tool (currently_selected_tool_id))
-			docking_tools.put ([a_gui_tool_dummy, docking_pane], currently_selected_tool_id) -- ***********
+			docking_pane.close_request_actions.extend (agent remove_tool (active_tool_id))
+			docking_pane.focus_in_actions.extend (agent select_tool (active_tool_id))
+			docking_tools.put ([a_gui_tool_dummy, docking_pane], active_tool_id) -- ***********
 		ensure
-			docking_tools.has (currently_selected_tool_id) and then docking_tools.item (currently_selected_tool_id).tool = a_gui_tool
+			docking_tools.has (active_tool_id) and then docking_tools.item (active_tool_id).tool = a_gui_tool
 		end
 
-	remove_tool (tool_id: INTEGER)
+	remove_tool (a_tool_id: INTEGER)
 		require
-			valid_tool_id: has_tool (tool_id)
+			valid_tool_id: has_tool (a_tool_id)
 		local
 			docking_pane: SD_CONTENT
 			keys: ARRAYED_LIST [INTEGER]
 		do
 			-- work out a sensible value for new current_archetype_tool_id
 			create keys.make_from_array (docking_tools.current_keys)
-			from keys.start until keys.off or keys.item = tool_id loop
+			from keys.start until keys.off or keys.item = a_tool_id loop
 				keys.forth
 			end
 			if keys.isfirst then
 				if keys.count = 1 then
-					currently_selected_tool_id := 0
+					active_tool_id := 0
 				else
-					currently_selected_tool_id := keys.i_th (2)
+					active_tool_id := keys.i_th (2)
 				end
 			else
 				keys.back
-				currently_selected_tool_id := keys.item
+				active_tool_id := keys.item
 			end
 
 			-- destroy the docking pane and archetype tool controls
-			docking_pane := docking_tools.item (tool_id).docking_pane
+			docking_pane := docking_tools.item (a_tool_id).docking_pane
 			docking_pane.close
 			docking_pane.destroy
-			docking_tools.remove (tool_id)
+			docking_tools.remove (a_tool_id)
 		ensure
-			not has_tool (tool_id)
+			not has_tool (a_tool_id)
 		end
 
 	select_tool (a_tool_id: INTEGER)
 		require
 			valid_tool_id: has_tool (a_tool_id)
 		do
-			currently_selected_tool_id := a_tool_id
+			active_tool_id := a_tool_id
+		ensure
+			active_tool_id = a_tool_id
 		end
 
-	populate_currently_selected_tool (a_long_title, a_short_title: STRING; a_pixmap: EV_PIXMAP)
+	populate_active_tool_pane (a_long_title, a_short_title: STRING; a_pixmap: EV_PIXMAP)
 			-- Populate content from visual controls.
 		do
-			currently_selected_tool_docking_pane.set_long_title (a_long_title)
-			currently_selected_tool_docking_pane.set_short_title (a_short_title)
-			currently_selected_tool_docking_pane.set_pixmap (a_pixmap)
-			if not currently_selected_tool_docking_pane.is_visible then
-				currently_selected_tool_docking_pane.show
+			active_tool_docking_pane.set_long_title (a_long_title)
+			active_tool_docking_pane.set_short_title (a_short_title)
+			active_tool_docking_pane.set_pixmap (a_pixmap)
+			if not active_tool_docking_pane.is_visible then
+				active_tool_docking_pane.show
 			end
-			currently_selected_tool_docking_pane.set_focus
+			active_tool_docking_pane.set_focus
 		end
 
 end
