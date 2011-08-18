@@ -45,8 +45,24 @@
 		  <p>In general, docking is controlled in the normal way for the platform you are working on, e.g Windows, or the various GUI toolkits used on Linux and MacOS. </p>
           <h3>General layout</h3>
           <p>The AWB has two facilities, the archetype compiler/viewer and the 'tester'. The main form shows the compiler/viewer, while the tester is normally minimised to the right. The Viewer looks as follows.</p>
-          <a href="images/overview.png">
-            <img border="0" alt="Overview" src="images/tn_overview.jpg" width="200" height="159"/> </a>
+          <div style="TEXT-ALIGN: left; PADDING-BOTTOM: 0px; TEXT-INDENT: 0px; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px">
+            <table style="BACKGROUND-COLOR: #ffffff" border="0" cellspacing="2" cellpadding="2" width="70%">
+              <tbody>
+                <tr valign="top">
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
+                    <a href="images/overview.png">
+                      <img border="0" alt="Expanded view in explorer" src="images/tn_overview.jpg" width="104" height="200"/> </a>
+                    <p>Overview</p>
+                  </td>
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
+                    <a href="images/RM_icons_overview.png">
+                      <img border="0" alt="Initial view in explorer" src="images/tn_RM_icons_overview.jpg" width="110" height="200"/> </a>
+                    <p>Overview with RM icons</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
           <h3>Archetype and template Catalogue</h3>
 		  <p>On the left side of the tool are two <a href="images/explorers.png">explorers</a>, making up the 'Catalogue' tool in AWB. The upper one is used to navigate all archetypes and templates, within the class hierarchy of the reference model on which the archetypes are based. Reference and working repository artefacts are merged in this view, and colourised so that the origin remains visible. The 'show entire ontology' option on the options panel can be used to force all classes in the hierarchy to be shown rather than just those which have archetypes in the current repository. Archetypes that appear below other archetypes are either specialisations, templates or template components. (Remember that the latter artefact types are technically just specialised archetypes.)</p>
           <p>The lower explorer is used exclusively for templates and template components, and shows compositional relationships due to slot-filling, rather than specialisation in its hierarchy. The two explorers are linked, so that choosing an artefact node in the lower one automatically chooses the same artefact in the upper one, allowing its lineage to be visible.</p>
@@ -56,7 +72,7 @@
 		  <p>The Archetype Tool enables a single archetype to be visualised in many ways. In the toolbar, the 'view' controls (to the right of the Archetype id text box) allow selection of differential and flat views. With one of these selected, the notebook tab controls allow viewing of the following aspects of an archetype:</p>
 
           <a href="images/archetype_view_controls.png">
-          <img border="0" alt="Archetype view controls" src="images/archetype_view_controls.png" width=500/>
+          <img border="0" alt="Archetype Tool" src="images/archetype_view_controls.png" width=500/>
 	  </a>
 		  <ul>
 			  <li>the <em>Description view</em>: the Administrative and Descriptive meta-data of the archetype, as well as the terminology binding summary;</li>
@@ -73,11 +89,14 @@
 	   <li>the <em>ADL view</em>: a view showing the ADL text in either the source differential form or of the generated flat archetype.</li>
 		   </ul>
           <h3>The Class Tool</h3>
-		  <p>The class tool</p>
+		  <p>The class tool is designed to allow the user to explore the reference model starting from a given class. It does this by displaying the attributes and allowing the ser to navigate by clicking open attributes at will. Like the Archetype Tool, flat and differential modes are supported. Differential mode shows only attributes <em>introduced</em> by the class, while flat mode shows the inheritance-flattened 'reachability closure' - in practical terms, the 'real data' that could potentially be created in a real system.  Because this computation is resource-intensive, the user can regulate the depth of the closure to explore. This means that the closure will in general only be partially computed, and it is up to the user to right click on terminal nodes they want to expand.</p>
+          <a href="images/class_tool.png">
+          <img style="border: 8px white solid" alt="Class Tool" src="images/class_tool.png" width=500/></a>
+		  <p>Since the reference model includes numerous attributes whose static type is either abstract or otherwise has descandants, the Class Tool allows the user to choose to display these by right-clicking on a node.</p>
           <h3>Using the ADL Workbench with the Archetype Editor</h3>
-		  <p>You can use the ADL Workbench as a convenient way to launch the <a href="http://www.openehr.org/svn/knowledge_tools_dotnet/TRUNK/ArchetypeEditor/Help/index.html">Archetype Editor</a> on individual archetypes. The AWB provides an easy way to see all archetypes, as well as performing ADL 1.5 validation, not currently available in the Archetype Editor. Firstly, download the <a href="http://www.openehr.org/svn/knowledge_tools_dotnet/TRUNK/ArchetypeEditor/Help/index.html">Archetype Editor</a>, and then configure it as the editor for archetypes, as described <a href = "tool_configuration.html#arch_ed_config">here</a>.</p>
+		  <p>You can use the ADL Workbench as a convenient way to launch the <a href="images/AWB_plus_AE.png">Archetype Editor</a> on individual archetypes. The AWB provides an easy way to see all archetypes, as well as performing ADL 1.5 validation, not currently available in the Archetype Editor. Firstly, <a href="http://www.openehr.org/svn/knowledge_tools_dotnet/TRUNK/ArchetypeEditor/Help/index.html">download the Archetype Editor</a>, and then configure it as the editor for archetypes, as described <a href = "tool_configuration.html#arch_ed_config">here</a>.</p>
           <h2>Artefact overview</h2>
-          <p>The ADL Workbench is designed to parse and validate archetypes. Technically speaking, 'archetypes' are any artefact conforming to the <i>open</i>EHR Archetype Definition Language (ADL) and Archetype Object Model (AOM) specifications (see lower part of the <a href="http://www.openehr.org/svn/specification/TRUNK/publishing/roadmap.html">specifications page</a>), or the older EN13606-2 specification, which is a snapshot of the <i>open</i>EHR AOM 1.4 specification. The latest ADL 1.5 specification defines 4 logical kinds of artefact. These include three kinds of archetype, and the 'operational template'. The latter is generated from a template, and is used as the basis for all further downstream transformations. The various artefact types and their file formats are shown below.</p>
+		  <p>The ADL Workbench is designed to parse and validate archetypes. Technically speaking, 'archetypes' are any artefact conforming to the <i>open</i>EHR Archetype Definition Language (ADL) and Archetype Object Model (AOM) specifications (see lower part of the <a href="http://www.openehr.org/svn/specification/TRUNK/publishing/roadmap.html">specifications page</a>), or the older <b>EN13606-2 specification</b>, which is a snapshot of the <i>open</i>EHR AOM 1.4 specification. The latest <b>ADL 1.5 specification</b> defines 4 logical kinds of artefact. These include three kinds of archetype, and the 'operational template'. The latter is generated from a template, and is used as the basis for all further downstream transformations. The various artefact types and their file formats are shown below.</p>
           <div style="TEXT-ALIGN: left; PADDING-BOTTOM: 0px; TEXT-INDENT: 0px; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px">
             <table style="BACKGROUND-COLOR: #ffffff" border="1" cellspacing="2" cellpadding="2" width="80%">
               <tbody>
