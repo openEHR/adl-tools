@@ -552,6 +552,7 @@ feature {NONE} -- Repository events
 	build_all
 			-- Build the whole system.
 		do
+			console_tool.show
 			do_build_action (agent archetype_compiler.build_all)
 		end
 
@@ -559,18 +560,21 @@ feature {NONE} -- Repository events
 			-- Force the whole system to rebuild.
 		do
 			error_tool.clear
+			console_tool.show
 			do_build_action (agent archetype_compiler.rebuild_all)
 		end
 
 	build_subtree
 			-- Build the subsystem below the currently selected node.
 		do
+			console_tool.show
 			do_build_action (agent archetype_compiler.build_subtree)
 		end
 
 	rebuild_subtree
 			-- Force rebuilding of the whole subsystem below the currently selected node.
 		do
+			console_tool.show
 			do_build_action (agent archetype_compiler.rebuild_subtree)
 		end
 
@@ -1041,6 +1045,7 @@ feature -- Console Tool
 			docking_pane: SD_CONTENT
 		do
 			create docking_pane.make_with_widget_title_pixmap (console_tool.ev_console, pixmaps ["console"], "Console")
+			console_tool.set_docking_pane (docking_pane)
 			attached_docking_manager.contents.extend (docking_pane)
 			docking_pane.set_type ({SD_ENUMERATION}.tool)
 			docking_pane.set_long_title ("Console")

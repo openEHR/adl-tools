@@ -57,6 +57,23 @@ feature -- Commands
 			ev_console.remove_text
 		end
 
+	show
+			-- make visible
+		do
+			docking_pane.show
+		end
+
+feature -- Modification
+
+	set_docking_pane (a_docking_pane: attached SD_CONTENT)
+		do
+			docking_pane := a_docking_pane
+		end
+
+feature {NONE} -- Implementation
+
+	docking_pane: SD_CONTENT
+
 end
 
 
