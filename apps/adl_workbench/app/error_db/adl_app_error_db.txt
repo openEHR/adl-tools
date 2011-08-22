@@ -115,6 +115,9 @@ templates = <
 		["annotations_tab_text"] = <"Annotations">
 		["serialised_tab_text"] = <"Serialised">
 
+		["properties_tab_text"] = <"Properties">
+		["descendants_tab_text"] = <"Descendants">
+
 		["serialise_frame_text"] = <"Output Format">
 
 		["show_adl_serialisation_tooltip"] = <"Show ADL $1 serialisation">

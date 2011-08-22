@@ -58,17 +58,20 @@ feature -- Initialisation
 		do
 			update_all_tools_rm_icons_setting_agent := a_update_all_tools_rm_icons_setting_agent
 
-			-- create root widget
+			-- create widgets
 			create ev_root_container
-			create ev_view_container_hbox
 			create ev_action_bar
 			create ev_class_id
 			create ev_view_label
 			create ev_view_tool_bar
 			create ev_differential_view_button
 			create ev_flat_view_button
-			create ev_tree
 
+			create ev_notebook
+
+			-- create widgets: property view
+			create ev_property_view_hbox
+			create ev_property_tree
 			create ev_view_controls_vbox
 			create ev_expand_button
 			create ev_expand_one_button
@@ -81,10 +84,12 @@ feature -- Initialisation
 			create ev_cell
 			create ev_use_rm_icons_cb
 
+			-- create widgets: inheritance view
+			create ev_inheritance_tree
+
 			-- connect widgets
 			ev_root_container.extend (ev_action_bar)
-			ev_root_container.extend (ev_view_container_hbox)
-			ev_view_container_hbox.extend (ev_tree)
+			ev_root_container.extend (ev_notebook)
 
 			ev_action_bar.extend (ev_class_id)
 			ev_action_bar.extend (ev_view_label)
@@ -92,7 +97,10 @@ feature -- Initialisation
 			ev_view_tool_bar.extend (ev_differential_view_button)
 			ev_view_tool_bar.extend (ev_flat_view_button)
 
-			ev_view_container_hbox.extend (ev_view_controls_vbox)
+			-- connect widgets: property view
+			ev_notebook.extend (ev_property_view_hbox)
+			ev_property_view_hbox.extend (ev_property_tree)
+			ev_property_view_hbox.extend (ev_view_controls_vbox)
 			ev_view_controls_vbox.extend (ev_expand_button)
 			ev_view_controls_vbox.extend (ev_expand_one_button)
 			ev_view_controls_vbox.extend (ev_collapse_one_button)
@@ -103,9 +111,12 @@ feature -- Initialisation
 			ev_view_controls_vbox.extend (ev_cell)
 			ev_view_controls_vbox.extend (ev_use_rm_icons_cb)
 
+			-- connect widgets: inheritance view
+			ev_notebook.extend (ev_inheritance_tree)
+
 			-- visual characteristics
 			ev_root_container.disable_item_expand (ev_action_bar)
-			ev_view_container_hbox.disable_item_expand (ev_view_controls_vbox)
+			ev_property_view_hbox.disable_item_expand (ev_view_controls_vbox)
 			ev_action_bar.set_padding (10)
 			ev_action_bar.set_border_width (4)
 			ev_action_bar.disable_item_expand (ev_view_label)
@@ -117,7 +128,14 @@ feature -- Initialisation
 			ev_differential_view_button.set_tooltip (create_message_content ("Set differential archetype view", Void))
 			ev_flat_view_button.set_tooltip (create_message_content ("Set flat archetype view", Void))
 
-			-- right hand side tree expand/collapse controls
+			-- visual characteristics: notebook
+			ev_notebook.set_item_text (ev_property_view_hbox, create_message_content ("properties_tab_text", Void))
+	--		ev_notebook.item_tab (ev_property_view_hbox).set_pixmap (pixmaps ["properties"])
+
+			ev_notebook.set_item_text (ev_inheritance_tree, create_message_content ("descendants_tab_text", Void))
+	--		ev_notebook.item_tab (ev_property_view_hbox).set_pixmap (pixmaps ["descendants"])
+
+			-- visual characteristics: property view right hand side tree expand/collapse controls
 			ev_view_controls_vbox.set_minimum_width (160)
 			ev_view_controls_vbox.set_padding (padding_width)
 			ev_view_controls_vbox.set_border_width (border_width)
@@ -207,28 +225,28 @@ feature -- Events
 
 	on_shrink_tree_one_level
 		do
-			if attached class_desc then
+			if attached class_def then
 				shrink_one_level
 			end
 		end
 
 	on_expand_tree_one_level
 		do
-			if attached class_desc then
+			if attached class_def then
 				expand_one_level
 			end
 		end
 
 	on_toggle_expand_tree
 		do
-			if attached class_desc then
+			if attached class_def then
 				toggle_expand_tree
 			end
 		end
 
 	on_ev_use_rm_icons_cb_selected
 		do
-			if attached class_desc then
+			if attached class_def then
 				set_use_rm_pixmaps (ev_use_rm_icons_cb.is_selected)
 				refresh
 
@@ -242,7 +260,7 @@ feature -- Events
 	update_rm_icons_cb
 			-- update and repopulate if this setting was changed elsewhere in the tool
 		do
-			if attached class_desc and use_rm_pixmaps /= ev_use_rm_icons_cb.is_selected then
+			if attached class_def and use_rm_pixmaps /= ev_use_rm_icons_cb.is_selected then
 				if use_rm_pixmaps then
 					ev_use_rm_icons_cb.enable_select
 				else
@@ -261,18 +279,18 @@ feature -- Commands
 	clear
 		do
  			ev_class_id.remove_text
- 			differential_view := True
- 			ev_differential_view_button.enable_select
+-- 			differential_view := True
+-- 			ev_differential_view_button.enable_select
  			ev_closure_depth_spin_button.set_value (Default_closure_depth)
- 			ev_tree.wipe_out
+ 			ev_property_tree.wipe_out
 		end
 
-	populate (a_class_desc: attached ARCH_CAT_MODEL_NODE)
+	populate (a_class_def: attached BMM_CLASS_DEFINITION)
 			-- populate the ADL tree control by creating it from scratch
 		do
 			clear
-			class_desc := a_class_desc
-			model_publisher := class_desc.class_definition.bmm_model.model_publisher
+			class_def := a_class_def
+			model_publisher := class_def.bmm_model.model_publisher
 			do_with_wait_cursor (ev_root_container, agent do_populate)
 		end
 
@@ -286,28 +304,28 @@ feature -- Commands
 		local
 			str: STRING
 		do
-			ev_tree.wipe_out
+			ev_property_tree.wipe_out
  			create ev_tree_item_stack.make (0)
 
  			-- set the name in the name area
-			str := class_desc.ontological_name.twin
-			str.prepend (class_desc.class_definition.bmm_model.model_publisher + class_desc.Section_separator.out)
+			str := class_def.name
+		--	str.prepend (class_def.bmm_model.model_publisher + class_desc.Section_separator.out)
  			ev_class_id.set_text (str)
 
  			-- populate the tree
 			populate_root_node
-			class_desc.class_definition.do_supplier_closure (not differential_view, ev_closure_depth_spin_button.value-1, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+			class_def.do_supplier_closure (not differential_view, ev_closure_depth_spin_button.value-1, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 
 			-- now collapse the tree, and then expand out just the top node
-			ev_tree.recursive_do_all (agent ev_tree_collapse)
-			if not ev_tree.is_empty and then ev_tree.first.is_expandable then
-				ev_tree.first.expand
+			ev_property_tree.recursive_do_all (agent ev_tree_collapse)
+			if not ev_property_tree.is_empty and then ev_property_tree.first.is_expandable then
+				ev_property_tree.first.expand
 			end
 		end
 
 	refresh
 		do
-			do_with_wait_cursor (ev_root_container, agent ev_tree.recursive_do_all (agent refresh_node))
+			do_with_wait_cursor (ev_root_container, agent ev_property_tree.recursive_do_all (agent refresh_node))
 		end
 
 	refresh_node (a_ti: EV_TREE_NODE)
@@ -341,11 +359,13 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	ev_view_container_hbox, ev_closure_controls_hbox: EV_HORIZONTAL_BOX
+	ev_property_view_hbox, ev_closure_controls_hbox: EV_HORIZONTAL_BOX
 
 	ev_class_id: EV_TEXT_FIELD
 
-	ev_tree: EV_TREE
+	ev_notebook: EV_NOTEBOOK
+
+	ev_property_tree, ev_inheritance_tree: EV_TREE
 
 	ev_expand_button, ev_expand_one_button, ev_collapse_one_button, ev_closure_recompute_button: EV_BUTTON
 
@@ -367,7 +387,9 @@ feature {NONE} -- Implementation
 
 	ev_tree_item_stack: ARRAYED_STACK[EV_TREE_ITEM]
 
-	class_desc: ARCH_CAT_MODEL_NODE
+--	class_desc: ARCH_CAT_MODEL_NODE
+
+	class_def: BMM_CLASS_DEFINITION
 
 	model_publisher: STRING
 			-- name of publisher, e.g. 'openehr', which is the key to RM-specific icons
@@ -385,14 +407,14 @@ feature {NONE} -- Implementation
 			a_ti: EV_TREE_ITEM
 		do
 			create a_ti
-			a_ti.set_text (class_desc.class_definition.name)
-			a_ti.set_data (class_desc.class_definition)
-			if use_rm_pixmaps and then rm_pixmaps.has (model_publisher) and then rm_pixmaps.item (model_publisher).has (class_desc.class_definition.name) then
-				a_ti.set_pixmap (rm_pixmaps.item (model_publisher).item (class_desc.class_definition.name))
+			a_ti.set_text (class_def.name)
+			a_ti.set_data (class_def)
+			if use_rm_pixmaps and then rm_pixmaps.has (model_publisher) and then rm_pixmaps.item (model_publisher).has (class_def.name) then
+				a_ti.set_pixmap (rm_pixmaps.item (model_publisher).item (class_def.name))
 			else
-				a_ti.set_pixmap (pixmaps [class_desc.group_name])
+				a_ti.set_pixmap (pixmaps [class_def.type_category])
 			end
-			ev_tree.extend (a_ti)
+			ev_property_tree.extend (a_ti)
 			ev_tree_item_stack.extend (a_ti)
 			create node_path.make_root
 		end
@@ -643,10 +665,10 @@ feature {NONE} -- Implementation
 			is_expanded := not is_expanded
 
 			if is_expanded then
-				ev_tree.recursive_do_all (agent ev_tree_item_expand)
+				ev_property_tree.recursive_do_all (agent ev_tree_item_expand)
 				ev_expand_button.set_text (create_message_content ("expand_button_collapse_text", Void))
 			else
-				ev_tree.recursive_do_all (agent ev_tree_item_shrink)
+				ev_property_tree.recursive_do_all (agent ev_tree_item_shrink)
 				ev_expand_button.set_text (create_message_content ("expand_button_expand_text", Void))
 			end
 		end
@@ -655,7 +677,7 @@ feature {NONE} -- Implementation
 			-- Expand the tree control one level further.
 		do
 			create node_list.make (0)
-			ev_tree.recursive_do_all (agent ev_tree_item_expand_one_level)
+			ev_property_tree.recursive_do_all (agent ev_tree_item_expand_one_level)
 
 			from node_list.start until node_list.off loop
 				node_list.item.expand
@@ -667,7 +689,7 @@ feature {NONE} -- Implementation
 			-- Shrink the tree control one level further.
 		do
 			create node_list.make (0)
-			ev_tree.recursive_do_all (agent ev_tree_item_collapse_one_level)
+			ev_property_tree.recursive_do_all (agent ev_tree_item_collapse_one_level)
 
 			from node_list.start until node_list.off loop
 				node_list.item.collapse
@@ -701,7 +723,7 @@ feature {NONE} -- Implementation
 					end
 					an_ev_tree_node.forth
 				end
-			elseif an_ev_tree_node = ev_tree.item then
+			elseif an_ev_tree_node = ev_property_tree.item then
 				node_list.extend (an_ev_tree_node)
 			end
 		end

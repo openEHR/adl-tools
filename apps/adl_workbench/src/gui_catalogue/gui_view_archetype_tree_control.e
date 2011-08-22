@@ -31,7 +31,8 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_select_archetype_agent, an_edit_archetype_agent, a_select_archetype_in_new_tool_agent, a_select_class_agent, a_select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE])
+	make (a_select_archetype_agent, an_edit_archetype_agent, a_select_archetype_in_new_tool_agent: like select_archetype_agent
+			a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent)
 			-- Create controller for the tree representing archetype files found in `archetype_directory'.
 		do
 			select_archetype_agent := a_select_archetype_agent
@@ -87,7 +88,7 @@ feature -- Events
 			-- Display details of `archetype_file_tree' when the user selects it.
 		do
 			if attached ev_tree.selected_item then
-				if attached current_arch_cat as cat and then cat.selected_item /= ev_tree.selected_item.data then
+				if attached current_arch_cat and then current_arch_cat.selected_item /= ev_tree.selected_item.data then
 					display_selected_item_after_delay
 				end
 			end
@@ -95,21 +96,23 @@ feature -- Events
 
 feature {NONE} -- Implementation
 
-	select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent, select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE]
+	select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent: PROCEDURE [ANY, TUPLE]
+
+	select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
 
 	display_selected_item
 		do
 			delay_to_make_keyboard_navigation_practical.set_interval (0)
 			if attached ev_tree.selected_item then
 				if attached {ARCH_CAT_ITEM} ev_tree.selected_item.data as aci then
-					if attached current_arch_cat as dir then
-						dir.set_selected_item (aci)
+					if attached current_arch_cat then
+						current_arch_cat.set_selected_item (aci)
 					end
 
 					if attached {ARCH_CAT_ARCHETYPE} aci then
 						select_archetype_agent.call ([])
-					else
-						select_class_agent.call ([])
+					elseif attached {ARCH_CAT_MODEL_NODE} aci as acmn and then not acmn.is_package then
+						select_class_agent.call ([acmn.class_definition])
 					end
 				end
 			end
@@ -162,7 +165,6 @@ feature {NONE} -- Implementation
    		local
 			text, tooltip: STRING_32
 			pixmap: EV_PIXMAP
-			model_publisher: STRING
 		do
 			if attached {ARCH_CAT_ITEM} node.data as aci then
 				text := utf8 (aci.display_name)
@@ -228,9 +230,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
---	context_menu_agent: PROCEDURE [ANY, TUPLE [EV_MENU]]
---			-- Procedure that sets up a context menu
-
 	create_archetype_context_menu (menu: EV_MENU; arch_id: STRING; ev_ti: EV_TREE_ITEM)
 			-- dynamically initializes the context menu for this tree
 		local
@@ -267,11 +266,6 @@ feature {NONE} -- Implementation
 			Result := "pebble"
 		end
 
-	on_pointer_button (a_x: INTEGER; a_y: INTEGER; a_button: INTEGER; a_x_tilt: DOUBLE; a_y_tilt: DOUBLE; a_pressure: DOUBLE; a_screen_x: INTEGER; a_screen_y: INTEGER)
-		do
-
-		end
-
 	display_context_selected_archetype_in_active_tool (ev_ti: EV_TREE_ITEM)
 		do
 			ev_ti.enable_select
@@ -286,7 +280,7 @@ feature {NONE} -- Implementation
 			ev_ti.enable_select
 			if attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
 				current_arch_cat.set_selected_item (acmn)
-				select_class_agent.call ([])
+				select_class_agent.call ([current_arch_cat.selected_class.class_definition])
 			end
 		end
 
@@ -304,7 +298,7 @@ feature {NONE} -- Implementation
 			ev_ti.enable_select
 			if attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
 				current_arch_cat.set_selected_item (acmn)
-				select_class_in_new_tool_agent.call ([])
+				select_class_in_new_tool_agent.call ([current_arch_cat.selected_class.class_definition])
 			end
 		end
 

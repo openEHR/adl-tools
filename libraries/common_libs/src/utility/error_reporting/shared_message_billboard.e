@@ -29,34 +29,31 @@ feature -- Access
 
 feature -- Commands
 
-	post_error(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING])
+	post_error (poster_object: attached ANY; poster_routine: attached STRING; id: STRING; args: ARRAY[STRING])
 			-- append to the  current contents of billboard an error message corresponding to id,
 			-- with positional parameters replaced by contents of optional args
 		require
-			Poster_valid: poster_object /= Void and poster_routine /= Void and
-						  not poster_routine.is_empty
+			Poster_valid: not poster_routine.is_empty
 		do
-			billboard.post_error(poster_object.generator, poster_routine, id, args)
+			billboard.post_error (poster_object, poster_routine, id, args)
 		end
 
-	post_warning(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING])
+	post_warning (poster_object: attached ANY; poster_routine: attached STRING; id: STRING; args: ARRAY[STRING])
 			-- append to the  current contents of billboard a warning message corresponding to id,
 			-- with positional parameters replaced by contents of optional args
 		require
-			Poster_valid: poster_object /= Void and poster_routine /= Void and
-						  not poster_routine.is_empty
+			Poster_valid: not poster_routine.is_empty
 		do
-			billboard.post_warning(poster_object.generator, poster_routine, id, args)
+			billboard.post_warning (poster_object, poster_routine, id, args)
 		end
 
-	post_info(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING])
+	post_info (poster_object: attached ANY; poster_routine: attached STRING; id: STRING; args: ARRAY[STRING])
 			-- append to the  current contents of billboard an info message corresponding to id,
 			-- with positional parameters replaced by contents of optional args
 		require
-			Poster_valid: poster_object /= Void and poster_routine /= Void and
-						  not poster_routine.is_empty
+			Poster_valid: not poster_routine.is_empty
 		do
-			billboard.post_info(poster_object.generator, poster_routine, id, args)
+			billboard.post_info (poster_object, poster_routine, id, args)
 		end
 
 end

@@ -22,8 +22,8 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_select_archetype_agent, an_edit_archetype_agent,
-			a_select_archetype_in_new_tool_agent, a_select_class_agent, a_select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE])
+	make (a_select_archetype_agent, an_edit_archetype_agent, a_select_archetype_in_new_tool_agent: like select_archetype_agent;
+			a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent)
 		do
 			select_archetype_agent := a_select_archetype_agent
 			edit_archetype_agent := an_edit_archetype_agent
@@ -104,7 +104,9 @@ feature {NONE} -- Implementation
 			create Result.make (select_archetype_agent, agent archetype_explorer.ensure_item_visible)
 		end
 
-	select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent, select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE]
+	select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent: PROCEDURE [ANY, TUPLE]
+
+	select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
 
 end
 

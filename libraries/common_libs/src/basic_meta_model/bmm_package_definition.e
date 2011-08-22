@@ -15,7 +15,15 @@ note
 class BMM_PACKAGE_DEFINITION
 
 inherit
+	BMM_DEFINITIONS
+		export
+			{NONE} all
+		end
+
 	DT_CONVERTIBLE
+
+create
+	make
 
 feature -- Initialisation
 
@@ -25,15 +33,67 @@ feature -- Initialisation
 			create name.make (0)
 		end
 
-feature -- Access
+	make (a_name: attached STRING)
+		do
+			name := a_name
+			create packages.make (0)
+		end
+
+	make_from_other (other_pkg: attached BMM_PACKAGE_DEFINITION)
+			-- make this package with `packages' and `classes' references to those parts of `other_pkg'
+			-- but keeping its own name
+		do
+			packages := other_pkg.packages
+			classes := other_pkg.classes
+		end
+
+feature -- Access (attributes from schema)
 
 	name: attached STRING
+			-- name of the package FROM SCHEMA; this name may be qualified if it is a top-level
+			-- package within the schema, or unqualified.
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
 	packages: HASH_TABLE [BMM_PACKAGE_DEFINITION, STRING]
-		-- child packages
+			-- child packages
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
-	classes: ARRAYED_LIST [STRING]
-		-- list of classes in this package
+	classes: ARRAYED_SET [STRING]
+			-- list of classes in this package
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+	archetype_namespace: STRING
+			-- archetype namespace FROM SCHEMA; this is a semantic namespace used in archetype
+			-- ids, like 'EHR', 'DEMOGRAPHIC' etc, to avoid long qualified names in archetype ids.
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+feature -- Access (attributes derived in post-schema processing)
+
+	parent: BMM_PACKAGE_DEFINITION
+			-- parent package
+
+	all_classes: ARRAYED_SET [STRING]
+			-- all classes in this package, recursively
+
+feature -- Access
+
+	bmm_model: BMM_SCHEMA
+			-- reverse reference, set after initialisation from input schema
+
+	qualified_name: attached STRING
+			-- generate full package path of this package
+		local
+			csr: BMM_PACKAGE_DEFINITION
+		do
+			create Result.make(0)
+			from csr := Current until csr = Void loop
+				Result.prepend (csr.name)
+				csr := csr.parent
+				if attached csr then
+					Result.prepend_character (Package_name_delimiter)
+				end
+			end
+		end
 
 feature -- Status Report
 
@@ -42,9 +102,69 @@ feature -- Status Report
 			Result := attached classes
 		end
 
+	has_packages: BOOLEAN
+		do
+			Result := attached packages
+		end
+
+feature -- Modification
+
+	merge (other: attached like Current)
+		do
+			-- merge the classes at this level
+			if has_classes then
+				classes.merge (other.classes)
+			else
+				classes := other.classes
+			end
+
+			-- merge the packages
+			if other.has_packages then
+				if not has_packages then
+					create packages.make (0)
+				end
+				from other.packages.start until other.packages.after loop
+					if packages.has (other.packages.key_for_iteration) then
+						packages.item (other.packages.key_for_iteration).merge (other.packages.item_for_iteration)
+					else
+						packages.put (other.packages.item_for_iteration, other.packages.key_for_iteration)
+					end
+					other.packages.forth
+				end
+			end
+		end
+
+	set_parent (a_pkg: attached BMM_PACKAGE_DEFINITION)
+		do
+			parent := a_pkg
+		end
+
+feature {BMM_SCHEMA, BMM_PACKAGE_DEFINITION} -- Modification
+
+	finalise_build (a_bmmm: attached BMM_SCHEMA; errors: ERROR_ACCUMULATOR)
+			-- synchronise structures after creation by DT deserialiser
+			-- MUST BE CALLED AFTER MERGING because parent links point up through
+			-- the expanded hierarchy attached to BMM_SCHEMA.canonical_packages, not
+			-- BMM_SCHEMA.packages as originally read in
+		do
+			bmm_model := a_bmmm
+			create all_classes.make (0)
+			if has_classes then
+				all_classes.merge (classes)
+			end
+			if has_packages then
+				from packages.start until packages.off loop
+					packages.item_for_iteration.set_parent (Current)
+					packages.item_for_iteration.finalise_build (a_bmmm, errors)
+					all_classes.merge (packages.item_for_iteration.all_classes)
+					packages.forth
+				end
+			end
+		end
+
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	persistent_attributes: ARRAYED_LIST[STRING]
+	persistent_attributes: ARRAYED_LIST [STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		do

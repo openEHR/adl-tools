@@ -301,23 +301,23 @@ feature -- Commands
 				from i := 0 until i > 0 and added_during_pass = 0 loop
 					added_during_pass := 0
 					from archs.start until archs.off loop
-						if status_list[archs.index] >= 0 then
+						if status_list [archs.index] >= 0 then
 							parent_key := archs.item.ontological_parent_name
 							if ontology_index.has (parent_key) then
 								child_key := archs.item.ontological_name
 								if not ontology_index.has (child_key) then
 									ontology_index.item (parent_key).put_child (archs.item)
 									ontology_index.force (archs.item, child_key)
-									archetype_index.force(archs.item, child_key)
-									update_basic_statistics(archs.item)
+									archetype_index.force (archs.item, child_key)
+									update_basic_statistics (archs.item)
 									added_during_pass := added_during_pass + 1
-									status_list[archs.index] := -1
+									status_list [archs.index] := -1
 								else
-									post_error (Current, "populate_directory", "arch_dir_dup_archetype", <<archs.item.full_path>>)
-									status_list[archs.index] := -2
+									post_error (Current, "populate", "arch_dir_dup_archetype", <<archs.item.full_path>>)
+									status_list [archs.index] := -2
 								end
 							else
-								status_list[archs.index] := status_list[archs.index] + 1
+								status_list [archs.index] := status_list [archs.index] + 1
 							end
 						end
 						archs.forth
@@ -327,11 +327,11 @@ feature -- Commands
 
 				-- now report on all the archetypes which could not be attached into the hierarchy
 				from archs.start until archs.off loop
-					if status_list[archs.index] > 0 then
+					if status_list [archs.index] > 0 then
 						if archs.item.is_specialised then
-							post_error (Current, "populate_directory", "arch_dir_orphan_archetype", <<archs.item.ontological_parent_name, archs.item.ontological_name>>)
+							post_error (Current, "populate", "arch_dir_orphan_archetype", <<archs.item.ontological_parent_name, archs.item.ontological_name>>)
 						else
-							post_error (Current, "populate_directory", "arch_dir_orphan_archetype_e2", <<archs.item.ontological_parent_name, archs.item.ontological_name>>)
+							post_error (Current, "populate", "arch_dir_orphan_archetype_e2", <<archs.item.ontological_parent_name, archs.item.ontological_name>>)
 						end
 					end
 					archs.forth
@@ -596,75 +596,88 @@ feature {NONE} -- Implementation
 		end
 
 	initialise_ontology_prototype
-			-- rebuild ``'ontology_prototype'
+			-- rebuild `ontology_prototype'
 		local
-			pkgs: HASH_TABLE [BMM_PACKAGE_DEFINITION, STRING]
-			parent_node, arm: ARCH_CAT_MODEL_NODE
-			pkg_name: STRING
+			model_pkg_list: ARRAYED_LIST [STRING]
+			pkg: BMM_PACKAGE_DEFINITION
+			models: HASH_TABLE [ARRAYED_LIST[STRING], STRING]
+			parent_model_node, model_node: ARCH_CAT_MODEL_NODE
+			model_name: STRING
 			supp_list, supp_list_copy: ARRAYED_SET[STRING]
 			supp_class_list: ARRAYED_LIST [BMM_CLASS_DEFINITION]
 			removed: BOOLEAN
+			bmm_schema: BMM_SCHEMA
 		do
-			create parent_node.make_category (Archetype_category.twin)
-			ontology_prototype.put (parent_node)
+			create parent_model_node.make_category (Archetype_category.twin)
+			ontology_prototype.put (parent_model_node)
 			from rm_schemas_access.top_level_schemas.start until rm_schemas_access.top_level_schemas.off loop
-				pkgs := rm_schemas_access.top_level_schemas.item_for_iteration.schema.packages
-				from pkgs.start until pkgs.off loop
-					if pkgs.item_for_iteration.has_classes then
-						-- package name might be of form xxx.yyy.zzz ; we only want 'zzz'
-						pkg_name := package_base_name (pkgs.item_for_iteration.name).as_upper
+				bmm_schema := rm_schemas_access.top_level_schemas.item_for_iteration.schema
+				models := bmm_schema.models
+				from models.start until models.off loop
+					model_name := models.key_for_iteration
+					model_pkg_list := models.item_for_iteration
+					from model_pkg_list.start until model_pkg_list.off loop
+						pkg := bmm_schema.package_definition (model_pkg_list.item)
+						if pkg.has_classes then
 
-						create arm.make_package(pkg_name)
-						parent_node.put_child (arm)
+							-- create new package node if not already in existence
+							if not parent_model_node.has_child_with_name (model_name) then
+								create model_node.make_package (model_name)
+								parent_model_node.put_child (model_node)
+							else
+								model_node ?= parent_model_node.child_with_name (model_name)
+							end
 
-						create supp_list.make (0)
-						supp_list.compare_objects
-						from pkgs.item_for_iteration.classes.start until pkgs.item_for_iteration.classes.off loop
-							supp_list.merge (rm_schemas_access.top_level_schemas.item_for_iteration.schema.class_definition (pkgs.item_for_iteration.classes.item).all_suppliers)
-							supp_list.extend (pkgs.item_for_iteration.classes.item)
-							pkgs.item_for_iteration.classes.forth
-						end
+							create supp_list.make (0)
+							supp_list.compare_objects
+							from pkg.classes.start until pkg.classes.off loop
+								supp_list.merge (bmm_schema.class_definition (pkg.classes.item).all_suppliers)
+								supp_list.extend (pkg.classes.item)
+								pkg.classes.forth
+							end
 
-						-- now create a list of classes inheriting from LOCATABLE that are among the suppliers of
-						-- the top-level class of the package; this gives the classes that could be archetyped in
-						-- that package
-						if rm_schemas_access.top_level_schemas.item_for_iteration.schema.has_class_definition ("LOCATABLE") then
+							-- now create a list of classes inheriting from LOCATABLE that are among the suppliers of
+							-- the top-level class of the package; this gives the classes that could be archetyped in
+							-- that package
+							if bmm_schema.has_class_definition ("LOCATABLE") then
+								from supp_list.start until supp_list.off loop
+									if not bmm_schema.is_descendant_of (supp_list.item, "LOCATABLE") then
+										supp_list.remove
+									else
+										supp_list.forth
+									end
+								end
+							end
+
+							-- clean suppliers list so that only highest class in any inheritance subtree remains
+							supp_list.start
+							supp_list_copy := supp_list.duplicate (supp_list.count)
 							from supp_list.start until supp_list.off loop
-								if not rm_schemas_access.top_level_schemas.item_for_iteration.schema.is_descendant_of (supp_list.item, "LOCATABLE") then
-									supp_list.remove
-								else
+								removed := False
+								from supp_list_copy.start until supp_list_copy.off or removed loop
+									if bmm_schema.is_descendant_of (supp_list.item, supp_list_copy.item) then
+										supp_list.remove
+										removed := True
+									end
+									supp_list_copy.forth
+								end
+
+								if not removed then
 									supp_list.forth
 								end
 							end
-						end
 
-						-- clean suppliers list so that only highest class in any inheritance subtree remains
-						supp_list.start
-						supp_list_copy := supp_list.duplicate (supp_list.count)
-						from supp_list.start until supp_list.off loop
-							removed := False
-							from supp_list_copy.start until supp_list_copy.off or removed loop
-								if rm_schemas_access.top_level_schemas.item_for_iteration.schema.is_descendant_of (supp_list.item, supp_list_copy.item) then
-									supp_list.remove
-									removed := True
-								end
-								supp_list_copy.forth
-							end
-
-							if not removed then
+							-- convert to BMM_CLASS_DESCRIPTORs
+							create supp_class_list.make(0)
+							from supp_list.start until supp_list.off loop
+								supp_class_list.extend (bmm_schema.class_definition (supp_list.item))
 								supp_list.forth
 							end
+							add_child_nodes (model_name, supp_class_list, model_node)
 						end
-
-						-- convert to BMM_CLASS_DESCRIPTORs
-						create supp_class_list.make(0)
-						from supp_list.start until supp_list.off loop
-							supp_class_list.extend (rm_schemas_access.top_level_schemas.item_for_iteration.schema.class_definition (supp_list.item))
-							supp_list.forth
-						end
-						add_child_nodes (pkg_name, supp_class_list, arm)
+						model_pkg_list.forth
 					end
-					pkgs.forth
+					models.forth
 				end
 				rm_schemas_access.top_level_schemas.forth
 			end
@@ -676,13 +689,13 @@ feature {NONE} -- Implementation
 			-- which will match with corresponding part of archetype identifier
 		local
 			children: ARRAYED_LIST [BMM_CLASS_DEFINITION]
-			arm: ARCH_CAT_MODEL_NODE
+			model_node: ARCH_CAT_MODEL_NODE
 		do
 			from class_list.start until class_list.off loop
-				create arm.make_class(a_package, class_list.item)
-				a_parent_node.put_child (arm)
+				create model_node.make_class (a_package, class_list.item)
+				a_parent_node.put_child (model_node)
 				children := class_list.item.immediate_descendants
-				add_child_nodes(a_package, children, arm)
+				add_child_nodes (a_package, children, model_node)
 				class_list.forth
 			end
 		end

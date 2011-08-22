@@ -302,8 +302,8 @@ feature -- Commands
 			ev_language_combo.wipe_out
 			ev_language_combo.remove_text
 			clear_content
-			differential_view := True
- 			ev_differential_view_button.enable_select
+--			differential_view := True
+-- 			ev_differential_view_button.enable_select
  		end
 
 	populate (aca: attached ARCH_CAT_ARCHETYPE)

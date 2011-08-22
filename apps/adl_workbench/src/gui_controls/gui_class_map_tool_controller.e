@@ -57,21 +57,15 @@ feature -- Commands
 			add_new_tool (new_tool)
 		end
 
-	populate_active_tool
+	populate_active_tool (a_class_def: BMM_CLASS_DEFINITION)
 			-- Populate content from visual controls.
-		require
-			has_current_profile
-			current_arch_cat.has_selected_class
 		do
 			if not has_tools then
 				create_new_tool
 			end
-
-			active_tool.populate (current_arch_cat.selected_class)
-			populate_active_tool_pane (current_arch_cat.selected_class.display_name,
-				current_arch_cat.selected_class.display_name.substring (1,
-					current_arch_cat.selected_class.display_name.count.min (10)),
-				pixmaps [current_arch_cat.selected_class.group_name])
+			active_tool.populate (a_class_def)
+			populate_active_tool_pane (a_class_def.name, a_class_def.name.substring (1, a_class_def.name.count.min (10)),
+				pixmaps [a_class_def.type_category])
 		end
 
 feature {NONE} -- Implementation

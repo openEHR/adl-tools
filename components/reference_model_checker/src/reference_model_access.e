@@ -45,7 +45,7 @@ feature -- Initialisation
 			create all_schemas.make(0)
 			create top_level_schemas.make(0)
 			create schema_inclusion_map.make(0)
-			create schemas_by_package.make(0)
+			create schemas_by_model.make(0)
 			create {ARRAYED_LIST[STRING]} schemas_load_list.make(0)
 			schemas_load_list.compare_objects
 		end
@@ -92,12 +92,12 @@ feature -- Access
 			-- top-level (root) schemas in use. Table is keyed by logical schema_name, i.e. model_publisher '_' model_name, e.g. "openehr_rm"
 			-- Schemas containing different variants of same model (i.e. model_publisher + model_name) are considered duplicates
 
-	schema_for_package (a_qualified_package_name: STRING): BMM_SCHEMA
-			-- Return schema containing the package-class key `a_qualified_package_name', e.g. "openEHR-EHR"
+	schema_for_model (a_qualified_model_name: STRING): BMM_SCHEMA
+			-- Return schema containing the model-class key `a_qualified_model_name', e.g. "openEHR-EHR"
 		require
-			has_schema_for_package (a_qualified_package_name.as_lower)
+			has_schema_for_model (a_qualified_model_name.as_lower)
 		do
-			Result := schemas_by_package.item (a_qualified_package_name.as_lower).schema
+			Result := schemas_by_model.item (a_qualified_model_name.as_lower).schema
 		end
 
 	schemas_load_list: attached LIST [STRING]
@@ -109,10 +109,10 @@ feature -- Access
 
 feature -- Status Report
 
-	has_schema_for_package (a_qualified_package_name: STRING): BOOLEAN
-			-- True if there is a schema containing the qualified package key `a_qualified_package_name', e.g. "openEHR-EHR"
+	has_schema_for_model (a_qualified_model_name: STRING): BOOLEAN
+			-- True if there is a schema containing the qualified package key `a_qualified_model_name', e.g. "openEHR-EHR"
 		do
-			Result := schemas_by_package.has (a_qualified_package_name.as_lower)
+			Result := schemas_by_model.has (a_qualified_model_name.as_lower)
 		end
 
 	found_valid_schemas: BOOLEAN
@@ -135,8 +135,8 @@ feature -- Commands
 			-- config variable, or by reading all schemas found in the schema directory
 		local
 			model_publisher: STRING
-			qualified_pkg_name: STRING
-			pkgs: HASH_TABLE [BMM_PACKAGE_DEFINITION, STRING]
+			qualified_model_name: STRING
+			models: HASH_TABLE [ARRAYED_LIST [STRING], STRING]
 			included_schema: BMM_SCHEMA
 			i: INTEGER
 			finished: BOOLEAN
@@ -170,7 +170,7 @@ feature -- Commands
 
 				-- mark the top level schemas
 				from all_schemas.start until all_schemas.off loop
-					if all_schemas.item_for_iteration.passed and not schema_inclusion_map.has(all_schemas.item_for_iteration.schema.schema_id) then
+					if all_schemas.item_for_iteration.passed and not schema_inclusion_map.has (all_schemas.item_for_iteration.schema.schema_id) then
 						all_schemas.item_for_iteration.set_top_level
 					end
 					all_schemas.forth
@@ -181,7 +181,7 @@ feature -- Commands
 				-- schema file. Also at this point, the `schema_inclusion_map' is populated.
 				-- Now we process the include relations, in order to add the packages and classes from included schemas to the
 				-- top-level schemas.
-				-- We iterate again repeatedly until all includes have been processed
+				-- We iterate again repeatedly until all includes have been processed.
 				from i := 1 until finished or i > Max_inclusion_depth loop
 					finished := True
 					from schema_inclusion_map.start until schema_inclusion_map.off loop
@@ -194,6 +194,7 @@ feature -- Commands
 								from schema_inclusion_map.item_for_iteration.start until schema_inclusion_map.item_for_iteration.off loop
 									if all_schemas.item (schema_inclusion_map.item_for_iteration.item).schema.state /= {BMM_SCHEMA}.State_includes_processed then
 										all_schemas.item (schema_inclusion_map.item_for_iteration.item).schema.merge_included_schema(included_schema)
+										post_info (Current, "load_schemas", "model_access_i2", <<included_schema.schema_id, all_schemas.item (schema_inclusion_map.item_for_iteration.item).schema_id>>)
 										finished := False
 									end
 									schema_inclusion_map.item_for_iteration.forth
@@ -216,7 +217,6 @@ feature -- Commands
 							-- validate the schema & if passed, put it into `top_level_schemas'
 							if all_schemas.item_for_iteration.passed then
 								top_level_schemas.extend (all_schemas.item_for_iteration, all_schemas.key_for_iteration)
-								post_info (Current, "load_schemas", "general", <<all_schemas.item_for_iteration.errors.as_string>>)
 							else
 								post_error (Current, "load_schemas", "model_access_e9", <<all_schemas.key_for_iteration, all_schemas.item_for_iteration.errors.as_string>>)
 							end
@@ -227,26 +227,29 @@ feature -- Commands
 			end
 
 			-- now populate the rm_schemas_by_package table
-			schemas_by_package.wipe_out
+			schemas_by_model.wipe_out
 			from top_level_schemas.start until top_level_schemas.off loop
 				model_publisher := top_level_schemas.item_for_iteration.schema.model_publisher
-				pkgs := top_level_schemas.item_for_iteration.schema.packages
+				models := top_level_schemas.item_for_iteration.schema.models
 
 				-- put a ref to schema, keyed by the model_publisher-package_name key (lower-case) for later lookup by compiler
-				from pkgs.start until pkgs.off loop
-					qualified_pkg_name := model_qualified_package_name(model_publisher, pkgs.item_for_iteration.name)
-					if not schemas_by_package.has (qualified_pkg_name) then
-						schemas_by_package.put (top_level_schemas.item_for_iteration, qualified_pkg_name)
+				from models.start until models.off loop
+					qualified_model_name := publisher_qualified_library_name (model_publisher, models.key_for_iteration)
+					if not schemas_by_model.has (qualified_model_name) then
+						schemas_by_model.put (top_level_schemas.item_for_iteration, qualified_model_name)
 					else
-						post_info (Current, "rm_schemas", "model_access_w3", <<qualified_pkg_name, schemas_by_package.item (qualified_pkg_name).schema.schema_id,
+						post_info (Current, "rm_schemas", "model_access_w3", <<qualified_model_name, schemas_by_model.item (qualified_model_name).schema.schema_id,
 							top_level_schemas.item_for_iteration.schema.schema_id>>)
 					end
-					pkgs.forth
+					models.forth
 				end
-
 				top_level_schemas.forth
 			end
 			load_count := load_count.item + 1
+
+		rescue
+			io.putstring (billboard.content)
+			io.new_line
 		end
 
 feature {NONE} -- Implementation
@@ -257,7 +260,7 @@ feature {NONE} -- Implementation
 			-- Schemas not included by other schemas have NO ENTRY in this list
 			-- this is detected and used to populate `top_level_schemas'
 
-	schemas_by_package: attached HASH_TABLE [SCHEMA_DESCRIPTOR, STRING]
+	schemas_by_model: attached HASH_TABLE [SCHEMA_DESCRIPTOR, STRING]
 			-- schemas keyed by qualified package name, i.e. model_publisher '-' package_name, e.g. "openehr-ehr";
 			-- this matches the qualifide package name part of an ARCHETYPE_ID
 
@@ -288,7 +291,7 @@ feature {NONE} -- Implementation
 						dmp.extract_attr_values (schema_path, Schema_fast_parse_attrs)
 						if dmp.last_parse_valid then
 							dmp.last_parse_content.put (schema_path, Metadata_schema_path)
-							create sd.make(dmp.last_parse_content)
+							create sd.make (dmp.last_parse_content)
 
 							-- check for two schema files purporting to be the exact same schema (including release)
 							if all_schemas.has (sd.schema_id) then
@@ -316,7 +319,9 @@ feature {NONE} -- Implementation
 		do
 			all_schemas.item (a_schema_id).load
 			if all_schemas.item (a_schema_id).passed then
-				includes := all_schemas.item(a_schema_id).schema.includes
+				post_info (Current, "load_schema_include_closure", "model_access_i1", <<a_schema_id,
+					all_schemas.item (a_schema_id).schema.primitive_types.count.out, all_schemas.item (a_schema_id).schema.class_definitions.count.out>>)
+				includes := all_schemas.item (a_schema_id).schema.includes
 				if not includes.is_empty then
 					from includes.start until includes.off loop
 						if not schema_inclusion_map.has (includes.item_for_iteration.id) then
@@ -325,7 +330,7 @@ feature {NONE} -- Implementation
 						end
 						schema_inclusion_map.item (includes.item_for_iteration.id).extend (a_schema_id)
 						if not all_schemas.has (includes.item_for_iteration.id) then
-							load_schema_include_closure(includes.item_for_iteration.id)
+							load_schema_include_closure (includes.item_for_iteration.id)
 						end
 						includes.forth
 					end

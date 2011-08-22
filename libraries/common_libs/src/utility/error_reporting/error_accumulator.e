@@ -46,7 +46,7 @@ feature -- Access
 			Result.compare_objects
 			from list.start until list.off loop
 				if list.item.severity = error_type_error then
-					Result.extend(list.item.code)
+					Result.extend (list.item.code)
 				end
 				list.forth
 			end
@@ -59,7 +59,7 @@ feature -- Access
 			Result.compare_objects
 			from list.start until list.off loop
 				if list.item.severity = error_type_warning then
-					Result.extend(list.item.code)
+					Result.extend (list.item.code)
 				end
 				list.forth
 			end
@@ -115,7 +115,7 @@ feature -- Modification
 			extend (create {ERROR_DESCRIPTOR}.make ("", error_type_debug, a_message, a_loc))
 		end
 
-	extend(err_desc: attached ERROR_DESCRIPTOR)
+	extend (err_desc: attached ERROR_DESCRIPTOR)
 		do
 			list.extend(err_desc)
 			has_errors := has_errors or err_desc.severity = Error_type_error
@@ -123,7 +123,7 @@ feature -- Modification
 			has_info := has_info or err_desc.severity = Error_type_info
 		end
 
-	append(other: attached ERROR_ACCUMULATOR)
+	append (other: attached ERROR_ACCUMULATOR)
 		do
 			list.append(other.list)
 			has_errors := has_errors or other.has_errors
@@ -147,7 +147,7 @@ feature -- Output
 			create Result.make(0)
 			from list.start until list.off loop
 				if list.item.severity >= error_reporting_level then
-					Result.append(list.item.as_string)
+					Result.append (list.item.as_string)
 					Result.append_character ('%N')
 				end
 				list.forth

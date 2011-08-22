@@ -145,24 +145,24 @@ feature -- Conversion
 			-- package name might be of form xxx.yyy.zzz ; we only want 'zzz'
 		do
 			if a_package_name.has (package_name_delimiter) then
-				Result := a_package_name.split(Package_name_delimiter).last
+				Result := a_package_name.split (Package_name_delimiter).last
 			else
 				Result := a_package_name
 			end
 		end
 
-	model_qualified_package_name (a_model_publisher, a_package_name: attached STRING): attached STRING
+	publisher_qualified_library_name (a_model_publisher, a_package_name: attached STRING): attached STRING
 			-- generate a lower-case standard model-package name string, e.g. "openehr-ehr" for use in finding RM schemas
-			-- uses `terminal_package_name' to guarantee terminal form of package name
+			-- uses `package_base_name' to obtain terminal form of package name
 		require
 			Model_publisher_valid: not a_model_publisher.is_empty
 			Package_name_valid: not a_package_name.is_empty
 		do
-			Result := a_model_publisher + section_separator.out + package_base_name(a_package_name)
+			Result := a_model_publisher + section_separator.out + package_base_name (a_package_name)
 			Result.to_lower
 		end
 
-	package_qualified_class_name (a_package_name, a_class_name: attached STRING): attached STRING
+	library_qualified_class_name (a_package_name, a_class_name: attached STRING): attached STRING
 			-- generate a standard package-class name string, e.g. "ehr-observation" for use in finding RM schemas
 			-- uses `terminal_package_name' to guarantee terminal form of package name
 		require

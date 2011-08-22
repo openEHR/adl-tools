@@ -132,6 +132,16 @@ feature -- Access
  			end
 		end
 
+	child_with_name (a_name: attached STRING): like child_type
+		require
+			has_child_with_name (a_name)
+		do
+			from children.start until children.off or children.item.ontological_name.same_string (a_name) loop
+				children.forth
+			end
+			Result := children.item
+		end
+
 feature -- Status Report
 
 	has_artefacts: BOOLEAN
@@ -154,7 +164,19 @@ feature -- Status Report
 	has_child (a_child: attached like child_type): BOOLEAN
 		do
 			if children /= Void then
-				Result := children.has(a_child)
+				Result := children.has (a_child)
+			end
+		end
+
+	has_child_with_name (a_name: attached STRING): BOOLEAN
+		do
+			if children /= Void then
+				Result := children.there_exists (
+					agent (a_child: like child_type; s: STRING):BOOLEAN
+						do
+							Result := a_child.ontological_name.same_string (s)
+						end (?, a_name)
+				)
 			end
 		end
 

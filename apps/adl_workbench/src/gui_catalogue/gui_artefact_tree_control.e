@@ -53,7 +53,6 @@ feature {NONE} -- Initialisation
 			ev_label.set_text (a_label)
 			ev_label.align_text_left
 			ev_tree.set_background_color (editable_colour)
-			ev_tree.set_minimum_width (60)
   			ev_tree.set_minimum_width (max_arch_explorer_width)
 
 			-- events
@@ -66,17 +65,6 @@ feature -- Access
 	ev_root_container: EV_VERTICAL_BOX
 
 feature -- Commands
-
-	display_selected_item_after_delay
-			-- When the user selects an item in `gui_file_tree', delay before displaying it.
-		do
-			if delay_to_make_keyboard_navigation_practical = Void then
-				create delay_to_make_keyboard_navigation_practical
-				delay_to_make_keyboard_navigation_practical.actions.extend (agent display_selected_item)
-			end
-
-			delay_to_make_keyboard_navigation_practical.set_interval (300)
-		end
 
 	populate
 			-- Populate `gui_file_tree' from `archetype_directory'.
@@ -132,9 +120,6 @@ feature {NONE} -- Implementation
 	ev_tree_item_stack: ARRAYED_STACK [EV_TREE_ITEM]
 			-- Stack used during `populate_ev_tree_node_enter'.
 
-	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
-			-- Timer to delay a moment before calling `display_details_of_selected_item'.
-
 	display_selected_item
 		deferred
 		end
@@ -166,6 +151,20 @@ feature {NONE} -- Implementation
 				Result := pixmaps [ara.group_name]
 			end
 		end
+
+	display_selected_item_after_delay
+			-- When the user selects an item in `gui_file_tree', delay before displaying it.
+		do
+			if delay_to_make_keyboard_navigation_practical = Void then
+				create delay_to_make_keyboard_navigation_practical
+				delay_to_make_keyboard_navigation_practical.actions.extend (agent display_selected_item)
+			end
+
+			delay_to_make_keyboard_navigation_practical.set_interval (300)
+		end
+
+	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
+			-- Timer to delay a moment before calling `display_details_of_selected_item'.
 
 invariant
 	valid_artefact_types: (create {ARTEFACT_TYPE}).valid_artefact_types(artefact_types)

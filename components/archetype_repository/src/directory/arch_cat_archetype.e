@@ -737,8 +737,8 @@ feature {NONE} -- Compilation
 		do
 			reset
 			if rm_schema = Void then
-				if rm_schemas_access.has_schema_for_package (id.qualified_package_name) then
-					rm_schema := rm_schemas_access.schema_for_package (id.qualified_package_name)
+				if rm_schemas_access.has_schema_for_model (id.qualified_package_name) then
+					rm_schema := rm_schemas_access.schema_for_model (id.qualified_package_name)
 				else
 					compilation_state := Cs_rm_class_unknown
 					errors.add_error ("model_access_e7", <<id.qualified_rm_name>>, "")

@@ -143,6 +143,7 @@ feature {NONE} -- Initialization
 			-- set up docking
 			create docking_manager.make (viewer_main_cell, Current)
 			create_new_catalogue_tool
+			create_new_rm_schema_tool
 			create_new_console_tool
 			create_new_error_tool
 			create_new_statistics_tool
@@ -304,6 +305,7 @@ feature -- Status setting
 
 			-- if some RM schemas now found, set up a repository if necessary
 			if rm_schemas_access.found_valid_schemas then
+				rm_schema_tool.populate
 				if repository_profiles.current_reference_repository_path.is_empty then
 					configure_profiles
 				else
@@ -931,12 +933,10 @@ feature -- Archetype Events
 			end
 		end
 
-	display_class
+	display_class (a_class_def: BMM_CLASS_DEFINITION)
 			-- display the class currently selected in `archetype_catalogue'.
 		do
-			if attached current_arch_cat as cat and then cat.has_selected_class then
-				class_map_tools.populate_active_tool
-			end
+			class_map_tools.populate_active_tool (a_class_def)
 		end
 
 feature -- Docking controls
@@ -984,6 +984,25 @@ feature -- Catalogue tool
 			a_docking_pane.set_top ({SD_ENUMERATION}.left)
 		end
 
+feature -- RM Schema tool
+
+	rm_schema_tool: GUI_RM_SCHEMA_TOOL
+		once
+			create Result.make (agent display_class, agent create_and_populate_new_class_tool)
+		end
+
+	create_new_rm_schema_tool
+		local
+			a_docking_pane: SD_CONTENT
+		do
+			create a_docking_pane.make_with_widget_title_pixmap (rm_schema_tool.ev_root_container, pixmaps ["rm_schema"], "RM Schemas")
+			attached_docking_manager.contents.extend (a_docking_pane)
+			a_docking_pane.set_long_title ("RM Schemas")
+			a_docking_pane.set_short_title ("RM Schemas")
+			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
+			a_docking_pane.set_auto_hide ({SD_ENUMERATION}.left)
+		end
+
 feature -- Archetype tools
 
 	archetype_tools: GUI_ARCHETYPE_TOOLS_CONTROLLER
@@ -1006,12 +1025,10 @@ feature -- Class map tool
 			create Result.make (attached_docking_manager, agent update_all_tools_rm_icons_setting)
 		end
 
-	create_and_populate_new_class_tool
+	create_and_populate_new_class_tool (a_class_def: BMM_CLASS_DEFINITION)
 		do
 			class_map_tools.create_new_tool
-			if current_arch_cat.has_selected_class then
-				class_map_tools.populate_active_tool
-			end
+			class_map_tools.populate_active_tool (a_class_def)
 		end
 
 feature -- Test tool
@@ -1298,10 +1315,9 @@ feature {NONE} -- Build commands
 			end
 
 			catalogue_tool.update (aca)
-
 			test_tool.do_row_for_item (aca)
 
-			if aca.last_compile_attempt_timestamp /= Void then
+			if attached aca.last_compile_attempt_timestamp then
 				error_tool.extend_and_select (aca)
 				statistics_tool.populate
 

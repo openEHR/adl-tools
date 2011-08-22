@@ -62,13 +62,9 @@ feature -- Initialisation
 		do
 			make
 			class_definition := a_class_desc
-			ontological_name := package_qualified_class_name (a_package_name, class_definition.name).as_upper
+			ontological_name := library_qualified_class_name (a_package_name, class_definition.name).as_upper
 			display_name := class_definition.name
-			if class_definition.is_abstract then
-				group_name := Type_cat_abstract_class
-			else
-				group_name := Type_cat_concrete_class
-			end
+			group_name := class_definition.type_category
 		ensure
 			ontological_name_set: ontological_name.is_equal (a_package_name + {ARCHETYPE_ID}.section_separator.out +  class_definition.name)
 			display_name_set: display_name = class_definition.name
