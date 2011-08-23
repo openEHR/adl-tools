@@ -11,7 +11,7 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class GUI_CLASS_MAP_TOOL_CONTROLLER
+class GUI_CLASS_TOOL_CONTROLLER
 
 inherit
 	GUI_DOCKING_EDITOR_CONTROLLER
@@ -70,7 +70,7 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	tool_type: GUI_CLASS_MAP_TOOL
+	tool_type: GUI_CLASS_TOOL
 
 	update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]
 

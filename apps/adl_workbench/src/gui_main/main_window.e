@@ -474,7 +474,7 @@ feature -- View Events
 				(a_tool: GUI_ARCHETYPE_TOOL) do a_tool.select_differential_view end
 			)
 			class_map_tools.do_all_visible_tools (agent
-				(a_tool: GUI_CLASS_MAP_TOOL) do a_tool.select_differential_view end
+				(a_tool: GUI_CLASS_TOOL) do a_tool.select_differential_view end
 			)
 		end
 
@@ -485,7 +485,7 @@ feature -- View Events
 				(a_tool: GUI_ARCHETYPE_TOOL) do a_tool.select_flat_view end
 			)
 			class_map_tools.do_all_visible_tools (agent
-				(a_tool: GUI_CLASS_MAP_TOOL) do a_tool.select_flat_view end
+				(a_tool: GUI_CLASS_TOOL) do a_tool.select_flat_view end
 			)
 		end
 
@@ -755,7 +755,7 @@ feature {NONE} -- Tools menu events
 	update_all_tools_rm_icons_setting
 		do
 			archetype_tools.do_all_tools (agent (a_tool: GUI_ARCHETYPE_TOOL) do a_tool.update_rm_icons_setting end)
-			class_map_tools.do_all_tools (agent (a_tool: GUI_CLASS_MAP_TOOL) do a_tool.update_rm_icons_cb end)
+			class_map_tools.do_all_tools (agent (a_tool: GUI_CLASS_TOOL) do a_tool.update_rm_icons_setting end)
 			catalogue_tool.update_rm_icons_setting
 		end
 
@@ -1020,7 +1020,7 @@ feature -- Archetype tools
 
 feature -- Class map tool
 
-	class_map_tools: GUI_CLASS_MAP_TOOL_CONTROLLER
+	class_map_tools: GUI_CLASS_TOOL_CONTROLLER
 		once
 			create Result.make (attached_docking_manager, agent update_all_tools_rm_icons_setting)
 		end

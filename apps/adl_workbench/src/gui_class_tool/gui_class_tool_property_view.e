@@ -1,6 +1,6 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Class map control - Visualise a reference model class as a node map"
+	description: "Class map control - visualise property view of a class, including flattening."
 	keywords:    "archetype, cadl, gui"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
@@ -11,14 +11,9 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class GUI_CLASS_MAP_TOOL
+class GUI_CLASS_TOOL_PROPERTY_VIEW
 
 inherit
-	GUI_TOOL
-		redefine
-			ev_root_container
-		end
-
 	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
@@ -60,17 +55,6 @@ feature -- Initialisation
 
 			-- create widgets
 			create ev_root_container
-			create ev_action_bar
-			create ev_class_id
-			create ev_view_label
-			create ev_view_tool_bar
-			create ev_differential_view_button
-			create ev_flat_view_button
-
-			create ev_notebook
-
-			-- create widgets: property view
-			create ev_property_view_hbox
 			create ev_property_tree
 			create ev_view_controls_vbox
 			create ev_expand_button
@@ -84,23 +68,9 @@ feature -- Initialisation
 			create ev_cell
 			create ev_use_rm_icons_cb
 
-			-- create widgets: inheritance view
-			create ev_inheritance_tree
-
 			-- connect widgets
-			ev_root_container.extend (ev_action_bar)
-			ev_root_container.extend (ev_notebook)
-
-			ev_action_bar.extend (ev_class_id)
-			ev_action_bar.extend (ev_view_label)
-			ev_action_bar.extend (ev_view_tool_bar)
-			ev_view_tool_bar.extend (ev_differential_view_button)
-			ev_view_tool_bar.extend (ev_flat_view_button)
-
-			-- connect widgets: property view
-			ev_notebook.extend (ev_property_view_hbox)
-			ev_property_view_hbox.extend (ev_property_tree)
-			ev_property_view_hbox.extend (ev_view_controls_vbox)
+			ev_root_container.extend (ev_property_tree)
+			ev_root_container.extend (ev_view_controls_vbox)
 			ev_view_controls_vbox.extend (ev_expand_button)
 			ev_view_controls_vbox.extend (ev_expand_one_button)
 			ev_view_controls_vbox.extend (ev_collapse_one_button)
@@ -111,31 +81,8 @@ feature -- Initialisation
 			ev_view_controls_vbox.extend (ev_cell)
 			ev_view_controls_vbox.extend (ev_use_rm_icons_cb)
 
-			-- connect widgets: inheritance view
-			ev_notebook.extend (ev_inheritance_tree)
-
 			-- visual characteristics
-			ev_root_container.disable_item_expand (ev_action_bar)
-			ev_property_view_hbox.disable_item_expand (ev_view_controls_vbox)
-			ev_action_bar.set_padding (10)
-			ev_action_bar.set_border_width (4)
-			ev_action_bar.disable_item_expand (ev_view_label)
-			ev_action_bar.disable_item_expand (ev_view_tool_bar)
-			ev_class_id.disable_edit
-			ev_view_label.set_text ("View ")
-			ev_differential_view_button.set_pixmap (pixmaps ["diff_class"])
-			ev_flat_view_button.set_pixmap (pixmaps ["flat_class"])
-			ev_differential_view_button.set_tooltip (create_message_content ("Set differential archetype view", Void))
-			ev_flat_view_button.set_tooltip (create_message_content ("Set flat archetype view", Void))
-
-			-- visual characteristics: notebook
-			ev_notebook.set_item_text (ev_property_view_hbox, create_message_content ("properties_tab_text", Void))
-	--		ev_notebook.item_tab (ev_property_view_hbox).set_pixmap (pixmaps ["properties"])
-
-			ev_notebook.set_item_text (ev_inheritance_tree, create_message_content ("descendants_tab_text", Void))
-	--		ev_notebook.item_tab (ev_property_view_hbox).set_pixmap (pixmaps ["descendants"])
-
-			-- visual characteristics: property view right hand side tree expand/collapse controls
+			ev_root_container.disable_item_expand (ev_view_controls_vbox)
 			ev_view_controls_vbox.set_minimum_width (160)
 			ev_view_controls_vbox.set_padding (padding_width)
 			ev_view_controls_vbox.set_border_width (border_width)
@@ -168,13 +115,6 @@ feature -- Initialisation
 			ev_use_rm_icons_cb.set_text (create_message_content ("use_rm_icons_button_text", Void))
 			ev_use_rm_icons_cb.set_tooltip (create_message_content ("use_rm_icons_button_tooltip", Void))
 
-			-- set events: action bar
-			ev_differential_view_button.select_actions.extend (agent on_differential_view)
-			ev_flat_view_button.select_actions.extend (agent on_flat_view)
-
-			differential_view := True
-			ev_differential_view_button.enable_select
-
 			if use_rm_pixmaps then
 				ev_use_rm_icons_cb.enable_select
 			end
@@ -189,7 +129,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	ev_root_container: EV_VERTICAL_BOX
+	ev_root_container: EV_HORIZONTAL_BOX
 
 feature -- Status Report
 
@@ -199,29 +139,6 @@ feature -- Status Report
 			-- True if last whole tree operation was expand
 
 feature -- Events
-
-	on_flat_view
-			-- Called by `select_actions' of `flat_view_button'.
-		do
-			set_view (False)
-		end
-
-	on_differential_view
-			-- Called by `select_actions' of `differential_view_button'.
-		do
-			set_view (True)
-		end
-
-	set_view (differential_flag: BOOLEAN)
-			-- set view one way or the other from view controls in this tool
-		do
-			if (differential_flag and not differential_view) or -- changing from flat to diff
-				(not differential_flag and differential_view)  -- changing from diff to flat
-			then
-				differential_view := differential_flag
-				repopulate
-			end
-		end
 
 	on_shrink_tree_one_level
 		do
@@ -278,39 +195,17 @@ feature -- Commands
 
 	clear
 		do
- 			ev_class_id.remove_text
--- 			differential_view := True
--- 			ev_differential_view_button.enable_select
  			ev_closure_depth_spin_button.set_value (Default_closure_depth)
  			ev_property_tree.wipe_out
 		end
 
-	populate (a_class_def: attached BMM_CLASS_DEFINITION)
-			-- populate the ADL tree control by creating it from scratch
+	populate (a_class_def: attached BMM_CLASS_DEFINITION; differential_view_flag: BOOLEAN)
 		do
-			clear
 			class_def := a_class_def
-			model_publisher := class_def.bmm_model.model_publisher
-			do_with_wait_cursor (ev_root_container, agent do_populate)
-		end
+			differential_view := differential_view_flag
 
-	repopulate
-			-- repopulate the ADL tree control by creating it from scratch for same class
-		do
-			do_with_wait_cursor (ev_root_container, agent do_populate)
-		end
-
-	do_populate
-		local
-			str: STRING
-		do
 			ev_property_tree.wipe_out
  			create ev_tree_item_stack.make (0)
-
- 			-- set the name in the name area
-			str := class_def.name
-		--	str.prepend (class_def.bmm_model.model_publisher + class_desc.Section_separator.out)
- 			ev_class_id.set_text (str)
 
  			-- populate the tree
 			populate_root_node
@@ -321,6 +216,11 @@ feature -- Commands
 			if not ev_property_tree.is_empty and then ev_property_tree.first.is_expandable then
 				ev_property_tree.first.expand
 			end
+		end
+
+	repopulate (differential_view_flag: BOOLEAN)
+		do
+			populate (class_def, differential_view_flag)
 		end
 
 	refresh
@@ -339,33 +239,9 @@ feature -- Commands
 			end
 		end
 
-	select_flat_view
-			-- Called by `select_actions' of `flat_view_button'.
-		do
-			if not ev_flat_view_button.is_selected then
-				ev_flat_view_button.enable_select
-				set_view (False)
-			end
-		end
-
-	select_differential_view
-			-- Called by `select_actions' of `differential_view_button'.
-		do
-			if not ev_differential_view_button.is_selected then
-				ev_differential_view_button.enable_select
-				set_view (True)
-			end
-		end
-
 feature {NONE} -- Implementation
 
-	ev_property_view_hbox, ev_closure_controls_hbox: EV_HORIZONTAL_BOX
-
-	ev_class_id: EV_TEXT_FIELD
-
-	ev_notebook: EV_NOTEBOOK
-
-	ev_property_tree, ev_inheritance_tree: EV_TREE
+	ev_property_tree: EV_TREE
 
 	ev_expand_button, ev_expand_one_button, ev_collapse_one_button, ev_closure_recompute_button: EV_BUTTON
 
@@ -375,19 +251,11 @@ feature {NONE} -- Implementation
 
 	ev_cell: EV_CELL
 
-	ev_action_bar: EV_HORIZONTAL_BOX
-
-	ev_view_tool_bar: EV_TOOL_BAR
-
-	ev_differential_view_button, ev_flat_view_button: EV_TOOL_BAR_RADIO_BUTTON
-
-	ev_view_label: EV_LABEL
+	ev_closure_controls_hbox: EV_HORIZONTAL_BOX
 
 	ev_closure_depth_spin_button: EV_SPIN_BUTTON
 
 	ev_tree_item_stack: ARRAYED_STACK[EV_TREE_ITEM]
-
---	class_desc: ARCH_CAT_MODEL_NODE
 
 	class_def: BMM_CLASS_DEFINITION
 
