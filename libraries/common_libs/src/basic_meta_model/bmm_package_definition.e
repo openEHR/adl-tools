@@ -21,6 +21,9 @@ inherit
 		end
 
 	DT_CONVERTIBLE
+		redefine
+			finalise_dt
+		end
 
 create
 	make
@@ -149,6 +152,7 @@ feature {BMM_SCHEMA, BMM_PACKAGE_DEFINITION} -- Modification
 		do
 			bmm_model := a_bmmm
 			create all_classes.make (0)
+			all_classes.compare_objects
 			if has_classes then
 				all_classes.merge (classes)
 			end
@@ -159,6 +163,24 @@ feature {BMM_SCHEMA, BMM_PACKAGE_DEFINITION} -- Modification
 					all_classes.merge (packages.item_for_iteration.all_classes)
 					packages.forth
 				end
+			end
+		end
+
+feature {DT_OBJECT_CONVERTER} -- Finalisation
+
+	finalise_dt
+			-- finalisation routine to guarantee validity on creation from dt
+		local
+			classes_copy: ARRAYED_SET [STRING]
+		do
+			if has_classes then
+				create classes_copy.make (0)
+				classes_copy.compare_objects
+				from classes.start until classes.off loop
+					classes_copy.extend (classes.item)
+					classes.forth
+				end
+				classes := classes_copy
 			end
 		end
 

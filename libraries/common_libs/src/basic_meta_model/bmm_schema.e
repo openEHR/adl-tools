@@ -571,16 +571,16 @@ feature -- Commands
 				canonical_packages.forth
 			end
 
-			-- remove other schema from remaining list of included schemas to process
-			includes_to_process.prune_all (other.schema_id)
-			if includes_to_process.is_empty then
-				state := State_includes_processed
-			end
-
 			-- semantic models
 			from other.models.start until other.models.off loop
 				models.put (other.models.item_for_iteration, other.models.key_for_iteration)
 				other.models.forth
+			end
+
+			-- remove other schema from remaining list of included schemas to process
+			includes_to_process.prune_all (other.schema_id)
+			if includes_to_process.is_empty then
+				state := State_includes_processed
 			end
 		end
 

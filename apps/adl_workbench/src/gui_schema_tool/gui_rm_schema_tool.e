@@ -144,7 +144,7 @@ feature {NONE} -- Implementation
 		local
 			ev_pkg_node: EV_TREE_ITEM
 		do
-			-- do this package
+			-- do the package
 			create ev_pkg_node.make_with_text (a_pkg.name)
  			ev_pkg_node.set_data (a_pkg)
  	 		ev_pkg_node.set_tooltip (a_pkg.qualified_name)
