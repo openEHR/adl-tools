@@ -34,25 +34,25 @@ feature -- Initialisation
 			ontological_name := a_name
 			display_name := a_name
 			group_name := "archetype_category"
-			is_package := True
+			is_model_group := True
 		ensure
 			ontological_name_set: ontological_name.is_equal (a_name)
 			display_name_set: display_name = ontological_name
 		end
 
-	make_package (a_package_name: attached STRING)
+	make_package (a_model_name: attached STRING)
 			-- create with ontological name
 		require
-			a_package_name_valid: not a_package_name.is_empty
+			a_model_name_valid: not a_model_name.is_empty
 		do
 			make
-			ontological_name := a_package_name
-			display_name := a_package_name
-			group_name := "file_folder_2"
-			is_package := True
+			ontological_name := a_model_name
+			display_name := a_model_name
+			group_name := "model_group"
+			is_model_group := True
 		ensure
-			ontological_name_set: ontological_name.is_equal (a_package_name)
-			display_name_set: display_name = a_package_name
+			ontological_name_set: ontological_name.is_equal (a_model_name)
+			display_name_set: display_name = a_model_name
 		end
 
 	make_class (a_package_name: attached STRING; a_class_desc: attached BMM_CLASS_DEFINITION)
@@ -91,7 +91,9 @@ feature -- Status Report
 			Result := class_definition /= Void and then class_definition.is_abstract
 		end
 
-	is_package: BOOLEAN
+	is_model_group: BOOLEAN
+			-- 'model group' is a grouping construct for packages that defines the namespace for archetypes within
+			-- a schema publisher
 
 	is_class: BOOLEAN
 		do
@@ -113,7 +115,7 @@ feature {ARCH_CAT_ITEM} -- Implementation
 			-- parent node
 
 invariant
-	Class_definition_validity: not (is_package and is_class)
+	Class_definition_validity: not (is_model_group and is_class)
 
 end
 

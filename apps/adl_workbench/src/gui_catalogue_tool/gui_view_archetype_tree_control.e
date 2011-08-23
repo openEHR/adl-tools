@@ -111,7 +111,7 @@ feature {NONE} -- Implementation
 
 					if attached {ARCH_CAT_ARCHETYPE} aci then
 						select_archetype_agent.call ([])
-					elseif attached {ARCH_CAT_MODEL_NODE} aci as acmn and then not acmn.is_package then
+					elseif attached {ARCH_CAT_MODEL_NODE} aci as acmn and then not acmn.is_model_group then
 						select_class_agent.call ([acmn.class_definition])
 					end
 				end
@@ -212,7 +212,7 @@ feature {NONE} -- Implementation
 			--
 		do
 	 		if attached {ARCH_CAT_MODEL_NODE} node.data as arf then
-	 			if (arf.is_abstract_class or arf.is_package) and node.is_expandable then
+	 			if (arf.is_abstract_class or arf.is_model_group) and node.is_expandable then
 					node.expand
 	 			end
 	 		end
