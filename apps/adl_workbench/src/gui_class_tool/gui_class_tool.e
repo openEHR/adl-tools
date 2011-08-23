@@ -90,7 +90,7 @@ feature -- Initialisation
 			ev_notebook.set_item_text (property_view.ev_root_container, create_message_content ("properties_tab_text", Void))
 	--		ev_notebook.item_tab (ev_property_view_hbox).set_pixmap (pixmaps ["properties"])
 
-			ev_notebook.set_item_text (inheritance_view.ev_root_container, create_message_content ("descendants_tab_text", Void))
+			ev_notebook.set_item_text (inheritance_view.ev_root_container, create_message_content ("inheritance_tab_text", Void))
 	--		ev_notebook.item_tab (ev_property_view_hbox).set_pixmap (pixmaps ["descendants"])
 
 			-- set events

@@ -207,6 +207,9 @@ feature -- Commands
 			ev_property_tree.wipe_out
  			create ev_tree_item_stack.make (0)
 
+			-- for use in icon switching
+ 			model_publisher := a_class_def.bmm_model.model_publisher
+
  			-- populate the tree
 			populate_root_node
 			class_def.do_supplier_closure (not differential_view, ev_closure_depth_spin_button.value-1, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
@@ -226,17 +229,6 @@ feature -- Commands
 	refresh
 		do
 			do_with_wait_cursor (ev_root_container, agent ev_property_tree.recursive_do_all (agent refresh_node))
-		end
-
-	refresh_node (a_ti: EV_TREE_NODE)
-		do
-			if attached {BMM_TYPE_SPECIFIER} a_ti.data as a_type_spec  then
-				if use_rm_pixmaps and then rm_pixmaps.has (model_publisher) and then rm_pixmaps.item (model_publisher).has (a_type_spec.root_class) then
-					a_ti.set_pixmap (rm_pixmaps.item (model_publisher).item (a_type_spec.root_class))
-				else
-					a_ti.set_pixmap (pixmaps [a_type_spec.type_category])
-				end
-			end
 		end
 
 feature {NONE} -- Implementation
@@ -403,12 +395,15 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	ev_tree_collapse (node: attached EV_TREE_NODE)
-			--
+	refresh_node (a_ti: EV_TREE_NODE)
 		do
- 			if node.is_expandable then
-				node.collapse
- 			end
+			if attached {BMM_TYPE_SPECIFIER} a_ti.data as a_type_spec  then
+				if use_rm_pixmaps and then rm_pixmaps.has (model_publisher) and then rm_pixmaps.item (model_publisher).has (a_type_spec.root_class) then
+					a_ti.set_pixmap (rm_pixmaps.item (model_publisher).item (a_type_spec.root_class))
+				else
+					a_ti.set_pixmap (pixmaps [a_type_spec.type_category])
+				end
+			end
 		end
 
 	context_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
@@ -525,6 +520,14 @@ feature {NONE} -- Implementation
 			-- Pebble function for pebble source
 		do
 			Result := "pebble"
+		end
+
+	ev_tree_collapse (node: attached EV_TREE_NODE)
+			--
+		do
+ 			if node.is_expandable then
+				node.collapse
+ 			end
 		end
 
 	toggle_expand_tree

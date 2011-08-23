@@ -116,7 +116,7 @@ templates = <
 		["serialised_tab_text"] = <"Serialised">
 
 		["properties_tab_text"] = <"Properties">
-		["descendants_tab_text"] = <"Descendants">
+		["inheritance_tab_text"] = <"Inheritance">
 
 		["serialise_frame_text"] = <"Output Format">
 

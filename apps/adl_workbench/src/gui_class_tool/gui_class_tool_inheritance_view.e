@@ -76,39 +76,56 @@ feature -- Commands
 
 	populate (a_class_def: attached BMM_CLASS_DEFINITION)
 			-- populate the ADL tree control by creating it from scratch
+   		local
+			a_ti: EV_TREE_ITEM
 		do
 			clear
 			class_def := a_class_def
 
  			-- populate the tree
-
+ 			create ev_tree_item_stack.make (0)
+ 			a_ti := create_node (class_def)
+ 			ev_root_container.extend (a_ti)
+			ev_tree_item_stack.extend (a_ti)
+			populate_ancestor_nodes (class_def)
+			ev_root_container.recursive_do_all (agent ev_tree_item_expand)
 		end
 
 feature {NONE} -- Implementation
 
-	ev_tree_item_stack: ARRAYED_STACK[EV_TREE_ITEM]
+	ev_tree_item_stack: ARRAYED_STACK [EV_TREE_ITEM]
 
 	class_def: BMM_CLASS_DEFINITION
 
-   	populate_gui_tree_node_enter (a_prop_def: attached BMM_PROPERTY_DEFINITION; depth: INTEGER)
-   			-- Add a node representing `a_prop_def' to `gui_file_tree'.
-   			-- If depth = 0, but this property is not a terminal node, it means that computation on
-   			-- this branch of the closure won't go further due the closure_depth limit; therefore,
-   			-- display this node with a special icon that invite the user to manually further expand
-   			-- this node
-   		local
-			a_ti: EV_TREE_ITEM
-			prop_str, type_str: STRING
-			is_terminal: BOOLEAN
-			has_type_subs: BOOLEAN
-		do
+   	create_node (a_class_def: attached BMM_CLASS_DEFINITION): EV_TREE_ITEM
+			-- create a node for `a_class_def'
+ 		do
+			create Result
+			Result.set_text (a_class_def.name)
+			Result.set_data (a_class_def)
+			Result.set_pixmap (pixmaps [a_class_def.type_category])
 		end
 
-   	populate_gui_tree_node_exit (a_prop_def: attached BMM_PROPERTY_DEFINITION)
-   		do
-			ev_tree_item_stack.remove
-			if not attached {BMM_CLASS_DEFINITION} a_prop_def.type_def as bmm_class_def or else not bmm_class_def.bmm_model.primitive_types.has (bmm_class_def.name) then
+   	populate_ancestor_nodes (a_class_def: attached BMM_CLASS_DEFINITION)
+			-- Add sub node node
+   		local
+			a_ti: EV_TREE_ITEM
+		do
+			from a_class_def.ancestor_defs.start until a_class_def.ancestor_defs.off loop
+				a_ti := create_node (a_class_def.ancestor_defs.item)
+				ev_tree_item_stack.item.extend (a_ti)
+				ev_tree_item_stack.extend (a_ti)
+				populate_ancestor_nodes (a_class_def.ancestor_defs.item)
 				ev_tree_item_stack.remove
+				a_class_def.ancestor_defs.forth
+			end
+		end
+
+	ev_tree_item_expand (an_ev_tree_node: attached EV_TREE_NODE)
+			--
+		do
+			if an_ev_tree_node.is_expandable then -- and node_data.is_addressable then
+				an_ev_tree_node.expand
 			end
 		end
 

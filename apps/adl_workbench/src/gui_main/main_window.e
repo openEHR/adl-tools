@@ -1183,6 +1183,7 @@ feature {NONE} -- Implementation
 			append_billboard_to_console
 
 			catalogue_tool.populate
+			rm_schema_tool.populate
 			test_tool.populate
 			statistics_tool.populate
 		end
