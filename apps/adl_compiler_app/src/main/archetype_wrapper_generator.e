@@ -970,13 +970,179 @@ feature
 			copy_dv_duration(p_wrapper.get_dvdurationfield, dv_duration)
 		elseif attached {DV_PROPORTION} p_dv_interval as dv_proportion  then
 			copy_dv_proportion(p_wrapper.get_dvproportionfield, dv_proportion)
---		elseif attached {DV_QUANTITY} p_dv_interval as dv_quantity  then --TODO: DV_QUANTITY DOES NOT COMPILE; TALK TO THOMAS BEALE
-
---		elseif attached {DV_DATE} p_dv_interval as dv_date then --TODO: DV_DATE DOES NOT COMPILE; TALK TO THOMAS BEALE
-
+		elseif attached {DV_QUANTITY} p_dv_interval as dv_quantity  then
+			copy_dv_quantity(p_wrapper.get_dvquantityfield, dv_quantity)
+		elseif attached {DV_DATE} p_dv_interval as dv_date then
+			copy_dv_date(p_wrapper.get_dvdatefield, dv_date)
 		elseif attached {DV_DATE_TIME} p_dv_interval as dv_date_time  then
 			copy_dv_date_time(p_wrapper.get_dvdatetimefield, dv_date_time)
---		elseif attached {DV_TIME} p_dv_interval as dv_time then --TODO: DV_TIME DOES NOT COMPILE; TALK TO THOMAS BEALE
+		elseif attached {DV_TIME} p_dv_interval as dv_time then
+			coyp_dv_time(p_wrapper.get_dvtimefield, dv_time)
+		end
+	end
+
+	coyp_dv_time(p_wrapper:DVTIME_WRAPPER_GEN; p_dv_time:DV_TIME)
+	require
+		p_not_null: attached p_wrapper and attached p_dv_time
+	do
+		--accuracy
+		if attached p_dv_time.accuracy as acc then
+			copy_dv_duration (p_wrapper.get_accuracy, acc)
+		end
+		--magnitudestaus
+		if attached p_dv_time.magnitude_status as ms then
+			p_wrapper.set_magnitudestatus (ms)
+		end
+		--normalrange
+		if attached p_dv_time.normal_range as nr then
+			copy_dv_interval (p_wrapper.get_normalrange, nr)
+		end
+		--normalstatus --TODO: TALK TO T. BEALE: NORMALSTATUS HAS TYPE DV_ORDINAL, SHOULD BE CODEPHRASE
+--		if attached p_dv_time.normal_status then
+--			
+--		end
+		--otherreferenceranges
+		if attached p_dv_time.other_reference_ranges as orr then
+			from
+				orr.start
+			until
+				orr.after
+			loop
+				copy_reference_range_time(p_wrapper.add_otherreferenceranges, orr.item_for_iteration)
+				orr.forth
+			end
+		end
+		--value
+		if attached p_dv_time.value as val then
+			p_wrapper.set_value (val)
+		end
+	end
+
+	copy_reference_range_time(p_wrapper:REFERENCERANGE_WRAPPER_GEN; p_ref_range: REFERENCE_RANGE[DV_TIME])
+	require
+		p_not_null: attached p_wrapper and attached p_ref_range
+	do
+		--meaning
+		if attached p_ref_range.meaning as mn then
+			copy_dv_text (p_wrapper.get_meaning, mn)
+		end
+		--range
+		if attached p_ref_range.range as rr then
+			copy_dv_interval (p_wrapper.get_range, rr)
+		end
+	end
+
+	copy_dv_date(p_wrapper:DVDATE_WRAPPER_GEN; p_dv_date:DV_DATE)
+	require
+		p_not_null: attached p_wrapper and attached p_dv_date
+	do
+		--accuracy
+		if attached p_dv_date.accuracy as acc then
+			copy_dv_duration (p_wrapper.get_accuracy, acc)
+		end
+		--magnitudestatus
+		if attached p_dv_date.magnitude_status as ms then
+			p_wrapper.set_magnitudestatus (ms)
+		end
+		--normalrange
+		if attached p_dv_date.normal_range as nr then
+			copy_dv_interval (p_wrapper.get_normalrange, nr)
+		end
+		--normalstatus --TODO: TALK TO T. BEALE: NORMALSTATUS IS DVORDINAL, SHOULD BE CODEPHRASE
+--		if attached p_dv_date.normal_status as ns then
+
+--		end
+		--otherreferenceranges
+		if attached p_dv_date.other_reference_ranges as orr then
+			from
+				orr.start
+			until
+				orr.after
+			loop
+				copy_reference_range_dv_date (p_wrapper.add_otherreferenceranges, orr.item_for_iteration)
+				orr.forth
+			end
+		end
+		--value
+		if attached p_dv_date.value as val then
+			p_wrapper.set_value (val)
+		end
+	end
+
+	copy_reference_range_dv_date (p_wrapper:REFERENCERANGE_WRAPPER_GEN; p_ref_r:REFERENCE_RANGE[DV_DATE])
+	require
+		p_not_null: attached p_wrapper and attached p_ref_r
+	do
+		--meaning --TODO: REF RANGE.MEANING IS DV_CODED_TEXT, BUT REF RANGE WRAPPER.MEANING IS DV_TEXT. XML MODEL DOES NOT SEEM TO MATCH SPECS HERE?
+		if attached p_ref_r.meaning as mn then
+			copy_dv_text (p_wrapper.get_meaning, mn)
+		end
+		--range
+		if attached p_ref_r.range as range then
+			copy_dv_interval (p_wrapper.get_range, range)
+		end
+	end
+
+	copy_dv_quantity(p_wrapper:DVQUANTITY_WRAPPER_GEN; p_dv_quantity:DV_QUANTITY)
+	require
+		p_not_null: attached p_wrapper and attached p_dv_quantity
+	do
+		--accuracy
+		if attached p_dv_quantity.accuracy as acc then
+			p_wrapper.set_accuracy (acc.out)--TODO: REAL REPRESENTED AS STRING
+		end
+		--accuracyispercent
+		if attached p_dv_quantity.accuracy_is_percent as aip then
+			p_wrapper.set_accuracyispercent (aip)
+		end
+		--magnitude
+		if attached p_dv_quantity.magnitude as  mag then
+			p_wrapper.set_magnitude (mag.item.out) --TODO: REAL REPRESENTED AS STRING
+		end
+		--magnitudestatus
+		if attached p_dv_quantity.magnitude_status as mags then
+			p_wrapper.set_magnitudestatus (mags)
+		end
+		--normalrange
+		if attached p_dv_quantity.normal_range as nr then
+			copy_dv_interval (p_wrapper.get_normalrange, nr)
+		end
+		--normalstatus --TODO: TALK TO T. BEALE: DV_QUANTITY.NORMAL_STATUS SHOULD BE OF TYPE CODEPHRASE
+--		if attached p_dv_quantity.normal_status as ns then
+--			
+--		end
+		--otherreferenceranges
+		if attached p_dv_quantity.other_reference_ranges as orr then
+			from
+				orr.start
+			until
+				orr.after
+			loop
+				copy_reference_range(p_wrapper.add_otherreferenceranges, orr.item_for_iteration)
+				orr.forth
+			end
+		end
+		--precision
+		if attached p_dv_quantity.precision as p then
+			p_wrapper.set_precision (p)
+		end
+		--units
+		if attached p_dv_quantity.units as u then
+			p_wrapper.set_units (u)
+		end
+	end
+
+	copy_reference_range(p_wrapper:REFERENCERANGE_WRAPPER_GEN; p_ref_range:REFERENCE_RANGE[DV_QUANTITY])
+	require
+		p_not_null: attached p_wrapper and attached p_ref_range
+	do
+		--meaning
+		if attached p_ref_range.meaning as mn then
+			copy_dv_text (p_wrapper.get_meaning, mn)
+		end
+		--range
+		if attached p_ref_range.range as range then
+			copy_dv_interval (p_wrapper.get_range, range)
 		end
 	end
 

@@ -82,7 +82,7 @@ feature {NONE} -- Initialisation
 		do
 			s := xml_extract_from_tags (str, "magnitude", 1)
 			create magnitude
-			magnitude.set_item (s.to_double)
+			magnitude.set_item (s.to_real)
 
 			if xml_has_tag (str, "accuracy", 1) then
 				s := xml_extract_from_tags (str, "accuracy_is_percent", 1)
