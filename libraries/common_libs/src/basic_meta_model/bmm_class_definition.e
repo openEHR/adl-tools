@@ -87,6 +87,9 @@ feature -- Access (attributes derived in post-schema processing)
 			end
 		end
 
+	pacakge_name: STRING
+			-- fully qualified package name
+
 feature -- Access
 
 	immediate_suppliers: attached ARRAYED_SET [STRING]
