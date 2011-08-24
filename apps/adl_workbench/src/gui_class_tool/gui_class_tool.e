@@ -29,15 +29,10 @@ inherit
 			{NONE} all
 		end
 
---	SHARED_REFERENCE_MODEL_ACCESS
---		export
---			{NONE} all
---		end
-
---	CONSTANTS
---		export
---			{NONE} all
---		end
+	BMM_DEFINITIONS
+		export
+			{NONE} all
+		end
 
 create
 	make
@@ -155,8 +150,9 @@ feature -- Commands
 			class_def := a_class_def
 
  			-- set the name in the name area
-			str := class_def.name
-		--	str.prepend (class_def.bmm_model.model_publisher + class_desc.Section_separator.out)
+			str := class_def.qualified_package_name.as_lower
+			str.append_character (package_name_delimiter)
+			str.append (class_def.name)
  			ev_class_id.set_text (str)
 
 			do_with_wait_cursor (ev_root_container, agent do_populate)

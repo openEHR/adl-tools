@@ -73,7 +73,13 @@ feature -- Modification
 			is_top_level := True
 		end
 
-feature -- Commands
+	signal_load_include_error
+			-- set error status due to failure to load an included schema
+		do
+			add_error ("model_access_e11", <<schema_id>>)
+		end
+
+feature {REFERENCE_MODEL_ACCESS} -- Commands
 
 	load
 			-- load schema into in-memory form

@@ -138,6 +138,7 @@ feature -- Commands
 			qualified_model_name: STRING
 			models: HASH_TABLE [ARRAYED_LIST [STRING], STRING]
 			included_schema: BMM_SCHEMA
+			sd: SCHEMA_DESCRIPTOR
 			i: INTEGER
 			finished: BOOLEAN
 		do
@@ -185,7 +186,7 @@ feature -- Commands
 				from i := 1 until finished or i > Max_inclusion_depth loop
 					finished := True
 					from schema_inclusion_map.start until schema_inclusion_map.off loop
-						if all_schemas.has (schema_inclusion_map.key_for_iteration) then
+						if all_schemas.has (schema_inclusion_map.key_for_iteration) and then all_schemas.item (schema_inclusion_map.key_for_iteration).passed then
 							included_schema := all_schemas.item (schema_inclusion_map.key_for_iteration).schema
 							-- only process current schema if its lower level includes have already been copied into it,
 							-- or if it had no includes, since only then is it ready to be itself included in the next one up the chain
@@ -210,16 +211,21 @@ feature -- Commands
 
 				-- finalise the top-level schemas on the load list (if there is one)
 				from all_schemas.start until all_schemas.off loop
-					if all_schemas.item_for_iteration.is_top_level and schemas_load_list.has (all_schemas.key_for_iteration) then
-						all_schemas.item_for_iteration.schema.finalise_schema
-						if all_schemas.item_for_iteration.schema.state = {BMM_SCHEMA}.State_ready_to_validate then
-							all_schemas.item_for_iteration.validate
-							-- validate the schema & if passed, put it into `top_level_schemas'
-							if all_schemas.item_for_iteration.passed then
-								top_level_schemas.extend (all_schemas.item_for_iteration, all_schemas.key_for_iteration)
-							else
-								post_error (Current, "load_schemas", "model_access_e9", <<all_schemas.key_for_iteration, all_schemas.item_for_iteration.errors.as_string>>)
+					sd := all_schemas.item_for_iteration
+					if sd.is_top_level and sd.passed and schemas_load_list.has (sd.schema_id) then
+						if sd.schema.state = {BMM_SCHEMA}.State_includes_processed then
+							sd.schema.finalise_schema
+							if sd.schema.state = {BMM_SCHEMA}.State_ready_to_validate then
+								-- validate the schema & if passed, put it into `top_level_schemas'
+								sd.validate
+								if sd.passed then
+									top_level_schemas.extend (sd, sd.schema_id)
+								else
+									post_error (Current, "load_schemas", "model_access_e9", <<sd.schema_id, sd.errors.as_string>>)
+								end
 							end
+						else
+							sd.signal_load_include_error
 						end
 					end
 					all_schemas.forth

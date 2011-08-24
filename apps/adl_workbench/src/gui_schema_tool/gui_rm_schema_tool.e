@@ -143,6 +143,7 @@ feature {NONE} -- Implementation
 	populate_packages (ev_parent_node: EV_TREE_ITEM; a_pkg: BMM_PACKAGE_DEFINITION)
 		local
 			ev_pkg_node: EV_TREE_ITEM
+			a_class_def: BMM_CLASS_DEFINITION
 		do
 			-- do the package
 			create ev_pkg_node.make_with_text (a_pkg.name)
@@ -154,7 +155,16 @@ feature {NONE} -- Implementation
 			-- do the classes
 			if a_pkg.has_classes then
 	 			from a_pkg.classes.start until a_pkg.classes.off loop
-	 				populate_classes (ev_pkg_node, a_pkg.bmm_model.class_definition (a_pkg.classes.item))
+	 				a_class_def := a_pkg.bmm_model.class_definition (a_pkg.classes.item)
+					if not a_class_def.ancestor_defs.there_exists (
+						agent (anc_class_def: BMM_CLASS_DEFINITION; a_pkg_name: STRING): BOOLEAN
+							do
+								Result := anc_class_def.qualified_package_name.same_string (a_pkg_name)
+							end (?, a_pkg.qualified_name)
+						)
+					then
+		 				populate_classes (ev_pkg_node, a_class_def)
+		 			end
 	 				a_pkg.classes.forth
 	 			end
 			end
@@ -181,8 +191,11 @@ feature {NONE} -- Implementation
 			ev_class_node.set_configurable_target_menu_handler (agent context_menu_handler)
 			ev_class_node.set_configurable_target_menu_mode
 
+			-- do any descendants in same package
 			from a_class_def.immediate_descendants.start until a_class_def.immediate_descendants.off loop
-				populate_classes (ev_class_node, a_class_def.immediate_descendants.item)
+				if a_class_def.immediate_descendants.item.qualified_package_name.same_string (a_class_def.qualified_package_name) then
+					populate_classes (ev_class_node, a_class_def.immediate_descendants.item)
+				end
 				a_class_def.immediate_descendants.forth
 			end
 		end

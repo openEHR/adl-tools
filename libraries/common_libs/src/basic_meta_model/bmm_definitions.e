@@ -30,6 +30,8 @@ feature -- Definitions
 	Generic_constraint_delimiter: CHARACTER = ':'
 			-- appears between 'T' and constraining type if there is one
 
+	Unknown_package_name: STRING = "unknown_package"
+
 	Any_type: STRING = "Any"
 
 	Type_cat_concrete_class: STRING = "class_concrete"

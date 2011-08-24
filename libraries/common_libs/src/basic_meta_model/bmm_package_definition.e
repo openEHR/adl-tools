@@ -142,6 +142,23 @@ feature -- Modification
 			parent := a_pkg
 		end
 
+	do_all_classes (action: PROCEDURE [ANY, TUPLE [BMM_PACKAGE_DEFINITION, STRING]])
+			-- recursively execute `action' procedure, taking package and class name as arguments
+		do
+			if has_classes then
+				from classes.start until classes.off loop
+					action.call ([Current, classes.item])
+					classes.forth
+				end
+			end
+			if has_packages then
+				from packages.start until packages.off loop
+					packages.item_for_iteration.do_all_classes (action)
+					packages.forth
+				end
+			end
+		end
+
 feature {BMM_SCHEMA, BMM_PACKAGE_DEFINITION} -- Modification
 
 	finalise_build (a_bmmm: attached BMM_SCHEMA; errors: ERROR_ACCUMULATOR)

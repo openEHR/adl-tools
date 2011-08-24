@@ -87,7 +87,7 @@ feature -- Access (attributes derived in post-schema processing)
 			end
 		end
 
-	pacakge_name: STRING
+	qualified_package_name: STRING
 			-- fully qualified package name
 
 feature -- Access
@@ -445,12 +445,17 @@ feature -- Output
 			Result := as_type_string
 		end
 
-feature {BMM_SCHEMA} -- Implementation
+feature {BMM_SCHEMA} -- Modification
 
 	add_immediate_descendant(a_bmm_class: BMM_CLASS_DEFINITION)
 			-- add a class def to the descendants list
 		do
 			immediate_descendants.extend (a_bmm_class)
+		end
+
+	set_qualified_package_name (a_name: attached STRING)
+		do
+			qualified_package_name := a_name
 		end
 
 feature {BMM_CLASS_DEFINITION} -- Implementation

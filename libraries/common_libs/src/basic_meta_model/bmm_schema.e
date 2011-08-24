@@ -371,7 +371,7 @@ feature -- Status Report
 			end
 		end
 
-feature -- Commands
+feature {SCHEMA_DESCRIPTOR} -- Schema Processing
 
 	dt_finalise
 			-- steps after load of this model, but before 'includes' processing
@@ -450,91 +450,14 @@ feature -- Commands
 			state = State_loaded or state = State_includes_processed
 		end
 
-	finalise_schema
-			-- steps after 'includes' processing, which require all class definitions to be in place
-		require
-			state = State_includes_processed
-		do
-			finalise_classes (primitive_types)
-			finalise_classes (class_definitions)
-			state := State_ready_to_validate
-		ensure
-			state = State_ready_to_validate
-		end
-
-	validate
-			-- do some basic validation:
-			-- check that all properties in every class have a type set and that the type is defined somewhere else in the schema,
-			-- i.e. this checks that the schema is at least completely specified
-		local
-			class_def: BMM_CLASS_DEFINITION
-		do
-			if passed then
-				from primitive_types.start until primitive_types.off loop
-					class_def := primitive_types.item_for_iteration
-					from class_def.properties.start until class_def.properties.off loop
-						if class_def.properties.item_for_iteration.type_def = Void then
-							passed := False
-							add_error("BMM_PTV", <<schema_id, class_def.name, class_def.properties.item_for_iteration.name>>)
-						end
-						class_def.properties.forth
-					end
-					primitive_types.forth
-				end
-				from class_definitions.start until class_definitions.off loop
-					class_def := class_definitions.item_for_iteration
-					from class_def.properties.start until class_def.properties.off loop
-						if class_def.properties.item_for_iteration.type_def = Void then
-							passed := False
-							add_error("BMM_PTV", <<schema_id, class_def.name, class_def.properties.item_for_iteration.name>>)
-						end
-						class_def.properties.forth
-					end
-					class_definitions.forth
-				end
-			end
-
-			if passed then
-				from packages.start until packages.off loop
-					validate_package (packages.item_for_iteration)
-					packages.forth
-				end
-			end
-
-			if passed then
-				add_info ("model_access_i1", << schema_id, primitive_types.count.out, class_definitions.count.out >>)
-			end
-		end
-
-	validate_package (a_pkg: attached BMM_PACKAGE_DEFINITION)
-		do
-			if a_pkg.has_classes then
-				from a_pkg.classes.start until a_pkg.classes.off loop
-					if not has_class_definition (a_pkg.classes.item) then
-						passed := False
-						add_error ("BMM_PKGCL", <<schema_id, a_pkg.classes.item, a_pkg.name>>)
-					end
-					a_pkg.classes.forth
-				end
-			end
-			if a_pkg.has_packages then
-				from a_pkg.packages.start until a_pkg.packages.off loop
-					validate_package (a_pkg.packages.item_for_iteration)
-					a_pkg.packages.forth
-				end
-			end
-		end
-
-	ready_to_validate: BOOLEAN
-		do
-			Result := precursor and state = State_ready_to_validate
-		end
+feature {REFERENCE_MODEL_ACCESS} -- Schema Processing
 
 	merge_included_schema (other: attached BMM_SCHEMA)
 			-- merge in class and package definitions from `other', except where the current schema already has
 			-- a definition for the given type or package
 		require
-			includes_to_process.has (other.schema_id)
+			Loaded: state = State_loaded
+			Other_valid: includes_to_process.has (other.schema_id)
 		do
 			-- primitive types
 			from other.primitive_types.start until other.primitive_types.after loop
@@ -565,6 +488,21 @@ feature -- Commands
 				other.canonical_packages.forth
 			end
 
+			-- generate qualified package names for class defs. Note that this only gets the classes explicitly declared in each package
+			-- Generally package declarations don't include subtypes that are in the same package. If the subtype is declared in some other
+			-- package, it will get that qualified package name. So a second phase has to occur, below
+			from canonical_packages.start until canonical_packages.off loop
+				canonical_packages.item_for_iteration.do_all_classes (
+					agent (a_pkg: BMM_PACKAGE_DEFINITION; a_class_name: STRING)
+						do
+							if has_class_definition (a_class_name) then
+								class_definition (a_class_name).set_qualified_package_name (a_pkg.qualified_name)
+							end
+						end
+				)
+				canonical_packages.forth
+			end
+
 			-- now finalise packages build, creating `all_classes' property at each level
 			from canonical_packages.start until canonical_packages.off loop
 				canonical_packages.item_for_iteration.finalise_build (Current, errors)
@@ -584,7 +522,88 @@ feature -- Commands
 			end
 		end
 
-feature {DT_OBJECT_CONVERTER} -- Conversion
+	finalise_schema
+			-- steps after 'includes' processing, which require all class definitions to be in place
+		require
+			state = State_includes_processed
+		do
+			finalise_classes (primitive_types)
+			finalise_classes (class_definitions)
+			state := State_ready_to_validate
+		ensure
+			state = State_ready_to_validate
+		end
+
+feature {SCHEMA_DESCRIPTOR} -- Schema Processing
+
+	ready_to_validate: BOOLEAN
+		do
+			Result := precursor and state = State_ready_to_validate
+		end
+
+	validate
+			-- do some basic validation:
+			-- check that all properties in every class have a type set and that the type is defined somewhere else in the schema,
+			-- i.e. this checks that the schema is at least completely specified
+		do
+			if passed then
+				validate_classes (primitive_types)
+				validate_classes (class_definitions)
+			end
+
+			if passed then
+				from canonical_packages.start until canonical_packages.off loop
+					validate_package (canonical_packages.item_for_iteration)
+					canonical_packages.forth
+				end
+			end
+
+			if passed then
+				add_info ("model_access_i1", << schema_id, primitive_types.count.out, class_definitions.count.out >>)
+			end
+		end
+
+	validate_classes (class_list: attached HASH_TABLE [BMM_CLASS_DEFINITION, STRING])
+		local
+			class_def: BMM_CLASS_DEFINITION
+		do
+			from class_list.start until class_list.off loop
+				class_def := class_list.item_for_iteration
+				if not attached class_def.qualified_package_name then
+					passed := False
+					add_error("BMM_PKGID", <<schema_id, class_def.name>>)
+				end
+				from class_def.properties.start until class_def.properties.off loop
+					if class_def.properties.item_for_iteration.type_def = Void then
+						passed := False
+						add_error("BMM_PTV", <<schema_id, class_def.name, class_def.properties.item_for_iteration.name>>)
+					end
+					class_def.properties.forth
+				end
+				class_list.forth
+			end
+		end
+
+	validate_package (a_pkg: attached BMM_PACKAGE_DEFINITION)
+		do
+			if a_pkg.has_classes then
+				from a_pkg.classes.start until a_pkg.classes.off loop
+					if not has_class_definition (a_pkg.classes.item) then
+						passed := False
+						add_error ("BMM_PKGCL", <<schema_id, a_pkg.classes.item, a_pkg.name>>)
+					end
+					a_pkg.classes.forth
+				end
+			end
+			if a_pkg.has_packages then
+				from a_pkg.packages.start until a_pkg.packages.off loop
+					validate_package (a_pkg.packages.item_for_iteration)
+					a_pkg.packages.forth
+				end
+			end
+		end
+
+feature {DT_OBJECT_CONVERTER} -- Persistence
 
 	persistent_attributes: ARRAYED_LIST[STRING]
 			-- list of attribute names to persist as DT structure

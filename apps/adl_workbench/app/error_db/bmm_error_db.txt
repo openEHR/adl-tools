@@ -18,15 +18,16 @@ templates = <
 		-- SCHEMA_ACCESS (RM model checker)
 		["model_access_e0"] = <"Reference model schema(s) $1 specified in options not valid or not found in directory $2">
 		["model_access_e1"] = <"Reference Model schema file $1 does not exist or not readable">
-		["model_access_e2"] = <"Reference Model schema $1 parse failure; reason: $2">
+		["model_access_e2"] = <"Reference Model schema $1 load failure; reason: $2">
 		["model_access_e3"] = <"Reference Model schema contains unknown type $1 (object add failed)">
 		["model_access_e4"] = <"Reference Model schema $1 load failure due to exception during processing">
 		["model_access_e5"] = <"Reference Model schema directory $1 does not exist or not readable">
 		["model_access_e6"] = <"Reference Model schema directory $1 does not contain any schemas (expecting structure $1/schema_file$2)">
 		["model_access_e7"] = <"No Reference Model schema found for package '$1'">
-		["model_access_e8"] = <"Reference Model schema $1 failed to parse; errors:%N$2">
+		["model_access_e8"] = <"Reference Model schema $1 failed to load; errors:%N$2">
 		["model_access_e9"] = <"Reference Model schema $1 failed semantic validation; errors:%N$2">
-		["model_access_e10"] = <"Reference Model included schema $1 not found or failed to parse">
+		["model_access_e10"] = <"Reference Model included schema $1 not found or failed to load">
+		["model_access_e11"] = <"Reference Model schema $1 includes a schema that failed to load">
 
 		["model_access_i1"] = <"Reference Model schema $1 loaded: $2 primitive types, $3 class definitions">
 		["model_access_i2"] = <"Merged schema $1 into schema $2">
@@ -52,6 +53,7 @@ templates = <
 		["BMM_SPT"] = <"Schema $1 class definition $2 single-valued property $3 type $4 not found in schema">
 		["BMM_SPOT"] = <"Schema $1 class definition $2 single-valued property $3 open generic parameter $4 not found in containing class declarations">
 		["BMM_PKGCL"] = <"Schema $1 class $2 found in package $3 but not in schema, or relevant child schema">
+		["BMM_PKGID"] = <"Schema $1 class definition $2 not declared in any package">
 	>
 >
 
