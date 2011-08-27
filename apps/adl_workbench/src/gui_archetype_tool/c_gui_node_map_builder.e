@@ -263,10 +263,6 @@ feature -- Visitor
 			gui_node_text: STRING
 			pixmap: EV_PIXMAP
 		do
-			-- have to obtain the ontology from the main archetype directory because the archetype being serialised
-			-- here might be in differential form, and have no component_ontologies aet up
-			ontologies.extend (current_arch_cat.archetype_index.item (a_node.archetype_id).flat_archetype.ontology)
-
 			-- node text
 			gui_node_text := c_archetype_root_string (a_node)
 
@@ -290,6 +286,10 @@ feature -- Visitor
 					create_node (gui_node_text, pixmap, a_node)
 				end
 			end
+
+			-- have to obtain the ontology from the main archetype directory because the archetype being serialised
+			-- here might be in differential form, and have no component_ontologies set up
+			ontologies.extend (current_arch_cat.archetype_index.item (a_node.archetype_id).flat_archetype.ontology)
 		end
 
 	end_c_archetype_root (a_node: attached C_ARCHETYPE_ROOT; depth: INTEGER)
@@ -743,7 +743,12 @@ feature {NONE} -- Implementation
 			if in_technical_mode then
 				Result.append (a_node.rm_type_name)
 			end
-			Result.append (" [" + a_node.node_id + "]")
+
+			if attached a_node.slot_node_id and in_technical_mode then
+				Result.append (" [" + a_node.slot_node_id + ", " + a_node.node_id + "]")
+			else
+				Result.append (" [" + a_node.node_id + "]")
+			end
 		end
 
 	object_ordinal_item_string (an_ordinal: attached ORDINAL; assumed_flag: BOOLEAN): attached STRING
