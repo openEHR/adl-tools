@@ -201,13 +201,13 @@ feature -- Visitor
 			if in_technical_mode then
 				create s.make_empty
 				if attached a_node.existence then
-					s.append ("Ex: " + a_node.existence.as_string)
+					s.append ("Existence: " + a_node.existence.as_string)
 				end
 				if a_node.is_multiple and attached a_node.cardinality then
 					if attached a_node.existence then
 					 	s.append ("; ")
 					end
-				 	s.append ("Card: " + a_node.cardinality.as_string)
+				 	s.append ("Cardinality: " + a_node.cardinality.as_string)
 				end
 				if not s.is_empty then
 					gui_node_text.append ("{" + s + "} ")
@@ -675,6 +675,8 @@ feature {NONE} -- Implementation
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make_empty
+
+			-- occurrences
 			if attached a_node.occurrences then
 				if in_technical_mode then
 					Result.append (" {" + a_node.occurrences_as_string + "} ")
@@ -683,6 +685,7 @@ feature {NONE} -- Implementation
 				end
 			end
 
+			-- sibling order and node meaning (addressable nodes only)
 			if a_node.is_addressable then
 				if attached a_node.sibling_order then
 					Result.append (a_node.sibling_order.as_string + " ")
@@ -690,12 +693,18 @@ feature {NONE} -- Implementation
 
 				if is_valid_code (a_node.node_id) and then ontology.has_term_code (a_node.node_id) then
 					Result.append (" " + ontology.term_definition (language, a_node.node_id).text)
+					if in_technical_mode then
+						Result.append (": ")
+					end
 				end
+			end
 
-				if in_technical_mode then
-					Result.append (": " + a_node.rm_type_name + "[" + a_node.node_id + "]")
+			-- rm_type_name
+			if in_technical_mode then
+				Result.append (a_node.rm_type_name)
+				if a_node.is_addressable then
+					 Result.append ("[" + a_node.node_id + "]")
 				end
-				
 			elseif not use_rm_pixmaps then
 				 -- put type even when not in technical mode
 				Result.append (a_node.rm_type_name)
@@ -706,6 +715,8 @@ feature {NONE} -- Implementation
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make_empty
+
+			-- occurrences
 			if attached a_node.occurrences then
 				if in_technical_mode then
 					Result.append (" {" + a_node.occurrences_as_string + "} ")
@@ -713,6 +724,8 @@ feature {NONE} -- Implementation
 					Result.append (" (REMOVED) ")
 				end
 			end
+
+			-- sibling order and node meaning (addressable nodes only)
 			if attached a_node.slot_node_id then
 				if attached a_node.sibling_order then
 					Result.append (a_node.sibling_order.as_string + " ")

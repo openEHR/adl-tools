@@ -99,12 +99,18 @@ feature {REFERENCE_MODEL_ACCESS} -- Commands
 				parser.execute(model_file.last_string, 1)
 				if not parser.syntax_error then
 					dt_tree := parser.output
-					schema ?= dt_tree.as_object_from_string("BMM_SCHEMA", Void)
+					schema ?= dt_tree.as_object_from_string ("BMM_SCHEMA", Void)
 					if schema = Void then
 						add_error ("model_access_e4", <<meta_data.item (Metadata_schema_path)>>)
 					else
 						passed := True
-						schema.dt_finalise
+						schema.validate_created
+						merge_errors (schema.errors)
+						if passed then
+							schema.load_finalise
+						else
+							add_error ("model_access_e12", <<schema.schema_id, schema.errors.as_string>>)
+						end
 					end
 				else
 					add_error ("model_access_e2", <<meta_data.item (Metadata_schema_path), parser.errors.as_string>>)

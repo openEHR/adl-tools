@@ -44,10 +44,18 @@ feature -- Initialisation
 
 	make_from_other (other_pkg: attached BMM_PACKAGE_DEFINITION)
 			-- make this package with `packages' and `classes' references to those parts of `other_pkg'
-			-- but keeping its own name
+			-- but keeping its own name. The child packages have their parent links reset to point to this
+			-- package. This is pretty ugly, but fixing it means making BMM_SCHEMA a BMM_PACKAGE_DEFINITION
+			-- as well, which we may do later.
 		do
-			packages := other_pkg.packages
 			classes := other_pkg.classes
+			if other_pkg.has_packages then
+				packages := other_pkg.packages
+				from packages.start until packages.off loop
+					packages.item_for_iteration.set_parent (Current)
+					packages.forth
+				end
+			end
 		end
 
 feature -- Access (attributes from schema)
@@ -112,6 +120,12 @@ feature -- Status Report
 
 feature -- Modification
 
+	add_package (a_pkg: attached BMM_PACKAGE_DEFINITION)
+		do
+			packages.put (a_pkg, a_pkg.name)
+			a_pkg.set_parent (Current)
+		end
+
 	merge (other: attached like Current)
 		do
 			-- merge the classes at this level
@@ -130,7 +144,7 @@ feature -- Modification
 					if packages.has (other.packages.key_for_iteration) then
 						packages.item (other.packages.key_for_iteration).merge (other.packages.item_for_iteration)
 					else
-						packages.put (other.packages.item_for_iteration, other.packages.key_for_iteration)
+						add_package (other.packages.item_for_iteration)
 					end
 					other.packages.forth
 				end
@@ -142,7 +156,7 @@ feature -- Modification
 			parent := a_pkg
 		end
 
-	do_all_classes (action: PROCEDURE [ANY, TUPLE [BMM_PACKAGE_DEFINITION, STRING]])
+	do_recursive_classes (action: PROCEDURE [ANY, TUPLE [BMM_PACKAGE_DEFINITION, STRING]])
 			-- recursively execute `action' procedure, taking package and class name as arguments
 		do
 			if has_classes then
@@ -153,7 +167,31 @@ feature -- Modification
 			end
 			if has_packages then
 				from packages.start until packages.off loop
-					packages.item_for_iteration.do_all_classes (action)
+					packages.item_for_iteration.do_recursive_classes (action)
+					packages.forth
+				end
+			end
+		end
+
+	do_recursive_packages (action: PROCEDURE [ANY, TUPLE [BMM_PACKAGE_DEFINITION]])
+			-- recursively execute `action' procedure, taking package as argument
+		do
+			action.call ([Current])
+			if has_packages then
+				from packages.start until packages.off loop
+					packages.item_for_iteration.do_recursive_packages (action)
+					packages.forth
+				end
+			end
+		end
+
+	there_exists_recursive_packages (test: FUNCTION [ANY, TUPLE [BMM_PACKAGE_DEFINITION], BOOLEAN]): BOOLEAN
+			-- recursively execute `test' function, taking package as argument
+		do
+			Result := test.item ([Current])
+			if not Result and has_packages then
+				from packages.start until packages.off loop
+					Result := packages.item_for_iteration.there_exists_recursive_packages (test)
 					packages.forth
 				end
 			end
@@ -168,16 +206,16 @@ feature {BMM_SCHEMA, BMM_PACKAGE_DEFINITION} -- Modification
 			-- BMM_SCHEMA.packages as originally read in
 		do
 			bmm_model := a_bmmm
-			create all_classes.make (0)
-			all_classes.compare_objects
-			if has_classes then
-				all_classes.merge (classes)
-			end
+--			create all_classes.make (0)
+--			all_classes.compare_objects
+--			if has_classes then
+--				all_classes.merge (classes)
+--			end
 			if has_packages then
 				from packages.start until packages.off loop
 					packages.item_for_iteration.set_parent (Current)
 					packages.item_for_iteration.finalise_build (a_bmmm, errors)
-					all_classes.merge (packages.item_for_iteration.all_classes)
+--					all_classes.merge (packages.item_for_iteration.all_classes)
 					packages.forth
 				end
 			end

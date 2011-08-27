@@ -266,7 +266,7 @@ feature -- Status Report
 		local
 			a_class_name: STRING
 		do
-			a_class_name := type_to_class(a_type_name)
+			a_class_name := type_to_class (a_type_name)
 			Result := primitive_types.has (a_class_name) or class_definitions.has (a_class_name)
 		end
 
@@ -373,22 +373,22 @@ feature -- Status Report
 
 feature {SCHEMA_DESCRIPTOR} -- Schema Processing
 
-	dt_finalise
-			-- steps after load of this model, but before 'includes' processing
-			-- 1. convert primitive type names of the form 'Integer' to all uppercase
-			-- 2. canonicalise the package structure so tha the top-level qualified package
-			--    names like 'rm.data_types.quantity' are turned into true hierarchical
-			--	  structure in order to aid merging of package structures of multiple schemas
+	validate_created
+			-- do some basic validation post initial creation
+			-- 1. check that package structure is regular:
+			--    a) only top-level packages can have qualified names
+			--    b) no top-level package name can be a direct parent or child of another
+			--		 (child package must be declared under the parent)
+			-- 2. check that all classes are mentioned in the package structure
 		require
 			state = State_created
 		local
+			pkg_names: ARRAY [STRING]
+			pkg: BMM_PACKAGE_DEFINITION
 			keys: ARRAY [STRING]
 			i: INTEGER
-			top_pkg, child_pkg: BMM_PACKAGE_DEFINITION
-			child_pkg_names: LIST [STRING]
-			pkg_csr: like packages
 		do
-			-- Do name case conversion on classes
+			-- Do name case conversion on primitive classes
 			-- has to be done in two gos, because changing keys messs with the table structure
 			-- if done in one pass			
 			from primitive_types.start until primitive_types.off loop
@@ -400,6 +400,71 @@ feature {SCHEMA_DESCRIPTOR} -- Schema Processing
 				primitive_types.replace_key (keys.item(i).as_upper, keys.item(i))
 				i := i + 1
 			end
+
+			-- check top-level names
+			pkg_names := packages.current_keys
+			from packages.start until packages.off loop
+				if pkg_names.there_exists (
+					agent (nm: STRING): BOOLEAN
+						do
+							Result := not packages.item_for_iteration.name.same_string (nm) and then
+								(packages.item_for_iteration.name.starts_with (nm) or nm.starts_with (packages.item_for_iteration.name))
+						end)
+				then
+					add_error ("BMM_PKGTL", <<schema_id>>)
+				end
+				packages.forth
+			end
+
+			-- check for lower-down qualified names
+			from packages.start until packages.off loop
+				pkg := packages.item_for_iteration
+				if pkg.has_packages then
+					from
+						pkg.packages.start
+					until
+						pkg.packages.off or else
+						pkg.packages.item_for_iteration.there_exists_recursive_packages (
+							agent (a_pkg: BMM_PACKAGE_DEFINITION): BOOLEAN
+								do
+									Result := a_pkg.name.has (package_name_delimiter)
+								end
+						)
+					loop
+						pkg.packages.forth
+					end
+					if not pkg.packages.off then
+						add_error("BMM_PKGQN", <<schema_id, pkg.packages.item_for_iteration.name>>)
+					end
+				end
+				packages.forth
+			end
+
+			if passed then
+				from packages.start until packages.off loop
+					validate_package (packages.item_for_iteration)
+					packages.forth
+				end
+			end
+
+			if passed then
+				add_info ("model_access_i1", << schema_id, primitive_types.count.out, class_definitions.count.out >>)
+			end
+		end
+
+	load_finalise
+			-- steps after load of this model, but before 'includes' processing
+			-- 1. convert primitive type names of the form 'Integer' to all uppercase
+			-- 2. canonicalise the package structure so tha the top-level qualified package
+			--    names like 'rm.data_types.quantity' are turned into true hierarchical
+			--	  structure in order to aid merging of package structures of multiple schemas
+		require
+			state = State_created
+		local
+			top_pkg, child_pkg, last_child_pkg: BMM_PACKAGE_DEFINITION
+			child_pkg_names: LIST [STRING]
+			pkg_csr: like packages
+		do
 			if includes.is_empty then
 				state := State_includes_processed
 			else
@@ -422,14 +487,19 @@ feature {SCHEMA_DESCRIPTOR} -- Schema Processing
 					-- and 'content' to be created and linked, with the 'rm' one being put in
 					-- `canonical_packages'
 					pkg_csr := canonical_packages
+					last_child_pkg := Void
 					child_pkg_names := top_pkg.name.split (Package_name_delimiter)
 					from child_pkg_names.start until child_pkg_names.off loop
 						if not pkg_csr.has (child_pkg_names.item) then
 							create child_pkg.make (child_pkg_names.item)
 							pkg_csr.put (child_pkg, child_pkg_names.item)
+							if attached last_child_pkg then
+								child_pkg.set_parent (last_child_pkg)
+							end
 						else
 							child_pkg := pkg_csr.item (child_pkg_names.item)
 						end
+						last_child_pkg := child_pkg
 						pkg_csr := child_pkg.packages
 						child_pkg_names.forth
 					end
@@ -492,7 +562,7 @@ feature {REFERENCE_MODEL_ACCESS} -- Schema Processing
 			-- Generally package declarations don't include subtypes that are in the same package. If the subtype is declared in some other
 			-- package, it will get that qualified package name. So a second phase has to occur, below
 			from canonical_packages.start until canonical_packages.off loop
-				canonical_packages.item_for_iteration.do_all_classes (
+				canonical_packages.item_for_iteration.do_recursive_classes (
 					agent (a_pkg: BMM_PACKAGE_DEFINITION; a_class_name: STRING)
 						do
 							if has_class_definition (a_class_name) then
@@ -564,6 +634,7 @@ feature {SCHEMA_DESCRIPTOR} -- Schema Processing
 		end
 
 	validate_classes (class_list: attached HASH_TABLE [BMM_CLASS_DEFINITION, STRING])
+			-- check that all classes have qualified_package_name set & property type defined in schema
 		local
 			class_def: BMM_CLASS_DEFINITION
 		do
@@ -585,6 +656,7 @@ feature {SCHEMA_DESCRIPTOR} -- Schema Processing
 		end
 
 	validate_package (a_pkg: attached BMM_PACKAGE_DEFINITION)
+			-- check to see that all classes mentioned in a package exist in schema
 		do
 			if a_pkg.has_classes then
 				from a_pkg.classes.start until a_pkg.classes.off loop
