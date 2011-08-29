@@ -61,7 +61,6 @@ feature -- Initialisation
 			create ev_expand_one_button
 			create ev_collapse_one_button
 
-			create ev_closure_controls_hbox
 			create ev_closure_depth_spin_button
 			create ev_closure_recompute_button
 
@@ -75,20 +74,21 @@ feature -- Initialisation
 			ev_view_controls_vbox.extend (ev_expand_one_button)
 			ev_view_controls_vbox.extend (ev_collapse_one_button)
 
-			ev_view_controls_vbox.extend (ev_closure_controls_hbox)
-			ev_closure_controls_hbox.extend (ev_closure_depth_spin_button)
-			ev_closure_controls_hbox.extend (ev_closure_recompute_button)
+			ev_view_controls_vbox.extend (ev_closure_depth_spin_button)
+			ev_view_controls_vbox.extend (ev_closure_recompute_button)
 			ev_view_controls_vbox.extend (ev_cell)
 			ev_view_controls_vbox.extend (ev_use_rm_icons_cb)
 
 			-- visual characteristics
 			ev_root_container.disable_item_expand (ev_view_controls_vbox)
-			ev_view_controls_vbox.set_minimum_width (160)
+			ev_view_controls_vbox.set_minimum_width (100)
 			ev_view_controls_vbox.set_padding (padding_width)
 			ev_view_controls_vbox.set_border_width (border_width)
 			ev_view_controls_vbox.disable_item_expand (ev_expand_button)
 			ev_view_controls_vbox.disable_item_expand (ev_expand_one_button)
 			ev_view_controls_vbox.disable_item_expand (ev_collapse_one_button)
+			ev_view_controls_vbox.disable_item_expand (ev_closure_depth_spin_button)
+			ev_view_controls_vbox.disable_item_expand (ev_closure_recompute_button)
 
 			ev_expand_button.set_text (create_message_content ("expand_collapse_complete_button_text", Void))
 			ev_expand_button.set_tooltip (create_message_content ("expand_collapse_complete_tooltip", Void))
@@ -100,8 +100,6 @@ feature -- Initialisation
 			ev_collapse_one_button.set_tooltip (create_message_content ("collapse_one_level_tooltip", Void))
 			ev_collapse_one_button.set_minimum_width (tree_control_panel_width)
 
-			ev_view_controls_vbox.disable_item_expand (ev_closure_controls_hbox)
-			ev_closure_controls_hbox.disable_item_expand (ev_closure_depth_spin_button)
 			ev_closure_depth_spin_button.set_text (create_message_content ("closure_depth_spin_button_text", Void))
 			ev_closure_depth_spin_button.set_tooltip (create_message_content ("closure_depth_spin_button_tooltip", Void))
 			ev_closure_depth_spin_button.set_value (default_closure_depth)
@@ -242,8 +240,6 @@ feature {NONE} -- Implementation
 	ev_view_controls_vbox: EV_VERTICAL_BOX
 
 	ev_cell: EV_CELL
-
-	ev_closure_controls_hbox: EV_HORIZONTAL_BOX
 
 	ev_closure_depth_spin_button: EV_SPIN_BUTTON
 
