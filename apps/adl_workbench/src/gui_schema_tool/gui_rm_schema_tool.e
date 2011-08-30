@@ -20,10 +20,10 @@ inherit
 			{NONE} all
 		end
 
---	SHARED_APP_UI_RESOURCES
---		export
---			{NONE} all
---		end
+	STRING_UTILITIES
+		export
+			{NONE} all
+		end
 
 	CONSTANTS
 		export
@@ -47,27 +47,12 @@ feature {NONE} -- Initialisation
 
 			-- create widgets
 			create ev_root_container
---			create ev_hbox
---			create ev_pixmap
---			create ev_label
 			create ev_tree
 
 			-- connect widgets
---			ev_root_container.extend (ev_hbox)
---			ev_hbox.extend (ev_pixmap)
---			ev_hbox.extend (ev_label)
 			ev_root_container.extend (ev_tree)
 
 			-- visual characteristics
---			ev_root_container.disable_item_expand (ev_hbox)
---			ev_hbox.set_padding (padding_width)
---			ev_hbox.set_border_width (border_width)
---			ev_hbox.disable_item_expand (ev_pixmap)
---			ev_pixmap.set_minimum_width (16)
---			ev_pixmap.set_minimum_height (16)
---			ev_pixmap.copy (pixmaps ["rm_schema"])
---			ev_label.set_text ("Reference Models")
---			ev_label.align_text_left
 			ev_tree.set_background_color (editable_colour)
   			ev_tree.set_minimum_width (max_arch_explorer_width)
 
@@ -131,11 +116,20 @@ feature {NONE} -- Implementation
 	populate_schema (a_schema: BMM_SCHEMA)
 		local
 			ev_node: EV_TREE_ITEM
+			str: STRING
 		do
 			-- put a root schema node on the tree
 			create ev_node.make_with_text (a_schema.schema_id)
  			ev_node.set_data (a_schema)
- 	 		ev_node.set_tooltip (a_schema.schema_description)
+
+ 			str := "Schema id: " + a_schema.schema_id + "%N"
+ 			str.append (a_schema.schema_description)
+
+ 	 		ev_node.set_pebble_function (agent pebble_function)
+			ev_node.set_configurable_target_menu_handler (agent context_menu_handler)
+			ev_node.set_configurable_target_menu_mode
+
+ 	 		ev_node.set_tooltip (str)
  	 		ev_node.set_pixmap (pixmaps ["rm_schema"])
 			ev_tree.extend (ev_node)
 
@@ -222,6 +216,8 @@ feature {NONE} -- Implementation
 			if attached {EV_TREE_ITEM} a_source as ev_ti then
 				if attached {BMM_CLASS_DEFINITION} ev_ti.data as acmn then
 					create_class_context_menu (a_menu, ev_ti)
+				elseif attached {BMM_SCHEMA} ev_ti.data as bmm_sch then
+					create_schema_context_menu (a_menu, bmm_sch)
 				end
 			end
 		end
@@ -230,7 +226,6 @@ feature {NONE} -- Implementation
 			-- dynamically initializes the context menu for this tree
 		local
 			an_mi: EV_MENU_ITEM
-			cd: BMM_CLASS_DEFINITION
 		do
 			create an_mi.make_with_text_and_action ("Display", agent display_context_selected_class_in_active_tool (ev_ti))
 	    	menu.extend (an_mi)
@@ -242,6 +237,15 @@ feature {NONE} -- Implementation
 				create an_mi.make_with_text_and_action ("Edit source schema", agent do_edit_schema (scd.bmm_source_schema_id))
 				menu.extend (an_mi)
 			end
+		end
+
+	create_schema_context_menu (menu: EV_MENU; a_schema: BMM_SCHEMA)
+			-- dynamically initializes the context menu for this tree
+		local
+			an_mi: EV_MENU_ITEM
+		do
+			create an_mi.make_with_text_and_action ("Edit source schema", agent do_edit_schema (a_schema.schema_id))
+	    	menu.extend (an_mi)
 		end
 
 	pebble_function (a_x, a_y: INTEGER): ANY
