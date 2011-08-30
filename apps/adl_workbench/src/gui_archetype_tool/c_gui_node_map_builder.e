@@ -279,12 +279,7 @@ feature -- Visitor
 				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
 				gui_node_map.item (a_node).set_pixmap (pixmap)
 			else
-				-- in flat mode; treat like normal C_COMPLEX_OBJECT with children
-				if a_node.has_attributes then
-					start_c_complex_object (a_node, depth)
-				else -- it is in source mode, there are no children, only slot fillers
-					create_node (gui_node_text, pixmap, a_node)
-				end
+				create_node (gui_node_text, pixmap, a_node)
 			end
 
 			-- have to obtain the ontology from the main archetype directory because the archetype being serialised
