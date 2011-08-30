@@ -108,30 +108,30 @@ feature -- Commands
 
 	finalise_build (a_bmmm: attached BMM_SCHEMA; a_class_def: attached BMM_CLASS_DEFINITION; a_prop_def: attached BMM_PROPERTY_DEFINITION; errors: ERROR_ACCUMULATOR)
 		do
-			bmm_model := a_bmmm
-			if bmm_model.has_class_definition (root_type) then
-				root_type_def := bmm_model.class_definition (root_type)
+			bmm_schema := a_bmmm
+			if bmm_schema.has_class_definition (root_type) then
+				root_type_def := bmm_schema.class_definition (root_type)
 				create generic_parameter_defs.make (0)
 				from generic_parameters.start until generic_parameters.off loop
-					if bmm_model.has_class_definition (generic_parameters.item) then
-						generic_parameter_defs.extend (bmm_model.class_definition (generic_parameters.item))
+					if bmm_schema.has_class_definition (generic_parameters.item) then
+						generic_parameter_defs.extend (bmm_schema.class_definition (generic_parameters.item))
 					elseif root_type_def.is_generic then
 						if attached root_type_def.generic_parameter_defs then
 							if root_type_def.generic_parameter_defs.has (generic_parameters.item) then
 								generic_parameter_defs.extend (root_type_def.generic_parameter_defs.item (generic_parameters.item))
 							else
-								errors.add_error ("BMM_GPGPU", <<bmm_model.schema_id, a_class_def.name, a_prop_def.name, root_type_def.name, generic_parameters.item>>, Void)
+								errors.add_error ("BMM_GPGPU", <<bmm_schema.schema_id, a_class_def.name, a_prop_def.name, root_type_def.name, generic_parameters.item>>, Void)
 							end
 						else
-							errors.add_error ("BMM_GPGPM", <<bmm_model.schema_id, root_type_def.name>>, Void)
+							errors.add_error ("BMM_GPGPM", <<bmm_schema.schema_id, root_type_def.name>>, Void)
 						end
 					else
-						errors.add_error ("BMM_GPGPT", <<bmm_model.schema_id, a_class_def.name, a_prop_def.name, generic_parameters.item>>, Void)
+						errors.add_error ("BMM_GPGPT", <<bmm_schema.schema_id, a_class_def.name, a_prop_def.name, generic_parameters.item>>, Void)
 					end
 					generic_parameters.forth
 				end
 			else
-				errors.add_error ("BMM_GPRT", <<bmm_model.schema_id, a_class_def.name, a_prop_def.name, root_type>>, Void)
+				errors.add_error ("BMM_GPRT", <<bmm_schema.schema_id, a_class_def.name, a_prop_def.name, root_type>>, Void)
 			end
 		end
 

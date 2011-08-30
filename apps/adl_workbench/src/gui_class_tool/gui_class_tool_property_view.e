@@ -206,7 +206,7 @@ feature -- Commands
  			create ev_tree_item_stack.make (0)
 
 			-- for use in icon switching
- 			model_publisher := a_class_def.bmm_model.model_publisher
+ 			model_publisher := a_class_def.bmm_schema.model_publisher
 
  			-- populate the tree
 			populate_root_node
@@ -295,7 +295,7 @@ feature {NONE} -- Implementation
 
 			-- determine data for property and one or more (in the case of generics with > 1 param) class nodes
 			if attached {BMM_CLASS_DEFINITION} a_prop_def.type_def as bmm_class_def then
-				if bmm_class_def.bmm_model.primitive_types.has (bmm_class_def.name) then
+				if bmm_class_def.bmm_schema.primitive_types.has (bmm_class_def.name) then
 					prop_str.append (": " + bmm_class_def.name)
 					is_terminal := True
 				else
@@ -373,7 +373,7 @@ feature {NONE} -- Implementation
    		do
 			node_path.remove_last
 			ev_tree_item_stack.remove
-			if not attached {BMM_CLASS_DEFINITION} a_prop_def.type_def as bmm_class_def or else not bmm_class_def.bmm_model.primitive_types.has (bmm_class_def.name) then
+			if not attached {BMM_CLASS_DEFINITION} a_prop_def.type_def as bmm_class_def or else not bmm_class_def.bmm_schema.primitive_types.has (bmm_class_def.name) then
 				ev_tree_item_stack.remove
 			end
 		end
@@ -442,7 +442,7 @@ feature {NONE} -- Implementation
 			from a_substitutions.start until a_substitutions.off loop
 				create an_mi.make_with_text_and_action (a_substitutions.item, agent rebuild_from_interior_node (a_substitutions.item, a_ti, True))
 				if attached {BMM_TYPE_SPECIFIER} a_ti.data as a_type_spec then
-					if a_type_spec.bmm_model.class_definition (a_substitutions.item).is_abstract then
+					if a_type_spec.bmm_schema.class_definition (a_substitutions.item).is_abstract then
 						an_mi.set_pixmap (pixmaps ["class_abstract"])
 					else
 						an_mi.set_pixmap (pixmaps ["class_concrete"])
@@ -460,7 +460,7 @@ feature {NONE} -- Implementation
 				from a_substitutions.start until a_substitutions.off loop
 					create an_mi.make_with_text_and_action (a_substitutions.item, agent rebuild_from_interior_node (a_substitutions.item, a_ti, False))
 					if attached {BMM_TYPE_SPECIFIER} a_ti.data as a_type_spec then
-						if a_type_spec.bmm_model.class_definition (a_substitutions.item).is_abstract then
+						if a_type_spec.bmm_schema.class_definition (a_substitutions.item).is_abstract then
 							an_mi.set_pixmap (pixmaps ["class_abstract"])
 						else
 							an_mi.set_pixmap (pixmaps ["class_concrete"])
@@ -499,7 +499,7 @@ feature {NONE} -- Implementation
 			end
 			ev_tree_item_stack.extend (target_ti)
 			if attached {BMM_TYPE_SPECIFIER} target_ti.data as a_type_spec then
-				bmm_class_def := a_type_spec.bmm_model.class_definition (a_class_name)
+				bmm_class_def := a_type_spec.bmm_schema.class_definition (a_class_name)
 				closure_depth := 1
 				set_class_node_details (target_ti, bmm_class_def, a_class_name, True)
 				if attached {EV_TREE_ITEM} target_ti.parent as a_parent_ti then

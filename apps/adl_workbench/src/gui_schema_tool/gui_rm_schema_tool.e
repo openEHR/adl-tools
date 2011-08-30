@@ -20,12 +20,17 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_APP_UI_RESOURCES
+--	SHARED_APP_UI_RESOURCES
+--		export
+--			{NONE} all
+--		end
+
+	CONSTANTS
 		export
 			{NONE} all
 		end
 
-	CONSTANTS
+	BMM_DEFINITIONS
 		export
 			{NONE} all
 		end
@@ -185,6 +190,7 @@ feature {NONE} -- Implementation
 			create ev_class_node.make_with_text (a_class_def.name)
  			ev_class_node.set_data (a_class_def)
  	 		ev_class_node.set_pixmap (pixmaps [a_class_def.type_category])
+ 	 		ev_class_node.set_tooltip ("Source schema: " + a_class_def.bmm_source_schema_id)
 			ev_package_node.extend (ev_class_node)
 
  	 		ev_class_node.set_pebble_function (agent pebble_function)
@@ -223,13 +229,19 @@ feature {NONE} -- Implementation
 	create_class_context_menu (menu: EV_MENU; ev_ti: EV_TREE_ITEM)
 			-- dynamically initializes the context menu for this tree
 		local
-			display_mi, new_tool_mi: EV_MENU_ITEM
+			an_mi: EV_MENU_ITEM
+			cd: BMM_CLASS_DEFINITION
 		do
-			create display_mi.make_with_text_and_action ("Display", agent display_context_selected_class_in_active_tool (ev_ti))
-	    	menu.extend (display_mi)
+			create an_mi.make_with_text_and_action ("Display", agent display_context_selected_class_in_active_tool (ev_ti))
+	    	menu.extend (an_mi)
 
-			create new_tool_mi.make_with_text_and_action ("Display in new tool", agent display_context_selected_class_in_new_tool (ev_ti))
-			menu.extend (new_tool_mi)
+			create an_mi.make_with_text_and_action ("Display in new tool", agent display_context_selected_class_in_new_tool (ev_ti))
+			menu.extend (an_mi)
+
+			if attached {BMM_CLASS_DEFINITION} ev_ti.data as scd then
+				create an_mi.make_with_text_and_action ("Edit source schema", agent do_edit_schema (scd.bmm_source_schema_id))
+				menu.extend (an_mi)
+			end
 		end
 
 	pebble_function (a_x, a_y: INTEGER): ANY
@@ -252,6 +264,12 @@ feature {NONE} -- Implementation
 			if attached {BMM_CLASS_DEFINITION} ev_ti.data as a_class_def then
 				select_class_in_new_tool_agent.call ([a_class_def])
 			end
+		end
+
+	do_edit_schema (a_schema_id: STRING)
+			-- launch external editor with schema, or info box if none defined
+		do
+			execution_environment.launch (text_editor_command + " %"" + rm_schemas_access.all_schemas.item (a_schema_id).meta_data.item (metadata_schema_path) + "%"")
 		end
 
 	display_selected_item_after_delay

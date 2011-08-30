@@ -705,7 +705,7 @@ feature {NONE} -- Implementation
 				if a_node.is_addressable then
 					 Result.append ("[" + a_node.node_id + "]")
 				end
-			elseif not use_rm_pixmaps then
+			elseif not a_node.is_addressable and not use_rm_pixmaps then
 				 -- put type even when not in technical mode
 				Result.append (a_node.rm_type_name)
 			end

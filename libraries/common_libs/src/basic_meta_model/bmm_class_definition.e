@@ -118,7 +118,7 @@ feature -- Access
 
 					-- now get the descendant types
 					from ftl.start until ftl.off loop
-						imm_descs := bmm_model.class_definition (ftl.item).immediate_descendants
+						imm_descs := bmm_schema.class_definition (ftl.item).immediate_descendants
 						from imm_descs.start until imm_descs.off loop
 							immediate_suppliers_cache.extend(imm_descs.item.name)
 							imm_descs.forth
@@ -139,7 +139,7 @@ feature -- Access
 			if immediate_suppliers_non_primitive_cache = Void then
 				create prim_types.make (0)
 				prim_types.compare_objects
-				prim_types.merge (bmm_model.primitive_types.current_keys)
+				prim_types.merge (bmm_schema.primitive_types.current_keys)
 				create immediate_suppliers_non_primitive_cache.make (0)
 				immediate_suppliers_non_primitive_cache.compare_objects
 				immediate_suppliers_non_primitive_cache.merge (immediate_suppliers)
@@ -159,7 +159,7 @@ feature -- Access
 				all_suppliers_cache.compare_objects
 				all_suppliers_cache.merge (immediate_suppliers)
 				from immediate_suppliers.start until immediate_suppliers.off loop
-					all_suppliers_cache.merge (bmm_model.class_definition (immediate_suppliers.item).all_suppliers)
+					all_suppliers_cache.merge (bmm_schema.class_definition (immediate_suppliers.item).all_suppliers)
 					immediate_suppliers.forth
 				end
 			end
@@ -212,7 +212,7 @@ feature -- Access
 				Result := flat_properties.item (a_prop_path.item.attr_name)
 				a_prop_path.forth
 				if not a_prop_path.off then
-					class_def := bmm_model.class_definition(Result.type_def.root_class)
+					class_def := bmm_schema.class_definition(Result.type_def.root_class)
 					Result := class_def.property_definition_at_path(a_prop_path)
 				end
 			else -- look in the descendants
@@ -311,7 +311,7 @@ feature -- Status Report
 		do
 			a_path_pos := a_path.items.index
 			if has_property (a_path.item.attr_name) then
-				class_def := bmm_model.class_definition(flat_properties.item (a_path.item.attr_name).type_def.root_class)
+				class_def := bmm_schema.class_definition(flat_properties.item (a_path.item.attr_name).type_def.root_class)
 				a_path.forth
 				if not a_path.off then
 					Result := class_def.has_property_path(a_path)
@@ -329,16 +329,22 @@ feature -- Status Report
 
 feature -- Commands
 
+	finalise_load (a_bmm_schema: attached BMM_SCHEMA)
+			-- set source schema
+		do
+			bmm_source_schema_id := a_bmm_schema.schema_id
+		end
+
 	finalise_build (a_bmmm: attached BMM_SCHEMA; errors: ERROR_ACCUMULATOR)
 			-- synchronise structures after creation by DT deserialiser
 		do
-			bmm_model := a_bmmm
+			bmm_schema := a_bmmm
 
 			-- populate references to ancestor classes; should be every class except Any
 			if attached ancestors then
 				from ancestors.start until ancestors.off loop
-					if bmm_model.has_class_definition (ancestors.item) then
-						ancestor_defs.extend (bmm_model.class_definition (ancestors.item))
+					if bmm_schema.has_class_definition (ancestors.item) then
+						ancestor_defs.extend (bmm_schema.class_definition (ancestors.item))
 					end
 					ancestors.forth
 				end
@@ -500,9 +506,9 @@ feature {NONE} -- Implementation
 		--			supplier_closure_class_record.extend (a_prop.type_def.root_class)
 					if max_depth > 0 then
 						if flat_flag then
-							props := bmm_model.class_definition (a_prop.type_def.root_class).flat_properties
+							props := bmm_schema.class_definition (a_prop.type_def.root_class).flat_properties
 						else
-							props := bmm_model.class_definition (a_prop.type_def.root_class).properties
+							props := bmm_schema.class_definition (a_prop.type_def.root_class).properties
 						end
 
 						from props.start until props.off loop

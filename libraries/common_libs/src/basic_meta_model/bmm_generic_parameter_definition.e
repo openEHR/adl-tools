@@ -77,7 +77,7 @@ feature -- Access
 			if is_constrained then
 				Result := conforms_to_type_def.type_substitutions
 			else
-				Result := bmm_model.any_class_definition.type_substitutions
+				Result := bmm_schema.any_class_definition.type_substitutions
 			end
 		end
 
@@ -96,12 +96,12 @@ feature -- Commands
 
 	finalise_build (a_bmmm: attached BMM_SCHEMA; a_class_def: BMM_CLASS_DEFINITION; errors: ERROR_ACCUMULATOR)
 		do
-			bmm_model := a_bmmm
+			bmm_schema := a_bmmm
 			if attached conforms_to_type then
-				if bmm_model.has_class_definition (conforms_to_type) then
-					conforms_to_type_def := bmm_model.class_definition (conforms_to_type)
+				if bmm_schema.has_class_definition (conforms_to_type) then
+					conforms_to_type_def := bmm_schema.class_definition (conforms_to_type)
 				else
-					errors.add_error ("BMM_GPCT", <<bmm_model.schema_id, a_class_def.name, name, conforms_to_type>>, Void)
+					errors.add_error ("BMM_GPCT", <<bmm_schema.schema_id, a_class_def.name, name, conforms_to_type>>, Void)
 				end
 			end
 		end

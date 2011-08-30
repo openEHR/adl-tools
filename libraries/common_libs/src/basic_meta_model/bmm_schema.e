@@ -458,6 +458,7 @@ feature {SCHEMA_DESCRIPTOR} -- Schema Processing
 			-- 2. canonicalise the package structure so tha the top-level qualified package
 			--    names like 'rm.data_types.quantity' are turned into true hierarchical
 			--	  structure in order to aid merging of package structures of multiple schemas
+			-- 3. set the source schema reference
 		require
 			state = State_created
 		local
@@ -516,8 +517,22 @@ feature {SCHEMA_DESCRIPTOR} -- Schema Processing
 				end
 				packages.forth
 			end
+
+			-- set source schema links
+			finalise_classes_load (primitive_types)
+			finalise_classes_load (class_definitions)
+
 		ensure
 			state = State_loaded or state = State_includes_processed
+		end
+
+	finalise_classes_load (class_list: attached HASH_TABLE [BMM_CLASS_DEFINITION, STRING])
+			-- set class source schema links
+		do
+			from class_list.start until class_list.off loop
+				class_list.item_for_iteration.finalise_load (Current)
+				class_list.forth
+			end
 		end
 
 feature {REFERENCE_MODEL_ACCESS} -- Schema Processing

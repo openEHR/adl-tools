@@ -141,7 +141,7 @@ feature {NONE} -- Implementation
 			rm_publisher: STRING
 		do
 			if attached {ARCH_CAT_MODEL_NODE} ara as acmn and then acmn.is_class then
-				rm_publisher := acmn.class_definition.bmm_model.model_publisher
+				rm_publisher := acmn.class_definition.bmm_schema.model_publisher
 				if use_rm_pixmaps and then rm_pixmaps.has (rm_publisher) and then rm_pixmaps.item (rm_publisher).has (acmn.display_name) then
 					Result := rm_pixmaps.item (rm_publisher).item (acmn.display_name)
 				else

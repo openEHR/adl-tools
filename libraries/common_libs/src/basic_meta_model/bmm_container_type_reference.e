@@ -101,16 +101,16 @@ feature -- Commands
 
 	finalise_build (a_bmmm: attached BMM_SCHEMA; a_class_def: attached BMM_CLASS_DEFINITION; a_prop_def: attached BMM_PROPERTY_DEFINITION; errors: ERROR_ACCUMULATOR)
 		do
-			bmm_model := a_bmmm
-			if bmm_model.has_class_definition(type) then
-				type_def := bmm_model.class_definition (type)
-				if bmm_model.has_class_definition(container_type) then
-					container_type_def := bmm_model.class_definition (container_type)
+			bmm_schema := a_bmmm
+			if bmm_schema.has_class_definition(type) then
+				type_def := bmm_schema.class_definition (type)
+				if bmm_schema.has_class_definition(container_type) then
+					container_type_def := bmm_schema.class_definition (container_type)
 				else
-					errors.add_error ("BMM_CPCT", <<bmm_model.schema_id, a_class_def.name, a_prop_def.name, container_type>>, Void)
+					errors.add_error ("BMM_CPCT", <<bmm_schema.schema_id, a_class_def.name, a_prop_def.name, container_type>>, Void)
 				end
 			else
-				errors.add_error ("BMM_CPTV", <<bmm_model.schema_id, a_class_def.name, a_prop_def.name, type>>, Void)
+				errors.add_error ("BMM_CPTV", <<bmm_schema.schema_id, a_class_def.name, a_prop_def.name, type>>, Void)
 			end
 		end
 

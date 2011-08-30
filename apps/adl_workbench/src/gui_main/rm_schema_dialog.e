@@ -242,13 +242,13 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	do_edit_schema(a_schema_id: STRING)
+	do_edit_schema (a_schema_id: STRING)
 			-- launch external editor with schema, or info box if none defined
 		do
 			execution_environment.launch (text_editor_command + " %"" + rm_schemas_access.all_schemas.item (a_schema_id).meta_data.item (metadata_schema_path) + "%"")
 		end
 
-	show_schema_validation(a_schema_id: STRING)
+	show_schema_validation (a_schema_id: STRING)
 			-- display info dialog with validity report
 		local
 			info_dialog: EV_INFORMATION_DIALOG
