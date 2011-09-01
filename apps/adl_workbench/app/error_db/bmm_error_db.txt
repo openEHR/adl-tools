@@ -57,6 +57,7 @@ templates = <
 		["BMM_PKGID"] = <"Schema $1 class definition $2 not declared in any package">
 		["BMM_PKGTL"] = <"Schema $1 top-level sibling package definitions cannot include a package which is the child of another">
 		["BMM_PKGQN"] = <"Schema $1 packages with qualified name found in package $2 (qualified names not allowed except at top-level)">
+		["BMM_MDLPK"] = <"Schema $1 model $2 mentions unknown package $3">
 	>
 >
 

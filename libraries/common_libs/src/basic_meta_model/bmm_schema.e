@@ -110,6 +110,14 @@ feature -- Schema documentation (Attributes from schema)
 			-- description of schema
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
+	schema_author: STRING
+			-- primary author of schema
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+	schema_contributors: ARRAYED_LIST [STRING]
+			-- contributing authors of schema
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
 feature -- Access (Attributes from schema)
 
 	includes: HASH_TABLE [BMM_INCLUDE_SPEC, STRING]
@@ -156,7 +164,7 @@ feature -- Access
 	package_definition (a_qualified_pkg_name: attached STRING): attached BMM_PACKAGE_DEFINITION
 			-- retrieve the pacakge definition corresponding to `a_qualified_pkg_name'
 		require
-			Package_name_valid: has_package_definition (a_qualified_pkg_name)
+			Package_name_valid: has_canonical_package_definition (a_qualified_pkg_name)
 		local
 			pkg_names: LIST[STRING]
 			pkg_csr: HASH_TABLE [BMM_PACKAGE_DEFINITION, STRING]
@@ -242,7 +250,7 @@ feature -- Access
 
 feature -- Status Report
 
-	has_package_definition (a_qualified_pkg_name: attached STRING): BOOLEAN
+	has_canonical_package_definition (a_qualified_pkg_name: attached STRING): BOOLEAN
 			-- Return True if there is a pacakge definition corresponding to `a_qualified_pkg_name',
 			-- which may be a simple or qualified name
 		local
@@ -380,6 +388,7 @@ feature {SCHEMA_DESCRIPTOR} -- Schema Processing
 			--    b) no top-level package name can be a direct parent or child of another
 			--		 (child package must be declared under the parent)
 			-- 2. check that all classes are mentioned in the package structure
+			-- 3. check that all models refer to valid packages
 		require
 			state = State_created
 		local
@@ -401,7 +410,7 @@ feature {SCHEMA_DESCRIPTOR} -- Schema Processing
 				i := i + 1
 			end
 
-			-- check top-level names
+			-- check top-level names - package names cannot contain each other and be siblings
 			pkg_names := packages.current_keys
 			from packages.start until packages.off loop
 				if pkg_names.there_exists (
@@ -454,11 +463,10 @@ feature {SCHEMA_DESCRIPTOR} -- Schema Processing
 
 	load_finalise
 			-- steps after load of this model, but before 'includes' processing
-			-- 1. convert primitive type names of the form 'Integer' to all uppercase
-			-- 2. canonicalise the package structure so tha the top-level qualified package
+			-- 1. canonicalise the package structure so that the top-level qualified package
 			--    names like 'rm.data_types.quantity' are turned into true hierarchical
 			--	  structure in order to aid merging of package structures of multiple schemas
-			-- 3. set the source schema reference
+			-- 2. set the source schema reference
 		require
 			state = State_created
 		local
@@ -474,6 +482,22 @@ feature {SCHEMA_DESCRIPTOR} -- Schema Processing
 					includes.forth
 				end
 				state := State_loaded
+			end
+
+			-- set class definition uid field
+			from primitive_types.start until primitive_types.off loop
+				if primitive_types.item_for_iteration.uid = 0 then
+					primitive_types.item_for_iteration.set_uid (uid_counter.item)
+					uid_counter.put (uid_counter.item + 1)
+				end
+				primitive_types.forth
+			end
+			from class_definitions.start until class_definitions.off loop
+				if class_definitions.item_for_iteration.uid = 0 then
+					class_definitions.item_for_iteration.set_uid (uid_counter.item)
+					uid_counter.put (uid_counter.item + 1)
+				end
+				class_definitions.forth
 			end
 
 			-- top-level package canonicalisation: the result is that in each BMM_SCHEMA, the
@@ -549,7 +573,13 @@ feature {REFERENCE_MODEL_ACCESS} -- Schema Processing
 				-- note that `put' only puts the class defintion from the included schema only if the current one does not already
 				-- have a definition for that class name. Since higher-level schemas are processed first, any over-rides they
 				-- contain will stay, with the classes being overridden being ignored - which is the desired behaviour.
-				primitive_types.put (other.primitive_types.item_for_iteration.deep_twin, other.primitive_types.key_for_iteration)
+				if primitive_types.has (other.primitive_types.key_for_iteration) then
+					if primitive_types.item (other.primitive_types.key_for_iteration).uid /= other.primitive_types.item_for_iteration.uid then
+						primitive_types.item (other.primitive_types.key_for_iteration).set_override_definition
+					end
+				else
+					primitive_types.put (other.primitive_types.item_for_iteration.deep_twin, other.primitive_types.key_for_iteration)
+				end
 				other.primitive_types.forth
 			end
 
@@ -558,7 +588,13 @@ feature {REFERENCE_MODEL_ACCESS} -- Schema Processing
 				-- note that `put' only puts the class defintion from the included schema only if the current one does not already
 				-- have a definition for that class name. Since higher-level schemas are processed first, any over-rides they
 				-- contain will stay, with the classes being overridden being ignored - which is the desired behaviour.
-				class_definitions.put (other.class_definitions.item_for_iteration.deep_twin, other.class_definitions.key_for_iteration)
+				if class_definitions.has (other.class_definitions.key_for_iteration) then
+					if class_definitions.item (other.class_definitions.key_for_iteration).uid /= other.class_definitions.item_for_iteration.uid then
+						class_definitions.item (other.class_definitions.key_for_iteration).set_override_definition
+					end
+				else
+					class_definitions.put (other.class_definitions.item_for_iteration.deep_twin, other.class_definitions.key_for_iteration)
+				end
 				other.class_definitions.forth
 			end
 
@@ -630,17 +666,33 @@ feature {SCHEMA_DESCRIPTOR} -- Schema Processing
 			-- do some basic validation:
 			-- check that all properties in every class have a type set and that the type is defined somewhere else in the schema,
 			-- i.e. this checks that the schema is at least completely specified
+		local
+			model_packages: ARRAYED_LIST [STRING]
 		do
+			-- check classes
 			if passed then
 				validate_classes (primitive_types)
 				validate_classes (class_definitions)
 			end
 
+			-- check packages
 			if passed then
 				from canonical_packages.start until canonical_packages.off loop
 					validate_package (canonical_packages.item_for_iteration)
 					canonical_packages.forth
 				end
+			end
+
+			-- check that all models refer to declared packages
+			from models.start until models.off loop
+				model_packages := models.item_for_iteration
+				from model_packages.start until model_packages.off loop
+					if not has_canonical_package_definition (model_packages.item) then
+						add_error("BMM_MDLPK", <<schema_id, models.key_for_iteration, model_packages.item>>)
+					end
+					model_packages.forth
+				end
+				models.forth
 			end
 
 			if passed then
@@ -751,6 +803,11 @@ feature {NONE} -- Implementation
 				end
 				class_list.forth
 			end
+		end
+
+	uid_counter: CELL [INTEGER]
+		once
+			create Result.put (1)
 		end
 
 end

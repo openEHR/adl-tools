@@ -39,7 +39,7 @@ create
 
 feature -- Initialisation
 
-	make (a_update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE])
+	make (a_update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]; a_select_class_agent, a_select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]])
 		do
 			-- create widgets
 			create ev_root_container
@@ -51,7 +51,7 @@ feature -- Initialisation
 			create ev_flat_view_button
 			create ev_notebook
 
-			create property_view.make (a_update_all_tools_rm_icons_setting_agent)
+			create property_view.make (a_update_all_tools_rm_icons_setting_agent, a_select_class_agent, a_select_class_in_new_tool_agent)
 			create inheritance_view.make
 
 			-- connect widgets

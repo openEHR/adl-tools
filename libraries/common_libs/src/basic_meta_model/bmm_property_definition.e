@@ -63,7 +63,7 @@ feature -- Status Report
 			end
 		end
 
-feature -- Commands
+feature {BMM_CLASS_DEFINITION} -- Commands
 
 	finalise_build (a_bmmm: attached BMM_SCHEMA; a_class_def: attached BMM_CLASS_DEFINITION; errors: ERROR_ACCUMULATOR)
 		deferred

@@ -180,11 +180,20 @@ feature {NONE} -- Implementation
 	populate_classes (ev_package_node: EV_TREE_ITEM; a_class_def: BMM_CLASS_DEFINITION)
 		local
 			ev_class_node: EV_TREE_ITEM
+			type_cat, tooltip_str: STRING
 		do
 			create ev_class_node.make_with_text (a_class_def.name)
  			ev_class_node.set_data (a_class_def)
- 	 		ev_class_node.set_pixmap (pixmaps [a_class_def.type_category])
- 	 		ev_class_node.set_tooltip ("Source schema: " + a_class_def.bmm_source_schema_id)
+ 			type_cat := a_class_def.type_category.twin
+ 			if a_class_def.override_definition then
+ 				type_cat.append ("_override")
+ 			end
+	 	 	ev_class_node.set_pixmap (pixmaps [type_cat])
+	 	 	tooltip_str := "Source schema: " + a_class_def.bmm_source_schema_id
+	 	 	if a_class_def.override_definition then
+	 	 		tooltip_str.append ("%N(overrides previous definition)")
+	 	 	end
+ 	 		ev_class_node.set_tooltip (tooltip_str)
 			ev_package_node.extend (ev_class_node)
 
  	 		ev_class_node.set_pebble_function (agent pebble_function)

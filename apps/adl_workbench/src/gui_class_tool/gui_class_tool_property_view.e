@@ -49,9 +49,12 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (a_update_all_tools_rm_icons_setting_agent: like update_all_tools_rm_icons_setting_agent)
+	make (a_update_all_tools_rm_icons_setting_agent: like update_all_tools_rm_icons_setting_agent;
+			a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent)
 		do
 			update_all_tools_rm_icons_setting_agent := a_update_all_tools_rm_icons_setting_agent
+			select_class_agent := a_select_class_agent
+			select_class_in_new_tool_agent := a_select_class_in_new_tool_agent
 
 			-- create widgets
 			create ev_root_container
@@ -185,10 +188,6 @@ feature -- Events
 			end
 		end
 
-	update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]
-			-- if this is set, it is an agent that takes one argument of a routine
-			-- to execute on all other editors, to sync them to a change in this current one
-
 feature -- Commands
 
 	clear
@@ -244,6 +243,12 @@ feature {NONE} -- Implementation
 	ev_closure_depth_spin_button: EV_SPIN_BUTTON
 
 	ev_tree_item_stack: ARRAYED_STACK[EV_TREE_ITEM]
+
+	update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]
+			-- if this is set, it is an agent that takes one argument of a routine
+			-- to execute on all other editors, to sync them to a change in this current one
+
+	select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
 
 	class_def: BMM_CLASS_DEFINITION
 
@@ -362,11 +367,11 @@ feature {NONE} -- Implementation
 			end
 			a_ti.set_pixmap (pixmap)
 
-			if has_type_subs or closure_depth = 0 then
+		--	if has_type_subs or closure_depth = 0 then
 	 			a_ti.set_pebble_function (agent pebble_function)
 				a_ti.set_configurable_target_menu_handler (agent context_menu_handler)
 				a_ti.set_configurable_target_menu_mode
-			end
+		--	end
 		end
 
    	populate_gui_tree_node_exit (a_prop_def: attached BMM_PROPERTY_DEFINITION)
@@ -427,6 +432,9 @@ feature {NONE} -- Implementation
 					if not subs.is_empty then
 						add_subtype_context_menu (a_menu, subs, eti)
 					end
+
+					-- add menu item for retarget tool to current node / display in new tool
+					add_class_context_menu (a_menu, eti)
 				end
 			end
 		end
@@ -480,6 +488,33 @@ feature {NONE} -- Implementation
 		do
 			create an_mi.make_with_text_and_action ("Expand", agent rebuild_from_interior_node (a_class_name, a_ti, True))
 			menu.extend (an_mi)
+		end
+
+	add_class_context_menu (menu: EV_MENU; ev_ti: EV_TREE_ITEM)
+			-- dynamically initializes the context menu for this tree
+		local
+			an_mi: EV_MENU_ITEM
+		do
+			create an_mi.make_with_text_and_action ("Retarget to this class", agent display_context_selected_class_in_active_tool (ev_ti))
+	    	menu.extend (an_mi)
+			create an_mi.make_with_text_and_action ("Display in new tool", agent display_context_selected_class_in_new_tool (ev_ti))
+			menu.extend (an_mi)
+		end
+
+	display_context_selected_class_in_active_tool (ev_ti: EV_TREE_ITEM)
+		do
+			ev_ti.enable_select
+			if attached {BMM_CLASS_DEFINITION} ev_ti.data as a_class_def then
+				select_class_agent.call ([a_class_def])
+			end
+		end
+
+	display_context_selected_class_in_new_tool (ev_ti: EV_TREE_ITEM)
+		do
+			ev_ti.enable_select
+			if attached {BMM_CLASS_DEFINITION} ev_ti.data as a_class_def then
+				select_class_in_new_tool_agent.call ([a_class_def])
+			end
 		end
 
 	rebuild_from_interior_node (a_class_name: attached STRING; a_ti: EV_TREE_ITEM; replace_mode: BOOLEAN)

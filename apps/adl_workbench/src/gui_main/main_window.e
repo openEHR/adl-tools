@@ -1022,7 +1022,8 @@ feature -- Class map tool
 
 	class_map_tools: GUI_CLASS_TOOL_CONTROLLER
 		once
-			create Result.make (attached_docking_manager, agent update_all_tools_rm_icons_setting)
+			create Result.make (attached_docking_manager, agent update_all_tools_rm_icons_setting, agent display_class,
+					agent create_and_populate_new_class_tool)
 		end
 
 	create_and_populate_new_class_tool (a_class_def: BMM_CLASS_DEFINITION)

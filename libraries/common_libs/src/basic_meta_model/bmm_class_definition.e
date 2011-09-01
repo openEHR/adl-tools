@@ -63,6 +63,10 @@ feature -- Access (attributes from schema)
 
 feature -- Access (attributes derived in post-schema processing)
 
+	uid: INTEGER
+			-- unique id generated for later comparison, in order to detect if two classes are the same
+			-- or not
+
 	ancestor_defs: ARRAYED_LIST [BMM_CLASS_DEFINITION]
 			-- list of immediate inheritance parents derived from `ancestors'in post-schema processing
 			-- by BMM_SCHEMA
@@ -89,6 +93,9 @@ feature -- Access (attributes derived in post-schema processing)
 
 	qualified_package_name: STRING
 			-- fully qualified package name
+
+	override_definition: BOOLEAN
+			-- True if this definition overrides a class of the same name in an included schema
 
 feature -- Access
 
@@ -462,6 +469,17 @@ feature {BMM_SCHEMA} -- Modification
 	set_qualified_package_name (a_name: attached STRING)
 		do
 			qualified_package_name := a_name
+		end
+
+	set_override_definition
+			-- set `override_definition'
+		do
+			override_definition := True
+		end
+
+	set_uid (val: INTEGER)
+		do
+			uid := val
 		end
 
 feature {BMM_CLASS_DEFINITION} -- Implementation

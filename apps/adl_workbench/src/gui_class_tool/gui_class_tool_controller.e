@@ -41,10 +41,13 @@ feature -- Definitions
 feature -- Initialisation
 
 	make (a_docking_manager: attached SD_DOCKING_MANAGER;
-			a_update_all_tools_rm_icons_setting_agent: like update_all_tools_rm_icons_setting_agent)
+			a_update_all_tools_rm_icons_setting_agent: like update_all_tools_rm_icons_setting_agent;
+			a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent)
 		do
 			make_docking (a_docking_manager)
 			update_all_tools_rm_icons_setting_agent := a_update_all_tools_rm_icons_setting_agent
+			select_class_agent := a_select_class_agent
+			select_class_in_new_tool_agent := a_select_class_in_new_tool_agent
 		end
 
 feature -- Commands
@@ -53,7 +56,7 @@ feature -- Commands
 		local
 			new_tool: like tool_type
 		do
-			create new_tool.make (update_all_tools_rm_icons_setting_agent)
+			create new_tool.make (update_all_tools_rm_icons_setting_agent, select_class_agent, select_class_in_new_tool_agent)
 			add_new_tool (new_tool)
 		end
 
@@ -73,6 +76,8 @@ feature {NONE} -- Implementation
 	tool_type: GUI_CLASS_TOOL
 
 	update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]
+
+	select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
 
 end
 
