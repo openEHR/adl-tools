@@ -291,6 +291,7 @@ feature {NONE} -- Implementation
 			prop_str, type_str: STRING
 			is_terminal: BOOLEAN
 			has_type_subs: BOOLEAN
+			type_spec: BMM_TYPE_SPECIFIER
 		do
 			closure_depth := depth
 
@@ -306,17 +307,20 @@ feature {NONE} -- Implementation
 				else
 					type_str := bmm_class_def.name
 				end
+				type_spec := bmm_class_def
 				has_type_subs := bmm_class_def.has_type_substitutions
 
 			elseif attached {BMM_CONTAINER_TYPE_REFERENCE} a_prop_def.type_def as bmm_cont_type_ref then
 				-- assume first gen param is only type of interest
 				prop_str.append (": " + bmm_cont_type_ref.container_type + Generic_left_delim.out + Generic_right_delim.out)
 				type_str := bmm_cont_type_ref.type
+				type_spec := bmm_cont_type_ref.type_def
 				has_type_subs := bmm_cont_type_ref.type_def.has_type_substitutions
 
 			elseif attached {BMM_GENERIC_TYPE_REFERENCE} a_prop_def.type_def as bmm_gen_type_ref then
 				type_str := bmm_gen_type_ref.as_type_string
 				has_type_subs := bmm_gen_type_ref.has_type_substitutions
+				type_spec := bmm_gen_type_ref.root_type_def
 
 			elseif attached {BMM_GENERIC_PARAMETER_DEFINITION} a_prop_def.type_def as bmm_gen_parm_def then -- type is T, U etc
 				type_str := bmm_gen_parm_def.name.twin
@@ -324,6 +328,7 @@ feature {NONE} -- Implementation
 					type_str.append (": " + bmm_gen_parm_def.conforms_to_type)
 				end
 				has_type_subs := bmm_gen_parm_def.has_type_substitutions
+				type_spec := a_prop_def.type_def
 			end
 
 			if a_prop_def.is_mandatory then
@@ -344,7 +349,7 @@ feature {NONE} -- Implementation
 			-- class / type node(s)
 			if not is_terminal then
 				create a_ti
-				set_class_node_details (a_ti, a_prop_def.type_def, type_str, has_type_subs)
+				set_class_node_details (a_ti, type_spec, type_str, has_type_subs)
 				ev_tree_item_stack.item.extend (a_ti)
 				ev_tree_item_stack.extend (a_ti)
 			end
@@ -446,7 +451,7 @@ feature {NONE} -- Implementation
 			chg_sub_menu: EV_MENU
 		do
 			-- create sub menu listing subtypes to change current node into
-			create chg_sub_menu.make_with_text ("=> subtype")
+			create chg_sub_menu.make_with_text ("Convert this node to subtype")
 			from a_substitutions.start until a_substitutions.off loop
 				create an_mi.make_with_text_and_action (a_substitutions.item, agent rebuild_from_interior_node (a_substitutions.item, a_ti, True))
 				if attached {BMM_TYPE_SPECIFIER} a_ti.data as a_type_spec then
@@ -464,7 +469,7 @@ feature {NONE} -- Implementation
 			-- if owning attribute is multiple, allow adding of sibling nodes
 			if a_ti.has_parent and then attached {BMM_PROPERTY_DEFINITION} a_ti.parent.data as a_prop_def and then a_prop_def.is_container then
 				-- create sub menu listing subtypes to add to parent node
-				create chg_sub_menu.make_with_text ("+ subtype")
+				create chg_sub_menu.make_with_text ("Add new subtype node")
 				from a_substitutions.start until a_substitutions.off loop
 					create an_mi.make_with_text_and_action (a_substitutions.item, agent rebuild_from_interior_node (a_substitutions.item, a_ti, False))
 					if attached {BMM_TYPE_SPECIFIER} a_ti.data as a_type_spec then
