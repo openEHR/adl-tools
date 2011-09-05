@@ -64,8 +64,7 @@ feature {NONE} -- Initialisation
   			ev_tree.set_minimum_width (max_arch_explorer_width)
 
 			-- events
-			ev_tree.select_actions.extend (agent tree_item_select)
-			ev_tree.focus_in_actions.extend (agent tree_item_select)
+--			ev_tree.focus_in_actions.extend (agent tree_item_select)
 		end
 
 feature -- Access
@@ -105,16 +104,6 @@ feature -- Status Report
 			Result := ev_node_map.has (a_key)
 		end
 
-feature -- Events
-
-	tree_item_select
-			-- Display details of `archetype_file_tree' when the user selects it.
-		do
-			if attached ev_tree.selected_item and attached {BMM_CLASS_DEFINITION} ev_tree.selected_item.data as a_bmm_class_def then
-				display_selected_item_after_delay
-			end
-		end
-
 feature -- Commands
 
 	populate
@@ -128,15 +117,6 @@ feature -- Commands
 	repopulate
 			-- repopulate current tree items if needed
 		do
-			populate
-		end
-
-	display_selected_item
-		do
-			delay_to_make_keyboard_navigation_practical.set_interval (0)
-			if attached {EV_TREE_ITEM} ev_tree.selected_item as eti and then attached {BMM_CLASS_DEFINITION} eti.data as a_class_def then
-				select_class_agent.call ([a_class_def])
-			end
 		end
 
 	select_item (id: attached STRING)
@@ -185,9 +165,7 @@ feature {NONE} -- Implementation
  			str := "Schema id: " + a_schema.schema_id + "%N"
  			str.append (a_schema.schema_description)
 
- 	 		ev_node.set_pebble_function (agent pebble_function)
-			ev_node.set_configurable_target_menu_handler (agent context_menu_handler)
-			ev_node.set_configurable_target_menu_mode
+ 	 		ev_node.pointer_button_press_actions.force_extend (agent schema_node_handler (ev_node, ?, ?, ?))
 
  	 		ev_node.set_tooltip (str)
  	 		ev_node.set_pixmap (pixmaps ["rm_schema"])
@@ -263,9 +241,7 @@ feature {NONE} -- Implementation
  	 		ev_class_node.set_tooltip (tooltip_str)
 			ev_package_node.extend (ev_class_node)
 
- 	 		ev_class_node.set_pebble_function (agent pebble_function)
-			ev_class_node.set_configurable_target_menu_handler (agent context_menu_handler)
-			ev_class_node.set_configurable_target_menu_mode
+ 	 		ev_class_node.pointer_button_press_actions.force_extend (agent class_node_handler (ev_class_node, ?, ?, ?))
 
 			ev_node_map.put (ev_class_node, a_class_def.globally_qualified_name)
 
@@ -288,73 +264,71 @@ feature {NONE} -- Implementation
 	 		end
 		end
 
-	context_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
+	class_node_handler (ev_ti: EV_TREE_ITEM; x,y, button: INTEGER)
 			-- creates the context menu for a right click action for an ARCH_REP_ARCHETYPE node
+		local
+			menu: EV_MENU
+			an_mi: EV_MENU_ITEM
 		do
-			if attached {EV_TREE_ITEM} a_source as ev_ti then
-				if attached {BMM_CLASS_DEFINITION} ev_ti.data as acmn then
-					create_class_context_menu (a_menu, ev_ti)
-				elseif attached {BMM_SCHEMA} ev_ti.data as bmm_sch then
-					create_schema_context_menu (a_menu, bmm_sch)
+			if attached {BMM_CLASS_DEFINITION} ev_ti.data as a_class_def then
+				if button = {EV_POINTER_CONSTANTS}.left then
+					selected_class_def := a_class_def
+					delay_to_make_keyboard_navigation_practical.set_interval (300)
+
+				elseif button = {EV_POINTER_CONSTANTS}.right then
+					create menu
+					create an_mi.make_with_text_and_action ("Display", agent display_context_selected_class_in_active_tool (ev_ti))
+			    	menu.extend (an_mi)
+
+					create an_mi.make_with_text_and_action ("Display in new tool", agent display_context_selected_class_in_new_tool (ev_ti))
+					menu.extend (an_mi)
+
+					create an_mi.make_with_text_and_action ("Edit source schema", agent do_edit_schema (a_class_def.bmm_source_schema_id))
+					menu.extend (an_mi)
+
+					menu.show
 				end
 			end
 		end
 
-	create_class_context_menu (menu: EV_MENU; ev_ti: EV_TREE_ITEM)
+	schema_node_handler (ev_ti: EV_TREE_ITEM; x,y, button: INTEGER)
 			-- dynamically initializes the context menu for this tree
 		local
+			menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
-			create an_mi.make_with_text_and_action ("Display", agent display_context_selected_class_in_active_tool (ev_ti))
-	    	menu.extend (an_mi)
+			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_SCHEMA} ev_ti.data as bmm_sch then
+				create menu
 
-			create an_mi.make_with_text_and_action ("Display in new tool", agent display_context_selected_class_in_new_tool (ev_ti))
-			menu.extend (an_mi)
+				create an_mi.make_with_text_and_action ("Edit source schema", agent do_edit_schema (bmm_sch.schema_id))
+		    	menu.extend (an_mi)
 
-			if attached {BMM_CLASS_DEFINITION} ev_ti.data as scd then
-				create an_mi.make_with_text_and_action ("Edit source schema", agent do_edit_schema (scd.bmm_source_schema_id))
-				menu.extend (an_mi)
-			end
-		end
-
-	create_schema_context_menu (menu: EV_MENU; a_schema: BMM_SCHEMA)
-			-- dynamically initializes the context menu for this tree
-		local
-			an_mi: EV_MENU_ITEM
-		do
-			create an_mi.make_with_text_and_action ("Edit source schema", agent do_edit_schema (a_schema.schema_id))
-	    	menu.extend (an_mi)
-
-			create an_mi.make_with_text_and_action ("Fully expand",
-				agent ev_tree.recursive_do_all (
-					agent (an_ev_tree_node: attached EV_TREE_NODE)
-						do
-							if an_ev_tree_node.is_expandable then
-								an_ev_tree_node.expand
+				create an_mi.make_with_text_and_action ("Fully expand",
+					agent ev_tree.recursive_do_all (
+						agent (an_ev_tree_node: attached EV_TREE_NODE)
+							do
+								if an_ev_tree_node.is_expandable then
+									an_ev_tree_node.expand
+								end
 							end
-						end
+					)
 				)
-			)
-	    	menu.extend (an_mi)
+		    	menu.extend (an_mi)
 
-			create an_mi.make_with_text_and_action ("Collapse",
-				agent ev_tree.recursive_do_all (
-					agent (an_ev_tree_node: attached EV_TREE_NODE)
-						do
-							if an_ev_tree_node.is_expandable then
-								an_ev_tree_node.collapse
+				create an_mi.make_with_text_and_action ("Collapse",
+					agent ev_tree.recursive_do_all (
+						agent (an_ev_tree_node: attached EV_TREE_NODE)
+							do
+								if an_ev_tree_node.is_expandable then
+									an_ev_tree_node.collapse
+								end
 							end
-						end
+					)
 				)
-			)
-	    	menu.extend (an_mi)
+		    	menu.extend (an_mi)
 
-		end
-
-	pebble_function (a_x, a_y: INTEGER): ANY
-			-- Pebble function for pebble source
-		do
-			Result := "pebble"
+				menu.show
+		    end
 		end
 
 	display_context_selected_class_in_active_tool (ev_ti: EV_TREE_ITEM)
@@ -379,19 +353,20 @@ feature {NONE} -- Implementation
 			execution_environment.launch (text_editor_command + " %"" + rm_schemas_access.all_schemas.item (a_schema_id).meta_data.item (metadata_schema_path) + "%"")
 		end
 
-	display_selected_item_after_delay
-			-- When the user selects an item in `gui_file_tree', delay before displaying it.
-		do
-			if delay_to_make_keyboard_navigation_practical = Void then
-				create delay_to_make_keyboard_navigation_practical
-				delay_to_make_keyboard_navigation_practical.actions.extend (agent display_selected_item)
-			end
-
-			delay_to_make_keyboard_navigation_practical.set_interval (300)
-		end
+	selected_class_def: BMM_CLASS_DEFINITION
 
 	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
-			-- Timer to delay a moment before calling `display_details_of_selected_item'.
+			-- Timer to delay a moment before calling `select_class_agent'.
+		once
+			create Result
+			Result.actions.extend (
+				agent
+					do
+						delay_to_make_keyboard_navigation_practical.set_interval (0)
+						select_class_agent.call ([selected_class_def])
+					end
+			)
+		end
 
 	ev_node_map: HASH_TABLE [EV_TREE_ITEM, STRING]
 			-- list of GUI explorer nodes, keyed by artefact id
