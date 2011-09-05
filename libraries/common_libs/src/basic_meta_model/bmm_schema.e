@@ -463,10 +463,12 @@ feature {SCHEMA_DESCRIPTOR} -- Schema Processing
 
 	load_finalise
 			-- steps after load of this model, but before 'includes' processing
-			-- 1. canonicalise the package structure so that the top-level qualified package
+			-- 1. set uid field on all class definitions; if the class def is cloned, this
+			--	  uid is the same for both, enabling comparison for sameness
+			-- 2. canonicalise the package structure so that the top-level qualified package
 			--    names like 'rm.data_types.quantity' are turned into true hierarchical
 			--	  structure in order to aid merging of package structures of multiple schemas
-			-- 2. set the source schema reference
+			-- 3. set the source schema reference
 		require
 			state = State_created
 		local
@@ -474,6 +476,7 @@ feature {SCHEMA_DESCRIPTOR} -- Schema Processing
 			child_pkg_names: LIST [STRING]
 			pkg_csr: like packages
 		do
+			-- set up the includes processing list
 			if includes.is_empty then
 				state := State_includes_processed
 			else
@@ -506,7 +509,6 @@ feature {SCHEMA_DESCRIPTOR} -- Schema Processing
 			from packages.start until packages.off loop
 				top_pkg := packages.item_for_iteration
 				if top_pkg.name.has (package_name_delimiter) then
-
 					-- iterate over qualified name, inserting new packages for each of these names.
 					-- E.g. 'rm.composition.content' causes three new packages 'rm', 'composition'
 					-- and 'content' to be created and linked, with the 'rm' one being put in
@@ -585,7 +587,7 @@ feature {REFERENCE_MODEL_ACCESS} -- Schema Processing
 
 			-- classes
 			from other.class_definitions.start until other.class_definitions.after loop
-				-- note that `put' only puts the class defintion from the included schema only if the current one does not already
+				-- note that `put' only puts the class definition from the included schema only if the current one does not already
 				-- have a definition for that class name. Since higher-level schemas are processed first, any over-rides they
 				-- contain will stay, with the classes being overridden being ignored - which is the desired behaviour.
 				if class_definitions.has (other.class_definitions.key_for_iteration) then
@@ -609,27 +611,6 @@ feature {REFERENCE_MODEL_ACCESS} -- Schema Processing
 				other.canonical_packages.forth
 			end
 
-			-- generate qualified package names for class defs. Note that this only gets the classes explicitly declared in each package
-			-- Generally package declarations don't include subtypes that are in the same package. If the subtype is declared in some other
-			-- package, it will get that qualified package name. So a second phase has to occur, below
-			from canonical_packages.start until canonical_packages.off loop
-				canonical_packages.item_for_iteration.do_recursive_classes (
-					agent (a_pkg: BMM_PACKAGE_DEFINITION; a_class_name: STRING)
-						do
-							if has_class_definition (a_class_name) then
-								class_definition (a_class_name).set_qualified_package_name (a_pkg.qualified_name)
-							end
-						end
-				)
-				canonical_packages.forth
-			end
-
-			-- now finalise packages build, creating `all_classes' property at each level
-			from canonical_packages.start until canonical_packages.off loop
-				canonical_packages.item_for_iteration.finalise_build (Current, errors)
-				canonical_packages.forth
-			end
-
 			-- semantic models
 			from other.models.start until other.models.off loop
 				models.put (other.models.item_for_iteration, other.models.key_for_iteration)
@@ -648,6 +629,12 @@ feature {REFERENCE_MODEL_ACCESS} -- Schema Processing
 		require
 			state = State_includes_processed
 		do
+			from canonical_packages.start until canonical_packages.off loop
+				-- set bmm_schema reverse links in
+				canonical_packages.item_for_iteration.finalise_build (Current, errors)
+				canonical_packages.forth
+			end
+
 			finalise_classes (primitive_types)
 			finalise_classes (class_definitions)
 			state := State_ready_to_validate

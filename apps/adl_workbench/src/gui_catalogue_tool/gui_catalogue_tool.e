@@ -16,6 +16,16 @@ class GUI_CATALOGUE_TOOL
 
 inherit
 	SHARED_KNOWLEDGE_REPOSITORY
+		export
+			{NONE} all
+		end
+
+	GUI_SEARCHABLE_TOOL
+		export
+			{NONE} all
+		redefine
+			ev_root_container
+		end
 
 create
 	make
@@ -47,6 +57,28 @@ feature -- Access
 
 	ev_root_container: EV_VERTICAL_SPLIT_AREA
 
+	matching_ids (a_key: attached STRING): attached ARRAYED_SET [STRING]
+		do
+			if attached current_arch_cat then
+				Result := current_arch_cat.matching_ids (a_key, Void, Void)
+			else
+				create Result.make(0)
+			end
+		end
+
+feature -- Status Report
+
+	item_selectable: BOOLEAN
+		do
+			Result := attached current_arch_cat
+		end
+
+	valid_item_id (a_key: attached STRING): BOOLEAN
+			-- key is a valid identifier of an item managed in this tool
+		do
+			Result := (create {ARCHETYPE_ID}.default_create).valid_id (a_key)
+		end
+
 feature -- Commands
 
 	populate
@@ -55,6 +87,12 @@ feature -- Commands
 			archetype_explorer.populate
 			template_explorer.populate
 			go_to_selected_archetype
+		end
+
+	repopulate
+			-- repopulate current tree items if needed
+		do
+			populate
 		end
 
 	update (aca: attached ARCH_CAT_ARCHETYPE)
@@ -72,10 +110,8 @@ feature -- Commands
 			end
 		end
 
-	select_archetype (id: attached STRING)
+	select_item, select_archetype (id: attached STRING)
 			-- Select `id' in the archetype catalogue and go to its node in explorer tree
-		require
-			has_current_arch_dir: attached current_arch_cat
 		do
 			if not current_arch_cat.has_selected_archetype or else not id.is_equal (current_arch_cat.selected_archetype.ontological_name) then
 				if current_arch_cat.archetype_index.has (id) then
@@ -90,6 +126,11 @@ feature -- Commands
 		do
 			archetype_explorer.update_rm_icons_setting
 			template_explorer.update_rm_icons_setting
+		end
+
+	clear
+		do
+
 		end
 
 feature {NONE} -- Implementation

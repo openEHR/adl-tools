@@ -88,7 +88,7 @@ feature -- Access (attributes derived in post-schema processing)
 
 feature -- Access
 
-	bmm_model: BMM_SCHEMA
+	bmm_schema: BMM_SCHEMA
 			-- reverse reference, set after initialisation from input schema
 
 	qualified_name: attached STRING
@@ -104,6 +104,14 @@ feature -- Access
 					Result.prepend_character (Package_name_delimiter)
 				end
 			end
+		end
+
+	globally_qualified_name: attached STRING
+			-- fully qualified package name prepended with schema name, of form: 'schema_name::package.package.CLASS'
+			-- to enable identification in situation when a given package has been imported into more than
+			-- one schema.
+		do
+			Result := bmm_schema.schema_id + schema_name_delimiter + qualified_name
 		end
 
 feature -- Status Report
@@ -144,7 +152,8 @@ feature -- Modification
 					if packages.has (other.packages.key_for_iteration) then
 						packages.item (other.packages.key_for_iteration).merge (other.packages.item_for_iteration)
 					else
-						add_package (other.packages.item_for_iteration)
+						-- do a safe clone
+						add_package (other.packages.item_for_iteration.safe_deep_twin)
 					end
 					other.packages.forth
 				end
@@ -199,32 +208,47 @@ feature -- Modification
 
 feature {BMM_SCHEMA, BMM_PACKAGE_DEFINITION} -- Modification
 
-	finalise_build (a_bmmm: attached BMM_SCHEMA; errors: ERROR_ACCUMULATOR)
-			-- synchronise structures after creation by DT deserialiser
+	finalise_build (a_bmm_schema: attached BMM_SCHEMA; errors: ERROR_ACCUMULATOR)
+			-- set `parent' links after creation by DT deserialiser
 			-- MUST BE CALLED AFTER MERGING because parent links point up through
 			-- the expanded hierarchy attached to BMM_SCHEMA.canonical_packages, not
 			-- BMM_SCHEMA.packages as originally read in
 		do
-			bmm_model := a_bmmm
---			create all_classes.make (0)
---			all_classes.compare_objects
---			if has_classes then
---				all_classes.merge (classes)
---			end
+			bmm_schema := a_bmm_schema
+
+			if has_classes then
+				from classes.start until classes.off loop
+					bmm_schema.class_definition (classes.item).set_qualified_names (bmm_schema.schema_id, qualified_name)
+					classes.forth
+				end
+			end
 			if has_packages then
 				from packages.start until packages.off loop
-					packages.item_for_iteration.set_parent (Current)
-					packages.item_for_iteration.finalise_build (a_bmmm, errors)
---					all_classes.merge (packages.item_for_iteration.all_classes)
+			--		packages.item_for_iteration.set_parent (Current)
+					packages.item_for_iteration.finalise_build (bmm_schema, errors)
 					packages.forth
 				end
 			end
 		end
 
+	safe_deep_twin: BMM_PACKAGE_DEFINITION
+			-- perform a safe deep_twin
+		local
+			parent_pkg: BMM_PACKAGE_DEFINITION
+			bmm_sch: BMM_SCHEMA
+		do
+			parent_pkg := parent
+			bmm_sch := bmm_schema
+			Result := deep_twin
+			parent := parent_pkg
+			bmm_schema := bmm_sch
+		end
+
 feature {DT_OBJECT_CONVERTER} -- Finalisation
 
 	finalise_dt
-			-- finalisation routine to guarantee validity on creation from dt
+			-- finalisation routine to guarantee validity on creation from DT form
+			-- rewrite `classes' list so that it has object comparison set
 		local
 			classes_copy: ARRAYED_SET [STRING]
 		do

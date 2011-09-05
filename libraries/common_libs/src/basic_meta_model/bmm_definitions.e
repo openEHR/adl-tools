@@ -17,7 +17,9 @@ class BMM_DEFINITIONS
 feature -- Definitions
 
 	Section_separator: CHARACTER = '-'
-			-- separator between sections in an identifier axis
+			-- separator between sections in an archetype identifier axis
+
+	Schema_name_delimiter: STRING = "::"
 
 	Package_name_delimiter: CHARACTER = '.'
 

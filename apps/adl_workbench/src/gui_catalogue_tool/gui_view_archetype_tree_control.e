@@ -43,6 +43,7 @@ feature {NONE} -- Initialisation
 
 			-- make UI
 			make_ui ("Archetypes", pixmaps ["archetype_category"])
+  			ev_tree.set_minimum_height (200)
 
 			artefact_types := <<{ARTEFACT_TYPE}.archetype, {ARTEFACT_TYPE}.template_component, {ARTEFACT_TYPE}.template>>
 		end
@@ -135,6 +136,7 @@ feature {NONE} -- Implementation
 	 			ev_node.set_data (aci)
 
  				ev_node_descriptor_map.put (ev_node, aci.ontological_name)
+ 				
 	 			ev_node.set_pebble_function (agent pebble_function)
 				ev_node.set_configurable_target_menu_handler (agent context_menu_handler)
 				ev_node.set_configurable_target_menu_mode

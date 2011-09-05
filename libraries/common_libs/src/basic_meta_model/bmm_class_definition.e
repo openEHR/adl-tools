@@ -92,7 +92,16 @@ feature -- Access (attributes derived in post-schema processing)
 		end
 
 	qualified_package_name: STRING
-			-- fully qualified package name
+			-- fully qualified package name, of form: 'package.package'
+
+	qualified_name: STRING
+			-- fully qualified class name, of form: 'package.package.CLASS'
+			-- with package path in lower-case and class in original case
+
+	globally_qualified_name: STRING
+			-- fully qualified class name prepended with schema name, of form: 'schema_name::package.package.CLASS'
+			-- to enable identification in situation when a given class/package has been imported into more than
+			-- one schema.
 
 	override_definition: BOOLEAN
 			-- True if this definition overrides a class of the same name in an included schema
@@ -458,17 +467,26 @@ feature -- Output
 			Result := as_type_string
 		end
 
+feature {BMM_PACKAGE_DEFINITION} -- Modification
+
+	set_qualified_names (a_schema_id, a_package_name: attached STRING)
+			-- a_name is of form 'package.package.package'
+		do
+			qualified_package_name := a_package_name
+
+			qualified_name := a_package_name.twin
+			qualified_name.append_character (package_name_delimiter)
+			qualified_name.append (name)
+
+			globally_qualified_name := a_schema_id + Schema_name_delimiter + qualified_name
+		end
+
 feature {BMM_SCHEMA} -- Modification
 
 	add_immediate_descendant(a_bmm_class: BMM_CLASS_DEFINITION)
 			-- add a class def to the descendants list
 		do
 			immediate_descendants.extend (a_bmm_class)
-		end
-
-	set_qualified_package_name (a_name: attached STRING)
-		do
-			qualified_package_name := a_name
 		end
 
 	set_override_definition

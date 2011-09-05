@@ -70,10 +70,7 @@ feature {NONE} -- Initialization
 			arch_compile_tool_bar.extend (history_back_button)
 			arch_compile_tool_bar.extend (tool_bar_sep_3)
 			arch_compile_tool_bar.extend (history_forward_button)
-			action_bar.extend (arch_id_hbox)
-			arch_id_hbox.extend (archetype_search_combo)
-			arch_id_hbox.extend (arch_search_tool_bar)
-			arch_search_tool_bar.extend (search_button)
+			action_bar.extend (address_bar.ev_root_container)
 
 			-- ADL output version combo
 			action_bar.extend (arch_output_version_hbox)
@@ -119,18 +116,10 @@ feature {NONE} -- Initialization
 			open_button.set_tooltip ("Open an ad hoc archetype")
 			history_back_button.set_tooltip ("Go back one archetype")
 			history_forward_button.set_tooltip ("Go forward one archetype")
-			arch_id_hbox.disable_item_expand (arch_search_tool_bar)
-			archetype_search_combo.set_tooltip ("Display or search for archetype id")
-			archetype_search_combo.set_minimum_width (600)
-			arch_search_tool_bar.set_minimum_width (20)
-			arch_search_tool_bar.set_minimum_height (20)
-			arch_search_tool_bar.disable_vertical_button_style
-			search_button.set_tooltip ("Search for archetype id")
 
 			open_button.set_pixmap (pixmaps ["open_archetype"])
 			history_back_button.set_pixmap (pixmaps ["history_back"])
 			history_forward_button.set_pixmap (pixmaps ["history_forward"])
-			search_button.set_pixmap (pixmaps ["magnifier"])
 
 			action_bar.disable_item_expand (arch_output_version_hbox)
 			arch_output_version_hbox.disable_item_expand (arch_output_version_label)
@@ -165,9 +154,6 @@ feature {NONE} -- Initialization
 			open_button.select_actions.extend (agent open_archetype)
 			history_back_button.select_actions.extend (agent on_back)
 			history_forward_button.select_actions.extend (agent on_forward)
-			archetype_search_combo.select_actions.extend (agent select_archetype_from_search_key)
-			archetype_search_combo.return_actions.extend (agent find_archetype_by_key)
-			search_button.select_actions.extend (agent start_search_by_id)
 			archetype_profile_combo.select_actions.extend (agent select_profile)
 
 			arch_output_version_combo.select_actions.extend (agent set_adl_version_from_combo)
@@ -196,10 +182,6 @@ feature {NONE} -- Initialization
 			create history_back_button
 			create tool_bar_sep_3
 			create history_forward_button
-			create arch_id_hbox
-			create archetype_search_combo
-			create arch_search_tool_bar
-			create search_button
 
 			create arch_output_version_hbox
 			create arch_output_version_label
@@ -855,73 +837,6 @@ feature {NONE} -- Help events
 
 feature -- Archetype Events
 
-	find_archetype_by_key
-			-- Called by `return_actions' of `archetype_search_combo'.
-		local
-			key: STRING
-			matching_ids: attached ARRAYED_SET[STRING]
-		do
-			key := archetype_search_combo.text
-
-			if is_windows and archetype_search_combo.is_list_shown then
-				if attached {EV_COMBO_BOX_IMP} archetype_search_combo.implementation as imp then
-					(create {GUI_PLATFORM_SPECIFIC_TOOLS}).hide_combo_box_list (imp)
-				end
-				catalogue_tool.select_archetype (key)
-
-			elseif key.count > 0 then
-				archetype_search_combo.select_actions.block
-
-				-- check if it is a full archetype id, e.g. created by slightly modifying current archetype id
-				if (create {ARCHETYPE_ID}.default_create).valid_id (key) then
-					catalogue_tool.select_archetype (key)
-				elseif key.count >= 3 then
-					 -- it is a partial id, get a list of candidates
-					if attached current_arch_cat as dir then
-						matching_ids := dir.matching_ids (regex_from_string(key), Void, Void)
-						if matching_ids.count > 0 then
-							archetype_search_combo.set_strings (matching_ids)
-							if attached {EV_COMBO_BOX_IMP} archetype_search_combo.implementation as imp then
-								(create {GUI_PLATFORM_SPECIFIC_TOOLS}).show_combo_box_list (imp)
-							end
-						else
-							archetype_search_combo.set_text (create_message_content ("no_match_found", Void))
-							archetype_search_combo.set_focus
-							archetype_search_combo.select_all
-						end
-					end
-
-					if archetype_search_combo.count = 1 then
-						catalogue_tool.select_archetype (key)
-					end
-				else -- key too short
-					archetype_search_combo.set_text (create_message_content ("key_too_short", Void))
-					archetype_search_combo.set_focus
-					archetype_search_combo.select_all
-				end
-
-				archetype_search_combo.select_actions.resume
-			end
-		end
-
-	select_archetype_from_search_key
-			-- Called by `select_actions' of `archetype_search_combo'.
-			-- archetype_search_combo.text is guaranteed to be a valid archetype id, and one that is in the current repository
-		do
-			if not (is_windows and archetype_search_combo.is_list_shown) then
-				catalogue_tool.select_archetype (archetype_search_combo.text)
-			end
-		end
-
-	start_search_by_id
-			-- Called by `select_actions' of `search_button'.
-		do
-			archetype_search_combo.wipe_out
-			archetype_search_combo.set_text (create_message_content ("enter_search_string", Void))
-			archetype_search_combo.set_focus
-			archetype_search_combo.select_all
-		end
-
 	select_archetype_from_gui_data (gui_item: EV_ANY)
 			-- Select and display the node of `archetype_file_tree' corresponding to the folder or archetype attached to `gui_item'.
 		do
@@ -937,6 +852,15 @@ feature -- Archetype Events
 			-- display the class currently selected in `archetype_catalogue'.
 		do
 			class_map_tools.populate_active_tool (a_class_def)
+		end
+
+feature -- Address Bar control
+
+	address_bar: GUI_ADDRESS_BAR
+		once
+			create Result.make (agent windows_hide_combo_dropdown, agent windows_show_combo_dropdown)
+			Result.add_client_control (catalogue_tool)
+			Result.add_client_control (rm_schema_tool)
 		end
 
 feature -- Docking controls
@@ -982,6 +906,7 @@ feature -- Catalogue tool
 			a_docking_pane.set_short_title ("Catalogue")
 			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
 			a_docking_pane.set_top ({SD_ENUMERATION}.left)
+			a_docking_pane.show_actions.extend (agent address_bar.set_current_client (catalogue_tool))
 		end
 
 feature -- RM Schema tool
@@ -1001,6 +926,7 @@ feature -- RM Schema tool
 			a_docking_pane.set_short_title ("RM Schemas")
 			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
 			a_docking_pane.set_auto_hide ({SD_ENUMERATION}.left)
+			a_docking_pane.show_actions.extend (agent address_bar.set_current_client (rm_schema_tool))
 		end
 
 feature -- Archetype tools
@@ -1193,7 +1119,7 @@ feature {NONE} -- Implementation
 			-- Wipe out content from visual controls.
 		do
 			populate_history_controls
-			archetype_search_combo.remove_text
+			address_bar.clear
 		end
 
 	clear_all_tools
@@ -1355,14 +1281,28 @@ feature {NONE} -- Build commands
 
 feature {NONE} -- GUI Widgets
 
-	action_bar, arch_id_hbox, arch_output_version_hbox: EV_HORIZONTAL_BOX
-	archetype_profile_combo, archetype_search_combo, arch_output_version_combo: EV_COMBO_BOX
-	arch_compile_tool_bar, arch_search_tool_bar: EV_TOOL_BAR
-	compile_button, open_button, history_back_button, history_forward_button, search_button: EV_TOOL_BAR_BUTTON
+	action_bar, arch_output_version_hbox: EV_HORIZONTAL_BOX
+	archetype_profile_combo, arch_output_version_combo: EV_COMBO_BOX
+	arch_compile_tool_bar: EV_TOOL_BAR
+	compile_button, open_button, history_back_button, history_forward_button: EV_TOOL_BAR_BUTTON
 	tool_bar_sep_1, tool_bar_sep_2, tool_bar_sep_3: EV_TOOL_BAR_SEPARATOR
 	arch_output_version_label: EV_LABEL
 
 	viewer_main_cell: EV_CELL
+
+	windows_hide_combo_dropdown (a_combo: EV_COMBO_BOX)
+		do
+			if attached {EV_COMBO_BOX_IMP} a_combo.implementation as imp then
+				(create {GUI_PLATFORM_SPECIFIC_TOOLS}).hide_combo_box_list (imp)
+			end
+		end
+
+	windows_show_combo_dropdown (a_combo: EV_COMBO_BOX)
+		do
+			if attached {EV_COMBO_BOX_IMP} a_combo.implementation as imp then
+				(create {GUI_PLATFORM_SPECIFIC_TOOLS}).show_combo_box_list (imp)
+			end
+		end
 
 end
 

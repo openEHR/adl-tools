@@ -35,6 +35,13 @@ inherit
 			{NONE} all
 		end
 
+	GUI_SEARCHABLE_TOOL
+		export
+			{NONE} all
+		redefine
+			ev_root_container
+		end
+
 create
 	make
 
@@ -65,6 +72,39 @@ feature -- Access
 
 	ev_root_container: EV_VERTICAL_BOX
 
+	matching_ids (a_regex: attached STRING): attached ARRAYED_SET[STRING]
+			-- generate list of schema elemtn ids (packages and classes)
+		local
+			regex_matcher: LX_DFA_REGULAR_EXPRESSION
+		do
+			create Result.make (0)
+			create regex_matcher.compile_case_insensitive (a_regex)
+			if regex_matcher.is_compiled then
+				Result.compare_objects
+				from ev_node_map.start until ev_node_map.off loop
+					if regex_matcher.matches (ev_node_map.key_for_iteration) then
+						Result.extend (ev_node_map.key_for_iteration)
+					end
+					ev_node_map.forth
+				end
+			else
+				Result.extend (create_message_line("regex_e1", <<a_regex>>))
+			end
+		end
+
+feature -- Status Report
+
+	item_selectable: BOOLEAN
+		do
+			Result := True
+		end
+
+	valid_item_id (a_key: attached STRING): BOOLEAN
+			-- key is a valid identifier of an item managed in this tool
+		do
+			Result := ev_node_map.has (a_key)
+		end
+
 feature -- Events
 
 	tree_item_select
@@ -81,7 +121,14 @@ feature -- Commands
 			-- Populate content from visual controls.
 		do
 			ev_tree.wipe_out
+			create ev_node_map.make(0)
 			populate_tree
+		end
+
+	repopulate
+			-- repopulate current tree items if needed
+		do
+			populate
 		end
 
 	display_selected_item
@@ -90,6 +137,20 @@ feature -- Commands
 			if attached {EV_TREE_ITEM} ev_tree.selected_item as eti and then attached {BMM_CLASS_DEFINITION} eti.data as a_class_def then
 				select_class_agent.call ([a_class_def])
 			end
+		end
+
+	select_item (id: attached STRING)
+			-- Select `id' in the archetype catalogue and go to its node in explorer tree
+		do
+			if ev_node_map.has (id) and ev_tree.is_displayed then
+				ev_tree.ensure_item_visible (ev_node_map.item (id))
+				ev_node_map.item (id).enable_select
+			end
+		end
+
+	clear
+			-- Wipe out content from visual controls and reset controls to reasonable state
+		do
 		end
 
 feature {NONE} -- Implementation
@@ -110,7 +171,6 @@ feature {NONE} -- Implementation
 				populate_schema (rm_schemas_access.top_level_schemas.item_for_iteration.schema)
 				rm_schemas_access.top_level_schemas.forth
 			end
-			ev_tree.recursive_do_all (agent ev_tree_expand)
 		end
 
 	populate_schema (a_schema: BMM_SCHEMA)
@@ -151,10 +211,15 @@ feature {NONE} -- Implementation
  	 		ev_pkg_node.set_pixmap (pixmaps ["file_folder_2"])
 			ev_parent_node.extend (ev_pkg_node)
 
+			ev_node_map.put (ev_pkg_node, a_pkg.globally_qualified_name)
+
 			-- do the classes
 			if a_pkg.has_classes then
 	 			from a_pkg.classes.start until a_pkg.classes.off loop
-	 				a_class_def := a_pkg.bmm_model.class_definition (a_pkg.classes.item)
+	 				a_class_def := a_pkg.bmm_schema.class_definition (a_pkg.classes.item)
+
+	 				-- only do top classes in each package; if this class has an ancestor in the same package,
+	 				-- don't do this class, it will get taken care of via the parent
 					if not a_class_def.ancestor_defs.there_exists (
 						agent (anc_class_def: BMM_CLASS_DEFINITION; a_pkg_name: STRING): BOOLEAN
 							do
@@ -189,7 +254,9 @@ feature {NONE} -- Implementation
  				type_cat.append ("_override")
  			end
 	 	 	ev_class_node.set_pixmap (pixmaps [type_cat])
-	 	 	tooltip_str := "Source schema: " + a_class_def.bmm_source_schema_id
+	 	 	create tooltip_str.make_empty
+	 	 	tooltip_str.append (a_class_def.qualified_name)
+	 	 	tooltip_str.append ("%NSource schema: " + a_class_def.bmm_source_schema_id)
 	 	 	if a_class_def.override_definition then
 	 	 		tooltip_str.append ("%N(overrides previous definition)")
 	 	 	end
@@ -199,6 +266,8 @@ feature {NONE} -- Implementation
  	 		ev_class_node.set_pebble_function (agent pebble_function)
 			ev_class_node.set_configurable_target_menu_handler (agent context_menu_handler)
 			ev_class_node.set_configurable_target_menu_mode
+
+			ev_node_map.put (ev_class_node, a_class_def.globally_qualified_name)
 
 			-- do any descendants in same package
 			from a_class_def.immediate_descendants.start until a_class_def.immediate_descendants.off loop
@@ -255,6 +324,31 @@ feature {NONE} -- Implementation
 		do
 			create an_mi.make_with_text_and_action ("Edit source schema", agent do_edit_schema (a_schema.schema_id))
 	    	menu.extend (an_mi)
+
+			create an_mi.make_with_text_and_action ("Fully expand",
+				agent ev_tree.recursive_do_all (
+					agent (an_ev_tree_node: attached EV_TREE_NODE)
+						do
+							if an_ev_tree_node.is_expandable then
+								an_ev_tree_node.expand
+							end
+						end
+				)
+			)
+	    	menu.extend (an_mi)
+
+			create an_mi.make_with_text_and_action ("Collapse",
+				agent ev_tree.recursive_do_all (
+					agent (an_ev_tree_node: attached EV_TREE_NODE)
+						do
+							if an_ev_tree_node.is_expandable then
+								an_ev_tree_node.collapse
+							end
+						end
+				)
+			)
+	    	menu.extend (an_mi)
+
 		end
 
 	pebble_function (a_x, a_y: INTEGER): ANY
@@ -298,6 +392,9 @@ feature {NONE} -- Implementation
 
 	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
 			-- Timer to delay a moment before calling `display_details_of_selected_item'.
+
+	ev_node_map: HASH_TABLE [EV_TREE_ITEM, STRING]
+			-- list of GUI explorer nodes, keyed by artefact id
 
 end
 

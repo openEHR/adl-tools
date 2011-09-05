@@ -1,31 +1,53 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Abstract idea of a GUI tool in docking arrangement"
-	keywords:    "GUI, ADL"
+	description: "Abstract idea of a GUI tool that can be searched from the addres bar"
+	keywords:    "GUI, searchable"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$URL"
+	revision:    "$LastChangedRevision"
+	last_change: "$LastChangedDate"
 
-deferred class GUI_TOOL
+deferred class GUI_SEARCHABLE_TOOL
+
+inherit
+	GUI_TOOL
 
 feature -- Access
 
-	ev_root_container: EV_CONTAINER
-
-feature -- Commands
-
-	clear
-			-- Wipe out content from visual controls and reset controls to reasoonable state
+	matching_ids (a_key: attached STRING): attached ARRAYED_SET [STRING]
+			-- obtain a list of matching ids
+		require
+			Key_valid: not a_key.is_empty
 		deferred
 		end
 
-	repopulate
-			-- repopulate current tree items if needed
+	tool_unique_id: INTEGER
+			-- unique id of this tool instance over the session
+		do
+			Result := ev_root_container.object_id
+		end
+
+feature -- Status Report
+
+	item_selectable: BOOLEAN
+		deferred
+		end
+
+	valid_item_id (a_key: attached STRING): BOOLEAN
+			-- key is a valid identifier of an item managed in this tool
+		deferred
+		end
+
+feature -- Commands
+
+	select_item (id: attached STRING)
+			-- Select `id' in the tool and go to its node in explorer tree
+		require
+			item_selectable
 		deferred
 		end
 
