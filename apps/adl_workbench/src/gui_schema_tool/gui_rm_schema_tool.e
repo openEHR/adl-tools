@@ -242,6 +242,7 @@ feature {NONE} -- Implementation
 			ev_package_node.extend (ev_class_node)
 
  	 		ev_class_node.pointer_button_press_actions.force_extend (agent class_node_handler (ev_class_node, ?, ?, ?))
+ 	 		ev_class_node.select_actions.force_extend (agent select_class_with_delay (a_class_def))
 
 			ev_node_map.put (ev_class_node, a_class_def.globally_qualified_name)
 
@@ -272,8 +273,7 @@ feature {NONE} -- Implementation
 		do
 			if attached {BMM_CLASS_DEFINITION} ev_ti.data as a_class_def then
 				if button = {EV_POINTER_CONSTANTS}.left then
-					selected_class_def := a_class_def
-					delay_to_make_keyboard_navigation_practical.set_interval (300)
+					select_class_with_delay (a_class_def)
 
 				elseif button = {EV_POINTER_CONSTANTS}.right then
 					create menu
@@ -303,19 +303,31 @@ feature {NONE} -- Implementation
 				create an_mi.make_with_text_and_action ("Edit source schema", agent do_edit_schema (bmm_sch.schema_id))
 		    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action ("Fully expand",
+				create an_mi.make_with_text_and_action ("Expand all",
 					agent ev_tree.recursive_do_all (
-						agent (an_ev_tree_node: attached EV_TREE_NODE)
+						agent (ev_tn: attached EV_TREE_NODE)
 							do
-								if an_ev_tree_node.is_expandable then
-									an_ev_tree_node.expand
+								if ev_tn.is_expandable then
+									ev_tn.expand
 								end
 							end
 					)
 				)
 		    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action ("Collapse",
+				create an_mi.make_with_text_and_action ("Expand packages",
+					agent ev_tree.recursive_do_all (
+						agent (ev_tn: attached EV_TREE_NODE)
+							do
+								if ev_tn.is_expandable and attached {BMM_CLASS_DEFINITION} ev_tn.data then
+									ev_tn.expand
+								end
+							end
+					)
+				)
+		    	menu.extend (an_mi)
+
+				create an_mi.make_with_text_and_action ("Collapse all",
 					agent ev_tree.recursive_do_all (
 						agent (an_ev_tree_node: attached EV_TREE_NODE)
 							do
@@ -355,14 +367,20 @@ feature {NONE} -- Implementation
 
 	selected_class_def: BMM_CLASS_DEFINITION
 
-	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
+	select_class_with_delay (a_class_def: BMM_CLASS_DEFINITION)
+		do
+			selected_class_def := a_class_def
+			delayed_select_class_agent.set_interval (300)
+		end
+
+	delayed_select_class_agent: EV_TIMEOUT
 			-- Timer to delay a moment before calling `select_class_agent'.
 		once
 			create Result
 			Result.actions.extend (
 				agent
 					do
-						delay_to_make_keyboard_navigation_practical.set_interval (0)
+						delayed_select_class_agent.set_interval (0)
 						select_class_agent.call ([selected_class_def])
 					end
 			)

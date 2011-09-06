@@ -54,10 +54,6 @@ feature {NONE} -- Initialisation
 			ev_label.align_text_left
 			ev_tree.set_background_color (editable_colour)
   			ev_tree.set_minimum_width (max_arch_explorer_width)
-
-			-- events
-			ev_tree.select_actions.extend (agent tree_item_select)
-			ev_tree.focus_in_actions.extend (agent tree_item_select)
 		end
 
 feature -- Access
@@ -94,13 +90,6 @@ feature -- Commands
 			refresh
 		end
 
-feature -- Events
-
-	tree_item_select
-			-- Display details of tree when user selects
-		deferred
-		end
-
 feature {NONE} -- Implementation
 
 	ev_pixmap: EV_PIXMAP
@@ -119,10 +108,6 @@ feature {NONE} -- Implementation
 
 	ev_tree_item_stack: ARRAYED_STACK [EV_TREE_ITEM]
 			-- Stack used during `populate_ev_tree_node_enter'.
-
-	display_selected_item
-		deferred
-		end
 
 	populate_tree
 		deferred
@@ -152,19 +137,60 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	display_selected_item_after_delay
-			-- When the user selects an item in `gui_file_tree', delay before displaying it.
-		do
-			if delay_to_make_keyboard_navigation_practical = Void then
-				create delay_to_make_keyboard_navigation_practical
-				delay_to_make_keyboard_navigation_practical.actions.extend (agent display_selected_item)
-			end
+	selected_archetype_node: ARCH_CAT_ARCHETYPE
 
-			delay_to_make_keyboard_navigation_practical.set_interval (300)
+	select_archetype_with_delay (aca: ARCH_CAT_ARCHETYPE)
+		deferred
 		end
 
-	delay_to_make_keyboard_navigation_practical: EV_TIMEOUT
-			-- Timer to delay a moment before calling `display_details_of_selected_item'.
+	select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent: PROCEDURE [ANY, TUPLE]
+
+	archetype_node_handler (ev_ti: EV_TREE_ITEM; x,y, button: INTEGER)
+			-- creates the context menu for a right click action for an ARCH_REP_ARCHETYPE node
+		local
+			menu: EV_MENU
+			an_mi: EV_MENU_ITEM
+		do
+			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
+				if button = {EV_POINTER_CONSTANTS}.left then
+					select_archetype_with_delay (aca)
+
+				elseif button = {EV_POINTER_CONSTANTS}.right then
+					create menu
+					create an_mi.make_with_text_and_action ("Compile and Display", agent display_context_selected_archetype_in_active_tool (ev_ti))
+					an_mi.set_pixmap (pixmaps ["parse"])
+			    	menu.extend (an_mi)
+
+					create an_mi.make_with_text_and_action ("Display in new tool", agent display_context_selected_archetype_in_new_tool (ev_ti))
+					an_mi.set_pixmap (pixmaps ["archetype_2"])
+					menu.extend (an_mi)
+
+					create an_mi.make_with_text_and_action ("Edit source", edit_archetype_agent)
+					an_mi.set_pixmap (pixmaps ["edit"])
+					menu.extend (an_mi)
+
+					menu.show
+				end
+			end
+		end
+
+	display_context_selected_archetype_in_active_tool (ev_ti: EV_TREE_ITEM)
+		do
+			ev_ti.enable_select
+			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
+				current_arch_cat.set_selected_item (aca)
+				select_archetype_agent.call ([])
+			end
+		end
+
+	display_context_selected_archetype_in_new_tool (ev_ti: EV_TREE_ITEM)
+		do
+			ev_ti.enable_select
+			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
+				current_arch_cat.set_selected_item (aca)
+				select_archetype_in_new_tool_agent.call ([])
+			end
+		end
 
 invariant
 	valid_artefact_types: (create {ARTEFACT_TYPE}).valid_artefact_types(artefact_types)

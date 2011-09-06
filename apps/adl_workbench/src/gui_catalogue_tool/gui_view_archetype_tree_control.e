@@ -83,41 +83,9 @@ feature -- Commands
 			end
 		end
 
-feature -- Events
-
-	tree_item_select
-			-- Display details of `archetype_file_tree' when the user selects it.
-		do
-			if attached ev_tree.selected_item then
-				if attached current_arch_cat and then current_arch_cat.selected_item /= ev_tree.selected_item.data then
-					display_selected_item_after_delay
-				end
-			end
-		end
-
 feature {NONE} -- Implementation
 
-	select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent: PROCEDURE [ANY, TUPLE]
-
 	select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
-
-	display_selected_item
-		do
-			delay_to_make_keyboard_navigation_practical.set_interval (0)
-			if attached ev_tree.selected_item then
-				if attached {ARCH_CAT_ITEM} ev_tree.selected_item.data as aci then
-					if attached current_arch_cat then
-						current_arch_cat.set_selected_item (aci)
-					end
-
-					if attached {ARCH_CAT_ARCHETYPE} aci then
-						select_archetype_agent.call ([])
-					elseif attached {ARCH_CAT_MODEL_NODE} aci as acmn and then not acmn.is_model_group then
-						select_class_agent.call ([acmn.class_definition])
-					end
-				end
-			end
-		end
 
 	populate_tree
 		do
@@ -136,10 +104,6 @@ feature {NONE} -- Implementation
 	 			ev_node.set_data (aci)
 
  				ev_node_descriptor_map.put (ev_node, aci.ontological_name)
- 				
-	 			ev_node.set_pebble_function (agent pebble_function)
-				ev_node.set_configurable_target_menu_handler (agent context_menu_handler)
-				ev_node.set_configurable_target_menu_mode
 
 	 			update_tree_node (ev_node)
 
@@ -162,13 +126,13 @@ feature {NONE} -- Implementation
 			end
 		end
 
-   	update_tree_node (node: attached EV_TREE_NODE)
+   	update_tree_node (ev_node: attached EV_TREE_ITEM)
    			-- Set the text, tooltip and icon appropriate to the item attached to `node'.
    		local
 			text, tooltip: STRING_32
 			pixmap: EV_PIXMAP
 		do
-			if attached {ARCH_CAT_ITEM} node.data as aci then
+			if attached {ARCH_CAT_ITEM} ev_node.data as aci then
 				text := utf8 (aci.display_name)
 
 				if attached {ARCH_CAT_ARCHETYPE} aci as aca then -- archetype / template node
@@ -185,10 +149,14 @@ feature {NONE} -- Implementation
 					if not aca.errors.is_empty then
 						tooltip.append (utf8 ("%N%N" + aca.errors.as_string))
 					end
-	 				node.set_tooltip (tooltip)
+	 				ev_node.set_tooltip (tooltip)
 
 					-- pixmap
 					pixmap := pixmaps [aci.group_name]
+
+					-- select / menu handling					
+		 			ev_node.pointer_button_press_actions.force_extend (agent archetype_node_handler (ev_node, ?, ?, ?))
+		 			ev_node.select_actions.force_extend (agent select_archetype_with_delay (aca))
 
 	 			elseif attached {ARCH_CAT_MODEL_NODE} aci as acmn then -- it is a model node
 	 				-- text
@@ -200,14 +168,60 @@ feature {NONE} -- Implementation
 					else
 						pixmap := pixmaps [aci.group_name]
 					end
+
+					-- select / menu handling					
+		 			ev_node.pointer_button_press_actions.force_extend (agent class_node_handler (ev_node, ?, ?, ?))
+		 			ev_node.select_actions.force_extend (agent select_class_with_delay (acmn))
 				end
 
 				-- set text
-				node.set_text (text)
+				ev_node.set_text (text)
 				if attached pixmap then
-					node.set_pixmap (pixmap)
+					ev_node.set_pixmap (pixmap)
 				end
 			end
+		end
+
+	selected_model_node: ARCH_CAT_MODEL_NODE
+
+	select_class_with_delay (acmn: ARCH_CAT_MODEL_NODE)
+		do
+			selected_model_node := acmn
+			delayed_select_class_agent.set_interval (300)
+		end
+
+	delayed_select_class_agent: EV_TIMEOUT
+			-- Timer to delay a moment before calling `select_class_agent'.
+		once
+			create Result
+			Result.actions.extend (
+				agent
+					do
+						delayed_select_class_agent.set_interval (0)
+						current_arch_cat.set_selected_item (selected_model_node)
+						select_class_agent.call ([selected_model_node.class_definition])
+					end
+			)
+		end
+
+	select_archetype_with_delay (aca: ARCH_CAT_ARCHETYPE)
+		do
+			selected_archetype_node := aca
+			delayed_select_archetype_agent.set_interval (300)
+		end
+
+	delayed_select_archetype_agent: EV_TIMEOUT
+			-- Timer to delay a moment before calling `select_archetype_agent'.
+		once
+			create Result
+			Result.actions.extend (
+				agent
+					do
+						delayed_select_archetype_agent.set_interval (0)
+						current_arch_cat.set_selected_item (selected_archetype_node)
+						select_archetype_agent.call ([])
+					end
+			)
 		end
 
 	ev_tree_expand (node: EV_TREE_NODE)
@@ -220,60 +234,26 @@ feature {NONE} -- Implementation
 	 		end
 		end
 
-	context_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
+	class_node_handler (ev_ti: EV_TREE_ITEM; x,y, button: INTEGER)
 			-- creates the context menu for a right click action for an ARCH_REP_ARCHETYPE node
+		local
+			menu: EV_MENU
+			an_mi: EV_MENU_ITEM
 		do
-			if attached {EV_TREE_ITEM} a_source as ev_ti then
-				if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
-					create_archetype_context_menu (a_menu, aca.ontological_name, ev_ti)
-				elseif attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
-					create_class_context_menu (a_menu, acmn.ontological_name, ev_ti)
+			if attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
+				if button = {EV_POINTER_CONSTANTS}.left then
+					select_class_with_delay (acmn)
+
+				elseif button = {EV_POINTER_CONSTANTS}.right then
+					create menu
+					create an_mi.make_with_text_and_action ("Display", agent display_context_selected_class_in_active_tool (ev_ti))
+			    	menu.extend (an_mi)
+
+					create an_mi.make_with_text_and_action ("Display in new tool", agent display_context_selected_class_in_new_tool (ev_ti))
+					menu.extend (an_mi)
+
+					menu.show
 				end
-			end
-		end
-
-	create_archetype_context_menu (menu: EV_MENU; arch_id: STRING; ev_ti: EV_TREE_ITEM)
-			-- dynamically initializes the context menu for this tree
-		local
-			parse_mi, edit_source_mi, new_tool_mi: EV_MENU_ITEM
-		do
-			create parse_mi.make_with_text_and_action ("Compile and Display", agent display_context_selected_archetype_in_active_tool (ev_ti))
-			parse_mi.set_pixmap (pixmaps ["parse"])
-	    	menu.extend (parse_mi)
-
-			create new_tool_mi.make_with_text_and_action ("Display in new tool", agent display_context_selected_archetype_in_new_tool (ev_ti))
-			new_tool_mi.set_pixmap (pixmaps ["archetype_2"])
-			menu.extend (new_tool_mi)
-
-			create edit_source_mi.make_with_text_and_action ("Edit source", edit_archetype_agent)
-			edit_source_mi.set_pixmap (pixmaps ["edit"])
-			menu.extend (edit_source_mi)
-		end
-
-	create_class_context_menu (menu: EV_MENU; arch_id: STRING; ev_ti: EV_TREE_ITEM)
-			-- dynamically initializes the context menu for this tree
-		local
-			display_mi, new_tool_mi: EV_MENU_ITEM
-		do
-			create display_mi.make_with_text_and_action ("Display", agent display_context_selected_class_in_active_tool (ev_ti))
-	    	menu.extend (display_mi)
-
-			create new_tool_mi.make_with_text_and_action ("Display in new tool", agent display_context_selected_class_in_new_tool (ev_ti))
-			menu.extend (new_tool_mi)
-		end
-
-	pebble_function (a_x, a_y: INTEGER): ANY
-			-- Pebble function for pebble source
-		do
-			Result := "pebble"
-		end
-
-	display_context_selected_archetype_in_active_tool (ev_ti: EV_TREE_ITEM)
-		do
-			ev_ti.enable_select
-			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
-				current_arch_cat.set_selected_item (aca)
-				select_archetype_agent.call ([])
 			end
 		end
 
@@ -283,15 +263,6 @@ feature {NONE} -- Implementation
 			if attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
 				current_arch_cat.set_selected_item (acmn)
 				select_class_agent.call ([current_arch_cat.selected_class.class_definition])
-			end
-		end
-
-	display_context_selected_archetype_in_new_tool (ev_ti: EV_TREE_ITEM)
-		do
-			ev_ti.enable_select
-			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
-				current_arch_cat.set_selected_item (aca)
-				select_archetype_in_new_tool_agent.call ([])
 			end
 		end
 

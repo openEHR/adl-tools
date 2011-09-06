@@ -57,42 +57,32 @@ feature -- Commands
 --			end
 		end
 
-feature -- Events
-
-	tree_item_select
-			-- Display details of `template_file_tree' when the user selects it.
-		do
-			if attached ev_tree.selected_item then
-				if attached {ARCH_CAT_ARCHETYPE} ev_tree.selected_item.data as ara then
-					focus_archetype_agent.call ([ara.ontological_name])
-				end
-
-				if attached current_arch_cat as cat and then cat.selected_item /= ev_tree.selected_item.data then
-					display_selected_item_after_delay
-				end
-			end
-		end
-
 feature {NONE} -- Implementation
-
-	select_archetype_agent: PROCEDURE [ANY, TUPLE]
 
 	focus_archetype_agent: PROCEDURE [ANY, TUPLE [STRING]]
 
-	display_selected_item
+	select_archetype_with_delay (aca: ARCH_CAT_ARCHETYPE)
 		do
-			delay_to_make_keyboard_navigation_practical.set_interval (0)
-
-			if attached ev_tree.selected_item then
-				if attached {ARCH_CAT_ARCHETYPE} ev_tree.selected_item.data as ara then
-					if attached current_arch_cat then
-						current_arch_cat.set_selected_item (ara)
-					end
-
-					select_archetype_agent.call ([])
-					ev_tree_node_populate (ara)
-				end
+			focus_archetype_agent.call ([aca.ontological_name])
+			selected_archetype_node := aca
+			if current_arch_cat.selected_item /= aca then
+				delayed_select_archetype_agent.set_interval (300)
 			end
+		end
+
+	delayed_select_archetype_agent: EV_TIMEOUT
+			-- Timer to delay a moment before calling `select_archetype_agent'.
+		once
+			create Result
+			Result.actions.extend (
+				agent
+					do
+						delayed_select_archetype_agent.set_interval (0)
+						current_arch_cat.set_selected_item (selected_archetype_node)
+						select_archetype_agent.call ([])
+						ev_tree_node_populate (selected_archetype_node)
+					end
+			)
 		end
 
 	populate_tree
@@ -202,6 +192,10 @@ feature {NONE} -- Implementation
 			if attached ara then
 				a_ti.set_data (ara)
 				ev_node_descriptor_map.force (a_ti, ara.ontological_name)
+
+				-- select / menu handling					
+	 			a_ti.pointer_button_press_actions.force_extend (agent archetype_node_handler (a_ti, ?, ?, ?))
+	 			a_ti.select_actions.force_extend (agent select_archetype_with_delay (ara))
 			end
 			a_ti.set_pixmap (pixmap)
 			if ev_tree_item_stack.is_empty then
