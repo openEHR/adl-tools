@@ -303,44 +303,59 @@ feature {NONE} -- Implementation
 				create an_mi.make_with_text_and_action ("Edit source schema", agent do_edit_schema (bmm_sch.schema_id))
 		    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action ("Expand all",
-					agent ev_tree.recursive_do_all (
-						agent (ev_tn: attached EV_TREE_NODE)
-							do
-								if ev_tn.is_expandable then
-									ev_tn.expand
-								end
-							end
-					)
-				)
+				create an_mi.make_with_text_and_action ("Expand all", agent schema_expand_all (ev_ti))
 		    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action ("Expand packages",
-					agent ev_tree.recursive_do_all (
-						agent (ev_tn: attached EV_TREE_NODE)
-							do
-								if ev_tn.is_expandable and attached {BMM_CLASS_DEFINITION} ev_tn.data then
-									ev_tn.expand
-								end
-							end
-					)
-				)
+				create an_mi.make_with_text_and_action ("Expand packages", agent schema_expand_packages (ev_ti))
 		    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action ("Collapse all",
-					agent ev_tree.recursive_do_all (
-						agent (an_ev_tree_node: attached EV_TREE_NODE)
-							do
-								if an_ev_tree_node.is_expandable then
-									an_ev_tree_node.collapse
-								end
-							end
-					)
-				)
+				create an_mi.make_with_text_and_action ("Collapse all",agent schema_collapse (ev_ti))
 		    	menu.extend (an_mi)
 
 				menu.show
 		    end
+		end
+
+	schema_expand_all (a_schema_node: EV_TREE_NODE)
+		do
+			a_schema_node.expand
+			a_schema_node.recursive_do_all (
+				agent (ev_tn: attached EV_TREE_NODE)
+					do
+						if ev_tn.is_expandable then
+							ev_tn.expand
+						end
+					end
+			)
+		end
+
+	schema_expand_packages (a_schema_node: EV_TREE_NODE)
+		do
+			a_schema_node.expand
+			a_schema_node.recursive_do_all (
+				agent (ev_tn: attached EV_TREE_NODE)
+					do
+						if ev_tn.is_expandable and
+							attached {BMM_PACKAGE_DEFINITION} ev_tn.data and then
+							not ev_tn.there_exists (agent (a_tn: EV_TREE_NODE):BOOLEAN do Result := attached {BMM_CLASS_DEFINITION} a_tn.data end)
+						then
+							ev_tn.expand
+						end
+					end
+			)
+		end
+
+	schema_collapse (a_schema_node: EV_TREE_NODE)
+		do
+			a_schema_node.recursive_do_all (
+				agent (an_ev_tree_node: attached EV_TREE_NODE)
+					do
+						if an_ev_tree_node.is_expandable then
+							an_ev_tree_node.collapse
+						end
+					end
+			)
+			a_schema_node.collapse
 		end
 
 	display_context_selected_class_in_active_tool (ev_ti: EV_TREE_ITEM)
