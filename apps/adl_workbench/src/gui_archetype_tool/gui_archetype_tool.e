@@ -285,6 +285,10 @@ feature -- UI Feedback
 	select_ontology_item_from_code (a_code: attached STRING)
 			-- if a code is selected in teh archetype definition tree, select the code in the ontology part of the UI
 		do
+			if not ontology_controls.is_populated then
+				ontology_controls.populate (target_archetype_descriptor, differential_view, selected_language)
+			end
+			ev_notebook.select_item (ontology_controls.ev_root_container)
 			if is_term_code (a_code) then
 				ontology_controls.select_term (a_code)
 			elseif is_constraint_code (a_code) then

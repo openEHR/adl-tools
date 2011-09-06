@@ -87,6 +87,11 @@ feature -- Status Report
 
 	differential_view: BOOLEAN
 
+	is_populated: BOOLEAN
+		do
+			Result := attached target_archetype_descriptor
+		end
+
 feature -- Commands
 
 	clear
@@ -262,18 +267,19 @@ feature {NONE} -- Implementation
 
 	select_coded_term_row (a_term_code: STRING; list_control: EV_MULTI_COLUMN_LIST)
 			-- Select the row for `a_term_code' in `list_control'.
+		local
+			found: BOOLEAN
 		do
 			list_control.remove_selection
-
-			from list_control.start until list_control.off loop
+			list_control.show
+			from list_control.start until list_control.off or found loop
 				if list_control.item.first.is_equal (a_term_code) then
 					list_control.item.enable_select
-
-					if list_control.is_displayed then
+					found := True
+				--	if list_control.is_displayed then
 						list_control.ensure_item_visible (list_control.item)
-					end
+				--	end
 				end
-
 				list_control.forth
 			end
 		end

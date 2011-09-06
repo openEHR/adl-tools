@@ -54,7 +54,8 @@ feature -- Initialisation
 
 	initialise (an_archetype: attached ARCHETYPE; a_lang: attached STRING; a_gui_tree: EV_TREE;
 				technical_mode_flag, update_flag: BOOLEAN;
-				a_gui_node_map: HASH_TABLE [EV_TREE_ITEM, ARCHETYPE_CONSTRAINT])
+				a_gui_node_map: HASH_TABLE [EV_TREE_ITEM, ARCHETYPE_CONSTRAINT];
+				a_code_select_agent: attached PROCEDURE [ANY, TUPLE [STRING]])
 			-- set ontology required for serialising cADL, and perform basic initialisation
 		do
 			initialise_visitor (an_archetype)
@@ -67,6 +68,7 @@ feature -- Initialisation
 			language := a_lang
 			rm_publisher := an_archetype.archetype_id.rm_originator.as_lower
 			create gui_nodes.make (0)
+			code_select_agent := a_code_select_agent
 		end
 
 feature -- Visitor
@@ -96,6 +98,9 @@ feature -- Visitor
 				gui_node_map.item (a_node).set_pixmap (pixmap)
 			else
 				create_node (gui_node_text, pixmap, a_node)
+
+				-- add select event
+	 			last_gui_node.pointer_button_press_actions.force_extend (agent call_code_select_agent (a_node.node_id, ?, ?, ?))
 
 				-- attach into GUI tree
 				if a_node.is_root then
@@ -349,6 +354,9 @@ feature -- Visitor
 				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
 			else
 				create_node (gui_node_text, pixmaps.item(a_node.generating_type + create_pixmap_ext (a_node)), a_node)
+
+				-- add select event
+	 			last_gui_node.pointer_button_press_actions.force_extend (agent call_code_select_agent (a_node.target, ?, ?, ?))
 			end
 		end
 
@@ -447,6 +455,12 @@ feature -- Visitor
 						create gui_sub_node.make_with_text (utf8 (object_term_item_string (a_node.code_list.item, assumed_flag, a_node.is_local)))
 						gui_sub_node.set_data (a_node.code_list.item) -- type STRING
 						gui_sub_node.set_pixmap (pixmaps.item ("TERM" + pixmap_ext))
+
+						-- add select event
+						if ontology.has_term_code (a_node.code_list.item) then
+	 						gui_sub_node.pointer_button_press_actions.force_extend (agent call_code_select_agent (a_node.code_list.item, ?, ?, ?))
+	 					end
+
 						last_gui_node.extend (gui_sub_node)
 						a_node.code_list.forth
 					end
@@ -496,6 +510,12 @@ feature -- Visitor
 						create gui_sub_node.make_with_text (utf8 (object_ordinal_item_string (a_node.items.item, assumed_flag)))
 						gui_sub_node.set_data (a_node.items.item) -- of type ORDINAL
 						gui_sub_node.set_pixmap (pixmaps.item ("ORDINAL" + pixmap_ext))
+
+						-- add select event
+						if a_node.items.item.symbol.terminology_id.is_local then
+	 						gui_sub_node.pointer_button_press_actions.force_extend (agent call_code_select_agent (a_node.items.item.symbol.code_string, ?, ?, ?))
+						end
+
 						last_gui_node.extend (gui_sub_node)
 						a_node.items.forth
 					end
@@ -838,6 +858,22 @@ feature {NONE} -- Implementation
 				end
 			end
 		end
+
+	call_code_select_agent (a_code: STRING; x,y, button: INTEGER)
+		local
+			menu: EV_MENU
+			an_mi: EV_MENU_ITEM
+		do
+			if button = {EV_POINTER_CONSTANTS}.right then
+				create menu
+				create an_mi.make_with_text_and_action ("Display code", agent code_select_agent.call ([a_code]))
+				menu.extend (an_mi)
+				menu.show
+			end
+		end
+
+	code_select_agent: PROCEDURE [ANY, TUPLE [STRING]]
+			-- action to perform when node is selected in tree
 
 end
 

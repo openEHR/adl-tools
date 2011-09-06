@@ -168,13 +168,14 @@ feature {NONE} -- Implementation
 					-- pixmap
 					if acmn.is_class then
 						pixmap := object_node_pixmap (acmn)
+
+						-- select / menu handling					
+			 			ev_node.pointer_button_press_actions.force_extend (agent class_node_handler (ev_node, ?, ?, ?))
+			 			ev_node.select_actions.force_extend (agent select_class_with_delay (acmn))
 					else
 						pixmap := pixmaps [aci.group_name]
 					end
 
-					-- select / menu handling					
-		 			ev_node.pointer_button_press_actions.force_extend (agent class_node_handler (ev_node, ?, ?, ?))
-		 			ev_node.select_actions.force_extend (agent select_class_with_delay (acmn))
 				end
 
 				-- set text
@@ -185,11 +186,11 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	selected_model_node: ARCH_CAT_MODEL_NODE
+	selected_class_node: ARCH_CAT_MODEL_NODE
 
-	select_class_with_delay (acmn: ARCH_CAT_MODEL_NODE)
+	select_class_with_delay (acmn: attached ARCH_CAT_MODEL_NODE)
 		do
-			selected_model_node := acmn
+			selected_class_node := acmn
 			delayed_select_class_agent.set_interval (300)
 		end
 
@@ -201,8 +202,8 @@ feature {NONE} -- Implementation
 				agent
 					do
 						delayed_select_class_agent.set_interval (0)
-						current_arch_cat.set_selected_item (selected_model_node)
-						select_class_agent.call ([selected_model_node.class_definition])
+						current_arch_cat.set_selected_item (selected_class_node)
+						select_class_agent.call ([selected_class_node.class_definition])
 					end
 			)
 		end

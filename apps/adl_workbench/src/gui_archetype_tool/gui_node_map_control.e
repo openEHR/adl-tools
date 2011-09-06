@@ -136,7 +136,6 @@ feature -- Initialisation
 			end
 
 			-- set events
-			ev_tree.select_actions.extend (agent on_tree_item_select)
 			ev_expand_button.select_actions.extend (agent on_toggle_expand_tree)
 			ev_expand_one_button.select_actions.extend (agent on_expand_tree_one_level)
 			ev_collapse_one_button.select_actions.extend (agent on_shrink_tree_one_level)
@@ -204,12 +203,13 @@ feature -- Commands
 			clear
 			create tree_item_stack.make (0)
 			create gui_node_map.make(0)
+			create ontologies.make (0)
 
 			rm_schema := target_archetype_descriptor.rm_schema
 
 			-- populate from definition
 			create c_node_map_builder
-			c_node_map_builder.initialise (target_archetype, selected_language, ev_tree, in_technical_mode, False, gui_node_map)
+			c_node_map_builder.initialise (target_archetype, selected_language, ev_tree, in_technical_mode, False, gui_node_map, code_select_action_agent)
 			create a_c_iterator.make (target_archetype.definition, c_node_map_builder)
 			a_c_iterator.do_all
 
@@ -242,7 +242,7 @@ feature -- Commands
 
 			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
 			create c_node_map_builder
-			c_node_map_builder.initialise (target_archetype, selected_language, ev_tree, in_technical_mode, True, gui_node_map)
+			c_node_map_builder.initialise (target_archetype, selected_language, ev_tree, in_technical_mode, True, gui_node_map, code_select_action_agent)
 			create a_c_iterator.make (target_archetype.definition, c_node_map_builder)
 			a_c_iterator.do_all
 
@@ -302,29 +302,6 @@ feature {NONE} -- Events
 		do
 			if attached target_archetype_descriptor then
 				toggle_expand_tree
-			end
-		end
-
-	on_tree_item_select
-			-- When the user selects a node in `gui_tree'.
-		do
-			if attached {C_COMPLEX_OBJECT} ev_tree.selected_item.data as c_c_o then
-				if c_c_o.is_addressable then
-					call_code_select_action (c_c_o.node_id)
-				end
-
-			elseif attached {CONSTRAINT_REF} ev_tree.selected_item.data as c_r then
-				call_code_select_action (c_r.target)
-
-			elseif attached {ORDINAL} ev_tree.selected_item.data as ord then
-				if ord.symbol.terminology_id.is_local then
-					call_code_select_action (ord.symbol.code_string)
-				end
-
-			elseif attached {STRING} ev_tree.selected_item.data as str and then is_valid_code (str) then
-				if ontology.has_term_code (str) then
-					call_code_select_action (str)
-				end
 			end
 		end
 
@@ -659,14 +636,6 @@ feature {NONE} -- Implementation
 				a_target.forth
 			end
 			node_exit_action.call ([a_target])
-		end
-
-	call_code_select_action (a_code: STRING)
-			-- Call `code_select_action_agent', if it is attached.
-		do
-			if attached code_select_action_agent then
-				code_select_action_agent.call ([a_code])
-			end
 		end
 
 end
