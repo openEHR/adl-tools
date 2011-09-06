@@ -95,7 +95,7 @@ feature {NONE}-- Initialization
 
 			file_menu.set_text ("&File")
 			file_menu_open.set_text ("&Open...")
-			file_menu_parse.set_text ("&Parse")
+			file_menu_parse.set_text ("&Compile and Display")
 			file_menu_edit.set_text ("&Edit")
 			file_menu_save_as.set_text ("Save &As...")
 			file_menu_exit.set_text ("E&xit")

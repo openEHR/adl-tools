@@ -146,6 +146,9 @@ feature {NONE} -- Implementation
 
 					-- tooltip
 					tooltip := utf8 (aca.full_path)
+					if aca.has_legacy_flat_file and aca.differential_generated then
+						tooltip.append ("%N(source = legacy flat)")
+					end
 					if not aca.errors.is_empty then
 						tooltip.append (utf8 ("%N%N" + aca.errors.as_string))
 					end
