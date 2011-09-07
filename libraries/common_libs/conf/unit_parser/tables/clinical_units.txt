@@ -1,0 +1,37 @@
+;
+;	component:   "openEHR Reusable Libraries"
+;	description: "[
+;			 Database of unit tables, designed on the basis of the Unified Code for Units
+;	             of Measure (UCUM), developed by Gunther Schadow and Clement J. McDonald of
+;			 The Regenstrief Institute For Health Care, Indianapolis.
+;			 Published at http://aurora.rg.iupui.edu/UCUM.
+;	             ]"
+;	keywords:    "units, UCUM"
+;
+;	author:      "Thomas Beale"
+;	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+;	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+;	license:     "See notice at bottom of class"
+;
+;	file:        "$Source$"
+;	revision:    "$Revision$"
+;	last_change: "$Date$"
+
+[identification]
+GROUP_NAME = Clinical Medicine units
+
+[units]
+;
+;NAME = NAME:PROPERTY:CASE_SENSITIVE:CASE_INSENSITIVE:METRIC:VALUE:DEFINITION
+;
+meter_water_pressure = meter of water:pressure m H2O:m[H2O]:M[H2O]:Y:9.80665:kPa
+col_meter_mercury_pressure = column meter of mercury:pressure m Hg:m[Hg]:M[HG]:Y:133.3220:kPa
+col_inch_water = column inch of water:pressure in H2O:in_i'H2O:IN_I'H2O:N:1:m[H2O].[in_i]/m
+col_inch_mercury = column inch of mercury:pressure in Hg:in_i'Hg:IN_i'HG:N:1:m[Hg].[in_i]/m
+col_pru_vascular_resistance = column peripheral vascular resistance P.R.U.:pru:PRU:PRU:N:1:mm[Hg].s/ml 
+diopter = unit diopter:refraction:dpt:DIOP:N:1:/m of a lens
+mesh = mesh:lineic number:mesh_i:MESH_I:N:1:/in_i
+Charrière = Charrière:gauge of (french) catheters:Ch:CH:N:1:mm/[pi]
+drop = drop:volume drop:drp:DRP:N:1:ml/12
+hounsfield_x_ray = Hounsfield x-ray unit:attenuation:hnsf'U:HNSF'U:N:1:1 metabolic
+metabolic_unit = metabolic:cost of equivalent physical MET:MET:MET:N:3.5:mL/min/kg activity

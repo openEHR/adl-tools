@@ -1,0 +1,61 @@
+#include <windows.h>
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+Logo_icon    ICON    DISCARDABLE     "icons/adl_workbench_logo.ico"
+
+// It should be
+// CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "adl_workbench.exe.manifest"
+// but on older version of VC or older version of the Platform SDK they are not defined.
+// 1 24 "adl_workbench.exe.manifest"
+
+#define VER_FILEVERSION             1,5,0,0
+#define VER_FILEVERSION_STR         "1.5.0.0\0"
+
+#define VER_PRODUCTVERSION          1,5,0,0
+#define VER_PRODUCTVERSION_STR      "1.5\0"
+
+#ifndef DEBUG
+#define VER_DEBUG                   0
+#else
+#define VER_DEBUG                   VS_FF_DEBUG
+#endif
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION    	VER_FILEVERSION
+PRODUCTVERSION 	VER_PRODUCTVERSION
+FILEFLAGSMASK  	VS_FFI_FILEFLAGSMASK
+FILEFLAGS      	1
+FILEOS         	VOS__WINDOWS32
+FILETYPE       	VFT_DLL
+FILESUBTYPE    	VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "CompanyName",      "openEHR Foundation"
+            VALUE "FileDescription",  "Archetype Definition Language Workbench"
+            VALUE "FileVersion",      VER_FILEVERSION_STR
+            VALUE "InternalName",     "adl_workbench.exe"
+            VALUE "LegalCopyright",   "Copyright © 2003-2011"
+            VALUE "OriginalFilename", "adl_workbench.exe"
+            VALUE "ProductName",      "ADL Workbench"
+            VALUE "ProductVersion",   VER_PRODUCTVERSION_STR
+        END
+    END
+
+    BLOCK "VarFileInfo"
+    BEGIN
+        /* The following line should only be modified for localized versions.     */
+        /* It consists of any number of WORD,WORD pairs, with each pair           */
+        /* describing a language,codepage combination supported by the file.      */
+        /*                                                                        */
+        /* For example, a file might have values "0x409,1252" indicating that it  */
+        /* supports English language (0x409) in the Windows ANSI codepage (1252). */
+
+        VALUE "Translation", 0x409, 1252
+
+    END
+END
+

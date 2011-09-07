@@ -1,0 +1,35 @@
+;
+;	component:   "openEHR Reusable Libraries"
+;	description: "[
+;			 Database of unit tables, designed on the basis of the Unified Code for Units
+;	             of Measure (UCUM), developed by Gunther Schadow and Clement J. McDonald of
+;			 The Regenstrief Institute For Health Care, Indianapolis.
+;			 Published at http://aurora.rg.iupui.edu/UCUM.
+;	             ]"
+;	keywords:    "units, UCUM"
+;
+;	author:      "Thomas Beale"
+;	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+;	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+;	license:     "See notice at bottom of class"
+;
+;	file:        "$Source$"
+;	revision:    "$Revision$"
+;	last_change: "$Date$"
+;
+
+[identification]
+GROUP_NAME = Level Units
+
+[units]
+;
+;NAME:PROPERTY:CASE_SENSITIVE:CASE_INSENSITIVE:METRIC:VALUE:DEFINITION
+;
+neper=neper:level:Np:NEP:Y:-:ln(1 1)
+bel=bel:level:B:B:Y:-:lg(1 1)
+bel sound pressure=bel sound pressure:sound pressure level:B[SPL]:B[SPL]:Y:-:2lg(2E-5.Pa)
+bel volt=bel volt:volts level:B[V]:B[V]:Y:-:2lg(1 V)
+bel millivolts=bel millivolts:millivolts level:B[mV]:B[MV]:Y:-:2lg(1 mV)
+bel microvolts=bel microvolts:microvolts level:B[uV]:B[UV]:Y:-:2lg(1 uV)
+bel watts=bel watts:watts level:B(W):B[W]:Y:-:lg(1 W)
+bel kilowatts=bel kilowatts:kilowatts level:B[kW]:B[KW]:Y:-:lg(1 kW)

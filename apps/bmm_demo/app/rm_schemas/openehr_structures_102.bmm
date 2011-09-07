@@ -1,0 +1,558 @@
+-- 
+-- 	component:   openEHR Archetype Project
+-- 	description: openEHR Reference Model formal expression. This file is a DADL serialisation of
+--               the BMM object meta-model classes found at 
+--               http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/libraries/common_libs/src/basic_meta_model
+-- 	keywords:    reference model, meta-model, archetypes
+-- 	author:      Thomas Beale
+-- 	support:     Ocean Informatics <support@OceanInformatics.com>
+-- 	copyright:   Copyright (c) 2009-2010 openEHR Foundation
+-- 	license:     See end of file
+-- 
+-- 	file:        $URL$
+-- 	revision:    $LastChangedRevision$
+-- 	last_change: $LastChangedDate$
+-- 
+
+------------------------------------------------------
+-- schema identification
+-- (schema_id computed as <model_publisher>_<schema_name>_<model_release>)
+------------------------------------------------------
+schema_name = <"structures">
+model_publisher = <"openehr">
+model_release = <"1.0.2">
+
+------------------------------------------------------
+-- schema documentation
+------------------------------------------------------
+schema_revision = <"$LastChangedRevision$">
+schema_lifecycle_state = <"stable">
+schema_description = <"openEHR Release 1.0.2 structures schema">
+
+------------------------------------------------------
+-- inclusions
+------------------------------------------------------
+includes = <
+	["1"] = <
+		id = <"openehr_basic_types_1.0.2">
+	>
+>
+
+------------------------------------------------------
+-- packages
+------------------------------------------------------
+
+packages = <
+	["rm.data_structures"] = <
+		name = <"rm.data_structures">
+		classes = <"DATA_STRUCTURE", ...> 
+	>
+>
+
+
+------------------------------------------------------
+-- classes
+------------------------------------------------------
+
+class_definitions = <
+
+	------------------------------------------------------------
+	---------------------- rm.data_structures ------------------
+	------------------------------------------------------------
+
+	["DATA_STRUCTURE"] = <
+		name = <"DATA_STRUCTURE">
+		is_abstract = <True>
+		ancestors = <"LOCATABLE", ...>
+	>
+
+	["ITEM_STRUCTURE"] = <
+		name = <"ITEM_STRUCTURE">
+		is_abstract = <True>
+		ancestors = <"DATA_STRUCTURE", ...>
+	>
+
+	["ITEM_SINGLE"] = <
+		name = <"ITEM_SINGLE">
+		ancestors = <"ITEM_STRUCTURE", ...>
+		properties = <
+			["item"] = (BMM_SINGLE_PROPERTY) <
+				name = <"item">
+				type = <"ELEMENT">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["ITEM_LIST"] = <
+		name = <"ITEM_LIST">
+		ancestors = <"ITEM_STRUCTURE", ...>
+		properties = <
+			["items"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"items">
+				type_def = <
+					container_type = <"List">
+					type = <"ELEMENT">
+				>
+				cardinality = <|>=0|>
+			>
+		>
+	>
+
+	["ITEM_TABLE"] = <
+		name = <"ITEM_TABLE">
+		ancestors = <"ITEM_STRUCTURE", ...>
+		properties = <
+			["rows"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"rows">
+				type_def = <
+					container_type = <"List">
+					type = <"CLUSTER">
+				>
+				cardinality = <|>=0|>
+			>
+		>
+	>
+
+	["ITEM_TREE"] = <
+		name = <"ITEM_TREE">
+		ancestors = <"ITEM_STRUCTURE", ...>
+		properties = <
+			["items"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"items">
+				type_def = <
+					container_type = <"List">
+					type = <"ITEM">
+				>
+				cardinality = <|>=0|>
+			>
+		>
+	>
+
+	["ITEM"] = <
+		name = <"ITEM">
+		ancestors = <"LOCATABLE", ...>
+		is_abstract = <True>
+	>
+
+	["CLUSTER"] = <
+		name = <"CLUSTER">
+		ancestors = <"ITEM", ...>
+		properties = <
+			["items"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"items">
+				type_def = <
+					container_type = <"List">
+					type = <"ITEM">
+				>
+				cardinality = <|>=1|>
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["ELEMENT"] = <
+		name = <"ELEMENT">
+		ancestors = <"ITEM", ...>
+		properties = <
+			["null_flavour"] = (BMM_SINGLE_PROPERTY) <
+				name = <"null_flavour">
+				type = <"DV_CODED_TEXT">
+			>
+			["value"] = (BMM_SINGLE_PROPERTY) <
+				name = <"value">
+				type = <"DATA_VALUE">
+			>
+		>
+	>
+
+	["HISTORY"] = <
+		name = <"HISTORY">
+		ancestors = <"DATA_STRUCTURE", ...>
+		is_generic = <True>
+		generic_parameter_defs = <
+			["T"] = <
+				name = <"T">
+				conforms_to_type = <"ITEM_STRUCTURE">
+			>
+		>
+		properties = <
+			["origin"] = (BMM_SINGLE_PROPERTY) <
+				name = <"origin">
+				type = <"DV_DATE_TIME">
+				is_mandatory = <True>
+			>
+			["period"] = (BMM_SINGLE_PROPERTY) <
+				name = <"period">
+				type = <"DV_DURATION">
+			>
+			["duration"] = (BMM_SINGLE_PROPERTY) <
+				name = <"duration">
+				type = <"DV_DURATION">
+			>
+			["summary"] = (BMM_SINGLE_PROPERTY) <
+				name = <"summary">
+				type = <"ITEM_STRUCTURE">
+			>
+			["events"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"events">
+				type_def = <
+					container_type = <"List">
+					type = <"EVENT">
+				>
+				cardinality = <|>=0|>
+			>
+		>
+	>
+
+	["EVENT"] = <
+		name = <"EVENT">
+		ancestors = <"LOCATABLE", ...>
+		is_abstract = <True>
+		is_generic = <True>
+		generic_parameter_defs = <
+			["T"] = <
+				name = <"T">
+				conforms_to_type = <"ITEM_STRUCTURE">
+			>
+		>
+		properties = <
+			["time"] = (BMM_SINGLE_PROPERTY) <
+				name = <"time">
+				type = <"DV_DATE_TIME">
+				is_mandatory = <True>
+			>
+			["state"] = (BMM_SINGLE_PROPERTY) <
+				name = <"state">
+				type = <"ITEM_STRUCTURE">
+			>
+			["data"] = (BMM_SINGLE_PROPERTY_OPEN) <
+				name = <"data">
+				type = <"T">
+				is_mandatory = <True>
+			>
+			["offset"] = (BMM_SINGLE_PROPERTY) <
+				name = <"offset">
+				is_computed = <True>
+				type = <"DV_DURATION">
+			>
+		>
+	>
+
+	["POINT_EVENT"] = <
+		name = <"POINT_EVENT">
+		ancestors = <"EVENT", ...>
+		is_generic = <True>
+		generic_parameter_defs = <
+			["T"] = <
+				name = <"T">
+			>
+		>
+	>
+
+	["INTERVAL_EVENT"] = <
+		name = <"INTERVAL_EVENT">
+		ancestors = <"EVENT", ...>
+		is_generic = <True>
+		generic_parameter_defs = <
+			["T"] = <
+				name = <"T">
+			>
+		>
+		properties = <
+			["width"] = (BMM_SINGLE_PROPERTY) <
+				name = <"width">
+				type = <"DV_DURATION">
+				is_mandatory = <True>
+			>
+			["sample_count"] = (BMM_SINGLE_PROPERTY) <
+				name = <"sample_count">
+				type = <"Integer">
+			>
+			["math_function"] = (BMM_SINGLE_PROPERTY) <
+				name = <"math_function">
+				type = <"DV_CODED_TEXT">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	------------------------------------------------------------
+	---------------------- rm.common.generic -------------------
+	------------------------------------------------------------
+
+	["PARTICIPATION"] = <
+		name = <"PARTICIPATION">
+		ancestors = <"Any", ...>
+		properties = <
+			["function"] = (BMM_SINGLE_PROPERTY) <
+				name = <"function">
+				type = <"DV_TEXT">
+				is_mandatory = <True>
+			>
+			["time"] = (BMM_GENERIC_PROPERTY) <
+				name = <"time">
+				type_def = <
+					root_type = <"DV_INTERVAL">
+					generic_parameters = <"DV_DATE_TIME">
+				>
+			>
+			["mode"] = (BMM_SINGLE_PROPERTY) <
+				name = <"mode">
+				type = <"DV_CODED_TEXT">
+				is_mandatory = <True>
+			>
+			["performer"] = (BMM_SINGLE_PROPERTY) <
+				name = <"performer">
+				type = <"PARTY_PROXY">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["PARTY_PROXY"] = <
+		name = <"PARTY_PROXY">
+		is_abstract = <True>
+		ancestors = <"Any", ...>
+		properties = <
+			["external_ref"] = (BMM_SINGLE_PROPERTY) <
+				name = <"external_ref">
+				type = <"PARTY_REF">
+			>
+		>
+	>
+
+	["PARTY_IDENTIFIED"] = <
+		name = <"PARTY_IDENTIFIED">
+		ancestors = <"PARTY_PROXY", ...>
+		properties = <
+			["name"] = (BMM_SINGLE_PROPERTY) <
+				name = <"name">
+				type = <"String">
+			>
+			["identifiers"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"identifiers">
+				type_def = <
+					container_type = <"List">
+					type = <"DV_IDENTIFIER">
+				>
+				cardinality = <|>=0|>
+			>
+		>
+	>
+
+	["PARTY_RELATED"] = <
+		name = <"PARTY_RELATED">
+		ancestors = <"PARTY_IDENTIFIED", ...>
+		properties = <
+			["relationship"] = (BMM_SINGLE_PROPERTY) <
+				name = <"relationship">
+				type = <"DV_CODED_TEXT">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["PARTY_SELF"] = <
+		name = <"PARTY_SELF">
+		ancestors = <"PARTY_PROXY", ...>
+	>
+
+	------------------------------------------------------------
+	--------------------- rm.common.archetyped -----------------
+	------------------------------------------------------------
+
+	["PATHABLE"] = <
+		name = <"PATHABLE">
+		is_abstract = <True>
+		ancestors = <"Any", ...>
+	>
+
+	["LOCATABLE"] = <
+		name = <"LOCATABLE">
+		is_abstract = <True>
+		ancestors = <"PATHABLE", ...>
+		properties = <
+			["uid"] = (BMM_SINGLE_PROPERTY) <
+				name = <"uid">
+				type = <"UID_BASED_ID">
+			>
+			["archetype_node_id"] = (BMM_SINGLE_PROPERTY) <
+				name = <"archetype_node_id">
+				type = <"String">
+				is_mandatory = <True>
+			>
+			["name"] = (BMM_SINGLE_PROPERTY) <
+				name = <"name">
+				type = <"DV_TEXT">
+				is_mandatory = <True>
+			>
+			["archetype_details"] = (BMM_SINGLE_PROPERTY) <
+				name = <"archetype_details">
+				type = <"ARCHETYPED">
+			>
+			["feeder_audit"] = (BMM_SINGLE_PROPERTY) <
+				name = <"feeder_audit">
+				type = <"FEEDER_AUDIT">
+			>
+			["links"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"links">
+				type_def = <
+					container_type = <"List">
+					type = <"LINK">
+				>
+				cardinality = <|>=0|>
+			>
+		>
+	>
+
+	["LINK"] = <
+		name = <"LINK">
+		ancestors = <"Any", ...>
+		properties = <
+			["meaning"] = (BMM_SINGLE_PROPERTY) <
+				name = <"meaning">
+				type = <"DV_TEXT">
+				is_mandatory = <True>
+			>
+			["type"] = (BMM_SINGLE_PROPERTY) <
+				name = <"type">
+				type = <"DV_TEXT">
+				is_mandatory = <True>
+			>
+			["target"] = (BMM_SINGLE_PROPERTY) <
+				name = <"target">
+				type = <"DV_EHR_URI">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["ARCHETYPED"] = <
+		name = <"ARCHETYPED">
+		ancestors = <"Any", ...>
+		properties = <
+			["archetype_id"] = (BMM_SINGLE_PROPERTY) <
+				name = <"archetype_id">
+				type = <"ARCHETYPE_ID">
+				is_mandatory = <True>
+			>
+			["template_id"] = (BMM_SINGLE_PROPERTY) <
+				name = <"template_id">
+				type = <"TEMPLATE_ID">
+			>
+			["rm_version"] = (BMM_SINGLE_PROPERTY) <
+				name = <"rm_version">
+				type = <"String">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["FEEDER_AUDIT"] = <
+		name = <"FEEDER_AUDIT">
+		ancestors = <"Any", ...>
+		properties = <
+			["originating_system_ids"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"originating_system_ids">
+				type_def = <
+					container_type = <"List">
+					type = <"DV_IDENTIFIER">
+				>
+				cardinality = <|>=0|>
+			>
+			["feeder_system_item_ids"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"feeder_system_item_ids">
+				type_def = <
+					container_type = <"List">
+					type = <"DV_IDENTIFIER">
+				>
+				cardinality = <|>=0|>
+			>
+			["original_content"] = (BMM_SINGLE_PROPERTY) <
+				name = <"original_content">
+				type = <"DV_ENCAPSULATED">
+			>
+			["originating_system_audit"] = (BMM_SINGLE_PROPERTY) <
+				name = <"originating_system_audit">
+				type = <"FEEDER_AUDIT_DETAILS">
+				is_mandatory = <True>
+			>
+			["feeder_system_audit"] = (BMM_SINGLE_PROPERTY) <
+				name = <"feeder_system_audit">
+				type = <"FEEDER_AUDIT_DETAILS">
+			>
+		>
+	>
+
+	["FEEDER_AUDIT_DETAILS"] = <
+		name = <"FEEDER_AUDIT_DETAILS">
+		ancestors = <"Any", ...>
+		properties = <
+			["system_id"] = (BMM_SINGLE_PROPERTY) <
+				name = <"system_id">
+				type = <"String">
+				is_mandatory = <True>
+			>
+			["location"] = (BMM_SINGLE_PROPERTY) <
+				name = <"location">
+				type = <"PARTY_IDENTIFIED">
+			>
+			["provider"] = (BMM_SINGLE_PROPERTY) <
+				name = <"provider">
+				type = <"PARTY_IDENTIFIED">
+			>
+			["subject"] = (BMM_SINGLE_PROPERTY) <
+				name = <"subject">
+				type = <"PARTY_PROXY">
+			>
+			["time"] = (BMM_SINGLE_PROPERTY) <
+				name = <"time">
+				type = <"DV_DATE_TIME">
+			>
+			["version_id"] = (BMM_SINGLE_PROPERTY) <
+				name = <"version_id">
+				type = <"String">
+			>
+		>
+	>
+
+>
+
+--|
+--| ***** BEGIN LICENSE BLOCK *****
+--| Version: MPL 1.1/GPL 2.0/LGPL 2.1
+--|
+--| The contents of this file are subject to the Mozilla Public License Version
+--| 1.1 (the 'License'); you may not use this file except in compliance with
+--| the License. You may obtain a copy of the License at
+--| http://www.mozilla.org/MPL/
+--|
+--| Software distributed under the License is distributed on an 'AS IS' basis,
+--| WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+--| for the specific language governing rights and limitations under the
+--| License.
+--|
+--| The Original Code is openehr_structures_102.dadl
+--|
+--| The Initial Developer of the Original Code is Thomas Beale.
+--| Portions created by the Initial Developer are Copyright (C) 2010
+--| the Initial Developer. All Rights Reserved.
+--|
+--| Contributor(s):
+--|
+--| Alternatively, the contents of this file may be used under the terms of
+--| either the GNU General Public License Version 2 or later (the 'GPL'), or
+--| the GNU Lesser General Public License Version 2.1 or later (the 'LGPL'),
+--| in which case the provisions of the GPL or the LGPL are applicable instead
+--| of those above. If you wish to allow use of your version of this file only
+--| under the terms of either the GPL or the LGPL, and not to allow others to
+--| use your version of this file under the terms of the MPL, indicate your
+--| decision by deleting the provisions above and replace them with the notice
+--| and other provisions required by the GPL or the LGPL. If you do not delete
+--| the provisions above, a recipient may use your version of this file under
+--| the terms of any one of the MPL, the GPL or the LGPL.
+--|
+--| ***** END LICENSE BLOCK *****
+--|
+

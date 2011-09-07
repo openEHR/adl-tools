@@ -1,0 +1,34 @@
+;
+;	component:   "openEHR Reusable Libraries"
+;	description: "[
+;			 Database of unit tables, designed on the basis of the Unified Code for Units
+;	             of Measure (UCUM), developed by Gunther Schadow and Clement J. McDonald of
+;			 The Regenstrief Institute For Health Care, Indianapolis.
+;			 Published at http://aurora.rg.iupui.edu/UCUM.
+;	             ]"
+;	keywords:    "units, UCUM"
+;
+;	author:      "Thomas Beale"
+;	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+;	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+;	license:     "See notice at bottom of class"
+;
+;	file:        "$Source$"
+;	revision:    "$Revision$"
+;	last_change: "$Date$"
+;
+
+[identification]
+GROUP_NAME = Base Units
+
+[units]
+;
+;NAME:PROPERTY:CASE_SENSITIVE:CASE_INSENSITIVE:METRIC:VALUE:DEFINITION
+;
+meter = meter:length:m:M:Y:-:-
+gram = gram:mass:g:G:Y:-:-
+second = second:time:s:S:Y:-:-
+radian = radian:plane angle:rad:RAD:Y:-:-
+Kelvin = Kelvin:temperature:K:K:Y:-:-
+Coulomb = Coulomb:electric charge:C:C:Y:-:-
+candela = candela:luminous intensity:cd:CD:Y:-:-

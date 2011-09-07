@@ -1,0 +1,20 @@
+3.6.6  Avoirdupois Weights
+
+      name       kind of  print    c/s        c/i    M   value  definition
+                quantity
+ grain          mass            [gr]      [GR]       N 64.79891 mg
+ pound          mass      lb    [lb_av]   [LB_AV]    N 7000     [gr]
+ ounce          mass      oz    [oz_av]   [OZ_AV]    N 1        [lb_av]/16
+ dram           mass            [dr_av]   [DR_AV]    N 1        [oz_av]/16
+ short
+ hundredweight  mass            [scwt_av] [SCWT_AV]  N 100      [lb_av]
+ (U.S.)
+ long
+ hunderdweight  mass            [lcwt_av] [LCWT_AV]  N 112      [lb_av]
+ (British)
+ short ton
+ (U.S.)         mass            [ston_av] [STON_AV]  N 20       [scwt_av]
+ long ton
+ (British)      mass            [lton_av] [LTON_AV]  N 20       [lcwt_av]
+ stone
+ (British)      mass            [stone_av][STONE_AV] N 14       [lb_av]

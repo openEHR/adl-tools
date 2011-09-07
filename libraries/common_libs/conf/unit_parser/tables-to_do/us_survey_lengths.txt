@@ -1,0 +1,26 @@
+3.6.2  U.S. Survey Lengths
+
+      name        kind of   print    c/s      c/i    M value   definition
+                  quantity
+ foot            length     ftus  [ft_us]  [FT_US]   N 1200   m/3937
+ yard            length           [yd_us]  [YD_US]   N 3      [ft_us]
+ inch            length           [in_us]  [IN_US]   N 1      [ft_us]/12
+ rod             length           [rd_us]  [RD_US]   N 16.5   [ft_us]
+ chain (Gunter's
+ or Surveyor's)  length           [ch_us]  [CH_US]   N 4      [rd_us]
+ link (for
+ Gunter's chain) length           [lk_us]  [LK_US]   N 1      [ch_us]/100
+ chain (Ramden's
+ or Engineer's)  length           [rch_us] [RCH_US]  N 100    [ft_us]
+ link (for
+ Ramden's chain) length           [rlk_us] [RLK_US]  N 1      [rch_us]/100
+ fathom          length           [fth_us] [FTH_US]  N 6      [ft_us]
+ furlong         length           [fur_us] [FUR_US]  N 40     [rd_us]
+ mile            length           [mi_us]  [MI_US]   N 8      [fur_us]
+ acre            area             [acr_us] [ACR_US]  N 160    [rd_us]2
+ square rod      area             [srd_us] [SRD_US]  N 1      [rd_us]2
+ square mile     area             [smi_us] [SMI_US]  N 1      [mi_us]2
+ section         area             [sct]    [SCT]     N 1      [mi_us]2
+ township        area             [twp]    [TWP]     N 36     [sct]
+                                                       1 ×
+ mil             length           [mil_us] [MIL_US]  N 10-3   [in_us]

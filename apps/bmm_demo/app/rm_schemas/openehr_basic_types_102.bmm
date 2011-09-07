@@ -1,0 +1,732 @@
+-- 
+-- 	component:   openEHR Archetype Project
+-- 	description: openEHR Reference Model formal expression. This file is a DADL serialisation of
+--               the BMM object meta-model classes found at 
+--               http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/specialisation/libraries/common_libs/src/basic_meta_model
+-- 	keywords:    reference model, meta-model, archetypes
+-- 	author:      Thomas Beale
+-- 	support:     Ocean Informatics <support@OceanInformatics.com>
+-- 	copyright:   Copyright (c) 2009-2010 openEHR Foundation
+-- 	license:     See end of file
+-- 
+-- 	file:        $URL$
+-- 	revision:    $LastChangedRevision$
+-- 	last_change: $LastChangedDate$
+-- 
+
+------------------------------------------------------
+-- schema identification
+-- (schema_id computed as <model_publisher>_<schema_name>_<model_release>)
+------------------------------------------------------
+schema_name = <"basic_types">
+model_publisher = <"openehr">
+model_release = <"1.0.2">
+
+------------------------------------------------------
+-- schema documentation
+------------------------------------------------------
+schema_revision = <"$LastChangedRevision$">
+schema_lifecycle_state = <"stable">
+schema_description = <"openEHR Release 1.0.2 reference model Support types and Data types"> 
+
+------------------------------------------------------
+-- inclusions
+------------------------------------------------------
+includes = <
+	["1"] = <
+		id = <"openehr_primitive_types_1.0.2">
+	>
+>
+
+------------------------------------------------------
+-- packages
+------------------------------------------------------
+
+packages = <
+	["rm.support.identification"] = <
+		name = <"rm.support.identification">
+	>
+	["rm.data_types"] = <
+		name = <"rm.data_types">
+	>
+>
+
+------------------------------------------------------
+-- classes
+------------------------------------------------------
+
+class_definitions = <
+
+	------------------------------------------------------------
+	------------------ rm.support.identification ---------------
+	------------------------------------------------------------
+
+	["OBJECT_REF"] = <
+		name = <"OBJECT_REF">
+		ancestors = <"Any", ...>
+		properties = <
+			["namespace"] = (BMM_SINGLE_PROPERTY) <
+				name = <"namespace">
+				type = <"String">
+				is_mandatory = <True>
+			>
+			["type"] = (BMM_SINGLE_PROPERTY) <
+				name = <"type">
+				type = <"String">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["LOCATABLE_REF"] = <
+		name = <"LOCATABLE_REF">
+		ancestors = <"OBJECT_REF", ...>
+		properties = <
+			["path"] = (BMM_SINGLE_PROPERTY) <
+				name = <"path">
+				type = <"String">
+			>
+		>
+	>
+
+	["PARTY_REF"] = <
+		name = <"PARTY_REF">
+		ancestors = <"OBJECT_REF", ...>
+	>
+
+	["OBJECT_ID"] = <
+		name = <"OBJECT_ID">
+		is_abstract = <True>
+		ancestors = <"Any", ...>
+		properties = <
+			["value"] = (BMM_SINGLE_PROPERTY) <
+				name = <"value">
+				type = <"String">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["TERMINOLOGY_ID"] = <
+		name = <"TERMINOLOGY_ID">
+		ancestors = <"OBJECT_ID", ...>
+	>
+	
+	["UID_BASED_ID"] = <
+		name = <"UID_BASED_ID">
+		ancestors = <"OBJECT_ID", ...>
+		is_abstract = <True>
+	>
+	
+	["GENERIC_ID"] = <
+		name = <"GENERIC_ID">
+		ancestors = <"OBJECT_ID", ...>
+	>
+	
+	["ARCHETYPE_ID"] = <
+		name = <"ARCHETYPE_ID">
+		ancestors = <"OBJECT_ID", ...>
+	>
+	
+	["TEMPLATE_ID"] = <
+		name = <"TEMPLATE_ID">
+		ancestors = <"OBJECT_ID", ...>
+	>
+	
+	["OBJECT_VERSION_ID"] = <
+		name = <"OBJECT_VERSION_ID">
+		ancestors = <"UID_BASED_ID", ...>
+	>
+	
+	["HIER_OBJECT_ID"] = <
+		name = <"HIER_OBJECT_ID">
+		ancestors = <"UID_BASED_ID", ...>
+	>
+	
+	["VERSION_TREE_ID"] = <
+		name = <"VERSION_TREE_ID">
+		ancestors = <"Any", ...>
+	>
+	
+	["UID"] = <
+		name = <"UID">
+		is_abstract = <True>
+		ancestors = <"Any", ...>
+	>
+	
+	["INTERNET_ID"] = <
+		name = <"INTERNET_ID">
+		ancestors = <"UID", ...>
+	>
+	
+	["UUID"] = <
+		name = <"UUID">
+		ancestors = <"UID", ...>
+	>
+	
+	["ISO_OID"] = <
+		name = <"ISO_OID">
+		ancestors = <"UID", ...>
+	>
+	
+	------------------------------------------------------------
+	--------------------- rm.data_types ------------------------
+	------------------------------------------------------------
+
+	--
+	--------------------- rm.data_types.basic ------------------
+	--
+
+	["DATA_VALUE"] = <
+		name = <"DATA_VALUE">
+		ancestors = <"Any", ...>
+		is_abstract = <True>
+	>
+
+	["DV_BOOLEAN"] = <
+		name = <"DV_BOOLEAN">
+		ancestors = <"DATA_VALUE", ...>
+		properties = <
+			["value"] = (BMM_SINGLE_PROPERTY) <
+				name = <"value">
+				type = <"Boolean">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["DV_IDENTIFIER"] = <
+		name = <"DV_IDENTIFIER">
+		ancestors = <"DATA_VALUE", ...>
+		properties = <
+			["issuer"] = (BMM_SINGLE_PROPERTY) <
+				name = <"issuer">
+				type = <"String">
+				is_mandatory = <True>
+			>
+			["id"] = (BMM_SINGLE_PROPERTY) <
+				name = <"id">
+				type = <"String">
+				is_mandatory = <True>
+			>
+			["type"] = (BMM_SINGLE_PROPERTY) <
+				name = <"type">
+				type = <"String">
+				is_mandatory = <True>
+			>
+			["assigner"] = (BMM_SINGLE_PROPERTY) <
+				name = <"assigner">
+				type = <"String">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["DV_STATE"] = <
+		name = <"DV_STATE">
+		ancestors = <"DATA_VALUE", ...>
+		properties = <
+			["value"] = (BMM_SINGLE_PROPERTY) <
+				name = <"value">
+				type = <"DV_CODED_TEXT">
+				is_mandatory = <True>
+			>
+			["is_terminal"] = (BMM_SINGLE_PROPERTY) <
+				name = <"is_terminal">
+				type = <"Boolean">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	--
+	--------------------- rm.data_types.text ------------------
+	--
+
+	["TERM_MAPPING"] = <
+		name = <"TERM_MAPPING">
+		properties = <
+			["defining_code"] = (BMM_SINGLE_PROPERTY) <
+				name = <"defining_code">
+				type = <"CODE_PHRASE">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["DV_TEXT"] = <
+		name = <"DV_TEXT">
+		ancestors = <"DATA_VALUE", ...>
+		properties = <
+			["value"] = (BMM_SINGLE_PROPERTY) <
+				name = <"value">
+				type = <"String">
+				is_mandatory = <True>
+			>
+			["hyperlink"] = (BMM_SINGLE_PROPERTY) <
+				name = <"hyperlink">
+				type = <"DV_URI">
+			>
+			["language"] = (BMM_SINGLE_PROPERTY) <
+				name = <"language">
+				type = <"CODE_PHRASE">
+			>
+			["encoding"] = (BMM_SINGLE_PROPERTY) <
+				name = <"encoding">
+				type = <"CODE_PHRASE">
+			>
+			["formatting"] = (BMM_SINGLE_PROPERTY) <
+				name = <"formatting">
+				type = <"String">
+			>
+			["mappings"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"mappings">
+				type_def = <
+					container_type = <"Set">
+					type = <"TERM_MAPPING">
+				>
+				cardinality = <|>=0|>
+			>
+		>
+	>
+
+	["DV_CODED_TEXT"] = <
+		name = <"DV_CODED_TEXT">
+		ancestors = <"DV_TEXT", ...>
+		properties = <
+			["defining_code"] = (BMM_SINGLE_PROPERTY) <
+				name = <"defining_code">
+				type = <"CODE_PHRASE">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["CODE_PHRASE"] = <
+		name = <"CODE_PHRASE">
+		properties = <
+			["terminology_id"] = (BMM_SINGLE_PROPERTY) <
+				name = <"terminology_id">
+				type = <"TERMINOLOGY_ID">
+				is_mandatory = <True>
+			>
+			["code_string"] = (BMM_SINGLE_PROPERTY) <
+				name = <"code_string">
+				type = <"String">
+			>
+		>
+	>
+
+	--
+	--------------------- rm.data_types.quantity ------------------
+	--
+
+	["DV_INTERVAL"] = <
+		name = <"DV_INTERVAL">
+		ancestors = <"Interval", "DATA_VALUE">
+		is_generic = <True>
+		generic_parameter_defs = <
+			["T"] = <
+				name = <"T">
+				conforms_to_type = <"DV_ORDERED">
+			>
+		>
+		properties = <
+			["lower"] = (BMM_SINGLE_PROPERTY_OPEN) <
+				name = <"lower">
+				type = <"T">
+			>
+			["upper"] = (BMM_SINGLE_PROPERTY_OPEN) <
+				name = <"upper">
+				type = <"T">
+			>
+		>
+	>
+
+	["REFERENCE_RANGE"] = <
+		name = <"REFERENCE_RANGE">
+		is_generic = <True>
+		ancestors = <"Any", ...>
+		generic_parameter_defs = <
+			["T"] = <
+				name = <"T">
+				conforms_to_type = <"DV_ORDERED">
+			>
+		>
+		properties = <
+			["range"] = (BMM_SINGLE_PROPERTY) <
+				name = <"range">
+				type = <"DV_INTERVAL">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["DV_ORDERED"] = <
+		name = <"DV_ORDERED">
+		is_abstract = <True>
+		ancestors = <"Ordered", "DATA_VALUE">
+		properties = <
+			["normal_status"] = (BMM_SINGLE_PROPERTY) <
+				name = <"normal_status">
+				type = <"CODE_PHRASE">
+			>
+			["normal_range"] = (BMM_GENERIC_PROPERTY) <
+				name = <"normal_range">
+				type_def = <
+					root_type = <"DV_INTERVAL">
+					generic_parameters = <"T">
+				>
+			>
+			["other_reference_ranges"] = (BMM_GENERIC_PROPERTY) <
+				name = <"other_reference_ranges">
+				type_def = <
+					root_type = <"REFERENCE_RANGE">
+					generic_parameters = <"T">
+				>
+			>
+		>
+	>
+
+	["DV_QUANTIFIED"] = <
+		name = <"DV_QUANTIFIED">
+		is_abstract = <True>
+		ancestors = <"DV_ORDERED", ...>
+	>
+
+	["DV_ORDINAL"] = <
+		name = <"DV_ORDINAL">
+		ancestors = <"DV_ORDERED", ...>
+		properties = <
+			["value"] = (BMM_SINGLE_PROPERTY) <
+				name = <"value">
+				type = <"Integer">
+				is_mandatory = <True>
+			>
+			["symbol"] = (BMM_SINGLE_PROPERTY) <
+				name = <"symbol">
+				type = <"DV_CODED_TEXT">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["DV_AMOUNT"] = <
+		name = <"DV_AMOUNT">
+		is_abstract = <True>
+		ancestors = <"DV_QUANTIFIED", ...>
+		properties = <
+			["accuracy"] = (BMM_SINGLE_PROPERTY) <
+				name = <"accuracy">
+				type = <"Real">
+			>
+			["accuracy_is_percent"] = (BMM_SINGLE_PROPERTY) <
+				name = <"accuracy_is_percent">
+				type = <"Boolean">
+			>
+		>
+	>
+
+	["DV_ABSOLUTE_QUANTITY"] = <
+		name = <"DV_ABSOLUTE_QUANTITY">
+		is_abstract = <True>
+		ancestors = <"DV_QUANTIFIED", ...>
+		properties = <
+			["accuracy"] = (BMM_SINGLE_PROPERTY) <
+				name = <"accuracy">
+				type = <"DV_AMOUNT">
+			>
+		>
+	>
+
+	["DV_QUANTITY"] = <
+		name = <"DV_QUANTITY">
+		ancestors = <"DV_AMOUNT", ...>
+		properties = <
+			["magnitude"] = (BMM_SINGLE_PROPERTY) <
+				name = <"magnitude">
+				type = <"Double">
+				is_mandatory = <True>
+			>
+			["units"] = (BMM_SINGLE_PROPERTY) <
+				name = <"units">
+				type = <"String">
+				is_mandatory = <True>
+			>
+			["precision"] = (BMM_SINGLE_PROPERTY) <
+				name = <"precision">
+				type = <"Integer">
+			>
+		>
+	>
+
+	["DV_COUNT"] = <
+		name = <"DV_COUNT">
+		ancestors = <"DV_AMOUNT", ...>
+		properties = <
+			["magnitude"] = (BMM_SINGLE_PROPERTY) <
+				name = <"magnitude">
+				type = <"Integer">
+			>
+		>
+	>
+
+	["DV_PROPORTION"] = <
+		name = <"DV_PROPORTION">
+		ancestors = <"DV_AMOUNT", ...>
+		properties = <
+			["numerator"] = (BMM_SINGLE_PROPERTY) <
+				name = <"numerator">
+				type = <"Real">
+				is_mandatory = <True>
+			>
+			["denominator"] = (BMM_SINGLE_PROPERTY) <
+				name = <"denominator">
+				type = <"Real">
+				is_mandatory = <True>
+			>
+			["type"] = (BMM_SINGLE_PROPERTY) <
+				name = <"type">
+				type = <"Integer">
+				is_mandatory = <True>
+			>
+			["precision"] = (BMM_SINGLE_PROPERTY) <
+				name = <"precision">
+				type = <"Integer">
+			>
+			["is_integral"] = (BMM_SINGLE_PROPERTY) <
+				name = <"is_integral">
+				type = <"Boolean">
+				is_computed = <True>
+			>
+		>
+	>
+
+	--
+	--------------------- rm.data_types.quantity.date_time ------------------
+	--
+
+	["DV_TEMPORAL"] = <
+		name = <"DV_TEMPORAL">
+		is_abstract = <True>
+		ancestors = <"DV_ABSOLUTE_QUANTITY", ...>
+	>
+
+	["DV_DATE"] = <
+		name = <"DV_DATE">
+		ancestors = <"DV_TEMPORAL", "ISO8601_DATE">
+		properties = <
+			["value"] = (BMM_SINGLE_PROPERTY) <
+				name = <"value">
+				type = <"String">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["DV_TIME"] = <
+		name = <"DV_TIME">
+		ancestors = <"DV_TEMPORAL", "ISO8601_TIME">
+		properties = <
+			["value"] = (BMM_SINGLE_PROPERTY) <
+				name = <"value">
+				type = <"String">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["DV_DATE_TIME"] = <
+		name = <"DV_DATE_TIME">
+		ancestors = <"DV_TEMPORAL", "ISO8601_DATE_TIME">
+		properties = <
+			["value"] = (BMM_SINGLE_PROPERTY) <
+				name = <"value">
+				type = <"String">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["DV_DURATION"] = <
+		name = <"DV_DURATION">
+		ancestors = <"DV_AMOUNT", "ISO8601_DURATION">
+		properties = <
+			["value"] = (BMM_SINGLE_PROPERTY) <
+				name = <"value">
+				type = <"String">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	--
+	--------------------- rm.data_types.encapsulated ------------------
+	--
+
+	["DV_ENCAPSULATED"] = <
+		name = <"DV_ENCAPSULATED">
+		is_abstract = <True>
+		ancestors = <"DATA_VALUE", ...>
+		properties = <
+			["charset"] = (BMM_SINGLE_PROPERTY) <
+				name = <"charset">
+				type = <"CODE_PHRASE">
+			>
+			["language"] = (BMM_SINGLE_PROPERTY) <
+				name = <"language">
+				type = <"CODE_PHRASE">
+			>
+		>
+	>
+
+	["DV_MULTIMEDIA"] = <
+		name = <"DV_MULTIMEDIA">
+		ancestors = <"DV_ENCAPSULATED", ...>
+		properties = <
+			["alternate_text"] = (BMM_SINGLE_PROPERTY) <
+				name = <"alternate_text">
+				type = <"String">
+			>
+			["uri"] = (BMM_SINGLE_PROPERTY) <
+				name = <"uri">
+				type = <"DV_URI">
+			>
+			["data"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"uri">
+				type_def = <
+					container_type = <"Array">
+					type = <"Octet">
+				>
+				cardinality = <|>=0|>
+			>
+			["media_type"] = (BMM_SINGLE_PROPERTY) <
+				name = <"media_type">
+				type = <"CODE_PHRASE">
+				is_mandatory = <True>
+			>
+			["compression_algorithm"] = (BMM_SINGLE_PROPERTY) <
+				name = <"compression_algorithm">
+				type = <"CODE_PHRASE">
+			>
+			["integrity_check"] = (BMM_CONTAINER_PROPERTY) <
+				name = <"integrity_check">
+				type_def = <
+					container_type = <"Array">
+					type = <"Octet">
+				>
+				cardinality = <|>=0|>
+			>
+			["integrity_check_algorithm"] = (BMM_SINGLE_PROPERTY) <
+				name = <"integrity_check_algorithm">
+				type = <"CODE_PHRASE">
+			>
+			["size"] = (BMM_SINGLE_PROPERTY) <
+				name = <"size">
+				type = <"Integer">
+			>
+		>
+	>
+
+	["DV_PARSABLE"] = <
+		name = <"DV_PARSABLE">
+		ancestors = <"DV_ENCAPSULATED", ...>
+		properties = <
+			["value"] = (BMM_SINGLE_PROPERTY) <
+				name = <"value">
+				type = <"String">
+			>
+			["formalism"] = (BMM_SINGLE_PROPERTY) <
+				name = <"formalism">
+				type = <"String">
+			>
+		>
+	>
+
+	--
+	--------------------- rm.data_types.uri ------------------
+	--
+
+	["DV_URI"] = <
+		name = <"DV_URI">
+		ancestors = <"DATA_VALUE", ...>
+		properties = <
+			["value"] = (BMM_SINGLE_PROPERTY) <
+				name = <"value">
+				type = <"String">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["DV_EHR_URI"] = <
+		name = <"DV_EHR_URI">
+		ancestors = <"DV_URI", ...>
+	>
+
+	--
+	--------------------- rm.data_types.time_specification ------------------
+	--
+
+	["DV_TIME_SPECIFICATION"] = <
+		name = <"DV_TIME_SPECIFICATION">
+		is_abstract = <True>
+		ancestors = <"DATA_VALUE", ...>
+		properties = <
+			["value"] = (BMM_SINGLE_PROPERTY) <
+				name = <"value">
+				type = <"DV_PARSABLE">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["DV_PERIODIC_TIME_SPECIFICATION"] = <
+		name = <"DV_PERIODIC_TIME_SPECIFICATION">
+		ancestors = <"DV_TIME_SPECIFICATION", ...>
+	>
+
+	["DV_GENERAL_TIME_SPECIFICATION"] = <
+		name = <"DV_GENERAL_TIME_SPECIFICATION">
+		ancestors = <"DV_TIME_SPECIFICATION", ...>
+	>
+
+>
+
+--|
+--| ***** BEGIN LICENSE BLOCK *****
+--| Version: MPL 1.1/GPL 2.0/LGPL 2.1
+--|
+--| The contents of this file are subject to the Mozilla Public License Version
+--| 1.1 (the 'License'); you may not use this file except in compliance with
+--| the License. You may obtain a copy of the License at
+--| http://www.mozilla.org/MPL/
+--|
+--| Software distributed under the License is distributed on an 'AS IS' basis,
+--| WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+--| for the specific language governing rights and limitations under the
+--| License.
+--|
+--| The Original Code is rm_schema.dadl
+--|
+--| The Initial Developer of the Original Code is Thomas Beale.
+--| Portions created by the Initial Developer are Copyright (C) 2009
+--| the Initial Developer. All Rights Reserved.
+--|
+--| Contributor(s):
+--|
+--| Alternatively, the contents of this file may be used under the terms of
+--| either the GNU General Public License Version 2 or later (the 'GPL'), or
+--| the GNU Lesser General Public License Version 2.1 or later (the 'LGPL'),
+--| in which case the provisions of the GPL or the LGPL are applicable instead
+--| of those above. If you wish to allow use of your version of this file only
+--| under the terms of either the GPL or the LGPL, and not to allow others to
+--| use your version of this file under the terms of the MPL, indicate your
+--| decision by deleting the provisions above and replace them with the notice
+--| and other provisions required by the GPL or the LGPL. If you do not delete
+--| the provisions above, a recipient may use your version of this file under
+--| the terms of any one of the MPL, the GPL or the LGPL.
+--|
+--| ***** END LICENSE BLOCK *****
+--|
+

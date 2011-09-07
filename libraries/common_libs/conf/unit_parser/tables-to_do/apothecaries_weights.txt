@@ -1,0 +1,7 @@
+3.6.8  Apotecaries' Weights
+
+      name     kind of quantity print   c/s      c/i    M value definition
+ scruple       mass                   [sc_ap]  [SC_AP] N  20    [gr]
+ dram (drachm) mass                   [dr_ap]  [DR_AP] N  3     [sc_ap]
+ ounce         mass                   [oz_ap]  [OZ_AP] N  8     [dr_ap]
+ pound         mass                   [lb_ap]  [LB_AP] N  12    [oz_ap]
