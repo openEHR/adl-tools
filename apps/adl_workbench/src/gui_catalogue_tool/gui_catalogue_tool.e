@@ -156,7 +156,7 @@ feature {NONE} -- Implementation
 
 	template_explorer: GUI_VIEW_TEMPLATE_TREE_CONTROL
 		once
-			create Result.make (select_archetype_agent, agent archetype_explorer.ensure_item_visible)
+			create Result.make (select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent, agent archetype_explorer.ensure_item_visible)
 		end
 
 	select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent: PROCEDURE [ANY, TUPLE]

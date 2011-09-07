@@ -27,10 +27,12 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_select_archetype_agent: like select_archetype_agent; a_focus_archetype_agent: like focus_archetype_agent)
+	make (a_select_archetype_agent, an_edit_archetype_agent, a_select_archetype_in_new_tool_agent: like select_archetype_agent; a_focus_archetype_agent: like focus_archetype_agent)
 			-- Create controller for the tree representing archetype files found in `archetype_directory'.
 		do
 			select_archetype_agent := a_select_archetype_agent
+			edit_archetype_agent := an_edit_archetype_agent
+			select_archetype_in_new_tool_agent := a_select_archetype_in_new_tool_agent
 			focus_archetype_agent := a_focus_archetype_agent
 
 			-- make UI
