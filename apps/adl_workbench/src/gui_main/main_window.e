@@ -311,8 +311,8 @@ feature -- File events
 		do
 			create dialog
 			dialog.set_start_directory (current_work_directory)
-			dialog.filters.extend (["*" + File_ext_archetype_source, "ADL source files"])
-			dialog.filters.extend (["*" + File_ext_archetype_adl14, "ADL legacy flat files"])
+			dialog.filters.extend (["*" + File_ext_archetype_source, "ADL 1.5 source files"])
+			dialog.filters.extend (["*" + File_ext_archetype_adl14, "ADL 1.4 files"])
 			dialog.show_modal_to_window (Current)
 			fname := dialog.file_name.as_string_8
 
@@ -323,6 +323,7 @@ feature -- File events
 						(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" not found.")).show_modal_to_window (Current)
 					elseif has_current_profile then
 						current_arch_cat.add_adhoc_item (fname)
+						catalogue_tool.show
 						catalogue_tool.populate
 						console_tool.append_text (billboard.content)
 					end
@@ -532,7 +533,7 @@ feature {NONE} -- Repository events
 				set_current_profile (archetype_profile_combo.text)
 			end
 			refresh_profile_context (False)
-			clear_all_tools
+			clear_all_editors
 		end
 
 	build_all
@@ -904,6 +905,7 @@ feature -- Catalogue tool
 		do
 			create a_docking_pane.make_with_widget_title_pixmap (catalogue_tool.ev_root_container, pixmaps ["archetype_category"], "Catalogue")
 			attached_docking_manager.contents.extend (a_docking_pane)
+			catalogue_tool.set_docking_pane (a_docking_pane)
 			a_docking_pane.set_long_title ("Catalogue")
 			a_docking_pane.set_short_title ("Catalogue")
 			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
@@ -1108,6 +1110,7 @@ feature {NONE} -- Implementation
 
 			clear_toolbar_controls
 			error_tool.clear
+			clear_all_editors
 
 			append_billboard_to_console
 
@@ -1124,7 +1127,7 @@ feature {NONE} -- Implementation
 			address_bar.clear
 		end
 
-	clear_all_tools
+	clear_all_editors
 		do
 			class_map_tools.clear_all_tools_content
 			archetype_tools.clear_all_tools_content

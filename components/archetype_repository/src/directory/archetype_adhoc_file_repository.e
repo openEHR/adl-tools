@@ -73,13 +73,15 @@ feature -- Modification
 					post_error (Current, "build_directory", "parse_archetype_e7", <<full_path>>)
 				elseif amp.last_archetype.is_specialised and then amp.last_archetype.parent_archetype_id_is_old_style then
 					post_error (Current, "build_directory", "parse_archetype_e11", <<full_path, amp.last_archetype.parent_archetype_id.as_string>>)
-				else
-					if not archetype_id_index.has (amp.last_archetype.archetype_id.as_string) then
-						create ara.make (full_path, Current, amp.last_archetype)
-						archetype_id_index.force (ara, full_path)
+				elseif not archetype_id_index.has (amp.last_archetype.archetype_id.as_string) then
+					if adl_legacy_flat_filename_pattern_regex.matches (file_system.basename (full_path)) then
+						create ara.make_legacy (full_path, Current, amp.last_archetype)
 					else
-						post_info (Current, "build_directory", "pair_filename_i1", <<full_path>>)
+						create ara.make (full_path, Current, amp.last_archetype)
 					end
+					archetype_id_index.force (ara, full_path)
+				else
+					post_info (Current, "build_directory", "pair_filename_i1", <<full_path>>)
 				end
 			else
 				post_error (Current, "build_directory", "parse_archetype_e5", <<full_path>>)

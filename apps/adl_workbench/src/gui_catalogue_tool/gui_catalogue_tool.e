@@ -133,7 +133,21 @@ feature -- Commands
 
 		end
 
+	show
+		do
+			docking_pane.show
+		end
+
+feature -- Modification
+
+	set_docking_pane (a_docking_pane: attached SD_CONTENT)
+		do
+			docking_pane := a_docking_pane
+		end
+
 feature {NONE} -- Implementation
+
+	docking_pane: SD_CONTENT
 
 	archetype_explorer: GUI_VIEW_ARCHETYPE_TREE_CONTROL
 		once
