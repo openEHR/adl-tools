@@ -462,7 +462,7 @@ feature
 	start_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER)
 			-- enter an C_DV_ORDINAL
 		do
-			io.put_string ("start_c_ordinal")
+--			io.put_string ("start_c_ordinal")
 		end
 
 	end_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER)
@@ -473,7 +473,7 @@ feature
 	start_c_quantity(a_node: C_DV_QUANTITY; depth: INTEGER)
 			-- enter a C_DV_QUANTITY
 		do
-			io.put_string ("start_c_quantity")
+--			io.put_string ("start_c_quantity")
 		end
 
 	end_c_quantity(a_node: C_DV_QUANTITY; depth: INTEGER)
