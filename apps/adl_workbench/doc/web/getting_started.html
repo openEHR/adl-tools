@@ -12,8 +12,8 @@
       <table style="BACKGROUND-COLOR: #9cd2f8" border="0" cellspacing="0" cellpadding="0" width="100%">
         <tbody>
           <tr valign="top">
-            <td valign="middle" width="152">
-              <img border="0" alt="openEHR logo" src="images/openehr_logo_trans_bg.png" width="150" height="50"/> </td>
+            <td valign="middle" width="115">
+              <img border="0" alt="openEHR logo" src="images/openehr_adl_workbench_logo.png" width="100" height="100"/> </td>
             <td>
               <div id="header">
                 <h1>ADL Workbench (AWB) - getting started</h1>
@@ -41,7 +41,7 @@
           </p>
           <h2>Using the Tool</h2>
           <h3>Docking</h3>
-		  <p>The AWB layout is docking-based, which means that the key components are all dockable 'tools'. <a href="images/docking_overview.png">This screenshot</a> shows multiple editor tabs, the Catalogue tool, and various minimised tools at the bottom and right hand side. Docking can be used to arrange editor tools side by side, as shown <a href="images/docking_side_by_side_definitions.png">here</a>, and to 'pop' a tool out into an independent window, as shown <a href="images/template_compiled.png">here</a>.</p>
+		  <p>The AWB layout is docking-based, which means that the key components are all dockable 'tools'. <a href="images/docking_overview.png">This screenshot</a> shows multiple editor tabs, the Catalog tool, and various minimised tools at the bottom and right hand side. Docking can be used to arrange editor tools side by side, as shown <a href="images/docking_side_by_side_definitions.png">here</a>, and to 'pop' a tool out into an independent window, as shown <a href="images/template_compiled.png">here</a>.</p>
 		  <p>In general, docking is controlled in the normal way for the platform you are working on, e.g Windows, or the various GUI toolkits used on Linux and MacOS. </p>
           <h3>General layout</h3>
           <p>The AWB has two facilities, the archetype compiler/viewer and the 'tester'. The main form shows the compiler/viewer, while the tester is normally minimised to the right. The Viewer looks as follows.</p>
@@ -59,15 +59,18 @@
                       <img border="0" alt="Initial view in explorer" src="images/tn_RM_icons_overview.jpg" width="110" height="200"/> </a>
                     <p>Overview with RM icons</p>
                   </td>
-                </tr>
+			  </tr>:w
+
               </tbody>
             </table>
           </div>
-          <h3>Archetype and template Catalogue</h3>
-		  <p>On the left side of the tool are two <a href="images/explorers.png">explorers</a>, making up the 'Catalogue' tool in AWB. The upper one is used to navigate all archetypes and templates, within the class hierarchy of the reference model on which the archetypes are based. Reference and working repository artefacts are merged in this view, and colourised so that the origin remains visible. The 'show entire ontology' option on the options panel can be used to force all classes in the hierarchy to be shown rather than just those which have archetypes in the current repository. Archetypes that appear below other archetypes are either specialisations, templates or template components. (Remember that the latter artefact types are technically just specialised archetypes.)</p>
+          <h3>Archetype and Template Catalog</h3>
+		  <p>On the left side of the tool are two <a href="images/explorers.png">explorers</a>, making up the 'Catalog' tool in AWB. The upper one is used to navigate all archetypes and templates, within the class hierarchy of the reference model on which the archetypes are based. Reference and working repository artefacts are merged in this view, and colourised so that the origin remains visible. The 'show entire ontology' option on the options panel can be used to force all classes in the hierarchy to be shown rather than just those which have archetypes in the current repository. Archetypes that appear below other archetypes are either specialisations, templates or template components. (Remember that the latter artefact types are technically just specialised archetypes.)</p>
           <p>The lower explorer is used exclusively for templates and template components, and shows compositional relationships due to slot-filling, rather than specialisation in its hierarchy. The two explorers are linked, so that choosing an artefact node in the lower one automatically chooses the same artefact in the upper one, allowing its lineage to be visible.</p>
+          <h3>Reference Model Browser</h3>
+		  <p>A second tool available on the left side of the main screen is the Reference Model (RM) browser. This enables multiple reference models to be visualised and explored in detail. </p>
           <h3>Archetype and Class Tool area</h3>
-		  <p>The middle area of the screen is dedicated to viewing archetypes, templates and browsing the reference model. Two types of tool are used for this - the Archetype Tool and the Class Tool. Any number of each tool can be launched. The first Archetype Tool starts just by left clicking on an archetype or template in the Catalogue. New Archetype Tools are launched by right-clicking and selecting 'New Tool' from the context menu. The same applies to starting a Class Tool - just left or right-click on a Class in the Catalogue area.</p>
+		  <p>The middle area of the screen is dedicated to viewing archetypes, templates and browsing the reference model. Two types of tool are used for this - the Archetype Tool and the Class Tool. Any number of each tool can be launched. The first Archetype Tool starts just by left clicking on an archetype or template in the Catalog. New Archetype Tools are launched by right-clicking and selecting 'New Tool' from the context menu. The same applies to starting a Class Tool - just left or right-click on a Class in the Catalog area.</p>
           <h3>The Archetype Tool</h3>
 		  <p>The Archetype Tool enables a single archetype to be visualised in many ways. In the toolbar, the 'view' controls (to the right of the Archetype id text box) allow selection of differential and flat views. With one of these selected, the notebook tab controls allow viewing of the following aspects of an archetype:</p>
 
