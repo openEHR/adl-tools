@@ -280,7 +280,7 @@ feature {NONE} -- Implementation
 					create an_mi.make_with_text_and_action ("Display", agent display_context_selected_class_in_active_tool (ev_ti))
 			    	menu.extend (an_mi)
 
-					create an_mi.make_with_text_and_action ("Display in new tool", agent display_context_selected_class_in_new_tool (ev_ti))
+					create an_mi.make_with_text_and_action ("Display in new tab", agent display_context_selected_class_in_new_tool (ev_ti))
 					menu.extend (an_mi)
 
 					create an_mi.make_with_text_and_action ("Edit source schema", agent do_edit_schema (a_class_def.bmm_source_schema_id))
