@@ -457,7 +457,7 @@ feature -- Visitor
 						gui_sub_node.set_pixmap (pixmaps.item ("TERM" + pixmap_ext))
 
 						-- add select event
-						if ontology.has_term_code (a_node.code_list.item) then
+						if is_valid_code (a_node.code_list.item) and then ontology.has_term_code (a_node.code_list.item) then
 	 						gui_sub_node.pointer_button_press_actions.force_extend (agent call_code_select_agent (a_node.code_list.item, ?, ?, ?))
 	 					end
 

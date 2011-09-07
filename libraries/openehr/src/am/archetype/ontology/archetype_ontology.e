@@ -121,6 +121,21 @@ feature -- Access
 	term_attribute_names: attached ARRAYED_LIST[STRING]
 			-- the attribute names found in ARCHETYPE_TERM objects
 
+	term_definitions: attached HASH_TABLE[HASH_TABLE[ARCHETYPE_TERM, STRING], STRING]
+			-- table of term definitions, keyed by code, keyed by language
+
+	constraint_definitions: attached HASH_TABLE[HASH_TABLE[ARCHETYPE_TERM, STRING], STRING]
+			-- table of constraint definitions, keyed by code, keyed by language
+
+	term_bindings: attached HASH_TABLE[HASH_TABLE[CODE_PHRASE, STRING], STRING]
+			-- tables of bindings of external terms to internal codes, keyed by external terminology id
+
+	constraint_bindings: attached HASH_TABLE[HASH_TABLE[URI, STRING], STRING]
+			-- table of constraint bindings in the form of strings "service::query", keyed by terminology
+
+	terminology_extracts: HASH_TABLE[HASH_TABLE[ARCHETYPE_TERM, STRING], STRING]
+			-- table of {code, description} keyed by terminology_id containing extracted concepts from external terminologies
+
 	specialisation_depth: INTEGER
 			-- depth of this ontology with relation to ontologies in other archetypes
 		do
@@ -644,21 +659,6 @@ feature {ARCHETYPE_ONTOLOGY, P_ARCHETYPE_ONTOLOGY} -- Implementation
 		do
 			Result := dt_representation.has_path(a_path)
 		end
-
-	term_definitions: attached HASH_TABLE[HASH_TABLE[ARCHETYPE_TERM, STRING], STRING]
-			-- table of term definitions, keyed by code, keyed by language
-
-	constraint_definitions: attached HASH_TABLE[HASH_TABLE[ARCHETYPE_TERM, STRING], STRING]
-			-- table of constraint definitions, keyed by code, keyed by language
-
-	term_bindings: attached HASH_TABLE[HASH_TABLE[CODE_PHRASE, STRING], STRING]
-			-- tables of bindings of external terms to internal codes, keyed by external terminology id
-
-	constraint_bindings: attached HASH_TABLE[HASH_TABLE[URI, STRING], STRING]
-			-- table of constraint bindings in the form of strings "service::query", keyed by terminology
-
-	terminology_extracts: HASH_TABLE[HASH_TABLE[ARCHETYPE_TERM, STRING], STRING]
-			-- table of {code, description} keyed by terminology_id containing extracted concepts from external terminologies
 
 	highest_specialised_code_indexes: attached HASH_TABLE [INTEGER, STRING]
 			-- Table of child code tails keyed by immediate parent code.

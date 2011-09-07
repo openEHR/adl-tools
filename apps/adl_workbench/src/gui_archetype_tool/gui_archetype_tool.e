@@ -90,9 +90,10 @@ feature {NONE}-- Initialization
 			create ev_serialise_controls_vbox
 			create ev_serialise_controls_frame
 			create ev_serialise_rb_vbox
-			create ev_adl_rb
-			create ev_dadl_rb
-			create ev_xml_rb
+			create ev_serialise_adl_rb
+			create ev_serialise_dadl_rb
+			create ev_serialise_xml_rb
+			create ev_flatten_with_rm_cb
 			create ev_serialise_padding_cell
 
 			-- connect widgets
@@ -120,11 +121,13 @@ feature {NONE}-- Initialization
 			ev_serialised_hbox.extend (ev_serialised_rich_text)
 			ev_serialised_hbox.extend (ev_serialise_controls_vbox)
 			ev_serialise_controls_vbox.extend (ev_serialise_controls_frame)
-			ev_serialise_controls_vbox.extend (ev_serialise_padding_cell)
 			ev_serialise_controls_frame.extend (ev_serialise_rb_vbox)
-			ev_serialise_rb_vbox.extend (ev_adl_rb)
-			ev_serialise_rb_vbox.extend (ev_dadl_rb)
-			ev_serialise_rb_vbox.extend (ev_xml_rb)
+			ev_serialise_rb_vbox.extend (ev_serialise_adl_rb)
+			ev_serialise_rb_vbox.extend (ev_serialise_dadl_rb)
+			ev_serialise_rb_vbox.extend (ev_serialise_xml_rb)
+			ev_serialise_controls_vbox.extend (ev_flatten_with_rm_cb)
+			ev_serialise_controls_vbox.disable_item_expand (ev_flatten_with_rm_cb)
+			ev_serialise_controls_vbox.extend (ev_serialise_padding_cell)
 
 			-- set visual characteristics
 			ev_root_container.disable_item_expand (ev_action_bar)
@@ -186,13 +189,15 @@ feature {NONE}-- Initialization
 			ev_serialised_hbox.set_padding_width (padding_width)
 			ev_serialise_rb_vbox.set_border_width (border_width)
 			ev_serialised_rich_text.set_tab_width ((ev_serialised_rich_text.tab_width/2).floor.max (1))  -- this is in pixels, and assumes 7-pixel wide chars
-			ev_serialise_rb_vbox.disable_item_expand (ev_adl_rb)
-			ev_serialise_rb_vbox.disable_item_expand (ev_dadl_rb)
-			ev_serialise_rb_vbox.disable_item_expand (ev_xml_rb)
+			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_adl_rb)
+			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_dadl_rb)
+			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_xml_rb)
 			ev_serialise_controls_frame.set_text (create_message_content ("serialise_frame_text", Void))
 			ev_serialise_controls_frame.set_minimum_width (125)
 			ev_serialise_controls_frame.set_minimum_height (95)
 			set_serialisation_control_texts
+			ev_flatten_with_rm_cb.set_text ("Include RM")
+			ev_flatten_with_rm_cb.set_tooltip ("Include RM in flattening process, causing RM existence and cardinality to be included and occurrences to be generated")
 
 			-- set events: action bar
 			ev_differential_view_button.select_actions.extend (agent on_differential_view)
@@ -209,9 +214,10 @@ feature {NONE}-- Initialization
 			ev_notebook.selection_actions.extend (agent on_select_archetype_notebook)
 
 			-- set events: serialisation controls
-			ev_adl_rb.select_actions.extend (agent populate_source_text)
-			ev_dadl_rb.select_actions.extend (agent populate_dadl_text)
-			ev_xml_rb.select_actions.extend (agent populate_xml_text)
+			ev_serialise_adl_rb.select_actions.extend (agent populate_source_text)
+			ev_serialise_dadl_rb.select_actions.extend (agent populate_dadl_text)
+			ev_serialise_xml_rb.select_actions.extend (agent populate_xml_text)
+			ev_flatten_with_rm_cb.select_actions.extend (agent populate_source_text)
 
 			differential_view := True
 			ev_differential_view_button.enable_select
@@ -482,7 +488,9 @@ feature {NONE} -- Implementation
 
 	ev_serialise_controls_frame: EV_FRAME
 
-	ev_adl_rb, ev_dadl_rb, ev_xml_rb: EV_RADIO_BUTTON
+	ev_serialise_adl_rb, ev_serialise_dadl_rb, ev_serialise_xml_rb: EV_RADIO_BUTTON
+
+	ev_flatten_with_rm_cb: EV_CHECK_BUTTON
 
 	selected_path_filter: STRING
 			-- currently selected filter in path map, for saving across sessions
@@ -533,11 +541,11 @@ feature {NONE} -- Implementation
 		require
 			attached target_archetype_descriptor
 		do
-			if ev_adl_rb.is_selected then
+			if ev_serialise_adl_rb.is_selected then
 				populate_source_text
-			elseif ev_dadl_rb.is_selected then
+			elseif ev_serialise_dadl_rb.is_selected then
 				populate_dadl_text
-			elseif ev_xml_rb.is_selected then
+			elseif ev_serialise_xml_rb.is_selected then
 				populate_xml_text
 			end
 		end
@@ -549,7 +557,7 @@ feature {NONE} -- Implementation
 		do
 			if not differential_view then
 				if target_archetype_descriptor.is_valid then
-					populate_source_text_with_line_numbers (target_archetype_descriptor.flat_text)
+					populate_source_text_with_line_numbers (target_archetype_descriptor.flat_text (ev_flatten_with_rm_cb.is_selected))
 				elseif target_archetype_descriptor.has_legacy_flat_file then
 					populate_source_text_with_line_numbers (target_archetype_descriptor.legacy_flat_text)
 				else -- not valid, but derived from differential source
@@ -636,12 +644,12 @@ feature {NONE} -- Implementation
 
 	set_serialisation_control_texts
 		do
-			ev_adl_rb.set_text ("ADL " + adl_version_for_flat_output)
-			ev_adl_rb.set_tooltip (create_message_content ("show_adl_serialisation_tooltip", <<adl_version_for_flat_output>>))
-			ev_dadl_rb.set_text ("dADL " + adl_version_for_flat_output)
-			ev_dadl_rb.set_tooltip (create_message_content ("show_dadl_serialisation_tooltip", <<adl_version_for_flat_output>>))
-			ev_xml_rb.set_text ("XML " + adl_version_for_flat_output)
-			ev_xml_rb.set_tooltip (create_message_content ("show_xml_serialisation_tooltip", <<adl_version_for_flat_output>>))
+			ev_serialise_adl_rb.set_text ("ADL " + adl_version_for_flat_output)
+			ev_serialise_adl_rb.set_tooltip (create_message_content ("show_adl_serialisation_tooltip", <<adl_version_for_flat_output>>))
+			ev_serialise_dadl_rb.set_text ("dADL " + adl_version_for_flat_output)
+			ev_serialise_dadl_rb.set_tooltip (create_message_content ("show_dadl_serialisation_tooltip", <<adl_version_for_flat_output>>))
+			ev_serialise_xml_rb.set_text ("XML " + adl_version_for_flat_output)
+			ev_serialise_xml_rb.set_tooltip (create_message_content ("show_xml_serialisation_tooltip", <<adl_version_for_flat_output>>))
 		end
 
 	set_tab_texts

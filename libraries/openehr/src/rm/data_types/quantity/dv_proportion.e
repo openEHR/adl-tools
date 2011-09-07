@@ -18,7 +18,10 @@ note
 class DV_PROPORTION
 
 inherit
-	DV_QUANTIFIED
+	DV_AMOUNT
+		redefine
+			as_string
+		end
 
 	PROPORTION_KIND
 		undefine
@@ -75,6 +78,11 @@ feature -- Access
 	diff_type: DV_PROPORTION
 			-- type of difference for this quantity
 
+	precision: INTEGER
+			-- Precision to which the numerator and denominator values of the proportion
+			-- are expressed, in terms of number of decimal places. The value 0 implies an integral quantity.
+			-- The value -1 implies no limit, i.e. any number of decimal places.
+
 feature -- Comparison
 
 	is_strictly_comparable_to (other: DV_PROPORTION): BOOLEAN
@@ -99,7 +107,7 @@ feature -- Conversion
 
 	as_string: STRING
 		do
-			create Result.make(0)
+			Result := precursor
 			Result.append(numerator.out)
 			Result.append(denominator.out)
 		end

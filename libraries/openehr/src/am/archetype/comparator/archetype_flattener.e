@@ -701,6 +701,8 @@ end
 						else
 							co.set_occurrences (create {MULTIPLICITY_INTERVAL}.make_bounded(0, cont_prop.cardinality.upper))
 						end
+					else
+						co.set_occurrences (rm_attr_desc.existence)
 					end
 				end
 			end

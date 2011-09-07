@@ -33,22 +33,20 @@ inherit
 
 feature -- Access
 
-	other_reference_ranges: LINKED_LIST[REFERENCE_RANGE[like Current]]
+	other_reference_ranges: LINKED_LIST [REFERENCE_RANGE[like Current]]
 			-- optional tagged ranges for this value in its particular measurement context
 
 	normal_range: DV_INTERVAL[like Current]
 			-- Optional normal range
 
-	normal_status: DV_ORDINAL
+	normal_status: CODE_PHRASE
 			-- Optional normal status indicator of value with respect to normal range for this value.
 			-- Often included by lab, even if the normal range itself is not included.
 			-- Coded by ordinals in series HHH, HH, H, (nothing), L, LL, LLL
 
 feature -- Comparison
 
-	is_strictly_comparable_to (other: like Current): BOOLEAN
-		require
-			other_exists: other /= Void
+	is_strictly_comparable_to (other: attached like Current): BOOLEAN
 		deferred
 		end
 
@@ -91,9 +89,12 @@ feature -- Modification
 invariant
 	Other_reference_range_validity: other_reference_ranges /= Void implies not other_reference_ranges.is_empty
 	Is_simple_validity: (normal_range = Void and other_reference_ranges = Void and normal_status = Void) implies is_simple
-	Normal_status_validity: normal_status /= Void implies normal_status.is_simple
-	Normal_status_symbol_validity: normal_status /= Void implies terminology(Terminology_id_openehr).
-		has_code_for_group_id(Group_id_normal_status, normal_status.symbol.defining_code)
+--	Normal_status_validity: normal_status /= Void implies normal_status.is_simple
+--	Normal_status_symbol_validity: normal_status /= Void implies terminology(Terminology_id_openehr).
+--		has_code_for_group_id(Group_id_normal_status, normal_status.symbol.defining_code)
+
+--	Normal_status_validity: normal_status /= Void implies code_set(Code_set_id_normal_statuses).has_code(normal_status)
+	Normal_range_and_status_consistency: (normal_range /= Void and normal_status /= Void) implies (normal_status.code_string.is_equal("N") xor not normal_range.has(Current))
 
 end
 

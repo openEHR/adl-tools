@@ -58,6 +58,8 @@ feature {NONE} -- Initialization
 		local
 			cur_title: STRING
 			dv_q: DV_QUANTITY
+			dv_prop: DV_PROPORTION
+			dv_id: DV_IDENTIFIER
 		do
 			-- connect controls
 			ev_main_vbox.extend (action_bar)
