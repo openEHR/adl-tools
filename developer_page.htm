@@ -1,0 +1,402 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en">
+<head>
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type" />
+
+
+
+
+
+
+
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <title>openEHR Eiffel Implementation Project</title>
+  <link rel="stylesheet" href="http://www.openehr.org/styles/oe.css" type="text/css" />
+</head>
+
+
+<body>
+
+
+
+
+
+
+
+
+<h1>The <span style="font-style: italic;">open</span>EHR ref_impl_eiffel Project Developer's page
+</h1>
+
+
+
+
+
+
+
+
+<hr style="width: 100%; height: 2px;" />
+<h2>What is in this project?</h2>
+
+
+
+<p>There are 3 sections to this repository, as follows:</p>
+
+
+
+<ul>
+
+
+
+  <li><span style="font-weight: bold;">libraries</span>: this is where the <span style="font-style: italic;">open</span>EHR reference model archetype models and supporting generic libraries are. Executables in this area are all test applications.</li>
+
+
+
+  <li><span style="font-weight: bold;">components</span>: re-usable
+components based on the libraries are here. Includes .Net and
+Java-wrapped DLLs (future: Linux .so libs) for ADL, and any other
+deployable component form of the&nbsp;<span style="font-style: italic;">open</span>EHR models. Will eventually include an&nbsp;<span style="font-style: italic;">open</span>EHR archetype- and template-processing kernel</li>
+
+
+
+  <li><span style="font-weight: bold;">apps</span>: standalone
+executable applications based on the libraries and/or components.
+Includes the ADL workbench, and will eventually include EHR,
+demographic and archetype servers.</li>
+
+
+
+</ul>
+
+
+
+<h2>Setting up for building</h2>
+
+
+
+<p>There are a number of steps to do to ensure you are ready to build anything, as follows:</p>
+
+
+
+<ul>
+
+
+
+  
+
+  
+
+  <li>Download and install <a href="http://eiffel.com">EiffelStudio 6.6</a> (free use license).</li>
+
+
+
+  
+  
+  
+  <ul>
+
+
+
+    <li>During installation, when it asks whether to precompile the libraries, you can choose No.</li>
+
+
+
+  
+  
+  
+  </ul>
+
+
+
+  
+
+  
+
+  <li>You can, if you wish, build individual projects within the EiffelStudio IDE; but if you wish to do batch command-line builds, you need SCons. SCons is a software build utility, based on Python, and it only takes a few minutes to install.</li>
+
+
+
+  
+  
+  
+  <ul>
+
+
+
+    <li>Download and install <a href="http://www.python.org">Python 2.5</a> or higher. (Do not install Python 3.0 or higher!)</li>
+
+
+
+    <li>Download and install <a href="http://www.scons.org">SCons 2.0</a> or higher.</li>
+
+
+
+  
+  
+  
+  </ul>
+
+
+
+  <li>On <span style="font-weight: bold;">Windows</span>, if you wish to build an installer for ADL Workbench, download and install <a href="http://nsis.sourceforge.net">NSIS</a>.</li>
+
+
+
+</ul>
+
+
+
+<h2>Building</h2>
+
+
+
+<p>The SCons-based facility for building the entire project works on Windows, Linux and Mac.</p>
+
+
+
+<p>The approach is:</p>
+
+
+
+<ul>
+
+
+
+  <li>Make sure that SCons, Python and the Eiffel compiler are in your PATH.</li>
+
+
+
+  <li>On <span style="font-weight: bold;">Windows</span>:
+    <ul>
+        <li>Make sure NSIS is in your path too if you installed it.</li>
+    </ul>
+  </li>
+
+
+
+  <li>On <span style="font-weight: bold;">Linux</span> or <span style="font-weight: bold;">Mac</span>, make sure that you have also set the EiffelStudio environment variables. For example, on a Mac, your <span style="font-weight: bold;">.profile</span> might contain this:
+    <ul>
+        <li>export <span style="font-weight: bold;">ISE_PLATFORM</span>=macosx-x86</li>
+        <li>export <span style="font-weight: bold;">ISE_EIFFEL</span>=/Applications/MacPorts/Eiffel66</li>
+        <li>export <span style="font-weight: bold;">GOBO</span>=$ISE_EIFFEL/library/gobo</li>
+        <li>export <span style="font-weight: bold;">ES_PATH</span>=$ISE_EIFFEL/studio/spec/$ISE_PLATFORM/bin</li>
+        <li>export <span style="font-weight: bold;">PATH</span>=$ES_PATH:$GOBO/spec/$ISE_PLATFORM/bin:$PATH</li>
+    </ul>
+  </li>
+
+
+
+  <li>Open a Windows command window, or a Linux or Mac terminal window.</li>
+
+
+
+  <li>Change directory to the project root directory.</li>
+
+
+
+  <li>To build all of the binaries, simply type <span style="font-weight: bold;">scons</span>.</li>
+
+
+
+</ul>
+
+
+
+<p>SCons provides many other options, depending how and what you want to build. For example:</p>
+
+
+
+<ul>
+
+
+
+  <li>To build just ADL Workbench, type <span style="font-weight: bold;">scons adl_workbench</span>.</li>
+
+
+
+  <li>To create installers for the current platform, specify a file or directory target that contains <span style="font-weight: bold;">oe_distrib</span> as a path component. For example, to build the installers below the current directory's parent, type <span style="font-weight: bold;">scons ../oe_distrib/</span>.</li>
+
+
+
+  <li>For a list of the SCons command-line options, type <span style="font-weight: bold;">scons -h</span>.</li>
+
+
+
+</ul>
+
+
+
+Building without SCons is not hard. Just start EiffelStudio by hand and then tell it to build from an existing ECF file.
+Depending on what you want to build, you just select the ECF file in the appropriate directory.
+
+<h2>Build Targets (what can I build?)</h2>
+
+
+
+<p>The current build targets are as follows:</p>
+
+
+
+<ul>
+
+
+
+  <li><span style="font-weight: bold;">libraries area</span>:&nbsp;</li>
+
+
+
+  
+  
+  
+  <ul>
+
+
+
+    <li>common_libs\test\app - a tester for dADL, method dispatcher, units library and others; (currently not being maintained - out of date!)</li>
+
+
+
+    <li>openehr\test\app - a tester for the openEHR reference model classes (currently not being maintained - out of date!)</li>
+
+
+
+  
+  
+  
+  </ul>
+
+
+
+  <li><span style="font-weight: bold;">component area</span>:</li>
+
+
+
+  
+  
+  
+  <ul>
+
+
+
+    <li>components\adl_parser\test\app - a tester for the ADL parser (currently not being maintained - out of date!)</li>
+
+
+
+    <li>components\adl_parser\lib\dotnet_dll - the <span style="font-weight: bold;">.NET DLL</span> form of the ADL parser</li>
+
+
+
+    <li>components\adl_parser\lib\java_lib - the <span style="font-weight: bold;">JNI-wrapped DLL</span> form of the ADL parser (currently not being maintained - out of date!)</li>
+
+
+
+  
+  
+  
+  </ul>
+
+
+
+  <li><span style="font-weight: bold;">apps area</span>:</li>
+
+
+
+  
+  
+  
+  <ul>
+
+
+
+    
+
+
+    <li>apps\adl_workbench\app - <span style="font-weight: bold;">adl_workbench</span>, an EiffelVision2-based GUI application for ADL parsing, viewing and saving.</li>
+
+
+
+  
+  
+  
+  </ul>
+
+
+
+</ul>
+
+
+<h2>Parser Grammars</h2>
+
+
+The following are links to the grammars of the various parsers:<br />
+
+
+<ul>
+
+
+  <li>ADL (<a href="components/adl_parser/src/syntax/adl/parser/adl_validator.y">.y file</a>) (<a href="components/adl_parser/src/syntax/adl/parser/adl_validator.html">html documentation</a>)</li>
+
+
+  <li>cADL  (<a href="components/adl_parser/src/syntax/cadl/parser/cadl_validator.y">.y file</a>) (<a href="components/adl_parser/src/syntax/cadl/parser/cadl_validator.html">html documentation</a>)</li>
+
+
+  <li>dADL  (<a href="libraries/common_libs/src/structures/syntax/dadl/parser/dadl2_validator.y">.y file</a>) (<a href="libraries/common_libs/src/structures/syntax/dadl/parser/dadl2_validator.html">html documentation</a>)</li>
+
+
+  <li>ADL Path Syntax (<a href="libraries/common_libs/src/structures/object_graph/path/og_path_validator.y">.y file</a>) (<a href="libraries/common_libs/src/structures/object_graph/path/og_path_validator.html">html documentation</a>)</li>
+
+
+  <li>Units parser&nbsp;(<a href="libraries/common_libs/src/unit_parser/parser/units_parser.y">.y file</a>) (<a href="libraries/common_libs/src/unit_parser/parser/units_parser.html">html documentation</a>)</li>
+
+
+</ul>
+
+
+
+
+
+
+
+
+<hr style="width: 100%; height: 2px;" />
+<p class="footer">$LastChangedDate$
+$LastChangedRevision$</p>
+
+
+
+
+
+
+
+
+</body>
+</html>

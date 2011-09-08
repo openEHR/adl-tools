@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-6-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-6-0 http://www.eiffel.com/developers/xml/configuration-1-6-0.xsd" name="adl_compiler" uuid="D02A4E49-CAAC-4455-8A72-2D3F91BECA98">
+	<target name="adl_compiler">
+		<root class="APP_ROOT"/>
+		<file_rule>
+			<exclude>/EIFGENs$</exclude>
+			<exclude>/CVS$</exclude>
+			<exclude>/.svn$</exclude>
+		</file_rule>
+		<option warning="true">
+			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
+		</option>
+		<precompile name="base_pre" location="$ISE_PRECOMP\base.ecf"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf">
+			<renaming old_name="C_STRING" new_name="BASE_C_STRING"/>
+		</library>
+		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
+		<library name="gobo_lexical" location="$ISE_LIBRARY\library\gobo\gobo_lexical.ecf"/>
+		<library name="gobo_parse" location="$ISE_LIBRARY\library\gobo\gobo_parse.ecf"/>
+		<library name="gobo_structure" location="$ISE_LIBRARY\library\gobo\gobo_structure.ecf"/>
+		<library name="gobo_utility" location="$ISE_LIBRARY\library\gobo\gobo_utility.ecf"/>
+		<library name="gobo_xml" location="$ISE_LIBRARY\library\gobo\gobo_xml.ecf"/>
+		<library name="i18n" location="$ISE_LIBRARY\library\i18n\i18n.ecf"/>
+		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf">
+			<renaming old_name="C_DATE" new_name="TIME_C_DATE"/>
+			<renaming old_name="INTERVAL" new_name="TIME_INTERVAL"/>
+		</library>
+		<cluster name="adl_compiler" location="..\..\..\components\adl_compiler\src\" recursive="true">
+			<visible class="APP_ROOT"/>
+		</cluster>
+		<cluster name="archetype_repository" location="..\..\..\components\archetype_repository\src\" recursive="true">
+			<option>
+				<assertions precondition="true" postcondition="true" check="true" loop="true" supplier_precondition="true"/>
+			</option>
+		</cluster>
+		<cluster name="common_libs" location="..\..\..\libraries\common_libs\src\" recursive="true">
+			<option>
+				<assertions precondition="true" postcondition="true" check="true" loop="true" supplier_precondition="true"/>
+			</option>
+			<file_rule>
+				<exclude>/other$</exclude>
+				<include>/windows$</include>
+				<condition>
+					<platform value="windows"/>
+				</condition>
+			</file_rule>
+			<file_rule>
+				<exclude>/windows$</exclude>
+				<include>/other$</include>
+				<condition>
+					<platform excluded_value="windows"/>
+				</condition>
+			</file_rule>
+		</cluster>
+		<cluster name="openehr" location="..\..\..\libraries\openehr\src\" recursive="true">
+			<option>
+				<assertions precondition="true" postcondition="true" check="true" loop="true" supplier_precondition="true"/>
+			</option>
+			<visible class="C_DV_ORDINAL"/>
+			<visible class="C_CODE_PHRASE"/>
+			<visible class="C_DV_QUANTITY"/>
+			<visible class="CODE_PHRASE"/>
+		</cluster>
+		<cluster name="reference_model_checker" location="..\..\..\components\reference_model_checker\src\" recursive="true"/>
+		<cluster name="version" location="..\..\..\libraries\version\" recursive="true"/>
+		<override name="vendor_fixes" location="..\..\..\libraries\vendor-fixes\" recursive="true">
+			<file_rule>
+				<exclude>/base_net$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>/implementation_gtk$</exclude>
+				<condition>
+					<platform value="windows"/>
+				</condition>
+			</file_rule>
+		</override>
+	</target>
+</system>
