@@ -222,9 +222,9 @@ feature -- Commands
 			end
 		end
 
-	repopulate (differential_view_flag: BOOLEAN)
+	repopulate
 		do
-			populate (class_def, differential_view_flag)
+			populate (class_def, differential_view)
 		end
 
 	refresh
