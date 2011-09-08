@@ -66,7 +66,7 @@ feature -- Initialization
 			print (msg)
 		end
 
-	compiler_archetype_gui_update (msg: attached STRING; ara: ARCH_REP_ARCHETYPE; depth: INTEGER)
+	compiler_archetype_gui_update (msg: attached STRING; ara: ARCH_CAT_ARCHETYPE; depth: INTEGER)
 			-- Update UI with progress on build.
 		do
 			print (msg)

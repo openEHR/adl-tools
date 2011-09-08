@@ -163,7 +163,7 @@ feature --process archetypes
 	local
 		archetype_key: STRING
 		flattend_archetype : FLAT_ARCHETYPE
-		archetype_list: DS_HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
+		archetype_list: DS_HASH_TABLE [ARCH_CAT_ARCHETYPE, STRING]
 	do
 		app_root.initialise
 		print("app_root init call passed")
@@ -202,7 +202,7 @@ feature --process archetypes
 
 	end
 
-	build_ui_update (ara: ARCH_REP_ARCHETYPE)
+	build_ui_update (ara: ARCH_CAT_ARCHETYPE)
 			-- Update UI with progress on build.
 		do
 			print (app_root.archetype_compiler.status)
