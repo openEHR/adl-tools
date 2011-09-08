@@ -107,6 +107,16 @@ feature {NONE} -- Implementation
 
 	 			update_tree_node (ev_node)
 
+				-- select / menu handling					
+				if attached {ARCH_CAT_ARCHETYPE} aci as aca then -- archetype / template node
+		 			ev_node.pointer_button_press_actions.force_extend (agent archetype_node_handler (ev_node, ?, ?, ?))
+		 			ev_node.select_actions.force_extend (agent select_archetype_with_delay (aca))
+
+	 			elseif attached {ARCH_CAT_MODEL_NODE} aci as acmn and then acmn.is_class then -- it is a model node
+		 			ev_node.pointer_button_press_actions.force_extend (agent class_node_handler (ev_node, ?, ?, ?))
+		 			ev_node.select_actions.force_extend (agent select_class_with_delay (acmn))
+				end
+
 				if ev_tree_item_stack.is_empty then
 					ev_tree.extend (ev_node)
 				else
@@ -157,10 +167,6 @@ feature {NONE} -- Implementation
 					-- pixmap
 					pixmap := pixmaps [aci.group_name]
 
-					-- select / menu handling					
-		 			ev_node.pointer_button_press_actions.force_extend (agent archetype_node_handler (ev_node, ?, ?, ?))
-		 			ev_node.select_actions.force_extend (agent select_archetype_with_delay (aca))
-
 	 			elseif attached {ARCH_CAT_MODEL_NODE} aci as acmn then -- it is a model node
 	 				-- text
 	 				text.append (utf8(" (" + acmn.sub_tree_artefact_count (artefact_types).out + ")"))
@@ -168,10 +174,6 @@ feature {NONE} -- Implementation
 					-- pixmap
 					if acmn.is_class then
 						pixmap := object_node_pixmap (acmn)
-
-						-- select / menu handling					
-			 			ev_node.pointer_button_press_actions.force_extend (agent class_node_handler (ev_node, ?, ?, ?))
-			 			ev_node.select_actions.force_extend (agent select_class_with_delay (acmn))
 					else
 						pixmap := pixmaps [aci.group_name]
 					end
@@ -244,26 +246,23 @@ feature {NONE} -- Implementation
 			menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
-			if attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
-				if button = {EV_POINTER_CONSTANTS}.left then
-	--				select_class_agent.call ([acmn.class_definition])
+			if button = {EV_POINTER_CONSTANTS}.right and attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
+				create menu
+				create an_mi.make_with_text_and_action ("Display", agent display_context_selected_class_in_active_tool (ev_ti))
+		    	menu.extend (an_mi)
 
-				elseif button = {EV_POINTER_CONSTANTS}.right then
-					create menu
-					create an_mi.make_with_text_and_action ("Display", agent display_context_selected_class_in_active_tool (ev_ti))
-			    	menu.extend (an_mi)
+				create an_mi.make_with_text_and_action ("Display in new tab", agent display_context_selected_class_in_new_tool (ev_ti))
+				menu.extend (an_mi)
 
-					create an_mi.make_with_text_and_action ("Display in new tab", agent display_context_selected_class_in_new_tool (ev_ti))
-					menu.extend (an_mi)
-
-					menu.show
-				end
+				menu.show
 			end
 		end
 
 	display_context_selected_class_in_active_tool (ev_ti: EV_TREE_ITEM)
 		do
-			ev_ti.enable_select
+			if not ev_ti.is_selected then
+				ev_ti.enable_select
+			end
 			if attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
 				current_arch_cat.set_selected_item (acmn)
 				select_class_agent.call ([current_arch_cat.selected_class.class_definition])
@@ -272,7 +271,9 @@ feature {NONE} -- Implementation
 
 	display_context_selected_class_in_new_tool (ev_ti: EV_TREE_ITEM)
 		do
-			ev_ti.enable_select
+			if not ev_ti.is_selected then
+				ev_ti.enable_select
+			end
 			if attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
 				current_arch_cat.set_selected_item (acmn)
 				select_class_in_new_tool_agent.call ([current_arch_cat.selected_class.class_definition])

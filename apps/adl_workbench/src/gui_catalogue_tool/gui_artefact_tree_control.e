@@ -151,13 +151,13 @@ feature {NONE} -- Implementation
 			menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
-			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca and button = {EV_POINTER_CONSTANTS}.right then
+			if button = {EV_POINTER_CONSTANTS}.right and attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
 				create menu
 				create an_mi.make_with_text_and_action ("Compile and Display", agent display_context_selected_archetype_in_active_tool (ev_ti))
 				an_mi.set_pixmap (pixmaps ["parse"])
 		    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action ("Display in new tool", agent display_context_selected_archetype_in_new_tool (ev_ti))
+				create an_mi.make_with_text_and_action ("Display in new tab", agent display_context_selected_archetype_in_new_tool (ev_ti))
 				an_mi.set_pixmap (pixmaps ["archetype_2"])
 				menu.extend (an_mi)
 
@@ -171,7 +171,9 @@ feature {NONE} -- Implementation
 
 	display_context_selected_archetype_in_active_tool (ev_ti: EV_TREE_ITEM)
 		do
-			ev_ti.enable_select
+			if not ev_ti.is_selected then
+				ev_ti.enable_select
+			end
 			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
 				current_arch_cat.set_selected_item (aca)
 				select_archetype_agent.call ([])
@@ -180,7 +182,9 @@ feature {NONE} -- Implementation
 
 	display_context_selected_archetype_in_new_tool (ev_ti: EV_TREE_ITEM)
 		do
-			ev_ti.enable_select
+			if not ev_ti.is_selected then
+				ev_ti.enable_select
+			end
 			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
 				current_arch_cat.set_selected_item (aca)
 				select_archetype_in_new_tool_agent.call ([])

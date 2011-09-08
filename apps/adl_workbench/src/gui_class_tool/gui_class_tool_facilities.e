@@ -43,7 +43,9 @@ feature {NONE} -- Implementation
 
 	display_context_selected_class_in_active_tool (ev_ti: EV_TREE_ITEM)
 		do
-			ev_ti.enable_select
+			if not ev_ti.is_selected then
+				ev_ti.enable_select
+			end
 			if attached {BMM_CLASS_DEFINITION} ev_ti.data as a_class_def then
 				select_class_agent.call ([a_class_def])
 			end
@@ -51,7 +53,9 @@ feature {NONE} -- Implementation
 
 	display_context_selected_class_in_new_tool (ev_ti: EV_TREE_ITEM)
 		do
-			ev_ti.enable_select
+			if not ev_ti.is_selected then
+				ev_ti.enable_select
+			end
 			if attached {BMM_CLASS_DEFINITION} ev_ti.data as a_class_def then
 				select_class_in_new_tool_agent.call ([a_class_def])
 			end
