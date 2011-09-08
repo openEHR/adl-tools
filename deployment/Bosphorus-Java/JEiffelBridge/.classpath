@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="lib" path="jni">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="JEiffelBridge/jni"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="javaLibs/adl-parser-1.0.5-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="javaLibs/adl-serializer-0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="javaLibs/measure-serv-0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="javaLibs/mini-termserv-0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="javaLibs/openehr-aom-0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="javaLibs/openehr-ap-0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="javaLibs/openehr-rm-core-0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="javaLibs/openehr-rm-domain-0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="javaLibs/rm-builder-0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="javaLibs/xml-serializer-0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="javaLibs/commons-lang-2.2.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
