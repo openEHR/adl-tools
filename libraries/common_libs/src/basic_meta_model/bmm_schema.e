@@ -692,7 +692,7 @@ feature {SCHEMA_DESCRIPTOR} -- Schema Processing
 		local
 			class_def: BMM_CLASS_DEFINITION
 		do
-			from class_list.start until class_list.off loop
+			from class_list.start until class_list.off or not passed loop
 				class_def := class_list.item_for_iteration
 				if not attached class_def.qualified_package_name then
 					passed := False
@@ -713,7 +713,7 @@ feature {SCHEMA_DESCRIPTOR} -- Schema Processing
 			-- check to see that all classes mentioned in a package exist in schema
 		do
 			if a_pkg.has_classes then
-				from a_pkg.classes.start until a_pkg.classes.off loop
+				from a_pkg.classes.start until a_pkg.classes.off or not passed loop
 					if not has_class_definition (a_pkg.classes.item) then
 						passed := False
 						add_error ("BMM_PKGCL", <<schema_id, a_pkg.classes.item, a_pkg.name>>)

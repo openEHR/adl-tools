@@ -146,6 +146,7 @@ feature -- Events
 				rm_schemas_access.load_schemas
 
 				if not rm_schemas_access.found_valid_schemas then
+					post_error (Current, "load_schemas", "model_access_e13", <<new_dir>>)
 					create error_dialog.make_with_text (billboard.content)
 					billboard.clear
 					error_dialog.show_modal_to_window (Current)

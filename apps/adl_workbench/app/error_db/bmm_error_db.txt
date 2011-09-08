@@ -29,6 +29,7 @@ templates = <
 		["model_access_e10"] = <"Reference Model included schema $1 not found or failed to load">
 		["model_access_e11"] = <"Reference Model schema $1 includes a schema that failed to load">
 		["model_access_e12"] = <"Reference Model schema $1 failed basic validation; errors:%N$2">
+		["model_access_e13"] = <"No valid schemas found at path $1; reverting to previous path">
 
 		["model_access_i1"] = <"Reference Model schema $1 loaded: $2 primitive types, $3 class definitions">
 		["model_access_i2"] = <"Merged schema $1 into schema $2">
