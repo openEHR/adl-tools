@@ -22,34 +22,19 @@ templates = <
 		["model_access_e3"] = <"Reference Model schema contains unknown type $1 (object add failed)">
 		["model_access_e4"] = <"Reference Model schema $1 load failure due to exception during processing">
 		["model_access_e5"] = <"Reference Model schema directory $1 does not exist or not readable">
-		["model_access_e6"] = <"Reference Model schema directory $1 does not contain any schemas (expecting structure $1/schema_file$2)">
+		["model_access_e6"] = <"Reference Model schema directory $1 does not contain any schemas (expecting structure $1/model_name/schema_file.dadl)">
 		["model_access_e7"] = <"No Reference Model schema found for package '$1'">
-		["model_access_e8"] = <"Reference Model schema $1 failed to parse; errors:%N$2">
-		["model_access_e9"] = <"Reference Model schema $1 failed semantic validation; errors:%N$2">
-		["model_access_e10"] = <"Reference Model included schema $1 not found or failed to parse">
 
 		["model_access_i1"] = <"Reference Model $1 loaded: $2 primitive types, $3 class definitions">
 
 		["model_access_w1"] = <"Reference Model checking is OFF">
 		["model_access_w2"] = <"Duplicate Reference Model schema found for model '$1' in file $2, ignoring latter">
-		["model_access_w3"] = <"Duplicate instance of Reference Model package $1 found; original schema $2; ignoring instance from schema $3">
+		["model_access_w3"] = <"Duplicate instance of Reference Model package $1 found; ignoring instance from schema $2">
 		["model_access_w4"] = <"Reference Model for $1 meta-data missing/invalid: $2">
 		["model_access_w5"] = <"Unknown Reference Model '$1' mentioned in 'rm_schemas_load_list' config setting (ignored)">
 		["model_access_w6"] = <"No 'rm_schemas_load_list' config setting found; attempting to load all schemas (change via Tools>Options)">
-		["model_access_w7"] = <"'rm_schemas_load_list' config setting mentions non-existence schema $1">
+		["RMPTV"] = <"class definition $1 property $2 type not defined in schema">
 
-		["BMM_PTV"] = <"Schema $1 class definition $2property $3 type not defined in schema">
-		["BMM_GPCT"] = <"Schema $1 class definition $2 generic parameter $3 constraint type $4 does not exist in schema">
-		["BMM_CPT"] = <"Schema $1 class definition $2 container property $3 target type not defined">
-		["BMM_CPTV"] = <"Schema $1 class definition $2 container property $3 target type $4 not found in schema">
-		["BMM_CPCT"] = <"Schema $1 class definition $2 container property $3 container type $4 not found in schema">
-		["BMM_GPT"] = <"Schema $1 class definition $2 generic property $3 not defined">
-		["BMM_GPRT"] = <"Schema $1 class definition $2 generic property $3 root type $4 not found in schema">
-		["BMM_GPGPT"] = <"Schema $1 class definition $2 generic property $3 generic parameter $4 not found in schema or in containing class declarations (if open)">
-		["BMM_GPGPM"] = <"Schema $1 class definition $2 marked 'is_generic' but has no generic parameter declarations">
-		["BMM_GPGPU"] = <"Schema $1 class definition $2 generic property $3 type $4 parameter $5 not found in class definitions or $4 formal declaration">
-		["BMM_SPT"] = <"Schema $1 class definition $2 single-valued property $3 type $4 not found in schema">
-		["BMM_SPOT"] = <"Schema $1 class definition $2 single-valued property $3 open generic parameter $4 not found in containing class declarations">
 	>
 >
 

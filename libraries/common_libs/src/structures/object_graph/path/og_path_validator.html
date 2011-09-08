@@ -1,0 +1,108 @@
+<html>
+<head>
+	<title>Grammar</title>
+	<style type="text/css">
+	<!--
+	body {
+		font-family: Verdana,Georgia,Geneva,sans serif;
+		font-size: 11pt;
+	}
+	a:link {
+		color: green;
+	}
+	a:visited {
+		color: green;
+	}
+	a:hover {
+		color: white;
+		background-color: blue;
+	}
+	a:active {
+		color: red;
+	}
+	.lhs {
+		font-weight: bold;
+	}
+	.rhs {
+		margin: 0% 0% 0% 3%;
+	}
+	.empty {
+		color: gray;
+	}
+	.literal_token {
+		font-family: Courier New,Courier; 
+		color: blue;
+	}
+	.token {
+		font-family: Courier New,Courier; 
+		font-style: italic;
+		color: black;
+	}
+	.rule {
+		margin: 2% 0% 0% 1%;
+	}
+	.lhs_variable {
+		font-family: Verdana,Georgia,sans serif; 
+		color: navy;
+	}
+	.rhs_variable {
+		font-family: Verdana,Georgia,sans serif; 
+		color: green;
+	}
+	-->
+	</style>
+</head>
+<body>
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="input">input</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#movable_path">movable_path</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#absolute_path">absolute_path</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#relative_path">relative_path</a> </span></div>
+<div class="rhs">
+| <span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="movable_path">movable_path</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_MOVABLE_LEADER </span><span class="rhs_variable"><a href="#relative_path">relative_path</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="absolute_path">absolute_path</span>: </div>
+<div class="rhs">
+&nbsp; <span class="literal_token">&#47; </span></div>
+<div class="rhs">
+| <span class="literal_token">&#47; </span><span class="rhs_variable"><a href="#relative_path">relative_path</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#absolute_path">absolute_path</a> </span><span class="literal_token">&#47; </span><span class="rhs_variable"><a href="#relative_path">relative_path</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="relative_path">relative_path</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#path_segment">path_segment</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#relative_path">relative_path</a> </span><span class="literal_token">&#47; </span><span class="rhs_variable"><a href="#path_segment">path_segment</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="path_segment">path_segment</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">V_ATTRIBUTE_IDENTIFIER </span><span class="token">V_LOCAL_TERM_CODE_REF </span></div>
+<div class="rhs">
+| <span class="token">V_ATTRIBUTE_IDENTIFIER </span><span class="token">V_ANY_PREDICATE </span></div>
+<div class="rhs">
+| <span class="token">V_ATTRIBUTE_IDENTIFIER </span></div>
+</div>
+
+</body>
+</html>

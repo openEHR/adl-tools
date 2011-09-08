@@ -1,0 +1,56 @@
+﻿archetype (adl_version=1.4)
+	openEHR-EHR-SECTION.conclusion.v1
+
+concept
+	[at0000]	-- Conclusion
+language
+	original_language = <[ISO_639-1::en]>
+description
+	original_author = <
+		["name"] = <"Heather Leslie">
+		["organisation"] = <"Ocean Informatics">
+		["email"] = <"heather.leslie@oceaninformatics.com">
+		["date"] = <"11/04/2007">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"Section to bring together all archetypes involved in recording the conclusion in an encounter with a patient">
+			use = <"">
+			keywords = <"diagnosis", "differential diagnosis">
+			misuse = <"">
+			copyright = <"copyright (c) 2010 openEHR Foundation">
+		>
+	>
+	lifecycle_state = <"AuthorDraft">
+	other_contributors = <>
+	other_details = <
+		["references"] = <"">
+	>
+
+definition
+	SECTION[at0000] matches {	-- Conclusion
+		items cardinality matches {0..*; unordered} matches {
+			allow_archetype EVALUATION[at0001] occurrences matches {0..*} matches {
+				include
+					archetype_id/value matches {/openEHR-EHR-EVALUATION\.differential_diagnosis\.v1|openEHR-EHR-EVALUATION\.problem\.v1|openEHR-EHR-EVALUATION\.problem-diagnosis\.v1/}
+			}
+		}
+	}
+
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					text = <"Conclusion">
+					description = <"Section to record conclusions of an encounter with a patient">
+				>
+				["at0001"] = <
+					text = <"Evaluation of a problem, diagnosis etc.">
+					description = <"*">
+				>
+			>
+		>
+	>

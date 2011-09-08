@@ -1,0 +1,199 @@
+﻿archetype (adl_version=1.4)
+	openEHR-DEMOGRAPHIC-CLUSTER.person_identifier_iso.v1
+
+concept
+	[at0000]	-- Identificador
+language
+	original_language = <[ISO_639-1::pt-br]>
+	translations = <
+		["en-gb"] = <
+			language = <[ISO_639-1::en-gb]>
+			author = <
+				["name"] = <"Sergio Miranda Freire">
+				["organisation"] = <"Universidade do Estado do Rio de Janeiro - UERJ">
+				["email"] = <"sergio@lampada.uerj.br">
+			>
+		>
+	>
+description
+	original_author = <
+		["name"] = <"Sergio Miranda Freire & Rigoleta Dutra Mediano Dias">
+		["organisation"] = <"Universidade do Estado do Rio de Janeiro - UERJ">
+		["email"] = <"sergio@lampada.uerj.br">
+		["date"] = <"22/05/2009">
+	>
+	details = <
+		["en-gb"] = <
+			language = <[ISO_639-1::en-gb]>
+			purpose = <"Representation of data about a person identifier">
+			use = <"Used in demographic services to register data about a person identifier">
+			keywords = <"demographic service", "person identifier">
+			misuse = <"">
+			copyright = <"copyright (c) 2010 openEHR Foundation">
+		>
+		["pt-br"] = <
+			language = <[ISO_639-1::pt-br]>
+			purpose = <"Representação de dados relativos a um documento de identificação de uma pessoa">
+			use = <"Usado em serviçoS demográficos para registrar os dados relativos a um documento de identificação de uma pessoa">
+			keywords = <"serviço demográfico", "documento de identificação de uma pessoa">
+			misuse = <"">
+			copyright = <"copyright (c) 2010 openEHR Foundation">
+		>
+	>
+	lifecycle_state = <"AuthorDraft">
+	other_contributors = <>
+	other_details = <
+		["references"] = <"ISO/TS 22220:2008(E) - Identification of Subject of Care - Technical Specification - International Organization for Standardization">
+	>
+
+definition
+	CLUSTER[at0000] matches {	-- Person Identifier
+		items cardinality matches {4..*; ordered} matches {
+			ELEMENT[at0001] occurrences matches {1..*} matches {	-- Designation
+				value matches {
+					DV_TEXT matches {*}
+				}
+			}
+			ELEMENT[at0002] occurrences matches {1..*} matches {	-- Geographic Area
+				value matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {
+							[local::
+							at0010, 	-- Local
+							at0011, 	-- Regional
+							at0012, 	-- State
+							at0013]	        -- National
+						}
+					}
+				}
+			}
+			ELEMENT[at0003] occurrences matches {1..*} matches  {	-- Issuer
+				value matches {
+					DV_TEXT matches {*}
+				}
+			}
+			ELEMENT[at0004] occurrences matches {1..*} matches {	-- Type of identification
+				value matches {
+					DV_CODED_TEXT matches {
+						defining_code matches {[ac0000]}
+					}
+				}
+			}
+			allow_archetype CLUSTER[at0005] occurrences matches {0..*} matches {
+				include
+					archetype_id/value matches {/(identifier)[a-zA-Z0-9_-]*\.v1/}
+			}
+		}
+	}
+
+
+
+ontology
+	term_definitions = <
+		["en-gb"] = <
+			items = <
+				["at0000"] = <
+					text = <"Person identifier">
+					description = <"Identifier for a person">
+				>
+				["at0001"] = <
+					text = <"Identifier designation">
+					description = <"A number or code assigned to a person in order to identify that person">
+				>
+				["at0002"] = <
+					text = <"Geographic area">
+					description = <"Indicates the geographic area within which the identifier is used">
+				>
+				["at0003"] = <
+					text = <"Issuer">
+					description = <"Identifier issuer">
+				>
+				["at0004"] = <
+					text = <"Type of identifier">
+					description = <"Type of identifier">
+				>
+				["at0005"] = <
+					text = <"Other data">
+					description = <"Other data about a specific identifier">
+				>
+				["at0010"] = <
+					text = <"Local">
+					description = <"Indicates that this identifier is used locally">
+				>
+				["at0011"] = <
+					text = <"Area/Regional/District">
+					description = <"Indicates that this identifier is used within a specific area">
+				>
+				["at0012"] = <
+					text = <"State/Province/Territory">
+					description = <"Indicates that this identifier is used within a political boundary such as a state or territory or province">
+				>
+				["at0013"] = <
+					text = <"National">
+					description = <"Indicates that this identifier is used nationally">
+				>
+			>
+		>
+		["pt-br"] = <
+			items = <
+				["at0000"] = <
+					text = <"Identificador">
+					description = <"Identificador para uma pessoa">
+				>
+				["at0001"] = <
+					text = <"Designação">
+					description = <"Número ou código do documento de identificação">
+				>
+				["at0002"] = <
+					text = <"Área geografica">
+					description = <"Indica a área geográfica onde o documento é utilizado">
+				>
+				["at0003"] = <
+					text = <"Emissor">
+					description = <"Órgão emissor da identificação">
+				>
+				["at0004"] = <
+					text = <"Tipo da identificação">
+					description = <"Tipo da identificacao">
+				>
+				["at0005"] = <
+					text = <"Outros dados">
+					description = <"Outros dados sobre um identificador específico">
+				>
+				["at0010"] = <
+					text = <"Local">
+					description = <"Indica que esta identificação é usada localmente">
+				>
+				["at0011"] = <
+					text = <"Regional">
+					description = <"Indica que esta identificação é usada em uma região">
+				>
+				["at0012"] = <
+					text = <"Estadual">
+					description = <"Indica que esta identificação é usada em nível de um estado">
+				>
+				["at0013"] = <
+					text = <"Nacional">
+					description = <"Indica que esta identificação é usada em nível nacional">
+				>
+			>
+		>
+	>
+	constraint_definitions = <
+		["en-gb"] = <
+			items = <
+				["ac0000"] = <
+					text = <"Identifier type code">
+					description = <"Valid codes for type of identifiers">
+				>
+			>
+		>
+		["pt-br"] = <
+			items = <
+				["ac0000"] = <
+					text = <"Código do tipo de identificador">
+					description = <"códigos válidos para tipo de identificador">
+				>
+			>
+		>
+	>

@@ -1,0 +1,51 @@
+;
+;	component:   "openEHR Reusable Libraries"
+;	description: "[
+;			 Database of unit tables, designed on the basis of the Unified Code for Units
+;	             of Measure (UCUM), developed by Gunther Schadow and Clement J. McDonald of
+;			 The Regenstrief Institute For Health Care, Indianapolis.
+;			 Published at http://aurora.rg.iupui.edu/UCUM.
+;	             ]"
+;	keywords:    "units, UCUM"
+;
+;	author:      "Thomas Beale"
+;	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+;	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+;	license:     "See notice at bottom of class"
+;
+;	file:        "$Source$"
+;	revision:    "$Revision$"
+;	last_change: "$Date$"
+;
+
+[identification]
+GROUP_NAME = ISO1000
+
+[units]
+;
+;NAME:PROPERTY:CASE_SENSITIVE:CASE_INSENSITIVE:METRIC:VALUE:DEFINITION
+;
+gon = gon (grade):plane angle:gon:GON:N:0.9:deg
+degree = degree (angle):plane angle:deg:DEG:N:2:[pi].rad/360
+minute = minute (angle):plane angle:':':N:1:deg/60
+second = second (angle):plane angle:'':'':N:1:'/60
+liter = liter:volume:l:L:Y:1:dm^3
+are = are:area:ar:AR:Y:100:m^2
+minute = minute:time:min:MIN:N:60:s
+hour = hour:time:h:HR:N:60:min
+day = day:time:d:D:N:24:h
+year (tropical) = year (tropical):time:a_t:ANN_T:N:365.24219:d
+year (mean Julian) = year (mean Julian):time:a_j:ANN_J:N:365.25:d
+year (mean Gregorian) = year (mean Gregorian):time:a_g:ANN_G:N:365.2425:d
+year = year:time:a:ANN:N:1:a_j
+week = week:time:wk:WK:N:7:d
+month (synodal) = month (synodal):time:mo_s:MO_S:N:29.53059:d
+month (Julian) = month (Julian):time:mo_j:MO_J:N:1:a_j/12
+month (Gregorian) = month (Gregorian):time:mo_g:MO_G:N:1:a_g/12
+month = month:time:mo:MO:N:1:mo_j
+tonne = tonne:mass:t:TNE:Y:1E3:kg
+bar = bar:pressure:bar:BAR:Y:1E5:Pa
+unified atomic mass unit = unified atomic mass unit:mass:u:AMU:Y:1.6605402E-24:g
+electron volt = electron volt:energy:eV:EV:Y:1:[e].V
+astronomic unit = astronomic unit:length:AU:ASU:N:149597.870:Mm
+parsec = parsec:length:pc:PRS:Y:3.085678E16:m

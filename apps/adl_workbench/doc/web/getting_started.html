@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <title>AWB getting started</title>
+    <meta content="text/html; charset=unicode" http-equiv="Content-Type"/>
+    <link rel="stylesheet" type="text/css" href="awb.css" media="screen"/>
+    <meta name="generator" content="CoffeeCup HTML Editor (www.coffeecup.com)"/>
+  </head>
+  <body>
+    <div id="container">
+      <table style="BACKGROUND-COLOR: #9cd2f8" border="0" cellspacing="0" cellpadding="0" width="100%">
+        <tbody>
+          <tr valign="top">
+            <td valign="middle" width="152">
+              <img border="0" alt="openEHR logo" src="images/openehr_logo_trans_bg.png" width="150" height="50"/> </td>
+            <td>
+              <div id="header">
+                <h1>ADL Workbench (AWB) - getting started</h1>
+                <p class="description">Download and Help pages</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div id="wrapper">
+        <div id="content">
+          <h2>Setting RM Schemas</h2>
+          <p>You may want to check which Reference Model schemas are enabled initially. Choose Tools &gt; Options to do this. The options dialog looks as follows.</p>
+          <a href="images/options.png">
+            <img border="0" alt="Options dialog" src="images/tn_options.jpg" width="200" height="187"/> </a>
+          <p>You can check all RM schemas that apply to archetypes in any repository you might define. The only time you would leave a schema unchecked is if you have more than one version of the same schema and you want to choose a specific one. Several RM schemas are provided with the AWB, which are copies of the controlled versions found in the <i>open</i>EHR knowledge2 SVN repository.</p>
+          <h2>Setting and changing repository profiles</h2>
+          <p>The first time you start the tool if you are a new user, you will be asked for a repository. The screen will look like this:<br/></p>
+          <a href="images/startup_repository.png">
+            <img border="0" alt="Repository dialog at startup" src="images/tn_startup_repository.jpg" width="200" height="151"/> </a>
+          <p>The repository dialog is used to define the location of a repository of archetypes/templates. The 'profile' is a logical name for a 'reference' repository, and optionally, a 'work' repository. You can create as many profiles as you like. The 'reference' repository is a directory containing archetypes that you will use, but not modify, such as the CKM archetypes, or a national library. These archetypes will be shown with blue icons. The optional 'work' repository is to indicate the directory under which you have archetypes/templates you are working on. The latter can include specialisations of the archetypes found in the reference location. These archetypes will be shown with green icons.</p>
+          <p>The files in each repository area can be arranged in any manner - e.g. the traditional '<i>open</i>EHR' structure, or even a single directory. When the files are read by the AWB, they are classified under the class structure of the reference model on which each archetype is based.</p>
+          <p>
+            <b>New users and anyone wanting to experiment with ADL/AOM 1.5 are advised to follow the setup described <a href="learning_adl_15.html">here</a>. This is the setup the tool authors most often use!</b>
+          </p>
+          <h2>Tool overview</h2>
+          <p>The AWB has two tools, the archetype viewer and the 'tester'. These are available via the tabs on the right top side of the tool. The Viewer looks as follows.</p>
+          <a href="images/overview.png">
+            <img border="0" alt="Overview" src="images/tn_overview.jpg" width="200" height="159"/> </a>
+          <h3>Archetype and template explorers</h3>
+          <p>On the left side of the tool are two explorers. The upper one is used to navigate all archetypes and templates, within the class hierarchy of the reference model on which the archetypes are based. Reference and working repository artefacts are merged in this view, and colourised so that the origin remains visible. The 'show entire ontology' option on the options panel can be used to force all classes in the hierarchy to be shown rather than just those which have archetypes in the current repository. Archetypes that appear below other archetypes are either specialisations, templates or template components. (Remember that the latter artefact types are technically just specialised archetypes.)</p>
+          <p>The lower explorer is used exclusively for templates and template components, and shows compositional relationships due to slot-filling, rather than specialisation in its hierarchy. The two explorers are linked, so that choosing an artefact node in the lower one automatically chooses the same artefact in the upper one, allowing its lineage to be visible.</p>
+          <h3>Archetype view area and controls</h3>
+          <p>The middle area of the screen is dedicated to a view of a single archetype or template. The 'aspect view' controls across the top control whether the archetype is seen in 'differential' or 'flat' mode, and under these, which physical view is shown - the node map (structure view), paths, ontology etc. A second set of controls on the right hand side determines the visibility of the node map, and the level of detail shown for each node.</p>
+          <h2>Artefact overview</h2>
+          <p>The ADL Workbench is designed to parse and validate archetypes. Technically speaking, 'archetypes' are any artefact conforming to the <i>open</i>EHR Archetype Definition Language (ADL) and Archetype Object Model (AOM) specifications (see lower part of the <a href="http://www.openehr.org/svn/specification/TRUNK/publishing/roadmap.html">specifications page</a>), or the older EN13606-2 specification, which is a snapshot of the <i>open</i>EHR AOM 1.4 specification. The latest ADL 1.5 specification defines 4 logical kinds of artefact. These include three kinds of archetype, and the 'operational template'. The latter is generated from a template, and is used as the basis for all further downstream transformations. The various artefact types and their file formats are shown below.</p>
+          <div style="TEXT-ALIGN: left; PADDING-BOTTOM: 0px; TEXT-INDENT: 0px; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px">
+            <table style="BACKGROUND-COLOR: #ffffff" border="1" cellspacing="2" cellpadding="2" width="80%">
+              <tbody>
+                <tr valign="top">
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
+                    <b>Artefact type</b> </td>
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
+                    <b>Description</b> </td>
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
+                    <b>Source file type</b> </td>
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
+                    <b>Flat file type</b> </td>
+                </tr>
+                <tr valign="top">
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
+                    <b>archetype</b> </td>
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">a theme-based definition of multiple data points/groups, using the archetype constraint formalism</td>
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">.adls<br/>.adl (legacy)</td>
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">.adlf</td>
+                </tr>
+                <tr valign="top">
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
+                    <b>template</b> </td>
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">a use-case specific definition of content, consisting of data items from various archetypes</td>
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">.adls</td>
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
+                    <br/>
+                  </td>
+                </tr>
+                <tr valign="top">
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
+                    <b>template_component</b> </td>
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">a component of a template</td>
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">.adls</td>
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
+                    <br/>
+                  </td>
+                </tr>
+                <tr valign="top">
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
+                    <b>operational_template</b> </td>
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">the inheritance-flattened form of a template, used as the basis for all further transformations</td>
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">n&frasl;a</td>
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">.opt</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>    <div id="navigation">
+      <h2>Contents</h2>
+      <ul>
+        <li value="0">
+          <a href="index.html">Home</a> </li>
+        <li value="0">
+          <a href="getting_started.html">Getting started</a> </li>
+        <li value="0">
+          <a href="browsing_archetypes.html">Browsing and compiling</a> </li>
+        <li value="0">
+          <a href="learning_adl_15.html">Learning about ADL 1.5</a> </li>
+        <li value="0">
+          <a href="templates.html">Working with templates</a> </li>
+        <li value="0">
+          <a href="test_tool.html">The test tool</a> </li>
+        <li value="0">
+          <a href="en13606.html">EN13606</a> </li>
+        <li value="0">
+          <a href="support.html">Support and contributing</a> </li>
+        <li value="0"> <a href="release_notes.html">Release notes</a> </li>
+      </ul>
+    </div><!--       <div id="extra">
+	<h2>XXXXXX</h2>
+	<p>xxxxx.</p>
+</div> --><div id="footer">
+      <ul>
+        <li value="0">
+          <a href="index.html">Home</a> </li>
+        <li value="0">
+          <a href="getting_started.html">Getting started</a> </li>
+        <li value="0">
+          <a href="browsing_archetypes.html">Browsing and compiling</a> </li>
+        <li value="0">
+          <a href="learning_adl_15.html">Learning about ADL 1.5</a> </li>
+        <li value="0">
+          <a href="templates.html">Working with templates</a> </li>
+        <li value="0">
+          <a href="test_tool.html">The test tool</a> </li>
+        <li value="0">
+          <a href="en13606.html">EN13606</a> </li>
+        <li value="0">
+          <a href="support.html">Support and contributing</a> </li>
+        <li value="0"> <a href="release_notes.html">Release notes</a> </li>
+      </ul>
+      <p>Copyright 2010 openEHR Foundation - $LastChangedDate$ $LastChangedRevision$</p>
+    </div></div>
+  </body>
+</html>

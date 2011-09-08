@@ -1,0 +1,7 @@
+# profile for Eiffel language for generate_ver script
+
+file_extension = ".e"
+class_header = "class OPENEHR_VERSION"
+feature_decl = "	feature -- Access\n		version: STRING is "$substr"\n"
+class_footer =  "end"
+newline =  "%N"

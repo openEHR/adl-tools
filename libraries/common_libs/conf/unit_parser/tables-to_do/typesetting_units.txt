@@ -1,0 +1,25 @@
+3.7  Units Used in Typesetting
+
+     name       kind of   print    c/s       c/i    M   value   definition
+                quantity
+ line         length            [lne]     [LNE]     N 1         [in_i]/12
+ point        length            [pnt]     [PNT]     N 1         [lne]/6
+ pica         length            [pca]     [PCA]     N 12        [pnt]
+ Printer's
+ point        length            [pnt_pr]  [PNT_PR]  N 0.013837  [in_i]
+ Printer's
+ pica         length            [pca_pr]  [PCA_PR]  N 12        [pnt_pr]
+ pied (French
+ foot)        length            [pied]    [PIED]    N 32.48     cm
+ pouce
+ (French      length            [pouce]   [POUCE]   N 1         [pied]/12
+ inch)
+ ligne
+ (French      length            [ligne]   [LIGNE]   N 1         [pouce]/12
+ line)
+ didot
+ (Didot's     length            [didot]   [DIDOT]   N 1         [ligne]/6
+ point)
+ cicero
+ (Didot's     length            [cicero]  [CICERO]  N 12        [didot]
+ pica)

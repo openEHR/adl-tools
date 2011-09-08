@@ -1,0 +1,23 @@
+archetype_id = <"adl-test-OUTER.mixed_types.draft">
+concept = <"at0000">	--  empty definition test
+description = <
+	original_author = <
+		["name"] = <"Thomas Beale">
+		["organisation"] = <"OceanInformatics.biz">
+		["submission"] = <"01/05/2004">
+	>
+	lifecycle_state = <"draft">
+	details = <
+		["en"] = <
+			language = <"en">
+			purpose = <"Test archetype for mixed node types. This is a really long
+				paragraph in which all kinds of annoying whitespace and linebreaks
+				appear.
+				
+				Even new paragraphs. But you have to admit it makes the text more 
+				readable.">
+			keywords = <"ADL", "test">
+			copyright = <"copyright (c) 2004 The openEHR Foundation">
+		>
+	>
+>

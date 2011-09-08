@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo $SCRIPT_NAME: launching ADL Workbench
+open -a "ADL Workbench"
+exit 0

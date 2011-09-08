@@ -1,0 +1,89 @@
+﻿archetype (adl_version=1.4)
+	openEHR-EHR-OBSERVATION.exam.v1
+
+concept
+	[at0000]	-- Examination findings
+language
+	original_language = <[ISO_639-1::en]>
+description
+	original_author = <
+		["name"] = <"Heather Leslie">
+		["organisation"] = <"Ocean Informatics">
+		["date"] = <"10/11/2007">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"For recording findings determined at physical examination.">
+			use = <"Designed as a container for nesting detailed examination-related clusters including the inspection, palpation, auscultation and percussion CLUSTERS and their specialisations.">
+			keywords = <"examination", "physical">
+			misuse = <"">
+			copyright = <"copyright (c) 2010 openEHR Foundation">
+		>
+	>
+	lifecycle_state = <"AuthorDraft">
+	other_contributors = <>
+	other_details = <
+		["MD5-CAM-1.0.1"] = <"682689F17AF491F687126D62301D6DE2">
+		["references"] = <"">
+	>
+
+definition
+	OBSERVATION[at0000] matches {	-- Examination findings
+		data matches {
+			HISTORY[at0001] matches {	-- Event Series
+				events cardinality matches {1..*; unordered} matches {
+					EVENT[at0002] occurrences matches {0..1} matches {	-- Any event
+						data matches {
+							ITEM_TREE[at0003] matches {	-- Tree
+								items cardinality matches {0..*; unordered} matches {
+									ELEMENT[at0004] occurrences matches {0..1} matches {	-- Clinical description
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+									allow_archetype CLUSTER[at0005] occurrences matches {0..1} matches {	-- Examination detail
+										include
+											archetype_id/value matches {/.*/}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					text = <"Examination findings">
+					description = <"For recording findings determined at physical examination.">
+				>
+				["at0001"] = <
+					text = <"Event Series">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Any event">
+					description = <"@ internal @">
+				>
+				["at0003"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0004"] = <
+					text = <"Clinical description">
+					description = <"The description of the examination findings.">
+				>
+				["at0005"] = <
+					text = <"Examination detail">
+					description = <"Details of the phyical examination.">
+				>
+			>
+		>
+	>

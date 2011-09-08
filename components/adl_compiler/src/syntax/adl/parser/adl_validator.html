@@ -1,0 +1,197 @@
+<html>
+<head>
+	<title>Grammar</title>
+	<style type="text/css">
+	<!--
+	body {
+		font-family: Verdana,Georgia,Geneva,sans serif;
+		font-size: 11pt;
+	}
+	a:link {
+		color: green;
+	}
+	a:visited {
+		color: green;
+	}
+	a:hover {
+		color: white;
+		background-color: blue;
+	}
+	a:active {
+		color: red;
+	}
+	.lhs {
+		font-weight: bold;
+	}
+	.rhs {
+		margin: 0% 0% 0% 3%;
+	}
+	.empty {
+		color: gray;
+	}
+	.literal_token {
+		font-family: Courier New,Courier; 
+		color: blue;
+	}
+	.token {
+		font-family: Courier New,Courier; 
+		font-style: italic;
+		color: black;
+	}
+	.rule {
+		margin: 2% 0% 0% 1%;
+	}
+	.lhs_variable {
+		font-family: Verdana,Georgia,sans serif; 
+		color: navy;
+	}
+	.rhs_variable {
+		font-family: Verdana,Georgia,sans serif; 
+		color: green;
+	}
+	-->
+	</style>
+</head>
+<body>
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="input">input</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#archetype">archetype</a> </span></div>
+<div class="rhs">
+| <span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="archetype">archetype</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#arch_identification">arch_identification</a> </span><span class="rhs_variable"><a href="#arch_specialisation">arch_specialisation</a> </span><span class="rhs_variable"><a href="#arch_concept">arch_concept</a> </span><span class="rhs_variable"><a href="#arch_language">arch_language</a> </span><span class="rhs_variable"><a href="#arch_description">arch_description</a> </span><span class="rhs_variable"><a href="#arch_definition">arch_definition</a> </span><span class="rhs_variable"><a href="#arch_invariant">arch_invariant</a> </span><span class="rhs_variable"><a href="#arch_ontology">arch_ontology</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="arch_identification">arch_identification</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#arch_head">arch_head</a> </span><span class="rhs_variable"><a href="#arch_meta_data">arch_meta_data</a> </span><span class="token">V_ARCHETYPE_ID </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#arch_head">arch_head</a> </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="arch_head">arch_head</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_ARCHETYPE </span></div>
+<div class="rhs">
+| <span class="token">SYM_TEMPLATE </span></div>
+<div class="rhs">
+| <span class="token">SYM_TEMPLATE_COMPONENT </span></div>
+<div class="rhs">
+| <span class="token">SYM_OPERATIONAL_TEMPLATE </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="arch_meta_data">arch_meta_data</span>: </div>
+<div class="rhs">
+&nbsp; <span class="empty">-/-</span></div>
+<div class="rhs">
+| <span class="literal_token">&#40; </span><span class="rhs_variable"><a href="#arch_meta_data_items">arch_meta_data_items</a> </span><span class="literal_token">&#41; </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="arch_meta_data_items">arch_meta_data_items</span>: </div>
+<div class="rhs">
+&nbsp; <span class="rhs_variable"><a href="#arch_meta_data_item">arch_meta_data_item</a> </span></div>
+<div class="rhs">
+| <span class="rhs_variable"><a href="#arch_meta_data_items">arch_meta_data_items</a> </span><span class="literal_token">&#59; </span><span class="rhs_variable"><a href="#arch_meta_data_item">arch_meta_data_item</a> </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="arch_meta_data_item">arch_meta_data_item</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_ADL_VERSION </span><span class="literal_token">&#61; </span><span class="token">V_VERSION_STRING </span></div>
+<div class="rhs">
+| <span class="token">SYM_IS_CONTROLLED </span></div>
+<div class="rhs">
+| <span class="token">SYM_IS_GENERATED </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="arch_specialisation">arch_specialisation</span>: </div>
+<div class="rhs">
+&nbsp; <span class="empty">-/-</span></div>
+<div class="rhs">
+| <span class="token">SYM_SPECIALIZE </span><span class="token">V_ARCHETYPE_ID </span></div>
+<div class="rhs">
+| <span class="token">SYM_SPECIALIZE </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="arch_concept">arch_concept</span>: </div>
+<div class="rhs">
+&nbsp; <span class="empty">-/-</span></div>
+<div class="rhs">
+| <span class="token">SYM_CONCEPT </span><span class="token">V_LOCAL_TERM_CODE_REF </span></div>
+<div class="rhs">
+| <span class="token">SYM_CONCEPT </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="arch_language">arch_language</span>: </div>
+<div class="rhs">
+&nbsp; <span class="empty">-/-</span></div>
+<div class="rhs">
+| <span class="token">SYM_LANGUAGE </span><span class="token">V_DADL_TEXT </span></div>
+<div class="rhs">
+| <span class="token">SYM_LANGUAGE </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="arch_description">arch_description</span>: </div>
+<div class="rhs">
+&nbsp; <span class="empty">-/-</span></div>
+<div class="rhs">
+| <span class="token">SYM_DESCRIPTION </span><span class="token">V_DADL_TEXT </span></div>
+<div class="rhs">
+| <span class="token">SYM_DESCRIPTION </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="arch_definition">arch_definition</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_DEFINITION </span><span class="token">V_CADL_TEXT </span></div>
+<div class="rhs">
+| <span class="token">SYM_DEFINITION </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="arch_invariant">arch_invariant</span>: </div>
+<div class="rhs">
+&nbsp; <span class="empty">-/-</span></div>
+<div class="rhs">
+| <span class="token">SYM_INVARIANT </span><span class="token">V_ASSERTION_TEXT </span></div>
+<div class="rhs">
+| <span class="token">SYM_INVARIANT </span><span class="token">error </span></div>
+</div>
+
+<div class="rule">
+<div class="lhs">
+<span class="lhs_variable" id="arch_ontology">arch_ontology</span>: </div>
+<div class="rhs">
+&nbsp; <span class="token">SYM_ONTOLOGY </span><span class="token">V_DADL_TEXT </span></div>
+<div class="rhs">
+| <span class="token">SYM_ONTOLOGY </span><span class="token">error </span></div>
+</div>
+
+</body>
+</html>

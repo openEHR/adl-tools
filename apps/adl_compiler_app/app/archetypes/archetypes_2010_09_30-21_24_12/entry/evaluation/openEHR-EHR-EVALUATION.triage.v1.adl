@@ -1,0 +1,98 @@
+﻿archetype (adl_version=1.4)
+	openEHR-EHR-EVALUATION.triage.v1
+
+concept
+	[at0000]	-- Triage evaluation
+language
+	original_language = <[ISO_639-1::en]>
+description
+	original_author = <
+		["name"] = <"Heather Leslie">
+		["organisation"] = <"Ocean Informatics">
+		["email"] = <"heather.leslie@oceaninformatics.biz">
+		["date"] = <"12/04/2007">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"An evaluative statement for the conclusions or summary by a clinician regarding need for priority of treatment">
+			use = <"">
+			keywords = <"triage", "evaluation", "assessment">
+			misuse = <"">
+			copyright = <"copyright (c) 2010 openEHR Foundation">
+		>
+	>
+	lifecycle_state = <"Initial">
+	other_contributors = <>
+	other_details = <
+		["references"] = <"">
+	>
+
+definition
+	EVALUATION[at0000] matches {	-- Triage evaluation
+		data matches {
+			ITEM_TREE[at0001] matches {	-- Tree
+				items cardinality matches {0..*; unordered} matches {
+					ELEMENT[at0002] occurrences matches {0..1} matches {	-- Triage evaluation
+						value matches {
+							1|[local::at0014], 	-- Immediate
+							2|[local::at0015], 	-- Very urgent
+							3|[local::at0016], 	-- Urgent
+							4|[local::at0017], 	-- Standard
+							5|[local::at0018]  	-- Non-urgent
+						}
+					}
+					ELEMENT[at0008] occurrences matches {0..1} matches {	-- Rationale
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					text = <"Triage evaluation">
+					description = <"The evaluation of need for immediacy of treatment">
+				>
+				["at0001"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Triage evaluation">
+					description = <"Record of need for prioritisation of treatment">
+				>
+				["at0008"] = <
+					text = <"Rationale">
+					description = <"The rationale for the evaluation provided">
+				>
+				["at0014"] = <
+					text = <"Immediate">
+					description = <"*">
+				>
+				["at0015"] = <
+					text = <"Very urgent">
+					description = <"*">
+				>
+				["at0016"] = <
+					text = <"Urgent">
+					description = <"*">
+				>
+				["at0017"] = <
+					text = <"Standard">
+					description = <"*">
+				>
+				["at0018"] = <
+					text = <"Non-urgent">
+					description = <"*">
+				>
+			>
+		>
+	>

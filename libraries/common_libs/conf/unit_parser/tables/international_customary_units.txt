@@ -1,0 +1,45 @@
+;
+;	component:   "openEHR Reusable Libraries"
+;	description: "[
+;			 Database of unit tables, designed on the basis of the Unified Code for Units
+;	             of Measure (UCUM), developed by Gunther Schadow and Clement J. McDonald of
+;			 The Regenstrief Institute For Health Care, Indianapolis.
+;			 Published at http://aurora.rg.iupui.edu/UCUM.
+;	             ]"
+;	keywords:    "units, UCUM"
+;
+;	author:      "Thomas Beale"
+;	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+;	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+;	license:     "See notice at bottom of class"
+;
+;	file:        "$Source$"
+;	revision:    "$Revision$"
+;	last_change: "$Date$"
+;
+
+[identification]
+GROUP_NAME = International Customary Units
+
+[units]
+;
+;NAME:PROPERTY:CASE_SENSITIVE:CASE_INSENSITIVE:METRIC:VALUE:DEFINITION
+;
+inch = inch:length:in_i:IN_I:N:2.54:cm
+foot = foot:length:ft_i:FT_I:N:12:in_i
+yard = yard:length:yd_i:YD_I:N:3:ft_i
+statute mile = statute mile:length:mi_i:MI_I:N:5280:ft_i
+fathom = fathom:depth of water:fth_i:FTH_I:N:6:ft_i
+nautical mile = nautical mile:length:nmi_i:NMI_I:N:1852:m
+knot = knot:velocity:kn_i:KN_I:N:1:nmi_i/h
+square inch = square inch:area:sin_i:SIN_I:N:1:in_i^2
+square foot = square foot:area:sft_i:SFT_I:N:1:ft_i^2
+square yard = square yard:area:syd_i:SYD_I:N:1:yd_i^2
+cubic inch = cubic inch:volume:cin_i:CIN_I:N:1:in_i^3
+cubic foot = cubic foot:volume:cft_i:CFT_I:N:1:ft_i^3
+cubic yard = cubic yard:volume:cyd_i:CYD_I:N:1:yd_i^3
+board foot = board foot:volume:bf_i:BF_I:N:144:in_i^3
+cord = cord:volume:cr_i:CR_I:N:128:ft_i^3
+mil = mil:length:mil_i:MIL_I:N:.001:in_i
+circular mil = circular mil:area:cml_i:CML_I:N:1:pi/4.mil_i^2
+hand = hand:height of horses:hd_i:HD_I:N:4:in_i

@@ -1,0 +1,227 @@
+﻿archetype (adl_version=1.4)
+	openEHR-EHR-OBSERVATION.glasgow_coma.v1
+
+concept
+	[at0000]	-- Glasgow Coma Scale
+language
+	original_language = <[ISO_639-1::en]>
+description
+	original_author = <
+		["name"] = <"Heather Leslie">
+		["organisation"] = <"Ocean Informatics">
+		["email"] = <"heather.leslie@oceaninformatics.com">
+		["date"] = <"13/03/2007">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"To record clinical observations regarding responsiveness to stimuli and monitor the level of consciousness of a subject. ">
+			use = <"Use in any clinical situation to assess the level of consciousness of a subject, usually following brain trauma.
+If the subject is not able to be assessed fully (for example, intubated and not able to provide a verbal response or paralysed and not able to provide a motor response) then the Total Score should not be used, but the results expressed in the EMV profile instead (for example E4 M4 VIntubated).">
+			keywords = <"response", "motor", "verbal", "eye", "stimulus", "glasgow", "coma", "scale">
+			misuse = <"Not to be used for assessing infants & young children - use the OBSERVATION.glasgow_coma-paediatric.v1.adl.">
+			copyright = <"copyright (c) 2010 openEHR Foundation">
+		>
+	>
+	lifecycle_state = <"Initial">
+	other_contributors = <>
+	other_details = <
+		["MD5-CAM-1.0.1"] = <"EF402ADD0FB0CF7E6C555E7E99E31D42">
+		["references"] = <"">
+	>
+
+definition
+	OBSERVATION[at0000] matches {	-- Glasgow Coma Scale
+		data matches {
+			HISTORY[at0001] matches {	-- Event Series
+				events cardinality matches {1..*; unordered} matches {
+					EVENT[at0002] occurrences matches {0..1} matches {	-- Any event
+						data matches {
+							ITEM_TREE[at0003] matches {	-- Tree
+								items cardinality matches {0..*; unordered} matches {
+									ELEMENT[at0009] occurrences matches {0..1} matches {	-- Best eye response (E)
+										value matches {
+											0|[local::at0010], 	-- Not able to be assessed
+											1|[local::at0011], 	-- No response
+											2|[local::at0012], 	-- To pain
+											3|[local::at0013], 	-- To speech
+											4|[local::at0029]  	-- Spontaneous
+										}
+									}
+									ELEMENT[at0008] occurrences matches {0..1} matches {	-- Best motor response (M)
+										value matches {
+											0|[local::at0019], 	-- Not able to be assessed
+											1|[local::at0020], 	-- No response
+											2|[local::at0021], 	-- Extension
+											3|[local::at0022], 	-- Flexor response
+											4|[local::at0023], 	-- Withdrawal
+											5|[local::at0024], 	-- Localises pain
+											6|[local::at0032]  	-- Obeys commands
+										}
+									}
+									ELEMENT[at0007] occurrences matches {0..1} matches {	-- Best verbal response (V)
+										value matches {
+											0|[local::at0014], 	-- Not able to be assessed
+											1|[local::at0015], 	-- No response
+											2|[local::at0016], 	-- Incomprehensible sounds
+											3|[local::at0017], 	-- Inappropriate words
+											4|[local::at0018], 	-- Confused
+											5|[local::at0033]  	-- Oriented
+										}
+									}
+									ELEMENT[at0026] occurrences matches {0..1} matches {	-- Total
+										value matches {
+											DV_COUNT matches {
+												magnitude matches {|3..15|}
+											}
+										}
+									}
+									ELEMENT[at0030] occurrences matches {0..1} matches {	-- EMV profile
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		protocol matches {
+			ITEM_TREE[at0027] matches {	-- Tree
+				items cardinality matches {0..*; unordered} matches {
+					ELEMENT[at0028] occurrences matches {0..*} matches {	-- Confounding factors
+						value matches {
+							DV_TEXT matches {*}
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					text = <"Glasgow Coma Scale">
+					description = <"Fifteen point scale used to assess the level of consciousness of a subject.">
+				>
+				["at0001"] = <
+					text = <"Event Series">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Any event">
+					description = <"Any event">
+				>
+				["at0003"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0007"] = <
+					text = <"Best verbal response (V)">
+					description = <"Best verbal response to stimulus.">
+				>
+				["at0008"] = <
+					text = <"Best motor response (M)">
+					description = <"Best motor response to stimulus.">
+				>
+				["at0009"] = <
+					text = <"Best eye response (E)">
+					description = <"Best eye response to stimulus.">
+				>
+				["at0010"] = <
+					text = <"Not able to be assessed">
+					description = <"Eye response not able to be assessed.">
+				>
+				["at0011"] = <
+					text = <"No response">
+					description = <"Does not open eyes.">
+				>
+				["at0012"] = <
+					text = <"To pain">
+					description = <"Opens eyes in response to painful stimuli.">
+				>
+				["at0013"] = <
+					text = <"To speech">
+					description = <"Opens eyes in response to speech.">
+				>
+				["at0014"] = <
+					text = <"Not able to be assessed">
+					description = <"Verbal response not able to be assessed.">
+				>
+				["at0015"] = <
+					text = <"No response">
+					description = <"No verbal response.">
+				>
+				["at0016"] = <
+					text = <"Incomprehensible sounds">
+					description = <"Moans or groans, but no speech.">
+				>
+				["at0017"] = <
+					text = <"Inappropriate words">
+					description = <"Intelligible, but no sustained sentences.">
+				>
+				["at0018"] = <
+					text = <"Confused">
+					description = <"Converses, but confused and disorientated.">
+				>
+				["at0019"] = <
+					text = <"Not able to be assessed">
+					description = <"Motor response is not able to be assessed.">
+				>
+				["at0020"] = <
+					text = <"No response">
+					description = <"No motor response; limbs flaccid.">
+				>
+				["at0021"] = <
+					text = <"Extension">
+					description = <"Abnormal extension to pain.">
+				>
+				["at0022"] = <
+					text = <"Flexor response">
+					description = <"Abnormal flexion to pain.">
+				>
+				["at0023"] = <
+					text = <"Withdrawal">
+					description = <"Flexion withdrawal from pain.">
+				>
+				["at0024"] = <
+					text = <"Localises pain">
+					description = <"Localised movement in response to pain.">
+				>
+				["at0026"] = <
+					text = <"Total">
+					description = <"The sum of the 3 ordinal scores for each component parameter.">
+				>
+				["at0027"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0028"] = <
+					text = <"Confounding factors">
+					description = <"Comments about any factors or issues about the measurement that may impact up on the final score, e.g. known sedation, aphasia, and deafness, or patient is intubated.">
+				>
+				["at0029"] = <
+					text = <"Spontaneous">
+					description = <"Opens eyes spontaneously.">
+				>
+				["at0030"] = <
+					text = <"EMV profile">
+					description = <"Eye Motor Verbal profile expressing each component individually. Used especially when one component cannot be assessed eg when the subject is intubated or paralysed.">
+				>
+				["at0032"] = <
+					text = <"Obeys commands">
+					description = <"Follows simple verbal commands.">
+				>
+				["at0033"] = <
+					text = <"Oriented">
+					description = <"Converses and orientated.">
+				>
+			>
+		>
+	>

@@ -1,0 +1,295 @@
+﻿archetype (adl_version=1.4)
+	openEHR-EHR-OBSERVATION.tympanogram.v1
+
+concept
+	[at0000]	-- Tympanogram
+language
+	original_language = <[ISO_639-1::en]>
+description
+	original_author = <
+		["name"] = <"Heather Leslie">
+		["organisation"] = <"NHS CFH/Ocean Informatics">
+		["email"] = <"heather.leslie@oceaninformatics.com">
+		["date"] = <"6/11/2007">
+	>
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+			purpose = <"To record the details of a tympanogram test">
+			use = <"">
+			keywords = <"tympanogram", "tympanometry", "hearing">
+			misuse = <"">
+			copyright = <"copyright (c) 2010 openEHR Foundation">
+		>
+	>
+	lifecycle_state = <"AuthorDraft">
+	other_contributors = <>
+
+definition
+	OBSERVATION[at0000] matches {	-- Tympanogram
+		data matches {
+			HISTORY[at0001] matches {	-- Event Series
+				events cardinality matches {1..*; unordered} matches {
+					EVENT[at0002] occurrences matches {0..1} matches {	-- Any event
+						data matches {
+							ITEM_TREE[at0003] matches {	-- Tree
+								items cardinality matches {0..*; unordered} matches {
+									CLUSTER[at0023] occurrences matches {0..1} matches {	-- Normal Statements
+										items cardinality matches {0..*; unordered} matches {
+											ELEMENT[at0022] occurrences matches {0..1} matches {	-- Normal statement
+												value matches {
+													DV_CODED_TEXT matches {
+														defining_code matches {
+															[local::
+															at0024, 	-- Tympanogram result normal on both sides
+															at0025, 	-- Left Tympanogram normal
+															at0026]	-- Right Tympanogram normal
+														}
+													}
+												}
+											}
+										}
+									}
+									ELEMENT[at0020] occurrences matches {0..*} matches {	-- Image of test result
+										value matches {
+											DV_MULTIMEDIA matches {
+												media_type matches {
+													[openEHR::
+													425, 
+													426, 
+													427, 
+													428, 
+													429]
+												}
+											}
+										}
+									}
+									CLUSTER[at0012] occurrences matches {0..2} matches {	-- Details
+										items cardinality matches {0..*; unordered} matches {
+											ELEMENT[at0009] occurrences matches {0..1} matches {	-- Side
+												value matches {
+													DV_CODED_TEXT matches {
+														defining_code matches {
+															[local::
+															at0010, 	-- Left
+															at0011]	-- Right
+														}
+													}
+												}
+											}
+											ELEMENT[at0013] occurrences matches {0..1} matches {	-- Pressure in external canal
+												value matches {
+													C_DV_QUANTITY <
+														property = <[openehr::125]>
+														list = <
+															["1"] = <
+																units = <"Pa">
+															>
+															["2"] = <
+																units = <"cm[H20]">
+															>
+															["3"] = <
+																units = <"daPa">
+															>
+															["4"] = <
+																units = <"mm[H20]">
+															>
+														>
+													>
+												}
+											}
+											ELEMENT[at0014] occurrences matches {0..1} matches {	-- Impedance
+												value matches {
+													C_DV_QUANTITY <
+														property = <[openehr::118]>
+													>
+												}
+											}
+										}
+									}
+									ELEMENT[at0004] occurrences matches {0..1} matches {	-- Result type
+										value matches {
+											DV_CODED_TEXT matches {
+												defining_code matches {
+													[local::
+													at0005, 	-- Type A
+													at0006, 	-- Type B
+													at0007, 	-- Type C1
+													at0008]	-- Type C2
+												}
+											}
+										}
+									}
+									ELEMENT[at0021] occurrences matches {0..1} matches {	-- Comment
+										value matches {
+											DV_TEXT matches {*}
+										}
+									}
+								}
+							}
+						}
+						state matches {
+							ITEM_TREE[at0015] matches {	-- Tree
+								items cardinality matches {0..*; unordered} matches {
+									CLUSTER[at0016] occurrences matches {0..1} matches {	-- Ear Canal volume
+										items cardinality matches {0..*; unordered} matches {
+											ELEMENT[at0017] occurrences matches {0..1} matches {	-- Ear
+												value matches {
+													DV_TEXT matches {*}
+												}
+											}
+											ELEMENT[at0018] occurrences matches {0..1} matches {	-- Volume
+												value matches {
+													C_DV_QUANTITY <
+														property = <[openehr::129]>
+														list = <
+															["1"] = <
+																units = <"cc">
+															>
+														>
+													>
+												}
+											}
+											ELEMENT[at0019] occurrences matches {0..1} matches {	-- Pressure
+												value matches {
+													C_DV_QUANTITY <
+														property = <[openehr::125]>
+														list = <
+															["1"] = <
+																units = <"daPa">
+															>
+														>
+														assumed_value = <
+															precision = <-1>
+															magnitude = <0.0>
+															units = <"daPa">
+														>
+													>
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					text = <"Tympanogram">
+					description = <"Record of tympanogram result">
+				>
+				["at0001"] = <
+					text = <"Event Series">
+					description = <"@ internal @">
+				>
+				["at0002"] = <
+					text = <"Any event">
+					description = <"*">
+				>
+				["at0003"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0004"] = <
+					text = <"Result type">
+					description = <"Result type of the tympanogram">
+				>
+				["at0005"] = <
+					text = <"Type A">
+					description = <"'Mountain peak' at or near 0 daPa">
+				>
+				["at0006"] = <
+					text = <"Type B">
+					description = <"Flat line">
+				>
+				["at0007"] = <
+					text = <"Type C1">
+					description = <"Delayed peak to the left">
+				>
+				["at0008"] = <
+					text = <"Type C2">
+					description = <"*">
+				>
+				["at0009"] = <
+					text = <"Side">
+					description = <"Identify ear tested">
+				>
+				["at0010"] = <
+					text = <"Left">
+					description = <"*">
+				>
+				["at0011"] = <
+					text = <"Right">
+					description = <"*">
+				>
+				["at0012"] = <
+					text = <"Details">
+					description = <"Details of the tympanogram result">
+				>
+				["at0013"] = <
+					text = <"Pressure in external canal">
+					description = <"*">
+				>
+				["at0014"] = <
+					text = <"Impedance">
+					description = <"Amount of impedance (or compliance) measured">
+				>
+				["at0015"] = <
+					text = <"Tree">
+					description = <"@ internal @">
+				>
+				["at0016"] = <
+					text = <"Ear Canal volume">
+					description = <"*">
+				>
+				["at0017"] = <
+					text = <"Ear">
+					description = <"Identify ear">
+				>
+				["at0018"] = <
+					text = <"Volume">
+					description = <"Volume from the probe tip to the  tympanic membrane (usually at a pressure of +200 daPa).">
+				>
+				["at0019"] = <
+					text = <"Pressure">
+					description = <"Pressure used in measurement of ear canal volume">
+				>
+				["at0020"] = <
+					text = <"Image of test result">
+					description = <"Image of tympanogram result">
+				>
+				["at0021"] = <
+					text = <"Comment">
+					description = <"Comment on test">
+				>
+				["at0022"] = <
+					text = <"Normal statement">
+					description = <"Series of statements declaring degrees of normality of the result">
+				>
+				["at0023"] = <
+					text = <"Normal Statements">
+					description = <"*">
+				>
+				["at0024"] = <
+					text = <"Tympanogram result normal on both sides">
+					description = <"The result of the tympanogram was normal">
+				>
+				["at0025"] = <
+					text = <"Left Tympanogram normal">
+					description = <"The left ear tympanogram result is normal">
+				>
+				["at0026"] = <
+					text = <"Right Tympanogram normal">
+					description = <"The Tympanogram of the right ear is normal">
+				>
+			>
+		>
+	>
