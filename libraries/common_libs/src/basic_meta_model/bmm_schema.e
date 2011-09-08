@@ -536,9 +536,9 @@ feature {SCHEMA_DESCRIPTOR} -- Schema Processing
 					child_pkg.make_from_other (top_pkg)
 
 				else
-					 -- just create a reference in the canonical packages; note that this precludes
-					 -- the situation where top-level packages like 'rm' and 'rm.composition.content'
-					 -- co-exist - this would be bad structure
+					-- just create a reference in the canonical packages; note that this precludes
+					-- the situation where top-level packages like 'rm' and 'rm.composition.content'
+					-- co-exist - this would be bad structure
 					canonical_packages.put (top_pkg, top_pkg.name)
 				end
 				packages.forth

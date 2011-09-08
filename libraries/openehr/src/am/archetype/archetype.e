@@ -112,6 +112,10 @@ feature -- Initialisation
 
 feature -- Access
 
+	uid: HIER_OBJECT_ID
+			-- optional UID identifier of this artefact
+			-- FIXME: should really be in AUTHORED_RESOURCE
+
 	archetype_id: attached ARCHETYPE_ID
 
 	adl_version: attached STRING

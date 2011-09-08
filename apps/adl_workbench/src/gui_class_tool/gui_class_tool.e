@@ -52,7 +52,7 @@ feature -- Initialisation
 			create ev_notebook
 
 			create property_view.make (a_update_all_tools_rm_icons_setting_agent, a_select_class_agent, a_select_class_in_new_tool_agent)
-			create inheritance_view.make
+			create inheritance_view.make (a_select_class_agent, a_select_class_in_new_tool_agent)
 
 			-- connect widgets
 			ev_root_container.extend (ev_action_bar)

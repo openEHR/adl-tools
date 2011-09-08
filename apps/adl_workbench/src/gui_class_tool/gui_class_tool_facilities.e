@@ -1,102 +1,60 @@
 note
-	component:   "openEHR Data Types"
-
-	description: "Implementation of DV_DATE_TIME"
-	keywords:    "date, time"
-
-	requirements:"ISO 18308 TS V1.0 STR 3.7, 3.10"
-	design:      "openEHR Data Types Reference Model 1.7"
-
+	component:   "openEHR Archetype Project"
+	description: "Facilities for any GUI class visualisation in AWB"
+	keywords:    "archetype, class"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class DV_DATE_TIME
-
-inherit
-	DV_TEMPORAL
-		undefine
-			out, is_less, default_create
-		end
-
-	ISO8601_DATE_TIME
-		undefine
-			default_create
-		end
-
-create
-	default_create,	make_from_string, make_date_and_time
-
-feature -- Definitions
-
-	Default_value: STRING = "1800-01-01T00:00:00"
+deferred class GUI_CLASS_TOOL_FACILITIES
 
 feature -- Initialisation
 
-	default_create
-			-- create the date/time "1800-01-01T00:00:00"
+	make_class_tool (a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent)
 		do
-			make_from_string (value)
-		ensure then
-			default: as_string.is_equal (Default_value)
+			select_class_agent := a_select_class_agent
+			select_class_in_new_tool_agent := a_select_class_in_new_tool_agent
 		end
 
-	make_from_canonical_string(str: STRING)
-		do
-			make_from_string(str)
+feature {NONE} -- Implementation
+
+	select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
+
+	class_node_handler (eti: EV_TREE_ITEM; x,y, button: INTEGER)
+			-- creates the context menu for a right click action for class node
+		deferred
 		end
 
-feature -- Status Report
-
-	valid_canonical_string(str: STRING): BOOLEAN
-			-- True if str contains required tags
+	add_class_context_menu (menu: EV_MENU; ev_ti: EV_TREE_ITEM)
+			-- dynamically initializes the context menu for this tree
+		local
+			an_mi: EV_MENU_ITEM
 		do
-			Result := valid_iso8601_date_time(str)
+			create an_mi.make_with_text_and_action ("Retarget to this class", agent display_context_selected_class_in_active_tool (ev_ti))
+	    	menu.extend (an_mi)
+			create an_mi.make_with_text_and_action ("Display in new tab", agent display_context_selected_class_in_new_tool (ev_ti))
+			menu.extend (an_mi)
 		end
 
-feature -- Access
-
-	magnitude: DOUBLE_REF
-			-- numeric value of the quantity in seconds
+	display_context_selected_class_in_active_tool (ev_ti: EV_TREE_ITEM)
 		do
-			Result := to_seconds
+			ev_ti.enable_select
+			if attached {BMM_CLASS_DEFINITION} ev_ti.data as a_class_def then
+				select_class_agent.call ([a_class_def])
+			end
 		end
 
-feature -- Basic Operations
-
-	add (a_diff: like diff): like Current
-			-- Addition of a differential amount to this quantity.
+	display_context_selected_class_in_new_tool (ev_ti: EV_TREE_ITEM)
 		do
-		end
-
-	subtract (a_diff: like diff): like Current
-			-- Result of subtracting a differential amount from this quantity.
-		do
-		end
-
-	diff (other: like Current): DV_DURATION
-			-- Difference of two quantities.
-		do
-		end
-
-feature -- Comparison
-
-	is_strictly_comparable_to (other: like Current): BOOLEAN
-			-- True for all date/time types
-		do
-			Result := True
-		end
-
-feature -- Output
-
-	as_canonical_string: STRING
-		do
-			Result := as_string
+			ev_ti.enable_select
+			if attached {BMM_CLASS_DEFINITION} ev_ti.data as a_class_def then
+				select_class_in_new_tool_agent.call ([a_class_def])
+			end
 		end
 
 end
@@ -116,10 +74,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is dv_date_time.e.
+--| The Original Code is gui_class_tool_facilities.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2011
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

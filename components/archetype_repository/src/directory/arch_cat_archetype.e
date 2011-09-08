@@ -245,18 +245,33 @@ feature -- Access (semantic)
 		require
 			compilation_state = Cs_validated_phase_2 or compilation_state = Cs_validated
 		do
-			if flat_archetype_cache = Void then
-				flatten
+			if flat_archetype_cache = Void or last_include_rm then
+				flatten (False)
 			end
 			Result := flat_archetype_cache
 		end
 
-	flat_text: STRING
+	flat_archetype_with_rm: attached FLAT_ARCHETYPE
+			-- inheritance-flattened form of archetype
+		require
+			compilation_state = Cs_validated_phase_2 or compilation_state = Cs_validated
+		do
+			if flat_archetype_cache = Void or not last_include_rm then
+				flatten (True)
+			end
+			Result := flat_archetype_cache
+		end
+
+	flat_text (include_rm: BOOLEAN): STRING
 			-- The serialised text of the flat form of the archetype
 		require
 			compilation_state = Cs_validated_phase_2 or compilation_state = Cs_validated
 		do
-			Result := adl15_engine.serialise(flat_archetype, Syntax_type_adl, current_archetype_language)
+			if include_rm then
+				Result := adl15_engine.serialise (flat_archetype_with_rm, Syntax_type_adl, current_archetype_language)
+			else
+				Result := adl15_engine.serialise (flat_archetype, Syntax_type_adl, current_archetype_language)
+			end
 		end
 
 	legacy_flat_path: STRING
@@ -968,7 +983,7 @@ feature -- File Operations
 			Serialise_format_valid: has_archetype_serialiser_format (a_format) or has_dt_serialiser_format (a_format)
 		do
 			if a_format.same_string (Syntax_type_adl) then
-				file_repository.save_text_to_file (a_full_path, flat_text)
+				file_repository.save_text_to_file (a_full_path, flat_text (False))
 			elseif has_archetype_serialiser_format (a_format) then
 				file_repository.save_text_to_file (a_full_path, adl15_engine.serialise (flat_archetype, a_format, current_archetype_language))
 			else -- must be a DT serialisation format
@@ -1101,7 +1116,7 @@ feature {NONE} -- Implementation
 			create last_compile_attempt_timestamp.make_now
 		end
 
-	flatten
+	flatten (include_rm: BOOLEAN)
 			-- (re)generate flat-form of this archetype
 		require
 			is_valid
@@ -1113,8 +1128,9 @@ feature {NONE} -- Implementation
 			else
 				create arch_flattener.make_specialised (specialisation_parent, Current, rm_schema)
 			end
-			arch_flattener.flatten (False)
+			arch_flattener.flatten (include_rm)
 			flat_archetype_cache := arch_flattener.arch_output_flat
+			last_include_rm := include_rm
 		ensure
 			flat_archetype_cache_attached: flat_archetype_cache /= Void
 		end
@@ -1129,6 +1145,9 @@ feature {NONE} -- Implementation
 		once
 			create Result.make
 		end
+
+	last_include_rm: BOOLEAN
+			-- which kind of flattening was last used? Used to know whether to regenerate flat or not
 
 invariant
 	compilation_state_valid: valid_compilation_state (compilation_state)

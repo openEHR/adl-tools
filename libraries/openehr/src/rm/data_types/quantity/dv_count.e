@@ -21,7 +21,10 @@ note
 class DV_COUNT
 
 inherit
-	DV_QUANTIFIED
+	DV_AMOUNT
+		redefine
+			as_string
+		end
 
 create
 	default_create,
@@ -84,10 +87,17 @@ feature -- Output
 
 	as_string: STRING
 		do
+			Result := precursor
 		end
 
 	as_canonical_string: STRING
 		do
+		end
+
+	magnitude_as_string: STRING
+			-- output the magnitude in its natural form
+		do
+			-- FIXME: to be implemented
 		end
 
 end

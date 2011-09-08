@@ -224,7 +224,7 @@ feature {BMM_SCHEMA, BMM_PACKAGE_DEFINITION} -- Modification
 			end
 			if has_packages then
 				from packages.start until packages.off loop
-			--		packages.item_for_iteration.set_parent (Current)
+					packages.item_for_iteration.set_parent (Current)
 					packages.item_for_iteration.finalise_build (bmm_schema, errors)
 					packages.forth
 				end

@@ -14,30 +14,15 @@ note
 class GUI_CLASS_TOOL_INHERITANCE_VIEW
 
 inherit
+	GUI_CLASS_TOOL_FACILITIES
+		export
+			{NONE} all
+		end
+
 	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
 		end
-
-	GUI_UTILITIES
-		export
-			{NONE} all
-		end
-
---	BMM_DEFINITIONS
---		export
---			{NONE} all
---		end
-
-	SHARED_REFERENCE_MODEL_ACCESS
-		export
-			{NONE} all
-		end
-
---	CONSTANTS
---		export
---			{NONE} all
---		end
 
 create
 	make
@@ -49,8 +34,11 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make
+	make  (a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent)
 		do
+			select_class_agent := a_select_class_agent
+			select_class_in_new_tool_agent := a_select_class_in_new_tool_agent
+
 			-- create widgets
 			create ev_root_container
 
@@ -113,7 +101,7 @@ feature {NONE} -- Implementation
 		do
 			from a_class_def.ancestor_defs.start until a_class_def.ancestor_defs.off loop
 				a_ti := create_node (a_class_def.ancestor_defs.item)
-				ev_tree_item_stack.item.extend (a_ti)
+	 	 		a_ti.pointer_button_press_actions.force_extend (agent class_node_handler (a_ti, ?, ?, ?))				ev_tree_item_stack.item.extend (a_ti)
 				ev_tree_item_stack.extend (a_ti)
 				populate_ancestor_nodes (a_class_def.ancestor_defs.item)
 				ev_tree_item_stack.remove
@@ -126,6 +114,22 @@ feature {NONE} -- Implementation
 		do
 			if an_ev_tree_node.is_expandable then -- and node_data.is_addressable then
 				an_ev_tree_node.expand
+			end
+		end
+
+	class_node_handler (eti: EV_TREE_ITEM; x,y, button: INTEGER)
+			-- creates the context menu for a right click action for class node
+		local
+			subs: ARRAYED_SET[STRING]
+			menu: EV_MENU
+		do
+			if attached {BMM_CLASS_DEFINITION} eti.data as bmm_class_def and button = {EV_POINTER_CONSTANTS}.right then
+				create menu
+
+				-- add menu item for retarget tool to current node / display in new tool
+				add_class_context_menu (menu, eti)
+
+				menu.show
 			end
 		end
 

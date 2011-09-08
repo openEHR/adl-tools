@@ -39,6 +39,11 @@ inherit
 			{NONE} all
 		end
 
+	GUI_CLASS_TOOL_FACILITIES
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -53,8 +58,7 @@ feature -- Initialisation
 			a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent)
 		do
 			update_all_tools_rm_icons_setting_agent := a_update_all_tools_rm_icons_setting_agent
-			select_class_agent := a_select_class_agent
-			select_class_in_new_tool_agent := a_select_class_in_new_tool_agent
+			make_class_tool (a_select_class_agent, a_select_class_in_new_tool_agent)
 
 			-- create widgets
 			create ev_root_container
@@ -218,9 +222,9 @@ feature -- Commands
 			end
 		end
 
-	repopulate (differential_view_flag: BOOLEAN)
+	repopulate
 		do
-			populate (class_def, differential_view_flag)
+			populate (class_def, differential_view)
 		end
 
 	refresh
@@ -247,8 +251,6 @@ feature {NONE} -- Implementation
 	update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]
 			-- if this is set, it is an agent that takes one argument of a routine
 			-- to execute on all other editors, to sync them to a change in this current one
-
-	select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
 
 	class_def: BMM_CLASS_DEFINITION
 
@@ -364,20 +366,20 @@ feature {NONE} -- Implementation
 			type_category := a_type_spec.type_category
 			a_ti.set_data (a_type_spec)						-- node data
 			a_ti.set_text (a_type_str)						-- node text
-			root_class := type_name_root_type (a_type_str)
-			if use_rm_pixmaps and then rm_pixmaps.has (model_publisher) and then rm_pixmaps.item (model_publisher).has (root_class) then
-				pixmap := rm_pixmaps.item (model_publisher).item (root_class)
+			if not attached {BMM_GENERIC_PARAMETER_DEFINITION} a_type_spec then
+				root_class := type_name_root_type (a_type_str)
+				if use_rm_pixmaps and then rm_pixmaps.has (model_publisher) and then rm_pixmaps.item (model_publisher).has (root_class) then
+					pixmap := rm_pixmaps.item (model_publisher).item (root_class)
+				else
+					pixmap := pixmaps [type_category]
+				end
 			else
 				pixmap := pixmaps [type_category]
 			end
 			a_ti.set_pixmap (pixmap)
 
-		--	if has_type_subs or closure_depth = 0 then
-	 			a_ti.set_pebble_function (agent pebble_function)
-				a_ti.set_configurable_target_menu_handler (agent context_menu_handler)
-				a_ti.set_configurable_target_menu_mode
-		--	end
-		end
+ 	 		a_ti.pointer_button_press_actions.force_extend (agent class_node_handler (a_ti, ?, ?, ?))
+ 	 	end
 
    	populate_gui_tree_node_exit (a_prop_def: attached BMM_PROPERTY_DEFINITION)
    		do
@@ -412,35 +414,38 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	context_menu_handler (a_menu: EV_MENU; a_target_list: ARRAYED_LIST [EV_PND_TARGET_DATA]; a_source: EV_PICK_AND_DROPABLE; a_pebble: ANY)
+	class_node_handler (eti: EV_TREE_ITEM; x,y, button: INTEGER)
 			-- creates the context menu for a right click action for class node
 		local
 			subs: ARRAYED_SET[STRING]
+			menu: EV_MENU
 		do
-			if attached {EV_TREE_ITEM} a_source as eti then
-				if attached {BMM_TYPE_SPECIFIER} eti.data as bmm_type_spec then
-					-- add a context menu item for expanding node, if depth limit reached
-					if eti.is_empty then
-						add_expand_context_menu (a_menu, bmm_type_spec.root_class, eti)
-					end
+			if attached {BMM_TYPE_SPECIFIER} eti.data as bmm_type_spec and button = {EV_POINTER_CONSTANTS}.right then
+				create menu
 
-					-- if there are type substitutions available, add menu for that
-					if attached {BMM_CLASS_DEFINITION} bmm_type_spec as bmm_class_def then
-						subs := bmm_class_def.type_substitutions
-					elseif attached {BMM_CONTAINER_TYPE_REFERENCE} bmm_type_spec as bmm_cont_type_ref then
-						subs := bmm_cont_type_ref.type_def.type_substitutions
-					elseif attached {BMM_GENERIC_TYPE_REFERENCE} bmm_type_spec as bmm_gen_type_ref then
-						subs := bmm_gen_type_ref.type_substitutions
-					elseif attached {BMM_GENERIC_PARAMETER_DEFINITION} bmm_type_spec as bmm_gen_parm_def then -- type is T, U etc
-						subs := bmm_gen_parm_def.type_substitutions
-					end
-					if not subs.is_empty then
-						add_subtype_context_menu (a_menu, subs, eti)
-					end
-
-					-- add menu item for retarget tool to current node / display in new tool
-					add_class_context_menu (a_menu, eti)
+				-- add a context menu item for expanding node, if depth limit reached
+				if eti.is_empty then
+					add_expand_context_menu (menu, bmm_type_spec.root_class, eti)
 				end
+
+				-- if there are type substitutions available, add menu for that
+				if attached {BMM_CLASS_DEFINITION} bmm_type_spec as bmm_class_def then
+					subs := bmm_class_def.type_substitutions
+				elseif attached {BMM_CONTAINER_TYPE_REFERENCE} bmm_type_spec as bmm_cont_type_ref then
+					subs := bmm_cont_type_ref.type_def.type_substitutions
+				elseif attached {BMM_GENERIC_TYPE_REFERENCE} bmm_type_spec as bmm_gen_type_ref then
+					subs := bmm_gen_type_ref.type_substitutions
+				elseif attached {BMM_GENERIC_PARAMETER_DEFINITION} bmm_type_spec as bmm_gen_parm_def then -- type is T, U etc
+					subs := bmm_gen_parm_def.type_substitutions
+				end
+				if not subs.is_empty then
+					add_subtype_context_menu (menu, subs, eti)
+				end
+
+				-- add menu item for retarget tool to current node / display in new tool
+				add_class_context_menu (menu, eti)
+
+				menu.show
 			end
 		end
 
@@ -495,33 +500,6 @@ feature {NONE} -- Implementation
 			menu.extend (an_mi)
 		end
 
-	add_class_context_menu (menu: EV_MENU; ev_ti: EV_TREE_ITEM)
-			-- dynamically initializes the context menu for this tree
-		local
-			an_mi: EV_MENU_ITEM
-		do
-			create an_mi.make_with_text_and_action ("Retarget to this class", agent display_context_selected_class_in_active_tool (ev_ti))
-	    	menu.extend (an_mi)
-			create an_mi.make_with_text_and_action ("Display in new tool", agent display_context_selected_class_in_new_tool (ev_ti))
-			menu.extend (an_mi)
-		end
-
-	display_context_selected_class_in_active_tool (ev_ti: EV_TREE_ITEM)
-		do
-			ev_ti.enable_select
-			if attached {BMM_CLASS_DEFINITION} ev_ti.data as a_class_def then
-				select_class_agent.call ([a_class_def])
-			end
-		end
-
-	display_context_selected_class_in_new_tool (ev_ti: EV_TREE_ITEM)
-		do
-			ev_ti.enable_select
-			if attached {BMM_CLASS_DEFINITION} ev_ti.data as a_class_def then
-				select_class_in_new_tool_agent.call ([a_class_def])
-			end
-		end
-
 	rebuild_from_interior_node (a_class_name: attached STRING; a_ti: EV_TREE_ITEM; replace_mode: BOOLEAN)
 			-- rebuild EV tree from interior node of class with a new tree of selected subtype
 		local
@@ -550,12 +528,6 @@ feature {NONE} -- Implementation
 				ev_tree_item_expand (target_ti)
 			end
 			ev_tree_item_stack.remove
-		end
-
-	pebble_function (a_x, a_y: INTEGER): ANY
-			-- Pebble function for pebble source
-		do
-			Result := "pebble"
 		end
 
 	ev_tree_collapse (node: attached EV_TREE_NODE)

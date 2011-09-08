@@ -51,29 +51,19 @@ feature -- Initialisation
 			schemas_load_list.compare_objects
 		end
 
-	initialise (a_rm_dir: attached STRING)
-		require
-			Rm_dir_valid: directory_exists (a_rm_dir)
-		do
-			schema_directory := a_rm_dir
-			load_schema_descriptors
-		ensure
-			Schemas_dir_set: schema_directory = a_rm_dir
-		end
-
 	initialise_with_load_list (a_rm_dir: attached STRING; a_schemas_load_list: attached LIST [STRING])
 			-- initialise with a specific schema load list, usually a sub-set of schemas that will be
 			-- found in the directory `a_rm_dir'
 		require
 			Rm_dir_valid: directory_exists (a_rm_dir)
 		do
+			make
 			schema_directory := a_rm_dir
-			schemas_load_list := a_schemas_load_list
-			schemas_load_list.compare_objects
+			schemas_load_list.append (a_schemas_load_list)
 			load_schema_descriptors
 		ensure
 			Schemas_dir_set: schema_directory = a_rm_dir
-			Schemas_load_list_set: schemas_load_list = a_schemas_load_list
+			Schemas_load_list_set: schemas_load_list.is_equal (a_schemas_load_list)
 		end
 
 feature -- Access
@@ -129,9 +119,10 @@ feature -- Commands
 
 	set_schema_load_list (a_schemas_load_list: attached LIST [STRING])
 		do
-			schemas_load_list := a_schemas_load_list
+			schemas_load_list.wipe_out
+			schemas_load_list.append(a_schemas_load_list)
 		ensure
-			Schemas_load_list_set: schemas_load_list = a_schemas_load_list
+			Schemas_load_list_set: schemas_load_list.is_equal (a_schemas_load_list)
 		end
 
 	load_schemas

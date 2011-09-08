@@ -2,70 +2,35 @@ note
 	component:   "openEHR Data Types"
 
 	description: "[
-				 Defines a named range to be associated with any ORDERED datum. Each such 
-				 range is particular to the patient and context, e.g. sex, age, and any 
-				 other factor which affects ranges.
-				 ]"
-	keywords:    "Reference range for ordered data items"
+			 Abstract temporal notion
+			 ]"
+	keywords:    "date, time"
 
-	requirements:"ISO 18308 TS V1.0 STR 3.13"
+	requirements:"ISO 18308 TS V1.0 STR 3.7"
 	design:      "openEHR Data Types Reference Model 1.7"
 
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2011 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class REFERENCE_RANGE [G -> DV_ORDERED]
+deferred class DV_TEMPORAL
 
-create
-	make
+inherit
+	DV_ABSOLUTE_QUANTITY
 
-feature -- Initialization
+feature -- Comparison
 
-	make (a_meaning: attached DV_TEXT; a_range: attached DV_INTERVAL [G])
-			-- make a range from a meaning and an interval
-		do
-			meaning := a_meaning
-			range := a_range
-		ensure
-			Meaning_set: meaning = a_meaning
-			Range_set: range = a_range
+	diff (other: like Current): DV_DURATION
+			-- Difference of two temporal quantities.
+		deferred
 		end
-
-feature -- Access
-
-	meaning: attached DV_TEXT
-			-- Text or Term whose value indicates the meaning of this range, e.g. “normal”,
-			-- “critical”, “therapeutic” etc.
-
-	range: attached DV_INTERVAL [G]
-			-- The data range for this meaning, e.g. “critical” etc.
-
-feature -- Status Report
-
-	has (v: attached G): BOOLEAN
-		do
-			Result := range.has(v)
-		end
-
-feature -- Conversion
-
-	as_string: STRING
-		do
-			Result := range.as_string + " (" + meaning.as_string + ")"
-		end
-
-invariant
-	Range_is_simple: (range.lower_unbounded or else range.lower.is_simple) and
-						(range.upper_unbounded or else range.upper.is_simple)
 
 end
-
 
 
 --|
@@ -82,7 +47,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is dv_reference_range.e.
+--| The Original Code is dv_temporal.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

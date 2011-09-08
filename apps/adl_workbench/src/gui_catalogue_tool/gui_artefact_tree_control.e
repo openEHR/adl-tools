@@ -151,26 +151,21 @@ feature {NONE} -- Implementation
 			menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
-			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
-				if button = {EV_POINTER_CONSTANTS}.left then
-					select_archetype_with_delay (aca)
+			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca and button = {EV_POINTER_CONSTANTS}.right then
+				create menu
+				create an_mi.make_with_text_and_action ("Compile and Display", agent display_context_selected_archetype_in_active_tool (ev_ti))
+				an_mi.set_pixmap (pixmaps ["parse"])
+		    	menu.extend (an_mi)
 
-				elseif button = {EV_POINTER_CONSTANTS}.right then
-					create menu
-					create an_mi.make_with_text_and_action ("Compile and Display", agent display_context_selected_archetype_in_active_tool (ev_ti))
-					an_mi.set_pixmap (pixmaps ["parse"])
-			    	menu.extend (an_mi)
+				create an_mi.make_with_text_and_action ("Display in new tool", agent display_context_selected_archetype_in_new_tool (ev_ti))
+				an_mi.set_pixmap (pixmaps ["archetype_2"])
+				menu.extend (an_mi)
 
-					create an_mi.make_with_text_and_action ("Display in new tool", agent display_context_selected_archetype_in_new_tool (ev_ti))
-					an_mi.set_pixmap (pixmaps ["archetype_2"])
-					menu.extend (an_mi)
+				create an_mi.make_with_text_and_action ("Edit source", edit_archetype_agent)
+				an_mi.set_pixmap (pixmaps ["edit"])
+				menu.extend (an_mi)
 
-					create an_mi.make_with_text_and_action ("Edit source", edit_archetype_agent)
-					an_mi.set_pixmap (pixmaps ["edit"])
-					menu.extend (an_mi)
-
-					menu.show
-				end
+				menu.show
 			end
 		end
 

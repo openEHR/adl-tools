@@ -34,7 +34,7 @@ feature -- Definitions
 
 	Unknown_package_name: STRING = "unknown_package"
 
-	Any_type: STRING = "Any"
+	Any_type: STRING = "ANY"
 
 	Type_cat_concrete_class: STRING = "class_concrete"
 	Type_cat_concrete_class_supertype: STRING = "class_concrete_supertype"

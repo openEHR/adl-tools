@@ -246,7 +246,7 @@ feature {NONE} -- Implementation
 		do
 			if attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
 				if button = {EV_POINTER_CONSTANTS}.left then
-					select_class_with_delay (acmn)
+	--				select_class_agent.call ([acmn.class_definition])
 
 				elseif button = {EV_POINTER_CONSTANTS}.right then
 					create menu

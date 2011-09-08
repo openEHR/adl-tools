@@ -133,7 +133,21 @@ feature -- Commands
 
 		end
 
+	show
+		do
+			docking_pane.show
+		end
+
+feature -- Modification
+
+	set_docking_pane (a_docking_pane: attached SD_CONTENT)
+		do
+			docking_pane := a_docking_pane
+		end
+
 feature {NONE} -- Implementation
+
+	docking_pane: SD_CONTENT
 
 	archetype_explorer: GUI_VIEW_ARCHETYPE_TREE_CONTROL
 		once
@@ -142,7 +156,7 @@ feature {NONE} -- Implementation
 
 	template_explorer: GUI_VIEW_TEMPLATE_TREE_CONTROL
 		once
-			create Result.make (select_archetype_agent, agent archetype_explorer.ensure_item_visible)
+			create Result.make (select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent, agent archetype_explorer.ensure_item_visible)
 		end
 
 	select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent: PROCEDURE [ANY, TUPLE]
