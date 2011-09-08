@@ -11,18 +11,15 @@
 
 <body>
   <div id="container">
-    <table style="BACKGROUND-COLOR: #9cd2f8" border="0" cellspacing="0" cellpadding="0" width="100%">
-      <tbody>
-        <tr valign="top">
-          <td valign="middle" width="152"><img border="0" alt="openEHR logo" src=
-          "images/openehr_logo_trans_bg.png"
-          width="150" height="50" /></td>
-
+      <table style="BACKGROUND-COLOR: #Cce3ef" border="0" cellspacing="0" cellpadding="0" width="100%">
+        <tbody>
+          <tr valign="top">
+            <td valign="middle" width="115">
+              <img border="0" alt="openEHR logo" src="images/openehr_adl_workbench_logo.png" width="100" height="100"/> </td>
           <td>
             <div id="header">
-              <h1>ADL Workbench (AWB) - learning ADL 1.5</h1>
-
-              <p class="description">Download and Help pages</p>
+              <h1>Learning ADL 1.5</h1>
+              <p class="description">AWB Help pages</p>
             </div>
           </td>
         </tr>
@@ -41,19 +38,20 @@
         you can see for yourself. The specifications are found in the following locations.</p>
 
         <ul>
-          <li value="0">The Archetype Definition Language 1.5 (draft)</li>
-          <li value="0">The Archetype Object Model 1.5 (draft)</li>
-          <li value="0"><i>open</i>EHR Distributed Knowledge Development (draft)</li>
-          <li value="0"><i>open</i>EHR Distributed Artefact Identification System (draft)</li>
+			<li value="0"><a href="http://www.openehr.org/svn/specification/TRUNK/publishing/architecture/am/adl1.5.pdf">The Archetype Definition Language 1.5 (draft)</a></li>
+			<li value="0"><a href="http://www.openehr.org/svn/specification/TRUNK/publishing/architecture/am/aom1.5.pdf">The Archetype Object Model 1.5 (draft)</a></li>
+			<li value="0"><a href="http://www.openehr.org/svn/specification/TRUNK/publishing/architecture/am/dist_dev_model.pdf"><i>open</i>EHR Distributed Knowledge Development (draft)</a></li>
+			<li value="0"><a href="http://www.openehr.org/svn/specification/TRUNK/publishing/architecture/am/knowledge_id_system.pdf"><i>open</i>EHR Distributed Artefact Identification System (draft)</a></li>
         </ul>
 
-        <p>One question you may have is: what if I am not interested in the ADL syntax as such? You might be using XML
+        <p>One question you may have is: what if I am not interested in the ADL syntax? You might be using XML
         archetypes for example. It is important to understand the various roles of ADL, XML and the AOM. These are
         explained in some detail in the specifications (see below). Briefly, the ADL workbench performs most of its
         work using AOM structures. It also has an ADL parser and serialiser, and in the near future, will have a parser
         and serialiser for XML archetypes. Apart from some syntax basics, nearly all the validation carried out by the
         AWB is on AOM structures and has nothing to do with the ADL syntax. Additionally, ADL is a human readable
-        syntax good for understanding the concepts and examples.</p>
+		syntax good for understanding the concepts and examples. However, it does not have to be used in archetype
+		authoring or production systems - the XML form is completely equivalent.</p>
 
         <h3>Specifications Status</h3>
 
