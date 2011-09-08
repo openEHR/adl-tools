@@ -4,7 +4,7 @@ note
 	keywords:    "model, UML"
 
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2009 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
@@ -16,6 +16,13 @@ class BMM_DEFINITIONS
 
 feature -- Definitions
 
+	Section_separator: CHARACTER = '-'
+			-- separator between sections in an archetype identifier axis
+
+	Schema_name_delimiter: STRING = "::"
+
+	Package_name_delimiter: CHARACTER = '.'
+
 	Generic_left_delim: CHARACTER = '<'
 
 	Generic_right_delim: CHARACTER = '>'
@@ -25,7 +32,39 @@ feature -- Definitions
 	Generic_constraint_delimiter: CHARACTER = ':'
 			-- appears between 'T' and constraining type if there is one
 
-	Any_type: STRING = "Any"
+	Unknown_package_name: STRING = "unknown_package"
+
+	Any_type: STRING = "ANY"
+
+	Type_cat_concrete_class: STRING = "class_concrete"
+	Type_cat_concrete_class_supertype: STRING = "class_concrete_supertype"
+	Type_cat_abstract_class: STRING = "class_abstract"
+	Type_cat_generic_parameter: STRING = "generic_parameter"
+	Type_cat_constrained_generic_parameter: STRING = "constrained_generic_parameter"
+
+	Type_categories: ARRAYED_LIST [STRING]
+		once
+			create Result.make (0)
+			Result.compare_objects
+			Result.extend (Type_cat_concrete_class)
+			Result.extend (Type_cat_abstract_class)
+			Result.extend (Type_cat_generic_parameter)
+			Result.extend (Type_cat_constrained_generic_parameter)
+		end
+
+	Schema_file_extension: STRING = ".bmm"
+
+	Metadata_model_publisher: STRING = "model_publisher"
+			-- dADL attribute name of logical attribute 'model_publisher' in schema file;
+			-- MUST correspond to attribute of same name in BMM_SCHEMA class
+
+	metadata_schema_name: STRING = "schema_name"
+			-- dADL attribute name of logical attribute 'schema_name' in schema file;
+			-- MUST correspond to attribute of same name in BMM_SCHEMA class
+
+	Metadata_model_release: STRING = "model_release"
+			-- dADL attribute name of logical attribute 'model_release' in schema file;
+			-- MUST correspond to attribute of same name in BMM_SCHEMA class
 
 	Metadata_schema_revision: STRING = "schema_revision"
 			-- dADL attribute name of logical attribute 'schema_revision' in schema file;
@@ -39,57 +78,45 @@ feature -- Definitions
 			-- dADL attribute name of logical attribute 'schema_description' in schema file;
 			-- MUST correspond to attribute of same name in BMM_SCHEMA class
 
-	Metadata_model_publisher: STRING = "model_publisher"
-			-- dADL attribute name of logical attribute 'model_publisher' in schema file;
-			-- MUST correspond to attribute of same name in BMM_SCHEMA class
-
-	Metadata_model_name: STRING = "model_name"
-			-- dADL attribute name of logical attribute 'model_name' in schema file;
-			-- MUST correspond to attribute of same name in BMM_SCHEMA class
-
-	Metadata_model_release: STRING = "model_release"
-			-- dADL attribute name of logical attribute 'model_release' in schema file;
-			-- MUST correspond to attribute of same name in BMM_SCHEMA class
-
 	Metadata_schema_path: STRING = "schema_path"
 			-- path of schema file
 
 	Schema_fast_parse_attrs: ARRAY [STRING]
 			-- attributes to retrieve for initial fast parse on schemas
 		once
-			Result := <<Metadata_schema_revision, Metadata_schema_lifecycle_state, Metadata_model_publisher, Metadata_model_name, Metadata_model_release>>
+			Result := <<Metadata_schema_revision, Metadata_schema_lifecycle_state, Metadata_model_publisher, metadata_schema_name, Metadata_model_release>>
 		end
 
 feature -- Comparison
 
-	is_well_formed_type_name (a_type_name: STRING): BOOLEAN
+	is_well_formed_type_name (a_type_name: attached STRING): BOOLEAN
 			-- True if the type name has a valid form, either a single name or a well-formed generic
 		require
-			Valid_type_name: a_type_name /= Void and then not a_type_name.is_empty
+			Valid_type_name: not a_type_name.is_empty
 		do
 			Result := well_formed_type_name_regex.matches(a_type_name)
 		end
 
-	is_well_formed_class_name (a_class_name: STRING): BOOLEAN
+	is_well_formed_class_name (a_class_name: attached STRING): BOOLEAN
 			-- True if the class name has a valid form
 		require
-			Valid_class_name: a_class_name /= Void and then not a_class_name.is_empty
+			Valid_class_name: not a_class_name.is_empty
 		do
 			Result := well_formed_class_name_regex.matches(a_class_name)
 		end
 
-	is_well_formed_generic_type_name (a_type_name: STRING): BOOLEAN
+	is_well_formed_generic_type_name (a_type_name: attached STRING): BOOLEAN
 			-- True if the type name includes a generic parameters part; should be used after is_well_formed_type_name
 		require
-			Valid_type_name: a_type_name /= Void and then is_well_formed_class_name(a_type_name)
+			Valid_type_name: is_well_formed_class_name(a_type_name)
 		do
 			Result := a_type_name.has (generic_left_delim)
 		end
 
 feature -- Conversion
 
-	create_schema_name (a_model_publisher, a_model_name, a_model_release: STRING): attached STRING
-			-- Derived name of schema in 3 part form model_publisher '_' model_name '_' model_release.
+	create_schema_id (a_model_publisher, a_schema_name, a_model_release: STRING): attached STRING
+			-- Derived name of schema in 3 part form model_publisher '_' a_schema_name '_' model_release.
 			-- Any or all arguments can be Void or empty; for each missing element,
 			-- result contains "unknown", e.g. "unknown_test_1.0"
 			-- Result is lower case
@@ -102,10 +129,10 @@ feature -- Conversion
 			else
 				mp := a_model_publisher
 			end
-			if a_model_name = Void or a_model_name.is_empty then
+			if a_schema_name = Void or a_schema_name.is_empty then
 				mn := "unknown"
 			else
-				mn := a_model_name
+				mn := a_schema_name
 			end
 			if a_model_release = Void or a_model_release.is_empty then
 				mr := "unknown"
@@ -118,19 +145,41 @@ feature -- Conversion
 			Result_not_empty: not Result.is_empty
 		end
 
-	package_class_name (a_package_name, a_class_name: attached STRING): STRING
+	package_base_name (a_package_name: attached STRING): attached STRING
+			-- package name might be of form xxx.yyy.zzz ; we only want 'zzz'
+		do
+			if a_package_name.has (package_name_delimiter) then
+				Result := a_package_name.split (Package_name_delimiter).last
+			else
+				Result := a_package_name
+			end
+		end
+
+	publisher_qualified_library_name (a_model_publisher, a_package_name: attached STRING): attached STRING
+			-- generate a lower-case standard model-package name string, e.g. "openehr-ehr" for use in finding RM schemas
+			-- uses `package_base_name' to obtain terminal form of package name
+		require
+			Model_publisher_valid: not a_model_publisher.is_empty
+			Package_name_valid: not a_package_name.is_empty
+		do
+			Result := a_model_publisher + section_separator.out + package_base_name (a_package_name)
+			Result.to_lower
+		end
+
+	library_qualified_class_name (a_package_name, a_class_name: attached STRING): attached STRING
 			-- generate a standard package-class name string, e.g. "ehr-observation" for use in finding RM schemas
+			-- uses `terminal_package_name' to guarantee terminal form of package name
 		require
 			Package_name_valid: not a_package_name.is_empty
 			Class_name_valid: not a_class_name.is_empty
 		do
-			Result := a_package_name + {ARCHETYPE_ID}.section_separator.out + a_class_name
+			Result := package_base_name(a_package_name) + section_separator.out + a_class_name
 		end
 
-	type_name_as_flattened_type_list(a_type_name: STRING): ARRAYED_LIST [STRING]
+	type_name_as_flattened_list (a_type_name: attached STRING): attached ARRAYED_LIST [STRING]
 			-- convert a type name to a flat set of strings
 		require
-			Valid_type_name: a_type_name /= Void and then is_well_formed_type_name(a_type_name)
+			Valid_type_name: is_well_formed_type_name(a_type_name)
 		local
 			is_gen_type: BOOLEAN
 			stype: STRING
@@ -150,14 +199,30 @@ feature -- Conversion
 			if is_gen_type then
 				stype.replace_substring_all (generic_left_delim.out, Generic_separator.out)
 				stype.replace_substring_all (generic_right_delim.out, Generic_separator.out)
-				from
-					lpos := rpos + 2
-				until
-					lpos > stype.count
-				loop
+				from lpos := rpos + 2 until lpos > stype.count loop
 					rpos := stype.index_of (Generic_separator, lpos) - 1
 					Result.extend(stype.substring (lpos, rpos))
 					lpos := rpos + 2
+				end
+			end
+		end
+
+	type_name_root_type (a_type_name: attached STRING): attached STRING
+			-- return the root type of `a_type_name', which is itself for non-generic types, or else
+			-- the first type for generic types
+		require
+			Valid_type_name: is_well_formed_type_name (a_type_name)
+		local
+			delim_pos, i: INTEGER
+		do
+			delim_pos := a_type_name.index_of (generic_left_delim, 1)
+			if delim_pos = 0 then
+				Result := a_type_name
+			else
+				create Result.make(0)
+				from i := 1 until a_type_name[i] = generic_left_delim or a_type_name[i] = ' ' loop
+					Result.append_character (a_type_name[i])
+					i := i + 1
 				end
 			end
 		end

@@ -84,13 +84,20 @@ feature -- Access
 
 feature -- Modification
 
-	set_property (a_property: CODE_PHRASE)
+	set_property (a_property: attached CODE_PHRASE)
 			-- set property constraint
 		require
-			Property_valid: a_property /= Void and has_property (a_property)
+			Property_valid: has_property (a_property)
 		do
 			property := a_property
 			default_units := units_for_property (a_property).first
+		end
+
+	set_list (an_list: attached ARRAYED_LIST [C_QUANTITY_ITEM])
+		do
+			list := an_list
+		ensure
+			list = an_list
 		end
 
 	set_assumed_value_from_units_magnitude (a_units: STRING; a_magnitude: REAL; a_precision: INTEGER)
@@ -103,11 +110,11 @@ feature -- Modification
 			assumed_value_set: assumed_value.magnitude = a_magnitude and assumed_value.units = a_units and assumed_value.precision = a_precision
 		end
 
-	add_unit_constraint (a_units: STRING; a_magnitude: INTERVAL [REAL]; a_precision: INTERVAL [INTEGER])
+	add_unit_constraint (a_units: attached STRING; a_magnitude: INTERVAL [REAL]; a_precision: INTERVAL [INTEGER])
 			-- add a units constraint. Void magnitude means any magnitude allowed
 		require
-			Units_valid: a_units /= Void and then not a_units.is_empty
-			Magnitude_validity: a_magnitude /= Void implies a_units /= Void
+			Units_valid: not a_units.is_empty
+			Magnitude_validity: attached a_magnitude implies attached a_units
 		do
 			if list = Void then
 				create list.make (0)
@@ -133,7 +140,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	node_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
+	node_conforms_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
 			-- True if this node is a subset, i.e. a redefinition of, `other' in the ADL constraint sense, i.e. that all
 			-- aspects of the definition of this node and all child nodes define a narrower, wholly
 			-- contained instance space of `other'.
@@ -204,22 +211,22 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			-- empty structure means all attributes
 		once
 			create Result.make (0)
+			Result.compare_objects
 			Result.extend ("node_id")
 			Result.extend ("property")
 			Result.extend ("list")
 			Result.extend ("assumed_value")
-			Result.compare_objects
 		end
 
 feature -- Implementation
 
-	default_units: STRING
+	default_units: detachable STRING
 			-- record default units if property is set; used to generate a default value
 
-	list_item_by_units (a_units: STRING): C_QUANTITY_ITEM
+	list_item_by_units (a_units: attached STRING): C_QUANTITY_ITEM
 			-- return item from `list' whose units match a_units' or else Void
 		require
-			a_units_valid: a_units /= Void and then not a_units.is_empty
+			a_units_valid: not a_units.is_empty
 		do
 			from list.start until list.off or list.item.units.is_equal (a_units) loop
 				list.forth

@@ -24,7 +24,7 @@ deferred class DT_CONVERTIBLE
 
 feature -- Initialisation
 
-	make_dt
+	make_dt (make_args: ARRAY[ANY])
 			-- basic make routine to guarantee validity on creation
 		deferred
 		end
@@ -33,30 +33,34 @@ feature -- Representation
 
 	dt_representation: DT_COMPLEX_OBJECT_NODE
 			-- representation as a data tree
+		note
+			option: transient
+		attribute
+		end
 
 feature -- Synchronisation
 
 	synchronise_to_tree
 			-- synchronise to parse tree representation
 		do
-			create dt_representation.make_from_object(Current)
+			create dt_representation.make_from_object (Current)
 		end
 
 feature -- Finalisation
 
 	finalise_dt
-			-- finalisation routine to guarantee validity on creation
+			-- finalisation routine to guarantee validity on creation from dt
 		do
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	persistent_attributes: ARRAYED_LIST[STRING]
+	persistent_attributes: ARRAYED_LIST [STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		deferred
 		ensure
-			Result.object_comparison
+			attached Result implies Result.object_comparison
 		end
 
 end

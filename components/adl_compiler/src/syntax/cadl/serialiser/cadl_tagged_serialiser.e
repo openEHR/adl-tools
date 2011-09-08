@@ -14,34 +14,43 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class CADL_TAGGED_SERIALISER 
+class CADL_TAGGED_SERIALISER
 
 inherit
-	CONSTRAINT_MODEL_SERIALISER
-	
+	C_SERIALISER
+		redefine
+			start_c_complex_object, end_c_complex_object,
+			start_c_attribute, end_c_attribute,
+			start_archetype_slot, end_archetype_slot,
+			start_archetype_internal_ref, start_constraint_ref,
+			start_c_archetype_root,
+			start_c_code_phrase, start_c_ordinal, start_c_quantity,
+			start_c_primitive_object
+		end
+
 	CADL_TOKENS
 		export
 			{NONE} all
 		end
-		
+
 	XML_TOOLS
 		export
 			{NONE} all
 		end
-	
+
 	XML_SERIALISER_DEFINITIONS
 		export
 			{NONE} all
 		end
 
-	SHARED_ARCHETYPE_CONTEXT
+	SHARED_APPLICATION_CONTEXT
 		export
 			{NONE} all
 		end
-	
+
 create
 	make
-	
+
 feature -- Modification
 
 	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER)
@@ -51,7 +60,7 @@ feature -- Modification
 		do
 			-- lead tag + attributes
 			create attrs.make(0)
-				
+
 			attrs.put ("complex object constraint", tag(TAG_NODE_TYPE))
 			attrs.put (a_node.rm_type_name, tag(TAG_NODE_RM_CLASS))
 
@@ -60,35 +69,35 @@ feature -- Modification
 			end
 
 			attrs.put (a_node.occurrences.as_occurrences_string, symbol(SYM_OCCURRENCES))
-				
+
 			last_result.append(create_indent(depth) + xml_tag_start(tag(TAG_NODE), attrs) + format_item(FMT_NEWLINE))
-				
+
 			-- output level
-			last_result.append(create_indent(depth+1) + xml_tag_enclose(tag(TAG_NODE_LEVEL), 
+			last_result.append(create_indent(depth+1) + xml_tag_enclose(tag(TAG_NODE_LEVEL),
 					(depth//2).out, Void) + format_item(FMT_NEWLINE))
 
 			-- output parent node id
 			if a_node.parent /= Void then
-				last_result.append(create_indent(depth+1) + xml_tag_enclose(tag(TAG_NODE_PARENT), 
-						a_node.parent.parent.node_id, Void) + format_item(FMT_NEWLINE))			
+				last_result.append(create_indent(depth+1) + xml_tag_enclose(tag(TAG_NODE_PARENT),
+						a_node.parent.parent.node_id, Void) + format_item(FMT_NEWLINE))
 			end
-				
+
 			-- output occurrences as element
 			-- serialise_occurrences(a_node, depth)
 
 			-- output text of node id
 			if a_node.is_addressable then
-				last_result.append(create_indent(depth+1) + xml_tag_enclose(tag(TAG_TEXT), 
+				last_result.append(create_indent(depth+1) + xml_tag_enclose(tag(TAG_TEXT),
 					ontology.term_definition(language, a_node.node_id).item("text"), Void) + format_item(FMT_NEWLINE))
 			end
 		end
-		
+
 	end_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- end serialising an C_COMPLEX_OBJECT
 		local
 			invs: ARRAYED_LIST[ASSERTION]
 			attrs: HASH_TABLE [STRING, STRING]
-		do	
+		do
 			-- if a normal node, output invariants, indent then end block, since must be on new line
 			if a_node.is_addressable then
 				-- last_result := node_strings.item(a_node.node_id)	
@@ -105,7 +114,7 @@ feature -- Modification
 		do
 			-- lead tag + attributes
 			create attrs.make(0)
-				
+
 			attrs.put ("archetype slot", tag(TAG_NODE_TYPE))
 			attrs.put (a_node.rm_type_name, tag(TAG_NODE_RM_CLASS))
 
@@ -114,33 +123,33 @@ feature -- Modification
 			end
 
 			attrs.put (a_node.occurrences.as_occurrences_string, symbol(SYM_OCCURRENCES))
-				
+
 			last_result.append(create_indent(depth) + xml_tag_start(tag(TAG_NODE), attrs) + format_item(FMT_NEWLINE))
-				
+
 			-- output level
-			last_result.append(create_indent(depth+1) + xml_tag_enclose(tag(TAG_NODE_LEVEL), 
+			last_result.append(create_indent(depth+1) + xml_tag_enclose(tag(TAG_NODE_LEVEL),
 					(depth//2).out, Void) + format_item(FMT_NEWLINE))
 
 			-- output parent node id
 			if a_node.parent /= Void then
-				last_result.append(create_indent(depth+1) + xml_tag_enclose(tag(TAG_NODE_PARENT), 
-						a_node.parent.parent.node_id, Void) + format_item(FMT_NEWLINE))			
+				last_result.append(create_indent(depth+1) + xml_tag_enclose(tag(TAG_NODE_PARENT),
+						a_node.parent.parent.node_id, Void) + format_item(FMT_NEWLINE))
 			end
-				
+
 			-- output occurrences as element
 			-- serialise_occurrences(a_node, depth)
 
 			-- output text of node id
 			if a_node.is_addressable then
-				last_result.append(create_indent(depth+1) + xml_tag_enclose(tag(TAG_TEXT), 
+				last_result.append(create_indent(depth+1) + xml_tag_enclose(tag(TAG_TEXT),
 					ontology.term_definition(language, a_node.node_id).item("text"), Void) + format_item(FMT_NEWLINE))
 			end
 
 			-- output includes and excludes
 			if not a_node.any_allowed then
-				if a_node.has_includes then					
+				if a_node.has_includes then
 					last_result.append(create_indent(depth+1) + xml_tag_start(symbol(SYM_INCLUDE), Void) + format_item(FMT_NEWLINE))
-						
+
 					invs := a_node.includes
 					from
 						invs.start
@@ -150,16 +159,16 @@ feature -- Modification
 						create attrs.make(0)
 
 						last_result.append(create_indent(depth+2) + xml_tag_start(tag(TAG_ITEM), attrs) + format_item(FMT_NEWLINE))
-						last_result.append(invs.item.expression.as_string + format_item(FMT_NEWLINE))						
+						last_result.append(invs.item.expression.as_string + format_item(FMT_NEWLINE))
 						last_result.append(create_indent(depth+2) + xml_tag_end(tag(TAG_ITEM)) + format_item(FMT_NEWLINE))
 						invs.forth
 					end
 					last_result.append(create_indent(depth+1) + xml_tag_end(symbol(SYM_INCLUDE)) + format_item(FMT_NEWLINE))
 				end
 
-				if a_node.has_excludes then					
+				if a_node.has_excludes then
 					last_result.append(create_indent(depth+1) + xml_tag_start(symbol(SYM_EXCLUDE), Void) + format_item(FMT_NEWLINE))
-						
+
 					invs := a_node.excludes
 					from
 						invs.start
@@ -169,7 +178,7 @@ feature -- Modification
 						create attrs.make(0)
 
 						last_result.append(create_indent(depth+2) + xml_tag_start(tag(TAG_ITEM), attrs) + format_item(FMT_NEWLINE))
-						last_result.append(invs.item.expression.as_string + format_item(FMT_NEWLINE))						
+						last_result.append(invs.item.expression.as_string + format_item(FMT_NEWLINE))
 						last_result.append(create_indent(depth+2) + xml_tag_end(tag(TAG_ITEM)) + format_item(FMT_NEWLINE))
 						invs.forth
 					end
@@ -179,10 +188,10 @@ feature -- Modification
 
 			last_result.append(create_indent(depth) + xml_tag_end(tag(TAG_NODE)) + format_item(FMT_NEWLINE))
 		end
-		
+
 	end_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER)
 			-- end serialising an ARCHETYPE_SLOT
-		do	
+		do
 		end
 
 	start_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER)
@@ -191,26 +200,26 @@ feature -- Modification
 			attrs: HASH_TABLE [STRING, STRING]
 		do
 			create attrs.make(0)
-			if a_node.is_relationship then	
+			if a_node.is_relationship then
 				attrs.put ("relationship constraint", tag(TAG_NODE_TYPE))
 			else
 				attrs.put ("attribute constraint", tag(TAG_NODE_TYPE))
 			end
-			
+
 			-- existence is only interesting if it is different from the reference model
 			-- attrs.put (a_node.existence.as_occurrences_string, symbol(SYM_EXISTENCE))
 			if a_node.is_multiple then
 				attrs.put (a_node.cardinality.as_string, symbol(SYM_CARDINALITY))
 			end
 
-			last_result.append(create_indent(depth) + xml_tag_start(a_node.rm_attribute_name, attrs) + 
+			last_result.append(create_indent(depth) + xml_tag_start(a_node.rm_attribute_name, attrs) +
 					format_item(FMT_NEWLINE))
 
 			-- output existence and cardinality as element
 			-- serialise_existence(a_node, depth)
 			-- serialise_cardinality(a_node, depth)
 		end
-		
+
 	end_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- end serialising an C_ATTRIBUTE
 		do
@@ -235,29 +244,24 @@ feature -- Modification
 			last_result.remove_tail(format_item(FMT_NEWLINE).count)
 			last_result.append(clean(a_node.as_string))
 			create last_object_simple_buffer.make(0)
-			last_object_simple_buffer.append(xml_tag_enclose("text",  
+			last_object_simple_buffer.append(xml_tag_enclose("text",
 				ontology.constraint_definition(language, a_node.target).item("text"), Void))
 			from
 				ontology.terminologies_available.start
 			until
-				ontology.terminologies_available.off							
+				ontology.terminologies_available.off
 			loop
 				if
 					ontology.has_constraint_binding(ontology.terminologies_available.item, a_node.target) then
 					create attrs.make(0)
 					attrs.put(ontology.terminologies_available.item, "terminology")
-					last_object_simple_buffer.append(format_item(FMT_NEWLINE) + create_indent(depth-1) + 
+					last_object_simple_buffer.append(format_item(FMT_NEWLINE) + create_indent(depth-1) +
 						xml_tag_enclose("binding",
 						ontology.constraint_binding(ontology.terminologies_available.item, a_node.target).as_string, attrs))
 				end
-				ontology.terminologies_available.forth							
+				ontology.terminologies_available.forth
 			end
-			last_object_simple := True			
-		end
-		
-	end_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER)
-			-- end serialising an CONSTRAINT_REF
-		do
+			last_object_simple := True
 		end
 
 	start_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
@@ -265,12 +269,6 @@ feature -- Modification
 		do
 --			last_result.append(create_indent(depth) + symbol(SYM_USE_NODE) + format_item(FMT_SPACE))
 --			last_result.append(a_node.rm_type_name + format_item(FMT_SPACE) + a_node.ref_path.as_string + format_item(FMT_NEWLINE))
-		end
-		
-	end_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
-			-- end serialising an ARCHETYPE_INTERNAL_REF
-		do
-			-- nothing needed
 		end
 
 	start_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
@@ -280,21 +278,9 @@ feature -- Modification
 			last_result.append(clean(a_node.as_string))
 			last_object_simple := True
 		end
-		
-	end_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
-			-- end serialising an C_PRIMITIVE_OBJECT
-		do
-			-- nothing needed
-			-- EXCEPTION TEST
-		end
 
 	start_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER)
 			-- start serialising an C_DOMAIN_TYPE
-		do
-		end
-		
-	end_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER)
-			-- end serialising an C_DOMAIN_TYPE
 		do
 		end
 
@@ -310,29 +296,29 @@ feature -- Modification
 				create last_object_simple_buffer.make(0)
 				if a_node.is_local and then a_node.code_count = 1 then
 					adl_term := ontology.term_definition(language, a_node.code_list.first)
-					last_object_simple_buffer.append(xml_tag_enclose("text", 
-						adl_term.item("text"), Void))			
+					last_object_simple_buffer.append(xml_tag_enclose("text",
+						adl_term.item("text"), Void))
 					from
 						ontology.terminologies_available.start
 					until
-						ontology.terminologies_available.off							
+						ontology.terminologies_available.off
 					loop
 						if
 							ontology.has_term_binding(ontology.terminologies_available.item, adl_term.item("text")) then
 							create attrs.make(0)
 							attrs.put(ontology.terminologies_available.item, "terminology")
-							last_object_simple_buffer.append(format_item(FMT_NEWLINE) + create_indent(depth-1) + 
+							last_object_simple_buffer.append(format_item(FMT_NEWLINE) + create_indent(depth-1) +
 								xml_tag_enclose("binding",
 								ontology.term_binding(ontology.terminologies_available.item, adl_term.item("text")).code_string,
 								attrs))
 						end
-						ontology.terminologies_available.forth							
-					end		
-				end				
+						ontology.terminologies_available.forth
+					end
+				end
 				last_object_simple := True
-				
+
 			elseif a_node.code_count > 1 then
-				last_result.append(create_indent(depth) + clean("[" + a_node.terminology_id.value + 
+				last_result.append(create_indent(depth) + clean("[" + a_node.terminology_id.value +
 					a_node.separator) + format_item(FMT_NEWLINE))
 				from
 					a_node.code_list.start
@@ -347,21 +333,16 @@ feature -- Modification
 					end
 					if a_node.is_local then
 						adl_term := ontology.term_definition(language, a_node.code_list.item)
-						last_result.append(format_item(FMT_INDENT) + format_item(FMT_COMMENT) + adl_term.item("text"))			
+						last_result.append(format_item(FMT_INDENT) + format_item(FMT_COMMENT) + adl_term.item("text"))
 					end
 					last_result.append(format_item(FMT_NEWLINE))
 					a_node.code_list.forth
-				end				
-			end				
-		end
-		
-	end_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER)
-			-- end serialising an C_CODE_PHRASE
-		do
+				end
+			end
 		end
 
-	start_c_ordinal(a_node: C_ORDINAL; depth: INTEGER)
-			-- start serialising an C_ORDINAL
+	start_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER)
+			-- start serialising an C_DV_ORDINAL
 		local
 			adl_term: ARCHETYPE_TERM
 			i: INTEGER
@@ -373,8 +354,8 @@ feature -- Modification
 				if a_node.is_local then
 					last_object_simple_buffer.append(format_item(FMT_INDENT))
 					adl_term := ontology.term_definition(language, a_node.items.first.symbol.code_string)
-					last_object_simple_buffer.append(format_item(FMT_INDENT) + format_item(FMT_COMMENT) + adl_term.item("text"))			
-				end				
+					last_object_simple_buffer.append(format_item(FMT_INDENT) + format_item(FMT_COMMENT) + adl_term.item("text"))
+				end
 				last_object_simple := True
 			elseif a_node.items.count > 1 then
 				from
@@ -391,19 +372,34 @@ feature -- Modification
 					end
 					if a_node.is_local then
 						adl_term := ontology.term_definition(language, a_node.items.item.symbol.code_string)
-						last_result.append(format_item(FMT_INDENT) + 
-							format_item(FMT_COMMENT) + 
-							adl_term.item("text"))			
+						last_result.append(format_item(FMT_INDENT) +
+							format_item(FMT_COMMENT) +
+							adl_term.item("text"))
 					end
 					last_result.append(format_item(FMT_NEWLINE))
 					a_node.items.forth
 					i := i + 1
-				end				
-			end				
+				end
+			end
 		end
-		
-	end_c_ordinal(a_node: C_ORDINAL; depth: INTEGER)
-			-- end serialising an C_ORDINAL
+
+	start_c_quantity(a_node: C_DV_QUANTITY; depth: INTEGER)
+			-- enter a C_DV_QUANTITY
+		do
+		end
+
+	start_c_leaf_object(a_node: C_LEAF_OBJECT; depth: INTEGER)
+			-- enter a C_LEAF_OBJECT
+		do
+		end
+
+	start_c_reference_object(a_node: C_REFERENCE_OBJECT; depth: INTEGER)
+			-- enter a C_REFERENCE_OBJECT
+		do
+		end
+
+	start_c_archetype_root(a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
+			-- enter a C_ARCHETYPE_ROOT
 		do
 		end
 
@@ -414,23 +410,23 @@ feature -- Modification
 			last_result.append(xml_tag_enclose(symbol(SYM_OCCURRENCES), a_node.occurrences.as_occurrences_string, Void))
 			last_result.append(format_item(FMT_NEWLINE))
 		end
-		
+
 	serialise_existence(a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- can only  be a range of 0..1 or 1..1
 		do
 			if not a_node.is_multiple then
 				last_result.append(create_indent(depth+1))
-				last_result.append(xml_tag_enclose(symbol(SYM_EXISTENCE), a_node.existence.as_occurrences_string, Void))	
+				last_result.append(xml_tag_enclose(symbol(SYM_EXISTENCE), a_node.existence.as_occurrences_string, Void))
 				last_result.append(format_item(FMT_NEWLINE))
 			end
 		end
-		
+
 	serialise_cardinality(a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- includes a range and possibly ordered, unique qualifiers
 		do
 			if a_node.is_multiple then
 				last_result.append(create_indent(depth+1))
-				last_result.append(xml_tag_enclose(symbol(SYM_CARDINALITY), a_node.cardinality.as_string, Void))			
+				last_result.append(xml_tag_enclose(symbol(SYM_CARDINALITY), a_node.cardinality.as_string, Void))
 				last_result.append(format_item(FMT_NEWLINE))
 			end
 		end
@@ -439,9 +435,9 @@ feature {NONE} -- Implementation
 
 	last_object_simple: BOOLEAN
 			-- True if last object traversed was an OBJECT_SIMPLE
-			
+
 	last_object_simple_buffer: STRING
-			
+
 end
 
 

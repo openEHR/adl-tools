@@ -6,9 +6,9 @@ note
 				 which represent constraints on other archetypes.
 				 ]"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2009 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -26,12 +26,12 @@ inherit
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all;
-			{ANY} specialisation_depth_from_code;
+			{ANY} specialisation_depth_from_code, is_valid_code;
 		end
 
 feature -- Access
 
-	rm_type_name: STRING
+	rm_type_name: attached STRING
 			-- type name from reference model, of object to instantiate
 
 	node_id: STRING
@@ -43,6 +43,10 @@ feature -- Access
 	occurrences: MULTIPLICITY_INTERVAL
 
 	parent: C_ATTRIBUTE
+		note
+			option: transient
+		attribute
+		end
 
 	sibling_order: SIBLING_ORDER
 			-- set if this node should be ordered with respect to an inherited sibling; only settable
@@ -50,8 +54,10 @@ feature -- Access
 
 	specialisation_depth: INTEGER
 			-- specialisation level of this node if identified
+		require
+			is_valid_code (node_id)
 		do
-			Result := representation.specialisation_depth
+			Result := specialisation_depth_from_code(node_id)
 		end
 
 	specialisation_status (spec_level: INTEGER): SPECIALISATION_STATUS
@@ -59,11 +65,11 @@ feature -- Access
 			-- specialisation hierarchy. Values are defined in SPECIALISATION_STATUSES
 			-- detects specialisation status for identified nodes
 		do
-			if not is_valid_code(node_id) then
-				create Result.make(ss_propagated)
+			if not is_valid_code (node_id) then
+				create Result.make (ss_propagated)
 			else
 				if specialisation_depth < spec_level then
-					create Result.make(ss_inherited)
+					create Result.make (ss_inherited)
 				else
 					Result := specialisation_status_from_code (node_id, spec_level)
 				end
@@ -71,6 +77,12 @@ feature -- Access
 		end
 
 feature -- Status report
+
+	is_addressable: BOOLEAN
+			-- True if this node has a non-anonymous node_id
+		do
+			Result := representation.is_addressable
+		end
 
 	is_prohibited: BOOLEAN
 			-- True if occurrences set to {0} i.e. prohibited
@@ -80,7 +92,7 @@ feature -- Status report
 
 feature -- Comparison
 
-	node_congruent_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
+	node_congruent_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other', other than
 			-- possible redefinition of the node id, which doesn't matter, since this won't get lost in a compressed path.
 			-- `other' is assumed to be in a flat archetype
@@ -93,7 +105,7 @@ feature -- Comparison
 			Result := rm_type_name.is_equal (other.rm_type_name) and occurrences = Void and node_id_conforms_to (other) and sibling_order = Void
 		end
 
-	node_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
+	node_conforms_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
 			-- `other' is assumed to be in a flat archetype.
 			-- Returns True only when the following is True:
@@ -113,7 +125,7 @@ feature -- Comparison
 			end
 		end
 
-	rm_type_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
+	rm_type_conforms_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
 			-- True if this node rm_type_name conforms to other.rm_type_name by either being equal, or being a subtype
 			-- according to the underlying reference model; `other' is assumed to be in a flat archetype
 		do
@@ -133,18 +145,18 @@ feature -- Comparison
 			Result := codes_conformant (node_id, other.node_id)
 		end
 
-	valid_occurrences(occ: attached MULTIPLICITY_INTERVAL): BOOLEAN
+	valid_occurrences (occ: attached MULTIPLICITY_INTERVAL): BOOLEAN
 			-- check if `occ' is valid to be set as occurrences on this object
 		do
-			Result := parent /= Void and parent.is_single implies occ.upper <= 1
+			Result := attached parent and parent.is_single implies occ.upper <= 1
 		end
 
 feature -- Modification
 
-	set_occurrences(occ: attached MULTIPLICITY_INTERVAL)
+	set_occurrences (occ: attached MULTIPLICITY_INTERVAL)
 			--
 		require
-			Occurrences_valid: valid_occurrences(occ)
+			Occurrences_valid: valid_occurrences (occ)
 		do
 			occurrences := occ
 		ensure
@@ -175,48 +187,50 @@ feature -- Modification
 		do
 			create sibling_order.make_before (a_node_id)
 		ensure
-			sibling_order_set: sibling_order /= Void and (sibling_order.is_before and sibling_order.sibling_node_id.is_equal (a_node_id))
+			sibling_order_set: attached sibling_order and (sibling_order.is_before and sibling_order.sibling_node_id.is_equal (a_node_id))
 		end
 
-	set_sibling_order_after (a_node_id: STRING)
+	set_sibling_order_after (a_node_id: attached STRING)
 			-- set sibling order of this node to be after the inherited sibling node with id a_node_id
 		require
-			a_node_id /= Void and specialisation_depth_from_code (a_node_id) < specialisation_depth
+			specialisation_depth_from_code (a_node_id) < specialisation_depth
 		do
 			create sibling_order.make_after (a_node_id)
 		ensure
-			sibling_order_set: sibling_order /= Void and (sibling_order.is_after and sibling_order.sibling_node_id.is_equal (a_node_id))
+			sibling_order_set: attached sibling_order and (sibling_order.is_after and sibling_order.sibling_node_id.is_equal (a_node_id))
 		end
 
 	clear_sibling_order
 			-- remove sibling order
 		do
 			sibling_order := Void
+		ensure
+			not attached sibling_order
 		end
 
-	set_node_id (an_object_id: STRING)
+	set_node_id (an_object_id: attached STRING)
 		require
-			Object_id_valid: an_object_id /= Void and then not an_object_id.is_empty
+			Object_id_valid: not an_object_id.is_empty
 		do
 			representation.set_node_id (an_object_id)
 		end
 
-	overlay_differential (other: like Current; an_rm_schema: SCHEMA_ACCESS)
+	overlay_differential (other: attached like Current; an_rm_schema: BMM_SCHEMA)
 			-- apply any differences from `other' to this object node including:
 			-- 	node_id
 			-- 	overridden rm_type_name
 			-- 	occurrences
 			-- Current is assumed to be in a flat archetype
 		require
-			Other_valid: other /= Void and then other.node_conforms_to (Current, an_rm_schema)
+			Other_valid: other.node_conforms_to (Current, an_rm_schema)
 		do
-			if not other.node_id.is_equal(node_id) then
+			if not other.node_id.is_equal (node_id) then
 				set_node_id (other.node_id.twin)
 			end
-			if not other.rm_type_name.is_equal(rm_type_name) then
+			if not other.rm_type_name.is_equal (rm_type_name) then
 				rm_type_name := other.rm_type_name.twin
 			end
-			if other.occurrences /= Void then
+			if attached other.occurrences then
 				set_occurrences (other.occurrences.deep_twin)
 			end
 		end
@@ -238,8 +252,8 @@ feature -- Representation
 	representation: attached OG_OBJECT
 
 invariant
-	rm_type_name_valid: rm_type_name /= Void and then not rm_type_name.is_empty
-	Occurrences_validity: occurrences /= Void implies valid_occurrences(occurrences)
+	rm_type_name_valid: not rm_type_name.is_empty
+	Occurrences_validity: attached occurrences implies valid_occurrences (occurrences)
 
 end
 

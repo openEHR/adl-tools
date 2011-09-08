@@ -22,7 +22,7 @@ feature -- Access
 	eval_result: ANY
 			-- constraint on result of evaluation of an expression
 
-	expression: ADL_EXPR_ITEM
+	expression: EXPR_ITEM
 			-- constraint expressed in the form of an expression
 
 feature -- Modification
@@ -34,7 +34,7 @@ feature -- Modification
 			eval_result := v
 		end
 
-	set_expression(e: ADL_EXPR_ITEM)
+	set_expression(e: EXPR_ITEM)
 		require
 			Exists: e /= Void
 		do

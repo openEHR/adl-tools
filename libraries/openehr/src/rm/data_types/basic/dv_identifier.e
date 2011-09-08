@@ -23,10 +23,8 @@ class DV_IDENTIFIER
 inherit
 	DATA_VALUE
 
-create 
-	default_create,
-	make,
-	make_from_canonical_string
+create
+	default_create, make
 
 feature -- Initialization
 
@@ -35,41 +33,24 @@ feature -- Initialization
 		end
 
 	make_from_string (a_str:STRING)
-			-- 
+			--
 		do
-		end
-	
-	make_from_canonical_string (a_str:STRING)
-			-- "<issuer>xxx</issuer>
-			-- <id>xxx</id>
-			-- <type>xxxx</type>"
-		do
-		end
-	
-feature -- Status Report
-
-	valid_canonical_string(str: STRING): BOOLEAN
-			-- True if str contains required tags
-		do
-			Result := xml_has_tag(str, "issuer", 1) and
-				xml_has_tag(str, "id", 1) and
-				xml_has_tag(str, "type", 1)
 		end
 
 feature -- Access
 
-	assigner: STRING
+	assigner: attached STRING
 			-- organisation which assigned this id to the item it identifies
 
-	issuer: STRING	
+	issuer: attached STRING
 			-- Issuing agency of these kind of ids
 
-	id: STRING	
-			-- The identifier value. Often structured, according to the 
+	id: attached STRING
+			-- The identifier value. Often structured, according to the
 			-- definition of the issuing authority’s rules.
 
-	type: STRING	
-			-- The identifier type, such as “prescription”, or “SSN”. 
+	type: attached STRING
+			-- The identifier type, such as “prescription”, or “SSN”.
 			-- One day a controlled vocabulary might be possible for this.
 
 feature -- Modify
@@ -79,17 +60,12 @@ feature -- Output
 	as_string: STRING
 		do
 		end
-	
-	as_canonical_string: STRING
-			-- 
-		do
-		end
-	
+
 invariant
-	assigner_valid: assigner /= Void and then not assigner.is_empty
-	issuer_valid: issuer /= Void and then not issuer.is_empty
-	id_valid: id /= Void and then not id.is_empty
-	type_valid: type /= Void and then not type.is_empty	
+	assigner_valid: not assigner.is_empty
+	issuer_valid: not issuer.is_empty
+	id_valid: not id.is_empty
+	type_valid: not type.is_empty
 
 end
 

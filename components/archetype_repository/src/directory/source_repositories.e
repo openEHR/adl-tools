@@ -67,7 +67,7 @@ feature -- Access
 
 feature -- Comparison
 
-	valid_working_repository_path (dir_name: STRING): BOOLEAN
+	valid_working_repository_path (dir_name: attached STRING): BOOLEAN
 			-- Does `dir_name' correspond to a real directory, which is not the same as, or a parent or child of,
 			-- any directory (except the working repository) already used to populate the tree?
 		local
@@ -96,24 +96,24 @@ feature -- Comparison
 
 feature -- Modification
 
-	set_reference_repository (dir_name: STRING)
+	set_reference_repository (dir_name: attached STRING)
 			-- Scan the reference repository at path `dir_name'.
 		require
 			dir_name_valid: directory_exists (dir_name)
 		do
 			create {ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP} reference_repository.make (file_system.canonical_pathname (dir_name), Group_id_reference)
-			repositories.force(reference_repository, reference_repository.group_id)
+			repositories.force (reference_repository, reference_repository.group_id)
 		ensure
 			reference_repository /= Void
 		end
 
-	set_work_repository (dir_name: STRING)
+	set_work_repository (dir_name: attached STRING)
 			-- Scan the work repository at path `dir_name'.
 		require
 			dir_name_valid: valid_working_repository_path (dir_name)
 		do
 			create {ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP} work_repository.make (file_system.canonical_pathname (dir_name), Group_id_work)
-			repositories.force(work_repository, work_repository.group_id)
+			repositories.force (work_repository, work_repository.group_id)
 		ensure
 			work_repository /= Void
 		end
@@ -121,8 +121,8 @@ feature -- Modification
 	remove_work_repository
 			-- remove work repository from the surce repositories
 		do
-			if repositories.has(Group_id_work) then
-				repositories.remove(Group_id_work)
+			if repositories.has (Group_id_work) then
+				repositories.remove (Group_id_work)
 				work_repository := Void
 			end
 		end
@@ -130,9 +130,7 @@ feature -- Modification
 invariant
 	adhoc_source_repository_group_id: adhoc_source_repository.group_id = 1
 	repositories_group_ids: repositories.for_all (agent (repository: attached ARCHETYPE_INDEXED_REPOSITORY_I): BOOLEAN
-		do
-			Result := repository.group_id > 1
-		end)
+		do Result := repository.group_id > 1 end)
 
 end
 

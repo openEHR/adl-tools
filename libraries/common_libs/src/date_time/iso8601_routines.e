@@ -146,10 +146,8 @@ feature -- Validity
 			Result := iso8601_parser.valid_iso8601_date_time(str)
 		end
 
-	valid_iso8601_duration(str: STRING): BOOLEAN
+	valid_iso8601_duration(str: attached STRING): BOOLEAN
 			-- True if string in form "PnDTnHnMnS"
-		require
-			str /= Void
 		do
 			Result := iso8601_parser.valid_iso8601_duration(str)
 		end

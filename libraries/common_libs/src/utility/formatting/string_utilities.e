@@ -21,24 +21,44 @@ feature -- Definitions
 
 feature -- Conversion
 
-	atomic_value_to_string (an_atomic_val: ANY): STRING
+	primitive_value_to_dadl_string (a_prim_val: attached ANY): STRING
+			-- generate a string, including dADL delimiters, e.g. "", '' for strings and chars.
 		do
-			if attached {STRING_GENERAL} an_atomic_val then
-				Result := "%"" + an_atomic_val.out + "%""
-			elseif attached {CHARACTER} an_atomic_val or attached {CHARACTER_32} an_atomic_val then
-				Result := "%'" + an_atomic_val.out + "%'"
+			if attached {STRING_GENERAL} a_prim_val then
+				Result := "%"" + a_prim_val.out + "%""
+			elseif attached {CHARACTER} a_prim_val or attached {CHARACTER_32} a_prim_val then
+				Result := "%'" + a_prim_val.out + "%'"
+			elseif attached {CODE_PHRASE} a_prim_val then
+				Result := "[" + a_prim_val.out + "]"
 			else
 				-- FIXME: duration.out does not exist in Eiffel, and in any case would not be ISO8601-compliant
-				if attached {DATE_TIME_DURATION} an_atomic_val as a_dur then
+				if attached {DATE_TIME_DURATION} a_prim_val as a_dur then
 					Result := (create {ISO8601_DURATION}.make_date_time_duration(a_dur)).as_string
-				elseif attached {DATE_TIME} an_atomic_val as a_dt then
+				elseif attached {DATE_TIME} a_prim_val as a_dt then
 					Result := (create {ISO8601_DATE_TIME}.make_date_time(a_dt)).as_string
 				else
-					Result := an_atomic_val.out
+					Result := a_prim_val.out
 					-- FIXME: REAL.out is broken (still the case in Eiffel 6.6)
-					if (attached {REAL_32} an_atomic_val or attached {REAL_64} an_atomic_val) and then Result.index_of ('.', 1) = 0 then
+					if (attached {REAL_32} a_prim_val or attached {REAL_64} a_prim_val) and then Result.index_of ('.', 1) = 0 then
 						Result.append(".0")
 					end
+				end
+			end
+		end
+
+	primitive_value_to_simple_string (a_prim_val: attached ANY): STRING
+			-- generate a basic string
+		do
+			-- FIXME: duration.out does not exist in Eiffel, and in any case would not be ISO8601-compliant
+			if attached {DATE_TIME_DURATION} a_prim_val as a_dur then
+				Result := (create {ISO8601_DURATION}.make_date_time_duration(a_dur)).as_string
+			elseif attached {DATE_TIME} a_prim_val as a_dt then
+				Result := (create {ISO8601_DATE_TIME}.make_date_time(a_dt)).as_string
+			else
+				Result := a_prim_val.out
+				-- FIXME: REAL.out is broken (still the case in Eiffel 6.6)
+				if (attached {REAL_32} a_prim_val or attached {REAL_64} a_prim_val) and then Result.index_of ('.', 1) = 0 then
+					Result.append(".0")
 				end
 			end
 		end
@@ -128,39 +148,41 @@ feature -- Element Change
 			Result_exists: Result /= Void
 		end
 
-	indented (s, indent: STRING): STRING
+	indented (s, indent: attached STRING): attached STRING
 			-- indent every line in 's' by 'indent' and return result
-		require
-			String_exists: s /= Void
-			Indent_exists: indent /= Void
 		local
-			insert_str: STRING
-			final_return: BOOLEAN
+			indent_str: STRING
+			tail_return_count: INTEGER
 		do
-			Result := s.twin
-			create insert_str.make(0)
-			insert_str.append(indent)
+			if not indent.is_empty then
+				create Result.make (s.count)
 
-			-- indent first line
-			Result.prepend(insert_str)
+				-- indent first line
+				Result.append(indent)
 
-			if not Result.is_empty then
-				-- if last character is a %N, remove it for the moment
-				if Result.item(Result.count).is_equal('%N') then
-					Result.keep_head(Result.count - 1)
-					final_return := True
+				-- add the contents
+				Result.append(s)
+
+				-- create the indent string
+				create indent_str.make(1 + indent.count)
+				indent_str.append_character('%N')
+				indent_str.append(indent)
+
+				-- temporarily remove final %N chars
+				from until Result.item(Result.count) /= '%N' or else Result.is_empty loop
+					Result.remove_tail (1)
+					tail_return_count := tail_return_count + 1
 				end
 
-				-- no indent all intervening lines
-				insert_str.prepend("%N")
-				Result.replace_substring_all("%N", insert_str)
+				-- now indent all intervening lines
+				Result.replace_substring_all("%N", indent_str)
 
-				if final_return then
-					Result.append_character('%N')
+				if tail_return_count > 0 then
+					Result.append(create {STRING}.make_filled('%N', tail_return_count))
 				end
+			else
+				Result := s
 			end
-		ensure
-			Result_exists: Result /= Void
 		end
 
 feature -- Unicode

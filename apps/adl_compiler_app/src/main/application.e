@@ -23,7 +23,7 @@ feature -- Initialization
 	make
 			-- Run application.
 		local
-			rep_profiles: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
+			rep_profiles: attached REPOSITORY_PROFILE_CONFIG
 			new_prof: STRING
 		do
 			app_root.initialise
@@ -36,20 +36,21 @@ feature -- Initialization
 						print(rep_profiles.key_for_iteration + "%N")
 						rep_profiles.forth
 					end
-					if app_root.current_repository_profile.is_empty then
+					if app_root.repository_profiles.is_empty then
 						rep_profiles.start
 						new_prof := rep_profiles.key_for_iteration
 					else
-						new_prof := app_root.current_repository_profile
+						new_prof := app_root.repository_profiles.current_profile_name
 					end
-					app_root.set_current_repository_profile (new_prof)
+					app_root.repository_profiles.set_current_profile_name (new_prof)
 
-					print ("Populating repository " + app_root.current_repository_profile + "...")
-					app_root.use_current_profile
+					print ("Populating repository " + app_root.repository_profiles.current_profile_name + "...")
+					app_root.use_current_profile(False)
 					print ("complete%N")
 
 					print("Doing complete build on current profile%N")
-					app_root.archetype_compiler.set_visual_update_action (agent build_ui_update)
+					app_root.archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
+					app_root.archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
 					app_root.archetype_compiler.build_all
 				else
 					print("No repository profiles found; add entries to .cfg file for current_repository_profile and [profiles] section%N")
@@ -59,10 +60,16 @@ feature -- Initialization
 			end
 		end
 
-	build_ui_update (ara: ARCH_REP_ARCHETYPE)
+	compiler_global_gui_update (msg: attached STRING)
 			-- Update UI with progress on build.
 		do
-			print (archetype_compiler.status)
+			print (msg)
+		end
+
+	compiler_archetype_gui_update (msg: attached STRING; ara: ARCH_REP_ARCHETYPE; depth: INTEGER)
+			-- Update UI with progress on build.
+		do
+			print (msg)
 		end
 
 end

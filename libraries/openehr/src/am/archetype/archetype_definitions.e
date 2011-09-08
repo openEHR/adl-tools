@@ -5,7 +5,7 @@ note
 				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2006-2009 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -18,23 +18,42 @@ class ARCHETYPE_DEFINITIONS
 
 feature -- Definitions
 
-	Archetype_native_syntax: STRING = "adl"
+	Syntax_type_adl: STRING = "adl"
 			-- Name of native ADL syntax type.
 
-	Archetype_web_syntax: STRING = "html"
+	Syntax_type_adl_html: STRING = "html"
 			-- Name of web publishing syntax type.
 
-	Archetype_web_page_extension: STRING = ".html"
-			-- Extension of web publishing syntax type.
+	Syntax_type_dadl: STRING = "dadl"
+			-- Name of native dADL syntax type.
 
-	archetype_legacy_file_extension: STRING = ".adl"
-			-- Extension for legacy flat form archetype files.
+	Syntax_type_xml: STRING = "xml"
+			-- Name of XML syntax type.
 
-	archetype_flat_file_extension: STRING = ".adlf"
-			-- Extension for legacy flat form archetype files.
+	File_ext_archetype_web_page: STRING = ".html"
+			-- Extension of web page containing ADL syntax
 
-	Archetype_source_file_extension: STRING = ".adls"
-			-- Extension for source form (differential) archetype files.
+	File_ext_archetype_adl14: STRING = ".adl"
+			-- Extension for legacy flat form archetype files in ADL 1.4 syntax
+
+	File_ext_archetype_flat: STRING = ".adlf"
+			-- Extension for legacy flat form archetype files in ADL syntax
+
+	File_ext_archetype_source: STRING = ".adls"
+			-- Extension for source form (differential) archetype files in ADL 1.5 syntax
+
+	File_ext_archetype_adl_diff: STRING = ".adlx"
+			-- Extension for use with source/flat diff; we don't want to use
+			-- the legitimate extension on these files because one is source
+			-- and one is flat, and diff tools need to see the same extension;
+			-- also we don't want users to get confused about what kind of files
+			-- these are
+
+	File_ext_dadl: STRING = ".dadl"
+			-- Default extension for dADL format files that don't have some other extension
+
+	File_ext_xml_default: STRING = ".xml"
+			-- Default extension for XML format archetype files that don't have some other extension
 
 	Adl_versions: ARRAYED_LIST [STRING]
 			-- list of ADL versions known in this tool
@@ -50,6 +69,21 @@ feature -- Definitions
 			-- return current latest known ADL version in this tool
 		once
 			Result := Adl_versions.last
+		end
+
+feature -- Comparison
+
+	valid_adl_version (a_ver: attached STRING): BOOLEAN
+			-- set adl_version with a string containing only '.' and numbers,
+			-- not commencing or finishing in '.'
+		require
+			Valid_string: not a_ver.is_empty
+		local
+			str: STRING
+		do
+			str := a_ver.twin
+			str.prune_all ('.')
+			Result := str.is_integer and a_ver.item(1) /= '.' and a_ver.item (a_ver.count) /= '.'
 		end
 
 end

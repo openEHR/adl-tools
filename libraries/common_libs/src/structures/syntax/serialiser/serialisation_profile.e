@@ -1,10 +1,10 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "Abstract model of serialisation profile"
-	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	keywords:    "serialisation, ADL"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -26,10 +26,10 @@ inherit
 
 feature -- Initialisation
 
-	make(an_output_format: STRING)
+	make (an_output_format: attached STRING)
 			-- make with the output format name this serialiser is to be associated with
 		require
-			an_output_format_valid: an_output_format /= Void and then not an_output_format.is_empty
+			an_output_format_valid: not an_output_format.is_empty
 		do
 			output_format := an_output_format
 		end
@@ -41,70 +41,55 @@ feature {ANY_SERIALISER} -- Access
 			-- associated with, usually "adl", "xml", "html" etc; needed to allow
 			-- embedded dADL in cADL and vice-versa to be serialised
 
-	symbols: HASH_TABLE[STRING, INTEGER]
+	symbols: attached HASH_TABLE[STRING, INTEGER]
 			-- keywords in this format, keyed by logical name
 		deferred
-		ensure
-			Result_exists: Result /= Void
 		end
 
-	tags: HASH_TABLE[STRING, INTEGER]
+	tags: attached HASH_TABLE[STRING, INTEGER]
 			-- keywords in this format, keyed by logical name
 		deferred
-		ensure
-			Result_exists: Result /= Void
 		end
 
-	format_items: HASH_TABLE[STRING, INTEGER]
+	format_items: attached HASH_TABLE[STRING, INTEGER]
 			-- formatting items
 		deferred
-		ensure
-			Result_exists: Result /= Void
 		end
 
-	styles: HASH_TABLE[STRING, INTEGER]
+	styles: attached HASH_TABLE[STRING, INTEGER]
 			-- styles in this format, keyed by logical name
 		deferred
-		ensure
-			Result_exists: Result /= Void
 		end
 
 feature  {ANY_SERIALISER} -- Factory
 
-	apply_style (elem: STRING; a_style: INTEGER): STRING
+	apply_style (elem: attached STRING; a_style: INTEGER): attached STRING
 			-- apply `a_style' to `elem', using attr 'class'
 		require
-			Elem_exists: elem /= Void
 			A_style_valid: styles.has(a_style)
 		deferred
 		end
 
-	create_indent (indent_level: INTEGER): STRING
+	create_indent (indent_level: INTEGER): attached STRING
 		require
 			indent_level >= 0
 		local
 			i: INTEGER
 		do
 			create Result.make(0)
-			from
-				i := 1
-			until
-				i > indent_level
-			loop
+			from i := 1 until i > indent_level loop
 				Result.append(format_items.item(FMT_INDENT))
 				i := i + 1
 			end
 		end
 
-	clean (str: STRING): STRING
+	clean (str: attached STRING): attached STRING
 			-- generate clean copy of `str' by inserting \ quoting for chars in `quoted_chars' not already quoted in `str':
 			-- find all instances of '\' and '"' that are not already being used in the quote patterns, e.g. like:
 			--	\n, \r, \t, \\, \", \'
 			-- and convert
 			--	\ to \\
 			-- 	" to \"
-		require
-			String_attached: str /= Void
 		do
 			if not str.is_empty then
 				Result := quote_clean(str)

@@ -37,7 +37,6 @@ create
 	make_bounded,
 	make_lower_unbounded,
 	make_upper_unbounded,
-	make_from_canonical_string,
 	make_from_string
 
 feature -- Initialization
@@ -46,55 +45,11 @@ feature -- Initialization
 		do
 		end
 
-	make_from_canonical_string (str: STRING)
-			-- create from a STRING of the form
-			-- "<lower>" + value + "</lower>"
-			-- "<upper>" + value + "</upper>"
-			-- where 'value' = "unbounded" for an open limit
-		local
-			s: STRING
-		do
-			s := xml_extract_from_tags(str, "lower", 1)
-			if not s.is_equal("unbounded") then
-			--	create lower.make_from_canonical_string(s)		
-			end
-			s := xml_extract_from_tags(str, "upper", 1)
-			if not s.is_equal("unbounded") then
-			--	create upper.make_from_canonical_string(s)		
-			end
-		end
-
-feature -- Status Report
-
-	valid_canonical_string(str: STRING): BOOLEAN
-			-- True if str contains required tags
-		do
-			Result := xml_has_tag(str, "lower", 1) and xml_has_tag(str, "upper", 1)
-		end
-
 feature -- Conversion
 
 	as_string: STRING
 		do
 			Result := lower.as_string + ".." + upper.as_string
-		end
-
-	as_canonical_string: STRING
-			-- output as a STRING of the form
-			-- "<lower>" + value + "</lower>"
-			-- "<upper>" + value + "</upper>"
-		do
-			create Result.make(0)
-			if lower_unbounded then
-				Result.append("<lower>" + "unbounded" + "</lower>")
-			else
-				Result.append("<lower>" + lower.as_canonical_string + "</lower>")
-			end
-			if upper_unbounded then
-				Result.append("<upper>" + "unbounded" + "</upper>")
-			else
-				Result.append("<upper>" + upper.as_canonical_string + "</upper>")
-			end
 		end
 
 invariant

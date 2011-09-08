@@ -51,7 +51,7 @@ feature -- Initialisation
 			Any_allowed: any_allowed
 		end
 
-	make_dt
+	make_dt (make_args: ARRAY[ANY])
 			-- make used by DT_OBJECT_CONVERTER
 		do
 			make
@@ -84,7 +84,7 @@ feature -- Conversion
 
 feature -- Representation
 
-	representation: attached OG_OBJECT_LEAF
+	representation: OG_OBJECT_LEAF
 
 feature -- Synchronisation
 
@@ -93,7 +93,7 @@ feature -- Synchronisation
 		do
 			precursor
 			dt_representation.set_type_visible
-			if node_id = Void or node_id.is_empty then
+			if node_id = Void or else node_id.is_empty then
 				if dt_representation.has_attribute ("node_id") then
 					dt_representation.remove_attribute ("node_id")
 				end

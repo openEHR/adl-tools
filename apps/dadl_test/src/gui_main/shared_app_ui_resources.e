@@ -23,124 +23,23 @@ feature -- Application Switches
 			-- from GUI open and save buttons; automatic opens (due to clicking
 			-- on archetype name) still use main repository directory.
 		do
-			Result := resource_value ("default", "current_work_directory")
+			Result := app_cfg.string_value ("/file_system/current_work_directory")
+		end
+
+	set_current_work_directory (a_path: attached STRING)
+			-- set the directory where archetypes are currently being opened and saved.
+		do
+			if not a_path.is_empty then
+				app_cfg.put_value ("/file_system/current_work_directory", a_path)
+			else
+				app_cfg.remove_resource ("/file_system/current_work_directory")
+			end
 		end
 
 	app_width: INTEGER
 			-- application width
-		local
-			str: STRING
 		do
-			str := resource_value("default", "app_width")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	app_height: INTEGER
-			-- application height
-		local
-			str: STRING
-		do
-			str := resource_value("default", "app_height")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	app_x_position: INTEGER
-			-- application horizontal position
-		local
-			str: STRING
-		do
-			str := resource_value("default", "app_x_position")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	app_y_position: INTEGER
-			-- application vertical position
-		local
-			str: STRING
-		do
-			str := resource_value("default", "app_y_position")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	app_maximised: BOOLEAN
-			-- True if app should be maximised
-		local
-			str: STRING
-		do
-			str := resource_value("default", "app_maximised")
-			if str.is_boolean then
-				Result := str.to_boolean
-			end
-		end
-
-	editor_command: attached STRING
-			-- Path of editor application for ADL files.
-		do
-			Result := substitute_env_vars (resource_value ("default", "editor"))
-		end
-
-	main_notebook_tab_pos: INTEGER
-			-- which tab of the main notebook was visible at the end of the last session
-		local
-			str: STRING
-		do
-			str := resource_value("default", "main_notebook_tab_pos")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	explorer_split_position: INTEGER
-			-- Split position of explorer horizontal split control.
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "explorer_split_position")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	main_split_position: INTEGER
-			-- Split position of main vertical split control.
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "main_split_position")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-feature -- Application Switch Setting
-
-	set_current_work_directory (a_path: STRING)
-			-- set the directory where archetypes are currently being opened and saved.
-		require
-			a_path_attached: a_path /= Void
-		do
-			if not a_path.is_empty then
-				set_resource_value ("default", "current_work_directory", a_path)
-			else
-				remove_resource ("default", "current_work_directory")
-			end
-		end
-
-	set_editor_command (value: STRING)
-			-- set editor
-		require
-			value_attached: value /= Void
-			value_not_empty: not value.is_empty
-		do
-			set_resource_value("default", "editor", value)
+			Result := app_cfg.integer_value ("/gui/app_width")
 		end
 
 	set_app_width (v: INTEGER)
@@ -148,7 +47,13 @@ feature -- Application Switch Setting
 		require
 			v > 0
 		do
-			set_resource_value("default", "app_width", v.out)
+			app_cfg.put_value ("/gui/app_width", v)
+		end
+
+	app_height: INTEGER
+			-- application height
+		do
+			Result := app_cfg.integer_value ("/gui/app_height")
 		end
 
 	set_app_height (v: INTEGER)
@@ -156,41 +61,49 @@ feature -- Application Switch Setting
 		require
 			v > 0
 		do
-			set_resource_value("default", "app_height", v.out)
+			app_cfg.put_value ("/gui/app_height", v)
+		end
+
+	app_x_position: INTEGER
+			-- application horizontal position
+		do
+			Result := app_cfg.integer_value ("/gui/app_x_position")
 		end
 
 	set_app_x_position (v: INTEGER)
 			-- set app x position
 		do
-			set_resource_value("default", "app_x_position", v.out)
+			app_cfg.put_value ("/gui/app_x_position", v)
+		end
+
+	app_y_position: INTEGER
+			-- application vertical position
+		do
+			Result := app_cfg.integer_value ("/gui/app_y_position")
 		end
 
 	set_app_y_position (v: INTEGER)
 			-- set app y position
 		do
-			set_resource_value("default", "app_y_position", v.out)
+			app_cfg.put_value ("/gui/app_y_position", v)
 		end
 
-	set_app_maximised (f: BOOLEAN)
+	app_maximised: BOOLEAN
+			-- True if app should be maximised
+		do
+			Result := app_cfg.boolean_value ("/gui/app_maximised")
+		end
+
+	set_app_maximised (flag: BOOLEAN)
 			-- set app maximised flag
 		do
-			set_resource_value("default", "app_maximised", f.out)
+			app_cfg.put_value("/gui/app_maximised", flag)
 		end
 
-	set_explorer_split_position (v: INTEGER)
-			-- Set split position of explorer horizontal split control.
-		require
-			v > 0
+	main_notebook_tab_pos: INTEGER
+			-- which tab of the main notebook was visible at the end of the last session
 		do
-			set_resource_value ("default", "explorer_split_position", v.out)
-		end
-
-	set_main_split_position (v: INTEGER)
-			-- Set split position of main vertical split control.
-		require
-			v > 0
-		do
-			set_resource_value ("default", "main_split_position", v.out)
+			Result := app_cfg.integer_value ("/gui/main_notebook_tab_pos")
 		end
 
 	set_main_notebook_tab_pos(a_tab_pos: INTEGER)
@@ -198,7 +111,49 @@ feature -- Application Switch Setting
 		require
 			a_tab_pos_valid: a_tab_pos > 0
 		do
-			set_resource_value("default", "main_notebook_tab_pos", a_tab_pos.out)
+			app_cfg.put_value("/gui/main_notebook_tab_pos", a_tab_pos)
+		end
+
+	explorer_split_position: INTEGER
+			-- Split position of explorer horizontal split control.
+		do
+			Result := app_cfg.integer_value ("/gui/explorer_split_position")
+		end
+
+	set_explorer_split_position (v: INTEGER)
+			-- Set split position of explorer horizontal split control.
+		require
+			v > 0
+		do
+			app_cfg.put_value ("/gui/explorer_split_position", v)
+		end
+
+	main_split_position: INTEGER
+			-- Split position of explorer horizontal split control.
+		do
+			Result := app_cfg.integer_value ("/gui/main_split_position")
+		end
+
+	set_main_split_position (v: INTEGER)
+			-- Set split position of explorer horizontal split control.
+		require
+			v > 0
+		do
+			app_cfg.put_value ("/gui/main_split_position", v)
+		end
+
+	text_editor_command: attached STRING
+			-- Path of editor application for ADL files.
+		do
+			Result := app_cfg.string_value_env_var_sub ("/commands/text_editor_command")
+		end
+
+	set_text_editor_command (a_value: attached STRING)
+			-- set editor
+		require
+			value_not_empty: not a_value.is_empty
+		do
+			app_cfg.put_value ("/commands/text_editor_command", a_value)
 		end
 
 end

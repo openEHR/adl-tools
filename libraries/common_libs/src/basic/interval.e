@@ -40,7 +40,7 @@ create
 	make_upper_unbounded,
 	make_unbounded,
 	make_point,
-	make_from_other
+	make
 
 feature -- Initialization
 
@@ -53,10 +53,8 @@ feature -- Initialization
 			unbounded: lower_unbounded and upper_unbounded
 		end
 
-	make_point (a_value: G)
+	make_point (a_value: attached G)
 			-- make with both limits set to the same value
-		require
-			Value_exists: a_value /= Void
 		do
 			lower := a_value
 			upper := a_value
@@ -70,11 +68,9 @@ feature -- Initialization
 			Is_point: is_point
 		end
 
-	make_bounded (a_lower, an_upper: G; lower_included_flag, upper_included_flag: BOOLEAN)
+	make_bounded (a_lower, an_upper: attached G; lower_included_flag, upper_included_flag: BOOLEAN)
 			-- make with both limits set
 		require
-			Lower_exists: a_lower /= Void
-			Upper_exists: an_upper /= Void
 			Valid_order: a_lower <= an_upper
 		do
 			lower := a_lower
@@ -88,11 +84,9 @@ feature -- Initialization
 			upper_included_set: upper_included = upper_included_flag
 		end
 
-	make_bounded_included (a_lower, an_upper: G)
+	make_bounded_included (a_lower, an_upper: attached G)
 			-- make with both limits set and included, the most typical situation
 		require
-			Lower_exists: a_lower /= Void
-			Upper_exists: an_upper /= Void
 			Valid_order: a_lower <= an_upper
 		do
 			lower := a_lower
@@ -106,10 +100,8 @@ feature -- Initialization
 			upper_included_set: upper_included
 		end
 
-	make_lower_unbounded (an_upper: G; upper_included_flag: BOOLEAN)
+	make_lower_unbounded (an_upper: attached G; upper_included_flag: BOOLEAN)
 			-- make an interval from -infinity to `an_upper'
-		require
-			Upper_exists: an_upper /= Void
 		do
 			upper := an_upper
 			lower_unbounded := True
@@ -120,10 +112,8 @@ feature -- Initialization
 			upper_included_set: upper_included = upper_included_flag
 		end
 
-	make_upper_unbounded (a_lower: G; lower_included_flag: BOOLEAN)
+	make_upper_unbounded (a_lower: attached G; lower_included_flag: BOOLEAN)
 			-- make an interval from `a_lower' to +infinity
-		require
-			Lower_exists: a_lower /= Void
 		do
 			lower := a_lower
 			upper_unbounded := True
@@ -145,7 +135,7 @@ feature -- Initialization
 			Upper_unbounded: upper_unbounded
 		end
 
-	make_from_other (a_lower, an_upper: G; a_lower_unbounded, an_upper_unbounded, a_lower_included, an_upper_included: BOOLEAN)
+	make (a_lower, an_upper: attached G; a_lower_unbounded, an_upper_unbounded, a_lower_included, an_upper_included: BOOLEAN)
 			-- make from parts of another interval
 		do
 			lower := a_lower
@@ -209,10 +199,8 @@ feature -- Status report
 
 feature -- Comparison
 
-	has (v: G): BOOLEAN
+	has (v: attached G): BOOLEAN
 			-- Does current interval have `v' between its bounds?
-		require
-			exists: v /= Void
 		do
 			Result := (lower_unbounded or ((lower_included and v >= lower) or v > lower)) and
 			(upper_unbounded or ((upper_included and v <= upper or v < upper)))
@@ -222,10 +210,8 @@ feature -- Comparison
 		--	(upper_unbounded or ((upper_included and v <= upper or v < upper)))
 		end
 
-	intersects (other: like Current): BOOLEAN
+	intersects (other: attached like Current): BOOLEAN
 			-- True if there is any overlap between intervals represented by Current and other
-		require
-			exists: other /= Void
 		do
 			Result := unbounded or other.unbounded or
 				(lower_unbounded and (other.lower_unbounded or upper >= other.lower)) or
@@ -233,11 +219,9 @@ feature -- Comparison
 				(upper >= other.lower or lower <= other.upper)
 		end
 
-	contains (other: like Current): BOOLEAN
+	contains (other: attached like Current): BOOLEAN
 			-- Does current interval properly contain `other'? True if at least one limit of other
 			-- is stricly inside the limits of this interval
-		require
-			Other_exists: other /= void
 		do
 			if other.lower_unbounded then
 				if other.upper_unbounded then
@@ -266,10 +250,8 @@ feature -- Comparison
 			end
 		end
 
-	equal_interval (other: like Current): BOOLEAN
+	equal_interval (other: attached like Current): BOOLEAN
 			-- compare two intervals, allows subtypes like MULTIPLICITY_INTERVAL to be compared
-		require
-			other_attached: other /= Void
 		do
 			if lower_unbounded then
 				Result := other.lower_unbounded
@@ -301,28 +283,28 @@ feature -- Output
 			create Result.make(0)
 			if lower_unbounded then
 				if upper_included then
-					Result.append("<=" + atomic_value_to_string(upper))
+					Result.append("<=" + primitive_value_to_simple_string (upper))
 				else
-					Result.append("<" + atomic_value_to_string(upper))
+					Result.append("<" + primitive_value_to_simple_string (upper))
 				end
 			elseif upper_unbounded then
 				if lower_included then
-					Result.append(">=" + atomic_value_to_string(lower))
+					Result.append(">=" + primitive_value_to_simple_string (lower))
 				else
-					Result.append(">" + atomic_value_to_string(lower))
+					Result.append(">" + primitive_value_to_simple_string (lower))
 				end
 			elseif not limits_equal then
 				if lower_included and upper_included then
-					Result.append(atomic_value_to_string(lower) + ".." + atomic_value_to_string(upper))
+					Result.append(primitive_value_to_simple_string (lower) + ".." + primitive_value_to_simple_string (upper))
 				elseif lower_included then
-					Result.append(atomic_value_to_string(lower) + "..<" + atomic_value_to_string(upper))
+					Result.append(primitive_value_to_simple_string (lower) + "..<" + primitive_value_to_simple_string (upper))
 				elseif upper_included then
-					Result.append(">" + atomic_value_to_string(lower) + ".." + atomic_value_to_string(upper))
+					Result.append(">" + primitive_value_to_simple_string (lower) + ".." + primitive_value_to_simple_string (upper))
 				else
-					Result.append(">" + atomic_value_to_string(lower) + "..<" + atomic_value_to_string(upper))
+					Result.append(">" + primitive_value_to_simple_string (lower) + "..<" + primitive_value_to_simple_string (upper))
 				end
 			else
-				Result.append(atomic_value_to_string(lower))
+				Result.append(primitive_value_to_dadl_string(lower))
 			end
 		end
 

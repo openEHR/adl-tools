@@ -2,9 +2,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "cADL serialisers"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -38,17 +38,19 @@ feature -- Initialisation
 
 	initialise_serialisers
 		once
-			archetype_serialisers.put(create {ADL_SYNTAX_SERIALISER}.make(create {NATIVE_ADL_SERIALISATION_PROFILE}.make(Archetype_native_syntax)), Archetype_native_syntax)
-			archetype_serialisers.put(create {ADL_SYNTAX_SERIALISER}.make(create {HTML_ADL_SERIALISATION_PROFILE}.make(Archetype_web_syntax)), Archetype_web_syntax)
+			archetype_serialisers.put (create {ARCHETYPE_ADL_SERIALISER}.make(create {NATIVE_ADL_SERIALISATION_PROFILE}.make(Syntax_type_adl)), Syntax_type_adl)
+			archetype_serialisers.put (create {ARCHETYPE_ADL_SERIALISER}.make(create {HTML_ADL_SERIALISATION_PROFILE}.make(Syntax_type_adl_html)), Syntax_type_adl_html)
 
-			c_serialisers.put(create {CADL_SYNTAX_SERIALISER}.make(create {NATIVE_CADL_SERIALISATION_PROFILE}.make(Archetype_native_syntax)), Archetype_native_syntax)
-			c_serialisers.put(create {CADL_SYNTAX_SERIALISER}.make(create {HTML_CADL_SERIALISATION_PROFILE}.make(Archetype_web_syntax)), Archetype_web_syntax)
+			c_serialisers.put (create {CADL_SYNTAX_SERIALISER}.make(create {NATIVE_CADL_SERIALISATION_PROFILE}.make(Syntax_type_adl)), Syntax_type_adl)
+			c_serialisers.put (create {CADL_SYNTAX_SERIALISER}.make(create {HTML_CADL_SERIALISATION_PROFILE}.make(Syntax_type_adl_html)), Syntax_type_adl_html)
 
-			assertion_serialisers.put(create {ASSERTION_SYNTAX_SERIALISER}.make(create {NATIVE_CADL_SERIALISATION_PROFILE}.make(Archetype_native_syntax)), Archetype_native_syntax)
-			assertion_serialisers.put(create {ASSERTION_SYNTAX_SERIALISER}.make(create {HTML_CADL_SERIALISATION_PROFILE}.make(Archetype_web_syntax)), Archetype_web_syntax)
+			assertion_serialisers.put (create {ASSERTION_SYNTAX_SERIALISER}.make(create {NATIVE_CADL_SERIALISATION_PROFILE}.make(Syntax_type_adl)), Syntax_type_adl)
+			assertion_serialisers.put (create {ASSERTION_SYNTAX_SERIALISER}.make(create {HTML_CADL_SERIALISATION_PROFILE}.make(Syntax_type_adl_html)), Syntax_type_adl_html)
 
-			dt_serialisers.put(create {DADL_SYNTAX_SERIALISER}.make(create {NATIVE_DADL_SERIALISATION_PROFILE}.make(Archetype_native_syntax)), Archetype_native_syntax)
-			dt_serialisers.put(create {DADL_SYNTAX_SERIALISER}.make(create {HTML_DADL_SERIALISATION_PROFILE}.make(Archetype_web_syntax)), Archetype_web_syntax)
+			dt_serialisers.put (create {DT_DADL_SERIALISER}.make(create {NATIVE_DADL_SERIALISATION_PROFILE}.make(Syntax_type_dadl)), Syntax_type_dadl)
+			dt_serialisers.put (create {DT_DADL_SERIALISER}.make(create {NATIVE_DADL_SERIALISATION_PROFILE}.make(Syntax_type_adl)), Syntax_type_adl)
+			dt_serialisers.put (create {DT_DADL_SERIALISER}.make(create {HTML_DADL_SERIALISATION_PROFILE}.make(Syntax_type_adl_html)), Syntax_type_adl_html)
+			dt_serialisers.put (create {DT_XML_SERIALISER}.make(create {XML_DT_SERIALISATION_PROFILE}.make(Syntax_type_xml)), Syntax_type_xml)
 		end
 
 feature -- Access
@@ -64,13 +66,10 @@ feature -- Access
 			end
 		ensure
 			not_empty: not Result.is_empty
-			each_format_has_file_extension: Result.for_all (agent (format: STRING): BOOLEAN
-				do
-					Result := archetype_file_extensions.has (format)
-				end)
+			each_format_has_file_extension: Result.for_all (agent (format: STRING): BOOLEAN do Result := archetype_file_extensions.has (format) end)
 		end
 
-	archetype_serialiser_for_format (a_format: attached STRING): attached ARCHETYPE_SERIALISER
+	archetype_serialiser_for_format (a_format: attached STRING): attached ARCHETYPE_MULTIPART_SERIALISER
 			-- The archetype serialiser for `a_format'.
 		require
 			format_valid: has_archetype_serialiser_format (a_format)
@@ -82,10 +81,9 @@ feature -- Access
 			-- File extensions for logical serialisation formats.
 		once
 			create Result.make (0)
-			Result.put (archetype_source_file_extension, archetype_native_syntax)
-			Result.put (".html", "html")
-			Result.put (".xml", "xml")
-			Result.put (".owl", "owl")
+			Result.put (File_ext_archetype_source, Syntax_type_adl)
+			Result.put (File_ext_archetype_web_page, Syntax_type_adl_html)
+			Result.put (File_ext_xml_default, Syntax_type_xml)
 		ensure
 			not_empty: not Result.is_empty
 		end
@@ -100,7 +98,7 @@ feature -- Status Report
 
 feature {NONE} -- Implementation
 
-	archetype_serialisers: attached HASH_TABLE [ARCHETYPE_SERIALISER, STRING]
+	archetype_serialisers: attached HASH_TABLE [ARCHETYPE_MULTIPART_SERIALISER, STRING]
 			-- The supported archetype serialisers.
 		once
 			create Result.make (0)

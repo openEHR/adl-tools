@@ -14,8 +14,8 @@ note
 				 ]"
 	keywords:    "object graph, recursive iterator"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003,2004 Ocean Informatics Pty Ltd"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -29,60 +29,43 @@ create
 
 feature -- Initialisation
 
-	make(a_target: OG_OBJECT_NODE)
-		require
-			a_target /= Void
+	make (a_target: attached OG_OBJECT_NODE)
 		do
 			target := a_target
 		end
 
 feature -- Access
 
-	target: OG_OBJECT_NODE
+	target: attached OG_OBJECT_NODE
 
 feature -- Traversal
 
-	do_all(node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]])
+	do_all (node_enter_action, node_exit_action: attached PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]])
 			-- do enter_action and exit_action to all nodes in the structure
-		require
-			Enter_action_valid: node_enter_action /= Void
-			Exit_action_valid: node_exit_action /= Void
 		do
 			depth := 0
-			do_all_nodes(target, node_enter_action, node_exit_action)
+			do_all_nodes (target, node_enter_action, node_exit_action)
 		end
 
-	do_at_surface(node_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]; node_is_included: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN])
+	do_at_surface (node_action: attached PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]; node_is_included: attached FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN])
 			-- Do action only to nodes at surface, where membership is defined by `node_is_included'.
-		require
-			Node_action_valid: node_action /= Void
-			Surface_test_action_valid: node_is_included /= Void
 		do
 			do_at_surface_nodes(target, node_action, node_is_included)
 		end
 
-	do_until_surface(node_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]; node_is_included: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN])
+	do_until_surface (node_action: attached PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]; node_is_included: attached FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN])
 			-- Do action only to nodes from top until surface (inclusive), where membership is defined by `node_is_included'.
-		require
-			Node_action_valid: node_action /= Void
-			Surface_test_action_valid: node_is_included /= Void
 		do
 			do_until_surface_nodes(target, node_action, node_is_included)
 		end
 
 feature {NONE} -- Implementation
 
-	do_all_nodes(a_target: OG_NODE; node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]])
-		require
-			Target_exists: a_target /= Void
+	do_all_nodes (a_target: attached OG_NODE; node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]])
 		do
 			depth := depth + 1
 			node_enter_action.call([a_target, depth])
-			from
-				a_target.start
-			until
-				a_target.off
-			loop
+			from a_target.start until a_target.off loop
 				if attached {OG_NODE} a_target.item_for_iteration as a_node then
 					do_all_nodes(a_node, node_enter_action, node_exit_action)
 				else -- terminal child node
@@ -95,10 +78,8 @@ feature {NONE} -- Implementation
 			depth := depth - 1
 		end
 
-	do_at_surface_nodes(a_target: OG_NODE; node_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]; node_is_at_surface: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN])
+	do_at_surface_nodes (a_target: attached OG_NODE; node_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]; node_is_at_surface: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN])
 			-- Do action only to nodes at surface, where membership is defined by `node_is_at_surface'.
-		require
-			Target_exists: a_target /= Void
 		do
 			if node_is_at_surface.item([a_target]) then
 				node_action.call([a_target, 0])
@@ -118,10 +99,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	do_until_surface_nodes(a_target: OG_NODE; node_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]; node_is_included: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN])
+	do_until_surface_nodes (a_target: attached OG_NODE; node_action: PROCEDURE[ANY, TUPLE[OG_ITEM, INTEGER]]; node_is_included: FUNCTION[ANY, TUPLE[OG_ITEM], BOOLEAN])
 			-- Do action only to nodes from top down to surface, where membership is defined by `node_is_included'.
-		require
-			Target_exists: a_target /= Void
 		do
 			if node_is_included.item([a_target]) then
 				node_action.call([a_target, 0])
@@ -142,9 +121,6 @@ feature {NONE} -- Implementation
 
 	depth: INTEGER
 
-invariant
-	target_exists: target /= Void
-
 end
 
 
@@ -162,10 +138,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is cadl_tree_iterator.e.
+--| The Original Code is og_iterator.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2003-2011
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

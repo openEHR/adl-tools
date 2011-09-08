@@ -30,36 +30,25 @@ create
 
 feature -- Initialization
 
-	make(a_value, a_formalism:STRING)
+	make (a_value, a_formalism: attached STRING)
 		require
-			Value_valid: a_value /= Void and then not a_value.is_empty
-			Formalism_valid: a_formalism /= Void and then not a_formalism.is_empty
+			Value_valid: not a_value.is_empty
+			Formalism_valid: not a_formalism.is_empty
 		do
 			value := a_value
 			formalism := a_formalism
 		end
 
-	make_from_string(str:STRING)
-		do
-		end
-
-	make_from_canonical_string(str:STRING)
-		do
-		end
-
-feature -- Status Report
-
-	valid_canonical_string(str: STRING): BOOLEAN
-			-- True if str contains required tags
+	make_from_string (str:STRING)
 		do
 		end
 
 feature -- Access
 
-	value: STRING
+	value: attached STRING
 			-- the string, which may validly be empty in some syntaxes
 
-	formalism: STRING
+	formalism: attached STRING
 			-- name of the formalism, e.g. “GLIF 1.0”, “proforma” etc.
 
 feature -- Output
@@ -69,16 +58,8 @@ feature -- Output
 		do
 		end
 
-	as_canonical_string: STRING
-			-- standardised form of string guaranteed to contain all information
-			-- in data item
-		do
-		end
-
 invariant
-
-	value_exists: value /= Void
-	formalism_exists: formalism /= Void and then not formalism.is_empty
+	formalism_exists: not formalism.is_empty
 
 end
 

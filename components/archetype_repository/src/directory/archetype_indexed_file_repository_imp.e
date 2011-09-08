@@ -31,9 +31,7 @@ feature {NONE} -- Implementation
 			a_dir: DIRECTORY
 			fs_node_names: ARRAYED_LIST [STRING]
 			dir_name_index: SORTED_TWO_WAY_LIST [STRING]
-			ara: ARCH_REP_ARCHETYPE
-			arch_id, parent_arch_id: attached ARCHETYPE_ID
-			a_file: RAW_FILE
+			ara: ARCH_CAT_ARCHETYPE
 			amp: ARCHETYPE_MINI_PARSER
    		do
    			-- generate lists of immediate child directory and archetype file names
@@ -51,37 +49,44 @@ feature {NONE} -- Implementation
 				fs_node_names := a_dir.linear_representation
 				create dir_name_index.make
 
+				-- deal with legacy archetype files and directories first
 				from fs_node_names.start until fs_node_names.off loop
 					fn := fs_node_names.item
-
 					if fn.item (1) /= '.' then
 						l_full_path := file_system.pathname (a_path, fn)
-
-						create a_file.make (l_full_path)
-						if a_file.is_directory then
+						if file_system.directory_exists (l_full_path) then
 							dir_name_index.extend (fn)
-						elseif adl_flat_filename_pattern_regex.matches (fn) or adl_differential_filename_pattern_regex.matches (fn) then
+						elseif adl_legacy_flat_filename_pattern_regex.matches (fn) then
 							-- perform a mini-parse of the file, getting the archetype id, the specialisation status and the specialisation parent
 							amp.parse (l_full_path)
 							if amp.last_parse_valid then
-								if not amp.last_archetype_id_old_style then
-									create arch_id.make_from_string(amp.last_archetype_id)
+								if amp.last_archetype.archetype_id_is_old_style then
+									post_error (Current, "build_directory", "parse_archetype_e7", <<fn, amp.last_archetype.archetype_id.as_string>>)
+								elseif amp.last_archetype.is_specialised and amp.last_archetype.parent_archetype_id_is_old_style then
+									post_error (Current, "build_directory", "parse_archetype_e11", <<fn, amp.last_archetype.parent_archetype_id.as_string>>)
+								else -- create the descriptor and put it into a local Hash for this node
+									create ara.make_legacy (l_full_path, Current, amp.last_archetype)
+									archetype_id_index.force (ara, ara.id.as_string)
+								end
+							else
+								post_error (Current, "build_directory", "general", <<amp.last_parse_fail_reason>>)
+							end
+						end
+					end
+					fs_node_names.forth
+				end
 
-									-- create the descriptor and put it into a local Hash for this node
-									if amp.last_archetype_specialised then
-										if not amp.last_parent_archetype_id_old_style then
-											create parent_arch_id.make_from_string(amp.last_parent_archetype_id)
-											create ara.make_specialised (l_full_path, arch_id, parent_arch_id, Current, amp.last_archetype_artefact_type)
-											insert_descriptor_into_directory (ara)
-										else
-											post_error (Current, "build_directory", "parse_archetype_e11", <<fn, amp.last_parent_archetype_id>>)
-										end
-									else
-										create ara.make (l_full_path, arch_id, Current, amp.last_archetype_artefact_type)
-										insert_descriptor_into_directory (ara)
-									end
-								else
-									post_warning (Current, "build_directory", "parse_archetype_e7", <<fn, amp.last_archetype_id>>)
+				-- deal with differential files; can be generated from legacy, or may be the primary artefact
+				from fs_node_names.start until fs_node_names.off loop
+					fn := fs_node_names.item
+					if fn.item (1) /= '.' then
+						if adl_differential_filename_pattern_regex.matches (fn) then
+							l_full_path := file_system.pathname (a_path, fn)
+							amp.parse (l_full_path)
+							if amp.last_parse_valid then
+								if not archetype_id_index.has (amp.last_archetype.archetype_id.as_string) then
+									create ara.make (l_full_path, Current, amp.last_archetype)
+									archetype_id_index.force (ara, ara.id.as_string)
 								end
 							else
 								post_error (Current, "build_directory", "general", <<amp.last_parse_fail_reason>>)
@@ -102,29 +107,6 @@ feature {NONE} -- Implementation
    				shifter.remove_tail (1)
    				io.put_string(shifter + "<---%N")
    			end
-		end
-
-	insert_descriptor_into_directory (ara: ARCH_REP_ARCHETYPE)
-			-- this function ensures only one of a .adl/.adls pair goes into the repository
-			-- look to see if more recent version of an existing archetype; if so, use it
-		do
-			if not archetype_id_index.has (ara.id.semantic_id) then
-				archetype_id_index.force (ara, ara.id.semantic_id)
-			elseif ara.id.version_number > archetype_id_index.item (ara.id.semantic_id).id.version_number then
-				archetype_id_index.replace (ara, ara.id.semantic_id)
-			end
-		end
-
-	adl_flat_filename_pattern_regex: attached LX_DFA_REGULAR_EXPRESSION
-			-- Pattern matcher for filenames ending in ".adl".
-		once
-			create Result.compile_case_insensitive (".*\" + archetype_legacy_file_extension + "$")
-		end
-
-	adl_differential_filename_pattern_regex: attached LX_DFA_REGULAR_EXPRESSION
-			-- Pattern matcher for filenames ending in ".adls".
-		once
-			create Result.compile_case_insensitive (".*\" + Archetype_source_file_extension + "$")
 		end
 
 	shifter: STRING

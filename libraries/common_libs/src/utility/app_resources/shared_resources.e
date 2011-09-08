@@ -1,11 +1,11 @@
 note
 	component:   "openEHR Reusable Libraries"
-	description: "Shared access to a .ini style configuration file."
+	description: "Shared access to application-wide configuration settings for any Eiffel app, stored in a config file."
 	keywords:    "config, resources"
 
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003-2011 openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -30,73 +30,41 @@ feature -- Definitions
 
 	User_config_file_extension: STRING = ".cfg"
 
-feature {NONE} -- Access
-
-	resource_value (a_category, a_resource_name: STRING): attached STRING
-			-- The value for `a_resource_name', in `a_category', preferably from a command-line option.
-		require
-			Valid_category: a_category /= Void and then not a_category.is_empty
-			Valid_resource_name: a_resource_name /= Void and then not a_resource_name.is_empty
-		do
-			Result := execution_environment.command_line.separate_word_option_value(a_category + ":" + a_resource_name)
-			if Result = Void then
-				Result := resource_config_file.resource_value(a_category, a_resource_name)
-			end
-		end
-
-	resource_value_list (a_category, a_resource_name: STRING): LIST [STRING]
-			-- List of items specified in file setting
-			-- of the form of a comma-separated list.
-		require
-			Valid_category: a_category /= Void and then not a_category.is_empty
-			Valid_resource_name: a_resource_name /= Void and then not a_resource_name.is_empty
-		do
-			Result := resource_config_file.resource_value_list(a_category, a_resource_name)
-		ensure
-			result_attached: attached Result
-			value_comparison: Result.object_comparison
-			no_empty_items: Result.for_all (agent (s: STRING): BOOLEAN do Result := attached s and then not s.is_empty end)
-		end
-
-	resource_category_values (a_category: attached STRING): attached HASH_TABLE [STRING, STRING]
-			-- get all name/value pairs in 'a_category'
-		require
-			Valid_category: not a_category.is_empty
-		do
-			Result := resource_config_file.resource_category_values(a_category)
-		end
-
-	resource_category_lists (a_category: attached STRING): attached HASH_TABLE [ARRAYED_LIST [STRING], STRING]
-			-- get all name/value list pairs in 'category', in a hash, keyed by the resource names
-			--
-			-- [category]
-			-- resource_1=aaa,bbb,ccc
-			-- resource_2=ddd,eee,fff
-			-- ..
-			-- resource_n=ggg,hhh,iii
-			--
-		require
-            Valid_category: not a_category.is_empty
-        do
-			Result := resource_config_file.resource_category_lists(a_category)
-        end
-
-feature -- Access
-
-	error_reporting_level: INTEGER
-			-- Level of error reporting required; see BILLBOARD_MESSAGE_TYPES for levels
-			-- all levels >= the one stored will be displayed; Info is the minimum.
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "status_reporting_level")
-
-			if str.is_integer then
-				Result := str.to_integer
+	Default_editor_app_command: STRING
+			-- An editor application based on operating system.
+		once
+   			if is_windows then
+   				Result := "cmd /q /d /c start %"%" /b"
+			elseif is_mac_os_x then
+				Result := "open"
 			else
-				Result := Error_type_info
-			end
-		end
+   				Result := "vi"
+   			end
+   		end
+
+	Default_text_editor_command: STRING
+			-- A reasonable name of a text editor based on operating system.
+		once
+   			if is_windows then
+   				Result := "Notepad.exe"
+			elseif is_mac_os_x then
+				Result := "open -t"
+			else
+   				Result := "vi"
+   			end
+   		end
+
+	Default_difftool_command: STRING
+			-- A reasonable diff tool based on operating system.
+		once
+   			if is_windows then
+   				-- /e = enable tool to be dismissed with single Esc keystroke, like a dialog
+   				-- /u means don't add any paths to Windows recent paths / places
+   				Result := "%"C:\Program Files\winmerge\winmergeU.exe%" /e /u /f *.*"
+			else
+   				Result := "sdiff"
+   			end
+   		end
 
 feature -- Environment
 
@@ -139,7 +107,7 @@ feature -- Environment
 	user_config_file_path: attached STRING
 			-- Full path to resource configuration file.
 		do
-			Result := file_system.pathname (user_config_file_directory, extension_replaced(application_name, User_config_file_extension))
+			Result := file_system.pathname (user_config_file_directory, extension_replaced (application_name, User_config_file_extension))
 		ensure
 			not_empty: not Result.is_empty
 		end
@@ -182,7 +150,7 @@ feature -- Environment
 		once
 			path := file_system.string_to_pathname (file_system.absolute_pathname (execution_environment.command_line.command_name))
 			path.set_canonical
-	    	Result := file_system.pathname_to_string (path)
+			Result := file_system.pathname_to_string (path)
 
 			if path.count > 3 then
 				dir := path.item (path.count - 1)
@@ -239,91 +207,6 @@ feature -- Environment
 			Result_attached: Result /= Void
 		end
 
-	Error_db_directory: STRING
-			-- directory of error database files in .dadl format e.g.
-			-- .../error_db/dadl_errors.txt etc
-		once
-			Result := file_system.pathname(application_startup_directory, "error_db")
-		end
-
-	Default_editor_command: STRING
-			-- A reasonable name of an editor based on operating system.
-		once
-   			if is_windows then
-   				Result := "Notepad.exe,cmd /q /d /c start %"%" /b"
-			elseif is_mac_os_x then
-				Result := "open -t"
-			else
-   				Result := "vi"
-   			end
-   		end
-
-feature {NONE} -- Element Change
-
-	record_resource_request (a_category, a_resource_name: STRING)
-		require
-			Valid_category: a_category /= Void and then not a_category.is_empty
-			Valid_resource_name: a_resource_name /= Void and then not a_resource_name.is_empty
-		local
-			res_table:HASH_TABLE[STRING,STRING]
-		do
-			res_table := resource_config_file.requested_resources.item(a_category)
-			if res_table /= Void then
-				if not res_table.has(a_resource_name) then
-					res_table.put("------", a_resource_name)
-				end
-			else
-				create res_table.make(0)
-				res_table.put("-------", a_resource_name)
-				resource_config_file.requested_resources.put(res_table, a_category)
-			end
-		end
-
-	set_resource_value (a_category, a_resource_name, a_value: attached STRING)
-		require
-			Valid_category: not a_category.is_empty
-			Valid_resource_name: not a_resource_name.is_empty
-			Valid_value: not a_value.is_empty
-		do
-			resource_config_file.set_resource_value(a_category, a_resource_name, a_value)
-		end
-
-	set_resource_value_list(a_category, a_resource_name: attached STRING; a_value: attached LIST[STRING])
-		require
-			Valid_category: not a_category.is_empty
-			Valid_resource_name: not a_resource_name.is_empty
-		do
-			resource_config_file.set_resource_value_list(a_category, a_resource_name, a_value)
-		end
-
-	set_resource_category_lists (a_category: attached STRING; res_lists: attached HASH_TABLE [ARRAYED_LIST [STRING], STRING])
-			-- set all name/value list pairs in 'category', in a hash, keyed by the resource names
-			-- replaces all resources in this category
-		require
-            Valid_category: not a_category.is_empty
-        do
-			resource_config_file.set_resource_category_lists(a_category, res_lists)
-        end
-
-feature -- Element Change
-
-	set_status_reporting_level (v: INTEGER)
-			-- Set `status_reporting_level'.
-		do
-			set_resource_value ("default", "status_reporting_level", v.out)
-		end
-
-feature  {NONE} -- Element Removal
-
-	remove_resource (a_category, a_resource_name: attached STRING)
-			-- remove the resource a_resource_name
-		require
-			Valid_category: not a_category.is_empty
-			Valid_resource_name: not a_resource_name.is_empty
-		do
-			resource_config_file.remove_resource(a_category, a_resource_name)
-		end
-
 feature  {NONE} -- Conversion
 
 	substitute_env_vars (s: attached STRING): attached STRING
@@ -366,32 +249,6 @@ feature  {NONE} -- Conversion
 				end
 				p := s.index_of('$', q)
 			end
-		end
-
-feature  {NONE} -- Output
-
-	resources_as_list: attached ARRAYED_LIST[STRING]
-			-- list of resources configured for application, in format:
-			--         category        res_name                res_val
-		do
-			Result := res_to_list(resources)
-		end
-
-	resources_requested_as_list: attached ARRAYED_LIST[STRING]
-			-- list of resources requested by application, in format:
-			--         category        res_name                res_val
-		do
-			Result := res_to_list(requested_resources)
-		end
-
-feature {NONE} -- Commands
-
-	save_resources
-			-- save current resource settings in file
-			-- of same name as application, with extnsion '.cfg'
-		do
-			file_system.recursive_create_directory (user_config_file_directory)
-			resource_config_file.write_file
 		end
 
 feature {NONE} -- Access
@@ -456,54 +313,6 @@ feature {NONE} -- Implementation
 		ensure
 			cloned: Result /= path
 			extension_removed: path.has ('.') implies path.count > Result.count
-		end
-
-	resources: HASH_TABLE[HASH_TABLE[STRING,STRING], STRING]
-		do
-			Result := resource_config_file.resources
-		end
-
-	requested_resources: HASH_TABLE[HASH_TABLE[STRING,STRING],STRING]
-		do
-			Result := resource_config_file.requested_resources
-		end
-
-	res_to_list (res: HASH_TABLE[HASH_TABLE [STRING, STRING], STRING]): ARRAYED_LIST [STRING]
-			-- actual resources read in resource file; result in format
-			--         category        res_name                res_val
-        local
-			str: STRING
-			resource_list: HASH_TABLE [STRING, STRING]
-		do
-			create Result.make(0)
-
-			from res.start until res.off loop
-				resource_list := res.item_for_iteration.twin
-				str := res.key_for_iteration.twin
-				str.prepend_string("CATEGORY: -------- ")
-				str.append(" --------")
-				Result.extend(str)
-
-				from resource_list.start until resource_list.off loop
-					str := "    "
-					str.append(resource_list.key_for_iteration)
-					str.append(" = ")
-					str.append(resource_list.item_for_iteration)
-					Result.extend(str)
-					resource_list.forth
-				end
-
-				res.forth
-			end
-		ensure
-			Result_exists: Result /= Void
-		end
-
-feature {NONE} -- Implementation
-
-	resource_config_file: CONFIG_FILE_ACCESS
-		once
-			create Result.make(user_config_file_path)
 		end
 
 end

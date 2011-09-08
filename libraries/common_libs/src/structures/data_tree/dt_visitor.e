@@ -15,72 +15,72 @@ deferred class DT_VISITOR
 
 feature -- Visitor
 
-	start_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER)
+	start_complex_object_node (a_node: attached DT_COMPLEX_OBJECT_NODE; depth: INTEGER)
 			-- start serialising an DT_COMPLEX_OBJECT_NODE
 		deferred
 		end
 
-	end_complex_object_node(a_node: DT_COMPLEX_OBJECT_NODE; depth: INTEGER)
+	end_complex_object_node (a_node: attached DT_COMPLEX_OBJECT_NODE; depth: INTEGER)
 			-- end serialising an DT_COMPLEX_OBJECT_NODE
 		deferred
 		end
 
-	start_attribute_node(a_node: DT_ATTRIBUTE_NODE; depth: INTEGER)
+	start_attribute_node (a_node: attached DT_ATTRIBUTE_NODE; depth: INTEGER)
 			-- start serialising an DT_ATTRIBUTE_NODE
 		deferred
 		end
 
-	end_attribute_node(a_node: DT_ATTRIBUTE_NODE; depth: INTEGER)
+	end_attribute_node (a_node: attached DT_ATTRIBUTE_NODE; depth: INTEGER)
 			-- end serialising an DT_ATTRIBUTE_NODE
 		deferred
 		end
 
-	start_primitive_object(a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER)
+	start_primitive_object (a_node: attached DT_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- start serialising a DT_OBJECT_SIMPLE
 		deferred
 		end
 
-	end_primitive_object(a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER)
+	end_primitive_object (a_node: attached DT_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- end serialising a DT_OBJECT_SIMPLE
 		deferred
 		end
 
-	start_primitive_object_list(a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER)
+	start_primitive_object_list (a_node: attached DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER)
 			-- start serialising an DT_OBJECT_SIMPLE_LIST
 		deferred
 		end
 
-	end_primitive_object_list(a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER)
+	end_primitive_object_list (a_node: attached DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER)
 			-- end serialising an DT_OBJECT_SIMPLE_LIST
 		deferred
 		end
 
-	start_primitive_object_interval(a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER)
+	start_primitive_object_interval (a_node: attached DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER)
 			-- start serialising a DT_OBJECT_SIMPLE
 		deferred
 		end
 
-	end_primitive_object_interval(a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER)
+	end_primitive_object_interval (a_node: attached DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER)
 			-- end serialising a DT_OBJECT_SIMPLE
 		deferred
 		end
 
-	start_object_reference(a_node: DT_OBJECT_REFERENCE; depth: INTEGER)
+	start_object_reference (a_node: attached DT_OBJECT_REFERENCE; depth: INTEGER)
 			-- start serialising a DT_OBJECT_REFERENCE
 		deferred
 		end
 
-	end_object_reference(a_node: DT_OBJECT_REFERENCE; depth: INTEGER)
+	end_object_reference (a_node: attached DT_OBJECT_REFERENCE; depth: INTEGER)
 			-- end serialising a DT_OBJECT_REFERENCE
 		deferred
 		end
 
-	start_object_reference_list(a_node: DT_OBJECT_REFERENCE_LIST; depth: INTEGER)
+	start_object_reference_list (a_node: attached DT_OBJECT_REFERENCE_LIST; depth: INTEGER)
 			-- start serialising a DT_OBJECT_REFERENCE_LIST
 		deferred
 		end
 
-	end_object_reference_list(a_node: DT_OBJECT_REFERENCE_LIST; depth: INTEGER)
+	end_object_reference_list (a_node: attached DT_OBJECT_REFERENCE_LIST; depth: INTEGER)
 			-- end serialising a DT_OBJECT_REFERENCE_LIST
 		deferred
 		end

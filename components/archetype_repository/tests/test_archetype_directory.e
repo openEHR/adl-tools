@@ -27,21 +27,6 @@ inherit
 			default_create
 		end
 
-	SHARED_KNOWLEDGE_REPOSITORY
-		undefine
-			default_create
-		end
-
-	SHARED_SOURCE_REPOSITORIES
-		undefine
-			default_create
-		end
-
-	SHARED_ARCHETYPE_COMPILER
-		undefine
-			default_create
-		end
-
 	SHARED_APP_RESOURCES
 		undefine
 			default_create
@@ -54,16 +39,21 @@ feature {NONE} -- Events
 		do
 			Precursor
 			application_developer_name.make_from_string ("openEHR")
-			resource_config_file.make (user_config_file_path)
+			app_cfg.make (user_config_file_path)
+			app_root.initialise
 			assert ("app_root initialisation failed", app_root.initialised)
 
-			if repository_profiles.has ("Test") then
-				test_repository := repository_profiles ["Test"].first
-			elseif repository_profiles.has ("test") then
-				test_repository := repository_profiles ["test"].first
+			if repository_profiles.has_profile ("Test") then
+				set_current_profile ("Test")
+			elseif repository_profiles.has_profile ("test") then
+				set_current_profile ("test")
 			else
-				assert ("Please define the %"Test%" repository profile in " + resource_config_file.file_name, False)
+				assert ("Please define the %"Test%" repository profile in " + app_cfg.file_path, False)
 			end
+
+			set_error_reporting_level (Error_type_error)
+			use_current_profile (True)
+			test_repository := repository_profiles.current_profile.reference_repository
 		end
 
 feature -- Access
@@ -77,25 +67,35 @@ feature -- Test routines
 			-- Check that an ad-hoc archetype can be added.
 		note
 			testing: "covers/{ARCHETYPE_DIRECTORY}.add_adhoc_item"
+		local
+			adl: STRING
+			name: STRING
 		do
-			assert_equal (False, arch_dir.has_selected_archetype)
-			arch_dir.add_adhoc_item (test_repository + "\basics\openehr-test_pkg-BOOK.structure_test1.v1.adls")
-			assert_equal (True, arch_dir.has_selected_archetype)
+			adl := "[
+				archetype (adl_version=1.5)
+					openehr-TEST_PKG-WHOLE.add_adhoc_item.v1
+				language original_language = <[ISO_639-1::en]>
+				description original_author = < ["name"] = <"unknown"> >
+				definition WHOLE[at0000] matches {*}
+				ontology term_definitions = < ["en"] = < items = < ["at0000"] = < description = <""> text = <""> > > > >
+				]"
+
+			name := file_system.pathname (test_directory, "openehr-TEST_PKG-WHOLE.add_adhoc_item.v1.adls")
+			file_context.save_file (name, adl)
+			assert_equal (False, current_arch_cat.has_selected_archetype)
+			current_arch_cat.add_adhoc_item (name)
+			assert_equal (True, current_arch_cat.has_selected_archetype)
 		end
 
-	test_validation
-			-- Check that the expected errors occur when building the validation test archetypes.
+	test_populate
+			-- Check that the repository can be populated.
 		note
 			testing: "covers/{ARCHETYPE_DIRECTORY}.populate"
 		do
-			set_status_reporting_level (Error_type_error)
-			source_repositories.set_reference_repository (test_repository)
-			arch_dir.populate
+			assert_equal (test_repository, source_repositories.reference_repository.full_path)
+			assert_equal (0, current_arch_cat.compile_attempt_count)
+			assert_equal (Void, current_arch_cat.selected_item)
 			assert ("Expected warning about ADL version", billboard.content.has_substring ("WARNING - Using ADL version"))
-			archetype_compiler.build_all
-			assert_equal (False, archetype_compiler.is_interrupted)
-			assert_equal (True, archetype_compiler.build_completed)
-			assert ("Expected status message", archetype_compiler.status.has_substring ("finished building system"))
 		end
 
 end

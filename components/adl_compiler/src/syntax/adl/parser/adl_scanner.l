@@ -168,9 +168,25 @@ NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
 				ontology_text_start_line := in_lineno
 			}
 
+^[Aa][Nn][Nn][Oo][Tt][Aa][Tt][Ii][Oo][Nn][Ss][ \t\r]*\n			{
+				last_token := SYM_ANNOTATIONS
+				set_start_condition(IN_DADL_SECTION)
+				in_lineno := in_lineno + 1
+				annotations_text_start_line := in_lineno
+			}
+
+^[Cc][Oo][Mm][Pp][Oo][Nn][Ee][Nn][Tt]_[Oo][Nn][Tt][Oo][Ll][Oo][Gg][Ii][Ee][Ss][ \t\r]*\n			{
+				last_token := SYM_COMPONENT_ONTOLOGIES
+				set_start_condition(IN_DADL_SECTION)
+				in_lineno := in_lineno + 1
+				comp_onts_text_start_line := in_lineno
+			}
+
 <IN_DADL_SECTION>{
 	^[Dd][Ee][Ss][Cc][Rr][Ii][Pp][Tt][Ii][Oo][Nn][ \t\r]*\n	|
-	^[Dd][Ee][Ff][Ii][Nn][Ii][Tt][Ii][Oo][Nn][ \t\r]*\n { -- line starting with "definition" or "description"
+	^[Dd][Ee][Ff][Ii][Nn][Ii][Tt][Ii][Oo][Nn][ \t\r]*\n |
+	^[Aa][Nn][Nn][Oo][Tt][Aa][Tt][Ii][Oo][Nn][Ss][ \t\r]*\n	| 
+	^[Cc][Oo][Mm][Pp][Oo][Nn][Ee][Nn][Tt]_[Oo][Nn][Tt][Oo][Ll][Oo][Gg][Ii][Ee][Ss][ \t\r]*\n	{ -- line starting with "definition" or "description" or "annotations"
 				-- unread the pattern just matched
 				a_text := text
 				from i := text_count until i < 1 loop
@@ -330,6 +346,10 @@ feature -- Access
 	invariant_text_start_line: INTEGER
 
 	ontology_text_start_line: INTEGER
+
+	annotations_text_start_line: INTEGER
+
+	comp_onts_text_start_line: INTEGER
 
 feature {NONE} -- Constants
 

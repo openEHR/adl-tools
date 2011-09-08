@@ -17,7 +17,7 @@ class SHARED_ADL_ENGINE
 
 feature {NONE} -- Implementation
 
-	adl_engine: attached ADL_ENGINE
+	adl15_engine: attached ADL15_ENGINE
 		once
 			create Result.make
 		end

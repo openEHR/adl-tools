@@ -416,7 +416,6 @@ feature {NONE} -- Constants
 				-- Initial size for `in_buffer'
 
 invariant
-
 	in_buffer_not_void: in_buffer /= Void
 
 end

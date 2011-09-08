@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-6-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-6-0 http://www.eiffel.com/developers/xml/configuration-1-6-0.xsd" name="adl_workbench" uuid="C99BD5CC-111C-4EE7-9BCF-337A924E2783">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-8-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-8-0 http://www.eiffel.com/developers/xml/configuration-1-8-0.xsd" name="adl_workbench" uuid="C99BD5CC-111C-4EE7-9BCF-337A924E2783">
 	<target name="adl_workbench">
 		<root class="GUI_APP_ROOT" feature="make_and_launch"/>
 		<file_rule>
@@ -12,17 +12,20 @@
 			<debug name="adl_tree" enabled="false"/>
 			<debug name="arch_dir" enabled="false"/>
 			<debug name="bb" enabled="false"/>
+			<debug name="compiler" enabled="false"/>
 			<debug name="compress" enabled="false"/>
 			<debug name="dadl_parse" enabled="false"/>
 			<debug name="dlg_dispatcher" enabled="false"/>
-			<debug name="dt" enabled="false"/>
+			<debug name="dt" enabled="true"/>
 			<debug name="exclude list" enabled="false"/>
 			<debug name="flatten" enabled="false"/>
 			<debug name="gelex" enabled="false"/>
 			<debug name="geyacc" enabled="false"/>
 			<debug name="include list" enabled="false"/>
+			<debug name="og_path" enabled="false"/>
 			<debug name="og_path_parse" enabled="false"/>
 			<debug name="refactor_fixme" enabled="false"/>
+			<debug name="rm_schema" enabled="false"/>
 			<debug name="validate" enabled="false"/>
 			<debug name="vision2_windows" enabled="false"/>
 			<debug name="vision2_windows_gdi" enabled="false"/>
@@ -46,10 +49,11 @@
 		<setting name="inlining" value="false"/>
 		<setting name="inlining_size" value="4"/>
 		<setting name="line_generation" value="false"/>
-		<setting name="multithreaded" value="true"/>
+		<setting name="concurrency" value="thread"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf">
 			<renaming old_name="C_STRING" new_name="BASE_C_STRING"/>
 		</library>
+		<library name="docking" location="$ISE_LIBRARY\library\docking\docking.ecf"/>
 		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
 		<library name="gobo_lexical" location="$ISE_LIBRARY\library\gobo\gobo_lexical.ecf"/>
 		<library name="gobo_parse" location="$ISE_LIBRARY\library\gobo\gobo_parse.ecf"/>
@@ -63,8 +67,13 @@
 			<renaming old_name="C_DATE" new_name="TIME_C_DATE"/>
 			<renaming old_name="INTERVAL" new_name="TIME_INTERVAL"/>
 		</library>
-		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf"/>
+		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf">
+			<option>
+				<assertions/>
+			</option>
+		</library>
 		<cluster name="adl_compiler" location="..\..\..\components\adl_compiler\src\" recursive="true"/>
+		<tests name="adl_compiler_tests" location="..\..\..\components\adl_compiler\tests\"/>
 		<cluster name="app" location="..\src\" recursive="true"/>
 		<cluster name="archetype_repository" location="..\..\..\components\archetype_repository\src\" recursive="true">
 			<option>
@@ -89,6 +98,9 @@
 				<condition>
 					<platform excluded_value="windows"/>
 				</condition>
+			</file_rule>
+			<file_rule>
+				<exclude>/testing$</exclude>
 			</file_rule>
 		</cluster>
 		<tests name="common_libs_tests" location="..\..\..\libraries\common_libs\tests\"/>

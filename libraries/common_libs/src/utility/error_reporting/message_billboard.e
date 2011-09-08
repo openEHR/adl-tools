@@ -8,7 +8,7 @@ note
 	keywords:    "error status reporting"
 
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -84,40 +84,37 @@ feature -- Modify
 			billboard.wipe_out
 		end
 
-	post_error(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING])
+	post_error (poster_object: attached ANY; poster_routine: attached STRING; id: STRING; args: ARRAY[STRING])
 			-- append to the  current contents of billboard an error message
 			-- corresponding to id, with positional parameters replaced
 			-- by contents of optional args
 		require
-			Poster_valid: poster_object /= Void and poster_routine /= Void and
-						  not poster_routine.is_empty
+			Poster_valid: not poster_routine.is_empty
 		do
 			billboard.put_front(
-				create {MESSAGE_BILLBOARD_ITEM}.make(poster_object.generator, poster_routine, id, args, Error_type_error))
+				create {MESSAGE_BILLBOARD_ITEM}.make (poster_object.generator, poster_routine, id, args, Error_type_error))
 		end
 
-	post_warning(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING])
+	post_warning (poster_object: attached ANY; poster_routine: attached STRING; id: STRING; args: ARRAY[STRING])
 			-- append to the  current contents of billboard a warning message
 			-- corresponding to id, with positional parameters replaced
 			-- by contents of optional args
 		require
-			Poster_valid: poster_object /= Void and poster_routine /= Void and
-						  not poster_routine.is_empty
+			Poster_valid: not poster_routine.is_empty
 		do
 			billboard.put_front(
-				create {MESSAGE_BILLBOARD_ITEM}.make(poster_object.generator, poster_routine, id, args, Error_type_warning))
+				create {MESSAGE_BILLBOARD_ITEM}.make (poster_object.generator, poster_routine, id, args, Error_type_warning))
 		end
 
-	post_info(poster_object: ANY; poster_routine: STRING; id: STRING; args: ARRAY[STRING])
+	post_info (poster_object: attached ANY; poster_routine: attached STRING; id: STRING; args: ARRAY[STRING])
 			-- append to the  current contents of billboard an info message
 			-- corresponding to id, with positional parameters replaced
 			-- by contents of optional args
 		require
-			Poster_valid: poster_object /= Void and poster_routine /= Void and
-						  not poster_routine.is_empty
+			Poster_valid: not poster_routine.is_empty
 		do
 			billboard.put_front(
-				create {MESSAGE_BILLBOARD_ITEM}.make(poster_object.generator, poster_routine, id, args, Error_type_info))
+				create {MESSAGE_BILLBOARD_ITEM}.make (poster_object.generator, poster_routine, id, args, Error_type_info))
 		end
 
 feature {NONE} -- Implementation
@@ -126,7 +123,7 @@ feature {NONE} -- Implementation
 
 	billboard: ARRAYED_LIST [MESSAGE_BILLBOARD_ITEM]
 
-	filtered_content(at_level: INTEGER): STRING
+	filtered_content (at_level: INTEGER): STRING
 			-- text of the billboard in locale current language, filtered according to include_types
 		require
 			at_level_valid: is_valid_error_type (at_level)
@@ -137,33 +134,33 @@ feature {NONE} -- Implementation
 			from billboard.start until billboard.off loop
 				bb_item := billboard.item
 				if bb_item.error_type >= at_level then
-					Result.append(item_formatted(bb_item, at_level))
+					Result.append (item_formatted (bb_item, at_level))
 				end
 				billboard.forth
 			end
 		end
 
-	item_formatted(bb_item: MESSAGE_BILLBOARD_ITEM; at_level: INTEGER): STRING
+	item_formatted (bb_item: MESSAGE_BILLBOARD_ITEM; at_level: INTEGER): STRING
 			-- format one item
 		local
 			err_str, leader, trailer: STRING
 		do
 			create Result.make(0)
-			leader := error_type_names.item(bb_item.error_type) + " - "
+			leader := error_type_names.item (bb_item.error_type) + " - "
 			if at_level = Error_type_debug then
 				trailer := "      (" + bb_item.type_name + "." + bb_item.routine_name + ")"
 			else
 				trailer := ""
 			end
-			if message_db.has_message(bb_item.message_id) then
-				err_str := message_db.create_message_content(bb_item.message_id, bb_item.args)
+			if message_db.has_message (bb_item.message_id) then
+				err_str := message_db.create_message_content (bb_item.message_id, bb_item.args)
 			else
-				err_str := message_db.create_message_content("message_code_error", Void)
+				err_str := message_db.create_message_content ("message_code_error", Void)
 			end
-			Result.append(leader)
-			Result.append(err_str)
-			Result.append(trailer)
-			Result.append("%N")
+			Result.append (leader)
+			Result.append (err_str)
+			Result.append (trailer)
+			Result.append ("%N")
 		end
 
 invariant

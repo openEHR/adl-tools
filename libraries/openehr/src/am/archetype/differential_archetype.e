@@ -24,11 +24,10 @@ create
 
 feature -- Initialisation
 
-	make_minimal (an_artefact_type: ARTEFACT_TYPE; an_id: like archetype_id; an_original_language: STRING; a_specialisation_depth: INTEGER)
+	make_minimal (an_artefact_type: attached ARTEFACT_TYPE; an_id: attached like archetype_id; an_original_language: attached STRING; a_specialisation_depth: INTEGER)
 			-- make a new differential form archetype
 		require
-			Artefact_type_attached: an_artefact_type /= Void
-			Language_valid: an_original_language /= Void and then not an_original_language.is_empty
+			Language_valid: not an_original_language.is_empty
 			Specialisation_depth_valid: a_specialisation_depth >= 0
 		do
 			artefact_type := an_artefact_type
@@ -50,20 +49,17 @@ feature -- Initialisation
 			Is_dirty: is_dirty
 		end
 
-	make_from_flat (a_flat: FLAT_ARCHETYPE)
+	make_from_flat (a_flat: attached FLAT_ARCHETYPE)
 			-- create from a flat archetype by cloning and then removing inherited parts
-		require
-			Flat_archetype_valid: a_flat /= Void
 		local
-			cco_prev, cco_next: C_OBJECT
 			c_it: C_ITERATOR
 			a_flat_copy: FLAT_ARCHETYPE
 		do
 			a_flat_copy := a_flat.deep_twin
-			make_all(a_flat.artefact_type, Latest_adl_version, a_flat_copy.archetype_id, a_flat_copy.parent_archetype_id, a_flat_copy.is_controlled,
-					a_flat_copy.original_language.code_string, a_flat_copy.translations,
+			make_all (a_flat.artefact_type, Latest_adl_version, a_flat_copy.archetype_id, a_flat_copy.parent_archetype_id, a_flat_copy.is_controlled,
+					a_flat_copy.original_language, a_flat_copy.translations,
 					a_flat_copy.description, a_flat_copy.definition, a_flat_copy.invariants,
-					a_flat_copy.ontology.to_differential)
+					a_flat_copy.ontology.to_differential, a_flat_copy.annotations)
 
 			if is_specialised then
 				build_rolled_up_status
@@ -71,7 +67,7 @@ feature -- Initialisation
 				-- using rolled_up_specialisation statuses in nodes of definition
 				-- generate a list of nodes/paths for deletion from a flat-form archetype
 				create inherited_subtree_list.make(0)
-				create c_it.make(definition)
+				create c_it.make (definition)
 				c_it.do_at_surface(
 					agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER) do inherited_subtree_list.put (a_c_node, a_c_node.path) end,
 					agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := a_c_node.rolled_up_specialisation_status.value = ss_inherited end
@@ -83,13 +79,15 @@ feature -- Initialisation
 						-- FIXME: in the following statement, we are assuming that if the cardinality of the parent attribute
 						-- does not exist (typical for a differential archetype), that it is ordered; really we should look up
 						-- the RM schema
-						if cco_1.parent /= Void and (cco_1.parent.cardinality = Void or cco_1.parent.is_ordered) then
-							cco_next := cco_1.parent.child_after (cco_1)
-							if cco_next /= Void and cco_next.specialisation_status (specialisation_depth).value = ss_added then
+						if attached cco_1.parent and (cco_1.parent.cardinality = Void or cco_1.parent.is_ordered) then
+							if attached {C_OBJECT} cco_1.parent.child_after (cco_1) as cco_next and then
+								cco_next.specialisation_status (specialisation_depth).value = ss_added
+							then
 								cco_next.set_sibling_order_after (cco_1.node_id)
 							end
-							cco_prev := cco_1.parent.child_before (cco_1)
-							if cco_prev /= Void and cco_prev.specialisation_status (specialisation_depth).value = ss_added then
+							if attached {C_OBJECT} cco_1.parent.child_before (cco_1) as cco_prev and then
+								cco_prev.specialisation_status (specialisation_depth).value = ss_added
+							then
 								cco_prev.set_sibling_order_before (cco_1.node_id)
 							end
 						end
@@ -162,7 +160,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER} -- Validation
 			end
 		end
 
-feature {ARCH_REP_ARCHETYPE} -- Structure
+feature {ARCH_CAT_ARCHETYPE} -- Structure
 
 	convert_to_differential_paths
 			-- FIXME: only needed while differential archetype source is being created in uncompressed form
@@ -277,12 +275,12 @@ feature -- Modification
 			end
 		end
 
-feature {ARCHETYPE_VALIDATOR} -- Implementation
+feature {ARCHETYPE_VALIDATOR, ARCH_CAT_ARCHETYPE} -- Implementation
 
-	set_parent_archetype (an_archetype: DIFFERENTIAL_ARCHETYPE)
+	set_parent_archetype (an_archetype: attached DIFFERENTIAL_ARCHETYPE)
 			-- set `parent_archetype'
 		require
-			Archetype_valid: an_archetype /= Void and then an_archetype.specialisation_depth + 1 = specialisation_depth
+			Archetype_valid: an_archetype.specialisation_depth + 1 = specialisation_depth
 		do
 			parent_archetype := an_archetype
 			ontology.set_parent_ontology (an_archetype.ontology)

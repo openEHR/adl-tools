@@ -57,7 +57,7 @@ feature -- Status Report
 	parse_succeeded: BOOLEAN
 			-- True if parse succeeded; call after parse()
 		do
-			Result := tree /= Void
+			Result := attached tree
 		end
 
 	is_differential: BOOLEAN
@@ -73,12 +73,10 @@ feature -- Commands
 			serialised := Void
 		end
 
-	set_source (in_text: STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: SCHEMA_ACCESS)
+	set_source (in_text: attached STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: attached BMM_SCHEMA)
 			-- Set `in_text' as working artifact.
 		require
-			text_attached: in_text /= Void
 			start_line_positive: a_source_start_line > 0
-			Rm_schema_available: an_rm_schema /= Void
 		do
 			rm_schema := an_rm_schema
 			source := in_text
@@ -95,7 +93,7 @@ feature -- Commands
 	parse
 			-- Parse artifact into `tree', then validate the artifact.
 		require
-			source_attached: source /= Void
+			source_attached: attached source
 			parsing: in_parse_mode
 		do
 			tree := Void
@@ -106,33 +104,29 @@ feature -- Commands
 			if not parser.syntax_error then
 				tree := parser.output
 			end
-		ensure
-			parse_succeeded or else tree = Void
 		end
 
-	serialise (a_format, a_lang: attached STRING; an_ontology: attached ARCHETYPE_ONTOLOGY)
+	serialise (an_archetype: attached ARCHETYPE; a_format, a_lang: attached STRING)
 			-- Serialise current artifact into `a_format'.
 		require
 			Format_valid: has_c_serialiser_format (a_format)
-			Language_valid: an_ontology.has_language (a_lang)
+			Language_valid: an_archetype.has_language (a_lang)
 		local
 			a_c_serialiser: C_SERIALISER
 			a_c_iterator: C_VISITOR_ITERATOR
 		do
 			a_c_serialiser := c_serialiser_for_format (a_format)
-			a_c_serialiser.initialise (an_ontology, a_lang)
+			a_c_serialiser.initialise (an_archetype, a_lang)
 			create a_c_iterator.make (tree, a_c_serialiser)
 			a_c_iterator.do_all
 			a_c_serialiser.finalise
 			serialised := a_c_serialiser.last_result
 		ensure
-			serialised_attached: serialised /= Void
+			serialised_attached: attached serialised
 		end
 
-	set_tree (a_node: C_COMPLEX_OBJECT)
+	set_tree (a_node: attached C_COMPLEX_OBJECT)
 			-- Set root node of `tree' from e.g. GUI tool.
-		require
-			node_attached: a_node /= Void
 		do
 			tree := a_node
 			in_parse_mode := False
@@ -145,7 +139,7 @@ feature {NONE} -- Implementation
 
 	parser: CADL_VALIDATOR
 
-	rm_schema: SCHEMA_ACCESS
+	rm_schema: BMM_SCHEMA
 
 end
 

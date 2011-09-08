@@ -51,10 +51,10 @@ feature -- Access
 			Result := generate_all_paths(True)
 		end
 
-	object_node_at_path(a_path: OG_PATH): OG_OBJECT
+	object_node_at_path (a_path: attached OG_PATH): attached OG_OBJECT
 			-- find the object node at the relative path `a_path'
 		require
-			Path_valid: a_path /= Void and then has_path(a_path)
+			Path_valid: has_path(a_path)
 		local
 			s_path: OG_PATH
 		do
@@ -66,14 +66,12 @@ feature -- Access
 				s_path.start
 				Result := internal_object_node_at_path(s_path)
 			end
-		ensure
-			Result_exists: Result /= Void
 		end
 
-	attribute_node_at_path(a_path: OG_PATH): OG_ATTRIBUTE_NODE
+	attribute_node_at_path (a_path: attached OG_PATH): attached OG_ATTRIBUTE_NODE
 			-- find the attribute node corresponding the the terminal segment of `a_path'
 		require
-			Path_valid: a_path /= Void and then has_path(a_path)
+			Path_valid: has_path(a_path)
 		local
 			s_path: OG_PATH
 		do
@@ -81,16 +79,14 @@ feature -- Access
 			s_path := compress_path(a_path)
 			s_path.start
 			Result := internal_attribute_node_at_path(s_path)
-		ensure
-			Result_exists: Result /= Void
 		end
 
 feature -- Status Report
 
-	has_path(a_path: OG_PATH): BOOLEAN
+	has_path (a_path: attached OG_PATH): BOOLEAN
 			-- `a_path' exists in object structure
 		require
-			Path_valid: a_path /= Void and then a_path.is_absolute implies is_root
+			Path_valid: a_path.is_absolute implies is_root
 		local
 			s_path: OG_PATH
 		do
@@ -104,10 +100,10 @@ feature -- Status Report
 			end
 		end
 
-	has_object_path(a_path: OG_PATH): BOOLEAN
+	has_object_path (a_path: attached OG_PATH): BOOLEAN
 			-- `a_path' refers to an object node in structure
 		require
-			Path_valid: a_path /= Void and then a_path.is_absolute implies is_root
+			Path_valid: a_path.is_absolute implies is_root
 		local
 			s_path: OG_PATH
 		do
@@ -121,10 +117,10 @@ feature -- Status Report
 			end
 		end
 
-	has_attribute_path(a_path: OG_PATH): BOOLEAN
+	has_attribute_path (a_path: attached OG_PATH): BOOLEAN
 			-- `a_path' refers to an attribute node in structure
 		require
-			Path_valid: a_path /= Void and then a_path.is_absolute implies is_root
+			Path_valid: a_path.is_absolute implies is_root
 		local
 			s_path: OG_PATH
 		do
@@ -140,11 +136,11 @@ feature -- Status Report
 
 feature -- Modification
 
-	replace_attribute_name(old_name, new_name: STRING)
+	replace_attribute_name (old_name, new_name: attached STRING)
 			-- change the name of an attribute
 		require
-			Old_name_valid: old_name /= Void and then has_child_with_id (old_name)
-			New_name_valid: new_name /= Void and then not new_name.is_empty
+			Old_name_valid: has_child_with_id (old_name)
+			New_name_valid: not new_name.is_empty
 		do
 			child_with_id (old_name).set_node_id (new_name)
 			children.replace_key (new_name, old_name)
@@ -155,7 +151,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 	child_type: OG_ATTRIBUTE_NODE
 			-- relationship target type
 
-	internal_has_path(a_path: OG_PATH): BOOLEAN
+	internal_has_path (a_path: OG_PATH): BOOLEAN
 			-- find the child at the path `a_path'
 		local
 			child_obj_node: OG_OBJECT_NODE
@@ -179,7 +175,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 			end
 		end
 
-	internal_object_node_at_path(a_path: OG_PATH): OG_OBJECT
+	internal_object_node_at_path (a_path: OG_PATH): OG_OBJECT
 			-- find the child at the path `a_path'
 		local
 			child_obj: OG_OBJECT
@@ -249,7 +245,6 @@ feature {OG_OBJECT_NODE} -- Implementation
 			a_path: OG_PATH
 			child_objs: HASH_TABLE [OG_OBJECT, STRING]
 			child_obj: OG_OBJECT
-			child_obj_node: OG_OBJECT_NODE
 			obj_predicate_required, created_attr_path: BOOLEAN
 		do
 			create Result.make(0)
@@ -257,36 +252,23 @@ feature {OG_OBJECT_NODE} -- Implementation
 
 			-- get the attributes of this object
 			if has_children then
-				from
-					children.start
-				until
-					children.off
-				loop
+				from children.start until children.off loop
 					attr_node := children.item_for_iteration
 
 					-- get the objects of this attribute
 					child_objs := attr_node.children
 					created_attr_path := False
-					from
-						child_objs.start
-					until
-						child_objs.off
-					loop
+					from child_objs.start until child_objs.off loop
 						child_obj ?= child_objs.item_for_iteration
 						obj_predicate_required := is_unique or
 												(attr_node.is_single and child_obj.is_addressable) or
-											-- use this line of code te get rid of node ids on single nodes	
-											--	(attr_node.is_single and attr_node.child_count > 1 and child_obj.is_addressable) or
+												-- use this line of code te get rid of node ids on single nodes	
+												--	(attr_node.is_single and attr_node.child_count > 1 and child_obj.is_addressable) or
 												attr_node.is_multiple
-						child_obj_node ?= child_obj
-						if child_obj_node /= Void then
+						if attached {OG_OBJECT_NODE} child_obj as child_obj_node then
 							child_paths := child_obj_node.all_paths
-							from
-								child_paths.start
-							until
-								child_paths.off
-							loop
-								a_path := child_paths.key_for_iteration
+							from child_paths.start until child_paths.off loop
+								a_path := child_paths.key_for_iteration.twin
 								if obj_predicate_required then
 									a_path.prepend_segment(create {OG_PATH_ITEM}.make_with_object_id(attr_node.node_id, child_obj_node.node_id))
 								else
@@ -310,6 +292,9 @@ feature {OG_OBJECT_NODE} -- Implementation
 							create a_path.make_relative(create {OG_PATH_ITEM}.make(attr_node.node_id))
 							created_attr_path := True -- this kind of path (with no node id) is the same as the path to the attribute...
 						end
+						if attr_node.has_differential_path then
+							a_path.prepend_path(attr_node.differential_path.deep_twin)
+						end
 						if is_root then
 							a_path.set_absolute
 						end
@@ -329,12 +314,12 @@ feature {OG_OBJECT_NODE} -- Implementation
 			end
 		end
 
-	compress_path(a_path: OG_PATH): OG_PATH
+	compress_path(a_path: attached OG_PATH): attached OG_PATH
 			-- if there is an attribute under this object node with a differential path matching `a_path',
 			-- generate a new path whose first attribute contains the differential section in it;
 			-- else return the original `a_path'
 		require
-			Path_valid: a_path /= Void and not a_path.is_compressed
+			Path_valid: not a_path.is_compressed
 		local
 			cand_path, a_path_str: STRING
 		do
@@ -363,8 +348,6 @@ feature {OG_OBJECT_NODE} -- Implementation
 			else
 				Result := a_path
 			end
-		ensure
-			Result_exists: Result /= Void
 		end
 
 end

@@ -2,9 +2,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Common things for all SML archetypes"
 	keywords:    "test, SML"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -26,21 +26,19 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make(a_profile: SERIALISATION_PROFILE)
+	make (a_profile: attached SERIALISATION_PROFILE)
 			-- set profile
-		require
-			Profile_exists: a_profile /= Void
 		do
 			profile := a_profile
 			reset
 		end
 
-feature -- Element Change
+feature -- Commands
 
 	reset
 			-- set up serialiser
 		do
-			create last_result.make(Buffer_size)
+			create last_result.make (Buffer_size)
 		end
 
 feature -- Access
@@ -117,19 +115,17 @@ feature -- Status Report
 
 feature -- Factory
 
-	apply_style (elem: STRING; a_style: INTEGER): STRING
+	apply_style (elem: attached STRING; a_style: INTEGER): attached STRING
 			-- apply `a_style' to `elem', using attr 'class'
 		require
-			Elem_exists: elem /= Void
 			Style_valid: has_style(a_style)
 		do
 			Result := profile.apply_style(elem, a_style)
 		end
 
-	clean (elem: STRING): STRING
+	dadl_clean (elem: attached STRING): attached STRING
 			-- clean `elem' using quoting rules of ADL
 		require
-			Elem_exists: elem /= Void
 		do
 			Result := profile.clean(elem)
 		end
@@ -141,7 +137,7 @@ feature -- Factory
 			Result := profile.create_indent(indent_level)
 		end
 
-	safe_comment (a_text: STRING): STRING
+	safe_comment (a_text: attached STRING): attached STRING
 			-- make a comment text taken from the ontology safe for inclusion
 			-- by removing newlines and restricting its length
 		local

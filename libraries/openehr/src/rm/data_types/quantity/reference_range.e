@@ -22,19 +22,13 @@ note
 
 class REFERENCE_RANGE [G -> DV_ORDERED]
 
-inherit
-	CANONICAL_FRAGMENT
-
 create
-	make, make_from_canonical_string
+	make
 
 feature -- Initialization
 
-	make (a_meaning: DV_CODED_TEXT; a_range: DV_INTERVAL [G])
+	make (a_meaning: attached DV_TEXT; a_range: attached DV_INTERVAL [G])
 			-- make a range from a meaning and an interval
-		require
-			Meaning_exists: a_meaning /= Void
-			Range_exists: a_range /= Void
 		do
 			meaning := a_meaning
 			range := a_range
@@ -43,28 +37,18 @@ feature -- Initialization
 			Range_set: range = a_range
 		end
 
-	make_from_canonical_string (str: STRING)
-		do
-		end
-
 feature -- Access
 
-	meaning: DV_CODED_TEXT
-			-- Term whose value indicates the meaning of this range, e.g. “normal”,
+	meaning: attached DV_TEXT
+			-- Text or Term whose value indicates the meaning of this range, e.g. “normal”,
 			-- “critical”, “therapeutic” etc.
 
-	range: DV_INTERVAL [G]
+	range: attached DV_INTERVAL [G]
 			-- The data range for this meaning, e.g. “critical” etc.
 
 feature -- Status Report
 
-	valid_canonical_string (str: STRING): BOOLEAN
-		do
-		end
-
-	has (v: G): BOOLEAN
-		require
-			Value_exists: v /= Void
+	has (v: attached G): BOOLEAN
 		do
 			Result := range.has(v)
 		end
@@ -75,16 +59,8 @@ feature -- Conversion
 		do
 			Result := range.as_string + " (" + meaning.as_string + ")"
 		end
-	
-	as_canonical_string: STRING
-		do
-			Result := "<range>" + range.as_canonical_string + "</range>" +
-				"<meaning>" + meaning.as_canonical_string + "</meaning>"
-		end
 
 invariant
-	Meaning_exists: meaning /= Void
-	Range_exists: range /= Void
 	Range_is_simple: (range.lower_unbounded or else range.lower.is_simple) and
 						(range.upper_unbounded or else range.upper.is_simple)
 

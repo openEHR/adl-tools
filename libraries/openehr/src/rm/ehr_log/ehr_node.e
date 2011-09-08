@@ -13,7 +13,7 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class EHR_NODE
+deferred class EHR_NODE
 
 feature -- Identification
 
@@ -22,12 +22,12 @@ feature -- Identification
 		deferred
 		end
 
-	owning_hcf: HCF
+--	owning_hcf: HCF
 			-- Defines which Healthcare Facility (HCF) owns this EHR node.
 			-- All EHR_SOURCEs  are  part  of an HCF. Provides a unique
 			-- identity of the HCF in which the  EHR  was  originally created .
-		deferred
-		end
+--		deferred
+--		end
 
 	identifier:STRING
 			-- registered GEHR unique identifier for this EHR node
@@ -40,7 +40,7 @@ feature -- Content
 			-- The IDs of EHRs at this EHR_SOURCE.
 		deferred
 		end
- 
+
 invariant
 	 Name_exists: name /= Void
 	 Owning_hcf_exists: owning_hcf /= Void

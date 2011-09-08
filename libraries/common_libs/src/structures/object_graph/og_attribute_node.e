@@ -25,48 +25,28 @@ inherit
 		end
 
 create
-	make_single, make_multiple, make_generic
-
-feature -- Definitions
-
-	Generic_attr_name: STRING = "_items"
-			-- name given to assumed multiple attribute of container types
+	make_single, make_multiple
 
 feature -- Initialisation
 
-	make_single (a_node_id: STRING; a_content_item: VISITABLE)
+	make_single (a_node_id: attached STRING; a_content_item: VISITABLE)
 			-- make an attribute representing a single-valued attribute in some model
 		require
-			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
+			Node_id_valid: not a_node_id.is_empty
 		do
-			make_og_node(a_node_id, a_content_item)
+			make_og_node (a_node_id, a_content_item)
 		ensure
 			Is_multiple: not is_multiple
 		end
 
-	make_multiple (a_node_id: STRING; a_content_item: VISITABLE)
+	make_multiple (a_node_id: attached STRING; a_content_item: VISITABLE)
 			-- make an attribute representing a multiple-valued (i.e. container) attribute in some model
 		require
-			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
+			Node_id_valid: not a_node_id.is_empty
 		do
-			make_og_node(a_node_id, a_content_item)
+			make_og_node (a_node_id, a_content_item)
 			is_multiple := True
 		ensure
-			Is_multiple: is_multiple
-		end
-
-	make_generic (a_content_item: VISITABLE)
-			-- create with pseudo-node id indicating that it is an unnamed
-			-- container attribute of a generic type
-		do
-			default_create
-			node_id := Generic_attr_name.twin
-			content_item := a_content_item
-			is_generic := True
-			is_multiple := True
-		ensure
-			Node_id_set: node_id.is_equal(Generic_attr_name)
-			Is_generic: is_generic
 			Is_multiple: is_multiple
 		end
 
@@ -79,7 +59,7 @@ feature -- Access
 			-- OG_ATTRIBUTE_NODE to stand as a 'path-compressed' replacement for a string of OG_OBJECT_NODE/
 			-- OG_ATTRIBUTE_NODE objects. Only valid in differential archetypes and templates.
 
-	node_key: STRING
+	node_key: attached STRING
 			-- uses differential path if it exists
 		do
 			if has_differential_path then
@@ -105,10 +85,6 @@ feature -- Status Report
 		do
 			Result := not is_multiple
 		end
-
-	is_generic: BOOLEAN
-			-- True if this attribute is a created pseudo attribute
-			-- representing an unnamed attribute in a generic class like List<T>
 
 	is_addressable: BOOLEAN = True
 			-- True if this node has a non-anonymous node_id
@@ -137,7 +113,7 @@ feature -- Status Setting
 
 feature -- Modification
 
-	put_child(obj_node: like child_type)
+	put_child (obj_node: attached like child_type)
 			-- put a new child node
 			-- if new child is an OBJECT_NODE id is already known in children, generate a unique id for it
 		local
@@ -151,7 +127,7 @@ feature -- Modification
 			precursor(obj_node)
 		end
 
-	put_child_left(obj_node, before_obj_node: like child_type)
+	put_child_left (obj_node, before_obj_node: attached like child_type)
 			-- insert a new child node before another object node
 			-- if new child is an OBJECT_NODE id is already known in children, generate a unique id for it
 		local
@@ -165,7 +141,7 @@ feature -- Modification
 			precursor(obj_node, before_obj_node)
 		end
 
-	put_child_right(obj_node, after_obj_node: like child_type)
+	put_child_right (obj_node, after_obj_node: attached like child_type)
 			-- insert a new child node before another object node
 			-- if new child is an OBJECT_NODE id is already known in children, generate a unique id for it
 		local
@@ -179,10 +155,8 @@ feature -- Modification
 			precursor(obj_node, after_obj_node)
 		end
 
-	set_differential_path(a_path: OG_PATH)
+	set_differential_path (a_path: attached OG_PATH)
 			-- set `differential_path'
-		require
-			Path_attached: a_path /= Void
 		do
 			differential_path := a_path
 			if parent /= Void then
@@ -229,11 +203,7 @@ feature {NONE} -- Implementation
 		do
 			p := parent
 			p.remove_child (Current)
-			from
-				csr := p
-			until
-				csr.parent = Void
-			loop
+			from csr := p until csr.parent = Void loop
 				if not csr.has_children then
 					csr.parent.remove_child (csr)
 				end
@@ -241,9 +211,6 @@ feature {NONE} -- Implementation
 			end
 			csr.put_child (Current)
 		end
-
-invariant
-	Generic_validity: not (is_generic xor node_id.is_equal(Generic_attr_name))
 
 end
 
@@ -262,10 +229,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is cadl_rel_node.e.
+--| The Original Code is og_attribute_node.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2003-2011
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

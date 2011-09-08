@@ -63,8 +63,7 @@ feature {NONE} -- Initialization
 			border.extend (hb)
 
 			if has_icon_directory then
-			--	pixmaps.item ("openEHR_logo").stretch (233, 77)
-				hb.extend (pixmaps ["openEHR_logo"])
+				hb.extend (pixmaps ["adl_workbench_logo"])
 			end
 
 			create label

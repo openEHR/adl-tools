@@ -38,7 +38,7 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make_dt
+	make_dt (make_args: ARRAY[ANY])
 			--
 		do
 			language := Default_language_code
@@ -58,11 +58,11 @@ feature -- Initialisation
 			Purpose_set: purpose = a_purpose
 		end
 
-	make_from_language(a_lang_name: STRING; a_purpose: STRING)
+	make_from_language(a_lang_name, a_purpose: attached STRING)
 			-- make using a_lang_name and default language code ste
 		require
-			Lang_valid: a_lang_name /= Void and then not a_lang_name.is_empty
-			Purpose_valid: a_purpose /= Void and then not a_purpose.is_empty
+			Lang_valid: not a_lang_name.is_empty
+			Purpose_valid: not a_purpose.is_empty
 		do
 			create language.make(default_language_code_set, a_lang_name)
 			purpose := a_purpose
@@ -73,10 +73,10 @@ feature -- Initialisation
 
 feature -- Access
 
-	language: CODE_PHRASE
+	language: attached CODE_PHRASE
 			-- Language of this item
 
-	purpose: STRING
+	purpose: attached STRING
 			-- Purpose of the archetype.
 
 	use: STRING
@@ -108,50 +108,50 @@ feature -- Status
 
 feature -- Modification
 
-	set_purpose(a_purpose: STRING)
+	set_purpose(a_purpose: attached STRING)
 			-- set purpose
 		require
-			Purpose_valid: a_purpose /= Void and then not a_purpose.is_empty
+			Purpose_valid: not a_purpose.is_empty
 		do
 			purpose := a_purpose
 		ensure
 			Purpose_set: purpose = a_purpose
 		end
 
-	set_use(a_use: STRING)
+	set_use(a_use: attached STRING)
 			-- set use
 		require
-			Purpose_valid: a_use /= Void and then not a_use.is_empty
+			Purpose_valid: not a_use.is_empty
 		do
 			use := a_use
 		ensure
 			Use_set: use = a_use
 		end
 
-	set_misuse(a_misuse: STRING)
+	set_misuse(a_misuse: attached STRING)
 			-- set misuse
 		require
-			Misuse_valid: a_misuse /= Void and then not a_misuse.is_empty
+			Misuse_valid: not a_misuse.is_empty
 		do
 			misuse := a_misuse
 		ensure
 			Misuse_set: misuse = a_misuse
 		end
 
-	set_copyright(a_copyright: STRING)
+	set_copyright(a_copyright: attached STRING)
 			-- set copyright
 		require
-			Copyright_valid: a_copyright /= Void and then not a_copyright.is_empty
+			Copyright_valid: not a_copyright.is_empty
 		do
 			copyright := a_copyright
 		ensure
 			Copyright_set: copyright = a_copyright
 		end
 
-	add_keyword(a_keyword: STRING)
+	add_keyword(a_keyword: attached STRING)
 			-- add a_keyword to keywords
 		require
-			Contributor_valid: a_keyword /= Void and then not a_keyword.is_empty
+			Contributor_valid: not a_keyword.is_empty
 		do
 			if keywords = Void then
 				create keywords.make(0)
@@ -161,11 +161,11 @@ feature -- Modification
 			Keyword_added: keywords.has(a_keyword)
 		end
 
-	add_other_detail(a_key, a_value: STRING)
+	add_other_detail(a_key, a_value: attached STRING)
 			-- add the key, value pair to other_details
 		require
-			Key_valid: a_key /= Void and then not a_key.is_empty
-			Value_valid: a_value /= Void and then not a_value.is_empty
+			Key_valid: not a_key.is_empty
+			Value_valid: not a_value.is_empty
 		do
 			if other_details = Void then
 				create other_details.make(0)
@@ -175,11 +175,11 @@ feature -- Modification
 			Other_details_set: other_details.item(a_key) = a_value
 		end
 
-	add_original_resource_uri(a_key, a_value: STRING)
+	add_original_resource_uri(a_key, a_value: attached STRING)
 			-- add the key, value pair to original_resource_uri
 		require
-			Key_valid: a_key /= Void and then not a_key.is_empty
-			Value_valid: a_value /= Void and then not a_value.is_empty
+			Key_valid: not a_key.is_empty
+			Value_valid: not a_value.is_empty
 		do
 			if original_resource_uri = Void then
 				create original_resource_uri.make (0)
@@ -192,54 +192,41 @@ feature -- Modification
 
 feature -- Copying
 
-	translated_copy(a_lang: STRING): RESOURCE_DESCRIPTION_ITEM
+	translated_copy(a_lang: attached STRING): attached RESOURCE_DESCRIPTION_ITEM
 			-- generate a copy of this object, with all strings sss replaced by
 			-- "*sss(orig_lang)"
 		require
-			a_lang /= Void and then not language.code_string.is_equal(a_lang)
+			not language.code_string.is_equal(a_lang)
 		local
 			prefix_str, suffix_str: STRING
 		do
 			prefix_str := "*"
 			suffix_str := "(" + a_lang + ")"
-			create Result.make(create {CODE_PHRASE}.make(Default_language_code_set, a_lang),
-				prefix_str + purpose + suffix_str)
-			if use /= Void then
+			create Result.make(create {CODE_PHRASE}.make(Default_language_code_set, a_lang), prefix_str + purpose + suffix_str)
+			if attached use then
 				Result.set_use(prefix_str + use + suffix_str)
 			end
-			if misuse /= Void then
+			if attached misuse then
 				Result.set_misuse(prefix_str + misuse + suffix_str)
 			end
-			if copyright /= Void then
+			if attached copyright then
 				Result.set_copyright(prefix_str + copyright + suffix_str)
 			end
-			if keywords /= Void then
-				from
-					keywords.start
-				until
-					keywords.off
-				loop
+			if attached keywords then
+				from keywords.start until keywords.off loop
 					Result.add_keyword(prefix_str + keywords.item + suffix_str)
 					keywords.forth
 				end
 			end
-			if original_resource_uri /= Void then
-				from
-					original_resource_uri.start
-				until
-					original_resource_uri.off
-				loop
+			if attached original_resource_uri then
+				from original_resource_uri.start until original_resource_uri.off loop
 					Result.add_original_resource_uri(prefix_str + original_resource_uri.key_for_iteration + suffix_str,
 						original_resource_uri.item_for_iteration)
 					original_resource_uri.forth
 				end
 			end
-			if other_details /= Void then
-				from
-					other_details.start
-				until
-					other_details.off
-				loop
+			if attached other_details then
+				from other_details.start until other_details.off loop
 					Result.add_other_detail(prefix_str + other_details.key_for_iteration + suffix_str,
 						prefix_str + other_details.item_for_iteration + suffix_str)
 					other_details.forth
@@ -254,6 +241,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			-- empty structure means all attributes
 		once
 			create Result.make(0)
+			Result.compare_objects
 			Result.extend("language")
 			Result.extend("purpose")
 			Result.extend("use")
@@ -262,12 +250,11 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			Result.extend("original_resource_uri")
 			Result.extend("copyright")
 			Result.extend("other_details")
-			Result.compare_objects
 		end
 
 invariant
-	language_valid: language /= Void and then code_set(code_set_id_languages).has(language)
-	purpose_valid: purpose /= Void and then not purpose.is_empty
+	language_valid: code_set(code_set_id_languages).has(language)
+	purpose_valid: not purpose.is_empty
 	use_valid: use /= Void implies not use.is_empty
 	misuse_valid: misuse /= Void implies not misuse.is_empty
 	copyright_valid: copyright /= Void implies not copyright.is_empty

@@ -43,8 +43,8 @@ feature -- Test routines
 			assert_equal (default_concept_code, target.ontology.concept_code)
 
 			term := target.ontology.term_definition ("en", default_concept_code)
-			assert ("text", term.has_key ("text"))
-			assert ("description", term.has_key ("description"))
+			assert ("text", term.keys.has ("text"))
+			assert ("description", term.keys.has ("description"))
 		end
 
 end

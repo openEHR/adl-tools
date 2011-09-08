@@ -14,19 +14,51 @@ note
 class CARDINALITY
 
 create
-	make
+	make, make_from_string
+
+feature -- Definitions
+
+	Cardinality_subsection_delimiter: CHARACTER = ';'
+
+	Cardinality_unique_marker: STRING = "unique"
+
+	Cardinality_ordered_marker: STRING = "ordered"
+
+	Cardinality_unordered_marker: STRING = "unordered"
 
 feature -- Initialisation
 
-	make(an_interval: MULTIPLICITY_INTERVAL)
-			--
+	make (an_interval: attached MULTIPLICITY_INTERVAL)
+			-- default status is: ordered, not unique, i.e., a list
 		require
-			Interval_exists: an_interval /= Void and then not an_interval.lower_unbounded
+			Interval_valid: not an_interval.lower_unbounded
 		do
 			interval := an_interval
 			is_ordered := True
 		ensure
 			Is_list: is_ordered and not is_unique
+		end
+
+	make_from_string (a_str: attached STRING)
+			-- make from string of form "n..m; ordered; unique" where the ';' section(s) are optional
+		local
+			end_pos: INTEGER
+		do
+			end_pos := a_str.index_of (Cardinality_subsection_delimiter, 1)
+			if end_pos > 0 then
+				create interval.make_from_string (a_str.substring (1, end_pos-1))
+				if a_str.has_substring (Cardinality_unordered_marker) then
+					-- nothing, but have to check before checking for 'ordered' marker
+				elseif a_str.has_substring (Cardinality_ordered_marker) then
+					is_ordered := True
+				end
+
+				if a_str.has_substring (Cardinality_unique_marker) then
+					is_unique := True
+				end
+			else
+				create interval.make_from_string (a_str)
+			end
 		end
 
 feature -- Access
@@ -88,7 +120,7 @@ feature -- Modification
 
 feature -- Output
 
-	as_string: STRING
+	as_string: attached STRING
 			-- output as a string, excluding default items
 		do
 			create Result.make(0)

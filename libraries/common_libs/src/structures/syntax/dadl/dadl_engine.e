@@ -2,9 +2,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "interface class to ADL parser and parse tree"
 	keywords:    "ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -71,10 +71,9 @@ feature -- Commands
 			serialised := Void
 		end
 
-	set_source (in_text: STRING; a_source_start_line: INTEGER)
+	set_source (in_text: attached STRING; a_source_start_line: INTEGER)
 			-- Set `in_text' as working artifact.
 		require
-			text_attached: in_text /= Void
 			start_line_positive: a_source_start_line > 0
 		do
 			source := in_text
@@ -89,7 +88,7 @@ feature -- Commands
 	parse
 			-- Parse artifact into `tree', then validate the artifact.
 		require
-			source_attached: source /= Void
+			source_attached: attached source
 			parsing: in_parse_mode
 		do
 			tree := Void
@@ -100,21 +99,30 @@ feature -- Commands
 				tree := parser.output
 			end
 		ensure
-			parse_succeeded or else tree = Void
+			parse_succeeded implies attached tree
 		end
 
-	serialise (a_format: STRING)
+	serialise (a_format: attached STRING; full_type_marking_on, output_typed_encapsulated: BOOLEAN)
 			-- Serialise current artifact into `a_format'.
+			-- `full_type_marking_on' = True if type marking even for inferrable primitive types should be added to serialised output
+			-- `output_typed_encapsulated' = True: output with typed object wrapper, rather than just the series of attributes innside the object
+
 		require
 			Format_valid: has_dt_serialiser_format (a_format)
-			Archetype_valid: tree /= Void implies tree.is_valid
+			Archetype_valid: attached tree implies tree.is_valid
 		local
 			a_dt_serialiser: DT_SERIALISER
 			a_dt_iterator: DT_VISITOR_ITERATOR
 		do
-			if tree /= Void then
+			if attached tree then
 				a_dt_serialiser := dt_serialiser_for_format (a_format)
 				a_dt_serialiser.reset
+				if full_type_marking_on then
+					a_dt_serialiser.set_full_type_marking_on
+				end
+				if output_typed_encapsulated then
+					a_dt_serialiser.set_output_typed_encapsulated
+				end
 				create a_dt_iterator.make (tree, a_dt_serialiser)
 				a_dt_iterator.do_all
 				serialised := a_dt_serialiser.last_result
@@ -122,13 +130,11 @@ feature -- Commands
 				create serialised.make_empty
 			end
 		ensure
-			serialised_attached: serialised /= Void
+			serialised_attached: attached serialised
 		end
 
-	set_tree (a_node: DT_COMPLEX_OBJECT_NODE)
+	set_tree (a_node: attached DT_COMPLEX_OBJECT_NODE)
 			-- Set root node of `tree' from e.g. GUI tool.
-		require
-			node_attached: a_node /= Void
 		do
 			tree := a_node
 			in_parse_mode := False
@@ -139,7 +145,7 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	parser: attached DADL2_VALIDATOR
+	parser: attached DADL_VALIDATOR
 			-- dADL parser.
 
 end

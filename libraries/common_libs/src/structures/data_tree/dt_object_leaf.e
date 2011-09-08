@@ -21,36 +21,30 @@ inherit
 
 feature -- Initialisation
 
-	make_identified(a_value: like value; a_node_id: STRING)
+	make_identified (a_value: attached like value; a_node_id: attached STRING)
 		require
-			Item_valid: a_value /= Void
-			Node_id_valid: a_node_id /= Void and then not a_node_id.is_empty
+			Node_id_valid: not a_node_id.is_empty
 		do
 			default_create
 			create representation.make(a_node_id, Current)
 			set_value(a_value)
 		ensure
-			is_typed
 			is_addressable
 		end
 
-	make_anonymous(a_value: like value)
-		require
-			Item_valid: a_value /= Void
+	make_anonymous (a_value: attached like value)
 		do
 			default_create
 			create representation.make_anonymous(Current)
 			set_value(a_value)
 		ensure
-			is_typed
 			not is_addressable
 		end
 
 	default_create
 			-- create with unknown type
 		do
-			create rm_type_name.make(0)
-			rm_type_name.append(Unknown_type_name)
+			im_type_name := Unknown_type_name.twin
 		end
 
 feature -- Access
@@ -66,7 +60,7 @@ feature -- Status Report
 			-- report on validity
 		do
 			create invalid_reason.make(0)
-			invalid_reason.append(rm_type_name + ": ")
+			invalid_reason.append(im_type_name + ": ")
 			if value = Void then
 				invalid_reason.append("leaf value Void")
 			else
@@ -80,7 +74,7 @@ feature -- Representation
 
 feature -- Conversion
 
-	as_object(a_type_id: INTEGER): ANY
+	as_object (a_type_id: INTEGER; make_args: ARRAY[ANY]): ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		do
@@ -90,9 +84,7 @@ feature -- Conversion
 
 feature -- Modification
 
-	set_value(a_value: like value)
-		require
-			Item_valid: a_value /= Void
+	set_value (a_value: attached like value)
 		deferred
 		ensure
 			Value_set: value = a_value
@@ -100,10 +92,8 @@ feature -- Modification
 
 feature -- Output
 
-	as_string: STRING
+	as_string: attached STRING
 		deferred
-		ensure
-			Result_exists: Result /= Void
 		end
 
 end

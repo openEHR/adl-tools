@@ -349,7 +349,7 @@ c_archetype_root: SYM_USE_ARCHETYPE type_identifier '[' V_ARCHETYPE_ID ']' c_occ
 	| SYM_USE_ARCHETYPE type_identifier '[' V_LOCAL_CODE ',' V_ARCHETYPE_ID ']' c_occurrences
 		{
 			if (create {ARCHETYPE_ID}).valid_id($6) then
-				create $$.make_with_slot_id($2, $4, $6)
+				create $$.make_with_slot_id($2, $6, $4)
 				if $8 /= Void then
 					$$.set_occurrences($8)
 				end
@@ -577,15 +577,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 			if not object_nodes.item.has_attribute(rm_attribute_name) then
 				if rm_schema.has_property (object_nodes.item.rm_type_name, rm_attribute_name) then
 					bmm_prop_def := rm_schema.property_definition (object_nodes.item.rm_type_name, rm_attribute_name)
-					if $2 /= Void and then bmm_prop_def.existence.equal_interval($2) and not validation_strict then
-						$2 := Void -- throw out constraint that is same as RM
-					end
 					if bmm_prop_def.is_container then
-						if attached {BMM_CONTAINER_PROPERTY} bmm_prop_def as bmm_cont_prop and $3 /= Void then
-							if $3.interval.equal_interval(bmm_cont_prop.type.cardinality) and not validation_strict then
-								-- $3 := Void -- throw out constraint that is same as RM
-							end
-						end
 						create attr_node.make_multiple(rm_attribute_name, $2, $3)
 						c_attrs.put(attr_node)
 						debug("ADL_parse")
@@ -629,15 +621,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 				-- check RM to see if path is valid, and if it is a container
 				if rm_schema.has_property_path (object_nodes.item.rm_type_name, path_str) then
 					bmm_prop_def := rm_schema.property_definition_at_path (object_nodes.item.rm_type_name, path_str)
-					if $2 /= Void and then bmm_prop_def.existence.equal_interval($2) and not validation_strict then
-						$2 := Void -- throw out constraint that is same as RM
-					end
 					if bmm_prop_def.is_container then
-						if attached {BMM_CONTAINER_PROPERTY} bmm_prop_def as bmm_cont_prop and $3 /= Void then
-							if $3.interval.equal_interval(bmm_cont_prop.type.cardinality) and not validation_strict then
-								-- $3 := Void -- throw out constraint that is same as RM
-							end
-						end
 						create attr_node.make_multiple(rm_attribute_name, $2, $3)
 						attr_node.set_differential_path(parent_path_str)
 						c_attrs.put(attr_node)
@@ -2305,9 +2289,7 @@ feature -- Initialization
 			make_parser_skeleton
 		end
 
-	execute (in_text:STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: SCHEMA_ACCESS)
-		require
-			Rm_schema_available: an_rm_schema /= Void
+	execute (in_text:STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: attached BMM_SCHEMA)
 		do
 			reset
 			rm_schema := an_rm_schema
@@ -2364,7 +2346,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	rm_schema: SCHEMA_ACCESS
+	rm_schema: BMM_SCHEMA
 
 	safe_put_c_attribute_child (an_attr: C_ATTRIBUTE; an_obj: C_OBJECT)
 			-- check child object for validity and then put as new child
@@ -2418,7 +2400,8 @@ feature {NONE} -- Implementation
 			elseif an_attr.is_multiple then
 				if an_attr.cardinality /= Void and an_obj.occurrences /= Void and (
 					not an_attr.cardinality.interval.upper_unbounded and (an_obj.occurrences.upper_unbounded or 
-								an_attr.cardinality.interval.upper < an_obj.occurrences.upper)) then
+								an_attr.cardinality.interval.upper < an_obj.occurrences.upper)) 
+				then
 					ar.extend(an_attr.cardinality.interval.as_string)
 					ar.extend(an_obj.occurrences.as_string)
 					err_code := "VACMC1"

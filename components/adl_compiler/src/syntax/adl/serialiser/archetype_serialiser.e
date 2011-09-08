@@ -1,10 +1,10 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "parent of all ADL serialisers"
-	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003,2004 Ocean Informatics Pty Ltd"
+	description: "Parent of all archetype serialisers."
+	keywords:    "serialisation, archetype"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -16,54 +16,17 @@ deferred class ARCHETYPE_SERIALISER
 inherit
 	ANY_SERIALISER
 
-feature -- Initialisation
-
-	initialise(an_ontology: ARCHETYPE_ONTOLOGY)
-			-- set ontology required for serialising cADL, and perform basic initialisation
-		require
-			Ontology_valid: an_ontology /= Void
-		do
-			reset
-			ontology := an_ontology
-		end
-
 feature -- Serialisation
 
-	serialise (a_target: ARCHETYPE; lang_serialised, desc_serialised, def_serialised, inv_serialised, ont_serialised: STRING)
-		require
-			a_target /= Void
-			lang_serialised /= Void
-			desc_serialised /= Void
-			def_serialised /= Void
-			ont_serialised /= Void
+	serialise (an_archetype: attached ARCHETYPE)
 		deferred
-		end
-
-	serialise_initialise
-		deferred
-		end
-
-	serialise_archetype_id
-		deferred
-		end
-
-	serialise_archetype_concept
-		deferred
-		end
-
-	serialise_archetype_specialise
-		deferred
-		end
-
-	serialise_finalise
-		deferred
+		ensure
+			attached archetype
 		end
 
 feature {NONE} -- Access
 
-	target: ARCHETYPE
-
-	ontology: ARCHETYPE_ONTOLOGY
+	archetype: ARCHETYPE
 
 end
 
@@ -82,10 +45,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is adl_serialiser.e.
+--| The Original Code is archetype_serialiser.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2011
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

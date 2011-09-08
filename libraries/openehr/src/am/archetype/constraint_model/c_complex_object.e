@@ -38,21 +38,21 @@ feature -- Initialisation
 			create attributes.make(0)
 		end
 
-	make_identified (a_rm_type_name, an_object_id: STRING)
+	make_identified (a_rm_type_name, an_object_id: attached STRING)
 			-- set type name, object_id
 		require
-			Rm_type_name_valid: a_rm_type_name /= Void and then not a_rm_type_name.is_empty
-			Object_id_valid: an_object_id /= Void and then not an_object_id.is_empty
+			Rm_type_name_valid: not a_rm_type_name.is_empty
+			Object_id_valid: not an_object_id.is_empty
 		do
 			default_create
 			create representation.make(an_object_id, Current)
 			rm_type_name := a_rm_type_name
 		end
 
-	make_anonymous (a_rm_type_name: STRING)
+	make_anonymous (a_rm_type_name: attached STRING)
 			-- set type name
 		require
-			Rm_type_name_valid: a_rm_type_name /= Void and then not a_rm_type_name.is_empty
+			Rm_type_name_valid: not a_rm_type_name.is_empty
 		do
 			default_create
 			create representation.make_anonymous(Current)
@@ -61,50 +61,44 @@ feature -- Initialisation
 
 feature -- Access
 
-	attributes: ARRAYED_LIST [C_ATTRIBUTE]
+	attributes: attached ARRAYED_LIST [C_ATTRIBUTE]
 
-	c_attribute (an_attr_name: STRING): C_ATTRIBUTE
+	c_attribute (an_attr_name: attached STRING): C_ATTRIBUTE
 		require
-			an_attr_name_valid: an_attr_name /= Void and then has_attribute(an_attr_name)
+			an_attr_name_valid: has_attribute(an_attr_name)
 		do
 			Result ?= representation.child_with_id(an_attr_name).content_item
 		end
 
-	c_attribute_at_path(a_path: STRING): C_ATTRIBUTE
+	c_attribute_at_path (a_path: attached STRING): C_ATTRIBUTE
 			-- get C_ATTRIBUTE at a path (which doesn't terminate in '/')
 		require
-			a_path_valid: a_path /= Void and then has_path(a_path)
+			a_path_valid: has_path(a_path)
 		do
 			Result ?= representation.attribute_node_at_path (create {OG_PATH}.make_from_string(a_path)).content_item
 		end
 
-	c_object_at_path(a_path: STRING): C_OBJECT
+	c_object_at_path (a_path: attached STRING): C_OBJECT
 			-- get C_OBJECT at a path (which terminates in '/')
 		require
-			a_path_valid: a_path /= Void and then has_path(a_path)
+			a_path_valid: has_path(a_path)
 		do
 			Result ?= representation.object_node_at_path (create {OG_PATH}.make_from_string(a_path)).content_item
 		end
 
-	all_paths_at_path(a_path: STRING): HASH_TABLE[C_OBJECT, STRING]
+	all_paths_at_path (a_path: attached STRING): attached HASH_TABLE[C_OBJECT, STRING]
 			-- all paths starting at node found at a_path, including itself
 		require
-			Path_valid: a_path /= Void and then has_path(a_path)
+			Path_valid: has_path(a_path)
 		local
 			og_paths: HASH_TABLE [OG_OBJECT, OG_PATH]
 			og_node: OG_OBJECT_NODE
-			og_obj: OG_OBJECT
 		do
 			og_node ?= representation.object_node_at_path(create {OG_PATH}.make_from_string(a_path))
 			og_paths := og_node.all_paths
 			create Result.make(0)
-			from
-				og_paths.start
-			until
-				og_paths.off
-			loop
-				og_obj := og_paths.item_for_iteration
-				if og_obj /= Void then
+			from og_paths.start until og_paths.off loop
+				if attached {OG_OBJECT} og_paths.item_for_iteration as og_obj then
 					if attached {C_OBJECT} og_obj.content_item as c_obj then
 						Result.put (c_obj, og_paths.key_for_iteration.as_string)
 					end
@@ -113,37 +107,25 @@ feature -- Access
 				end
 				og_paths.forth
 			end
-		ensure
-			Result_exists: Result /= Void
 		end
 
-	all_paths: HASH_TABLE [C_OBJECT, STRING]
+	all_paths: attached HASH_TABLE [C_OBJECT, STRING]
 			-- All paths below this point, including this node.
 		local
 			og_paths: HASH_TABLE [OG_OBJECT, OG_PATH]
-			og_obj: OG_OBJECT
 		do
 			og_paths := representation.all_paths
 			create Result.make (0)
-
-			from
-				og_paths.start
-			until
-				og_paths.off
-			loop
-				og_obj := og_paths.item_for_iteration
-				if og_obj /= Void then
+			from og_paths.start until og_paths.off loop
+				if attached {OG_OBJECT} og_paths.item_for_iteration as og_obj then
 					if attached {C_OBJECT} og_obj.content_item as c_obj then
 						Result.put (c_obj, og_paths.key_for_iteration.as_string)
 					end
 				else
 					Result.put (Void, og_paths.key_for_iteration.as_string)
 				end
-
 				og_paths.forth
 			end
-		ensure
-			Result_exists: Result /= Void -- and then Result.object_comparison
 		end
 
 	prototype_value: ANY
@@ -167,35 +149,29 @@ feature -- Status Report
 			Result := attributes.count > 0
 		end
 
-	has_path(a_path: STRING): BOOLEAN
+	has_path (a_path: attached STRING): BOOLEAN
 			-- does a_path exist from this node?
-		require
-			Path_valid: a_path /= Void
 		do
-			Result := representation.has_path(create {OG_PATH}.make_from_string(a_path))
+			Result := representation.has_path (create {OG_PATH}.make_from_string(a_path))
 		end
 
-	has_object_path(a_path: STRING): BOOLEAN
+	has_object_path (a_path: attached STRING): BOOLEAN
 			-- does a_path exist to an object node from this node?
-		require
-			Path_valid: a_path /= Void
 		do
-			Result := representation.has_object_path(create {OG_PATH}.make_from_string(a_path))
+			Result := representation.has_object_path (create {OG_PATH}.make_from_string(a_path))
 		end
 
-	has_attribute_path(a_path: STRING): BOOLEAN
+	has_attribute_path (a_path: attached STRING): BOOLEAN
 			-- does a_path to an object node exist from this node?
-		require
-			Path_valid: a_path /= Void
 		do
-			Result := representation.has_attribute_path(create {OG_PATH}.make_from_string(a_path))
+			Result := representation.has_attribute_path (create {OG_PATH}.make_from_string(a_path))
 		end
 
-	has_attribute(an_attr_name: STRING): BOOLEAN
+	has_attribute (an_attr_name: attached STRING): BOOLEAN
 		require
-			an_attr_name_valid: an_attr_name /= Void and then not an_attr_name.is_empty
+			an_attr_name_valid: not an_attr_name.is_empty
 		do
-			Result := representation.has_child_with_id(an_attr_name)
+			Result := representation.has_child_with_id (an_attr_name)
 		end
 
 	valid_value (a_value: like prototype_value): BOOLEAN
@@ -205,20 +181,20 @@ feature -- Status Report
 
 feature -- Modification
 
-	put_attribute(an_attr: C_ATTRIBUTE)
+	put_attribute (an_attr: attached C_ATTRIBUTE)
 			-- put a new attribute
 		require
-			Attribute_exists: an_attr /= Void and not has_attribute (an_attr.rm_attribute_path)
+			Attribute_valid: not has_attribute (an_attr.rm_attribute_path)
 		do
-			representation.put_child(an_attr.representation)
-			attributes.extend(an_attr)
-			an_attr.set_parent(Current)
+			representation.put_child (an_attr.representation)
+			attributes.extend (an_attr)
+			an_attr.set_parent (Current)
 		end
 
-	remove_attribute(an_attr: C_ATTRIBUTE)
+	remove_attribute (an_attr: attached C_ATTRIBUTE)
 			-- remove an existing attribute
 		require
-			Attribute_exists: an_attr /= Void and has_attribute (an_attr.rm_attribute_path)
+			Attribute_valid: has_attribute (an_attr.rm_attribute_path)
 		do
 			attributes.prune_all(an_attr)
 			representation.remove_child (an_attr.representation)
@@ -226,10 +202,10 @@ feature -- Modification
 			not has_attribute (an_attr.rm_attribute_path)
 		end
 
-	remove_attribute_by_name (an_attr_name: STRING)
+	remove_attribute_by_name (an_attr_name: attached STRING)
 			-- remove an existing attribute
 		require
-			Attribute_name_valid: an_attr_name /= Void and has_attribute (an_attr_name)
+			Attribute_name_valid: has_attribute (an_attr_name)
 		local
 			ca: C_ATTRIBUTE
 		do
@@ -249,12 +225,12 @@ feature -- Modification
 
 feature -- Output
 
-	out: STRING
+	out: attached STRING
 			--
 		do
 			create Result.make(0)
-			Result.append(rm_type_name + "[" + node_id + "] ")
-			if occurrences /= Void then
+			Result.append (rm_type_name + "[" + node_id + "] ")
+			if attached occurrences then
 				Result.append(occurrences.as_string)
 			end
 		end
@@ -265,25 +241,28 @@ feature -- Representation
 
 feature -- Visitor
 
-	enter_subtree(visitor: C_VISITOR; depth: INTEGER)
+	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
-			visitor.start_c_complex_object(Current, depth)
+			visitor.start_c_complex_object (Current, depth)
 		end
 
-	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
+	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
-			visitor.end_c_complex_object(Current, depth)
+			visitor.end_c_complex_object (Current, depth)
 		end
 
 feature {NONE} -- Implementation
 
 	child_type: C_ATTRIBUTE
 			-- child parse nodes
+		note
+			option: transient
+		attribute
+		end
 
 invariant
-	Attributes_valid: attributes /= Void
 	Any_allowed_validity: any_allowed xor not attributes.is_empty
 
 end

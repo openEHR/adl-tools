@@ -52,10 +52,10 @@ feature -- Access
 			Result := current_directory + operating_environment.Directory_separator.out + current_file_name
 		end
 
-	current_directory: STRING
+	current_directory: attached STRING
 			-- directory name only
 
-	current_file_name: STRING
+	current_file_name: attached STRING
 			-- name of fle only
 
 	has_byte_order_marker: BOOLEAN
@@ -63,9 +63,9 @@ feature -- Access
 
 	last_op_failed: BOOLEAN
 
-	last_op_fail_reason: STRING
+	last_op_fail_reason: attached STRING
 
-	file_content: STRING
+	file_content: attached STRING
 			-- Text from current file as a string.
 
 	file_lines: ARRAYED_LIST [STRING]
@@ -76,10 +76,8 @@ feature -- Access
 
 feature -- Status Report
 
-	has_file (a_file_name: STRING): BOOLEAN
+	has_file (a_file_name: attached STRING): BOOLEAN
 			-- Does `a_file_name' exist in `current_directory'?
-		require
-			File_name_valid: a_file_name /= Void
 		local
 			a_file: PLAIN_TEXT_FILE
    		do
@@ -87,10 +85,10 @@ feature -- Status Report
 			Result := a_file.exists
 		end
 
-	file_writable (a_file_name: STRING): BOOLEAN
+	file_writable (a_file_name: attached STRING): BOOLEAN
 			-- True if named file is writable, or else doesn't exist
 		require
-			File_name_valid: a_file_name /= Void and then not a_file_name.is_empty
+			File_name_valid: not a_file_name.is_empty
 		local
 			fd: PLAIN_TEXT_FILE
    		do
@@ -153,14 +151,15 @@ feature -- Commands
 
 	read_matching_lines (start_patterns: attached ARRAY[STRING]; ignore_pattern: STRING; max_lines: INTEGER)
 			-- Read lines starting with `start_patterns', ignoring lines starting with `ignore_pattern',
-			-- up to a maximum of `max_lines' non-ignored lines. Output line, if any, in `file_lines'
+			-- or only whitespace, up to a maximum of `max_lines' non-ignored lines. Output lines, if any,
+			-- in `file_lines'
 		require
 			Start_patterns_valid: not start_patterns.is_empty
 			Ignore_pattern_valid: attached ignore_pattern implies not ignore_pattern.is_empty
 			Valid_max_lines: max_lines > 0
 		local
 			in_file: PLAIN_TEXT_FILE
-			i, j: INTEGER
+			i, j, k: INTEGER
 			items_found: ARRAY[BOOLEAN]
    		do
    			last_op_failed := False
@@ -169,21 +168,32 @@ feature -- Commands
 
 			if in_file.exists then
 				in_file.open_read
-				create items_found.make (start_patterns.lower, start_patterns.upper)
+				create items_found.make_filled (False, start_patterns.lower, start_patterns.upper)
+
 				from i := 1 until i > max_lines or file_lines.count = start_patterns.count or in_file.end_of_file loop
 					in_file.read_line
-					if not in_file.last_string.starts_with (ignore_pattern) then
-						from j := start_patterns.lower until j > start_patterns.upper loop
-							if not items_found[j] and in_file.last_string.starts_with (start_patterns[j]) then
+
+					-- ignore if empty
+					if not in_file.last_string.is_empty and not in_file.last_string.starts_with (ignore_pattern) then
+						-- see if just whitespace
+						from k := 1 until k > in_file.last_string.count or else not in_file.last_string.item (k).is_space loop
+							k := k + 1
+						end
+
+						if k <= in_file.last_string.count then
+							from j := start_patterns.lower until j > start_patterns.upper or else (in_file.last_string.starts_with (start_patterns[j]) and not items_found[j]) loop
+								j := j + 1
+							end
+							if j <= start_patterns.upper then
 								file_lines.extend (in_file.last_string.twin)
 								file_lines.last.prune_all('%R')
 								items_found[j] := True
 							end
-							j := j + 1
+							i := i + 1
 						end
-						i := i + 1
 					end
 				end
+
 				in_file.close
 				if file_lines.count >= 1 then
 					clean_utf(file_lines[1])
@@ -232,11 +242,9 @@ feature -- Commands
 			file_content_empty_on_failure: last_op_failed implies file_content.is_empty
 		end
 
-	save_file (a_file_name, content: STRING)
+	save_file (a_file_name, content: attached STRING)
 			-- Write `content' out to file `a_file_name' in `current_directory'.
 		require
-			Arch_id_valid: a_file_name /= Void
-			Content_valid: content /= Void
 			File_writable: file_writable (a_file_name)
 		local
 			out_file: PLAIN_TEXT_FILE
@@ -263,10 +271,10 @@ feature -- Commands
 			end
 		end
 
-	set_target (a_file_path: STRING)
+	set_target (a_file_path: attached STRING)
 			-- set context to `a_file_path'
 		require
-			a_file_path_valid: a_file_path /= Void and then not a_file_path.is_empty
+			a_file_path_valid: not a_file_path.is_empty
 		local
 			sep_pos: INTEGER
 		do
@@ -281,16 +289,16 @@ feature -- Commands
 			end
 		end
 
-	set_current_file_name (a_file_name: STRING)
+	set_current_file_name (a_file_name: attached STRING)
 		require
-			a_file_name_valid: a_file_name /= Void and then not a_file_name.is_empty
+			a_file_name_valid: not a_file_name.is_empty
 		do
 			current_file_name := a_file_name
 		end
 
-	set_current_directory (a_dir: STRING)
+	set_current_directory (a_dir: attached STRING)
 		require
-			a_dir_valid: a_dir /= Void and then not a_dir.is_empty
+			a_dir_valid: not a_dir.is_empty
 		do
 			current_directory := a_dir
 		end
@@ -309,10 +317,6 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	directory_attached: current_directory /= Void
-	file_name_attached: current_file_name /= Void
-	last_op_fail_reason_attached: last_op_fail_reason /= Void
-	content_attached: file_content /= Void
 	timestamp_natural: file_timestamp >= 0
 
 end

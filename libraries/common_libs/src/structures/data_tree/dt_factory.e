@@ -18,12 +18,11 @@ inherit
 
 feature -- Access
 
-	create_complex_object_node (a_parent: DT_ATTRIBUTE_NODE; a_node_id: STRING): DT_COMPLEX_OBJECT_NODE
+	create_complex_object_node (a_parent: attached DT_ATTRIBUTE_NODE; a_node_id: detachable STRING): attached DT_COMPLEX_OBJECT_NODE
 		require
-			parent_valid: a_parent /= Void
-			a_node_id_valid: a_node_id /= Void implies not a_node_id.is_empty
+			a_node_id_valid: attached a_node_id implies not a_node_id.is_empty
 		do
-			if a_node_id /= Void then
+			if attached a_node_id then
 				create Result.make_identified(a_node_id)
 			else
 				create Result.make_anonymous
@@ -31,30 +30,26 @@ feature -- Access
 			a_parent.put_child(Result)
 		end
 
-	create_attribute_node (a_parent: DT_COMPLEX_OBJECT_NODE; a_rel_name: STRING; is_multiple: BOOLEAN): DT_ATTRIBUTE_NODE
+	create_attribute_node (a_parent: attached DT_COMPLEX_OBJECT_NODE; a_rel_name: attached STRING; is_multiple: BOOLEAN): attached DT_ATTRIBUTE_NODE
 			-- create a rel_node with a simple name like "text" or "description"
 			-- is_multiple flag indicates if multiple cardinality
-		require
-			parent_valid: a_parent /= Void
-			rel_name_valid: a_rel_name /= Void
 		do
 			if is_multiple then
-				create Result.make_multiple(a_rel_name)
+				create Result.make_container(a_rel_name)
 			else
 				create Result.make_single(a_rel_name)
 			end
 			a_parent.put_attribute(Result)
 		end
 
-	create_dt_primitive_object (a_parent: DT_ATTRIBUTE_NODE; an_item: ANY; a_node_id: STRING): DT_PRIMITIVE_OBJECT
+	create_dt_primitive_object (a_parent: attached DT_ATTRIBUTE_NODE; an_item: attached ANY; a_node_id: detachable STRING): attached DT_PRIMITIVE_OBJECT
 			-- an_item must be STRING, INTEGER, REAL, DOUBLE, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION
 		require
-			parent_valid: a_parent /= Void
-			an_item_valid: an_item /= Void and then has_dt_primitive_atomic_type(an_item)
-			a_node_id_valid: a_node_id /= Void implies not a_node_id.is_empty
+			an_item_valid: has_dt_primitive_atomic_type(an_item)
+			a_node_id_valid: attached a_node_id implies not a_node_id.is_empty
 		do
-			if a_node_id /= Void then
+			if attached a_node_id then
 				create Result.make_identified(an_item, a_node_id)
 			else
 				create Result.make_anonymous(an_item)
@@ -62,15 +57,14 @@ feature -- Access
 			a_parent.put_child(Result)
 		end
 
-	create_primitive_object_list (a_parent: DT_ATTRIBUTE_NODE; an_item: LIST [ANY]; a_node_id: STRING): DT_PRIMITIVE_OBJECT_LIST
+	create_primitive_object_list (a_parent: attached DT_ATTRIBUTE_NODE; an_item: attached LIST [ANY]; a_node_id: detachable STRING): attached DT_PRIMITIVE_OBJECT_LIST
 			-- an_item must conform to LIST of STRING, INTEGER, REAL, DOUBLE, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION
 		require
-			parent_valid: a_parent /= Void
-			an_item_valid: an_item /= Void and then has_dt_primitive_sequence_type(an_item)
-			a_node_id_valid: a_node_id /= Void implies not a_node_id.is_empty
+			an_item_valid: has_dt_primitive_sequence_type(an_item)
+			a_node_id_valid: attached a_node_id implies not a_node_id.is_empty
 		do
-			if a_node_id /= Void then
+			if attached a_node_id then
 				create Result.make_identified(an_item, a_node_id)
 			else
 				create Result.make_anonymous(an_item)
@@ -78,11 +72,10 @@ feature -- Access
 			a_parent.put_child(Result)
 		end
 
-	create_primitive_object_term(a_parent: DT_ATTRIBUTE_NODE; a_qualified_code, a_node_id: STRING): DT_PRIMITIVE_OBJECT
+	create_primitive_object_term(a_parent: attached DT_ATTRIBUTE_NODE; a_qualified_code: attached STRING; a_node_id: STRING): DT_PRIMITIVE_OBJECT
 			-- an_item must be in the form TERMINOLOGY_ID::CODE
 		require
-			parent_valid: a_parent /= Void
-			a_qualified_code_valid: a_qualified_code /= Void and then not a_qualified_code.is_empty
+			a_qualified_code_valid: not a_qualified_code.is_empty
 			a_node_id_valid: a_node_id /= Void implies not a_node_id.is_empty
 		do
 			if a_node_id /= Void then
@@ -93,11 +86,10 @@ feature -- Access
 			a_parent.put_child(Result)
 		end
 
-	create_primitive_object_term_list (a_parent: DT_ATTRIBUTE_NODE; an_item: LIST [ANY]; a_node_id: STRING): DT_PRIMITIVE_OBJECT_LIST
+	create_primitive_object_term_list (a_parent: attached DT_ATTRIBUTE_NODE; an_item: attached LIST [ANY]; a_node_id: STRING): DT_PRIMITIVE_OBJECT_LIST
 			-- an_item must conform to LIST of STRINGs representing terms
 		require
-			parent_valid: a_parent /= Void
-			an_item_valid: an_item /= Void and then has_dt_primitive_sequence_type(an_item)
+			an_item_valid: has_dt_primitive_sequence_type(an_item)
 			a_node_id_valid: a_node_id /= Void implies not a_node_id.is_empty
 		do
 			Result := create_primitive_object_list(a_parent, an_item, a_node_id)

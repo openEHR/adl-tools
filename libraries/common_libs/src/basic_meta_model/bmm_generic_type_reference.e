@@ -17,15 +17,27 @@ class BMM_GENERIC_TYPE_REFERENCE
 inherit
 	BMM_TYPE_REFERENCE
 
-feature -- Initialisation
+feature -- Access (attributes from schema)
+
+	root_type: STRING
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+	generic_parameters: ARRAYED_LIST [STRING]
+			-- generic parameters of the root_type in this type specifier
+			-- The order must match the order of the owning class's formal generic parameter declarations
+			-- FIXME: currently the code below is limited to handling 1 level of generic parameter, i.e no further generics
+
+feature -- Access (attributes derived in post-schema processing)
+
+	root_type_def: BMM_CLASS_DEFINITION
+			-- root type
+
+	generic_parameter_defs: ARRAYED_LIST [BMM_TYPE_SPECIFIER]
+			-- generic parameters of the root_type in this type specifier
+			-- The order must match the order of the owning class's formal generic parameter declarations
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
 feature -- Access
-
-	root_type: BMM_CLASS_DEFINITION
-			-- optional type to which this paramter conforms
-
-	generic_parameters: ARRAYED_LIST [BMM_TYPE_SPECIFIER]
-			-- generic parameters of the root_type in this type specifier
 
 	flattened_type_list: ARRAYED_LIST [STRING]
 			-- completely flattened list of type names, flattening out all generic parameters
@@ -33,18 +45,95 @@ feature -- Access
 		do
 			create Result.make(0)
 			Result.compare_objects
-			Result.extend (root_type.name)
-			from
-				generic_parameters.start
-			until
-				generic_parameters.off
-			loop
-				Result.append(generic_parameters.item.flattened_type_list)
-				generic_parameters.forth
+			Result.extend (root_type)
+			from generic_parameter_defs.start until generic_parameter_defs.off loop
+				Result.append(generic_parameter_defs.item.flattened_type_list)
+				generic_parameter_defs.forth
+			end
+		end
+
+	type_category: STRING
+			-- generate a type category of main target type from Type_cat_xx values
+		local
+			has_abstract_gen_parms: BOOLEAN
+		do
+			from generic_parameter_defs.start until generic_parameter_defs.off loop
+				if not generic_parameter_defs.item.type_category.is_equal (Type_cat_concrete_class) then
+					has_abstract_gen_parms := True
+				end
+				generic_parameter_defs.forth
+			end
+			if root_type_def.is_abstract and has_abstract_gen_parms then
+				Result := Type_cat_abstract_class
+			elseif has_type_substitutions then
+				Result := Type_cat_concrete_class_supertype
+			else
+				Result := Type_cat_concrete_class
+			end
+		end
+
+	type_substitutions: ARRAYED_SET [STRING]
+			-- just generate permutations of one generic parameter for now
+		local
+			root_sub_type_list, gen_param_sub_type_list: ARRAYED_SET [STRING]
+		do
+			root_sub_type_list := root_type_def.type_substitutions
+			if root_sub_type_list.is_empty then
+				root_sub_type_list.extend (root_type_def.name)
+			end
+
+			gen_param_sub_type_list := generic_parameter_defs.first.type_substitutions
+			if gen_param_sub_type_list.is_empty then
+				gen_param_sub_type_list.extend (generic_parameter_defs.first.as_type_string)
+			end
+
+			create Result.make (0)
+			from root_sub_type_list.start until root_sub_type_list.off loop
+				from gen_param_sub_type_list.start until gen_param_sub_type_list.off loop
+					Result.extend (root_sub_type_list.item + generic_left_delim.out + gen_param_sub_type_list.item + generic_right_delim.out)
+					gen_param_sub_type_list.forth
+				end
+				root_sub_type_list.forth
 			end
 		end
 
 feature -- Status Report
+
+	has_type_substitutions: BOOLEAN
+		do
+			Result := root_type_def.has_type_substitutions or generic_parameter_defs.first.has_type_substitutions
+		end
+
+feature -- Commands
+
+	finalise_build (a_bmmm: attached BMM_SCHEMA; a_class_def: attached BMM_CLASS_DEFINITION; a_prop_def: attached BMM_PROPERTY_DEFINITION; errors: ERROR_ACCUMULATOR)
+		do
+			bmm_schema := a_bmmm
+			if bmm_schema.has_class_definition (root_type) then
+				root_type_def := bmm_schema.class_definition (root_type)
+				create generic_parameter_defs.make (0)
+				from generic_parameters.start until generic_parameters.off loop
+					if bmm_schema.has_class_definition (generic_parameters.item) then
+						generic_parameter_defs.extend (bmm_schema.class_definition (generic_parameters.item))
+					elseif root_type_def.is_generic then
+						if attached root_type_def.generic_parameter_defs then
+							if root_type_def.generic_parameter_defs.has (generic_parameters.item) then
+								generic_parameter_defs.extend (root_type_def.generic_parameter_defs.item (generic_parameters.item))
+							else
+								errors.add_error ("BMM_GPGPU", <<bmm_schema.schema_id, a_class_def.name, a_prop_def.name, root_type_def.name, generic_parameters.item>>, Void)
+							end
+						else
+							errors.add_error ("BMM_GPGPM", <<bmm_schema.schema_id, root_type_def.name>>, Void)
+						end
+					else
+						errors.add_error ("BMM_GPGPT", <<bmm_schema.schema_id, a_class_def.name, a_prop_def.name, generic_parameters.item>>, Void)
+					end
+					generic_parameters.forth
+				end
+			else
+				errors.add_error ("BMM_GPRT", <<bmm_schema.schema_id, a_class_def.name, a_prop_def.name, root_type>>, Void)
+			end
+		end
 
 feature -- Output
 
@@ -52,18 +141,14 @@ feature -- Output
 			-- name of the type
 		do
 			create Result.make (0)
-			Result.append (root_type.name)
+			Result.append (root_type)
 			Result.append_character (Generic_left_delim)
-			from
-				generic_parameters.start
-			until
-				generic_parameters.off
-			loop
-				Result.append(generic_parameters.item.as_type_string)
-				if not generic_parameters.islast then
+			from generic_parameter_defs.start until generic_parameter_defs.off loop
+				Result.append(generic_parameter_defs.item.as_type_string)
+				if not generic_parameter_defs.islast then
 					Result.append_character(generic_separator)
 				end
-				generic_parameters.forth
+				generic_parameter_defs.forth
 			end
 			Result.append_character (Generic_right_delim)
 		end
@@ -73,10 +158,6 @@ feature -- Output
 		do
 			Result := as_type_string
 		end
-
-invariant
-	Root_type_exists: root_type /= Void
-	Generic_parameters_valid: generic_parameters /= Void
 
 end
 

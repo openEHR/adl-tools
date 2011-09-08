@@ -1,11 +1,14 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Shared access to archteype directory.
+				 Shared access to 'archteype directories'. An archetype directory is an in-memory logical catalogue of
+				 archetypes & templates corresponding to a single 'profile'. Each profile may reference one or more 
+				 source locations, providing reference and working repositories, with the pseudo-location 'adhoc'
+				 enabling archetypes to be added adhoc to a directory.
 				 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2006-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -16,12 +19,64 @@ note
 
 class SHARED_KNOWLEDGE_REPOSITORY
 
+inherit
+	SHARED_APP_RESOURCES
+
+	SHARED_SOURCE_REPOSITORIES
+
 feature -- Access
 
-	arch_dir: ARCHETYPE_DIRECTORY
+	current_arch_cat: attached ARCHETYPE_CATALOGUE
 			-- application-wide archetype directory access
+		require
+			has_current_profile
+		do
+			if not arch_cats.has (repository_profiles.current_profile_name) then
+				use_current_profile (False)
+			end
+			Result := arch_cats.item (repository_profiles.current_profile_name)
+		end
+
+	use_current_profile (refresh: BOOLEAN)
+			-- switch to current profile; refresh flag forces archetype in memory directory to be refreshed from source repository
+		local
+			new_cat: ARCHETYPE_CATALOGUE
+		do
+			init_gen_dirs_from_current_profile
+			if not arch_cats.has (repository_profiles.current_profile_name) or else refresh then
+				create new_cat.make
+				if directory_exists (repository_profiles.current_reference_repository_path) then
+					source_repositories.set_reference_repository (repository_profiles.current_reference_repository_path)
+					if not repository_profiles.current_work_repository_path.is_empty then
+						if source_repositories.valid_working_repository_path (repository_profiles.current_work_repository_path) then
+							source_repositories.set_work_repository (repository_profiles.current_work_repository_path)
+						else
+							post_error (Current, "switch_to_profile", "work_repo_not_found", <<repository_profiles.current_work_repository_path>>)
+						end
+					else
+						source_repositories.remove_work_repository
+					end
+					new_cat.populate
+					arch_cats.force (new_cat, repository_profiles.current_profile_name) -- replace original copy if it was there
+				else
+					post_error (Current, "switch_to_profile", "ref_repo_not_found", <<repository_profiles.current_reference_repository_path>>)
+				end
+			end
+		end
+
+feature -- Status Report
+
+	has_current_profile: BOOLEAN
+		do
+			Result := repository_profiles.has_current_profile
+		end
+
+feature {NONE} -- Implementation
+
+	arch_cats: attached HASH_TABLE [ARCHETYPE_CATALOGUE, STRING]
+			-- hash of all archetype directories used so far in the current session
 		once
-			create Result.make
+			create Result.make(0)
 		end
 
 end

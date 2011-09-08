@@ -47,10 +47,10 @@ convert
 
 feature -- Initialisation
 
-	make_from_string(str: STRING)
+	make_from_string(str: attached STRING)
 			-- make from any valid ISO date string
 		require
-			String_valid: str /= Void and valid_iso8601_date(str)
+			String_valid: valid_iso8601_date(str)
 		do
 			if valid_iso8601_date(str) then
 				deep_copy(iso8601_parser.cached_iso8601_date)
@@ -110,7 +110,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	value: STRING
+	value: attached STRING
 			-- ISO8601 string for date; always equal to result of as_string
 
 	year: INTEGER
@@ -197,7 +197,7 @@ feature -- Conversion
 
 feature -- Output
 
-	as_string: STRING
+	as_string: attached STRING
 			-- express as string of ISO8601 format
 		local
 			s: STRING
@@ -227,7 +227,7 @@ feature -- Output
 				end
 			end
 		ensure
-			Result_valid: Result /= Void and then valid_iso8601_date(Result)
+			Result_valid: valid_iso8601_date(Result)
 		end
 
 	out: STRING

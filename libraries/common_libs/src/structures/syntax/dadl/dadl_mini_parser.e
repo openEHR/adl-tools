@@ -36,6 +36,7 @@ feature -- Definitions
 feature -- Access
 
 	last_parse_content: HASH_TABLE [STRING, STRING]
+			-- table of {attr_name, value} pairs
 
 	last_parse_fail_reason: STRING
 

@@ -40,11 +40,6 @@ feature -- Access
 
 feature -- Status Report
 
-	valid_canonical_string(str: STRING): BOOLEAN
-			-- True if str contains required tags
-		deferred
-		end
-
 	accuracy_is_percent: BOOLEAN
 			-- If True, indicates that when this object was created, accuracy was recorded as a
 			-- percent value; if False, as an absolute quantity value.
@@ -108,17 +103,6 @@ feature -- Output
 			end
 		end
 
-	as_canonical_string: STRING
-			-- standardised form of string guaranteed to contain all information
-			-- in data item
-		do
-			Result := "<magnitude>" + magnitude.out + "</magnitude>"
-			if accuracy /= 0 then
-				Result.append("<accuracy>" + accuracy.out + "</accuracy>")
-				Result.append("<accuracy_is_percent>" + accuracy_is_percent.out + "</accuracy_is_percent>")
-			end
-		end
-
 	magnitude_as_string: attached STRING
 			-- output the magnitude in its natural form
 		deferred
@@ -127,7 +111,7 @@ feature -- Output
 		end
 
 invariant
-	Accuracy_validity: accuracy_is_percent implies valid_percentage(accuracy)
+	Accuracy_validity: accuracy_is_percent implies valid_percentage (accuracy)
 
 end
 

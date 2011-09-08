@@ -19,8 +19,8 @@ note
 
 class EXTRACT_REQUEST_REPEAT
 
-inherit
-	MESSAGE_CONTENT
+--inherit
+--	MESSAGE_CONTENT
 
 feature -- Access
 

@@ -15,7 +15,11 @@ class C_SERIALISER_MGR
 
 inherit
 	SHARED_C_SERIALISERS
+
 	C_ITERATOR
+		rename
+			make as iterator_make
+		end
 
 create
 	make
@@ -53,16 +57,6 @@ feature -- Access
 feature {NONE} -- Implementation
 
 	visitor: C_SERIALISER
-
-	node_enter_action(a_node: OG_ITEM; indent_level: INTEGER)
-		do
-			a_node.enter_subtree(visitor, indent_level)
-		end
-
-	node_exit_action(a_node: OG_ITEM; indent_level: INTEGER)
-		do
-			a_node.exit_subtree(visitor, indent_level)
-		end
 
 end
 

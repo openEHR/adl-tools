@@ -57,11 +57,7 @@ feature -- Source Control
 		do
 			create Result.make (ss_propagated)
 			if items /= Void then
-				from
-					items.start
-				until
-					items.off
-				loop
+				from items.start until items.off loop
 					if items.item.symbol.is_local then
 						Result := Result.specialisation_dominant_status (specialisation_status_from_code (items.item.symbol.code_string, spec_level))
 						items.forth
@@ -90,11 +86,7 @@ feature -- Status Report
 			-- Is `code_phrase' in one of the ordinals in `index'?
 		do
 			if index /= Void then
-				from
-					index.start
-				until
-					Result or index.off
-				loop
+				from index.start until Result or index.off loop
 					Result := index.item_for_iteration.symbol.is_equal (code_phrase)
 					index.forth
 				end
@@ -114,22 +106,18 @@ feature -- Status Report
 
 feature -- Comparison
 
-	node_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
+	node_conforms_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
 			-- True if this node is a subset, i.e. a redefinition of, `other' in the ADL constraint sense, i.e. that all
 			-- aspects of the definition of this node and all child nodes define a narrower, wholly
 			-- contained instance space of `other'.
 			-- Returns False if they are the same, or if they do not correspond
 		do
-			if precursor(other, an_rm_schema) then
+			if precursor (other, an_rm_schema) then
 				if other.any_allowed then
 					Result := True
 				elseif not any_allowed then
 					if items.count <= other.items.count then
-						from
-							items.start
-						until
-							items.off or not other.has_item (items.item.value)
-						loop
+						from items.start until items.off or not other.has_item (items.item.value) loop
 							items.forth
 						end
 					end
@@ -140,7 +128,7 @@ feature -- Comparison
 
 feature -- Modification
 
-	add_item(an_ordinal: ORDINAL)
+	add_item (an_ordinal: attached ORDINAL)
 			-- add an ordinal to the list
 		require
 			An_ordinal_valid: not any_allowed implies not has_item(an_ordinal.value)
@@ -155,7 +143,18 @@ feature -- Modification
 			Item_added: items.has(an_ordinal)
 		end
 
-	set_assumed_value_from_integer(a_value: INTEGER)
+	set_items (an_items: attached ARRAYED_LIST [ORDINAL])
+		do
+			create items.make
+			items.append (an_items)
+			create index.make (0)
+			from items.start until items.off loop
+				index.put (items.item, items.item.value)
+				items.forth
+			end
+		end
+
+	set_assumed_value_from_integer (a_value: INTEGER)
 			-- set `assumed_value' from an integer in the ordinal enumeration
 		require
 			Not_any_allowed: not any_allowed
@@ -172,11 +171,7 @@ feature -- Conversion
 			--
 		do
 			create Result.make (0)
-			from
-				items.start
-			until
-				items.off
-			loop
+			from items.start until items.off loop
 				if not items.isfirst then
 					Result.append (", ")
 				end
@@ -231,9 +226,9 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			-- empty structure means all attributes
 		once
 			create Result.make(0)
+			Result.compare_objects
 			Result.extend("items")
 			Result.extend("assumed_value")
-			Result.compare_objects
 		end
 
 invariant

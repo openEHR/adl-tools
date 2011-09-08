@@ -142,7 +142,7 @@ feature -- Modification
 			Valid_message_string:  not a_dadl_str.is_empty
 			Valid_local_lang: not a_locale_lang.is_empty
 		local
-			parser: DADL2_VALIDATOR
+			parser: DADL_VALIDATOR
 			dt_tree: DT_COMPLEX_OBJECT_NODE
 			init_helper: IN_MEMORY_MESSAGE_DB_INITIALISER
 		do
@@ -150,7 +150,7 @@ feature -- Modification
 			parser.execute(a_dadl_str, 1)
 			if not parser.syntax_error then
 				dt_tree := parser.output
-				init_helper ?= dt_tree.as_object_from_string("IN_MEMORY_MESSAGE_DB_INITIALISER")
+				init_helper ?= dt_tree.as_object_from_string("IN_MEMORY_MESSAGE_DB_INITIALISER", Void)
 				if init_helper.templates.has (a_locale_lang) then
 					templates.merge (init_helper.templates.item (a_locale_lang))
 				else

@@ -24,42 +24,89 @@ inherit
 
 feature -- Initialisation
 
-	make_dt
+	make_dt  (make_args: ARRAY[ANY])
 			-- make in a safe way for DT building purposes
 		do
 			create properties.make (0)
-			create ancestors.make (0)
+			create ancestor_defs.make (0)
 			create all_ancestors.make (0)
 			all_ancestors.compare_objects
 			create immediate_descendants.make (0)
 		end
 
-feature -- Access
+feature -- Access (attributes from schema)
 
-	name: STRING
+	name: attached STRING
 			-- name of the class FROM SCHEMA
-			-- DON'T RENAME THIS ATTRIBUTE
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
-	generic_parameters: HASH_TABLE [BMM_GENERIC_PARAMETER_DEFINITION, STRING]
+	generic_parameter_defs: HASH_TABLE [BMM_GENERIC_PARAMETER_DEFINITION, STRING]
 			-- list of generic parameter definitions
 			-- FIXME: this won't function correctly unless ordering is guaranteed;
-			-- use DS_HASH_TABLE - but not yet supported by DT_OBJECT_CONVERTER
-			-- DON'T RENAME THIS ATTRIBUTE
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
-	ancestors: ARRAYED_LIST [BMM_CLASS_DEFINITION]
+	ancestors: ARRAYED_LIST [STRING]
 			-- list of immediate inheritance parents FROM SCHEMA
-			-- DON'T RENAME THIS ATTRIBUTE
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+	properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
+			-- list of attributes defined in this class FROM SCHEMA
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+	is_abstract: BOOLEAN
+			-- True if this is an abstract type
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+	is_generic: BOOLEAN
+			-- True if this class is a generic class
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+feature -- Access (attributes derived in post-schema processing)
+
+	uid: INTEGER
+			-- unique id generated for later comparison, in order to detect if two classes are the same
+			-- or not
+
+	ancestor_defs: ARRAYED_LIST [BMM_CLASS_DEFINITION]
+			-- list of immediate inheritance parents derived from `ancestors'in post-schema processing
+			-- by BMM_SCHEMA
 
 	all_ancestors: ARRAYED_LIST [STRING]
-			-- list of all inheritance parent class names; derived in port-schema processing
+			-- list of all inheritance parent class names; derived in post-schema processing
+			-- by BMM_SCHEMA
 
 	immediate_descendants: ARRAYED_LIST [BMM_CLASS_DEFINITION]
 			-- list of immediate inheritance descendants; set during post processing
 			-- by BMM_SCHEMA
 
-	properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
-			-- list of attributes defined in this class FROM SCHEMA
-			-- DON'T RENAME THIS ATTRIBUTE
+	type_category: STRING
+			-- generate a type category of main target type from Type_cat_xx values
+		do
+			if is_abstract then
+				Result := Type_cat_abstract_class
+			elseif has_type_substitutions then
+				Result := Type_cat_concrete_class_supertype
+			else
+				Result := Type_cat_concrete_class
+			end
+		end
+
+	qualified_package_name: STRING
+			-- fully qualified package name, of form: 'package.package'
+
+	qualified_name: STRING
+			-- fully qualified class name, of form: 'package.package.CLASS'
+			-- with package path in lower-case and class in original case
+
+	globally_qualified_name: STRING
+			-- fully qualified class name prepended with schema name, of form: 'schema_name::package.package.CLASS'
+			-- to enable identification in situation when a given class/package has been imported into more than
+			-- one schema.
+
+	override_definition: BOOLEAN
+			-- True if this definition overrides a class of the same name in an included schema
+
+feature -- Access
 
 	immediate_suppliers: attached ARRAYED_SET [STRING]
 			-- list of names of immediate supplier classes, including concrete generic parameters and
@@ -82,12 +129,12 @@ feature -- Access
 				end
 				from properties.start until properties.off loop
 					-- get the statically defined type(s) of the property (could be >1 due to generics)
-					ftl := properties.item_for_iteration.type.flattened_type_list
+					ftl := properties.item_for_iteration.type_def.flattened_type_list
 					immediate_suppliers_cache.merge (ftl)
 
 					-- now get the descendant types
 					from ftl.start until ftl.off loop
-						imm_descs := bmm_model.class_definition (ftl.item).immediate_descendants
+						imm_descs := bmm_schema.class_definition (ftl.item).immediate_descendants
 						from imm_descs.start until imm_descs.off loop
 							immediate_suppliers_cache.extend(imm_descs.item.name)
 							imm_descs.forth
@@ -108,10 +155,10 @@ feature -- Access
 			if immediate_suppliers_non_primitive_cache = Void then
 				create prim_types.make (0)
 				prim_types.compare_objects
-				prim_types.merge (bmm_model.primitive_types.current_keys)
-				create immediate_suppliers_non_primitive_cache.make(0)
+				prim_types.merge (bmm_schema.primitive_types.current_keys)
+				create immediate_suppliers_non_primitive_cache.make (0)
 				immediate_suppliers_non_primitive_cache.compare_objects
-				immediate_suppliers_non_primitive_cache.merge(immediate_suppliers)
+				immediate_suppliers_non_primitive_cache.merge (immediate_suppliers)
 				immediate_suppliers_non_primitive_cache.subtract (prim_types)
 			end
 			Result := immediate_suppliers_non_primitive_cache
@@ -128,7 +175,7 @@ feature -- Access
 				all_suppliers_cache.compare_objects
 				all_suppliers_cache.merge (immediate_suppliers)
 				from immediate_suppliers.start until immediate_suppliers.off loop
-					all_suppliers_cache.merge (bmm_model.class_definition (immediate_suppliers.item).all_suppliers)
+					all_suppliers_cache.merge (bmm_schema.class_definition (immediate_suppliers.item).all_suppliers)
 					immediate_suppliers.forth
 				end
 			end
@@ -141,9 +188,9 @@ feature -- Access
 			if flat_properties_cache = Void then
 				create flat_properties_cache.make(0)
 				flat_properties_cache.compare_objects
-				from ancestors.start until ancestors.off loop
-					flat_properties_cache.merge (ancestors.item.flat_properties)
-					ancestors.forth
+				from ancestor_defs.start until ancestor_defs.off loop
+					flat_properties_cache.merge (ancestor_defs.item.flat_properties)
+					ancestor_defs.forth
 				end
 				flat_properties_cache.merge (properties)
 			end
@@ -158,19 +205,19 @@ feature -- Access
 			Result.compare_objects
 			Result.extend (name)
 			if is_generic then
-				from generic_parameters.start until generic_parameters.off loop
-					Result.append(generic_parameters.item_for_iteration.flattened_type_list)
-					generic_parameters.forth
+				from generic_parameter_defs.start until generic_parameter_defs.off loop
+					Result.append(generic_parameter_defs.item_for_iteration.flattened_type_list)
+					generic_parameter_defs.forth
 				end
 			end
 		end
 
-	property_definition_at_path (a_prop_path: OG_PATH): attached BMM_PROPERTY_DEFINITION
+	property_definition_at_path (a_prop_path: attached OG_PATH): attached BMM_PROPERTY_DEFINITION
 			-- retrieve the property definition for `a_prop_path' in flattened class corresponding to `a_type_name'
 			-- note that the internal cursor of the path is used to know how much to read - from cursor to end (this allows
 			-- recursive evaluation)
 		require
-			Property_path_valid: a_prop_path /= Void and then has_property_path(a_prop_path)
+			Property_path_valid: has_property_path(a_prop_path)
 		local
 			a_path_pos: INTEGER
 			class_def: BMM_CLASS_DEFINITION
@@ -181,7 +228,7 @@ feature -- Access
 				Result := flat_properties.item (a_prop_path.item.attr_name)
 				a_prop_path.forth
 				if not a_prop_path.off then
-					class_def := bmm_model.class_definition(Result.type.root_class)
+					class_def := bmm_schema.class_definition(Result.type_def.root_class)
 					Result := class_def.property_definition_at_path(a_prop_path)
 				end
 			else -- look in the descendants
@@ -195,38 +242,47 @@ feature -- Access
 			a_prop_path.go_i_th (a_path_pos)
 		end
 
-	property_type (a_class_type_name, a_prop_name: STRING): attached STRING
+	property_type (a_class_type_name, a_prop_name: attached STRING): attached STRING
 			-- retrieve the property type for `a_prop_name' in class corresponding to `a_type_name'
 			-- same as property_definition.type, except if a_type_name is generic
 		require
-			Type_name_valid: a_class_type_name /= Void and then is_well_formed_type_name (a_class_type_name)
-			Property_valid: a_prop_name /= Void and then has_property(a_prop_name)
+			Type_name_valid: is_well_formed_type_name (a_class_type_name)
+			Property_valid: has_property(a_prop_name)
 		local
 			prop_def: BMM_PROPERTY_DEFINITION
 			prop_type: BMM_TYPE_SPECIFIER
 			gen_param_count: INTEGER
 		do
 			prop_def := flat_properties.item(a_prop_name)
-			prop_type := prop_def.type
+			prop_type := prop_def.type_def
 			if attached {BMM_GENERIC_PARAMETER_DEFINITION} prop_type as gen_prop_type then
 				gen_param_count := 1
-				from generic_parameters.start until generic_parameters.off or generic_parameters.item_for_iteration.name.is_equal(gen_prop_type.name) loop
+				from generic_parameter_defs.start until generic_parameter_defs.off or generic_parameter_defs.item_for_iteration.name.is_equal(gen_prop_type.name) loop
 					gen_param_count := gen_param_count + 1
-					generic_parameters.forth
+					generic_parameter_defs.forth
 				end
-				Result := type_name_as_flattened_type_list (a_class_type_name).i_th (gen_param_count)
+				Result := type_name_as_flattened_list (a_class_type_name).i_th (gen_param_count)
 			else
 				Result := prop_type.as_type_string
 			end
 		end
 
+	type_substitutions: ARRAYED_SET [STRING]
+		do
+			create Result.make(0)
+			from immediate_descendants.start until immediate_descendants.off loop
+				Result.extend (immediate_descendants.item.name)
+				Result.merge (immediate_descendants.item.type_substitutions)
+				immediate_descendants.forth
+			end
+		end
+
 feature -- Status Report
 
-	is_abstract: BOOLEAN
-			-- True if this is an abstract type
-
-	is_generic: BOOLEAN
-			-- True if this class is a generic class
+	has_type_substitutions: BOOLEAN
+		do
+			Result := is_abstract or else not immediate_descendants.is_empty
+		end
 
 	has_property (a_prop_name: STRING): BOOLEAN
 			-- True if a_prop_name valid in this type, due to this type definition, or any ancestor
@@ -236,14 +292,14 @@ feature -- Status Report
 			Result := flat_properties.has (a_prop_name)
 		end
 
-	has_ancestor (a_class_name: STRING): BOOLEAN
+	has_ancestor (a_class_name: attached STRING): BOOLEAN
 			-- True if a_class_name is among the ancestor classes
 		require
-			Class_name_valid: a_class_name /= Void and then not a_class_name.is_empty
+			Class_name_valid: not a_class_name.is_empty
 		do
-			from ancestors.start until ancestors.off or Result loop
-				Result := ancestors.item.name.is_equal(a_class_name) or else ancestors.item.has_ancestor (a_class_name)
-				ancestors.forth
+			from ancestor_defs.start until ancestor_defs.off or Result loop
+				Result := ancestor_defs.item.name.is_equal(a_class_name) or else ancestor_defs.item.has_ancestor (a_class_name)
+				ancestor_defs.forth
 			end
 		end
 
@@ -271,7 +327,7 @@ feature -- Status Report
 		do
 			a_path_pos := a_path.items.index
 			if has_property (a_path.item.attr_name) then
-				class_def := bmm_model.class_definition(flat_properties.item (a_path.item.attr_name).type.root_class)
+				class_def := bmm_schema.class_definition(flat_properties.item (a_path.item.attr_name).type_def.root_class)
 				a_path.forth
 				if not a_path.off then
 					Result := class_def.has_property_path(a_path)
@@ -289,35 +345,71 @@ feature -- Status Report
 
 feature -- Commands
 
-	dt_finalise (a_bmmm: BMM_SCHEMA)
+	finalise_load (a_bmm_schema: attached BMM_SCHEMA)
+			-- set source schema
+		do
+			bmm_source_schema_id := a_bmm_schema.schema_id
+		end
+
+	finalise_build (a_bmmm: attached BMM_SCHEMA; errors: ERROR_ACCUMULATOR)
 			-- synchronise structures after creation by DT deserialiser
 		do
-			bmm_model := a_bmmm
+			bmm_schema := a_bmmm
 
-			-- connect attribute defs with parent attribute defs
-
-			-- connect generic parm defs with defs in parent classes if any
-			-- first find a direct ancestor that has generic parameters
-			if is_generic and ancestors /= Void then
-				from ancestors.start until ancestors.off or ancestors.item.is_generic loop
+			-- populate references to ancestor classes; should be every class except Any
+			if attached ancestors then
+				from ancestors.start until ancestors.off loop
+					if bmm_schema.has_class_definition (ancestors.item) then
+						ancestor_defs.extend (bmm_schema.class_definition (ancestors.item))
+					end
 					ancestors.forth
 				end
-				if not ancestors.off then
-					from generic_parameters.start until generic_parameters.off loop
-						if ancestors.item.generic_parameters.has (generic_parameters.key_for_iteration) then
-							generic_parameters.item_for_iteration.set_inheritance_precursor(ancestors.item.generic_parameters.item(generic_parameters.key_for_iteration))
-						end
-						generic_parameters.forth
+			end
+
+			-- post-process generic parameters if any
+			if is_generic then
+				if attached generic_parameter_defs then
+					from generic_parameter_defs.start until generic_parameter_defs.off loop
+						generic_parameter_defs.item_for_iteration.finalise_build (a_bmmm, Current, errors)
+						generic_parameter_defs.forth
 					end
+
+					-- connect generic parm defs with defs in parent classes if any
+					-- first find a direct ancestor that has generic parameters
+					if not ancestor_defs.is_empty then
+						from ancestor_defs.start until ancestor_defs.off or ancestor_defs.item.is_generic loop
+							ancestor_defs.forth
+						end
+						if not ancestor_defs.off then
+							from generic_parameter_defs.start until generic_parameter_defs.off loop
+								if ancestor_defs.item.generic_parameter_defs.has (generic_parameter_defs.key_for_iteration) then
+									generic_parameter_defs.item_for_iteration.set_inheritance_precursor (ancestor_defs.item.generic_parameter_defs.item (generic_parameter_defs.key_for_iteration))
+								end
+								generic_parameter_defs.forth
+							end
+						end
+					end
+				else
+					errors.add_error ("BMM_GPGPM", <<a_bmmm.schema_id, name>>, Void)
 				end
 			end
+
+			-- post-process properties
+			from properties.start until properties.off loop
+				properties.item_for_iteration.finalise_build (a_bmmm, Current, errors)
+				properties.forth
+			end
+
+			-- connect attribute defs with parent attribute defs
 		end
 
 feature -- Traversal
 
-	do_supplier_closure (flat_flag: BOOLEAN; enter_action, exit_action: PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION]])
+	do_supplier_closure (flat_flag: BOOLEAN; max_depth: INTEGER;
+		enter_action: PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION, INTEGER]]; exit_action: PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION]])
 			-- On all nodes in supplier closure of this class, execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 			-- If `flat_flag' = True, use the inheritance-flattened closure
+			-- THIS CAN BE AN EXPENSIVE COMPUTATION, so it is limited by the max_depth argument
 		require
 			enter_action_attached: enter_action /= Void
 		local
@@ -338,7 +430,7 @@ feature -- Traversal
 			end
 
 			from props.start until props.off loop
-				do_property_supplier_closure (props.item_for_iteration, flat_flag, enter_action, exit_action)
+				do_property_supplier_closure (props.item_for_iteration, flat_flag, max_depth, enter_action, exit_action)
 				props.forth
 			end
 		end
@@ -355,14 +447,14 @@ feature -- Output
 			if is_generic then
 				Result.append_character (generic_left_delim)
 				from
-					generic_parameters.start
+					generic_parameter_defs.start
 					i := 1
-				until generic_parameters.off loop
-					Result.append(generic_parameters.item_for_iteration.as_type_string)
-					if i < generic_parameters.count then
+				until generic_parameter_defs.off loop
+					Result.append(generic_parameter_defs.item_for_iteration.as_type_string)
+					if i < generic_parameter_defs.count then
 						Result.append_character(generic_separator)
 					end
-					generic_parameters.forth
+					generic_parameter_defs.forth
 					i := i + 1
 				end
 				Result.append_character (generic_right_delim)
@@ -375,12 +467,37 @@ feature -- Output
 			Result := as_type_string
 		end
 
-feature {BMM_SCHEMA} -- Implementation
+feature {BMM_PACKAGE_DEFINITION} -- Modification
+
+	set_qualified_names (a_schema_id, a_package_name: attached STRING)
+			-- a_name is of form 'package.package.package'
+		do
+			qualified_package_name := a_package_name
+
+			qualified_name := a_package_name.twin
+			qualified_name.append_character (package_name_delimiter)
+			qualified_name.append (name)
+
+			globally_qualified_name := a_schema_id + Schema_name_delimiter + qualified_name
+		end
+
+feature {BMM_SCHEMA} -- Modification
 
 	add_immediate_descendant(a_bmm_class: BMM_CLASS_DEFINITION)
 			-- add a class def to the descendants list
 		do
 			immediate_descendants.extend (a_bmm_class)
+		end
+
+	set_override_definition
+			-- set `override_definition'
+		do
+			override_definition := True
+		end
+
+	set_uid (val: INTEGER)
+		do
+			uid := val
 		end
 
 feature {BMM_CLASS_DEFINITION} -- Implementation
@@ -397,9 +514,6 @@ feature {BMM_CLASS_DEFINITION} -- Implementation
 	all_suppliers_cache: ARRAYED_SET [STRING]
 			-- cache for `suppliers'
 
-	bmm_model: BMM_SCHEMA
-			-- reverse reference, set after initialisation from input schema
-
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
 	persistent_attributes: ARRAYED_LIST[STRING]
@@ -411,33 +525,34 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 
 feature {NONE} -- Implementation
 
-	do_property_supplier_closure (a_prop: BMM_PROPERTY_DEFINITION; flat_flag: BOOLEAN; enter_action, exit_action: PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION]])
+	do_property_supplier_closure (a_prop: attached BMM_PROPERTY_DEFINITION; flat_flag: BOOLEAN; max_depth: INTEGER;
+		enter_action: attached PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION, INTEGER]]; exit_action: PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION]])
 			-- On all nodes in supplier closure of `a_prop', execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 			-- If `flat_flag' = True, use the inheritance-flattened closure
-		require
-			propert_attached: a_prop /= Void
-			enter_action_attached: enter_action /= Void
+			-- THIS CAN BE AN EXPENSIVE COMPUTATION, so it is limited by the max_depth argument
 		local
 			props: attached HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 		do
-			if not supplier_closure_stack.has(a_prop.type.root_class) then
-				supplier_closure_stack.extend(a_prop.type.root_class)
+			if not supplier_closure_stack.has (a_prop.type_def.root_class) then
+				supplier_closure_stack.extend (a_prop.type_def.root_class)
 
-				enter_action.call ([a_prop])
+				enter_action.call ([a_prop, max_depth])
 
-				if not supplier_closure_class_record.has(a_prop.type.root_class) then
-					supplier_closure_class_record.extend(a_prop.type.root_class)
-					if flat_flag then
-						props := bmm_model.class_definition(a_prop.type.root_class).flat_properties
-					else
-						props := bmm_model.class_definition(a_prop.type.root_class).properties
+		--		if not supplier_closure_class_record.has (a_prop.type_def.root_class) then
+		--			supplier_closure_class_record.extend (a_prop.type_def.root_class)
+					if max_depth > 0 then
+						if flat_flag then
+							props := bmm_schema.class_definition (a_prop.type_def.root_class).flat_properties
+						else
+							props := bmm_schema.class_definition (a_prop.type_def.root_class).properties
+						end
+
+						from props.start until props.off loop
+							do_property_supplier_closure (props.item_for_iteration, flat_flag, max_depth - 1, enter_action, exit_action)
+							props.forth
+						end
 					end
-
-					from props.start until props.off loop
-						do_property_supplier_closure (props.item_for_iteration, flat_flag, enter_action, exit_action)
-						props.forth
-					end
-				end
+		--		end
 
 				if exit_action /= Void then
 					exit_action.call ([a_prop])
@@ -450,13 +565,10 @@ feature {NONE} -- Implementation
 			-- list of classes on this tree branch, to prevent cycling
 
 	supplier_closure_class_record: ARRAYED_LIST [STRING]
-			-- list of classes already done, to prevent fully expanded form being generated after first instance
+			-- list of classes already done, to prevent fully expanded form of each class being generated after its first occurrence
 
 invariant
-	Properties_exists: properties /= Void
-	Ancestors_exists: ancestors /= Void
-	Descendants_exists: immediate_descendants /= Void
-	Generic_validity: is_generic implies generic_parameters /= Void and then not generic_parameters.is_empty
+	Generic_validity: is_generic implies generic_parameter_defs /= Void and then not generic_parameter_defs.is_empty
 
 end
 

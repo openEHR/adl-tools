@@ -28,9 +28,7 @@ create
 
 feature -- Initialisation
 
-	make(an_item: C_PRIMITIVE)
-		require
-			an_item /= Void
+	make (an_item: attached C_PRIMITIVE)
 		do
 			default_create
 			item := an_item
@@ -64,7 +62,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	node_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
+	node_conforms_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		do
 			if precursor(other, an_rm_schema) then
@@ -78,11 +76,9 @@ feature -- Comparison
 
 feature -- Output
 
-	as_string: STRING
+	as_string: attached STRING
 		do
 			Result := item.as_string
-		ensure
-			Result_exists: Result /= Void
 		end
 
 	out: STRING

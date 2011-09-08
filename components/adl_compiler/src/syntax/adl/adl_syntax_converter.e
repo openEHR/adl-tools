@@ -29,20 +29,16 @@ inherit
 
 feature -- Access
 
-	perform_syntax_upgrade(dadl_text: STRING)
+	perform_syntax_upgrade (dadl_text: attached STRING)
 			-- perform any upgrades likely to be required on older archetypes
 			-- dadl_text will be of form "C_SOME_TYPE <xxxxx>"
-		require
-			dadl_text /= Void
 		do
 		end
 
 feature -- ADL 1.4 conversions
 
-	convert_dadl_language(dadl_text: STRING)
+	convert_dadl_language (dadl_text: attached STRING)
 			-- converted language = <"xxx"> to language = <[ISO-639::xxx]>
-		require
-			dadl_text /= Void
 		local
 			pos, lpos, rpos: INTEGER
 			rep_str, lang: STRING
@@ -64,11 +60,9 @@ feature -- ADL 1.4 conversions
 			end
 		end
 
-	convert_c_dv_names(dadl_text: STRING)
+	convert_c_dv_names (dadl_text: attached STRING)
 			-- convert C_QUANTITY and C_ORDINAL in embedded dADL sections of cADL to
 			-- C_DV_QUANTITY and C_DV_ORDINAL
-		require
-			dadl_text /= Void
 		local
 			pos: INTEGER
 		do
@@ -87,7 +81,7 @@ feature -- ADL 1.4 conversions
 			end
 		end
 
-	convert_c_quantity_property(dadl_text: STRING)
+	convert_c_quantity_property (dadl_text: attached STRING)
 			-- convert an old style C_QUANTITY property dADL fragment from ADL 1.x
 			-- to ADL 1.4
 			-- The old fragment looks like this:
@@ -95,8 +89,6 @@ feature -- ADL 1.4 conversions
 			-- The new one looks like this:
 			--		property = <[openehr:xxxx]>
 			--
-		require
-			dadl_text /= Void
 		local
 			lpos, rpos: INTEGER
 			old_str, prop_name, new_str: STRING
@@ -118,12 +110,12 @@ feature -- ADL 1.4 conversions
 			end
 		end
 
-	convert_non_conforming_duration(a_str: STRING): STRING
+	convert_non_conforming_duration (a_str: attached STRING): STRING
 			-- fix an ISO8601-like duration string which is missing a 'T' character
 			-- called from cADL lexer, matched by pattern:
 			-- P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?([0-9]+h)?([0-9]+m)?([0-9]+s)?
 		require
-			a_str /= Void and then not a_str.is_empty
+			not a_str.is_empty
 		local
 			ind, i: INTEGER
 		do
@@ -165,11 +157,11 @@ feature -- ADL 1.4 conversions
 
 feature -- ADL 1.5 conversions
 
-	convert_dadl_type_name(a_type_name: STRING): STRING
+	convert_dadl_type_name (a_type_name: attached STRING): STRING
 			-- convert type name preceding <> dADL block to (typename), i.e. add parentheses
 			-- spec change is part of ADL 1.4.1, Release 1.0.2 of openEHR
 		require
-			type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
+			type_name_valid: not a_type_name.is_empty
 		do
 			if adl_version_for_flat_output_numeric >= 150 then
 				Result := "("
@@ -207,52 +199,108 @@ feature -- ADL 1.5 conversions
 --			end
 --		end
 
-	old_archetype_id_pattern_regex: LX_DFA_REGULAR_EXPRESSION
+	old_archetype_id_pattern_regex: attached LX_DFA_REGULAR_EXPRESSION
 			-- Pattern matcher for archetype ids with the 'draft' still in the version
 		once
 			create Result.compile_case_insensitive ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+){2}\.[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*\.v[1-9][0-9a-z]*$")
 		end
 
-	convert_ontology_syntax(dt: DT_COMPLEX_OBJECT_NODE)
+	convert_ontology_to_nested (dt: attached DT_COMPLEX_OBJECT_NODE)
+			-- convert 'items' nodes in ontology to nested form, corresponding to declaration like
+			-- HASH_TABLE [HASH_TABLE [ARCHETPE_TERM, STRING]]; the ADL way of expression ontology
+			-- has nested structures in the AOM, but non-nested structures in the dADL, due to
+			-- intervening 'items' attributes. This routine converts the parsed structure so that
+			-- these attributes are marked in the correct way to indicate nesting of container structures
+			-- which then enables the DT_OBJECT_CONVERTER to correctly generate such structures.
+			-- A reverse routine below does the opposite, so that serialisation back out to ADL 1.4 archetypes
+			-- looks the way it always has. One day, we will change the ADL standard on this...
 		do
-			if dt.has_attribute ("term_binding") then
-				dt.replace_attribute_name ("term_binding", "term_bindings")
+			-- convert top-level attribute names
+--			if dt.has_attribute ("term_binding") then
+--				dt.replace_attribute_name ("term_binding", "term_bindings")
+--			end
+--			if dt.has_attribute ("constraint_binding") then
+--				dt.replace_attribute_name ("constraint_binding", "constraint_bindings")
+--			end
+
+			convert_ontology_items_to_nested (dt, "term_definitions")
+			convert_ontology_items_to_nested (dt, "constraint_definitions")
+			convert_ontology_items_to_nested (dt, "term_bindings")
+			convert_ontology_items_to_nested (dt, "constraint_bindings")
+		end
+
+	convert_ontology_items_to_nested (dt: attached DT_COMPLEX_OBJECT_NODE; attr_name: attached STRING)
+			-- mark 'items' attribute nodes in ontology section as being nested_container; this is
+			-- to simulate having been parsed that way in the first place, so that these structures
+			-- will be correctly converted by DT_OBJECT_CONVERTER into nested HASH_TABLEs
+		local
+			dt_attr: DT_ATTRIBUTE_NODE
+			dt_objs: ARRAYED_LIST [DT_OBJECT_ITEM]
+		do
+			if dt.has_attribute (attr_name) then
+				dt_objs := dt.attribute_node (attr_name).children
+				from dt_objs.start until dt_objs.off loop
+					if attached {DT_COMPLEX_OBJECT_NODE} dt_objs.item as dt_co and then dt_co.has_attribute ("items") then
+						dt_attr := dt_co.attribute_node ("items")
+						dt_attr.set_nested_container
+					end
+					dt_objs.forth
+				end
 			end
-			if dt.has_attribute ("constraint_binding") then
-				dt.replace_attribute_name ("constraint_binding", "constraint_bindings")
+		end
+
+	convert_ontology_to_unnested (dt: attached DT_COMPLEX_OBJECT_NODE)
+			-- routine to reverse effects of `convert_ontology_to_nested' for
+			-- standard ADL1.4 style serialisation
+		do
+			convert_ontology_items_to_unnested (dt, "term_definitions")
+			convert_ontology_items_to_unnested (dt, "constraint_definitions")
+			convert_ontology_items_to_unnested (dt, "term_bindings")
+			convert_ontology_items_to_unnested (dt, "constraint_bindings")
+		end
+
+	convert_ontology_items_to_unnested (dt: attached DT_COMPLEX_OBJECT_NODE; attr_name: attached STRING)
+			-- mark 'items' attribute nodes in ontology section as being nested_container; this is
+			-- to simulate having been parsed that way in the first place, so that these structures
+			-- will be correctly converted by DT_OBJECT_CONVERTER into nested HASH_TABLEs
+		local
+			dt_attr: DT_ATTRIBUTE_NODE
+			dt_objs: ARRAYED_LIST [DT_OBJECT_ITEM]
+		do
+			if dt.has_attribute (attr_name) then
+				dt_objs := dt.attribute_node (attr_name).children
+				from dt_objs.start until dt_objs.off loop
+					if attached {DT_COMPLEX_OBJECT_NODE} dt_objs.item as dt_co and then dt_co.has_attribute ("items") then
+						dt_attr := dt_co.attribute_node ("items")
+						dt_attr.unset_nested
+					end
+					dt_objs.forth
+				end
 			end
 		end
 
 feature -- Path conversions
 
-	convert_use_ref_paths(ref_node_list: ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]; index_path: STRING; referree: ARCHETYPE)
+	convert_use_ref_paths (ref_node_list: attached ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]; index_path: attached STRING; referree: attached ARCHETYPE)
 			-- FIXME: the following only needed while old use_ref paths containing redundant node_ids are in existence
 			-- rewrite target path into standard Xpath format, removing [atnnn] predicates on objects below single attributes
 		local
 			xpath: STRING
 		do
 			xpath := referree.definition.c_object_at_path (index_path).path
-			from
-				ref_node_list.start
-			until
-				ref_node_list.off
-			loop
+			from ref_node_list.start until ref_node_list.off loop
 				ref_node_list.item.set_target_path (xpath)
 				ref_node_list.forth
 			end
 		end
 
-	convert_invariant_paths(expr_node_list: ARRAYED_LIST[EXPR_LEAF]; referree: ARCHETYPE)
+	convert_invariant_paths (expr_node_list: attached ARRAYED_LIST[EXPR_LEAF]; referree: attached ARCHETYPE)
 			-- FIXME: the following only needed while old invariant paths containing redundant node_ids are in existence
 			-- rewrite target path into standard Xpath format, removing [atnnn] predicates on objects below single attributes
 		local
 			xpath, assertion_path: STRING
 		do
-			from
-				expr_node_list.start
-			until
-				expr_node_list.off
-			loop
+			from expr_node_list.start until expr_node_list.off loop
 				assertion_path ?= expr_node_list.item.item
 				xpath := referree.definition.c_object_at_path (assertion_path).path
 				expr_node_list.item.make_archetype_definition_ref (xpath)

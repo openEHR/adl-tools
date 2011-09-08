@@ -33,7 +33,7 @@ feature -- Command
 	do_all
 			-- start the serialisation process; the result will be in `serialiser_output'
 		do
-			tree_iterator.do_all(agent node_enter_action(?,?), agent node_exit_action(?,?))
+			tree_iterator.do_all (agent node_enter_action (?,?), agent node_exit_action (?,?))
 		end
 
 feature {NONE} -- Implementation
@@ -42,16 +42,12 @@ feature {NONE} -- Implementation
 
 	visitor: DT_VISITOR
 
-	node_enter_action(a_node: OG_ITEM; indent_level: INTEGER)
-		require
-			Node_exists: a_node /= Void
+	node_enter_action (a_node: attached OG_ITEM; indent_level: INTEGER)
 		do
 			a_node.enter_subtree(visitor, indent_level)
 		end
 
-	node_exit_action(a_node: OG_ITEM; indent_level: INTEGER)
-		require
-			Node_exists: a_node /= Void
+	node_exit_action (a_node: attached OG_ITEM; indent_level: INTEGER)
 		do
 			a_node.exit_subtree(visitor, indent_level)
 		end

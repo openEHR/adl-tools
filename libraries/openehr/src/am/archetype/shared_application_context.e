@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Archetype Project"
 	description: "Shared context settings for serialisation"
 	keywords:    "test, ADL"
@@ -26,7 +26,7 @@ inherit
 
 feature -- Access
 
-	current_language: STRING is
+	current_language: STRING
 		do
 			Result := cell_language.item
 		ensure
@@ -35,7 +35,7 @@ feature -- Access
 
 feature -- Modification
 
-	set_current_language(a_lang: STRING) is
+	set_current_language(a_lang: STRING)
 			-- set `language'
 		require
 			a_lang /= Void and then not a_lang.is_empty
@@ -45,7 +45,7 @@ feature -- Modification
 
 feature {NONE} -- Implementation
 
-	cell_language: CELL[STRING] is
+	cell_language: CELL[STRING]
 			-- language to serialise in, for comments and other language-specific items
 		once
 			create Result.put(Default_language)

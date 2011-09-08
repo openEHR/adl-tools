@@ -1,4 +1,4 @@
-indexing
+note
 	component:   "openEHR Re-usable Components"
 	description: "Populate various Eiffel Vision2 standard controls from standard EiffelBase data structures"
 	keywords:    "EiffelVision, GUI"
@@ -19,7 +19,7 @@ inherit
 
 feature {NONE} -- Implementation
 
-	populate_ev_multi_list_from_hash(ev_mlist: EV_MULTI_COLUMN_LIST; ht: HASH_TABLE [ANY, STRING]) is
+	populate_ev_multi_list_from_hash(ev_mlist: EV_MULTI_COLUMN_LIST; ht: HASH_TABLE [ANY, STRING])
 			-- populate rows of a multi-column list with name - value pairs in a HASH_TABLE
 			-- Note that the value type is assumed to have a sensible outpur from its 'out' function
 		require
@@ -49,7 +49,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_ev_list_from_list(ev_list: EV_LIST; a_list: ARRAYED_LIST [STRING]) is
+	populate_ev_list_from_list(ev_list: EV_LIST; a_list: ARRAYED_LIST [STRING])
 			-- populate rows of a list with items from a ARRAYED_LIST [STRING]
 		require
 			ev_list_valid: ev_list /= Void
@@ -69,7 +69,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_ev_list_from_hash_keys(ev_list: EV_LIST; ht: HASH_TABLE [ANY, STRING]) is
+	populate_ev_list_from_hash_keys(ev_list: EV_LIST; ht: HASH_TABLE [ANY, STRING])
 			-- populate list from hash table keys
 		local
 			ev_list_item: EV_LIST_ITEM
@@ -87,7 +87,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_ev_combo_from_hash_keys(ev_combo: EV_COMBO_BOX; ht: DS_HASH_TABLE [INTEGER, STRING]) is
+	populate_ev_combo_from_hash_keys(ev_combo: EV_COMBO_BOX; ht: DS_HASH_TABLE [INTEGER, STRING])
 			-- populate combo from hash table items
 		local
 			strs: ARRAYED_LIST[STRING]

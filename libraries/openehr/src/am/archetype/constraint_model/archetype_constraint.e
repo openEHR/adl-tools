@@ -2,9 +2,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Abstract model of any archetype constraint"
 	keywords:    "archetype, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2004-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -22,6 +22,8 @@ inherit
 			{ANY} valid_specialisation_status
 		end
 
+	HASHABLE
+
 feature -- Access
 
 	parent: ARCHETYPE_CONSTRAINT
@@ -35,7 +37,13 @@ feature -- Access
 	path_to_node (a_node: ARCHETYPE_CONSTRAINT): STRING
 			-- path from this node to `a_node'
 		do
-			Result := representation.path_to_node(a_node.representation).as_string
+			Result := representation.path_to_node (a_node.representation).as_string
+		end
+
+	hash_code: INTEGER
+			-- Hash code value
+		do
+			Result := path.hash_code
 		end
 
 feature -- Source Control
@@ -52,6 +60,10 @@ feature -- Source Control
 			-- status of this node taking into consideration effective_specialisation_status of
 			-- all sub-nodes. Used to roll up nodes on visualisation, and also to decide which
 			-- subtree to remove to convert an archetype to differential form
+		note
+			option: transient
+		attribute
+		end
 
 	set_rolled_up_specialisation_status (a_status: SPECIALISATION_STATUS)
 		require
@@ -79,12 +91,6 @@ feature -- Status report
 			Result := representation.is_root
 		end
 
-	is_addressable: BOOLEAN
-			-- True if this node has a non-anonymous node_id
-		do
-			Result := representation.is_addressable
-		end
-
 	is_prohibited: BOOLEAN
 			-- True if node is prohibited, i.e. excluded
 		deferred
@@ -92,20 +98,14 @@ feature -- Status report
 
 feature -- Comparison
 
-	node_congruent_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
+	node_congruent_to (other: attached like Current; an_rm_schema: attached BMM_SCHEMA): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other'.
-		require
-			other /= Void
-			Schema_attached: an_rm_schema /= Void
 		deferred
 		end
 
-	node_conforms_to (other: like Current; an_rm_schema: SCHEMA_ACCESS): BOOLEAN
+	node_conforms_to (other: attached like Current; an_rm_schema: attached BMM_SCHEMA): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
 			-- An error message can be obtained by calling node_conformance_failure_reason
-		require
-			Other_attached: other /= Void
-			Schema_attached: an_rm_schema /= Void
 		deferred
 		end
 
@@ -119,10 +119,8 @@ feature -- Modification
 
 feature {ARCHETYPE_CONSTRAINT} -- Modification
 
-	set_parent(a_node: like parent)
+	set_parent(a_node: attached like parent)
 			-- set parent
-		require
-			Node_exists: a_node /= Void
 		do
 			parent := a_node
 		end
@@ -130,6 +128,10 @@ feature {ARCHETYPE_CONSTRAINT} -- Modification
 feature -- Representation
 
 	representation: attached OG_ITEM
+		note
+			option: transient
+		attribute
+		end
 
 feature {OG_ITEM} -- Implementation
 

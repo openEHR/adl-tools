@@ -1,10 +1,10 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-		         Temporary variant of DADL_SYNTAX_SERIALISER needed until ADL 1.5 is universally used. This
+		         Temporary variant of DT_DADL_SERIALISER needed until ADL 1.5 is universally used. This
 				 variant implements two ADL-specific variations of standard dADL:
 					* the dadl type name is serialised with "()" if ADL version is >= 1.5
-					* 
+					*
 				 ]"
 	keywords:    "test, DADL"
 	author:      "Thomas Beale"
@@ -19,7 +19,7 @@ note
 class ADL_DADL_SYNTAX_SERIALISER
 
 inherit
-	DADL_SYNTAX_SERIALISER
+	DT_DADL_SERIALISER
 		redefine
 			start_complex_object_node
 		end

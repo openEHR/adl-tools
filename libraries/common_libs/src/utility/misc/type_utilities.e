@@ -2,9 +2,9 @@ note
 	component:   "openEHR Library Project"
 	description: "Type conversion routines to help Eiffel's type system"
 	keywords:    "type conversion"
-	
+
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -15,7 +15,7 @@ note
 class TYPE_UTILITIES
 
 feature -- Conversion
-	
+
 	interval_integer_to_interval_integer_ref(a_ivl_integer: INTERVAL[INTEGER]): INTERVAL [INTEGER_REF]
 			-- convert INTERVAL[INTEGER] -> INTERVAL[INTEGER_REF]
 		require
@@ -39,7 +39,7 @@ feature -- Conversion
 				create Result.make_bounded(a_lower, an_upper, a_ivl_integer.lower_included, a_ivl_integer.upper_included)
 			end
 		end
-	
+
 	interval_real_to_interval_real_ref(a_ivl_real: INTERVAL[REAL]): INTERVAL [REAL_REF]
 			-- convert INTERVAL[REAL] -> INTERVAL[REAL_REF]
 		require
@@ -63,7 +63,7 @@ feature -- Conversion
 				create Result.make_bounded(a_lower, an_upper, a_ivl_real.lower_included, a_ivl_real.upper_included)
 			end
 		end
-	
+
 	interval_integer_ref_to_interval_integer(a_ivl_integer_ref: INTERVAL[INTEGER_REF]): INTERVAL [INTEGER]
 			-- convert INTERVAL[INTEGER_REF] -> INTERVAL[INTEGER]
 		require
@@ -74,7 +74,7 @@ feature -- Conversion
 			elseif a_ivl_integer_ref.upper_unbounded then
 				create Result.make_upper_unbounded(a_ivl_integer_ref.lower.item, a_ivl_integer_ref.lower_included)
 			else
-				create Result.make_bounded(a_ivl_integer_ref.lower.item, a_ivl_integer_ref.upper.item, 
+				create Result.make_bounded(a_ivl_integer_ref.lower.item, a_ivl_integer_ref.upper.item,
 						a_ivl_integer_ref.lower_included, a_ivl_integer_ref.upper_included)
 			end
 		end
@@ -89,7 +89,7 @@ feature -- Conversion
 			elseif a_ivl_real_ref.upper_unbounded then
 				create Result.make_upper_unbounded(a_ivl_real_ref.lower.item, a_ivl_real_ref.lower_included)
 			else
-				create Result.make_bounded(a_ivl_real_ref.lower.item, a_ivl_real_ref.upper.item, 
+				create Result.make_bounded(a_ivl_real_ref.lower.item, a_ivl_real_ref.upper.item,
 					a_ivl_real_ref.lower_included, a_ivl_real_ref.upper_included)
 			end
 		end
@@ -104,7 +104,7 @@ feature -- Conversion
 			elseif a_ivl_ref.upper_unbounded then
 				create Result.make_upper_unbounded(a_ivl_ref.lower.item, a_ivl_ref.lower_included)
 			else
-				create Result.make_bounded(a_ivl_ref.lower.item, a_ivl_ref.upper.item, 
+				create Result.make_bounded(a_ivl_ref.lower.item, a_ivl_ref.upper.item,
 					a_ivl_ref.lower_included, a_ivl_ref.upper_included)
 			end
 		end

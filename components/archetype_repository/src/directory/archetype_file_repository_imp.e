@@ -17,11 +17,6 @@ deferred class
 inherit
 	ARCHETYPE_REPOSITORY_I
 
-	SHARED_KNOWLEDGE_REPOSITORY
-		export
-			{NONE} all
-		end
-
 	SHARED_APP_RESOURCES
 		rename
 			file_exists as is_valid_path,
@@ -40,15 +35,15 @@ feature -- Access
 
 feature -- Status Report
 
-	is_valid_directory_part (path: STRING): BOOLEAN
+	is_valid_directory_part (path: attached STRING): BOOLEAN
 			-- Is the directory part of `path', whose last section is a filename, valid on the repository medium?
 		do
-			if path /= Void and then not path.is_empty then
+			if not path.is_empty then
 				Result := is_valid_directory (file_system.dirname (path))
 			end
 		end
 
-	has_file_changed_on_disk (path: STRING; timestamp: INTEGER): BOOLEAN
+	has_file_changed_on_disk (path: attached STRING; timestamp: INTEGER): BOOLEAN
 			-- Has the loaded archetype designated by `path' changed on disk since last read?
 		do
 			file_context.set_target (path)
@@ -58,7 +53,7 @@ feature -- Status Report
 
 feature -- Commands
 
-	read_text_from_file (full_path: STRING)
+	read_text_from_file (full_path: attached STRING)
 			-- Read `text' and `text_timestamp' from the file designated by `full_path' on the repository medium.
 		do
 			file_context.set_target (full_path)
@@ -67,7 +62,7 @@ feature -- Commands
 			text_timestamp := file_context.file_timestamp
 		end
 
-	save_text_to_file (full_path, a_text: STRING)
+	save_text_to_file (full_path, a_text: attached STRING)
 			-- Save `a_text' to the file designated by `full_path' on the repository medium.
 		do
 			if file_context.file_writable (full_path) then
@@ -79,12 +74,30 @@ feature -- Commands
 			end
 		end
 
+	delete_file (full_path: attached STRING)
+			-- Delete file designated by `full_path' on the repository medium.
+		do
+			file_system.delete_file (full_path)
+		end
+
 feature {NONE} -- Implementation
 
 	file_context: attached FILE_CONTEXT
 			-- Access to the file system.
 		once
 			create Result.make
+		end
+
+	adl_legacy_flat_filename_pattern_regex: attached LX_DFA_REGULAR_EXPRESSION
+			-- Pattern matcher for filenames ending in ".adl".
+		once
+			create Result.compile_case_insensitive (".*\" + File_ext_archetype_adl14 + "$")
+		end
+
+	adl_differential_filename_pattern_regex: attached LX_DFA_REGULAR_EXPRESSION
+			-- Pattern matcher for filenames ending in ".adls".
+		once
+			create Result.compile_case_insensitive (".*\" + File_ext_archetype_source + "$")
 		end
 
 end

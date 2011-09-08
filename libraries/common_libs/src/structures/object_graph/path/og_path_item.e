@@ -33,15 +33,16 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make(an_attr_name: STRING)
+	make (an_attr_name: attached STRING)
 			-- make a path segment with an attribute and an empty object id -
 			-- corresponds to single cardinality attribute or it could be
 			-- a path segment for a multiple cardinality attribute but defaulting
 			-- to the first object in the collection
 		require
-			an_attr_name_valid: an_attr_name /= Void and then not an_attr_name.is_empty
+			an_attr_name_valid: not an_attr_name.is_empty
 		do
-			attr_name := an_attr_name
+			create attr_name.make_empty
+			attr_name.append (an_attr_name)
 			create object_id.make(0)
 		ensure
 			Attr_name_set: attr_name.is_equal(an_attr_name)

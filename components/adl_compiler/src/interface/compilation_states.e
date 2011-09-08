@@ -1,11 +1,9 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "[
-				 Types of compilation state of a single compilable artefact.
-				 ]"
+	description: "Types of compilation state of a single compilable artefact."
 	keywords:    "ADL"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -24,7 +22,9 @@ feature -- Definitions
 	cs_ready_to_parse_legacy: INTEGER = 21
 	Cs_suppliers_known: INTEGER = 30
 	Cs_ready_to_validate: INTEGER = 40
-	Cs_validated: INTEGER = 50
+	Cs_validated_phase_1: INTEGER = 51
+	Cs_validated_phase_2: INTEGER = 52
+	Cs_validated: INTEGER = 53
 	Cs_invalid: INTEGER = -1
 	Cs_rm_class_unknown: INTEGER = -2
 	cs_lineage_invalid: INTEGER = -10
@@ -45,6 +45,8 @@ feature -- Access
 			Result.put("Ready to parse", Cs_ready_to_parse)
 			Result.put("Suppliers known", Cs_suppliers_known)
 			Result.put("Ready to validate", Cs_ready_to_validate)
+			Result.put("Validated phase 1", Cs_validated_phase_1)
+			Result.put("Validated phase 2", Cs_validated_phase_2)
 			Result.put("Validated", Cs_validated)
 			Result.put("Invalid", Cs_invalid)
 			Result.put("RM class unknown", Cs_rm_class_unknown)

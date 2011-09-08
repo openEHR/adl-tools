@@ -42,11 +42,8 @@
 
         <ul>
           <li value="0">The Archetype Definition Language 1.5 (draft)</li>
-
           <li value="0">The Archetype Object Model 1.5 (draft)</li>
-
           <li value="0"><i>open</i>EHR Distributed Knowledge Development (draft)</li>
-
           <li value="0"><i>open</i>EHR Distributed Artefact Identification System (draft)</li>
         </ul>
 
@@ -70,125 +67,6 @@
         <p>The remainder of this page describes the configuration of the tool for viewing the examples, and then
         describes in turn each of the features of ADL/AOM 1.5 grouped in the categories &#39;New features&#39; and
         &#39;Changes&#39;.</p>
-
-        <h2>Set-up</h2>
-
-        <p>In order to work with the examples described below, the following configuration is advised. Experienced
-        users may skip this step.</p>
-
-        <h3>Repository setup</h3>
-
-        <p>You should download the CKM and the <i>open</i>EHR test archetype repositories. The steps to do this are as
-        follows.</p>
-
-        <p>For the Clinical Knowledge Manager (CKM) repository:</p>
-
-        <ul>
-          <li value="0">Login to the repository at <a href=
-          "http://www.openehr.org/knowledge">http://www.openehr.org/knowledge</a>.</li>
-
-          <li value="0">Go to Archetypes &gt; Bulk Export and select all archetypes for download; save in any location.
-          For the purposes of this manual, we will refer to the location as $CKM.</li>
-
-          <li value="0">In the AWB, select Repository &gt; Set Repository</li>
-
-          <li value="0">On the dialog, use the large &#39;+&#39; button to add a new profile called &#39;CKM&#39;.</li>
-
-          <li value="0">Set the Reference repository to $CKM, as described above.</li>
-
-          <li value="0">Save the new profile.</li>
-        </ul>
-
-        <p>The <i>open</i>EHR test archetype repository is a Subversion repository located <a href=
-        "http://www.openehr.org/svn/knowledge2/TRUNK">here</a>. If you have a Subversion client such as TortoiseSVN
-        installed on your machine, use it to check out this repository. If you do not have a Subversion tool, you can
-        download the repository as a .zip file from <a href="http://www.openehr.org/wsvn/knowledge2/TRUNK">this
-        page</a>. We will refer to the location of this repository on your file system as $knowledge2. Now, there is
-        actually more than one logical group of archetypes in the repository, so the configuration is as follows.</p>
-
-        <ul>
-          <li value="0">In the AWB, select Repository &gt; Set Repository.</li>
-
-          <li value="0">On the dialog, use the large &#39;+&#39; button to add a new profile called &#39;ADL 1.5
-          test&#39; or similar.</li>
-
-          <li value="0">Set the Reference repository to $knowledge2/archetypes/ADL_1.5_test.</li>
-
-          <li value="0">Save the new profile.</li>
-
-          <li value="0">Repeat the above steps and create another new profile called &#39;openEHR examples&#39; or
-          similar.</li>
-
-          <li value="0">Set the Reference Repository to
-          $knowledge2/archetypes/openEHR_examples/demographic_template/Reference.</li>
-
-          <li value="0">Set the Work Repository to
-          $knowledge2/archetypes/openEHR_examples/demographic_template/Working.</li>
-
-          <li value="0">Save the new profile.</li>
-        </ul>
-
-        <p>If you are interested in EN 13606, you can use the above method to create a further profile called
-        &#39;EN13606 examples&#39; or similar, using the Reference Repository path
-        $knowledge2/archetypes/en13606_examples.</p>
-
-        <h3>RM Schemas</h3>
-
-        <p>You will need to have all the relevant RM schemas selected for these profiles to work. Assuming you have
-        followed the above instructions, you do this as follows:</p>
-
-        <ul>
-          <li value="0">Select Tools &gt; Options</li>
-
-          <li value="0">Ensure that the openehr, adltest, and en13606 (if relevant) schemas are checked, as shown
-          <a href=
-          "images/options_rm_schema_config.png">
-          here</a>.</li>
-
-          <li value="0">Save the configuration.</li>
-        </ul>
-
-        <p>You can now use the Repository &gt; Set Repository dialog to switch between the profiles at will. The
-        remaining sections below describe how to see the ADL/AOM 1.5 changes using the archetypes you have configured
-        above.</p>
-
-		<h3>The .cfg file</h3>
-		<p>The result of the above configuration creates entries in the application configuration file, which will be in one of the following places, depending on your operating system:</p>
-		<ul>
-		<li>Windows XP/Vista: C:\Documents and Settings\&lt;username&gt;\AppData\Local\openEHR\adl_workbench\adl_workbench.cfg</li>
-		<li>Windows 7: C:\Users\&lt;username&gt;\AppData\Local\openEHR\adl_workbench\adl_workbench.cfg</li>
-		<li>Mac OSX: $HOME/openEHR/adl_workbench/adl_workbench.cfg</li>
-		<li>Linux: $HOME/openEHR/adl_workbench/adl_workbench.cfg</li>
-		</ul>
-		<p>The contents of this file are currently formatted in the old Windows '.ini' style, and will typically include lines such as the following, corresponding to the above configuration.</p>
-<pre>
-rm_schemas_load_list=cen_rm_0.9,openehr_adltest_1.0.0,openehr_rm_1.0.3
-test_diff_directory=C:\Users\Thomas\AppData\Local\openEHR\adl_workbench\diff_test
-current_repository_profile=ADL15_test
-[profiles]
-CKM=C:\project\openehr\knowledge\archetypes\CKM,
-openEHR_examples=C:\project\openehr\knowledge2\TRUNK\archetypes\openEHR_examples\demographic_template\Reference,C:\project\openehr\knowledge2\TRUNK\archetypes\openEHR_examples\demographic_template\Working
-ADL15_test=C:\project\openehr\knowledge2\TRUNK\archetypes\ADL_1.5_test,
-EN13606_examples=C:\project\openehr\knowledge2\TRUNK\archetypes\en13606_examples,
-</pre>
-		<p>Each line in the profile section is of the form "profile_name=dir1, dri2", where "profile_name" is the logical name of the profile, and the two directories are respectively the reference and work directories for that profile. The latter of these is optional, as explained above. One of these profile names should be given as the value in the current_repository_profile setting, shown above the [profiles] section in the example above.</p>
-		<p>Other useful config file settings, shown with typical / reasonable values:</p>
-		<ul>
-			<li>adl_version_for_flat_output=1.5</li>
- 		   <li>html_export_directory=C:\project\openehr\knowledge\archetypes\html</li>
- 		   	<li>display_archetype_source=True</li>
-		    <li>current_language=en</li>
-  		  	<li>path_filter_combo_selection=All</li>
-		    <li>show_technical_view=False</li>
-   		 	<li>show_reference_model_view=False</li>
-		    <li>expand_node_tree=True</li>
-   		 	<li>show_entire_ontology=False</li>
-		    <li>validation_strict=True</li>
-    		<li>path_view_check_list_settings=Machine,Nat lang,RM Type</li>
-	  	  <li>show_line_numbers=False</li>
-    		<li>editor=C:\Program Files\Vim\vim72\gvim.exe</li>
-		</ul>
-		<p>The config file may also include numerous tool-set GUI settings, which you can usually ignore for manual setting.</p>
 
         <h2>ADL/AOM 1.5 - New features</h2>
 
@@ -263,10 +141,8 @@ EN13606_examples=C:\project\openehr\knowledge2\TRUNK\archetypes\en13606_examples
           select the diagnosis node, which corresponds to the archetype
           openEHR-EHR-EVALUATION.problem-diagnosis.v1</li>
 
-          <li value="0">Select the &#39;Differential&#39; tab, and below it, in the &#39;Node map&#39; tab, you should
-          see <a href=
-          "images/problem-diagnosis_diff_view.png">
-          this</a></li>
+          <li value="0">Select the &#39;Differential&#39; tab, and below it, in the &#39;Definition&#39; tab, you should
+          see <a href="images/problem-diagnosis_diff_view.png">this</a></li>
 
           <li value="0">You will see that below the top &#39;Diagnosis&#39; node, the path
           &#39;/data[at0001]/items&#39; appears, and below that, one redefined object node and two new object node
@@ -332,7 +208,7 @@ EN13606_examples=C:\project\openehr\knowledge2\TRUNK\archetypes\en13606_examples
               <li value="0">Navigate to the PERSON.t_patient_simple template in the template explorer and select it
               (click once).</li>
 
-              <li value="0">Select Differential View, Node Map. You should see <a href=
+              <li value="0">Select Differential View, Definition tab. You should see <a href=
               "images/existence_redef_diff.png">
               this</a>. You will see that the final &#39;relationships&#39; attribute has been removed by setting its
               existence to {0}.</li>
@@ -368,7 +244,7 @@ EN13606_examples=C:\project\openehr\knowledge2\TRUNK\archetypes\en13606_examples
               various ways:
 
                 <ul>
-                  <li value="0">In the central archetype view area, select the &#39;Differential&#39; view Node map
+                  <li value="0">In the central archetype view area, select the &#39;Differential&#39; select Definition tab
                   with RM visibility = &#39;Hide&#39;, you should see <a href=
                   "images/occ_redef_0_simple_view.png">
                   this</a></li>
@@ -402,7 +278,7 @@ EN13606_examples=C:\project\openehr\knowledge2\TRUNK\archetypes\en13606_examples
 
           <li value="0">Navigate to and select the COMPOSITION.t_ext_ref template</li>
 
-          <li value="0">Select Differential View, Node map, and you will see <a href=
+          <li value="0">Select Differential View, Definition tab, and you will see <a href=
           "images/ext_ref_diff.png">this</a>,
           which shows the use of the use_archetype statement to select two archetypes to be used under the attribute
           /content</li>
@@ -439,11 +315,40 @@ EN13606_examples=C:\project\openehr\knowledge2\TRUNK\archetypes\en13606_examples
           "images/slot_filling.png">this</a>.</li>
         </ul>
 
-        <h3>Annotations section (Not yet implemented)</h3>
+		<a name="annotations"/><h3>Annotations section</h3>
 
         <p>Annotations can now be added on a per-node basis, with each annotation having one or more facets
         (representation = Hash&lt;T&gt;). This supports fine-grained documentation of elements of archetypes and
-        templates.</p>
+        templates. A typical annotations section looks as follows:</p>
+		<pre>
+annotations
+	annotations = &lt;
+		["en"] = &lt;
+			items = &lt;
+				["/data[at0001]/items[at0.8]"] = &lt;
+					items = &lt;
+						["design note"] = &lt;"this is a design note on allergic reaction"&gt;
+						["requirements note"] = &lt;"this is a requirements note on allergic reaction"&gt;
+						["medline ref"] = &lt;"this is a medline ref on allergic reaction"&gt;
+					&gt;
+				&gt;
+				["/data[at0001]/items[at0.10]"] = &lt;
+					items = &lt;
+						["design note"] = &lt;"this is a design note on intelerance"&gt;
+						["requirements note"] = &lt;"this is a requirements note on intolerance"&gt;
+						["national data dictionary"] = &lt;"NDD ref for intoleranance"&gt;
+					&gt;
+				&gt;
+			&gt;
+		&gt;
+	&gt;
+		</pre>
+		<p>Currently, the annotations feature implements a simple Hash of Strings, with plain String keys. Other more
+		complex alternatives are available, e.g. where the keys are coded using at-codes, and then bound to globally
+		standard codes within SNOMED CT or some other terminology. A discussion of these possibilities can be found 
+		<a href="http://www.openehr.org/mailarchives/openehr-technical/msg05523.html" target="_blank">here</a>.</p>
+
+		<p>Annotations can be viewed in the Annotations tab in either differential or flat form. The example archetypes <a href="http://www.openehr.org/svn/knowledge2/TRUNK/archetypes/ADL_1.5_test/validity/annotations/">here</a>, are displayed in a grid, as in <a href="images/annotations_tab.png">this screenshot.</a></p>
 
         <h3>Default values (Not yet implemented)</h3>
 
@@ -479,7 +384,7 @@ EN13606_examples=C:\project\openehr\knowledge2\TRUNK\archetypes\en13606_examples
 
         <h3>Group construct (Not yet implemented)</h3>
 
-        <p>This feature supports groups within container attributes. Original proposal on this page.</p>
+		<p>This feature supports groups within container attributes. Original proposal on <a href="http://www.openehr.org/wiki/display/spec/Ordering+and+choice+in+archetypes+and+templates">this page</a>.</p>
 
         <h2>Changes</h2>
 
@@ -540,39 +445,16 @@ EN13606_examples=C:\project\openehr\knowledge2\TRUNK\archetypes\en13606_examples
       <h2>Contents</h2>
 
       <ul>
-        <li value="0"><a href=
-        "index.html">Home</a></li>
-
-        <li value="0"><a href=
-        "getting_started.html">Getting
-        started</a></li>
-
-        <li value="0"><a href=
-        "browsing_archetypes.html">Browsing
-        and compiling</a></li>
-
-        <li value="0"><a href=
-        "learning_adl_15.html">Learning
-        about ADL 1.5</a></li>
-
-        <li value="0"><a href=
-        "templates.html">Working with
-        templates</a></li>
-
-        <li value="0"><a href=
-        "test_tool.html">The test
-        tool</a></li>
-
-        <li value="0"><a href=
-        "en13606.html">EN13606</a></li>
-
-        <li value="0"><a href=
-        "support.html">Support and
-        contributing</a></li>
-
-        <li value="0"><a href=
-        "release_notes.html">Release
-        notes</a></li>
+        <li value="0"><a href="index.html">Home</a></li>
+        <li value="0"><a href="getting_started.html">Getting started</a></li>
+        <li value="0"><a href="browsing_archetypes.html">Browsing and compiling</a></li>
+        <li value="0"><a href="tool_configuration.html">Tool Configuration</a></li>
+        <li value="0"><a href="learning_adl_15.html">Learning about ADL 1.5</a></li>
+        <li value="0"><a href="templates.html">Working with templates</a></li>
+        <li value="0"><a href="test_tool.html">The test tool</a></li>
+        <li value="0"><a href="en13606.html">EN13606</a></li> 
+        <li value="0"><a href="support.html">Support and contributing</a></li>
+        <li value="0"><a href="release_notes.html">Release notes</a></li>
       </ul>
     </div><!--       <div id="extra">
   <h2>XXXXXX</h2>
@@ -581,39 +463,16 @@ EN13606_examples=C:\project\openehr\knowledge2\TRUNK\archetypes\en13606_examples
 
     <div id="footer">
       <ul>
-        <li value="0"><a href=
-        "index.html">Home</a></li>
-
-        <li value="0"><a href=
-        "getting_started.html">Getting
-        started</a></li>
-
-        <li value="0"><a href=
-        "browsing_archetypes.html">Browsing
-        and compiling</a></li>
-
-        <li value="0"><a href=
-        "learning_adl_15.html">Learning
-        about ADL 1.5</a></li>
-
-        <li value="0"><a href=
-        "templates.html">Working with
-        templates</a></li>
-
-        <li value="0"><a href=
-        "test_tool.html">The test
-        tool</a></li>
-
-        <li value="0"><a href=
-        "en13606.html">EN13606</a></li>
-
-        <li value="0"><a href=
-        "support.html">Support and
-        contributing</a></li>
-
-        <li value="0"><a href=
-        "release_notes.html">Release
-        notes</a></li>
+        <li value="0"><a href="index.html">Home</a></li>
+        <li value="0"><a href="getting_started.html">Getting started</a></li>
+        <li value="0"><a href="browsing_archetypes.html">Browsing and compiling</a></li>
+        <li value="0"><a href="tool_configuration.html">Tool Configuration</a></li>
+        <li value="0"><a href="learning_adl_15.html">Learning about ADL 1.5</a></li>
+        <li value="0"><a href="templates.html">Working with templates</a></li>
+        <li value="0"><a href="test_tool.html">The test tool</a></li>
+        <li value="0"><a href="en13606.html">EN13606</a></li> 
+        <li value="0"><a href="support.html">Support and contributing</a></li>
+        <li value="0"><a href="release_notes.html">Release notes</a></li>
       </ul>
 
       <p>Copyright 2010 openEHR Foundation - $LastChangedDate$

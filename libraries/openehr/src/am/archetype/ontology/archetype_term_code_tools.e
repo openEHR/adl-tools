@@ -83,20 +83,20 @@ feature -- Definitions
 
 feature -- Access
 
-	specialisation_parent_from_code(a_code: STRING): STRING
+	specialisation_parent_from_code (a_code: attached STRING): STRING
 			-- get parent of this specialised code
 		require
-			Code_valid: a_code /= Void and then specialisation_depth_from_code(a_code) > 0
+			Code_valid: specialisation_depth_from_code(a_code) > 0
 		do
 			Result := a_code.substring (1, a_code.last_index_of(Specialisation_separator, a_code.count)-1)
 		ensure
 			Valid_result: specialisation_depth_from_code(Result) = specialisation_depth_from_code(a_code) - 1
 		end
 
-	code_at_level(a_code: STRING; a_level: INTEGER): STRING
+	code_at_level (a_code: attached STRING; a_level: INTEGER): STRING
 			-- get valid form of this code at `a_level'
 		require
-			Code_valid: a_code /= Void and then code_exists_at_level(a_code, a_level)
+			Code_valid: code_exists_at_level(a_code, a_level)
 			Level_valid: a_level >= 0 and a_level <= specialisation_depth_from_code(a_code)
 		local
 			i, idx: INTEGER
@@ -130,7 +130,7 @@ feature -- Access
 			Valid_result: is_valid_code (Result)
 		end
 
-	specialisation_status_from_code(a_code: STRING; a_depth: INTEGER): SPECIALISATION_STATUS
+	specialisation_status_from_code (a_code: attached STRING; a_depth: INTEGER): SPECIALISATION_STATUS
 			-- get the specialisation status (added, inherited, redefined) from this code, at a_depth
 			-- for example:
 			-- 		at0001 at depth 0 ==> ss_added
@@ -149,7 +149,7 @@ feature -- Access
 			--		at0.1.1 at depth 4 ==> ss_inherited
 			--		at0009.0.0.1 at depth 5 ==> ss_inherited
 		require
-			Code_valid: a_code /= Void and then is_valid_code(a_code)
+			Code_valid: is_valid_code(a_code)
 			Depth_valid: a_depth >= 0
 		local
 			code_defined_in_this_level: BOOLEAN
@@ -174,7 +174,7 @@ feature -- Access
 			end
 		end
 
-	index_from_code_at_level(a_code: STRING; a_depth: INTEGER): STRING
+	index_from_code_at_level (a_code: attached STRING; a_depth: INTEGER): STRING
 			-- get the numeric part of the code from this code, at a_depth
 			-- for example:
 			-- 		a_code = at0001		a_depth = 0 -> 0001
@@ -217,22 +217,22 @@ feature -- Access
 			Result := code_num_part.substring(lpos, rpos)
 		end
 
-	specialisation_depth_from_code (a_code: STRING): INTEGER
+	specialisation_depth_from_code (a_code: attached STRING): INTEGER
 			-- Infer number of levels of specialisation from `a_code'.
 		require
-			code_valid: a_code /= Void and then is_valid_code (a_code)
+			code_valid: is_valid_code (a_code)
 		do
 			Result := a_code.occurrences (Specialisation_separator)
 		ensure
 			non_negative: Result >= 0
 		end
 
-	specialised_code_tail (a_code: STRING): STRING
+	specialised_code_tail (a_code: attached STRING): STRING
 			-- get code tail from a specialised code, e.g. from
 			-- "at0032.0.1", the result is "1"; from
 			-- "at0004.3", the result is "3"
 		require
-			code_valid: a_code /= Void and then is_valid_code (a_code)
+			code_valid: is_valid_code (a_code)
 			not_root_code: is_refined_code (a_code)
 		do
 			Result := a_code.substring (a_code.last_index_of (Specialisation_separator, a_code.count) + 1, a_code.count)
@@ -240,15 +240,25 @@ feature -- Access
 
 feature -- Comparison
 
-	is_valid_code (a_code: STRING): BOOLEAN
+	is_term_code (a_code: attached STRING): BOOLEAN
+			-- Is `a_code' an "at" code?
+		do
+			Result := a_code.starts_with (term_code_leader)
+		end
+
+	is_constraint_code (a_code: attached STRING): BOOLEAN
+			-- Is `a_code' an "ac" code?
+		do
+			Result := a_code.starts_with (constraint_code_leader)
+		end
+
+	is_valid_code (a_code: attached STRING): BOOLEAN
 			-- Is `a_code' a valid "at" or "ac" code? It can be any of:
 			-- at0000
 			-- at000n
 			-- at0.n, at0.1.n, at0.0.n etc
 			-- where n is non-0
 			-- It can't have a final 0-value numeric segment except in the at0000 case.
-		require
-			code_attached: a_code /= Void
 		local
 			i: INTEGER
 			str: STRING
@@ -276,14 +286,14 @@ feature -- Comparison
 			end
 		end
 
-	is_refined_code(a_code: STRING): BOOLEAN
+	is_refined_code (a_code: attached STRING): BOOLEAN
 			-- a code has been specialised if there is a non-zero code index anywhere above the last index
 			-- e.g. at0.0.1 -> False
 			--      at0001.0.1 -> True
 			-- OR: if the code is a specialisation of the at0000 code, e.g. at0000.1, it will also return true, even
 			-- though it breaks the above rule. This occurs because we allowed at0000 to be a real code!
 		require
-			Code_valid: a_code /= Void and then is_valid_code (a_code)
+			Code_valid: is_valid_code (a_code)
 		local
 			idx_str: STRING
 		do
@@ -299,13 +309,13 @@ feature -- Comparison
 			end
 		end
 
-	code_exists_at_level(a_code: STRING; a_level: INTEGER): BOOLEAN
+	code_exists_at_level (a_code: attached STRING; a_level: INTEGER): BOOLEAN
 			-- is `a_code' valid at level `a_level' or less, i.e. if we remove its
 			-- trailing specialised part corresponding to specialisation below `a_level',
 			-- and then any trailing '.0' pieces, do we end up with a valid code? If so
 			-- it means that the code corresponds to a real node from `a_level' or higher
 		require
-			Code_valid: a_code /= Void and then is_valid_code(a_code)
+			Code_valid: is_valid_code(a_code)
 			Level_valid: a_level >= 0
 		local
 			s: STRING
@@ -334,11 +344,11 @@ feature -- Comparison
 			end
 		end
 
-	is_valid_concept_code(a_code: STRING): BOOLEAN
+	is_valid_concept_code (a_code: attached STRING): BOOLEAN
 			-- check if `a_code' is a valid root concept code of an archetype
 			-- True if a_code has form at0000, or at0000.1, at0000.1.1 etc
 		require
-			Code_valid: a_code /= Void and then not a_code.is_empty
+			Code_valid: not a_code.is_empty
 		local
 			csr: INTEGER
 		do
@@ -351,12 +361,12 @@ feature -- Comparison
 			end
 		end
 
-	codes_conformant(a_child_code, a_parent_code: STRING): BOOLEAN
+	codes_conformant (a_child_code, a_parent_code: attached STRING): BOOLEAN
 			-- True if `a_child_code' conforms to `a_parent_code' in the sense of specialisation, i.e.
 			-- is `a_child_code' the same as or more specialised than `a_parent_code'
 		require
-			Child_code_valid: a_child_code /= Void and then not a_child_code.is_empty
-			Parent_code_valid: a_parent_code /= Void and then not a_parent_code.is_empty
+			Child_code_valid: not a_child_code.is_empty
+			Parent_code_valid: not a_parent_code.is_empty
 		do
 			Result := a_child_code.starts_with (a_parent_code)
 		end

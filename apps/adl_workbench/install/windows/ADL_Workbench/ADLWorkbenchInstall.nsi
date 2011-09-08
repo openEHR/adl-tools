@@ -11,6 +11,7 @@ Name "ADL Workbench"
 
 # MUI defines
 !define MUI_ICON "..\..\..\app\icons\openEHR.ico"
+!define MUI_UNICON "..\..\..\app\icons\openEHR.ico"
 !define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of the openEHR Foundation's $(^Name).\r\n\r\nClick Next to continue."
 !define MUI_LICENSEPAGE_RADIOBUTTONS
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
@@ -18,7 +19,6 @@ Name "ADL Workbench"
 !define MUI_STARTMENUPAGE_REGISTRY_KEY ${REGKEY}
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME StartMenuGroup
 !define MUI_STARTMENUPAGE_DEFAULTFOLDER "openEHR\ADL Workbench"
-!define MUI_UNICON "..\..\..\app\icons\openEHR.ico"
 !define MUI_WELCOMEFINISHPAGE_BITMAP "birds_vertical.bmp"
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP "openEHR.bmp"
@@ -60,7 +60,7 @@ VIAddVersionKey CompanyName "${COMPANY}"
 VIAddVersionKey CompanyWebsite "${URL}"
 VIAddVersionKey FileVersion "${VERSION}"
 VIAddVersionKey FileDescription "ADL Workbench Installer"
-VIAddVersionKey LegalCopyright "Copyright 2003-2010 openEHR Foundation"
+VIAddVersionKey LegalCopyright "Copyright 2003-2011 openEHR Foundation"
 InstallDirRegKey HKLM "${REGKEY}" Path
 ShowUninstDetails show
 
@@ -78,18 +78,25 @@ Section -Main SEC0000
 
     File ..\..\..\app\ArchetypeRepositoryReport.xsl
     File ..\..\..\app\ArchetypeRepositoryReport.css
+    File ..\..\..\app\sample_xml_rules.cfg
+    File ..\..\..\app\default_ui_config.cfg
 
     SetOutPath $INSTDIR\icons
     File /r /x .svn ..\..\..\app\icons\*
 
     SetOutPath $INSTDIR\rm_schemas
-    File ..\..\..\app\rm_schemas\*
+    File ..\..\..\..\..\rm_schemas\*
 
     SetOutPath $INSTDIR\error_db
     File ..\..\..\app\error_db\*
 
     SetOutPath $INSTDIR\vim
     File ..\..\..\..\..\components\adl_compiler\etc\vim\*
+
+    SetOverwrite off
+    SetOutPath $LOCALAPPDATA\openEHR\adl_workbench
+    File /oname=xml_rules.cfg ..\..\..\app\sample_xml_rules.cfg
+    SetOverwrite ifnewer
 
     WriteRegStr HKLM "${REGKEY}\Components" Main 1
 SectionEnd
@@ -133,6 +140,8 @@ Section /o un.Main UNSEC0000
     Delete /REBOOTOK $INSTDIR\adl_workbench.exe
     Delete /REBOOTOK $INSTDIR\ArchetypeRepositoryReport.xsl
     Delete /REBOOTOK $INSTDIR\ArchetypeRepositoryReport.css
+    Delete /REBOOTOK $INSTDIR\sample_xml_rules.cfg
+    Delete /REBOOTOK $INSTDIR\default_ui_config.cfg
     RMDir /r /REBOOTOK $INSTDIR\icons
     RMDir /r /REBOOTOK $INSTDIR\rm_schemas
     RMDir /r /REBOOTOK $INSTDIR\error_db

@@ -20,18 +20,18 @@ inherit
 		end
 
 create
-	make, make_from_differential
+	make, make_non_specialised, make_all
 
 create {ARCHETYPE_FLATTENER}
-	make_staging
+	make_specialised
 
 feature -- Initialisation
 
-	make_from_differential (a_diff: DIFFERENTIAL_ARCHETYPE)
+	make_non_specialised (a_diff: DIFFERENTIAL_ARCHETYPE)
 			-- initialise from a differential archetype
 		do
 			make(a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
-					a_diff.original_language.code_string,
+					a_diff.original_language.deep_twin,
 					a_diff.description.deep_twin,
 					a_diff.definition.deep_twin, a_diff.ontology.to_flat)
 			if a_diff.has_translations then
@@ -39,6 +39,9 @@ feature -- Initialisation
 			end
 			if a_diff.has_invariants then
 				invariants := a_diff.invariants.deep_twin
+			end
+			if a_diff.has_annotations then
+				annotations := a_diff.annotations.deep_twin
 			end
 			rebuild
 			is_valid := True
@@ -50,22 +53,26 @@ feature -- Initialisation
 
 feature {ARCHETYPE_FLATTENER} -- Initialisation
 
-	make_staging (a_diff: DIFFERENTIAL_ARCHETYPE; a_flat_parent: FLAT_ARCHETYPE)
+	make_specialised (a_diff: DIFFERENTIAL_ARCHETYPE; a_flat_parent: FLAT_ARCHETYPE)
 			-- initialise from a differential archetype and its flat parent, as preparation
 			-- for generating a flat archetype. The items from the differential are used
-			-- except for the definition, which is the flat parent version, so that the
-			-- differential definition can be overlaid on it by a merging process.
+			-- except for the definition, invariants and annotations, which are the flat parent versions, so that the
+			-- differential definition can be overlaid on it by a merging process. The ontology
+			-- is converted to a form ready for overlaying as well.
 		do
 			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
-					a_diff.original_language.code_string,
+					a_diff.original_language.deep_twin,
 					a_diff.description.deep_twin,
 					a_flat_parent.definition.deep_twin,
 					a_diff.ontology.to_flat)
 			if a_diff.has_translations then
 				translations := a_diff.translations.deep_twin
 			end
-			if a_diff.has_invariants then
-				invariants := a_diff.invariants.deep_twin
+			if a_flat_parent.has_invariants then
+				invariants := a_flat_parent.invariants.deep_twin
+			end
+			if a_flat_parent.has_annotations then
+				annotations := a_flat_parent.annotations.deep_twin
 			end
 			rebuild
 			is_valid := True
@@ -79,29 +86,12 @@ feature -- Access
 
 	ontology: attached FLAT_ARCHETYPE_ONTOLOGY
 
-	component_ontologies: HASH_TABLE [FLAT_ARCHETYPE_ONTOLOGY, STRING]
-			-- Compendium of flattened ontologies of all archetypes/templates used in this
-			-- archetype/template, keyed by identifier
-
 feature -- Factory
 
 	to_differential: DIFFERENTIAL_ARCHETYPE
 			-- generate differential form of archetype if specialised, to be in differential form by removing inherited parts
 		do
 			create Result.make_from_flat(Current)
-		end
-
-feature -- Modification
-
-	add_component_ontology (an_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_archetype_id: STRING)
-		require
-			Ontology_attached: attached an_ontology
-			Archetype_id_attached: attached an_archetype_id and then not an_archetype_id.is_empty
-		do
-			if component_ontologies = Void then
-				create component_ontologies.make(0)
-			end
-			component_ontologies.put(an_ontology, an_archetype_id)
 		end
 
 end

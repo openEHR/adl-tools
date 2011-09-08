@@ -21,24 +21,11 @@ class C_XREF_BUILDER
 
 inherit
 	C_VISITOR
-		rename
-			initialise as initialise_visitor
-		end
 
-feature -- Initialisation
-
-	initialise(an_archetype: attached ARCHETYPE)
-			-- set ontology required for interpreting meaning of object nodes
-			-- archetype is required as well since it contains the xref tables that are
-			-- populated by this visitor
-		do
-			archetype := an_archetype
-			initialise_visitor(archetype.ontology)
-		end
 
 feature -- Visitor
 
-	start_c_object(a_node: C_OBJECT; depth: INTEGER)
+	start_c_object (a_node: C_OBJECT; depth: INTEGER)
 			-- enter a C_OBJECT
 		do
 			if a_node.is_addressable then
@@ -49,20 +36,20 @@ feature -- Visitor
 			end
 		end
 
-	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER)
+	start_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- enter a C_COMPLEX_OBJECT
 		do
 			start_c_object(a_node, depth)
 		end
 
-	start_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER)
+	start_archetype_slot (a_node: ARCHETYPE_SLOT; depth: INTEGER)
 			-- enter an ARCHETYPE_SLOT
 		do
 			start_c_object(a_node, depth)
 			archetype.slot_index.extend (a_node)
 		end
 
-	start_c_archetype_root(a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
+	start_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- enter a C_ARCHETYPE_ROOT
 		do
 			if not archetype.suppliers_index.has(a_node.archetype_id) then
@@ -71,7 +58,7 @@ feature -- Visitor
 			archetype.suppliers_index.item(a_node.archetype_id).extend (a_node)
 		end
 
-	start_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
+	start_archetype_internal_ref (a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
 			-- enter an ARCHETYPE_INTERNAL_REF
 		do
 			if not archetype.use_node_index.has(a_node.target_path) then
@@ -80,7 +67,7 @@ feature -- Visitor
 			archetype.use_node_index.item(a_node.target_path).extend (a_node)
 		end
 
-	start_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER)
+	start_constraint_ref (a_node: CONSTRAINT_REF; depth: INTEGER)
 			-- enter a CONSTRAINT_REF
 		do
 			if not archetype.accodes_index.has(a_node.target) then
@@ -89,7 +76,7 @@ feature -- Visitor
 			archetype.accodes_index.item(a_node.target).extend (a_node)
 		end
 
-	start_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER)
+	start_c_code_phrase (a_node: C_CODE_PHRASE; depth: INTEGER)
 			-- enter an C_CODE_PHRASE
 		do
 			start_c_domain_type(a_node, depth)
@@ -108,7 +95,7 @@ feature -- Visitor
 			end
 		end
 
-	start_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER)
+	start_c_ordinal (a_node: C_DV_ORDINAL; depth: INTEGER)
 			-- enter an C_DV_ORDINAL
 		do
 			start_c_domain_type(a_node, depth)
@@ -127,7 +114,7 @@ feature -- Visitor
 			end
 		end
 
-	start_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER)
+	start_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- enter a C_ATTRIBUTE; see if it has a differential path, in which case there may be at-codes
 			-- referenced there not visible elsewhere in the structure; these need to be found and added to
 			-- the id_atcodes list
@@ -149,36 +136,32 @@ feature -- Visitor
 			end
 		end
 
-	start_c_leaf_object(a_node: C_LEAF_OBJECT; depth: INTEGER)
+	start_c_leaf_object (a_node: C_LEAF_OBJECT; depth: INTEGER)
 			-- enter a C_LEAF_OBJECT
 		do
 		end
 
-	start_c_reference_object(a_node: C_REFERENCE_OBJECT; depth: INTEGER)
+	start_c_reference_object (a_node: C_REFERENCE_OBJECT; depth: INTEGER)
 			-- enter a C_REFERENCE_OBJECT
 		do
 		end
 
-	start_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
+	start_c_primitive_object (a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- enter an C_PRIMITIVE_OBJECT
 		do
 		end
 
-	start_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER)
+	start_c_domain_type (a_node: C_DOMAIN_TYPE; depth: INTEGER)
 			-- enter an C_DOMAIN_TYPE
 		do
 			start_c_object(a_node, depth)
 		end
 
-	start_c_quantity(a_node: C_DV_QUANTITY; depth: INTEGER)
+	start_c_quantity (a_node: C_DV_QUANTITY; depth: INTEGER)
 			-- enter a C_DV_QUANTITY
 		do
 			start_c_domain_type(a_node, depth)
 		end
-
-feature {NONE} -- Implementation
-
-	archetype: ARCHETYPE
 
 end
 

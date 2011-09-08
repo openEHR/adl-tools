@@ -25,12 +25,17 @@ feature {NONE} -- Initialization
 			-- (due to regeneration of implementation class)
 			-- can be added here.
 		do
-			set_icon_pixmap (adl_workbench_ico)
+			set_icon_pixmap (adl_workbench_icon)
 			ok_button.select_actions.extend (agent hide)
 			set_default_cancel_button (ok_button)
 			set_default_push_button (ok_button)
 			add_help_items
 			show_actions.extend (agent icon_help_list.set_focus)
+		end
+
+	user_create_interface_objects
+			-- Feature for custom user interface object creation, called at end of `create_interface_objects'.
+		do
 		end
 
 feature {NONE} -- Implementation
@@ -42,23 +47,23 @@ feature {NONE} -- Implementation
 			help: STRING
 		do
 			from
-				pixmap_table.start
+				semantic_icon_table.start
 			until
-				pixmap_table.off
+				semantic_icon_table.off
 			loop
-				help := pixmap_table.item_for_iteration.help
+				help := semantic_icon_table.item_for_iteration.help
 
 				if help /= Void then
 					create list_item.make_with_text (help)
 
-					if pixmaps.has (pixmap_table.key_for_iteration) then
-						list_item.set_pixmap (pixmaps [pixmap_table.key_for_iteration])
+					if pixmaps.has (semantic_icon_table.key_for_iteration) then
+						list_item.set_pixmap (pixmaps [semantic_icon_table.key_for_iteration])
 					end
 
 					icon_help_list.extend (list_item)
 				end
 
-				pixmap_table.forth
+				semantic_icon_table.forth
 			end
 		end
 

@@ -18,20 +18,20 @@ inherit
 		redefine
 			default_create
 		end
-		
+
 create
-	make, make_dt, make_author
-	
+	make, make_author
+
 feature -- Definitions
 
 	Default_lifecycle_state: STRING = "initial"
 
 	Default_original_author: STRING = "unknown"
-		
+
 feature -- Initialisation
 
 	default_create
-			-- 
+			--
 		do
 			lifecycle_state := Default_lifecycle_state.twin
 			create details.make(0)
@@ -40,24 +40,24 @@ feature -- Initialisation
 			lifecycle_state_set: lifecycle_state.is_equal(Default_lifecycle_state)
 			details_exists: details /= Void
 		end
-		
+
 	make
 			-- default make
 		do
 			default_create
 			make_author(Default_original_author)
 		end
-		
-	make_dt
+
+	make_dt (make_args: ARRAY[ANY])
 			-- make used by DT_OBJECT_CONVERTER
 		do
 			make
 		end
-		
-	make_author(an_author_name: STRING)
+
+	make_author (an_author_name: attached STRING)
 			-- make an empty description
 		require
-			An_author_name_exists: an_author_name /= Void and then not an_author_name.is_empty
+			An_author_name_exists: not an_author_name.is_empty
 		do
 			default_create
 			add_original_author_item("name", an_author_name)
@@ -68,7 +68,7 @@ feature -- Initialisation
 feature -- Access
 
 	original_author: HASH_TABLE [STRING, STRING]
-			-- Original author of this archetype, with all relevant details, 
+			-- Original author of this archetype, with all relevant details,
 			-- including organisation.
 
 	archetype_package_uri: URI
@@ -76,12 +76,12 @@ feature -- Access
 
 	details: HASH_TABLE [ARCHETYPE_DESCRIPTION_ITEM, STRING]
 			-- list of descriptive details, keyed by language
-			
+
 	lifecycle_state: STRING
 			-- Lifecycle state of the archetype. Includes states such as
-			-- submitted, experimental, awaiting_approval, approved, 
+			-- submitted, experimental, awaiting_approval, approved,
 			-- superseded, obsolete. State machine defined by archetype system
-			
+
 	other_contributors: ARRAYED_LIST [STRING]
 
 	other_details: HASH_TABLE [STRING, STRING]
@@ -95,8 +95,8 @@ feature -- Access
 			if details.has(a_lang) then
 				Result := details.item(a_lang)
 			end
-		end		
-	
+		end
+
 feature -- Modification
 
 	add_original_author_item(a_key, a_value: STRING)
@@ -109,13 +109,13 @@ feature -- Modification
 		ensure
 			Original_author_set: original_author.item(a_key) = a_value
 		end
-		
+
 	clear_original_author
 			-- wipeout current items in original_author list
 		do
 			create original_author.make(0)
 		end
-		
+
 	add_other_contributor(a_contributor: STRING)
 			-- add a_contributor to add_other_contributor
 		require
@@ -128,13 +128,13 @@ feature -- Modification
 		ensure
 			Other_contributor_set: other_contributors.has(a_contributor)
 		end
-		
+
 	clear_other_contributors
 			-- wipeout current items in other_contributors list
 		do
 			create other_contributors.make(0)
-		end	
-		
+		end
+
 	set_archetype_package_uri(a_uri: STRING)
 			-- set archetype_package_uri
 		require
@@ -144,7 +144,7 @@ feature -- Modification
 		ensure
 			Archetype_package_uri_set: archetype_package_uri.out.is_equal(a_uri)
 		end
-		
+
 	set_lifecycle_state(a_lifecycle_state: STRING)
 			-- set lifecycle_state
 		require
@@ -168,13 +168,13 @@ feature -- Modification
 		ensure
 			Details_set: details.has(a_language)
 		end
-		
+
 	clear_details
 			-- wipeout current items in details list
 		do
 			create details.make(0)
-		end	
-		
+		end
+
 	add_other_detail(a_key, a_value: STRING)
 			-- add the key, value pair to other_details
 		require
@@ -193,8 +193,8 @@ feature -- Modification
 			-- wipeout current items in other_details list
 		do
 			create other_details.make(0)
-		end	
-		
+		end
+
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
 	persistent_attributes: ARRAYED_LIST[STRING]
@@ -215,7 +215,7 @@ invariant
 	Original_author_exists: original_author /= Void and then not original_author.is_empty
 	Lifecycle_state_valid: lifecycle_state /= Void and then not lifecycle_state.is_empty
 	Details_valid: details /= Void
-	
+
 end
 
 

@@ -20,14 +20,6 @@ class DT_PRIMITIVE_OBJECT
 inherit
 	DT_OBJECT_LEAF
 
-	-- FIXME: remove when duration.out solved
-	DATE_TIME_ROUTINES
-		export
-			{NONE} all
-		undefine
-			is_equal, default_create
-		end
-
 	STRING_UTILITIES
 		export
 			{NONE} all
@@ -44,27 +36,31 @@ feature -- Access
 
 feature -- Modification
 
-	set_value(a_value: ANY)
+	set_value (a_value: ANY)
 		do
 			value := a_value
-			rm_type_name := a_value.generating_type
+			im_type_name := a_value.generating_type
 		end
 
 feature -- Conversion
 
 	as_string: STRING
 		do
-			Result := atomic_value_to_string(value)
+			Result := primitive_value_to_dadl_string (value)
 		end
 
-	clean_as_string (cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
+	as_serialised_string (string_converter: attached FUNCTION [ANY, TUPLE [ANY], STRING]; cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
 			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
+		local
+			v: ANY
 		do
-			if attached {STRING} value as str then
-				Result := atomic_value_to_string(cleaner.item ([str]))
+			-- if cleaning string, do it first before converting
+			if attached {STRING} value as s and attached cleaner then
+				v := cleaner.item ([s])
 			else
-				Result := as_string
+				v := value
 			end
+			Result := string_converter.item ([v])
 		end
 
 feature -- Serialisation
@@ -72,13 +68,13 @@ feature -- Serialisation
 	enter_subtree (serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at start of block for this node
 		do
-			serialiser.start_primitive_object(Current, depth)
+			serialiser.start_primitive_object (Current, depth)
 		end
 
 	exit_subtree (serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at end of block for this node
 		do
-			serialiser.end_primitive_object(Current, depth)
+			serialiser.end_primitive_object (Current, depth)
 		end
 
 end

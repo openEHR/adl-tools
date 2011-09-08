@@ -107,7 +107,7 @@ feature -- Output
 
 feature {NONE} -- Implementation
 
-	prefixes_file:CONFIG_FILE_ACCESS
+	prefixes_file: INI_CONFIG_FILE_ACCESS
 
 end
 

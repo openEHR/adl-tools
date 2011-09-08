@@ -19,16 +19,16 @@ note
 
 class SYNC_EXTRACT_REQUEST
 
-inherit 
-	MESSAGE_CONTENT
+--inherit
+--	MESSAGE_CONTENT
 
 feature -- Access
 
-	specification: SYNC_EXTRACT_SPEC	
+	specification: SYNC_EXTRACT_SPEC
 			-- Details of specification of synchronisation request.
 
 invariant
-	Specification_valid: specification /= Void	
+	Specification_valid: specification /= Void
 
 end
 

@@ -37,6 +37,11 @@ feature {NONE} -- Initialization
 			show_actions.extend (agent release_notes_text_box.set_focus)
 		end
 
+	user_create_interface_objects
+			-- Feature for custom user interface object creation, called at end of `create_interface_objects'.
+		do
+		end
+
 end
 
 

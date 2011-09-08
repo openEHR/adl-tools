@@ -18,10 +18,8 @@ inherit
 
 feature {NONE} -- Initialisation
 
-	make (a_target: like target)
+	initialise (a_target: attached like target)
 			-- set target and initialise reporting variables
-		require
-			target_valid: a_target /= Void
 		do
 			target := a_target
 			reset
@@ -32,7 +30,7 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	target: AUTHORED_RESOURCE
+	target: attached AUTHORED_RESOURCE
 			-- target of this validator
 
 	validate
@@ -68,9 +66,6 @@ feature -- Access
 				add_error("VRDLA", <<target.description.details.key_for_iteration, target.description.details.item_for_iteration.language.code_string>>)
 			end
 		end
-
-invariant
-	target_attached: target /= Void
 
 end
 

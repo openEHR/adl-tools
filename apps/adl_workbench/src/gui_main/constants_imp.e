@@ -483,40 +483,6 @@ feature -- Access
 			create Result.put (10)
 		end
 
-	adl_workbench_ico: EV_PIXMAP
-			-- `Result' is EV_PIXMAP constant named `adl_workbench_ico'.
-		do
-			Result := adl_workbench_ico_cell.item
-		end
-
-	adl_workbench_ico_cell: CELL [EV_PIXMAP]
-			--`Result' is once access to a cell holding vale of `adl_workbench_ico'.
-		local
-			a_file_name: FILE_NAME
-		once
-			create Result.put (create {EV_PIXMAP})
-			create a_file_name.make_from_string (icons)
-			a_file_name.set_file_name ("openEHR.ico")
-			set_with_named_file (Result.item, a_file_name)
-		end
-
-	ontology_category_ico: EV_PIXMAP
-			-- `Result' is EV_PIXMAP constant named `ontology_category_ico'.
-		do
-			Result := ontology_category_ico_cell.item
-		end
-
-	ontology_category_ico_cell: CELL [EV_PIXMAP]
-			--`Result' is once access to a cell holding vale of `ontology_category_ico'.
-		local
-			a_file_name: FILE_NAME
-		once
-			create Result.put (create {EV_PIXMAP})
-			create a_file_name.make_from_string (icons)
-			a_file_name.set_file_name ("ontology_category.ico")
-			set_with_named_file (Result.item, a_file_name)
-		end
-
 feature -- Access
 
 --| FIXME `constant_by_name' and `has_constant' `constants_initialized' are only required until the complete change to
@@ -535,7 +501,9 @@ feature -- Access
 			name_valid: a_name /= Void and not a_name.is_empty
 			has_constant (a_name)
 		do
-			Result := (all_constants.item (a_name)).twin
+			check attached all_constants.item (a_name) as l_string then
+				Result := l_string.twin
+			end
 		ensure
 			Result_not_void: Result /= Void
 		end
@@ -546,15 +514,13 @@ feature -- Access
 			initialized: constants_initialized
 			name_valid: a_name /= Void and not a_name.is_empty
 			has_constant (a_name)
-		local
-			l_string: STRING
 		do
-			l_string := (all_constants.item (a_name)).twin
-			check
-				is_integer: l_string.is_integer
+			check attached all_constants.item (a_name) as l_string then
+				check
+					is_integer: l_string.is_integer
+				end
+				Result := l_string.to_integer
 			end
-			
-			Result := l_string.to_integer
 		end
 		
 	has_constant (a_name: STRING): BOOLEAN
@@ -563,7 +529,8 @@ feature -- Access
 			initialized: constants_initialized
 			name_valid: a_name /= Void and not a_name.is_empty
 		do
-			Result := all_constants.item (a_name) /= Void
+			all_constants.search (a_name)
+			Result := all_constants.found
 		end
 
 feature {NONE} -- Implementation

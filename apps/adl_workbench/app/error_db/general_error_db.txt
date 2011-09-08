@@ -25,6 +25,11 @@ templates = <
 		["general"] = <"$1">
 		["cfg_file_i1"] = <"Wrote config file $1">
 		["file_exists_replace_question"] = <"File $1 already exists. Replace it?">
+		["enter_search_string"] = <"Enter search string">
+		["no_match_found"] = <"No match found">
+		["key_too_short"] = <"At least 3 characters required in key">
+		["yes_response"] = <"Yes">
+		["no_response"] = <"No">
 	>
 >
 

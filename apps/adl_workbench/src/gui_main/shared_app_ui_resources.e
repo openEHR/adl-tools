@@ -2,9 +2,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Shared UI resources"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale "
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -27,19 +27,39 @@ inherit
 
 feature -- Definitions
 
-	ADL_help_page_url: STRING = "http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/adl_workbench/doc/web/index.html"
-			-- The URL to ADL Workbench's online help.
-
-	Release_notes_file_path: STRING = "http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/adl_workbench/doc/web/release_notes.html"
-			-- The path to ADL Workbench's release notes.
-
-	clinical_knowledge_manager_url: STRING = "http://www.openehr.org/knowledge/"
-			-- The URL to CKM.
+	Sane_screen_coord: INTEGER = -2500
+			-- assumed 'most negative' screen X or Y position that app could, due to use of multiple screens. If it is more negative
+			-- than this, at least on windows, assume that the app was minimised and start it in a default screen location instead
 
 	bug_reporter_url: STRING = "http://www.openehr.org/issues/browse/AWBPR/"
 			-- The URL to ADL Workbench's problem reporter.
 
+	user_docking_layout_file_path: attached STRING
+			-- Full path to docking layout configuration file.
+		do
+			Result := file_system.pathname (user_config_file_directory, extension_replaced ("ui_config", User_config_file_extension))
+		ensure
+			not_empty: not Result.is_empty
+		end
+
+	default_docking_layout_file_path: attached STRING
+			-- Full path to docking layout configuration file.
+		do
+			Result := file_system.pathname (application_startup_directory, extension_replaced ("default_ui_config", User_config_file_extension))
+		ensure
+			not_empty: not Result.is_empty
+		end
+
+	icon_ico_extension: STRING = ".ico"
+
+	icon_png_extension: STRING = ".png"
+
 feature -- Access
+
+	adl_workbench_icon: EV_PIXMAP
+		do
+			Result := pixmaps["adl_workbench_logo"]
+		end
 
 	icon_directory: attached STRING
 		once
@@ -57,16 +77,391 @@ feature -- Access
 			Result := a_dir.exists
 		end
 
-	pixmap_table: attached DS_HASH_TABLE [TUPLE [file, help: STRING], STRING]
+	pixmaps: attached HASH_TABLE [EV_PIXMAP, STRING]
+			-- Table of pixmap file paths keyed by logical name; constructed from pixmaps
+			-- mentioned in `pixmap_table' and also any other pixmaps (icons) found in the
+			-- icon root directory, which will be keyed by their file name minus '.ico'
+			-- This means practically, that if an icon is general purpose, does't need a
+			-- help entry, then don't bother listing it in the `pixmap_table', just put
+			-- it in the icons root directory and the app will find it on startup.
+		require
+			has_icon_directory
+		local
+			file: RAW_FILE
+			pixmap: EV_PIXMAP
+			ico_fname, pixmap_key: STRING
+			dir: DIRECTORY
+		once
+			create Result.make (0)
+
+			from semantic_icon_table.start until semantic_icon_table.off loop
+				if semantic_icon_table.item_for_iteration.file /= Void then
+					ico_fname := file_system.pathname (icon_directory, semantic_icon_table.item_for_iteration.file)
+					create file.make (ico_fname)
+					create pixmap
+					Result [semantic_icon_table.key_for_iteration] := pixmap
+
+					if file.exists then
+						pixmap.set_with_named_file (file.name)
+						pixmap.set_minimum_size (pixmap.width, pixmap.height)
+					else
+						io.putstring ("Could not find icon " + file.name + "; using default%N")
+					end
+				end
+
+				semantic_icon_table.forth
+			end
+
+			-- now go and collect any other pixmaps found in the icon directory and put them in
+			-- this table, keyed by the filename name with '.ico' removed
+			create dir.make_open_read (icon_directory)
+			from
+				dir.start
+				dir.readentry
+			until
+				dir.lastentry = Void
+			loop
+				if dir.lastentry.ends_with (icon_ico_extension) then
+					pixmap_key := dir.lastentry.substring (1, dir.lastentry.count - icon_ico_extension.count)
+					if not Result.has (pixmap_key) then
+						create pixmap
+						Result.put (pixmap, pixmap_key)
+						ico_fname := file_system.pathname (dir.name, dir.lastentry)
+						pixmap.set_with_named_file (ico_fname)
+						pixmap.set_minimum_size (pixmap.width, pixmap.height)
+					end
+				end
+				dir.readentry
+			end
+		end
+
+	rm_pixmaps: attached HASH_TABLE [HASH_TABLE [EV_PIXMAP, STRING], STRING]
+			-- Table of pixmap tables, each table for a given reference model;
+			-- each table has the structure {PIXMAP, RM class name}
+			-- these pixmaps can be used for RM-specific visualisation of the archetype definition
+			-- the source files can be .ico or .png
+		require
+			has_icon_directory
+		local
+			rm_ico_file: RAW_FILE
+			pixmap: EV_PIXMAP
+			path, ico_fname: STRING
+			dir, rm_ico_dir: DIRECTORY
+			rm_ico_map: HASH_TABLE [EV_PIXMAP, STRING]
+		once
+			create Result.make (0)
+			path := file_system.pathname (icon_directory, "rm")
+			create dir.make_open_read (path)
+			from
+				dir.start
+				dir.readentry
+			until
+				dir.lastentry = Void
+			loop
+				if not dir.lastentry.ends_with (".") then
+					create rm_ico_map.make(0)
+					Result.put (rm_ico_map, dir.lastentry)
+					create rm_ico_dir.make_open_read (file_system.pathname (path, dir.lastentry))
+					from
+						rm_ico_dir.start
+						rm_ico_dir.readentry
+					until
+						rm_ico_dir.lastentry = Void
+					loop
+						if rm_ico_dir.lastentry.ends_with (icon_ico_extension) or rm_ico_dir.lastentry.ends_with (icon_png_extension) then
+							create pixmap
+							rm_ico_map.put (pixmap, rm_ico_dir.lastentry.substring (1, rm_ico_dir.lastentry.count - icon_ico_extension.count).as_upper)
+							ico_fname := file_system.pathname (rm_ico_dir.name, rm_ico_dir.lastentry)
+							pixmap.set_with_named_file (ico_fname)
+							pixmap.set_minimum_size (pixmap.width, pixmap.height)
+						end
+						rm_ico_dir.readentry
+					end
+				end
+				dir.readentry
+			end
+		end
+
+feature -- Application Switches
+
+	current_work_directory: attached STRING
+			-- Directory where archetypes are currently being opened and saved
+			-- from GUI open and save buttons; automatic opens (due to clicking
+			-- on archetype name) still use main repository directory.
+		do
+			Result := app_cfg.string_value ("/file_system/current_work_directory")
+		end
+
+	set_current_work_directory (a_path: attached STRING)
+			-- set the directory where archetypes are currently being opened and saved.
+		do
+			if not a_path.is_empty then
+				app_cfg.put_value ("/file_system/current_work_directory", a_path)
+			else
+				app_cfg.remove_resource ("/file_system/current_work_directory")
+			end
+		end
+
+	app_width: INTEGER
+			-- application width
+		do
+			Result := app_cfg.integer_value ("/gui/app_width")
+		end
+
+	set_app_width (v: INTEGER)
+			-- set app width
+		require
+			v > 0
+		do
+			app_cfg.put_value ("/gui/app_width", v)
+		end
+
+	app_height: INTEGER
+			-- application height
+		do
+			Result := app_cfg.integer_value ("/gui/app_height")
+		end
+
+	set_app_height (v: INTEGER)
+			-- set app height
+		require
+			v > 0
+		do
+			app_cfg.put_value ("/gui/app_height", v)
+		end
+
+	app_x_position: INTEGER
+			-- application horizontal position
+		do
+			Result := app_cfg.integer_value ("/gui/app_x_position")
+		end
+
+	set_app_x_position (v: INTEGER)
+			-- set app x position
+		do
+			app_cfg.put_value ("/gui/app_x_position", v)
+		end
+
+	app_y_position: INTEGER
+			-- application vertical position
+		do
+			Result := app_cfg.integer_value ("/gui/app_y_position")
+		end
+
+	set_app_y_position (v: INTEGER)
+			-- set app y position
+		do
+			app_cfg.put_value ("/gui/app_y_position", v)
+		end
+
+	app_maximised: BOOLEAN
+			-- True if app should be maximised
+		do
+			Result := app_cfg.boolean_value ("/gui/app_maximised")
+		end
+
+	set_app_maximised (flag: BOOLEAN)
+			-- set app maximised flag
+		do
+			app_cfg.put_value("/gui/app_maximised", flag)
+		end
+
+	test_split_position: INTEGER
+			-- Split position of vertical split control in test tool.
+		do
+			Result := app_cfg.integer_value ("/gui/test_split_position")
+		end
+
+	set_test_split_position (v: INTEGER)
+			-- Set split position of test tool vertical split control.
+		require
+			v > 0
+		do
+			app_cfg.put_value ("/gui/test_split_position", v)
+		end
+
+	catalogue_split_position: INTEGER
+			-- Split position of explorer horizontal split control.
+		do
+			Result := app_cfg.integer_value ("/gui/catalogue_split_position")
+		end
+
+	set_catalogue_split_position (v: INTEGER)
+			-- Set split position of explorer vertical split control.
+		require
+			v > 0
+		do
+			app_cfg.put_value ("/gui/catalogue_split_position", v)
+		end
+
+	expand_node_tree: BOOLEAN
+			-- Expand the archetype definition node tree by default?
+		do
+			Result := app_cfg.boolean_value ("/gui/expand_node_tree")
+		end
+
+	set_expand_node_tree (flag: BOOLEAN)
+			-- Set flag for whether to expand the archetype definition node tree by default.
+		do
+			app_cfg.put_value("/gui/expand_node_tree", flag)
+		end
+
+	show_technical_view: BOOLEAN
+			-- Display the technical view in the archetype definition node tree by default?
+		do
+			Result := app_cfg.boolean_value ("/gui/show_technical_view")
+		end
+
+	set_show_technical_view (flag: BOOLEAN)
+			-- Set flag for whether to show the technical view in the archetype definition node tree by default.
+		do
+			app_cfg.put_value("/gui/show_technical_view", flag)
+		end
+
+	show_reference_model_view: BOOLEAN
+			-- Display the reference model view in the archetype definition node tree by default?
+		do
+			Result := app_cfg.boolean_value ("/gui/show_reference_model_view")
+		end
+
+	set_show_reference_model_view (flag: BOOLEAN)
+			-- Set flag for whether to show the technical view in the archetype definition node tree by default.
+		do
+			app_cfg.put_value("/gui/show_reference_model_view", flag)
+		end
+
+	show_line_numbers: BOOLEAN
+			-- Display line numbers in the ADL source text box?
+		do
+			Result := app_cfg.boolean_value ("/gui/show_line_numbers")
+		end
+
+	set_show_line_numbers (flag: BOOLEAN)
+			-- Set flag for whether to show line numbers in the ADL source text box.
+		do
+			app_cfg.put_value("/gui/show_line_numbers", flag)
+		end
+
+	show_entire_ontology: BOOLEAN
+			-- Display the entire ontology class tree, even when classes have no archetypes
+		do
+			Result := app_cfg.boolean_value ("/gui/show_entire_ontology")
+		end
+
+	set_show_entire_ontology (flag: BOOLEAN)
+			-- Set flag for show_entire_ontology.
+		do
+			app_cfg.put_value("/gui/show_entire_ontology", flag)
+		end
+
+	display_archetype_source: BOOLEAN
+			-- Display "(f)" marker on archetypes created in flat form
+		do
+			Result := app_cfg.boolean_value ("/gui/display_archetype_source")
+		end
+
+	set_display_archetype_source (flag: BOOLEAN)
+			-- Set flag for whether to display markers indicating archetype authoring form.
+		do
+			app_cfg.put_value ("/gui/display_archetype_source", flag)
+		end
+
+	path_filter_combo_selection: STRING
+			-- setting of path control filter combo-box
+		do
+			Result := app_cfg.string_value ("/gui/path_filter_combo_selection")
+		end
+
+	set_path_filter_combo_selection(str: STRING)
+			--
+		do
+			app_cfg.put_value("/gui/path_filter_combo_selection", str)
+		end
+
+	use_rm_pixmaps: BOOLEAN
+			-- if True, substitute RM pixmaps, if any found, below icon directory, during
+			-- archetype definition visualisation
+		do
+			Result := app_cfg.boolean_value ("/gui/use_rm_pixmaps")
+		end
+
+	set_use_rm_pixmaps (flag: BOOLEAN)
+			--
+		do
+			app_cfg.put_value ("/gui/use_rm_pixmaps", flag)
+		end
+
+	path_view_check_list_settings: attached LIST [STRING]
+			-- path view column settings
+		do
+			Result := app_cfg.string_list_value ("/gui/path_view_check_list_settings")
+			Result.compare_objects
+		ensure
+			result_attached: attached Result
+			value_comparison: Result.object_comparison
+			no_empty_items: Result.for_all (agent (s: STRING): BOOLEAN do Result := attached s and then not s.is_empty end)
+		end
+
+	set_path_view_check_list_settings (strs: attached LIST [STRING])
+			-- save path view column settings
+		do
+			app_cfg.put_value("/gui/path_view_check_list_settings", strs)
+		end
+
+	text_editor_command: attached STRING
+			-- Path of editor application for ADL files.
+		do
+			Result := app_cfg.string_value_env_var_sub ("/commands/text_editor_command")
+		end
+
+	set_text_editor_command (a_value: attached STRING)
+			-- set editor
+		require
+			value_not_empty: not a_value.is_empty
+		do
+			app_cfg.put_value ("/commands/text_editor_command", a_value)
+		end
+
+	editor_app_command: attached STRING
+			-- Path of editor application for ADL files.
+		do
+			Result := app_cfg.string_value_env_var_sub ("/commands/editor_app_command")
+		end
+
+	set_editor_app_command (a_value: attached STRING)
+			-- set editor
+		require
+			value_not_empty: not a_value.is_empty
+		do
+			app_cfg.put_value ("/commands/editor_app_command", a_value)
+		end
+
+	difftool_command: attached STRING
+			-- Path of diff tool application for ADL files.
+		do
+			Result := app_cfg.string_value_env_var_sub ("/commands/difftool_command")
+		end
+
+	set_difftool_command (a_value: attached STRING)
+			-- set editor
+		require
+			value_not_empty: not a_value.is_empty
+		do
+			app_cfg.put_value ("/commands/difftool_command", a_value)
+		end
+
+feature {NONE} -- Implementation
+
+	semantic_icon_table: attached DS_HASH_TABLE [TUPLE [file, help: STRING], STRING]
 			-- Table of pixmap file paths and help messages, keyed by icon key.
 		once
 			create Result.make (0)
 
-			Result.force (["archetype_category.ico", "archetype category"], "archetype_category")
-			Result.force (["template_category.ico", "template category"], "template_category")
-
 			Result.force (["class_concrete.ico", "concrete class from RM"], "class_concrete")
+			Result.force (["class_concrete_supertype.ico", "concrete class from RM"], "class_concrete_supertype")
 			Result.force (["class_abstract.ico", "abstract class from RM"], "class_abstract")
+			Result.force (["generic_parameter.ico", "generic parameter from RM type"], "generic_parameter")
+			Result.force (["generic_parameter.ico", "constrained generic parameter from RM type"], "constrained_generic_parameter")
 
 			Result.force (["archetype_1.ico", "Ad hoc archetype (not parsed yet)"], "archetype_1")
 			Result.force (["archetype_parsed_1.ico", "Ad hoc archetype (parsed but not compiled)"], "archetype_parsed_1")
@@ -74,14 +469,12 @@ feature -- Access
 			Result.force (["archetype_warning_1.ico", "Ad hoc archetype (parsed and compiled with warnings)"], "archetype_warning_1")
 			Result.force (["archetype_valid_1.ico", "Ad hoc archetype (parsed and compiled)"], "archetype_valid_1")
 
-			Result.force (["file_folder_2.ico", Void], "file_folder_2")
 			Result.force (["archetype_2.ico", "Archetype in the reference repository (not parsed yet)"], "archetype_2")
 			Result.force (["archetype_parsed_2.ico", "Archetype in the reference repository (parsed but not compiled)"], "archetype_parsed_2")
 			Result.force (["archetype_parse_failed_2.ico", "Archetype in the reference repository (parse failed)"], "archetype_parse_failed_2")
 			Result.force (["archetype_warning_2.ico", "Archetype in the reference repository (parsed and compiled with warnings)"], "archetype_warning_2")
 			Result.force (["archetype_valid_2.ico", "Archetype in the reference repository (parsed and compiled)"], "archetype_valid_2")
 
-			Result.force (["file_folder_3.ico", Void], "file_folder_3")
 			Result.force (["archetype_3.ico", "Archetype in the work repository (not parsed yet)"], "archetype_3")
 			Result.force (["archetype_parsed_3.ico", "Archetype in the work repository (parsed but not compiled)"], "archetype_parsed_3")
 			Result.force (["archetype_parse_failed_3.ico", "Archetype in the work repository (parse failed)"], "archetype_parse_failed_3")
@@ -108,34 +501,7 @@ feature -- Access
 			Result.force (["template_warning_3.ico", "Template in the work repository (parsed and compiled with warnings)"], "template_warning_3")
 			Result.force (["template_valid_3.ico", "Template in the work repository (parsed and compiled)"], "template_valid_3")
 
-			Result.force (["template_component_1.ico", Void], "template_component_1")
-			Result.force (["template_component_parsed_1.ico", Void], "template_component_parsed_1")
-			Result.force (["template_component_parse_failed_1.ico", Void], "template_component_parse_failed_1")
-			Result.force (["template_component_warning_1.ico", Void], "template_component_warning_1")
-			Result.force (["template_component_valid_1.ico", Void], "template_component_valid_1")
-
-			Result.force (["template_component_2.ico", Void], "template_component_2")
-			Result.force (["template_component_parsed_2.ico", Void], "template_component_parsed_2")
-			Result.force (["template_component_parse_failed_2.ico", Void], "template_component_parse_failed_2")
-			Result.force (["template_component_warning_2.ico", Void], "template_component_warning_2")
-			Result.force (["template_component_valid_2.ico", Void], "template_component_valid_2")
-
-			Result.force (["template_component_3.ico", Void], "template_component_3")
-			Result.force (["template_component_parsed_3.ico", Void], "template_component_parsed_3")
-			Result.force (["template_component_parse_failed_3.ico", Void], "template_component_parse_failed_3")
-			Result.force (["template_component_warning_3.ico", Void], "template_component_warning_3")
-			Result.force (["template_component_valid_3.ico", Void], "template_component_valid_3")
 			Result.force ([Void, ""], "Gap 1 in the help")
-
-			Result.force (["node_normal/c_attribute.ico", "Single-valued attribute (mandatory)"], "C_ATTRIBUTE")
-			Result.force (["node_normal/c_attribute_optional.ico", "Single-valued attribute (optional)"], "C_ATTRIBUTE.optional")
-			Result.force (["node_normal/c_attribute_multiple.ico", "Container attribute (mandatory)"], "C_ATTRIBUTE.multiple")
-			Result.force (["node_normal/c_attribute_multiple_optional.ico", "Container attribute (optional)"], "C_ATTRIBUTE.multiple.optional")
-
-			Result.force (["node_reference_model/c_attribute.ico", "Single-valued RM attribute (mandatory)"], "C_ATTRIBUTE.reference_model")
-			Result.force (["node_reference_model/c_attribute_multiple.ico", "Container RM attribute (mandatory)"], "C_ATTRIBUTE.multiple.reference_model")
-			Result.force (["node_reference_model/c_attribute_optional.ico", "Single-valued RM attribute (optional)"], "C_ATTRIBUTE.optional.reference_model")
-			Result.force (["node_reference_model/c_attribute_multiple_optional.ico", "Container RM attribute (optional)"], "C_ATTRIBUTE.multiple.optional.reference_model")
 
 			Result.force ([Void, ""], "Gap 2 in the help")
 
@@ -171,10 +537,6 @@ feature -- Access
 			Result.force (["node_inherited/icon_help_example.ico", "X is inherited from parent archetype"], "icon_help_example.inherited")
 			Result.force (["node_redefined/icon_help_example.ico", "X is redefined from parent archetype"], "icon_help_example.redefined")
 
-			Result.force (["node_inherited/c_attribute.ico", Void], "C_ATTRIBUTE.inherited")
-			Result.force (["node_inherited/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.inherited")
-			Result.force (["node_inherited/c_attribute.ico", Void], "C_ATTRIBUTE.optional.inherited")
-			Result.force (["node_inherited/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.optional.inherited")
 			Result.force (["node_inherited/c_code_phrase.ico", Void], "C_CODE_PHRASE.inherited")
 			Result.force (["node_inherited/c_dv_ordinal.ico", Void], "C_DV_ORDINAL.inherited")
 			Result.force (["node_inherited/c_dv_quantity.ico", Void], "C_DV_QUANTITY.inherited")
@@ -200,10 +562,6 @@ feature -- Access
 			Result.force (["node_inherited/ordinal.ico", Void], "ORDINAL.inherited")
 			Result.force (["node_normal/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.inherited")
 
-			Result.force (["node_redefined/c_attribute.ico", Void], "C_ATTRIBUTE.redefined")
-			Result.force (["node_redefined/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.redefined")
-			Result.force (["node_redefined/c_attribute.ico", Void], "C_ATTRIBUTE.optional.redefined")
-			Result.force (["node_redefined/c_attribute_multiple.ico", Void], "C_ATTRIBUTE.multiple.optional.redefined")
 			Result.force (["node_redefined/c_code_phrase.ico", Void], "C_CODE_PHRASE.redefined")
 			Result.force (["node_redefined/c_dv_ordinal.ico", Void], "C_DV_ORDINAL.redefined")
 			Result.force (["node_redefined/c_dv_quantity.ico", Void], "C_DV_QUANTITY.redefined")
@@ -232,49 +590,10 @@ feature -- Access
 			Result.force (["fail.ico", Void], "test_failed")
 			Result.force (["not_applicable.ico", Void], "test_not_applicable")
 
-			Result.force (["parse_errors.ico", Void], "parse_errors")
-			Result.force (["validity_errors.ico", Void], "validity_errors")
-			Result.force (["warnings.ico", Void], "warnings")
-
-			Result.force (["go.ico", Void], "go")
-			Result.force (["stop.ico", Void], "stop")
-			Result.force (["parse.ico", Void], "parse")
-			Result.force (["edit.ico", Void], "edit")
-			Result.force (["history_back.ico", Void], "history_back")
-			Result.force (["history_forward.ico", Void], "history_forward")
-			Result.force (["magnifier.ico", Void], "magnifier")
-
 			Result.force (["openEHR.png", Void], "openEHR_logo")
+			Result.force (["openehr_adl_workbench_logo.png", Void], "adl_workbench_logo")
 		ensure
 			not_empty: not Result.is_empty
-		end
-
-	pixmaps: attached HASH_TABLE [EV_PIXMAP, STRING]
-			-- Table of pixmap file paths keyed by logical name.
-		require
-			has_icon_directory
-		local
-			file: RAW_FILE
-			pixmap: EV_PIXMAP
-		once
-			create Result.make (0)
-
-			from pixmap_table.start until pixmap_table.off loop
-				if pixmap_table.item_for_iteration.file /= Void then
-					create file.make (icon_directory + "/" + pixmap_table.item_for_iteration.file)
-					create pixmap
-					Result [pixmap_table.key_for_iteration] := pixmap
-
-					if file.exists then
-						pixmap.set_with_named_file (file.name)
-						pixmap.set_minimum_size (pixmap.width, pixmap.height)
-					else
-						io.putstring ("Could not find icon " + file.name + "; using default%N")
-					end
-				end
-
-				pixmap_table.forth
-			end
 		end
 
 	splash_text: attached STRING
@@ -286,7 +605,7 @@ feature -- Access
 			create Result.make_empty
 			Result.append ("ADL Workbench%N")
 			Result.append ("Version " + version.out + "%N")
-			Result.append ("(c) 2003-2010 openEHR Foundation%N")
+			Result.append ("(c) 2003-2011 openEHR Foundation%N")
 			Result.append ("ADL version: " + Latest_adl_version + "%N")
 			Result.append ("Source SVN - http://www.openehr.org/svn/ref_impl_eiffel%N%T" + version.last_changed + "%N")
 			Result.append ("Source license: Mozilla tri-license%N")
@@ -295,369 +614,15 @@ feature -- Access
 			Result.append ("Funded by: OceanInformatics.com%N")
 			Result.append ("Author: Thomas Beale%N")
 			Result.append ("Contributors: Peter Gummer%N")
-			Result.append ("Built using%N")
-			Result.append ("- Eiffel Software Eiffel (http://www.eiffel.com)%N")
-			Result.append ("- Gobo parsing libraries & tools (http://www.gobosoft.com)%N")
+			Result.append ("Acknowledgements:%N")
+			Result.append ("  - Eiffel Software (http://www.eiffel.com)%N")
+			Result.append ("  - Gobo parsing libraries & tools (http://www.gobosoft.com)%N")
+			Result.append ("  - Jonas Rask Design icons (http://jonasraskdesign.com)%N")
 		ensure
 			not_empty: not Result.is_empty
 		end
 
-feature -- Application Switches
-
-	current_work_directory: attached STRING
-			-- Directory where archetypes are currently being opened and saved
-			-- from GUI open and save buttons; automatic opens (due to clicking
-			-- on archetype name) still use main repository directory.
-		do
-			Result := resource_value ("default", "current_work_directory")
-		end
-
-	app_width: INTEGER
-			-- application width
-		local
-			str: STRING
-		do
-			str := resource_value("default", "app_width")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	app_height: INTEGER
-			-- application height
-		local
-			str: STRING
-		do
-			str := resource_value("default", "app_height")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	app_x_position: INTEGER
-			-- application horizontal position
-		local
-			str: STRING
-		do
-			str := resource_value("default", "app_x_position")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	app_y_position: INTEGER
-			-- application vertical position
-		local
-			str: STRING
-		do
-			str := resource_value("default", "app_y_position")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	app_maximised: BOOLEAN
-			-- True if app should be maximised
-		local
-			str: STRING
-		do
-			str := resource_value("default", "app_maximised")
-			if str.is_boolean then
-				Result := str.to_boolean
-			end
-		end
-
-	total_split_position: INTEGER
-			-- Split position of outer vertical split control.
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "total_split_position")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	test_split_position: INTEGER
-			-- Split position of vertical split control in test tool.
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "test_split_position")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	explorer_split_position: INTEGER
-			-- Split position of explorer horizontal split control.
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "explorer_split_position")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	archetype_template_split_position: INTEGER
-			-- Split position of explorer horizontal split control.
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "archetype_template_split_position")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	main_notebook_tab_pos: INTEGER
-			-- which tab of the main notebook was visible at the end of the last session
-		local
-			str: STRING
-		do
-			str := resource_value("default", "main_notebook_tab_pos")
-			if str.is_integer then
-				Result := str.to_integer
-			end
-		end
-
-	expand_node_tree: BOOLEAN
-			-- Expand the archetype definition node tree by default?
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "expand_node_tree")
-
-			if str.is_boolean then
-				Result := str.to_boolean
-			end
-		end
-
-	show_technical_view: BOOLEAN
-			-- Display the technical view in the archetype definition node tree by default?
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "show_technical_view")
-			if str.is_boolean then
-				Result := str.to_boolean
-			end
-		end
-
-	show_reference_model_view: BOOLEAN
-			-- Display the reference model view in the archetype definition node tree by default?
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "show_reference_model_view")
-			if str.is_boolean then
-				Result := str.to_boolean
-			end
-		end
-
-	show_line_numbers: BOOLEAN
-			-- Display line numbers in the ADL source text box?
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "show_line_numbers")
-			if str.is_boolean then
-				Result := str.to_boolean
-			end
-		end
-
-	show_entire_ontology: BOOLEAN
-			-- Display the entire ontology class tree, even when classes have no archetypes
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "show_entire_ontology")
-			if str.is_boolean then
-				Result := str.to_boolean
-			end
-		end
-
-	display_archetype_source: BOOLEAN
-			-- Display "(f)" marker on archetypes created in flat form
-		local
-			str: STRING
-		do
-			str := resource_value ("default", "display_archetype_source")
-			if str.is_boolean then
-				Result := str.to_boolean
-			end
-		end
-
-	path_filter_combo_selection: STRING
-			-- setting of path control filter combo-box
-		do
-			Result := resource_value ("default", "path_filter_combo_selection")
-		end
-
-	path_view_check_list_settings: LIST [STRING]
-			-- path view column settings
-		do
-			Result := resource_value_list ("default", "path_view_check_list_settings")
-		ensure
-			result_attached: attached Result
-			value_comparison: Result.object_comparison
-			no_empty_items: Result.for_all (agent (s: STRING): BOOLEAN do Result := attached s and then not s.is_empty end)
-		end
-
-	editor_command: attached STRING
-			-- Path of editor application for ADL files.
-		do
-			Result := substitute_env_vars (resource_value ("default", "editor"))
-		end
-
-feature -- Application Switch Setting
-
-	set_current_work_directory (a_path: STRING)
-			-- set the directory where archetypes are currently being opened and saved.
-		require
-			a_path_attached: a_path /= Void
-		do
-			if not a_path.is_empty then
-				set_resource_value ("default", "current_work_directory", a_path)
-			else
-				remove_resource ("default", "current_work_directory")
-			end
-		end
-
-	set_editor_command (value: STRING)
-			-- set editor
-		require
-			value_attached: value /= Void
-			value_not_empty: not value.is_empty
-		do
-			set_resource_value("default", "editor", value)
-		end
-
-	set_main_notebook_tab_pos(a_tab_pos: INTEGER)
-			-- set main notebook tab pos
-		require
-			a_tab_pos_valid: a_tab_pos > 0
-		do
-			set_resource_value("default", "main_notebook_tab_pos", a_tab_pos.out)
-		end
-
-	set_total_split_position (v: INTEGER)
-			-- Set split position of outer vertical split control.
-		require
-			v > 0
-		do
-			set_resource_value ("default", "total_split_position", v.out)
-		end
-
-	set_test_split_position (v: INTEGER)
-			-- Set split position of test tool vertical split control.
-		require
-			v > 0
-		do
-			set_resource_value ("default", "test_split_position", v.out)
-		end
-
-	set_explorer_split_position (v: INTEGER)
-			-- Set split position of explorer horizontal split control.
-		require
-			v > 0
-		do
-			set_resource_value ("default", "explorer_split_position", v.out)
-		end
-
-	set_archetype_template_split_position (v: INTEGER)
-			-- Set split position of explorer vertical split control.
-		require
-			v > 0
-		do
-			set_resource_value ("default", "archetype_template_split_position", v.out)
-		end
-
-	set_app_width (v: INTEGER)
-			-- set app width
-		require
-			v > 0
-		do
-			set_resource_value("default", "app_width", v.out)
-		end
-
-	set_app_height (v: INTEGER)
-			-- set app height
-		require
-			v > 0
-		do
-			set_resource_value("default", "app_height", v.out)
-		end
-
-	set_app_x_position (v: INTEGER)
-			-- set app x position
-		do
-			set_resource_value("default", "app_x_position", v.out)
-		end
-
-	set_app_y_position (v: INTEGER)
-			-- set app y position
-		do
-			set_resource_value("default", "app_y_position", v.out)
-		end
-
-	set_app_maximised (f: BOOLEAN)
-			-- set app maximised flag
-		do
-			set_resource_value("default", "app_maximised", f.out)
-		end
-
-	set_expand_node_tree (flag: BOOLEAN)
-			-- Set flag for whether to expand the archetype definition node tree by default.
-		do
-			set_resource_value ("default", "expand_node_tree", flag.out)
-		end
-
-	set_show_technical_view (flag: BOOLEAN)
-			-- Set flag for whether to show the technical view in the archetype definition node tree by default.
-		do
-			set_resource_value ("default", "show_technical_view", flag.out)
-		end
-
-	set_show_reference_model_view (flag: BOOLEAN)
-			-- Set flag for whether to show the technical view in the archetype definition node tree by default.
-		do
-			set_resource_value ("default", "show_reference_model_view", flag.out)
-		end
-
-	set_show_line_numbers (flag: BOOLEAN)
-			-- Set flag for whether to show line numbers in the ADL source text box.
-		do
-			set_resource_value ("default", "show_line_numbers", flag.out)
-		end
-
-	set_show_entire_ontology (flag: BOOLEAN)
-			-- Set flag for show_entire_ontology.
-		do
-			set_resource_value ("default", "show_entire_ontology", flag.out)
-		end
-
-	set_display_archetype_source (flag: BOOLEAN)
-			-- Set flag for whether to display markers indicating archetype authoring form.
-		do
-			set_resource_value ("default", "display_archetype_source", flag.out)
-		end
-
-	set_path_filter_combo_selection(str: STRING)
-			--
-		do
-			set_resource_value("default", "path_filter_combo_selection", str)
-		end
-
-	set_path_view_check_list_settings (strs: LIST [STRING])
-			-- save path view column settings
-		do
-			set_resource_value_list("default", "path_view_check_list_settings", strs)
-		end
-
 end
-
 
 
 --|

@@ -21,9 +21,12 @@ note
 class DV_COUNT
 
 inherit
-	DV_QUANTIFIED
+	DV_AMOUNT
+		redefine
+			as_string
+		end
 
-create 
+create
 	default_create,
 	make,
 	make_from_string,
@@ -38,17 +41,17 @@ feature -- Initialisation
 		end
 
 	make_from_string(s: STRING)
-			-- 
+			--
 		do
-			
+
 		end
-		
+
 	make_from_canonical_string(s: STRING)
-			-- 
+			--
 		do
-			
+
 		end
-		
+
 feature -- Status Report
 
 	valid_canonical_string(str: STRING): BOOLEAN
@@ -60,15 +63,15 @@ feature -- Access
 
 	magnitude: INTEGER_REF
 			-- numeric value of the quantity
-	
+
 feature -- Basic Operations
 
-	infix "+" (other: like Current): like Current
+	plus alias "+" (other: like Current): like Current
 		do
 			create Result.make(magnitude + other.magnitude)
 		end
 
-	infix "-" (other: like Current): like Current
+	minus alias "-" (other: like Current): like Current
 			-- subtraction
 		do
 			create Result.make(magnitude - other.magnitude)
@@ -84,12 +87,19 @@ feature -- Output
 
 	as_string: STRING
 		do
+			Result := precursor
 		end
-	
+
 	as_canonical_string: STRING
 		do
 		end
-	
+
+	magnitude_as_string: STRING
+			-- output the magnitude in its natural form
+		do
+			-- FIXME: to be implemented
+		end
+
 end
 
 

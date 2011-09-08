@@ -19,25 +19,37 @@ class BMM_GENERIC_PARAMETER_DEFINITION
 inherit
 	BMM_TYPE_SPECIFIER
 
-feature -- Access
+feature -- Access (attributes from schema)
 
 	name: STRING
 			-- name of the parameter, e.g. 'T' etc
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
-	conforms_to_type: BMM_CLASS_DEFINITION
+	conforms_to_type: STRING
 			-- optional conformance constraint
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
-	flattened_conforms_to_type: BMM_CLASS_DEFINITION
+feature -- Access (attributes derived in post-schema processing)
+
+	conforms_to_type_def: BMM_CLASS_DEFINITION
+			-- optional conformance constraint derived from `conforms_to_type'
+
+	inheritance_precursor: BMM_GENERIC_PARAMETER_DEFINITION
+			-- if set, is the corresponding generic parameter definition in an ancestor class
+
+feature -- Access
+
+	flattened_conforms_to_type: detachable BMM_CLASS_DEFINITION
 			-- get any ultimate type conformance constraint on this generic parameter due to inheritance
 		do
-			if conforms_to_type /= Void then
-				Result := conforms_to_type
+			if conforms_to_type_def /= Void then
+				Result := conforms_to_type_def
 			elseif inheritance_precursor /= Void then
 				Result := inheritance_precursor.flattened_conforms_to_type
 			end
 		end
 
-	flattened_type_list: ARRAYED_LIST [STRING]
+	flattened_type_list: attached ARRAYED_LIST [STRING]
 			-- completely flattened list of type names, flattening out all generic parameters
 			-- note that for this type, we output "ANY" if there is no constraint
 		do
@@ -50,10 +62,29 @@ feature -- Access
 			end
 		end
 
-	inheritance_precursor: BMM_GENERIC_PARAMETER_DEFINITION
-			-- if set, is the corresponding generic parameter definition in an ancestor class
+	type_category: STRING
+			-- generate a type category of main target type from Type_cat_xx values
+		do
+			if is_constrained then
+				Result := Type_cat_constrained_generic_parameter
+			else
+				Result := Type_cat_generic_parameter
+			end
+		end
+
+	type_substitutions: ARRAYED_SET [STRING]
+		do
+			if is_constrained then
+				Result := conforms_to_type_def.type_substitutions
+			else
+				Result := bmm_schema.any_class_definition.type_substitutions
+			end
+		end
 
 feature -- Status Report
+
+	has_type_substitutions: BOOLEAN = True
+			-- True if there are types subsitutable for this one according to the model
 
 	is_constrained: BOOLEAN
 			-- True if this generic parameter has a type constraint
@@ -61,12 +92,24 @@ feature -- Status Report
 			Result := flattened_conforms_to_type /= Void
 		end
 
+feature -- Commands
+
+	finalise_build (a_bmmm: attached BMM_SCHEMA; a_class_def: BMM_CLASS_DEFINITION; errors: ERROR_ACCUMULATOR)
+		do
+			bmm_schema := a_bmmm
+			if attached conforms_to_type then
+				if bmm_schema.has_class_definition (conforms_to_type) then
+					conforms_to_type_def := bmm_schema.class_definition (conforms_to_type)
+				else
+					errors.add_error ("BMM_GPCT", <<bmm_schema.schema_id, a_class_def.name, name, conforms_to_type>>, Void)
+				end
+			end
+		end
+
 feature -- Modification
 
-	set_inheritance_precursor (a_gen_parm_def: BMM_GENERIC_PARAMETER_DEFINITION)
+	set_inheritance_precursor (a_gen_parm_def: attached BMM_GENERIC_PARAMETER_DEFINITION)
 			-- set `inheritance_precursor'
-		require
-			a_gen_parm_def /= Void
 		do
 			inheritance_precursor := a_gen_parm_def
 		end
@@ -80,7 +123,7 @@ feature -- Output
 			Result.append(name)
 			if is_constrained then
 				Result.append_character(Generic_constraint_delimiter)
-				Result.append(conforms_to_type.as_type_string)
+				Result.append(conforms_to_type_def.as_type_string)
 			end
 		end
 
@@ -89,10 +132,6 @@ feature -- Output
 		do
 			Result := as_type_string
 		end
-
-feature {NONE} -- Implementation
-
-	owning_class: BMM_CLASS_DEFINITION
 
 end
 

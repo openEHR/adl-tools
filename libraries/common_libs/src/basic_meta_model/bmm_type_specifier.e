@@ -19,32 +19,52 @@ inherit
 
 feature -- Access
 
-	flattened_type_list: ARRAYED_LIST [STRING]
+	bmm_schema: BMM_SCHEMA
+			-- reverse reference to final parent schema, set after load and merge of from input schemas
+
+	bmm_source_schema_id: STRING
+			-- reference to original source schema defining this class
+
+	flattened_type_list: attached ARRAYED_LIST [STRING]
 			-- completely flattened list of type names, flattening out all generic parameters
 		deferred
 		end
 
-	root_class: STRING
+	root_class: attached STRING
 			-- root class of type
 		do
 			Result := flattened_type_list.first
 		end
-		
+
+	type_category: STRING
+			-- generate a type category of main target type from Type_category_xx values
+		deferred
+		end
+
+	type_substitutions: ARRAYED_SET [STRING]
+		deferred
+		end
+
+feature -- Status Report
+
+	has_type_substitutions: BOOLEAN
+		deferred
+		end
+
 feature -- Output
 
-	as_type_string: STRING
+	as_type_string: attached STRING
 			-- formal string form of the type
 		deferred
-		ensure
-			Result /= Void
 		end
 
-	as_flattened_type_string: STRING
+	as_flattened_type_string: attached STRING
 			-- string form of the type for matching in archetypes - i.e. ignoring container type names
 		deferred
-		ensure
-			Result /= Void
 		end
+
+invariant
+	type_category_valid: Type_categories.has (type_category)
 
 end
 

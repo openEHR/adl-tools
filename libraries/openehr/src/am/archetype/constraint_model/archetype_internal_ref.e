@@ -24,15 +24,15 @@ create
 
 feature -- Initialisation
 
-	make (a_rm_type_name: STRING; a_path: STRING)
+	make (a_rm_type_name, a_path: attached STRING)
 			-- set reference model type name
 		require
-			a_rm_type_name_valid: a_rm_type_name /= Void and then not a_rm_type_name.is_empty
-			a_path_exists: a_path /= Void and then not a_path.is_empty
+			a_rm_type_name_valid: not a_rm_type_name.is_empty
+			a_path_exists: not a_path.is_empty
 		do
 			create representation.make_anonymous(Current)
 			rm_type_name := a_rm_type_name
-			set_target_path(a_path)
+			set_target_path (a_path)
 			use_target_occurrences := True
 		ensure
 			Use_target_occurrences: use_target_occurrences
@@ -51,15 +51,13 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_target_path(a_path: STRING)
+	set_target_path (a_path: attached STRING)
 			-- set reference path with a valid ADL path string
-		require
-			a_path /= Void
 		do
 			target_path := a_path
 		end
 
-	set_occurrences(ivl: MULTIPLICITY_INTERVAL)
+	set_occurrences (ivl: attached MULTIPLICITY_INTERVAL)
 			--
 		do
 			precursor(ivl)

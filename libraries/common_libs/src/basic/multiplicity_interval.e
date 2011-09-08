@@ -34,14 +34,21 @@ create
 	make_open,
 	make_mandatory,
 	make_optional,
-	make_prohibited
+	make_prohibited,
+	make_from_string
 
 convert
 	make_from_interval({INTERVAL[INTEGER]})
 
+feature -- Definitions
+
+	Multiplicity_range_delimiter: STRING = ".."
+
+	Multiplicity_unbounded_marker: CHARACTER = '*'
+
 feature -- Initialisation
 
-	make_bounded(a_lower, an_upper: INTEGER)
+	make_bounded (a_lower, an_upper: INTEGER)
 			-- make with both limits set
 		require
 			Valid_order: a_lower <= an_upper
@@ -117,6 +124,40 @@ feature -- Initialisation
 			Upper_bounded: not upper_unbounded
 		end
 
+	make_from_string (a_str: attached STRING)
+			-- make from a string of the form "n..m" or just "n", where n and m are integers, or m may be '*'
+		require
+			valid_multiplicity_string: valid_multiplicity_string (a_str)
+		local
+			a_lower, an_upper, delim_pos: INTEGER
+			a_mult_str: STRING
+		do
+			a_mult_str := a_str.twin
+
+			-- remove any spaces
+			a_mult_str.prune_all (' ')
+
+			-- make the interval
+			delim_pos := a_mult_str.substring_index (Multiplicity_range_delimiter, 1)
+			-- n..m case
+			if delim_pos > 0 then
+				a_lower := a_mult_str.substring (1, delim_pos-1).to_integer
+				if a_mult_str.item (a_mult_str.count) = Multiplicity_unbounded_marker then
+					make_upper_unbounded (a_lower)
+				else
+					an_upper := a_mult_str.substring (a_mult_str.substring_index (Multiplicity_range_delimiter, 1) + Multiplicity_range_delimiter.count, a_mult_str.count).to_integer
+					make_bounded (a_lower, an_upper)
+				end
+			-- * case
+			elseif a_mult_str.item (1) = Multiplicity_unbounded_marker then
+				make_upper_unbounded (0)
+			-- m (single integer) case
+			else
+				a_lower := a_mult_str.to_integer
+				make_bounded (a_lower, a_lower)
+			end
+		end
+
 feature -- Status report
 
 	is_open: BOOLEAN
@@ -135,6 +176,13 @@ feature -- Status report
 			-- True if this interval is set to 0..0
 		do
 			Result := lower = 0 and upper = 0 and not lower_unbounded and not upper_unbounded
+		end
+
+	valid_multiplicity_string (a_str: attached STRING): BOOLEAN
+			-- check if string is in form "n..m; ordered; unique" where each subsection after a ';' is optional
+		do
+			-- for the moment, just assume
+			Result := True
 		end
 
 feature -- Operations
@@ -163,7 +211,7 @@ feature -- Operations
 
 feature -- Comparison
 
-	equal_interval(other: attached  INTERVAL [INTEGER]): BOOLEAN
+	equal_interval (other: attached  INTERVAL [INTEGER]): BOOLEAN
 			-- True if current object's interval is same as `other'
 		do
 			Result := lower = other.lower and
@@ -180,11 +228,11 @@ feature -- Output
 		do
 			create Result.make(0)
 			if upper_unbounded then
-				Result.append(atomic_value_to_string(lower) + "..*")
+				Result.append (primitive_value_to_dadl_string(lower) + "..*")
 			elseif not limits_equal then
-				Result.append(atomic_value_to_string(lower) + ".." + atomic_value_to_string(upper))
+				Result.append (primitive_value_to_dadl_string(lower) + ".." + primitive_value_to_dadl_string(upper))
 			else
-				Result.append(atomic_value_to_string(lower))
+				Result.append (primitive_value_to_dadl_string(lower))
 			end
 		end
 

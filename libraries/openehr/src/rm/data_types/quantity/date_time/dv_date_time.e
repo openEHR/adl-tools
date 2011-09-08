@@ -19,7 +19,7 @@ note
 class DV_DATE_TIME
 
 inherit
-	DV_ABSOLUTE_QUANTITY
+	DV_TEMPORAL
 		undefine
 			out, is_less, default_create
 		end

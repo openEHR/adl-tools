@@ -1,14 +1,14 @@
 note
 	component:   "openEHR Common Information Model"
 	description: "[
-				 Dummy class containing just the translations attribute of AUTHORED_RESOURCE;
+				 Helper class containing just the translations attribute of AUTHORED_RESOURCE;
 				 used by pre-ADL2 parsing to convert dADL text of translations in language section
 				 of archetype into an object that can then be pasted into the archetype.
 				 ]"
 	keywords:    "archetype"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2007-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -46,7 +46,7 @@ feature -- Initialisation
 			default_create
 		end
 
-	make_dt
+	make_dt (make_args: ARRAY[ANY])
 			-- make used by DT_OBJECT_CONVERTER
 		do
 			make
@@ -63,30 +63,30 @@ feature -- Access
 
 feature -- Modification
 
-	set_translations(a_trans: HASH_TABLE [TRANSLATION_DETAILS, STRING])
+	set_translations (a_trans: attached HASH_TABLE [TRANSLATION_DETAILS, STRING])
 			-- set translations
 		do
 			translations := a_trans
 		end
 
-	set_original_language(a_lang: CODE_PHRASE)
+	set_original_language (a_lang: attached CODE_PHRASE)
 			--
 		do
 			original_language := a_lang
 		end
 
-	set_original_language_from_string(a_lang: STRING)
+	set_original_language_from_string (a_lang: attached STRING)
 			--
 		do
 			create original_language.make (Default_language_code_set, a_lang)
 		end
 
-	add_new_translation(a_lang: STRING)
+	add_new_translation (a_lang: attached STRING)
 			-- add a blank translation object for a_lang
 		local
 			a_trans: TRANSLATION_DETAILS
 		do
-			if translations = Void then
+			if not attached translations then
 				create translations.make(0)
 			end
 

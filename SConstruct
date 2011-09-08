@@ -3,7 +3,7 @@ import os, shutil, re
 EnsurePythonVersion(2, 4)
 EnsureSConsVersion(1, 0, 0)
 
-env = Environment(ENV = os.environ, tools = ['Eiffel'], toolpath = ['.'])
+env = Environment(ENV = os.environ, tools = ['default', 'Eiffel'], toolpath = ['scripts'])
 
 if env['PLATFORM'] == 'win32': platform = 'windows'
 if env['PLATFORM'] == 'posix': platform = 'linux'
@@ -29,10 +29,7 @@ geyacc = Action([['geyacc', '--new_typing', '-v', '${TARGET.filebase}.txt', '-t'
 
 geyacc_html = Action([['geyacc', '--doc=html', '-o', '${TARGET.file}', '${SOURCE.file}']], chdir = 1)
 
-eiffel_syntax_updater = [
-	os.path.abspath(os.path.join(env.EiffelEnvironmentVariable('ISE_EIFFEL'), 'tools/spec/' + env.EiffelEnvironmentVariable('ISE_PLATFORM') + '/bin/syntax_updater')),
-	'${TARGET.dir}'
-	]
+eiffel_syntax_updater = [env.EiffelSpecPath('tools' , 'bin/syntax_updater'),  '${TARGET.dir}']
 
 for scanner, parser, tokens, dir in [
 	['adl_scanner', 'adl_validator', 'adl_tokens', 'components/adl_compiler/src/syntax/adl/parser/'],
@@ -59,6 +56,24 @@ if platform == 'windows':
 	adl_parser = eiffel('adl_parser', 'deployment/dotnet/dll/adl_parser.ecf')
 	versioned_targets += [adl_parser]
 
+eiffel('bmm_demo', 'apps/bmm_demo/app/bmm_demo.ecf')
+eiffel('dadl_test', 'apps/dadl_test/app/dadl_test.ecf')
+eiffel('adl_compiler_app', 'apps/adl_compiler_app/app/adl_compiler_app.ecf')
+adl_compiler = eiffel('adl_compiler', 'deployment/c/adl_compiler/adl_compiler.ecf')
+
+# Define how to build the ADL compiler static library and its test C language wrapper.
+
+make = ['make']
+libs = []
+include = env.EiffelSpecPath('studio', 'include')
+
+if env.EiffelEnvironmentVariable('ISE_C_COMPILER') == 'msc':
+	make = ['nmake', '/nologo']
+	libs = ['ws2_32']
+
+adl_compiler_lib = env.Command('${SOURCE.dir}/lib${SOURCE.filebase}$LIBSUFFIX', adl_compiler, [make + ['cecil']], chdir = 1)
+env.Program(['deployment/c/c_tester_for_adl_compiler/adlc_test_app.c', adl_compiler_lib], CPPPATH=include, LIBS=libs)
+
 # Define how to put installers, etc., into the distribution directory.
 # These are not performed unless a path containing 'oe_distrib' is explicitly requested on the command line.
 
@@ -78,17 +93,19 @@ if distrib and len(adl_workbench) > 0:
 	license = 'apps/adl_workbench/doc/LICENSE.txt'
 	xsl = 'apps/adl_workbench/app/ArchetypeRepositoryReport.xsl'
 	css = 'apps/adl_workbench/app/ArchetypeRepositoryReport.css'
+	xml_rules = 'apps/adl_workbench/app/sample_xml_rules.cfg'
+	ui_config = 'apps/adl_workbench/app/default_ui_config.cfg'
 	icons = 'apps/adl_workbench/app/icons'
-	rm_schemas = 'apps/adl_workbench/app/rm_schemas'
+	rm_schemas = 'rm_schemas'
 	error_db = 'apps/adl_workbench/app/error_db'
 	vim = 'components/adl_compiler/etc/vim'
 	install = 'apps/adl_workbench/install/' + platform
-	adl_workbench_installer_sources = [adl_workbench[0], license, xsl, css]
+	adl_workbench_installer_sources = [adl_workbench[0], license, xsl, css, xml_rules, ui_config]
 
-	for dir in [icons, rm_schemas, error_db, vim, install]:
-		for source, dirnames, filenames in os.walk(dir):
+	for root in [icons, rm_schemas, error_db, vim, install]:
+		for dir, dirnames, filenames in os.walk(root):
 			if '.svn' in dirnames: dirnames.remove('.svn')
-			adl_workbench_installer_sources += env.Files(source + '/*')
+			adl_workbench_installer_sources += env.Files(dir + '/*')
 
 	if platform == 'windows':
 		Install(distrib + '/adl_parser/dotnet', adl_parser)
@@ -110,13 +127,21 @@ if distrib and len(adl_workbench) > 0:
 			import tarfile
 			tar = tarfile.open(str(target[0]), 'w:bz2')
 
-			for src in [str(adl_workbench[0]), license, xsl, css]:
+			for src in [str(adl_workbench[0]), license, xsl, css, xml_rules, ui_config]:
 				tar.add(src, os.path.basename(src))
 
 			for root in [icons, rm_schemas, error_db, vim]:
+				root_dirname_length = len(os.path.dirname(root))
+
 				for dir, dirnames, filenames in os.walk(root):
-					if '.svn' in dirnames: dirnames.remove('.svn')
-					archived_dir = dir[len(os.path.dirname(root)) + 1:]
+					if '.svn' in dirnames:
+						dirnames.remove('.svn')
+
+					if root_dirname_length > 0:
+						archived_dir = dir[root_dirname_length + 1:]
+					else:
+						archived_dir = dir
+
 					for name in filenames: tar.add(os.path.join(dir, name), os.path.join(archived_dir, name))
 
 			tar.close()
@@ -150,7 +175,7 @@ if distrib and len(adl_workbench) > 0:
 				copy_tree(install, distrib)
 				copy_tree(vim, pkg_contents)
 
-				for src in [str(adl_workbench[0]), license, xsl, css, icons, rm_schemas, error_db]:
+				for src in [str(adl_workbench[0]), license, xsl, css, xml_rules, ui_config, icons, rm_schemas, error_db]:
 					copy_tree(src, pkg_contents + '/ADL Workbench.app/Contents/Resources/')
 
 				for src, dst in [['apps/adl_workbench/doc/web/release_notes.html', 'Welcome.html'], ['apps/adl_workbench/doc/web/help-mac_install.html', 'ReadMe.html']]:

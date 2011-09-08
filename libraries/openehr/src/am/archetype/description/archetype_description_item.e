@@ -15,24 +15,24 @@ class ARCHETYPE_DESCRIPTION_ITEM
 
 inherit
 	DT_CONVERTIBLE
-		
+
 create
-	make_dt, make_lang
-	
+	make_lang
+
 feature -- Definitions
 
 	Default_language: STRING = "en"
-	
+
 feature -- Initialisation
 
-	make_dt
-			-- 
+	make_dt (make_args: ARRAY[ANY])
+			--
 		do
 			create language.make (0)
 			language.append(Default_language)
 		end
-		
-	make_lang(a_lang, a_purpose: STRING)
+
+	make_lang (a_lang, a_purpose: STRING)
 		require
 			Lang_valid: a_lang /= Void and then not a_lang.is_empty
 			Purpose_valid: a_purpose /= Void and then not a_purpose.is_empty
@@ -46,26 +46,26 @@ feature -- Initialisation
 
 feature -- Access
 
-	language: STRING	
+	language: STRING
 			-- Language of this item
 
-	purpose: STRING	
+	purpose: STRING
 			-- Purpose of the archetype.
 
-	use: STRING	
-			-- Description of the uses of the archetype, 
+	use: STRING
+			-- Description of the uses of the archetype,
 			-- i.e. contexts in which it could be used.
-			
+
 	keywords: ARRAYED_LIST [STRING]
-			-- Keywords which characterise this archetype, used e.g. 
+			-- Keywords which characterise this archetype, used e.g.
 			-- for indexing and searching.
 
-	misuse: STRING	
-			-- Description of any misuses of the archetype, 
+	misuse: STRING
+			-- Description of any misuses of the archetype,
 			-- i.e. contexts in which it should not be used.
 
-	copyright: STRING	
-			-- Rights over the archetype as a knowledge resource; 
+	copyright: STRING
+			-- Rights over the archetype as a knowledge resource;
 			-- usually copyright and/or license to use.
 
 	original_resource_uri: HASH_TABLE [URI, STRING]
@@ -129,13 +129,13 @@ feature -- Modification
 		ensure
 			Keyword_added: keywords.has(a_keyword)
 		end
-		
+
 	clear_keywords
 			-- remove existing keywords
 		do
 			create keywords.make(0)
 		end
-		
+
 	add_other_detail(a_key, a_value: STRING)
 			-- add the key, value pair to other_details
 		require
@@ -149,7 +149,7 @@ feature -- Modification
 		ensure
 			Other_details_set: other_details.item(a_key) = a_value
 		end
-		
+
 	clear_other_details
 			-- remove existing other_details
 		do
@@ -169,13 +169,13 @@ feature -- Modification
 		ensure
 			Original_resource_uri_added: original_resource_uri.item(a_key).as_string.is_equal(a_value)
 		end
-		
+
 	clear_original_resource_uri
 			-- remove existing original_resource_uri items
 		do
 			create original_resource_uri.make(0)
 		end
-		
+
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
 	persistent_attributes: ARRAYED_LIST[STRING]
@@ -199,8 +199,8 @@ invariant
 	purpose_exists: purpose /= Void and then not purpose.is_empty
 	use_valid: use /= Void implies not use.is_empty
 	misuse_valid: misuse /= Void implies not misuse.is_empty
-	copyright_valid: copyright /= Void implies not copyright.is_empty	
-	
+	copyright_valid: copyright /= Void implies not copyright.is_empty
+
 end
 
 

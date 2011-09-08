@@ -28,10 +28,8 @@ class C_ROLLUP_BUILDER
 
 inherit
 	C_VISITOR
-		rename
-			initialise as initialise_visitor
 		redefine
-			end_c_complex_object, end_c_attribute
+			initialise, end_c_complex_object, end_c_attribute
 		end
 
 	SPECIALISATION_STATUSES
@@ -41,21 +39,18 @@ inherit
 
 feature -- Initialisation
 
-	initialise(an_ontology: ARCHETYPE_ONTOLOGY; an_archetype_specialisation_level: INTEGER)
+	initialise (an_archetype: attached ARCHETYPE)
 			-- set ontology required for interpreting meaning of object nodes
 			-- archetype is required as well since it contains the xref tables that are
 			-- populated by this visitor
-		require
-			Ontology_valid: an_ontology /= Void
-			Archetype_specialisation_level_valid: an_archetype_specialisation_level >= 0
 		do
-			initialise_visitor(an_ontology)
-			archetype_specialisation_level := an_archetype_specialisation_level
+			precursor (an_archetype)
+			archetype_specialisation_level := an_archetype.specialisation_depth
 		end
 
 feature -- Visitor
 
-	end_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER)
+	end_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- status of this node taking into consideration effective_specialisation_status of
 			-- all sub-nodes.
 		local
@@ -73,7 +68,7 @@ feature -- Visitor
 			a_node.set_rolled_up_specialisation_status(spec_sts)
 		end
 
-	end_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER)
+	end_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- exit an C_ATTRIBUTE
 		local
 			spec_sts: SPECIALISATION_STATUS
@@ -90,70 +85,70 @@ feature -- Visitor
 			a_node.set_rolled_up_specialisation_status(spec_sts)
 		end
 
-	start_c_leaf_object(a_node: C_LEAF_OBJECT; depth: INTEGER)
+	start_c_leaf_object (a_node: C_LEAF_OBJECT; depth: INTEGER)
 			-- enter an C_LEAF_OBJECT
 		do
 			a_node.set_rolled_up_specialisation_status(a_node.specialisation_status (archetype_specialisation_level))
 		end
 
-	start_c_reference_object(a_node: C_REFERENCE_OBJECT; depth: INTEGER)
+	start_c_reference_object (a_node: C_REFERENCE_OBJECT; depth: INTEGER)
 			-- enter an C_REFERENCE_OBJECT
 		do
 			a_node.set_rolled_up_specialisation_status(a_node.specialisation_status (archetype_specialisation_level))
 		end
 
-	start_c_complex_object(a_node: C_COMPLEX_OBJECT; depth: INTEGER)
+	start_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- enter an C_COMPLEX_OBJECT
 		do
 		end
 
-	start_archetype_slot(a_node: ARCHETYPE_SLOT; depth: INTEGER)
+	start_archetype_slot (a_node: ARCHETYPE_SLOT; depth: INTEGER)
 			-- enter an ARCHETYPE_SLOT
 		do
 		end
 
-	start_c_attribute(a_node: C_ATTRIBUTE; depth: INTEGER)
+	start_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- enter a C_ATTRIBUTE
 		do
 		end
 
-	start_c_archetype_root(a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
+	start_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- enter a C_ARCHETYPE_ROOT
 		do
 			a_node.set_rolled_up_specialisation_status(create {SPECIALISATION_STATUS}.make (ss_added))
 		end
 
-	start_archetype_internal_ref(a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
+	start_archetype_internal_ref (a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
 			-- enter an ARCHETYPE_INTERNAL_REF
 		do
 		end
 
-	start_constraint_ref(a_node: CONSTRAINT_REF; depth: INTEGER)
+	start_constraint_ref (a_node: CONSTRAINT_REF; depth: INTEGER)
 			-- enter a CONSTRAINT_REF
 		do
 		end
 
-	start_c_primitive_object(a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
+	start_c_primitive_object (a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- enter an C_PRIMITIVE_OBJECT
 		do
 		end
 
-	start_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER)
+	start_c_domain_type (a_node: C_DOMAIN_TYPE; depth: INTEGER)
 			-- enter an C_DOMAIN_TYPE
 		do
 		end
 
-	start_c_code_phrase(a_node: C_CODE_PHRASE; depth: INTEGER)
+	start_c_code_phrase (a_node: C_CODE_PHRASE; depth: INTEGER)
 			-- enter an C_CODE_PHRASE
 		do
 		end
 
-	start_c_ordinal(a_node: C_DV_ORDINAL; depth: INTEGER)
+	start_c_ordinal (a_node: C_DV_ORDINAL; depth: INTEGER)
 			-- enter an C_DV_ORDINAL
 		do
 		end
 
-	start_c_quantity(a_node: C_DV_QUANTITY; depth: INTEGER)
+	start_c_quantity (a_node: C_DV_QUANTITY; depth: INTEGER)
 			-- enter a C_DV_QUANTITY
 		do
 		end

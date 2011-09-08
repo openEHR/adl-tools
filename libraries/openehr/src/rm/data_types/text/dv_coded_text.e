@@ -26,13 +26,12 @@ inherit
 		rename
 			make as make_text
 		redefine
-			default_create, is_equal, as_canonical_string, as_string, valid_canonical_string,
-			make_from_canonical_string, make_from_string
+			default_create, is_equal, as_string, make_from_string
 		end
 
 create
 	default_create,
-	make, make_from_string, make_from_canonical_string
+	make, make_from_string
 
 feature -- Definitions
 
@@ -48,10 +47,9 @@ feature -- Initialization
 			create defining_code.default_create
 		end
 
-	make (str: STRING; a_code: CODE_PHRASE)
+	make (str: attached STRING; a_code: attached CODE_PHRASE)
 		require
-			String_valid: str /= void and then not str.is_empty
-			A_code_valid: a_code /= Void
+			String_valid: not str.is_empty
 		do
 			value := str
 			defining_code := a_code
@@ -60,67 +58,13 @@ feature -- Initialization
 			Code_set: defining_code = a_code
 		end
 
-	make_from_string (str: STRING)
+	make_from_string (str: attached STRING)
 		do
-		end
-
-	make_from_canonical_string (str: STRING)
-			-- make from a string of the form:
-			--
-			-- <value>xxxx</value>
-			-- <language>
-			-- 		<terminology_id>
-			--			<name>string</name>
-			-- 			[<version_id>string</version_id>]
-			-- 		</terminology_id>
-			-- 		<code_string>string</code_string>
-			-- </language>
-			-- <charset>
-			-- 		<terminology_id>
-			--			<name>string</name>
-			-- 			[<version_id>string</version_id>]
-			-- 		</terminology_id>
-			-- 		<code_string>string</code_string>
-			-- </charset>
-			-- <defining_code>
-			-- 		<terminology_id>
-			--			<name>string</name>
-			-- 			[<version_id>string</version_id>]
-			-- 		</terminology_id>
-			-- 		<code_string>string</code_string>
-			-- </defining_code>
-			-- [<hyperlink>DV_URI</hyperlink>]
-			-- [<formatting>xxxx</formatting>]
-			-- [<mappings>
-			--		<item>
-			-- 			<target>
-			-- 				<terminology_id>
-			--					<name>string</name>
-			-- 					[<version_id>string</version_id>]
-			-- 				</terminology_id>
-			-- 				<code_string>string</code_string>
-			-- 			</target>
-			-- 			<match>character</match>
-			-- 			[<purpose>DV_CODED_TEXT</purpose>]			
-			--		</item>
-			--		<item>...</item>
-			-- <mappings>]
-		do
-			precursor(str)
-			create defining_code.make_from_canonical_string(xml_extract_from_tags(str, "defining_code", 1))
-		end
-
-feature -- Status Report
-
-	valid_canonical_string(str: STRING): BOOLEAN
-			-- True if str contains required tags
-		do
-			Result := precursor(str) and then xml_has_tag(str, "defining_code", 1)
 		end
 
 feature -- Access
 
-	defining_code: CODE_PHRASE
+	defining_code: attached CODE_PHRASE
 			-- the (possibly coordinated) term from a terminology service whose rubric is the 'value' attribute
 
 feature -- Comparison
@@ -131,11 +75,9 @@ feature -- Comparison
 			Result := value.is_equal (other.value) and defining_code.is_equal(other.defining_code)
 		end
 
-	is_comparable (other: like Current): BOOLEAN
+	is_comparable (other: attached like Current): BOOLEAN
 			-- True if Current and other are both from same vocabulary; only really meaingiful
 			-- for terms from same small vocabulary, i.e. a subset or value range
-		require
-			other /= Void
 		do
 			Result := defining_code.terminology_id.is_equal (other.defining_code.terminology_id)
 		end
@@ -148,16 +90,6 @@ feature -- Output
 			Result := precursor
 			Result.append (defining_code.as_string)
 		end
-
-	as_canonical_string: STRING
-			-- Result in canonical form
-		do
-			Result := precursor
-			Result.append("<defining_code>" + defining_code.as_canonical_string + "</defining_code>")
-		end
-
-invariant
-	Defining_code_exists: defining_code /= void
 
 end
 
