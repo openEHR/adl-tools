@@ -11,18 +11,15 @@
 
 <body>
   <div id="container">
-    <table style="BACKGROUND-COLOR: #9cd2f8" border="0" cellspacing="0" cellpadding="0" width="100%">
-      <tbody>
-        <tr valign="top">
-          <td valign="middle" width="152"><img border="0" alt="openEHR logo" src=
-          "images/openehr_logo_trans_bg.png"
-          width="150" height="50" /></td>
-
+      <table style="BACKGROUND-COLOR: #Cce3ef" border="0" cellspacing="0" cellpadding="0" width="100%">
+        <tbody>
+          <tr valign="top">
+            <td valign="middle" width="115">
+              <img border="0" alt="openEHR logo" src="images/openehr_adl_workbench_logo.png" width="100" height="100"/> </td>
           <td>
             <div id="header">
-              <h1>ADL Workbench (AWB) - learning ADL 1.5</h1>
-
-              <p class="description">Download and Help pages</p>
+              <h1>Learning ADL 1.5</h1>
+              <p class="description">AWB Help pages</p>
             </div>
           </td>
         </tr>
@@ -41,19 +38,20 @@
         you can see for yourself. The specifications are found in the following locations.</p>
 
         <ul>
-          <li value="0">The Archetype Definition Language 1.5 (draft)</li>
-          <li value="0">The Archetype Object Model 1.5 (draft)</li>
-          <li value="0"><i>open</i>EHR Distributed Knowledge Development (draft)</li>
-          <li value="0"><i>open</i>EHR Distributed Artefact Identification System (draft)</li>
+			<li value="0"><a href="http://www.openehr.org/svn/specification/TRUNK/publishing/architecture/am/adl1.5.pdf">The Archetype Definition Language 1.5 (draft)</a></li>
+			<li value="0"><a href="http://www.openehr.org/svn/specification/TRUNK/publishing/architecture/am/aom1.5.pdf">The Archetype Object Model 1.5 (draft)</a></li>
+			<li value="0"><a href="http://www.openehr.org/svn/specification/TRUNK/publishing/architecture/am/dist_dev_model.pdf"><i>open</i>EHR Distributed Knowledge Development (draft)</a></li>
+			<li value="0"><a href="http://www.openehr.org/svn/specification/TRUNK/publishing/architecture/am/knowledge_id_system.pdf"><i>open</i>EHR Distributed Artefact Identification System (draft)</a></li>
         </ul>
 
-        <p>One question you may have is: what if I am not interested in the ADL syntax as such? You might be using XML
+        <p>One question you may have is: what if I am not interested in the ADL syntax? You might be using XML
         archetypes for example. It is important to understand the various roles of ADL, XML and the AOM. These are
         explained in some detail in the specifications (see below). Briefly, the ADL workbench performs most of its
         work using AOM structures. It also has an ADL parser and serialiser, and in the near future, will have a parser
         and serialiser for XML archetypes. Apart from some syntax basics, nearly all the validation carried out by the
         AWB is on AOM structures and has nothing to do with the ADL syntax. Additionally, ADL is a human readable
-        syntax good for understanding the concepts and examples.</p>
+		syntax good for understanding the concepts and examples. However, it does not have to be used in archetype
+		authoring or production systems - the XML form is completely equivalent.</p>
 
         <h3>Specifications Status</h3>
 
@@ -316,39 +314,32 @@
         </ul>
 
 		<a name="annotations"/><h3>Annotations section</h3>
-			<p>It is possible to include node-level (i.e. path-keyed) meta-data on the definition of an archetype, by adding definitions in the annotations section.
-			Annotations are intended for two purposes:<p>
-			<ul>
-				<li>to allow designers of artefacts such as archetypes to record their thinking during the development and review process;</li>
-				<li>to allow users of published artefacts to record notes relevant to their use of those artefacts within a local context.</li>
-			</ul>
-			<p>Annotations are designed so as to be easily removable from a resource artefact after publishing or at some other point. Later users of the same artefact might add annotations to private copies. Specifications: <a href="http://www.openehr.org/svn/specification/TRUNK/publishing/architecture/rm/common_im.pdf">common IM (section 7)</a>, <a href="http://www.openehr.org/svn/specification/TRUNK/publishing/architecture/am/adl1.5.pdf">ADL 1.5 (section 9.8)</a>.</p>
 
-        <p>Annotations are added on a per-node basis, with each annotation having one or more facets
-        (representation = Hash&lt;String, String&gt;). This supports fine-grained documentation of elements of archetypes and
+        <p>Annotations can now be added on a per-node basis, with each annotation having one or more facets
+        (representation = Hash&lt;T&gt;). This supports fine-grained documentation of elements of archetypes and
         templates. A typical annotations section looks as follows:</p>
 		<pre>
 annotations
-    items = &lt;
-        ["en"] = &lt;
-            items = &lt;
-                ["/data[at0001]/items[at0.8]"] = &lt;
-                    items = &lt;
-                        ["design note"] = &lt;"this is a design note on allergic reaction"&gt;
-                        ["requirements note"] = &lt;"this is a requirements note on allergic reaction"&gt;
-                        ["medline ref"] = &lt;"this is a medline ref on allergic reaction"&gt;
-                    &gt;
-                &gt;
-                ["/data[at0001]/items[at0.10]"] = &lt;
-                    items = &lt;
-                        ["design note"] = &lt;"this is a design note on intolerance"&gt;
-                        ["requirements note"] = &lt;"this is a requirements note on intolerance"&gt;
-                        ["national data dictionary"] = &lt;"NDD ref for intoleranance"&gt;
-                    &gt;
-                &gt;
-            &gt;
-        &gt;
-    &gt;
+	annotations = &lt;
+		["en"] = &lt;
+			items = &lt;
+				["/data[at0001]/items[at0.8]"] = &lt;
+					items = &lt;
+						["design note"] = &lt;"this is a design note on allergic reaction"&gt;
+						["requirements note"] = &lt;"this is a requirements note on allergic reaction"&gt;
+						["medline ref"] = &lt;"this is a medline ref on allergic reaction"&gt;
+					&gt;
+				&gt;
+				["/data[at0001]/items[at0.10]"] = &lt;
+					items = &lt;
+						["design note"] = &lt;"this is a design note on intelerance"&gt;
+						["requirements note"] = &lt;"this is a requirements note on intolerance"&gt;
+						["national data dictionary"] = &lt;"NDD ref for intoleranance"&gt;
+					&gt;
+				&gt;
+			&gt;
+		&gt;
+	&gt;
 		</pre>
 		<p>Currently, the annotations feature implements a simple Hash of Strings, with plain String keys. Other more
 		complex alternatives are available, e.g. where the keys are coded using at-codes, and then bound to globally
@@ -391,7 +382,7 @@ annotations
 
         <h3>Group construct (Not yet implemented)</h3>
 
-        <p>This feature supports groups within container attributes. Original proposal on this page.</p>
+		<p>This feature supports groups within container attributes. Original proposal on <a href="http://www.openehr.org/wiki/display/spec/Ordering+and+choice+in+archetypes+and+templates">this page</a>.</p>
 
         <h2>Changes</h2>
 
@@ -482,7 +473,7 @@ annotations
         <li value="0"><a href="release_notes.html">Release notes</a></li>
       </ul>
 
-      <p>Copyright 2010-2011 openEHR Foundation - $LastChangedDate$
+      <p>Copyright 2010 openEHR Foundation - $LastChangedDate$
       $LastChangedRevision$</p>
     </div>
   </div>

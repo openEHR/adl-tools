@@ -9,15 +9,15 @@
   </head>
   <body>
     <div id="container">
-      <table style="BACKGROUND-COLOR: #9cd2f8" border="0" cellspacing="0" cellpadding="0" width="100%">
+      <table style="BACKGROUND-COLOR: #Cce3ef" border="0" cellspacing="0" cellpadding="0" width="100%">
         <tbody>
           <tr valign="top">
-            <td valign="middle" width="152">
-              <img border="0" alt="openEHR logo" src="images/openehr_logo_trans_bg.png" width="150" height="50"/> </td>
+            <td valign="middle" width="115">
+              <img border="0" alt="openEHR logo" src="images/openehr_adl_workbench_logo.png" width="100" height="100"/> </td>
             <td>
               <div id="header">
-                <h1>ADL Workbench (AWB) - browsing and compiling</h1>
-                <p class="description">Download and Help pages</p>
+                <h1>Browsing and Compiling</h1>
+                <p class="description">AWB Help pages</p>
               </div>
             </td>
           </tr>
@@ -25,8 +25,8 @@
       </table>
       <div id="wrapper">
         <div id="content">
-          <h2>The explorer</h2>
-          <p>As soon as you have specified a profile (Repository &gt; Set repository), the left-side explorer controls will populate and you will initially see the explorer with the reference model (RM) class hierarchy. If you have selected 'Show entire ontology in explorer?' in the Options dialog, you will see all classes from all loaded RM schemas. This can be useful for understanding the reference models. In normal use, you will probably not use this option. At any time, you can select a class node in the explorer, and if you have the node map selected in the archetype view area, you will see the RM definition of the selected class, either in differential form (just attributes introduced by that class), or in flat form, i.e. compressed through inheritance. These various views are shown below.</p>
+          <h2>The Archetype/Template Catalogue</h2>
+          <p>As soon as you have specified a profile (Repository &gt; Set repository), the left-hand side explorer controls will populate and you will initially see the explorer with the reference model (RM) class hierarchy. If you have selected 'Show entire ontology in explorer?' in the Options dialog, you will see all classes from all loaded RM schemas. This can be useful for understanding the reference models. In normal use, you will probably not use this option. At any time, you can select a class node in the explorer, and if you have the node map selected in the archetype view area, you will see the RM definition of the selected class, either in differential form (just attributes introduced by that class), or in flat form, i.e. compressed through inheritance. These various views are shown below.</p>
           <p></p>
           <div style="TEXT-ALIGN: left; PADDING-BOTTOM: 0px; TEXT-INDENT: 0px; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px">
             <table style="BACKGROUND-COLOR: #ffffff" border="0" cellspacing="2" cellpadding="2" width="70%">
@@ -38,8 +38,8 @@
                     <p>Initial view</p>
                   </td>
                   <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
-                    <a href="images/explorer_expanded.png">
-                      <img border="0" alt="Expanded view in explorer" src="images/tn_explorer_expanded.jpg" width="104" height="200"/> </a>
+                    <a href="images/explorer_expanded_plus_RM_icons.png">
+                      <img border="0" alt="Expanded view in explorer" src="images/tn_explorer_expanded_plus_RM_icons.jpg" width="104" height="200"/> </a>
                     <p>Expanded view</p>
                   </td>
                   <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
@@ -108,8 +108,8 @@
           </div>
           <h3>Source (differential) and flat forms</h3>
           <p>A key point to understand is that in most views, the archetype is visible in either source (differential) or flat form. For non-specialised archetypes, the two forms are structurally the same. For specialised archetypes and templates, the source form is the same idea as for object-oriented class files (e.g. in Java, .NET, etc), i.e. it contains only differences with respect to the immediate specialisation parent. For both, the source form is the 'authored' form. The flat form is the result of 'compressing' an archetype through its specialisation lineage, i.e. the 'operational' form of the archetype at runtime. This 'flattening' is the same thing that happens in all object-oriented programming technologies. Due to flattening, we often speak of the 'flat parent' with respect to a differential archetype, which denotes all constraints so far in the lineage.</p>
-		  <p>In the AWB, you can see both the differential and flat forms of an archetype visualised. Most of the views below can be seen in differential and flat form. Use the <a href="images/archetype_view_controls.png">'View' Differential and Flat toolbar check boxes</a> at the top to switch.</p>
-          <h3>Definition node map</h3>
+          <p>From the point of view of the AWB, you can see both the differential and flat forms of an archetype visualised. Most of the views below can be seen in differential and flat form. Use the Differential and Flat View tabs at the top to switch.</p>
+          <h3>Node map</h3>
           <p>The node map is a way of viewing the definition part of the archetype structurally. The definition section contains the main definitional statements of the archetype, and can be thought of as a visualisation of an AOM structure, that is to say, each node corresponds to an AOM node type. In the differential form, the node map shows only those constraints introduced by the archetype on its own. If it is a non-specialised archetype, these constraints are in addition to constraints implied by the reference model (cardinality, types etc). For a specialised archetype, the constraints are in addition to the 'flat parent', i.e. the notional sum of constraints so far in the specialisation lineage. You will notice in particular that specialised archetypes have constraints whose parent attributes are not just a single attribute name like 'items', but are a path, like '/protocol', '/data/events[at0010]/items[at0023]' and so on.</p>
           <p>You can use the radio button controls on the right to show each node in more or less detail. The last radio button control adds in the reference model attributes that have not been archetyped, but will/can be in the runtime data.</p>
           <div style="TEXT-ALIGN: left; PADDING-BOTTOM: 0px; TEXT-INDENT: 0px; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px">
@@ -191,16 +191,12 @@
             <img border="0" src="images/tn_slots_1.jpg" width="180" height="200"/> </a>
           <h3>Terminology</h3>
           <p>All archetypes contain an internal terminology, consisting of one or more 'at-codes'. They may also include constraint codes ('ac-codes'), and bindings between both of these and external terminologies and other ontology resources. These elements are found in the 'ontology' section of the archetype, such as shown here.</p>
-          <a href="images/ontology.png"><img border="0" src="images/tn_ontology.jpg" width="200" height="116"/> </a>
-
-		<h3>Annotations</h3>
-		<p>Annotations can be viewed in the Annotations tab in either differential or flat form.<a href="learning_adl_15.html">More details</a></p>
-          <a href="images/annotations_tab.png"><img border="0" src="images/tn_annotations_tab.jpg" width="200" height="116"/> </a>
-
-          <h3>Source view</h3>
-          <p>Archetypes can be viewed in the source form in the AWB, which is useful to verify other visual renderings, or understand how ADL works. The following is a typical example.</p>
-          <a href="images/source_1.png">
-            <img border="0" src="images/tn_source_1.jpg" width="200" height="173"/> </a>
+          <a href="images/ontology.png">
+            <img border="0" src="images/tn_ontology.jpg" width="200" height="116"/> </a>
+          <h3>Serialised views</h3>
+          <p>Archetypes can be viewed in various serialised forms in the AWB, which is useful to verify other visual renderings, or to understand how ADL works. In both differential and flat forms, archetype can be viewed as ADL, dADL and XML. The dADL form is equivalent to a DOM tree in XML, but more regular.</p>
+          <a href="images/source_1.png"><img border="0" src="images/tn_source_1.jpg" width="200" height="173"/></a>
+		  <p>The output in the XML view can be controlled by a set of rules accessible from the XML menu.</p>
         </div>
       </div>    <div id="navigation">
       <h2>Contents</h2>

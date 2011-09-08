@@ -11,18 +11,15 @@
 
 <body>
   <div id="container">
-    <table style="BACKGROUND-COLOR: #9cd2f8" border="0" cellspacing="0" cellpadding="0" width="100%">
-      <tbody>
-        <tr valign="top">
-          <td valign="middle" width="152"><img border="0" alt="openEHR logo" src=
-          "images/openehr_logo_trans_bg.png"
-          width="150" height="50" /></td>
-
+      <table style="BACKGROUND-COLOR: #Cce3ef" border="0" cellspacing="0" cellpadding="0" width="100%">
+        <tbody>
+          <tr valign="top">
+            <td valign="middle" width="115">
+              <img border="0" alt="openEHR logo" src="images/openehr_adl_workbench_logo.png" width="100" height="100"/> </td>
           <td>
             <div id="header">
-              <h1>ADL Workbench (AWB) - Tool Configuration</h1>
-
-              <p class="description">Download and Help pages</p>
+              <h1>Tool Configuration</h1>
+              <p class="description">AWB Help pages</p>
             </div>
           </td>
         </tr>
@@ -105,68 +102,68 @@ commands = &lt;
 		<p>This file is in dADL format, and will typically include lines such as the following, corresponding to the above configuration.</p>
 <pre>
 file_system = &lt;
-    html_export_directory = &lt;"C:\\Users\\Thomas\\AppData\\Local\\openEHR\\adl_workbench\\html"&gt;
-    test_diff_directory = &lt;"C:\\Users\\Thomas\\AppData\\Local\\openEHR\\adl_workbench\\diff_test"&gt;
-    rm_schema_directory = &lt;"C:\\project\\openehr\\knowledge2\\TRUNK\\rm_schemas"&gt;
+	html_export_directory = &lt;"C:\\Users\\Thomas\\AppData\\Local\\openEHR\\adl_workbench\\html"&gt;
+	test_diff_directory = &lt;"C:\\Users\\Thomas\\AppData\\Local\\openEHR\\adl_workbench\\diff_test"&gt;
+	rm_schema_directory = &lt;"C:\\project\\openehr\\knowledge2\\TRUNK\\rm_schemas"&gt;
 &gt;
 commands = &lt;
-    text_editor_command = &lt;"C:\\Program Files\\Vim\\vim72\\gvim.exe"&gt;
-    editor_app_command = &lt;"cmd /q /d /c start \"\" /b"&gt;
-    difftool_command = &lt;"\"C:\\Program Files\\winmerge\\winmerge.exe\" /e /u"&gt;
+	text_editor_command = &lt;"C:\\Program Files\\Vim\\vim72\\gvim.exe"&gt;
+	editor_app_command = &lt;"cmd /q /d /c start \"\" /b"&gt;
+	difftool_command = &lt;"\"C:\\Program Files\\winmerge\\winmerge.exe\" /e /u"&gt;
 &gt;
 profile = &lt;
-    current_profile_name = &lt;"adl_test"&gt;
-    profiles = &lt;
-        ["CKM"] = &lt;
-            reference_repository = &lt;"C:\\project\\openehr\\knowledge\\archetypes\\CKM"&gt;
-        &gt;
-        ["Singapore"] = &lt;
-            reference_repository = &lt;"C:\\project\\SG_MOHH\\controlled\\50.Deliverables\\07.Knowledge\\Repository\\Reference"&gt;
-            work_repository = &lt;"C:\\project\\SG_MOHH\\controlled\\50.Deliverables\\07.Knowledge\\Repository\\Working"&gt;
-        &gt;
-        ["adl_test"] = &lt;
-            reference_repository = &lt;"C:\\project\\openehr\\knowledge2\\TRUNK\\archetypes\\ADL_1.5_test"&gt;
-            work_repository = &lt;""&gt;
-        &gt;
-        ["EN13606"] = &lt;
-            reference_repository = &lt;"C:\\project\\openehr\\knowledge2\\TRUNK\\archetypes\\en13606_examples"&gt;
-        &gt;
-        ["openEHR_examples"] = &lt;
-            reference_repository = &lt;"C:\\project\\openehr\\knowledge2\\TRUNK\\archetypes\\openEHR_examples"&gt;
-        &gt;
-    &gt;
+	current_profile_name = &lt;"adl_test"&gt;
+	profiles = &lt;
+		["CKM"] = &lt;
+			reference_repository = &lt;"C:\\project\\openehr\\knowledge\\archetypes\\CKM"&gt;
+		&gt;
+		["Singapore"] = &lt;
+			reference_repository = &lt;"C:\\project\\SG_MOHH\\controlled\\50.Deliverables\\07.Knowledge\\Repository\\Reference"&gt;
+			work_repository = &lt;"C:\\project\\SG_MOHH\\controlled\\50.Deliverables\\07.Knowledge\\Repository\\Working"&gt;
+		&gt;
+		["adl_test"] = &lt;
+			reference_repository = &lt;"C:\\project\\openehr\\knowledge2\\TRUNK\\archetypes\\ADL_1.5_test"&gt;
+			work_repository = &lt;""&gt;
+		&gt;
+		["EN13606"] = &lt;
+			reference_repository = &lt;"C:\\project\\openehr\\knowledge2\\TRUNK\\archetypes\\en13606_examples"&gt;
+		&gt;
+		["openEHR_examples"] = &lt;
+			reference_repository = &lt;"C:\\project\\openehr\\knowledge2\\TRUNK\\archetypes\\openEHR_examples"&gt;
+		&gt;
+	&gt;
 &gt;
 general = &lt;
-    current_language = &lt;"en"&gt;
-    error_reporting_level = &lt;9002&gt;
+	current_language = &lt;"en"&gt;
+	error_reporting_level = &lt;9002&gt;
 &gt;
 gui = &lt;
-    total_split_position = &lt;551&gt;
-    test_split_position = &lt;617&gt;
-    explorer_split_position = &lt;298&gt;
-    archetype_template_split_position = &lt;599&gt;
-    app_width = &lt;1456&gt;
-    app_height = &lt;916&gt;
-    app_x_position = &lt;-8&gt;
-    app_y_position = &lt;-8&gt;
-    app_maximised = &lt;True&gt;
-    main_notebook_tab_pos = &lt;1&gt;
-    path_filter_combo_selection = &lt;"All"&gt;
-    path_view_check_list_settings = &lt;"Machine", "Nat lang", "RM Type"&gt;
-    expand_node_tree = &lt;True&gt;
-    show_line_numbers = &lt;False&gt;
-    display_archetype_source = &lt;True&gt;
-    show_entire_ontology = &lt;False&gt;
-    show_technical_view = &lt;True&gt;
-    show_reference_model_view = &lt;False&gt;
+	total_split_position = &lt;551&gt;
+	test_split_position = &lt;617&gt;
+	explorer_split_position = &lt;298&gt;
+	archetype_template_split_position = &lt;599&gt;
+	app_width = &lt;1456&gt;
+	app_height = &lt;916&gt;
+	app_x_position = &lt;-8&gt;
+	app_y_position = &lt;-8&gt;
+	app_maximised = &lt;True&gt;
+	main_notebook_tab_pos = &lt;1&gt;
+	path_filter_combo_selection = &lt;"All"&gt;
+	path_view_check_list_settings = &lt;"Machine", "Nat lang", "RM Type"&gt;
+	expand_node_tree = &lt;True&gt;
+	show_line_numbers = &lt;False&gt;
+	display_archetype_source = &lt;True&gt;
+	show_entire_ontology = &lt;False&gt;
+	show_technical_view = &lt;True&gt;
+	show_reference_model_view = &lt;False&gt;
 &gt;
 compiler = &lt;
-    adl_version_for_flat_output = &lt;"1.5"&gt;
-    validation_strict = &lt;False&gt;
-    rm_flattening = &lt;False&gt;
+	adl_version_for_flat_output = &lt;"1.5"&gt;
+	validation_strict = &lt;False&gt;
+	rm_flattening = &lt;False&gt;
 &gt;
 rm_schemas = &lt;
-    load_list = &lt;"openehr_adltest_1.0.0", "openehr_ehr_extract_2.0.0"&gt;
+	load_list = &lt;"openehr_adltest_1.0.0", "openehr_ehr_extract_2.0.0"&gt;
 &gt;
 </pre>
       </div>
@@ -206,7 +203,7 @@ rm_schemas = &lt;
         <li value="0"><a href="release_notes.html">Release notes</a></li>
       </ul>
 
-      <p>Copyright 2010-2011 openEHR Foundation - $LastChangedDate$
+      <p>Copyright 2010 openEHR Foundation - $LastChangedDate$
       $LastChangedRevision$</p>
     </div>
   </div>
