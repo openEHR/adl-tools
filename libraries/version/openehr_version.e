@@ -19,7 +19,7 @@ inherit
 		redefine
 			out
 		end
-
+ 
 feature -- Access
 
 	location: STRING = "$URL$"
