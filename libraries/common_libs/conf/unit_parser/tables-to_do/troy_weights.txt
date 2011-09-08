@@ -1,6 +1,0 @@
-3.6.7  Troy Weights
-
-     name    kind of quantity print    c/s       c/i    M value definition
- pennyweight mass                   [pwt_tr]  [PWT_TR] N  24    [gr]
- ounce       mass                   [oz_tr]   [OZ_TR]  N  20    [pwt_tr]
- pound       mass                   [lb_tr]   [LB_TR]  N  12    [oz_tr]

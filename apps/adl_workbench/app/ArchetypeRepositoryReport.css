@@ -1,7 +1,0 @@
-#html-body { width:100%; margin:0px; background-color:#eee; }
-#html-statistics { width:100%; margin:4px 4px 0px 4px; color:#000; text-align:center}
-#html-errors { width:100%; margin:4px 4px 0px 4px; color:#000; text-align:center}
-#statistics-table { border-style:solid; border-width:medium; border-color:Black; background-color:#fff; text-align:left}
-#errors-table { border-style:solid; border-width:medium; border-color:Black; background-color:#fff}
-#errors-heading {font-weight:bolder; font-size:large; border-bottom-style:inset; border-bottom-color:#000; text-align:center}
-#errors-cell {border-bottom-style:solid; border-bottom-width:thin; border-bottom-color:#eee; text-align:left}
