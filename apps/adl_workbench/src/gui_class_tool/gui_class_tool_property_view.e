@@ -366,9 +366,13 @@ feature {NONE} -- Implementation
 			type_category := a_type_spec.type_category
 			a_ti.set_data (a_type_spec)						-- node data
 			a_ti.set_text (a_type_str)						-- node text
-			root_class := type_name_root_type (a_type_str)
-			if use_rm_pixmaps and then rm_pixmaps.has (model_publisher) and then rm_pixmaps.item (model_publisher).has (root_class) then
-				pixmap := rm_pixmaps.item (model_publisher).item (root_class)
+			if not attached {BMM_GENERIC_PARAMETER_DEFINITION} a_type_spec then
+				root_class := type_name_root_type (a_type_str)
+				if use_rm_pixmaps and then rm_pixmaps.has (model_publisher) and then rm_pixmaps.item (model_publisher).has (root_class) then
+					pixmap := rm_pixmaps.item (model_publisher).item (root_class)
+				else
+					pixmap := pixmaps [type_category]
+				end
 			else
 				pixmap := pixmaps [type_category]
 			end
