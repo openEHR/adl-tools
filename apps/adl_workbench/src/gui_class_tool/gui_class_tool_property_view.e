@@ -303,21 +303,26 @@ feature {NONE} -- Implementation
 
 			-- determine data for property and one or more (in the case of generics with > 1 param) class nodes
 			if attached {BMM_CLASS_DEFINITION} a_prop_def.type_def as bmm_class_def then
-				if bmm_class_def.bmm_schema.primitive_types.has (bmm_class_def.name) then
+				if bmm_class_def.bmm_schema.is_primitive_type (bmm_class_def.name) then
 					prop_str.append (": " + bmm_class_def.name)
 					is_terminal := True
 				else
 					type_str := bmm_class_def.name
+					has_type_subs := bmm_class_def.has_type_substitutions
 				end
 				type_spec := bmm_class_def
-				has_type_subs := bmm_class_def.has_type_substitutions
 
 			elseif attached {BMM_CONTAINER_TYPE_REFERENCE} a_prop_def.type_def as bmm_cont_type_ref then
 				-- assume first gen param is only type of interest
-				prop_str.append (": " + bmm_cont_type_ref.container_type + Generic_left_delim.out + Generic_right_delim.out)
-				type_str := bmm_cont_type_ref.type
+				if bmm_cont_type_ref.bmm_schema.is_primitive_type (bmm_cont_type_ref.as_type_string) then
+					prop_str.append (": " + bmm_cont_type_ref.as_type_string)
+					is_terminal := True
+				else
+					prop_str.append (": " + bmm_cont_type_ref.container_type + Generic_left_delim.out + Generic_right_delim.out)
+					type_str := bmm_cont_type_ref.type
+					has_type_subs := bmm_cont_type_ref.type_def.has_type_substitutions
+				end
 				type_spec := bmm_cont_type_ref.type_def
-				has_type_subs := bmm_cont_type_ref.type_def.has_type_substitutions
 
 			elseif attached {BMM_GENERIC_TYPE_REFERENCE} a_prop_def.type_def as bmm_gen_type_ref then
 				type_str := bmm_gen_type_ref.as_type_string
@@ -385,7 +390,12 @@ feature {NONE} -- Implementation
    		do
 			node_path.remove_last
 			ev_tree_item_stack.remove
-			if not attached {BMM_CLASS_DEFINITION} a_prop_def.type_def as bmm_class_def or else not bmm_class_def.bmm_schema.primitive_types.has (bmm_class_def.name) then
+			if not (	-- some kind of primitive, that did not result in an object node
+				attached {BMM_CLASS_DEFINITION} a_prop_def.type_def as bmm_class_def and then
+					bmm_class_def.bmm_schema.is_primitive_type (bmm_class_def.name) or
+				attached {BMM_CONTAINER_TYPE_REFERENCE} a_prop_def.type_def as bmm_cont_type_ref and then
+					bmm_cont_type_ref.bmm_schema.is_primitive_type (bmm_cont_type_ref.as_type_string))
+			then
 				ev_tree_item_stack.remove
 			end
 		end

@@ -323,7 +323,7 @@ feature -- Status Report
 			is_gen_type := is_well_formed_generic_type_name (a_type_name)
 			a_class_def := class_definition (a_class_name)
 			if a_class_def.is_generic then
-				type_strs := type_name_as_flattened_list(a_type_name)
+				type_strs := type_name_as_flat_list(a_type_name)
 				type_strs.compare_objects
 				type_strs.start
 				if type_strs.item.is_equal (a_class_def.name) or class_definitions.item (type_strs.item).has_ancestor(a_class_def.name)  then
@@ -362,8 +362,8 @@ feature -- Status Report
 		local
 			tlist1, tlist2: ARRAYED_LIST[STRING]
 		do
-			tlist1 := type_name_as_flattened_list (type_1)
-			tlist2 := type_name_as_flattened_list (type_2)
+			tlist1 := type_name_as_flat_list (type_1)
+			tlist2 := type_name_as_flat_list (type_2)
 			Result := True
 			from
 				tlist1.start
@@ -377,6 +377,18 @@ feature -- Status Report
 				tlist1.forth
 				tlist2.forth
 			end
+		end
+
+	is_primitive_type (a_type_name: attached STRING): BOOLEAN
+			-- True if `a_type_name' is defined as a primitive type in this schema or one of its includes,
+			-- or a generic container based only only Primitive types
+		require
+			Type_valid: not a_type_name.is_empty
+		local
+			a_class_names: ARRAYED_LIST [STRING]
+		do
+			a_class_names := type_name_as_flat_list (a_type_name)
+			Result := a_class_names.for_all (agent (s: STRING):BOOLEAN do Result := primitive_types.has (s.as_upper) end)
 		end
 
 feature {SCHEMA_DESCRIPTOR} -- Schema Processing
@@ -692,7 +704,7 @@ feature {SCHEMA_DESCRIPTOR} -- Schema Processing
 		local
 			class_def: BMM_CLASS_DEFINITION
 		do
-			from class_list.start until class_list.off or not passed loop
+			from class_list.start until class_list.off loop
 				class_def := class_list.item_for_iteration
 				if not attached class_def.qualified_package_name then
 					passed := False
@@ -738,23 +750,6 @@ feature {DT_OBJECT_CONVERTER} -- Persistence
 		end
 
 feature {NONE} -- Implementation
-
-	type_to_class (a_type_name: attached STRING): STRING
-			-- convert a type name which might have a generic part to a simple class name
-		require
-			Type_valid: not a_type_name.is_empty
-		local
-			gen_pos: INTEGER
-		do
-			gen_pos := a_type_name.substring_index (generic_left_delim.out, 1)
-			if gen_pos > 0 then
-				Result := a_type_name.substring (1, gen_pos-1)
-				Result.right_adjust
-				Result.to_upper
-			else
-				Result := a_type_name.as_upper
-			end
-		end
 
 	finalise_classes (class_list: attached HASH_TABLE [BMM_CLASS_DEFINITION, STRING])
 			-- build `immediate_descendants' and `all_ancestors' properties for each class in `class_list'

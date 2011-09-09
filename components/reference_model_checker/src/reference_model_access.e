@@ -263,6 +263,7 @@ feature -- Commands
 
 		rescue
 			exception_encountered := True
+			post_error (Current, "load_schemas", "model_access_e14", Void)
 			retry
 		end
 
@@ -327,6 +328,7 @@ feature {NONE} -- Implementation
 			end
 		rescue
 			exception_encountered := True
+			post_error (Current, "load_schemas", "model_access_e14", Void)
 			retry
 		end
 
@@ -338,21 +340,26 @@ feature {NONE} -- Implementation
 		do
 			all_schemas.item (a_schema_id).load
 			if all_schemas.item (a_schema_id).passed then
-				post_info (Current, "load_schema_include_closure", "model_access_i1", <<a_schema_id,
-					all_schemas.item (a_schema_id).schema.primitive_types.count.out, all_schemas.item (a_schema_id).schema.class_definitions.count.out>>)
-				includes := all_schemas.item (a_schema_id).schema.includes
-				if not includes.is_empty then
-					from includes.start until includes.off loop
-						if not schema_inclusion_map.has (includes.item_for_iteration.id) then
-							create includers.make (0)
-							schema_inclusion_map.put (includers, includes.item_for_iteration.id)
+				all_schemas.item (a_schema_id).validate_includes (all_schemas.current_keys)
+				if all_schemas.item (a_schema_id).passed then
+					post_info (Current, "load_schema_include_closure", "model_access_i1", <<a_schema_id,
+						all_schemas.item (a_schema_id).schema.primitive_types.count.out, all_schemas.item (a_schema_id).schema.class_definitions.count.out>>)
+					includes := all_schemas.item (a_schema_id).schema.includes
+					if not includes.is_empty then
+						from includes.start until includes.off loop
+							if not schema_inclusion_map.has (includes.item_for_iteration.id) then
+								create includers.make (0)
+								schema_inclusion_map.put (includers, includes.item_for_iteration.id)
+							end
+							schema_inclusion_map.item (includes.item_for_iteration.id).extend (a_schema_id)
+							if not all_schemas.has (includes.item_for_iteration.id) then
+								load_schema_include_closure (includes.item_for_iteration.id)
+							end
+							includes.forth
 						end
-						schema_inclusion_map.item (includes.item_for_iteration.id).extend (a_schema_id)
-						if not all_schemas.has (includes.item_for_iteration.id) then
-							load_schema_include_closure (includes.item_for_iteration.id)
-						end
-						includes.forth
 					end
+				else
+					post_error (Current, "load_schemas", "model_access_e15", <<a_schema_id, all_schemas.item (a_schema_id).errors.as_string>>)
 				end
 			else
 				post_error (Current, "load_schemas", "model_access_e8", <<a_schema_id, all_schemas.item (a_schema_id).errors.as_string>>)

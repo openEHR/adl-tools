@@ -176,7 +176,7 @@ feature -- Conversion
 			Result := package_base_name(a_package_name) + section_separator.out + a_class_name
 		end
 
-	type_name_as_flattened_list (a_type_name: attached STRING): attached ARRAYED_LIST [STRING]
+	type_name_as_flat_list (a_type_name: attached STRING): attached ARRAYED_LIST [STRING]
 			-- convert a type name to a flat set of strings
 		require
 			Valid_type_name: is_well_formed_type_name(a_type_name)
@@ -224,6 +224,23 @@ feature -- Conversion
 					Result.append_character (a_type_name[i])
 					i := i + 1
 				end
+			end
+		end
+
+	type_to_class (a_type_name: attached STRING): STRING
+			-- convert a type name which might have a generic part to a simple class name
+		require
+			Type_valid: not a_type_name.is_empty
+		local
+			gen_pos: INTEGER
+		do
+			gen_pos := a_type_name.substring_index (generic_left_delim.out, 1)
+			if gen_pos > 0 then
+				Result := a_type_name.substring (1, gen_pos-1)
+				Result.right_adjust
+				Result.to_upper
+			else
+				Result := a_type_name.as_upper
 			end
 		end
 

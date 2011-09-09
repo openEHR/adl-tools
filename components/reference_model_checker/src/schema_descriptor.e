@@ -119,6 +119,24 @@ feature {REFERENCE_MODEL_ACCESS} -- Commands
 			end
 		end
 
+	validate_includes (all_schemas_list: ARRAY [STRING])
+			-- validate include list
+		local
+			all_schemas: ARRAYED_LIST [STRING]
+		do
+			create all_schemas.make (0)
+			all_schemas.compare_objects
+			all_schemas.make_from_array (all_schemas_list)
+			if attached schema.includes then
+				from schema.includes.start until schema.includes.off or not all_schemas.has (schema.includes.item_for_iteration.id) loop
+					schema.includes.forth
+				end
+				if not schema.includes.off then
+					add_error("BMM_INC", <<schema_id, schema.includes.item_for_iteration.id>>)
+				end
+			end
+		end
+
 	validate
 		do
 			schema.validate
