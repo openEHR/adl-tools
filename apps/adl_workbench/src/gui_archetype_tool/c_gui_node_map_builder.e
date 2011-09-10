@@ -316,10 +316,8 @@ feature -- Visitor
 				if a_node.is_addressable then
 					gui_node_text.append ("[" + a_node.node_id + "]")
 				end
-				gui_node_text.append (" " + a_node.target_path)
-			elseif current_arch_cat.has_validated_selected_archetype then
-				gui_node_text.append ("use " + ontology.physical_to_logical_path (a_node.target_path, language))
 			end
+			gui_node_text.append ("use " + ontology.physical_to_logical_path (a_node.target_path, language, True))
 
 			-- do the work
 			if updating then
@@ -651,11 +649,7 @@ feature {NONE} -- Implementation
 	node_tooltip_str (a_node: attached ARCHETYPE_CONSTRAINT): STRING
 			-- generate a tooltip for this node
 		do
-			if in_technical_mode then
-				Result := utf8 (a_node.path)
-			else
-				Result := utf8 (ontology.physical_to_logical_path (a_node.path, language))
-			end
+			Result := utf8 (ontology.physical_to_logical_path (a_node.path, language, True))
 			if archetype.has_annotation_at_path (language, a_node.path) then
 				Result.append ("%N%NAnnotations:%N")
 				Result.append (utf8 (archetype.annotations.annotation_at_path (language, a_node.path).as_string))

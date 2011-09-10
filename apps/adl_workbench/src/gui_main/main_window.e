@@ -911,6 +911,7 @@ feature -- Catalogue tool
 			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
 			a_docking_pane.set_top ({SD_ENUMERATION}.left)
 			a_docking_pane.show_actions.extend (agent address_bar.set_current_client (catalogue_tool))
+			a_docking_pane.focus_in_actions.extend (agent address_bar.set_current_client (catalogue_tool))
 		end
 
 feature -- RM Schema tool
@@ -931,6 +932,7 @@ feature -- RM Schema tool
 			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
 			a_docking_pane.set_auto_hide ({SD_ENUMERATION}.left)
 			a_docking_pane.show_actions.extend (agent address_bar.set_current_client (rm_schema_tool))
+			a_docking_pane.focus_in_actions.extend (agent address_bar.set_current_client (rm_schema_tool))
 		end
 
 feature -- Archetype tools

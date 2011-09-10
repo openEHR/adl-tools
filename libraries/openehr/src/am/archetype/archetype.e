@@ -191,19 +191,19 @@ feature -- Paths
 			end
 
 			from phys_paths.start until phys_paths.off loop
-				Result.extend (ontology.physical_to_logical_path (phys_paths.item, a_lang))
+				Result.extend (ontology.physical_to_logical_path (phys_paths.item, a_lang, False))
 				phys_paths.forth
 			end
 		end
 
-	physical_to_logical_path (a_phys_path, a_lang: attached STRING): attached STRING
-			-- generate a logical path in 'a_lang' from a physical path
-		require
-			Phys_path_valid: not a_phys_path.is_empty
-			Lang_valid: not a_lang.is_empty
-		do
-			Result := ontology.physical_to_logical_path (a_phys_path, a_lang)
-		end
+--	physical_to_logical_path (a_phys_path, a_lang: attached STRING): attached STRING
+--			-- generate a logical path in 'a_lang' from a physical path
+--		require
+--			Phys_path_valid: not a_phys_path.is_empty
+--			Lang_valid: not a_lang.is_empty
+--		do
+--			Result := ontology.physical_to_logical_path (a_phys_path, a_lang)
+--		end
 
 	c_object_at_path (a_path: attached STRING): attached C_OBJECT
 			-- find the c_object from the path_map matching the path; uses path map so as to pick up
@@ -429,19 +429,6 @@ feature -- Modification
 				build_rolled_up_status
 			end
 			is_dirty := False
-		end
-
-feature -- Output
-
-	as_string: STRING
-   		do
-   			create Result.make(0)
-
-			Result.append("%N--------------- physical paths -------------%N")
-			Result.append(display_paths(physical_paths))
-
-			Result.append("%N--------------- logical paths(en) -------------%N")
-			Result.append(display_paths(logical_paths("en", False)))
 		end
 
 feature {ADL15_ENGINE} -- ADL 1.5 Serialisation

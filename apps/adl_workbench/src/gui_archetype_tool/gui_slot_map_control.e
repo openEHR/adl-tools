@@ -100,7 +100,7 @@ feature -- Commands
 			if aca.has_slots then
 				slot_index := aca.slot_id_index
 				from slot_index.start until slot_index.off loop
-					create eti.make_with_text (utf8 (aca.differential_archetype.ontology.physical_to_logical_path (slot_index.key_for_iteration, a_language)))
+					create eti.make_with_text (utf8 (aca.differential_archetype.ontology.physical_to_logical_path (slot_index.key_for_iteration, a_language, True)))
 					eti.set_pixmap (pixmaps ["ARCHETYPE_SLOT"])
 					ev_suppliers_tree.extend (eti)
 					append_tree (eti, slot_index.item_for_iteration)

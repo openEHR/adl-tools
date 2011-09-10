@@ -284,6 +284,7 @@ feature {NONE} -- Implementation
 					menu.extend (an_mi)
 
 					create an_mi.make_with_text_and_action ("Edit source schema", agent do_edit_schema (a_class_def.bmm_source_schema_id))
+					an_mi.set_pixmap (pixmaps ["edit"])
 					menu.extend (an_mi)
 
 					menu.show
@@ -301,6 +302,7 @@ feature {NONE} -- Implementation
 				create menu
 
 				create an_mi.make_with_text_and_action ("Edit source schema", agent do_edit_schema (bmm_sch.schema_id))
+				an_mi.set_pixmap (pixmaps ["edit"])
 		    	menu.extend (an_mi)
 
 				create an_mi.make_with_text_and_action ("Expand all", agent schema_expand_all (ev_ti))

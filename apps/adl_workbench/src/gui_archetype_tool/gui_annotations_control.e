@@ -81,7 +81,7 @@ feature -- Commands
 				anns_by_path := target_archetype.annotations.annotation_table (lang_key).items
 				from anns_by_path.start until anns_by_path.off loop
 					-- put the path in the first column
-					create gli.make_with_text (anns_by_path.key_for_iteration)
+					create gli.make_with_text (target_archetype.ontology.physical_to_logical_path (anns_by_path.key_for_iteration, selected_language, True))
 					grid.set_item (Grid_path_col, grid.row_count + 1, gli)
 					path_row := gli.row
 
