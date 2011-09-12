@@ -249,9 +249,11 @@ feature {NONE} -- Implementation
 			if button = {EV_POINTER_CONSTANTS}.right and attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
 				create menu
 				create an_mi.make_with_text_and_action ("Display", agent display_context_selected_class_in_active_tool (ev_ti))
+				an_mi.set_pixmap (pixmaps ["class_tool"])
 		    	menu.extend (an_mi)
 
 				create an_mi.make_with_text_and_action ("Display in new tab", agent display_context_selected_class_in_new_tool (ev_ti))
+				an_mi.set_pixmap (pixmaps ["class_tool_new"])
 				menu.extend (an_mi)
 
 				menu.show

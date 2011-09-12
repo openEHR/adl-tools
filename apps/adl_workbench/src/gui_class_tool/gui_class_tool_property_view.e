@@ -14,11 +14,6 @@ note
 class GUI_CLASS_TOOL_PROPERTY_VIEW
 
 inherit
-	SHARED_APP_UI_RESOURCES
-		export
-			{NONE} all
-		end
-
 	GUI_UTILITIES
 		export
 			{NONE} all
@@ -351,13 +346,15 @@ feature {NONE} -- Implementation
 			a_ti.set_tooltip (node_path.as_string)				-- tooltip
 			a_ti.set_pixmap (pixmaps [rm_attribute_pixmap_string (a_prop_def)])	-- pixmap
  	 		a_ti.pointer_button_press_actions.force_extend (agent attribute_node_handler (a_ti, ?, ?, ?))
-			ev_tree_item_stack.item.extend (a_ti)
+ 	 		a_ti.expand_actions.force_extend (agent attribute_node_expand_handler (a_ti))
+ 			ev_tree_item_stack.item.extend (a_ti)
 			ev_tree_item_stack.extend (a_ti)
 
 			-- class / type node(s)
 			if not is_terminal then
 				create a_ti
 				set_class_node_details (a_ti, type_spec, type_str, has_type_subs)
+	 	 		a_ti.pointer_button_press_actions.force_extend (agent class_node_handler (a_ti, ?, ?, ?))
 				ev_tree_item_stack.item.extend (a_ti)
 				ev_tree_item_stack.extend (a_ti)
 			end
@@ -383,7 +380,6 @@ feature {NONE} -- Implementation
 				pixmap := pixmaps [type_category]
 			end
 			a_ti.set_pixmap (pixmap)
- 	 		a_ti.pointer_button_press_actions.force_extend (agent class_node_handler (a_ti, ?, ?, ?))
  	 	end
 
    	populate_gui_tree_node_exit (a_prop_def: attached BMM_PROPERTY_DEFINITION)
@@ -429,13 +425,12 @@ feature {NONE} -- Implementation
 		local
 			subs: ARRAYED_SET[STRING]
 			menu: EV_MENU
+			an_mi: EV_MENU_ITEM
 		do
 			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_TYPE_SPECIFIER} eti.data as bmm_type_spec then
 				create menu
-				-- add a context menu item for expanding node, if depth limit reached
-				if eti.is_empty then
-					add_expand_context_menu (menu, bmm_type_spec.root_class, eti)
-				end
+				-- add menu item for retarget tool to current node / display in new tool
+				add_class_context_menu (menu, eti)
 
 				-- if there are type substitutions available, add menu for that
 				if attached {BMM_CLASS_DEFINITION} bmm_type_spec as bmm_class_def then
@@ -450,9 +445,6 @@ feature {NONE} -- Implementation
 				if not subs.is_empty then
 					add_subtype_context_menu (menu, subs, eti)
 				end
-
-				-- add menu item for retarget tool to current node / display in new tool
-				add_class_context_menu (menu, eti)
 				menu.show
 			end
 		end
@@ -468,6 +460,20 @@ feature {NONE} -- Implementation
 				create an_mi.make_with_text_and_action ("remove", agent remove_optional_attribute (eti))
 				menu.extend (an_mi)
 				menu.show
+			end
+		end
+
+	attribute_node_expand_handler (eti: EV_TREE_ITEM)
+			-- creates the context menu for a right click action for class node
+		local
+			menu: EV_MENU
+			an_mi: EV_MENU_ITEM
+		do
+			from eti.start until eti.off loop
+				if eti.item.is_empty and attached {EV_TREE_ITEM} eti.item as a_ti and then attached {BMM_TYPE_SPECIFIER} a_ti.data as bmm_type_spec then
+					rebuild_from_interior_node (bmm_type_spec.root_class, a_ti, True)
+				end
+				eti.forth
 			end
 		end
 
@@ -511,15 +517,6 @@ feature {NONE} -- Implementation
 				end
 				menu.extend (chg_sub_menu)
 			end
-		end
-
-	add_expand_context_menu (menu: EV_MENU; a_class_name: STRING; a_ti: EV_TREE_ITEM)
-			-- dynamically initializes the context menu for this tree
-		local
-			an_mi: EV_MENU_ITEM
-		do
-			create an_mi.make_with_text_and_action ("Expand", agent rebuild_from_interior_node (a_class_name, a_ti, True))
-			menu.extend (an_mi)
 		end
 
 	remove_optional_attribute (a_ti: EV_TREE_ITEM)

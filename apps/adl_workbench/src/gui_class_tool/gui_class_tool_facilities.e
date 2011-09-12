@@ -13,6 +13,12 @@ note
 
 deferred class GUI_CLASS_TOOL_FACILITIES
 
+inherit
+	SHARED_APP_UI_RESOURCES
+		export
+			{NONE} all
+		end
+
 feature -- Initialisation
 
 	make_class_tool (a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent)
@@ -36,8 +42,10 @@ feature {NONE} -- Implementation
 			an_mi: EV_MENU_ITEM
 		do
 			create an_mi.make_with_text_and_action ("Retarget to this class", agent display_context_selected_class_in_active_tool (ev_ti))
+			an_mi.set_pixmap (pixmaps ["class_tool"])
 	    	menu.extend (an_mi)
 			create an_mi.make_with_text_and_action ("Display in new tab", agent display_context_selected_class_in_new_tool (ev_ti))
+			an_mi.set_pixmap (pixmaps ["class_tool_new"])
 			menu.extend (an_mi)
 		end
 
