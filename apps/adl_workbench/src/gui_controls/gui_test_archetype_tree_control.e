@@ -563,21 +563,21 @@ feature {NONE} -- Tests
 				-- save source as serialised to $profile/source/new area
 				if diff_dirs_available then
 					-- save source as read in (not serialised) to $profile/source/orig area
-					file_system.copy_file (target.differential_path, file_system.pathname (diff_dir_source_orig, target.ontological_name + File_ext_archetype_source))
+					file_system.copy_file (target.differential_path, file_system.pathname (diff_dir_source_orig, target.qualified_name + File_ext_archetype_source))
 
 					-- this save causes serialisation to rewrite target.differential_text, which gives us something to compare to what was captured above
-					serialised_source_path := file_system.pathname (diff_dir_source_new, target.ontological_name + File_ext_archetype_source)
+					serialised_source_path := file_system.pathname (diff_dir_source_new, target.qualified_name + File_ext_archetype_source)
 					target.save_differential_as (serialised_source_path, Syntax_type_adl)
 
 					-- for top-level archetypes only, copy above serialised source to $profile/source_flat/orig area as well, using extension .adlx
 					-- (flat also uses this - diff tool needs to see same extensions or else it gets confused)
 				--	if not target.is_specialised then
-						file_system.copy_file (serialised_source_path, file_system.pathname (diff_dir_source_flat_orig, target.ontological_name + File_ext_archetype_adl_diff))
+						file_system.copy_file (serialised_source_path, file_system.pathname (diff_dir_source_flat_orig, target.qualified_name + File_ext_archetype_adl_diff))
 				--	end
 
 					-- save legacy ADL
 					if target.has_legacy_flat_file then
-						target.save_legacy_to (file_system.pathname (diff_dir_flat_orig, target.ontological_name + File_ext_archetype_flat))
+						target.save_legacy_to (file_system.pathname (diff_dir_flat_orig, target.qualified_name + File_ext_archetype_flat))
 					end
 				end
 			else
@@ -645,12 +645,12 @@ feature {NONE} -- Tests
 			Result := Test_failed
 			if target.is_valid then
 				if diff_dirs_available then
-					flat_path := file_system.pathname (diff_dir_flat_new, target.ontological_name + File_ext_archetype_flat)
+					flat_path := file_system.pathname (diff_dir_flat_new, target.qualified_name + File_ext_archetype_flat)
 					target.save_flat_as (flat_path, Syntax_type_adl)
 
 					-- copy above flat file to $profile/source_flat/orig area as well, using extension .adlx (flat also uses this - diff tool needs to see same
 					-- extensions or else it gets confused)
-					file_system.copy_file (flat_path, file_system.pathname (diff_dir_source_flat_new, target.ontological_name + File_ext_archetype_adl_diff))
+					file_system.copy_file (flat_path, file_system.pathname (diff_dir_source_flat_new, target.qualified_name + File_ext_archetype_adl_diff))
 				end
 				if target.status.is_empty then
 					Result := test_passed
@@ -687,7 +687,7 @@ feature {NONE} -- Tests
 			Result := Test_failed
 			if target.is_valid then
 				target.save_compiled_differential
-				file_system.copy_file (target.differential_compiled_path, file_system.pathname (dadl_source_dir, target.ontological_name + File_ext_dadl))
+				file_system.copy_file (target.differential_compiled_path, file_system.pathname (dadl_source_dir, target.qualified_name + File_ext_dadl))
 				Result := test_passed
 			else
 				Result := test_not_applicable
@@ -702,10 +702,10 @@ feature {NONE} -- Tests
 			if target.is_valid then
 				if attached target.read_compiled_differential as adl_text then
 					-- original .adls file, for diffing
-					file_system.copy_file (target.differential_path, file_system.pathname (diff_dadl_round_trip_source_orig_dir, target.ontological_name + File_ext_archetype_source))
+					file_system.copy_file (target.differential_path, file_system.pathname (diff_dadl_round_trip_source_orig_dir, target.qualified_name + File_ext_archetype_source))
 
 					-- post-dadl round-tripped file
-					create fd.make_create_read_write (file_system.pathname (diff_dadl_round_trip_source_new_dir, target.ontological_name + File_ext_archetype_source))
+					create fd.make_create_read_write (file_system.pathname (diff_dadl_round_trip_source_new_dir, target.qualified_name + File_ext_archetype_source))
 					fd.put_string (adl_text)
 					fd.close
 
@@ -761,7 +761,7 @@ feature {NONE} -- Implementation
 			col_csr: INTEGER
 		do
 			if ari.has_artefacts or ari.is_root then
-				create gli.make_with_text (utf8 (ari.display_name))
+				create gli.make_with_text (utf8 (ari.name))
 				if grid_row_stack.is_empty then
 					grid.set_item (1, 1, gli)
 					row := gli.row

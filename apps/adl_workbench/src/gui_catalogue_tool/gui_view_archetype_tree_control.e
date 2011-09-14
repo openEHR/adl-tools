@@ -17,6 +17,11 @@ class GUI_VIEW_ARCHETYPE_TREE_CONTROL
 inherit
 	GUI_ARTEFACT_TREE_CONTROL
 
+	BMM_DEFINITIONS
+		export
+			{NONE} all
+		end
+
 	STRING_UTILITIES
 		export
 			{NONE} all
@@ -57,11 +62,11 @@ feature -- Commands
 		do
 			an_id := aca.id.as_string
 			if ev_node_descriptor_map.has (an_id) then
-				update_tree_node (ev_node_descriptor_map.item (aca.ontological_name))
+				update_tree_node (ev_node_descriptor_map.item (aca.qualified_name))
 			elseif attached aca.old_id then
 				if ev_node_descriptor_map.has (aca.old_id.as_string) then
-					ev_node_descriptor_map.replace_key (aca.ontological_name, aca.old_id.as_string)
-					update_tree_node (ev_node_descriptor_map.item (aca.ontological_name))
+					ev_node_descriptor_map.replace_key (aca.qualified_name, aca.old_id.as_string)
+					update_tree_node (ev_node_descriptor_map.item (aca.qualified_name))
 				end
 			end
 		end
@@ -103,7 +108,7 @@ feature {NONE} -- Implementation
 				create ev_node
 	 			ev_node.set_data (aci)
 
- 				ev_node_descriptor_map.put (ev_node, aci.ontological_name)
+ 				ev_node_descriptor_map.put (ev_node, aci.qualified_name)
 
 	 			update_tree_node (ev_node)
 
@@ -143,13 +148,14 @@ feature {NONE} -- Implementation
 			pixmap: EV_PIXMAP
 		do
 			if attached {ARCH_CAT_ITEM} ev_node.data as aci then
-				text := utf8 (aci.display_name)
+				create text.make_empty
 
 				if attached {ARCH_CAT_ARCHETYPE} aci as aca then -- archetype / template node
 					-- text
 					if aca.has_legacy_flat_file and display_archetype_source then
-						text.prepend (utf8("(lf) "))
+						text.append ("(lf) ")
 					end
+					text.append (aci.name)
 					if aca.has_slots then
 						text.append_code (Right_arrow_char)	-- Unicode character: an arrow pointing right
 					end
@@ -168,20 +174,22 @@ feature {NONE} -- Implementation
 					pixmap := pixmaps [aci.group_name]
 
 	 			elseif attached {ARCH_CAT_MODEL_NODE} aci as acmn then -- it is a model node
-	 				-- text
-	 				text.append (utf8(" (" + acmn.sub_tree_artefact_count (artefact_types).out + ")"))
-
-					-- pixmap
 					if acmn.is_class then
 						pixmap := object_node_pixmap (acmn)
+			 	 		tooltip := acmn.class_definition.description
+						text.append (aci.name)
 					else
+		 				text.append (acmn.qualified_name)
 						pixmap := pixmaps [aci.group_name]
+						tooltip := "Archetype model namespace " + acmn.qualified_name + "%Nfrom schema " + acmn.bmm_schema.schema_id
 					end
+	 				text.append (" (" + acmn.sub_tree_artefact_count (artefact_types).out + ")")
 
 				end
 
 				-- set text
 				ev_node.set_text (text)
+	 	 		ev_node.set_tooltip (tooltip)
 				if attached pixmap then
 					ev_node.set_pixmap (pixmap)
 				end

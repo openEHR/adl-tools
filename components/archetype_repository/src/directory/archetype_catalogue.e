@@ -94,7 +94,7 @@ feature -- Access
 
 	ontology_index: attached DS_HASH_TABLE [ARCH_CAT_ITEM, STRING]
 			-- Index of archetype & class nodes, keyed by ontology concept. Used during construction of `directory'
-			-- For class nodes, this will be package_name-class_name, e.g. DEMOGRAPHIC-PARTY.
+			-- For class nodes, this will be model_publisher-model_name-class_name, e.g. OPENEHR-DEMOGRAPHIC-PARTY.
 			-- For archetype nodes, this will be the archetype id.
 
 	selected_item: ARCH_CAT_ITEM
@@ -302,13 +302,13 @@ feature -- Commands
 					added_during_pass := 0
 					from archs.start until archs.off loop
 						if status_list [archs.index] >= 0 then
-							parent_key := archs.item.ontological_parent_name
+							parent_key := archs.item.ontological_parent_name.as_upper
 							if ontology_index.has (parent_key) then
-								child_key := archs.item.ontological_name
+								child_key := archs.item.qualified_key
 								if not ontology_index.has (child_key) then
 									ontology_index.item (parent_key).put_child (archs.item)
 									ontology_index.force (archs.item, child_key)
-									archetype_index.force (archs.item, child_key)
+									archetype_index.force (archs.item, archs.item.qualified_name)
 									update_basic_statistics (archs.item)
 									added_during_pass := added_during_pass + 1
 									status_list [archs.index] := -1
@@ -329,9 +329,9 @@ feature -- Commands
 				from archs.start until archs.off loop
 					if status_list [archs.index] > 0 then
 						if archs.item.is_specialised then
-							post_error (Current, "populate", "arch_dir_orphan_archetype", <<archs.item.ontological_parent_name, archs.item.ontological_name>>)
+							post_error (Current, "populate", "arch_dir_orphan_archetype", <<archs.item.ontological_parent_name, archs.item.qualified_name>>)
 						else
-							post_error (Current, "populate", "arch_dir_orphan_archetype_e2", <<archs.item.ontological_parent_name, archs.item.ontological_name>>)
+							post_error (Current, "populate", "arch_dir_orphan_archetype_e2", <<archs.item.ontological_parent_name, archs.item.qualified_name>>)
 						end
 					end
 					archs.forth
@@ -362,17 +362,17 @@ feature -- Commands
 			end
 		end
 
-	update_terminology_bindings_info (ara: attached ARCH_CAT_ARCHETYPE)
+	update_terminology_bindings_info (aca: attached ARCH_CAT_ARCHETYPE)
 			-- Update term binding info
 		local
 			terminologies: ARRAYED_LIST [STRING]
 		do
-			terminologies := ara.differential_archetype.ontology.terminologies_available
+			terminologies := aca.differential_archetype.ontology.terminologies_available
 			from terminologies.start until terminologies.off loop
 				if not terminology_bindings_info.has(terminologies.item) then
 					terminology_bindings_info.put(create {ARRAYED_LIST[STRING]}.make(0), terminologies.item)
 				end
-				terminology_bindings_info.item(terminologies.item).extend(ara.ontological_name)
+				terminology_bindings_info.item (terminologies.item).extend(aca.qualified_name)
 				terminologies.forth
 			end
 		end
@@ -492,24 +492,24 @@ feature -- Modification
 			end
 		end
 
-	update_archetype_id (ara: attached ARCH_CAT_ARCHETYPE)
+	update_archetype_id (aca: attached ARCH_CAT_ARCHETYPE)
 			-- move `ara' in tree according to its current and old ids
 		require
-			old_id_valid: attached ara.old_id and then archetype_index.has (ara.old_id.as_string) and then archetype_index.item (ara.old_id.as_string) = ara
-			new_id_valid: not archetype_index.has(ara.id.as_string)
-			ontological_parent_exists: ontology_index.has(ara.ontological_parent_name)
+			old_id_valid: attached aca.old_id and then archetype_index.has (aca.old_id.as_string) and then archetype_index.item (aca.old_id.as_string) = aca
+			new_id_valid: not archetype_index.has(aca.id.as_string)
+			ontological_parent_exists: ontology_index.has(aca.ontological_parent_name)
 		do
-			archetype_index.remove (ara.old_id.as_string)
-			archetype_index.force (ara, ara.id.as_string)
-			ontology_index.remove (ara.old_id.as_string)
-			ontology_index.force (ara, ara.id.as_string)
-			ara.parent.remove_child(ara)
-			ontology_index.item (ara.ontological_parent_name).put_child (ara)
-			ara.clear_old_ontological_parent_name
+			archetype_index.remove (aca.old_id.as_string)
+			archetype_index.force (aca, aca.id.as_string)
+			ontology_index.remove (aca.old_id.as_string)
+			ontology_index.force (aca, aca.id.as_string)
+			aca.parent.remove_child(aca)
+			ontology_index.item (aca.ontological_parent_name).put_child (aca)
+			aca.clear_old_ontological_parent_name
 		ensure
-			Node_added_to_archetype_index: archetype_index.has (ara.id.as_string)
-			Node_added_to_ontology_index: ontology_index.has (ara.id.as_string)
-			Node_parent_set: ara.parent.ontological_name.is_equal (ara.ontological_parent_name)
+			Node_added_to_archetype_index: archetype_index.has (aca.id.as_string)
+			Node_added_to_ontology_index: ontology_index.has (aca.id.as_string)
+			Node_parent_set: aca.parent.qualified_name.is_equal (aca.ontological_parent_name)
 		end
 
 feature -- Traversal
@@ -602,7 +602,7 @@ feature {NONE} -- Implementation
 			pkg: BMM_PACKAGE_DEFINITION
 			models: HASH_TABLE [ARRAYED_LIST[STRING], STRING]
 			parent_model_node, model_node: ARCH_CAT_MODEL_NODE
-			model_name: STRING
+			model_name, publisher_qualified_model_name: STRING
 			supp_list, supp_list_copy: ARRAYED_SET[STRING]
 			supp_class_list: ARRAYED_LIST [BMM_CLASS_DEFINITION]
 			removed: BOOLEAN
@@ -615,17 +615,18 @@ feature {NONE} -- Implementation
 				models := bmm_schema.models
 				from models.start until models.off loop
 					model_name := models.key_for_iteration
+					publisher_qualified_model_name := bmm_schema.model_publisher + section_separator.out + model_name
 					model_pkg_list := models.item_for_iteration
 					from model_pkg_list.start until model_pkg_list.off loop
 						pkg := bmm_schema.package_definition (model_pkg_list.item)
 						if pkg.has_classes then
 
-							-- create new package node if not already in existence
-							if not parent_model_node.has_child_with_name (model_name) then
-								create model_node.make_package (model_name)
+							-- create new model node if not already in existence
+							if not parent_model_node.has_child_with_qualified_name (publisher_qualified_model_name) then
+								create model_node.make_model (model_name, bmm_schema)
 								parent_model_node.put_child (model_node)
 							else
-								model_node ?= parent_model_node.child_with_name (model_name)
+								model_node ?= parent_model_node.child_with_qualified_name (publisher_qualified_model_name)
 							end
 
 							create supp_list.make (0)
@@ -683,7 +684,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_child_nodes (a_package: STRING; class_list: ARRAYED_LIST [BMM_CLASS_DEFINITION]; a_parent_node: ARCH_CAT_MODEL_NODE)
+	add_child_nodes (a_model: STRING; class_list: ARRAYED_LIST [BMM_CLASS_DEFINITION]; a_parent_node: ARCH_CAT_MODEL_NODE)
 			-- populate child nodes of a node in directory with immediate descendants of `a_class'
 			-- put each node into `ontology_index', keyed by a_package + '-' + `a_class',
 			-- which will match with corresponding part of archetype identifier
@@ -692,10 +693,10 @@ feature {NONE} -- Implementation
 			model_node: ARCH_CAT_MODEL_NODE
 		do
 			from class_list.start until class_list.off loop
-				create model_node.make_class (a_package, class_list.item)
+				create model_node.make_class (a_model, class_list.item)
 				a_parent_node.put_child (model_node)
 				children := class_list.item.immediate_descendants
-				add_child_nodes (a_package, children, model_node)
+				add_child_nodes (a_model, children, model_node)
 				class_list.forth
 			end
 		end
@@ -705,7 +706,7 @@ feature {NONE} -- Implementation
 		do
 			ontology := ontology_prototype.item.deep_twin
 			create ontology_index.make (0)
-			do_all (agent (ari: attached ARCH_CAT_ITEM) do ontology_index.force (ari, ari.ontological_name) end, Void)
+			do_all (agent (ari: attached ARCH_CAT_ITEM) do ontology_index.force (ari, ari.qualified_name.as_upper) end, Void)
 		end
 
 	schema_load_counter: INTEGER

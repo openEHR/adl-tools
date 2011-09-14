@@ -467,6 +467,17 @@ feature -- Output
 			Result := as_type_string
 		end
 
+	description: STRING
+			-- output a description of this class for use in e.g. tooltips, other places in the UI
+		do
+	 	 	create Result.make_empty
+	 	 	Result.append (qualified_name)
+	 	 	Result.append ("%NSource schema: " + bmm_source_schema_id)
+	 	 	if override_definition then
+	 	 		Result.append ("%N(overrides previous definition)")
+	 	 	end
+	 	 end
+
 feature {BMM_PACKAGE_DEFINITION} -- Modification
 
 	set_qualified_names (a_schema_id, a_package_name: attached STRING)

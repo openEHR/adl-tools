@@ -166,14 +166,13 @@ feature -- Conversion
 			Result.to_lower
 		end
 
-	library_qualified_class_name (a_package_name, a_class_name: attached STRING): attached STRING
-			-- generate a standard package-class name string, e.g. "ehr-observation" for use in finding RM schemas
-			-- uses `terminal_package_name' to guarantee terminal form of package name
+	library_qualified_class_name (a_model_name, a_class_name: attached STRING): attached STRING
+			-- generate a standard model-class name string, e.g. "ehr-observation" for use in finding RM schemas
 		require
-			Package_name_valid: not a_package_name.is_empty
+			Model_name_valid: not a_model_name.is_empty
 			Class_name_valid: not a_class_name.is_empty
 		do
-			Result := package_base_name(a_package_name) + section_separator.out + a_class_name
+			Result := a_model_name + section_separator.out + a_class_name
 		end
 
 	type_name_as_flat_list (a_type_name: attached STRING): attached ARRAYED_LIST [STRING]

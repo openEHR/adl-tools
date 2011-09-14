@@ -113,14 +113,14 @@ feature -- Commands
 			-- No events will be processed because archetype selected in ARCHETYPE_CATALOGUE already matches selected tree node
 		do
 			if has_current_profile and then current_arch_cat.has_selected_item then
-				archetype_explorer.select_item (current_arch_cat.selected_item.ontological_name)
+				archetype_explorer.select_item (current_arch_cat.selected_item.qualified_name)
 			end
 		end
 
 	select_item, select_archetype (id: attached STRING)
 			-- Select `id' in the archetype catalogue and go to its node in explorer tree
 		do
-			if not current_arch_cat.has_selected_archetype or else not id.is_equal (current_arch_cat.selected_archetype.ontological_name) then
+			if not current_arch_cat.has_selected_archetype or else not id.is_equal (current_arch_cat.selected_archetype.qualified_name) then
 				if current_arch_cat.archetype_index.has (id) then
 					archetype_explorer.select_item (id)
 				end

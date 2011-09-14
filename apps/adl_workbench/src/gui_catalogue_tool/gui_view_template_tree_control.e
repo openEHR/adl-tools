@@ -65,7 +65,7 @@ feature {NONE} -- Implementation
 
 	select_archetype_with_delay (aca: ARCH_CAT_ARCHETYPE)
 		do
-			focus_archetype_agent.call ([aca.ontological_name])
+			focus_archetype_agent.call ([aca.qualified_name])
 			selected_archetype_node := aca
 			if current_arch_cat.selected_item /= aca then
 				delayed_select_archetype_agent.set_interval (300)
@@ -100,20 +100,20 @@ feature {NONE} -- Implementation
 			-- make sure it is a template of some kind
 			if artefact_types.has (ara.artefact_type) then
 				-- if it is compiled & valid, display its flat filler structure
-				if ev_node_descriptor_map.has (ara.ontological_name) then
+				if ev_node_descriptor_map.has (ara.qualified_name) then
 					if ara.is_valid then
-						ev_tree_item_stack.extend (ev_node_descriptor_map.item (ara.ontological_name))
+						ev_tree_item_stack.extend (ev_node_descriptor_map.item (ara.qualified_name))
 						ev_tree_item_stack.item.wipe_out
 						ev_tree_item_stack.item.set_pixmap (object_node_pixmap (ara))
 						create tree_iterator.make (ara.flat_archetype.definition.representation)
 						tree_iterator.do_all (agent ev_node_build_enter_action (?, ?), agent ev_node_build_exit_action (?, ?))
 						ev_tree_item_stack.remove
 					else
-						ev_node_descriptor_map.item (ara.ontological_name).set_pixmap (object_node_pixmap (ara))
+						ev_node_descriptor_map.item (ara.qualified_name).set_pixmap (object_node_pixmap (ara))
 					end
 				else -- otherwise just display the template root
-					attach_node (ara.id.rm_entity + "." + ara.display_name, object_node_pixmap (ara), ara)
-					ev_node_descriptor_map.force (ev_tree_item_stack.item, ara.ontological_name)
+					attach_node (ara.id.rm_entity + "." + ara.name, object_node_pixmap (ara), ara)
+					ev_node_descriptor_map.force (ev_tree_item_stack.item, ara.qualified_name)
 					ev_tree_item_stack.remove
 				end
 			end
@@ -147,7 +147,7 @@ feature {NONE} -- Implementation
 					end
 				elseif attached {C_ARCHETYPE_ROOT} ca as car and attached current_arch_cat as dir then
 					ara := dir.archetype_index.item (car.archetype_id)
-					attach_node (ara.id.rm_entity + "." + ara.display_name, object_node_pixmap (ara), ara)
+					attach_node (ara.id.rm_entity + "." + ara.name, object_node_pixmap (ara), ara)
 				end
 			end
 		end
@@ -193,7 +193,7 @@ feature {NONE} -- Implementation
 			create a_ti.make_with_text (utf8 (str))
 			if attached ara then
 				a_ti.set_data (ara)
-				ev_node_descriptor_map.force (a_ti, ara.ontological_name)
+				ev_node_descriptor_map.force (a_ti, ara.qualified_name)
 
 				-- select / menu handling					
 	 			a_ti.pointer_button_press_actions.force_extend (agent archetype_node_handler (a_ti, ?, ?, ?))

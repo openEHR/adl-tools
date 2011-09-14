@@ -367,7 +367,7 @@ feature -- File events
 				path := ara.differential_path
 				if ara.has_differential_file and ara.has_legacy_flat_file then
 					create question_dialog.make_with_text (create_message_line("edit_which_file_question", <<file_system.basename (path), file_system.basename (ara.legacy_flat_path)>>))
-					question_dialog.set_title ("Edit " + ara.ontological_name)
+					question_dialog.set_title ("Edit " + ara.qualified_name)
 					question_dialog.set_buttons (<<"Differential", "Legacy (flat)">>)
 					question_dialog.show_modal_to_window (Current)
 

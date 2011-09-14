@@ -198,14 +198,14 @@ feature -- Access (semantic)
 			-- a path derived from the ontological path of the nearest folder node + archetype_id
 		local
 			csr: ARCH_CAT_ITEM
-			arf: ARCH_CAT_MODEL_NODE
+			acmn: ARCH_CAT_MODEL_NODE
 		do
 			create Result.make(0)
-			from csr := parent until csr = Void or arf /= Void loop
-				arf ?= csr
+			from csr := parent until csr = Void or acmn /= Void loop
+				acmn ?= csr
 				csr := csr.parent
 			end
-			Result := arf.ontological_path + Ontological_path_separator + id.as_string
+			Result := acmn.path + Ontological_path_separator + id.as_string
 		end
 
 	differential_path: attached STRING
@@ -324,27 +324,32 @@ feature -- Access (semantic)
 	clients_index: ARRAYED_LIST [STRING]
 			-- list of archetype_ids of archetypes that use this archetype
 
-	ontological_name: STRING
+	qualified_name: STRING
 		do
 			Result := id.as_string
 		end
 
+	qualified_key: STRING
+		do
+			Result := qualified_name.as_upper
+		end
+
 	ontological_parent_name: STRING
 			-- semantic name of parent node in ontology tree
-			-- For top-level archetypes e.g. openEHR-EHR-OBSERVATION.thing.v1, it will be the name of teh folder, e.g. EHR-OBSERVATION
+			-- For top-level archetypes e.g. openEHR-EHR-OBSERVATION.thing.v1, it will be the name of teh folder, e.g. openEHR-EHR-OBSERVATION
 			-- for specialised archetypes, e.g. openEHR-EHR-OBSERVATION.specialised_thing.v1, it will be the id of the parent, e.g. openEHR-EHR-OBSERVATION.thing.v1
 		do
 			if is_specialised then
 				Result := parent_id.as_string
 			else
-				Result := id.package_class_name
+				Result := id.qualified_rm_entity
 			end
 		end
 
 	old_ontological_parent_name: STRING
 			-- old vaue of `old_ontological_parent_name', to facilitate handling changes due to external editing of archetypes
 
-	display_name: STRING
+	name: STRING
 			-- domain concept part of archetype id; if there are any '-' characters due to ADL 1.4 style ids,
 			-- return only the final section
 		local

@@ -185,7 +185,7 @@ feature {NONE} -- Implementation
 			-- do the package
 			create ev_pkg_node.make_with_text (a_pkg.name)
  			ev_pkg_node.set_data (a_pkg)
- 	 		ev_pkg_node.set_tooltip (a_pkg.qualified_name)
+ 	 		ev_pkg_node.set_tooltip ("Package " + a_pkg.qualified_name)
  	 		ev_pkg_node.set_pixmap (pixmaps ["file_folder_2"])
 			ev_parent_node.extend (ev_pkg_node)
 
@@ -223,7 +223,7 @@ feature {NONE} -- Implementation
 	populate_classes (ev_package_node: EV_TREE_ITEM; a_class_def: BMM_CLASS_DEFINITION)
 		local
 			ev_class_node: EV_TREE_ITEM
-			type_cat, tooltip_str: STRING
+			type_cat: STRING
 		do
 			create ev_class_node.make_with_text (a_class_def.name)
  			ev_class_node.set_data (a_class_def)
@@ -232,13 +232,7 @@ feature {NONE} -- Implementation
  				type_cat.append ("_override")
  			end
 	 	 	ev_class_node.set_pixmap (pixmaps [type_cat])
-	 	 	create tooltip_str.make_empty
-	 	 	tooltip_str.append (a_class_def.qualified_name)
-	 	 	tooltip_str.append ("%NSource schema: " + a_class_def.bmm_source_schema_id)
-	 	 	if a_class_def.override_definition then
-	 	 		tooltip_str.append ("%N(overrides previous definition)")
-	 	 	end
- 	 		ev_class_node.set_tooltip (tooltip_str)
+ 	 		ev_class_node.set_tooltip (a_class_def.description)
 			ev_package_node.extend (ev_class_node)
 
  	 		ev_class_node.pointer_button_press_actions.force_extend (agent class_node_handler (ev_class_node, ?, ?, ?))

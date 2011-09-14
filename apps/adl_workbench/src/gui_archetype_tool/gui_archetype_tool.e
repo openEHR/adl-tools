@@ -322,7 +322,7 @@ feature -- Commands
 			target_archetype_descriptor := aca
 			clear
 			if target_archetype_descriptor.is_valid then
-				ev_archetype_id.set_text (target_archetype_descriptor.ontological_name)
+				ev_archetype_id.set_text (target_archetype_descriptor.qualified_name)
 				ev_adl_version_text.set_text (target_archetype_descriptor.differential_archetype.adl_version)
 				selected_language := target_archetype_descriptor.differential_archetype.original_language.code_string
 				populate_languages
