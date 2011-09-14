@@ -280,20 +280,6 @@ feature -- Application Switches
 			app_cfg.put_value ("/gui/test_split_position", v)
 		end
 
-	catalogue_split_position: INTEGER
-			-- Split position of explorer horizontal split control.
-		do
-			Result := app_cfg.integer_value ("/gui/catalogue_split_position")
-		end
-
-	set_catalogue_split_position (v: INTEGER)
-			-- Set split position of explorer vertical split control.
-		require
-			v > 0
-		do
-			app_cfg.put_value ("/gui/catalogue_split_position", v)
-		end
-
 	expand_node_tree: BOOLEAN
 			-- Expand the archetype definition node tree by default?
 		do

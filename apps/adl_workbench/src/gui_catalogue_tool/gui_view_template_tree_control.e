@@ -36,7 +36,7 @@ feature {NONE} -- Initialisation
 			focus_archetype_agent := a_focus_archetype_agent
 
 			-- make UI
-			make_ui ("Templates", pixmaps ["template_category"])
+			make_ui
 
 			artefact_types := <<{ARTEFACT_TYPE}.template>>
 		end
@@ -201,7 +201,7 @@ feature {NONE} -- Implementation
 			end
 			a_ti.set_pixmap (pixmap)
 			if ev_tree_item_stack.is_empty then
-				ev_tree.extend (a_ti)
+				ev_root_container.extend (a_ti)
 			else
 				ev_tree_item_stack.item.extend (a_ti)
 			end

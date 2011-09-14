@@ -45,6 +45,14 @@ templates = <
 		["compiler_no_source_text"] = <"===================== No source (.adls) text available =======================">
 		["compiler_no_dadl_text"] = <"===================== No dADL (.dadl) text available =======================">
 		["read_docking_file_failed"] = <"Read from docking config file $1 failed">
+		["write_docking_file_failed"] = <"Write to docking config file $1 failed">
+		["copy_docking_file"] = <"Copying user docking config file $1 to default location $2">
+		["no_docking_file_found"] = <"No docking format file fund at user location $1 or default location $2">
+
+		-- GUI_CATALOGUE_TOOL
+		["catalogue_archetype_tab_text"] = <"Archetypes">
+		["catalogue_template_tab_text"] = <"Templates">
+
 
 		-- GUI_SOT_MAP_CONTROL
 		["slots_incomplete_w1"] = <"this list may be incomplete. To be sure, run Build All under the Repository menu.">

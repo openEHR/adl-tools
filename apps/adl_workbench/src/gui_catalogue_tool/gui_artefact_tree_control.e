@@ -27,38 +27,21 @@ inherit
 
 feature {NONE} -- Initialisation
 
-	make_ui (a_label: attached STRING; a_pixmap: EV_PIXMAP)
+	make_ui
 		do
 			-- create widgets
 			create ev_root_container
-			create ev_hbox
-			create ev_pixmap
-			create ev_label
-			create ev_tree
 
 			-- connect widgets
-			ev_root_container.extend (ev_hbox)
-			ev_hbox.extend (ev_pixmap)
-			ev_hbox.extend (ev_label)
-			ev_root_container.extend (ev_tree)
 
 			-- visual characteristics
-			ev_root_container.disable_item_expand (ev_hbox)
-			ev_hbox.set_padding (padding_width)
-			ev_hbox.set_border_width (border_width)
-			ev_hbox.disable_item_expand (ev_pixmap)
-			ev_pixmap.set_minimum_width (16)
-			ev_pixmap.set_minimum_height (16)
-			ev_pixmap.copy (a_pixmap)
-			ev_label.set_text (a_label)
-			ev_label.align_text_left
-			ev_tree.set_background_color (editable_colour)
-  			ev_tree.set_minimum_width (max_arch_explorer_width)
+			ev_root_container.set_background_color (editable_colour)
+  			ev_root_container.set_minimum_width (max_arch_explorer_width)
 		end
 
 feature -- Access
 
-	ev_root_container: EV_VERTICAL_BOX
+	ev_root_container: EV_TREE
 
 feature -- Commands
 
@@ -66,7 +49,7 @@ feature -- Commands
 			-- Populate `gui_file_tree' from `archetype_directory'.
 		do
 			create ev_node_descriptor_map.make(0)
-			ev_tree.wipe_out
+			ev_root_container.wipe_out
  			create ev_tree_item_stack.make (0)
 
  			if has_current_profile then
@@ -77,7 +60,7 @@ feature -- Commands
 	refresh
 			-- repopulate to update GUI settings
 		do
-			ev_tree.recursive_do_all (agent update_tree_node)
+			ev_root_container.recursive_do_all (agent update_tree_node)
 		end
 
 	update_tree_node_for_archetype (ara: attached ARCH_CAT_ARCHETYPE)
@@ -91,14 +74,6 @@ feature -- Commands
 		end
 
 feature {NONE} -- Implementation
-
-	ev_pixmap: EV_PIXMAP
-
-	ev_label: EV_LABEL
-
-	ev_tree: EV_TREE
-
-	ev_hbox: EV_HORIZONTAL_BOX
 
 	ev_node_descriptor_map: HASH_TABLE [EV_TREE_ITEM, STRING]
 			-- list of GUI explorer nodes, keyed by artefact id

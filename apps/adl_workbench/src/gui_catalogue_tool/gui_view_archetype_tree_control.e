@@ -42,8 +42,8 @@ feature {NONE} -- Initialisation
 			select_class_in_new_tool_agent := a_select_class_in_new_tool_agent
 
 			-- make UI
-			make_ui ("Archetypes", pixmaps ["archetype_category"])
-  			ev_tree.set_minimum_height (200)
+			make_ui
+  			ev_root_container.set_minimum_height (200)
 
 			artefact_types := <<{ARTEFACT_TYPE}.archetype, {ARTEFACT_TYPE}.template_component, {ARTEFACT_TYPE}.template>>
 		end
@@ -69,8 +69,8 @@ feature -- Commands
 	select_item (ari_ont_id: attached STRING)
 			-- ensure node with ontological node id `ari_ont_id' is visible in the tree
 		do
-			if ev_node_descriptor_map.has (ari_ont_id) and ev_tree.is_displayed then
-				ev_tree.ensure_item_visible (ev_node_descriptor_map.item (ari_ont_id))
+			if ev_node_descriptor_map.has (ari_ont_id) and ev_root_container.is_displayed then
+				ev_root_container.ensure_item_visible (ev_node_descriptor_map.item (ari_ont_id))
 				ev_node_descriptor_map.item (ari_ont_id).enable_select
 			end
 		end
@@ -78,8 +78,8 @@ feature -- Commands
 	ensure_item_visible (ari_ont_id: attached STRING)
 			-- ensure node with ontological node id `ari_ont_id' is visible in the tree
 		do
-			if ev_node_descriptor_map.has(ari_ont_id) and ev_tree.is_displayed then
-				ev_tree.ensure_item_visible (ev_node_descriptor_map.item (ari_ont_id))
+			if ev_node_descriptor_map.has(ari_ont_id) and ev_root_container.is_displayed then
+				ev_root_container.ensure_item_visible (ev_node_descriptor_map.item (ari_ont_id))
 			end
 		end
 
@@ -90,7 +90,7 @@ feature {NONE} -- Implementation
 	populate_tree
 		do
 	 		current_arch_cat.do_all (agent ev_tree_node_populate_enter, agent ev_tree_node_populate_exit)
-			ev_tree.recursive_do_all (agent ev_tree_expand)
+			ev_root_container.recursive_do_all (agent ev_tree_expand)
 		end
 
    	ev_tree_node_populate_enter (aci: attached ARCH_CAT_ITEM)
@@ -118,7 +118,7 @@ feature {NONE} -- Implementation
 				end
 
 				if ev_tree_item_stack.is_empty then
-					ev_tree.extend (ev_node)
+					ev_root_container.extend (ev_node)
 				else
 					ev_tree_item_stack.item.extend (ev_node)
 				end

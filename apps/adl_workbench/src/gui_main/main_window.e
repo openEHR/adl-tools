@@ -238,25 +238,38 @@ feature {NONE} -- Initialization
 
 	initialise_session_ui_layout
 			-- initialise visual settings of window remembered from previous session
+		local
+			docking_file_to_use: STRING
 		do
 			if app_maximised then
 				maximize
 			end
 
-			-- Docking layout
-			if file_system.file_exists (user_docking_layout_file_path) then
-				if not docking_manager.open_config (user_docking_layout_file_path) then
-					console_tool.append_text (create_message_line ("read_docking_file_failed", <<user_docking_layout_file_path>>))
+			-- Determine which Docking layout file to read
+			-- if the default one is the only one, or more recent than the user one, use it
+			-- else use the user's one
+			if file_system.file_exists (default_docking_layout_file_path) then
+				if file_system.file_exists (user_docking_layout_file_path) then
+					if file_system.file_time_stamp (default_docking_layout_file_path) > file_system.file_time_stamp (user_docking_layout_file_path) then
+						docking_file_to_use := default_docking_layout_file_path
+					else
+						docking_file_to_use := user_docking_layout_file_path
+					end
 				end
-			elseif file_system.file_exists (default_docking_layout_file_path) then
-				if not docking_manager.open_config (default_docking_layout_file_path) then
-					console_tool.append_text (create_message_line ("read_docking_file_failed", <<default_docking_layout_file_path>>))
-				end
+			elseif file_system.file_exists (user_docking_layout_file_path) then
+				docking_file_to_use := user_docking_layout_file_path
+				console_tool.append_text (create_message_line ("copy_docking_file", <<user_docking_layout_file_path, default_docking_layout_file_path>>))
+				file_system.copy_file (user_docking_layout_file_path, default_docking_layout_file_path)
+			else
+				console_tool.append_text (create_message_line ("no_docking_file_found", <<user_docking_layout_file_path, default_docking_layout_file_path>>))
+			end
+
+			if attached docking_file_to_use and then not docking_manager.open_config (docking_file_to_use) then
+				console_tool.append_text (create_message_line ("read_docking_file_failed", <<user_docking_layout_file_path>>))
 			end
 
 			-- Splitter layout
 			initialise_splitter (test_tool.ev_root_container, test_split_position)
-			initialise_splitter (catalogue_tool.ev_root_container, catalogue_split_position)
 		end
 
 feature -- Status setting
@@ -440,11 +453,11 @@ feature -- File events
 			end
 			set_app_maximised (is_maximized)
 			set_test_split_position (test_tool.ev_root_container.split_position)
-			set_catalogue_split_position (catalogue_tool.ev_root_container.split_position)
 
 			app_cfg.save
 
-			if docking_manager.save_data (user_docking_layout_file_path) then
+			if not docking_manager.save_data (user_docking_layout_file_path) then
+				console_tool.append_text (create_message_line ("write_docking_file_failed", <<user_docking_layout_file_path>>))
 			end
 
 			ev_application.destroy
@@ -980,7 +993,7 @@ feature -- Test tool
 			a_docking_pane.set_long_title ("Test")
 			a_docking_pane.set_short_title ("Test")
 			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
-			a_docking_pane.set_auto_hide ({SD_ENUMERATION}.right)
+			a_docking_pane.set_auto_hide ({SD_ENUMERATION}.bottom)
 		end
 
 feature -- Console Tool

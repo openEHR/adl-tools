@@ -15,6 +15,11 @@ note
 class GUI_CATALOGUE_TOOL
 
 inherit
+	SHARED_APP_UI_RESOURCES
+		export
+			{NONE} all
+		end
+
 	SHARED_KNOWLEDGE_REPOSITORY
 		export
 			{NONE} all
@@ -49,13 +54,15 @@ feature {NONE} -- Initialisation
 			ev_root_container.extend (template_explorer.ev_root_container)
 
 			-- visual characteristics
-			ev_root_container.enable_item_expand (template_explorer.ev_root_container)
-			ev_root_container.disable_item_expand (archetype_explorer.ev_root_container)
+			ev_root_container.set_item_text (archetype_explorer.ev_root_container, create_message_content ("catalogue_archetype_tab_text", Void))
+			ev_root_container.item_tab (archetype_explorer.ev_root_container).set_pixmap (pixmaps ["archetype_catalog"])
+			ev_root_container.set_item_text (template_explorer.ev_root_container, create_message_content ("catalogue_template_tab_text", Void))
+			ev_root_container.item_tab (template_explorer.ev_root_container).set_pixmap (pixmaps ["template_catalog"])
 		end
 
 feature -- Access
 
-	ev_root_container: EV_VERTICAL_SPLIT_AREA
+	ev_root_container: EV_NOTEBOOK
 
 	matching_ids (a_key: attached STRING): attached ARRAYED_SET [STRING]
 		do
