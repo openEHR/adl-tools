@@ -31,7 +31,6 @@ templates = <
 		["export_repository_report_replace_info"] = <"Exported report to $1">
 		["export_repository_report_replace_err"] = <"Failed to export report to $1">
 		["export_html_question"] = <"Only successfully built archetypes can be exported to HTML.%N%NDo you want to build each archetype before exporting it?">
-		["adl_version_warning"] = <"Using ADL version $1 for output serialisation">
 		["edit_which_file_question"] = <"Edit which file?%N%NDifferential: $1%N%NFlat (legacy): $2">
 		["edit_legacy_file_info"] = <"The Differential (.adls) file is not available.%N%NOpening the legacy flat file: $1%N">
 		["build_and_export_all"] = <"Yes, Build and Export All">

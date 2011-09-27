@@ -103,12 +103,12 @@ feature -- Commands
 		do
 			is_full_build_completed := False
 			is_building := True
-			call_global_visual_update_action(create_message_line ("compiler_building_system", Void))
+			call_global_visual_update_action (create_message_line ("compiler_building_system", Void))
 			do_all (agent check_file_system_currency (False, ?))
 			do_all (agent build_archetype (?, 0))
 			is_full_build_completed := not is_interrupt_requested
 			is_building := False
-			call_global_visual_update_action(create_message_line ("compiler_finished_building_system", Void))
+			call_global_visual_update_action (create_message_line ("compiler_finished_building_system", Void))
 		end
 
 	rebuild_all
@@ -121,7 +121,7 @@ feature -- Commands
 			do_all (agent build_archetype (?, 0))
 			is_full_build_completed := not is_interrupt_requested
 			is_building := False
-			call_global_visual_update_action(create_message_line ("compiler_finished_rebuilding_system", Void))
+			call_global_visual_update_action (create_message_line ("compiler_finished_rebuilding_system", Void))
 		end
 
 	build_subtree
@@ -242,7 +242,7 @@ feature {NONE} -- Implementation
 				if not exception_encountered then
 					ara.check_compilation_currency
 					if not ara.is_in_terminal_compilation_state then
-						build_status := create_message_line("compiler_compiling_archetype", <<ara.artefact_name.as_upper, ara.id.value>>)
+						build_status := create_message_line ("compiler_compiling_archetype", <<ara.artefact_name.as_upper, ara.id.value>>)
 						call_archetype_visual_update_action (build_status, ara, dependency_depth)
 
 						-- first phase

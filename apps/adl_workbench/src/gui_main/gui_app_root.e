@@ -42,12 +42,10 @@ feature {NONE} -- Initialization
 		do
 			default_create
 			app_root.initialise
-			if app_root.initialised then
-				show_splash_window
-				if not is_destroyed then
-					post_launch_actions.extend_kamikaze (agent show_main_window)
-					launch
-				end
+			show_splash_window
+			if not is_destroyed then
+				post_launch_actions.extend_kamikaze (agent show_main_window)
+				launch
 			end
 		end
 

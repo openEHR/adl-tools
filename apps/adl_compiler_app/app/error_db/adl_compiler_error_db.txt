@@ -15,6 +15,11 @@
 
 templates = <
 	["en"] = <
+		-- APP_ROOT
+		["adl_version_warning"] = <"Using ADL version $1 for output serialisation">
+		["validation_strict"] = <"Validation level STRICT">
+		["validation_non_strict"] = <"Validation level NON-STRICT; non-conforming existence, occurrences & cardinality will be removed">
+
 		-- ARCHETYPE_COMPILER
 		["arch_context_make_flat_i1"] = <"Generated differential archetype from specialised flat archetype">
 		["compiler_status"] = <"=============== $1 ===============">
@@ -48,8 +53,6 @@ templates = <
 		-- ARCHETYPE_VALIDATOR
 		["validate_e1"] = <"specialisation parent is missing">
 		["validate_e3"] = <"archetype id in descriptor $1 does not match id at top of file $2">
-		["validation_strict"] = <"Validation level STRICT">
-		["validation_non_strict"] = <"Validation level NON-STRICT; non-conforming existence, occurrences & cardinality will be removed">
 
 		-- ARCH_CAT_ARCHETYPE
 		["clean_generated_file"] = <"Removing generated file $1">

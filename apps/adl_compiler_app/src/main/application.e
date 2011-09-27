@@ -27,9 +27,11 @@ feature -- Initialization
 			new_prof: STRING
 		do
 			app_root.initialise
-			print ("Config file path: " + app_root.user_config_file_path + "%N")
-			if app_root.initialised then
-				print ("APP_ROOT initialisation succeeded; repository profiles available:%N")
+			print (billboard.content)
+			if not billboard.has_errors then
+				billboard.clear
+				print ("Config file path: " + app_root.user_config_file_path + "%N")
+				print ("Repository profiles available:%N")
 				rep_profiles := app_root.repository_profiles
 				if not rep_profiles.is_empty then
 					from rep_profiles.start until rep_profiles.off loop
@@ -56,7 +58,7 @@ feature -- Initialization
 					print ("No repository profiles found; add entries to .cfg file for current_repository_profile and [profiles] section%N")
 				end
 			else
-				print ("APP_ROOT initialisation failed%N")
+				print ("Exiting....APP_ROOT initialisation completed with errors%N")
 			end
 		end
 

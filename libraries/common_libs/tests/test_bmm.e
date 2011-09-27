@@ -42,7 +42,6 @@ feature {NONE} -- Events
 			-- <Precursor>
 		do
 			app_root.initialise
-			assert ("app_root initialisation failed", app_root.initialised)
 			assert ("No RM schemas", rm_schemas_access.found_valid_schemas)
 			rm_schema := rm_schemas_access.schema_for_model ("openehr-ehr")
 		end

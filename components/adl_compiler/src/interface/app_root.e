@@ -110,15 +110,8 @@ feature -- Initialisation
 					repository_profiles.start
 					set_current_profile (repository_profiles.key_for_iteration)
 				end
-
-				initialised := True
 			end
 		end
-
-feature -- Status Report
-
-	initialised: BOOLEAN
-			-- True after successful initialisation
 
 feature {NONE} -- Implementation
 

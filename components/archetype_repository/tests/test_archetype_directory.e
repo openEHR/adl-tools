@@ -41,7 +41,6 @@ feature {NONE} -- Events
 			application_developer_name.make_from_string ("openEHR")
 			app_cfg.make (user_config_file_path)
 			app_root.initialise
-			assert ("app_root initialisation failed", app_root.initialised)
 
 			if repository_profiles.has_profile ("Test") then
 				set_current_profile ("Test")
