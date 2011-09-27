@@ -15,9 +15,6 @@ class SHARED_APP_RESOURCES
 
 inherit
 	SHARED_APP_CONFIG_FILE_ACCESS
-		export
-			{NONE} all
-		end
 
 	BASIC_DEFINITIONS
 		export
