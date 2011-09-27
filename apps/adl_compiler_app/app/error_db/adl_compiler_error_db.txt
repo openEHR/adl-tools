@@ -1,0 +1,127 @@
+--
+--	component:   openEHR Archetype Project
+--	description: Error database for ADL compiler
+--				 
+--	keywords:    ADL
+--	author:      Thomas Beale
+--	support:     Ocean Informatics <support@OceanInformatics.com>
+--	copyright:   Copyright (c) 2011 Ocean Informatics Pty Ltd"
+--	license:     See notice at bottom of class
+--
+--	file:        $URL$
+--	revision:    $LastChangedRevision$
+--	last_change: $LastChangedDate$
+--
+
+templates = <
+	["en"] = <
+		-- ARCHETYPE_COMPILER
+		["arch_context_make_flat_i1"] = <"Generated differential archetype from specialised flat archetype">
+		["compiler_status"] = <"=============== $1 ===============">
+		["compiler_finished_status"] = <"=============== finished $1 ===============">
+
+		["compiler_building_system"] = <"=============== building system ===============">
+		["compiler_finished_building_system"] = <"=============== finished building system ===============">
+
+		["compiler_rebuilding_system"] = <"=============== rebuilding system from scratch ===============">
+		["compiler_finished_rebuilding_system"] = <"=============== finished rebuilding system from scratch ===============">
+
+		["compiler_building_subtree"] = <"=============== building sub-tree ===============">
+		["compiler_finished_building_subtree"] = <"=============== finished building sub-tree ===============">
+
+		["compiler_rebuilding_subtree"] = <"=============== rebuilding sub-tree from scratch ===============">
+		["compiler_finished_rebuilding_subtree"] = <"=============== finished rebuilding sub-tree from scratch ===============">
+
+		["compiler_export_html"] = <"=============== exporting built system as HTML ===============">
+		["compiler_finished_export_html"] = <"=============== finished exporting built system as HTML ===============">
+
+		["compiler_build_and_export_html"] = <"=============== building system and exporting as HTML ===============">
+		["compiler_finished_build_and_export_html"] = <"=============== finished building system and exporting as HTML ===============">
+
+		["compiler_compiling_archetype"] = <"------------- compiling $1 ---- $2 -------------">
+		["compiler_already_attempted_failed"] = <"------------- $1 ---- $2 (already attempted - FAILED) -------------%N$2">
+		["compiler_already_attempted_validated"] = <"------------- $1 ---- $2 (already attempted - PASSED) -------------">
+		["compiler_already_attempted_validated_with_warnings"] = <"------------- $1 ---- $2 (already attempted - PASSED with warnings) -------------%N$3">
+		["compiler_unexpected_error"] = <"Location: $1">
+		["compile_exception"] = <"EXCEPTION in last operation on archetype $1; details = $2; stack = $3">
+
+		-- ARCHETYPE_VALIDATOR
+		["validate_e1"] = <"specialisation parent is missing">
+		["validate_e3"] = <"archetype id in descriptor $1 does not match id at top of file $2">
+		["validation_strict"] = <"Validation level STRICT">
+		["validation_non_strict"] = <"Validation level NON-STRICT; non-conforming existence, occurrences & cardinality will be removed">
+
+		-- ARCH_CAT_ARCHETYPE
+		["clean_generated_file"] = <"Removing generated file $1">
+		["compile_e1"] = <"specialisation parent $1 failed to validate">
+		["parse_i1"] = <"Archetype $1 --> parsed ok">
+		["parse_i2"] = <"Parsing Archetype differential file">
+		["parse_w1"] = <"Archetype $1 parent has changed from $2 to $3; refresh required (^R)">
+		["compile_legacy_i1"] = <"LEGACY Archetype $1 --> Parsed ok">
+		["parse_archetype_i2"] = <"Archetype $1 semantics VALIDATED">
+		["compile_e2"] = <"component artefact $1 failed to validate">
+
+		-- ARCHETYPE_CATALOGUE
+		["arch_dir_orphan_archetype"] = <"No parent matching $1 found for archetype $2">
+		["arch_dir_orphan_archetype_e2"] = <"No ontology node matching $1 found for archetype $2; incorrect id?">
+		["arch_dir_dup_archetype"] = <"Duplicate archetype $1">
+		["regex_e1"] = <"Invalid regular expression $1">
+
+		-- ADL_SYNTAX_CONTERTER
+		["syntax_upgraded_i1"] = <"Syntax element upgraded: --$1-- changed to --$2--">
+
+		-- ARCHETYPE_FILE_REPOSITORY_IMP
+		["invalid_filename_e1"] = <"Invalid archetype filename $1">
+		["save_as_i1"] = <"Archetype saved to $2">
+		["save_as_e1"] = <"Save-as failed; could not write to file $1">
+		["duplicate_filename"] = <"Duplicate file name or alternate version $1">
+
+		-- ARCHETYPE_ADHOC_FILE_REPOSITORY, ARCHETYPE_INDEXED_FILE_REPOSITORY
+		["pair_filename_i1"] = <"(Differential/flat pair archetype filename found $1)">
+		["parse_archetype_e5"] = <"Archetype $1 basic error in 'archetype' clause">
+		["parse_archetype_e7"] = <"Archetype $1 invalid: old-style 'draft' identifier $2">
+		["parse_archetype_e11"] = <"Archetype at $1 invalid: old-style 'draft' parent identifier $2">
+
+		-- ARCHETYPE_MINI_PARSER
+		["parse_archetype_e8"] = <"Archetype at $1 invalid identifier $2">
+		["parse_archetype_e9"] = <"Archetype at $1 invalid artefact type $2 (should be 'archetype', 'template', etc)">
+		["parse_archetype_e10"] = <"Archetype at $1 invalid parent identifier $2">
+	>
+>
+
+--|
+--| ***** BEGIN LICENSE BLOCK *****
+--| Version: MPL 1.1/GPL 2.0/LGPL 2.1
+--|
+--| The contents of this file are subject to the Mozilla Public License Version
+--| 1.1 (the 'License'); you may not use this file except in compliance with
+--| the License. You may obtain a copy of the License at
+--| http://www.mozilla.org/MPL/
+--|
+--| Software distributed under the License is distributed on an 'AS IS' basis,
+--| WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+--| for the specific language governing rights and limitations under the
+--| License.
+--|
+--| The Original Code is adl_app_error_db.txt
+--|
+--| The Initial Developer of the Original Code is Thomas Beale.
+--| Portions created by the Initial Developer are Copyright (C) 2010
+--| the Initial Developer. All Rights Reserved.
+--|
+--| Contributor(s):
+--|
+--| Alternatively, the contents of this file may be used under the terms of
+--| either the GNU General Public License Version 2 or later (the 'GPL'), or
+--| the GNU Lesser General Public License Version 2.1 or later (the 'LGPL'),
+--| in which case the provisions of the GPL or the LGPL are applicable instead
+--| of those above. If you wish to allow use of your version of this file only
+--| under the terms of either the GPL or the LGPL, and not to allow others to
+--| use your version of this file under the terms of the MPL, indicate your
+--| decision by deleting the provisions above and replace them with the notice
+--| and other provisions required by the GPL or the LGPL. If you do not delete
+--| the provisions above, a recipient may use your version of this file under
+--| the terms of any one of the MPL, the GPL or the LGPL.
+--|
+--| ***** END LICENSE BLOCK *****
+--|
