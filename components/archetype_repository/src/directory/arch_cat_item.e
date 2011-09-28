@@ -90,49 +90,13 @@ feature -- Access
 			Result.append (name)
 		end
 
-	subtree_artefact_counts: HASH_TABLE [INTEGER, INTEGER]
-			-- stored counter of archetype child objects, keyed by artefact type,
-			-- i.e. archetype & template counts stored separately
-		local
-			atf_types: ARRAYED_LIST [INTEGER]
-		do
-			if subtree_artefact_counts_cache = Void then
-				-- create empty set of counters
-				create subtree_artefact_counts_cache.make(0)
-				atf_types := (create {ARTEFACT_TYPE}).types.linear_representation
-				from atf_types.start until atf_types.off loop
-					subtree_artefact_counts_cache.put (0, atf_types.item)
-					atf_types.forth
-				end
-
-				-- aggregate child counts and local count
-				if has_children then
-					from children.start until children.off loop
-						-- the following is technically naughty, since it creates a dependency on a descendant type, but
-						-- the code reduction seems worth it
-						from subtree_artefact_counts_cache.start until subtree_artefact_counts_cache.off loop
-							subtree_artefact_counts_cache.replace (subtree_artefact_counts_cache.item_for_iteration +
-																	children.item.subtree_artefact_counts.item(subtree_artefact_counts_cache.key_for_iteration),
-																	subtree_artefact_counts_cache.key_for_iteration)
-							subtree_artefact_counts_cache.forth
-						end
-						if attached {ARCH_CAT_ARCHETYPE} children.item as ara then
-							subtree_artefact_counts_cache.replace(subtree_artefact_counts_cache.item(ara.artefact_type) + 1, ara.artefact_type)
-						end
-						children.forth
-					end
-				end
-			end
-			Result := subtree_artefact_counts_cache
-		end
-
-   	sub_tree_artefact_count (artefact_types: attached ARRAY [INTEGER]): INTEGER
+   	subtree_artefact_count (artefact_types: attached ARRAY [INTEGER]): INTEGER
    			-- number of artefacts below this node of the types mentioned in `artefact_types'
    		local
 			i: INTEGER
 		do
  			from i := artefact_types.lower until i > artefact_types.upper loop
- 				Result := Result + subtree_artefact_counts.item(artefact_types[i])
+ 				Result := Result + subtree_artefact_counts.item (artefact_types[i])
  				i := i + 1
  			end
 		end
@@ -225,6 +189,7 @@ feature {ARCHETYPE_CATALOGUE} -- Modification
 			end
 			children.extend (a_child)
 			a_child.set_parent (Current)
+			reset_subtree_artefact_count
 		end
 
 	remove_child (a_child: attached like child_type)
@@ -232,6 +197,7 @@ feature {ARCHETYPE_CATALOGUE} -- Modification
 			has_child (a_child)
 		do
 			children.prune (a_child)
+			reset_subtree_artefact_count
 		end
 
 feature {ARCH_CAT_ITEM} -- Modification
@@ -260,9 +226,56 @@ feature {ARCH_CAT_ITEM, ARCHETYPE_CATALOGUE} -- Implementation
 	parent: ARCH_CAT_ITEM
 			-- parent node
 
+	subtree_artefact_counts: HASH_TABLE [INTEGER, INTEGER]
+			-- counter of archetype child objects, keyed by artefact type,
+			-- i.e. archetype & template counts stored separately
+		local
+			atf_types: ARRAYED_LIST [INTEGER]
+		do
+			if subtree_artefact_counts_cache = Void then
+				-- create empty set of counters
+				create subtree_artefact_counts_cache.make(0)
+				atf_types := (create {ARTEFACT_TYPE}).types.linear_representation
+				from atf_types.start until atf_types.off loop
+					subtree_artefact_counts_cache.put (0, atf_types.item)
+					atf_types.forth
+				end
+
+				-- aggregate child counts and local count
+				if has_children then
+					from children.start until children.off loop
+						-- the following is technically naughty, since it creates a dependency on a descendant type, but
+						-- the code reduction seems worth it
+						from subtree_artefact_counts_cache.start until subtree_artefact_counts_cache.off loop
+							subtree_artefact_counts_cache.replace (subtree_artefact_counts_cache.item_for_iteration +
+																	children.item.subtree_artefact_counts.item (subtree_artefact_counts_cache.key_for_iteration),
+																	subtree_artefact_counts_cache.key_for_iteration)
+							subtree_artefact_counts_cache.forth
+						end
+						if attached {ARCH_CAT_ARCHETYPE} children.item as ara then
+							subtree_artefact_counts_cache.replace (subtree_artefact_counts_cache.item (ara.artefact_type) + 1, ara.artefact_type)
+						end
+						children.forth
+					end
+				end
+			end
+			Result := subtree_artefact_counts_cache
+		end
+
 	subtree_artefact_counts_cache: HASH_TABLE [INTEGER, INTEGER]
 			-- stored counter of archetype child objects, keyed by artefact type,
 			-- i.e. archetype & template counts stored separately
+
+	reset_subtree_artefact_count
+		local
+			csr: ARCH_CAT_ITEM
+		do
+			subtree_artefact_counts_cache := Void
+			from csr := parent until csr = Void loop
+				csr.reset_subtree_artefact_count
+				csr := csr.parent
+			end
+		end
 
 end
 

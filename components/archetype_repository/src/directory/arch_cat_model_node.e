@@ -46,12 +46,12 @@ feature -- Initialisation
 			a_model_name_valid: not a_model_name.is_empty
 		do
 			make
-			qualified_name := a_bmm_schema.model_publisher + section_separator.out + a_model_name
+			bmm_schema := a_bmm_schema
+			qualified_name := bmm_schema.model_publisher + section_separator.out + a_model_name
 			qualified_key := qualified_name.as_upper
 			name := a_model_name
 			group_name := "model_group"
 			is_model_group := True
-			bmm_schema := a_bmm_schema
 		ensure
 			ontological_name_set: qualified_name.is_equal (a_bmm_schema.model_publisher + section_separator.out + a_model_name)
 			display_name_set: name = a_model_name

@@ -461,31 +461,31 @@ feature -- Modification
 			path_valid: adhoc_path_valid (full_path)
 		local
 			parent_key, child_key: STRING
-			ara: ARCH_CAT_ARCHETYPE
+			aca: ARCH_CAT_ARCHETYPE
 		do
 			if ontology_index.is_empty then
 				clone_ontology_prototype
 			end
 
 			source_repositories.adhoc_source_repository.add_item (full_path)
-			ara := source_repositories.adhoc_source_repository.item(full_path)
+			aca := source_repositories.adhoc_source_repository.item (full_path)
 			if source_repositories.adhoc_source_repository.has_path (full_path) then
-				parent_key := ara.ontological_parent_name
+				parent_key := aca.ontological_parent_name.as_upper
 				if ontology_index.has (parent_key) then
-					child_key := ara.id.as_string
-					if not ontology_index.has(child_key) then
-						ontology_index.item (parent_key).put_child(ara)
-						ontology_index.force (ara, child_key)
-						archetype_index.force (ara, child_key)
-						update_basic_statistics(ara)
+					child_key := aca.qualified_key
+					if not ontology_index.has (child_key) then
+						ontology_index.item (parent_key).put_child(aca)
+						ontology_index.force (aca, child_key)
+						archetype_index.force (aca, child_key)
+						update_basic_statistics (aca)
 						set_selected_item (source_repositories.adhoc_source_repository.item (full_path))
 					else
 						post_error (Current, "add_adhoc_item", "arch_dir_dup_archetype", <<full_path>>)
 					end
-				elseif ara.is_specialised then
+				elseif aca.is_specialised then
 					post_error (Current, "add_adhoc_item", "arch_dir_orphan_archetype", <<parent_key, child_key>>)
 				else
-					post_error (Current, "add_adhoc_item", "arch_dir_orphan_archetype2", <<parent_key, child_key>>)
+					post_error (Current, "add_adhoc_item", "arch_dir_orphan_archetype_e2", <<parent_key, child_key>>)
 				end
 			else
 				post_error (Current, "add_adhoc_item", "invalid_filename_e1", <<full_path>>)
@@ -685,7 +685,7 @@ feature {NONE} -- Implementation
 		end
 
 	add_child_nodes (a_model: STRING; class_list: ARRAYED_LIST [BMM_CLASS_DEFINITION]; a_parent_node: ARCH_CAT_MODEL_NODE)
-			-- populate child nodes of a node in directory with immediate descendants of `a_class'
+			-- populate child nodes of a node in catalogue with immediate descendants of `a_class'
 			-- put each node into `ontology_index', keyed by a_package + '-' + `a_class',
 			-- which will match with corresponding part of archetype identifier
 		local

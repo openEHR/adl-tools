@@ -103,7 +103,7 @@ feature {NONE} -- Implementation
    		local
 			ev_node: EV_TREE_ITEM
 		do
-			if not aci.is_root and (aci.sub_tree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
+			if not aci.is_root and (aci.subtree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
 								(attached {ARCH_CAT_ARCHETYPE} aci as aca and then artefact_types.has(aca.artefact_type))) then
 				create ev_node
 	 			ev_node.set_data (aci)
@@ -134,7 +134,7 @@ feature {NONE} -- Implementation
 
    	ev_tree_node_populate_exit (aci: attached ARCH_CAT_ITEM)
    		do
-			if not aci.is_root and (aci.sub_tree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
+			if not aci.is_root and (aci.subtree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
 				(attached {ARCH_CAT_ARCHETYPE} aci as aca and then artefact_types.has (aca.artefact_type)))
 			then
 				ev_tree_item_stack.remove
@@ -176,14 +176,15 @@ feature {NONE} -- Implementation
 	 			elseif attached {ARCH_CAT_MODEL_NODE} aci as acmn then -- it is a model node
 					if acmn.is_class then
 						pixmap := object_node_pixmap (acmn)
-			 	 		tooltip := acmn.class_definition.description
+			 	 		tooltip := acmn.qualified_name
+			 	 		tooltip.append ("%N" + acmn.class_definition.description)
 						text.append (aci.name)
 					else
 		 				text.append (acmn.qualified_name)
 						pixmap := pixmaps [aci.group_name]
 						tooltip := "Archetype model namespace " + acmn.qualified_name + "%Nfrom schema " + acmn.bmm_schema.schema_id
 					end
-	 				text.append (" (" + acmn.sub_tree_artefact_count (artefact_types).out + ")")
+	 				text.append (" (" + acmn.subtree_artefact_count (artefact_types).out + ")")
 
 				end
 

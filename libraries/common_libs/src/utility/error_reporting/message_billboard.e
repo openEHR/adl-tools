@@ -155,7 +155,7 @@ feature {NONE} -- Implementation
 			if message_db.has_message (bb_item.message_id) then
 				err_str := message_db.create_message_content (bb_item.message_id, bb_item.args)
 			else
-				err_str := message_db.create_message_content ("message_code_error", Void)
+				err_str := message_db.create_message_content ("message_code_error", <<bb_item.message_id, bb_item.type_name, bb_item.routine_name>>)
 			end
 			Result.append (leader)
 			Result.append (err_str)

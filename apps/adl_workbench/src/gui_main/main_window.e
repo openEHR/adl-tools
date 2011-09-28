@@ -336,8 +336,10 @@ feature -- File events
 						(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" not found.")).show_modal_to_window (Current)
 					elseif has_current_profile then
 						current_arch_cat.add_adhoc_item (fname)
-						catalogue_tool.show
-						catalogue_tool.populate
+						if not billboard.has_errors then
+							catalogue_tool.show
+							catalogue_tool.populate
+						end
 						console_tool.append_text (billboard.content)
 					end
 				else
