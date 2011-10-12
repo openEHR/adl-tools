@@ -67,7 +67,10 @@ feature -- Validation
 			-- reference model validation - needed for all archetypes, top-level and
 			-- specialised, since specialised archetypes can contain new nodes that need to be
 			-- validated all the way through to the RM
-			if passed and rm_schema.passed and not target.is_specialised then
+			-- FIXME: currently specialised archetypes are not RM_validated because the RM-validation
+			-- logic needs to be fixed for them; to see how, change the following line back to just
+			-- 'if passed' and see the result
+			if passed and not target.is_specialised then
 				validate_reference_model
 			end
 
@@ -529,8 +532,6 @@ end
 
 	validate_reference_model
 			-- validate definition of archetype against reference model
-		require
-			rm_schema.passed
 		local
 			def_it: C_ITERATOR
 		do

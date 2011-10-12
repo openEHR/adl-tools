@@ -38,37 +38,44 @@ feature -- Access
 	errors: attached ERROR_ACCUMULATOR
 			-- error output of validator - things that must be corrected
 
+feature -- Status Report
+
+	has_error (a_code: STRING): BOOLEAN
+		do
+			Result := errors.has_error (a_code)
+		end
+
 feature -- Modification
 
-	add_error(a_key: STRING; args: ARRAY [STRING])
+	add_error (a_key: STRING; args: ARRAY [STRING])
 			-- append an error with key `a_key' and `args' array to the `errors' string
 		do
-			add_error_with_location(a_key, args, "")
+			add_error_with_location (a_key, args, "")
 		end
 
-	add_warning(a_key: STRING; args: ARRAY [STRING])
+	add_warning (a_key: STRING; args: ARRAY [STRING])
 			-- append a warning with key `a_key' and `args' array to the `warnings' string
 		do
-			add_warning_with_location(a_key, args, "")
+			add_warning_with_location (a_key, args, "")
 		end
 
-	add_info(a_key: STRING; args: ARRAY [STRING])
+	add_info (a_key: STRING; args: ARRAY [STRING])
 			-- append an information message with key `a_key' and `args' array to the `information' string
 		do
-			add_info_with_location(a_key, args, "")
+			add_info_with_location (a_key, args, "")
 		end
 
-	add_error_with_location(a_key: STRING; args: ARRAY [STRING]; a_location: STRING)
+	add_error_with_location (a_key: STRING; args: ARRAY [STRING]; a_location: STRING)
 			-- append an error with key `a_key' and `args' array to the `errors' string
 		do
-			errors.extend(create {ERROR_DESCRIPTOR}.make_error(a_key, create_message_content(a_key, args), a_location))
+			errors.extend (create {ERROR_DESCRIPTOR}.make_error (a_key, create_message_content(a_key, args), a_location))
 			passed := False
 		end
 
-	add_warning_with_location(a_key: STRING; args: ARRAY [STRING]; a_location: STRING)
+	add_warning_with_location (a_key: STRING; args: ARRAY [STRING]; a_location: STRING)
 			-- append a warning with key `a_key' and `args' array to the `warnings' string
 		do
-			errors.extend(create {ERROR_DESCRIPTOR}.make_warning(a_key, create_message_content(a_key, args), a_location))
+			errors.extend (create {ERROR_DESCRIPTOR}.make_warning (a_key, create_message_content(a_key, args), a_location))
 		end
 
 	add_info_with_location(a_key: STRING; args: ARRAY [STRING]; a_location: STRING)

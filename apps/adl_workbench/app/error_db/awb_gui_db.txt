@@ -51,6 +51,7 @@ templates = <
 		-- GUI_CATALOGUE_TOOL
 		["catalogue_archetype_tab_text"] = <"Archetypes">
 		["catalogue_template_tab_text"] = <"Templates">
+		["catalogue_tool_title"] = <"Repository">
 
 
 		-- GUI_SOT_MAP_CONTROL
@@ -79,7 +80,7 @@ templates = <
 		["display_rm_class_names_button_text"] = <"Technical">
 		["display_rm_class_names_tooltip"] = <"Display RM class names and attribute details of archetyped nodes">
 
-		["show_rm_properties_button_text"] = <"Show RM properties">
+		["show_rm_properties_button_text"] = <"RM properties">
 		["show_rm_properties_tooltip"] = <"Show non-archetyped RM properties">
 
 		["closure_depth_spin_button_text"] = <"Depth">
@@ -88,7 +89,7 @@ templates = <
 		["closure_depth_recompute_button_text"] = <"Recompute">
 		["closure_depth_recompute_button_tooltip"] = <"Recompute with new depth">
 
-		["use_rm_icons_button_text"] = <"Use RM icons">
+		["use_rm_icons_button_text"] = <"RM icons">
 		["use_rm_icons_button_tooltip"] = <"Use RM-specific icons">
 
 		["rm_visibility_controls_text"] = <"Viewing mode">
@@ -123,7 +124,8 @@ templates = <
 		["serialised_tab_text"] = <"Serialised">
 
 		["properties_tab_text"] = <"Properties">
-		["inheritance_tab_text"] = <"Inheritance">
+		["ancestors_tab_text"] = <"Ancestors">
+		["descendants_tab_text"] = <"Descendants">
 
 		["serialise_frame_text"] = <"Output Format">
 

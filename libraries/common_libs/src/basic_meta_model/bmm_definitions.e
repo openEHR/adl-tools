@@ -14,6 +14,13 @@ note
 
 class BMM_DEFINITIONS
 
+feature -- Software-dependent definitions
+
+	Bmm_internal_version: STRING = "2.0"
+			-- current notional version of the BMM_SCHEMA class model used in this software; used for
+			-- comparison with the BMM version recorded in schema files. If no bmm_version attribute is
+			-- found, the `Assumed_bmm_version' is used.
+
 feature -- Definitions
 
 	Section_separator: CHARACTER = '-'
@@ -34,7 +41,7 @@ feature -- Definitions
 
 	Unknown_package_name: STRING = "unknown_package"
 
-	Any_type: STRING = "ANY"
+	Any_type: STRING = "Any"
 
 	Type_cat_concrete_class: STRING = "class_concrete"
 	Type_cat_concrete_class_supertype: STRING = "class_concrete_supertype"
@@ -54,29 +61,33 @@ feature -- Definitions
 
 	Schema_file_extension: STRING = ".bmm"
 
+	Metadata_bmm_version: STRING = "bmm_version"
+			-- dADL attribute name of logical attribute 'bmm_version' in schema file;
+			-- MUST correspond to attribute of same name in P_BMM_SCHEMA class
+
 	Metadata_model_publisher: STRING = "model_publisher"
 			-- dADL attribute name of logical attribute 'model_publisher' in schema file;
-			-- MUST correspond to attribute of same name in BMM_SCHEMA class
+			-- MUST correspond to attribute of same name in P_BMM_SCHEMA class
 
 	metadata_schema_name: STRING = "schema_name"
 			-- dADL attribute name of logical attribute 'schema_name' in schema file;
-			-- MUST correspond to attribute of same name in BMM_SCHEMA class
+			-- MUST correspond to attribute of same name in P_BMM_SCHEMA class
 
 	Metadata_model_release: STRING = "model_release"
 			-- dADL attribute name of logical attribute 'model_release' in schema file;
-			-- MUST correspond to attribute of same name in BMM_SCHEMA class
+			-- MUST correspond to attribute of same name in P_BMM_SCHEMA class
 
 	Metadata_schema_revision: STRING = "schema_revision"
 			-- dADL attribute name of logical attribute 'schema_revision' in schema file;
-			-- MUST correspond to attribute of same name in BMM_SCHEMA class
+			-- MUST correspond to attribute of same name in P_BMM_SCHEMA class
 
 	Metadata_schema_lifecycle_state: STRING = "schema_lifecycle_state"
 			-- dADL attribute name of logical attribute 'schema_lifecycle_state' in schema file;
-			-- MUST correspond to attribute of same name in BMM_SCHEMA class
+			-- MUST correspond to attribute of same name in P_BMM_SCHEMA class
 
 	Metadata_schema_description: STRING = "schema_description"
 			-- dADL attribute name of logical attribute 'schema_description' in schema file;
-			-- MUST correspond to attribute of same name in BMM_SCHEMA class
+			-- MUST correspond to attribute of same name in P_BMM_SCHEMA class
 
 	Metadata_schema_path: STRING = "schema_path"
 			-- path of schema file
@@ -84,8 +95,11 @@ feature -- Definitions
 	Schema_fast_parse_attrs: ARRAY [STRING]
 			-- attributes to retrieve for initial fast parse on schemas
 		once
-			Result := <<Metadata_schema_revision, Metadata_schema_lifecycle_state, Metadata_model_publisher, metadata_schema_name, Metadata_model_release>>
+			Result := <<Metadata_bmm_version, Metadata_schema_revision, Metadata_schema_lifecycle_state, Metadata_model_publisher, metadata_schema_name, Metadata_model_release>>
 		end
+
+	Assumed_bmm_version: STRING = "1.0"
+			-- version of BMM to assume for a schema that doesn't have the bmm_version attribute
 
 feature -- Comparison
 
@@ -111,6 +125,16 @@ feature -- Comparison
 			Valid_type_name: is_well_formed_class_name(a_type_name)
 		do
 			Result := a_type_name.has (generic_left_delim)
+		end
+
+	bmm_version_compatible (schema_bmm_ver: STRING): BOOLEAN
+			-- is the software version of the BMM (defined by the constant `Bmm_version', above)
+			-- compatible with that found in the schema?
+			-- Returns True if the two versions have the same major version number
+		require
+			Well_formed_version: schema_bmm_ver.occurrences ('.') = 1
+		do
+			Result := schema_bmm_ver.substring (1, schema_bmm_ver.index_of ('.', 1)-1).is_equal (Bmm_internal_version.substring (1, Bmm_internal_version.index_of ('.', 1)-1))
 		end
 
 feature -- Conversion
@@ -185,6 +209,7 @@ feature -- Conversion
 			lpos, rpos: INTEGER
 		do
 			create Result.make(0)
+			Result.compare_objects
 			stype := a_type_name.twin
 			stype.prune_all (' ')
 			if stype.has (generic_left_delim) then
@@ -193,17 +218,19 @@ feature -- Conversion
 			else
 				rpos := stype.count
 			end
-			Result.extend(a_type_name.substring(1, rpos))
+			Result.extend (a_type_name.substring(1, rpos))
 
 			if is_gen_type then
 				stype.replace_substring_all (generic_left_delim.out, Generic_separator.out)
 				stype.replace_substring_all (generic_right_delim.out, Generic_separator.out)
 				from lpos := rpos + 2 until lpos > stype.count loop
 					rpos := stype.index_of (Generic_separator, lpos) - 1
-					Result.extend(stype.substring (lpos, rpos))
+					Result.extend (stype.substring (lpos, rpos))
 					lpos := rpos + 2
 				end
 			end
+		ensure
+			Result.object_comparison
 		end
 
 	type_name_root_type (a_type_name: attached STRING): attached STRING
@@ -241,6 +268,8 @@ feature -- Conversion
 			else
 				Result := a_type_name.as_upper
 			end
+		ensure
+			Upper_case: Result ~ Result.as_upper
 		end
 
 feature {NONE} -- Implementation
@@ -256,6 +285,13 @@ feature {NONE} -- Implementation
 		once
 			create Result.compile_case_insensitive ("[a-z][a-z0-9_]+")
 		end
+
+--	Any_class_cell: BMM_CLASS_DEFINITION
+--			-- assumed ultimate ancestor class; can be replaced by
+--		once
+--			create Result.make (Any_type, True)
+--			Result.set_description ("System default ancestor class")
+--		end
 
 end
 

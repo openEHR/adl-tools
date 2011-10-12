@@ -71,7 +71,7 @@ feature -- Initialisation
 			name := class_definition.name
 			group_name := class_definition.type_category
 		ensure
-			ontological_name_set: qualified_name.is_equal (bmm_schema.model_publisher + section_separator.out + a_model_name + section_separator.out +  class_definition.name)
+			qualified_name_set: qualified_name.is_equal (bmm_schema.model_publisher + section_separator.out + a_model_name + section_separator.out +  class_definition.name)
 			display_name_set: name = class_definition.name
 		end
 

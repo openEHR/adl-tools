@@ -18,13 +18,21 @@ class
 	PROFILE_EDIT_DIALOG
 
 inherit
-	PROFILE_EDIT_DIALOG_IMP
+	EV_DIALOG
+		redefine
+			initialize, is_in_default_state
+		end
 
 	GUI_UTILITIES
 		export
 			{NONE} all
 		undefine
 			copy, default_create
+		end
+
+	GUI_DEFINITIONS
+		undefine
+			is_equal, default_create, copy
 		end
 
 create
@@ -70,14 +78,98 @@ feature {NONE} -- Initialization
 			rep_profiles_set: rep_profiles = profiles
 		end
 
-	user_initialization
-			-- Called by `initialize'.
-			-- Any custom user initialization that
-			-- could not be performed in `initialize',
-			-- (due to regeneration of implementation class)
-			-- can be added here.
+	initialize
+			-- Initialize `Current'.
 		do
+			Precursor {EV_DIALOG}
+
+			-- create widgets
+			create ev_vbox_1
+			create profile_name_hbox
+			create ev_label_1
+			create profile_name_text
+			create ref_path_frame
+			create ev_hbox_1
+			create reference_path_text
+			create reference_path_browse_button
+			create work_path_frame
+			create ev_hbox_2
+			create work_path_text
+			create work_path_browse_button
+			create ev_hbox_3
+			create ev_cell_1
+			create ok_button
+			create cancel_button
+
+			-- connect widgets
+			extend (ev_vbox_1)
+			ev_vbox_1.extend (profile_name_hbox)
+			profile_name_hbox.extend (ev_label_1)
+			profile_name_hbox.extend (profile_name_text)
+			ev_vbox_1.extend (ref_path_frame)
+			ref_path_frame.extend (ev_hbox_1)
+			ev_hbox_1.extend (reference_path_text)
+			ev_hbox_1.extend (reference_path_browse_button)
+			ev_vbox_1.extend (work_path_frame)
+			work_path_frame.extend (ev_hbox_2)
+			ev_hbox_2.extend (work_path_text)
+			ev_hbox_2.extend (work_path_browse_button)
+			ev_vbox_1.extend (ev_hbox_3)
+			ev_hbox_3.extend (ev_cell_1)
+			ev_hbox_3.extend (ok_button)
+			ev_hbox_3.extend (cancel_button)
+
+			ev_vbox_1.set_padding (padding_width)
+			ev_vbox_1.set_border_width (border_width)
+			ev_vbox_1.disable_item_expand (profile_name_hbox)
+			ev_vbox_1.disable_item_expand (ref_path_frame)
+			ev_vbox_1.disable_item_expand (work_path_frame)
+			ev_vbox_1.disable_item_expand (ev_hbox_3)
+			profile_name_hbox.set_padding (padding_width)
+			profile_name_hbox.set_border_width (border_width)
+			profile_name_hbox.disable_item_expand (ev_label_1)
+			ev_label_1.set_text ("Profile Name:")
+			ev_label_1.set_minimum_width (90)
+			ev_label_1.align_text_right
+			ref_path_frame.set_text ("Reference Repository Path")
+			ev_hbox_1.set_padding (padding_width)
+			ev_hbox_1.set_border_width (border_width)
+			ev_hbox_1.disable_item_expand (reference_path_browse_button)
+			reference_path_text.set_minimum_width (300)
+			reference_path_browse_button.set_text ("Browse...")
+			reference_path_browse_button.set_tooltip ("Choose directory above where the archetypes are")
+			reference_path_browse_button.set_minimum_width (90)
+			reference_path_browse_button.set_minimum_height (26)
+			work_path_frame.set_text ("Working Repository Path")
+			ev_hbox_2.set_padding (padding_width)
+			ev_hbox_2.set_border_width (border_width)
+			ev_hbox_2.disable_item_expand (work_path_browse_button)
+			work_path_text.set_minimum_width (300)
+			work_path_browse_button.set_text ("Browse...")
+			work_path_browse_button.set_tooltip ("Choose directory above where the archetypes are")
+			work_path_browse_button.set_minimum_width (90)
+			work_path_browse_button.set_minimum_height (26)
+			ev_hbox_3.set_padding (15)
+			ev_hbox_3.set_border_width (10)
+			ev_hbox_3.disable_item_expand (ok_button)
+			ev_hbox_3.disable_item_expand (cancel_button)
+			ok_button.set_text ("OK")
+			ok_button.set_minimum_width (100)
+			ok_button.set_minimum_height (26)
+			cancel_button.set_text ("Cancel")
+			cancel_button.set_minimum_width (100)
+			set_minimum_width (500)
+			set_minimum_height (215)
+			set_maximum_width (1000)
+			set_maximum_height (400)
+			set_title ("Edit Repository Profile")
 			set_icon_pixmap (adl_workbench_icon)
+
+				-- Connect events.
+			reference_path_browse_button.select_actions.extend (agent get_reference_repository_path)
+			work_path_browse_button.select_actions.extend (agent get_work_repository_path)
+			ok_button.select_actions.extend (agent on_ok)
+			show_actions.extend (agent on_show)
 			cancel_button.select_actions.extend (agent hide)
 			set_default_cancel_button (cancel_button)
 			set_default_push_button (ok_button)
@@ -86,11 +178,6 @@ feature {NONE} -- Initialization
 
 			-- set default values for profile name and paths; use `set_initial_values' to change
 			reference_path_text.set_text (user_config_file_directory)
-		end
-
-	user_create_interface_objects
-			-- Feature for custom user interface object creation, called at end of `create_interface_objects'.
-		do
 		end
 
 feature -- Events
@@ -228,6 +315,20 @@ feature {NONE} -- Implementation
 				def_path := work_path_text.text
 			end
 			work_path_text.set_text (get_directory (def_path, Current))
+		end
+
+	ev_vbox_1: EV_VERTICAL_BOX
+	profile_name_hbox, ev_hbox_1, ev_hbox_2, ev_hbox_3: EV_HORIZONTAL_BOX
+	ev_label_1: EV_LABEL
+	profile_name_text, reference_path_text, work_path_text: EV_TEXT_FIELD
+	ref_path_frame, work_path_frame: EV_FRAME
+	reference_path_browse_button, work_path_browse_button, ok_button, cancel_button: EV_BUTTON
+	ev_cell_1: EV_CELL
+
+	is_in_default_state: BOOLEAN
+			-- Is `Current' in its default state?
+		do
+			Result := True
 		end
 
 invariant

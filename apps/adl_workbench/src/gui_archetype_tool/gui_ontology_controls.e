@@ -20,7 +20,7 @@ inherit
 			{NONE} all
 		end
 
-	CONSTANTS
+	GUI_DEFINITIONS
 		export
 			{NONE} all
 		end

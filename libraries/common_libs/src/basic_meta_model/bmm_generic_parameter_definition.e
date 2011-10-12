@@ -19,22 +19,34 @@ class BMM_GENERIC_PARAMETER_DEFINITION
 inherit
 	BMM_TYPE_SPECIFIER
 
+create
+	make, make_constrained
+
+feature -- Initialisation
+
+	make (a_name: STRING; any_type_def: attached BMM_CLASS_DEFINITION)
+			-- any_type is a reference to the Any definition from this schema
+		do
+			name := a_name
+			any_class_definition := any_type_def
+		end
+
+	make_constrained (a_name: STRING; a_conforms_to_type: attached BMM_CLASS_DEFINITION)
+			-- any_type is a reference to the Any definition from this schema
+		do
+			name := a_name
+			conforms_to_type := a_conforms_to_type
+		end
+
 feature -- Access (attributes from schema)
 
-	name: STRING
+	name: attached STRING
 			-- name of the parameter, e.g. 'T' etc
-			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
-	conforms_to_type: STRING
-			-- optional conformance constraint
-			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
-
-feature -- Access (attributes derived in post-schema processing)
-
-	conforms_to_type_def: BMM_CLASS_DEFINITION
+	conforms_to_type: BMM_CLASS_DEFINITION
 			-- optional conformance constraint derived from `conforms_to_type'
 
-	inheritance_precursor: BMM_GENERIC_PARAMETER_DEFINITION
+	inheritance_precursor: detachable BMM_GENERIC_PARAMETER_DEFINITION
 			-- if set, is the corresponding generic parameter definition in an ancestor class
 
 feature -- Access
@@ -42,9 +54,9 @@ feature -- Access
 	flattened_conforms_to_type: detachable BMM_CLASS_DEFINITION
 			-- get any ultimate type conformance constraint on this generic parameter due to inheritance
 		do
-			if conforms_to_type_def /= Void then
-				Result := conforms_to_type_def
-			elseif inheritance_precursor /= Void then
+			if attached conforms_to_type then
+				Result := conforms_to_type
+			elseif attached inheritance_precursor then
 				Result := inheritance_precursor.flattened_conforms_to_type
 			end
 		end
@@ -75,9 +87,9 @@ feature -- Access
 	type_substitutions: ARRAYED_SET [STRING]
 		do
 			if is_constrained then
-				Result := conforms_to_type_def.type_substitutions
+				Result := conforms_to_type.type_substitutions
 			else
-				Result := bmm_schema.any_class_definition.type_substitutions
+				Result := any_class_definition.type_substitutions
 			end
 		end
 
@@ -89,21 +101,7 @@ feature -- Status Report
 	is_constrained: BOOLEAN
 			-- True if this generic parameter has a type constraint
 		do
-			Result := flattened_conforms_to_type /= Void
-		end
-
-feature -- Commands
-
-	finalise_build (a_bmmm: attached BMM_SCHEMA; a_class_def: BMM_CLASS_DEFINITION; errors: ERROR_ACCUMULATOR)
-		do
-			bmm_schema := a_bmmm
-			if attached conforms_to_type then
-				if bmm_schema.has_class_definition (conforms_to_type) then
-					conforms_to_type_def := bmm_schema.class_definition (conforms_to_type)
-				else
-					errors.add_error ("BMM_GPCT", <<bmm_schema.schema_id, a_class_def.name, name, conforms_to_type>>, Void)
-				end
-			end
+			Result := attached flattened_conforms_to_type
 		end
 
 feature -- Modification
@@ -122,16 +120,19 @@ feature -- Output
 			create Result.make(0)
 			Result.append(name)
 			if is_constrained then
-				Result.append_character(Generic_constraint_delimiter)
-				Result.append(conforms_to_type_def.as_type_string)
+				Result.append_character (Generic_constraint_delimiter)
+				Result.append (conforms_to_type.as_type_string)
 			end
 		end
 
 	as_flattened_type_string: STRING
-			-- string form of the type for matching in archetypes - i.e. ignoring container type names
 		do
 			Result := as_type_string
 		end
+
+feature {NONE} -- Implementation
+
+	any_class_definition: BMM_CLASS_DEFINITION
 
 end
 

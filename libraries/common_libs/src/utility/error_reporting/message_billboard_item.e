@@ -28,12 +28,12 @@ create
 
 feature -- Initialisation
 
-	make (a_type_name, a_routine_name: STRING; a_message_id: STRING; an_args: ARRAY[STRING]; an_error_type: INTEGER)
+	make (a_type_name, a_routine_name, a_message_id: attached STRING; an_args: detachable ARRAY[STRING]; an_error_type: INTEGER)
 		require
-			Type_name_valid: a_type_name /= Void and then not a_type_name.is_empty
-			Routine_name_valid: a_routine_name /= Void and then not a_routine_name.is_empty
-			Error_id_valid: a_message_id /= Void and then not a_message_id.is_empty
-			Error_type_valid: is_valid_error_type(an_error_type)
+			Type_name_valid: not a_type_name.is_empty
+			Routine_name_valid: not a_routine_name.is_empty
+			Error_id_valid: not a_message_id.is_empty
+			Error_type_valid: is_valid_error_type (an_error_type)
 		do
 			type_name := a_type_name
 			routine_name := a_routine_name
@@ -59,7 +59,7 @@ feature -- Access
 	error_type: INTEGER
 
 invariant
-	is_valid_error_type(error_type)
+	is_valid_error_type (error_type)
 
 end
 

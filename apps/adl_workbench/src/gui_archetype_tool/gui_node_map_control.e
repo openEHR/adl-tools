@@ -31,13 +31,17 @@ inherit
 			{NONE} all
 		end
 
-	CONSTANTS
+	GUI_DEFINITIONS
 		export
 			{NONE} all
 		end
 
 create
 	make
+
+feature -- Definitions
+
+	tree_control_panel_width: INTEGER = 100
 
 feature -- Initialisation
 
@@ -81,11 +85,11 @@ feature -- Initialisation
 			ev_root_container.set_minimum_height (160)
 			ev_root_container.disable_item_expand (ev_view_controls_vbox)
 			ev_tree.set_background_color (editable_colour)
-			ev_tree.set_minimum_width (arch_tree_min_width)
+			ev_tree.set_minimum_width (350)
 			ev_tree.set_minimum_height (60)
 
 			-- right hand side tree expand/collapse controls
-			ev_view_controls_vbox.set_minimum_width (140)
+			ev_view_controls_vbox.set_minimum_width (100)
 			ev_view_controls_vbox.set_minimum_height (170)
 			ev_view_controls_vbox.set_padding (padding_width)
 			ev_view_controls_vbox.set_border_width (border_width)
@@ -414,7 +418,7 @@ feature {NONE} -- Implementation
 					from props.start until props.off loop
 						if not c_c_o.has_attribute (props.key_for_iteration) then
 							pixmap := pixmaps.item (rm_attribute_pixmap_string (props.item_for_iteration))
-							create attr_ti.make_with_text (utf8 (props.key_for_iteration + ": " + props.item_for_iteration.type_def.as_type_string))
+							create attr_ti.make_with_text (utf8 (props.key_for_iteration + ": " + props.item_for_iteration.type.as_type_string))
 							attr_ti.set_data (props.item_for_iteration)
 							attr_ti.set_pixmap (pixmap)
 							a_tree_node.extend (attr_ti)

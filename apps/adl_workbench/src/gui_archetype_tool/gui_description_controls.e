@@ -20,13 +20,23 @@ inherit
 			{NONE} all
 		end
 
-	CONSTANTS
+	GUI_DEFINITIONS
 		export
 			{NONE} all
 		end
 
 create
 	make
+
+feature -- Definitions
+
+	min_text_height: INTEGER = 35
+
+	min_list_height: INTEGER = 50
+
+	min_entry_control_width: INTEGER = 150
+
+	desc_label_width: INTEGER = 70
 
 feature {NONE} -- Initialisation
 

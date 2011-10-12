@@ -391,14 +391,19 @@ end
 							-- Test if DT object is a multiple-valued attribute of a complex type (i.e. not a list or hash of primitive types; see below for that)
 							if a_dt_attr.is_container_type and not a_dt_attr.is_empty then
 								if is_eiffel_container_type (fld_type_id) then -- so is Eiffel object field; create container object
+									-- create a new container if there was not already one created by the make_dt call
+									if not attached field (i, Result) then
 debug ("DT")
 	io.put_string ("%T%TDT type is multiple, and Eiffel field type is container; about to call (2) new_instance_of (" + type_name_of_type (fld_type_id) + ")%N")
 end
-									a_gen_field := new_instance_of (fld_type_id)
+										a_gen_field := new_instance_of (fld_type_id)
+										set_reference_field (i, Result, a_gen_field)
 debug ("DT")
 	io.put_string ("%T%T(return)%N")
 end
-									set_reference_field (i, Result, a_gen_field)
+									else
+										a_gen_field := field (i, Result)
+									end
 
 									-- FIXME: can only deal with one generic parameter for the moment
 									populate_eif_container_from_dt (a_gen_field, a_dt_attr)
@@ -642,25 +647,28 @@ feature {NONE} -- Conversion to object
 			converting_element_types: BOOLEAN
 			dt_seq_content_type_id: INTEGER
 		do
-			if dynamic_type (dt_seq_value) = eif_fld_type then
+			-- if the DT object and the Eiffel object are of exactly the same types, then do a direct copy
+			-- unless if there is already a container object there (set up due to a call to make_dt in an enclosing object)
+			if not attached field (i, object) and dynamic_type (dt_seq_value) = eif_fld_type then
 				set_reference_field (i, object, dt_seq_value)
 			else
 debug ("DT")
 	io.put_string ("DT_OBJECT_CONVERTER.set_primitive_sequence_field: about to call new_instance_of (" +
 		type_name_of_type (eif_fld_type) + ")%N")
 end
-				set_reference_field (i, object, new_instance_of (eif_fld_type))
+				if not attached field (i, object) then
+					set_reference_field (i, object, new_instance_of (eif_fld_type))
+
+					-- if it was an arrayed_list, call its make routine to get it into a decent state
+					if attached {ARRAYED_LIST[ANY]} field (i, object) as al_field then
+						al_field.make (0)
+					else
+						-- FIXME should do something about other types
+					end
+				end
 debug ("DT")
 	io.put_string ("%T(return)%N")
 end
-
-				-- if it was an arrayed_list, call its make routine to get it into a decent state
-				if attached {ARRAYED_LIST[ANY]} field (i, object) as al_field then
-					al_field.make (0)
-				else
-					-- FIXME should do something about other types
-				end
-
 				-- now copy the values in
 				if attached {SEQUENCE[ANY]} field (i, object) as eif_seq then
 					-- check if element type in DT list conforms to that in object list; if not turn on flag to convert types

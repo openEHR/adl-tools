@@ -25,7 +25,7 @@ inherit
 			{NONE} all
 		end
 
-	CONSTANTS
+	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
 		end
@@ -60,8 +60,8 @@ feature {NONE} -- Initialisation
 			ev_root_container.extend (ev_tree)
 
 			-- visual characteristics
-			ev_tree.set_background_color (editable_colour)
-  			ev_tree.set_minimum_width (max_arch_explorer_width)
+--			ev_tree.set_background_color (editable_colour)
+  			ev_tree.set_minimum_width (180)
 
 			-- events
 --			ev_tree.focus_in_actions.extend (agent tree_item_select)
@@ -120,11 +120,19 @@ feature -- Commands
 		end
 
 	select_item (id: attached STRING)
-			-- Select `id' in the archetype catalogue and go to its node in explorer tree
+			-- show class in RM explorer and display it in a class tool
 		do
 			if ev_node_map.has (id) and ev_tree.is_displayed then
 				ev_tree.ensure_item_visible (ev_node_map.item (id))
 				ev_node_map.item (id).enable_select
+			end
+		end
+
+	show_item (id: attached STRING)
+			-- show class in RM explorer
+		do
+			if ev_node_map.has (id) and ev_tree.is_displayed then
+				ev_tree.ensure_item_visible (ev_node_map.item (id))
 			end
 		end
 
@@ -147,9 +155,9 @@ feature {NONE} -- Implementation
 
 	populate_tree
 		do
-			from rm_schemas_access.top_level_schemas.start until rm_schemas_access.top_level_schemas.off loop
-				populate_schema (rm_schemas_access.top_level_schemas.item_for_iteration.schema)
-				rm_schemas_access.top_level_schemas.forth
+			from rm_schemas_access.valid_top_level_schemas.start until rm_schemas_access.valid_top_level_schemas.off loop
+				populate_schema (rm_schemas_access.valid_top_level_schemas.item_for_iteration)
+				rm_schemas_access.valid_top_level_schemas.forth
 			end
 		end
 
@@ -171,9 +179,9 @@ feature {NONE} -- Implementation
  	 		ev_node.set_pixmap (pixmaps ["rm_schema"])
 			ev_tree.extend (ev_node)
 
- 			from a_schema.canonical_packages.start until a_schema.canonical_packages.off loop
- 				populate_packages (ev_node, a_schema.canonical_packages.item_for_iteration)
- 				a_schema.canonical_packages.forth
+ 			from a_schema.packages.start until a_schema.packages.off loop
+ 				populate_packages (ev_node, a_schema.packages.item_for_iteration)
+ 				a_schema.packages.forth
  			end
 		end
 
@@ -185,39 +193,32 @@ feature {NONE} -- Implementation
 			-- do the package
 			create ev_pkg_node.make_with_text (a_pkg.name)
  			ev_pkg_node.set_data (a_pkg)
- 	 		ev_pkg_node.set_tooltip ("Package " + a_pkg.qualified_name)
+ 	 		ev_pkg_node.set_tooltip ("Package " + a_pkg.path)
  	 		ev_pkg_node.set_pixmap (pixmaps ["file_folder_2"])
 			ev_parent_node.extend (ev_pkg_node)
 
-			ev_node_map.put (ev_pkg_node, a_pkg.globally_qualified_name)
+			ev_node_map.put (ev_pkg_node, a_pkg.globally_qualified_path)
 
 			-- do the classes
-			if a_pkg.has_classes then
-	 			from a_pkg.classes.start until a_pkg.classes.off loop
-	 				a_class_def := a_pkg.bmm_schema.class_definition (a_pkg.classes.item)
+ 			from a_pkg.classes.start until a_pkg.classes.off loop
+ 				a_class_def := a_pkg.classes.item
 
-	 				-- only do top classes in each package; if this class has an ancestor in the same package,
-	 				-- don't do this class, it will get taken care of via the parent
-					if not a_class_def.ancestor_defs.there_exists (
-						agent (anc_class_def: BMM_CLASS_DEFINITION; a_pkg_name: STRING): BOOLEAN
-							do
-								Result := anc_class_def.qualified_package_name.same_string (a_pkg_name)
-							end (?, a_pkg.qualified_name)
-						)
-					then
-		 				populate_classes (ev_pkg_node, a_class_def)
-		 			end
-	 				a_pkg.classes.forth
+ 				-- only do top classes in each package; if this class has an ancestor in the same package,
+ 				-- don't do this class, it will get taken care of via the parent
+ 				from a_class_def.ancestors.start until a_class_def.ancestors.off or a_class_def.ancestors.item_for_iteration.package = a_pkg loop
+ 					a_class_def.ancestors.forth
+ 				end
+				if a_class_def.ancestors.off then
+	 				populate_classes (ev_pkg_node, a_class_def)
 	 			end
-			end
+ 				a_pkg.classes.forth
+ 			end
 
 			-- do the child packages
-			if a_pkg.has_packages then
-	 			from a_pkg.packages.start until a_pkg.packages.off loop
-	 				populate_packages (ev_pkg_node, a_pkg.packages.item_for_iteration)
-	 				a_pkg.packages.forth
-	 			end
-			end
+ 			from a_pkg.packages.start until a_pkg.packages.off loop
+ 				populate_packages (ev_pkg_node, a_pkg.packages.item_for_iteration)
+ 				a_pkg.packages.forth
+ 			end
 		end
 
 	populate_classes (ev_package_node: EV_TREE_ITEM; a_class_def: BMM_CLASS_DEFINITION)
@@ -228,7 +229,7 @@ feature {NONE} -- Implementation
 			create ev_class_node.make_with_text (a_class_def.name)
  			ev_class_node.set_data (a_class_def)
  			type_cat := a_class_def.type_category.twin
- 			if a_class_def.override_definition then
+ 			if a_class_def.is_override then
  				type_cat.append ("_override")
  			end
 	 	 	ev_class_node.set_pixmap (pixmaps [type_cat])
@@ -238,11 +239,11 @@ feature {NONE} -- Implementation
  	 		ev_class_node.pointer_button_press_actions.force_extend (agent class_node_handler (ev_class_node, ?, ?, ?))
  	 		ev_class_node.select_actions.force_extend (agent select_class_with_delay (a_class_def))
 
-			ev_node_map.put (ev_class_node, a_class_def.globally_qualified_name)
+			ev_node_map.put (ev_class_node, a_class_def.globally_qualified_path)
 
 			-- do any descendants in same package
 			from a_class_def.immediate_descendants.start until a_class_def.immediate_descendants.off loop
-				if a_class_def.immediate_descendants.item.qualified_package_name.same_string (a_class_def.qualified_package_name) then
+				if a_class_def.immediate_descendants.item.package_path.same_string (a_class_def.package_path) then
 					populate_classes (ev_class_node, a_class_def.immediate_descendants.item)
 				end
 				a_class_def.immediate_descendants.forth
@@ -279,7 +280,7 @@ feature {NONE} -- Implementation
 					an_mi.set_pixmap (pixmaps ["class_tool_new"])
 					menu.extend (an_mi)
 
-					create an_mi.make_with_text_and_action ("Edit source schema", agent do_edit_schema (a_class_def.bmm_source_schema_id))
+					create an_mi.make_with_text_and_action ("Edit source schema", agent do_edit_schema (a_class_def.source_schema_id))
 					an_mi.set_pixmap (pixmaps ["edit"])
 					menu.extend (an_mi)
 

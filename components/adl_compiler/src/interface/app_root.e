@@ -46,6 +46,7 @@ feature -- Initialisation
 	initialise
 		local
 			dummy_error_accumulator: ERROR_ACCUMULATOR
+			strx: STRING
 		once
 			-- see DT_TYPES note above; a hack needed to make string name -> type_id work for class names
 			-- that clash with Eiffel type names
@@ -96,7 +97,7 @@ feature -- Initialisation
 					rm_schemas_access.load_schemas
 					if not rm_schemas_access.found_valid_schemas then
 						create strx.make_empty
-						rm_schemas_load_list.do_all (agent (s: STRING) do strx.append(s + ", ") end)
+						rm_schemas_load_list.do_all (agent (s: STRING; err_str: STRING) do err_str.append(s + ", ") end (?, strx))
 						strx.remove_tail (2) -- remove final ", "
 						post_warning (Current, "initialise", "model_access_e0", <<strx, rm_schema_directory>>)
 					end
@@ -105,17 +106,13 @@ feature -- Initialisation
 				end
 
 				-- adjust for repository profiles being out of sync with current profile setting (e.g. due to
-				-- manual editing of .cfg file
+				-- manual editing of .cfg file)
 				if not repository_profiles.is_empty and not repository_profiles.has_current_profile then
 					repository_profiles.start
 					set_current_profile (repository_profiles.key_for_iteration)
 				end
 			end
 		end
-
-feature {NONE} -- Implementation
-
-	strx: STRING
 
 end
 

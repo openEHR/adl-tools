@@ -2,7 +2,7 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Access to service interface to object model"
 	keywords:    "ADL, archetype, reference model"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2010-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
@@ -31,6 +31,11 @@ inherit
 			{NONE} all
 		end
 
+	EXCEPTIONS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -44,26 +49,26 @@ feature -- Initialisation
 		do
 			exception_encountered := False
 			create all_schemas.make(0)
-			create validated_schemas.make(0)
-			create top_level_schemas.make(0)
+			create candidate_schemas.make(0)
+			create valid_top_level_schemas.make(0)
 			create schema_inclusion_map.make(0)
 			create schemas_by_model.make(0)
 			create {ARRAYED_LIST[STRING]} schemas_load_list.make(0)
 			schemas_load_list.compare_objects
 		end
 
-	initialise_with_load_list (a_rm_dir: attached STRING; a_schemas_load_list: attached LIST [STRING])
+	initialise_with_load_list (an_rm_dir: attached STRING; a_schemas_load_list: attached LIST [STRING])
 			-- initialise with a specific schema load list, usually a sub-set of schemas that will be
 			-- found in the directory `a_rm_dir'
 		require
-			Rm_dir_valid: directory_exists (a_rm_dir)
+			Rm_dir_valid: directory_exists (an_rm_dir)
 		do
 			make
-			schema_directory := a_rm_dir
+			schema_directory := an_rm_dir
 			schemas_load_list.append (a_schemas_load_list)
 			load_schema_descriptors
 		ensure
-			Schemas_dir_set: schema_directory = a_rm_dir
+			Schemas_dir_set: schema_directory = an_rm_dir
 			Schemas_load_list_set: schemas_load_list.is_equal (a_schemas_load_list)
 		end
 
@@ -80,10 +85,10 @@ feature -- Access
 			-- This is the same key as BMM_SCHEMA.schema_id
 			-- Does not include schemas that failed to parse (i.e. SCHEMA_ACCESS.passed = False)
 
-	validated_schemas: HASH_TABLE [SCHEMA_DESCRIPTOR, STRING]
+	candidate_schemas: HASH_TABLE [SCHEMA_DESCRIPTOR, STRING]
 			-- includes only fully validated schemas
 
-	top_level_schemas: attached HASH_TABLE [SCHEMA_DESCRIPTOR, STRING]
+	valid_top_level_schemas: attached HASH_TABLE [BMM_SCHEMA, STRING]
 			-- top-level (root) schemas in use. Table is keyed by logical schema_name, i.e. model_publisher '_' model_name, e.g. "openehr_rm"
 			-- Schemas containing different variants of same model (i.e. model_publisher + model_name) are considered duplicates
 
@@ -92,7 +97,7 @@ feature -- Access
 		require
 			has_schema_for_model (a_qualified_model_name.as_lower)
 		do
-			Result := schemas_by_model.item (a_qualified_model_name.as_lower).schema
+			Result := schemas_by_model.item (a_qualified_model_name.as_lower)
 		end
 
 	schemas_load_list: attached LIST [STRING]
@@ -116,7 +121,7 @@ feature -- Status Report
 	found_valid_schemas: BOOLEAN
 			-- True if any Reference Model schemas were found
 		do
-			Result := exception_encountered or not top_level_schemas.is_empty
+			Result := not exception_encountered and not valid_top_level_schemas.is_empty
 		end
 
 feature -- Commands
@@ -136,17 +141,22 @@ feature -- Commands
 			model_publisher: STRING
 			qualified_model_name: STRING
 			models: HASH_TABLE [ARRAYED_LIST [STRING], STRING]
-			included_schema: BMM_SCHEMA
+			included_schema: P_BMM_SCHEMA
 			sd: SCHEMA_DESCRIPTOR
 			i: INTEGER
-			finished: BOOLEAN
-			inv_schema_names: 	ARRAYED_LIST [STRING]
+			finished, incompatible_schema_detected: BOOLEAN
 		do
 			if not exception_encountered then
 				-- populate the rm_schemas table first
-				top_level_schemas.wipe_out
+				valid_top_level_schemas.wipe_out
 				schema_inclusion_map.wipe_out
+
 				if not all_schemas.is_empty then
+					-- reset all schemas error logs
+					from all_schemas.start until all_schemas.off loop
+						all_schemas.item_for_iteration.reset
+						all_schemas.forth
+					end
 
 					-- set list of schemas to load; used later to determine what to put in `top_level_schemas'
 					if not schemas_load_list.is_empty then
@@ -164,42 +174,62 @@ feature -- Commands
 						post_warning (Current, "load_schemas", "model_access_w6", Void)
 					end
 
-					-- initial load of all schemas & populate `schema_inclusion_map'
+					-- initial load of all schemas, which populates `schema_inclusion_map';
 					from all_schemas.start until all_schemas.off loop
-						load_schema_include_closure (all_schemas.key_for_iteration)
 						if all_schemas.item_for_iteration.passed then
-							validated_schemas.put (all_schemas.item_for_iteration, all_schemas.key_for_iteration)
+							load_schema_include_closure (all_schemas.key_for_iteration)
+						else
+							post_error (Current, "load_schemas", "model_access_e12", <<all_schemas.key_for_iteration, all_schemas.item_for_iteration.errors.as_string>>)
+							if not all_schemas.item_for_iteration.is_bmm_compatible then
+								incompatible_schema_detected := True
+							end
 						end
 						all_schemas.forth
 					end
+					if incompatible_schema_detected then
+						post_error (Current, "load_schemas", "model_access_e16", <<schema_directory>>)
+					end
 
-					-- mark the top level schemas (including failed loads)
+					-- propagate errors found so far
+					-- Also here: mark the 'top-level' schemas, inferred from the inclusion maps in each schema
 					from all_schemas.start until all_schemas.off loop
-						if all_schemas.item_for_iteration.passed and not schema_inclusion_map.has (all_schemas.item_for_iteration.schema.schema_id) then
+						if not all_schemas.item_for_iteration.passed then
+							merge_validation_errors (all_schemas.item_for_iteration)
+						end
+						if not schema_inclusion_map.has (all_schemas.item_for_iteration.schema_id) then
 							all_schemas.item_for_iteration.set_top_level
 						end
 						all_schemas.forth
 					end
 
-					-- At this point, all schemas that loaded successfully are in `validated_schemas' - consists of a set of
-					-- SCHEMA_ACCESS objects each containing a BMM_SCHEMA containing only the classes defined in that
-					-- schema file. Also at this point, the `schema_inclusion_map' is populated.
-					-- Now we process the include relations, in order to add the packages and classes from included schemas to the
-					-- top-level schemas.
-					-- We iterate again repeatedly until all includes have been processed.
+					-- Copy all SCHEMA_DESCRIPTORs validated to this point to `validated_schemas'
+					-- we do this in a separate pass, because each iteration of the previous loop can result in a closure
+					-- of schemas being loaded
+					from all_schemas.start until all_schemas.off loop
+						if all_schemas.item_for_iteration.passed then
+							candidate_schemas.put (all_schemas.item_for_iteration, all_schemas.key_for_iteration)
+						end
+						if not schema_inclusion_map.has (all_schemas.item_for_iteration.schema_id) then
+							all_schemas.item_for_iteration.set_top_level
+						end
+						all_schemas.forth
+					end
+
+					-- Now we process the include relations on the P_BMM top-level schemas, creating fully populated schemas
 					from i := 1 until finished or i > Max_inclusion_depth loop
 						finished := True
 						from schema_inclusion_map.start until schema_inclusion_map.off loop
-							if validated_schemas.has (schema_inclusion_map.key_for_iteration) then
-								included_schema := validated_schemas.item (schema_inclusion_map.key_for_iteration).schema
+							if candidate_schemas.has (schema_inclusion_map.key_for_iteration) then
+								included_schema := candidate_schemas.item (schema_inclusion_map.key_for_iteration).p_schema
 								-- only process current schema if its lower level includes have already been copied into it,
 								-- or if it had no includes, since only then is it ready to be itself included in the next one up the chain
 								-- If this included schema is in this state, merge its contents into each schema that includes it
-								if included_schema.state = {BMM_SCHEMA}.State_includes_processed then
+								if included_schema.state = {P_BMM_SCHEMA}.State_includes_processed then
+									-- iterate over the schemas that include `included_schema' and process the inclusion
 									from schema_inclusion_map.item_for_iteration.start until schema_inclusion_map.item_for_iteration.off loop
-										if validated_schemas.item (schema_inclusion_map.item_for_iteration.item).schema.state /= {BMM_SCHEMA}.State_includes_processed then
-											validated_schemas.item (schema_inclusion_map.item_for_iteration.item).schema.merge_included_schema (included_schema)
-											post_info (Current, "load_schemas", "model_access_i2", <<included_schema.schema_id, validated_schemas.item (schema_inclusion_map.item_for_iteration.item).schema_id>>)
+										if candidate_schemas.item (schema_inclusion_map.item_for_iteration.item).p_schema.state = {P_BMM_SCHEMA}.State_includes_pending then
+											candidate_schemas.item (schema_inclusion_map.item_for_iteration.item).p_schema.merge (included_schema)
+											post_info (Current, "load_schemas", "model_access_i2", <<included_schema.schema_id, candidate_schemas.item (schema_inclusion_map.item_for_iteration.item).schema_id>>)
 											finished := False
 										end
 										schema_inclusion_map.item_for_iteration.forth
@@ -213,57 +243,57 @@ feature -- Commands
 						i := i + 1
 					end
 
-					-- finalise the top-level schemas on the load list (if there is one)
-					create inv_schema_names.make (0)
-					from validated_schemas.start until validated_schemas.off loop
-						sd := validated_schemas.item_for_iteration
+					-- By this point the P_BMM schemas have been merged, and the top-level P_BMM schemas can be validated
+					-- This will cause each schema to potentially create errors to do with included schemas as well as itself
+					-- These errors then need to be integrated with the original schemas, so as to be reported correctly
+					from candidate_schemas.start until candidate_schemas.off loop
+						sd := candidate_schemas.item_for_iteration
 						if sd.is_top_level and schemas_load_list.has (sd.schema_id) then
-							if sd.schema.state = {BMM_SCHEMA}.State_includes_processed then
-								sd.schema.finalise_schema
-								if sd.schema.state = {BMM_SCHEMA}.State_ready_to_validate then
-									-- validate the schema & if passed, put it into `top_level_schemas'
-									sd.validate
-									if sd.passed then
-										top_level_schemas.extend (sd, sd.schema_id)
-									else
-										inv_schema_names.extend (validated_schemas.key_for_iteration)
-										post_error (Current, "load_schemas", "model_access_e9", <<sd.schema_id, sd.errors.as_string>>)
-									end
+							if sd.passed and sd.p_schema.state = {P_BMM_SCHEMA}.State_includes_processed then
+								-- validate the schema & if passed, put it into `top_level_schemas'
+								sd.validate
+								if sd.passed then
+									sd.create_schema
+									valid_top_level_schemas.extend (sd.schema, sd.schema_id)
+								else
+									merge_validation_errors (sd)
+									post_error (Current, "load_schemas", "model_access_e9", <<sd.schema_id, sd.errors.as_string>>)
 								end
-							else
-								sd.signal_load_include_error
 							end
 						end
-						validated_schemas.forth
+						candidate_schemas.forth
 					end
-					inv_schema_names.do_all (agent (s: STRING) do validated_schemas.remove (s) end)
 				end
 
-				-- now populate the rm_schemas_by_package table
+				-- now populate the `schemas_by_model' table
 				schemas_by_model.wipe_out
-				from top_level_schemas.start until top_level_schemas.off loop
-					model_publisher := top_level_schemas.item_for_iteration.schema.model_publisher
-					models := top_level_schemas.item_for_iteration.schema.models
+				from valid_top_level_schemas.start until valid_top_level_schemas.off loop
+					model_publisher := valid_top_level_schemas.item_for_iteration.model_publisher
+					models := valid_top_level_schemas.item_for_iteration.models
 
 					-- put a ref to schema, keyed by the model_publisher-package_name key (lower-case) for later lookup by compiler
 					from models.start until models.off loop
 						qualified_model_name := publisher_qualified_library_name (model_publisher, models.key_for_iteration)
 						if not schemas_by_model.has (qualified_model_name) then
-							schemas_by_model.put (top_level_schemas.item_for_iteration, qualified_model_name)
+							schemas_by_model.put (valid_top_level_schemas.item_for_iteration, qualified_model_name)
 						else
-							post_info (Current, "load_schemas", "model_access_w3", <<qualified_model_name, schemas_by_model.item (qualified_model_name).schema.schema_id,
-								top_level_schemas.item_for_iteration.schema.schema_id>>)
+							post_info (Current, "load_schemas", "model_access_w3", <<qualified_model_name, schemas_by_model.item (qualified_model_name).schema_id,
+								valid_top_level_schemas.key_for_iteration>>)
 						end
 						models.forth
 					end
-					top_level_schemas.forth
+					valid_top_level_schemas.forth
 				end
 				load_count := load_count.item + 1
 			end
 
 		rescue
 			exception_encountered := True
-			post_error (Current, "load_schemas", "model_access_e14", Void)
+			if assertion_violation then
+				post_error (Current, "load_schemas", "model_access_e14a", <<original_class_name + "." + original_recipient_name + "%N" + exception_trace>>)
+			else
+				post_error (Current, "load_schemas", "model_access_e14", Void)
+			end
 			retry
 		end
 
@@ -275,7 +305,7 @@ feature {NONE} -- Implementation
 			-- Schemas not included by other schemas have NO ENTRY in this list
 			-- this is detected and used to populate `top_level_schemas'
 
-	schemas_by_model: attached HASH_TABLE [SCHEMA_DESCRIPTOR, STRING]
+	schemas_by_model: attached HASH_TABLE [BMM_SCHEMA, STRING]
 			-- schemas keyed by qualified package name, i.e. model_publisher '-' package_name, e.g. "openehr-ehr";
 			-- this matches the qualifide package name part of an ARCHETYPE_ID
 
@@ -343,8 +373,8 @@ feature {NONE} -- Implementation
 				all_schemas.item (a_schema_id).validate_includes (all_schemas.current_keys)
 				if all_schemas.item (a_schema_id).passed then
 					post_info (Current, "load_schema_include_closure", "model_access_i1", <<a_schema_id,
-						all_schemas.item (a_schema_id).schema.primitive_types.count.out, all_schemas.item (a_schema_id).schema.class_definitions.count.out>>)
-					includes := all_schemas.item (a_schema_id).schema.includes
+						all_schemas.item (a_schema_id).p_schema.primitive_types.count.out, all_schemas.item (a_schema_id).p_schema.class_definitions.count.out>>)
+					includes := all_schemas.item (a_schema_id).p_schema.includes
 					if not includes.is_empty then
 						from includes.start until includes.off loop
 							if not schema_inclusion_map.has (includes.item_for_iteration.id) then
@@ -363,6 +393,49 @@ feature {NONE} -- Implementation
 				end
 			else
 				post_error (Current, "load_schemas", "model_access_e8", <<a_schema_id, all_schemas.item (a_schema_id).errors.as_string>>)
+			end
+		end
+
+	merge_validation_errors (sd: SCHEMA_DESCRIPTOR)
+			-- merge all errors recorded during validation of `sd' - this includes errors that
+			-- may be for included schemas, so we use the inclusion map to mark all schemas
+			-- up the hierarchy with the knock-on effect of these errors
+		local
+			err_table: HASH_TABLE [ERROR_ACCUMULATOR, STRING]
+			error_propagated: BOOLEAN
+		do
+			err_table := sd.p_schema.schema_error_table
+			from err_table.start until err_table.off loop
+				-- merge errors into the offending schema error accumulator
+				all_schemas.item (err_table.key_for_iteration).merge_errors (err_table.item_for_iteration)
+
+				-- iterate through all schemas including err_table.key_for_iteration, except for `sd' since it will already have been marked
+				if schema_inclusion_map.has (err_table.key_for_iteration) then
+					schema_inclusion_map.item (err_table.key_for_iteration).do_all (
+						agent (an_including_schema, a_source_schema: STRING)
+							do
+								all_schemas.item (an_including_schema).add_error ("BMM_INCERR", <<an_including_schema, a_source_schema>>)
+							end (?, err_table.key_for_iteration)
+					)
+				end
+				err_table.forth
+			end
+
+			-- now propagate the errors to all schemas in the inclusion hierarchy
+			from error_propagated := True until not error_propagated loop
+				from schema_inclusion_map.start until schema_inclusion_map.off loop
+					error_propagated := False
+					if not all_schemas.item (schema_inclusion_map.key_for_iteration).passed then
+						from schema_inclusion_map.item_for_iteration.start until schema_inclusion_map.item_for_iteration.off loop
+							if all_schemas.item (schema_inclusion_map.item_for_iteration.item).passed then
+								all_schemas.item (schema_inclusion_map.item_for_iteration.item).add_error ("BMM_INCERR", <<schema_inclusion_map.item_for_iteration.item, schema_inclusion_map.key_for_iteration>>)
+								error_propagated := True
+							end
+							schema_inclusion_map.item_for_iteration.forth
+						end
+					end
+					schema_inclusion_map.forth
+				end
 			end
 		end
 

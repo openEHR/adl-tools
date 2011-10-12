@@ -6,7 +6,11 @@ note
 				 file system or a web-accessible repository. 
 				 
 				 The structure of the catalogue is a list of top-level packages, each containing
-				 an inheritance tree of first degree descendants of the LOCATABLE class.
+				 an inheritance tree of first degree descendants of a class that provides 
+				 archetyping capability, such as the openEHR class LOCATABLE or the 13606 class
+				 RECORD_COMPONENT (which class it is is marked in the .bmm schema for the relevant
+				 reference model).
+				 
 				 The contents of the structure consist of archetypes found in the reference and
 				 working repositories, and are subsequently attached into the structure.
 				 Archetypes opened adhoc are also grafted here.
@@ -14,8 +18,8 @@ note
 				 The catalogue is populated at startup, using the source repository paths stored in a
 				 configuration file or elsewhere.
 				 
-				 Archetypes can also be explicitly chosen by the user at runtime, outside of the 
-				 repositories, e.g. the user wants to look at an archetype sent to them in email and
+				 Archetypes can also be explicitly loaded by the user at runtime, outside of the 
+				 repositories, e.g. the user wants to look at an archetype sent to him in email and
 				 stored in /tmp. These archetypes are remembered on the 'adhoc_repository', and this 
 				 is also merged into the directory by 'grafting'.
 				 
@@ -26,7 +30,7 @@ note
 	keywords:    "ADL"
 	author:      "Thomas Beale"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2006-2010 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2006-2011 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -41,6 +45,8 @@ inherit
 		export
 			{NONE} all
 		end
+
+	SELECTION_HISTORY [ARCH_CAT_ITEM]
 
 	SHARED_REFERENCE_MODEL_ACCESS
 		export
@@ -97,18 +103,8 @@ feature -- Access
 			-- For class nodes, this will be model_publisher-model_name-class_name, e.g. OPENEHR-DEMOGRAPHIC-PARTY.
 			-- For archetype nodes, this will be the archetype id.
 
-	selected_item: ARCH_CAT_ITEM
-			-- The folder or archetype at `selected_node'.
-		do
-			if not selection_history.off then
-				Result := selection_history.item
-			end
-		ensure
-			consistent_with_history: attached Result implies Result = selection_history.item
-		end
-
 	selected_archetype: ARCH_CAT_ARCHETYPE
-			-- The archetype at `selected_node'.
+			-- The archetype at `selected_item'.
 		do
 			Result ?= selected_item
 		ensure
@@ -116,7 +112,7 @@ feature -- Access
 		end
 
 	selected_class: ARCH_CAT_MODEL_NODE
-			-- The model node at `selected_node'.
+			-- The model node at `selected_item'.
 		do
 			Result ?= selected_item
 			if attached Result and not Result.is_class then
@@ -164,34 +160,6 @@ feature -- Access
 			end
 		end
 
-	recently_selected_archetypes (n: INTEGER): attached ARRAYED_LIST [ARCH_CAT_ARCHETYPE]
-			-- The `n' most recently used archetypes from `selection_history', excluding duplicates.
-		require
-			positive: n > 0
-		local
-			cursor: LINKED_LIST_CURSOR [attached ARCH_CAT_ITEM]
-		do
-			create Result.make (n)
-
-			from
-				cursor := selection_history.cursor
-				selection_history.finish
-			until
-				selection_history.off or Result.full
-			loop
-				if attached {ARCH_CAT_ARCHETYPE} selection_history.item as ara then
-					if not Result.has (ara) then
-						Result.extend (ara)
-					end
-				end
-				selection_history.back
-			end
-
-			selection_history.go_to (cursor)
-		ensure
-			not_too_long: Result.count <= n
-		end
-
 feature -- Statistics
 
 	total_archetype_count: INTEGER
@@ -218,12 +186,6 @@ feature -- Statistics
 
 feature -- Status Report
 
-	has_selected_item: BOOLEAN
-			-- Has an item been selected?
-		do
-			Result := attached selected_item
-		end
-
 	has_selected_archetype: BOOLEAN
 			-- Has an archetype been selected?
 		do
@@ -242,22 +204,16 @@ feature -- Status Report
 			Result := attached selected_class
 		end
 
-	selection_history_has_previous: BOOLEAN
-			-- Can `selection_history' go back?
-		do
-			Result := not selection_history.off and not selection_history.isfirst
-		end
-
-	selection_history_has_next: BOOLEAN
-			-- Can `selection_history' go forth?
-		do
-			Result := not selection_history.off and not selection_history.islast
-		end
-
 	adhoc_path_valid (a_full_path: STRING): BOOLEAN
 			-- True if path is valid in adhoc repository
 		do
 			Result := source_repositories.adhoc_source_repository.is_valid_path (a_full_path)
+		end
+
+	item_selectable (an_item_id: STRING): BOOLEAN
+			-- True if item can be selected
+		do
+			Result := archetype_index.has (an_item_id)
 		end
 
 feature -- Commands
@@ -265,7 +221,7 @@ feature -- Commands
 	clear
 			-- reduce to initial state
 		do
-			create selection_history.make
+			clear_selection_history
 			create archetype_index.make (0)
 			create ontology_index.make (0)
 			ontology := Void
@@ -409,51 +365,12 @@ feature -- Commands
 			create terminology_bindings_info.make(0)
 		end
 
+	build_detailed_staistics
+		do
+	--		create statistics_analyser.make ()
+		end
+
 feature -- Modification
-
-	set_selected_item (an_item: attached ARCH_CAT_ITEM)
-			-- Append `an_item' to `selection_history' and select it.
-		do
-			if selected_item /= an_item then
-				if selection_history.is_empty or else selection_history.last /= an_item then
-					selection_history.extend (an_item)
-				end
-				selection_history.finish
-			end
-		ensure
-			selected_item_set: selected_item = an_item
-			history_is_last_if_value_different: old selected_item /= an_item implies selection_history.islast
-			history_extended_if_value_different_and_wasnt_last: selection_history.count = old
-				(selection_history.count + (selected_item /= an_item and (selection_history.is_empty or else selection_history.last /= an_item)).to_integer)
-		end
-
-	set_selected_item_from_id (an_item_id: STRING)
-			-- Append `an_item' to `selection_history' and select it.
-		require
-			Id_valid: archetype_index.has (an_item_id)
-		do
-			set_selected_item(archetype_index.item (an_item_id))
-		end
-
-	selection_history_back
-			-- Select the previous archetype or folder in `selection_history'.
-		require
-			history_can_go_back: selection_history_has_previous
-		do
-			selection_history.back
-		ensure
-			history_isnt_last: selection_history_has_next
-		end
-
-	selection_history_forth
-			-- Select the next archetype or folder in `selection_history'.
-		require
-			history_can_go_forth: selection_history_has_next
-		do
-			selection_history.forth
-		ensure
-			history_isnt_first: selection_history_has_previous
-		end
 
 	add_adhoc_item (full_path: attached STRING)
 			-- Add the archetype designated by `full_path' to the ad hoc repository, and graft it into `directory'.
@@ -577,9 +494,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	selection_history: attached LINKED_LIST [attached ARCH_CAT_ITEM]
-			-- The history in which archetypes and folders have been selected, from earliest to most recent.
-
 	ontology: ARCH_CAT_MODEL_NODE
 			-- The logical directory of archetypes, whose structure is derived directly from the
 			-- reference model. The structure is a list of top-level packages, each containing
@@ -610,17 +524,16 @@ feature {NONE} -- Implementation
 		do
 			create parent_model_node.make_category (Archetype_category.twin)
 			ontology_prototype.put (parent_model_node)
-			from rm_schemas_access.top_level_schemas.start until rm_schemas_access.top_level_schemas.off loop
-				bmm_schema := rm_schemas_access.top_level_schemas.item_for_iteration.schema
+			from rm_schemas_access.valid_top_level_schemas.start until rm_schemas_access.valid_top_level_schemas.off loop
+				bmm_schema := rm_schemas_access.valid_top_level_schemas.item_for_iteration
 				models := bmm_schema.models
 				from models.start until models.off loop
 					model_name := models.key_for_iteration
 					publisher_qualified_model_name := bmm_schema.model_publisher + section_separator.out + model_name
 					model_pkg_list := models.item_for_iteration
 					from model_pkg_list.start until model_pkg_list.off loop
-						pkg := bmm_schema.package_definition (model_pkg_list.item)
-						if pkg.has_classes then
-
+						pkg := bmm_schema.package_at_path (model_pkg_list.item)
+						if not pkg.classes.is_empty then
 							-- create new model node if not already in existence
 							if not parent_model_node.has_child_with_qualified_name (publisher_qualified_model_name) then
 								create model_node.make_model (model_name, bmm_schema)
@@ -632,17 +545,17 @@ feature {NONE} -- Implementation
 							create supp_list.make (0)
 							supp_list.compare_objects
 							from pkg.classes.start until pkg.classes.off loop
-								supp_list.merge (bmm_schema.class_definition (pkg.classes.item).all_suppliers)
-								supp_list.extend (pkg.classes.item)
+								supp_list.merge (pkg.classes.item.all_suppliers)
+								supp_list.extend (pkg.classes.item.name)
 								pkg.classes.forth
 							end
 
 							-- now create a list of classes inheriting from LOCATABLE that are among the suppliers of
 							-- the top-level class of the package; this gives the classes that could be archetyped in
 							-- that package
-							if bmm_schema.has_class_definition ("LOCATABLE") then
+							if bmm_schema.has_archetype_parent_class then
 								from supp_list.start until supp_list.off loop
-									if not bmm_schema.is_descendant_of (supp_list.item, "LOCATABLE") then
+									if not bmm_schema.is_descendant_of (supp_list.item, bmm_schema.archetype_parent_class) then
 										supp_list.remove
 									else
 										supp_list.forth
@@ -651,8 +564,7 @@ feature {NONE} -- Implementation
 							end
 
 							-- clean suppliers list so that only highest class in any inheritance subtree remains
-							supp_list.start
-							supp_list_copy := supp_list.duplicate (supp_list.count)
+							supp_list_copy := supp_list.deep_twin
 							from supp_list.start until supp_list.off loop
 								removed := False
 								from supp_list_copy.start until supp_list_copy.off or removed loop
@@ -680,7 +592,7 @@ feature {NONE} -- Implementation
 					end
 					models.forth
 				end
-				rm_schemas_access.top_level_schemas.forth
+				rm_schemas_access.valid_top_level_schemas.forth
 			end
 		end
 
@@ -712,10 +624,18 @@ feature {NONE} -- Implementation
 	schema_load_counter: INTEGER
 			-- track loading of schemas; when changed, re-intialise the ontology prototype
 
+	statistics_analyser: ARCHETYPE_STATISTICAL_ANALYSER
+
 	shifter: STRING
 			-- debug indenter
 		once
 			create Result.make_empty
+		end
+
+	selectable_item_by_id (an_item_id: STRING): ARCH_CAT_ITEM
+			-- obtain a selectable item via an id
+		do
+			Result := archetype_index.item (an_item_id)
 		end
 
 invariant

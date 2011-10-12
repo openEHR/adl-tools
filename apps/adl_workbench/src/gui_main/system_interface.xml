@@ -197,6 +197,7 @@
   <item type="EV_VERTICAL_BOX">
    <Internal_properties>
     <id>173</id>
+    <name>ev_root_container</name>
     <Expanded>1</Expanded>
    </Internal_properties>
    <EV_COLORIZABLE>
@@ -205,7 +206,7 @@
    </EV_SENSITIVE>
    <EV_WIDGET>
     <Minimum_width>360</Minimum_width>
-    <Minimum_height>320</Minimum_height>
+    <Minimum_height>290</Minimum_height>
    </EV_WIDGET>
    <EV_BOX>
     <Padding>
@@ -289,7 +290,7 @@ Check or uncheck to load as required.</Text>
     <EV_TOOLTIPABLE>
     </EV_TOOLTIPABLE>
     <EV_WIDGET>
-     <Minimum_height>175</Minimum_height>
+     <Minimum_height>150</Minimum_height>
     </EV_WIDGET>
     <EV_PIXMAPABLE>
     </EV_PIXMAPABLE>
@@ -2054,7 +2055,7 @@ Check or uncheck to load as required.</Text>
     <Internal_properties>
      <id>68</id>
      <name>view_menu</name>
-     <Expanded>0</Expanded>
+     <Expanded>1</Expanded>
     </Internal_properties>
     <EV_SENSITIVE>
     </EV_SENSITIVE>
@@ -2094,13 +2095,27 @@ Check or uncheck to load as required.</Text>
     <item type="EV_MENU_ITEM">
      <Internal_properties>
       <id>65</id>
-      <name>view_menu_new_tab</name>
+      <name>view_menu_new_archetype_tool</name>
       <Expanded>0</Expanded>
      </Internal_properties>
      <EV_SENSITIVE>
      </EV_SENSITIVE>
      <EV_TEXTABLE>
-      <Text>New &amp;Tab</Text>
+      <Text>New Archetype &amp;Tab</Text>
+     </EV_TEXTABLE>
+     <EV_PIXMAPABLE>
+     </EV_PIXMAPABLE>
+    </item>
+    <item type="EV_MENU_ITEM">
+     <Internal_properties>
+      <id>174</id>
+      <name>view_menu_new_class_tool</name>
+      <Expanded>0</Expanded>
+     </Internal_properties>
+     <EV_SENSITIVE>
+     </EV_SENSITIVE>
+     <EV_TEXTABLE>
+      <Text>New Class Tab</Text>
      </EV_TEXTABLE>
      <EV_PIXMAPABLE>
      </EV_PIXMAPABLE>

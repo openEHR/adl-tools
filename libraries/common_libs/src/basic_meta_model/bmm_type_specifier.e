@@ -19,12 +19,6 @@ inherit
 
 feature -- Access
 
-	bmm_schema: BMM_SCHEMA
-			-- reverse reference to final parent schema, set after load and merge of from input schemas
-
-	bmm_source_schema_id: STRING
-			-- reference to original source schema defining this class
-
 	flattened_type_list: attached ARRAYED_LIST [STRING]
 			-- completely flattened list of type names, flattening out all generic parameters
 		deferred

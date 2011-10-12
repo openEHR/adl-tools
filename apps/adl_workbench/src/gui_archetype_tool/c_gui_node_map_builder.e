@@ -220,7 +220,7 @@ feature -- Visitor
 			elseif a_node.is_prohibited then
 				gui_node_text.append (" (REMOVED) ")
 			end
-			gui_node_text.append (a_node.rm_attribute_path)
+			gui_node_text.append (utf8 (ontology.physical_to_logical_path (a_node.rm_attribute_path, language, True)))
 			if a_node.any_allowed then
 				gui_node_text.append (" matches {*}")
 			end

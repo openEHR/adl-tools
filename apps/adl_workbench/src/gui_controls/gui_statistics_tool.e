@@ -15,7 +15,7 @@ note
 class GUI_STATISTICS_TOOL
 
 inherit
-	CONSTANTS
+	GUI_DEFINITIONS
 		export
 			{NONE} all
 		end

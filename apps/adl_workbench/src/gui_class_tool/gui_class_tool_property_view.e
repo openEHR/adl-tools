@@ -29,7 +29,7 @@ inherit
 			{NONE} all
 		end
 
-	CONSTANTS
+	GUI_DEFINITIONS
 		export
 			{NONE} all
 		end
@@ -46,6 +46,8 @@ feature -- Definitions
 
 	Default_closure_depth: INTEGER = 2
 			-- default depth to explore supplier closure
+
+	tree_control_panel_width: INTEGER = 100
 
 feature -- Initialisation
 
@@ -208,7 +210,8 @@ feature -- Commands
 
  			-- populate the tree
 			populate_root_node
-			class_def.do_supplier_closure (not differential_view, ev_closure_depth_spin_button.value-1, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+			class_def.do_supplier_closure (not differential_view, ev_closure_depth_spin_button.value-1,
+					agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 
 			-- now collapse the tree, and then expand out just the top node
 			ev_property_tree.recursive_do_all (agent ev_tree_collapse)
@@ -297,8 +300,8 @@ feature {NONE} -- Implementation
 			node_path.append_segment (create {OG_PATH_ITEM}.make (prop_str))
 
 			-- determine data for property and one or more (in the case of generics with > 1 param) class nodes
-			if attached {BMM_CLASS_DEFINITION} a_prop_def.type_def as bmm_class_def then
-				if bmm_class_def.bmm_schema.is_primitive_type (bmm_class_def.name) then
+			if attached {BMM_CLASS_DEFINITION} a_prop_def.type as bmm_class_def then
+				if bmm_class_def.is_primitive_type then
 					prop_str.append (": " + bmm_class_def.name)
 					is_terminal := True
 				else
@@ -307,30 +310,30 @@ feature {NONE} -- Implementation
 				end
 				type_spec := bmm_class_def
 
-			elseif attached {BMM_CONTAINER_TYPE_REFERENCE} a_prop_def.type_def as bmm_cont_type_ref then
+			elseif attached {BMM_CONTAINER_TYPE_REFERENCE} a_prop_def.type as bmm_cont_type_ref then
 				-- assume first gen param is only type of interest
-				if bmm_cont_type_ref.bmm_schema.is_primitive_type (bmm_cont_type_ref.as_type_string) then
+				if bmm_cont_type_ref.type.is_primitive_type then
 					prop_str.append (": " + bmm_cont_type_ref.as_type_string)
 					is_terminal := True
 				else
-					prop_str.append (": " + bmm_cont_type_ref.container_type + Generic_left_delim.out + Generic_right_delim.out)
-					type_str := bmm_cont_type_ref.type
-					has_type_subs := bmm_cont_type_ref.type_def.has_type_substitutions
+					prop_str.append (": " + bmm_cont_type_ref.container_type.name + Generic_left_delim.out + Generic_right_delim.out)
+					type_str := bmm_cont_type_ref.type.name
+					has_type_subs := bmm_cont_type_ref.type.has_type_substitutions
 				end
-				type_spec := bmm_cont_type_ref.type_def
+				type_spec := bmm_cont_type_ref.type
 
-			elseif attached {BMM_GENERIC_TYPE_REFERENCE} a_prop_def.type_def as bmm_gen_type_ref then
+			elseif attached {BMM_GENERIC_TYPE_REFERENCE} a_prop_def.type as bmm_gen_type_ref then
 				type_str := bmm_gen_type_ref.as_type_string
 				has_type_subs := bmm_gen_type_ref.has_type_substitutions
-				type_spec := bmm_gen_type_ref.root_type_def
+				type_spec := bmm_gen_type_ref.root_type
 
-			elseif attached {BMM_GENERIC_PARAMETER_DEFINITION} a_prop_def.type_def as bmm_gen_parm_def then -- type is T, U etc
+			elseif attached {BMM_GENERIC_PARAMETER_DEFINITION} a_prop_def.type as bmm_gen_parm_def then -- type is T, U etc
 				type_str := bmm_gen_parm_def.name.twin
 				if bmm_gen_parm_def.is_constrained then
-					type_str.append (": " + bmm_gen_parm_def.conforms_to_type)
+					type_str.append (": " + bmm_gen_parm_def.conforms_to_type.name)
 				end
 				has_type_subs := bmm_gen_parm_def.has_type_substitutions
-				type_spec := a_prop_def.type_def
+				type_spec := a_prop_def.type
 			end
 
 			if a_prop_def.is_mandatory then
@@ -387,10 +390,11 @@ feature {NONE} -- Implementation
 			node_path.remove_last
 			ev_tree_item_stack.remove
 			if not (	-- some kind of primitive, that did not result in an object node
-				attached {BMM_CLASS_DEFINITION} a_prop_def.type_def as bmm_class_def and then
-					bmm_class_def.bmm_schema.is_primitive_type (bmm_class_def.name) or
-				attached {BMM_CONTAINER_TYPE_REFERENCE} a_prop_def.type_def as bmm_cont_type_ref and then
-					bmm_cont_type_ref.bmm_schema.is_primitive_type (bmm_cont_type_ref.as_type_string))
+				attached {BMM_CLASS_DEFINITION} a_prop_def.type as bmm_class_def and then
+					bmm_class_def.is_primitive_type or
+				attached {BMM_CONTAINER_TYPE_REFERENCE} a_prop_def.type as bmm_cont_type_ref and then
+					bmm_cont_type_ref.type.is_primitive_type
+			)
 			then
 				ev_tree_item_stack.remove
 			end
@@ -425,18 +429,17 @@ feature {NONE} -- Implementation
 		local
 			subs: ARRAYED_SET[STRING]
 			menu: EV_MENU
-			an_mi: EV_MENU_ITEM
 		do
 			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_TYPE_SPECIFIER} eti.data as bmm_type_spec then
 				create menu
 				-- add menu item for retarget tool to current node / display in new tool
 				add_class_context_menu (menu, eti)
 
-				-- if there are type substitutions available, add menu for that
+				-- if there are type substitutions available, add sub-menu for that
 				if attached {BMM_CLASS_DEFINITION} bmm_type_spec as bmm_class_def then
 					subs := bmm_class_def.type_substitutions
 				elseif attached {BMM_CONTAINER_TYPE_REFERENCE} bmm_type_spec as bmm_cont_type_ref then
-					subs := bmm_cont_type_ref.type_def.type_substitutions
+					subs := bmm_cont_type_ref.type.type_substitutions
 				elseif attached {BMM_GENERIC_TYPE_REFERENCE} bmm_type_spec as bmm_gen_type_ref then
 					subs := bmm_gen_type_ref.type_substitutions
 				elseif attached {BMM_GENERIC_PARAMETER_DEFINITION} bmm_type_spec as bmm_gen_parm_def then -- type is T, U etc
@@ -457,7 +460,7 @@ feature {NONE} -- Implementation
 		do
 			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_PROPERTY_DEFINITION} eti.data as bmm_pd and then not bmm_pd.is_mandatory then
 				create menu
-				create an_mi.make_with_text_and_action ("remove", agent remove_optional_attribute (eti))
+				create an_mi.make_with_text_and_action ("Remove", agent remove_optional_attribute (eti))
 				menu.extend (an_mi)
 				menu.show
 			end
@@ -465,9 +468,6 @@ feature {NONE} -- Implementation
 
 	attribute_node_expand_handler (eti: EV_TREE_ITEM)
 			-- creates the context menu for a right click action for class node
-		local
-			menu: EV_MENU
-			an_mi: EV_MENU_ITEM
 		do
 			from eti.start until eti.off loop
 				if eti.item.is_empty and attached {EV_TREE_ITEM} eti.item as a_ti and then attached {BMM_TYPE_SPECIFIER} a_ti.data as bmm_type_spec then
@@ -487,12 +487,10 @@ feature {NONE} -- Implementation
 			create chg_sub_menu.make_with_text ("Convert this node to subtype")
 			from a_substitutions.start until a_substitutions.off loop
 				create an_mi.make_with_text_and_action (a_substitutions.item, agent rebuild_from_interior_node (a_substitutions.item, a_ti, True))
-				if attached {BMM_TYPE_SPECIFIER} a_ti.data as a_type_spec then
-					if a_type_spec.bmm_schema.class_definition (a_substitutions.item).is_abstract then
-						an_mi.set_pixmap (pixmaps ["class_abstract"])
-					else
-						an_mi.set_pixmap (pixmaps ["class_concrete"])
-					end
+				if class_def.bmm_schema.class_definition (a_substitutions.item).is_abstract then
+					an_mi.set_pixmap (pixmaps ["class_abstract"])
+				else
+					an_mi.set_pixmap (pixmaps ["class_concrete"])
 				end
 	    		chg_sub_menu.extend (an_mi)
 				a_substitutions.forth
@@ -505,12 +503,10 @@ feature {NONE} -- Implementation
 				create chg_sub_menu.make_with_text ("Add new subtype node")
 				from a_substitutions.start until a_substitutions.off loop
 					create an_mi.make_with_text_and_action (a_substitutions.item, agent rebuild_from_interior_node (a_substitutions.item, a_ti, False))
-					if attached {BMM_TYPE_SPECIFIER} a_ti.data as a_type_spec then
-						if a_type_spec.bmm_schema.class_definition (a_substitutions.item).is_abstract then
-							an_mi.set_pixmap (pixmaps ["class_abstract"])
-						else
-							an_mi.set_pixmap (pixmaps ["class_concrete"])
-						end
+					if class_def.bmm_schema.class_definition (a_substitutions.item).is_abstract then
+						an_mi.set_pixmap (pixmaps ["class_abstract"])
+					else
+						an_mi.set_pixmap (pixmaps ["class_concrete"])
 					end
 		    		chg_sub_menu.extend (an_mi)
 					a_substitutions.forth
@@ -539,19 +535,18 @@ feature {NONE} -- Implementation
 				create target_ti.default_create
 				a_ti.parent.extend (target_ti)
 				target_ti.set_data (a_ti.data)
+	 	 		target_ti.pointer_button_press_actions.force_extend (agent class_node_handler (target_ti, ?, ?, ?))
 			end
 			ev_tree_item_stack.extend (target_ti)
-			if attached {BMM_TYPE_SPECIFIER} target_ti.data as a_type_spec then
-				bmm_class_def := a_type_spec.bmm_schema.class_definition (a_class_name)
-				closure_depth := 1
-				set_class_node_details (target_ti, bmm_class_def, a_class_name, True)
-				if attached {EV_TREE_ITEM} target_ti.parent as a_parent_ti then
-					create node_path.make_from_string (a_parent_ti.tooltip)
-				end
-				do_with_wait_cursor (ev_root_container, agent bmm_class_def.do_supplier_closure (not differential_view, ev_closure_depth_spin_button.value - 1,
-					agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit))
-				ev_tree_item_expand (target_ti)
+			bmm_class_def := class_def.bmm_schema.class_definition (a_class_name)
+			closure_depth := 1
+			set_class_node_details (target_ti, bmm_class_def, a_class_name, True)
+			if attached {EV_TREE_ITEM} target_ti.parent as a_parent_ti then
+				create node_path.make_from_string (a_parent_ti.tooltip)
 			end
+			do_with_wait_cursor (ev_root_container, agent bmm_class_def.do_supplier_closure (not differential_view, ev_closure_depth_spin_button.value - 1,
+				agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit))
+			ev_tree_item_expand (target_ti)
 			ev_tree_item_stack.remove
 		end
 

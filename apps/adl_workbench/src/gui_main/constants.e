@@ -16,27 +16,38 @@ note
 	revision: "$Revision$"
 
 class
-	CONSTANTS
+	GUI_DEFINITIONS
 
 inherit
-	CONSTANTS_IMP
-		redefine
-			icons
-		end
-
 	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
-		undefine
-			copy, default_create
 		end
 
-feature -- Access
+feature -- Definitions
 
 	icons: STRING
 			-- The path to the directory containing icon files.
 		once
 			Result := application_startup_directory + os_directory_separator.out + "icons"
+		end
+
+	padding_width: INTEGER = 3
+
+	border_width: INTEGER = 4
+
+	editable_colour: EV_COLOR
+		once
+			create Result.make_with_8_bit_rgb (255, 255, 255)
+		end
+
+	screen_10_pt_regular_font: EV_FONT
+		do
+			create Result
+			Result.set_family ({EV_FONT_CONSTANTS}.Family_screen)
+			Result.set_weight ({EV_FONT_CONSTANTS}.Weight_regular)
+			Result.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
+			Result.set_height_in_points (10)
 		end
 
 end

@@ -21,7 +21,7 @@ inherit
 			{ANY} has_current_profile
 		end
 
-	CONSTANTS
+	GUI_DEFINITIONS
 		export
 			{NONE} all
 		end

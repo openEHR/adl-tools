@@ -21,29 +21,119 @@ class
 	REPOSITORY_DIALOG
 
 inherit
-	REPOSITORY_DIALOG_IMP
+	EV_DIALOG
+		redefine
+			initialize, is_in_default_state
+		end
+
+	GUI_DEFINITIONS
+		undefine
+			is_equal, default_create, copy
+		end
 
 feature {NONE} -- Initialization
 
-	user_initialization
-			-- Called by `initialize'.
-			-- Any custom user initialization that
-			-- could not be performed in `initialize',
-			-- (due to regeneration of implementation class)
-			-- can be added here.
+	initialize
+			-- Initialize `Current'.
 		do
+			Precursor {EV_DIALOG}
+
+			-- create widgets
+			create ev_vbox_1
+			create profile_frame
+			create ev_hbox_1
+			create profile_list
+			create ev_vbox_2
+			create profile_add_button
+			create profile_remove_button
+			create profile_edit_button
+			create ref_path_hbox
+			create reference_path_text
+			create work_path_hbox
+			create work_path_text
+			create ev_hbox_2
+			create ev_cell_1
+			create ok_button
+			create cancel_button
+
+			-- connect widgets
+			extend (ev_vbox_1)
+			ev_vbox_1.extend (profile_frame)
+			profile_frame.extend (ev_hbox_1)
+			ev_hbox_1.extend (profile_list)
+			ev_hbox_1.extend (ev_vbox_2)
+			ev_vbox_2.extend (profile_add_button)
+			ev_vbox_2.extend (profile_remove_button)
+			ev_vbox_2.extend (profile_edit_button)
+			ev_vbox_1.extend (ref_path_hbox)
+			ref_path_hbox.extend (reference_path_text)
+			ev_vbox_1.extend (work_path_hbox)
+			work_path_hbox.extend (work_path_text)
+			ev_vbox_1.extend (ev_hbox_2)
+			ev_hbox_2.extend (ev_cell_1)
+			ev_hbox_2.extend (ok_button)
+			ev_hbox_2.extend (cancel_button)
+
+			ev_vbox_1.set_minimum_height (220)
+			ev_vbox_1.set_padding (padding_width)
+			ev_vbox_1.set_border_width (border_width)
+			ev_vbox_1.disable_item_expand (ref_path_hbox)
+			ev_vbox_1.disable_item_expand (work_path_hbox)
+			ev_vbox_1.disable_item_expand (ev_hbox_2)
+			profile_frame.set_text ("Profiles")
+			profile_frame.set_minimum_height (120)
+			ev_hbox_1.set_minimum_height (110)
+			ev_hbox_1.set_padding (padding_width)
+			ev_hbox_1.set_border_width (border_width)
+			ev_hbox_1.disable_item_expand (ev_vbox_2)
+			profile_list.set_minimum_height (100)
+			ev_vbox_2.set_minimum_width (100)
+			ev_vbox_2.set_padding (padding_width)
+			ev_vbox_2.set_border_width (border_width)
+			ev_vbox_2.disable_item_expand (profile_add_button)
+			ev_vbox_2.disable_item_expand (profile_remove_button)
+			ev_vbox_2.disable_item_expand (profile_edit_button)
+			profile_add_button.set_text ("Add New")
+			profile_add_button.set_tooltip ("Add a new profile")
+			profile_remove_button.set_text ("Remove")
+			profile_remove_button.set_tooltip ("Remove selected profile")
+			profile_edit_button.set_text ("Edit")
+			profile_edit_button.set_tooltip ("Edit selected profile")
+			ref_path_hbox.set_text ("Reference repository")
+			reference_path_text.disable_edit
+			work_path_hbox.set_text ("Work repository")
+			work_path_text.disable_edit
+			ev_hbox_2.set_padding (15)
+			ev_hbox_2.set_border_width (border_width)
+			ev_hbox_2.disable_item_expand (ok_button)
+			ev_hbox_2.disable_item_expand (cancel_button)
+			ok_button.set_text ("OK")
+			ok_button.set_minimum_width (100)
+			ok_button.set_minimum_height (26)
+			cancel_button.set_text ("Cancel")
+			cancel_button.set_minimum_width (100)
+			cancel_button.set_minimum_height (26)
+			set_minimum_width (500)
+			set_minimum_height (280)
+			set_maximum_width (800)
+			set_maximum_height (800)
+			set_title ("ADL Workbench Repository Profile Configuration")
 			set_icon_pixmap (adl_workbench_icon)
+
+			-- Connect events.
+			profile_list.select_actions.extend (agent on_select_profile)
+			profile_add_button.select_actions.extend (agent add_new_profile)
+			profile_remove_button.select_actions.extend (agent remove_selected_profile)
+			profile_edit_button.select_actions.extend (agent edit_selected_profile)
+			ok_button.select_actions.extend (agent on_ok)
+			show_actions.extend (agent on_show)
 			cancel_button.select_actions.extend (agent hide)
 			set_default_cancel_button (cancel_button)
 			set_default_push_button (ok_button)
+
 			rep_profiles_copy := repository_profiles.deep_twin
 			selected_profile_key := rep_profiles_copy.current_profile_name
 			populate_controls
-		end
-
-	user_create_interface_objects
-			-- Feature for custom user interface object creation, called at end of `create_interface_objects'.
-		do
 		end
 
 feature {NONE} -- Events
@@ -216,6 +306,23 @@ feature {NONE} -- Implementation
 				profile_list.i_th (profile_names.index_of (selected_profile_key, 1).max (1)).enable_select
 				populate_path_controls
 			end
+		end
+
+
+	ev_vbox_1, ev_vbox_2: EV_VERTICAL_BOX
+	profile_frame, ref_path_hbox, work_path_hbox: EV_FRAME
+	ev_hbox_1,
+	ev_hbox_2: EV_HORIZONTAL_BOX
+	profile_list: EV_LIST
+	profile_add_button, profile_remove_button, profile_edit_button,
+	ok_button, cancel_button: EV_BUTTON
+	reference_path_text, work_path_text: EV_TEXT_FIELD
+	ev_cell_1: EV_CELL
+
+	is_in_default_state: BOOLEAN
+			-- Is `Current' in its default state?
+		do
+			Result := True
 		end
 
 invariant

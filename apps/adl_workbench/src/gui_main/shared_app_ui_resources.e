@@ -143,7 +143,6 @@ feature -- Access
 		require
 			has_icon_directory
 		local
-			rm_ico_file: RAW_FILE
 			pixmap: EV_PIXMAP
 			path, ico_fname: STRING
 			dir, rm_ico_dir: DIRECTORY
@@ -434,6 +433,24 @@ feature -- Application Switches
 			value_not_empty: not a_value.is_empty
 		do
 			app_cfg.put_value ("/commands/difftool_command", a_value)
+		end
+
+feature -- Conversion
+
+	object_node_pixmap (ara: ARCH_CAT_ITEM): EV_PIXMAP
+		local
+			rm_publisher: STRING
+		do
+			if attached {ARCH_CAT_MODEL_NODE} ara as acmn and then acmn.is_class then
+				rm_publisher := acmn.bmm_schema.model_publisher
+				if use_rm_pixmaps and then rm_pixmaps.has (rm_publisher) and then rm_pixmaps.item (rm_publisher).has (acmn.class_definition.name) then
+					Result := rm_pixmaps.item (rm_publisher).item (acmn.class_definition.name)
+				else
+					Result := pixmaps [ara.group_name]
+				end
+			else
+				Result := pixmaps [ara.group_name]
+			end
 		end
 
 feature {NONE} -- Implementation

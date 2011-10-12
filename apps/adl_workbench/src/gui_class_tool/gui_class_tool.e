@@ -52,7 +52,8 @@ feature -- Initialisation
 			create ev_notebook
 
 			create property_view.make (a_update_all_tools_rm_icons_setting_agent, a_select_class_agent, a_select_class_in_new_tool_agent)
-			create inheritance_view.make (a_select_class_agent, a_select_class_in_new_tool_agent)
+			create ancestors_view.make (a_select_class_agent, a_select_class_in_new_tool_agent)
+			create descendants_view.make (a_select_class_agent, a_select_class_in_new_tool_agent)
 
 			-- connect widgets
 			ev_root_container.extend (ev_action_bar)
@@ -66,7 +67,8 @@ feature -- Initialisation
 
 			-- connect widgets: sub-tools
 			ev_notebook.extend (property_view.ev_root_container)
-			ev_notebook.extend (inheritance_view.ev_root_container)
+			ev_notebook.extend (ancestors_view.ev_root_container)
+			ev_notebook.extend (descendants_view.ev_root_container)
 
 			-- visual characteristics
 			ev_root_container.disable_item_expand (ev_action_bar)
@@ -83,10 +85,13 @@ feature -- Initialisation
 
 			-- visual characteristics: notebook
 			ev_notebook.set_item_text (property_view.ev_root_container, create_message_content ("properties_tab_text", Void))
-	--		ev_notebook.item_tab (ev_property_view_hbox).set_pixmap (pixmaps ["properties"])
+			ev_notebook.item_tab (property_view.ev_root_container).set_pixmap (pixmaps ["properties"])
 
-			ev_notebook.set_item_text (inheritance_view.ev_root_container, create_message_content ("inheritance_tab_text", Void))
-	--		ev_notebook.item_tab (ev_property_view_hbox).set_pixmap (pixmaps ["descendants"])
+			ev_notebook.set_item_text (ancestors_view.ev_root_container, create_message_content ("ancestors_tab_text", Void))
+			ev_notebook.item_tab (ancestors_view.ev_root_container).set_pixmap (pixmaps ["ancestors"])
+
+			ev_notebook.set_item_text (descendants_view.ev_root_container, create_message_content ("descendants_tab_text", Void))
+			ev_notebook.item_tab (descendants_view.ev_root_container).set_pixmap (pixmaps ["descendants"])
 
 			-- set events
 			ev_differential_view_button.select_actions.extend (agent on_differential_view)
@@ -138,36 +143,31 @@ feature -- Commands
 		do
  			ev_class_id.remove_text
  			property_view.clear
- 			inheritance_view.clear
+ 			ancestors_view.clear
 		end
 
 	populate (a_class_def: attached BMM_CLASS_DEFINITION)
 			-- populate the ADL tree control by creating it from scratch
-		local
-			str: STRING
 		do
 			clear
 			class_def := a_class_def
-
- 			-- set the name in the name area
-			str := class_def.qualified_package_name.as_lower
-			str.append_character (package_name_delimiter)
-			str.append (class_def.name)
- 			ev_class_id.set_text (str)
-
+ 			ev_class_id.set_text (class_def.globally_qualified_path)
 			do_with_wait_cursor (ev_root_container, agent do_populate)
 		end
 
 	repopulate
 			-- repopulate the ADL tree control by creating it from scratch for same class
 		do
-			do_with_wait_cursor (ev_root_container, agent do_populate)
+			if attached class_def then
+				do_with_wait_cursor (ev_root_container, agent do_populate)
+			end
 		end
 
 	do_populate
 		do
 			property_view.populate (class_def, differential_view)
-			inheritance_view.populate (class_def)
+			ancestors_view.populate (class_def)
+			descendants_view.populate (class_def)
 		end
 
 	select_flat_view
@@ -198,7 +198,9 @@ feature {NONE} -- Implementation
 
 	property_view: GUI_CLASS_TOOL_PROPERTY_VIEW
 
-	inheritance_view: GUI_CLASS_TOOL_INHERITANCE_VIEW
+	ancestors_view: GUI_CLASS_TOOL_ANCESTORS_VIEW
+
+	descendants_view: GUI_CLASS_TOOL_DESCENDANTS_VIEW
 
 	ev_class_id: EV_TEXT_FIELD
 

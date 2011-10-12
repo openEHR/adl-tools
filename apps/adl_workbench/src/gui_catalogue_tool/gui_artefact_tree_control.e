@@ -20,7 +20,7 @@ inherit
 			{NONE} all
 		end
 
-	CONSTANTS
+	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
 		end
@@ -35,8 +35,8 @@ feature {NONE} -- Initialisation
 			-- connect widgets
 
 			-- visual characteristics
-			ev_root_container.set_background_color (editable_colour)
-  			ev_root_container.set_minimum_width (max_arch_explorer_width)
+--			ev_root_container.set_background_color (editable_colour)
+  			ev_root_container.set_minimum_width (180)
 		end
 
 feature -- Access
@@ -96,22 +96,6 @@ feature {NONE} -- Implementation
 			-- if this is set, it is an agent that takes one argument of a routine
 			-- to execute on all other editors, to sync them to a change in this current one
 
-	object_node_pixmap (ara: ARCH_CAT_ITEM): EV_PIXMAP
-		local
-			rm_publisher: STRING
-		do
-			if attached {ARCH_CAT_MODEL_NODE} ara as acmn and then acmn.is_class then
-				rm_publisher := acmn.bmm_schema.model_publisher
-				if use_rm_pixmaps and then rm_pixmaps.has (rm_publisher) and then rm_pixmaps.item (rm_publisher).has (acmn.class_definition.name) then
-					Result := rm_pixmaps.item (rm_publisher).item (acmn.class_definition.name)
-				else
-					Result := pixmaps [ara.group_name]
-				end
-			else
-				Result := pixmaps [ara.group_name]
-			end
-		end
-
 	selected_archetype_node: ARCH_CAT_ARCHETYPE
 
 	select_archetype_with_delay (aca: ARCH_CAT_ARCHETYPE)
@@ -128,12 +112,12 @@ feature {NONE} -- Implementation
 		do
 			if button = {EV_POINTER_CONSTANTS}.right and attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
 				create menu
-				create an_mi.make_with_text_and_action ("Compile and Display", agent display_context_selected_archetype_in_active_tool (ev_ti))
-				an_mi.set_pixmap (pixmaps ["parse"])
+				create an_mi.make_with_text_and_action ("Display", agent display_context_selected_archetype_in_active_tool (ev_ti))
+				an_mi.set_pixmap (pixmaps ["archetype_tool"])
 		    	menu.extend (an_mi)
 
 				create an_mi.make_with_text_and_action ("Display in new tab", agent display_context_selected_archetype_in_new_tool (ev_ti))
-				an_mi.set_pixmap (pixmaps ["archetype_2"])
+				an_mi.set_pixmap (pixmaps ["archetype_tool_new"])
 				menu.extend (an_mi)
 
 				create an_mi.make_with_text_and_action ("Edit source", edit_archetype_agent)

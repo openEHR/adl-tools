@@ -50,7 +50,7 @@ inherit
 			{NONE} all
 		end
 
-	CONSTANTS
+	GUI_DEFINITIONS
 		export
 			{NONE} all
 		end
@@ -81,6 +81,8 @@ feature -- Definitions
 	Regression_fail_code: STRING = "FAIL"
 
 	Regression_pass_code: STRING = "PASS"
+
+	status_area_min_height: INTEGER = 65
 
 feature {NONE} -- Initialisation
 
@@ -136,7 +138,7 @@ feature {NONE} -- Initialisation
 			ev_root_container.extend (test_status_area)
 
 			-- set visual characteristics
-			ev_root_container.set_minimum_width (app_min_width)
+			ev_root_container.set_minimum_width (500)
 			ev_root_container.enable_item_expand (ev_test_hbox)
 			ev_root_container.disable_item_expand (test_status_area)
 			ev_test_hbox.disable_item_expand (ev_test_vbox)
@@ -601,9 +603,9 @@ feature {NONE} -- Tests
 					other_details := amp.extract_other_details (target.differential_text)
 				end
 				if other_details.has (Regression_test_key) then
-					val_code := other_details.item (Regression_test_key).as_upper
+					val_code := other_details.item (Regression_test_key)
 				elseif other_details.has (Regression_test_key.as_lower) then
-					val_code := other_details.item (Regression_test_key.as_lower).as_upper
+					val_code := other_details.item (Regression_test_key.as_lower)
 				end
 
 				-- check to see if expected regression test result `val_code' (typically some code like "VSONIR" from AOM 1.5 spec)
@@ -612,8 +614,8 @@ feature {NONE} -- Tests
 				-- validity condition. Therefore the comparison is not as simple as just doing compiler_result_codes.has(test_code)
 				if not val_code.is_empty then
 					if target.is_valid then
-						if not val_code.is_equal (Regression_fail_code) and
-							(val_code.is_equal (Regression_pass_code) or target.errors.warning_codes.there_exists (agent (str: STRING):BOOLEAN do Result := str.starts_with (val_code) end)) and
+						if not val_code.is_case_insensitive_equal (Regression_fail_code) and
+							(val_code.is_case_insensitive_equal (Regression_pass_code) or target.errors.has_matching_warning (val_code)) and
 							not target.errors.has_errors
 						then
 							Result := test_passed
@@ -621,7 +623,7 @@ feature {NONE} -- Tests
 							Result := test_failed
 						end
 					else
-						if (val_code.is_equal (Regression_fail_code) or target.errors.error_codes.there_exists (agent (str: STRING):BOOLEAN do Result := str.starts_with (val_code) end)) then
+						if val_code.is_case_insensitive_equal (Regression_fail_code) or target.errors.has_matching_error (val_code) then
 							Result := test_passed
 						else
 							Result := test_failed

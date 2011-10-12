@@ -15,11 +15,14 @@ class
 	MAIN_WINDOW
 
 inherit
-	MAIN_WINDOW_IMP
-		rename
-			set_repository as configure_profiles
+	EV_TITLED_WINDOW
 		redefine
-			show
+			show, initialize, is_in_default_state
+		end
+
+	GUI_DEFINITIONS
+		undefine
+			is_equal, default_create, copy
 		end
 
 	WINDOW_ACCELERATORS
@@ -51,27 +54,160 @@ inherit
 
 feature {NONE} -- Initialization
 
-	user_initialization
-			-- called by `initialize'.
-			-- Any custom user initialization that could not be performed in `initialize',
-			-- (due to regeneration of implementation class) can be added here.
-		local
-			cur_title: STRING
-			dv_q: DV_QUANTITY
-			dv_prop: DV_PROPORTION
-			dv_id: DV_IDENTIFIER
+	frozen initialize
+			-- Initialize `Current'.
 		do
-			-- connect controls
+			Precursor {EV_TITLED_WINDOW}
+
+			-- create widgets
+			create menu
+			create file_menu
+			create file_menu_open
+			create l_ev_menu_separator_1
+			create file_menu_save_as
+			create l_ev_menu_separator_2
+			create file_menu_exit
+
+			create edit_menu
+			create edit_menu_copy
+			create edit_menu_select_all
+			create l_ev_menu_separator_3
+			create edit_menu_clipboard
+
+			create view_menu
+			create view_menu_differential
+			create view_menu_flat
+			create view_menu_new_archetype_tool
+			create view_menu_new_class_tool
+			create l_ev_menu_separator_4
+			create view_menu_reset_layout
+
+			create history_menu
+			create history_menu_back
+			create history_menu_forward
+			create history_menu_separator
+			create repository_menu
+			create repository_menu_build_all
+			create repository_menu_rebuild_all
+			create l_ev_menu_separator_5
+			create repository_menu_build_subtree
+			create repository_menu_rebuild_subtree
+			create l_ev_menu_separator_6
+			create repository_menu_export_html
+			create repository_menu_export_repository_report
+			create l_ev_menu_separator_7
+			create repository_menu_interrupt_build
+			create repository_menu_refresh
+			create l_ev_menu_separator_8
+			create repository_menu_set_repository
+			create rm_schemas_menu
+			create rm_schemas_menu_reload_schemas
+			create l_ev_menu_separator_9
+			create rm_schemas_menu_configure_rm_schemas
+			create xml_menu
+			create l_ev_menu_separator_10
+			create xml_menu_conv_rules
+			create tools_menu
+			create tools_menu_clean_generated_files
+			create l_ev_menu_separator_11
+			create tools_menu_options
+			create help_menu
+			create help_menu_contents
+			create help_menu_release_notes
+			create help_menu_icons
+			create l_ev_menu_separator_12
+			create help_menu_clinical_knowledge_manager
+			create help_menu_report_bug
+			create help_menu_about
+			create ev_main_vbox
+			create action_bar
+			create archetype_profile_combo
+			create arch_history_tool_bar
+			create arch_compile_tool_bar
+			create compile_button
+			create tool_bar_sep_1
+			create open_button
+			create tool_bar_sep_2
+			create history_back_button
+			create tool_bar_sep_3
+			create history_forward_button
+
+			create arch_output_version_hbox
+			create arch_output_version_label
+			create arch_output_version_combo
+
+			create viewer_main_cell
+
+			-- Connect widgets
+			set_menu_bar (menu)
+			menu.extend (file_menu)
+			file_menu.extend (file_menu_open)
+			file_menu.extend (l_ev_menu_separator_1)
+			file_menu.extend (file_menu_save_as)
+			file_menu.extend (l_ev_menu_separator_2)
+			file_menu.extend (file_menu_exit)
+			menu.extend (edit_menu)
+			edit_menu.extend (edit_menu_copy)
+			edit_menu.extend (edit_menu_select_all)
+			edit_menu.extend (l_ev_menu_separator_3)
+			edit_menu.extend (edit_menu_clipboard)
+			menu.extend (view_menu)
+			view_menu.extend (view_menu_differential)
+			view_menu.extend (view_menu_flat)
+			view_menu.extend (view_menu_new_archetype_tool)
+			view_menu.extend (view_menu_new_class_tool)
+			view_menu.extend (l_ev_menu_separator_4)
+			view_menu.extend (view_menu_reset_layout)
+			menu.extend (history_menu)
+			history_menu.extend (history_menu_back)
+			history_menu.extend (history_menu_forward)
+			history_menu.extend (history_menu_separator)
+			menu.extend (repository_menu)
+			repository_menu.extend (repository_menu_build_all)
+			repository_menu.extend (repository_menu_rebuild_all)
+			repository_menu.extend (l_ev_menu_separator_5)
+			repository_menu.extend (repository_menu_build_subtree)
+			repository_menu.extend (repository_menu_rebuild_subtree)
+			repository_menu.extend (l_ev_menu_separator_6)
+			repository_menu.extend (repository_menu_export_html)
+			repository_menu.extend (repository_menu_export_repository_report)
+			repository_menu.extend (l_ev_menu_separator_7)
+			repository_menu.extend (repository_menu_interrupt_build)
+			repository_menu.extend (repository_menu_refresh)
+			repository_menu.extend (l_ev_menu_separator_8)
+			repository_menu.extend (repository_menu_set_repository)
+			menu.extend (rm_schemas_menu)
+			rm_schemas_menu.extend (rm_schemas_menu_reload_schemas)
+			rm_schemas_menu.extend (l_ev_menu_separator_9)
+			rm_schemas_menu.extend (rm_schemas_menu_configure_rm_schemas)
+			menu.extend (xml_menu)
+			xml_menu.extend (l_ev_menu_separator_10)
+			xml_menu.extend (xml_menu_conv_rules)
+			menu.extend (tools_menu)
+			tools_menu.extend (tools_menu_clean_generated_files)
+			tools_menu.extend (l_ev_menu_separator_11)
+			tools_menu.extend (tools_menu_options)
+			menu.extend (help_menu)
+			help_menu.extend (help_menu_contents)
+			help_menu.extend (help_menu_release_notes)
+			help_menu.extend (help_menu_icons)
+			help_menu.extend (l_ev_menu_separator_12)
+			help_menu.extend (help_menu_clinical_knowledge_manager)
+			help_menu.extend (help_menu_report_bug)
+			help_menu.extend (help_menu_about)
+			extend (ev_main_vbox)
+
 			ev_main_vbox.extend (action_bar)
+			action_bar.extend (arch_history_tool_bar)
+			arch_history_tool_bar.extend (history_back_button)
+			arch_history_tool_bar.extend (tool_bar_sep_3)
+			arch_history_tool_bar.extend (history_forward_button)
 			action_bar.extend (archetype_profile_combo)
 			action_bar.extend (arch_compile_tool_bar)
 			arch_compile_tool_bar.extend (compile_button)
 			arch_compile_tool_bar.extend (tool_bar_sep_1)
-			arch_compile_tool_bar.extend (open_button)
-			arch_compile_tool_bar.extend (tool_bar_sep_2)
-			arch_compile_tool_bar.extend (history_back_button)
-			arch_compile_tool_bar.extend (tool_bar_sep_3)
-			arch_compile_tool_bar.extend (history_forward_button)
+--			arch_compile_tool_bar.extend (open_button)
+--			arch_compile_tool_bar.extend (tool_bar_sep_2)
 			action_bar.extend (address_bar.ev_root_container)
 
 			-- ADL output version combo
@@ -81,20 +217,98 @@ feature {NONE} -- Initialization
 
 			ev_main_vbox.extend (viewer_main_cell)
 
+			-- Set visual characteristics
+			file_menu.set_text ("&File")
+			file_menu_open.set_text ("&Open...")
+			file_menu_save_as.set_text ("Save &As...")
+			file_menu_exit.set_text ("E&xit")
+			edit_menu.set_text ("&Edit")
+			edit_menu_copy.set_text ("&Copy")
+			edit_menu_select_all.set_text ("Select &All")
+			edit_menu_clipboard.set_text ("Clip&board...")
+			view_menu.set_text ("&View")
+			view_menu_differential.set_text ("&Differential")
+			view_menu_flat.set_text ("&Flat")
+			view_menu_new_archetype_tool.set_text ("New Archetype &Tab")
+			view_menu_new_class_tool.set_text ("New Class Tab")
+			view_menu_reset_layout.set_text ("&Reset tool layout")
+			history_menu.set_text ("H&istory")
+			history_menu_back.set_text ("&Back")
+			history_menu_forward.set_text ("&Forward")
+			repository_menu.set_text ("&Repository")
+			repository_menu_build_all.set_text ("&Build All")
+			repository_menu_rebuild_all.set_text ("&Rebuild All")
+			repository_menu_build_subtree.set_text ("Build Sub&tree")
+			repository_menu_rebuild_subtree.set_text ("Rebuild S&ubtree")
+			repository_menu_export_html.set_text ("Export &HTML...")
+			repository_menu_export_repository_report.set_text ("&Export Repository Report...")
+			repository_menu_interrupt_build.disable_sensitive
+			repository_menu_interrupt_build.set_text ("&Interrupt Build")
+			repository_menu_refresh.set_text ("Refresh Repository")
+			repository_menu_set_repository.set_text ("&Configure Repository Profiles...")
+			rm_schemas_menu.set_text ("RM &Schemas")
+			rm_schemas_menu_reload_schemas.set_text ("&Reload Schemas")
+			rm_schemas_menu_configure_rm_schemas.set_text ("&Configure Schemas...")
+			xml_menu.set_text ("&XML")
+			xml_menu_conv_rules.set_text ("Edit &Conversion Rules...")
+			tools_menu.set_text ("&Tools")
+			tools_menu_clean_generated_files.set_text ("&Clean Generated Files")
+			tools_menu_options.set_text ("&Options...")
+			help_menu.set_text ("&Help")
+			help_menu_contents.set_text ("&Contents")
+			help_menu_release_notes.set_text ("&Release Notes")
+			help_menu_icons.set_text ("&Icons ")
+			help_menu_clinical_knowledge_manager.set_text ("Clinical &Knowledge Manager")
+			help_menu_report_bug.set_text ("Report a &Bug")
+			help_menu_about.set_text ("&About ADL Workbench")
+			set_minimum_width (500)
+			set_minimum_height (350)
+			set_maximum_width (2000)
+			set_maximum_height (2000)
+			set_title ("Archetype Definition Language " + latest_adl_version + " Workbench")
+
+			-- Connect events.
+			file_menu_open.select_actions.extend (agent open_archetype)
+			file_menu_save_as.select_actions.extend (agent save_archetype_as)
+			file_menu_exit.select_actions.extend (agent exit_app)
+			edit_menu_clipboard.select_actions.extend (agent show_clipboard)
+			view_menu_reset_layout.select_actions.extend (agent on_reset_tool_layout)
+			history_menu.select_actions.extend (agent on_history)
+			history_menu_back.select_actions.extend (agent on_back)
+			history_menu_forward.select_actions.extend (agent on_forward)
+			repository_menu_build_all.select_actions.extend (agent build_all)
+			repository_menu_rebuild_all.select_actions.extend (agent rebuild_all)
+			repository_menu_build_subtree.select_actions.extend (agent build_subtree)
+			repository_menu_rebuild_subtree.select_actions.extend (agent rebuild_subtree)
+			repository_menu_export_html.select_actions.extend (agent export_html)
+			repository_menu_export_repository_report.select_actions.extend (agent export_repository_report)
+			repository_menu_interrupt_build.select_actions.extend (agent interrupt_build)
+			repository_menu_refresh.select_actions.extend (agent refresh_directory)
+			repository_menu_set_repository.select_actions.extend (agent configure_profiles)
+			rm_schemas_menu_reload_schemas.select_actions.extend (agent reload_schemas)
+			rm_schemas_menu_configure_rm_schemas.select_actions.extend (agent set_rm_schemas)
+			xml_menu_conv_rules.select_actions.extend (agent set_xml_rules)
+			tools_menu_clean_generated_files.select_actions.extend (agent clean_generated_files)
+			tools_menu_options.select_actions.extend (agent set_options)
+			help_menu_contents.select_actions.extend (agent show_online_help)
+			help_menu_release_notes.select_actions.extend (agent show_release_notes)
+			help_menu_icons.select_actions.extend (agent show_icon_help)
+			help_menu_clinical_knowledge_manager.select_actions.extend (agent show_clinical_knowledge_manager)
+			help_menu_report_bug.select_actions.extend (agent show_bug_reporter)
+			help_menu_about.select_actions.extend (agent show_about)
+			close_request_actions.extend (agent exit_app)
+
 			-- set visual characteristics - menu
 			set_icon_pixmap (adl_workbench_icon)
-			cur_title := title.twin.as_string_8
-			cur_title.replace_substring_all ("VER", latest_adl_version)
-			set_title (cur_title)
 
 			file_menu_open.set_pixmap (pixmaps ["open_archetype"])
-			file_menu_parse.set_pixmap (pixmaps ["parse"])
-			file_menu_edit.set_pixmap (pixmaps ["edit"])
 			history_menu_back.set_pixmap (pixmaps ["history_back"])
 			history_menu_forward.set_pixmap (pixmaps ["history_forward"])
 
 			view_menu_differential.set_pixmap (pixmaps ["diff_class"])
 			view_menu_flat.set_pixmap (pixmaps ["flat_class"])
+			view_menu_new_archetype_tool.set_pixmap (pixmaps ["archetype_2"])
+			view_menu_new_class_tool.set_pixmap (pixmaps ["class_tool_new"])
 
 			repository_menu_set_repository.set_pixmap (pixmaps ["tools"])
 			rm_schemas_menu_configure_rm_schemas.set_pixmap (pixmaps ["tools"])
@@ -106,20 +320,22 @@ feature {NONE} -- Initialization
 			action_bar.set_padding (10)
 			action_bar.set_border_width (4)
 			action_bar.disable_item_expand (archetype_profile_combo)
+			action_bar.disable_item_expand (arch_history_tool_bar)
 			action_bar.disable_item_expand (arch_compile_tool_bar)
 			archetype_profile_combo.set_tooltip ("Select repository profile")
 			archetype_profile_combo.set_minimum_width (160)
 			archetype_profile_combo.disable_edit
+			arch_history_tool_bar.disable_vertical_button_style
 			arch_compile_tool_bar.disable_vertical_button_style
 			compile_button.set_text ("Compile")
 			compile_button.set_pixmap (pixmaps ["compile"])
 			compile_button.set_tooltip ("Compile all archetypes (F7)")
-			open_button.set_text ("Open")
-			open_button.set_tooltip ("Open an ad hoc archetype")
+--			open_button.set_text ("Open")
+--			open_button.set_tooltip ("Open an ad hoc archetype")
 			history_back_button.set_tooltip ("Go back one archetype")
 			history_forward_button.set_tooltip ("Go forward one archetype")
 
-			open_button.set_pixmap (pixmaps ["open_archetype"])
+--			open_button.set_pixmap (pixmaps ["open_archetype"])
 			history_back_button.set_pixmap (pixmaps ["history_back"])
 			history_forward_button.set_pixmap (pixmaps ["history_forward"])
 
@@ -150,10 +366,11 @@ feature {NONE} -- Initialization
 
 			view_menu_differential.select_actions.extend (agent on_differential_view)
 			view_menu_flat.select_actions.extend (agent on_flat_view)
-			view_menu_new_tab.select_actions.extend (agent archetype_tools.create_new_tool)
+			view_menu_new_archetype_tool.select_actions.extend (agent archetype_tools.create_new_tool)
+			view_menu_new_class_tool.select_actions.extend (agent class_map_tools.create_new_tool)
 
 			compile_button.select_actions.extend (agent compile_toggle)
-			open_button.select_actions.extend (agent open_archetype)
+--			open_button.select_actions.extend (agent open_archetype)
 			history_back_button.select_actions.extend (agent on_back)
 			history_forward_button.select_actions.extend (agent on_forward)
 			archetype_profile_combo.select_actions.extend (agent select_profile)
@@ -171,27 +388,6 @@ feature {NONE} -- Initialization
 			initialise_accelerators
 		end
 
-	user_create_interface_objects
-			-- Feature for custom user interface object creation, called at end of `create_interface_objects'.
-		do
-			create action_bar
-			create archetype_profile_combo
-			create arch_compile_tool_bar
-			create compile_button
-			create tool_bar_sep_1
-			create open_button
-			create tool_bar_sep_2
-			create history_back_button
-			create tool_bar_sep_3
-			create history_forward_button
-
-			create arch_output_version_hbox
-			create arch_output_version_label
-			create arch_output_version_combo
-
-			create viewer_main_cell
-		end
-
 	initialise_accelerators
 			-- Initialise keyboard accelerators for various widgets.
 		do
@@ -205,7 +401,8 @@ feature {NONE} -- Initialization
 
 			add_menu_shortcut (view_menu_differential, key_d, True, False, True)
 			add_menu_shortcut (view_menu_flat, key_f, True, False, True)
-			add_menu_shortcut (view_menu_new_tab, key_t, True, False, False)
+			add_menu_shortcut (view_menu_new_archetype_tool, key_t, True, False, False)
+			add_menu_shortcut (view_menu_new_class_tool, key_t, True, False, True)
 
 			add_menu_shortcut (repository_menu_build_all, key_f7, False, False, False)
 			add_menu_shortcut (repository_menu_rebuild_all, key_f7, False, False, True)
@@ -226,17 +423,17 @@ feature {NONE} -- Initialization
 			if app_x_position > Sane_screen_coord and app_y_position > Sane_screen_coord then
 				set_position (app_x_position, app_y_position)
 			else
-				set_position (app_initial_x_position, app_initial_y_position)
+				set_position (10, 10)
 			end
 
 			if app_width > 0 and app_height > 0 then
 				set_size (app_width, app_height)
 			else
-				set_size (app_initial_width, app_initial_height)
+				set_size (1024, 768)
 			end
 		end
 
-	initialise_session_ui_layout
+	initialise_docking_layout
 			-- initialise visual settings of window remembered from previous session
 		local
 			docking_file_to_use: STRING
@@ -281,7 +478,7 @@ feature -- Status setting
 
 			initialise_session_ui_basic
 			Precursor
-			initialise_session_ui_layout
+			initialise_docking_layout
 
 			if text_editor_command.is_empty then
 				set_text_editor_command (default_text_editor_command)
@@ -496,7 +693,7 @@ feature -- View Events
 			-- reset Docking layout
 			if file_system.file_exists (default_docking_layout_file_path) then
 				file_system.copy_file (default_docking_layout_file_path, user_docking_layout_file_path)
-				initialise_session_ui_layout
+				initialise_docking_layout
 			else
 				console_tool.append_text (create_message_line ("read_docking_file_failed", <<default_docking_layout_file_path>>))
 			end
@@ -683,15 +880,30 @@ feature {NONE} -- History events
 			history_menu.extend (history_menu_separator)
 
 			if attached current_arch_cat as cat then
-				cat.recently_selected_archetypes (20).do_all (agent (aca: attached ARCH_CAT_ARCHETYPE)
-					local
-						mi: EV_MENU_ITEM
-					do
-						create mi.make_with_text (aca.id.as_string)
-						mi.select_actions.extend (agent select_archetype_from_gui_data (mi))
-						mi.set_data (aca)
-						history_menu.extend (mi)
-					end)
+				cat.recently_selected_items (20).do_all (
+					agent (aci: attached ARCH_CAT_ITEM)
+						local
+							mi: EV_MENU_ITEM
+							pixmap: EV_PIXMAP
+							text: STRING
+							agt: PROCEDURE [ANY, TUPLE]
+						do
+				 			if attached {ARCH_CAT_MODEL_NODE} aci as acmn and then acmn.is_class then
+							--	pixmap := object_node_pixmap (acmn) -- RM icon version; but seems confusing on UI in history menu
+								pixmap := pixmaps [acmn.group_name]
+								text := acmn.class_definition.globally_qualified_path
+								agt := agent select_class_in_rm_schema_tool (acmn.class_definition.globally_qualified_path)
+							elseif attached {ARCH_CAT_ARCHETYPE} aci as aca then
+								pixmap := pixmaps [aca.group_name]
+								text := aca.id.as_string
+								agt := agent catalogue_tool.select_item (aca.id.as_string)
+							end
+							create mi.make_with_text (text)
+							mi.set_pixmap (pixmap)
+							mi.select_actions.extend (agt)
+							history_menu.extend (mi)
+						end
+				)
 			end
 		end
 
@@ -701,7 +913,7 @@ feature {NONE} -- History events
 			if attached current_arch_cat as cat then
 				if cat.selection_history_has_previous then
 					cat.selection_history_back
-					catalogue_tool.go_to_selected_archetype
+					catalogue_tool.go_to_selected_item
 					populate_history_controls
 				end
 			end
@@ -713,7 +925,7 @@ feature {NONE} -- History events
 			if attached current_arch_cat as cat then
 				if cat.selection_history_has_next then
 					cat.selection_history_forth
-					catalogue_tool.go_to_selected_archetype
+					catalogue_tool.go_to_selected_item
 					populate_history_controls
 				end
 			end
@@ -861,15 +1073,23 @@ feature -- Archetype Events
 			if attached gui_item and has_current_profile then
 				if attached {ARCH_CAT_ITEM} gui_item.data as aci then
 					current_arch_cat.set_selected_item (aci)
-					catalogue_tool.go_to_selected_archetype
+					catalogue_tool.go_to_selected_item
 				end
 			end
 		end
 
 	display_class (a_class_def: BMM_CLASS_DEFINITION)
-			-- display the class currently selected in `archetype_catalogue'.
+			-- display a class selected in some tool
 		do
 			class_map_tools.populate_active_tool (a_class_def)
+		end
+
+	select_class_in_rm_schema_tool (a_key: STRING)
+			-- display a particular class in the RM schema tool
+		do
+			if rm_schema_tool.valid_item_id (a_key) then
+				rm_schema_tool.select_item (a_key)
+			end
 		end
 
 feature -- Address Bar control
@@ -911,18 +1131,19 @@ feature -- Catalogue tool
 					agent edit_archetype,
 					agent create_and_populate_new_archetype_tool,
 					agent display_class,
-					agent create_and_populate_new_class_tool)
+					agent create_and_populate_new_class_tool,
+					agent select_class_in_rm_schema_tool)
 		end
 
 	create_new_catalogue_tool
 		local
 			a_docking_pane: SD_CONTENT
 		do
-			create a_docking_pane.make_with_widget_title_pixmap (catalogue_tool.ev_root_container, pixmaps ["archetype_category"], "Catalogue")
+			create a_docking_pane.make_with_widget_title_pixmap (catalogue_tool.ev_root_container, pixmaps ["archetype_category"], create_message_content ("catalogue_tool_title", Void))
 			attached_docking_manager.contents.extend (a_docking_pane)
 			catalogue_tool.set_docking_pane (a_docking_pane)
-			a_docking_pane.set_long_title ("Catalogue")
-			a_docking_pane.set_short_title ("Catalogue")
+			a_docking_pane.set_long_title (create_message_content ("catalogue_tool_title", Void))
+			a_docking_pane.set_short_title (create_message_content ("catalogue_tool_title", Void))
 			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
 			a_docking_pane.set_top ({SD_ENUMERATION}.left)
 			a_docking_pane.show_actions.extend (agent address_bar.set_current_client (catalogue_tool))
@@ -940,10 +1161,10 @@ feature -- RM Schema tool
 		local
 			a_docking_pane: SD_CONTENT
 		do
-			create a_docking_pane.make_with_widget_title_pixmap (rm_schema_tool.ev_root_container, pixmaps ["rm_schema"], "RM Schemas")
+			create a_docking_pane.make_with_widget_title_pixmap (rm_schema_tool.ev_root_container, pixmaps ["rm_schema"], "Reference Models")
 			attached_docking_manager.contents.extend (a_docking_pane)
-			a_docking_pane.set_long_title ("RM Schemas")
-			a_docking_pane.set_short_title ("RM Schemas")
+			a_docking_pane.set_long_title ("Reference Models")
+			a_docking_pane.set_short_title ("Reference Models")
 			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
 			a_docking_pane.set_auto_hide ({SD_ENUMERATION}.left)
 			a_docking_pane.show_actions.extend (agent address_bar.set_current_client (rm_schema_tool))
@@ -1114,12 +1335,6 @@ feature {NONE} -- Implementation
 
 	do_refresh_profile_context (refresh_from_repository: BOOLEAN)
 		do
-			if title.has_substring (" - ") then
-				set_title (title.substring (title.substring_index (" - ", 1) + 3, title.count))
-			end
-
-			set_title (repository_profiles.current_reference_repository_path + " - " + title)
-
 			console_tool.show
 			console_tool.append_text (create_message_line ("populating_directory_start", <<repository_profiles.current_profile_name>>))
 			use_current_profile (refresh_from_repository)
@@ -1132,7 +1347,6 @@ feature {NONE} -- Implementation
 			append_billboard_to_console
 
 			catalogue_tool.populate
-			rm_schema_tool.populate
 			test_tool.populate
 			statistics_tool.populate
 		end
@@ -1305,12 +1519,36 @@ feature {NONE} -- GUI Widgets
 
 	action_bar, arch_output_version_hbox: EV_HORIZONTAL_BOX
 	archetype_profile_combo, arch_output_version_combo: EV_COMBO_BOX
-	arch_compile_tool_bar: EV_TOOL_BAR
+	arch_history_tool_bar, arch_compile_tool_bar: EV_TOOL_BAR
 	compile_button, open_button, history_back_button, history_forward_button: EV_TOOL_BAR_BUTTON
 	tool_bar_sep_1, tool_bar_sep_2, tool_bar_sep_3: EV_TOOL_BAR_SEPARATOR
 	arch_output_version_label: EV_LABEL
 
 	viewer_main_cell: EV_CELL
+
+	menu: EV_MENU_BAR
+	file_menu, edit_menu, view_menu, history_menu, repository_menu, rm_schemas_menu,
+	xml_menu, tools_menu, help_menu: EV_MENU
+	file_menu_open, file_menu_save_as, file_menu_exit, edit_menu_copy, edit_menu_select_all, edit_menu_clipboard,
+	view_menu_differential, view_menu_flat, view_menu_new_archetype_tool, view_menu_new_class_tool,
+	view_menu_reset_layout, history_menu_back, history_menu_forward, repository_menu_build_all,
+	repository_menu_rebuild_all, repository_menu_build_subtree, repository_menu_rebuild_subtree,
+	repository_menu_export_html, repository_menu_export_repository_report, repository_menu_interrupt_build,
+	repository_menu_refresh, repository_menu_set_repository, rm_schemas_menu_reload_schemas,
+	rm_schemas_menu_configure_rm_schemas, xml_menu_conv_rules, tools_menu_clean_generated_files,
+	tools_menu_options, help_menu_contents, help_menu_release_notes, help_menu_icons,
+	help_menu_clinical_knowledge_manager, help_menu_report_bug, help_menu_about: EV_MENU_ITEM
+	l_ev_menu_separator_1,
+	l_ev_menu_separator_2, l_ev_menu_separator_3, l_ev_menu_separator_4, history_menu_separator,
+	l_ev_menu_separator_5, l_ev_menu_separator_6, l_ev_menu_separator_7, l_ev_menu_separator_8,
+	l_ev_menu_separator_9, l_ev_menu_separator_10, l_ev_menu_separator_11, l_ev_menu_separator_12: EV_MENU_SEPARATOR
+	ev_main_vbox: EV_VERTICAL_BOX
+
+	is_in_default_state: BOOLEAN
+			-- Is `Current' in its default state?
+		do
+			Result := True
+		end
 
 	windows_hide_combo_dropdown (a_combo: EV_COMBO_BOX)
 		do

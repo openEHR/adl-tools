@@ -38,13 +38,15 @@ create
 feature {NONE} -- Initialisation
 
 	make (a_select_archetype_agent, an_edit_archetype_agent, a_select_archetype_in_new_tool_agent: like select_archetype_agent;
-			a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent)
+			a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent;
+			a_select_class_in_rm_schema_tool_agent: like select_class_in_rm_schema_tool_agent)
 		do
 			select_archetype_agent := a_select_archetype_agent
 			edit_archetype_agent := an_edit_archetype_agent
 			select_archetype_in_new_tool_agent := a_select_archetype_in_new_tool_agent
 			select_class_agent := a_select_class_agent
 			select_class_in_new_tool_agent := a_select_class_in_new_tool_agent
+			select_class_in_rm_schema_tool_agent := a_select_class_in_rm_schema_tool_agent
 
 			-- create widgets
 			create ev_root_container
@@ -91,9 +93,11 @@ feature -- Commands
 	populate
 			-- Populate content from visual controls.
 		do
+			docking_pane.set_short_title (create_message_content ("catalogue_tool_title", Void))
+			docking_pane.set_long_title (create_message_content ("catalogue_tool_title", Void) + " " + repository_profiles.current_profile_name)
 			archetype_explorer.populate
 			template_explorer.populate
-			go_to_selected_archetype
+			go_to_selected_item
 		end
 
 	repopulate
@@ -108,7 +112,7 @@ feature -- Commands
 			template_explorer.update_tree_node_for_archetype (aca)
 		end
 
-	go_to_selected_archetype
+	go_to_selected_item
 			-- Select and display the node of `archetype_file_tree' corresponding to the selection in `archetype_catalogue'.
 			-- No events will be processed because archetype selected in ARCHETYPE_CATALOGUE already matches selected tree node
 		do
@@ -117,7 +121,7 @@ feature -- Commands
 			end
 		end
 
-	select_item, select_archetype (id: attached STRING)
+	select_item (id: attached STRING)
 			-- Select `id' in the archetype catalogue and go to its node in explorer tree
 		do
 			if not current_arch_cat.has_selected_archetype or else not id.is_equal (current_arch_cat.selected_archetype.qualified_name) then
@@ -158,7 +162,8 @@ feature {NONE} -- Implementation
 
 	archetype_explorer: GUI_VIEW_ARCHETYPE_TREE_CONTROL
 		once
-			create Result.make (select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent, select_class_agent, select_class_in_new_tool_agent)
+			create Result.make (select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent,
+				select_class_agent, select_class_in_new_tool_agent, select_class_in_rm_schema_tool_agent)
 		end
 
 	template_explorer: GUI_VIEW_TEMPLATE_TREE_CONTROL
@@ -169,6 +174,8 @@ feature {NONE} -- Implementation
 	select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent: PROCEDURE [ANY, TUPLE]
 
 	select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
+
+	select_class_in_rm_schema_tool_agent: PROCEDURE [ANY, TUPLE [STRING]]
 
 end
 

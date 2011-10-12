@@ -17,25 +17,24 @@ class BMM_CONTAINER_TYPE_REFERENCE
 inherit
 	BMM_TYPE_REFERENCE
 
-feature -- Access (attributes from schema)
+create
+	make
 
-	type: STRING
-			-- the target type; this converts to the first parameter in generic_parameters in BMM_GENERIC_TYPE_SPECIFIER
-			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+feature -- Initialisation
 
-	container_type: STRING
-			-- the type of the container. This converts to the root_type in BMM_GENERIC_TYPE_SPECIFIER
-			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
-
-feature -- Access (attributes derived in post-schema processing)
-
-	type_def: BMM_CLASS_DEFINITION
-			-- the target type; this converts to the first parameter in generic_parameters in BMM_GENERIC_TYPE_SPECIFIER
-
-	container_type_def: BMM_CLASS_DEFINITION
-			-- the type of the container. This converts to the root_type in BMM_GENERIC_TYPE_SPECIFIER
+	make (a_type, a_container_type: BMM_CLASS_DEFINITION)
+		do
+			type := a_type
+			container_type := a_container_type
+		end
 
 feature -- Access
+
+	type: BMM_CLASS_DEFINITION
+			-- the target type; this converts to the first parameter in generic_parameters in BMM_GENERIC_TYPE_SPECIFIER
+
+	container_type: BMM_CLASS_DEFINITION
+			-- the type of the container. This converts to the root_type in BMM_GENERIC_TYPE_SPECIFIER
 
 	flattened_type_list: ARRAYED_LIST [STRING]
 			-- completely flattened list of type names, flattening out all generic parameters
@@ -44,13 +43,13 @@ feature -- Access
 		do
 			create Result.make(0)
 			Result.compare_objects
-			Result.append (type_def.flattened_type_list)
+			Result.append (type.flattened_type_list)
 		end
 
 	type_category: STRING
 			-- generate a type category of main target type from Type_cat_xx values
 		do
-			if type_def.is_abstract or container_type_def.is_abstract then
+			if type.is_abstract or container_type.is_abstract then
 				Result := Type_cat_abstract_class
 			elseif has_type_substitutions then
 				Result := Type_cat_concrete_class_supertype
@@ -63,14 +62,14 @@ feature -- Access
 		local
 			cont_sub_type_list, item_sub_type_list: ARRAYED_LIST [STRING]
 		do
-			cont_sub_type_list := container_type_def.type_substitutions
+			cont_sub_type_list := container_type.type_substitutions
 			if cont_sub_type_list.is_empty then
-				cont_sub_type_list.extend (container_type_def.name)
+				cont_sub_type_list.extend (container_type.name)
 			end
 
-			item_sub_type_list := type_def.type_substitutions
+			item_sub_type_list := type.type_substitutions
 			if item_sub_type_list.is_empty then
-				item_sub_type_list.extend (type_def.name)
+				item_sub_type_list.extend (type.name)
 			end
 
 			create Result.make (0)
@@ -87,7 +86,7 @@ feature -- Status Report
 
 	has_type_substitutions: BOOLEAN
 		do
-			Result := container_type_def.has_type_substitutions or type_def.has_type_substitutions
+			Result := container_type.has_type_substitutions or type.has_type_substitutions
 		end
 
 feature -- Conversion
@@ -97,37 +96,20 @@ feature -- Conversion
 			-- create Result.make(container_type, <<type>>)
 		end
 
-feature -- Commands
-
-	finalise_build (a_bmmm: attached BMM_SCHEMA; a_class_def: attached BMM_CLASS_DEFINITION; a_prop_def: attached BMM_PROPERTY_DEFINITION; errors: ERROR_ACCUMULATOR)
-		do
-			bmm_schema := a_bmmm
-			if bmm_schema.has_class_definition(type) then
-				type_def := bmm_schema.class_definition (type)
-				if bmm_schema.has_class_definition(container_type) then
-					container_type_def := bmm_schema.class_definition (container_type)
-				else
-					errors.add_error ("BMM_CPCT", <<bmm_schema.schema_id, a_class_def.name, a_prop_def.name, container_type>>, Void)
-				end
-			else
-				errors.add_error ("BMM_CPTV", <<bmm_schema.schema_id, a_class_def.name, a_prop_def.name, type>>, Void)
-			end
-		end
-
 feature -- Output
 
 	as_type_string: STRING
 			-- formal name of the type
 		do
 			create Result.make (0)
-			Result.append (container_type + Generic_left_delim.out + type + Generic_right_delim.out)
+			Result.append (container_type.name + Generic_left_delim.out + type.name + Generic_right_delim.out)
 		end
 
 	as_flattened_type_string: STRING
 			-- name of the type
 		do
 			create Result.make (0)
-			Result.append (type_def.as_type_string)
+			Result.append (type.as_type_string)
 		end
 
 end

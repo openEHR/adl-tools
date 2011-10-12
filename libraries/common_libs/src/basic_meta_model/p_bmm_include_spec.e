@@ -1,46 +1,26 @@
 note
-	description: "Help dialog for displaying release notes in a scrollable box."
-	generator: "EiffelBuild"
-	date: "$Date$"
-	revision: "$Revision$"
+	component:   "openEHR re-usable library"
+	description: "Persistent form of BMM_INCLUDE_SPEC"
+	keywords:    "Basic meta-model"
 
-class
-	RELEASE_NOTES_DIALOG
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011 The openEHR Foundation <http://www.openEHR.org>"
+	license:     "See notice at bottom of class"
 
-inherit
-	RELEASE_NOTES_DIALOG_IMP
+	file:        "$URL$"
+	revision:    "$LastChangedRevision$"
+	last_change: "$LastChangedDate$"
 
-	SHARED_APP_UI_RESOURCES
-		export
-			{NONE} all
-		undefine
-			default_create, copy
-		end
+class P_BMM_INCLUDE_SPEC
 
-feature {NONE} -- Initialization
+feature -- Access
 
-	user_initialization
-			-- Called by `initialize'.
-			-- Any custom user initialization that
-			-- could not be performed in `initialize',
-			-- (due to regeneration of implementation class)
-			-- can be added here.
-		do
-			set_icon_pixmap (adl_workbench_ico)
-			ok_button.select_actions.extend (agent hide)
-			set_default_cancel_button (ok_button)
-			set_default_push_button (ok_button)
-			release_notes_text_box.set_text (Release_notes_text)
-			set_position (app_x_position + 20, app_y_position + 10)
-			set_size (700, 800)
-			set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
-			show_actions.extend (agent release_notes_text_box.set_focus)
-		end
+	id: STRING
+			-- id of schema
 
-	user_create_interface_objects
-			-- Feature for custom user interface object creation, called at end of `create_interface_objects'.
-		do
-		end
+	namespace: STRING
+			-- namespace under which types of included schema will be known in this schema
 
 end
 
@@ -59,10 +39,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is release_notes.e.
+--| The Original Code is bmm_include_spec.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2010
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

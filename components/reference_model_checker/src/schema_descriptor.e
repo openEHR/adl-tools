@@ -36,12 +36,30 @@ create
 feature -- Initialisation
 
 	make (a_meta_data: attached HASH_TABLE [STRING, STRING])
+		local
+			bmm_ver: STRING
 		do
+			reset
 			meta_data := a_meta_data
 			schema_id := create_schema_id (meta_data.item (Metadata_model_publisher), meta_data.item (metadata_schema_name), meta_data.item (Metadata_model_release))
+
+			-- if there is no bmm_version meta-data item, that means that the initial fast-parse scan (note: doesn't use the main dadl parser)
+			-- did not find one; therefore we use the assumed value
+			if not meta_data.has (Metadata_bmm_version) then
+				bmm_ver := Assumed_bmm_version
+			else
+				bmm_ver := meta_data.item (Metadata_bmm_version)
+			end
+			is_bmm_compatible := bmm_version_compatible (bmm_ver)
+			if not is_bmm_compatible then
+				add_error ("BMM_VER", <<schema_id, bmm_ver, Bmm_internal_version>>)
+			end
 		end
 
 feature -- Access
+
+	p_schema: detachable P_BMM_SCHEMA
+			-- persistent form of model
 
 	schema: detachable BMM_SCHEMA
 			-- computable form of model
@@ -53,6 +71,7 @@ feature -- Access
 
 	meta_data: attached HASH_TABLE [STRING, STRING]
 			-- table of {key, value} pairs of schema meta-data, keys as follows:
+			-- "bmm_version",
 			-- "model_publisher",
 			-- "schema_name",
 			-- "model_release",
@@ -65,6 +84,9 @@ feature -- Status Report
 
 	is_top_level: BOOLEAN
 			-- True if this is a top-level schema, i.e. not included by some other schema
+
+	is_bmm_compatible: BOOLEAN
+			-- True if the BMM version found in the schema (or assumed, if none) is compatible with that in this software
 
 feature -- Modification
 
@@ -89,6 +111,8 @@ feature {REFERENCE_MODEL_ACCESS} -- Commands
 			parser: DADL_VALIDATOR
 		do
 			reset
+			schema := Void
+			p_schema := Void
 			create model_file.make (meta_data.item (Metadata_schema_path))
 			if not model_file.exists or else not model_file.is_readable then
 				add_error ("model_access_e1", <<meta_data.item (Metadata_schema_path)>>)
@@ -99,17 +123,15 @@ feature {REFERENCE_MODEL_ACCESS} -- Commands
 				parser.execute(model_file.last_string, 1)
 				if not parser.syntax_error then
 					dt_tree := parser.output
-					schema ?= dt_tree.as_object_from_string ("BMM_SCHEMA", Void)
-					if schema = Void then
+					p_schema ?= dt_tree.as_object_from_string ("P_BMM_SCHEMA", Void)
+					if p_schema = Void then
 						add_error ("model_access_e4", <<meta_data.item (Metadata_schema_path)>>)
 					else
 						passed := True
-						schema.validate_created
-						merge_errors (schema.errors)
+						p_schema.validate_created
+						merge_errors (p_schema.errors)
 						if passed then
-							schema.load_finalise
-						else
-							add_error ("model_access_e12", <<schema.schema_id, schema.errors.as_string>>)
+							p_schema.load_finalise
 						end
 					end
 				else
@@ -117,6 +139,8 @@ feature {REFERENCE_MODEL_ACCESS} -- Commands
 				end
 				model_file.close
 			end
+		ensure
+			attached p_schema or else errors.has_errors
 		end
 
 	validate_includes (all_schemas_list: ARRAY [STRING])
@@ -127,20 +151,29 @@ feature {REFERENCE_MODEL_ACCESS} -- Commands
 			create all_schemas.make (0)
 			all_schemas.compare_objects
 			all_schemas.make_from_array (all_schemas_list)
-			if attached schema.includes then
-				from schema.includes.start until schema.includes.off or not all_schemas.has (schema.includes.item_for_iteration.id) loop
-					schema.includes.forth
+			if attached p_schema.includes then
+				from p_schema.includes.start until p_schema.includes.off or not all_schemas.has (p_schema.includes.item_for_iteration.id) loop
+					p_schema.includes.forth
 				end
-				if not schema.includes.off then
-					add_error("BMM_INC", <<schema_id, schema.includes.item_for_iteration.id>>)
+				if not p_schema.includes.off then
+					add_error("BMM_INC", <<schema_id, p_schema.includes.item_for_iteration.id>>)
 				end
 			end
 		end
 
 	validate
 		do
-			schema.validate
-			merge_errors (schema.errors)
+			p_schema.validate
+			merge_errors (p_schema.errors)
+		end
+
+	create_schema
+			-- create `schema'
+		require
+			passed
+		do
+			p_schema.create_bmm_schema
+			schema := p_schema.bmm_schema
 		end
 
 end

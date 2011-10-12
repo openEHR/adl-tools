@@ -19,7 +19,7 @@ inherit
 			ev_root_container
 		end
 
-	CONSTANTS
+	GUI_DEFINITIONS
 		export
 			{NONE} all
 		end
@@ -51,6 +51,10 @@ inherit
 
 create
 	make
+
+feature -- Definitions
+
+	arch_notebook_min_height: INTEGER = 350
 
 feature {NONE}-- Initialization
 
@@ -150,7 +154,7 @@ feature {NONE}-- Initialization
 			ev_language_label.set_minimum_height (23)
 			ev_language_label.align_text_right
 			ev_language_combo.set_tooltip (create_message_content ("language_combo_tooltip", Void))
-			ev_language_combo.set_minimum_width (min_combo_box_width)
+			ev_language_combo.set_minimum_width (60)
 			ev_language_combo.set_minimum_height (23)
 			ev_language_combo.disable_edit
 			ev_adl_version_label.set_text (create_message_content ("adl_version_label", Void))
@@ -158,7 +162,7 @@ feature {NONE}-- Initialization
 			ev_adl_version_label.align_text_right
 			ev_adl_version_label.set_tooltip (create_message_content ("adl_version_label_tooltip", Void))
 
-			ev_notebook.set_minimum_width (app_min_width)
+			ev_notebook.set_minimum_width (500)
 			ev_notebook.set_minimum_height (arch_notebook_min_height)
 
 			ev_notebook.set_item_text (description_controls.ev_notebook, create_message_content ("description_tab_text", Void))
@@ -335,7 +339,7 @@ feature -- Commands
 			-- repopulate from current archetype
 		do
 			clear_content
-			if target_archetype_descriptor.is_valid then
+			if attached target_archetype_descriptor and then target_archetype_descriptor.is_valid then
 				description_controls.populate (target_archetype, selected_language)
 				node_map_control.populate (target_archetype_descriptor, differential_view, selected_language)
 			end

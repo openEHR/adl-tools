@@ -37,7 +37,8 @@ feature -- Definitions
 feature {NONE} -- Initialisation
 
 	make (a_select_archetype_agent, an_edit_archetype_agent, a_select_archetype_in_new_tool_agent: like select_archetype_agent
-			a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent)
+			a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent;
+			a_select_class_in_rm_schema_tool_agent: like select_class_in_rm_schema_tool_agent)
 			-- Create controller for the tree representing archetype files found in `archetype_directory'.
 		do
 			select_archetype_agent := a_select_archetype_agent
@@ -45,6 +46,7 @@ feature {NONE} -- Initialisation
 			select_archetype_in_new_tool_agent := a_select_archetype_in_new_tool_agent
 			select_class_agent := a_select_class_agent
 			select_class_in_new_tool_agent := a_select_class_in_new_tool_agent
+			select_class_in_rm_schema_tool_agent := a_select_class_in_rm_schema_tool_agent
 
 			-- make UI
 			make_ui
@@ -91,6 +93,8 @@ feature -- Commands
 feature {NONE} -- Implementation
 
 	select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
+
+	select_class_in_rm_schema_tool_agent: PROCEDURE [ANY, TUPLE [STRING]]
 
 	populate_tree
 		do
@@ -265,6 +269,10 @@ feature {NONE} -- Implementation
 				an_mi.set_pixmap (pixmaps ["class_tool_new"])
 				menu.extend (an_mi)
 
+				create an_mi.make_with_text_and_action ("Show in RM", agent display_context_selected_class_in_rm_schema_tool (ev_ti))
+				an_mi.set_pixmap (pixmaps ["rm_schema"])
+				menu.extend (an_mi)
+
 				menu.show
 			end
 		end
@@ -288,6 +296,13 @@ feature {NONE} -- Implementation
 			if attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
 				current_arch_cat.set_selected_item (acmn)
 				select_class_in_new_tool_agent.call ([current_arch_cat.selected_class.class_definition])
+			end
+		end
+
+	display_context_selected_class_in_rm_schema_tool (ev_ti: EV_TREE_ITEM)
+		do
+			if attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
+				select_class_in_rm_schema_tool_agent.call ([acmn.class_definition.globally_qualified_path])
 			end
 		end
 

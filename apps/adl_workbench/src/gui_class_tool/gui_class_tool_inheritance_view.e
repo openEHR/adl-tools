@@ -11,7 +11,7 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class GUI_CLASS_TOOL_INHERITANCE_VIEW
+class GUI_CLASS_TOOL_ANCESTORS_VIEW
 
 inherit
 	GUI_CLASS_TOOL_FACILITIES
@@ -99,13 +99,14 @@ feature {NONE} -- Implementation
    		local
 			a_ti: EV_TREE_ITEM
 		do
-			from a_class_def.ancestor_defs.start until a_class_def.ancestor_defs.off loop
-				a_ti := create_node (a_class_def.ancestor_defs.item)
-	 	 		a_ti.pointer_button_press_actions.force_extend (agent class_node_handler (a_ti, ?, ?, ?))				ev_tree_item_stack.item.extend (a_ti)
+			from a_class_def.ancestors.start until a_class_def.ancestors.off loop
+				a_ti := create_node (a_class_def.ancestors.item_for_iteration)
+	 	 		a_ti.pointer_button_press_actions.force_extend (agent class_node_handler (a_ti, ?, ?, ?))
+				ev_tree_item_stack.item.extend (a_ti)
 				ev_tree_item_stack.extend (a_ti)
-				populate_ancestor_nodes (a_class_def.ancestor_defs.item)
+				populate_ancestor_nodes (a_class_def.ancestors.item_for_iteration)
 				ev_tree_item_stack.remove
-				a_class_def.ancestor_defs.forth
+				a_class_def.ancestors.forth
 			end
 		end
 
@@ -120,15 +121,11 @@ feature {NONE} -- Implementation
 	class_node_handler (eti: EV_TREE_ITEM; x,y, button: INTEGER)
 			-- creates the context menu for a right click action for class node
 		local
-			subs: ARRAYED_SET[STRING]
 			menu: EV_MENU
 		do
 			if attached {BMM_CLASS_DEFINITION} eti.data as bmm_class_def and button = {EV_POINTER_CONSTANTS}.right then
 				create menu
-
-				-- add menu item for retarget tool to current node / display in new tool
 				add_class_context_menu (menu, eti)
-
 				menu.show
 			end
 		end
