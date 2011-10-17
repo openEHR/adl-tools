@@ -65,7 +65,7 @@ feature -- Definitions
 			-- dADL attribute name of logical attribute 'bmm_version' in schema file;
 			-- MUST correspond to attribute of same name in P_BMM_SCHEMA class
 
-	Metadata_model_publisher: STRING = "model_publisher"
+	metadata_rm_publisher: STRING = "rm_publisher"
 			-- dADL attribute name of logical attribute 'model_publisher' in schema file;
 			-- MUST correspond to attribute of same name in P_BMM_SCHEMA class
 
@@ -73,7 +73,7 @@ feature -- Definitions
 			-- dADL attribute name of logical attribute 'schema_name' in schema file;
 			-- MUST correspond to attribute of same name in P_BMM_SCHEMA class
 
-	Metadata_model_release: STRING = "model_release"
+	metadata_rm_release: STRING = "rm_release"
 			-- dADL attribute name of logical attribute 'model_release' in schema file;
 			-- MUST correspond to attribute of same name in P_BMM_SCHEMA class
 
@@ -95,7 +95,7 @@ feature -- Definitions
 	Schema_fast_parse_attrs: ARRAY [STRING]
 			-- attributes to retrieve for initial fast parse on schemas
 		once
-			Result := <<Metadata_bmm_version, Metadata_schema_revision, Metadata_schema_lifecycle_state, Metadata_model_publisher, metadata_schema_name, Metadata_model_release>>
+			Result := <<Metadata_bmm_version, Metadata_schema_revision, Metadata_schema_lifecycle_state, metadata_rm_publisher, metadata_schema_name, metadata_rm_release>>
 		end
 
 	Assumed_bmm_version: STRING = "1.0"
@@ -179,24 +179,24 @@ feature -- Conversion
 			end
 		end
 
-	publisher_qualified_library_name (a_model_publisher, a_package_name: attached STRING): attached STRING
+	publisher_qualified_rm_closure_name (a_rm_publisher, a_rm_closure_name: attached STRING): attached STRING
 			-- generate a lower-case standard model-package name string, e.g. "openehr-ehr" for use in finding RM schemas
 			-- uses `package_base_name' to obtain terminal form of package name
 		require
-			Model_publisher_valid: not a_model_publisher.is_empty
-			Package_name_valid: not a_package_name.is_empty
+			Model_publisher_valid: not a_rm_publisher.is_empty
+			Closure_name_valid: not a_rm_closure_name.is_empty
 		do
-			Result := a_model_publisher + section_separator.out + package_base_name (a_package_name)
+			Result := a_rm_publisher + section_separator.out + package_base_name (a_rm_closure_name)
 			Result.to_lower
 		end
 
-	library_qualified_class_name (a_model_name, a_class_name: attached STRING): attached STRING
+	rm_closure_qualified_class_name (a_rm_closure_name, a_class_name: attached STRING): attached STRING
 			-- generate a standard model-class name string, e.g. "ehr-observation" for use in finding RM schemas
 		require
-			Model_name_valid: not a_model_name.is_empty
+			Rm_closure_name_valid: not a_rm_closure_name.is_empty
 			Class_name_valid: not a_class_name.is_empty
 		do
-			Result := a_model_name + section_separator.out + a_class_name
+			Result := a_rm_closure_name + section_separator.out + a_class_name
 		end
 
 	type_name_as_flat_list (a_type_name: attached STRING): attached ARRAYED_LIST [STRING]

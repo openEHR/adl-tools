@@ -88,17 +88,9 @@ feature {NONE}-- Initialization
 			create slot_map_control.make (agent update_slots_tab_label)
 			create ontology_controls.make
 			create annotations_control.make
-
-			create ev_serialised_hbox
-			create ev_serialised_rich_text
-			create ev_serialise_controls_vbox
-			create ev_serialise_controls_frame
-			create ev_serialise_rb_vbox
-			create ev_serialise_adl_rb
-			create ev_serialise_dadl_rb
-			create ev_serialise_xml_rb
-			create ev_flatten_with_rm_cb
-			create ev_serialise_padding_cell
+			create serialisation_control.make
+			create validity_report_control.make
+			create statistical_information_control.make
 
 			-- connect widgets
 			ev_root_container.extend (ev_action_bar)
@@ -114,24 +106,15 @@ feature {NONE}-- Initialization
 			ev_action_bar.extend (ev_adl_version_label)
 			ev_action_bar.extend (ev_adl_version_text)
 
-			ev_notebook.extend (description_controls.ev_notebook)
+			ev_notebook.extend (description_controls.ev_root_container)
 			ev_notebook.extend (node_map_control.ev_root_container)
 			ev_notebook.extend (ontology_controls.ev_root_container)
-			ev_notebook.extend (annotations_control.grid)
+			ev_notebook.extend (annotations_control.ev_root_container)
 			ev_notebook.extend (path_map_control.ev_root_container)
 			ev_notebook.extend (slot_map_control.ev_root_container)
-			ev_notebook.extend (ev_serialised_hbox)
-
-			ev_serialised_hbox.extend (ev_serialised_rich_text)
-			ev_serialised_hbox.extend (ev_serialise_controls_vbox)
-			ev_serialise_controls_vbox.extend (ev_serialise_controls_frame)
-			ev_serialise_controls_frame.extend (ev_serialise_rb_vbox)
-			ev_serialise_rb_vbox.extend (ev_serialise_adl_rb)
-			ev_serialise_rb_vbox.extend (ev_serialise_dadl_rb)
-			ev_serialise_rb_vbox.extend (ev_serialise_xml_rb)
-			ev_serialise_controls_vbox.extend (ev_flatten_with_rm_cb)
-			ev_serialise_controls_vbox.disable_item_expand (ev_flatten_with_rm_cb)
-			ev_serialise_controls_vbox.extend (ev_serialise_padding_cell)
+			ev_notebook.extend (serialisation_control.ev_root_container)
+			ev_notebook.extend (validity_report_control.ev_root_container)
+			ev_notebook.extend (statistical_information_control.ev_root_container)
 
 			-- set visual characteristics
 			ev_root_container.disable_item_expand (ev_action_bar)
@@ -165,8 +148,8 @@ feature {NONE}-- Initialization
 			ev_notebook.set_minimum_width (500)
 			ev_notebook.set_minimum_height (arch_notebook_min_height)
 
-			ev_notebook.set_item_text (description_controls.ev_notebook, create_message_content ("description_tab_text", Void))
-			ev_notebook.item_tab (description_controls.ev_notebook).set_pixmap (pixmaps ["description"])
+			ev_notebook.set_item_text (description_controls.ev_root_container, create_message_content ("description_tab_text", Void))
+			ev_notebook.item_tab (description_controls.ev_root_container).set_pixmap (pixmaps ["description"])
 
 			ev_notebook.set_item_text (node_map_control.ev_root_container, create_message_content ("definition_tab_text", Void))
 			ev_notebook.item_tab (node_map_control.ev_root_container).set_pixmap (pixmaps ["node_map"])
@@ -180,28 +163,17 @@ feature {NONE}-- Initialization
 			ev_notebook.set_item_text (ontology_controls.ev_root_container, create_message_content ("terminology_tab_text", Void))
 			ev_notebook.item_tab (ontology_controls.ev_root_container).set_pixmap (pixmaps ["terminology"])
 
-			ev_notebook.set_item_text (annotations_control.grid, create_message_content ("annotations_tab_text", Void))
-			ev_notebook.item_tab (annotations_control.grid).set_pixmap (pixmaps ["annotations"])
+			ev_notebook.set_item_text (annotations_control.ev_root_container, create_message_content ("annotations_tab_text", Void))
+			ev_notebook.item_tab (annotations_control.ev_root_container).set_pixmap (pixmaps ["annotations"])
 
-			ev_notebook.set_item_text (ev_serialised_hbox, create_message_content ("serialised_tab_text", Void))
-			ev_notebook.item_tab (ev_serialised_hbox).set_pixmap (pixmaps ["diff"])
+			ev_notebook.set_item_text (serialisation_control.ev_root_container, create_message_content ("serialised_tab_text", Void))
+			ev_notebook.item_tab (serialisation_control.ev_root_container).set_pixmap (pixmaps ["diff"])
 
-			ev_serialised_rich_text.disable_edit
-			ev_serialised_hbox.disable_item_expand (ev_serialise_controls_vbox)
-			ev_serialise_controls_vbox.disable_item_expand (ev_serialise_controls_frame)
-			ev_serialised_hbox.set_border_width (border_width)
-			ev_serialised_hbox.set_padding_width (padding_width)
-			ev_serialise_rb_vbox.set_border_width (border_width)
-			ev_serialised_rich_text.set_tab_width ((ev_serialised_rich_text.tab_width/2).floor.max (1))  -- this is in pixels, and assumes 7-pixel wide chars
-			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_adl_rb)
-			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_dadl_rb)
-			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_xml_rb)
-			ev_serialise_controls_frame.set_text (create_message_content ("serialise_frame_text", Void))
-			ev_serialise_controls_frame.set_minimum_width (125)
-			ev_serialise_controls_frame.set_minimum_height (95)
-			set_serialisation_control_texts
-			ev_flatten_with_rm_cb.set_text ("Include RM")
-			ev_flatten_with_rm_cb.set_tooltip ("Include RM in flattening process, causing RM existence and cardinality to be included and occurrences to be generated")
+			ev_notebook.set_item_text (validity_report_control.ev_root_container, create_message_content ("validity_tab_text", Void))
+			ev_notebook.item_tab (validity_report_control.ev_root_container).set_pixmap (pixmaps ["errors"])
+
+			ev_notebook.set_item_text (statistical_information_control.ev_root_container, create_message_content ("stat_info_tab_text", Void))
+			ev_notebook.item_tab (statistical_information_control.ev_root_container).set_pixmap (pixmaps ["info"])
 
 			-- set events: action bar
 			ev_differential_view_button.select_actions.extend (agent on_differential_view)
@@ -216,12 +188,6 @@ feature {NONE}-- Initialization
 
 			-- set events: select a notebook tab
 			ev_notebook.selection_actions.extend (agent on_select_archetype_notebook)
-
-			-- set events: serialisation controls
-			ev_serialise_adl_rb.select_actions.extend (agent populate_source_text)
-			ev_serialise_dadl_rb.select_actions.extend (agent populate_dadl_text)
-			ev_serialise_xml_rb.select_actions.extend (agent populate_xml_text)
-			ev_flatten_with_rm_cb.select_actions.extend (agent populate_source_text)
 
 			differential_view := True
 			ev_differential_view_button.enable_select
@@ -260,26 +226,14 @@ feature -- Events
 	on_select_archetype_notebook
 			-- Called by `selection_actions' of `archetype_notebook'.
 		do
-			if ev_notebook.selected_item = slot_map_control.ev_root_container then
-				if attached target_archetype_descriptor and then target_archetype_descriptor.is_valid then
-					slot_map_control.populate (target_archetype_descriptor, selected_language)
-				end
-			elseif ev_notebook.selected_item = path_map_control.ev_root_container then
-				if attached target_archetype_descriptor and then target_archetype_descriptor.is_valid then
-					path_map_control.populate (target_archetype, selected_language)
-				end
-			elseif ev_notebook.selected_item = annotations_control.grid then
-				if attached target_archetype_descriptor and then target_archetype_descriptor.is_valid then
-					annotations_control.populate (target_archetype_descriptor, differential_view, selected_language)
-				end
-			elseif ev_notebook.selected_item = ontology_controls.ev_root_container then
-				if attached target_archetype_descriptor and then target_archetype_descriptor.is_valid then
-					ontology_controls.populate (target_archetype_descriptor, differential_view, selected_language)
-				end
-			elseif ev_notebook.selected_item = ev_serialised_hbox then
-				if attached target_archetype_descriptor and then target_archetype_descriptor.is_valid then
-					set_serialisation_control_texts
-					populate_serialised
+			if attached {GUI_ARCHETYPE_TARGETTED_TOOL} ev_notebook.selected_item.data as arch_tool and attached target_archetype_descriptor then
+				if (target_archetype_descriptor /= arch_tool.target_archetype_descriptor or else
+					target_archetype_descriptor.last_compile_attempt_timestamp > arch_tool.last_populate_timestamp or
+					differential_view /= arch_tool.differential_view or
+					selected_language /= arch_tool.selected_language) and
+					arch_tool.can_populate (target_archetype_descriptor)
+				then
+					arch_tool.populate (target_archetype_descriptor, differential_view, selected_language)
 				end
 			end
 		end
@@ -316,33 +270,19 @@ feature -- Commands
 			ev_language_combo.wipe_out
 			ev_language_combo.remove_text
 			clear_content
---			differential_view := True
--- 			ev_differential_view_button.enable_select
  		end
 
 	populate (aca: attached ARCH_CAT_ARCHETYPE)
 			-- Populate content from visual controls.
 		do
 			target_archetype_descriptor := aca
-			clear
-			if target_archetype_descriptor.is_valid then
-				ev_archetype_id.set_text (target_archetype_descriptor.qualified_name)
-				ev_adl_version_text.set_text (target_archetype_descriptor.differential_archetype.adl_version)
-				selected_language := target_archetype_descriptor.differential_archetype.original_language.code_string
-				populate_languages
-				description_controls.populate (target_archetype, selected_language)
-				node_map_control.populate (target_archetype_descriptor, differential_view, selected_language)
-			end
+			do_populate
 		end
 
 	repopulate
 			-- repopulate from current archetype
 		do
-			clear_content
-			if attached target_archetype_descriptor and then target_archetype_descriptor.is_valid then
-				description_controls.populate (target_archetype, selected_language)
-				node_map_control.populate (target_archetype_descriptor, differential_view, selected_language)
-			end
+			do_populate
 		end
 
 	select_flat_view
@@ -366,9 +306,8 @@ feature -- Commands
 	change_adl_serialisation_version
 			-- call this if changing it becase control labels and contents need to be repopulated
 		do
-			set_serialisation_control_texts
 			if attached target_archetype_descriptor then
-				populate_serialised
+				serialisation_control.repopulate
 			end
 		end
 
@@ -400,7 +339,6 @@ feature {NONE} -- Events
 			then
 				differential_view := differential_flag
 				set_tab_texts
-				repopulate
 				on_select_archetype_notebook
 			end
 		end
@@ -449,14 +387,33 @@ feature {NONE} -- Events
 			-- Repopulate the view of the archetype when the user selects a different language.
 		do
 			selected_language := ev_language_combo.text.as_string_8
-			if target_archetype_descriptor.is_valid then
-				description_controls.populate (target_archetype, selected_language)
-				node_map_control.repopulate (selected_language)
-			end
+--			if target_archetype_descriptor.is_valid then
+--				description_controls.populate (target_archetype_descriptor, differential_view, selected_language)
+--				node_map_control.repopulate_with_language (selected_language)
+--			end
 			on_select_archetype_notebook
 		end
 
 feature {NONE} -- Implementation
+
+	do_populate
+		require
+			attached target_archetype_descriptor
+		do
+			clear
+			if target_archetype_descriptor.is_valid then
+				ev_archetype_id.set_text (target_archetype_descriptor.qualified_name)
+				ev_adl_version_text.set_text (target_archetype_descriptor.differential_archetype.adl_version)
+				selected_language := target_archetype_descriptor.differential_archetype.original_language.code_string
+				populate_languages
+
+				-- pre-populate the description and node-map controls, or else populate the validity control and show it
+				description_controls.populate (target_archetype_descriptor, differential_view, selected_language)
+				node_map_control.populate (target_archetype_descriptor, differential_view, selected_language)
+			else
+				ev_notebook.select_item (validity_report_control.ev_root_container)
+			end
+		end
 
 	text_widget_handler: GUI_TEXT_WIDGET_HANDLER
 			-- FIXME: this is a hack to get round lack of standard behaviour in Vision2 for
@@ -474,13 +431,13 @@ feature {NONE} -- Implementation
 
 	annotations_control: GUI_ANNOTATIONS_CONTROL
 
-	ev_serialised_rich_text: EV_RICH_TEXT
+	serialisation_control: GUI_SERIALISATION_CONTROL
 
-	ev_action_bar, ev_serialised_hbox: EV_HORIZONTAL_BOX
+	validity_report_control: GUI_VALIDITY_REPORT_CONTROL
 
-	ev_serialise_rb_vbox, ev_serialise_controls_vbox: EV_VERTICAL_BOX
+	statistical_information_control: GUI_ARCHETYPE_INFORMATION_TOOL
 
-	ev_serialise_padding_cell: EV_CELL
+	ev_action_bar: EV_HORIZONTAL_BOX
 
 	ev_view_tool_bar: EV_TOOL_BAR
 
@@ -489,12 +446,6 @@ feature {NONE} -- Implementation
 	ev_view_label, ev_language_label, ev_adl_version_label, ev_adl_version_text: EV_LABEL
 
 	ev_language_combo: EV_COMBO_BOX
-
-	ev_serialise_controls_frame: EV_FRAME
-
-	ev_serialise_adl_rb, ev_serialise_dadl_rb, ev_serialise_xml_rb: EV_RADIO_BUTTON
-
-	ev_flatten_with_rm_cb: EV_CHECK_BUTTON
 
 	selected_path_filter: STRING
 			-- currently selected filter in path map, for saving across sessions
@@ -528,8 +479,9 @@ feature {NONE} -- Implementation
 			ontology_controls.clear
 			slot_map_control.clear
 			annotations_control.clear
-
-			ev_serialised_rich_text.remove_text
+			serialisation_control.clear
+			validity_report_control.clear
+			statistical_information_control.clear
 		end
 
 	populate_languages
@@ -541,129 +493,14 @@ feature {NONE} -- Implementation
 			ev_language_combo.select_actions.resume
 		end
 
-	populate_serialised
-		require
-			attached target_archetype_descriptor
-		do
-			if ev_serialise_adl_rb.is_selected then
-				populate_source_text
-			elseif ev_serialise_dadl_rb.is_selected then
-				populate_dadl_text
-			elseif ev_serialise_xml_rb.is_selected then
-				populate_xml_text
-			end
-		end
-
-	populate_source_text
-			-- Display the selected archetype's differential or flat text in `source_rich_text', optionally with line numbers.
-		require
-			attached target_archetype_descriptor
-		do
-			if not differential_view then
-				if target_archetype_descriptor.is_valid then
-					populate_source_text_with_line_numbers (target_archetype_descriptor.flat_text (ev_flatten_with_rm_cb.is_selected))
-				elseif target_archetype_descriptor.has_legacy_flat_file then
-					populate_source_text_with_line_numbers (target_archetype_descriptor.legacy_flat_text)
-				else -- not valid, but derived from differential source
-					ev_serialised_rich_text.set_text (create_message_line ("compiler_no_flat_text", <<>>))
-				end
-			elseif target_archetype_descriptor.has_differential_file then
-				populate_source_text_with_line_numbers (target_archetype_descriptor.differential_text)
-			else
-				ev_serialised_rich_text.set_text (create_message_line ("compiler_no_source_text", <<>>))
-			end
-		end
-
-	populate_dadl_text
-			-- Display the selected archetype's differential or flat text in `ev_serialised_rich_text', in dADL format.
-		require
-			attached target_archetype_descriptor
-		do
-			if target_archetype_descriptor.is_valid then
-				if differential_view then
-					ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.serialise_object (False, Syntax_type_adl)))
-				else
-					ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.serialise_object (True, Syntax_type_adl)))
-				end
-			else
-				ev_serialised_rich_text.set_text (create_message_line ("compiler_no_dadl_text", <<>>))
-			end
-		end
-
-	populate_xml_text
-			-- Display the selected archetype's differential or flat text in `ev_serialised_rich_text', in XML format.
-		require
-			attached target_archetype_descriptor
-		do
-			if target_archetype_descriptor.is_valid then
-				if differential_view then
-					ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.serialise_object (False, Syntax_type_xml)))
-				else
-					ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.serialise_object (True, Syntax_type_xml)))
-				end
-			else
-				ev_serialised_rich_text.set_text (create_message_line ("compiler_no_xml_text", <<>>))
-			end
-		end
-
-	populate_source_text_with_line_numbers (text: attached STRING)
-			-- Display `text' in `source_rich_text', optionally with each line preceded by line numbers.
-		local
-			s: STRING
-			len, left_pos, right_pos, number: INTEGER
-		do
-			if show_line_numbers then
-				from
-					len := text.count
-					create s.make (len)
-					left_pos := 1
-					number := 1
-				until
-					left_pos > len
-				loop
-					s.append (number.out)
-
-					if number < 1000 then
-						s.append ("%T")
-					end
-
-					s.append (" ")
-
-					right_pos := text.index_of ('%N', left_pos)
-
-					if right_pos = 0 then
-						right_pos := len
-					end
-
-					s.append (text.substring (left_pos, right_pos))
-					left_pos := right_pos + 1
-					number := number + 1
-				end
-			else
-				s := text
-			end
-
-			ev_serialised_rich_text.set_text (utf8 (s))
-		end
-
-	set_serialisation_control_texts
-		do
-			ev_serialise_adl_rb.set_text ("ADL " + adl_version_for_flat_output)
-			ev_serialise_adl_rb.set_tooltip (create_message_content ("show_adl_serialisation_tooltip", <<adl_version_for_flat_output>>))
-			ev_serialise_dadl_rb.set_text ("dADL " + adl_version_for_flat_output)
-			ev_serialise_dadl_rb.set_tooltip (create_message_content ("show_dadl_serialisation_tooltip", <<adl_version_for_flat_output>>))
-			ev_serialise_xml_rb.set_text ("XML " + adl_version_for_flat_output)
-			ev_serialise_xml_rb.set_tooltip (create_message_content ("show_xml_serialisation_tooltip", <<adl_version_for_flat_output>>))
-		end
-
 	set_tab_texts
 			-- set taxt on tabs depending on view
 		do
 			-- serialised rich text tab
 			if differential_view then
-				ev_notebook.set_item_text (ev_serialised_hbox, "Serialised (src)")
+				ev_notebook.set_item_text (serialisation_control.ev_root_container, "Serialised (src)")
 			else
-				ev_notebook.set_item_text (ev_serialised_hbox, "Serialised (flat)")
+				ev_notebook.set_item_text (serialisation_control.ev_root_container, "Serialised (flat)")
 			end
 		end
 

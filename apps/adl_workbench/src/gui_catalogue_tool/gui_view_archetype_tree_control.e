@@ -247,7 +247,7 @@ feature {NONE} -- Implementation
 			--
 		do
 	 		if attached {ARCH_CAT_MODEL_NODE} node.data as arf then
-	 			if (arf.is_abstract_class or arf.is_model_group) and node.is_expandable then
+	 			if (arf.is_abstract_class or arf.is_rm_closure) and node.is_expandable then
 					node.expand
 	 			end
 	 		end

@@ -14,12 +14,12 @@ note
 class GUI_ANNOTATIONS_CONTROL
 
 inherit
+	GUI_ARCHETYPE_TARGETTED_TOOL
+
 	GUI_UTILITIES
 		export
 			{NONE} all
 		end
-
-	GUI_GRID_CONTROLLER
 
 	SHARED_APP_UI_RESOURCES
 		export
@@ -41,26 +41,51 @@ feature {NONE} -- Initialisation
 			-- Create controller for the annotations grid.
 		do
 			-- set visual characteristics & events
-			make_for_grid (create {EV_GRID})
-			grid.enable_tree
+			create ev_root_container
+			ev_root_container.set_data (Current)
+
+			ev_root_container.enable_tree
+			create grid_controller.make_for_grid (ev_root_container)
 		end
 
-feature -- Status Report
+feature -- Access
 
-	differential_view: BOOLEAN
+	ev_root_container: EV_GRID
 
 feature -- Commands
 
 	clear
 			-- Wipe out content from widgets.
 		do
-			grid.wipe_out
+			ev_root_container.wipe_out
 		end
 
-	populate (aca: attached ARCH_CAT_ARCHETYPE; differential_view_flag: BOOLEAN; selected_language: attached STRING)
+   	set_row_pixmap (row: attached EV_GRID_ROW)
+   			-- Set the icon appropriate to the item attached to `row'.
+   		do
+			if attached {EV_GRID_LABEL_ITEM} row.item (1) as gli and attached {ARCH_CAT_ITEM} row.data as ari then
+				if attached {EV_PIXMAP} pixmaps [ari.group_name] as pixmap then
+					gli.set_pixmap (pixmap)
+				end
+			end
+		end
+
+	toggle_expand_tree
+			-- toggle expanded status of tree view
+		do
+--			if is_expanded then
+--				is_expanded := False
+--			else
+--				is_expanded := True
+--			end
+		end
+
+feature {NONE} -- Implementation
+
+	grid_controller: GUI_GRID_CONTROLLER
+
+	do_populate
 			-- populate the ADL tree control by creating it from scratch
-		require
-			aca.is_valid
 		local
 			lang_key: STRING
 			anns_by_path: HASH_TABLE [RESOURCE_ANNOTATION_ITEMS, STRING]
@@ -68,11 +93,6 @@ feature -- Commands
 			gli: EV_GRID_LABEL_ITEM
 			path_row, ann_row: EV_GRID_ROW
 		do
-			target_archetype_descriptor := aca
-			differential_view := differential_view_flag
-
-			clear
-
 			-- figure out if there are any annotations, and what actual language tag they are under
 			if target_archetype.has_annotations and then target_archetype.annotations.has_matching_language_tag (selected_language) then
 				lang_key := target_archetype.annotations.matching_language_tag (selected_language)
@@ -82,7 +102,7 @@ feature -- Commands
 				from anns_by_path.start until anns_by_path.off loop
 					-- put the path in the first column
 					create gli.make_with_text (target_archetype.ontology.physical_to_logical_path (anns_by_path.key_for_iteration, selected_language, True))
-					grid.set_item (Grid_path_col, grid.row_count + 1, gli)
+					ev_root_container.set_item (Grid_path_col, ev_root_container.row_count + 1, gli)
 					path_row := gli.row
 
 					-- for each item in the annotations list, add a sub-row with the key in col 2 and the value in col 3
@@ -109,51 +129,16 @@ feature -- Commands
 				end
 
 				-- put names on columns
-				if grid.column_count > 0 then
-					grid.column (Grid_path_col).set_title (create_message_content ("annotation_path_text", Void))
-					grid.column (Grid_path_col).resize_to_content
-					grid.column (Grid_ann_key_col).set_title (create_message_content ("annotation_key_text", Void))
-					grid.column (Grid_ann_key_col).resize_to_content
-					grid.column (Grid_ann_value_col).set_title (create_message_content ("annotation_value_text", Void))
-					grid.column (Grid_ann_value_col).resize_to_content
+				if ev_root_container.column_count > 0 then
+					ev_root_container.column (Grid_path_col).set_title (create_message_content ("annotation_path_text", Void))
+					ev_root_container.column (Grid_path_col).resize_to_content
+					ev_root_container.column (Grid_ann_key_col).set_title (create_message_content ("annotation_key_text", Void))
+					ev_root_container.column (Grid_ann_key_col).resize_to_content
+					ev_root_container.column (Grid_ann_value_col).set_title (create_message_content ("annotation_value_text", Void))
+					ev_root_container.column (Grid_ann_value_col).resize_to_content
 				end
 			end
 		end
-
-   	set_row_pixmap (row: attached EV_GRID_ROW)
-   			-- Set the icon appropriate to the item attached to `row'.
-   		do
-			if attached {EV_GRID_LABEL_ITEM} row.item (1) as gli and attached {ARCH_CAT_ITEM} row.data as ari then
-				if attached {EV_PIXMAP} pixmaps [ari.group_name] as pixmap then
-					gli.set_pixmap (pixmap)
-				end
-			end
-		end
-
-	toggle_expand_tree
-			-- toggle expanded status of tree view
-		do
---			if is_expanded then
---				is_expanded := False
---			else
---				is_expanded := True
---			end
-		end
-
-feature {NONE} -- Implementation
-
-	target_archetype: ARCHETYPE
-			-- differential or flat version of archetype, depending on setting of `differential_view'
-		do
-			if differential_view then
-				Result := target_archetype_descriptor.differential_archetype
-			else
-				Result := target_archetype_descriptor.flat_archetype
-			end
-		end
-
-	target_archetype_descriptor: ARCH_CAT_ARCHETYPE
-			-- archetype to which this tool is targetted
 
 end
 

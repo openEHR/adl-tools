@@ -32,13 +32,13 @@ create
 
 feature -- Access
 
-	property: CODE_PHRASE
+	property: detachable CODE_PHRASE
 			-- property
 
-	list: ARRAYED_LIST [C_QUANTITY_ITEM]
+	list: detachable ARRAYED_LIST [C_QUANTITY_ITEM]
 			-- list of items constraining magnitude/units pairs
 
-	prototype_value: QUANTITY
+	prototype_value: attached QUANTITY
 			-- Generate a default value from this constraint object.
 			-- FIXME: This should be of type DV_QUANTITY.
 		local
@@ -80,6 +80,26 @@ feature -- Access
 			else -- property must be the only thing set...
 				create Result.make (a_mag, default_units, -1)
  			end
+		end
+
+feature -- Statistics
+
+	report_rm_attributes: attached ARRAYED_SET [STRING]
+			-- report which attributes of the equivalent DV_QUANTITY are being constrained here
+		do
+			create Result.make(0)
+			if attached list then
+				Result.extend ("units")
+				from list.start until list.off loop
+					if attached list.item.magnitude then
+						Result.extend ("magnitude")
+					end
+					if attached list.item.precision then
+						Result.extend ("precision")
+					end
+					list.forth
+				end
+			end
 		end
 
 feature -- Modification

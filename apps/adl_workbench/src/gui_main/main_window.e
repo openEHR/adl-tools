@@ -1,7 +1,7 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "Main window"
-	keywords:    "test, ADL"
+	keywords:    "AWB, archetypes, workbench"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
@@ -1003,12 +1003,12 @@ feature -- RM Schemas Events
 				rm_schemas_access.load_schemas
 				if not rm_schemas_access.found_valid_schemas then
 					append_billboard_to_console
-
-					-- FIXME: reset rm schema load list back?
 				else
+					rm_schema_tool.populate
 					refresh_profile_context (True)
 				end
 			elseif dialog.has_changed_schema_dir then
+				rm_schema_tool.populate
 				refresh_profile_context (True)
 			end
 		end

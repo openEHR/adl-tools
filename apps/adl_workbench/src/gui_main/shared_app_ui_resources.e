@@ -442,7 +442,7 @@ feature -- Conversion
 			rm_publisher: STRING
 		do
 			if attached {ARCH_CAT_MODEL_NODE} ara as acmn and then acmn.is_class then
-				rm_publisher := acmn.bmm_schema.model_publisher
+				rm_publisher := acmn.bmm_schema.rm_publisher
 				if use_rm_pixmaps and then rm_pixmaps.has (rm_publisher) and then rm_pixmaps.item (rm_publisher).has (acmn.class_definition.name) then
 					Result := rm_pixmaps.item (rm_publisher).item (acmn.class_definition.name)
 				else

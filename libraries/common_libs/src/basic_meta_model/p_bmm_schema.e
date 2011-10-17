@@ -52,7 +52,8 @@ feature -- Initialisation
 			create class_definitions.make (0)
 			create packages.make (0)
 			create includes.make (0)
-			create models.make (0)
+			create archetype_rm_closure_packages.make (0)
+			archetype_rm_closure_packages.compare_objects
 			create includes_to_process.make (0)
 			includes_to_process.compare_objects
 			create schema_error_table.make (0)
@@ -85,11 +86,6 @@ feature -- Access (attributes from schema)
 			-- inclusion list, in the form of a hash of individual include specifications,
 			-- each of which at least specifies the id of another schema, and may specify
 			-- a namespace via which types from the included schemas are known in this schema
-			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
-
-	archetype_parent_class: STRING
-			-- name of a parent class used within the schema to provide archetype capability,
-			-- enabling schema evolution reasoning
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
 	primitive_types: HASH_TABLE [P_BMM_CLASS_DEFINITION, STRING]
@@ -420,6 +416,13 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 			if attached other.archetype_parent_class then
 				archetype_parent_class := other.archetype_parent_class
 			end
+			-- archetype data value parent class
+			if attached other.archetype_data_value_parent_class then
+				archetype_data_value_parent_class := other.archetype_data_value_parent_class
+			end
+			-- archetype closures
+			archetype_rm_closure_packages.merge (other.archetype_rm_closure_packages)
+
 
 			-- primitive types
 			from other.primitive_types.start until other.primitive_types.after loop
@@ -490,12 +493,6 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 				other.canonical_packages.forth
 			end
 
-			-- models
-			from other.models.start until other.models.off loop
-				models.put (other.models.item_for_iteration, other.models.key_for_iteration)
-				other.models.forth
-			end
-
 			-- remove other schema from remaining list of included schemas to process
 			includes_to_process.prune_all (other.schema_id)
 			if includes_to_process.is_empty then
@@ -512,19 +509,14 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 			-- main validation prior to generation of BMM_SCHEMA; access to `all_schemas' allows errors to be allocated to
 			-- correct schema
 		local
-			model_packages: ARRAYED_LIST [STRING]
 			package_classes: HASH_TABLE [STRING, STRING]
 		do
 			-- check that all models refer to declared packages
-			from models.start until models.off loop
-				model_packages := models.item_for_iteration
-				from model_packages.start until model_packages.off loop
-					if not has_canonical_package_path (model_packages.item) then
-						add_error ("BMM_MDLPK", <<schema_id, models.key_for_iteration, model_packages.item>>)
-					end
-					model_packages.forth
+			from archetype_rm_closure_packages.start until archetype_rm_closure_packages.off loop
+				if not has_canonical_package_path (archetype_rm_closure_packages.item) then
+					add_error ("BMM_MDLPK", <<schema_id, archetype_rm_closure_packages.item>>)
 				end
-				models.forth
+				archetype_rm_closure_packages.forth
 			end
 
 			-- check that no duplicate classes are found in packages
@@ -637,7 +629,7 @@ feature -- Factory
 			state = State_includes_processed
 		do
 			--------- PASS 1 ----------
-			create bmm_schema.make (model_publisher, schema_name, model_release)
+			create bmm_schema.make (rm_publisher, schema_name, rm_release)
 			bmm_schema.set_schema_description (schema_description)
 
 			-- packages - add package structure only, no classes yet
@@ -657,12 +649,15 @@ feature -- Factory
 			if attached archetype_parent_class then
 				bmm_schema.set_archetype_parent_class (archetype_parent_class)
 			end
-
-			-- add models - clone because merging will change the structure in the BMM_SCHEMA
-			bmm_schema.set_models (models.deep_twin)
+			-- set the archetype data value root class
+			if attached archetype_data_value_parent_class then
+				bmm_schema.set_archetype_data_value_parent_class (archetype_data_value_parent_class)
+			end
+			-- add RM closure packages - clone because merging will change the structure in the BMM_SCHEMA
+			bmm_schema.set_archetype_rm_closure_packages (archetype_rm_closure_packages.deep_twin)
 
 			--------- PASS 2 ----------
-			-- add generic parameter model elements to BMM_CLASS_DEFINITION objects
+			-- populate BMM_CLASS_DEFINITION objects
 			do_all_classes (agent (a_class_def: P_BMM_CLASS_DEFINITION) do a_class_def.populate_bmm_class_definition (bmm_schema) end)
 		end
 

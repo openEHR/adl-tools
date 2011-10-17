@@ -15,6 +15,8 @@ note
 class GUI_PATH_MAP_CONTROL
 
 inherit
+	GUI_ARCHETYPE_TARGETTED_TOOL
+
 	SHARED_KNOWLEDGE_REPOSITORY
 		export
 			{NONE} all;
@@ -55,6 +57,8 @@ feature {NONE} -- Initialisation
 		do
 			-- create widgets
 			create ev_root_container
+			ev_root_container.set_data (Current)
+
 			create ev_path_list
 			create ev_vbox
 			create ev_row_frame
@@ -87,15 +91,15 @@ feature {NONE} -- Initialisation
 			ev_vbox.set_border_width (4)
 			ev_vbox.disable_item_expand (ev_row_frame)
 			ev_vbox.disable_item_expand (ev_col_frame)
-			ev_row_frame.set_text ("Row Filter")
+			ev_row_frame.set_text (create_message_content ("row_filter_frame_text", Void))
 			ev_row_vbox.set_border_width (border_width)
-			ev_filter_combo.set_tooltip ("Filter which rows are shown in the Path Analysis")
+			ev_filter_combo.set_tooltip (create_message_content ("row_filter_combo_tooltip", Void))
 			ev_filter_combo.set_minimum_width (80)
 			ev_filter_combo.disable_edit
-			ev_col_frame.set_text ("Column View")
+			ev_col_frame.set_text (create_message_content ("column_frame_text", Void))
 			ev_col_frame.set_minimum_height (150)
 			ev_col_vbox.set_border_width (border_width)
-			ev_column_check_list.set_tooltip ("Choose view of columns in the Path Analysis")
+			ev_column_check_list.set_tooltip (create_message_content ("column_checklist_tooltip", Void))
 			ev_column_check_list.set_minimum_width (100)
 			ev_column_check_list.set_minimum_height (30)
 
@@ -120,8 +124,6 @@ feature -- Access
 		do
 			Result := ev_filter_combo.selected_item.text.as_string_8
 		end
-
-	selected_language: STRING
 
 feature -- Events
 
@@ -151,17 +153,65 @@ feature -- Commands
 			ev_path_list.wipe_out
 		end
 
-	populate (an_archetype: attached ARCHETYPE; a_language: attached STRING)
-			-- Populate `path_list'.
-		require
-			an_archetype.is_valid
+	adjust_columns
+			-- Adjust column view of paths control according to `column_check_list'.
+		local
+			i: INTEGER
 		do
-			target_archetype := an_archetype
-			selected_language := a_language
-			repopulate (selected_language)
+			from i := 1 until i > ev_path_list.column_count loop
+				if i > ev_column_check_list.count or else not ev_column_check_list.is_item_checked (ev_column_check_list [i]) then
+					ev_path_list.set_column_width (0, i)
+				else
+					ev_path_list.resize_column_to_content (i)
+					if ev_path_list.column_width (i) < 100 then
+						ev_path_list.set_column_width (100, i)
+					end
+				end
+
+				i := i + 1
+			end
 		end
 
-	repopulate (a_language: attached STRING)
+	set_filter
+			-- Called by `select_actions' of `filter_combo'.
+		do
+			if ev_path_list.is_displayed then
+				repopulate
+			end
+		end
+
+	selected_text: STRING
+			-- copy a selected path row from the paths control to the OS clipboard
+		local
+			ev_rows: DYNAMIC_LIST[EV_MULTI_COLUMN_LIST_ROW]
+			ev_col: EV_MULTI_COLUMN_LIST_ROW
+		do
+			ev_rows := ev_path_list.selected_items
+			create Result.make (0)
+
+			if not ev_rows.is_empty then
+				from ev_rows.start until ev_rows.off loop
+					ev_col := ev_rows.item
+					from ev_col.start until ev_col.off loop
+						Result.append (ev_col.item.string + "%N")
+						ev_col.forth
+					end
+					ev_rows.forth
+				end
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	ev_vbox, ev_row_vbox, ev_col_vbox: EV_VERTICAL_BOX
+
+	ev_filter_combo: EV_COMBO_BOX
+
+	ev_row_frame, ev_col_frame: EV_FRAME
+
+	ev_path_list: EV_MULTI_COLUMN_LIST
+
+	do_populate
 		local
 			list_row: EV_MULTI_COLUMN_LIST_ROW
 			p_paths, l_paths: ARRAYED_LIST[STRING]
@@ -201,66 +251,6 @@ feature -- Commands
 
 			adjust_columns
 		end
-
-	adjust_columns
-			-- Adjust column view of paths control according to `column_check_list'.
-		local
-			i: INTEGER
-		do
-			from i := 1 until i > ev_path_list.column_count loop
-				if i > ev_column_check_list.count or else not ev_column_check_list.is_item_checked (ev_column_check_list [i]) then
-					ev_path_list.set_column_width (0, i)
-				else
-					ev_path_list.resize_column_to_content (i)
-					if ev_path_list.column_width (i) < 100 then
-						ev_path_list.set_column_width (100, i)
-					end
-				end
-
-				i := i + 1
-			end
-		end
-
-	set_filter
-			-- Called by `select_actions' of `filter_combo'.
-		do
-			if ev_path_list.is_displayed then
-				repopulate (selected_language)
-			end
-		end
-
-	selected_text: STRING
-			-- copy a selected path row from the paths control to the OS clipboard
-		local
-			ev_rows: DYNAMIC_LIST[EV_MULTI_COLUMN_LIST_ROW]
-			ev_col: EV_MULTI_COLUMN_LIST_ROW
-		do
-			ev_rows := ev_path_list.selected_items
-			create Result.make (0)
-
-			if not ev_rows.is_empty then
-				from ev_rows.start until ev_rows.off loop
-					ev_col := ev_rows.item
-					from ev_col.start until ev_col.off loop
-						Result.append (ev_col.item.string + "%N")
-						ev_col.forth
-					end
-					ev_rows.forth
-				end
-			end
-		end
-
-feature {NONE} -- Implementation
-
-	ev_vbox, ev_row_vbox, ev_col_vbox: EV_VERTICAL_BOX
-
-	ev_filter_combo: EV_COMBO_BOX
-
-	ev_row_frame, ev_col_frame: EV_FRAME
-
-	ev_path_list: EV_MULTI_COLUMN_LIST
-
-	target_archetype: ARCHETYPE
 
 	initialise_controls
 			-- Initialise widgets associated with the Path Analysis.

@@ -52,7 +52,7 @@ feature -- Initialisation
 			create candidate_schemas.make(0)
 			create valid_top_level_schemas.make(0)
 			create schema_inclusion_map.make(0)
-			create schemas_by_model.make(0)
+			create schemas_by_rm_closure.make(0)
 			create {ARRAYED_LIST[STRING]} schemas_load_list.make(0)
 			schemas_load_list.compare_objects
 		end
@@ -92,12 +92,12 @@ feature -- Access
 			-- top-level (root) schemas in use. Table is keyed by logical schema_name, i.e. model_publisher '_' model_name, e.g. "openehr_rm"
 			-- Schemas containing different variants of same model (i.e. model_publisher + model_name) are considered duplicates
 
-	schema_for_model (a_qualified_model_name: STRING): BMM_SCHEMA
-			-- Return schema containing the model-class key `a_qualified_model_name', e.g. "openEHR-EHR"
+	schema_for_rm_closure (a_qualified_rm_closure_name: STRING): BMM_SCHEMA
+			-- Return schema containing the model-class key `a_qualified_rm_closure_name', e.g. "openEHR-EHR"
 		require
-			has_schema_for_model (a_qualified_model_name.as_lower)
+			has_schema_for_rm_closure (a_qualified_rm_closure_name)
 		do
-			Result := schemas_by_model.item (a_qualified_model_name.as_lower)
+			Result := schemas_by_rm_closure.item (a_qualified_rm_closure_name.as_lower)
 		end
 
 	schemas_load_list: attached LIST [STRING]
@@ -112,10 +112,10 @@ feature -- Access
 
 feature -- Status Report
 
-	has_schema_for_model (a_qualified_model_name: STRING): BOOLEAN
-			-- True if there is a schema containing the qualified package key `a_qualified_model_name', e.g. "openEHR-EHR"
+	has_schema_for_rm_closure (a_qualified_rm_closure_name: STRING): BOOLEAN
+			-- True if there is a schema containing the qualified package key `a_qualified_rm_closure_name', e.g. "openEHR-EHR"
 		do
-			Result := schemas_by_model.has (a_qualified_model_name.as_lower)
+			Result := schemas_by_rm_closure.has (a_qualified_rm_closure_name.as_lower)
 		end
 
 	found_valid_schemas: BOOLEAN
@@ -139,8 +139,8 @@ feature -- Commands
 			-- config variable, or by reading all schemas found in the schema directory
 		local
 			model_publisher: STRING
-			qualified_model_name: STRING
-			models: HASH_TABLE [ARRAYED_LIST [STRING], STRING]
+			qualified_rm_closure_name: STRING
+			rm_closures: ARRAYED_LIST [STRING]
 			included_schema: P_BMM_SCHEMA
 			sd: SCHEMA_DESCRIPTOR
 			i: INTEGER
@@ -265,22 +265,22 @@ feature -- Commands
 					end
 				end
 
-				-- now populate the `schemas_by_model' table
-				schemas_by_model.wipe_out
+				-- now populate the `schemas_by_rm_closure' table
+				schemas_by_rm_closure.wipe_out
 				from valid_top_level_schemas.start until valid_top_level_schemas.off loop
-					model_publisher := valid_top_level_schemas.item_for_iteration.model_publisher
-					models := valid_top_level_schemas.item_for_iteration.models
+					model_publisher := valid_top_level_schemas.item_for_iteration.rm_publisher
+					rm_closures := valid_top_level_schemas.item_for_iteration.archetype_rm_closure_packages
 
 					-- put a ref to schema, keyed by the model_publisher-package_name key (lower-case) for later lookup by compiler
-					from models.start until models.off loop
-						qualified_model_name := publisher_qualified_library_name (model_publisher, models.key_for_iteration)
-						if not schemas_by_model.has (qualified_model_name) then
-							schemas_by_model.put (valid_top_level_schemas.item_for_iteration, qualified_model_name)
+					from rm_closures.start until rm_closures.off loop
+						qualified_rm_closure_name := publisher_qualified_rm_closure_name (model_publisher, rm_closures.item)
+						if not schemas_by_rm_closure.has (qualified_rm_closure_name) then
+							schemas_by_rm_closure.put (valid_top_level_schemas.item_for_iteration, qualified_rm_closure_name.as_lower)
 						else
-							post_info (Current, "load_schemas", "model_access_w3", <<qualified_model_name, schemas_by_model.item (qualified_model_name).schema_id,
+							post_info (Current, "load_schemas", "model_access_w3", <<qualified_rm_closure_name, schemas_by_rm_closure.item (qualified_rm_closure_name).schema_id,
 								valid_top_level_schemas.key_for_iteration>>)
 						end
-						models.forth
+						rm_closures.forth
 					end
 					valid_top_level_schemas.forth
 				end
@@ -305,7 +305,7 @@ feature {NONE} -- Implementation
 			-- Schemas not included by other schemas have NO ENTRY in this list
 			-- this is detected and used to populate `top_level_schemas'
 
-	schemas_by_model: attached HASH_TABLE [BMM_SCHEMA, STRING]
+	schemas_by_rm_closure: attached HASH_TABLE [BMM_SCHEMA, STRING]
 			-- schemas keyed by qualified package name, i.e. model_publisher '-' package_name, e.g. "openehr-ehr";
 			-- this matches the qualifide package name part of an ARCHETYPE_ID
 
@@ -402,7 +402,7 @@ feature {NONE} -- Implementation
 			-- up the hierarchy with the knock-on effect of these errors
 		local
 			err_table: HASH_TABLE [ERROR_ACCUMULATOR, STRING]
-			error_propagated: BOOLEAN
+			errors_to_propagate: BOOLEAN
 		do
 			err_table := sd.p_schema.schema_error_table
 			from err_table.start until err_table.off loop
@@ -422,14 +422,14 @@ feature {NONE} -- Implementation
 			end
 
 			-- now propagate the errors to all schemas in the inclusion hierarchy
-			from error_propagated := True until not error_propagated loop
+			from errors_to_propagate := True until not errors_to_propagate loop
+				errors_to_propagate := False
 				from schema_inclusion_map.start until schema_inclusion_map.off loop
-					error_propagated := False
 					if not all_schemas.item (schema_inclusion_map.key_for_iteration).passed then
 						from schema_inclusion_map.item_for_iteration.start until schema_inclusion_map.item_for_iteration.off loop
 							if all_schemas.item (schema_inclusion_map.item_for_iteration.item).passed then
 								all_schemas.item (schema_inclusion_map.item_for_iteration.item).add_error ("BMM_INCERR", <<schema_inclusion_map.item_for_iteration.item, schema_inclusion_map.key_for_iteration>>)
-								error_propagated := True
+								errors_to_propagate := True
 							end
 							schema_inclusion_map.item_for_iteration.forth
 						end

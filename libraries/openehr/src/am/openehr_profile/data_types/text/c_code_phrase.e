@@ -57,11 +57,11 @@ feature -- Initialisation
 
 feature -- Access
 
-	terminology_id: TERMINOLOGY_ID
+	terminology_id: detachable TERMINOLOGY_ID
 			-- id of terminology from which codes come. If code list empty, any code from
 			-- this terminology is allowed
 
-	code_list: ARRAYED_LIST[STRING]
+	code_list: detachable ARRAYED_LIST[STRING]
 			-- list of codes in terminology designated by terminology_id
 
 	code_count: INTEGER
@@ -90,6 +90,20 @@ feature -- Access
 		end
 
 	fail_reason: STRING
+
+feature -- Statistics
+
+	report_rm_attributes: attached ARRAYED_SET [STRING]
+			-- report which attributes of the equivalent DV_QUANTITY are being constrained here
+		do
+			create Result.make (0)
+			if attached terminology_id then
+				Result.extend ("terminology_id")
+			end
+			if attached code_list then
+				Result.extend ("code_phrase")
+			end
+		end
 
 feature -- Status Report
 

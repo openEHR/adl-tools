@@ -22,21 +22,22 @@ inherit
 
 feature -- Initialisation
 
-	make (a_model_publisher, a_schema_name, a_model_release: attached STRING)
+	make (a_rm_publisher, a_schema_name, a_rm_release: attached STRING)
 		require
-			valid_publisher: not a_model_publisher.is_empty
+			valid_rm_publisher: not a_rm_publisher.is_empty
 			valid_schema_name: not a_schema_name.is_empty
-			valid_model_release: not a_model_release.is_empty
+			valid_rm_release: not a_rm_release.is_empty
 		do
-			model_publisher := a_model_publisher
+			rm_publisher := a_rm_publisher
 			schema_name := a_schema_name
-			model_release := a_model_release
-			create models.make (0)
+			rm_release := a_rm_release
+			create archetype_rm_closure_packages.make (0)
+			archetype_rm_closure_packages.compare_objects
 		end
 
 feature -- Identification
 
-	model_publisher: STRING
+	rm_publisher: STRING
 			-- publisher of model expressed in the schema
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
@@ -45,14 +46,14 @@ feature -- Identification
 			-- A publisher with more than one model can have multiple schemas.
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
-	model_release: STRING
+	rm_release: STRING
 			-- release of model expressed in the schema
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
 	schema_id: STRING
 			-- derived name of schema, based on model publisher, model name, model release
 		do
-			Result := create_schema_id (model_publisher, schema_name, model_release)
+			Result := create_schema_id (rm_publisher, schema_name, rm_release)
 		end
 
 	schema_description: STRING
@@ -61,33 +62,37 @@ feature -- Identification
 
 feature -- Access
 
-	models: attached HASH_TABLE [ARRAYED_LIST [STRING], STRING]
-			-- semantic model list; equivalent to a list of models included in schema
-			-- top-level packages are models on which archteypes are based, and their names correspond to the
-			-- second section of the 3-part archetype RM entity identifer, e.g. "EHR" in "openEHR-EHR"
+	archetype_parent_class: STRING
+			-- name of a parent class used within the schema to provide archetype capability,
+			-- enabling filtering of classes in RM visualisation. If empty, 'Any' is assumed
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+	archetype_data_value_parent_class: STRING
+			-- name of a parent class of logical 'data types' used within the schema to provide archetype capability,
+			-- enabling filtering of classes in RM visualisation. If empty, 'Any' is assumed
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+	archetype_rm_closure_packages: attached ARRAYED_SET [STRING]
+			-- list of top-level package paths that provide the RM 'model' part in achetype identifiers,
+			-- e.g. the path "org.openehr.ehr" gives "EHR" in "openEHR-EHR". Within this namespace,
+			-- archetypes can be based on any class reachable from classes defined directly in these packages
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
 feature -- Status Report
 
-	has_model (a_model_name: attached STRING): BOOLEAN
+	has_rm_closure_package (a_package_path: attached STRING): BOOLEAN
+			-- `a_package_path' is a qualified package name, like 'org.openehr.ehr', 'org.openehr.demographic'
 		require
-			valid_model_name: not a_model_name.is_empty
+			valid_package_path: not a_package_path.is_empty
 		do
-			Result := models.has (a_model_name)
+			Result := archetype_rm_closure_packages.has (a_package_path)
 		end
 
 feature -- Modification
 
-	add_model (a_model_name: attached STRING; a_package_list: attached ARRAYED_LIST [STRING])
-		require
-			valid_model_name: not a_model_name.is_empty and not has_model (a_model_name)
+	set_archetype_rm_closure_packages (a_package_list: like archetype_rm_closure_packages)
 		do
-			models.put (a_package_list, a_model_name)
-		end
-
-	set_models (a_models: like models)
-		do
-			models := a_models
+			archetype_rm_closure_packages := a_package_list
 		end
 
 	set_schema_description (a_description: attached STRING)

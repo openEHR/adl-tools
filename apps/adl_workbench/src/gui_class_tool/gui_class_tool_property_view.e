@@ -206,7 +206,7 @@ feature -- Commands
  			create ev_tree_item_stack.make (0)
 
 			-- for use in icon switching
- 			model_publisher := a_class_def.bmm_schema.model_publisher
+ 			model_publisher := a_class_def.bmm_schema.rm_publisher
 
  			-- populate the tree
 			populate_root_node

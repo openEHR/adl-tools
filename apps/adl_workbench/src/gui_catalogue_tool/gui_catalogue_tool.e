@@ -26,8 +26,6 @@ inherit
 		end
 
 	GUI_SEARCHABLE_TOOL
-		export
-			{NONE} all
 		redefine
 			ev_root_container
 		end

@@ -43,7 +43,7 @@ feature {NONE} -- Events
 		do
 			app_root.initialise
 			assert ("No RM schemas", rm_schemas_access.found_valid_schemas)
-			rm_schema := rm_schemas_access.schema_for_model ("openehr-ehr")
+			rm_schema := rm_schemas_access.schema_for_rm_closure ("openehr-ehr")
 		end
 
 feature -- Access

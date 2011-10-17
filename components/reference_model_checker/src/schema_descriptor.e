@@ -41,7 +41,7 @@ feature -- Initialisation
 		do
 			reset
 			meta_data := a_meta_data
-			schema_id := create_schema_id (meta_data.item (Metadata_model_publisher), meta_data.item (metadata_schema_name), meta_data.item (Metadata_model_release))
+			schema_id := create_schema_id (meta_data.item (metadata_rm_publisher), meta_data.item (metadata_schema_name), meta_data.item (metadata_rm_release))
 
 			-- if there is no bmm_version meta-data item, that means that the initial fast-parse scan (note: doesn't use the main dadl parser)
 			-- did not find one; therefore we use the assumed value

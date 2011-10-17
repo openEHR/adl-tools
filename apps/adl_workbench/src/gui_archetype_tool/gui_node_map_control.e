@@ -14,6 +14,11 @@ note
 class GUI_NODE_MAP_CONTROL
 
 inherit
+	GUI_ARCHETYPE_TARGETTED_TOOL
+		redefine
+			repopulate
+		end
+
 	SPECIALISATION_STATUSES
 		export
 			{NONE} all
@@ -53,6 +58,8 @@ feature -- Initialisation
 
 			-- create widgets
 			create ev_root_container
+			ev_root_container.set_data (Current)
+
 			create ev_tree
 			create ev_view_controls_vbox
 			create ev_expand_button
@@ -81,12 +88,10 @@ feature -- Initialisation
 			ev_view_controls_vbox.extend (ev_use_rm_icons_cb)
 
 			-- set visual characteristics
-			ev_root_container.set_minimum_width (1)
-			ev_root_container.set_minimum_height (160)
+--			ev_root_container.set_minimum_width (1)
+--			ev_root_container.set_minimum_height (160)
 			ev_root_container.disable_item_expand (ev_view_controls_vbox)
 			ev_tree.set_background_color (editable_colour)
-			ev_tree.set_minimum_width (350)
-			ev_tree.set_minimum_height (60)
 
 			-- right hand side tree expand/collapse controls
 			ev_view_controls_vbox.set_minimum_width (100)
@@ -153,24 +158,7 @@ feature -- Access
 
 	ev_root_container: EV_HORIZONTAL_BOX
 
-	target_archetype: ARCHETYPE
-			-- differential or flat version of archetype, depending on setting of `differential_view'
-		do
-			if differential_view then
-				Result := target_archetype_descriptor.differential_archetype
-			else
-				Result := target_archetype_descriptor.flat_archetype
-			end
-		end
-
-	target_archetype_descriptor: ARCH_CAT_ARCHETYPE
-			-- archetype to which this tool is targetted
-
-	selected_language: STRING
-
 feature -- Status Report
-
-	differential_view: BOOLEAN
 
 	in_technical_mode: BOOLEAN
 			-- If True, show more technical detail on each node
@@ -191,59 +179,12 @@ feature -- Commands
 			ev_tree.wipe_out
 		end
 
-	populate (aca: attached ARCH_CAT_ARCHETYPE; differential_view_flag: BOOLEAN; a_language: attached STRING)
-			-- build definition / ontology cross reference tables used for validation and
-			-- other purposes
-		require
-			aca.is_valid
-		local
-			a_c_iterator: C_VISITOR_ITERATOR
-			c_node_map_builder: C_GUI_NODE_MAP_BUILDER
-		do
-			target_archetype_descriptor := aca
-			differential_view := differential_view_flag
-			selected_language := a_language
-
-			clear
-			create tree_item_stack.make (0)
-			create gui_node_map.make(0)
-			create ontologies.make (0)
-
-			rm_schema := target_archetype_descriptor.rm_schema
-
-			-- populate from definition
-			create c_node_map_builder
-			c_node_map_builder.initialise (target_archetype, selected_language, ev_tree, in_technical_mode, False, gui_node_map, code_select_action_agent)
-			create a_c_iterator.make (target_archetype.definition, c_node_map_builder)
-			a_c_iterator.do_all
-
-			-- add RM attributes if in RM mode
-			if in_reference_model_mode then
-				ev_tree.recursive_do_all (agent node_add_rm_attributes (?))
-			end
-
-			-- populate from invariants
-			populate_invariants
-
-			-- make visualisation adjustments
-			is_expanded := not expand_node_tree
-			toggle_expand_tree
-
-			if not differential_view then
-				roll_up_to_specialisation_level
-			end
-		end
-
-	repopulate (a_language: attached STRING)
+	repopulate
 			-- repopulate and/or refresh visual appearance if diff/flat view has changed or RM icons setting changed
-		require
-			Already_populated: attached target_archetype
 		local
 			a_c_iterator: C_VISITOR_ITERATOR
 			c_node_map_builder: C_GUI_NODE_MAP_BUILDER
 		do
-			selected_language := a_language
-
 			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
 			create c_node_map_builder
 			c_node_map_builder.initialise (target_archetype, selected_language, ev_tree, in_technical_mode, True, gui_node_map, code_select_action_agent)
@@ -270,7 +211,7 @@ feature -- Commands
 				else
 					ev_use_rm_icons_cb.disable_select
 				end
-				repopulate (selected_language)
+				repopulate
 			end
 		end
 
@@ -315,7 +256,7 @@ feature {NONE} -- Events
 			if attached target_archetype_descriptor then
 				in_technical_mode := False
 				set_show_technical_view (False)
-				repopulate (selected_language)
+				repopulate
 			end
 		end
 
@@ -325,7 +266,7 @@ feature {NONE} -- Events
 			if attached target_archetype_descriptor then
 				in_technical_mode := True
 				set_show_technical_view (True)
-				repopulate (selected_language)
+				repopulate
 			end
 		end
 
@@ -342,7 +283,7 @@ feature {NONE} -- Events
 					in_reference_model_mode := False
 					set_show_reference_model_view (False)
 				end
-				repopulate (selected_language)
+				repopulate
 			end
 		end
 
@@ -353,7 +294,7 @@ feature {NONE} -- Events
 		do
 			if attached target_archetype_descriptor then
 				set_use_rm_pixmaps (ev_use_rm_icons_cb.is_selected)
-				repopulate (selected_language)
+				repopulate
 
 				-- reflect change to other editor tools
 				if attached update_all_tools_rm_icons_setting_agent then
@@ -401,6 +342,42 @@ feature {NONE} -- Implementation
 			-- nodes have child GUI nodes; the visitor takes care of the details)
 
 	tree_item_stack: ARRAYED_STACK[EV_TREE_ITEM]
+
+	do_populate
+			-- build definition / ontology cross reference tables used for validation and
+			-- other purposes
+		local
+			a_c_iterator: C_VISITOR_ITERATOR
+			c_node_map_builder: C_GUI_NODE_MAP_BUILDER
+		do
+			create tree_item_stack.make (0)
+			create gui_node_map.make(0)
+			create ontologies.make (0)
+
+			rm_schema := target_archetype_descriptor.rm_schema
+
+			-- populate from definition
+			create c_node_map_builder
+			c_node_map_builder.initialise (target_archetype, selected_language, ev_tree, in_technical_mode, False, gui_node_map, code_select_action_agent)
+			create a_c_iterator.make (target_archetype.definition, c_node_map_builder)
+			a_c_iterator.do_all
+
+			-- add RM attributes if in RM mode
+			if in_reference_model_mode then
+				ev_tree.recursive_do_all (agent node_add_rm_attributes (?))
+			end
+
+			-- populate from invariants
+			populate_invariants
+
+			-- make visualisation adjustments
+			is_expanded := not expand_node_tree
+			toggle_expand_tree
+
+			if not differential_view then
+				roll_up_to_specialisation_level
+			end
+		end
 
 	node_add_rm_attributes (a_tree_node: attached EV_TREE_NODE)
 		local

@@ -37,13 +37,13 @@ create
 
 feature -- Initialisation
 
-	make (a_model_publisher, a_schema_name, a_model_release: attached STRING)
+	make (a_rm_publisher, a_schema_name, a_rm_release: attached STRING)
 		do
 			make_package_container
 			create class_definitions.make (0)
-			model_publisher := a_model_publisher
+			rm_publisher := a_rm_publisher
 			schema_name := a_schema_name
-			model_release := a_model_release
+			rm_release := a_rm_release
 		end
 
 feature -- Definitions
@@ -64,9 +64,6 @@ feature -- Access
 
 	class_definitions: HASH_TABLE [BMM_CLASS_DEFINITION, STRING]
 			-- all classes in this schema
-
-	archetype_parent_class: detachable STRING
-			-- name of a class within the schema that all archetypable classes inherit from
 
 	primitive_types: attached ARRAYED_SET [STRING]
 			-- list of keys in `class_definitions' of items marked as primitive types, as defined in input schema
@@ -294,6 +291,13 @@ feature -- Modification
 			has_class_definition (a_class_name)
 		do
 			archetype_parent_class := a_class_name
+		end
+
+	set_archetype_data_value_parent_class (a_class_name: attached STRING)
+		require
+			has_class_definition (a_class_name)
+		do
+			archetype_data_value_parent_class := a_class_name
 		end
 
 end

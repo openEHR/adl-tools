@@ -15,6 +15,8 @@ note
 class GUI_DESCRIPTION_CONTROLS
 
 inherit
+	GUI_ARCHETYPE_TARGETTED_TOOL
+
 	GUI_UTILITIES
 		export
 			{NONE} all
@@ -43,7 +45,9 @@ feature {NONE} -- Initialisation
 	make (a_text_box_select_all_handler: PROCEDURE [ANY, TUPLE])
 		do
 			-- create widgets
-			create ev_notebook
+			create ev_root_container
+			ev_root_container.set_data (Current)
+
 			create admin_vbox
 			create author_lang_term_hbox
 			create auth_frame
@@ -112,7 +116,7 @@ feature {NONE} -- Initialisation
 			create refset_bindings_list
 
 			-- connect them together
-			ev_notebook.extend (admin_vbox)
+			ev_root_container.extend (admin_vbox)
 			admin_vbox.extend (author_lang_term_hbox)
 			author_lang_term_hbox.extend (auth_frame)
 			auth_frame.extend (status_auth_contrib_vbox)
@@ -147,7 +151,7 @@ feature {NONE} -- Initialisation
 			admin_vbox.extend (copyright_hbox)
 			copyright_hbox.extend (copyright_label)
 			copyright_hbox.extend (copyright_text)
-			ev_notebook.extend (desc_box)
+			ev_root_container.extend (desc_box)
 			desc_box.extend (details_frame)
 			details_frame.extend (details_hbox)
 			details_hbox.extend (purpose_use_misuse_vbox)
@@ -171,7 +175,7 @@ feature {NONE} -- Initialisation
 			resource_vbox.extend (resource_orig_res_hbox)
 			resource_orig_res_hbox.extend (resource_orig_res_label)
 			resource_orig_res_hbox.extend (resource_orig_res_mlist)
-			ev_notebook.extend (term_hbox)
+			ev_root_container.extend (term_hbox)
 			term_hbox.extend (terminology_vbox)
 			terminology_vbox.extend (ev_terminology_label)
 			terminology_vbox.extend (term_mappings_list)
@@ -180,9 +184,9 @@ feature {NONE} -- Initialisation
 			refset_vbox.extend (refset_bindings_list)
 
 			-- set visual characteristics
-			ev_notebook.set_item_text (admin_vbox, create_message_content ("administrative_tab_text", Void))
-			ev_notebook.set_item_text (desc_box, create_message_content ("descriptive_tab_text", Void))
-			ev_notebook.set_item_text (term_hbox, create_message_content ("term_bindings_tab_text", Void))
+			ev_root_container.set_item_text (admin_vbox, create_message_content ("administrative_tab_text", Void))
+			ev_root_container.set_item_text (desc_box, create_message_content ("descriptive_tab_text", Void))
+			ev_root_container.set_item_text (term_hbox, create_message_content ("term_bindings_tab_text", Void))
 			admin_vbox.disable_item_expand (copyright_hbox)
 			author_lang_term_hbox.set_padding (padding_width)
 			author_lang_term_hbox.set_border_width (border_width)
@@ -374,9 +378,7 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	ev_notebook: EV_NOTEBOOK
-
-	selected_language: STRING
+	ev_root_container: EV_NOTEBOOK
 
 feature -- Commands
 
@@ -401,24 +403,6 @@ feature -- Commands
 			copyright_text.remove_text
 
 			clear_translations
-		end
-
-	populate (an_archetype: attached ARCHETYPE; a_language: attached STRING)
-			-- Populate ontology controls.
-		require
-			an_archetype.is_valid
-		do
-			target_archetype := an_archetype
-			selected_language := a_language
-			clear
-			term_mappings_list.set_strings (target_archetype.ontology.terminologies_available)
-			if attached target_archetype.description then
-				populate_authorship
-				populate_details
-				populate_resources
-				populate_copyright
-				populate_translations
-			end
 		end
 
 feature -- Events
@@ -453,14 +437,25 @@ feature {NONE} -- Implementation
 
 	l_ev_cell_1: EV_CELL
 
-	auth_orig_auth_mlist, trans_author_mlist, trans_other_details_mlist,
-	resource_orig_res_mlist: EV_MULTI_COLUMN_LIST
+	auth_orig_auth_mlist, trans_author_mlist, trans_other_details_mlist, resource_orig_res_mlist: EV_MULTI_COLUMN_LIST
 
 	auth_contrib_list, trans_languages_list,
 	keywords_list, term_mappings_list, refset_bindings_list: EV_LIST
 
 	trans_accreditation_text, copyright_text, purpose_text, use_text,
 	misuse_text: EV_TEXT
+
+	do_populate
+		do
+			term_mappings_list.set_strings (target_archetype.ontology.terminologies_available)
+			if attached target_archetype.description then
+				populate_authorship
+				populate_details
+				populate_resources
+				populate_copyright
+				populate_translations
+			end
+		end
 
 	populate_authorship
 			-- populate authorship fields
@@ -586,8 +581,6 @@ feature {NONE} -- Implementation
 
 	translation_language: STRING
 			-- currently selected translation language
-
-	target_archetype: ARCHETYPE
 
 end
 

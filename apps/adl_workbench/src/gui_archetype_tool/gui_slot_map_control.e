@@ -14,6 +14,8 @@ note
 class GUI_SLOT_MAP_CONTROL
 
 inherit
+	GUI_ARCHETYPE_TARGETTED_TOOL
+
 	SHARED_KNOWLEDGE_REPOSITORY
 		export
 			{NONE} all;
@@ -39,6 +41,8 @@ feature {NONE} -- Initialisation
 		do
 			-- create widgets
 			create ev_root_container
+			ev_root_container.set_data (Current)
+
 			create ev_suppliers_tree
 			create ev_clients_tree
 			create supplier_frame
@@ -85,47 +89,6 @@ feature -- Commands
 			call_visual_update_action (0, 0)
 		end
 
-	populate (aca: attached ARCH_CAT_ARCHETYPE; a_language: attached STRING)
-			-- populate the ADL tree control by creating it from scratch
-		require
-			aca.is_valid
-		local
-			eti: EV_TREE_ITEM
-			slot_index: DS_HASH_TABLE [ARRAYED_LIST [STRING], STRING]
-			slots_count: INTEGER
-			used_by_count: INTEGER
-		do
-			clear
-
-			if aca.has_slots then
-				slot_index := aca.slot_id_index
-				from slot_index.start until slot_index.off loop
-					create eti.make_with_text (utf8 (aca.differential_archetype.ontology.physical_to_logical_path (slot_index.key_for_iteration, a_language, True)))
-					eti.set_pixmap (pixmaps ["ARCHETYPE_SLOT"])
-					ev_suppliers_tree.extend (eti)
-					append_tree (eti, slot_index.item_for_iteration)
-					slots_count := slots_count + eti.count
-
-					if eti.is_expandable then
-						eti.expand
-					end
-
-					slot_index.forth
-				end
-			end
-
-			if current_arch_cat.compile_attempt_count < current_arch_cat.total_archetype_count then
-				ev_clients_tree.extend (create {EV_TREE_ITEM}.make_with_text (create_message_line ("slots_incomplete_w1", <<>>)))
-			end
-
-			if aca.is_supplier then
-				append_tree (ev_clients_tree, aca.clients_index)
-				used_by_count := used_by_count + ev_clients_tree.count
-			end
-
-			call_visual_update_action (slots_count, used_by_count)
-		end
-
 feature {NONE} -- Implementation
 
 	supplier_vbox, client_vbox: EV_VERTICAL_BOX
@@ -150,6 +113,43 @@ feature {NONE} -- Implementation
 			end
 		ensure
 			appended: subtree.count = old subtree.count + ids.count
+		end
+
+	do_populate
+			-- populate the ADL tree control by creating it from scratch
+		local
+			eti: EV_TREE_ITEM
+			slot_index: DS_HASH_TABLE [ARRAYED_LIST [STRING], STRING]
+			slots_count: INTEGER
+			used_by_count: INTEGER
+		do
+			if target_archetype_descriptor.has_slots then
+				slot_index := target_archetype_descriptor.slot_id_index
+				from slot_index.start until slot_index.off loop
+					create eti.make_with_text (utf8 (target_archetype_descriptor.differential_archetype.ontology.physical_to_logical_path (slot_index.key_for_iteration, selected_language, True)))
+					eti.set_pixmap (pixmaps ["ARCHETYPE_SLOT"])
+					ev_suppliers_tree.extend (eti)
+					append_tree (eti, slot_index.item_for_iteration)
+					slots_count := slots_count + eti.count
+
+					if eti.is_expandable then
+						eti.expand
+					end
+
+					slot_index.forth
+				end
+			end
+
+			if current_arch_cat.compile_attempt_count < current_arch_cat.total_archetype_count then
+				ev_clients_tree.extend (create {EV_TREE_ITEM}.make_with_text (create_message_line ("slots_incomplete_w1", <<>>)))
+			end
+
+			if target_archetype_descriptor.is_supplier then
+				append_tree (ev_clients_tree, target_archetype_descriptor.clients_index)
+				used_by_count := used_by_count + ev_clients_tree.count
+			end
+
+			call_visual_update_action (slots_count, used_by_count)
 		end
 
 	call_visual_update_action (val1, val2: INTEGER)

@@ -95,7 +95,7 @@ feature {NONE} -- Initialisation
 				parent_id := arch_thumbnail.parent_archetype_id
 			end
 			artefact_type := arch_thumbnail.artefact_type
-			artefact_name := (create {ARTEFACT_TYPE}).type_names.item(artefact_type)
+			artefact_name := (create {ARTEFACT_TYPE}).type_names.item (artefact_type)
 			differential_generated := True
 
 			legacy_flat_path := a_path
@@ -757,8 +757,8 @@ feature {NONE} -- Compilation
 		do
 			reset
 			if rm_schema = Void then
-				if rm_schemas_access.has_schema_for_model (id.qualified_package_name) then
-					rm_schema := rm_schemas_access.schema_for_model (id.qualified_package_name)
+				if rm_schemas_access.has_schema_for_rm_closure (id.qualified_package_name) then
+					rm_schema := rm_schemas_access.schema_for_rm_closure (id.qualified_package_name)
 				else
 					compilation_state := Cs_rm_class_unknown
 					errors.add_error ("model_access_e7", <<id.qualified_rm_name>>, "")
@@ -802,6 +802,7 @@ feature {NONE} -- Compilation
 				differential_archetype := legacy_flat_archetype.to_differential
 				if is_specialised and not specialisation_parent.is_valid then
 					compilation_state := cs_lineage_invalid
+					errors.add_error("compile_e1", <<parent_id.as_string>>, "")
 				else
 				 	compilation_state := Cs_ready_to_validate
 					if current_language.is_empty or not differential_archetype.has_language (current_language) then
@@ -1092,6 +1093,16 @@ feature -- Output
 				Result := archetype_serialise_engine.serialised
 			end
 		end
+
+feature -- Statistics
+
+	generate_statistics
+		do
+			create statistical_analyser.make (Current)
+			statistical_analyser.analyse
+		end
+
+	statistical_analyser: ARCHETYPE_STATISTICAL_ANALYSER
 
 feature {NONE} -- Implementation
 

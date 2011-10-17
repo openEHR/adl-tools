@@ -2,7 +2,7 @@ note
 	component:   "openEHR Archetype Project"
 	description: "FIXME: temporary type for ORDINAL until reconciled with DV_ORDINAL"
 	keywords:    "ordinal, ADL"
-	
+
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
@@ -19,7 +19,7 @@ inherit
 		redefine
 			out
 		end
-		
+
 create
 	make
 
@@ -41,31 +41,28 @@ feature -- Initialisation
 			Value_set: value = a_value
 			Symbol_set: symbol = a_symbol
 		end
-		
+
 feature -- Access
 
 	value: INTEGER
 
-	symbol: CODE_PHRASE
+	symbol: attached CODE_PHRASE
 
 feature -- Conversion
 
 	as_string: STRING
-			-- 
+			--
 		do
 			create Result.make(0)
-			Result.append (value.out + Separator.out + "[" + symbol.as_string + "]")	
+			Result.append (value.out + Separator.out + "[" + symbol.as_string + "]")
 		end
-		
+
 	out: STRING
-			-- 
+			--
 		do
 			Result := as_string
 		end
-		
-invariant
-	Symbol_exists: symbol /= Void
-	
+
 end
 
 

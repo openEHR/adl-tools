@@ -2,7 +2,7 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Statistical analyser for archetypes."
 	keywords:    "statistics, archteype"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
@@ -16,154 +16,134 @@ class ARCHETYPE_STATISTICAL_ANALYSER
 create
 	make
 
+feature -- Definitions
+
+	Object_node_count: STRING = "object_node_count"
+
+	Archetypable_node_count: STRING = "archetypable_node_count"
+
+	Archetype_data_value_node_count: STRING = "archetype_data_value_node_count"
+
+	At_code_count: STRING = "at_code_count"
+
+	Ac_code_count: STRING = "ac_code_count"
+
+	At_code_bindings_count: STRING = "At_code_bindings_count"
+
+	Ac_code_bindings_count: STRING = "Ac_code_bindings_count"
+
+	Summed_result_metric_names: ARRAY [STRING]
+		once
+			Result := <<Object_node_count, Archetypable_node_count, Archetype_data_value_node_count, At_code_count, Ac_code_count, At_code_bindings_count, Ac_code_bindings_count>>
+		end
+
 feature -- Initialisation
 
-	make (a_target: DIFFERENTIAL_ARCHETYPE)
+	make (a_target_descriptor: ARCH_CAT_ARCHETYPE)
 		do
-			target := a_target
+			target_descriptor := a_target_descriptor
+			target := a_target_descriptor.differential_archetype
+			bmm_schema := target_descriptor.rm_schema
+			reset
 		end
 
 feature -- Access
 
-	target: DIFFERENTIAL_ARCHETYPE
-			-- differential archetype being validated
+	target_descriptor: ARCH_CAT_ARCHETYPE
+			-- target descriptor
 
-	rm_class_table: HASH_TABLE [INTEGER, STRING]
+	target: DIFFERENTIAL_ARCHETYPE
+			-- differential archetype
+
+	rm_class_table: HASH_TABLE [RM_CLASS_STATISTICS, STRING]
 			-- counts of all RM classes
 
-	summed_archetypable_nodes: INTEGER
-			-- summed count of archetypable nodes, i.e. descendants of the class designated by
-			-- the BMM attribute 'archetype_parent_class'
-
-    summed_data_value_nodes: INTEGER
-			-- summed count of archetype 'data_value' nodes, i.e. descendants of the class designated by
-			-- the BMM attribute 'archetype_data_value_class'
+	summed_results: HASH_TABLE [INTEGER, STRING]
+			-- table of summed values, keyed by meaning, suitable for direct display
 
 feature -- Commands
 
 	analyse
-			-- validate description section
 		local
 			def_it: C_ITERATOR
 		do
 			reset
-			create invalid_types.make(0)
-			invalid_types.compare_objects
 			create def_it.make (target.definition)
 			def_it.do_until_surface (agent node_enter, agent node_test)
+			finalise_summation
 		end
 
 feature {NONE} -- Implementation
 
+	bmm_schema: BMM_SCHEMA
+
 	reset
 		do
+			create rm_class_table.make (0)
+			create summed_results.make (0)
+			Summed_result_metric_names.do_all (
+				agent (metric_name: STRING)
+					do
+						summed_results.put (0, metric_name)
+					end
+			)
 		end
 
 	node_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
-			-- perform validation of node against reference model.
 		local
-			arch_parent_attr_type, model_attr_class: STRING
-			co_parent_flat: C_OBJECT
-			apa: ARCHETYPE_PATH_ANALYSER
-			rm_prop_def: BMM_PROPERTY_DEFINITION
+			stat_accum: RM_CLASS_STATISTICS
 		do
---			if attached {C_OBJECT} a_c_node as co then
---				if not co.is_root then -- now check if this object a valid type of its owning attribute
---					if target.is_specialised and then co.parent.has_differential_path then
---						create apa.make_from_string (co.parent.differential_path)
---						co_parent_flat := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
---						arch_parent_attr_type := co_parent_flat.rm_type_name
---					else
---						arch_parent_attr_type := co.parent.parent.rm_type_name
---					end
-
---					if not invalid_types.has (arch_parent_attr_type) then
---						-- check for type substitutions such as ISO8601_DATE which appear in the archetype as a String
---						if rm_schema.has_property (arch_parent_attr_type, co.parent.rm_attribute_name) and not
---											rm_schema.valid_property_type (arch_parent_attr_type, co.parent.rm_attribute_name, co.rm_type_name) then
---							model_attr_class := rm_schema.property_type (arch_parent_attr_type, co.parent.rm_attribute_name)
-
---							-- flag if constraint is equal to reference model; FUTURE: remove if equal
---							if rm_schema.substitutions.has (co.rm_type_name) and then rm_schema.substitutions.item (co.rm_type_name).is_equal (model_attr_class) then
---								add_info ("ICORMTS", <<co.rm_type_name, co.path, model_attr_class,
---									arch_parent_attr_type, co.parent.rm_attribute_name>>)
---							else
---								add_error ("VCORMT", <<co.rm_type_name, co.path, model_attr_class, arch_parent_attr_type, co.parent.rm_attribute_name>>)
---								invalid_types.extend (co.rm_type_name)
---							end
---						end
---					end
---				end
---			elseif attached {C_ATTRIBUTE} a_c_node as ca then
---				if target.is_specialised and then ca.has_differential_path then
---					create apa.make_from_string (ca.differential_path)
---					co_parent_flat := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
---					arch_parent_attr_type := co_parent_flat.rm_type_name
---				else
---					arch_parent_attr_type := ca.parent.rm_type_name -- can be a generic type like DV_INTERVAL <DV_QUANTITY>
---				end
---				if not rm_schema.has_property(arch_parent_attr_type, ca.rm_attribute_name) then
---					add_error ("VCARM", <<ca.rm_attribute_name, ca.path, arch_parent_attr_type>>)
---				else
---					rm_prop_def := rm_schema.property_definition(arch_parent_attr_type, ca.rm_attribute_name)
---					if attached ca.existence then
---						if not rm_prop_def.existence.contains(ca.existence) then
---							if not target.is_specialised and rm_prop_def.existence.equal_interval(ca.existence) then
---								add_warning ("WCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string>>)
---								if not validation_strict then
---									ca.remove_existence
---								end
---							else
---								add_error ("VCAEX", <<ca.rm_attribute_name, ca.path, ca.existence.as_string, rm_prop_def.existence.as_string>>)
---							end
---						end
---					end
---					if ca.is_multiple then
---						if attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop then
---							if attached ca.cardinality then
---								if not cont_prop.cardinality.contains(ca.cardinality.interval) then
---									if not target.is_specialised and cont_prop.cardinality.equal_interval(ca.cardinality.interval) then
---										add_warning ("WCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string>>)
---										if not validation_strict then
---											ca.remove_cardinality
---										end
---									else
---										add_error ("VCACA", <<ca.rm_attribute_name, ca.path, ca.cardinality.interval.as_string, cont_prop.cardinality.as_string>>)
---									end
---								end
---							end
---						else -- archetype has multiple attribute but RM does not
---							add_error ("VCAM", <<ca.rm_attribute_name, ca.path, ca.cardinality.as_string, "(single-valued)">>)
---						end
---					elseif attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop_2 then
---						add_error ("VCAM", <<ca.rm_attribute_name, ca.path, "(single-valued)", cont_prop_2.cardinality.as_string>>)
---					end
---					if rm_prop_def.is_computed then
---						-- flag if this is a computed property constraint (i.e. a constraint on a function from the RM)
---						add_warning ("WCARMC", <<ca.rm_attribute_name, ca.path, arch_parent_attr_type>>)
---					end
---				end
---			end
+			if attached {C_OBJECT} a_c_node as co then
+				create stat_accum.make (co.rm_type_name)
+				if attached {C_COMPLEX_OBJECT} co as cco then
+					cco.attributes.do_all (
+						agent (ca: C_ATTRIBUTE; a_stat_accum: RM_CLASS_STATISTICS)
+							do
+								a_stat_accum.add_rm_attribute_occurrence (ca.rm_attribute_name)
+							end (?, stat_accum)
+					)
+				elseif attached {C_DOMAIN_TYPE} co as cdt then
+					stat_accum.add_rm_attribute_occurrences (cdt.report_rm_attributes)
+				end
+				add_rm_class_stats (stat_accum)
+			end
 		end
 
-	invalid_types: ARRAYED_LIST [STRING]
+	add_rm_class_stats (a_stat_accum: RM_CLASS_STATISTICS)
+		do
+			if rm_class_table.has (a_stat_accum.rm_class_name) then
+				rm_class_table.item (a_stat_accum.rm_class_name).merge (a_stat_accum)
+			else
+				rm_class_table.put (a_stat_accum, a_stat_accum.rm_class_name)
+			end
+		end
+
+	finalise_summation
+		do
+			from rm_class_table.start until rm_class_table.off loop
+				summed_results.force (summed_results.item (Object_node_count) + rm_class_table.item_for_iteration.rm_class_count, Object_node_count)
+				if bmm_schema.is_descendant_of (rm_class_table.item_for_iteration.rm_class_name, bmm_schema.archetype_parent_class) then
+					summed_results.force (summed_results.item (Archetypable_node_count) + rm_class_table.item_for_iteration.rm_class_count, Archetypable_node_count)
+				end
+				if bmm_schema.is_descendant_of (rm_class_table.item_for_iteration.rm_class_name, bmm_schema.archetype_data_value_parent_class) then
+					summed_results.force (summed_results.item (Archetype_data_value_node_count) + rm_class_table.item_for_iteration.rm_class_count, Archetype_data_value_node_count)
+				end
+				rm_class_table.forth
+			end
+			summed_results.force (target.ontology.term_codes.count, At_code_count)
+			summed_results.force (target.ontology.constraint_codes.count, Ac_code_count)
+			if not target.ontology.term_bindings.is_empty then
+				summed_results.force (target.ontology.term_bindings.iteration_item (0).count, At_code_bindings_count)
+			end
+			if not target.ontology.constraint_bindings.is_empty then
+				summed_results.force (target.ontology.constraint_bindings.iteration_item (0).count, Ac_code_bindings_count)
+			end
+		end
 
 	node_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
-			-- Return True if node is a C_OBJECT and class is known in RM, or if it is a C_ATTRIBUTE
 		do
---			Result := True
---			if attached {C_OBJECT} a_c_node as co then
---				if not rm_schema.has_class_definition(co.rm_type_name) then
---					if not invalid_types.has(co.rm_type_name) then
---						add_error ("VCORM", <<co.rm_type_name, co.path>>)
---						invalid_types.extend (co.rm_type_name)
---					end
---					Result := False
---				end
---			end
+			Result := True
 		end
-
-	rm_schema: attached BMM_SCHEMA
 
 end
 

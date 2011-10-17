@@ -53,8 +53,13 @@ templates = <
 		["catalogue_template_tab_text"] = <"Templates">
 		["catalogue_tool_title"] = <"Repository">
 
+		-- GUI_PATH_MAP_CONTROL
+		["row_filter_frame_text"] = <"Row Filter">
+		["row_filter_combo_tooltip"] = <"Filter which rows are shown in the Path Analysis">
+		["column_frame_text"] = <"Column View">
+		["column_checklist_tooltip"] = <"Choose view of columns in the Path Analysis">
 
-		-- GUI_SOT_MAP_CONTROL
+		-- GUI_SLOT_MAP_CONTROL
 		["slots_incomplete_w1"] = <"this list may be incomplete. To be sure, run Build All under the Repository menu.">
 		["supplier_frame_text"] = <"Supplier Archetypes">
 		["client_frame_text"] = <"Client Archetypes">
@@ -122,6 +127,8 @@ templates = <
 		["terminology_tab_text"] = <"Terminology">
 		["annotations_tab_text"] = <"Annotations">
 		["serialised_tab_text"] = <"Serialised">
+		["validity_tab_text"] = <"Validity">
+		["stat_info_tab_text"] = <"Statistics">
 
 		["properties_tab_text"] = <"Properties">
 		["ancestors_tab_text"] = <"Ancestors">
@@ -159,6 +166,17 @@ templates = <
 		["resource_orig_res_label_text"] = <"Original%NResources">
 		["terminology_label_text"] = <"Terminology mappings">
 		["refset_bindings_label_text"] = <"Refset bindings">
+
+		-- GUI_ARCHETYPE_INFORMATION_CONTROL
+		["summary_list_title"] = <"Summary">
+		["breakdown_grid_title"] = <"Breakdown">
+		["summary_list_metric_col_title"] = <"Metric">
+		["summary_list_occurrences_col_title"] = <"Occurrences">
+		["statistics_grid_class_name_col_title"] = <"Class">
+		["statistics_grid_class_count_col_title"] = <"Occurrences">
+		["statistics_grid_attr_name_col_title"] = <"Attribute">
+		["statistics_grid_attr_count_col_title"] = <"Occurrences">
+
 	>
 >
 
