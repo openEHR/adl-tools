@@ -387,10 +387,6 @@ feature {NONE} -- Events
 			-- Repopulate the view of the archetype when the user selects a different language.
 		do
 			selected_language := ev_language_combo.text.as_string_8
---			if target_archetype_descriptor.is_valid then
---				description_controls.populate (target_archetype_descriptor, differential_view, selected_language)
---				node_map_control.repopulate_with_language (selected_language)
---			end
 			on_select_archetype_notebook
 		end
 
