@@ -89,6 +89,7 @@ feature {NONE}-- Initialization
 			create ontology_controls.make
 			create annotations_control.make
 			create serialisation_control.make
+			create source_control.make
 			create validity_report_control.make
 			create statistical_information_control.make
 
@@ -108,10 +109,11 @@ feature {NONE}-- Initialization
 
 			ev_notebook.extend (description_controls.ev_root_container)
 			ev_notebook.extend (node_map_control.ev_root_container)
-			ev_notebook.extend (ontology_controls.ev_root_container)
 			ev_notebook.extend (annotations_control.ev_root_container)
 			ev_notebook.extend (path_map_control.ev_root_container)
 			ev_notebook.extend (slot_map_control.ev_root_container)
+			ev_notebook.extend (ontology_controls.ev_root_container)
+			ev_notebook.extend (source_control.ev_root_container)
 			ev_notebook.extend (serialisation_control.ev_root_container)
 			ev_notebook.extend (validity_report_control.ev_root_container)
 			ev_notebook.extend (statistical_information_control.ev_root_container)
@@ -155,10 +157,10 @@ feature {NONE}-- Initialization
 			ev_notebook.item_tab (node_map_control.ev_root_container).set_pixmap (pixmaps ["node_map"])
 
 			ev_notebook.set_item_text (path_map_control.ev_root_container, create_message_content ("paths_tab_text", Void))
-			ev_notebook.item_tab (path_map_control.ev_root_container).set_pixmap (pixmaps ["paths"])
+			ev_notebook.item_tab (path_map_control.ev_root_container).set_pixmap (pixmaps ["path_map"])
 
 			ev_notebook.set_item_text (slot_map_control.ev_root_container, create_message_content ("slots_tab_text", Void))
-			ev_notebook.item_tab (slot_map_control.ev_root_container).set_pixmap (pixmaps ["archetype_slot"])
+			ev_notebook.item_tab (slot_map_control.ev_root_container).set_pixmap (pixmaps ["slot_map"])
 
 			ev_notebook.set_item_text (ontology_controls.ev_root_container, create_message_content ("terminology_tab_text", Void))
 			ev_notebook.item_tab (ontology_controls.ev_root_container).set_pixmap (pixmaps ["terminology"])
@@ -167,10 +169,13 @@ feature {NONE}-- Initialization
 			ev_notebook.item_tab (annotations_control.ev_root_container).set_pixmap (pixmaps ["annotations"])
 
 			ev_notebook.set_item_text (serialisation_control.ev_root_container, create_message_content ("serialised_tab_text", Void))
-			ev_notebook.item_tab (serialisation_control.ev_root_container).set_pixmap (pixmaps ["diff"])
+			ev_notebook.item_tab (serialisation_control.ev_root_container).set_pixmap (pixmaps ["serialised"])
+
+			ev_notebook.set_item_text (source_control.ev_root_container, create_message_content ("source_tab_text", Void))
+			ev_notebook.item_tab (source_control.ev_root_container).set_pixmap (pixmaps ["source"])
 
 			ev_notebook.set_item_text (validity_report_control.ev_root_container, create_message_content ("validity_tab_text", Void))
-			ev_notebook.item_tab (validity_report_control.ev_root_container).set_pixmap (pixmaps ["errors"])
+			ev_notebook.item_tab (validity_report_control.ev_root_container).set_pixmap (pixmaps ["errors_grey"])
 
 			ev_notebook.set_item_text (statistical_information_control.ev_root_container, create_message_content ("stat_info_tab_text", Void))
 			ev_notebook.item_tab (statistical_information_control.ev_root_container).set_pixmap (pixmaps ["info"])
@@ -306,7 +311,7 @@ feature -- Commands
 	change_adl_serialisation_version
 			-- call this if changing it becase control labels and contents need to be repopulated
 		do
-			if attached target_archetype_descriptor then
+			if attached target_archetype_descriptor and serialisation_control.can_repopulate then
 				serialisation_control.repopulate
 			end
 		end
@@ -409,6 +414,7 @@ feature {NONE} -- Implementation
 			else
 				ev_notebook.select_item (validity_report_control.ev_root_container)
 			end
+			set_validity_tab_appearance
 		end
 
 	text_widget_handler: GUI_TEXT_WIDGET_HANDLER
@@ -428,6 +434,8 @@ feature {NONE} -- Implementation
 	annotations_control: GUI_ANNOTATIONS_CONTROL
 
 	serialisation_control: GUI_SERIALISATION_CONTROL
+
+	source_control: GUI_SOURCE_CONTROL
 
 	validity_report_control: GUI_VALIDITY_REPORT_CONTROL
 
@@ -494,9 +502,19 @@ feature {NONE} -- Implementation
 		do
 			-- serialised rich text tab
 			if differential_view then
-				ev_notebook.set_item_text (serialisation_control.ev_root_container, "Serialised (src)")
+				ev_notebook.set_item_text (serialisation_control.ev_root_container, create_message_content ("serialised_diff_tab_text", Void))
 			else
-				ev_notebook.set_item_text (serialisation_control.ev_root_container, "Serialised (flat)")
+				ev_notebook.set_item_text (serialisation_control.ev_root_container, create_message_content ("serialised_flat_tab_text", Void))
+			end
+		end
+
+	set_validity_tab_appearance
+			-- set visual appearance of validity tab according to whether there are errors or not
+		do
+			if target_archetype_descriptor.is_valid then
+				ev_notebook.item_tab (validity_report_control.ev_root_container).set_pixmap (pixmaps ["errors_grey"])
+			else
+				ev_notebook.item_tab (validity_report_control.ev_root_container).set_pixmap (pixmaps ["errors"])
 			end
 		end
 

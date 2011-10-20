@@ -78,14 +78,14 @@ feature {NONE}-- Initialization
 			ev_serialise_controls_frame.set_minimum_width (125)
 			ev_serialise_controls_frame.set_minimum_height (95)
 			set_serialisation_control_texts
-			ev_flatten_with_rm_cb.set_text ("Include RM")
-			ev_flatten_with_rm_cb.set_tooltip ("Include RM in flattening process, causing RM existence and cardinality to be included and occurrences to be generated")
+			ev_flatten_with_rm_cb.set_text (create_message_content ("flatten_with_rm_cb_text", Void))
+			ev_flatten_with_rm_cb.set_tooltip (create_message_content ("flatten_with_rm_cb_tooltip", Void))
 
 			-- set events: serialisation controls
-			ev_serialise_adl_rb.select_actions.extend (agent populate_source_text)
-			ev_serialise_dadl_rb.select_actions.extend (agent populate_dadl_text)
-			ev_serialise_xml_rb.select_actions.extend (agent populate_xml_text)
-			ev_flatten_with_rm_cb.select_actions.extend (agent do_populate)
+			ev_serialise_adl_rb.select_actions.extend (agent try_repopulate)
+			ev_serialise_dadl_rb.select_actions.extend (agent try_repopulate)
+			ev_serialise_xml_rb.select_actions.extend (agent try_repopulate)
+			ev_flatten_with_rm_cb.select_actions.extend (agent try_repopulate)
 
 			differential_view := True
 		end
@@ -119,7 +119,7 @@ feature {NONE} -- Implementation
 		do
 			set_serialisation_control_texts
 			if ev_serialise_adl_rb.is_selected then
-				populate_source_text
+				populate_adl_text
 			elseif ev_serialise_dadl_rb.is_selected then
 				populate_dadl_text
 			elseif ev_serialise_xml_rb.is_selected then
@@ -127,96 +127,34 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_source_text
+	populate_adl_text
 			-- Display the selected archetype's differential or flat text in `source_rich_text', optionally with line numbers.
-		require
-			attached target_archetype_descriptor
 		do
 			if not differential_view then
-				if target_archetype_descriptor.is_valid then
-					populate_source_text_with_line_numbers (target_archetype_descriptor.flat_text (ev_flatten_with_rm_cb.is_selected))
-				elseif target_archetype_descriptor.has_legacy_flat_file then
-					populate_source_text_with_line_numbers (target_archetype_descriptor.legacy_flat_text)
-				else -- not valid, but derived from differential source
-					ev_serialised_rich_text.set_text (create_message_line ("compiler_no_flat_text", <<>>))
-				end
-			elseif target_archetype_descriptor.has_differential_file then
-				populate_source_text_with_line_numbers (target_archetype_descriptor.differential_text)
+				ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.flat_text (ev_flatten_with_rm_cb.is_selected)))
 			else
-				ev_serialised_rich_text.set_text (create_message_line ("compiler_no_source_text", <<>>))
+				ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.differential_text))
 			end
 		end
 
 	populate_dadl_text
 			-- Display the selected archetype's differential or flat text in `ev_serialised_rich_text', in dADL format.
-		require
-			attached target_archetype_descriptor
 		do
-			if target_archetype_descriptor.is_valid then
-				if differential_view then
-					ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.serialise_object (False, Syntax_type_adl)))
-				else
-					ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.serialise_object (True, Syntax_type_adl)))
-				end
+			if differential_view then
+				ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.serialise_object (False, Syntax_type_adl)))
 			else
-				ev_serialised_rich_text.set_text (create_message_line ("compiler_no_dadl_text", <<>>))
+				ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.serialise_object (True, Syntax_type_adl)))
 			end
 		end
 
 	populate_xml_text
 			-- Display the selected archetype's differential or flat text in `ev_serialised_rich_text', in XML format.
-		require
-			attached target_archetype_descriptor
 		do
-			if target_archetype_descriptor.is_valid then
-				if differential_view then
-					ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.serialise_object (False, Syntax_type_xml)))
-				else
-					ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.serialise_object (True, Syntax_type_xml)))
-				end
+			if differential_view then
+				ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.serialise_object (False, Syntax_type_xml)))
 			else
-				ev_serialised_rich_text.set_text (create_message_line ("compiler_no_xml_text", <<>>))
+				ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.serialise_object (True, Syntax_type_xml)))
 			end
-		end
-
-	populate_source_text_with_line_numbers (text: attached STRING)
-			-- Display `text' in `source_rich_text', optionally with each line preceded by line numbers.
-		local
-			s: STRING
-			len, left_pos, right_pos, number: INTEGER
-		do
-			if show_line_numbers then
-				from
-					len := text.count
-					create s.make (len)
-					left_pos := 1
-					number := 1
-				until
-					left_pos > len
-				loop
-					s.append (number.out)
-
-					if number < 1000 then
-						s.append ("%T")
-					end
-
-					s.append (" ")
-
-					right_pos := text.index_of ('%N', left_pos)
-
-					if right_pos = 0 then
-						right_pos := len
-					end
-
-					s.append (text.substring (left_pos, right_pos))
-					left_pos := right_pos + 1
-					number := number + 1
-				end
-			else
-				s := text
-			end
-
-			ev_serialised_rich_text.set_text (utf8 (s))
 		end
 
 	set_serialisation_control_texts

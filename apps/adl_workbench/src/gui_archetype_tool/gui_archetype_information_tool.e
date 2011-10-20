@@ -38,6 +38,11 @@ feature -- Definitions
 	Grid_attr_name_col: INTEGER = 3
 	Grid_attr_count_col: INTEGER = 4
 
+	Grid_column_ids: ARRAY [INTEGER]
+		once
+			Result := <<Grid_class_name_col, Grid_class_count_col, Grid_attr_name_col, Grid_attr_count_col>>
+		end
+
 feature {NONE} -- Initialization
 
 	make
@@ -47,11 +52,11 @@ feature {NONE} -- Initialization
 			create ev_root_container
 			ev_root_container.set_data (Current)
 			create ev_summary_vbox
-			create ev_summary_label.make_with_text (create_message_content ("summary_list_title", Void))
+			create ev_summary_label.make_with_text (create_message_content ("summary_list_title_diff", Void))
 			ev_summary_label.align_text_left
 			create ev_summary_list
 			create ev_breakdown_vbox
-			create ev_breakdown_label.make_with_text (create_message_content ("breakdown_grid_title", Void))
+			create ev_breakdown_label.make_with_text (create_message_content ("breakdown_grid_title_diff", Void))
 			ev_breakdown_label.align_text_left
 			create ev_breakdown_grid
 
@@ -95,14 +100,36 @@ feature {NONE} -- Implementation
 			class_row, attr_row: EV_GRID_ROW
 			rm_class_stats: HASH_TABLE [RM_CLASS_STATISTICS, STRING]
 		do
+			if differential_view then
+				ev_summary_label.set_text (create_message_content ("summary_list_title_diff", Void))
+				ev_breakdown_label.set_text (create_message_content ("breakdown_grid_title_diff", Void))
+			else
+				ev_summary_label.set_text (create_message_content ("summary_list_title_flat", Void))
+				ev_breakdown_label.set_text (create_message_content ("breakdown_grid_title_flat", Void))
+			end
+			target_archetype_descriptor.generate_statistics (differential_view)
+
 			-- summary list
 			ev_summary_list.set_column_titles (<<create_message_content ("summary_list_metric_col_title", Void), create_message_content ("summary_list_occurrences_col_title", Void)>>)
-			target_archetype_descriptor.generate_statistics
 			populate_ev_multi_list_from_hash (ev_summary_list, target_archetype_descriptor.statistical_analyser.summed_results)
 			ev_summary_list.resize_column_to_content (1)
 			ev_summary_list.set_column_width (100, 2) -- FIXME: this is a hack, but there is no auto-resize based on column title...
 
 			-- breakdown grid
+			-- column names
+			ev_breakdown_grid.insert_new_column (Grid_class_name_col)
+			ev_breakdown_grid.column (Grid_class_name_col).set_title (create_message_content ("statistics_grid_class_name_col_title", Void))
+			ev_breakdown_grid.column (Grid_class_name_col).resize_to_content
+			ev_breakdown_grid.insert_new_column (Grid_class_count_col)
+			ev_breakdown_grid.column (Grid_class_count_col).set_title (create_message_content ("statistics_grid_class_count_col_title", Void))
+			ev_breakdown_grid.column (Grid_class_count_col).resize_to_content
+			ev_breakdown_grid.insert_new_column (Grid_attr_name_col)
+			ev_breakdown_grid.column (Grid_attr_name_col).set_title (create_message_content ("statistics_grid_attr_name_col_title", Void))
+			ev_breakdown_grid.column (Grid_attr_name_col).resize_to_content
+			ev_breakdown_grid.insert_new_column (Grid_attr_count_col)
+			ev_breakdown_grid.column (Grid_attr_count_col).set_title (create_message_content ("statistics_grid_attr_count_col_title", Void))
+			ev_breakdown_grid.column (Grid_attr_count_col).resize_to_content
+
 			rm_class_stats := target_archetype_descriptor.statistical_analyser.rm_class_table
 			from rm_class_stats.start until rm_class_stats.off loop
 				-- class name in col 1
@@ -133,15 +160,13 @@ feature {NONE} -- Implementation
 				rm_class_stats.forth
 			end
 
-			-- column names
-			ev_breakdown_grid.column (Grid_class_name_col).set_title (create_message_content ("statistics_grid_class_name_col_title", Void))
-			ev_breakdown_grid.column (Grid_class_name_col).resize_to_content
-			ev_breakdown_grid.column (Grid_class_count_col).set_title (create_message_content ("statistics_grid_class_count_col_title", Void))
-			ev_breakdown_grid.column (Grid_class_count_col).resize_to_content
-			ev_breakdown_grid.column (Grid_attr_name_col).set_title (create_message_content ("statistics_grid_attr_name_col_title", Void))
-			ev_breakdown_grid.column (Grid_attr_name_col).resize_to_content
-			ev_breakdown_grid.column (Grid_attr_count_col).set_title (create_message_content ("statistics_grid_attr_count_col_title", Void))
-			ev_breakdown_grid.column (Grid_attr_count_col).resize_to_content
+			-- resize grid cols properly
+			Grid_column_ids.do_all (
+				agent (i: INTEGER)
+					do
+						ev_breakdown_grid.column (i).resize_to_content
+					end
+			)
 
 			-- set a reasonable split position: label + summary table title row height + nr rows x row height + one more row for padding
 			ev_root_container.set_split_position (ev_summary_label.height + ev_summary_list.row_height + ev_summary_list.row_height * ev_summary_list.count + ev_summary_list.row_height)

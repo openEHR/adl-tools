@@ -44,7 +44,7 @@ feature -- Status Report
 
 	can_repopulate: BOOLEAN
 		do
-			Result := attached target_archetype_descriptor
+			Result := is_populated and target_archetype_descriptor.is_valid
 		end
 
 	is_populated: BOOLEAN
@@ -65,6 +65,14 @@ feature -- Commands
 			clear
 			do_populate
 			create last_populate_timestamp.make_now
+		end
+
+	try_repopulate
+			-- repopulate if possible; useful for buttons on tool that would cause live repopulate
+		do
+			if can_repopulate then
+				repopulate
+			end
 		end
 
 	repopulate

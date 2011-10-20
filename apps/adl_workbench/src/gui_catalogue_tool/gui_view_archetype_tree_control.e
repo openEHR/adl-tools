@@ -164,13 +164,10 @@ feature {NONE} -- Implementation
 						text.append_code (Right_arrow_char)	-- Unicode character: an arrow pointing right
 					end
 
-					-- tooltip
+					-- tooltip		
 					tooltip := utf8 (aca.full_path)
 					if aca.has_legacy_flat_file and aca.differential_generated then
-						tooltip.append ("%N(source = legacy flat)")
-					end
-					if not aca.errors.is_empty then
-						tooltip.append (utf8 ("%N%N" + aca.errors.as_string))
+						tooltip.append ("%N" + create_message_content ("archetype_tree_node_tooltip", Void))
 					end
 	 				ev_node.set_tooltip (tooltip)
 
@@ -186,7 +183,7 @@ feature {NONE} -- Implementation
 					else
 		 				text.append (acmn.qualified_name)
 						pixmap := pixmaps [aci.group_name]
-						tooltip := "Archetype model namespace " + acmn.qualified_name + "%Nfrom schema " + acmn.bmm_schema.schema_id
+						tooltip := create_message_content ("rm_closure_tree_node_tooltip", <<acmn.qualified_name, acmn.bmm_schema.schema_id>>)
 					end
 	 				text.append (" (" + acmn.subtree_artefact_count (artefact_types).out + ")")
 

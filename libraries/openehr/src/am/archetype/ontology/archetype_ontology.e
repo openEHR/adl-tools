@@ -210,8 +210,8 @@ feature -- Access
 			term_code, log_str: STRING
 			og_phys_path, og_log_path: OG_PATH
 		do
-			create og_phys_path.make_from_string(a_phys_path)
-			create og_log_path.make_from_other(og_phys_path)
+			create og_phys_path.make_from_string (a_phys_path)
+			create og_log_path.make_from_other (og_phys_path)
 			from
 				og_phys_path.start
 				og_log_path.start
@@ -223,9 +223,9 @@ feature -- Access
 					if is_valid_code (term_code) then
 						if has_term_code (term_code) then
 							if with_codes then
-								log_str := annotated_code (term_code, term_definition(a_language, term_code).text)
+								log_str := annotated_code (term_code, term_definition (a_language, term_code).text)
 							else
-								log_str := term_definition(a_language, term_code).text
+								log_str := term_definition (a_language, term_code).text
 							end
 							og_log_path.item.set_object_id (log_str)
 						end

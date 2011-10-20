@@ -39,10 +39,14 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (a_target_descriptor: ARCH_CAT_ARCHETYPE)
+	make (a_target_descriptor: ARCH_CAT_ARCHETYPE; in_differential_mode: BOOLEAN)
 		do
 			target_descriptor := a_target_descriptor
-			target := a_target_descriptor.differential_archetype
+			if in_differential_mode then
+				target := a_target_descriptor.differential_archetype
+			else
+				target := a_target_descriptor.flat_archetype
+			end
 			bmm_schema := target_descriptor.rm_schema
 			reset
 		end
@@ -52,7 +56,7 @@ feature -- Access
 	target_descriptor: ARCH_CAT_ARCHETYPE
 			-- target descriptor
 
-	target: DIFFERENTIAL_ARCHETYPE
+	target: ARCHETYPE
 			-- differential archetype
 
 	rm_class_table: HASH_TABLE [RM_CLASS_STATISTICS, STRING]

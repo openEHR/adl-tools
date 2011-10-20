@@ -127,6 +127,9 @@ templates = <
 		["terminology_tab_text"] = <"Terminology">
 		["annotations_tab_text"] = <"Annotations">
 		["serialised_tab_text"] = <"Serialised">
+		["serialised_diff_tab_text"] = <"Serialised (diff)">
+		["serialised_flat_tab_text"] = <"Serialised (flat)">
+		["source_tab_text"] = <"Source">
 		["validity_tab_text"] = <"Validity">
 		["stat_info_tab_text"] = <"Statistics">
 
@@ -168,14 +171,27 @@ templates = <
 		["refset_bindings_label_text"] = <"Refset bindings">
 
 		-- GUI_ARCHETYPE_INFORMATION_CONTROL
-		["summary_list_title"] = <"Summary">
-		["breakdown_grid_title"] = <"Breakdown">
+		["summary_list_title_diff"] = <"Summary (differential)">
+		["summary_list_title_flat"] = <"Summary (flat)">
+		["breakdown_grid_title_diff"] = <"Breakdown (differential)">
+		["breakdown_grid_title_flat"] = <"Breakdown (flat)">
 		["summary_list_metric_col_title"] = <"Metric">
 		["summary_list_occurrences_col_title"] = <"Occurrences">
 		["statistics_grid_class_name_col_title"] = <"Class">
 		["statistics_grid_class_count_col_title"] = <"Occurrences">
 		["statistics_grid_attr_name_col_title"] = <"Attribute">
 		["statistics_grid_attr_count_col_title"] = <"Occurrences">
+
+		-- GUI_SERIALISATION_CONTROL
+		["flatten_with_rm_cb_text"] = <"Include RM">
+		["flatten_with_rm_cb_tooltip"] = <"Include RM in flattening process, causing RM existence and cardinality to be included and occurrences to be generated">
+
+		-- GUI_SOURCE_CONTROL
+		["line_numbers_cb_text"] = <"+ Line Numbers">
+
+		-- GUI_VIEW_ARCHETYPE_TREE_CONTROL
+		["rm_closure_tree_node_tooltip"] = <"Archetype model namespace: RM package closure $1%Nfrom schema $2">
+		["archetype_tree_node_tooltip"] = <"(source = legacy flat)">
 
 	>
 >

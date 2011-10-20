@@ -1096,9 +1096,12 @@ feature -- Output
 
 feature -- Statistics
 
-	generate_statistics
+	generate_statistics (in_differential_mode: BOOLEAN)
+			-- generate statistics in differential or flat mode
+		require
+			is_valid
 		do
-			create statistical_analyser.make (Current)
+			create statistical_analyser.make (Current, in_differential_mode)
 			statistical_analyser.analyse
 		end
 

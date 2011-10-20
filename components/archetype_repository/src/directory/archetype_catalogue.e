@@ -526,7 +526,7 @@ feature {NONE} -- Implementation
 				bmm_schema := rm_schemas_access.valid_top_level_schemas.item_for_iteration
 				from bmm_schema.archetype_rm_closure_packages.start until bmm_schema.archetype_rm_closure_packages.off loop
 					rm_closure_name := package_base_name (bmm_schema.archetype_rm_closure_packages.item)
-					qualified_rm_closure_name := publisher_qualified_rm_closure_name (bmm_schema.rm_publisher, rm_closure_name)
+					qualified_rm_closure_name := publisher_qualified_rm_closure_key (bmm_schema.rm_publisher, rm_closure_name)
 					rm_closure_root_pkg := bmm_schema.package_at_path (bmm_schema.archetype_rm_closure_packages.item)
 					if not rm_closure_root_pkg.classes.is_empty then
 						-- create new model node if not already in existence
@@ -540,7 +540,7 @@ feature {NONE} -- Implementation
 						create supp_list.make (0)
 						supp_list.compare_objects
 						from rm_closure_root_pkg.classes.start until rm_closure_root_pkg.classes.off loop
-							supp_list.merge (rm_closure_root_pkg.classes.item.all_suppliers)
+							supp_list.merge (rm_closure_root_pkg.classes.item.supplier_closure)
 							supp_list.extend (rm_closure_root_pkg.classes.item.name)
 							rm_closure_root_pkg.classes.forth
 						end

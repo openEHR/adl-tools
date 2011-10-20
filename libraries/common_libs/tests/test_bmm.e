@@ -101,7 +101,7 @@ feature -- Test routines
 		local
 			supps: ARRAYED_SET [STRING]
 		do
-			supps := rm_schema.class_definition ("COMPOSITION").immediate_suppliers
+			supps := rm_schema.class_definition ("COMPOSITION").suppliers
 			assert ("COMPOSITION immediate suppliers includes CODE_PHRASE", supps.has ("CODE_PHRASE"))
 			assert ("COMPOSITION immediate suppliers includes DV_CODED_TEXT", supps.has ("DV_CODED_TEXT"))
 			assert ("COMPOSITION immediate suppliers includes PARTY_PROXY", supps.has ("PARTY_PROXY"))
@@ -116,7 +116,7 @@ feature -- Test routines
 		local
 			supps: ARRAYED_SET [STRING]
 		do
-			supps := rm_schema.class_definition ("COMPOSITION").all_suppliers
+			supps := rm_schema.class_definition ("COMPOSITION").supplier_closure
 			assert ("COMPOSITION immediate suppliers includes CODE_PHRASE", supps.has ("CODE_PHRASE"))
 			assert ("COMPOSITION immediate suppliers includes DV_CODED_TEXT", supps.has ("DV_CODED_TEXT"))
 			assert ("COMPOSITION immediate suppliers includes PARTY_PROXY", supps.has ("PARTY_PROXY"))

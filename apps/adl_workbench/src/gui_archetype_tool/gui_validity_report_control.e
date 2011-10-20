@@ -17,7 +17,7 @@ class
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			can_populate
+			can_populate, can_repopulate
 		end
 
 create
@@ -45,6 +45,11 @@ feature -- Access
 feature -- Status Report
 
 	can_populate (aca: attached ARCH_CAT_ARCHETYPE): BOOLEAN
+		do
+			Result := True
+		end
+
+	can_repopulate: BOOLEAN
 		do
 			Result := True
 		end

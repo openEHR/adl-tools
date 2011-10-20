@@ -273,7 +273,7 @@ feature -- Commands
 
 					-- put a ref to schema, keyed by the model_publisher-package_name key (lower-case) for later lookup by compiler
 					from rm_closures.start until rm_closures.off loop
-						qualified_rm_closure_name := publisher_qualified_rm_closure_name (model_publisher, rm_closures.item)
+						qualified_rm_closure_name := publisher_qualified_rm_closure_key (model_publisher, rm_closures.item)
 						if not schemas_by_rm_closure.has (qualified_rm_closure_name) then
 							schemas_by_rm_closure.put (valid_top_level_schemas.item_for_iteration, qualified_rm_closure_name.as_lower)
 						else

@@ -281,11 +281,6 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 		local
 			pkg_names: ARRAY [STRING]
 		do
-			-- check archetype parent class in list of class names
-			if attached archetype_parent_class and then not has_class_definition (archetype_parent_class) then
-				add_error ("BMM_ARPAR", <<schema_id, archetype_parent_class>>)
-			end
-
 			-- check top-level names - package names cannot contain each other and be siblings
 			pkg_names := packages.current_keys
 			from packages.start until packages.off loop
@@ -412,12 +407,12 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 			Loaded: state = State_includes_pending
 			Other_valid: includes_to_process.has (other.schema_id)
 		do
-			-- archetype parent class
-			if attached other.archetype_parent_class then
+			-- archetype parent class: only merge if nothing already in the higher-level schema
+			if attached other.archetype_parent_class and not attached archetype_parent_class then
 				archetype_parent_class := other.archetype_parent_class
 			end
-			-- archetype data value parent class
-			if attached other.archetype_data_value_parent_class then
+			-- archetype data value parent class: only merge if nothing already in the higher-level schema
+			if attached other.archetype_data_value_parent_class and not attached archetype_data_value_parent_class then
 				archetype_data_value_parent_class := other.archetype_data_value_parent_class
 			end
 			-- archetype closures
@@ -511,6 +506,11 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 		local
 			package_classes: HASH_TABLE [STRING, STRING]
 		do
+			-- check archetype parent class in list of class names
+			if attached archetype_parent_class and then not has_class_definition (archetype_parent_class) then
+				add_error ("BMM_ARPAR", <<schema_id, archetype_parent_class>>)
+			end
+
 			-- check that all models refer to declared packages
 			from archetype_rm_closure_packages.start until archetype_rm_closure_packages.off loop
 				if not has_canonical_package_path (archetype_rm_closure_packages.item) then
