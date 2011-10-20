@@ -350,7 +350,7 @@ feature {NONE} -- Initialization
 			-- set up docking
 			create docking_manager.make (viewer_main_cell, Current)
 			create_new_catalogue_tool
-			create_new_rm_schema_tool
+			create_new_rm_schema_explorer
 			create_new_console_tool
 			create_new_error_tool
 			create_new_statistics_tool
@@ -499,7 +499,7 @@ feature -- Status setting
 
 			-- if some RM schemas now found, set up a repository if necessary
 			if rm_schemas_access.found_valid_schemas then
-				rm_schema_tool.populate
+				rm_schema_explorer.populate
 				if repository_profiles.current_reference_repository_path.is_empty then
 					configure_profiles
 				else
@@ -1004,11 +1004,11 @@ feature -- RM Schemas Events
 				if not rm_schemas_access.found_valid_schemas then
 					append_billboard_to_console
 				else
-					rm_schema_tool.populate
+					rm_schema_explorer.populate
 					refresh_profile_context (True)
 				end
 			elseif dialog.has_changed_schema_dir then
-				rm_schema_tool.populate
+				rm_schema_explorer.populate
 				refresh_profile_context (True)
 			end
 		end
@@ -1087,8 +1087,8 @@ feature -- Archetype Events
 	select_class_in_rm_schema_tool (a_key: STRING)
 			-- display a particular class in the RM schema tool
 		do
-			if rm_schema_tool.valid_item_id (a_key) then
-				rm_schema_tool.select_item (a_key)
+			if rm_schema_explorer.valid_item_id (a_key) then
+				rm_schema_explorer.select_item (a_key)
 			end
 		end
 
@@ -1098,7 +1098,7 @@ feature -- Address Bar control
 		once
 			create Result.make (agent windows_hide_combo_dropdown, agent windows_show_combo_dropdown)
 			Result.add_client_control (catalogue_tool)
-			Result.add_client_control (rm_schema_tool)
+			Result.add_client_control (rm_schema_explorer)
 		end
 
 feature -- Docking controls
@@ -1122,6 +1122,27 @@ feature -- Docking controls
 
 	tool_bar_content: detachable SD_TOOL_BAR_CONTENT
 			-- Tool bar content
+
+feature -- RM Schema explorer
+
+	rm_schema_explorer: GUI_RM_SCHEMA_EXPLORER
+		once
+			create Result.make (agent display_class, agent create_and_populate_new_class_tool)
+		end
+
+	create_new_rm_schema_explorer
+		local
+			a_docking_pane: SD_CONTENT
+		do
+			create a_docking_pane.make_with_widget_title_pixmap (rm_schema_explorer.ev_root_container, pixmaps ["rm_schema"], "Reference Models")
+			attached_docking_manager.contents.extend (a_docking_pane)
+			a_docking_pane.set_long_title ("Reference Models")
+			a_docking_pane.set_short_title ("Reference Models")
+			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
+			a_docking_pane.set_auto_hide ({SD_ENUMERATION}.left)
+			a_docking_pane.show_actions.extend (agent address_bar.set_current_client (rm_schema_explorer))
+			a_docking_pane.focus_in_actions.extend (agent address_bar.set_current_client (rm_schema_explorer))
+		end
 
 feature -- Catalogue tool
 
@@ -1148,27 +1169,6 @@ feature -- Catalogue tool
 			a_docking_pane.set_top ({SD_ENUMERATION}.left)
 			a_docking_pane.show_actions.extend (agent address_bar.set_current_client (catalogue_tool))
 			a_docking_pane.focus_in_actions.extend (agent address_bar.set_current_client (catalogue_tool))
-		end
-
-feature -- RM Schema tool
-
-	rm_schema_tool: GUI_RM_SCHEMA_EXPLORER
-		once
-			create Result.make (agent display_class, agent create_and_populate_new_class_tool)
-		end
-
-	create_new_rm_schema_tool
-		local
-			a_docking_pane: SD_CONTENT
-		do
-			create a_docking_pane.make_with_widget_title_pixmap (rm_schema_tool.ev_root_container, pixmaps ["rm_schema"], "Reference Models")
-			attached_docking_manager.contents.extend (a_docking_pane)
-			a_docking_pane.set_long_title ("Reference Models")
-			a_docking_pane.set_short_title ("Reference Models")
-			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
-			a_docking_pane.set_auto_hide ({SD_ENUMERATION}.left)
-			a_docking_pane.show_actions.extend (agent address_bar.set_current_client (rm_schema_tool))
-			a_docking_pane.focus_in_actions.extend (agent address_bar.set_current_client (rm_schema_tool))
 		end
 
 feature -- Archetype tools
