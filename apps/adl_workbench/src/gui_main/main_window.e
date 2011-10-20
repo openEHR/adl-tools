@@ -1152,7 +1152,7 @@ feature -- Catalogue tool
 
 feature -- RM Schema tool
 
-	rm_schema_tool: GUI_RM_SCHEMA_TOOL
+	rm_schema_tool: GUI_RM_SCHEMA_EXPLORER
 		once
 			create Result.make (agent display_class, agent create_and_populate_new_class_tool)
 		end

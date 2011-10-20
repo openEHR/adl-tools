@@ -12,7 +12,7 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class GUI_RM_SCHEMA_TOOL
+class GUI_RM_SCHEMA_EXPLORER
 
 inherit
 	SHARED_REFERENCE_MODEL_ACCESS
