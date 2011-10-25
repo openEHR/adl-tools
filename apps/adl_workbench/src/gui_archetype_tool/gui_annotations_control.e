@@ -54,12 +54,6 @@ feature -- Access
 
 feature -- Commands
 
-	clear
-			-- Wipe out content from widgets.
-		do
-			ev_root_container.wipe_out
-		end
-
    	set_row_pixmap (row: attached EV_GRID_ROW)
    			-- Set the icon appropriate to the item attached to `row'.
    		do
@@ -84,6 +78,12 @@ feature {NONE} -- Implementation
 
 	grid_controller: GUI_GRID_CONTROLLER
 
+	do_clear
+			-- Wipe out content from widgets.
+		do
+			ev_root_container.wipe_out
+		end
+
 	do_populate
 			-- populate the ADL tree control by creating it from scratch
 		local
@@ -94,14 +94,14 @@ feature {NONE} -- Implementation
 			path_row, ann_row: EV_GRID_ROW
 		do
 			-- figure out if there are any annotations, and what actual language tag they are under
-			if target_archetype.has_annotations and then target_archetype.annotations.has_matching_language_tag (selected_language) then
-				lang_key := target_archetype.annotations.matching_language_tag (selected_language)
+			if source_archetype.has_annotations and then source_archetype.annotations.has_matching_language_tag (selected_language) then
+				lang_key := source_archetype.annotations.matching_language_tag (selected_language)
 
 				-- populate grid
-				anns_by_path := target_archetype.annotations.annotation_table (lang_key).items
+				anns_by_path := source_archetype.annotations.annotation_table (lang_key).items
 				from anns_by_path.start until anns_by_path.off loop
 					-- put the path in the first column
-					create gli.make_with_text (target_archetype.ontology.physical_to_logical_path (anns_by_path.key_for_iteration, selected_language, True))
+					create gli.make_with_text (source_archetype.ontology.physical_to_logical_path (anns_by_path.key_for_iteration, selected_language, True))
 					ev_root_container.set_item (Grid_path_col, ev_root_container.row_count + 1, gli)
 					path_row := gli.row
 

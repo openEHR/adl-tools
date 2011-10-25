@@ -74,13 +74,6 @@ feature -- Access
 
 feature -- Commands
 
-	clear
-			-- wipe out content from ontology-related controls
-		do
-			ev_term_defs_mlist.wipe_out
-			ev_constraint_defs_mlist.wipe_out
-		end
-
 	select_term (a_term_code: attached STRING)
 			-- select row for a_term_code in term_definitions control
 		do
@@ -104,7 +97,14 @@ feature {NONE} -- Implementation
 	ontology: attached ARCHETYPE_ONTOLOGY
 			-- access to ontology of selected archetype
 		do
-			Result := target_archetype.ontology
+			Result := source_archetype.ontology
+		end
+
+	do_clear
+			-- wipe out content from ontology-related controls
+		do
+			ev_term_defs_mlist.wipe_out
+			ev_constraint_defs_mlist.wipe_out
 		end
 
 	do_populate

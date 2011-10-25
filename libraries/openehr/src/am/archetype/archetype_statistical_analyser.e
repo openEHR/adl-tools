@@ -13,29 +13,11 @@ note
 
 class ARCHETYPE_STATISTICAL_ANALYSER
 
+inherit
+	ARCHETYPE_STATISTICAL_DEFINITIONS
+
 create
 	make
-
-feature -- Definitions
-
-	Object_node_count: STRING = "object_node_count"
-
-	Archetypable_node_count: STRING = "archetypable_node_count"
-
-	Archetype_data_value_node_count: STRING = "archetype_data_value_node_count"
-
-	At_code_count: STRING = "at_code_count"
-
-	Ac_code_count: STRING = "ac_code_count"
-
-	At_code_bindings_count: STRING = "At_code_bindings_count"
-
-	Ac_code_bindings_count: STRING = "Ac_code_bindings_count"
-
-	Summed_result_metric_names: ARRAY [STRING]
-		once
-			Result := <<Object_node_count, Archetypable_node_count, Archetype_data_value_node_count, At_code_count, Ac_code_count, At_code_bindings_count, Ac_code_bindings_count>>
-		end
 
 feature -- Initialisation
 
@@ -47,8 +29,7 @@ feature -- Initialisation
 			else
 				target := a_target_descriptor.flat_archetype
 			end
-			bmm_schema := target_descriptor.rm_schema
-			reset
+			create stats.make (target_descriptor.rm_schema)
 		end
 
 feature -- Access
@@ -59,11 +40,7 @@ feature -- Access
 	target: ARCHETYPE
 			-- differential archetype
 
-	rm_class_table: HASH_TABLE [RM_CLASS_STATISTICS, STRING]
-			-- counts of all RM classes
-
-	summed_results: HASH_TABLE [INTEGER, STRING]
-			-- table of summed values, keyed by meaning, suitable for direct display
+	stats: ARCHETYPE_STATISTICAL_REPORT
 
 feature -- Commands
 
@@ -71,34 +48,38 @@ feature -- Commands
 		local
 			def_it: C_ITERATOR
 		do
-			reset
+			-- add archetype-level counts
+			stats.increment_archetype_metric (target.ontology.term_codes.count, At_code_count)
+			stats.increment_archetype_metric (target.ontology.constraint_codes.count, Ac_code_count)
+			if not target.ontology.term_bindings.is_empty then
+				from target.ontology.term_bindings.start until target.ontology.term_bindings.off loop
+					stats.increment_archetype_metric (target.ontology.term_bindings.item_for_iteration.count, At_code_bindings_count)
+					target.ontology.term_bindings.forth
+				end
+			end
+			if not target.ontology.constraint_bindings.is_empty then
+				from target.ontology.constraint_bindings.start until target.ontology.constraint_bindings.off loop
+					stats.increment_archetype_metric (target.ontology.constraint_bindings.item_for_iteration.count, Ac_code_bindings_count)
+					target.ontology.constraint_bindings.forth
+				end
+			end
+
+			-- add node-level counts
 			create def_it.make (target.definition)
-			def_it.do_until_surface (agent node_enter, agent node_test)
-			finalise_summation
+			def_it.do_all (agent node_enter, agent node_exit)
+
+			-- finalise
+			stats.compute_metrics
 		end
 
 feature {NONE} -- Implementation
-
-	bmm_schema: BMM_SCHEMA
-
-	reset
-		do
-			create rm_class_table.make (0)
-			create summed_results.make (0)
-			Summed_result_metric_names.do_all (
-				agent (metric_name: STRING)
-					do
-						summed_results.put (0, metric_name)
-					end
-			)
-		end
 
 	node_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 		local
 			stat_accum: RM_CLASS_STATISTICS
 		do
 			if attached {C_OBJECT} a_c_node as co then
-				create stat_accum.make (co.rm_type_name)
+				create stat_accum.make (co.rm_type_name, co.is_root)
 				if attached {C_COMPLEX_OBJECT} co as cco then
 					cco.attributes.do_all (
 						agent (ca: C_ATTRIBUTE; a_stat_accum: RM_CLASS_STATISTICS)
@@ -109,44 +90,12 @@ feature {NONE} -- Implementation
 				elseif attached {C_DOMAIN_TYPE} co as cdt then
 					stat_accum.add_rm_attribute_occurrences (cdt.report_rm_attributes)
 				end
-				add_rm_class_stats (stat_accum)
+				stats.add_rm_class_stats (stat_accum)
 			end
 		end
 
-	add_rm_class_stats (a_stat_accum: RM_CLASS_STATISTICS)
+	node_exit (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 		do
-			if rm_class_table.has (a_stat_accum.rm_class_name) then
-				rm_class_table.item (a_stat_accum.rm_class_name).merge (a_stat_accum)
-			else
-				rm_class_table.put (a_stat_accum, a_stat_accum.rm_class_name)
-			end
-		end
-
-	finalise_summation
-		do
-			from rm_class_table.start until rm_class_table.off loop
-				summed_results.force (summed_results.item (Object_node_count) + rm_class_table.item_for_iteration.rm_class_count, Object_node_count)
-				if bmm_schema.is_descendant_of (rm_class_table.item_for_iteration.rm_class_name, bmm_schema.archetype_parent_class) then
-					summed_results.force (summed_results.item (Archetypable_node_count) + rm_class_table.item_for_iteration.rm_class_count, Archetypable_node_count)
-				end
-				if bmm_schema.is_descendant_of (rm_class_table.item_for_iteration.rm_class_name, bmm_schema.archetype_data_value_parent_class) then
-					summed_results.force (summed_results.item (Archetype_data_value_node_count) + rm_class_table.item_for_iteration.rm_class_count, Archetype_data_value_node_count)
-				end
-				rm_class_table.forth
-			end
-			summed_results.force (target.ontology.term_codes.count, At_code_count)
-			summed_results.force (target.ontology.constraint_codes.count, Ac_code_count)
-			if not target.ontology.term_bindings.is_empty then
-				summed_results.force (target.ontology.term_bindings.iteration_item (0).count, At_code_bindings_count)
-			end
-			if not target.ontology.constraint_bindings.is_empty then
-				summed_results.force (target.ontology.constraint_bindings.iteration_item (0).count, Ac_code_bindings_count)
-			end
-		end
-
-	node_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
-		do
-			Result := True
 		end
 
 end

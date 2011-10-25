@@ -382,29 +382,6 @@ feature -- Access
 
 feature -- Commands
 
-	clear
-			-- Wipe out content.
-		do
-			term_mappings_list.wipe_out
-			status_text.remove_text
-
-			auth_orig_auth_mlist.wipe_out
-			auth_contrib_list.wipe_out
-			original_language_text.remove_text
-
-			purpose_text.remove_text
-			use_text.remove_text
-			misuse_text.remove_text
-			keywords_list.wipe_out
-
-			resource_package_text.remove_text
-			resource_orig_res_mlist.wipe_out
-
-			copyright_text.remove_text
-
-			clear_translations
-		end
-
 feature -- Events
 
 	translations_select_language
@@ -445,10 +422,33 @@ feature {NONE} -- Implementation
 	trans_accreditation_text, copyright_text, purpose_text, use_text,
 	misuse_text: EV_TEXT
 
+	do_clear
+			-- Wipe out content.
+		do
+			term_mappings_list.wipe_out
+			status_text.remove_text
+
+			auth_orig_auth_mlist.wipe_out
+			auth_contrib_list.wipe_out
+			original_language_text.remove_text
+
+			purpose_text.remove_text
+			use_text.remove_text
+			misuse_text.remove_text
+			keywords_list.wipe_out
+
+			resource_package_text.remove_text
+			resource_orig_res_mlist.wipe_out
+
+			copyright_text.remove_text
+
+			clear_translations
+		end
+
 	do_populate
 		do
-			term_mappings_list.set_strings (target_archetype.ontology.terminologies_available)
-			if attached target_archetype.description then
+			term_mappings_list.set_strings (source_archetype.ontology.terminologies_available)
+			if attached source_archetype.description then
 				populate_authorship
 				populate_details
 				populate_resources
@@ -461,18 +461,18 @@ feature {NONE} -- Implementation
 			-- populate authorship fields
 		do
 			-- original author: tagged list of strings
-			populate_ev_multi_list_from_hash (auth_orig_auth_mlist, target_archetype.description.original_author)
+			populate_ev_multi_list_from_hash (auth_orig_auth_mlist, source_archetype.description.original_author)
 
 			-- status
-			if attached target_archetype.description.lifecycle_state as sts then
+			if attached source_archetype.description.lifecycle_state as sts then
 				status_text.set_text (utf8 (sts))
 			end
 
 			-- original language
-			original_language_text.set_text (utf8 (target_archetype.original_language.code_string))
+			original_language_text.set_text (utf8 (source_archetype.original_language.code_string))
 
 			-- contributors: list of strings
-			if attached target_archetype.description.other_contributors as contribs then
+			if attached source_archetype.description.other_contributors as contribs then
 				create utf_str_list.make (0)
 				contribs.do_all (agent (utf8_str: STRING) do utf_str_list.extend (utf8 (utf8_str)) end)
 				auth_contrib_list.set_strings (utf_str_list)
@@ -482,7 +482,7 @@ feature {NONE} -- Implementation
 	populate_details
 			-- Populate details (language sensitive).
 		do
-			if attached target_archetype.description.details.item(selected_language) as item then
+			if attached source_archetype.description.details.item(selected_language) as item then
 				if attached item.purpose then
 					purpose_text.set_text (utf8 (item.purpose))
 				end
@@ -507,12 +507,12 @@ feature {NONE} -- Implementation
 			-- populate resources fields
 		do
 			-- package URI
-			if attached target_archetype.description.resource_package_uri as arch_pkg_uri then
+			if attached source_archetype.description.resource_package_uri as arch_pkg_uri then
 				resource_package_text.set_text (utf8 (arch_pkg_uri.out))
 			end
 
 			-- list of URI resources
-			if attached target_archetype.description.details.item(selected_language) as item then
+			if attached source_archetype.description.details.item(selected_language) as item then
 				populate_ev_multi_list_from_hash (resource_orig_res_mlist, item.original_resource_uri)
 			end
 		end
@@ -520,7 +520,7 @@ feature {NONE} -- Implementation
 	populate_copyright
 			-- populate copyright field
 		do
-			if attached target_archetype.description.details.item(selected_language) as item  and then
+			if attached source_archetype.description.details.item(selected_language) as item  and then
 				attached item.copyright
 			then
 				copyright_text.set_text (utf8 (item.copyright))
@@ -531,8 +531,8 @@ feature {NONE} -- Implementation
 			-- populate controls
 		do
 			clear_translations
-			if attached target_archetype.translations then
-				trans_languages_list.set_strings (target_archetype.translations.current_keys)
+			if attached source_archetype.translations then
+				trans_languages_list.set_strings (source_archetype.translations.current_keys)
 				populate_translation_items
 			end
 		end
@@ -556,7 +556,7 @@ feature {NONE} -- Implementation
 				translation_language := trans_languages_list.selected_item.text.as_string_8
 			end
 
-			trans_item := target_archetype.translations.item (translation_language)
+			trans_item := source_archetype.translations.item (translation_language)
 
 			-- populate author hash
 			populate_ev_multi_list_from_hash (trans_author_mlist, trans_item.author)

@@ -50,6 +50,9 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
+	full_compile_visual_update_action: PROCEDURE [ANY, TUPLE]
+			-- Called after complete build
+
 	global_visual_update_action: PROCEDURE [ANY, TUPLE[STRING]]
 			-- Called after global processing to perform GUI updates
 
@@ -80,6 +83,14 @@ feature -- Status Setting
 
 feature -- Modification
 
+	set_full_compile_visual_update_action (a_routine: attached PROCEDURE [ANY, TUPLE])
+			-- Set `full_compile_visual_update_action'.
+		do
+			full_compile_visual_update_action := a_routine
+		ensure
+			full_compile_visual_update_action_set: full_compile_visual_update_action = a_routine
+		end
+
 	set_global_visual_update_action (a_routine: attached PROCEDURE [ANY, TUPLE[STRING]])
 			-- Set `global_visual_update_action'.
 		do
@@ -93,7 +104,7 @@ feature -- Modification
 		do
 			archetype_visual_update_action := a_routine
 		ensure
-			archetype_visual_update_action: archetype_visual_update_action = a_routine
+			archetype_visual_update_action_set: archetype_visual_update_action = a_routine
 		end
 
 feature -- Commands
@@ -109,6 +120,9 @@ feature -- Commands
 			is_full_build_completed := not is_interrupt_requested
 			is_building := False
 			call_global_visual_update_action (create_message_line ("compiler_finished_building_system", Void))
+			if is_full_build_completed then
+				call_full_compile_visual_update_action
+			end
 		end
 
 	rebuild_all
@@ -122,6 +136,9 @@ feature -- Commands
 			is_full_build_completed := not is_interrupt_requested
 			is_building := False
 			call_global_visual_update_action (create_message_line ("compiler_finished_rebuilding_system", Void))
+			if is_full_build_completed then
+				call_full_compile_visual_update_action
+			end
 		end
 
 	build_subtree
@@ -303,6 +320,14 @@ feature {NONE} -- Implementation
 					ara.save_flat_as (filename, Syntax_type_adl_html)
 					call_archetype_visual_update_action (ara.status, ara, 0)
 				end
+			end
+		end
+
+	call_full_compile_visual_update_action
+			-- Call `full_compile_visual_update_action', if it is attached.
+		do
+			if attached full_compile_visual_update_action then
+				full_compile_visual_update_action.call ([])
 			end
 		end
 

@@ -15,11 +15,6 @@ note
 class GUI_RM_SCHEMA_EXPLORER
 
 inherit
-	SHARED_REFERENCE_MODEL_ACCESS
-		export
-			{NONE} all
-		end
-
 	STRING_UTILITIES
 		export
 			{NONE} all
@@ -36,8 +31,10 @@ inherit
 		end
 
 	GUI_SEARCHABLE_TOOL
+
+	GUI_TOOL
 		redefine
-			ev_root_container
+			source
 		end
 
 create
@@ -45,13 +42,17 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent)
+	make (a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent;
+			a_select_rm_agent, a_select_rm_in_new_tool_agent: like select_rm_agent)
 		do
 			select_class_agent := a_select_class_agent
 			select_class_in_new_tool_agent := a_select_class_in_new_tool_agent
+			select_rm_agent := a_select_rm_agent
+			select_rm_in_new_tool_agent := a_select_rm_in_new_tool_agent
 
 			-- create widgets
 			create ev_root_container
+			ev_root_container.set_data (Current)
 			create ev_tree
 
 			-- connect widgets
@@ -66,6 +67,8 @@ feature {NONE} -- Initialisation
 		end
 
 feature -- Access
+
+	source: REFERENCE_MODEL_ACCESS
 
 	ev_root_container: EV_VERTICAL_BOX
 
@@ -104,19 +107,6 @@ feature -- Status Report
 
 feature -- Commands
 
-	populate
-			-- Populate content from visual controls.
-		do
-			ev_tree.wipe_out
-			create ev_node_map.make(0)
-			populate_tree
-		end
-
-	repopulate
-			-- repopulate current tree items if needed
-		do
-		end
-
 	select_item (id: attached STRING)
 			-- show class in RM explorer and display it in a class tool
 		do
@@ -134,11 +124,6 @@ feature -- Commands
 			end
 		end
 
-	clear
-			-- Wipe out content from visual controls and reset controls to reasonable state
-		do
-		end
-
 feature {NONE} -- Implementation
 
 	ev_pixmap: EV_PIXMAP
@@ -151,29 +136,33 @@ feature {NONE} -- Implementation
 
 	select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
 
-	populate_tree
+	select_rm_agent, select_rm_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_SCHEMA]]
+
+	do_clear
+			-- Wipe out content from visual controls and reset controls to reasonable state
 		do
-			from rm_schemas_access.valid_top_level_schemas.start until rm_schemas_access.valid_top_level_schemas.off loop
-				populate_schema (rm_schemas_access.valid_top_level_schemas.item_for_iteration)
-				rm_schemas_access.valid_top_level_schemas.forth
+			ev_tree.wipe_out
+			create ev_node_map.make(0)
+		end
+
+	do_populate
+		do
+			from source.valid_top_level_schemas.start until source.valid_top_level_schemas.off loop
+				populate_schema (source.valid_top_level_schemas.item_for_iteration)
+				source.valid_top_level_schemas.forth
 			end
 		end
 
 	populate_schema (a_schema: BMM_SCHEMA)
 		local
 			ev_node: EV_TREE_ITEM
-			str: STRING
 		do
 			-- put a root schema node on the tree
 			create ev_node.make_with_text (a_schema.schema_id)
  			ev_node.set_data (a_schema)
 
- 			str := "Schema id: " + a_schema.schema_id + "%N"
- 			str.append (a_schema.schema_description)
-
  	 		ev_node.pointer_button_press_actions.force_extend (agent schema_node_handler (ev_node, ?, ?, ?))
 
- 	 		ev_node.set_tooltip (str)
  	 		ev_node.set_pixmap (pixmaps ["rm_schema"])
 			ev_tree.extend (ev_node)
 
@@ -270,15 +259,15 @@ feature {NONE} -- Implementation
 
 				elseif button = {EV_POINTER_CONSTANTS}.right then
 					create menu
-					create an_mi.make_with_text_and_action ("Display", agent display_context_selected_class_in_active_tool (ev_ti))
+					create an_mi.make_with_text_and_action (create_message_content ("display_in_active_tab", Void), agent display_context_selected_class_in_active_tool (ev_ti))
 					an_mi.set_pixmap (pixmaps ["class_tool"])
 			    	menu.extend (an_mi)
 
-					create an_mi.make_with_text_and_action ("Display in new tab", agent display_context_selected_class_in_new_tool (ev_ti))
+					create an_mi.make_with_text_and_action (create_message_content ("display_in_new_tab", Void), agent display_context_selected_class_in_new_tool (ev_ti))
 					an_mi.set_pixmap (pixmaps ["class_tool_new"])
 					menu.extend (an_mi)
 
-					create an_mi.make_with_text_and_action ("Edit source schema", agent do_edit_schema (a_class_def.source_schema_id))
+					create an_mi.make_with_text_and_action (create_message_content ("edit_source_schema", Void), agent do_edit_schema (a_class_def.source_schema_id))
 					an_mi.set_pixmap (pixmaps ["edit"])
 					menu.extend (an_mi)
 
@@ -296,17 +285,25 @@ feature {NONE} -- Implementation
 			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_SCHEMA} ev_ti.data as bmm_sch then
 				create menu
 
-				create an_mi.make_with_text_and_action ("Edit source schema", agent do_edit_schema (bmm_sch.schema_id))
+				create an_mi.make_with_text_and_action (create_message_content ("display_in_active_tab", Void), agent display_context_selected_rm_in_active_tool (ev_ti))
+		    	menu.extend (an_mi)
+				an_mi.set_pixmap (pixmaps ["rm_schema_tool"])
+
+				create an_mi.make_with_text_and_action (create_message_content ("display_in_new_tab", Void), agent display_context_selected_rm_in_new_tool (ev_ti))
+		    	menu.extend (an_mi)
+				an_mi.set_pixmap (pixmaps ["rm_schema_tool_new"])
+
+				create an_mi.make_with_text_and_action (create_message_content ("expand_button_expand_text", Void), agent schema_expand_all (ev_ti))
+		    	menu.extend (an_mi)
+
+				create an_mi.make_with_text_and_action (create_message_content ("expand_packages", Void), agent schema_expand_packages (ev_ti))
+		    	menu.extend (an_mi)
+
+				create an_mi.make_with_text_and_action (create_message_content ("expand_button_collapse_text", Void), agent schema_collapse (ev_ti))
+		    	menu.extend (an_mi)
+
+				create an_mi.make_with_text_and_action (create_message_content ("edit_source_schema", Void), agent do_edit_schema (bmm_sch.schema_id))
 				an_mi.set_pixmap (pixmaps ["edit"])
-		    	menu.extend (an_mi)
-
-				create an_mi.make_with_text_and_action ("Expand all", agent schema_expand_all (ev_ti))
-		    	menu.extend (an_mi)
-
-				create an_mi.make_with_text_and_action ("Expand packages", agent schema_expand_packages (ev_ti))
-		    	menu.extend (an_mi)
-
-				create an_mi.make_with_text_and_action ("Collapse all",agent schema_collapse (ev_ti))
 		    	menu.extend (an_mi)
 
 				menu.show
@@ -371,10 +368,26 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	display_context_selected_rm_in_active_tool (ev_ti: EV_TREE_ITEM)
+		do
+			ev_ti.enable_select
+			if attached {BMM_SCHEMA} ev_ti.data as a_bmm then
+				select_rm_agent.call ([a_bmm])
+			end
+		end
+
+	display_context_selected_rm_in_new_tool (ev_ti: EV_TREE_ITEM)
+		do
+			ev_ti.enable_select
+			if attached {BMM_SCHEMA} ev_ti.data as a_bmm then
+				select_rm_in_new_tool_agent.call ([a_bmm])
+			end
+		end
+
 	do_edit_schema (a_schema_id: STRING)
 			-- launch external editor with schema, or info box if none defined
 		do
-			execution_environment.launch (text_editor_command + " %"" + rm_schemas_access.all_schemas.item (a_schema_id).meta_data.item (metadata_schema_path) + "%"")
+			execution_environment.launch (text_editor_command + " %"" + source.all_schemas.item (a_schema_id).meta_data.item (metadata_schema_path) + "%"")
 		end
 
 	selected_class_def: BMM_CLASS_DEFINITION

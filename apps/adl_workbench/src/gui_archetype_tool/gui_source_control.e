@@ -82,13 +82,6 @@ feature -- Status Report
 			Result := True
 		end
 
-feature -- Commands
-
-	clear
-		do
-			ev_souce_rich_text.remove_text
-		end
-
 feature {NONE} -- Implementation
 
 	ev_souce_rich_text: EV_RICH_TEXT
@@ -105,12 +98,17 @@ feature {NONE} -- Implementation
 			try_repopulate
 		end
 
+	do_clear
+		do
+			ev_souce_rich_text.remove_text
+		end
+
 	do_populate
 		do
-			if target_archetype_descriptor.has_legacy_flat_file then
-				populate_source_text_with_line_numbers (target_archetype_descriptor.legacy_flat_text)
+			if source.has_legacy_flat_file then
+				populate_source_text_with_line_numbers (source.legacy_flat_text)
 			else
-				populate_source_text_with_line_numbers (target_archetype_descriptor.differential_text)
+				populate_source_text_with_line_numbers (source.differential_text)
 			end
 		end
 

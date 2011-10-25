@@ -67,7 +67,7 @@ feature -- Commands
 				create_new_tool
 			end
 			active_tool.populate (a_class_def)
-			populate_active_tool_pane (a_class_def.name, a_class_def.name.substring (1, a_class_def.name.count.min (10)),
+			populate_active_tool_pane (a_class_def.name, a_class_def.name.substring (1, a_class_def.name.count.min (Tab_title_width)),
 				pixmaps [a_class_def.type_category])
 		end
 

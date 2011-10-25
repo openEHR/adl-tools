@@ -15,30 +15,88 @@ deferred class GUI_TOOL
 
 feature -- Access
 
+	source: ANY
+			-- source object to which this tool is targetted
+
 	ev_root_container: EV_CONTAINER
 		deferred
 		end
 
+	last_populate_timestamp: attached DATE_TIME
+			-- timestamp of last populate or repopulate
+
+	tool_unique_id: INTEGER
+			-- unique id of this tool instance over the session
+		do
+			Result := ev_root_container.object_id
+		end
+
 feature -- Status Report
+
+	can_populate (a_source: attached like source): BOOLEAN
+		do
+			Result := True
+		end
 
 	can_repopulate: BOOLEAN
 		do
-			Result := True
+			Result := is_populated
+		end
+
+	is_populated: BOOLEAN
+		do
+			Result := attached source
 		end
 
 feature -- Commands
 
 	clear
 			-- Wipe out content from visual controls and reset controls to reasoonable state
-		deferred
+		do
+			last_populate_timestamp := Void
+			do_clear
+		end
+
+	populate (a_source: attached like source)
+			-- populate the control by creating it from scratch
+		require
+			can_populate (a_source)
+		do
+			source := a_source
+			clear
+			do_populate
+			create last_populate_timestamp.make_now
 		end
 
 	repopulate
 			-- repopulate current tree items if needed
 		require
 			can_repopulate: can_repopulate
+		do
+			do_populate
+			create last_populate_timestamp.make_now
+		end
+
+	try_repopulate
+			-- repopulate if possible; useful for buttons on tool that would cause live repopulate
+		do
+			if can_repopulate then
+				repopulate
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	do_clear
 		deferred
 		end
+
+	do_populate
+		deferred
+		end
+
+invariant
+	Reverse_link_set: ev_root_container.data = Current
 
 end
 

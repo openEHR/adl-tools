@@ -29,6 +29,9 @@ feature -- Definitions
 			create Result.default_create
 		end
 
+	Tab_title_width: INTEGER = 10
+			-- Max number of text chars in string to populate editor tab
+
 feature -- Initialisation
 
 	make_docking (a_docking_manager: attached SD_DOCKING_MANAGER)

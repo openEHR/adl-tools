@@ -147,12 +147,6 @@ feature -- Events
 
 feature -- Commands
 
-	clear
-			-- wipe out content from controls
-		do
-			ev_path_list.wipe_out
-		end
-
 	adjust_columns
 			-- Adjust column view of paths control according to `column_check_list'.
 		local
@@ -211,6 +205,12 @@ feature {NONE} -- Implementation
 
 	ev_path_list: EV_MULTI_COLUMN_LIST
 
+	do_clear
+			-- wipe out content from controls
+		do
+			ev_path_list.wipe_out
+		end
+
 	do_populate
 		local
 			list_row: EV_MULTI_COLUMN_LIST_ROW
@@ -223,11 +223,11 @@ feature {NONE} -- Implementation
 			ev_path_list.set_column_title ("", path_control_column_names.count + 1)
 
 			if ev_filter_combo.text.is_equal ("All") then
-				p_paths := target_archetype.physical_paths
-				l_paths := target_archetype.logical_paths (selected_language, False)
+				p_paths := source_archetype.physical_paths
+				l_paths := source_archetype.logical_paths (selected_language, False)
 			else
-				p_paths := target_archetype.physical_leaf_paths
-				l_paths := target_archetype.logical_paths (selected_language, True)
+				p_paths := source_archetype.physical_leaf_paths
+				l_paths := source_archetype.logical_paths (selected_language, True)
 			end
 
 			from
@@ -236,7 +236,7 @@ feature {NONE} -- Implementation
 			until
 				p_paths.off
 			loop
-				if attached {C_OBJECT} target_archetype.c_object_at_path (p_paths.item) as c_o then
+				if attached {C_OBJECT} source_archetype.c_object_at_path (p_paths.item) as c_o then
 					create list_row
 					list_row.extend (utf8 (p_paths.item))
 					list_row.extend (utf8 (l_paths.item))

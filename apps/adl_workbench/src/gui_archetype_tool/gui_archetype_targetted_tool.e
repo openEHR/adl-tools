@@ -1,85 +1,68 @@
 note
-	description: "Summary description for {GUI_ARCHETYPE_TARGETTED_TOOL}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	component:   "openEHR Archetype Project"
+	description: "General model of a GUI tool whose data source is an archetype"
+	keywords:    "statistics, archteype"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	license:     "See notice at bottom of class"
+
+	file:        "$URL$"
+	revision:    "$LastChangedRevision$"
+	last_change: "$LastChangedDate$"
 
 deferred class
 	GUI_ARCHETYPE_TARGETTED_TOOL
 
 inherit
 	GUI_TOOL
+		rename
+			populate as gui_tool_populate
 		redefine
-			can_repopulate
+			can_populate, can_repopulate, source
 		end
 
 feature -- Access
 
-	target_archetype_descriptor: ARCH_CAT_ARCHETYPE
+	source: ARCH_CAT_ARCHETYPE
 			-- archetype to which this tool is targetted
 
-	target_archetype: ARCHETYPE
+	source_archetype: ARCHETYPE
 			-- differential or flat version of archetype, depending on setting of `differential_view'
 		do
 			if differential_view then
-				Result := target_archetype_descriptor.differential_archetype
+				Result := source.differential_archetype
 			else
-				Result := target_archetype_descriptor.flat_archetype
+				Result := source.flat_archetype
 			end
 		end
 
 	selected_language: attached STRING
 
-	last_populate_timestamp: DATE_TIME
-			-- timestamp of last populate or repopulate
-
 feature -- Status Report
 
 	differential_view: BOOLEAN
 
-	can_populate (aca: attached ARCH_CAT_ARCHETYPE): BOOLEAN
+	can_populate (a_source: attached like source): BOOLEAN
 		do
-			Result := aca.is_valid
+			Result := a_source.is_valid
 		end
 
 	can_repopulate: BOOLEAN
 		do
-			Result := is_populated and target_archetype_descriptor.is_valid
-		end
-
-	is_populated: BOOLEAN
-		do
-			Result := attached target_archetype_descriptor
+			Result := is_populated and source.is_valid
 		end
 
 feature -- Commands
 
-	populate (aca: attached ARCH_CAT_ARCHETYPE; differential_view_flag: BOOLEAN; a_selected_language: attached STRING)
+	populate (a_source: attached like source; differential_view_flag: BOOLEAN; a_selected_language: attached STRING)
 			-- populate the control by creating it from scratch
 		require
-			can_populate (aca)
+			can_populate (a_source)
 		do
-			target_archetype_descriptor := aca
 			differential_view := differential_view_flag
 			selected_language := a_selected_language
-			clear
-			do_populate
-			create last_populate_timestamp.make_now
-		end
-
-	try_repopulate
-			-- repopulate if possible; useful for buttons on tool that would cause live repopulate
-		do
-			if can_repopulate then
-				repopulate
-			end
-		end
-
-	repopulate
-			-- repopulate if targetted to same archetype as previously
-		do
-			do_populate
-			create last_populate_timestamp.make_now
+			gui_tool_populate (a_source)
 		end
 
 	repopulate_with_language (a_selected_language: attached STRING)
@@ -94,9 +77,6 @@ feature {NONE} -- Implementation
 	do_populate
 		deferred
 		end
-
-invariant
-	Reverse_link_set: ev_root_container.data = Current
 
 end
 

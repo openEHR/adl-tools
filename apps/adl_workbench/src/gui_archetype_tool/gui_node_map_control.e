@@ -174,11 +174,6 @@ feature -- Status Report
 
 feature -- Commands
 
-	clear
-		do
-			ev_tree.wipe_out
-		end
-
 	repopulate
 			-- repopulate and/or refresh visual appearance if diff/flat view has changed or RM icons setting changed
 		local
@@ -187,8 +182,8 @@ feature -- Commands
 		do
 			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
 			create c_node_map_builder
-			c_node_map_builder.initialise (target_archetype, selected_language, ev_tree, in_technical_mode, True, gui_node_map, code_select_action_agent)
-			create a_c_iterator.make (target_archetype.definition, c_node_map_builder)
+			c_node_map_builder.initialise (source_archetype, selected_language, ev_tree, in_technical_mode, True, gui_node_map, code_select_action_agent)
+			create a_c_iterator.make (source_archetype.definition, c_node_map_builder)
 			a_c_iterator.do_all
 
 			-- update reference mode nodes
@@ -205,7 +200,7 @@ feature -- Commands
 	update_rm_icons_cb
 			-- update and repopulate if this setting was changed elsewhere in the tool
 		do
-			if attached target_archetype_descriptor and use_rm_pixmaps /= ev_use_rm_icons_cb.is_selected then
+			if attached source and use_rm_pixmaps /= ev_use_rm_icons_cb.is_selected then
 				if use_rm_pixmaps then
 					ev_use_rm_icons_cb.enable_select
 				else
@@ -219,7 +214,7 @@ feature {NONE} -- Events
 
 	on_shrink_tree_one_level
 		do
-			if attached target_archetype_descriptor then
+			if attached source then
 				create node_list.make (0)
 				ev_tree.recursive_do_all (agent ev_tree_item_collapse_one_level)
 
@@ -232,7 +227,7 @@ feature {NONE} -- Events
 
 	on_expand_tree_one_level
 		do
-			if attached target_archetype_descriptor then
+			if attached source then
 				create node_list.make (0)
 				ev_tree.recursive_do_all (agent ev_tree_item_expand_one_level)
 
@@ -245,7 +240,7 @@ feature {NONE} -- Events
 
 	on_toggle_expand_tree
 		do
-			if attached target_archetype_descriptor then
+			if attached source then
 				toggle_expand_tree
 			end
 		end
@@ -253,7 +248,7 @@ feature {NONE} -- Events
 	on_domain_selected
 			-- Hide technical details in `gui_tree'.
 		do
-			if attached target_archetype_descriptor then
+			if attached source then
 				in_technical_mode := False
 				set_show_technical_view (False)
 				repopulate
@@ -263,7 +258,7 @@ feature {NONE} -- Events
 	on_technical_selected
 			-- Display technical details in `gui_tree'.
 		do
-			if attached target_archetype_descriptor then
+			if attached source then
 				in_technical_mode := True
 				set_show_technical_view (True)
 				repopulate
@@ -273,7 +268,7 @@ feature {NONE} -- Events
 	on_reference_model_selected
 			-- turn on or off the display of reference model details in `gui_tree'.
 		do
-			if attached target_archetype_descriptor then
+			if attached source then
 				if ev_rm_attrs_on_cb.is_selected then
 					in_reference_model_mode_changed := not in_reference_model_mode
 					in_reference_model_mode := True
@@ -292,7 +287,7 @@ feature {NONE} -- Events
 
 	on_ev_use_rm_icons_cb_selected
 		do
-			if attached target_archetype_descriptor then
+			if attached source then
 				set_use_rm_pixmaps (ev_use_rm_icons_cb.is_selected)
 				repopulate
 
@@ -329,7 +324,7 @@ feature {NONE} -- Implementation
 			-- we use a stack here to handle ontologies inside operational templates
 
 	ontology: attached ARCHETYPE_ONTOLOGY
-			-- The ontology for `target_archetype'.
+			-- The ontology for `source_archetype'.
 		require
 			ontologies_attached: attached ontologies
 			ontologies_has_item: not ontologies.off
@@ -343,6 +338,11 @@ feature {NONE} -- Implementation
 
 	tree_item_stack: ARRAYED_STACK[EV_TREE_ITEM]
 
+	do_clear
+		do
+			ev_tree.wipe_out
+		end
+
 	do_populate
 			-- build definition / ontology cross reference tables used for validation and
 			-- other purposes
@@ -354,12 +354,12 @@ feature {NONE} -- Implementation
 			create gui_node_map.make(0)
 			create ontologies.make (0)
 
-			rm_schema := target_archetype_descriptor.rm_schema
+			rm_schema := source.rm_schema
 
 			-- populate from definition
 			create c_node_map_builder
-			c_node_map_builder.initialise (target_archetype, selected_language, ev_tree, in_technical_mode, False, gui_node_map, code_select_action_agent)
-			create a_c_iterator.make (target_archetype.definition, c_node_map_builder)
+			c_node_map_builder.initialise (source_archetype, selected_language, ev_tree, in_technical_mode, False, gui_node_map, code_select_action_agent)
+			create a_c_iterator.make (source_archetype.definition, c_node_map_builder)
 			a_c_iterator.do_all
 
 			-- add RM attributes if in RM mode
@@ -457,9 +457,9 @@ feature {NONE} -- Implementation
 			-- roll the tree up so that nodes whose rolled_up_specialisation_status is
 			-- ss_inherited are closed, but nodes with
 		require
-			archetype_selected: attached target_archetype_descriptor
+			archetype_selected: attached source
 		do
-			if target_archetype.is_specialised and not target_archetype.is_template then
+			if source_archetype.is_specialised and not source_archetype.is_template then
 				create node_list.make(0)
 				ev_tree.recursive_do_all(agent ev_tree_item_roll_up(?))
 
@@ -575,8 +575,8 @@ feature {NONE} -- Implementation
 			invariants: ARRAYED_LIST[ASSERTION]
 			s: STRING
 		do
-			if target_archetype.has_invariants then
-				invariants := target_archetype.invariants
+			if source_archetype.has_invariants then
+				invariants := source_archetype.invariants
 				create a_ti_sub.make_with_text ("invariants:")
 				a_ti_sub.set_pixmap(pixmaps.item ("CADL_INVARIANT"))
 				ev_tree.extend (a_ti_sub)

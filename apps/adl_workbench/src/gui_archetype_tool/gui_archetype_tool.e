@@ -14,10 +14,7 @@ note
 class GUI_ARCHETYPE_TOOL
 
 inherit
-	GUI_TOOL
-		redefine
-			ev_root_container
-		end
+	GUI_ARCHETYPE_TARGETTED_TOOL
 
 	GUI_DEFINITIONS
 		export
@@ -65,6 +62,7 @@ feature {NONE}-- Initialization
 
 			-- create root widget
 			create ev_root_container
+			ev_root_container.set_data (Current)
 
 			-- text field handling
 			create text_widget_handler.make (ev_root_container)
@@ -178,7 +176,7 @@ feature {NONE}-- Initialization
 			ev_notebook.item_tab (validity_report_control.ev_root_container).set_pixmap (pixmaps ["errors_grey"])
 
 			ev_notebook.set_item_text (statistical_information_control.ev_root_container, create_message_content ("stat_info_tab_text", Void))
-			ev_notebook.item_tab (statistical_information_control.ev_root_container).set_pixmap (pixmaps ["info"])
+			ev_notebook.item_tab (statistical_information_control.ev_root_container).set_pixmap (pixmaps ["statistics"])
 
 			-- set events: action bar
 			ev_differential_view_button.select_actions.extend (agent on_differential_view)
@@ -207,38 +205,19 @@ feature -- Access
 
 	ev_notebook: EV_NOTEBOOK
 
-	target_archetype_descriptor: ARCH_CAT_ARCHETYPE
-			-- archetype to which this tool is targetted
-
-	target_archetype: ARCHETYPE
-			-- differential or flat version of archetype, depending on setting of `differential_view'
-		do
-			if differential_view then
-				Result := target_archetype_descriptor.differential_archetype
-			else
-				Result := target_archetype_descriptor.flat_archetype
-			end
-		end
-
-	selected_language: attached STRING
-
-feature -- Status Report
-
-	differential_view: BOOLEAN
-
 feature -- Events
 
 	on_select_archetype_notebook
 			-- Called by `selection_actions' of `archetype_notebook'.
 		do
-			if attached {GUI_ARCHETYPE_TARGETTED_TOOL} ev_notebook.selected_item.data as arch_tool and attached target_archetype_descriptor then
-				if (target_archetype_descriptor /= arch_tool.target_archetype_descriptor or else
-					target_archetype_descriptor.last_compile_attempt_timestamp > arch_tool.last_populate_timestamp or
+			if attached {GUI_ARCHETYPE_TARGETTED_TOOL} ev_notebook.selected_item.data as arch_tool and attached source then
+				if (source /= arch_tool.source or else
+					source.last_compile_attempt_timestamp > arch_tool.last_populate_timestamp or
 					differential_view /= arch_tool.differential_view or
 					selected_language /= arch_tool.selected_language) and
-					arch_tool.can_populate (target_archetype_descriptor)
+					arch_tool.can_populate (source)
 				then
-					arch_tool.populate (target_archetype_descriptor, differential_view, selected_language)
+					arch_tool.populate (source, differential_view, selected_language)
 				end
 			end
 		end
@@ -255,7 +234,7 @@ feature -- UI Feedback
 			-- if a code is selected in teh archetype definition tree, select the code in the ontology part of the UI
 		do
 			if not ontology_controls.is_populated then
-				ontology_controls.populate (target_archetype_descriptor, differential_view, selected_language)
+				ontology_controls.populate (source, differential_view, selected_language)
 			end
 			ev_notebook.select_item (ontology_controls.ev_root_container)
 			if is_term_code (a_code) then
@@ -266,29 +245,6 @@ feature -- UI Feedback
 		end
 
 feature -- Commands
-
-	clear
-			-- Wipe out content from visual controls.
-		do
-			ev_archetype_id.remove_text
-			ev_adl_version_text.remove_text
-			ev_language_combo.wipe_out
-			ev_language_combo.remove_text
-			clear_content
- 		end
-
-	populate (aca: attached ARCH_CAT_ARCHETYPE)
-			-- Populate content from visual controls.
-		do
-			target_archetype_descriptor := aca
-			do_populate
-		end
-
-	repopulate
-			-- repopulate from current archetype
-		do
-			do_populate
-		end
 
 	select_flat_view
 			-- Called from MAIN_WINDOW View menu
@@ -311,7 +267,7 @@ feature -- Commands
 	change_adl_serialisation_version
 			-- call this if changing it becase control labels and contents need to be repopulated
 		do
-			if attached target_archetype_descriptor and serialisation_control.can_repopulate then
+			if attached source and serialisation_control.can_repopulate then
 				serialisation_control.repopulate
 			end
 		end
@@ -323,6 +279,16 @@ feature -- Commands
 		end
 
 feature {NONE} -- Events
+
+	do_clear
+			-- Wipe out content from visual controls.
+		do
+			ev_archetype_id.remove_text
+			ev_adl_version_text.remove_text
+			ev_language_combo.wipe_out
+			ev_language_combo.remove_text
+			clear_content
+ 		end
 
 	on_flat_view
 			-- Called by `select_actions' of `ev_flat_view_button' in this tool
@@ -398,19 +364,16 @@ feature {NONE} -- Events
 feature {NONE} -- Implementation
 
 	do_populate
-		require
-			attached target_archetype_descriptor
 		do
-			clear
-			if target_archetype_descriptor.is_valid then
-				ev_archetype_id.set_text (target_archetype_descriptor.qualified_name)
-				ev_adl_version_text.set_text (target_archetype_descriptor.differential_archetype.adl_version)
-				selected_language := target_archetype_descriptor.differential_archetype.original_language.code_string
+			if source.is_valid then
+				ev_archetype_id.set_text (source.qualified_name)
+				ev_adl_version_text.set_text (source.differential_archetype.adl_version)
+				selected_language := source.differential_archetype.original_language.code_string
 				populate_languages
 
 				-- pre-populate the description and node-map controls, or else populate the validity control and show it
-				description_controls.populate (target_archetype_descriptor, differential_view, selected_language)
-				node_map_control.populate (target_archetype_descriptor, differential_view, selected_language)
+				description_controls.populate (source, differential_view, selected_language)
+				node_map_control.populate (source, differential_view, selected_language)
 			else
 				ev_notebook.select_item (validity_report_control.ev_root_container)
 			end
@@ -492,7 +455,7 @@ feature {NONE} -- Implementation
 			-- Populate `language_combo' in the toolbar for currently selected archetype
 		do
 			ev_language_combo.select_actions.block
-			ev_language_combo.set_strings (target_archetype_descriptor.differential_archetype.languages_available)
+			ev_language_combo.set_strings (source.differential_archetype.languages_available)
 			ev_language_combo.do_all (agent (li: EV_LIST_ITEM) do if li.text.same_string (selected_language) then li.enable_select end end)
 			ev_language_combo.select_actions.resume
 		end
@@ -511,7 +474,7 @@ feature {NONE} -- Implementation
 	set_validity_tab_appearance
 			-- set visual appearance of validity tab according to whether there are errors or not
 		do
-			if target_archetype_descriptor.is_valid then
+			if source.is_valid then
 				ev_notebook.item_tab (validity_report_control.ev_root_container).set_pixmap (pixmaps ["errors_grey"])
 			else
 				ev_notebook.item_tab (validity_report_control.ev_root_container).set_pixmap (pixmaps ["errors"])

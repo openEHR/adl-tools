@@ -1,7 +1,7 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Statistical data accumulator for a single class used within an archetype"
-	keywords:    "path"
+	description: "Statistics display for a single RM"
+	keywords:    "statistics"
 	keywords:    "statistics, archteype"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
@@ -12,77 +12,97 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class RM_CLASS_STATISTICS
+class
+	GUI_RM_INFORMATION_TOOL
+
+inherit
+	GUI_RM_TARGETTED_TOOL
+
+	GUI_DEFINITIONS
+		export
+			{NONE} all
+		end
+
+	GUI_UTILITIES
+		export
+			{NONE} all
+		end
 
 create
 	make
 
-feature -- Initialisation
+feature -- Definitions
 
-	make (a_class_name: STRING; is_root: BOOLEAN)
+	Grid_metric_name_col: INTEGER = 1
+	Grid_metric_count_col: INTEGER = 2
+
+	Grid_column_ids: ARRAY [INTEGER]
+		once
+			Result := <<Grid_metric_name_col, Grid_metric_count_col>>
+		end
+
+feature {NONE} -- Initialization
+
+	make
+			-- Initialization for `Current'.
 		do
-			rm_class_name := a_class_name
-			create rm_attributes.make (0)
-			rm_class_count := 1
-			is_archetype_root_class := is_root
+			-- create widgets
+			create ev_root_container
+			ev_root_container.set_data (Current)
+
+			-- connect widgets
+
+			-- set visual characteristics
 		end
 
 feature -- Access
 
-	rm_class_name: STRING
-
-	rm_attributes: HASH_TABLE [INTEGER, STRING]
-			-- table of number of occurrences of this attribute of this class
-
-	rm_class_count: INTEGER
-			-- occurrences of class `rm_class_name' covered by this statistical object
-
-feature -- Status Report
-
-	is_archetype_root_class: BOOLEAN
-
-feature -- Modification
-
-	add_rm_class_occurrence
-			-- increment `rm_class_count' to indicate a new class is being counted
-		do
-			rm_class_count := rm_class_count + 1
-		end
-
-	add_rm_attribute_occurrence (an_attr_name: STRING)
-		do
-			if rm_attributes.has (an_attr_name) then
-				rm_attributes.force (rm_attributes.item (an_attr_name) + 1, an_attr_name)
-			else
-				rm_attributes.put (1, an_attr_name)
-			end
-		end
-
-	add_rm_attribute_occurrences (attr_names: ARRAYED_SET [STRING])
-		do
-			from attr_names.start until attr_names.off loop
-				add_rm_attribute_occurrence (attr_names.item)
-				attr_names.forth
-			end
-		end
-
-	merge (other: RM_CLASS_STATISTICS)
-		require
-			other.rm_class_name.same_string (rm_class_name)
-		do
-			rm_class_count := rm_class_count + other.rm_class_count
-			from other.rm_attributes.start until other.rm_attributes.off loop
-				if rm_attributes.has (other.rm_attributes.key_for_iteration) then
-					rm_attributes.force (rm_attributes.item (other.rm_attributes.key_for_iteration) + other.rm_attributes.item_for_iteration, other.rm_attributes.key_for_iteration)
-				else
-					rm_attributes.put (other.rm_attributes.item_for_iteration, other.rm_attributes.key_for_iteration)
-				end
-				other.rm_attributes.forth
-			end
-			is_archetype_root_class := is_archetype_root_class or other.is_archetype_root_class
-		end
+	ev_root_container: EV_GRID
 
 feature {NONE} -- Implementation
+
+	ev_grid: EV_GRID
+
+	do_clear
+		do
+			ev_root_container.wipe_out
+		end
+
+	do_populate
+		local
+			gli: EV_GRID_LABEL_ITEM
+			rm_stats: HASH_TABLE [INTEGER, STRING]
+		do
+			source.generate_statistics
+
+			ev_grid := ev_root_container
+
+			-- column names
+			ev_grid.insert_new_column (Grid_metric_name_col)
+			ev_grid.column (Grid_metric_name_col).set_title (create_message_content ("rm_info_grid_metric_col_title", Void))
+			ev_grid.insert_new_column (Grid_metric_count_col)
+			ev_grid.column (Grid_metric_count_col).set_title (create_message_content ("rm_info_grid_count_col_title", Void))
+
+			rm_stats := source.statistics_table
+			from rm_stats.start until rm_stats.off loop
+				-- class name in col 1
+				create gli.make_with_text (rm_stats.key_for_iteration)
+				ev_grid.set_item (Grid_metric_name_col, ev_grid.row_count + 1, gli)
+
+				create gli.make_with_text (rm_stats.item_for_iteration.out)
+				ev_grid.set_item (Grid_metric_count_col, ev_grid.row_count, gli)
+				rm_stats.forth
+			end
+
+			-- resize grid cols properly
+			Grid_column_ids.do_all (
+				agent (i: INTEGER)
+					do
+						ev_grid.column (i).resize_to_content
+						ev_grid.column(i).set_width ((ev_grid.column (i).width * 1.2).ceiling)
+					end
+			)
+		end
 
 end
 
@@ -101,7 +121,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is rm_class_statistics.e.
+--| The Original Code is gui_archetype_information_tool.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2011

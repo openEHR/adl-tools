@@ -41,6 +41,11 @@ feature -- Definitions
 			create Result.make_with_8_bit_rgb (255, 255, 255)
 		end
 
+	background_colour: EV_COLOR
+		once
+			create Result.make_with_8_bit_rgb (240, 240, 240)
+		end
+
 	screen_10_pt_regular_font: EV_FONT
 		do
 			create Result
@@ -49,6 +54,8 @@ feature -- Definitions
 			Result.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
 			Result.set_height_in_points (10)
 		end
+
+	Text_min_height: INTEGER = 22
 
 end
 

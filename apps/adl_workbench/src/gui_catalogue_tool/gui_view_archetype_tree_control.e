@@ -50,7 +50,7 @@ feature {NONE} -- Initialisation
 
 			-- make UI
 			make_ui
-  			ev_root_container.set_minimum_height (200)
+  			ev_tree.set_minimum_height (200)
 
 			artefact_types := <<{ARTEFACT_TYPE}.archetype, {ARTEFACT_TYPE}.template_component, {ARTEFACT_TYPE}.template>>
 		end
@@ -76,8 +76,8 @@ feature -- Commands
 	select_item (ari_ont_id: attached STRING)
 			-- ensure node with ontological node id `ari_ont_id' is visible in the tree
 		do
-			if ev_node_descriptor_map.has (ari_ont_id) and ev_root_container.is_displayed then
-				ev_root_container.ensure_item_visible (ev_node_descriptor_map.item (ari_ont_id))
+			if ev_node_descriptor_map.has (ari_ont_id) and ev_tree.is_displayed then
+				ev_tree.ensure_item_visible (ev_node_descriptor_map.item (ari_ont_id))
 				ev_node_descriptor_map.item (ari_ont_id).enable_select
 			end
 		end
@@ -85,8 +85,8 @@ feature -- Commands
 	ensure_item_visible (ari_ont_id: attached STRING)
 			-- ensure node with ontological node id `ari_ont_id' is visible in the tree
 		do
-			if ev_node_descriptor_map.has(ari_ont_id) and ev_root_container.is_displayed then
-				ev_root_container.ensure_item_visible (ev_node_descriptor_map.item (ari_ont_id))
+			if ev_node_descriptor_map.has(ari_ont_id) and ev_tree.is_displayed then
+				ev_tree.ensure_item_visible (ev_node_descriptor_map.item (ari_ont_id))
 			end
 		end
 
@@ -96,10 +96,10 @@ feature {NONE} -- Implementation
 
 	select_class_in_rm_schema_tool_agent: PROCEDURE [ANY, TUPLE [STRING]]
 
-	populate_tree
+	do_populate
 		do
-	 		current_arch_cat.do_all (agent ev_tree_node_populate_enter, agent ev_tree_node_populate_exit)
-			ev_root_container.recursive_do_all (agent ev_tree_expand)
+	 		source.do_all (agent ev_tree_node_populate_enter, agent ev_tree_node_populate_exit)
+			ev_tree.recursive_do_all (agent ev_tree_expand)
 		end
 
    	ev_tree_node_populate_enter (aci: attached ARCH_CAT_ITEM)
@@ -127,7 +127,7 @@ feature {NONE} -- Implementation
 				end
 
 				if ev_tree_item_stack.is_empty then
-					ev_root_container.extend (ev_node)
+					ev_tree.extend (ev_node)
 				else
 					ev_tree_item_stack.item.extend (ev_node)
 				end
@@ -214,7 +214,7 @@ feature {NONE} -- Implementation
 				agent
 					do
 						delayed_select_class_agent.set_interval (0)
-						current_arch_cat.set_selected_item (selected_class_node)
+						source.set_selected_item (selected_class_node)
 						select_class_agent.call ([selected_class_node.class_definition])
 					end
 			)
@@ -234,7 +234,7 @@ feature {NONE} -- Implementation
 				agent
 					do
 						delayed_select_archetype_agent.set_interval (0)
-						current_arch_cat.set_selected_item (selected_archetype_node)
+						source.set_selected_item (selected_archetype_node)
 						select_archetype_agent.call ([])
 					end
 			)
@@ -258,15 +258,15 @@ feature {NONE} -- Implementation
 		do
 			if button = {EV_POINTER_CONSTANTS}.right and attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
 				create menu
-				create an_mi.make_with_text_and_action ("Display", agent display_context_selected_class_in_active_tool (ev_ti))
+				create an_mi.make_with_text_and_action (create_message_content ("display", Void), agent display_context_selected_class_in_active_tool (ev_ti))
 				an_mi.set_pixmap (pixmaps ["class_tool"])
 		    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action ("Display in new tab", agent display_context_selected_class_in_new_tool (ev_ti))
+				create an_mi.make_with_text_and_action (create_message_content ("display_in_new_tab", Void), agent display_context_selected_class_in_new_tool (ev_ti))
 				an_mi.set_pixmap (pixmaps ["class_tool_new"])
 				menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action ("Show in RM", agent display_context_selected_class_in_rm_schema_tool (ev_ti))
+				create an_mi.make_with_text_and_action (create_message_content ("show_class_in_rm", Void), agent display_context_selected_class_in_rm_schema_tool (ev_ti))
 				an_mi.set_pixmap (pixmaps ["rm_schema"])
 				menu.extend (an_mi)
 
@@ -280,8 +280,8 @@ feature {NONE} -- Implementation
 				ev_ti.enable_select
 			end
 			if attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
-				current_arch_cat.set_selected_item (acmn)
-				select_class_agent.call ([current_arch_cat.selected_class.class_definition])
+				source.set_selected_item (acmn)
+				select_class_agent.call ([source.selected_class.class_definition])
 			end
 		end
 
@@ -291,8 +291,8 @@ feature {NONE} -- Implementation
 				ev_ti.enable_select
 			end
 			if attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
-				current_arch_cat.set_selected_item (acmn)
-				select_class_in_new_tool_agent.call ([current_arch_cat.selected_class.class_definition])
+				source.set_selected_item (acmn)
+				select_class_in_new_tool_agent.call ([source.selected_class.class_definition])
 			end
 		end
 

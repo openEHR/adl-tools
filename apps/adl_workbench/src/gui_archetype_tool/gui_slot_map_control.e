@@ -80,15 +80,6 @@ feature -- UI Feedback
 	visual_update_action: PROCEDURE [ANY, TUPLE [INTEGER, INTEGER]]
 			-- Called after processing each archetype (to perform GUI updates during processing).
 
-feature -- Commands
-
-	clear
-		do
-			ev_suppliers_tree.wipe_out
-			ev_clients_tree.wipe_out
-			call_visual_update_action (0, 0)
-		end
-
 feature {NONE} -- Implementation
 
 	supplier_vbox, client_vbox: EV_VERTICAL_BOX
@@ -115,6 +106,13 @@ feature {NONE} -- Implementation
 			appended: subtree.count = old subtree.count + ids.count
 		end
 
+	do_clear
+		do
+			ev_suppliers_tree.wipe_out
+			ev_clients_tree.wipe_out
+			call_visual_update_action (0, 0)
+		end
+
 	do_populate
 			-- populate the ADL tree control by creating it from scratch
 		local
@@ -123,10 +121,10 @@ feature {NONE} -- Implementation
 			slots_count: INTEGER
 			used_by_count: INTEGER
 		do
-			if target_archetype_descriptor.has_slots then
-				slot_index := target_archetype_descriptor.slot_id_index
+			if source.has_slots then
+				slot_index := source.slot_id_index
 				from slot_index.start until slot_index.off loop
-					create eti.make_with_text (utf8 (target_archetype_descriptor.differential_archetype.ontology.physical_to_logical_path (slot_index.key_for_iteration, selected_language, True)))
+					create eti.make_with_text (utf8 (source.differential_archetype.ontology.physical_to_logical_path (slot_index.key_for_iteration, selected_language, True)))
 					eti.set_pixmap (pixmaps ["ARCHETYPE_SLOT"])
 					ev_suppliers_tree.extend (eti)
 					append_tree (eti, slot_index.item_for_iteration)
@@ -140,12 +138,12 @@ feature {NONE} -- Implementation
 				end
 			end
 
-			if current_arch_cat.compile_attempt_count < current_arch_cat.total_archetype_count then
+			if current_arch_cat.compile_attempt_count < current_arch_cat.archetype_count then
 				ev_clients_tree.extend (create {EV_TREE_ITEM}.make_with_text (create_message_line ("slots_incomplete_w1", <<>>)))
 			end
 
-			if target_archetype_descriptor.is_supplier then
-				append_tree (ev_clients_tree, target_archetype_descriptor.clients_index)
+			if source.is_supplier then
+				append_tree (ev_clients_tree, source.clients_index)
 				used_by_count := used_by_count + ev_clients_tree.count
 			end
 

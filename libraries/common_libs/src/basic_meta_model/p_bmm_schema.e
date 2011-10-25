@@ -48,6 +48,7 @@ feature -- Initialisation
 			-- make in a safe way for DT building purposes
 		do
 			reset
+			make_core
 			create primitive_types.make (0)
 			create class_definitions.make (0)
 			create packages.make (0)
@@ -64,22 +65,6 @@ feature -- Access (attributes from schema)
 
 	bmm_version: STRING
 			-- version of BMM model, enabling schema evolution reasoning
-			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
-
-	schema_revision: STRING
-			-- revision of schema
-			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
-
-	schema_lifecycle_state: STRING
-			-- lifecycle state of schema
-			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
-
-	schema_author: STRING
-			-- primary author of schema
-			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
-
-	schema_contributors: attached ARRAYED_LIST [STRING]
-			-- contributing authors of schema
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
 	includes: HASH_TABLE [BMM_INCLUDE_SPEC, STRING]
@@ -136,13 +121,6 @@ feature -- Access
 		end
 
 feature -- Status Report
-
-	has_schema_contributor (a_contributor: attached STRING): BOOLEAN
-		require
-			valid_contributor: not a_contributor.is_empty
-		do
-			Result := schema_contributors.has (a_contributor)
-		end
 
 	has_class_definition (a_class_name: attached STRING): BOOLEAN
 			-- True if `a_class_name' has a class definition or is a primitive type in the model. Note that a_type_name
@@ -234,36 +212,6 @@ feature -- Comparison
 			-- check if type 1 and type 2 are identical; each type may be generic
 		do
 			Result := type_name_as_flat_list (type_1).is_equal (type_name_as_flat_list (type_2))
-		end
-
-feature -- Modification
-
-	set_schema_revision (a_revision: attached STRING)
-		require
-			valid_revision: not a_revision.is_empty
-		do
-			schema_revision := a_revision
-		end
-
-	set_schema_lifecycle_state (a_lifecycle_state: attached STRING)
-		require
-			valid_lifecycle_state: not a_lifecycle_state.is_empty
-		do
-			schema_lifecycle_state := a_lifecycle_state
-		end
-
-	set_schema_author (an_author: attached STRING)
-		require
-			valid_author: not an_author.is_empty
-		do
-			schema_author := an_author
-		end
-
-	add_schema_contributor (a_contributor: attached STRING)
-		require
-			valid_contributor: not a_contributor.is_empty and not has_schema_contributor (a_contributor)
-		do
-			schema_contributors.extend (a_contributor)
 		end
 
 feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
@@ -630,6 +578,12 @@ feature -- Factory
 		do
 			--------- PASS 1 ----------
 			create bmm_schema.make (rm_publisher, schema_name, rm_release)
+			bmm_schema.set_schema_author (schema_author)
+			if not schema_contributors.is_empty then
+				bmm_schema.set_schema_contributors (schema_contributors)
+			end
+			bmm_schema.set_schema_lifecycle_state (schema_lifecycle_state)
+			bmm_schema.set_schema_revision (schema_revision)
 			bmm_schema.set_schema_description (schema_description)
 
 			-- packages - add package structure only, no classes yet

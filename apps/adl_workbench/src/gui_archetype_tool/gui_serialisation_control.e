@@ -94,13 +94,6 @@ feature -- Access
 
 	ev_root_container: EV_HORIZONTAL_BOX
 
-feature -- Commands
-
-	clear
-		do
-			ev_serialised_rich_text.remove_text
-		end
-
 feature {NONE} -- Implementation
 
 	ev_serialised_rich_text: EV_RICH_TEXT
@@ -114,6 +107,11 @@ feature {NONE} -- Implementation
 	ev_serialise_adl_rb, ev_serialise_dadl_rb, ev_serialise_xml_rb: EV_RADIO_BUTTON
 
 	ev_flatten_with_rm_cb: EV_CHECK_BUTTON
+
+	do_clear
+		do
+			ev_serialised_rich_text.remove_text
+		end
 
 	do_populate
 		do
@@ -131,9 +129,9 @@ feature {NONE} -- Implementation
 			-- Display the selected archetype's differential or flat text in `source_rich_text', optionally with line numbers.
 		do
 			if not differential_view then
-				ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.flat_text (ev_flatten_with_rm_cb.is_selected)))
+				ev_serialised_rich_text.set_text (utf8 (source.flat_text (ev_flatten_with_rm_cb.is_selected)))
 			else
-				ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.differential_text))
+				ev_serialised_rich_text.set_text (utf8 (source.differential_text))
 			end
 		end
 
@@ -141,9 +139,9 @@ feature {NONE} -- Implementation
 			-- Display the selected archetype's differential or flat text in `ev_serialised_rich_text', in dADL format.
 		do
 			if differential_view then
-				ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.serialise_object (False, Syntax_type_adl)))
+				ev_serialised_rich_text.set_text (utf8 (source.serialise_object (False, Syntax_type_adl)))
 			else
-				ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.serialise_object (True, Syntax_type_adl)))
+				ev_serialised_rich_text.set_text (utf8 (source.serialise_object (True, Syntax_type_adl)))
 			end
 		end
 
@@ -151,9 +149,9 @@ feature {NONE} -- Implementation
 			-- Display the selected archetype's differential or flat text in `ev_serialised_rich_text', in XML format.
 		do
 			if differential_view then
-				ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.serialise_object (False, Syntax_type_xml)))
+				ev_serialised_rich_text.set_text (utf8 (source.serialise_object (False, Syntax_type_xml)))
 			else
-				ev_serialised_rich_text.set_text (utf8 (target_archetype_descriptor.serialise_object (True, Syntax_type_xml)))
+				ev_serialised_rich_text.set_text (utf8 (source.serialise_object (True, Syntax_type_xml)))
 			end
 		end
 

@@ -15,14 +15,14 @@ note
 deferred class GUI_ARTEFACT_TREE_CONTROL
 
 inherit
-	SHARED_KNOWLEDGE_REPOSITORY
+	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
 		end
 
-	SHARED_APP_UI_RESOURCES
-		export
-			{NONE} all
+	GUI_CATALOGUE_TARGETTED_TOOL
+		redefine
+			repopulate
 		end
 
 feature {NONE} -- Initialisation
@@ -31,36 +31,30 @@ feature {NONE} -- Initialisation
 		do
 			-- create widgets
 			create ev_root_container
+			ev_root_container.set_data (Current)
+
+			create ev_tree
 
 			-- connect widgets
+			ev_root_container.extend (ev_tree)
 
 			-- visual characteristics
---			ev_root_container.set_background_color (editable_colour)
-  			ev_root_container.set_minimum_width (180)
+--			ev_tree.set_background_color (editable_colour)
+  			ev_tree.set_minimum_width (180)
 		end
 
 feature -- Access
 
-	ev_root_container: EV_TREE
+	ev_root_container: EV_CELL
+
+	ev_tree: EV_TREE
 
 feature -- Commands
 
-	populate
-			-- Populate `gui_file_tree' from `archetype_directory'.
-		do
-			create ev_node_descriptor_map.make(0)
-			ev_root_container.wipe_out
- 			create ev_tree_item_stack.make (0)
-
- 			if has_current_profile then
-	 			populate_tree
-			end
-		end
-
-	refresh
+	repopulate
 			-- repopulate to update GUI settings
 		do
-			ev_root_container.recursive_do_all (agent update_tree_node)
+			ev_tree.recursive_do_all (agent update_tree_node)
 		end
 
 	update_tree_node_for_archetype (ara: attached ARCH_CAT_ARCHETYPE)
@@ -70,10 +64,17 @@ feature -- Commands
 
 	update_rm_icons_setting
 		do
-			refresh
+			repopulate
 		end
 
 feature {NONE} -- Implementation
+
+	do_clear
+		do
+			create ev_node_descriptor_map.make(0)
+			ev_tree.wipe_out
+ 			create ev_tree_item_stack.make (0)
+		end
 
 	ev_node_descriptor_map: HASH_TABLE [EV_TREE_ITEM, STRING]
 			-- list of GUI explorer nodes, keyed by artefact id
@@ -83,10 +84,6 @@ feature {NONE} -- Implementation
 
 	ev_tree_item_stack: ARRAYED_STACK [EV_TREE_ITEM]
 			-- Stack used during `populate_ev_tree_node_enter'.
-
-	populate_tree
-		deferred
-		end
 
    	update_tree_node (node: attached EV_TREE_NODE)
    		deferred
@@ -112,15 +109,15 @@ feature {NONE} -- Implementation
 		do
 			if button = {EV_POINTER_CONSTANTS}.right and attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
 				create menu
-				create an_mi.make_with_text_and_action ("Display", agent display_context_selected_archetype_in_active_tool (ev_ti))
+				create an_mi.make_with_text_and_action (create_message_content ("display_in_active_tab", Void), agent display_context_selected_archetype_in_active_tool (ev_ti))
 				an_mi.set_pixmap (pixmaps ["archetype_tool"])
 		    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action ("Display in new tab", agent display_context_selected_archetype_in_new_tool (ev_ti))
+				create an_mi.make_with_text_and_action (create_message_content ("display_in_new_tab", Void), agent display_context_selected_archetype_in_new_tool (ev_ti))
 				an_mi.set_pixmap (pixmaps ["archetype_tool_new"])
 				menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action ("Edit source", edit_archetype_agent)
+				create an_mi.make_with_text_and_action (create_message_content ("edit_source", Void), edit_archetype_agent)
 				an_mi.set_pixmap (pixmaps ["edit"])
 				menu.extend (an_mi)
 
@@ -134,7 +131,7 @@ feature {NONE} -- Implementation
 				ev_ti.enable_select
 			end
 			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
-				current_arch_cat.set_selected_item (aca)
+				source.set_selected_item (aca)
 				select_archetype_agent.call ([])
 			end
 		end
@@ -145,13 +142,13 @@ feature {NONE} -- Implementation
 				ev_ti.enable_select
 			end
 			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
-				current_arch_cat.set_selected_item (aca)
+				source.set_selected_item (aca)
 				select_archetype_in_new_tool_agent.call ([])
 			end
 		end
 
 invariant
-	valid_artefact_types: (create {ARTEFACT_TYPE}).valid_artefact_types(artefact_types)
+	valid_artefact_types: (create {ARTEFACT_TYPE}).valid_artefact_types (artefact_types)
 
 end
 

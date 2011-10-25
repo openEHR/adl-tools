@@ -86,10 +86,9 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_populate_statistics_agent: like populate_statistics_agent; an_info_feedback_agent: like info_feedback_agent)
+	make (an_info_feedback_agent: like info_feedback_agent)
 			-- Create controller for the test grid.
 		do
-			populate_statistics_agent := a_populate_statistics_agent
 			info_feedback_agent := an_info_feedback_agent
 
 			-- create widgets

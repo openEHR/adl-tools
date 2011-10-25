@@ -73,6 +73,11 @@ inherit
 			{NONE} all
 		end
 
+	ARCHETYPE_STATISTICAL_DEFINITIONS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -87,8 +92,8 @@ feature -- Initialisation
 	make
 		do
 			clear
-			if ontology_prototype.item = Void then
-				initialise_ontology_prototype
+			if item_tree_prototype.item = Void then
+				initialise_item_tree_prototype
 				schema_load_counter := rm_schemas_access.load_count
 			end
 		end
@@ -98,7 +103,7 @@ feature -- Access
 	archetype_index: attached DS_HASH_TABLE [ARCH_CAT_ARCHETYPE, STRING]
 			-- index of archetype descriptors. Used in rest of application
 
-	ontology_index: attached DS_HASH_TABLE [ARCH_CAT_ITEM, STRING]
+	item_index: attached DS_HASH_TABLE [ARCH_CAT_ITEM, STRING]
 			-- Index of archetype & class nodes, keyed by ontology concept. Used during construction of `directory'
 			-- For class nodes, this will be model_publisher-model_name-class_name, e.g. OPENEHR-DEMOGRAPHIC-PARTY.
 			-- For archetype nodes, this will be the archetype id.
@@ -156,33 +161,15 @@ feature -- Access
 					archetype_index.forth
 				end
 			else
-				Result.extend(create_message_line("regex_e1", <<a_regex>>))
+				Result.extend (create_message_line("regex_e1", <<a_regex>>))
 			end
 		end
 
-feature -- Statistics
+	last_stats_build_timestamp: DATE_TIME
+			-- timestamp of stats build
 
-	total_archetype_count: INTEGER
-			-- Count of all archetype descriptors in directory.
-
-	specialised_archetype_count: INTEGER
-			-- Count of specialised archetype descriptors in directory.
-
-	client_archetype_count: INTEGER
-			-- Count of slot-containing archetype descriptors in directory.
-
-	supplier_archetype_count: INTEGER
-			-- Count of archetype descriptors for archetypes used in slots in directory.
-
-	bad_archetype_count: INTEGER
-			-- Count of invalid archetype files found in repositories.
-
-	compile_attempt_count: INTEGER
-			-- Count of archetypes for which parsing has been attempted.
-
-	terminology_bindings_info: HASH_TABLE [ARRAYED_LIST[STRING], STRING]
-			-- table of archetypes containing terminology bindings, keyed by terminology;
-			-- some archetypes have more than one binding, so could appear in more than one list
+	last_populate_timestamp: DATE_TIME
+			-- timestamp of last populate or repopulate
 
 feature -- Status Report
 
@@ -223,13 +210,13 @@ feature -- Commands
 		do
 			clear_selection_history
 			create archetype_index.make (0)
-			create ontology_index.make (0)
-			ontology := Void
-			reset_statistics
+			create item_index.make (0)
+			item_tree := Void
+			compile_attempt_count := 0
 		end
 
 	populate
-			-- Rebuild `archetype_index' and `ontology_index' from source repositories.
+			-- Rebuild `archetype_index' and `item_index' from source repositories.
 		local
 			archs: ARRAYED_LIST [ARCH_CAT_ARCHETYPE]
 			parent_key, child_key: STRING
@@ -238,10 +225,10 @@ feature -- Commands
 			i: INTEGER
 		do
 			if schema_load_counter < rm_schemas_access.load_count then
-				initialise_ontology_prototype
+				initialise_item_tree_prototype
 			end
 
-			clone_ontology_prototype
+			clone_item_tree_prototype
 
 			from source_repositories.repositories.start until source_repositories.repositories.off loop
 				source_repositories.repositories.item_for_iteration.populate
@@ -259,13 +246,12 @@ feature -- Commands
 					from archs.start until archs.off loop
 						if status_list [archs.index] >= 0 then
 							parent_key := archs.item.ontological_parent_name.as_upper
-							if ontology_index.has (parent_key) then
+							if item_index.has (parent_key) then
 								child_key := archs.item.qualified_key
-								if not ontology_index.has (child_key) then
-									ontology_index.item (parent_key).put_child (archs.item)
-									ontology_index.force (archs.item, child_key)
+								if not item_index.has (child_key) then
+									item_index.item (parent_key).put_child (archs.item)
+									item_index.force (archs.item, child_key)
 									archetype_index.force (archs.item, archs.item.qualified_name)
-									update_basic_statistics (archs.item)
 									added_during_pass := added_during_pass + 1
 									status_list [archs.index] := -1
 								else
@@ -295,79 +281,7 @@ feature -- Commands
 
 				source_repositories.repositories.forth
 			end
-		end
-
-	update_basic_statistics (ara: attached ARCH_CAT_ARCHETYPE)
-			-- Update statistics counters.
-		do
-			total_archetype_count := total_archetype_count + 1
-			if ara.is_specialised then
-				specialised_archetype_count := specialised_archetype_count + 1
-			end
-		end
-
-	update_slot_statistics (ara: attached ARCH_CAT_ARCHETYPE)
-			-- Update slot-related statistics counters.
-		do
-			if ara.has_slots then
-				client_archetype_count := client_archetype_count + 1
-			end
-
-			if ara.is_supplier then
-				supplier_archetype_count := supplier_archetype_count + 1
-			end
-		end
-
-	update_terminology_bindings_info (aca: attached ARCH_CAT_ARCHETYPE)
-			-- Update term binding info
-		local
-			terminologies: ARRAYED_LIST [STRING]
-		do
-			terminologies := aca.differential_archetype.ontology.terminologies_available
-			from terminologies.start until terminologies.off loop
-				if not terminology_bindings_info.has(terminologies.item) then
-					terminology_bindings_info.put(create {ARRAYED_LIST[STRING]}.make(0), terminologies.item)
-				end
-				terminology_bindings_info.item (terminologies.item).extend(aca.qualified_name)
-				terminologies.forth
-			end
-		end
-
-	update_compile_attempt_count
-			-- Increment the count of archetypes for which parsing has been attempted.
-		require
-			can_increment: compile_attempt_count < total_archetype_count
-		do
-			compile_attempt_count := compile_attempt_count + 1
-		ensure
-			incremented: compile_attempt_count = old compile_attempt_count + 1
-		end
-
-	decrement_compile_attempt_count
-			-- Decrement the count of archetypes for which parsing has been attempted.
-		require
-			can_decrement: compile_attempt_count > 0
-		do
-			compile_attempt_count := compile_attempt_count - 1
-		ensure
-			decremented: compile_attempt_count = old compile_attempt_count - 1
-		end
-
-	reset_statistics
-			-- Reset counters to zero.
-		do
-			total_archetype_count := 0
-			specialised_archetype_count := 0
-			client_archetype_count := 0
-			supplier_archetype_count := 0
-			bad_archetype_count := 0
-			compile_attempt_count := 0
-			create terminology_bindings_info.make(0)
-		end
-
-	build_detailed_staistics
-		do
-	--		create statistics_analyser.make ()
+			create last_populate_timestamp.make_now
 		end
 
 feature -- Modification
@@ -380,21 +294,20 @@ feature -- Modification
 			parent_key, child_key: STRING
 			aca: ARCH_CAT_ARCHETYPE
 		do
-			if ontology_index.is_empty then
-				clone_ontology_prototype
+			if item_index.is_empty then
+				clone_item_tree_prototype
 			end
 
 			source_repositories.adhoc_source_repository.add_item (full_path)
 			aca := source_repositories.adhoc_source_repository.item (full_path)
 			if source_repositories.adhoc_source_repository.has_path (full_path) then
 				parent_key := aca.ontological_parent_name.as_upper
-				if ontology_index.has (parent_key) then
+				if item_index.has (parent_key) then
 					child_key := aca.qualified_key
-					if not ontology_index.has (child_key) then
-						ontology_index.item (parent_key).put_child(aca)
-						ontology_index.force (aca, child_key)
+					if not item_index.has (child_key) then
+						item_index.item (parent_key).put_child(aca)
+						item_index.force (aca, child_key)
 						archetype_index.force (aca, child_key)
-						update_basic_statistics (aca)
 						set_selected_item (source_repositories.adhoc_source_repository.item (full_path))
 					else
 						post_error (Current, "add_adhoc_item", "arch_dir_dup_archetype", <<full_path>>)
@@ -414,18 +327,18 @@ feature -- Modification
 		require
 			old_id_valid: attached aca.old_id and then archetype_index.has (aca.old_id.as_string) and then archetype_index.item (aca.old_id.as_string) = aca
 			new_id_valid: not archetype_index.has(aca.id.as_string)
-			ontological_parent_exists: ontology_index.has(aca.ontological_parent_name)
+			ontological_parent_exists: item_index.has(aca.ontological_parent_name)
 		do
 			archetype_index.remove (aca.old_id.as_string)
 			archetype_index.force (aca, aca.id.as_string)
-			ontology_index.remove (aca.old_id.as_string)
-			ontology_index.force (aca, aca.id.as_string)
+			item_index.remove (aca.old_id.as_string)
+			item_index.force (aca, aca.id.as_string)
 			aca.parent.remove_child(aca)
-			ontology_index.item (aca.ontological_parent_name).put_child (aca)
+			item_index.item (aca.ontological_parent_name).put_child (aca)
 			aca.clear_old_ontological_parent_name
 		ensure
 			Node_added_to_archetype_index: archetype_index.has (aca.id.as_string)
-			Node_added_to_ontology_index: ontology_index.has (aca.id.as_string)
+			Node_added_to_ontology_index: item_index.has (aca.id.as_string)
 			Node_parent_set: aca.parent.qualified_name.is_equal (aca.ontological_parent_name)
 		end
 
@@ -436,42 +349,121 @@ feature -- Traversal
 		require
 			enter_action_attached: attached enter_action
 		do
-			do_subtree (ontology, enter_action, exit_action)
+			do_subtree (item_tree, enter_action, exit_action)
 		end
 
-	do_archetypes (ari: ARCH_CAT_ITEM; action: attached PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]])
-			-- On all archetype nodes in tree, execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
+	do_archetypes (aci: ARCH_CAT_ITEM; action: attached PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]])
+			-- On archetype `aci', execute `action', then recurse into its subnodes
 		do
-			do_subtree (ari, agent do_if_archetype (?, action), Void)
+			do_subtree (aci, agent do_if_archetype (?, action), Void)
 		end
 
 	do_all_archetypes (action: attached PROCEDURE [ANY, TUPLE [attached ARCH_CAT_ARCHETYPE]])
-			-- On all archetype nodes in tree, execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
+			-- On all archetype nodes in tree, execute `action'
 		do
-			do_subtree (ontology, agent do_if_archetype (?, action), Void)
+			do_subtree (item_tree, agent do_if_archetype (?, action), Void)
 		end
 
-	do_if_archetype (ari: ARCH_CAT_ITEM; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_CAT_ARCHETYPE]])
-			-- If `ari' is an archetype, perform `action' on it.
+	do_if_archetype (aci: ARCH_CAT_ITEM; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_CAT_ARCHETYPE]])
+			-- If `aci' is an archetype, perform `action' on it.
 		do
-			if attached {ARCH_CAT_ARCHETYPE} ari as ara then
-				action.call ([ara])
+			if attached {ARCH_CAT_ARCHETYPE} aci as aca then
+				action.call ([aca])
 			end
 		end
 
-	do_archetype_lineage (ara: ARCH_CAT_ARCHETYPE; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_CAT_ARCHETYPE]])
-			-- On all archetype nodes from top to , execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
+	do_archetype_lineage (aca: ARCH_CAT_ARCHETYPE; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_CAT_ARCHETYPE]])
+			-- On all archetype nodes from top to `aca', execute `action'
 		local
 			csr: ARCH_CAT_ARCHETYPE
 			lineage: attached ARRAYED_LIST [ARCH_CAT_ARCHETYPE]
 		do
 			create lineage.make (1)
-			from csr := ara until csr = Void loop
+			from csr := aca until csr = Void loop
 				lineage.put_front (csr)
 				csr := csr.specialisation_parent
 			end
 			lineage.do_all (action)
 		end
+
+feature -- Metrics
+
+	archetype_count: INTEGER
+			-- Count of all archetype descriptors in directory.
+		do
+			Result := archetype_index.count
+		end
+
+	compile_attempt_count: INTEGER
+			-- Count of archetypes for which compiling has been attempted.
+
+	update_compile_attempt_count
+			-- Increment the count of archetypes for which parsing has been attempted.
+		require
+			can_increment: compile_attempt_count < archetype_count
+		do
+			compile_attempt_count := compile_attempt_count + 1
+		ensure
+			incremented: compile_attempt_count = old compile_attempt_count + 1
+		end
+
+	decrement_compile_attempt_count
+			-- Decrement the count of archetypes for which parsing has been attempted.
+		require
+			can_decrement: compile_attempt_count > 0
+		do
+			compile_attempt_count := compile_attempt_count - 1
+		ensure
+			decremented: compile_attempt_count = old compile_attempt_count - 1
+		end
+
+feature -- Statistics
+
+	can_build_statistics: BOOLEAN
+		do
+			Result := compile_attempt_count = archetype_count
+		end
+
+	catalogue_metrics: HASH_TABLE [INTEGER, STRING]
+
+	terminology_bindings_statistics: HASH_TABLE [ARRAYED_LIST[STRING], STRING]
+			-- table of archetypes containing terminology bindings, keyed by terminology;
+			-- some archetypes have more than one binding, so could appear in more than one list
+
+	reset_statistics
+			-- Reset counters to zero.
+		do
+			create terminology_bindings_statistics.make(0)
+			create stats.make (0)
+			create catalogue_metrics.make (catalogue_metric_names.count)
+			Catalogue_metric_names.do_all (
+				agent (metric_name: STRING)
+					do
+						catalogue_metrics.put (0, metric_name)
+					end
+			)
+			last_stats_build_timestamp := Void
+		end
+
+	build_detailed_statistics
+		require
+			can_build_statistics
+		do
+			if not attached last_stats_build_timestamp or else last_stats_build_timestamp < last_populate_timestamp then
+				reset_statistics
+				do_all_archetypes (agent gather_statistics)
+				from stats.start until stats.off loop
+					stats.item_for_iteration.compute_metrics
+					stats.forth
+				end
+				catalogue_metrics.put (archetype_count, Total_archetype_count)
+				create last_stats_build_timestamp.make_now
+			end
+		end
+
+	stats: HASH_TABLE [ARCHETYPE_STATISTICAL_REPORT, STRING]
+			-- table of aggregated stats, keyed by BMM_SCHEMA id to which the contributing archetypes relate
+			-- (a single logical archetpe repository can contain archetypes of multiple RMs)
 
 feature {NONE} -- Implementation
 
@@ -494,7 +486,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	ontology: ARCH_CAT_MODEL_NODE
+	item_tree: ARCH_CAT_MODEL_NODE
 			-- The logical directory of archetypes, whose structure is derived directly from the
 			-- reference model. The structure is a list of top-level packages, each containing
 			-- an inheritance tree of first degree descendants of the LOCATABLE class.
@@ -502,15 +494,15 @@ feature {NONE} -- Implementation
 			-- working repositories, and are subsequently attached into the structure.
 			-- Archetypes opened adhoc are also grafted here.
 
-	ontology_prototype: CELL [ARCH_CAT_MODEL_NODE]
+	item_tree_prototype: CELL [ARCH_CAT_MODEL_NODE]
 			-- pure ontology structure created from RM schemas; to be used to create a copy for each refresh of the repository
 			-- We use a CELL here because we only want one of these shared between all instances
 		once
 			create Result.put (Void)
 		end
 
-	initialise_ontology_prototype
-			-- rebuild `ontology_prototype'
+	initialise_item_tree_prototype
+			-- rebuild `item_tree_prototype'
 		local
 			rm_closure_root_pkg: BMM_PACKAGE_DEFINITION
 			parent_model_node, model_node: ARCH_CAT_MODEL_NODE
@@ -521,7 +513,7 @@ feature {NONE} -- Implementation
 			bmm_schema: BMM_SCHEMA
 		do
 			create parent_model_node.make_category (Archetype_category.twin)
-			ontology_prototype.put (parent_model_node)
+			item_tree_prototype.put (parent_model_node)
 			from rm_schemas_access.valid_top_level_schemas.start until rm_schemas_access.valid_top_level_schemas.off loop
 				bmm_schema := rm_schemas_access.valid_top_level_schemas.item_for_iteration
 				from bmm_schema.archetype_rm_closure_packages.start until bmm_schema.archetype_rm_closure_packages.off loop
@@ -591,7 +583,7 @@ feature {NONE} -- Implementation
 
 	add_child_nodes (an_rm_closure_name: STRING; class_list: ARRAYED_LIST [BMM_CLASS_DEFINITION]; a_parent_node: ARCH_CAT_MODEL_NODE)
 			-- populate child nodes of a node in catalogue with immediate descendants of classes in `class_list'
-			-- put each node into `ontology_index', keyed by `an_rm_closure_name' + '-' + `class_list.item.name',
+			-- put each node into `item_index', keyed by `an_rm_closure_name' + '-' + `class_list.item.name',
 			-- which will match with corresponding part of archetype identifier
 		local
 			children: ARRAYED_LIST [BMM_CLASS_DEFINITION]
@@ -606,18 +598,16 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	clone_ontology_prototype
-			-- clone `ontology_prototype' and `ontology_index_prototype'
+	clone_item_tree_prototype
+			-- clone `item_tree_prototype' for use in an `item_tree'
 		do
-			ontology := ontology_prototype.item.deep_twin
-			create ontology_index.make (0)
-			do_all (agent (ari: attached ARCH_CAT_ITEM) do ontology_index.force (ari, ari.qualified_name.as_upper) end, Void)
+			item_tree := item_tree_prototype.item.deep_twin
+			create item_index.make (0)
+			do_all (agent (ari: attached ARCH_CAT_ITEM) do item_index.force (ari, ari.qualified_name.as_upper) end, Void)
 		end
 
 	schema_load_counter: INTEGER
 			-- track loading of schemas; when changed, re-intialise the ontology prototype
-
-	statistics_analyser: ARCHETYPE_STATISTICAL_ANALYSER
 
 	shifter: STRING
 			-- debug indenter
@@ -631,13 +621,45 @@ feature {NONE} -- Implementation
 			Result := archetype_index.item (an_item_id)
 		end
 
+	gather_statistics (aca: attached ARCH_CAT_ARCHETYPE)
+			-- Update statistics counters from `aca'
+		local
+			terminologies: ARRAYED_LIST [STRING]
+		do
+			if aca.is_specialised then
+				catalogue_metrics.force (catalogue_metrics.item (specialised_archetype_count) + 1, specialised_archetype_count)
+			end
+			if aca.has_slots then
+				catalogue_metrics.force (catalogue_metrics.item (client_archetype_count) + 1, client_archetype_count)
+			end
+			if aca.is_supplier then
+				catalogue_metrics.force (catalogue_metrics.item (supplier_archetype_count) + 1, supplier_archetype_count)
+			end
+
+			-- RM stats
+			if aca.is_valid then
+				catalogue_metrics.force (catalogue_metrics.item (valid_archetype_count) + 1, valid_archetype_count)
+
+				terminologies := aca.differential_archetype.ontology.terminologies_available
+				from terminologies.start until terminologies.off loop
+					if not terminology_bindings_statistics.has (terminologies.item) then
+						terminology_bindings_statistics.put (create {ARRAYED_LIST[STRING]}.make(0), terminologies.item)
+					end
+					terminology_bindings_statistics.item (terminologies.item).extend (aca.qualified_name)
+					terminologies.forth
+				end
+
+				aca.generate_statistics (True)
+				if stats.has (aca.rm_schema.schema_id) then
+					stats.item (aca.rm_schema.schema_id).merge (aca.statistical_analyser.stats)
+				else
+					stats.put (aca.statistical_analyser.stats.duplicate, aca.rm_schema.schema_id)
+				end
+			end
+		end
+
 invariant
-	total_archetype_count_non_negative: total_archetype_count >= 0
-	specialised_archetype_count_valid: specialised_archetype_count >= 0 and specialised_archetype_count <= total_archetype_count
-	slotted_archetype_count_valid: client_archetype_count >= 0 and client_archetype_count <= total_archetype_count
-	used_by_archetype_count_valid: supplier_archetype_count >= 0 and supplier_archetype_count <= total_archetype_count
-	bad_archetype_count_count_valid: bad_archetype_count >= 0 and bad_archetype_count <= total_archetype_count
-	parse_attempted_archetype_count_valid: compile_attempt_count >= 0 and compile_attempt_count <= total_archetype_count
+	parse_attempted_archetype_count_valid: compile_attempt_count >= 0 and compile_attempt_count <= archetype_count
 
 end
 

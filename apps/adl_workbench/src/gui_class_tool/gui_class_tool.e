@@ -16,7 +16,7 @@ class GUI_CLASS_TOOL
 inherit
 	GUI_TOOL
 		redefine
-			ev_root_container
+			source
 		end
 
 	SHARED_APP_UI_RESOURCES
@@ -43,6 +43,7 @@ feature -- Initialisation
 		do
 			-- create widgets
 			create ev_root_container
+			ev_root_container.set_data (Current)
 			create ev_action_bar
 			create ev_class_id
 			create ev_view_label
@@ -105,6 +106,8 @@ feature -- Access
 
 	ev_root_container: EV_VERTICAL_BOX
 
+	source: BMM_CLASS_DEFINITION
+
 feature -- Status Report
 
 	differential_view: BOOLEAN
@@ -139,37 +142,6 @@ feature -- Events
 
 feature -- Commands
 
-	clear
-		do
- 			ev_class_id.remove_text
- 			property_view.clear
- 			ancestors_view.clear
-		end
-
-	populate (a_class_def: attached BMM_CLASS_DEFINITION)
-			-- populate the ADL tree control by creating it from scratch
-		do
-			clear
-			class_def := a_class_def
- 			ev_class_id.set_text (class_def.globally_qualified_path)
-			do_with_wait_cursor (ev_root_container, agent do_populate)
-		end
-
-	repopulate
-			-- repopulate the ADL tree control by creating it from scratch for same class
-		do
-			if attached class_def then
-				do_with_wait_cursor (ev_root_container, agent do_populate)
-			end
-		end
-
-	do_populate
-		do
-			property_view.populate (class_def, differential_view)
-			ancestors_view.populate (class_def)
-			descendants_view.populate (class_def)
-		end
-
 	select_flat_view
 			-- Called by `select_actions' of `flat_view_button'.
 		do
@@ -196,6 +168,20 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
+	do_clear
+		do
+ 			ev_class_id.remove_text
+ 			property_view.clear
+ 			ancestors_view.clear
+		end
+
+	do_populate
+		do
+			property_view.populate (source, differential_view)
+			ancestors_view.populate (source)
+			descendants_view.populate (source)
+		end
+
 	property_view: GUI_CLASS_TOOL_PROPERTY_VIEW
 
 	ancestors_view: GUI_CLASS_TOOL_ANCESTORS_VIEW
@@ -213,8 +199,6 @@ feature {NONE} -- Implementation
 	ev_differential_view_button, ev_flat_view_button: EV_TOOL_BAR_RADIO_BUTTON
 
 	ev_view_label: EV_LABEL
-
-	class_def: BMM_CLASS_DEFINITION
 
 	node_path: OG_PATH
 

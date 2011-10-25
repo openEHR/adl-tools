@@ -1,8 +1,8 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Class map control - Visualise a reference model class as a node map"
-	keywords:    "archetype, cadl, gui"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	description: "Statistical metric names and other definitions for stats gathering"
+	keywords:    "statistics, archetype"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
@@ -11,64 +11,58 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class
-	GUI_VALIDITY_REPORT_CONTROL
+class ARCHETYPE_STATISTICAL_DEFINITIONS
 
-inherit
-	GUI_ARCHETYPE_TARGETTED_TOOL
-		redefine
-			can_populate, can_repopulate
+feature -- Definitions
+
+	Object_node_count: STRING = "Object node count"
+
+	Archetypable_node_count: STRING = "Archetypable node count"
+
+	Archetype_data_value_node_count: STRING = "Data value node count"
+
+	At_code_count: STRING = "At-codes"
+
+	Ac_code_count: STRING = "Ac-codes"
+
+	At_code_bindings_count: STRING = "At-code bindings"
+
+	Ac_code_bindings_count: STRING = "Ac-code bindings"
+
+	Rm_metric_names: ARRAY [STRING]
+		once
+			Result := <<Object_node_count, Archetypable_node_count, Archetype_data_value_node_count>>
 		end
 
-create
-	make
-
-feature {NONE} -- Initialization
-
-	make
-			-- Initialization for `Current'.
-		do
-			-- create widgets
-			create ev_root_container
-			ev_root_container.set_data (Current)
-
-			create ev_rich_text
-
-			-- connect them together
-			ev_root_container.extend (ev_rich_text)
+	Archetype_metric_names: ARRAY [STRING]
+		once
+			Result := <<At_code_count, Ac_code_count, At_code_bindings_count, Ac_code_bindings_count>>
 		end
 
-feature -- Access
+	Total_archetype_count: STRING = "Total archetypes"
 
-	ev_root_container: EV_VERTICAL_BOX
+	Valid_archetype_count: STRING = "Valid archetypes"
+			-- count of valid archetypes
 
-feature -- Status Report
+	Specialised_archetype_count: STRING = "Specialised archetypes"
+			-- Count of specialised archetype descriptors in directory.
 
-	can_populate (aca: attached ARCH_CAT_ARCHETYPE): BOOLEAN
-		do
-			Result := True
+	Client_archetype_count: STRING = "Client archetypes"
+			-- Count of slot-containing archetype descriptors in directory.
+
+	Supplier_archetype_count: STRING = "Supplier archetypes"
+			-- Count of archetype descriptors for archetypes used in slots in directory.
+
+	Catalogue_metric_names: ARRAY [STRING]
+		once
+			Result := <<Valid_archetype_count, Specialised_archetype_count, Client_archetype_count, Supplier_archetype_count>>
 		end
 
-	can_repopulate: BOOLEAN
-		do
-			Result := True
-		end
+	Rm_primitive_group_key: STRING = "Primitive"
+			-- name of group of RM breakdown stats based on classs that are primtiive types
 
-feature {NONE} -- Implementation
-
-	do_clear
-			-- wipe out content from ontology-related controls
-		do
-			ev_rich_text.remove_text
-		end
-
-	do_populate
-			-- populate ontology controls
-		do
-			ev_rich_text.set_text (source.errors.as_string)
-		end
-
-	ev_rich_text: EV_RICH_TEXT
+	Rm_non_primitive_group_key: STRING = "Non-primitive"
+			-- name of group of RM breakdown stats based on classs that are non-primtiive types
 
 end
 
@@ -87,10 +81,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is gui_validity_report_control.e.
+--| The Original Code is archetype_statistical_definitions.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2011
+--| Portions created by the Initial Developer are Copyright (C) 2007-2011
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

@@ -15,6 +15,14 @@
 
 templates = <
 	["en"] = <
+		-- context (right-click) menus, common items
+		["display_in_active_tab"] = <"Display">
+		["display_in_new_tab"] = <"Display in new tab">
+		["show_class_in_rm"] = <"Show in RM explorer">
+		["edit_source"] = <"Edit source">
+		["edit_source_schema"] = <"Edit source schema">
+		["expand_packages"] = <"Expand packages">
+
 		-- SHARED_KNOWLEDGE_REPOSITORY, REPOSITORY_DIALOG
 		["ref_repo_not_found"] = <"Reference Repository $1 does not exist or not readable">
 		["work_repo_not_found"] = <"Work Repository $1 does not exist or not readable">
@@ -51,6 +59,8 @@ templates = <
 		-- GUI_CATALOGUE_TOOL
 		["catalogue_archetype_tab_text"] = <"Archetypes">
 		["catalogue_template_tab_text"] = <"Templates">
+		["catalogue_metrics_tab_text"] = <"Metrics">
+		["catalogue_stats_tab_text"] = <"Stats">
 		["catalogue_tool_title"] = <"Repository">
 
 		-- GUI_PATH_MAP_CONTROL
@@ -171,10 +181,12 @@ templates = <
 		["refset_bindings_label_text"] = <"Refset bindings">
 
 		-- GUI_ARCHETYPE_INFORMATION_CONTROL
-		["summary_list_title_diff"] = <"Summary (differential)">
-		["summary_list_title_flat"] = <"Summary (flat)">
-		["breakdown_grid_title_diff"] = <"Breakdown (differential)">
-		["breakdown_grid_title_flat"] = <"Breakdown (flat)">
+		["arch_metrics_list_title_diff"] = <"Archetype metrics (differential)">
+		["arch_metrics_list_title_flat"] = <"Archetype metrics (flat)">
+		["rm_metrics_list_title_diff"] = <"RM metrics (differential)">
+		["rm_metrics_list_title_flat"] = <"RM metrics (flat)">
+		["breakdown_nb_title_diff"] = <"RM breakdown (differential)">
+		["breakdown_nb_title_flat"] = <"RM breakdown (flat)">
 		["summary_list_metric_col_title"] = <"Metric">
 		["summary_list_occurrences_col_title"] = <"Occurrences">
 		["statistics_grid_class_name_col_title"] = <"Class">
@@ -193,6 +205,26 @@ templates = <
 		["rm_closure_tree_node_tooltip"] = <"Archetype model namespace: RM package closure $1%Nfrom schema $2">
 		["archetype_tree_node_tooltip"] = <"(source = legacy flat)">
 
+		-- GUI_RM_TOOL
+		["bmm_version_label"] = <"BMM Version:">
+		["bmm_version_label_tooltip"] = <"Basic Meta-Model (BMM) version in which the RM schema was authored">
+
+		-- GUI_RM_DESCRIPTION_TOOL
+		["rm_desc_attr_group"] = <"Group">
+		["rm_desc_attr_name"] = <"Attribute">
+		["rm_desc_attr_value"] = <"Value">
+
+		-- GUI_RM_INFORMATION_TOOL
+		["rm_info_grid_metric_col_title"] = <"Metric">
+		["rm_info_grid_count_col_title"] = <"Count">
+
+		-- GUI_STATISTICS_TOOL
+		["stats_frame_text"] = <"Basic statistics">
+		["term_bindings_frame_text"] = <"Terminology bindings">
+
+		-- GUI_ARCHETYPE_STATISTICAL_REPORT
+		["rm_types_nb_tab_text"] = <"$1 types">
+		["rm_primitive_types_nb_tab_text"] = <"Primitive types">
 	>
 >
 

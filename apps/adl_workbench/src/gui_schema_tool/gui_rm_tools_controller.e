@@ -1,51 +1,76 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Abstract idea of a GUI tool that can be searched from the addres bar"
-	keywords:    "GUI, searchable"
+	description: "Controller for multiple RM tools within a docking area."
+	keywords:    "archetype, reference model"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL"
-	revision:    "$LastChangedRevision"
-	last_change: "$LastChangedDate"
+	file:        "$URL$"
+	revision:    "$LastChangedRevision$"
+	last_change: "$LastChangedDate$"
 
-deferred class GUI_SEARCHABLE_TOOL
+class GUI_RM_TOOLS_CONTROLLER
 
-feature -- Access
-
-	matching_ids (a_key: attached STRING): attached ARRAYED_SET [STRING]
-			-- obtain a list of matching ids
-		require
-			Key_valid: not a_key.is_empty
-		deferred
+inherit
+	GUI_DOCKING_EDITOR_CONTROLLER
+		redefine
+			Editor_group_name, Editor_pixmap, tool_type
 		end
 
-	tool_unique_id: INTEGER
-			-- unique id of this tool instance over the session
-		deferred
+	SHARED_APP_UI_RESOURCES
+		export
+			{NONE} all
 		end
 
-feature -- Status Report
-
-	item_selectable: BOOLEAN
-		deferred
+	SHARED_REFERENCE_MODEL_ACCESS
+		export
+			{NONE} all
 		end
 
-	valid_item_id (a_key: attached STRING): BOOLEAN
-			-- key is a valid identifier of an item managed in this tool
-		deferred
+create
+	make
+
+feature -- Definitions
+
+	Editor_group_name: STRING = "RM tool"
+
+	Editor_pixmap: EV_PIXMAP
+		once
+			Result := pixmaps ["rm_schema"]
+		end
+
+feature -- Initialisation
+
+	make (a_docking_manager: attached SD_DOCKING_MANAGER)
+		do
+			make_docking (a_docking_manager)
 		end
 
 feature -- Commands
 
-	select_item (id: attached STRING)
-			-- Select `id' in the tool and go to its node in explorer tree
-		require
-			item_selectable
-		deferred
+	create_new_tool
+		local
+			new_tool: like tool_type
+		do
+			create new_tool.make
+			add_new_tool (new_tool)
 		end
+
+	populate_active_tool (an_rm: BMM_SCHEMA)
+			-- Populate content from visual controls.
+		do
+			if not has_tools then
+				create_new_tool
+			end
+			active_tool.populate (an_rm)
+			populate_active_tool_pane (an_rm.schema_id, an_rm.schema_id.substring (1, an_rm.schema_id.count.min (Tab_title_width)), pixmaps ["rm_schema"])
+		end
+
+feature {NONE} -- Implementation
+
+	tool_type: GUI_RM_TOOL
 
 end
 
@@ -64,10 +89,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is gui_archetype_tool.e.
+--| The Original Code is gui_arhetype_tools_controller.e
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 20011
+--| Portions created by the Initial Developer are Copyright (C) 2011
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

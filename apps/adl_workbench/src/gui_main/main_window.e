@@ -353,7 +353,6 @@ feature {NONE} -- Initialization
 			create_new_rm_schema_explorer
 			create_new_console_tool
 			create_new_error_tool
-			create_new_statistics_tool
 			create_new_test_tool
 			archetype_tools.create_new_tool
 
@@ -380,6 +379,7 @@ feature {NONE} -- Initialization
 			-- set UI feedback handlers
 			archetype_compiler.set_global_visual_update_action (agent compiler_global_gui_update)
 			archetype_compiler.set_archetype_visual_update_action (agent compiler_archetype_gui_update)
+			archetype_compiler.set_full_compile_visual_update_action (agent catalogue_tool.on_full_compile)
 
 			-- text widget handling
 			text_widget_handler.focus_first_widget (viewer_main_cell)
@@ -499,7 +499,7 @@ feature -- Status setting
 
 			-- if some RM schemas now found, set up a repository if necessary
 			if rm_schemas_access.found_valid_schemas then
-				rm_schema_explorer.populate
+				rm_schema_explorer.populate (rm_schemas_access)
 				if repository_profiles.current_reference_repository_path.is_empty then
 					configure_profiles
 				else
@@ -535,7 +535,7 @@ feature -- File events
 						current_arch_cat.add_adhoc_item (fname)
 						if not billboard.has_errors then
 							catalogue_tool.show
-							catalogue_tool.populate
+							catalogue_tool.populate (current_arch_cat)
 						end
 						console_tool.append_text (billboard.content)
 					end
@@ -959,7 +959,7 @@ feature {NONE} -- Tools menu events
 			end
 			if dialog.has_changed_navigator_options and repository_profiles.has_current_profile then
 				save_resources
-				catalogue_tool.populate
+				catalogue_tool.populate (current_arch_cat)
 				test_tool.populate
 			end
 		end
@@ -1004,11 +1004,11 @@ feature -- RM Schemas Events
 				if not rm_schemas_access.found_valid_schemas then
 					append_billboard_to_console
 				else
-					rm_schema_explorer.populate
+					rm_schema_explorer.populate (rm_schemas_access)
 					refresh_profile_context (True)
 				end
 			elseif dialog.has_changed_schema_dir then
-				rm_schema_explorer.populate
+				rm_schema_explorer.populate (rm_schemas_access)
 				refresh_profile_context (True)
 			end
 		end
@@ -1127,7 +1127,7 @@ feature -- RM Schema explorer
 
 	rm_schema_explorer: GUI_RM_SCHEMA_EXPLORER
 		once
-			create Result.make (agent display_class, agent create_and_populate_new_class_tool)
+			create Result.make (agent display_class, agent display_class_in_new_tool, agent display_rm, agent display_rm_in_new_tool)
 		end
 
 	create_new_rm_schema_explorer
@@ -1144,15 +1144,34 @@ feature -- RM Schema explorer
 			a_docking_pane.focus_in_actions.extend (agent address_bar.set_current_client (rm_schema_explorer))
 		end
 
+feature -- RM tools
+
+	rm_tools: GUI_RM_TOOLS_CONTROLLER
+		once
+			create Result.make (attached_docking_manager)
+		end
+
+	display_rm_in_new_tool (an_rm: BMM_SCHEMA)
+		do
+			rm_tools.create_new_tool
+			rm_tools.populate_active_tool (an_rm)
+		end
+
+	display_rm (an_rm: BMM_SCHEMA)
+			-- display a class selected in some tool
+		do
+			rm_tools.populate_active_tool (an_rm)
+		end
+
 feature -- Catalogue tool
 
 	catalogue_tool: GUI_CATALOGUE_TOOL
 		once
 			create Result.make (agent parse_archetype,
 					agent edit_archetype,
-					agent create_and_populate_new_archetype_tool,
+					agent display_archetype_in_new_tool,
 					agent display_class,
-					agent create_and_populate_new_class_tool,
+					agent display_class_in_new_tool,
 					agent select_class_in_rm_schema_tool)
 		end
 
@@ -1178,7 +1197,7 @@ feature -- Archetype tools
 			create Result.make (attached_docking_manager, agent select_archetype_from_gui_data, agent update_all_tools_rm_icons_setting)
 		end
 
-	create_and_populate_new_archetype_tool
+	display_archetype_in_new_tool
 		do
 			archetype_tools.create_new_tool
 			if current_arch_cat.has_selected_archetype then
@@ -1191,10 +1210,10 @@ feature -- Class map tool
 	class_map_tools: GUI_CLASS_TOOL_CONTROLLER
 		once
 			create Result.make (attached_docking_manager, agent update_all_tools_rm_icons_setting, agent display_class,
-					agent create_and_populate_new_class_tool)
+					agent display_class_in_new_tool)
 		end
 
-	create_and_populate_new_class_tool (a_class_def: BMM_CLASS_DEFINITION)
+	display_class_in_new_tool (a_class_def: BMM_CLASS_DEFINITION)
 		do
 			class_map_tools.create_new_tool
 			class_map_tools.populate_active_tool (a_class_def)
@@ -1204,7 +1223,7 @@ feature -- Test tool
 
 	test_tool: GUI_TEST_ARCHETYPE_TREE_CONTROL
 		once
-			create Result.make (agent statistics_tool.populate, agent info_feedback)
+			create Result.make (agent info_feedback)
 		end
 
 	create_new_test_tool
@@ -1262,25 +1281,6 @@ feature -- Error Tool
 		do
 			error_docking_pane.set_short_title ("Errors (" + parse_error_count.out + "/" + validity_error_count.out + "/" + warning_count.out + ")")
 			error_docking_pane.set_long_title ("Errors (" + parse_error_count.out + "/" + validity_error_count.out + "/" + warning_count.out + ")")
-		end
-
-feature -- Statistics Tool
-
-	statistics_tool: GUI_STATISTICS_TOOL
-		once
-			create Result.make
-		end
-
-	create_new_statistics_tool
-		local
-			docking_pane: SD_CONTENT
-		do
-			create docking_pane.make_with_widget_title_pixmap (statistics_tool.ev_root_container, pixmaps ["info"], "Statistics")
-			attached_docking_manager.contents.extend (docking_pane)
-			docking_pane.set_type ({SD_ENUMERATION}.tool)
-			docking_pane.set_long_title ("Statistics")
-			docking_pane.set_short_title ("Statistics")
-			docking_pane.set_auto_hide ({SD_ENUMERATION}.bottom)
 		end
 
 feature -- Clipboard
@@ -1346,9 +1346,8 @@ feature {NONE} -- Implementation
 
 			append_billboard_to_console
 
-			catalogue_tool.populate
+			catalogue_tool.populate (current_arch_cat)
 			test_tool.populate
-			statistics_tool.populate
 		end
 
 	clear_toolbar_controls
@@ -1428,14 +1427,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-feature {GUI_TEST_ARCHETYPE_TREE_CONTROL} -- Statistics
-
-	populate_statistics
-			-- Populate the statistics tab.
-		do
-			statistics_tool.populate
-		end
-
 feature {NONE} -- Build commands
 
 	do_build_action (action: attached PROCEDURE [ANY, TUPLE])
@@ -1483,7 +1474,6 @@ feature {NONE} -- Build commands
 
 			if attached aca.last_compile_attempt_timestamp then
 				error_tool.extend_and_select (aca)
-				statistics_tool.populate
 
 				if attached current_arch_cat then
 					if aca = current_arch_cat.selected_archetype then

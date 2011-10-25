@@ -906,8 +906,6 @@ feature {NONE} -- Compilation
 					if adl15_engine.validation_passed then
 						post_info (Current, "validate", "parse_archetype_i2", <<id.as_string>>)
 						compilation_state := Cs_validated
-						current_arch_cat.update_slot_statistics (Current)
-						current_arch_cat.update_terminology_bindings_info (Current)
 					else
 						compilation_state := Cs_validate_failed
 					end

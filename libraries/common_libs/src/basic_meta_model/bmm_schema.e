@@ -39,11 +39,9 @@ feature -- Initialisation
 
 	make (a_rm_publisher, a_schema_name, a_rm_release: attached STRING)
 		do
+			precursor (a_rm_publisher, a_schema_name, a_rm_release)
 			make_package_container
 			create class_definitions.make (0)
-			rm_publisher := a_rm_publisher
-			schema_name := a_schema_name
-			rm_release := a_rm_release
 		end
 
 feature -- Definitions
@@ -145,12 +143,6 @@ feature -- Access
 
 feature -- Status Report
 
-	has_archetype_parent_class: BOOLEAN
-			-- True if this schema has an archetype_parent_class
-		do
-			Result := attached archetype_parent_class
-		end
-
 	has_class_definition (a_type_name: attached STRING): BOOLEAN
 			-- True if `a_type_name' has a class definition or is a primitive type in the model. Note that a_type_name
 			-- could be a generic type string; only the root class is considered
@@ -167,6 +159,13 @@ feature -- Status Report
 			Property_valid: not a_prop_name.is_empty
 		do
 			Result := class_definition (a_type_name).has_property(a_prop_name)
+		end
+
+	is_primitive_type (a_type_name: STRING): BOOLEAN
+		require
+			has_class_definition (a_type_name)
+		do
+			Result := class_definition (a_type_name).is_primitive_type
 		end
 
 	is_descendant_of (a_class, a_parent_class: attached STRING): BOOLEAN
@@ -299,6 +298,74 @@ feature -- Modification
 		do
 			archetype_data_value_parent_class := a_class_name
 		end
+
+feature -- Statistics
+
+	generate_statistics
+		local
+			arch_parent_key, data_value_parent_key, class_count_key, primitive_key, abstract_key, generic_key, package_key: STRING
+		do
+			create statistics_table.make (0)
+			package_key := "Package count"
+			package_count := 0
+			do_recursive_packages (
+				agent (a_pkg: BMM_PACKAGE_DEFINITION)
+					do
+						package_count :=  package_count + 1
+					end
+			)
+			statistics_table.put (package_count, package_key)
+
+			class_count_key := "Classes"
+			statistics_table.put (0, class_count_key)
+
+			primitive_key := "Primitive classes"
+			statistics_table.put (0, primitive_key)
+
+			abstract_key := "Abstract classes"
+			statistics_table.put (0, abstract_key)
+
+			generic_key := "Generic classes"
+			statistics_table.put (0, generic_key)
+
+			if attached archetype_parent_class then
+				arch_parent_key := archetype_parent_class + " classes"
+				statistics_table.put (0, arch_parent_key)
+			end
+			if attached archetype_data_value_parent_class then
+				data_value_parent_key := archetype_data_value_parent_class + " classes"
+				statistics_table.put (0, data_value_parent_key)
+			end
+			from class_definitions.start until class_definitions.off loop
+				statistics_table.force (statistics_table.item (class_count_key) + 1, class_count_key)
+				if class_definitions.item_for_iteration.is_primitive_type then
+					statistics_table.force (statistics_table.item (primitive_key) + 1, primitive_key)
+				end
+				if class_definitions.item_for_iteration.is_abstract then
+					statistics_table.force (statistics_table.item (abstract_key) + 1, abstract_key)
+				end
+				if class_definitions.item_for_iteration.is_generic then
+					statistics_table.force (statistics_table.item (generic_key) + 1, generic_key)
+				end
+				if attached archetype_parent_class then
+					if class_definitions.item_for_iteration.has_ancestor (archetype_parent_class) then
+						statistics_table.force (statistics_table.item (arch_parent_key) + 1, arch_parent_key)
+					end
+				end
+				if attached archetype_data_value_parent_class then
+					if class_definitions.item_for_iteration.has_ancestor (archetype_data_value_parent_class) then
+						statistics_table.force (statistics_table.item (data_value_parent_key) + 1, data_value_parent_key)
+					end
+				end
+				class_definitions.forth
+			end
+		end
+
+	statistics_table: HASH_TABLE [INTEGER, STRING]
+
+feature {NONE} -- Implementation
+
+	package_count: INTEGER
 
 end
 

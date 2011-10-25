@@ -9,7 +9,7 @@ note
 				 build of the archetype system is done.
 				 ]"
 	keywords:    "ADL"
-	author:      "Thomas Beale"
+	author:      "Peter Gummer <peter.gummer@oceaninformatics.com>"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
@@ -43,6 +43,11 @@ inherit
 		end
 
 	STRING_UTILITIES
+		export
+			{NONE} all
+		end
+
+	ARCHETYPE_STATISTICAL_DEFINITIONS
 		export
 			{NONE} all
 		end
@@ -207,11 +212,10 @@ feature -- Commands
 				end
 
 			create statistics_element.make_last (root, "statistics", ns)
-			create_category_element.call ([statistics_element, "Total Archetypes", current_arch_cat.total_archetype_count])
-			create_category_element.call ([statistics_element, "Specialised Archetypes", current_arch_cat.specialised_archetype_count])
-			create_category_element.call ([statistics_element, "Archetypes with slots", current_arch_cat.client_archetype_count])
-			create_category_element.call ([statistics_element, "Archetypes used by others", current_arch_cat.supplier_archetype_count])
-			create_category_element.call ([statistics_element, "Bad Archetypes", current_arch_cat.bad_archetype_count])
+			create_category_element.call ([statistics_element, "Total Archetypes", current_arch_cat.archetype_count])
+			create_category_element.call ([statistics_element, "Specialised Archetypes", current_arch_cat.catalogue_metrics.item (specialised_archetype_count)])
+			create_category_element.call ([statistics_element, "Archetypes with slots", current_arch_cat.catalogue_metrics.item (client_archetype_count)])
+			create_category_element.call ([statistics_element, "Archetypes used by others", current_arch_cat.catalogue_metrics.item (supplier_archetype_count)])
 
 			from
 				err_type := categories.lower

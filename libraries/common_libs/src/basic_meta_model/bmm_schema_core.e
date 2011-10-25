@@ -20,7 +20,24 @@ inherit
 			{NONE} all
 		end
 
+feature -- Definitions
+
+	Default_schema_lifecycle_state: STRING = "Unknown"
+	Default_schema_revision: STRING = "Unknown"
+	Default_schema_author: STRING = "Unknown"
+	Default_schema_description: STRING = "(none)"
+
 feature -- Initialisation
+
+	make_core
+		do
+			schema_revision := Default_schema_revision.twin
+			schema_author := Default_schema_author.twin
+			schema_description := Default_schema_description.twin
+			create schema_contributors.make (0)
+			create archetype_rm_closure_packages.make (0)
+			archetype_rm_closure_packages.compare_objects
+		end
 
 	make (a_rm_publisher, a_schema_name, a_rm_release: attached STRING)
 		require
@@ -31,8 +48,7 @@ feature -- Initialisation
 			rm_publisher := a_rm_publisher
 			schema_name := a_schema_name
 			rm_release := a_rm_release
-			create archetype_rm_closure_packages.make (0)
-			archetype_rm_closure_packages.compare_objects
+			make_core
 		end
 
 feature -- Identification
@@ -55,6 +71,22 @@ feature -- Identification
 		do
 			Result := create_schema_id (rm_publisher, schema_name, rm_release)
 		end
+
+	schema_revision: STRING
+			-- revision of schema
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+	schema_lifecycle_state: STRING
+			-- lifecycle state of schema
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+	schema_author: STRING
+			-- primary author of schema
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+	schema_contributors: attached ARRAYED_LIST [STRING]
+			-- contributing authors of schema
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
 	schema_description: STRING
 			-- description of schema
@@ -80,6 +112,18 @@ feature -- Access
 
 feature -- Status Report
 
+	has_archetype_parent_class: BOOLEAN
+			-- True if this schema has an archetype_parent_class
+		do
+			Result := attached archetype_parent_class
+		end
+
+	has_archetype_data_value_parent_class: BOOLEAN
+			-- True if this schema has an archetype_parent_class
+		do
+			Result := attached archetype_data_value_parent_class
+		end
+
 	has_rm_closure_package (a_package_path: attached STRING): BOOLEAN
 			-- `a_package_path' is a qualified package name, like 'org.openehr.ehr', 'org.openehr.demographic'
 		require
@@ -88,7 +132,49 @@ feature -- Status Report
 			Result := archetype_rm_closure_packages.has (a_package_path)
 		end
 
+	has_schema_contributor (a_contributor: attached STRING): BOOLEAN
+		require
+			valid_contributor: not a_contributor.is_empty
+		do
+			Result := schema_contributors.has (a_contributor)
+		end
+
 feature -- Modification
+
+	set_schema_revision (a_revision: attached STRING)
+		require
+			valid_revision: not a_revision.is_empty
+		do
+			schema_revision := a_revision
+		end
+
+	set_schema_lifecycle_state (a_lifecycle_state: attached STRING)
+		require
+			valid_lifecycle_state: not a_lifecycle_state.is_empty
+		do
+			schema_lifecycle_state := a_lifecycle_state
+		end
+
+	set_schema_author (an_author: attached STRING)
+		require
+			valid_author: not an_author.is_empty
+		do
+			schema_author := an_author
+		end
+
+	add_schema_contributor (a_contributor: attached STRING)
+		require
+			valid_contributor: not a_contributor.is_empty and not has_schema_contributor (a_contributor)
+		do
+			schema_contributors.extend (a_contributor)
+		end
+
+	set_schema_contributors (a_contributors: attached ARRAYED_LIST [STRING])
+		require
+			valid_contributor: not a_contributors.is_empty
+		do
+			schema_contributors := a_contributors
+		end
 
 	set_archetype_rm_closure_packages (a_package_list: like archetype_rm_closure_packages)
 		do

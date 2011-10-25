@@ -68,7 +68,7 @@ feature -- Commands
 			if not has_tools then
 				create_new_tool
 			end
-			active_tool.populate (current_arch_cat.selected_archetype)
+			active_tool.gui_tool_populate (current_arch_cat.selected_archetype)
 			populate_active_tool_pane (current_arch_cat.selected_archetype.id.as_string,
 				current_arch_cat.selected_archetype.id.as_abbreviated_string,
 				pixmaps [current_arch_cat.selected_archetype.group_name])

@@ -49,138 +49,29 @@ feature {NONE} -- Initialization
 			-- Initialization for `Current'.
 		do
 			-- create widgets
-			create ev_root_container
+			create report_controls.make
+			ev_root_container := report_controls.ev_root_container
 			ev_root_container.set_data (Current)
-			create ev_summary_vbox
-			create ev_summary_label.make_with_text (create_message_content ("summary_list_title_diff", Void))
-			ev_summary_label.align_text_left
-			create ev_summary_list
-			create ev_breakdown_vbox
-			create ev_breakdown_label.make_with_text (create_message_content ("breakdown_grid_title_diff", Void))
-			ev_breakdown_label.align_text_left
-			create ev_breakdown_grid
-
-			-- connect widgets
-			ev_root_container.extend (ev_summary_vbox)
-			ev_summary_vbox.extend (ev_summary_label)
-			ev_summary_vbox.extend (ev_summary_list)
-			ev_summary_vbox.disable_item_expand (ev_summary_label)
-			ev_root_container.extend (ev_breakdown_vbox)
-			ev_breakdown_vbox.extend (ev_breakdown_label)
-			ev_breakdown_vbox.extend (ev_breakdown_grid)
-			ev_breakdown_vbox.disable_item_expand (ev_breakdown_label)
-
-			-- set visual characteristics
-			ev_summary_vbox.set_border_width (border_width)
-			ev_summary_vbox.set_padding_width (padding_width)
-			ev_breakdown_vbox.set_border_width (border_width)
-			ev_breakdown_vbox.set_padding_width (padding_width)
-
-			ev_breakdown_grid.enable_tree
-			create grid_controller.make_for_grid (ev_breakdown_grid)
 		end
 
 feature -- Access
 
-	ev_root_container: EV_VERTICAL_SPLIT_AREA
-
-feature -- Commands
-
-	clear
-		do
-			ev_summary_list.wipe_out
-			ev_breakdown_grid.wipe_out
-		end
+	ev_root_container: EV_NOTEBOOK
 
 feature {NONE} -- Implementation
 
-	do_populate
-		local
-			gli: EV_GRID_LABEL_ITEM
-			class_row, attr_row: EV_GRID_ROW
-			rm_class_stats: HASH_TABLE [RM_CLASS_STATISTICS, STRING]
+	report_controls: GUI_ARCHETYPE_STATISTICAL_REPORT
+
+	do_clear
 		do
-			if differential_view then
-				ev_summary_label.set_text (create_message_content ("summary_list_title_diff", Void))
-				ev_breakdown_label.set_text (create_message_content ("breakdown_grid_title_diff", Void))
-			else
-				ev_summary_label.set_text (create_message_content ("summary_list_title_flat", Void))
-				ev_breakdown_label.set_text (create_message_content ("breakdown_grid_title_flat", Void))
-			end
-			target_archetype_descriptor.generate_statistics (differential_view)
-
-			-- summary list
-			ev_summary_list.set_column_titles (<<create_message_content ("summary_list_metric_col_title", Void), create_message_content ("summary_list_occurrences_col_title", Void)>>)
-			populate_ev_multi_list_from_hash (ev_summary_list, target_archetype_descriptor.statistical_analyser.summed_results)
-			ev_summary_list.resize_column_to_content (1)
-			ev_summary_list.set_column_width (100, 2) -- FIXME: this is a hack, but there is no auto-resize based on column title...
-
-			-- breakdown grid
-			-- column names
-			ev_breakdown_grid.insert_new_column (Grid_class_name_col)
-			ev_breakdown_grid.column (Grid_class_name_col).set_title (create_message_content ("statistics_grid_class_name_col_title", Void))
-			ev_breakdown_grid.column (Grid_class_name_col).resize_to_content
-			ev_breakdown_grid.insert_new_column (Grid_class_count_col)
-			ev_breakdown_grid.column (Grid_class_count_col).set_title (create_message_content ("statistics_grid_class_count_col_title", Void))
-			ev_breakdown_grid.column (Grid_class_count_col).resize_to_content
-			ev_breakdown_grid.insert_new_column (Grid_attr_name_col)
-			ev_breakdown_grid.column (Grid_attr_name_col).set_title (create_message_content ("statistics_grid_attr_name_col_title", Void))
-			ev_breakdown_grid.column (Grid_attr_name_col).resize_to_content
-			ev_breakdown_grid.insert_new_column (Grid_attr_count_col)
-			ev_breakdown_grid.column (Grid_attr_count_col).set_title (create_message_content ("statistics_grid_attr_count_col_title", Void))
-			ev_breakdown_grid.column (Grid_attr_count_col).resize_to_content
-
-			rm_class_stats := target_archetype_descriptor.statistical_analyser.rm_class_table
-			from rm_class_stats.start until rm_class_stats.off loop
-				-- class name in col 1
-				create gli.make_with_text (rm_class_stats.item_for_iteration.rm_class_name)
-				ev_breakdown_grid.set_item (Grid_class_name_col, ev_breakdown_grid.row_count + 1, gli)
-				class_row := gli.row
-
-				-- class count in col 2
-				create gli.make_with_text (rm_class_stats.item_for_iteration.rm_class_count.out)
-				class_row.set_item (Grid_class_count_col, gli)
-
-				-- attributes in subrows
-				from rm_class_stats.item_for_iteration.rm_attributes.start until rm_class_stats.item_for_iteration.rm_attributes.off loop
-					class_row.insert_subrow (class_row.subrow_count+1)
-					attr_row := class_row.subrow (class_row.subrow_count)
-
-					create gli.make_with_text (rm_class_stats.item_for_iteration.rm_attributes.key_for_iteration)
-					attr_row.set_item (Grid_attr_name_col, gli)
-
-					create gli.make_with_text (rm_class_stats.item_for_iteration.rm_attributes.item_for_iteration.out)
-					attr_row.set_item (Grid_attr_count_col, gli)
-
-					rm_class_stats.item_for_iteration.rm_attributes.forth
-				end
-				if class_row.is_expandable then
-					class_row.expand
-				end
-				rm_class_stats.forth
-			end
-
-			-- resize grid cols properly
-			Grid_column_ids.do_all (
-				agent (i: INTEGER)
-					do
-						ev_breakdown_grid.column (i).resize_to_content
-					end
-			)
-
-			-- set a reasonable split position: label + summary table title row height + nr rows x row height + one more row for padding
-			ev_root_container.set_split_position (ev_summary_label.height + ev_summary_list.row_height + ev_summary_list.row_height * ev_summary_list.count + ev_summary_list.row_height)
+			report_controls.clear
 		end
 
-	ev_summary_label, ev_breakdown_label: EV_LABEL
-
-	ev_summary_vbox, ev_breakdown_vbox: EV_VERTICAL_BOX
-
-	ev_summary_list: EV_MULTI_COLUMN_LIST
-
-	ev_breakdown_grid: EV_GRID
-
-	grid_controller: GUI_GRID_CONTROLLER
+	do_populate
+		do
+			source.generate_statistics (differential_view)
+			report_controls.populate (source.statistical_analyser.stats, differential_view)
+		end
 
 end
 
