@@ -60,7 +60,7 @@ templates = <
 		["catalogue_archetype_tab_text"] = <"Archetypes">
 		["catalogue_template_tab_text"] = <"Templates">
 		["catalogue_metrics_tab_text"] = <"Metrics">
-		["catalogue_stats_tab_text"] = <"Stats">
+		["catalogue_stats_tab_text"] = <"Statistics">
 		["catalogue_tool_title"] = <"Repository">
 
 		-- GUI_PATH_MAP_CONTROL
@@ -183,16 +183,15 @@ templates = <
 		-- GUI_ARCHETYPE_INFORMATION_CONTROL
 		["arch_metrics_list_title_diff"] = <"Archetype metrics (differential)">
 		["arch_metrics_list_title_flat"] = <"Archetype metrics (flat)">
-		["rm_metrics_list_title_diff"] = <"RM metrics (differential)">
-		["rm_metrics_list_title_flat"] = <"RM metrics (flat)">
 		["breakdown_nb_title_diff"] = <"RM breakdown (differential)">
 		["breakdown_nb_title_flat"] = <"RM breakdown (flat)">
 		["summary_list_metric_col_title"] = <"Metric">
-		["summary_list_occurrences_col_title"] = <"Occurrences">
-		["statistics_grid_class_name_col_title"] = <"Class">
-		["statistics_grid_class_count_col_title"] = <"Occurrences">
-		["statistics_grid_attr_name_col_title"] = <"Attribute">
-		["statistics_grid_attr_count_col_title"] = <"Occurrences">
+		["summary_list_total_col_title"] = <"Total">
+		["summary_list_max_col_title"] = <"Max">
+		["summary_list_min_col_title"] = <"Min">
+		["summary_list_mean_col_title"] = <"Mean">
+		["statistics_grid_model_element_name_col_title"] = <"Model element">
+		["statistics_grid_model_element_count_col_title"] = <"Total">
 
 		-- GUI_SERIALISATION_CONTROL
 		["flatten_with_rm_cb_text"] = <"Include RM">

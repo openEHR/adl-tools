@@ -56,7 +56,8 @@ feature -- Definitions
 feature {NONE}-- Initialization
 
 	make (a_select_archetype_from_gui_data_agent: like select_archetype_from_gui_data;
-			a_update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE])
+			a_update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE];
+			a_select_class_agent, a_select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]])
 		do
 			select_archetype_from_gui_data := a_select_archetype_from_gui_data_agent
 
@@ -89,7 +90,7 @@ feature {NONE}-- Initialization
 			create serialisation_control.make
 			create source_control.make
 			create validity_report_control.make
-			create statistical_information_control.make
+			create statistical_information_control.make (a_select_class_agent, a_select_class_in_new_tool_agent)
 
 			-- connect widgets
 			ev_root_container.extend (ev_action_bar)
@@ -173,10 +174,8 @@ feature {NONE}-- Initialization
 			ev_notebook.item_tab (source_control.ev_root_container).set_pixmap (pixmaps ["source"])
 
 			ev_notebook.set_item_text (validity_report_control.ev_root_container, create_message_content ("validity_tab_text", Void))
-			ev_notebook.item_tab (validity_report_control.ev_root_container).set_pixmap (pixmaps ["errors_grey"])
 
 			ev_notebook.set_item_text (statistical_information_control.ev_root_container, create_message_content ("stat_info_tab_text", Void))
-			ev_notebook.item_tab (statistical_information_control.ev_root_container).set_pixmap (pixmaps ["statistics"])
 
 			-- set events: action bar
 			ev_differential_view_button.select_actions.extend (agent on_differential_view)
@@ -195,6 +194,7 @@ feature {NONE}-- Initialization
 			differential_view := True
 			ev_differential_view_button.enable_select
 			set_tab_texts
+			set_tab_appearance
 		end
 
 feature -- Access
@@ -212,7 +212,8 @@ feature -- Events
 		do
 			if attached {GUI_ARCHETYPE_TARGETTED_TOOL} ev_notebook.selected_item.data as arch_tool and attached source then
 				if (source /= arch_tool.source or else
-					source.last_compile_attempt_timestamp > arch_tool.last_populate_timestamp or
+					not arch_tool.is_populated or else
+					arch_tool.last_populate_timestamp < source.last_compile_attempt_timestamp or
 					differential_view /= arch_tool.differential_view or
 					selected_language /= arch_tool.selected_language) and
 					arch_tool.can_populate (source)
@@ -279,16 +280,6 @@ feature -- Commands
 		end
 
 feature {NONE} -- Events
-
-	do_clear
-			-- Wipe out content from visual controls.
-		do
-			ev_archetype_id.remove_text
-			ev_adl_version_text.remove_text
-			ev_language_combo.wipe_out
-			ev_language_combo.remove_text
-			clear_content
- 		end
 
 	on_flat_view
 			-- Called by `select_actions' of `ev_flat_view_button' in this tool
@@ -363,6 +354,16 @@ feature {NONE} -- Events
 
 feature {NONE} -- Implementation
 
+	do_clear
+			-- Wipe out content from visual controls.
+		do
+			ev_archetype_id.remove_text
+			ev_adl_version_text.remove_text
+			ev_language_combo.wipe_out
+			ev_language_combo.remove_text
+			clear_content
+ 		end
+
 	do_populate
 		do
 			if source.is_valid then
@@ -377,7 +378,7 @@ feature {NONE} -- Implementation
 			else
 				ev_notebook.select_item (validity_report_control.ev_root_container)
 			end
-			set_validity_tab_appearance
+			set_tab_appearance
 		end
 
 	text_widget_handler: GUI_TEXT_WIDGET_HANDLER
@@ -471,13 +472,18 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	set_validity_tab_appearance
+	set_tab_appearance
 			-- set visual appearance of validity tab according to whether there are errors or not
 		do
-			if source.is_valid then
+			if not attached source or else source.is_valid then
 				ev_notebook.item_tab (validity_report_control.ev_root_container).set_pixmap (pixmaps ["errors_grey"])
 			else
 				ev_notebook.item_tab (validity_report_control.ev_root_container).set_pixmap (pixmaps ["errors"])
+			end
+			if attached source and then source.is_valid then
+				ev_notebook.item_tab (statistical_information_control.ev_root_container).set_pixmap (pixmaps ["statistics"])
+			else
+				ev_notebook.item_tab (statistical_information_control.ev_root_container).set_pixmap (pixmaps ["statistics_grey"])
 			end
 		end
 

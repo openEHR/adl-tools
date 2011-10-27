@@ -1,7 +1,10 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "General model of a GUI tool whose data source is an archetype"
-	keywords:    "statistics, archteype"
+	description: "[
+				 Abstract model of any complex data item whose contents are made available in a linear 
+				 vector that can be used by generic screen populating or reporting methods.
+				 ]"
+	keywords:    "statistics, archetype"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
@@ -11,60 +14,18 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class
-	GUI_ARCHETYPE_TARGETTED_TOOL
-
-inherit
-	GUI_TOOL
-		rename
-			populate as gui_tool_populate
-		redefine
-			source
-		end
+deferred class GENERIC_RENDERABLE
 
 feature -- Access
 
-	source: ARCH_CAT_ARCHETYPE
-			-- archetype to which this tool is targetted
-
-	source_archetype: ARCHETYPE
-			-- differential or flat version of archetype, depending on setting of `differential_view'
-		do
-			if differential_view then
-				Result := source.differential_archetype
-			else
-				Result := source.flat_archetype
-			end
+	as_vector: attached LIST [ANY]
+			-- vector representation for use with generic screen populating methods
+		deferred
 		end
-
-	selected_language: attached STRING
 
 feature -- Status Report
 
-	differential_view: BOOLEAN
-
-feature -- Commands
-
-	populate (a_source: attached like source; differential_view_flag: BOOLEAN; a_selected_language: attached STRING)
-			-- populate the control by creating it from scratch
-		require
-			can_populate (a_source)
-		do
-			differential_view := differential_view_flag
-			selected_language := a_selected_language
-			gui_tool_populate (a_source)
-		end
-
-	repopulate_with_language (a_selected_language: attached STRING)
-			-- repopulate with changed language
-		do
-			selected_language := a_selected_language
-			repopulate
-		end
-
-feature {NONE} -- Implementation
-
-	do_populate
+	is_populated: BOOLEAN
 		deferred
 		end
 
@@ -85,7 +46,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is gui_archetype_targetted_tool.e.
+--| The Original Code is generic_renderable.e
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2011

@@ -1,7 +1,7 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "General model of a GUI tool whose data source is an archetype"
-	keywords:    "statistics, archteype"
+	description: "Simple statistical data gatherer for any datum X which is counted over a population of artefacts"
+	keywords:    "statistics, archetype"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
@@ -11,61 +11,85 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class
-	GUI_ARCHETYPE_TARGETTED_TOOL
+class STATISTICAL_DATUM
 
 inherit
-	GUI_TOOL
-		rename
-			populate as gui_tool_populate
-		redefine
-			source
+	GENERIC_RENDERABLE
+
+create
+	make
+
+feature -- Initialisation
+
+	make (a_name: STRING)
+		do
+			name := a_name
 		end
+
 
 feature -- Access
 
-	source: ARCH_CAT_ARCHETYPE
-			-- archetype to which this tool is targetted
+	name: STRING
+			-- name of this datum
 
-	source_archetype: ARCHETYPE
-			-- differential or flat version of archetype, depending on setting of `differential_view'
+	population: INTEGER
+			-- population of artefacts over which measured
+
+	total: INTEGER
+			-- total number of occurrences of this datum across the population
+
+	minimum: INTEGER
+			-- minimum non-zero number of occurrences of this datum across the population
+
+	maximum: INTEGER
+			-- maximum number of occurrences of this datum across the population
+
+	average: REAL
 		do
-			if differential_view then
-				Result := source.differential_archetype
-			else
-				Result := source.flat_archetype
+			if is_populated then
+				Result := (total / population).truncated_to_integer
 			end
 		end
 
-	selected_language: attached STRING
+	as_vector: LIST [ANY]
+			-- vector representation for use with generic screen populating methods
+		do
+			create {ARRAYED_LIST [ANY]} Result.make(0)
+			Result.extend (total)
+			Result.extend (minimum)
+			Result.extend (maximum)
+			Result.extend (average)
+		end
 
 feature -- Status Report
 
-	differential_view: BOOLEAN
-
-feature -- Commands
-
-	populate (a_source: attached like source; differential_view_flag: BOOLEAN; a_selected_language: attached STRING)
-			-- populate the control by creating it from scratch
-		require
-			can_populate (a_source)
+	is_populated: BOOLEAN
 		do
-			differential_view := differential_view_flag
-			selected_language := a_selected_language
-			gui_tool_populate (a_source)
+			Result := population > 0
 		end
 
-	repopulate_with_language (a_selected_language: attached STRING)
-			-- repopulate with changed language
+feature -- Modification
+
+	update (a_total: INTEGER)
 		do
-			selected_language := a_selected_language
-			repopulate
+			population := population + 1
+			total := total + a_total
+			if minimum = 0 then
+				minimum := a_total
+			else
+				minimum := minimum.min (a_total)
+			end
+			maximum := maximum.max (a_total)
 		end
 
-feature {NONE} -- Implementation
-
-	do_populate
-		deferred
+	merge (other: like Current)
+		do
+			population := population + other.population
+			total := total + other.total
+			if minimum > 0 and other.minimum > 0 then
+				minimum := minimum.min (other.minimum)
+			end
+			maximum := maximum.max (other.maximum)
 		end
 
 end
@@ -85,10 +109,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is gui_archetype_targetted_tool.e.
+--| The Original Code is archetype_phase_2_validator.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2011
+--| Portions created by the Initial Developer are Copyright (C) 2007-2011
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

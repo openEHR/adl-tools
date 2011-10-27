@@ -452,10 +452,6 @@ feature -- Statistics
 			if not attached last_stats_build_timestamp or else last_stats_build_timestamp < last_populate_timestamp then
 				reset_statistics
 				do_all_archetypes (agent gather_statistics)
-				from stats.start until stats.off loop
-					stats.item_for_iteration.compute_metrics
-					stats.forth
-				end
 				catalogue_metrics.put (archetype_count, Total_archetype_count)
 				create last_stats_build_timestamp.make_now
 			end

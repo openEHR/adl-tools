@@ -24,19 +24,11 @@ feature -- Initialisation
 	make (a_bmm_schema: BMM_SCHEMA)
 		do
 			bmm_schema :=  a_bmm_schema
-			create rm_metrics.make (0)
-			Rm_metric_names.do_all (
-				agent (metric_name: STRING)
-					do
-						rm_metrics.put (0, metric_name)
-					end
-			)
-
 			create archetype_metrics.make (0)
 			Archetype_metric_names.do_all (
 				agent (metric_name: STRING)
 					do
-						archetype_metrics.put (0, metric_name)
+						archetype_metrics.put (create {STATISTICAL_DATUM}.make (metric_name), metric_name)
 					end
 			)
 
@@ -59,12 +51,8 @@ feature -- Initialisation
 
 feature -- Access
 
-	archetype_metrics: HASH_TABLE [INTEGER, STRING]
+	archetype_metrics: HASH_TABLE [STATISTICAL_DATUM, STRING]
 			-- other archetype metrics (not relating to RM), keyed by metric name
-
-	rm_metrics: HASH_TABLE [INTEGER, STRING]
-			-- table of summed values, keyed by meaning of RM class & attribute usage in archetype,
-			-- suitable for direct display
 
 	rm_grouped_class_table: HASH_TABLE [HASH_TABLE [RM_CLASS_STATISTICS, STRING], STRING]
 			-- table of grouped stats of all RM classes, keyed by class name, with
@@ -99,7 +87,7 @@ feature -- Modification
 		require
 			archetype_metrics.has (a_metric_name)
 		do
-			archetype_metrics.force (archetype_metrics.item (a_metric_name) + a_val, a_metric_name)
+			archetype_metrics.item (a_metric_name).update (a_val)
 		end
 
 	merge (other: like Current)
@@ -112,12 +100,7 @@ feature -- Modification
 		do
 			-- archetype metrics table
 			from other.archetype_metrics.start until other.archetype_metrics.off loop
-				if archetype_metrics.has (other.archetype_metrics.key_for_iteration) then
-					archetype_metrics.force (archetype_metrics.item (other.archetype_metrics.key_for_iteration) +
-						other.archetype_metrics.item_for_iteration, other.archetype_metrics.key_for_iteration)
-				else
-					archetype_metrics.put (other.archetype_metrics.item_for_iteration, other.archetype_metrics.key_for_iteration)
-				end
+				archetype_metrics.item (other.archetype_metrics.key_for_iteration).merge (other.archetype_metrics.item_for_iteration)
 				other.archetype_metrics.forth
 			end
 
@@ -143,28 +126,6 @@ feature -- Modification
 			end
 		end
 
-feature -- Commands
-
-	compute_metrics
-		local
-			rm_class_table: HASH_TABLE [RM_CLASS_STATISTICS, STRING]
-		do
-			from rm_grouped_class_table.start until rm_grouped_class_table.off loop
-				rm_class_table := rm_grouped_class_table.item_for_iteration
-				from rm_class_table.start until rm_class_table.off loop
-					rm_metrics.force (rm_metrics.item (Object_node_count) + rm_class_table.item_for_iteration.rm_class_count, Object_node_count)
-					if bmm_schema.is_descendant_of (rm_class_table.item_for_iteration.rm_class_name, bmm_schema.archetype_parent_class) then
-						rm_metrics.force (rm_metrics.item (Archetypable_node_count) + rm_class_table.item_for_iteration.rm_class_count, Archetypable_node_count)
-					end
-					if bmm_schema.is_descendant_of (rm_class_table.item_for_iteration.rm_class_name, bmm_schema.archetype_data_value_parent_class) then
-						rm_metrics.force (rm_metrics.item (Archetype_data_value_node_count) + rm_class_table.item_for_iteration.rm_class_count, Archetype_data_value_node_count)
-					end
-					rm_class_table.forth
-				end
-				rm_grouped_class_table.forth
-			end
-		end
-
 feature -- Copying
 
 	duplicate: like Current
@@ -172,7 +133,6 @@ feature -- Copying
 		do
 			create Result.make (bmm_schema)
 			Result.archetype_metrics.copy (archetype_metrics.deep_twin)
-			Result.rm_metrics.copy (rm_metrics.deep_twin)
 			Result.rm_grouped_class_table.copy (rm_grouped_class_table.deep_twin)
 		end
 

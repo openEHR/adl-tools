@@ -17,7 +17,7 @@ class
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			ev_root_container
+			can_populate, can_repopulate, ev_root_container
 		end
 
 	GUI_DEFINITIONS
@@ -93,6 +93,18 @@ feature {NONE}-- Initialization
 feature -- Access
 
 	ev_root_container: EV_HORIZONTAL_BOX
+
+feature -- Status Report
+
+	can_populate (a_source: attached like source): BOOLEAN
+		do
+			Result := a_source.is_valid
+		end
+
+	can_repopulate: BOOLEAN
+		do
+			Result := is_populated and source.is_valid
+		end
 
 feature {NONE} -- Implementation
 

@@ -281,6 +281,19 @@ feature -- Conversion
 			Upper_case: Result ~ Result.as_upper
 		end
 
+	rm_attribute_pixmap_string (rm_attr: attached BMM_PROPERTY_DEFINITION): STRING
+			-- string name of pixmap for attribute rm_attr
+		do
+			create Result.make(0)
+			Result.append ("c_attribute")
+			if rm_attr.is_container then
+				Result.append (".multiple")
+			end
+			if not rm_attr.is_mandatory then
+				Result.append (".optional")
+			end
+		end
+
 feature {NONE} -- Implementation
 
 	well_formed_type_name_regex: attached LX_DFA_REGULAR_EXPRESSION

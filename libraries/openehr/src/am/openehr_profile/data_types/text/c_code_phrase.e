@@ -101,7 +101,7 @@ feature -- Statistics
 				Result.extend ("terminology_id")
 			end
 			if attached code_list then
-				Result.extend ("code_phrase")
+				Result.extend ("code_string")
 			end
 		end
 

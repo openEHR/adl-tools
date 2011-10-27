@@ -16,6 +16,9 @@ class GUI_PATH_MAP_CONTROL
 
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
+		redefine
+			can_populate, can_repopulate
+		end
 
 	SHARED_KNOWLEDGE_REPOSITORY
 		export
@@ -123,6 +126,18 @@ feature -- Access
 	selected_filter: STRING
 		do
 			Result := ev_filter_combo.selected_item.text.as_string_8
+		end
+
+feature -- Status Report
+
+	can_populate (a_source: attached like source): BOOLEAN
+		do
+			Result := a_source.is_valid
+		end
+
+	can_repopulate: BOOLEAN
+		do
+			Result := is_populated and source.is_valid
 		end
 
 feature -- Events

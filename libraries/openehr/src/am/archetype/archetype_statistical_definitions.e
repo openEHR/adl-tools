@@ -15,11 +15,11 @@ class ARCHETYPE_STATISTICAL_DEFINITIONS
 
 feature -- Definitions
 
-	Object_node_count: STRING = "Object node count"
+	Object_node_count: STRING = "Object nodes"
 
-	Archetypable_node_count: STRING = "Archetypable node count"
+	Archetypable_node_count: STRING = "Archetypable nodes"
 
-	Archetype_data_value_node_count: STRING = "Data value node count"
+	Archetype_data_value_node_count: STRING = "Data value nodes"
 
 	At_code_count: STRING = "At-codes"
 
@@ -29,14 +29,16 @@ feature -- Definitions
 
 	Ac_code_bindings_count: STRING = "Ac-code bindings"
 
-	Rm_metric_names: ARRAY [STRING]
-		once
-			Result := <<Object_node_count, Archetypable_node_count, Archetype_data_value_node_count>>
-		end
-
 	Archetype_metric_names: ARRAY [STRING]
 		once
-			Result := <<At_code_count, Ac_code_count, At_code_bindings_count, Ac_code_bindings_count>>
+			Result := <<Object_node_count,
+				Archetypable_node_count,
+				Archetype_data_value_node_count,
+				At_code_count,
+				Ac_code_count,
+				At_code_bindings_count,
+				Ac_code_bindings_count
+			>>
 		end
 
 	Total_archetype_count: STRING = "Total archetypes"

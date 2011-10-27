@@ -73,16 +73,13 @@ feature {NONE} -- Implementation
 			-- Populate the statistics tab.
 		local
 			list_row: EV_MULTI_COLUMN_LIST_ROW
-			i: INTEGER
 		do
 			-- archetype metrics list
 			ev_stats_mlist.set_column_titles (
 				<<create_message_content ("summary_list_metric_col_title", Void),
-				create_message_content ("summary_list_occurrences_col_title", Void)>>
+				create_message_content ("summary_list_total_col_title", Void)>>
 			)
 			populate_ev_multi_list_from_hash (ev_stats_mlist, source.catalogue_metrics)
-			ev_stats_mlist.resize_column_to_content (1)
-			ev_stats_mlist.set_column_width (100, 2) -- FIXME: this is a hack, but there is no auto-resize based on column title...
 			ev_stats_info_frame.set_minimum_height ((ev_stats_mlist.count + 3) * ev_stats_mlist.row_height)
 
 			-- do terminology bindings statistics
@@ -101,17 +98,11 @@ feature {NONE} -- Implementation
 					list_row.extend (utf8 (source.terminology_bindings_statistics.key_for_iteration))
 					list_row.extend (utf8 (source.terminology_bindings_statistics.item_for_iteration.count.out))
 					ev_term_bindings_info_list.extend (list_row)
-					from i := 1 until i > ev_term_bindings_info_list.column_count loop
-						ev_term_bindings_info_list.resize_column_to_content (i)
-						if ev_term_bindings_info_list.column_width (i) < 100 then
-							ev_term_bindings_info_list.set_column_width (100, i)
-						end
-						i := i + 1
-					end
 				end
 
 				source.terminology_bindings_statistics.forth
 			end
+			resize_ev_multi_list (ev_term_bindings_info_list)
 		end
 
 	ev_stats_info_frame, ev_term_bindings_info_frame: EV_FRAME

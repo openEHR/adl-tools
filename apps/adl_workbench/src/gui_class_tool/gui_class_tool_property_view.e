@@ -400,19 +400,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	rm_attribute_pixmap_string (rm_attr: attached BMM_PROPERTY_DEFINITION): STRING
-			-- string name of pixmap for attribute rm_attr
-		do
-			create Result.make(0)
-			Result.append ("c_attribute")
-			if rm_attr.is_container then
-				Result.append (".multiple")
-			end
-			if not rm_attr.is_mandatory then
-				Result.append (".optional")
-			end
-		end
-
 	refresh_node (a_ti: EV_TREE_NODE)
 		do
 			if attached {BMM_TYPE_SPECIFIER} a_ti.data as a_type_spec  then

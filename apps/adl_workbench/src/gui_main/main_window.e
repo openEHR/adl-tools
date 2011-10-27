@@ -1194,7 +1194,8 @@ feature -- Archetype tools
 
 	archetype_tools: GUI_ARCHETYPE_TOOLS_CONTROLLER
 		once
-			create Result.make (attached_docking_manager, agent select_archetype_from_gui_data, agent update_all_tools_rm_icons_setting)
+			create Result.make (attached_docking_manager, agent select_archetype_from_gui_data, agent update_all_tools_rm_icons_setting,
+				agent display_class, agent display_class_in_new_tool)
 		end
 
 	display_archetype_in_new_tool
@@ -1209,8 +1210,8 @@ feature -- Class map tool
 
 	class_map_tools: GUI_CLASS_TOOL_CONTROLLER
 		once
-			create Result.make (attached_docking_manager, agent update_all_tools_rm_icons_setting, agent display_class,
-					agent display_class_in_new_tool)
+			create Result.make (attached_docking_manager, agent update_all_tools_rm_icons_setting,
+				agent display_class, agent display_class_in_new_tool)
 		end
 
 	display_class_in_new_tool (a_class_def: BMM_CLASS_DEFINITION)

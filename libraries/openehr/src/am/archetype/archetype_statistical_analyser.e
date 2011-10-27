@@ -65,32 +65,69 @@ feature -- Commands
 			end
 
 			-- add node-level counts
+			total_node_count := 0
+			locatable_node_count := 0
+			data_value_node_count := 0
+
 			create def_it.make (target.definition)
 			def_it.do_all (agent node_enter, agent node_exit)
 
-			-- finalise
-			stats.compute_metrics
+			stats.archetype_metrics.item (Object_node_count).update (total_node_count)
+			stats.archetype_metrics.item (Archetypable_node_count).update (locatable_node_count)
+			stats.archetype_metrics.item (Archetype_data_value_node_count).update (data_value_node_count)
 		end
 
 feature {NONE} -- Implementation
 
 	node_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 		local
-			stat_accum: RM_CLASS_STATISTICS
+			stat_accums: ARRAYED_LIST [RM_CLASS_STATISTICS]
+			a_class_stat_accum, an_attr_stat_accum: RM_CLASS_STATISTICS
+			apa: ARCHETYPE_PATH_ANALYSER
+			flat_parent: FLAT_ARCHETYPE
+			ca: C_ATTRIBUTE
 		do
 			if attached {C_OBJECT} a_c_node as co then
-				create stat_accum.make (co.rm_type_name, co.is_root)
-				if attached {C_COMPLEX_OBJECT} co as cco then
-					cco.attributes.do_all (
-						agent (ca: C_ATTRIBUTE; a_stat_accum: RM_CLASS_STATISTICS)
-							do
-								a_stat_accum.add_rm_attribute_occurrence (ca.rm_attribute_name)
-							end (?, stat_accum)
-					)
-				elseif attached {C_DOMAIN_TYPE} co as cdt then
-					stat_accum.add_rm_attribute_occurrences (cdt.report_rm_attributes)
+				-- capture total node count
+				total_node_count := total_node_count + 1
+
+				-- capture LOCATABLE node count
+				if target_descriptor.rm_schema.has_archetype_parent_class and then
+					target_descriptor.rm_schema.is_descendant_of (co.rm_type_name, target_descriptor.rm_schema.archetype_parent_class)
+				then
+					locatable_node_count := locatable_node_count + 1
+				elseif target_descriptor.rm_schema.has_archetype_data_value_parent_class and then -- capture DATA_VALUE node count
+					target_descriptor.rm_schema.is_descendant_of (co.rm_type_name, target_descriptor.rm_schema.archetype_data_value_parent_class)
+				then
+					data_value_node_count := data_value_node_count + 1
 				end
-				stats.add_rm_class_stats (stat_accum)
+
+				-- capture node specific info
+				create stat_accums.make (0)
+				create a_class_stat_accum.make (co.rm_type_name, co.is_root)
+				stat_accums.extend (a_class_stat_accum)
+				if attached {C_COMPLEX_OBJECT} co as cco then
+					from cco.attributes.start until cco.attributes.off loop
+						ca := cco.attributes.item
+						if not ca.has_differential_path then
+							a_class_stat_accum.add_rm_attribute_occurrence (ca.rm_attribute_name)
+						else
+							-- this is the case of constraint at a path, as found in specialised archetypes -
+							-- it is an attribute for a different RM object type
+							create apa.make_from_string (ca.rm_attribute_path)
+							flat_parent := target_descriptor.specialisation_parent.flat_archetype
+							if attached {C_ATTRIBUTE} flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth)) as ca_parent_flat then
+								create an_attr_stat_accum.make (ca_parent_flat.parent.rm_type_name, ca_parent_flat.parent.is_root)
+								an_attr_stat_accum.add_rm_attribute_occurrence (ca_parent_flat.rm_attribute_name)
+								stat_accums.extend (an_attr_stat_accum)
+							end
+						end
+						cco.attributes.forth
+					end
+				elseif attached {C_DOMAIN_TYPE} co as cdt then
+					a_class_stat_accum.add_rm_attribute_occurrences (cdt.report_rm_attributes)
+				end
+				stat_accums.do_all (agent (a_stat_accum: RM_CLASS_STATISTICS) do stats.add_rm_class_stats (a_stat_accum) end)
 			end
 		end
 
@@ -98,6 +135,14 @@ feature {NONE} -- Implementation
 		do
 		end
 
+	total_node_count: INTEGER
+			-- count of nodes in this archetype
+
+	locatable_node_count: INTEGER
+			-- count of nodes inheriting from bmm_schema.archetype_parent_class (e.g. LOCATABLE)
+
+	data_value_node_count: INTEGER
+			-- count of nodes inheriting from bmm_schema.archetype_data_value_parent_class (e.g. DATA_VALUE)
 end
 
 

@@ -44,7 +44,7 @@ feature {NONE} -- Initialisation
 				select_class_agent, select_class_in_new_tool_agent, select_class_in_rm_schema_tool_agent)
 			create template_explorer.make (select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent, agent archetype_explorer.ensure_item_visible)
 			create metrics_viewer.make
-			create stats_viewer.make
+			create stats_viewer.make (a_select_class_agent, a_select_class_in_new_tool_agent)
 
 			-- create widgets
 			create ev_root_container

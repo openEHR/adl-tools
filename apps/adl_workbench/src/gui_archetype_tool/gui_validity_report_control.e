@@ -16,9 +16,6 @@ class
 
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
-		redefine
-			can_populate, can_repopulate
-		end
 
 create
 	make
@@ -41,18 +38,6 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	ev_root_container: EV_VERTICAL_BOX
-
-feature -- Status Report
-
-	can_populate (aca: attached ARCH_CAT_ARCHETYPE): BOOLEAN
-		do
-			Result := True
-		end
-
-	can_repopulate: BOOLEAN
-		do
-			Result := True
-		end
 
 feature {NONE} -- Implementation
 

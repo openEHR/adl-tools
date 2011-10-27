@@ -15,6 +15,9 @@ class GUI_SLOT_MAP_CONTROL
 
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
+		redefine
+			can_populate, can_repopulate
+		end
 
 	SHARED_KNOWLEDGE_REPOSITORY
 		export
@@ -74,6 +77,18 @@ feature -- Access
 	ev_root_container: EV_VERTICAL_BOX
 
 	ev_suppliers_tree, ev_clients_tree: EV_TREE
+
+feature -- Status Report
+
+	can_populate (a_source: attached like source): BOOLEAN
+		do
+			Result := a_source.is_valid
+		end
+
+	can_repopulate: BOOLEAN
+		do
+			Result := is_populated and source.is_valid
+		end
 
 feature -- UI Feedback
 

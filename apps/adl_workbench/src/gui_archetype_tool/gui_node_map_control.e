@@ -16,7 +16,7 @@ class GUI_NODE_MAP_CONTROL
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			repopulate
+			can_populate, can_repopulate, repopulate
 		end
 
 	SPECIALISATION_STATUSES
@@ -171,6 +171,16 @@ feature -- Status Report
 
 	is_expanded: BOOLEAN
 			-- True if last whole tree operation was expand
+
+	can_populate (a_source: attached like source): BOOLEAN
+		do
+			Result := a_source.is_valid
+		end
+
+	can_repopulate: BOOLEAN
+		do
+			Result := is_populated and source.is_valid
+		end
 
 feature -- Commands
 

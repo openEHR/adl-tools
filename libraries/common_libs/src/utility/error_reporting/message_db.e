@@ -35,6 +35,8 @@ feature -- Definitions
 
 	Error_file_extension: STRING = ".txt"
 
+	Catchall_error: STRING = "(Error DB load failure); original error params $1; $2; $3; $4"
+
 feature -- Initialisation
 
 	make
@@ -62,9 +64,11 @@ feature -- Access
 			if templates.has (an_id) then
 				Result := templates.item (an_id).twin
 				args_list := args
-			else
+			elseif templates.has ("message_code_error") then
 				Result := templates.item ("message_code_error").twin
 				args_list := <<an_id>>
+			else -- catchall
+				Result := Catchall_error.twin
 			end
 			Result.replace_substring_all ("%%N", "%N")
 			if args_list /= Void then
@@ -81,7 +85,7 @@ feature -- Access
 			end
 		end
 
-	create_message_line(an_id: attached STRING; args: ARRAY[STRING]): attached STRING
+	create_message_line (an_id: attached STRING; args: ARRAY[STRING]): attached STRING
 			-- create message as a full line
 		do
 			Result := create_message_content(an_id, args)

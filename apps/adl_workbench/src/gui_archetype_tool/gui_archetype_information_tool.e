@@ -17,6 +17,9 @@ class
 
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
+		redefine
+			can_populate, can_repopulate
+		end
 
 	GUI_DEFINITIONS
 		export
@@ -45,11 +48,10 @@ feature -- Definitions
 
 feature {NONE} -- Initialization
 
-	make
-			-- Initialization for `Current'.
+	make (a_select_class_agent, a_select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]])
 		do
 			-- create widgets
-			create report_controls.make
+			create report_controls.make  (a_select_class_agent, a_select_class_in_new_tool_agent)
 			ev_root_container := report_controls.ev_root_container
 			ev_root_container.set_data (Current)
 		end
@@ -57,6 +59,18 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	ev_root_container: EV_NOTEBOOK
+
+feature -- Status Report
+
+	can_populate (a_source: attached like source): BOOLEAN
+		do
+			Result := a_source.is_valid
+		end
+
+	can_repopulate: BOOLEAN
+		do
+			Result := is_populated and source.is_valid
+		end
 
 feature {NONE} -- Implementation
 

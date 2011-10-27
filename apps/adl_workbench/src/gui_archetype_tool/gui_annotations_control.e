@@ -15,6 +15,9 @@ class GUI_ANNOTATIONS_CONTROL
 
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
+		redefine
+			can_populate, can_repopulate
+		end
 
 	GUI_UTILITIES
 		export
@@ -51,6 +54,18 @@ feature {NONE} -- Initialisation
 feature -- Access
 
 	ev_root_container: EV_GRID
+
+feature -- Status Report
+
+	can_populate (a_source: attached like source): BOOLEAN
+		do
+			Result := a_source.is_valid
+		end
+
+	can_repopulate: BOOLEAN
+		do
+			Result := is_populated and source.is_valid
+		end
 
 feature -- Commands
 
