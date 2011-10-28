@@ -43,6 +43,7 @@ feature -- Definitions
 
 	Any_type: STRING = "Any"
 
+	Type_cat_primitive_class: STRING = "class_primitive"
 	Type_cat_concrete_class: STRING = "class_concrete"
 	Type_cat_concrete_class_supertype: STRING = "class_concrete_supertype"
 	Type_cat_abstract_class: STRING = "class_abstract"
@@ -53,6 +54,7 @@ feature -- Definitions
 		once
 			create Result.make (0)
 			Result.compare_objects
+			Result.extend (Type_cat_primitive_class)
 			Result.extend (Type_cat_concrete_class)
 			Result.extend (Type_cat_abstract_class)
 			Result.extend (Type_cat_generic_parameter)

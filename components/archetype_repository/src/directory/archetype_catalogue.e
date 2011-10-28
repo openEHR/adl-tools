@@ -394,6 +394,17 @@ feature -- Metrics
 			Result := archetype_index.count
 		end
 
+	template_count: INTEGER
+			-- count of artefacts designated as templates or template_components
+		do
+			from archetype_index.start until archetype_index.off loop
+				if archetype_index.item_for_iteration.artefact_type /= {ARTEFACT_TYPE}.archetype then
+					Result := Result + 1
+				end
+				archetype_index.forth
+			end
+		end
+
 	compile_attempt_count: INTEGER
 			-- Count of archetypes for which compiling has been attempted.
 

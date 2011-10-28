@@ -52,7 +52,7 @@ feature -- Initialisation
 			create ev_flat_view_button
 			create ev_notebook
 
-			create property_view.make (a_update_all_tools_rm_icons_setting_agent, a_select_class_agent, a_select_class_in_new_tool_agent)
+			create closure_view.make (a_update_all_tools_rm_icons_setting_agent, a_select_class_agent, a_select_class_in_new_tool_agent)
 			create ancestors_view.make (a_select_class_agent, a_select_class_in_new_tool_agent)
 			create descendants_view.make (a_select_class_agent, a_select_class_in_new_tool_agent)
 
@@ -67,7 +67,7 @@ feature -- Initialisation
 			ev_view_tool_bar.extend (ev_flat_view_button)
 
 			-- connect widgets: sub-tools
-			ev_notebook.extend (property_view.ev_root_container)
+			ev_notebook.extend (closure_view.ev_root_container)
 			ev_notebook.extend (ancestors_view.ev_root_container)
 			ev_notebook.extend (descendants_view.ev_root_container)
 
@@ -85,8 +85,8 @@ feature -- Initialisation
 			ev_flat_view_button.set_tooltip (create_message_content ("Set flat archetype view", Void))
 
 			-- visual characteristics: notebook
-			ev_notebook.set_item_text (property_view.ev_root_container, create_message_content ("properties_tab_text", Void))
-			ev_notebook.item_tab (property_view.ev_root_container).set_pixmap (pixmaps ["properties"])
+			ev_notebook.set_item_text (closure_view.ev_root_container, create_message_content ("closure_tab_text", Void))
+			ev_notebook.item_tab (closure_view.ev_root_container).set_pixmap (pixmaps ["closure"])
 
 			ev_notebook.set_item_text (ancestors_view.ev_root_container, create_message_content ("ancestors_tab_text", Void))
 			ev_notebook.item_tab (ancestors_view.ev_root_container).set_pixmap (pixmaps ["ancestors"])
@@ -163,7 +163,7 @@ feature -- Commands
 	update_rm_icons_setting
 			-- call this routine if rm_icons setting changed elsewhere in tool
 		do
-			property_view.update_rm_icons_cb
+			closure_view.update_rm_icons_cb
 		end
 
 feature {NONE} -- Implementation
@@ -171,18 +171,19 @@ feature {NONE} -- Implementation
 	do_clear
 		do
  			ev_class_id.remove_text
- 			property_view.clear
+ 			closure_view.clear
  			ancestors_view.clear
 		end
 
 	do_populate
 		do
-			property_view.populate (source, differential_view)
+			ev_class_id.set_text (source.globally_qualified_path)
+			closure_view.populate (source, differential_view)
 			ancestors_view.populate (source)
 			descendants_view.populate (source)
 		end
 
-	property_view: GUI_CLASS_TOOL_PROPERTY_VIEW
+	closure_view: GUI_CLASS_TOOL_CLOSURE_VIEW
 
 	ancestors_view: GUI_CLASS_TOOL_ANCESTORS_VIEW
 

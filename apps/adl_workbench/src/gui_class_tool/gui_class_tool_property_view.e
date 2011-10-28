@@ -11,7 +11,7 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class GUI_CLASS_TOOL_PROPERTY_VIEW
+class GUI_CLASS_TOOL_CLOSURE_VIEW
 
 inherit
 	GUI_UTILITIES

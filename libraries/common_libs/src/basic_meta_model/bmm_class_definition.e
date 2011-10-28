@@ -97,7 +97,9 @@ feature -- Access
 	type_category: STRING
 			-- generate a type category of main target type from Type_cat_xx values
 		do
-			if is_abstract then
+			if is_primitive_type then
+				Result := Type_cat_primitive_class
+			elseif is_abstract then
 				Result := Type_cat_abstract_class
 			elseif has_type_substitutions then
 				Result := Type_cat_concrete_class_supertype

@@ -143,6 +143,7 @@ templates = <
 		["validity_tab_text"] = <"Validity">
 		["stat_info_tab_text"] = <"Statistics">
 
+		["closure_tab_text"] = <"Closure">
 		["properties_tab_text"] = <"Properties">
 		["ancestors_tab_text"] = <"Ancestors">
 		["descendants_tab_text"] = <"Descendants">
