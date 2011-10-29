@@ -1,8 +1,8 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Controller for CLASS_MAP_TOOL in docking structure."
-	keywords:    "ADL, archetype, class map, docking"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	description: "General model of a GUI tool whose data source is an BMM_CLASS_DEFINITION"
+	keywords:    "statistics, archteype"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
@@ -11,73 +11,41 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class GUI_CLASS_TOOL_CONTROLLER
+deferred class GUI_CLASS_TARGETTED_TOOL
 
 inherit
-	GUI_DOCKING_EDITOR_CONTROLLER
+	GUI_TOOL
+		rename
+			populate as gui_tool_populate
 		redefine
-			Editor_group_name, Editor_pixmap, tool_type
+			source
 		end
 
-	SHARED_APP_UI_RESOURCES
-		export
-			{NONE} all
-		end
+feature -- Access
 
-	SHARED_KNOWLEDGE_REPOSITORY
+	source: BMM_CLASS_DEFINITION
+			-- class definition to which this tool is targetted
 
-create
-	make
+feature -- Status Report
 
-feature -- Definitions
-
-	Editor_group_name: STRING = "class tool"
-
-	Editor_pixmap: EV_PIXMAP
-		once
-			Result := pixmaps ["class_concrete"]
-		end
-
-feature -- Initialisation
-
-	make (a_docking_manager: attached SD_DOCKING_MANAGER;
-			a_update_all_tools_rm_icons_setting_agent: like update_all_tools_rm_icons_setting_agent;
-			a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent)
-		do
-			make_docking (a_docking_manager)
-			update_all_tools_rm_icons_setting_agent := a_update_all_tools_rm_icons_setting_agent
-			select_class_agent := a_select_class_agent
-			select_class_in_new_tool_agent := a_select_class_in_new_tool_agent
-		end
+	differential_view: BOOLEAN
 
 feature -- Commands
 
-	create_new_tool
-		local
-			new_tool: like tool_type
+	populate (a_source: attached like source; differential_view_flag: BOOLEAN)
+			-- populate the control by creating it from scratch
+		require
+			can_populate (a_source)
 		do
-			create new_tool.make (update_all_tools_rm_icons_setting_agent, select_class_agent, select_class_in_new_tool_agent)
-			add_new_tool (new_tool)
-		end
-
-	populate_active_tool (a_class_def: BMM_CLASS_DEFINITION)
-			-- Populate content from visual controls.
-		do
-			if not has_tools then
-				create_new_tool
-			end
-			active_tool.populate (a_class_def, True)
-			populate_active_tool_pane (a_class_def.name, a_class_def.name.substring (1, a_class_def.name.count.min (Tab_title_width)),
-				pixmaps [a_class_def.type_category])
+			differential_view := differential_view_flag
+			gui_tool_populate (a_source)
 		end
 
 feature {NONE} -- Implementation
 
-	tool_type: GUI_CLASS_TOOL
-
-	update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]
-
-	select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
+	do_populate
+		deferred
+		end
 
 end
 
@@ -96,7 +64,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is gui_class_map_tool_controller.e
+--| The Original Code is gui_archetype_targetted_tool.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2011

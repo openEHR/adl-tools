@@ -14,10 +14,7 @@ note
 class GUI_CLASS_TOOL
 
 inherit
-	GUI_TOOL
-		redefine
-			source
-		end
+	GUI_CLASS_TARGETTED_TOOL
 
 	SHARED_APP_UI_RESOURCES
 		export
@@ -44,6 +41,7 @@ feature -- Initialisation
 			-- create widgets
 			create ev_root_container
 			ev_root_container.set_data (Current)
+
 			create ev_action_bar
 			create ev_class_id
 			create ev_view_label
@@ -52,9 +50,10 @@ feature -- Initialisation
 			create ev_flat_view_button
 			create ev_notebook
 
-			create closure_view.make (a_update_all_tools_rm_icons_setting_agent, a_select_class_agent, a_select_class_in_new_tool_agent)
+			create properties_view.make (a_select_class_agent, a_select_class_in_new_tool_agent)
 			create ancestors_view.make (a_select_class_agent, a_select_class_in_new_tool_agent)
 			create descendants_view.make (a_select_class_agent, a_select_class_in_new_tool_agent)
+			create closure_view.make (a_update_all_tools_rm_icons_setting_agent, a_select_class_agent, a_select_class_in_new_tool_agent)
 
 			-- connect widgets
 			ev_root_container.extend (ev_action_bar)
@@ -67,9 +66,10 @@ feature -- Initialisation
 			ev_view_tool_bar.extend (ev_flat_view_button)
 
 			-- connect widgets: sub-tools
-			ev_notebook.extend (closure_view.ev_root_container)
+			ev_notebook.extend (properties_view.ev_root_container)
 			ev_notebook.extend (ancestors_view.ev_root_container)
 			ev_notebook.extend (descendants_view.ev_root_container)
+			ev_notebook.extend (closure_view.ev_root_container)
 
 			-- visual characteristics
 			ev_root_container.disable_item_expand (ev_action_bar)
@@ -85,6 +85,9 @@ feature -- Initialisation
 			ev_flat_view_button.set_tooltip (create_message_content ("Set flat archetype view", Void))
 
 			-- visual characteristics: notebook
+			ev_notebook.set_item_text (properties_view.ev_root_container, create_message_content ("properties_tab_text", Void))
+			ev_notebook.item_tab (properties_view.ev_root_container).set_pixmap (pixmaps ["properties"])
+
 			ev_notebook.set_item_text (closure_view.ev_root_container, create_message_content ("closure_tab_text", Void))
 			ev_notebook.item_tab (closure_view.ev_root_container).set_pixmap (pixmaps ["closure"])
 
@@ -106,11 +109,7 @@ feature -- Access
 
 	ev_root_container: EV_VERTICAL_BOX
 
-	source: BMM_CLASS_DEFINITION
-
 feature -- Status Report
-
-	differential_view: BOOLEAN
 
 	is_expanded: BOOLEAN
 			-- True if last whole tree operation was expand
@@ -172,16 +171,21 @@ feature {NONE} -- Implementation
 		do
  			ev_class_id.remove_text
  			closure_view.clear
+ 			properties_view.clear
+ 			descendants_view.clear
  			ancestors_view.clear
 		end
 
 	do_populate
 		do
 			ev_class_id.set_text (source.globally_qualified_path)
+			properties_view.populate (source, differential_view)
 			closure_view.populate (source, differential_view)
-			ancestors_view.populate (source)
-			descendants_view.populate (source)
+			ancestors_view.populate (source, differential_view)
+			descendants_view.populate (source, differential_view)
 		end
+
+	properties_view: GUI_CLASS_TOOL_PROPERTY_VIEW
 
 	closure_view: GUI_CLASS_TOOL_CLOSURE_VIEW
 

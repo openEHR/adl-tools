@@ -143,6 +143,11 @@ templates = <
 		["validity_tab_text"] = <"Validity">
 		["stat_info_tab_text"] = <"Statistics">
 
+		["show_adl_serialisation_tooltip"] = <"Show ADL $1 serialisation">
+		["show_dadl_serialisation_tooltip"] = <"Show dADL $1 serialisation">
+		["show_xml_serialisation_tooltip"] = <"Show XML $1 serialisation">
+
+		-- GUI_CLASS_TOOL
 		["closure_tab_text"] = <"Closure">
 		["properties_tab_text"] = <"Properties">
 		["ancestors_tab_text"] = <"Ancestors">
@@ -150,9 +155,9 @@ templates = <
 
 		["serialise_frame_text"] = <"Output Format">
 
-		["show_adl_serialisation_tooltip"] = <"Show ADL $1 serialisation">
-		["show_dadl_serialisation_tooltip"] = <"Show dADL $1 serialisation">
-		["show_xml_serialisation_tooltip"] = <"Show XML $1 serialisation">
+		["property_grid_declared_in_col_title"] = <"Declared in">
+		["property_grid_property_col_title"] = <"Property">
+		["property_grid_property_type_col_title"] = <"Type">
 
 		-- GUI_DESCRIPTION_CONTROL
 		["administrative_tab_text"] = <"Administration">

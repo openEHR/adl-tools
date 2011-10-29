@@ -14,6 +14,8 @@ note
 class GUI_CLASS_TOOL_CLOSURE_VIEW
 
 inherit
+	GUI_CLASS_TARGETTED_TOOL
+
 	GUI_UTILITIES
 		export
 			{NONE} all
@@ -59,6 +61,8 @@ feature -- Initialisation
 
 			-- create widgets
 			create ev_root_container
+			ev_root_container.set_data (Current)
+
 			create ev_property_tree
 			create ev_view_controls_vbox
 			create ev_expand_button
@@ -135,8 +139,6 @@ feature -- Access
 
 feature -- Status Report
 
-	differential_view: BOOLEAN
-
 	is_expanded: BOOLEAN
 			-- True if last whole tree operation was expand
 
@@ -144,28 +146,28 @@ feature -- Events
 
 	on_shrink_tree_one_level
 		do
-			if attached class_def then
+			if is_populated then
 				shrink_one_level
 			end
 		end
 
 	on_expand_tree_one_level
 		do
-			if attached class_def then
+			if is_populated then
 				expand_one_level
 			end
 		end
 
 	on_toggle_expand_tree
 		do
-			if attached class_def then
+			if is_populated then
 				toggle_expand_tree
 			end
 		end
 
 	on_ev_use_rm_icons_cb_selected
 		do
-			if attached class_def then
+			if is_populated then
 				set_use_rm_pixmaps (ev_use_rm_icons_cb.is_selected)
 				refresh
 
@@ -179,7 +181,7 @@ feature -- Events
 	update_rm_icons_cb
 			-- update and repopulate if this setting was changed elsewhere in the tool
 		do
-			if attached class_def and use_rm_pixmaps /= ev_use_rm_icons_cb.is_selected then
+			if is_populated and use_rm_pixmaps /= ev_use_rm_icons_cb.is_selected then
 				if use_rm_pixmaps then
 					ev_use_rm_icons_cb.enable_select
 				else
@@ -191,26 +193,29 @@ feature -- Events
 
 feature -- Commands
 
-	clear
+	refresh
+		do
+			do_with_wait_cursor (ev_root_container, agent ev_property_tree.recursive_do_all (agent refresh_node))
+		end
+
+feature {NONE} -- Implementation
+
+	do_clear
 		do
  			ev_closure_depth_spin_button.set_value (Default_closure_depth)
  			ev_property_tree.wipe_out
 		end
 
-	populate (a_class_def: attached BMM_CLASS_DEFINITION; differential_view_flag: BOOLEAN)
+	do_populate
 		do
-			class_def := a_class_def
-			differential_view := differential_view_flag
-
-			ev_property_tree.wipe_out
  			create ev_tree_item_stack.make (0)
 
 			-- for use in icon switching
- 			model_publisher := a_class_def.bmm_schema.rm_publisher
+ 			model_publisher := source.bmm_schema.rm_publisher
 
  			-- populate the tree
 			populate_root_node
-			class_def.do_supplier_closure (not differential_view, ev_closure_depth_spin_button.value-1,
+			source.do_supplier_closure (not differential_view, ev_closure_depth_spin_button.value-1,
 					agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 
 			-- now collapse the tree, and then expand out just the top node
@@ -219,18 +224,6 @@ feature -- Commands
 				ev_property_tree.first.expand
 			end
 		end
-
-	repopulate
-		do
-			populate (class_def, differential_view)
-		end
-
-	refresh
-		do
-			do_with_wait_cursor (ev_root_container, agent ev_property_tree.recursive_do_all (agent refresh_node))
-		end
-
-feature {NONE} -- Implementation
 
 	ev_property_tree: EV_TREE
 
@@ -250,8 +243,6 @@ feature {NONE} -- Implementation
 			-- if this is set, it is an agent that takes one argument of a routine
 			-- to execute on all other editors, to sync them to a change in this current one
 
-	class_def: BMM_CLASS_DEFINITION
-
 	model_publisher: STRING
 			-- name of publisher, e.g. 'openehr', which is the key to RM-specific icons
 
@@ -268,12 +259,12 @@ feature {NONE} -- Implementation
 			a_ti: EV_TREE_ITEM
 		do
 			create a_ti
-			a_ti.set_text (class_def.name)
-			a_ti.set_data (class_def)
-			if use_rm_pixmaps and then rm_pixmaps.has (model_publisher) and then rm_pixmaps.item (model_publisher).has (class_def.name) then
-				a_ti.set_pixmap (rm_pixmaps.item (model_publisher).item (class_def.name))
+			a_ti.set_text (source.name)
+			a_ti.set_data (source)
+			if use_rm_pixmaps and then rm_pixmaps.has (model_publisher) and then rm_pixmaps.item (model_publisher).has (source.name) then
+				a_ti.set_pixmap (rm_pixmaps.item (model_publisher).item (source.name))
 			else
-				a_ti.set_pixmap (pixmaps [class_def.type_category])
+				a_ti.set_pixmap (pixmaps [source.type_category])
 			end
 			ev_property_tree.extend (a_ti)
 			ev_tree_item_stack.extend (a_ti)
@@ -474,7 +465,7 @@ feature {NONE} -- Implementation
 			create chg_sub_menu.make_with_text ("Convert this node to subtype")
 			from a_substitutions.start until a_substitutions.off loop
 				create an_mi.make_with_text_and_action (a_substitutions.item, agent rebuild_from_interior_node (a_substitutions.item, a_ti, True))
-				if class_def.bmm_schema.class_definition (a_substitutions.item).is_abstract then
+				if source.bmm_schema.class_definition (a_substitutions.item).is_abstract then
 					an_mi.set_pixmap (pixmaps ["class_abstract"])
 				else
 					an_mi.set_pixmap (pixmaps ["class_concrete"])
@@ -490,7 +481,7 @@ feature {NONE} -- Implementation
 				create chg_sub_menu.make_with_text ("Add new subtype node")
 				from a_substitutions.start until a_substitutions.off loop
 					create an_mi.make_with_text_and_action (a_substitutions.item, agent rebuild_from_interior_node (a_substitutions.item, a_ti, False))
-					if class_def.bmm_schema.class_definition (a_substitutions.item).is_abstract then
+					if source.bmm_schema.class_definition (a_substitutions.item).is_abstract then
 						an_mi.set_pixmap (pixmaps ["class_abstract"])
 					else
 						an_mi.set_pixmap (pixmaps ["class_concrete"])
@@ -525,7 +516,7 @@ feature {NONE} -- Implementation
 	 	 		target_ti.pointer_button_press_actions.force_extend (agent class_node_handler (target_ti, ?, ?, ?))
 			end
 			ev_tree_item_stack.extend (target_ti)
-			bmm_class_def := class_def.bmm_schema.class_definition (a_class_name)
+			bmm_class_def := source.bmm_schema.class_definition (a_class_name)
 			closure_depth := 1
 			set_class_node_details (target_ti, bmm_class_def, a_class_name, True)
 			if attached {EV_TREE_ITEM} target_ti.parent as a_parent_ti then

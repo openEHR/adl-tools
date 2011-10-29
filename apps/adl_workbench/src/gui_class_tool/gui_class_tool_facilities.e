@@ -31,12 +31,12 @@ feature {NONE} -- Implementation
 
 	select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
 
-	class_node_handler (eti: EV_TREE_ITEM; x,y, button: INTEGER)
+	class_node_handler (eti: EV_SELECTABLE; x,y, button: INTEGER)
 			-- creates the context menu for a right click action for class node
 		deferred
 		end
 
-	add_class_context_menu (menu: EV_MENU; ev_ti: EV_TREE_ITEM)
+	add_class_context_menu (menu: EV_MENU; ev_ti: EV_SELECTABLE)
 			-- dynamically initializes the context menu for this tree
 		local
 			an_mi: EV_MENU_ITEM
@@ -49,7 +49,7 @@ feature {NONE} -- Implementation
 			menu.extend (an_mi)
 		end
 
-	display_context_selected_class_in_active_tool (ev_ti: EV_TREE_ITEM)
+	display_context_selected_class_in_active_tool (ev_ti: EV_SELECTABLE)
 		do
 			if not ev_ti.is_selected then
 				ev_ti.enable_select
@@ -59,7 +59,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	display_context_selected_class_in_new_tool (ev_ti: EV_TREE_ITEM)
+	display_context_selected_class_in_new_tool (ev_ti: EV_SELECTABLE)
 		do
 			if not ev_ti.is_selected then
 				ev_ti.enable_select

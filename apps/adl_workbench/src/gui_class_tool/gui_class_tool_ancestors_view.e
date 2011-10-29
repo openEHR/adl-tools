@@ -14,6 +14,8 @@ note
 class GUI_CLASS_TOOL_ANCESTORS_VIEW
 
 inherit
+	GUI_CLASS_TARGETTED_TOOL
+
 	GUI_CLASS_TOOL_FACILITIES
 		export
 			{NONE} all
@@ -36,13 +38,16 @@ feature -- Initialisation
 
 	make  (a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent)
 		do
-			select_class_agent := a_select_class_agent
-			select_class_in_new_tool_agent := a_select_class_in_new_tool_agent
+			make_class_tool (a_select_class_agent, a_select_class_in_new_tool_agent)
 
 			-- create widgets
 			create ev_root_container
+			ev_root_container.set_data (Current)
+
+			create ev_tree
 
 			-- connect widgets
+			ev_root_container.extend (ev_tree)
 
 			-- visual characteristics
 
@@ -51,39 +56,31 @@ feature -- Initialisation
 
 feature -- Access
 
-	ev_root_container: EV_TREE
+	ev_root_container: EV_CELL
 
-feature -- Events
+feature {NONE} -- Implementation
 
-feature -- Commands
+	ev_tree: EV_TREE
 
-	clear
+	do_clear
 		do
- 			ev_root_container.wipe_out
+ 			ev_tree.wipe_out
 		end
 
-	populate (a_class_def: attached BMM_CLASS_DEFINITION)
+	do_populate
 			-- populate the ADL tree control by creating it from scratch
    		local
 			a_ti: EV_TREE_ITEM
 		do
-			clear
-			class_def := a_class_def
-
- 			-- populate the tree
  			create ev_tree_item_stack.make (0)
- 			a_ti := create_node (class_def)
- 			ev_root_container.extend (a_ti)
+ 			a_ti := create_node (source)
+ 			ev_tree.extend (a_ti)
 			ev_tree_item_stack.extend (a_ti)
-			populate_ancestor_nodes (class_def)
-			ev_root_container.recursive_do_all (agent ev_tree_item_expand)
+			populate_ancestor_nodes (source)
+			ev_tree.recursive_do_all (agent ev_tree_item_expand)
 		end
 
-feature {NONE} -- Implementation
-
 	ev_tree_item_stack: ARRAYED_STACK [EV_TREE_ITEM]
-
-	class_def: BMM_CLASS_DEFINITION
 
    	create_node (a_class_def: attached BMM_CLASS_DEFINITION): EV_TREE_ITEM
 			-- create a node for `a_class_def'
@@ -118,7 +115,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	class_node_handler (eti: EV_TREE_ITEM; x,y, button: INTEGER)
+	class_node_handler (eti: EV_SELECTABLE; x,y, button: INTEGER)
 			-- creates the context menu for a right click action for class node
 		local
 			menu: EV_MENU

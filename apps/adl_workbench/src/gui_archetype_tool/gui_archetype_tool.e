@@ -361,8 +361,19 @@ feature {NONE} -- Implementation
 			ev_adl_version_text.remove_text
 			ev_language_combo.wipe_out
 			ev_language_combo.remove_text
-			clear_content
- 		end
+
+			-- Wipe out content from subordinate controls.
+			description_controls.clear
+			node_map_control.clear
+			path_map_control.clear
+			ontology_controls.clear
+			slot_map_control.clear
+			annotations_control.clear
+			serialisation_control.clear
+			validity_report_control.clear
+			statistical_information_control.clear
+		end
+
 
 	do_populate
 		do
@@ -437,20 +448,6 @@ feature {NONE} -- Implementation
 	select_archetype_from_gui_data: PROCEDURE [ANY, TUPLE [EV_ANY]]
 			-- agent provided by upper level of GUI for doing something
 			-- when an archetype in this tool is selected
-
-	clear_content
-			-- Wipe out content from visual controls.
-		do
-			description_controls.clear
-			node_map_control.clear
-			path_map_control.clear
-			ontology_controls.clear
-			slot_map_control.clear
-			annotations_control.clear
-			serialisation_control.clear
-			validity_report_control.clear
-			statistical_information_control.clear
-		end
 
 	populate_languages
 			-- Populate `language_combo' in the toolbar for currently selected archetype
