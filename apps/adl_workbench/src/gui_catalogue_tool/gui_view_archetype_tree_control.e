@@ -110,6 +110,7 @@ feature {NONE} -- Implementation
 			if not aci.is_root and (aci.subtree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
 								(attached {ARCH_CAT_ARCHETYPE} aci as aca and then artefact_types.has(aca.artefact_type))) then
 				create ev_node
+	 			ev_node.set_data (aci)
 
  				ev_node_descriptor_map.put (ev_node, aci.qualified_name)
 
@@ -119,12 +120,10 @@ feature {NONE} -- Implementation
 				if attached {ARCH_CAT_ARCHETYPE} aci as aca then -- archetype / template node
 		 			ev_node.pointer_button_press_actions.force_extend (agent archetype_node_handler (ev_node, ?, ?, ?))
 		 			ev_node.select_actions.force_extend (agent select_archetype_with_delay (aca))
-		 			ev_node.set_data (aci)
 
 	 			elseif attached {ARCH_CAT_MODEL_NODE} aci as acmn and then acmn.is_class then -- it is a model node
 		 			ev_node.pointer_button_press_actions.force_extend (agent class_node_handler (ev_node, ?, ?, ?))
 		 			ev_node.select_actions.force_extend (agent select_class_with_delay (acmn))
-		 			ev_node.set_data (acmn)
 				end
 
 				if ev_tree_item_stack.is_empty then

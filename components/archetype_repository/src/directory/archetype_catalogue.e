@@ -353,13 +353,13 @@ feature -- Traversal
 		end
 
 	do_archetypes (aci: ARCH_CAT_ITEM; action: attached PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]])
-			-- On archetype `aci', execute `action', then recurse into its subnodes
+			-- Execute `action' on all archetypes found below `aci' in the tree
 		do
 			do_subtree (aci, agent do_if_archetype (?, action), Void)
 		end
 
 	do_all_archetypes (action: attached PROCEDURE [ANY, TUPLE [attached ARCH_CAT_ARCHETYPE]])
-			-- On all archetype nodes in tree, execute `action'
+			-- On all archetype nodes, execute `action'
 		do
 			do_subtree (item_tree, agent do_if_archetype (?, action), Void)
 		end
