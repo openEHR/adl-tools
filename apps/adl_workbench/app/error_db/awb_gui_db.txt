@@ -17,6 +17,7 @@ templates = <
 	["en"] = <
 		-- context (right-click) menus, common items
 		["display_in_active_tab"] = <"Display">
+		["retarget_to_this_class"] = <"Retarget to this class">
 		["display_in_new_tab"] = <"Display in new tab">
 		["show_class_in_rm"] = <"Show in RM explorer">
 		["edit_source"] = <"Edit source">

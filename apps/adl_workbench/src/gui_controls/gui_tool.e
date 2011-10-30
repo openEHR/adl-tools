@@ -51,10 +51,13 @@ feature -- Status Report
 feature -- Commands
 
 	clear
-			-- Wipe out content from visual controls and reset controls to reasoonable state
+			-- Wipe out content from visual controls and reset controls to reasonable state
 		do
-			last_populate_timestamp := Void
 			do_clear
+			last_populate_timestamp := Void
+			source := Void
+		ensure
+			not is_populated
 		end
 
 	populate (a_source: attached like source)
@@ -62,8 +65,8 @@ feature -- Commands
 		require
 			can_populate (a_source)
 		do
-			source := a_source
 			clear
+			source := a_source
 			do_populate
 			create last_populate_timestamp.make_now
 		end
