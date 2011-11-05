@@ -16,13 +16,27 @@ deferred class GUI_CATALOGUE_TARGETTED_TOOL
 inherit
 	GUI_TOOL
 		redefine
-			source
+			source, selection_history, selected_item
 		end
 
 feature -- Access
 
 	source: ARCHETYPE_CATALOGUE
 			-- archetype catalogue to which this tool is targetted
+
+	tool_artefact_id: STRING
+			-- a system-wide unique artefact id that can be used to find a tool in a GUI collection like
+			-- docked panes or similar
+		do
+			Result := "catalogue"
+		end
+
+	selection_history: ARCHETYPE_CATALOGUE_SELECTION_HISTORY
+
+	selected_item: ARCH_CAT_ITEM
+		do
+			Result := selection_history.selected_item
+		end
 
 end
 

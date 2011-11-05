@@ -37,6 +37,13 @@ feature -- Access
 			end
 		end
 
+	tool_artefact_id: STRING
+			-- a system-wide unique artefact id that can be used to find a tool in a GUI collection like
+			-- docked panes or similar
+		do
+			Result := source.id.as_string
+		end
+
 	selected_language: attached STRING
 
 feature -- Status Report

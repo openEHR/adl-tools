@@ -150,7 +150,6 @@ feature {NONE} -- Implementation
 			-- Note that the value type is assumed to have a sensible outpur from its 'out' function
 		local
 			ev_list_row: EV_MULTI_COLUMN_LIST_ROW
-			i: INTEGER
 			item_list: LIST [ANY]
 		do
 			if ht /= Void then
@@ -224,6 +223,17 @@ feature {NONE} -- Implementation
 			elseif split.minimum_split_position <= position and position <= split.maximum_split_position then
 				split.set_split_position (position)
 			end
+		end
+
+	proximate_ev_window (a_widget: EV_WIDGET): EV_WINDOW
+			-- find closest EV_WINDOW containing `a_widget'
+		local
+			csr: EV_WIDGET
+		do
+			from csr := a_widget.parent until not attached csr or else attached {EV_WINDOW} csr loop
+				csr := csr.parent
+			end
+			Result ?= csr
 		end
 
 end

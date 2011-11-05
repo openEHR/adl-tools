@@ -46,8 +46,6 @@ inherit
 			{NONE} all
 		end
 
-	SELECTION_HISTORY [ARCH_CAT_ITEM]
-
 	SHARED_REFERENCE_MODEL_ACCESS
 		export
 			{NONE} all
@@ -108,25 +106,6 @@ feature -- Access
 			-- For class nodes, this will be model_publisher-model_name-class_name, e.g. OPENEHR-DEMOGRAPHIC-PARTY.
 			-- For archetype nodes, this will be the archetype id.
 
-	selected_archetype: ARCH_CAT_ARCHETYPE
-			-- The archetype at `selected_item'.
-		do
-			Result ?= selected_item
-		ensure
-			consistent_with_history: attached Result implies Result = selected_item
-		end
-
-	selected_class: ARCH_CAT_MODEL_NODE
-			-- The model node at `selected_item'.
-		do
-			Result ?= selected_item
-			if attached Result and not Result.is_class then
-				Result := Void
-			end
-		ensure
-			consistent_with_history: attached Result implies Result = selected_item
-		end
-
 	matching_ids (a_regex: attached STRING; an_rm_type, an_rm_package: STRING): attached ARRAYED_SET[STRING]
 			-- generate list of archetype ids that match the regex pattern and optional rm_type. If rm_type is supplied,
 			-- we assume that the regex itself does not contain an rm type
@@ -173,34 +152,22 @@ feature -- Access
 
 feature -- Status Report
 
-	has_selected_archetype: BOOLEAN
-			-- Has an archetype been selected?
-		do
-			Result := attached selected_archetype
-		end
-
-	has_validated_selected_archetype: BOOLEAN
-			-- Has a valid archetype been selected?
-		do
-			Result := attached selected_archetype and then selected_archetype.is_valid
-		end
-
-	has_selected_class: BOOLEAN
-			-- Has a class been selected?
-		do
-			Result := attached selected_class
-		end
-
 	adhoc_path_valid (a_full_path: STRING): BOOLEAN
 			-- True if path is valid in adhoc repository
 		do
 			Result := source_repositories.adhoc_source_repository.is_valid_path (a_full_path)
 		end
 
-	item_selectable (an_item_id: STRING): BOOLEAN
-			-- True if item can be selected
+	has_item (an_item: ARCH_CAT_ITEM): BOOLEAN
+			-- True if `an_item' in catalogue
 		do
-			Result := archetype_index.has (an_item_id)
+			Result := item_index.has_item (an_item)
+		end
+
+	has_item_with_id (an_id: STRING): BOOLEAN
+			-- True if `an_id' exists in catalogue
+		do
+			Result := item_index.has (an_id)
 		end
 
 feature -- Commands
@@ -208,7 +175,6 @@ feature -- Commands
 	clear
 			-- reduce to initial state
 		do
-			clear_selection_history
 			create archetype_index.make (0)
 			create item_index.make (0)
 			item_tree := Void
@@ -308,7 +274,7 @@ feature -- Modification
 						item_index.item (parent_key).put_child(aca)
 						item_index.force (aca, child_key)
 						archetype_index.force (aca, child_key)
-						set_selected_item (source_repositories.adhoc_source_repository.item (full_path))
+						last_adhoc_item := aca
 					else
 						post_error (Current, "add_adhoc_item", "arch_dir_dup_archetype", <<full_path>>)
 					end
@@ -321,6 +287,9 @@ feature -- Modification
 				post_error (Current, "add_adhoc_item", "invalid_filename_e1", <<full_path>>)
 			end
 		end
+
+	last_adhoc_item: ARCH_CAT_ARCHETYPE
+			-- adhoc archetype added by last call to `add_adhoc_item'
 
 	update_archetype_id (aca: attached ARCH_CAT_ARCHETYPE)
 			-- move `ara' in tree according to its current and old ids
@@ -622,11 +591,11 @@ feature {NONE} -- Implementation
 			create Result.make_empty
 		end
 
-	selectable_item_by_id (an_item_id: STRING): ARCH_CAT_ITEM
-			-- obtain a selectable item via an id
-		do
-			Result := archetype_index.item (an_item_id)
-		end
+--	selectable_item_by_id (an_item_id: STRING): ARCH_CAT_ITEM
+--			-- obtain a selectable item via an id
+--		do
+--			Result := archetype_index.item (an_item_id)
+--		end
 
 	gather_statistics (aca: attached ARCH_CAT_ARCHETYPE)
 			-- Update statistics counters from `aca'

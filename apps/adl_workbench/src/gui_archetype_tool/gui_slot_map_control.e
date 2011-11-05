@@ -25,11 +25,6 @@ inherit
 			{ANY} has_current_profile
 		end
 
-	GUI_DEFINITIONS
-		export
-			{NONE} all
-		end
-
 	STRING_UTILITIES
 		export
 			{NONE} all

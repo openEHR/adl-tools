@@ -1,27 +1,73 @@
 note
-	description: "Summary description for {GUI_ARCHETYPE_TARGETTED_TOOL}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	component:   "openEHR Archetype Project"
+	description: "Specialised form of SELECTION_HISTORY for ARCHETYPE_CATALOGUE"
+	keywords:    "ADL"
+	author:      "Thomas Beale"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
+	license:     "See notice at bottom of class"
 
-deferred class GUI_RM_TARGETTED_TOOL
+	file:        "$URL$"
+	revision:    "$LastChangedRevision$"
+	last_change: "$LastChangedDate$"
+
+
+class ARCHETYPE_CATALOGUE_SELECTION_HISTORY
 
 inherit
-	GUI_TOOL
+	SELECTION_HISTORY
 		redefine
-			source
+			selected_item
 		end
+
+create
+	make
 
 feature -- Access
 
-	source: BMM_SCHEMA
-			-- archetype to which this tool is targetted
-
-	tool_artefact_id: STRING
-			-- a system-wide unique artefact id that can be used to find a tool in a GUI collection like
-			-- docked panes or similar
+	selected_item: ARCH_CAT_ITEM
+			-- The archetype at `selected_item'.
 		do
-			Result := source.schema_id
+			Result ?= precursor
+		end
+
+	selected_archetype: ARCH_CAT_ARCHETYPE
+			-- The archetype at `selected_item'.
+		do
+			Result ?= selected_item
+		ensure
+			consistent_with_history: attached Result implies Result = selected_item
+		end
+
+	selected_class: ARCH_CAT_MODEL_NODE
+			-- The model node at `selected_item'.
+		do
+			Result ?= selected_item
+			if attached Result and not Result.is_class then
+				Result := Void
+			end
+		ensure
+			consistent_with_history: attached Result implies Result = selected_item
+		end
+
+feature -- Status Report
+
+	has_selected_archetype: BOOLEAN
+			-- Has an archetype been selected?
+		do
+			Result := attached selected_archetype
+		end
+
+	has_validated_selected_archetype: BOOLEAN
+			-- Has a valid archetype been selected?
+		do
+			Result := attached selected_archetype and then selected_archetype.is_valid
+		end
+
+	has_selected_class: BOOLEAN
+			-- Has a class been selected?
+		do
+			Result := attached selected_class
 		end
 
 end
@@ -41,10 +87,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is gui_archetype_targetted_tool.e.
+--| The Original Code is archetype_directory.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2011
+--| Portions created by the Initial Developer are Copyright (C) 2003-2008
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

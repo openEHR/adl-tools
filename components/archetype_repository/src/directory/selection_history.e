@@ -15,45 +15,48 @@ note
 	last_change: "$LastChangedDate$"
 
 
-deferred class SELECTION_HISTORY [G]
+class SELECTION_HISTORY
+
+create
+	make
 
 feature {NONE} -- Initialisation
 
-	make_selection_history
+	make
 		do
-			clear_selection_history
+			clear
 		end
 
 feature -- Access
 
-	selected_item: G
+	selected_item: IDENTIFIED_TOOL_ARTEFACT
 			-- currently selected item from some kind of repository of items
 		do
-			if not selection_history.off then
-				Result := selection_history.item
+			if not history.off then
+				Result := history.item
 			end
 		ensure
-			consistent_with_history: attached Result implies Result = selection_history.item
+			consistent_with_history: attached Result implies Result = history.item
 		end
 
-	recently_selected_items (n: INTEGER): attached ARRAYED_LIST [G]
-			-- The `n' most recently used items from `selection_history', excluding duplicates.
+	recently_selected_items (n: INTEGER): attached ARRAYED_LIST [IDENTIFIED_TOOL_ARTEFACT]
+			-- The `n' most recently used items from `history', excluding duplicates.
 		require
 			positive: n > 0
 		local
-			cursor: LINKED_LIST_CURSOR [G]
+			cursor: LINKED_LIST_CURSOR [IDENTIFIED_TOOL_ARTEFACT]
 		do
 			create Result.make (n)
-			cursor := selection_history.cursor
+			cursor := history.cursor
 
-			from selection_history.finish until selection_history.off or Result.full loop
-				if not Result.has (selection_history.item) then
-					Result.extend (selection_history.item)
+			from history.finish until history.off or Result.full loop
+				if not Result.has (history.item) then
+					Result.extend (history.item)
 				end
-				selection_history.back
+				history.back
 			end
-			
-			selection_history.go_to (cursor)
+
+			history.go_to (cursor)
 		ensure
 			not_too_long: Result.count <= n
 		end
@@ -66,88 +69,82 @@ feature -- Status Report
 			Result := attached selected_item
 		end
 
-	selection_history_has_previous: BOOLEAN
-			-- Can `selection_history' go back?
+	has_previous: BOOLEAN
+			-- Can `history' go back?
 		do
-			Result := not selection_history.off and not selection_history.isfirst
+			Result := not history.off and not history.isfirst
 		end
 
-	selection_history_has_next: BOOLEAN
-			-- Can `selection_history' go forth?
+	has_next: BOOLEAN
+			-- Can `history' go forth?
 		do
-			Result := not selection_history.off and not selection_history.islast
-		end
-
-	item_selectable (an_item_id: STRING): BOOLEAN
-			-- True if item can be selected
-		deferred
+			Result := not history.off and not history.islast
 		end
 
 feature -- Commands
 
-	clear_selection_history
+	clear
 			-- reduce to initial state
 		do
-			create selection_history.make
+			create history.make
 		end
 
 feature -- Modification
 
-	set_selected_item (an_item: G)
-			-- Append `an_item' to `selection_history' and select it.
+	set_selected_item (an_item: IDENTIFIED_TOOL_ARTEFACT)
+			-- Append `an_item' to `history' and select it.
 		do
 			if selected_item /= an_item then
-				if selection_history.is_empty or else selection_history.last /= an_item then
-					selection_history.extend (an_item)
+				if history.is_empty or else history.last /= an_item then
+					history.extend (an_item)
 				end
-				selection_history.finish
+				history.finish
 			end
 		ensure
 			selected_item_set: selected_item = an_item
-			history_is_last_if_value_different: old selected_item /= an_item implies selection_history.islast
-			history_extended_if_value_different_and_wasnt_last: selection_history.count = old
-				(selection_history.count + (selected_item /= an_item and (selection_history.is_empty or else selection_history.last /= an_item)).to_integer)
+			history_is_last_if_value_different: old selected_item /= an_item implies history.islast
+			history_extended_if_value_different_and_wasnt_last: history.count = old
+				(history.count + (selected_item /= an_item and (history.is_empty or else history.last /= an_item)).to_integer)
 		end
 
-	set_selected_item_from_id (an_item_id: STRING)
-			-- Append `an_item' to `selection_history' and select it.
-		require
-			Id_valid: item_selectable (an_item_id)
+	go_to (an_item_id: STRING)
+			-- if an item with id `an_item_id' exists in the history, go to it
+		local
+			csr: LINKED_LIST_CURSOR [IDENTIFIED_TOOL_ARTEFACT]
 		do
-			set_selected_item (selectable_item_by_id (an_item_id))
+			csr := history.cursor
+			from history.start until history.off or history.item.global_artefact_identifier.same_string (an_item_id) loop
+				history.forth
+			end
+			if history.off then
+				history.go_to (csr)
+			end
 		end
 
-	selection_history_back
-			-- Select the previous archetype or folder in `selection_history'.
+	back
+			-- Select the previous archetype or folder in `history'.
 		require
-			history_can_go_back: selection_history_has_previous
+			history_can_go_back: has_previous
 		do
-			selection_history.back
+			history.back
 		ensure
-			history_isnt_last: selection_history_has_next
+			history_isnt_last: has_next
 		end
 
-	selection_history_forth
-			-- Select the next archetype or folder in `selection_history'.
+	forth
+			-- Select the next archetype or folder in `history'.
 		require
-			history_can_go_forth: selection_history_has_next
+			history_can_go_forth: has_next
 		do
-			selection_history.forth
+			history.forth
 		ensure
-			history_isnt_first: selection_history_has_previous
+			history_isnt_first: has_previous
 		end
 
 feature {NONE} -- Implementation
 
-	selection_history: attached LINKED_LIST [G]
+	history: attached LINKED_LIST [IDENTIFIED_TOOL_ARTEFACT]
 			-- The history of user selection of items from oldest to most recent
-
-	selectable_item_by_id (an_item_id: STRING): G
-			-- obtain a selectable item via an id
-		require
-			Id_valid: item_selectable (an_item_id)
-		deferred
-		end
 
 end
 

@@ -20,6 +20,11 @@ class BMM_CLASS_DEFINITION
 inherit
 	BMM_TYPE_SPECIFIER
 
+	IDENTIFIED_TOOL_ARTEFACT
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -291,6 +296,19 @@ feature -- Access
 	type_substitutions: ARRAYED_SET [STRING]
 		do
 			Result := all_descendants
+		end
+
+	global_artefact_identifier: attached STRING
+			-- tool-wide unique id for this artefact
+		do
+			Result := globally_qualified_path
+		end
+
+	global_artefact_category: attached STRING
+			-- tool-wide category for this artefact, useful for indexing visual type indeicators
+			-- like pixmap etc
+		do
+			Result := type_category
 		end
 
 feature -- Status Report

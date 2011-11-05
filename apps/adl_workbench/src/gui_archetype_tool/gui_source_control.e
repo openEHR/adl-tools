@@ -17,11 +17,6 @@ class
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 
-	GUI_DEFINITIONS
-		export
-			{NONE} all
-		end
-
 	STRING_UTILITIES
 		export
 			{NONE} all

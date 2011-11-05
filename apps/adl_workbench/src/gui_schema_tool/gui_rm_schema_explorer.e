@@ -20,11 +20,6 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_APP_UI_RESOURCES
-		export
-			{NONE} all
-		end
-
 	BMM_DEFINITIONS
 		export
 			{NONE} all
@@ -64,11 +59,19 @@ feature {NONE} -- Initialisation
 
 			-- events
 --			ev_tree.focus_in_actions.extend (agent tree_item_select)
+			enable_selection_history
 		end
 
 feature -- Access
 
 	source: REFERENCE_MODEL_ACCESS
+
+	tool_artefact_id: STRING
+			-- a system-wide unique artefact id that can be used to find a tool in a GUI collection like
+			-- docked panes or similar
+		do
+			Result := "RM schemas"
+		end
 
 	ev_root_container: EV_VERTICAL_BOX
 
@@ -107,7 +110,7 @@ feature -- Status Report
 
 feature -- Commands
 
-	select_item (id: attached STRING)
+	select_item_by_id (id: attached STRING)
 			-- show class in RM explorer and display it in a class tool
 		do
 			if ev_node_map.has (id) and ev_tree.is_displayed then

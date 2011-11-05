@@ -13,54 +13,6 @@ note
 
 deferred class GUI_CLASS_TOOL_FACILITIES
 
-inherit
-	SHARED_APP_UI_RESOURCES
-		export
-			{NONE} all
-		end
-
-feature -- Initialisation
-
-	make_class_tool (a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent)
-		do
-			select_class_agent := a_select_class_agent
-			select_class_in_new_tool_agent := a_select_class_in_new_tool_agent
-		end
-
-feature {NONE} -- Implementation
-
-	select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
-
-	class_node_handler (eti: EV_SELECTABLE; x,y, button: INTEGER)
-			-- creates the context menu for a right click action for class node
-		deferred
-		end
-
-	add_class_context_menu (menu: EV_MENU; ev_ti: EV_SELECTABLE)
-			-- dynamically initializes the context menu for this tree
-		local
-			an_mi: EV_MENU_ITEM
-		do
-			if attached {BMM_CLASS_DEFINITION} ev_ti.data as a_class_def then
-				create an_mi.make_with_text_and_action (create_message_content ("retarget_to_this_class", Void), agent display_context_selected_class_in_active_tool (a_class_def))
-				an_mi.set_pixmap (pixmaps ["class_tool"])
-		    	menu.extend (an_mi)
-
-				create an_mi.make_with_text_and_action (create_message_content ("display_in_new_tab", Void), agent display_context_selected_class_in_new_tool (a_class_def))
-				an_mi.set_pixmap (pixmaps ["class_tool_new"])
-				menu.extend (an_mi)
-			end
-		end
-
-	display_context_selected_class_in_active_tool (a_class_def: BMM_CLASS_DEFINITION)
-		do
-			select_class_agent.call ([a_class_def])
-		end
-
-	display_context_selected_class_in_new_tool (a_class_def: BMM_CLASS_DEFINITION)
-		do
-			select_class_in_new_tool_agent.call ([a_class_def])
-		end
 
 end
 

@@ -15,16 +15,6 @@ note
 class GUI_STATISTICS_TOOL
 
 inherit
-	GUI_DEFINITIONS
-		export
-			{NONE} all
-		end
-
-	GUI_UTILITIES
-		export
-			{NONE} all
-		end
-
 	GUI_CATALOGUE_TARGETTED_TOOL
 
 create

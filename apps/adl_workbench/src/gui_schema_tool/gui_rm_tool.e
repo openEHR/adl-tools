@@ -14,15 +14,7 @@ note
 class GUI_RM_TOOL
 
 inherit
-	GUI_TOOL
-		redefine
-			source
-		end
-
-	GUI_DEFINITIONS
-		export
-			{NONE} all
-		end
+	GUI_RM_TARGETTED_TOOL
 
 	STRING_UTILITIES
 		export
@@ -87,8 +79,6 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
-	source: BMM_SCHEMA
-
 	ev_rm_id: EV_TEXT_FIELD
 
 	ev_root_container: EV_VERTICAL_BOX
@@ -106,8 +96,6 @@ feature -- Events
 				end
 			end
 		end
-
-feature -- Commands
 
 feature {NONE} -- Implementation
 

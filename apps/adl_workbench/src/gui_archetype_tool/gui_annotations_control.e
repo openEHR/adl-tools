@@ -19,16 +19,6 @@ inherit
 			can_populate, can_repopulate
 		end
 
-	GUI_UTILITIES
-		export
-			{NONE} all
-		end
-
-	SHARED_APP_UI_RESOURCES
-		export
-			{NONE} all
-		end
-
 create
 	make
 

@@ -59,20 +59,20 @@ feature -- Initialisation
 			Schema_set: bmm_schema = a_bmm_schema
 		end
 
-	make_class (a_model_name: attached STRING; a_class_desc: attached BMM_CLASS_DEFINITION)
-			-- create with package name and class def
+	make_class (an_rm_closure_name: attached STRING; a_class_desc: attached BMM_CLASS_DEFINITION)
+			-- create with RM closure package name and class def
 		require
-			a_model_valid: not a_model_name.is_empty and not a_model_name.has (Package_name_delimiter)
+			Rm_closure_valid: not an_rm_closure_name.is_empty and not an_rm_closure_name.has (Package_name_delimiter)
 		do
 			make
 			class_definition := a_class_desc
 			bmm_schema := class_definition.bmm_schema
-			qualified_name := bmm_schema.rm_publisher + section_separator.out + a_model_name + section_separator.out + class_definition.name
+			qualified_name := bmm_schema.rm_publisher + section_separator.out + an_rm_closure_name + section_separator.out + class_definition.name
 			qualified_key := qualified_name.as_upper
 			name := class_definition.name
 			group_name := class_definition.type_category
 		ensure
-			qualified_name_set: qualified_name.is_equal (bmm_schema.rm_publisher + section_separator.out + a_model_name + section_separator.out +  class_definition.name)
+			qualified_name_set: qualified_name.is_equal (bmm_schema.rm_publisher + section_separator.out + an_rm_closure_name + section_separator.out +  class_definition.name)
 			display_name_set: name = class_definition.name
 		end
 
@@ -94,6 +94,14 @@ feature -- Access
 
 	name: STRING
 			-- class_name
+
+	global_artefact_identifier: attached STRING
+			-- tool-wide unique id for this artefact
+		do
+			if is_class then
+				Result := class_definition.global_artefact_identifier
+			end
+		end
 
 feature -- Status Report
 

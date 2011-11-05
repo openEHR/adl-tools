@@ -16,6 +16,9 @@ class GUI_VIEW_TEMPLATE_TREE_CONTROL
 
 inherit
 	GUI_ARTEFACT_TREE_CONTROL
+		rename
+			make as make_tree_control
+		end
 
 	STRING_UTILITIES
 		export
@@ -27,17 +30,10 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_select_archetype_agent, an_edit_archetype_agent, a_select_archetype_in_new_tool_agent: like select_archetype_agent; a_focus_archetype_agent: like focus_archetype_agent)
-			-- Create controller for the tree representing archetype files found in `archetype_directory'.
+	make (an_edit_archetype_agent: like edit_archetype_agent; a_focus_archetype_agent: like focus_archetype_agent)
 		do
-			select_archetype_agent := a_select_archetype_agent
-			edit_archetype_agent := an_edit_archetype_agent
-			select_archetype_in_new_tool_agent := a_select_archetype_in_new_tool_agent
+			make_tree_control (an_edit_archetype_agent)
 			focus_archetype_agent := a_focus_archetype_agent
-
-			-- make UI
-			make_ui
-
 			artefact_types := <<{ARTEFACT_TYPE}.template>>
 		end
 
@@ -65,9 +61,8 @@ feature {NONE} -- Implementation
 
 	select_archetype_with_delay (aca: ARCH_CAT_ARCHETYPE)
 		do
-			focus_archetype_agent.call ([aca.qualified_name])
 			selected_archetype_node := aca
-			if source.selected_item /= aca then
+			if selection_history.selected_item /= aca then
 				delayed_select_archetype_agent.set_interval (300)
 			end
 		end
@@ -80,8 +75,9 @@ feature {NONE} -- Implementation
 				agent
 					do
 						delayed_select_archetype_agent.set_interval (0)
-						source.set_selected_item (selected_archetype_node)
-						select_archetype_agent.call ([])
+						focus_archetype_agent.call ([selected_archetype_node.global_artefact_identifier])
+						selection_history.set_selected_item (selected_archetype_node)
+						gui_agents.select_archetype_agent.call ([selected_archetype_node])
 						ev_tree_node_populate (selected_archetype_node)
 					end
 			)

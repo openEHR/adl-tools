@@ -15,15 +15,8 @@ class GUI_CLASS_TOOL
 
 inherit
 	GUI_CLASS_TARGETTED_TOOL
-
-	SHARED_APP_UI_RESOURCES
-		export
-			{NONE} all
-		end
-
-	GUI_UTILITIES
-		export
-			{NONE} all
+		redefine
+			go_to_selected_item
 		end
 
 	BMM_DEFINITIONS
@@ -36,7 +29,7 @@ create
 
 feature -- Initialisation
 
-	make (a_update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]; a_select_class_agent, a_select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]])
+	make
 		do
 			-- create widgets
 			create ev_root_container
@@ -50,10 +43,10 @@ feature -- Initialisation
 			create ev_flat_view_button
 			create ev_notebook
 
-			create properties_view.make (a_select_class_agent, a_select_class_in_new_tool_agent)
-			create ancestors_view.make (a_select_class_agent, a_select_class_in_new_tool_agent)
-			create descendants_view.make (a_select_class_agent, a_select_class_in_new_tool_agent)
-			create closure_view.make (a_update_all_tools_rm_icons_setting_agent, a_select_class_agent, a_select_class_in_new_tool_agent)
+			create properties_view.make
+			create ancestors_view.make
+			create descendants_view.make
+			create closure_view.make
 
 			-- connect widgets
 			ev_root_container.extend (ev_action_bar)
@@ -101,18 +94,20 @@ feature -- Initialisation
 			ev_differential_view_button.select_actions.extend (agent on_differential_view)
 			ev_flat_view_button.select_actions.extend (agent on_flat_view)
 
-			differential_view := True
-			ev_differential_view_button.enable_select
+			differential_view := False
+			ev_flat_view_button.enable_select
+
+			-- set up tool / sub-tool structures
+			add_sub_tool (properties_view)
+			add_sub_tool (ancestors_view)
+			add_sub_tool (descendants_view)
+			add_sub_tool (closure_view)
+			enable_selection_history
 		end
 
 feature -- Access
 
 	ev_root_container: EV_VERTICAL_BOX
-
-feature -- Status Report
-
-	is_expanded: BOOLEAN
-			-- True if last whole tree operation was expand
 
 feature -- Events
 
@@ -165,6 +160,13 @@ feature -- Commands
 			closure_view.update_rm_icons_cb
 		end
 
+	go_to_selected_item
+		do
+			if attached {BMM_CLASS_DEFINITION} selection_history.selected_item as class_def then
+				gui_agents.select_class_agent.call ([class_def])
+			end
+		end
+
 feature {NONE} -- Implementation
 
 	do_clear
@@ -206,6 +208,13 @@ feature {NONE} -- Implementation
 	ev_view_label: EV_LABEL
 
 	node_path: OG_PATH
+
+feature {NONE} -- Inapplicable
+
+	class_node_handler (eti: EV_SELECTABLE; x,y, button: INTEGER)
+			-- creates the context menu for a right click action for class node
+		do
+		end
 
 end
 

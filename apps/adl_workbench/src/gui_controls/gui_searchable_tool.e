@@ -40,8 +40,8 @@ feature -- Status Report
 
 feature -- Commands
 
-	select_item (id: attached STRING)
-			-- Select `id' in the tool and go to its node in explorer tree
+	select_item_by_id (id: attached STRING)
+			-- Select `id' in the tool and go to corresponding widget in GUI visualisation
 		require
 			item_selectable
 		deferred

@@ -769,10 +769,8 @@ feature {NONE} -- Implementation
 			code := an_ordinal.symbol.code_string
 			Result.append (an_ordinal.value.out + an_ordinal.separator.out)
 
-			if current_arch_cat.has_validated_selected_archetype then
-				if ontology.has_term_code (code) then
-					Result.append (" " + ontology.term_definition (language, code).text)
-				end
+			if ontology.has_term_code (code) then
+				Result.append (" " + ontology.term_definition (language, code).text)
 			end
 
 			if in_technical_mode then
@@ -791,15 +789,13 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_empty
 
-			if current_arch_cat.has_validated_selected_archetype then
-				if local_flag then
-					if ontology.has_term_code (code) then
-						Result.append (" " + ontology.term_definition (language, code).text)
-					end
-				else
-					-- need a way to get it out of an external terminology; for the moment, just show code
-					Result.append (" (rubric for " + code + ")")
+			if local_flag then
+				if ontology.has_term_code (code) then
+					Result.append (" " + ontology.term_definition (language, code).text)
 				end
+			else
+				-- need a way to get it out of an external terminology; for the moment, just show code
+				Result.append (" (rubric for " + code + ")")
 			end
 
 			if in_technical_mode then
@@ -846,10 +842,8 @@ feature {NONE} -- Implementation
 			-- generate string form of node or object for use in tree node
 		do
 			Result := an_inv.as_string
-			if current_arch_cat.has_validated_selected_archetype then
-				if not in_technical_mode then
-					Result := ontology.substitute_codes (Result, language)
-				end
+			if not in_technical_mode then
+				Result := ontology.substitute_codes (Result, language)
 			end
 		end
 

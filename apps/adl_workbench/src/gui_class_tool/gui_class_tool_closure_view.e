@@ -16,27 +16,12 @@ class GUI_CLASS_TOOL_CLOSURE_VIEW
 inherit
 	GUI_CLASS_TARGETTED_TOOL
 
-	GUI_UTILITIES
-		export
-			{NONE} all
-		end
-
 	BMM_DEFINITIONS
 		export
 			{NONE} all
 		end
 
 	SHARED_REFERENCE_MODEL_ACCESS
-		export
-			{NONE} all
-		end
-
-	GUI_DEFINITIONS
-		export
-			{NONE} all
-		end
-
-	GUI_CLASS_TOOL_FACILITIES
 		export
 			{NONE} all
 		end
@@ -53,12 +38,8 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (a_update_all_tools_rm_icons_setting_agent: like update_all_tools_rm_icons_setting_agent;
-			a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent)
+	make
 		do
-			update_all_tools_rm_icons_setting_agent := a_update_all_tools_rm_icons_setting_agent
-			make_class_tool (a_select_class_agent, a_select_class_in_new_tool_agent)
-
 			-- create widgets
 			create ev_root_container
 			ev_root_container.set_data (Current)
@@ -172,9 +153,7 @@ feature -- Events
 				refresh
 
 				-- reflect change to other editor tools
-				if attached update_all_tools_rm_icons_setting_agent then
-					update_all_tools_rm_icons_setting_agent.call ([])
-				end
+				gui_agents.update_all_tools_rm_icons_setting_agent.call ([])
 			end
 		end
 
@@ -238,10 +217,6 @@ feature {NONE} -- Implementation
 	ev_closure_depth_spin_button: EV_SPIN_BUTTON
 
 	ev_tree_item_stack: ARRAYED_STACK[EV_TREE_ITEM]
-
-	update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]
-			-- if this is set, it is an agent that takes one argument of a routine
-			-- to execute on all other editors, to sync them to a change in this current one
 
 	model_publisher: STRING
 			-- name of publisher, e.g. 'openehr', which is the key to RM-specific icons

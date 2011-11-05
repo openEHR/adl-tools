@@ -16,6 +16,9 @@ class GUI_VIEW_ARCHETYPE_TREE_CONTROL
 
 inherit
 	GUI_ARTEFACT_TREE_CONTROL
+		rename
+			make as make_tree_control
+		end
 
 	BMM_DEFINITIONS
 		export
@@ -36,23 +39,12 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_select_archetype_agent, an_edit_archetype_agent, a_select_archetype_in_new_tool_agent: like select_archetype_agent
-			a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent;
-			a_select_class_in_rm_schema_tool_agent: like select_class_in_rm_schema_tool_agent)
+	make (an_edit_archetype_agent: like edit_archetype_agent)
 			-- Create controller for the tree representing archetype files found in `archetype_directory'.
 		do
-			select_archetype_agent := a_select_archetype_agent
-			edit_archetype_agent := an_edit_archetype_agent
-			select_archetype_in_new_tool_agent := a_select_archetype_in_new_tool_agent
-			select_class_agent := a_select_class_agent
-			select_class_in_new_tool_agent := a_select_class_in_new_tool_agent
-			select_class_in_rm_schema_tool_agent := a_select_class_in_rm_schema_tool_agent
-
-			-- make UI
-			make_ui
-  			ev_tree.set_minimum_height (200)
-
 			artefact_types := <<{ARTEFACT_TYPE}.archetype, {ARTEFACT_TYPE}.template_component, {ARTEFACT_TYPE}.template>>
+			make_tree_control (an_edit_archetype_agent)
+  			ev_tree.set_minimum_height (200)
 		end
 
 feature -- Commands
@@ -73,28 +65,35 @@ feature -- Commands
 			end
 		end
 
-	select_item (ari_ont_id: attached STRING)
-			-- ensure node with ontological node id `ari_ont_id' is visible in the tree
+	select_item_in_tree (ari_global_id: attached STRING)
+			-- ensure node with global node id `ari_global_id' is visible in the tree
 		do
-			if ev_node_descriptor_map.has (ari_ont_id) and ev_tree.is_displayed then
-				ev_tree.ensure_item_visible (ev_node_descriptor_map.item (ari_ont_id))
-				ev_node_descriptor_map.item (ari_ont_id).enable_select
+			if ev_node_descriptor_map.has (ari_global_id) and ev_tree.is_displayed then
+				ev_tree.ensure_item_visible (ev_node_descriptor_map.item (ari_global_id))
+
+				-- if a class tool already exists with this id, then cause it to be shown
+				-- and then select corresponding tree node, but with events off. If no
+				-- class tool available, treat as if it were a first tme request for this class
+				-- and do a normal tree node select
+				if gui_agents.show_tool_with_artefact_agent.item ([ari_global_id]) then
+					ev_node_descriptor_map.item (ari_global_id).select_actions.block
+					ev_node_descriptor_map.item (ari_global_id).enable_select
+					ev_node_descriptor_map.item (ari_global_id).select_actions.resume
+				else
+					ev_node_descriptor_map.item (ari_global_id).enable_select
+				end
 			end
 		end
 
-	ensure_item_visible (ari_ont_id: attached STRING)
-			-- ensure node with ontological node id `ari_ont_id' is visible in the tree
+	ensure_item_visible (ari_global_id: attached STRING)
+			-- ensure node with ontological node id `ari_global_id' is visible in the tree
 		do
-			if ev_node_descriptor_map.has(ari_ont_id) and ev_tree.is_displayed then
-				ev_tree.ensure_item_visible (ev_node_descriptor_map.item (ari_ont_id))
+			if ev_node_descriptor_map.has (ari_global_id) and ev_tree.is_displayed then
+				ev_tree.ensure_item_visible (ev_node_descriptor_map.item (ari_global_id))
 			end
 		end
 
 feature {NONE} -- Implementation
-
-	select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
-
-	select_class_in_rm_schema_tool_agent: PROCEDURE [ANY, TUPLE [STRING]]
 
 	do_populate
 		do
@@ -108,12 +107,11 @@ feature {NONE} -- Implementation
 			ev_node: EV_TREE_ITEM
 		do
 			if not aci.is_root and (aci.subtree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
-								(attached {ARCH_CAT_ARCHETYPE} aci as aca and then artefact_types.has(aca.artefact_type))) then
+								(attached {ARCH_CAT_ARCHETYPE} aci as aca and then artefact_types.has (aca.artefact_type))) then
 				create ev_node
 	 			ev_node.set_data (aci)
 
- 				ev_node_descriptor_map.put (ev_node, aci.qualified_name)
-
+ 				ev_node_descriptor_map.put (ev_node, aci.global_artefact_identifier)
 	 			update_tree_node (ev_node)
 
 				-- select / menu handling					
@@ -125,6 +123,7 @@ feature {NONE} -- Implementation
 		 			ev_node.pointer_button_press_actions.force_extend (agent class_node_handler (ev_node, ?, ?, ?))
 		 			ev_node.select_actions.force_extend (agent select_class_with_delay (acmn))
 				end
+				ev_node.pointer_button_press_actions.force_extend (agent do gui_agents.history_update_agent.call ([ultimate_parent_tool]) end)
 
 				if ev_tree_item_stack.is_empty then
 					ev_tree.extend (ev_node)
@@ -214,8 +213,8 @@ feature {NONE} -- Implementation
 				agent
 					do
 						delayed_select_class_agent.set_interval (0)
-						source.set_selected_item (selected_class_node)
-						select_class_agent.call ([selected_class_node.class_definition])
+						selection_history.set_selected_item (selected_class_node)
+						gui_agents.select_class_agent.call ([selected_class_node.class_definition])
 					end
 			)
 		end
@@ -234,8 +233,8 @@ feature {NONE} -- Implementation
 				agent
 					do
 						delayed_select_archetype_agent.set_interval (0)
-						source.set_selected_item (selected_archetype_node)
-						select_archetype_agent.call ([])
+						selection_history.set_selected_item (selected_archetype_node)
+						gui_agents.select_archetype_agent.call ([selected_archetype_node])
 					end
 			)
 		end
@@ -278,8 +277,7 @@ feature {NONE} -- Implementation
 		do
 			ev_ti.enable_select
 			if attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
-				source.set_selected_item (acmn)
-				select_class_agent.call ([source.selected_class.class_definition])
+				gui_agents.select_class_agent.call ([acmn.class_definition])
 			end
 		end
 
@@ -287,8 +285,7 @@ feature {NONE} -- Implementation
 		do
 			ev_ti.enable_select
 			if attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
-				source.set_selected_item (acmn)
-				select_class_in_new_tool_agent.call ([source.selected_class.class_definition])
+				gui_agents.select_class_in_new_tool_agent.call ([acmn.class_definition])
 			end
 		end
 
@@ -296,7 +293,7 @@ feature {NONE} -- Implementation
 		do
 			ev_ti.enable_select
 			if attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
-				select_class_in_rm_schema_tool_agent.call ([acmn.class_definition.globally_qualified_path])
+				gui_agents.select_class_in_rm_schema_tool_agent.call ([acmn.class_definition.globally_qualified_path])
 			end
 		end
 

@@ -322,8 +322,6 @@ feature {NONE} -- Implementation
 
 	xml_attrs_for_dt_primitive_object (a_dt_obj: DT_PRIMITIVE_OBJECT): HASH_TABLE [STRING, STRING]
 			-- generate XML attribute table for `a_dt_obj' based on XML rules, if any found
-		local
-			attr_name: STRING
 		do
 			if attached serialisation_rules.rules_for_type (a_dt_obj.im_type_name) as srt then
 				create Result.make (0)

@@ -15,36 +15,40 @@ note
 class GUI_CATALOGUE_TOOL
 
 inherit
-	SHARED_APP_UI_RESOURCES
+	SHARED_SOURCE_REPOSITORIES
 		export
 			{NONE} all
+		end
+
+	SHARED_ARCHETYPE_COMPILER
+		export
+			{NONE} all
+		end
+
+	SHARED_ARCHETYPE_SERIALISERS
+		export
+			{NONE} all
+			{ANY} has_archetype_serialiser_format, archetype_serialiser_formats
 		end
 
 	GUI_SEARCHABLE_TOOL
 
 	GUI_CATALOGUE_TARGETTED_TOOL
+		redefine
+			go_to_selected_item
+		end
 
 create
 	make
 
 feature {NONE} -- Initialisation
 
-	make (a_select_archetype_agent, an_edit_archetype_agent, a_select_archetype_in_new_tool_agent: like select_archetype_agent;
-			a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent;
-			a_select_class_in_rm_schema_tool_agent: like select_class_in_rm_schema_tool_agent)
+	make
 		do
-			select_archetype_agent := a_select_archetype_agent
-			edit_archetype_agent := an_edit_archetype_agent
-			select_archetype_in_new_tool_agent := a_select_archetype_in_new_tool_agent
-			select_class_agent := a_select_class_agent
-			select_class_in_new_tool_agent := a_select_class_in_new_tool_agent
-			select_class_in_rm_schema_tool_agent := a_select_class_in_rm_schema_tool_agent
-
-			create archetype_explorer.make (select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent,
-				select_class_agent, select_class_in_new_tool_agent, select_class_in_rm_schema_tool_agent)
-			create template_explorer.make (select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent, agent archetype_explorer.ensure_item_visible)
+			create archetype_explorer.make (agent edit_archetype)
+			create template_explorer.make (agent edit_archetype, agent archetype_explorer.ensure_item_visible)
 			create metrics_viewer.make
-			create stats_viewer.make (a_select_class_agent, a_select_class_in_new_tool_agent)
+			create stats_viewer.make
 
 			-- create widgets
 			create ev_root_container
@@ -68,6 +72,12 @@ feature {NONE} -- Initialisation
 
 			-- set events: select a notebook tab
 			ev_root_container.selection_actions.extend (agent on_select_notebook)
+
+			-- set up tool / sub-tool structures
+			add_sub_tool (archetype_explorer)
+			add_sub_tool (template_explorer)
+			add_sub_tool (metrics_viewer)
+			enable_selection_history
 		end
 
 feature -- Access
@@ -98,7 +108,7 @@ feature -- Status Report
 
 feature -- Commands
 
-	update (aca: attached ARCH_CAT_ARCHETYPE)
+	update_tree_node (aca: attached ARCH_CAT_ARCHETYPE)
 		do
 			archetype_explorer.update_tree_node_for_archetype (aca)
 			template_explorer.update_tree_node_for_archetype (aca)
@@ -108,20 +118,19 @@ feature -- Commands
 			-- Select and display the node of `archetype_file_tree' corresponding to the selection in `archetype_catalogue'.
 			-- No events will be processed because archetype selected in ARCHETYPE_CATALOGUE already matches selected tree node
 		do
-			if source.has_selected_item then
-				archetype_explorer.select_item (source.selected_item.qualified_name)
+			if selection_history.has_selected_item then
+				archetype_explorer.select_item_in_tree (selection_history.selected_item.global_artefact_identifier)
+				docking_pane.set_focus
 			end
 		end
 
-	select_item (id: attached STRING)
-			-- Select `id' in the archetype catalogue and go to its node in explorer tree
+	select_item_by_id (a_globally_qualified_id: attached STRING)
+			-- Select `a_globally_qualified_id' in the GUI catalogue tree, unless it is the same as the current selection
 		do
-			if not source.has_selected_archetype or else not id.is_equal (source.selected_archetype.qualified_name) then
-				if source.archetype_index.has (id) then
-					archetype_explorer.select_item (id)
+			if not selection_history.has_selected_archetype or else not a_globally_qualified_id.is_equal (selection_history.selected_archetype.qualified_name) then
+				if source.has_item_with_id (a_globally_qualified_id) then
+					archetype_explorer.select_item_in_tree (a_globally_qualified_id)
 				end
-			else
-				-- discrete visual feedback for selecting same archetype as already selected?
 			end
 		end
 
@@ -134,6 +143,125 @@ feature -- Commands
 	show
 		do
 			docking_pane.show
+		end
+
+	open_archetype
+			-- open currently selected archetype
+		local
+			dialog: EV_FILE_OPEN_DIALOG
+			fname: STRING
+		do
+			create dialog
+			dialog.set_start_directory (current_work_directory)
+			dialog.filters.extend (["*" + File_ext_archetype_source, "ADL 1.5 source files"])
+			dialog.filters.extend (["*" + File_ext_archetype_adl14, "ADL 1.4 files"])
+			dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+			fname := dialog.file_name.as_string_8
+
+			if not fname.is_empty then
+				if not source_repositories.adhoc_source_repository.has_path (fname) then
+					set_current_work_directory (file_system.dirname (fname))
+					if not file_system.file_exists (fname) then
+						(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" not found.")).show_modal_to_window (proximate_ev_window (ev_root_container))
+					else
+						source.add_adhoc_item (fname)
+						if not billboard.has_errors then
+							selection_history.set_selected_item (source.last_adhoc_item)
+							show
+							repopulate
+						end
+						gui_agents.console_tool_append_agent.call ([billboard.content])
+					end
+				else
+					(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" already added.")).show_modal_to_window (proximate_ev_window (ev_root_container))
+				end
+			end
+		end
+
+	edit_archetype
+			-- Launch the external editor with the archetype currently selected in `archetype_directory'.
+		local
+			question_dialog: EV_QUESTION_DIALOG
+			info_dialog: EV_INFORMATION_DIALOG
+			path: STRING
+		do
+			if selection_history.has_selected_archetype then
+				path := selection_history.selected_archetype.differential_path
+				if selection_history.selected_archetype.has_differential_file and selection_history.selected_archetype.has_legacy_flat_file then
+					create question_dialog.make_with_text (create_message_line("edit_which_file_question",
+						<<file_system.basename (path), file_system.basename (selection_history.selected_archetype.legacy_flat_path)>>))
+					question_dialog.set_title ("Edit " + selection_history.selected_archetype.qualified_name)
+					question_dialog.set_buttons (<<"Differential", "Legacy (ADL 1.4 flat)">>)
+					question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+					if question_dialog.selected_button.starts_with ("L") then
+						path := selection_history.selected_archetype.legacy_flat_path
+					end
+				elseif selection_history.selected_archetype.has_legacy_flat_file then
+					create info_dialog.make_with_text (create_message_line ("edit_legacy_file_info",
+						<<file_system.basename (selection_history.selected_archetype.legacy_flat_path)>>))
+					info_dialog.set_title ("Edit " + selection_history.selected_archetype.id.as_string)
+					info_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+					path := selection_history.selected_archetype.legacy_flat_path
+				end
+				execution_environment.launch (editor_app_command + " %"" + path + "%"")
+			end
+		end
+
+	save_archetype_as
+			-- Save to an ADL or HTML file via a GUI file save dialog.
+		local
+			ok_to_write: BOOLEAN
+			question_dialog: EV_QUESTION_DIALOG
+			error_dialog: EV_INFORMATION_DIALOG
+			file: PLAIN_TEXT_FILE
+			save_dialog: EV_FILE_SAVE_DIALOG
+			name, format: STRING
+		do
+			if selection_history.has_validated_selected_archetype then
+				name := extension_replaced (selection_history.selected_archetype.full_path, "")
+
+				create save_dialog
+				save_dialog.set_title ("Save Archetype")
+				save_dialog.set_file_name (name)
+				save_dialog.set_start_directory (current_work_directory)
+
+				from archetype_serialiser_formats.start until archetype_serialiser_formats.off loop
+					format := archetype_serialiser_formats.item
+					save_dialog.filters.extend (["*" + archetype_file_extensions [format], "Save as " + format.as_upper])
+					archetype_serialiser_formats.forth
+				end
+
+				save_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+				name := save_dialog.file_name.as_string_8
+
+				if not name.is_empty then
+					set_current_work_directory (file_system.dirname (name))
+					format := archetype_serialiser_formats [save_dialog.selected_filter_index]
+
+					if not file_system.has_extension (name, archetype_file_extensions [format]) then
+						name.append (archetype_file_extensions [format])
+					end
+
+					ok_to_write := True
+					create file.make (name)
+
+					if file.exists then
+						create question_dialog.make_with_text (create_message_content ("file_exists_replace_question", <<file_system.basename (name)>>))
+						question_dialog.set_title ("Save as " + format.as_upper)
+						question_dialog.set_buttons (<<"Yes", "No">>)
+						question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+						ok_to_write := question_dialog.selected_button.same_string ("Yes")
+					end
+
+					if ok_to_write then
+						selection_history.selected_archetype.save_differential_as (name, format)
+						gui_agents.console_tool_append_agent.call ([selection_history.selected_archetype.status])
+					end
+				end
+			else
+				create error_dialog.make_with_text (create_message_content ("compile_before_serialising", Void))
+				error_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+			end
 		end
 
 feature -- Modification
@@ -203,12 +331,6 @@ feature {NONE} -- Implementation
 	metrics_viewer: GUI_STATISTICS_TOOL
 
 	stats_viewer: GUI_ARCHETYPE_STATISTICAL_REPORT
-
-	select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent: PROCEDURE [ANY, TUPLE]
-
-	select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
-
-	select_class_in_rm_schema_tool_agent: PROCEDURE [ANY, TUPLE [STRING]]
 
 	set_stats_metric_tab_appearance
 			-- set visual appearance of stats & metric tab according to whether there are errors or not

@@ -26,6 +26,13 @@ feature -- Access
 	source: BMM_CLASS_DEFINITION
 			-- class definition to which this tool is targetted
 
+	tool_artefact_id: STRING
+			-- a system-wide unique artefact id that can be used to find a tool in a GUI collection like
+			-- docked panes or similar
+		do
+			Result := source.global_artefact_identifier
+		end
+
 feature -- Status Report
 
 	differential_view: BOOLEAN
@@ -45,6 +52,41 @@ feature {NONE} -- Implementation
 
 	do_populate
 		deferred
+		end
+
+	class_node_handler (eti: EV_SELECTABLE; x,y, button: INTEGER)
+			-- creates the context menu for a right click action for class node
+		deferred
+		end
+
+	add_class_context_menu (menu: EV_MENU; ev_ti: EV_SELECTABLE)
+			-- dynamically initializes the context menu for this tree
+		local
+			an_mi: EV_MENU_ITEM
+		do
+			if attached {BMM_CLASS_DEFINITION} ev_ti.data as a_class_def then
+				create an_mi.make_with_text_and_action (create_message_content ("retarget_to_this_class", Void), agent display_context_selected_class_in_active_tool (a_class_def))
+				an_mi.set_pixmap (pixmaps ["class_tool"])
+		    	menu.extend (an_mi)
+
+				create an_mi.make_with_text_and_action (create_message_content ("display_in_new_tab", Void), agent display_context_selected_class_in_new_tool (a_class_def))
+				an_mi.set_pixmap (pixmaps ["class_tool_new"])
+				menu.extend (an_mi)
+			end
+		end
+
+	display_context_selected_class_in_active_tool (a_class_def: BMM_CLASS_DEFINITION)
+		do
+			selection_history.set_selected_item (a_class_def)
+			gui_agents.select_class_agent.call ([a_class_def])
+			gui_agents.history_set_active_agent.call ([ultimate_parent_tool])
+		end
+
+	display_context_selected_class_in_new_tool (a_class_def: BMM_CLASS_DEFINITION)
+		do
+			selection_history.set_selected_item (a_class_def)
+			gui_agents.select_class_in_new_tool_agent.call ([a_class_def])
+			gui_agents.history_set_active_agent.call ([ultimate_parent_tool])
 		end
 
 end

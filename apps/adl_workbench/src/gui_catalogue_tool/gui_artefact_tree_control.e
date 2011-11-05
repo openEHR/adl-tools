@@ -15,11 +15,6 @@ note
 deferred class GUI_ARTEFACT_TREE_CONTROL
 
 inherit
-	SHARED_APP_UI_RESOURCES
-		export
-			{NONE} all
-		end
-
 	GUI_CATALOGUE_TARGETTED_TOOL
 		redefine
 			repopulate
@@ -27,12 +22,14 @@ inherit
 
 feature {NONE} -- Initialisation
 
-	make_ui
+	make (an_edit_archetype_agent: like edit_archetype_agent)
+			-- Create controller for the tree representing archetype files found in `archetype_directory'.
 		do
+			edit_archetype_agent := an_edit_archetype_agent
+
 			-- create widgets
 			create ev_root_container
 			ev_root_container.set_data (Current)
-
 			create ev_tree
 
 			-- connect widgets
@@ -89,17 +86,13 @@ feature {NONE} -- Implementation
    		deferred
    		end
 
-	update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]
-			-- if this is set, it is an agent that takes one argument of a routine
-			-- to execute on all other editors, to sync them to a change in this current one
-
 	selected_archetype_node: ARCH_CAT_ARCHETYPE
 
 	select_archetype_with_delay (aca: ARCH_CAT_ARCHETYPE)
 		deferred
 		end
 
-	select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent: PROCEDURE [ANY, TUPLE]
+	edit_archetype_agent: PROCEDURE [ANY, TUPLE]
 
 	archetype_node_handler (ev_ti: EV_TREE_ITEM; x,y, button: INTEGER)
 			-- creates the context menu for a right click action for an ARCH_REP_ARCHETYPE node
@@ -127,23 +120,17 @@ feature {NONE} -- Implementation
 
 	display_context_selected_archetype_in_active_tool (ev_ti: EV_TREE_ITEM)
 		do
-			if not ev_ti.is_selected then
-				ev_ti.enable_select
-			end
+			ev_ti.enable_select
 			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
-				source.set_selected_item (aca)
-				select_archetype_agent.call ([])
+				gui_agents.select_archetype_agent.call ([aca])
 			end
 		end
 
 	display_context_selected_archetype_in_new_tool (ev_ti: EV_TREE_ITEM)
 		do
-			if not ev_ti.is_selected then
-				ev_ti.enable_select
-			end
+			ev_ti.enable_select
 			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
-				source.set_selected_item (aca)
-				select_archetype_in_new_tool_agent.call ([])
+				gui_agents.select_archetype_in_new_tool_agent.call ([aca])
 			end
 		end
 

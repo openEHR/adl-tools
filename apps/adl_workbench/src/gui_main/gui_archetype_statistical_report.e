@@ -15,14 +15,11 @@ class
 	GUI_ARCHETYPE_STATISTICAL_REPORT
 
 inherit
-	GUI_DEFINITIONS
-		export
-			{NONE} all
-		end
-
-	GUI_UTILITIES
-		export
-			{NONE} all
+	GUI_TOOL
+		rename
+			populate as populate_gui_tool
+		redefine
+			source
 		end
 
 	BMM_DEFINITIONS
@@ -54,12 +51,9 @@ feature -- Definitions
 
 feature {NONE} -- Initialization
 
-	make (a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent)
+	make
 			-- Create controller for the tree representing archetype files found in `archetype_directory'.
 		do
-			select_class_agent := a_select_class_agent
-			select_class_in_new_tool_agent := a_select_class_in_new_tool_agent
-
 			create ev_root_container
 			ev_root_container.set_data (Current)
 		end
@@ -71,7 +65,12 @@ feature -- Access
 	source: ARCHETYPE_STATISTICAL_REPORT
 			-- stats being visualised
 
-	last_populate_timestamp: DATE_TIME
+	tool_artefact_id: STRING
+			-- a system-wide unique artefact id that can be used to find a tool in a GUI collection like
+			-- docked panes or similar
+		do
+			Result := "archetype stats"
+		end
 
 feature -- Status Report
 
@@ -80,26 +79,20 @@ feature -- Status Report
 
 feature -- Commands
 
-	clear
-		do
-			ev_root_container.wipe_out
-			last_populate_timestamp := Void
-		end
-
 	populate (a_stat_report: ARCHETYPE_STATISTICAL_REPORT; diff_flag: BOOLEAN)
 		do
 			differential_view := diff_flag
-			source := a_stat_report
-			clear
-			do_populate (a_stat_report.bmm_schema)
-			create last_populate_timestamp.make_now
+			populate_gui_tool (a_stat_report)
 		end
 
 feature {NONE} -- Implementation
 
-	select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
+	do_clear
+		do
+			ev_root_container.wipe_out
+		end
 
-	do_populate (a_bmm_schema: BMM_SCHEMA)
+	do_populate
 		local
 			ev_rm_vbox: EV_VERTICAL_BOX
 			ev_arch_stats_frame, ev_rm_breakdown_frame: EV_FRAME
@@ -111,7 +104,6 @@ feature {NONE} -- Implementation
 			class_row, attr_row: EV_GRID_ROW
 			rm_class_stats: HASH_TABLE [RM_CLASS_STATISTICS, STRING]
 			class_def: BMM_CLASS_DEFINITION
-		--	prop_def: BMM_PROPERTY_DEFINITION
 		do
 			-----------------------------------
 			-- create widgets
@@ -133,7 +125,7 @@ feature {NONE} -- Implementation
 			ev_rm_vbox.extend (ev_rm_breakdown_frame)
 
 			ev_root_container.extend (ev_rm_vbox)
-			ev_root_container.set_item_text (ev_rm_vbox, a_bmm_schema.schema_id)
+			ev_root_container.set_item_text (ev_rm_vbox, source.bmm_schema.schema_id)
 
 			-----------------------------------
 			-- populate data
@@ -224,16 +216,30 @@ feature {NONE} -- Implementation
 		do
 			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_CLASS_DEFINITION} gli.data as class_def then
 				create menu
-				create an_mi.make_with_text_and_action (create_message_content ("display_in_active_tab", Void), agent select_class_agent.call ([class_def]))
+				create an_mi.make_with_text_and_action (create_message_content ("display_in_active_tab", Void), agent display_context_selected_class_in_active_tool (class_def))
 				an_mi.set_pixmap (pixmaps ["class_tool"])
 		    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (create_message_content ("display_in_new_tab", Void), agent select_class_in_new_tool_agent.call ([class_def]))
+				create an_mi.make_with_text_and_action (create_message_content ("display_in_new_tab", Void), agent display_context_selected_class_in_new_tool (class_def))
 				an_mi.set_pixmap (pixmaps ["class_tool_new"])
 				menu.extend (an_mi)
 
 				menu.show
 			end
+		end
+
+	display_context_selected_class_in_active_tool (a_class_def: BMM_CLASS_DEFINITION)
+		do
+			selection_history.set_selected_item (a_class_def)
+			gui_agents.select_class_agent.call ([a_class_def])
+			gui_agents.history_update_agent.call([])
+		end
+
+	display_context_selected_class_in_new_tool (a_class_def: BMM_CLASS_DEFINITION)
+		do
+			selection_history.set_selected_item (a_class_def)
+			gui_agents.select_class_in_new_tool_agent.call ([a_class_def])
+			gui_agents.history_update_agent.call([])
 		end
 
 end

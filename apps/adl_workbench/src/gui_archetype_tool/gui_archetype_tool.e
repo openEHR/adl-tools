@@ -16,11 +16,6 @@ class GUI_ARCHETYPE_TOOL
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 
-	GUI_DEFINITIONS
-		export
-			{NONE} all
-		end
-
 	EV_SHARED_APPLICATION
 		export
 			{NONE} all
@@ -55,12 +50,8 @@ feature -- Definitions
 
 feature {NONE}-- Initialization
 
-	make (a_select_archetype_from_gui_data_agent: like select_archetype_from_gui_data;
-			a_update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE];
-			a_select_class_agent, a_select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]])
+	make
 		do
-			select_archetype_from_gui_data := a_select_archetype_from_gui_data_agent
-
 			-- create root widget
 			create ev_root_container
 			ev_root_container.set_data (Current)
@@ -82,7 +73,7 @@ feature {NONE}-- Initialization
 
 			create ev_notebook
 			create description_controls.make (agent text_widget_handler.on_select_all)
-			create node_map_control.make (agent select_ontology_item_from_code, a_update_all_tools_rm_icons_setting_agent)
+			create node_map_control.make (agent select_ontology_item_from_code)
 			create path_map_control.make (agent on_path_map_key_press)
 			create slot_map_control.make (agent update_slots_tab_label)
 			create ontology_controls.make
@@ -90,7 +81,7 @@ feature {NONE}-- Initialization
 			create serialisation_control.make
 			create source_control.make
 			create validity_report_control.make
-			create statistical_information_control.make (a_select_class_agent, a_select_class_in_new_tool_agent)
+			create statistical_information_control.make
 
 			-- connect widgets
 			ev_root_container.extend (ev_action_bar)
@@ -310,7 +301,7 @@ feature {NONE} -- Events
 		do
 			if not (ev_application.shift_pressed or ev_application.alt_pressed or ev_application.ctrl_pressed) then
 				if key /= Void and then key.code = key_enter then
-					select_archetype_from_gui_data.call ([slot_map_control.ev_suppliers_tree.selected_item])
+					gui_agents.select_archetype_from_gui_data_agent.call ([slot_map_control.ev_suppliers_tree.selected_item])
 				end
 			end
 		end
@@ -320,7 +311,7 @@ feature {NONE} -- Events
 		do
 			if not (ev_application.shift_pressed or ev_application.alt_pressed or ev_application.ctrl_pressed) then
 				if key /= Void and then key.code = key_enter then
-					select_archetype_from_gui_data.call ([slot_map_control.ev_clients_tree.selected_item])
+					gui_agents.select_archetype_from_gui_data_agent.call ([slot_map_control.ev_clients_tree.selected_item])
 				end
 			end
 		end
@@ -328,13 +319,13 @@ feature {NONE} -- Events
 	on_slot_map_suppliers_tree_double_click (x, y, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER)
 			-- When the user double-clicks on an archetype, select it in the main window's explorer tree.
 		do
-			select_archetype_from_gui_data.call ([slot_map_control.ev_suppliers_tree.selected_item])
+			gui_agents.select_archetype_from_gui_data_agent.call ([slot_map_control.ev_suppliers_tree.selected_item])
 		end
 
 	on_slot_map_clients_tree_double_click (x, y, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER)
 			-- When the user double-clicks on an archetype, select it in the main window's explorer tree.
 		do
-			select_archetype_from_gui_data.call ([slot_map_control.ev_clients_tree.selected_item])
+			gui_agents.select_archetype_from_gui_data_agent.call ([slot_map_control.ev_clients_tree.selected_item])
 		end
 
 	on_path_map_key_press (key: EV_KEY)
@@ -373,7 +364,6 @@ feature {NONE} -- Implementation
 			validity_report_control.clear
 			statistical_information_control.clear
 		end
-
 
 	do_populate
 		do
@@ -444,10 +434,6 @@ feature {NONE} -- Implementation
 				ev_items.forth
 			end
 		end
-
-	select_archetype_from_gui_data: PROCEDURE [ANY, TUPLE [EV_ANY]]
-			-- agent provided by upper level of GUI for doing something
-			-- when an archetype in this tool is selected
 
 	populate_languages
 			-- Populate `language_combo' in the toolbar for currently selected archetype

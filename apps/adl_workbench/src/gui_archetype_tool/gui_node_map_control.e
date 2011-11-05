@@ -36,11 +36,6 @@ inherit
 			{NONE} all
 		end
 
-	GUI_DEFINITIONS
-		export
-			{NONE} all
-		end
-
 create
 	make
 
@@ -50,11 +45,9 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (a_code_select_action_agent: like code_select_action_agent;
-			a_update_all_tools_rm_icons_setting_agent: like update_all_tools_rm_icons_setting_agent)
+	make (a_code_select_action_agent: like code_select_action_agent)
 		do
 			code_select_action_agent := a_code_select_action_agent
-			update_all_tools_rm_icons_setting_agent := a_update_all_tools_rm_icons_setting_agent
 
 			-- create widgets
 			create ev_root_container
@@ -302,9 +295,7 @@ feature {NONE} -- Events
 				repopulate
 
 				-- reflect change to other editor tools
-				if attached update_all_tools_rm_icons_setting_agent then
-					update_all_tools_rm_icons_setting_agent.call ([])
-				end
+				gui_agents.update_all_tools_rm_icons_setting_agent.call ([])
 			end
 		end
 
@@ -323,10 +314,6 @@ feature {NONE} -- Implementation
 	ev_rm_visibility_controls: EV_FRAME
 
 	ev_cell: EV_CELL
-
-	update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]
-			-- if this is set, it is an agent that takes one argument of a routine
-			-- to execute on all other editors, to sync them to a change in this current one
 
 	rm_schema: BMM_SCHEMA
 

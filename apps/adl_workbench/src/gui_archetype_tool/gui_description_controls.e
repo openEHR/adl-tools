@@ -20,16 +20,6 @@ inherit
 			can_populate, can_repopulate
 		end
 
-	GUI_UTILITIES
-		export
-			{NONE} all
-		end
-
-	GUI_DEFINITIONS
-		export
-			{NONE} all
-		end
-
 create
 	make
 

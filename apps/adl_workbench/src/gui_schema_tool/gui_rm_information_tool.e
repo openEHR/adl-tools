@@ -18,16 +18,6 @@ class
 inherit
 	GUI_RM_TARGETTED_TOOL
 
-	GUI_DEFINITIONS
-		export
-			{NONE} all
-		end
-
-	GUI_UTILITIES
-		export
-			{NONE} all
-		end
-
 create
 	make
 

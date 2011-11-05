@@ -20,11 +20,6 @@ inherit
 			can_populate, can_repopulate, ev_root_container
 		end
 
-	GUI_DEFINITIONS
-		export
-			{NONE} all
-		end
-
 	STRING_UTILITIES
 		export
 			{NONE} all

@@ -65,7 +65,7 @@ feature -- Test routines
 	test_add_adhoc_item
 			-- Check that an ad-hoc archetype can be added.
 		note
-			testing: "covers/{ARCHETYPE_DIRECTORY}.add_adhoc_item"
+			testing: "covers/{ARCHETYPE_CATALOGUE}.add_adhoc_item"
 		local
 			adl: STRING
 			name: STRING
@@ -81,19 +81,18 @@ feature -- Test routines
 
 			name := file_system.pathname (test_directory, "openehr-TEST_PKG-WHOLE.add_adhoc_item.v1.adls")
 			file_context.save_file (name, adl)
-			assert_equal (False, current_arch_cat.has_selected_archetype)
+			assert_equal (False, attached current_arch_cat.last_adhoc_item)
 			current_arch_cat.add_adhoc_item (name)
-			assert_equal (True, current_arch_cat.has_selected_archetype)
+			assert_equal (True, attached current_arch_cat.last_adhoc_item)
 		end
 
 	test_populate
 			-- Check that the repository can be populated.
 		note
-			testing: "covers/{ARCHETYPE_DIRECTORY}.populate"
+			testing: "covers/{ARCHETYPE_CATALOGUE}.populate"
 		do
 			assert_equal (test_repository, source_repositories.reference_repository.full_path)
 			assert_equal (0, current_arch_cat.compile_attempt_count)
-			assert_equal (Void, current_arch_cat.selected_item)
 			assert ("Expected warning about ADL version", billboard.content.has_substring ("WARNING - Using ADL version"))
 		end
 

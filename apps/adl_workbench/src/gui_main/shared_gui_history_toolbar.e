@@ -1,27 +1,24 @@
 note
-	description: "Summary description for {GUI_ARCHETYPE_TARGETTED_TOOL}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	component:   "openEHR Archetype Project"
+	description: "Shared History toolbar"
+	keywords:    "AWB, archetypes, workbench"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	license:     "See notice at bottom of class"
 
-deferred class GUI_RM_TARGETTED_TOOL
+	file:        "$URL$"
+	revision:    "$LastChangedRevision$"
+	last_change: "$LastChangedDate$"
 
-inherit
-	GUI_TOOL
-		redefine
-			source
-		end
+class
+	SHARED_HISTORY_TOOLBAR
 
-feature -- Access
+feature -- History Bar control
 
-	source: BMM_SCHEMA
-			-- archetype to which this tool is targetted
-
-	tool_artefact_id: STRING
-			-- a system-wide unique artefact id that can be used to find a tool in a GUI collection like
-			-- docked panes or similar
-		do
-			Result := source.schema_id
+	history_bar: GUI_HISTORY_TOOLBAR
+		once
+			create Result.make
 		end
 
 end
@@ -41,10 +38,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is gui_archetype_targetted_tool.e.
+--| The Original Code is shared_history_toolbar.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2011
+--| Portions created by the Initial Developer are Copyright (C) 2003-2004
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

@@ -141,25 +141,25 @@ feature -- Commands
 			end
 		end
 
-	build_subtree
-			-- Build the sub-system at and below `archetype_directory.selected_node', but not artefacts that seem to be built already.
+	build_subtree (aci: attached ARCH_CAT_ITEM)
+			-- Build the sub-system at and below `aci', but not artefacts that seem to be built already.
 		do
 			is_building := True
-			call_global_visual_update_action(create_message_line ("compiler_building_subtree", Void))
-			do_subtree (current_arch_cat.selected_item, agent check_file_system_currency (False, ?))
-			do_subtree (current_arch_cat.selected_item, agent build_archetype (?, 0))
+			call_global_visual_update_action (create_message_line ("compiler_building_subtree", Void))
+			do_subtree (aci, agent check_file_system_currency (False, ?))
+			do_subtree (aci, agent build_archetype (?, 0))
 			is_building := False
-			call_global_visual_update_action(create_message_line ("compiler_finished_building_subtree", Void))
+			call_global_visual_update_action (create_message_line ("compiler_finished_building_subtree", Void))
 		end
 
-	rebuild_subtree
-			-- Rebuild the sub-system at and below `archetype_directory.selected_node' from scratch, regardless of previous attempts.
+	rebuild_subtree (aci: attached ARCH_CAT_ITEM)
+			-- Rebuild the sub-system at and below `aci' from scratch, regardless of previous attempts.
 		do
 			is_building := True
-			call_global_visual_update_action(create_message_line ("compiler_rebuilding_subtree", Void))
-			do_subtree (current_arch_cat.selected_item, agent check_file_system_currency (True, ?))
-			do_subtree (current_arch_cat.selected_item, agent build_archetype (?, 0))
-			call_global_visual_update_action(create_message_line ("compiler_finished_rebuilding_subtree", Void))
+			call_global_visual_update_action (create_message_line ("compiler_rebuilding_subtree", Void))
+			do_subtree (aci, agent check_file_system_currency (True, ?))
+			do_subtree (aci, agent build_archetype (?, 0))
+			call_global_visual_update_action (create_message_line ("compiler_finished_rebuilding_subtree", Void))
 			is_building := False
 		end
 

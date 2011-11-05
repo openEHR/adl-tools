@@ -388,6 +388,12 @@ feature -- Access (semantic)
 	flat_compiled_path: STRING
 			-- path to persisted compiled flat form of archetype
 
+	global_artefact_identifier: attached STRING
+			-- tool-wide unique id for this artefact
+		do
+			Result := qualified_name
+		end
+
 feature -- Access (compiler)
 
 	compilation_state: INTEGER

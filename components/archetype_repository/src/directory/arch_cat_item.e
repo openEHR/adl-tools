@@ -29,6 +29,11 @@ inherit
 			is_equal
 		end
 
+	IDENTIFIED_TOOL_ARTEFACT
+		undefine
+			is_equal
+		end
+
 	BMM_DEFINITIONS
 		export
 			{NONE} all;
@@ -109,6 +114,13 @@ feature -- Access
 				children.forth
 			end
 			Result := children.item
+		end
+
+	global_artefact_category: attached STRING
+			-- tool-wide category for this artefact, useful for indexing visual type indeicators
+			-- like pixmap etc
+		do
+			Result := group_name
 		end
 
 feature -- Status Report

@@ -16,27 +16,12 @@ class GUI_CLASS_TOOL_PROPERTY_VIEW
 inherit
 	GUI_CLASS_TARGETTED_TOOL
 
-	GUI_UTILITIES
-		export
-			{NONE} all
-		end
-
 	BMM_DEFINITIONS
 		export
 			{NONE} all
 		end
 
 	SHARED_REFERENCE_MODEL_ACCESS
-		export
-			{NONE} all
-		end
-
-	GUI_DEFINITIONS
-		export
-			{NONE} all
-		end
-
-	GUI_CLASS_TOOL_FACILITIES
 		export
 			{NONE} all
 		end
@@ -57,10 +42,8 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent)
+	make
 		do
-			make_class_tool (a_select_class_agent, a_select_class_in_new_tool_agent)
-
 			-- create widgets
 			create ev_root_container
 			ev_root_container.set_data (Current)

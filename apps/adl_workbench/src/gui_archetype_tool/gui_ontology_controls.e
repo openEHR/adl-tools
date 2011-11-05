@@ -25,11 +25,6 @@ inherit
 			{NONE} all
 		end
 
-	GUI_DEFINITIONS
-		export
-			{NONE} all
-		end
-
 create
 	make
 

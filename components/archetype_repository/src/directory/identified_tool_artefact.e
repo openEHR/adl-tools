@@ -1,27 +1,33 @@
 note
-	description: "Summary description for {GUI_ARCHETYPE_TARGETTED_TOOL}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	component:   "openEHR Archetype Project"
+	description: "[
+				 Defines identification properties for any information artefact handled by a tool, for purposes
+				 of indexing in GUI history list, or any other generic situation where artefacts need to be tracked.
+				 ]"
+	keywords:    "identification"
+	author:      "Thomas Beale"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
+	license:     "See notice at bottom of class"
 
-deferred class GUI_RM_TARGETTED_TOOL
+	file:        "$URL$"
+	revision:    "$LastChangedRevision$"
+	last_change: "$LastChangedDate$"
 
-inherit
-	GUI_TOOL
-		redefine
-			source
-		end
+
+deferred class IDENTIFIED_TOOL_ARTEFACT
 
 feature -- Access
 
-	source: BMM_SCHEMA
-			-- archetype to which this tool is targetted
+	global_artefact_identifier: attached STRING
+			-- tool-wide unique id for this artefact
+		deferred
+		end
 
-	tool_artefact_id: STRING
-			-- a system-wide unique artefact id that can be used to find a tool in a GUI collection like
-			-- docked panes or similar
-		do
-			Result := source.schema_id
+	global_artefact_category: attached STRING
+			-- tool-wide category for this artefact, useful for indexing visual type indeicators
+			-- like pixmap etc
+		deferred
 		end
 
 end
@@ -41,7 +47,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is gui_archetype_targetted_tool.e.
+--| The Original Code is identified_tool_artefact.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2011

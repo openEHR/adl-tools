@@ -17,16 +17,6 @@ class GUI_RM_DESCRIPTION_CONTROLS
 inherit
 	GUI_RM_TARGETTED_TOOL
 
-	GUI_UTILITIES
-		export
-			{NONE} all
-		end
-
-	GUI_DEFINITIONS
-		export
-			{NONE} all
-		end
-
 create
 	make
 

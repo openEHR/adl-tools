@@ -21,16 +21,6 @@ inherit
 			can_populate, can_repopulate
 		end
 
-	GUI_DEFINITIONS
-		export
-			{NONE} all
-		end
-
-	GUI_UTILITIES
-		export
-			{NONE} all
-		end
-
 create
 	make
 
@@ -48,17 +38,18 @@ feature -- Definitions
 
 feature {NONE} -- Initialization
 
-	make (a_select_class_agent, a_select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]])
+	make
 		do
-			-- create widgets
-			create report_controls.make  (a_select_class_agent, a_select_class_in_new_tool_agent)
-			ev_root_container := report_controls.ev_root_container
+			create ev_root_container.default_create
 			ev_root_container.set_data (Current)
+
+			create report_controls.make
+			ev_root_container.extend (report_controls.ev_root_container)
 		end
 
 feature -- Access
 
-	ev_root_container: EV_NOTEBOOK
+	ev_root_container: EV_CELL
 
 feature -- Status Report
 
