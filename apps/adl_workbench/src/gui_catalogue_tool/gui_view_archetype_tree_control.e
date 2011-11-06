@@ -123,7 +123,7 @@ feature {NONE} -- Implementation
 		 			ev_node.pointer_button_press_actions.force_extend (agent class_node_handler (ev_node, ?, ?, ?))
 		 			ev_node.select_actions.force_extend (agent select_class_with_delay (acmn))
 				end
-				ev_node.pointer_button_press_actions.force_extend (agent do gui_agents.history_update_agent.call ([ultimate_parent_tool]) end)
+				ev_node.pointer_button_press_actions.force_extend (agent do gui_agents.history_set_active_agent.call ([ultimate_parent_tool]) end)
 
 				if ev_tree_item_stack.is_empty then
 					ev_tree.extend (ev_node)

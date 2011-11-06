@@ -29,7 +29,7 @@ inherit
 
 	GUI_TOOL
 		redefine
-			source
+			source, go_to_selected_item
 		end
 
 create
@@ -37,14 +37,8 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent;
-			a_select_rm_agent, a_select_rm_in_new_tool_agent: like select_rm_agent)
+	make
 		do
-			select_class_agent := a_select_class_agent
-			select_class_in_new_tool_agent := a_select_class_in_new_tool_agent
-			select_rm_agent := a_select_rm_agent
-			select_rm_in_new_tool_agent := a_select_rm_in_new_tool_agent
-
 			-- create widgets
 			create ev_root_container
 			ev_root_container.set_data (Current)
@@ -54,11 +48,9 @@ feature {NONE} -- Initialisation
 			ev_root_container.extend (ev_tree)
 
 			-- visual characteristics
---			ev_tree.set_background_color (editable_colour)
   			ev_tree.set_minimum_width (180)
 
 			-- events
---			ev_tree.focus_in_actions.extend (agent tree_item_select)
 			enable_selection_history
 		end
 
@@ -115,7 +107,18 @@ feature -- Commands
 		do
 			if ev_node_map.has (id) and ev_tree.is_displayed then
 				ev_tree.ensure_item_visible (ev_node_map.item (id))
-				ev_node_map.item (id).enable_select
+
+				-- if a class tool already exists with this id, then cause it to be shown
+				-- and then select corresponding tree node, but with events off. If no
+				-- class tool available, treat as if it were a first tme request for this class
+				-- and do a normal tree node select
+				if gui_agents.show_tool_with_artefact_agent.item ([id]) then
+					ev_node_map.item (id).select_actions.block
+					ev_node_map.item (id).enable_select
+					ev_node_map.item (id).select_actions.resume
+				else
+					ev_node_map.item (id).enable_select
+				end
 			end
 		end
 
@@ -125,6 +128,23 @@ feature -- Commands
 			if ev_node_map.has (id) and ev_tree.is_displayed then
 				ev_tree.ensure_item_visible (ev_node_map.item (id))
 			end
+		end
+
+	go_to_selected_item
+			-- Select and display the node of `archetype_file_tree' corresponding to the selection in `archetype_catalogue'.
+			-- No events will be processed because archetype selected in ARCHETYPE_CATALOGUE already matches selected tree node
+		do
+			if selection_history.has_selected_item then
+				select_item_by_id (selection_history.selected_item.global_artefact_identifier)
+				docking_pane.set_focus
+			end
+		end
+
+feature -- Modification
+
+	set_docking_pane (a_docking_pane: attached SD_CONTENT)
+		do
+			docking_pane := a_docking_pane
 		end
 
 feature {NONE} -- Implementation
@@ -137,9 +157,7 @@ feature {NONE} -- Implementation
 
 	ev_hbox: EV_HORIZONTAL_BOX
 
-	select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
-
-	select_rm_agent, select_rm_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_SCHEMA]]
+	docking_pane: SD_CONTENT
 
 	do_clear
 			-- Wipe out content from visual controls and reset controls to reasonable state
@@ -228,8 +246,9 @@ feature {NONE} -- Implementation
 
  	 		ev_class_node.pointer_button_press_actions.force_extend (agent class_node_handler (ev_class_node, ?, ?, ?))
  	 		ev_class_node.select_actions.force_extend (agent select_class_with_delay (a_class_def))
+			ev_class_node.pointer_button_press_actions.force_extend (agent do gui_agents.history_set_active_agent.call ([ultimate_parent_tool]) end)
 
-			ev_node_map.put (ev_class_node, a_class_def.globally_qualified_path)
+			ev_node_map.put (ev_class_node, a_class_def.global_artefact_identifier)
 
 			-- do any descendants in same package
 			from a_class_def.immediate_descendants.start until a_class_def.immediate_descendants.off loop
@@ -359,7 +378,7 @@ feature {NONE} -- Implementation
 		do
 			ev_ti.enable_select
 			if attached {BMM_CLASS_DEFINITION} ev_ti.data as a_class_def then
-				select_class_agent.call ([a_class_def])
+				gui_agents.select_class_agent.call ([a_class_def])
 			end
 		end
 
@@ -367,7 +386,7 @@ feature {NONE} -- Implementation
 		do
 			ev_ti.enable_select
 			if attached {BMM_CLASS_DEFINITION} ev_ti.data as a_class_def then
-				select_class_in_new_tool_agent.call ([a_class_def])
+				gui_agents.select_class_in_new_tool_agent.call ([a_class_def])
 			end
 		end
 
@@ -375,7 +394,7 @@ feature {NONE} -- Implementation
 		do
 			ev_ti.enable_select
 			if attached {BMM_SCHEMA} ev_ti.data as a_bmm then
-				select_rm_agent.call ([a_bmm])
+				gui_agents.select_rm_agent.call ([a_bmm])
 			end
 		end
 
@@ -383,7 +402,7 @@ feature {NONE} -- Implementation
 		do
 			ev_ti.enable_select
 			if attached {BMM_SCHEMA} ev_ti.data as a_bmm then
-				select_rm_in_new_tool_agent.call ([a_bmm])
+				gui_agents.select_rm_in_new_tool_agent.call ([a_bmm])
 			end
 		end
 
@@ -409,7 +428,8 @@ feature {NONE} -- Implementation
 				agent
 					do
 						delayed_select_class_agent.set_interval (0)
-						select_class_agent.call ([selected_class_def])
+						selection_history.set_selected_item (selected_class_def)
+						gui_agents.select_class_agent.call ([selected_class_def])
 					end
 			)
 		end

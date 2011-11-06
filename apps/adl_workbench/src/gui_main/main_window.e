@@ -393,6 +393,8 @@ feature {NONE} -- Initialization
 			gui_agents.set_select_class_agent (agent display_class)
 			gui_agents.set_select_class_in_new_tool_agent (agent display_class_in_new_tool)
 			gui_agents.set_select_class_in_rm_schema_tool_agent (agent select_class_in_rm_schema_tool)
+			gui_agents.set_select_rm_agent (agent display_rm)
+			gui_agents.set_select_rm_in_new_tool_agent (agent display_rm_in_new_tool)
 			gui_agents.set_update_all_tools_rm_icons_setting_agent (agent update_all_tools_rm_icons_setting)
 			gui_agents.set_select_archetype_from_gui_data_agent (agent select_archetype_from_gui_node)
 			gui_agents.set_show_tool_with_artefact_agent (agent show_tool_with_artefact_agent)
@@ -927,7 +929,7 @@ feature -- RM Schema explorer
 
 	rm_schema_explorer: GUI_RM_SCHEMA_EXPLORER
 		once
-			create Result.make (agent display_class, agent display_class_in_new_tool, agent display_rm, agent display_rm_in_new_tool)
+			create Result.make
 		end
 
 	create_new_rm_schema_explorer
@@ -936,6 +938,7 @@ feature -- RM Schema explorer
 		do
 			create a_docking_pane.make_with_widget_title_pixmap (rm_schema_explorer.ev_root_container, pixmaps ["rm_schema"], "Reference Models")
 			attached_docking_manager.contents.extend (a_docking_pane)
+			rm_schema_explorer.set_docking_pane (a_docking_pane)
 			a_docking_pane.set_long_title ("Reference Models")
 			a_docking_pane.set_short_title ("Reference Models")
 			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
@@ -992,12 +995,7 @@ feature -- Catalogue tool
 			a_docking_pane.set_top ({SD_ENUMERATION}.left)
 			a_docking_pane.show_actions.extend (agent address_bar.set_current_client (catalogue_tool))
 			a_docking_pane.focus_in_actions.extend (agent address_bar.set_current_client (catalogue_tool))
-			a_docking_pane.focus_in_actions.extend (
-				agent
-					do
-						gui_agents.history_set_active_agent.call ([catalogue_tool])
-					end
-			)
+			a_docking_pane.focus_in_actions.extend (agent history_bar.set_active_tool (catalogue_tool))
 		end
 
 	select_archetype_from_gui_node (gui_item: EV_SELECTABLE)

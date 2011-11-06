@@ -29,6 +29,8 @@ feature -- Access
 
 	select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
 
+	select_rm_agent, select_rm_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_SCHEMA]]
+
 	select_class_in_rm_schema_tool_agent: PROCEDURE [ANY, TUPLE [STRING]]
 
 	update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]
@@ -80,6 +82,16 @@ feature -- Modification
 	set_select_class_in_rm_schema_tool_agent (an_agent: like select_class_in_rm_schema_tool_agent)
 		do
 			select_class_in_rm_schema_tool_agent := an_agent
+		end
+
+	set_select_rm_agent (an_agent: like select_rm_agent)
+		do
+			select_rm_agent := an_agent
+		end
+
+	set_select_rm_in_new_tool_agent (an_agent: like select_rm_in_new_tool_agent)
+		do
+			select_rm_in_new_tool_agent := an_agent
 		end
 
 	set_update_all_tools_rm_icons_setting_agent (an_agent: like update_all_tools_rm_icons_setting_agent)
