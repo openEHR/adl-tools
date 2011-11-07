@@ -167,7 +167,7 @@ feature -- Status Report
 	has_item_with_id (an_id: STRING): BOOLEAN
 			-- True if `an_id' exists in catalogue
 		do
-			Result := item_index.has (an_id)
+			Result := item_index.has (an_id.as_upper)
 		end
 
 feature -- Commands

@@ -340,7 +340,9 @@ feature {NONE} -- Implementation
 								create sd.make (dmp.last_parse_content)
 
 								-- check for two schema files purporting to be the exact same schema (including release)
-								if all_schemas.has (sd.schema_id) then
+								if sd.errors.has_errors then
+									post_error (Current, "load_schema_descriptors", "model_access_e2", <<sd.schema_id, sd.errors.as_string>>)
+								elseif all_schemas.has (sd.schema_id) then
 									post_warning (Current, "load_schema_descriptors", "model_access_w2", <<sd.schema_id, schema_path>>)
 								else
 									all_schemas.put (sd, sd.schema_id)
