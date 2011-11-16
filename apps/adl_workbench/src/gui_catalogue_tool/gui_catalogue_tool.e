@@ -77,6 +77,7 @@ feature {NONE} -- Initialisation
 			add_sub_tool (archetype_explorer)
 			add_sub_tool (template_explorer)
 			add_sub_tool (metrics_viewer)
+			add_sub_tool (stats_viewer)
 			enable_selection_history
 		end
 
