@@ -43,6 +43,7 @@ feature {NONE}-- Initialization
 			create ev_serialise_adl_rb
 			create ev_serialise_dadl_rb
 			create ev_serialise_xml_rb
+			create ev_serialise_json_rb
 			create ev_flatten_with_rm_cb
 			create ev_serialise_padding_cell
 
@@ -54,6 +55,7 @@ feature {NONE}-- Initialization
 			ev_serialise_rb_vbox.extend (ev_serialise_adl_rb)
 			ev_serialise_rb_vbox.extend (ev_serialise_dadl_rb)
 			ev_serialise_rb_vbox.extend (ev_serialise_xml_rb)
+			ev_serialise_rb_vbox.extend (ev_serialise_json_rb)
 			ev_serialise_controls_vbox.extend (ev_flatten_with_rm_cb)
 			ev_serialise_controls_vbox.disable_item_expand (ev_flatten_with_rm_cb)
 			ev_serialise_controls_vbox.extend (ev_serialise_padding_cell)
@@ -69,9 +71,10 @@ feature {NONE}-- Initialization
 			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_adl_rb)
 			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_dadl_rb)
 			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_xml_rb)
+			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_json_rb)
 			ev_serialise_controls_frame.set_text (create_message_content ("serialise_frame_text", Void))
 			ev_serialise_controls_frame.set_minimum_width (125)
-			ev_serialise_controls_frame.set_minimum_height (95)
+		--	ev_serialise_controls_frame.set_minimum_height (110)
 			set_serialisation_control_texts
 			ev_flatten_with_rm_cb.set_text (create_message_content ("flatten_with_rm_cb_text", Void))
 			ev_flatten_with_rm_cb.set_tooltip (create_message_content ("flatten_with_rm_cb_tooltip", Void))
@@ -80,6 +83,7 @@ feature {NONE}-- Initialization
 			ev_serialise_adl_rb.select_actions.extend (agent try_repopulate)
 			ev_serialise_dadl_rb.select_actions.extend (agent try_repopulate)
 			ev_serialise_xml_rb.select_actions.extend (agent try_repopulate)
+			ev_serialise_json_rb.select_actions.extend (agent try_repopulate)
 			ev_flatten_with_rm_cb.select_actions.extend (agent try_repopulate)
 
 			differential_view := True
@@ -111,7 +115,7 @@ feature {NONE} -- Implementation
 
 	ev_serialise_controls_frame: EV_FRAME
 
-	ev_serialise_adl_rb, ev_serialise_dadl_rb, ev_serialise_xml_rb: EV_RADIO_BUTTON
+	ev_serialise_adl_rb, ev_serialise_dadl_rb, ev_serialise_xml_rb, ev_serialise_json_rb: EV_RADIO_BUTTON
 
 	ev_flatten_with_rm_cb: EV_CHECK_BUTTON
 
@@ -129,6 +133,8 @@ feature {NONE} -- Implementation
 				populate_dadl_text
 			elseif ev_serialise_xml_rb.is_selected then
 				populate_xml_text
+			elseif ev_serialise_json_rb.is_selected then
+				populate_json_text
 			end
 		end
 
@@ -162,6 +168,16 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	populate_json_text
+			-- Display the selected archetype's differential or flat text in `ev_serialised_rich_text', in JSON format.
+		do
+			if differential_view then
+				ev_serialised_rich_text.set_text (utf8 (source.serialise_object (False, Syntax_type_json)))
+			else
+				ev_serialised_rich_text.set_text (utf8 (source.serialise_object (True, Syntax_type_json)))
+			end
+		end
+
 	set_serialisation_control_texts
 		do
 			ev_serialise_adl_rb.set_text ("ADL " + adl_version_for_flat_output)
@@ -170,6 +186,8 @@ feature {NONE} -- Implementation
 			ev_serialise_dadl_rb.set_tooltip (create_message_content ("show_dadl_serialisation_tooltip", <<adl_version_for_flat_output>>))
 			ev_serialise_xml_rb.set_text ("XML " + adl_version_for_flat_output)
 			ev_serialise_xml_rb.set_tooltip (create_message_content ("show_xml_serialisation_tooltip", <<adl_version_for_flat_output>>))
+			ev_serialise_json_rb.set_text ("JSON " + adl_version_for_flat_output)
+			ev_serialise_json_rb.set_tooltip (create_message_content ("show_json_serialisation_tooltip", <<adl_version_for_flat_output>>))
 		end
 
 end

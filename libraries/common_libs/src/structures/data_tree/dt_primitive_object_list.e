@@ -46,21 +46,21 @@ feature -- Conversion
 
 	as_string: STRING
 		do
-			create Result.make(0)
+			create Result.make (0)
 			from value.start until value.off loop
 				if value.index > 1 then
-					Result.append(", ")
+					Result.append (", ")
 				end
 				Result.append (primitive_value_to_dadl_string(value.item))
 				value.forth
 			end
 			if value.count = 1 then -- append syntactic indication of list continuation
-				Result.append(", ...")
+				Result.append (", ...")
 			end
 		end
 
-	as_serialised_string (string_converter: attached FUNCTION [ANY, TUPLE [ANY], STRING]; delimiter, end_delimiter: STRING; cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
-			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
+	as_serialised_string (value_serialiser: attached FUNCTION [ANY, TUPLE [ANY], STRING]; delimiter, end_delimiter: STRING; cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
+			-- generate a cleaned form of this object as a structured string with specified delimiters, and cleaning with `cleaner'
 		do
 			create Result.make(0)
 			from value.start until value.off loop
@@ -68,13 +68,13 @@ feature -- Conversion
 					Result.append (delimiter)
 				end
 				if attached {STRING} value.item as s and attached cleaner then
-					Result.append (string_converter.item ([cleaner.item ([s])]))
+					Result.append (value_serialiser.item ([cleaner.item ([s])]))
 				else
-					Result.append (string_converter.item ([value.item]))
+					Result.append (value_serialiser.item ([value.item]))
 				end
 				value.forth
 			end
-			if attached end_delimiter and value.count = 1 then -- append syntactic indication of list continuation
+			if attached end_delimiter and value.count = 1 then
 				Result.append (end_delimiter)
 			end
 		end

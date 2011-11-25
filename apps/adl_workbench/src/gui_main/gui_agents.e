@@ -16,30 +16,30 @@ class
 
 feature -- Access
 
-	history_update_agent: PROCEDURE [ANY, TUPLE]
+	history_update_agent: detachable PROCEDURE [ANY, TUPLE]
 			-- agent to update history toolbar (left & right arrow controls)
 
-	history_set_active_agent: PROCEDURE [ANY, TUPLE [GUI_TOOL]]
+	history_set_active_agent: detachable PROCEDURE [ANY, TUPLE [GUI_TOOL]]
 			-- agent to set a GUI_TOOL as active for history, then update history toolbar (left & right arrow controls)
 
-	console_tool_append_agent: PROCEDURE [ANY, TUPLE [STRING]]
+	console_tool_append_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
 			-- agent to update global console
 
-	select_archetype_agent, select_archetype_in_new_tool_agent: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]]
+	select_archetype_agent, select_archetype_in_new_tool_agent: detachable PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]]
 
-	select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
+	select_class_agent, select_class_in_new_tool_agent: detachable PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
 
-	select_rm_agent, select_rm_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_SCHEMA]]
+	select_rm_agent, select_rm_in_new_tool_agent: detachable PROCEDURE [ANY, TUPLE [BMM_SCHEMA]]
 
-	select_class_in_rm_schema_tool_agent: PROCEDURE [ANY, TUPLE [STRING]]
+	select_class_in_rm_schema_tool_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
 
-	update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]
+	update_all_tools_rm_icons_setting_agent: detachable PROCEDURE [ANY, TUPLE]
 
-	select_archetype_from_gui_data_agent: PROCEDURE [ANY, TUPLE [EV_ANY]]
+	select_archetype_from_gui_data_agent: detachable PROCEDURE [ANY, TUPLE [EV_ANY]]
 			-- agent provided by upper level of GUI for doing something
 			-- when an archetype in this tool is selected
 
-	show_tool_with_artefact_agent: FUNCTION [ANY, TUPLE [STRING], BOOLEAN]
+	show_tool_with_artefact_agent: detachable FUNCTION [ANY, TUPLE [STRING], BOOLEAN]
 			-- if there is a live tool with artefact with id = `an_id' then show it and return True
 
 feature -- Modification

@@ -317,18 +317,6 @@ feature {NONE} -- Implementation
 
 	rm_schema: BMM_SCHEMA
 
-	ontologies: ARRAYED_STACK [ARCHETYPE_ONTOLOGY]
-			-- we use a stack here to handle ontologies inside operational templates
-
-	ontology: attached ARCHETYPE_ONTOLOGY
-			-- The ontology for `source_archetype'.
-		require
-			ontologies_attached: attached ontologies
-			ontologies_has_item: not ontologies.off
-		do
-			Result := ontologies.item
-		end
-
 	gui_node_map: HASH_TABLE [EV_TREE_ITEM, ARCHETYPE_CONSTRAINT]
 			-- xref table from archetype definition nodes to GUI nodes (note that some C_X
 			-- nodes have child GUI nodes; the visitor takes care of the details)
@@ -349,7 +337,6 @@ feature {NONE} -- Implementation
 		do
 			create tree_item_stack.make (0)
 			create gui_node_map.make(0)
-			create ontologies.make (0)
 
 			rm_schema := source.rm_schema
 
@@ -561,7 +548,7 @@ feature {NONE} -- Implementation
 			Result := an_inv.as_string
 
 			if not in_technical_mode then
-				Result := ontology.substitute_codes (Result, current_language)
+				Result := source_archetype.ontology.substitute_codes (Result, current_language)
 			end
 		end
 

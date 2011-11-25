@@ -12,7 +12,7 @@ note
 	last_change: "$LastChangedDate$"
 
 class
-	SHARED_HISTORY_TOOLBAR
+	SHARED_GUI_HISTORY_TOOLBAR
 
 feature -- History Bar control
 

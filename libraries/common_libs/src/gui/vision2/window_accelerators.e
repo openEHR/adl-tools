@@ -22,7 +22,7 @@ inherit
 
 feature {NONE} -- Implementation
 
-	accelerators: EV_ACCELERATOR_LIST
+	accelerators: detachable EV_ACCELERATOR_LIST
 			-- Key combination shortcuts associated with the main window.
 		deferred
 		end

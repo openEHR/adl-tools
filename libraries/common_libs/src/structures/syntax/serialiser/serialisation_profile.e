@@ -64,7 +64,7 @@ feature {ANY_SERIALISER} -- Access
 feature  {ANY_SERIALISER} -- Factory
 
 	apply_style (elem: attached STRING; a_style: INTEGER): attached STRING
-			-- apply `a_style' to `elem', using attr 'class'
+			-- apply `a_style' to `elem'
 		require
 			A_style_valid: styles.has(a_style)
 		deferred
@@ -78,7 +78,7 @@ feature  {ANY_SERIALISER} -- Factory
 		do
 			create Result.make(0)
 			from i := 1 until i > indent_level loop
-				Result.append(format_items.item(FMT_INDENT))
+				Result.append (format_items.item (FMT_INDENT))
 				i := i + 1
 			end
 		end

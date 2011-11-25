@@ -18,7 +18,7 @@ note
 class GUI_DOCKING_EDITOR_CONTROLLER
 
 inherit
-	SHARED_HISTORY_TOOLBAR
+	SHARED_GUI_HISTORY_TOOLBAR
 
 feature -- Definitions
 

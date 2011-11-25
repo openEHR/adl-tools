@@ -40,7 +40,7 @@ inherit
 			copy, default_create
 		end
 
-	SHARED_HISTORY_TOOLBAR
+	SHARED_GUI_HISTORY_TOOLBAR
 		undefine
 			copy, default_create
 		end

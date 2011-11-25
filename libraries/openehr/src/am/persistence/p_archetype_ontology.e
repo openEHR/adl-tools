@@ -63,7 +63,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	terminologies_available: ARRAYED_LIST [STRING]
+	terminologies_available: detachable ARRAYED_LIST [STRING]
 
 	term_definitions: attached HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
 			-- table of term definitions, keyed by code, keyed by language
@@ -71,10 +71,10 @@ feature -- Access
 	constraint_definitions: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
 			-- table of constraint definitions, keyed by code, keyed by language
 
-	term_bindings: HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
+	term_bindings: detachable HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
 			-- tables of bindings of external terms to internal codes, keyed by external terminology id
 
-	constraint_bindings: HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
+	constraint_bindings: detachable HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
 			-- table of constraint bindings in the form of strings "service::query", keyed by terminology
 
 	terminology_extracts: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]

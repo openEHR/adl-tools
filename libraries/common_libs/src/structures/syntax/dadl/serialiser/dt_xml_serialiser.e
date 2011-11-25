@@ -53,7 +53,7 @@ feature -- Modification
 				checked_for_rules := True
 			end
 
-			-- if we are on the root nod, output the XML header
+			-- if we are on the root node, output the XML header
 			if a_node.is_root then
 				if attached serialisation_rules.doc_header then
 					doc_hdr := serialisation_rules.doc_header.twin
@@ -77,14 +77,14 @@ feature -- Modification
 					doc_hdr.replace_substring_all ("$doc_tag", doc_tag_value)
 					last_result.append (doc_hdr + format_item(FMT_NEWLINE))
 				else
-					last_result.append (xml_tag_start (serialisation_rules.default_doc_tag, Void) + format_item(FMT_NEWLINE))
+					last_result.append (xml_tag_start (serialisation_rules.default_doc_tag, Void) + format_item (FMT_NEWLINE))
 				end
 
 			-- only output object-level tag for object inside a container
 			elseif a_node.parent.is_container_type then
 				-- output the starting tag with attributes
 				last_result.append (create_indent (depth//2) + xml_tag_start (a_node.parent.im_attr_name,
-					xml_attrs_for_dt_complex_object (a_node)) + format_item(FMT_NEWLINE))
+					xml_attrs_for_dt_complex_object (a_node)) + format_item (FMT_NEWLINE))
 			end
 		end
 
@@ -191,14 +191,16 @@ feature -- Modification
 
 	start_primitive_object_interval (a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER)
 			-- start serialising a DT_PRIMITIVE_OBJECT_INTERVAL
+		local
+			str: STRING
 		do
 			-- generate an XML tag if object in a container
 			if a_node.parent.is_container_type then
 				last_result.append (create_indent (depth//2) + xml_tag_start (a_node.parent.im_attr_name, Void))
-			else
-				last_result.remove_tail (format_item (FMT_NEWLINE).count)
 			end
-			last_result.append (a_node.as_string)
+			str := primitive_interval_to_xml_tagged_string (a_node.value)
+			str.append ("%N")
+			last_result.append (indented (str, create_indent (depth//2 + 1)))
 			last_object_primitive := True
 		end
 
@@ -206,7 +208,9 @@ feature -- Modification
 			-- end serialising a DT_PRIMITIVE_OBJECT_INTERVAL
 		do
 			if a_node.parent.is_container_type then
-				last_result.append (xml_tag_end (a_node.parent.im_attr_name) + format_item(FMT_NEWLINE))
+				last_result.append (create_indent (depth//2))
+				last_result.append (xml_tag_end (a_node.parent.im_attr_name))
+				last_result.append (format_item (FMT_NEWLINE))
 			end
 		end
 
@@ -354,6 +358,45 @@ feature {NONE} -- Implementation
 			Result.append (create_indent (an_indent) + xml_tag_start (a_tag, Void))
 			Result.append (primitive_value_to_simple_string (a_prim_val))
 			Result.append (xml_tag_end (a_tag) + format_item(FMT_NEWLINE))
+		end
+
+	primitive_interval_to_xml_tagged_string (value: INTERVAL[PART_COMPARABLE]): STRING
+			-- generate a structured, tagged form of this object
+			-- FIXME: the 'to_reference' in the below should not be required, but BOOLEAN does not conform to ANY when it is an agent argument!
+		do
+			create Result.make(0)
+			if value.lower_unbounded then
+				Result.append (xml_tag_start ("lower_unbounded", Void))
+				Result.append (primitive_value_to_simple_string (value.lower_unbounded))
+				Result.append (xml_tag_end ("lower_unbounded"))
+				Result.append ("%N")
+			else
+				Result.append (xml_tag_start ("lower", Void))
+				Result.append (primitive_value_to_simple_string (value.lower))
+				Result.append (xml_tag_end ("lower"))
+				Result.append ("%N")
+				if not value.lower_included then
+					Result.append (xml_tag_start ("lower_included", Void))
+					Result.append (primitive_value_to_simple_string (value.lower_included))
+					Result.append (xml_tag_end ("lower_included"))
+					Result.append ("%N")
+				end
+			end
+			if value.upper_unbounded then
+				Result.append (xml_tag_start ("upper_unbounded", Void))
+				Result.append (primitive_value_to_simple_string (value.upper_unbounded))
+				Result.append (xml_tag_end ("upper_unbounded"))
+			else
+				Result.append (xml_tag_start ("upper", Void))
+				Result.append (primitive_value_to_simple_string (value.upper))
+				Result.append (xml_tag_end ("upper"))
+				if not value.upper_included then
+					Result.append ("%N")
+					Result.append (xml_tag_start ("upper_included", Void))
+					Result.append (primitive_value_to_simple_string (value.upper_included.to_reference))
+					Result.append (xml_tag_end ("upper_included"))
+				end
+			end
 		end
 
 end

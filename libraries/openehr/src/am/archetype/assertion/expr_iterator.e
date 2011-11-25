@@ -24,9 +24,7 @@ create
 
 feature -- Initialisation
 
-	make(a_target: EXPR_ITEM)
-		require
-			a_target /= Void
+	make (a_target: EXPR_ITEM)
 		do
 			target := a_target
 		end
@@ -39,9 +37,6 @@ feature -- Traversal
 
 	do_all(node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE[EXPR_ITEM, INTEGER]])
 			-- do enter_action and exit_action to all nodes in the structure
-		require
-			Enter_action_valid: node_enter_action /= Void
-			Exit_action_valid: node_exit_action /= Void
 		do
 			depth := 0
 			do_all_nodes(target, node_enter_action, node_exit_action)
@@ -49,33 +44,21 @@ feature -- Traversal
 
 feature {NONE} -- Implementation
 
-	do_all_nodes(a_target: EXPR_ITEM; node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE[EXPR_ITEM, INTEGER]])
-		require
-			Target_exists: a_target /= Void
-		local
-			a_binary_op: EXPR_BINARY_OPERATOR
-			a_unary_op: EXPR_UNARY_OPERATOR
+	do_all_nodes (a_target: EXPR_ITEM; node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE[EXPR_ITEM, INTEGER]])
 		do
 			depth := depth + 1
-			node_enter_action.call([a_target, depth])
-			a_binary_op ?= a_target
-			if a_binary_op /= Void then
+			node_enter_action.call ([a_target, depth])
+			if attached {EXPR_BINARY_OPERATOR} a_target as a_binary_op then
 				do_all_nodes(a_binary_op.left_operand, node_enter_action, node_exit_action)
 				do_all_nodes(a_binary_op.right_operand, node_enter_action, node_exit_action)
-			else
-				a_unary_op ?= a_target
-				if a_unary_op /= Void then
-					do_all_nodes(a_unary_op.operand, node_enter_action, node_exit_action)
-				end
+			elseif attached {EXPR_UNARY_OPERATOR} a_target as a_unary_op then
+				do_all_nodes(a_unary_op.operand, node_enter_action, node_exit_action)
 			end
 			node_exit_action.call([a_target, depth])
 			depth := depth - 1
 		end
 
 	depth: INTEGER
-
-invariant
-	target_exists: target /= Void
 
 end
 

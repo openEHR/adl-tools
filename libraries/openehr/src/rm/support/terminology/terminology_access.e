@@ -20,10 +20,10 @@ create
 
 feature -- Initialisation
 
-	make(an_id: STRING)
+	make (an_id: STRING)
 			-- make a terminology interface with `an_id'
 		require
-			Id_valid: an_id /= Void and then not an_id.is_empty
+			Id_valid: not an_id.is_empty
 		do
 			id := an_id
 		ensure
@@ -37,47 +37,50 @@ feature -- Access
 
 	all_codes: SET [CODE_PHRASE]
 		do
+			create {ARRAYED_SET [CODE_PHRASE]} Result.make (0)
 		end
 
 	all_group_ids: SET [STRING]
 		do
+			create {ARRAYED_SET [STRING]} Result.make (0)
 		end
 
 	codes_for_group_id (a_group_id: STRING): SET [CODE_PHRASE]
 		do
+			create {ARRAYED_SET [CODE_PHRASE]} Result.make (0)
 		end
 
 	codes_for_group_name (a_group_rubric, a_language: STRING): SET [CODE_PHRASE]
 		do
+			create {ARRAYED_SET [CODE_PHRASE]} Result.make (0)
 		end
 
 	rubric_for_code (a_code: STRING; a_lang: STRING): STRING
 		do
+			create Result.make_empty
 		end
 
 	code_for_rubric(a_rubric, a_lang: STRING): CODE_PHRASE
 			--
 		do
-
+			create Result.default_create
 		end
 
 feature -- Status Report
 
-	has(a_code: CODE_PHRASE): BOOLEAN
+	has (a_code: CODE_PHRASE): BOOLEAN
 			-- 	True if a_code exists in this code set
-		require
-			Code_exists: a_code /= Void
 		do
 
 		end
 
 	has_group_id (gid: STRING): BOOLEAN
 		require
-			gid_valid: gid /= Void and then not gid.is_empty
+			gid_valid: not gid.is_empty
 		do
 		end
 
-	has_code_for_group_id (group_id: String; a_code: CODE_PHRASE): BOOLEAN
+	has_code_for_group_id (group_id: STRING; a_code: CODE_PHRASE): BOOLEAN
 			-- True if ‘a_code’ is known in group ‘group_id’ in the openEHR terminology.
 		do
 

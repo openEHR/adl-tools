@@ -45,6 +45,8 @@ feature {NONE} -- Initialization
 
 			create report_controls.make
 			ev_root_container.extend (report_controls.ev_root_container)
+			add_sub_tool (report_controls)
+			enable_selection_history
 		end
 
 feature -- Access

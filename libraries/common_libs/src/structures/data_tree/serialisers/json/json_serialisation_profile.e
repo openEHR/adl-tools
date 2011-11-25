@@ -1,55 +1,50 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Serialiser Manager for all DT serialiser types"
-	keywords:    "test, Data Tree"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	description: "Common routines for JSON DT serialisation"
+	keywords:    "JSON, serialisation"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class DT_VISITOR_ITERATOR
+deferred class JSON_SERIALISATION_PROFILE
 
-create
-	make
+inherit
+	SERIALISATION_PROFILE
 
-feature -- Initialisation
+feature {ANY_SERIALISER} -- Access
 
-	make(a_target: DT_COMPLEX_OBJECT_NODE; a_visitor: DT_VISITOR)
-			-- create a new iterator targetted to the DT tree `a_target'
-		require
-			Target_exists: a_target /= Void
-			Visitor_exists: a_visitor /= Void
-		do
-			create tree_iterator.make (a_target.representation)
-			visitor := a_visitor
+	format_items: HASH_TABLE [STRING, INTEGER]
+			-- formatting items
+		once
+			create Result.make(0)
+			Result.put(" ",			FMT_SPACE)
+			Result.put("%N",		FMT_NEWLINE)
+			Result.put("%T",		FMT_INDENT)
+			Result.put(", ",		FMT_LIST_ITEM_SEPARATOR)
 		end
 
-feature -- Command
-
-	do_all
-			-- start the serialisation process; the result will be in `serialiser_output'
-		do
-			tree_iterator.do_all (agent node_enter_action (?,?), agent node_exit_action (?,?))
+	styles: HASH_TABLE [STRING, INTEGER]
+			-- styles in this format, keyed by logical name
+		once
+			create Result.make(0)
 		end
 
-feature {NONE} -- Implementation
-
-	tree_iterator: OG_ITERATOR
-
-	visitor: DT_VISITOR
-
-	node_enter_action (a_node: attached OG_ITEM; indent_level: INTEGER)
-		do
-			a_node.enter_subtree (visitor, indent_level)
+	quote_patterns: HASH_TABLE[STRING, STRING]
+			-- styles in this format, keyed by logical name
+		once
+			create Result.make(0)
 		end
 
-	node_exit_action (a_node: attached OG_ITEM; indent_level: INTEGER)
+feature {ANY_SERIALISER} -- Factory
+
+	apply_style (elem:STRING; a_style:INTEGER): STRING
+			-- apply `a_style' to `elem'
 		do
-			a_node.exit_subtree (visitor, indent_level)
 		end
 
 end
@@ -69,7 +64,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is dadl_serialiser_mgr.e.
+--| The Original Code is xml_serialisation_profile.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

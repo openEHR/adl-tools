@@ -1,55 +1,48 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Serialiser Manager for all DT serialiser types"
-	keywords:    "test, Data Tree"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	description: "Serialisation profile for JSON syntax"
+	keywords:    "JSON, serialisation"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class DT_VISITOR_ITERATOR
+class JSON_DT_SERIALISATION_PROFILE
+
+inherit
+	JSON_SERIALISATION_PROFILE
+
+	JSON_SYMBOLS
+		export
+			{NONE} all
+		end
 
 create
 	make
 
-feature -- Initialisation
-
-	make(a_target: DT_COMPLEX_OBJECT_NODE; a_visitor: DT_VISITOR)
-			-- create a new iterator targetted to the DT tree `a_target'
-		require
-			Target_exists: a_target /= Void
-			Visitor_exists: a_visitor /= Void
-		do
-			create tree_iterator.make (a_target.representation)
-			visitor := a_visitor
-		end
-
-feature -- Command
-
-	do_all
-			-- start the serialisation process; the result will be in `serialiser_output'
-		do
-			tree_iterator.do_all (agent node_enter_action (?,?), agent node_exit_action (?,?))
-		end
-
 feature {NONE} -- Implementation
 
-	tree_iterator: OG_ITERATOR
-
-	visitor: DT_VISITOR
-
-	node_enter_action (a_node: attached OG_ITEM; indent_level: INTEGER)
-		do
-			a_node.enter_subtree (visitor, indent_level)
+	symbols: HASH_TABLE [STRING, INTEGER]
+			-- keywords in this format, keyed by logical name
+		once
+			create Result.make(0)
+			Result.put ("{", SYM_JSON_START_OBJECT)
+			Result.put ("}", SYM_JSON_END_OBJECT)
+			Result.put ("[", SYM_JSON_START_ARRAY)
+			Result.put ("]", SYM_JSON_END_ARRAY)
+			Result.put (",", SYM_JSON_ITEM_DELIMITER)
+			Result.put (": ", SYM_JSON_EQ)
+			Result.put ("%"", Sym_json_attribute_name_delimiter)
 		end
 
-	node_exit_action (a_node: attached OG_ITEM; indent_level: INTEGER)
-		do
-			a_node.exit_subtree (visitor, indent_level)
+	tags: HASH_TABLE[STRING, INTEGER]
+			-- keywords in this format, keyed by logical name
+		once
+			create Result.make(0)
 		end
 
 end
@@ -69,7 +62,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is dadl_serialiser_mgr.e.
+--| The Original Code is native_dadl_serialisation_profile.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

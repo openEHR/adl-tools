@@ -147,6 +147,7 @@ templates = <
 		["show_adl_serialisation_tooltip"] = <"Show ADL $1 serialisation">
 		["show_dadl_serialisation_tooltip"] = <"Show dADL $1 serialisation">
 		["show_xml_serialisation_tooltip"] = <"Show XML $1 serialisation">
+		["show_json_serialisation_tooltip"] = <"Show JSON $1 serialisation">
 
 		-- GUI_CLASS_TOOL
 		["closure_tab_text"] = <"Closure">

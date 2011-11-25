@@ -16,11 +16,6 @@ class XML_DT_SERIALISATION_PROFILE
 inherit
 	XML_SERIALISATION_PROFILE
 
-	DADL_TOKENS
-		export
-			{NONE} all
-		end
-
 create
 	make
 
