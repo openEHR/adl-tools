@@ -22,10 +22,12 @@ inherit
 
 feature {NONE} -- Initialisation
 
-	make (an_edit_archetype_agent: like edit_archetype_agent)
+	make (an_edit_archetype_agent: like edit_archetype_agent;
+		a_save_archetype_agent: like save_archetype_agent)
 			-- Create controller for the tree representing archetype files found in `archetype_directory'.
 		do
 			edit_archetype_agent := an_edit_archetype_agent
+			save_archetype_agent := a_save_archetype_agent
 
 			-- create widgets
 			create ev_root_container
@@ -92,7 +94,10 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
-	edit_archetype_agent: PROCEDURE [ANY, TUPLE]
+	edit_archetype_agent: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]]
+
+	save_archetype_agent: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE, BOOLEAN, BOOLEAN]]
+			-- agent with signature (aca: ARCH_CAT_ARCHETYPE; diff_flag, native_format_flag: BOOLEAN)
 
 	archetype_node_handler (ev_ti: EV_TREE_ITEM; x,y, button: INTEGER)
 			-- creates the context menu for a right click action for an ARCH_REP_ARCHETYPE node
@@ -110,8 +115,20 @@ feature {NONE} -- Implementation
 				an_mi.set_pixmap (pixmaps ["archetype_tool_new"])
 				menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (create_message_content ("edit_source", Void), edit_archetype_agent)
+				create an_mi.make_with_text_and_action (create_message_content ("edit_source", Void), agent (an_aca: ARCH_CAT_ARCHETYPE) do edit_archetype_agent.call ([an_aca]) end (aca))
 				an_mi.set_pixmap (pixmaps ["edit"])
+				menu.extend (an_mi)
+
+				create an_mi.make_with_text_and_action (create_message_content ("save_archetype_as", Void), agent (an_aca: ARCH_CAT_ARCHETYPE) do save_archetype_agent.call ([an_aca, True, True]) end (aca))
+	--			an_mi.set_pixmap (pixmaps ["save"])
+				menu.extend (an_mi)
+
+				create an_mi.make_with_text_and_action (create_message_content ("export_archetype_as", Void), agent (an_aca: ARCH_CAT_ARCHETYPE) do save_archetype_agent.call ([an_aca, True, False]) end (aca))
+	--			an_mi.set_pixmap (pixmaps ["save"])
+				menu.extend (an_mi)
+
+				create an_mi.make_with_text_and_action (create_message_content ("export_flat_archetype_as", Void), agent (an_aca: ARCH_CAT_ARCHETYPE) do save_archetype_agent.call ([an_aca, False, False]) end (aca))
+	--			an_mi.set_pixmap (pixmaps ["save"])
 				menu.extend (an_mi)
 
 				menu.show

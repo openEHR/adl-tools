@@ -39,11 +39,11 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (an_edit_archetype_agent: like edit_archetype_agent)
+	make (an_edit_archetype_agent: like edit_archetype_agent; a_save_archetype_agent: like save_archetype_agent)
 			-- Create controller for the tree representing archetype files found in `archetype_directory'.
 		do
 			artefact_types := <<{ARTEFACT_TYPE}.archetype, {ARTEFACT_TYPE}.template_component, {ARTEFACT_TYPE}.template>>
-			make_tree_control (an_edit_archetype_agent)
+			make_tree_control (an_edit_archetype_agent, a_save_archetype_agent)
   			ev_tree.set_minimum_height (200)
 		end
 

@@ -28,7 +28,7 @@ inherit
 	SHARED_ARCHETYPE_SERIALISERS
 		export
 			{NONE} all
-			{ANY} has_archetype_serialiser_format, archetype_serialiser_formats
+			{ANY} has_archetype_native_serialiser_format, archetype_native_serialiser_formats
 		end
 
 	GUI_SEARCHABLE_TOOL
@@ -45,8 +45,8 @@ feature {NONE} -- Initialisation
 
 	make
 		do
-			create archetype_explorer.make (agent edit_archetype)
-			create template_explorer.make (agent edit_archetype, agent archetype_explorer.ensure_item_visible)
+			create archetype_explorer.make (agent edit_archetype, agent save_archetype)
+			create template_explorer.make (agent edit_archetype, agent save_archetype, agent archetype_explorer.ensure_item_visible)
 			create metrics_viewer.make
 			create stats_viewer.make
 
@@ -179,7 +179,7 @@ feature -- Commands
 			end
 		end
 
-	edit_archetype
+	edit_source_archetype
 			-- Launch the external editor with the archetype currently selected in `archetype_directory'.
 		local
 			question_dialog: EV_QUESTION_DIALOG
@@ -187,81 +187,31 @@ feature -- Commands
 			path: STRING
 		do
 			if selection_history.has_selected_archetype then
-				path := selection_history.selected_archetype.differential_path
-				if selection_history.selected_archetype.has_differential_file and selection_history.selected_archetype.has_legacy_flat_file then
-					create question_dialog.make_with_text (create_message_line("edit_which_file_question",
-						<<file_system.basename (path), file_system.basename (selection_history.selected_archetype.legacy_flat_path)>>))
-					question_dialog.set_title ("Edit " + selection_history.selected_archetype.qualified_name)
-					question_dialog.set_buttons (<<"Differential", "Legacy (ADL 1.4 flat)">>)
-					question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
-					if question_dialog.selected_button.starts_with ("L") then
-						path := selection_history.selected_archetype.legacy_flat_path
-					end
-				elseif selection_history.selected_archetype.has_legacy_flat_file then
-					create info_dialog.make_with_text (create_message_line ("edit_legacy_file_info",
-						<<file_system.basename (selection_history.selected_archetype.legacy_flat_path)>>))
-					info_dialog.set_title ("Edit " + selection_history.selected_archetype.id.as_string)
-					info_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
-					path := selection_history.selected_archetype.legacy_flat_path
-				end
-				execution_environment.launch (editor_app_command + " %"" + path + "%"")
+				edit_archetype (selection_history.selected_archetype)
 			end
 		end
 
-	save_archetype_as
-			-- Save to an ADL or HTML file via a GUI file save dialog.
-		local
-			ok_to_write: BOOLEAN
-			question_dialog: EV_QUESTION_DIALOG
-			error_dialog: EV_INFORMATION_DIALOG
-			file: PLAIN_TEXT_FILE
-			save_dialog: EV_FILE_SAVE_DIALOG
-			name, format: STRING
+	save_source_archetype_as
+			-- Save source (differential) archetype to a user-specified path
 		do
 			if selection_history.has_validated_selected_archetype then
-				name := extension_replaced (selection_history.selected_archetype.full_path, "")
+				save_archetype (selection_history.selected_archetype, True, True)
+			end
+		end
 
-				create save_dialog
-				save_dialog.set_title ("Save Archetype")
-				save_dialog.set_file_name (name)
-				save_dialog.set_start_directory (current_work_directory)
+	export_source_archetype_as
+			-- Export source archetype to a user-specified path
+		do
+			if selection_history.has_validated_selected_archetype then
+				save_archetype (selection_history.selected_archetype, True, False)
+			end
+		end
 
-				from archetype_serialiser_formats.start until archetype_serialiser_formats.off loop
-					format := archetype_serialiser_formats.item
-					save_dialog.filters.extend (["*" + archetype_file_extensions [format], "Save as " + format.as_upper])
-					archetype_serialiser_formats.forth
-				end
-
-				save_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
-				name := save_dialog.file_name.as_string_8
-
-				if not name.is_empty then
-					set_current_work_directory (file_system.dirname (name))
-					format := archetype_serialiser_formats [save_dialog.selected_filter_index]
-
-					if not file_system.has_extension (name, archetype_file_extensions [format]) then
-						name.append (archetype_file_extensions [format])
-					end
-
-					ok_to_write := True
-					create file.make (name)
-
-					if file.exists then
-						create question_dialog.make_with_text (create_message_content ("file_exists_replace_question", <<file_system.basename (name)>>))
-						question_dialog.set_title ("Save as " + format.as_upper)
-						question_dialog.set_buttons (<<"Yes", "No">>)
-						question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
-						ok_to_write := question_dialog.selected_button.same_string ("Yes")
-					end
-
-					if ok_to_write then
-						selection_history.selected_archetype.save_differential_as (name, format)
-						gui_agents.console_tool_append_agent.call ([selection_history.selected_archetype.status])
-					end
-				end
-			else
-				create error_dialog.make_with_text (create_message_content ("compile_before_serialising", Void))
-				error_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+	export_flat_archetype_as
+			-- Export flat archetype to a user-specified path
+		do
+			if selection_history.has_validated_selected_archetype then
+				save_archetype (selection_history.selected_archetype, False, False)
 			end
 		end
 
@@ -348,6 +298,103 @@ feature {NONE} -- Implementation
 			else
 				ev_root_container.item_tab (template_explorer.ev_root_container).set_pixmap (pixmaps ["template_catalog_grey"])
 			end
+		end
+
+	save_archetype (aca: ARCH_CAT_ARCHETYPE; diff_flag, native_format_flag: BOOLEAN)
+			-- Export differential or flat archetype to a user-specified path
+		local
+			ok_to_write: BOOLEAN
+			question_dialog: EV_QUESTION_DIALOG
+			error_dialog: EV_INFORMATION_DIALOG
+			file: PLAIN_TEXT_FILE
+			save_dialog: EV_FILE_SAVE_DIALOG
+			name, format: STRING
+			format_list: ARRAYED_LIST [STRING]
+			dialog_title: STRING
+		do
+			if aca.is_valid then
+				if native_format_flag then
+					format_list := archetype_native_serialiser_formats
+					dialog_title := "Save Archetype"
+				else
+					format_list := archetype_all_serialiser_formats
+					dialog_title := "Export Archetype"
+				end
+				name := extension_replaced (aca.full_path, "")
+
+				create save_dialog
+				save_dialog.set_title (dialog_title)
+				save_dialog.set_file_name (name)
+				save_dialog.set_start_directory (current_work_directory)
+
+				-- ask the user what format
+				from format_list.start until format_list.off loop
+					format := format_list.item
+					save_dialog.filters.extend (["*" + archetype_file_extensions [format], "Save as " + format.as_upper])
+					format_list.forth
+				end
+
+				save_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+				name := save_dialog.file_name.as_string_8
+
+				if not name.is_empty then
+					-- finalise the file path & create a handle
+					set_current_work_directory (file_system.dirname (name))
+					format := format_list [save_dialog.selected_filter_index]
+					if not file_system.has_extension (name, archetype_file_extensions [format]) then
+						name.append (archetype_file_extensions [format])
+					end
+					create file.make (name)
+
+					-- if the file already exists, ask user about overwrite
+					ok_to_write := True
+					if file.exists then
+						create question_dialog.make_with_text (create_message_content ("file_exists_replace_question", <<file_system.basename (name)>>))
+						question_dialog.set_title ("Save as " + format.as_upper)
+						question_dialog.set_buttons (<<"Yes", "No">>)
+						question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+						ok_to_write := question_dialog.selected_button.same_string ("Yes")
+					end
+					if ok_to_write then
+						if diff_flag then
+							aca.save_differential_as (name, format)
+						else
+							aca.save_flat_as (name, format)
+						end
+						gui_agents.console_tool_append_agent.call ([aca.status])
+					end
+				end
+			else
+				create error_dialog.make_with_text (create_message_content ("compile_before_serialising", Void))
+				error_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+			end
+		end
+
+	edit_archetype (aca: ARCH_CAT_ARCHETYPE)
+			-- Launch the external editor with the archetype currently selected in `archetype_directory'.
+		local
+			question_dialog: EV_QUESTION_DIALOG
+			info_dialog: EV_INFORMATION_DIALOG
+			path: STRING
+		do
+			path := aca.differential_path
+			if aca.has_differential_file and aca.has_legacy_flat_file then
+				create question_dialog.make_with_text (create_message_line ("edit_which_file_question",
+					<<file_system.basename (path), file_system.basename (aca.legacy_flat_path)>>))
+				question_dialog.set_title ("Edit " + aca.qualified_name)
+				question_dialog.set_buttons (<<"Differential", "Legacy (ADL 1.4 flat)">>)
+				question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+				if question_dialog.selected_button.starts_with ("L") then
+					path := aca.legacy_flat_path
+				end
+			elseif aca.has_legacy_flat_file then
+				create info_dialog.make_with_text (create_message_line ("edit_legacy_file_info",
+					<<file_system.basename (aca.legacy_flat_path)>>))
+				info_dialog.set_title ("Edit " + aca.id.as_string)
+				info_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+				path := aca.legacy_flat_path
+			end
+			execution_environment.launch (editor_app_command + " %"" + path + "%"")
 		end
 
 end

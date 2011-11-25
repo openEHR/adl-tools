@@ -77,6 +77,8 @@ feature {NONE} -- Initialization
 			create file_menu_open
 			create l_ev_menu_separator_1
 			create file_menu_save_as
+			create file_menu_export_as
+			create file_menu_export_flat_as
 			create l_ev_menu_separator_2
 			create file_menu_exit
 
@@ -147,6 +149,8 @@ feature {NONE} -- Initialization
 			file_menu.extend (file_menu_open)
 			file_menu.extend (l_ev_menu_separator_1)
 			file_menu.extend (file_menu_save_as)
+			file_menu.extend (file_menu_export_as)
+			file_menu.extend (file_menu_export_flat_as)
 			file_menu.extend (l_ev_menu_separator_2)
 			file_menu.extend (file_menu_exit)
 
@@ -223,7 +227,9 @@ feature {NONE} -- Initialization
 			-- Set visual characteristics
 			file_menu.set_text ("&File")
 			file_menu_open.set_text ("&Open...")
-			file_menu_save_as.set_text ("Save &As...")
+			file_menu_save_as.set_text ("&Save As...")
+			file_menu_export_as.set_text ("&Export As...")
+			file_menu_export_flat_as.set_text ("Export F&lat As...")
 			file_menu_exit.set_text ("E&xit")
 
 			edit_menu.set_text ("&Edit")
@@ -276,7 +282,9 @@ feature {NONE} -- Initialization
 
 			-- Connect events.
 			file_menu_open.select_actions.extend (agent catalogue_tool.open_archetype)
-			file_menu_save_as.select_actions.extend (agent catalogue_tool.save_archetype_as)
+			file_menu_save_as.select_actions.extend (agent catalogue_tool.save_source_archetype_as)
+			file_menu_export_as.select_actions.extend (agent catalogue_tool.export_source_archetype_as)
+			file_menu_export_flat_as.select_actions.extend (agent catalogue_tool.export_flat_archetype_as)
 			file_menu_exit.select_actions.extend (agent exit_app)
 
 			edit_menu_clipboard.select_actions.extend (agent show_clipboard)
@@ -1318,9 +1326,9 @@ feature {NONE} -- GUI Widgets
 
 	menu: EV_MENU_BAR
 	file_menu, edit_menu, view_menu, repository_menu, rm_schemas_menu, xml_menu, tools_menu, help_menu: EV_MENU
-	file_menu_open, file_menu_save_as, file_menu_exit, edit_menu_copy, edit_menu_select_all, edit_menu_clipboard,
-	view_menu_differential, view_menu_flat, view_menu_new_archetype_tool, view_menu_new_class_tool,
-	view_menu_reset_layout, repository_menu_build_all,
+	file_menu_open, file_menu_save_as, file_menu_export_as, file_menu_export_flat_as, file_menu_exit, edit_menu_copy,
+	edit_menu_select_all, edit_menu_clipboard, view_menu_differential, view_menu_flat, view_menu_new_archetype_tool,
+	view_menu_new_class_tool, view_menu_reset_layout, repository_menu_build_all,
 	repository_menu_rebuild_all, repository_menu_build_subtree, repository_menu_rebuild_subtree,
 	repository_menu_export_html, repository_menu_export_repository_report, repository_menu_interrupt_build,
 	repository_menu_refresh, repository_menu_set_repository, rm_schemas_menu_reload_schemas,

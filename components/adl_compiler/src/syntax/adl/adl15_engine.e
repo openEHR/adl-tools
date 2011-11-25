@@ -21,7 +21,7 @@ inherit
 	SHARED_ARCHETYPE_SERIALISERS
 		export
 			{NONE} all;
-			{ANY} archetype_serialiser_formats, has_archetype_serialiser_format
+			{ANY} archetype_native_serialiser_formats, has_archetype_native_serialiser_format
 		end
 
 	ARCHETYPE_TERM_CODE_TOOLS
@@ -139,7 +139,7 @@ feature -- Serialisation
 		require
 			archetype_valid: an_archetype.is_valid
 			Language_valid: an_archetype.has_language (a_lang)
-			format_valid: has_archetype_serialiser_format (a_format)
+			format_valid: has_archetype_native_serialiser_format (a_format)
 		local
 			ont_serialised, comp_onts_serialised: STRING
 			comp_onts_helper: COMPONENT_ONTOLOGIES_HELPER
@@ -172,17 +172,21 @@ feature -- Serialisation
 
 			-- ontology section
 			dt_ont := an_archetype.ontology.dt_representation
+
 	-- this is a hack which causes ontology section to be output as dADL with the 'items' attributes
 	-- rather than the native nested structure
 	if generate_adl14_ontology then
 		convert_ontology_to_unnested (dt_ont)
 	end
+
 			ontology_context.set_tree (dt_ont)
 			ontology_context.serialise (a_format, False, False)
+
 	-- and this puts the in-memory structure back to native form so things work correctly from here
 	if generate_adl14_ontology then
 		convert_ontology_to_nested (dt_ont)
 	end
+	
 			ont_serialised := ontology_context.serialised
 
 			-- OPT only: component_ontologies section
@@ -201,7 +205,7 @@ feature -- Serialisation
 			end
 
 			-- perform the pasting together of pieces to make ADL archetype
-			serialiser := archetype_serialiser_for_format (a_format)
+			serialiser := archetype_native_serialiser_for_format (a_format)
 			serialiser.reset
 			serialiser.serialise_from_parts (an_archetype,
 				language_context.serialised, description_context.serialised, definition_context.serialised,

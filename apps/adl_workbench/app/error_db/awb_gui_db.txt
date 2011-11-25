@@ -21,6 +21,9 @@ templates = <
 		["display_in_new_tab"] = <"Display in new tab">
 		["show_class_in_rm"] = <"Show in RM explorer">
 		["edit_source"] = <"Edit source">
+		["save_archetype_as"] = <"Save as">
+		["export_archetype_as"] = <"Export as">
+		["export_flat_archetype_as"] = <"Export flat as">
 		["edit_source_schema"] = <"Edit source schema">
 		["expand_packages"] = <"Expand packages">
 

@@ -30,9 +30,11 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (an_edit_archetype_agent: like edit_archetype_agent; a_focus_archetype_agent: like focus_archetype_agent)
+	make (an_edit_archetype_agent: like edit_archetype_agent;
+			a_save_archetype_agent: like save_archetype_agent;
+			a_focus_archetype_agent: like focus_archetype_agent)
 		do
-			make_tree_control (an_edit_archetype_agent)
+			make_tree_control (an_edit_archetype_agent, a_save_archetype_agent)
 			focus_archetype_agent := a_focus_archetype_agent
 			artefact_types := <<{ARTEFACT_TYPE}.template>>
 		end

@@ -44,7 +44,7 @@ inherit
 	SHARED_ARCHETYPE_SERIALISERS
 		export
 			{NONE} all
-			{ANY} has_archetype_serialiser_format, archetype_serialiser_formats, has_dt_serialiser_format
+			{ANY} has_archetype_native_serialiser_format, archetype_native_serialiser_formats, archetype_all_serialiser_formats, has_dt_serialiser_format
 		undefine
 			is_equal
 		end
@@ -976,9 +976,9 @@ feature -- File Operations
 		require
 			Archetype_valid: is_valid
 			path_valid: not a_full_path.is_empty
-			Serialise_format_valid: has_archetype_serialiser_format (a_format) or has_dt_serialiser_format (a_format)
+			Serialise_format_valid: has_archetype_native_serialiser_format (a_format) or has_dt_serialiser_format (a_format)
 		do
-			if has_archetype_serialiser_format (a_format) then
+			if has_archetype_native_serialiser_format (a_format) then
 				file_repository.save_text_to_file (a_full_path, adl15_engine.serialise (differential_archetype, a_format, current_archetype_language))
 			else -- must be a DT serialisation format
 				file_repository.save_text_to_file (a_full_path, serialise_object (False, a_format))
@@ -990,11 +990,11 @@ feature -- File Operations
 		require
 			Archetype_valid: is_valid
 			path_valid: not a_full_path.is_empty
-			Serialise_format_valid: has_archetype_serialiser_format (a_format) or has_dt_serialiser_format (a_format)
+			Serialise_format_valid: has_archetype_native_serialiser_format (a_format) or has_dt_serialiser_format (a_format)
 		do
 			if a_format.same_string (Syntax_type_adl) then
 				file_repository.save_text_to_file (a_full_path, flat_text (False))
-			elseif has_archetype_serialiser_format (a_format) then
+			elseif has_archetype_native_serialiser_format (a_format) then
 				file_repository.save_text_to_file (a_full_path, adl15_engine.serialise (flat_archetype, a_format, current_archetype_language))
 			else -- must be a DT serialisation format
 				file_repository.save_text_to_file (a_full_path, serialise_object (True, a_format))
@@ -1088,7 +1088,7 @@ feature -- Output
 				if flat_flag then
 					create {P_ARCHETYPE} dt_arch.make (flat_archetype)
 				else
-					create{P_ARCHETYPE} dt_arch.make (differential_archetype)
+					create {P_ARCHETYPE} dt_arch.make (differential_archetype)
 				end
 
 				dt_arch.synchronise_to_tree
