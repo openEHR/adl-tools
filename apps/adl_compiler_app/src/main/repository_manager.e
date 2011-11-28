@@ -75,10 +75,10 @@ feature
 		root_obj: CCOMPLEXOBJECT_WRAPPER_GEN
 	do
 --		io.put_string ("compiling and using archetype: " + p_archetype_name + "%N")
-		app_root.current_arch_cat.set_selected_item (app_root.current_arch_cat.archetype_index.item (p_archetype_name))
-		app_root.archetype_compiler.build_lineage (app_root.current_arch_cat.selected_archetype, 0) --TODO: TALK TO THOMAS BEALE: WHAT IS THE RIGHT VALUE OF THE DEPTH PARAMATER HERE?
-		if app_root.current_arch_cat.selected_archetype.is_valid then
-			flattened_archetype := app_root.current_arch_cat.selected_archetype.flat_archetype
+--		app_root.current_arch_cat.set_selected_item (app_root.current_arch_cat.archetype_index.item (p_archetype_name))
+		app_root.archetype_compiler.build_lineage (app_root.current_arch_cat.archetype_index.item (p_archetype_name), 0) --TODO: TALK TO THOMAS BEALE: WHAT IS THE RIGHT VALUE OF THE DEPTH PARAMATER HERE?
+		if app_root.current_arch_cat.archetype_index.item (p_archetype_name).is_valid then
+			flattened_archetype := app_root.current_arch_cat.archetype_index.item (p_archetype_name).flat_archetype
 			if flattened_archetype /= Void then
 				create test_visitor.make(current)
 				create visitor_iterator.make (flattened_archetype.definition, test_visitor)
@@ -106,10 +106,10 @@ feature
 --		io.put_string ("compiling and using archetype: " + p_archetype_name + "%N")
 		--app_root.arch_dir.set_selected_item (app_root.arch_dir.archetype_index.item (p_archetype_name))
 		arch_cat_archetype := current_arch_cat.archetype_index.item (p_archetype_name)
-		current_arch_cat.set_selected_item (arch_cat_archetype)
-		archetype_compiler.build_lineage (current_arch_cat.selected_archetype,0) --THE DEPTH ARGUMENT IS RELATED TO FORMATTING OF OUTPUTS
-		if current_arch_cat.selected_archetype.is_valid then
-			flattened_archetype := current_arch_cat.selected_archetype.flat_archetype_with_rm
+--		current_arch_cat.set_selected_item (arch_cat_archetype)
+		archetype_compiler.build_lineage (arch_cat_archetype,0) --THE DEPTH ARGUMENT IS RELATED TO FORMATTING OF OUTPUTS
+		if arch_cat_archetype.is_valid then
+			flattened_archetype := arch_cat_archetype.flat_archetype_with_rm
 			if flattened_archetype /= Void then
 				create arch_wrapper_generator.make (flattened_archetype)
 				arch_wrapper_generator.fill_archetype_wrapper
