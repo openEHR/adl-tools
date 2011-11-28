@@ -31,9 +31,23 @@
       <div id="content">
         <h2>Release History</h2>
 
+		<h3>26 Nov 2011 ADL 1.5 beta Release 5 (<a href="http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/1643/BRANCHES/adl1.5/">SVN rev 1643</a>) (<a href="http://www.openehr.org/issues/secure/IssueNavigator.jspa?reset=true&mode=hide&sorter/order=DESC&sorter/field=priority&resolution=-1&pid=10070&fixfor=10120">Jira</a>)</h3>
+		<ul>
+			<li><b>GUI changes</b>:
+				<ul>The Class Tool now includes a properties view, an ancestors view and a descendants view. All views contain class icons that are clickable.</ul>
+				<ul>There is now an RM Schema meta-data viewing tool.</ul>
+				<ul>Numerous small UI changes and improvements, including modal selection history - the Tool back and forward buttons work in a similar way to those of a web browser, no matter what the active tools is.</ul>
+			</li>
+			<li><b>Reporting</b>:
+				<ul>There is now a Statistics facility at the Archetype Catalogue and Archetype Tool levels, providing detailed statistics on use of RM classes and terminology in archetypes.</ul>
+			</li>
+			<li><b>Ouput formats</b>:
+				<ul>JSON is now supported as an output format for differential and flat archetypes. Note that occurrences, cardinality and existence are serialised with single Strings, e.g. "0..1", "1..*" etc.</ul>
+			</li>
+		</ul>
 		<h3>8 Sep 2011 ADL 1.5 beta Release 4 (<a href="http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/1603/BRANCHES/adl1.5/">SVN rev 1603</a>) (<a href="http://www.openehr.org/issues/secure/IssueNavigator.jspa?reset=true&mode=hide&sorter/order=DESC&sorter/field=priority&resolution=-1&pid=10070&fixfor=10080">Jira</a>)</h3>
 		<ul>
-			<li>GUI changes
+			<li><b>GUI changes</b>:
 				<ul>
 					<li>The <b>GUI is now <a href="images/docking_side_by_side_definitions.png">docking-based</a></b>, allowing greater flexibility in placement of visual components.  Visually, multiple archetypes can now be loaded simultaneously, and docked side-by-side for visual comparison. This visual layout is the same model used in most modern tabbed editing and browsing tools. Underneath, the tool now properly supports multiple open archetypes and templates.
 						<ul>

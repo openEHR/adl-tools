@@ -75,6 +75,8 @@
           <a href="images/rm_schema_tool.png">
 			  <img border="0" alt="Archetype Tool" src="images/rm_schema_tool.png" height=500/></a>
 		  <p>Classes can be viewed from different reference models, in a side-by-side fashion by using the docking controls, as shown <a href="images/rm_schema_tool_duplex_classes.png">here</a>.</p>
+          <h3>Reference Model Tool</h3>
+		  <p>In the Reference Model schema browser, the context menu of each schema includes an option for viewing the schema. When selected, this view shows the schema meta-data in a tool in the same area as the Archetype and Class Tools.</p>
           <h3>The Address Bar</h3>
 		  <p>At the top of the tool is an <a href="images/address_bar.png">address bar</a> that can be used to search for either elements of reference models, e.g. classes, or archetypes, depending on which of the Archetype/template catalog or RM browser is in focus.</p>
           <h3>Archetype and Class Tool area</h3>
@@ -100,10 +102,41 @@
 	   <li>the <em>ADL view</em>: a view showing the ADL text in either the source differential form or of the generated flat archetype.</li>
 		   </ul>
           <h3>The Class Tool</h3>
-		  <p>The class tool is designed to allow the user to explore the reference model starting from a given class. It does this by displaying the attributes and allowing the ser to navigate by clicking open attributes at will. Like the Archetype Tool, flat and differential modes are supported. Differential mode shows only attributes <em>introduced</em> by the class, while flat mode shows the inheritance-flattened 'reachability closure' - in practical terms, the 'real data' that could potentially be created in a real system.  Because this computation is resource-intensive, the user can regulate the depth of the closure to explore. This means that the closure will in general only be partially computed, and it is up to the user to right click on terminal nodes they want to expand.</p>
-          <a href="images/class_tool.png">
-          <img style="border: 8px white solid" alt="Class Tool" src="images/class_tool.png" width=500/></a>
-		  <p>Since the reference model includes numerous attributes whose static type is either abstract or otherwise has descandants, the Class Tool allows the user to choose to display these by right-clicking on a node.</p>
+		  <p>The class tool is designed to allow the user to explore the reference model starting from a given class. It provides 4 views: properties, ancestors, descendants and closure. The <b>Properties view</b> shows all properties defined in the class and its ancestors, grouped on the basis of the class in which each property was declared in. This is known as the 'flat' view of the class.</p>
+		  <p>The <b>Ancestors</b> and <b>Descendants</b> views show the inheritance tree above and below the focal class, including multiple inheritance.</p>
+		  <p>The <b>Closure view</b> displays the properties and allowing the user to navigate through the entire property reachability closure by clicking open attributes at will. Because this computation is resource-intensive, the user can regulate the depth of the closure to explore. This means that the closure will in general only be partially computed, and it is up to the user to right click on terminal nodes they want to expand.</p>
+		  <p>Since the reference model includes numerous attributes whose static type is either abstract or otherwise has descandants, the Closure view allows the user to choose to display these by right-clicking on a node.</p>
+          <div style="TEXT-ALIGN: left; PADDING-BOTTOM: 0px; TEXT-INDENT: 0px; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px">
+            <table style="BACKGROUND-COLOR: #ffffff" border="0" cellspacing="2" cellpadding="2" width="70%">
+              <tbody>
+                <tr valign="top">
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
+					  <a href="images/class_tool.png">
+					  <img border="0" alt="Class Tool properties view" src="images/tn_class_tool.jpg"/></a>
+                    <p>Properties</p>
+                  </td>
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
+                    <a href="images/class_tool_ancestors.png">
+                      <img border="0" alt="Ancestors view" src="images/tn_class_tool_ancestors.jpg"/> </a>
+                    <p>Ancestors</p>
+                  </td>
+				 </tr>
+				 <tr>
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
+                    <a href="images/class_tool_descendants.png">
+                      <img border="0" alt="Descendants view" src="images/tn_class_tool_descendants.jpg"/> </a>
+                    <p>Descendants</p>
+                  </td>
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
+                    <a href="images/class_tool_closure.png">
+                      <img border="0" alt="Closure view" src="images/tn_class_tool_closure.jpg"/> </a>
+                    <p>Closure</p>
+                  </td>
+			  </tr>
+
+              </tbody>
+            </table>
+          </div>
           <h3>Using the ADL Workbench with the Archetype Editor</h3>
 		  <p>You can use the ADL Workbench as a convenient way to launch the <a href="images/AWB_plus_AE.png">Archetype Editor</a> on individual archetypes. The AWB provides an easy way to see all archetypes, as well as performing ADL 1.5 validation, not currently available in the Archetype Editor. Firstly, <a href="http://www.openehr.org/svn/knowledge_tools_dotnet/TRUNK/ArchetypeEditor/Help/index.html">download the Archetype Editor</a>, and then configure it as the editor for archetypes, as described <a href = "tool_configuration.html#arch_ed_config">here</a>.</p>
           <h2>Artefact overview</h2>
