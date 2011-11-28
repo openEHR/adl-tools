@@ -540,6 +540,8 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 			elseif attached {P_BMM_CONTAINER_PROPERTY} a_prop_def as a_cont_prop_def then
 				if not attached a_cont_prop_def.type_def then
 					add_validity_error (a_class_def.source_schema_id, "BMM_CPT", <<a_class_def.source_schema_id, a_class_def.name, a_cont_prop_def.name>>)
+				elseif not attached a_cont_prop_def.cardinality then
+					add_validity_warning (a_class_def.source_schema_id, "BMM_CPTNC", <<a_class_def.source_schema_id, a_class_def.name, a_cont_prop_def.name>>)
 				elseif not has_class_definition (a_cont_prop_def.type_def.type) then
 					add_validity_error (a_class_def.source_schema_id, "BMM_CPTV", <<a_class_def.source_schema_id, a_class_def.name, a_cont_prop_def.name, a_cont_prop_def.type_def.type>>)
 				elseif not has_class_definition (a_cont_prop_def.type_def.container_type) then
@@ -713,6 +715,20 @@ feature {NONE} -- Implementation
 				end
 				schema_error_table.item (source_schema_id).add_error (a_key, args, "")
 				add_error ("BMM_INCERR", <<schema_id, source_schema_id>>)
+			end
+		end
+
+	add_validity_warning (source_schema_id, a_key: STRING; args: ARRAY [STRING])
+			-- append a warning with key `a_key' and `args' array to the `errors' string to the
+			-- error list for schema with `a_schema_id'
+		do
+			if source_schema_id.same_string (schema_id) then
+				add_warning (a_key, args)
+			else
+				if not schema_error_table.has (source_schema_id) then
+					schema_error_table.put (create {ERROR_ACCUMULATOR}.make, source_schema_id)
+				end
+				schema_error_table.item (source_schema_id).add_warning (a_key, args, "")
 			end
 		end
 

@@ -93,8 +93,7 @@ feature -- Initialisation
 					set_rm_schema_directory (default_rm_schema_directory)
 				end
 				if directory_exists (rm_schema_directory) then
-					rm_schemas_access.initialise_with_load_list(rm_schema_directory, rm_schemas_load_list)
-					rm_schemas_access.load_schemas
+					rm_schemas_access.initialise_with_load_list (rm_schema_directory, rm_schemas_load_list)
 					if not rm_schemas_access.found_valid_schemas then
 						create strx.make_empty
 						rm_schemas_load_list.do_all (agent (s: STRING; err_str: STRING) do err_str.append(s + ", ") end (?, strx))

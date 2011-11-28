@@ -110,17 +110,21 @@ feature {NONE} -- Initialization
 			create repository_menu_refresh
 			create l_ev_menu_separator_8
 			create repository_menu_set_repository
+
 			create rm_schemas_menu
 			create rm_schemas_menu_reload_schemas
 			create l_ev_menu_separator_9
 			create rm_schemas_menu_configure_rm_schemas
+
 			create xml_menu
 			create l_ev_menu_separator_10
 			create xml_menu_conv_rules
+
 			create tools_menu
 			create tools_menu_clean_generated_files
 			create l_ev_menu_separator_11
 			create tools_menu_options
+
 			create help_menu
 			create help_menu_contents
 			create help_menu_release_notes
@@ -832,7 +836,7 @@ feature -- RM Schemas Events
 			populate_archetype_profile_combo
 			if dialog.has_changed_schema_load_list then
 				console_tool.clear
-				rm_schemas_access.load_schemas
+				rm_schemas_access.reload_schemas
 				if not rm_schemas_access.found_valid_schemas then
 					append_billboard_to_console
 				else
@@ -848,7 +852,7 @@ feature -- RM Schemas Events
 	reload_schemas
 			-- user-initiated reload
 		do
-			rm_schemas_access.load_schemas
+			rm_schemas_access.reload_schemas
 			refresh_profile_context (True)
 		end
 

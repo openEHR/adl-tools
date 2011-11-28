@@ -223,7 +223,6 @@ feature -- Events
 				cancel_button.disable_sensitive
 
 				rm_schemas_access.initialise_with_load_list (new_dir, rm_schemas_load_list)
-				rm_schemas_access.load_schemas
 
 				if not rm_schemas_access.found_valid_schemas then
 					post_error (Current, "load_schemas", "model_access_e13", <<new_dir>>)
@@ -288,7 +287,7 @@ feature {NONE} -- Implementation
 
 				-- column 4 - validated
 				create gli.make_with_text ("         ")
-				if rm_schemas_access.all_schemas.item_for_iteration.passed then
+				if rm_schemas_access.all_schemas.item_for_iteration.passed and not rm_schemas_access.all_schemas.item_for_iteration.errors.has_warnings then
 					gli.set_pixmap (pixmaps["star"])
 				else
 					if rm_schemas_access.all_schemas.item_for_iteration.errors.has_errors then

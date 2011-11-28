@@ -17,15 +17,23 @@ class BMM_CONTAINER_PROPERTY
 inherit
 	BMM_PROPERTY_DEFINITION
 		redefine
-			type
+			type, make
 		end
 
 create
 	make
 
+feature -- Initialisation
+
+	make (a_name: STRING; a_type: attached like type; is_mandatory_flag, is_computed_flag: BOOLEAN)
+		do
+			precursor (a_name, a_type, is_mandatory_flag, is_computed_flag)
+			create cardinality.make_open
+		end
+
 feature -- Access
 
-	cardinality: detachable MULTIPLICITY_INTERVAL
+	cardinality: MULTIPLICITY_INTERVAL
 
 	type: BMM_CONTAINER_TYPE_REFERENCE
 			-- type of the contained type
