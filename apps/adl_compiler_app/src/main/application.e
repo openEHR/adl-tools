@@ -28,14 +28,14 @@ feature -- Initialization
 		do
 			app_root.initialise
 			print (billboard.content)
-			if not billboard.has_errors then
+			if rm_schemas_access.found_valid_schemas then
 				billboard.clear
 				print ("Config file path: " + app_root.user_config_file_path + "%N")
 				print ("Repository profiles available:%N")
 				rep_profiles := app_root.repository_profiles
 				if not rep_profiles.is_empty then
 					from rep_profiles.start until rep_profiles.off loop
-						print(rep_profiles.key_for_iteration + "%N")
+						print (rep_profiles.key_for_iteration + "%N")
 						rep_profiles.forth
 					end
 					if app_root.repository_profiles.is_empty then

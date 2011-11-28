@@ -69,7 +69,6 @@ feature -- Initialisation
 			reload_schemas
 		ensure
 			Schemas_dir_set: schema_directory = an_rm_dir
-			Schemas_load_list_set: schemas_load_list.is_equal (a_schemas_load_list)
 		end
 
 feature -- Access
