@@ -81,6 +81,10 @@ feature -- Definitions
 
 	Zero_filler: STRING = ".0"
 
+	Annotated_code_text_delimiter: CHARACTER = '|'
+			-- delimiter for creating annotated terms of form 'nnnn|term text|'
+			-- as commonly used in SNOMED CT
+
 feature -- Access
 
 	specialisation_parent_from_code (a_code: attached STRING): STRING
@@ -369,6 +373,18 @@ feature -- Comparison
 			Parent_code_valid: not a_parent_code.is_empty
 		do
 			Result := a_child_code.starts_with (a_parent_code)
+		end
+
+feature -- Conversion
+
+	annotated_code (a_code, a_text: attached STRING): attached STRING
+			-- create annotated term of form 'nnnn|term text|' as commonly used in SNOMED CT
+		do
+			create Result.make_empty
+			Result.append (a_code)
+			Result.append_character (Annotated_code_text_delimiter)
+			Result.append (a_text)
+			Result.append_character (Annotated_code_text_delimiter)
 		end
 
 end

@@ -220,7 +220,7 @@ feature -- Visitor
 			elseif a_node.is_prohibited then
 				gui_node_text.append (" (REMOVED) ")
 			end
-			gui_node_text.append (a_node.rm_attribute_path)
+			gui_node_text.append (utf8 (ontology.physical_to_logical_path (a_node.rm_attribute_path, language, True)))
 			if a_node.any_allowed then
 				gui_node_text.append (" matches {*}")
 			end
@@ -316,10 +316,8 @@ feature -- Visitor
 				if a_node.is_addressable then
 					gui_node_text.append ("[" + a_node.node_id + "]")
 				end
-				gui_node_text.append (" " + a_node.target_path)
-			elseif current_arch_cat.has_validated_selected_archetype then
-				gui_node_text.append ("use " + ontology.physical_to_logical_path (a_node.target_path, language))
 			end
+			gui_node_text.append ("use " + ontology.physical_to_logical_path (a_node.target_path, language, True))
 
 			-- do the work
 			if updating then
@@ -651,11 +649,7 @@ feature {NONE} -- Implementation
 	node_tooltip_str (a_node: attached ARCHETYPE_CONSTRAINT): STRING
 			-- generate a tooltip for this node
 		do
-			if in_technical_mode then
-				Result := utf8 (a_node.path)
-			else
-				Result := utf8 (ontology.physical_to_logical_path (a_node.path, language))
-			end
+			Result := utf8 (ontology.physical_to_logical_path (a_node.path, language, True))
 			if archetype.has_annotation_at_path (language, a_node.path) then
 				Result.append ("%N%NAnnotations:%N")
 				Result.append (utf8 (archetype.annotations.annotation_at_path (language, a_node.path).as_string))
@@ -775,10 +769,8 @@ feature {NONE} -- Implementation
 			code := an_ordinal.symbol.code_string
 			Result.append (an_ordinal.value.out + an_ordinal.separator.out)
 
-			if current_arch_cat.has_validated_selected_archetype then
-				if ontology.has_term_code (code) then
-					Result.append (" " + ontology.term_definition (language, code).text)
-				end
+			if ontology.has_term_code (code) then
+				Result.append (" " + ontology.term_definition (language, code).text)
 			end
 
 			if in_technical_mode then
@@ -797,15 +789,13 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_empty
 
-			if current_arch_cat.has_validated_selected_archetype then
-				if local_flag then
-					if ontology.has_term_code (code) then
-						Result.append (" " + ontology.term_definition (language, code).text)
-					end
-				else
-					-- need a way to get it out of an external terminology; for the moment, just show code
-					Result.append (" (rubric for " + code + ")")
+			if local_flag then
+				if ontology.has_term_code (code) then
+					Result.append (" " + ontology.term_definition (language, code).text)
 				end
+			else
+				-- need a way to get it out of an external terminology; for the moment, just show code
+				Result.append (" (rubric for " + code + ")")
 			end
 
 			if in_technical_mode then
@@ -852,10 +842,8 @@ feature {NONE} -- Implementation
 			-- generate string form of node or object for use in tree node
 		do
 			Result := an_inv.as_string
-			if current_arch_cat.has_validated_selected_archetype then
-				if not in_technical_mode then
-					Result := ontology.substitute_codes (Result, language)
-				end
+			if not in_technical_mode then
+				Result := ontology.substitute_codes (Result, language)
 			end
 		end
 

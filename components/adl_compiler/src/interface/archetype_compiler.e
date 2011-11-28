@@ -50,6 +50,9 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
+	full_compile_visual_update_action: PROCEDURE [ANY, TUPLE]
+			-- Called after complete build
+
 	global_visual_update_action: PROCEDURE [ANY, TUPLE[STRING]]
 			-- Called after global processing to perform GUI updates
 
@@ -80,6 +83,14 @@ feature -- Status Setting
 
 feature -- Modification
 
+	set_full_compile_visual_update_action (a_routine: attached PROCEDURE [ANY, TUPLE])
+			-- Set `full_compile_visual_update_action'.
+		do
+			full_compile_visual_update_action := a_routine
+		ensure
+			full_compile_visual_update_action_set: full_compile_visual_update_action = a_routine
+		end
+
 	set_global_visual_update_action (a_routine: attached PROCEDURE [ANY, TUPLE[STRING]])
 			-- Set `global_visual_update_action'.
 		do
@@ -93,7 +104,7 @@ feature -- Modification
 		do
 			archetype_visual_update_action := a_routine
 		ensure
-			archetype_visual_update_action: archetype_visual_update_action = a_routine
+			archetype_visual_update_action_set: archetype_visual_update_action = a_routine
 		end
 
 feature -- Commands
@@ -103,12 +114,15 @@ feature -- Commands
 		do
 			is_full_build_completed := False
 			is_building := True
-			call_global_visual_update_action(create_message_line ("compiler_building_system", Void))
+			call_global_visual_update_action (create_message_line ("compiler_building_system", Void))
 			do_all (agent check_file_system_currency (False, ?))
 			do_all (agent build_archetype (?, 0))
 			is_full_build_completed := not is_interrupt_requested
 			is_building := False
-			call_global_visual_update_action(create_message_line ("compiler_finished_building_system", Void))
+			call_global_visual_update_action (create_message_line ("compiler_finished_building_system", Void))
+			if is_full_build_completed then
+				call_full_compile_visual_update_action
+			end
 		end
 
 	rebuild_all
@@ -121,28 +135,31 @@ feature -- Commands
 			do_all (agent build_archetype (?, 0))
 			is_full_build_completed := not is_interrupt_requested
 			is_building := False
-			call_global_visual_update_action(create_message_line ("compiler_finished_rebuilding_system", Void))
+			call_global_visual_update_action (create_message_line ("compiler_finished_rebuilding_system", Void))
+			if is_full_build_completed then
+				call_full_compile_visual_update_action
+			end
 		end
 
-	build_subtree
-			-- Build the sub-system at and below `archetype_directory.selected_node', but not artefacts that seem to be built already.
+	build_subtree (aci: attached ARCH_CAT_ITEM)
+			-- Build the sub-system at and below `aci', but not artefacts that seem to be built already.
 		do
 			is_building := True
-			call_global_visual_update_action(create_message_line ("compiler_building_subtree", Void))
-			do_subtree (current_arch_cat.selected_item, agent check_file_system_currency (False, ?))
-			do_subtree (current_arch_cat.selected_item, agent build_archetype (?, 0))
+			call_global_visual_update_action (create_message_line ("compiler_building_subtree", Void))
+			do_subtree (aci, agent check_file_system_currency (False, ?))
+			do_subtree (aci, agent build_archetype (?, 0))
 			is_building := False
-			call_global_visual_update_action(create_message_line ("compiler_finished_building_subtree", Void))
+			call_global_visual_update_action (create_message_line ("compiler_finished_building_subtree", Void))
 		end
 
-	rebuild_subtree
-			-- Rebuild the sub-system at and below `archetype_directory.selected_node' from scratch, regardless of previous attempts.
+	rebuild_subtree (aci: attached ARCH_CAT_ITEM)
+			-- Rebuild the sub-system at and below `aci' from scratch, regardless of previous attempts.
 		do
 			is_building := True
-			call_global_visual_update_action(create_message_line ("compiler_rebuilding_subtree", Void))
-			do_subtree (current_arch_cat.selected_item, agent check_file_system_currency (True, ?))
-			do_subtree (current_arch_cat.selected_item, agent build_archetype (?, 0))
-			call_global_visual_update_action(create_message_line ("compiler_finished_rebuilding_subtree", Void))
+			call_global_visual_update_action (create_message_line ("compiler_rebuilding_subtree", Void))
+			do_subtree (aci, agent check_file_system_currency (True, ?))
+			do_subtree (aci, agent build_archetype (?, 0))
+			call_global_visual_update_action (create_message_line ("compiler_finished_rebuilding_subtree", Void))
 			is_building := False
 		end
 
@@ -242,7 +259,7 @@ feature {NONE} -- Implementation
 				if not exception_encountered then
 					ara.check_compilation_currency
 					if not ara.is_in_terminal_compilation_state then
-						build_status := create_message_line("compiler_compiling_archetype", <<ara.artefact_name.as_upper, ara.id.value>>)
+						build_status := create_message_line ("compiler_compiling_archetype", <<ara.artefact_name.as_upper, ara.id.value>>)
 						call_archetype_visual_update_action (build_status, ara, dependency_depth)
 
 						-- first phase
@@ -280,7 +297,7 @@ feature {NONE} -- Implementation
 				end
 			end
 		rescue
-			post_error(Current, "build_archetype", "compile_exception", <<ara.ontological_name, exception.out, exception_trace>>)
+			post_error(Current, "build_archetype", "compile_exception", <<ara.qualified_name, exception.out, exception_trace>>)
 			exception_encountered := True
 			retry
 		end
@@ -303,6 +320,14 @@ feature {NONE} -- Implementation
 					ara.save_flat_as (filename, Syntax_type_adl_html)
 					call_archetype_visual_update_action (ara.status, ara, 0)
 				end
+			end
+		end
+
+	call_full_compile_visual_update_action
+			-- Call `full_compile_visual_update_action', if it is attached.
+		do
+			if attached full_compile_visual_update_action then
+				full_compile_visual_update_action.call ([])
 			end
 		end
 

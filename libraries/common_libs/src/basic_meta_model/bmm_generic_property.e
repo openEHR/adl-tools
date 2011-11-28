@@ -17,7 +17,7 @@ class BMM_GENERIC_PROPERTY
 inherit
 	BMM_PROPERTY_DEFINITION
 		redefine
-			type_def
+			type
 		end
 
 	BMM_DEFINITIONS
@@ -25,21 +25,13 @@ inherit
 			{NONE} all
 		end
 
+create
+	make
+
 feature -- Access (attributes from schema)
 
-	type_def: BMM_GENERIC_TYPE_REFERENCE
+	type: BMM_GENERIC_TYPE_REFERENCE
 			-- type of the container of this attribute from its containing class
-
-feature -- Commands
-
-	finalise_build (a_bmmm: attached BMM_SCHEMA; a_class_def: attached BMM_CLASS_DEFINITION; errors: ERROR_ACCUMULATOR)
-		do
-			if attached type_def then
-				type_def.finalise_build(a_bmmm, a_class_def, Current, errors)
-			else
-				errors.add_error ("BMM_GPT", <<a_bmmm.schema_id, a_class_def.name, name>>, Void)
-			end
-		end
 
 end
 

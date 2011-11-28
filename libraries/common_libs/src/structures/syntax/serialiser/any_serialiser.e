@@ -52,25 +52,25 @@ feature -- Access
 	symbol (sym_id: INTEGER): STRING
 			-- retrieve symbol string for `sym_id'
 		require
-			has_symbol(sym_id)
+			has_symbol (sym_id)
 		do
-			Result := profile.symbols.item(sym_id)
+			Result := profile.symbols.item (sym_id)
 		end
 
 	tag (tag_id: INTEGER): STRING
 			-- retrieve tag for `tag_id'
 		require
-			has_tag(tag_id)
+			has_tag (tag_id)
 		do
-			Result := profile.tags.item(tag_id)
+			Result := profile.tags.item (tag_id)
 		end
 
 	format_item (fmt_id: INTEGER): STRING
 			-- retrieve formatting string for `fmt_id'
 		require
-			has_format_item(fmt_id)
+			has_format_item (fmt_id)
 		do
-			Result := profile.format_items.item(fmt_id)
+			Result := profile.format_items.item (fmt_id)
 		end
 
 	style (style_id: INTEGER): STRING
@@ -78,7 +78,7 @@ feature -- Access
 		require
 			has_style(style_id)
 		do
-			Result := profile.styles.item(style_id)
+			Result := profile.styles.item (style_id)
 		end
 
 	output_format: STRING
@@ -92,35 +92,35 @@ feature -- Status Report
 	has_style (style_id: INTEGER): BOOLEAN
 			-- true if `style_id' exists in style table
 		do
-			Result := profile.styles.has(style_id)
+			Result := profile.styles.has (style_id)
 		end
 
 	has_symbol (sym_id: INTEGER): BOOLEAN
 			-- true if `sym_id' exists in symbol table
 		do
-			Result := profile.symbols.has(sym_id)
+			Result := profile.symbols.has (sym_id)
 		end
 
 	has_tag (tag_id: INTEGER): BOOLEAN
 			-- true if `tag_id' exists in tag table
 		do
-			Result := profile.tags.has(tag_id)
+			Result := profile.tags.has (tag_id)
 		end
 
 	has_format_item (fmt_id: INTEGER): BOOLEAN
 			-- true if `fmt_id' exists in format item table
 		do
-			Result := profile.format_items.has(fmt_id)
+			Result := profile.format_items.has (fmt_id)
 		end
 
 feature -- Factory
 
 	apply_style (elem: attached STRING; a_style: INTEGER): attached STRING
-			-- apply `a_style' to `elem', using attr 'class'
+			-- apply `a_style' to `elem'
 		require
-			Style_valid: has_style(a_style)
+			Style_valid: has_style (a_style)
 		do
-			Result := profile.apply_style(elem, a_style)
+			Result := profile.apply_style (elem, a_style)
 		end
 
 	dadl_clean (elem: attached STRING): attached STRING
@@ -134,7 +134,7 @@ feature -- Factory
 		require
 			indent_level >= 0
 		do
-			Result := profile.create_indent(indent_level)
+			Result := profile.create_indent (indent_level)
 		end
 
 	safe_comment (a_text: attached STRING): attached STRING

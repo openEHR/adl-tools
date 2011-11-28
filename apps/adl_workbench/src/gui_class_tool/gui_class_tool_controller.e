@@ -24,6 +24,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_GUI_AGENTS
+		export
+			{NONE} all
+		end
+
 	SHARED_KNOWLEDGE_REPOSITORY
 
 create
@@ -40,14 +45,9 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (a_docking_manager: attached SD_DOCKING_MANAGER;
-			a_update_all_tools_rm_icons_setting_agent: like update_all_tools_rm_icons_setting_agent;
-			a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent)
+	make (a_docking_manager: attached SD_DOCKING_MANAGER)
 		do
 			make_docking (a_docking_manager)
-			update_all_tools_rm_icons_setting_agent := a_update_all_tools_rm_icons_setting_agent
-			select_class_agent := a_select_class_agent
-			select_class_in_new_tool_agent := a_select_class_in_new_tool_agent
 		end
 
 feature -- Commands
@@ -56,8 +56,9 @@ feature -- Commands
 		local
 			new_tool: like tool_type
 		do
-			create new_tool.make (update_all_tools_rm_icons_setting_agent, select_class_agent, select_class_in_new_tool_agent)
+			create new_tool.make
 			add_new_tool (new_tool)
+			active_tool_docking_pane.focus_in_actions.extend (agent do gui_agents.history_set_active_agent.call ([active_tool]) end)
 		end
 
 	populate_active_tool (a_class_def: BMM_CLASS_DEFINITION)
@@ -66,18 +67,14 @@ feature -- Commands
 			if not has_tools then
 				create_new_tool
 			end
-			active_tool.populate (a_class_def)
-			populate_active_tool_pane (a_class_def.name, a_class_def.name.substring (1, a_class_def.name.count.min (10)),
-				pixmaps [a_class_def.type_category])
+			active_tool.populate (a_class_def, False)
+			populate_active_tool_pane (a_class_def.name, a_class_def.name.substring (1, a_class_def.name.count.min (Tab_title_width)), pixmaps [a_class_def.type_category])
+			active_tool.selection_history.set_selected_item (a_class_def)
 		end
 
 feature {NONE} -- Implementation
 
 	tool_type: GUI_CLASS_TOOL
-
-	update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]
-
-	select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
 
 end
 

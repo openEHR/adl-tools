@@ -21,53 +21,59 @@ inherit
 		end
 
 create
-	make_class, make_package, make_category
+	make_class, make_rm_closure, make_category
 
 feature -- Initialisation
 
 	make_category (a_name: attached STRING)
-			-- create with ontological name of artefact category
+			-- create with ontological name of artefact category, e.g. 'archetype', 'template' etc
 		require
 			a_name_valid: not a_name.is_empty
 		do
 			make
-			ontological_name := a_name
-			display_name := a_name
+			qualified_name := a_name
+			name := a_name
 			group_name := "archetype_category"
-			is_model_group := True
+			is_rm_closure := True
 		ensure
-			ontological_name_set: ontological_name.is_equal (a_name)
-			display_name_set: display_name = ontological_name
+			ontological_name_set: qualified_name.is_equal (a_name)
+			display_name_set: name = qualified_name
 		end
 
-	make_package (a_model_name: attached STRING)
-			-- create with ontological name
+	make_rm_closure (an_rm_closure_name: attached STRING; a_bmm_schema: attached BMM_SCHEMA)
+			-- create to represent a RM closure package, e.g. 'EHR', 'DEMOGRAPHIC' etc - these are
+			-- packages whose reachability closure provide the classes for archetyping in that closure
 		require
-			a_model_name_valid: not a_model_name.is_empty
+			Rm_closure_name_valid: not an_rm_closure_name.is_empty
 		do
 			make
-			ontological_name := a_model_name
-			display_name := a_model_name
+			bmm_schema := a_bmm_schema
+			qualified_name := publisher_qualified_rm_closure_name (bmm_schema.rm_publisher, an_rm_closure_name)
+			qualified_key := qualified_name.as_upper
+			name := an_rm_closure_name
 			group_name := "model_group"
-			is_model_group := True
+			is_rm_closure := True
 		ensure
-			ontological_name_set: ontological_name.is_equal (a_model_name)
-			display_name_set: display_name = a_model_name
+			ontological_name_set: qualified_name.is_equal (publisher_qualified_rm_closure_name (bmm_schema.rm_publisher, an_rm_closure_name))
+			display_name_set: name = an_rm_closure_name
+			Schema_set: bmm_schema = a_bmm_schema
 		end
 
-	make_class (a_package_name: attached STRING; a_class_desc: attached BMM_CLASS_DEFINITION)
-			-- create with package name and class def
+	make_class (an_rm_closure_name: attached STRING; a_class_desc: attached BMM_CLASS_DEFINITION)
+			-- create with RM closure package name and class def
 		require
-			a_package_valid: not a_package_name.is_empty and not a_package_name.has (Package_name_delimiter)
+			Rm_closure_valid: not an_rm_closure_name.is_empty and not an_rm_closure_name.has (Package_name_delimiter)
 		do
 			make
 			class_definition := a_class_desc
-			ontological_name := library_qualified_class_name (a_package_name, class_definition.name).as_upper
-			display_name := class_definition.name
+			bmm_schema := class_definition.bmm_schema
+			qualified_name := bmm_schema.rm_publisher + section_separator.out + an_rm_closure_name + section_separator.out + class_definition.name
+			qualified_key := qualified_name.as_upper
+			name := class_definition.name
 			group_name := class_definition.type_category
 		ensure
-			ontological_name_set: ontological_name.is_equal (a_package_name + {ARCHETYPE_ID}.section_separator.out +  class_definition.name)
-			display_name_set: display_name = class_definition.name
+			qualified_name_set: qualified_name.is_equal (bmm_schema.rm_publisher + section_separator.out + an_rm_closure_name + section_separator.out +  class_definition.name)
+			display_name_set: name = class_definition.name
 		end
 
 feature -- Access
@@ -78,11 +84,24 @@ feature -- Access
 
 	class_definition: BMM_CLASS_DEFINITION
 
-	ontological_name: STRING
-			-- package_name '-' class_name
+	bmm_schema: BMM_SCHEMA
 
-	display_name: STRING
+	qualified_name: STRING
+			-- model_name '-' class_name
+
+	qualified_key: STRING
+			-- uppercase form of `qualified_name' for safe matching
+
+	name: STRING
 			-- class_name
+
+	global_artefact_identifier: attached STRING
+			-- tool-wide unique id for this artefact
+		do
+			if is_class then
+				Result := class_definition.global_artefact_identifier
+			end
+		end
 
 feature -- Status Report
 
@@ -91,9 +110,10 @@ feature -- Status Report
 			Result := class_definition /= Void and then class_definition.is_abstract
 		end
 
-	is_model_group: BOOLEAN
-			-- 'model group' is a grouping construct for packages that defines the namespace for archetypes within
-			-- a schema publisher
+	is_rm_closure: BOOLEAN
+			-- RM closure name, which is a package name from the RM whose class closure can be archetyped within
+			-- that closure space. E.g. the class closure of the 'EHR' package in openEHR have archetypes with ids
+			-- like 'openEHR-EHR-XXXX' where XXXX is a class name
 
 	is_class: BOOLEAN
 		do
@@ -115,7 +135,7 @@ feature {ARCH_CAT_ITEM} -- Implementation
 			-- parent node
 
 invariant
-	Class_definition_validity: not (is_model_group and is_class)
+	Class_definition_validity: not (is_rm_closure and is_class)
 
 end
 

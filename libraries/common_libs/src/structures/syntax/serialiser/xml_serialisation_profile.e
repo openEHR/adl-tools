@@ -16,36 +16,21 @@ deferred class XML_SERIALISATION_PROFILE
 inherit
 	SERIALISATION_PROFILE
 
-	XML_SERIALISER_DEFINITIONS
-		export
-			{NONE} all
-		end
-
 feature {ANY_SERIALISER} -- Access
 
 	format_items: HASH_TABLE[STRING, INTEGER]
 			-- formatting items
 		once
 			create Result.make(0)
-			Result.put(" ",					FMT_SPACE)
-			Result.put("-- ",				FMT_COMMENT)
 			Result.put("%N",				FMT_NEWLINE)
 			Result.put("%T",				FMT_INDENT)
 			Result.put("<?xml version=%"1.0%" encoding=%"ISO-8859-1%"?>%N",	FMT_DOC_START)
-			Result.put(", ",				FMT_LIST_ITEM_SEPARATOR)
-			Result.put("; ",				FMT_ASSUMED_VALUE_SEPARATOR)
 		end
 
 	styles: HASH_TABLE[STRING, INTEGER]
 			-- styles in this format, keyed by logical name
 		once
 			create Result.make(0)
-			Result.put("keyword",			STYLE_KEYWORD)
-			Result.put("operator",			STYLE_OPERATOR)
-			Result.put("identifier",		STYLE_IDENTIFIER)
-			Result.put("term_ref",			STYLE_TERM_REF)
-			Result.put("value",			STYLE_VALUE)
-			Result.put("comment",			STYLE_COMMENT)
 		end
 
 	quote_patterns: HASH_TABLE[STRING, STRING]

@@ -53,7 +53,7 @@ feature -- Initialization
 			unbounded: lower_unbounded and upper_unbounded
 		end
 
-	make_point (a_value: attached G)
+	make_point (a_value: G)
 			-- make with both limits set to the same value
 		do
 			lower := a_value
@@ -68,7 +68,7 @@ feature -- Initialization
 			Is_point: is_point
 		end
 
-	make_bounded (a_lower, an_upper: attached G; lower_included_flag, upper_included_flag: BOOLEAN)
+	make_bounded (a_lower, an_upper: G; lower_included_flag, upper_included_flag: BOOLEAN)
 			-- make with both limits set
 		require
 			Valid_order: a_lower <= an_upper
@@ -84,7 +84,7 @@ feature -- Initialization
 			upper_included_set: upper_included = upper_included_flag
 		end
 
-	make_bounded_included (a_lower, an_upper: attached G)
+	make_bounded_included (a_lower, an_upper: G)
 			-- make with both limits set and included, the most typical situation
 		require
 			Valid_order: a_lower <= an_upper
@@ -100,7 +100,7 @@ feature -- Initialization
 			upper_included_set: upper_included
 		end
 
-	make_lower_unbounded (an_upper: attached G; upper_included_flag: BOOLEAN)
+	make_lower_unbounded (an_upper: G; upper_included_flag: BOOLEAN)
 			-- make an interval from -infinity to `an_upper'
 		do
 			upper := an_upper
@@ -112,7 +112,7 @@ feature -- Initialization
 			upper_included_set: upper_included = upper_included_flag
 		end
 
-	make_upper_unbounded (a_lower: attached G; lower_included_flag: BOOLEAN)
+	make_upper_unbounded (a_lower: G; lower_included_flag: BOOLEAN)
 			-- make an interval from `a_lower' to +infinity
 		do
 			lower := a_lower
@@ -135,7 +135,7 @@ feature -- Initialization
 			Upper_unbounded: upper_unbounded
 		end
 
-	make (a_lower, an_upper: attached G; a_lower_unbounded, an_upper_unbounded, a_lower_included, an_upper_included: BOOLEAN)
+	make (a_lower, an_upper: G; a_lower_unbounded, an_upper_unbounded, a_lower_included, an_upper_included: BOOLEAN)
 			-- make from parts of another interval
 		do
 			lower := a_lower
@@ -155,13 +155,13 @@ feature -- Initialization
 
 feature -- Access
 
-	lower: G
+	lower: detachable G
 			-- lower limit of interval
 
-	upper: G
+	upper: detachable G
 			-- upper limit of interval
 
-	midpoint: G
+	midpoint: detachable G
 			-- generate midpoint of limits
 		do
 
@@ -199,7 +199,7 @@ feature -- Status report
 
 feature -- Comparison
 
-	has (v: attached G): BOOLEAN
+	has (v: G): BOOLEAN
 			-- Does current interval have `v' between its bounds?
 		do
 			Result := (lower_unbounded or ((lower_included and v >= lower) or v > lower)) and
@@ -210,7 +210,7 @@ feature -- Comparison
 		--	(upper_unbounded or ((upper_included and v <= upper or v < upper)))
 		end
 
-	intersects (other: attached like Current): BOOLEAN
+	intersects (other: like Current): BOOLEAN
 			-- True if there is any overlap between intervals represented by Current and other
 		do
 			Result := unbounded or other.unbounded or
@@ -219,7 +219,7 @@ feature -- Comparison
 				(upper >= other.lower or lower <= other.upper)
 		end
 
-	contains (other: attached like Current): BOOLEAN
+	contains (other: like Current): BOOLEAN
 			-- Does current interval properly contain `other'? True if at least one limit of other
 			-- is stricly inside the limits of this interval
 		do
@@ -250,7 +250,7 @@ feature -- Comparison
 			end
 		end
 
-	equal_interval (other: attached like Current): BOOLEAN
+	equal_interval (other: like Current): BOOLEAN
 			-- compare two intervals, allows subtypes like MULTIPLICITY_INTERVAL to be compared
 		do
 			if lower_unbounded then
@@ -309,8 +309,8 @@ feature -- Output
 		end
 
 invariant
-	lower_attached_if_bounded: not lower_unbounded implies lower /= Void
-	upper_attached_if_bounded: not upper_unbounded implies upper /= Void
+	lower_attached_if_bounded: not lower_unbounded implies attached lower
+	upper_attached_if_bounded: not upper_unbounded implies attached upper
 	limits_consistent: not (upper_unbounded or lower_unbounded) implies lower <= upper
 
 end

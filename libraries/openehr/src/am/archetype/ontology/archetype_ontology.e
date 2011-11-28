@@ -201,16 +201,17 @@ feature -- Access
 
 	errors: ERROR_ACCUMULATOR
 
-	physical_to_logical_path (a_phys_path, a_language: attached STRING): attached STRING
+	physical_to_logical_path (a_phys_path, a_language: attached STRING; with_codes: BOOLEAN): attached STRING
 			-- generate a logical path in 'a_language' from a physical path
+			-- if `with_code' then generate annotated form of each code, i.e. "code|text|"
 		require
 			a_lang_valid: not a_language.is_empty
 		local
-			term_code: STRING
+			term_code, log_str: STRING
 			og_phys_path, og_log_path: OG_PATH
 		do
-			create og_phys_path.make_from_string(a_phys_path)
-			create og_log_path.make_from_other(og_phys_path)
+			create og_phys_path.make_from_string (a_phys_path)
+			create og_log_path.make_from_other (og_phys_path)
 			from
 				og_phys_path.start
 				og_log_path.start
@@ -220,8 +221,13 @@ feature -- Access
 				if og_phys_path.item.is_addressable then
 					term_code := og_phys_path.item.object_id
 					if is_valid_code (term_code) then
-						if has_term_code(term_code) then
-							og_log_path.item.set_object_id (term_definition(a_language, term_code).text)
+						if has_term_code (term_code) then
+							if with_codes then
+								log_str := annotated_code (term_code, term_definition (a_language, term_code).text)
+							else
+								log_str := term_definition (a_language, term_code).text
+							end
+							og_log_path.item.set_object_id (log_str)
 						end
 					else
 						og_log_path.item.set_object_id (term_code)

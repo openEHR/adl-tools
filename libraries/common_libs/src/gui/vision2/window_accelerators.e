@@ -2,9 +2,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Initialisation of the main window's accelerator keys."
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003-2007 Ocean Informatics Pty Ltd"
+	author:      "Peter Gummer <peter.gummer@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -22,7 +22,7 @@ inherit
 
 feature {NONE} -- Implementation
 
-	accelerators: EV_ACCELERATOR_LIST
+	accelerators: detachable EV_ACCELERATOR_LIST
 			-- Key combination shortcuts associated with the main window.
 		deferred
 		end

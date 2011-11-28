@@ -15,11 +15,6 @@ note
 class GUI_CONSOLE_TOOL
 
 inherit
-	CONSTANTS
-		export
-			{NONE} all
-		end
-
 	EV_SHARED_APPLICATION
 		export
 			{NONE} all

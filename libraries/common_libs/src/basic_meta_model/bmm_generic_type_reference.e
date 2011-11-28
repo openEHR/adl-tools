@@ -17,38 +17,36 @@ class BMM_GENERIC_TYPE_REFERENCE
 inherit
 	BMM_TYPE_REFERENCE
 
-feature -- Access (attributes from schema)
+create
+	make
 
-	root_type: STRING
-			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+feature -- Initialisation
 
-	generic_parameters: ARRAYED_LIST [STRING]
-			-- generic parameters of the root_type in this type specifier
-			-- The order must match the order of the owning class's formal generic parameter declarations
-			-- FIXME: currently the code below is limited to handling 1 level of generic parameter, i.e no further generics
-
-feature -- Access (attributes derived in post-schema processing)
-
-	root_type_def: BMM_CLASS_DEFINITION
-			-- root type
-
-	generic_parameter_defs: ARRAYED_LIST [BMM_TYPE_SPECIFIER]
-			-- generic parameters of the root_type in this type specifier
-			-- The order must match the order of the owning class's formal generic parameter declarations
-			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+	make (a_root_type: BMM_CLASS_DEFINITION)
+		do
+			root_type := a_root_type
+			create generic_parameters.make (0)
+		end
 
 feature -- Access
 
-	flattened_type_list: ARRAYED_LIST [STRING]
+	root_type: attached BMM_CLASS_DEFINITION
+			-- root type
+
+	generic_parameters: attached ARRAYED_LIST [BMM_TYPE_SPECIFIER]
+			-- generic parameters of the root_type in this type specifier
+			-- The order must match the order of the owning class's formal generic parameter declarations
+
+	flattened_type_list:attached ARRAYED_LIST [STRING]
 			-- completely flattened list of type names, flattening out all generic parameters
 			-- Note: can include repeats, e.g. HASH_TABLE [STRING, STRING] => HASH_TABLE, STRING, STRING
 		do
 			create Result.make(0)
 			Result.compare_objects
-			Result.extend (root_type)
-			from generic_parameter_defs.start until generic_parameter_defs.off loop
-				Result.append(generic_parameter_defs.item.flattened_type_list)
-				generic_parameter_defs.forth
+			Result.extend (root_type.name)
+			from generic_parameters.start until generic_parameters.off loop
+				Result.append(generic_parameters.item.flattened_type_list)
+				generic_parameters.forth
 			end
 		end
 
@@ -57,13 +55,13 @@ feature -- Access
 		local
 			has_abstract_gen_parms: BOOLEAN
 		do
-			from generic_parameter_defs.start until generic_parameter_defs.off loop
-				if not generic_parameter_defs.item.type_category.is_equal (Type_cat_concrete_class) then
+			from generic_parameters.start until generic_parameters.off loop
+				if not generic_parameters.item.type_category.is_equal (Type_cat_concrete_class) then
 					has_abstract_gen_parms := True
 				end
-				generic_parameter_defs.forth
+				generic_parameters.forth
 			end
-			if root_type_def.is_abstract and has_abstract_gen_parms then
+			if root_type.is_abstract and has_abstract_gen_parms then
 				Result := Type_cat_abstract_class
 			elseif has_type_substitutions then
 				Result := Type_cat_concrete_class_supertype
@@ -73,18 +71,18 @@ feature -- Access
 		end
 
 	type_substitutions: ARRAYED_SET [STRING]
-			-- just generate permutations of one generic parameter for now
+			-- FIXME: just generate permutations of one generic parameter for now
 		local
 			root_sub_type_list, gen_param_sub_type_list: ARRAYED_SET [STRING]
 		do
-			root_sub_type_list := root_type_def.type_substitutions
+			root_sub_type_list := root_type.type_substitutions
 			if root_sub_type_list.is_empty then
-				root_sub_type_list.extend (root_type_def.name)
+				root_sub_type_list.extend (root_type.name)
 			end
 
-			gen_param_sub_type_list := generic_parameter_defs.first.type_substitutions
+			gen_param_sub_type_list := generic_parameters.first.type_substitutions
 			if gen_param_sub_type_list.is_empty then
-				gen_param_sub_type_list.extend (generic_parameter_defs.first.as_type_string)
+				gen_param_sub_type_list.extend (generic_parameters.first.as_type_string)
 			end
 
 			create Result.make (0)
@@ -101,38 +99,14 @@ feature -- Status Report
 
 	has_type_substitutions: BOOLEAN
 		do
-			Result := root_type_def.has_type_substitutions or generic_parameter_defs.first.has_type_substitutions
+			Result := root_type.has_type_substitutions or generic_parameters.first.has_type_substitutions
 		end
 
-feature -- Commands
+feature -- Modification
 
-	finalise_build (a_bmmm: attached BMM_SCHEMA; a_class_def: attached BMM_CLASS_DEFINITION; a_prop_def: attached BMM_PROPERTY_DEFINITION; errors: ERROR_ACCUMULATOR)
+	add_generic_parameter (a_gen_parm: attached BMM_TYPE_SPECIFIER)
 		do
-			bmm_schema := a_bmmm
-			if bmm_schema.has_class_definition (root_type) then
-				root_type_def := bmm_schema.class_definition (root_type)
-				create generic_parameter_defs.make (0)
-				from generic_parameters.start until generic_parameters.off loop
-					if bmm_schema.has_class_definition (generic_parameters.item) then
-						generic_parameter_defs.extend (bmm_schema.class_definition (generic_parameters.item))
-					elseif root_type_def.is_generic then
-						if attached root_type_def.generic_parameter_defs then
-							if root_type_def.generic_parameter_defs.has (generic_parameters.item) then
-								generic_parameter_defs.extend (root_type_def.generic_parameter_defs.item (generic_parameters.item))
-							else
-								errors.add_error ("BMM_GPGPU", <<bmm_schema.schema_id, a_class_def.name, a_prop_def.name, root_type_def.name, generic_parameters.item>>, Void)
-							end
-						else
-							errors.add_error ("BMM_GPGPM", <<bmm_schema.schema_id, root_type_def.name>>, Void)
-						end
-					else
-						errors.add_error ("BMM_GPGPT", <<bmm_schema.schema_id, a_class_def.name, a_prop_def.name, generic_parameters.item>>, Void)
-					end
-					generic_parameters.forth
-				end
-			else
-				errors.add_error ("BMM_GPRT", <<bmm_schema.schema_id, a_class_def.name, a_prop_def.name, root_type>>, Void)
-			end
+			generic_parameters.extend (a_gen_parm)
 		end
 
 feature -- Output
@@ -141,20 +115,19 @@ feature -- Output
 			-- name of the type
 		do
 			create Result.make (0)
-			Result.append (root_type)
+			Result.append (root_type.name)
 			Result.append_character (Generic_left_delim)
-			from generic_parameter_defs.start until generic_parameter_defs.off loop
-				Result.append(generic_parameter_defs.item.as_type_string)
-				if not generic_parameter_defs.islast then
-					Result.append_character(generic_separator)
+			from generic_parameters.start until generic_parameters.off loop
+				Result.append (generic_parameters.item.as_type_string)
+				if not generic_parameters.islast then
+					Result.append_character (generic_separator)
 				end
-				generic_parameter_defs.forth
+				generic_parameters.forth
 			end
 			Result.append_character (Generic_right_delim)
 		end
 
 	as_flattened_type_string: STRING
-			-- string form of the type for matching in archetypes - i.e. ignoring container type names
 		do
 			Result := as_type_string
 		end

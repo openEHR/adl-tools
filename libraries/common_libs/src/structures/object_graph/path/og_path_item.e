@@ -79,7 +79,7 @@ feature -- Initialisation
 			Is_feature_call: is_feature_call
 		end
 
-	make_from_other(other: OG_PATH_ITEM)
+	make_from_other (other: OG_PATH_ITEM)
 			-- FIXME: created because clone does not work in dotnet
 		do
 			is_feature_call := other.is_feature_call

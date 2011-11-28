@@ -22,12 +22,6 @@ inherit
 
 	SHARED_ARCHETYPE_COMPILER
 
-	SHARED_ARCHETYPE_SERIALISERS
-		export
-			{NONE} all
-			{ANY} has_archetype_serialiser_format, archetype_serialiser_formats
-		end
-
 feature -- Access
 
 	app_root: APP_ROOT

@@ -15,66 +15,42 @@ note
 deferred class GUI_ARTEFACT_TREE_CONTROL
 
 inherit
-	SHARED_KNOWLEDGE_REPOSITORY
-		export
-			{NONE} all
-		end
-
-	CONSTANTS
-		export
-			{NONE} all
+	GUI_CATALOGUE_TARGETTED_TOOL
+		redefine
+			repopulate
 		end
 
 feature {NONE} -- Initialisation
 
-	make_ui (a_label: attached STRING; a_pixmap: EV_PIXMAP)
+	make (an_edit_archetype_agent: like edit_archetype_agent;
+		a_save_archetype_agent: like save_archetype_agent)
+			-- Create controller for the tree representing archetype files found in `archetype_directory'.
 		do
+			edit_archetype_agent := an_edit_archetype_agent
+			save_archetype_agent := a_save_archetype_agent
+
 			-- create widgets
 			create ev_root_container
-			create ev_hbox
-			create ev_pixmap
-			create ev_label
+			ev_root_container.set_data (Current)
 			create ev_tree
 
 			-- connect widgets
-			ev_root_container.extend (ev_hbox)
-			ev_hbox.extend (ev_pixmap)
-			ev_hbox.extend (ev_label)
 			ev_root_container.extend (ev_tree)
 
 			-- visual characteristics
-			ev_root_container.disable_item_expand (ev_hbox)
-			ev_hbox.set_padding (padding_width)
-			ev_hbox.set_border_width (border_width)
-			ev_hbox.disable_item_expand (ev_pixmap)
-			ev_pixmap.set_minimum_width (16)
-			ev_pixmap.set_minimum_height (16)
-			ev_pixmap.copy (a_pixmap)
-			ev_label.set_text (a_label)
-			ev_label.align_text_left
-			ev_tree.set_background_color (editable_colour)
-  			ev_tree.set_minimum_width (max_arch_explorer_width)
+--			ev_tree.set_background_color (editable_colour)
+  			ev_tree.set_minimum_width (180)
 		end
 
 feature -- Access
 
-	ev_root_container: EV_VERTICAL_BOX
+	ev_root_container: EV_CELL
+
+	ev_tree: EV_TREE
 
 feature -- Commands
 
-	populate
-			-- Populate `gui_file_tree' from `archetype_directory'.
-		do
-			create ev_node_descriptor_map.make(0)
-			ev_tree.wipe_out
- 			create ev_tree_item_stack.make (0)
-
- 			if has_current_profile then
-	 			populate_tree
-			end
-		end
-
-	refresh
+	repopulate
 			-- repopulate to update GUI settings
 		do
 			ev_tree.recursive_do_all (agent update_tree_node)
@@ -87,18 +63,17 @@ feature -- Commands
 
 	update_rm_icons_setting
 		do
-			refresh
+			repopulate
 		end
 
 feature {NONE} -- Implementation
 
-	ev_pixmap: EV_PIXMAP
-
-	ev_label: EV_LABEL
-
-	ev_tree: EV_TREE
-
-	ev_hbox: EV_HORIZONTAL_BOX
+	do_clear
+		do
+			create ev_node_descriptor_map.make(0)
+			ev_tree.wipe_out
+ 			create ev_tree_item_stack.make (0)
+		end
 
 	ev_node_descriptor_map: HASH_TABLE [EV_TREE_ITEM, STRING]
 			-- list of GUI explorer nodes, keyed by artefact id
@@ -109,33 +84,9 @@ feature {NONE} -- Implementation
 	ev_tree_item_stack: ARRAYED_STACK [EV_TREE_ITEM]
 			-- Stack used during `populate_ev_tree_node_enter'.
 
-	populate_tree
-		deferred
-		end
-
    	update_tree_node (node: attached EV_TREE_NODE)
    		deferred
    		end
-
-	update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]
-			-- if this is set, it is an agent that takes one argument of a routine
-			-- to execute on all other editors, to sync them to a change in this current one
-
-	object_node_pixmap (ara: ARCH_CAT_ITEM): EV_PIXMAP
-		local
-			rm_publisher: STRING
-		do
-			if attached {ARCH_CAT_MODEL_NODE} ara as acmn and then acmn.is_class then
-				rm_publisher := acmn.class_definition.bmm_schema.model_publisher
-				if use_rm_pixmaps and then rm_pixmaps.has (rm_publisher) and then rm_pixmaps.item (rm_publisher).has (acmn.display_name) then
-					Result := rm_pixmaps.item (rm_publisher).item (acmn.display_name)
-				else
-					Result := pixmaps [ara.group_name]
-				end
-			else
-				Result := pixmaps [ara.group_name]
-			end
-		end
 
 	selected_archetype_node: ARCH_CAT_ARCHETYPE
 
@@ -143,7 +94,10 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
-	select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent: PROCEDURE [ANY, TUPLE]
+	edit_archetype_agent: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]]
+
+	save_archetype_agent: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE, BOOLEAN, BOOLEAN]]
+			-- agent with signature (aca: ARCH_CAT_ARCHETYPE; diff_flag, native_format_flag: BOOLEAN)
 
 	archetype_node_handler (ev_ti: EV_TREE_ITEM; x,y, button: INTEGER)
 			-- creates the context menu for a right click action for an ARCH_REP_ARCHETYPE node
@@ -151,18 +105,30 @@ feature {NONE} -- Implementation
 			menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
-			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca and button = {EV_POINTER_CONSTANTS}.right then
+			if button = {EV_POINTER_CONSTANTS}.right and attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
 				create menu
-				create an_mi.make_with_text_and_action ("Compile and Display", agent display_context_selected_archetype_in_active_tool (ev_ti))
-				an_mi.set_pixmap (pixmaps ["parse"])
+				create an_mi.make_with_text_and_action (create_message_content ("display_in_active_tab", Void), agent display_context_selected_archetype_in_active_tool (ev_ti))
+				an_mi.set_pixmap (pixmaps ["archetype_tool"])
 		    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action ("Display in new tool", agent display_context_selected_archetype_in_new_tool (ev_ti))
-				an_mi.set_pixmap (pixmaps ["archetype_2"])
+				create an_mi.make_with_text_and_action (create_message_content ("display_in_new_tab", Void), agent display_context_selected_archetype_in_new_tool (ev_ti))
+				an_mi.set_pixmap (pixmaps ["archetype_tool_new"])
 				menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action ("Edit source", edit_archetype_agent)
+				create an_mi.make_with_text_and_action (create_message_content ("edit_source", Void), agent (an_aca: ARCH_CAT_ARCHETYPE) do edit_archetype_agent.call ([an_aca]) end (aca))
 				an_mi.set_pixmap (pixmaps ["edit"])
+				menu.extend (an_mi)
+
+				create an_mi.make_with_text_and_action (create_message_content ("save_archetype_as", Void), agent (an_aca: ARCH_CAT_ARCHETYPE) do save_archetype_agent.call ([an_aca, True, True]) end (aca))
+	--			an_mi.set_pixmap (pixmaps ["save"])
+				menu.extend (an_mi)
+
+				create an_mi.make_with_text_and_action (create_message_content ("export_archetype_as", Void), agent (an_aca: ARCH_CAT_ARCHETYPE) do save_archetype_agent.call ([an_aca, True, False]) end (aca))
+	--			an_mi.set_pixmap (pixmaps ["save"])
+				menu.extend (an_mi)
+
+				create an_mi.make_with_text_and_action (create_message_content ("export_flat_archetype_as", Void), agent (an_aca: ARCH_CAT_ARCHETYPE) do save_archetype_agent.call ([an_aca, False, False]) end (aca))
+	--			an_mi.set_pixmap (pixmaps ["save"])
 				menu.extend (an_mi)
 
 				menu.show
@@ -173,8 +139,7 @@ feature {NONE} -- Implementation
 		do
 			ev_ti.enable_select
 			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
-				current_arch_cat.set_selected_item (aca)
-				select_archetype_agent.call ([])
+				gui_agents.select_archetype_agent.call ([aca])
 			end
 		end
 
@@ -182,13 +147,12 @@ feature {NONE} -- Implementation
 		do
 			ev_ti.enable_select
 			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
-				current_arch_cat.set_selected_item (aca)
-				select_archetype_in_new_tool_agent.call ([])
+				gui_agents.select_archetype_in_new_tool_agent.call ([aca])
 			end
 		end
 
 invariant
-	valid_artefact_types: (create {ARTEFACT_TYPE}).valid_artefact_types(artefact_types)
+	valid_artefact_types: (create {ARTEFACT_TYPE}).valid_artefact_types (artefact_types)
 
 end
 

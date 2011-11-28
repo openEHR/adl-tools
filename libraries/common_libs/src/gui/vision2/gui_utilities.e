@@ -150,26 +150,39 @@ feature {NONE} -- Implementation
 			-- Note that the value type is assumed to have a sensible outpur from its 'out' function
 		local
 			ev_list_row: EV_MULTI_COLUMN_LIST_ROW
-			i: INTEGER
+			item_list: LIST [ANY]
 		do
 			if ht /= Void then
-				from
-					ht.start
-				until
-					ht.off
-				loop
+				from ht.start until ht.off loop
 					create ev_list_row
 					ev_list_row.extend (utf8 (ht.key_for_iteration))
-					ev_list_row.extend (utf8 (ht.item_for_iteration.out))
+					if attached {GENERIC_RENDERABLE} ht.item_for_iteration as gr_item then
+						item_list := gr_item.as_vector
+						from item_list.start until item_list.off loop
+							ev_list_row.extend (utf8 (item_list.item.out))
+							item_list.forth
+						end
+					else
+						ev_list_row.extend (utf8 (ht.item_for_iteration.out))
+					end
 					ev_mlist.extend(ev_list_row)
 					ht.forth
 				end
 
-				from i := 1
-				until i > ev_mlist.column_count
-				loop ev_mlist.resize_column_to_content(i)
-					i := i + 1
-				end
+				resize_ev_multi_list (ev_mlist)
+			end
+		end
+
+	resize_ev_multi_list (ev_mlist: attached EV_MULTI_COLUMN_LIST)
+			-- perform seinsible column resizing on a EV_MULTI_COLUMN_LIST
+		local
+			i: INTEGER
+		do
+			from i := 1 until i > ev_mlist.column_count loop
+				ev_mlist.resize_column_to_content(i)
+				-- FIXME: a pure hack to get round the problem of Multi-list column resizing not including title contents
+				ev_mlist.set_column_width (ev_mlist.column_width (i).max (ev_mlist.column_title (i).count * 12), i)
+				i := i + 1
 			end
 		end
 
@@ -210,6 +223,17 @@ feature {NONE} -- Implementation
 			elseif split.minimum_split_position <= position and position <= split.maximum_split_position then
 				split.set_split_position (position)
 			end
+		end
+
+	proximate_ev_window (a_widget: EV_WIDGET): EV_WINDOW
+			-- find closest EV_WINDOW containing `a_widget'
+		local
+			csr: EV_WIDGET
+		do
+			from csr := a_widget.parent until not attached csr or else attached {EV_WINDOW} csr loop
+				csr := csr.parent
+			end
+			Result ?= csr
 		end
 
 end

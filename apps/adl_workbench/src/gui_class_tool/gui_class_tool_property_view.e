@@ -1,6 +1,6 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Class map control - visualise property view of a class, including flattening."
+	description: "Class map control - visualise property view of a class, including inheritance lineage."
 	keywords:    "archetype, cadl, gui"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
@@ -14,15 +14,7 @@ note
 class GUI_CLASS_TOOL_PROPERTY_VIEW
 
 inherit
-	SHARED_APP_UI_RESOURCES
-		export
-			{NONE} all
-		end
-
-	GUI_UTILITIES
-		export
-			{NONE} all
-		end
+	GUI_CLASS_TARGETTED_TOOL
 
 	BMM_DEFINITIONS
 		export
@@ -34,590 +26,158 @@ inherit
 			{NONE} all
 		end
 
-	CONSTANTS
-		export
-			{NONE} all
-		end
-
-	GUI_CLASS_TOOL_FACILITIES
-		export
-			{NONE} all
-		end
-
 create
 	make
 
 feature -- Definitions
 
-	Default_closure_depth: INTEGER = 2
-			-- default depth to explore supplier closure
+	Grid_declared_in_col: INTEGER = 1
+	Grid_property_col: INTEGER = 2
+	Grid_property_type_col: INTEGER = 3
+
+	Grid_column_ids: ARRAY [INTEGER]
+		once
+			Result := <<Grid_declared_in_col, Grid_property_col, Grid_property_type_col>>
+		end
 
 feature -- Initialisation
 
-	make (a_update_all_tools_rm_icons_setting_agent: like update_all_tools_rm_icons_setting_agent;
-			a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent)
+	make
 		do
-			update_all_tools_rm_icons_setting_agent := a_update_all_tools_rm_icons_setting_agent
-			make_class_tool (a_select_class_agent, a_select_class_in_new_tool_agent)
-
 			-- create widgets
 			create ev_root_container
-			create ev_property_tree
-			create ev_view_controls_vbox
-			create ev_expand_button
-			create ev_expand_one_button
-			create ev_collapse_one_button
+			ev_root_container.set_data (Current)
 
-			create ev_closure_depth_spin_button
-			create ev_closure_recompute_button
-
-			create ev_cell
-			create ev_use_rm_icons_cb
+			create ev_grid
+			ev_grid.enable_tree
+			create grid_controller.make_for_grid (ev_grid)
 
 			-- connect widgets
-			ev_root_container.extend (ev_property_tree)
-			ev_root_container.extend (ev_view_controls_vbox)
-			ev_view_controls_vbox.extend (ev_expand_button)
-			ev_view_controls_vbox.extend (ev_expand_one_button)
-			ev_view_controls_vbox.extend (ev_collapse_one_button)
-
-			ev_view_controls_vbox.extend (ev_closure_depth_spin_button)
-			ev_view_controls_vbox.extend (ev_closure_recompute_button)
-			ev_view_controls_vbox.extend (ev_cell)
-			ev_view_controls_vbox.extend (ev_use_rm_icons_cb)
-
-			-- visual characteristics
-			ev_root_container.disable_item_expand (ev_view_controls_vbox)
-			ev_view_controls_vbox.set_minimum_width (100)
-			ev_view_controls_vbox.set_padding (padding_width)
-			ev_view_controls_vbox.set_border_width (border_width)
-			ev_view_controls_vbox.disable_item_expand (ev_expand_button)
-			ev_view_controls_vbox.disable_item_expand (ev_expand_one_button)
-			ev_view_controls_vbox.disable_item_expand (ev_collapse_one_button)
-			ev_view_controls_vbox.disable_item_expand (ev_closure_depth_spin_button)
-			ev_view_controls_vbox.disable_item_expand (ev_closure_recompute_button)
-
-			ev_expand_button.set_text (create_message_content ("expand_collapse_complete_button_text", Void))
-			ev_expand_button.set_tooltip (create_message_content ("expand_collapse_complete_tooltip", Void))
-			ev_expand_button.set_minimum_width (tree_control_panel_width)
-			ev_expand_one_button.set_text (create_message_content ("expand_one_level_button_text", Void))
-			ev_expand_one_button.set_tooltip (create_message_content ("expand_one_level_tooltip", Void))
-			ev_expand_one_button.set_minimum_width (tree_control_panel_width)
-			ev_collapse_one_button.set_text (create_message_content ("collapse_one_level_button_text", Void))
-			ev_collapse_one_button.set_tooltip (create_message_content ("collapse_one_level_tooltip", Void))
-			ev_collapse_one_button.set_minimum_width (tree_control_panel_width)
-
-			ev_closure_depth_spin_button.set_text (create_message_content ("closure_depth_spin_button_text", Void))
-			ev_closure_depth_spin_button.set_tooltip (create_message_content ("closure_depth_spin_button_tooltip", Void))
-			ev_closure_depth_spin_button.set_value (default_closure_depth)
-			ev_closure_recompute_button.set_text (create_message_content ("closure_depth_recompute_button_text", Void))
-			ev_closure_recompute_button.set_tooltip (create_message_content ("closure_depth_recompute_button_tooltip", Void))
-			ev_cell.set_minimum_height (20)
-
-			-- right hand side visibility controls
-			ev_view_controls_vbox.disable_item_expand (ev_cell)
-			ev_view_controls_vbox.disable_item_expand (ev_use_rm_icons_cb)
-			ev_use_rm_icons_cb.set_text (create_message_content ("use_rm_icons_button_text", Void))
-			ev_use_rm_icons_cb.set_tooltip (create_message_content ("use_rm_icons_button_tooltip", Void))
-
-			if use_rm_pixmaps then
-				ev_use_rm_icons_cb.enable_select
-			end
-
-			-- set events - visibility controls
-			ev_expand_button.select_actions.extend (agent on_toggle_expand_tree)
-			ev_expand_one_button.select_actions.extend (agent on_expand_tree_one_level)
-			ev_collapse_one_button.select_actions.extend (agent on_shrink_tree_one_level)
-			ev_use_rm_icons_cb.select_actions.extend (agent on_ev_use_rm_icons_cb_selected)
-			ev_closure_recompute_button.select_actions.extend (agent repopulate)
+			ev_root_container.extend (ev_grid)
 		end
 
 feature -- Access
 
 	ev_root_container: EV_HORIZONTAL_BOX
 
-feature -- Status Report
-
-	differential_view: BOOLEAN
-
-	is_expanded: BOOLEAN
-			-- True if last whole tree operation was expand
-
-feature -- Events
-
-	on_shrink_tree_one_level
-		do
-			if attached class_def then
-				shrink_one_level
-			end
-		end
-
-	on_expand_tree_one_level
-		do
-			if attached class_def then
-				expand_one_level
-			end
-		end
-
-	on_toggle_expand_tree
-		do
-			if attached class_def then
-				toggle_expand_tree
-			end
-		end
-
-	on_ev_use_rm_icons_cb_selected
-		do
-			if attached class_def then
-				set_use_rm_pixmaps (ev_use_rm_icons_cb.is_selected)
-				refresh
-
-				-- reflect change to other editor tools
-				if attached update_all_tools_rm_icons_setting_agent then
-					update_all_tools_rm_icons_setting_agent.call ([])
-				end
-			end
-		end
-
-	update_rm_icons_cb
-			-- update and repopulate if this setting was changed elsewhere in the tool
-		do
-			if attached class_def and use_rm_pixmaps /= ev_use_rm_icons_cb.is_selected then
-				if use_rm_pixmaps then
-					ev_use_rm_icons_cb.enable_select
-				else
-					ev_use_rm_icons_cb.disable_select
-				end
-				refresh
-			end
-		end
-
-feature -- Commands
-
-	clear
-		do
- 			ev_closure_depth_spin_button.set_value (Default_closure_depth)
- 			ev_property_tree.wipe_out
-		end
-
-	populate (a_class_def: attached BMM_CLASS_DEFINITION; differential_view_flag: BOOLEAN)
-		do
-			class_def := a_class_def
-			differential_view := differential_view_flag
-
-			ev_property_tree.wipe_out
- 			create ev_tree_item_stack.make (0)
-
-			-- for use in icon switching
- 			model_publisher := a_class_def.bmm_schema.model_publisher
-
- 			-- populate the tree
-			populate_root_node
-			class_def.do_supplier_closure (not differential_view, ev_closure_depth_spin_button.value-1, agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
-
-			-- now collapse the tree, and then expand out just the top node
-			ev_property_tree.recursive_do_all (agent ev_tree_collapse)
-			if not ev_property_tree.is_empty and then ev_property_tree.first.is_expandable then
-				ev_property_tree.first.expand
-			end
-		end
-
-	repopulate
-		do
-			populate (class_def, differential_view)
-		end
-
-	refresh
-		do
-			do_with_wait_cursor (ev_root_container, agent ev_property_tree.recursive_do_all (agent refresh_node))
-		end
-
 feature {NONE} -- Implementation
 
-	ev_property_tree: EV_TREE
+	do_clear
+		do
+ 			ev_grid.wipe_out
+		end
 
-	ev_expand_button, ev_expand_one_button, ev_collapse_one_button, ev_closure_recompute_button: EV_BUTTON
+	do_populate
+		do
+			flat_properties := source.flat_properties
+			create anc_classes.make(0)
+			anc_classes.compare_objects
 
-	ev_use_rm_icons_cb: EV_CHECK_BUTTON
+			-- grid columns
+			ev_grid.insert_new_column (Grid_declared_in_col)
+			ev_grid.column (Grid_declared_in_col).set_title (create_message_content ("property_grid_declared_in_col_title", Void))
+			ev_grid.insert_new_column (Grid_property_col)
+			ev_grid.column (Grid_property_col).set_title (create_message_content ("property_grid_property_col_title", Void))
+			ev_grid.insert_new_column (Grid_property_type_col)
+			ev_grid.column (Grid_property_type_col).set_title (create_message_content ("property_grid_property_type_col_title", Void))
 
-	ev_view_controls_vbox: EV_VERTICAL_BOX
+			-- add the rows
+ 			populate_class_node (source)
 
-	ev_cell: EV_CELL
+			-- resize grid cols properly
+			Grid_column_ids.do_all (
+				agent (i: INTEGER; a_grid: EV_GRID)
+					do
+						a_grid.column (i).resize_to_content
+						a_grid.column(i).set_width ((a_grid.column (i).width * 1.1).ceiling)
+					end (?, ev_grid)
+			)
+		end
 
-	ev_closure_depth_spin_button: EV_SPIN_BUTTON
+	ev_grid: EV_GRID
 
-	ev_tree_item_stack: ARRAYED_STACK[EV_TREE_ITEM]
+	grid_controller: GUI_GRID_CONTROLLER
 
-	update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]
-			-- if this is set, it is an agent that takes one argument of a routine
-			-- to execute on all other editors, to sync them to a change in this current one
+	flat_properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 
-	class_def: BMM_CLASS_DEFINITION
+	anc_classes: ARRAYED_LIST [STRING]
 
-	model_publisher: STRING
-			-- name of publisher, e.g. 'openehr', which is the key to RM-specific icons
-
-	node_path: OG_PATH
-
-	node_list: ARRAYED_LIST [EV_TREE_NODE]
-
-	closure_depth: INTEGER
-			-- closure compute depth; limits closure computation to manageable level
-
-   	populate_root_node
-			-- Add root node representing class to `gui_file_tree'.
+   	populate_class_node (a_class_def: attached BMM_CLASS_DEFINITION)
+			-- Add rows and sub rows if there are properties from `a_class_def' found in the flat_properties
+			-- of `source'. Then iterate through ancestors recusrively
    		local
-			a_ti: EV_TREE_ITEM
+			gli: EV_GRID_LABEL_ITEM
+			class_row, property_row: EV_GRID_ROW
+			prop_list: ARRAYED_LIST [BMM_PROPERTY_DEFINITION]
+			prop_class: BMM_CLASS_DEFINITION
 		do
-			create a_ti
-			a_ti.set_text (class_def.name)
-			a_ti.set_data (class_def)
-			if use_rm_pixmaps and then rm_pixmaps.has (model_publisher) and then rm_pixmaps.item (model_publisher).has (class_def.name) then
-				a_ti.set_pixmap (rm_pixmaps.item (model_publisher).item (class_def.name))
-			else
-				a_ti.set_pixmap (pixmaps [class_def.type_category])
-			end
-			ev_property_tree.extend (a_ti)
-			ev_tree_item_stack.extend (a_ti)
-			create node_path.make_root
-		end
-
-   	populate_gui_tree_node_enter (a_prop_def: attached BMM_PROPERTY_DEFINITION; depth: INTEGER)
-   			-- Add a node representing `a_prop_def' to `gui_file_tree'.
-   			-- If depth = 0, but this property is not a terminal node, it means that computation on
-   			-- this branch of the closure won't go further due the closure_depth limit; therefore,
-   			-- display this node with a special icon that invite the user to manually further expand
-   			-- this node
-   		local
-			a_ti: EV_TREE_ITEM
-			prop_str, type_str: STRING
-			is_terminal: BOOLEAN
-			has_type_subs: BOOLEAN
-			type_spec: BMM_TYPE_SPECIFIER
-		do
-			closure_depth := depth
-
-			-- update path value
-			prop_str := a_prop_def.name.twin
-			node_path.append_segment (create {OG_PATH_ITEM}.make (prop_str))
-
-			-- determine data for property and one or more (in the case of generics with > 1 param) class nodes
-			if attached {BMM_CLASS_DEFINITION} a_prop_def.type_def as bmm_class_def then
-				if bmm_class_def.bmm_schema.primitive_types.has (bmm_class_def.name) then
-					prop_str.append (": " + bmm_class_def.name)
-					is_terminal := True
-				else
-					type_str := bmm_class_def.name
+			-- find properties defined on `a_class_def', if any; have to check against flat properties, since
+			-- there could be properties which were overridden in some lower descendant, and which
+			-- therefore should not be displayed as being from the original class
+			create prop_list.make (0)
+			from a_class_def.properties.start until a_class_def.properties.off loop
+				if flat_properties.has_item (a_class_def.properties.item_for_iteration) then
+					prop_list.extend (a_class_def.properties.item_for_iteration)
 				end
-				type_spec := bmm_class_def
-				has_type_subs := bmm_class_def.has_type_substitutions
+				a_class_def.properties.forth
+			end
 
-			elseif attached {BMM_CONTAINER_TYPE_REFERENCE} a_prop_def.type_def as bmm_cont_type_ref then
-				-- assume first gen param is only type of interest
-				prop_str.append (": " + bmm_cont_type_ref.container_type + Generic_left_delim.out + Generic_right_delim.out)
-				type_str := bmm_cont_type_ref.type
-				type_spec := bmm_cont_type_ref.type_def
-				has_type_subs := bmm_cont_type_ref.type_def.has_type_substitutions
+			-- if there were any, populate the class and then the properties
+			if not prop_list.is_empty then
+				-- populate class row
+				create gli.make_with_text (a_class_def.name)
+				gli.set_pixmap (pixmaps [a_class_def.type_category])
+				gli.set_data (a_class_def)
+				gli.pointer_button_press_actions.force_extend (agent class_node_handler (gli, ?, ?, ?))
+				ev_grid.set_item (Grid_declared_in_col, ev_grid.row_count + 1, gli)
+				class_row := gli.row
 
-			elseif attached {BMM_GENERIC_TYPE_REFERENCE} a_prop_def.type_def as bmm_gen_type_ref then
-				type_str := bmm_gen_type_ref.as_type_string
-				has_type_subs := bmm_gen_type_ref.has_type_substitutions
-				type_spec := bmm_gen_type_ref.root_type_def
+				-- do property rows if we have not already encountered this class
+				if not anc_classes.has (a_class_def.name) then
+					from prop_list.start until prop_list.off loop
+	--					class_row.insert_subrow (class_row.subrow_count+1)
+	--					property_row := class_row.subrow (class_row.subrow_count)
 
-			elseif attached {BMM_GENERIC_PARAMETER_DEFINITION} a_prop_def.type_def as bmm_gen_parm_def then -- type is T, U etc
-				type_str := bmm_gen_parm_def.name.twin
-				if bmm_gen_parm_def.is_constrained then
-					type_str.append (": " + bmm_gen_parm_def.conforms_to_type)
+						-- property name
+						create gli.make_with_text (prop_list.item.name)
+						gli.set_pixmap (pixmaps [rm_attribute_pixmap_string (prop_list.item)])
+						ev_grid.set_item (Grid_property_col, ev_grid.row_count + 1, gli)
+						property_row := gli.row
+	--					property_row.set_item (Grid_property_col, gli)
+
+						-- property type
+						create gli.make_with_text (prop_list.item.type.as_type_string)
+						prop_class := source.bmm_schema.class_definition (prop_list.item.type.root_class)
+						gli.set_pixmap (pixmaps [prop_class.type_category])
+						gli.set_data (prop_class)
+						gli.pointer_button_press_actions.force_extend (agent class_node_handler (gli, ?, ?, ?))
+						property_row.set_item (Grid_property_type_col, gli)
+
+						prop_list.forth
+					end
+
+	--				class_row.expand
 				end
-				has_type_subs := bmm_gen_parm_def.has_type_substitutions
-				type_spec := a_prop_def.type_def
+				anc_classes.extend (a_class_def.name)
 			end
 
-			if a_prop_def.is_mandatory then
-				prop_str.append (" [1]")
-			else
-				prop_str.append (" [0..1]")
-			end
-
-			-- property node
-			create a_ti
-			a_ti.set_data (a_prop_def)							-- node data = BMM property definition
-			a_ti.set_text (prop_str)							-- node text
-			a_ti.set_tooltip (node_path.as_string)				-- tooltip
-			a_ti.set_pixmap (pixmaps [rm_attribute_pixmap_string (a_prop_def)])	-- pixmap
-			ev_tree_item_stack.item.extend (a_ti)
-			ev_tree_item_stack.extend (a_ti)
-
-			-- class / type node(s)
-			if not is_terminal then
-				create a_ti
-				set_class_node_details (a_ti, type_spec, type_str, has_type_subs)
-				ev_tree_item_stack.item.extend (a_ti)
-				ev_tree_item_stack.extend (a_ti)
+			-- visit ancestors, recursively
+			from a_class_def.ancestors.start until a_class_def.ancestors.off loop
+				populate_class_node (a_class_def.ancestors.item_for_iteration)
+				a_class_def.ancestors.forth
 			end
 		end
 
-	set_class_node_details (a_ti: EV_TREE_ITEM; a_type_spec: BMM_TYPE_SPECIFIER; a_type_str: STRING; has_type_subs: BOOLEAN)
-		local
-			type_category: STRING
-			root_class: STRING
-			pixmap: EV_PIXMAP
-		do
-			type_category := a_type_spec.type_category
-			a_ti.set_data (a_type_spec)						-- node data
-			a_ti.set_text (a_type_str)						-- node text
-			if not attached {BMM_GENERIC_PARAMETER_DEFINITION} a_type_spec then
-				root_class := type_name_root_type (a_type_str)
-				if use_rm_pixmaps and then rm_pixmaps.has (model_publisher) and then rm_pixmaps.item (model_publisher).has (root_class) then
-					pixmap := rm_pixmaps.item (model_publisher).item (root_class)
-				else
-					pixmap := pixmaps [type_category]
-				end
-			else
-				pixmap := pixmaps [type_category]
-			end
-			a_ti.set_pixmap (pixmap)
-
- 	 		a_ti.pointer_button_press_actions.force_extend (agent class_node_handler (a_ti, ?, ?, ?))
- 	 	end
-
-   	populate_gui_tree_node_exit (a_prop_def: attached BMM_PROPERTY_DEFINITION)
-   		do
-			node_path.remove_last
-			ev_tree_item_stack.remove
-			if not attached {BMM_CLASS_DEFINITION} a_prop_def.type_def as bmm_class_def or else not bmm_class_def.bmm_schema.primitive_types.has (bmm_class_def.name) then
-				ev_tree_item_stack.remove
-			end
-		end
-
-	rm_attribute_pixmap_string (rm_attr: attached BMM_PROPERTY_DEFINITION): STRING
-			-- string name of pixmap for attribute rm_attr
-		do
-			create Result.make(0)
-			Result.append ("c_attribute")
-			if rm_attr.is_container then
-				Result.append (".multiple")
-			end
-			if not rm_attr.is_mandatory then
-				Result.append (".optional")
-			end
-		end
-
-	refresh_node (a_ti: EV_TREE_NODE)
-		do
-			if attached {BMM_TYPE_SPECIFIER} a_ti.data as a_type_spec  then
-				if use_rm_pixmaps and then rm_pixmaps.has (model_publisher) and then rm_pixmaps.item (model_publisher).has (a_type_spec.root_class) then
-					a_ti.set_pixmap (rm_pixmaps.item (model_publisher).item (a_type_spec.root_class))
-				else
-					a_ti.set_pixmap (pixmaps [a_type_spec.type_category])
-				end
-			end
-		end
-
-	class_node_handler (eti: EV_TREE_ITEM; x,y, button: INTEGER)
+	class_node_handler (eti: EV_SELECTABLE; x,y, button: INTEGER)
 			-- creates the context menu for a right click action for class node
 		local
-			subs: ARRAYED_SET[STRING]
 			menu: EV_MENU
 		do
-			if attached {BMM_TYPE_SPECIFIER} eti.data as bmm_type_spec and button = {EV_POINTER_CONSTANTS}.right then
+			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_TYPE_SPECIFIER} eti.data as bmm_type_spec then
 				create menu
-
-				-- add a context menu item for expanding node, if depth limit reached
-				if eti.is_empty then
-					add_expand_context_menu (menu, bmm_type_spec.root_class, eti)
-				end
-
-				-- if there are type substitutions available, add menu for that
-				if attached {BMM_CLASS_DEFINITION} bmm_type_spec as bmm_class_def then
-					subs := bmm_class_def.type_substitutions
-				elseif attached {BMM_CONTAINER_TYPE_REFERENCE} bmm_type_spec as bmm_cont_type_ref then
-					subs := bmm_cont_type_ref.type_def.type_substitutions
-				elseif attached {BMM_GENERIC_TYPE_REFERENCE} bmm_type_spec as bmm_gen_type_ref then
-					subs := bmm_gen_type_ref.type_substitutions
-				elseif attached {BMM_GENERIC_PARAMETER_DEFINITION} bmm_type_spec as bmm_gen_parm_def then -- type is T, U etc
-					subs := bmm_gen_parm_def.type_substitutions
-				end
-				if not subs.is_empty then
-					add_subtype_context_menu (menu, subs, eti)
-				end
-
 				-- add menu item for retarget tool to current node / display in new tool
 				add_class_context_menu (menu, eti)
-
 				menu.show
-			end
-		end
-
-	add_subtype_context_menu (menu: EV_MENU; a_substitutions: ARRAYED_SET[STRING]; a_ti: EV_TREE_ITEM)
-			-- dynamically initializes the context menu for this tree
-		local
-			an_mi: EV_MENU_ITEM
-			chg_sub_menu: EV_MENU
-		do
-			-- create sub menu listing subtypes to change current node into
-			create chg_sub_menu.make_with_text ("Convert this node to subtype")
-			from a_substitutions.start until a_substitutions.off loop
-				create an_mi.make_with_text_and_action (a_substitutions.item, agent rebuild_from_interior_node (a_substitutions.item, a_ti, True))
-				if attached {BMM_TYPE_SPECIFIER} a_ti.data as a_type_spec then
-					if a_type_spec.bmm_schema.class_definition (a_substitutions.item).is_abstract then
-						an_mi.set_pixmap (pixmaps ["class_abstract"])
-					else
-						an_mi.set_pixmap (pixmaps ["class_concrete"])
-					end
-				end
-	    		chg_sub_menu.extend (an_mi)
-				a_substitutions.forth
-			end
-			menu.extend (chg_sub_menu)
-
-			-- if owning attribute is multiple, allow adding of sibling nodes
-			if a_ti.has_parent and then attached {BMM_PROPERTY_DEFINITION} a_ti.parent.data as a_prop_def and then a_prop_def.is_container then
-				-- create sub menu listing subtypes to add to parent node
-				create chg_sub_menu.make_with_text ("Add new subtype node")
-				from a_substitutions.start until a_substitutions.off loop
-					create an_mi.make_with_text_and_action (a_substitutions.item, agent rebuild_from_interior_node (a_substitutions.item, a_ti, False))
-					if attached {BMM_TYPE_SPECIFIER} a_ti.data as a_type_spec then
-						if a_type_spec.bmm_schema.class_definition (a_substitutions.item).is_abstract then
-							an_mi.set_pixmap (pixmaps ["class_abstract"])
-						else
-							an_mi.set_pixmap (pixmaps ["class_concrete"])
-						end
-					end
-		    		chg_sub_menu.extend (an_mi)
-					a_substitutions.forth
-				end
-				menu.extend (chg_sub_menu)
-			end
-		end
-
-	add_expand_context_menu (menu: EV_MENU; a_class_name: STRING; a_ti: EV_TREE_ITEM)
-			-- dynamically initializes the context menu for this tree
-		local
-			an_mi: EV_MENU_ITEM
-		do
-			create an_mi.make_with_text_and_action ("Expand", agent rebuild_from_interior_node (a_class_name, a_ti, True))
-			menu.extend (an_mi)
-		end
-
-	rebuild_from_interior_node (a_class_name: attached STRING; a_ti: EV_TREE_ITEM; replace_mode: BOOLEAN)
-			-- rebuild EV tree from interior node of class with a new tree of selected subtype
-		local
-			bmm_class_def: BMM_CLASS_DEFINITION
-			target_ti: EV_TREE_ITEM
-		do
-			a_ti.enable_select
-			if replace_mode then
-				target_ti := a_ti
-				target_ti.wipe_out
-			else
-				create target_ti.default_create
-				a_ti.parent.extend (target_ti)
-				target_ti.set_data (a_ti.data)
-			end
-			ev_tree_item_stack.extend (target_ti)
-			if attached {BMM_TYPE_SPECIFIER} target_ti.data as a_type_spec then
-				bmm_class_def := a_type_spec.bmm_schema.class_definition (a_class_name)
-				closure_depth := 1
-				set_class_node_details (target_ti, bmm_class_def, a_class_name, True)
-				if attached {EV_TREE_ITEM} target_ti.parent as a_parent_ti then
-					create node_path.make_from_string (a_parent_ti.tooltip)
-				end
-				do_with_wait_cursor (ev_root_container, agent bmm_class_def.do_supplier_closure (not differential_view, ev_closure_depth_spin_button.value - 1,
-					agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit))
-				ev_tree_item_expand (target_ti)
-			end
-			ev_tree_item_stack.remove
-		end
-
-	ev_tree_collapse (node: attached EV_TREE_NODE)
-			--
-		do
- 			if node.is_expandable then
-				node.collapse
- 			end
-		end
-
-	toggle_expand_tree
-			-- Expand or shrink the tree control.
-		do
-			is_expanded := not is_expanded
-
-			if is_expanded then
-				ev_property_tree.recursive_do_all (agent ev_tree_item_expand)
-				ev_expand_button.set_text (create_message_content ("expand_button_collapse_text", Void))
-			else
-				ev_property_tree.recursive_do_all (agent ev_tree_item_shrink)
-				ev_expand_button.set_text (create_message_content ("expand_button_expand_text", Void))
-			end
-		end
-
-	expand_one_level
-			-- Expand the tree control one level further.
-		do
-			create node_list.make (0)
-			ev_property_tree.recursive_do_all (agent ev_tree_item_expand_one_level)
-
-			from node_list.start until node_list.off loop
-				node_list.item.expand
-				node_list.forth
-			end
-		end
-
-	shrink_one_level
-			-- Shrink the tree control one level further.
-		do
-			create node_list.make (0)
-			ev_property_tree.recursive_do_all (agent ev_tree_item_collapse_one_level)
-
-			from node_list.start until node_list.off loop
-				node_list.item.collapse
-				node_list.forth
-			end
-		end
-
-	ev_tree_item_expand (an_ev_tree_node: attached EV_TREE_NODE)
-			--
-		do
-			if an_ev_tree_node.is_expandable then -- and node_data.is_addressable then
-				an_ev_tree_node.expand
-			end
-		end
-
-	ev_tree_item_shrink (an_ev_tree_node: attached EV_TREE_NODE)
-			--
-		do
-			if an_ev_tree_node.is_expandable then -- and node_data.is_addressable then
-				an_ev_tree_node.collapse
-			end
-		end
-
-	ev_tree_item_expand_one_level (an_ev_tree_node: attached EV_TREE_NODE)
-			--
-		do
-			if an_ev_tree_node.is_expanded then
-				from an_ev_tree_node.start until an_ev_tree_node.off loop
-					if an_ev_tree_node.item.is_expandable and then not an_ev_tree_node.item.is_expanded then
-						node_list.extend (an_ev_tree_node.item)
-					end
-					an_ev_tree_node.forth
-				end
-			elseif an_ev_tree_node = ev_property_tree.item then
-				node_list.extend (an_ev_tree_node)
-			end
-		end
-
-	ev_tree_item_collapse_one_level (an_ev_tree_node: attached EV_TREE_NODE)
-			--
-		do
-			if an_ev_tree_node.is_expanded then
-				from an_ev_tree_node.start until an_ev_tree_node.off or else (an_ev_tree_node.item.is_expandable and then an_ev_tree_node.item.is_expanded) loop
-					an_ev_tree_node.forth
-				end
-
-				if an_ev_tree_node.off then -- didn't find any expanded children
-					node_list.extend (an_ev_tree_node)
-				end
 			end
 		end
 

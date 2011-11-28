@@ -1,0 +1,276 @@
+--
+--	component:   openEHR Archetype Project
+--	description: Error database for any ADL application, except for errors defined in official openEHR ADL/AOM error file
+--				 
+--	keywords:    ADL
+--	author:      Thomas Beale
+--	support:     Ocean Informatics <support@OceanInformatics.com>
+--	copyright:   Copyright (c) 2010 Ocean Informatics Pty Ltd"
+--	license:     See notice at bottom of class
+--
+--	file:        $URL$
+--	revision:    $LastChangedRevision$
+--	last_change: $LastChangedDate$
+--
+
+templates = <
+	["en"] = <
+		-- context (right-click) menus, common items
+		["display_in_active_tab"] = <"Display">
+		["retarget_to_this_class"] = <"Retarget to this class">
+		["display_in_new_tab"] = <"Display in new tab">
+		["show_class_in_rm"] = <"Show in RM explorer">
+		["edit_source"] = <"Edit source">
+		["save_archetype_as"] = <"Save as">
+		["export_archetype_as"] = <"Export as">
+		["export_flat_archetype_as"] = <"Export flat as">
+		["edit_source_schema"] = <"Edit source schema">
+		["expand_packages"] = <"Expand packages">
+
+		-- SHARED_KNOWLEDGE_REPOSITORY, REPOSITORY_DIALOG
+		["ref_repo_not_found"] = <"Reference Repository $1 does not exist or not readable">
+		["work_repo_not_found"] = <"Work Repository $1 does not exist or not readable">
+		["work_repo_not_valid"] = <"Work Repository $1 is the same as or a child of the reference repository $2">
+		["cant_remove_last_profile"] = <"Last profile cannot be removed; use 'Edit' to reconfigure">
+		["duplicate_profile"] = <"New profile name $1 already used">
+		["empty_profile"] = <"Profile name must not be empty">
+
+		-- RM_SCHEMA_DIALOG
+		["rm_schema_dir_not_found"] = <"Directory $1 not found; please specify a valid directory">
+
+		-- MAIN_WINDOW
+		["clean_generated_files_info"] = <"System needs to be compiled before generated files can be deleted">
+		["export_repository_report_replace_info"] = <"Exported report to $1">
+		["export_repository_report_replace_err"] = <"Failed to export report to $1">
+		["export_html_question"] = <"Only successfully built archetypes can be exported to HTML.%N%NDo you want to build each archetype before exporting it?">
+		["edit_which_file_question"] = <"Edit which file?%N%NDifferential: $1%N%NFlat (legacy): $2">
+		["edit_legacy_file_info"] = <"The Differential (.adls) file is not available.%N%NOpening the legacy flat file: $1%N">
+		["build_and_export_all"] = <"Yes, Build and Export All">
+		["export_only_built"] = <"No, Export only the built ones">
+		["compile_before_serialising"] = <"Must compile before serialising">
+		["no_diff_tool"] = <"No diff tool must be configured; see Options">
+		["no_diff_dirs"] = <"No diff directories available; tests must be run on repository first">
+		["populating_directory_start"] = <"Populating from directories in $1 profile...">
+		["populating_directory_complete"] = <"...complete; compile with F7 or other options under Repository menu">
+		["compiler_no_flat_text"] = <"===================== No flat (.adlf) text available =======================">
+		["compiler_no_source_text"] = <"===================== No source (.adls) text available =======================">
+		["compiler_no_dadl_text"] = <"===================== No dADL (.dadl) text available =======================">
+		["read_docking_file_failed"] = <"Read from docking config file $1 failed">
+		["write_docking_file_failed"] = <"Write to docking config file $1 failed">
+		["copy_docking_file"] = <"Copying user docking config file $1 to default location $2">
+		["no_docking_file_found"] = <"No docking format file fund at user location $1 or default location $2">
+
+		-- GUI_CATALOGUE_TOOL
+		["catalogue_archetype_tab_text"] = <"Archetypes">
+		["catalogue_template_tab_text"] = <"Templates">
+		["catalogue_metrics_tab_text"] = <"Metrics">
+		["catalogue_stats_tab_text"] = <"Statistics">
+		["catalogue_tool_title"] = <"Repository">
+
+		-- GUI_PATH_MAP_CONTROL
+		["row_filter_frame_text"] = <"Row Filter">
+		["row_filter_combo_tooltip"] = <"Filter which rows are shown in the Path Analysis">
+		["column_frame_text"] = <"Column View">
+		["column_checklist_tooltip"] = <"Choose view of columns in the Path Analysis">
+
+		-- GUI_SLOT_MAP_CONTROL
+		["slots_incomplete_w1"] = <"this list may be incomplete. To be sure, run Build All under the Repository menu.">
+		["supplier_frame_text"] = <"Supplier Archetypes">
+		["client_frame_text"] = <"Client Archetypes">
+
+		-- GUI_ANNOTATIONS_CONTROL 
+		["annotation_path_text"] = <"Path">
+		["annotation_key_text"] = <"Annotation key">
+		["annotation_value_text"] = <"Annotation value">
+
+		-- GUI_NODE_MAP_CONTROL 
+		["expand_collapse_complete_button_text"] = <"Expand All">
+		["expand_collapse_complete_tooltip"] = <"Completely expand or collapse the Node Map">
+
+		["expand_one_level_button_text"] = <"Expand One">
+		["expand_one_level_tooltip"] = <"Expand one level of the Node Map">
+
+		["collapse_one_level_button_text"] = <"Collapse One">
+		["collapse_one_level_tooltip"] = <"Collapse one level of the Node Map">
+
+		["hide_rm_details_button_text"] = <"Domain">
+		["hide_rm_details_tooltip"] = <"Show domain view; hide RM details of the archetyped nodes">
+
+		["display_rm_class_names_button_text"] = <"Technical">
+		["display_rm_class_names_tooltip"] = <"Display RM class names and attribute details of archetyped nodes">
+
+		["show_rm_properties_button_text"] = <"RM properties">
+		["show_rm_properties_tooltip"] = <"Show non-archetyped RM properties">
+
+		["closure_depth_spin_button_text"] = <"Depth">
+		["closure_depth_spin_button_tooltip"] = <"Depth of closure to explore; this computation can be long for depths > 5">
+
+		["closure_depth_recompute_button_text"] = <"Recompute">
+		["closure_depth_recompute_button_tooltip"] = <"Recompute with new depth">
+
+		["use_rm_icons_button_text"] = <"RM icons">
+		["use_rm_icons_button_tooltip"] = <"Use RM-specific icons">
+
+		["rm_visibility_controls_text"] = <"Viewing mode">
+
+		["expand_button_collapse_text"] = <"Collapse All">
+		["expand_button_expand_text"] = <"Expand All">
+
+		-- GUI_TEST_ARCHETYPE_TREE_CONTROL
+		["Test_arch_compare_i1"] = <"Archetype source lengths same but texts differ">
+		["Test_arch_compare_i2"] = <"Archetype source lengths differ: original =  $1; new = $2">
+
+		-- GUI_CLASS_MAP_CONTROL
+		["set_differential_archetype_view"] = <"Set differential archetype view">
+		["set_flat_archetype_view"] = <"Set flat archetype view">
+
+		-- GUI_ARCHETYPE_TOOL
+		["differential_view_button_tooltip"] = <"Set differential archetype view">
+		["flat_view_button_tooltip"] = <"Set flat archetype view">
+
+		["language_label"] = <"Language:">
+		["language_combo_tooltip"] = <"Select display language">
+
+		["adl_version_label"] = <"ADL Version:">
+		["adl_version_label_tooltip"] = <"ADL/AOM version in which archetype was authored">
+
+		["description_tab_text"] = <"Description">
+		["definition_tab_text"] = <"Definition">
+		["paths_tab_text"] = <"Paths">
+		["slots_tab_text"] = <"Slots">
+		["terminology_tab_text"] = <"Terminology">
+		["annotations_tab_text"] = <"Annotations">
+		["serialised_tab_text"] = <"Serialised">
+		["serialised_diff_tab_text"] = <"Serialised (diff)">
+		["serialised_flat_tab_text"] = <"Serialised (flat)">
+		["source_tab_text"] = <"Source">
+		["validity_tab_text"] = <"Validity">
+		["stat_info_tab_text"] = <"Statistics">
+
+		["show_adl_serialisation_tooltip"] = <"Show ADL $1 serialisation">
+		["show_dadl_serialisation_tooltip"] = <"Show dADL $1 serialisation">
+		["show_xml_serialisation_tooltip"] = <"Show XML $1 serialisation">
+		["show_json_serialisation_tooltip"] = <"Show JSON $1 serialisation">
+
+		-- GUI_CLASS_TOOL
+		["closure_tab_text"] = <"Closure">
+		["properties_tab_text"] = <"Properties">
+		["ancestors_tab_text"] = <"Ancestors">
+		["descendants_tab_text"] = <"Descendants">
+
+		["serialise_frame_text"] = <"Output Format">
+
+		["property_grid_declared_in_col_title"] = <"Declared in">
+		["property_grid_property_col_title"] = <"Property">
+		["property_grid_property_type_col_title"] = <"Type">
+
+		-- GUI_DESCRIPTION_CONTROL
+		["administrative_tab_text"] = <"Administration">
+		["descriptive_tab_text"] = <"Descriptive">
+		["term_bindings_tab_text"] = <"Term Bindings">
+
+		["status_label_text"] = <"Lifecycle state:">
+		["auth_frame_text"] = <"Authorship">
+		["auth_orig_auth_label_text"] = <"Original Author">
+		["auth_contrib_label_text"] = <"Contributors">
+		["lang_frame_text"] = <"Languages">
+		["original_language_label_text"] = <"Original language:">
+		["trans_languages_label_text"] = <"Translations">
+		["author_label_text"] = <"Author">
+		["acreditation_label_text"] = <"Accreditation">
+		["other_details_label_text"] = <"Other Details">
+		["copyright_label_text"] = <"Copyright:">
+		["archetype_details_label_text"] = <"Archetype Details">
+		["purpose_label_text"] = <"Purpose">
+		["use_label_text"] = <"Use">
+		["misuse_label_text"] = <"Misuse">
+		["keywords_label_text"] = <"Keywords">
+		["resources_label_text"] = <"Resources">
+		["packages_label_text"] = <"Package">
+		["resource_orig_res_label_text"] = <"Original%NResources">
+		["terminology_label_text"] = <"Terminology mappings">
+		["refset_bindings_label_text"] = <"Refset bindings">
+
+		-- GUI_ARCHETYPE_INFORMATION_CONTROL
+		["arch_metrics_list_title_diff"] = <"Archetype metrics (differential)">
+		["arch_metrics_list_title_flat"] = <"Archetype metrics (flat)">
+		["breakdown_nb_title_diff"] = <"RM breakdown (differential)">
+		["breakdown_nb_title_flat"] = <"RM breakdown (flat)">
+		["summary_list_metric_col_title"] = <"Metric">
+		["summary_list_total_col_title"] = <"Total">
+		["summary_list_max_col_title"] = <"Max">
+		["summary_list_min_col_title"] = <"Min">
+		["summary_list_mean_col_title"] = <"Mean">
+		["statistics_grid_model_element_name_col_title"] = <"Model element">
+		["statistics_grid_model_element_count_col_title"] = <"Total">
+
+		-- GUI_SERIALISATION_CONTROL
+		["flatten_with_rm_cb_text"] = <"Include RM">
+		["flatten_with_rm_cb_tooltip"] = <"Include RM in flattening process, causing RM existence and cardinality to be included and occurrences to be generated">
+
+		-- GUI_SOURCE_CONTROL
+		["line_numbers_cb_text"] = <"+ Line Numbers">
+
+		-- GUI_VIEW_ARCHETYPE_TREE_CONTROL
+		["rm_closure_tree_node_tooltip"] = <"Archetype model namespace: RM package closure $1%Nfrom schema $2">
+		["archetype_tree_node_tooltip"] = <"(source = legacy flat)">
+
+		-- GUI_RM_TOOL
+		["bmm_version_label"] = <"BMM Version:">
+		["bmm_version_label_tooltip"] = <"Basic Meta-Model (BMM) version in which the RM schema was authored">
+
+		-- GUI_RM_DESCRIPTION_TOOL
+		["rm_desc_attr_group"] = <"Group">
+		["rm_desc_attr_name"] = <"Attribute">
+		["rm_desc_attr_value"] = <"Value">
+
+		-- GUI_RM_INFORMATION_TOOL
+		["rm_info_grid_metric_col_title"] = <"Metric">
+		["rm_info_grid_count_col_title"] = <"Count">
+
+		-- GUI_STATISTICS_TOOL
+		["stats_frame_text"] = <"Basic statistics">
+		["term_bindings_frame_text"] = <"Terminology bindings">
+
+		-- GUI_ARCHETYPE_STATISTICAL_REPORT
+		["rm_types_nb_tab_text"] = <"$1 types">
+		["rm_primitive_types_nb_tab_text"] = <"Primitive types">
+	>
+>
+
+--|
+--| ***** BEGIN LICENSE BLOCK *****
+--| Version: MPL 1.1/GPL 2.0/LGPL 2.1
+--|
+--| The contents of this file are subject to the Mozilla Public License Version
+--| 1.1 (the 'License'); you may not use this file except in compliance with
+--| the License. You may obtain a copy of the License at
+--| http://www.mozilla.org/MPL/
+--|
+--| Software distributed under the License is distributed on an 'AS IS' basis,
+--| WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+--| for the specific language governing rights and limitations under the
+--| License.
+--|
+--| The Original Code is adl_app_error_db.txt
+--|
+--| The Initial Developer of the Original Code is Thomas Beale.
+--| Portions created by the Initial Developer are Copyright (C) 2010
+--| the Initial Developer. All Rights Reserved.
+--|
+--| Contributor(s):
+--|
+--| Alternatively, the contents of this file may be used under the terms of
+--| either the GNU General Public License Version 2 or later (the 'GPL'), or
+--| the GNU Lesser General Public License Version 2.1 or later (the 'LGPL'),
+--| in which case the provisions of the GPL or the LGPL are applicable instead
+--| of those above. If you wish to allow use of your version of this file only
+--| under the terms of either the GPL or the LGPL, and not to allow others to
+--| use your version of this file under the terms of the MPL, indicate your
+--| decision by deleting the provisions above and replace them with the notice
+--| and other provisions required by the GPL or the LGPL. If you do not delete
+--| the provisions above, a recipient may use your version of this file under
+--| the terms of any one of the MPL, the GPL or the LGPL.
+--|
+--| ***** END LICENSE BLOCK *****
+--|

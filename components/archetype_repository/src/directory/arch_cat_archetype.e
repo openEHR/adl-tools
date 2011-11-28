@@ -44,7 +44,7 @@ inherit
 	SHARED_ARCHETYPE_SERIALISERS
 		export
 			{NONE} all
-			{ANY} has_archetype_serialiser_format, archetype_serialiser_formats, has_dt_serialiser_format
+			{ANY} has_archetype_native_serialiser_format, archetype_native_serialiser_formats, archetype_all_serialiser_formats, has_dt_serialiser_format
 		undefine
 			is_equal
 		end
@@ -95,7 +95,7 @@ feature {NONE} -- Initialisation
 				parent_id := arch_thumbnail.parent_archetype_id
 			end
 			artefact_type := arch_thumbnail.artefact_type
-			artefact_name := (create {ARTEFACT_TYPE}).type_names.item(artefact_type)
+			artefact_name := (create {ARTEFACT_TYPE}).type_names.item (artefact_type)
 			differential_generated := True
 
 			legacy_flat_path := a_path
@@ -198,14 +198,14 @@ feature -- Access (semantic)
 			-- a path derived from the ontological path of the nearest folder node + archetype_id
 		local
 			csr: ARCH_CAT_ITEM
-			arf: ARCH_CAT_MODEL_NODE
+			acmn: ARCH_CAT_MODEL_NODE
 		do
 			create Result.make(0)
-			from csr := parent until csr = Void or arf /= Void loop
-				arf ?= csr
+			from csr := parent until csr = Void or acmn /= Void loop
+				acmn ?= csr
 				csr := csr.parent
 			end
-			Result := arf.ontological_path + Ontological_path_separator + id.as_string
+			Result := acmn.path + Ontological_path_separator + id.as_string
 		end
 
 	differential_path: attached STRING
@@ -324,27 +324,32 @@ feature -- Access (semantic)
 	clients_index: ARRAYED_LIST [STRING]
 			-- list of archetype_ids of archetypes that use this archetype
 
-	ontological_name: STRING
+	qualified_name: STRING
 		do
 			Result := id.as_string
 		end
 
+	qualified_key: STRING
+		do
+			Result := qualified_name.as_upper
+		end
+
 	ontological_parent_name: STRING
 			-- semantic name of parent node in ontology tree
-			-- For top-level archetypes e.g. openEHR-EHR-OBSERVATION.thing.v1, it will be the name of teh folder, e.g. EHR-OBSERVATION
+			-- For top-level archetypes e.g. openEHR-EHR-OBSERVATION.thing.v1, it will be the name of teh folder, e.g. openEHR-EHR-OBSERVATION
 			-- for specialised archetypes, e.g. openEHR-EHR-OBSERVATION.specialised_thing.v1, it will be the id of the parent, e.g. openEHR-EHR-OBSERVATION.thing.v1
 		do
 			if is_specialised then
 				Result := parent_id.as_string
 			else
-				Result := id.package_class_name
+				Result := id.qualified_rm_entity
 			end
 		end
 
 	old_ontological_parent_name: STRING
 			-- old vaue of `old_ontological_parent_name', to facilitate handling changes due to external editing of archetypes
 
-	display_name: STRING
+	name: STRING
 			-- domain concept part of archetype id; if there are any '-' characters due to ADL 1.4 style ids,
 			-- return only the final section
 		local
@@ -382,6 +387,12 @@ feature -- Access (semantic)
 
 	flat_compiled_path: STRING
 			-- path to persisted compiled flat form of archetype
+
+	global_artefact_identifier: attached STRING
+			-- tool-wide unique id for this artefact
+		do
+			Result := qualified_name
+		end
 
 feature -- Access (compiler)
 
@@ -752,8 +763,8 @@ feature {NONE} -- Compilation
 		do
 			reset
 			if rm_schema = Void then
-				if rm_schemas_access.has_schema_for_model (id.qualified_package_name) then
-					rm_schema := rm_schemas_access.schema_for_model (id.qualified_package_name)
+				if rm_schemas_access.has_schema_for_rm_closure (id.qualified_package_name) then
+					rm_schema := rm_schemas_access.schema_for_rm_closure (id.qualified_package_name)
 				else
 					compilation_state := Cs_rm_class_unknown
 					errors.add_error ("model_access_e7", <<id.qualified_rm_name>>, "")
@@ -797,6 +808,7 @@ feature {NONE} -- Compilation
 				differential_archetype := legacy_flat_archetype.to_differential
 				if is_specialised and not specialisation_parent.is_valid then
 					compilation_state := cs_lineage_invalid
+					errors.add_error("compile_e1", <<parent_id.as_string>>, "")
 				else
 				 	compilation_state := Cs_ready_to_validate
 					if current_language.is_empty or not differential_archetype.has_language (current_language) then
@@ -900,8 +912,6 @@ feature {NONE} -- Compilation
 					if adl15_engine.validation_passed then
 						post_info (Current, "validate", "parse_archetype_i2", <<id.as_string>>)
 						compilation_state := Cs_validated
-						current_arch_cat.update_slot_statistics (Current)
-						current_arch_cat.update_terminology_bindings_info (Current)
 					else
 						compilation_state := Cs_validate_failed
 					end
@@ -966,9 +976,9 @@ feature -- File Operations
 		require
 			Archetype_valid: is_valid
 			path_valid: not a_full_path.is_empty
-			Serialise_format_valid: has_archetype_serialiser_format (a_format) or has_dt_serialiser_format (a_format)
+			Serialise_format_valid: has_archetype_native_serialiser_format (a_format) or has_dt_serialiser_format (a_format)
 		do
-			if has_archetype_serialiser_format (a_format) then
+			if has_archetype_native_serialiser_format (a_format) then
 				file_repository.save_text_to_file (a_full_path, adl15_engine.serialise (differential_archetype, a_format, current_archetype_language))
 			else -- must be a DT serialisation format
 				file_repository.save_text_to_file (a_full_path, serialise_object (False, a_format))
@@ -980,11 +990,11 @@ feature -- File Operations
 		require
 			Archetype_valid: is_valid
 			path_valid: not a_full_path.is_empty
-			Serialise_format_valid: has_archetype_serialiser_format (a_format) or has_dt_serialiser_format (a_format)
+			Serialise_format_valid: has_archetype_native_serialiser_format (a_format) or has_dt_serialiser_format (a_format)
 		do
 			if a_format.same_string (Syntax_type_adl) then
 				file_repository.save_text_to_file (a_full_path, flat_text (False))
-			elseif has_archetype_serialiser_format (a_format) then
+			elseif has_archetype_native_serialiser_format (a_format) then
 				file_repository.save_text_to_file (a_full_path, adl15_engine.serialise (flat_archetype, a_format, current_archetype_language))
 			else -- must be a DT serialisation format
 				file_repository.save_text_to_file (a_full_path, serialise_object (True, a_format))
@@ -1078,7 +1088,7 @@ feature -- Output
 				if flat_flag then
 					create {P_ARCHETYPE} dt_arch.make (flat_archetype)
 				else
-					create{P_ARCHETYPE} dt_arch.make (differential_archetype)
+					create {P_ARCHETYPE} dt_arch.make (differential_archetype)
 				end
 
 				dt_arch.synchronise_to_tree
@@ -1087,6 +1097,19 @@ feature -- Output
 				Result := archetype_serialise_engine.serialised
 			end
 		end
+
+feature -- Statistics
+
+	generate_statistics (in_differential_mode: BOOLEAN)
+			-- generate statistics in differential or flat mode
+		require
+			is_valid
+		do
+			create statistical_analyser.make (Current, in_differential_mode)
+			statistical_analyser.analyse
+		end
+
+	statistical_analyser: ARCHETYPE_STATISTICAL_ANALYSER
 
 feature {NONE} -- Implementation
 

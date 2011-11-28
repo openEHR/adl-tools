@@ -23,7 +23,7 @@ class REVISION_HISTORY
 
 feature -- Access
 
-	items: attached LIST [REVISION_HISTORY_ITEM]
+	items: detachable LIST [REVISION_HISTORY_ITEM]
 			-- Complete history of items
 
 	item_count: INTEGER

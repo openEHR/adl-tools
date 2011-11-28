@@ -1,10 +1,10 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "Class map control - Visualise a reference model class as a node map"
-	keywords:    "archetype, cadl, gui"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	keywords:    "archetype, class, gui"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -14,19 +14,9 @@ note
 class GUI_CLASS_TOOL
 
 inherit
-	GUI_TOOL
+	GUI_CLASS_TARGETTED_TOOL
 		redefine
-			ev_root_container
-		end
-
-	SHARED_APP_UI_RESOURCES
-		export
-			{NONE} all
-		end
-
-	GUI_UTILITIES
-		export
-			{NONE} all
+			go_to_selected_item
 		end
 
 	BMM_DEFINITIONS
@@ -39,10 +29,12 @@ create
 
 feature -- Initialisation
 
-	make (a_update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]; a_select_class_agent, a_select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]])
+	make
 		do
 			-- create widgets
 			create ev_root_container
+			ev_root_container.set_data (Current)
+
 			create ev_action_bar
 			create ev_class_id
 			create ev_view_label
@@ -51,8 +43,10 @@ feature -- Initialisation
 			create ev_flat_view_button
 			create ev_notebook
 
-			create property_view.make (a_update_all_tools_rm_icons_setting_agent, a_select_class_agent, a_select_class_in_new_tool_agent)
-			create inheritance_view.make (a_select_class_agent, a_select_class_in_new_tool_agent)
+			create properties_view.make
+			create ancestors_view.make
+			create descendants_view.make
+			create closure_view.make
 
 			-- connect widgets
 			ev_root_container.extend (ev_action_bar)
@@ -65,8 +59,10 @@ feature -- Initialisation
 			ev_view_tool_bar.extend (ev_flat_view_button)
 
 			-- connect widgets: sub-tools
-			ev_notebook.extend (property_view.ev_root_container)
-			ev_notebook.extend (inheritance_view.ev_root_container)
+			ev_notebook.extend (properties_view.ev_root_container)
+			ev_notebook.extend (ancestors_view.ev_root_container)
+			ev_notebook.extend (descendants_view.ev_root_container)
+			ev_notebook.extend (closure_view.ev_root_container)
 
 			-- visual characteristics
 			ev_root_container.disable_item_expand (ev_action_bar)
@@ -82,30 +78,36 @@ feature -- Initialisation
 			ev_flat_view_button.set_tooltip (create_message_content ("Set flat archetype view", Void))
 
 			-- visual characteristics: notebook
-			ev_notebook.set_item_text (property_view.ev_root_container, create_message_content ("properties_tab_text", Void))
-	--		ev_notebook.item_tab (ev_property_view_hbox).set_pixmap (pixmaps ["properties"])
+			ev_notebook.set_item_text (properties_view.ev_root_container, create_message_content ("properties_tab_text", Void))
+			ev_notebook.item_tab (properties_view.ev_root_container).set_pixmap (pixmaps ["properties"])
 
-			ev_notebook.set_item_text (inheritance_view.ev_root_container, create_message_content ("inheritance_tab_text", Void))
-	--		ev_notebook.item_tab (ev_property_view_hbox).set_pixmap (pixmaps ["descendants"])
+			ev_notebook.set_item_text (closure_view.ev_root_container, create_message_content ("closure_tab_text", Void))
+			ev_notebook.item_tab (closure_view.ev_root_container).set_pixmap (pixmaps ["closure"])
+
+			ev_notebook.set_item_text (ancestors_view.ev_root_container, create_message_content ("ancestors_tab_text", Void))
+			ev_notebook.item_tab (ancestors_view.ev_root_container).set_pixmap (pixmaps ["ancestors"])
+
+			ev_notebook.set_item_text (descendants_view.ev_root_container, create_message_content ("descendants_tab_text", Void))
+			ev_notebook.item_tab (descendants_view.ev_root_container).set_pixmap (pixmaps ["descendants"])
 
 			-- set events
 			ev_differential_view_button.select_actions.extend (agent on_differential_view)
 			ev_flat_view_button.select_actions.extend (agent on_flat_view)
 
-			differential_view := True
-			ev_differential_view_button.enable_select
+			differential_view := False
+			ev_flat_view_button.enable_select
+
+			-- set up tool / sub-tool structures
+			add_sub_tool (properties_view)
+			add_sub_tool (ancestors_view)
+			add_sub_tool (descendants_view)
+			add_sub_tool (closure_view)
+			enable_selection_history
 		end
 
 feature -- Access
 
 	ev_root_container: EV_VERTICAL_BOX
-
-feature -- Status Report
-
-	differential_view: BOOLEAN
-
-	is_expanded: BOOLEAN
-			-- True if last whole tree operation was expand
 
 feature -- Events
 
@@ -134,42 +136,6 @@ feature -- Events
 
 feature -- Commands
 
-	clear
-		do
- 			ev_class_id.remove_text
- 			property_view.clear
- 			inheritance_view.clear
-		end
-
-	populate (a_class_def: attached BMM_CLASS_DEFINITION)
-			-- populate the ADL tree control by creating it from scratch
-		local
-			str: STRING
-		do
-			clear
-			class_def := a_class_def
-
- 			-- set the name in the name area
-			str := class_def.qualified_package_name.as_lower
-			str.append_character (package_name_delimiter)
-			str.append (class_def.name)
- 			ev_class_id.set_text (str)
-
-			do_with_wait_cursor (ev_root_container, agent do_populate)
-		end
-
-	repopulate
-			-- repopulate the ADL tree control by creating it from scratch for same class
-		do
-			do_with_wait_cursor (ev_root_container, agent do_populate)
-		end
-
-	do_populate
-		do
-			property_view.populate (class_def, differential_view)
-			inheritance_view.populate (class_def)
-		end
-
 	select_flat_view
 			-- Called by `select_actions' of `flat_view_button'.
 		do
@@ -191,14 +157,43 @@ feature -- Commands
 	update_rm_icons_setting
 			-- call this routine if rm_icons setting changed elsewhere in tool
 		do
-			property_view.update_rm_icons_cb
+			closure_view.update_rm_icons_cb
+		end
+
+	go_to_selected_item
+		do
+			if attached {BMM_CLASS_DEFINITION} selection_history.selected_item as class_def then
+				gui_agents.select_class_agent.call ([class_def])
+			end
 		end
 
 feature {NONE} -- Implementation
 
-	property_view: GUI_CLASS_TOOL_PROPERTY_VIEW
+	do_clear
+		do
+ 			ev_class_id.remove_text
+ 			closure_view.clear
+ 			properties_view.clear
+ 			descendants_view.clear
+ 			ancestors_view.clear
+		end
 
-	inheritance_view: GUI_CLASS_TOOL_INHERITANCE_VIEW
+	do_populate
+		do
+			ev_class_id.set_text (source.globally_qualified_path)
+			properties_view.populate (source, differential_view)
+			closure_view.populate (source, differential_view)
+			ancestors_view.populate (source, differential_view)
+			descendants_view.populate (source, differential_view)
+		end
+
+	properties_view: GUI_CLASS_TOOL_PROPERTY_VIEW
+
+	closure_view: GUI_CLASS_TOOL_CLOSURE_VIEW
+
+	ancestors_view: GUI_CLASS_TOOL_ANCESTORS_VIEW
+
+	descendants_view: GUI_CLASS_TOOL_DESCENDANTS_VIEW
 
 	ev_class_id: EV_TEXT_FIELD
 
@@ -212,9 +207,14 @@ feature {NONE} -- Implementation
 
 	ev_view_label: EV_LABEL
 
-	class_def: BMM_CLASS_DEFINITION
-
 	node_path: OG_PATH
+
+feature {NONE} -- Inapplicable
+
+	class_node_handler (eti: EV_SELECTABLE; x,y, button: INTEGER)
+			-- creates the context menu for a right click action for class node
+		do
+		end
 
 end
 

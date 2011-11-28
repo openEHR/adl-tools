@@ -113,7 +113,7 @@ feature
 		until
 			p_package.classes.after
 		loop
-			io.put_string(p_package.classes.item + "%N")
+			io.put_string(p_package.classes.item.as_type_string + "%N")
 			p_package.classes.forth
 		end
 	end

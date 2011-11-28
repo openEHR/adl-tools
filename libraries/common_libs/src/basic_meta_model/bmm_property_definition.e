@@ -14,34 +14,30 @@ note
 
 deferred class BMM_PROPERTY_DEFINITION
 
-feature -- Access (attributes from schema)
+feature -- Initialisation
+
+	make (a_name: STRING; a_type: attached like type; is_mandatory_flag, is_computed_flag: BOOLEAN)
+		do
+			name := a_name
+			is_mandatory := is_mandatory_flag
+			is_computed := is_computed_flag
+			type := a_type
+		end
+
+feature -- Access
 
 	name: STRING
 			-- name of this attribute
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
-	type: STRING
+	type: BMM_TYPE_SPECIFIER
 			-- type name of this attribute from dADL schema
-			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
-
-	is_abstract: BOOLEAN
-			-- this property is abstract, i.e. whether it is computed or stored is not yet defined
-			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
 	is_mandatory: BOOLEAN
 			-- True if this propert is mandatory in its class
-			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
 	is_computed: BOOLEAN
 			-- True if this property is computed rather than stored in objects of this class
-			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
-
-feature -- Access (attributes derived in post-schema processing)
-
-	type_def: BMM_TYPE_SPECIFIER
-			-- type of this attribute
-
-feature -- Access
 
 	existence: MULTIPLICITY_INTERVAL
 			-- interval form of 0..1, 1..1 etc, generated from is_mandatory
@@ -58,15 +54,16 @@ feature -- Status Report
 	is_container: BOOLEAN
 			-- True if type is a container type
 		do
-			if attached {BMM_CONTAINER_TYPE_REFERENCE} type_def as a_cont then
-				Result := True
-			end
+			Result := attached {BMM_CONTAINER_TYPE_REFERENCE} type
 		end
 
-feature {BMM_CLASS_DEFINITION} -- Commands
+feature -- Comparison
 
-	finalise_build (a_bmmm: attached BMM_SCHEMA; a_class_def: attached BMM_CLASS_DEFINITION; errors: ERROR_ACCUMULATOR)
-		deferred
+	bmm_conforms_to (other: attached BMM_PROPERTY_DEFINITION): BOOLEAN
+			-- True if this property conforms to `other' such that it could be used to override it
+		do
+			-- FIXME: to be implemented
+			Result := True
 		end
 
 end

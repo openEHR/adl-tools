@@ -11,9 +11,9 @@
 
 <body>
   <div id="container">
-    <table style="BACKGROUND-COLOR: #9cd2f8" border="0" cellspacing="0" cellpadding="0" width="100%">
-      <tbody>
-        <tr valign="top">
+      <table style="BACKGROUND-COLOR: #Cce3ef" border="0" cellspacing="0" cellpadding="0" width="100%">
+        <tbody>
+          <tr valign="top">
             <td valign="middle" width="115">
               <img border="0" alt="openEHR logo" src="images/openehr_adl_workbench_logo.png" width="100" height="100"/> </td>
           <td>
@@ -31,46 +31,59 @@
       <div id="content">
         <h2>Release History</h2>
 
-		<h3>15 Aug 2011 ADL 1.5 beta Release 4 (<a href="http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/1530/BRANCHES/adl1.5/">SVN rev 1530</a>) (<a href="http://www.openehr.org/issues/secure/IssueNavigator.jspa?reset=true&mode=hide&sorter/order=DESC&sorter/field=priority&resolution=-1&pid=10070&fixfor=10073">Jira</a>)</h3>
+		<h3>26 Nov 2011 ADL 1.5 beta Release 5 (<a href="http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/1643/BRANCHES/adl1.5/">SVN rev 1643</a>) (<a href="http://www.openehr.org/issues/secure/IssueNavigator.jspa?reset=true&mode=hide&sorter/order=DESC&sorter/field=priority&resolution=-1&pid=10070&fixfor=10120">Jira</a>)</h3>
 		<ul>
-			<li>GUI changes
+			<li><b>GUI changes</b>:
+				<ul>The Class Tool now includes a properties view, an ancestors view and a descendants view. All views contain class icons that are clickable.</ul>
+				<ul>There is now an RM Schema meta-data viewing tool.</ul>
+				<ul>Numerous small UI changes and improvements, including modal selection history - the Tool back and forward buttons work in a similar way to those of a web browser, no matter what the active tools is.</ul>
+			</li>
+			<li><b>Reporting</b>:
+				<ul>There is now a Statistics facility at the Archetype Catalogue and Archetype Tool levels, providing detailed statistics on use of RM classes and terminology in archetypes.</ul>
+			</li>
+			<li><b>Ouput formats</b>:
+				<ul>JSON is now supported as an output format for differential and flat archetypes. Note that occurrences, cardinality and existence are serialised with single Strings, e.g. "0..1", "1..*" etc.</ul>
+			</li>
+		</ul>
+		<h3>8 Sep 2011 ADL 1.5 beta Release 4 (<a href="http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/1603/BRANCHES/adl1.5/">SVN rev 1603</a>) (<a href="http://www.openehr.org/issues/secure/IssueNavigator.jspa?reset=true&mode=hide&sorter/order=DESC&sorter/field=priority&resolution=-1&pid=10070&fixfor=10080">Jira</a>)</h3>
+		<ul>
+			<li><b>GUI changes</b>:
 				<ul>
-					<li>The <b>GUI is now docking-based</b>, allowing greater flexibility in placement of visual components.  Visually, multiple archetypes can now be loaded simultaneously, and docked side-by-side for visual comparison. This visual layout is the same model used in most modern tabbed editing and browsing tools. Underneath, the tool now properly supports multiple open archetypes and templates.
+					<li>The <b>GUI is now <a href="images/docking_side_by_side_definitions.png">docking-based</a></b>, allowing greater flexibility in placement of visual components.  Visually, multiple archetypes can now be loaded simultaneously, and docked side-by-side for visual comparison. This visual layout is the same model used in most modern tabbed editing and browsing tools. Underneath, the tool now properly supports multiple open archetypes and templates.
 						<ul>
-							<li>The archetype identifier text box now performs only the search function, since individual archetype ids are now displayed in each tabbed tool, i.e. it now performs a similar function to the address box in a browser.</li>
 							<li>A new archetype tool is created either using ctrl-T (as for most web browsers) or from the new context (right click) menu available on an archetype or template in the explorer tol on the left.</li>
 							<li>The language choice combo, and flat/differential view button are therefore now on each individual archetype tool, rather than being tool-wide.</li>
-							<li>The status, error and statistics tools are now docked along the bottom and popup on left-click, in the manner typical of most programming IDEs.</li>
+							<li>The status, error and statistics tools are now <a href="images/compile_1.png">docked along the bottom</a> and popup on left-click, in the manner typical of most programming IDEs.</li>
 							<li>The profile chooser has moved to the top-left, in the place typically used to select 'projects' in most IDEs</li>
-							<li>The 'test' tool is now shown as a docked component minimised on the right hand side, where it used to be. However, now it is a normal dockable component, so can be arranged in the same screen space as the other components, or even popped out into its own independent window, e.g. to be displayed on a separate screen.</li>
-							<li>The docking tool layout is currently remembered across sessions by being saved in its own file. Because of the inherent complexity of docking and interaction with the operating system, the layout can occasionally disappear or seem non-sensical, usually due to a problem with the file. A 'reset visual layout' option is available from the View menu to correct this.</li>
+							<li>The 'test' tool is now shown as a <a href="images/test_tool.png">docked component</a> minimised on the right hand side, where it used to be. However, now it is a normal dockable component, so can be arranged in the same screen space as the other components, or even popped out into its own independent window, e.g. to be displayed on a separate screen.</li>
+							<li>The docking tool layout is currently remembered over sessions by being saved in its own file. Because of the inherent complexity of docking and interaction with the operating system, the layout can occasionally disappear or seem non-sensical, usually due to a problem with the file. A 'reset visual layout' option is available from the View menu to correct this.</li>
 						</ul>
 					</li>
 					<li><b>New Reference Model Browser</b>: 
 						<ul>
-							<li>A new tool on the left hand side of the main screen allows multiple Reference Models to be browsed and explored. Clicking on any class causes the class to be displyed in the Class Tool, in a new tab.</li>
-							<li>Classes from different RMs can be viewed side-by-side using different class tools and docking system to arrange the panes.</li>
+							<li>A <a href="images/rm_schema_tool.png">new tool</a> on the left hand side of the main screen allows multiple Reference Models to be browsed and explored. Clicking on any class causes the class to be displyed in the Class Tool, in a new tab.</li>
+							<li>Classes from different RMs can be <a href="images/rm_schema_tool_duplex_classes.png">viewed side-by-side</a> using different class tools and docking system to arrange the panes.</li>
 						</ul>
 					</li>
 					<li><b>Enhanced search bar</b>: 
 						<ul>
-							<li>The search bar now supports searching for classes as well as archetpes, depending on which of the RM browser or Archetype Catalog is active.</li>
+							<li>The <a href="images/address_bar.png">address bar</a> now supports searching for classes as well as archetpes, depending on which of the RM browser or Archetype Catalog is active.</li>
 						</ul>
 					</li>
 					<li><b>Archetype definition visualisation enhanced</b>: 
 						<ul>
-							<li>It is now possible to include a set of RM-specific icons for visualising the definition tree. These icons have to be located in the install area icons/&lt;rm_name&gt; directory, e.g. icons/openehr. Viewing with these icons or the generic ones is now an option available from the option dialog and also from the definition node tree.</li>
-							<li>The reference model attributes can be added independently of other vhanges to the view.</li>
+							<li>It is now possible to include a set of RM-specific icons for <a href="images/apgar_RM_icons.png">visualising the definition tree</a>. These icons have to be located in the install area icons/&lt;rm_name&gt; directory, e.g. icons/openehr. Viewing with these icons or the generic ones is now an option available from the option dialog and also from the definition node tree.</li>
+							<li>The <a href="images/apgar_RM_icons_RM_attrs.png">reference model attributes</a> can now be visualised independently of other changes to the view.</li>
 						</ul>
 					</li>
 					<li><b>Class tool enhanceed</b>: 
 						<ul>
-							<li>Left-clicking on a class node in the explorer on the left populates the 'class tool' (just another tool, tabbed with the archetype tools) with the compositional 'closure' of the chosen class. This is visualised as a tree of alternating type nodes and property nodes, in a similar to the node visualisation of an archetype.</li>
-							<li>Some of the class nodes are abstract, or even if concrete, have subtypes defined. Right-clicking on these nodes in the class tool, brings up a context meny containing the subtypes defined in the reference model, and selecting one causes re-population of that node in the tree downward with the chosen type.</li>
+							<li>Left-clicking on a class node in the explorer on the left populates the 'class tool' (now just another tool, tabbed with the archetype tools) with the compositional 'closure' of the chosen class. This is <a href="images/explorer_class_view.png">visualised</a> as a tree of alternating type nodes and property nodes, in a similar to the node visualisation of an archetype.</li>
+							<li>Some of the class nodes are abstract, or even if concrete, have subtypes defined. Right-clicking on these nodes in the class tool, brings up a context menu containing the subtypes defined in the reference model, and selecting one causes <a href="images/explorer_class_view_subtypes.png">re-population</a> of that node in the tree downward with the chosen type.</li>
 							<li>As with the archetype tool, right clicking on a class node allows a new tool to be created instead of populating the existing one. Class tools can also be delted from the docking container.</li>
 						</ul>
 					</li>
-					<li>ADL/XML serialisation version now choosable in main GUI window, rather than only in the options. This option changes the format of ADL and XML output to conform to the chosen ADL release (1.4 or 1.5)</li>
+					<li>ADL/<a href="images/xml_serialisation.png">XML</a> serialisation version now choosable in main GUI window, rather than only in the options. This option changes the format of ADL and XML output to conform to the chosen ADL release (1.4 or 1.5)</li>
 				</ul>
 				<li><b>Serialisation: dADL and rule-driven XML added</b>:
 					<ul>

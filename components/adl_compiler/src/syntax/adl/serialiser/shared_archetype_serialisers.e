@@ -38,43 +38,69 @@ feature -- Initialisation
 
 	initialise_serialisers
 		once
-			archetype_serialisers.put (create {ARCHETYPE_ADL_SERIALISER}.make(create {NATIVE_ADL_SERIALISATION_PROFILE}.make(Syntax_type_adl)), Syntax_type_adl)
-			archetype_serialisers.put (create {ARCHETYPE_ADL_SERIALISER}.make(create {HTML_ADL_SERIALISATION_PROFILE}.make(Syntax_type_adl_html)), Syntax_type_adl_html)
+			archetype_native_serialisers.put (create {ARCHETYPE_ADL_SERIALISER}.make (create {NATIVE_ADL_SERIALISATION_PROFILE}.make (Syntax_type_adl)), Syntax_type_adl)
+			archetype_native_serialisers.put (create {ARCHETYPE_ADL_SERIALISER}.make (create {HTML_ADL_SERIALISATION_PROFILE}.make (Syntax_type_adl_html)), Syntax_type_adl_html)
 
-			c_serialisers.put (create {CADL_SYNTAX_SERIALISER}.make(create {NATIVE_CADL_SERIALISATION_PROFILE}.make(Syntax_type_adl)), Syntax_type_adl)
-			c_serialisers.put (create {CADL_SYNTAX_SERIALISER}.make(create {HTML_CADL_SERIALISATION_PROFILE}.make(Syntax_type_adl_html)), Syntax_type_adl_html)
+			c_serialisers.put (create {CADL_SYNTAX_SERIALISER}.make (create {NATIVE_CADL_SERIALISATION_PROFILE}.make (Syntax_type_adl)), Syntax_type_adl)
+			c_serialisers.put (create {CADL_SYNTAX_SERIALISER}.make (create {HTML_CADL_SERIALISATION_PROFILE}.make (Syntax_type_adl_html)), Syntax_type_adl_html)
 
-			assertion_serialisers.put (create {ASSERTION_SYNTAX_SERIALISER}.make(create {NATIVE_CADL_SERIALISATION_PROFILE}.make(Syntax_type_adl)), Syntax_type_adl)
-			assertion_serialisers.put (create {ASSERTION_SYNTAX_SERIALISER}.make(create {HTML_CADL_SERIALISATION_PROFILE}.make(Syntax_type_adl_html)), Syntax_type_adl_html)
+			assertion_serialisers.put (create {ASSERTION_SYNTAX_SERIALISER}.make (create {NATIVE_CADL_SERIALISATION_PROFILE}.make (Syntax_type_adl)), Syntax_type_adl)
+			assertion_serialisers.put (create {ASSERTION_SYNTAX_SERIALISER}.make (create {HTML_CADL_SERIALISATION_PROFILE}.make (Syntax_type_adl_html)), Syntax_type_adl_html)
 
-			dt_serialisers.put (create {DT_DADL_SERIALISER}.make(create {NATIVE_DADL_SERIALISATION_PROFILE}.make(Syntax_type_dadl)), Syntax_type_dadl)
-			dt_serialisers.put (create {DT_DADL_SERIALISER}.make(create {NATIVE_DADL_SERIALISATION_PROFILE}.make(Syntax_type_adl)), Syntax_type_adl)
-			dt_serialisers.put (create {DT_DADL_SERIALISER}.make(create {HTML_DADL_SERIALISATION_PROFILE}.make(Syntax_type_adl_html)), Syntax_type_adl_html)
-			dt_serialisers.put (create {DT_XML_SERIALISER}.make(create {XML_DT_SERIALISATION_PROFILE}.make(Syntax_type_xml)), Syntax_type_xml)
+			-- the following is the native dADL serialiser that is used for in-line dADL sections in a native ADL archetype serialisation; in that
+			-- case, the serialisation syntax will be 'adl' this will also get passed to the ADL_ENGINE, so it has to have a dADL syntax serialiser
+			-- available for the 'adl' syntax
+			dt_serialisers.put (create {DT_DADL_SERIALISER}.make (create {NATIVE_DADL_SERIALISATION_PROFILE}.make (Syntax_type_adl)), Syntax_type_adl)
+
+			-- the following serialisers are all for various DT-based full archetype serialisation
+			dt_serialisers.put (create {DT_DADL_SERIALISER}.make (create {NATIVE_DADL_SERIALISATION_PROFILE}.make (Syntax_type_dadl)), Syntax_type_dadl)
+			dt_serialisers.put (create {DT_DADL_SERIALISER}.make (create {HTML_DADL_SERIALISATION_PROFILE}.make (Syntax_type_adl_html)), Syntax_type_adl_html)
+			dt_serialisers.put (create {DT_XML_SERIALISER}.make (create {XML_DT_SERIALISATION_PROFILE}.make (Syntax_type_xml)), Syntax_type_xml)
+			dt_serialisers.put (create {DT_JSON_SERIALISER}.make (create {JSON_DT_SERIALISATION_PROFILE}.make (Syntax_type_json)), Syntax_type_json)
 		end
 
 feature -- Access
 
-	archetype_serialiser_formats: attached ARRAYED_LIST [STRING]
-			-- List of format names.
+	archetype_all_serialiser_formats: attached ARRAYED_LIST [STRING]
+			-- List of all avalable archetype serialisation format names.
 		once
 			create Result.make (0)
 			Result.compare_objects
-			from archetype_serialisers.start until archetype_serialisers.off loop
-				Result.extend (archetype_serialisers.key_for_iteration)
-				archetype_serialisers.forth
+			from archetype_native_serialisers.start until archetype_native_serialisers.off loop
+				Result.extend (archetype_native_serialisers.key_for_iteration)
+				archetype_native_serialisers.forth
+			end
+			from dt_serialisers.start until dt_serialisers.off loop
+				if not Result.has (dt_serialisers.key_for_iteration) then
+					Result.extend (dt_serialisers.key_for_iteration)
+				end
+				dt_serialisers.forth
 			end
 		ensure
 			not_empty: not Result.is_empty
 			each_format_has_file_extension: Result.for_all (agent (format: STRING): BOOLEAN do Result := archetype_file_extensions.has (format) end)
 		end
 
-	archetype_serialiser_for_format (a_format: attached STRING): attached ARCHETYPE_MULTIPART_SERIALISER
+	archetype_native_serialiser_formats: attached ARRAYED_LIST [STRING]
+			-- List of native archetype serialisation format names.
+		once
+			create Result.make (0)
+			Result.compare_objects
+			from archetype_native_serialisers.start until archetype_native_serialisers.off loop
+				Result.extend (archetype_native_serialisers.key_for_iteration)
+				archetype_native_serialisers.forth
+			end
+		ensure
+			not_empty: not Result.is_empty
+			each_format_has_file_extension: Result.for_all (agent (format: STRING): BOOLEAN do Result := archetype_file_extensions.has (format) end)
+		end
+
+	archetype_native_serialiser_for_format (a_format: attached STRING): attached ARCHETYPE_MULTIPART_SERIALISER
 			-- The archetype serialiser for `a_format'.
 		require
-			format_valid: has_archetype_serialiser_format (a_format)
+			format_valid: has_archetype_native_serialiser_format (a_format)
 		do
-			Result := archetype_serialisers [a_format]
+			Result := archetype_native_serialisers [a_format]
 		end
 
 	archetype_file_extensions: attached HASH_TABLE [STRING, STRING]
@@ -83,23 +109,25 @@ feature -- Access
 			create Result.make (0)
 			Result.put (File_ext_archetype_source, Syntax_type_adl)
 			Result.put (File_ext_archetype_web_page, Syntax_type_adl_html)
+			Result.put (File_ext_dadl, Syntax_type_dadl)
 			Result.put (File_ext_xml_default, Syntax_type_xml)
+			Result.put (File_ext_json_default, Syntax_type_json)
 		ensure
 			not_empty: not Result.is_empty
 		end
 
 feature -- Status Report
 
-	has_archetype_serialiser_format (a_format: attached STRING): BOOLEAN
+	has_archetype_native_serialiser_format (a_format: attached STRING): BOOLEAN
 			-- Is `a_format' supported for serialisation?
 		do
-			Result := archetype_serialisers.has (a_format)
+			Result := archetype_native_serialisers.has (a_format)
 		end
 
 feature {NONE} -- Implementation
 
-	archetype_serialisers: attached HASH_TABLE [ARCHETYPE_MULTIPART_SERIALISER, STRING]
-			-- The supported archetype serialisers.
+	archetype_native_serialisers: attached HASH_TABLE [ARCHETYPE_MULTIPART_SERIALISER, STRING]
+			-- The supported archetype native syntax serialisers, i.e. serialisers based on the ADL syntax
 		once
 			create Result.make (0)
 		end

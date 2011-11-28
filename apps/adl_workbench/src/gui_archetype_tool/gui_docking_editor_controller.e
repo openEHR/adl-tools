@@ -17,6 +17,9 @@ note
 
 class GUI_DOCKING_EDITOR_CONTROLLER
 
+inherit
+	SHARED_GUI_HISTORY_TOOLBAR
+
 feature -- Definitions
 
 	Editor_group_name: STRING
@@ -28,6 +31,9 @@ feature -- Definitions
 		once
 			create Result.default_create
 		end
+
+	Tab_title_width: INTEGER = 10
+			-- Max number of text chars in string to populate editor tab
 
 feature -- Initialisation
 
@@ -45,6 +51,19 @@ feature -- Access
 			has_tools
 		do
 			Result := docking_tools.item (active_tool_id).tool
+		end
+
+	docking_pane_by_tool_id (an_id: STRING): detachable SD_CONTENT
+		do
+			from docking_tools.start until docking_tools.off or
+				(docking_tools.item_for_iteration.tool.is_populated and then
+				docking_tools.item_for_iteration.tool.tool_artefact_id.same_string (an_id))
+			loop
+				docking_tools.forth
+			end
+			if not docking_tools.off then
+				Result := docking_tools.item_for_iteration.docking_pane
+			end
 		end
 
 feature -- Status Report
@@ -90,6 +109,14 @@ feature -- Commands
 		do
 			if has_tools then
 				all_tools (True).do_all (an_agent)
+			end
+		end
+
+	show_docking_pane_by_tool_id (an_id: STRING): BOOLEAN
+		do
+			if attached {SD_CONTENT} docking_pane_by_tool_id (an_id) as pane then
+				pane.set_focus
+				Result := True
 			end
 		end
 
@@ -169,7 +196,7 @@ feature {NONE} -- Implementation
 			docking_pane.focus_in_actions.extend (agent select_tool (active_tool_id))
 			docking_tools.put ([a_gui_tool_dummy, docking_pane], active_tool_id) -- ***********
 		ensure
-			docking_tools.has (active_tool_id) and then docking_tools.item (active_tool_id).tool = a_gui_tool
+			Tool_added_to_index: docking_tools.has (active_tool_id) and then docking_tools.item (active_tool_id).tool = a_gui_tool
 		end
 
 	remove_tool (a_tool_id: INTEGER)

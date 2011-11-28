@@ -24,7 +24,7 @@ feature -- Initialisation
 			Target_exists: a_target /= Void
 			Visitor_exists: a_visitor /= Void
 		do
-			create tree_iterator.make(a_target.representation)
+			create tree_iterator.make (a_target.representation)
 			visitor := a_visitor
 		end
 
@@ -44,12 +44,12 @@ feature {NONE} -- Implementation
 
 	node_enter_action (a_node: attached OG_ITEM; indent_level: INTEGER)
 		do
-			a_node.enter_subtree(visitor, indent_level)
+			a_node.enter_subtree (visitor, indent_level)
 		end
 
 	node_exit_action (a_node: attached OG_ITEM; indent_level: INTEGER)
 		do
-			a_node.exit_subtree(visitor, indent_level)
+			a_node.exit_subtree (visitor, indent_level)
 		end
 
 end

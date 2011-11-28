@@ -15,12 +15,12 @@ note
 class GUI_ONTOLOGY_CONTROLS
 
 inherit
-	STRING_UTILITIES
-		export
-			{NONE} all
+	GUI_ARCHETYPE_TARGETTED_TOOL
+		redefine
+			can_populate, can_repopulate
 		end
 
-	CONSTANTS
+	STRING_UTILITIES
 		export
 			{NONE} all
 		end
@@ -34,6 +34,8 @@ feature {NONE} -- Initialisation
 		do
 			-- create widgets
 			create ev_root_container
+			ev_root_container.set_data (Current)
+
 			create ev_vsplit
 			create ev_term_defs_frame
 			create ev_term_defs_mlist
@@ -54,65 +56,33 @@ feature {NONE} -- Initialisation
 			ev_vsplit.disable_item_expand (ev_constraint_defs_frame)
 			ev_term_defs_frame.set_text ("Term definitions and bindings")
 			ev_term_defs_mlist.set_background_color (editable_colour)
-			ev_term_defs_mlist.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
+	--		ev_term_defs_mlist.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
 			ev_term_defs_mlist.set_minimum_width (1)
 			ev_term_defs_mlist.set_minimum_height (1)
 			ev_constraint_defs_frame.set_text ("Constraint definitions and bindings")
 			ev_constraint_defs_mlist.set_background_color (editable_colour)
-			ev_constraint_defs_mlist.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
-			ev_constraint_defs_mlist.set_minimum_width (1)
-			ev_constraint_defs_mlist.set_minimum_height (1)
+	--		ev_constraint_defs_mlist.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
+	--		ev_constraint_defs_mlist.set_minimum_width (1)
+	--		ev_constraint_defs_mlist.set_minimum_height (1)
 		end
 
 feature -- Access
 
 	ev_root_container: EV_VERTICAL_BOX
 
-	target_archetype: ARCHETYPE
-			-- differential or flat version of archetype, depending on setting of `differential_view'
-		do
-			if differential_view then
-				Result := target_archetype_descriptor.differential_archetype
-			else
-				Result := target_archetype_descriptor.flat_archetype
-			end
-		end
-
-	target_archetype_descriptor: ARCH_CAT_ARCHETYPE
-			-- archetype to which this tool is targetted
-
-	selected_language: attached STRING
-
 feature -- Status Report
 
-	differential_view: BOOLEAN
-
-	is_populated: BOOLEAN
+	can_populate (a_source: attached like source): BOOLEAN
 		do
-			Result := attached target_archetype_descriptor
+			Result := a_source.is_valid
+		end
+
+	can_repopulate: BOOLEAN
+		do
+			Result := is_populated and source.is_valid
 		end
 
 feature -- Commands
-
-	clear
-			-- wipe out content from ontology-related controls
-		do
-			ev_term_defs_mlist.wipe_out
-			ev_constraint_defs_mlist.wipe_out
-		end
-
-	populate (aca: attached ARCH_CAT_ARCHETYPE; differential_view_flag: BOOLEAN; a_selected_language: attached STRING)
-			-- populate ontology controls
-		require
-			aca.is_valid
-		do
-			target_archetype_descriptor := aca
-			selected_language := a_selected_language
-			differential_view := differential_view_flag
-			clear
-			populate_term_definitions
-			populate_constraint_definitions
-		end
 
 	select_term (a_term_code: attached STRING)
 			-- select row for a_term_code in term_definitions control
@@ -137,7 +107,20 @@ feature {NONE} -- Implementation
 	ontology: attached ARCHETYPE_ONTOLOGY
 			-- access to ontology of selected archetype
 		do
-			Result := target_archetype.ontology
+			Result := source_archetype.ontology
+		end
+
+	do_clear
+			-- wipe out content from ontology-related controls
+		do
+			ev_term_defs_mlist.wipe_out
+			ev_constraint_defs_mlist.wipe_out
+		end
+
+	do_populate
+		do
+			populate_term_definitions
+			populate_constraint_definitions
 		end
 
 	populate_term_definitions
@@ -178,9 +161,7 @@ feature {NONE} -- Implementation
 				-- populate bindings
 				from ontology.terminologies_available.start until ontology.terminologies_available.off loop
 					if ontology.has_term_binding (ontology.terminologies_available.item, a_term.code) then
-						list_row.extend (utf8 (ontology.term_binding (
-							ontology.terminologies_available.item, a_term.code
-						).as_string))
+						list_row.extend (utf8 (ontology.term_binding (ontology.terminologies_available.item, a_term.code).as_string))
 					else
 						list_row.extend (" - ")
 					end

@@ -15,7 +15,15 @@ class
 	RM_SCHEMA_DIALOG
 
 inherit
-	RM_SCHEMA_DIALOG_IMP
+	EV_DIALOG
+		redefine
+			initialize, is_in_default_state
+		end
+
+	GUI_DEFINITIONS
+		undefine
+			is_equal, default_create, copy
+		end
 
 	BMM_DEFINITIONS
 		export
@@ -25,13 +33,6 @@ inherit
 		end
 
 	GUI_UTILITIES
-		export
-			{NONE} all
-		undefine
-			copy, default_create
-		end
-
-	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
 		undefine
@@ -57,32 +58,111 @@ feature -- Definitions
 			Result := Grid_edit_col
 		end
 
+	frame_height: INTEGER = 100
+
 feature {NONE} -- Initialisation
 
-	user_initialization
-			-- called by `initialize'.
-			-- Any custom user initialization that
-			-- could not be performed in `initialize',
-			-- (due to regeneration of implementation class)
-			-- can be added here.
+	initialize
+			-- Initialize `Current'.
 		do
+			Precursor {EV_DIALOG}
+
+			-- create widgets
+			create ev_root_container
+			create ev_cell_1
+			create ev_label_1
+			create ev_cell_2
+			create grid
+			create ev_cell_3
+			create ev_hbox_1
+			create ev_label_2
+			create rm_schema_dir_text
+			create rm_schema_dir_button
+			create ev_hbox_2
+			create ev_cell_4
+			create ok_button
+			create cancel_button
+
+			-- connect widgets
+			extend (ev_root_container)
+			ev_root_container.extend (ev_cell_1)
+			ev_root_container.extend (ev_label_1)
+			ev_root_container.extend (ev_cell_2)
+			ev_root_container.extend (grid)
+			ev_root_container.extend (ev_cell_3)
+			ev_root_container.extend (ev_hbox_1)
+			ev_hbox_1.extend (ev_label_2)
+			ev_hbox_1.extend (rm_schema_dir_text)
+			ev_hbox_1.extend (rm_schema_dir_button)
+			ev_root_container.extend (ev_hbox_2)
+			ev_hbox_2.extend (ev_cell_4)
+			ev_hbox_2.extend (ok_button)
+			ev_hbox_2.extend (cancel_button)
+
+			ev_root_container.set_minimum_width (360)
+			ev_root_container.set_minimum_height (290)
+			ev_root_container.set_padding (padding_width)
+			ev_root_container.set_border_width (border_width)
+			ev_root_container.disable_item_expand (ev_cell_1)
+			ev_root_container.disable_item_expand (ev_label_1)
+			ev_root_container.disable_item_expand (ev_cell_2)
+			ev_root_container.disable_item_expand (ev_cell_3)
+			ev_root_container.disable_item_expand (ev_hbox_1)
+			ev_root_container.disable_item_expand (ev_hbox_2)
+			ev_cell_1.set_minimum_height (20)
+			ev_label_1.set_text ("Reference Model schemas loaded shown below.%NCheck or uncheck to load as required.")
+			ev_cell_2.set_minimum_height (20)
+			grid.set_minimum_height (150)
+			ev_cell_3.set_minimum_height (10)
+			ev_hbox_1.set_minimum_width (350)
+			ev_hbox_1.set_minimum_height (30)
+			ev_hbox_1.set_padding (padding_width)
+			ev_hbox_1.set_border_width (border_width)
+			ev_hbox_1.disable_item_expand (ev_label_2)
+			ev_hbox_1.disable_item_expand (rm_schema_dir_button)
+			ev_label_2.set_text ("RM schema directory: ")
+			rm_schema_dir_text.set_minimum_width (300)
+			rm_schema_dir_text.disable_edit
+			rm_schema_dir_button.set_text ("Browse...")
+			rm_schema_dir_button.set_minimum_width (65)
+			ev_hbox_2.set_minimum_height (34)
+			ev_hbox_2.set_padding (15)
+			ev_hbox_2.set_border_width (border_width)
+			ev_hbox_2.disable_item_expand (ok_button)
+			ev_hbox_2.disable_item_expand (cancel_button)
+			ev_cell_4.set_minimum_width (100)
+			ok_button.set_text ("OK")
+			ok_button.set_minimum_width (100)
+			ok_button.set_minimum_height (26)
+			cancel_button.set_text ("Cancel")
+			cancel_button.set_minimum_width (100)
+			cancel_button.set_minimum_height (26)
+			set_minimum_width (550)
+			set_minimum_height (390)
+			set_maximum_width (800)
+			set_maximum_height (800)
+			set_title ("ADL Workbench RM Schema Configuration")
 			set_icon_pixmap (adl_workbench_icon)
 
-			-- set up other buttons
+			-- Connect events.
+			rm_schema_dir_button.select_actions.extend (agent on_rm_schema_dir_browse)
+			ok_button.select_actions.extend (agent on_ok)
 			cancel_button.select_actions.extend (agent hide)
 			set_default_cancel_button (cancel_button)
 			set_default_push_button (ok_button)
+			show_actions.extend (agent grid.set_focus)
 
 			populate_grid
-			rm_schema_dir_text.set_text(rm_schema_directory)
+			ev_root_container.refresh_now
+			rm_schema_dir_text.set_text (rm_schema_directory)
 
-			show_actions.extend (agent grid.set_focus)
+			-- FIXME: this is a complete hack, but I cannot find another way to control the height properly!
+			set_height (ev_root_container.height + frame_height + ev_root_container.last.minimum_height)
 		end
 
-	user_create_interface_objects
-			-- Feature for custom user interface object creation, called at end of `create_interface_objects'.
-		do
-		end
+feature -- Access
+
+	ev_root_container: EV_VERTICAL_BOX
 
 feature -- Status
 
@@ -143,17 +223,12 @@ feature -- Events
 				cancel_button.disable_sensitive
 
 				rm_schemas_access.initialise_with_load_list (new_dir, rm_schemas_load_list)
-				rm_schemas_access.load_schemas
 
 				if not rm_schemas_access.found_valid_schemas then
+					post_error (Current, "load_schemas", "model_access_e13", <<new_dir>>)
 					create error_dialog.make_with_text (billboard.content)
 					billboard.clear
 					error_dialog.show_modal_to_window (Current)
-
-					-- revert to previous
-					rm_schema_dir_text.set_text (rm_schema_directory)
-					rm_schemas_access.initialise_with_load_list(rm_schema_directory, rm_schemas_load_list)
-					rm_schemas_access.load_schemas
 				end
 
 				populate_grid
@@ -177,6 +252,8 @@ feature {NONE} -- Implementation
 		do
 			-- get rid of previously defined rows
 			grid.wipe_out
+			grid.enable_column_resize_immediate
+			grid.set_minimum_height (rm_schemas_access.all_schemas.count * grid.row_height + grid.header.height)
 
 			-- create row containinng widgets for: check column, name column, status column, edit button column
 			from rm_schemas_access.all_schemas.start until rm_schemas_access.all_schemas.off loop
@@ -210,18 +287,22 @@ feature {NONE} -- Implementation
 
 				-- column 4 - validated
 				create gli.make_with_text ("         ")
-				if rm_schemas_access.all_schemas.item_for_iteration.passed then
+				if rm_schemas_access.all_schemas.item_for_iteration.passed and not rm_schemas_access.all_schemas.item_for_iteration.errors.has_warnings then
 					gli.set_pixmap (pixmaps["star"])
 				else
-					gli.set_pixmap (pixmaps["info"])
-					gli.select_actions.extend (agent show_schema_validation(schema_id))
+					if rm_schemas_access.all_schemas.item_for_iteration.errors.has_errors then
+						gli.set_pixmap (pixmaps["errors"])
+					else
+						gli.set_pixmap (pixmaps["info"])
+					end
+					gli.select_actions.extend (agent show_schema_validation (schema_id))
 				end
 				row.set_item (Grid_validated_col, gli)
 
 				-- column 5 - create edit button and add to row
 				create gli.make_with_text ("Edit")
 				gli.set_pixmap (pixmaps ["edit"])
-				gli.select_actions.extend (agent do_edit_schema(schema_id))
+				gli.select_actions.extend (agent do_edit_schema (schema_id))
 				row.set_item (Grid_edit_col, gli)
 				rm_schemas_access.all_schemas.forth
 			end
@@ -259,6 +340,19 @@ feature {NONE} -- Implementation
 
 	rm_schemas_ll: LIST [STRING]
 			-- list of checked schemas in options dialog
+
+	ev_cell_1, ev_cell_2, ev_cell_3, ev_cell_4: EV_CELL
+	ev_label_1, ev_label_2: EV_LABEL
+	grid: EV_GRID
+	ev_hbox_1, ev_hbox_2: EV_HORIZONTAL_BOX
+	rm_schema_dir_text: EV_TEXT_FIELD
+	rm_schema_dir_button, ok_button, cancel_button: EV_BUTTON
+
+	is_in_default_state: BOOLEAN
+			-- Is `Current' in its default state?
+		do
+			Result := True
+		end
 
 end
 

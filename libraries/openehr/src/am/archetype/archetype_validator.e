@@ -56,7 +56,13 @@ feature {ADL15_ENGINE} -- Initialisation
 			target_set: attached target
 		end
 
-feature -- Access
+feature -- Status Report
+
+	validation_candidiate (ara: attached ARCH_CAT_ARCHETYPE): BOOLEAN
+		deferred
+		end
+
+feature {NONE} -- Implementation
 
 	target_descriptor: attached ARCH_CAT_ARCHETYPE
 			-- differential archetype being validated
@@ -70,13 +76,6 @@ feature -- Access
 			Result := target.ontology
 		end
 
-feature -- Status Report
-
-	validation_candidiate (ara: attached ARCH_CAT_ARCHETYPE): BOOLEAN
-		deferred
-		end
-
-feature {NONE} -- Implementation
 
 	rm_schema: attached BMM_SCHEMA
 

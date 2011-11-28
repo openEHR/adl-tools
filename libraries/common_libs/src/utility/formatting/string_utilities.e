@@ -63,6 +63,31 @@ feature -- Conversion
 			end
 		end
 
+	primitive_value_to_json_string (a_prim_val: attached ANY): STRING
+			-- generate a string, including JSON delimiters, e.g. "", '' for strings and chars.
+		do
+			if attached {STRING_GENERAL} a_prim_val then
+				Result := "%"" + a_prim_val.out + "%""
+			elseif attached {CHARACTER} a_prim_val or attached {CHARACTER_32} a_prim_val then
+				Result := "%'" + a_prim_val.out + "%'"
+			elseif attached {CODE_PHRASE} a_prim_val then
+				Result := "%"" + a_prim_val.out + "%""
+			else
+				-- FIXME: duration.out does not exist in Eiffel, and in any case would not be ISO8601-compliant
+				if attached {DATE_TIME_DURATION} a_prim_val as a_dur then
+					Result := (create {ISO8601_DURATION}.make_date_time_duration(a_dur)).as_string
+				elseif attached {DATE_TIME} a_prim_val as a_dt then
+					Result := (create {ISO8601_DATE_TIME}.make_date_time(a_dt)).as_string
+				else
+					Result := a_prim_val.out.as_lower
+					-- FIXME: REAL.out is broken (still the case in Eiffel 6.6)
+					if (attached {REAL_32} a_prim_val or attached {REAL_64} a_prim_val) and then Result.index_of ('.', 1) = 0 then
+						Result.append(".0")
+					end
+				end
+			end
+		end
+
 	quote_clean (str: STRING): STRING
 			-- if any quoting needed, generate clean copy of `str' and convert
 			--	\ to \\
@@ -158,27 +183,27 @@ feature -- Element Change
 				create Result.make (s.count)
 
 				-- indent first line
-				Result.append(indent)
+				Result.append (indent)
 
 				-- add the contents
-				Result.append(s)
+				Result.append (s)
 
-				-- create the indent string
-				create indent_str.make(1 + indent.count)
-				indent_str.append_character('%N')
-				indent_str.append(indent)
-
-				-- temporarily remove final %N chars
-				from until Result.item(Result.count) /= '%N' or else Result.is_empty loop
+				-- temporarily remove any final %N chars
+				from until Result.item (Result.count) /= '%N' or else Result.is_empty loop
 					Result.remove_tail (1)
 					tail_return_count := tail_return_count + 1
 				end
 
+				-- create the indent string
+				create indent_str.make (1 + indent.count)
+				indent_str.append_character ('%N')
+				indent_str.append (indent)
+
 				-- now indent all intervening lines
-				Result.replace_substring_all("%N", indent_str)
+				Result.replace_substring_all ("%N", indent_str)
 
 				if tail_return_count > 0 then
-					Result.append(create {STRING}.make_filled('%N', tail_return_count))
+					Result.append (create {STRING}.make_filled ('%N', tail_return_count))
 				end
 			else
 				Result := s

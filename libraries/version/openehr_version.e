@@ -37,6 +37,9 @@ feature -- Access
 	build: INTEGER = 0
 			-- The build number: manually incremented for each public release, or else reset to 0 when `minor' changes.
 
+	beta: INTEGER = 5
+			-- The beta number: manually incremented for each public release, or else reset to 0 when `major' changes.
+
 	revision: INTEGER = 0
 			-- The Subversion revision number: automatically set by the SConstruct.
 			-- Make sure this is zero whenever the class is committed to Subversion.
@@ -48,7 +51,7 @@ feature -- Access
 	out: STRING
 			-- The version as a string of the form "major.minor.build.revision".
 		do
-			Result := major.out + "." + minor.out + "." + build.out + "." + revision.out + " Beta"
+			Result := major.out + "." + minor.out + "." + build.out + "." + revision.out + " Beta " + beta.out
 		ensure then
 			long_enough: Result.count >= 7
 		end

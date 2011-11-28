@@ -39,7 +39,7 @@ feature -- Access
 			Result := list.last
 		end
 
-	error_codes: attached ARRAYED_LIST[STRING]
+	error_codes: attached ARRAYED_SET [STRING]
 			-- list of all codes from errors currently in list
 		do
 			create Result.make(0)
@@ -52,7 +52,7 @@ feature -- Access
 			end
 		end
 
-	warning_codes: attached ARRAYED_LIST[STRING]
+	warning_codes: attached ARRAYED_SET [STRING]
 			-- list of all codes from warnings currently in list
 		do
 			create Result.make(0)
@@ -83,6 +83,34 @@ feature -- Status Report
 	has_warnings: BOOLEAN
 
 	has_info: BOOLEAN
+
+	has_error (a_code: STRING): BOOLEAN
+			-- True if there has been an error recorded with code `a_code'
+		do
+			Result := error_codes.has (a_code)
+		end
+
+	has_matching_error (a_code: STRING): BOOLEAN
+			-- True if there has been an error whose code starts with code `a_code'
+		do
+			Result := list.there_exists (
+				agent (an_err: ERROR_DESCRIPTOR; a_match_code: STRING): BOOLEAN
+					do
+						Result := an_err.severity = error_type_error and an_err.code.starts_with (a_match_code)
+					end (?, a_code)
+			)
+		end
+
+	has_matching_warning (a_code: STRING): BOOLEAN
+			-- True if there has been a warning whose code starts with code `a_code'
+		do
+			Result := list.there_exists (
+				agent (an_err: ERROR_DESCRIPTOR; a_match_code: STRING): BOOLEAN
+					do
+						Result := an_err.severity = error_type_warning and an_err.code.starts_with (a_match_code)
+					end (?, a_code)
+			)
+		end
 
 feature -- Status Setting
 
@@ -125,7 +153,7 @@ feature -- Modification
 
 	append (other: attached ERROR_ACCUMULATOR)
 		do
-			list.append(other.list)
+			list.append (other.list)
 			has_errors := has_errors or other.has_errors
 			has_warnings := has_warnings or other.has_warnings
 			has_info := has_info or other.has_info
@@ -156,7 +184,7 @@ feature -- Output
 
 feature {ERROR_ACCUMULATOR} -- Implementation
 
-	list: attached ARRAYED_LIST[ERROR_DESCRIPTOR]
+	list: attached ARRAYED_LIST [ERROR_DESCRIPTOR]
 			-- error output of validator - things that must be corrected
 
 	error_reporting_level_cell: CELL [INTEGER]

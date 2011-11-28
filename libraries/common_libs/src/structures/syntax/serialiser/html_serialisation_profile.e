@@ -21,23 +21,23 @@ feature {ANY_SERIALISER} -- Access
 	format_items: HASH_TABLE[STRING, INTEGER]
 			-- formatting items
 		once
-			create Result.make(0)
-			Result.put(" ",					FMT_SPACE)
-			Result.put("-- ",				FMT_COMMENT)
-			Result.put("%N",				FMT_NEWLINE)
-			Result.put("    ",				FMT_INDENT)
-			Result.put("<html>%N<head>%N",	FMT_DOC_START)
-			Result.put("%N</html>%N",		FMT_DOC_END)
-			Result.put(html_style_header,	FMT_DOC_STYLES)
-			Result.put("%N</head>%N<body><pre>%N",		FMT_START_BODY)
-			Result.put("%N</pre></body>%N",	FMT_END_BODY)
-			Result.put("<span $attrs>",		FMT_START_SPAN)
-			Result.put("</span>",			FMT_END_SPAN)
-			Result.put("%N<title>$title",	FMT_START_TITLE)
-			Result.put("</title>%N",		FMT_END_TITLE)
-			Result.put(html_meta,			FMT_META_ITEM)
-			Result.put(", ",				FMT_LIST_ITEM_SEPARATOR)
-			Result.put("; ",				FMT_ASSUMED_VALUE_SEPARATOR)
+			create Result.make (0)
+			Result.put (" ",					FMT_SPACE)
+			Result.put ("-- ",				FMT_COMMENT)
+			Result.put ("%N",				FMT_NEWLINE)
+			Result.put ("    ",				FMT_INDENT)
+			Result.put ("<html>%N<head>%N",	FMT_DOC_START)
+			Result.put ("%N</html>%N",		FMT_DOC_END)
+			Result.put (html_style_header,	FMT_DOC_STYLES)
+			Result.put ("%N</head>%N<body><pre>%N",		FMT_START_BODY)
+			Result.put ("%N</pre></body>%N",	FMT_END_BODY)
+			Result.put ("<span $attrs>",		FMT_START_SPAN)
+			Result.put ("</span>",			FMT_END_SPAN)
+			Result.put ("%N<title>$title",	FMT_START_TITLE)
+			Result.put ("</title>%N",		FMT_END_TITLE)
+			Result.put (html_meta,			FMT_META_ITEM)
+			Result.put (", ",				FMT_LIST_ITEM_SEPARATOR)
+			Result.put ("; ",				FMT_ASSUMED_VALUE_SEPARATOR)
 		end
 
 	styles: HASH_TABLE[STRING, INTEGER]
@@ -64,18 +64,18 @@ feature {ANY_SERIALISER} -- Access
 			-- styles in this format, keyed by logical name
 		once
 			create Result.make(0)
-			Result.put("&lt;",			"<")
-			Result.put("&gt;",			">")
+			Result.put ("&lt;",			"<")
+			Result.put ("&gt;",			">")
 		end
 
 feature {ANY_SERIALISER} -- Factory
 
 	apply_style (elem: STRING; a_style: INTEGER): STRING
-			-- apply `a_style' to `elem', using attr 'class'
+			-- apply `a_style' to `elem', using XML 'class' attribute
 		do
 			create Result.make(0)
-			Result.append(format_items.item(FMT_START_SPAN) + elem + format_items.item(FMT_END_SPAN))
-			Result.replace_substring_all("$attrs", "class=" + styles.item(a_style))
+			Result.append (format_items.item (FMT_START_SPAN) + elem + format_items.item (FMT_END_SPAN))
+			Result.replace_substring_all ("$attrs", "class=" + styles.item (a_style))
 		end
 
 feature {NONE} -- Implementation

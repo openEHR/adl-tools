@@ -1,10 +1,10 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Node of interval of ordered simple types,
-				 i.e. : INTEGER, REAL, DATE, TIME, DATE_TIME, DURATION.
-				 Occurrences set to the default of {1..1}
-			 ]"
+				 DT node of interval of ordered simple type, i.e. : INTEGER, REAL, DATE, TIME, DATE_TIME, DURATION. Has a 
+				 structured serialisation method that can output the object in a form that can be tailored by agents to
+				 look like dADL, JSON, YAML or any other such format.
+			 	 ]"
 	keywords:    "ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
@@ -43,6 +43,55 @@ feature -- Conversion
 			Result.append_character ('|')
 			Result.append (value.as_string)
 			Result.append_character ('|')
+		end
+
+	as_serialised_string (value_serialiser: attached FUNCTION [ANY, TUPLE [ANY], STRING];
+			attr_name_formatter: attached FUNCTION [ANY, TUPLE [STRING], STRING];
+			value_string_formatter: attached FUNCTION [ANY, TUPLE [STRING], STRING];
+			equal_symbol, attr_delimiter: STRING): STRING
+			-- generate a cleaned form of this object as a structured string following the general model (in dADL)
+			-- 		lower = <0.0>
+			--  	upper_unbounded = <True>
+			-- etc. IN JSON, this would be:
+			-- 		"lower": 0.0,
+			-- 		"upper_unbounded": true
+			-- The agent `attr_name_formatter' can be used to format the agent name e.g. add "" as in JSON
+			-- The agent `value_string_formatter' is used to format the value, e.g. add <> as in dADL
+			-- FIXME: the 'to_reference' in the below should not be required, but BOOLEAN does not conform to ANY when it is an agent argument!
+		do
+			create Result.make(0)
+			if value.lower_unbounded then
+				Result.append (attr_name_formatter.item (["lower_unbounded"]))
+				Result.append (equal_symbol)
+				Result.append (value_string_formatter.item ([value_serialiser.item ([value.lower_unbounded.to_reference])]))
+				Result.append (attr_delimiter)
+			else
+				Result.append (attr_name_formatter.item (["lower"]))
+				Result.append (equal_symbol)
+				Result.append (value_string_formatter.item ([value_serialiser.item ([value.lower])]))
+				Result.append (attr_delimiter)
+				if not value.lower_included then
+					Result.append (attr_name_formatter.item (["lower_included"]))
+					Result.append (equal_symbol)
+					Result.append (value_string_formatter.item ([value_serialiser.item ([value.lower_included.to_reference])]))
+					Result.append (attr_delimiter)
+				end
+			end
+			if value.upper_unbounded then
+				Result.append (attr_name_formatter.item (["upper_unbounded"]))
+				Result.append (equal_symbol)
+				Result.append (value_string_formatter.item ([value_serialiser.item ([value.upper_unbounded.to_reference])]))
+			else
+				Result.append (attr_name_formatter.item (["upper"]))
+				Result.append (equal_symbol)
+				Result.append (value_string_formatter.item ([value_serialiser.item ([value.upper])]))
+				if not value.upper_included then
+					Result.append (attr_delimiter)
+					Result.append (attr_name_formatter.item (["upper_included"]))
+					Result.append (equal_symbol)
+					Result.append (value_string_formatter.item ([value_serialiser.item ([value.upper_included.to_reference])]))
+				end
+			end
 		end
 
 feature -- Serialisation

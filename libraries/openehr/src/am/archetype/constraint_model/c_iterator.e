@@ -40,11 +40,11 @@ feature -- Access
 
 	target: C_COMPLEX_OBJECT
 
-	c_node_enter_action: PROCEDURE [ANY, TUPLE[ARCHETYPE_CONSTRAINT, INTEGER]]
+	c_node_enter_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]
 
-	c_node_exit_action: PROCEDURE [ANY, TUPLE[ARCHETYPE_CONSTRAINT, INTEGER]]
+	c_node_exit_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]
 
-	c_node_test: FUNCTION [ANY, TUPLE[ARCHETYPE_CONSTRAINT], BOOLEAN]
+	c_node_test: FUNCTION [ANY, TUPLE [ARCHETYPE_CONSTRAINT], BOOLEAN]
 
 feature -- Command
 
@@ -52,7 +52,7 @@ feature -- Command
 		do
 			c_node_enter_action := a_c_node_enter_action
 			c_node_exit_action := a_c_node_exit_action
-			tree_iterator.do_all(agent node_enter_action(?, ?), agent node_exit_action(?, ?))
+			tree_iterator.do_all (agent node_enter_action, agent node_exit_action)
 		end
 
 	do_at_surface(a_c_node_enter_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]; a_c_node_test: FUNCTION [ANY, TUPLE [ARCHETYPE_CONSTRAINT], BOOLEAN])
@@ -60,7 +60,7 @@ feature -- Command
 		do
 			c_node_enter_action := a_c_node_enter_action
 			c_node_test := a_c_node_test
-			tree_iterator.do_at_surface(agent node_action(?, ?), agent node_is_included(?))
+			tree_iterator.do_at_surface (agent node_action, agent node_is_included)
 		end
 
 	do_until_surface(a_c_node_enter_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]; a_c_node_test: FUNCTION [ANY, TUPLE [ARCHETYPE_CONSTRAINT], BOOLEAN])
@@ -68,14 +68,14 @@ feature -- Command
 		do
 			c_node_enter_action := a_c_node_enter_action
 			c_node_test := a_c_node_test
-			tree_iterator.do_until_surface(agent node_action(?, ?), agent node_is_included(?))
+			tree_iterator.do_until_surface (agent node_action, agent node_is_included)
 		end
 
 feature {NONE} -- Implementation
 
 	tree_iterator: OG_ITERATOR
 
-	node_enter_action(a_node: OG_ITEM; depth: INTEGER)
+	node_enter_action (a_node: OG_ITEM; depth: INTEGER)
 		require
 			Node_exists: a_node /= Void
 		do
@@ -83,14 +83,14 @@ feature {NONE} -- Implementation
 			c_node_enter_action.call([arch_node, depth])
 		end
 
-	node_exit_action(a_node: OG_ITEM; depth: INTEGER)
+	node_exit_action (a_node: OG_ITEM; depth: INTEGER)
 		require
 			Node_exists: a_node /= Void
 		do
 			c_node_exit_action.call([arch_node, depth])
 		end
 
-	node_is_included(a_node: OG_ITEM): BOOLEAN
+	node_is_included (a_node: OG_ITEM): BOOLEAN
 		require
 			Node_exists: a_node /= Void
 		do
@@ -98,7 +98,7 @@ feature {NONE} -- Implementation
 			Result := arch_node /= Void and then c_node_test.item([arch_node])
 		end
 
-	node_action(a_node: OG_ITEM; depth: INTEGER)
+	node_action (a_node: OG_ITEM; depth: INTEGER)
 		require
 			Node_exists: a_node /= Void
 		do

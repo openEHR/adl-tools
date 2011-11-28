@@ -25,7 +25,7 @@ create
 
 feature -- Access
 
-	items: LINKED_SET [ORDINAL]
+	items: detachable LINKED_SET [ORDINAL]
 
 	prototype_value: ORDINAL
 			-- 	generate a default value from this constraint object
@@ -37,13 +37,25 @@ feature -- Access
 			end
 		end
 
-	item_at_ordinal(i: INTEGER): ORDINAL
+	item_at_ordinal (i: INTEGER): ORDINAL
 			-- get the item in the list which has the ordinal value i
 		require
 			Not_any_allowed: not any_allowed
 			Valid_index: has_item(i)
 		do
 			Result := index.item(i)
+		end
+
+feature -- Statistics
+
+	report_rm_attributes: attached ARRAYED_SET [STRING]
+			-- report which attributes of the equivalent DV_ORDINAL are being constrained here
+		do
+			create Result.make (0)
+			if attached items then
+				Result.extend ("symbol")
+				Result.extend ("value")
+			end
 		end
 
 feature -- Source Control

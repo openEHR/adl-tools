@@ -40,13 +40,9 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (a_docking_manager: attached SD_DOCKING_MANAGER;
-			a_select_archetype_from_gui_data_agent: like select_archetype_from_gui_data;
-			a_update_all_tools_rm_icons_setting_agent: like update_all_tools_rm_icons_setting_agent)
+	make (a_docking_manager: attached SD_DOCKING_MANAGER)
 		do
 			make_docking (a_docking_manager)
-			select_archetype_from_gui_data := a_select_archetype_from_gui_data_agent
-			update_all_tools_rm_icons_setting_agent := a_update_all_tools_rm_icons_setting_agent
 		end
 
 feature -- Commands
@@ -55,34 +51,23 @@ feature -- Commands
 		local
 			new_tool: like tool_type
 		do
-			create new_tool.make (select_archetype_from_gui_data, update_all_tools_rm_icons_setting_agent)
+			create new_tool.make
 			add_new_tool (new_tool)
 		end
 
-	populate_active_tool
+	populate_active_tool (aca: ARCH_CAT_ARCHETYPE)
 			-- Populate content from visual controls.
-		require
-			has_current_profile
-			current_arch_cat.has_selected_archetype
 		do
 			if not has_tools then
 				create_new_tool
 			end
-			active_tool.populate (current_arch_cat.selected_archetype)
-			populate_active_tool_pane (current_arch_cat.selected_archetype.id.as_string,
-				current_arch_cat.selected_archetype.id.as_abbreviated_string,
-				pixmaps [current_arch_cat.selected_archetype.group_name])
+			active_tool.gui_tool_populate (aca)
+			populate_active_tool_pane (aca.id.as_string, aca.id.as_abbreviated_string, pixmaps [aca.group_name])
 		end
 
 feature {NONE} -- Implementation
 
 	tool_type: GUI_ARCHETYPE_TOOL
-
-	select_archetype_from_gui_data: PROCEDURE [ANY, TUPLE [EV_ANY]]
-			-- agent provided by upper level of GUI for doing something
-			-- when an archetype in this tool is selected
-
-	update_all_tools_rm_icons_setting_agent: PROCEDURE [ANY, TUPLE]
 
 end
 

@@ -75,6 +75,13 @@ feature -- Access
 
 	node_id: STRING
 
+feature -- Statistics
+
+	report_rm_attributes: attached ARRAYED_SET [STRING]
+			-- report which attributes of the equivalent RM type are being constrained here
+		deferred
+		end
+
 feature -- Conversion
 
 	standard_equivalent: C_COMPLEX_OBJECT

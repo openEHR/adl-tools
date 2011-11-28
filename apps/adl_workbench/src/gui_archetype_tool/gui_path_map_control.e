@@ -15,15 +15,15 @@ note
 class GUI_PATH_MAP_CONTROL
 
 inherit
+	GUI_ARCHETYPE_TARGETTED_TOOL
+		redefine
+			can_populate, can_repopulate
+		end
+
 	SHARED_KNOWLEDGE_REPOSITORY
 		export
 			{NONE} all;
 			{ANY} has_current_profile
-		end
-
-	CONSTANTS
-		export
-			{NONE} all
 		end
 
 	STRING_UTILITIES
@@ -55,6 +55,8 @@ feature {NONE} -- Initialisation
 		do
 			-- create widgets
 			create ev_root_container
+			ev_root_container.set_data (Current)
+
 			create ev_path_list
 			create ev_vbox
 			create ev_row_frame
@@ -87,15 +89,15 @@ feature {NONE} -- Initialisation
 			ev_vbox.set_border_width (4)
 			ev_vbox.disable_item_expand (ev_row_frame)
 			ev_vbox.disable_item_expand (ev_col_frame)
-			ev_row_frame.set_text ("Row Filter")
+			ev_row_frame.set_text (create_message_content ("row_filter_frame_text", Void))
 			ev_row_vbox.set_border_width (border_width)
-			ev_filter_combo.set_tooltip ("Filter which rows are shown in the Path Analysis")
+			ev_filter_combo.set_tooltip (create_message_content ("row_filter_combo_tooltip", Void))
 			ev_filter_combo.set_minimum_width (80)
 			ev_filter_combo.disable_edit
-			ev_col_frame.set_text ("Column View")
+			ev_col_frame.set_text (create_message_content ("column_frame_text", Void))
 			ev_col_frame.set_minimum_height (150)
 			ev_col_vbox.set_border_width (border_width)
-			ev_column_check_list.set_tooltip ("Choose view of columns in the Path Analysis")
+			ev_column_check_list.set_tooltip (create_message_content ("column_checklist_tooltip", Void))
 			ev_column_check_list.set_minimum_width (100)
 			ev_column_check_list.set_minimum_height (30)
 
@@ -121,7 +123,17 @@ feature -- Access
 			Result := ev_filter_combo.selected_item.text.as_string_8
 		end
 
-	selected_language: STRING
+feature -- Status Report
+
+	can_populate (a_source: attached like source): BOOLEAN
+		do
+			Result := a_source.is_valid
+		end
+
+	can_repopulate: BOOLEAN
+		do
+			Result := is_populated and source.is_valid
+		end
 
 feature -- Events
 
@@ -144,63 +156,6 @@ feature -- Events
 		end
 
 feature -- Commands
-
-	clear
-			-- wipe out content from controls
-		do
-			ev_path_list.wipe_out
-		end
-
-	populate (an_archetype: attached ARCHETYPE; a_language: attached STRING)
-			-- Populate `path_list'.
-		require
-			an_archetype.is_valid
-		do
-			target_archetype := an_archetype
-			selected_language := a_language
-			repopulate (selected_language)
-		end
-
-	repopulate (a_language: attached STRING)
-		local
-			list_row: EV_MULTI_COLUMN_LIST_ROW
-			p_paths, l_paths: ARRAYED_LIST[STRING]
-		do
-			ev_path_list.wipe_out
-			ev_path_list.set_column_titles (path_control_column_names)
-
-			-- Add am empty column at the end so the width of the true last column can be set to zero on all platforms.
-			ev_path_list.set_column_title ("", path_control_column_names.count + 1)
-
-			if ev_filter_combo.text.is_equal ("All") then
-				p_paths := target_archetype.physical_paths
-				l_paths := target_archetype.logical_paths (selected_language, False)
-			else
-				p_paths := target_archetype.physical_leaf_paths
-				l_paths := target_archetype.logical_paths (selected_language, True)
-			end
-
-			from
-				p_paths.start
-				l_paths.start
-			until
-				p_paths.off
-			loop
-				if attached {C_OBJECT} target_archetype.c_object_at_path (p_paths.item) as c_o then
-					create list_row
-					list_row.extend (utf8 (p_paths.item))
-					list_row.extend (utf8 (l_paths.item))
-					list_row.extend (utf8 (c_o.rm_type_name))
-					list_row.extend (utf8 (c_o.generating_type))
-					ev_path_list.extend (list_row)
-				end
-
-				p_paths.forth
-				l_paths.forth
-			end
-
-			adjust_columns
-		end
 
 	adjust_columns
 			-- Adjust column view of paths control according to `column_check_list'.
@@ -225,7 +180,7 @@ feature -- Commands
 			-- Called by `select_actions' of `filter_combo'.
 		do
 			if ev_path_list.is_displayed then
-				repopulate (selected_language)
+				repopulate
 			end
 		end
 
@@ -260,7 +215,52 @@ feature {NONE} -- Implementation
 
 	ev_path_list: EV_MULTI_COLUMN_LIST
 
-	target_archetype: ARCHETYPE
+	do_clear
+			-- wipe out content from controls
+		do
+			ev_path_list.wipe_out
+		end
+
+	do_populate
+		local
+			list_row: EV_MULTI_COLUMN_LIST_ROW
+			p_paths, l_paths: ARRAYED_LIST[STRING]
+		do
+			ev_path_list.wipe_out
+			ev_path_list.set_column_titles (path_control_column_names)
+
+			-- Add am empty column at the end so the width of the true last column can be set to zero on all platforms.
+			ev_path_list.set_column_title ("", path_control_column_names.count + 1)
+
+			if ev_filter_combo.text.is_equal ("All") then
+				p_paths := source_archetype.physical_paths
+				l_paths := source_archetype.logical_paths (selected_language, False)
+			else
+				p_paths := source_archetype.physical_leaf_paths
+				l_paths := source_archetype.logical_paths (selected_language, True)
+			end
+
+			from
+				p_paths.start
+				l_paths.start
+			until
+				p_paths.off
+			loop
+				if attached {C_OBJECT} source_archetype.c_object_at_path (p_paths.item) as c_o then
+					create list_row
+					list_row.extend (utf8 (p_paths.item))
+					list_row.extend (utf8 (l_paths.item))
+					list_row.extend (utf8 (c_o.rm_type_name))
+					list_row.extend (utf8 (c_o.generating_type))
+					ev_path_list.extend (list_row)
+				end
+
+				p_paths.forth
+				l_paths.forth
+			end
+
+			adjust_columns
+		end
 
 	initialise_controls
 			-- Initialise widgets associated with the Path Analysis.

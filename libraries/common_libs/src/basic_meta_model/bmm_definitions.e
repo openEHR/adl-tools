@@ -14,6 +14,13 @@ note
 
 class BMM_DEFINITIONS
 
+feature -- Software-dependent definitions
+
+	Bmm_internal_version: STRING = "2.0"
+			-- current notional version of the BMM_SCHEMA class model used in this software; used for
+			-- comparison with the BMM version recorded in schema files. If no bmm_version attribute is
+			-- found, the `Assumed_bmm_version' is used.
+
 feature -- Definitions
 
 	Section_separator: CHARACTER = '-'
@@ -34,8 +41,9 @@ feature -- Definitions
 
 	Unknown_package_name: STRING = "unknown_package"
 
-	Any_type: STRING = "ANY"
+	Any_type: STRING = "Any"
 
+	Type_cat_primitive_class: STRING = "class_primitive"
 	Type_cat_concrete_class: STRING = "class_concrete"
 	Type_cat_concrete_class_supertype: STRING = "class_concrete_supertype"
 	Type_cat_abstract_class: STRING = "class_abstract"
@@ -46,6 +54,7 @@ feature -- Definitions
 		once
 			create Result.make (0)
 			Result.compare_objects
+			Result.extend (Type_cat_primitive_class)
 			Result.extend (Type_cat_concrete_class)
 			Result.extend (Type_cat_abstract_class)
 			Result.extend (Type_cat_generic_parameter)
@@ -54,29 +63,33 @@ feature -- Definitions
 
 	Schema_file_extension: STRING = ".bmm"
 
-	Metadata_model_publisher: STRING = "model_publisher"
+	Metadata_bmm_version: STRING = "bmm_version"
+			-- dADL attribute name of logical attribute 'bmm_version' in schema file;
+			-- MUST correspond to attribute of same name in P_BMM_SCHEMA class
+
+	metadata_rm_publisher: STRING = "rm_publisher"
 			-- dADL attribute name of logical attribute 'model_publisher' in schema file;
-			-- MUST correspond to attribute of same name in BMM_SCHEMA class
+			-- MUST correspond to attribute of same name in P_BMM_SCHEMA class
 
 	metadata_schema_name: STRING = "schema_name"
 			-- dADL attribute name of logical attribute 'schema_name' in schema file;
-			-- MUST correspond to attribute of same name in BMM_SCHEMA class
+			-- MUST correspond to attribute of same name in P_BMM_SCHEMA class
 
-	Metadata_model_release: STRING = "model_release"
+	metadata_rm_release: STRING = "rm_release"
 			-- dADL attribute name of logical attribute 'model_release' in schema file;
-			-- MUST correspond to attribute of same name in BMM_SCHEMA class
+			-- MUST correspond to attribute of same name in P_BMM_SCHEMA class
 
 	Metadata_schema_revision: STRING = "schema_revision"
 			-- dADL attribute name of logical attribute 'schema_revision' in schema file;
-			-- MUST correspond to attribute of same name in BMM_SCHEMA class
+			-- MUST correspond to attribute of same name in P_BMM_SCHEMA class
 
 	Metadata_schema_lifecycle_state: STRING = "schema_lifecycle_state"
 			-- dADL attribute name of logical attribute 'schema_lifecycle_state' in schema file;
-			-- MUST correspond to attribute of same name in BMM_SCHEMA class
+			-- MUST correspond to attribute of same name in P_BMM_SCHEMA class
 
 	Metadata_schema_description: STRING = "schema_description"
 			-- dADL attribute name of logical attribute 'schema_description' in schema file;
-			-- MUST correspond to attribute of same name in BMM_SCHEMA class
+			-- MUST correspond to attribute of same name in P_BMM_SCHEMA class
 
 	Metadata_schema_path: STRING = "schema_path"
 			-- path of schema file
@@ -84,8 +97,11 @@ feature -- Definitions
 	Schema_fast_parse_attrs: ARRAY [STRING]
 			-- attributes to retrieve for initial fast parse on schemas
 		once
-			Result := <<Metadata_schema_revision, Metadata_schema_lifecycle_state, Metadata_model_publisher, metadata_schema_name, Metadata_model_release>>
+			Result := <<Metadata_bmm_version, Metadata_schema_revision, Metadata_schema_lifecycle_state, metadata_rm_publisher, metadata_schema_name, metadata_rm_release>>
 		end
+
+	Assumed_bmm_version: STRING = "1.0"
+			-- version of BMM to assume for a schema that doesn't have the bmm_version attribute
 
 feature -- Comparison
 
@@ -111,6 +127,16 @@ feature -- Comparison
 			Valid_type_name: is_well_formed_class_name(a_type_name)
 		do
 			Result := a_type_name.has (generic_left_delim)
+		end
+
+	bmm_version_compatible (schema_bmm_ver: STRING): BOOLEAN
+			-- is the software version of the BMM (defined by the constant `Bmm_version', above)
+			-- compatible with that found in the schema?
+			-- Returns True if the two versions have the same major version number
+		require
+			Well_formed_version: schema_bmm_ver.occurrences ('.') = 1
+		do
+			Result := schema_bmm_ver.substring (1, schema_bmm_ver.index_of ('.', 1)-1).is_equal (Bmm_internal_version.substring (1, Bmm_internal_version.index_of ('.', 1)-1))
 		end
 
 feature -- Conversion
@@ -155,28 +181,36 @@ feature -- Conversion
 			end
 		end
 
-	publisher_qualified_library_name (a_model_publisher, a_package_name: attached STRING): attached STRING
+	publisher_qualified_rm_closure_key (a_rm_publisher, a_rm_closure_name: attached STRING): attached STRING
 			-- generate a lower-case standard model-package name string, e.g. "openehr-ehr" for use in finding RM schemas
 			-- uses `package_base_name' to obtain terminal form of package name
 		require
-			Model_publisher_valid: not a_model_publisher.is_empty
-			Package_name_valid: not a_package_name.is_empty
+			Model_publisher_valid: not a_rm_publisher.is_empty
+			Closure_name_valid: not a_rm_closure_name.is_empty
 		do
-			Result := a_model_publisher + section_separator.out + package_base_name (a_package_name)
-			Result.to_lower
+			Result := publisher_qualified_rm_closure_name (a_rm_publisher, a_rm_closure_name).as_lower
 		end
 
-	library_qualified_class_name (a_package_name, a_class_name: attached STRING): attached STRING
-			-- generate a standard package-class name string, e.g. "ehr-observation" for use in finding RM schemas
-			-- uses `terminal_package_name' to guarantee terminal form of package name
+	publisher_qualified_rm_closure_name (a_rm_publisher, a_rm_closure_name: attached STRING): attached STRING
+			-- generate a lower-case standard model-package name string, e.g. "openehr-ehr" for use in finding RM schemas
+			-- uses `package_base_name' to obtain terminal form of package name
 		require
-			Package_name_valid: not a_package_name.is_empty
+			Model_publisher_valid: not a_rm_publisher.is_empty
+			Closure_name_valid: not a_rm_closure_name.is_empty
+		do
+			Result := a_rm_publisher + section_separator.out + package_base_name (a_rm_closure_name).as_upper
+		end
+
+	rm_closure_qualified_class_name (a_rm_closure_name, a_class_name: attached STRING): attached STRING
+			-- generate a standard model-class name string, e.g. "ehr-observation" for use in finding RM schemas
+		require
+			Rm_closure_name_valid: not a_rm_closure_name.is_empty
 			Class_name_valid: not a_class_name.is_empty
 		do
-			Result := package_base_name(a_package_name) + section_separator.out + a_class_name
+			Result := a_rm_closure_name + section_separator.out + a_class_name
 		end
 
-	type_name_as_flattened_list (a_type_name: attached STRING): attached ARRAYED_LIST [STRING]
+	type_name_as_flat_list (a_type_name: attached STRING): attached ARRAYED_LIST [STRING]
 			-- convert a type name to a flat set of strings
 		require
 			Valid_type_name: is_well_formed_type_name(a_type_name)
@@ -186,6 +220,7 @@ feature -- Conversion
 			lpos, rpos: INTEGER
 		do
 			create Result.make(0)
+			Result.compare_objects
 			stype := a_type_name.twin
 			stype.prune_all (' ')
 			if stype.has (generic_left_delim) then
@@ -194,17 +229,19 @@ feature -- Conversion
 			else
 				rpos := stype.count
 			end
-			Result.extend(a_type_name.substring(1, rpos))
+			Result.extend (a_type_name.substring(1, rpos))
 
 			if is_gen_type then
 				stype.replace_substring_all (generic_left_delim.out, Generic_separator.out)
 				stype.replace_substring_all (generic_right_delim.out, Generic_separator.out)
 				from lpos := rpos + 2 until lpos > stype.count loop
 					rpos := stype.index_of (Generic_separator, lpos) - 1
-					Result.extend(stype.substring (lpos, rpos))
+					Result.extend (stype.substring (lpos, rpos))
 					lpos := rpos + 2
 				end
 			end
+		ensure
+			Result.object_comparison
 		end
 
 	type_name_root_type (a_type_name: attached STRING): attached STRING
@@ -227,6 +264,38 @@ feature -- Conversion
 			end
 		end
 
+	type_to_class (a_type_name: attached STRING): STRING
+			-- convert a type name which might have a generic part to a simple class name
+		require
+			Type_valid: not a_type_name.is_empty
+		local
+			gen_pos: INTEGER
+		do
+			gen_pos := a_type_name.substring_index (generic_left_delim.out, 1)
+			if gen_pos > 0 then
+				Result := a_type_name.substring (1, gen_pos-1)
+				Result.right_adjust
+				Result.to_upper
+			else
+				Result := a_type_name.as_upper
+			end
+		ensure
+			Upper_case: Result ~ Result.as_upper
+		end
+
+	rm_attribute_pixmap_string (rm_attr: attached BMM_PROPERTY_DEFINITION): STRING
+			-- string name of pixmap for attribute rm_attr
+		do
+			create Result.make(0)
+			Result.append ("c_attribute")
+			if rm_attr.is_container then
+				Result.append (".multiple")
+			end
+			if not rm_attr.is_mandatory then
+				Result.append (".optional")
+			end
+		end
+
 feature {NONE} -- Implementation
 
 	well_formed_type_name_regex: attached LX_DFA_REGULAR_EXPRESSION
@@ -240,6 +309,13 @@ feature {NONE} -- Implementation
 		once
 			create Result.compile_case_insensitive ("[a-z][a-z0-9_]+")
 		end
+
+--	Any_class_cell: BMM_CLASS_DEFINITION
+--			-- assumed ultimate ancestor class; can be replaced by
+--		once
+--			create Result.make (Any_type, True)
+--			Result.set_description ("System default ancestor class")
+--		end
 
 end
 

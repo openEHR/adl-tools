@@ -17,29 +17,32 @@ class BMM_CONTAINER_PROPERTY
 inherit
 	BMM_PROPERTY_DEFINITION
 		redefine
-			type_def
+			type, make
 		end
 
-feature -- Access (attributes from schema)
+create
+	make
 
-	cardinality: INTERVAL [INTEGER]
-			-- needs to be this basic type because this attribute is scanned in from schema, else would
-			-- have used MULTIPLICITY_INTERVAL
-			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+feature -- Initialisation
 
-	type_def: detachable BMM_CONTAINER_TYPE_REFERENCE
-			-- type of the contained type
-			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
-
-feature -- Commands
-
-	finalise_build (a_bmmm: attached BMM_SCHEMA; a_class_def: attached BMM_CLASS_DEFINITION; errors: ERROR_ACCUMULATOR)
+	make (a_name: STRING; a_type: attached like type; is_mandatory_flag, is_computed_flag: BOOLEAN)
 		do
-			if attached type_def then
-				type_def.finalise_build(a_bmmm, a_class_def, Current, errors)
-			else
-				errors.add_error ("BMM_CPT", <<a_bmmm.schema_id, a_class_def.name, name>>, Void)
-			end
+			precursor (a_name, a_type, is_mandatory_flag, is_computed_flag)
+			create cardinality.make_open
+		end
+
+feature -- Access
+
+	cardinality: MULTIPLICITY_INTERVAL
+
+	type: BMM_CONTAINER_TYPE_REFERENCE
+			-- type of the contained type
+
+feature -- Modification
+
+	set_cardinality (a_cardinality: MULTIPLICITY_INTERVAL)
+		do
+			cardinality := a_cardinality
 		end
 
 end

@@ -100,6 +100,12 @@ feature -- Access
 			Result := children.first
 		end
 
+	last_child: DT_OBJECT_ITEM
+			--
+		do
+			Result := children.last
+		end
+
 	child_count: INTEGER
 			-- number of children
 		do

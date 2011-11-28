@@ -26,8 +26,8 @@ feature -- Access
 		local
 			lpos, rpos: INTEGER
 		do
-			lpos := a_str.substring_index("<" + tag + ">", start) + tag.count + 2
-			rpos := a_str.substring_index("</" + tag + ">", start) - 1
+			lpos := a_str.substring_index ("<" + tag + ">", start) + tag.count + 2
+			rpos := a_str.substring_index ("</" + tag + ">", start) - 1
 			if lpos > 1 and rpos > lpos then
 				Result := lpos
 			end
@@ -42,8 +42,8 @@ feature -- Access
 		local
 			lpos, rpos: INTEGER
 		do
-			lpos := a_str.substring_index("<" + tag + ">", start) + tag.count + 2
-			rpos := a_str.substring_index("</" + tag + ">", start) - 1
+			lpos := a_str.substring_index ("<" + tag + ">", start) + tag.count + 2
+			rpos := a_str.substring_index ("</" + tag + ">", start) - 1
 			Result := lpos > 1 and rpos > lpos
 		end
 
@@ -55,16 +55,16 @@ feature -- Access
 		local
 			lpos, rpos, next_lpos: INTEGER
 		do
-			lpos := a_str.substring_index("<" + tag + ">", start) + tag.count + 2
-			rpos := a_str.substring_index("</" + tag + ">", start) - 1
+			lpos := a_str.substring_index ("<" + tag + ">", start) + tag.count + 2
+			rpos := a_str.substring_index ("</" + tag + ">", start) - 1
 
 			from
-				next_lpos := a_str.substring_index("<" + tag + ">", lpos)
+				next_lpos := a_str.substring_index ("<" + tag + ">", lpos)
 			until
 				next_lpos = 0 or next_lpos > rpos
 			loop
-				rpos := a_str.substring_index("</" + tag + ">", rpos + tag.count + 2) - 1
-				next_lpos := a_str.substring_index("<" + tag + ">", next_lpos + tag.count + 2)
+				rpos := a_str.substring_index ("</" + tag + ">", rpos + tag.count + 2) - 1
+				next_lpos := a_str.substring_index ("<" + tag + ">", next_lpos + tag.count + 2)
 			end
 
 			Result := a_str.substring(lpos, rpos)
@@ -78,9 +78,9 @@ feature -- Access
 			Result := a_str.twin
 			Result.left_adjust
 			Result.right_adjust
-			Result.replace_substring("", 1, Result.substring_index(">", 1))
+			Result.replace_substring ("", 1, Result.substring_index(">", 1))
 			Result.mirror
-			Result.replace_substring("", 1, Result.substring_index("<", 1))
+			Result.replace_substring ("", 1, Result.substring_index("<", 1))
 			Result.mirror
 		end
 
@@ -91,30 +91,27 @@ feature -- Access
 		end
 
 	xml_tag_indent (xml_string: attached STRING): attached STRING
-			-- indented output for XML
+			-- indent `xml_string' in the usual way, with one tag per line, and using
+			-- 1 TAB character for each indent level
 		local
 			csr, tag_depth: INTEGER
 			in_start_tag: BOOLEAN
 			last_c, c: CHARACTER
 			indent_str: STRING
 		do
-			create indent_str.make_filled('%T', 50)
-			create Result.make(0)
-			from
-				csr := 1
-			until
-				csr > xml_string.count
-			loop
+			create indent_str.make_filled ('%T', 50)
+			create Result.make (0)
+			from csr := 1 until csr > xml_string.count loop
 				c := xml_string.item(csr)
 				if c = '<' then
-					if xml_string.item(csr+1) /= '/' then -- start of start tag
+					if xml_string.item (csr+1) /= '/' then -- start of start tag
 						in_start_tag := True
 					else
 						tag_depth := tag_depth - 1
 					end
 					if last_c /= '>' then
-						Result.append_character('%N')
-						Result.append(indent_str.substring(1, tag_depth))
+						Result.append_character ('%N')
+						Result.append (indent_str.substring (1, tag_depth))
 					end
 					Result.append_character(c)
 
@@ -123,9 +120,9 @@ feature -- Access
 						tag_depth := tag_depth + 1
 						in_start_tag := False
 					end
-					Result.append_character(c)
-					Result.append_character('%N')
-					Result.append(indent_str.substring(1, tag_depth))
+					Result.append_character (c)
+					Result.append_character ('%N')
+					Result.append (indent_str.substring(1, tag_depth))
 
 				else
 					Result.append_character(c)
@@ -143,7 +140,7 @@ feature -- Access
 		do
 			create Result.make(0)
 
-			Result.append("<" + tag_name)
+			Result.append ("<" + tag_name)
 
 			if attributes /= Void then
 				from attributes.start until attributes.off loop
@@ -151,7 +148,7 @@ feature -- Access
 					attributes.forth
 				end
 			end
-			Result.append(">")
+			Result.append (">")
 		end
 
 	xml_tag_end (tag_name: attached STRING): attached STRING
@@ -160,7 +157,7 @@ feature -- Access
 			Tag_name_valid: not tag_name.is_empty
 		do
 			create Result.make(0)
-			Result.append("</" + tag_name + ">")
+			Result.append ("</" + tag_name + ">")
 		end
 
 	xml_tag_enclose (tag_name, content: attached STRING; attributes: HASH_TABLE [STRING, STRING]): attached STRING
@@ -174,10 +171,10 @@ feature -- Access
 			Result := xml_tag_start(tag_name, attributes)
 
 			-- content
-			Result.append(content)
+			Result.append (content)
 
 			-- trailing tag
-			Result.append(xml_tag_end(tag_name))
+			Result.append (xml_tag_end (tag_name))
 		end
 
 	xml_quote (str: attached STRING): attached STRING
@@ -185,7 +182,7 @@ feature -- Access
 		do
 			create Result.make(0)
 			-- FIXME: to be implemented
-			Result.append(str)
+			Result.append (str)
 		end
 
 end

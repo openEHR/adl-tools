@@ -29,6 +29,11 @@ inherit
 			is_equal
 		end
 
+	IDENTIFIED_TOOL_ARTEFACT
+		undefine
+			is_equal
+		end
+
 	BMM_DEFINITIONS
 		export
 			{NONE} all;
@@ -59,7 +64,7 @@ feature -- Access
 			not_empty: not Result.is_empty
 		end
 
-	ontological_name: attached STRING
+	qualified_name: attached STRING
 			-- semantic name of this node, relative to parent concept, which is either class or package name, or else as concept name of archetype
 			-- used to generate ontological path
 			-- For Classes, will be the name of the top-level package & class e.g. EHR-OBSERVATION
@@ -67,12 +72,17 @@ feature -- Access
 		deferred
 		end
 
-	display_name: STRING
-			-- semantic name of this node to use in display context
+	qualified_key: attached STRING
+			-- uppercase form of qualified_name, for safe matching
 		deferred
 		end
 
-	ontological_path: STRING
+	name: STRING
+			-- name of this node to use in display context
+		deferred
+		end
+
+	path: STRING
 			-- path from root of ontology structure down to this point
 			-- for classes in the RM, it will look lie 			/content_item/care_entry/observation
 			-- for archetypes, it will look like 				/content_item/care_entry/observation/lab_result
@@ -80,66 +90,37 @@ feature -- Access
 		do
 			create Result.make (0)
 			if parent /= Void then
-				Result.append(parent.ontological_path + Ontological_path_separator)
+				Result.append (parent.path + Ontological_path_separator)
 			end
-			Result.append (display_name)
+			Result.append (name)
 		end
 
-	subtree_artefact_counts: HASH_TABLE [INTEGER, INTEGER]
-			-- stored counter of archetype child objects, keyed by artefact type,
-			-- i.e. archetype & template counts stored separately
-		local
-			atf_types: ARRAYED_LIST [INTEGER]
-		do
-			if subtree_artefact_counts_cache = Void then
-				-- create empty set of counters
-				create subtree_artefact_counts_cache.make(0)
-				atf_types := (create {ARTEFACT_TYPE}).types.linear_representation
-				from atf_types.start until atf_types.off loop
-					subtree_artefact_counts_cache.put (0, atf_types.item)
-					atf_types.forth
-				end
-
-				-- aggregate child counts and local count
-				if has_children then
-					from children.start until children.off loop
-						-- the following is technically naughty, since it creates a dependency on a descendant type, but
-						-- the code reduction seems worth it
-						from subtree_artefact_counts_cache.start until subtree_artefact_counts_cache.off loop
-							subtree_artefact_counts_cache.replace (subtree_artefact_counts_cache.item_for_iteration +
-																	children.item.subtree_artefact_counts.item(subtree_artefact_counts_cache.key_for_iteration),
-																	subtree_artefact_counts_cache.key_for_iteration)
-							subtree_artefact_counts_cache.forth
-						end
-						if attached {ARCH_CAT_ARCHETYPE} children.item as ara then
-							subtree_artefact_counts_cache.replace(subtree_artefact_counts_cache.item(ara.artefact_type) + 1, ara.artefact_type)
-						end
-						children.forth
-					end
-				end
-			end
-			Result := subtree_artefact_counts_cache
-		end
-
-   	sub_tree_artefact_count (artefact_types: attached ARRAY [INTEGER]): INTEGER
+   	subtree_artefact_count (artefact_types: attached ARRAY [INTEGER]): INTEGER
    			-- number of artefacts below this node of the types mentioned in `artefact_types'
    		local
 			i: INTEGER
 		do
  			from i := artefact_types.lower until i > artefact_types.upper loop
- 				Result := Result + subtree_artefact_counts.item(artefact_types[i])
+ 				Result := Result + subtree_artefact_counts.item (artefact_types[i])
  				i := i + 1
  			end
 		end
 
-	child_with_name (a_name: attached STRING): like child_type
+	child_with_qualified_name (a_name: attached STRING): like child_type
 		require
-			has_child_with_name (a_name)
+			has_child_with_qualified_name (a_name)
 		do
-			from children.start until children.off or children.item.ontological_name.same_string (a_name) loop
+			from children.start until children.off or children.item.qualified_name.same_string (a_name) loop
 				children.forth
 			end
 			Result := children.item
+		end
+
+	global_artefact_category: attached STRING
+			-- tool-wide category for this artefact, useful for indexing visual type indeicators
+			-- like pixmap etc
+		do
+			Result := group_name
 		end
 
 feature -- Status Report
@@ -168,14 +149,14 @@ feature -- Status Report
 			end
 		end
 
-	has_child_with_name (a_name: attached STRING): BOOLEAN
+	has_child_with_qualified_name (a_name: attached STRING): BOOLEAN
 		do
 			if children /= Void then
 				Result := children.there_exists (
 					agent (a_child: like child_type; s: STRING):BOOLEAN
 						do
-							Result := a_child.ontological_name.same_string (s)
-						end (?, a_name)
+							Result := a_child.qualified_key.same_string (s)
+						end (?, a_name.as_upper)
 				)
 			end
 		end
@@ -220,6 +201,7 @@ feature {ARCHETYPE_CATALOGUE} -- Modification
 			end
 			children.extend (a_child)
 			a_child.set_parent (Current)
+			reset_subtree_artefact_count
 		end
 
 	remove_child (a_child: attached like child_type)
@@ -227,6 +209,7 @@ feature {ARCHETYPE_CATALOGUE} -- Modification
 			has_child (a_child)
 		do
 			children.prune (a_child)
+			reset_subtree_artefact_count
 		end
 
 feature {ARCH_CAT_ITEM} -- Modification
@@ -241,7 +224,7 @@ feature -- Comparison
 	is_less alias "<" (other: like Current): BOOLEAN
 			-- Is current object less than `other'?
 		do
-			Result := ontological_name < other.ontological_name
+			Result := qualified_name < other.qualified_name
 		end
 
 feature {ARCH_CAT_ITEM, ARCHETYPE_CATALOGUE} -- Implementation
@@ -255,9 +238,56 @@ feature {ARCH_CAT_ITEM, ARCHETYPE_CATALOGUE} -- Implementation
 	parent: ARCH_CAT_ITEM
 			-- parent node
 
+	subtree_artefact_counts: HASH_TABLE [INTEGER, INTEGER]
+			-- counter of archetype child objects, keyed by artefact type,
+			-- i.e. archetype & template counts stored separately
+		local
+			atf_types: ARRAYED_LIST [INTEGER]
+		do
+			if subtree_artefact_counts_cache = Void then
+				-- create empty set of counters
+				create subtree_artefact_counts_cache.make(0)
+				atf_types := (create {ARTEFACT_TYPE}).types.linear_representation
+				from atf_types.start until atf_types.off loop
+					subtree_artefact_counts_cache.put (0, atf_types.item)
+					atf_types.forth
+				end
+
+				-- aggregate child counts and local count
+				if has_children then
+					from children.start until children.off loop
+						-- the following is technically naughty, since it creates a dependency on a descendant type, but
+						-- the code reduction seems worth it
+						from subtree_artefact_counts_cache.start until subtree_artefact_counts_cache.off loop
+							subtree_artefact_counts_cache.replace (subtree_artefact_counts_cache.item_for_iteration +
+																	children.item.subtree_artefact_counts.item (subtree_artefact_counts_cache.key_for_iteration),
+																	subtree_artefact_counts_cache.key_for_iteration)
+							subtree_artefact_counts_cache.forth
+						end
+						if attached {ARCH_CAT_ARCHETYPE} children.item as ara then
+							subtree_artefact_counts_cache.replace (subtree_artefact_counts_cache.item (ara.artefact_type) + 1, ara.artefact_type)
+						end
+						children.forth
+					end
+				end
+			end
+			Result := subtree_artefact_counts_cache
+		end
+
 	subtree_artefact_counts_cache: HASH_TABLE [INTEGER, INTEGER]
 			-- stored counter of archetype child objects, keyed by artefact type,
 			-- i.e. archetype & template counts stored separately
+
+	reset_subtree_artefact_count
+		local
+			csr: ARCH_CAT_ITEM
+		do
+			subtree_artefact_counts_cache := Void
+			from csr := parent until csr = Void loop
+				csr.reset_subtree_artefact_count
+				csr := csr.parent
+			end
+		end
 
 end
 

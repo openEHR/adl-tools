@@ -15,16 +15,27 @@ note
 class GUI_CATALOGUE_TOOL
 
 inherit
-	SHARED_KNOWLEDGE_REPOSITORY
+	SHARED_SOURCE_REPOSITORIES
 		export
 			{NONE} all
 		end
 
-	GUI_SEARCHABLE_TOOL
+	SHARED_ARCHETYPE_COMPILER
 		export
 			{NONE} all
+		end
+
+	SHARED_ARCHETYPE_SERIALISERS
+		export
+			{NONE} all
+			{ANY} has_archetype_native_serialiser_format, archetype_native_serialiser_formats
+		end
+
+	GUI_SEARCHABLE_TOOL
+
+	GUI_CATALOGUE_TARGETTED_TOOL
 		redefine
-			ev_root_container
+			go_to_selected_item
 		end
 
 create
@@ -32,35 +43,52 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_select_archetype_agent, an_edit_archetype_agent, a_select_archetype_in_new_tool_agent: like select_archetype_agent;
-			a_select_class_agent, a_select_class_in_new_tool_agent: like select_class_agent)
+	make
 		do
-			select_archetype_agent := a_select_archetype_agent
-			edit_archetype_agent := an_edit_archetype_agent
-			select_archetype_in_new_tool_agent := a_select_archetype_in_new_tool_agent
-			select_class_agent := a_select_class_agent
-			select_class_in_new_tool_agent := a_select_class_in_new_tool_agent
+			create archetype_explorer.make (agent edit_archetype, agent save_archetype)
+			create template_explorer.make (agent edit_archetype, agent save_archetype, agent archetype_explorer.ensure_item_visible)
+			create metrics_viewer.make
+			create stats_viewer.make
 
 			-- create widgets
 			create ev_root_container
+			ev_root_container.set_data (Current)
 
 			-- connect widgets
 			ev_root_container.extend (archetype_explorer.ev_root_container)
 			ev_root_container.extend (template_explorer.ev_root_container)
+			ev_root_container.extend (metrics_viewer.ev_root_container)
+			ev_root_container.extend (stats_viewer.ev_root_container)
 
 			-- visual characteristics
-			ev_root_container.enable_item_expand (template_explorer.ev_root_container)
-			ev_root_container.disable_item_expand (archetype_explorer.ev_root_container)
+			ev_root_container.set_item_text (archetype_explorer.ev_root_container, create_message_content ("catalogue_archetype_tab_text", Void))
+			ev_root_container.item_tab (archetype_explorer.ev_root_container).set_pixmap (pixmaps ["archetype_catalog"])
+
+			ev_root_container.set_item_text (template_explorer.ev_root_container, create_message_content ("catalogue_template_tab_text", Void))
+
+			ev_root_container.set_item_text (metrics_viewer.ev_root_container, create_message_content ("catalogue_metrics_tab_text", Void))
+			ev_root_container.set_item_text (stats_viewer.ev_root_container, create_message_content ("catalogue_stats_tab_text", Void))
+			set_stats_metric_tab_appearance
+
+			-- set events: select a notebook tab
+			ev_root_container.selection_actions.extend (agent on_select_notebook)
+
+			-- set up tool / sub-tool structures
+			add_sub_tool (archetype_explorer)
+			add_sub_tool (template_explorer)
+			add_sub_tool (metrics_viewer)
+			add_sub_tool (stats_viewer)
+			enable_selection_history
 		end
 
 feature -- Access
 
-	ev_root_container: EV_VERTICAL_SPLIT_AREA
+	ev_root_container: EV_NOTEBOOK
 
 	matching_ids (a_key: attached STRING): attached ARRAYED_SET [STRING]
 		do
-			if attached current_arch_cat then
-				Result := current_arch_cat.matching_ids (a_key, Void, Void)
+			if attached source then
+				Result := source.matching_ids (a_key, Void, Void)
 			else
 				create Result.make(0)
 			end
@@ -70,7 +98,7 @@ feature -- Status Report
 
 	item_selectable: BOOLEAN
 		do
-			Result := attached current_arch_cat
+			Result := is_populated
 		end
 
 	valid_item_id (a_key: attached STRING): BOOLEAN
@@ -81,44 +109,29 @@ feature -- Status Report
 
 feature -- Commands
 
-	populate
-			-- Populate content from visual controls.
-		do
-			archetype_explorer.populate
-			template_explorer.populate
-			go_to_selected_archetype
-		end
-
-	repopulate
-			-- repopulate current tree items if needed
-		do
-			populate
-		end
-
-	update (aca: attached ARCH_CAT_ARCHETYPE)
+	update_tree_node (aca: attached ARCH_CAT_ARCHETYPE)
 		do
 			archetype_explorer.update_tree_node_for_archetype (aca)
 			template_explorer.update_tree_node_for_archetype (aca)
 		end
 
-	go_to_selected_archetype
+	go_to_selected_item
 			-- Select and display the node of `archetype_file_tree' corresponding to the selection in `archetype_catalogue'.
 			-- No events will be processed because archetype selected in ARCHETYPE_CATALOGUE already matches selected tree node
 		do
-			if has_current_profile and then current_arch_cat.has_selected_item then
-				archetype_explorer.select_item (current_arch_cat.selected_item.ontological_name)
+			if selection_history.has_selected_item then
+				archetype_explorer.select_item_in_tree (selection_history.selected_item.global_artefact_identifier)
+				docking_pane.set_focus
 			end
 		end
 
-	select_item, select_archetype (id: attached STRING)
-			-- Select `id' in the archetype catalogue and go to its node in explorer tree
+	select_item_by_id (a_globally_qualified_id: attached STRING)
+			-- Select `a_globally_qualified_id' in the GUI catalogue tree, unless it is the same as the current selection
 		do
-			if not current_arch_cat.has_selected_archetype or else not id.is_equal (current_arch_cat.selected_archetype.ontological_name) then
-				if current_arch_cat.archetype_index.has (id) then
-					archetype_explorer.select_item (id)
+			if not selection_history.has_selected_archetype or else not a_globally_qualified_id.is_equal (selection_history.selected_archetype.qualified_name) then
+				if source.has_item_with_id (a_globally_qualified_id) then
+					archetype_explorer.select_item_in_tree (a_globally_qualified_id)
 				end
-			else
-				-- discrete visual feedback for selecting same archetype as already selected?
 			end
 		end
 
@@ -128,14 +141,78 @@ feature -- Commands
 			template_explorer.update_rm_icons_setting
 		end
 
-	clear
-		do
-
-		end
-
 	show
 		do
 			docking_pane.show
+		end
+
+	open_archetype
+			-- open currently selected archetype
+		local
+			dialog: EV_FILE_OPEN_DIALOG
+			fname: STRING
+		do
+			create dialog
+			dialog.set_start_directory (current_work_directory)
+			dialog.filters.extend (["*" + File_ext_archetype_source, "ADL 1.5 source files"])
+			dialog.filters.extend (["*" + File_ext_archetype_adl14, "ADL 1.4 files"])
+			dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+			fname := dialog.file_name.as_string_8
+
+			if not fname.is_empty then
+				if not source_repositories.adhoc_source_repository.has_path (fname) then
+					set_current_work_directory (file_system.dirname (fname))
+					if not file_system.file_exists (fname) then
+						(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" not found.")).show_modal_to_window (proximate_ev_window (ev_root_container))
+					else
+						source.add_adhoc_item (fname)
+						if not billboard.has_errors then
+							selection_history.set_selected_item (source.last_adhoc_item)
+							show
+							repopulate
+						end
+						gui_agents.console_tool_append_agent.call ([billboard.content])
+					end
+				else
+					(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" already added.")).show_modal_to_window (proximate_ev_window (ev_root_container))
+				end
+			end
+		end
+
+	edit_source_archetype
+			-- Launch the external editor with the archetype currently selected in `archetype_directory'.
+		local
+			question_dialog: EV_QUESTION_DIALOG
+			info_dialog: EV_INFORMATION_DIALOG
+			path: STRING
+		do
+			if selection_history.has_selected_archetype then
+				edit_archetype (selection_history.selected_archetype)
+			end
+		end
+
+	save_source_archetype_as
+			-- Save source (differential) archetype to a user-specified path
+		do
+			if selection_history.has_validated_selected_archetype then
+				save_archetype (selection_history.selected_archetype, True, True)
+			end
+		end
+
+	export_source_archetype_as
+			-- Export source archetype to a user-specified path
+		do
+			if selection_history.has_validated_selected_archetype then
+				save_archetype (selection_history.selected_archetype, True, False)
+			end
+		end
+
+	export_flat_archetype_as
+			-- Export flat archetype to a user-specified path
+		do
+			if selection_history.has_validated_selected_archetype then
+				save_archetype (selection_history.selected_archetype, False, False)
+			end
 		end
 
 feature -- Modification
@@ -145,23 +222,180 @@ feature -- Modification
 			docking_pane := a_docking_pane
 		end
 
+feature -- Events
+
+	on_select_notebook
+		do
+			if ev_root_container.selected_item.data = metrics_viewer then
+				if source.can_build_statistics then
+					source.build_detailed_statistics
+					if not attached metrics_viewer.last_populate_timestamp or else metrics_viewer.last_populate_timestamp < source.last_stats_build_timestamp then
+						metrics_viewer.populate (source)
+					end
+				end
+			elseif ev_root_container.selected_item.data = stats_viewer then
+				if source.can_build_statistics then
+					source.build_detailed_statistics
+					if not attached stats_viewer.last_populate_timestamp or else stats_viewer.last_populate_timestamp < source.last_stats_build_timestamp then
+						from source.stats.start until source.stats.off loop
+							stats_viewer.populate (source.stats.item_for_iteration, True)
+							source.stats.forth
+						end
+					end
+				end
+			end
+		end
+
+	on_full_compile
+			-- actions to execute when a complete compile has been done
+		do
+			set_stats_metric_tab_appearance
+		end
+
 feature {NONE} -- Implementation
+
+	do_clear
+		do
+			metrics_viewer.clear
+			stats_viewer.clear
+			set_stats_metric_tab_appearance
+			ev_root_container.select_item (archetype_explorer.ev_root_container)
+		end
+
+	do_populate
+			-- Populate content from visual controls.
+		do
+			docking_pane.set_short_title (create_message_content ("catalogue_tool_title", Void))
+			docking_pane.set_long_title (create_message_content ("catalogue_tool_title", Void) + " " + repository_profiles.current_profile_name)
+			archetype_explorer.populate (source)
+			template_explorer.populate (source)
+			on_select_notebook
+			go_to_selected_item
+		end
 
 	docking_pane: SD_CONTENT
 
 	archetype_explorer: GUI_VIEW_ARCHETYPE_TREE_CONTROL
-		once
-			create Result.make (select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent, select_class_agent, select_class_in_new_tool_agent)
-		end
 
 	template_explorer: GUI_VIEW_TEMPLATE_TREE_CONTROL
-		once
-			create Result.make (select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent, agent archetype_explorer.ensure_item_visible)
+
+	metrics_viewer: GUI_STATISTICS_TOOL
+
+	stats_viewer: GUI_ARCHETYPE_STATISTICAL_REPORT
+
+	set_stats_metric_tab_appearance
+			-- set visual appearance of stats & metric tab according to whether there are errors or not
+		do
+			if attached source and then source.can_build_statistics then
+				ev_root_container.item_tab (metrics_viewer.ev_root_container).set_pixmap (pixmaps ["metrics"])
+				ev_root_container.item_tab (stats_viewer.ev_root_container).set_pixmap (pixmaps ["statistics"])
+			else
+				ev_root_container.item_tab (metrics_viewer.ev_root_container).set_pixmap (pixmaps ["metrics_grey"])
+				ev_root_container.item_tab (stats_viewer.ev_root_container).set_pixmap (pixmaps ["statistics_grey"])
+			end
+			if attached source and then source.template_count > 0 then
+				ev_root_container.item_tab (template_explorer.ev_root_container).set_pixmap (pixmaps ["template_catalog"])
+			else
+				ev_root_container.item_tab (template_explorer.ev_root_container).set_pixmap (pixmaps ["template_catalog_grey"])
+			end
 		end
 
-	select_archetype_agent, edit_archetype_agent, select_archetype_in_new_tool_agent: PROCEDURE [ANY, TUPLE]
+	save_archetype (aca: ARCH_CAT_ARCHETYPE; diff_flag, native_format_flag: BOOLEAN)
+			-- Export differential or flat archetype to a user-specified path
+		local
+			ok_to_write: BOOLEAN
+			question_dialog: EV_QUESTION_DIALOG
+			error_dialog: EV_INFORMATION_DIALOG
+			file: PLAIN_TEXT_FILE
+			save_dialog: EV_FILE_SAVE_DIALOG
+			name, format: STRING
+			format_list: ARRAYED_LIST [STRING]
+			dialog_title: STRING
+		do
+			if aca.is_valid then
+				if native_format_flag then
+					format_list := archetype_native_serialiser_formats
+					dialog_title := "Save Archetype"
+				else
+					format_list := archetype_all_serialiser_formats
+					dialog_title := "Export Archetype"
+				end
+				name := extension_replaced (aca.full_path, "")
 
-	select_class_agent, select_class_in_new_tool_agent: PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
+				create save_dialog
+				save_dialog.set_title (dialog_title)
+				save_dialog.set_file_name (name)
+				save_dialog.set_start_directory (current_work_directory)
+
+				-- ask the user what format
+				from format_list.start until format_list.off loop
+					format := format_list.item
+					save_dialog.filters.extend (["*" + archetype_file_extensions [format], "Save as " + format.as_upper])
+					format_list.forth
+				end
+
+				save_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+				name := save_dialog.file_name.as_string_8
+
+				if not name.is_empty then
+					-- finalise the file path & create a handle
+					set_current_work_directory (file_system.dirname (name))
+					format := format_list [save_dialog.selected_filter_index]
+					if not file_system.has_extension (name, archetype_file_extensions [format]) then
+						name.append (archetype_file_extensions [format])
+					end
+					create file.make (name)
+
+					-- if the file already exists, ask user about overwrite
+					ok_to_write := True
+					if file.exists then
+						create question_dialog.make_with_text (create_message_content ("file_exists_replace_question", <<file_system.basename (name)>>))
+						question_dialog.set_title ("Save as " + format.as_upper)
+						question_dialog.set_buttons (<<"Yes", "No">>)
+						question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+						ok_to_write := question_dialog.selected_button.same_string ("Yes")
+					end
+					if ok_to_write then
+						if diff_flag then
+							aca.save_differential_as (name, format)
+						else
+							aca.save_flat_as (name, format)
+						end
+						gui_agents.console_tool_append_agent.call ([aca.status])
+					end
+				end
+			else
+				create error_dialog.make_with_text (create_message_content ("compile_before_serialising", Void))
+				error_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+			end
+		end
+
+	edit_archetype (aca: ARCH_CAT_ARCHETYPE)
+			-- Launch the external editor with the archetype currently selected in `archetype_directory'.
+		local
+			question_dialog: EV_QUESTION_DIALOG
+			info_dialog: EV_INFORMATION_DIALOG
+			path: STRING
+		do
+			path := aca.differential_path
+			if aca.has_differential_file and aca.has_legacy_flat_file then
+				create question_dialog.make_with_text (create_message_line ("edit_which_file_question",
+					<<file_system.basename (path), file_system.basename (aca.legacy_flat_path)>>))
+				question_dialog.set_title ("Edit " + aca.qualified_name)
+				question_dialog.set_buttons (<<"Differential", "Legacy (ADL 1.4 flat)">>)
+				question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+				if question_dialog.selected_button.starts_with ("L") then
+					path := aca.legacy_flat_path
+				end
+			elseif aca.has_legacy_flat_file then
+				create info_dialog.make_with_text (create_message_line ("edit_legacy_file_info",
+					<<file_system.basename (aca.legacy_flat_path)>>))
+				info_dialog.set_title ("Edit " + aca.id.as_string)
+				info_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+				path := aca.legacy_flat_path
+			end
+			execution_environment.launch (editor_app_command + " %"" + path + "%"")
+		end
 
 end
 

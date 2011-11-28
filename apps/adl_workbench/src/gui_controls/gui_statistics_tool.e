@@ -15,20 +15,7 @@ note
 class GUI_STATISTICS_TOOL
 
 inherit
-	CONSTANTS
-		export
-			{NONE} all
-		end
-
-	SHARED_KNOWLEDGE_REPOSITORY
-		export
-			{NONE} all
-		end
-
-	GUI_UTILITIES
-		export
-			{NONE} all
-		end
+	GUI_CATALOGUE_TARGETTED_TOOL
 
 create
 	make
@@ -36,195 +23,81 @@ create
 feature {NONE} -- Initialisation
 
 	make
-		local
-			bg_colour: EV_COLOR
 		do
-			create bg_colour.make_with_8_bit_rgb (240, 240, 240)
-
 			-- create root widget
 			create ev_root_container
-
-			-- text field handling
-			create text_widget_handler.make (ev_root_container)
-
-			-- create subordinate widgets
-			create ev_statistics_vbox
-			create ev_arch_total_count_hbox
-			create ev_label_1
-			create ev_arch_total_count_tf
-			create ev_arch_spec_count_hbox
-			create ev_label_2
-			create ev_arch_spec_count_tf
-			create ev_arch_slotted_count_hbox
-			create ev_label_3
-			create ev_arch_slotted_count_tf
-			create ev_arch_used_by_count_hbox
-			create ev_label_4
-			create ev_arch_used_by_count_tf
-			create ev_arch_bad_count_hbox
-			create ev_label_5
-			create ev_arch_bad_count_tf
+			ev_root_container.set_data (Current)
+			create ev_stats_info_frame
 			create ev_term_bindings_info_frame
+			create ev_stats_mlist
 			create ev_term_bindings_info_list
 
 			-- connect them together
-			ev_root_container.extend (ev_statistics_vbox)
-			ev_statistics_vbox.extend (ev_arch_total_count_hbox)
-			ev_arch_total_count_hbox.extend (ev_label_1)
-			ev_arch_total_count_hbox.extend (ev_arch_total_count_tf)
-			ev_statistics_vbox.extend (ev_arch_spec_count_hbox)
-			ev_arch_spec_count_hbox.extend (ev_label_2)
-			ev_arch_spec_count_hbox.extend (ev_arch_spec_count_tf)
-			ev_statistics_vbox.extend (ev_arch_slotted_count_hbox)
-			ev_arch_slotted_count_hbox.extend (ev_label_3)
-			ev_arch_slotted_count_hbox.extend (ev_arch_slotted_count_tf)
-			ev_statistics_vbox.extend (ev_arch_used_by_count_hbox)
-			ev_arch_used_by_count_hbox.extend (ev_label_4)
-			ev_arch_used_by_count_hbox.extend (ev_arch_used_by_count_tf)
-			ev_statistics_vbox.extend (ev_arch_bad_count_hbox)
-			ev_arch_bad_count_hbox.extend (ev_label_5)
-			ev_arch_bad_count_hbox.extend (ev_arch_bad_count_tf)
+			ev_root_container.extend (ev_stats_info_frame)
+			ev_stats_info_frame.extend (ev_stats_mlist)
 			ev_root_container.extend (ev_term_bindings_info_frame)
 			ev_term_bindings_info_frame.extend (ev_term_bindings_info_list)
 
 			-- set visual characteristics
-			ev_root_container.set_minimum_height (200)
 			ev_root_container.set_padding (padding_width)
-			ev_root_container.set_border_width (15)
-			ev_root_container.disable_item_expand (ev_statistics_vbox)
-			ev_statistics_vbox.set_minimum_width (250)
-			ev_statistics_vbox.set_padding (padding_width)
-			ev_statistics_vbox.set_border_width (border_width)
-			ev_statistics_vbox.disable_item_expand (ev_arch_total_count_hbox)
-			ev_statistics_vbox.disable_item_expand (ev_arch_spec_count_hbox)
-			ev_statistics_vbox.disable_item_expand (ev_arch_slotted_count_hbox)
-			ev_statistics_vbox.disable_item_expand (ev_arch_used_by_count_hbox)
-			ev_statistics_vbox.disable_item_expand (ev_arch_bad_count_hbox)
-			ev_arch_total_count_hbox.set_padding (10)
-			ev_arch_total_count_hbox.set_border_width (border_width)
-			ev_arch_total_count_hbox.disable_item_expand (ev_arch_total_count_tf)
-			ev_label_1.set_text ("Total Archetypes:")
-			ev_label_1.set_minimum_width (140)
-			ev_label_1.align_text_right
-			ev_arch_total_count_tf.set_background_color (bg_colour)
-			ev_arch_total_count_tf.disable_edit
-			ev_arch_total_count_tf.align_text_right
-			ev_arch_spec_count_hbox.set_padding (10)
-			ev_arch_spec_count_hbox.set_border_width (border_width)
-			ev_arch_spec_count_hbox.disable_item_expand (ev_arch_spec_count_tf)
-			ev_label_2.set_text ("Specialised Archetypes:")
-			ev_label_2.set_minimum_width (140)
-			ev_label_2.align_text_right
-			ev_arch_spec_count_tf.set_background_color (bg_colour)
-			ev_arch_spec_count_tf.disable_edit
-			ev_arch_spec_count_tf.align_text_right
-			ev_arch_slotted_count_hbox.set_padding (10)
-			ev_arch_slotted_count_hbox.set_border_width (border_width)
-			ev_arch_slotted_count_hbox.disable_item_expand (ev_arch_slotted_count_tf)
-			ev_label_3.set_text ("Archetypes Containing Slots:")
-			ev_label_3.set_minimum_width (140)
-			ev_label_3.align_text_right
-			ev_arch_slotted_count_tf.set_background_color (bg_colour)
-			ev_arch_slotted_count_tf.disable_edit
-			ev_arch_slotted_count_tf.align_text_right
-			ev_arch_used_by_count_hbox.set_padding (padding_width)
-			ev_arch_used_by_count_hbox.set_border_width (border_width)
-			ev_arch_used_by_count_hbox.disable_item_expand (ev_arch_used_by_count_tf)
-			ev_label_4.set_text ("Archetypes Used In Slots:")
-			ev_label_4.set_minimum_width (140)
-			ev_label_4.align_text_right
-			ev_arch_used_by_count_tf.set_background_color (bg_colour)
-			ev_arch_used_by_count_tf.disable_edit
-			ev_arch_used_by_count_tf.align_text_right
-			ev_arch_bad_count_hbox.set_padding (10)
-			ev_arch_bad_count_hbox.set_border_width (border_width)
-			ev_arch_bad_count_hbox.disable_item_expand (ev_arch_bad_count_tf)
-			ev_label_5.set_text ("Invalid Archetype Files:")
-			ev_label_5.set_minimum_width (140)
-			ev_label_5.align_text_right
-			ev_arch_bad_count_tf.set_background_color (bg_colour)
-			ev_arch_bad_count_tf.disable_edit
-			ev_arch_bad_count_tf.align_text_right
-			ev_term_bindings_info_frame.set_text ("Terminology Bindings")
-			ev_term_bindings_info_list.set_background_color (bg_colour)
-			ev_term_bindings_info_list.set_minimum_width (200)
-			ev_term_bindings_info_list.set_minimum_height (100)
+			ev_root_container.set_border_width (border_width)
+			ev_root_container.disable_item_expand (ev_stats_info_frame)
+			ev_stats_info_frame.set_text (create_message_content ("stats_frame_text", Void))
+			ev_term_bindings_info_frame.set_text (create_message_content ("term_bindings_frame_text", Void))
 			ev_term_bindings_info_list.set_column_titles (<<"terminology", "archetypes">>)
-
-			-- set events
-			ev_arch_total_count_tf.focus_in_actions.extend (agent text_widget_handler.on_select_all)
-			ev_arch_spec_count_tf.focus_in_actions.extend (agent text_widget_handler.on_select_all)
-			ev_arch_slotted_count_tf.focus_in_actions.extend (agent text_widget_handler.on_select_all)
-			ev_arch_used_by_count_tf.focus_in_actions.extend (agent text_widget_handler.on_select_all)
-			ev_arch_bad_count_tf.focus_in_actions.extend (agent text_widget_handler.on_select_all)
 		end
 
 feature -- Access
 
-	ev_root_container: EV_HORIZONTAL_BOX
-
-feature -- Commands
-
-	populate
-			-- Populate the statistics tab.
-		local
-			list_row: EV_MULTI_COLUMN_LIST_ROW
-			i: INTEGER
-		do
-			if has_current_profile then
-				ev_arch_total_count_tf.set_text (current_arch_cat.total_archetype_count.out)
-				ev_arch_spec_count_tf.set_text (current_arch_cat.specialised_archetype_count.out)
-				ev_arch_slotted_count_tf.set_text (current_arch_cat.client_archetype_count.out)
-				ev_arch_used_by_count_tf.set_text (current_arch_cat.supplier_archetype_count.out)
-				ev_arch_bad_count_tf.set_text (current_arch_cat.bad_archetype_count.out)
-
-				-- do terminology bindings statistics
-				from current_arch_cat.terminology_bindings_info.start until current_arch_cat.terminology_bindings_info.off loop
-					from ev_term_bindings_info_list.start until ev_term_bindings_info_list.off or
-						ev_term_bindings_info_list.item.first.is_equal (current_arch_cat.terminology_bindings_info.key_for_iteration)
-					loop
-						ev_term_bindings_info_list.forth
-					end
-					if not ev_term_bindings_info_list.off then
-						ev_term_bindings_info_list.item.finish
-						ev_term_bindings_info_list.item.remove
-						ev_term_bindings_info_list.item.extend (utf8 (current_arch_cat.terminology_bindings_info.item_for_iteration.count.out))
-					else
-						create list_row
-						list_row.extend (utf8 (current_arch_cat.terminology_bindings_info.key_for_iteration))
-						list_row.extend (utf8 (current_arch_cat.terminology_bindings_info.item_for_iteration.count.out))
-						ev_term_bindings_info_list.extend (list_row)
-						from i := 1 until i > ev_term_bindings_info_list.column_count loop
-							ev_term_bindings_info_list.resize_column_to_content (i)
-							if ev_term_bindings_info_list.column_width (i) < 100 then
-								ev_term_bindings_info_list.set_column_width (100, i)
-							end
-							i := i + 1
-						end
-					end
-
-					current_arch_cat.terminology_bindings_info.forth
-				end
-			end
-		end
+	ev_root_container: EV_VERTICAL_BOX
 
 feature {NONE} -- Implementation
 
-	text_widget_handler: GUI_TEXT_WIDGET_HANDLER
-			-- FIXME: this is a hack to get round lack of standard behaviour in Vision2 for
-			-- focussed text widgets & cut & paste behaviours
+	do_clear
+		do
+			ev_stats_mlist.wipe_out
+			ev_term_bindings_info_list.wipe_out
+		end
 
-	ev_arch_total_count_tf, ev_arch_spec_count_tf, ev_arch_slotted_count_tf, ev_arch_used_by_count_tf, ev_arch_bad_count_tf, ev_arch_test_processed_count: EV_TEXT_FIELD
+	do_populate
+			-- Populate the statistics tab.
+		local
+			list_row: EV_MULTI_COLUMN_LIST_ROW
+		do
+			-- archetype metrics list
+			ev_stats_mlist.set_column_titles (
+				<<create_message_content ("summary_list_metric_col_title", Void),
+				create_message_content ("summary_list_total_col_title", Void)>>
+			)
+			populate_ev_multi_list_from_hash (ev_stats_mlist, source.catalogue_metrics)
+			ev_stats_info_frame.set_minimum_height ((ev_stats_mlist.count + 3) * ev_stats_mlist.row_height)
 
-	ev_term_bindings_info_frame: EV_FRAME
+			-- do terminology bindings statistics
+			from source.terminology_bindings_statistics.start until source.terminology_bindings_statistics.off loop
+				from ev_term_bindings_info_list.start until ev_term_bindings_info_list.off or
+					ev_term_bindings_info_list.item.first.is_equal (source.terminology_bindings_statistics.key_for_iteration)
+				loop
+					ev_term_bindings_info_list.forth
+				end
+				if not ev_term_bindings_info_list.off then
+					ev_term_bindings_info_list.item.finish
+					ev_term_bindings_info_list.item.remove
+					ev_term_bindings_info_list.item.extend (utf8 (source.terminology_bindings_statistics.item_for_iteration.count.out))
+				else
+					create list_row
+					list_row.extend (utf8 (source.terminology_bindings_statistics.key_for_iteration))
+					list_row.extend (utf8 (source.terminology_bindings_statistics.item_for_iteration.count.out))
+					ev_term_bindings_info_list.extend (list_row)
+				end
 
-	ev_label_1, ev_label_2, ev_label_3, ev_label_4, ev_label_5: EV_LABEL
+				source.terminology_bindings_statistics.forth
+			end
+			resize_ev_multi_list (ev_term_bindings_info_list)
+		end
 
-	ev_term_bindings_info_list: EV_MULTI_COLUMN_LIST
+	ev_stats_info_frame, ev_term_bindings_info_frame: EV_FRAME
 
-	ev_arch_total_count_hbox, ev_arch_spec_count_hbox, ev_arch_slotted_count_hbox, ev_arch_used_by_count_hbox, ev_arch_bad_count_hbox: EV_HORIZONTAL_BOX
-
-	ev_statistics_vbox: EV_VERTICAL_BOX
+	ev_stats_mlist, ev_term_bindings_info_list: EV_MULTI_COLUMN_LIST
 
 end
 

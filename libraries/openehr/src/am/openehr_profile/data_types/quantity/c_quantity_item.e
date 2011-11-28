@@ -2,7 +2,7 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Magnitude/unit constrainer item for C_QUANTITY"
 	keywords:    "quantity, archetype, clinical type, ADL"
-	
+
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
@@ -19,7 +19,7 @@ create
 
 feature -- Initialisation
 
-	make(a_units: STRING; a_magnitude: INTERVAL[REAL]; a_precision: INTERVAL[INTEGER])
+	make (a_units: STRING; a_magnitude: INTERVAL [REAL]; a_precision: INTERVAL [INTEGER])
 			-- add a units constraint. Void magnitude means any magnitude allowed
 		require
 			Magnitude_validity: a_magnitude /= Void implies a_units /= Void
@@ -34,31 +34,31 @@ feature -- Initialisation
 
 feature -- Access
 
-	units: STRING
+	units: attached STRING
 			-- constraint on units
-	
-	magnitude: INTERVAL [REAL]
+
+	magnitude: detachable INTERVAL [REAL]
 			-- constraint on magnitude
-			
-	precision: INTERVAL [INTEGER]
+
+	precision: detachable INTERVAL [INTEGER]
 			-- constraint on precision. A value of -1 means that precision is unconstrained.
 
 feature -- Status Report
-			
+
 	any_magnitude_allowed: BOOLEAN
 			-- True if there is no constraint on magnitude
 		do
-			Result := magnitude = Void
+			Result := attached magnitude
 		end
-		
+
 	any_precision_allowed: BOOLEAN
 			-- True if there is no constraint on precision
 		do
-			Result := precision = Void
+			Result := attached precision
 		end
-		
+
 invariant
-	units_valid: units /= Void and not units.is_empty
+	units_valid: not units.is_empty
 
 end
 

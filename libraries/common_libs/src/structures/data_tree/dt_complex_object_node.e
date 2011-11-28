@@ -86,6 +86,17 @@ feature -- Access
 	attributes: attached ARRAYED_LIST [DT_ATTRIBUTE_NODE]
 			-- next nodes, keyed by node id or attribute name
 
+	first: DT_ATTRIBUTE_NODE
+		do
+			Result := attributes.first
+		end
+
+	last: DT_ATTRIBUTE_NODE
+			--
+		do
+			Result := attributes.last
+		end
+
 	attribute_node (an_attr_name: attached STRING): attached DT_ATTRIBUTE_NODE
 			-- return attribute node at an_attr_name
 		require
@@ -182,11 +193,6 @@ feature -- Iteration
 	item: DT_ATTRIBUTE_NODE
 		do
 			Result := attributes.item
-		end
-
-	first: DT_ATTRIBUTE_NODE
-		do
-			Result := attributes.first
 		end
 
 feature -- Status Report

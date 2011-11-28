@@ -14,15 +14,15 @@ note
 class GUI_SLOT_MAP_CONTROL
 
 inherit
+	GUI_ARCHETYPE_TARGETTED_TOOL
+		redefine
+			can_populate, can_repopulate
+		end
+
 	SHARED_KNOWLEDGE_REPOSITORY
 		export
 			{NONE} all;
 			{ANY} has_current_profile
-		end
-
-	CONSTANTS
-		export
-			{NONE} all
 		end
 
 	STRING_UTILITIES
@@ -39,6 +39,8 @@ feature {NONE} -- Initialisation
 		do
 			-- create widgets
 			create ev_root_container
+			ev_root_container.set_data (Current)
+
 			create ev_suppliers_tree
 			create ev_clients_tree
 			create supplier_frame
@@ -71,60 +73,22 @@ feature -- Access
 
 	ev_suppliers_tree, ev_clients_tree: EV_TREE
 
+feature -- Status Report
+
+	can_populate (a_source: attached like source): BOOLEAN
+		do
+			Result := a_source.is_valid
+		end
+
+	can_repopulate: BOOLEAN
+		do
+			Result := is_populated and source.is_valid
+		end
+
 feature -- UI Feedback
 
 	visual_update_action: PROCEDURE [ANY, TUPLE [INTEGER, INTEGER]]
 			-- Called after processing each archetype (to perform GUI updates during processing).
-
-feature -- Commands
-
-	clear
-		do
-			ev_suppliers_tree.wipe_out
-			ev_clients_tree.wipe_out
-			call_visual_update_action (0, 0)
-		end
-
-	populate (aca: attached ARCH_CAT_ARCHETYPE; a_language: attached STRING)
-			-- populate the ADL tree control by creating it from scratch
-		require
-			aca.is_valid
-		local
-			eti: EV_TREE_ITEM
-			slot_index: DS_HASH_TABLE [ARRAYED_LIST [STRING], STRING]
-			slots_count: INTEGER
-			used_by_count: INTEGER
-		do
-			clear
-
-			if aca.has_slots then
-				slot_index := aca.slot_id_index
-				from slot_index.start until slot_index.off loop
-					create eti.make_with_text (utf8 (aca.differential_archetype.ontology.physical_to_logical_path (slot_index.key_for_iteration, a_language)))
-					eti.set_pixmap (pixmaps ["ARCHETYPE_SLOT"])
-					ev_suppliers_tree.extend (eti)
-					append_tree (eti, slot_index.item_for_iteration)
-					slots_count := slots_count + eti.count
-
-					if eti.is_expandable then
-						eti.expand
-					end
-
-					slot_index.forth
-				end
-			end
-
-			if current_arch_cat.compile_attempt_count < current_arch_cat.total_archetype_count then
-				ev_clients_tree.extend (create {EV_TREE_ITEM}.make_with_text (create_message_line ("slots_incomplete_w1", <<>>)))
-			end
-
-			if aca.is_supplier then
-				append_tree (ev_clients_tree, aca.clients_index)
-				used_by_count := used_by_count + ev_clients_tree.count
-			end
-
-			call_visual_update_action (slots_count, used_by_count)
-		end
 
 feature {NONE} -- Implementation
 
@@ -150,6 +114,50 @@ feature {NONE} -- Implementation
 			end
 		ensure
 			appended: subtree.count = old subtree.count + ids.count
+		end
+
+	do_clear
+		do
+			ev_suppliers_tree.wipe_out
+			ev_clients_tree.wipe_out
+			call_visual_update_action (0, 0)
+		end
+
+	do_populate
+			-- populate the ADL tree control by creating it from scratch
+		local
+			eti: EV_TREE_ITEM
+			slot_index: DS_HASH_TABLE [ARRAYED_LIST [STRING], STRING]
+			slots_count: INTEGER
+			used_by_count: INTEGER
+		do
+			if source.has_slots then
+				slot_index := source.slot_id_index
+				from slot_index.start until slot_index.off loop
+					create eti.make_with_text (utf8 (source.differential_archetype.ontology.physical_to_logical_path (slot_index.key_for_iteration, selected_language, True)))
+					eti.set_pixmap (pixmaps ["ARCHETYPE_SLOT"])
+					ev_suppliers_tree.extend (eti)
+					append_tree (eti, slot_index.item_for_iteration)
+					slots_count := slots_count + eti.count
+
+					if eti.is_expandable then
+						eti.expand
+					end
+
+					slot_index.forth
+				end
+			end
+
+			if current_arch_cat.compile_attempt_count < current_arch_cat.archetype_count then
+				ev_clients_tree.extend (create {EV_TREE_ITEM}.make_with_text (create_message_line ("slots_incomplete_w1", <<>>)))
+			end
+
+			if source.is_supplier then
+				append_tree (ev_clients_tree, source.clients_index)
+				used_by_count := used_by_count + ev_clients_tree.count
+			end
+
+			call_visual_update_action (slots_count, used_by_count)
 		end
 
 	call_visual_update_action (val1, val2: INTEGER)

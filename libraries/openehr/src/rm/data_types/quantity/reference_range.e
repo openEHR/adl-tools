@@ -27,7 +27,7 @@ create
 
 feature -- Initialization
 
-	make (a_meaning: attached DV_TEXT; a_range: attached DV_INTERVAL [G])
+	make (a_meaning: DV_TEXT; a_range: DV_INTERVAL [G])
 			-- make a range from a meaning and an interval
 		do
 			meaning := a_meaning
@@ -39,16 +39,16 @@ feature -- Initialization
 
 feature -- Access
 
-	meaning: attached DV_TEXT
+	meaning: DV_TEXT
 			-- Text or Term whose value indicates the meaning of this range, e.g. “normal”,
 			-- “critical”, “therapeutic” etc.
 
-	range: attached DV_INTERVAL [G]
+	range: DV_INTERVAL [G]
 			-- The data range for this meaning, e.g. “critical” etc.
 
 feature -- Status Report
 
-	has (v: attached G): BOOLEAN
+	has (v: G): BOOLEAN
 		do
 			Result := range.has(v)
 		end
@@ -57,7 +57,8 @@ feature -- Conversion
 
 	as_string: STRING
 		do
-			Result := range.as_string + " (" + meaning.as_string + ")"
+			Result.make_empty
+			Result.append (range.as_string + " (" + meaning.as_string + ")")
 		end
 
 invariant

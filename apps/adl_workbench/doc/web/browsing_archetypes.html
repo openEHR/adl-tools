@@ -9,15 +9,15 @@
   </head>
   <body>
     <div id="container">
-      <table style="BACKGROUND-COLOR: #9cd2f8" border="0" cellspacing="0" cellpadding="0" width="100%">
+      <table style="BACKGROUND-COLOR: #Cce3ef" border="0" cellspacing="0" cellpadding="0" width="100%">
         <tbody>
           <tr valign="top">
-            <td valign="middle" width="152">
-              <img border="0" alt="openEHR logo" src="images/openehr_logo_trans_bg.png" width="150" height="50"/> </td>
+            <td valign="middle" width="115">
+              <img border="0" alt="openEHR logo" src="images/openehr_adl_workbench_logo.png" width="100" height="100"/> </td>
             <td>
               <div id="header">
-                <h1>ADL Workbench (AWB) - browsing and compiling</h1>
-                <p class="description">Download and Help pages</p>
+                <h1>Browsing and Compiling</h1>
+                <p class="description">AWB Help pages</p>
               </div>
             </td>
           </tr>
@@ -46,11 +46,6 @@
                     <a href="images/explorer_spec.png">
                       <img border="0" alt="Explorer showing specialisation" src="images/tn_explorer_spec.jpg" width="107" height="200"/> </a>
                     <p>Specialisation view</p>
-                  </td>
-                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
-                    <a href="images/explorer_f7.png">
-                      <img border="0" alt="Explorer after hitting F7" src="images/tn_explorer_f7.jpg" width="107" height="200"/> </a>
-                    <p>After hitting F7</p>
                   </td>
                 </tr>
               </tbody>
@@ -84,6 +79,11 @@
           <p>The compilation errors can also be seen in the Errors tab at the bottom, classified according to type, as shown below.</p>
           <a href="images/errors_2.png">
             <img border="0" alt="Error tree" src="images/tn_errors_2.jpg" width="200" height="43"/> </a>
+          <h3>Metrics Report</h3>
+          <p>The 'Metrics' tab provides a report of counts of archetypes, compiled archetypes, specialised archetypes and so on, for the current repository.</p>
+          <a href="images/catalogue_metrics.png"> <img border="0" alt="Repository metrics" src="images/tn_catalogue_metrics.jpg"/> </a>
+          <p>The 'Statistics' tab provides a statistical report of the use of RM types and prperties in archetypes, as well as terminology definitions and bindings.</p>
+          <a href="images/catalogue_statistics.png"> <img border="0" alt="Repository statistics" src="images/tn_catalogue_statistics.jpg"/> </a>
           <h2>Viewing an archetype</h2>
           <p>This section describes the various ways of viewing a successfully compiled archetype.</p>
           <h3>Descriptive meta-data</h3>
@@ -194,11 +194,20 @@
           <a href="images/ontology.png">
             <img border="0" src="images/tn_ontology.jpg" width="200" height="116"/> </a>
           <h3>Source view</h3>
-          <p>Archetypes can be viewed in the source form in the AWB, which is useful to verify other visual renderings, or understand how ADL works. The following is a typical example.</p>
-          <a href="images/source_1.png">
-            <img border="0" src="images/tn_source_1.jpg" width="200" height="173"/> </a>
+          <p>The source of an archetype can be viewed in the 'Source' tab, regardless of whether it has compiled successfully or not. This is mainly useful for debugging.</p>
+          <a href="images/archetype_source_view.png"><img border="0" src="images/tn_archetype_source_view.jpg"/></a>
+          <h3>Serialised views: ADL, dADL, XML, JSON</h3>
+          <p>Compiled archetypes can be viewed in various serialised formats, which can be used for testing ADL, XML, JSON and other software components. In both differential and flat forms, any compiled archetype can be viewed as ADL, dADL, XML and JSON. The dADL form is equivalent to a DOM tree in XML, but more regular.</p>
+          <a href="images/source_1.png"><img border="0" src="images/tn_source_1.jpg" width="200" height="173"/></a>
+		  <p>The output in the XML view can be controlled by a set of rules accessible from the XML menu.</p>
+          <h3>Validity report</h3>
+          <p>The 'Validity' tab displays any compiler messages for the archetype.</p>
+          <h3>Statistics report</h3>
+          <p>The 'Statistics' tab displays a statistics report for RM class and terminology usage in the archetype.</p>
+          <a href="images/archetype_statistics.png"><img border="0" src="images/tn_archetype_statistics.jpg"/></a>
         </div>
-      </div>    <div id="navigation">
+	</div>    
+	<div id="navigation">
       <h2>Contents</h2>
       <ul>
         <li value="0"> <a href="index.html">Home</a> </li>
@@ -212,10 +221,8 @@
         <li value="0"> <a href="support.html">Support and contributing</a> </li>
         <li value="0"> <a href="release_notes.html">Release notes</a> </li>
       </ul>
-    </div><!--       <div id="extra">
-	<h2>XXXXXX</h2>
-	<p>xxxxx.</p>
-</div> --><div id="footer">
+    </div>
+	<div id="footer">
       <ul>
         <li value="0"> <a href="index.html">Home</a> </li>
         <li value="0"> <a href="getting_started.html">Getting started</a> </li>

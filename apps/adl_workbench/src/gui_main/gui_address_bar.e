@@ -103,7 +103,7 @@ feature -- Commands
 			matching_ids: attached ARRAYED_SET[STRING]
 		do
 			if is_windows and ev_search_combo.is_list_shown then
-				client_controls.item (current_client).select_item (ev_search_combo.selected_text)
+				client_controls.item (current_client).select_item_by_id (ev_search_combo.selected_text)
 				windows_hide_combo_dropdown_agent.call ([ev_search_combo])
 
 			else
@@ -113,7 +113,7 @@ feature -- Commands
 
 					-- check if it is valid as is, e.g. created by slightly modifying currently displayed id
 					if client_controls.item (current_client).valid_item_id (key) then
-						client_controls.item (current_client).select_item (key)
+						client_controls.item (current_client).select_item_by_id (key)
 
 					elseif key.count >= 3 then
 						 -- it is a partial id, get a list of candidates
@@ -123,7 +123,7 @@ feature -- Commands
 							windows_show_combo_dropdown_agent.call ([ev_search_combo])
 
 							if ev_search_combo.count = 1 then
-								client_controls.item (current_client).select_item (ev_search_combo.text)
+								client_controls.item (current_client).select_item_by_id (ev_search_combo.text)
 							end
 						else
 							ev_search_combo.set_text (create_message_content ("no_match_found", Void))
@@ -147,7 +147,7 @@ feature -- Commands
 			-- archetype_search_combo.text is guaranteed to be a valid archetype id, and one that is in the current repository
 		do
 			if not (is_windows and ev_search_combo.is_list_shown) then
-				client_controls.item (current_client).select_item (ev_search_combo.text.as_string_8)
+				client_controls.item (current_client).select_item_by_id (ev_search_combo.text.as_string_8)
 			end
 		end
 

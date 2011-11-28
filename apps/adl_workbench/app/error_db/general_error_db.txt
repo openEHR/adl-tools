@@ -15,7 +15,7 @@ templates = <
 	["en"] = <
 		-- MESSAGE_BILLBOARD
 		["none"] = <"No error">
-		["message_code_error"] = <"Error code $1 does not exist">
+		["message_code_error"] = <"Error code $1 does not exist (calling context = $2.$3)">
 
 		-- General application
 		["report_exception"] = <"Software Exception $1 caught; Stack:%N$2">
