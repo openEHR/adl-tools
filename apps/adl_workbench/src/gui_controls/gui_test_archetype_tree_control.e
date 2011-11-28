@@ -467,7 +467,6 @@ feature {NONE} -- Commands
 			end
 
 			test_status_area.append_text ("****** Executed tests on " + last_tested_archetypes_count.out + " Archetypes ******%N")
-			populate_statistics_agent.call ([])
 		end
 
 	run_tests_on_row (row: EV_GRID_ROW)
@@ -730,8 +729,6 @@ feature {NONE} -- Implementation
 	ev_hsep_1, ev_hsep_2: EV_HORIZONTAL_SEPARATOR
 	ev_spacer_cell: EV_CELL
 	test_status_area: EV_TEXT
-
-	populate_statistics_agent: PROCEDURE [ANY, TUPLE]
 
 	info_feedback_agent: PROCEDURE [ANY, TUPLE [STRING]]
 

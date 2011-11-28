@@ -187,13 +187,13 @@ feature {NONE} -- Implementation
 		do
 			from ontology.term_codes.start until ontology.term_codes.off loop
 				if specialisation_depth_from_code (ontology.term_codes.item) /= ontology.specialisation_depth then
-					add_error("VONSD", <<ontology.term_codes.item>>)
+					add_error ("VONSD", <<ontology.term_codes.item>>)
 				end
 				ontology.term_codes.forth
 			end
 			from ontology.constraint_codes.start until ontology.constraint_codes.off loop
 				if specialisation_depth_from_code (ontology.constraint_codes.item) /= ontology.specialisation_depth then
-					add_error("VONSD", <<ontology.constraint_codes.item>>)
+					add_error ("VONSD", <<ontology.constraint_codes.item>>)
 				end
 				ontology.constraint_codes.forth
 			end
@@ -217,11 +217,11 @@ feature {NONE} -- Implementation
 			-- are not referenced anywhere in the archetype definition
 		do
 			from target.ontology_unused_term_codes.start until target.ontology_unused_term_codes.off loop
-				add_warning("WOUC", <<target.ontology_unused_term_codes.item>>)
+				add_warning ("WOUC", <<target.ontology_unused_term_codes.item>>)
 				target.ontology_unused_term_codes.forth
 			end
 			from target.ontology_unused_constraint_codes.start until target.ontology_unused_constraint_codes.off loop
-				add_warning("WOUC", <<target.ontology_unused_constraint_codes.item>>)
+				add_warning ("WOUC", <<target.ontology_unused_constraint_codes.item>>)
 				target.ontology_unused_constraint_codes.forth
 			end
 		end
@@ -248,7 +248,6 @@ feature {NONE} -- Implementation
 			target.has_slots
 		local
 			includes, excludes: ARRAYED_LIST[ASSERTION]
-			a_regex: STRING
 			id_list: ARRAYED_LIST[STRING]
 			ara: ARCH_CAT_ARCHETYPE
 		do
@@ -259,8 +258,7 @@ feature {NONE} -- Implementation
 				if not includes.is_empty and not assertion_matches_any (includes.first) then
 					if not excludes.is_empty then -- create specific match list from includes constraint
 						from includes.start until includes.off loop
-							a_regex := extract_regex (includes.item)
-							if a_regex /= Void then
+							if attached {STRING} extract_regex (includes.item) as a_regex then
 								target_descriptor.add_slot_ids (current_arch_cat.matching_ids (a_regex, target.slot_index.item.rm_type_name, Void), target.slot_index.item.path)
 							end
 							includes.forth
@@ -272,8 +270,7 @@ feature {NONE} -- Implementation
 					target_descriptor.add_slot_ids (current_arch_cat.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, Void), target.slot_index.item.path)
 					if not includes.is_empty then -- means excludes is not a recommendation; need to actually process it
 						from excludes.start until excludes.off loop
-							a_regex := extract_regex (excludes.item)
-							if a_regex /= Void then
+							if attached {STRING} extract_regex (excludes.item) as a_regex then
 								id_list := current_arch_cat.matching_ids (a_regex, target.slot_index.item.rm_type_name, target.archetype_id.rm_name)
 								from id_list.start until id_list.off loop
 									target_descriptor.slot_id_index.item (target.slot_index.item.path).prune (id_list.item)

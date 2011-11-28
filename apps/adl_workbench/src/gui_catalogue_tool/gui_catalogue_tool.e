@@ -258,7 +258,6 @@ feature {NONE} -- Implementation
 		do
 			metrics_viewer.clear
 			stats_viewer.clear
-			set_stats_metric_tab_appearance
 			ev_root_container.select_item (archetype_explorer.ev_root_container)
 		end
 
@@ -269,6 +268,7 @@ feature {NONE} -- Implementation
 			docking_pane.set_long_title (create_message_content ("catalogue_tool_title", Void) + " " + repository_profiles.current_profile_name)
 			archetype_explorer.populate (source)
 			template_explorer.populate (source)
+			set_stats_metric_tab_appearance
 			on_select_notebook
 			go_to_selected_item
 		end

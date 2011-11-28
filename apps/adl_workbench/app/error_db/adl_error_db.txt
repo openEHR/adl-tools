@@ -91,6 +91,7 @@ templates = <
 		["VSANCC"] = <"attribute at path $1 cardinality $2 does not conform to parent $3 cardinality $4">
 		["VDIFP1"] = <"differential path $1 should have corresponding node in flat parent at $2 but doesn't">
 		["VDIFP2"] = <"differential path $1 not legal with respect to RM">
+		["VDIFV"] = <"differential path $1 not allowed in non-specialised archetype">
 		["VSAM1"] = <"attribute at path $1 is single-valued but is defined as multiply-valued in flat parent">
 		["VSAM2"] = <"attribute at path $1 is multiply-valued but is defined as single-valued in flat parent">
 

@@ -56,6 +56,9 @@ feature -- Validation
 				flat_parent := target_descriptor.specialisation_parent.flat_archetype
  			end
 
+ 			-- structure validation
+			validate_structure
+
 			-- reference model validation - needed for all archetypes, top-level and
 			-- specialised, since specialised archetypes can contain new nodes that need to be
 			-- validated all the way through to the RM
@@ -197,6 +200,38 @@ feature {NONE} -- Implementation
 				end
 				use_refs.forth
 			end
+		end
+
+	validate_structure
+			-- validate definition structure of archetype
+		local
+			def_it: C_ITERATOR
+		do
+			create invalid_types.make(0)
+			invalid_types.compare_objects
+			create def_it.make (target.definition)
+			def_it.do_until_surface (agent structure_validate_node, agent structure_validate_test)
+		end
+
+	structure_validate_node (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+			-- perform validation of node against reference model.
+		local
+			arch_parent_attr_type, model_attr_class: STRING
+			co_parent_flat: C_OBJECT
+			apa: ARCHETYPE_PATH_ANALYSER
+			rm_prop_def: BMM_PROPERTY_DEFINITION
+		do
+			if attached {C_ATTRIBUTE} a_c_node as ca then
+				if not target.is_specialised and then ca.has_differential_path then
+					add_error ("VDIFV", <<ca.path>>)
+				end
+			end
+		end
+
+	structure_validate_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
+			-- Return True
+		do
+			Result := True
 		end
 
 	validate_annotations
@@ -622,12 +657,12 @@ end
 				else
 					arch_parent_attr_type := ca.parent.rm_type_name -- can be a generic type like DV_INTERVAL <DV_QUANTITY>
 				end
-				if not rm_schema.has_property(arch_parent_attr_type, ca.rm_attribute_name) then
+				if not rm_schema.has_property (arch_parent_attr_type, ca.rm_attribute_name) then
 					add_error ("VCARM", <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.current_language, True), arch_parent_attr_type>>)
 				else
-					rm_prop_def := rm_schema.property_definition(arch_parent_attr_type, ca.rm_attribute_name)
+					rm_prop_def := rm_schema.property_definition (arch_parent_attr_type, ca.rm_attribute_name)
 					if attached ca.existence then
-						if not rm_prop_def.existence.contains(ca.existence) then
+						if not rm_prop_def.existence.contains (ca.existence) then
 							if not target.is_specialised and rm_prop_def.existence.equal_interval(ca.existence) then
 								add_warning ("WCAEX", <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.current_language, True), ca.existence.as_string>>)
 								if not validation_strict then
@@ -641,8 +676,8 @@ end
 					if ca.is_multiple then
 						if attached {BMM_CONTAINER_PROPERTY} rm_prop_def as cont_prop then
 							if attached ca.cardinality then
-								if not cont_prop.cardinality.contains(ca.cardinality.interval) then
-									if not target.is_specialised and cont_prop.cardinality.equal_interval(ca.cardinality.interval) then
+								if not cont_prop.cardinality.contains (ca.cardinality.interval) then
+									if not target.is_specialised and cont_prop.cardinality.equal_interval (ca.cardinality.interval) then
 										add_warning ("WCACA", <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.current_language, True),
 											ca.cardinality.interval.as_string>>)
 										if not validation_strict then
