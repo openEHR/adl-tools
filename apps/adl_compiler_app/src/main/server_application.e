@@ -20,10 +20,58 @@ feature
 	make
 	local
 		schema_name:STRING
+		arc_names: ARRAYED_LIST[STRING]
+		i: INTEGER
+		counter: INTEGER
+
+--		storage_str:STRING
+--		source:CSTRING_WRAPPER_GEN
+--		target:CSTRING_WRAPPER_GEN
+
+--		file:RAW_FILE
+--		filestr : FILE
+--		file_contents:MANAGED_POINTER
+--		myteststr : STRING
+
 	do
+
+--		create source.make
+--		source.init_pb_obj
+--		source.set_is_root_object (true)
+--		source.set_pattern ("some test value here and now updated")
+--		source.set_listopen (false)
+
+--		create target.make
+--		storage_str := source.serialize_pb_object_to_string
+
+--		myteststr := "test value"
+--		create file.make_open_write ("c:\\tmp\\pbstringserializetest")
+
+--		file.put_string (storage_str)
+--		file.close
+
+
 		create repo_manager.make
+
+		--test for memory leaks
+--		from
+--			i := 0
+--		until
+--			i = 1
+--		loop
+--			arc_names := repo_manager.get_archetype_names
+--			counter := counter + 1
+--			if counter = 1000 then
+--				io.put_string ("1K CALLS%N")
+--				counter := 0
+--			end
+--		end
+
+
 		create dispatcher.make (repo_manager)
 		dispatcher.zmq_wrap
+
+		--SCHEMA RELATED TEST CODE
 --		schema_name := "openehr_rm"
 --		io.put_string ("listing schema info:%N")
 --		list_schema_info
@@ -65,7 +113,7 @@ feature
 		until
 			p_package.classes.after
 		loop
-			io.put_string(p_package.classes.item_for_iteration + "%N")
+			io.put_string(p_package.classes.item + "%N")
 			p_package.classes.forth
 		end
 	end
@@ -90,13 +138,15 @@ feature
 		repo_manager_ready: repo_manager.initialized = true
 	do
 		from
-			repo_manager.app_root.rm_schemas_access.schemas.start
+--			repo_manager.app_root.rm_schemas_access.schemas.start
+			repo_manager.app_root.rm_schemas_access.all_schemas.start
 		until
-			repo_manager.app_root.rm_schemas_access.schemas.after
+--			repo_manager.app_root.rm_schemas_access.schemas.after
+			repo_manager.app_root.rm_schemas_access.all_schemas.after
 		loop
-			io.put_string (repo_manager.app_root.rm_schemas_access.schemas.key_for_iteration + "%N")
-			io.put_string(repo_manager.app_root.rm_schemas_access.schemas.item_for_iteration.schema.model_name + "%N")
-			repo_manager.app_root.rm_schemas_access.schemas.forth
+			io.put_string (repo_manager.app_root.rm_schemas_access.all_schemas.key_for_iteration + "%N")
+			io.put_string(repo_manager.app_root.rm_schemas_access.all_schemas.item_for_iteration.schema.schema_name + "%N")
+			repo_manager.app_root.rm_schemas_access.all_schemas.forth
 		end
 	end
 

@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {BOSPHORUS_SHARED_RESOURCES}."
+	description: "Summary description for {BOSPHORUS_SHARED_KNOWLEDGE_REPOSITORY}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	BOSPHORUS_SHARED_APP_RESOURCES
+	BOSPHORUS_SHARED_KNOWLEDGE_REPOSITORY
 inherit
 	SHARED_KNOWLEDGE_REPOSITORY
 redefine

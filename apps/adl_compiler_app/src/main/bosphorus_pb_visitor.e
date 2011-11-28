@@ -8,7 +8,6 @@ class
 	BOSPHORUS_PB_VISITOR
 inherit
 	C_VISITOR
-
 	redefine
 		start_c_complex_object, end_c_complex_object,
 	start_c_attribute, end_c_attribute,
@@ -24,6 +23,13 @@ inherit
 	start_constraint_ref, end_constraint_ref,
 	start_c_domain_type, end_c_domain_type
 	end
+	ARCHETYPE_WRAPPER_GENERATOR
+	rename
+	archetype as archetype_to_wrap,
+	make as archetype_wrapper_make
+	end
+
+
 
 create
 	make, make_with_root_ccomplexobj_wrapper
@@ -60,7 +66,7 @@ feature
 			-- enter an C_COMPLEX_OBJECT
 		local
 			wrapper:CCOMPLEXOBJECT_WRAPPER_GEN
-			schema:SCHEMA_ACCESS
+			schema:SCHEMA_DESCRIPTOR
 			class_def:BMM_CLASS_DEFINITION
 		do
 			if root = void then --IF THE VISITOR DOES NOT HAVE A PRE SET CCOMPLEXOBJECT_WRAPPER FOR ROOT, IT WILL CREATE ONE
@@ -157,8 +163,8 @@ feature
 						a_node.excludes.after
 					loop
 						assertion_wrapper := slot.add_excludes
-						copy_assertion(assertion_wrapper, a_node.includes.item)
-						a_node.includes.forth
+						copy_assertion(assertion_wrapper, a_node.excludes.item)
+						a_node.excludes.forth
 					end
 				end
 			end
@@ -340,8 +346,10 @@ feature
 				get_default_interval_of_int (wrapper.get_occurrences)
 			end
 			--reference
-			if attached a_node.external_reference as exref then
-				wrapper.set_reference (exref.as_canonical_string) --TODO DVPARSABLE REFERENCE EXPRESSED AS STRING; ASK THOMAS BEALE: WHICH ATTR SHOULD I USE?
+			if attached a_node.target as ref then
+				wrapper.set_reference (ref) --TODO DVPARSABLE REFERENCE EXPRESSED AS STRING; ASK THOMAS BEALE: WHICH ATTR SHOULD I USE?
+			else
+				io.put_string ("reference null, parent.parent.parent node id: " + a_node.parent.parent.parent.parent.node_id)
 			end
 
 			--rmtypename
@@ -416,32 +424,150 @@ feature
 		do
 		end
 
+--MOVE THESE TO THE END----------------------------------------------
+
+copy_c_code_phrase(p_ccodephrase_wrapper: CCODEPHRASE_WRAPPER_GEN; p_ccodephrase:C_CODE_PHRASE)
+do
+	--nodeid
+	if attached p_ccodephrase.node_id as nodeid then
+		p_ccodephrase_wrapper.set_nodeid (nodeid)
+	end
+	--occurences
+	if attached p_ccodephrase.occurrences as occ then
+		copy_multiplicity_interval (p_ccodephrase_wrapper.get_occurrences, occ )
+	end
+	--rmtypename
+	if attached p_ccodephrase.rm_type_name as name then
+		p_ccodephrase_wrapper.set_rmtypename (name)
+	end
+	--assumed_value
+	if attached p_ccodephrase.assumed_value as aval then
+		copy_code_phrase (p_ccodephrase_wrapper.get_assumedvalue, aval)
+	end
+	--terminology_id
+	if attached p_ccodephrase.terminology_id as termid then
+		copy_terminology_id (p_ccodephrase_wrapper.get_terminologyid, termid)
+	end
+	--code_list
+	if attached p_ccodephrase.code_list as codelist then
+		from
+			codelist.start
+		until
+			codelist.after
+		loop
+			p_ccodephrase_wrapper.add_codelist (codelist.item_for_iteration)
+			codelist.forth
+		end
+	end
+end
+
+copy_c_dv_ordinal(p_cdvordinal_wrapper: CDVORDINAL_WRAPPER_GEN; p_cdv_ordinal:C_DV_ORDINAL)
+do
+	--nodeid
+	if attached p_cdv_ordinal.node_id as nid then
+		p_cdvordinal_wrapper.set_nodeid (nid)
+	end
+	--occurences
+	if attached p_cdv_ordinal.occurrences as occ then
+		copy_multiplicity_interval (p_cdvordinal_wrapper.get_occurrences, occ)
+	end
+	--rmtypename
+	if attached p_cdv_ordinal.rm_type_name as name then
+		p_cdvordinal_wrapper.set_rmtypename (name)
+	end
+	--assumed_value
+	if attached p_cdv_ordinal.assumed_value as av then
+		--TODO: TALK TO THOMAS BEALE: ASSUMED VALUE IS ORDINAL, SHOULD BE DV_ORDINAL
+	end
+	--list --TODO: TALK TO THOMAS BEALE: LIST IS PROVIDED VIA ITEMS IN THE P_CDV_ORDINAL, AND ITS TYPE IS ORDINAL, WHERE IT SHOULD BE DV_ORDINAL
+--	if attahced p_cdv_ordinal. then
+--		
+--	end
+
+end
+
+copy_c_dv_quantity(p_cdvquantity_wrapper:CDVQUANTITY_WRAPPER_GEN; p_cdv_quantity:C_DV_QUANTITY)
+do
+	--nodeid
+	if attached p_cdv_quantity.node_id as nid then
+		p_cdvquantity_wrapper.set_nodeid (nid)
+	end
+	--occurences
+	if attached p_cdv_quantity.occurrences as occ then
+		copy_multiplicity_interval (p_cdvquantity_wrapper.get_occurrences, occ)
+	end
+	--rmtypename
+	if attached p_cdv_quantity.rm_type_name as name then
+		p_cdvquantity_wrapper.set_rmtypename (name)
+	end
+	--assumedvalue
+	if attached p_cdv_quantity.assumed_value then --TALK TO THOMAS BEALE: THE TYPE OF ASSUMED VALUE IS QUANTITY, IT SHOULD BE DV_QUANTITY
+
+	end
+
+	--property
+	if attached p_cdv_quantity.property as prop then
+		copy_code_phrase (p_cdvquantity_wrapper.get_property, prop)
+	end
+	--list
+	if attached p_cdv_quantity.list as q_list then --C_QUANTITY_ITEM
+		from
+			q_list.start
+		until
+			q_list.after
+		loop
+			copy_c_quantity_item(p_cdvquantity_wrapper.add_list,q_list.item_for_iteration)
+			q_list.forth
+		end
+	end
+end
+
+copy_c_quantity_item(p_c_quantity_item_wrapper: CQUANTITYITEM_WRAPPER_GEN; p_cquantity_item: C_QUANTITY_ITEM)
+do
+	--magnitude
+	if attached p_cquantity_item.magnitude as magnit then
+		copy_interval_of_real (p_c_quantity_item_wrapper.get_magnitude, magnit)
+	end
+	--precision
+	if attached p_cquantity_item.precision as precis then
+		copy_interval_of_integer(p_c_quantity_item_wrapper.get_precision, precis)
+	end
+	--units
+	if attached p_cquantity_item.units as units then
+		p_c_quantity_item_wrapper.set_units (units)
+	end
+
+end
+---------------------------------------------------------------------
 
 	start_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER)
-		local
-			wrapper:CDOMAINTYPE_WRAPPER_GEN
 		do
 			--there must be a wrapper for the parent attribute in the stack
 				if attached {CMULTIPLEATTRIBUTE_WRAPPER_GEN} wrapper_stack.linear_representation.first as multiple_atr then
-					wrapper := multiple_atr.add_children.get_cdomaintypefield
+
+					--check a_node to see which c_domain_type subtype
+					if attached {C_CODE_PHRASE} a_node as ccodephrase then
+						copy_c_code_phrase(multiple_atr.add_children.get_ccodephrasefield, ccodephrase)
+					elseif attached {C_DV_ORDINAL} a_node as cdvordinal then
+						copy_c_dv_ordinal(multiple_atr.add_children.get_cdvordinalfield, cdvordinal)
+					elseif attached {C_DV_QUANTITY} a_node as cdvquantity then --TODO: TALK TO THOMAS BEALE: C_DV_STATE SHOULD INHERIT FROM C_DOMAIN_TYPE
+						copy_c_dv_quantity(multiple_atr.add_children.get_cdvquantityfield, cdvquantity)
+					end
+
 				elseif attached {CSINGLEATTRIBUTE_WRAPPER_GEN} wrapper_stack.linear_representation.first as single_atr then
-					wrapper := single_atr.add_children.get_cdomaintypefield
+					--REPEAT THE C_DOMAIN SUBTYPE CHECK. UGLY, BUT THERE IS NO SUPPORT FOR INHERITANCE IN PB, HENCE, NO SUPPORT IN EIFFEL
+
+					--check a_node to see which c_domain_type subtype
+					if attached {C_CODE_PHRASE} a_node as ccodephrase then
+						copy_c_code_phrase(single_atr.add_children.get_ccodephrasefield, ccodephrase)
+					elseif attached {C_DV_ORDINAL} a_node as cdvordinal then
+						copy_c_dv_ordinal(single_atr.add_children.get_cdvordinalfield, cdvordinal)
+					elseif attached {C_DV_QUANTITY} a_node as cdvquantity then --TODO: TALK TO THOMAS BEALE: C_DV_STATE SHOULD INHERIT FROM C_DOMAIN_TYPE
+						copy_c_dv_quantity(single_atr.add_children.get_cdvquantityfield, cdvquantity)
+					end
 				end
-				--nodeid
-				if attached a_node.node_id as nid then
-					wrapper.set_nodeid (nid)
-				end
-				--occurrences: todo: must be handled by the parser automatically
-				if attached a_node.occurrences as occ then
-					copy_multiplicity_interval (wrapper.get_occurrences, occ)
-				else
-					get_default_interval_of_int (wrapper.get_occurrences)
-				end
-				--rmtypename
-				if attached a_node.rm_type_name as rmtypename then
-					wrapper.set_rmtypename (rmtypename)
-				end
-				--no children, don't put into stack
+
+				--no children, don't put anything into stack
 		end
 
 	end_c_domain_type(a_node: C_DOMAIN_TYPE; depth: INTEGER)
@@ -500,426 +626,52 @@ feature
 		end
 	end
 
-	copy_assertion(p_wrapper: ASSERTION_WRAPPER_GEN; p_assertion:ASSERTION)
-	do
-		copy_expr_item (p_wrapper.get_expression, p_assertion.expression)
-		if attached p_assertion.as_string then
-			p_wrapper.set_stringexpression (p_assertion.as_string)
-		end
-		if attached p_assertion.tag then
-			p_wrapper.set_tag (p_assertion.tag)
-		end
+	--MOVED TO ARCHETYPE_WRAPPER_GENERATOR
+--	copy_assertion(p_wrapper: ASSERTION_WRAPPER_GEN; p_assertion:ASSERTION)
+--	do
+--		copy_expr_item (p_wrapper.get_expression, p_assertion.expression)
+--		if attached p_assertion.as_string then
+--			p_wrapper.set_stringexpression (p_assertion.as_string)
+--		end
+--		if attached p_assertion.tag then
+--			p_wrapper.set_tag (p_assertion.tag)
+--		end
 
-	end
+--	end
 
-	copy_expr_item(p_wrapper:EXPRITEMALTERNATIVES_WRAPPER_GEN; p_operand: EXPR_ITEM  )
-	--this is an EXPR_ITEM known to be a either an  EXPR_UNARY_OPERATOR OR EXPR_BINARY_OPERATOR so configure accordingly
-	do
-		if attached {EXPR_UNARY_OPERATOR} p_operand as unary_op then
-			p_wrapper.get_exprunaryoperatorfield.set_type (unary_op.type)
-			p_wrapper.get_exprunaryoperatorfield.set_precedenceoverridden (unary_op.precedence_overridden)
-			--operator of unary operator
-			p_wrapper.get_exprunaryoperatorfield.set_operator_ (unary_op.operator.out)--TODO: BIG INT MUST BE HANDLED IN EIFFEL CODE GENERATOR (int to str conversion at the moment)
-			--operand of unary operator may be unary, binary  or leaf. Recursion would handle it
-			copy_expr_item(p_wrapper.get_exprunaryoperatorfield.get_operand, unary_op.operand)
-		elseif attached {EXPR_BINARY_OPERATOR} p_operand as binary_op then
-			p_wrapper.get_exprbinaryoperatorfield.set_type (binary_op.type)
-			p_wrapper.get_exprbinaryoperatorfield.set_precedenceoverridden (binary_op.precedence_overridden)
-			--operator of binary operator
-			p_wrapper.get_exprbinaryoperatorfield.set_operator_ (binary_op.operator.out)--TODO: BIG INT MUST BE HANDLED IN EIFFEL CODE GENERATOR (int to str conversion at the moment)
-			--left operand of binary operator
-			copy_expr_item(p_wrapper.get_exprbinaryoperatorfield.get_leftoperand,binary_op.left_operand)
-			--right operand of binary operator
-			copy_expr_item(p_wrapper.get_exprbinaryoperatorfield.get_rightoperand,binary_op.right_operand)
-		elseif attached {EXPR_LEAF} p_operand as leaf then
-			if attached {STRING} leaf.item as string_item then
-				p_wrapper.get_exprleaffield.set_item (string_item)
-			elseif attached{C_STRING} leaf.item as c_string_item and leaf.item /= void then
-				p_wrapper.get_exprleaffield.set_item (c_string_item.as_string)
-			else
-				p_wrapper.get_exprleaffield.set_item ("NOT IMPLEMENTED TYPE: ITEM IN EXPR_LEAF")--TODO: TALK TO THOMAS BEALE ABOUT ITEM IN EXPR_LEAF
-			end
-			p_wrapper.get_exprleaffield.set_referencetype (leaf.reference_type)
-			p_wrapper.get_exprleaffield.set_type (leaf.type)
-		end
-	end
+	--MOVED TO ARCHETYPE_WRAPPER_GENERATOR
+--	copy_expr_item(p_wrapper:EXPRITEMALTERNATIVES_WRAPPER_GEN; p_operand: EXPR_ITEM  )
+--	--this is an EXPR_ITEM known to be a either an  EXPR_UNARY_OPERATOR OR EXPR_BINARY_OPERATOR so configure accordingly
+--	do
+--		if attached {EXPR_UNARY_OPERATOR} p_operand as unary_op then
+--			p_wrapper.get_exprunaryoperatorfield.set_type (unary_op.type)
+--			p_wrapper.get_exprunaryoperatorfield.set_precedenceoverridden (unary_op.precedence_overridden)
+--			--operator of unary operator
+--			p_wrapper.get_exprunaryoperatorfield.set_operator_ (unary_op.operator.out)--TODO: BIG INT MUST BE HANDLED IN EIFFEL CODE GENERATOR (int to str conversion at the moment)
+--			--operand of unary operator may be unary, binary  or leaf. Recursion would handle it
+--			copy_expr_item(p_wrapper.get_exprunaryoperatorfield.get_operand, unary_op.operand)
+--		elseif attached {EXPR_BINARY_OPERATOR} p_operand as binary_op then
+--			p_wrapper.get_exprbinaryoperatorfield.set_type (binary_op.type)
+--			p_wrapper.get_exprbinaryoperatorfield.set_precedenceoverridden (binary_op.precedence_overridden)
+--			--operator of binary operator
+--			p_wrapper.get_exprbinaryoperatorfield.set_operator_ (binary_op.operator.out)--TODO: BIG INT MUST BE HANDLED IN EIFFEL CODE GENERATOR (int to str conversion at the moment)
+--			--left operand of binary operator
+--			copy_expr_item(p_wrapper.get_exprbinaryoperatorfield.get_leftoperand,binary_op.left_operand)
+--			--right operand of binary operator
+--			copy_expr_item(p_wrapper.get_exprbinaryoperatorfield.get_rightoperand,binary_op.right_operand)
+--		elseif attached {EXPR_LEAF} p_operand as leaf then
+--			if attached {STRING} leaf.item as string_item then
+--				p_wrapper.get_exprleaffield.set_item (string_item)
+--			elseif attached{C_STRING} leaf.item as c_string_item and leaf.item /= void then
+--				p_wrapper.get_exprleaffield.set_item (c_string_item.as_string)
+--			else
+--				p_wrapper.get_exprleaffield.set_item ("NOT IMPLEMENTED TYPE: ITEM IN EXPR_LEAF")--TODO: TALK TO THOMAS BEALE ABOUT ITEM IN EXPR_LEAF
+--			end
+--			p_wrapper.get_exprleaffield.set_referencetype (leaf.reference_type)
+--			p_wrapper.get_exprleaffield.set_type (leaf.type)
+--		end
+--	end
 
-	copy_c_primitive(p_wrapper:CPRIMITIVEALTERNATIVES_WRAPPER_GEN; p_c_primitive:C_PRIMITIVE)
-	require
-		p_not_null: attached p_wrapper and attached p_c_primitive
-	do
-		if attached {C_BOOLEAN} p_c_primitive as cboolean then
-			copy_c_boolean(p_wrapper.get_cbooleanfield, cboolean)
-		elseif attached {C_DATE} p_c_primitive as cdate then
-			copy_c_date(p_wrapper.get_cdatefield, cdate)
-		elseif attached {C_DATE_TIME} p_c_primitive as cdatetime then
-			copy_c_date_time(p_wrapper.get_cdatetimefield, cdatetime)
-		elseif attached {C_DURATION} p_c_primitive as cduration then
-			copy_c_duration(p_wrapper.get_cdurationfield, cduration)
-		elseif attached {C_INTEGER} p_c_primitive as cinteger then
-			copy_c_integer(p_wrapper.get_cintegerfield, cinteger)
-		elseif attached {C_REAL} p_c_primitive as creal then
-			copy_c_real(p_wrapper.get_crealfield, creal)
-		elseif attached {C_STRING} p_c_primitive as cstring then
-			copy_c_string(p_wrapper.get_cstringfield, cstring)
-		elseif attached {C_TIME} p_c_primitive as ctime then
-			copy_c_time(p_wrapper.get_ctimefield, ctime)
-		end
-	end
-
-	copy_c_time(p_wrapper:CTIME_WRAPPER_GEN; p_ctime:C_TIME)
-	require
-		p_not_null: attached p_wrapper and attached p_ctime
-	do
-		--assumedvalue
-		if attached p_ctime.assumed_value as aval then
-			p_wrapper.set_assumedvalue (aval.as_string) --TODO: TIME REPRESENTED AS STRING
-		end
-		--pattern
-		if attached p_ctime.pattern as pat then
-			p_wrapper.set_pattern(pat)
-		end
-		--range
-		if attached p_ctime.range as range then
-			copy_interval_of_time(p_wrapper.get_range, range)
-		end
-		--timezonevalidity --TODO: WHERE IS THIS VALUE IN EIFFEL IMPLEMENTATION?
-
-	end
-
-	copy_interval_of_time(p_wrapper:INTERVALOFTIME_WRAPPER_GEN; p_range:INTERVAL[ISO8601_TIME])
-	require
-		p_not_null: attached p_wrapper and attached p_range
-	do
-		--lower
-		if attached p_range.lower as low then
-			p_wrapper.set_lower (low.as_string) --TODO: TIME EXPRESSED AS STRING
-		end
-		--lowerincluded
-		if attached p_range.lower_included as li then
-			p_wrapper.set_lowerincluded (li)
-		end
-		--lowerunbounded
-		if attached p_range.lower_unbounded as lu then
-			p_wrapper.set_lowerunbounded (lu)
-		end
-		--upper
-		if attached p_range.upper as up then
-			p_wrapper.set_upper (up.as_string) --TODO: TIME EXPRESSED AS STRING
-		end
-		--upperincluded
-		if attached p_range.upper_included as ui then
-			p_wrapper.set_upperincluded (ui)
-		end
-		--upperunbounded
-		if attached p_range.upper_unbounded as uu then
-			p_wrapper.set_upperunbounded (uu)
-		end
-
-	end
-
-	copy_c_string(p_wrapper:CSTRING_WRAPPER_GEN; p_cstring:C_STRING)
-	require
-		p_not_null: attached p_wrapper and attached p_cstring
-	do
-		--assumedvalue
-		if attached p_cstring.assumed_value as aval then
-			p_wrapper.set_assumedvalue (aval)
-		end
-		--list
-		if attached p_cstring.strings as list then
-			from
-				list.start
-			until
-				list.after
-			loop
-				p_wrapper.add_list (list.item_for_iteration)
-				list.forth
-			end
-		end
-		--listopen
-		if attached p_cstring.is_open as lio then--TODO: IS IS_OPEN THE FIELD FOR LIST_OPEN?? Ask T. BEALE
-			p_wrapper.set_listopen (lio)
-		end
-		--pattern
-		if attached p_cstring.regexp as pat then --TODO: IS REGEXP THE FIELD FOR PATTERN?
-			p_wrapper.set_pattern (pat)
-		end
-	end
-
-
-	copy_c_real(p_wrapper:CREAL_WRAPPER_GEN;p_creal:C_REAL)
-	require
-		p_not_null: attached p_wrapper and attached p_creal
-	do
-		--assumedvalue
-		if attached p_creal.assumed_value as aval then
-			p_wrapper.set_assumedvalue (aval.out)--TODO: REAL REPRESENTED AS STRING
-		end
-		--list
-		if attached p_creal.list as li then
-			from
-				li.start
-			until
-				li.after
-			loop
-				p_wrapper.add_list (li.item_for_iteration.out) --TODO: REAL REPRESENTED AS STRING
-				li.forth
-			end
-		end
-		--range
-		if attached p_creal.range as range then
-			copy_interval_of_real(p_wrapper.get_range, range)
-		end
-	end
-
-	copy_interval_of_real(p_wrapper:INTERVALOFREAL_WRAPPER_GEN;p_range:INTERVAL[REAL_32])
-	require
-		p_not_null: attached p_wrapper and attached p_range
-	do
-		--lower
-		if attached p_range.lower as low then
-			p_wrapper.set_lower (low.out) --TODO: REAL REPRESENTED AS STRING
-		end
-		--lowerincluded
-		if attached p_range.lower_included as li then
-			p_wrapper.set_lowerincluded (li)
-		end
-		--lowerunbounded
-		if attached p_range.lower_unbounded as lunb then
-			p_wrapper.set_lowerunbounded (lunb)
-		end
-		--upper
-		if attached p_range.upper as up then
-			p_wrapper.set_upper (up.out)--TODO: REAL REPRESENTED AS STRING
-		end
-		--upperincluded
-		if attached p_range.upper_included as ui then
-			p_wrapper.set_upperincluded (ui)
-		end
-		--upperunbounded
-		if attached p_range.upper_unbounded as uu then
-			p_wrapper.set_upperunbounded (uu)
-		end
-	end
-
-	copy_c_integer(p_wrapper:CINTEGER_WRAPPER_GEN; p_cinteger:C_INTEGER)
-	require
-		p_not_null: attached p_wrapper and attached p_cinteger
-	do
-		--assumedvalue
-		if attached p_cinteger.assumed_value as aval then
-			p_wrapper.set_assumedvalue (aval.item)
-		end
-		--list
-		if attached p_cinteger.list as li then
-			from
-				li.start
-			until
-				li.after
-			loop
-				p_wrapper.add_list (li.item_for_iteration.item)
-				li.forth
-			end
-		end
-		--range
-		if attached p_cinteger.range as range then
-			copy_interval_of_integer(p_wrapper.get_range, range)
-		end
-	end
-
-	copy_interval_of_integer(p_wrapper:INTERVALOFINTEGER_WRAPPER_GEN;p_range:INTERVAL[INTEGER_32])
-	require
-		p_not_null: attached p_wrapper and attached p_range
-	do
-		--lower
-		if attached p_range.lower as low then
-			p_wrapper.set_lower (low.item)
-		end
-		--lowerincluded
-		if attached p_range.lower_included as li then
-			p_wrapper.set_lowerincluded (li)
-		end
-		--lowerunbounded
-		if attached p_range.lower_unbounded as lu then
-			p_wrapper.set_lowerunbounded (lu)
-		end
-		--upper
-		if attached p_range.upper as upp then
-			p_wrapper.set_upper (upp.item)
-		end
-		--upperincluded
-		if attached p_range.upper_included as ui then
-			p_wrapper.set_upperincluded (ui)
-		end
-		--upperunbounded
-		if attached p_range.upper_unbounded as uu then
-			p_wrapper.set_upperunbounded (uu)
-		end
-	end
-
-	copy_c_duration(p_wrapper:CDURATION_WRAPPER_GEN; cduration:C_DURATION)
-	require
-		p_not_null: attached p_wrapper and attached cduration
-	do
-		--assumed value
-		if attached cduration.assumed_value as aval then
-			p_wrapper.set_assumedvalue (aval.as_string)--TODO: DURATION REPRESENTED AS STRING
-		end
-		--pattern
-		if attached cduration.pattern as pat then
-			p_wrapper.set_pattern (pat)
-		end
-		--range
-		if attached cduration.range as range then
-			copy_interval_of_duration(p_wrapper.get_range, range)
-		end
-	end
-
-	copy_interval_of_duration(p_wrapper:INTERVALOFDURATION_WRAPPER_GEN; p_range:INTERVAL[ISO8601_DURATION])
-	require
-		p_not_null: attached p_wrapper and attached p_range
-	do
-		--lower
-		if attached p_range.lower as low then
-			p_wrapper.set_lower (low.as_string) --TODO: DURATION EXPRESSED AS STRING
-		end
-		--lowerincluded
-		if attached p_range.lower_included as li then
-			p_wrapper.set_lowerincluded (li)
-		end
-		--lowerunbounded
-		if attached p_range.lower_unbounded as lu then
-			p_wrapper.set_lowerunbounded (lu)
-		end
-		--upper
-		if attached p_range.upper as up then
-			p_wrapper.set_upper (up.as_string) --TODO: DURATION EXPRESSED AS STRING
-		end
-		--upperincluded
-		if attached p_range.upper_included as uinc then
-			p_wrapper.set_upperincluded (uinc)
-		end
-		--upperunbounded
-		if attached p_range.upper_unbounded as uu then
-			p_wrapper.set_upperunbounded (uu)
-		end
-	end
-
-	copy_c_date_time(p_wrapper:CDATETIME_WRAPPER_GEN; p_cdatetime:C_DATE_TIME)
-	require
-		p_not_null: attached p_wrapper and attached p_cdatetime
-	do
-		--assumedvalue
-		if attached p_cdatetime.assumed_value as aval then
-			p_wrapper.set_assumedvalue (aval.as_string)--TODO: DATETIME REPRESENTED AS STRING
-		end
-		--pattern
-		if attached p_cdatetime.pattern as pat then
-			p_wrapper.set_pattern (pat)
-		end
-		--range
-		if attached p_cdatetime.range as range then
-			copy_c_date_time_interval(p_wrapper.get_range, range)
-		end
-		--timezonevalidity --TODO: WHERE IS THIS VALUE IN EIFFEL CODE??
-	end
-
-	copy_c_date_time_interval(p_wrapper:INTERVALOFDATETIME_WRAPPER_GEN; range:INTERVAL[ISO8601_DATE_TIME])
-	require
-		p_not_null: attached p_wrapper and attached range
-	do
-		--lower
-		if attached range.lower as low then
-			p_wrapper.set_lower (low.as_string) --TODO: DATETIME REPRESENTED AS STRING
-		end
-		--lowerincluded
-		if attached range.lower_included as li then
-			p_wrapper.set_lowerincluded (li)
-		end
-		--lowerunbounded
-		if attached range.lower_unbounded as lu then
-			p_wrapper.set_lowerunbounded (lu)
-		end
-		--upper
-		if attached range.upper as up then
-			p_wrapper.set_upper (up.as_string) --TODO: DATETIME REPRESENTED AS STRING
-		end
-		--upperincluded
-		if attached range.upper_included as ui then
-			p_wrapper.set_upperincluded (ui)
-		end
-		--upperunbounded
-		if attached range.upper_unbounded as uu then
-			p_wrapper.set_upperunbounded (uu)
-		end
-	end
-
-	copy_c_boolean(p_wrapper:CBOOLEAN_WRAPPER_GEN; p_cboolean:C_BOOLEAN)
-	require
-		p_not_null: attached p_wrapper and attached p_cboolean
-	do
-			--assumedvalue
-			if attached p_cboolean.assumed_value as aval then
-				p_wrapper.set_assumedvalue (aval.item)
-			end
-			--falsevalid
-			if attached p_cboolean.false_valid as fv then
-				p_wrapper.set_falsevalid (fv)
-			end
-			--truevalid
-			if attached p_cboolean.true_valid as tv then
-				p_wrapper.set_truevalid (tv)
-			end
-	end
-
-	copy_c_date(p_wrapper:CDATE_WRAPPER_GEN; p_cdate:C_DATE)
-	require
-		p_not_null: attached p_wrapper and attached p_cdate
-	do
-		--assumedvalue
-		if attached p_cdate.assumed_value as aval then
-			p_wrapper.set_assumedvalue ("value:" + aval.value + ";year:" + aval.year.out + ";month:" + aval.month.out + ";day:" + aval.day.out)
-		end
-		--pattern
-		if attached p_cdate.pattern as pat then
-			p_wrapper.set_pattern (pat)
-		end
-		--range
-		if attached p_cdate.range as range then
-			copy_interval_of_date(p_wrapper.get_range, range)
-		end
-		--timezonevalidity --TODO: TALK TO THOMAS BEALE: WHERE IS THIS VALUE IN THE EIFFEL IMPLEMENTATION?
-
-
-	end
-
-	copy_interval_of_date(p_wrapper:INTERVALOFDATE_WRAPPER_GEN; range:INTERVAL[ISO8601_DATE])
-	do
-		--lower
-		if attached range.lower as lower then
-			p_wrapper.set_lower (lower.as_string)--TODO: DATE REPRESENTED AS STRING
-		end
-		--lowerincluded
-		if attached range.lower_included as li then
-			p_wrapper.set_lowerincluded (li)
-		end
-		--lowerunbounded
-		if attached range.lower_unbounded as lu then
-			p_wrapper.set_lowerunbounded (lu)
-		end
-		--upper
-		if attached range.upper as up then
-			p_wrapper.set_upper (up.as_string)--TODO: DATE REPRESENTED AS STRING
-		end
-		--upperincluded
-		if attached range.upper_included as ui then
-			p_wrapper.set_upperincluded (ui)
-		end
-		--upperunbounded
-		if attached range.upper_unbounded as uu then
-			p_wrapper.set_upperunbounded (uu)
-		end
-	end
+	
 end
 

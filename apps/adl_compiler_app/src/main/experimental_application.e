@@ -69,15 +69,15 @@ feature		--Access
 			archetype_index: INTEGER_32
 		do
 			configure_archetype_repository
-			create names_arr.make (0, app_root.arch_dir.archetype_index.count - 1)
+			create names_arr.make (0, app_root.current_arch_cat.archetype_index.count - 1)
 			archetype_index := 0
-			FROM app_root.arch_dir.archetype_index.start
+			FROM app_root.current_arch_cat.archetype_index.start
 			until
-				app_root.arch_dir.archetype_index.after
+				app_root.current_arch_cat.archetype_index.after
 			loop
-				names_arr.put (app_root.arch_dir.archetype_index.key_for_iteration, archetype_index)
+				names_arr.put (app_root.current_arch_cat.archetype_index.key_for_iteration, archetype_index)
 				archetype_index := archetype_index + 1
-				app_root.arch_dir.archetype_index.forth
+				app_root.current_arch_cat.archetype_index.forth
 			end
 			Result := names_arr
 		end
@@ -96,10 +96,10 @@ feature --process archetypes
 		visitor_iterator: C_VISITOR_ITERATOR
 	do
 		configure_archetype_repository
-		app_root.arch_dir.set_selected_item (app_root.arch_dir.archetype_index.item (p_archetype_name))
-		app_root.archetype_compiler.build_lineage (app_root.arch_dir.selected_archetype)
-		if app_root.arch_dir.selected_archetype.is_valid then
-			flattened_archetype := app_root.arch_dir.selected_archetype.flat_archetype
+		app_root.current_arch_cat.set_selected_item (app_root.current_arch_cat.archetype_index.item (p_archetype_name))
+		app_root.archetype_compiler.build_lineage (app_root.current_arch_cat.selected_archetype, 0) --TODO: TALK TO THOMAS BEALE: WHAT IS THE RIGHT VALUE FOR DEPTH HERE?
+		if app_root.current_arch_cat.selected_archetype.is_valid then
+			flattened_archetype := app_root.current_arch_cat.selected_archetype.flat_archetype
 			if flattened_archetype /= Void then
 				create bosphorus_visitor
 				bosphorus_visitor.set_logger (logger)
@@ -163,21 +163,21 @@ feature --process archetypes
 	local
 		archetype_key: STRING
 		flattend_archetype : FLAT_ARCHETYPE
-		archetype_list: DS_HASH_TABLE [ARCH_REP_ARCHETYPE, STRING]
+		archetype_list: DS_HASH_TABLE [ARCH_CAT_ARCHETYPE, STRING]
 	do
 		app_root.initialise
 		print("app_root init call passed")
 		if app_root.initialised then
 			print("app root inited %N")
 			set_repository_profile
-			print ("Populating repository " + app_root.current_repository_profile + "...")
-			app_root.use_current_profile
+			print ("Populating repository " + app_root.repository_profiles.current_profile.work_repository + "...")
+			app_root.use_current_profile (false)
 			print ("complete%N")
-			app_root.archetype_compiler.set_visual_update_action (agent build_ui_update)
-			create archetype_list.make (app_root.arch_dir.archetype_index.count)
-			from app_root.arch_dir.archetype_index.start until app_root.arch_dir.archetype_index.off loop
-				archetype_list.force (app_root.arch_dir.archetype_index.item (app_root.arch_dir.archetype_index.key_for_iteration), app_root.arch_dir.archetype_index.key_for_iteration)
-				app_root.arch_dir.archetype_index.forth
+--			app_root.archetype_compiler.set_visual_update_action (agent build_ui_update)
+			create archetype_list.make (app_root.current_arch_cat.archetype_index.count)
+			from app_root.current_arch_cat.archetype_index.start until app_root.current_arch_cat.archetype_index.off loop
+				archetype_list.force (app_root.current_arch_cat.archetype_index.item (app_root.current_arch_cat.archetype_index.key_for_iteration), app_root.current_arch_cat.archetype_index.key_for_iteration)
+				app_root.current_arch_cat.archetype_index.forth
 			end
 			--from app_root.arch_dir.archetype_index.start until app_root.arch_dir.archetype_index.off loop
 			from archetype_list.start until archetype_list.off loop
@@ -185,11 +185,11 @@ feature --process archetypes
 					archetype_key := archetype_list.key_for_iteration
 					print(archetype_key.to_string_8 + "%N")
 					--set this one selected
-					app_root.arch_dir.set_selected_item (app_root.arch_dir.archetype_index.item (archetype_key))
+					app_root.current_arch_cat.set_selected_item (app_root.current_arch_cat.archetype_index.item (archetype_key))
 					--build selected one					
-					app_root.archetype_compiler.build_lineage (app_root.arch_dir.selected_archetype)
-					if app_root.arch_dir.selected_archetype.is_valid then
-						flattend_archetype := app_root.arch_dir.selected_archetype.flat_archetype
+					app_root.archetype_compiler.build_lineage (app_root.current_arch_cat.selected_archetype, 0) --TODO: TALK TO THOMAS BEALE, ABOUT THIS DEPTH PARAMETER, WHAT IS THE RIGHT VALUE HERE?
+					if app_root.current_arch_cat.selected_archetype.is_valid then
+						flattend_archetype := app_root.current_arch_cat.selected_archetype.flat_archetype
 					else
 						flattend_archetype := Void
 					end
@@ -202,34 +202,34 @@ feature --process archetypes
 
 	end
 
-	build_ui_update (ara: ARCH_REP_ARCHETYPE)
-			-- Update UI with progress on build.
-		do
-			print (app_root.archetype_compiler.status)
-		end
+--	build_ui_update (ara: ARCH_CAT_ARCHETYPE)
+--			-- Update UI with progress on build.
+--		do
+--			print (app_root.archetype_compiler.status)
+--		end
 
 
 
 	set_repository_profile
 			--assign one of the available profiles as the repository profile to use
 			local
-				repository_profiles: attached HASH_TABLE[ARRAYED_LIST[STRING], STRING]
-				new_prof: STRING
+				repository_profile_conf: REPOSITORY_PROFILE_CONFIG
+				new_profile: STRING
 			do
-				repository_profiles := app_root.repository_profiles
+				repository_profile_conf := app_root.repository_profiles
 				print("repo profiles count: ")
-				io.put_integer (repository_profiles.count)
-				from repository_profiles.start until repository_profiles.off loop
-							print(repository_profiles.key_for_iteration + "%N")
-							repository_profiles.forth
+				io.put_integer (repository_profile_conf.count)
+				from repository_profile_conf.start until repository_profile_conf.off loop
+							print(repository_profile_conf.key_for_iteration + "%N")
+							repository_profile_conf.forth
 				end
-				if app_root.current_repository_profile.is_empty then
-					repository_profiles.start
-					new_prof := repository_profiles.key_for_iteration
-				else
-					new_prof := app_root.current_repository_profile
-				end
-				app_root.set_current_repository_profile (new_prof)
+--				if app_root.repository_profiles.current_profile.is_empty then
+--					repository_profile.start
+--					new_prof := repository_profile.key_for_iteration
+--				else
+--					new_prof := app_root.repository_profiles.current_profile
+--				end
+				app_root.set_current_profile (app_root.repository_profiles.current_profile_name)
 			end
 
 feature --configuration
@@ -251,7 +251,7 @@ feature --configuration
 	do
 		app_root.initialise
 		set_repository_profile
-		app_root.use_current_profile
+		app_root.use_current_profile (false)
 	end
 
 

@@ -112,31 +112,29 @@ definition
 ontology
 	term_definitions = <
 		["en"] = <
-			items = <
-				["at0000"] = <
-					text = <"Environmental conditions">
-					description = <"Record environmental conditions to which the patient is exposed.">
-				>
-				["at0001"] = <
-					text = <"Ambient Temperature">
-					description = <"The temperature of the environment in which the patient is situated.  If this archetype is used within a state model, the assumed value is 21 degrees Celsius or 69.8 degrees Fahrenheit.">
-				>
-				["at0002"] = <
-					text = <"Relative humidity">
-					description = <"Humidity of the environment in which the patient is situated.">
-				>
-				["at0003"] = <
-					text = <"Wind Velocity">
-					description = <"Measure of wind velocity.">
-				>
-				["at0005"] = <
-					text = <"Wind Chill Temperature">
-					description = <"The apparent temperature felt on exposed skin, which is a function of the air temperature and wind speed - usually used in low temperature environements where the apparent temperature is lower than the measured air temperature.">
-				>
-				["at0010"] = <
-					text = <"Wet Bulb Globe Temperature">
-					description = <"A composite temperature used to estimate the effect of temperature, humidity, and solar radiation on humans - usually used in exposure to high temperatures.">
-				>
+			["at0000"] = <
+				text = <"Environmental conditions">
+				description = <"Record environmental conditions to which the patient is exposed.">
+			>
+			["at0001"] = <
+				text = <"Ambient Temperature">
+				description = <"The temperature of the environment in which the patient is situated.  If this archetype is used within a state model, the assumed value is 21 degrees Celsius or 69.8 degrees Fahrenheit.">
+			>
+			["at0002"] = <
+				text = <"Relative humidity">
+				description = <"Humidity of the environment in which the patient is situated.">
+			>
+			["at0003"] = <
+				text = <"Wind Velocity">
+				description = <"Measure of wind velocity.">
+			>
+			["at0005"] = <
+				text = <"Wind Chill Temperature">
+				description = <"The apparent temperature felt on exposed skin, which is a function of the air temperature and wind speed - usually used in low temperature environements where the apparent temperature is lower than the measured air temperature.">
+			>
+			["at0010"] = <
+				text = <"Wet Bulb Globe Temperature">
+				description = <"A composite temperature used to estimate the effect of temperature, humidity, and solar radiation on humans - usually used in exposure to high temperatures.">
 			>
 		>
 	>

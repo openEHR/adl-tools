@@ -70,35 +70,33 @@ definition
 ontology
 	term_definitions = <
 		["en"] = <
-			items = <
-				["at0000"] = <
-					text = <"Examination">
-					description = <"Basic examination cluster for describing findings on physical examination when there is no named focus of examination.">
-				>
-				["at0002"] = <
-					text = <"Clinical description">
-					description = <"Textural description of the part examined.">
-				>
-				["at0004"] = <
-					text = <"Normal statements">
-					description = <"A group of statements about the normality of the examination.">
-				>
-				["at0005"] = <
-					text = <"Normal statement">
-					description = <"A specific statement of normality.">
-				>
-				["at0006"] = <
-					text = <"Image">
-					description = <"Drawing or image of the area examined.">
-				>
-				["at0008"] = <
-					text = <"Findings">
-					description = <"Clinical findings.">
-				>
-				["at0009"] = <
-					text = <"Detail">
-					description = <"More focused examination findings.">
-				>
+			["at0000"] = <
+				text = <"Examination">
+				description = <"Basic examination cluster for describing findings on physical examination when there is no named focus of examination.">
+			>
+			["at0002"] = <
+				text = <"Clinical description">
+				description = <"Textural description of the part examined.">
+			>
+			["at0004"] = <
+				text = <"Normal statements">
+				description = <"A group of statements about the normality of the examination.">
+			>
+			["at0005"] = <
+				text = <"Normal statement">
+				description = <"A specific statement of normality.">
+			>
+			["at0006"] = <
+				text = <"Image">
+				description = <"Drawing or image of the area examined.">
+			>
+			["at0008"] = <
+				text = <"Findings">
+				description = <"Clinical findings.">
+			>
+			["at0009"] = <
+				text = <"Detail">
+				description = <"More focused examination findings.">
 			>
 		>
 	>

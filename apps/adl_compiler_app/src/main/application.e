@@ -27,7 +27,7 @@ feature -- Initialization
 			new_prof: STRING
 		do
 			app_root.initialise
-			print("Config file path: " + app_root.user_config_file_path + "%N")
+--			print("Config file path: " + app_root.user_config_file_path + "%N")
 			if app_root.initialised then
 				print("APP_ROOT initialisation succeeded; repository profiles available:%N")
 				rep_profiles := app_root.repository_profiles
@@ -66,7 +66,7 @@ feature -- Initialization
 			print (msg)
 		end
 
-	compiler_archetype_gui_update (msg: attached STRING; ara: ARCH_REP_ARCHETYPE; depth: INTEGER)
+	compiler_archetype_gui_update (msg: attached STRING; ara: ARCH_CAT_ARCHETYPE; depth: INTEGER)
 			-- Update UI with progress on build.
 		do
 			print (msg)

@@ -46,19 +46,17 @@ definition
 ontology
 	term_definitions = <
 		["en"] = <
-			items = <
-				["at0000"] = <
-					text = <"Issue presented by a person">
-					description = <"An issue, symptom, or complaint presented to the health provider seeking explanation, education, understanding, investigation or treatment">
-				>
-				["at0001"] = <
-					text = <"Issue">
-					description = <"The issue as presented by the person">
-				>
-				["at0002"] = <
-					text = <"Detail">
-					description = <"Detailed information about the issue or health problem">
-				>
+			["at0000"] = <
+				text = <"Issue presented by a person">
+				description = <"An issue, symptom, or complaint presented to the health provider seeking explanation, education, understanding, investigation or treatment">
+			>
+			["at0001"] = <
+				text = <"Issue">
+				description = <"The issue as presented by the person">
+			>
+			["at0002"] = <
+				text = <"Detail">
+				description = <"Detailed information about the issue or health problem">
 			>
 		>
 	>

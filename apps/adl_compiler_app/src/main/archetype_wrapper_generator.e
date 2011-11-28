@@ -112,8 +112,19 @@ feature
 		end
 
 		--uid
---		copy_hierobject_id(wrapper.get_uid,archetype.--TODO: TALK TO T. BEALE : ARCHETYPE DOES NOT SEEM TO HAVE UID FIELD
+		if attached a_wrapper.uid as uid then
+			copy_hierobject_id(a_wrapper.get_uid,archetype.uid)
+		end
 
+	end
+
+	copy_hierobject_id(p_wrapper:HIEROBJECTID_WRAPPER_GEN; p_hierobject_id:HIER_OBJECT_ID)
+	require
+		p_not_null: attached p_wrapper  and attached p_hierobject_id
+	do
+		if attached {STRING} p_hierobject_id.value as val then
+			p_wrapper.set_value (val)
+		end
 	end
 
 	copy_archetype_id(p_wrapper:ARCHETYPEID_WRAPPER_GEN; p_archetype_id:ARCHETYPE_ID)
@@ -703,6 +714,10 @@ feature
 			p_wrapper.get_terminologyidfield.set_value (terminology_id.value)
 		elseif attached {OBJECT_VERSION_ID} p_object_id as object_version_id then
 			p_wrapper.get_objectversionidfield.set_value (object_version_id.value)
+		elseif attached {TEMPLATE_ID} p_object_id as template_id then
+			p_wrapper.get_objectversionidfield.set_value (template_id.value)
+		elseif attached {HIER_OBJECT_ID} p_object_id as uid_based_id then
+			p_wrapper.get_hierobjectidfield.set_value (uid_based_id.value)
 		end
 	end
 
@@ -870,7 +885,10 @@ feature
 		end
 
 		--normal status
---		copy_code_phrase(p_wrapper.get_normalstatus, p_dv_datetime.normal_status)--TODO: TALK TO T. BEALE: DV_DATE_TIME.NORMALSTATUS IS DV_ORDINAL, SHOULD BE CODE_PHRASE ACC. TO SPEC
+		if attached p_dv_datetime.normal_status  then
+			copy_code_phrase(p_wrapper.get_normalstatus, p_dv_datetime.normal_status)
+		end
+
 		--otherreference ranges
 		if p_dv_datetime.other_reference_ranges /= void then
 			copy_dv_date_time_other_ref_ranges (p_wrapper, p_dv_datetime.other_reference_ranges)
@@ -907,7 +925,11 @@ feature
 		end
 
 		--normalstatus
-		--p_wrapper.get_normalstatus,p_dv_duration.normal_status--TODO: TALK TO T.BEALE: DV_DURATION.NORMALSTATUS IS DV_ORDINAL, SHOULD BE CODEPHRASE ACC. TO SPEC
+		if attached p_dv_duration.normal_status then
+			copy_code_phrase(p_wrapper.get_normalstatus,p_dv_duration.normal_status)
+		end
+
+
 		--otherreferenceranges
 		if p_dv_duration.other_reference_ranges /= void then
 			copy_dv_duration_other_ref_ranges(p_wrapper, p_dv_duration.other_reference_ranges)
@@ -956,7 +978,7 @@ feature
 
 	end
 
-	copy_dv_ordered(p_wrapper:DVORDEREDALTERNATIVES_WRAPPER_GEN;p_dv_interval:DV_ORDERED)--TODO: TALK TO THOMAS BEALE: DV_TEMPORAL DOES NOT EXIST IN EIFFEL
+	copy_dv_ordered(p_wrapper:DVORDEREDALTERNATIVES_WRAPPER_GEN;p_dv_interval:DV_ORDERED)--DV_TEMPORAL IS AN ABSTRACT CLASS, THEEFORE ONLY ITS DESCENDANTS ARE USED BELOW
 	require
 		p_not_null: p_wrapper /= void and p_dv_interval /= void
 	do
@@ -997,10 +1019,11 @@ feature
 		if attached p_dv_time.normal_range as nr then
 			copy_dv_interval (p_wrapper.get_normalrange, nr)
 		end
-		--normalstatus --TODO: TALK TO T. BEALE: NORMALSTATUS HAS TYPE DV_ORDINAL, SHOULD BE CODEPHRASE
---		if attached p_dv_time.normal_status then
---			
---		end
+
+		if attached p_dv_time.normal_status as ns then
+			copy_code_phrase (p_wrapper.get_normalstatus, ns)
+		end
+
 		--otherreferenceranges
 		if attached p_dv_time.other_reference_ranges as orr then
 			from
@@ -1048,10 +1071,10 @@ feature
 		if attached p_dv_date.normal_range as nr then
 			copy_dv_interval (p_wrapper.get_normalrange, nr)
 		end
-		--normalstatus --TODO: TALK TO T. BEALE: NORMALSTATUS IS DVORDINAL, SHOULD BE CODEPHRASE
---		if attached p_dv_date.normal_status as ns then
 
---		end
+		if attached p_dv_date.normal_status as ns then
+			copy_code_phrase (p_wrapper.get_normalstatus, ns)
+		end
 		--otherreferenceranges
 		if attached p_dv_date.other_reference_ranges as orr then
 			from
@@ -1073,7 +1096,7 @@ feature
 	require
 		p_not_null: attached p_wrapper and attached p_ref_r
 	do
-		--meaning --TODO: REF RANGE.MEANING IS DV_CODED_TEXT, BUT REF RANGE WRAPPER.MEANING IS DV_TEXT. XML MODEL DOES NOT SEEM TO MATCH SPECS HERE?
+
 		if attached p_ref_r.meaning as mn then
 			copy_dv_text (p_wrapper.get_meaning, mn)
 		end
@@ -1107,10 +1130,10 @@ feature
 		if attached p_dv_quantity.normal_range as nr then
 			copy_dv_interval (p_wrapper.get_normalrange, nr)
 		end
-		--normalstatus --TODO: TALK TO T. BEALE: DV_QUANTITY.NORMAL_STATUS SHOULD BE OF TYPE CODEPHRASE
---		if attached p_dv_quantity.normal_status as ns then
---			
---		end
+
+		if attached p_dv_quantity.normal_status as ns then
+			copy_code_phrase (p_wrapper.get_normalstatus, ns)
+		end
 		--otherreferenceranges
 		if attached p_dv_quantity.other_reference_ranges as orr then
 			from
@@ -1157,7 +1180,9 @@ feature
 
 
 		--normalstatus
-		--copy_code_phrase (p_wrapper.get_normalstatus, p_dv_ordinal.normal_status)--TODO:DV_ORDINAL SEEMS TO HAVE WRONG TYPE FOR NORMAL_STATUS: TALK TO THOMAS BEALE
+		if attached p_dv_ordinal.normal_status then
+			copy_code_phrase (p_wrapper.get_normalstatus, p_dv_ordinal.normal_status)
+		end
 
 		--otherreferenceranges
 		if p_dv_ordinal.other_reference_ranges /= void then
@@ -1178,9 +1203,9 @@ feature
 		loop
 			ref_range := p_wrapper.add_otherreferenceranges
 			--meaning
---			copy_dv_text (ref_range.get_meaning, p_reference_ranges.item_for_iteration.meaning)--TODO: TALK TO T. BEALE: REFRERENCE_RANGE.MEANING SEEMS TO BE DV_CODED_TEXT: ACC. TO SPEC IT SHOULD BE DV_TEXT
+			copy_dv_text (ref_range.get_meaning, p_reference_ranges.item_for_iteration.meaning)
 			if p_reference_ranges.item_for_iteration.meaning /= void then
-				copy_dv_text (ref_range.get_meaning, get_dv_text_from_dv_coded_text (p_reference_ranges.item_for_iteration.meaning))
+				copy_dv_text (ref_range.get_meaning, p_reference_ranges.item_for_iteration.meaning)
 			end
 
 			--range
@@ -1204,10 +1229,9 @@ feature
 			p_reference_ranges.after
 		loop
 			ref_range := p_wrapper.add_otherreferenceranges
-			--meaning
---			copy_dv_text (ref_range.get_meaning, p_reference_ranges.item_for_iteration.meaning)--TODO: TALK TO T. BEALE: REFRERENCE_RANGE.MEANING SEEMS TO BE DV_CODED_TEXT: ACC. TO SPEC IT SHOULD BE DV_TEXT
+			--meaning			
 			if p_reference_ranges.item_for_iteration.meaning /= void then
-				copy_dv_text (ref_range.get_meaning, get_dv_text_from_dv_coded_text (p_reference_ranges.item_for_iteration.meaning))
+				copy_dv_text (ref_range.get_meaning, p_reference_ranges.item_for_iteration.meaning)
 			end
 
 			--range
@@ -1219,12 +1243,12 @@ feature
 		end
 	end
 
-	get_dv_text_from_dv_coded_text(p_dv_coded_text:DV_CODED_TEXT):DV_TEXT
-	require
-		p_not_null: p_dv_coded_text /= void
-	do
-		create Result.make_from_canonical_string (p_dv_coded_text.as_canonical_string)
-	end
+--	get_dv_text_from_dv_coded_text(p_dv_coded_text:DV_CODED_TEXT):DV_TEXT
+--	require
+--		p_not_null: p_dv_coded_text /= void
+--	do
+--		create Result.make_from_canonical_string (p_dv_coded_text.as_canonical_string)
+--	end
 
 	copy_dv_amount(p_wrapper:DVAMOUNT_WRAPPER_GEN;p_dv_amount:DV_AMOUNT)
 	require
@@ -1251,7 +1275,10 @@ feature
 		end
 
 		--normalstatus
---		copy_code_phrase (p_wrapper.normalstatus, p_dv_amount.normal_status)--TODO: TALK TO T. BEALE: DV_AMOUNT.NORMAL_STATUS IS DV_ORDINAL; ACCORDING TO SPEC IT SHOUDL BE CODE_PHRASE
+		if attached p_dv_amount.normal_status then
+			copy_code_phrase (p_wrapper.normalstatus, p_dv_amount.normal_status)
+		end
+
 		--otherreferenceranges	
 		if p_dv_amount.other_reference_ranges /= void then
 			copy_dv_amount_other_ref_ranges(p_wrapper,p_dv_amount.other_reference_ranges)
@@ -1270,10 +1297,9 @@ feature
 			p_reference_ranges.after
 		loop
 			ref_range := p_wrapper.add_otherreferenceranges
-			--meaning
---			copy_dv_text (ref_range.get_meaning, p_reference_ranges.item_for_iteration.meaning)--TODO: TALK TO T. BEALE: REFRERENCE_RANGE.MEANING SEEMS TO BE DV_CODED_TEXT: ACC. TO SPEC IT SHOULD BE DV_TEXT
-			if p_reference_ranges.item_for_iteration.meaning /= void then
-				copy_dv_text (ref_range.get_meaning, get_dv_text_from_dv_coded_text (p_reference_ranges.item_for_iteration.meaning))
+
+			if attached p_reference_ranges.item_for_iteration.meaning then
+				copy_dv_text (ref_range.get_meaning, p_reference_ranges.item_for_iteration.meaning)
 			end
 
 			--range
@@ -1285,13 +1311,19 @@ feature
 		end
 	end
 
-	copy_dv_count(p_wrapper:DVCOUNT_WRAPPER_GEN;p_dv_count:DV_COUNT)--TODO: TALK TO T.BEALE: DV_COUNT DOES NOT INHERIT FROM DV_AMOUNT, IT SHOULD DO SO ACC. TO SPEC
+	copy_dv_count(p_wrapper:DVCOUNT_WRAPPER_GEN;p_dv_count:DV_COUNT)
 	require
 		p_not_null: p_wrapper /= void and p_dv_count /= void
 	do
 		--accuracy
---		p_wrapper.set_accuracy (p_dv_count.)
-		--accuracyispercent--TODO: SEE WARNING IN METHOD SIGNATURE
+		if attached p_dv_count.accuracy as acc then
+			p_wrapper.set_accuracy (acc.out) --TODO:  REAL REPRESENTED AS STRING
+		end
+
+		if attached p_dv_count.accuracy_is_percent as ip  then
+			p_wrapper.set_accuracyispercent (ip)
+		end
+
 		--magnitude
 		if p_dv_count.magnitude /= void then
 			p_wrapper.set_magnitude (p_dv_count.magnitude)
@@ -1307,8 +1339,10 @@ feature
 			copy_dv_interval (p_wrapper.get_normalrange, p_dv_count.normal_range)
 		end
 
-		--normalstatus --TODO: TALK TO T. BEALE: DV_COUNT.NORMAL STATUS IS DV_ORDINAL: SHOULD BE CODEPHRASE
---		copy_code_phrase...
+		if attached p_dv_count.normal_status as ns then
+			copy_code_phrase (p_wrapper.get_normalstatus, ns)
+		end
+
 		--otherreferenceranges
 		if p_dv_count.other_reference_ranges /= void then
 			copy_dv_count_other_ref_ranges(p_wrapper,p_dv_count.other_reference_ranges)
@@ -1328,9 +1362,9 @@ feature
 		loop
 			ref_range := p_wrapper.add_otherreferenceranges
 			--meaning
---			copy_dv_text (ref_range.get_meaning, p_reference_ranges.item_for_iteration.meaning)--TODO: TALK TO T. BEALE: REFRERENCE_RANGE.MEANING SEEMS TO BE DV_CODED_TEXT: ACC. TO SPEC IT SHOULD BE DV_TEXT
+
 			if p_reference_ranges.item.meaning /= void then
-				copy_dv_text (ref_range.get_meaning, get_dv_text_from_dv_coded_text (p_reference_ranges.item_for_iteration.meaning))
+				copy_dv_text (ref_range.get_meaning, p_reference_ranges.item_for_iteration.meaning)
 			end
 
 			--range
@@ -1355,9 +1389,8 @@ feature
 		loop
 			ref_range := p_wrapper.add_otherreferenceranges
 			--meaning
---			copy_dv_text (ref_range.get_meaning, p_reference_ranges.item_for_iteration.meaning)--TODO: TALK TO T. BEALE: REFRERENCE_RANGE.MEANING SEEMS TO BE DV_CODED_TEXT: ACC. TO SPEC IT SHOULD BE DV_TEXT
 			if p_reference_ranges.item_for_iteration.meaning /= void then
-				copy_dv_text (ref_range.get_meaning, get_dv_text_from_dv_coded_text (p_reference_ranges.item_for_iteration.meaning))
+				copy_dv_text (ref_range.get_meaning, p_reference_ranges.item_for_iteration.meaning)
 			end
 
 			--range
@@ -1374,8 +1407,14 @@ feature
 		p_not_null: p_wrapper /= void and p_dv_proportion /= void
 	do
 		--accurracy
---		p_wrapper.set_accuracy (p_dv_proportion.accuracy)--TODO: TALK TO THOMAS BEALE: DV_PROPORTION SHOULD INHERIT FROM DV_AMOUNT
-		--accuracyispercent --TODO: TALK TO THOMAS BEALE: DV_PROPORTION SHOULD INHERIT FROM DV_AMOUNT
+		if attached p_dv_proportion.accuracy as acc then
+			p_wrapper.set_accuracy (acc.out) --TODO: REAL REPRESENTED AS STRING
+		end
+
+		if attached p_dv_proportion.accuracy_is_percent as aip then
+			p_wrapper.set_accuracyispercent (aip)
+		end
+
 		--denominator
 		if p_dv_proportion.denominator /= void then
 			p_wrapper.set_denominator (p_dv_proportion.denominator.out)--TODO: real represented as string
@@ -1392,7 +1431,10 @@ feature
 		end
 
 		--normalstatus
---		copy_code_phrase(p_wrapper...--TODO: DV_PROPORTION.NORMALSTATUS IS DV_ORDINAL, SHOULD BE CODEPHRASE ACC TO SPEC
+		if attached p_dv_proportion.normal_status as ns then
+		copy_code_phrase(p_wrapper.get_normalstatus, ns)
+		end
+
 		--numerator
 		if p_dv_proportion.numerator /= void then
 			p_wrapper.set_numerator (p_dv_proportion.numerator.out)--TODO: REAL REPRESENTED AS STRING
@@ -1404,7 +1446,10 @@ feature
 		end
 
 		--precisision
---		p_wrapper.set_precision (p_dv_proportion.)--TODO: TALK TO T. BEALE: DV_PROPORTION DOES NOT HAVE PRECISION FIELD
+		if attached p_dv_proportion.precision as prec then
+			p_wrapper.set_precision (prec)
+		end
+
 		--type
 		if p_dv_proportion.type /= void then
 			p_wrapper.set_type (p_dv_proportion.type.out)--TODO: INTEGER REPRESENTED AS STRING
@@ -1425,9 +1470,8 @@ feature
 		loop
 			ref_range := p_wrapper.add_otherreferenceranges
 			--meaning
---			copy_dv_text (ref_range.get_meaning, p_reference_ranges.item_for_iteration.meaning)--TODO: TALK TO T. BEALE: REFRERENCE_RANGE.MEANING SEEMS TO BE DV_CODED_TEXT: ACC. TO SPEC IT SHOULD BE DV_TEXT
 			if p_reference_ranges.item_for_iteration.meaning /= void then
-				copy_dv_text (ref_range.get_meaning, get_dv_text_from_dv_coded_text (p_reference_ranges.item_for_iteration.meaning))
+				copy_dv_text (ref_range.get_meaning, p_reference_ranges.item_for_iteration.meaning)
 			end
 
 			--range
@@ -1470,26 +1514,6 @@ feature
 
 	end
 
---	copy_dv_date_time_other_ref_ranges(p_wrapper:DVDATETIME_WRAPPER_GEN; p_reference_ranges:LINKED_LIST[REFERENCE_RANGE[DV_DATE_TIME]])
---	local
---		ref_range:REFERENCERANGE_WRAPPER_GEN
---	do
---		from
---			p_reference_ranges.start
---		until
---			p_reference_ranges.after
---		loop
---			ref_range := p_wrapper.add_otherreferenceranges
---			--meaning
-----			copy_dv_text (ref_range.get_meaning, p_reference_ranges.item_for_iteration.meaning)--TODO: TALK TO T. BEALE: REFRERENCE_RANGE.MEANING SEEMS TO BE DV_CODED_TEXT: ACC. TO SPEC IT SHOULD BE DV_TEXT
---			copy_dv_text (ref_range.get_meaning, get_dv_text_from_dv_coded_text (p_reference_ranges.item_for_iteration.meaning))
---			--range
---			copy_dv_interval (ref_range.get_range, p_reference_ranges.item_for_iteration.range)
-
---			p_reference_ranges.forth
---		end
---	end
-
 	copy_assertion(p_wrapper: ASSERTION_WRAPPER_GEN; p_assertion:ASSERTION)
 	require
 		p_not_null: p_wrapper /= void and p_assertion /= void
@@ -1511,6 +1535,12 @@ feature
 	--this is an EXPR_ITEM known to be a either an  EXPR_UNARY_OPERATOR OR EXPR_BINARY_OPERATOR so configure accordingly
 	require
 		p_not_null: p_wrapper /= void and p_operand /= void
+	local
+		c_string_wrapper : CSTRING_WRAPPER_GEN
+		c_string_string_ser: STRING
+		c_string_tagged_ser: STRING
+		debug_file: RAW_FILE
+		c_string_wrapper_byte_arr: POINTER
 	do
 		if attached {EXPR_UNARY_OPERATOR} p_operand as unary_op then
 			p_wrapper.get_exprunaryoperatorfield.set_type (unary_op.type)
@@ -1529,10 +1559,38 @@ feature
 			--right operand of binary operator
 			copy_expr_item(p_wrapper.get_exprbinaryoperatorfield.get_rightoperand,binary_op.right_operand)
 		elseif attached {EXPR_LEAF} p_operand as leaf then
-			p_wrapper.get_exprleaffield.set_item ("NOT IMPLEMENTED YET: ITEM IN EXPR_LEAF; SHOULD BE SERIALIZED BYTE ARR WITH TYPE INFO")
+			if attached {STRING} leaf.item as string_leaf then
+				p_wrapper.get_exprleaffield.get_item.set_typeinfo ("<STRING>")
+				p_wrapper.get_exprleaffield.get_item.set_stringvalue (string_leaf)
+			elseif attached {C_STRING} leaf.item as cstring_leaf then
+
+				c_string_wrapper := get_standalone_cstring_wrapper
+				copy_c_string (c_string_wrapper, cstring_leaf)
+--				c_string_string_ser := c_string_wrapper.serialize_pb_object_to_string
+--				c_string_tagged_ser := "<serialized_type:C_STRING>" + c_string_string_ser
+				c_string_wrapper_byte_arr := c_string_wrapper.serialize_to_byte_array
+				p_wrapper.get_exprleaffield.get_item.set_typeinfo ("<CSTRING>")
+				p_wrapper.get_exprleaffield.get_item.set_msgdata (c_string_wrapper_byte_arr, c_string_wrapper.get_pb_object_size)
+
+
+				c_string_wrapper := void --make sure that this is garbage collected asap
+			else
+				p_wrapper.get_exprleaffield.get_item.set_typeinfo ("<UNKNOWN>")
+				--NO VALUE SET
+			end
 			p_wrapper.get_exprleaffield.set_referencetype (leaf.reference_type)
 			p_wrapper.get_exprleaffield.set_type (leaf.type)
+--			create debug_file.make_open_write ("c:\\tmp\\eiffelpbstring.txt")
+--			debug_file.put_string (p_wrapper.get_exprleaffield.serialize_pb_object_to_string)
+--			debug_file.close
 		end
+	end
+
+	get_standalone_cstring_wrapper:CSTRING_WRAPPER_GEN
+	do
+		create Result.make
+		Result.init_pb_obj
+		Result.set_is_root_object (true)
 	end
 
 	copy_archetype_ontology(p_wrapper:ARCHETYPEONTOLOGY_WRAPPER_GEN;p_ontology:ARCHETYPE_ONTOLOGY)
@@ -1540,7 +1598,7 @@ feature
 		p_not_null: p_wrapper /= void and p_ontology /= void
 	local
 		constraint_bindings: HASH_TABLE[ HASH_TABLE[URI,STRING_8], STRING_8]
-		constraint_binding_set:CONSTRAINTBINDINGSET_WRAPPER_GEN--TODO: constraint						
+		constraint_binding_set:CONSTRAINTBINDINGSET_WRAPPER_GEN
 		constraint_binding_items: HASH_TABLE[URI,STRING_8]
 		constraint_binding_item_wrapper:CONSTRAINTBINDINGITEM_WRAPPER_GEN
 
@@ -1570,7 +1628,7 @@ feature
 
 			constraint_binding_set := p_wrapper.add_constraintbindings
 			--terminology
-			if constraint_bindings.item_for_iteration /= void and constraint_bindings.key_for_iteration /= void then
+			if attached constraint_bindings.item_for_iteration  and attached constraint_bindings.key_for_iteration then
 				constraint_binding_set.set_terminology (constraint_bindings.item_for_iteration.key_for_iteration)--TODO: IS THIS THE TERMINOLOGY?
 			end
 
@@ -1582,7 +1640,7 @@ feature
 				constraint_binding_items.after
 			loop
 				constraint_binding_item_wrapper := constraint_binding_set.add_items
-				if constraint_binding_items.item_for_iteration /= void and constraint_binding_items.key_for_iteration /= void then
+				if attached constraint_binding_items.item_for_iteration and attached constraint_binding_items.key_for_iteration then
 					constraint_binding_item_wrapper.set_value (constraint_binding_items.item_for_iteration.as_string)--TODO: DEBUG THIS POINT
 					constraint_binding_item_wrapper.set_code (constraint_binding_items.key_for_iteration.out)
 				end
@@ -1602,8 +1660,8 @@ feature
 			constraint_definition_item := constraint_definitions.item_for_iteration
 			constraint_definitions_wrapper := p_wrapper.add_constraintdefinitions
 			--language
-			if constraint_definition_item.key_for_iteration /= void then
-				constraint_definitions_wrapper.set_language (constraint_definition_item.key_for_iteration)--TODO: IS THIS THE LANGUAGE?
+			if attached constraint_definitions.key_for_iteration then
+				constraint_definitions_wrapper.set_language (constraint_definitions.key_for_iteration)--TODO: IS THIS THE LANGUAGE?
 			end
 
 			--items
@@ -1612,7 +1670,7 @@ feature
 			until
 				constraint_definition_item.after
 			loop
-				if constraint_definition_item.item_for_iteration /= void then
+				if attached constraint_definition_item.item_for_iteration then
 					copy_archeype_term(constraint_definitions_wrapper.add_items, constraint_definition_item.item_for_iteration)
 				end
 
@@ -1631,7 +1689,7 @@ feature
 			term_bindings_item := term_bindings.item_for_iteration
 			term_bindings_wrapper := p_wrapper.add_termbindings
 			--terminology
-			if term_bindings.key_for_iteration /= void then
+			if attached term_bindings.key_for_iteration then
 				term_bindings_wrapper.set_terminology (term_bindings.key_for_iteration)--TODO: IS THIS THE TERMINOLOGY?
 			end
 
@@ -1643,12 +1701,12 @@ feature
 			loop
 				term_bindings_item_wrapper := term_bindings_wrapper.add_items
 				--value
-				if term_bindings_item.item_for_iteration /= void then
+				if attached term_bindings_item.item_for_iteration then
 					copy_code_phrase (term_bindings_item_wrapper.get_value, term_bindings_item.item_for_iteration)
 				end
 
 				--code
-				if term_bindings_item.key_for_iteration /= void then
+				if attached term_bindings_item.key_for_iteration then
 					term_bindings_item_wrapper.set_code (term_bindings_item.key_for_iteration)--TODO: IS THIS THE CODE?
 				end
 
@@ -1667,7 +1725,7 @@ feature
 			term_definition_item := term_definitions.item_for_iteration
 			term_definitions_wrapper := p_wrapper.add_termdefinitions
 			--language
-			if term_definitions.key_for_iteration /= void then
+			if attached term_definitions.key_for_iteration then
 				term_definitions_wrapper.set_language (term_definitions.key_for_iteration)--TODO: IS THIS THE LANGUAGE?
 			end
 
@@ -1677,7 +1735,7 @@ feature
 			until
 				term_definition_item.after
 			loop
-				if term_definition_item.item_for_iteration /= void then
+				if attached term_definition_item.item_for_iteration then
 					copy_archeype_term(term_definitions_wrapper.add_items, term_definition_item.item_for_iteration)
 				end
 
@@ -1702,17 +1760,20 @@ feature
 
 		--items
 		from
-			p_archetype_term.items.start
+--			p_archetype_term.items.start
+			p_archetype_term.keys.start
 		until
-			p_archetype_term.items.after
+--			p_archetype_term.items.after
+			p_archetype_term.keys.after
 		loop
 			string_dict_item  := p_wrapper.add_items
-			if p_archetype_term.items.key_for_iteration /= void and p_archetype_term.items.item_for_iteration /= void then
-				string_dict_item.set_value (p_archetype_term.items.item_for_iteration)
-				string_dict_item.set_id (p_archetype_term.items.key_for_iteration)
+			if p_archetype_term.keys.item_for_iteration /= void and p_archetype_term.item (p_archetype_term.keys.item_for_iteration) /= void then
+				string_dict_item.set_value (p_archetype_term.item (p_archetype_term.keys.item_for_iteration))
+				string_dict_item.set_id (p_archetype_term.keys.item_for_iteration)
 			end
 
-			p_archetype_term.items.forth
+--			p_archetype_term.items.forth
+			p_archetype_term.keys.forth
 		end
 	end
 
@@ -1770,6 +1831,384 @@ feature
 	do
 		if p_object_vid.value /= void then
 			p_wrapper.set_value (p_object_vid.value)
+		end
+	end
+
+	copy_c_primitive(p_wrapper:CPRIMITIVEALTERNATIVES_WRAPPER_GEN; p_c_primitive:C_PRIMITIVE)
+	require
+		p_not_null: attached p_wrapper and attached p_c_primitive
+	do
+		if attached {C_BOOLEAN} p_c_primitive as cboolean then
+			copy_c_boolean(p_wrapper.get_cbooleanfield, cboolean)
+		elseif attached {C_DATE} p_c_primitive as cdate then
+			copy_c_date(p_wrapper.get_cdatefield, cdate)
+		elseif attached {C_DATE_TIME} p_c_primitive as cdatetime then
+			copy_c_date_time(p_wrapper.get_cdatetimefield, cdatetime)
+		elseif attached {C_DURATION} p_c_primitive as cduration then
+			copy_c_duration(p_wrapper.get_cdurationfield, cduration)
+		elseif attached {C_INTEGER} p_c_primitive as cinteger then
+			copy_c_integer(p_wrapper.get_cintegerfield, cinteger)
+		elseif attached {C_REAL} p_c_primitive as creal then
+			copy_c_real(p_wrapper.get_crealfield, creal)
+		elseif attached {C_STRING} p_c_primitive as cstring then
+			copy_c_string(p_wrapper.get_cstringfield, cstring)
+		elseif attached {C_TIME} p_c_primitive as ctime then
+			copy_c_time(p_wrapper.get_ctimefield, ctime)
+		end
+	end
+
+	copy_c_time(p_wrapper:CTIME_WRAPPER_GEN; p_ctime:C_TIME)
+	require
+		p_not_null: attached p_wrapper and attached p_ctime
+	do
+		--assumedvalue
+		if attached p_ctime.assumed_value as aval then
+			p_wrapper.set_assumedvalue (aval.as_string) --TODO: TIME REPRESENTED AS STRING
+		end
+		--pattern
+		if attached p_ctime.pattern as pat then
+			p_wrapper.set_pattern(pat)
+		end
+		--range
+		if attached p_ctime.range as range then
+			copy_interval_of_time(p_wrapper.get_range, range)
+		end
+		--timezonevalidity --TODO: WHERE IS THIS VALUE IN EIFFEL IMPLEMENTATION?
+
+	end
+
+	copy_interval_of_time(p_wrapper:INTERVALOFTIME_WRAPPER_GEN; p_range:INTERVAL[ISO8601_TIME])
+	require
+		p_not_null: attached p_wrapper and attached p_range
+	do
+		--lower
+		if attached p_range.lower as low then
+			p_wrapper.set_lower (low.as_string) --TODO: TIME EXPRESSED AS STRING
+		end
+		--lowerincluded
+		if attached p_range.lower_included as li then
+			p_wrapper.set_lowerincluded (li)
+		end
+		--lowerunbounded
+		if attached p_range.lower_unbounded as lu then
+			p_wrapper.set_lowerunbounded (lu)
+		end
+		--upper
+		if attached p_range.upper as up then
+			p_wrapper.set_upper (up.as_string) --TODO: TIME EXPRESSED AS STRING
+		end
+		--upperincluded
+		if attached p_range.upper_included as ui then
+			p_wrapper.set_upperincluded (ui)
+		end
+		--upperunbounded
+		if attached p_range.upper_unbounded as uu then
+			p_wrapper.set_upperunbounded (uu)
+		end
+
+	end
+
+	copy_c_string(p_wrapper:CSTRING_WRAPPER_GEN; p_cstring:C_STRING)
+	require
+		p_not_null: attached p_wrapper and attached p_cstring
+	do
+		--assumedvalue
+		if attached p_cstring.assumed_value as aval then
+			p_wrapper.set_assumedvalue (aval)
+		end
+		--list
+		if attached p_cstring.strings as list then
+			from
+				list.start
+			until
+				list.after
+			loop
+				p_wrapper.add_list (list.item_for_iteration)
+				list.forth
+			end
+		end
+		--listopen
+		if attached p_cstring.is_open as lio then--TODO: IS IS_OPEN THE FIELD FOR LIST_OPEN?? Ask T. BEALE
+			p_wrapper.set_listopen (lio)
+		end
+		--pattern
+		if attached p_cstring.regexp as pat then --TODO: IS REGEXP THE FIELD FOR PATTERN?
+			p_wrapper.set_pattern (pat)
+		end
+	end
+
+
+	copy_c_real(p_wrapper:CREAL_WRAPPER_GEN;p_creal:C_REAL)
+	require
+		p_not_null: attached p_wrapper and attached p_creal
+	do
+		--assumedvalue
+		if attached p_creal.assumed_value as aval then
+			p_wrapper.set_assumedvalue (aval.out)--TODO: REAL REPRESENTED AS STRING
+		end
+		--list
+		if attached p_creal.list as li then
+			from
+				li.start
+			until
+				li.after
+			loop
+				p_wrapper.add_list (li.item_for_iteration.out) --TODO: REAL REPRESENTED AS STRING
+				li.forth
+			end
+		end
+		--range
+		if attached p_creal.range as range then
+			copy_interval_of_real(p_wrapper.get_range, range)
+		end
+	end
+
+	copy_interval_of_real(p_wrapper:INTERVALOFREAL_WRAPPER_GEN;p_range:INTERVAL[REAL_32])
+	require
+		p_not_null: attached p_wrapper and attached p_range
+	do
+		--lower
+		if attached p_range.lower as low then
+			p_wrapper.set_lower (low.out) --TODO: REAL REPRESENTED AS STRING
+		end
+		--lowerincluded
+		if attached p_range.lower_included as li then
+			p_wrapper.set_lowerincluded (li)
+		end
+		--lowerunbounded
+		if attached p_range.lower_unbounded as lunb then
+			p_wrapper.set_lowerunbounded (lunb)
+		end
+		--upper
+		if attached p_range.upper as up then
+			p_wrapper.set_upper (up.out)--TODO: REAL REPRESENTED AS STRING
+		end
+		--upperincluded
+		if attached p_range.upper_included as ui then
+			p_wrapper.set_upperincluded (ui)
+		end
+		--upperunbounded
+		if attached p_range.upper_unbounded as uu then
+			p_wrapper.set_upperunbounded (uu)
+		end
+	end
+
+	copy_c_integer(p_wrapper:CINTEGER_WRAPPER_GEN; p_cinteger:C_INTEGER)
+	require
+		p_not_null: attached p_wrapper and attached p_cinteger
+	do
+		--assumedvalue
+		if attached p_cinteger.assumed_value as aval then
+			p_wrapper.set_assumedvalue (aval.item)
+		end
+		--list
+		if attached p_cinteger.list as li then
+			from
+				li.start
+			until
+				li.after
+			loop
+				p_wrapper.add_list (li.item_for_iteration.item)
+				li.forth
+			end
+		end
+		--range
+		if attached p_cinteger.range as range then
+			copy_interval_of_integer(p_wrapper.get_range, range)
+		end
+	end
+
+	copy_interval_of_integer(p_wrapper:INTERVALOFINTEGER_WRAPPER_GEN;p_range:INTERVAL[INTEGER_32])
+	require
+		p_not_null: attached p_wrapper and attached p_range
+	do
+		--lower
+		if attached p_range.lower as low then
+			p_wrapper.set_lower (low.item)
+		end
+		--lowerincluded
+		if attached p_range.lower_included as li then
+			p_wrapper.set_lowerincluded (li)
+		end
+		--lowerunbounded
+		if attached p_range.lower_unbounded as lu then
+			p_wrapper.set_lowerunbounded (lu)
+		end
+		--upper
+		if attached p_range.upper as upp then
+			p_wrapper.set_upper (upp.item)
+		end
+		--upperincluded
+		if attached p_range.upper_included as ui then
+			p_wrapper.set_upperincluded (ui)
+		end
+		--upperunbounded
+		if attached p_range.upper_unbounded as uu then
+			p_wrapper.set_upperunbounded (uu)
+		end
+	end
+
+	copy_c_duration(p_wrapper:CDURATION_WRAPPER_GEN; cduration:C_DURATION)
+	require
+		p_not_null: attached p_wrapper and attached cduration
+	do
+		--assumed value
+		if attached cduration.assumed_value as aval then
+			p_wrapper.set_assumedvalue (aval.as_string)--TODO: DURATION REPRESENTED AS STRING
+		end
+		--pattern
+		if attached cduration.pattern as pat then
+			p_wrapper.set_pattern (pat)
+		end
+		--range
+		if attached cduration.range as range then
+			copy_interval_of_duration(p_wrapper.get_range, range)
+		end
+	end
+
+	copy_interval_of_duration(p_wrapper:INTERVALOFDURATION_WRAPPER_GEN; p_range:INTERVAL[ISO8601_DURATION])
+	require
+		p_not_null: attached p_wrapper and attached p_range
+	do
+		--lower
+		if attached p_range.lower as low then
+			p_wrapper.set_lower (low.as_string) --TODO: DURATION EXPRESSED AS STRING
+		end
+		--lowerincluded
+		if attached p_range.lower_included as li then
+			p_wrapper.set_lowerincluded (li)
+		end
+		--lowerunbounded
+		if attached p_range.lower_unbounded as lu then
+			p_wrapper.set_lowerunbounded (lu)
+		end
+		--upper
+		if attached p_range.upper as up then
+			p_wrapper.set_upper (up.as_string) --TODO: DURATION EXPRESSED AS STRING
+		end
+		--upperincluded
+		if attached p_range.upper_included as uinc then
+			p_wrapper.set_upperincluded (uinc)
+		end
+		--upperunbounded
+		if attached p_range.upper_unbounded as uu then
+			p_wrapper.set_upperunbounded (uu)
+		end
+	end
+
+	copy_c_date_time(p_wrapper:CDATETIME_WRAPPER_GEN; p_cdatetime:C_DATE_TIME)
+	require
+		p_not_null: attached p_wrapper and attached p_cdatetime
+	do
+		--assumedvalue
+		if attached p_cdatetime.assumed_value as aval then
+			p_wrapper.set_assumedvalue (aval.as_string)--TODO: DATETIME REPRESENTED AS STRING
+		end
+		--pattern
+		if attached p_cdatetime.pattern as pat then
+			p_wrapper.set_pattern (pat)
+		end
+		--range
+		if attached p_cdatetime.range as range then
+			copy_c_date_time_interval(p_wrapper.get_range, range)
+		end
+		--timezonevalidity --TODO: WHERE IS THIS VALUE IN EIFFEL CODE??
+	end
+
+	copy_c_date_time_interval(p_wrapper:INTERVALOFDATETIME_WRAPPER_GEN; range:INTERVAL[ISO8601_DATE_TIME])
+	require
+		p_not_null: attached p_wrapper and attached range
+	do
+		--lower
+		if attached range.lower as low then
+			p_wrapper.set_lower (low.as_string) --TODO: DATETIME REPRESENTED AS STRING
+		end
+		--lowerincluded
+		if attached range.lower_included as li then
+			p_wrapper.set_lowerincluded (li)
+		end
+		--lowerunbounded
+		if attached range.lower_unbounded as lu then
+			p_wrapper.set_lowerunbounded (lu)
+		end
+		--upper
+		if attached range.upper as up then
+			p_wrapper.set_upper (up.as_string) --TODO: DATETIME REPRESENTED AS STRING
+		end
+		--upperincluded
+		if attached range.upper_included as ui then
+			p_wrapper.set_upperincluded (ui)
+		end
+		--upperunbounded
+		if attached range.upper_unbounded as uu then
+			p_wrapper.set_upperunbounded (uu)
+		end
+	end
+
+	copy_c_boolean(p_wrapper:CBOOLEAN_WRAPPER_GEN; p_cboolean:C_BOOLEAN)
+	require
+		p_not_null: attached p_wrapper and attached p_cboolean
+	do
+			--assumedvalue
+			if attached p_cboolean.assumed_value as aval then
+				p_wrapper.set_assumedvalue (aval.item)
+			end
+			--falsevalid
+			if attached p_cboolean.false_valid as fv then
+				p_wrapper.set_falsevalid (fv)
+			end
+			--truevalid
+			if attached p_cboolean.true_valid as tv then
+				p_wrapper.set_truevalid (tv)
+			end
+	end
+
+	copy_c_date(p_wrapper:CDATE_WRAPPER_GEN; p_cdate:C_DATE)
+	require
+		p_not_null: attached p_wrapper and attached p_cdate
+	do
+		--assumedvalue
+		if attached p_cdate.assumed_value as aval then
+			p_wrapper.set_assumedvalue ("value:" + aval.value + ";year:" + aval.year.out + ";month:" + aval.month.out + ";day:" + aval.day.out)
+		end
+		--pattern
+		if attached p_cdate.pattern as pat then
+			p_wrapper.set_pattern (pat)
+		end
+		--range
+		if attached p_cdate.range as range then
+			copy_interval_of_date(p_wrapper.get_range, range)
+		end
+		--timezonevalidity --TODO: TALK TO THOMAS BEALE: WHERE IS THIS VALUE IN THE EIFFEL IMPLEMENTATION?
+
+
+	end
+
+	copy_interval_of_date(p_wrapper:INTERVALOFDATE_WRAPPER_GEN; range:INTERVAL[ISO8601_DATE])
+	do
+		--lower
+		if attached range.lower as lower then
+			p_wrapper.set_lower (lower.as_string)--TODO: DATE REPRESENTED AS STRING
+		end
+		--lowerincluded
+		if attached range.lower_included as li then
+			p_wrapper.set_lowerincluded (li)
+		end
+		--lowerunbounded
+		if attached range.lower_unbounded as lu then
+			p_wrapper.set_lowerunbounded (lu)
+		end
+		--upper
+		if attached range.upper as up then
+			p_wrapper.set_upper (up.as_string)--TODO: DATE REPRESENTED AS STRING
+		end
+		--upperincluded
+		if attached range.upper_included as ui then
+			p_wrapper.set_upperincluded (ui)
+		end
+		--upperunbounded
+		if attached range.upper_unbounded as uu then
+			p_wrapper.set_upperunbounded (uu)
 		end
 	end
 

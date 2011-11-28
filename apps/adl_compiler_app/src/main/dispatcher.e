@@ -215,7 +215,7 @@ feature --methods
 	local
 		arc_list:ARCHETYPELIST_WRAPPER_GEN
 		loop_index:INTEGER
-		names:ARRAY[STRING]
+		names:ARRAYED_LIST[STRING]
 	do
 		create arc_list.make
 		arc_list.set_is_root_object(true)

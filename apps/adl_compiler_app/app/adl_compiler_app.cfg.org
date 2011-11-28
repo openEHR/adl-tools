@@ -1,0 +1,85 @@
+--
+-- adl_workbench.exe configuration settings (dADL format)
+-- Automatically written by application
+--
+
+	file_system = <
+		html_export_directory = <"C:\\Users\\Thomas\\AppData\\Local\\openEHR\\adl_workbench\\html">
+		test_diff_directory = <"C:\\Users\\Thomas\\AppData\\Local\\openEHR\\adl_workbench\\diff_test">
+		rm_schema_directory = <"C:\\project\\openehr\\knowledge2\\TRUNK\\rm_schemas">
+		compiler_gen_directory = <"C:\\Users\\Thomas\\AppData\\Local\\openEHR\\adl_workbench\\gen">
+		current_work_directory = <"C:\\temp">
+	>
+	commands = <
+		text_editor_command = <"C:\\Program Files\\Vim\\vim72\\gvim.exe">
+		editor_app_command = <"C:\\Program Files\\Vim\\vim72\\gvim.exe">
+		difftool_command = <"\"C:\\Program Files\\winmerge\\winmergeU.exe\" /e /u /f *.*">
+	>
+	gui = <
+		test_split_position = <343>
+		app_width = <1515>
+		app_height = <916>
+		app_x_position = <1560>
+		app_y_position = <-16>
+		app_maximised = <False>
+		expand_node_tree = <True>
+		show_line_numbers = <False>
+		display_archetype_source = <True>
+		show_entire_ontology = <False>
+		differential_view = <False>
+		show_technical_view = <False>
+		show_reference_model_view = <False>
+		catalogue_split_position = <243>
+		total_split_position = <572>
+		explorer_split_position = <288>
+		archetype_template_split_position = <640>
+		main_notebook_tab_pos = <1>
+		path_filter_combo_selection = <"All">
+		path_view_check_list_settings = <"Machine", "RM Type">
+		use_rm_pixmaps = <True>
+	>
+	rm_schemas = <
+		load_list = <"cen_13606_0.95", "openehr_adltest_1.0.0", "openehr_ehr_extract_2.0.0">
+	>
+	profile = <
+		current_profile_name = <"EHR_extract">
+		profiles = <
+			["ADL_test"] = <
+				reference_repository = <"C:\\project\\openehr\\knowledge2\\TRUNK\\archetypes\\ADL_1.5_test">
+			>
+			["dadl_round_trip"] = <
+				reference_repository = <"C:\\project\\openehr\\knowledge2\\TRUNK\\archetypes\\ADL_1.5_test\\dadl_round_trip">
+			>
+			["EHR_extract"] = <
+				reference_repository = <"C:\\project\\openehr\\knowledge2\\TRUNK\\archetypes\\openEHR_examples\\ehr_extract_template\\Reference">
+				work_repository = <"C:\\project\\openehr\\knowledge2\\TRUNK\\archetypes\\openEHR_examples\\ehr_extract_template\\Working">
+			>
+			["SG_MOHH"] = <
+				reference_repository = <"C:\\project\\SG_MOHH\\controlled\\50.Deliverables\\07.Knowledge\\Repository\\Reference">
+				work_repository = <"C:\\project\\SG_MOHH\\controlled\\50.Deliverables\\07.Knowledge\\Repository\\Working">
+			>
+			["CKM_06_Jun_2011"] = <
+				reference_repository = <"C:\\project\\openehr\\knowledge\\archetypes\\CKM_2011_06_06">
+			>
+			["EN13606"] = <
+				reference_repository = <"C:\\project\\openehr\\knowledge2\\TRUNK\\archetypes\\en13606_examples">
+			>
+			["Nehta_08_09_2011"] = <
+				reference_repository = <"C:\\project\\openehr\\knowledge\\archetypes\\Nehta_2011_09_08">
+				work_repository = <"">
+			>
+			["epSOS"] = <
+				reference_repository = <"C:\\project\\openehr\\knowledge\\archetypes\\epSOS\\epSOS-EN13606-archetypes">
+				work_repository = <"">
+			>
+		>
+	>
+	compiler = <
+		adl_version_for_flat_output = <"1.5">
+		validation_strict = <False>
+		rm_flattening = <True>
+	>
+	general = <
+		error_reporting_level = <9002>
+		current_language = <"en">
+	>
