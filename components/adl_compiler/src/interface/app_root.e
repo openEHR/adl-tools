@@ -47,6 +47,7 @@ feature -- Initialisation
 		local
 			dummy_error_accumulator: ERROR_ACCUMULATOR
 			strx: STRING
+			a, b: REAL
 		once
 			-- see DT_TYPES note above; a hack needed to make string name -> type_id work for class names
 			-- that clash with Eiffel type names

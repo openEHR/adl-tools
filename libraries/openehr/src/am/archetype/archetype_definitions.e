@@ -33,6 +33,9 @@ feature -- Definitions
 	Syntax_type_json: STRING = "json"
 			-- Name of JSON syntax type.
 
+	Syntax_type_yaml: STRING = "yaml"
+			-- Name of YAML syntax type.
+
 	File_ext_archetype_web_page: STRING = ".html"
 			-- Extension of web page containing ADL syntax
 
@@ -60,6 +63,9 @@ feature -- Definitions
 
 	File_ext_json_default: STRING = ".json"
 			-- Default extension for JSON format archetype files that don't have some other extension
+
+	File_ext_yaml_default: STRING = ".yaml"
+			-- Default extension for YAML format archetype files that don't have some other extension
 
 	Adl_versions: ARRAYED_LIST [STRING]
 			-- list of ADL versions known in this tool

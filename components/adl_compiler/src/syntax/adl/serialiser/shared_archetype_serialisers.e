@@ -57,6 +57,7 @@ feature -- Initialisation
 			dt_serialisers.put (create {DT_DADL_SERIALISER}.make (create {HTML_DADL_SERIALISATION_PROFILE}.make (Syntax_type_adl_html)), Syntax_type_adl_html)
 			dt_serialisers.put (create {DT_XML_SERIALISER}.make (create {XML_DT_SERIALISATION_PROFILE}.make (Syntax_type_xml)), Syntax_type_xml)
 			dt_serialisers.put (create {DT_JSON_SERIALISER}.make (create {JSON_DT_SERIALISATION_PROFILE}.make (Syntax_type_json)), Syntax_type_json)
+			dt_serialisers.put (create {DT_YAML_SERIALISER}.make (create {YAML_DT_SERIALISATION_PROFILE}.make (Syntax_type_yaml)), Syntax_type_yaml)
 		end
 
 feature -- Access
@@ -112,6 +113,7 @@ feature -- Access
 			Result.put (File_ext_dadl, Syntax_type_dadl)
 			Result.put (File_ext_xml_default, Syntax_type_xml)
 			Result.put (File_ext_json_default, Syntax_type_json)
+			Result.put (File_ext_yaml_default, Syntax_type_yaml)
 		ensure
 			not_empty: not Result.is_empty
 		end
