@@ -91,7 +91,7 @@ feature -- Visitor
 			-- start serialising a DT_PRIMITIVE_OBJECT
 		do
 			start_object_leaf (a_node, depth)
-			last_result.append (apply_style (a_node.as_serialised_string (agent primitive_value_to_dadl_string, agent dadl_clean), STYLE_VALUE))
+			last_result.append (apply_style (a_node.as_serialised_string (agent primitive_value_to_dadl_string, agent clean), STYLE_VALUE))
 		end
 
 	end_primitive_object (a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER)
@@ -104,7 +104,7 @@ feature -- Visitor
 			-- start serialising an DT_PRIMITIVE_OBJECT_LIST
 		do
 			start_object_leaf (a_node, depth)
-			last_result.append (apply_style (a_node.as_serialised_string (agent primitive_value_to_dadl_string, ", ", ", ...", agent dadl_clean), STYLE_VALUE))
+			last_result.append (apply_style (a_node.as_serialised_string (agent primitive_value_to_dadl_string, ", ", ", ...", agent clean), STYLE_VALUE))
 		end
 
 	end_primitive_object_list (a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER)
@@ -164,7 +164,7 @@ feature {NONE} -- Implementation
 				-- indent
 				last_result.append (create_indent (depth//2 + multiple_attr_count))
 				-- tag id
-				last_result.append (apply_style ("[%"" + dadl_clean (a_node.id) + "%"]", STYLE_IDENTIFIER))
+				last_result.append (apply_style ("[%"" + clean (a_node.id) + "%"]", STYLE_IDENTIFIER))
 				-- ' = '
 				last_result.append (format_item (FMT_SPACE) + apply_style (symbol (SYM_EQ), STYLE_OPERATOR) + format_item (FMT_SPACE))
 			end

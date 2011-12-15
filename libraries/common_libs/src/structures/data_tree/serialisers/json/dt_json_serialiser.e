@@ -101,7 +101,7 @@ feature -- Visitor
 			-- start serialising a DT_PRIMITIVE_OBJECT
 		do
 			start_object_item (a_node, depth)
-			last_result.append (a_node.as_serialised_string (agent primitive_value_to_json_string, agent dadl_clean))
+			last_result.append (a_node.as_serialised_string (agent primitive_value_to_json_string, agent clean))
 		end
 
 	end_primitive_object (a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER)
@@ -115,7 +115,7 @@ feature -- Visitor
 		do
 			last_result.append (symbol (SYM_JSON_START_ARRAY))
 			start_object_item (a_node, depth)
-			last_result.append (a_node.as_serialised_string (agent primitive_value_to_json_string, ", ", "", agent dadl_clean))
+			last_result.append (a_node.as_serialised_string (agent primitive_value_to_json_string, ", ", "", agent clean))
 		end
 
 	end_primitive_object_list (a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER)
@@ -191,7 +191,7 @@ feature {NONE} -- Implementation
 				-- indent
 				last_result.append (create_indent (depth//2 + multiple_attr_count))
 				if not a_node.id.is_integer then
-					last_result.append (format_attr_name (dadl_clean (a_node.id)))
+					last_result.append (format_attr_name (clean (a_node.id)))
 					last_result.append (symbol (SYM_JSON_EQ))
 				end
 			end

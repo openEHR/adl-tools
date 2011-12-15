@@ -41,8 +41,16 @@ feature -- Visitor
 				last_result.append (format_item (FMT_START_BODY))
 			end
 			start_object_item (a_node, depth)
-			if not a_node.is_root and then last_result.item (last_result.count) /= '%N' then
-				last_result.append (format_item (FMT_NEWLINE))
+
+			-- only output a newline if we did not just output a '- ' sequence item marker;
+			-- if we did, set a flag, so that the first attribute we hit doesn't have an indent
+			-- (since it is immediately after the '- ')
+			if not a_node.is_root then
+				if a_node.is_addressable and then a_node.id.is_integer then
+					entered_complex_object := True
+				else
+					last_result.append (format_item (FMT_NEWLINE))
+				end
 			end
 		end
 
@@ -61,7 +69,11 @@ feature -- Visitor
 			-- start serialising a DT_ATTRIBUTE_NODE
 		do
 			-- output: indent $attr_name:
-			last_result.append (create_indent (depth//2 + multiple_attr_count))
+			if not entered_complex_object then
+				last_result.append (create_indent (depth//2 + multiple_attr_count))
+			else
+				entered_complex_object := False
+			end
 			last_result.append (a_node.im_attr_name)
 			last_result.append (symbol (SYM_YAML_EQ))
 
@@ -83,7 +95,7 @@ feature -- Visitor
 			-- start serialising a DT_PRIMITIVE_OBJECT
 		do
 			start_object_item (a_node, depth)
-			last_result.append (a_node.as_serialised_string (agent primitive_value_to_yaml_string, agent dadl_clean))
+			last_result.append (a_node.as_serialised_string (agent primitive_value_to_yaml_string, agent clean))
 		end
 
 	end_primitive_object (a_node: DT_PRIMITIVE_OBJECT; depth: INTEGER)
@@ -97,7 +109,7 @@ feature -- Visitor
 		do
 			last_result.append (symbol (Sym_yaml_sequence_start))
 			start_object_item (a_node, depth)
-			last_result.append (a_node.as_serialised_string (agent primitive_value_to_yaml_string, ", ", "", agent dadl_clean))
+			last_result.append (a_node.as_serialised_string (agent primitive_value_to_yaml_string, ", ", "", agent clean))
 		end
 
 	end_primitive_object_list (a_node: DT_PRIMITIVE_OBJECT_LIST; depth: INTEGER)
@@ -161,6 +173,10 @@ feature {NONE} -- Implementation
 	multiple_attr_count: INTEGER
 			-- counter for how many multiple attributes at the current point
 
+	entered_complex_object: BOOLEAN
+			-- True if we just entered a complex object; this flag is used to enable a '-' (Sym_yaml_sequence_entry)
+			-- to be output on the start of the first line of a complex object rather than on the line above.
+
 	start_object_item (a_node: DT_OBJECT_ITEM; depth: INTEGER)
 			-- start serialising a DT_OBJECT_LEAF
 		do
@@ -171,7 +187,7 @@ feature {NONE} -- Implementation
 				last_result.append (create_indent (depth//2 + multiple_attr_count))
 				last_result.append (symbol (Sym_yaml_sequence_entry))
 				if not a_node.id.is_integer then
-					last_result.append (dadl_clean (a_node.id))
+					last_result.append (clean (a_node.id))
 					last_result.append (symbol (SYM_YAML_EQ))
 				end
 			end

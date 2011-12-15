@@ -23,6 +23,10 @@ inherit
 create
 	make
 
+feature -- Definitions
+
+	Sym_yaml_sequence_entry_string: STRING = "- "
+
 feature {NONE} -- Implementation
 
 	symbols: HASH_TABLE [STRING, INTEGER]
@@ -31,7 +35,7 @@ feature {NONE} -- Implementation
 			create Result.make(0)
 			Result.put ("[", Sym_yaml_sequence_start)
 			Result.put ("]", Sym_yaml_sequence_end)
-			Result.put ("- ", Sym_yaml_sequence_entry)
+			Result.put (create {STRING}.make_filled (' ', Indent_count - Sym_yaml_sequence_entry_string.count) + "- ", Sym_yaml_sequence_entry)
 			Result.put (",", SYM_YAML_ITEM_DELIMITER)
 			Result.put (": ", SYM_YAML_EQ)
 		end

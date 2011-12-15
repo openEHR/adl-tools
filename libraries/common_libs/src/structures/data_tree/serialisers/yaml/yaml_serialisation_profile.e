@@ -15,6 +15,10 @@ deferred class YAML_SERIALISATION_PROFILE
 inherit
 	SERIALISATION_PROFILE
 
+feature -- Definitions
+
+	Indent_count: INTEGER = 4
+
 feature {ANY_SERIALISER} -- Access
 
 	format_items: HASH_TABLE [STRING, INTEGER]
@@ -23,7 +27,7 @@ feature {ANY_SERIALISER} -- Access
 			create Result.make(0)
 			Result.put(" ",			FMT_SPACE)
 			Result.put("%N",		FMT_NEWLINE)
-			Result.put("    ",		FMT_INDENT)
+			Result.put(create {STRING}.make_filled (' ', Indent_count),		FMT_INDENT)
 			Result.put(", ",		FMT_LIST_ITEM_SEPARATOR)
 			Result.put("%%YAML 1.1%N---%N",		FMT_START_BODY)
 			Result.put("...",		FMT_END_BODY)

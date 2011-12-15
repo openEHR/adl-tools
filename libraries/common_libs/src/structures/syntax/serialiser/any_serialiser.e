@@ -123,11 +123,11 @@ feature -- Factory
 			Result := profile.apply_style (elem, a_style)
 		end
 
-	dadl_clean (elem: attached STRING): attached STRING
+	clean (elem: attached STRING): attached STRING
 			-- clean `elem' using quoting rules of ADL
 		require
 		do
-			Result := profile.clean(elem)
+			Result := profile.clean (elem)
 		end
 
 	create_indent (indent_level: INTEGER): STRING

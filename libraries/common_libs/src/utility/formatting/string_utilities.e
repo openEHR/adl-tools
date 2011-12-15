@@ -94,49 +94,41 @@ feature -- Conversion
 			if attached {STRING_GENERAL} a_prim_val then
 				Result := "%"" + a_prim_val.out + "%""
 			elseif attached {CHARACTER} a_prim_val or attached {CHARACTER_32} a_prim_val then
-				Result := "%'" + a_prim_val.out + "%'"
+				Result := a_prim_val.out
 			elseif attached {CODE_PHRASE} a_prim_val then
-				Result := "%"" + a_prim_val.out + "%""
+				Result := a_prim_val.out
 			else
 				-- FIXME: duration.out does not exist in Eiffel, and in any case would not be ISO8601-compliant
 				if attached {DATE_TIME_DURATION} a_prim_val as a_dur then
-					Result := "%"" + (create {ISO8601_DURATION}.make_date_time_duration(a_dur)).as_string + "%""
+					Result := (create {ISO8601_DURATION}.make_date_time_duration(a_dur)).as_string
 				elseif attached {DATE_TIME} a_prim_val as a_dt then
-					Result := "%"" + (create {ISO8601_DATE_TIME}.make_date_time(a_dt)).as_string + "%""
+					Result := (create {ISO8601_DATE_TIME}.make_date_time(a_dt)).as_string
 				else
 					Result := a_prim_val.out.as_lower
 					-- FIXME: REAL.out is broken (still the case in Eiffel 6.6)
 					if (attached {REAL_32} a_prim_val or attached {REAL_64} a_prim_val) and then Result.index_of ('.', 1) = 0 then
-						Result.append(".0")
+						Result.append (".0")
 					end
 				end
 			end
 		end
 
 	quote_clean (str: STRING): STRING
-			-- if any quoting needed, generate clean copy of `str' and convert
+			-- generate clean copy of `str' and convert
 			--	\ to \\
 			-- 	" to \"
 			-- otherwise just return original string
-		require
-			String_attached: str /= Void
 		local
-			i, j: INTEGER
+			i: INTEGER
 		do
-			if str.has ('\') or str.has('"') then
-				Result := str.twin
-				from
-					i := 1
-					j := 1
-				until
-					i > str.count
-				loop
-					if str.item(i) = '\' or str.item(i) = '"' then
-						Result.insert_character ('\', j)
-						j := j + 1
+			if str.has ('\') or str.has ('"') then
+				create Result.make (str.count)
+				from i := 1 until i > str.count loop
+					if str.item (i) = '\' or str.item (i) = '"' then
+						Result.append_character ('\')
 					end
+					Result.append_character (str.item (i))
 					i := i + 1
-					j := j + 1
 				end
 			else
 				Result := str
@@ -151,9 +143,8 @@ feature -- Element Change
 			-- in str, replace every occurrence of each char in s1
 			-- by corr char in s2, or delete them, if s2 empty
 	    require
-	    	Str_valid: str /= Void and then not str.is_empty
+	    	Str_valid: not str.is_empty
 			S1_valid: not s1.is_empty
-			S2_valid: s2 /= Void
 			Valid_arg_lengths: s1.count = s2.count or else s2.count = 0
 	    local
 			i, j: INTEGER
