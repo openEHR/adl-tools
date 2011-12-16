@@ -137,6 +137,32 @@ feature -- Conversion
 			Result_attached: Result /= Void
 		end
 
+	json_clean (str: STRING): STRING
+			-- generate clean copy of `str' and convert
+			--	\ to \\
+			-- 	" to \"
+			-- otherwise just return original string
+		local
+			i: INTEGER
+		do
+			create Result.make (str.count)
+			from i := 1 until i > str.count loop
+				if str.item (i) = '%N'  then
+					Result.append ("\n")
+				elseif str.item (i) = '%T'  then
+					Result.append ("\t")
+				else
+					if str.item (i) = '\' or str.item (i) = '"' then
+						Result.append_character ('\')
+					end
+					Result.append_character (str.item (i))
+				end
+				i := i + 1
+			end
+		ensure
+			Result_attached: Result /= Void
+		end
+
 feature -- Element Change
 
 	translate (str, s1, s2: STRING)

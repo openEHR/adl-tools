@@ -15,6 +15,9 @@ deferred class JSON_SERIALISATION_PROFILE
 
 inherit
 	SERIALISATION_PROFILE
+		redefine
+			clean
+		end
 
 feature {ANY_SERIALISER} -- Access
 
@@ -45,6 +48,21 @@ feature {ANY_SERIALISER} -- Factory
 	apply_style (elem:STRING; a_style:INTEGER): STRING
 			-- apply `a_style' to `elem'
 		do
+		end
+
+	clean (str: attached STRING): attached STRING
+			-- generate clean copy of `str' by inserting \ quoting for chars in `quoted_chars' not already quoted in `str':
+			-- find all instances of '\' and '"' that are not already being used in the quote patterns, e.g. like:
+			--	\n, \r, \t, \\, \", \'
+			-- and convert
+			--	\ to \\
+			-- 	" to \"
+		do
+			if not str.is_empty then
+				Result := json_clean (str)
+			else
+				Result := str
+			end
 		end
 
 end

@@ -125,7 +125,6 @@ feature -- Factory
 
 	clean (elem: attached STRING): attached STRING
 			-- clean `elem' using quoting rules of ADL
-		require
 		do
 			Result := profile.clean (elem)
 		end
