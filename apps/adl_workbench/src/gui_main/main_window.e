@@ -438,7 +438,11 @@ feature {NONE} -- Initialization
 			add_menu_shortcut (repository_menu_interrupt_build, key_escape, False, False, True)
 			add_menu_shortcut (repository_menu_refresh, key_r, True, False, False)
 
+			-- ctrl-L = reload current RM schemas
 			add_menu_shortcut (rm_schemas_menu_reload_schemas, key_l, True, False, False)
+
+			-- shift-ctrl-L = show line numbers
+			add_shortcut (agent  set_show_line_numbers (not show_line_numbers), key_l, True, False, False)
 		end
 
 	initialise_session_ui_basic

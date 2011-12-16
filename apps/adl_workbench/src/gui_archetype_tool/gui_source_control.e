@@ -49,11 +49,15 @@ feature {NONE}-- Initialization
 			ev_source_controls_vbox.disable_item_expand (ev_line_numbers_cb)
 			ev_source_controls_vbox.set_border_width (border_width)
 			ev_source_controls_vbox.set_padding_width (padding_width)
-			ev_line_numbers_cb.set_text (create_message_content ("line_numbers_cb_text", Void))
+
+			ev_line_numbers_cb.set_text (create_message_content ("add_line_numbers_text", Void))
+			ev_line_numbers_cb.set_tooltip (create_message_content ("add_line_numbers_tooltip", Void))
+
 			ev_souce_rich_text.set_tab_width ((ev_souce_rich_text.tab_width/2).floor.max (1))  -- this is in pixels, and assumes 7-pixel wide chars
 
 			-- set events: serialisation controls
-			ev_line_numbers_cb.select_actions.extend (agent try_repopulate_with_line_numbers)
+			ev_line_numbers_cb.select_actions.extend (agent do set_show_line_numbers (ev_line_numbers_cb.is_selected) end)
+			ev_line_numbers_cb.select_actions.extend (agent try_repopulate)
 
 			differential_view := True
 		end
@@ -72,12 +76,6 @@ feature {NONE} -- Implementation
 
 	ev_line_numbers_cb: EV_CHECK_BUTTON
 
-	try_repopulate_with_line_numbers
-		do
-			set_show_line_numbers (ev_line_numbers_cb.is_selected)
-			try_repopulate
-		end
-
 	do_clear
 		do
 			ev_souce_rich_text.remove_text
@@ -86,49 +84,22 @@ feature {NONE} -- Implementation
 	do_populate
 		do
 			if source.has_legacy_flat_file then
-				populate_source_text_with_line_numbers (source.legacy_flat_text)
+				populate_source_text (source.legacy_flat_text)
 			else
-				populate_source_text_with_line_numbers (source.differential_text)
+				populate_source_text (source.differential_text)
 			end
 		end
 
-	populate_source_text_with_line_numbers (text: attached STRING)
+	populate_source_text (text: attached STRING)
 			-- Display `text' in `source_rich_text', optionally with each line preceded by line numbers.
 		local
 			s: STRING
-			len, left_pos, right_pos, number: INTEGER
 		do
 			if show_line_numbers then
-				from
-					len := text.count
-					create s.make (len)
-					left_pos := 1
-					number := 1
-				until
-					left_pos > len
-				loop
-					s.append (number.out)
-
-					if number < 1000 then
-						s.append ("%T")
-					end
-
-					s.append (" ")
-
-					right_pos := text.index_of ('%N', left_pos)
-
-					if right_pos = 0 then
-						right_pos := len
-					end
-
-					s.append (text.substring (left_pos, right_pos))
-					left_pos := right_pos + 1
-					number := number + 1
-				end
+				s := add_line_numbers (text, 4, " ")
 			else
 				s := text
 			end
-
 			ev_souce_rich_text.set_text (utf8 (s))
 		end
 

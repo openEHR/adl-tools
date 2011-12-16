@@ -226,6 +226,49 @@ feature -- Element Change
 			end
 		end
 
+	add_line_numbers (text: STRING; leader_width: INTEGER; spacer: detachable STRING): STRING
+			-- add line numbers to each line of `text' within a width of `leader_width', and with an optional
+			-- spacer 'spacer'
+			-- If leader_width = 4, and spacer = '  ', then the first line looks like
+			-- "   1  ", i.e. "SSS1SS", where 'S' stands for a space
+		local
+			text_len, left_pos, right_pos, line_no: INTEGER
+			line_no_str, leader: STRING
+		do
+			create leader.make_filled (' ', leader_width - 1)
+			text_len := text.count
+			create Result.make (text_len)
+			from
+				left_pos := 1
+				line_no := 1
+			until
+				left_pos > text_len
+			loop
+				line_no_str := line_no.out
+
+				-- recreate the leader string when we hit a new power of 10
+				if line_no \\ 10 = 0 and then line_no_str.count <= leader_width then
+					create leader.make_filled (' ', leader_width - line_no_str.count)
+				end
+				Result.append (leader)
+				Result.append (line_no_str)
+
+				if attached spacer then
+					Result.append (spacer)
+				end
+
+				right_pos := text.index_of ('%N', left_pos)
+
+				if right_pos = 0 then
+					right_pos := text_len
+				end
+
+				Result.append (text.substring (left_pos, right_pos))
+				left_pos := right_pos + 1
+				line_no := line_no + 1
+			end
+		end
+
 feature -- Unicode
 
 	utf8 (utf8_bytes: STRING): attached STRING_32

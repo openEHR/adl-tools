@@ -46,6 +46,7 @@ feature {NONE}-- Initialization
 			create ev_serialise_json_rb
 			create ev_serialise_yaml_rb
 			create ev_flatten_with_rm_cb
+			create ev_line_numbers_cb
 			create ev_serialise_padding_cell
 
 			-- connect widgets
@@ -58,8 +59,13 @@ feature {NONE}-- Initialization
 			ev_serialise_rb_vbox.extend (ev_serialise_xml_rb)
 			ev_serialise_rb_vbox.extend (ev_serialise_json_rb)
 			ev_serialise_rb_vbox.extend (ev_serialise_yaml_rb)
+
 			ev_serialise_controls_vbox.extend (ev_flatten_with_rm_cb)
 			ev_serialise_controls_vbox.disable_item_expand (ev_flatten_with_rm_cb)
+
+			ev_serialise_controls_vbox.extend (ev_line_numbers_cb)
+			ev_serialise_controls_vbox.disable_item_expand (ev_line_numbers_cb)
+
 			ev_serialise_controls_vbox.extend (ev_serialise_padding_cell)
 
 			-- set visual characteristics
@@ -79,8 +85,12 @@ feature {NONE}-- Initialization
 			ev_serialise_controls_frame.set_minimum_width (125)
 		--	ev_serialise_controls_frame.set_minimum_height (110)
 			set_serialisation_control_texts
+
 			ev_flatten_with_rm_cb.set_text (create_message_content ("flatten_with_rm_cb_text", Void))
 			ev_flatten_with_rm_cb.set_tooltip (create_message_content ("flatten_with_rm_cb_tooltip", Void))
+
+			ev_line_numbers_cb.set_text (create_message_content ("add_line_numbers_text", Void))
+			ev_line_numbers_cb.set_tooltip (create_message_content ("add_line_numbers_tooltip", Void))
 
 			-- set events: serialisation controls
 			ev_serialise_adl_rb.select_actions.extend (agent try_repopulate)
@@ -89,6 +99,8 @@ feature {NONE}-- Initialization
 			ev_serialise_json_rb.select_actions.extend (agent try_repopulate)
 			ev_serialise_yaml_rb.select_actions.extend (agent try_repopulate)
 			ev_flatten_with_rm_cb.select_actions.extend (agent try_repopulate)
+			ev_line_numbers_cb.select_actions.extend (agent do set_show_line_numbers (ev_line_numbers_cb.is_selected) end)
+			ev_line_numbers_cb.select_actions.extend (agent try_repopulate)
 
 			differential_view := True
 		end
@@ -121,7 +133,7 @@ feature {NONE} -- Implementation
 
 	ev_serialise_adl_rb, ev_serialise_dadl_rb, ev_serialise_xml_rb, ev_serialise_json_rb, ev_serialise_yaml_rb: EV_RADIO_BUTTON
 
-	ev_flatten_with_rm_cb: EV_CHECK_BUTTON
+	ev_flatten_with_rm_cb, ev_line_numbers_cb: EV_CHECK_BUTTON
 
 	do_clear
 		do
@@ -129,69 +141,47 @@ feature {NONE} -- Implementation
 		end
 
 	do_populate
+		local
+			s, syntax_type: STRING
 		do
 			set_serialisation_control_texts
 			if ev_serialise_adl_rb.is_selected then
-				populate_adl_text
-			elseif ev_serialise_dadl_rb.is_selected then
-				populate_dadl_text
-			elseif ev_serialise_xml_rb.is_selected then
-				populate_xml_text
-			elseif ev_serialise_json_rb.is_selected then
-				populate_json_text
-			elseif ev_serialise_yaml_rb.is_selected then
-				populate_yaml_text
+				if not differential_view then
+					s := source.flat_text (ev_flatten_with_rm_cb.is_selected)
+				else
+					s := source.differential_text
+				end
+			else
+				if ev_serialise_dadl_rb.is_selected then
+					syntax_type := Syntax_type_adl
+				elseif ev_serialise_xml_rb.is_selected then
+					syntax_type := Syntax_type_xml
+				elseif ev_serialise_json_rb.is_selected then
+					syntax_type := Syntax_type_json
+				elseif ev_serialise_yaml_rb.is_selected then
+					syntax_type := Syntax_type_yaml
+				end
+				if differential_view then
+					s := source.serialise_object (False, syntax_type)
+				else
+					s := source.serialise_object (True, syntax_type)
+				end
 			end
+
+			populate_serialised_rich_text (s)
 		end
 
-	populate_adl_text
-			-- Display the selected archetype's differential or flat text in `source_rich_text', optionally with line numbers.
+	populate_serialised_rich_text (text: attached STRING)
+			-- Display `text' in `source_rich_text', optionally with each line preceded by line numbers.
+		local
+			s: STRING
 		do
-			if not differential_view then
-				ev_serialised_rich_text.set_text (utf8 (source.flat_text (ev_flatten_with_rm_cb.is_selected)))
+			if show_line_numbers then
+				s := add_line_numbers (text, 4, " ")
 			else
-				ev_serialised_rich_text.set_text (utf8 (source.differential_text))
+				s := text
 			end
-		end
-
-	populate_dadl_text
-			-- Display the selected archetype's differential or flat text in `ev_serialised_rich_text', in dADL format.
-		do
-			if differential_view then
-				ev_serialised_rich_text.set_text (utf8 (source.serialise_object (False, Syntax_type_adl)))
-			else
-				ev_serialised_rich_text.set_text (utf8 (source.serialise_object (True, Syntax_type_adl)))
-			end
-		end
-
-	populate_xml_text
-			-- Display the selected archetype's differential or flat text in `ev_serialised_rich_text', in XML format.
-		do
-			if differential_view then
-				ev_serialised_rich_text.set_text (utf8 (source.serialise_object (False, Syntax_type_xml)))
-			else
-				ev_serialised_rich_text.set_text (utf8 (source.serialise_object (True, Syntax_type_xml)))
-			end
-		end
-
-	populate_json_text
-			-- Display the selected archetype's differential or flat text in `ev_serialised_rich_text', in JSON format.
-		do
-			if differential_view then
-				ev_serialised_rich_text.set_text (utf8 (source.serialise_object (False, Syntax_type_json)))
-			else
-				ev_serialised_rich_text.set_text (utf8 (source.serialise_object (True, Syntax_type_json)))
-			end
-		end
-
-	populate_yaml_text
-			-- Display the selected archetype's differential or flat text in `ev_serialised_rich_text', in YAML format.
-		do
-			if differential_view then
-				ev_serialised_rich_text.set_text (utf8 (source.serialise_object (False, Syntax_type_yaml)))
-			else
-				ev_serialised_rich_text.set_text (utf8 (source.serialise_object (True, Syntax_type_yaml)))
-			end
+			ev_serialised_rich_text.set_text (utf8 (s))
 		end
 
 	set_serialisation_control_texts

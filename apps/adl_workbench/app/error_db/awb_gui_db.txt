@@ -208,9 +208,8 @@ templates = <
 		-- GUI_SERIALISATION_CONTROL
 		["flatten_with_rm_cb_text"] = <"Include RM">
 		["flatten_with_rm_cb_tooltip"] = <"Include RM in flattening process, causing RM existence and cardinality to be included and occurrences to be generated">
-
-		-- GUI_SOURCE_CONTROL
-		["line_numbers_cb_text"] = <"+ Line Numbers">
+		["add_line_numbers_text"] = <"+ Line Numbers">
+		["add_line_numbers_tooltip"] = <"Add line numbers to text">
 
 		-- GUI_VIEW_ARCHETYPE_TREE_CONTROL
 		["rm_closure_tree_node_tooltip"] = <"Archetype model namespace: RM package closure $1%Nfrom schema $2">
