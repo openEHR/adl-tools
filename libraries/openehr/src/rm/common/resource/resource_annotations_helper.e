@@ -15,7 +15,7 @@ class RESOURCE_ANNOTATIONS_HELPER
 
 feature -- Access
 
-	annotations: detachable HASH_TABLE [RESOURCE_ANNOTATION_TABLE, STRING]
+	annotations: detachable HASH_TABLE [RESOURCE_ANNOTATION_NODES, STRING]
 			-- list of annotations, keyed by language. Annotations may be present for only one or
 			-- some languages; if they are present for more than one, the structures must match
 

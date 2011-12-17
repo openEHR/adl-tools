@@ -62,7 +62,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	items: attached HASH_TABLE [RESOURCE_ANNOTATION_TABLE, STRING]
+	items: attached HASH_TABLE [RESOURCE_ANNOTATION_NODES, STRING]
 			-- list of annotation tables, keyed by language. Annotations may be present for only one or
 			-- some languages; if they are present for more than one, the structures must match
 
@@ -81,7 +81,7 @@ feature -- Access
 			end
 		end
 
-	annotation_at_path (a_lang, a_path: attached STRING): attached RESOURCE_ANNOTATION_ITEMS
+	annotations_at_path (a_lang, a_path: attached STRING): attached RESOURCE_ANNOTATION_NODE_ITEMS
 			-- Get annotations for `a_lang' at `a_path' from `items'
 		require
 			has_annotation_at_path (a_lang, a_path)
@@ -89,7 +89,7 @@ feature -- Access
 			Result := items.item (a_lang).item_at_path(a_path)
 		end
 
-	annotation_table (a_lang: attached STRING): attached RESOURCE_ANNOTATION_TABLE
+	node_table_for_language (a_lang: attached STRING): attached RESOURCE_ANNOTATION_NODES
 			-- Get annotations for `a_lang' at `a_path' from `items'
 		require
 			has_language (a_lang)
@@ -122,20 +122,20 @@ feature -- Status Report
 
 feature -- Modification
 
-	add_annotation_table (an_annot_table: attached RESOURCE_ANNOTATION_TABLE; a_lang: attached STRING)
+	add_annotation_table (an_annot_table: attached RESOURCE_ANNOTATION_NODES; a_lang: attached STRING)
 		require
 			not has_language (a_lang)
 		do
 			items.put (an_annot_table, a_lang)
 		end
 
-	merge_annotation_items (a_lang_tag: attached STRING; a_path: attached STRING; ann_items: attached RESOURCE_ANNOTATION_ITEMS)
+	merge_annotation_items (a_lang_tag: attached STRING; a_path: attached STRING; ann_items: attached RESOURCE_ANNOTATION_NODE_ITEMS)
 			-- add `ann_items' at key `a_path'; replace any existing at same path
 		do
 			if not items.has (a_lang_tag) then
-				items.put (create {RESOURCE_ANNOTATION_TABLE}.make, a_lang_tag)
+				items.put (create {RESOURCE_ANNOTATION_NODES}.make, a_lang_tag)
 			end
-			items.item(a_lang_tag).merge_annotation_items(a_path, ann_items)
+			items.item(a_lang_tag).merge_items_at_node(a_path, ann_items)
 		end
 
 	merge (other: attached RESOURCE_ANNOTATIONS)

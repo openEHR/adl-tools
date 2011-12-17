@@ -93,7 +93,7 @@ feature {NONE} -- Implementation
 			-- populate the ADL tree control by creating it from scratch
 		local
 			lang_key: STRING
-			anns_by_path: HASH_TABLE [RESOURCE_ANNOTATION_ITEMS, STRING]
+			anns_by_path: HASH_TABLE [RESOURCE_ANNOTATION_NODE_ITEMS, STRING]
 			ann_list: HASH_TABLE [STRING, STRING]
 			gli: EV_GRID_LABEL_ITEM
 			path_row, ann_row: EV_GRID_ROW
@@ -103,7 +103,7 @@ feature {NONE} -- Implementation
 				lang_key := source_archetype.annotations.matching_language_tag (selected_language)
 
 				-- populate grid
-				anns_by_path := source_archetype.annotations.annotation_table (lang_key).items
+				anns_by_path := source_archetype.annotations.node_table_for_language (lang_key).items
 				from anns_by_path.start until anns_by_path.off loop
 					-- put the path in the first column
 					create gli.make_with_text (source_archetype.ontology.physical_to_logical_path (anns_by_path.key_for_iteration, selected_language, True))

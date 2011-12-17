@@ -11,7 +11,7 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class RESOURCE_ANNOTATION_TABLE
+class RESOURCE_ANNOTATION_NODES
 
 create
 	make
@@ -25,11 +25,11 @@ feature -- initialisation
 
 feature -- Access
 
-	items: HASH_TABLE [RESOURCE_ANNOTATION_ITEMS, STRING]
+	items: HASH_TABLE [RESOURCE_ANNOTATION_NODE_ITEMS, STRING]
 			-- List of form:
 			-- {{tag, value}+, path}
 
-	item_at_path (a_path: attached STRING): RESOURCE_ANNOTATION_ITEMS
+	item_at_path (a_path: attached STRING): RESOURCE_ANNOTATION_NODE_ITEMS
 			-- Return annotations at `a_path' from `items'
 		do
 			Result := items.item (a_path)
@@ -45,17 +45,17 @@ feature -- Status Report
 
 feature -- Modification
 
-	replace_annotation_items (a_path: attached STRING; an_annotations: attached RESOURCE_ANNOTATION_ITEMS)
+	replace_items_at_node (a_path: attached STRING; an_annotations: attached RESOURCE_ANNOTATION_NODE_ITEMS)
 			-- add `an_annotations' at key `a_path'; replace any existing at that path
 		do
 			items.force(an_annotations, a_path)
 		end
 
-	merge_annotation_items (a_path: attached STRING; an_annotations: attached RESOURCE_ANNOTATION_ITEMS)
+	merge_items_at_node (a_path: attached STRING; an_annotations: attached RESOURCE_ANNOTATION_NODE_ITEMS)
 			-- add `an_annotations' at key `a_path' to existing annotations
 		do
 			if not items.has (a_path) then
-				items.put (create {RESOURCE_ANNOTATION_ITEMS}.make, a_path)
+				items.put (create {RESOURCE_ANNOTATION_NODE_ITEMS}.make, a_path)
 			end
 			from an_annotations.items.start until an_annotations.items.off loop
 				items.item(a_path).items.force(an_annotations.items.item_for_iteration, an_annotations.items.key_for_iteration)
@@ -63,14 +63,14 @@ feature -- Modification
 			end
 		end
 
-	add_annotation (a_path, annot_key, annot_content: attached STRING)
+	add_item_at_node (a_path, annot_key, annot_content: attached STRING)
 			-- add an annotation consisting of key `annot_key' & `annot_content' at path `a_path';
 			-- replace any existing at same path
 		do
 			if not items.has (a_path) then
-				items.put (create {RESOURCE_ANNOTATION_ITEMS}.make, a_path)
+				items.put (create {RESOURCE_ANNOTATION_NODE_ITEMS}.make, a_path)
 			end
-			items.item(a_path).add_item(annot_key, annot_content)
+			items.item (a_path).add_item (annot_key, annot_content)
 		end
 
 end

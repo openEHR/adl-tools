@@ -217,14 +217,14 @@ feature -- Modification
 			has_language(a_lang_tag)
 		end
 
-	merge_annotations (a_lang_tag: attached STRING; a_path: attached STRING; an_annotations: attached RESOURCE_ANNOTATION_ITEMS)
+	merge_annotations (a_lang_tag: attached STRING; a_path: attached STRING; an_annotations: attached RESOURCE_ANNOTATION_NODE_ITEMS)
 			-- add `an_annotations' at key `a_path'; replace any existing at same path
 		do
 			if not has_annotations then
 				create annotations
 			end
 			if not annotations.has_language (a_lang_tag) then
-				annotations.add_annotation_table (create {RESOURCE_ANNOTATION_TABLE}.make, a_lang_tag)
+				annotations.add_annotation_table (create {RESOURCE_ANNOTATION_NODES}.make, a_lang_tag)
 			end
 			annotations.merge_annotation_items (a_lang_tag, a_path, an_annotations)
 		end

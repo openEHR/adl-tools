@@ -11,7 +11,7 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class RESOURCE_ANNOTATION_ITEMS
+class RESOURCE_ANNOTATION_NODE_ITEMS
 
 create
 	make
@@ -33,7 +33,7 @@ feature -- Modification
 	add_item (a_tag, an_item: attached STRING)
 			-- add `an_item' at key `a_tag'; replace any existing at the same tag
 		do
-			items.force(an_item, a_tag)
+			items.force (an_item, a_tag)
 		end
 
 feature -- Output

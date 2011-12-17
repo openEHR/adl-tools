@@ -238,7 +238,7 @@ feature {NONE} -- Implementation
 			-- for each language, ensure that annotations are proper translations of each other (if present)
 			-- For specialised archetypes, requires flat parent to be available
 		local
-			ann_for_lang: RESOURCE_ANNOTATION_TABLE
+			ann_for_lang: RESOURCE_ANNOTATION_NODES
 		do
 			if target.has_annotations then
 				from target.annotations.items.start until not passed or target.annotations.items.off loop

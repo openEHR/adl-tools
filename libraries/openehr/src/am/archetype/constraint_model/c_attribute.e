@@ -74,24 +74,24 @@ feature -- Initialisation
 
 feature -- Access
 
-	rm_attribute_name: attached STRING
+	rm_attribute_name: STRING
 			-- name of this attribute in reference model
 		do
 			Result := representation.node_id
 		end
 
-	rm_attribute_path: attached STRING
+	rm_attribute_path: STRING
 			-- path of this attribute with respect to owning C_OBJECT,
 			-- including differential path where applicable
 		do
 			Result := representation.node_key
 		end
 
-	children: attached ARRAYED_LIST [C_OBJECT]
+	children: ARRAYED_LIST [C_OBJECT]
 
-	existence: MULTIPLICITY_INTERVAL
+	existence: detachable MULTIPLICITY_INTERVAL
 
-	cardinality: CARDINALITY
+	cardinality: detachable CARDINALITY
 
 	path: STRING
 			-- take account of differential path if it exists
@@ -103,7 +103,7 @@ feature -- Access
 			end
 		end
 
-	differential_path: STRING
+	differential_path: detachable STRING
 			-- if set, contains the path to this attribute, excluding the name of this attribute, allowing this
 			-- C_ATTRIBUTE to stand as a 'path-compressed' replacement for a string of C_COMPLEX_OBJECT/
 			-- C_ATTRIBUTE constraint objects
@@ -113,7 +113,7 @@ feature -- Access
 			end
 		end
 
-	occurrences_total_range: attached MULTIPLICITY_INTERVAL
+	occurrences_total_range: MULTIPLICITY_INTERVAL
 			-- calculate total possible cardinality range based on occurrences of all children
 			-- only meaningful on flat archetypes
 		require
@@ -138,7 +138,7 @@ feature -- Access
 			end
 		end
 
-	parent: C_COMPLEX_OBJECT
+	parent: detachable C_COMPLEX_OBJECT
 
 	child_count: INTEGER
 			-- number of children; 0 if any_allowed is True

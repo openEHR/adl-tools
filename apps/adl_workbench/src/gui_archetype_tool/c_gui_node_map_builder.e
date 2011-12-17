@@ -652,7 +652,7 @@ feature {NONE} -- Implementation
 			Result := utf8 (ontology.physical_to_logical_path (a_node.path, language, True))
 			if archetype.has_annotation_at_path (language, a_node.path) then
 				Result.append ("%N%NAnnotations:%N")
-				Result.append (utf8 (archetype.annotations.annotation_at_path (language, a_node.path).as_string))
+				Result.append (utf8 (archetype.annotations.annotations_at_path (language, a_node.path).as_string))
 			end
 		end
 
