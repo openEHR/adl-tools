@@ -47,8 +47,9 @@ feature -- Visitor
 			-- (since it is immediately after the '- ')
 			if not a_node.is_root then
 				if a_node.is_addressable and then a_node.id.is_integer then
-					entered_complex_object := True
+					entered_anonymous_complex_object := True
 				else
+					addressable_complex_object_count := addressable_complex_object_count + 1
 					last_result.append (format_item (FMT_NEWLINE))
 				end
 			end
@@ -58,22 +59,26 @@ feature -- Visitor
 			-- end serialising a DT_COMPLEX_OBJECT_NODE
 		do
 			if last_result.item (last_result.count) /= '%N'  then
-				last_result.append (format_item(FMT_NEWLINE))
+				last_result.append (format_item (FMT_NEWLINE))
 			end
 			if a_node.is_root then
-				last_result.append (format_item (FMT_END_BODY) + format_item(FMT_NEWLINE))
+				last_result.append (format_item (FMT_END_BODY) + format_item (FMT_NEWLINE))
+			elseif not (a_node.is_addressable and then a_node.id.is_integer) then
+				addressable_complex_object_count := addressable_complex_object_count - 1
 			end
 		end
 
 	start_attribute_node (a_node: DT_ATTRIBUTE_NODE; depth: INTEGER)
 			-- start serialising a DT_ATTRIBUTE_NODE
 		do
-			-- output: indent $attr_name:
-			if not entered_complex_object then
-				last_result.append (create_indent (depth//2 + multiple_attr_count))
+			-- output: indent, if not the first line of a new complex object where a '  - '
+			-- sequence marker has just been output
+			if not entered_anonymous_complex_object then
+				last_result.append (create_indent (depth//2 + multiple_attr_count + addressable_complex_object_count))
 			else
-				entered_complex_object := False
+				entered_anonymous_complex_object := False
 			end
+			-- output: $attr_name:
 			last_result.append (a_node.im_attr_name)
 			last_result.append (symbol (SYM_YAML_EQ))
 
@@ -133,7 +138,7 @@ feature -- Visitor
 					symbol (SYM_YAML_EQ),
 					"%N")
 			str.append ("%N")
-			last_result.append (indented (str, create_indent (depth//2 + multiple_attr_count + 1)))
+			last_result.append (indented (str, create_indent (depth//2 + multiple_attr_count + 1 + addressable_complex_object_count)))
 		end
 
 	end_primitive_object_interval (a_node: DT_PRIMITIVE_OBJECT_INTERVAL; depth: INTEGER)
@@ -173,9 +178,11 @@ feature {NONE} -- Implementation
 	multiple_attr_count: INTEGER
 			-- counter for how many multiple attributes at the current point
 
-	entered_complex_object: BOOLEAN
+	entered_anonymous_complex_object: BOOLEAN
 			-- True if we just entered a complex object; this flag is used to enable a '-' (Sym_yaml_sequence_entry)
 			-- to be output on the start of the first line of a complex object rather than on the line above.
+
+	addressable_complex_object_count: INTEGER
 
 	start_object_item (a_node: DT_OBJECT_ITEM; depth: INTEGER)
 			-- start serialising a DT_OBJECT_LEAF
@@ -184,7 +191,7 @@ feature {NONE} -- Implementation
 			-- keys and proper attribute names)
 			if a_node.is_addressable then
 				-- indent
-				last_result.append (create_indent (depth//2 + multiple_attr_count))
+				last_result.append (create_indent (depth//2 + multiple_attr_count + addressable_complex_object_count))
 				last_result.append (symbol (Sym_yaml_sequence_entry))
 				if not a_node.id.is_integer then
 					last_result.append (clean (a_node.id))
