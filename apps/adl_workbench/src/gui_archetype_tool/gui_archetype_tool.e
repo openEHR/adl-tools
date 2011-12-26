@@ -132,7 +132,7 @@ feature {NONE}-- Initialization
 			ev_language_combo.set_minimum_width (60)
 			ev_language_combo.set_minimum_height (23)
 			ev_language_combo.disable_edit
-			ev_adl_version_label.set_text (create_message_content ("adl_version_label", Void))
+			ev_adl_version_label.set_text (create_message_content ("adl_version_label_text", Void))
 			ev_adl_version_label.set_minimum_width (80)
 			ev_adl_version_label.align_text_right
 			ev_adl_version_label.set_tooltip (create_message_content ("adl_version_label_tooltip", Void))

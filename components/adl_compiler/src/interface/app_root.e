@@ -47,7 +47,6 @@ feature -- Initialisation
 		local
 			dummy_error_accumulator: ERROR_ACCUMULATOR
 			strx: STRING
-			a, b: REAL
 		once
 			-- see DT_TYPES note above; a hack needed to make string name -> type_id work for class names
 			-- that clash with Eiffel type names
@@ -62,24 +61,8 @@ feature -- Initialisation
 				create dummy_error_accumulator.make
 				dummy_error_accumulator.set_error_reporting_level (error_reporting_level)
 
-				-- set a reasonable default for HTML output directory
-				if html_export_directory.is_empty then
-					set_html_export_directory (file_system.pathname (user_config_file_directory, "html"))
-				end
-
-				-- set a reasonable default for compiler generated artefacts directory
-				if compiler_gen_directory.is_empty then
-					set_compiler_gen_directory (file_system.pathname (user_config_file_directory, "gen"))
-				end
-
-				-- set a reasonable default for diff test file directory (where files are written from test page for comparison with a diff tool)
-				if test_diff_directory.is_empty then
-					set_test_diff_directory (file_system.pathname (user_config_file_directory, "diff_test"))
-				end
-
 				-- tell the user a few useful things
 				post_warning (Current, "initialise", "adl_version_warning", <<adl_version_for_flat_output>>)
-
 				if validation_strict then
 					post_warning (Current, "initialise", "validation_strict", Void)
 				else

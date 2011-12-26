@@ -181,10 +181,6 @@ feature -- Commands
 
 	edit_source_archetype
 			-- Launch the external editor with the archetype currently selected in `archetype_directory'.
-		local
-			question_dialog: EV_QUESTION_DIALOG
-			info_dialog: EV_INFORMATION_DIALOG
-			path: STRING
 		do
 			if selection_history.has_selected_archetype then
 				edit_archetype (selection_history.selected_archetype)

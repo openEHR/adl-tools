@@ -50,6 +50,11 @@ inherit
 			copy, default_create
 		end
 
+	SHARED_ARCHETYPE_SERIALISERS
+		undefine
+			copy, default_create
+		end
+
 	SHARED_GUI_AGENTS
 		export
 			{NONE} all
@@ -104,6 +109,9 @@ feature {NONE} -- Initialization
 			create repository_menu_rebuild_subtree
 			create l_ev_menu_separator_6
 			create repository_menu_export_html
+			create repository_menu_export_json
+			create repository_menu_export_yaml
+			create repository_menu_export_xml
 			create repository_menu_export_repository_report
 			create l_ev_menu_separator_7
 			create repository_menu_interrupt_build
@@ -181,11 +189,14 @@ feature {NONE} -- Initialization
 			repository_menu.extend (repository_menu_build_subtree)
 			repository_menu.extend (repository_menu_rebuild_subtree)
 			repository_menu.extend (l_ev_menu_separator_6)
-			repository_menu.extend (repository_menu_export_html)
-			repository_menu.extend (repository_menu_export_repository_report)
-			repository_menu.extend (l_ev_menu_separator_7)
 			repository_menu.extend (repository_menu_interrupt_build)
 			repository_menu.extend (repository_menu_refresh)
+			repository_menu.extend (l_ev_menu_separator_7)
+			repository_menu.extend (repository_menu_export_html)
+			repository_menu.extend (repository_menu_export_json)
+			repository_menu.extend (repository_menu_export_yaml)
+			repository_menu.extend (repository_menu_export_xml)
+			repository_menu.extend (repository_menu_export_repository_report)
 			repository_menu.extend (l_ev_menu_separator_8)
 			repository_menu.extend (repository_menu_set_repository)
 
@@ -229,60 +240,63 @@ feature {NONE} -- Initialization
 			ev_main_vbox.extend (viewer_main_cell)
 
 			-- Set visual characteristics
-			file_menu.set_text ("&File")
-			file_menu_open.set_text ("&Open...")
-			file_menu_save_as.set_text ("&Save As...")
-			file_menu_export_as.set_text ("&Export As...")
-			file_menu_export_flat_as.set_text ("Export F&lat As...")
+			file_menu.set_text (create_message_content ("file_menu_text", Void))
+			file_menu_open.set_text (create_message_content ("file_menu_open_text", Void))
+			file_menu_save_as.set_text (create_message_content ("file_menu_save_as_text", Void))
+			file_menu_export_as.set_text (create_message_content ("file_menu_export_text", Void))
+			file_menu_export_flat_as.set_text (create_message_content ("file_menu_export_flat_as_text", Void))
 			file_menu_exit.set_text ("E&xit")
 
-			edit_menu.set_text ("&Edit")
-			edit_menu_copy.set_text ("&Copy")
-			edit_menu_select_all.set_text ("Select &All")
-			edit_menu_clipboard.set_text ("Clip&board...")
+			edit_menu.set_text (create_message_content ("edit_menu_text", Void))
+			edit_menu_copy.set_text (create_message_content ("edit_menu_text", Void))
+			edit_menu_select_all.set_text (create_message_content ("edit_menu_select_all_text", Void))
+			edit_menu_clipboard.set_text (create_message_content ("edit_menu_clipboard_text", Void))
 
-			view_menu.set_text ("&View")
-			view_menu_differential.set_text ("&Differential")
-			view_menu_flat.set_text ("&Flat")
-			view_menu_new_archetype_tool.set_text ("New Archetype &Tab")
-			view_menu_new_class_tool.set_text ("New Class Tab")
-			view_menu_reset_layout.set_text ("&Reset tool layout")
+			view_menu.set_text (create_message_content ("view_menu_text", Void))
+			view_menu_differential.set_text (create_message_content ("view_menu_differential_text", Void))
+			view_menu_flat.set_text (create_message_content ("view_menu_flat_text", Void))
+			view_menu_new_archetype_tool.set_text (create_message_content ("view_menu_new_arch_tab_text", Void))
+			view_menu_new_class_tool.set_text (create_message_content ("view_menu_new_class_tab_text", Void))
+			view_menu_reset_layout.set_text (create_message_content ("view_menu_reset_layout_text", Void))
 
-			repository_menu.set_text ("&Repository")
-			repository_menu_build_all.set_text ("&Build All")
-			repository_menu_rebuild_all.set_text ("&Rebuild All")
-			repository_menu_build_subtree.set_text ("Build Sub&tree")
-			repository_menu_rebuild_subtree.set_text ("Rebuild S&ubtree")
-			repository_menu_export_html.set_text ("Export &HTML...")
-			repository_menu_export_repository_report.set_text ("&Export Repository Report...")
+			repository_menu.set_text (create_message_content ("repository_menu_text", Void))
+			repository_menu_build_all.set_text (create_message_content ("repository_menu_build_all_text", Void))
+			repository_menu_rebuild_all.set_text (create_message_content ("repository_menu_rebuild_all_text", Void))
+			repository_menu_build_subtree.set_text (create_message_content ("repository_menu_build_subtree_text", Void))
+			repository_menu_rebuild_subtree.set_text (create_message_content ("repository_menu_rebuild_subtree_text", Void))
+			repository_menu_interrupt_build.set_text (create_message_content ("repository_menu_interrupt_text", Void))
+			repository_menu_refresh.set_text (create_message_content ("repository_menu_refresh_text", Void))
+			repository_menu_export_html.set_text (create_message_content ("repository_menu_export_html_text", Void))
+			repository_menu_export_json.set_text (create_message_content ("repository_menu_export_json_text", Void))
+			repository_menu_export_yaml.set_text (create_message_content ("repository_menu_export_yaml_text", Void))
+			repository_menu_export_xml.set_text (create_message_content ("repository_menu_export_xml_text", Void))
+			repository_menu_export_repository_report.set_text (create_message_content ("repository_menu_export_report_text", Void))
 			repository_menu_interrupt_build.disable_sensitive
-			repository_menu_interrupt_build.set_text ("&Interrupt Build")
-			repository_menu_refresh.set_text ("Refresh Repository")
-			repository_menu_set_repository.set_text ("&Configure Repository Profiles...")
+			repository_menu_set_repository.set_text (create_message_content ("repository_menu_configure_text", Void))
 
-			rm_schemas_menu.set_text ("RM &Schemas")
-			rm_schemas_menu_reload_schemas.set_text ("&Reload Schemas")
-			rm_schemas_menu_configure_rm_schemas.set_text ("&Configure Schemas...")
+			rm_schemas_menu.set_text (create_message_content ("rm_schemas_menu_text", Void))
+			rm_schemas_menu_reload_schemas.set_text (create_message_content ("rm_schemas_reload_text", Void))
+			rm_schemas_menu_configure_rm_schemas.set_text (create_message_content ("rm_schemas_configure_text", Void))
 
-			xml_menu.set_text ("&XML")
-			xml_menu_conv_rules.set_text ("Edit &Conversion Rules...")
+			xml_menu.set_text (create_message_content ("xml_menu_text", Void))
+			xml_menu_conv_rules.set_text (create_message_content ("xml_menu_edit_rules_text", Void))
 
-			tools_menu.set_text ("&Tools")
-			tools_menu_clean_generated_files.set_text ("&Clean Generated Files")
-			tools_menu_options.set_text ("&Options...")
+			tools_menu.set_text (create_message_content ("tools_menu_text", Void))
+			tools_menu_clean_generated_files.set_text (create_message_content ("tools_menu_clean_text", Void))
+			tools_menu_options.set_text (create_message_content ("tools_menu_options_text", Void))
 
-			help_menu.set_text ("&Help")
-			help_menu_contents.set_text ("&Contents")
-			help_menu_release_notes.set_text ("&Release Notes")
-			help_menu_icons.set_text ("&Icons ")
-			help_menu_clinical_knowledge_manager.set_text ("Clinical &Knowledge Manager")
-			help_menu_report_bug.set_text ("Report a &Bug")
-			help_menu_about.set_text ("&About ADL Workbench")
+			help_menu.set_text (create_message_content ("help_menu_text", Void))
+			help_menu_contents.set_text (create_message_content ("help_menu_online_text", Void))
+			help_menu_release_notes.set_text (create_message_content ("help_menu_release_notes_text", Void))
+			help_menu_icons.set_text (create_message_content ("help_menu_icons_text", Void))
+			help_menu_clinical_knowledge_manager.set_text (create_message_content ("help_menu_ckm_text", Void))
+			help_menu_report_bug.set_text (create_message_content ("help_menu_report_bug_text", Void))
+			help_menu_about.set_text (create_message_content ("help_menu_about_text", Void))
 			set_minimum_width (500)
 			set_minimum_height (350)
 			set_maximum_width (2000)
 			set_maximum_height (2000)
-			set_title ("Archetype Definition Language " + latest_adl_version + " Workbench")
+			set_title (create_message_content ("main_window_title", <<latest_adl_version>>))
 
 			-- Connect events.
 			file_menu_open.select_actions.extend (agent catalogue_tool.open_archetype)
@@ -299,7 +313,10 @@ feature {NONE} -- Initialization
 			repository_menu_rebuild_all.select_actions.extend (agent rebuild_all)
 			repository_menu_build_subtree.select_actions.extend (agent build_subtree)
 			repository_menu_rebuild_subtree.select_actions.extend (agent rebuild_subtree)
-			repository_menu_export_html.select_actions.extend (agent export_html)
+			repository_menu_export_html.select_actions.extend (agent export_repository (syntax_type_adl_html))
+			repository_menu_export_json.select_actions.extend (agent export_repository (syntax_type_json))
+			repository_menu_export_yaml.select_actions.extend (agent export_repository (syntax_type_yaml))
+			repository_menu_export_xml.select_actions.extend (agent export_repository (syntax_type_xml))
 			repository_menu_export_repository_report.select_actions.extend (agent export_repository_report)
 			repository_menu_interrupt_build.select_actions.extend (agent interrupt_build)
 			repository_menu_refresh.select_actions.extend (agent refresh_directory)
@@ -343,20 +360,20 @@ feature {NONE} -- Initialization
 			action_bar.disable_item_expand (archetype_profile_combo)
 			action_bar.disable_item_expand (history_bar.tool_bar)
 			action_bar.disable_item_expand (arch_compile_tool_bar)
-			archetype_profile_combo.set_tooltip ("Select repository profile")
+			archetype_profile_combo.set_tooltip (create_message_content ("profile_combo_tooltip", Void))
 			archetype_profile_combo.set_minimum_width (160)
 			archetype_profile_combo.disable_edit
 			arch_compile_tool_bar.disable_vertical_button_style
-			compile_button.set_text ("Compile")
+			compile_button.set_text (create_message_content ("compile_button_text", Void))
 			compile_button.set_pixmap (pixmaps ["compile"])
-			compile_button.set_tooltip ("Compile all archetypes (F7)")
+			compile_button.set_tooltip (create_message_content ("compile_button_tooltip", Void))
 
 			action_bar.disable_item_expand (arch_output_version_hbox)
 			arch_output_version_hbox.disable_item_expand (arch_output_version_label)
 			arch_output_version_hbox.disable_item_expand (arch_output_version_combo)
 			arch_output_version_combo.set_minimum_width (50)
-			arch_output_version_label.set_text ("ADL output version: ")
-			arch_output_version_label.set_tooltip ("Release of ADL and AOM XSD to use in output serialisation")
+			arch_output_version_label.set_text (create_message_content ("adl_version_label_text", Void))
+			arch_output_version_label.set_tooltip (create_message_content ("adl_version_label_tooltip", Void))
 			arch_output_version_combo.set_strings (Adl_versions)
 
 			-- set up docking
@@ -695,25 +712,37 @@ feature {NONE} -- Repository events
 			archetype_compiler.signal_interrupt
 		end
 
-	export_html
-			-- Generate HTML from flat archetypes into `html_export_directory'.
+	export_repository (a_syntax: STRING)
+			-- Generate serialised form of flat archetypes into `export_directory'/syntax.
+		require
+			Serialise_format_valid: has_archetype_native_serialiser_format (a_syntax) or has_dt_serialiser_format (a_syntax)
 		local
 			dialog: EV_QUESTION_DIALOG
-			yes_text, no_text: STRING
+			yes_text, no_text, cancel_text, export_dir: STRING
+			info_dialog: EV_INFORMATION_DIALOG
 		do
-			create dialog.make_with_text (create_message_line ("export_html_question", Void))
-			dialog.set_title ("Export HTML")
+			create dialog.make_with_text (create_message_line ("export_question", <<a_syntax>>))
+			dialog.set_title (create_message_content ("export_in_format_dialog_title", <<a_syntax>>))
 			yes_text := create_message_content ("build_and_export_all", Void)
 			no_text := create_message_content ("export_only_built", Void)
-			dialog.set_buttons (<<yes_text, no_text, "Cancel">>)
+			cancel_text := create_message_line ("cancel_button_text", Void)
+			dialog.set_buttons (<<yes_text, no_text, cancel_text>>)
 
-			dialog.set_default_cancel_button (dialog.button ("Cancel"))
+			dialog.set_default_cancel_button (dialog.button (cancel_text))
 			dialog.show_modal_to_window (Current)
 
-			if dialog.selected_button.same_string (yes_text) then
-				do_build_action (agent archetype_compiler.build_and_export_all_html (html_export_directory))
-			elseif dialog.selected_button.same_string (no_text) then
-				do_build_action (agent archetype_compiler.export_all_html (html_export_directory))
+			if not dialog.selected_button.same_string (cancel_text) then
+				export_dir := file_system.pathname (export_directory, a_syntax)
+				file_system.recursive_create_directory (export_dir)
+				if not file_system.directory_exists (export_dir) then
+					create info_dialog.make_with_text (create_message_line ("could_not_create_file_text", <<export_dir>>))
+				else
+					if dialog.selected_button.same_string (yes_text) then
+						do_build_action (agent archetype_compiler.build_and_export_all (export_dir, a_syntax))
+					elseif dialog.selected_button.same_string (no_text) then
+						do_build_action (agent archetype_compiler.export_all (export_dir, a_syntax))
+					end
+				end
 			end
 		end
 
@@ -727,8 +756,8 @@ feature {NONE} -- Repository events
 			xml_name: STRING
 		do
 			create save_dialog
-			save_dialog.set_title ("Export Repository Report")
-			save_dialog.set_file_name ("ArchetypeRepositoryReport.xml")
+			save_dialog.set_title (create_message_content ("export_report_dialog_title", Void))
+			save_dialog.set_file_name (Repository_report_filename)
 			save_dialog.set_start_directory (current_work_directory)
 			save_dialog.filters.extend (["*.xml", "Save as XML"])
 			save_dialog.show_modal_to_window (Current)
@@ -746,15 +775,14 @@ feature {NONE} -- Repository events
 
 				if file.exists then
 					create question_dialog.make_with_text (create_message_line ("file_exists_replace_question", <<xml_name>>))
-					question_dialog.set_title ("Export Repository Report")
-					question_dialog.set_buttons (<<"Yes", "No">>)
+					question_dialog.set_title (create_message_content ("export_dialog_title", Void))
+					question_dialog.set_buttons (<<create_message_content ("yes_response", Void), create_message_content ("no_response", Void)>>)
 					question_dialog.show_modal_to_window (Current)
-					ok_to_write := question_dialog.selected_button.same_string ("Yes")
+					ok_to_write := question_dialog.selected_button.same_string (create_message_content ("yes_response", Void))
 				end
 
 				if ok_to_write then
 					do_with_wait_cursor (Current, agent error_tool.export_repository_report (xml_name))
-
 					if file.exists then
 						console_tool.append_text (create_message_line ("export_repository_report_replace_info", <<xml_name>>))
 						show_in_system_browser (xml_name)
@@ -898,7 +926,7 @@ feature {NONE} -- Help events
 			dialog: EV_INFORMATION_DIALOG
 		do
 			create dialog.make_with_text (splash_text)
-			dialog.set_title ("About ADL Workbench")
+			dialog.set_title (create_message_content ("about_awb_dialog_title", Void))
 			dialog.set_pixmap (pixmaps ["adl_workbench_logo"])
 			dialog.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
 			dialog.set_position (app_x_position + (app_width - dialog.width) // 2, app_y_position + (app_height - dialog.height) // 2)
@@ -952,11 +980,11 @@ feature -- RM Schema explorer
 		local
 			a_docking_pane: SD_CONTENT
 		do
-			create a_docking_pane.make_with_widget_title_pixmap (rm_schema_explorer.ev_root_container, pixmaps ["rm_schema"], "Reference Models")
+			create a_docking_pane.make_with_widget_title_pixmap (rm_schema_explorer.ev_root_container, pixmaps ["rm_schema"], create_message_content ("reference_models_docking_area_title", Void))
 			attached_docking_manager.contents.extend (a_docking_pane)
 			rm_schema_explorer.set_docking_pane (a_docking_pane)
-			a_docking_pane.set_long_title ("Reference Models")
-			a_docking_pane.set_short_title ("Reference Models")
+			a_docking_pane.set_long_title (create_message_content ("reference_models_docking_area_title", Void))
+			a_docking_pane.set_short_title (create_message_content ("reference_models_docking_area_title", Void))
 			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
 			a_docking_pane.set_auto_hide ({SD_ENUMERATION}.left)
 			a_docking_pane.show_actions.extend (agent address_bar.set_current_client (rm_schema_explorer))
@@ -1075,10 +1103,10 @@ feature -- Test tool
 		local
 			a_docking_pane: SD_CONTENT
 		do
-			create a_docking_pane.make_with_widget_title_pixmap (test_tool.ev_root_container, pixmaps ["tools"], "Test")
+			create a_docking_pane.make_with_widget_title_pixmap (test_tool.ev_root_container, pixmaps ["tools"], create_message_content ("test_tool_title", Void))
 			attached_docking_manager.contents.extend (a_docking_pane)
-			a_docking_pane.set_long_title ("Test")
-			a_docking_pane.set_short_title ("Test")
+			a_docking_pane.set_long_title (create_message_content ("test_tool_title", Void))
+			a_docking_pane.set_short_title (create_message_content ("test_tool_title", Void))
 			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
 			a_docking_pane.set_auto_hide ({SD_ENUMERATION}.bottom)
 		end
@@ -1094,12 +1122,12 @@ feature -- Console Tool
 		local
 			docking_pane: SD_CONTENT
 		do
-			create docking_pane.make_with_widget_title_pixmap (console_tool.ev_console, pixmaps ["console"], "Console")
+			create docking_pane.make_with_widget_title_pixmap (console_tool.ev_console, pixmaps ["console"], create_message_content ("console_tool_title", Void))
 			console_tool.set_docking_pane (docking_pane)
 			attached_docking_manager.contents.extend (docking_pane)
 			docking_pane.set_type ({SD_ENUMERATION}.tool)
-			docking_pane.set_long_title ("Console")
-			docking_pane.set_short_title ("Console")
+			docking_pane.set_long_title (create_message_content ("console_tool_title", Void))
+			docking_pane.set_short_title (create_message_content ("console_tool_title", Void))
 			docking_pane.set_auto_hide ({SD_ENUMERATION}.bottom)
 		end
 
@@ -1114,18 +1142,18 @@ feature -- Error Tool
 
 	create_new_error_tool
 		do
-			create error_docking_pane.make_with_widget_title_pixmap (error_tool.grid, pixmaps ["errors"], "Errors")
+			create error_docking_pane.make_with_widget_title_pixmap (error_tool.grid, pixmaps ["errors"], create_message_content ("error_tool_title", Void))
 			attached_docking_manager.contents.extend (error_docking_pane)
 			error_docking_pane.set_type ({SD_ENUMERATION}.tool)
-			error_docking_pane.set_long_title ("Errors")
-			error_docking_pane.set_short_title ("Errors")
+			error_docking_pane.set_long_title (create_message_content ("error_tool_title", Void))
+			error_docking_pane.set_short_title (create_message_content ("error_tool_title", Void))
 			error_docking_pane.set_auto_hide ({SD_ENUMERATION}.bottom)
 		end
 
 	error_tool_title_update (parse_error_count, validity_error_count, warning_count: NATURAL)
 		do
-			error_docking_pane.set_short_title ("Errors (" + parse_error_count.out + "/" + validity_error_count.out + "/" + warning_count.out + ")")
-			error_docking_pane.set_long_title ("Errors (" + parse_error_count.out + "/" + validity_error_count.out + "/" + warning_count.out + ")")
+			error_docking_pane.set_short_title (create_message_content ("error_tool_title", Void) + " (" + parse_error_count.out + "/" + validity_error_count.out + "/" + warning_count.out + ")")
+			error_docking_pane.set_long_title (create_message_content ("error_tool_title", Void) + " (" + parse_error_count.out + "/" + validity_error_count.out + "/" + warning_count.out + ")")
 		end
 
 feature -- Clipboard
@@ -1315,8 +1343,8 @@ feature {NONE} -- Build commands
 
 			-- for the moment, post a message about ADL 1.4 XML not being available
 			if adl_version_for_flat_output_numeric < 150 then
-				create info_dialog.make_with_text ("XML based on ADL 1.4 available in next release")
-				info_dialog.set_title ("Configuration warning")
+				create info_dialog.make_with_text (create_message_content ("xml_14_not_available_message", Void))
+				info_dialog.set_title (create_message_content ("config_warning_text", Void))
 				info_dialog.show_modal_to_window (Current)
 			end
 		end
@@ -1338,7 +1366,8 @@ feature {NONE} -- GUI Widgets
 	edit_menu_select_all, edit_menu_clipboard, view_menu_differential, view_menu_flat, view_menu_new_archetype_tool,
 	view_menu_new_class_tool, view_menu_reset_layout, repository_menu_build_all,
 	repository_menu_rebuild_all, repository_menu_build_subtree, repository_menu_rebuild_subtree,
-	repository_menu_export_html, repository_menu_export_repository_report, repository_menu_interrupt_build,
+	repository_menu_export_html, repository_menu_export_json, repository_menu_export_yaml, repository_menu_export_xml,
+	repository_menu_export_repository_report, repository_menu_interrupt_build,
 	repository_menu_refresh, repository_menu_set_repository, rm_schemas_menu_reload_schemas,
 	rm_schemas_menu_configure_rm_schemas, xml_menu_conv_rules, tools_menu_clean_generated_files,
 	tools_menu_options, help_menu_contents, help_menu_release_notes, help_menu_icons,

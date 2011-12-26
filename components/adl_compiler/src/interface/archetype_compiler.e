@@ -29,6 +29,13 @@ inherit
 			is_equal
 		end
 
+	SHARED_ARCHETYPE_SERIALISERS
+		export
+			{NONE} all
+		undefine
+			is_equal
+		end
+
 	COMPILATION_STATES
 		export
 			{NONE} all
@@ -184,24 +191,24 @@ feature -- Commands
 			is_building := False
 		end
 
-	export_all_html (a_html_export_directory: attached STRING)
-			-- Generate HTML under `html_export_directory' from all archetypes that have already been built.
+	export_all (an_export_dir, a_syntax: attached STRING)
+			-- Generate `a_syntax' serialisation of archetypes under `an_export_dir' from all archetypes that have already been built.
 		do
-			call_global_visual_update_action(create_message_line ("compiler_export_html", Void))
-			do_all (agent export_archetype_html (a_html_export_directory, False, ?))
-			call_global_visual_update_action(create_message_line ("compiler_finished_export_html", Void))
+			call_global_visual_update_action (create_message_line ("compiler_export", <<a_syntax>>))
+			do_all (agent export_archetype (an_export_dir, a_syntax, False, ?))
+			call_global_visual_update_action (create_message_line ("compiler_finished_export", <<a_syntax, an_export_dir>>))
 		end
 
-	build_and_export_all_html (a_html_export_directory: attached STRING)
-			-- Generate HTML under `html_export_directory' from the whole system, building each archetype as necessary.
+	build_and_export_all (an_export_dir, a_syntax: attached STRING)
+			-- Generate `a_syntax' serialisation of archetypes under `an_export_dir' from the whole system, building each archetype as necessary.
 		do
 			is_full_build_completed := False
 			is_building := True
-			call_global_visual_update_action(create_message_line ("compiler_build_and_export_html", Void))
-			do_all (agent export_archetype_html (a_html_export_directory, True, ?))
+			call_global_visual_update_action (create_message_line ("compiler_build_and_export", <<a_syntax>>))
+			do_all (agent export_archetype (an_export_dir, a_syntax, True, ?))
 			is_full_build_completed := not is_interrupt_requested
 			is_building := False
-			call_global_visual_update_action(create_message_line ("compiler_finished_build_and_export_html", Void))
+			call_global_visual_update_action (create_message_line ("compiler_finished_build_and_export", <<a_syntax, an_export_dir>>))
 		end
 
 feature {NONE} -- Implementation
@@ -302,10 +309,8 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	export_archetype_html (a_html_export_directory: STRING; build_too: BOOLEAN; ara: attached ARCH_CAT_ARCHETYPE)
-			-- Generate HTML under `html_export_directory' from `ara', optionally building it first if necessary.
-		require
-			directory_attached: a_html_export_directory /= Void
+	export_archetype (an_export_dir, a_syntax: STRING; build_too: BOOLEAN; ara: ARCH_CAT_ARCHETYPE)
+			-- Generate serialised output under `an_export_dir' from `ara', optionally building it first if necessary.
 		local
 			filename: STRING
 		do
@@ -315,9 +320,8 @@ feature {NONE} -- Implementation
 				end
 
 				if ara.is_valid then
-					filename := file_system.pathname (a_html_export_directory, ara.relative_path) + File_ext_archetype_web_page
-					file_system.recursive_create_directory (file_system.dirname (filename))
-					ara.save_flat_as (filename, Syntax_type_adl_html)
+					filename := file_system.pathname (an_export_dir, ara.id.as_string) + archetype_file_extensions.item (a_syntax)
+					ara.save_flat_as (filename, a_syntax)
 					call_archetype_visual_update_action (ara.status, ara, 0)
 				end
 			end

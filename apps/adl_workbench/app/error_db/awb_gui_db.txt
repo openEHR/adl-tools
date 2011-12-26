@@ -38,15 +38,85 @@ templates = <
 		-- RM_SCHEMA_DIALOG
 		["rm_schema_dir_not_found"] = <"Directory $1 not found; please specify a valid directory">
 
-		-- MAIN_WINDOW
+		-- MAIN_WINDOW - menus
+		["file_menu_text"] = <"&File">
+		["file_menu_open_text"] = <"&Open...">
+		["file_menu_save_as_text"] = <"&Save As...">
+		["file_menu_export_text"] = <"&Export As...">
+		["file_menu_export_flat_as_text"] = <"Export F&lat As...">
+
+		["edit_menu_text"] = <"&Edit">
+		["edit_menu_copy_text"] = <"&Copy">
+		["edit_menu_select_all_text"] = <"Select &All">
+		["edit_menu_clipboard_text"] = <"Clip&board...">
+
+		["view_menu_text"] = <"&View">
+		["view_menu_differential_text"] = <"&Differential">
+		["view_menu_flat_text"] = <"&Flat">
+		["view_menu_new_arch_tab_text"] = <"New Archetype &Tab">
+		["view_menu_new_class_tab_text"] = <"New &Class Tab">
+		["view_menu_reset_layout_text"] = <"&Reset tool layout">
+
+		["repository_menu_text"] = <"&Repository">
+		["repository_menu_build_all_text"] = <"&Build All">
+		["repository_menu_rebuild_all_text"] = <"Rebuild &All">
+		["repository_menu_build_subtree_text"] = <"Build Sub&tree">
+		["repository_menu_rebuild_subtree_text"] = <"Rebuild S&ubtree">
+		["repository_menu_interrupt_text"] = <"&Interrupt Build">
+		["repository_menu_refresh_text"] = <"Re&fresh Repository">
+		["repository_menu_export_html_text"] = <"Export as &HTML...">
+		["repository_menu_export_json_text"] = <"Export as &JSON...">
+		["repository_menu_export_yaml_text"] = <"Export as &YAML...">
+		["repository_menu_export_xml_text"] = <"Export as &XML...">
+		["repository_menu_export_report_text"] = <"&Export Repository Report...">
+		["repository_menu_configure_text"] = <"&Configure Repository Profiles...">
+
+		["rm_schemas_menu_text"] = <"RM &Schemas">
+		["rm_schemas_reload_text"] = <"&Reload Schemas">
+		["rm_schemas_configure_text"] = <"&Configure Schemas">
+
+		["xml_menu_text"] = <"&XML">
+		["xml_menu_edit_rules_text"] = <"&Edit Rules">
+
+		["tools_menu_text"] = <"&Tools">
+		["tools_menu_clean_text"] = <"&Clean Generated Files">
+		["tools_menu_options_text"] = <"&Options">
+
+		["help_menu_text"] = <"&Help">
+		["help_menu_online_text"] = <"&Online Help">
+		["help_menu_release_notes_text"] = <"&Release Notes">
+		["help_menu_icons_text"] = <"&Icons">
+		["help_menu_ckm_text"] = <"Clinical $Knowledge Manager">
+		["help_menu_report_bug_text"] = <"Report a &Bug">
+		["help_menu_about_text"] = <"&About AWB">
+
+		-- MAIN_WINDOW - titles
+		["main_window_title"] = <"Archetype Definition Language $1 Workbench">
+		["export_report_dialog_title"] = <"Export Repository Report">
+		["about_awb_dialog_title"] = <"About ADL Workbench">
+		["reference_models_docking_area_title"] = <"Reference Models">
+		["error_tool_title"] = <"Errors">
+		["console_tool_title"] = <"Console">
+		["test_tool_title"] = <"Test tool">
+
+		-- MAIN_WINDOW - widget texts and tooltips
+		["profile_combo_tooltip"] = <"Select repository profile">
+		["compile_button_text"] = <"Compile">
+		["compile_button_tooltip"] = <"Compile all archetypes (F7)">
+		["adl_version_label_text"] = <"ADL Version:">
+		["adl_version_label_tooltip"] = <"ADL/AOM version in which archetype was authored">
+
+		["config_dialog_warning"] = <"Configuration warning">
+
 		["clean_generated_files_info"] = <"System needs to be compiled before generated files can be deleted">
 		["export_repository_report_replace_info"] = <"Exported report to $1">
 		["export_repository_report_replace_err"] = <"Failed to export report to $1">
-		["export_html_question"] = <"Only successfully built archetypes can be exported to HTML.%N%NDo you want to build each archetype before exporting it?">
+		["export_question"] = <"Only successfully built archetypes can be exported to $1.%N%NDo you want to build each archetype before exporting it?">
 		["edit_which_file_question"] = <"Edit which file?%N%NDifferential: $1%N%NFlat (legacy): $2">
 		["edit_legacy_file_info"] = <"The Differential (.adls) file is not available.%N%NOpening the legacy flat file: $1%N">
 		["build_and_export_all"] = <"Yes, Build and Export All">
 		["export_only_built"] = <"No, Export only the built ones">
+		["export_in_format_dialog_title"] = <"Export repository in $1 format">
 		["compile_before_serialising"] = <"Must compile before serialising">
 		["no_diff_tool"] = <"No diff tool must be configured; see Options">
 		["no_diff_dirs"] = <"No diff directories available; tests must be run on repository first">
@@ -59,6 +129,9 @@ templates = <
 		["write_docking_file_failed"] = <"Write to docking config file $1 failed">
 		["copy_docking_file"] = <"Copying user docking config file $1 to default location $2">
 		["no_docking_file_found"] = <"No docking format file fund at user location $1 or default location $2">
+		["cancel_button_text"] = <"Cancel">
+		["config_warning_text"] = <"Configuration warning">
+		["xml_14_not_available_message"] = <"XML based on ADL 1.4 available in next release">
 
 		-- GUI_CATALOGUE_TOOL
 		["catalogue_archetype_tab_text"] = <"Archetypes">
@@ -130,9 +203,6 @@ templates = <
 
 		["language_label"] = <"Language:">
 		["language_combo_tooltip"] = <"Select display language">
-
-		["adl_version_label"] = <"ADL Version:">
-		["adl_version_label_tooltip"] = <"ADL/AOM version in which archetype was authored">
 
 		["description_tab_text"] = <"Description">
 		["definition_tab_text"] = <"Definition">

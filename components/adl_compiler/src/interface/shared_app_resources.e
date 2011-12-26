@@ -47,6 +47,8 @@ feature -- Definitions
 	clinical_knowledge_manager_url: STRING = "http://www.openehr.org/knowledge/"
 			-- The URL to CKM.
 
+	Repository_report_filename: STRING = "ArchetypeRepositoryReport.xml"
+
 	Default_rm_schema_directory: attached STRING
 			-- directory of Reference Model schema files; same as full path to app + "/rm_schemas";
 			-- contains schema files in .dadl format e.g.
@@ -221,7 +223,7 @@ feature -- Application Switches
 	adl_version_for_flat_output: attached STRING
 			-- version of ADL syntax to use for outputting flat archetypes
 		do
-			Result := app_cfg.string_value("/compiler/adl_version_for_flat_output")
+			Result := app_cfg.string_value ("/compiler/adl_version_for_flat_output")
 			if Result.is_empty then
 				Result := Latest_adl_version.twin
 			end
@@ -234,7 +236,7 @@ feature -- Application Switches
 		require
 			value_not_empty: not a_value.is_empty
 		do
-			app_cfg.put_value("/compiler/adl_version_for_flat_output", a_value)
+			app_cfg.put_value ("/compiler/adl_version_for_flat_output", a_value)
 		end
 
 	validation_strict: BOOLEAN
@@ -272,13 +274,34 @@ feature -- Application Switches
 		require
 			path_not_empty: not a_path.is_empty
 		do
-			app_cfg.put_value("/file_system/rm_schema_directory", a_path)
+			app_cfg.put_value ("/file_system/rm_schema_directory", a_path)
+		end
+
+	export_directory: attached STRING
+			-- Path of directory to which HTML is exported.
+		do
+			Result := app_cfg.string_value_env_var_sub ("/file_system/export_directory")
+			if Result.is_empty then
+				Result := file_system.pathname (user_config_file_directory, "export")
+				set_export_directory (Result)
+			end
+		end
+
+	set_export_directory (a_path: attached STRING)
+			-- Set the root path of directories to which serialised files are exported.
+		require
+			path_not_empty: not a_path.is_empty
+		do
+			app_cfg.put_value ("/file_system/export_directory", a_path)
 		end
 
 	html_export_directory: attached STRING
 			-- Path of directory to which HTML is exported.
 		do
 			Result := app_cfg.string_value_env_var_sub ("/file_system/html_export_directory")
+			if Result.is_empty then
+				Result := file_system.pathname (export_directory, Syntax_type_adl_html)
+			end
 		end
 
 	set_html_export_directory (a_path: attached STRING)
@@ -286,13 +309,17 @@ feature -- Application Switches
 		require
 			path_not_empty: not a_path.is_empty
 		do
-			app_cfg.put_value("/file_system/html_export_directory", a_path)
+			app_cfg.put_value ("/file_system/html_export_directory", a_path)
 		end
 
 	test_diff_directory: attached STRING
 			-- Path of directory where .adls files are saved by GUI_TEST_ARCHETYPE_TREE_CONTROL for diff testing.
 		do
 			Result := app_cfg.string_value_env_var_sub ("/file_system/test_diff_directory")
+			if Result.is_empty then
+				Result := file_system.pathname (user_config_file_directory, "diff_test")
+				set_test_diff_directory (Result)
+			end
 		end
 
 	set_test_diff_directory (a_path: attached STRING)
@@ -300,13 +327,17 @@ feature -- Application Switches
 		require
 			path_not_empty: not a_path.is_empty
 		do
-			app_cfg.put_value("/file_system/test_diff_directory", a_path)
+			app_cfg.put_value ("/file_system/test_diff_directory", a_path)
 		end
 
 	compiler_gen_directory: attached STRING
 			-- Path of directory where compiler generated files go
 		do
 			Result := app_cfg.string_value_env_var_sub ("/file_system/compiler_gen_directory")
+			if Result.is_empty then
+			Result := file_system.pathname (user_config_file_directory, "gen")
+				set_compiler_gen_directory (Result)
+			end
 		end
 
 	compiler_gen_source_directory: attached STRING

@@ -74,7 +74,7 @@ feature -- Validation
 				validate_definition_codes
 			end
 
-			-- basic validation of definition and ontology
+			-- validation of ontology requiring flat parent
 			if passed then
 				validate_ontology_languages
 			end
@@ -215,11 +215,6 @@ feature {NONE} -- Implementation
 
 	structure_validate_node (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- perform validation of node against reference model.
-		local
-			arch_parent_attr_type, model_attr_class: STRING
-			co_parent_flat: C_OBJECT
-			apa: ARCHETYPE_PATH_ANALYSER
-			rm_prop_def: BMM_PROPERTY_DEFINITION
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca then
 				if not target.is_specialised and then ca.has_differential_path then

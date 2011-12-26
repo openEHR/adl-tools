@@ -685,7 +685,7 @@ end
 				end
 				if ca.is_multiple and ca.cardinality = Void then
 					if attached {BMM_CONTAINER_PROPERTY} rm_attr_desc as cont_prop then
-						ca.set_cardinality (create {CARDINALITY}.make(cont_prop.cardinality))
+						ca.set_cardinality (create {CARDINALITY}.make (cont_prop.cardinality))
 					else -- should never get here
 
 					end

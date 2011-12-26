@@ -47,8 +47,8 @@ feature {NONE} -- Initialization
 			create ev_vbox_2
 			create ev_hbox_1
 			create ev_label_1
-			create export_html_text
-			create export_html_browse_button
+			create export_text
+			create export_browse_button
 			create ev_hbox_2
 			create ev_label_2
 			create save_diff_path_text
@@ -99,8 +99,8 @@ feature {NONE} -- Initialization
 			paths_setting_frame.extend (ev_vbox_2)
 			ev_vbox_2.extend (ev_hbox_1)
 			ev_hbox_1.extend (ev_label_1)
-			ev_hbox_1.extend (export_html_text)
-			ev_hbox_1.extend (export_html_browse_button)
+			ev_hbox_1.extend (export_text)
+			ev_hbox_1.extend (export_browse_button)
 			ev_vbox_2.extend (ev_hbox_2)
 			ev_hbox_2.extend (ev_label_2)
 			ev_hbox_2.extend (save_diff_path_text)
@@ -167,12 +167,12 @@ feature {NONE} -- Initialization
 			ev_hbox_1.set_padding (padding_width)
 			ev_hbox_1.set_border_width (border_width)
 			ev_hbox_1.disable_item_expand (ev_label_1)
-			ev_hbox_1.disable_item_expand (export_html_browse_button)
-			ev_label_1.set_text ("Export HTML to:")
-			export_html_text.set_background_color (editable_colour)
-			export_html_text.set_minimum_width (300)
-			export_html_browse_button.set_text ("Browse...")
-			export_html_browse_button.set_minimum_width (65)
+			ev_hbox_1.disable_item_expand (export_browse_button)
+			ev_label_1.set_text ("Export directory")
+			export_text.set_background_color (editable_colour)
+			export_text.set_minimum_width (300)
+			export_browse_button.set_text ("Browse...")
+			export_browse_button.set_minimum_width (65)
 			ev_hbox_2.set_minimum_width (350)
 			ev_hbox_2.set_minimum_height (30)
 			ev_hbox_2.set_padding (padding_width)
@@ -300,13 +300,13 @@ feature {NONE} -- Initialization
 			set_default_push_button (ok_button)
 
 				-- Connect events.
-			export_html_browse_button.select_actions.extend (agent on_export_html_browse)
+			export_browse_button.select_actions.extend (agent on_export_browse)
 			save_diff_path_button.select_actions.extend (agent on_test_diff_path_browse)
 			text_editor_command_browse_button.select_actions.extend (agent on_text_editor_command_browse)
 			editor_app_command_browse_button.select_actions.extend (agent on_editor_app_command_browse)
 			difftool_command_browse_button.select_actions.extend (agent on_difftool_command_browse)
 			ok_button.select_actions.extend (agent on_ok)
-			export_html_text.focus_in_actions.extend (agent on_select_all (export_html_text))
+			export_text.focus_in_actions.extend (agent on_select_all (export_text))
 			save_diff_path_text.focus_in_actions.extend (agent on_select_all (save_diff_path_text))
 
 			text_editor_command_text.focus_in_actions.extend (agent on_select_all (text_editor_command_text))
@@ -355,7 +355,7 @@ feature -- Events
 			end
 
 			-- paths options: set directly; NO FURTHER ACTION REQUIRED IN GUI
-			set_html_export_directory (export_html_text.text.as_string_8)
+			set_export_directory (export_text.text.as_string_8)
 			set_test_diff_directory (save_diff_path_text.text.as_string_8)
 
 			-- compilation options: set directly; NO FURTHER ACTION REQUIRED IN GUI
@@ -363,7 +363,7 @@ feature -- Events
 			set_validation_strict (validation_strict_check_button.is_selected)
 			set_rm_flattening_on (rm_flattening_on_check_button.is_selected)
 			set_error_reporting_level (error_type_ids.item (parser_error_reporting_level_combo_box.text.as_string_8))
-			billboard.set_error_reporting_level(error_reporting_level)
+			billboard.set_error_reporting_level (error_reporting_level)
 		end
 
 	on_editor_app_command_browse
@@ -384,10 +384,10 @@ feature -- Events
 			difftool_command_text.set_text (get_file (difftool_command_text.text.as_string_8, Current))
 		end
 
-	on_export_html_browse
-			-- Let the user browse for the directory to which HTML will be exported.
+	on_export_browse
+			-- Let the user browse for the directory to which serialised files will be exported.
 		do
-			export_html_text.set_text (get_directory (export_html_text.text.as_string_8, Current))
+			export_text.set_text (get_directory (export_text.text.as_string_8, Current))
 		end
 
 	on_test_diff_path_browse
@@ -487,7 +487,7 @@ feature {NONE} -- Implementation
 			end
 
 			-- resource / directory options
-			export_html_text.set_text (html_export_directory)
+			export_text.set_text (export_directory)
 			save_diff_path_text.set_text (test_diff_directory)
 		end
 
@@ -495,8 +495,8 @@ feature {NONE} -- Implementation
 	paths_setting_frame, compiler_settings_frame, archetype_view_frame, ev_frame_1: EV_FRAME
 	ev_hbox_1, ev_hbox_2, ev_hbox_3, ev_hbox_4, ev_hbox_5, ev_hbox_6, ev_hbox_7, ev_hbox_8, ev_hbox_9, ev_hbox_10, ev_hbox_11, ev_hbox_12: EV_HORIZONTAL_BOX
 	ev_label_1, ev_label_2, ev_label_3, ev_label_4, ev_label_5, ev_label_6, ev_label_7: EV_LABEL
-	export_html_text, save_diff_path_text, text_editor_command_text, editor_app_command_text, difftool_command_text: EV_TEXT_FIELD
-	export_html_browse_button, save_diff_path_button, text_editor_command_browse_button: EV_BUTTON
+	export_text, save_diff_path_text, text_editor_command_text, editor_app_command_text, difftool_command_text: EV_TEXT_FIELD
+	export_browse_button, save_diff_path_button, text_editor_command_browse_button: EV_BUTTON
 	editor_app_command_browse_button, difftool_command_browse_button, ok_button, cancel_button: EV_BUTTON
 	parser_error_reporting_level_combo_box, adl_save_version_combo_box: EV_COMBO_BOX
 	validation_strict_check_button, rm_flattening_on_check_button, show_definition_tree_expanded_check_button, show_line_numbers_check_button: EV_CHECK_BUTTON

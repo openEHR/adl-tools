@@ -30,6 +30,7 @@ templates = <
 		["key_too_short"] = <"At least 3 characters required in key">
 		["yes_response"] = <"Yes">
 		["no_response"] = <"No">
+		["could_not_create_file_text"] = <"Could not create file or directory $1">
 	>
 >
 

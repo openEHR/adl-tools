@@ -20,7 +20,7 @@ feature -- Access
 			Result := message_db.create_message_line (an_id, args)
 		end
 
-	create_message_content(an_id: attached STRING; args: ARRAY[STRING]): attached STRING
+	create_message_content (an_id: attached STRING; args: ARRAY[STRING]): attached STRING
 		do
 			Result := message_db.create_message_content (an_id, args)
 		end
