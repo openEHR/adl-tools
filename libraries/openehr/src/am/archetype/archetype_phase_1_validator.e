@@ -1,7 +1,7 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Validator of standalone archetype i.e. without reference to parent archetypes
+				 Validator of standalone archetype i.e. without need of flattened parent archetype
 				 in the case of specialised archetypes.
 		         ]"
 	keywords:    "constraint model"
@@ -52,7 +52,6 @@ feature -- Status Report
 feature -- Validation
 
 	validate
-			-- validate description section
 		do
 			reset
 

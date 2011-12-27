@@ -234,14 +234,17 @@ feature {NONE} -- Implementation
 			-- For specialised archetypes, requires flat parent to be available
 		local
 			ann_for_lang: RESOURCE_ANNOTATION_NODES
+			ann_path: STRING
 		do
 			if target.has_annotations then
 				from target.annotations.items.start until not passed or target.annotations.items.off loop
 					ann_for_lang := target.annotations.items.item_for_iteration
 					from ann_for_lang.items.start until not passed or ann_for_lang.items.off loop
+						ann_path := ann_for_lang.items.key_for_iteration
+
 						-- firstly see if annotation path is valid
-						if not (target.has_path (ann_for_lang.items.key_for_iteration) or else (target.is_specialised and then
-							flat_parent.has_path (ann_for_lang.items.key_for_iteration)))
+						if not (target.has_path (ann_path) or else (target.is_specialised and then
+							flat_parent.has_path (ann_path)) or else rm_schema.has_property_path (target.definition.rm_type_name, ann_path))
 						then
 							add_error ("VRANP", <<target.annotations.items.key_for_iteration, ann_for_lang.items.key_for_iteration>>)
 						end
