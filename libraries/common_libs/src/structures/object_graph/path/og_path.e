@@ -306,6 +306,12 @@ feature -- Status Report
 			Result := items.count = 1
 		end
 
+	has_addressable_item: BOOLEAN
+			-- True if there is at least one addressable item (i.e. predicate) in this path
+		do
+			Result := items.there_exists (agent (a_path_item: OG_PATH_ITEM):BOOLEAN do Result := a_path_item.is_addressable end)
+		end
+
 feature -- Validation
 
 	valid_path_string(a_path: STRING): BOOLEAN

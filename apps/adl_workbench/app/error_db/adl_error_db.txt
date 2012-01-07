@@ -83,8 +83,8 @@ templates = <
 		["VACDF2"] = <"constraint code $1 not found in ontology of current archetype">
 
 		-- annotations
-		["VRANP"] = <"Annotation at language $1 has invalid path $2">
-
+		["VRANP1"] = <"Annotation at language $1 has invalid archetype path $2">
+		["VRANP2"] = <"Annotation at language $1 has invalid reference model path $2">
 
 		-- C_ATTRIBUTE
 		["VSANCE"] = <"attribute at path $1 existence $2 does not conform to parent $3 existence $4">

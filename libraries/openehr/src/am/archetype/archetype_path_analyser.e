@@ -105,6 +105,13 @@ feature -- Status Report
 			end
 	 	end
 
+	 is_archetype_path: BOOLEAN
+	 		-- True if this path is of the form for referencing an archetyped structure, i.e. contains at least one archetype
+	 		-- node code. If it has none, it is a pure RM path, even though some such paths are valid in archetype
+	 	do
+	 		Result := target.has_addressable_item
+	 	end
+
 feature {NONE} -- Implementation
 
 	calculate_level
