@@ -356,11 +356,11 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 			-- table of {list<ARCHETYPE_INTERNAL_REF>, target_path}
 			-- i.e. <list of use_nodes> keyed by path they point to
 
-	suppliers_index: HASH_TABLE[ARRAYED_LIST[C_ARCHETYPE_ROOT], STRING]
+	suppliers_index: HASH_TABLE [ARRAYED_LIST [C_ARCHETYPE_ROOT], STRING]
 			-- table of {list<C_ARCHETYPE_ROOT>, archetype_id}
 			-- i.e. <list of use_archetype nodes> keyed by archetype id they refer to
 
-	invariants_index: HASH_TABLE[ARRAYED_LIST[EXPR_LEAF], STRING]
+	invariants_index: HASH_TABLE [ARRAYED_LIST [EXPR_LEAF], STRING]
 			-- table of {list<EXPR_LEAF>, target_path}
 			-- i.e. <list of invariant leaf nodes> keyed by path they point to
 

@@ -98,8 +98,8 @@ NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
 				last_token := SYM_ARCHETYPE
 			}
 
-^[Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee]_[Cc][Oo][Mm][Pp][Oo][Nn][Ee][Nn][Tt][ \t\r\n]+ 		{
-				last_token := SYM_TEMPLATE_COMPONENT
+^[Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee]_[Oo][Vv][Ee][Rr][Ll][Aa][Yy][ \t\r\n]+ 		{
+				last_token := SYM_TEMPLATE_OVERLAY
 			}
 
 ^[Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee][ \t\r\n]+ 		{

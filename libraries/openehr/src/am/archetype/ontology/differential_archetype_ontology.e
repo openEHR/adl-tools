@@ -55,8 +55,6 @@ feature -- Initialisation
 			a_flat_copy := a_flat.deep_twin
 			a_flat_copy.remove_inherited_codes
 
-			create errors.make
-
 			concept_code := a_flat_copy.concept_code
 			original_language := a_flat.original_language.twin
 

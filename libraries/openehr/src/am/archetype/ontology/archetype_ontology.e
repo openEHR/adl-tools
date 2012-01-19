@@ -52,8 +52,6 @@ feature -- Initialisation
 	default_create
 			--
 		do
-			create errors.make
-
 			create terminologies_available.make (0)
 			terminologies_available.compare_objects
 
@@ -198,8 +196,6 @@ feature -- Access
 			Term_code_valid: has_terminology_extract_code(a_terminology, a_code)
 		deferred
 		end
-
-	errors: ERROR_ACCUMULATOR
 
 	physical_to_logical_path (a_phys_path, a_language: attached STRING; with_codes: BOOLEAN): attached STRING
 			-- generate a logical path in 'a_language' from a physical path

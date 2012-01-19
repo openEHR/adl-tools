@@ -24,8 +24,8 @@ feature -- Defnition
 	template: INTEGER = 1
 			-- Constant to indicate that the artefact is designed as a template.
 
-	template_component: INTEGER = 2
-			-- Constant to indicate that the artefact is designed as a template_component.
+	template_overlay: INTEGER = 2
+			-- Constant to indicate that the artefact is designed as a template_overlay.
 
 	operational_template: INTEGER = 3
 			-- Constant to indicate that the artefact is an operational template.
@@ -59,7 +59,7 @@ feature -- Access
 			create Result.make(0)
 			Result.extend("archetype", archetype)
 			Result.extend("template", template)
-			Result.extend("template", template_component)
+			Result.extend("template", template_overlay)
 			Result.extend("template", operational_template)
 		end
 
@@ -68,7 +68,7 @@ feature -- Access
 			create Result.make(0)
 			Result.extend(archetype, "archetype")
 			Result.extend(template, "template")
-			Result.extend(template_component, "template_component")
+			Result.extend(template_overlay, "template_overlay")
 			Result.extend(operational_template, "operational_template")
 		end
 
@@ -77,7 +77,7 @@ feature -- Access
 			create Result.make(0)
 			Result.extend("archetype", archetype)
 			Result.extend("template", template)
-			Result.extend("template_component", template_component)
+			Result.extend("template_overlay", template_overlay)
 			Result.extend("operational_template", operational_template)
 		end
 

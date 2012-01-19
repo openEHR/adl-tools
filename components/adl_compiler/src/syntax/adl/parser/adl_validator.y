@@ -48,15 +48,37 @@ create
 %token <STRING> V_DADL_TEXT V_CADL_TEXT V_ASSERTION_TEXT
 %token <STRING> V_VERSION_STRING
 
-%token SYM_ARCHETYPE SYM_TEMPLATE SYM_TEMPLATE_COMPONENT SYM_OPERATIONAL_TEMPLATE
+%token SYM_ARCHETYPE SYM_TEMPLATE SYM_TEMPLATE_OVERLAY SYM_OPERATIONAL_TEMPLATE
 %token SYM_CONCEPT SYM_SPECIALIZE
 %token SYM_DEFINITION SYM_LANGUAGE SYM_ANNOTATIONS SYM_COMPONENT_ONTOLOGIES
 %token SYM_DESCRIPTION SYM_ONTOLOGY SYM_INVARIANT
 %token SYM_ADL_VERSION SYM_IS_CONTROLLED SYM_IS_GENERATED
 
+%type <STRING> source_artefact_type opt_artefact_type
+
 %%
 
-input: archetype	
+input: archetype
+		{
+			accept
+		}
+	| specialised_archetype_or_template
+		{
+			accept
+		}
+	| template_overlay
+		{
+			accept
+		}
+	| operational_template
+		{
+			accept
+		}
+	| adl_14_archetype
+		{
+			accept
+		}
+	| specialised_adl_14_archetype
 		{
 			accept
 		}
@@ -66,9 +88,26 @@ input: archetype
 		}
 	;
 
-archetype: arch_identification 
-	   	arch_specialisation 
+adl_14_archetype: source_identification 
 		arch_concept 
+		arch_language 
+		arch_description 
+		arch_definition 
+		arch_invariant
+		arch_ontology
+	;
+
+specialised_adl_14_archetype: source_identification 
+	   	arch_specialisation
+		arch_concept 
+		arch_language 
+		arch_description 
+		arch_definition 
+		arch_invariant
+		arch_ontology
+	;
+
+archetype: source_identification 
 		arch_language 
 		arch_description 
 		arch_definition 
@@ -77,43 +116,90 @@ archetype: arch_identification
 		arch_annotations
 	;
 
-arch_identification: arch_head arch_meta_data V_ARCHETYPE_ID 
+specialised_archetype_or_template: source_identification 
+	   	arch_specialisation
+		arch_language 
+		arch_description 
+		arch_definition 
+		arch_invariant
+		arch_ontology
+		arch_annotations
+	;
+
+template_overlay: source_identification 
+	   	arch_specialisation
+		arch_language 
+		arch_definition 
+		arch_ontology
+	;
+
+operational_template: opt_identification 
+		arch_language 
+		arch_description 
+		arch_definition 
+		arch_invariant
+		arch_ontology
+		arch_annotations
+		arch_component_ontologies
+	;
+
+source_identification: source_artefact_type arch_meta_data V_ARCHETYPE_ID 
 		{
-			if arch_id.valid_id($3) then
-				create archetype_id.make_from_string($3)
+			$1.right_adjust
+			create artefact_type.make_from_type_name ($1)
+			if arch_id.valid_id ($3) then
+				create archetype_id.make_from_string ($3)
+			else
+				raise_error
+				report_error (create_message_line ("SASID", Void))
+				abort
 			end
 		}
-	| arch_head error
+	| source_artefact_type error
 		{
 			raise_error
-			report_error(create_message_line("SARID", Void))
+			report_error (create_message_line ("SARID", Void))
 			abort
 		}
 	;
 
-arch_head: SYM_ARCHETYPE 
+source_artefact_type: SYM_ARCHETYPE 
 		{
-			str := text
-			str.right_adjust
-			create artefact_type.make_from_type_name(str)
+			$$ := text
 		}
 	| SYM_TEMPLATE
 		{
-			str := text
-			str.right_adjust
-			create artefact_type.make_from_type_name(str)
+			$$ := text
 		}
-	| SYM_TEMPLATE_COMPONENT
+	| SYM_TEMPLATE_OVERLAY
 		{
-			str := text
-			str.right_adjust
-			create artefact_type.make_from_type_name(str)
+			$$ := text
 		}
-	| SYM_OPERATIONAL_TEMPLATE
+	;
+
+opt_identification: opt_artefact_type arch_meta_data V_ARCHETYPE_ID 
 		{
-			str := text
-			str.right_adjust
-			create artefact_type.make_from_type_name(str)
+			$1.right_adjust
+			create artefact_type.make_from_type_name ($1)
+			if arch_id.valid_id ($3) then
+				create archetype_id.make_from_string ($3)
+			else
+				raise_error
+				report_error (create_message_line ("SASID", Void))
+				abort
+			end
+		}
+	| opt_artefact_type error
+		{
+			raise_error
+			report_error (create_message_line ("SARID", Void))
+			abort
+		}
+	;
+
+opt_artefact_type: SYM_OPERATIONAL_TEMPLATE
+		{
+			$$ := text
 		}
 	;
 
@@ -122,7 +208,7 @@ arch_meta_data: -- empty ok
 	;
 
 arch_meta_data_items: arch_meta_data_item
-	| arch_meta_data_items ';' arch_meta_data_item
+	| arch_meta_data_item ';' arch_meta_data_items
 	;
 
 arch_meta_data_item: SYM_ADL_VERSION '=' V_VERSION_STRING
@@ -139,23 +225,25 @@ arch_meta_data_item: SYM_ADL_VERSION '=' V_VERSION_STRING
 		}
 	;
 
-arch_specialisation: -- empty is ok
-	| SYM_SPECIALIZE V_ARCHETYPE_ID 
+arch_specialisation: SYM_SPECIALIZE V_ARCHETYPE_ID 
 		{
-			if arch_id.valid_id($2) then
-				create parent_archetype_id.make_from_string($2)
+			if arch_id.valid_id ($2) then
+				create parent_archetype_id.make_from_string ($2)
+			else
+				raise_error
+				report_error (create_message_line ("SASID", Void))
+				abort
 			end
 		}
 	| SYM_SPECIALIZE error
 		{
 			raise_error
-			report_error(create_message_line("SASID", Void))
+			report_error (create_message_line ("SASID", Void))
 			abort
 		}
 	;
 
-arch_concept: -- empty is ADL 1.5 
-	| SYM_CONCEPT V_LOCAL_TERM_CODE_REF 
+arch_concept: SYM_CONCEPT V_LOCAL_TERM_CODE_REF 
 		{
 			concept := $2
 			debug("ADL_parse")
@@ -165,18 +253,12 @@ arch_concept: -- empty is ADL 1.5
 	| SYM_CONCEPT error
 		{
 			raise_error
-			report_error(create_message_line("SACO", Void))
+			report_error (create_message_line ("SACO", Void))
 			abort
 		}
 	;
 
-arch_language: 
-		{
-			raise_error
-			report_error(create_message_line("SALAN", Void))
-			abort
-		}
-	| SYM_LANGUAGE V_DADL_TEXT
+arch_language: SYM_LANGUAGE V_DADL_TEXT
 		{
 			convert_dadl_language($2)
 			language_text := $2
@@ -184,13 +266,12 @@ arch_language:
 	| SYM_LANGUAGE error
 		{
 			raise_error
-			report_error(create_message_line("SALA", Void))
+			report_error (create_message_line ("SALA", Void))
 			abort
 		}
 	;
 
-arch_description: -- no meta-data ok
-	| SYM_DESCRIPTION V_DADL_TEXT 
+arch_description: SYM_DESCRIPTION V_DADL_TEXT 
 		{ 
 			convert_dadl_language($2)
 			description_text := $2
@@ -198,7 +279,7 @@ arch_description: -- no meta-data ok
 	| SYM_DESCRIPTION error
 		{
 			raise_error
-			report_error(create_message_line("SADS", Void))
+			report_error (create_message_line ("SADS", Void))
 			abort
 		}
 	;
@@ -211,7 +292,7 @@ arch_definition:	SYM_DEFINITION V_CADL_TEXT
 	| SYM_DEFINITION error
 		{
 			raise_error
-			report_error(create_message_line("SADF", Void))
+			report_error (create_message_line ("SADF", Void))
 			abort
 		}
 	;
@@ -224,7 +305,7 @@ arch_invariant: -- no invariant ok
 	| SYM_INVARIANT error
 		{
 			raise_error
-			report_error(create_message_line("SAIV", Void))
+			report_error (create_message_line ("SAIV", Void))
 			abort
 		}
 	;
@@ -236,7 +317,7 @@ arch_ontology: SYM_ONTOLOGY V_DADL_TEXT
 	| SYM_ONTOLOGY error
 		{
 			raise_error
-			report_error(create_message_line("SAON", Void))
+			report_error (create_message_line ("SAON", Void))
 			abort
 		}
 	;
@@ -249,7 +330,19 @@ arch_annotations: -- no meta-data ok
 	| SYM_ANNOTATIONS error
 		{
 			raise_error
-			report_error(create_message_line("SAAS", Void))
+			report_error (create_message_line ("SAAS", Void))
+			abort
+		}
+	;
+		
+arch_component_ontologies: SYM_COMPONENT_ONTOLOGIES V_DADL_TEXT 
+		{ 
+			component_ontologies_text := $2
+		}
+	| SYM_COMPONENT_ONTOLOGIES error
+		{
+			raise_error
+			report_error (create_message_line ("SAAS", Void))
 			abort
 		}
 	;
@@ -327,6 +420,8 @@ feature -- Parse Output
 	ontology_text: STRING
 
 	annotations_text: STRING
+
+	component_ontologies_text: STRING
 
 feature {NONE} -- Implementation 
 

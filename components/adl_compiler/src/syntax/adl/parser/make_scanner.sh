@@ -12,4 +12,4 @@
 #	last_change: "$LastChangedDate$"
 #
 
-$GOBO/bin/gelex adl_scanner.l
+gelex adl_scanner.l

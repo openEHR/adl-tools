@@ -798,7 +798,7 @@ feature {NONE} -- Compilation
 		local
 			legacy_flat_archetype: FLAT_ARCHETYPE
 		do
-			legacy_flat_archetype := adl15_engine.parse_flat (legacy_flat_text, rm_schema)
+			legacy_flat_archetype := adl15_engine.parse_legacy_flat (legacy_flat_text, rm_schema)
 			flat_archetype_cache := Void
 			if legacy_flat_archetype = Void then
 				errors.append (adl15_engine.errors)
@@ -1155,7 +1155,7 @@ feature {NONE} -- Implementation
 			flat_archetype_cache := arch_flattener.arch_output_flat
 			last_include_rm := include_rm
 		ensure
-			flat_archetype_cache_attached: flat_archetype_cache /= Void
+			flat_archetype_cache_attached: attached flat_archetype_cache
 		end
 
 	flat_archetype_cache: FLAT_ARCHETYPE

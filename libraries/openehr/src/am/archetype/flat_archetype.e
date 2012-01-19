@@ -91,7 +91,7 @@ feature -- Factory
 	to_differential: DIFFERENTIAL_ARCHETYPE
 			-- generate differential form of archetype if specialised, to be in differential form by removing inherited parts
 		do
-			create Result.make_from_flat(Current)
+			create Result.make_from_flat (Current)
 		end
 
 end

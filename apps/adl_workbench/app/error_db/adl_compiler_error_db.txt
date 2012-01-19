@@ -50,6 +50,9 @@ templates = <
 		["compiler_unexpected_error"] = <"Location: $1">
 		["compile_exception"] = <"EXCEPTION in last operation on archetype $1; details = $2; stack = $3">
 
+		-- ADL15_ENGINE
+		["deserialise_e1"] = <"Object deserialisation from dADL failed; type = $1">
+
 		-- ARCHETYPE_VALIDATOR
 		["validate_e1"] = <"specialisation parent is missing">
 		["validate_e3"] = <"archetype id in descriptor $1 does not match id at top of file $2">

@@ -41,12 +41,12 @@ feature -- Initialisation
 			--
 		do
 			lifecycle_state := Default_lifecycle_state.twin
-			create details.make(0)
-			create original_author.make(0)
-			add_original_author_item("name", Default_original_author)
-			create original_language.make(default_language_code_set, default_language)
+			create details.make (0)
+			create original_author.make (0)
+			add_original_author_item ("name", Default_original_author)
+			create original_language.make (default_language_code_set, default_language)
 		ensure then
-			lifecycle_state_set: lifecycle_state.is_equal(Default_lifecycle_state)
+			lifecycle_state_set: lifecycle_state.is_equal (Default_lifecycle_state)
 		end
 
 	make_dt (make_args: ARRAY[ANY])
@@ -62,10 +62,10 @@ feature -- Initialisation
 			Language_valid: not orig_lang.is_empty
 		do
 			default_create
-			add_original_author_item("name", an_author_name)
+			add_original_author_item ("name", an_author_name)
 			create original_language.make(default_language_code_set, orig_lang)
 		ensure
-			Original_author_item_set: original_author.item("name") = an_author_name
+			Original_author_item_set: original_author.item ("name") = an_author_name
 			Original_language_set: original_language.code_string.is_equal(orig_lang)
 		end
 
@@ -104,7 +104,7 @@ feature -- Access
 			end
 		end
 
-	detail_for_language(a_lang: attached STRING): RESOURCE_DESCRIPTION_ITEM
+	detail_for_language (a_lang: attached STRING): RESOURCE_DESCRIPTION_ITEM
 			-- get the RESOURCE_DESCRIPTION_ITEM for a_lang
 		require
 			Language_valid: details.has (a_lang)
@@ -117,18 +117,14 @@ feature -- Access
 
 feature -- Comparison
 
-	valid_detail(a_detail: attached RESOURCE_DESCRIPTION_ITEM): BOOLEAN
+	valid_detail (a_detail: attached RESOURCE_DESCRIPTION_ITEM): BOOLEAN
 			-- is a_detail valid to be added to details list? Checks to see
 			-- that two detail objects both with is_original_language set
 			-- cannot be added.
 		do
 			if not details.has (a_detail.language.code_string) then
 				if a_detail.is_original_language then
-					from
-						details.start
-					until
-						details.off or details.item_for_iteration.is_original_language
-					loop
+					from details.start until details.off or details.item_for_iteration.is_original_language loop
 						details.forth
 					end
 				end
@@ -138,7 +134,7 @@ feature -- Comparison
 
 feature -- Modification
 
-	add_original_author_item(a_key, a_value: attached STRING)
+	add_original_author_item (a_key, a_value: attached STRING)
 			-- add the key, value pair to original_author
 		require
 			Key_valid: not a_key.is_empty
@@ -155,7 +151,7 @@ feature -- Modification
 			create original_author.make(0)
 		end
 
-	add_other_contributor(a_contributor: attached STRING)
+	add_other_contributor (a_contributor: attached STRING)
 			-- add a_contributor to add_other_contributor
 		require
 			Contributor_valid: not a_contributor.is_empty
@@ -174,7 +170,7 @@ feature -- Modification
 			create other_contributors.make(0)
 		end
 
-	set_resource_package_uri(a_uri: attached STRING)
+	set_resource_package_uri (a_uri: attached STRING)
 			-- set resource_package_uri
 		require
 			Uri_valid: not a_uri.is_empty
@@ -184,7 +180,7 @@ feature -- Modification
 			Archetype_package_uri_set: resource_package_uri.out.is_equal(a_uri)
 		end
 
-	set_lifecycle_state(a_lifecycle_state: attached STRING)
+	set_lifecycle_state (a_lifecycle_state: attached STRING)
 			-- set lifecycle_state
 		require
 			Lifecycle_state_valid: not a_lifecycle_state.is_empty
@@ -194,7 +190,7 @@ feature -- Modification
 			Lifecycle_state_set: lifecycle_state = a_lifecycle_state
 		end
 
-	add_detail(a_detail: attached RESOURCE_DESCRIPTION_ITEM)
+	add_detail (a_detail: attached RESOURCE_DESCRIPTION_ITEM)
 			-- Add a language, value pair to `details'.
 		require
 			Detail_valid: valid_detail(a_detail)
@@ -204,7 +200,7 @@ feature -- Modification
 			Details_set: details.has(a_detail.language.code_string)
 		end
 
-	add_language(a_new_lang: attached STRING)
+	add_language (a_new_lang: attached STRING)
 			-- add a new details object created from the object for orig_lang,
 			-- with all string fields ready for translation
 		require
@@ -213,7 +209,7 @@ feature -- Modification
 			add_detail(details.item (original_language.code_string).translated_copy (a_new_lang))
 		end
 
-	remove_detail, remove_language(a_lang: attached STRING)
+	remove_detail, remove_language (a_lang: attached STRING)
 			-- remove details item for a_lang from the resource
 		require
 			Lang_valid: details.has(a_lang)
@@ -247,7 +243,7 @@ feature -- Modification
 			other_details_removed: a_value.is_empty implies not other_details.has (a_key)
 		end
 
-	set_parent_resource(a_res: attached AUTHORED_RESOURCE)
+	set_parent_resource (a_res: attached AUTHORED_RESOURCE)
 			-- set parent_resource
 		do
 			parent_resource := a_res

@@ -30,39 +30,39 @@ feature -- Visitor
 		do
 			if a_node.is_addressable then
 				if not archetype.id_atcodes_index.has(a_node.node_id) then
-					archetype.id_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
+					archetype.id_atcodes_index.put (create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
 				end
-				archetype.id_atcodes_index.item(a_node.node_id).extend (a_node)
+				archetype.id_atcodes_index.item (a_node.node_id).extend (a_node)
 			end
 		end
 
 	start_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- enter a C_COMPLEX_OBJECT
 		do
-			start_c_object(a_node, depth)
+			start_c_object (a_node, depth)
 		end
 
 	start_archetype_slot (a_node: ARCHETYPE_SLOT; depth: INTEGER)
 			-- enter an ARCHETYPE_SLOT
 		do
-			start_c_object(a_node, depth)
+			start_c_object (a_node, depth)
 			archetype.slot_index.extend (a_node)
 		end
 
 	start_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- enter a C_ARCHETYPE_ROOT
 		do
-			if not archetype.suppliers_index.has(a_node.archetype_id) then
-				archetype.suppliers_index.put(create {ARRAYED_LIST[C_ARCHETYPE_ROOT]}.make(0), a_node.archetype_id)
+			if not archetype.suppliers_index.has (a_node.archetype_id) then
+				archetype.suppliers_index.put (create {ARRAYED_LIST[C_ARCHETYPE_ROOT]}.make(0), a_node.archetype_id)
 			end
-			archetype.suppliers_index.item(a_node.archetype_id).extend (a_node)
+			archetype.suppliers_index.item (a_node.archetype_id).extend (a_node)
 		end
 
 	start_archetype_internal_ref (a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
 			-- enter an ARCHETYPE_INTERNAL_REF
 		do
-			if not archetype.use_node_index.has(a_node.target_path) then
-				archetype.use_node_index.put(create {ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]}.make(0), a_node.target_path)
+			if not archetype.use_node_index.has (a_node.target_path) then
+				archetype.use_node_index.put (create {ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]}.make(0), a_node.target_path)
 			end
 			archetype.use_node_index.item(a_node.target_path).extend (a_node)
 		end
@@ -71,9 +71,9 @@ feature -- Visitor
 			-- enter a CONSTRAINT_REF
 		do
 			if not archetype.accodes_index.has(a_node.target) then
-				archetype.accodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.target)
+				archetype.accodes_index.put (create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.target)
 			end
-			archetype.accodes_index.item(a_node.target).extend (a_node)
+			archetype.accodes_index.item (a_node.target).extend (a_node)
 		end
 
 	start_c_code_phrase (a_node: C_CODE_PHRASE; depth: INTEGER)

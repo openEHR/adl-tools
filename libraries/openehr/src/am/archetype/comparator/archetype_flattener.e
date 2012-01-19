@@ -123,8 +123,8 @@ end
 			-- now finalise template flattening
 			if arch_child_diff.is_template then
 				arch_output_flat.build_xrefs
-				template_overlay_target_definitions
-				template_overlay_target_ontologies
+				template_overlay_supplier_definitions
+				template_overlay_supplier_ontologies
 			end
 		ensure
 			attached arch_output_flat
@@ -213,8 +213,8 @@ end
 			create child_grafted_path_list.make(0)
 			child_grafted_path_list.compare_objects
 
-			create def_it.make(arch_child_diff.definition)
-			def_it.do_until_surface(agent node_graft, agent node_test)
+			create def_it.make (arch_child_diff.definition)
+			def_it.do_until_surface (agent node_graft, agent node_test)
 		end
 
 	node_graft (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER)
@@ -509,9 +509,10 @@ end
 				-- to be merged either before or after the insert_obj in the flattened output.
 				from i := merge_list.item.start_pos until i > merge_list.item.end_pos loop
 					if is_valid_code (ca_child.children.i_th(i).node_id) 																						-- identified nodes only
-								and specialisation_status_from_code (ca_child.children.i_th(i).node_id, arch_child_diff.specialisation_depth).value = ss_added 	-- that have been added
-								or attached {C_ARCHETYPE_ROOT} ca_child.children.i_th(i) as car then 															-- or else C_ARCHETYPE_ROOTs
-							child_grafted_path_list.extend (ca_child.children.i_th(i).path) -- remember the path, so we don't try to do it again later on
+						and specialisation_status_from_code (ca_child.children.i_th(i).node_id, arch_child_diff.specialisation_depth).value = ss_added 			-- that have been added
+						or attached {C_ARCHETYPE_ROOT} ca_child.children.i_th(i) as car 																		-- or else C_ARCHETYPE_ROOTs
+					then
+						child_grafted_path_list.extend (ca_child.children.i_th(i).path) -- remember the path, so we don't try to do it again later on
 
 						-- now we either merge the object, or deal with the special case of occurrences = 0,
 						-- in which case, remove the target object
@@ -548,7 +549,7 @@ end
 			end
 		end
 
-	merge_single_attribute(ca_output, ca_child: C_ATTRIBUTE)
+	merge_single_attribute (ca_output, ca_child: C_ATTRIBUTE)
 			-- merge objects from a single-valued attribute (multiple objects if alternatives defined) which are either new
 			-- in the specialised attribute, or are C_COMPLEX_OBJECTs (if they are the latter, they will get traversed
 			-- normally by node_graft())
@@ -712,10 +713,10 @@ end
 		do
 		end
 
-	template_overlay_target_definitions
-			-- process `template_arch_root_list' to overlay target definitions.
+	template_overlay_supplier_definitions
+			-- process `arch_output_flat.suppliers_index' to overlay target definitions.
 		local
-			arch_root_cco: attached C_COMPLEX_OBJECT
+			arch_root_cco: C_COMPLEX_OBJECT
 			ca_clone: C_ATTRIBUTE
 			xref_idx: HASH_TABLE[ARRAYED_LIST[C_ARCHETYPE_ROOT], STRING]
 			xref_list: ARRAYED_LIST[C_ARCHETYPE_ROOT]
@@ -725,8 +726,13 @@ debug ("flatten")
 end
 			xref_idx := arch_output_flat.suppliers_index
 			from xref_idx.start until xref_idx.off loop
+				-- get the definition structure of the flat archetype corresponding to the archetype id in the suppliers list
 				arch_root_cco := current_arch_cat.archetype_index.item (xref_idx.key_for_iteration).flat_archetype.definition
+
+				-- get list of C_ARCHETYPE_ROOT nodes in this archetype or template corresponding to the supplier archetype id xref_idx.key_for_iteration
 				xref_list := xref_idx.item_for_iteration
+
+				-- into each one of these C_ARCHETYPE_ROOT nodes, clone the flat definition structure from the supplier archetype
 				from xref_list.start until xref_list.off loop
 					if not xref_list.item.has_attributes then -- it is empty and needs to be filled
 debug ("flatten")
@@ -749,7 +755,7 @@ end
 			end
 		end
 
-	template_overlay_target_ontologies
+	template_overlay_supplier_ontologies
 			-- process `template_ontology_overlay_list' to overlay target ontologies.
 		local
 			ont: FLAT_ARCHETYPE_ONTOLOGY

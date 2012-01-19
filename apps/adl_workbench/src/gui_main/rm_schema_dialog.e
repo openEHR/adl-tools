@@ -99,8 +99,8 @@ feature {NONE} -- Initialisation
 			ev_hbox_2.extend (ok_button)
 			ev_hbox_2.extend (cancel_button)
 
-			ev_root_container.set_minimum_width (360)
-			ev_root_container.set_minimum_height (290)
+		--	ev_root_container.set_minimum_width (360)
+		--	ev_root_container.set_minimum_height (290)
 			ev_root_container.set_padding (padding_width)
 			ev_root_container.set_border_width (border_width)
 			ev_root_container.disable_item_expand (ev_cell_1)
@@ -114,14 +114,14 @@ feature {NONE} -- Initialisation
 			ev_cell_2.set_minimum_height (20)
 			grid.set_minimum_height (150)
 			ev_cell_3.set_minimum_height (10)
-			ev_hbox_1.set_minimum_width (350)
-			ev_hbox_1.set_minimum_height (30)
+	--		ev_hbox_1.set_minimum_width (350)
+	--		ev_hbox_1.set_minimum_height (30)
 			ev_hbox_1.set_padding (padding_width)
 			ev_hbox_1.set_border_width (border_width)
 			ev_hbox_1.disable_item_expand (ev_label_2)
 			ev_hbox_1.disable_item_expand (rm_schema_dir_button)
 			ev_label_2.set_text ("RM schema directory: ")
-			rm_schema_dir_text.set_minimum_width (300)
+	--		rm_schema_dir_text.set_minimum_width (300)
 			rm_schema_dir_text.disable_edit
 			rm_schema_dir_button.set_text ("Browse...")
 			rm_schema_dir_button.set_minimum_width (65)
@@ -137,10 +137,10 @@ feature {NONE} -- Initialisation
 			cancel_button.set_text ("Cancel")
 			cancel_button.set_minimum_width (100)
 			cancel_button.set_minimum_height (26)
-			set_minimum_width (550)
-			set_minimum_height (390)
-			set_maximum_width (800)
-			set_maximum_height (800)
+	--		set_minimum_width (550)
+	--		set_minimum_height (390)
+	--		set_maximum_width (800)
+	--		set_maximum_height (800)
 			set_title ("ADL Workbench RM Schema Configuration")
 			set_icon_pixmap (adl_workbench_icon)
 
@@ -157,7 +157,7 @@ feature {NONE} -- Initialisation
 			rm_schema_dir_text.set_text (rm_schema_directory)
 
 			-- FIXME: this is a complete hack, but I cannot find another way to control the height properly!
-			set_height (ev_root_container.height + frame_height + ev_root_container.last.minimum_height)
+		--	set_height (ev_root_container.height + frame_height + ev_root_container.last.minimum_height)
 		end
 
 feature -- Access
@@ -249,6 +249,7 @@ feature {NONE} -- Implementation
 			schema_id: STRING
 			i: INTEGER
 			schema_meta_data: HASH_TABLE [STRING, STRING]
+			form_width: INTEGER
 		do
 			-- get rid of previously defined rows
 			grid.wipe_out
@@ -318,9 +319,12 @@ feature {NONE} -- Implementation
 				from i := 1 until i > Grid_max_cols loop
 					grid.column(i).resize_to_content
 					grid.column(i).set_width ((grid.column (i).width * 1.2).ceiling)
+					form_width := form_width + grid.column (i).width
 					i := i + 1
 				end
 			end
+
+			set_width (form_width + padding_width * (grid.column_count + 1) + border_width * 2)
 		end
 
 	do_edit_schema (a_schema_id: STRING)

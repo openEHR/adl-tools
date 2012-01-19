@@ -1232,7 +1232,6 @@ feature {NONE} -- Implementation
 
 	clear_all_editors
 		do
-			class_tools.clear_all_tools_content
 			archetype_tools.clear_all_tools_content
 		end
 

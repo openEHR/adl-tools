@@ -156,9 +156,9 @@ feature -- Access
 		local
 			p: INTEGER
 		do
-			p := value.index_of(axis_separator, 1) + 1
-			p := value.index_of(axis_separator, p) + 1
-			Result := value.substring(p, value.count)
+			p := value.index_of (axis_separator, 1) + 1
+			p := value.index_of (axis_separator, p) + 1
+			Result := value.substring (p, value.count)
 		end
 
 	version_number: INTEGER
