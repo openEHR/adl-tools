@@ -1,12 +1,12 @@
 %{
 note
 	component:   "openEHR Archetype Project"
-	description: "Validating parser for Archetype Description Language (ADL)"
-	keywords:    "ADL, dADL"
+	description: "Validating parser for data Archetype Description Language (dADL)"
+	keywords:    "dADL"
 	
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2004-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2004-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"

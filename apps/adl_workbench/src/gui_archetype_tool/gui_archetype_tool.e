@@ -363,6 +363,7 @@ feature {NONE} -- Implementation
 			serialisation_control.clear
 			validity_report_control.clear
 			statistical_information_control.clear
+			source_control.clear
 		end
 
 	do_populate

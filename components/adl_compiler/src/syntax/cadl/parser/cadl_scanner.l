@@ -396,7 +396,14 @@ P[yY]?[mM]?[Ww]?[dD]? {
 			}
 
 -- The following version is the correct version.
+-- Single object form
 \([A-Z]{IDCHAR}*\)[	 \n]*< 			{	-- match a pattern like '(Type_Identifier) whitespace <'
+				set_start_condition (IN_C_DOMAIN_TYPE)
+				in_buffer.append_string (text)
+			}
+
+-- Multiple keyed object form
+\[at[0-9.]+\][	 ]*=[	 ]*\([A-Z]{IDCHAR}*\)[	 \n]*< 			{	-- match a pattern like '["at0004"] = (Type_Identifier) whitespace <'
 				set_start_condition (IN_C_DOMAIN_TYPE)
 				in_buffer.append_string (text)
 			}

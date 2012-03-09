@@ -90,7 +90,7 @@ feature -- Initialisation
 	make
 		do
 			clear
-			if item_tree_prototype.item = Void then
+			if not attached item_tree_prototype.item then
 				initialise_item_tree_prototype
 				schema_load_counter := rm_schemas_access.load_count
 			end
@@ -485,10 +485,14 @@ feature {NONE} -- Implementation
 			rm_closure_name, qualified_rm_closure_name: STRING
 			supp_list, supp_list_copy: ARRAYED_SET[STRING]
 			supp_class_list: ARRAYED_LIST [BMM_CLASS_DEFINITION]
+			root_classes: ARRAYED_SET [BMM_CLASS_DEFINITION]
 			removed: BOOLEAN
 			bmm_schema: BMM_SCHEMA
 		do
 			create parent_model_node.make_category (Archetype_category.twin)
+debug ("rm_ontology")
+	io.put_string ("Category: " + Archetype_category + "%N")
+end
 			item_tree_prototype.put (parent_model_node)
 			from rm_schemas_access.valid_top_level_schemas.start until rm_schemas_access.valid_top_level_schemas.off loop
 				bmm_schema := rm_schemas_access.valid_top_level_schemas.item_for_iteration
@@ -496,26 +500,42 @@ feature {NONE} -- Implementation
 					rm_closure_name := package_base_name (bmm_schema.archetype_rm_closure_packages.item)
 					qualified_rm_closure_name := publisher_qualified_rm_closure_key (bmm_schema.rm_publisher, rm_closure_name)
 					rm_closure_root_pkg := bmm_schema.package_at_path (bmm_schema.archetype_rm_closure_packages.item)
-					if not rm_closure_root_pkg.classes.is_empty then
-						-- create new model node if not already in existence
-						if not parent_model_node.has_child_with_qualified_name (qualified_rm_closure_name) then
-							create model_node.make_rm_closure (rm_closure_name, bmm_schema)
-							parent_model_node.put_child (model_node)
-						else
-							model_node ?= parent_model_node.child_with_qualified_name (qualified_rm_closure_name)
-						end
 
+					-- create new model node if not already in existence
+					if not parent_model_node.has_child_with_qualified_name (qualified_rm_closure_name) then
+						create model_node.make_rm_closure (rm_closure_name, bmm_schema)
+						parent_model_node.put_child (model_node)
+debug ("rm_ontology")
+	io.put_string ("%TClosure: " + rm_closure_name + "%N")
+end
+					else
+						model_node ?= parent_model_node.child_with_qualified_name (qualified_rm_closure_name)
+debug ("rm_ontology")
+	io.put_string ("%TClosure: " + qualified_rm_closure_name + "%N")
+end
+					end
+
+					-- obtain the top-most classes from the package structure; they might not always be in the top-most
+					-- package
+					root_classes := rm_closure_root_pkg.root_classes
+debug ("rm_ontology")
+	io.put_string ("%TInitial class set: ")
+	root_classes.linear_representation.do_all (agent (a_bmm_class: BMM_CLASS_DEFINITION) do io.put_string (a_bmm_class.name + ", ") end)
+	io.new_line
+end
+					if not root_classes.is_empty then
+						-- create the list of supplier classes for all the classes in the closure root package
 						create supp_list.make (0)
 						supp_list.compare_objects
-						from rm_closure_root_pkg.classes.start until rm_closure_root_pkg.classes.off loop
-							supp_list.merge (rm_closure_root_pkg.classes.item.supplier_closure)
-							supp_list.extend (rm_closure_root_pkg.classes.item.name)
-							rm_closure_root_pkg.classes.forth
+						from root_classes.start until root_classes.off loop
+							supp_list.merge (root_classes.item.supplier_closure)
+							supp_list.extend (root_classes.item.name)
+							root_classes.forth
 						end
 
-						-- now create a list of classes inheriting from LOCATABLE that are among the suppliers of
-						-- the top-level class of the package; this gives the classes that could be archetyped in
-						-- that package
+						-- now filter this list to keep only those classes inheriting from the archetype_parent_class
+						-- that are among the suppliers of the top-level class of the package; this gives the classes
+						-- that could be archetyped in that package
 						if bmm_schema.has_archetype_parent_class then
 							from supp_list.start until supp_list.off loop
 								if not bmm_schema.is_descendant_of (supp_list.item, bmm_schema.archetype_parent_class) then
@@ -526,7 +546,7 @@ feature {NONE} -- Implementation
 							end
 						end
 
-						-- clean suppliers list so that only highest class in any inheritance subtree remains
+						-- filter list list again so that only highest class in any inheritance subtree remains
 						supp_list_copy := supp_list.deep_twin
 						from supp_list.start until supp_list.off loop
 							removed := False
@@ -568,6 +588,9 @@ feature {NONE} -- Implementation
 			from class_list.start until class_list.off loop
 				create model_node.make_class (an_rm_closure_name, class_list.item)
 				a_parent_node.put_child (model_node)
+debug ("rm_ontology")
+	io.put_string ("%T%TClass: " + class_list.item.name + "%N")
+end
 				children := class_list.item.immediate_descendants
 				add_child_nodes (an_rm_closure_name, children, model_node)
 				class_list.forth
@@ -590,12 +613,6 @@ feature {NONE} -- Implementation
 		once
 			create Result.make_empty
 		end
-
---	selectable_item_by_id (an_item_id: STRING): ARCH_CAT_ITEM
---			-- obtain a selectable item via an id
---		do
---			Result := archetype_index.item (an_item_id)
---		end
 
 	gather_statistics (aca: attached ARCH_CAT_ARCHETYPE)
 			-- Update statistics counters from `aca'

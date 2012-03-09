@@ -49,6 +49,7 @@ create
 
 --------------- Definitions --------------
 ALPHANUM [a-zA-Z0-9]
+ALPHANUMSTR [a-zA-Z0-9]+
 IDCHAR [a-zA-Z0-9_]
 NAMECHAR [a-zA-Z0-9._\-]
 NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
@@ -271,7 +272,7 @@ NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
 			}
 
 ----------/* archetype id */ -------------------------------------------------
-{NAMESTR}(-{NAMESTR}){2}\.{NAMESTR}(-{NAMESTR})*\.v[1-9][0-9]* {
+{NAMESTR}-{ALPHANUMSTR}-{NAMESTR}\.{NAMESTR}(-{ALPHANUMSTR})*\.v[1-9][0-9]* {
 					last_token := V_ARCHETYPE_ID
 					last_string_value := text
 			}

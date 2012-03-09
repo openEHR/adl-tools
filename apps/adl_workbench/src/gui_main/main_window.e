@@ -886,6 +886,7 @@ feature -- RM Schemas Events
 		do
 			rm_schemas_access.reload_schemas
 			refresh_profile_context (True)
+			rm_schema_explorer.populate (rm_schemas_access)
 		end
 
 feature {NONE} -- Help events

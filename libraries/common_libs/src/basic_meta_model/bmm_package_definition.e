@@ -69,6 +69,32 @@ feature -- Access
 	parent: BMM_PACKAGE_DEFINITION
 			-- parent package
 
+	root_classes: ARRAYED_SET [BMM_CLASS_DEFINITION]
+			-- obtain the set of top-level classes in this package, either from this package itself
+			-- or by recursing into the structure until classes are obtained from child packages.
+			-- Recurse into each child only far enough to find the first level of classes.
+		do
+			create Result.make(0)
+			do_until_surface_recursive_packages (
+				agent (bmm_pkg: BMM_PACKAGE_DEFINITION): BOOLEAN
+					do
+						Result := bmm_pkg.has_classes
+					end,
+				agent (bmm_pkg: BMM_PACKAGE_DEFINITION; class_list: ARRAYED_SET [BMM_CLASS_DEFINITION])
+					do
+						class_list.merge (bmm_pkg.classes)
+					end (?, Result)
+			)
+		end
+
+feature -- Status Report
+
+	has_classes: BOOLEAN
+			-- True if this package has classes
+		do
+			Result := not classes.is_empty
+		end
+
 feature {BMM_PACKAGE_CONTAINER} -- Modification
 
 	add_class (a_class: BMM_CLASS_DEFINITION)
@@ -93,6 +119,21 @@ feature {BMM_PACKAGE_CONTAINER} -- Modification
 	set_bmm_schema (a_bmm_schema: BMM_SCHEMA)
 		do
 			bmm_schema := a_bmm_schema
+		end
+
+feature -- Iteration
+
+	do_until_surface_recursive_packages (test: FUNCTION [ANY, TUPLE [BMM_PACKAGE_DEFINITION], BOOLEAN]; action: PROCEDURE [ANY, TUPLE [BMM_PACKAGE_DEFINITION]])
+			-- recursively execute `action' procedure on the current package and children, up to first layer in tree where `test' becomes true, then stop
+		do
+			if test.item ([Current]) then
+				action.call ([Current])
+			else
+				from packages.start until packages.off loop
+					packages.item_for_iteration.do_until_surface_recursive_packages (test, action)
+					packages.forth
+				end
+			end
 		end
 
 end

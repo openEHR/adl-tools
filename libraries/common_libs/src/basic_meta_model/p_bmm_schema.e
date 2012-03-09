@@ -160,24 +160,23 @@ feature -- Comparison
 			-- check basics first
 			if attached {P_BMM_SINGLE_PROPERTY} a_parent_prop_def and then a_parent_prop_def.type.same_string (any_type) then
 				Result := True
-			else
-				Result := a_child_prop_def.same_type (a_parent_prop_def) 			-- same Eiffel dynamic types, i.e. P_BMM_ types
-					and a_child_prop_def.name.same_string (a_parent_prop_def.name)	-- same names
+			elseif a_child_prop_def.name.same_string (a_parent_prop_def.name) then -- same names
+				if attached {P_BMM_SINGLE_PROPERTY} a_child_prop_def and attached {P_BMM_SINGLE_PROPERTY} a_parent_prop_def then
+					Result := type_strictly_conforms_to (a_child_prop_def.type, a_parent_prop_def.type)
 
-				-- now check specific types
-				if Result then
-					if attached {P_BMM_SINGLE_PROPERTY} a_child_prop_def and attached {P_BMM_SINGLE_PROPERTY} a_parent_prop_def then
-						Result := type_strictly_conforms_to (a_child_prop_def.type, a_parent_prop_def.type)
-
-					elseif attached {P_BMM_SINGLE_PROPERTY_OPEN} a_child_prop_def as a_child_single_prop_def_open and attached {P_BMM_SINGLE_PROPERTY_OPEN} a_parent_prop_def as a_parent_single_prop_def_open then
+				elseif attached {P_BMM_SINGLE_PROPERTY_OPEN} a_parent_prop_def as a_parent_single_prop_def_open then
+					if attached {P_BMM_SINGLE_PROPERTY_OPEN} a_child_prop_def as a_child_single_prop_def_open then
 						Result := False
-
-					elseif attached {P_BMM_CONTAINER_PROPERTY} a_child_prop_def as a_child_cont_prop_def and attached {P_BMM_CONTAINER_PROPERTY} a_parent_prop_def as a_parent_cont_prop_def then
-						Result := type_strictly_conforms_to (a_child_cont_prop_def.type_def.as_type_string, a_parent_cont_prop_def.type_def.as_type_string)
-
-					elseif attached {P_BMM_GENERIC_PROPERTY} a_child_prop_def as a_child_gen_prop_def and attached {P_BMM_GENERIC_PROPERTY} a_parent_prop_def as a_parent_gen_prop_def then
-						Result := type_strictly_conforms_to (a_child_gen_prop_def.type_def.as_type_string, a_parent_gen_prop_def.type_def.as_type_string)
+					elseif attached {P_BMM_SINGLE_PROPERTY} a_child_prop_def as a_child_single_prop_def then
+						Result := True
+						-- FIXME: proper type conformance to constraining generic type needs to be checked here
 					end
+
+				elseif attached {P_BMM_CONTAINER_PROPERTY} a_child_prop_def as a_child_cont_prop_def and attached {P_BMM_CONTAINER_PROPERTY} a_parent_prop_def as a_parent_cont_prop_def then
+					Result := type_strictly_conforms_to (a_child_cont_prop_def.type_def.as_type_string, a_parent_cont_prop_def.type_def.as_type_string)
+
+				elseif attached {P_BMM_GENERIC_PROPERTY} a_child_prop_def as a_child_gen_prop_def and attached {P_BMM_GENERIC_PROPERTY} a_parent_prop_def as a_parent_gen_prop_def then
+					Result := type_strictly_conforms_to (a_child_gen_prop_def.type_def.as_type_string, a_parent_gen_prop_def.type_def.as_type_string)
 				end
 			end
 		end

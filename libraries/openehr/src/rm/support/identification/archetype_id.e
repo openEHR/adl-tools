@@ -40,7 +40,7 @@ feature {NONE} -- Implementation
 	id_pattern_regex: LX_DFA_REGULAR_EXPRESSION
 			-- Pattern matcher for archetype ids.
 		once
-			create Result.compile_case_insensitive ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+){2}\.[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*\.v[1-9][0-9]*$")
+			create Result.compile_case_insensitive ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z0-9_]+){2}\.[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*\.v[1-9][0-9]*$")
 		end
 
 end
