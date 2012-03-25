@@ -7,9 +7,9 @@ note
 				 ]"
 	keywords:    "ADL"
 
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics<support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2006-2102 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -21,19 +21,19 @@ class SPECIALISATION_STATUSES
 feature -- Definitions
 
 	ss_undefined: INTEGER = 5000
-			-- this node is inherited here and is redefined here
+			-- this node status is not defined
 
 	ss_added: INTEGER = 5001
 			-- this node was defined here for the first time
 
 	ss_redefined: INTEGER = 5002
-			-- this node is inherited here and is redefined here
+			-- this node is inherited and redefined here
 
 	ss_inherited: INTEGER = 5003
 			-- this node is inherited here unchanged
 
 	ss_propagated: INTEGER = 5004
-			-- this node is inherited here and is redefined here
+			-- this node's status is the same as its parent's
 
 feature -- Access
 

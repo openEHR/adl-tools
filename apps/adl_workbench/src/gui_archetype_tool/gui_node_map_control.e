@@ -518,7 +518,7 @@ feature {NONE} -- Implementation
 		do
 			if an_ev_tree_node.is_expandable then
 				if attached {ARCHETYPE_CONSTRAINT} an_ev_tree_node.data as ac then
-					if ac.rolled_up_specialisation_status.value = ss_inherited then
+					if ac.inferred_rolled_up_specialisation_status.value = ss_inherited then
 						an_ev_tree_node.collapse
 					else
 						an_ev_tree_node.expand

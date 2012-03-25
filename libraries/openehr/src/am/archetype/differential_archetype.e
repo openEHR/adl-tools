@@ -2,9 +2,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Archetype abstraction"
 	keywords:    "archetype"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2008 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003-2102 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -70,7 +70,7 @@ feature -- Initialisation
 				create c_it.make (definition)
 				c_it.do_at_surface(
 					agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER) do inherited_subtree_list.put (a_c_node, a_c_node.path) end,
-					agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := a_c_node.rolled_up_specialisation_status.value = ss_inherited end
+					agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := a_c_node.inferred_rolled_up_specialisation_status.value = ss_inherited end
 				)
 
 				-- add before/after ordering markers to new nodes whose parent attributes are ordered containers
@@ -81,12 +81,12 @@ feature -- Initialisation
 						-- the RM schema
 						if attached cco_1.parent and (cco_1.parent.cardinality = Void or cco_1.parent.is_ordered) then
 							if attached {C_OBJECT} cco_1.parent.child_after (cco_1) as cco_next and then
-								cco_next.specialisation_status (specialisation_depth).value = ss_added
+								cco_next.inferred_specialisation_status (specialisation_depth).value = ss_added
 							then
 								cco_next.set_sibling_order_after (cco_1.node_id)
 							end
 							if attached {C_OBJECT} cco_1.parent.child_before (cco_1) as cco_prev and then
-								cco_prev.specialisation_status (specialisation_depth).value = ss_added
+								cco_prev.inferred_specialisation_status (specialisation_depth).value = ss_added
 							then
 								cco_prev.set_sibling_order_before (cco_1.node_id)
 							end

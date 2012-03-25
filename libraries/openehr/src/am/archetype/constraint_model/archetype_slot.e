@@ -35,6 +35,7 @@ feature -- Initialisation
 	default_create
 			--
 		do
+			precursor
 			create includes.make(0)
 			create excludes.make(0)
 		end

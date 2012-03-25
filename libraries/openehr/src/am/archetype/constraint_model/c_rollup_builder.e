@@ -15,9 +15,9 @@ note
 				 archetype.
 		         ]"
 	keywords:    "visitor, constraint model"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2007-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -51,50 +51,41 @@ feature -- Initialisation
 feature -- Visitor
 
 	end_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
-			-- status of this node taking into consideration effective_specialisation_status of
-			-- all sub-nodes.
+			-- status of this node taking into consideration effective_specialisation_status of all sub-nodes.
 		local
 			spec_sts: SPECIALISATION_STATUS
 		do
-			spec_sts := a_node.specialisation_status (archetype_specialisation_level)
-			from
-				a_node.attributes.start
-			until
-				a_node.attributes.off -- or spec_sts.value < ss_inherited
-			loop
-				spec_sts := spec_sts.specialisation_dominant_status(a_node.attributes.item.rolled_up_specialisation_status)
+			spec_sts := a_node.inferred_specialisation_status (archetype_specialisation_level)
+			from a_node.attributes.start until a_node.attributes.off loop
+				spec_sts := spec_sts.specialisation_dominant_status (a_node.attributes.item.inferred_rolled_up_specialisation_status)
 				a_node.attributes.forth
 			end
-			a_node.set_rolled_up_specialisation_status(spec_sts)
+			a_node.set_inferred_rolled_up_specialisation_status (spec_sts)
 		end
 
 	end_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
-			-- exit an C_ATTRIBUTE
+			-- exit a C_ATTRIBUTE
 		local
 			spec_sts: SPECIALISATION_STATUS
 		do
-			spec_sts := a_node.specialisation_status (archetype_specialisation_level)
-			from
-				a_node.children.start
-			until
-				a_node.children.off -- or spec_sts.value < ss_inherited
-			loop
-				spec_sts := spec_sts.specialisation_dominant_status(a_node.children.item.rolled_up_specialisation_status)
+			spec_sts := a_node.inferred_specialisation_status (archetype_specialisation_level)
+			from a_node.children.start until a_node.children.off loop
+				spec_sts := spec_sts.specialisation_dominant_status (a_node.children.item.inferred_rolled_up_specialisation_status)
 				a_node.children.forth
 			end
-			a_node.set_rolled_up_specialisation_status(spec_sts)
+			a_node.set_inferred_rolled_up_specialisation_status (spec_sts)
 		end
 
 	start_c_leaf_object (a_node: C_LEAF_OBJECT; depth: INTEGER)
-			-- enter an C_LEAF_OBJECT
+			-- enter a C_LEAF_OBJECT
 		do
-			a_node.set_rolled_up_specialisation_status(a_node.specialisation_status (archetype_specialisation_level))
+			a_node.set_inferred_rolled_up_specialisation_status(a_node.inferred_specialisation_status (archetype_specialisation_level))
 		end
 
 	start_c_reference_object (a_node: C_REFERENCE_OBJECT; depth: INTEGER)
 			-- enter an C_REFERENCE_OBJECT
 		do
-			a_node.set_rolled_up_specialisation_status(a_node.specialisation_status (archetype_specialisation_level))
+			a_node.set_inferred_rolled_up_specialisation_status(a_node.inferred_specialisation_status (archetype_specialisation_level))
 		end
 
 	start_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
@@ -115,7 +106,7 @@ feature -- Visitor
 	start_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- enter a C_ARCHETYPE_ROOT
 		do
-			a_node.set_rolled_up_specialisation_status(create {SPECIALISATION_STATUS}.make (ss_added))
+			a_node.set_inferred_rolled_up_specialisation_status(create {SPECIALISATION_STATUS}.make (ss_added))
 		end
 
 	start_archetype_internal_ref (a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)

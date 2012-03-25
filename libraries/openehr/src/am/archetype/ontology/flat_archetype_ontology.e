@@ -96,7 +96,7 @@ feature -- Status Report
 	has_term_binding (a_terminology, a_code: STRING): BOOLEAN
 			-- true if there is a term binding for code `a_code' in `a_terminology'
 		do
-			Result := term_bindings.has(a_terminology) and then term_bindings.item(a_terminology).has(a_code)
+			Result := term_bindings.has (a_terminology) and then term_bindings.item (a_terminology).has (a_code)
 		end
 
 	has_any_constraint_binding (a_code: STRING): BOOLEAN

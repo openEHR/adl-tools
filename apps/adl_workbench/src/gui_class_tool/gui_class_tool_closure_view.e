@@ -1,10 +1,10 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "Class map control - visualise property view of a class, including flattening."
-	keywords:    "archetype, cadl, gui"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	keywords:    "archetype, ADL, gui"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2010-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -314,8 +314,8 @@ feature {NONE} -- Implementation
 			a_ti.set_text (prop_str)							-- node text
 			a_ti.set_tooltip (node_path.as_string)				-- tooltip
 			a_ti.set_pixmap (pixmaps [rm_attribute_pixmap_string (a_prop_def)])	-- pixmap
- 	 		a_ti.pointer_button_press_actions.force_extend (agent attribute_node_handler (a_ti, ?, ?, ?))
- 	 		a_ti.expand_actions.force_extend (agent attribute_node_expand_handler (a_ti))
+ 	 		a_ti.pointer_button_press_actions.force_extend (agent property_node_handler (a_ti, ?, ?, ?))
+ 	 		a_ti.expand_actions.force_extend (agent property_node_expand_handler (a_ti))
  			ev_tree_item_stack.item.extend (a_ti)
 			ev_tree_item_stack.extend (a_ti)
 
@@ -405,7 +405,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	attribute_node_handler (eti: EV_TREE_ITEM; x,y, button: INTEGER)
+	property_node_handler (eti: EV_TREE_ITEM; x,y, button: INTEGER)
 			-- creates the context menu for a right click action for class node
 		local
 			menu: EV_MENU
@@ -413,13 +413,13 @@ feature {NONE} -- Implementation
 		do
 			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_PROPERTY_DEFINITION} eti.data as bmm_pd and then not bmm_pd.is_mandatory then
 				create menu
-				create an_mi.make_with_text_and_action ("Remove", agent remove_optional_attribute (eti))
+				create an_mi.make_with_text_and_action ("Remove", agent remove_optional_property (eti))
 				menu.extend (an_mi)
 				menu.show
 			end
 		end
 
-	attribute_node_expand_handler (eti: EV_TREE_ITEM)
+	property_node_expand_handler (eti: EV_TREE_ITEM)
 			-- creates the context menu for a right click action for class node
 		do
 			from eti.start until eti.off loop
@@ -468,7 +468,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	remove_optional_attribute (a_ti: EV_TREE_ITEM)
+	remove_optional_property (a_ti: EV_TREE_ITEM)
 			-- remove this node
 		do
 			a_ti.parent.prune (a_ti)

@@ -49,7 +49,7 @@ create
 
 --------------- Definitions --------------
 ALPHANUM [a-zA-Z0-9]
-ALPHANUMSTR [a-zA-Z0-9]+
+ALPHANUMSTR [a-zA-Z0-9_]+
 IDCHAR [a-zA-Z0-9_]
 NAMECHAR [a-zA-Z0-9._\-]
 NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)

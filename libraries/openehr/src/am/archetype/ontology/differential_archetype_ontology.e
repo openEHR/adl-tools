@@ -166,57 +166,37 @@ feature -- Status Report
 		end
 
 	has_any_term_binding (a_code: STRING): BOOLEAN
-			-- true if there is any term binding for code `a_code'
-		local
-			p: ARRAYED_LIST_CURSOR
+			-- true if there is any term binding for ontology code `a_code'
 		do
 			if specialisation_depth_from_code (a_code) = specialisation_depth then
-				p := terminologies_available.cursor
-				from
-					terminologies_available.start
-				until
-					terminologies_available.off or Result
-				loop
-					Result := term_bindings.has(terminologies_available.item) and then
-						term_bindings.item(terminologies_available.item).has(a_code)
-					terminologies_available.forth
+				from term_bindings.start until term_bindings.off or term_bindings.item_for_iteration.has (a_code) loop
+					term_bindings.forth
 				end
-				terminologies_available.go_to (p)
 			else
 				Result := parent_ontology.has_any_term_binding(a_code)
 			end
 		end
 
 	has_term_binding (a_terminology, a_code: STRING): BOOLEAN
-			-- true if there is a term binding for code `a_code' in `a_terminology'
+			-- true if there is a term binding for ontology code `a_code' in `a_terminology'
 		do
 			if specialisation_depth_from_code (a_code) = specialisation_depth then
-				Result := term_bindings.has(a_terminology) and then
-					term_bindings.item(a_terminology).has(a_code)
+				Result := term_bindings.has (a_terminology) and then
+					term_bindings.item (a_terminology).has (a_code)
 			else
-				Result := parent_ontology.has_term_binding(a_terminology, a_code)
+				Result := parent_ontology.has_term_binding (a_terminology, a_code)
 			end
 		end
 
 	has_any_constraint_binding (a_code: STRING): BOOLEAN
 			-- true if there is any constraint binding for code `a_code'
-		local
-			p: ARRAYED_LIST_CURSOR
 		do
 			if specialisation_depth_from_code (a_code) = specialisation_depth then
-				p := terminologies_available.cursor
-				from
-					terminologies_available.start
-				until
-					terminologies_available.off or Result
-				loop
-					Result := constraint_bindings.has(terminologies_available.item) and then
-						constraint_bindings.item(terminologies_available.item).has(a_code)
-					terminologies_available.forth
+				from constraint_bindings.start until constraint_bindings.off or constraint_bindings.item_for_iteration.has (a_code) loop
+					constraint_bindings.forth
 				end
-				terminologies_available.go_to (p)
 			else
-				Result := parent_ontology.has_any_constraint_binding(a_code)
+				Result := parent_ontology.has_any_constraint_binding (a_code)
 			end
 		end
 

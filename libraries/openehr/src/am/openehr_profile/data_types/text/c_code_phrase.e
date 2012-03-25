@@ -17,7 +17,7 @@ class C_CODE_PHRASE
 inherit
 	C_DOMAIN_TYPE
 		redefine
-			enter_subtree, exit_subtree, synchronise_to_tree, specialisation_status, node_conforms_to
+			enter_subtree, exit_subtree, synchronise_to_tree, inferred_specialisation_status, node_conforms_to
 		end
 
 create
@@ -232,7 +232,7 @@ feature -- Comparison
 
 feature -- Source Control
 
-	specialisation_status (spec_level: INTEGER): SPECIALISATION_STATUS
+	inferred_specialisation_status (spec_level: INTEGER): SPECIALISATION_STATUS
 			-- status of this node in the source text of this archetype with respect to the
 			-- specialisation hierarchy. Values are defined in SPECIALISATION_STATUSES
 			-- FIXME: this code is only an attempt to work out the specialisation status,

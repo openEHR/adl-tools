@@ -27,6 +27,8 @@ inherit
 		export
 			{NONE} all;
 			{ANY} specialisation_depth_from_code, is_valid_code;
+		undefine
+			default_create
 		end
 
 feature -- Access
@@ -52,15 +54,15 @@ feature -- Access
 			-- set if this node should be ordered with respect to an inherited sibling; only settable
 			-- on specialised nodes
 
-	specialisation_depth: INTEGER
+	inferred_specialisation_depth: INTEGER
 			-- specialisation level of this node if identified
 		require
 			is_valid_code (node_id)
 		do
-			Result := specialisation_depth_from_code(node_id)
+			Result := specialisation_depth_from_code (node_id)
 		end
 
-	specialisation_status (spec_level: INTEGER): SPECIALISATION_STATUS
+	inferred_specialisation_status (spec_level: INTEGER): SPECIALISATION_STATUS
 			-- status of this node in the source text of this archetype with respect to the
 			-- specialisation hierarchy. Values are defined in SPECIALISATION_STATUSES
 			-- detects specialisation status for identified nodes
@@ -68,7 +70,7 @@ feature -- Access
 			if not is_valid_code (node_id) then
 				create Result.make (ss_propagated)
 			else
-				if specialisation_depth < spec_level then
+				if inferred_specialisation_depth < spec_level then
 					create Result.make (ss_inherited)
 				else
 					Result := specialisation_status_from_code (node_id, spec_level)
@@ -173,7 +175,7 @@ feature -- Modification
 	set_sibling_order (a_sibling_order: attached SIBLING_ORDER)
 			-- set sibling order
 		require
-			specialisation_depth > 0
+			inferred_specialisation_depth > 0
 		do
 			sibling_order := a_sibling_order
 		ensure
@@ -193,7 +195,7 @@ feature -- Modification
 	set_sibling_order_after (a_node_id: attached STRING)
 			-- set sibling order of this node to be after the inherited sibling node with id a_node_id
 		require
-			specialisation_depth_from_code (a_node_id) < specialisation_depth
+			specialisation_depth_from_code (a_node_id) < inferred_specialisation_depth
 		do
 			create sibling_order.make_after (a_node_id)
 		ensure
@@ -226,12 +228,15 @@ feature -- Modification
 		do
 			if not other.node_id.is_equal (node_id) then
 				set_node_id (other.node_id.twin)
+				set_specialisation_status_redefined
 			end
 			if not other.rm_type_name.is_equal (rm_type_name) then
 				rm_type_name := other.rm_type_name.twin
+				set_specialisation_status_redefined
 			end
 			if attached other.occurrences then
 				set_occurrences (other.occurrences.deep_twin)
+				set_specialisation_status_redefined
 			end
 		end
 
@@ -240,10 +245,10 @@ feature -- Output
 	occurrences_as_string: STRING
 			-- output string representing `occurrences', even if occurrences is Void
 		do
-			if occurrences = Void then
-				Result := "(unchanged)"
-			else
+			if attached occurrences then
 				Result := occurrences.as_string
+			else
+				Result := "(unchanged)"
 			end
 		end
 

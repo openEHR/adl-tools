@@ -614,7 +614,7 @@ feature {NONE} -- Implementation
 			spec_sts: INTEGER
 		do
 			create Result.make_empty
-			spec_sts := a_node.specialisation_status (archetype.specialisation_depth).value
+			spec_sts := a_node.inferred_specialisation_status (archetype.specialisation_depth).value
 			if spec_sts = ss_inherited or spec_sts = ss_redefined then
 				Result.append (".")
 				Result.append (specialisation_status_names.item (spec_sts))

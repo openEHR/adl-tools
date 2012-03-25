@@ -30,7 +30,8 @@ feature -- Initialisation
 			a_rm_type_name_valid: not a_rm_type_name.is_empty
 			a_path_exists: not a_path.is_empty
 		do
-			create representation.make_anonymous(Current)
+			default_create
+			create representation.make_anonymous (Current)
 			rm_type_name := a_rm_type_name
 			set_target_path (a_path)
 			use_target_occurrences := True

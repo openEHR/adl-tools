@@ -545,7 +545,7 @@ feature {NONE} -- Implementation
 	identifier_style (constraint: ARCHETYPE_CONSTRAINT): INTEGER
 			-- The formatting identifier style appropriate to the the specialisation status of `constraint'.
 		do
-			inspect constraint.specialisation_status (ontology.specialisation_depth).value
+			inspect constraint.inferred_specialisation_status (ontology.specialisation_depth).value
 			when {SPECIALISATION_STATUS}.ss_inherited then
 				Result := style_inherited_identifier
 			when {SPECIALISATION_STATUS}.ss_redefined then

@@ -159,7 +159,6 @@ feature -- Access
 	term_binding (a_terminology, a_code: attached STRING): attached CODE_PHRASE
 			-- retrieve the term definition in language `a_language' for code `a_code'
 		require
-			Terminology_valid: terminologies_available.has (a_terminology)
 			Term_code_valid: has_term_binding (a_terminology, a_code)
 		deferred
 		end
@@ -167,26 +166,25 @@ feature -- Access
 	term_bindings_for_terminology (a_terminology: attached STRING): attached HASH_TABLE [CODE_PHRASE, STRING]
 			-- retrieve the term bindings for a particular terminology
 		require
-			Terminology_valid: terminologies_available.has(a_terminology)
+			Terminology_valid: term_bindings.has (a_terminology)
 		do
-			Result := term_bindings.item(a_terminology)
+			Result := term_bindings.item (a_terminology)
 		end
 
 	constraint_binding (a_terminology, a_code: attached STRING): attached URI
 			-- retrieve the constraint definition in language `a_language' for code `a_code'
 			-- in form of a string: "service::query"
 		require
-			Terminology_valid: terminologies_available.has(a_terminology)
-			Term_code_valid: has_constraint_binding(a_terminology, a_code)
+			Term_code_valid: has_constraint_binding (a_terminology, a_code)
 		deferred
 		end
 
 	constraint_bindings_for_terminology (a_terminology: attached STRING): attached HASH_TABLE [URI, STRING]
 			-- retrieve the term bindings for a particular terminology
 		require
-			Terminology_valid: terminologies_available.has(a_terminology)
+			Terminology_valid: constraint_bindings.has (a_terminology)
 		do
-			Result := constraint_bindings.item(a_terminology)
+			Result := constraint_bindings.item (a_terminology)
 		end
 
 	terminology_extract_term (a_terminology, a_code: attached STRING): ARCHETYPE_TERM
@@ -243,7 +241,7 @@ feature -- Status Report
 		require
 			Language_valid: not a_language.is_empty
 		do
-			Result := term_definitions.has(a_language)
+			Result := term_definitions.has (a_language)
 		end
 
 	has_terminology (a_terminology: attached STRING): BOOLEAN
@@ -251,7 +249,7 @@ feature -- Status Report
 		require
 			Terminology_valid: not a_terminology.is_empty
 		do
-			Result := terminologies_available.has(a_terminology)
+			Result := terminologies_available.has (a_terminology)
 		end
 
 	has_term_code (a_code: attached STRING): BOOLEAN
@@ -286,47 +284,41 @@ feature -- Status Report
 
 	has_term_bindings (a_terminology: attached STRING): BOOLEAN
 			-- true if there are term bindings `a_terminology'
-		require
-			Terminology_valid: not terminologies_available.is_empty
 		do
-			Result := term_bindings.has(a_terminology)
+			Result := term_bindings.has (a_terminology)
 		end
 
 	has_constraint_bindings (a_terminology: attached STRING): BOOLEAN
 			-- true if there are term bindings `a_terminology'
-		require
-			Terminology_valid: not terminologies_available.is_empty
 		do
-			Result := constraint_bindings.has(a_terminology)
+			Result := constraint_bindings.has (a_terminology)
 		end
 
 	has_any_term_binding (a_code: attached STRING): BOOLEAN
 			-- true if there is any term binding for code `a_code'
 		require
-			Term_code_valid: is_valid_code(a_code)
+			Term_code_valid: is_valid_code (a_code)
 		deferred
 		end
 
 	has_term_binding (a_terminology, a_code: attached STRING): BOOLEAN
 			-- true if there is a term binding for code `a_code' in `a_terminology'
 		require
-			Terminology_valid: not terminologies_available.is_empty
-			Term_code_valid: is_valid_code(a_code)
+			Term_code_valid: is_valid_code (a_code)
 		deferred
 		end
 
 	has_any_constraint_binding (a_code: attached STRING): BOOLEAN
 			-- true if there is any constraint binding for code `a_code'
 		require
-			Term_code_valid: is_valid_code(a_code)
+			Term_code_valid: is_valid_code (a_code)
 		deferred
 		end
 
 	has_constraint_binding (a_terminology, a_code: attached STRING): BOOLEAN
 			-- true if there is a term binding for code `a_code' in `a_terminology'
 		require
-			Terminology_valid: not terminologies_available.is_empty
-			Term_code_valid: is_valid_code(a_code)
+			Term_code_valid: is_valid_code (a_code)
 		deferred
 		end
 
@@ -340,7 +332,7 @@ feature -- Status Report
 	has_terminology_extract_code (a_terminology, a_code: attached STRING): BOOLEAN
 			-- true if there is a term binding for code `a_code' in `a_terminology'
 		require
-			Terminology_valid: not has_terminology_extract(a_terminology)
+			Terminology_valid: not has_terminology_extract (a_terminology)
 			Term_code_valid: not a_code.is_empty
 		deferred
 		end
@@ -461,22 +453,22 @@ feature -- Modification
 			Binding_added: has_term_binding(a_code_phrase.terminology_id.name, a_code)
 		end
 
-	add_constraint_binding(a_uri: attached URI; a_terminology, a_code: attached STRING)
+	add_constraint_binding (a_uri: attached URI; a_terminology, a_code: attached STRING)
 			-- add a new constraint binding to local code a_code, in the terminology
 			-- group corresponding to the a_code_phrase.terminology
 		require
-			Local_code_valid: has_constraint_code(a_code)
-			Not_already_added: not has_constraint_binding(a_terminology, a_code)
+			Local_code_valid: has_constraint_code (a_code)
+			Not_already_added: not has_constraint_binding (a_terminology, a_code)
 		do
-			if not terminologies_available.has(a_terminology) then
+			if not terminologies_available.has (a_terminology) then
 				terminologies_available.extend (a_terminology)
 			end
-			if not has_constraint_bindings(a_terminology) then
-				constraint_bindings.put(create {HASH_TABLE[URI, STRING]}.make(0), a_terminology)
+			if not has_constraint_bindings (a_terminology) then
+				constraint_bindings.put (create {HASH_TABLE[URI, STRING]}.make(0), a_terminology)
 			end
-			constraint_bindings.item(a_terminology).put(a_uri, a_code)
+			constraint_bindings.item (a_terminology).put (a_uri, a_code)
 		ensure
-			Binding_added: has_constraint_binding(a_terminology, a_code)
+			Binding_added: has_constraint_binding (a_terminology, a_code)
 		end
 
 	remove_term_definition (a_code: attached STRING)
@@ -565,8 +557,8 @@ feature -- Modification
 			Terminology_valid: terminologies_available.has(a_terminology)
 			Has_binding: has_term_binding(a_terminology, a_code)
 		do
-			term_bindings.item(a_terminology).remove(a_code)
-			if term_bindings.item(a_terminology).count = 0 then
+			term_bindings.item (a_terminology).remove (a_code)
+			if term_bindings.item (a_terminology).count = 0 then
 				term_bindings.remove (a_terminology)
 				if not constraint_bindings.has (a_terminology) then
 					terminologies_available.prune_all (a_terminology)
@@ -579,19 +571,19 @@ feature -- Modification
 	remove_constraint_binding (a_code, a_terminology: attached STRING)
 			-- remove constraint binding to local code in group a_terminology
 		require
-			Local_code_valid: has_constraint_code(a_code)
-			Terminology_valid: terminologies_available.has(a_terminology)
-			Has_binding: has_constraint_binding(a_terminology, a_code)
+			Local_code_valid: has_constraint_code (a_code)
+			Terminology_valid: terminologies_available.has (a_terminology)
+			Has_binding: has_constraint_binding (a_terminology, a_code)
 		do
-			constraint_bindings.item(a_terminology).remove(a_code)
-			if constraint_bindings.item(a_terminology).count = 0 then
+			constraint_bindings.item (a_terminology).remove (a_code)
+			if constraint_bindings.item (a_terminology).count = 0 then
 				constraint_bindings.remove (a_terminology)
 				if not term_bindings.has (a_terminology) then
 					terminologies_available.prune_all (a_terminology)
 				end
 			end
 		ensure
-			Binding_removed: not has_constraint_binding(a_terminology, a_code)
+			Binding_removed: not has_constraint_binding (a_terminology, a_code)
 		end
 
 	set_terminologies_available (a_terminologies_avialable: attached ARRAYED_LIST [STRING])
@@ -876,7 +868,7 @@ invariant
 	Highest_term_code_index_valid: highest_term_code_index >= 0
 	Highest_constraint_code_index_valid: highest_constraint_code_index >= 0
 	Highest_code_specialisation_level_valid: highest_code_specialisation_level >= 0
-	terminologies_available_compares_objects: terminologies_available = void or else terminologies_available.object_comparison
+	terminologies_available_compares_objects: attached terminologies_available implies terminologies_available.object_comparison
 	term_codes_compares_objects: term_codes.object_comparison
 	constraint_codes_compares_objects: constraint_codes.object_comparison
 

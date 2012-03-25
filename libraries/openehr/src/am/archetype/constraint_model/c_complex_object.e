@@ -35,6 +35,7 @@ feature -- Initialisation
 	default_create
 			--
 		do
+			precursor
 			create attributes.make(0)
 		end
 

@@ -22,14 +22,14 @@ inherit
 	ARCHETYPE_TERM_CODE_TOOLS
 		export {NONE}
 			all
-		undefine
+		redefine
 			default_create
 		end
 
 	C_COMMON
 		export {NONE}
 			all
-		undefine
+		redefine
 			default_create
 		end
 
@@ -41,6 +41,7 @@ feature -- Initialisation
 	default_create
 			--
 		do
+			precursor {ARCHETYPE_CONSTRAINT}
 			create children.make (0)
 		end
 
@@ -215,13 +216,13 @@ feature -- Access
 			Result := children.item
 		end
 
-feature -- Source Control
+feature {C_ROLLUP_BUILDER} -- Source Control
 
-	specialisation_status (specialisation_level: INTEGER): SPECIALISATION_STATUS
+	inferred_specialisation_status (a_specialisation_level: INTEGER): SPECIALISATION_STATUS
 			-- status of this node in the source text of this archetype with respect to the
 			-- specialisation hierarchy. Values are: defined_here; redefined, added, unknown
 		do
-			create Result.make(ss_propagated)
+			create Result.make (ss_propagated)
 		end
 
 feature -- Status Report
@@ -515,7 +516,7 @@ feature -- Modification
 			Flat_obj_valid: has_child (a_flat_obj)
 			Diff_obj_valid: diff_obj.node_conforms_to (a_flat_obj, an_rm_schema)
 		do
-			if not a_flat_obj.node_id.is_equal(diff_obj.node_id) then
+			if not a_flat_obj.node_id.is_equal (diff_obj.node_id) then
 				representation.replace_node_id (a_flat_obj.node_id, diff_obj.node_id)
 			end
 			a_flat_obj.overlay_differential (diff_obj, an_rm_schema)
