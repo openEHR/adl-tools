@@ -52,9 +52,6 @@ feature -- Initialisation
 	default_create
 			--
 		do
-			create terminologies_available.make (0)
-			terminologies_available.compare_objects
-
 			create term_definitions.make (0)
 			create constraint_definitions.make (0)
 
@@ -108,7 +105,20 @@ feature -- Access
 			end
 		end
 
-	terminologies_available: attached ARRAYED_LIST [STRING]
+	terminologies_available: attached ARRAYED_SET [STRING]
+			-- set of all terminology names that appear in `term_bindings' or `constraint_bindings'
+		local
+			terminologies: ARRAY [STRING]
+		do
+			create Result.make(0)
+			Result.compare_objects
+			terminologies := term_bindings.current_keys
+			terminologies.compare_objects
+			Result.merge (terminologies)
+			terminologies := constraint_bindings.current_keys
+			terminologies.compare_objects
+			Result.merge (terminologies)
+		end
 
 	term_codes: attached TWO_WAY_SORTED_SET[STRING]
 			-- list of term codes
@@ -440,17 +450,12 @@ feature -- Modification
 			a_terminology: STRING
 		do
 			a_terminology := a_code_phrase.terminology_id.name
-			if not terminologies_available.has(a_terminology) then
-				terminologies_available.extend (a_terminology)
-			end
-
 			if not has_term_bindings(a_terminology) then
 				term_bindings.put(create {HASH_TABLE[CODE_PHRASE, STRING]}.make(0), a_terminology)
 			end
-
-			term_bindings.item(a_terminology).put(a_code_phrase, a_code)
+			term_bindings.item (a_terminology).put (a_code_phrase, a_code)
 		ensure
-			Binding_added: has_term_binding(a_code_phrase.terminology_id.name, a_code)
+			Binding_added: has_term_binding (a_code_phrase.terminology_id.name, a_code)
 		end
 
 	add_constraint_binding (a_uri: attached URI; a_terminology, a_code: attached STRING)
@@ -460,9 +465,6 @@ feature -- Modification
 			Local_code_valid: has_constraint_code (a_code)
 			Not_already_added: not has_constraint_binding (a_terminology, a_code)
 		do
-			if not terminologies_available.has (a_terminology) then
-				terminologies_available.extend (a_terminology)
-			end
 			if not has_constraint_bindings (a_terminology) then
 				constraint_bindings.put (create {HASH_TABLE[URI, STRING]}.make(0), a_terminology)
 			end
@@ -476,13 +478,13 @@ feature -- Modification
 		require
 			Term_valid: has_term_code(a_code)
 		local
-			ta: ARRAYED_LIST[STRING]
+			terminologies: ARRAYED_LIST[STRING]
 			langs_to_remove: ARRAYED_LIST[STRING]
 		do
 			create langs_to_remove.make(0)
 
 			from term_definitions.start until term_definitions.off loop
-				term_definitions.item_for_iteration.remove(a_code)
+				term_definitions.item_for_iteration.remove (a_code)
 				if term_definitions.item_for_iteration.count = 0 then
 					langs_to_remove.extend (term_definitions.key_for_iteration)
 				end
@@ -490,19 +492,19 @@ feature -- Modification
 			end
 
 			from langs_to_remove.start until langs_to_remove.off loop
-				term_definitions.remove(langs_to_remove.item)
+				term_definitions.remove (langs_to_remove.item)
 				langs_to_remove.forth
 			end
 
 			-- make a copy of terminologies list, since the next action might modify it...
-			ta := terminologies_available.deep_twin
-			if has_any_term_binding(a_code) then
-				from ta.start until ta.off loop
-					if term_bindings.has(ta.item) and then
-						term_bindings.item(ta.item).has(a_code) then
-						remove_term_binding(a_code, ta.item)
+			create terminologies.make_from_array (term_bindings.current_keys)
+			if has_any_term_binding (a_code) then
+				from terminologies.start until terminologies.off loop
+					if term_bindings.has(terminologies.item) and then
+						term_bindings.item (terminologies.item).has(a_code) then
+						remove_term_binding (a_code, terminologies.item)
 					end
-					ta.forth
+					terminologies.forth
 				end
 			end
 			term_codes.prune (a_code)
@@ -513,9 +515,9 @@ feature -- Modification
 	remove_constraint_definition (a_code: attached STRING)
 			-- completely remove the constraint from the ontology
 		require
-			Constraint_valid: has_constraint_code(a_code)
+			Constraint_valid: has_constraint_code (a_code)
 		local
-			ta: ARRAYED_LIST[STRING]
+			terminologies: ARRAYED_LIST[STRING]
 			langs_to_remove: ARRAYED_LIST[STRING]
 		do
 			create langs_to_remove.make(0)
@@ -534,35 +536,31 @@ feature -- Modification
 			end
 
 			-- make a copy of terminologies list, since the next action might modify it...
-			ta := terminologies_available.deep_twin
-			if has_any_constraint_binding(a_code) then
-				from ta.start until ta.off loop
-					if constraint_bindings.has(ta.item) and then
-						constraint_bindings.item(ta.item).has(a_code) then
-						remove_constraint_binding(a_code, ta.item)
+			create terminologies.make_from_array (constraint_bindings.current_keys)
+			if has_any_constraint_binding (a_code) then
+				from terminologies.start until terminologies.off loop
+					if constraint_bindings.has (terminologies.item) and then
+						constraint_bindings.item (terminologies.item).has (a_code) then
+						remove_constraint_binding (a_code, terminologies.item)
 					end
-					ta.forth
+					terminologies.forth
 				end
 			end
 
 			constraint_codes.prune (a_code)
 		ensure
-			not has_constraint_code(a_code)
+			not has_constraint_code (a_code)
 		end
 
 	remove_term_binding (a_code, a_terminology: attached STRING)
 			-- remove term binding to local code in group a_terminology
 		require
 			Local_code_valid: has_term_code(a_code)
-			Terminology_valid: terminologies_available.has(a_terminology)
 			Has_binding: has_term_binding(a_terminology, a_code)
 		do
 			term_bindings.item (a_terminology).remove (a_code)
 			if term_bindings.item (a_terminology).count = 0 then
 				term_bindings.remove (a_terminology)
-				if not constraint_bindings.has (a_terminology) then
-					terminologies_available.prune_all (a_terminology)
-				end
 			end
 		ensure
 			Binding_removed: not has_term_binding(a_terminology, a_code)
@@ -572,23 +570,14 @@ feature -- Modification
 			-- remove constraint binding to local code in group a_terminology
 		require
 			Local_code_valid: has_constraint_code (a_code)
-			Terminology_valid: terminologies_available.has (a_terminology)
 			Has_binding: has_constraint_binding (a_terminology, a_code)
 		do
 			constraint_bindings.item (a_terminology).remove (a_code)
 			if constraint_bindings.item (a_terminology).count = 0 then
 				constraint_bindings.remove (a_terminology)
-				if not term_bindings.has (a_terminology) then
-					terminologies_available.prune_all (a_terminology)
-				end
 			end
 		ensure
 			Binding_removed: not has_constraint_binding (a_terminology, a_code)
-		end
-
-	set_terminologies_available (a_terminologies_avialable: attached ARRAYED_LIST [STRING])
-		do
-			terminologies_available := a_terminologies_avialable
 		end
 
 	set_term_definitions (a_term_defs: attached HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING])
@@ -843,7 +832,6 @@ feature -- Finalisation
 
 			-- populate term attribute names (assumed to be the same for terms and constraints)
 			term_attribute_names := (create {ARCHETYPE_TERM}.default_create).Keys
-			terminologies_available.compare_objects
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
@@ -854,7 +842,6 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 		once
 			create Result.make(0)
 			Result.compare_objects
-			Result.extend ("terminologies_available")
 			Result.extend ("term_definitions")
 			Result.extend ("constraint_definitions")
 			Result.extend ("term_bindings")
@@ -868,7 +855,6 @@ invariant
 	Highest_term_code_index_valid: highest_term_code_index >= 0
 	Highest_constraint_code_index_valid: highest_constraint_code_index >= 0
 	Highest_code_specialisation_level_valid: highest_code_specialisation_level >= 0
-	terminologies_available_compares_objects: attached terminologies_available implies terminologies_available.object_comparison
 	term_codes_compares_objects: term_codes.object_comparison
 	constraint_codes_compares_objects: constraint_codes.object_comparison
 

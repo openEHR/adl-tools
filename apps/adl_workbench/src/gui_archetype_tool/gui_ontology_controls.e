@@ -131,19 +131,22 @@ feature {NONE} -- Implementation
 			list_row: EV_MULTI_COLUMN_LIST_ROW
 			a_term: ARCHETYPE_TERM
 			i: INTEGER
+			terminologies: ARRAYED_SET [STRING]
 		do
 			-- populate column titles
 			pl := ev_term_defs_mlist
 			create col_titles.make(0)
 			col_titles.extend ("code")
+
 			from ontology.term_attribute_names.start until ontology.term_attribute_names.off loop
 				col_titles.extend (ontology.term_attribute_names.item)
 				ontology.term_attribute_names.forth
 			end
 
-			from ontology.terminologies_available.start until ontology.terminologies_available.off loop
-				col_titles.extend (utf8 (ontology.terminologies_available.item))
-				ontology.terminologies_available.forth
+			terminologies := ontology.terminologies_available
+			from terminologies.start until terminologies.off loop
+				col_titles.extend (utf8 (terminologies.item))
+				terminologies.forth
 			end
 
 			pl.set_column_titles (col_titles.to_array)
@@ -159,13 +162,13 @@ feature {NONE} -- Implementation
 				end
 
 				-- populate bindings
-				from ontology.terminologies_available.start until ontology.terminologies_available.off loop
-					if ontology.has_term_binding (ontology.terminologies_available.item, a_term.code) then
-						list_row.extend (utf8 (ontology.term_binding (ontology.terminologies_available.item, a_term.code).as_string))
+				from terminologies.start until terminologies.off loop
+					if ontology.has_term_binding (terminologies.item, a_term.code) then
+						list_row.extend (utf8 (ontology.term_binding (terminologies.item, a_term.code).as_string))
 					else
 						list_row.extend (" - ")
 					end
-					ontology.terminologies_available.forth
+					terminologies.forth
 				end
 
 				pl.extend (list_row)
@@ -186,6 +189,7 @@ feature {NONE} -- Implementation
 			list_row: EV_MULTI_COLUMN_LIST_ROW
 			a_term: ARCHETYPE_TERM
 			i: INTEGER
+			terminologies: ARRAYED_SET [STRING]
 		do
 			-- build columns
 			pl := ev_constraint_defs_mlist
@@ -196,9 +200,10 @@ feature {NONE} -- Implementation
 				ontology.term_attribute_names.forth
 			end
 
-			from ontology.terminologies_available.start until ontology.terminologies_available.off loop
-				col_titles.extend (utf8 (ontology.terminologies_available.item))
-				ontology.terminologies_available.forth
+			terminologies := ontology.terminologies_available
+			from terminologies.start until terminologies.off loop
+				col_titles.extend (utf8 (terminologies.item))
+				terminologies.forth
 			end
 
 			pl.set_column_titles (col_titles.to_array)
@@ -208,21 +213,21 @@ feature {NONE} -- Implementation
 
 				-- populate constraint codes
 				list_row.extend (utf8 (ontology.constraint_codes.item))
-				a_term := ontology.constraint_definition(selected_language, ontology.constraint_codes.item)
+				a_term := ontology.constraint_definition (selected_language, ontology.constraint_codes.item)
 				from a_term.keys.start until a_term.keys.off loop
 					list_row.extend (utf8 (a_term.item (a_term.keys.item)))
 					a_term.keys.forth
 				end
 
 				-- populate bindings
-				from ontology.terminologies_available.start until ontology.terminologies_available.off loop
-					if ontology.has_constraint_binding (ontology.terminologies_available.item, a_term.code) then
+				from terminologies.start until terminologies.off loop
+					if ontology.has_constraint_binding (terminologies.item, a_term.code) then
 						list_row.extend (utf8 (ontology.constraint_binding(
-							ontology.terminologies_available.item, a_term.code).as_string))
+							terminologies.item, a_term.code).as_string))
 					else
 						list_row.extend (" - ")
 					end
-					ontology.terminologies_available.forth
+					terminologies.forth
 				end
 
 				pl.extend (list_row)

@@ -81,16 +81,11 @@ feature -- Status Report
 
 	has_any_term_binding (a_code: STRING): BOOLEAN
 			-- true if there is any term binding for code `a_code'
-		local
-			p: ARRAYED_LIST_CURSOR
 		do
-			p := terminologies_available.cursor
-			from terminologies_available.start until terminologies_available.off or Result loop
-				Result := term_bindings.has(terminologies_available.item) and then
-					term_bindings.item(terminologies_available.item).has(a_code)
-				terminologies_available.forth
+			from term_bindings.start until term_bindings.off or term_bindings.item_for_iteration.has (a_code) loop
+				term_bindings.forth
 			end
-			terminologies_available.go_to (p)
+			Result := not term_bindings.off
 		end
 
 	has_term_binding (a_terminology, a_code: STRING): BOOLEAN
@@ -101,22 +96,17 @@ feature -- Status Report
 
 	has_any_constraint_binding (a_code: STRING): BOOLEAN
 			-- true if there is any constraint binding for code `a_code'
-		local
-			p: ARRAYED_LIST_CURSOR
 		do
-			p := terminologies_available.cursor
-			from terminologies_available.start until terminologies_available.off or Result loop
-				Result := constraint_bindings.has(terminologies_available.item) and then
-					constraint_bindings.item(terminologies_available.item).has(a_code)
-				terminologies_available.forth
+			from constraint_bindings.start until constraint_bindings.off or constraint_bindings.item_for_iteration.has (a_code) loop
+				constraint_bindings.forth
 			end
-			terminologies_available.go_to (p)
+			Result := not constraint_bindings.off
 		end
 
 	has_constraint_binding (a_terminology, a_code: STRING): BOOLEAN
 			-- true if there is a term binding for code `a_code' in `a_terminology'
 		do
-			Result := constraint_bindings.has(a_terminology) and then constraint_bindings.item(a_terminology).has(a_code)
+			Result := constraint_bindings.has (a_terminology) and then constraint_bindings.item(a_terminology).has (a_code)
 		end
 
 	has_terminology_extract (a_terminology: STRING): BOOLEAN
@@ -142,7 +132,7 @@ feature -- Modification
 			lang_terms: HASH_TABLE [ARCHETYPE_TERM, STRING_8]
 			cons_bindings_1: HASH_TABLE [URI, STRING_8]
 			term_bindings_1: HASH_TABLE [CODE_PHRASE, STRING_8]
-			a_lang, a_terminology: STRING
+			a_lang: STRING
 		do
 			-- term definitions
 			from other.term_definitions.start until other.term_definitions.off loop
@@ -185,10 +175,9 @@ feature -- Modification
 			end
 
 			-- terminology bindings; first add the bindings to terminologies that are not there at all
-			from other.terminologies_available.start until other.terminologies_available.off loop
-				a_terminology := other.terminologies_available.item
-				if other.has_term_bindings (a_terminology) then
-					term_bindings_1 := other.term_bindings_for_terminology (a_terminology)
+			from other.term_bindings.start until other.term_bindings.off loop
+				if other.has_term_bindings (other.term_bindings.key_for_iteration) then
+					term_bindings_1 := other.term_bindings_for_terminology (other.term_bindings.key_for_iteration)
 					from term_bindings_1.start until term_bindings_1.off loop
 						add_term_binding (term_bindings_1.item_for_iteration.deep_twin, term_bindings_1.key_for_iteration)
 						debug ("flatten")
@@ -197,20 +186,19 @@ feature -- Modification
 						term_bindings_1.forth
 					end
 				end
-				other.terminologies_available.forth
+				other.term_bindings.forth
 			end
 
 			-- constraint bindings; first add the bindings to terminologies that are not there at all
-			from other.terminologies_available.start until other.terminologies_available.off loop
-				a_terminology := other.terminologies_available.item
-				if other.has_constraint_bindings (a_terminology) then
-					cons_bindings_1 := other.constraint_bindings_for_terminology (a_terminology)
+			from other.constraint_bindings.start until other.constraint_bindings.off loop
+				if other.has_constraint_bindings (other.constraint_bindings.key_for_iteration) then
+					cons_bindings_1 := other.constraint_bindings_for_terminology (other.constraint_bindings.key_for_iteration)
 					from cons_bindings_1.start until cons_bindings_1.off loop
-						add_constraint_binding (cons_bindings_1.item_for_iteration.deep_twin, a_terminology, cons_bindings_1.key_for_iteration)
+						add_constraint_binding (cons_bindings_1.item_for_iteration.deep_twin, other.constraint_bindings.key_for_iteration, cons_bindings_1.key_for_iteration)
 						cons_bindings_1.forth
 					end
 				end
-				other.terminologies_available.forth
+				other.constraint_bindings.forth
 			end
 		ensure
 			-- Terminologies_merged: terminologies_available.is_superset (other.terminologies_available)

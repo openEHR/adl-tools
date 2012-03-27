@@ -1031,6 +1031,13 @@ path_segment: V_ATTRIBUTE_IDENTIFIER V_LOCAL_TERM_CODE_REF
 				io.put_string("...path_segment: " + $1 + "[" + $2 + "]%N")
 			end
 		}
+	| V_ATTRIBUTE_IDENTIFIER '[' V_ARCHETYPE_ID ']'
+		{
+			create $$.make_with_object_id($1, $3)
+			debug("OG_PATH_parse")
+				io.put_string("...path_segment: " + $1 + "[" + $3 + "]%N")
+			end
+		}
 	| V_ATTRIBUTE_IDENTIFIER
 		{
 			create $$.make($1)

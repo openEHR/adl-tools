@@ -26,7 +26,6 @@ feature -- Initialisation
 			tb_p_ont: HASH_TABLE [STRING, STRING]
 			cb_p_ont: HASH_TABLE [STRING, STRING]
 		do
-			terminologies_available := an_ontology.terminologies_available
 			term_definitions := an_ontology.term_definitions
 			constraint_definitions := an_ontology.constraint_definitions
 
@@ -63,8 +62,6 @@ feature -- Initialisation
 
 feature -- Access
 
-	terminologies_available: detachable ARRAYED_LIST [STRING]
-
 	term_definitions: attached HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
 			-- table of term definitions, keyed by code, keyed by language
 
@@ -96,10 +93,6 @@ feature -- Factory
 			an_ont.set_term_definitions (term_definitions)
 			if attached constraint_definitions then
 				an_ont.set_constraint_definitions (constraint_definitions)
-			end
-
-			if attached terminologies_available then
-				an_ont.set_terminologies_available (terminologies_available)
 			end
 
 			if attached term_bindings then

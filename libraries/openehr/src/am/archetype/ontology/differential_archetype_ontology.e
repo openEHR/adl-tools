@@ -58,8 +58,6 @@ feature -- Initialisation
 			concept_code := a_flat_copy.concept_code
 			original_language := a_flat.original_language.twin
 
-			terminologies_available := a_flat_copy.terminologies_available
-
 			term_definitions := a_flat_copy.term_definitions
 			constraint_definitions := a_flat_copy.constraint_definitions
 
@@ -150,7 +148,7 @@ feature -- Status Report
 		do
 			if specialisation_depth_from_code (a_code) = specialisation_depth then
 				Result := term_definitions.has (a_language) and then term_definitions.item(a_language).has(a_code)
-			elseif parent_ontology /= Void then
+			elseif attached parent_ontology then
 				Result := parent_ontology.has_term_definition (a_language, a_code)
 			end
 		end
@@ -159,8 +157,8 @@ feature -- Status Report
 			-- is `a_code' defined in `a_language' in this ontology?
 		do
 			if specialisation_depth_from_code (a_code) = specialisation_depth then
-				Result := constraint_definitions.has (a_language) and then constraint_definitions.item(a_language).has(a_code)
-			elseif parent_ontology /= Void then
+				Result := constraint_definitions.has (a_language) and then constraint_definitions.item (a_language).has(a_code)
+			elseif attached parent_ontology then
 				Result := parent_ontology.has_constraint_definition (a_language, a_code)
 			end
 		end
@@ -172,8 +170,9 @@ feature -- Status Report
 				from term_bindings.start until term_bindings.off or term_bindings.item_for_iteration.has (a_code) loop
 					term_bindings.forth
 				end
+				Result := not term_bindings.off
 			else
-				Result := parent_ontology.has_any_term_binding(a_code)
+				Result := parent_ontology.has_any_term_binding (a_code)
 			end
 		end
 
@@ -181,8 +180,7 @@ feature -- Status Report
 			-- true if there is a term binding for ontology code `a_code' in `a_terminology'
 		do
 			if specialisation_depth_from_code (a_code) = specialisation_depth then
-				Result := term_bindings.has (a_terminology) and then
-					term_bindings.item (a_terminology).has (a_code)
+				Result := term_bindings.has (a_terminology) and then term_bindings.item (a_terminology).has (a_code)
 			else
 				Result := parent_ontology.has_term_binding (a_terminology, a_code)
 			end
@@ -195,6 +193,7 @@ feature -- Status Report
 				from constraint_bindings.start until constraint_bindings.off or constraint_bindings.item_for_iteration.has (a_code) loop
 					constraint_bindings.forth
 				end
+				Result := not constraint_bindings.off
 			else
 				Result := parent_ontology.has_any_constraint_binding (a_code)
 			end
@@ -204,8 +203,7 @@ feature -- Status Report
 			-- true if there is a term binding for code `a_code' in `a_terminology'
 		do
 			if specialisation_depth_from_code (a_code) = specialisation_depth then
-				Result := constraint_bindings.has(a_terminology) and then
-						constraint_bindings.item(a_terminology).has(a_code)
+				Result := constraint_bindings.has (a_terminology) and then constraint_bindings.item (a_terminology).has(a_code)
 			else
 				Result := parent_ontology.has_constraint_binding(a_terminology, a_code)
 			end
@@ -286,7 +284,6 @@ feature -- Modification
 			-- replaces existing a term binding to local code a_code, in group a_terminology
 		require
 			Local_code_valid: has_term_code(a_code)
-			Terminology_valid: terminologies_available.has(a_code_phrase.terminology_id.value)
 			Already_added: has_term_binding(a_code_phrase.terminology_id.value, a_code)
 		do
 			term_bindings.item(a_code_phrase.terminology_id.value).replace(a_code_phrase, a_code)
@@ -298,7 +295,6 @@ feature -- Modification
 			-- replaces existing constraint binding to local code a_code, in group a_terminology
 		require
 			Local_code_valid: has_constraint_code(a_code)
-			Terminology_valid: terminologies_available.has(a_terminology)
 			Already_added: has_constraint_binding(a_terminology, a_code)
 		do
 			constraint_bindings.item(a_terminology).replace(a_uri, a_code)

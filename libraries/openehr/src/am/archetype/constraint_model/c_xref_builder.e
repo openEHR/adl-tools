@@ -23,13 +23,18 @@ inherit
 	C_VISITOR
 
 
+	ARCHETYPE_TERM_CODE_TOOLS
+		export
+			{NONE} all
+		end
+
 feature -- Visitor
 
 	start_c_object (a_node: C_OBJECT; depth: INTEGER)
 			-- enter a C_OBJECT
 		do
-			if a_node.is_addressable then
-				if not archetype.id_atcodes_index.has(a_node.node_id) then
+			if a_node.is_addressable and is_valid_code (a_node.node_id) then
+				if not archetype.id_atcodes_index.has (a_node.node_id) then
 					archetype.id_atcodes_index.put (create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
 				end
 				archetype.id_atcodes_index.item (a_node.node_id).extend (a_node)
@@ -124,11 +129,11 @@ feature -- Visitor
 			if a_node.has_differential_path then
 				create og_path.make_from_string (a_node.differential_path)
 				from og_path.start until og_path.off loop
-					if og_path.item.is_addressable then
-						if not archetype.id_atcodes_index.has(og_path.item.object_id) then
+					if og_path.item.is_addressable and is_valid_code (og_path.item.object_id) then
+						if not archetype.id_atcodes_index.has (og_path.item.object_id) then
 							archetype.id_atcodes_index.put(create {ARRAYED_LIST[ARCHETYPE_CONSTRAINT]}.make(0), og_path.item.object_id)
 						end
-						archetype.id_atcodes_index.item(og_path.item.object_id).extend (a_node)
+						archetype.id_atcodes_index.item (og_path.item.object_id).extend (a_node)
 					end
 					og_path.forth
 				end
