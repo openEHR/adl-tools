@@ -608,7 +608,7 @@ feature {NONE} -- Implementation
 			create Result.make_empty
 			Result.append ("ADL Workbench%N")
 			Result.append ("Version " + version.out + "%N")
-			Result.append ("(c) 2003-2011 openEHR Foundation%N")
+			Result.append ("(c) 2003-2012 openEHR Foundation%N")
 			Result.append ("ADL version: " + Latest_adl_version + "%N")
 			Result.append ("Source SVN - http://www.openehr.org/svn/ref_impl_eiffel%N%T" + version.last_changed + "%N")
 			Result.append ("Source license: Mozilla tri-license%N")
