@@ -31,18 +31,46 @@
       <div id="content">
         <h2>Release History</h2>
 
+		<h3>29 Mar 2012 ADL 1.5 beta Release 6 (<a href="http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/1677/BRANCHES/adl1.5/">SVN rev 1677</a>) (<a href="http://www.openehr.org/issues/secure/IssueNavigator.jspa?reset=true&mode=hide&sorter/order=DESC&sorter/field=priority&resolution=-1&pid=10070&fixfor=10110">Jira</a>)</h3>
+			<ul>
+				<li><b>GUI changes</b>:
+					<ul>
+						<li>Improve UI for turning on and off line numbers in source and serialised views.</li>
+					</ul>
+				</li>
+				<li><b>Output</b>:
+					<ul>
+						<li>Add YAML 1.1 output; validates at <a href="http://yaml-online-parser.appspot.com/">appspot online YAML parser</a>.</li>
+						<ll>Correct some bugs in JSON output.</li>
+						<li>Add batch generation of all output types.</li>
+					</ul>
+				</li>
+				<li><b>Compiler changes</b>:
+					<ul>
+						<li>Template type template_component renamed to template_overlay.</li>
+						<li>Terminologies_available part of ontology section is now ignored in 1.4 and not used in 1.5.</li>
+						<li>Loosen ARCHETYPE_ID valid patterns to allow for closure names (middle part of first segment in id) to be a number like '13606'.</li>
+						<li>Add support for documenting non-archetyped RM paths in the annotations section.</li>
+					</ul>
+				</li>
+			</ul>
+
 		<h3>29 Nov 2011 ADL 1.5 beta Release 5 (<a href="http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/1656/BRANCHES/adl1.5/">SVN rev 1656</a>) (<a href="http://www.openehr.org/issues/secure/IssueNavigator.jspa?reset=true&mode=hide&sorter/order=DESC&sorter/field=priority&resolution=-1&pid=10070&fixfor=10120">Jira</a>)</h3>
 		<ul>
 			<li><b>GUI changes</b>:
-				<ul>The Class Tool now includes a properties view, an ancestors view and a descendants view. All views contain class icons that are clickable.</ul>
-				<ul>There is now an RM Schema meta-data viewing tool.</ul>
-				<ul>Numerous small UI changes and improvements, including modal selection history - the Tool back and forward buttons work in a similar way to those of a web browser, no matter what the active tools is.</ul>
+				<ul>
+					<li>The Class Tool now includes a properties view, an ancestors view and a descendants view. All views contain class icons that are clickable.</li>
+					<li>There is now an RM Schema meta-data viewing tool.</li>
+					<li>Numerous small UI changes and improvements, including modal selection history - the Tool back and forward buttons work in a similar way to those of a web browser, no matter what the active tools is.</li>
+				</ul>
 			</li>
 			<li><b>Reporting</b>:
-				<ul>There is now a Statistics facility at the Archetype Catalogue and Archetype Tool levels, providing detailed statistics on use of RM classes and terminology in archetypes.</ul>
+				<ul>
+					<li>There is now a Statistics facility at the Archetype Catalogue and Archetype Tool levels, providing detailed statistics on use of RM classes and terminology in archetypes.</li>
+				</ul>
 			</li>
 			<li><b>Ouput formats</b>:
-				<ul>JSON is now supported as an output format for differential and flat archetypes. Note that occurrences, cardinality and existence are serialised with single Strings, e.g. "0..1", "1..*" etc.</ul>
+			<ul><li>JSON is now supported as an output format for differential and flat archetypes. Note that occurrences, cardinality and existence are serialised with single Strings, e.g. "0..1", "1..*" etc.</li></ul>
 			</li>
 		</ul>
 		<h3>8 Sep 2011 ADL 1.5 beta Release 4 (<a href="http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/1603/BRANCHES/adl1.5/">SVN rev 1603</a>) (<a href="http://www.openehr.org/issues/secure/IssueNavigator.jspa?reset=true&mode=hide&sorter/order=DESC&sorter/field=priority&resolution=-1&pid=10070&fixfor=10080">Jira</a>)</h3>
