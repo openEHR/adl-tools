@@ -37,7 +37,7 @@ feature -- Access
 	build: INTEGER = 0
 			-- The build number: manually incremented for each public release, or else reset to 0 when `minor' changes.
 
-	beta: STRING = "5a"
+	beta: STRING = "6"
 			-- The beta number: manually incremented for each public release, or else reset to 0 when `major' changes.
 
 	revision: INTEGER = 0
