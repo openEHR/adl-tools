@@ -492,12 +492,15 @@ P[yY]?[mM]?[Ww]?[dD]? {
 			}
 
 <IN_REGEXP1> {
-	[^/]*\\\/	{ 		-- match any segments with quoted slashes
+	[^/]*\\\/	{ 		-- match any segments with quoted slashes '\/'
 				in_buffer.append_string (text)
 			}
 
-	[^/}]*\/	{ 		-- match final segment
+	[^/]*\/}	{ 		-- match final segment
 				in_buffer.append_string (text)
+				unread_character (in_buffer.item(in_buffer.count)) -- put back the last character - '}'
+				in_buffer.remove_tail(1) -- get rid of the "}" from the buffer
+
 				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
 				in_buffer.wipe_out
