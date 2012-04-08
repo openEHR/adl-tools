@@ -28,7 +28,7 @@ inherit
 
 	AUTHORED_RESOURCE
 		redefine
-			synchronise_adl15
+			synchronise_adl15, make_from_other
 		end
 
 feature -- Initialisation
@@ -108,6 +108,18 @@ feature -- Initialisation
 			Invariants_set: invariants = an_invariants
 			Ontology_set: ontology = an_ontology
 			Is_dirty: is_dirty
+		end
+
+	make_from_other (other: like Current)
+			-- duplicate from another archetype
+		local
+			a_copy: like Current
+		do
+			a_copy := other.deep_twin
+			make_all (a_copy.artefact_type, a_copy.adl_version, a_copy.archetype_id, a_copy.parent_archetype_id, a_copy.is_controlled,
+					a_copy.original_language, a_copy.translations,
+					a_copy.description, a_copy.definition, a_copy.invariants,
+					a_copy.ontology, a_copy.annotations)
 		end
 
 feature -- Access

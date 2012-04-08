@@ -28,13 +28,17 @@ feature -- Definitions
 feature -- Initialisation
 
 	make_from_other (other: attached AUTHORED_RESOURCE)
+		local
+			a_copy: like other
 		do
-			is_controlled := other.is_controlled
-			original_language := other.original_language
-			translations := other.translations
-			description := other.description
-			revision_history := other.revision_history
-			annotations := other.annotations
+			a_copy := other.deep_twin
+
+			is_controlled := a_copy.is_controlled
+			original_language := a_copy.original_language
+			translations := a_copy.translations
+			description := a_copy.description
+			revision_history := a_copy.revision_history
+			annotations := a_copy.annotations
 		end
 
 feature -- Access

@@ -102,15 +102,15 @@ feature {NONE} -- Implementation
 					if ara.is_valid then
 						ev_tree_item_stack.extend (ev_node_descriptor_map.item (ara.qualified_name))
 						ev_tree_item_stack.item.wipe_out
-						ev_tree_item_stack.item.set_pixmap (object_node_pixmap (ara))
+						ev_tree_item_stack.item.set_pixmap (catalogue_node_pixmap (ara))
 						create tree_iterator.make (ara.flat_archetype.definition.representation)
 						tree_iterator.do_all (agent ev_node_build_enter_action, agent ev_node_build_exit_action)
 						ev_tree_item_stack.remove
 					else
-						ev_node_descriptor_map.item (ara.qualified_name).set_pixmap (object_node_pixmap (ara))
+						ev_node_descriptor_map.item (ara.qualified_name).set_pixmap (catalogue_node_pixmap (ara))
 					end
 				else -- otherwise just display the template root
-					attach_node (ara.id.rm_entity + "." + ara.name, object_node_pixmap (ara), ara)
+					attach_node (ara.id.rm_entity + "." + ara.name, catalogue_node_pixmap (ara), ara)
 					ev_node_descriptor_map.force (ev_tree_item_stack.item, ara.qualified_name)
 					ev_tree_item_stack.remove
 				end
@@ -141,11 +141,11 @@ feature {NONE} -- Implementation
 						ca_path := c_attr.path
 					end
 					if not c_attr.children.off then
-						attach_node (ca_path, pixmaps [c_attribute_pixmap_string(c_attr)], Void)
+						attach_node (ca_path, get_icon_pixmap ("archetype/" + c_attribute_pixmap_string(c_attr)), Void)
 					end
 				elseif attached {C_ARCHETYPE_ROOT} ca as car and attached source as dir then
 					ara := dir.archetype_index.item (car.archetype_id)
-					attach_node (ara.id.rm_entity + "." + ara.name, object_node_pixmap (ara), ara)
+					attach_node (ara.id.rm_entity + "." + ara.name, catalogue_node_pixmap (ara), ara)
 				end
 			end
 		end
@@ -211,7 +211,7 @@ feature {NONE} -- Implementation
 		do
  			if attached {ARCH_CAT_MODEL_NODE} node.data as acmn then -- it is a model node
 				if acmn.is_class then
-					node.set_pixmap (object_node_pixmap (acmn))
+					node.set_pixmap (catalogue_node_pixmap (acmn))
 				end
 			end
 		end

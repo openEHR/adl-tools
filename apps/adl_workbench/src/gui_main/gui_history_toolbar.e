@@ -41,12 +41,12 @@ feature -- Initialisation
 
 			create back_button
 			back_button.set_tooltip ("Back one item")
-			back_button.set_pixmap (pixmaps ["history_back"])
+			back_button.set_pixmap (get_icon_pixmap ("tool/history_back"))
 
 			create tool_bar_sep_3
 			create forward_button
 			forward_button.set_tooltip ("Forward one item")
-			forward_button.set_pixmap (pixmaps ["history_forward"])
+			forward_button.set_pixmap (get_icon_pixmap ("tool/history_forward"))
 
 			-- Connect widgets
 			menu.extend (menu_item_back)
@@ -61,8 +61,8 @@ feature -- Initialisation
 			menu.set_text ("H&istory")
 			menu_item_back.set_text ("&Back")
 			menu_item_forward.set_text ("&Forward")
-			menu_item_back.set_pixmap (pixmaps ["history_back"])
-			menu_item_forward.set_pixmap (pixmaps ["history_forward"])
+			menu_item_back.set_pixmap (get_icon_pixmap ("tool/history_back"))
+			menu_item_forward.set_pixmap (get_icon_pixmap ("tool/history_forward"))
 
 			-- menu events
 			menu.select_actions.extend (agent on_history)
@@ -117,7 +117,7 @@ feature -- Events
 							mi: EV_MENU_ITEM
 						do
 							create mi.make_with_text (ita.global_artefact_identifier)
-							mi.set_pixmap (pixmaps [ita.global_artefact_category])
+							mi.set_pixmap (get_icon_pixmap ("archetype/" + ita.global_artefact_category))
 							mi.select_actions.extend (agent go_to_history_item (ita.global_artefact_identifier))
 							menu.extend (mi)
 						end

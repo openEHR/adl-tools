@@ -184,7 +184,7 @@ feature {NONE} -- Implementation
 
  	 		ev_node.pointer_button_press_actions.force_extend (agent schema_node_handler (ev_node, ?, ?, ?))
 
- 	 		ev_node.set_pixmap (pixmaps ["rm_schema"])
+ 	 		ev_node.set_pixmap (get_icon_pixmap ("tool/rm_schema"))
 			ev_tree.extend (ev_node)
 
  			from a_schema.packages.start until a_schema.packages.off loop
@@ -202,7 +202,7 @@ feature {NONE} -- Implementation
 			create ev_pkg_node.make_with_text (a_pkg.name)
  			ev_pkg_node.set_data (a_pkg)
  	 		ev_pkg_node.set_tooltip ("Package " + a_pkg.path)
- 	 		ev_pkg_node.set_pixmap (pixmaps ["file_folder_2"])
+ 	 		ev_pkg_node.set_pixmap (get_icon_pixmap ("rm/generic/package"))
 			ev_parent_node.extend (ev_pkg_node)
 
 			ev_node_map.put (ev_pkg_node, a_pkg.globally_qualified_path)
@@ -234,13 +234,13 @@ feature {NONE} -- Implementation
 			ev_class_node: EV_TREE_ITEM
 			type_cat: STRING
 		do
-			create ev_class_node.make_with_text (a_class_def.name)
+			create ev_class_node.make_with_text (a_class_def.as_type_string)
  			ev_class_node.set_data (a_class_def)
  			type_cat := a_class_def.type_category.twin
  			if a_class_def.is_override then
  				type_cat.append ("_override")
  			end
-	 	 	ev_class_node.set_pixmap (pixmaps [type_cat])
+	 	 	ev_class_node.set_pixmap (get_icon_pixmap ("rm/generic/" + type_cat))
  	 		ev_class_node.set_tooltip (a_class_def.description)
 			ev_package_node.extend (ev_class_node)
 
@@ -282,15 +282,15 @@ feature {NONE} -- Implementation
 				elseif button = {EV_POINTER_CONSTANTS}.right then
 					create menu
 					create an_mi.make_with_text_and_action (create_message_content ("display_in_active_tab", Void), agent display_context_selected_class_in_active_tool (ev_ti))
-					an_mi.set_pixmap (pixmaps ["class_tool"])
+					an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool"))
 			    	menu.extend (an_mi)
 
 					create an_mi.make_with_text_and_action (create_message_content ("display_in_new_tab", Void), agent display_context_selected_class_in_new_tool (ev_ti))
-					an_mi.set_pixmap (pixmaps ["class_tool_new"])
+					an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
 					menu.extend (an_mi)
 
 					create an_mi.make_with_text_and_action (create_message_content ("edit_source_schema", Void), agent do_edit_schema (a_class_def.source_schema_id))
-					an_mi.set_pixmap (pixmaps ["edit"])
+					an_mi.set_pixmap (get_icon_pixmap ("tool/edit"))
 					menu.extend (an_mi)
 
 					menu.show
@@ -309,11 +309,11 @@ feature {NONE} -- Implementation
 
 				create an_mi.make_with_text_and_action (create_message_content ("display_in_active_tab", Void), agent display_context_selected_rm_in_active_tool (ev_ti))
 		    	menu.extend (an_mi)
-				an_mi.set_pixmap (pixmaps ["rm_schema_tool"])
+				an_mi.set_pixmap (get_icon_pixmap ("tool/rm_schema_tool"))
 
 				create an_mi.make_with_text_and_action (create_message_content ("display_in_new_tab", Void), agent display_context_selected_rm_in_new_tool (ev_ti))
 		    	menu.extend (an_mi)
-				an_mi.set_pixmap (pixmaps ["rm_schema_tool_new"])
+				an_mi.set_pixmap (get_icon_pixmap ("tool/rm_schema_tool_new"))
 
 				create an_mi.make_with_text_and_action (create_message_content ("expand_button_expand_text", Void), agent schema_expand_all (ev_ti))
 		    	menu.extend (an_mi)
@@ -325,7 +325,7 @@ feature {NONE} -- Implementation
 		    	menu.extend (an_mi)
 
 				create an_mi.make_with_text_and_action (create_message_content ("edit_source_schema", Void), agent do_edit_schema (bmm_sch.schema_id))
-				an_mi.set_pixmap (pixmaps ["edit"])
+				an_mi.set_pixmap (get_icon_pixmap ("tool/edit"))
 		    	menu.extend (an_mi)
 
 				menu.show

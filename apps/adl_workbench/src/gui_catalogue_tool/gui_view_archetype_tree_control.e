@@ -171,17 +171,17 @@ feature {NONE} -- Implementation
 	 				ev_node.set_tooltip (tooltip)
 
 					-- pixmap
-					pixmap := pixmaps [aci.group_name]
+					pixmap := get_icon_pixmap ("archetype/" + aci.group_name)
 
 	 			elseif attached {ARCH_CAT_MODEL_NODE} aci as acmn then -- it is a model node
 					if acmn.is_class then
-						pixmap := object_node_pixmap (acmn)
+						pixmap := catalogue_node_pixmap (acmn)
 			 	 		tooltip := acmn.qualified_name
 			 	 		tooltip.append ("%N" + acmn.class_definition.description)
 						text.append (aci.name)
 					else
 		 				text.append (acmn.qualified_name)
-						pixmap := pixmaps [aci.group_name]
+						pixmap := get_icon_pixmap ("archetype/" + aci.group_name)
 						tooltip := create_message_content ("rm_closure_tree_node_tooltip", <<acmn.qualified_name, acmn.bmm_schema.schema_id>>)
 					end
 	 				text.append (" (" + acmn.subtree_artefact_count (artefact_types).out + ")")
@@ -258,15 +258,15 @@ feature {NONE} -- Implementation
 			if button = {EV_POINTER_CONSTANTS}.right and attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
 				create menu
 				create an_mi.make_with_text_and_action (create_message_content ("display_in_active_tab", Void), agent display_context_selected_class_in_active_tool (ev_ti))
-				an_mi.set_pixmap (pixmaps ["class_tool"])
+				an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool"))
 		    	menu.extend (an_mi)
 
 				create an_mi.make_with_text_and_action (create_message_content ("display_in_new_tab", Void), agent display_context_selected_class_in_new_tool (ev_ti))
-				an_mi.set_pixmap (pixmaps ["class_tool_new"])
+				an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
 				menu.extend (an_mi)
 
 				create an_mi.make_with_text_and_action (create_message_content ("show_class_in_rm", Void), agent display_context_selected_class_in_rm_schema_tool (ev_ti))
-				an_mi.set_pixmap (pixmaps ["rm_schema"])
+				an_mi.set_pixmap (get_icon_pixmap ("tool/rm_schema"))
 				menu.extend (an_mi)
 
 				menu.show

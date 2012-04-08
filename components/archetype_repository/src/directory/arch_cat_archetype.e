@@ -961,6 +961,23 @@ feature -- Modification
 			old_ontological_parent_name := Void
 		end
 
+feature -- Editing
+
+	flat_archetype_clone: FLAT_ARCHETYPE
+			-- produce a clone of the current `flat_archetype'
+		do
+			create Result.make_from_other (flat_archetype)
+		end
+
+	create_editor_context
+			-- set up a new editing context
+		do
+			create editor_context.make (flat_archetype_clone, rm_schema)
+		end
+
+	editor_context: ARCH_ED_CONTEXT
+			-- archetype editor context
+
 feature -- File Operations
 
 	save_differential
@@ -1146,11 +1163,7 @@ feature {NONE} -- Implementation
 		local
 			arch_flattener: ARCHETYPE_FLATTENER
 		do
-			if not differential_archetype.is_specialised then
-				create arch_flattener.make_non_specialised (Current, rm_schema)
-			else
-				create arch_flattener.make_specialised (specialisation_parent, Current, rm_schema)
-			end
+			create arch_flattener.make (Current, rm_schema)
 			arch_flattener.flatten (include_rm)
 			flat_archetype_cache := arch_flattener.arch_output_flat
 			last_include_rm := include_rm

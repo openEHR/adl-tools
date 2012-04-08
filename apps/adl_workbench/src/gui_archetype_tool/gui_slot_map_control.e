@@ -106,7 +106,7 @@ feature {NONE} -- Implementation
 				create eti.make_with_text (utf8 (ids.item))
 				if current_arch_cat.archetype_index.has(ids.item) then
 					ara := current_arch_cat.archetype_index.item (ids.item)
-					eti.set_pixmap (pixmaps [ara.group_name])
+					eti.set_pixmap (get_icon_pixmap ("archetype/" + ara.group_name))
 					eti.set_data (ara)
 				end
 				subtree.extend (eti)
@@ -135,7 +135,7 @@ feature {NONE} -- Implementation
 				slot_index := source.slot_id_index
 				from slot_index.start until slot_index.off loop
 					create eti.make_with_text (utf8 (source.differential_archetype.ontology.physical_to_logical_path (slot_index.key_for_iteration, selected_language, True)))
-					eti.set_pixmap (pixmaps ["ARCHETYPE_SLOT"])
+					eti.set_pixmap (get_icon_pixmap ("added/arcetype_slot"))
 					ev_suppliers_tree.extend (eti)
 					append_tree (eti, slot_index.item_for_iteration)
 					slots_count := slots_count + eti.count

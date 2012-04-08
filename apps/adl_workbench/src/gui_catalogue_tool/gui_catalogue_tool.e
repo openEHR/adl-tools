@@ -62,7 +62,7 @@ feature {NONE} -- Initialisation
 
 			-- visual characteristics
 			ev_root_container.set_item_text (archetype_explorer.ev_root_container, create_message_content ("catalogue_archetype_tab_text", Void))
-			ev_root_container.item_tab (archetype_explorer.ev_root_container).set_pixmap (pixmaps ["archetype_catalog"])
+			ev_root_container.item_tab (archetype_explorer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/archetype_catalog"))
 
 			ev_root_container.set_item_text (template_explorer.ev_root_container, create_message_content ("catalogue_template_tab_text", Void))
 
@@ -283,16 +283,16 @@ feature {NONE} -- Implementation
 			-- set visual appearance of stats & metric tab according to whether there are errors or not
 		do
 			if attached source and then source.can_build_statistics then
-				ev_root_container.item_tab (metrics_viewer.ev_root_container).set_pixmap (pixmaps ["metrics"])
-				ev_root_container.item_tab (stats_viewer.ev_root_container).set_pixmap (pixmaps ["statistics"])
+				ev_root_container.item_tab (metrics_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/metrics"))
+				ev_root_container.item_tab (stats_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/statistics"))
 			else
-				ev_root_container.item_tab (metrics_viewer.ev_root_container).set_pixmap (pixmaps ["metrics_grey"])
-				ev_root_container.item_tab (stats_viewer.ev_root_container).set_pixmap (pixmaps ["statistics_grey"])
+				ev_root_container.item_tab (metrics_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/metrics_grey"))
+				ev_root_container.item_tab (stats_viewer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/statistics_grey"))
 			end
 			if attached source and then source.template_count > 0 then
-				ev_root_container.item_tab (template_explorer.ev_root_container).set_pixmap (pixmaps ["template_catalog"])
+				ev_root_container.item_tab (template_explorer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/template_catalog"))
 			else
-				ev_root_container.item_tab (template_explorer.ev_root_container).set_pixmap (pixmaps ["template_catalog_grey"])
+				ev_root_container.item_tab (template_explorer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/template_catalog_grey"))
 			end
 		end
 

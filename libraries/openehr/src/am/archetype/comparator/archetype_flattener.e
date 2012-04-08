@@ -33,30 +33,20 @@ inherit
 		end
 
 create
-	make_specialised, make_non_specialised
+	make
 
 feature -- Initialisation
 
-	make_specialised (a_flat_parent_desc, a_child_desc: attached ARCH_CAT_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
-			-- create with flat archetype of parent and source (differential) archetype of
-			-- archetype for which we wish to generate a flat archetype
+	make (a_child_desc: attached ARCH_CAT_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
+			-- create with source (differential) archetype of archetype for which we wish to generate a flat archetype
 		require
-			Flat_desc_valid: a_flat_parent_desc.is_valid
 			Child_desc_valid: a_child_desc.is_valid
-			Child_parent_relation_valid: a_child_desc.differential_archetype.parent_archetype_id.as_string.is_equal (a_flat_parent_desc.flat_archetype.archetype_id.as_string)
-		do
-			rm_schema := an_rm_schema
-			flat_parent_desc := a_flat_parent_desc
-			child_desc := a_child_desc
-		end
-
-	make_non_specialised (a_child_desc: attached ARCH_CAT_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
-			-- create with source (differential) archetype
-		require
-			Child_desc_attached: a_child_desc.is_valid
 		do
 			rm_schema := an_rm_schema
 			child_desc := a_child_desc
+			if a_child_desc.is_specialised then
+				flat_parent_desc := child_desc.specialisation_parent
+			end
 		end
 
 feature -- Access
@@ -204,6 +194,8 @@ end
 	flatten_definition
 			-- build the flat archetype definition by traversing src_archetype and determining what
 			-- nodes from flat_archetype to add; do the changes to the output archetype
+		require
+			arch_child_diff.is_specialised
 		local
 			def_it: C_ITERATOR
 		do
@@ -212,6 +204,18 @@ end
 
 			create child_grafted_path_list.make(0)
 			child_grafted_path_list.compare_objects
+
+			-- traverse flat output and mark every node as inherited
+			create def_it.make (arch_output_flat.definition)
+			def_it.do_all (
+				agent (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER)
+					do
+						a_c_node.set_specialisation_status_inherited
+					end,
+				agent (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER)
+					do
+					end
+			)
 
 			create def_it.make (arch_child_diff.definition)
 			def_it.do_until_surface (agent node_graft, agent node_test)

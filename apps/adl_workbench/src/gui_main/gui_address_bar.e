@@ -56,7 +56,7 @@ feature {NONE} -- Initialization
 			ev_tool_bar.set_minimum_height (20)
 			ev_tool_bar.disable_vertical_button_style
 			ev_search_button.set_tooltip ("Search for archetype id")
-			ev_search_button.set_pixmap (pixmaps ["magnifier"])
+			ev_search_button.set_pixmap (get_icon_pixmap ("tool/magnifier"))
 
 			-- set up events
 			ev_search_combo.select_actions.extend (agent select_item_from_search_key)

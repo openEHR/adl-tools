@@ -54,11 +54,13 @@ feature -- Definitions
 
 	icon_png_extension: STRING = ".png"
 
+	rm_icon_dir: STRING = "rm"
+
 feature -- Access
 
 	adl_workbench_icon: EV_PIXMAP
 		do
-			Result := pixmaps["adl_workbench_logo"]
+			Result := get_icon_pixmap ("openehr_adl_workbench_logo")
 		end
 
 	icon_directory: attached STRING
@@ -77,107 +79,23 @@ feature -- Access
 			Result := a_dir.exists
 		end
 
-	pixmaps: attached HASH_TABLE [EV_PIXMAP, STRING]
-			-- Table of pixmap file paths keyed by logical name; constructed from pixmaps
-			-- mentioned in `pixmap_table' and also any other pixmaps (icons) found in the
-			-- icon root directory, which will be keyed by their file name minus '.ico'
-			-- This means practically, that if an icon is general purpose, does't need a
-			-- help entry, then don't bother listing it in the `pixmap_table', just put
-			-- it in the icons root directory and the app will find it on startup.
-		require
-			has_icon_directory
-		local
-			file: RAW_FILE
-			pixmap: EV_PIXMAP
-			ico_fname, pixmap_key: STRING
-			dir: DIRECTORY
-		once
-			create Result.make (0)
-
-			from semantic_icon_table.start until semantic_icon_table.off loop
-				if semantic_icon_table.item_for_iteration.file /= Void then
-					ico_fname := file_system.pathname (icon_directory, semantic_icon_table.item_for_iteration.file)
-					create file.make (ico_fname)
-					create pixmap
-					Result [semantic_icon_table.key_for_iteration] := pixmap
-
-					if file.exists then
-						pixmap.set_with_named_file (file.name)
-						pixmap.set_minimum_size (pixmap.width, pixmap.height)
-					else
-						io.putstring ("Could not find icon " + file.name + "; using default%N")
-					end
-				end
-
-				semantic_icon_table.forth
-			end
-
-			-- now go and collect any other pixmaps found in the icon directory and put them in
-			-- this table, keyed by the filename name with '.ico' removed
-			create dir.make_open_read (icon_directory)
-			from
-				dir.start
-				dir.readentry
-			until
-				dir.lastentry = Void
-			loop
-				if dir.lastentry.ends_with (icon_ico_extension) then
-					pixmap_key := dir.lastentry.substring (1, dir.lastentry.count - icon_ico_extension.count)
-					if not Result.has (pixmap_key) then
-						create pixmap
-						Result.put (pixmap, pixmap_key)
-						ico_fname := file_system.pathname (dir.name, dir.lastentry)
-						pixmap.set_with_named_file (ico_fname)
-						pixmap.set_minimum_size (pixmap.width, pixmap.height)
-					end
-				end
-				dir.readentry
-			end
+	has_icon_pixmap (key: STRING): BOOLEAN
+			-- True if pixmap corresponding to `key' exists
+		do
+			Result := icon_pixmaps.has (key.as_lower)
 		end
 
-	rm_pixmaps: attached HASH_TABLE [HASH_TABLE [EV_PIXMAP, STRING], STRING]
-			-- Table of pixmap tables, each table for a given reference model;
-			-- each table has the structure {PIXMAP, RM class name}
-			-- these pixmaps can be used for RM-specific visualisation of the archetype definition
-			-- the source files can be .ico or .png
-		require
-			has_icon_directory
+	get_icon_pixmap (key: STRING): EV_PIXMAP
+			-- obtain pixmap corresponding to `key' or else a generic pixmap
 		local
-			pixmap: EV_PIXMAP
-			path, ico_fname: STRING
-			dir, rm_ico_dir: DIRECTORY
-			rm_ico_map: HASH_TABLE [EV_PIXMAP, STRING]
-		once
-			create Result.make (0)
-			path := file_system.pathname (icon_directory, "rm")
-			create dir.make_open_read (path)
-			from
-				dir.start
-				dir.readentry
-			until
-				dir.lastentry = Void
-			loop
-				if not dir.lastentry.ends_with (".") then
-					create rm_ico_map.make(0)
-					Result.put (rm_ico_map, dir.lastentry)
-					create rm_ico_dir.make_open_read (file_system.pathname (path, dir.lastentry))
-					from
-						rm_ico_dir.start
-						rm_ico_dir.readentry
-					until
-						rm_ico_dir.lastentry = Void
-					loop
-						if rm_ico_dir.lastentry.ends_with (icon_ico_extension) or rm_ico_dir.lastentry.ends_with (icon_png_extension) then
-							create pixmap
-							rm_ico_map.put (pixmap, rm_ico_dir.lastentry.substring (1, rm_ico_dir.lastentry.count - icon_ico_extension.count).as_upper)
-							ico_fname := file_system.pathname (rm_ico_dir.name, rm_ico_dir.lastentry)
-							pixmap.set_with_named_file (ico_fname)
-							pixmap.set_minimum_size (pixmap.width, pixmap.height)
-						end
-						rm_ico_dir.readentry
-					end
-				end
-				dir.readentry
+			pixmap_name: STRING
+		do
+			pixmap_name := key.as_lower
+			if icon_pixmaps.has (pixmap_name) then
+				Result := icon_pixmaps.item (pixmap_name)
+			else
+				io.put_string ("No pixmap for " + key + "%N")
+				create Result.default_create
 			end
 		end
 
@@ -437,166 +355,73 @@ feature -- Application Switches
 
 feature -- Conversion
 
-	object_node_pixmap (ara: ARCH_CAT_ITEM): EV_PIXMAP
+	catalogue_node_pixmap (ara: ARCH_CAT_ITEM): EV_PIXMAP
 		local
-			rm_publisher: STRING
+			pixmap_name: STRING
 		do
 			if attached {ARCH_CAT_MODEL_NODE} ara as acmn and then acmn.is_class then
-				rm_publisher := acmn.bmm_schema.rm_publisher
-				if use_rm_pixmaps and then rm_pixmaps.has (rm_publisher) and then rm_pixmaps.item (rm_publisher).has (acmn.class_definition.name) then
-					Result := rm_pixmaps.item (rm_publisher).item (acmn.class_definition.name)
+				pixmap_name := "rm/" + acmn.bmm_schema.rm_publisher + "/" + acmn.class_definition.name
+				if use_rm_pixmaps and then has_icon_pixmap (pixmap_name) then
+					Result := get_icon_pixmap (pixmap_name)
 				else
-					Result := pixmaps [ara.group_name]
+					Result := get_icon_pixmap ("archetype/" + ara.group_name)
 				end
 			else
-				Result := pixmaps [ara.group_name]
+				Result := get_icon_pixmap ("archetype/" + ara.group_name)
 			end
 		end
 
 feature {NONE} -- Implementation
 
-	semantic_icon_table: attached DS_HASH_TABLE [TUPLE [file, help: STRING], STRING]
-			-- Table of pixmap file paths and help messages, keyed by icon key.
+	icon_pixmaps: attached HASH_TABLE [EV_PIXMAP, STRING]
+			-- Table of pixmap file paths keyed by relative path, e.g.
+			-- tool/compile.ico
+			-- added/c_attribute.ico
+			-- rm/openehr/entry.ico
+		require
+			has_icon_directory
 		once
 			create Result.make (0)
+			recursive_load_pixmaps (Result, "")
+		end
 
-			Result.force (["class_concrete.ico", "concrete class from RM"], "class_concrete")
-			Result.force (["class_concrete_supertype.ico", "concrete class from RM"], "class_concrete_supertype")
-			Result.force (["class_abstract.ico", "abstract class from RM"], "class_abstract")
-			Result.force (["generic_parameter.ico", "generic parameter from RM type"], "generic_parameter")
-			Result.force (["generic_parameter.ico", "constrained generic parameter from RM type"], "constrained_generic_parameter")
+	recursive_load_pixmaps (pixmap_table: HASH_TABLE [EV_PIXMAP, STRING]; rel_path: STRING)
+			-- load .png and .ico pixmaps into `pixmaps', keyed by relative path under icons root directory
+		require
+			has_icon_directory
+		local
+			pixmap: EV_PIXMAP
+			abs_path, key: STRING
+			dir: KL_DIRECTORY
+			dir_items: ARRAYED_LIST [STRING]
+		do
+			abs_path := file_system.pathname (icon_directory, rel_path)
+			create dir.make (abs_path)
 
-			Result.force (["archetype_1.ico", "Ad hoc archetype (not parsed yet)"], "archetype_1")
-			Result.force (["archetype_parsed_1.ico", "Ad hoc archetype (parsed but not compiled)"], "archetype_parsed_1")
-			Result.force (["archetype_parse_failed_1.ico", "Ad hoc archetype (parse failed)"], "archetype_parse_failed_1")
-			Result.force (["archetype_warning_1.ico", "Ad hoc archetype (parsed and compiled with warnings)"], "archetype_warning_1")
-			Result.force (["archetype_valid_1.ico", "Ad hoc archetype (parsed and compiled)"], "archetype_valid_1")
+			-- process files
+			create dir_items.make_from_array (dir.filenames)
+			from dir_items.start until dir_items.off loop
+				if dir_items.item.ends_with (icon_ico_extension) or dir_items.item.ends_with (icon_png_extension) then
+					create pixmap
+					pixmap.set_with_named_file (file_system.pathname (abs_path, dir_items.item))
+					pixmap.set_minimum_size (pixmap.width, pixmap.height)
+					key := file_system.pathname (rel_path, dir_items.item)
+					key.remove_tail (key.count - key.last_index_of ('.', key.count) + 1)
+					key.to_lower
+					key.replace_substring_all ("\", "/")
+					pixmap_table.put (pixmap, key)
+				end
+				dir_items.forth
+			end
 
-			Result.force (["archetype_2.ico", "Archetype in the reference repository (not parsed yet)"], "archetype_2")
-			Result.force (["archetype_parsed_2.ico", "Archetype in the reference repository (parsed but not compiled)"], "archetype_parsed_2")
-			Result.force (["archetype_parse_failed_2.ico", "Archetype in the reference repository (parse failed)"], "archetype_parse_failed_2")
-			Result.force (["archetype_warning_2.ico", "Archetype in the reference repository (parsed and compiled with warnings)"], "archetype_warning_2")
-			Result.force (["archetype_valid_2.ico", "Archetype in the reference repository (parsed and compiled)"], "archetype_valid_2")
-
-			Result.force (["archetype_3.ico", "Archetype in the work repository (not parsed yet)"], "archetype_3")
-			Result.force (["archetype_parsed_3.ico", "Archetype in the work repository (parsed but not compiled)"], "archetype_parsed_3")
-			Result.force (["archetype_parse_failed_3.ico", "Archetype in the work repository (parse failed)"], "archetype_parse_failed_3")
-			Result.force (["archetype_warning_3.ico", "Archetype in the work repository (parsed and compiled with warnings)"], "archetype_warning_3")
-			Result.force (["archetype_valid_3.ico", "Archetype in the work repository (parsed and compiled)"], "archetype_valid_3")
-
-			Result.force ([Void, ""], "Gap 0 in the help")
-
-			Result.force (["template_1.ico", "Ad hoc template (not parsed yet)"], "template_1")
-			Result.force (["template_parsed_1.ico", "Ad hoc template (parsed but not compiled)"], "template_parsed_1")
-			Result.force (["template_parse_failed_1.ico", "Ad hoc template (parse failed)"], "template_parse_failed_1")
-			Result.force (["template_warning_1.ico", "Ad hoc template (parsed and compiled with warnings)"], "template_warning_1")
-			Result.force (["template_valid_1.ico", "Ad hoc template (parsed and compiled)"], "template_valid_1")
-
-			Result.force (["template_2.ico", "Template in the reference repository (not parsed yet)"], "template_2")
-			Result.force (["template_parsed_2.ico", "Template in the reference repository (parsed but not compiled)"], "template_parsed_2")
-			Result.force (["template_parse_failed_2.ico", "Template in the reference repository (parse failed)"], "template_parse_failed_2")
-			Result.force (["template_warning_2.ico", "Template in the reference repository (parsed and compiled with warnings)"], "template_warning_2")
-			Result.force (["template_valid_2.ico", "Template in the reference repository (parsed and compiled)"], "template_valid_2")
-
-			Result.force (["template_3.ico", "Template in the work repository (not parsed yet)"], "template_3")
-			Result.force (["template_parsed_3.ico", "Template in the work repository (parsed but not compiled)"], "template_parsed_3")
-			Result.force (["template_parse_failed_3.ico", "Template in the work repository (parse failed)"], "template_parse_failed_3")
-			Result.force (["template_warning_3.ico", "Template in the work repository (parsed and compiled with warnings)"], "template_warning_3")
-			Result.force (["template_valid_3.ico", "Template in the work repository (parsed and compiled)"], "template_valid_3")
-
-			Result.force ([Void, ""], "Gap 1 in the help")
-
-			Result.force ([Void, ""], "Gap 2 in the help")
-
-			Result.force (["node_normal/c_code_phrase.ico", "C_CODE_PHRASE (openEHR archetype profile)"], "C_CODE_PHRASE")
-			Result.force (["node_normal/c_dv_ordinal.ico", "C_DV_ORDINAL (openEHR archetype profile)"], "C_DV_ORDINAL")
-			Result.force (["node_normal/c_dv_quantity.ico", "C_DV_QUANTITY (openEHR archetype profile)"], "C_DV_QUANTITY")
-			Result.force (["node_normal/c_quantity_item.ico", "C_QUANTITY_ITEM (openEHR archetype profile)"], "C_QUANTITY_ITEM")
-			Result.force (["node_normal/c_primitive_object.ico", "C_PRIMITIVE_OBJECT - any type (openEHR AOM)"], "C_PRIMITIVE_OBJECT")
-
-			Result.force (["node_normal/archetype_slot.ico", "Archetype slot (mandatory)"], "ARCHETYPE_SLOT")
-			Result.force (["node_normal/archetype_slot_optional.ico", "Archetype slot (optional)"], "ARCHETYPE_SLOT.optional")
-			Result.force (["node_normal/cadl_include.ico", "Archetype slot allowed archetypes"], "CADL_INCLUDE")
-			Result.force (["node_normal/cadl_exclude.ico", "Archetype slot excluded archetypes"], "CADL_EXCLUDE")
-
-			Result.force (["node_normal/c_complex_object.ico", "Complex ref model object (mandatory, single occurrence)"], "C_COMPLEX_OBJECT")
-			Result.force (["node_normal/c_complex_object_multiple.ico", "Complex ref model object (mandatory, multiple occurrences)"], "C_COMPLEX_OBJECT.multiple")
-			Result.force (["node_normal/c_complex_object_optional.ico", "Complex ref model object (optional, single occurrence)"], "C_COMPLEX_OBJECT.optional")
-			Result.force (["node_normal/c_complex_object_multiple_optional.ico", "Complex ref model object (optional, multiple occurrences)"], "C_COMPLEX_OBJECT.multiple.optional")
-
-			Result.force (["node_normal/archetype_internal_ref.ico", "Archetype internal reference to previously defined node"], "ARCHETYPE_INTERNAL_REF")
-
-			Result.force (["node_normal/archetype_external_ref.ico", "Archetype reference to other archetype (mandatory, single occurrence)"], "C_ARCHETYPE_ROOT")
-			Result.force (["node_normal/archetype_external_ref_multiple.ico", "Archetype reference to other archetype (mandatory, multiple occurrences)"], "C_ARCHETYPE_ROOT.multiple")
-			Result.force (["node_normal/archetype_external_ref_optional.ico", "Archetype reference to other archetype (optional, single occurrence)"], "C_ARCHETYPE_ROOT.optional")
-			Result.force (["node_normal/archetype_external_ref_multiple_optional.ico", "Archetype reference to other archetype (optional, multiple occurrences)"], "C_ARCHETYPE_ROOT.multiple.optional")
-
-			Result.force (["node_normal/archetype_code_ref.ico", "Constraint reference (openEHR AOM)"], "CONSTRAINT_REF")
-
-			Result.force (["node_normal/term.ico", Void], "TERM")
-			Result.force (["node_normal/ordinal.ico", Void], "ORDINAL")
-			Result.force (["node_normal/cadl_invariant.ico", "Invariant section"], "CADL_INVARIANT")
-			Result.force (["node_normal/cadl_invariant_item.ico","Invariant section item"], "CADL_INVARIANT_ITEM")
-			Result.force (["node_inherited/icon_help_example.ico", "X is inherited from parent archetype"], "icon_help_example.inherited")
-			Result.force (["node_redefined/icon_help_example.ico", "X is redefined from parent archetype"], "icon_help_example.redefined")
-
-			Result.force (["node_inherited/c_code_phrase.ico", Void], "C_CODE_PHRASE.inherited")
-			Result.force (["node_inherited/c_dv_ordinal.ico", Void], "C_DV_ORDINAL.inherited")
-			Result.force (["node_inherited/c_dv_quantity.ico", Void], "C_DV_QUANTITY.inherited")
-			Result.force (["node_inherited/c_quantity_item.ico", Void], "C_QUANTITY_ITEM.inherited")
-			Result.force (["node_inherited/c_primitive_object.ico", Void], "C_PRIMITIVE_OBJECT.inherited")
-			Result.force (["node_inherited/archetype_code_ref.ico", Void], "CONSTRAINT_REF.inherited")
-			Result.force (["node_inherited/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.inherited")
-			Result.force (["node_inherited/archetype_slot.ico", Void], "ARCHETYPE_SLOT.inherited")
-
-			Result.force (["node_inherited/c_complex_object.ico", Void], "C_COMPLEX_OBJECT.inherited")
-			Result.force (["node_inherited/c_complex_object_multiple.ico", Void], "C_COMPLEX_OBJECT.multiple.inherited")
-			Result.force (["node_inherited/c_complex_object_optional.ico", Void], "C_COMPLEX_OBJECT.optional.inherited")
-			Result.force (["node_inherited/c_complex_object_multiple_optional.ico", Void], "C_COMPLEX_OBJECT.multiple.optional.inherited")
-
-			Result.force (["node_inherited/archetype_external_ref.ico", Void], "ARCHETYPE_EXTERNAL_REF.inherited")
-			Result.force (["node_inherited/archetype_external_ref_multiple.ico", Void], "ARCHETYPE_EXTERNAL_REF.multiple.inherited")
-			Result.force (["node_inherited/archetype_external_ref_optional.ico", Void], "ARCHETYPE_EXTERNAL_REF.optional.inherited")
-			Result.force (["node_inherited/archetype_external_ref_multiple_optional.ico", Void], "ARCHETYPE_EXTERNAL_REF.multiple.optional.inherited")
-
-			Result.force (["node_inherited/archetype_internal_ref.ico", Void], "ARCHETYPE_INTERNAL_REF.inherited")
-			Result.force (["node_inherited/archetype_external_ref.ico", Void], "ARCHETYPE_EXTERNAL_REF.inherited")
-			Result.force (["node_inherited/term.ico", Void], "TERM.inherited")
-			Result.force (["node_inherited/ordinal.ico", Void], "ORDINAL.inherited")
-			Result.force (["node_normal/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.inherited")
-
-			Result.force (["node_redefined/c_code_phrase.ico", Void], "C_CODE_PHRASE.redefined")
-			Result.force (["node_redefined/c_dv_ordinal.ico", Void], "C_DV_ORDINAL.redefined")
-			Result.force (["node_redefined/c_dv_quantity.ico", Void], "C_DV_QUANTITY.redefined")
-			Result.force (["node_redefined/c_quantity_item.ico", Void], "C_QUANTITY_ITEM.redefined")
-			Result.force (["node_redefined/c_primitive_object.ico", Void], "C_PRIMITIVE_OBJECT.redefined")
-			Result.force (["node_redefined/archetype_code_ref.ico", Void], "CONSTRAINT_REF.redefined")
-			Result.force (["node_redefined/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.redefined")
-			Result.force (["node_redefined/archetype_slot.ico", Void], "ARCHETYPE_SLOT.redefined")
-			Result.force (["node_redefined/c_complex_object.ico", Void], "C_COMPLEX_OBJECT.redefined")
-			Result.force (["node_redefined/c_complex_object_multiple.ico", Void], "C_COMPLEX_OBJECT.multiple.redefined")
-			Result.force (["node_redefined/c_complex_object_optional.ico", Void], "C_COMPLEX_OBJECT.optional.redefined")
-			Result.force (["node_redefined/c_complex_object_multiple_optional.ico", Void], "C_COMPLEX_OBJECT.multiple.optional.redefined")
-
-			Result.force (["node_redefined/archetype_external_ref.ico", Void], "ARCHETYPE_EXTERNAL_REF.redefined")
-			Result.force (["node_redefined/archetype_external_ref_multiple.ico", Void], "ARCHETYPE_EXTERNAL_REF.multiple.redefined")
-			Result.force (["node_redefined/archetype_external_ref_optional.ico", Void], "ARCHETYPE_EXTERNAL_REF.optional.redefined")
-			Result.force (["node_redefined/archetype_external_ref_multiple_optional.ico", Void], "ARCHETYPE_EXTERNAL_REF.multiple.optional.redefined")
-
-			Result.force (["node_redefined/archetype_internal_ref.ico", Void], "ARCHETYPE_INTERNAL_REF.redefined")
-			Result.force (["node_redefined/archetype_external_ref.ico", Void], "ARCHETYPE_EXTERNAL_REF.redefined")
-			Result.force (["node_redefined/term.ico", Void], "TERM.redefined")
-			Result.force (["node_redefined/ordinal.ico", Void], "ORDINAL.redefined")
-			Result.force (["node_normal/archetype_slot_optional.ico", Void], "ARCHETYPE_SLOT.optional.redefined")
-
-			Result.force (["pass.ico", Void], "test_passed")
-			Result.force (["fail.ico", Void], "test_failed")
-			Result.force (["not_applicable.ico", Void], "test_not_applicable")
-
-			Result.force (["openEHR.png", Void], "openEHR_logo")
-			Result.force (["openehr_adl_workbench_logo.png", Void], "adl_workbench_logo")
-		ensure
-			not_empty: not Result.is_empty
+			-- process child directories
+			create dir_items.make_from_array (dir.directory_names)
+			from dir_items.start until dir_items.off loop
+				if not dir_items.item.starts_with (".") then
+					recursive_load_pixmaps (pixmap_table, file_system.pathname (rel_path, dir_items.item))
+				end
+				dir_items.forth
+			end
 		end
 
 	splash_text: attached STRING

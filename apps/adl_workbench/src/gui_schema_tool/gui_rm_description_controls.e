@@ -141,7 +141,7 @@ feature {NONE} -- Implementation
 			create gli.make_with_text ("schema_description")
 			ev_grid.set_item (Grid_attr_col, ev_grid.row_count + 1, gli)
 			create gli.make_with_text ("View")
-			gli.set_pixmap (pixmaps ["edit"])
+			gli.set_pixmap (get_icon_pixmap ("tool/edit"))
 			gli.select_actions.extend (agent show_text_in_dialog (source.schema_description))
 			ev_grid.set_item (grid_attr_val_col, ev_grid.row_count, gli)
 

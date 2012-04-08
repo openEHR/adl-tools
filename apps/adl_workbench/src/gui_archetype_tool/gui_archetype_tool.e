@@ -120,8 +120,8 @@ feature {NONE}-- Initialization
 			ev_action_bar.disable_item_expand (ev_adl_version_text)
 			ev_archetype_id.disable_edit
 			ev_view_label.set_text ("View ")
-			ev_differential_view_button.set_pixmap (pixmaps ["diff_class"])
-			ev_flat_view_button.set_pixmap (pixmaps ["flat_class"])
+			ev_differential_view_button.set_pixmap (get_icon_pixmap ("tool/diff_class"))
+			ev_flat_view_button.set_pixmap (get_icon_pixmap ("tool/flat_class"))
 			ev_differential_view_button.set_tooltip (create_message_content ("differential_view_button_tooltip", Void))
 			ev_flat_view_button.set_tooltip (create_message_content ("flat_view_button_tooltip", Void))
 			ev_language_label.set_text (create_message_content ("language_label", Void))
@@ -141,28 +141,28 @@ feature {NONE}-- Initialization
 			ev_notebook.set_minimum_height (arch_notebook_min_height)
 
 			ev_notebook.set_item_text (description_controls.ev_root_container, create_message_content ("description_tab_text", Void))
-			ev_notebook.item_tab (description_controls.ev_root_container).set_pixmap (pixmaps ["description"])
+			ev_notebook.item_tab (description_controls.ev_root_container).set_pixmap (get_icon_pixmap ("tool/description"))
 
 			ev_notebook.set_item_text (node_map_control.ev_root_container, create_message_content ("definition_tab_text", Void))
-			ev_notebook.item_tab (node_map_control.ev_root_container).set_pixmap (pixmaps ["node_map"])
+			ev_notebook.item_tab (node_map_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/node_map"))
 
 			ev_notebook.set_item_text (path_map_control.ev_root_container, create_message_content ("paths_tab_text", Void))
-			ev_notebook.item_tab (path_map_control.ev_root_container).set_pixmap (pixmaps ["path_map"])
+			ev_notebook.item_tab (path_map_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/path_map"))
 
 			ev_notebook.set_item_text (slot_map_control.ev_root_container, create_message_content ("slots_tab_text", Void))
-			ev_notebook.item_tab (slot_map_control.ev_root_container).set_pixmap (pixmaps ["slot_map"])
+			ev_notebook.item_tab (slot_map_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/slot_map"))
 
 			ev_notebook.set_item_text (ontology_controls.ev_root_container, create_message_content ("terminology_tab_text", Void))
-			ev_notebook.item_tab (ontology_controls.ev_root_container).set_pixmap (pixmaps ["terminology"])
+			ev_notebook.item_tab (ontology_controls.ev_root_container).set_pixmap (get_icon_pixmap ("tool/terminology"))
 
 			ev_notebook.set_item_text (annotations_control.ev_root_container, create_message_content ("annotations_tab_text", Void))
-			ev_notebook.item_tab (annotations_control.ev_root_container).set_pixmap (pixmaps ["annotations"])
+			ev_notebook.item_tab (annotations_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/annotations"))
 
 			ev_notebook.set_item_text (serialisation_control.ev_root_container, create_message_content ("serialised_tab_text", Void))
-			ev_notebook.item_tab (serialisation_control.ev_root_container).set_pixmap (pixmaps ["serialised"])
+			ev_notebook.item_tab (serialisation_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/serialised"))
 
 			ev_notebook.set_item_text (source_control.ev_root_container, create_message_content ("source_tab_text", Void))
-			ev_notebook.item_tab (source_control.ev_root_container).set_pixmap (pixmaps ["source"])
+			ev_notebook.item_tab (source_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/source"))
 
 			ev_notebook.set_item_text (validity_report_control.ev_root_container, create_message_content ("validity_tab_text", Void))
 
@@ -460,14 +460,14 @@ feature {NONE} -- Implementation
 			-- set visual appearance of validity tab according to whether there are errors or not
 		do
 			if not attached source or else source.is_valid then
-				ev_notebook.item_tab (validity_report_control.ev_root_container).set_pixmap (pixmaps ["errors_grey"])
+				ev_notebook.item_tab (validity_report_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/errors_grey"))
 			else
-				ev_notebook.item_tab (validity_report_control.ev_root_container).set_pixmap (pixmaps ["errors"])
+				ev_notebook.item_tab (validity_report_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/errors"))
 			end
 			if attached source and then source.is_valid then
-				ev_notebook.item_tab (statistical_information_control.ev_root_container).set_pixmap (pixmaps ["statistics"])
+				ev_notebook.item_tab (statistical_information_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/statistics"))
 			else
-				ev_notebook.item_tab (statistical_information_control.ev_root_container).set_pixmap (pixmaps ["statistics_grey"])
+				ev_notebook.item_tab (statistical_information_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/statistics_grey"))
 			end
 		end
 

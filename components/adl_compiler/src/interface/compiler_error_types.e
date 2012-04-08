@@ -34,7 +34,7 @@ feature -- Access
 			Result.put("Warnings", Err_type_warning)
 		end
 
-	Err_type_pixmap_names: HASH_TABLE [STRING, INTEGER]
+	Err_type_keys: HASH_TABLE [STRING, INTEGER]
 			-- version of name suitable for use as file name
 		once
 			create Result.make(0)

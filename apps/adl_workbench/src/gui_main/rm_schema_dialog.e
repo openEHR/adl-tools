@@ -289,12 +289,12 @@ feature {NONE} -- Implementation
 				-- column 4 - validated
 				create gli.make_with_text ("         ")
 				if rm_schemas_access.all_schemas.item_for_iteration.passed and not rm_schemas_access.all_schemas.item_for_iteration.errors.has_warnings then
-					gli.set_pixmap (pixmaps["star"])
+					gli.set_pixmap (get_icon_pixmap ("tool/star"))
 				else
 					if rm_schemas_access.all_schemas.item_for_iteration.errors.has_errors then
-						gli.set_pixmap (pixmaps["errors"])
+						gli.set_pixmap (get_icon_pixmap ("tool/errors"))
 					else
-						gli.set_pixmap (pixmaps["info"])
+						gli.set_pixmap (get_icon_pixmap ("tool/info"))
 					end
 					gli.select_actions.extend (agent show_schema_validation (schema_id))
 				end
@@ -302,7 +302,7 @@ feature {NONE} -- Implementation
 
 				-- column 5 - create edit button and add to row
 				create gli.make_with_text ("Edit")
-				gli.set_pixmap (pixmaps ["edit"])
+				gli.set_pixmap (get_icon_pixmap ("tool/edit"))
 				gli.select_actions.extend (agent do_edit_schema (schema_id))
 				row.set_item (Grid_edit_col, gli)
 				rm_schemas_access.all_schemas.forth

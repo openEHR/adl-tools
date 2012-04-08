@@ -22,11 +22,6 @@ inherit
 			source
 		end
 
-	BMM_DEFINITIONS
-		export
-			{NONE} all
-		end
-
 create
 	make
 
@@ -166,7 +161,7 @@ feature {NONE} -- Implementation
 						gli.text.append (" *")
 					end
 					class_def := source.bmm_schema.class_definition (rm_class_stats.item_for_iteration.rm_class_name)
-					gli.set_pixmap (pixmaps [class_def.type_category])
+					gli.set_pixmap (get_icon_pixmap ("rm/generic/" + class_def.type_category))
 					gli.set_data (class_def)
 					gli.pointer_button_press_actions.force_extend (agent class_node_handler (gli, ?, ?, ?))
 					ev_rm_grid.set_item (Grid_model_element_name_col, ev_rm_grid.row_count + 1, gli)
@@ -183,7 +178,7 @@ feature {NONE} -- Implementation
 
 						create gli.make_with_text (rm_class_stats.item_for_iteration.rm_attributes.key_for_iteration)
 						if attached class_def.flat_properties.item (rm_class_stats.item_for_iteration.rm_attributes.key_for_iteration) as prop_def then
-							gli.set_pixmap (pixmaps [rm_attribute_pixmap_string (prop_def)])	-- pixmap
+							gli.set_pixmap (get_icon_pixmap ("rm/generic/" + prop_def.multiplicity_key_string))	-- pixmap
 						end
 						attr_row.set_item (Grid_model_element_name_col, gli)
 
@@ -217,11 +212,11 @@ feature {NONE} -- Implementation
 			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_CLASS_DEFINITION} gli.data as class_def then
 				create menu
 				create an_mi.make_with_text_and_action (create_message_content ("display_in_active_tab", Void), agent display_context_selected_class_in_active_tool (class_def))
-				an_mi.set_pixmap (pixmaps ["class_tool"])
+				an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool"))
 		    	menu.extend (an_mi)
 
 				create an_mi.make_with_text_and_action (create_message_content ("display_in_new_tab", Void), agent display_context_selected_class_in_new_tool (class_def))
-				an_mi.set_pixmap (pixmaps ["class_tool_new"])
+				an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
 				menu.extend (an_mi)
 
 				menu.show

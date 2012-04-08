@@ -49,6 +49,19 @@ feature -- Access
 			end
 		end
 
+	multiplicity_key_string: STRING
+			-- string name of pixmap for attribute rm_attr
+		do
+			create Result.make_empty
+			Result.append ("c_attribute")
+			if is_container then
+				Result.append (".multiple")
+			end
+			if not is_mandatory then
+				Result.append (".optional")
+			end
+		end
+
 feature -- Status Report
 
 	is_container: BOOLEAN

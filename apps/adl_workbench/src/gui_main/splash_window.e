@@ -63,7 +63,7 @@ feature {NONE} -- Initialization
 			border.extend (hb)
 
 			if has_icon_directory then
-				hb.extend (pixmaps ["adl_workbench_logo"])
+				hb.extend (adl_workbench_icon)
 			end
 
 			create label

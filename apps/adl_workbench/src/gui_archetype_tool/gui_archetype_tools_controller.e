@@ -35,7 +35,7 @@ feature -- Definitions
 
 	Editor_pixmap: EV_PIXMAP
 		once
-			Result := pixmaps ["archetype_2"]
+			Result := get_icon_pixmap ("archetype/archetype_2")
 		end
 
 feature -- Initialisation
@@ -62,7 +62,7 @@ feature -- Commands
 				create_new_tool
 			end
 			active_tool.gui_tool_populate (aca)
-			populate_active_tool_pane (aca.id.as_string, aca.id.as_abbreviated_string, pixmaps [aca.group_name])
+			populate_active_tool_pane (aca.id.as_string, aca.id.as_abbreviated_string, get_icon_pixmap ("archetype/" + aca.group_name))
 		end
 
 feature {NONE} -- Implementation

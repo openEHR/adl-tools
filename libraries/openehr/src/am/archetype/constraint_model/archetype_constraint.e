@@ -15,30 +15,14 @@ deferred class ARCHETYPE_CONSTRAINT
 
 inherit
 	VISITABLE
-		redefine
-			default_create
-		end
 
 	SPECIALISATION_STATUSES
 		export
 			{NONE} all;
 			{ANY} valid_specialisation_status
-		undefine
-			default_create
 		end
 
 	HASHABLE
-		undefine
-			default_create
-		end
-
-feature -- Initialisation
-
-	default_create
-			--
-		do
-			set_specialisation_status_added
-		end
 
 feature -- Access
 
@@ -75,23 +59,23 @@ feature -- Source Control
 			specialisation_level := a_level
 		end
 
-	specialisation_status: SPECIALISATION_STATUS
+	specialisation_status: INTEGER
 			-- status of this node in the source text of this archetype with respect to the
 			-- specialisation hierarchy. Determined from initial parse, and subsequent editing on structure
 
 	set_specialisation_status_added
 		do
-			create specialisation_status.make (ss_added)
+			specialisation_status := ss_added
 		end
 
 	set_specialisation_status_redefined
 		do
-			create specialisation_status.make (ss_redefined)
+			specialisation_status := ss_redefined
 		end
 
 	set_specialisation_status_inherited
 		do
-			create specialisation_status.make (ss_inherited)
+			specialisation_status := ss_inherited
 		end
 
 	inferred_specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS
@@ -213,6 +197,9 @@ feature -- Duplication
 		ensure
 			Result.parent = Void
 		end
+
+invariant
+	Specialisation_status_validity: valid_specialisation_status (specialisation_status)
 
 end
 

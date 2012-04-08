@@ -73,21 +73,21 @@ feature {NONE} -- Implementation
 			list_item: EV_LIST_ITEM
 			help: STRING
 		do
-			from semantic_icon_table.start until semantic_icon_table.off loop
-				help := semantic_icon_table.item_for_iteration.help
+--			from semantic_icon_table.start until semantic_icon_table.off loop
+--				help := semantic_icon_table.item_for_iteration.help
 
-				if help /= Void then
-					create list_item.make_with_text (help)
+--				if help /= Void then
+--					create list_item.make_with_text (help)
 
-					if pixmaps.has (semantic_icon_table.key_for_iteration) then
-						list_item.set_pixmap (pixmaps [semantic_icon_table.key_for_iteration])
-					end
+--					if pixmaps.has (semantic_icon_table.key_for_iteration) then
+--						list_item.set_pixmap (pixmaps [semantic_icon_table.key_for_iteration])
+--					end
 
-					icon_help_list.extend (list_item)
-				end
+--					icon_help_list.extend (list_item)
+--				end
 
-				semantic_icon_table.forth
-			end
+--				semantic_icon_table.forth
+--			end
 		end
 
 	ev_vbox_1: EV_VERTICAL_BOX

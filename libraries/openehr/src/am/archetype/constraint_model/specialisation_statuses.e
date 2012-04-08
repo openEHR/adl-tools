@@ -20,19 +20,19 @@ class SPECIALISATION_STATUSES
 
 feature -- Definitions
 
-	ss_undefined: INTEGER = 5000
+	ss_undefined: INTEGER = -1
 			-- this node status is not defined
 
-	ss_added: INTEGER = 5001
+	ss_added: INTEGER = 0
 			-- this node was defined here for the first time
 
-	ss_redefined: INTEGER = 5002
+	ss_redefined: INTEGER = 1
 			-- this node is inherited and redefined here
 
-	ss_inherited: INTEGER = 5003
+	ss_inherited: INTEGER = 2
 			-- this node is inherited here unchanged
 
-	ss_propagated: INTEGER = 5004
+	ss_propagated: INTEGER = 3
 			-- this node's status is the same as its parent's
 
 feature -- Access

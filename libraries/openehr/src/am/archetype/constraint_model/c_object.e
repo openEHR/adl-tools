@@ -27,8 +27,6 @@ inherit
 		export
 			{NONE} all;
 			{ANY} specialisation_depth_from_code, is_valid_code;
-		undefine
-			default_create
 		end
 
 feature -- Access
@@ -42,9 +40,24 @@ feature -- Access
 			Result := representation.node_id
 		end
 
-	occurrences: MULTIPLICITY_INTERVAL
+	occurrences: detachable MULTIPLICITY_INTERVAL
 
-	parent: C_ATTRIBUTE
+	occurrences_key_string: STRING
+			-- generate a string of the form ".multiple", ".multiple.optional" or ".optional" or ""
+			-- representing the occurrences, useful as a key to variant pixmaps, files etc.
+		do
+			create Result.make_empty
+			if attached occurrences then
+				if occurrences.upper > 1 or occurrences.upper_unbounded then
+					Result.append (".multiple")
+				end
+				if occurrences.is_optional then
+					Result.append (".optional")
+				end
+			end
+		end
+
+	parent: detachable C_ATTRIBUTE
 		note
 			option: transient
 		attribute

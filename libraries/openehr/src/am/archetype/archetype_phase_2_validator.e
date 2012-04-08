@@ -533,7 +533,8 @@ end
 						end
 
 						if attached co_child_diff.sibling_order and then not co_parent_flat.parent.has_child_with_id (co_child_diff.sibling_order.sibling_node_id) then
-							add_error ("VSSM", <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.current_language, True), co_child_diff.sibling_order.sibling_node_id>>)
+							add_error ("VSSM", <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.current_language, True),
+								co_child_diff.sibling_order.sibling_node_id>>)
 						end
 					end
 				end
@@ -635,17 +636,17 @@ end
 					end
 
 					if not invalid_types.has (arch_parent_attr_type) then
-						-- check for type substitutions such as ISO8601_DATE which appear in the archetype as a String
 						if rm_schema.has_property (arch_parent_attr_type, co.parent.rm_attribute_name) and not
 											rm_schema.valid_property_type (arch_parent_attr_type, co.parent.rm_attribute_name, co.rm_type_name) then
 							model_attr_class := rm_schema.property_type (arch_parent_attr_type, co.parent.rm_attribute_name)
 
-							-- flag if constraint is equal to reference model; FUTURE: remove if equal
+							-- check for type substitutions such as ISO8601_DATE which appear in the archetype as a String
 							if rm_schema.substitutions.has (co.rm_type_name) and then rm_schema.substitutions.item (co.rm_type_name).is_equal (model_attr_class) then
 								add_info ("ICORMTS", <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.current_language, True), model_attr_class,
 									arch_parent_attr_type, co.parent.rm_attribute_name>>)
 							else
-								add_error ("VCORMT", <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.current_language, True), model_attr_class, arch_parent_attr_type, co.parent.rm_attribute_name>>)
+								add_error ("VCORMT", <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.current_language, True),
+									model_attr_class, arch_parent_attr_type, co.parent.rm_attribute_name>>)
 								invalid_types.extend (co.rm_type_name)
 							end
 						end
@@ -666,12 +667,14 @@ end
 					if attached ca.existence then
 						if not rm_prop_def.existence.contains (ca.existence) then
 							if not target.is_specialised and rm_prop_def.existence.equal_interval(ca.existence) then
-								add_warning ("WCAEX", <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.current_language, True), ca.existence.as_string>>)
+								add_warning ("WCAEX", <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.current_language, True),
+									ca.existence.as_string>>)
 								if not validation_strict then
 									ca.remove_existence
 								end
 							else
-								add_error ("VCAEX", <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.current_language, True), ca.existence.as_string, rm_prop_def.existence.as_string>>)
+								add_error ("VCAEX", <<ca.rm_attribute_name, ontology.physical_to_logical_path (ca.path, target_descriptor.current_language, True),
+									ca.existence.as_string, rm_prop_def.existence.as_string>>)
 							end
 						end
 					end

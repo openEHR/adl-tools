@@ -365,7 +365,6 @@ feature {NONE} -- Implementation
 
 	node_add_rm_attributes (a_tree_node: attached EV_TREE_NODE)
 		local
-			pixmap: EV_PIXMAP
 			props: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 			attr_ti: EV_TREE_ITEM
 		do
@@ -378,10 +377,9 @@ feature {NONE} -- Implementation
 					end
 					from props.start until props.off loop
 						if not c_c_o.has_attribute (props.key_for_iteration) then
-							pixmap := pixmaps.item (rm_attribute_pixmap_string (props.item_for_iteration))
 							create attr_ti.make_with_text (utf8 (props.key_for_iteration + ": " + props.item_for_iteration.type.as_type_string))
 							attr_ti.set_data (props.item_for_iteration)
-							attr_ti.set_pixmap (pixmap)
+							attr_ti.set_pixmap (get_icon_pixmap ("rm/generic/" + rm_attribute_pixmap_string (props.item_for_iteration)))
 							a_tree_node.extend (attr_ti)
 						end
 						props.forth
@@ -561,8 +559,8 @@ feature {NONE} -- Implementation
 		do
 			if source_archetype.has_invariants then
 				invariants := source_archetype.invariants
-				create a_ti_sub.make_with_text ("invariants:")
-				a_ti_sub.set_pixmap(pixmaps.item ("CADL_INVARIANT"))
+				create a_ti_sub.make_with_text ("rules:")
+				a_ti_sub.set_pixmap (get_icon_pixmap ("added/rules"))
 				ev_tree.extend (a_ti_sub)
 
 				from invariants.start until invariants.off loop
@@ -574,7 +572,7 @@ feature {NONE} -- Implementation
 
 					s.append (object_invariant_string (invariants.item))
 					create a_ti_sub2.make_with_text (utf8 (s))
-					a_ti_sub2.set_pixmap (pixmaps.item ("CADL_INVARIANT_ITEM"))
+					a_ti_sub2.set_pixmap (get_icon_pixmap ("added/" + invariants.item.generator))
 					a_ti_sub2.set_data (invariants.item)
 					a_ti_sub.extend (a_ti_sub2)
 					invariants.forth

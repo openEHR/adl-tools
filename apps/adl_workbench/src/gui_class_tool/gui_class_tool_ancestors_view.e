@@ -76,7 +76,7 @@ feature {NONE} -- Implementation
 			create Result
 			Result.set_text (a_class_def.name)
 			Result.set_data (a_class_def)
-			Result.set_pixmap (pixmaps [a_class_def.type_category])
+			Result.set_pixmap (get_icon_pixmap ("rm/generic/" + a_class_def.type_category))
 		end
 
    	populate_ancestor_nodes (a_class_def: attached BMM_CLASS_DEFINITION)

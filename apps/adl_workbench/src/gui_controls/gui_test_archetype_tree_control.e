@@ -186,7 +186,7 @@ feature {NONE} -- Initialisation
 			test_status_area.set_minimum_height (status_area_min_height)
 			test_status_area.disable_edit
 			grid.enable_tree
-			archetype_test_go_bn.set_pixmap (pixmaps ["go"])
+			archetype_test_go_bn.set_pixmap (get_icon_pixmap ("tool/go"))
 
 			-- set up events
 			arch_test_tree_toggle_expand_bn.select_actions.extend (agent toggle_expand_tree)
@@ -325,9 +325,7 @@ feature -- Commands
    			-- Set the icon appropriate to the item attached to `row'.
    		do
 			if attached {EV_GRID_LABEL_ITEM} row.item (1) as gli and attached {ARCH_CAT_ITEM} row.data as ari then
-				if attached {EV_PIXMAP} pixmaps [ari.group_name] as pixmap then
-					gli.set_pixmap (pixmap)
-				end
+				gli.set_pixmap (get_icon_pixmap ("archetype/" + ari.group_name))
 			end
 		end
 
@@ -385,11 +383,11 @@ feature -- Events
 			else
 				test_stop_requested := False
 				test_execution_underway := True
-				archetype_test_go_bn.set_pixmap (pixmaps ["stop"])
+				archetype_test_go_bn.set_pixmap (get_icon_pixmap ("tool/stop"))
 				archetype_test_go_bn.set_text ("Pause")
 				run_tests
 				test_execution_underway := False
-				archetype_test_go_bn.set_pixmap (pixmaps ["go"])
+				archetype_test_go_bn.set_pixmap (get_icon_pixmap ("tool/go"))
 				archetype_test_go_bn.set_text ("Go")
 			end
 		end
@@ -505,7 +503,7 @@ feature {NONE} -- Commands
 						end
 
 						create gli
-						gli.set_pixmap (pixmaps [res_label])
+						gli.set_pixmap (get_icon_pixmap ("tool/" + res_label))
 						if regression_test_on and tests.key_for_iteration.is_equal (Regression_test_key) then
 							gli.set_text (val_code)
 						end

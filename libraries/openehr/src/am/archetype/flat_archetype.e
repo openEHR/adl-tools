@@ -20,7 +20,7 @@ inherit
 		end
 
 create
-	make, make_non_specialised, make_all
+	make, make_non_specialised, make_all, make_from_other
 
 create {ARCHETYPE_FLATTENER}
 	make_specialised
@@ -56,9 +56,10 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 	make_specialised (a_diff: DIFFERENTIAL_ARCHETYPE; a_flat_parent: FLAT_ARCHETYPE)
 			-- initialise from a differential archetype and its flat parent, as preparation
 			-- for generating a flat archetype. The items from the differential are used
-			-- except for the definition, invariants and annotations, which are the flat parent versions, so that the
-			-- differential definition can be overlaid on it by a merging process. The ontology
-			-- is converted to a form ready for overlaying as well.
+			-- except for the definition, invariants and annotations, which are the flat
+			-- parent versions, so that the differential definition can be overlaid on
+			-- it by a merging process. The ontology is converted to a form ready for
+			-- overlaying as well.
 		do
 			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
 					a_diff.original_language.deep_twin,

@@ -104,7 +104,6 @@ feature -- Commands
 		local
 			gli: EV_GRID_LABEL_ITEM
 			cat_row, row, subrow: EV_GRID_ROW
-			pixmap: EV_PIXMAP
 			i, row_idx: INTEGER
 		do
 			remove_archetype_row_if_in_wrong_category (ara)
@@ -144,11 +143,7 @@ feature -- Commands
 				subrow := row.subrow (1)
 				cat_row.expand
 				create gli.make_with_text (utf8 (ara.id.as_string))
-				pixmap := pixmaps [ara.group_name]
-
-				if pixmap /= Void then
-					gli.set_pixmap (pixmap)
-				end
+				gli.set_pixmap (get_icon_pixmap ("archetype/" + ara.group_name))
 
 				gli.set_tooltip (utf8 (ara.errors.as_string))
 				gli.pointer_double_press_actions.force_extend (agent select_node_in_archetype_tree_view)
@@ -339,7 +334,6 @@ feature {NONE} -- Implementation
 			not_too_big: err_type <= categories.upper
 		local
 			gli: EV_GRID_LABEL_ITEM
-			pixmap: EV_PIXMAP
 			i, row_idx: INTEGER
 			row: EV_GRID_ROW
 		do
@@ -362,11 +356,7 @@ feature {NONE} -- Implementation
 				row.set_data (err_type)
 				row.collapse_actions.extend (agent step_to_viewable_parent_of_selected_row)
 				create gli.make_with_text (utf8 (err_type_names [err_type]))
-				pixmap := pixmaps [err_type_pixmap_names [err_type]]
-
-				if pixmap /= Void then
-					gli.set_pixmap (pixmap)
-				end
+				gli.set_pixmap (get_icon_pixmap ("tool/" + err_type_keys [err_type]))
 
 				row.set_item (col_category, gli)
 				categories [err_type] := row

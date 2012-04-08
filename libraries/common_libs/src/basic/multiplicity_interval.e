@@ -89,6 +89,7 @@ feature -- Initialisation
 			Lower_set: lower = 0
 			Lower_bounded: not lower_unbounded
 			Upper_unbounded: upper_unbounded
+			open: is_open
 		end
 
 	make_optional
@@ -100,6 +101,7 @@ feature -- Initialisation
 			Upper_set: upper = 1
 			Lower_bounded: not lower_unbounded
 			Upper_bounded: not upper_unbounded
+			optional: is_optional
 		end
 
 	make_mandatory
@@ -111,6 +113,7 @@ feature -- Initialisation
 			Upper_set: upper = 1
 			Lower_bounded: not lower_unbounded
 			Upper_bounded: not upper_unbounded
+			mandatory: is_mandatory
 		end
 
 	make_prohibited
@@ -122,6 +125,7 @@ feature -- Initialisation
 			Upper_set: upper = 0
 			Lower_bounded: not lower_unbounded
 			Upper_bounded: not upper_unbounded
+			prohibited: is_prohibited
 		end
 
 	make_from_string (a_str: attached STRING)
@@ -170,6 +174,12 @@ feature -- Status report
 			-- True if this interval expresses optionality, i.e. 0..1
 		do
 			Result := lower = 0 and upper = 1
+		end
+
+	is_mandatory: BOOLEAN
+			-- True if this interval expresses mandation, i.e. 1..1
+		do
+			Result := lower = 1 and upper = 1
 		end
 
 	is_prohibited: BOOLEAN

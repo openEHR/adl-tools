@@ -232,14 +232,16 @@ feature {NONE} -- Implementation
 			-- Add root node representing class to `gui_file_tree'.
    		local
 			a_ti: EV_TREE_ITEM
+			pixmap_name: STRING
 		do
 			create a_ti
-			a_ti.set_text (source.name)
+			a_ti.set_text (source.as_type_string)
 			a_ti.set_data (source)
-			if use_rm_pixmaps and then rm_pixmaps.has (model_publisher) and then rm_pixmaps.item (model_publisher).has (source.name) then
-				a_ti.set_pixmap (rm_pixmaps.item (model_publisher).item (source.name))
+			pixmap_name := rm_icon_dir + "/" + model_publisher + "/" + source.name
+			if use_rm_pixmaps and then has_icon_pixmap (pixmap_name) then
+				a_ti.set_pixmap (get_icon_pixmap (pixmap_name))
 			else
-				a_ti.set_pixmap (pixmaps [source.type_category])
+				a_ti.set_pixmap (get_icon_pixmap ("rm/generic/" + source.type_category))
 			end
 			ev_property_tree.extend (a_ti)
 			ev_tree_item_stack.extend (a_ti)
@@ -313,7 +315,7 @@ feature {NONE} -- Implementation
 			a_ti.set_data (a_prop_def)							-- node data = BMM property definition
 			a_ti.set_text (prop_str)							-- node text
 			a_ti.set_tooltip (node_path.as_string)				-- tooltip
-			a_ti.set_pixmap (pixmaps [rm_attribute_pixmap_string (a_prop_def)])	-- pixmap
+			a_ti.set_pixmap (get_icon_pixmap ("rm/generic/" + a_prop_def.multiplicity_key_string))	-- pixmap
  	 		a_ti.pointer_button_press_actions.force_extend (agent property_node_handler (a_ti, ?, ?, ?))
  	 		a_ti.expand_actions.force_extend (agent property_node_expand_handler (a_ti))
  			ev_tree_item_stack.item.extend (a_ti)
@@ -331,22 +333,21 @@ feature {NONE} -- Implementation
 
 	set_class_node_details (a_ti: EV_TREE_ITEM; a_type_spec: BMM_TYPE_SPECIFIER; a_type_str: STRING; has_type_subs: BOOLEAN)
 		local
-			type_category: STRING
-			root_class: STRING
+			type_category, pixmap_name: STRING
 			pixmap: EV_PIXMAP
 		do
 			type_category := a_type_spec.type_category
 			a_ti.set_data (a_type_spec)						-- node data
 			a_ti.set_text (a_type_str)						-- node text
 			if not attached {BMM_GENERIC_PARAMETER_DEFINITION} a_type_spec then
-				root_class := type_name_root_type (a_type_str)
-				if use_rm_pixmaps and then rm_pixmaps.has (model_publisher) and then rm_pixmaps.item (model_publisher).has (root_class) then
-					pixmap := rm_pixmaps.item (model_publisher).item (root_class)
+				pixmap_name := rm_icon_dir + "/" + model_publisher + "/" + type_name_root_type (a_type_str)
+				if use_rm_pixmaps and then has_icon_pixmap (pixmap_name) then
+					pixmap := get_icon_pixmap (pixmap_name)
 				else
-					pixmap := pixmaps [type_category]
+					pixmap := get_icon_pixmap ("rm/generic/" + type_category)
 				end
 			else
-				pixmap := pixmaps [type_category]
+				pixmap := get_icon_pixmap ("rm/generic/" + type_category)
 			end
 			a_ti.set_pixmap (pixmap)
  	 	end
@@ -367,12 +368,15 @@ feature {NONE} -- Implementation
 		end
 
 	refresh_node (a_ti: EV_TREE_NODE)
+		local
+			pixmap_name: STRING
 		do
 			if attached {BMM_TYPE_SPECIFIER} a_ti.data as a_type_spec  then
-				if use_rm_pixmaps and then rm_pixmaps.has (model_publisher) and then rm_pixmaps.item (model_publisher).has (a_type_spec.root_class) then
-					a_ti.set_pixmap (rm_pixmaps.item (model_publisher).item (a_type_spec.root_class))
+				pixmap_name := rm_icon_dir + "/" + model_publisher + "/" + a_type_spec.root_class
+				if use_rm_pixmaps and then has_icon_pixmap (pixmap_name) then
+					a_ti.set_pixmap (get_icon_pixmap (pixmap_name))
 				else
-					a_ti.set_pixmap (pixmaps [a_type_spec.type_category])
+					a_ti.set_pixmap (get_icon_pixmap ("rm/generic/" + a_type_spec.type_category))
 				end
 			end
 		end
@@ -441,9 +445,9 @@ feature {NONE} -- Implementation
 			from a_substitutions.start until a_substitutions.off loop
 				create an_mi.make_with_text_and_action (a_substitutions.item, agent rebuild_from_interior_node (a_substitutions.item, a_ti, True))
 				if source.bmm_schema.class_definition (a_substitutions.item).is_abstract then
-					an_mi.set_pixmap (pixmaps ["class_abstract"])
+					an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))
 				else
-					an_mi.set_pixmap (pixmaps ["class_concrete"])
+					an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_concrete"))
 				end
 	    		chg_sub_menu.extend (an_mi)
 				a_substitutions.forth
@@ -457,9 +461,9 @@ feature {NONE} -- Implementation
 				from a_substitutions.start until a_substitutions.off loop
 					create an_mi.make_with_text_and_action (a_substitutions.item, agent rebuild_from_interior_node (a_substitutions.item, a_ti, False))
 					if source.bmm_schema.class_definition (a_substitutions.item).is_abstract then
-						an_mi.set_pixmap (pixmaps ["class_abstract"])
+						an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))
 					else
-						an_mi.set_pixmap (pixmaps ["class_concrete"])
+						an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_concrete"))
 					end
 		    		chg_sub_menu.extend (an_mi)
 					a_substitutions.forth

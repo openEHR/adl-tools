@@ -16,11 +16,6 @@ class GUI_CLASS_TOOL_PROPERTY_VIEW
 inherit
 	GUI_CLASS_TARGETTED_TOOL
 
-	BMM_DEFINITIONS
-		export
-			{NONE} all
-		end
-
 	SHARED_REFERENCE_MODEL_ACCESS
 		export
 			{NONE} all
@@ -125,8 +120,8 @@ feature {NONE} -- Implementation
 			-- if there were any, populate the class and then the properties
 			if not prop_list.is_empty then
 				-- populate class row
-				create gli.make_with_text (a_class_def.name)
-				gli.set_pixmap (pixmaps [a_class_def.type_category])
+				create gli.make_with_text (a_class_def.as_type_string)
+				gli.set_pixmap (get_icon_pixmap ("rm/generic/" + a_class_def.type_category))
 				gli.set_data (a_class_def)
 				gli.pointer_button_press_actions.force_extend (agent class_node_handler (gli, ?, ?, ?))
 				ev_grid.set_item (Grid_declared_in_col, ev_grid.row_count + 1, gli)
@@ -140,7 +135,7 @@ feature {NONE} -- Implementation
 
 						-- property name
 						create gli.make_with_text (prop_list.item.name)
-						gli.set_pixmap (pixmaps [rm_attribute_pixmap_string (prop_list.item)])
+						gli.set_pixmap (get_icon_pixmap ("rm/generic/" + prop_list.item.multiplicity_key_string))
 						ev_grid.set_item (Grid_property_col, ev_grid.row_count + 1, gli)
 						property_row := gli.row
 	--					property_row.set_item (Grid_property_col, gli)
@@ -148,7 +143,7 @@ feature {NONE} -- Implementation
 						-- property type
 						create gli.make_with_text (prop_list.item.type.as_type_string)
 						prop_class := source.bmm_schema.class_definition (prop_list.item.type.root_class)
-						gli.set_pixmap (pixmaps [prop_class.type_category])
+						gli.set_pixmap (get_icon_pixmap ("rm/generic/" + prop_class.type_category))
 						gli.set_data (prop_class)
 						gli.pointer_button_press_actions.force_extend (agent class_node_handler (gli, ?, ?, ?))
 						property_row.set_item (Grid_property_type_col, gli)

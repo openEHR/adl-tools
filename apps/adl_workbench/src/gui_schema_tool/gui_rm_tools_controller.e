@@ -38,7 +38,7 @@ feature -- Definitions
 
 	Editor_pixmap: EV_PIXMAP
 		once
-			Result := pixmaps ["rm_schema"]
+			Result := get_icon_pixmap ("tool/rm_schema")
 		end
 
 feature -- Initialisation
@@ -65,7 +65,7 @@ feature -- Commands
 				create_new_tool
 			end
 			active_tool.populate (an_rm)
-			populate_active_tool_pane (an_rm.schema_id, an_rm.schema_id.substring (1, an_rm.schema_id.count.min (Tab_title_width)), pixmaps ["rm_schema"])
+			populate_active_tool_pane (an_rm.schema_id, an_rm.schema_id.substring (1, an_rm.schema_id.count.min (Tab_title_width)), get_icon_pixmap ("tool/rm_schema"))
 		end
 
 feature {NONE} -- Implementation

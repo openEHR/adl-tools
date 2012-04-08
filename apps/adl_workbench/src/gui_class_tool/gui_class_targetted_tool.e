@@ -66,11 +66,11 @@ feature {NONE} -- Implementation
 		do
 			if attached {BMM_CLASS_DEFINITION} ev_ti.data as a_class_def then
 				create an_mi.make_with_text_and_action (create_message_content ("retarget_to_this_class", Void), agent display_context_selected_class_in_active_tool (a_class_def))
-				an_mi.set_pixmap (pixmaps ["class_tool"])
+				an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool"))
 		    	menu.extend (an_mi)
 
 				create an_mi.make_with_text_and_action (create_message_content ("display_in_new_tab", Void), agent display_context_selected_class_in_new_tool (a_class_def))
-				an_mi.set_pixmap (pixmaps ["class_tool_new"])
+				an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
 				menu.extend (an_mi)
 			end
 		end

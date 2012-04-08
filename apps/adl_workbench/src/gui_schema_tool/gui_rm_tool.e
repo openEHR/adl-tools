@@ -68,10 +68,10 @@ feature {NONE}-- Initialization
 			ev_notebook.set_minimum_height (notebook_min_height)
 
 			ev_notebook.set_item_text (description_controls.ev_root_container, create_message_content ("description_tab_text", Void))
-			ev_notebook.item_tab (description_controls.ev_root_container).set_pixmap (pixmaps ["description"])
+			ev_notebook.item_tab (description_controls.ev_root_container).set_pixmap (get_icon_pixmap ("tool/description"))
 
 			ev_notebook.set_item_text (statistical_information_control.ev_root_container, create_message_content ("stat_info_tab_text", Void))
-			ev_notebook.item_tab (statistical_information_control.ev_root_container).set_pixmap (pixmaps ["statistics"])
+			ev_notebook.item_tab (statistical_information_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/statistics"))
 
 			-- set events: select a notebook tab
 			ev_notebook.selection_actions.extend (agent on_select_archetype_notebook)

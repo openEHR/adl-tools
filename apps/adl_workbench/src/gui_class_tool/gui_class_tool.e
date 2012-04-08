@@ -72,23 +72,23 @@ feature -- Initialisation
 			ev_action_bar.disable_item_expand (ev_view_tool_bar)
 			ev_class_id.disable_edit
 			ev_view_label.set_text ("View ")
-			ev_differential_view_button.set_pixmap (pixmaps ["diff_class"])
-			ev_flat_view_button.set_pixmap (pixmaps ["flat_class"])
+			ev_differential_view_button.set_pixmap (get_icon_pixmap ("tool/diff_class"))
+			ev_flat_view_button.set_pixmap (get_icon_pixmap ("tool/flat_class"))
 			ev_differential_view_button.set_tooltip (create_message_content ("Set differential archetype view", Void))
 			ev_flat_view_button.set_tooltip (create_message_content ("Set flat archetype view", Void))
 
 			-- visual characteristics: notebook
 			ev_notebook.set_item_text (properties_view.ev_root_container, create_message_content ("properties_tab_text", Void))
-			ev_notebook.item_tab (properties_view.ev_root_container).set_pixmap (pixmaps ["properties"])
+			ev_notebook.item_tab (properties_view.ev_root_container).set_pixmap (get_icon_pixmap ("tool/properties"))
 
 			ev_notebook.set_item_text (closure_view.ev_root_container, create_message_content ("closure_tab_text", Void))
-			ev_notebook.item_tab (closure_view.ev_root_container).set_pixmap (pixmaps ["closure"])
+			ev_notebook.item_tab (closure_view.ev_root_container).set_pixmap (get_icon_pixmap ("tool/closure"))
 
 			ev_notebook.set_item_text (ancestors_view.ev_root_container, create_message_content ("ancestors_tab_text", Void))
-			ev_notebook.item_tab (ancestors_view.ev_root_container).set_pixmap (pixmaps ["ancestors"])
+			ev_notebook.item_tab (ancestors_view.ev_root_container).set_pixmap (get_icon_pixmap ("tool/ancestors"))
 
 			ev_notebook.set_item_text (descendants_view.ev_root_container, create_message_content ("descendants_tab_text", Void))
-			ev_notebook.item_tab (descendants_view.ev_root_container).set_pixmap (pixmaps ["descendants"])
+			ev_notebook.item_tab (descendants_view.ev_root_container).set_pixmap (get_icon_pixmap ("tool/descendants"))
 
 			-- set events
 			ev_differential_view_button.select_actions.extend (agent on_differential_view)

@@ -211,6 +211,7 @@ feature {NONE} -- Initialisation
 			auth_orig_auth_mlist.set_background_color (editable_colour)
 			auth_orig_auth_mlist.set_minimum_width (min_entry_control_width)
 			auth_orig_auth_mlist.set_minimum_height (min_list_height)
+
 			contrib_vbox.set_minimum_height (65)
 			contrib_vbox.set_padding (padding_width)
 			contrib_vbox.set_border_width (border_width)

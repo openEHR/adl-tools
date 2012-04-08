@@ -121,7 +121,7 @@ feature -- Output
 			Result.append(name)
 			if is_constrained then
 				Result.append_character (Generic_constraint_delimiter)
-				Result.append (conforms_to_type.as_type_string)
+				Result.append (flattened_conforms_to_type.as_type_string)
 			end
 		end
 

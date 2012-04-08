@@ -136,7 +136,6 @@ feature {NONE} -- Initialization
 			create help_menu
 			create help_menu_contents
 			create help_menu_release_notes
-			create help_menu_icons
 			create l_ev_menu_separator_12
 			create help_menu_clinical_knowledge_manager
 			create help_menu_report_bug
@@ -217,7 +216,6 @@ feature {NONE} -- Initialization
 			menu.extend (help_menu)
 			help_menu.extend (help_menu_contents)
 			help_menu.extend (help_menu_release_notes)
-			help_menu.extend (help_menu_icons)
 			help_menu.extend (l_ev_menu_separator_12)
 			help_menu.extend (help_menu_clinical_knowledge_manager)
 			help_menu.extend (help_menu_report_bug)
@@ -288,7 +286,6 @@ feature {NONE} -- Initialization
 			help_menu.set_text (create_message_content ("help_menu_text", Void))
 			help_menu_contents.set_text (create_message_content ("help_menu_online_text", Void))
 			help_menu_release_notes.set_text (create_message_content ("help_menu_release_notes_text", Void))
-			help_menu_icons.set_text (create_message_content ("help_menu_icons_text", Void))
 			help_menu_clinical_knowledge_manager.set_text (create_message_content ("help_menu_ckm_text", Void))
 			help_menu_report_bug.set_text (create_message_content ("help_menu_report_bug_text", Void))
 			help_menu_about.set_text (create_message_content ("help_menu_about_text", Void))
@@ -332,7 +329,6 @@ feature {NONE} -- Initialization
 
 			help_menu_contents.select_actions.extend (agent show_online_help)
 			help_menu_release_notes.select_actions.extend (agent show_release_notes)
-			help_menu_icons.select_actions.extend (agent show_icon_help)
 			help_menu_clinical_knowledge_manager.select_actions.extend (agent show_clinical_knowledge_manager)
 			help_menu_report_bug.select_actions.extend (agent show_bug_reporter)
 			help_menu_about.select_actions.extend (agent show_about)
@@ -341,16 +337,16 @@ feature {NONE} -- Initialization
 			-- set visual characteristics - menu
 			set_icon_pixmap (adl_workbench_icon)
 
-			file_menu_open.set_pixmap (pixmaps ["open_archetype"])
+			file_menu_open.set_pixmap (get_icon_pixmap ("tool/open_archetype"))
 
-			view_menu_differential.set_pixmap (pixmaps ["diff_class"])
-			view_menu_flat.set_pixmap (pixmaps ["flat_class"])
-			view_menu_new_archetype_tool.set_pixmap (pixmaps ["archetype_2"])
-			view_menu_new_class_tool.set_pixmap (pixmaps ["class_tool_new"])
+			view_menu_differential.set_pixmap (get_icon_pixmap ("tool/diff_class"))
+			view_menu_flat.set_pixmap (get_icon_pixmap ("tool/flat_class"))
+			view_menu_new_archetype_tool.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
+			view_menu_new_class_tool.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
 
-			repository_menu_set_repository.set_pixmap (pixmaps ["tools"])
-			rm_schemas_menu_configure_rm_schemas.set_pixmap (pixmaps ["tools"])
-			tools_menu_options.set_pixmap (pixmaps ["tools"])
+			repository_menu_set_repository.set_pixmap (get_icon_pixmap ("tool/tools"))
+			rm_schemas_menu_configure_rm_schemas.set_pixmap (get_icon_pixmap ("tool/tools"))
+			tools_menu_options.set_pixmap (get_icon_pixmap ("tool/tools"))
 
 			-- set visual characteristics - action bar
 			ev_main_vbox.disable_item_expand (action_bar)
@@ -365,7 +361,7 @@ feature {NONE} -- Initialization
 			archetype_profile_combo.disable_edit
 			arch_compile_tool_bar.disable_vertical_button_style
 			compile_button.set_text (create_message_content ("compile_button_text", Void))
-			compile_button.set_pixmap (pixmaps ["compile"])
+			compile_button.set_pixmap (get_icon_pixmap ("tool/compile"))
 			compile_button.set_tooltip (create_message_content ("compile_button_tooltip", Void))
 
 			action_bar.disable_item_expand (arch_output_version_hbox)
@@ -897,12 +893,6 @@ feature {NONE} -- Help events
 			show_in_system_browser (adl_help_page_url)
 		end
 
-	show_icon_help
-			-- Display the icons help dialog.
-		do
-			(create {ICON_DIALOG}).show_modal_to_window (Current)
-		end
-
 	show_release_notes
 			-- Display news about the latest release.
 		do
@@ -928,7 +918,7 @@ feature {NONE} -- Help events
 		do
 			create dialog.make_with_text (splash_text)
 			dialog.set_title (create_message_content ("about_awb_dialog_title", Void))
-			dialog.set_pixmap (pixmaps ["adl_workbench_logo"])
+			dialog.set_pixmap (get_icon_pixmap ("tool/adl_workbench_logo"))
 			dialog.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
 			dialog.set_position (app_x_position + (app_width - dialog.width) // 2, app_y_position + (app_height - dialog.height) // 2)
 			dialog.show_modal_to_window (Current)
@@ -981,7 +971,7 @@ feature -- RM Schema explorer
 		local
 			a_docking_pane: SD_CONTENT
 		do
-			create a_docking_pane.make_with_widget_title_pixmap (rm_schema_explorer.ev_root_container, pixmaps ["rm_schema"], create_message_content ("reference_models_docking_area_title", Void))
+			create a_docking_pane.make_with_widget_title_pixmap (rm_schema_explorer.ev_root_container, get_icon_pixmap ("tool/rm_schema"), create_message_content ("reference_models_docking_area_title", Void))
 			attached_docking_manager.contents.extend (a_docking_pane)
 			rm_schema_explorer.set_docking_pane (a_docking_pane)
 			a_docking_pane.set_long_title (create_message_content ("reference_models_docking_area_title", Void))
@@ -1031,7 +1021,7 @@ feature -- Catalogue tool
 		local
 			a_docking_pane: SD_CONTENT
 		do
-			create a_docking_pane.make_with_widget_title_pixmap (catalogue_tool.ev_root_container, pixmaps ["archetype_category"], create_message_content ("catalogue_tool_title", Void))
+			create a_docking_pane.make_with_widget_title_pixmap (catalogue_tool.ev_root_container, get_icon_pixmap ("tool/archetype_category"), create_message_content ("catalogue_tool_title", Void))
 			attached_docking_manager.contents.extend (a_docking_pane)
 			catalogue_tool.set_docking_pane (a_docking_pane)
 			a_docking_pane.set_long_title (create_message_content ("catalogue_tool_title", Void))
@@ -1104,7 +1094,7 @@ feature -- Test tool
 		local
 			a_docking_pane: SD_CONTENT
 		do
-			create a_docking_pane.make_with_widget_title_pixmap (test_tool.ev_root_container, pixmaps ["tools"], create_message_content ("test_tool_title", Void))
+			create a_docking_pane.make_with_widget_title_pixmap (test_tool.ev_root_container, get_icon_pixmap ("tool/tools"), create_message_content ("test_tool_title", Void))
 			attached_docking_manager.contents.extend (a_docking_pane)
 			a_docking_pane.set_long_title (create_message_content ("test_tool_title", Void))
 			a_docking_pane.set_short_title (create_message_content ("test_tool_title", Void))
@@ -1123,7 +1113,7 @@ feature -- Console Tool
 		local
 			docking_pane: SD_CONTENT
 		do
-			create docking_pane.make_with_widget_title_pixmap (console_tool.ev_console, pixmaps ["console"], create_message_content ("console_tool_title", Void))
+			create docking_pane.make_with_widget_title_pixmap (console_tool.ev_console, get_icon_pixmap ("tool/console"), create_message_content ("console_tool_title", Void))
 			console_tool.set_docking_pane (docking_pane)
 			attached_docking_manager.contents.extend (docking_pane)
 			docking_pane.set_type ({SD_ENUMERATION}.tool)
@@ -1143,7 +1133,7 @@ feature -- Error Tool
 
 	create_new_error_tool
 		do
-			create error_docking_pane.make_with_widget_title_pixmap (error_tool.grid, pixmaps ["errors"], create_message_content ("error_tool_title", Void))
+			create error_docking_pane.make_with_widget_title_pixmap (error_tool.grid, get_icon_pixmap ("tool/errors"), create_message_content ("error_tool_title", Void))
 			attached_docking_manager.contents.extend (error_docking_pane)
 			error_docking_pane.set_type ({SD_ENUMERATION}.tool)
 			error_docking_pane.set_long_title (create_message_content ("error_tool_title", Void))
@@ -1256,9 +1246,9 @@ feature {NONE} -- Implementation
 	populate_compile_button
 		do
 			if not archetype_compiler.is_building then
-				compile_button.set_pixmap (pixmaps ["compile"])
+				compile_button.set_pixmap (get_icon_pixmap ("tool/compile"))
 			else
-				compile_button.set_pixmap (pixmaps ["pause"])
+				compile_button.set_pixmap (get_icon_pixmap ("tool/pause"))
 			end
 		end
 

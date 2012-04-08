@@ -41,7 +41,6 @@ feature -- Initialisation
 	default_create
 			--
 		do
-			precursor {ARCHETYPE_CONSTRAINT}
 			create children.make (0)
 		end
 
@@ -93,6 +92,19 @@ feature -- Access
 	existence: detachable MULTIPLICITY_INTERVAL
 
 	cardinality: detachable CARDINALITY
+
+	multiplicity_key_string: STRING
+			-- generate a string of the form ".multiple", ".multiple.optional", ".optional" or ""
+			-- based on existence and cardinality; useful for key to variant pixmaps etc
+		do
+			create Result.make_empty
+			if is_multiple then
+				Result.append (".multiple")
+			end
+			if attached existence and then existence.is_optional then
+				Result.append (".optional")
+			end
+		end
 
 	path: STRING
 			-- take account of differential path if it exists
@@ -273,6 +285,12 @@ feature -- Status Report
 			-- True if occurrences set to {0} i.e. prohibited
 		do
 			Result := attached existence and existence.is_prohibited
+		end
+
+	is_mandatory: BOOLEAN
+			-- True if occurrences set to {1} i.e. prohibited
+		do
+			Result := attached existence and existence.is_mandatory
 		end
 
 	has_differential_path: BOOLEAN
