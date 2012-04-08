@@ -81,6 +81,11 @@ Section -Main SEC0000
     File ..\..\..\app\sample_xml_rules.cfg
     File ..\..\..\app\default_ui_config.cfg
 
+	# get rid of icons directory, due to major re-arrangement SVN rev 1700
+	# will make it more efficient on startup with new software version, which 
+	# now simply puts the whole icons directory into a hash keyed by relative 
+	# icon file paths
+    RMDir /r $INSTDIR\icons
     SetOutPath $INSTDIR\icons
     File /r /x .svn ..\..\..\app\icons\*
 
