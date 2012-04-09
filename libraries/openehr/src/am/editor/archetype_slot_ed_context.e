@@ -1,76 +1,31 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Controller for multiple archetype viewing tools within a docking area."
-	keywords:    "ADL, archetype"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	description: "Editor context for an ARCHETYPE_SLOT"
+	keywords:    "archetype, editing"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class GUI_ARCHETYPE_TOOLS_CONTROLLER
+class ARCHETYPE_SLOT_ED_CONTEXT
 
 inherit
-	GUI_DOCKING_EDITOR_CONTROLLER
+	C_OBJECT_ED_CONTEXT
 		redefine
-			Editor_group_name, Editor_pixmap, tool_type
+			arch_node
 		end
-
-	SHARED_APP_UI_RESOURCES
-		export
-			{NONE} all
-		end
-
-	SHARED_KNOWLEDGE_REPOSITORY
 
 create
 	make
 
-feature -- Definitions
+feature -- Access
 
-	Editor_group_name: STRING
-		once
-			Result := "archetype tool"
-		end
-
-	Editor_pixmap: EV_PIXMAP
-		once
-			Result := get_icon_pixmap ("archetype/archetype_2")
-		end
-
-feature -- Initialisation
-
-	make (a_docking_manager: attached SD_DOCKING_MANAGER)
-		do
-			make_docking (a_docking_manager)
-		end
-
-feature -- Commands
-
-	create_new_tool
-		local
-			new_tool: like tool_type
-		do
-			create new_tool.make
-			add_new_tool (new_tool)
-		end
-
-	populate_active_tool (aca: ARCH_CAT_ARCHETYPE)
-			-- Populate content from visual controls.
-		do
-			if not has_tools then
-				create_new_tool
-			end
-			active_tool.gui_tool_populate (aca)
-			populate_active_tool_pane (aca.id.as_string, aca.id.as_abbreviated_string, get_icon_pixmap ("archetype/" + aca.group_name))
-		end
-
-feature {NONE} -- Implementation
-
-	tool_type: GUI_ARCHETYPE_TOOL
+	arch_node: ARCHETYPE_SLOT
+			-- archetype node being edited
 
 end
 
@@ -89,13 +44,14 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is gui_arhetype_tools_controller.e
+--| The Original Code is arch_ed_context.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2011
+--| Portions created by the Initial Developer are Copyright (C) 2012
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
+--|	Sam Heard
 --|
 --| Alternatively, the contents of this file may be used under the terms of
 --| either the GNU General Public License Version 2 or later (the 'GPL'), or

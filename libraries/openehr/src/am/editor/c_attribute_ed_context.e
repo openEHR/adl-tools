@@ -1,76 +1,48 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Controller for multiple archetype viewing tools within a docking area."
-	keywords:    "ADL, archetype"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	description: "Editor context for any kind of C_ATTRIBUTE"
+	keywords:    "archetype, editing"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class GUI_ARCHETYPE_TOOLS_CONTROLLER
-
-inherit
-	GUI_DOCKING_EDITOR_CONTROLLER
-		redefine
-			Editor_group_name, Editor_pixmap, tool_type
-		end
-
-	SHARED_APP_UI_RESOURCES
-		export
-			{NONE} all
-		end
-
-	SHARED_KNOWLEDGE_REPOSITORY
+class C_ATTRIBUTE_ED_CONTEXT
 
 create
 	make
 
-feature -- Definitions
-
-	Editor_group_name: STRING
-		once
-			Result := "archetype tool"
-		end
-
-	Editor_pixmap: EV_PIXMAP
-		once
-			Result := get_icon_pixmap ("archetype/archetype_2")
-		end
-
 feature -- Initialisation
 
-	make (a_docking_manager: attached SD_DOCKING_MANAGER)
+	make (an_arch_node: C_ATTRIBUTE; a_bmm_prop_def: BMM_PROPERTY_DEFINITION)
 		do
-			make_docking (a_docking_manager)
+			arch_node := an_arch_node
+			rm_property := a_bmm_prop_def
+			create children.make(0)
 		end
 
-feature -- Commands
+feature -- Access
 
-	create_new_tool
-		local
-			new_tool: like tool_type
+	arch_node: C_ATTRIBUTE
+			-- archetype node being edited
+
+	rm_property: BMM_PROPERTY_DEFINITION
+			-- RM property of node being edited
+
+	children: ARRAYED_LIST [C_OBJECT_ED_CONTEXT]
+			-- child objects
+
+feature -- Modification
+
+	add_child (a_node: C_OBJECT_ED_CONTEXT)
+			-- add a new child
 		do
-			create new_tool.make
-			add_new_tool (new_tool)
+			children.extend (a_node)
 		end
-
-	populate_active_tool (aca: ARCH_CAT_ARCHETYPE)
-			-- Populate content from visual controls.
-		do
-			if not has_tools then
-				create_new_tool
-			end
-			active_tool.gui_tool_populate (aca)
-			populate_active_tool_pane (aca.id.as_string, aca.id.as_abbreviated_string, get_icon_pixmap ("archetype/" + aca.group_name))
-		end
-
-feature {NONE} -- Implementation
-
-	tool_type: GUI_ARCHETYPE_TOOL
 
 end
 
@@ -89,13 +61,14 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is gui_arhetype_tools_controller.e
+--| The Original Code is arch_ed_context.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2011
+--| Portions created by the Initial Developer are Copyright (C) 2012
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
+--|	Sam Heard
 --|
 --| Alternatively, the contents of this file may be used under the terms of
 --| either the GNU General Public License Version 2 or later (the 'GPL'), or

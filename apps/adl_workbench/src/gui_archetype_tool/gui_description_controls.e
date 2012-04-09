@@ -486,7 +486,7 @@ feature {NONE} -- Implementation
 	populate_details
 			-- Populate details (language sensitive).
 		do
-			if attached source_archetype.description.details.item(selected_language) as item then
+			if attached source_archetype.description.details.item (selected_language) as item then
 				if attached item.purpose then
 					purpose_text.set_text (utf8 (item.purpose))
 				end

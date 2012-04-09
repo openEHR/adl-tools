@@ -1064,6 +1064,20 @@ feature -- Archetype tools
 			display_archetype (aca)
 		end
 
+feature -- Archetype editors
+
+	archetype_editors: GUI_ARCHETYPE_EDITORS_CONTROLLER
+		once
+			create Result.make (attached_docking_manager)
+		end
+
+	edit_archetype_in_new_tool (aca: ARCH_CAT_ARCHETYPE)
+		do
+			archetype_editors.create_new_tool
+			archetype_editors.populate_active_tool (aca)
+			archetype_editors.active_tool.on_select_archetype_notebook
+		end
+
 feature -- Class tool
 
 	class_tools: GUI_CLASS_TOOL_CONTROLLER

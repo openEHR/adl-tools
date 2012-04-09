@@ -1,17 +1,17 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Controller for multiple archetype viewing tools within a docking area."
+	description: "Controller for multiple archetype editors within a docking area."
 	keywords:    "ADL, archetype"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class GUI_ARCHETYPE_TOOLS_CONTROLLER
+class GUI_ARCHETYPE_EDITORS_CONTROLLER
 
 inherit
 	GUI_DOCKING_EDITOR_CONTROLLER
@@ -33,12 +33,12 @@ feature -- Definitions
 
 	Editor_group_name: STRING
 		once
-			Result := "archetype tool"
+			Result := "archetype editor"
 		end
 
 	Editor_pixmap: EV_PIXMAP
 		once
-			Result := get_icon_pixmap ("archetype/archetype_2")
+			Result := get_icon_pixmap ("tool/archetype_editor")
 		end
 
 feature -- Initialisation
@@ -70,7 +70,7 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	tool_type: GUI_ARCHETYPE_TOOL
+	tool_type: GUI_ARCHETYPE_EDITOR
 
 end
 
