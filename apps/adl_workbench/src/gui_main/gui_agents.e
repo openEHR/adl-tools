@@ -25,7 +25,7 @@ feature -- Access
 	console_tool_append_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
 			-- agent to update global console
 
-	select_archetype_agent, select_archetype_in_new_tool_agent: detachable PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]]
+	select_archetype_agent, select_archetype_in_new_tool_agent, edit_archetype_in_new_tool_agent: detachable PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]]
 
 	select_class_agent, select_class_in_new_tool_agent: detachable PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
 
@@ -67,6 +67,11 @@ feature -- Modification
 	set_select_archetype_in_new_tool_agent (an_agent: like select_archetype_in_new_tool_agent)
 		do
 			select_archetype_in_new_tool_agent := an_agent
+		end
+
+	set_edit_archetype_in_new_tool_agent (an_agent: like edit_archetype_in_new_tool_agent)
+		do
+			edit_archetype_in_new_tool_agent := an_agent
 		end
 
 	set_select_class_agent (an_agent: like select_class_agent)

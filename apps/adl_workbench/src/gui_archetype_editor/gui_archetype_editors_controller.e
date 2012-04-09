@@ -65,7 +65,7 @@ feature -- Commands
 				create_new_tool
 			end
 			active_tool.gui_tool_populate (aca)
-			populate_active_tool_pane (aca.id.as_string, aca.id.as_abbreviated_string, get_icon_pixmap ("archetype/" + aca.group_name))
+			populate_active_tool_pane (aca.id.as_string, aca.id.as_abbreviated_string, Editor_pixmap)
 		end
 
 feature {NONE} -- Implementation

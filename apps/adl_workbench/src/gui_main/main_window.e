@@ -415,6 +415,7 @@ feature {NONE} -- Initialization
 			gui_agents.set_console_tool_append_agent (agent console_tool.append_text)
 			gui_agents.set_select_archetype_agent (agent display_archetype)
 			gui_agents.set_select_archetype_in_new_tool_agent (agent display_archetype_in_new_tool)
+			gui_agents.set_edit_archetype_in_new_tool_agent (agent edit_archetype_in_new_tool)
 			gui_agents.set_select_class_agent (agent display_class)
 			gui_agents.set_select_class_in_new_tool_agent (agent display_class_in_new_tool)
 			gui_agents.set_select_class_in_rm_schema_tool_agent (agent select_class_in_rm_schema_tool)

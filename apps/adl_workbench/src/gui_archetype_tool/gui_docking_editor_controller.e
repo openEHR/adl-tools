@@ -190,7 +190,7 @@ feature {NONE} -- Implementation
 			if attached last_ed then
 				docking_pane.set_tab_with (last_ed, False)
 			else
-				docking_pane.set_default_editor_position
+				docking_pane.set_top ({SD_ENUMERATION}.left)
 			end
 			docking_pane.close_request_actions.extend (agent remove_tool (active_tool_id))
 			docking_pane.focus_in_actions.extend (agent select_tool (active_tool_id))

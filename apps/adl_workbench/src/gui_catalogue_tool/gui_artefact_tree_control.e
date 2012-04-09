@@ -115,6 +115,12 @@ feature {NONE} -- Implementation
 				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
 				menu.extend (an_mi)
 
+				if aca.is_valid then
+					create an_mi.make_with_text_and_action (create_message_content ("edit", Void), agent edit_context_selected_archetype_in_new_tool (ev_ti))
+					an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_editor"))
+					menu.extend (an_mi)
+				end
+
 				create an_mi.make_with_text_and_action (create_message_content ("edit_source", Void), agent (an_aca: ARCH_CAT_ARCHETYPE) do edit_archetype_agent.call ([an_aca]) end (aca))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/edit"))
 				menu.extend (an_mi)
@@ -148,6 +154,14 @@ feature {NONE} -- Implementation
 			ev_ti.enable_select
 			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
 				gui_agents.select_archetype_in_new_tool_agent.call ([aca])
+			end
+		end
+
+	edit_context_selected_archetype_in_new_tool (ev_ti: EV_TREE_ITEM)
+		do
+			ev_ti.enable_select
+			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
+				gui_agents.edit_archetype_in_new_tool_agent.call ([aca])
 			end
 		end
 
