@@ -545,7 +545,7 @@ feature -- Visitor
 				if a_node.has_assumed_value then
 					create gui_sub_node.make_with_text (utf8 (a_node.assumed_value.magnitude_as_string + " (Assumed)"))
 					gui_sub_node.set_data (a_node.assumed_value)
-					gui_sub_node.set_pixmap (spec_pixmap (a_node, a_node.list.item.generating_type))
+					gui_sub_node.set_pixmap (spec_pixmap (a_node, a_node.assumed_value.generating_type))
 					last_gui_node.extend (gui_sub_node)
 				end
 			end

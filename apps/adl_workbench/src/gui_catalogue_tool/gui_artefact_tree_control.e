@@ -115,7 +115,7 @@ feature {NONE} -- Implementation
 				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
 				menu.extend (an_mi)
 
-				if aca.is_valid then
+				if aca.is_valid and not gui_agents.archetype_has_editor_agent.item ([aca]) then
 					create an_mi.make_with_text_and_action (create_message_content ("edit", Void), agent edit_context_selected_archetype_in_new_tool (ev_ti))
 					an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_editor"))
 					menu.extend (an_mi)

@@ -79,27 +79,27 @@ feature -- Access
 	purpose: attached STRING
 			-- Purpose of the archetype.
 
-	use: STRING
+	use: detachable STRING
 			-- Description of the uses of the archetype,
 			-- i.e. contexts in which it could be used.
 
-	keywords: ARRAYED_LIST [STRING]
+	keywords:  detachable ARRAYED_LIST [STRING]
 			-- Keywords which characterise this archetype, used e.g.
 			-- for indexing and searching.
 
-	misuse: STRING
+	misuse:  detachable STRING
 			-- Description of any misuses of the archetype,
 			-- i.e. contexts in which it should not be used.
 
-	copyright: STRING
+	copyright:  detachable STRING
 			-- Rights over the archetype as a knowledge resource;
 			-- usually copyright and/or license to use.
 
-	original_resource_uri: HASH_TABLE [STRING, STRING]
+	original_resource_uri: detachable HASH_TABLE [STRING, STRING]
 			-- URI of precursor resource of archetype, e.g. natural language
 			-- document, semi-formal description
 
-	other_details: HASH_TABLE [STRING, STRING]
+	other_details:  detachable HASH_TABLE [STRING, STRING]
 			-- Additional language-senstive archetype meta-data, as a list of name/value pairs.
 
 feature -- Status

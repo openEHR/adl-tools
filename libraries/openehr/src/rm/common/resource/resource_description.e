@@ -71,27 +71,27 @@ feature -- Initialisation
 
 feature -- Access
 
-	original_author: attached HASH_TABLE [STRING, STRING]
+	original_author: HASH_TABLE [STRING, STRING]
 			-- Original author of this archetype, with all relevant details,
 			-- including organisation.
 
-	resource_package_uri: URI
+	resource_package_uri: detachable URI
 			-- URI of archetype package
 
-	details: attached HASH_TABLE [RESOURCE_DESCRIPTION_ITEM, STRING]
+	details: detachable HASH_TABLE [RESOURCE_DESCRIPTION_ITEM, STRING]
 			-- list of descriptive details, keyed by language
 
-	lifecycle_state: attached STRING
+	lifecycle_state: STRING
 			-- Lifecycle state of the archetype. Includes states such as
 			-- submitted, experimental, awaiting_approval, approved,
 			-- superseded, obsolete. State machine defined by archetype system
 
-	other_contributors: ARRAYED_LIST [STRING]
+	other_contributors: detachable ARRAYED_LIST [STRING]
 			-- Other contributors to the resource, probably listed in “name <email>” form
 
-	other_details: HASH_TABLE [STRING, STRING]
+	other_details: detachable HASH_TABLE [STRING, STRING]
 
-	parent_resource: AUTHORED_RESOURCE
+	parent_resource: detachable AUTHORED_RESOURCE
 			-- Reference to owning resource.
 
 	languages: attached ARRAYED_SET[STRING]
@@ -270,8 +270,8 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 invariant
 	Original_author_valid: not original_author.is_empty
 	Lifecycle_state_valid: not lifecycle_state.is_empty
-	Parent_resource_valid: parent_resource /= Void implies parent_resource.description = Current
-	Language_valid: parent_resource /= Void implies details.linear_representation.for_all
+	Parent_resource_valid: attached parent_resource implies parent_resource.description = Current
+	Language_valid: attached parent_resource implies details.linear_representation.for_all
 		(agent (rdi: RESOURCE_DESCRIPTION_ITEM):BOOLEAN do Result := parent_resource.languages_available.has(rdi.language.code_string) end)
 
 end

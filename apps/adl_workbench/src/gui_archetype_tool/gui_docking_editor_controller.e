@@ -53,7 +53,8 @@ feature -- Access
 			Result := docking_tools.item (active_tool_id).tool
 		end
 
-	docking_pane_by_tool_id (an_id: STRING): detachable SD_CONTENT
+	docking_pane_by_tool_artefact_id (an_id: STRING): detachable SD_CONTENT
+			-- return a tool for artefact with id `an_artefact_id' or Void if none
 		do
 			from docking_tools.start until docking_tools.off or
 				(docking_tools.item_for_iteration.tool.is_populated and then
@@ -78,6 +79,18 @@ feature -- Status Report
 			-- is there any tool whose content is displayed?
 		do
 			from docking_tools.start until docking_tools.off or docking_tools.item_for_iteration.tool.ev_root_container.is_displayed loop
+				docking_tools.forth
+			end
+			Result := not docking_tools.off
+		end
+
+	has_docking_pane_with_tool_artefact_id (an_artefact_id: STRING): BOOLEAN
+			-- return True if there is a tool for artefact with id `an_artefact_id'
+		do
+			from docking_tools.start until docking_tools.off or
+				(docking_tools.item_for_iteration.tool.is_populated and then
+				docking_tools.item_for_iteration.tool.tool_artefact_id.same_string (an_artefact_id))
+			loop
 				docking_tools.forth
 			end
 			Result := not docking_tools.off
@@ -112,9 +125,10 @@ feature -- Commands
 			end
 		end
 
-	show_docking_pane_by_tool_id (an_id: STRING): BOOLEAN
+	show_docking_pane_by_tool_artefact_id (an_artefact_id: STRING): BOOLEAN
+			-- set focus to tool for artefact with id `an_artefact_id'
 		do
-			if attached {SD_CONTENT} docking_pane_by_tool_id (an_id) as pane then
+			if attached {SD_CONTENT} docking_pane_by_tool_artefact_id (an_artefact_id) as pane then
 				pane.set_focus
 				Result := True
 			end

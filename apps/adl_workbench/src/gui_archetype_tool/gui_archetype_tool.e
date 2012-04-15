@@ -16,7 +16,7 @@ class GUI_ARCHETYPE_TOOL
 inherit
 	GUI_ARCHETYPE_TOOL_FRAME
 		redefine
-			make, do_clear, do_populate
+			make, do_clear, do_populate, disable_edit
 		end
 
 	EV_KEY_CONSTANTS
@@ -102,6 +102,7 @@ feature {NONE}-- Initialization
 			slot_map_control.ev_clients_tree.pointer_double_press_actions.force (agent on_slot_map_clients_tree_double_click)
 
 			set_tab_appearance
+			set_tab_texts
 		end
 
 feature -- UI Feedback
@@ -140,6 +141,11 @@ feature -- Commands
 			-- call this routine if rm_icons setting changed elsewhere in tool
 		do
 			node_map_control.update_rm_icons_cb
+		end
+
+	disable_edit
+		do
+			description_controls.disable_edit
 		end
 
 feature {NONE} -- Events

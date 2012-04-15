@@ -95,6 +95,15 @@ feature -- Status Report
 			Result := attached sub_tools and then sub_tools.has (a_tool)
 		end
 
+	can_edit: BOOLEAN
+			-- True if this tool has editing capability
+		do
+			Result := False
+		end
+
+	editing_enabled: BOOLEAN
+			-- True if this tool is in edit mode
+
 feature -- Commands
 
 	clear
@@ -161,13 +170,29 @@ feature -- Commands
 		do
 		end
 
+	enable_edit
+			-- enable editing
+		require
+			can_edit
+		do
+			editing_enabled := True
+		end
+
+	disable_edit
+			-- disable editing
+		do
+			editing_enabled := False
+		end
+
 feature {GUI_TOOL} -- Implementation
 
 	do_clear
+			-- clear visual controls
 		deferred
 		end
 
 	do_populate
+			-- populate visual controls
 		deferred
 		end
 

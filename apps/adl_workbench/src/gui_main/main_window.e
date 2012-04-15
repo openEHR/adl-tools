@@ -416,6 +416,7 @@ feature {NONE} -- Initialization
 			gui_agents.set_select_archetype_agent (agent display_archetype)
 			gui_agents.set_select_archetype_in_new_tool_agent (agent display_archetype_in_new_tool)
 			gui_agents.set_edit_archetype_in_new_tool_agent (agent edit_archetype_in_new_tool)
+			gui_agents.set_archetype_has_editor_agent (agent archetype_has_editor)
 			gui_agents.set_select_class_agent (agent display_class)
 			gui_agents.set_select_class_in_new_tool_agent (agent display_class_in_new_tool)
 			gui_agents.set_select_class_in_rm_schema_tool_agent (agent select_class_in_rm_schema_tool)
@@ -958,7 +959,7 @@ feature -- Docking controls
 
 	show_tool_with_artefact_agent (an_id: STRING): BOOLEAN
 		do
-			Result := class_tools.show_docking_pane_by_tool_id (an_id) or else archetype_tools.show_docking_pane_by_tool_id (an_id)
+			Result := class_tools.show_docking_pane_by_tool_artefact_id (an_id) or else archetype_tools.show_docking_pane_by_tool_artefact_id (an_id)
 		end
 
 feature -- RM Schema explorer
@@ -1075,8 +1076,14 @@ feature -- Archetype editors
 	edit_archetype_in_new_tool (aca: ARCH_CAT_ARCHETYPE)
 		do
 			archetype_editors.create_new_tool
+			archetype_editors.active_tool.enable_edit
 			archetype_editors.populate_active_tool (aca)
 			archetype_editors.active_tool.on_select_archetype_notebook
+		end
+
+	archetype_has_editor (aca: ARCH_CAT_ARCHETYPE): BOOLEAN
+		do
+			Result := archetype_editors.has_docking_pane_with_tool_artefact_id (aca.id.as_string)
 		end
 
 feature -- Class tool

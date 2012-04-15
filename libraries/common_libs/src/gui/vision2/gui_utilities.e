@@ -145,14 +145,15 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_ev_multi_list_from_hash (ev_mlist: attached EV_MULTI_COLUMN_LIST; ht: HASH_TABLE [ANY, STRING])
+	populate_ev_multi_list_from_hash (ev_mlist: attached EV_MULTI_COLUMN_LIST; ht: detachable HASH_TABLE [ANY, STRING])
 			-- populate rows of a multi-column list with name - value pairs in a HASH_TABLE
 			-- Note that the value type is assumed to have a sensible outpur from its 'out' function
 		local
 			ev_list_row: EV_MULTI_COLUMN_LIST_ROW
 			item_list: LIST [ANY]
 		do
-			if ht /= Void then
+			if attached ht then
+				ev_mlist.wipe_out
 				from ht.start until ht.off loop
 					create ev_list_row
 					ev_list_row.extend (utf8 (ht.key_for_iteration))
@@ -169,6 +170,24 @@ feature {NONE} -- Implementation
 					ht.forth
 				end
 
+				resize_ev_multi_list (ev_mlist)
+			end
+		end
+
+	populate_ev_multi_list_from_list (ev_mlist: attached EV_MULTI_COLUMN_LIST; a_list: detachable LIST [ANY])
+			-- populate rows of a multi-column list with a single column of strings from `a_list'
+			-- Note that the list value type is assumed to have a sensible outpur from its 'out' function
+		local
+			ev_list_row: EV_MULTI_COLUMN_LIST_ROW
+		do
+			if attached a_list then
+				ev_mlist.wipe_out
+				from a_list.start until a_list.off loop
+					create ev_list_row
+					ev_list_row.extend (utf8 (a_list.item.out))
+					ev_mlist.extend (ev_list_row)
+					a_list.forth
+				end
 				resize_ev_multi_list (ev_mlist)
 			end
 		end

@@ -27,6 +27,8 @@ feature -- Access
 
 	select_archetype_agent, select_archetype_in_new_tool_agent, edit_archetype_in_new_tool_agent: detachable PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]]
 
+	archetype_has_editor_agent: detachable FUNCTION [ANY, TUPLE [ARCH_CAT_ARCHETYPE], BOOLEAN]
+
 	select_class_agent, select_class_in_new_tool_agent: detachable PROCEDURE [ANY, TUPLE [BMM_CLASS_DEFINITION]]
 
 	select_rm_agent, select_rm_in_new_tool_agent: detachable PROCEDURE [ANY, TUPLE [BMM_SCHEMA]]
@@ -72,6 +74,11 @@ feature -- Modification
 	set_edit_archetype_in_new_tool_agent (an_agent: like edit_archetype_in_new_tool_agent)
 		do
 			edit_archetype_in_new_tool_agent := an_agent
+		end
+
+	set_archetype_has_editor_agent (an_agent: like archetype_has_editor_agent)
+		do
+			archetype_has_editor_agent := an_agent
 		end
 
 	set_select_class_agent (an_agent: like select_class_agent)

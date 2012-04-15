@@ -19,6 +19,9 @@ deferred class GUI_ARCHETYPE_TOOL_FRAME
 
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
+		redefine
+			enable_edit, disable_edit
+		end
 
 feature -- Definitions
 
@@ -75,8 +78,8 @@ feature {NONE}-- Initialization
 			ev_action_bar.disable_item_expand (ev_language_combo)
 			ev_action_bar.disable_item_expand (ev_adl_version_label)
 			ev_action_bar.disable_item_expand (ev_adl_version_text)
-			ev_archetype_id.disable_edit
-			ev_view_label.set_text ("View ")
+
+			ev_view_label.set_text (create_message_content ("diff_flat_form_label", Void))
 			ev_differential_view_button.set_pixmap (get_icon_pixmap ("tool/diff_class"))
 			ev_flat_view_button.set_pixmap (get_icon_pixmap ("tool/flat_class"))
 			ev_differential_view_button.set_tooltip (create_message_content ("differential_view_button_tooltip", Void))
@@ -88,7 +91,6 @@ feature {NONE}-- Initialization
 			ev_language_combo.set_tooltip (create_message_content ("language_combo_tooltip", Void))
 			ev_language_combo.set_minimum_width (60)
 			ev_language_combo.set_minimum_height (23)
-			ev_language_combo.disable_edit
 			ev_adl_version_label.set_text (create_message_content ("adl_version_label_text", Void))
 			ev_adl_version_label.set_minimum_width (80)
 			ev_adl_version_label.align_text_right
@@ -107,7 +109,6 @@ feature {NONE}-- Initialization
 
 			differential_view := True
 			ev_differential_view_button.enable_select
-			set_tab_texts
 		end
 
 feature -- Access
@@ -154,6 +155,20 @@ feature -- Commands
 				ev_differential_view_button.enable_select
 				set_view (True)
 			end
+		end
+
+	enable_edit
+		do
+			precursor
+			ev_archetype_id.enable_edit
+			ev_language_combo.enable_edit
+		end
+
+	disable_edit
+		do
+			precursor
+			ev_archetype_id.disable_edit
+			ev_language_combo.disable_edit
 		end
 
 feature {NONE} -- Events

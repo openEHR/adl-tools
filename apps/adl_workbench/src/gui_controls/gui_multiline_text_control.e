@@ -1,92 +1,99 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "FIXME: temporary type for QUANTITY until reconciled with DV_QUANTITY"
-	keywords:    "quantity, ADL"
+	description: "[
+				 Visual control for a data source that outputs to multi-line EV_TEXT control.
+				 Visual control structure is a text edit field with a title, in-place editing.
+				 
+					        +----------------------------+
+				            |                            |
+				    Title: 	|                            |
+				    	    |                            |
+						    +----------------------------+
 
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003-2005 Ocean Informatics Pty Ltd"
+				 ]"
+	keywords:    "UI, ADL"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class QUANTITY
+
+class GUI_MULTILINE_TEXT_CONTROL
 
 inherit
-	ANY
+	GUI_DATA_CONTROL
+		rename
+			make as make_data_control
 		redefine
-			default_create
+			data_source, enable_edit, disable_edit
 		end
 
 create
-	make, default_create
+	make
 
 feature -- Definitions
 
-	Default_units: STRING = "m"
-			-- metres
+	default_min_height: INTEGER = 25
 
-	Default_precision: INTEGER = -1
+	default_min_width: INTEGER = 50
 
 feature -- Initialisation
 
-	default_create
-			-- create a reasonable default object
+	make (a_title: STRING; a_data_source: like data_source; min_height, min_width: INTEGER; use_hbox_container: BOOLEAN; a_text_box_select_all_handler: PROCEDURE [ANY, TUPLE])
 		do
-			units := Default_units.twin
-			precision := Default_precision
-		ensure then
-			precision = Default_precision
-		end
-
-	make(a_magnitude: REAL; a_units: STRING; a_precision: INTEGER)
-			-- set magnitude and units; precision should be set to -1 if no precision
-		require
-			Units_valid: a_units /= Void implies not a_units.is_empty
-		do
-			magnitude := a_magnitude
-			units := a_units
-			precision := a_precision
-		ensure
-			Magnitude_set: magnitude = a_magnitude
-			Units_set: units = a_units
-			Precision_set: precision = a_precision
+			make_data_control (a_title, a_data_source, min_height, min_width, use_hbox_container, True)
+			ev_data_control.focus_in_actions.extend (a_text_box_select_all_handler)
 		end
 
 feature -- Access
 
-	magnitude: REAL
+	ev_data_control: EV_TEXT
 
-	units: STRING
+	data_source: FUNCTION [ANY, TUPLE, STRING]
 
-	precision: INTEGER
+feature -- Commands
 
-feature -- Conversion
-
-	magnitude_as_string: STRING
-			-- The magnitude in its natural form.
-		local
-			formatter: FORMAT_DOUBLE
+	enable_edit
+			-- enable editing
 		do
-			if precision = default_precision then
-				Result := magnitude.out
-			else
-				create formatter.make (precision.max (50), precision)
-				Result := formatter.formatted (magnitude.to_double)
-			end
-			if Result.item (Result.count) = '.' then
-				Result.append_character ('0')
-			end
-			Result.left_adjust
+			precursor
+			ev_data_control.enable_edit
+		end
 
-			if units /= Void then
-				Result.append (" " + units)
+	disable_edit
+			-- disable editing
+		do
+			precursor
+			ev_data_control.disable_edit
+		end
+
+	do_clear
+			-- Wipe out content.
+		do
+			ev_data_control.remove_text
+		end
+
+	do_populate
+			-- populate content.
+		do
+			if attached {STRING} data_source.item ([]) as str then
+				ev_data_control.set_text (utf8 (str))
 			end
 		end
 
+feature {NONE} -- Implementation
+
+	create_ev_data_control
+		do
+			create ev_data_control
+		end
+
 end
+
 
 
 --|
@@ -103,10 +110,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is cadl_object_ordinal.e.
+--| The Original Code is gui_hash_table.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2012
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

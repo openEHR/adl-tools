@@ -55,96 +55,112 @@ feature -- Initialisation
 
 			create ev_tree
 			create ev_view_controls_vbox
+			create ev_view_label
+
+			create ev_collapse_expand_hbox
 			create ev_expand_button
+			create ev_collapse_button
 			create ev_expand_one_button
 			create ev_collapse_one_button
-			create ev_cell
-			create ev_rm_visibility_controls
-			create ev_rm_visibility_vbox
-			create ev_rm_off_rb
-			create ev_rm_classes_on_rb
-			create ev_rm_attrs_on_cb
-			create ev_use_rm_icons_cb
+
+			create ev_view_detail_frame
+			create ev_view_detail_vbox
+			create ev_view_detail_low_rb
+			create ev_view_detail_high_rb
+
+			create ev_view_rm_frame
+			create ev_view_rm_vbox
+			create ev_view_rm_attrs_on_cb
+			create ev_view_rm_use_icons_cb
 
 			-- connect them together
 			ev_root_container.extend (ev_tree)
 			ev_root_container.extend (ev_view_controls_vbox)
-			ev_view_controls_vbox.extend (ev_expand_button)
-			ev_view_controls_vbox.extend (ev_expand_one_button)
-			ev_view_controls_vbox.extend (ev_collapse_one_button)
-			ev_view_controls_vbox.extend (ev_cell)
-			ev_view_controls_vbox.extend (ev_rm_visibility_controls)
-			ev_rm_visibility_controls.extend (ev_rm_visibility_vbox)
-			ev_rm_visibility_vbox.extend (ev_rm_off_rb)
-			ev_rm_visibility_vbox.extend (ev_rm_classes_on_rb)
-			ev_view_controls_vbox.extend (ev_rm_attrs_on_cb)
-			ev_view_controls_vbox.extend (ev_use_rm_icons_cb)
+
+			ev_view_controls_vbox.extend (ev_view_label)
+			ev_view_controls_vbox.extend (ev_collapse_expand_hbox)
+			ev_collapse_expand_hbox.extend (ev_collapse_button)
+			ev_collapse_expand_hbox.extend (ev_collapse_one_button)
+			ev_collapse_expand_hbox.extend (ev_expand_one_button)
+			ev_collapse_expand_hbox.extend (ev_expand_button)
+
+			ev_view_controls_vbox.extend (ev_view_detail_frame)
+			ev_view_detail_frame.extend (ev_view_detail_vbox)
+			ev_view_detail_vbox.extend (ev_view_detail_low_rb)
+			ev_view_detail_vbox.extend (ev_view_detail_high_rb)
+
+			ev_view_controls_vbox.extend (ev_view_rm_frame)
+			ev_view_rm_frame.extend (ev_view_rm_vbox)
+			ev_view_rm_vbox.extend (ev_view_rm_attrs_on_cb)
+			ev_view_rm_vbox.extend (ev_view_rm_use_icons_cb)
 
 			-- set visual characteristics
---			ev_root_container.set_minimum_width (1)
---			ev_root_container.set_minimum_height (160)
 			ev_root_container.disable_item_expand (ev_view_controls_vbox)
 			ev_tree.set_background_color (editable_colour)
 
 			-- right hand side tree expand/collapse controls
-			ev_view_controls_vbox.set_minimum_width (100)
+			ev_view_controls_vbox.set_minimum_width (115)
 			ev_view_controls_vbox.set_minimum_height (170)
 			ev_view_controls_vbox.set_padding (padding_width)
 			ev_view_controls_vbox.set_border_width (border_width)
-			ev_view_controls_vbox.disable_item_expand (ev_expand_button)
-			ev_view_controls_vbox.disable_item_expand (ev_expand_one_button)
-			ev_view_controls_vbox.disable_item_expand (ev_collapse_one_button)
-			ev_view_controls_vbox.disable_item_expand (ev_cell)
-			ev_view_controls_vbox.disable_item_expand (ev_rm_visibility_controls)
-			ev_view_controls_vbox.disable_item_expand (ev_rm_attrs_on_cb)
-			ev_view_controls_vbox.disable_item_expand (ev_use_rm_icons_cb)
-			ev_expand_button.set_text (create_message_content ("expand_collapse_complete_button_text", Void))
-			ev_expand_button.set_tooltip (create_message_content ("expand_collapse_complete_tooltip", Void))
-			ev_expand_button.set_minimum_width (tree_control_panel_width)
-			ev_expand_one_button.set_text (create_message_content ("expand_one_level_button_text", Void))
+			ev_view_controls_vbox.disable_item_expand (ev_view_label)
+			ev_view_controls_vbox.disable_item_expand (ev_collapse_expand_hbox)
+			ev_view_controls_vbox.disable_item_expand (ev_view_detail_frame)
+			ev_view_controls_vbox.disable_item_expand (ev_view_rm_frame)
+
+			ev_view_label.set_text (create_message_content ("view_label_text", Void))
+			ev_view_label.align_text_left
+			ev_collapse_button.set_text ("0")
+			ev_collapse_button.set_tooltip (create_message_content ("collapse_complete_tooltip", Void))
+			ev_expand_button.set_text ("*")
+			ev_expand_button.set_tooltip (create_message_content ("expand_complete_tooltip", Void))
+			ev_expand_one_button.set_text ("+")
 			ev_expand_one_button.set_tooltip (create_message_content ("expand_one_level_tooltip", Void))
-			ev_expand_one_button.set_minimum_width (tree_control_panel_width)
-			ev_collapse_one_button.set_text (create_message_content ("collapse_one_level_button_text", Void))
+			ev_collapse_one_button.set_text ("-")
 			ev_collapse_one_button.set_tooltip (create_message_content ("collapse_one_level_tooltip", Void))
-			ev_collapse_one_button.set_minimum_width (tree_control_panel_width)
-			ev_cell.set_minimum_height (20)
 
 			-- right hand side visibility controls
-			ev_rm_visibility_controls.set_text (create_message_content ("rm_visibility_controls_text", Void))
-			ev_rm_visibility_controls.set_minimum_width (100)
-			ev_rm_visibility_controls.set_minimum_height (85)
-			ev_rm_visibility_vbox.set_border_width (border_width)
-			ev_rm_off_rb.set_text (create_message_content ("hide_rm_details_button_text", Void))
-			ev_rm_off_rb.set_tooltip (create_message_content ("hide_rm_details_tooltip", Void))
-			ev_rm_classes_on_rb.set_text (create_message_content ("display_rm_class_names_button_text", Void))
-			ev_rm_classes_on_rb.set_tooltip (create_message_content ("display_rm_class_names_tooltip", Void))
-			ev_rm_attrs_on_cb.set_text (create_message_content ("show_rm_properties_button_text", Void))
-			ev_rm_attrs_on_cb.set_tooltip (create_message_content ("show_rm_properties_tooltip", Void))
-			ev_use_rm_icons_cb.set_text (create_message_content ("use_rm_icons_button_text", Void))
-			ev_use_rm_icons_cb.set_tooltip (create_message_content ("use_rm_icons_button_tooltip", Void))
+			ev_view_detail_frame.set_text (create_message_content ("view_detail_controls_text", Void))
+			ev_view_detail_frame.set_minimum_width (100)
+			ev_view_detail_frame.set_minimum_height (85)
+			ev_view_detail_vbox.set_border_width (border_width)
+			ev_view_detail_low_rb.set_text (create_message_content ("domain_detail_button_text", Void))
+			ev_view_detail_low_rb.set_tooltip (create_message_content ("domain_detail_button_tooltip", Void))
+			ev_view_detail_high_rb.set_text (create_message_content ("technical_detail_button_text", Void))
+			ev_view_detail_high_rb.set_tooltip (create_message_content ("technical_detail_button_tooltip", Void))
+
+			ev_view_rm_frame.set_text (create_message_content ("view_rm_controls_text", Void))
+			ev_view_rm_frame.set_minimum_width (100)
+			ev_view_rm_frame.set_minimum_height (85)
+			ev_view_rm_vbox.set_border_width (border_width)
+			ev_view_rm_attrs_on_cb.set_text (create_message_content ("show_rm_properties_button_text", Void))
+			ev_view_rm_attrs_on_cb.set_tooltip (create_message_content ("show_rm_properties_tooltip", Void))
+			ev_view_rm_use_icons_cb.set_text (create_message_content ("use_rm_icons_button_text", Void))
+			ev_view_rm_use_icons_cb.set_tooltip (create_message_content ("use_rm_icons_button_tooltip", Void))
 
 			in_reference_model_mode := show_reference_model_view
 			if in_reference_model_mode then
-				ev_rm_attrs_on_cb.enable_select
+				ev_view_rm_attrs_on_cb.enable_select
 			end
 			in_technical_mode := show_technical_view
 			if in_technical_mode then
-				ev_rm_classes_on_rb.enable_select
+				ev_view_detail_high_rb.enable_select
 			else
-				ev_rm_off_rb.enable_select
+				ev_view_detail_low_rb.enable_select
 			end
 			if use_rm_pixmaps then
-				ev_use_rm_icons_cb.enable_select
+				ev_view_rm_use_icons_cb.enable_select
 			end
 
 			-- set events
-			ev_expand_button.select_actions.extend (agent on_toggle_expand_tree)
+			ev_expand_button.select_actions.extend (agent on_expand_tree)
+			ev_collapse_button.select_actions.extend (agent on_collapse_tree)
 			ev_expand_one_button.select_actions.extend (agent on_expand_tree_one_level)
 			ev_collapse_one_button.select_actions.extend (agent on_shrink_tree_one_level)
-			ev_rm_off_rb.select_actions.extend (agent on_domain_selected)
-			ev_rm_classes_on_rb.select_actions.extend (agent on_technical_selected)
-			ev_rm_attrs_on_cb.select_actions.extend (agent on_reference_model_selected)
-			ev_use_rm_icons_cb.select_actions.extend (agent on_ev_use_rm_icons_cb_selected)
+			ev_view_detail_low_rb.select_actions.extend (agent on_domain_selected)
+			ev_view_detail_high_rb.select_actions.extend (agent on_technical_selected)
+			ev_view_rm_attrs_on_cb.select_actions.extend (agent on_reference_model_selected)
+			ev_view_rm_use_icons_cb.select_actions.extend (agent on_ev_use_rm_icons_cb_selected)
 		end
 
 feature -- Access
@@ -203,11 +219,11 @@ feature -- Commands
 	update_rm_icons_cb
 			-- update and repopulate if this setting was changed elsewhere in the tool
 		do
-			if attached source and use_rm_pixmaps /= ev_use_rm_icons_cb.is_selected then
+			if attached source and use_rm_pixmaps /= ev_view_rm_use_icons_cb.is_selected then
 				if use_rm_pixmaps then
-					ev_use_rm_icons_cb.enable_select
+					ev_view_rm_use_icons_cb.enable_select
 				else
-					ev_use_rm_icons_cb.disable_select
+					ev_view_rm_use_icons_cb.disable_select
 				end
 				repopulate
 			end
@@ -241,10 +257,31 @@ feature {NONE} -- Events
 			end
 		end
 
-	on_toggle_expand_tree
+	on_expand_tree
 		do
 			if attached source then
-				toggle_expand_tree
+				ev_tree.recursive_do_all (
+					agent (an_ev_tree_node: attached EV_TREE_NODE)
+						do
+							if an_ev_tree_node.is_expandable then
+								an_ev_tree_node.expand
+							end
+						end
+				)
+			end
+		end
+
+	on_collapse_tree
+		do
+			if attached source then
+				ev_tree.recursive_do_all (
+					agent (an_ev_tree_node: attached EV_TREE_NODE)
+						do
+							if an_ev_tree_node.is_expandable then
+								an_ev_tree_node.collapse
+							end
+						end
+				)
 			end
 		end
 
@@ -272,7 +309,7 @@ feature {NONE} -- Events
 			-- turn on or off the display of reference model details in `gui_tree'.
 		do
 			if attached source then
-				if ev_rm_attrs_on_cb.is_selected then
+				if ev_view_rm_attrs_on_cb.is_selected then
 					in_reference_model_mode_changed := not in_reference_model_mode
 					in_reference_model_mode := True
 					set_show_reference_model_view (True)
@@ -291,7 +328,7 @@ feature {NONE} -- Events
 	on_ev_use_rm_icons_cb_selected
 		do
 			if attached source then
-				set_use_rm_pixmaps (ev_use_rm_icons_cb.is_selected)
+				set_use_rm_pixmaps (ev_view_rm_use_icons_cb.is_selected)
 				repopulate
 
 				-- reflect change to other editor tools
@@ -303,17 +340,19 @@ feature {NONE} -- Implementation
 
 	ev_tree: EV_TREE
 
-	ev_expand_button, ev_expand_one_button, ev_collapse_one_button: EV_BUTTON
+	ev_view_label: EV_LABEL
 
-	ev_rm_off_rb, ev_rm_classes_on_rb: EV_RADIO_BUTTON
+	ev_expand_button, ev_expand_one_button, ev_collapse_one_button, ev_collapse_button: EV_BUTTON
 
-	ev_rm_attrs_on_cb, ev_use_rm_icons_cb: EV_CHECK_BUTTON
+	ev_collapse_expand_hbox: EV_HORIZONTAL_BOX
 
-	ev_view_controls_vbox, ev_rm_visibility_vbox: EV_VERTICAL_BOX
+	ev_view_detail_low_rb, ev_view_detail_high_rb: EV_RADIO_BUTTON
 
-	ev_rm_visibility_controls: EV_FRAME
+	ev_view_rm_attrs_on_cb, ev_view_rm_use_icons_cb: EV_CHECK_BUTTON
 
-	ev_cell: EV_CELL
+	ev_view_controls_vbox, ev_view_detail_vbox, ev_view_rm_vbox: EV_VERTICAL_BOX
+
+	ev_view_detail_frame, ev_view_rm_frame: EV_FRAME
 
 	rm_schema: BMM_SCHEMA
 
@@ -355,8 +394,11 @@ feature {NONE} -- Implementation
 			populate_invariants
 
 			-- make visualisation adjustments
-			is_expanded := not expand_node_tree
-			toggle_expand_tree
+			on_collapse_tree
+			on_expand_tree_one_level
+			on_expand_tree_one_level
+			on_expand_tree_one_level
+			on_expand_tree_one_level
 
 			if not differential_view then
 				roll_up_to_specialisation_level
@@ -398,34 +440,6 @@ feature {NONE} -- Implementation
 						a_tree_node.forth
 					end
 				end
-			end
-		end
-
-	toggle_expand_tree
-			-- Expand or shrink the tree control.
-		do
-			is_expanded := not is_expanded
-
-			if is_expanded then
-				ev_tree.recursive_do_all (
-					agent (an_ev_tree_node: attached EV_TREE_NODE)
-						do
-							if an_ev_tree_node.is_expandable then
-								an_ev_tree_node.expand
-							end
-						end
-				)
-				ev_expand_button.set_text (create_message_content ("expand_button_collapse_text", Void))
-			else
-				ev_tree.recursive_do_all (
-					agent (an_ev_tree_node: attached EV_TREE_NODE)
-						do
-							if an_ev_tree_node.is_expandable then
-								an_ev_tree_node.collapse
-							end
-						end
-				)
-				ev_expand_button.set_text (create_message_content ("expand_button_expand_text", Void))
 			end
 		end
 

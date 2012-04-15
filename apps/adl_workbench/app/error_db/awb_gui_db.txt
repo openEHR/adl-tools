@@ -86,8 +86,7 @@ templates = <
 		["help_menu_text"] = <"&Help">
 		["help_menu_online_text"] = <"&Online Help">
 		["help_menu_release_notes_text"] = <"&Release Notes">
-		["help_menu_icons_text"] = <"&Icons">
-		["help_menu_ckm_text"] = <"Clinical $Knowledge Manager">
+		["help_menu_ckm_text"] = <"Clinical &Knowledge Manager">
 		["help_menu_report_bug_text"] = <"Report a &Bug">
 		["help_menu_about_text"] = <"&About AWB">
 
@@ -158,8 +157,13 @@ templates = <
 		["annotation_value_text"] = <"Annotation value">
 
 		-- GUI_NODE_MAP_CONTROL 
-		["expand_collapse_complete_button_text"] = <"Expand All">
-		["expand_collapse_complete_tooltip"] = <"Completely expand or collapse the Node Map">
+		["view_label_text"] = <"Tree View">
+
+		["expand_complete_button_text"] = <"Expand All">
+		["expand_complete_tooltip"] = <"Completely expand the Node Map">
+
+		["collapse_complete_button_text"] = <"Expand All">
+		["collapse_complete_tooltip"] = <"Completely collapse the Node Map">
 
 		["expand_one_level_button_text"] = <"Expand One">
 		["expand_one_level_tooltip"] = <"Expand one level of the Node Map">
@@ -167,25 +171,23 @@ templates = <
 		["collapse_one_level_button_text"] = <"Collapse One">
 		["collapse_one_level_tooltip"] = <"Collapse one level of the Node Map">
 
-		["hide_rm_details_button_text"] = <"Domain">
-		["hide_rm_details_tooltip"] = <"Show domain view; hide RM details of the archetyped nodes">
+		["view_detail_controls_text"] = <"Detail Level">
+		["domain_detail_button_text"] = <"Domain">
+		["domain_detail_button_tooltip"] = <"Show domain view; hide RM details of the archetyped nodes">
+		["technical_detail_button_text"] = <"Technical">
+		["technical_detail_button_tooltip"] = <"Display RM class names and attribute details of archetyped nodes">
 
-		["display_rm_class_names_button_text"] = <"Technical">
-		["display_rm_class_names_tooltip"] = <"Display RM class names and attribute details of archetyped nodes">
-
+		["view_rm_controls_text"] = <"RM View">
 		["show_rm_properties_button_text"] = <"RM properties">
 		["show_rm_properties_tooltip"] = <"Show non-archetyped RM properties">
+		["use_rm_icons_button_text"] = <"RM icons">
+		["use_rm_icons_button_tooltip"] = <"Use RM-specific icons">
 
 		["closure_depth_spin_button_text"] = <"Depth">
 		["closure_depth_spin_button_tooltip"] = <"Depth of closure to explore; this computation can be long for depths > 5">
 
 		["closure_depth_recompute_button_text"] = <"Recompute">
 		["closure_depth_recompute_button_tooltip"] = <"Recompute with new depth">
-
-		["use_rm_icons_button_text"] = <"RM icons">
-		["use_rm_icons_button_tooltip"] = <"Use RM-specific icons">
-
-		["rm_visibility_controls_text"] = <"Viewing mode">
 
 		["expand_button_collapse_text"] = <"Collapse All">
 		["expand_button_expand_text"] = <"Expand All">
@@ -198,13 +200,15 @@ templates = <
 		["set_differential_archetype_view"] = <"Set differential archetype view">
 		["set_flat_archetype_view"] = <"Set flat archetype view">
 
-		-- GUI_ARCHETYPE_TOOL
-		["differential_view_button_tooltip"] = <"Set differential archetype view">
-		["flat_view_button_tooltip"] = <"Set flat archetype view">
+		-- GUI_ARCHETYPE_TOOL_FRAME
+		["diff_flat_form_label"] = <"Form">
+		["differential_view_button_tooltip"] = <"View differential archetype form">
+		["flat_view_button_tooltip"] = <"View flat archetype form">
 
 		["language_label"] = <"Language:">
 		["language_combo_tooltip"] = <"Select display language">
 
+		-- GUI_ARCHETYPE_TOOL
 		["description_tab_text"] = <"Description">
 		["definition_tab_text"] = <"Definition">
 		["paths_tab_text"] = <"Paths">
@@ -237,11 +241,11 @@ templates = <
 		["property_grid_property_type_col_title"] = <"Type">
 
 		-- GUI_DESCRIPTION_CONTROL
-		["administrative_tab_text"] = <"Administration">
-		["descriptive_tab_text"] = <"Descriptive">
+		["authoring_tab_text"] = <"Authoring">
+		["descriptive_tab_text"] = <"Details">
 		["term_bindings_tab_text"] = <"Term Bindings">
 
-		["status_label_text"] = <"Lifecycle state:">
+		["lifecycle_state_label_text"] = <"Lifecycle state:">
 		["auth_frame_text"] = <"Authorship">
 		["auth_orig_auth_label_text"] = <"Original Author">
 		["auth_contrib_label_text"] = <"Contributors">
@@ -249,7 +253,7 @@ templates = <
 		["original_language_label_text"] = <"Original language:">
 		["trans_languages_label_text"] = <"Translations">
 		["author_label_text"] = <"Author">
-		["acreditation_label_text"] = <"Accreditation">
+		["accreditation_label_text"] = <"Accreditation">
 		["other_details_label_text"] = <"Other Details">
 		["copyright_label_text"] = <"Copyright:">
 		["archetype_details_label_text"] = <"Archetype Details">

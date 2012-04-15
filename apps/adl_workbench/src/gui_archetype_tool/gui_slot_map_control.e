@@ -135,7 +135,7 @@ feature {NONE} -- Implementation
 				slot_index := source.slot_id_index
 				from slot_index.start until slot_index.off loop
 					create eti.make_with_text (utf8 (source.differential_archetype.ontology.physical_to_logical_path (slot_index.key_for_iteration, selected_language, True)))
-					eti.set_pixmap (get_icon_pixmap ("added/arcetype_slot"))
+					eti.set_pixmap (get_icon_pixmap ("am/added/archetype_slot"))
 					ev_suppliers_tree.extend (eti)
 					append_tree (eti, slot_index.item_for_iteration)
 					slots_count := slots_count + eti.count

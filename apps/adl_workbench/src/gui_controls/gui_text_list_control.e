@@ -1,65 +1,53 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Application constant redefinitions"
-	keywords:    "constants"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2007 Ocean Informatics Pty Ltd"
+	description: "[
+				 Visual control for LIST [STRING] data source. Control structure is a single column table with a title, 
+				 in-place editing and deletion, right-click context menu to add a row.
+				 
+								   Title
+						+----------------------------+
+						|                            |
+						|                            |
+						|                            |
+						|                            |
+						+----------------------------+
+
+				 ]"
+	keywords:    "UI, ADL"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-	description: "Objects that provide access to constants loaded from files."
-	date: "$Date$"
-	revision: "$Revision$"
 
-class
-	GUI_DEFINITIONS
+class GUI_TEXT_LIST_CONTROL
 
 inherit
-	SHARED_APP_UI_RESOURCES
-		export
-			{NONE} all
+	GUI_EV_MLIST_CONTROL
+		redefine
+			data_source
 		end
 
-feature -- Definitions
+create
+	make
 
-	icons: STRING
-			-- The path to the directory containing icon files.
-		once
-			Result := application_startup_directory + os_directory_separator.out + "icons"
-		end
+feature -- Access
 
-	padding_width: INTEGER = 3
+	data_source: FUNCTION [ANY, TUPLE, LIST [STRING]]
 
-	border_width: INTEGER = 4
+feature -- Commands
 
-	editable_colour: EV_COLOR
-		once
-			create Result.make_with_8_bit_rgb (255, 255, 255)
-		end
-
-	background_colour: EV_COLOR
-		once
-			create Result.make_with_8_bit_rgb (240, 240, 240)
-		end
-
-	screen_10_pt_regular_font: EV_FONT
+	do_populate
 		do
-			create Result
-			Result.set_family ({EV_FONT_CONSTANTS}.Family_screen)
-			Result.set_weight ({EV_FONT_CONSTANTS}.Weight_regular)
-			Result.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
-			Result.set_height_in_points (10)
+			populate_ev_multi_list_from_list (ev_data_control, data_source.item ([]))
 		end
-
-	Text_min_height: INTEGER = 22
-
-	Label_min_width: INTEGER = 35
 
 end
+
 
 
 --|
@@ -76,10 +64,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is constants.e.
+--| The Original Code is gui_hash_table.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2007
+--| Portions created by the Initial Developer are Copyright (C) 2012
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

@@ -16,7 +16,7 @@ class GUI_ARCHETYPE_EDITOR
 inherit
 	GUI_ARCHETYPE_TOOL_FRAME
 		redefine
-			make, do_clear, do_populate, can_populate
+			make, do_clear, do_populate, can_populate, can_edit, enable_edit, disable_edit
 		end
 
 	ARCHETYPE_TERM_CODE_TOOLS
@@ -31,6 +31,8 @@ feature {NONE}-- Initialization
 
 	make
 		do
+			precursor
+
 			-- create subordinate widgets
 			create description_controls.make (agent text_widget_handler.on_select_all)
 			create node_map_control.make (agent select_ontology_item_from_code)
@@ -55,6 +57,8 @@ feature {NONE}-- Initialization
 
 			ev_notebook.set_item_text (serialisation_control.ev_root_container, create_message_content ("serialised_tab_text", Void))
 			ev_notebook.item_tab (serialisation_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/serialised"))
+
+			set_tab_texts
 		end
 
 feature -- UI Feedback
@@ -80,7 +84,23 @@ feature -- Status Report
 			Result := a_source.is_valid
 		end
 
+	can_edit: BOOLEAN
+			-- True if this tool had editing capability
+		do
+			Result := True
+		end
+
 feature -- Commands
+
+	enable_edit
+		do
+			description_controls.enable_edit
+		end
+
+	disable_edit
+		do
+			description_controls.disable_edit
+		end
 
 	update_rm_icons_setting
 			-- call this routine if rm_icons setting changed elsewhere in tool
