@@ -30,10 +30,18 @@ feature -- Access
 	source_archetype: ARCHETYPE
 			-- differential or flat version of archetype, depending on setting of `differential_view'
 		do
-			if differential_view then
-				Result := source.differential_archetype
+			if not editing_enabled then
+				if differential_view then
+					Result := source.differential_archetype
+				else
+					Result := source.flat_archetype
+				end
 			else
-				Result := source.flat_archetype
+				if differential_view then
+					Result := source.differential_archetype_clone
+				else
+					Result := source.flat_archetype_clone
+				end
 			end
 		end
 

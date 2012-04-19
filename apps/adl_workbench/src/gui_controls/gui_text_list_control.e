@@ -46,6 +46,12 @@ feature -- Commands
 			populate_ev_multi_list_from_list (ev_data_control, data_source.item ([]))
 		end
 
+feature {NONE} -- Implementation
+
+	process_in_place_edit
+		do
+		end
+
 end
 
 

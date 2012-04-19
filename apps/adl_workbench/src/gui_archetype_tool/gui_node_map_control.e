@@ -443,12 +443,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	shrink_to_level (a_type: STRING)
-			-- Shrink the tree control up to items of type `a_type'.
-		do
-			ev_tree.recursive_do_all (agent ev_tree_item_shrink_to_level (a_type, ?))
-		end
-
 	roll_up_to_specialisation_level
 			-- roll the tree up so that nodes whose rolled_up_specialisation_status is
 			-- ss_inherited are closed, but nodes with
@@ -456,39 +450,31 @@ feature {NONE} -- Implementation
 			archetype_selected: attached source
 		do
 			if source_archetype.is_specialised and not source_archetype.is_template then
-				create node_list.make(0)
-				ev_tree.recursive_do_all(agent ev_tree_item_roll_up(?))
+				ev_tree.recursive_do_all (agent ev_tree_item_roll_up)
+			end
+		end
 
-				from node_list.start until node_list.off loop
-					node_list.item.collapse
-					node_list.forth
+	ev_tree_item_roll_up (an_ev_tree_node: attached EV_TREE_NODE)
+			-- close nodes that have rolled_up_specialisation_status = ss_inherited; open others
+		do
+			if an_ev_tree_node.is_expandable then
+				if attached {ARCHETYPE_CONSTRAINT} an_ev_tree_node.data as ac then
+					if ac.specialisation_status = ss_inherited and not an_ev_tree_node.there_exists (agent ev_tree_node_non_inherited) then
+						an_ev_tree_node.collapse
+					else
+						an_ev_tree_node.expand
+					end
 				end
 			end
 		end
 
-	ev_tree_item_shrink_to_level (a_level: attached STRING; an_ev_tree_node: attached EV_TREE_NODE)
-			--
+	ev_tree_node_non_inherited (a_node: EV_TREE_NODE): BOOLEAN
+			-- test that looks at child nodes and
 		do
-			if attached an_ev_tree_node.data then
-				if attached {C_ATTRIBUTE} an_ev_tree_node.data and an_ev_tree_node.is_expandable then
-					an_ev_tree_node.expand
-				elseif an_ev_tree_node.is_expandable then
-					if a_level.is_equal ("addressable") then
-						if attached {C_COMPLEX_OBJECT} an_ev_tree_node as an_obj_node and then an_obj_node.is_addressable then
-							an_ev_tree_node.expand
-						else
-							an_ev_tree_node.collapse
-						end
-					elseif a_level.is_equal ("anonymous") then
-						if attached {C_COMPLEX_OBJECT} an_ev_tree_node then
-							an_ev_tree_node.expand
-						else
-							an_ev_tree_node.collapse
-						end
-					elseif a_level.is_equal ("simple") then
-						an_ev_tree_node.expand
-					end
-				end
+			if a_node.is_expandable then
+				Result := a_node.is_expanded
+			elseif attached {ARCHETYPE_CONSTRAINT} a_node.data as ac2 then
+				Result := ac2.specialisation_status /= ss_inherited
 			end
 		end
 
@@ -521,20 +507,6 @@ feature {NONE} -- Implementation
 
 				if an_ev_tree_node.off then -- didn't find any expanded children
 					node_list.extend (an_ev_tree_node)
-				end
-			end
-		end
-
-	ev_tree_item_roll_up (an_ev_tree_node: attached EV_TREE_NODE)
-			-- close nodes that have rolled_up_specialisation_status = ss_inherited; open others
-		do
-			if an_ev_tree_node.is_expandable then
-				if attached {ARCHETYPE_CONSTRAINT} an_ev_tree_node.data as ac then
-					if ac.inferred_rolled_up_specialisation_status.value = ss_inherited then
-						an_ev_tree_node.collapse
-					else
-						an_ev_tree_node.expand
-					end
 				end
 			end
 		end

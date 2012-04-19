@@ -1,19 +1,7 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Visual control for a data source that outputs to an EV_MULTI_COLUMN_LIST. Specialise data source
-				 in descendants.
-				 Visual control structure is a single or multi-column table with a title, in-place editing and deletion, 
-				 right-click context menu to add a row.
-				 
-								   Title
-						+----------------------------+
-						|                            |
-						|                            |
-						|                            |
-						|                            |
-						+----------------------------+
-
+				 One undo/redo object in an undo/redo chain.
 				 ]"
 	keywords:    "UI, ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
@@ -26,73 +14,45 @@ note
 	last_change: "$LastChangedDate$"
 
 
-deferred class GUI_EV_MLIST_CONTROL
+class UNDO_REDO_ACTION
 
-inherit
-	GUI_DATA_CONTROL
-		rename
-			make as make_data_control
-		redefine
-			enable_edit, disable_edit
-		end
-
-feature -- Definitions
-
-	default_min_height: INTEGER = 25
-
-	default_min_width: INTEGER = 50
+create
+	make
 
 feature -- Initialisation
 
-	make (a_title: STRING; a_data_source: like data_source; min_height, min_width: INTEGER; use_hbox_container: BOOLEAN)
+	make (an_undo_action, a_redo_action, a_display_action: PROCEDURE [ANY, TUPLE])
 		do
-			make_data_control (a_title, a_data_source, default_min_height.max (min_height), default_min_height.max (min_width), use_hbox_container, True)
-			ev_data_control.hide_title_row
+			undo_action := an_undo_action
+			redo_action := a_redo_action
+			display_action := a_display_action
 		end
 
 feature -- Access
 
-	ev_data_control: EV_MULTI_COLUMN_LIST_EDITABLE
+	undo_action: PROCEDURE [ANY, TUPLE]
+
+	redo_action: PROCEDURE [ANY, TUPLE]
+
+	display_action: PROCEDURE [ANY, TUPLE]
 
 feature -- Commands
 
-	enable_edit
-			-- enable editing
-		local
-			root_win: EV_WINDOW
+	undo
 		do
-			precursor
-			root_win := proximate_ev_window (ev_root_container)
-			ev_data_control.enable_editing (root_win)
-			ev_data_control.set_all_columns_editable
-			ev_data_control.end_edit_actions.extend (agent process_in_place_edit)
+			undo_action.call ([])
+			display_action.call ([])
 		end
 
-	disable_edit
-			-- disable editing
+	redo
 		do
-			precursor
-		end
-
-	do_clear
-			-- Wipe out content.
-		do
-			ev_data_control.wipe_out
+			redo_action.call ([])
+			display_action.call ([])
 		end
 
 feature {NONE} -- Implementation
 
-	process_in_place_edit
-		deferred
-		end
-
-	create_ev_data_control
-		do
-			create ev_data_control
-		end
-
 end
-
 
 
 --|

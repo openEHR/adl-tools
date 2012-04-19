@@ -20,7 +20,7 @@ inherit
 		end
 
 create
-	make, make_minimal, make_from_flat, make_all
+	make, make_minimal, make_from_flat, make_all, make_from_other
 
 feature -- Initialisation
 

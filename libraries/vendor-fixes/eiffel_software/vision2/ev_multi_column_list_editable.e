@@ -467,7 +467,7 @@ feature {NONE} -- Commands
 		--	update_agents (relative_window, False)
 		end
 
-feature {NONE} -- Widget
+feature -- Widget
 
 	widget: detachable EV_TEXT_COMPONENT
 			-- The widget with the Current keyboard focus.

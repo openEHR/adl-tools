@@ -49,7 +49,7 @@ feature {NONE} -- Initialisation
 			ev_root_container.set_item_text (admin_vbox, create_message_content ("authoring_tab_text", Void))
 			create lifecycle_state_text_ctl.make (create_message_content ("lifecycle_state_label_text", Void),
 				agent :STRING do Result := source_archetype.description.lifecycle_state end,
-				0, 200, True, False, a_text_box_select_all_handler)
+				0, 250, True, False, a_text_box_select_all_handler)
 			gui_data_controls.extend (lifecycle_state_text_ctl)
 			admin_vbox.extend (lifecycle_state_text_ctl.ev_root_container)
 			admin_vbox.disable_item_expand (lifecycle_state_text_ctl.ev_root_container)
@@ -61,7 +61,7 @@ feature {NONE} -- Initialisation
 				65, min_entry_control_width, False)
 			gui_data_controls.extend (original_author_ctl)
 			create auth_contrib_list_ctl.make (create_message_content ("auth_contrib_label_text", Void),
-				agent :LIST [STRING] do Result := source_archetype.description.other_contributors end,
+				agent :LIST [STRING] do if attached source_archetype.description.other_contributors then Result := source_archetype.description.other_contributors end end,
 				30, min_entry_control_width, False)
 			gui_data_controls.extend (auth_contrib_list_ctl)
 			auth_frame_ctl.extend (original_author_ctl.ev_root_container, True)
@@ -94,28 +94,28 @@ feature {NONE} -- Initialisation
 			create trans_author_accreditation_vbox
 			lang_translations_hbox.extend (trans_author_accreditation_vbox)
 			create trans_author_ctl.make (create_message_content ("author_label_text", Void),
-				agent :HASH_TABLE [STRING, STRING] do Result := translation_details.author end,
+				agent :HASH_TABLE [STRING, STRING] do if source_archetype.has_translations then Result := translation_details.author end end,
 				65, min_entry_control_width, False)
 			gui_data_controls.extend (trans_author_ctl)
 			trans_languages_ctl.add_linked_control (trans_author_ctl)
 			trans_author_accreditation_vbox.extend (trans_author_ctl.ev_root_container)
 
 			create trans_accreditation_text_ctl.make (create_message_content ("accreditation_label_text", Void),
-				agent :STRING do Result := translation_details.accreditation end,
+				agent :STRING do if source_archetype.has_translations then Result := translation_details.accreditation end end,
 				0, 0, False, a_text_box_select_all_handler)
 			gui_data_controls.extend (trans_accreditation_text_ctl)
 			trans_author_accreditation_vbox.extend (trans_accreditation_text_ctl.ev_root_container)
 			trans_languages_ctl.add_linked_control (trans_accreditation_text_ctl)
 
 			create trans_other_details_ctl.make (create_message_content ("other_details_label_text", Void),
-				agent :HASH_TABLE [STRING, STRING] do Result := translation_details.other_details end,
+				agent :HASH_TABLE [STRING, STRING] do if source_archetype.has_translations then Result := translation_details.other_details end end,
 				40, min_entry_control_width, False)
 			gui_data_controls.extend (trans_other_details_ctl)
 			trans_languages_ctl.add_linked_control (trans_other_details_ctl)
 			lang_translations_hbox.extend (trans_other_details_ctl.ev_root_container)
 
 			create copyright_text_ctl.make (create_message_content ("copyright_label_text", Void),
-				agent :STRING do Result := description_details.copyright end,
+				agent :STRING do if attached description_details then Result := description_details.copyright end end,
 				44, min_entry_control_width, True, a_text_box_select_all_handler)
 			gui_data_controls.extend (copyright_text_ctl)
 			admin_vbox.extend (copyright_text_ctl.ev_root_container)
@@ -133,15 +133,15 @@ feature {NONE} -- Initialisation
 			details_hbox.extend (details_frame_ctl.ev_root_container)
 
 			create purpose_text_ctl.make (create_message_content ("purpose_label_text", Void),
-				agent :STRING do if attached source_archetype.has_translations then Result := description_details.purpose end end,
+				agent :STRING do if attached description_details then Result := description_details.purpose end end,
 				0, 0, True, a_text_box_select_all_handler)
 			gui_data_controls.extend (purpose_text_ctl)
 			create use_text_ctl.make (create_message_content ("use_label_text", Void),
-				agent :STRING do if attached source_archetype.has_translations then Result := description_details.use end end,
+				agent :STRING do if attached description_details then Result := description_details.use end end,
 				0, 0, True, a_text_box_select_all_handler)
 			gui_data_controls.extend (use_text_ctl)
 			create misuse_text_ctl.make (create_message_content ("misuse_label_text", Void),
-				agent :STRING do if attached source_archetype.has_translations then Result := description_details.misuse end end,
+				agent :STRING do if attached description_details then Result := description_details.misuse end end,
 				0, 0, True, a_text_box_select_all_handler)
 			gui_data_controls.extend (misuse_text_ctl)
 			details_frame_ctl.extend (purpose_text_ctl.ev_root_container, True)
@@ -149,7 +149,7 @@ feature {NONE} -- Initialisation
 			details_frame_ctl.extend (misuse_text_ctl.ev_root_container, True)
 
 			create keywords_list_ctl.make (create_message_content ("keywords_label_text", Void),
-				agent :LIST [STRING] do if attached source_archetype.description.details then Result := description_details.keywords end end,
+				agent :LIST [STRING] do if attached description_details then Result := description_details.keywords end end,
 				0, 200, False)
 			gui_data_controls.extend (keywords_list_ctl)
 			details_hbox.extend (keywords_list_ctl.ev_root_container)
@@ -231,8 +231,6 @@ feature {NONE} -- Implementation
 	details_hbox, lang_translations_hbox, lang_original_trans_hbox: EV_HORIZONTAL_BOX
 
 	auth_frame_ctl, lang_frame_ctl, details_frame_ctl, resource_frame_ctl: GUI_FRAME_CONTROL
-
---	l_ev_cell_1: EV_CELL
 
 	lifecycle_state_text_ctl, original_language_text_ctl, resource_package_ctl: GUI_SINGLE_LINE_TEXT_CONTROL
 

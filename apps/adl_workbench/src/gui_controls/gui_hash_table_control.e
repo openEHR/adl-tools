@@ -36,11 +36,22 @@ inherit
 create
 	make
 
-feature -- Definitions
-
 feature -- Access
 
-	data_source: FUNCTION [ANY, TUPLE, HASH_TABLE [ANY, STRING]]
+	data_source: FUNCTION [ANY, TUPLE, HASH_TABLE [STRING, STRING]]
+
+feature -- Modification
+
+	set_editing_agents (an_undo_redo_chain: like undo_redo_chain;
+			an_add_item_agent: like add_item_agent;
+			a_replace_item_agent: like replace_item_agent;
+			a_remove_item_agent: like remove_item_agent)
+		do
+			undo_redo_chain := an_undo_redo_chain
+			add_item_agent := an_add_item_agent
+			replace_item_agent := a_replace_item_agent
+			remove_item_agent := a_remove_item_agent
+		end
 
 feature -- Commands
 
@@ -52,6 +63,107 @@ feature -- Commands
 feature -- Events
 
 feature {NONE} -- Implementation
+
+	undo_redo_chain: UNDO_REDO_CHAIN
+
+	process_in_place_edit
+		local
+			old_key, old_val, new_key, new_val: STRING
+			ds: HASH_TABLE [STRING, STRING]
+			i: INTEGER
+		do
+			ds := data_source.item ([])
+			from ds.start until i = ev_data_control.widget_row or ds.off loop
+				i := i + 1
+				ds.forth
+			end
+			old_key := ds.key_for_iteration
+			old_val := ds.item_for_iteration
+
+			if ev_data_control.widget_column = 1 then -- key was modified; treat it as a remove & add
+				new_key := ev_data_control.i_th (ev_data_control.widget_row).i_th (1)
+				do_replace_key (ds, new_key, old_key, old_val)
+				undo_redo_chain.add_link (
+					agent do_replace_key (ds, new_key, old_key, old_val), agent undo_replace_key (ds, new_key, old_key, old_val), agent do_populate
+				)
+			else -- value modified; it's a replace
+				new_val := ev_data_control.i_th (ev_data_control.widget_row).i_th (2)
+				do_replace_item (ds, old_key, new_val)
+				undo_redo_chain.add_link (
+					agent do_replace_item (ds, old_key, new_val), agent undo_replace_item (ds, old_key, old_val), agent do_populate
+				)
+			end
+
+		end
+
+	process_add_new
+		do
+
+		end
+
+	process_remove_existing
+		local
+			ds: HASH_TABLE [STRING, STRING]
+			old_key, old_val: STRING
+		do
+			ds := data_source.item ([])
+			do_remove_item (ds, old_key)
+			undo_redo_chain.add_link (
+				agent do_remove_item (ds, old_key), agent undo_remove_item (ds, old_key, old_val), agent do_populate
+			)
+		end
+
+	do_replace_key (a_data_source_target: HASH_TABLE [STRING, STRING]; a_new_key, an_old_key, an_old_value: STRING)
+		do
+			remove_item_agent.call ([an_old_key])
+			add_item_agent.call ([a_new_key, an_old_value])
+		end
+
+	undo_replace_key (a_data_source_target: HASH_TABLE [STRING, STRING]; a_new_key, an_old_key, an_old_value: STRING)
+		do
+			remove_item_agent.call ([a_new_key])
+			add_item_agent.call ([an_old_key, an_old_value])
+		end
+
+	do_add_item (a_data_source_target: HASH_TABLE [STRING, STRING]; a_key, a_value: STRING)
+		do
+			add_item_agent.call ([a_key, a_value])
+		end
+
+	undo_add_item (a_data_source_target: HASH_TABLE [STRING, STRING]; a_key: STRING)
+		do
+			remove_item_agent.call ([a_key])
+		end
+
+	do_replace_item (a_data_source_target: HASH_TABLE [STRING, STRING]; a_key, a_new_value: STRING)
+		do
+			replace_item_agent.call ([a_key, a_new_value])
+		end
+
+	undo_replace_item (a_data_source_target: HASH_TABLE [STRING, STRING]; a_key, an_old_value: STRING)
+		do
+			replace_item_agent.call ([a_key, an_old_value])
+		end
+
+	do_remove_item (a_data_source_target: HASH_TABLE [STRING, STRING]; a_key: STRING)
+		do
+			remove_item_agent.call ([a_key])
+		end
+
+	undo_remove_item (a_data_source_target: HASH_TABLE [STRING, STRING]; a_key, an_old_value: STRING)
+		do
+			add_item_agent.call ([a_key, an_old_value])
+		end
+
+	add_item_agent: PROCEDURE [ANY, TUPLE [a_key: STRING; a_value: STRING]]
+			-- an agent that can be used to add a new entry to the hash table
+
+	replace_item_agent: PROCEDURE [ANY, TUPLE [a_key: STRING; a_new_value: STRING]]
+			-- an agent that can be used to replace an entry in the hash table
+
+	remove_item_agent: PROCEDURE [ANY, TUPLE [a_key: STRING]]
+			-- an agent that can be used to remove an entry in the hash table
+
 
 end
 

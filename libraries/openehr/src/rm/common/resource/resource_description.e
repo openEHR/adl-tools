@@ -145,6 +145,27 @@ feature -- Modification
 			Original_author_set: original_author.item(a_key) = a_value
 		end
 
+	replace_original_author_item (a_key, a_value: attached STRING)
+			-- replace value for `a_key' in `original_author'
+		require
+			Key_valid: original_author.has (a_key)
+			Value_valid: not a_value.is_empty
+		do
+			original_author.replace (a_value, a_key)
+		ensure
+			Value_replaced: original_author.item (a_key) = a_value
+		end
+
+	remove_original_author_item (a_key: attached STRING)
+			-- remove the key, value pair from `original_author'
+		require
+			Key_valid: original_author.has (a_key)
+		do
+			original_author.remove (a_key)
+		ensure
+			Item_removed: not original_author.has (a_key)
+		end
+
 	clear_original_author
 			-- wipeout current items in original_author list
 		do
@@ -158,10 +179,21 @@ feature -- Modification
 		do
 			if other_contributors = Void then
 				create other_contributors.make(0)
+				other_contributors.compare_objects
 			end
 			other_contributors.extend (a_contributor)
 		ensure
 			Other_contributor_set: other_contributors.has(a_contributor)
+		end
+
+	remove_other_contributor (a_contributor: attached STRING)
+			-- add a_contributor to add_other_contributor
+		require
+			Contributor_valid: other_contributors.has (a_contributor)
+		do
+			other_contributors.prune_all (a_contributor)
+		ensure
+			Other_contributor_set: not other_contributors.has(a_contributor)
 		end
 
 	clear_other_contributors

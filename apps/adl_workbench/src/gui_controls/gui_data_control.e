@@ -32,12 +32,11 @@ feature -- Initialisation
 
 	make (a_title: STRING; a_data_source: like data_source; min_height, min_width: INTEGER; use_hbox_container: BOOLEAN; allow_expansion: BOOLEAN)
 		local
-			mh: INTEGER
+			mh, mw: INTEGER
 		do
 			data_source := a_data_source
 
 			-- create container
-			mh := min_height + 2 * border_width
 			if use_hbox_container then
 				create {EV_HORIZONTAL_BOX} ev_root_container
 			else
@@ -54,11 +53,15 @@ feature -- Initialisation
 			ev_root_container.extend (ev_title_label)
 			ev_root_container.disable_item_expand (ev_title_label)
 
-			if not use_hbox_container then
+			mh := min_height + 2 * border_width
+			mw := min_width + 2 * border_width
+			if use_hbox_container then
+				mw := mw + ev_title_label.width + padding_width
+			else
 				mh := mh + ev_title_label.height + padding_width
 			end
 			ev_root_container.set_minimum_height (mh)
-			ev_root_container.set_minimum_width (min_width + 2 * border_width)
+			ev_root_container.set_minimum_width (mw)
 
 			-- create the data control and add to ev_container
 			create_ev_data_control

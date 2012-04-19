@@ -94,11 +94,13 @@ feature -- Commands
 
 	enable_edit
 		do
+			precursor
 			description_controls.enable_edit
 		end
 
 	disable_edit
 		do
+			precursor
 			description_controls.disable_edit
 		end
 
