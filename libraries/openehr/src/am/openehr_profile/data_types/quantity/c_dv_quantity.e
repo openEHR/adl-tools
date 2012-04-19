@@ -177,13 +177,11 @@ feature -- Comparison
 						if (list = Void and other.list = Void) then
 							Result := True
 						elseif list /= Void and other.list /= Void and list.count <= other.list.count then
-							from
-								list.start
-							until
-								list.off or fail
-							loop
-								other_item := other.list_item_by_units(list.item.units)
-								if other_item = Void or not other_item.magnitude.contains(list.item.magnitude) then
+							from list.start until list.off or fail loop
+								other_item := other.list_item_by_units (list.item.units)
+								if not attached other_item or else  -- there was no item in `other' matching this unit in Current
+									attached other_item.magnitude and then not other_item.magnitude.contains (list.item.magnitude)
+								then
 									fail := True
 								end
 								list.forth
@@ -243,7 +241,7 @@ feature -- Implementation
 	default_units: detachable STRING
 			-- record default units if property is set; used to generate a default value
 
-	list_item_by_units (a_units: attached STRING): C_QUANTITY_ITEM
+	list_item_by_units (a_units: attached STRING): detachable C_QUANTITY_ITEM
 			-- return item from `list' whose units match a_units' or else Void
 		require
 			a_units_valid: not a_units.is_empty

@@ -311,12 +311,14 @@ end
 							end
 							child_grafted_path_list.extend (cco_child_diff.path)
 
-						-- otherwise is it a normal override
-						else
-							-- firstly, add overrides from immediate child node to corresponding flat node
+						else -- otherwise is it a normal override
 debug ("flatten")
 	io.put_string ("%TOVERLAY immediate node " + cco_child_diff.node_id + " on flat parent " + cco_output_flat.node_id + "%N")
 end
+							-- firstly, add overrides from immediate child node to corresponding flat node
+							-- this if statement needed because the first branch is what we have to do in order to
+							-- ensure the parent C_ATTR child link to the object is maintained properly. The else
+							-- branch only for the root node, which has no parent...
 							if attached cco_output_flat.parent then
 								cco_output_flat.parent.overlay_differential (cco_output_flat, cco_child_diff, rm_schema)
 							else
@@ -354,7 +356,8 @@ end
 									c_path_in_diff.finish
 									from cco_csr := cco_output_flat_proximate until cco_csr = cco_output_flat loop
 										if c_path_in_diff.item.is_addressable and then c_path_in_diff.item.object_id.count > cco_csr.node_id.count and then
-												c_path_in_diff.item.object_id.starts_with (cco_csr.node_id) then
+												c_path_in_diff.item.object_id.starts_with (cco_csr.node_id)
+										then
 debug ("flatten")
 	io.put_string ("%T%T%Treplacing node id " + cco_csr.node_id +
 		" in flat structure with " + c_path_in_diff.item.object_id + "%N")
@@ -525,14 +528,15 @@ end
 				from i := merge_list.item.start_pos until i > merge_list.item.end_pos loop
 					if is_valid_code (ca_child.children.i_th(i).node_id) 																						-- identified nodes only
 						and specialisation_status_from_code (ca_child.children.i_th(i).node_id, arch_child_diff.specialisation_depth).value = ss_added 			-- that have been added
-						or attached {C_ARCHETYPE_ROOT} ca_child.children.i_th(i) as car 																		-- or else C_ARCHETYPE_ROOTs
+						or attached {C_ARCHETYPE_ROOT} ca_child.children.i_th (i) as car 																		-- or else C_ARCHETYPE_ROOTs
 					then
-						child_grafted_path_list.extend (ca_child.children.i_th(i).path) -- remember the path, so we don't try to do it again later on
+						child_grafted_path_list.extend (ca_child.children.i_th (i).path) -- remember the path, so we don't try to do it again later on
 
 						-- now we either merge the object, or deal with the special case of occurrences = 0,
 						-- in which case, remove the target object
 						if ca_child.children.i_th(i).is_prohibited then
 							ca_output.remove_child (insert_obj)
+							ca_output.set_specialisation_status_redefined -- mark parent as redefined if a child is removed
 						else
 							merge_obj := ca_child.children.i_th(i).safe_deep_twin
 							merge_obj.clear_sibling_order -- no sibling_order markers in flat archetypes!
@@ -542,6 +546,7 @@ end
 								ca_output.put_child_right (merge_obj, insert_obj)
 								insert_obj := ca_output.child_after (insert_obj) -- move 1 to the right, so adding occurs after
 							end
+							merge_obj.set_specialisation_status_added
 						end
 
 					elseif attached {ARCHETYPE_SLOT} ca_child.children.i_th(i) as arch_slot then	-- ARCHETYPE_SLOT override
@@ -549,8 +554,9 @@ end
 						if arch_slot.is_closed then
 							ca_output.remove_child_by_id (code_at_level (ca_child.children.i_th(i).node_id, arch_parent_flat.specialisation_depth))
 						else
-							ca_output.replace_child_by_id (ca_child.children.i_th(i).safe_deep_twin,
-									code_at_level (ca_child.children.i_th(i).node_id, arch_parent_flat.specialisation_depth))
+							merge_obj := ca_child.children.i_th(i).safe_deep_twin
+							ca_output.replace_child_by_id (merge_obj, code_at_level (merge_obj.node_id, arch_parent_flat.specialisation_depth))
+							merge_obj.set_specialisation_status_redefined
 						end
 					else
 						debug("flatten")
@@ -575,32 +581,41 @@ end
 			from ca_child.children.start until ca_child.children.off loop
 				if attached {ARCHETYPE_SLOT} ca_child.children.item as arch_slot then
 					if arch_slot.is_closed then
-						ca_output.remove_child_by_id (code_at_level (ca_child.children.item.node_id, arch_parent_flat.specialisation_depth))
-					elseif specialisation_status_from_code (ca_child.children.item.node_id, arch_child_diff.specialisation_depth).value = ss_added then
-						ca_output.put_child(ca_child.children.item.safe_deep_twin)
+						ca_output.remove_child_by_id (code_at_level (arch_slot.node_id, arch_parent_flat.specialisation_depth))
+					elseif specialisation_status_from_code (arch_slot.node_id, arch_child_diff.specialisation_depth).value = ss_added then
+						merge_obj := arch_slot.safe_deep_twin
+						ca_output.put_child (merge_obj)
+						merge_obj.set_specialisation_status_added
 					else
-						ca_output.replace_child_by_id (ca_child.children.item.safe_deep_twin,
-								code_at_level (ca_child.children.item.node_id, arch_parent_flat.specialisation_depth))
+						merge_obj := arch_slot.safe_deep_twin
+						ca_output.replace_child_by_id (merge_obj,
+								code_at_level (arch_slot.node_id, arch_parent_flat.specialisation_depth))
+						merge_obj.set_specialisation_status_redefined
 					end
 
 				elseif attached {C_ARCHETYPE_ROOT} ca_child.children.item as car then
-					merge_obj := ca_child.children.item.safe_deep_twin
+					merge_obj := car.safe_deep_twin
 					ca_output.put_child (merge_obj)
-					child_grafted_path_list.extend (ca_child.children.item.path)
+					merge_obj.set_specialisation_status_added
+					child_grafted_path_list.extend (car.path)
 
-				elseif not attached {C_COMPLEX_OBJECT} ca_child.children.item as cco then
+				elseif not attached {C_COMPLEX_OBJECT} ca_child.children.item then
+					merge_obj := ca_child.children.item.safe_deep_twin
+					merge_obj.set_specialisation_status_redefined
+
 					if ca_child.children.item.is_addressable then -- if identified, find corresponding node in parent & replace completely
-						ca_output.replace_child_by_id (ca_child.children.item.safe_deep_twin,
-							code_at_level (ca_child.children.item.node_id, arch_parent_flat.specialisation_depth))
-					elseif ca_output.has_child_with_rm_type_name(ca_child.children.item.rm_type_name) then -- find a node of same type, then replace completely
-						ca_output.replace_child_by_rm_type_name (ca_child.children.item.safe_deep_twin)
+						ca_output.replace_child_by_id (merge_obj, code_at_level (merge_obj.node_id, arch_parent_flat.specialisation_depth))
+
+					elseif ca_output.has_child_with_rm_type_name (merge_obj.rm_type_name) then -- find a node of same type, then replace completely
+						ca_output.replace_child_by_rm_type_name (merge_obj)
+
 					else -- or a RM parent type, then add
-						rm_ancestors := rm_schema.all_ancestor_classes_of(ca_child.children.item.rm_type_name)
-						from rm_ancestors.start until rm_ancestors.off or ca_output.has_child_with_rm_type_name(rm_ancestors.item) loop
+						rm_ancestors := rm_schema.all_ancestor_classes_of (merge_obj.rm_type_name)
+						from rm_ancestors.start until rm_ancestors.off or ca_output.has_child_with_rm_type_name (rm_ancestors.item) loop
 							rm_ancestors.forth
 						end
 						if not rm_ancestors.off then
-							ca_output.put_child (ca_child.children.item.safe_deep_twin)
+							ca_output.put_child (merge_obj)
 						end
 					end
 					child_grafted_path_list.extend (ca_child.children.item.path)
