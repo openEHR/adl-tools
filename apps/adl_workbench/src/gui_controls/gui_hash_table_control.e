@@ -82,15 +82,15 @@ feature {NONE} -- Implementation
 
 			if ev_data_control.widget_column = 1 then -- key was modified; treat it as a remove & add
 				new_key := ev_data_control.i_th (ev_data_control.widget_row).i_th (1)
-				do_replace_key (ds, new_key, old_key, old_val)
+				do_replace_key (old_key, new_key, old_val)
 				undo_redo_chain.add_link (
-					agent do_replace_key (ds, new_key, old_key, old_val), agent undo_replace_key (ds, new_key, old_key, old_val), agent do_populate
+					agent do_replace_key (old_key, new_key, old_val), agent undo_replace_key (old_key, new_key, old_val), agent do_populate
 				)
-			else -- value modified; it's a replace
+			else -- value modified; it's a normal replace
 				new_val := ev_data_control.i_th (ev_data_control.widget_row).i_th (2)
-				do_replace_item (ds, old_key, new_val)
+				replace_item_agent.call ([old_key, new_val])
 				undo_redo_chain.add_link (
-					agent do_replace_item (ds, old_key, new_val), agent undo_replace_item (ds, old_key, old_val), agent do_populate
+					agent do_replace_item (old_key, new_val), agent undo_replace_item (old_key, old_val), agent do_populate
 				)
 			end
 
@@ -107,63 +107,65 @@ feature {NONE} -- Implementation
 			old_key, old_val: STRING
 		do
 			ds := data_source.item ([])
-			do_remove_item (ds, old_key)
+			do_remove_item (old_key)
 			undo_redo_chain.add_link (
-				agent do_remove_item (ds, old_key), agent undo_remove_item (ds, old_key, old_val), agent do_populate
+				agent do_remove_item (old_key), agent undo_remove_item (old_key, old_val), agent do_populate
 			)
 		end
 
-	do_replace_key (a_data_source_target: HASH_TABLE [STRING, STRING]; a_new_key, an_old_key, an_old_value: STRING)
+	do_replace_key (an_old_key, a_new_key, an_old_value: STRING)
 		do
-			remove_item_agent.call ([an_old_key])
+			remove_item_agent.call ([an_old_key, an_old_value])
 			add_item_agent.call ([a_new_key, an_old_value])
 		end
 
-	undo_replace_key (a_data_source_target: HASH_TABLE [STRING, STRING]; a_new_key, an_old_key, an_old_value: STRING)
+	undo_replace_key (an_old_key, a_new_key, an_old_value: STRING)
 		do
-			remove_item_agent.call ([a_new_key])
+			remove_item_agent.call ([a_new_key, an_old_value])
 			add_item_agent.call ([an_old_key, an_old_value])
 		end
 
-	do_add_item (a_data_source_target: HASH_TABLE [STRING, STRING]; a_key, a_value: STRING)
-		do
-			add_item_agent.call ([a_key, a_value])
-		end
-
-	undo_add_item (a_data_source_target: HASH_TABLE [STRING, STRING]; a_key: STRING)
-		do
-			remove_item_agent.call ([a_key])
-		end
-
-	do_replace_item (a_data_source_target: HASH_TABLE [STRING, STRING]; a_key, a_new_value: STRING)
+	do_replace_item (a_key, a_new_value: STRING)
 		do
 			replace_item_agent.call ([a_key, a_new_value])
 		end
 
-	undo_replace_item (a_data_source_target: HASH_TABLE [STRING, STRING]; a_key, an_old_value: STRING)
+	undo_replace_item (a_key, an_old_value: STRING)
 		do
 			replace_item_agent.call ([a_key, an_old_value])
 		end
 
-	do_remove_item (a_data_source_target: HASH_TABLE [STRING, STRING]; a_key: STRING)
+	do_add_item (a_key, a_value: STRING)
+		do
+			add_item_agent.call ([a_key, a_value])
+		end
+
+	undo_add_item (a_key: STRING)
 		do
 			remove_item_agent.call ([a_key])
 		end
 
-	undo_remove_item (a_data_source_target: HASH_TABLE [STRING, STRING]; a_key, an_old_value: STRING)
+	do_remove_item (a_key: STRING)
+		do
+			remove_item_agent.call ([a_key])
+		end
+
+	undo_remove_item (a_key, an_old_value: STRING)
 		do
 			add_item_agent.call ([a_key, an_old_value])
 		end
 
-	add_item_agent: PROCEDURE [ANY, TUPLE [a_key: STRING; a_value: STRING]]
-			-- an agent that can be used to add a new entry to the hash table
+	add_item_agent: PROCEDURE [ANY, TUPLE [a_key: STRING; a_new_value: STRING]]
+			-- an agent that can be used to add an entry to the hash table;
+			-- this will typically be a setter routine from a high-level object, not the HASH_TABLE in question
 
 	replace_item_agent: PROCEDURE [ANY, TUPLE [a_key: STRING; a_new_value: STRING]]
-			-- an agent that can be used to replace an entry in the hash table
+			-- an agent that can be used to replace an entry in the hash table;
+			-- this will typically be a setter routine from a high-level object, not the HASH_TABLE in question
 
 	remove_item_agent: PROCEDURE [ANY, TUPLE [a_key: STRING]]
-			-- an agent that can be used to remove an entry in the hash table
-
+			-- an agent that can be used to remove an entry in the hash table;
+			-- this will typically be a setter routine from a high-level object, not the HASH_TABLE in question
 
 end
 

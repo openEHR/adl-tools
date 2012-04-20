@@ -54,7 +54,7 @@ feature -- Access
 
 	parent: OG_OBJECT_NODE
 
-	differential_path: OG_PATH
+	differential_path: detachable OG_PATH
 			-- if set, contains the path to this attribute, excluding the name of this attribute, allowing this
 			-- OG_ATTRIBUTE_NODE to stand as a 'path-compressed' replacement for a string of OG_OBJECT_NODE/
 			-- OG_ATTRIBUTE_NODE objects. Only valid in differential archetypes and templates.
@@ -94,7 +94,7 @@ feature -- Status Report
 	has_differential_path: BOOLEAN
 			-- True if this node has a differential path
 		do
-			Result := differential_path /= Void
+			Result := attached differential_path
 		end
 
 	valid_child_for_insertion (a_node: like child_type): BOOLEAN

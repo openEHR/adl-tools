@@ -460,6 +460,7 @@ end
 			i: INTEGER
 			after_pending: BOOLEAN
 			start_pos, end_pos: INTEGER
+			node_id_in_parent: STRING
 		do
 			--
 			-- Phase 1: figure out the merge records
@@ -528,7 +529,7 @@ end
 				from i := merge_list.item.start_pos until i > merge_list.item.end_pos loop
 					if is_valid_code (ca_child.children.i_th(i).node_id) 																						-- identified nodes only
 						and specialisation_status_from_code (ca_child.children.i_th(i).node_id, arch_child_diff.specialisation_depth).value = ss_added 			-- that have been added
-						or attached {C_ARCHETYPE_ROOT} ca_child.children.i_th (i) as car 																		-- or else C_ARCHETYPE_ROOTs
+						or attached {C_ARCHETYPE_ROOT} ca_child.children.i_th (i) 																				-- or else C_ARCHETYPE_ROOTs
 					then
 						child_grafted_path_list.extend (ca_child.children.i_th (i).path) -- remember the path, so we don't try to do it again later on
 
@@ -550,12 +551,17 @@ end
 						end
 
 					elseif attached {ARCHETYPE_SLOT} ca_child.children.i_th(i) as arch_slot then	-- ARCHETYPE_SLOT override
-						child_grafted_path_list.extend (ca_child.children.i_th(i).path) -- remember the path, so we don't try to do it again later on
-						if arch_slot.is_closed then
-							ca_output.remove_child_by_id (code_at_level (ca_child.children.i_th(i).node_id, arch_parent_flat.specialisation_depth))
+						node_id_in_parent := code_at_level (arch_slot.node_id, arch_parent_flat.specialisation_depth)
+						child_grafted_path_list.extend (arch_slot.path) -- remember the path, so we don't try to do it again later on
+						if arch_slot.is_prohibited then
+							ca_output.remove_child_by_id (node_id_in_parent)
+						elseif arch_slot.is_closed then
+							if attached {ARCHETYPE_SLOT} ca_output.child_with_id (node_id_in_parent) as flat_arch_slot then
+								flat_arch_slot.set_closed
+							end
 						else
-							merge_obj := ca_child.children.i_th(i).safe_deep_twin
-							ca_output.replace_child_by_id (merge_obj, code_at_level (merge_obj.node_id, arch_parent_flat.specialisation_depth))
+							merge_obj := arch_slot.safe_deep_twin
+							ca_output.replace_child_by_id (merge_obj, node_id_in_parent)
 							merge_obj.set_specialisation_status_redefined
 						end
 					else
@@ -577,19 +583,24 @@ end
 		local
 			rm_ancestors: ARRAYED_LIST [STRING]
 			merge_obj: C_OBJECT
+			node_id_in_parent: STRING
 		do
 			from ca_child.children.start until ca_child.children.off loop
 				if attached {ARCHETYPE_SLOT} ca_child.children.item as arch_slot then
-					if arch_slot.is_closed then
-						ca_output.remove_child_by_id (code_at_level (arch_slot.node_id, arch_parent_flat.specialisation_depth))
+					node_id_in_parent := code_at_level (arch_slot.node_id, arch_parent_flat.specialisation_depth)
+					if arch_slot.is_prohibited then
+						ca_output.remove_child_by_id (node_id_in_parent)
+					elseif arch_slot.is_closed then
+						if attached {ARCHETYPE_SLOT} ca_output.child_with_id (node_id_in_parent) as flat_arch_slot then
+							flat_arch_slot.set_closed
+						end
 					elseif specialisation_status_from_code (arch_slot.node_id, arch_child_diff.specialisation_depth).value = ss_added then
 						merge_obj := arch_slot.safe_deep_twin
 						ca_output.put_child (merge_obj)
 						merge_obj.set_specialisation_status_added
 					else
 						merge_obj := arch_slot.safe_deep_twin
-						ca_output.replace_child_by_id (merge_obj,
-								code_at_level (arch_slot.node_id, arch_parent_flat.specialisation_depth))
+						ca_output.replace_child_by_id (merge_obj, node_id_in_parent)
 						merge_obj.set_specialisation_status_redefined
 					end
 

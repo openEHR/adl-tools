@@ -1363,8 +1363,8 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 405")
 end
 
-			if not archetype_slot.is_closed then
-				abort_with_error("VASMD", <<archetype_slot.rm_type_name, archetype_slot.path>>)
+			if not (archetype_slot.is_closed or archetype_slot.is_prohibited) then
+				abort_with_error("VASMD", <<archetype_slot.rm_type_name, c_attrs.item.path>>)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -1961,7 +1961,7 @@ end
 					bmm_prop_def := rm_schema.property_definition_at_path (object_nodes.item.rm_type_name, path_str)
 					if bmm_prop_def.is_container then
 						create attr_node.make_multiple(rm_attribute_name, yyvs13.item (yyvsp13), yyvs17.item (yyvsp17))
-						attr_node.set_differential_path(parent_path_str)
+						attr_node.set_differential_path (parent_path_str)
 						c_attrs.put(attr_node)
 						debug("ADL_parse")
 							io.put_string(indent + "PUSH create ATTR_NODE " + path_str + "; container = " + attr_node.is_multiple.out) 
@@ -1973,7 +1973,7 @@ end
 						object_nodes.item.put_attribute(attr_node)
 					elseif yyvs17.item (yyvsp17) = Void then
 						create attr_node.make_single(rm_attribute_name, yyvs13.item (yyvsp13))
-						attr_node.set_differential_path(parent_path_str)
+						attr_node.set_differential_path (parent_path_str)
 						c_attrs.put(attr_node)
 						debug("ADL_parse")
 							io.put_string(indent + "PUSH create ATTR_NODE " + path_str + "; container = " + attr_node.is_multiple.out) 

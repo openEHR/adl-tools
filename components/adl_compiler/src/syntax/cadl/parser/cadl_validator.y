@@ -402,10 +402,10 @@ archetype_slot: c_archetype_slot_head SYM_MATCHES SYM_START_CBLOCK c_includes c_
 				indent.remove_tail(1)
 			end
 		}
-	| c_archetype_slot_head -- if closed
+	| c_archetype_slot_head -- if closed or occurrences = 0
 		{
-			if not archetype_slot.is_closed then
-				abort_with_error("VASMD", <<archetype_slot.rm_type_name, archetype_slot.path>>)
+			if not (archetype_slot.is_closed or archetype_slot.is_prohibited) then
+				abort_with_error("VASMD", <<archetype_slot.rm_type_name, c_attrs.item.path>>)
 			end
 		}
 	;
@@ -623,7 +623,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 					bmm_prop_def := rm_schema.property_definition_at_path (object_nodes.item.rm_type_name, path_str)
 					if bmm_prop_def.is_container then
 						create attr_node.make_multiple(rm_attribute_name, $2, $3)
-						attr_node.set_differential_path(parent_path_str)
+						attr_node.set_differential_path (parent_path_str)
 						c_attrs.put(attr_node)
 						debug("ADL_parse")
 							io.put_string(indent + "PUSH create ATTR_NODE " + path_str + "; container = " + attr_node.is_multiple.out) 
@@ -635,7 +635,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 						object_nodes.item.put_attribute(attr_node)
 					elseif $3 = Void then
 						create attr_node.make_single(rm_attribute_name, $2)
-						attr_node.set_differential_path(parent_path_str)
+						attr_node.set_differential_path (parent_path_str)
 						c_attrs.put(attr_node)
 						debug("ADL_parse")
 							io.put_string(indent + "PUSH create ATTR_NODE " + path_str + "; container = " + attr_node.is_multiple.out) 
