@@ -388,6 +388,7 @@ end
 
 									if ca_child.is_prohibited then -- existence = {0}; remove the attribute completely
 										ca_output.parent.remove_attribute_by_name (ca_child.rm_attribute_name)
+										ca_output.parent.set_specialisation_status_redefined
 									else
 										-- graft the existence if that has been changed
 										if attached ca_child.existence then
@@ -555,9 +556,11 @@ end
 						child_grafted_path_list.extend (arch_slot.path) -- remember the path, so we don't try to do it again later on
 						if arch_slot.is_prohibited then
 							ca_output.remove_child_by_id (node_id_in_parent)
+							ca_output.set_specialisation_status_redefined
 						elseif arch_slot.is_closed then
 							if attached {ARCHETYPE_SLOT} ca_output.child_with_id (node_id_in_parent) as flat_arch_slot then
 								flat_arch_slot.set_closed
+								flat_arch_slot.set_specialisation_status_redefined
 							end
 						else
 							merge_obj := arch_slot.safe_deep_twin
@@ -590,9 +593,11 @@ end
 					node_id_in_parent := code_at_level (arch_slot.node_id, arch_parent_flat.specialisation_depth)
 					if arch_slot.is_prohibited then
 						ca_output.remove_child_by_id (node_id_in_parent)
+						ca_output.set_specialisation_status_redefined
 					elseif arch_slot.is_closed then
 						if attached {ARCHETYPE_SLOT} ca_output.child_with_id (node_id_in_parent) as flat_arch_slot then
 							flat_arch_slot.set_closed
+							flat_arch_slot.set_specialisation_status_redefined
 						end
 					elseif specialisation_status_from_code (arch_slot.node_id, arch_child_diff.specialisation_depth).value = ss_added then
 						merge_obj := arch_slot.safe_deep_twin

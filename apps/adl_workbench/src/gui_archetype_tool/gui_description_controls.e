@@ -47,6 +47,7 @@ feature {NONE} -- Initialisation
 			create admin_vbox
 			ev_root_container.extend (admin_vbox)
 			ev_root_container.set_item_text (admin_vbox, create_message_content ("authoring_tab_text", Void))
+			create authoring_tab_undo_redo_chain.make
 			create lifecycle_state_text_ctl.make (create_message_content ("lifecycle_state_label_text", Void),
 				agent :STRING do Result := source_archetype.description.lifecycle_state end,
 				0, 250, True, False, a_text_box_select_all_handler)
@@ -59,6 +60,7 @@ feature {NONE} -- Initialisation
 			create original_author_ctl.make (create_message_content ("auth_orig_auth_label_text", Void),
 				agent :HASH_TABLE [STRING, STRING] do Result := source_archetype.description.original_author end,
 				65, min_entry_control_width, False)
+
 			gui_data_controls.extend (original_author_ctl)
 			create auth_contrib_list_ctl.make (create_message_content ("auth_contrib_label_text", Void),
 				agent :LIST [STRING] do if attached source_archetype.description.other_contributors then Result := source_archetype.description.other_contributors end end,
@@ -244,6 +246,8 @@ feature {NONE} -- Implementation
 
 	gui_data_controls: ARRAYED_LIST [GUI_DATA_CONTROL]
 
+	authoring_tab_undo_redo_chain, description_tab_undo_redo_chain: UNDO_REDO_CHAIN
+
 	do_clear
 			-- Wipe out content.
 		do
@@ -253,6 +257,12 @@ feature {NONE} -- Implementation
 	do_populate
 		do
 			gui_data_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.do_populate end)
+			if editing_enabled and source.is_valid then
+				original_author_ctl.set_editing_agents (authoring_tab_undo_redo_chain,
+					agent (source_archetype.description).add_original_author_item,
+					agent (source_archetype.description).replace_original_author_item,
+					agent (source_archetype.description).remove_original_author_item)
+			end
 		end
 
 	description_details: detachable RESOURCE_DESCRIPTION_ITEM

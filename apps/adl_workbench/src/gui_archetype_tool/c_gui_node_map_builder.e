@@ -187,13 +187,13 @@ feature -- Visitor
 			if in_technical_mode then
 				create s.make_empty
 				if attached a_node.existence then
-					s.append ("Existence: " + a_node.existence.as_string)
+					s.append ("Existence: {" + a_node.existence.as_string + "} ")
 				end
 				if a_node.is_multiple and attached a_node.cardinality then
 					if attached a_node.existence then
 					 	s.append ("; ")
 					end
-				 	s.append ("Cardinality: " + a_node.cardinality.as_string)
+				 	s.append ("Cardinality: {" + a_node.cardinality.as_string + "} ")
 				end
 				if not s.is_empty then
 					gui_node_text.append ("{" + s + "} ")
@@ -628,7 +628,7 @@ feature {NONE} -- Implementation
 			-- occurrences
 			if attached a_node.occurrences then
 				if in_technical_mode then
-					Result.append (" {" + a_node.occurrences_as_string + "} ")
+					Result.append ("Occurrences:  {" + a_node.occurrences_as_string + "} ")
 				elseif a_node.occurrences.is_prohibited then
 					Result.append (" (REMOVED) ")
 				end
