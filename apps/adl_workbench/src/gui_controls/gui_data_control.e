@@ -45,7 +45,6 @@ feature -- Initialisation
 			ev_root_container.set_data (Current)
 			ev_root_container.set_padding (padding_width)
 			ev_root_container.set_border_width (border_width)
-			ev_root_container.set_background_color (editable_colour)
 
 			-- create the title and add to ev_container
 			create ev_title_label
