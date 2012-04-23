@@ -50,8 +50,8 @@ feature {NONE} -- Initialisation
 			ev_constraint_defs_frame.extend (ev_constraint_defs_mlist)
 
 			-- set visual characteristics
-			ev_root_container.set_padding (padding_width)
-			ev_root_container.set_border_width (border_width)
+			ev_root_container.set_padding (Default_padding_width)
+			ev_root_container.set_border_width (Default_border_width)
 			ev_vsplit.enable_item_expand (ev_term_defs_frame)
 			ev_vsplit.disable_item_expand (ev_constraint_defs_frame)
 			ev_term_defs_frame.set_text ("Term definitions and bindings")

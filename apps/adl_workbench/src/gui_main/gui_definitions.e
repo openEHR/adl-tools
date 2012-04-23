@@ -26,15 +26,9 @@ inherit
 
 feature -- Definitions
 
-	icons: STRING
-			-- The path to the directory containing icon files.
-		once
-			Result := application_startup_directory + os_directory_separator.out + "icons"
-		end
+	Default_padding_width: INTEGER = 3
 
-	padding_width: INTEGER = 3
-
-	border_width: INTEGER = 4
+	Default_border_width: INTEGER = 4
 
 	editable_colour: EV_COLOR
 		once
@@ -55,7 +49,7 @@ feature -- Definitions
 			Result.set_height_in_points (10)
 		end
 
-	Text_min_height: INTEGER = 22
+	Text_min_height: INTEGER = 23
 
 	Label_min_width: INTEGER = 35
 

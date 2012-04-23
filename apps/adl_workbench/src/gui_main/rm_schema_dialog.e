@@ -101,8 +101,8 @@ feature {NONE} -- Initialisation
 
 		--	ev_root_container.set_minimum_width (360)
 		--	ev_root_container.set_minimum_height (290)
-			ev_root_container.set_padding (padding_width)
-			ev_root_container.set_border_width (border_width)
+			ev_root_container.set_padding (Default_padding_width)
+			ev_root_container.set_border_width (Default_border_width)
 			ev_root_container.disable_item_expand (ev_cell_1)
 			ev_root_container.disable_item_expand (ev_label_1)
 			ev_root_container.disable_item_expand (ev_cell_2)
@@ -116,8 +116,8 @@ feature {NONE} -- Initialisation
 			ev_cell_3.set_minimum_height (10)
 	--		ev_hbox_1.set_minimum_width (350)
 	--		ev_hbox_1.set_minimum_height (30)
-			ev_hbox_1.set_padding (padding_width)
-			ev_hbox_1.set_border_width (border_width)
+			ev_hbox_1.set_padding (Default_padding_width)
+			ev_hbox_1.set_border_width (Default_border_width)
 			ev_hbox_1.disable_item_expand (ev_label_2)
 			ev_hbox_1.disable_item_expand (rm_schema_dir_button)
 			ev_label_2.set_text ("RM schema directory: ")
@@ -127,7 +127,7 @@ feature {NONE} -- Initialisation
 			rm_schema_dir_button.set_minimum_width (65)
 			ev_hbox_2.set_minimum_height (34)
 			ev_hbox_2.set_padding (15)
-			ev_hbox_2.set_border_width (border_width)
+			ev_hbox_2.set_border_width (Default_border_width)
 			ev_hbox_2.disable_item_expand (ok_button)
 			ev_hbox_2.disable_item_expand (cancel_button)
 			ev_cell_4.set_minimum_width (100)
@@ -324,7 +324,7 @@ feature {NONE} -- Implementation
 				end
 			end
 
-			set_width (form_width + padding_width * (grid.column_count + 1) + border_width * 2)
+			set_width (form_width + Default_padding_width * (grid.column_count + 1) + Default_border_width * 2)
 		end
 
 	do_edit_schema (a_schema_id: STRING)

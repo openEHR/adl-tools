@@ -43,8 +43,8 @@ feature -- Initialisation
 				create {EV_VERTICAL_BOX} ev_root_container
 			end
 			ev_root_container.set_data (Current)
-			ev_root_container.set_padding (padding_width)
-			ev_root_container.set_border_width (border_width)
+			ev_root_container.set_padding (Default_padding_width)
+			ev_root_container.set_border_width (Default_border_width)
 
 			-- create the title and add to ev_container
 			create ev_title_label
@@ -52,12 +52,12 @@ feature -- Initialisation
 			ev_root_container.extend (ev_title_label)
 			ev_root_container.disable_item_expand (ev_title_label)
 
-			mh := min_height + 2 * border_width
-			mw := min_width + 2 * border_width
+			mh := min_height + 2 * Default_border_width
+			mw := min_width + 2 * Default_border_width
 			if use_hbox_container then
-				mw := mw + ev_title_label.width + padding_width
+				mw := mw + ev_title_label.width + Default_padding_width
 			else
-				mh := mh + ev_title_label.height + padding_width
+				mh := mh + ev_title_label.height + Default_padding_width
 			end
 			ev_root_container.set_minimum_height (mh)
 			ev_root_container.set_minimum_width (mw)
@@ -84,6 +84,11 @@ feature -- Access
 	data_source: FUNCTION [ANY, TUPLE, ANY]
 			-- specialise in descendants
 
+feature -- Status Report
+
+	edit_enabled: BOOLEAN
+			-- True if editing current enabled
+
 feature -- Modification
 
 	add_linked_control (a_control: GUI_DATA_CONTROL)
@@ -109,11 +114,13 @@ feature -- Commands
 	enable_edit
 			-- enable editing
 		do
+			edit_enabled := True
 		end
 
 	disable_edit
 			-- disable editing
 		do
+			edit_enabled := False
 		end
 
 feature {NONE} -- Implementation

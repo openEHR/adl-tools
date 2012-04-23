@@ -90,6 +90,7 @@ feature {NONE} -- Initialisation
 				0, 0, True)
 			lang_original_trans_hbox.extend (trans_languages_ctl.ev_root_container)
 			gui_data_controls.extend (trans_languages_ctl)
+			trans_languages_ctl.ev_data_control.select_actions.extend (agent on_select_translation_language)
 
 			create lang_translations_hbox
 			lang_frame_ctl.extend (lang_translations_hbox, True)
@@ -257,25 +258,38 @@ feature {NONE} -- Implementation
 	do_populate
 		do
 			gui_data_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.do_populate end)
-			if editing_enabled and source.is_valid then
+			if can_edit and source.is_valid then
 				original_author_ctl.set_editing_agents (authoring_tab_undo_redo_chain,
-					agent (source_archetype.description).add_original_author_item,
-					agent (source_archetype.description).replace_original_author_item,
+					agent (source_archetype.description).put_original_author_item,
 					agent (source_archetype.description).remove_original_author_item)
+				if source_archetype.has_translations then
+					trans_author_ctl.set_editing_agents (authoring_tab_undo_redo_chain,
+						agent translation_details.put_author_item,
+						agent translation_details.remove_author_item)
+				end
+			end
+		end
+
+	on_select_translation_language
+		do
+			if source_archetype.has_translations then
+				trans_author_ctl.set_editing_agents (authoring_tab_undo_redo_chain,
+					agent translation_details.put_author_item,
+					agent translation_details.remove_author_item)
 			end
 		end
 
 	description_details: detachable RESOURCE_DESCRIPTION_ITEM
 		do
 			if attached source_archetype.description.details then
-				Result := source_archetype.description.details.item (selected_language)
+				Result := source_archetype.description.detail_for_language (selected_language)
 			end
 		end
 
 	translation_details: detachable TRANSLATION_DETAILS
 		do
 			if source_archetype.has_translations then
-				Result := source_archetype.translations.item (trans_languages_ctl.ev_data_control.text)
+				Result := source_archetype.translation_for_language (trans_languages_ctl.ev_data_control.text)
 			end
 		end
 

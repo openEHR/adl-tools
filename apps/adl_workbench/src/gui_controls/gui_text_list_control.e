@@ -52,6 +52,14 @@ feature {NONE} -- Implementation
 		do
 		end
 
+	process_add_new
+		do
+		end
+
+	process_remove_existing
+		do
+		end
+
 end
 
 

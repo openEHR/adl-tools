@@ -39,8 +39,8 @@ feature {NONE} -- Initialisation
 			ev_term_bindings_info_frame.extend (ev_term_bindings_info_list)
 
 			-- set visual characteristics
-			ev_root_container.set_padding (padding_width)
-			ev_root_container.set_border_width (border_width)
+			ev_root_container.set_padding (Default_padding_width)
+			ev_root_container.set_border_width (Default_border_width)
 			ev_root_container.disable_item_expand (ev_stats_info_frame)
 			ev_stats_info_frame.set_text (create_message_content ("stats_frame_text", Void))
 			ev_term_bindings_info_frame.set_text (create_message_content ("term_bindings_frame_text", Void))

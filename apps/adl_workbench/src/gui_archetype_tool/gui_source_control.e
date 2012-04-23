@@ -47,8 +47,8 @@ feature {NONE}-- Initialization
 			ev_souce_rich_text.disable_edit
 			ev_root_container.disable_item_expand (ev_source_controls_vbox)
 			ev_source_controls_vbox.disable_item_expand (ev_line_numbers_cb)
-			ev_source_controls_vbox.set_border_width (border_width)
-			ev_source_controls_vbox.set_padding_width (padding_width)
+			ev_source_controls_vbox.set_border_width (Default_border_width)
+			ev_source_controls_vbox.set_padding_width (Default_padding_width)
 
 			ev_line_numbers_cb.set_text (create_message_content ("add_line_numbers_text", Void))
 			ev_line_numbers_cb.set_tooltip (create_message_content ("add_line_numbers_tooltip", Void))

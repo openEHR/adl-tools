@@ -38,7 +38,7 @@ feature -- Initialisation
 		do
 			language := default_language_code
 			create author.make(0)
-			add_author_detail ("name", "????")
+			put_author_item ("name", "????")
 		end
 
 	make_from_language (a_lang: attached STRING)
@@ -104,13 +104,21 @@ feature -- Modification
 			accreditation = Void
 		end
 
-	add_author_detail (a_det_key, a_det_value: attached STRING)
+	put_author_item (a_key, a_value: attached STRING)
 			-- set key=value pair into author
 		require
-			Key_valid: not a_det_key.is_empty
-			Value_valid: not a_det_value.is_empty
+			Key_valid: not a_key.is_empty
+			Value_valid: not a_value.is_empty
 		do
-			author.force (a_det_value, a_det_key)
+			author.force (a_value, a_key)
+		end
+
+	remove_author_item (a_key: attached STRING)
+			-- remove key=value pair from author
+		require
+			Key_valid: author.has (a_key)
+		do
+			author.remove (a_key)
 		end
 
 	add_other_detail (a_det_key, a_det_value: attached STRING)
@@ -123,14 +131,6 @@ feature -- Modification
 				create other_details.make (0)
 			end
 			other_details.force (a_det_value, a_det_key)
-		end
-
-	remove_author_detail (a_det_key: attached STRING)
-			-- remove key=value pair from author
-		require
-			Key_valid: author.has(a_det_key)
-		do
-			author.remove (a_det_key)
 		end
 
 	remove_other_detail (a_det_key: attached STRING)

@@ -28,6 +28,10 @@ templates = <
 		["edit_source_schema"] = <"Edit source schema">
 		["expand_packages"] = <"Expand packages">
 
+		-- GUI_HASH_TABLE_CONTROL
+		["add_mi"] = <"Add new row">
+		["remove_mi"] = <"Remove row">
+
 		-- SHARED_KNOWLEDGE_REPOSITORY, REPOSITORY_DIALOG
 		["ref_repo_not_found"] = <"Reference Repository $1 does not exist or not readable">
 		["work_repo_not_found"] = <"Work Repository $1 does not exist or not readable">
@@ -205,7 +209,7 @@ templates = <
 		["differential_view_button_tooltip"] = <"View differential archetype form">
 		["flat_view_button_tooltip"] = <"View flat archetype form">
 
-		["language_label"] = <"Language:">
+		["language_label"] = <"Language">
 		["language_combo_tooltip"] = <"Select display language">
 
 		-- GUI_ARCHETYPE_TOOL

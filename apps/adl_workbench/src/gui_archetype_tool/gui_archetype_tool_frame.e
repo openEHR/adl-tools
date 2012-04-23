@@ -40,71 +40,35 @@ feature {NONE}-- Initialization
 			-- text field handling
 			create text_widget_handler.make (ev_root_container)
 
-			-- create subordinate widgets
-			create ev_action_bar
-			create ev_archetype_id
-			create ev_view_label
-			create ev_view_tool_bar
-			create ev_differential_view_button
-			create ev_flat_view_button
-			create ev_language_label
-			create ev_language_combo
-			create ev_adl_version_label
-			create ev_adl_version_text
-
-			create ev_notebook
-
 			-- connect widgets
-			ev_root_container.extend (ev_action_bar)
+			create tool_bar.make
+			ev_root_container.extend (tool_bar.ev_root_container)
+			ev_root_container.disable_item_expand (tool_bar.ev_root_container)
+
+			-- archetype id
+			tool_bar.add_expanding_text_field ("", "")
+			ev_archetype_id := tool_bar.last_text_field
+
+			-- 'Form' label + diff & flat controls
+			tool_bar.add_tool_bar_with_title (create_message_content ("diff_flat_form_label", Void))
+			tool_bar.add_tool_bar_radio_button (get_icon_pixmap ("tool/diff_class"), create_message_content ("differential_view_button_tooltip", Void), agent on_differential_view)
+			ev_differential_view_button := tool_bar.last_tool_bar_radio_button
+			tool_bar.add_tool_bar_radio_button (get_icon_pixmap ("tool/flat_class"), create_message_content ("flat_view_button_tooltip", Void), agent on_flat_view)
+			ev_flat_view_button := tool_bar.last_tool_bar_radio_button
+
+			-- add language combo box
+			tool_bar.add_fixed_combo_box (create_message_content ("language_label", Void), create_message_content ("language_combo_tooltip", Void), 60, agent on_select_language)
+			ev_language_combo := tool_bar.last_combo_box
+
+			-- add version text field
+			tool_bar.add_titled_label (create_message_content ("adl_version_label_text", Void), "", create_message_content ("adl_version_label_tooltip", Void), 30)
+			ev_adl_version_text := tool_bar.last_label
+
+			-- main content area
+			create ev_notebook
 			ev_root_container.extend (ev_notebook)
-
-			ev_action_bar.extend (ev_archetype_id)
-			ev_action_bar.extend (ev_view_label)
-			ev_action_bar.extend (ev_view_tool_bar)
-			ev_view_tool_bar.extend (ev_differential_view_button)
-			ev_view_tool_bar.extend (ev_flat_view_button)
-			ev_action_bar.extend (ev_language_label)
-			ev_action_bar.extend (ev_language_combo)
-			ev_action_bar.extend (ev_adl_version_label)
-			ev_action_bar.extend (ev_adl_version_text)
-
-			-- set visual characteristics
-			ev_root_container.disable_item_expand (ev_action_bar)
-			ev_action_bar.set_padding (10)
-			ev_action_bar.set_border_width (4)
-			ev_action_bar.disable_item_expand (ev_view_label)
-			ev_action_bar.disable_item_expand (ev_view_tool_bar)
-			ev_action_bar.disable_item_expand (ev_language_label)
-			ev_action_bar.disable_item_expand (ev_language_combo)
-			ev_action_bar.disable_item_expand (ev_adl_version_label)
-			ev_action_bar.disable_item_expand (ev_adl_version_text)
-
-			ev_view_label.set_text (create_message_content ("diff_flat_form_label", Void))
-			ev_differential_view_button.set_pixmap (get_icon_pixmap ("tool/diff_class"))
-			ev_flat_view_button.set_pixmap (get_icon_pixmap ("tool/flat_class"))
-			ev_differential_view_button.set_tooltip (create_message_content ("differential_view_button_tooltip", Void))
-			ev_flat_view_button.set_tooltip (create_message_content ("flat_view_button_tooltip", Void))
-			ev_language_label.set_text (create_message_content ("language_label", Void))
-			ev_language_label.set_minimum_width (70)
-			ev_language_label.set_minimum_height (23)
-			ev_language_label.align_text_right
-			ev_language_combo.set_tooltip (create_message_content ("language_combo_tooltip", Void))
-			ev_language_combo.set_minimum_width (60)
-			ev_language_combo.set_minimum_height (23)
-			ev_adl_version_label.set_text (create_message_content ("adl_version_label_text", Void))
-			ev_adl_version_label.set_minimum_width (80)
-			ev_adl_version_label.align_text_right
-			ev_adl_version_label.set_tooltip (create_message_content ("adl_version_label_tooltip", Void))
-
 			ev_notebook.set_minimum_width (arch_notebook_min_width)
 			ev_notebook.set_minimum_height (arch_notebook_min_height)
-
-			-- set events: action bar
-			ev_differential_view_button.select_actions.extend (agent on_differential_view)
-			ev_flat_view_button.select_actions.extend (agent on_flat_view)
-			ev_language_combo.select_actions.extend (agent on_select_language)
-
-			-- set events: select a notebook tab
 			ev_notebook.selection_actions.extend (agent on_select_archetype_notebook)
 
 			differential_view := True
@@ -229,13 +193,11 @@ feature {NONE} -- Implementation
 			-- FIXME: this is a hack to get round lack of standard behaviour in Vision2 for
 			-- focussed text widgets & cut & paste behaviours
 
-	ev_action_bar: EV_HORIZONTAL_BOX
-
-	ev_view_tool_bar: EV_TOOL_BAR
+	tool_bar: GUI_TOOL_BAR
 
 	ev_differential_view_button, ev_flat_view_button: EV_TOOL_BAR_RADIO_BUTTON
 
-	ev_view_label, ev_language_label, ev_adl_version_label, ev_adl_version_text: EV_LABEL
+	ev_adl_version_text: EV_LABEL
 
 	ev_language_combo: EV_COMBO_BOX
 

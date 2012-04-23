@@ -82,13 +82,42 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
+	create_ev_data_control
+		do
+			create ev_data_control
+		end
+
 	process_in_place_edit
 		deferred
 		end
 
-	create_ev_data_control
+	process_add_new
+		deferred
+		end
+
+	process_remove_existing
+		deferred
+		end
+
+	mlist_row_handler (ev_row: EV_MULTI_COLUMN_LIST_ROW; x,y, button: INTEGER)
+			-- creates the context menu for a right click action for an ARCH_REP_ARCHETYPE node
+		local
+			menu: EV_MENU
+			an_mi: EV_MENU_ITEM
 		do
-			create ev_data_control
+			if button = {EV_POINTER_CONSTANTS}.right then
+				create menu
+				create an_mi.make_with_text_and_action (create_message_content ("add_mi", Void), agent process_add_new)
+		--		an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool"))
+		    	menu.extend (an_mi)
+
+				if ev_row.is_selected then
+					create an_mi.make_with_text_and_action (create_message_content ("remove_mi", Void), agent process_remove_existing)
+			--		an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
+					menu.extend (an_mi)
+				end
+				menu.show
+			end
 		end
 
 end

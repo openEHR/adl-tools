@@ -71,8 +71,8 @@ feature -- Initialisation
 			-- visual characteristics
 			ev_root_container.disable_item_expand (ev_view_controls_vbox)
 			ev_view_controls_vbox.set_minimum_width (100)
-			ev_view_controls_vbox.set_padding (padding_width)
-			ev_view_controls_vbox.set_border_width (border_width)
+			ev_view_controls_vbox.set_padding (Default_padding_width)
+			ev_view_controls_vbox.set_border_width (Default_border_width)
 			ev_view_controls_vbox.disable_item_expand (ev_expand_button)
 			ev_view_controls_vbox.disable_item_expand (ev_expand_one_button)
 			ev_view_controls_vbox.disable_item_expand (ev_collapse_one_button)

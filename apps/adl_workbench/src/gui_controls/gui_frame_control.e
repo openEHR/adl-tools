@@ -38,8 +38,8 @@ feature -- Initialisation
 			else
 				create {EV_VERTICAL_BOX} ev_box
 			end
-			ev_box.set_border_width (border_width)
-			ev_box.set_padding_width (padding_width)
+			ev_box.set_border_width (Default_border_width)
+			ev_box.set_padding_width (Default_padding_width)
 			ev_root_container.extend (ev_box)
 		end
 

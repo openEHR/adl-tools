@@ -72,9 +72,9 @@ feature {NONE}-- Initialization
 			ev_serialised_rich_text.disable_edit
 			ev_root_container.disable_item_expand (ev_serialise_controls_vbox)
 			ev_serialise_controls_vbox.disable_item_expand (ev_serialise_controls_frame)
-			ev_root_container.set_border_width (border_width)
-			ev_root_container.set_padding_width (padding_width)
-			ev_serialise_rb_vbox.set_border_width (border_width)
+			ev_root_container.set_border_width (Default_border_width)
+			ev_root_container.set_padding_width (Default_padding_width)
+			ev_serialise_rb_vbox.set_border_width (Default_border_width)
 			ev_serialised_rich_text.set_tab_width ((ev_serialised_rich_text.tab_width/2).floor.max (1))  -- this is in pixels, and assumes 7-pixel wide chars
 			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_adl_rb)
 			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_dadl_rb)

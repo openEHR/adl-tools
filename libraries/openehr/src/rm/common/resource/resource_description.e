@@ -43,7 +43,7 @@ feature -- Initialisation
 			lifecycle_state := Default_lifecycle_state.twin
 			create details.make (0)
 			create original_author.make (0)
-			add_original_author_item ("name", Default_original_author)
+			put_original_author_item ("name", Default_original_author)
 			create original_language.make (default_language_code_set, default_language)
 		ensure then
 			lifecycle_state_set: lifecycle_state.is_equal (Default_lifecycle_state)
@@ -62,7 +62,7 @@ feature -- Initialisation
 			Language_valid: not orig_lang.is_empty
 		do
 			default_create
-			add_original_author_item ("name", an_author_name)
+			put_original_author_item ("name", an_author_name)
 			create original_language.make(default_language_code_set, orig_lang)
 		ensure
 			Original_author_item_set: original_author.item ("name") = an_author_name
@@ -134,26 +134,15 @@ feature -- Comparison
 
 feature -- Modification
 
-	add_original_author_item (a_key, a_value: attached STRING)
+	put_original_author_item (a_key, a_value: attached STRING)
 			-- add the key, value pair to original_author
 		require
 			Key_valid: not a_key.is_empty
 			Value_valid: not a_value.is_empty
 		do
-			original_author.force(a_value, a_key)
+			original_author.force (a_value, a_key)
 		ensure
-			Original_author_set: original_author.item(a_key) = a_value
-		end
-
-	replace_original_author_item (a_key, a_value: attached STRING)
-			-- replace value for `a_key' in `original_author'
-		require
-			Key_valid: original_author.has (a_key)
-			Value_valid: not a_value.is_empty
-		do
-			original_author.replace (a_value, a_key)
-		ensure
-			Value_replaced: original_author.item (a_key) = a_value
+			Original_author_set: original_author.item (a_key) = a_value
 		end
 
 	remove_original_author_item (a_key: attached STRING)

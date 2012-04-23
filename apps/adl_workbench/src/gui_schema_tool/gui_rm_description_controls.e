@@ -43,8 +43,8 @@ feature {NONE} -- Initialisation
 			ev_root_container.extend (ev_grid)
 
 			-- set visual characteristics
-			ev_root_container.set_padding (padding_width)
-			ev_root_container.set_border_width (border_width)
+			ev_root_container.set_padding (Default_padding_width)
+			ev_root_container.set_border_width (Default_border_width)
 
 			ev_grid.disable_row_height_fixed
 		end

@@ -80,12 +80,12 @@ feature -- Access
 			-- original_language and translations. Guaranteed to at least include original_language
 		do
 			if languages_available_cache = Void then
-				create languages_available_cache.make(0)
+				create languages_available_cache.make (0)
 				languages_available_cache.compare_objects
-				languages_available_cache.extend(original_language.code_string)
+				languages_available_cache.extend (original_language.code_string)
 				if has_translations then
 					from translations.start until translations.off loop
-						languages_available_cache.extend(translations.key_for_iteration)
+						languages_available_cache.extend (translations.key_for_iteration)
 						translations.forth
 					end
 				end
@@ -99,9 +99,9 @@ feature -- Access
 			-- get translation details for a_lang
 			-- Void if nothing for that language
 		require
-			Lang_valid: translations.has(a_lang)
+			Lang_valid: translations.has (a_lang)
 		do
-			Result := translations.item(a_lang)
+			Result := translations.item (a_lang)
 		end
 
 	matching_language_tag (a_lang: attached STRING): attached STRING
@@ -190,7 +190,7 @@ feature -- Modification
 			a_trans: TRANSLATION_DETAILS
 		do
 			create a_trans.make_from_language(a_lang_tag)
-			a_trans.add_author_detail ("name", "unknown")
+			a_trans.put_author_item ("name", "unknown")
 			add_translation (a_trans)
 		end
 

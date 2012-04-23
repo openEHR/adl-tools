@@ -57,12 +57,12 @@ feature {NONE} -- Initialisation
 			client_vbox.extend (ev_clients_tree)
 
 			-- set visual characteristics
-			ev_root_container.set_padding (padding_width)
-			ev_root_container.set_border_width (border_width)
+			ev_root_container.set_padding (Default_padding_width)
+			ev_root_container.set_border_width (Default_border_width)
 			supplier_frame.set_text (create_message_content ("supplier_frame_text", Void))
-			supplier_vbox.set_border_width (border_width)
+			supplier_vbox.set_border_width (Default_border_width)
 			client_frame.set_text (create_message_content ("client_frame_text", Void))
-			client_vbox.set_border_width (border_width)
+			client_vbox.set_border_width (Default_border_width)
 
 			visual_update_action := a_visual_update_action
 		end
