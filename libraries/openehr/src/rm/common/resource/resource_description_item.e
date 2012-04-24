@@ -102,7 +102,12 @@ feature -- Access
 	other_details:  detachable HASH_TABLE [STRING, STRING]
 			-- Additional language-senstive archetype meta-data, as a list of name/value pairs.
 
-feature -- Status
+feature -- Status Report
+
+	has_keyword (a_keyword: STRING): BOOLEAN
+		do
+			Result := attached keywords and then keywords.has (a_keyword)
+		end
 
 	is_original_language: BOOLEAN
 
@@ -138,7 +143,7 @@ feature -- Modification
 			Misuse_set: misuse = a_misuse
 		end
 
-	set_copyright(a_copyright: attached STRING)
+	set_copyright (a_copyright: attached STRING)
 			-- set copyright
 		require
 			Copyright_valid: not a_copyright.is_empty
@@ -148,21 +153,22 @@ feature -- Modification
 			Copyright_set: copyright = a_copyright
 		end
 
-	add_keyword(a_keyword: attached STRING)
+	add_keyword (a_keyword: attached STRING)
 			-- add a_keyword to keywords
 		require
-			Contributor_valid: not a_keyword.is_empty
+			Contributor_valid: not has_keyword (a_keyword)
 		do
 			if keywords = Void then
-				create keywords.make(0)
+				create keywords.make (0)
+				keywords.compare_objects
 			end
-			keywords.extend(a_keyword)
+			keywords.extend (a_keyword)
 		ensure
 			Keyword_added: keywords.has(a_keyword)
 		end
 
-	add_other_detail(a_key, a_value: attached STRING)
-			-- add the key, value pair to other_details
+	put_other_details_item (a_key, a_value: attached STRING)
+			-- put the key, value pair to other_details
 		require
 			Key_valid: not a_key.is_empty
 			Value_valid: not a_value.is_empty
@@ -170,12 +176,25 @@ feature -- Modification
 			if other_details = Void then
 				create other_details.make(0)
 			end
-			other_details.put(a_value, a_key)
+			other_details.force (a_value, a_key)
 		ensure
 			Other_details_set: other_details.item(a_key) = a_value
 		end
 
-	add_original_resource_uri(a_key, a_value: attached STRING)
+	remove_other_details_item (a_key: attached STRING)
+			-- remove item with key `a_key' from other_details
+		require
+			Key_valid: other_details.has (a_key)
+		do
+			other_details.remove (a_key)
+			if other_details.is_empty then
+				other_details := Void
+			end
+		ensure
+			old other_details.count = 1 implies other_details = Void
+		end
+
+	add_original_resource_uri (a_key, a_value: attached STRING)
 			-- add the key, value pair to original_resource_uri
 		require
 			Key_valid: not a_key.is_empty
@@ -185,14 +204,14 @@ feature -- Modification
 				create original_resource_uri.make (0)
 			end
 			-- original_resource_uri.put(create {URI}.make_from_string(a_value), a_key)
-			original_resource_uri.put(a_value, a_key)
+			original_resource_uri.put (a_value, a_key)
 		ensure
-			Original_resource_uri_added: original_resource_uri.item(a_key) = a_value
+			Original_resource_uri_added: original_resource_uri.item (a_key) = a_value
 		end
 
 feature -- Copying
 
-	translated_copy(a_lang: attached STRING): attached RESOURCE_DESCRIPTION_ITEM
+	translated_copy (a_lang: attached STRING): attached RESOURCE_DESCRIPTION_ITEM
 			-- generate a copy of this object, with all strings sss replaced by
 			-- "*sss(orig_lang)"
 		require
@@ -227,7 +246,7 @@ feature -- Copying
 			end
 			if attached other_details then
 				from other_details.start until other_details.off loop
-					Result.add_other_detail(prefix_str + other_details.key_for_iteration + suffix_str,
+					Result.put_other_details_item (prefix_str + other_details.key_for_iteration + suffix_str,
 						prefix_str + other_details.item_for_iteration + suffix_str)
 					other_details.forth
 				end

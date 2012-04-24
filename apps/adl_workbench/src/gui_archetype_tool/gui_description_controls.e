@@ -129,6 +129,7 @@ feature {NONE} -- Initialisation
 			create description_vbox
 			ev_root_container.extend (description_vbox)
 			ev_root_container.set_item_text (description_vbox, create_message_content ("descriptive_tab_text", Void))
+			create description_tab_undo_redo_chain.make
 
 			create details_hbox
 			description_vbox.extend (details_hbox)
@@ -262,11 +263,18 @@ feature {NONE} -- Implementation
 				original_author_ctl.set_editing_agents (authoring_tab_undo_redo_chain,
 					agent (source_archetype.description).put_original_author_item,
 					agent (source_archetype.description).remove_original_author_item)
-				if source_archetype.has_translations then
-					trans_author_ctl.set_editing_agents (authoring_tab_undo_redo_chain,
-						agent translation_details.put_author_item,
-						agent translation_details.remove_author_item)
-				end
+				original_resources_ctl.set_editing_agents (authoring_tab_undo_redo_chain,
+					agent (source_archetype.description).put_original_author_item,
+					agent (source_archetype.description).remove_original_author_item)
+--				auth_contrib_list_ctl.set_editing_agents (authoring_tab_undo_redo_chain,
+--					agent (source_archetype.description).add_other_contributor,
+--					agent (source_archetype.description).xx,
+--					agent (source_archetype.description).remove_other_contributor)
+--				keywords_list_ctl.set_editing_agents (authoring_tab_undo_redo_chain,
+--					agent (source_archetype.description).xx,
+--					agent (source_archetype.description).xx,
+--					agent (source_archetype.description).xx)
+				on_select_translation_language
 			end
 		end
 
@@ -276,6 +284,9 @@ feature {NONE} -- Implementation
 				trans_author_ctl.set_editing_agents (authoring_tab_undo_redo_chain,
 					agent translation_details.put_author_item,
 					agent translation_details.remove_author_item)
+				trans_other_details_ctl.set_editing_agents (authoring_tab_undo_redo_chain,
+					agent translation_details.put_other_details_item,
+					agent translation_details.remove_other_details_item)
 			end
 		end
 

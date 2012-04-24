@@ -72,6 +72,7 @@ feature -- Events
 feature {NONE} -- Implementation
 
 	undo_redo_chain: UNDO_REDO_CHAIN
+		-- reference to undo/redo chain from owning visual context
 
 	process_in_place_edit
 		local

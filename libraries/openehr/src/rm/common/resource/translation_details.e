@@ -114,31 +114,31 @@ feature -- Modification
 		end
 
 	remove_author_item (a_key: attached STRING)
-			-- remove key=value pair from author
+			-- remove item with key `a_key' from author
 		require
 			Key_valid: author.has (a_key)
 		do
 			author.remove (a_key)
 		end
 
-	add_other_detail (a_det_key, a_det_value: attached STRING)
+	put_other_details_item (a_key, a_value: attached STRING)
 			-- set key=value pair into other_details
 		require
-			Key_valid: not a_det_key.is_empty
-			Value_valid: not a_det_value.is_empty
+			Key_valid: not a_key.is_empty
+			Value_valid: not a_value.is_empty
 		do
 			if other_details = Void then
 				create other_details.make (0)
 			end
-			other_details.force (a_det_value, a_det_key)
+			other_details.force (a_value, a_key)
 		end
 
-	remove_other_detail (a_det_key: attached STRING)
-			-- set key=value pair into other_details
+	remove_other_details_item (a_key: attached STRING)
+			-- remove item with key `a_key' from other_details
 		require
-			Key_valid: other_details.has(a_det_key)
+			Key_valid: other_details.has (a_key)
 		do
-			other_details.remove (a_det_key)
+			other_details.remove (a_key)
 			if other_details.is_empty then
 				other_details := Void
 			end

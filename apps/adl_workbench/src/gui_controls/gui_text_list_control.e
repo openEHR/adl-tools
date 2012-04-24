@@ -39,6 +39,19 @@ feature -- Access
 
 	data_source: FUNCTION [ANY, TUPLE, LIST [STRING]]
 
+feature -- Modification
+
+	set_editing_agents (an_undo_redo_chain: like undo_redo_chain;
+			an_add_item_agent: like add_item_agent;
+			a_replace_current_item_agent: like replace_current_item_agent;
+			a_remove_current_item_agent: like remove_current_item_agent)
+		do
+			undo_redo_chain := an_undo_redo_chain
+			add_item_agent := an_add_item_agent
+			replace_current_item_agent := a_replace_current_item_agent
+			remove_current_item_agent := a_remove_current_item_agent
+		end
+
 feature -- Commands
 
 	do_populate
@@ -47,6 +60,9 @@ feature -- Commands
 		end
 
 feature {NONE} -- Implementation
+
+	undo_redo_chain: UNDO_REDO_CHAIN
+		-- reference to undo/redo chain from owning visual context
 
 	process_in_place_edit
 		do
@@ -59,6 +75,18 @@ feature {NONE} -- Implementation
 	process_remove_existing
 		do
 		end
+
+	add_item_agent: PROCEDURE [ANY, TUPLE [an_index: INTEGER; a_new_value: STRING]]
+			-- an agent that can be used to add an entry to the list at the i'th position;
+			-- this will typically be a setter routine from a high-level object, not the LIST in question
+
+	replace_current_item_agent: PROCEDURE [ANY, TUPLE [a_new_value: STRING]]
+			-- an agent that can be used to replace the currently selected entry in the list;
+			-- this will typically be a setter routine from a high-level object, not the LIST in question
+
+	remove_current_item_agent: PROCEDURE [ANY, TUPLE]
+			-- an agent that can be used to remove the current entry from the list;
+			-- this will typically be a setter routine from a high-level object, not the LIST in question
 
 end
 
