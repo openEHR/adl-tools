@@ -16,7 +16,12 @@ class GUI_ARCHETYPE_EDITOR
 inherit
 	GUI_ARCHETYPE_TOOL_FRAME
 		redefine
-			make, do_clear, do_populate, can_populate, can_edit, enable_edit, disable_edit
+			make, do_clear, do_populate, can_populate, can_edit, enable_edit, disable_edit, add_editing_controls
+		end
+
+	GUI_UNDO_REDO_ENABLED
+		export
+			{NONE} all
 		end
 
 	ARCHETYPE_TERM_CODE_TOOLS
@@ -150,6 +155,11 @@ feature {NONE} -- Implementation
 			-- set text on tabs for flat form of archetype
 		do
 			ev_notebook.set_item_text (serialisation_control.ev_root_container, create_message_content ("serialised_flat_tab_text", Void))
+		end
+
+	add_editing_controls
+		do
+			add_undo_redo_toolbar
 		end
 
 end

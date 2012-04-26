@@ -46,11 +46,7 @@ feature {NONE}-- Initialization
 			ev_root_container.disable_item_expand (tool_bar.ev_root_container)
 
 			-- if editing, add undo and redo buttons
-			tool_bar.add_tool_bar
-			tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/undo_active"), get_icon_pixmap ("tool/undo_inactive"), create_message_content ("undo_button_tooltip", Void), agent on_undo)
-			ev_undo_button := tool_bar.last_tool_bar_button
-			tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/redo_active"), get_icon_pixmap ("tool/redo_inactive"), create_message_content ("redo_button_tooltip", Void), agent on_redo)
-			ev_redo_button := tool_bar.last_tool_bar_button
+			add_editing_controls
 
 			-- archetype id
 			tool_bar.add_expanding_text_field ("", "")
@@ -106,16 +102,6 @@ feature -- Events
 					arch_tool.populate (source, differential_view, selected_language)
 				end
 			end
-		end
-
-	on_undo
-		do
-			undo_redo_chain.undo
-		end
-
-	on_redo
-		do
-			undo_redo_chain.redo
 		end
 
 feature -- Commands
@@ -218,37 +204,6 @@ feature {NONE} -- Implementation
 
 	ev_language_combo: EV_COMBO_BOX
 
-	ev_undo_button, ev_redo_button: EV_TOOL_BAR_BUTTON
-
-	undo_redo_chain: UNDO_REDO_CHAIN
-
-	update_undo_redo_controls (a_chain: UNDO_REDO_CHAIN)
-			-- set undo/redo buttons appropriately
-		do
-			undo_redo_chain := a_chain
-			populate_undo_redo_controls
-		end
-
-	populate_undo_redo_controls
-			-- set undo/redo buttons appropriately
-		do
-			if attached undo_redo_chain and not undo_redo_chain.is_empty then
-				if undo_redo_chain.has_undos then
-					tool_bar.activate_tool_bar_button (ev_undo_button)
-				else
-					tool_bar.deactivate_tool_bar_button (ev_undo_button)
-				end
-				if undo_redo_chain.has_redos then
-					tool_bar.activate_tool_bar_button (ev_redo_button)
-				else
-					tool_bar.deactivate_tool_bar_button (ev_redo_button)
-				end
-			else
-				tool_bar.deactivate_tool_bar_button (ev_undo_button)
-				tool_bar.deactivate_tool_bar_button (ev_redo_button)
-			end
-		end
-
 	populate_languages
 			-- Populate `language_combo' in the toolbar for currently selected archetype
 		do
@@ -277,6 +232,10 @@ feature {NONE} -- Implementation
 	set_flat_tab_texts
 			-- set text on tabs for flat form of archetype
 		deferred
+		end
+
+	add_editing_controls
+		do
 		end
 
 end
