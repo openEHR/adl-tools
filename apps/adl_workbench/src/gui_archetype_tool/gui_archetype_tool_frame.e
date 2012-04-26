@@ -6,7 +6,7 @@ note
 				 and ADL version indicator; and a notebook for the main content.
 				 ]"
 	keywords:    "GUI, ADL"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	author:      "Thomas Beale <t homas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
@@ -40,10 +40,17 @@ feature {NONE}-- Initialization
 			-- text field handling
 			create text_widget_handler.make (ev_root_container)
 
-			-- connect widgets
+			-- connect toolbar to parent widget
 			create tool_bar.make
 			ev_root_container.extend (tool_bar.ev_root_container)
 			ev_root_container.disable_item_expand (tool_bar.ev_root_container)
+
+			-- if editing, add undo and redo buttons
+			tool_bar.add_tool_bar
+			tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/undo_active"), get_icon_pixmap ("tool/undo_inactive"), create_message_content ("undo_button_tooltip", Void), agent on_undo)
+			ev_undo_button := tool_bar.last_tool_bar_button
+			tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/redo_active"), get_icon_pixmap ("tool/redo_inactive"), create_message_content ("redo_button_tooltip", Void), agent on_redo)
+			ev_redo_button := tool_bar.last_tool_bar_button
 
 			-- archetype id
 			tool_bar.add_expanding_text_field ("", "")
@@ -89,16 +96,26 @@ feature -- Events
 			-- Called by `selection_actions' of `archetype_notebook'.
 		do
 			if attached {GUI_ARCHETYPE_TARGETTED_TOOL} ev_notebook.selected_item.data as arch_tool and attached source then
-				if (source /= arch_tool.source or else
-					not arch_tool.is_populated or else
-					arch_tool.last_populate_timestamp < source.last_compile_attempt_timestamp or
-					differential_view /= arch_tool.differential_view or
-					selected_language /= arch_tool.selected_language) and
+				if (source /= arch_tool.source or else												-- different archetype chosen
+					not arch_tool.is_populated or else												-- some tools are pre-populated
+					arch_tool.last_populate_timestamp < source.last_compile_attempt_timestamp or	-- source re-compiled more recently than last populate
+					differential_view /= arch_tool.differential_view or								-- user has changed from flat to diff view or v.v.
+					selected_language /= arch_tool.selected_language) and							-- different language selected
 					arch_tool.can_populate (source)
 				then
 					arch_tool.populate (source, differential_view, selected_language)
 				end
 			end
+		end
+
+	on_undo
+		do
+			undo_redo_chain.undo
+		end
+
+	on_redo
+		do
+			undo_redo_chain.redo
 		end
 
 feature -- Commands
@@ -124,15 +141,15 @@ feature -- Commands
 	enable_edit
 		do
 			precursor
-			ev_archetype_id.enable_edit
-			ev_language_combo.enable_edit
+--			ev_archetype_id.enable_edit
+--			ev_language_combo.enable_edit
 		end
 
 	disable_edit
 		do
 			precursor
-			ev_archetype_id.disable_edit
-			ev_language_combo.disable_edit
+--			ev_archetype_id.disable_edit
+--			ev_language_combo.disable_edit
 		end
 
 feature {NONE} -- Events
@@ -201,6 +218,37 @@ feature {NONE} -- Implementation
 
 	ev_language_combo: EV_COMBO_BOX
 
+	ev_undo_button, ev_redo_button: EV_TOOL_BAR_BUTTON
+
+	undo_redo_chain: UNDO_REDO_CHAIN
+
+	update_undo_redo_controls (a_chain: UNDO_REDO_CHAIN)
+			-- set undo/redo buttons appropriately
+		do
+			undo_redo_chain := a_chain
+			populate_undo_redo_controls
+		end
+
+	populate_undo_redo_controls
+			-- set undo/redo buttons appropriately
+		do
+			if attached undo_redo_chain and not undo_redo_chain.is_empty then
+				if undo_redo_chain.has_undos then
+					tool_bar.activate_tool_bar_button (ev_undo_button)
+				else
+					tool_bar.deactivate_tool_bar_button (ev_undo_button)
+				end
+				if undo_redo_chain.has_redos then
+					tool_bar.activate_tool_bar_button (ev_redo_button)
+				else
+					tool_bar.deactivate_tool_bar_button (ev_redo_button)
+				end
+			else
+				tool_bar.deactivate_tool_bar_button (ev_undo_button)
+				tool_bar.deactivate_tool_bar_button (ev_redo_button)
+			end
+		end
+
 	populate_languages
 			-- Populate `language_combo' in the toolbar for currently selected archetype
 		do
@@ -211,7 +259,7 @@ feature {NONE} -- Implementation
 		end
 
 	set_tab_texts
-			-- set taxt on tabs depending on view
+			-- set text on tabs depending on view
 		do
 			-- serialised rich text tab
 			if differential_view then

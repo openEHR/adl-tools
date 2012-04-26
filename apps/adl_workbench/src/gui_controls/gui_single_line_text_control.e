@@ -23,75 +23,24 @@ note
 class GUI_SINGLE_LINE_TEXT_CONTROL
 
 inherit
-	GUI_DATA_CONTROL
-		rename
-			make as make_data_control
+	GUI_TEXT_CONTROL
 		redefine
-			data_source, enable_edit, disable_edit
+			ev_data_control
 		end
 
 create
-	make
-
-feature -- Definitions
-
-	default_min_height: INTEGER = 25
-
-	default_min_width: INTEGER = 50
-
-feature -- Initialisation
-
-	make (a_title: STRING; a_data_source: like data_source; min_height, min_width: INTEGER; use_hbox_container: BOOLEAN; allow_expansion: BOOLEAN; a_text_box_select_all_handler: PROCEDURE [ANY, TUPLE])
-		do
-			make_data_control (a_title, a_data_source, min_height.max (default_min_height), min_width.max (default_min_width), use_hbox_container, allow_expansion)
-			ev_data_control.focus_in_actions.extend (a_text_box_select_all_handler)
-		end
+	make, make_editable
 
 feature -- Access
 
 	ev_data_control: EV_TEXT_FIELD
-
-	data_source: FUNCTION [ANY, TUPLE, STRING]
-
-feature -- Commands
-
-	enable_edit
-			-- enable editing
-		do
-			precursor
-			ev_data_control.enable_edit
-		end
-
-	disable_edit
-			-- disable editing
-		do
-			precursor
-			ev_data_control.enable_edit
-		end
-
-feature -- Events
-
-feature -- Commands
-
-	do_clear
-			-- Wipe out content.
-		do
-			ev_data_control.remove_text
-		end
-
-	do_populate
-			-- populate content.
-		do
-			if attached {STRING} data_source.item ([]) as str then
-				ev_data_control.set_text (utf8 (str))
-			end
-		end
 
 feature {NONE} -- Implementation
 
 	create_ev_data_control
 		do
 			create ev_data_control
+			ev_data_control.focus_out_actions.extend (agent process_edit)
 		end
 
 end

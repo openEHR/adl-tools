@@ -31,9 +31,9 @@ deferred class GUI_EV_MLIST_CONTROL
 inherit
 	GUI_DATA_CONTROL
 		rename
-			make as make_data_control
+			make as make_data_control, make_editable as make_editable_data_control
 		redefine
-			enable_edit, disable_edit
+			do_populate, enable_edit
 		end
 
 feature -- Definitions
@@ -44,9 +44,27 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (a_title: STRING; a_data_source: like data_source; min_height, min_width: INTEGER; use_hbox_container: BOOLEAN)
+	make (a_title: STRING; a_data_source: like data_source;
+			min_height, min_width: INTEGER;
+			use_hbox_container: BOOLEAN)
 		do
-			make_data_control (a_title, a_data_source, default_min_height.max (min_height), default_min_height.max (min_width), use_hbox_container, True)
+			make_data_control (a_title, a_data_source,
+				default_min_height.max (min_height), default_min_height.max (min_width), use_hbox_container, True)
+			ev_data_control.hide_title_row
+		end
+
+	make_editable (a_title: STRING; a_data_source: like data_source;
+			a_data_source_create_agent: like data_source_create_agent;
+			a_data_source_remove_agent: like data_source_remove_agent;
+			an_undo_redo_chain: UNDO_REDO_CHAIN;
+			min_height, min_width: INTEGER;
+			use_hbox_container: BOOLEAN)
+		local
+			mh, mw: INTEGER
+		do
+			make_editable_data_control (a_title,
+				a_data_source, a_data_source_create_agent, a_data_source_remove_agent, an_undo_redo_chain,
+				min_height, min_width, use_hbox_container, True)
 			ev_data_control.hide_title_row
 		end
 
@@ -55,6 +73,18 @@ feature -- Access
 	ev_data_control: EV_MULTI_COLUMN_LIST_EDITABLE
 
 feature -- Commands
+
+	do_populate
+		do
+			do_populate_control_from_source
+
+			if edit_enabled then
+				from ev_data_control.start until ev_data_control.off loop
+					ev_data_control.item.pointer_button_press_actions.force_extend (agent mlist_row_handler (ev_data_control.item, ?, ?, ?))
+					ev_data_control.forth
+				end
+			end
+		end
 
 	enable_edit
 			-- enable editing
@@ -68,12 +98,6 @@ feature -- Commands
 			ev_data_control.end_edit_actions.extend (agent process_in_place_edit)
 		end
 
-	disable_edit
-			-- disable editing
-		do
-			precursor
-		end
-
 	do_clear
 			-- Wipe out content.
 		do
@@ -81,6 +105,10 @@ feature -- Commands
 		end
 
 feature {NONE} -- Implementation
+
+	do_populate_control_from_source
+		deferred
+		end
 
 	create_ev_data_control
 		do

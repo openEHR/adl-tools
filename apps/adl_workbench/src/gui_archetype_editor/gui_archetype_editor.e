@@ -34,10 +34,10 @@ feature {NONE}-- Initialization
 			precursor
 
 			-- create subordinate widgets
-			create description_controls.make (agent text_widget_handler.on_select_all)
-			create node_map_control.make (agent select_ontology_item_from_code)
-			create ontology_controls.make
-			create serialisation_control.make
+			create description_controls.make (agent text_widget_handler.on_select_all, agent update_undo_redo_controls)
+			create node_map_control.make (agent select_ontology_item_from_code) --, agent install_undo_redo_chain)
+			create ontology_controls.make -- (agent install_undo_redo_chain)
+			create serialisation_control.make -- (agent install_undo_redo_chain)
 
 			-- connect widgets
 			ev_notebook.extend (description_controls.ev_root_container)

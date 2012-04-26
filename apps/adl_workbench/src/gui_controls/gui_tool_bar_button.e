@@ -1,15 +1,7 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Visual control for a data source that outputs to multi-line EV_TEXT control.
-				 Visual control structure is a text edit field with a title, in-place editing.
-				 
-					        +----------------------------+
-				            |                            |
-				    Title: 	|                            |
-				    	    |                            |
-						    +----------------------------+
-
+				 Tool bar button with active/inactive setting.
 				 ]"
 	keywords:    "UI, ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
@@ -22,31 +14,83 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class GUI_MULTILINE_TEXT_CONTROL
+class GUI_TOOL_BAR_BUTTON
 
 inherit
-	GUI_TEXT_CONTROL
-		redefine
-			ev_data_control
+	GUI_DEFINITIONS
+		export
+			{NONE} all
+		end
+
+	GUI_UTILITIES
+		export
+			{NONE} all
 		end
 
 create
-	make, make_editable
+	make
+
+feature -- Initialisation
+
+	make (an_active_pixmap, an_inactive_pixmap: detachable EV_PIXMAP; a_tooltip_text: detachable STRING; a_select_action: detachable PROCEDURE [ANY, TUPLE])
+		do
+			active_pixmap := an_active_pixmap
+			inactive_pixmap := an_inactive_pixmap
+			select_action := a_select_action
+
+			create ev_button
+			if attached a_tooltip_text then
+				ev_button.set_tooltip (a_tooltip_text)
+			end
+			disable_active
+		end
 
 feature -- Access
 
-	ev_data_control: EV_TEXT
+	ev_button: EV_TOOL_BAR_BUTTON
+
+	active_pixmap: detachable EV_PIXMAP
+
+	inactive_pixmap: detachable EV_PIXMAP
+
+	select_action: detachable PROCEDURE [ANY, TUPLE]
+
+feature -- Status Report
+
+	is_active: BOOLEAN
+
+feature -- Commands
+
+	enable_active
+			-- set active pixmap and install `select_action'
+		do
+			if not is_active then
+				is_active := True
+				if attached active_pixmap then
+					ev_button.set_pixmap (active_pixmap)
+				end
+				if attached select_action then
+					ev_button.select_actions.extend (select_action)
+				end
+			end
+		end
+
+	disable_active
+			-- set inactive pixmap and uninstall `select_action'
+		do
+			if is_active then
+				is_active := False
+				if attached inactive_pixmap then
+					ev_button.set_pixmap (inactive_pixmap)
+				end
+				ev_button.select_actions.wipe_out
+			end
+		end
 
 feature {NONE} -- Implementation
 
-	create_ev_data_control
-		do
-			create ev_data_control
-			ev_data_control.focus_out_actions.extend (agent process_edit)
-		end
 
 end
-
 
 
 --|

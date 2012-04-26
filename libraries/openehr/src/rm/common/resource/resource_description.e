@@ -71,12 +71,12 @@ feature -- Initialisation
 
 feature -- Access
 
+	original_language: CODE_PHRASE
+			-- a copy of original_language from parent object
+
 	original_author: HASH_TABLE [STRING, STRING]
 			-- Original author of this archetype, with all relevant details,
 			-- including organisation.
-
-	resource_package_uri: detachable URI
-			-- URI of archetype package
 
 	details: detachable HASH_TABLE [RESOURCE_DESCRIPTION_ITEM, STRING]
 			-- list of descriptive details, keyed by language
@@ -93,6 +93,9 @@ feature -- Access
 
 	parent_resource: detachable AUTHORED_RESOURCE
 			-- Reference to owning resource.
+
+	resource_package_uri: detachable URI
+			-- URI of archetype package
 
 	languages: attached ARRAYED_SET[STRING]
 			-- list of all languages in details
@@ -111,9 +114,6 @@ feature -- Access
 		do
 			Result := details.item(a_lang)
 		end
-
-	original_language: CODE_PHRASE
-			-- a copy of original_language from parent object
 
 feature -- Comparison
 
@@ -161,18 +161,25 @@ feature -- Modification
 			create original_author.make(0)
 		end
 
-	add_other_contributor (a_contributor: attached STRING)
-			-- add a_contributor to add_other_contributor
+	add_other_contributor (a_contributor: attached STRING; i: INTEGER)
+			-- add a_contributor to `add_other_contributor' at position `i', or end if i is 0
 		require
 			Contributor_valid: not a_contributor.is_empty
+			Valid_max_index: attached other_contributors implies i <= other_contributors.count
 		do
 			if other_contributors = Void then
 				create other_contributors.make(0)
 				other_contributors.compare_objects
 			end
-			other_contributors.extend (a_contributor)
+			if i > 0 then
+				other_contributors.go_i_th (i)
+				other_contributors.put_left (a_contributor)
+			else
+				other_contributors.extend (a_contributor)
+			end
 		ensure
-			Other_contributor_set: other_contributors.has(a_contributor)
+			Other_contributor_set: other_contributors.has (a_contributor)
+			Insert_position: i > 0 implies other_contributors.i_th (i) = a_contributor
 		end
 
 	remove_other_contributor (a_contributor: attached STRING)
@@ -188,17 +195,27 @@ feature -- Modification
 	clear_other_contributors
 			-- wipeout current items in other_contributors list
 		do
-			create other_contributors.make(0)
+			other_contributors := Void
+		ensure
+			not attached other_contributors
 		end
 
 	set_resource_package_uri (a_uri: attached STRING)
-			-- set resource_package_uri
+			-- set `resource_package_uri'
 		require
 			Uri_valid: not a_uri.is_empty
 		do
-			create resource_package_uri.make_from_string(a_uri)
+			create resource_package_uri.make_from_string (a_uri)
 		ensure
 			Archetype_package_uri_set: resource_package_uri.out.is_equal(a_uri)
+		end
+
+	clear_resource_package_uri
+			-- clear `resource_package_uri'
+		do
+			resource_package_uri := Void
+		ensure
+			not attached resource_package_uri
 		end
 
 	set_lifecycle_state (a_lifecycle_state: attached STRING)

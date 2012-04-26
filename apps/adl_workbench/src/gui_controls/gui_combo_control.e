@@ -78,7 +78,7 @@ feature -- Commands
 		end
 
 	do_clear
-			-- Wipe out content.
+			-- Wipe out content
 		do
 			ev_data_control.wipe_out
 		end

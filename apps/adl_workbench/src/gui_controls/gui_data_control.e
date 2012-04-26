@@ -30,7 +30,9 @@ inherit
 
 feature -- Initialisation
 
-	make (a_title: STRING; a_data_source: like data_source; min_height, min_width: INTEGER; use_hbox_container: BOOLEAN; allow_expansion: BOOLEAN)
+	make (a_title: STRING; a_data_source: like data_source;
+			min_height, min_width: INTEGER;
+			use_hbox_container: BOOLEAN; allow_expansion: BOOLEAN)
 		local
 			mh, mw: INTEGER
 		do
@@ -73,6 +75,25 @@ feature -- Initialisation
 			end
 		end
 
+	make_editable (a_title: STRING; a_data_source: like data_source;
+			a_data_source_create_agent: like data_source_create_agent;
+			a_data_source_remove_agent: like data_source_remove_agent;
+			an_undo_redo_chain: UNDO_REDO_CHAIN;
+			min_height, min_width: INTEGER;
+			use_hbox_container: BOOLEAN; allow_expansion: BOOLEAN)
+		local
+			mh, mw: INTEGER
+		do
+			make (a_title, a_data_source, min_height, min_width, use_hbox_container, allow_expansion)
+			data_source_create_agent := a_data_source_create_agent
+			data_source_remove_agent := a_data_source_remove_agent
+			undo_redo_chain := an_undo_redo_chain
+
+			can_edit := True
+		ensure
+			can_edit
+		end
+
 feature -- Access
 
 	ev_root_container: EV_BOX
@@ -84,7 +105,23 @@ feature -- Access
 	data_source: FUNCTION [ANY, TUPLE, ANY]
 			-- specialise in descendants
 
+	data_source_create_agent: detachable PROCEDURE [ANY, TUPLE]
+			-- agent for creating & setting the data source
+
+	data_source_remove_agent: detachable PROCEDURE [ANY, TUPLE]
+			-- agent for removing an the data source when it becomes empty,
+			-- in the case where it is a detachable attribute
+			-- of its owning class.
+
+	undo_redo_chain: detachable UNDO_REDO_CHAIN
+		-- reference to undo/redo chain from owning visual context
+
+	ev_title_label: EV_LABEL
+
 feature -- Status Report
+
+	can_edit: BOOLEAN
+			-- True if this control is capable of editing
 
 	edit_enabled: BOOLEAN
 			-- True if editing current enabled
@@ -113,19 +150,21 @@ feature -- Commands
 
 	enable_edit
 			-- enable editing
+		require
+			can_edit
 		do
 			edit_enabled := True
 		end
 
 	disable_edit
 			-- disable editing
+		require
+			can_edit
 		do
 			edit_enabled := False
 		end
 
 feature {NONE} -- Implementation
-
-	ev_title_label: EV_LABEL
 
 	create_ev_data_control
 		deferred

@@ -30,11 +30,11 @@ class GUI_HASH_TABLE_CONTROL
 inherit
 	GUI_EV_MLIST_CONTROL
 		redefine
-			data_source
+			data_source, data_source_create_agent, data_source_remove_agent
 		end
 
 create
-	make
+	make, make_editable
 
 feature -- Access
 
@@ -42,42 +42,22 @@ feature -- Access
 			-- function that produces a correct reference to the data source of this
 			-- control when called
 
-feature -- Modification
+	data_source_create_agent: detachable PROCEDURE [ANY, TUPLE [STRING, STRING]]
+			-- agent for creating & setting the data source
 
-	set_editing_agents (an_undo_redo_chain: like undo_redo_chain;
-			an_put_item_agent: like put_item_agent;
-			a_remove_item_agent: like remove_item_agent)
-		do
-			undo_redo_chain := an_undo_redo_chain
-			put_item_agent := an_put_item_agent
-			remove_item_agent := a_remove_item_agent
-		end
-
-feature -- Commands
-
-	do_populate
-		do
-			populate_ev_multi_list_from_hash (ev_data_control, data_source.item([]))
-
-			if edit_enabled then
-				from ev_data_control.start until ev_data_control.off loop
-					ev_data_control.item.pointer_button_press_actions.force_extend (agent mlist_row_handler (ev_data_control.item, ?, ?, ?))
-					ev_data_control.forth
-				end
-			end
-		end
-
-feature -- Events
+	data_source_remove_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
+			-- agent for removing a data item
 
 feature {NONE} -- Implementation
 
-	undo_redo_chain: UNDO_REDO_CHAIN
-		-- reference to undo/redo chain from owning visual context
+	do_populate_control_from_source
+		do
+			populate_ev_multi_list_from_hash (ev_data_control, data_source.item([]))
+		end
 
 	process_in_place_edit
 		local
 			old_key, old_val, new_key, new_val: STRING
-			ds: HASH_TABLE [STRING, STRING]
 			i: INTEGER
 		do
 			ds := data_source.item ([])
@@ -91,15 +71,15 @@ feature {NONE} -- Implementation
 
 			if ev_data_control.widget_column = 1 then -- key was modified; treat it as a remove & add
 				new_key := ev_data_control.i_th (ev_data_control.widget_row).i_th (1)
-				do_replace_key (old_key, new_key, old_val)
+				ds.replace_key (new_key, old_key)
 				undo_redo_chain.add_link (
-					agent do_replace_key (old_key, new_key, old_val), agent undo_replace_key (old_key, new_key, old_val), agent do_populate
+					agent ds.replace_key (old_key, new_key), agent ds.replace_key (new_key, old_key), agent do_populate
 				)
 			else -- value modified; it's a normal replace
 				new_val := ev_data_control.i_th (ev_data_control.widget_row).i_th (2)
-				put_item_agent.call ([old_key, new_val])
+				ds.force (new_val, old_key)
 				undo_redo_chain.add_link (
-					agent put_item_agent.call ([old_key, new_val]), agent put_item_agent.call ([old_key, old_val]), agent do_populate
+					agent ds.force (old_val, old_key), agent ds.force (new_val, old_key), agent do_populate
 				)
 			end
 
@@ -110,7 +90,7 @@ feature {NONE} -- Implementation
 			new_key, new_val: STRING
 			new_row: EV_MULTI_COLUMN_LIST_ROW
 		do
-			new_key := "new_key-" + uniqueness_counter.out
+			new_key := "new_key#" + uniqueness_counter.out
 			uniqueness_counter := uniqueness_counter + 1
 			new_val := "new_value"
 
@@ -119,9 +99,10 @@ feature {NONE} -- Implementation
 			new_row.extend (new_val)
 			ev_data_control.extend (new_row)
 			new_row.pointer_button_press_actions.force_extend (agent mlist_row_handler (new_row, ?, ?, ?))
-			put_item_agent.call ([new_key, new_val])
+
+			data_source_create_agent.call ([new_key, new_val])
 			undo_redo_chain.add_link (
-				agent put_item_agent.call ([new_key, new_val]), agent remove_item_agent.call ([new_key]), agent do_populate
+				agent data_source_remove_agent.call ([new_key]), agent data_source_create_agent.call ([new_key, new_val]), agent do_populate
 			)
 		end
 
@@ -131,34 +112,18 @@ feature {NONE} -- Implementation
 		do
 			old_key := ev_data_control.selected_item.i_th (1)
 			old_val := ev_data_control.selected_item.i_th (2)
-			remove_item_agent.call ([old_key])
-			undo_redo_chain.add_link (
-				agent remove_item_agent.call ([old_key]), agent put_item_agent.call ([old_key, old_val]), agent do_populate
-			)
+
+			data_source_remove_agent.call ([old_key])
 			ev_data_control.remove_selected_item
+
+			undo_redo_chain.add_link (
+				agent data_source_create_agent.call ([old_key, old_val]), agent data_source_remove_agent.call ([old_key]), agent do_populate
+			)
 		end
-
-	do_replace_key (an_old_key, a_new_key, an_old_value: STRING)
-		do
-			remove_item_agent.call ([an_old_key, an_old_value])
-			put_item_agent.call ([a_new_key, an_old_value])
-		end
-
-	undo_replace_key (an_old_key, a_new_key, an_old_value: STRING)
-		do
-			remove_item_agent.call ([a_new_key, an_old_value])
-			put_item_agent.call ([an_old_key, an_old_value])
-		end
-
-	put_item_agent: PROCEDURE [ANY, TUPLE [a_key: STRING; a_new_value: STRING]]
-			-- an agent that can be used to add or replace an entry to the hash table;
-			-- this will typically be a setter routine from a high-level object, not the HASH_TABLE in question
-
-	remove_item_agent: PROCEDURE [ANY, TUPLE [a_key: STRING]]
-			-- an agent that can be used to remove an entry in the hash table;
-			-- this will typically be a setter routine from a high-level object, not the HASH_TABLE in question
 
 	uniqueness_counter: INTEGER
+
+	ds: HASH_TABLE [STRING, STRING]
 
 end
 

@@ -208,6 +208,8 @@ templates = <
 		["diff_flat_form_label"] = <"Form">
 		["differential_view_button_tooltip"] = <"View differential archetype form">
 		["flat_view_button_tooltip"] = <"View flat archetype form">
+		["undo_button_tooltip"] = <"Undo (ctrl-z)">
+		["redo_button_tooltip"] = <"Redo (ctrl-y)">
 
 		["language_label"] = <"Language">
 		["language_combo_tooltip"] = <"Select display language">

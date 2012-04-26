@@ -64,10 +64,10 @@ feature -- Access
 	author: attached HASH_TABLE [STRING, STRING]
 			-- Translator name and other demographic details
 
-	accreditation: STRING
+	accreditation: detachable STRING
 			-- Accreditation of translator, usually a national translator's association id
 
-	other_details: HASH_TABLE [STRING, STRING]
+	other_details: detachable HASH_TABLE [STRING, STRING]
 			-- Any other meta-data
 
 feature -- Modification
@@ -101,7 +101,7 @@ feature -- Modification
 		do
 			accreditation := Void
 		ensure
-			accreditation = Void
+			not attached accreditation
 		end
 
 	put_author_item (a_key, a_value: attached STRING)
@@ -143,7 +143,7 @@ feature -- Modification
 				other_details := Void
 			end
 		ensure
-			old other_details.count = 1 implies other_details = Void
+			old other_details.count = 1 implies not attached other_details
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion

@@ -60,6 +60,8 @@ feature -- Access
 
 	last_tool_bar_radio_button: EV_TOOL_BAR_RADIO_BUTTON
 
+	last_tool_bar_button: EV_TOOL_BAR_BUTTON
+
 	last_combo_box: EV_COMBO_BOX
 
 feature -- Modification
@@ -152,15 +154,44 @@ feature -- Modification
 			add_tool_bar
 		end
 
-	add_tool_bar_radio_button (a_pixmap: EV_PIXMAP; a_tooltip_text: STRING; a_select_action: detachable PROCEDURE [ANY, TUPLE])
+	add_tool_bar_radio_button (an_active_pixmap: detachable EV_PIXMAP; a_tooltip_text: detachable STRING; a_select_action: detachable PROCEDURE [ANY, TUPLE])
 			-- add a radio button to current EV_TOOL_BAR
 		do
 			create last_tool_bar_radio_button
 			last_tool_bar.extend (last_tool_bar_radio_button)
-			last_tool_bar_radio_button.set_pixmap (a_pixmap)
-			last_tool_bar_radio_button.set_tooltip (a_tooltip_text)
+			if attached an_active_pixmap then
+				last_tool_bar_radio_button.set_pixmap (an_active_pixmap)
+			end
+			if attached a_tooltip_text then
+				last_tool_bar_radio_button.set_tooltip (a_tooltip_text)
+			end
 			if attached a_select_action then
 				last_tool_bar_radio_button.select_actions.extend (a_select_action)
+			end
+		end
+
+	add_tool_bar_button (an_active_pixmap, an_inactive_pixmap: detachable EV_PIXMAP; a_tooltip_text: detachable STRING; a_select_action: detachable PROCEDURE [ANY, TUPLE])
+			-- add a normal button to current EV_TOOL_BAR
+		local
+			gui_button: GUI_TOOL_BAR_BUTTON
+		do
+			create gui_button.make (an_active_pixmap, an_inactive_pixmap, a_tooltip_text, a_select_action)
+			last_tool_bar_button := gui_button.ev_button
+			last_tool_bar.extend (last_tool_bar_button)
+			last_tool_bar_button.set_data (gui_button)
+		end
+
+	activate_tool_bar_button (a_tool_bar_button: EV_TOOL_BAR_BUTTON)
+		do
+			if attached {GUI_TOOL_BAR_BUTTON} a_tool_bar_button.data as gui_button then
+				gui_button.enable_active
+			end
+		end
+
+	deactivate_tool_bar_button (a_tool_bar_button: EV_TOOL_BAR_BUTTON)
+		do
+			if attached {GUI_TOOL_BAR_BUTTON} a_tool_bar_button.data as gui_button then
+				gui_button.disable_active
 			end
 		end
 

@@ -29,64 +29,93 @@ class GUI_TEXT_LIST_CONTROL
 inherit
 	GUI_EV_MLIST_CONTROL
 		redefine
-			data_source
+			data_source, data_source_create_agent
 		end
 
 create
-	make
+	make, make_editable
 
 feature -- Access
 
-	data_source: FUNCTION [ANY, TUPLE, LIST [STRING]]
+	data_source: FUNCTION [ANY, TUPLE, DYNAMIC_LIST [STRING]]
+			-- function that produces a correct reference to the data source of this
+			-- control when called
 
-feature -- Modification
+	data_source_create_agent: detachable PROCEDURE [ANY, TUPLE [STRING, INTEGER]]
+			-- agent for add an item to the data source list
 
-	set_editing_agents (an_undo_redo_chain: like undo_redo_chain;
-			an_add_item_agent: like add_item_agent;
-			a_replace_current_item_agent: like replace_current_item_agent;
-			a_remove_current_item_agent: like remove_current_item_agent)
-		do
-			undo_redo_chain := an_undo_redo_chain
-			add_item_agent := an_add_item_agent
-			replace_current_item_agent := a_replace_current_item_agent
-			remove_current_item_agent := a_remove_current_item_agent
-		end
+feature {NONE} -- Implementation
 
-feature -- Commands
-
-	do_populate
+	do_populate_control_from_source
 		do
 			populate_ev_multi_list_from_list (ev_data_control, data_source.item ([]))
 		end
 
-feature {NONE} -- Implementation
-
-	undo_redo_chain: UNDO_REDO_CHAIN
-		-- reference to undo/redo chain from owning visual context
-
 	process_in_place_edit
 		do
+			ds := data_source.item ([])
+			ds_index := 1
+			from ds.start until ds_index = ev_data_control.widget_row or ds.off loop
+				ds_index := ds_index + 1
+				ds.forth
+			end
+			old_val := ds.item_for_iteration
+
+			new_val := ev_data_control.i_th (ev_data_control.widget_row).i_th (1)
+			ds.replace (new_val)
+			undo_redo_chain.add_link (
+				agent do ds.go_i_th (ds_index); ds.replace (old_val) end,
+				agent do ds.go_i_th (ds_index); ds.replace (new_val) end,
+				agent do_populate
+			)
 		end
 
 	process_add_new
+		local
+			new_row: EV_MULTI_COLUMN_LIST_ROW
 		do
+			new_val := "new_value"
+
+			create new_row
+			new_row.extend (new_val)
+			ev_data_control.extend (new_row)
+			new_row.pointer_button_press_actions.force_extend (agent mlist_row_handler (new_row, ?, ?, ?))
+
+			data_source_create_agent.call ([new_val, 0])
+			undo_redo_chain.add_link (
+				agent data_source_remove_agent.call ([new_val]),
+				agent data_source_create_agent.call ([new_val, 0]),
+				agent do_populate
+			)
 		end
 
 	process_remove_existing
+		local
+			undo_add_idx: INTEGER
 		do
+			ds := data_source.item ([])
+			ds_index := ev_data_control.index_of (ev_data_control.selected_item, 1)
+			old_val := ds.i_th (ds_index)
+
+			if ds_index = ev_data_control.count then -- removing last element
+				undo_add_idx := 0
+			else
+				undo_add_idx := ds_index
+			end
+			data_source_remove_agent.call ([old_val])
+			undo_redo_chain.add_link (
+				agent data_source_create_agent.call ([old_val, undo_add_idx]),
+				agent data_source_remove_agent.call ([old_val]),
+				agent do_populate
+			)
+			ev_data_control.remove_selected_item
 		end
 
-	add_item_agent: PROCEDURE [ANY, TUPLE [an_index: INTEGER; a_new_value: STRING]]
-			-- an agent that can be used to add an entry to the list at the i'th position;
-			-- this will typically be a setter routine from a high-level object, not the LIST in question
+	ds: DYNAMIC_LIST [STRING]
 
-	replace_current_item_agent: PROCEDURE [ANY, TUPLE [a_new_value: STRING]]
-			-- an agent that can be used to replace the currently selected entry in the list;
-			-- this will typically be a setter routine from a high-level object, not the LIST in question
+	ds_index: INTEGER
 
-	remove_current_item_agent: PROCEDURE [ANY, TUPLE]
-			-- an agent that can be used to remove the current entry from the list;
-			-- this will typically be a setter routine from a high-level object, not the LIST in question
+	old_val, new_val: STRING
 
 end
 

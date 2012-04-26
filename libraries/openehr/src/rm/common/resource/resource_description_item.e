@@ -113,7 +113,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_purpose(a_purpose: attached STRING)
+	set_purpose (a_purpose: attached STRING)
 			-- set purpose
 		require
 			Purpose_valid: not a_purpose.is_empty
@@ -123,7 +123,7 @@ feature -- Modification
 			Purpose_set: purpose = a_purpose
 		end
 
-	set_use(a_use: attached STRING)
+	set_use (a_use: attached STRING)
 			-- set use
 		require
 			Purpose_valid: not a_use.is_empty
@@ -133,7 +133,15 @@ feature -- Modification
 			Use_set: use = a_use
 		end
 
-	set_misuse(a_misuse: attached STRING)
+	clear_use
+			-- remove `use'
+		do
+			use := Void
+		ensure
+			not attached use
+		end
+
+	set_misuse (a_misuse: attached STRING)
 			-- set misuse
 		require
 			Misuse_valid: not a_misuse.is_empty
@@ -141,6 +149,14 @@ feature -- Modification
 			misuse := a_misuse
 		ensure
 			Misuse_set: misuse = a_misuse
+		end
+
+	clear_misuse
+			-- remove `misuse'
+		do
+			misuse := Void
+		ensure
+			not attached misuse
 		end
 
 	set_copyright (a_copyright: attached STRING)
@@ -153,18 +169,43 @@ feature -- Modification
 			Copyright_set: copyright = a_copyright
 		end
 
-	add_keyword (a_keyword: attached STRING)
-			-- add a_keyword to keywords
-		require
-			Contributor_valid: not has_keyword (a_keyword)
+	clear_copyright
+			-- remove copyright
 		do
-			if keywords = Void then
-				create keywords.make (0)
+			copyright := Void
+		ensure
+			not attached copyright
+		end
+
+	add_keyword (a_keyword: attached STRING; i: INTEGER)
+			-- add a_keyword to `keywords' at position `i', or end if i is 0
+		require
+			Keyword_valid: not has_keyword (a_keyword)
+			Valid_max_index: attached keywords implies i <= keywords.count
+		do
+			if not attached keywords then
+				create keywords.make(0)
 				keywords.compare_objects
 			end
-			keywords.extend (a_keyword)
+			if i > 0 then
+				keywords.go_i_th (i)
+				keywords.put_left (a_keyword)
+			else
+				keywords.extend (a_keyword)
+			end
 		ensure
-			Keyword_added: keywords.has(a_keyword)
+			Keyword_added: keywords.has (a_keyword)
+			Insert_position: i > 0 implies keywords.i_th (i) = a_keyword
+		end
+
+	remove_keyword (a_keyword: attached STRING)
+			-- remove a_keyword from `keywords'
+		require
+			Contributor_valid: has_keyword (a_keyword)
+		do
+			keywords.prune (a_keyword)
+		ensure
+			Keyword_removed: not has_keyword (a_keyword)
 		end
 
 	put_other_details_item (a_key, a_value: attached STRING)
@@ -194,7 +235,7 @@ feature -- Modification
 			old other_details.count = 1 implies other_details = Void
 		end
 
-	add_original_resource_uri (a_key, a_value: attached STRING)
+	put_original_resource_uri_item (a_key, a_value: attached STRING)
 			-- add the key, value pair to original_resource_uri
 		require
 			Key_valid: not a_key.is_empty
@@ -207,6 +248,19 @@ feature -- Modification
 			original_resource_uri.put (a_value, a_key)
 		ensure
 			Original_resource_uri_added: original_resource_uri.item (a_key) = a_value
+		end
+
+	remove_original_resource_uri_item (a_key: attached STRING)
+			-- remove item with key `a_key' from `original_resource_uri'
+		require
+			Key_valid: original_resource_uri.has (a_key)
+		do
+			original_resource_uri.remove (a_key)
+			if other_details.is_empty then
+				original_resource_uri := Void
+			end
+		ensure
+			old original_resource_uri.count = 1 implies original_resource_uri = Void
 		end
 
 feature -- Copying
@@ -233,13 +287,13 @@ feature -- Copying
 			end
 			if attached keywords then
 				from keywords.start until keywords.off loop
-					Result.add_keyword(prefix_str + keywords.item + suffix_str)
+					Result.add_keyword (prefix_str + keywords.item + suffix_str, 0)
 					keywords.forth
 				end
 			end
 			if attached original_resource_uri then
 				from original_resource_uri.start until original_resource_uri.off loop
-					Result.add_original_resource_uri(prefix_str + original_resource_uri.key_for_iteration + suffix_str,
+					Result.put_original_resource_uri_item (prefix_str + original_resource_uri.key_for_iteration + suffix_str,
 						original_resource_uri.item_for_iteration)
 					original_resource_uri.forth
 				end

@@ -21,39 +21,65 @@ create
 
 feature -- Initialisation
 
-	make
+	make (a_gui_update_agent: like gui_update_agent)
 		do
 			create chain.make
+			gui_update_agent := a_gui_update_agent
 		end
 
 feature -- Access
 
 	chain: LINKED_LIST [UNDO_REDO_ACTION]
 
+	gui_update_agent: PROCEDURE [ANY, TUPLE [UNDO_REDO_CHAIN]]
+
+feature -- Status Report
+
+	is_empty: BOOLEAN
+		do
+			Result := chain.is_empty
+		end
+
+	has_undos: BOOLEAN
+			-- True if there are any undo actions available
+		do
+			Result := not is_empty and then not chain.before
+		end
+
+	has_redos: BOOLEAN
+			-- True if there are any redo actions available
+		do
+			Result := not is_empty and then not chain.islast
+		end
+
 feature -- Element Change
 
 	add_link (an_undo_action, a_redo_action, a_display_action: PROCEDURE [ANY, TUPLE])
 		do
 			chain.extend (create {UNDO_REDO_ACTION}.make (an_undo_action, a_redo_action, a_display_action))
+			chain.finish
+			gui_update_agent.call ([Current])
 		end
 
 feature -- Commands
 
-	back
-			-- go back one element and execute its undo action
+	undo
+			-- execute current undo action and go back one element
 		do
-			if not chain.isfirst then
-				chain.back
+			if not chain.before then
 				chain.item.undo
+				chain.back
+				gui_update_agent.call ([Current])
 			end
 		end
 
-	forth
+	redo
 			-- go forward one element and execute its redo action
 		do
 			if not chain.islast then
 				chain.forth
 				chain.item.redo
+				gui_update_agent.call ([Current])
 			end
 		end
 
