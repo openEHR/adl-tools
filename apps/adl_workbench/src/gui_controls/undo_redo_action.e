@@ -21,11 +21,12 @@ create
 
 feature -- Initialisation
 
-	make (an_undo_action, a_redo_action, a_display_action: PROCEDURE [ANY, TUPLE])
+	make (an_undo_action, an_undo_display_action, a_redo_action, a_redo_display_action: PROCEDURE [ANY, TUPLE])
 		do
 			undo_action := an_undo_action
 			redo_action := a_redo_action
-			display_action := a_display_action
+			undo_display_action := an_undo_display_action
+			redo_display_action := a_redo_display_action
 		end
 
 feature -- Access
@@ -34,20 +35,22 @@ feature -- Access
 
 	redo_action: PROCEDURE [ANY, TUPLE]
 
-	display_action: PROCEDURE [ANY, TUPLE]
+	undo_display_action: PROCEDURE [ANY, TUPLE]
+
+	redo_display_action: PROCEDURE [ANY, TUPLE]
 
 feature -- Commands
 
 	undo
 		do
 			undo_action.call ([])
-			display_action.call ([])
+			undo_display_action.call ([])
 		end
 
 	redo
 		do
 			redo_action.call ([])
-			display_action.call ([])
+			redo_display_action.call ([])
 		end
 
 feature {NONE} -- Implementation

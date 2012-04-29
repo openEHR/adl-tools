@@ -193,24 +193,27 @@ feature {NONE} -- Implementation
 		end
 
 	resize_ev_multi_list (ev_mlist: attached EV_MULTI_COLUMN_LIST)
-			-- perform seinsible column resizing on a EV_MULTI_COLUMN_LIST
+			-- perform sensible column resizing on a EV_MULTI_COLUMN_LIST
 		local
 			i: INTEGER
 		do
 			from i := 1 until i > ev_mlist.column_count loop
-				ev_mlist.resize_column_to_content(i)
-				-- FIXME: a pure hack to get round the problem of Multi-list column resizing not including title contents
-				ev_mlist.set_column_width (ev_mlist.column_width (i).max (ev_mlist.column_title (i).count * 12), i)
+				if not ev_mlist.is_empty then
+					ev_mlist.resize_column_to_content (i)
+				elseif attached ev_mlist.column_title (i) then
+					-- FIXME: a pure hack to get round the problem of Multi-list column resizing not including title contents
+					ev_mlist.set_column_width (ev_mlist.column_width (i).max (ev_mlist.column_title (i).count * 12), i)
+				end
 				i := i + 1
 			end
 		end
 
-	populate_ev_list_from_hash_keys (ev_list: EV_LIST; ht: HASH_TABLE [ANY, STRING])
+	populate_ev_list_from_hash_keys (ev_list: EV_LIST; ht: detachable HASH_TABLE [ANY, STRING])
 			-- populate list from hash table keys
 		local
 			ev_list_item: EV_LIST_ITEM
 		do
-			if ht /= Void then
+			if attached ht then
 				from ht.start until ht.off loop
 					create ev_list_item.make_with_text (utf8 (ht.key_for_iteration))
 					ev_list.extend(ev_list_item)
@@ -219,13 +222,13 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_ev_combo_from_ds_hash_keys (ev_combo: EV_COMBO_BOX; ht: DS_HASH_TABLE [ANY, STRING])
+	populate_ev_combo_from_ds_hash_keys (ev_combo: EV_COMBO_BOX; ht: detachable DS_HASH_TABLE [ANY, STRING])
 			-- populate combo from hash table items
 		local
 			strs: ARRAYED_LIST [STRING_32]
 		do
 			create strs.make (0)
-			if ht /= Void then
+			if attached ht then
 				from ht.start until ht.off loop
 					strs.extend (utf8 (ht.key_for_iteration))
 					ht.forth

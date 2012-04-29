@@ -30,37 +30,48 @@ inherit
 
 feature -- Initialisation
 
-	make (a_title: STRING; a_data_source: like data_source;
+	make (a_title: detachable STRING; a_data_source: like data_source;
 			min_height, min_width: INTEGER;
-			use_hbox_container: BOOLEAN; allow_expansion: BOOLEAN)
+			use_hbox_container: BOOLEAN;
+			allow_expansion: BOOLEAN)
 		local
 			mh, mw: INTEGER
 		do
 			data_source := a_data_source
 
-			-- create container
+			mh := min_height + Default_border_width
+			mw := min_width + Default_border_width
+
+			-- create a container to hold title and data control
 			if use_hbox_container then
 				create {EV_HORIZONTAL_BOX} ev_root_container
 			else
 				create {EV_VERTICAL_BOX} ev_root_container
 			end
 			ev_root_container.set_data (Current)
-			ev_root_container.set_padding (Default_padding_width)
-			ev_root_container.set_border_width (Default_border_width)
 
-			-- create the title and add to ev_container
-			create ev_title_label
-			ev_title_label.set_text (a_title)
-			ev_root_container.extend (ev_title_label)
-			ev_root_container.disable_item_expand (ev_title_label)
+			-- if there is a title, set appropriate padding & border
+			if attached a_title and then not a_title.is_empty then
+				ev_root_container.set_padding (Default_padding_width)
+				ev_root_container.set_border_width (Default_border_width)
 
-			mh := min_height + 2 * Default_border_width
-			mw := min_width + 2 * Default_border_width
-			if use_hbox_container then
-				mw := mw + ev_title_label.width + Default_padding_width
-			else
-				mh := mh + ev_title_label.height + Default_padding_width
+				-- create the title and add to ev_container
+				create ev_title_label
+				ev_title_label.set_text (a_title)
+				ev_root_container.extend (ev_title_label)
+				ev_root_container.disable_item_expand (ev_title_label)
+
+				-- add some more spacing due to title
+				mh := mh + Default_border_width
+				mw := mw + Default_border_width
+
+				if use_hbox_container then
+					mw := mw + ev_title_label.width + Default_padding_width
+				else
+					mh := mh + ev_title_label.height + Default_padding_width
+				end
 			end
+
 			ev_root_container.set_minimum_height (mh)
 			ev_root_container.set_minimum_width (mw)
 

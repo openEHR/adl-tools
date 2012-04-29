@@ -47,7 +47,7 @@ feature {NONE}-- Initialization
 			create node_map_control.make (agent select_ontology_item_from_code)
 			create path_map_control.make (agent on_path_map_key_press)
 			create slot_map_control.make (agent update_slots_tab_label)
-			create ontology_controls.make
+			create ontology_controls.make (Void)
 			create annotations_control.make
 			create serialisation_control.make
 			create source_control.make

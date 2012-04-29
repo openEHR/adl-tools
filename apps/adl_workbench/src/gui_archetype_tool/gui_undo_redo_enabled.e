@@ -24,13 +24,23 @@ feature {NONE}-- Initialization
 	add_undo_redo_toolbar
 			-- add undo/redo buttons to toolbar
 		do
+			-- toolbar
 			tool_bar.add_tool_bar
+
+			-- undo button
 			tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/undo_active"), get_icon_pixmap ("tool/undo_inactive"),
 				create_message_content ("undo_button_tooltip", Void), agent on_undo)
 			ev_undo_button := tool_bar.last_tool_bar_button
+
+			-- redo button
 			tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/redo_active"), get_icon_pixmap ("tool/redo_inactive"),
 				create_message_content ("redo_button_tooltip", Void), agent on_redo)
 			ev_redo_button := tool_bar.last_tool_bar_button
+
+			-- commit button
+			tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/synchronise_active"), get_icon_pixmap ("tool/synchronise_inactive"),
+				create_message_content ("commit_button_tooltip", Void), agent on_commit)
+			ev_commit_button := tool_bar.last_tool_bar_button
 		end
 
 feature -- Access
@@ -39,7 +49,12 @@ feature -- Access
 		deferred
 		end
 
-feature -- Commands
+feature -- Status Report
+
+	is_dirty: BOOLEAN
+			-- editable content has been changed by user actions
+
+feature -- Events
 
 	on_undo
 		do
@@ -51,9 +66,18 @@ feature -- Commands
 			undo_redo_chain.redo
 		end
 
+	on_commit
+		do
+			do_commit
+			is_dirty := False
+			populate_commit_control
+		end
+
 feature {NONE} -- Implementation
 
 	ev_undo_button, ev_redo_button: EV_TOOL_BAR_BUTTON
+
+	ev_commit_button: EV_TOOL_BAR_BUTTON
 
 	undo_redo_chain: UNDO_REDO_CHAIN
 
@@ -61,13 +85,15 @@ feature {NONE} -- Implementation
 			-- set undo/redo buttons appropriately
 		do
 			undo_redo_chain := a_chain
+			is_dirty := True
 			populate_undo_redo_controls
 		end
 
 	populate_undo_redo_controls
-			-- set undo/redo buttons appropriately
+			-- set undo/redo and commit controls appropriately
 		do
-			if attached undo_redo_chain and not undo_redo_chain.is_empty then
+			-- undo/redo buttons
+			if attached undo_redo_chain then
 				if undo_redo_chain.has_undos then
 					tool_bar.activate_tool_bar_button (ev_undo_button)
 				else
@@ -82,6 +108,22 @@ feature {NONE} -- Implementation
 				tool_bar.deactivate_tool_bar_button (ev_undo_button)
 				tool_bar.deactivate_tool_bar_button (ev_redo_button)
 			end
+
+			-- commit button
+			populate_commit_control
+		end
+
+	populate_commit_control
+		do
+			if is_dirty then
+				tool_bar.activate_tool_bar_button (ev_commit_button)
+			else
+				tool_bar.deactivate_tool_bar_button (ev_commit_button)
+			end
+		end
+
+	do_commit
+		deferred
 		end
 
 end

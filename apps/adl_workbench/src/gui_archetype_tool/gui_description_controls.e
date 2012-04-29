@@ -17,7 +17,7 @@ class GUI_DESCRIPTION_CONTROLS
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			can_populate, can_repopulate, can_edit, disable_edit, enable_edit
+			can_populate, can_repopulate, can_edit, disable_edit, enable_edit, on_selected
 		end
 
 create
@@ -35,19 +35,20 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_text_box_select_all_handler: PROCEDURE [ANY, TUPLE]; an_undo_redo_update_agent: like undo_redo_update_agent)
+	make (a_text_box_select_all_handler: PROCEDURE [ANY, TUPLE];
+			an_undo_redo_update_agent: like undo_redo_update_agent)
 		do
-			-- create widgets
+			-- set commit handling
+			undo_redo_update_agent := an_undo_redo_update_agent
+			create authoring_tab_undo_redo_chain.make (undo_redo_update_agent)
+			create description_tab_undo_redo_chain.make (undo_redo_update_agent)
+
+			-- ======= root container ===========
 			create ev_root_container
 			ev_root_container.set_data (Current)
 
 			create gui_authoring_tab_controls.make (0)
 			create gui_description_tab_controls.make (0)
-
-			-- set up undo handling
-			undo_redo_update_agent := an_undo_redo_update_agent
-			create authoring_tab_undo_redo_chain.make (undo_redo_update_agent)
-			create description_tab_undo_redo_chain.make (undo_redo_update_agent)
 
 			-- ====== Authoring tab =======
 			create admin_vbox
@@ -74,7 +75,7 @@ feature {NONE} -- Initialisation
 				agent (a_key, a_val: STRING) do source_archetype.description.put_original_author_item (a_key, a_val) end,
 				agent (a_key: STRING) do source_archetype.description.remove_original_author_item (a_key) end,
 				authoring_tab_undo_redo_chain,
-				65, min_entry_control_width, False)
+				65, min_entry_control_width, False, Void)
 			gui_authoring_tab_controls.extend (original_author_ctl)
 
 			-- contributors - list
@@ -123,7 +124,7 @@ feature {NONE} -- Initialisation
 				agent (a_key, a_val: STRING) do translation_details.put_author_item (a_key, a_val) end,
 				agent (a_key: STRING) do translation_details.remove_author_item (a_key) end,
 				authoring_tab_undo_redo_chain,
-				65, min_entry_control_width, False)
+				65, min_entry_control_width, False, Void)
 			gui_authoring_tab_controls.extend (trans_author_ctl)
 			trans_languages_ctl.add_linked_control (trans_author_ctl)
 			trans_author_accreditation_vbox.extend (trans_author_ctl.ev_root_container)
@@ -145,7 +146,7 @@ feature {NONE} -- Initialisation
 				agent (a_key, a_val: STRING) do translation_details.put_other_details_item (a_key, a_val) end,
 				agent (a_key: STRING) do translation_details.remove_other_details_item (a_key) end,
 				authoring_tab_undo_redo_chain,
-				40, min_entry_control_width, False)
+				40, min_entry_control_width, False, Void)
 			gui_authoring_tab_controls.extend (trans_other_details_ctl)
 			trans_languages_ctl.add_linked_control (trans_other_details_ctl)
 			lang_translations_hbox.extend (trans_other_details_ctl.ev_root_container)
@@ -243,7 +244,7 @@ feature {NONE} -- Initialisation
 				agent (a_key, a_val: STRING) do description_details.put_original_resource_uri_item (a_key, a_val) end,
 				agent (a_key: STRING) do description_details.remove_original_resource_uri_item (a_key) end,
 				description_tab_undo_redo_chain,
-				44, 0, True)
+				44, 0, True, Void)
 			gui_description_tab_controls.extend (original_resources_ctl)
 			resource_frame_ctl.extend (original_resources_ctl.ev_root_container, False)
 
@@ -282,11 +283,19 @@ feature -- Events
 
 	on_select_notebook
 		do
-			if ev_root_container.selected_item = admin_vbox then
-				undo_redo_update_agent.call ([authoring_tab_undo_redo_chain])
-			else
-				undo_redo_update_agent.call ([description_tab_undo_redo_chain])
+			if editing_enabled then
+				if ev_root_container.selected_item = admin_vbox then
+					undo_redo_update_agent.call ([authoring_tab_undo_redo_chain])
+				else
+					undo_redo_update_agent.call ([description_tab_undo_redo_chain])
+				end
 			end
+		end
+
+	on_selected
+			-- perform when this tool made visible, e.g. by selection of parent notebook tab
+		do
+			on_select_notebook
 		end
 
 feature -- Commands

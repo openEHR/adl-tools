@@ -1,7 +1,13 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-				 List of undo/redo objects that can be traversed in either direction.
+				 List of undo/redo objects that can be traversed in either direction. When a new undo/redo
+				 element is added, everything to the right is thrown away.
+				 The current position is the current undo object; calling `undo' causes execution of that
+				 action followed by a move one place back. This can result in moving to the 'before' position
+				 of the chain.
+				 Calling `redo', if there are elements in front of the cursor, causes a move forward and then
+				 execution of the redo action.
 				 ]"
 	keywords:    "UI, ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
@@ -29,7 +35,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	chain: LINKED_LIST [UNDO_REDO_ACTION]
+	chain: TWO_WAY_LIST [UNDO_REDO_ACTION]
 
 	gui_update_agent: PROCEDURE [ANY, TUPLE [UNDO_REDO_CHAIN]]
 
@@ -54,9 +60,17 @@ feature -- Status Report
 
 feature -- Element Change
 
-	add_link (an_undo_action, a_redo_action, a_display_action: PROCEDURE [ANY, TUPLE])
+	add_link (an_undo_action, an_undo_display_action, a_redo_action, a_redo_display_action: PROCEDURE [ANY, TUPLE])
 		do
-			chain.extend (create {UNDO_REDO_ACTION}.make (an_undo_action, a_redo_action, a_display_action))
+			if not chain.is_empty then
+				if chain.before then
+					create chain.make
+				elseif not chain.islast then -- remove everything to the right of current position
+					chain.forth
+					chain.split (chain.count)
+				end
+			end
+			chain.extend (create {UNDO_REDO_ACTION}.make (an_undo_action, an_undo_display_action, a_redo_action, a_redo_display_action))
 			chain.finish
 			gui_update_agent.call ([Current])
 		end
@@ -76,10 +90,16 @@ feature -- Commands
 	redo
 			-- go forward one element and execute its redo action
 		do
-			if not chain.islast then
-				chain.forth
-				chain.item.redo
-				gui_update_agent.call ([Current])
+			if not chain.is_empty then
+				if chain.before then
+					chain.start
+				elseif not chain.islast then
+					chain.forth
+				end
+				if not chain.off then
+					chain.item.redo
+					gui_update_agent.call ([Current])
+				end
 			end
 		end
 

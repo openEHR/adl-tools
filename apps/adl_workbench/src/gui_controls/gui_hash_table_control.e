@@ -13,6 +13,9 @@ note
 						|      |                            |
 						+------+----------------------------+
 
+				 Note that the undo/redo actions for adding and deleting rows can cause re-ordering of the table
+				 because HASH_TABLE iterates in chronological addition order. Therefore all undo/redo actions
+				 have to be impervious to table re-ordering.
 				 ]"
 	keywords:    "UI, ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
@@ -59,6 +62,7 @@ feature {NONE} -- Implementation
 		local
 			old_key, old_val, new_key, new_val: STRING
 			i: INTEGER
+			ds: HASH_TABLE [STRING, STRING]
 		do
 			ds := data_source.item ([])
 			i := 1
@@ -73,16 +77,25 @@ feature {NONE} -- Implementation
 				new_key := ev_data_control.i_th (ev_data_control.widget_row).i_th (1)
 				ds.replace_key (new_key, old_key)
 				undo_redo_chain.add_link (
-					agent ds.replace_key (old_key, new_key), agent ds.replace_key (new_key, old_key), agent do_populate
+					-- undo
+					agent ds.replace_key (old_key, new_key),
+					agent do_populate,
+					-- redo
+					agent ds.replace_key (new_key, old_key),
+					agent do_populate
 				)
 			else -- value modified; it's a normal replace
 				new_val := ev_data_control.i_th (ev_data_control.widget_row).i_th (2)
 				ds.force (new_val, old_key)
 				undo_redo_chain.add_link (
-					agent ds.force (old_val, old_key), agent ds.force (new_val, old_key), agent do_populate
+					-- undo
+					agent ds.force (old_val, old_key),
+					agent do_populate,
+					-- redo
+					agent ds.force (new_val, old_key),
+					agent do_populate
 				)
 			end
-
 		end
 
 	process_add_new
@@ -91,18 +104,19 @@ feature {NONE} -- Implementation
 			new_row: EV_MULTI_COLUMN_LIST_ROW
 		do
 			new_key := "new_key#" + uniqueness_counter.out
-			uniqueness_counter := uniqueness_counter + 1
+			increment_uniqueness_counter
 			new_val := "new_value"
 
 			create new_row
 			new_row.extend (new_key)
 			new_row.extend (new_val)
 			ev_data_control.extend (new_row)
-			new_row.pointer_button_press_actions.force_extend (agent mlist_row_handler (new_row, ?, ?, ?))
+			new_row.pointer_button_press_actions.force_extend (agent mlist_handler (ev_data_control, ?, ?, ?, ?, ?, ?, ?, ?))
 
 			data_source_create_agent.call ([new_key, new_val])
 			undo_redo_chain.add_link (
-				agent data_source_remove_agent.call ([new_key]), agent data_source_create_agent.call ([new_key, new_val]), agent do_populate
+				agent data_source_remove_agent.call ([new_key]), agent do_populate, -- undo
+				agent data_source_create_agent.call ([new_key, new_val]), agent do_populate -- redo
 			)
 		end
 
@@ -117,13 +131,30 @@ feature {NONE} -- Implementation
 			ev_data_control.remove_selected_item
 
 			undo_redo_chain.add_link (
-				agent data_source_create_agent.call ([old_key, old_val]), agent data_source_remove_agent.call ([old_key]), agent do_populate
+				agent data_source_create_agent.call ([old_key, old_val]), agent do_populate,  -- undo
+				agent data_source_remove_agent.call ([old_key]), agent do_populate -- redo
 			)
 		end
 
 	uniqueness_counter: INTEGER
+		do
+			Result := uniqueness_counter_cell.item
+		end
 
-	ds: HASH_TABLE [STRING, STRING]
+	increment_uniqueness_counter
+		do
+			uniqueness_counter_cell.put (uniqueness_counter + 1)
+		end
+
+	uniqueness_counter_cell: CELL[INTEGER]
+		local
+			rnd: RANDOM
+			dt: DATE_TIME
+		once
+			create dt.make_now
+			create rnd.set_seed (dt.seconds)
+			create Result.put (rnd.next_random (1))
+		end
 
 end
 

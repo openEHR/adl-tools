@@ -28,12 +28,37 @@ class GUI_TEXT_LIST_CONTROL
 
 inherit
 	GUI_EV_MLIST_CONTROL
+		rename
+			make as make_mlist, make_editable as make_editable_mlist
 		redefine
 			data_source, data_source_create_agent
 		end
 
 create
 	make, make_editable
+
+feature -- Initialisation
+
+	make (a_title: STRING; a_data_source: like data_source;
+			min_height, min_width: INTEGER;
+			use_hbox_container: BOOLEAN)
+		do
+			make_mlist (a_title, a_data_source,
+				min_height, min_width,
+				use_hbox_container, Void)
+		end
+
+	make_editable (a_title: STRING; a_data_source: like data_source;
+			a_data_source_create_agent: like data_source_create_agent;
+			a_data_source_remove_agent: like data_source_remove_agent;
+			an_undo_redo_chain: UNDO_REDO_CHAIN;
+			min_height, min_width: INTEGER;
+			use_hbox_container: BOOLEAN)
+		do
+			make_editable_mlist (a_title,
+				a_data_source, a_data_source_create_agent, a_data_source_remove_agent, an_undo_redo_chain,
+				min_height, min_width, use_hbox_container, Void)
+		end
 
 feature -- Access
 
@@ -52,6 +77,10 @@ feature {NONE} -- Implementation
 		end
 
 	process_in_place_edit
+		local
+			old_val, new_val: STRING
+			ds: DYNAMIC_LIST [STRING]
+			ds_index: INTEGER
 		do
 			ds := data_source.item ([])
 			ds_index := 1
@@ -64,26 +93,31 @@ feature {NONE} -- Implementation
 			new_val := ev_data_control.i_th (ev_data_control.widget_row).i_th (1)
 			ds.replace (new_val)
 			undo_redo_chain.add_link (
-				agent do ds.go_i_th (ds_index); ds.replace (old_val) end,
-				agent do ds.go_i_th (ds_index); ds.replace (new_val) end,
-				agent do_populate
+				-- undo
+				agent ds.put_i_th (old_val, ds_index),
+				agent (ev_data_control.i_th (ev_data_control.widget_row)).put_i_th (utf8 (old_val), 1),
+				-- redo
+				agent ds.put_i_th (new_val, ds_index),
+				agent (ev_data_control.i_th (ev_data_control.widget_row)).put_i_th (new_val, 1)
 			)
 		end
 
 	process_add_new
 		local
 			new_row: EV_MULTI_COLUMN_LIST_ROW
+			new_val: STRING
 		do
 			new_val := "new_value"
 
 			create new_row
 			new_row.extend (new_val)
 			ev_data_control.extend (new_row)
-			new_row.pointer_button_press_actions.force_extend (agent mlist_row_handler (new_row, ?, ?, ?))
+			new_row.pointer_button_press_actions.force_extend (agent mlist_handler (ev_data_control, ?, ?, ?, ?, ?, ?, ?, ?))
 
 			data_source_create_agent.call ([new_val, 0])
 			undo_redo_chain.add_link (
 				agent data_source_remove_agent.call ([new_val]),
+				agent do_populate,
 				agent data_source_create_agent.call ([new_val, 0]),
 				agent do_populate
 			)
@@ -92,6 +126,9 @@ feature {NONE} -- Implementation
 	process_remove_existing
 		local
 			undo_add_idx: INTEGER
+			old_val, new_val: STRING
+			ds: DYNAMIC_LIST [STRING]
+			ds_index: INTEGER
 		do
 			ds := data_source.item ([])
 			ds_index := ev_data_control.index_of (ev_data_control.selected_item, 1)
@@ -105,17 +142,12 @@ feature {NONE} -- Implementation
 			data_source_remove_agent.call ([old_val])
 			undo_redo_chain.add_link (
 				agent data_source_create_agent.call ([old_val, undo_add_idx]),
+				agent do_populate,
 				agent data_source_remove_agent.call ([old_val]),
 				agent do_populate
 			)
 			ev_data_control.remove_selected_item
 		end
-
-	ds: DYNAMIC_LIST [STRING]
-
-	ds_index: INTEGER
-
-	old_val, new_val: STRING
 
 end
 

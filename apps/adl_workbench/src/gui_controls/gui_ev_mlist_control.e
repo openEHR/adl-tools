@@ -46,11 +46,16 @@ feature -- Initialisation
 
 	make (a_title: STRING; a_data_source: like data_source;
 			min_height, min_width: INTEGER;
-			use_hbox_container: BOOLEAN)
+			use_hbox_container: BOOLEAN;
+			a_header_strings_agent: like header_strings_agent)
 		do
 			make_data_control (a_title, a_data_source,
 				default_min_height.max (min_height), default_min_height.max (min_width), use_hbox_container, True)
-			ev_data_control.hide_title_row
+			if attached a_header_strings_agent then
+				header_strings_agent := a_header_strings_agent
+			else
+				ev_data_control.hide_title_row
+			end
 		end
 
 	make_editable (a_title: STRING; a_data_source: like data_source;
@@ -58,31 +63,43 @@ feature -- Initialisation
 			a_data_source_remove_agent: like data_source_remove_agent;
 			an_undo_redo_chain: UNDO_REDO_CHAIN;
 			min_height, min_width: INTEGER;
-			use_hbox_container: BOOLEAN)
-		local
-			mh, mw: INTEGER
+			use_hbox_container: BOOLEAN;
+			a_header_strings_agent: like header_strings_agent)
 		do
 			make_editable_data_control (a_title,
 				a_data_source, a_data_source_create_agent, a_data_source_remove_agent, an_undo_redo_chain,
 				min_height, min_width, use_hbox_container, True)
-			ev_data_control.hide_title_row
+			if attached a_header_strings_agent then
+				header_strings_agent := a_header_strings_agent
+			else
+				ev_data_control.hide_title_row
+			end
 		end
 
 feature -- Access
 
 	ev_data_control: EV_MULTI_COLUMN_LIST_EDITABLE
 
+	header_strings_agent: detachable FUNCTION [ANY, TUPLE, ARRAY [STRING]]
+			-- agent that returns a set of strings that can be used to populate the
+			-- title row of the data control
+
 feature -- Commands
 
 	do_populate
 		do
+			if attached header_strings_agent then
+				ev_data_control.set_column_titles (header_strings_agent.item ([]))
+			end
 			do_populate_control_from_source
 
 			if edit_enabled then
-				from ev_data_control.start until ev_data_control.off loop
-					ev_data_control.item.pointer_button_press_actions.force_extend (agent mlist_row_handler (ev_data_control.item, ?, ?, ?))
-					ev_data_control.forth
-				end
+				set_columns_editable
+--				from ev_data_control.start until ev_data_control.off loop
+--					ev_data_control.item.pointer_button_press_actions.force_extend (agent mlist_row_handler (ev_data_control.item, ?, ?, ?))
+--					ev_data_control.forth
+--				end
+				ev_data_control.pointer_button_press_actions.force_extend (agent mlist_handler (ev_data_control, ?, ?, ?, ?, ?, ?, ?, ?))
 			end
 		end
 
@@ -94,7 +111,6 @@ feature -- Commands
 			precursor
 			root_win := proximate_ev_window (ev_root_container)
 			ev_data_control.enable_editing (root_win)
-			ev_data_control.set_all_columns_editable
 			ev_data_control.end_edit_actions.extend (agent process_in_place_edit)
 		end
 
@@ -127,25 +143,29 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
-	mlist_row_handler (ev_row: EV_MULTI_COLUMN_LIST_ROW; x,y, button: INTEGER)
-			-- creates the context menu for a right click action for an ARCH_REP_ARCHETYPE node
+	mlist_handler (ev_mlist: EV_MULTI_COLUMN_LIST; x,y, button: INTEGER; x_tilt, y_tilt, pressure: DOUBLE; screen_x, screen_y: INTEGER)
+			-- creates the context menu for a right click action on a list
 		local
 			menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
 			if button = {EV_POINTER_CONSTANTS}.right then
 				create menu
+				if attached ev_mlist.selected_item then
+					create an_mi.make_with_text_and_action (create_message_content ("remove_mi", Void), agent process_remove_existing)
+				--		an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
+					menu.extend (an_mi)
+				end
 				create an_mi.make_with_text_and_action (create_message_content ("add_mi", Void), agent process_add_new)
 		--		an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool"))
 		    	menu.extend (an_mi)
-
-				if ev_row.is_selected then
-					create an_mi.make_with_text_and_action (create_message_content ("remove_mi", Void), agent process_remove_existing)
-			--		an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
-					menu.extend (an_mi)
-				end
 				menu.show
 			end
+		end
+
+	set_columns_editable
+		do
+			ev_data_control.set_all_columns_editable
 		end
 
 end

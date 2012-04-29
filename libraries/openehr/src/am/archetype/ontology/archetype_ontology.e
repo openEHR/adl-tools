@@ -135,7 +135,7 @@ feature -- Access
 	constraint_definitions: attached HASH_TABLE[HASH_TABLE[ARCHETYPE_TERM, STRING], STRING]
 			-- table of constraint definitions, keyed by code, keyed by language
 
-	term_bindings: attached HASH_TABLE[HASH_TABLE[CODE_PHRASE, STRING], STRING]
+	term_bindings: attached HASH_TABLE [HASH_TABLE [CODE_PHRASE, STRING], STRING]
 			-- tables of bindings of external terms to internal codes, keyed by external terminology id
 
 	constraint_bindings: attached HASH_TABLE[HASH_TABLE[URI, STRING], STRING]

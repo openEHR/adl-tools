@@ -1057,7 +1057,7 @@ feature -- Archetype tools
 				error_tool.extend_and_select (aca)
 			end
 			archetype_tools.populate_active_tool (aca)
-			archetype_tools.active_tool.on_select_archetype_notebook
+			archetype_tools.active_tool.on_select_notebook
 		end
 
 	display_archetype_in_new_tool (aca: ARCH_CAT_ARCHETYPE)
@@ -1078,7 +1078,7 @@ feature -- Archetype editors
 			archetype_editors.create_new_tool
 			archetype_editors.active_tool.enable_edit
 			archetype_editors.populate_active_tool (aca)
-			archetype_editors.active_tool.on_select_archetype_notebook
+			archetype_editors.active_tool.on_select_notebook
 		end
 
 	archetype_has_editor (aca: ARCH_CAT_ARCHETYPE): BOOLEAN

@@ -42,6 +42,7 @@ feature -- Initialisation
 			if attached a_tooltip_text then
 				ev_button.set_tooltip (a_tooltip_text)
 			end
+			is_active := True
 			disable_active
 		end
 

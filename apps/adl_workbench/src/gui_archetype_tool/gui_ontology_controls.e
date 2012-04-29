@@ -17,7 +17,7 @@ class GUI_ONTOLOGY_CONTROLS
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			can_populate, can_repopulate
+			can_populate, can_repopulate, can_edit, enable_edit, disable_edit, on_selected
 		end
 
 	STRING_UTILITIES
@@ -30,40 +30,61 @@ create
 
 feature {NONE} -- Initialisation
 
-	make
+	make (an_undo_redo_update_agent: like undo_redo_update_agent)
 		do
-			-- create widgets
+			-- set commit handling
+			undo_redo_update_agent := an_undo_redo_update_agent
+			create undo_redo_chain.make (undo_redo_update_agent)
+
+			-- ======= root container ===========
+			create gui_controls.make (0)
+
 			create ev_root_container
 			ev_root_container.set_data (Current)
-
-			create ev_vsplit
-			create ev_term_defs_frame
-			create ev_term_defs_mlist
-			create ev_constraint_defs_frame
-			create ev_constraint_defs_mlist
-
-			-- connect them together
-			ev_root_container.extend (ev_vsplit)
-			ev_vsplit.extend (ev_term_defs_frame)
-			ev_term_defs_frame.extend (ev_term_defs_mlist)
-			ev_vsplit.extend (ev_constraint_defs_frame)
-			ev_constraint_defs_frame.extend (ev_constraint_defs_mlist)
-
-			-- set visual characteristics
 			ev_root_container.set_padding (Default_padding_width)
 			ev_root_container.set_border_width (Default_border_width)
-			ev_vsplit.enable_item_expand (ev_term_defs_frame)
-			ev_vsplit.disable_item_expand (ev_constraint_defs_frame)
-			ev_term_defs_frame.set_text ("Term definitions and bindings")
-			ev_term_defs_mlist.set_background_color (editable_colour)
-	--		ev_term_defs_mlist.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
-			ev_term_defs_mlist.set_minimum_width (1)
-			ev_term_defs_mlist.set_minimum_height (1)
-			ev_constraint_defs_frame.set_text ("Constraint definitions and bindings")
-			ev_constraint_defs_mlist.set_background_color (editable_colour)
-	--		ev_constraint_defs_mlist.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (64, 0, 0))
-	--		ev_constraint_defs_mlist.set_minimum_width (1)
-	--		ev_constraint_defs_mlist.set_minimum_height (1)
+
+			create ev_vsplit
+			ev_root_container.extend (ev_vsplit)
+
+			-- create Fames
+			create term_defs_frame_ctl.make (create_message_content ("term_defs_frame_text", Void), 0, 0, True)
+			ev_vsplit.extend (term_defs_frame_ctl.ev_root_container)
+			ev_vsplit.enable_item_expand (term_defs_frame_ctl.ev_root_container)
+
+			-- term defs + bindings
+			create term_defs_mlist_ctl.make_editable (
+				agent :LIST [STRING] do Result := ontology.term_codes end,
+				Void,
+				Void,
+				agent update_term_table_item,
+				undo_redo_chain,
+				0, 0,
+				agent term_definition_header,
+				agent term_definition_row)
+			term_defs_frame_ctl.extend (term_defs_mlist_ctl.ev_root_container, True)
+			gui_controls.extend (term_defs_mlist_ctl)
+
+			-- constraint defs + bindings
+			create constraint_defs_frame_ctl.make (create_message_content ("constraint_defs_frame_text", Void), 0, 0, True)
+			ev_vsplit.extend (constraint_defs_frame_ctl.ev_root_container)
+			ev_vsplit.disable_item_expand (constraint_defs_frame_ctl.ev_root_container)
+
+			create constraint_defs_mlist_ctl.make_editable (
+				agent :LIST [STRING] do Result := ontology.constraint_codes end,
+				Void,
+				Void,
+				agent update_constraint_table_item,
+				undo_redo_chain,
+				0, 0,
+				agent term_definition_header,
+				agent constraint_definition_row)
+			constraint_defs_frame_ctl.extend (constraint_defs_mlist_ctl.ev_root_container, True)
+			gui_controls.extend (constraint_defs_mlist_ctl)
+
+			if not editing_enabled then
+				disable_edit
+			end
 		end
 
 feature -- Access
@@ -82,27 +103,63 @@ feature -- Status Report
 			Result := is_populated and source.is_valid
 		end
 
+	can_edit: BOOLEAN
+			-- True if this tool has editing capability
+		do
+			Result := True
+		end
+
 feature -- Commands
+
+	enable_edit
+			-- enable editing
+		do
+			precursor
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do if an_item.can_edit then an_item.enable_edit end end)
+		end
+
+	disable_edit
+			-- disable editing
+		do
+			precursor
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do if an_item.can_edit then an_item.disable_edit end end)
+		end
 
 	select_term (a_term_code: attached STRING)
 			-- select row for a_term_code in term_definitions control
 		do
-			select_coded_term_row (a_term_code, ev_term_defs_mlist)
+			select_coded_term_row (a_term_code, term_defs_mlist_ctl.ev_data_control)
 		end
 
 	select_constraint (a_term_code: attached STRING)
 			-- select row for a_term_code in term_definitions control
 		do
-			select_coded_term_row (a_term_code, ev_constraint_defs_mlist)
+			select_coded_term_row (a_term_code, constraint_defs_mlist_ctl.ev_data_control)
+		end
+
+feature -- Events
+
+	on_selected
+			-- perform when this tool made visible, e.g. by selection of parent notebook tab
+		do
+			if editing_enabled then
+				undo_redo_update_agent.call ([undo_redo_chain])
+			end
 		end
 
 feature {NONE} -- Implementation
 
-	ev_term_defs_mlist, ev_constraint_defs_mlist: EV_MULTI_COLUMN_LIST
+	term_defs_mlist_ctl, constraint_defs_mlist_ctl: GUI_MULTI_COLUMN_TABLE_CONTROL
 
 	ev_vsplit: EV_VERTICAL_SPLIT_AREA
 
-	ev_term_defs_frame, ev_constraint_defs_frame: EV_FRAME
+	term_defs_frame_ctl, constraint_defs_frame_ctl: GUI_FRAME_CONTROL
+
+	gui_controls: ARRAYED_LIST [GUI_DATA_CONTROL]
+
+	undo_redo_update_agent: PROCEDURE [ANY, TUPLE [UNDO_REDO_CHAIN]]
+
+	undo_redo_chain: UNDO_REDO_CHAIN
 
 	ontology: attached ARCHETYPE_ONTOLOGY
 			-- access to ontology of selected archetype
@@ -113,142 +170,90 @@ feature {NONE} -- Implementation
 	do_clear
 			-- wipe out content from ontology-related controls
 		do
-			ev_term_defs_mlist.wipe_out
-			ev_constraint_defs_mlist.wipe_out
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.do_clear end)
 		end
 
 	do_populate
 		do
-			populate_term_definitions
-			populate_constraint_definitions
+			terminologies := ontology.terminologies_available
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.do_populate end)
 		end
 
-	populate_term_definitions
-			-- Populate the Term Definitions list.
+	terminologies: ARRAYED_SET [STRING]
+
+	term_definition_header: ARRAY [STRING]
 		local
-			col_titles: ARRAYED_LIST [STRING_32]
-			pl: EV_MULTI_COLUMN_LIST
-			list_row: EV_MULTI_COLUMN_LIST_ROW
-			a_term: ARCHETYPE_TERM
-			i: INTEGER
-			terminologies: ARRAYED_SET [STRING]
+			al: ARRAYED_LIST [STRING]
 		do
 			-- populate column titles
-			pl := ev_term_defs_mlist
-			create col_titles.make(0)
-			col_titles.extend ("code")
+			create al.make (3)
+			al.extend ("code")
 
-			from ontology.term_attribute_names.start until ontology.term_attribute_names.off loop
-				col_titles.extend (ontology.term_attribute_names.item)
-				ontology.term_attribute_names.forth
-			end
+			-- term attribute names - text and description
+			al.append ((create {ARCHETYPE_TERM}.default_create).Keys)
 
-			terminologies := ontology.terminologies_available
+			-- terminology names
+			al.append (terminologies)
+
+			Result := al.to_array
+		end
+
+	term_definition_row (a_code: STRING): ARRAYED_LIST [STRING_32]
+		local
+			a_term: ARCHETYPE_TERM
+		do
+			create Result.make(3)
+
+			-- column #1, 2, 3 - code, text, description
+			Result.extend (a_code)
+			a_term := ontology.term_definition (selected_language, a_code)
+			Result.extend (utf8 (a_term.text))
+			Result.extend (utf8 (a_term.description))
+
+			-- populate bindings
 			from terminologies.start until terminologies.off loop
-				col_titles.extend (utf8 (terminologies.item))
+				if ontology.has_term_binding (terminologies.item, a_term.code) then
+					Result.extend (ontology.term_binding (terminologies.item, a_term.code).as_string)
+				else
+					Result.extend (" - ")
+				end
 				terminologies.forth
-			end
-
-			pl.set_column_titles (col_titles.to_array)
-
-			-- populate data
-			from ontology.term_codes.start until ontology.term_codes.off loop
-				create list_row
-				list_row.extend (utf8 (ontology.term_codes.item))
-				a_term := ontology.term_definition(selected_language, ontology.term_codes.item)
-				from a_term.keys.start until a_term.keys.off loop
-					list_row.extend (utf8 (a_term.item (a_term.keys.item)))
-					a_term.keys.forth
-				end
-
-				-- populate bindings
-				from terminologies.start until terminologies.off loop
-					if ontology.has_term_binding (terminologies.item, a_term.code) then
-						list_row.extend (utf8 (ontology.term_binding (terminologies.item, a_term.code).as_string))
-					else
-						list_row.extend (" - ")
-					end
-					terminologies.forth
-				end
-
-				pl.extend (list_row)
-				ontology.term_codes.forth
-			end
-
-			from i := 1 until i > pl.column_count loop
-				pl.resize_column_to_content(i)
-				i := i + 1
 			end
 		end
 
-	populate_constraint_definitions
-			-- Populate the Constraint Definitions list
+	constraint_definition_row (a_code: STRING): ARRAYED_LIST [STRING_32]
 		local
-			col_titles: ARRAYED_LIST [STRING_32]
-			pl: EV_MULTI_COLUMN_LIST
-			list_row: EV_MULTI_COLUMN_LIST_ROW
 			a_term: ARCHETYPE_TERM
-			i: INTEGER
-			terminologies: ARRAYED_SET [STRING]
 		do
-			-- build columns
-			pl := ev_constraint_defs_mlist
-			create col_titles.make(0)
-			col_titles.extend ("code")
-			from ontology.term_attribute_names.start until ontology.term_attribute_names.off loop
-				col_titles.extend (ontology.term_attribute_names.item)
-				ontology.term_attribute_names.forth
-			end
+			create Result.make(3)
 
-			terminologies := ontology.terminologies_available
+			-- column #1, 2, 3 - code, text, description
+			Result.extend (a_code)
+			a_term := ontology.constraint_definition (selected_language, a_code)
+			Result.extend (utf8 (a_term.text))
+			Result.extend (utf8 (a_term.description))
+
+			-- populate bindings
 			from terminologies.start until terminologies.off loop
-				col_titles.extend (utf8 (terminologies.item))
+				if ontology.has_constraint_binding (terminologies.item, a_term.code) then
+					Result.extend (ontology.constraint_binding (terminologies.item, a_term.code).as_string)
+				else
+					Result.extend (" - ")
+				end
 				terminologies.forth
 			end
+		end
 
-			pl.set_column_titles (col_titles.to_array)
+	update_term_table_item (a_col_name, a_key: STRING; a_value: STRING_32)
+			--
+		do
+			--	ontology.set
+		end
 
-			from ontology.constraint_codes.start until ontology.constraint_codes.off loop
-				create list_row
-
-				-- populate constraint codes
-				list_row.extend (utf8 (ontology.constraint_codes.item))
-				a_term := ontology.constraint_definition (selected_language, ontology.constraint_codes.item)
-				from a_term.keys.start until a_term.keys.off loop
-					list_row.extend (utf8 (a_term.item (a_term.keys.item)))
-					a_term.keys.forth
-				end
-
-				-- populate bindings
-				from terminologies.start until terminologies.off loop
-					if ontology.has_constraint_binding (terminologies.item, a_term.code) then
-						list_row.extend (utf8 (ontology.constraint_binding(
-							terminologies.item, a_term.code).as_string))
-					else
-						list_row.extend (" - ")
-					end
-					terminologies.forth
-				end
-
-				pl.extend (list_row)
-				ontology.constraint_codes.forth
-			end
-
-			-- resize the columns; if there is data, use that to determine the widths;
-			-- if not, use the column titles
-			if pl.count > 0 then
-				from i := 1 until i > pl.column_count loop
-					pl.resize_column_to_content(i)
-		 			i := i + 1
-				end
-			else
-				from i := 1 until i > col_titles.count loop
-					-- This is a hack - it assumes that 10 px is a letter width in the current font.
-					-- There appears to be no way to resize the columns based on the titles...
-					pl.set_column_width (col_titles.i_th(i).count * 10, i)
-		 			i := i + 1
-				end
-			end
+	update_constraint_table_item (a_col_name, a_key: STRING; a_value: STRING_32)
+			--
+		do
+			--	ontology.set
 		end
 
 	select_coded_term_row (a_term_code: STRING; list_control: EV_MULTI_COLUMN_LIST)

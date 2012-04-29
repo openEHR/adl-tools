@@ -109,15 +109,15 @@ feature -- Status setting
 				from
 					editable_columns.start
 				until
-					editable_columns.after
+					editable_columns.off
 				loop
 					if editable_columns.item = i then
 						editable_columns.remove
 					end
 					editable_columns.forth
 				end
+				all_columns_editable := False
 			end
-
 		end
 
 	set_all_columns_editable
@@ -130,7 +130,7 @@ feature -- Status setting
 			from
 				i := 1
 			until
-				i = column_count + 1
+				i > column_count
 			loop
 				editable_columns.extend (i)
 				i := i + 1

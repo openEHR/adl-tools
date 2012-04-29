@@ -46,7 +46,9 @@ feature {NONE}-- Initialization
 			ev_root_container.disable_item_expand (tool_bar.ev_root_container)
 
 			-- if editing, add undo and redo buttons
-			add_editing_controls
+			if can_edit then
+				add_editing_controls
+			end
 
 			-- archetype id
 			tool_bar.add_expanding_text_field ("", "")
@@ -72,7 +74,7 @@ feature {NONE}-- Initialization
 			ev_root_container.extend (ev_notebook)
 			ev_notebook.set_minimum_width (arch_notebook_min_width)
 			ev_notebook.set_minimum_height (arch_notebook_min_height)
-			ev_notebook.selection_actions.extend (agent on_select_archetype_notebook)
+			ev_notebook.selection_actions.extend (agent on_select_notebook)
 
 			differential_view := True
 			ev_differential_view_button.enable_select
@@ -88,10 +90,14 @@ feature -- Access
 
 feature -- Events
 
-	on_select_archetype_notebook
+	on_select_notebook
 			-- Called by `selection_actions' of `archetype_notebook'.
 		do
 			if attached {GUI_ARCHETYPE_TARGETTED_TOOL} ev_notebook.selected_item.data as arch_tool and attached source then
+				-- do anything required when tool becomes visible again
+				arch_tool.on_selected
+
+				-- update content if out of date in any way
 				if (source /= arch_tool.source or else												-- different archetype chosen
 					not arch_tool.is_populated or else												-- some tools are pre-populated
 					arch_tool.last_populate_timestamp < source.last_compile_attempt_timestamp or	-- source re-compiled more recently than last populate
@@ -160,7 +166,7 @@ feature {NONE} -- Events
 			then
 				differential_view := differential_flag
 				set_tab_texts
-				on_select_archetype_notebook
+				on_select_notebook
 			end
 		end
 
@@ -168,7 +174,7 @@ feature {NONE} -- Events
 			-- Repopulate the view of the archetype when the user selects a different language.
 		do
 			selected_language := ev_language_combo.text.as_string_8
-			on_select_archetype_notebook
+			on_select_notebook
 		end
 
 feature {NONE} -- Implementation

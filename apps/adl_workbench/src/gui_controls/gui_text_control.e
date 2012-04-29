@@ -112,22 +112,33 @@ feature {NONE} -- Implementation
 	process_edit
 		local
 			old_val, new_val: STRING
-			undo_agt: PROCEDURE [ANY, TUPLE]
+			undo_agt, redo_agt: PROCEDURE [ANY, TUPLE]
 		do
 			new_val := ev_data_control.text
 			ds := data_source.item ([])
 			if attached ds then
 				create old_val.make_from_string (ds)
-			end
-
-			if not attached old_val or else old_val.is_empty then
-				undo_agt := data_source_remove_agent
 			else
-				undo_agt := agent data_source_create_agent.call ([old_val])
+				create old_val.make_empty
 			end
 
-			data_source_create_agent.call ([new_val])
-			undo_redo_chain.add_link (undo_agt, agent data_source_create_agent.call ([new_val]), agent do_populate)
+			if not old_val.same_string (new_val) then
+				-- if user is removing value then use the remove agent, else use the setting agent
+				if old_val.is_empty then
+					undo_agt := data_source_remove_agent
+				else
+					undo_agt := agent data_source_create_agent.call ([old_val])
+				end
+
+				if new_val.is_empty then
+					redo_agt := data_source_remove_agent
+				else
+					redo_agt := agent data_source_create_agent.call ([new_val])
+				end
+
+				data_source_create_agent.call ([new_val])
+				undo_redo_chain.add_link (undo_agt, agent do_populate, redo_agt, agent do_populate)
+			end
 		end
 
 	ds: STRING

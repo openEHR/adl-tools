@@ -184,6 +184,13 @@ feature -- Commands
 			editing_enabled := False
 		end
 
+feature {GUI_TOOL} -- Events
+
+	on_selected
+			-- processing required if this tool is visual selected, e.g. in a notebook
+		do
+		end
+
 feature {GUI_TOOL} -- Implementation
 
 	do_clear

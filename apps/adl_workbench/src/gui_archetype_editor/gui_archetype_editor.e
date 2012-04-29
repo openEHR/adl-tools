@@ -40,9 +40,9 @@ feature {NONE}-- Initialization
 
 			-- create subordinate widgets
 			create description_controls.make (agent text_widget_handler.on_select_all, agent update_undo_redo_controls)
-			create node_map_control.make (agent select_ontology_item_from_code) --, agent install_undo_redo_chain)
-			create ontology_controls.make -- (agent install_undo_redo_chain)
-			create serialisation_control.make -- (agent install_undo_redo_chain)
+			create node_map_control.make (agent select_ontology_item_from_code) -- , agent update_undo_redo_controls)
+			create ontology_controls.make (agent update_undo_redo_controls)
+			create serialisation_control.make -- (agent update_undo_redo_controls)
 
 			-- connect widgets
 			ev_notebook.extend (description_controls.ev_root_container)
@@ -101,12 +101,14 @@ feature -- Commands
 		do
 			precursor
 			description_controls.enable_edit
+			ontology_controls.enable_edit
 		end
 
 	disable_edit
 		do
 			precursor
 			description_controls.disable_edit
+			ontology_controls.disable_edit
 		end
 
 	update_rm_icons_setting
@@ -114,8 +116,6 @@ feature -- Commands
 		do
 			node_map_control.update_rm_icons_cb
 		end
-
-feature {NONE} -- Events
 
 feature {NONE} -- Implementation
 
@@ -135,6 +135,10 @@ feature {NONE} -- Implementation
 			precursor
 			description_controls.populate (source, differential_view, selected_language)
 			node_map_control.populate (source, differential_view, selected_language)
+		end
+
+	do_commit
+		do
 		end
 
 	description_controls: GUI_DESCRIPTION_CONTROLS
