@@ -362,7 +362,7 @@ end
 				create archetype_id.make_from_string (yyvs2.item (yyvsp2))
 			else
 				raise_error
-				report_error (create_message_line ("SASID", Void))
+				report_error (get_msg_line ("SASID", Void))
 				abort
 			end
 		
@@ -378,7 +378,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error (create_message_line ("SARID", Void))
+			report_error (get_msg_line ("SARID", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -488,7 +488,7 @@ end
 				create archetype_id.make_from_string (yyvs2.item (yyvsp2))
 			else
 				raise_error
-				report_error (create_message_line ("SASID", Void))
+				report_error (get_msg_line ("SASID", Void))
 				abort
 			end
 		
@@ -504,7 +504,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error (create_message_line ("SARID", Void))
+			report_error (get_msg_line ("SARID", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -653,7 +653,7 @@ end
 				create parent_archetype_id.make_from_string (yyvs2.item (yyvsp2))
 			else
 				raise_error
-				report_error (create_message_line ("SASID", Void))
+				report_error (get_msg_line ("SASID", Void))
 				abort
 			end
 		
@@ -669,7 +669,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error (create_message_line ("SASID", Void))
+			report_error (get_msg_line ("SASID", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -700,7 +700,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error (create_message_line ("SACO", Void))
+			report_error (get_msg_line ("SACO", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -729,7 +729,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error (create_message_line ("SALA", Void))
+			report_error (get_msg_line ("SALA", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -758,7 +758,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error (create_message_line ("SADS", Void))
+			report_error (get_msg_line ("SADS", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -786,7 +786,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error (create_message_line ("SADF", Void))
+			report_error (get_msg_line ("SADF", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -842,7 +842,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error (create_message_line ("SAIV", Void))
+			report_error (get_msg_line ("SAIV", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -870,7 +870,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error (create_message_line ("SAON", Void))
+			report_error (get_msg_line ("SAON", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -926,7 +926,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error (create_message_line ("SAAS", Void))
+			report_error (get_msg_line ("SAAS", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then
@@ -954,7 +954,7 @@ debug ("GEYACC")
 end
 
 			raise_error
-			report_error (create_message_line ("SAAS", Void))
+			report_error (get_msg_line ("SAAS", Void))
 			abort
 		
 if yy_parsing_status >= yyContinue then

@@ -31,6 +31,7 @@ feature -- Initialisation
 		do
 			create chain.make
 			gui_update_agent := a_gui_update_agent
+			create last_action_time.make_from_epoch (0)
 		end
 
 feature -- Access
@@ -38,6 +39,10 @@ feature -- Access
 	chain: TWO_WAY_LIST [UNDO_REDO_ACTION]
 
 	gui_update_agent: PROCEDURE [ANY, TUPLE [UNDO_REDO_CHAIN]]
+
+	last_action_time: DATE_TIME
+			-- time stamp of last action, either due to the action executed before the
+			-- call to `add_link' or an undo or redo
 
 feature -- Status Report
 
@@ -72,6 +77,7 @@ feature -- Element Change
 			end
 			chain.extend (create {UNDO_REDO_ACTION}.make (an_undo_action, an_undo_display_action, a_redo_action, a_redo_display_action))
 			chain.finish
+			create last_action_time.make_now
 			gui_update_agent.call ([Current])
 		end
 
@@ -83,6 +89,7 @@ feature -- Commands
 			if not chain.before then
 				chain.item.undo
 				chain.back
+				create last_action_time.make_now
 				gui_update_agent.call ([Current])
 			end
 		end
@@ -98,6 +105,7 @@ feature -- Commands
 				end
 				if not chain.off then
 					chain.item.redo
+					create last_action_time.make_now
 					gui_update_agent.call ([Current])
 				end
 			end

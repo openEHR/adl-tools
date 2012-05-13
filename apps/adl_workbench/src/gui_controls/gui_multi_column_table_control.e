@@ -73,13 +73,13 @@ feature -- Access
 	data_source_create_agent: detachable PROCEDURE [ANY, TUPLE [STRING, STRING]]
 			-- agent for creating & setting the data source
 
-	data_source_remove_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
+	data_source_remove_agent: detachable PROCEDURE [ANY, TUPLE [key: STRING]]
 			-- agent for removing a data item
 
 	data_source_modify_agent: detachable PROCEDURE [ANY, TUPLE [col_name: STRING; key: STRING; value: STRING_32]]
 			-- agent for setting the data item in column with name `col_name', row with `key' to `value'
 
-	data_row_agt: FUNCTION [ANY, TUPLE [key:STRING], ARRAYED_LIST [STRING_32]]
+	data_row_agt: FUNCTION [ANY, TUPLE [key: STRING], ARRAYED_LIST [STRING_32]]
 			-- agent to generate a data row, taking a key from `data_source' as argument
 
 feature -- Commands
@@ -91,10 +91,9 @@ feature {NONE} -- Implementation
 			populate_table (data_source.item([]))
 		end
 
-	populate_table (key_list: LIST[STRING])
+	populate_table (key_list: LIST [STRING])
 		local
 			list_row: EV_MULTI_COLUMN_LIST_ROW
-			i: INTEGER
 		do
 			ev_data_control.wipe_out
 
@@ -113,21 +112,25 @@ feature {NONE} -- Implementation
 	process_in_place_edit
 		local
 			key, col_name: STRING
-			new_val: STRING_32
+			old_val, new_val: STRING_32
 		do
-			key := ev_data_control.i_th (ev_data_control.widget_row).i_th (1)
-			col_name := ev_data_control.column_title (ev_data_control.widget_column)
-			new_val := ev_data_control.i_th (ev_data_control.widget_row).i_th (ev_data_control.widget_column)
-			data_source_modify_agent.call ([col_name, key, new_val])
+			key := utf32_to_utf8 (ev_data_control.i_th (ev_data_control.widget_row).i_th (1))
+			col_name := utf32_to_utf8 (ev_data_control.column_title (ev_data_control.widget_column))
+			new_val := utf32_to_utf8 (ev_data_control.i_th (ev_data_control.widget_row).i_th (ev_data_control.widget_column))
+			old_val := ev_data_control.saved_text
 
-			undo_redo_chain.add_link (
-				-- undo
-				agent data_source_modify_agent.call ([col_name, key, ev_data_control.saved_text]),
-				agent (ev_data_control.i_th (ev_data_control.widget_row)).put_i_th (ev_data_control.saved_text, ev_data_control.widget_column),
-				-- redo
-				agent data_source_modify_agent.call ([col_name, key, new_val]),
-				agent (ev_data_control.i_th (ev_data_control.widget_row)).put_i_th (new_val, ev_data_control.widget_column)
-			)
+			if not old_val.same_string (new_val) then
+				data_source_modify_agent.call ([col_name, key, new_val])
+
+				undo_redo_chain.add_link (
+					-- undo
+					agent data_source_modify_agent.call ([col_name, key, old_val]),
+					agent (ev_data_control.i_th (ev_data_control.widget_row)).put_i_th (old_val, ev_data_control.widget_column),
+					-- redo
+					agent data_source_modify_agent.call ([col_name, key, new_val]),
+					agent (ev_data_control.i_th (ev_data_control.widget_row)).put_i_th (new_val, ev_data_control.widget_column)
+				)
+			end
 		end
 
 	process_add_new

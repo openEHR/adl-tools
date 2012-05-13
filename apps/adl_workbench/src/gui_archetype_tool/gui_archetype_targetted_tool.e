@@ -45,6 +45,12 @@ feature -- Access
 			end
 		end
 
+	edit_archetype: DIFFERENTIAL_ARCHETYPE
+			-- modifiable target of editing
+		do
+			Result := source.differential_archetype_clone
+		end
+
 	tool_artefact_id: STRING
 			-- a system-wide unique artefact id that can be used to find a tool in a GUI collection like
 			-- docked panes or similar

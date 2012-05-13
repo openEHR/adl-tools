@@ -69,9 +69,9 @@ feature {NONE} -- Implementation
 
 			-- column names
 			ev_grid.insert_new_column (Grid_metric_name_col)
-			ev_grid.column (Grid_metric_name_col).set_title (create_message_content ("rm_info_grid_metric_col_title", Void))
+			ev_grid.column (Grid_metric_name_col).set_title (get_msg ("rm_info_grid_metric_col_title", Void))
 			ev_grid.insert_new_column (Grid_metric_count_col)
-			ev_grid.column (Grid_metric_count_col).set_title (create_message_content ("rm_info_grid_count_col_title", Void))
+			ev_grid.column (Grid_metric_count_col).set_title (get_msg ("rm_info_grid_count_col_title", Void))
 
 			rm_stats := source.statistics_table
 			from rm_stats.start until rm_stats.off loop

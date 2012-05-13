@@ -20,7 +20,7 @@ inherit
 		end
 
 create
-	make, make_minimal, make_from_flat, make_all, make_from_other
+	make, make_minimal, make_from_legacy_flat, make_all, make_from_other
 
 feature -- Initialisation
 
@@ -49,8 +49,10 @@ feature -- Initialisation
 			Is_dirty: is_dirty
 		end
 
-	make_from_flat (a_flat: attached FLAT_ARCHETYPE)
-			-- create from a flat archetype by cloning and then removing inherited parts
+	make_from_legacy_flat (a_flat: attached FLAT_ARCHETYPE)
+			-- create from a legacy flat archetype (which has no overlay markers) by cloning and then removing inherited parts
+		require
+			not a_flat.is_generated
 		local
 			c_it: C_ITERATOR
 			a_flat_copy: FLAT_ARCHETYPE
@@ -66,9 +68,9 @@ feature -- Initialisation
 
 				-- using rolled_up_specialisation statuses in nodes of definition
 				-- generate a list of nodes/paths for deletion from a flat-form archetype
-				create inherited_subtree_list.make(0)
+				create inherited_subtree_list.make (0)
 				create c_it.make (definition)
-				c_it.do_at_surface(
+				c_it.do_at_surface (
 					agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER) do inherited_subtree_list.put (a_c_node, a_c_node.path) end,
 					agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := a_c_node.inferred_rolled_up_specialisation_status.value = ss_inherited end
 				)
@@ -176,8 +178,8 @@ feature {ARCH_CAT_ARCHETYPE} -- Structure
 			def_it: C_ITERATOR
 		do
 			converted_def := definition.deep_twin
-			create def_it.make(definition)
-			def_it.do_at_surface(agent node_set_differential_path, agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := not a_c_node.is_path_compressible end)
+			create def_it.make (definition)
+			def_it.do_at_surface (agent node_set_differential_path, agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := not a_c_node.is_path_compressible end)
 			definition := converted_def
 			rebuild
 		end
@@ -229,12 +231,12 @@ feature {ARCH_CAT_ARCHETYPE} -- Structure
 
 feature -- Modification
 
-	set_definition_node_id(a_term_code: STRING)
+	set_definition_node_id (a_term_code: STRING)
 			-- set the node_id of the archetype root node to a_term_id
 		require
-			Valid_term_code: ontology.has_term_code(a_term_code)
+			Valid_term_code: ontology.has_term_code (a_term_code)
 		do
-			definition.set_node_id(a_term_code)
+			definition.set_node_id (a_term_code)
 		end
 
 	reset_definition

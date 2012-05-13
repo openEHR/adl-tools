@@ -83,7 +83,7 @@ feature -- Access
 					ev_node_map.forth
 				end
 			else
-				Result.extend (create_message_line("regex_e1", <<a_regex>>))
+				Result.extend (get_msg_line("regex_e1", <<a_regex>>))
 			end
 		end
 
@@ -281,15 +281,15 @@ feature {NONE} -- Implementation
 
 				elseif button = {EV_POINTER_CONSTANTS}.right then
 					create menu
-					create an_mi.make_with_text_and_action (create_message_content ("display_in_active_tab", Void), agent display_context_selected_class_in_active_tool (ev_ti))
+					create an_mi.make_with_text_and_action (get_msg ("display_in_active_tab", Void), agent display_context_selected_class_in_active_tool (ev_ti))
 					an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool"))
 			    	menu.extend (an_mi)
 
-					create an_mi.make_with_text_and_action (create_message_content ("display_in_new_tab", Void), agent display_context_selected_class_in_new_tool (ev_ti))
+					create an_mi.make_with_text_and_action (get_msg ("display_in_new_tab", Void), agent display_context_selected_class_in_new_tool (ev_ti))
 					an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
 					menu.extend (an_mi)
 
-					create an_mi.make_with_text_and_action (create_message_content ("edit_source_schema", Void), agent do_edit_schema (a_class_def.source_schema_id))
+					create an_mi.make_with_text_and_action (get_msg ("edit_source_schema", Void), agent do_edit_schema (a_class_def.source_schema_id))
 					an_mi.set_pixmap (get_icon_pixmap ("tool/edit"))
 					menu.extend (an_mi)
 
@@ -307,24 +307,24 @@ feature {NONE} -- Implementation
 			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_SCHEMA} ev_ti.data as bmm_sch then
 				create menu
 
-				create an_mi.make_with_text_and_action (create_message_content ("display_in_active_tab", Void), agent display_context_selected_rm_in_active_tool (ev_ti))
+				create an_mi.make_with_text_and_action (get_msg ("display_in_active_tab", Void), agent display_context_selected_rm_in_active_tool (ev_ti))
 		    	menu.extend (an_mi)
 				an_mi.set_pixmap (get_icon_pixmap ("tool/rm_schema_tool"))
 
-				create an_mi.make_with_text_and_action (create_message_content ("display_in_new_tab", Void), agent display_context_selected_rm_in_new_tool (ev_ti))
+				create an_mi.make_with_text_and_action (get_msg ("display_in_new_tab", Void), agent display_context_selected_rm_in_new_tool (ev_ti))
 		    	menu.extend (an_mi)
 				an_mi.set_pixmap (get_icon_pixmap ("tool/rm_schema_tool_new"))
 
-				create an_mi.make_with_text_and_action (create_message_content ("expand_button_expand_text", Void), agent schema_expand_all (ev_ti))
+				create an_mi.make_with_text_and_action (get_msg ("expand_button_expand_text", Void), agent schema_expand_all (ev_ti))
 		    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (create_message_content ("expand_packages", Void), agent schema_expand_packages (ev_ti))
+				create an_mi.make_with_text_and_action (get_msg ("expand_packages", Void), agent schema_expand_packages (ev_ti))
 		    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (create_message_content ("expand_button_collapse_text", Void), agent schema_collapse (ev_ti))
+				create an_mi.make_with_text_and_action (get_msg ("expand_button_collapse_text", Void), agent schema_collapse (ev_ti))
 		    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (create_message_content ("edit_source_schema", Void), agent do_edit_schema (bmm_sch.schema_id))
+				create an_mi.make_with_text_and_action (get_msg ("edit_source_schema", Void), agent do_edit_schema (bmm_sch.schema_id))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/edit"))
 		    	menu.extend (an_mi)
 

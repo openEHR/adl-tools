@@ -61,13 +61,13 @@ feature {NONE} -- Initialisation
 			ev_root_container.extend (stats_viewer.ev_root_container)
 
 			-- visual characteristics
-			ev_root_container.set_item_text (archetype_explorer.ev_root_container, create_message_content ("catalogue_archetype_tab_text", Void))
+			ev_root_container.set_item_text (archetype_explorer.ev_root_container, get_msg ("catalogue_archetype_tab_text", Void))
 			ev_root_container.item_tab (archetype_explorer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/archetype_catalog"))
 
-			ev_root_container.set_item_text (template_explorer.ev_root_container, create_message_content ("catalogue_template_tab_text", Void))
+			ev_root_container.set_item_text (template_explorer.ev_root_container, get_msg ("catalogue_template_tab_text", Void))
 
-			ev_root_container.set_item_text (metrics_viewer.ev_root_container, create_message_content ("catalogue_metrics_tab_text", Void))
-			ev_root_container.set_item_text (stats_viewer.ev_root_container, create_message_content ("catalogue_stats_tab_text", Void))
+			ev_root_container.set_item_text (metrics_viewer.ev_root_container, get_msg ("catalogue_metrics_tab_text", Void))
+			ev_root_container.set_item_text (stats_viewer.ev_root_container, get_msg ("catalogue_stats_tab_text", Void))
 			set_stats_metric_tab_appearance
 
 			-- set events: select a notebook tab
@@ -260,8 +260,8 @@ feature {NONE} -- Implementation
 	do_populate
 			-- Populate content from visual controls.
 		do
-			docking_pane.set_short_title (create_message_content ("catalogue_tool_title", Void))
-			docking_pane.set_long_title (create_message_content ("catalogue_tool_title", Void) + " " + repository_profiles.current_profile_name)
+			docking_pane.set_short_title (get_msg ("catalogue_tool_title", Void))
+			docking_pane.set_long_title (get_msg ("catalogue_tool_title", Void) + " " + repository_profiles.current_profile_name)
 			archetype_explorer.populate (source)
 			template_explorer.populate (source)
 			set_stats_metric_tab_appearance
@@ -345,7 +345,7 @@ feature {NONE} -- Implementation
 					-- if the file already exists, ask user about overwrite
 					ok_to_write := True
 					if file.exists then
-						create question_dialog.make_with_text (create_message_content ("file_exists_replace_question", <<file_system.basename (name)>>))
+						create question_dialog.make_with_text (get_msg ("file_exists_replace_question", <<file_system.basename (name)>>))
 						question_dialog.set_title ("Save as " + format.as_upper)
 						question_dialog.set_buttons (<<"Yes", "No">>)
 						question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
@@ -361,7 +361,7 @@ feature {NONE} -- Implementation
 					end
 				end
 			else
-				create error_dialog.make_with_text (create_message_content ("compile_before_serialising", Void))
+				create error_dialog.make_with_text (get_msg ("compile_before_serialising", Void))
 				error_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 			end
 		end
@@ -375,7 +375,7 @@ feature {NONE} -- Implementation
 		do
 			path := aca.differential_path
 			if aca.has_differential_file and aca.has_legacy_flat_file then
-				create question_dialog.make_with_text (create_message_line ("edit_which_file_question",
+				create question_dialog.make_with_text (get_msg_line ("edit_which_file_question",
 					<<file_system.basename (path), file_system.basename (aca.legacy_flat_path)>>))
 				question_dialog.set_title ("Edit " + aca.qualified_name)
 				question_dialog.set_buttons (<<"Differential", "Legacy (ADL 1.4 flat)">>)
@@ -384,7 +384,7 @@ feature {NONE} -- Implementation
 					path := aca.legacy_flat_path
 				end
 			elseif aca.has_legacy_flat_file then
-				create info_dialog.make_with_text (create_message_line ("edit_legacy_file_info",
+				create info_dialog.make_with_text (get_msg_line ("edit_legacy_file_info",
 					<<file_system.basename (aca.legacy_flat_path)>>))
 				info_dialog.set_title ("Edit " + aca.id.as_string)
 				info_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))

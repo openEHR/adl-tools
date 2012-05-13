@@ -78,6 +78,13 @@ feature -- Source Control
 			specialisation_status := ss_inherited
 		end
 
+	set_specialisation_status (a_spec_status: INTEGER)
+		require
+			valid_specialisation_status (a_spec_status)
+		do
+			specialisation_status := a_spec_status
+		end
+
 	inferred_specialisation_status (archetype_specialisation_level: INTEGER): SPECIALISATION_STATUS
 			-- status of this node in the source text of this archetype with respect to the
 			-- specialisation hierarchy. Values are: defined_here; redefined, added, unknown.
@@ -108,9 +115,9 @@ feature -- Source Control
 feature -- Status report
 
 	is_path_compressible: BOOLEAN
-			-- flag to indicate this node is in a specialised archetype and makes no changes
-			-- to the corresponding node in the flat parent, and therefore, this node can be
-			-- compressed .
+			-- flag to indicate this node is in a specialised archetype and makes no structural changes
+			-- to the corresponding node in the flat parent, and therefore, this node can be compressed.
+			-- Note that congruent node_id definition is allowed, since node ids are not lost in paths.
 
 	is_leaf: BOOLEAN
 			-- True if this node is a terminal node
@@ -168,8 +175,7 @@ feature -- Representation
 
 feature {OG_ITEM} -- Implementation
 
-	set_representation(a_rep: like representation)
-			--
+	set_representation (a_rep: like representation)
 		do
 			representation := a_rep
 		ensure

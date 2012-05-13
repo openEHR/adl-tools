@@ -67,33 +67,33 @@ feature {NONE}-- Initialization
 			ev_notebook.extend (statistical_information_control.ev_root_container)
 
 			-- set visual characteristics
-			ev_notebook.set_item_text (description_controls.ev_root_container, create_message_content ("description_tab_text", Void))
+			ev_notebook.set_item_text (description_controls.ev_root_container, get_msg ("description_tab_text", Void))
 			ev_notebook.item_tab (description_controls.ev_root_container).set_pixmap (get_icon_pixmap ("tool/description"))
 
-			ev_notebook.set_item_text (node_map_control.ev_root_container, create_message_content ("definition_tab_text", Void))
+			ev_notebook.set_item_text (node_map_control.ev_root_container, get_msg ("definition_tab_text", Void))
 			ev_notebook.item_tab (node_map_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/node_map"))
 
-			ev_notebook.set_item_text (path_map_control.ev_root_container, create_message_content ("paths_tab_text", Void))
+			ev_notebook.set_item_text (path_map_control.ev_root_container, get_msg ("paths_tab_text", Void))
 			ev_notebook.item_tab (path_map_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/path_map"))
 
-			ev_notebook.set_item_text (slot_map_control.ev_root_container, create_message_content ("slots_tab_text", Void))
+			ev_notebook.set_item_text (slot_map_control.ev_root_container, get_msg ("slots_tab_text", Void))
 			ev_notebook.item_tab (slot_map_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/slot_map"))
 
-			ev_notebook.set_item_text (ontology_controls.ev_root_container, create_message_content ("terminology_tab_text", Void))
+			ev_notebook.set_item_text (ontology_controls.ev_root_container, get_msg ("terminology_tab_text", Void))
 			ev_notebook.item_tab (ontology_controls.ev_root_container).set_pixmap (get_icon_pixmap ("tool/terminology"))
 
-			ev_notebook.set_item_text (annotations_control.ev_root_container, create_message_content ("annotations_tab_text", Void))
+			ev_notebook.set_item_text (annotations_control.ev_root_container, get_msg ("annotations_tab_text", Void))
 			ev_notebook.item_tab (annotations_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/annotations"))
 
-			ev_notebook.set_item_text (serialisation_control.ev_root_container, create_message_content ("serialised_tab_text", Void))
+			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_msg ("serialised_tab_text", Void))
 			ev_notebook.item_tab (serialisation_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/serialised"))
 
-			ev_notebook.set_item_text (source_control.ev_root_container, create_message_content ("source_tab_text", Void))
+			ev_notebook.set_item_text (source_control.ev_root_container, get_msg ("source_tab_text", Void))
 			ev_notebook.item_tab (source_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/source"))
 
-			ev_notebook.set_item_text (validity_report_control.ev_root_container, create_message_content ("validity_tab_text", Void))
+			ev_notebook.set_item_text (validity_report_control.ev_root_container, get_msg ("validity_tab_text", Void))
 
-			ev_notebook.set_item_text (statistical_information_control.ev_root_container, create_message_content ("stat_info_tab_text", Void))
+			ev_notebook.set_item_text (statistical_information_control.ev_root_container, get_msg ("stat_info_tab_text", Void))
 
 			-- set events: press Enter on Slots map trees
 			slot_map_control.ev_suppliers_tree.key_press_actions.force (agent on_slot_map_suppliers_tree_key_press)
@@ -110,7 +110,7 @@ feature -- UI Feedback
 	update_slots_tab_label (slots_count, used_by_count: INTEGER)
 			-- On the Slots tab, indicate the numbers of slots and used-by's.
 		do
-			ev_notebook.set_item_text (slot_map_control.ev_root_container, create_message_content ("slots_tab_text", Void) + " (" + slots_count.out + "/" + used_by_count.out + ")")
+			ev_notebook.set_item_text (slot_map_control.ev_root_container, get_msg ("slots_tab_text", Void) + " (" + slots_count.out + "/" + used_by_count.out + ")")
 		end
 
 	select_ontology_item_from_code (a_code: attached STRING)
@@ -263,13 +263,13 @@ feature {NONE} -- Implementation
 	set_differential_tab_texts
 			-- set text on tabs for differential form of archetype
 		do
-			ev_notebook.set_item_text (serialisation_control.ev_root_container, create_message_content ("serialised_diff_tab_text", Void))
+			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_msg ("serialised_diff_tab_text", Void))
 		end
 
 	set_flat_tab_texts
 			-- set text on tabs for flat form of archetype
 		do
-			ev_notebook.set_item_text (serialisation_control.ev_root_container, create_message_content ("serialised_flat_tab_text", Void))
+			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_msg ("serialised_flat_tab_text", Void))
 		end
 
 	set_tab_appearance

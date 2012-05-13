@@ -11,7 +11,7 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class GUI_UNDO_REDO_ENABLED
+deferred class GUI_EDITING_ENABLED
 
 inherit
 	SHARED_APP_UI_RESOURCES
@@ -21,26 +21,27 @@ inherit
 
 feature {NONE}-- Initialization
 
-	add_undo_redo_toolbar
+	add_undo_redo_commit_toolbar
 			-- add undo/redo buttons to toolbar
+		require
+			tool_bar.has_ev_tool_bar
 		do
-			-- toolbar
-			tool_bar.add_tool_bar
-
 			-- undo button
 			tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/undo_active"), get_icon_pixmap ("tool/undo_inactive"),
-				create_message_content ("undo_button_tooltip", Void), agent on_undo)
+				get_msg ("undo_button_tooltip", Void), agent on_undo)
 			ev_undo_button := tool_bar.last_tool_bar_button
 
 			-- redo button
 			tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/redo_active"), get_icon_pixmap ("tool/redo_inactive"),
-				create_message_content ("redo_button_tooltip", Void), agent on_redo)
+				get_msg ("redo_button_tooltip", Void), agent on_redo)
 			ev_redo_button := tool_bar.last_tool_bar_button
 
 			-- commit button
 			tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/synchronise_active"), get_icon_pixmap ("tool/synchronise_inactive"),
-				create_message_content ("commit_button_tooltip", Void), agent on_commit)
+				get_msg ("commit_button_tooltip", Void), agent on_commit)
 			ev_commit_button := tool_bar.last_tool_bar_button
+
+			create last_commit_time.make_from_epoch (0)
 		end
 
 feature -- Access
@@ -48,6 +49,8 @@ feature -- Access
 	tool_bar: GUI_TOOL_BAR
 		deferred
 		end
+
+	last_commit_time: detachable DATE_TIME
 
 feature -- Status Report
 
@@ -71,6 +74,7 @@ feature -- Events
 			do_commit
 			is_dirty := False
 			populate_commit_control
+			create last_commit_time.make_now
 		end
 
 feature {NONE} -- Implementation
@@ -85,7 +89,9 @@ feature {NONE} -- Implementation
 			-- set undo/redo buttons appropriately
 		do
 			undo_redo_chain := a_chain
-			is_dirty := True
+			if undo_redo_chain.last_action_time > last_commit_time then
+				is_dirty := True
+			end
 			populate_undo_redo_controls
 		end
 

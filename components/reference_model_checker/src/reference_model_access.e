@@ -223,6 +223,7 @@ feature {NONE} -- Implementation
 				-- populate the rm_schemas table first
 				valid_top_level_schemas.wipe_out
 				schema_inclusion_map.wipe_out
+				candidate_schemas.wipe_out
 
 				if not all_schemas.is_empty then
 					-- reset all schemas error logs

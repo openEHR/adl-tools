@@ -16,6 +16,11 @@ class SHARED_APP_UI_RESOURCES
 inherit
 	SHARED_APP_RESOURCES
 
+	GUI_DEFINITIONS
+		export
+			{NONE} all
+		end
+
 	EV_STOCK_PIXMAPS
 		rename
 			implementation as pixmaps_implementation
@@ -294,23 +299,6 @@ feature -- Application Switches
 			app_cfg.put_value ("/gui/use_rm_pixmaps", flag)
 		end
 
-	path_view_check_list_settings: attached LIST [STRING]
-			-- path view column settings
-		do
-			Result := app_cfg.string_list_value ("/gui/path_view_check_list_settings")
-			Result.compare_objects
-		ensure
-			result_attached: attached Result
-			value_comparison: Result.object_comparison
-			no_empty_items: Result.for_all (agent (s: STRING): BOOLEAN do Result := attached s and then not s.is_empty end)
-		end
-
-	set_path_view_check_list_settings (strs: attached LIST [STRING])
-			-- save path view column settings
-		do
-			app_cfg.put_value("/gui/path_view_check_list_settings", strs)
-		end
-
 	text_editor_command: attached STRING
 			-- Path of editor application for ADL files.
 		do
@@ -446,6 +434,8 @@ feature {NONE} -- Implementation
 			Result.append ("  - Eiffel Software (http://www.eiffel.com)%N")
 			Result.append ("  - Gobo parsing libraries & tools (http://www.gobosoft.com)%N")
 			Result.append ("  - Jonas Rask Design icons (http://jonasraskdesign.com)%N")
+			Result.append ("  - VisualPharm 'must-have' icons (http://www.visualpharm.com/)%N")
+			Result.append ("    under CC-BY-ND (http://creativecommons.org/licenses/by-nd/3.0/)%N")
 		ensure
 			not_empty: not Result.is_empty
 		end

@@ -74,27 +74,31 @@ feature {NONE} -- Implementation
 			old_val := ds.item_for_iteration
 
 			if ev_data_control.widget_column = 1 then -- key was modified; treat it as a remove & add
-				new_key := ev_data_control.i_th (ev_data_control.widget_row).i_th (1)
-				ds.replace_key (new_key, old_key)
-				undo_redo_chain.add_link (
-					-- undo
-					agent ds.replace_key (old_key, new_key),
-					agent do_populate,
-					-- redo
-					agent ds.replace_key (new_key, old_key),
-					agent do_populate
-				)
+				new_key := utf32_to_utf8 (ev_data_control.i_th (ev_data_control.widget_row).i_th (1))
+				if not new_key.same_string (old_key) then
+					ds.replace_key (new_key, old_key)
+					undo_redo_chain.add_link (
+						-- undo
+						agent ds.replace_key (old_key, new_key),
+						agent do_populate,
+						-- redo
+						agent ds.replace_key (new_key, old_key),
+						agent do_populate
+					)
+				end
 			else -- value modified; it's a normal replace
-				new_val := ev_data_control.i_th (ev_data_control.widget_row).i_th (2)
-				ds.force (new_val, old_key)
-				undo_redo_chain.add_link (
-					-- undo
-					agent ds.force (old_val, old_key),
-					agent do_populate,
-					-- redo
-					agent ds.force (new_val, old_key),
-					agent do_populate
-				)
+				new_val := utf32_to_utf8 (ev_data_control.i_th (ev_data_control.widget_row).i_th (2))
+				if not new_val.same_string (old_val) then
+					ds.force (new_val, old_key)
+					undo_redo_chain.add_link (
+						-- undo
+						agent ds.force (old_val, old_key),
+						agent do_populate,
+						-- redo
+						agent ds.force (new_val, old_key),
+						agent do_populate
+					)
+				end
 			end
 		end
 

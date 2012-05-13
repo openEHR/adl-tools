@@ -151,14 +151,14 @@ source_identification: source_artefact_type arch_meta_data V_ARCHETYPE_ID
 				create archetype_id.make_from_string ($3)
 			else
 				raise_error
-				report_error (create_message_line ("SASID", Void))
+				report_error (get_msg_ln ("SASID", Void))
 				abort
 			end
 		}
 	| source_artefact_type error
 		{
 			raise_error
-			report_error (create_message_line ("SARID", Void))
+			report_error (get_msg_ln ("SARID", Void))
 			abort
 		}
 	;
@@ -185,14 +185,14 @@ opt_identification: opt_artefact_type arch_meta_data V_ARCHETYPE_ID
 				create archetype_id.make_from_string ($3)
 			else
 				raise_error
-				report_error (create_message_line ("SASID", Void))
+				report_error (get_msg_ln ("SASID", Void))
 				abort
 			end
 		}
 	| opt_artefact_type error
 		{
 			raise_error
-			report_error (create_message_line ("SARID", Void))
+			report_error (get_msg_ln ("SARID", Void))
 			abort
 		}
 	;
@@ -231,14 +231,14 @@ arch_specialisation: SYM_SPECIALIZE V_ARCHETYPE_ID
 				create parent_archetype_id.make_from_string ($2)
 			else
 				raise_error
-				report_error (create_message_line ("SASID", Void))
+				report_error (get_msg_ln ("SASID", Void))
 				abort
 			end
 		}
 	| SYM_SPECIALIZE error
 		{
 			raise_error
-			report_error (create_message_line ("SASID", Void))
+			report_error (get_msg_ln ("SASID", Void))
 			abort
 		}
 	;
@@ -253,7 +253,7 @@ arch_concept: SYM_CONCEPT V_LOCAL_TERM_CODE_REF
 	| SYM_CONCEPT error
 		{
 			raise_error
-			report_error (create_message_line ("SACO", Void))
+			report_error (get_msg_ln ("SACO", Void))
 			abort
 		}
 	;
@@ -266,7 +266,7 @@ arch_language: SYM_LANGUAGE V_DADL_TEXT
 	| SYM_LANGUAGE error
 		{
 			raise_error
-			report_error (create_message_line ("SALA", Void))
+			report_error (get_msg_ln ("SALA", Void))
 			abort
 		}
 	;
@@ -279,7 +279,7 @@ arch_description: SYM_DESCRIPTION V_DADL_TEXT
 	| SYM_DESCRIPTION error
 		{
 			raise_error
-			report_error (create_message_line ("SADS", Void))
+			report_error (get_msg_ln ("SADS", Void))
 			abort
 		}
 	;
@@ -292,7 +292,7 @@ arch_definition:	SYM_DEFINITION V_CADL_TEXT
 	| SYM_DEFINITION error
 		{
 			raise_error
-			report_error (create_message_line ("SADF", Void))
+			report_error (get_msg_ln ("SADF", Void))
 			abort
 		}
 	;
@@ -305,7 +305,7 @@ arch_invariant: -- no invariant ok
 	| SYM_INVARIANT error
 		{
 			raise_error
-			report_error (create_message_line ("SAIV", Void))
+			report_error (get_msg_ln ("SAIV", Void))
 			abort
 		}
 	;
@@ -317,7 +317,7 @@ arch_ontology: SYM_ONTOLOGY V_DADL_TEXT
 	| SYM_ONTOLOGY error
 		{
 			raise_error
-			report_error (create_message_line ("SAON", Void))
+			report_error (get_msg_ln ("SAON", Void))
 			abort
 		}
 	;
@@ -330,7 +330,7 @@ arch_annotations: -- no meta-data ok
 	| SYM_ANNOTATIONS error
 		{
 			raise_error
-			report_error (create_message_line ("SAAS", Void))
+			report_error (get_msg_ln ("SAAS", Void))
 			abort
 		}
 	;
@@ -342,7 +342,7 @@ arch_component_ontologies: SYM_COMPONENT_ONTOLOGIES V_DADL_TEXT
 	| SYM_COMPONENT_ONTOLOGIES error
 		{
 			raise_error
-			report_error (create_message_line ("SAAS", Void))
+			report_error (get_msg_ln ("SAAS", Void))
 			abort
 		}
 	;

@@ -60,6 +60,25 @@ feature -- Initialisation
 			rm_type_name := a_rm_type_name
 		end
 
+feature -- Source Control
+
+	set_subtree_specialisation_status (a_spec_status: INTEGER)
+			-- mark every node from here down as having the specialisation status `a_spec_status'
+		local
+			def_it: C_ITERATOR
+		do
+			create def_it.make (Current)
+			def_it.do_all (
+				agent (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER; a_spec_sts: INTEGER)
+					do
+						a_c_node.set_specialisation_status (a_spec_sts)
+					end (?, ?, a_spec_status),
+				agent (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER)
+					do
+					end
+			)
+		end
+
 feature -- Access
 
 	attributes: attached ARRAYED_LIST [C_ATTRIBUTE]

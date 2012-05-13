@@ -107,33 +107,33 @@ feature {NONE} -- Implementation
 		do
 			if button = {EV_POINTER_CONSTANTS}.right and attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
 				create menu
-				create an_mi.make_with_text_and_action (create_message_content ("display_in_active_tab", Void), agent display_context_selected_archetype_in_active_tool (ev_ti))
+				create an_mi.make_with_text_and_action (get_msg ("display_in_active_tab", Void), agent display_context_selected_archetype_in_active_tool (ev_ti))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool"))
 		    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (create_message_content ("display_in_new_tab", Void), agent display_context_selected_archetype_in_new_tool (ev_ti))
+				create an_mi.make_with_text_and_action (get_msg ("display_in_new_tab", Void), agent display_context_selected_archetype_in_new_tool (ev_ti))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
 				menu.extend (an_mi)
 
 				if aca.is_valid and not gui_agents.archetype_has_editor_agent.item ([aca]) then
-					create an_mi.make_with_text_and_action (create_message_content ("edit", Void), agent edit_context_selected_archetype_in_new_tool (ev_ti))
+					create an_mi.make_with_text_and_action (get_msg ("edit", Void), agent edit_context_selected_archetype_in_new_tool (ev_ti))
 					an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_editor"))
 					menu.extend (an_mi)
 				end
 
-				create an_mi.make_with_text_and_action (create_message_content ("edit_source", Void), agent (an_aca: ARCH_CAT_ARCHETYPE) do edit_archetype_agent.call ([an_aca]) end (aca))
+				create an_mi.make_with_text_and_action (get_msg ("edit_source", Void), agent (an_aca: ARCH_CAT_ARCHETYPE) do edit_archetype_agent.call ([an_aca]) end (aca))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/edit"))
 				menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (create_message_content ("save_archetype_as", Void), agent (an_aca: ARCH_CAT_ARCHETYPE) do save_archetype_agent.call ([an_aca, True, True]) end (aca))
+				create an_mi.make_with_text_and_action (get_msg ("save_archetype_as", Void), agent (an_aca: ARCH_CAT_ARCHETYPE) do save_archetype_agent.call ([an_aca, True, True]) end (aca))
 	--			an_mi.set_pixmap (get_icon_pixmap ("tool/save"))
 				menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (create_message_content ("export_archetype_as", Void), agent (an_aca: ARCH_CAT_ARCHETYPE) do save_archetype_agent.call ([an_aca, True, False]) end (aca))
+				create an_mi.make_with_text_and_action (get_msg ("export_archetype_as", Void), agent (an_aca: ARCH_CAT_ARCHETYPE) do save_archetype_agent.call ([an_aca, True, False]) end (aca))
 	--			an_mi.set_pixmap (get_icon_pixmap ("tool/save"))
 				menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (create_message_content ("export_flat_archetype_as", Void), agent (an_aca: ARCH_CAT_ARCHETYPE) do save_archetype_agent.call ([an_aca, False, False]) end (aca))
+				create an_mi.make_with_text_and_action (get_msg ("export_flat_archetype_as", Void), agent (an_aca: ARCH_CAT_ARCHETYPE) do save_archetype_agent.call ([an_aca, False, False]) end (aca))
 	--			an_mi.set_pixmap (get_icon_pixmap ("tool/save"))
 				menu.extend (an_mi)
 

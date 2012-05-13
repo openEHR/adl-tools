@@ -164,9 +164,9 @@ feature {NONE} -- Implementation
 					end
 
 					-- tooltip		
-					tooltip := utf8 (aca.full_path)
+					tooltip := utf8_to_utf32 (aca.full_path)
 					if aca.has_legacy_flat_file and aca.differential_generated then
-						tooltip.append ("%N" + create_message_content ("archetype_tree_node_tooltip", Void))
+						tooltip.append ("%N" + get_msg ("archetype_tree_node_tooltip", Void))
 					end
 	 				ev_node.set_tooltip (tooltip)
 
@@ -182,7 +182,7 @@ feature {NONE} -- Implementation
 					else
 		 				text.append (acmn.qualified_name)
 						pixmap := get_icon_pixmap ("archetype/" + aci.group_name)
-						tooltip := create_message_content ("rm_closure_tree_node_tooltip", <<acmn.qualified_name, acmn.bmm_schema.schema_id>>)
+						tooltip := get_msg ("rm_closure_tree_node_tooltip", <<acmn.qualified_name, acmn.bmm_schema.schema_id>>)
 					end
 	 				text.append (" (" + acmn.subtree_artefact_count (artefact_types).out + ")")
 
@@ -257,15 +257,15 @@ feature {NONE} -- Implementation
 		do
 			if button = {EV_POINTER_CONSTANTS}.right and attached {ARCH_CAT_MODEL_NODE} ev_ti.data as acmn then
 				create menu
-				create an_mi.make_with_text_and_action (create_message_content ("display_in_active_tab", Void), agent display_context_selected_class_in_active_tool (ev_ti))
+				create an_mi.make_with_text_and_action (get_msg ("display_in_active_tab", Void), agent display_context_selected_class_in_active_tool (ev_ti))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool"))
 		    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (create_message_content ("display_in_new_tab", Void), agent display_context_selected_class_in_new_tool (ev_ti))
+				create an_mi.make_with_text_and_action (get_msg ("display_in_new_tab", Void), agent display_context_selected_class_in_new_tool (ev_ti))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
 				menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (create_message_content ("show_class_in_rm", Void), agent display_context_selected_class_in_rm_schema_tool (ev_ti))
+				create an_mi.make_with_text_and_action (get_msg ("show_class_in_rm", Void), agent display_context_selected_class_in_rm_schema_tool (ev_ti))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/rm_schema"))
 				menu.extend (an_mi)
 

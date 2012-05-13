@@ -83,6 +83,28 @@ feature -- Definitions
 			Result := Adl_versions.last
 		end
 
+	archetype_term_keys: ARRAYED_LIST [STRING]
+			-- set of 'key's of an ARCHETYPE_TERM, currently 'text' and 'description'
+		once
+			Result := (create {ARCHETYPE_TERM}.default_create).Keys
+		end
+
+	Archetype_lifecycle_states: ARRAYED_LIST [STRING]
+			-- list of archetype authoring lifecycle states
+			-- TODO: obtain from openEHR terminology
+		once
+			create Result.make(0)
+			Result.compare_objects
+			Result.extend ("Initial")
+			Result.extend ("Draft")
+			Result.extend ("Review")
+			Result.extend ("Approved")
+			Result.extend ("Obsolete")
+			Result.extend ("Superseded")
+		end
+
+	Unknown_value: STRING = "(Unknown)"
+
 feature -- Comparison
 
 	valid_adl_version (a_ver: attached STRING): BOOLEAN

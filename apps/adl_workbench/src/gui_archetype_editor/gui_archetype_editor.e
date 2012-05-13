@@ -16,12 +16,17 @@ class GUI_ARCHETYPE_EDITOR
 inherit
 	GUI_ARCHETYPE_TOOL_FRAME
 		redefine
-			make, do_clear, do_populate, can_populate, can_edit, enable_edit, disable_edit, add_editing_controls
+			make, do_clear,
+			do_populate, can_populate,
+			can_edit, enable_edit, disable_edit,
+			add_editing_controls, on_set_primary_source
 		end
 
-	GUI_UNDO_REDO_ENABLED
+	GUI_EDITING_ENABLED
 		export
 			{NONE} all
+		redefine
+			populate_undo_redo_controls
 		end
 
 	ARCHETYPE_TERM_CODE_TOOLS
@@ -51,16 +56,16 @@ feature {NONE}-- Initialization
 			ev_notebook.extend (serialisation_control.ev_root_container)
 
 			-- set visual characteristics
-			ev_notebook.set_item_text (description_controls.ev_root_container, create_message_content ("description_tab_text", Void))
+			ev_notebook.set_item_text (description_controls.ev_root_container, get_msg ("description_tab_text", Void))
 			ev_notebook.item_tab (description_controls.ev_root_container).set_pixmap (get_icon_pixmap ("tool/description"))
 
-			ev_notebook.set_item_text (node_map_control.ev_root_container, create_message_content ("definition_tab_text", Void))
+			ev_notebook.set_item_text (node_map_control.ev_root_container, get_msg ("definition_tab_text", Void))
 			ev_notebook.item_tab (node_map_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/node_map"))
 
-			ev_notebook.set_item_text (ontology_controls.ev_root_container, create_message_content ("terminology_tab_text", Void))
+			ev_notebook.set_item_text (ontology_controls.ev_root_container, get_msg ("terminology_tab_text", Void))
 			ev_notebook.item_tab (ontology_controls.ev_root_container).set_pixmap (get_icon_pixmap ("tool/terminology"))
 
-			ev_notebook.set_item_text (serialisation_control.ev_root_container, create_message_content ("serialised_tab_text", Void))
+			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_msg ("serialised_tab_text", Void))
 			ev_notebook.item_tab (serialisation_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/serialised"))
 
 			set_tab_texts
@@ -117,6 +122,18 @@ feature -- Commands
 			node_map_control.update_rm_icons_cb
 		end
 
+feature -- Events
+
+	on_set_primary_source
+		do
+			if source_archetype.is_generated then
+				edit_archetype.set_is_generated
+			else
+				edit_archetype.clear_is_generated
+			end
+			populate_primary_source
+		end
+
 feature {NONE} -- Implementation
 
 	do_clear
@@ -139,6 +156,15 @@ feature {NONE} -- Implementation
 
 	do_commit
 		do
+			source.commit
+			gui_agents.refresh_archetype_viewers_agent.call ([source.id.as_string])
+			gui_agents.console_tool_append_agent.call ([get_msg ("arch_editor_commit_notification", <<source.id.as_string, source.differential_path>>)])
+		end
+
+	populate_undo_redo_controls
+		do
+			precursor
+			populate_primary_source
 		end
 
 	description_controls: GUI_DESCRIPTION_CONTROLS
@@ -152,18 +178,18 @@ feature {NONE} -- Implementation
 	set_differential_tab_texts
 			-- set text on tabs for differential form of archetype
 		do
-			ev_notebook.set_item_text (serialisation_control.ev_root_container, create_message_content ("serialised_diff_tab_text", Void))
+			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_msg ("serialised_diff_tab_text", Void))
 		end
 
 	set_flat_tab_texts
 			-- set text on tabs for flat form of archetype
 		do
-			ev_notebook.set_item_text (serialisation_control.ev_root_container, create_message_content ("serialised_flat_tab_text", Void))
+			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_msg ("serialised_flat_tab_text", Void))
 		end
 
 	add_editing_controls
 		do
-			add_undo_redo_toolbar
+			add_undo_redo_commit_toolbar
 		end
 
 end

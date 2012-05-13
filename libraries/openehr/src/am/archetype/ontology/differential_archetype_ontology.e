@@ -63,7 +63,6 @@ feature -- Initialisation
 
 			term_codes := a_flat_copy.term_codes
 			constraint_codes := a_flat_copy.constraint_codes
-			term_attribute_names := a_flat_copy.term_attribute_names
 
 			term_bindings := a_flat_copy.term_bindings
 			constraint_bindings := a_flat_copy.constraint_bindings
@@ -274,32 +273,60 @@ feature -- Modification
 			-- set concept of ontology from a term
 		do
 			term_codes.extend (a_term.code)
-			term_definitions.put (create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), original_language)
-			term_definitions.item (original_language).put(a_term, a_term.code)
+			term_definitions.put (create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make (0), original_language)
+			term_definitions.item (original_language).put (a_term, a_term.code)
 		ensure
-			Term_definitions_populated: term_definitions.item(original_language).item(concept_code) = a_term
+			Term_definitions_populated: term_definitions.item (original_language).item(concept_code) = a_term
+		end
+
+	replace_term_definition_item (a_language: STRING; a_code, a_key, a_value: STRING)
+			-- replace a field denoted by `a_key' of the term with code `a_code'
+		require
+			Language_valid: has_language (a_language)
+			Term_valid: has_term_code (a_code)
+		local
+			term: ARCHETYPE_TERM
+		do
+			term := term_definitions.item (a_language).item (a_code)
+			if term.has_key (a_key) then
+				term.set_value (a_value, a_key)
+			end
+		end
+
+	replace_constraint_definition_item (a_language: STRING; a_code, a_key, a_value: STRING)
+			-- replace a field denoted by `a_key' of the term with code `a_code'
+		require
+			Language_valid: has_language (a_language)
+			Term_valid: has_constraint_code (a_code)
+		local
+			term: ARCHETYPE_TERM
+		do
+			term := constraint_definitions.item (a_language).item (a_code)
+			if term.has_key (a_key) then
+				term.set_value (a_value, a_key)
+			end
 		end
 
 	replace_term_binding (a_code_phrase: attached CODE_PHRASE; a_code: attached STRING)
 			-- replaces existing a term binding to local code a_code, in group a_terminology
 		require
-			Local_code_valid: has_term_code(a_code)
-			Already_added: has_term_binding(a_code_phrase.terminology_id.value, a_code)
+			Local_code_valid: has_term_code (a_code)
+			Already_added: has_term_binding (a_code_phrase.terminology_id.value, a_code)
 		do
-			term_bindings.item(a_code_phrase.terminology_id.value).replace(a_code_phrase, a_code)
+			term_bindings.item (a_code_phrase.terminology_id.value).replace (a_code_phrase, a_code)
 		ensure
-			Binding_added: has_term_binding(a_code_phrase.terminology_id.value, a_code)
+			Binding_added: has_term_binding (a_code_phrase.terminology_id.value, a_code)
 		end
 
 	replace_constraint_binding (a_uri: attached URI; a_terminology, a_code: attached STRING)
 			-- replaces existing constraint binding to local code a_code, in group a_terminology
 		require
-			Local_code_valid: has_constraint_code(a_code)
-			Already_added: has_constraint_binding(a_terminology, a_code)
+			Local_code_valid: has_constraint_code (a_code)
+			Already_added: has_constraint_binding (a_terminology, a_code)
 		do
-			constraint_bindings.item(a_terminology).replace(a_uri, a_code)
+			constraint_bindings.item (a_terminology).replace (a_uri, a_code)
 		ensure
-			Binding_added: has_constraint_binding(a_terminology, a_code)
+			Binding_added: has_constraint_binding (a_terminology, a_code)
 		end
 
 feature {ARCHETYPE} -- Modification

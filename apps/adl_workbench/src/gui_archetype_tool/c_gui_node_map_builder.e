@@ -86,11 +86,11 @@ feature -- Visitor
 			-- node text
 			gui_node_text := c_object_string (a_node)
 			if a_node.any_allowed then
-				gui_node_text.append (" = *")
+				gui_node_text.append (" matches {*}")
 			end
 
 			if updating then
-				gui_node_map.item (a_node).set_text (utf8 (gui_node_text))
+				gui_node_map.item (a_node).set_text (utf8_to_utf32 (gui_node_text))
 				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
 				gui_node_map.item (a_node).set_pixmap (c_object_pixmap (a_node))
 			else
@@ -124,13 +124,13 @@ feature -- Visitor
 			-- node text
 			gui_node_text := c_object_string (a_node)
 			if a_node.any_allowed then
-				gui_node_text.append (" = *")
+				gui_node_text.append (" matches {*}")
 			end
 
 			if updating then
 				-- update the text
 				gui_node := gui_node_map.item (a_node)
-				gui_node.set_text (utf8 (gui_node_text))
+				gui_node.set_text (utf8_to_utf32 (gui_node_text))
 				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
 				gui_node_map.item (a_node).set_pixmap (c_object_pixmap (a_node))
 
@@ -138,7 +138,7 @@ feature -- Visitor
 				if a_node.has_includes or a_node.has_excludes then
 					from gui_node.start until gui_node.off loop
 						if attached {ASSERTION} gui_node.item.data as assn then
-							gui_node.item.set_text (utf8 (object_invariant_string (assn)))
+							gui_node.item.set_text (utf8_to_utf32 (object_invariant_string (assn)))
 						end
 						gui_node.forth
 					end
@@ -149,7 +149,7 @@ feature -- Visitor
 				-- create child nodes for includes & excludes
 				if a_node.has_includes then
 					from a_node.includes.start until a_node.includes.off loop
-						create gui_sub_node.make_with_text (utf8 (object_invariant_string (a_node.includes.item)))
+						create gui_sub_node.make_with_text (utf8_to_utf32 (object_invariant_string (a_node.includes.item)))
 						gui_sub_node.set_pixmap (get_icon_pixmap ("am/added/" + a_node.generating_type + "_include"))
 						gui_sub_node.set_data (a_node.includes.item)
 						last_gui_node.extend (gui_sub_node)
@@ -159,7 +159,7 @@ feature -- Visitor
 
 				if a_node.has_excludes then
 					from a_node.excludes.start until a_node.excludes.off loop
-						create gui_sub_node.make_with_text (utf8 (object_invariant_string (a_node.excludes.item)))
+						create gui_sub_node.make_with_text (utf8_to_utf32 (object_invariant_string (a_node.excludes.item)))
 						gui_sub_node.set_pixmap (get_icon_pixmap ("am/added/" + a_node.generating_type + "_exclude"))
 						gui_sub_node.set_data (a_node.excludes.item)
 						last_gui_node.extend (gui_sub_node)
@@ -184,31 +184,31 @@ feature -- Visitor
 		do
 			-- node text
 			create gui_node_text.make_empty
+			gui_node_text.append (utf8_to_utf32 (ontology.physical_to_logical_path (a_node.rm_attribute_path, language, True)))
 			if in_technical_mode then
 				create s.make_empty
 				if attached a_node.existence then
-					s.append ("Existence: {" + a_node.existence.as_string + "} ")
+					s.append (" Existence: {" + a_node.existence.as_string + "}")
 				end
 				if a_node.is_multiple and attached a_node.cardinality then
 					if attached a_node.existence then
-					 	s.append ("; ")
+					 	s.append (";")
 					end
-				 	s.append ("Cardinality: {" + a_node.cardinality.as_string + "} ")
+				 	s.append (" Cardinality: {" + a_node.cardinality.as_string + "}")
 				end
 				if not s.is_empty then
-					gui_node_text.append ("{" + s + "} ")
+					gui_node_text.append (s)
 				end
 			elseif a_node.is_prohibited then
 				gui_node_text.append (" (REMOVED) ")
 			end
-			gui_node_text.append (utf8 (ontology.physical_to_logical_path (a_node.rm_attribute_path, language, True)))
 			if a_node.any_allowed then
 				gui_node_text.append (" matches {*}")
 			end
 
 			if updating then
 				-- update the text; update pixmap if in non-RM icons mode, since inheritance status is shown
-				gui_node_map.item (a_node).set_text (utf8 (gui_node_text))
+				gui_node_map.item (a_node).set_text (utf8_to_utf32 (gui_node_text))
 				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
 				gui_node_map.item (a_node).set_pixmap (c_attribute_pixmap (a_node))
 			else
@@ -244,7 +244,7 @@ feature -- Visitor
 
 			if updating then
 				-- update the text
-				gui_node_map.item (a_node).set_text (utf8 (gui_node_text))
+				gui_node_map.item (a_node).set_text (utf8_to_utf32 (gui_node_text))
 				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
 				gui_node_map.item (a_node).set_pixmap (c_object_pixmap (a_node))
 			else
@@ -273,19 +273,19 @@ feature -- Visitor
 			-- node text
 			create gui_node_text.make_empty
 			if in_technical_mode then
-				if not a_node.use_target_occurrences and attached a_node.occurrences then
-					gui_node_text.append (" {" + a_node.occurrences_as_string + "} ")
-				end
 				gui_node_text.append ("use " + a_node.rm_type_name)
 				if a_node.is_addressable then
 					gui_node_text.append ("[" + a_node.node_id + "]")
 				end
+				if not a_node.use_target_occurrences and attached a_node.occurrences then
+					gui_node_text.append (" {" + a_node.occurrences_as_string + "}")
+				end
 			end
-			gui_node_text.append ("use " + ontology.physical_to_logical_path (a_node.target_path, language, True))
+			gui_node_text.append (ontology.physical_to_logical_path (a_node.target_path, language, True))
 
 			-- do the work
 			if updating then
-				gui_node_map.item (a_node).set_text (utf8 (gui_node_text))
+				gui_node_map.item (a_node).set_text (utf8_to_utf32 (gui_node_text))
 				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
 			else
 				create_node (gui_node_text, spec_pixmap (a_node, a_node.generating_type), a_node)
@@ -312,7 +312,7 @@ feature -- Visitor
 			end
 
 			if updating then
-				gui_node_map.item (a_node).set_text (utf8 (gui_node_text))
+				gui_node_map.item (a_node).set_text (utf8_to_utf32 (gui_node_text))
 				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
 			else
 				create_node (gui_node_text, spec_pixmap (a_node, a_node.generating_type), a_node)
@@ -337,6 +337,9 @@ feature -- Visitor
 		do
 			-- node text
 			create gui_node_text.make_empty
+			if in_technical_mode then
+				gui_node_text.append (a_node.rm_type_name)
+			end
 			if attached a_node.occurrences then
 				if in_technical_mode then
 					gui_node_text.append (" {" + a_node.occurrences_as_string + "}")
@@ -344,14 +347,11 @@ feature -- Visitor
 					gui_node_text.append (" (REMOVED) ")
 				end
 			end
-			if in_technical_mode then
-				gui_node_text.append (a_node.rm_type_name)
-			end
 			gui_node_text.append (" " + a_node.item.as_string)
 
 			-- do the work
 			if updating then
-				gui_node_map.item (a_node).set_text (utf8 (gui_node_text))
+				gui_node_map.item (a_node).set_text (utf8_to_utf32 (gui_node_text))
 				gui_node_map.item (a_node).set_tooltip (node_tooltip_str (a_node))
 			else
 				create_node (gui_node_text, spec_pixmap (a_node, a_node.generating_type), a_node)
@@ -392,7 +392,7 @@ feature -- Visitor
 						a_node.code_list.off
 					loop
 						assumed_flag := a_node.has_assumed_value and then a_node.assumed_value.code_string.is_equal (gui_node.item.text)
-						gui_node.item.set_text (utf8 (object_term_item_string (a_node.code_list.item, assumed_flag, a_node.is_local)))
+						gui_node.item.set_text (utf8_to_utf32 (object_term_item_string (a_node.code_list.item, assumed_flag, a_node.is_local)))
 						a_node.code_list.forth
 						gui_node.forth
 					end
@@ -410,7 +410,7 @@ feature -- Visitor
 				if a_node.code_count > 0 then
 					from a_node.code_list.start until a_node.code_list.off loop
 						assumed_flag := a_node.has_assumed_value and then a_node.assumed_value.code_string.is_equal (a_node.code_list.item)
-						create gui_sub_node.make_with_text (utf8 (object_term_item_string (a_node.code_list.item, assumed_flag, a_node.is_local)))
+						create gui_sub_node.make_with_text (utf8_to_utf32 (object_term_item_string (a_node.code_list.item, assumed_flag, a_node.is_local)))
 						gui_sub_node.set_data (a_node.code_list.item) -- type STRING
 						gui_sub_node.set_pixmap (spec_pixmap (a_node, "term"))
 
@@ -452,7 +452,7 @@ feature -- Visitor
 						a_node.items.off
 					loop
 						assumed_flag := a_node.has_assumed_value and then a_node.assumed_value.value = a_node.items.item.value
-						gui_node.item.set_text (utf8 (object_ordinal_item_string (a_node.items.item, assumed_flag)))
+						gui_node.item.set_text (utf8_to_utf32 (object_ordinal_item_string (a_node.items.item, assumed_flag)))
 						a_node.items.forth
 						gui_node.forth
 					end
@@ -463,7 +463,7 @@ feature -- Visitor
 				if not a_node.any_allowed then
 					from a_node.items.start until a_node.items.off loop
 						assumed_flag := a_node.has_assumed_value and then a_node.assumed_value.value = a_node.items.item.value
-						create gui_sub_node.make_with_text (utf8 (object_ordinal_item_string (a_node.items.item, assumed_flag)))
+						create gui_sub_node.make_with_text (utf8_to_utf32 (object_ordinal_item_string (a_node.items.item, assumed_flag)))
 						gui_sub_node.set_data (a_node.items.item) -- of type ORDINAL
 						gui_sub_node.set_pixmap (spec_pixmap (a_node, a_node.items.item.generating_type))
 
@@ -516,7 +516,7 @@ feature -- Visitor
 					until
 						a_node.list.off
 					loop
-						gui_node.item.set_text (utf8 (c_quantity_item_string (a_node.list.item)))
+						gui_node.item.set_text (utf8_to_utf32 (c_quantity_item_string (a_node.list.item)))
 						a_node.list.forth
 						gui_node.forth
 					end
@@ -525,7 +525,7 @@ feature -- Visitor
 				-- update assumed value child node; note that if there is an assumed value, the child
 				-- GUI node list will be one longer than the a_node.list in the loop above
 				if a_node.has_assumed_value then
-					gui_node.item.set_text (utf8 (a_node.assumed_value.magnitude_as_string + " (Assumed)"))
+					gui_node.item.set_text (utf8_to_utf32 (a_node.assumed_value.magnitude_as_string + " (Assumed)"))
 				end
 			else
 				create_node (gui_node_text, spec_pixmap (a_node, a_node.generating_type), a_node)
@@ -533,7 +533,7 @@ feature -- Visitor
 				-- child nodes
 				if attached a_node.list then
 					from a_node.list.start until a_node.list.off loop
-						create gui_sub_node.make_with_text (utf8 (c_quantity_item_string (a_node.list.item)))
+						create gui_sub_node.make_with_text (utf8_to_utf32 (c_quantity_item_string (a_node.list.item)))
 						gui_sub_node.set_data (a_node.list.item)
 						gui_sub_node.set_pixmap (spec_pixmap (a_node, a_node.list.item.generating_type))
 						last_gui_node.extend (gui_sub_node)
@@ -543,7 +543,7 @@ feature -- Visitor
 
 				-- assumed value child node
 				if a_node.has_assumed_value then
-					create gui_sub_node.make_with_text (utf8 (a_node.assumed_value.magnitude_as_string + " (Assumed)"))
+					create gui_sub_node.make_with_text (utf8_to_utf32 (a_node.assumed_value.magnitude_as_string + " (Assumed)"))
 					gui_sub_node.set_data (a_node.assumed_value)
 					gui_sub_node.set_pixmap (spec_pixmap (a_node, a_node.assumed_value.generating_type))
 					last_gui_node.extend (gui_sub_node)
@@ -565,7 +565,7 @@ feature {NONE} -- Implementation
 			-- attach a node into the tree
 		do
 			-- create and set the text
-			create last_gui_node.make_with_text (utf8 (a_text))
+			create last_gui_node.make_with_text (utf8_to_utf32 (a_text))
 
 			-- set the data
 			last_gui_node.set_data (a_node)
@@ -589,10 +589,10 @@ feature {NONE} -- Implementation
 	node_tooltip_str (a_node: attached ARCHETYPE_CONSTRAINT): STRING
 			-- generate a tooltip for this node
 		do
-			Result := utf8 (ontology.physical_to_logical_path (a_node.path, language, True))
+			Result := utf8_to_utf32 (ontology.physical_to_logical_path (a_node.path, language, True))
 			if archetype.has_annotation_at_path (language, a_node.path) then
 				Result.append ("%N%NAnnotations:%N")
-				Result.append (utf8 (archetype.annotations.annotations_at_path (language, a_node.path).as_string))
+				Result.append (utf8_to_utf32 (archetype.annotations.annotations_at_path (language, a_node.path).as_string))
 			end
 		end
 
@@ -625,29 +625,6 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_empty
 
-			-- occurrences
-			if attached a_node.occurrences then
-				if in_technical_mode then
-					Result.append ("Occurrences:  {" + a_node.occurrences_as_string + "} ")
-				elseif a_node.occurrences.is_prohibited then
-					Result.append (" (REMOVED) ")
-				end
-			end
-
-			-- sibling order and node meaning (addressable nodes only)
-			if a_node.is_addressable then
-				if attached a_node.sibling_order then
-					Result.append (a_node.sibling_order.as_string + " ")
-				end
-
-				if is_valid_code (a_node.node_id) and then ontology.has_term_code (a_node.node_id) then
-					Result.append (" " + ontology.term_definition (language, a_node.node_id).text)
-					if in_technical_mode then
-						Result.append (": ")
-					end
-				end
-			end
-
 			-- rm_type_name
 			if in_technical_mode then
 				Result.append (a_node.rm_type_name)
@@ -657,6 +634,25 @@ feature {NONE} -- Implementation
 			elseif not a_node.is_addressable and not use_rm_pixmaps then
 				 -- put type even when not in technical mode
 				Result.append (a_node.rm_type_name)
+			end
+
+			-- sibling order and node meaning (addressable nodes only)
+			if a_node.is_addressable then
+				if attached a_node.sibling_order then
+					Result.append (" " + a_node.sibling_order.as_string)
+				end
+				if is_valid_code (a_node.node_id) and then ontology.has_term_code (a_node.node_id) then
+					Result.append (" " + ontology.term_definition (language, a_node.node_id).text)
+				end
+			end
+
+			-- occurrences
+			if attached a_node.occurrences then
+				if in_technical_mode then
+					Result.append (" Occurrences: {" + a_node.occurrences_as_string + "}")
+				elseif a_node.occurrences.is_prohibited then
+					Result.append (" (REMOVED)")
+				end
 			end
 		end
 

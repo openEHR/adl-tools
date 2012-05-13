@@ -669,10 +669,10 @@ feature {NONE} -- Tests
 					if original_differential_text.same_string (target.differential_text) then
 						Result := Test_passed
 					else
-						test_status.append (create_message_line ("Test_arch_compare_i1", <<>>))
+						test_status.append (get_msg_line ("Test_arch_compare_i1", <<>>))
 					end
 				else
-					test_status.append (create_message_line ("Test_arch_compare_i2", <<original_differential_text.count.out, target.differential_text.count.out>>))
+					test_status.append (get_msg_line ("Test_arch_compare_i2", <<original_differential_text.count.out, target.differential_text.count.out>>))
 				end
 			else
 				Result := test_not_applicable
@@ -733,7 +733,7 @@ feature {NONE} -- Implementation
 	call_info_feedback_agent (a_message: attached STRING)
 		do
 			if attached info_feedback_agent then
-				info_feedback_agent.call ([create_message_line (a_message, Void)])
+				info_feedback_agent.call ([get_msg_line (a_message, Void)])
 			end
 		end
 
@@ -757,7 +757,7 @@ feature {NONE} -- Implementation
 			col_csr: INTEGER
 		do
 			if ari.has_artefacts or ari.is_root then
-				create gli.make_with_text (utf8 (ari.name))
+				create gli.make_with_text (utf8_to_utf32 (ari.name))
 				if grid_row_stack.is_empty then
 					grid.set_item (1, 1, gli)
 					row := gli.row
@@ -779,7 +779,7 @@ feature {NONE} -- Implementation
 				grid_row_stack.extend (row)
 
 				if attached {ARCH_CAT_ARCHETYPE} ari as ara then
-					gli.set_tooltip (utf8 (ara.full_path))
+					gli.set_tooltip (utf8_to_utf32 (ara.full_path))
 					col_csr := first_test_col
 					from tests.start until tests.off loop
 						row.set_item (col_csr, create {EV_GRID_LABEL_ITEM}.make_with_text ("?"))

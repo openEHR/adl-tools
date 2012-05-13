@@ -188,7 +188,7 @@ feature {NONE} -- Implementation
 		local
 			a_ti: EV_TREE_ITEM
 		do
-			create a_ti.make_with_text (utf8 (str))
+			create a_ti.make_with_text (utf8_to_utf32 (str))
 			if attached ara then
 				a_ti.set_data (ara)
 				ev_node_descriptor_map.force (a_ti, ara.qualified_name)

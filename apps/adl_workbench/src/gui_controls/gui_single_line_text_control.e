@@ -40,7 +40,6 @@ feature {NONE} -- Implementation
 	create_ev_data_control
 		do
 			create ev_data_control
-			ev_data_control.focus_out_actions.extend (agent process_edit)
 		end
 
 end

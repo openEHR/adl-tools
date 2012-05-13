@@ -45,7 +45,7 @@ feature -- Definitions
 	path_control_column_names: ARRAY [STRING]
 			-- names of columns of path view control
 		once
-			Result := <<"Machine", "Nat lang", "RM Type", "AOM Type">>
+			Result := <<"Path", "RM Type", "AOM Type">>
 		end
 
 feature {NONE} -- Initialisation
@@ -89,22 +89,22 @@ feature {NONE} -- Initialisation
 			ev_vbox.set_border_width (4)
 			ev_vbox.disable_item_expand (ev_row_frame)
 			ev_vbox.disable_item_expand (ev_col_frame)
-			ev_row_frame.set_text (create_message_content ("row_filter_frame_text", Void))
+			ev_row_frame.set_text (get_msg ("row_filter_frame_text", Void))
 			ev_row_vbox.set_border_width (Default_border_width)
-			ev_filter_combo.set_tooltip (create_message_content ("row_filter_combo_tooltip", Void))
+			ev_filter_combo.set_tooltip (get_msg ("row_filter_combo_tooltip", Void))
 			ev_filter_combo.set_minimum_width (80)
 			ev_filter_combo.disable_edit
-			ev_col_frame.set_text (create_message_content ("column_frame_text", Void))
-			ev_col_frame.set_minimum_height (150)
+			ev_col_frame.set_text (get_msg ("column_frame_text", Void))
+			ev_col_frame.set_minimum_height (50)
 			ev_col_vbox.set_border_width (Default_border_width)
-			ev_column_check_list.set_tooltip (create_message_content ("column_checklist_tooltip", Void))
+			ev_column_check_list.set_tooltip (get_msg ("column_checklist_tooltip", Void))
 			ev_column_check_list.set_minimum_width (100)
 			ev_column_check_list.set_minimum_height (30)
 
 			-- set events
 			ev_filter_combo.select_actions.extend (agent path_row_set_filter)
-			ev_column_check_list.check_actions.extend (agent path_column_select)
-			ev_column_check_list.uncheck_actions.extend (agent path_column_unselect)
+			ev_column_check_list.check_actions.extend (agent on_check_item)
+			ev_column_check_list.uncheck_actions.extend (agent on_check_item)
 
 			-- set events: path map
 			ev_path_list.key_press_actions.extend (on_path_map_key_press_agent)
@@ -137,44 +137,18 @@ feature -- Status Report
 
 feature -- Events
 
-	path_column_select (a_list_item: EV_LIST_ITEM)
-			-- Show a column in the Path Analysis list after setting a check box in `path_view_check_list'.
-		do
-			adjust_columns
-		end
-
-	path_column_unselect (a_list_item: EV_LIST_ITEM)
-			-- Hide a column in the Path Analysis list after clearing a check box in `path_view_check_list'.
-		do
-			adjust_columns
-		end
-
 	path_row_set_filter
 			-- Called by `select_actions' of `path_filter_combo'.
 		do
 			set_filter
 		end
 
-feature -- Commands
-
-	adjust_columns
-			-- Adjust column view of paths control according to `column_check_list'.
-		local
-			i: INTEGER
+	on_check_item (li: EV_LIST_ITEM)
 		do
-			from i := 1 until i > ev_path_list.column_count loop
-				if i > ev_column_check_list.count or else not ev_column_check_list.is_item_checked (ev_column_check_list [i]) then
-					ev_path_list.set_column_width (0, i)
-				else
-					ev_path_list.resize_column_to_content (i)
-					if ev_path_list.column_width (i) < 100 then
-						ev_path_list.set_column_width (100, i)
-					end
-				end
-
-				i := i + 1
-			end
+			repopulate
 		end
+
+feature -- Commands
 
 	set_filter
 			-- Called by `select_actions' of `filter_combo'.
@@ -225,6 +199,7 @@ feature {NONE} -- Implementation
 		local
 			list_row: EV_MULTI_COLUMN_LIST_ROW
 			p_paths, l_paths: ARRAYED_LIST[STRING]
+			i: INTEGER
 		do
 			ev_path_list.wipe_out
 			ev_path_list.set_column_titles (path_control_column_names)
@@ -232,12 +207,17 @@ feature {NONE} -- Implementation
 			-- Add am empty column at the end so the width of the true last column can be set to zero on all platforms.
 			ev_path_list.set_column_title ("", path_control_column_names.count + 1)
 
+			create l_paths.make (0)
 			if ev_filter_combo.text.is_equal ("All") then
 				p_paths := source_archetype.physical_paths
-				l_paths := source_archetype.logical_paths (selected_language, False)
+				if ev_column_check_list.is_item_checked (ev_column_check_list.first) then
+					l_paths := source_archetype.logical_paths (selected_language, False)
+				end
 			else
 				p_paths := source_archetype.physical_leaf_paths
-				l_paths := source_archetype.logical_paths (selected_language, True)
+				if ev_column_check_list.is_item_checked (ev_column_check_list.first) then
+					l_paths := source_archetype.logical_paths (selected_language, True)
+				end
 			end
 
 			from
@@ -248,25 +228,32 @@ feature {NONE} -- Implementation
 			loop
 				if attached {C_OBJECT} source_archetype.c_object_at_path (p_paths.item) as c_o then
 					create list_row
-					list_row.extend (utf8 (p_paths.item))
-					list_row.extend (utf8 (l_paths.item))
-					list_row.extend (utf8 (c_o.rm_type_name))
-					list_row.extend (utf8 (c_o.generating_type))
+					if not l_paths.is_empty then
+						list_row.extend (utf8_to_utf32 (l_paths.item))
+					else
+						list_row.extend (utf8_to_utf32 (p_paths.item))
+					end
+					list_row.extend (utf8_to_utf32 (c_o.rm_type_name))
+					list_row.extend (utf8_to_utf32 (c_o.generating_type))
 					ev_path_list.extend (list_row)
 				end
 
 				p_paths.forth
-				l_paths.forth
+				if not l_paths.is_empty then
+					l_paths.forth
+				end
 			end
 
-			adjust_columns
+			from i := 1 until i > ev_path_list.column_count loop
+				ev_path_list.resize_column_to_content (i)
+				i := i + 1
+			end
 		end
 
 	initialise_controls
 			-- Initialise widgets associated with the Path Analysis.
 		local
 			filter_combo_index: INTEGER
-			strs: LIST [STRING]
 		do
 			ev_path_list.enable_multiple_selection
 			ev_filter_combo.set_strings (path_control_filter_names)
@@ -290,21 +277,7 @@ feature {NONE} -- Implementation
 
 			ev_filter_combo [filter_combo_index].enable_select
 
-			ev_column_check_list.set_strings (path_control_column_names)
-			strs := path_view_check_list_settings
-
-			if not strs.is_empty then
-				from ev_column_check_list.start until ev_column_check_list.off loop
-					if strs.has (ev_column_check_list.item.text.as_string_8) then
-						ev_column_check_list.check_item (ev_column_check_list.item)
-					end
-
-					ev_column_check_list.forth
-				end
-			else -- default to physical paths
-				ev_column_check_list.check_item (ev_column_check_list [2])
-				ev_column_check_list.check_item (ev_column_check_list [3])
-			end
+			ev_column_check_list.set_strings (<<get_msg ("natural_language_checkbox_text", Void)>>)
 		end
 
 end

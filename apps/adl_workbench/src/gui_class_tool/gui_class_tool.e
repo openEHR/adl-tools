@@ -74,20 +74,20 @@ feature -- Initialisation
 			ev_view_label.set_text ("View ")
 			ev_differential_view_button.set_pixmap (get_icon_pixmap ("tool/diff_class"))
 			ev_flat_view_button.set_pixmap (get_icon_pixmap ("tool/flat_class"))
-			ev_differential_view_button.set_tooltip (create_message_content ("Set differential archetype view", Void))
-			ev_flat_view_button.set_tooltip (create_message_content ("Set flat archetype view", Void))
+			ev_differential_view_button.set_tooltip (get_msg ("Set differential archetype view", Void))
+			ev_flat_view_button.set_tooltip (get_msg ("Set flat archetype view", Void))
 
 			-- visual characteristics: notebook
-			ev_notebook.set_item_text (properties_view.ev_root_container, create_message_content ("properties_tab_text", Void))
+			ev_notebook.set_item_text (properties_view.ev_root_container, get_msg ("properties_tab_text", Void))
 			ev_notebook.item_tab (properties_view.ev_root_container).set_pixmap (get_icon_pixmap ("tool/properties"))
 
-			ev_notebook.set_item_text (closure_view.ev_root_container, create_message_content ("closure_tab_text", Void))
+			ev_notebook.set_item_text (closure_view.ev_root_container, get_msg ("closure_tab_text", Void))
 			ev_notebook.item_tab (closure_view.ev_root_container).set_pixmap (get_icon_pixmap ("tool/closure"))
 
-			ev_notebook.set_item_text (ancestors_view.ev_root_container, create_message_content ("ancestors_tab_text", Void))
+			ev_notebook.set_item_text (ancestors_view.ev_root_container, get_msg ("ancestors_tab_text", Void))
 			ev_notebook.item_tab (ancestors_view.ev_root_container).set_pixmap (get_icon_pixmap ("tool/ancestors"))
 
-			ev_notebook.set_item_text (descendants_view.ev_root_container, create_message_content ("descendants_tab_text", Void))
+			ev_notebook.set_item_text (descendants_view.ev_root_container, get_msg ("descendants_tab_text", Void))
 			ev_notebook.item_tab (descendants_view.ev_root_container).set_pixmap (get_icon_pixmap ("tool/descendants"))
 
 			-- set events

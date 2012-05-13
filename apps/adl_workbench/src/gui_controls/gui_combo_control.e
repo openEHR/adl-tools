@@ -32,7 +32,7 @@ class GUI_COMBO_CONTROL
 inherit
 	GUI_DATA_CONTROL
 		rename
-			make as make_data_control
+			make as make_data_control, make_editable as make_editable_data_control
 		redefine
 			data_source, enable_edit, disable_edit
 		end
@@ -40,15 +40,10 @@ inherit
 create
 	make
 
-feature -- Definitions
-
-	default_min_height: INTEGER = 23
-
-	default_min_width: INTEGER = 50
-
 feature -- Initialisation
 
-	make (a_title: STRING; a_data_source: like data_source; min_height, min_width: INTEGER; use_hbox_container: BOOLEAN)
+	make (a_title: STRING; a_data_source: like data_source;
+			min_height, min_width: INTEGER; use_hbox_container: BOOLEAN)
 		do
 			make_data_control (a_title, a_data_source, min_height, min_width, use_hbox_container, False)
 			ev_root_container.disable_item_expand (ev_data_control)
@@ -92,7 +87,7 @@ feature -- Commands
 				strs.do_all (
 					agent (str:STRING)
 						do
-							ev_data_control.extend (create {EV_LIST_ITEM}.make_with_text (utf8 (str)))
+							ev_data_control.extend (create {EV_LIST_ITEM}.make_with_text (utf8_to_utf32 (str)))
 						end
 				)
 			end

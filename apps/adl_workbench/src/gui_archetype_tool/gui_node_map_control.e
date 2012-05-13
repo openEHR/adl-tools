@@ -108,35 +108,35 @@ feature -- Initialisation
 			ev_view_controls_vbox.disable_item_expand (ev_view_detail_frame)
 			ev_view_controls_vbox.disable_item_expand (ev_view_rm_frame)
 
-			ev_view_label.set_text (create_message_content ("view_label_text", Void))
+			ev_view_label.set_text (get_msg ("view_label_text", Void))
 			ev_view_label.align_text_left
 			ev_collapse_button.set_text ("0")
-			ev_collapse_button.set_tooltip (create_message_content ("collapse_complete_tooltip", Void))
+			ev_collapse_button.set_tooltip (get_msg ("collapse_complete_tooltip", Void))
 			ev_expand_button.set_text ("*")
-			ev_expand_button.set_tooltip (create_message_content ("expand_complete_tooltip", Void))
+			ev_expand_button.set_tooltip (get_msg ("expand_complete_tooltip", Void))
 			ev_expand_one_button.set_text ("+")
-			ev_expand_one_button.set_tooltip (create_message_content ("expand_one_level_tooltip", Void))
+			ev_expand_one_button.set_tooltip (get_msg ("expand_one_level_tooltip", Void))
 			ev_collapse_one_button.set_text ("-")
-			ev_collapse_one_button.set_tooltip (create_message_content ("collapse_one_level_tooltip", Void))
+			ev_collapse_one_button.set_tooltip (get_msg ("collapse_one_level_tooltip", Void))
 
 			-- right hand side visibility controls
-			ev_view_detail_frame.set_text (create_message_content ("view_detail_controls_text", Void))
+			ev_view_detail_frame.set_text (get_msg ("view_detail_controls_text", Void))
 			ev_view_detail_frame.set_minimum_width (100)
 			ev_view_detail_frame.set_minimum_height (85)
 			ev_view_detail_vbox.set_border_width (Default_border_width)
-			ev_view_detail_low_rb.set_text (create_message_content ("domain_detail_button_text", Void))
-			ev_view_detail_low_rb.set_tooltip (create_message_content ("domain_detail_button_tooltip", Void))
-			ev_view_detail_high_rb.set_text (create_message_content ("technical_detail_button_text", Void))
-			ev_view_detail_high_rb.set_tooltip (create_message_content ("technical_detail_button_tooltip", Void))
+			ev_view_detail_low_rb.set_text (get_msg ("domain_detail_button_text", Void))
+			ev_view_detail_low_rb.set_tooltip (get_msg ("domain_detail_button_tooltip", Void))
+			ev_view_detail_high_rb.set_text (get_msg ("technical_detail_button_text", Void))
+			ev_view_detail_high_rb.set_tooltip (get_msg ("technical_detail_button_tooltip", Void))
 
-			ev_view_rm_frame.set_text (create_message_content ("view_rm_controls_text", Void))
+			ev_view_rm_frame.set_text (get_msg ("view_rm_controls_text", Void))
 			ev_view_rm_frame.set_minimum_width (100)
 			ev_view_rm_frame.set_minimum_height (85)
 			ev_view_rm_vbox.set_border_width (Default_border_width)
-			ev_view_rm_attrs_on_cb.set_text (create_message_content ("show_rm_properties_button_text", Void))
-			ev_view_rm_attrs_on_cb.set_tooltip (create_message_content ("show_rm_properties_tooltip", Void))
-			ev_view_rm_use_icons_cb.set_text (create_message_content ("use_rm_icons_button_text", Void))
-			ev_view_rm_use_icons_cb.set_tooltip (create_message_content ("use_rm_icons_button_tooltip", Void))
+			ev_view_rm_attrs_on_cb.set_text (get_msg ("show_rm_properties_button_text", Void))
+			ev_view_rm_attrs_on_cb.set_tooltip (get_msg ("show_rm_properties_tooltip", Void))
+			ev_view_rm_use_icons_cb.set_text (get_msg ("use_rm_icons_button_text", Void))
+			ev_view_rm_use_icons_cb.set_tooltip (get_msg ("use_rm_icons_button_tooltip", Void))
 
 			in_reference_model_mode := show_reference_model_view
 			if in_reference_model_mode then
@@ -395,6 +395,7 @@ feature {NONE} -- Implementation
 
 			-- make visualisation adjustments
 			on_collapse_tree
+
 			on_expand_tree_one_level
 			on_expand_tree_one_level
 			on_expand_tree_one_level
@@ -419,7 +420,7 @@ feature {NONE} -- Implementation
 					end
 					from props.start until props.off loop
 						if not c_c_o.has_attribute (props.key_for_iteration) then
-							create attr_ti.make_with_text (utf8 (props.key_for_iteration + ": " + props.item_for_iteration.type.as_type_string))
+							create attr_ti.make_with_text (utf8_to_utf32 (props.key_for_iteration + ": " + props.item_for_iteration.type.as_type_string))
 							attr_ti.set_data (props.item_for_iteration)
 							attr_ti.set_pixmap (get_icon_pixmap ("rm/generic/" + rm_attribute_pixmap_string (props.item_for_iteration)))
 							a_tree_node.extend (attr_ti)
@@ -469,7 +470,8 @@ feature {NONE} -- Implementation
 		end
 
 	ev_tree_node_non_inherited (a_node: EV_TREE_NODE): BOOLEAN
-			-- test that looks at child nodes and
+			-- True if `a_node' is either already expanded, which implies it is not inherited,
+			-- or else its specialisation status is not ss_inherited
 		do
 			if a_node.is_expandable then
 				Result := a_node.is_expanded
@@ -488,7 +490,7 @@ feature {NONE} -- Implementation
 					end
 					an_ev_tree_node.forth
 				end
-			elseif an_ev_tree_node = ev_tree.item then
+			elseif an_ev_tree_node = ev_tree.item and then ev_tree.item.is_expandable then
 				node_list.extend (an_ev_tree_node)
 			end
 		end
@@ -557,7 +559,7 @@ feature {NONE} -- Implementation
 					end
 
 					s.append (object_invariant_string (invariants.item))
-					create a_ti_sub2.make_with_text (utf8 (s))
+					create a_ti_sub2.make_with_text (utf8_to_utf32 (s))
 					a_ti_sub2.set_pixmap (get_icon_pixmap ("added/" + invariants.item.generator))
 					a_ti_sub2.set_data (invariants.item)
 					a_ti_sub.extend (a_ti_sub2)

@@ -115,7 +115,7 @@ feature -- Commands
 					last_archetype.set_archetype_id_is_old_style
 				else -- something wrong with the id
 					id_bad := True
-					last_parse_fail_reason := create_message_content("parse_archetype_e8", <<a_full_path, lines[2]>>)
+					last_parse_fail_reason := get_msg("parse_archetype_e8", <<a_full_path, lines[2]>>)
 				end
 
 				if not id_bad then
@@ -130,13 +130,13 @@ feature -- Commands
 							last_archetype.set_parent_archetype_id_is_old_style
 						else
 							-- something wrong with the parent id
-							last_parse_fail_reason := create_message_content("parse_archetype_e10", <<a_full_path, lines[4]>>)
+							last_parse_fail_reason := get_msg("parse_archetype_e10", <<a_full_path, lines[4]>>)
 						end
 					end
 					last_parse_valid := True
 				end
 			else
-				last_parse_fail_reason := create_message_content("parse_archetype_e9", <<a_full_path, lines[2]>>)
+				last_parse_fail_reason := get_msg("parse_archetype_e9", <<a_full_path, lines[2]>>)
 			end
 		end
 

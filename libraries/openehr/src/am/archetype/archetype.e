@@ -68,6 +68,7 @@ feature -- Initialisation
 			Definition_set: definition = a_definition
 			Ontology_set: ontology = an_ontology
 			Is_dirty: is_dirty
+			Not_generated: not is_generated
 		end
 
 	make_all (an_artefact_type: attached ARTEFACT_TYPE;
@@ -108,6 +109,7 @@ feature -- Initialisation
 			Invariants_set: invariants = an_invariants
 			Ontology_set: ontology = an_ontology
 			Is_dirty: is_dirty
+			Not_generated: not is_generated
 		end
 
 	make_from_other (other: like Current)
@@ -120,6 +122,11 @@ feature -- Initialisation
 					a_copy.original_language, a_copy.translations,
 					a_copy.description, a_copy.definition, a_copy.invariants,
 					a_copy.ontology, a_copy.annotations)
+			is_generated := other.is_generated
+			is_valid := other.is_valid
+		ensure then
+			Is_generated_preserved: other.is_generated implies is_generated
+			Is_valid_preserved: other.is_valid implies is_valid
 		end
 
 feature -- Access
@@ -203,19 +210,10 @@ feature -- Paths
 			end
 
 			from phys_paths.start until phys_paths.off loop
-				Result.extend (ontology.physical_to_logical_path (phys_paths.item, a_lang, False))
+				Result.extend (ontology.physical_to_logical_path (phys_paths.item, a_lang, True))
 				phys_paths.forth
 			end
 		end
-
---	physical_to_logical_path (a_phys_path, a_lang: attached STRING): attached STRING
---			-- generate a logical path in 'a_lang' from a physical path
---		require
---			Phys_path_valid: not a_phys_path.is_empty
---			Lang_valid: not a_lang.is_empty
---		do
---			Result := ontology.physical_to_logical_path (a_phys_path, a_lang)
---		end
 
 	c_object_at_path (a_path: attached STRING): attached C_OBJECT
 			-- find the c_object from the path_map matching the path; uses path map so as to pick up
@@ -302,6 +300,12 @@ feature -- Status Setting
 			is_generated := True
 		end
 
+	clear_is_generated
+			-- unset is_generated flag
+		do
+			is_generated := False
+		end
+
 feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUILDER, ARCH_CAT_ARCHETYPE} -- Validation
 
 	build_xrefs
@@ -347,24 +351,24 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 			rollup_builder: C_ROLLUP_BUILDER
 		do
 			create rollup_builder
-			rollup_builder.initialise(Current)
-			create a_c_iterator.make(definition, rollup_builder)
+			rollup_builder.initialise (Current)
+			create a_c_iterator.make (definition, rollup_builder)
 			a_c_iterator.do_all
 		end
 
-	id_atcodes_index: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_CONSTRAINT], STRING]
+	id_atcodes_index: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_CONSTRAINT], STRING]
 			-- table of {list<node>, code} for term codes which identify nodes in archetype (note that there
 			-- are other uses of term codes from the ontology, which is why this attribute is not just called
 			-- 'term_codes_xref_table')
 
-	data_atcodes_index: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
+	data_atcodes_index: HASH_TABLE [ARRAYED_LIST [C_OBJECT], STRING]
 			-- table of {list<node>, code} for term codes which appear in archetype nodes as data,
 			-- e.g. in C_DV_ORDINAL and C_CODE_PHRASE types
 
-	accodes_index: HASH_TABLE[ARRAYED_LIST[C_OBJECT], STRING]
+	accodes_index: HASH_TABLE [ARRAYED_LIST [C_OBJECT], STRING]
 			-- table of {list<node>, code} for constraint codes in archetype
 
-	use_node_index: HASH_TABLE[ARRAYED_LIST[ARCHETYPE_INTERNAL_REF], STRING]
+	use_node_index: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_INTERNAL_REF], STRING]
 			-- table of {list<ARCHETYPE_INTERNAL_REF>, target_path}
 			-- i.e. <list of use_nodes> keyed by path they point to
 

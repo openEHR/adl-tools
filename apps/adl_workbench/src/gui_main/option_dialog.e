@@ -27,7 +27,7 @@ inherit
 			copy, default_create
 		end
 
-	GUI_DEFINITIONS
+	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
 		undefine

@@ -126,13 +126,13 @@ feature -- Commands
 								client_controls.item (current_client).select_item_by_id (ev_search_combo.text)
 							end
 						else
-							ev_search_combo.set_text (create_message_content ("no_match_found", Void))
+							ev_search_combo.set_text (get_msg ("no_match_found", Void))
 							ev_search_combo.set_focus
 							ev_search_combo.select_all
 						end
 
 					else -- key too short
-						ev_search_combo.set_text (create_message_content ("key_too_short", Void))
+						ev_search_combo.set_text (get_msg ("key_too_short", Void))
 						ev_search_combo.set_focus
 						ev_search_combo.select_all
 					end
@@ -155,7 +155,7 @@ feature -- Commands
 			-- Called by `select_actions' of `search_button'.
 		do
 			ev_search_combo.wipe_out
-			ev_search_combo.set_text (create_message_content ("enter_search_string", Void))
+			ev_search_combo.set_text (get_msg ("enter_search_string", Void))
 			ev_search_combo.set_focus
 			ev_search_combo.select_all
 		end

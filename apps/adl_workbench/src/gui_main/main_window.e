@@ -238,62 +238,62 @@ feature {NONE} -- Initialization
 			ev_main_vbox.extend (viewer_main_cell)
 
 			-- Set visual characteristics
-			file_menu.set_text (create_message_content ("file_menu_text", Void))
-			file_menu_open.set_text (create_message_content ("file_menu_open_text", Void))
-			file_menu_save_as.set_text (create_message_content ("file_menu_save_as_text", Void))
-			file_menu_export_as.set_text (create_message_content ("file_menu_export_text", Void))
-			file_menu_export_flat_as.set_text (create_message_content ("file_menu_export_flat_as_text", Void))
+			file_menu.set_text (get_msg ("file_menu_text", Void))
+			file_menu_open.set_text (get_msg ("file_menu_open_text", Void))
+			file_menu_save_as.set_text (get_msg ("file_menu_save_as_text", Void))
+			file_menu_export_as.set_text (get_msg ("file_menu_export_text", Void))
+			file_menu_export_flat_as.set_text (get_msg ("file_menu_export_flat_as_text", Void))
 			file_menu_exit.set_text ("E&xit")
 
-			edit_menu.set_text (create_message_content ("edit_menu_text", Void))
-			edit_menu_copy.set_text (create_message_content ("edit_menu_text", Void))
-			edit_menu_select_all.set_text (create_message_content ("edit_menu_select_all_text", Void))
-			edit_menu_clipboard.set_text (create_message_content ("edit_menu_clipboard_text", Void))
+			edit_menu.set_text (get_msg ("edit_menu_text", Void))
+			edit_menu_copy.set_text (get_msg ("edit_menu_text", Void))
+			edit_menu_select_all.set_text (get_msg ("edit_menu_select_all_text", Void))
+			edit_menu_clipboard.set_text (get_msg ("edit_menu_clipboard_text", Void))
 
-			view_menu.set_text (create_message_content ("view_menu_text", Void))
-			view_menu_differential.set_text (create_message_content ("view_menu_differential_text", Void))
-			view_menu_flat.set_text (create_message_content ("view_menu_flat_text", Void))
-			view_menu_new_archetype_tool.set_text (create_message_content ("view_menu_new_arch_tab_text", Void))
-			view_menu_new_class_tool.set_text (create_message_content ("view_menu_new_class_tab_text", Void))
-			view_menu_reset_layout.set_text (create_message_content ("view_menu_reset_layout_text", Void))
+			view_menu.set_text (get_msg ("view_menu_text", Void))
+			view_menu_differential.set_text (get_msg ("view_menu_differential_text", Void))
+			view_menu_flat.set_text (get_msg ("view_menu_flat_text", Void))
+			view_menu_new_archetype_tool.set_text (get_msg ("view_menu_new_arch_tab_text", Void))
+			view_menu_new_class_tool.set_text (get_msg ("view_menu_new_class_tab_text", Void))
+			view_menu_reset_layout.set_text (get_msg ("view_menu_reset_layout_text", Void))
 
-			repository_menu.set_text (create_message_content ("repository_menu_text", Void))
-			repository_menu_build_all.set_text (create_message_content ("repository_menu_build_all_text", Void))
-			repository_menu_rebuild_all.set_text (create_message_content ("repository_menu_rebuild_all_text", Void))
-			repository_menu_build_subtree.set_text (create_message_content ("repository_menu_build_subtree_text", Void))
-			repository_menu_rebuild_subtree.set_text (create_message_content ("repository_menu_rebuild_subtree_text", Void))
-			repository_menu_interrupt_build.set_text (create_message_content ("repository_menu_interrupt_text", Void))
-			repository_menu_refresh.set_text (create_message_content ("repository_menu_refresh_text", Void))
-			repository_menu_export_html.set_text (create_message_content ("repository_menu_export_html_text", Void))
-			repository_menu_export_json.set_text (create_message_content ("repository_menu_export_json_text", Void))
-			repository_menu_export_yaml.set_text (create_message_content ("repository_menu_export_yaml_text", Void))
-			repository_menu_export_xml.set_text (create_message_content ("repository_menu_export_xml_text", Void))
-			repository_menu_export_repository_report.set_text (create_message_content ("repository_menu_export_report_text", Void))
+			repository_menu.set_text (get_msg ("repository_menu_text", Void))
+			repository_menu_build_all.set_text (get_msg ("repository_menu_build_all_text", Void))
+			repository_menu_rebuild_all.set_text (get_msg ("repository_menu_rebuild_all_text", Void))
+			repository_menu_build_subtree.set_text (get_msg ("repository_menu_build_subtree_text", Void))
+			repository_menu_rebuild_subtree.set_text (get_msg ("repository_menu_rebuild_subtree_text", Void))
+			repository_menu_interrupt_build.set_text (get_msg ("repository_menu_interrupt_text", Void))
+			repository_menu_refresh.set_text (get_msg ("repository_menu_refresh_text", Void))
+			repository_menu_export_html.set_text (get_msg ("repository_menu_export_html_text", Void))
+			repository_menu_export_json.set_text (get_msg ("repository_menu_export_json_text", Void))
+			repository_menu_export_yaml.set_text (get_msg ("repository_menu_export_yaml_text", Void))
+			repository_menu_export_xml.set_text (get_msg ("repository_menu_export_xml_text", Void))
+			repository_menu_export_repository_report.set_text (get_msg ("repository_menu_export_report_text", Void))
 			repository_menu_interrupt_build.disable_sensitive
-			repository_menu_set_repository.set_text (create_message_content ("repository_menu_configure_text", Void))
+			repository_menu_set_repository.set_text (get_msg ("repository_menu_configure_text", Void))
 
-			rm_schemas_menu.set_text (create_message_content ("rm_schemas_menu_text", Void))
-			rm_schemas_menu_reload_schemas.set_text (create_message_content ("rm_schemas_reload_text", Void))
-			rm_schemas_menu_configure_rm_schemas.set_text (create_message_content ("rm_schemas_configure_text", Void))
+			rm_schemas_menu.set_text (get_msg ("rm_schemas_menu_text", Void))
+			rm_schemas_menu_reload_schemas.set_text (get_msg ("rm_schemas_reload_text", Void))
+			rm_schemas_menu_configure_rm_schemas.set_text (get_msg ("rm_schemas_configure_text", Void))
 
-			xml_menu.set_text (create_message_content ("xml_menu_text", Void))
-			xml_menu_conv_rules.set_text (create_message_content ("xml_menu_edit_rules_text", Void))
+			xml_menu.set_text (get_msg ("xml_menu_text", Void))
+			xml_menu_conv_rules.set_text (get_msg ("xml_menu_edit_rules_text", Void))
 
-			tools_menu.set_text (create_message_content ("tools_menu_text", Void))
-			tools_menu_clean_generated_files.set_text (create_message_content ("tools_menu_clean_text", Void))
-			tools_menu_options.set_text (create_message_content ("tools_menu_options_text", Void))
+			tools_menu.set_text (get_msg ("tools_menu_text", Void))
+			tools_menu_clean_generated_files.set_text (get_msg ("tools_menu_clean_text", Void))
+			tools_menu_options.set_text (get_msg ("tools_menu_options_text", Void))
 
-			help_menu.set_text (create_message_content ("help_menu_text", Void))
-			help_menu_contents.set_text (create_message_content ("help_menu_online_text", Void))
-			help_menu_release_notes.set_text (create_message_content ("help_menu_release_notes_text", Void))
-			help_menu_clinical_knowledge_manager.set_text (create_message_content ("help_menu_ckm_text", Void))
-			help_menu_report_bug.set_text (create_message_content ("help_menu_report_bug_text", Void))
-			help_menu_about.set_text (create_message_content ("help_menu_about_text", Void))
+			help_menu.set_text (get_msg ("help_menu_text", Void))
+			help_menu_contents.set_text (get_msg ("help_menu_online_text", Void))
+			help_menu_release_notes.set_text (get_msg ("help_menu_release_notes_text", Void))
+			help_menu_clinical_knowledge_manager.set_text (get_msg ("help_menu_ckm_text", Void))
+			help_menu_report_bug.set_text (get_msg ("help_menu_report_bug_text", Void))
+			help_menu_about.set_text (get_msg ("help_menu_about_text", Void))
 			set_minimum_width (500)
 			set_minimum_height (350)
 			set_maximum_width (2000)
 			set_maximum_height (2000)
-			set_title (create_message_content ("main_window_title", <<latest_adl_version>>))
+			set_title (get_msg ("main_window_title", <<latest_adl_version>>))
 
 			-- Connect events.
 			file_menu_open.select_actions.extend (agent catalogue_tool.open_archetype)
@@ -356,20 +356,20 @@ feature {NONE} -- Initialization
 			action_bar.disable_item_expand (archetype_profile_combo)
 			action_bar.disable_item_expand (history_bar.tool_bar)
 			action_bar.disable_item_expand (arch_compile_tool_bar)
-			archetype_profile_combo.set_tooltip (create_message_content ("profile_combo_tooltip", Void))
+			archetype_profile_combo.set_tooltip (get_msg ("profile_combo_tooltip", Void))
 			archetype_profile_combo.set_minimum_width (160)
 			archetype_profile_combo.disable_edit
 			arch_compile_tool_bar.disable_vertical_button_style
-			compile_button.set_text (create_message_content ("compile_button_text", Void))
+			compile_button.set_text (get_msg ("compile_button_text", Void))
 			compile_button.set_pixmap (get_icon_pixmap ("tool/compile"))
-			compile_button.set_tooltip (create_message_content ("compile_button_tooltip", Void))
+			compile_button.set_tooltip (get_msg ("compile_button_tooltip", Void))
 
 			action_bar.disable_item_expand (arch_output_version_hbox)
 			arch_output_version_hbox.disable_item_expand (arch_output_version_label)
 			arch_output_version_hbox.disable_item_expand (arch_output_version_combo)
 			arch_output_version_combo.set_minimum_width (50)
-			arch_output_version_label.set_text (create_message_content ("adl_version_label_text", Void))
-			arch_output_version_label.set_tooltip (create_message_content ("adl_version_label_tooltip", Void))
+			arch_output_version_label.set_text (get_msg ("adl_version_label_text", Void))
+			arch_output_version_label.set_tooltip (get_msg ("adl_version_label_tooltip", Void))
 			arch_output_version_combo.set_strings (Adl_versions)
 
 			-- set up docking
@@ -423,6 +423,7 @@ feature {NONE} -- Initialization
 			gui_agents.set_select_rm_agent (agent display_rm)
 			gui_agents.set_select_rm_in_new_tool_agent (agent display_rm_in_new_tool)
 			gui_agents.set_update_all_tools_rm_icons_setting_agent (agent update_all_tools_rm_icons_setting)
+			gui_agents.set_refresh_archetype_viewers_agent (agent refresh_archetype_viewers)
 			gui_agents.set_select_archetype_from_gui_data_agent (agent select_archetype_from_gui_node)
 			gui_agents.set_show_tool_with_artefact_agent (agent show_tool_with_artefact_agent)
 		end
@@ -498,14 +499,14 @@ feature {NONE} -- Initialization
 				end
 			elseif file_system.file_exists (user_docking_layout_file_path) then
 				docking_file_to_use := user_docking_layout_file_path
-				console_tool.append_text (create_message_line ("copy_docking_file", <<user_docking_layout_file_path, default_docking_layout_file_path>>))
+				console_tool.append_text (get_msg_line ("copy_docking_file", <<user_docking_layout_file_path, default_docking_layout_file_path>>))
 				file_system.copy_file (user_docking_layout_file_path, default_docking_layout_file_path)
 			else
-				console_tool.append_text (create_message_line ("no_docking_file_found", <<user_docking_layout_file_path, default_docking_layout_file_path>>))
+				console_tool.append_text (get_msg_line ("no_docking_file_found", <<user_docking_layout_file_path, default_docking_layout_file_path>>))
 			end
 
 			if attached docking_file_to_use and then not docking_manager.open_config (docking_file_to_use) then
-				console_tool.append_text (create_message_line ("read_docking_file_failed", <<user_docking_layout_file_path>>))
+				console_tool.append_text (get_msg_line ("read_docking_file_failed", <<user_docking_layout_file_path>>))
 			end
 
 			-- Splitter layout
@@ -569,7 +570,7 @@ feature -- Commands
 			app_cfg.save
 
 			if not docking_manager.save_data (user_docking_layout_file_path) then
-				console_tool.append_text (create_message_line ("write_docking_file_failed", <<user_docking_layout_file_path>>))
+				console_tool.append_text (get_msg_line ("write_docking_file_failed", <<user_docking_layout_file_path>>))
 			end
 
 			ev_application.destroy
@@ -608,7 +609,7 @@ feature -- View Events
 				file_system.copy_file (default_docking_layout_file_path, user_docking_layout_file_path)
 				initialise_docking_layout
 			else
-				console_tool.append_text (create_message_line ("read_docking_file_failed", <<default_docking_layout_file_path>>))
+				console_tool.append_text (get_msg_line ("read_docking_file_failed", <<default_docking_layout_file_path>>))
 			end
 		end
 
@@ -719,11 +720,11 @@ feature {NONE} -- Repository events
 			yes_text, no_text, cancel_text, export_dir: STRING
 			info_dialog: EV_INFORMATION_DIALOG
 		do
-			create dialog.make_with_text (create_message_line ("export_question", <<a_syntax>>))
-			dialog.set_title (create_message_content ("export_in_format_dialog_title", <<a_syntax>>))
-			yes_text := create_message_content ("build_and_export_all", Void)
-			no_text := create_message_content ("export_only_built", Void)
-			cancel_text := create_message_line ("cancel_button_text", Void)
+			create dialog.make_with_text (get_msg_line ("export_question", <<a_syntax>>))
+			dialog.set_title (get_msg ("export_in_format_dialog_title", <<a_syntax>>))
+			yes_text := get_msg ("build_and_export_all", Void)
+			no_text := get_msg ("export_only_built", Void)
+			cancel_text := get_msg_line ("cancel_button_text", Void)
 			dialog.set_buttons (<<yes_text, no_text, cancel_text>>)
 
 			dialog.set_default_cancel_button (dialog.button (cancel_text))
@@ -733,7 +734,7 @@ feature {NONE} -- Repository events
 				export_dir := file_system.pathname (export_directory, a_syntax)
 				file_system.recursive_create_directory (export_dir)
 				if not file_system.directory_exists (export_dir) then
-					create info_dialog.make_with_text (create_message_line ("could_not_create_file_text", <<export_dir>>))
+					create info_dialog.make_with_text (get_msg_line ("could_not_create_file_text", <<export_dir>>))
 				else
 					if dialog.selected_button.same_string (yes_text) then
 						do_build_action (agent archetype_compiler.build_and_export_all (export_dir, a_syntax))
@@ -754,7 +755,7 @@ feature {NONE} -- Repository events
 			xml_name: STRING
 		do
 			create save_dialog
-			save_dialog.set_title (create_message_content ("export_report_dialog_title", Void))
+			save_dialog.set_title (get_msg ("export_report_dialog_title", Void))
 			save_dialog.set_file_name (Repository_report_filename)
 			save_dialog.set_start_directory (current_work_directory)
 			save_dialog.filters.extend (["*.xml", "Save as XML"])
@@ -772,20 +773,20 @@ feature {NONE} -- Repository events
 				create file.make (xml_name)
 
 				if file.exists then
-					create question_dialog.make_with_text (create_message_line ("file_exists_replace_question", <<xml_name>>))
-					question_dialog.set_title (create_message_content ("export_dialog_title", Void))
-					question_dialog.set_buttons (<<create_message_content ("yes_response", Void), create_message_content ("no_response", Void)>>)
+					create question_dialog.make_with_text (get_msg_line ("file_exists_replace_question", <<xml_name>>))
+					question_dialog.set_title (get_msg ("export_dialog_title", Void))
+					question_dialog.set_buttons (<<get_msg ("yes_response", Void), get_msg ("no_response", Void)>>)
 					question_dialog.show_modal_to_window (Current)
-					ok_to_write := question_dialog.selected_button.same_string (create_message_content ("yes_response", Void))
+					ok_to_write := question_dialog.selected_button.same_string (get_msg ("yes_response", Void))
 				end
 
 				if ok_to_write then
 					do_with_wait_cursor (Current, agent error_tool.export_repository_report (xml_name))
 					if file.exists then
-						console_tool.append_text (create_message_line ("export_repository_report_replace_info", <<xml_name>>))
+						console_tool.append_text (get_msg_line ("export_repository_report_replace_info", <<xml_name>>))
 						show_in_system_browser (xml_name)
 					else
-						console_tool.append_text (create_message_line ("export_repository_report_replace_err", <<xml_name>>))
+						console_tool.append_text (get_msg_line ("export_repository_report_replace_err", <<xml_name>>))
 					end
 				end
 			end
@@ -919,7 +920,7 @@ feature {NONE} -- Help events
 			dialog: EV_INFORMATION_DIALOG
 		do
 			create dialog.make_with_text (splash_text)
-			dialog.set_title (create_message_content ("about_awb_dialog_title", Void))
+			dialog.set_title (get_msg ("about_awb_dialog_title", Void))
 			dialog.set_pixmap (get_icon_pixmap ("tool/adl_workbench_logo"))
 			dialog.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
 			dialog.set_position (app_x_position + (app_width - dialog.width) // 2, app_y_position + (app_height - dialog.height) // 2)
@@ -973,11 +974,11 @@ feature -- RM Schema explorer
 		local
 			a_docking_pane: SD_CONTENT
 		do
-			create a_docking_pane.make_with_widget_title_pixmap (rm_schema_explorer.ev_root_container, get_icon_pixmap ("tool/rm_schema"), create_message_content ("reference_models_docking_area_title", Void))
+			create a_docking_pane.make_with_widget_title_pixmap (rm_schema_explorer.ev_root_container, get_icon_pixmap ("tool/rm_schema"), get_msg ("reference_models_docking_area_title", Void))
 			attached_docking_manager.contents.extend (a_docking_pane)
 			rm_schema_explorer.set_docking_pane (a_docking_pane)
-			a_docking_pane.set_long_title (create_message_content ("reference_models_docking_area_title", Void))
-			a_docking_pane.set_short_title (create_message_content ("reference_models_docking_area_title", Void))
+			a_docking_pane.set_long_title (get_msg ("reference_models_docking_area_title", Void))
+			a_docking_pane.set_short_title (get_msg ("reference_models_docking_area_title", Void))
 			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
 			a_docking_pane.set_auto_hide ({SD_ENUMERATION}.left)
 			a_docking_pane.show_actions.extend (agent address_bar.set_current_client (rm_schema_explorer))
@@ -1023,11 +1024,11 @@ feature -- Catalogue tool
 		local
 			a_docking_pane: SD_CONTENT
 		do
-			create a_docking_pane.make_with_widget_title_pixmap (catalogue_tool.ev_root_container, get_icon_pixmap ("tool/archetype_category"), create_message_content ("catalogue_tool_title", Void))
+			create a_docking_pane.make_with_widget_title_pixmap (catalogue_tool.ev_root_container, get_icon_pixmap ("tool/archetype_category"), get_msg ("catalogue_tool_title", Void))
 			attached_docking_manager.contents.extend (a_docking_pane)
 			catalogue_tool.set_docking_pane (a_docking_pane)
-			a_docking_pane.set_long_title (create_message_content ("catalogue_tool_title", Void))
-			a_docking_pane.set_short_title (create_message_content ("catalogue_tool_title", Void))
+			a_docking_pane.set_long_title (get_msg ("catalogue_tool_title", Void))
+			a_docking_pane.set_short_title (get_msg ("catalogue_tool_title", Void))
 			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
 			a_docking_pane.set_top ({SD_ENUMERATION}.left)
 			a_docking_pane.show_actions.extend (agent address_bar.set_current_client (catalogue_tool))
@@ -1086,6 +1087,19 @@ feature -- Archetype editors
 			Result := archetype_editors.has_docking_pane_with_tool_artefact_id (aca.id.as_string)
 		end
 
+	refresh_archetype_viewers (an_archetype_id: STRING)
+			-- refresh all viewers of archetype with `an_archetype_id'
+		do
+			archetype_tools.do_all_tools (
+				agent (a_tool: GUI_ARCHETYPE_TOOL; an_id: STRING)
+					do
+						if a_tool.source.id.as_string.same_string (an_id) then
+							a_tool.repopulate
+						end
+					end (?, an_archetype_id)
+			)
+		end
+
 feature -- Class tool
 
 	class_tools: GUI_CLASS_TOOL_CONTROLLER
@@ -1116,10 +1130,10 @@ feature -- Test tool
 		local
 			a_docking_pane: SD_CONTENT
 		do
-			create a_docking_pane.make_with_widget_title_pixmap (test_tool.ev_root_container, get_icon_pixmap ("tool/tools"), create_message_content ("test_tool_title", Void))
+			create a_docking_pane.make_with_widget_title_pixmap (test_tool.ev_root_container, get_icon_pixmap ("tool/tools"), get_msg ("test_tool_title", Void))
 			attached_docking_manager.contents.extend (a_docking_pane)
-			a_docking_pane.set_long_title (create_message_content ("test_tool_title", Void))
-			a_docking_pane.set_short_title (create_message_content ("test_tool_title", Void))
+			a_docking_pane.set_long_title (get_msg ("test_tool_title", Void))
+			a_docking_pane.set_short_title (get_msg ("test_tool_title", Void))
 			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
 			a_docking_pane.set_auto_hide ({SD_ENUMERATION}.bottom)
 		end
@@ -1135,12 +1149,12 @@ feature -- Console Tool
 		local
 			docking_pane: SD_CONTENT
 		do
-			create docking_pane.make_with_widget_title_pixmap (console_tool.ev_console, get_icon_pixmap ("tool/console"), create_message_content ("console_tool_title", Void))
+			create docking_pane.make_with_widget_title_pixmap (console_tool.ev_console, get_icon_pixmap ("tool/console"), get_msg ("console_tool_title", Void))
 			console_tool.set_docking_pane (docking_pane)
 			attached_docking_manager.contents.extend (docking_pane)
 			docking_pane.set_type ({SD_ENUMERATION}.tool)
-			docking_pane.set_long_title (create_message_content ("console_tool_title", Void))
-			docking_pane.set_short_title (create_message_content ("console_tool_title", Void))
+			docking_pane.set_long_title (get_msg ("console_tool_title", Void))
+			docking_pane.set_short_title (get_msg ("console_tool_title", Void))
 			docking_pane.set_auto_hide ({SD_ENUMERATION}.bottom)
 		end
 
@@ -1155,18 +1169,18 @@ feature -- Error Tool
 
 	create_new_error_tool
 		do
-			create error_docking_pane.make_with_widget_title_pixmap (error_tool.grid, get_icon_pixmap ("tool/errors"), create_message_content ("error_tool_title", Void))
+			create error_docking_pane.make_with_widget_title_pixmap (error_tool.grid, get_icon_pixmap ("tool/errors"), get_msg ("error_tool_title", Void))
 			attached_docking_manager.contents.extend (error_docking_pane)
 			error_docking_pane.set_type ({SD_ENUMERATION}.tool)
-			error_docking_pane.set_long_title (create_message_content ("error_tool_title", Void))
-			error_docking_pane.set_short_title (create_message_content ("error_tool_title", Void))
+			error_docking_pane.set_long_title (get_msg ("error_tool_title", Void))
+			error_docking_pane.set_short_title (get_msg ("error_tool_title", Void))
 			error_docking_pane.set_auto_hide ({SD_ENUMERATION}.bottom)
 		end
 
 	error_tool_title_update (parse_error_count, validity_error_count, warning_count: NATURAL)
 		do
-			error_docking_pane.set_short_title (create_message_content ("error_tool_title", Void) + " (" + parse_error_count.out + "/" + validity_error_count.out + "/" + warning_count.out + ")")
-			error_docking_pane.set_long_title (create_message_content ("error_tool_title", Void) + " (" + parse_error_count.out + "/" + validity_error_count.out + "/" + warning_count.out + ")")
+			error_docking_pane.set_short_title (get_msg ("error_tool_title", Void) + " (" + parse_error_count.out + "/" + validity_error_count.out + "/" + warning_count.out + ")")
+			error_docking_pane.set_long_title (get_msg ("error_tool_title", Void) + " (" + parse_error_count.out + "/" + validity_error_count.out + "/" + warning_count.out + ")")
 		end
 
 feature -- Clipboard
@@ -1222,9 +1236,9 @@ feature {NONE} -- Implementation
 	do_refresh_profile_context (refresh_from_repository: BOOLEAN)
 		do
 			console_tool.show
-			console_tool.append_text (create_message_line ("populating_directory_start", <<repository_profiles.current_profile_name>>))
+			console_tool.append_text (get_msg_line ("populating_directory_start", <<repository_profiles.current_profile_name>>))
 			use_current_profile (refresh_from_repository)
-			console_tool.append_text (create_message_line ("populating_directory_complete", Void))
+			console_tool.append_text (get_msg_line ("populating_directory_complete", Void))
 
 			clear_toolbar_controls
 			error_tool.clear
@@ -1320,19 +1334,19 @@ feature {NONE} -- Build commands
 			retry
 		end
 
-	compiler_global_gui_update (msg: attached STRING)
+	compiler_global_gui_update (a_msg: attached STRING)
 			-- Update GUI with progress on build.
 		do
 			populate_compile_button
-			console_tool.append_text (msg)
+			console_tool.append_text (a_msg)
 			ev_application.process_events
 		end
 
-	compiler_archetype_gui_update (msg: attached STRING; aca: attached ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
+	compiler_archetype_gui_update (a_msg: attached STRING; aca: attached ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
 			-- Update GUI with progress on build.
 		do
-			if not msg.is_empty then
-				console_tool.append_text (indented (msg, create {STRING}.make_filled ('%T', dependency_depth)))
+			if not a_msg.is_empty then
+				console_tool.append_text (indented (a_msg, create {STRING}.make_filled ('%T', dependency_depth)))
 			end
 
 			catalogue_tool.update_tree_node (aca)
@@ -1355,8 +1369,8 @@ feature {NONE} -- Build commands
 
 			-- for the moment, post a message about ADL 1.4 XML not being available
 			if adl_version_for_flat_output_numeric < 150 then
-				create info_dialog.make_with_text (create_message_content ("xml_14_not_available_message", Void))
-				info_dialog.set_title (create_message_content ("config_warning_text", Void))
+				create info_dialog.make_with_text (get_msg ("xml_14_not_available_message", Void))
+				info_dialog.set_title (get_msg ("config_warning_text", Void))
 				info_dialog.show_modal_to_window (Current)
 			end
 		end

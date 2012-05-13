@@ -1,10 +1,10 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-				 ADL archetype path. This abstraction allows ADL style paths to be created and manipulated. An ADL path
-				 is a simplified form of an Xpath, and contains 'predicate' sections, e.g. /items[at0004] which in pure Xpath
-				 would be /items[@node_id = 'at0004']. At the moment there is no constraint on what can be in predicates (e.g. 
-				 there is no Xpath parsing).
+				 Object representation of an ADL path. This abstraction allows ADL style paths to be created and manipulated. 
+				 An ADL path is a simplified form of an Xpath, and contains 'predicate' sections, e.g. /items[at0004] which 
+				 in pure Xpath  would be /items[@node_id = 'at0004']. At the moment there is no constraint on what can be in 
+				 predicates (e.g. there is no Xpath parsing).
 				 
 				 'Pure' paths, i.e. with no predicates can also be handled; a path string containing predicates can be parsed
 				 as if it contained no predicates, i.e. /items[at0004/events[1] would be read as /items/events.
@@ -12,7 +12,7 @@ note
 	keywords:    "test, ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2009 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2003-2012 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -50,7 +50,7 @@ feature -- Initialisation
 			is_root
 		end
 
-	make_absolute(a_path_segment: OG_PATH_ITEM)
+	make_absolute (a_path_segment: OG_PATH_ITEM)
 			-- make a path of the form /attr_name[xxx]/attr_name/attr_name[xxx]...
 		require
 			Path_segment_valid: a_path_segment /= Void
@@ -62,34 +62,34 @@ feature -- Initialisation
 			is_absolute
 		end
 
-	make_relative(a_path_segment: OG_PATH_ITEM)
+	make_relative (a_path_segment: OG_PATH_ITEM)
 			-- make a path of the form attr_name[xxx]/attr_name[xxx]...
 		require
 			Path_segment_valid: a_path_segment /= Void
 		do
 			create items.make(0)
-			items.extend(a_path_segment)
+			items.extend (a_path_segment)
 		ensure
 			not is_absolute and not is_movable
 		end
 
-	make_movable(a_path_segment: OG_PATH_ITEM)
+	make_movable (a_path_segment: OG_PATH_ITEM)
 			-- make a path of the form //attr_name[xxx]/attr_name[xxx]...
 			-- point, equivalen to Xpath "//" path
 		require
 			Path_segment_valid: a_path_segment /= Void
 		do
 			create items.make(0)
-			items.extend(a_path_segment)
+			items.extend (a_path_segment)
 			is_movable := True
 		ensure
 			is_movable
 		end
 
-	make_from_string(s: STRING)
+	make_from_string (s: STRING)
 			--
 		require
-			s /= Void and then valid_path_string(s)
+			s /= Void and then valid_path_string (s)
 		do
 			parser.execute(s)
 			is_absolute := parser.output.is_absolute
@@ -97,7 +97,7 @@ feature -- Initialisation
 			items := parser.output.items
 		end
 
-	make_pure_from_string(s: STRING)
+	make_pure_from_string (s: STRING)
 			-- make a path containing no predicates, only attribute names
 		require
 			s /= Void and then valid_path_string(s)

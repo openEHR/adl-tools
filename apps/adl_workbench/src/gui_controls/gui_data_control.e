@@ -18,7 +18,7 @@ note
 deferred class GUI_DATA_CONTROL
 
 inherit
-	GUI_DEFINITIONS
+	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
 		end
@@ -28,19 +28,24 @@ inherit
 			{NONE} all
 		end
 
+feature -- Definitions
+
+	default_min_height: INTEGER = 23
+
+	default_min_width: INTEGER = 50
+
 feature -- Initialisation
 
 	make (a_title: detachable STRING; a_data_source: like data_source;
 			min_height, min_width: INTEGER;
-			use_hbox_container: BOOLEAN;
-			allow_expansion: BOOLEAN)
+			use_hbox_container: BOOLEAN; allow_expansion: BOOLEAN)
 		local
 			mh, mw: INTEGER
 		do
 			data_source := a_data_source
 
-			mh := min_height + Default_border_width
-			mw := min_width + Default_border_width
+			mh := min_height.max (default_min_height) + Default_border_width
+			mw := min_width.max (default_min_width) + Default_border_width
 
 			-- create a container to hold title and data control
 			if use_hbox_container then
@@ -72,12 +77,13 @@ feature -- Initialisation
 				end
 			end
 
-			ev_root_container.set_minimum_height (mh)
-			ev_root_container.set_minimum_width (mw)
-
 			-- create the data control and add to ev_container
 			create_ev_data_control
 			ev_root_container.extend (ev_data_control)
+			ev_data_control.set_minimum_width (min_width.max (default_min_width))
+
+			ev_root_container.set_minimum_height (mh)
+			ev_root_container.set_minimum_width (mw)
 
 			-- control expanding characteristics of main control
 			if not allow_expansion then
@@ -92,8 +98,6 @@ feature -- Initialisation
 			an_undo_redo_chain: UNDO_REDO_CHAIN;
 			min_height, min_width: INTEGER;
 			use_hbox_container: BOOLEAN; allow_expansion: BOOLEAN)
-		local
-			mh, mw: INTEGER
 		do
 			make (a_title, a_data_source, min_height, min_width, use_hbox_container, allow_expansion)
 			data_source_create_agent := a_data_source_create_agent

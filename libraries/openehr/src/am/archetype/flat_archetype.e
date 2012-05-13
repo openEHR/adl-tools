@@ -20,17 +20,17 @@ inherit
 		end
 
 create
-	make, make_non_specialised, make_all, make_from_other
+	make, make_all, make_from_other
 
 create {ARCHETYPE_FLATTENER}
-	make_specialised
+	make_specialised, make_non_specialised
 
-feature -- Initialisation
+feature {ARCHETYPE_FLATTENER} -- Initialisation
 
 	make_non_specialised (a_diff: DIFFERENTIAL_ARCHETYPE)
 			-- initialise from a differential archetype
 		do
-			make(a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
+			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
 					a_diff.original_language.deep_twin,
 					a_diff.description.deep_twin,
 					a_diff.definition.deep_twin, a_diff.ontology.to_flat)
@@ -50,8 +50,6 @@ feature -- Initialisation
 			is_valid: is_valid
 			is_generated: is_generated
 		end
-
-feature {ARCHETYPE_FLATTENER} -- Initialisation
 
 	make_specialised (a_diff: DIFFERENTIAL_ARCHETYPE; a_flat_parent: FLAT_ARCHETYPE)
 			-- initialise from a differential archetype and its flat parent, as preparation
@@ -89,10 +87,110 @@ feature -- Access
 
 feature -- Factory
 
-	to_differential: DIFFERENTIAL_ARCHETYPE
-			-- generate differential form of archetype if specialised, to be in differential form by removing inherited parts
+	to_legacy_differential: DIFFERENTIAL_ARCHETYPE
+			-- generate differential form of archetype from a legacy flat
+		require
+			not is_generated
 		do
-			create Result.make_from_flat (Current)
+			create Result.make_from_legacy_flat (Current)
+		end
+
+	to_differential: DIFFERENTIAL_ARCHETYPE
+			-- generate differential form of archetype if specialised, to be in differential form,
+			-- based on inspecting each node's `specialisation_level'
+		require
+			is_generated
+		local
+			def_it: C_ITERATOR
+		do
+			-- deal with main archetype
+
+			-- description
+
+			-- definition
+			create diff_nodes.make (0)
+			create def_it.make (definition)
+			def_it.do_all (agent node_diff_enter, agent node_diff_exit)
+			def_it.do_at_surface (agent node_diff_enter,
+				agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
+					do
+						Result := not (a_c_node.specialisation_status = ss_added or a_c_node.specialisation_status = ss_redefined)
+					end
+			)
+
+			-- rules section
+
+			-- ontology
+
+			-- annotations
+
+		end
+
+	node_diff_enter (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER)
+		local
+			ss: INTEGER
+			new_ca: C_ATTRIBUTE
+			a_path: OG_PATH
+		do
+			ss := a_c_node.specialisation_status
+			if attached {C_OBJECT} a_c_node as co then
+				if ss = {SPECIALISATION_STATUSES}.ss_added then
+					create a_path.make_from_string (co.parent.path)
+					if a_path.count = 1 then
+						new_ca := co.parent.twin
+						-- clone the parent C_ATTRIBUTE
+					end
+				elseif ss = {SPECIALISATION_STATUSES}.ss_redefined then
+
+				end
+
+			elseif attached {C_ATTRIBUTE} a_c_node as ca then
+
+				-- added tree of constraints, startinng with a C_ATTRIBUTE that was not in the parent flat
+				if ss = {SPECIALISATION_STATUSES}.ss_added then
+					new_ca := ca.safe_deep_twin
+					diff_nodes.put (new_ca, ca.path)
+
+				-- C_ATTRIBUTE local redefinition of cardinality (+/- changes beneath)
+				elseif ss = {SPECIALISATION_STATUSES}.ss_redefined then
+					-- clone this C_ATTRIBUTE and its cardinality and store it
+				end
+			end
+		end
+
+	diff_nodes: HASH_TABLE [C_ATTRIBUTE, STRING]
+			-- table of C_ATTRIBUTEs keyed by path, each is one of:
+			--	* redefined - changed cardinality is only possible change
+			-- 	* added new, with child C_OBJECTs
+			--	* compressed path C_ATTRIBUTEs, containing added/redefined C_OBJECTs
+
+	debug_node_diff_enter (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER)
+		local
+			s: STRING
+			ss: INTEGER
+		do
+			create s.make_filled ('-', depth*4)
+			s.append ("> ")
+
+			ss := a_c_node.specialisation_status
+			if attached {C_OBJECT} a_c_node as co then
+				s.append (co.rm_type_name)
+				if co.is_addressable then
+					s.append ("[" + co.node_id + "|" + ontology.term_definition (original_language.code_string, co.node_id).text + "]")
+				end
+			elseif attached {C_ATTRIBUTE} a_c_node as ca then
+				s.append (ca.rm_attribute_name)
+			end
+
+			s.append_character (' ')
+			s.append (specialisation_status_symbols.item (ss))
+
+			s.append_character ('%N')
+			io.put_string (s)
+		end
+
+	node_diff_exit (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER)
+		do
 		end
 
 end

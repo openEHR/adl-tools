@@ -55,6 +55,7 @@
 			<renaming old_name="C_STRING" new_name="BASE_C_STRING"/>
 		</library>
 		<library name="docking" location="$ISE_LIBRARY\library\docking\docking.ecf"/>
+		<library name="encoding" location="$ISE_LIBRARY\library\encoding\encoding.ecf"/>
 		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
 		<library name="gobo_lexical" location="$ISE_LIBRARY\library\gobo\gobo_lexical.ecf"/>
 		<library name="gobo_parse" location="$ISE_LIBRARY\library\gobo\gobo_parse.ecf"/>

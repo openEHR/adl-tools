@@ -90,16 +90,19 @@ feature {NONE} -- Implementation
 			end
 			old_val := ds.item_for_iteration
 
-			new_val := ev_data_control.i_th (ev_data_control.widget_row).i_th (1)
-			ds.replace (new_val)
-			undo_redo_chain.add_link (
-				-- undo
-				agent ds.put_i_th (old_val, ds_index),
-				agent (ev_data_control.i_th (ev_data_control.widget_row)).put_i_th (utf8 (old_val), 1),
-				-- redo
-				agent ds.put_i_th (new_val, ds_index),
-				agent (ev_data_control.i_th (ev_data_control.widget_row)).put_i_th (new_val, 1)
-			)
+			new_val := utf32_to_utf8 (ev_data_control.i_th (ev_data_control.widget_row).i_th (1))
+
+			if not old_val.same_string (new_val) then
+				ds.replace (new_val)
+				undo_redo_chain.add_link (
+					-- undo
+					agent ds.put_i_th (old_val, ds_index),
+					agent (ev_data_control.i_th (ev_data_control.widget_row)).put_i_th (utf8_to_utf32 (old_val), 1),
+					-- redo
+					agent ds.put_i_th (new_val, ds_index),
+					agent (ev_data_control.i_th (ev_data_control.widget_row)).put_i_th (new_val, 1)
+				)
+			end
 		end
 
 	process_add_new
@@ -126,7 +129,7 @@ feature {NONE} -- Implementation
 	process_remove_existing
 		local
 			undo_add_idx: INTEGER
-			old_val, new_val: STRING
+			old_val: STRING
 			ds: DYNAMIC_LIST [STRING]
 			ds_index: INTEGER
 		do

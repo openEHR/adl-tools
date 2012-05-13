@@ -15,6 +15,8 @@ class ARCHETYPE_TERM
 
 inherit
 	ARCHETYPE_TERM_CODE_TOOLS
+		export
+			{NONE} all
 		redefine
 			default_create
 		end
@@ -31,9 +33,13 @@ feature -- Definitions
 
 	Unknown_value: STRING = "-"
 
+	Text_key: STRING = "text"
+
+	Description_key: STRING = "description"
+
 	Keys: ARRAYED_LIST [STRING]
 		once
-			create Result.make_from_array (<<"text", "description">>)
+			create Result.make_from_array (<<Text_key, Description_key>>)
 			Result.compare_objects
 		end
 
@@ -94,11 +100,11 @@ feature -- Access
 
 	item (a_key: attached STRING): STRING
 		require
-			keys.has (a_key)
+			has_key (a_key)
 		do
-			if a_key.same_string ("text") then
+			if a_key.same_string (Text_key) then
 				Result := text
-			elseif a_key.same_string ("description") then
+			elseif a_key.same_string (Description_key) then
 				Result := description
 --			elseif a_key.same_string ("provenance") then
 --				Result := provenance
@@ -107,7 +113,26 @@ feature -- Access
 			end
 		end
 
+feature -- Status Report
+
+	has_key (a_key: STRING): BOOLEAN
+		do
+			Result := keys.has (a_key)
+		end
+
 feature -- Modification
+
+	set_value (a_val, a_key: STRING)
+			-- set value `a_val' into property for `a_key'
+		require
+			has_key (a_key)
+		do
+			if a_key.same_string (Text_key) then
+				text := a_val
+			elseif a_key.same_string (Description_key) then
+				description := a_val
+			end
+		end
 
 	set_code (a_code: attached STRING)
 		require

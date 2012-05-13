@@ -35,6 +35,13 @@ inherit
 			default_create
 		end
 
+	ARCHETYPE_DEFINITIONS
+		export
+			{NONE} all
+		undefine
+			default_create
+		end
+
 feature -- Definitions
 
 	Sym_terminologies_available: STRING = "terminologies_available"
@@ -126,8 +133,8 @@ feature -- Access
 	constraint_codes: attached TWO_WAY_SORTED_SET[STRING]
 			-- list of constraint codes
 
-	term_attribute_names: attached ARRAYED_LIST[STRING]
-			-- the attribute names found in ARCHETYPE_TERM objects
+--	term_attribute_names: attached ARRAYED_LIST[STRING]
+--			-- the attribute names found in ARCHETYPE_TERM objects
 
 	term_definitions: attached HASH_TABLE[HASH_TABLE[ARCHETYPE_TERM, STRING], STRING]
 			-- table of term definitions, keyed by code, keyed by language
@@ -401,13 +408,13 @@ feature -- Modification
 			-- replace the definition of an existing term code; replace all translations
 			-- if flag set and `a_language' is the primary language
 		require
-			Language_valid: has_language(a_language)
-			Term_valid: has_term_code(a_term.code)
+			Language_valid: has_language (a_language)
+			Term_valid: has_term_code (a_term.code)
 		do
-			if a_language.is_equal(original_language) and replace_translations then
-				put_term_definition(a_language, a_term) -- replace all translations as well
+			if a_language.is_equal (original_language) and replace_translations then
+				put_term_definition (a_language, a_term) -- replace all translations as well
 			else
-				term_definitions.item(a_language).replace(a_term, a_term.code) -- just do this translation
+				term_definitions.item (a_language).replace (a_term, a_term.code) -- just do this translation
 			end
 		end
 
@@ -430,13 +437,13 @@ feature -- Modification
 			-- replace the definition of an existing constraint code; replace all translations
 			-- if flag set and `a_language' is the primary language
 		require
-			Language_valid: has_language(a_language)
-			Term_valid: has_constraint_code(a_term.code)
+			Language_valid: has_language (a_language)
+			Term_valid: has_constraint_code (a_term.code)
 		do
-			if a_language.is_equal(original_language) and replace_translations then
-				put_constraint_definition(a_language, a_term) -- replace all translations as well
+			if a_language.is_equal (original_language) and replace_translations then
+				put_constraint_definition (a_language, a_term) -- replace all translations as well
 			else
-				constraint_definitions.item(a_language).replace(a_term, a_term.code) -- just do this translation
+				constraint_definitions.item (a_language).replace(a_term, a_term.code) -- just do this translation
 			end
 		end
 
@@ -450,7 +457,7 @@ feature -- Modification
 			a_terminology: STRING
 		do
 			a_terminology := a_code_phrase.terminology_id.name
-			if not has_term_bindings(a_terminology) then
+			if not has_term_bindings (a_terminology) then
 				term_bindings.put(create {HASH_TABLE[CODE_PHRASE, STRING]}.make(0), a_terminology)
 			end
 			term_bindings.item (a_terminology).put (a_code_phrase, a_code)
@@ -829,9 +836,6 @@ feature -- Finalisation
 				constraint_definitions.forth
 				done := True
 			end
-
-			-- populate term attribute names (assumed to be the same for terms and constraints)
-			term_attribute_names := (create {ARCHETYPE_TERM}.default_create).Keys
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion

@@ -68,20 +68,20 @@ feature -- Modification
 	add_error_with_location (a_key: STRING; args: ARRAY [STRING]; a_location: STRING)
 			-- append an error with key `a_key' and `args' array to the `errors' string
 		do
-			errors.extend (create {ERROR_DESCRIPTOR}.make_error (a_key, create_message_content(a_key, args), a_location))
+			errors.extend (create {ERROR_DESCRIPTOR}.make_error (a_key, get_msg(a_key, args), a_location))
 			passed := False
 		end
 
 	add_warning_with_location (a_key: STRING; args: ARRAY [STRING]; a_location: STRING)
 			-- append a warning with key `a_key' and `args' array to the `warnings' string
 		do
-			errors.extend (create {ERROR_DESCRIPTOR}.make_warning (a_key, create_message_content(a_key, args), a_location))
+			errors.extend (create {ERROR_DESCRIPTOR}.make_warning (a_key, get_msg(a_key, args), a_location))
 		end
 
 	add_info_with_location(a_key: STRING; args: ARRAY [STRING]; a_location: STRING)
 			-- append an information message with key `a_key' and `args' array to the `information' string
 		do
-			errors.extend(create {ERROR_DESCRIPTOR}.make_info(a_key, create_message_content(a_key, args), a_location))
+			errors.extend(create {ERROR_DESCRIPTOR}.make_info(a_key, get_msg(a_key, args), a_location))
 		end
 
 	merge_errors (other_errors: attached ERROR_ACCUMULATOR)

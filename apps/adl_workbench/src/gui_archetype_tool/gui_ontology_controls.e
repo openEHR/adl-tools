@@ -48,7 +48,7 @@ feature {NONE} -- Initialisation
 			ev_root_container.extend (ev_vsplit)
 
 			-- create Fames
-			create term_defs_frame_ctl.make (create_message_content ("term_defs_frame_text", Void), 0, 0, True)
+			create term_defs_frame_ctl.make (get_msg ("term_defs_frame_text", Void), 0, 0, True)
 			ev_vsplit.extend (term_defs_frame_ctl.ev_root_container)
 			ev_vsplit.enable_item_expand (term_defs_frame_ctl.ev_root_container)
 
@@ -66,7 +66,7 @@ feature {NONE} -- Initialisation
 			gui_controls.extend (term_defs_mlist_ctl)
 
 			-- constraint defs + bindings
-			create constraint_defs_frame_ctl.make (create_message_content ("constraint_defs_frame_text", Void), 0, 0, True)
+			create constraint_defs_frame_ctl.make (get_msg ("constraint_defs_frame_text", Void), 0, 0, True)
 			ev_vsplit.extend (constraint_defs_frame_ctl.ev_root_container)
 			ev_vsplit.disable_item_expand (constraint_defs_frame_ctl.ev_root_container)
 
@@ -190,7 +190,7 @@ feature {NONE} -- Implementation
 			al.extend ("code")
 
 			-- term attribute names - text and description
-			al.append ((create {ARCHETYPE_TERM}.default_create).Keys)
+			al.append (archetype_term_keys)
 
 			-- terminology names
 			al.append (terminologies)
@@ -199,6 +199,7 @@ feature {NONE} -- Implementation
 		end
 
 	term_definition_row (a_code: STRING): ARRAYED_LIST [STRING_32]
+			-- row of data items for term definitions table, as an ARRAY of UTF-32 Strings
 		local
 			a_term: ARCHETYPE_TERM
 		do
@@ -207,21 +208,22 @@ feature {NONE} -- Implementation
 			-- column #1, 2, 3 - code, text, description
 			Result.extend (a_code)
 			a_term := ontology.term_definition (selected_language, a_code)
-			Result.extend (utf8 (a_term.text))
-			Result.extend (utf8 (a_term.description))
+			Result.extend (utf8_to_utf32 (a_term.text))
+			Result.extend (utf8_to_utf32 (a_term.description))
 
 			-- populate bindings
 			from terminologies.start until terminologies.off loop
 				if ontology.has_term_binding (terminologies.item, a_term.code) then
-					Result.extend (ontology.term_binding (terminologies.item, a_term.code).as_string)
+					Result.extend (utf8_to_utf32 (ontology.term_binding (terminologies.item, a_term.code).as_string))
 				else
-					Result.extend (" - ")
+					Result.extend ("")
 				end
 				terminologies.forth
 			end
 		end
 
 	constraint_definition_row (a_code: STRING): ARRAYED_LIST [STRING_32]
+			-- row of data items for constraint definitions table, as an ARRAY of UTF-32 Strings
 		local
 			a_term: ARCHETYPE_TERM
 		do
@@ -230,30 +232,42 @@ feature {NONE} -- Implementation
 			-- column #1, 2, 3 - code, text, description
 			Result.extend (a_code)
 			a_term := ontology.constraint_definition (selected_language, a_code)
-			Result.extend (utf8 (a_term.text))
-			Result.extend (utf8 (a_term.description))
+			Result.extend (utf8_to_utf32 (a_term.text))
+			Result.extend (utf8_to_utf32 (a_term.description))
 
 			-- populate bindings
 			from terminologies.start until terminologies.off loop
 				if ontology.has_constraint_binding (terminologies.item, a_term.code) then
-					Result.extend (ontology.constraint_binding (terminologies.item, a_term.code).as_string)
+					Result.extend (utf8_to_utf32 (ontology.constraint_binding (terminologies.item, a_term.code).as_string))
 				else
-					Result.extend (" - ")
+					Result.extend ("")
 				end
 				terminologies.forth
 			end
 		end
 
-	update_term_table_item (a_col_name, a_key: STRING; a_value: STRING_32)
-			--
+	update_term_table_item (a_col_name, a_code: STRING; a_value: STRING_32)
+			-- update either term definition or binding in ontology
 		do
-			--	ontology.set
+			if archetype_term_keys.has (a_col_name) then
+				edit_archetype.ontology.replace_term_definition_item (selected_language, a_code, a_col_name, a_value)
+			elseif edit_archetype.ontology.has_term_binding (a_col_name, a_code) then -- replace an existing binding
+				edit_archetype.ontology.replace_term_binding (create {CODE_PHRASE}.make_from_string (a_value), a_code)
+			elseif edit_archetype.ontology.has_terminology (a_col_name) then -- terminology known
+				edit_archetype.ontology.add_term_binding (create {CODE_PHRASE}.make_from_string (a_value), a_code)
+			end
 		end
 
-	update_constraint_table_item (a_col_name, a_key: STRING; a_value: STRING_32)
-			--
+	update_constraint_table_item (a_col_name, a_code: STRING; a_value: STRING_32)
+			-- update either constraint definition or binding in ontology
 		do
-			--	ontology.set
+			if archetype_term_keys.has (a_col_name) then
+				edit_archetype.ontology.replace_constraint_definition_item (selected_language, a_code, a_col_name, a_value)
+			elseif edit_archetype.ontology.has_constraint_binding (a_col_name, a_code) then -- replace an existing binding
+				edit_archetype.ontology.replace_constraint_binding (create {URI}.make_from_string (a_value), a_col_name, a_code)
+			elseif edit_archetype.ontology.has_terminology (a_col_name) then -- terminology known
+				edit_archetype.ontology.add_constraint_binding (create {URI}.make_from_string (a_value), a_col_name, a_code)
+			end
 		end
 
 	select_coded_term_row (a_term_code: STRING; list_control: EV_MULTI_COLUMN_LIST)

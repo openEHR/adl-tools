@@ -508,9 +508,10 @@ debug ("validate")
 	ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.current_language, True) + " CONGRUENT to parent node " +
 	ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.current_language, True))
 end
-							-- if the parent C_ATTRIBUTE of the object node in the flat parent has no children, this object can be assumed to be a total
-							-- replacement, so don't mark it as an overlay
 							if attached {C_COMPLEX_OBJECT} co_parent_flat as cco_pf then
+								-- if this node in the diff archetype is the root, or else if the corresponding node in the flat parent has children,
+								-- this node must be an overlay node (in the former case, it is by definition; in the latter, the flat parent node children
+								-- need to be preserved)
 								if co_child_diff.is_root or cco_pf.has_attributes then
 									co_child_diff.set_is_path_compressible
 debug ("validate")
@@ -518,7 +519,7 @@ debug ("validate")
 end
 								else
 debug ("validate")
-	io.put_string ("(not setting is_path_compressible, due to being replacement)%N")
+	io.put_string ("(not setting is_path_compressible, due to being overlay node)%N")
 end
 								end
 							else

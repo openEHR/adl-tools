@@ -140,7 +140,7 @@ feature -- Access
 					archetype_index.forth
 				end
 			else
-				Result.extend (create_message_line("regex_e1", <<a_regex>>))
+				Result.extend (get_msg_line("regex_e1", <<a_regex>>))
 			end
 		end
 

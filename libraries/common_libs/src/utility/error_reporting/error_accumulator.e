@@ -125,17 +125,17 @@ feature -- Modification
 
 	add_error (a_code: attached STRING; args: ARRAY[STRING]; a_loc: STRING)
 		do
-			extend (create {ERROR_DESCRIPTOR}.make (a_code, error_type_error, create_message_content (a_code, args), a_loc))
+			extend (create {ERROR_DESCRIPTOR}.make (a_code, error_type_error, get_msg (a_code, args), a_loc))
 		end
 
 	add_warning (a_code: attached STRING; args: ARRAY[STRING]; a_loc: STRING)
 		do
-			extend (create {ERROR_DESCRIPTOR}.make (a_code, error_type_warning, create_message_content (a_code, args), a_loc))
+			extend (create {ERROR_DESCRIPTOR}.make (a_code, error_type_warning, get_msg (a_code, args), a_loc))
 		end
 
 	add_info (a_code: attached STRING; args: ARRAY[STRING]; a_loc: STRING)
 		do
-			extend (create {ERROR_DESCRIPTOR}.make (a_code, error_type_info, create_message_content (a_code, args), a_loc))
+			extend (create {ERROR_DESCRIPTOR}.make (a_code, error_type_info, get_msg (a_code, args), a_loc))
 		end
 
 	add_debug (a_message: attached STRING; a_loc: STRING)

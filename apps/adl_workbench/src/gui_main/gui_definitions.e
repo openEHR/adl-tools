@@ -18,12 +18,6 @@ note
 class
 	GUI_DEFINITIONS
 
-inherit
-	SHARED_APP_UI_RESOURCES
-		export
-			{NONE} all
-		end
-
 feature -- Definitions
 
 	Default_padding_width: INTEGER = 3

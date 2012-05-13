@@ -72,6 +72,22 @@ feature -- Initialisation
 			Cardinality_set: cardinality = a_cardinality
 		end
 
+feature -- Source Control
+
+	set_subtree_specialisation_status (a_spec_status: INTEGER)
+			-- mark every node from here down as having the specialisation status `a_spec_status'
+		do
+			set_specialisation_status (a_spec_status)
+			from children.start until children.off loop
+				if attached {C_COMPLEX_OBJECT} children.item as c_c_o then
+					c_c_o.set_subtree_specialisation_status (a_spec_status)
+				else
+					children.item.set_specialisation_status (a_spec_status)
+				end
+				children.forth
+			end
+		end
+
 feature -- Access
 
 	rm_attribute_name: STRING

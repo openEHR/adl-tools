@@ -149,6 +149,7 @@ templates = <
 		["row_filter_combo_tooltip"] = <"Filter which rows are shown in the Path Analysis">
 		["column_frame_text"] = <"Column View">
 		["column_checklist_tooltip"] = <"Choose view of columns in the Path Analysis">
+		["natural_language_checkbox_text"] = <"Nat lang">
 
 		-- GUI_SLOT_MAP_CONTROL
 		["slots_incomplete_w1"] = <"this list may be incomplete. To be sure, run Build All under the Repository menu.">
@@ -205,6 +206,7 @@ templates = <
 		["set_flat_archetype_view"] = <"Set flat archetype view">
 
 		-- GUI_ARCHETYPE_TOOL_FRAME
+		["archetype_is_primary_source_button_text"] = <"If active, this archetype is the primary authoring source (active means is_generated=True)">
 		["diff_flat_form_label"] = <"Form">
 		["differential_view_button_tooltip"] = <"View differential archetype form">
 		["flat_view_button_tooltip"] = <"View flat archetype form">
@@ -236,6 +238,7 @@ templates = <
 
 		-- GUI_ARCHETYPE_EDITOR	
 		["commit_button_tooltip"] = <"Commit changes to archetype">
+		["arch_editor_commit_notification"] = <"Wrote archetype $1 to file $2">
 
 		-- GUI_CLASS_TOOL
 		["closure_tab_text"] = <"Closure">
@@ -261,9 +264,9 @@ templates = <
 		["lang_frame_text"] = <"Languages">
 		["original_language_label_text"] = <"Original language:">
 		["trans_languages_label_text"] = <"Translations">
-		["author_label_text"] = <"Author">
-		["accreditation_label_text"] = <"Accreditation">
-		["other_details_label_text"] = <"Other Details">
+		["translator_label_text"] = <"Translator">
+		["accreditation_label_text"] = <"Translator Accreditation">
+		["translator_other_details_label_text"] = <"Translator Other Details">
 		["copyright_label_text"] = <"Copyright:">
 		["archetype_details_label_text"] = <"Archetype Details">
 		["purpose_label_text"] = <"Purpose">

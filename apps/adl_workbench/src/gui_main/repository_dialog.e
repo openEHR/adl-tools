@@ -26,7 +26,7 @@ inherit
 			initialize, is_in_default_state
 		end
 
-	GUI_DEFINITIONS
+	SHARED_APP_UI_RESOURCES
 		undefine
 			is_equal, default_create, copy
 		end
@@ -242,7 +242,7 @@ feature {NONE} -- Events
 				end
 				populate_controls
 			else
-				create error_dialog.make_with_text (create_message_line ("cant_remove_last_profile", Void))
+				create error_dialog.make_with_text (get_msg_line ("cant_remove_last_profile", Void))
 				error_dialog.show_modal_to_window (Current)
 			end
 		end

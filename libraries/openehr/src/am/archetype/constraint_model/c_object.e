@@ -29,6 +29,13 @@ inherit
 			{ANY} specialisation_depth_from_code, is_valid_code;
 		end
 
+feature -- Source Control
+
+	set_specialisation_status_id_redefined
+		do
+			specialisation_status := ss_id_redefined
+		end
+
 feature -- Access
 
 	rm_type_name: attached STRING
@@ -241,7 +248,7 @@ feature -- Modification
 		do
 			if not other.node_id.is_equal (node_id) then
 				set_node_id (other.node_id.twin)
-				set_specialisation_status_redefined
+				set_specialisation_status_id_redefined
 			end
 			if not other.rm_type_name.is_equal (rm_type_name) then
 				rm_type_name := other.rm_type_name.twin

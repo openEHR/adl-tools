@@ -156,15 +156,15 @@ feature {NONE} -- Implementation
 				ev_mlist.wipe_out
 				from ht.start until ht.off loop
 					create ev_list_row
-					ev_list_row.extend (utf8 (ht.key_for_iteration))
+					ev_list_row.extend (utf8_to_utf32 (ht.key_for_iteration))
 					if attached {GENERIC_RENDERABLE} ht.item_for_iteration as gr_item then
 						item_list := gr_item.as_vector
 						from item_list.start until item_list.off loop
-							ev_list_row.extend (utf8 (item_list.item.out))
+							ev_list_row.extend (utf8_to_utf32 (item_list.item.out))
 							item_list.forth
 						end
 					else
-						ev_list_row.extend (utf8 (ht.item_for_iteration.out))
+						ev_list_row.extend (utf8_to_utf32 (ht.item_for_iteration.out))
 					end
 					ev_mlist.extend(ev_list_row)
 					ht.forth
@@ -184,7 +184,7 @@ feature {NONE} -- Implementation
 				ev_mlist.wipe_out
 				from a_list.start until a_list.off loop
 					create ev_list_row
-					ev_list_row.extend (utf8 (a_list.item.out))
+					ev_list_row.extend (utf8_to_utf32 (a_list.item.out))
 					ev_mlist.extend (ev_list_row)
 					a_list.forth
 				end
@@ -215,7 +215,7 @@ feature {NONE} -- Implementation
 		do
 			if attached ht then
 				from ht.start until ht.off loop
-					create ev_list_item.make_with_text (utf8 (ht.key_for_iteration))
+					create ev_list_item.make_with_text (utf8_to_utf32 (ht.key_for_iteration))
 					ev_list.extend(ev_list_item)
 					ht.forth
 				end
@@ -230,7 +230,7 @@ feature {NONE} -- Implementation
 			create strs.make (0)
 			if attached ht then
 				from ht.start until ht.off loop
-					strs.extend (utf8 (ht.key_for_iteration))
+					strs.extend (utf8_to_utf32 (ht.key_for_iteration))
 					ht.forth
 				end
 			end

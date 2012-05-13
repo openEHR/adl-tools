@@ -60,7 +60,6 @@ feature -- Output
 			-- output as a string
 		do
 			create Result.make(0)
-
 			if is_before then
 				Result.append ("before ")
 			else

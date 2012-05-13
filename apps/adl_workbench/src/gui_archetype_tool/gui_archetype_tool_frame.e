@@ -2,8 +2,13 @@ note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Archetype common tool frame for archetype tools and editors. The Frame consists of the 
-				 toolbar containing widgets for archetype id, flat/differential controls, language combo, 
-				 and ADL version indicator; and a notebook for the main content.
+				 toolbar containing widgets for:
+				 	- is_generated flag
+				 	- archetype id, 
+				 	- flat/differential controls, 
+				 	- language combo, 
+				 	- and ADL version indicator.
+				 Additionally there is a notebook for the main content.
 				 ]"
 	keywords:    "GUI, ADL"
 	author:      "Thomas Beale <t homas.beale@OceanInformatics.com>"
@@ -45,6 +50,14 @@ feature {NONE}-- Initialization
 			ev_root_container.extend (tool_bar.ev_root_container)
 			ev_root_container.disable_item_expand (tool_bar.ev_root_container)
 
+			-- toolbar
+			tool_bar.add_tool_bar
+
+			-- archetype set-to-primary-source button (= not is_generated flag)
+			tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/edit_active"), get_icon_pixmap ("tool/edit_inactive"),
+				get_msg ("archetype_is_primary_source_button_text", Void), Void)
+			ev_primary_source_button := tool_bar.last_tool_bar_button
+
 			-- if editing, add undo and redo buttons
 			if can_edit then
 				add_editing_controls
@@ -55,18 +68,22 @@ feature {NONE}-- Initialization
 			ev_archetype_id := tool_bar.last_text_field
 
 			-- 'Form' label + diff & flat controls
-			tool_bar.add_tool_bar_with_title (create_message_content ("diff_flat_form_label", Void))
-			tool_bar.add_tool_bar_radio_button (get_icon_pixmap ("tool/diff_class"), create_message_content ("differential_view_button_tooltip", Void), agent on_differential_view)
+			tool_bar.add_tool_bar_with_title (get_msg ("diff_flat_form_label", Void))
+			tool_bar.add_tool_bar_radio_button (get_icon_pixmap ("tool/diff_class"),
+				get_msg ("differential_view_button_tooltip", Void), agent on_differential_view)
 			ev_differential_view_button := tool_bar.last_tool_bar_radio_button
-			tool_bar.add_tool_bar_radio_button (get_icon_pixmap ("tool/flat_class"), create_message_content ("flat_view_button_tooltip", Void), agent on_flat_view)
+			tool_bar.add_tool_bar_radio_button (get_icon_pixmap ("tool/flat_class"),
+				get_msg ("flat_view_button_tooltip", Void), agent on_flat_view)
 			ev_flat_view_button := tool_bar.last_tool_bar_radio_button
 
 			-- add language combo box
-			tool_bar.add_fixed_combo_box (create_message_content ("language_label", Void), create_message_content ("language_combo_tooltip", Void), 60, agent on_select_language)
+			tool_bar.add_fixed_combo_box (get_msg ("language_label", Void),
+				get_msg ("language_combo_tooltip", Void), 60, agent on_select_language)
 			ev_language_combo := tool_bar.last_combo_box
 
 			-- add version text field
-			tool_bar.add_titled_label (create_message_content ("adl_version_label_text", Void), "", create_message_content ("adl_version_label_tooltip", Void), 30)
+			tool_bar.add_titled_label (get_msg ("adl_version_label_text", Void), "",
+				get_msg ("adl_version_label_tooltip", Void), 30)
 			ev_adl_version_text := tool_bar.last_label
 
 			-- main content area
@@ -98,16 +115,14 @@ feature -- Events
 				arch_tool.on_selected
 
 				-- update content if out of date in any way
-				if (source /= arch_tool.source or else												-- different archetype chosen
-					not arch_tool.is_populated or else												-- some tools are pre-populated
-					arch_tool.last_populate_timestamp < source.last_compile_attempt_timestamp or	-- source re-compiled more recently than last populate
-					differential_view /= arch_tool.differential_view or								-- user has changed from flat to diff view or v.v.
-					selected_language /= arch_tool.selected_language) and							-- different language selected
-					arch_tool.can_populate (source)
-				then
+				if tool_out_of_date (arch_tool) and	arch_tool.can_populate (source) then
 					arch_tool.populate (source, differential_view, selected_language)
 				end
 			end
+		end
+
+	on_set_primary_source
+		do
 		end
 
 feature -- Commands
@@ -191,6 +206,7 @@ feature {NONE} -- Implementation
 	do_populate
 		do
 			ev_archetype_id.set_text (source.qualified_name)
+			populate_primary_source
 			if source.is_valid then
 				ev_adl_version_text.set_text (source.differential_archetype.adl_version)
 				selected_language := source.differential_archetype.original_language.code_string
@@ -206,12 +222,26 @@ feature {NONE} -- Implementation
 
 	ev_differential_view_button, ev_flat_view_button: EV_TOOL_BAR_RADIO_BUTTON
 
+	ev_primary_source_button: EV_TOOL_BAR_BUTTON
+
 	ev_adl_version_text: EV_LABEL
 
 	ev_language_combo: EV_COMBO_BOX
 
+	populate_primary_source
+			-- populate primary source button, which is the inverse of the is_generated flag
+		do
+			if source.differential_generated then
+				tool_bar.deactivate_tool_bar_button (ev_primary_source_button)
+			else
+				tool_bar.activate_tool_bar_button (ev_primary_source_button)
+			end
+		end
+
 	populate_languages
 			-- Populate `language_combo' in the toolbar for currently selected archetype
+		require
+			source.is_valid
 		do
 			ev_language_combo.select_actions.block
 			ev_language_combo.set_strings (source.differential_archetype.languages_available)
@@ -242,6 +272,16 @@ feature {NONE} -- Implementation
 
 	add_editing_controls
 		do
+		end
+
+	tool_out_of_date (an_arch_tool: GUI_ARCHETYPE_TARGETTED_TOOL): BOOLEAN
+		do
+			Result := source /= an_arch_tool.source or else										-- different archetype chosen
+				not an_arch_tool.is_populated or else											-- some tools are pre-populated
+				an_arch_tool.last_populate_timestamp < source.last_compile_attempt_timestamp or	-- source re-compiled more recently than last populate
+				an_arch_tool.last_populate_timestamp < source.last_modify_timestamp or			-- source modified more recently than last populate
+				differential_view /= an_arch_tool.differential_view or							-- user has changed from flat to diff view or v.v.
+				selected_language /= an_arch_tool.selected_language								-- different language selected
 		end
 
 end

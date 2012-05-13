@@ -30,7 +30,7 @@ inherit
 			copy, default_create
 		end
 
-	GUI_DEFINITIONS
+	SHARED_APP_UI_RESOURCES
 		undefine
 			is_equal, default_create, copy
 		end
@@ -207,18 +207,18 @@ feature -- Events
 			-- now validate the name with respect to existing profiles			
 			-- first see if it is non-empty and unique
 			if prof_name.is_empty then
-				create error_dialog.make_with_text (create_message_content ("empty_profile", Void))
+				create error_dialog.make_with_text (get_msg ("empty_profile", Void))
 				error_dialog.show_modal_to_window (Current)
 
 			elseif prof_name /~ initial_profile_name and rep_profiles.has_profile (prof_name) then
-				create error_dialog.make_with_text (create_message_content ("duplicate_profile", <<prof_name>>))
+				create error_dialog.make_with_text (get_msg ("duplicate_profile", <<prof_name>>))
 				error_dialog.show_modal_to_window (Current)
 
 			else
 				-- now validate the paths, remembering that the paths could have been set just by the user typing directly in the fields
 				-- first, the reference path
 				if not directory_exists (reference_path_text.text) then
-					create error_dialog.make_with_text (create_message_line ("ref_repo_not_found", <<reference_path_text.text>>))
+					create error_dialog.make_with_text (get_msg_line ("ref_repo_not_found", <<reference_path_text.text>>))
 					error_dialog.show_modal_to_window (Current)
 
 				elseif not work_path_text.text.is_empty then -- now work path			
@@ -226,11 +226,11 @@ feature -- Events
 						if not (work_path_text.text.starts_with (reference_path_text.text) or reference_path_text.text.starts_with (work_path_text.text)) then
 							is_valid := True
 						else
-							create error_dialog.make_with_text (create_message_line ("work_repo_not_valid", <<work_path_text.text, reference_path_text.text>>))
+							create error_dialog.make_with_text (get_msg_line ("work_repo_not_valid", <<work_path_text.text, reference_path_text.text>>))
 							error_dialog.show_modal_to_window (Current)
 						end
 					else
-						create error_dialog.make_with_text (create_message_line ("work_repo_not_found", <<work_path_text.text>>))
+						create error_dialog.make_with_text (get_msg_line ("work_repo_not_found", <<work_path_text.text>>))
 						error_dialog.show_modal_to_window (Current)
 					end
 				else -- there was no work path

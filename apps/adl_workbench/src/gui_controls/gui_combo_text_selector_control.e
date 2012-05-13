@@ -1,12 +1,20 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Visual control for a data source that outputs to text field control.
-				 Visual control structure is a text edit field with a title, in-place editing.
+				 Visual control for a single text field data source whose values from from a fixed set, chosen
+				 from and displayed to an EV_COMBO_BOX.
+				 Visual control structure is a combo-box with a title.
 				 
-					        +----------------------------+
-				    Title: 	|                            |
-						    +----------------------------+
+								   Title
+						+-------------------------+-+
+						|                         |V|
+						+-------------------------+-+
+						
+				 or
+				 
+							+-------------------------+-+
+					Title	|                         |V|
+							+-------------------------+-+
 
 				 ]"
 	keywords:    "UI, ADL"
@@ -20,51 +28,58 @@ note
 	last_change: "$LastChangedDate$"
 
 
-deferred class GUI_TEXT_CONTROL
+class GUI_COMBO_TEXT_SELECTOR_CONTROL
 
 inherit
-	GUI_DATA_CONTROL
+	GUI_TEXT_CONTROL
 		rename
-			make as make_data_control, make_editable as make_editable_data_control
+			make as make_text_control, make_editable as make_editable_text_control
 		redefine
-			data_source, data_source_create_agent, enable_edit, disable_edit
+			enable_edit, disable_edit, data_source_create_agent, do_populate
 		end
+
+create
+	make, make_editable
 
 feature -- Initialisation
 
-	make (a_title: STRING;
-			a_data_source: like data_source;
-			min_height, min_width: INTEGER; use_hbox_container, allow_expansion: BOOLEAN;
-			a_text_box_select_all_handler: PROCEDURE [ANY, TUPLE])
+	make (a_title: STRING; a_data_source: like data_source;
+			a_value_set: LIST [STRING];
+			min_height, min_width: INTEGER; use_hbox_container: BOOLEAN)
 		do
-			make_data_control (a_title, a_data_source, min_height, min_width,
-				use_hbox_container, allow_expansion)
-			ev_data_control.focus_in_actions.extend (a_text_box_select_all_handler)
+			make_data_control (a_title, a_data_source, min_height, min_width, use_hbox_container, False)
+			value_set := a_value_set
+			ev_root_container.disable_item_expand (ev_data_control)
+			ev_data_control.select_actions.extend (agent propagate_select_action)
 		end
 
 	make_editable (a_title: STRING;
 			a_data_source: like data_source;
+			a_value_set: LIST [STRING];
 			a_data_source_create_agent: like data_source_create_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
 			an_undo_redo_chain: like undo_redo_chain;
-			min_height, min_width: INTEGER; use_hbox_container: BOOLEAN; allow_expansion: BOOLEAN;
-			a_text_box_select_all_handler: PROCEDURE [ANY, TUPLE])
+			min_height, min_width: INTEGER;
+			use_hbox_container: BOOLEAN)
 		do
 			make_editable_data_control (a_title,
 				a_data_source, a_data_source_create_agent, a_data_source_remove_agent,
 				an_undo_redo_chain,
 				min_height, min_width,
-				use_hbox_container, allow_expansion)
-			ev_data_control.focus_in_actions.extend (a_text_box_select_all_handler)
+				use_hbox_container, False)
+			value_set := a_value_set
+			ev_root_container.disable_item_expand (ev_data_control)
+			ev_data_control.select_actions.extend (agent propagate_select_action)
+			ev_data_control.select_actions.extend (agent process_edit)
+			disable_edit
 		end
 
 feature -- Access
 
-	ev_data_control: EV_TEXT_COMPONENT
-		deferred
-		end
+	value_set: LIST [STRING]
+				-- list of values from which to choose the value of the source data field
 
-	data_source: FUNCTION [ANY, TUPLE, STRING]
+	ev_data_control: EV_COMBO_BOX
 
 	data_source_create_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
 			-- agent for creating & setting the data source
@@ -76,7 +91,7 @@ feature -- Commands
 		do
 			precursor
 			ev_data_control.enable_edit
-			ev_data_control.focus_out_actions.extend (agent process_edit)
+			ev_data_control.enable_sensitive
 		end
 
 	disable_edit
@@ -84,62 +99,60 @@ feature -- Commands
 		do
 			precursor
 			ev_data_control.disable_edit
-			ev_data_control.focus_out_actions.wipe_out
-		end
-
-feature -- Commands
-
-	do_clear
-			-- Wipe out content.
-		do
-			ev_data_control.remove_text
+			ev_data_control.disable_sensitive
 		end
 
 	do_populate
-			-- populate content.
+			-- populate content
+		local
+			cur_val: STRING
+			li2: EV_LIST_ITEM
 		do
-			if attached {STRING} data_source.item ([]) as str then
-				ev_data_control.set_text (utf8_to_utf32 (str))
+			ev_data_control.select_actions.block
+			if not edit_enabled then
+				ev_data_control.enable_sensitive
+			end
+			ev_data_control.wipe_out
+			value_set.do_all (
+				agent (str: STRING)
+					do
+						ev_data_control.extend (create {EV_LIST_ITEM}.make_with_text (utf8_to_utf32 (str)))
+					end
+			)
+			cur_val := data_source.item ([])
+			if value_set.has (cur_val) then
+				ev_data_control.do_all (
+					agent (li: EV_LIST_ITEM; a_val: STRING)
+						do
+							if li.text.same_string (a_val) then li.enable_select end
+						end (?, cur_val)
+				)
 			else
-				ev_data_control.remove_text
+				create li2.make_with_text (Unknown_value)
+				ev_data_control.extend (li2)
+				li2.enable_select
+			end
+			ev_data_control.select_actions.resume
+			if not edit_enabled then
+				ev_data_control.disable_sensitive
 			end
 		end
 
 feature {NONE} -- Implementation
 
-	process_edit
-		local
-			old_val, new_val: STRING
-			undo_agt, redo_agt: PROCEDURE [ANY, TUPLE]
+	propagate_select_action
 		do
-			new_val := utf32_to_utf8 (ev_data_control.text)
-			ds := data_source.item ([])
-			if attached ds then
-				create old_val.make_from_string (ds)
-			else
-				create old_val.make_empty
-			end
-
-			if not old_val.same_string (new_val) then
-				-- if user is removing value then use the remove agent, else use the setting agent
-				if old_val.is_empty then
-					undo_agt := data_source_remove_agent
-				else
-					undo_agt := agent data_source_create_agent.call ([old_val])
-				end
-
-				if new_val.is_empty then
-					redo_agt := data_source_remove_agent
-				else
-					redo_agt := agent data_source_create_agent.call ([new_val])
-				end
-
-				data_source_create_agent.call ([new_val])
-				undo_redo_chain.add_link (undo_agt, agent do_populate, redo_agt, agent do_populate)
+			if attached linked_data_controls then
+				linked_data_controls.do_all (agent (a_ctl: GUI_DATA_CONTROL) do a_ctl.do_populate end)
 			end
 		end
 
-	ds: STRING
+feature {NONE} -- Implementation
+
+	create_ev_data_control
+		do
+			create ev_data_control
+		end
 
 end
 

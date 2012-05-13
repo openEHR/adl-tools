@@ -36,12 +36,6 @@ inherit
 			do_populate, enable_edit
 		end
 
-feature -- Definitions
-
-	default_min_height: INTEGER = 25
-
-	default_min_width: INTEGER = 50
-
 feature -- Initialisation
 
 	make (a_title: STRING; a_data_source: like data_source;
@@ -49,8 +43,7 @@ feature -- Initialisation
 			use_hbox_container: BOOLEAN;
 			a_header_strings_agent: like header_strings_agent)
 		do
-			make_data_control (a_title, a_data_source,
-				default_min_height.max (min_height), default_min_height.max (min_width), use_hbox_container, True)
+			make_data_control (a_title, a_data_source, min_height, min_width, use_hbox_container, True)
 			if attached a_header_strings_agent then
 				header_strings_agent := a_header_strings_agent
 			else
@@ -152,11 +145,11 @@ feature {NONE} -- Implementation
 			if button = {EV_POINTER_CONSTANTS}.right then
 				create menu
 				if attached ev_mlist.selected_item then
-					create an_mi.make_with_text_and_action (create_message_content ("remove_mi", Void), agent process_remove_existing)
+					create an_mi.make_with_text_and_action (get_msg ("remove_mi", Void), agent process_remove_existing)
 				--		an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
 					menu.extend (an_mi)
 				end
-				create an_mi.make_with_text_and_action (create_message_content ("add_mi", Void), agent process_add_new)
+				create an_mi.make_with_text_and_action (get_msg ("add_mi", Void), agent process_add_new)
 		--		an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool"))
 		    	menu.extend (an_mi)
 				menu.show

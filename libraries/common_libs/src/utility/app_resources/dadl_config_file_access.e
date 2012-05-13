@@ -38,8 +38,8 @@ feature -- Definitions
 		once
 			create Result.make(0)
 			Result.append("--%N")
-			Result.append("-- " + create_message_line ("config_settings_line1", <<application_name>>))
-			Result.append("-- " + create_message_line ("config_settings_line2", Void))
+			Result.append("-- " + get_msg_line ("config_settings_line1", <<application_name>>))
+			Result.append("-- " + get_msg_line ("config_settings_line2", Void))
 			Result.append("--%N")
 			Result.append("%N")
 		end

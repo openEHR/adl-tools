@@ -78,6 +78,7 @@ feature {NONE} -- Initialisation
 			precursor
 			create status.make_empty
 			create errors.make
+			create last_modify_timestamp.make_from_epoch (0)
 		end
 
 	make_legacy (a_path: attached STRING; a_repository: attached ARCHETYPE_REPOSITORY_I; arch_thumbnail: attached ARCHETYPE_THUMBNAIL)
@@ -235,7 +236,10 @@ feature -- Access (semantic)
 			Result > 0
 		end
 
-	differential_archetype: DIFFERENTIAL_ARCHETYPE
+	last_modify_timestamp: attached DATE_TIME
+			-- Modification timestamp of `differential_archetype' due to editing
+
+	differential_archetype: detachable DIFFERENTIAL_ARCHETYPE
 			-- archetype representing differential structure with respect to parent archetype;
 			-- if this is a non-specialised archetype, then it is the same as the flat form, else
 			-- it is just the differences (like an object-oriented source file for a subclass)
@@ -414,7 +418,7 @@ feature -- Access (compiler)
 			-- Typical examples: 'archetype_valid_2'
 		do
 			create Result.make_empty
-			Result.append(artefact_name)
+			Result.append (artefact_name)
 
 			inspect compilation_state
 			when Cs_validated then
@@ -715,7 +719,7 @@ feature -- Compilation
 			if differential_generated then
 				if has_differential_file then
 					file_repository.delete_file (differential_path)
-					status := create_message_line ("clean_generated_file", <<differential_path>>)
+					status := get_msg_line ("clean_generated_file", <<differential_path>>)
 				end
 				signal_from_scratch
 			end
@@ -805,7 +809,7 @@ feature {NONE} -- Compilation
 			 	compilation_state := Cs_convert_legacy_failed
 			else
 				post_info (Current, "compile_legacy", "compile_legacy_i1", <<id.as_string>>)
-				differential_archetype := legacy_flat_archetype.to_differential
+				differential_archetype := legacy_flat_archetype.to_legacy_differential
 				if is_specialised and not specialisation_parent.is_valid then
 					compilation_state := cs_lineage_invalid
 					errors.add_error("compile_e1", <<parent_id.as_string>>, "")
@@ -990,6 +994,26 @@ feature -- Editing
 	editor_context: ARCH_ED_CONTEXT
 			-- archetype editor context
 
+	commit
+			-- commit modified differential clone to archetype
+		do
+			-- do something with previous version of archetype
+
+			-- copy in differential_archetype_clone
+			create differential_archetype.make_from_other (differential_archetype_clone)
+			differential_archetype.clear_is_generated
+			differential_generated := False
+			save_differential
+			create last_modify_timestamp.make_now
+
+			-- regenerate flat form
+			flatten (False)
+
+			-- set revision appropriately
+		ensure
+			Differential_is_primary: not differential_generated and not differential_archetype.is_generated
+		end
+
 feature -- File Operations
 
 	save_differential
@@ -1172,10 +1196,12 @@ feature {NONE} -- Implementation
 			-- (re)generate flat-form of this archetype
 		require
 			is_valid
-		local
-			arch_flattener: ARCHETYPE_FLATTENER
 		do
-			create arch_flattener.make (Current, rm_schema)
+			if not attached arch_flattener then
+				create arch_flattener.make (Current, rm_schema)
+			else
+				arch_flattener.make (Current, rm_schema)
+			end
 			arch_flattener.flatten (include_rm)
 			flat_archetype_cache := arch_flattener.arch_output_flat
 			last_include_rm := include_rm
@@ -1202,6 +1228,8 @@ feature {NONE} -- Implementation
 
 	flat_archetype_clone_cache: detachable FLAT_ARCHETYPE
 			-- clone of current `flat_archetype'; usually used for editing
+
+	arch_flattener: ARCHETYPE_FLATTENER
 
 invariant
 	compilation_state_valid: valid_compilation_state (compilation_state)

@@ -20,7 +20,7 @@ inherit
 			initialize, is_in_default_state
 		end
 
-	GUI_DEFINITIONS
+	SHARED_APP_UI_RESOURCES
 		undefine
 			is_equal, default_create, copy
 		end

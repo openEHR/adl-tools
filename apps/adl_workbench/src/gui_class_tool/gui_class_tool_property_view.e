@@ -70,11 +70,11 @@ feature {NONE} -- Implementation
 
 			-- grid columns
 			ev_grid.insert_new_column (Grid_declared_in_col)
-			ev_grid.column (Grid_declared_in_col).set_title (create_message_content ("property_grid_declared_in_col_title", Void))
+			ev_grid.column (Grid_declared_in_col).set_title (get_msg ("property_grid_declared_in_col_title", Void))
 			ev_grid.insert_new_column (Grid_property_col)
-			ev_grid.column (Grid_property_col).set_title (create_message_content ("property_grid_property_col_title", Void))
+			ev_grid.column (Grid_property_col).set_title (get_msg ("property_grid_property_col_title", Void))
 			ev_grid.insert_new_column (Grid_property_type_col)
-			ev_grid.column (Grid_property_type_col).set_title (create_message_content ("property_grid_property_type_col_title", Void))
+			ev_grid.column (Grid_property_type_col).set_title (get_msg ("property_grid_property_type_col_title", Void))
 
 			-- add the rows
  			populate_class_node (source)

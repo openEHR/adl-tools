@@ -37,11 +37,11 @@ feature -- Definitions
 
 	Summary_table_col_titles: ARRAY [STRING]
 		once
-			Result := <<create_message_content ("summary_list_metric_col_title", Void),
-				create_message_content ("summary_list_total_col_title", Void),
-				create_message_content ("summary_list_min_col_title", Void),
-				create_message_content ("summary_list_max_col_title", Void),
-				create_message_content ("summary_list_mean_col_title", Void)>>
+			Result := <<get_msg ("summary_list_metric_col_title", Void),
+				get_msg ("summary_list_total_col_title", Void),
+				get_msg ("summary_list_min_col_title", Void),
+				get_msg ("summary_list_max_col_title", Void),
+				get_msg ("summary_list_mean_col_title", Void)>>
 		end
 
 feature {NONE} -- Initialization
@@ -105,7 +105,7 @@ feature {NONE} -- Implementation
 			-----------------------------------
 			create ev_rm_vbox
 
-			create ev_arch_stats_frame.make_with_text (create_message_content ("arch_stats_list_title_diff", Void))
+			create ev_arch_stats_frame.make_with_text (get_msg ("arch_stats_list_title_diff", Void))
 			ev_arch_stats_frame.align_text_left
 			create ev_arch_stats_list
 			ev_arch_stats_frame.extend (ev_arch_stats_list)
@@ -113,7 +113,7 @@ feature {NONE} -- Implementation
 			ev_rm_vbox.disable_item_expand (ev_arch_stats_frame)
 
 			-- notebook for 3 groups of class stats
-			create ev_rm_breakdown_frame.make_with_text (create_message_content ("breakdown_nb_title_diff", Void))
+			create ev_rm_breakdown_frame.make_with_text (get_msg ("breakdown_nb_title_diff", Void))
 			ev_rm_breakdown_frame.align_text_left
 			create ev_rm_breakdown_nb
 			ev_rm_breakdown_frame.extend (ev_rm_breakdown_nb)
@@ -126,11 +126,11 @@ feature {NONE} -- Implementation
 			-- populate data
 			-----------------------------------
 			if differential_view then
-				ev_arch_stats_frame.set_text (create_message_content ("arch_metrics_list_title_diff", Void))
-				ev_rm_breakdown_frame.set_text (create_message_content ("breakdown_nb_title_diff", Void))
+				ev_arch_stats_frame.set_text (get_msg ("arch_metrics_list_title_diff", Void))
+				ev_rm_breakdown_frame.set_text (get_msg ("breakdown_nb_title_diff", Void))
 			else
-				ev_arch_stats_frame.set_text (create_message_content ("arch_metrics_list_title_flat", Void))
-				ev_rm_breakdown_frame.set_text (create_message_content ("breakdown_nb_title_flat", Void))
+				ev_arch_stats_frame.set_text (get_msg ("arch_metrics_list_title_flat", Void))
+				ev_rm_breakdown_frame.set_text (get_msg ("breakdown_nb_title_flat", Void))
 			end
 
 			-- archetype metrics list
@@ -149,9 +149,9 @@ feature {NONE} -- Implementation
 
 				-- column names
 				ev_rm_grid.insert_new_column (Grid_model_element_name_col)
-				ev_rm_grid.column (Grid_model_element_name_col).set_title (create_message_content ("statistics_grid_model_element_name_col_title", Void))
+				ev_rm_grid.column (Grid_model_element_name_col).set_title (get_msg ("statistics_grid_model_element_name_col_title", Void))
 				ev_rm_grid.insert_new_column (Grid_model_element_total_col)
-				ev_rm_grid.column (Grid_model_element_total_col).set_title (create_message_content ("statistics_grid_model_element_count_col_title", Void))
+				ev_rm_grid.column (Grid_model_element_total_col).set_title (get_msg ("statistics_grid_model_element_count_col_title", Void))
 
 				rm_class_stats := source.rm_grouped_class_table.item_for_iteration
 				from rm_class_stats.start until rm_class_stats.off loop
@@ -211,11 +211,11 @@ feature {NONE} -- Implementation
 		do
 			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_CLASS_DEFINITION} gli.data as class_def then
 				create menu
-				create an_mi.make_with_text_and_action (create_message_content ("display_in_active_tab", Void), agent display_context_selected_class_in_active_tool (class_def))
+				create an_mi.make_with_text_and_action (get_msg ("display_in_active_tab", Void), agent display_context_selected_class_in_active_tool (class_def))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool"))
 		    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (create_message_content ("display_in_new_tab", Void), agent display_context_selected_class_in_new_tool (class_def))
+				create an_mi.make_with_text_and_action (get_msg ("display_in_new_tab", Void), agent display_context_selected_class_in_new_tool (class_def))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
 				menu.extend (an_mi)
 

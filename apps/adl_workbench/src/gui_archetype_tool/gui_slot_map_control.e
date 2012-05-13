@@ -59,9 +59,9 @@ feature {NONE} -- Initialisation
 			-- set visual characteristics
 			ev_root_container.set_padding (Default_padding_width)
 			ev_root_container.set_border_width (Default_border_width)
-			supplier_frame.set_text (create_message_content ("supplier_frame_text", Void))
+			supplier_frame.set_text (get_msg ("supplier_frame_text", Void))
 			supplier_vbox.set_border_width (Default_border_width)
-			client_frame.set_text (create_message_content ("client_frame_text", Void))
+			client_frame.set_text (get_msg ("client_frame_text", Void))
 			client_vbox.set_border_width (Default_border_width)
 
 			visual_update_action := a_visual_update_action
@@ -103,7 +103,7 @@ feature {NONE} -- Implementation
 			ara: ARCH_CAT_ARCHETYPE
 		do
 			from ids.start until ids.off loop
-				create eti.make_with_text (utf8 (ids.item))
+				create eti.make_with_text (utf8_to_utf32 (ids.item))
 				if current_arch_cat.archetype_index.has(ids.item) then
 					ara := current_arch_cat.archetype_index.item (ids.item)
 					eti.set_pixmap (get_icon_pixmap ("archetype/" + ara.group_name))
@@ -134,7 +134,7 @@ feature {NONE} -- Implementation
 			if source.has_slots then
 				slot_index := source.slot_id_index
 				from slot_index.start until slot_index.off loop
-					create eti.make_with_text (utf8 (source.differential_archetype.ontology.physical_to_logical_path (slot_index.key_for_iteration, selected_language, True)))
+					create eti.make_with_text (utf8_to_utf32 (source.differential_archetype.ontology.physical_to_logical_path (slot_index.key_for_iteration, selected_language, True)))
 					eti.set_pixmap (get_icon_pixmap ("am/added/archetype_slot"))
 					ev_suppliers_tree.extend (eti)
 					append_tree (eti, slot_index.item_for_iteration)
@@ -149,7 +149,7 @@ feature {NONE} -- Implementation
 			end
 
 			if current_arch_cat.compile_attempt_count < current_arch_cat.archetype_count then
-				ev_clients_tree.extend (create {EV_TREE_ITEM}.make_with_text (create_message_line ("slots_incomplete_w1", <<>>)))
+				ev_clients_tree.extend (create {EV_TREE_ITEM}.make_with_text (get_msg_line ("slots_incomplete_w1", <<>>)))
 			end
 
 			if source.is_supplier then

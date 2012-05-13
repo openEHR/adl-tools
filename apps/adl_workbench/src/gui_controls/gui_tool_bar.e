@@ -64,6 +64,14 @@ feature -- Access
 
 	last_combo_box: EV_COMBO_BOX
 
+feature -- Status Report
+
+	has_ev_tool_bar: BOOLEAN
+			-- True if there is an EV_TOOL_BAR set up
+		do
+			Result := attached last_tool_bar
+		end
+
 feature -- Modification
 
 	add_label (a_text: STRING; a_min_width: INTEGER; expandable, align_right: BOOLEAN)
@@ -143,6 +151,8 @@ feature -- Modification
 			create last_tool_bar
 			ev_root_container.extend (last_tool_bar)
 			ev_root_container.disable_item_expand (last_tool_bar)
+		ensure
+			has_ev_tool_bar
 		end
 
 	add_tool_bar_with_title (a_title: STRING)
@@ -172,6 +182,8 @@ feature -- Modification
 
 	add_tool_bar_button (an_active_pixmap, an_inactive_pixmap: detachable EV_PIXMAP; a_tooltip_text: detachable STRING; a_select_action: detachable PROCEDURE [ANY, TUPLE])
 			-- add a normal button to current EV_TOOL_BAR
+		require
+			has_ev_tool_bar: has_ev_tool_bar
 		local
 			gui_button: GUI_TOOL_BAR_BUTTON
 		do
