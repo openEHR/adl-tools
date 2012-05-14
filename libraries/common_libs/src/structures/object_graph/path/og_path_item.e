@@ -26,10 +26,13 @@ inherit
 create
 	make, make_with_object_id, make_feature_call, make_from_other
 
-
 feature -- Definitions
 
 	feature_call_arg_delimiters: STRING = "()"
+
+	predicate_left_delim: CHARACTER = '['
+
+	predicate_right_delim: CHARACTER = ']'
 
 feature -- Initialisation
 
@@ -163,9 +166,9 @@ feature -- Output
 			create Result.make(0)
 			Result.append(attr_name)
 			if is_addressable then
-				Result.append("[" + object_id + "]")
+				Result.append (predicate_left_delim.out + object_id + predicate_right_delim.out)
 			elseif is_feature_call then
-				Result.append(feature_call_arg_delimiters)
+				Result.append (feature_call_arg_delimiters)
 			end
 		end
 

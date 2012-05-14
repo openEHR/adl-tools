@@ -148,8 +148,8 @@ templates = <
 		["row_filter_frame_text"] = <"Row Filter">
 		["row_filter_combo_tooltip"] = <"Filter which rows are shown in the Path Analysis">
 		["column_frame_text"] = <"Column View">
-		["column_checklist_tooltip"] = <"Choose view of columns in the Path Analysis">
-		["natural_language_checkbox_text"] = <"Nat lang">
+		["nat_lang_paths_tooltip"] = <"Include code meanings in paths">
+		["nat_lang_checkbox_text"] = <"Nat lang">
 
 		-- GUI_SLOT_MAP_CONTROL
 		["slots_incomplete_w1"] = <"this list may be incomplete. To be sure, run Build All under the Repository menu.">

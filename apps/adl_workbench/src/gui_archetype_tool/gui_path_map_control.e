@@ -56,71 +56,75 @@ feature {NONE} -- Initialisation
 			-- create widgets
 			create ev_root_container
 			ev_root_container.set_data (Current)
-
-			create ev_path_list
-			create ev_vbox
-			create ev_row_frame
-			create ev_row_vbox
-			create ev_filter_combo
-			create ev_col_frame
-			create ev_col_vbox
-			create ev_column_check_list
-
-			-- connect them together
-			ev_root_container.extend (ev_path_list)
-			ev_root_container.extend (ev_vbox)
-			ev_vbox.extend (ev_row_frame)
-			ev_row_frame.extend (ev_row_vbox)
-			ev_row_vbox.extend (ev_filter_combo)
-			ev_vbox.extend (ev_col_frame)
-			ev_col_frame.extend (ev_col_vbox)
-			ev_col_vbox.extend (ev_column_check_list)
-
-			-- set visual characteristics
 			ev_root_container.set_minimum_width (140)
 			ev_root_container.set_minimum_height (93)
-			ev_root_container.disable_item_expand (ev_vbox)
+
+			create ev_path_list
 			ev_path_list.set_background_color (editable_colour)
 			ev_path_list.set_minimum_width (1)
 			ev_path_list.set_minimum_height (1)
+			ev_path_list.enable_multiple_selection
+			ev_root_container.extend (ev_path_list)
+
+			create ev_vbox
 			ev_vbox.set_minimum_width (140)
 			ev_vbox.set_minimum_height (93)
 			ev_vbox.set_padding (3)
 			ev_vbox.set_border_width (4)
-			ev_vbox.disable_item_expand (ev_row_frame)
-			ev_vbox.disable_item_expand (ev_col_frame)
+			ev_root_container.extend (ev_vbox)
+			ev_root_container.disable_item_expand (ev_vbox)
+
+			create ev_row_frame
 			ev_row_frame.set_text (get_msg ("row_filter_frame_text", Void))
+			ev_vbox.extend (ev_row_frame)
+			ev_vbox.disable_item_expand (ev_row_frame)
+
+			create ev_row_vbox
 			ev_row_vbox.set_border_width (Default_border_width)
-			ev_filter_combo.set_tooltip (get_msg ("row_filter_combo_tooltip", Void))
-			ev_filter_combo.set_minimum_width (80)
-			ev_filter_combo.disable_edit
+			ev_row_frame.extend (ev_row_vbox)
+
+			create ev_row_filter_combo
+			ev_row_filter_combo.set_tooltip (get_msg ("row_filter_combo_tooltip", Void))
+			ev_row_filter_combo.set_minimum_width (80)
+			ev_row_filter_combo.disable_edit
+			ev_row_filter_combo.set_strings (path_control_filter_names)
+			ev_row_filter_combo[1].enable_select
+			ev_row_vbox.extend (ev_row_filter_combo)
+
+			create ev_col_frame
 			ev_col_frame.set_text (get_msg ("column_frame_text", Void))
 			ev_col_frame.set_minimum_height (50)
+			ev_vbox.extend (ev_col_frame)
+			ev_vbox.disable_item_expand (ev_col_frame)
+
+			create ev_col_vbox
 			ev_col_vbox.set_border_width (Default_border_width)
-			ev_column_check_list.set_tooltip (get_msg ("column_checklist_tooltip", Void))
-			ev_column_check_list.set_minimum_width (100)
-			ev_column_check_list.set_minimum_height (30)
+			ev_col_frame.extend (ev_col_vbox)
+
+			create ev_nat_lang_paths_cb
+			ev_nat_lang_paths_cb.set_text (get_msg ("nat_lang_checkbox_text", Void))
+			ev_nat_lang_paths_cb.set_tooltip (get_msg ("nat_lang_paths_tooltip", Void))
+			ev_nat_lang_paths_cb.set_minimum_width (100)
+			ev_nat_lang_paths_cb.set_minimum_height (30)
+			ev_col_vbox.extend (ev_nat_lang_paths_cb)
 
 			-- set events
-			ev_filter_combo.select_actions.extend (agent path_row_set_filter)
-			ev_column_check_list.check_actions.extend (agent on_check_item)
-			ev_column_check_list.uncheck_actions.extend (agent on_check_item)
+			ev_row_filter_combo.select_actions.extend (agent path_row_set_filter)
+			ev_nat_lang_paths_cb.select_actions.extend (agent repopulate)
 
 			-- set events: path map
 			ev_path_list.key_press_actions.extend (on_path_map_key_press_agent)
-
-			initialise_controls
 		end
 
 feature -- Access
 
 	ev_root_container: EV_HORIZONTAL_BOX
 
-	ev_column_check_list: EV_CHECKABLE_LIST
+	ev_nat_lang_paths_cb: EV_CHECK_BUTTON
 
 	selected_filter: STRING
 		do
-			Result := ev_filter_combo.selected_item.text.as_string_8
+			Result := ev_row_filter_combo.selected_item.text.as_string_8
 		end
 
 feature -- Status Report
@@ -141,11 +145,6 @@ feature -- Events
 			-- Called by `select_actions' of `path_filter_combo'.
 		do
 			set_filter
-		end
-
-	on_check_item (li: EV_LIST_ITEM)
-		do
-			repopulate
 		end
 
 feature -- Commands
@@ -183,7 +182,7 @@ feature {NONE} -- Implementation
 
 	ev_vbox, ev_row_vbox, ev_col_vbox: EV_VERTICAL_BOX
 
-	ev_filter_combo: EV_COMBO_BOX
+	ev_row_filter_combo: EV_COMBO_BOX
 
 	ev_row_frame, ev_col_frame: EV_FRAME
 
@@ -208,14 +207,14 @@ feature {NONE} -- Implementation
 			ev_path_list.set_column_title ("", path_control_column_names.count + 1)
 
 			create l_paths.make (0)
-			if ev_filter_combo.text.is_equal ("All") then
+			if ev_row_filter_combo.text.is_equal ("All") then
 				p_paths := source_archetype.physical_paths
-				if ev_column_check_list.is_item_checked (ev_column_check_list.first) then
+				if ev_nat_lang_paths_cb.is_selected then
 					l_paths := source_archetype.logical_paths (selected_language, False)
 				end
 			else
 				p_paths := source_archetype.physical_leaf_paths
-				if ev_column_check_list.is_item_checked (ev_column_check_list.first) then
+				if ev_nat_lang_paths_cb.is_selected then
 					l_paths := source_archetype.logical_paths (selected_language, True)
 				end
 			end
@@ -248,36 +247,6 @@ feature {NONE} -- Implementation
 				ev_path_list.resize_column_to_content (i)
 				i := i + 1
 			end
-		end
-
-	initialise_controls
-			-- Initialise widgets associated with the Path Analysis.
-		local
-			filter_combo_index: INTEGER
-		do
-			ev_path_list.enable_multiple_selection
-			ev_filter_combo.set_strings (path_control_filter_names)
-
-			if not ev_filter_combo.is_empty then
-				from
-					filter_combo_index := 1
-				until
-					filter_combo_index > path_control_filter_names.count or
-					path_control_filter_names [filter_combo_index].is_equal (path_filter_combo_selection)
-				loop
-					filter_combo_index := filter_combo_index + 1
-				end
-
-				if filter_combo_index > path_control_filter_names.count then -- non-existent string in session file
-					filter_combo_index := 1
-				end
-			else
-				filter_combo_index := 1
-			end
-
-			ev_filter_combo [filter_combo_index].enable_select
-
-			ev_column_check_list.set_strings (<<get_msg ("natural_language_checkbox_text", Void)>>)
 		end
 
 end

@@ -247,19 +247,6 @@ feature {NONE} -- Implementation
 			Result := path_map_control.selected_filter
 		end
 
-	path_map_selected_columns: attached ARRAYED_LIST [STRING]
-			-- currently selected path map columns, for saving across sessions
-		local
-			ev_items: DYNAMIC_LIST [EV_LIST_ITEM]
-		do
-			ev_items := path_map_control.ev_column_check_list.checked_items
-			create Result.make (0)
-			from ev_items.start until ev_items.off loop
-				Result.extend (ev_items.item.text.as_string_8)
-				ev_items.forth
-			end
-		end
-
 	set_differential_tab_texts
 			-- set text on tabs for differential form of archetype
 		do

@@ -20,18 +20,34 @@ inherit
 		end
 
 create
-	make
+	make, make_identified
 
 feature -- Initialisation
 
 	make (a_rm_type_name, a_path: attached STRING)
-			-- set reference model type name
+			-- make assuming target object id
 		require
 			a_rm_type_name_valid: not a_rm_type_name.is_empty
 			a_path_exists: not a_path.is_empty
 		do
 			default_create
 			create representation.make_anonymous (Current)
+			rm_type_name := a_rm_type_name
+			set_target_path (a_path)
+			use_target_occurrences := True
+		ensure
+			Use_target_occurrences: use_target_occurrences
+		end
+
+	make_identified (a_rm_type_name, an_object_id, a_path: attached STRING)
+			-- make with id
+		require
+			rm_type_name_valid: not a_rm_type_name.is_empty
+			object_id_valid: not an_object_id.is_empty
+			path_valid: not a_path.is_empty
+		do
+			default_create
+			create representation.make (an_object_id, Current)
 			rm_type_name := a_rm_type_name
 			set_target_path (a_path)
 			use_target_occurrences := True

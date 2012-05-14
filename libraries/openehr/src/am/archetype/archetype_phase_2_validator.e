@@ -125,8 +125,7 @@ feature {NONE} -- Implementation
 
 	validate_definition_codes
 			-- Check if all at- and ac-codes found in the definition node tree are in the ontology (including inherited items).
-			-- Leave `passed' True if all found node_ids are defined in term_definitions,
-			-- and term_definitions contains no extras.
+			-- Leave `passed' True if all found node_ids are defined in term_definitions, and term_definitions contains no extras.
 			-- For specialised archetypes, requires flat parent to be available
 		local
 			a_codes: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_CONSTRAINT], STRING]
@@ -210,7 +209,8 @@ feature {NONE} -- Implementation
 			create invalid_types.make(0)
 			invalid_types.compare_objects
 			create def_it.make (target.definition)
-			def_it.do_until_surface (agent structure_validate_node, agent structure_validate_test)
+			def_it.do_until_surface (agent structure_validate_node,
+				agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := True end)
 		end
 
 	structure_validate_node (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
@@ -221,12 +221,6 @@ feature {NONE} -- Implementation
 					add_error ("VDIFV", <<ca.path>>)
 				end
 			end
-		end
-
-	structure_validate_test (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
-			-- Return True
-		do
-			Result := True
 		end
 
 	validate_annotations
@@ -289,10 +283,18 @@ feature {NONE} -- Implementation
 			co_parent_flat: attached C_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
 			slot_id_index: DS_HASH_TABLE [ARRAYED_SET[STRING], STRING]
+			ca_path_in_flat: STRING
+			ca_parent_flat: C_ATTRIBUTE
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca_child_diff then
 				create apa.make_from_string (a_c_node.path)
-				if attached {C_ATTRIBUTE} flat_parent.definition.c_attribute_at_path (apa.path_at_level (flat_parent.specialisation_depth)) as ca_parent_flat then
+				ca_path_in_flat := apa.path_at_level (flat_parent.specialisation_depth)
+				if flat_parent.definition.has_attribute_path (ca_path_in_flat) then
+					ca_parent_flat := flat_parent.definition.c_attribute_at_path (ca_path_in_flat)
+				else -- must be due to an internal ref; look in full attr_path_map
+					ca_parent_flat := flat_parent.c_attr_at_path (ca_path_in_flat)
+				end
+				if attached ca_parent_flat then
 					if not ca_child_diff.node_conforms_to (ca_parent_flat, rm_schema) then
 						if ca_child_diff.is_single and not ca_parent_flat.is_single then
 							add_error ("VSAM1", <<ontology.physical_to_logical_path (ca_child_diff.path, target_descriptor.current_language, True)>>)

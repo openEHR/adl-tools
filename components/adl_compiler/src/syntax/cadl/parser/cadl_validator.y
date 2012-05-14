@@ -361,31 +361,52 @@ c_archetype_root: SYM_USE_ARCHETYPE type_identifier '[' V_ARCHETYPE_ID ']' c_occ
 		}
 	;
 
-archetype_internal_ref: SYM_USE_NODE type_identifier c_occurrences absolute_path 
+archetype_internal_ref: archetype_internal_ref_head c_occurrences absolute_path 
 		{
-			create $$.make($2, $4.as_string)
-			if $3 /= Void then
-				$$.set_occurrences($3)
+			if attached arch_internal_ref_node_id then
+				create $$.make_identified (arch_internal_ref_rm_type_name, arch_internal_ref_node_id, $3.as_string)
+			else
+				create $$.make (arch_internal_ref_rm_type_name, $3.as_string)
+			end
+			if attached $2 then
+				$$.set_occurrences ($2)
+			end
+			if (c_attrs.item.is_multiple or c_attrs.item.child_count > 1) and not $$.is_addressable and not $3.last.object_id.is_empty then
+				$$.set_node_id ($3.last.object_id)
 			end
 
 			debug("ADL_parse")
 				io.put_string(indent + "create ARCHETYPE_INTERNAL_REF ")
+				io.put_string ($$.rm_type_name) 
+				if $$.is_addressable then
+					io.put_string("[" + $$.node_id + "] ")
+				else
+					io.put_string(" ")
+				end
 				if $$.use_target_occurrences then
 					io.put_string("occurrences=(use target) ")
-				elseif $3 /= Void then
+				elseif $2 /= Void then
 					io.put_string("occurrences=" + $$.occurrences.as_string + " ")
 				end
-				io.put_string($$.rm_type_name + " path=" + $$.target_path + "%N") 
-				io.put_string(indent + "C_ATTR " + c_attrs.item.rm_attribute_name + " safe_put_c_attribute_child(ARCHETYPE_INTERNAL_REF)%N") 
-			end
-
-			if (c_attrs.item.is_multiple or c_attrs.item.child_count > 1) and not $$.is_addressable and not $4.last.object_id.is_empty then
-				$$.set_node_id($4.last.object_id)
+				io.put_string (" => " + $$.target_path + "%N") 
+				io.put_string (indent + "C_ATTR " + c_attrs.item.rm_attribute_name + " safe_put_c_attribute_child(ARCHETYPE_INTERNAL_REF)%N") 
 			end
 		}
 	| SYM_USE_NODE type_identifier error 
 		{
 			abort_with_error("SUNPA", Void)
+		}
+	;
+
+archetype_internal_ref_head: SYM_USE_NODE type_identifier
+		{
+			arch_internal_ref_rm_type_name := $2
+			arch_internal_ref_node_id := Void
+		}
+	| SYM_USE_NODE type_identifier V_LOCAL_TERM_CODE_REF
+		{
+			arch_internal_ref_rm_type_name := $2
+			arch_internal_ref_node_id := $3
 		}
 	;
 
@@ -2484,6 +2505,9 @@ feature {NONE} -- Implementation
 
 	term: CODE_PHRASE
 	a_uri: URI
+
+	arch_internal_ref_rm_type_name: STRING
+	arch_internal_ref_node_id: STRING
 
 	multiplicity_interval: MULTIPLICITY_INTERVAL
 	int_interval: INTERVAL [INTEGER]

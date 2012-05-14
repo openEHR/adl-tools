@@ -35,7 +35,7 @@ feature -- Visitor
 		do
 			if a_node.is_addressable and is_valid_code (a_node.node_id) then
 				if not archetype.id_atcodes_index.has (a_node.node_id) then
-					archetype.id_atcodes_index.put (create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.node_id)
+					archetype.id_atcodes_index.put (create {ARRAYED_LIST [C_OBJECT]}.make(0), a_node.node_id)
 				end
 				archetype.id_atcodes_index.item (a_node.node_id).extend (a_node)
 			end
@@ -66,10 +66,11 @@ feature -- Visitor
 	start_archetype_internal_ref (a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
 			-- enter an ARCHETYPE_INTERNAL_REF
 		do
+			start_c_object (a_node, depth)
 			if not archetype.use_node_index.has (a_node.target_path) then
 				archetype.use_node_index.put (create {ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]}.make(0), a_node.target_path)
 			end
-			archetype.use_node_index.item(a_node.target_path).extend (a_node)
+			archetype.use_node_index.item (a_node.target_path).extend (a_node)
 		end
 
 	start_constraint_ref (a_node: CONSTRAINT_REF; depth: INTEGER)

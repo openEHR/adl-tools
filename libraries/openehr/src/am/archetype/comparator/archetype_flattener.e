@@ -185,6 +185,12 @@ debug ("flatten")
 	" and replacing at " + int_refs.item.path + "%N")
 end
 								c_obj := arch_output_flat.c_object_at_path (arch_output_flat.use_node_index.key_for_iteration).safe_deep_twin
+								if int_refs.item.is_addressable then
+									c_obj.set_node_id (int_refs.item.node_id)
+								end
+								if attached int_refs.item.occurrences then
+									c_obj.set_occurrences (int_refs.item.occurrences.deep_twin)
+								end
 								int_refs.item.parent.replace_child_by_id (c_obj, int_refs.item.node_id)
 								clone_performed := True
 							end

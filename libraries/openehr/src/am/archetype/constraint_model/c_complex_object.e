@@ -46,7 +46,7 @@ feature -- Initialisation
 			Object_id_valid: not an_object_id.is_empty
 		do
 			default_create
-			create representation.make(an_object_id, Current)
+			create representation.make (an_object_id, Current)
 			rm_type_name := a_rm_type_name
 		end
 
@@ -106,7 +106,7 @@ feature -- Access
 			Result ?= representation.object_node_at_path (create {OG_PATH}.make_from_string(a_path)).content_item
 		end
 
-	all_paths_at_path (a_path: attached STRING): attached HASH_TABLE[C_OBJECT, STRING]
+	all_paths_at_path (a_path: attached STRING): attached HASH_TABLE [C_OBJECT, STRING]
 			-- all paths starting at node found at a_path, including itself
 		require
 			Path_valid: has_path(a_path)

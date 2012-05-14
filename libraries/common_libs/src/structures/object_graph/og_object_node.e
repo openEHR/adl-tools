@@ -179,14 +179,12 @@ feature {OG_OBJECT_NODE} -- Implementation
 			-- find the child at the path `a_path'
 		local
 			child_obj: OG_OBJECT
-			child_obj_node: OG_OBJECT_NODE
 		do
 			if has_object_at_path_segment(a_path.item) then
 				child_obj := object_at_path_segment(a_path.item)  -- if no predicate in segment, only gets first item
 				a_path.forth
 				if not a_path.off then
-					child_obj_node ?= child_obj
-					if child_obj_node /= Void then
+					if attached {OG_OBJECT_NODE} child_obj as child_obj_node then
 						Result := child_obj_node.internal_object_node_at_path(a_path)
 					end
 				else
@@ -198,15 +196,17 @@ feature {OG_OBJECT_NODE} -- Implementation
 	internal_attribute_node_at_path(a_path: OG_PATH): OG_ATTRIBUTE_NODE
 			-- find the child at the path `a_path'
 		local
-			child_obj_node: OG_OBJECT_NODE
+			child_obj: OG_OBJECT
 		do
 			if has_object_at_path_segment(a_path.item) then
-				child_obj_node ?= object_at_path_segment(a_path.item)
+				child_obj := object_at_path_segment(a_path.item)
 				a_path.forth
 				if not a_path.off then
-					Result := child_obj_node.internal_attribute_node_at_path(a_path)   -- if no predicate in segment, only gets first item
+					if attached {OG_OBJECT_NODE} child_obj as child_obj_node then
+						Result := child_obj_node.internal_attribute_node_at_path(a_path)   -- if no predicate in segment, only gets first item
+					end
 				else
-					Result := child_with_id(a_path.last.attr_name)
+					Result := child_with_id (a_path.last.attr_name)
 				end
 			elseif a_path.is_last then
 				Result := child_with_id(a_path.last.attr_name)

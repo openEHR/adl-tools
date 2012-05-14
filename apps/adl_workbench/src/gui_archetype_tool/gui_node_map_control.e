@@ -54,89 +54,84 @@ feature -- Initialisation
 			ev_root_container.set_data (Current)
 
 			create ev_tree
-			create ev_view_controls_vbox
-			create ev_view_label
-
-			create ev_collapse_expand_hbox
-			create ev_expand_button
-			create ev_collapse_button
-			create ev_expand_one_button
-			create ev_collapse_one_button
-
-			create ev_view_detail_frame
-			create ev_view_detail_vbox
-			create ev_view_detail_low_rb
-			create ev_view_detail_high_rb
-
-			create ev_view_rm_frame
-			create ev_view_rm_vbox
-			create ev_view_rm_attrs_on_cb
-			create ev_view_rm_use_icons_cb
-
-			-- connect them together
 			ev_root_container.extend (ev_tree)
-			ev_root_container.extend (ev_view_controls_vbox)
-
-			ev_view_controls_vbox.extend (ev_view_label)
-			ev_view_controls_vbox.extend (ev_collapse_expand_hbox)
-			ev_collapse_expand_hbox.extend (ev_collapse_button)
-			ev_collapse_expand_hbox.extend (ev_collapse_one_button)
-			ev_collapse_expand_hbox.extend (ev_expand_one_button)
-			ev_collapse_expand_hbox.extend (ev_expand_button)
-
-			ev_view_controls_vbox.extend (ev_view_detail_frame)
-			ev_view_detail_frame.extend (ev_view_detail_vbox)
-			ev_view_detail_vbox.extend (ev_view_detail_low_rb)
-			ev_view_detail_vbox.extend (ev_view_detail_high_rb)
-
-			ev_view_controls_vbox.extend (ev_view_rm_frame)
-			ev_view_rm_frame.extend (ev_view_rm_vbox)
-			ev_view_rm_vbox.extend (ev_view_rm_attrs_on_cb)
-			ev_view_rm_vbox.extend (ev_view_rm_use_icons_cb)
-
-			-- set visual characteristics
-			ev_root_container.disable_item_expand (ev_view_controls_vbox)
 			ev_tree.set_background_color (editable_colour)
 
-			-- right hand side tree expand/collapse controls
+			create ev_view_controls_vbox
+			ev_root_container.extend (ev_view_controls_vbox)
+			ev_root_container.disable_item_expand (ev_view_controls_vbox)
 			ev_view_controls_vbox.set_minimum_width (115)
 			ev_view_controls_vbox.set_minimum_height (170)
 			ev_view_controls_vbox.set_padding (Default_padding_width)
 			ev_view_controls_vbox.set_border_width (Default_border_width)
-			ev_view_controls_vbox.disable_item_expand (ev_view_label)
-			ev_view_controls_vbox.disable_item_expand (ev_collapse_expand_hbox)
-			ev_view_controls_vbox.disable_item_expand (ev_view_detail_frame)
-			ev_view_controls_vbox.disable_item_expand (ev_view_rm_frame)
 
+			create ev_view_label
 			ev_view_label.set_text (get_msg ("view_label_text", Void))
 			ev_view_label.align_text_left
+			ev_view_controls_vbox.extend (ev_view_label)
+			ev_view_controls_vbox.disable_item_expand (ev_view_label)
+
+			create ev_collapse_expand_hbox
+			ev_view_controls_vbox.extend (ev_collapse_expand_hbox)
+			create ev_collapse_button
 			ev_collapse_button.set_text ("0")
 			ev_collapse_button.set_tooltip (get_msg ("collapse_complete_tooltip", Void))
-			ev_expand_button.set_text ("*")
-			ev_expand_button.set_tooltip (get_msg ("expand_complete_tooltip", Void))
-			ev_expand_one_button.set_text ("+")
-			ev_expand_one_button.set_tooltip (get_msg ("expand_one_level_tooltip", Void))
+			ev_collapse_expand_hbox.extend (ev_collapse_button)
+			create ev_collapse_one_button
+			ev_collapse_expand_hbox.extend (ev_collapse_one_button)
 			ev_collapse_one_button.set_text ("-")
 			ev_collapse_one_button.set_tooltip (get_msg ("collapse_one_level_tooltip", Void))
+			create ev_expand_one_button
+			ev_expand_one_button.set_text ("+")
+			ev_expand_one_button.set_tooltip (get_msg ("expand_one_level_tooltip", Void))
+			ev_collapse_expand_hbox.extend (ev_expand_one_button)
+			create ev_expand_button
+			ev_collapse_expand_hbox.extend (ev_expand_button)
+			ev_view_controls_vbox.disable_item_expand (ev_collapse_expand_hbox)
+			ev_expand_button.set_text ("*")
+			ev_expand_button.set_tooltip (get_msg ("expand_complete_tooltip", Void))
 
-			-- right hand side visibility controls
+			create ev_view_detail_frame
 			ev_view_detail_frame.set_text (get_msg ("view_detail_controls_text", Void))
 			ev_view_detail_frame.set_minimum_width (100)
 			ev_view_detail_frame.set_minimum_height (85)
+			ev_view_controls_vbox.extend (ev_view_detail_frame)
+			ev_view_controls_vbox.disable_item_expand (ev_view_detail_frame)
+
+			create ev_view_detail_vbox
 			ev_view_detail_vbox.set_border_width (Default_border_width)
+			ev_view_detail_frame.extend (ev_view_detail_vbox)
+
+			create ev_view_detail_low_rb
 			ev_view_detail_low_rb.set_text (get_msg ("domain_detail_button_text", Void))
 			ev_view_detail_low_rb.set_tooltip (get_msg ("domain_detail_button_tooltip", Void))
+			ev_view_detail_vbox.extend (ev_view_detail_low_rb)
+
+			create ev_view_detail_high_rb
 			ev_view_detail_high_rb.set_text (get_msg ("technical_detail_button_text", Void))
 			ev_view_detail_high_rb.set_tooltip (get_msg ("technical_detail_button_tooltip", Void))
+			ev_view_detail_vbox.extend (ev_view_detail_high_rb)
 
+			create ev_view_rm_frame
 			ev_view_rm_frame.set_text (get_msg ("view_rm_controls_text", Void))
 			ev_view_rm_frame.set_minimum_width (100)
 			ev_view_rm_frame.set_minimum_height (85)
+			ev_view_controls_vbox.extend (ev_view_rm_frame)
+			ev_view_controls_vbox.disable_item_expand (ev_view_rm_frame)
+
+			create ev_view_rm_vbox
 			ev_view_rm_vbox.set_border_width (Default_border_width)
+			ev_view_rm_frame.extend (ev_view_rm_vbox)
+
+			create ev_view_rm_attrs_on_cb
 			ev_view_rm_attrs_on_cb.set_text (get_msg ("show_rm_properties_button_text", Void))
 			ev_view_rm_attrs_on_cb.set_tooltip (get_msg ("show_rm_properties_tooltip", Void))
+			ev_view_rm_vbox.extend (ev_view_rm_attrs_on_cb)
+
+			create ev_view_rm_use_icons_cb
 			ev_view_rm_use_icons_cb.set_text (get_msg ("use_rm_icons_button_text", Void))
 			ev_view_rm_use_icons_cb.set_tooltip (get_msg ("use_rm_icons_button_tooltip", Void))
+			ev_view_rm_vbox.extend (ev_view_rm_use_icons_cb)
 
 			in_reference_model_mode := show_reference_model_view
 			if in_reference_model_mode then

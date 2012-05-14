@@ -274,18 +274,6 @@ feature -- Application Switches
 			app_cfg.put_value ("/gui/display_archetype_source", flag)
 		end
 
-	path_filter_combo_selection: STRING
-			-- setting of path control filter combo-box
-		do
-			Result := app_cfg.string_value ("/gui/path_filter_combo_selection")
-		end
-
-	set_path_filter_combo_selection(str: STRING)
-			--
-		do
-			app_cfg.put_value("/gui/path_filter_combo_selection", str)
-		end
-
 	use_rm_pixmaps: BOOLEAN
 			-- if True, substitute RM pixmaps, if any found, below icon directory, during
 			-- archetype definition visualisation
