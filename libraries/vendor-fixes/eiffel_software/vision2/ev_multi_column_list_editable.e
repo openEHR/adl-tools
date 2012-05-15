@@ -285,6 +285,7 @@ feature {NONE} -- Actions
 			-- Action to be performed when row editing has been finished
 		do
 			end_edit_actions.call (Void)
+			resize_column_to_content (widget_column)
 		end
 
 	on_change_widget_deselected
@@ -292,7 +293,6 @@ feature {NONE} -- Actions
 		do
 			create hide_timer.make_with_interval (25)
 			hide_timer.actions.extend (agent hide_window_on_timer)
-			--internal_dialog.hide
 		end
 
 	hide_window_on_timer

@@ -272,15 +272,9 @@ feature -- Visitor
 		do
 			-- node text
 			create gui_node_text.make_empty
-			if in_technical_mode then
-				gui_node_text.append ("use " + a_node.rm_type_name)
-				if a_node.is_addressable then
-					gui_node_text.append ("[" + a_node.node_id + "]")
-				end
-				if not a_node.use_target_occurrences and attached a_node.occurrences then
-					gui_node_text.append (" {" + a_node.occurrences_as_string + "}")
-				end
-			end
+			gui_node_text.append ("use ")
+			gui_node_text.append (c_object_string (a_node))
+			gui_node_text.append ("--> ")
 			gui_node_text.append (ontology.physical_to_logical_path (a_node.target_path, language, True))
 
 			-- do the work

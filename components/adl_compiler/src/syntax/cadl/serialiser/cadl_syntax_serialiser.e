@@ -53,7 +53,7 @@ feature -- Visitor
 	start_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- start serialising an C_COMPLEX_OBJECT
 		do
-			serialise_sibling_order(a_node, depth)
+			serialise_sibling_order (a_node, depth)
 			last_result.append (create_indent (depth))
 			serialise_type_node_id (a_node, depth)
 
@@ -113,6 +113,7 @@ feature -- Visitor
 			serialise_sibling_order(a_node, depth)
 			last_result.append (create_indent (depth))
 			last_result.append (apply_style(symbol(SYM_ALLOW_ARCHETYPE), STYLE_KEYWORD) + format_item(FMT_SPACE))
+
 			serialise_type_node_id (a_node, depth)
 			serialise_occurrences(a_node, depth)
 
@@ -242,14 +243,14 @@ feature -- Visitor
 	start_archetype_internal_ref (a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
 			-- start serialising an ARCHETYPE_INTERNAL_REF
 		do
-			last_result.append (create_indent(depth) + apply_style(symbol(SYM_USE_NODE), STYLE_KEYWORD) + format_item(FMT_SPACE))
-			last_result.append (a_node.rm_type_name + format_item(FMT_SPACE))
+			last_result.append (create_indent(depth) + apply_style (symbol (SYM_USE_NODE), STYLE_KEYWORD) + format_item(FMT_SPACE))
+			serialise_type_node_id (a_node, depth)
 			if not a_node.use_target_occurrences then
-				serialise_occurrences(a_node, depth)
+				serialise_occurrences (a_node, depth)
 			end
 			last_result.append (a_node.target_path)
 			last_result.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-						safe_comment(ontology.physical_to_logical_path (a_node.target_path, language, False) ), STYLE_COMMENT))
+						safe_comment (ontology.physical_to_logical_path (a_node.target_path, language, False)), STYLE_COMMENT))
 			last_result.append (format_item(FMT_NEWLINE))
 		end
 
@@ -312,14 +313,14 @@ feature -- Visitor
 	start_constraint_ref (a_node: CONSTRAINT_REF; depth: INTEGER)
 			-- start serialising a CONSTRAINT_REF
 		do
-			last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	
-			last_result.append (apply_style(a_node.as_string, STYLE_TERM_REF))
+			last_result.remove_tail (format_item (FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	
+			last_result.append (apply_style (a_node.as_string, STYLE_TERM_REF))
 			create last_object_simple_buffer.make(0)
-			last_object_simple_buffer.append (format_item(FMT_INDENT))
+			last_object_simple_buffer.append (format_item (FMT_INDENT))
 
 			-- add the comment
-			last_object_simple_buffer.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-					safe_comment(ontology.constraint_definition(language, a_node.target).text), STYLE_COMMENT))
+			last_object_simple_buffer.append (format_item (FMT_INDENT) + apply_style (format_item (FMT_COMMENT) +
+					safe_comment (ontology.constraint_definition (language, a_node.target).text), STYLE_COMMENT))
 			last_object_simple := True
 		end
 
@@ -329,7 +330,7 @@ feature -- Visitor
 			s: STRING
 		do
 			last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE
-			if attached {C_STRING} a_node.item as c_str and then c_str.strings /= Void then
+			if attached {C_STRING} a_node.item as c_str and then attached c_str.strings then
 				s := c_str.clean_as_string(agent clean)
 			else
 				s := a_node.as_string
