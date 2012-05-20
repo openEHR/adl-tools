@@ -109,19 +109,6 @@ feature -- Access
 
 	cardinality: detachable CARDINALITY
 
-	multiplicity_key_string: STRING
-			-- generate a string of the form ".multiple", ".multiple.optional", ".optional" or ""
-			-- based on existence and cardinality; useful for key to variant pixmaps etc
-		do
-			create Result.make_empty
-			if is_multiple then
-				Result.append (".multiple")
-			end
-			if attached existence and then existence.is_optional then
-				Result.append (".optional")
-			end
-		end
-
 	path: STRING
 			-- take account of differential path if it exists
 		do

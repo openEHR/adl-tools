@@ -54,6 +54,9 @@ feature -- Access
 		do
 			create Result.make_empty
 			Result.append ("c_attribute")
+			if is_computed then
+				Result.append ("_computed")
+			end
 			if is_container then
 				Result.append (".multiple")
 			end

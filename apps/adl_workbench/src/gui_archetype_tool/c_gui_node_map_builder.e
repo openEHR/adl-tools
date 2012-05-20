@@ -44,6 +44,14 @@ inherit
 		end
 
 	SHARED_KNOWLEDGE_REPOSITORY
+		export
+			{NONE} all
+		end
+
+	SHARED_REFERENCE_MODEL_ACCESS
+		export
+			{NONE} all
+		end
 
 	SPECIALISATION_STATUSES
 		export
@@ -57,13 +65,14 @@ inherit
 
 feature -- Initialisation
 
-	initialise (an_archetype: attached ARCHETYPE; a_lang: attached STRING; a_gui_tree: EV_TREE;
+	initialise (a_rm_schema: BMM_SCHEMA; an_archetype: attached ARCHETYPE; a_lang: attached STRING; a_gui_tree: EV_TREE;
 				technical_mode_flag, update_flag: BOOLEAN;
 				a_gui_node_map: HASH_TABLE [EV_TREE_ITEM, ARCHETYPE_CONSTRAINT];
 				a_code_select_agent: attached PROCEDURE [ANY, TUPLE [STRING]])
 			-- set ontology required for serialising cADL, and perform basic initialisation
 		do
 			initialise_visitor (an_archetype)
+			rm_schema := a_rm_schema
 			create ontologies.make(0)
 			ontologies.extend (archetype.ontology)
 			gui_tree := a_gui_tree
@@ -602,6 +611,8 @@ feature {NONE} -- Implementation
 			-- nodes have child GUI nodes; the visitor takes care of the details)
 			-- reference copied from GUI_NODE_MAP_CONTROL
 
+	rm_schema: BMM_SCHEMA
+
 	in_technical_mode: BOOLEAN
 
 	rm_publisher: STRING
@@ -799,7 +810,7 @@ feature {NONE} -- Implementation
 		local
 			pixmap_name: STRING
 		do
-			pixmap_name := "c_attribute" + a_node.multiplicity_key_string
+			pixmap_name := rm_schema.property_definition (a_node.parent.rm_type_name, a_node.rm_attribute_name).multiplicity_key_string
 
 			-- if using RM pixmaps, nothing changes; if not, inheritance status is shown
 			if use_rm_pixmaps then

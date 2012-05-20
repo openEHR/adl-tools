@@ -196,7 +196,7 @@ feature -- Commands
 		do
 			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
 			create c_node_map_builder
-			c_node_map_builder.initialise (source_archetype, selected_language, ev_tree, in_technical_mode, True, gui_node_map, code_select_action_agent)
+			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, ev_tree, in_technical_mode, True, gui_node_map, code_select_action_agent)
 			create a_c_iterator.make (source_archetype.definition, c_node_map_builder)
 			a_c_iterator.do_all
 
@@ -370,13 +370,13 @@ feature {NONE} -- Implementation
 			c_node_map_builder: C_GUI_NODE_MAP_BUILDER
 		do
 			create tree_item_stack.make (0)
-			create gui_node_map.make(0)
+			create gui_node_map.make (0)
 
 			rm_schema := source.rm_schema
 
 			-- populate from definition
 			create c_node_map_builder
-			c_node_map_builder.initialise (source_archetype, selected_language, ev_tree, in_technical_mode, False, gui_node_map, code_select_action_agent)
+			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, ev_tree, in_technical_mode, False, gui_node_map, code_select_action_agent)
 			create a_c_iterator.make (source_archetype.definition, c_node_map_builder)
 			a_c_iterator.do_all
 
@@ -417,7 +417,7 @@ feature {NONE} -- Implementation
 						if not c_c_o.has_attribute (props.key_for_iteration) then
 							create attr_ti.make_with_text (utf8_to_utf32 (props.key_for_iteration + ": " + props.item_for_iteration.type.as_type_string))
 							attr_ti.set_data (props.item_for_iteration)
-							attr_ti.set_pixmap (get_icon_pixmap ("rm/generic/" + rm_attribute_pixmap_string (props.item_for_iteration)))
+							attr_ti.set_pixmap (get_icon_pixmap ("rm/generic/" + props.item_for_iteration.multiplicity_key_string))
 							a_tree_node.extend (attr_ti)
 						end
 						props.forth
@@ -510,19 +510,6 @@ feature {NONE} -- Implementation
 
 	node_list: ARRAYED_LIST [EV_TREE_NODE]
 
-	rm_attribute_pixmap_string (rm_attr: attached BMM_PROPERTY_DEFINITION): attached STRING
-			-- string name of pixmap for attribute rm_attr
-		do
-			create Result.make_empty
-			Result.append ("c_attribute")
-			if rm_attr.is_container then
-				Result.append (".multiple")
-			end
-			if not rm_attr.is_mandatory then
-				Result.append (".optional")
-			end
-		end
-
 	object_invariant_string (an_inv: attached ASSERTION): attached STRING
 			-- generate string form of node or object for use in tree node
 		do
@@ -565,7 +552,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	ev_tree_do_all(node_enter_action, node_exit_action: attached PROCEDURE[ANY, TUPLE [EV_TREE_NODE]])
+	ev_tree_do_all (node_enter_action, node_exit_action: attached PROCEDURE[ANY, TUPLE [EV_TREE_NODE]])
 			-- do enter_action and exit_action to all nodes in the structure
 		do
 			from ev_tree.start until ev_tree.off loop
@@ -574,7 +561,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	ev_tree_do_all_nodes(a_target: attached EV_TREE_NODE; node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE [EV_TREE_NODE]])
+	ev_tree_do_all_nodes (a_target: attached EV_TREE_NODE; node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE [EV_TREE_NODE]])
 		do
 			node_enter_action.call ([a_target])
 			from a_target.start until a_target.off loop
