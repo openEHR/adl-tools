@@ -16,6 +16,9 @@ class SHARED_RESOURCES
 
 inherit
 	KL_SHARED_FILE_SYSTEM
+		export
+			{NONE} all
+		end
 
 	ERROR_SEVERITY_TYPES
 		export

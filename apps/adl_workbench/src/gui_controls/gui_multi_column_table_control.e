@@ -32,7 +32,7 @@ inherit
 		rename
 			make as make_mlist, make_editable as make_editable_mlist
 		redefine
-			data_source, data_source_create_agent, data_source_remove_agent, set_columns_editable
+			data_source_agent, data_source_setter_agent, data_source_remove_agent, set_columns_editable
 		end
 
 create
@@ -40,17 +40,17 @@ create
 
 feature -- Initialisation
 
-	make (a_data_source: like data_source;
+	make (a_data_source_agent: like data_source_agent;
 			min_height, min_width: INTEGER;
 			a_header_strings_agent: like header_strings_agent;
 			a_data_row_agt: like data_row_agt)
 		do
-			make_mlist ("", a_data_source, min_height, min_width, False, a_header_strings_agent)
+			make_mlist ("", a_data_source_agent, min_height, min_width, False, a_header_strings_agent)
 			data_row_agt := a_data_row_agt
 		end
 
-	make_editable (a_data_source: like data_source;
-			a_data_source_create_agent: like data_source_create_agent;
+	make_editable (a_data_source_agent: like data_source_agent;
+			a_data_source_create_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
 			a_data_source_modify_agent: like data_source_modify_agent;
 			an_undo_redo_chain: UNDO_REDO_CHAIN;
@@ -59,7 +59,7 @@ feature -- Initialisation
 			a_data_row_agt: like data_row_agt)
 		do
 			make_editable_mlist ("",
-				a_data_source, a_data_source_create_agent, a_data_source_remove_agent, an_undo_redo_chain,
+				a_data_source_agent, a_data_source_create_agent, a_data_source_remove_agent, an_undo_redo_chain,
 				min_height, min_width, False, a_header_strings_agent)
 			data_source_modify_agent := a_data_source_modify_agent
 			data_row_agt := a_data_row_agt
@@ -67,10 +67,10 @@ feature -- Initialisation
 
 feature -- Access
 
-	data_source: FUNCTION [ANY, TUPLE, LIST [STRING]]
+	data_source_agent: FUNCTION [ANY, TUPLE, LIST [STRING]]
 			-- first column keys
 
-	data_source_create_agent: detachable PROCEDURE [ANY, TUPLE [STRING, STRING]]
+	data_source_setter_agent: detachable PROCEDURE [ANY, TUPLE [STRING, STRING]]
 			-- agent for creating & setting the data source
 
 	data_source_remove_agent: detachable PROCEDURE [ANY, TUPLE [key: STRING]]
@@ -88,7 +88,7 @@ feature {NONE} -- Implementation
 
 	do_populate_control_from_source
 		do
-			populate_table (data_source.item([]))
+			populate_table (data_source_agent.item([]))
 		end
 
 	populate_table (key_list: LIST [STRING])

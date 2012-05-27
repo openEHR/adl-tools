@@ -29,7 +29,7 @@ note
 deferred class GUI_EV_MLIST_CONTROL
 
 inherit
-	GUI_DATA_CONTROL
+	GUI_TITLED_DATA_CONTROL
 		rename
 			make as make_data_control, make_editable as make_editable_data_control
 		redefine
@@ -38,12 +38,12 @@ inherit
 
 feature -- Initialisation
 
-	make (a_title: STRING; a_data_source: like data_source;
+	make (a_title: STRING; a_data_source_agent: like data_source_agent;
 			min_height, min_width: INTEGER;
 			use_hbox_container: BOOLEAN;
 			a_header_strings_agent: like header_strings_agent)
 		do
-			make_data_control (a_title, a_data_source, min_height, min_width, use_hbox_container, True)
+			make_data_control (a_title, a_data_source_agent, min_height, min_width, use_hbox_container, True)
 			if attached a_header_strings_agent then
 				header_strings_agent := a_header_strings_agent
 			else
@@ -51,8 +51,8 @@ feature -- Initialisation
 			end
 		end
 
-	make_editable (a_title: STRING; a_data_source: like data_source;
-			a_data_source_create_agent: like data_source_create_agent;
+	make_editable (a_title: STRING; a_data_source_agent: like data_source_agent;
+			a_data_source_create_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
 			an_undo_redo_chain: UNDO_REDO_CHAIN;
 			min_height, min_width: INTEGER;
@@ -60,7 +60,7 @@ feature -- Initialisation
 			a_header_strings_agent: like header_strings_agent)
 		do
 			make_editable_data_control (a_title,
-				a_data_source, a_data_source_create_agent, a_data_source_remove_agent, an_undo_redo_chain,
+				a_data_source_agent, a_data_source_create_agent, a_data_source_remove_agent, an_undo_redo_chain,
 				min_height, min_width, use_hbox_container, True)
 			if attached a_header_strings_agent then
 				header_strings_agent := a_header_strings_agent

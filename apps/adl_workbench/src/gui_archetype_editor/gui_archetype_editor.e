@@ -44,7 +44,7 @@ feature {NONE}-- Initialization
 			precursor
 
 			-- create subordinate widgets
-			create description_controls.make (agent text_widget_handler.on_select_all, agent update_undo_redo_controls)
+			create description_controls.make (agent update_undo_redo_controls)
 			create node_map_control.make (agent select_ontology_item_from_code) -- , agent update_undo_redo_controls)
 			create ontology_controls.make (agent update_undo_redo_controls)
 			create serialisation_control.make -- (agent update_undo_redo_controls)

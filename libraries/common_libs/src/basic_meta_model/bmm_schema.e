@@ -127,9 +127,9 @@ feature -- Access
 			class_def: BMM_CLASS_DEFINITION
 		do
 			class_def := class_definition (type_to_class (a_type_name))
-			create an_og_path.make_pure_from_string(a_property_path)
+			create an_og_path.make_pure_from_string (a_property_path)
 			an_og_path.start
-			Result := class_def.property_definition_at_path(an_og_path)
+			Result := class_def.property_definition_at_path (an_og_path)
 		end
 
 	all_ancestor_classes_of (a_class_name: attached STRING): attached ARRAYED_LIST [STRING]

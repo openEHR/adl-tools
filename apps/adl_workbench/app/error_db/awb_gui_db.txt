@@ -15,6 +15,11 @@
 
 templates = <
 	["en"] = <
+		-- standard button texts
+		["browse_button_text"] = <"Browse...">
+		["ok_button_text"] = <"OK">
+		["cancel_button_text"] = <"Cancel">
+
 		-- context (right-click) menus, common items
 		["display_in_active_tab"] = <"Display">
 		["retarget_to_this_class"] = <"Retarget to this class">
@@ -40,8 +45,45 @@ templates = <
 		["duplicate_profile"] = <"New profile name $1 already used">
 		["empty_profile"] = <"Profile name must not be empty">
 
+		-- PROFILE_EDIT_DIALOG
+		["profile_edit_dialog_title"] =  <"Edit Repository Profile">
+		["profile_name_text"] =  <"Profile Name:">
+		["ref_repo_dir_text"] =  <"Reference Repository Directory:">
+		["work_repo_dir_text"] = <"     Work Repository Directory:">
+
+		-- OPTION_DIALOG
+		["option_dialog_title"] = <"ADL Workbench Options">
+		["export_directory_text"] = <"Export directory:">
+		["test_diff_files_directory_text"] = <"Save test diff files to:">
+		["text_editor_directory_text"] = <"Text Editor:">
+		["adl_editor_directory_text"] = <"ADL Editor:">
+		["diff_tool_directory_text"] = <"Diff Tool:">
+		["path_settings_frame_text"] = <"Directory Paths">
+		["compiler_settings_frame_text"] = <"Compiler Settings">
+		["tool_paths_frame_text"] = <"External Tool Paths">
+		["ui_settings_frame_text"] = <"User Interface Settings">
+		["adl_serialisation_level_text"] = <"ADL version for serialisation:">
+		["adl_serialisation_level_tooltip"] = <"Which version of the ADL syntax to use when saving archetypes.">
+		["error_reporting_level_text"] = <"Error Reporting Level:">
+		["error_reporting_level_tooltip"] = <"Select the level of parser messages to display. All levels >= this level displayed.">
+		["rm_flattening_text"] = <"RM flattening on">
+		["rm_flattening_tooltip"] = <"Include RM attribute existence and cardinality in flattened archetypes.">
+		["validation_strict_text"] = <"Validation Strict">
+		["validation_strict_tooltip"] = <"With 'strict' on, identical constraints in child archetypes are treated as errors.">
+		["show_definition_tree_expanded_text"] = <"Show definition tree expanded">
+		["show_definition_tree_expanded_tooltip"] = <"Show archetype definition tree fully expanded by default when viewing a new archetype">
+		["show_line_numbers"] = <"Show line numbers in ADL source">
+		["show_source_form_text"] = <"Show original creation form">
+		["show_source_form_tooltip"] = <"Indicate original format  - ADL 1.4 legacy flat, ADL 1.5, etc">
+		["show_all_classes_text"] = <"Show all classes in explorer">
+		["show_all_classes_tooltip"] = <"Show all archetypable classes in RM even if there are no archetypes based on them in the current repository.">
+		["use_rm_icons_text"] = <"Use RM icons">
+		["use_rm_icons_tooltip"] = <"Use RM-specific icons in visualisation of archetype definition?">
+
 		-- RM_SCHEMA_DIALOG
+		["rm_schema_dialog_header_label"] = <"Reference Model schemas loaded shown below.%NCheck or uncheck to load as required.">
 		["rm_schema_dir_not_found"] = <"Directory $1 not found; please specify a valid directory">
+		["rm_schema_dir_text"] = <"RM schema directory:">
 
 		-- MAIN_WINDOW - menus
 		["file_menu_text"] = <"&File">
@@ -133,7 +175,6 @@ templates = <
 		["write_docking_file_failed"] = <"Write to docking config file $1 failed">
 		["copy_docking_file"] = <"Copying user docking config file $1 to default location $2">
 		["no_docking_file_found"] = <"No docking format file fund at user location $1 or default location $2">
-		["cancel_button_text"] = <"Cancel">
 		["config_warning_text"] = <"Configuration warning">
 		["xml_14_not_available_message"] = <"XML based on ADL 1.4 available in next release">
 

@@ -315,10 +315,12 @@ feature -- Status Report
 		require
 			Type_name_valid: not a_type_name.is_empty
 		do
-			from children.start until children.off or children.item.rm_type_name.is_equal (a_type_name) loop
-				children.forth
-			end
-			Result := not children.off
+			Result := children.there_exists (
+				agent (a_child: C_OBJECT; a_rm_type: STRING): BOOLEAN
+					do
+						Result := a_child.rm_type_name.is_equal (a_rm_type)
+					end (?, a_type_name)
+			)
 		end
 
 	has_child (a_node: attached C_OBJECT): BOOLEAN
@@ -327,13 +329,19 @@ feature -- Status Report
 			Result := children.has (a_node)
 		end
 
+	has_non_identified_alternatives: BOOLEAN
+			-- return True if there are multiple alternative children (for a single-valued attribute)
+			-- with no identifiers
+		do
+			if is_single and child_count > 1 then
+				Result := children.for_all (agent (a_child: C_OBJECT): BOOLEAN do Result := not a_child.is_addressable end)
+			end
+		end
+
 	all_children_have_occurrences: BOOLEAN
 			-- True if all immediate child nodes have occurrences set
 		do
-			from children.start until children.off or children.item.occurrences = Void loop
-				children.forth
-			end
-			Result := children.off
+			Result := children.for_all (agent (a_child: C_OBJECT): BOOLEAN do Result := attached a_child.occurrences end)
 		end
 
 feature -- Comparison
@@ -383,14 +391,14 @@ feature -- Modification
 		do
 			cardinality := Void
 		ensure
-			cardinality = Void
+			not attached cardinality
 		end
 
 	remove_existence
 		do
 			existence := Void
 		ensure
-			existence = Void
+			not attached existence
 		end
 
 	set_differential_path (a_path: attached STRING)
@@ -519,6 +527,12 @@ feature -- Modification
 			children.prune_all(an_obj)
 		end
 
+	remove_all_children
+		do
+			children.wipe_out
+			representation.remove_all_children
+		end
+
 	replace_node_id (old_id, new_id: attached STRING)
 			-- replace old_id with new_id in relevant child node, and also in attribute parent list
 		require
@@ -541,6 +555,18 @@ feature -- Modification
 				representation.replace_node_id (a_flat_obj.node_id, diff_obj.node_id)
 			end
 			a_flat_obj.overlay_differential (diff_obj, an_rm_schema)
+		end
+
+	convert_to_ghost
+			-- Remove all children and cardinality - represents a removed node within a flat archetype.
+			-- In an editing context, this enables diff form to be regenerated for saving
+		do
+			remove_all_children
+			remove_cardinality
+			set_specialisation_status_redefined
+		ensure
+			Marked_as_redefined: specialisation_status = {SPECIALISATION_STATUSES}.ss_redefined
+			Cardinality_removed: not attached cardinality
 		end
 
 feature -- Validation

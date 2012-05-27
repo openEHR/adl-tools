@@ -214,6 +214,13 @@ feature -- Application Switches
 			app_cfg.put_value("/gui/expand_node_tree", flag)
 		end
 
+	allow_archetype_editing: BOOLEAN
+			-- turn editing on; TEMPORARY flag to stop most users seeing editing function
+			-- until its ready. Turned on by manual addition to .cfg file
+		do
+			Result := app_cfg.boolean_value ("/gui/allow_archetype_editing")
+		end
+
 	show_technical_view: BOOLEAN
 			-- Display the technical view in the archetype definition node tree by default?
 		do

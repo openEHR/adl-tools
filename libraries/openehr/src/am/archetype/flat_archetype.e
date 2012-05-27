@@ -103,30 +103,57 @@ feature -- Factory
 		local
 			def_it: C_ITERATOR
 		do
-			-- deal with main archetype
+			-- ======= deal with main archetype =======
 
-			-- description
+			-- ======= description =======
 
-			-- definition
-			create diff_nodes.make (0)
+			-- ======= definition =========
+			create diff_added_obj_nodes.make (0)
+			create diff_added_attr_nodes.make (0)
+			create diff_redefined_obj_nodes.make (0)
+			create diff_redefined_attr_nodes.make (0)
+			create diff_redefined_id_nodes.make (0)
 			create def_it.make (definition)
-			def_it.do_all (agent node_diff_enter, agent node_diff_exit)
-			def_it.do_at_surface (agent node_diff_enter,
-				agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
-					do
-						Result := not (a_c_node.specialisation_status = ss_added or a_c_node.specialisation_status = ss_redefined)
-					end
+
+			-- extract the added nodes first
+			def_it.do_at_surface (agent node_diff_extract_additions,
+				agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := a_c_node.specialisation_status = ss_added end
 			)
 
-			-- rules section
+			-- now find redefined nodes
+			def_it.do_until_surface (agent node_diff_extract_redefinitions,
+				agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := a_c_node.specialisation_status /= ss_added end
+			)
 
-			-- ontology
+			-- ======= rules section =======
 
-			-- annotations
+			-- ======= ontology =======
+
+			-- ======= annotations =======
 
 		end
 
-	node_diff_enter (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER)
+	node_diff_extract_additions (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER)
+			-- record all added nodes & paths (including sibling order markers, which remain in the
+			-- in-memory flat)
+		local
+			node_path: STRING
+		do
+			node_path := a_c_node.path
+			if attached {C_OBJECT} a_c_node as co then
+				if not diff_added_obj_nodes.has (node_path) then
+					diff_added_obj_nodes.put (create {ARRAYED_LIST [C_OBJECT]}.make (0), node_path)
+				end
+				diff_added_obj_nodes.item (node_path).extend (co)
+			elseif attached {C_ATTRIBUTE} a_c_node as ca then
+				if not diff_added_attr_nodes.has (node_path) then
+					diff_added_attr_nodes.put (create {ARRAYED_LIST [C_ATTRIBUTE]}.make (0), node_path)
+				end
+				diff_added_attr_nodes.item (node_path).extend (ca)
+			end
+		end
+
+	node_diff_extract_redefinitions (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER)
 		local
 			ss: INTEGER
 			new_ca: C_ATTRIBUTE
@@ -134,29 +161,34 @@ feature -- Factory
 		do
 			ss := a_c_node.specialisation_status
 			if attached {C_OBJECT} a_c_node as co then
-				if ss = {SPECIALISATION_STATUSES}.ss_added then
-					create a_path.make_from_string (co.parent.path)
-					if a_path.count = 1 then
-						new_ca := co.parent.twin
-						-- clone the parent C_ATTRIBUTE
-					end
-				elseif ss = {SPECIALISATION_STATUSES}.ss_redefined then
+				-- solely node_id was redefined
+				if ss = {SPECIALISATION_STATUSES}.ss_id_redefined then
+					diff_redefined_id_nodes.put (co.node_id, co.path)
 
+				-- occurrences and/or rm_type (C_COMPLEX_OBJECT case), and/or other redefinitions for
+				-- other C_OBJECT subtypes - just remember the node
+				elseif ss = {SPECIALISATION_STATUSES}.ss_redefined then
+					diff_redefined_obj_nodes.put (co, co.path)
 				end
 
+			-- must be redefined cardinality and/or existence
 			elseif attached {C_ATTRIBUTE} a_c_node as ca then
-
-				-- added tree of constraints, startinng with a C_ATTRIBUTE that was not in the parent flat
-				if ss = {SPECIALISATION_STATUSES}.ss_added then
-					new_ca := ca.safe_deep_twin
-					diff_nodes.put (new_ca, ca.path)
-
-				-- C_ATTRIBUTE local redefinition of cardinality (+/- changes beneath)
-				elseif ss = {SPECIALISATION_STATUSES}.ss_redefined then
-					-- clone this C_ATTRIBUTE and its cardinality and store it
-				end
+				diff_redefined_attr_nodes.put (ca, ca.path)
 			end
 		end
+
+	diff_added_obj_nodes: HASH_TABLE [ARRAYED_LIST [C_OBJECT], STRING]
+
+	diff_added_attr_nodes: HASH_TABLE [ARRAYED_LIST [C_ATTRIBUTE], STRING]
+
+	diff_redefined_obj_nodes: HASH_TABLE [C_OBJECT, STRING]
+
+	diff_redefined_attr_nodes: HASH_TABLE [C_ATTRIBUTE, STRING]
+
+	diff_redefined_id_nodes: HASH_TABLE [STRING, STRING]
+			-- table of redefined node_id keyed by path; these correspond to C_OBJECT nodes whose
+			-- only redefinition was in the id, and which appeared in the orginal differential in
+			-- compressed paths
 
 	diff_nodes: HASH_TABLE [C_ATTRIBUTE, STRING]
 			-- table of C_ATTRIBUTEs keyed by path, each is one of:

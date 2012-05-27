@@ -25,6 +25,11 @@ feature -- Access
 			Result := message_db.create_message_content (an_id, args)
 		end
 
+	get_text (an_id: attached STRING): attached STRING
+		do
+			Result := message_db.create_message_content (an_id, Void)
+		end
+
 feature {NONE} -- Access
 
 	message_db: MESSAGE_DB

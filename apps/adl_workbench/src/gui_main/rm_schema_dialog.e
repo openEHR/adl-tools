@@ -32,13 +32,6 @@ inherit
 			copy, default_create
 		end
 
-	GUI_UTILITIES
-		export
-			{NONE} all
-		undefine
-			copy, default_create
-		end
-
 	SHARED_REFERENCE_MODEL_ACCESS
 		export
 			{NONE} all
@@ -65,99 +58,66 @@ feature {NONE} -- Initialisation
 	initialize
 			-- Initialize `Current'.
 		do
+			create gui_controls.make (0)
+			last_populated_rm_schema_dir := rm_schema_directory.twin
+
 			Precursor {EV_DIALOG}
 
-			-- create widgets
-			create ev_root_container
-			create ev_cell_1
-			create ev_label_1
-			create ev_cell_2
-			create grid
-			create ev_cell_3
-			create ev_hbox_1
-			create ev_label_2
-			create rm_schema_dir_text
-			create rm_schema_dir_button
-			create ev_hbox_2
-			create ev_cell_4
-			create ok_button
-			create cancel_button
-
-			-- connect widgets
-			extend (ev_root_container)
-			ev_root_container.extend (ev_cell_1)
-			ev_root_container.extend (ev_label_1)
-			ev_root_container.extend (ev_cell_2)
-			ev_root_container.extend (grid)
-			ev_root_container.extend (ev_cell_3)
-			ev_root_container.extend (ev_hbox_1)
-			ev_hbox_1.extend (ev_label_2)
-			ev_hbox_1.extend (rm_schema_dir_text)
-			ev_hbox_1.extend (rm_schema_dir_button)
-			ev_root_container.extend (ev_hbox_2)
-			ev_hbox_2.extend (ev_cell_4)
-			ev_hbox_2.extend (ok_button)
-			ev_hbox_2.extend (cancel_button)
-
-		--	ev_root_container.set_minimum_width (360)
-		--	ev_root_container.set_minimum_height (290)
-			ev_root_container.set_padding (Default_padding_width)
-			ev_root_container.set_border_width (Default_border_width)
-			ev_root_container.disable_item_expand (ev_cell_1)
-			ev_root_container.disable_item_expand (ev_label_1)
-			ev_root_container.disable_item_expand (ev_cell_2)
-			ev_root_container.disable_item_expand (ev_cell_3)
-			ev_root_container.disable_item_expand (ev_hbox_1)
-			ev_root_container.disable_item_expand (ev_hbox_2)
-			ev_cell_1.set_minimum_height (20)
-			ev_label_1.set_text ("Reference Model schemas loaded shown below.%NCheck or uncheck to load as required.")
-			ev_cell_2.set_minimum_height (20)
-			grid.set_minimum_height (150)
-			ev_cell_3.set_minimum_height (10)
-	--		ev_hbox_1.set_minimum_width (350)
-	--		ev_hbox_1.set_minimum_height (30)
-			ev_hbox_1.set_padding (Default_padding_width)
-			ev_hbox_1.set_border_width (Default_border_width)
-			ev_hbox_1.disable_item_expand (ev_label_2)
-			ev_hbox_1.disable_item_expand (rm_schema_dir_button)
-			ev_label_2.set_text ("RM schema directory: ")
-	--		rm_schema_dir_text.set_minimum_width (300)
-			rm_schema_dir_text.disable_edit
-			rm_schema_dir_button.set_text ("Browse...")
-			rm_schema_dir_button.set_minimum_width (65)
-			ev_hbox_2.set_minimum_height (34)
-			ev_hbox_2.set_padding (15)
-			ev_hbox_2.set_border_width (Default_border_width)
-			ev_hbox_2.disable_item_expand (ok_button)
-			ev_hbox_2.disable_item_expand (cancel_button)
-			ev_cell_4.set_minimum_width (100)
-			ok_button.set_text ("OK")
-			ok_button.set_minimum_width (100)
-			ok_button.set_minimum_height (26)
-			cancel_button.set_text ("Cancel")
-			cancel_button.set_minimum_width (100)
-			cancel_button.set_minimum_height (26)
-	--		set_minimum_width (550)
-	--		set_minimum_height (390)
-	--		set_maximum_width (800)
-	--		set_maximum_height (800)
 			set_title ("ADL Workbench RM Schema Configuration")
 			set_icon_pixmap (adl_workbench_icon)
 
+			-- ============ root container ============
+			create ev_root_container
+			extend (ev_root_container)
+			ev_root_container.set_padding (Default_padding_width)
+			ev_root_container.set_border_width (Default_border_width)
+
+			-- ============ top label ============
+			create ev_cell_1
+			ev_cell_1.set_minimum_height (20)
+			ev_root_container.extend (ev_cell_1)
+			create ev_label_1
+			ev_label_1.set_text (get_text ("rm_schema_dialog_header_label"))
+			ev_root_container.extend (ev_label_1)
+			create ev_cell_2
+			ev_cell_2.set_minimum_height (20)
+			ev_root_container.extend (ev_cell_2)
+			ev_root_container.disable_item_expand (ev_cell_1)
+			ev_root_container.disable_item_expand (ev_label_1)
+			ev_root_container.disable_item_expand (ev_cell_2)
+
+			-- ============ main grid ============
+			create grid
+			ev_root_container.extend (grid)
+			grid.set_minimum_height (150)
+
+			-- space cell
+			create ev_cell_3
+			ev_cell_3.set_minimum_height (10)
+			ev_root_container.extend (ev_cell_3)
+			ev_root_container.disable_item_expand (ev_cell_3)
+
+			-- ============ RM schema directory getter ============
+			create rm_dir_setter.make_editable (get_text ("rm_schema_dir_text"), agent :STRING do Result := rm_schema_directory end,
+				Void, Void, Void, 0, 0)
+			rm_dir_setter.set_post_setting_agent (agent on_rm_schema_dir_browse)
+			ev_root_container.extend (rm_dir_setter.ev_root_container)
+			ev_root_container.disable_item_expand (rm_dir_setter.ev_root_container)
+			gui_controls.extend (rm_dir_setter)
+
+			-- ============ Ok/Cancel buttons ============
+			create ok_cancel_buttons.make (agent on_ok, agent hide)
+			ev_root_container.extend (ok_cancel_buttons.ev_root_container)
+			ev_root_container.disable_item_expand (ok_cancel_buttons.ev_root_container)
+			set_default_cancel_button (ok_cancel_buttons.cancel_button)
+			set_default_push_button (ok_cancel_buttons.ok_button)
+
 			-- Connect events.
-			rm_schema_dir_button.select_actions.extend (agent on_rm_schema_dir_browse)
-			ok_button.select_actions.extend (agent on_ok)
-			cancel_button.select_actions.extend (agent hide)
-			set_default_cancel_button (cancel_button)
-			set_default_push_button (ok_button)
 			show_actions.extend (agent grid.set_focus)
 
-			populate_grid
+			enable_edit
+			do_populate
 			ev_root_container.refresh_now
-			rm_schema_dir_text.set_text (rm_schema_directory)
-
-			-- FIXME: this is a complete hack, but I cannot find another way to control the height properly!
-		--	set_height (ev_root_container.height + frame_height + ev_root_container.last.minimum_height)
 		end
 
 feature -- Access
@@ -172,19 +132,24 @@ feature -- Status
 	has_changed_schema_dir: BOOLEAN
 			-- Schema load directory has changed; should refresh
 
+feature -- Commands
+
+	enable_edit
+			-- enable editing
+		do
+			gui_controls.do_all (agent (an_item: GUI_XX_DATA_CONTROL) do if an_item.can_edit then an_item.enable_edit end end)
+		end
+
 feature -- Events
 
 	on_ok
 			-- Set shared settings from the dialog widgets.
 		local
 			i: INTEGER
-			new_dir: STRING
 		do
 			hide
-
-			new_dir := rm_schema_dir_text.text.as_string_8
-			if not new_dir.same_string (rm_schema_directory) and directory_exists (new_dir) then
-				set_rm_schema_directory (new_dir)
+			if not last_populated_rm_schema_dir.same_string (rm_schema_directory) and directory_exists (last_populated_rm_schema_dir) then
+				set_rm_schema_directory (last_populated_rm_schema_dir)
 				has_changed_schema_dir := True
 			end
 
@@ -194,7 +159,7 @@ feature -- Events
 			from i := 1 until i > grid.row_count loop
 				if attached {EV_GRID_CHECKABLE_LABEL_ITEM} grid.row (i).item (Grid_loaded_col) as gcli and then gcli.is_checked then
 					if attached {EV_GRID_LABEL_ITEM} grid.row (i).item (Grid_name_col) as gli then
-						rm_schemas_ll.extend(gli.text)
+						rm_schemas_ll.extend (gli.text)
 					end
 				end
 				i := i + 1
@@ -212,20 +177,17 @@ feature -- Events
 			-- if a change is made, reload schemas immediately, then repopulate this dialog
 		local
 			error_dialog: EV_INFORMATION_DIALOG
-			new_dir: STRING
+			new_rm_dir: STRING
 		do
-			rm_schema_dir_text.set_text (get_directory (rm_schema_dir_text.text.as_string_8, Current))
-			ev_application.process_events
-			new_dir := rm_schema_dir_text.text.as_string_8
+			new_rm_dir := rm_dir_setter.data_control_text
 
-			if not new_dir.same_string (rm_schema_directory) and directory_exists (new_dir) then
-				ok_button.disable_sensitive
-				cancel_button.disable_sensitive
+			if not new_rm_dir.same_string (last_populated_rm_schema_dir) and directory_exists (new_rm_dir) then
+				ok_cancel_buttons.disable_sensitive
 
-				rm_schemas_access.initialise_with_load_list (new_dir, rm_schemas_load_list)
+				rm_schemas_access.initialise_with_load_list (new_rm_dir, rm_schemas_load_list)
 
 				if not rm_schemas_access.found_valid_schemas then
-					post_error (Current, "load_schemas", "model_access_e13", <<new_dir>>)
+					post_error (Current, "load_schemas", "model_access_e13", <<new_rm_dir>>)
 					create error_dialog.make_with_text (billboard.content)
 					billboard.clear
 					error_dialog.show_modal_to_window (Current)
@@ -233,12 +195,22 @@ feature -- Events
 
 				populate_grid
 
-				ok_button.enable_sensitive
-				cancel_button.enable_sensitive
+				ok_cancel_buttons.enable_sensitive
+
+				last_populated_rm_schema_dir := new_rm_dir
 			end
 		end
 
+	last_populated_rm_schema_dir: STRING
+
 feature {NONE} -- Implementation
+
+	do_populate
+			-- Set the dialog widgets from shared settings.
+		do
+			gui_controls.do_all (agent (an_item: GUI_XX_DATA_CONTROL) do an_item.do_populate end)
+			populate_grid
+		end
 
 	populate_grid
 			-- Set the grid from shared settings.
@@ -348,9 +320,12 @@ feature {NONE} -- Implementation
 	ev_cell_1, ev_cell_2, ev_cell_3, ev_cell_4: EV_CELL
 	ev_label_1, ev_label_2: EV_LABEL
 	grid: EV_GRID
-	ev_hbox_1, ev_hbox_2: EV_HORIZONTAL_BOX
-	rm_schema_dir_text: EV_TEXT_FIELD
-	rm_schema_dir_button, ok_button, cancel_button: EV_BUTTON
+
+	gui_controls: ARRAYED_LIST [GUI_XX_DATA_CONTROL]
+
+	rm_dir_setter: GUI_DIRECTORY_SETTER
+
+	ok_cancel_buttons: GUI_OK_CANCEL_CONTROLS
 
 	is_in_default_state: BOOLEAN
 			-- Is `Current' in its default state?

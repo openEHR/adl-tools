@@ -31,7 +31,7 @@ inherit
 		rename
 			make as make_mlist, make_editable as make_editable_mlist
 		redefine
-			data_source, data_source_create_agent
+			data_source_agent, data_source_setter_agent
 		end
 
 create
@@ -39,41 +39,41 @@ create
 
 feature -- Initialisation
 
-	make (a_title: STRING; a_data_source: like data_source;
+	make (a_title: STRING; a_data_source_agent: like data_source_agent;
 			min_height, min_width: INTEGER;
 			use_hbox_container: BOOLEAN)
 		do
-			make_mlist (a_title, a_data_source,
+			make_mlist (a_title, a_data_source_agent,
 				min_height, min_width,
 				use_hbox_container, Void)
 		end
 
-	make_editable (a_title: STRING; a_data_source: like data_source;
-			a_data_source_create_agent: like data_source_create_agent;
+	make_editable (a_title: STRING; a_data_source_agent: like data_source_agent;
+			a_data_source_create_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
 			an_undo_redo_chain: UNDO_REDO_CHAIN;
 			min_height, min_width: INTEGER;
 			use_hbox_container: BOOLEAN)
 		do
 			make_editable_mlist (a_title,
-				a_data_source, a_data_source_create_agent, a_data_source_remove_agent, an_undo_redo_chain,
+				a_data_source_agent, a_data_source_create_agent, a_data_source_remove_agent, an_undo_redo_chain,
 				min_height, min_width, use_hbox_container, Void)
 		end
 
 feature -- Access
 
-	data_source: FUNCTION [ANY, TUPLE, DYNAMIC_LIST [STRING]]
+	data_source_agent: FUNCTION [ANY, TUPLE, DYNAMIC_LIST [STRING]]
 			-- function that produces a correct reference to the data source of this
 			-- control when called
 
-	data_source_create_agent: detachable PROCEDURE [ANY, TUPLE [STRING, INTEGER]]
+	data_source_setter_agent: detachable PROCEDURE [ANY, TUPLE [STRING, INTEGER]]
 			-- agent for add an item to the data source list
 
 feature {NONE} -- Implementation
 
 	do_populate_control_from_source
 		do
-			populate_ev_multi_list_from_list (ev_data_control, data_source.item ([]))
+			populate_ev_multi_list_from_list (ev_data_control, data_source_agent.item ([]))
 		end
 
 	process_in_place_edit
@@ -82,7 +82,7 @@ feature {NONE} -- Implementation
 			ds: DYNAMIC_LIST [STRING]
 			ds_index: INTEGER
 		do
-			ds := data_source.item ([])
+			ds := data_source_agent.item ([])
 			ds_index := 1
 			from ds.start until ds_index = ev_data_control.widget_row or ds.off loop
 				ds_index := ds_index + 1
@@ -117,11 +117,11 @@ feature {NONE} -- Implementation
 			ev_data_control.extend (new_row)
 			new_row.pointer_button_press_actions.force_extend (agent mlist_handler (ev_data_control, ?, ?, ?, ?, ?, ?, ?, ?))
 
-			data_source_create_agent.call ([new_val, 0])
+			data_source_setter_agent.call ([new_val, 0])
 			undo_redo_chain.add_link (
 				agent data_source_remove_agent.call ([new_val]),
 				agent do_populate,
-				agent data_source_create_agent.call ([new_val, 0]),
+				agent data_source_setter_agent.call ([new_val, 0]),
 				agent do_populate
 			)
 		end
@@ -133,7 +133,7 @@ feature {NONE} -- Implementation
 			ds: DYNAMIC_LIST [STRING]
 			ds_index: INTEGER
 		do
-			ds := data_source.item ([])
+			ds := data_source_agent.item ([])
 			ds_index := ev_data_control.index_of (ev_data_control.selected_item, 1)
 			old_val := ds.i_th (ds_index)
 
@@ -144,7 +144,7 @@ feature {NONE} -- Implementation
 			end
 			data_source_remove_agent.call ([old_val])
 			undo_redo_chain.add_link (
-				agent data_source_create_agent.call ([old_val, undo_add_idx]),
+				agent data_source_setter_agent.call ([old_val, undo_add_idx]),
 				agent do_populate,
 				agent data_source_remove_agent.call ([old_val]),
 				agent do_populate

@@ -1,7 +1,7 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-				 EV_FRAME-based control, containing a vbox or hbox, and with some style setting.
+				 OK and Cancel buttons, with left hand padding cell, to add to any dialog box.
 				 ]"
 	keywords:    "UI, ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
@@ -14,7 +14,7 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class GUI_FRAME_CONTROL
+class GUI_OK_CANCEL_CONTROLS
 
 inherit
 	GUI_DEFINITIONS
@@ -22,59 +22,73 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_APP_UI_RESOURCES
+		export
+			{NONE} all
+		undefine
+			copy, default_create
+		end
+
 create
 	make
 
 feature -- Initialisation
 
-	make (a_title: STRING; min_height, min_width: INTEGER; use_hbox_container: BOOLEAN)
+	make (ok_agent, cancel_agent: PROCEDURE [ANY, TUPLE])
 		do
 			create ev_root_container
-			ev_root_container.set_text (a_title)
-			ev_root_container.set_style (1)
+			ev_root_container.set_padding_width (default_padding_width)
+			ev_root_container.set_border_width (default_border_width)
 
-			if use_hbox_container then
-				create {EV_HORIZONTAL_BOX} ev_root_box
-			else
-				create {EV_VERTICAL_BOX} ev_root_box
-			end
-			ev_root_box.set_border_width (Default_border_width)
-			ev_root_box.set_padding_width (Default_padding_width)
-			ev_root_container.extend (ev_root_box)
-			ev_current_box := ev_root_box
+			-- Padding Cell
+			create ev_cell
+			ev_root_container.extend (ev_cell)
+			ev_cell.set_minimum_width (100)
+
+			-- OK button
+			create ok_button
+			ok_button.set_text (get_text ("ok_button_text"))
+			ok_button.set_minimum_width (100)
+			ok_button.set_minimum_height (26)
+			ev_root_container.extend (ok_button)
+			ev_root_container.disable_item_expand (ok_button)
+			ok_button.select_actions.extend (ok_agent)
+
+			-- Cancel button
+			create cancel_button
+			cancel_button.set_text (get_text ("cancel_button_text"))
+			cancel_button.set_minimum_width (100)
+			cancel_button.set_minimum_height (26)
+			ev_root_container.extend (cancel_button)
+			ev_root_container.disable_item_expand (cancel_button)
+			cancel_button.select_actions.extend (cancel_agent)
 		end
 
 feature -- Access
 
-	ev_root_container: EV_FRAME
+	ev_root_container: EV_HORIZONTAL_BOX
 
-feature -- Modification
+	ok_button, cancel_button: EV_BUTTON
 
-	extend (a_widget: EV_WIDGET; can_expand: BOOLEAN)
-			-- extend current container with `a_widget'
+feature -- Command
+
+	enable_sensitive
+			-- enable user input
 		do
-			ev_current_box.extend (a_widget)
-			if not can_expand then
-				ev_current_box.disable_item_expand (a_widget)
-			end
+			cancel_button.enable_sensitive
+			ok_button.enable_sensitive
 		end
 
-	add_row (can_expand: BOOLEAN)
-			-- add an HBOX container; subsequent calls to `extend' will add to this HBOX
+	disable_sensitive
+			-- disable user input
 		do
-			create {EV_HORIZONTAL_BOX} ev_current_box
-			ev_root_box.extend (ev_current_box)
-			if not can_expand then
-				ev_root_box.disable_item_expand (ev_current_box)
-			end
+			cancel_button.disable_sensitive
+			ok_button.disable_sensitive
 		end
 
 feature {NONE} -- Implementation
 
-	ev_root_box: EV_BOX
-
-	ev_current_box: EV_BOX
-			-- ref to box currently being added to
+	ev_cell: EV_CELL
 
 end
 

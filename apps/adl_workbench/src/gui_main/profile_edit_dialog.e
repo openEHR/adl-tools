@@ -23,13 +23,6 @@ inherit
 			initialize, is_in_default_state
 		end
 
-	GUI_UTILITIES
-		export
-			{NONE} all
-		undefine
-			copy, default_create
-		end
-
 	SHARED_APP_UI_RESOURCES
 		undefine
 			is_equal, default_create, copy
@@ -49,188 +42,122 @@ feature {NONE} -- Initialization
 		require
 			profiles.has_profile (an_existing_profile)
 		do
-			default_create
-			rep_profiles := profiles
-			profile_name_text.set_text (an_existing_profile)
-			reference_path_text.set_text (rep_profiles.profile (an_existing_profile).reference_repository)
-			if rep_profiles.profile (an_existing_profile).has_work_repository then
-				work_path_text.set_text (rep_profiles.profile (an_existing_profile).work_repository)
-			end
 			initial_profile_name := an_existing_profile
+			rep_profiles := profiles
+			default_create
 		ensure
 			rep_profiles_set: rep_profiles = profiles
+			Existing_profile: not is_new_profile
 		end
 
 	make_new (profiles: attached REPOSITORY_PROFILE_CONFIG)
 			-- Make with a reference to the table of profiles being edited.
 		do
-			default_create
 			rep_profiles := profiles
-			profile_name_text.set_text (New_profile_name)
-			if rep_profiles.has_current_profile then
-				reference_path_text.set_text (rep_profiles.current_reference_repository_path)
-				work_path_text.set_text (rep_profiles.current_work_repository_path)
-			else
-				reference_path_text.set_text (user_config_file_directory)
-			end
-			is_new_profile := True
+			default_create
 		ensure
 			rep_profiles_set: rep_profiles = profiles
+			New_profile: is_new_profile
 		end
 
 	initialize
 			-- Initialize `Current'.
 		do
+			initialise_dirs
+
+			create gui_controls.make (0)
+
 			Precursor {EV_DIALOG}
 
-			-- create widgets
-			create ev_vbox_1
-			create profile_name_hbox
-			create ev_label_1
-			create profile_name_text
-			create ref_path_frame
-			create ev_hbox_1
-			create reference_path_text
-			create reference_path_browse_button
-			create work_path_frame
-			create ev_hbox_2
-			create work_path_text
-			create work_path_browse_button
-			create ev_hbox_3
-			create ev_cell_1
-			create ok_button
-			create cancel_button
-
-			-- connect widgets
-			extend (ev_vbox_1)
-			ev_vbox_1.extend (profile_name_hbox)
-			profile_name_hbox.extend (ev_label_1)
-			profile_name_hbox.extend (profile_name_text)
-			ev_vbox_1.extend (ref_path_frame)
-			ref_path_frame.extend (ev_hbox_1)
-			ev_hbox_1.extend (reference_path_text)
-			ev_hbox_1.extend (reference_path_browse_button)
-			ev_vbox_1.extend (work_path_frame)
-			work_path_frame.extend (ev_hbox_2)
-			ev_hbox_2.extend (work_path_text)
-			ev_hbox_2.extend (work_path_browse_button)
-			ev_vbox_1.extend (ev_hbox_3)
-			ev_hbox_3.extend (ev_cell_1)
-			ev_hbox_3.extend (ok_button)
-			ev_hbox_3.extend (cancel_button)
-
-			ev_vbox_1.set_padding (Default_padding_width)
-			ev_vbox_1.set_border_width (Default_border_width)
-			ev_vbox_1.disable_item_expand (profile_name_hbox)
-			ev_vbox_1.disable_item_expand (ref_path_frame)
-			ev_vbox_1.disable_item_expand (work_path_frame)
-			ev_vbox_1.disable_item_expand (ev_hbox_3)
-			profile_name_hbox.set_padding (Default_padding_width)
-			profile_name_hbox.set_border_width (Default_border_width)
-			profile_name_hbox.disable_item_expand (ev_label_1)
-			ev_label_1.set_text ("Profile Name:")
-			ev_label_1.set_minimum_width (90)
-			ev_label_1.align_text_right
-			ref_path_frame.set_text ("Reference Repository Path")
-			ev_hbox_1.set_padding (Default_padding_width)
-			ev_hbox_1.set_border_width (Default_border_width)
-			ev_hbox_1.disable_item_expand (reference_path_browse_button)
-			reference_path_text.set_minimum_width (300)
-			reference_path_browse_button.set_text ("Browse...")
-			reference_path_browse_button.set_tooltip ("Choose directory above where the archetypes are")
-			reference_path_browse_button.set_minimum_width (90)
-			reference_path_browse_button.set_minimum_height (26)
-			work_path_frame.set_text ("Working Repository Path")
-			ev_hbox_2.set_padding (Default_padding_width)
-			ev_hbox_2.set_border_width (Default_border_width)
-			ev_hbox_2.disable_item_expand (work_path_browse_button)
-			work_path_text.set_minimum_width (300)
-			work_path_browse_button.set_text ("Browse...")
-			work_path_browse_button.set_tooltip ("Choose directory above where the archetypes are")
-			work_path_browse_button.set_minimum_width (90)
-			work_path_browse_button.set_minimum_height (26)
-			ev_hbox_3.set_padding (15)
-			ev_hbox_3.set_border_width (10)
-			ev_hbox_3.disable_item_expand (ok_button)
-			ev_hbox_3.disable_item_expand (cancel_button)
-			ok_button.set_text ("OK")
-			ok_button.set_minimum_width (100)
-			ok_button.set_minimum_height (26)
-			cancel_button.set_text ("Cancel")
-			cancel_button.set_minimum_width (100)
-			set_minimum_width (500)
-			set_minimum_height (215)
-			set_maximum_width (1000)
-			set_maximum_height (400)
-			set_title ("Edit Repository Profile")
+			-- window characteristics
+			set_title (get_text ("profile_edit_dialog_title"))
 			set_icon_pixmap (adl_workbench_icon)
 
-				-- Connect events.
-			reference_path_browse_button.select_actions.extend (agent get_reference_repository_path)
-			work_path_browse_button.select_actions.extend (agent get_work_repository_path)
-			ok_button.select_actions.extend (agent on_ok)
-			show_actions.extend (agent on_show)
-			cancel_button.select_actions.extend (agent hide)
-			set_default_cancel_button (cancel_button)
-			set_default_push_button (ok_button)
-			reference_path_text.focus_in_actions.extend (agent on_select_all (reference_path_text))
-			work_path_text.focus_in_actions.extend (agent on_select_all (work_path_text))
+			-- create widgets
+			create ev_root_container
+			ev_root_container.set_padding (Default_padding_width)
+			ev_root_container.set_border_width (Default_border_width)
+			extend (ev_root_container)
 
-			-- set default values for profile name and paths; use `set_initial_values' to change
-			reference_path_text.set_text (user_config_file_directory)
+			-- ============ profile name text control ============
+			create profile_name_ctl.make_editable (get_text ("profile_name_text"), agent :STRING do Result := profile_name end,
+				Void, Void, Void, 0, 600, True, True)
+			ev_root_container.extend (profile_name_ctl.ev_root_container)
+			ev_root_container.disable_item_expand (profile_name_ctl.ev_root_container)
+			gui_controls.extend (profile_name_ctl)
+
+			-- ============ Reference path ============
+			create ref_dir_setter.make_editable (get_text ("ref_repo_dir_text"), agent :STRING do Result := ref_dir end,
+				Void, Void, Void, 0, 0)
+			ev_root_container.extend (ref_dir_setter.ev_root_container)
+			ev_root_container.disable_item_expand (ref_dir_setter.ev_root_container)
+			gui_controls.extend (ref_dir_setter)
+
+			-- ============ Work path ============
+			create work_dir_setter.make_editable (get_text ("work_repo_dir_text"), agent :STRING do Result := work_dir end,
+				Void, Void, Void, 0, 0)
+			work_dir_setter.set_default_directory_agent (agent :STRING do Result := ref_dir end)
+			ev_root_container.extend (work_dir_setter.ev_root_container)
+			ev_root_container.disable_item_expand (work_dir_setter.ev_root_container)
+			gui_controls.extend (work_dir_setter)
+
+			-- ============ Ok/Cancel buttons ============
+			create ok_cancel_buttons.make (agent on_ok, agent hide)
+			ev_root_container.extend (ok_cancel_buttons.ev_root_container)
+			ev_root_container.disable_item_expand (ok_cancel_buttons.ev_root_container)
+			set_default_cancel_button (ok_cancel_buttons.cancel_button)
+			set_default_push_button (ok_cancel_buttons.ok_button)
+
+			-- set up form for display
+			enable_edit
+			do_populate
+--			show_actions.extend (agent (profile_name_ctl.ev_data_control).set_focus)
 		end
 
 feature -- Events
 
-	on_show
-			-- On showing the dialog, set focus to the profile name text box.
-		do
-			profile_name_text.set_focus
-		end
-
 	on_ok
-			-- Called by `select_actions' of `profile_edit_dialog_ok_button'.
 		local
-			prof_name: STRING
 			a_prof: REPOSITORY_PROFILE
 			error_dialog: EV_INFORMATION_DIALOG
 		do
 			is_valid := False
 
-			-- validate profilename: must not contain whitespace
-			prof_name := profile_name_text.text
-			if prof_name.has (' ') then
-				prof_name.replace_substring_all (" ", "_")
-				profile_name_text.set_text (prof_name)
+			-- set working variables
+			profile_name := profile_name_ctl.data_control_text
+			if profile_name.has (' ') then
+				profile_name.replace_substring_all (" ", "_")
 			end
+			ref_dir := ref_dir_setter.data_control_text
+			work_dir := work_dir_setter.data_control_text
 
 			-- now validate the name with respect to existing profiles			
 			-- first see if it is non-empty and unique
-			if prof_name.is_empty then
-				create error_dialog.make_with_text (get_msg ("empty_profile", Void))
+			if profile_name.is_empty then
+				create error_dialog.make_with_text (get_text ("empty_profile"))
 				error_dialog.show_modal_to_window (Current)
 
-			elseif prof_name /~ initial_profile_name and rep_profiles.has_profile (prof_name) then
-				create error_dialog.make_with_text (get_msg ("duplicate_profile", <<prof_name>>))
+			elseif profile_name /~ initial_profile_name and rep_profiles.has_profile (profile_name) then
+				create error_dialog.make_with_text (get_msg ("duplicate_profile", <<profile_name>>))
 				error_dialog.show_modal_to_window (Current)
 
 			else
 				-- now validate the paths, remembering that the paths could have been set just by the user typing directly in the fields
 				-- first, the reference path
-				if not directory_exists (reference_path_text.text) then
-					create error_dialog.make_with_text (get_msg_line ("ref_repo_not_found", <<reference_path_text.text>>))
+				if not directory_exists (ref_dir) then
+					create error_dialog.make_with_text (get_msg_line ("ref_repo_not_found", <<ref_dir>>))
 					error_dialog.show_modal_to_window (Current)
 
-				elseif not work_path_text.text.is_empty then -- now work path			
-					if directory_exists (work_path_text.text) then
-						if not (work_path_text.text.starts_with (reference_path_text.text) or reference_path_text.text.starts_with (work_path_text.text)) then
+				elseif not work_dir.is_empty then -- now work path			
+					if directory_exists (work_dir) then
+						if not (work_dir.starts_with (ref_dir) or ref_dir.starts_with (work_dir)) then
 							is_valid := True
 						else
-							create error_dialog.make_with_text (get_msg_line ("work_repo_not_valid", <<work_path_text.text, reference_path_text.text>>))
+							create error_dialog.make_with_text (get_msg_line ("work_repo_not_valid", <<work_dir, ref_dir>>))
 							error_dialog.show_modal_to_window (Current)
 						end
 					else
-						create error_dialog.make_with_text (get_msg_line ("work_repo_not_found", <<work_path_text.text>>))
+						create error_dialog.make_with_text (get_msg_line ("work_repo_not_found", <<work_dir>>))
 						error_dialog.show_modal_to_window (Current)
 					end
 				else -- there was no work path
@@ -241,39 +168,30 @@ feature -- Events
 			if is_valid then
 				if is_new_profile then
 					create a_prof
-					a_prof.set_reference_repository (reference_path_text.text)
-					if not work_path_text.text.is_empty then
-						a_prof.set_work_repository (work_path_text.text)
+					a_prof.set_reference_repository (ref_dir)
+					if not work_dir.is_empty then
+						a_prof.set_work_repository (work_dir)
 					end
-					rep_profiles.put_profile (a_prof, prof_name)
+					rep_profiles.put_profile (a_prof, profile_name)
 					has_changed_profile := True
 
 				else -- in edit existing situation, only do something if the paths have changed
 					-- if existing profile name was changed
-					if prof_name /~ initial_profile_name then
-						rep_profiles.rename_profile (initial_profile_name, prof_name)
+					if profile_name /~ initial_profile_name then
+						rep_profiles.rename_profile (initial_profile_name, profile_name)
 						has_changed_profile := True
 					end
-
-					a_prof := rep_profiles.profile (prof_name)
-					if a_prof.reference_repository /~ reference_path_text.text then
-						a_prof.set_reference_repository (reference_path_text.text)
+					a_prof := rep_profiles.profile (profile_name)
+					if a_prof.reference_repository /~ ref_dir then
+						a_prof.set_reference_repository (ref_dir)
 						has_changed_profile := True
 					end
-					if a_prof.work_repository /~ work_path_text.text then
-						a_prof.set_work_repository (work_path_text.text)
+					if a_prof.work_repository /~ work_dir then
+						a_prof.set_work_repository (work_dir)
 						has_changed_profile := True
 					end
 				end
 				hide
-			end
-		end
-
-	on_select_all (text: EV_TEXT_FIELD)
-			-- Select all text in `text', if any.
-		do
-			if text /= Void and then text.text_length > 0 then
-				text.select_all
 			end
 		end
 
@@ -282,13 +200,31 @@ feature -- Access
 	rep_profiles: attached REPOSITORY_PROFILE_CONFIG
 			-- Profiles being edited, as a table of {{ref_path, working path}, prof_name}.
 
-	is_new_profile: BOOLEAN
-			-- True if the profile being specified in this dialog is to be treated as a new entry in `rep_profiles'.
-
 	initial_profile_name: STRING
 			-- copy of profile name if editing an existing one, used for checking if a rename has occurred in `on_ok'
 
+	initial_ref_dir: attached STRING
+			-- initial value of reference directory, based on whether `initial_profile_name' was set
+
+	initial_work_dir: STRING
+			-- initial value of work directory, based on whether `initial_profile_name' was set
+
+	profile_name: STRING
+			-- current value of profile name based on choosing so far
+
+	ref_dir: STRING
+			-- current value of reference directory setting based on choosing so far
+
+	work_dir: STRING
+			-- current value of work directory setting based on choosing so far
+
 feature -- Status Report
+
+	is_new_profile: BOOLEAN
+			-- True if the profile being specified in this dialog is to be treated as a new entry in `rep_profiles'.
+		do
+			Result := not attached initial_profile_name
+		end
 
 	is_valid: BOOLEAN
 			-- result of validation in `on_ok'
@@ -296,43 +232,65 @@ feature -- Status Report
 	has_changed_profile: BOOLEAN
 			-- True if this dialog has caused a change to `rep_profiles'.
 
+feature -- Commands
+
+	enable_edit
+			-- enable editing
+		do
+			gui_controls.do_all (agent (an_item: GUI_XX_DATA_CONTROL) do if an_item.can_edit then an_item.enable_edit end end)
+		end
+
 feature {NONE} -- Implementation
 
-	get_reference_repository_path
-			-- Display a dialog for the user to select a new Reference Repository.
+	do_populate
+			-- Set the dialog widgets from shared settings.
 		do
-			reference_path_text.set_text (get_directory (reference_path_text.text, Current))
+			gui_controls.do_all (agent (an_item: GUI_XX_DATA_CONTROL) do an_item.do_populate end)
 		end
 
-	get_work_repository_path
-			-- Display a dialog for the user select the Work Repository.
-		local
-			def_path: STRING
+	initialise_dirs
 		do
-			if work_path_text.text.is_empty then
-				def_path := reference_path_text.text
+			-- set initial values
+			if is_new_profile then
+				if rep_profiles.has_current_profile then
+					initial_ref_dir := rep_profiles.current_reference_repository_path
+					initial_work_dir := rep_profiles.current_work_repository_path
+				else
+					initial_ref_dir := user_config_file_directory
+				end
+				profile_name := New_profile_name.twin
 			else
-				def_path := work_path_text.text
+				initial_ref_dir := rep_profiles.profile (initial_profile_name).reference_repository
+				if rep_profiles.profile (initial_profile_name).has_work_repository then
+					initial_work_dir := rep_profiles.profile (initial_profile_name).work_repository
+				end
+				profile_name := initial_profile_name.twin
 			end
-			work_path_text.set_text (get_directory (def_path, Current))
+
+			-- set current values
+			ref_dir := initial_ref_dir.twin
+			if attached initial_work_dir then
+				work_dir := initial_work_dir.twin
+			else
+				create work_dir.make_empty
+			end
 		end
 
-	ev_vbox_1: EV_VERTICAL_BOX
-	profile_name_hbox, ev_hbox_1, ev_hbox_2, ev_hbox_3: EV_HORIZONTAL_BOX
-	ev_label_1: EV_LABEL
-	profile_name_text, reference_path_text, work_path_text: EV_TEXT_FIELD
-	ref_path_frame, work_path_frame: EV_FRAME
-	reference_path_browse_button, work_path_browse_button, ok_button, cancel_button: EV_BUTTON
-	ev_cell_1: EV_CELL
+	ev_root_container: EV_VERTICAL_BOX
+
+	gui_controls: ARRAYED_LIST [GUI_XX_DATA_CONTROL]
+
+	profile_name_ctl: GUI_SINGLE_LINE_TEXT_CONTROL
+
+	ref_dir_setter, work_dir_setter: GUI_DIRECTORY_SETTER
+
+	ok_cancel_buttons: GUI_OK_CANCEL_CONTROLS
 
 	is_in_default_state: BOOLEAN
 			-- Is `Current' in its default state?
 		do
 			Result := True
 		end
-
-invariant
-	initial_name_only_when_editing_existing_profile: is_new_profile implies initial_profile_name = Void
 
 end
 

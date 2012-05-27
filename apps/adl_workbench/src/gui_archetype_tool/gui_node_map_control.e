@@ -66,7 +66,7 @@ feature -- Initialisation
 			ev_view_controls_vbox.set_border_width (Default_border_width)
 
 			create ev_view_label
-			ev_view_label.set_text (get_msg ("view_label_text", Void))
+			ev_view_label.set_text (get_text ("view_label_text"))
 			ev_view_label.align_text_left
 			ev_view_controls_vbox.extend (ev_view_label)
 			ev_view_controls_vbox.disable_item_expand (ev_view_label)
@@ -75,24 +75,24 @@ feature -- Initialisation
 			ev_view_controls_vbox.extend (ev_collapse_expand_hbox)
 			create ev_collapse_button
 			ev_collapse_button.set_text ("0")
-			ev_collapse_button.set_tooltip (get_msg ("collapse_complete_tooltip", Void))
+			ev_collapse_button.set_tooltip (get_text ("collapse_complete_tooltip"))
 			ev_collapse_expand_hbox.extend (ev_collapse_button)
 			create ev_collapse_one_button
 			ev_collapse_expand_hbox.extend (ev_collapse_one_button)
 			ev_collapse_one_button.set_text ("-")
-			ev_collapse_one_button.set_tooltip (get_msg ("collapse_one_level_tooltip", Void))
+			ev_collapse_one_button.set_tooltip (get_text ("collapse_one_level_tooltip"))
 			create ev_expand_one_button
 			ev_expand_one_button.set_text ("+")
-			ev_expand_one_button.set_tooltip (get_msg ("expand_one_level_tooltip", Void))
+			ev_expand_one_button.set_tooltip (get_text ("expand_one_level_tooltip"))
 			ev_collapse_expand_hbox.extend (ev_expand_one_button)
 			create ev_expand_button
 			ev_collapse_expand_hbox.extend (ev_expand_button)
 			ev_view_controls_vbox.disable_item_expand (ev_collapse_expand_hbox)
 			ev_expand_button.set_text ("*")
-			ev_expand_button.set_tooltip (get_msg ("expand_complete_tooltip", Void))
+			ev_expand_button.set_tooltip (get_text ("expand_complete_tooltip"))
 
 			create ev_view_detail_frame
-			ev_view_detail_frame.set_text (get_msg ("view_detail_controls_text", Void))
+			ev_view_detail_frame.set_text (get_text ("view_detail_controls_text"))
 			ev_view_detail_frame.set_minimum_width (100)
 			ev_view_detail_frame.set_minimum_height (85)
 			ev_view_controls_vbox.extend (ev_view_detail_frame)
@@ -103,17 +103,17 @@ feature -- Initialisation
 			ev_view_detail_frame.extend (ev_view_detail_vbox)
 
 			create ev_view_detail_low_rb
-			ev_view_detail_low_rb.set_text (get_msg ("domain_detail_button_text", Void))
-			ev_view_detail_low_rb.set_tooltip (get_msg ("domain_detail_button_tooltip", Void))
+			ev_view_detail_low_rb.set_text (get_text ("domain_detail_button_text"))
+			ev_view_detail_low_rb.set_tooltip (get_text ("domain_detail_button_tooltip"))
 			ev_view_detail_vbox.extend (ev_view_detail_low_rb)
 
 			create ev_view_detail_high_rb
-			ev_view_detail_high_rb.set_text (get_msg ("technical_detail_button_text", Void))
-			ev_view_detail_high_rb.set_tooltip (get_msg ("technical_detail_button_tooltip", Void))
+			ev_view_detail_high_rb.set_text (get_text ("technical_detail_button_text"))
+			ev_view_detail_high_rb.set_tooltip (get_text ("technical_detail_button_tooltip"))
 			ev_view_detail_vbox.extend (ev_view_detail_high_rb)
 
 			create ev_view_rm_frame
-			ev_view_rm_frame.set_text (get_msg ("view_rm_controls_text", Void))
+			ev_view_rm_frame.set_text (get_text ("view_rm_controls_text"))
 			ev_view_rm_frame.set_minimum_width (100)
 			ev_view_rm_frame.set_minimum_height (85)
 			ev_view_controls_vbox.extend (ev_view_rm_frame)
@@ -124,13 +124,13 @@ feature -- Initialisation
 			ev_view_rm_frame.extend (ev_view_rm_vbox)
 
 			create ev_view_rm_attrs_on_cb
-			ev_view_rm_attrs_on_cb.set_text (get_msg ("show_rm_properties_button_text", Void))
-			ev_view_rm_attrs_on_cb.set_tooltip (get_msg ("show_rm_properties_tooltip", Void))
+			ev_view_rm_attrs_on_cb.set_text (get_text ("show_rm_properties_button_text"))
+			ev_view_rm_attrs_on_cb.set_tooltip (get_text ("show_rm_properties_tooltip"))
 			ev_view_rm_vbox.extend (ev_view_rm_attrs_on_cb)
 
 			create ev_view_rm_use_icons_cb
-			ev_view_rm_use_icons_cb.set_text (get_msg ("use_rm_icons_button_text", Void))
-			ev_view_rm_use_icons_cb.set_tooltip (get_msg ("use_rm_icons_button_tooltip", Void))
+			ev_view_rm_use_icons_cb.set_text (get_text ("use_rm_icons_button_text"))
+			ev_view_rm_use_icons_cb.set_tooltip (get_text ("use_rm_icons_button_tooltip"))
 			ev_view_rm_vbox.extend (ev_view_rm_use_icons_cb)
 
 			in_reference_model_mode := show_reference_model_view
@@ -389,12 +389,15 @@ feature {NONE} -- Implementation
 			populate_invariants
 
 			-- make visualisation adjustments
-			on_collapse_tree
-
-			on_expand_tree_one_level
-			on_expand_tree_one_level
-			on_expand_tree_one_level
-			on_expand_tree_one_level
+			if expand_node_tree then
+				on_expand_tree
+			else
+				on_collapse_tree
+				on_expand_tree_one_level
+				on_expand_tree_one_level
+				on_expand_tree_one_level
+				on_expand_tree_one_level
+			end
 
 			if not differential_view then
 				roll_up_to_specialisation_level

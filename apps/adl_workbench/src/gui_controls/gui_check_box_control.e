@@ -1,7 +1,13 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-				 EV_FRAME-based control, containing a vbox or hbox, and with some style setting.
+				 Visual control for a BOOLEAN data source that outputs to an EV_CHECK_BUTTON.
+				 Visual control structure is a check-box with a title.
+				 
+					+-+
+					| | Title
+					+-+
+
 				 ]"
 	keywords:    "UI, ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
@@ -14,12 +20,12 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class GUI_FRAME_CONTROL
+class GUI_CHECK_BOX_CONTROL
 
 inherit
-	GUI_DEFINITIONS
-		export
-			{NONE} all
+	GUI_XX_DATA_CONTROL
+		redefine
+			data_source_agent, enable_edit, disable_edit
 		end
 
 create
@@ -27,54 +33,74 @@ create
 
 feature -- Initialisation
 
-	make (a_title: STRING; min_height, min_width: INTEGER; use_hbox_container: BOOLEAN)
+	make (a_title, a_tooltip: detachable STRING; a_data_source_agent: like data_source_agent; min_height, min_width: INTEGER)
+		local
+			mh, mw: INTEGER
 		do
-			create ev_root_container
-			ev_root_container.set_text (a_title)
-			ev_root_container.set_style (1)
+			data_source_agent := a_data_source_agent
 
-			if use_hbox_container then
-				create {EV_HORIZONTAL_BOX} ev_root_box
-			else
-				create {EV_VERTICAL_BOX} ev_root_box
+			mh := min_height.max (default_min_height) + Default_border_width
+			mw := min_width.max (default_min_width) + Default_border_width
+
+			-- create the data control and add to ev_container
+			create_ev_data_control
+			ev_data_control.set_text (a_title)
+			if attached a_tooltip then
+				ev_data_control.set_tooltip (a_tooltip)
 			end
-			ev_root_box.set_border_width (Default_border_width)
-			ev_root_box.set_padding_width (Default_padding_width)
-			ev_root_container.extend (ev_root_box)
-			ev_current_box := ev_root_box
 		end
 
 feature -- Access
 
-	ev_root_container: EV_FRAME
+	ev_data_control: EV_CHECK_BUTTON
 
-feature -- Modification
+	data_source_agent: FUNCTION [ANY, TUPLE, BOOLEAN]
 
-	extend (a_widget: EV_WIDGET; can_expand: BOOLEAN)
-			-- extend current container with `a_widget'
+feature -- Status Report
+
+	is_selected: BOOLEAN
+			-- report state of checkbox
 		do
-			ev_current_box.extend (a_widget)
-			if not can_expand then
-				ev_current_box.disable_item_expand (a_widget)
-			end
+			Result := ev_data_control.is_selected
 		end
 
-	add_row (can_expand: BOOLEAN)
-			-- add an HBOX container; subsequent calls to `extend' will add to this HBOX
+feature -- Commands
+
+	enable_edit
+			-- enable editing
 		do
-			create {EV_HORIZONTAL_BOX} ev_current_box
-			ev_root_box.extend (ev_current_box)
-			if not can_expand then
-				ev_root_box.disable_item_expand (ev_current_box)
+			precursor
+			ev_data_control.enable_sensitive
+		end
+
+	disable_edit
+			-- disable editing
+		do
+			precursor
+			ev_data_control.disable_sensitive
+		end
+
+	do_clear
+			-- Wipe out content
+		do
+			ev_data_control.disable_select
+		end
+
+	do_populate
+		do
+			if data_source_agent.item ([]) then
+				ev_data_control.enable_select
+			else
+				ev_data_control.disable_select
 			end
 		end
 
 feature {NONE} -- Implementation
 
-	ev_root_box: EV_BOX
-
-	ev_current_box: EV_BOX
-			-- ref to box currently being added to
+	create_ev_data_control
+		do
+			create ev_data_control
+		end
 
 end
 

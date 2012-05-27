@@ -30,11 +30,11 @@ note
 class GUI_COMBO_CONTROL
 
 inherit
-	GUI_DATA_CONTROL
+	GUI_TITLED_DATA_CONTROL
 		rename
 			make as make_data_control, make_editable as make_editable_data_control
 		redefine
-			data_source, enable_edit, disable_edit
+			data_source_agent, enable_edit, disable_edit
 		end
 
 create
@@ -42,10 +42,10 @@ create
 
 feature -- Initialisation
 
-	make (a_title: STRING; a_data_source: like data_source;
+	make (a_title: STRING; a_data_source_agent: like data_source_agent;
 			min_height, min_width: INTEGER; use_hbox_container: BOOLEAN)
 		do
-			make_data_control (a_title, a_data_source, min_height, min_width, use_hbox_container, False)
+			make_data_control (a_title, a_data_source_agent, min_height, min_width, use_hbox_container, False)
 			ev_root_container.disable_item_expand (ev_data_control)
 			ev_data_control.select_actions.extend (agent propagate_select_action)
 		end
@@ -54,7 +54,7 @@ feature -- Access
 
 	ev_data_control: EV_COMBO_BOX
 
-	data_source: FUNCTION [ANY, TUPLE, LIST [STRING]]
+	data_source_agent: FUNCTION [ANY, TUPLE, LIST [STRING]]
 
 feature -- Commands
 
@@ -83,7 +83,7 @@ feature -- Commands
 		do
 			ev_data_control.select_actions.block
 			ev_data_control.wipe_out
-			if attached {LIST [STRING]} data_source.item ([]) as strs then
+			if attached {LIST [STRING]} data_source_agent.item ([]) as strs then
 				strs.do_all (
 					agent (str:STRING)
 						do
@@ -99,7 +99,7 @@ feature {NONE} -- Implementation
 	propagate_select_action
 		do
 			if attached linked_data_controls then
-				linked_data_controls.do_all (agent (a_ctl: GUI_DATA_CONTROL) do a_ctl.do_populate end)
+				linked_data_controls.do_all (agent (a_ctl: GUI_XX_DATA_CONTROL) do a_ctl.do_populate end)
 			end
 		end
 

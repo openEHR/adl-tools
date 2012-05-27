@@ -33,7 +33,7 @@ class GUI_HASH_TABLE_CONTROL
 inherit
 	GUI_EV_MLIST_CONTROL
 		redefine
-			data_source, data_source_create_agent, data_source_remove_agent
+			data_source_agent, data_source_setter_agent, data_source_remove_agent
 		end
 
 create
@@ -41,11 +41,11 @@ create
 
 feature -- Access
 
-	data_source: FUNCTION [ANY, TUPLE, HASH_TABLE [STRING, STRING]]
+	data_source_agent: FUNCTION [ANY, TUPLE, HASH_TABLE [STRING, STRING]]
 			-- function that produces a correct reference to the data source of this
 			-- control when called
 
-	data_source_create_agent: detachable PROCEDURE [ANY, TUPLE [STRING, STRING]]
+	data_source_setter_agent: detachable PROCEDURE [ANY, TUPLE [STRING, STRING]]
 			-- agent for creating & setting the data source
 
 	data_source_remove_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
@@ -55,7 +55,7 @@ feature {NONE} -- Implementation
 
 	do_populate_control_from_source
 		do
-			populate_ev_multi_list_from_hash (ev_data_control, data_source.item([]))
+			populate_ev_multi_list_from_hash (ev_data_control, data_source_agent.item([]))
 		end
 
 	process_in_place_edit
@@ -64,7 +64,7 @@ feature {NONE} -- Implementation
 			i: INTEGER
 			ds: HASH_TABLE [STRING, STRING]
 		do
-			ds := data_source.item ([])
+			ds := data_source_agent.item ([])
 			i := 1
 			from ds.start until i = ev_data_control.widget_row or ds.off loop
 				i := i + 1
@@ -117,10 +117,10 @@ feature {NONE} -- Implementation
 			ev_data_control.extend (new_row)
 			new_row.pointer_button_press_actions.force_extend (agent mlist_handler (ev_data_control, ?, ?, ?, ?, ?, ?, ?, ?))
 
-			data_source_create_agent.call ([new_key, new_val])
+			data_source_setter_agent.call ([new_key, new_val])
 			undo_redo_chain.add_link (
 				agent data_source_remove_agent.call ([new_key]), agent do_populate, -- undo
-				agent data_source_create_agent.call ([new_key, new_val]), agent do_populate -- redo
+				agent data_source_setter_agent.call ([new_key, new_val]), agent do_populate -- redo
 			)
 		end
 
@@ -135,7 +135,7 @@ feature {NONE} -- Implementation
 			ev_data_control.remove_selected_item
 
 			undo_redo_chain.add_link (
-				agent data_source_create_agent.call ([old_key, old_val]), agent do_populate,  -- undo
+				agent data_source_setter_agent.call ([old_key, old_val]), agent do_populate,  -- undo
 				agent data_source_remove_agent.call ([old_key]), agent do_populate -- redo
 			)
 		end

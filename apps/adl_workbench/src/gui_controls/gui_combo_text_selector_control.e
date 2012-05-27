@@ -35,7 +35,7 @@ inherit
 		rename
 			make as make_text_control, make_editable as make_editable_text_control
 		redefine
-			enable_edit, disable_edit, data_source_create_agent, do_populate
+			enable_edit, disable_edit, data_source_setter_agent, do_populate
 		end
 
 create
@@ -43,31 +43,29 @@ create
 
 feature -- Initialisation
 
-	make (a_title: STRING; a_data_source: like data_source;
+	make (a_title: STRING; a_data_source: like data_source_agent;
 			a_value_set: LIST [STRING];
-			min_height, min_width: INTEGER; use_hbox_container: BOOLEAN)
+			min_height, min_width: INTEGER)
 		do
-			make_data_control (a_title, a_data_source, min_height, min_width, use_hbox_container, False)
+			make_data_control (a_title, a_data_source, min_height, min_width, True, False)
 			value_set := a_value_set
+			value_set.compare_objects
 			ev_root_container.disable_item_expand (ev_data_control)
 			ev_data_control.select_actions.extend (agent propagate_select_action)
 		end
 
-	make_editable (a_title: STRING;
-			a_data_source: like data_source;
+	make_editable (a_title: STRING; a_data_source: like data_source_agent;
 			a_value_set: LIST [STRING];
-			a_data_source_create_agent: like data_source_create_agent;
+			a_data_source_setter_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
 			an_undo_redo_chain: like undo_redo_chain;
-			min_height, min_width: INTEGER;
-			use_hbox_container: BOOLEAN)
+			min_height, min_width: INTEGER)
 		do
 			make_editable_data_control (a_title,
-				a_data_source, a_data_source_create_agent, a_data_source_remove_agent,
-				an_undo_redo_chain,
-				min_height, min_width,
-				use_hbox_container, False)
+				a_data_source, a_data_source_setter_agent, a_data_source_remove_agent,
+				an_undo_redo_chain, min_height, min_width, True, False)
 			value_set := a_value_set
+			value_set.compare_objects
 			ev_root_container.disable_item_expand (ev_data_control)
 			ev_data_control.select_actions.extend (agent propagate_select_action)
 			ev_data_control.select_actions.extend (agent process_edit)
@@ -81,7 +79,7 @@ feature -- Access
 
 	ev_data_control: EV_COMBO_BOX
 
-	data_source_create_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
+	data_source_setter_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
 			-- agent for creating & setting the data source
 
 feature -- Commands
@@ -112,6 +110,8 @@ feature -- Commands
 			if not edit_enabled then
 				ev_data_control.enable_sensitive
 			end
+
+			-- populate with all possible values
 			ev_data_control.wipe_out
 			value_set.do_all (
 				agent (str: STRING)
@@ -119,7 +119,10 @@ feature -- Commands
 						ev_data_control.extend (create {EV_LIST_ITEM}.make_with_text (utf8_to_utf32 (str)))
 					end
 			)
-			cur_val := data_source.item ([])
+
+			-- select value matching that in data source, if any match exists, otherwise select
+			-- the 'unknown' value
+			cur_val := data_source_agent.item ([])
 			if value_set.has (cur_val) then
 				ev_data_control.do_all (
 					agent (li: EV_LIST_ITEM; a_val: STRING)
@@ -143,7 +146,7 @@ feature {NONE} -- Implementation
 	propagate_select_action
 		do
 			if attached linked_data_controls then
-				linked_data_controls.do_all (agent (a_ctl: GUI_DATA_CONTROL) do a_ctl.do_populate end)
+				linked_data_controls.do_all (agent (a_ctl: GUI_XX_DATA_CONTROL) do a_ctl.do_populate end)
 			end
 		end
 

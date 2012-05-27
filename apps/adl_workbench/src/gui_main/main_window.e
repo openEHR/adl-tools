@@ -831,6 +831,11 @@ feature {NONE} -- Tools menu events
 			end
 		end
 
+	read_options_file
+		do
+			execution_environment.launch (text_editor_command + " %"" + user_config_file_path + "%"")
+		end
+
 	update_all_tools_rm_icons_setting
 		do
 			archetype_tools.do_all_tools (agent (a_tool: GUI_ARCHETYPE_TOOL) do a_tool.update_rm_icons_setting end)

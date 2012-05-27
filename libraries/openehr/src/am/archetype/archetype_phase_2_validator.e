@@ -390,9 +390,25 @@ end
 					add_error ("VARXV", <<ontology.physical_to_logical_path (car.path, target_descriptor.current_language, True)>>)
 				end
 
+			-- any kind of C_OBJECT other than a C_ARCHETYPE_ROOT
 			elseif attached {C_OBJECT} a_c_node as co_child_diff then
 				create apa.make_from_string (a_c_node.path)
+
 				co_parent_flat := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
+
+				-- The above won't work properly in the case where there are multiple alternative objects with no identifiers
+				-- in the flat parent - need to do a search based on RM type matching to find the matching C_OBJECT in the flat
+				if not co_parent_flat.is_root and not co_child_diff.is_addressable and then co_parent_flat.parent.has_non_identified_alternatives then
+					if co_parent_flat.parent.has_child_with_rm_type_name (co_child_diff.rm_type_name) then
+						co_parent_flat := co_parent_flat.parent.child_with_rm_type_name (co_child_diff.rm_type_name)
+					else
+						-- TODO: (12930) find the closest ancestor node
+						io.put_string ("ARCHETYPE_PHASE_2_VALIDATOR.specialised_node_validate: %
+							%currently unhandled case - co_child_diff.rm_type_name needs to be matched with child at path " + co_parent_flat.parent.path + "%N")
+
+						-- TODO: generate error in case where no type match can be found
+					end
+				end
 
 debug ("validate")
 	io.put_string (">>>>> validate: C_OBJECT in child at " + ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.current_language, True))
@@ -429,7 +445,7 @@ end
 							co_parent_flat.generating_type>>)
 
 					-- they should also be conformant as defined by the node_conforms_to() function
-					elseif not co_child_diff.node_conforms_to(co_parent_flat, rm_schema) then
+					elseif not co_child_diff.node_conforms_to (co_parent_flat, rm_schema) then
 
 						-- RM type non-conformance was the reason
 						if not co_child_diff.rm_type_conforms_to (co_parent_flat, rm_schema) then

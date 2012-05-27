@@ -23,39 +23,32 @@ note
 deferred class GUI_TEXT_CONTROL
 
 inherit
-	GUI_DATA_CONTROL
+	GUI_TITLED_DATA_CONTROL
 		rename
 			make as make_data_control, make_editable as make_editable_data_control
 		redefine
-			data_source, data_source_create_agent, enable_edit, disable_edit
+			data_source_agent, data_source_setter_agent, enable_edit, disable_edit
 		end
 
 feature -- Initialisation
 
-	make (a_title: STRING;
-			a_data_source: like data_source;
-			min_height, min_width: INTEGER; use_hbox_container, allow_expansion: BOOLEAN;
-			a_text_box_select_all_handler: PROCEDURE [ANY, TUPLE])
+	make (a_title: STRING; a_data_source_agent: like data_source_agent;
+			min_height, min_width: INTEGER; use_hbox_container, allow_expansion: BOOLEAN)
 		do
-			make_data_control (a_title, a_data_source, min_height, min_width,
-				use_hbox_container, allow_expansion)
-			ev_data_control.focus_in_actions.extend (a_text_box_select_all_handler)
+			make_data_control (a_title, a_data_source_agent, min_height, min_width, use_hbox_container, allow_expansion)
+			ev_data_control.focus_in_actions.extend (agent on_select_all)
 		end
 
-	make_editable (a_title: STRING;
-			a_data_source: like data_source;
-			a_data_source_create_agent: like data_source_create_agent;
+	make_editable (a_title: STRING; a_data_source_agent: like data_source_agent;
+			a_data_source_setter_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
 			an_undo_redo_chain: like undo_redo_chain;
-			min_height, min_width: INTEGER; use_hbox_container: BOOLEAN; allow_expansion: BOOLEAN;
-			a_text_box_select_all_handler: PROCEDURE [ANY, TUPLE])
+			min_height, min_width: INTEGER; use_hbox_container: BOOLEAN; allow_expansion: BOOLEAN)
 		do
 			make_editable_data_control (a_title,
-				a_data_source, a_data_source_create_agent, a_data_source_remove_agent,
-				an_undo_redo_chain,
-				min_height, min_width,
-				use_hbox_container, allow_expansion)
-			ev_data_control.focus_in_actions.extend (a_text_box_select_all_handler)
+				a_data_source_agent, a_data_source_setter_agent, a_data_source_remove_agent,
+				an_undo_redo_chain, min_height, min_width, use_hbox_container, allow_expansion)
+			ev_data_control.focus_in_actions.extend (agent on_select_all)
 		end
 
 feature -- Access
@@ -64,9 +57,15 @@ feature -- Access
 		deferred
 		end
 
-	data_source: FUNCTION [ANY, TUPLE, STRING]
+	data_control_text: STRING_8
+			-- STRING_8 converted form of text from UI
+		do
+			Result := ev_data_control.text.to_string_8
+		end
 
-	data_source_create_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
+	data_source_agent: FUNCTION [ANY, TUPLE, STRING]
+
+	data_source_setter_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
 			-- agent for creating & setting the data source
 
 feature -- Commands
@@ -76,7 +75,9 @@ feature -- Commands
 		do
 			precursor
 			ev_data_control.enable_edit
-			ev_data_control.focus_out_actions.extend (agent process_edit)
+			if attached data_source_setter_agent and attached data_source_remove_agent then
+				ev_data_control.focus_out_actions.extend (agent process_edit)
+			end
 		end
 
 	disable_edit
@@ -98,7 +99,7 @@ feature -- Commands
 	do_populate
 			-- populate content.
 		do
-			if attached {STRING} data_source.item ([]) as str then
+			if attached {STRING} data_source_agent.item ([]) as str then
 				ev_data_control.set_text (utf8_to_utf32 (str))
 			else
 				ev_data_control.remove_text
@@ -108,12 +109,16 @@ feature -- Commands
 feature {NONE} -- Implementation
 
 	process_edit
+		require
+			Setter_agent_available: attached data_source_setter_agent
+			Remove_agent_available: attached data_source_remove_agent
 		local
 			old_val, new_val: STRING
 			undo_agt, redo_agt: PROCEDURE [ANY, TUPLE]
+			ds: STRING
 		do
 			new_val := utf32_to_utf8 (ev_data_control.text)
-			ds := data_source.item ([])
+			ds := data_source_agent.item ([])
 			if attached ds then
 				create old_val.make_from_string (ds)
 			else
@@ -125,21 +130,29 @@ feature {NONE} -- Implementation
 				if old_val.is_empty then
 					undo_agt := data_source_remove_agent
 				else
-					undo_agt := agent data_source_create_agent.call ([old_val])
+					undo_agt := agent data_source_setter_agent.call ([old_val])
 				end
 
 				if new_val.is_empty then
 					redo_agt := data_source_remove_agent
 				else
-					redo_agt := agent data_source_create_agent.call ([new_val])
+					redo_agt := agent data_source_setter_agent.call ([new_val])
 				end
 
-				data_source_create_agent.call ([new_val])
-				undo_redo_chain.add_link (undo_agt, agent do_populate, redo_agt, agent do_populate)
+				data_source_setter_agent.call ([new_val])
+
+				if attached undo_redo_chain then
+					undo_redo_chain.add_link (undo_agt, agent do_populate, redo_agt, agent do_populate)
+				end
 			end
 		end
 
-	ds: STRING
+	on_select_all
+		do
+			if ev_data_control.text_length > 0 then
+				ev_data_control.select_all
+			end
+		end
 
 end
 

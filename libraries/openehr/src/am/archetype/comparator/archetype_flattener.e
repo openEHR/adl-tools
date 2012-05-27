@@ -279,7 +279,8 @@ debug ("flatten")
 		cco_output_flat.node_id + "]**%N")
 end
 							if not cco_output_flat.is_root then
-								cco_output_flat.parent.remove_child_by_id (cco_output_flat.node_id)
+								-- cco_output_flat.parent.remove_child_by_id (cco_output_flat.node_id)
+								cco_output_flat.convert_to_ghost
 							end
 
 						else -- otherwise is it a normal override
@@ -389,8 +390,8 @@ end
 										ca_output := cco_output_flat_proximate.c_attribute (ca_child.rm_attribute_name)
 
 										if ca_child.is_prohibited then -- existence = {0}; remove the attribute completely
-											ca_output.parent.remove_attribute_by_name (ca_child.rm_attribute_name)
-											ca_output.parent.set_specialisation_status_redefined
+											-- ca_output.parent.remove_attribute_by_name (ca_child.rm_attribute_name)
+											ca_output.convert_to_ghost
 										else
 											-- graft the existence if that has been changed
 											if attached ca_child.existence then
@@ -558,12 +559,12 @@ end
 
 						-- now we either merge the object, or deal with the special case of occurrences = 0,
 						-- in which case, remove the target object
-						if ca_child.children.i_th(i).is_prohibited then
-							ca_output.remove_child (insert_obj)
-							ca_output.set_specialisation_status_redefined -- mark parent as redefined if a child is removed
+						if ca_child.children.i_th (i).is_prohibited then
+							-- ca_output.remove_child (insert_obj)
+							insert_obj.convert_to_ghost
 						else
 							merge_obj := ca_child.children.i_th(i).safe_deep_twin
-							merge_obj.clear_sibling_order -- no sibling_order markers in flat archetypes!
+					--		merge_obj.clear_sibling_order -- no sibling_order markers in flat archetypes!
 							if merge_list.item.before_flag then -- True = insert before
 								ca_output.put_child_left (merge_obj, insert_obj)
 							else
@@ -582,7 +583,8 @@ end
 						node_id_in_parent := code_at_level (arch_slot.node_id, arch_parent_flat.specialisation_depth)
 						child_grafted_path_list.extend (arch_slot.path) -- remember the path, so we don't try to do it again later on
 						if arch_slot.is_prohibited then
-							ca_output.remove_child_by_id (node_id_in_parent)
+							-- ca_output.remove_child_by_id (node_id_in_parent)
+							ca_output.child_with_id (node_id_in_parent).convert_to_ghost
 						elseif arch_slot.is_closed then
 							if attached {ARCHETYPE_SLOT} ca_output.child_with_id (node_id_in_parent) as flat_arch_slot then
 								flat_arch_slot.set_closed
@@ -618,8 +620,8 @@ end
 				if attached {ARCHETYPE_SLOT} ca_child.children.item as arch_slot then
 					node_id_in_parent := code_at_level (arch_slot.node_id, arch_parent_flat.specialisation_depth)
 					if arch_slot.is_prohibited then
-						ca_output.remove_child_by_id (node_id_in_parent)
-						ca_output.set_specialisation_status_redefined
+					--	ca_output.remove_child_by_id (node_id_in_parent)
+						ca_output.child_with_id (node_id_in_parent).convert_to_ghost
 					elseif arch_slot.is_closed then
 						if attached {ARCHETYPE_SLOT} ca_output.child_with_id (node_id_in_parent) as flat_arch_slot then
 							flat_arch_slot.set_closed
@@ -655,12 +657,14 @@ end
 					elseif ca_output.has_child_with_rm_type_name (merge_obj.rm_type_name) then
 						ca_output.replace_child_by_rm_type_name (merge_obj)
 
-					else -- or a RM parent type, then add
+					-- else the node to be added has an RM child type of an existing node - then add it
+					else
+						-- TODO: the following won't be needed when the check in ARCHETYPE_PHASE_2_VALIDATOR (search for '12930')
+						-- is implemented.
 						rm_ancestors := rm_schema.all_ancestor_classes_of (merge_obj.rm_type_name)
-						from rm_ancestors.start until rm_ancestors.off or ca_output.has_child_with_rm_type_name (rm_ancestors.item) loop
-							rm_ancestors.forth
-						end
-						if not rm_ancestors.off then
+						if rm_ancestors.there_exists (
+							agent (anc_type: STRING; ca: C_ATTRIBUTE): BOOLEAN do Result := ca.has_child_with_rm_type_name (anc_type) end (?, ca_output))
+						then
 							ca_output.put_child (merge_obj)
 						end
 					end

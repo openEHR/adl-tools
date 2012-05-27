@@ -1,7 +1,8 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-				 EV_FRAME-based control, containing a vbox or hbox, and with some style setting.
+				 General model of a primitive data control, consisting of a data source, visual control, 
+				 routines for populate, clear, and agents for editing.
 				 ]"
 	keywords:    "UI, ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
@@ -14,70 +15,100 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class GUI_FRAME_CONTROL
+deferred class GUI_XX_DATA_CONTROL
 
 inherit
-	GUI_DEFINITIONS
+	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
 		end
 
-create
-	make
-
-feature -- Initialisation
-
-	make (a_title: STRING; min_height, min_width: INTEGER; use_hbox_container: BOOLEAN)
-		do
-			create ev_root_container
-			ev_root_container.set_text (a_title)
-			ev_root_container.set_style (1)
-
-			if use_hbox_container then
-				create {EV_HORIZONTAL_BOX} ev_root_box
-			else
-				create {EV_VERTICAL_BOX} ev_root_box
-			end
-			ev_root_box.set_border_width (Default_border_width)
-			ev_root_box.set_padding_width (Default_padding_width)
-			ev_root_container.extend (ev_root_box)
-			ev_current_box := ev_root_box
+	GUI_UTILITIES
+		export
+			{NONE} all
 		end
+
+feature -- Definitions
+
+	default_min_height: INTEGER = 23
+
+	default_min_width: INTEGER = 50
 
 feature -- Access
 
-	ev_root_container: EV_FRAME
+	ev_data_control: EV_PRIMITIVE
+		deferred
+		end
+
+	data_source_agent: FUNCTION [ANY, TUPLE, ANY]
+			-- specialise in descendants
+
+	data_source_setter_agent: detachable PROCEDURE [ANY, TUPLE[ANY]]
+			-- agent for creating & setting the data source
+
+	data_source_remove_agent: detachable PROCEDURE [ANY, TUPLE]
+			-- agent for removing an the data source when it becomes empty,
+			-- in the case where it is a detachable attribute
+			-- of its owning class.
+
+	undo_redo_chain: detachable UNDO_REDO_CHAIN
+		-- reference to undo/redo chain from owning visual context
+
+feature -- Status Report
+
+	can_edit: BOOLEAN
+			-- True if this control is capable of editing
+
+	edit_enabled: BOOLEAN
+			-- True if editing current enabled
 
 feature -- Modification
 
-	extend (a_widget: EV_WIDGET; can_expand: BOOLEAN)
-			-- extend current container with `a_widget'
+	add_linked_control (a_control: GUI_TITLED_DATA_CONTROL)
+			-- add a control that is to be repopulated if this control is selected in some way
 		do
-			ev_current_box.extend (a_widget)
-			if not can_expand then
-				ev_current_box.disable_item_expand (a_widget)
+			if not attached linked_data_controls then
+				create linked_data_controls.make(0)
 			end
+			linked_data_controls.extend (a_control)
 		end
 
-	add_row (can_expand: BOOLEAN)
-			-- add an HBOX container; subsequent calls to `extend' will add to this HBOX
+feature -- Commands
+
+	do_clear
+			-- Wipe out content.
+		deferred
+		end
+
+	do_populate
+		deferred
+		end
+
+	enable_edit
+			-- enable editing
+		require
+			can_edit
 		do
-			create {EV_HORIZONTAL_BOX} ev_current_box
-			ev_root_box.extend (ev_current_box)
-			if not can_expand then
-				ev_root_box.disable_item_expand (ev_current_box)
-			end
+			edit_enabled := True
+		end
+
+	disable_edit
+			-- disable editing
+		require
+			can_edit
+		do
+			edit_enabled := False
 		end
 
 feature {NONE} -- Implementation
 
-	ev_root_box: EV_BOX
+	create_ev_data_control
+		deferred
+		end
 
-	ev_current_box: EV_BOX
-			-- ref to box currently being added to
+	linked_data_controls: detachable ARRAYED_LIST [GUI_XX_DATA_CONTROL]
 
 end
-
 
 
 --|

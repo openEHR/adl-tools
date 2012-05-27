@@ -222,13 +222,13 @@ feature -- Modification
 			sibling_order_set: attached sibling_order and (sibling_order.is_after and sibling_order.sibling_node_id.is_equal (a_node_id))
 		end
 
-	clear_sibling_order
-			-- remove sibling order
-		do
-			sibling_order := Void
-		ensure
-			not attached sibling_order
-		end
+--	clear_sibling_order
+--			-- remove sibling order
+--		do
+--			sibling_order := Void
+--		ensure
+--			not attached sibling_order
+--		end
 
 	set_node_id (an_object_id: attached STRING)
 		require
@@ -258,6 +258,15 @@ feature -- Modification
 				set_occurrences (other.occurrences.deep_twin)
 				set_specialisation_status_redefined
 			end
+		end
+
+	convert_to_ghost
+			-- Remove all children - represents a removed node within a flat archetype.
+			-- In an editing context, this enables diff form to be regenerated for saving
+		do
+			set_specialisation_status_redefined
+		ensure
+			Marked_as_redefined: specialisation_status = {SPECIALISATION_STATUSES}.ss_redefined
 		end
 
 feature -- Output

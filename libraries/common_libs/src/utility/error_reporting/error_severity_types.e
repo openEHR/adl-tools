@@ -25,7 +25,7 @@ feature -- Definitions
 
 feature -- Access
 
-	error_type_names: DS_HASH_TABLE [STRING, INTEGER]
+	error_type_names: HASH_TABLE [STRING, INTEGER]
 			-- names of message types
 		once
 			create Result.make(0)
@@ -35,7 +35,7 @@ feature -- Access
 			Result.force("DEBUG", Error_type_debug)
 		end
 
-	error_type_ids: DS_HASH_TABLE [INTEGER, STRING]
+	error_type_ids: HASH_TABLE [INTEGER, STRING]
 			-- ids of message types
 		once
 			create Result.make(0)

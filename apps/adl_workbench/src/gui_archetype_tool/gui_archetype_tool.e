@@ -43,7 +43,7 @@ feature {NONE}-- Initialization
 			precursor
 
 			-- create subordinate widgets
-			create description_controls.make (agent text_widget_handler.on_select_all, Void)
+			create description_controls.make (Void)
 			create node_map_control.make (agent select_ontology_item_from_code)
 			create path_map_control.make (agent on_path_map_key_press)
 			create slot_map_control.make (agent update_slots_tab_label)

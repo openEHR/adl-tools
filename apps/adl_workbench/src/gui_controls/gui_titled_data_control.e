@@ -15,34 +15,20 @@ note
 	last_change: "$LastChangedDate$"
 
 
-deferred class GUI_DATA_CONTROL
+deferred class GUI_TITLED_DATA_CONTROL
 
 inherit
-	SHARED_APP_UI_RESOURCES
-		export
-			{NONE} all
-		end
-
-	GUI_UTILITIES
-		export
-			{NONE} all
-		end
-
-feature -- Definitions
-
-	default_min_height: INTEGER = 23
-
-	default_min_width: INTEGER = 50
+	GUI_XX_DATA_CONTROL
 
 feature -- Initialisation
 
-	make (a_title: detachable STRING; a_data_source: like data_source;
+	make (a_title: detachable STRING; a_data_source_agent: like data_source_agent;
 			min_height, min_width: INTEGER;
 			use_hbox_container: BOOLEAN; allow_expansion: BOOLEAN)
 		local
 			mh, mw: INTEGER
 		do
-			data_source := a_data_source
+			data_source_agent := a_data_source_agent
 
 			mh := min_height.max (default_min_height) + Default_border_width
 			mw := min_width.max (default_min_width) + Default_border_width
@@ -92,15 +78,15 @@ feature -- Initialisation
 			end
 		end
 
-	make_editable (a_title: STRING; a_data_source: like data_source;
-			a_data_source_create_agent: like data_source_create_agent;
+	make_editable (a_title: STRING; a_data_source_agent: like data_source_agent;
+			a_data_source_create_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
 			an_undo_redo_chain: UNDO_REDO_CHAIN;
 			min_height, min_width: INTEGER;
 			use_hbox_container: BOOLEAN; allow_expansion: BOOLEAN)
 		do
-			make (a_title, a_data_source, min_height, min_width, use_hbox_container, allow_expansion)
-			data_source_create_agent := a_data_source_create_agent
+			make (a_title, a_data_source_agent, min_height, min_width, use_hbox_container, allow_expansion)
+			data_source_setter_agent := a_data_source_create_agent
 			data_source_remove_agent := a_data_source_remove_agent
 			undo_redo_chain := an_undo_redo_chain
 
@@ -113,79 +99,7 @@ feature -- Access
 
 	ev_root_container: EV_BOX
 
-	ev_data_control: EV_PRIMITIVE
-		deferred
-		end
-
-	data_source: FUNCTION [ANY, TUPLE, ANY]
-			-- specialise in descendants
-
-	data_source_create_agent: detachable PROCEDURE [ANY, TUPLE]
-			-- agent for creating & setting the data source
-
-	data_source_remove_agent: detachable PROCEDURE [ANY, TUPLE]
-			-- agent for removing an the data source when it becomes empty,
-			-- in the case where it is a detachable attribute
-			-- of its owning class.
-
-	undo_redo_chain: detachable UNDO_REDO_CHAIN
-		-- reference to undo/redo chain from owning visual context
-
 	ev_title_label: EV_LABEL
-
-feature -- Status Report
-
-	can_edit: BOOLEAN
-			-- True if this control is capable of editing
-
-	edit_enabled: BOOLEAN
-			-- True if editing current enabled
-
-feature -- Modification
-
-	add_linked_control (a_control: GUI_DATA_CONTROL)
-			-- add a control that is to be repopulated if this control is selected in some way
-		do
-			if not attached linked_data_controls then
-				create linked_data_controls.make(0)
-			end
-			linked_data_controls.extend (a_control)
-		end
-
-feature -- Commands
-
-	do_clear
-			-- Wipe out content.
-		deferred
-		end
-
-	do_populate
-		deferred
-		end
-
-	enable_edit
-			-- enable editing
-		require
-			can_edit
-		do
-			edit_enabled := True
-		end
-
-	disable_edit
-			-- disable editing
-		require
-			can_edit
-		do
-			edit_enabled := False
-		end
-
-feature {NONE} -- Implementation
-
-	create_ev_data_control
-		deferred
-		end
-
-	linked_data_controls: ARRAYED_LIST [GUI_DATA_CONTROL]
 
 end
 

@@ -810,7 +810,11 @@ feature {NONE} -- Implementation
 		local
 			pixmap_name: STRING
 		do
-			pixmap_name := rm_schema.property_definition (a_node.parent.rm_type_name, a_node.rm_attribute_name).multiplicity_key_string
+			if a_node.has_differential_path then
+				pixmap_name := rm_schema.property_definition_at_path (a_node.parent.rm_type_name, a_node.differential_path).multiplicity_key_string
+			else
+				pixmap_name := rm_schema.property_definition (a_node.parent.rm_type_name, a_node.rm_attribute_name).multiplicity_key_string
+			end
 
 			-- if using RM pixmaps, nothing changes; if not, inheritance status is shown
 			if use_rm_pixmaps then
