@@ -230,7 +230,7 @@ feature -- Commands
 	enable_edit
 			-- enable editing
 		do
-			gui_controls.do_all (agent (an_item: GUI_XX_DATA_CONTROL) do if an_item.can_edit then an_item.enable_edit end end)
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do if an_item.can_edit then an_item.enable_edit end end)
 		end
 
 feature {NONE} -- Implementation
@@ -241,10 +241,10 @@ feature {NONE} -- Implementation
 	do_populate
 			-- Set the dialog widgets from shared settings.
 		do
-			gui_controls.do_all (agent (an_item: GUI_XX_DATA_CONTROL) do an_item.do_populate end)
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.do_populate end)
 		end
 
-	gui_controls: ARRAYED_LIST [GUI_XX_DATA_CONTROL]
+	gui_controls: ARRAYED_LIST [GUI_DATA_CONTROL]
 
 	export_dir_setter, test_files_dir_setter: GUI_DIRECTORY_SETTER
 

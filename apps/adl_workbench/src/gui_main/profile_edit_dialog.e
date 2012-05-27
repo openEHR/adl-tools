@@ -237,7 +237,7 @@ feature -- Commands
 	enable_edit
 			-- enable editing
 		do
-			gui_controls.do_all (agent (an_item: GUI_XX_DATA_CONTROL) do if an_item.can_edit then an_item.enable_edit end end)
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do if an_item.can_edit then an_item.enable_edit end end)
 		end
 
 feature {NONE} -- Implementation
@@ -245,7 +245,7 @@ feature {NONE} -- Implementation
 	do_populate
 			-- Set the dialog widgets from shared settings.
 		do
-			gui_controls.do_all (agent (an_item: GUI_XX_DATA_CONTROL) do an_item.do_populate end)
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.do_populate end)
 		end
 
 	initialise_dirs
@@ -278,7 +278,7 @@ feature {NONE} -- Implementation
 
 	ev_root_container: EV_VERTICAL_BOX
 
-	gui_controls: ARRAYED_LIST [GUI_XX_DATA_CONTROL]
+	gui_controls: ARRAYED_LIST [GUI_DATA_CONTROL]
 
 	profile_name_ctl: GUI_SINGLE_LINE_TEXT_CONTROL
 

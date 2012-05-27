@@ -15,7 +15,7 @@ note
 	last_change: "$LastChangedDate$"
 
 
-deferred class GUI_XX_DATA_CONTROL
+deferred class GUI_DATA_CONTROL
 
 inherit
 	SHARED_APP_UI_RESOURCES
@@ -106,7 +106,7 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
-	linked_data_controls: detachable ARRAYED_LIST [GUI_XX_DATA_CONTROL]
+	linked_data_controls: detachable ARRAYED_LIST [GUI_DATA_CONTROL]
 
 end
 

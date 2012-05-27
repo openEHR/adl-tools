@@ -18,7 +18,7 @@ note
 deferred class GUI_TITLED_DATA_CONTROL
 
 inherit
-	GUI_XX_DATA_CONTROL
+	GUI_DATA_CONTROL
 
 feature -- Initialisation
 

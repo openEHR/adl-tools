@@ -99,7 +99,7 @@ feature {NONE} -- Implementation
 	propagate_select_action
 		do
 			if attached linked_data_controls then
-				linked_data_controls.do_all (agent (a_ctl: GUI_XX_DATA_CONTROL) do a_ctl.do_populate end)
+				linked_data_controls.do_all (agent (a_ctl: GUI_DATA_CONTROL) do a_ctl.do_populate end)
 			end
 		end
 

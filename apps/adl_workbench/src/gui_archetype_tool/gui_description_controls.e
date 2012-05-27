@@ -295,16 +295,16 @@ feature -- Commands
 			-- enable editing
 		do
 			precursor
-			gui_authoring_tab_controls.do_all (agent (an_item: GUI_XX_DATA_CONTROL) do if an_item.can_edit then an_item.enable_edit end end)
-			gui_description_tab_controls.do_all (agent (an_item: GUI_XX_DATA_CONTROL) do if an_item.can_edit then an_item.enable_edit end end)
+			gui_authoring_tab_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do if an_item.can_edit then an_item.enable_edit end end)
+			gui_description_tab_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do if an_item.can_edit then an_item.enable_edit end end)
 		end
 
 	disable_edit
 			-- disable editing
 		do
 			precursor
-			gui_authoring_tab_controls.do_all (agent (an_item: GUI_XX_DATA_CONTROL) do if an_item.can_edit then an_item.disable_edit end end)
-			gui_description_tab_controls.do_all (agent (an_item: GUI_XX_DATA_CONTROL) do if an_item.can_edit then an_item.disable_edit end end)
+			gui_authoring_tab_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do if an_item.can_edit then an_item.disable_edit end end)
+			gui_description_tab_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do if an_item.can_edit then an_item.disable_edit end end)
 		end
 
 feature {NONE} -- Implementation
@@ -329,21 +329,21 @@ feature {NONE} -- Implementation
 
 	undo_redo_update_agent: PROCEDURE [ANY, TUPLE [UNDO_REDO_CHAIN]]
 
-	gui_authoring_tab_controls, gui_description_tab_controls: ARRAYED_LIST [GUI_XX_DATA_CONTROL]
+	gui_authoring_tab_controls, gui_description_tab_controls: ARRAYED_LIST [GUI_DATA_CONTROL]
 
 	authoring_tab_undo_redo_chain, description_tab_undo_redo_chain: UNDO_REDO_CHAIN
 
 	do_clear
 			-- Wipe out content.
 		do
-			gui_authoring_tab_controls.do_all (agent (an_item: GUI_XX_DATA_CONTROL) do an_item.do_clear end)
-			gui_description_tab_controls.do_all (agent (an_item: GUI_XX_DATA_CONTROL) do an_item.do_clear end)
+			gui_authoring_tab_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.do_clear end)
+			gui_description_tab_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.do_clear end)
 		end
 
 	do_populate
 		do
-			gui_authoring_tab_controls.do_all (agent (an_item: GUI_XX_DATA_CONTROL) do an_item.do_populate end)
-			gui_description_tab_controls.do_all (agent (an_item: GUI_XX_DATA_CONTROL) do an_item.do_populate end)
+			gui_authoring_tab_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.do_populate end)
+			gui_description_tab_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.do_populate end)
 		end
 
 	description_details: detachable RESOURCE_DESCRIPTION_ITEM

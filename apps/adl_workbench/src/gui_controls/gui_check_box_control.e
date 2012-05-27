@@ -23,7 +23,7 @@ note
 class GUI_CHECK_BOX_CONTROL
 
 inherit
-	GUI_XX_DATA_CONTROL
+	GUI_DATA_CONTROL
 		redefine
 			data_source_agent, enable_edit, disable_edit
 		end

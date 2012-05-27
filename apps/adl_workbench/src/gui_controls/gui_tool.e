@@ -187,7 +187,7 @@ feature -- Commands
 feature {GUI_TOOL} -- Events
 
 	on_selected
-			-- processing required if this tool is visual selected, e.g. in a notebook
+			-- processing required if this tool is visually selected, e.g. in a notebook
 		do
 		end
 
