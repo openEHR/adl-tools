@@ -48,14 +48,10 @@ feature -- Initialisation
 
 	make (a_file_path: attached STRING)
 		do
+			create refresh_listeners.make (0)
 			create requested_resources.make (0)
 			file_path := a_file_path
-			if file_system.file_exists (file_path) then
-				read
-				if not attached dt_tree then
-					create_default_dt_tree
-				end
-			end
+			load
 		end
 
 feature -- Access
@@ -190,6 +186,12 @@ feature -- Modification
 			end
 		end
 
+	add_refresh_listener (an_agent: PROCEDURE [ANY, TUPLE])
+			-- adda listener to be executed on file reload
+		do
+
+		end
+
 feature -- Element Removal
 
 	remove_resource (a_path: attached STRING)
@@ -207,25 +209,15 @@ feature -- Element Removal
 			Path_removed: not has_resource(a_path)
 		end
 
-feature -- File system access
+feature -- Commands
 
-	read
-			-- read content from file and parse to Data Tree form.
-			-- if file not readable, or not there, or in wrong syntax, do nothing.
-		local
-			res_file: PLAIN_TEXT_FILE
-			parser: DADL_VALIDATOR
+	load
 		do
-			create res_file.make (file_path)
-			if res_file.exists and res_file.is_readable then
-				res_file.open_read
-				res_file.read_stream (res_file.count)
-				create parser.make
-				parser.execute(res_file.last_string, 1)
-				if not parser.syntax_error then
-					dt_tree := parser.output
+			if file_system.file_exists (file_path) then
+				read
+				if not attached dt_tree then
+					create_default_dt_tree
 				end
-				res_file.close
 			end
 		end
 
@@ -258,6 +250,32 @@ feature -- File system access
 
 feature {NONE} -- Implementation
 
+	read
+			-- read content from file and parse to Data Tree form.
+			-- if file not readable, or not there, or in wrong syntax, do nothing.
+		local
+			res_file: PLAIN_TEXT_FILE
+			parser: DADL_VALIDATOR
+		do
+			create res_file.make (file_path)
+			if res_file.exists and res_file.is_readable then
+				res_file.open_read
+				res_file.read_stream (res_file.count)
+				create parser.make
+				parser.execute (res_file.last_string, 1)
+				if not parser.syntax_error then
+					dt_tree := parser.output
+				end
+				res_file.close
+			end
+
+			-- update any refresh listeners
+			from refresh_listeners.start until refresh_listeners.off loop
+				 refresh_listeners.item.call ([])
+				 refresh_listeners.forth
+			end
+		end
+
 	env_var_pattern_matcher: LX_DFA_REGULAR_EXPRESSION
 			-- pattern for detecting $NAME in config values
 		once
@@ -277,6 +295,9 @@ feature {NONE} -- Implementation
 		do
 			create dt_tree.make_anonymous
 		end
+
+	refresh_listeners: ARRAYED_LIST [PROCEDURE [ANY, TUPLE]]
+			-- listeners to execute on file refresh
 
 end
 

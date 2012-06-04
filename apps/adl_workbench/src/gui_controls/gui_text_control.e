@@ -111,7 +111,6 @@ feature {NONE} -- Implementation
 	process_edit
 		require
 			Setter_agent_available: attached data_source_setter_agent
-			Remove_agent_available: attached data_source_remove_agent
 		local
 			old_val, new_val: STRING
 			undo_agt, redo_agt: PROCEDURE [ANY, TUPLE]

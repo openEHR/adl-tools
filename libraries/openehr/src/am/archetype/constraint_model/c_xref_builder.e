@@ -87,15 +87,11 @@ feature -- Visitor
 		do
 			start_c_domain_type(a_node, depth)
 			if not a_node.any_allowed and then (a_node.is_local and a_node.code_count > 0) then
-				from
-					a_node.code_list.start
-				until
-					a_node.code_list.off
-				loop
-					if not archetype.data_atcodes_index.has(a_node.code_list.item) then
-						archetype.data_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.code_list.item)
+				from a_node.code_list.start until a_node.code_list.off loop
+					if not archetype.data_atcodes_index.has (a_node.code_list.item) then
+						archetype.data_atcodes_index.put (create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.code_list.item)
 					end
-					archetype.data_atcodes_index.item(a_node.code_list.item).extend (a_node)
+					archetype.data_atcodes_index.item (a_node.code_list.item).extend (a_node)
 					a_node.code_list.forth
 				end
 			end
@@ -106,15 +102,11 @@ feature -- Visitor
 		do
 			start_c_domain_type(a_node, depth)
 			if not a_node.any_allowed and then a_node.is_local then
-				from
-					a_node.items.start
-				until
-					a_node.items.off
-				loop
-					if not archetype.data_atcodes_index.has(a_node.items.item.symbol.code_string) then
-						archetype.data_atcodes_index.put(create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.items.item.symbol.code_string)
+				from a_node.items.start until a_node.items.off loop
+					if not archetype.data_atcodes_index.has (a_node.items.item.symbol.code_string) then
+						archetype.data_atcodes_index.put (create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.items.item.symbol.code_string)
 					end
-					archetype.data_atcodes_index.item(a_node.items.item.symbol.code_string).extend (a_node)
+					archetype.data_atcodes_index.item (a_node.items.item.symbol.code_string).extend (a_node)
 					a_node.items.forth
 				end
 			end
@@ -132,7 +124,7 @@ feature -- Visitor
 				from og_path.start until og_path.off loop
 					if og_path.item.is_addressable and is_valid_code (og_path.item.object_id) then
 						if not archetype.id_atcodes_index.has (og_path.item.object_id) then
-							archetype.id_atcodes_index.put(create {ARRAYED_LIST[ARCHETYPE_CONSTRAINT]}.make(0), og_path.item.object_id)
+							archetype.id_atcodes_index.put (create {ARRAYED_LIST[ARCHETYPE_CONSTRAINT]}.make(0), og_path.item.object_id)
 						end
 						archetype.id_atcodes_index.item (og_path.item.object_id).extend (a_node)
 					end

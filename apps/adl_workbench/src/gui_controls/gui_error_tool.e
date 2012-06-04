@@ -22,9 +22,9 @@ note
 class GUI_ERROR_TOOL
 
 inherit
-	GUI_GRID_CONTROLLER
-		redefine
-			on_grid_key_press
+	EV_KEY_CONSTANTS
+		export
+			{NONE} all;
 		end
 
 	EV_SHARED_APPLICATION
@@ -75,10 +75,11 @@ feature {NONE} -- Initialisation
 			select_archetype_from_gui_data := a_select_archetype_from_gui_data_agent
 			update_gui_with_compiler_error_counts := an_update_gui_with_compiler_error_counts_agent
 			create categories.make_filled (Void, Err_type_valid, Err_type_warning)
-			make_for_grid (create {EV_GRID})
-			grid.enable_tree
-			grid.disable_row_height_fixed
-			grid.hide_tree_node_connectors
+			create ev_grid.make
+			ev_grid.enable_tree
+			ev_grid.disable_row_height_fixed
+			ev_grid.hide_tree_node_connectors
+			ev_grid.add_key_event (key_enter, agent select_node_in_archetype_tree_view)
 		end
 
 feature -- Commands
@@ -86,15 +87,15 @@ feature -- Commands
 	clear
 			-- Wipe out the content from `grid'.
 		do
-			grid.wipe_out
+			ev_grid.wipe_out
 			categories.discard_items
 
-			grid.insert_new_column (Col_category)
-			grid.insert_new_column (Col_location)
-			grid.insert_new_column (Col_message)
-			grid.column (Col_category).set_title ("Category")
-			grid.column (Col_location).set_title ("Archetype")
-			grid.column (Col_message).set_title ("Message")
+			ev_grid.insert_new_column (Col_category)
+			ev_grid.insert_new_column (Col_location)
+			ev_grid.insert_new_column (Col_message)
+			ev_grid.column (Col_category).set_title ("Category")
+			ev_grid.column (Col_location).set_title ("Archetype")
+			ev_grid.column (Col_message).set_title ("Message")
 
 			update_errors_tab_label
 		end
@@ -136,7 +137,7 @@ feature -- Commands
 					cat_row.insert_subrow (row_idx)
 					row := cat_row.subrow (row_idx)
 					row.set_data (ara)
-					row.collapse_actions.extend (agent step_to_viewable_parent_of_selected_row)
+					row.collapse_actions.extend (agent ev_grid.step_to_viewable_parent_of_selected_row)
 					row.insert_subrow (1)
 				end
 
@@ -163,9 +164,9 @@ feature -- Commands
 					gli.ensure_visible
 				end
 
-				grid.column (Col_category).resize_to_content
-				grid.column (Col_location).resize_to_content
-				grid.column (Col_message).resize_to_content
+				ev_grid.column (Col_category).resize_to_content
+				ev_grid.column (Col_location).resize_to_content
+				ev_grid.column (Col_message).resize_to_content
 			end
 
 			update_errors_tab_label
@@ -225,11 +226,7 @@ feature -- Commands
 					create_category_element.call ([root, category, row.subrow_count])
 					category_element ?= root.last
 
-					from
-						i := 0
-					until
-						i = row.subrow_count
-					loop
+					from i := 0 until i = row.subrow_count loop
 						i := i + 1
 
 						if attached {ARCH_CAT_ARCHETYPE} row.subrow (i).data as ara then
@@ -272,6 +269,8 @@ feature -- Commands
 
 feature -- Access
 
+	ev_grid: EV_GRID_KBD_MOUSE
+
 	parse_error_count: NATURAL
 			-- Number of parser errors.
 		do
@@ -299,23 +298,11 @@ feature {NONE} -- Implementation
 	update_gui_with_compiler_error_counts: PROCEDURE [ANY, TUPLE [NATURAL, NATURAL, NATURAL]]
 			-- agent provided by upper GUI for providing feedback about current error counts
 
-	on_grid_key_press (key: EV_KEY)
-			-- When the user presses Enter on an archetype, select it in the main window's explorer tree.
-		do
-			Precursor (key)
-
-			if not (ev_application.shift_pressed or ev_application.alt_pressed or ev_application.ctrl_pressed) then
-				if key /= Void and then key.code = key_enter then
-					select_node_in_archetype_tree_view
-				end
-			end
-		end
-
 	select_node_in_archetype_tree_view
 			-- Select the archetype represented by `selected_cell' in the main window's explorer tree.
 		do
-			if selected_cell /= Void and then selected_cell.column.index = Col_location then
-				select_archetype_from_gui_data.call ([selected_cell.row])
+			if attached ev_grid.selected_cell and then ev_grid.selected_cell.column.index = Col_location then
+				select_archetype_from_gui_data.call ([ev_grid.selected_cell.row])
 			end
 		end
 
@@ -340,7 +327,7 @@ feature {NONE} -- Implementation
 			if categories [err_type] = Void then
 				from
 					i := categories.upper
-					row_idx := grid.row_count + 1
+					row_idx := ev_grid.row_count + 1
 				until
 					i = err_type
 				loop
@@ -351,10 +338,10 @@ feature {NONE} -- Implementation
 					i := i - 1
 				end
 
-				grid.insert_new_row (row_idx)
-				row := grid.row (row_idx)
+				ev_grid.insert_new_row (row_idx)
+				row := ev_grid.row (row_idx)
 				row.set_data (err_type)
-				row.collapse_actions.extend (agent step_to_viewable_parent_of_selected_row)
+				row.collapse_actions.extend (agent ev_grid.step_to_viewable_parent_of_selected_row)
 				create gli.make_with_text (utf8_to_utf32 (err_type_names [err_type]))
 				gli.set_pixmap (get_icon_pixmap ("tool/" + err_type_keys [err_type]))
 
@@ -372,11 +359,11 @@ feature {NONE} -- Implementation
 			row_idx: INTEGER
 		do
 			from
-				row_idx := grid.row_count
+				row_idx := ev_grid.row_count
 			until
 				row_idx = 0
 			loop
-				row := grid.row (row_idx)
+				row := ev_grid.row (row_idx)
 				row_idx := row_idx - 1
 
 				if attached {ARCH_CAT_ARCHETYPE} row.data as other then
@@ -386,9 +373,9 @@ feature {NONE} -- Implementation
 
 						if cat_row /= categories [ara.compiler_error_type] then
 							if cat_row.subrow_count > 1 then
-								grid.remove_row (row.index)
+								ev_grid.remove_row (row.index)
 							else
-								grid.remove_row (cat_row.index)
+								ev_grid.remove_row (cat_row.index)
 
 								if attached {INTEGER_REF} cat_row.data as i then
 									categories [i.item] := Void

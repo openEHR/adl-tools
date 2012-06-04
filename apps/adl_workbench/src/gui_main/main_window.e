@@ -831,11 +831,6 @@ feature {NONE} -- Tools menu events
 			end
 		end
 
-	read_options_file
-		do
-			execution_environment.launch (text_editor_command + " %"" + user_config_file_path + "%"")
-		end
-
 	update_all_tools_rm_icons_setting
 		do
 			archetype_tools.do_all_tools (agent (a_tool: GUI_ARCHETYPE_TOOL) do a_tool.update_rm_icons_setting end)
@@ -1174,7 +1169,7 @@ feature -- Error Tool
 
 	create_new_error_tool
 		do
-			create error_docking_pane.make_with_widget_title_pixmap (error_tool.grid, get_icon_pixmap ("tool/errors"), get_msg ("error_tool_title", Void))
+			create error_docking_pane.make_with_widget_title_pixmap (error_tool.ev_grid, get_icon_pixmap ("tool/errors"), get_msg ("error_tool_title", Void))
 			attached_docking_manager.contents.extend (error_docking_pane)
 			error_docking_pane.set_type ({SD_ENUMERATION}.tool)
 			error_docking_pane.set_long_title (get_msg ("error_tool_title", Void))

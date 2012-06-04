@@ -70,6 +70,36 @@ feature -- Access
 
 	ok_button, cancel_button: EV_BUTTON
 
+feature -- Status Report
+
+	has_button (a_title: STRING): BOOLEAN
+			-- is there any button with title `a_title'?
+		do
+			Result := attached added_buttons and then
+				(added_buttons.has(a_title) or a_title.same_string (ok_button.text) or a_title.same_string (cancel_button.text))
+		end
+
+feature -- Modification
+
+	add_button (a_title: STRING; an_agent: PROCEDURE [ANY, TUPLE])
+			-- add another button, which will appear to the left of the OK/Cancel buttons
+		require
+			not has_button (a_title)
+		local
+			a_button: EV_BUTTON
+		do
+			if not attached added_buttons then
+				create added_buttons.make (0)
+			end
+			create a_button
+			a_button.set_text (a_title)
+			a_button.select_actions.extend (an_agent)
+			added_buttons.put (a_button, a_title)
+			ev_root_container.start
+			ev_root_container.put_right (a_button)
+			ev_root_container.disable_item_expand (a_button)
+		end
+
 feature -- Command
 
 	enable_sensitive
@@ -89,6 +119,8 @@ feature -- Command
 feature {NONE} -- Implementation
 
 	ev_cell: EV_CELL
+
+	added_buttons: detachable HASH_TABLE [EV_BUTTON, STRING]
 
 end
 

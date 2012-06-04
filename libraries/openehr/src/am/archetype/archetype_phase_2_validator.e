@@ -148,7 +148,7 @@ feature {NONE} -- Implementation
 				a_codes.forth
 			end
 
-			-- see if every found leaf term code (in an ORDINAL or a CODED_TERM) is in ontology
+			-- see if every term code used in an ORDINAL or a CODE_PHRASE is in ontology
 			a_codes := target.data_atcodes_index
 			from a_codes.start until a_codes.off loop
 				code_depth := specialisation_depth_from_code (a_codes.key_for_iteration)
@@ -156,10 +156,10 @@ feature {NONE} -- Implementation
 					add_error ("VATCD", <<a_codes.key_for_iteration>>)
 				elseif code_depth < depth then
 					if not flat_parent.ontology.has_term_code (a_codes.key_for_iteration) then
-						add_error ("VATDF1", <<a_codes.key_for_iteration>>)
+						add_error ("VATDC1", <<a_codes.key_for_iteration>>)
 					end
 				elseif not ontology.has_term_code (a_codes.key_for_iteration) then
-					add_error ("VATDF2", <<a_codes.key_for_iteration>>)
+					add_error ("VATDC2", <<a_codes.key_for_iteration>>)
 				end
 				a_codes.forth
 			end
@@ -396,8 +396,8 @@ end
 
 				co_parent_flat := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
 
-				-- The above won't work properly in the case where there are multiple alternative objects with no identifiers
-				-- in the flat parent - need to do a search based on RM type matching to find the matching C_OBJECT in the flat
+				-- The above won't work in the case where there are multiple alternative objects with no identifiers
+				-- in the flat parent - so we need to do a search based on RM type matching to find the matching C_OBJECT in the flat
 				if not co_parent_flat.is_root and not co_child_diff.is_addressable and then co_parent_flat.parent.has_non_identified_alternatives then
 					if co_parent_flat.parent.has_child_with_rm_type_name (co_child_diff.rm_type_name) then
 						co_parent_flat := co_parent_flat.parent.child_with_rm_type_name (co_child_diff.rm_type_name)

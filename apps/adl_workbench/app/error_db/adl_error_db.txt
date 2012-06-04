@@ -79,6 +79,8 @@ templates = <
 		["VOTM"] = <"translations for $1 defined in the description / translations section but missing in the term_definition and constraint_definition sections">
 		["VATDF1"] = <"node id at-code $1 from specialisation parent not defined in ontology of any parent archetype">
 		["VATDF2"] = <"node id at-code $1 not defined in ontology of current archetype">
+		["VATDC1"] = <"at-code $1 used in constraint from specialisation parent not defined in ontology of any parent archetype">
+		["VATDC2"] = <"at-code $1 used in constraint not defined in ontology of current archetype">
 		["VACDF1"] = <"constraint code $1 from specialisation parent not defined in ontology of any parent archetype">
 		["VACDF2"] = <"constraint code $1 not found in ontology of current archetype">
 

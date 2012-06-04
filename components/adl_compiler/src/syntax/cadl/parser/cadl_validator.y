@@ -367,12 +367,20 @@ archetype_internal_ref: archetype_internal_ref_head c_occurrences absolute_path
 				create $$.make_identified (arch_internal_ref_rm_type_name, arch_internal_ref_node_id, $3.as_string)
 			else
 				create $$.make (arch_internal_ref_rm_type_name, $3.as_string)
+
+				-- if the C_ATTRIBUTE above this node requires that this node has an identifier, then take it from the target path
+				if c_attrs.item.candidate_child_requires_id ($$.rm_type_name) then
+					-- default to the id from the target path
+					if not $3.last.object_id.is_empty then
+						$$.set_node_id ($3.last.object_id)
+					else
+						-- error will be generated when attempt is made to add this object to C_ATTRIBUTE
+					end
+				end
+
 			end
 			if attached $2 then
 				$$.set_occurrences ($2)
-			end
-			if (c_attrs.item.is_multiple or c_attrs.item.child_count > 1) and not $$.is_addressable and not $3.last.object_id.is_empty then
-				$$.set_node_id ($3.last.object_id)
 			end
 
 			debug("ADL_parse")

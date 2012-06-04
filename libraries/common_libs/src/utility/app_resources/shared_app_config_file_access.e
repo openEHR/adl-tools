@@ -23,6 +23,12 @@ feature -- Access
 			-- accessor object for application config file
 		once
 			create Result.make (user_config_file_path)
+			app_cfg_initialise
+		end
+
+	app_cfg_initialise
+			-- redefine in descendants, e.g. to add listeners for reload of file
+		do
 		end
 
 end

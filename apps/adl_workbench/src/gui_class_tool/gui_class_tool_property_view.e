@@ -43,9 +43,8 @@ feature -- Initialisation
 			create ev_root_container
 			ev_root_container.set_data (Current)
 
-			create ev_grid
+			create ev_grid.make
 			ev_grid.enable_tree
-			create grid_controller.make_for_grid (ev_grid)
 
 			-- connect widgets
 			ev_root_container.extend (ev_grid)
@@ -89,9 +88,7 @@ feature {NONE} -- Implementation
 			)
 		end
 
-	ev_grid: EV_GRID
-
-	grid_controller: GUI_GRID_CONTROLLER
+	ev_grid: EV_GRID_KBD_MOUSE
 
 	flat_properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 

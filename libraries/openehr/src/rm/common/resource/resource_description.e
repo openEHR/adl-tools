@@ -80,6 +80,10 @@ feature -- Access
 
 	details: detachable HASH_TABLE [RESOURCE_DESCRIPTION_ITEM, STRING]
 			-- list of descriptive details, keyed by language
+			-- NOTE: this attribute is only detachable because it will be Void for a short time, when an instance
+			-- of this class is created during reading a serialised instance, until the details part from the
+			-- text is also deserialised and attached. The code here treats it as if it were attached for all
+			-- practical purposes.
 
 	lifecycle_state: STRING
 			-- Lifecycle state of the archetype. Includes states such as
@@ -113,6 +117,14 @@ feature -- Access
 			Language_valid: details.has (a_lang)
 		do
 			Result := details.item(a_lang)
+		end
+
+feature -- Status Report
+
+	has_details: BOOLEAN
+			-- True if there are any details
+		do
+			Result := attached details and not details.is_empty
 		end
 
 feature -- Comparison
@@ -233,7 +245,7 @@ feature -- Modification
 		require
 			Detail_valid: valid_detail(a_detail)
 		do
-			details.force(a_detail, a_detail.language.code_string)
+			details.force (a_detail, a_detail.language.code_string)
 		ensure
 			Details_set: details.has(a_detail.language.code_string)
 		end
@@ -244,13 +256,13 @@ feature -- Modification
 		require
 			New_lang_valid: not details.has(a_new_lang)
 		do
-			add_detail(details.item (original_language.code_string).translated_copy (a_new_lang))
+			add_detail (details.item (original_language.code_string).translated_copy (a_new_lang))
 		end
 
 	remove_detail, remove_language (a_lang: attached STRING)
 			-- remove details item for a_lang from the resource
 		require
-			Lang_valid: details.has(a_lang)
+			Lang_valid: details.has (a_lang)
 		do
 			details.remove (a_lang)
 		end

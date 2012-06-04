@@ -60,12 +60,13 @@ feature -- Initialisation
 			a_data_source_remove_agent: like data_source_remove_agent;
 			an_undo_redo_chain: like undo_redo_chain;
 			min_height, min_width: INTEGER)
+		require
+			a_value_set.object_comparison
 		do
 			make_editable_data_control (a_title,
 				a_data_source, a_data_source_setter_agent, a_data_source_remove_agent,
 				an_undo_redo_chain, min_height, min_width, True, False)
 			value_set := a_value_set
-			value_set.compare_objects
 			ev_root_container.disable_item_expand (ev_data_control)
 			ev_data_control.select_actions.extend (agent propagate_select_action)
 			ev_data_control.select_actions.extend (agent process_edit)

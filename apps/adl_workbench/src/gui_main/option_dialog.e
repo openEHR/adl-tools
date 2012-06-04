@@ -72,9 +72,8 @@ feature {NONE} -- Initialization
 
 			-- Error reporting level combo			
 			create parser_error_reporting_level_combo_box.make_editable (get_text ("error_reporting_level_text"),
-				agent error_type_names.item (error_reporting_level),
-				create {ARRAYED_LIST[STRING]}.make_from_array (error_type_ids.current_keys),
-				agent (a_val: STRING) do  end,
+				agent error_type_name_table.item (error_reporting_level),
+				error_type_names, agent (a_val: STRING) do  end,
 				Void, Void, 0, 100)
 			compiler_settings_frame_ctl.extend (parser_error_reporting_level_combo_box.ev_root_container, False)
 			gui_controls.extend (parser_error_reporting_level_combo_box)
@@ -169,6 +168,9 @@ feature {NONE} -- Initialization
 			set_default_cancel_button (ok_cancel_buttons.cancel_button)
 			set_default_push_button (ok_cancel_buttons.ok_button)
 
+			-- add another button to OK/cancel button row to enable edit of options file
+			ok_cancel_buttons.add_button (get_text ("option_dialog_edit_file_text"), agent on_edit_options_file)
+
 			enable_edit
 
 			old_show_entire_ontology := show_entire_ontology
@@ -184,6 +186,9 @@ feature -- Status
 	has_changed_navigator_options: BOOLEAN
 			-- True if some option has changed that would require the navigator to be redrawn
 
+	has_edited_options_file: BOOLEAN
+			-- True if options file was updated directly by user
+
 feature -- Events
 
 	on_ok
@@ -191,38 +196,44 @@ feature -- Events
 		do
 			hide
 
-			-- text editor command
-			set_text_editor_command (text_editor_dir_setter.data_control_text)
-
-			-- archetype editor app command
-			set_editor_app_command (adl_editor_dir_setter.data_control_text)
-
-			-- difftool command
-			set_difftool_command (diff_tool_dir_setter.data_control_text)
-
-			-- GUI options
-			has_changed_ui_options := True -- for now, just assume changes. since repainting archetype part of gui is cheap
-			set_expand_node_tree (expand_definition_tree_check_ctl.is_selected)
-			set_show_line_numbers (show_line_numbers_check_ctl.is_selected)
-			set_display_archetype_source (display_source_check_ctl.is_selected)
-			set_use_rm_pixmaps (use_rm_icons_check_ctl.is_selected)
-			set_show_entire_ontology (show_all_classes_check_ctl.is_selected)
-			if show_entire_ontology /= old_show_entire_ontology then
-				has_changed_navigator_options := True
+			if has_edited_options_file then
+				app_cfg.load
 			else
-				has_changed_navigator_options := False
+				-- GUI options
+				has_changed_ui_options := True -- for now, just assume changes. since repainting archetype part of gui is cheap
+				set_expand_node_tree (expand_definition_tree_check_ctl.is_selected)
+				set_show_line_numbers (show_line_numbers_check_ctl.is_selected)
+				set_display_archetype_source (display_source_check_ctl.is_selected)
+				set_use_rm_pixmaps (use_rm_icons_check_ctl.is_selected)
+				set_show_entire_ontology (show_all_classes_check_ctl.is_selected)
+				if show_entire_ontology /= old_show_entire_ontology then
+					has_changed_navigator_options := True
+				else
+					has_changed_navigator_options := False
+				end
+
+				-- paths options: set directly; NO FURTHER ACTION REQUIRED IN GUI
+				set_export_directory (export_dir_setter.data_control_text)
+				set_test_diff_directory (test_files_dir_setter.data_control_text)
+
+				-- compilation options: set directly; NO FURTHER ACTION REQUIRED IN GUI
+				set_adl_version_for_flat_output (adl_save_version_combo_box.data_control_text)
+				set_validation_strict (validation_strict_check_ctl.is_selected)
+				set_rm_flattening_on (rm_flattening_check_ctl.is_selected)
+				set_error_reporting_level (error_type_id_table.item (parser_error_reporting_level_combo_box.data_control_text))
+				billboard.set_error_reporting_level (error_reporting_level)
+
+				-- tool commands
+				set_text_editor_command (text_editor_dir_setter.data_control_text)
+				set_editor_app_command (adl_editor_dir_setter.data_control_text)
+				set_difftool_command (diff_tool_dir_setter.data_control_text)
 			end
+		end
 
-			-- paths options: set directly; NO FURTHER ACTION REQUIRED IN GUI
-			set_export_directory (export_dir_setter.data_control_text)
-			set_test_diff_directory (test_files_dir_setter.data_control_text)
-
-			-- compilation options: set directly; NO FURTHER ACTION REQUIRED IN GUI
-			set_adl_version_for_flat_output (adl_save_version_combo_box.data_control_text)
-			set_validation_strict (validation_strict_check_ctl.is_selected)
-			set_rm_flattening_on (rm_flattening_check_ctl.is_selected)
-			set_error_reporting_level (error_type_ids.item (parser_error_reporting_level_combo_box.data_control_text))
-			billboard.set_error_reporting_level (error_reporting_level)
+	on_edit_options_file
+		do
+			execution_environment.launch (text_editor_command + " %"" + user_config_file_path + "%"")
+			has_edited_options_file := True -- might not be true, but we assume it changed
 		end
 
 feature -- Commands

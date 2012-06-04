@@ -341,8 +341,8 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 			create slot_index.make(0)
 
 			create definition_xref_builder
-			definition_xref_builder.initialise(Current)
-			create a_c_iterator.make(definition, definition_xref_builder)
+			definition_xref_builder.initialise (Current)
+			create a_c_iterator.make (definition, definition_xref_builder)
 			a_c_iterator.do_all
 
 			if has_invariants then
@@ -579,32 +579,6 @@ feature {NONE} -- Implementation
 		end
 
 	attr_path_map_cache: HASH_TABLE [C_ATTRIBUTE, STRING]
-
-	display_arrayed_list (str_lst: attached ARRAYED_LIST [STRING]): attached STRING
-			--
-		do
-			create Result.make(0)
-			from str_lst.start until str_lst.off loop
-				if not str_lst.isfirst then
-					Result.append(", ")
-				end
-				Result.append(str_lst.item)
-				str_lst.forth
-			end
-		end
-
-	display_paths (path_list: attached ARRAYED_LIST [STRING]): STRING
-			-- display terminal paths
-		do
-			create Result.make(0)
-			from path_list.start until path_list.off loop
-				if path_list.islast then
-					Result.append(path_list.item)
-					Result.append("%N")
-				end
-				path_list.forth
-			end
-		end
 
 invariant
 	Concept_valid: concept.is_equal (ontology.concept_code)

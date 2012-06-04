@@ -146,7 +146,7 @@ feature {NONE} -- Implementation
 			err_str, leader, trailer: STRING
 		do
 			create Result.make(0)
-			leader := error_type_names.item (bb_item.error_type) + " - "
+			leader := error_type_name_table.item (bb_item.error_type) + " - "
 			if at_level = Error_type_debug then
 				trailer := "      (" + bb_item.type_name + "." + bb_item.routine_name + ")"
 			else

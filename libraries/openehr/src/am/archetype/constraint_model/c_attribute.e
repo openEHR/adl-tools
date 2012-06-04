@@ -344,6 +344,15 @@ feature -- Status Report
 			Result := children.for_all (agent (a_child: C_OBJECT): BOOLEAN do Result := attached a_child.occurrences end)
 		end
 
+	candidate_child_requires_id (a_type_name: attached STRING): BOOLEAN
+			-- True if a candidate child node with rm_type_name = `a_type_name' needs a node id;
+			-- i.e. if is_multiple or else `has_child_with_rm_type_name'
+		require
+			Type_name_valid: not a_type_name.is_empty
+		do
+			Result := is_multiple or else has_child_with_rm_type_name (a_type_name)
+		end
+
 feature -- Comparison
 
 	node_congruent_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN

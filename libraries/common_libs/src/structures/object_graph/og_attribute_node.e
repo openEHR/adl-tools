@@ -65,9 +65,9 @@ feature -- Access
 			if has_differential_path then
 				Result := differential_path.as_string
 				if not differential_path.is_root then
-					Result.append_character({OG_PATH}.segment_separator)
+					Result.append_character ({OG_PATH}.segment_separator)
 				end
-				Result.append(node_id)
+				Result.append (node_id)
 			else
 				Result := node_id
 			end

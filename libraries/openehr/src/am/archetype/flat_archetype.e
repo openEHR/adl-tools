@@ -47,8 +47,9 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			is_valid := True
 			is_generated := True
 		ensure
-			is_valid: is_valid
-			is_generated: is_generated
+			Valid: is_valid
+			Generated: is_generated
+			Top_level: not is_specialised
 		end
 
 	make_specialised (a_diff: DIFFERENTIAL_ARCHETYPE; a_flat_parent: FLAT_ARCHETYPE)
@@ -77,8 +78,9 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 			is_valid := True
 			is_generated := True
 		ensure
-			is_valid: is_valid
-			is_generated: is_generated
+			Valid: is_valid
+			Generated: is_generated
+			Specialised: is_specialised
 		end
 
 feature -- Access

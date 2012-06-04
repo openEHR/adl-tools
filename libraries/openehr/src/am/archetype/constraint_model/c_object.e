@@ -260,15 +260,6 @@ feature -- Modification
 			end
 		end
 
-	convert_to_ghost
-			-- Remove all children - represents a removed node within a flat archetype.
-			-- In an editing context, this enables diff form to be regenerated for saving
-		do
-			set_specialisation_status_redefined
-		ensure
-			Marked_as_redefined: specialisation_status = {SPECIALISATION_STATUSES}.ss_redefined
-		end
-
 feature -- Output
 
 	occurrences_as_string: STRING

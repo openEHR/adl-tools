@@ -1,6 +1,6 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Controller to add keyboard and mouse wheel accessibility to a grid widget."
+	description: "Form of EV_GRID to add keyboard and mouse wheel accessibility to a grid widget."
 	keywords:    "ADL"
 	author:      "Peter Gummer"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
@@ -12,109 +12,145 @@ note
 	last_change: "$LastChangedDate$"
 
 class
-	GUI_GRID_CONTROLLER
+	EV_GRID_KBD_MOUSE
 
 inherit
+	EV_GRID
+
 	EV_KEY_CONSTANTS
+		export
+			{NONE} all;
+			{ANY} valid_key_code
+		undefine
+			copy, default_create
+		end
 
 	EV_SHARED_APPLICATION
+		export
+			{NONE} all;
+		undefine
+			copy, default_create
+		end
 
 create
-	make_for_grid
+	make
 
 feature {NONE} -- Initialisation
 
-	make_for_grid (g: like grid)
-			-- Create to control `g'.
-		require
-			g_attached: g /= Void
+	make
 		do
-			grid := g
-			grid.key_press_actions.wipe_out
-			grid.key_press_actions.extend (agent on_grid_key_press)
-			grid.mouse_wheel_actions.wipe_out
-			grid.mouse_wheel_actions.extend (agent on_mouse_wheel)
-		ensure
-			grid_set: grid = g
+			default_create
+			key_press_actions.wipe_out
+			key_press_actions.extend (agent on_grid_key_press)
+			mouse_wheel_actions.wipe_out
+			mouse_wheel_actions.extend (agent on_mouse_wheel)
+			create user_key_map.make (0)
 		end
 
 feature -- Access
-
-	grid: attached EV_GRID
-			-- The grid being controlled.
 
 	selected_cell: EV_GRID_ITEM
 			-- The currently selected cell in `grid'; else Void if no cell is selected.
 		local
 			items: ARRAYED_LIST [EV_GRID_ITEM]
 		do
-			items := grid.selected_items
+			items := selected_items
 			if not items.is_empty then
 				Result := items.first
 			end
 		end
 
-feature {NONE} -- Grid events
+	index_of_viewable_offset_from_row (index, offset: INTEGER): INTEGER
+			-- The index of the row at viewable `offset' from the row at `index'.
+		require
+			has_rows: row_count > 0
+		local
+			indexes: ARRAYED_LIST [INTEGER]
+			i: INTEGER
+		do
+			from
+				indexes := viewable_row_indexes
+				i := indexes.count
+			until
+				i = 1 or else indexes [i] <= index
+			loop
+				i := i - 1
+			end
+
+			Result := indexes [(i + offset).max (1).min (indexes.count)]
+		end
+
+feature -- Modification
+
+	add_key_event (a_key_code: INTEGER; an_event: PROCEDURE [ANY, TUPLE])
+		require
+			a_code_valid: valid_key_code (a_key_code)
+		do
+			user_key_map.force (an_event, a_key_code)
+		end
+
+feature -- Events
 
 	on_grid_key_press (key: EV_KEY)
 			-- Process keystrokes in `grid' to scroll, expand and collapse rows, etc.
 		local
-			row: EV_GRID_ROW
+			a_row: EV_GRID_ROW
 		do
-			if key /= Void and grid.row_count > 0 then
+			if attached key and row_count > 0 then
 				if not ev_application.shift_pressed and not ev_application.alt_pressed then
 					if ev_application.ctrl_pressed then
 						if key.code = key_up then
 							key.set_code (key_menu)
-							scroll_to_row (grid.first_visible_row.index - 1)
+							scroll_to_row (first_visible_row.index - 1)
 						elseif key.code = key_down then
 							key.set_code (key_menu)
-
-							if grid.visible_row_indexes.count > 1 then
-								scroll_to_row (grid.visible_row_indexes [2])
+							if visible_row_indexes.count > 1 then
+								scroll_to_row (visible_row_indexes [2])
 							end
 						elseif key.code = key_home then
 							scroll_to_row (1)
 						elseif key.code = key_end then
-							scroll_to_row (grid.row_count)
+							scroll_to_row (row_count)
 						elseif key.code = key_page_up then
-							scroll_to_row (index_of_viewable_offset_from_row (grid.first_visible_row.index, 1 - grid.visible_row_indexes.count))
+							scroll_to_row (index_of_viewable_offset_from_row (first_visible_row.index, 1 - visible_row_indexes.count))
 						elseif key.code = key_page_down then
-							scroll_to_row (grid.last_visible_row.index)
+							scroll_to_row (last_visible_row.index)
 						end
 					elseif key.code = key_home then
 						step_to_row (1)
 					elseif key.code = key_end then
-						step_to_row (grid.row_count)
+						step_to_row (row_count)
 					elseif selected_cell /= Void then
-						row := selected_cell.row
+						a_row := selected_cell.row
 
 						if key.code = key_page_up then
-							step_to_row (index_of_viewable_offset_from_row (row.index, 1 - grid.visible_row_indexes.count))
+							step_to_row (index_of_viewable_offset_from_row (a_row.index, 1 - visible_row_indexes.count))
 						elseif key.code = key_page_down then
-							step_to_row (index_of_viewable_offset_from_row (row.index, grid.visible_row_indexes.count - 1))
+							step_to_row (index_of_viewable_offset_from_row (a_row.index, visible_row_indexes.count - 1))
 						elseif key.code = key_numpad_multiply then
-							expand_tree (row)
+							expand_tree (a_row)
 						elseif key.code = key_numpad_add or key.code = key_right then
-							if row.is_expandable then
-								row.expand
+							if a_row.is_expandable then
+								a_row.expand
 							end
 						elseif key.code = key_numpad_subtract then
-							if row.is_expanded then
-								row.collapse
+							if a_row.is_expanded then
+								a_row.collapse
 							end
 						elseif key.code = key_left then
-							if selected_cell.column.index = row.index_of_first_item then
-								if row.is_expanded then
-									row.collapse
-								elseif row.parent_row /= Void then
-									step_to_row (row.parent_row.index)
+							if selected_cell.column.index = a_row.index_of_first_item then
+								if a_row.is_expanded then
+									a_row.collapse
+								elseif a_row.parent_row /= Void then
+									step_to_row (a_row.parent_row.index)
 								end
 							end
 						elseif key.code = key_back_space then
-							if row.parent_row /= Void then
-								step_to_row (row.parent_row.index)
+							if a_row.parent_row /= Void then
+								step_to_row (a_row.parent_row.index)
 							end
+						elseif user_key_map.has (key.code) then
+							user_key_map.item (key.code).call ([])
 						end
 					end
 				end
@@ -124,53 +160,47 @@ feature {NONE} -- Grid events
 	on_mouse_wheel (step: INTEGER)
 			-- Scroll `grid' when the mouse wheel moves.
 		do
-			if grid.row_count > 0 then
+			if row_count > 0 then
 				if step > 0 then
-					scroll_to_row (grid.first_visible_row.index - step)
+					scroll_to_row (first_visible_row.index - step)
 				else
-					scroll_to_row (grid.visible_row_indexes [grid.visible_row_indexes.count.min (1 - step)])
+					scroll_to_row (visible_row_indexes [visible_row_indexes.count.min (1 - step)])
 				end
 			end
 		end
 
-feature {NONE} -- Implementation
+feature -- Commands
 
 	scroll_to_row (index: INTEGER)
 			-- Scroll `grid' so the row at `index' is at the top.
 		require
-			has_rows: grid.row_count > 0
+			has_rows: row_count > 0
 		local
 			i: INTEGER
 		do
-			i := index.max (1).min (grid.row_count)
-			grid.set_first_visible_row (i)
+			i := index.max (1).min (row_count)
+			set_first_visible_row (i)
 		end
 
-	step_to_row (index: INTEGER)
+	step_to_row (an_index: INTEGER)
 			-- Select the first non-void cell on the row at `index'.
 			-- If that row is hidden within a collapsed parent, select its nearest viewable parent.
 		require
-			has_rows: grid.row_count > 0
+			has_rows: row_count > 0
 		local
-			row: EV_GRID_ROW
-			item: EV_GRID_ITEM
+			a_row: EV_GRID_ROW
+			an_item: EV_GRID_ITEM
 			i: INTEGER
 		do
-			row := grid.row (index_of_viewable_offset_from_row (index, 0))
-
-			from
-				i := 1
-			until
-				i > row.count or item /= Void
-			loop
-				item := row.item (i)
+			a_row := row (index_of_viewable_offset_from_row (an_index, 0))
+			from i := 1 until i > a_row.count or attached an_item loop
+				an_item := a_row.item (i)
 				i := i + 1
 			end
-
-			if item /= Void and then not item.is_selected then
-				grid.remove_selection
-				item.enable_select
-				row.ensure_visible
+			if attached an_item and then not an_item.is_selected then
+				remove_selection
+				an_item.enable_select
+				a_row.ensure_visible
 			end
 		end
 
@@ -182,55 +212,40 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	index_of_viewable_offset_from_row (index, offset: INTEGER): INTEGER
-			-- The index of the row at viewable `offset' from the row at `index'.
-		require
-			has_rows: grid.row_count > 0
-		local
-			indexes: ARRAYED_LIST [INTEGER]
-			i: INTEGER
-		do
-			from
-				indexes := grid.viewable_row_indexes
-				i := indexes.count
-			until
-				i = 1 or else indexes [i] <= index
-			loop
-				i := i - 1
-			end
-
-			Result := indexes [(i + offset).max (1).min (indexes.count)]
-		end
-
-	expand_tree (row: attached EV_GRID_ROW)
+	expand_tree (a_row: attached EV_GRID_ROW)
 			-- Expand `row' and all of its sub-rows, recursively.
 		local
 			i: INTEGER
 		do
-			if row.is_expandable then
-				row.expand
-				from i := 1 until i > row.subrow_count loop
-					expand_tree (row.subrow (i))
+			if a_row.is_expandable then
+				a_row.expand
+				from i := 1 until i > a_row.subrow_count loop
+					expand_tree (a_row.subrow (i))
 					i := i + 1
 				end
 			end
 		ensure
-			row_expanded: row.is_expandable implies row.is_expanded
+			row_expanded: a_row.is_expandable implies a_row.is_expanded
 		end
 
-	collapse_tree (row: attached EV_GRID_ROW)
+	collapse_tree (a_row: attached EV_GRID_ROW)
 			-- Collapse `row' and all of its sub-rows, recursively.
 		local
 			i: INTEGER
 		do
-			from i := 1 until i > row.subrow_count loop
-				collapse_tree (row.subrow (i))
+			from i := 1 until i > a_row.subrow_count loop
+				collapse_tree (a_row.subrow (i))
 				i := i + 1
 			end
-			row.collapse
+			a_row.collapse
 		ensure
-			row_collapsed: not row.is_expanded
+			row_collapsed: not a_row.is_expanded
 		end
+
+feature {NONE} -- Implementation
+
+	user_key_map: HASH_TABLE [PROCEDURE [ANY, TUPLE], INTEGER]
+			-- user-defined key => actions map for other keys
 
 end
 

@@ -142,7 +142,7 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	schema_inclusion_map: attached HASH_TABLE [ARRAYED_LIST[STRING], STRING]
+	schema_inclusion_map: attached HASH_TABLE [ARRAYED_LIST [STRING], STRING]
 			-- map of inclusions among schemas found in the directory; structure:
 			-- {key = schema_id; {list of schemas that 'include' key}}
 			-- Schemas not included by other schemas have NO ENTRY in this list

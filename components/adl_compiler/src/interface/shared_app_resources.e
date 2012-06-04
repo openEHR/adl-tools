@@ -15,6 +15,9 @@ class SHARED_APP_RESOURCES
 
 inherit
 	SHARED_APP_CONFIG_FILE_ACCESS
+		redefine
+			app_cfg_initialise
+		end
 
 	BASIC_DEFINITIONS
 		export
@@ -71,6 +74,14 @@ feature -- Definitions
 			Result := file_system.pathname (user_config_file_directory, extension_replaced ("xml_rules", User_config_file_extension))
 		ensure
 			not_empty: not Result.is_empty
+		end
+
+feature -- Initialisation
+
+	app_cfg_initialise
+			-- do some once-off initialisation - attach a listener to config file loaded
+		do
+			app_cfg.add_refresh_listener (agent resources_refresh_from_file)
 		end
 
 feature -- Application Switches
@@ -340,6 +351,16 @@ feature -- Application Switches
 			end
 		end
 
+	set_compiler_gen_directory (a_path: attached STRING)
+			-- Set the path of directory where compiler generated files go
+		require
+			path_not_empty: not a_path.is_empty
+		do
+			app_cfg.put_value("/file_system/compiler_gen_directory", a_path)
+		end
+
+feature {NONE} -- Cached Settings
+
 	compiler_gen_source_directory: attached STRING
 			-- Path of directory where compiled source files go in dADL serialisation form
 		once
@@ -352,17 +373,16 @@ feature -- Application Switches
 			create Result.make_empty
 		end
 
-	set_compiler_gen_directory (a_path: attached STRING)
-			-- Set the path of directory where compiler generated files go
-		require
-			path_not_empty: not a_path.is_empty
-		do
-			app_cfg.put_value("/file_system/compiler_gen_directory", a_path)
-		end
-
-	repository_profiles_cache: CELL[REPOSITORY_PROFILE_CONFIG]
+	repository_profiles_cache: CELL [REPOSITORY_PROFILE_CONFIG]
 		once
 			create Result.put (Void)
+		end
+
+	resources_refresh_from_file
+			-- actions to clear any cached content from config file, due to file being re-loaded
+		do
+			repository_profiles_cache.put (Void)
+			init_gen_dirs_from_current_profile
 		end
 
 end

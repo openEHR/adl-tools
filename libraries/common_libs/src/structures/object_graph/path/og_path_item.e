@@ -52,7 +52,7 @@ feature -- Initialisation
 			Object_id_empty: object_id.is_empty
 		end
 
-	make_with_object_id(an_attr_name, an_object_id: STRING)
+	make_with_object_id (an_attr_name, an_object_id: STRING)
 			-- make a path segment with an attribute name and an object id -
 			-- corresponds to multiple child attribute
 		require
@@ -70,7 +70,7 @@ feature -- Initialisation
 			Object_id_set: object_id.is_equal(an_object_id) or else object_id.is_empty
 		end
 
-	make_feature_call(a_feat_name: STRING)
+	make_feature_call (a_feat_name: STRING)
 		require
 			a_feat_name_valid: a_feat_name /= Void and then not a_feat_name.is_empty
 		do

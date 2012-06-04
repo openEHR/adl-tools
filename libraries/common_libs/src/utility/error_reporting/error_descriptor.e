@@ -67,7 +67,7 @@ feature -- Output
 	as_string: attached STRING
 		do
 			create Result.make (0)
-			Result.append (error_type_names.item(severity) + " ")
+			Result.append (error_type_name_table.item (severity) + " ")
 			if attached location and not location.is_empty then
 				Result.append (location + ": ")
 			end

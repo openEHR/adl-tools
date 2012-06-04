@@ -61,6 +61,28 @@ feature -- Definitions
 
 	rm_icon_dir: STRING = "rm"
 
+	Node_grid_col_rm_name: INTEGER = 1
+	Node_grid_col_meaning: INTEGER = 2
+	Node_grid_col_existence: INTEGER = 3
+	Node_grid_col_card_occ: INTEGER = 4
+	Node_grid_col_sibling_order: INTEGER = 5
+	Node_grid_col_constraint: INTEGER = 6
+	Node_grid_col_max: INTEGER
+		once
+			Result := Node_grid_col_constraint
+		end
+
+	Node_grid_col_names: HASH_TABLE [STRING, INTEGER]
+		once
+			create Result.make (0)
+			Result.put (get_text ("node_grid_col_meaning_text"), Node_grid_col_meaning)
+			Result.put (get_text ("node_grid_col_rm_name_text"), Node_grid_col_rm_name)
+			Result.put (get_text ("node_grid_col_existence_text"), Node_grid_col_existence)
+			Result.put (get_text ("node_grid_col_card_occ_text"), Node_grid_col_card_occ)
+			Result.put (get_text ("node_grid_col_sibling_order_text"), Node_grid_col_sibling_order)
+			Result.put (get_text ("node_grid_col_constraint_text"), Node_grid_col_constraint)
+		end
+
 feature -- Access
 
 	adl_workbench_icon: EV_PIXMAP

@@ -134,7 +134,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER} -- Validation
 
 	build_xrefs
 			-- build definition / ontology cross reference tables used for validation and
-			-- other purposes
+			-- other purposes; record codes defined in ontology but not used in this archetype
 		do
 			precursor
 
@@ -146,17 +146,18 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER} -- Validation
 			ontology_unused_constraint_codes.compare_objects
 
 			from ontology.term_codes.start until ontology.term_codes.off loop
-				if not id_atcodes_index.has(ontology.term_codes.item) and not
-						data_atcodes_index.has(ontology.term_codes.item) then
-					ontology_unused_term_codes.extend(ontology.term_codes.item)
+				if not id_atcodes_index.has (ontology.term_codes.item) and not
+						data_atcodes_index.has (ontology.term_codes.item)
+				then
+					ontology_unused_term_codes.extend (ontology.term_codes.item)
 				end
 				ontology.term_codes.forth
 			end
-			ontology_unused_term_codes.prune(concept)
+			ontology_unused_term_codes.prune (concept)
 
 			from ontology.constraint_codes.start until ontology.constraint_codes.off loop
-				if not accodes_index.has(ontology.constraint_codes.item) then
-					ontology_unused_constraint_codes.extend(ontology.constraint_codes.item)
+				if not accodes_index.has (ontology.constraint_codes.item) then
+					ontology_unused_constraint_codes.extend (ontology.constraint_codes.item)
 				end
 				ontology.constraint_codes.forth
 			end
@@ -266,13 +267,13 @@ feature -- Modification
 
 			code_list := ontology_unused_term_codes
 			from code_list.start until code_list.off loop
-				ontology.remove_term_definition(code_list.item)
+				ontology.remove_term_definition (code_list.item)
 				code_list.forth
 			end
 
 			code_list := ontology_unused_constraint_codes
 			from code_list.start until code_list.off loop
-				ontology.remove_constraint_definition(code_list.item)
+				ontology.remove_constraint_definition (code_list.item)
 				code_list.forth
 			end
 		end

@@ -24,7 +24,7 @@ class C_COMPLEX_OBJECT
 inherit
 	C_DEFINED_OBJECT
 		redefine
-			default_create, representation, out, convert_to_ghost
+			default_create, representation, out
 		end
 
 create
@@ -241,14 +241,6 @@ feature -- Modification
 		do
 			representation.remove_all_children
 			attributes.wipe_out
-		end
-
-	convert_to_ghost
-			-- Remove all children - represents a removed node within a flat archetype.
-			-- In an editing context, this enables diff form to be regenerated for saving
-		do
-			precursor
-			remove_all_attributes
 		end
 
 feature -- Output

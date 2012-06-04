@@ -34,16 +34,14 @@ feature {NONE} -- Initialisation
 			-- Create controller for the annotations grid.
 		do
 			-- set visual characteristics & events
-			create ev_root_container
+			create ev_root_container.make
 			ev_root_container.set_data (Current)
-
 			ev_root_container.enable_tree
-			create grid_controller.make_for_grid (ev_root_container)
 		end
 
 feature -- Access
 
-	ev_root_container: EV_GRID
+	ev_root_container: EV_GRID_KBD_MOUSE
 
 feature -- Status Report
 
@@ -78,8 +76,6 @@ feature -- Commands
 		end
 
 feature {NONE} -- Implementation
-
-	grid_controller: GUI_GRID_CONTROLLER
 
 	do_clear
 			-- Wipe out content from widgets.

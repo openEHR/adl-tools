@@ -92,8 +92,7 @@ feature {NONE} -- Implementation
 			ev_rm_vbox: EV_VERTICAL_BOX
 			ev_arch_stats_frame, ev_rm_breakdown_frame: EV_FRAME
 			ev_arch_stats_list: EV_MULTI_COLUMN_LIST
-			ev_rm_grid: EV_GRID
-			grid_controller: GUI_GRID_CONTROLLER
+			ev_rm_grid: EV_GRID_KBD_MOUSE
 			ev_rm_breakdown_nb: EV_NOTEBOOK
 			gli: EV_GRID_LABEL_ITEM
 			class_row, attr_row: EV_GRID_ROW
@@ -141,9 +140,8 @@ feature {NONE} -- Implementation
 			-- breakdown grid
 			from source.rm_grouped_class_table.start until source.rm_grouped_class_table.off loop
 				-- populate RM breakdown notebook tabs
-				create ev_rm_grid
+				create ev_rm_grid.make
 				ev_rm_grid.enable_tree
-				create grid_controller.make_for_grid (ev_rm_grid)
 				ev_rm_breakdown_nb.extend (ev_rm_grid)
 				ev_rm_breakdown_nb.set_item_text (ev_rm_grid, source.rm_grouped_class_table.key_for_iteration)
 

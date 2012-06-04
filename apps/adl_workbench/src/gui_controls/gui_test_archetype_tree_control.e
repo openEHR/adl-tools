@@ -15,9 +15,14 @@ note
 class GUI_TEST_ARCHETYPE_TREE_CONTROL
 
 inherit
-	GUI_GRID_CONTROLLER
-		redefine
-			on_grid_key_press
+	EV_SHARED_APPLICATION
+		export
+			{NONE} all;
+		end
+
+	EV_KEY_CONSTANTS
+		export
+			{NONE} all;
 		end
 
 	SHARED_KNOWLEDGE_REPOSITORY
@@ -87,7 +92,6 @@ feature -- Definitions
 feature {NONE} -- Initialisation
 
 	make (an_info_feedback_agent: like info_feedback_agent)
-			-- Create controller for the test grid.
 		do
 			info_feedback_agent := an_info_feedback_agent
 
@@ -112,11 +116,22 @@ feature {NONE} -- Initialisation
 			create diff_source_flat_button
 			create diff_source_round_trip_button
 			create test_status_area
-			make_for_grid (create {EV_GRID})
+
+			create ev_grid.make
+			ev_grid.enable_tree
+			ev_grid.add_key_event (key_space,
+				agent
+					do
+						if attached {EV_GRID_CHECKABLE_LABEL_ITEM} ev_grid.selected_cell as gcli then
+							gcli.toggle_is_checked
+							set_checkboxes_recursively (gcli)
+						end
+					end
+			)
 
 			-- connect widgets
 			ev_root_container.extend (ev_test_hbox)
-			ev_test_hbox.extend (grid)
+			ev_test_hbox.extend (ev_grid)
 			ev_test_hbox.extend (ev_test_vbox)
 			ev_test_vbox.extend (remove_unused_codes_rb)
 			ev_test_vbox.extend (arch_test_tree_toggle_expand_bn)
@@ -185,7 +200,6 @@ feature {NONE} -- Initialisation
 			diff_source_round_trip_button.set_tooltip ("Open diff tool on source and archetype round-tripped through dADL P_* objects")
 			test_status_area.set_minimum_height (status_area_min_height)
 			test_status_area.disable_edit
-			grid.enable_tree
 			archetype_test_go_bn.set_pixmap (get_icon_pixmap ("tool/go"))
 
 			-- set up events
@@ -278,7 +292,7 @@ feature -- Commands
 	clear
 			-- Wipe out content from widgets.
 		do
-			grid.wipe_out
+			ev_grid.wipe_out
 			test_status_area.remove_text
 			create grid_row_stack.make(0)
 		end
@@ -295,17 +309,17 @@ feature -- Commands
  			end
 
 			-- put names on columns
-			if grid.column_count > 0 then
-				grid.column (1).set_title ("Archetypes - " + repository_profiles.current_profile_name)
+			if ev_grid.column_count > 0 then
+				ev_grid.column (1).set_title ("Archetypes - " + repository_profiles.current_profile_name)
 
-				if grid.column_count >= first_test_col then
+				if ev_grid.column_count >= first_test_col then
 					from
 						tests.start
 						col_csr := first_test_col
 					until
 						tests.off
 					loop
-						grid.column (col_csr).set_title (tests.key_for_iteration)
+						ev_grid.column (col_csr).set_title (tests.key_for_iteration)
 						tests.forth
 						col_csr := col_csr + 1
 					end
@@ -313,8 +327,8 @@ feature -- Commands
 
 				is_expanded := False
 				toggle_expand_tree
-				grid.column (1).resize_to_content
-				grid.column (2).resize_to_content
+				ev_grid.column (1).resize_to_content
+				ev_grid.column (2).resize_to_content
 			end
 
 			arch_test_processed_count.set_text ("0")
@@ -336,8 +350,8 @@ feature -- Commands
 			row: EV_GRID_ROW
    		do
 			if attached ari then
-				from i := grid.row_count until i = 0 loop
-					row := grid.row (i)
+				from i := ev_grid.row_count until i = 0 loop
+					row := ev_grid.row (i)
 					if row.data /= Void and then row.data.is_equal (ari) then
 						set_row_pixmap (row)
 						i := 0
@@ -354,11 +368,11 @@ feature -- Events
 			-- toggle expanded status of tree view
 		do
 			if is_expanded then
-				collapse_tree (grid.row (1))
+				ev_grid.collapse_tree (ev_grid.row (1))
 				arch_test_tree_toggle_expand_bn.set_text ("Expand Tree")
 				is_expanded := False
 			else
-				expand_tree (grid.row (1))
+				ev_grid.expand_tree (ev_grid.row (1))
 				arch_test_tree_toggle_expand_bn.set_text ("Collapse Tree")
 				is_expanded := True
 			end
@@ -459,8 +473,8 @@ feature {NONE} -- Commands
 			remove_unused_codes := remove_unused_codes_rb.is_selected
 
 			last_tested_archetypes_count := 0
-			from row_csr := 1 until row_csr > grid.row_count or test_stop_requested loop
-				run_tests_on_row (grid.row (row_csr))
+			from row_csr := 1 until row_csr > ev_grid.row_count or test_stop_requested loop
+				run_tests_on_row (ev_grid.row (row_csr))
 				row_csr := row_csr + 1
 			end
 
@@ -727,6 +741,7 @@ feature {NONE} -- Implementation
 	ev_hsep_1, ev_hsep_2: EV_HORIZONTAL_SEPARATOR
 	ev_spacer_cell: EV_CELL
 	test_status_area: EV_TEXT
+	ev_grid: EV_GRID_KBD_MOUSE
 
 	info_feedback_agent: PROCEDURE [ANY, TUPLE [STRING]]
 
@@ -759,12 +774,12 @@ feature {NONE} -- Implementation
 			if ari.has_artefacts or ari.is_root then
 				create gli.make_with_text (utf8_to_utf32 (ari.name))
 				if grid_row_stack.is_empty then
-					grid.set_item (1, 1, gli)
+					ev_grid.set_item (1, 1, gli)
 					row := gli.row
 					gli.enable_select
 				else
 					row := grid_row_stack.item
-					row.collapse_actions.extend (agent step_to_viewable_parent_of_selected_row)
+					row.collapse_actions.extend (agent ev_grid.step_to_viewable_parent_of_selected_row)
 
 					-- create a new sub row
 					row.insert_subrow (row.subrow_count + 1)
@@ -918,20 +933,6 @@ feature {NONE} -- Implementation
 			diff_dadl_round_trip_source_new_dir := file_system.pathname (dadl_adl_root, "new")
 			if not file_system.directory_exists (diff_dadl_round_trip_source_new_dir) then
 				file_system.recursive_create_directory (diff_dadl_round_trip_source_new_dir)
-			end
-		end
-
-	on_grid_key_press (key: EV_KEY)
-			-- When the user presses the space key, toggle the selected check box.
-		do
-			Precursor (key)
-			if not (ev_application.shift_pressed or ev_application.alt_pressed or ev_application.ctrl_pressed) then
-				if attached key and then key.code = key_space then
-					if attached {EV_GRID_CHECKABLE_LABEL_ITEM} selected_cell as gcli then
-						gcli.toggle_is_checked
-						set_checkboxes_recursively (gcli)
-					end
-				end
 			end
 		end
 

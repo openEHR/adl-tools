@@ -403,7 +403,7 @@ P[yY]?[mM]?[Ww]?[dD]? {
 			}
 
 -- Multiple keyed object form
-\[at[0-9.]+\][	 ]*=[	 ]*\([A-Z]{IDCHAR}*\)[	 \n]*< 			{	-- match a pattern like '["at0004"] = (Type_Identifier) whitespace <'
+\[at[0-9.]+\][	 ]*=[	 ]*\([A-Z]{IDCHAR}*\)[	 \n]*< 			{	-- match a pattern like '["at0004"] = (Type_Identifier)  <'
 				set_start_condition (IN_C_DOMAIN_TYPE)
 				in_buffer.append_string (text)
 			}
@@ -494,12 +494,10 @@ P[yY]?[mM]?[Ww]?[dD]? {
 <IN_REGEXP1> {
 	[^/]*\\\/	{ 		-- match any segments with quoted slashes '\/'
 				in_buffer.append_string (text)
-			}
+	}
 
-	[^/]*\/}	{ 		-- match final segment
+	[^/]*"/"	{ 		-- match final segment
 				in_buffer.append_string (text)
-				unread_character (in_buffer.item(in_buffer.count)) -- put back the last character - '}'
-				in_buffer.remove_tail(1) -- get rid of the "}" from the buffer
 
 				create str_.make (in_buffer.count)
 				str_.append_string (in_buffer)
@@ -507,7 +505,7 @@ P[yY]?[mM]?[Ww]?[dD]? {
  				last_string_value := str_
  				last_token := V_REGEXP
 				set_start_condition (INITIAL)
- 			}
+	}
 }
 
 \^[^^\n]*\^		{	-- regexp formed using '^' delimiters

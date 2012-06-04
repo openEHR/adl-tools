@@ -23,26 +23,42 @@ feature -- Definitions
 	Error_type_warning: INTEGER = 9002
 	Error_type_error: INTEGER = 9003
 
+	Error_type_debug_name: STRING = "DEBUG"
+	Error_type_info_name: STRING = "INFO"
+	Error_type_warning_name: STRING = "WARNING"
+	Error_type_error_name: STRING = "ERROR"
+
 feature -- Access
 
-	error_type_names: HASH_TABLE [STRING, INTEGER]
+	error_type_name_table: HASH_TABLE [STRING, INTEGER]
 			-- names of message types
 		once
 			create Result.make(0)
-			Result.force("ERROR", Error_type_error)
-			Result.force("WARNING", Error_type_warning)
-			Result.force("INFO", Error_type_info)
-			Result.force("DEBUG", Error_type_debug)
+			Result.force(Error_type_error_name, Error_type_error)
+			Result.force(Error_type_warning_name, Error_type_warning)
+			Result.force(Error_type_info_name, Error_type_info)
+			Result.force(Error_type_debug_name, Error_type_debug)
 		end
 
-	error_type_ids: HASH_TABLE [INTEGER, STRING]
+	error_type_id_table: HASH_TABLE [INTEGER, STRING]
 			-- ids of message types
 		once
 			create Result.make(0)
-			Result.force(Error_type_error, "ERROR")
-			Result.force(Error_type_warning, "WARNING")
-			Result.force(Error_type_info, "INFO")
-			Result.force(Error_type_debug, "DEBUG")
+			Result.force(Error_type_error, Error_type_error_name)
+			Result.force(Error_type_warning, Error_type_warning_name)
+			Result.force(Error_type_info, Error_type_info_name)
+			Result.force(Error_type_debug, Error_type_debug_name)
+		end
+
+	error_type_names: ARRAYED_LIST [STRING]
+			-- names of message types
+		once
+			create Result.make(0)
+			Result.compare_objects
+			Result.force(Error_type_error_name)
+			Result.force(Error_type_warning_name)
+			Result.force(Error_type_info_name)
+			Result.force(Error_type_debug_name)
 		end
 
 feature -- Status Report

@@ -54,6 +54,8 @@ feature -- Initialisation
 			if not is_bmm_compatible then
 				add_error ("BMM_VER", <<schema_id, bmm_ver, Bmm_internal_version>>)
 			end
+
+			create includes.make (0)
 		end
 
 feature -- Access
@@ -64,12 +66,12 @@ feature -- Access
 	schema: detachable BMM_SCHEMA
 			-- computable form of model
 
-	schema_id: attached STRING
+	schema_id: STRING
 			-- schema id, formed from:
 			-- meta_data(Metadata_model_publisher) '-' meta_data(metadata_schema_name) '-' meta_data(Metadata_model_release)
 			--	 e.g. openehr_rm_1.0.3, openehr_test_1.0.1, iso_13606-1_2008
 
-	meta_data: attached HASH_TABLE [STRING, STRING]
+	meta_data: HASH_TABLE [STRING, STRING]
 			-- table of {key, value} pairs of schema meta-data, keys as follows:
 			-- "bmm_version",
 			-- "model_publisher",
@@ -79,6 +81,9 @@ feature -- Access
 			-- "schema_lifecycle_state",
 			-- "schema_description",
 			-- "schema_path"
+
+	includes: ARRAYED_LIST [STRING]
+			-- schema_ids of schemas included by this schema
 
 feature -- Status Report
 
@@ -144,7 +149,7 @@ feature {REFERENCE_MODEL_ACCESS} -- Commands
 		end
 
 	validate_includes (all_schemas_list: ARRAY [STRING])
-			-- validate include list
+			-- validate includes list for this schema, to see if each mentioned schema exists in read schemas
 		local
 			all_schemas: ARRAYED_LIST [STRING]
 		do
@@ -152,11 +157,13 @@ feature {REFERENCE_MODEL_ACCESS} -- Commands
 			all_schemas.compare_objects
 			all_schemas.make_from_array (all_schemas_list)
 			if attached p_schema.includes then
-				from p_schema.includes.start until p_schema.includes.off or not all_schemas.has (p_schema.includes.item_for_iteration.id) loop
+				from p_schema.includes.start until p_schema.includes.off loop
+					if not all_schemas.has (p_schema.includes.item_for_iteration.id) then
+						add_error("BMM_INC", <<schema_id, p_schema.includes.item_for_iteration.id>>)
+					else
+						includes.extend (p_schema.includes.item_for_iteration.id)
+					end
 					p_schema.includes.forth
-				end
-				if not p_schema.includes.off then
-					add_error("BMM_INC", <<schema_id, p_schema.includes.item_for_iteration.id>>)
 				end
 			end
 		end

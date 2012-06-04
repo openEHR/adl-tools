@@ -53,6 +53,7 @@ templates = <
 
 		-- OPTION_DIALOG
 		["option_dialog_title"] = <"ADL Workbench Options">
+		["option_dialog_edit_file_text"] = <"Edit File">
 		["export_directory_text"] = <"Export directory:">
 		["test_diff_files_directory_text"] = <"Save test diff files to:">
 		["text_editor_directory_text"] = <"Text Editor:">
@@ -84,6 +85,9 @@ templates = <
 		["rm_schema_dialog_header_label"] = <"Reference Model schemas loaded shown below.%NCheck or uncheck to load as required.">
 		["rm_schema_dir_not_found"] = <"Directory $1 not found; please specify a valid directory">
 		["rm_schema_dir_text"] = <"RM schema directory:">
+		["rm_schema_grid_schema_col_title"] = <"Schema">
+		["rm_schema_grid_lifecycle_state_col_title"] = <"Lifecycle state">
+		["rm_schema_grid_validated_col_title"] = <"Validated">
 
 		-- MAIN_WINDOW - menus
 		["file_menu_text"] = <"&File">
@@ -204,6 +208,17 @@ templates = <
 
 		-- GUI_NODE_MAP_CONTROL 
 		["view_label_text"] = <"Tree View">
+		["occurrences_removed_text"] = <"(REMOVED)">
+		["annotations_text"] = <"Annotations">
+
+		["node_grid_col_meaning_text"] = <"Meaning">
+		["node_grid_col_rm_name_text"] = <"RM name">
+		["node_grid_col_existence_text"] = <"Existence">
+		["node_grid_col_card_occ_text"] = <"Card/Occ">
+		["node_grid_col_sibling_order_text"] = <"Order">
+		["node_grid_col_constraint_text"] = <"Constraint">
+
+		["assumed_text"] = <"Assumed">
 
 		["expand_complete_button_text"] = <"Expand All">
 		["expand_complete_tooltip"] = <"Completely expand the Node Map">
@@ -237,6 +252,8 @@ templates = <
 
 		["expand_button_collapse_text"] = <"Collapse All">
 		["expand_button_expand_text"] = <"Expand All">
+
+		["menu_option_display_code"] = <"Display code">
 
 		-- GUI_TEST_ARCHETYPE_TREE_CONTROL
 		["Test_arch_compare_i1"] = <"Archetype source lengths same but texts differ">

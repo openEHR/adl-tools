@@ -334,7 +334,6 @@ feature {NONE} -- Implementation
 	authoring_tab_undo_redo_chain, description_tab_undo_redo_chain: UNDO_REDO_CHAIN
 
 	do_clear
-			-- Wipe out content.
 		do
 			gui_authoring_tab_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.do_clear end)
 			gui_description_tab_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.do_clear end)
@@ -348,7 +347,7 @@ feature {NONE} -- Implementation
 
 	description_details: detachable RESOURCE_DESCRIPTION_ITEM
 		do
-			if attached source_archetype.description.details then
+			if source_archetype.description.has_details then
 				Result := source_archetype.description.detail_for_language (selected_language)
 			end
 		end
