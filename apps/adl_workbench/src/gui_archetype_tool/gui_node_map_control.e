@@ -43,8 +43,6 @@ feature -- Definitions
 
 	Tree_control_panel_width: INTEGER = 100
 
-	Grid_expansion_factor: REAL = 1.05
-
 feature -- Initialisation
 
 	make (a_code_select_action_agent: like code_select_action_agent)
@@ -55,11 +53,12 @@ feature -- Initialisation
 			create ev_root_container
 			ev_root_container.set_data (Current)
 
+			-- EV_GRID
 			create ev_grid.make
 			ev_grid.enable_tree
 			ev_grid.disable_row_height_fixed
-			ev_grid.row_expand_actions.extend (agent (a_row: EV_GRID_ROW) do ev_grid.resize_columns_to_content (Grid_expansion_factor) end)
-			ev_grid.row_collapse_actions.extend (agent (a_row: EV_GRID_ROW) do ev_grid.resize_columns_to_content (Grid_expansion_factor) end)
+			ev_grid.row_expand_actions.extend (agent (a_row: EV_GRID_ROW) do ev_grid.resize_columns_to_content (Default_grid_expansion_factor) end)
+			ev_grid.row_collapse_actions.extend (agent (a_row: EV_GRID_ROW) do ev_grid.resize_columns_to_content (Default_grid_expansion_factor) end)
 			ev_root_container.extend (ev_grid)
 
 			create ev_view_controls_vbox
@@ -215,7 +214,7 @@ feature -- Commands
 				in_reference_model_mode_changed := False
 			end
 
-			ev_grid.resize_columns_to_content (Grid_expansion_factor)
+			ev_grid.resize_columns_to_content (Default_grid_expansion_factor)
 		end
 
 	update_rm_icons_cb
@@ -245,7 +244,7 @@ feature {NONE} -- Events
 					ev_grid_row_list.forth
 				end
 			end
-			ev_grid.resize_columns_to_content (Grid_expansion_factor)
+			ev_grid.resize_columns_to_content (Default_grid_expansion_factor)
 		end
 
 	on_expand_tree_one_level
@@ -260,7 +259,7 @@ feature {NONE} -- Events
 					ev_grid_row_list.forth
 				end
 			end
-			ev_grid.resize_columns_to_content (Grid_expansion_factor)
+			ev_grid.resize_columns_to_content (Default_grid_expansion_factor)
 		end
 
 	on_expand_tree
@@ -405,7 +404,7 @@ feature {NONE} -- Implementation
 					i := i + 1
 				end
 			end
-			ev_grid.resize_columns_to_content (Grid_expansion_factor)
+			ev_grid.resize_columns_to_content (Default_grid_expansion_factor)
 		end
 
 	grid_row_add_rm_attributes (an_ev_grid_row: attached EV_GRID_ROW)

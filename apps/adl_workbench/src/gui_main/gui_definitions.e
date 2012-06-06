@@ -47,6 +47,12 @@ feature -- Definitions
 
 	Label_min_width: INTEGER = 35
 
+	Default_grid_expansion_factor: REAL = 1.05
+			-- amount to spread columns by to enhance readability
+
+	Default_grid_row_expansion: INTEGER = 4
+			-- number of pixels to add to height of grid row to enhance readability
+
 end
 
 

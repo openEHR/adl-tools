@@ -224,7 +224,7 @@ feature -- Visitor
 							create gli.make_with_text (s_32)
 							gli.set_foreground_color (archetype_constraint_color)
 							sub_row.set_item (Node_grid_col_constraint, gli)
-							sub_row.set_height (gli.text_height)
+							sub_row.set_height (gli.text_height + Default_grid_row_expansion)
 
 							sub_row.set_data (a_node.includes.item)
 							a_node.includes.forth
@@ -247,7 +247,7 @@ feature -- Visitor
 							create gli.make_with_text (s_32)
 							gli.set_foreground_color (archetype_constraint_color)
 							sub_row.set_item (Node_grid_col_constraint, gli)
-							sub_row.set_height (gli.text_height)
+							sub_row.set_height (gli.text_height + Default_grid_row_expansion)
 
 							sub_row.set_data (a_node.excludes.item)
 							a_node.excludes.forth
@@ -288,7 +288,7 @@ feature -- Visitor
 				gli.set_tooltip (node_tooltip_str (a_node))
 				gli.set_foreground_color (rm_attribute_color)
 				last_row.set_item (Node_grid_col_rm_name, gli)
-				last_row.set_height (gli.text_height)
+				last_row.set_height (gli.text_height + Default_grid_row_expansion)
 
 				-- meaning field
 				create gli.make_with_text ("")
@@ -360,7 +360,7 @@ feature -- Visitor
 				s.replace_substring_all ({ARCHETYPE_ID}.axis_separator_string, {ARCHETYPE_ID}.axis_separator_string + "%N")
 				create gli.make_with_text (s)
 				row.set_item (Node_grid_col_constraint, gli)
-				row.set_height (gli.text_height)
+				row.set_height (gli.text_height + Default_grid_row_expansion)
 			end
 
 			-- have to obtain the ontology from the main archetype directory because the archetype being serialised
@@ -397,7 +397,7 @@ feature -- Visitor
 			create gli.make_with_text (utf8_to_utf32 (s))
 			gli.set_foreground_color (rm_attribute_color)
 			row.set_item (Node_grid_col_constraint, gli)
-			row.set_height (gli.text_height)
+			row.set_height (gli.text_height + Default_grid_row_expansion)
 		end
 
 	end_archetype_internal_ref (a_node: attached ARCHETYPE_INTERNAL_REF; depth: INTEGER)
