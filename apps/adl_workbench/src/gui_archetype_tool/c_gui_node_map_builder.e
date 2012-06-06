@@ -191,6 +191,11 @@ feature -- Visitor
 			start_c_object (a_node, depth)
 			row := node_grid_row_map.item (a_node)
 
+			-- try to find a slot pixmap even if in RM icon mode
+			if use_rm_pixmaps and attached {EV_GRID_LABEL_ITEM} row.item (node_grid_col_rm_name) as gli2 then
+				gli2.set_pixmap (c_object_slot_pixmap (a_node))
+			end
+
 			if updating then
 --				if a_node.has_includes or a_node.has_excludes then
 --					from i := 1 until i > row.subrow_count loop
@@ -791,13 +796,31 @@ feature {NONE} -- Implementation
 		local
 			pixmap_name: STRING
 		do
-			pixmap_name := rm_icon_dir +  resource_path_separator + rm_publisher + resource_path_separator + a_node.rm_type_name
+			pixmap_name := rm_icon_dir + resource_path_separator + rm_publisher + resource_path_separator + a_node.rm_type_name
 			if use_rm_pixmaps and then has_icon_pixmap (pixmap_name) then
 				Result := get_icon_pixmap (pixmap_name)
 			elseif has_icon_pixmap (a_node.generating_type + a_node.occurrences_key_string) then
 				Result := spec_pixmap (a_node, a_node.generating_type + a_node.occurrences_key_string)
 			else
 				Result := spec_pixmap (a_node, a_node.generating_type)
+			end
+		end
+
+	c_object_slot_pixmap (a_node: C_OBJECT): EV_PIXMAP
+			-- find a pixmap for an ARCHETYPE_SLOT node if using RM pixmaps
+		require
+			use_rm_pixmaps
+		local
+			base_pixmap_name, slot_pixmap_name: STRING
+		do
+			base_pixmap_name := rm_icon_dir + resource_path_separator + rm_publisher + resource_path_separator + a_node.rm_type_name
+			create slot_pixmap_name.make_empty
+			slot_pixmap_name.append (base_pixmap_name)
+			slot_pixmap_name.append ("_slot")
+			if has_icon_pixmap (slot_pixmap_name) then
+				Result := get_icon_pixmap (slot_pixmap_name)
+			else
+				Result := get_icon_pixmap (base_pixmap_name)
 			end
 		end
 
