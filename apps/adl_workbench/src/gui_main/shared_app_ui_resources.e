@@ -93,10 +93,16 @@ feature -- Definitions
 			create Result.make_with_8_bit_rgb (0, 0, 0xff)
 		end
 
+	archetype_rm_type_color: EV_COLOR
+			-- a rendering colour for rm_attributes in the UI
+		once
+			create Result.make_with_8_bit_rgb (0, 0, 0x99)
+		end
+
 	Archetype_constraint_color: EV_COLOR
 			-- a rendering colour for rm_attributes in the UI
 		once
-			create Result.make_with_8_bit_rgb (0xff, 0, 0)
+			create Result.make_with_8_bit_rgb (0xdd, 0, 0)
 		end
 
 feature -- Access

@@ -107,7 +107,9 @@ feature -- Visitor
 				node_grid_row_map.put (last_row, a_node)
 
 				-- rm_name column
-				last_row.set_item (Node_grid_col_rm_name, create {EV_GRID_LABEL_ITEM}.make_with_text (a_node.rm_type_name))
+				create gli.make_with_text (a_node.rm_type_name)
+				gli.set_foreground_color (archetype_rm_type_color)
+				last_row.set_item (Node_grid_col_rm_name, gli)
 
 				-- meaning column - blank text + add select event
 				last_row.set_item (Node_grid_col_meaning, create {EV_GRID_LABEL_ITEM}.make_with_text (""))
@@ -147,10 +149,8 @@ feature -- Visitor
 			end
 
 			-- update meaning column
-			if a_node.is_addressable then
-				if attached {EV_GRID_LABEL_ITEM} row.item (Node_grid_col_meaning) as gli_meaning then
-					gli_meaning.set_text (utf8_to_utf32 (coded_text_string (a_node.node_id)))
-				end
+			if a_node.is_addressable and then attached {EV_GRID_LABEL_ITEM} row.item (Node_grid_col_meaning) as gli_meaning then
+				gli_meaning.set_text (utf8_to_utf32 (coded_text_string (a_node.node_id)))
 			end
 
 			-- sibling order column
@@ -184,9 +184,9 @@ feature -- Visitor
 			-- enter an ARCHETYPE_SLOT
 		local
 			row, sub_row: EV_GRID_ROW
-			i: INTEGER
+--			i: INTEGER
 			gli: EV_GRID_LABEL_ITEM
-			s: STRING
+			s_32: STRING_32
 		do
 			start_c_object (a_node, depth)
 			row := node_grid_row_map.item (a_node)
@@ -219,9 +219,9 @@ feature -- Visitor
 							sub_row.set_item (Node_grid_col_rm_name, gli)
 
 							-- put assertions in constraint col
-							s := object_invariant_string (a_node.includes.item)
-							s.replace_substring_all (" ", "%N")
-							create gli.make_with_text (s)
+							s_32 := object_invariant_string (a_node.includes.item)
+							s_32.replace_substring_all (" ", "%N")
+							create gli.make_with_text (s_32)
 							gli.set_foreground_color (archetype_constraint_color)
 							sub_row.set_item (Node_grid_col_constraint, gli)
 							sub_row.set_height (gli.text_height)
@@ -242,9 +242,9 @@ feature -- Visitor
 							sub_row.set_item (Node_grid_col_rm_name, gli)
 
 							-- put assertions in constraint col
-							s := object_invariant_string (a_node.excludes.item)
-							s.replace_substring_all (" ", "%N")
-							create gli.make_with_text (s)
+							s_32 := object_invariant_string (a_node.excludes.item)
+							s_32.replace_substring_all (" ", "%N")
+							create gli.make_with_text (s_32)
 							gli.set_foreground_color (archetype_constraint_color)
 							sub_row.set_item (Node_grid_col_constraint, gli)
 							sub_row.set_height (gli.text_height)
@@ -269,7 +269,7 @@ feature -- Visitor
 			-- enter a C_ATTRIBUTE
 		local
 			gli: EV_GRID_LABEL_ITEM
-			s, s1: STRING
+			s: STRING
 		do
 			if not updating then
 				-- RM attr name / path
@@ -283,7 +283,7 @@ feature -- Visitor
 				else
 					s.append (a_node.rm_attribute_name)
 				end
-				create gli.make_with_text (s)
+				create gli.make_with_text (utf8_to_utf32 (s))
 				gli.set_pixmap (c_attribute_pixmap (a_node))
 				gli.set_tooltip (node_tooltip_str (a_node))
 				gli.set_foreground_color (rm_attribute_color)
@@ -349,10 +349,10 @@ feature -- Visitor
 			start_c_object (a_node, depth)
 			row := node_grid_row_map.item (a_node)
 
-			if not a_node.any_allowed then
+			if not a_node.any_allowed and in_technical_mode then
 				-- add Archetype root reference info
 				create s.make_empty
-				if attached a_node.slot_node_id and in_technical_mode then
+				if attached a_node.slot_node_id then
 					s.append ("[" + a_node.slot_node_id + ",%N" + a_node.node_id + "]")
 				else
 					s.append ("[" + a_node.node_id + "]")
@@ -394,7 +394,7 @@ feature -- Visitor
 			p.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
 			p.remove_head (1)
 			s.append (p)
-			create gli.make_with_text (s)
+			create gli.make_with_text (utf8_to_utf32 (s))
 			gli.set_foreground_color (rm_attribute_color)
 			row.set_item (Node_grid_col_constraint, gli)
 			row.set_height (gli.text_height)
@@ -468,9 +468,9 @@ feature -- Visitor
 			-- enter an C_CODE_PHRASE
 		local
 			assumed_flag: BOOLEAN
-			row: EV_GRID_ROW
+			row, sub_row: EV_GRID_ROW
 			gli: EV_GRID_LABEL_ITEM
-			s: STRING
+			s_32: STRING_32
 			i: INTEGER
 		do
 			start_c_object (a_node, depth)
@@ -485,28 +485,29 @@ feature -- Visitor
 					a_node.code_list.off
 				loop
 					assumed_flag := a_node.has_assumed_value and then a_node.assumed_value.code_string.is_equal (a_node.code_list.item)
-					s := object_term_item_string (a_node.code_list.item, assumed_flag, a_node.is_local)
+					s_32 := object_term_item_string (a_node.code_list.item, assumed_flag)
 					if updating then
 						if attached {EV_GRID_LABEL_ITEM} row.subrow (i).item (Node_grid_col_constraint) as gli2 then
-							gli2.set_text (s)
+							gli2.set_text (s_32)
 						end
 					else
 						row.insert_subrow (row.subrow_count + 1)
+						sub_row := row.subrow (row.subrow_count)
 
 						-- RM code - empty text, pixmap only
 						create gli.default_create
 						gli.set_pixmap (spec_pixmap (a_node, "term"))
 						gli.set_data (a_node.code_list.item) -- of type STRING
-						row.subrow (row.subrow_count).set_item (Node_grid_col_rm_name, gli)
+						sub_row.set_item (Node_grid_col_rm_name, gli)
 
 						-- constraint col
-						create gli.make_with_text (s)
+						create gli.make_with_text (s_32)
 						gli.set_foreground_color (Archetype_constraint_color)
 						-- add select event
 						if is_valid_code (a_node.code_list.item) and then ontology.has_term_code (a_node.code_list.item) then
 	 						gli.pointer_button_press_actions.force_extend (agent call_code_select_agent (a_node.code_list.item, ?, ?, ?))
 						end
-						row.subrow (row.subrow_count).set_item (Node_grid_col_constraint, gli)
+						sub_row.set_item (Node_grid_col_constraint, gli)
 					end
 					a_node.code_list.forth
 					i := i + 1
@@ -528,7 +529,7 @@ feature -- Visitor
 			assumed_flag: BOOLEAN
 			row: EV_GRID_ROW
 			gli: EV_GRID_LABEL_ITEM
-			s: STRING
+			s_32: STRING_32
 			i: INTEGER
 		do
 			start_c_object (a_node, depth)
@@ -542,10 +543,10 @@ feature -- Visitor
 					a_node.items.off
 				loop
 					assumed_flag := a_node.has_assumed_value and then a_node.assumed_value.value = a_node.items.item.value
-					s := object_ordinal_item_string (a_node.items.item, assumed_flag)
+					s_32 := object_ordinal_item_string (a_node.items.item, assumed_flag)
 					if updating then
 						if attached {EV_GRID_LABEL_ITEM} row.subrow (i).item (Node_grid_col_constraint) as gli2 then
-							gli2.set_text (s)
+							gli2.set_text (s_32)
 						end
 					else
 						row.insert_subrow (row.subrow_count + 1)
@@ -557,7 +558,7 @@ feature -- Visitor
 						row.subrow (row.subrow_count).set_item (Node_grid_col_rm_name, gli)
 
 						-- constraint col
-						create gli.make_with_text (s)
+						create gli.make_with_text (s_32)
 						gli.set_foreground_color (archetype_constraint_color)
 						-- add select event
 						if a_node.items.item.symbol.terminology_id.is_local then
@@ -682,36 +683,6 @@ feature {NONE} -- Implementation
 			-- IETF RFC 5646 language tag; wll be an exact text match
 			-- for one of the 'languages' in the archetype
 
-	object_ordinal_item_string (an_ordinal: attached ORDINAL; assumed_flag: BOOLEAN): attached STRING_32
-			-- generate string form of node or object for use in tree node
-		local
-			code, s: STRING
-		do
-			code := an_ordinal.symbol.code_string
-			create s.make_empty
-			s.append (an_ordinal.value.out + " - ")
-			s.append (coded_text_string (code))
-			if assumed_flag then
-				s.append (" (" + get_text ("assumed_text") + ")")
-			end
-			Result := utf8_to_utf32 (s)
-		end
-
-	object_term_item_string (code: attached STRING; assumed_flag, local_flag: BOOLEAN): attached STRING_32
-			-- generate string form of node or object for use in tree node;
-			-- assumed_flag = True if this is an assumed value - will be marked visually
-			-- local_flag = True if his term is an at- or ac- code from within archetype
-		local
-			s: STRING
-		do
-			create s.make_empty
-			s.append (coded_text_string (code))
-			if assumed_flag then
-				s.append (" (" + get_text ("assumed_text") + ")")
-			end
-			Result := utf8_to_utf32 (s)
-		end
-
 	c_quantity_item_string (a_node: attached C_QUANTITY_ITEM): attached STRING_32
 			-- generate string form of node or object for use in tree node
 		local
@@ -727,9 +698,38 @@ feature {NONE} -- Implementation
 			Result := utf8_to_utf32 (s)
 		end
 
-	coded_text_string (a_code: STRING): STRING
-			-- generate a string of the form "[code|rubric|]" if in technical mode, or else
-			-- "rubric"
+	object_term_item_string (a_code: attached STRING; assumed_flag: BOOLEAN): attached STRING_32
+			-- generate string form of node or object for use in tree node;
+			-- assumed_flag = True if this is an assumed value - will be marked visually
+		local
+			s: STRING
+		do
+			create s.make_empty
+			s.append (coded_text_string (a_code))
+			if assumed_flag then
+				s.append (" (" + get_text ("assumed_text") + ")")
+			end
+			Result := utf8_to_utf32 (s)
+		end
+
+	object_ordinal_item_string (an_ordinal: attached ORDINAL; assumed_flag: BOOLEAN): attached STRING_32
+			-- generate string form of node or object for use in tree node
+		local
+			s: STRING
+		do
+			create s.make_empty
+			s.append (an_ordinal.value.out)
+			s.append (" - ")
+			s.append (coded_text_string (an_ordinal.symbol.code_string))
+			if assumed_flag then
+				s.append (" (" + get_text ("assumed_text") + ")")
+			end
+			Result := utf8_to_utf32 (s)
+		end
+
+	coded_text_string (a_code: STRING): attached STRING
+			-- generate a string of the form "[code|rubric|]" if in technical mode,
+			-- or else "rubric"
 		local
 			rubric: STRING
 		do

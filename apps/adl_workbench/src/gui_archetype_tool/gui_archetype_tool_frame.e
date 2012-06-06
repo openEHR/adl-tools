@@ -189,7 +189,9 @@ feature {NONE} -- Events
 			-- Repopulate the view of the archetype when the user selects a different language.
 		do
 			selected_language := ev_language_combo.text.as_string_8
-			on_select_notebook
+			if attached {GUI_ARCHETYPE_TARGETTED_TOOL} ev_notebook.selected_item.data as arch_tool then
+				arch_tool.repopulate_with_language (selected_language)
+			end
 		end
 
 feature {NONE} -- Implementation

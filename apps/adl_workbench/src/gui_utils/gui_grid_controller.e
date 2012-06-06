@@ -241,7 +241,7 @@ feature -- Commands
 	resize_columns_to_content (expansion_factor: REAL)
 			-- resize all columns to content, applying `expansion_factor'
 		require
-			Sane_expansion_factor: 1.0 >= expansion_factor and expansion_factor <= 2.0
+			Sane_expansion_factor: expansion_factor >= 1.0 and expansion_factor <= 2.0
 		local
 			i: INTEGER
 		do
