@@ -52,6 +52,8 @@ feature -- Definitions
 
 	frame_height: INTEGER = 100
 
+	Grid_expansion_factor: REAL = 1.2
+
 feature {NONE} -- Initialisation
 
 	initialize
@@ -86,7 +88,7 @@ feature {NONE} -- Initialisation
 			ev_root_container.disable_item_expand (ev_cell_2)
 
 			-- ============ main grid ============
-			create grid
+			create grid.make
 			grid.enable_tree
 			ev_root_container.extend (grid)
 			grid.set_minimum_height (150)
@@ -236,9 +238,8 @@ feature {NONE} -- Implementation
 				grid.column (grid_lifecycle_state_col).set_title (get_text ("rm_schema_grid_lifecycle_state_col_title"))
 				grid.column (Grid_validated_col).set_title (get_text ("rm_schema_grid_validated_col_title"))
 
-				from i := 1 until i > Grid_max_cols loop
-					grid.column(i).resize_to_content
-					grid.column(i).set_width ((grid.column (i).width * 1.2).ceiling)
+				grid.resize_columns_to_content (Grid_expansion_factor)
+				from i := 1 until i > grid.column_count loop
 					form_width := form_width + grid.column (i).width
 					i := i + 1
 				end
@@ -322,7 +323,7 @@ feature {NONE} -- Implementation
 
 	ev_cell_1, ev_cell_2, ev_cell_3, ev_cell_4: EV_CELL
 	ev_label_1, ev_label_2: EV_LABEL
-	grid: EV_GRID
+	grid: EV_GRID_KBD_MOUSE
 
 	gui_controls: ARRAYED_LIST [GUI_DATA_CONTROL]
 

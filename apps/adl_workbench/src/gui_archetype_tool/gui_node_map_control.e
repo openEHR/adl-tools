@@ -41,7 +41,9 @@ create
 
 feature -- Definitions
 
-	tree_control_panel_width: INTEGER = 100
+	Tree_control_panel_width: INTEGER = 100
+
+	Grid_expansion_factor: REAL = 1.05
 
 feature -- Initialisation
 
@@ -55,9 +57,10 @@ feature -- Initialisation
 
 			create ev_grid.make
 			ev_grid.enable_tree
+			ev_grid.disable_row_height_fixed
+			ev_grid.row_expand_actions.extend (agent (a_row: EV_GRID_ROW) do ev_grid.resize_columns_to_content (Grid_expansion_factor) end)
+			ev_grid.row_collapse_actions.extend (agent (a_row: EV_GRID_ROW) do ev_grid.resize_columns_to_content (Grid_expansion_factor) end)
 			ev_root_container.extend (ev_grid)
-			ev_grid.row_expand_actions.extend (agent (a_row: EV_GRID_ROW) do grid_resize_to_content end)
-			ev_grid.row_collapse_actions.extend (agent (a_row: EV_GRID_ROW) do grid_resize_to_content end)
 
 			create ev_view_controls_vbox
 			ev_root_container.extend (ev_view_controls_vbox)
@@ -212,7 +215,7 @@ feature -- Commands
 				in_reference_model_mode_changed := False
 			end
 
-			grid_resize_to_content
+			ev_grid.resize_columns_to_content (Grid_expansion_factor)
 		end
 
 	update_rm_icons_cb
@@ -242,7 +245,7 @@ feature {NONE} -- Events
 					ev_grid_row_list.forth
 				end
 			end
-			grid_resize_to_content
+			ev_grid.resize_columns_to_content (Grid_expansion_factor)
 		end
 
 	on_expand_tree_one_level
@@ -257,7 +260,7 @@ feature {NONE} -- Events
 					ev_grid_row_list.forth
 				end
 			end
-			grid_resize_to_content
+			ev_grid.resize_columns_to_content (Grid_expansion_factor)
 		end
 
 	on_expand_tree
@@ -402,7 +405,7 @@ feature {NONE} -- Implementation
 					i := i + 1
 				end
 			end
-			grid_resize_to_content
+			ev_grid.resize_columns_to_content (Grid_expansion_factor)
 		end
 
 	grid_row_add_rm_attributes (an_ev_grid_row: attached EV_GRID_ROW)
@@ -427,15 +430,18 @@ feature {NONE} -- Implementation
 							-- RM col
 							create gli.make_with_text (utf8_to_utf32 (props.key_for_iteration + ": " + props.item_for_iteration.type.as_type_string))
 							gli.set_pixmap (get_icon_pixmap ("rm/generic/" + props.item_for_iteration.multiplicity_key_string))
+							gli.set_foreground_color (rm_attribute_color)
 							rm_attr_sub_row.set_item (Node_grid_col_rm_name, gli)
 
 							-- existence col
 							create gli.make_with_text (props.item_for_iteration.existence.as_string)
+							gli.set_foreground_color (rm_attribute_color)
 							rm_attr_sub_row.set_item (Node_grid_col_existence, gli)
 
 							-- card/occ col
 							if attached {BMM_CONTAINER_PROPERTY} props.item_for_iteration as bmm_cont_prop then
 								create gli.make_with_text (bmm_cont_prop.cardinality.as_string)
+								gli.set_foreground_color (rm_attribute_color)
 								rm_attr_sub_row.set_item (Node_grid_col_card_occ, gli)
 							end
 						end
@@ -625,15 +631,6 @@ feature {NONE} -- Implementation
 				i := i + 1
 			end
 			a_node_action.call ([a_grid_row])
-		end
-
-	grid_resize_to_content
-		do
-			ev_grid.column (node_grid_col_rm_name).resize_to_content
-			ev_grid.column (node_grid_col_rm_name).set_width ((ev_grid.column (node_grid_col_rm_name).width * 1.05).ceiling)
-
-			ev_grid.column (node_grid_col_meaning).resize_to_content
-			ev_grid.column (node_grid_col_meaning).set_width ((ev_grid.column (node_grid_col_meaning).width * 1.05).ceiling)
 		end
 
 end

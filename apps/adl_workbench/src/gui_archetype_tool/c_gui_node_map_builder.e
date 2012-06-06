@@ -92,6 +92,7 @@ feature -- Visitor
 		local
 			row: EV_GRID_ROW
 			s: STRING
+			gli: EV_GRID_LABEL_ITEM
 		do
 			if not updating then
 				-- create a new row
@@ -123,11 +124,15 @@ feature -- Visitor
 						s.append (get_text ("occurrences_removed_text"))
 					end
 				end
-				last_row.set_item (Node_grid_col_card_occ, create {EV_GRID_LABEL_ITEM}.make_with_text (s))
+				create gli.make_with_text (s)
+				gli.set_foreground_color (archetype_constraint_color)
+				last_row.set_item (Node_grid_col_card_occ, gli)
 
 				-- constraint column
 				if attached {C_DEFINED_OBJECT} a_node as c_do and then c_do.any_allowed then
-					last_row.set_item (Node_grid_col_constraint, create {EV_GRID_LABEL_ITEM}.make_with_text ("*"))
+					create gli.make_with_text (Archetype_any_constraint)
+					gli.set_foreground_color (archetype_constraint_color)
+					last_row.set_item (Node_grid_col_constraint, gli)
 				end
 
 				-- remember on stack
@@ -141,12 +146,12 @@ feature -- Visitor
 				gli2.set_tooltip (node_tooltip_str (a_node))
 			end
 
-			-- meaning column
-			create s.make_empty
+			-- update meaning column
 			if a_node.is_addressable then
-				s.append (coded_text_string (a_node.node_id))
+				if attached {EV_GRID_LABEL_ITEM} row.item (Node_grid_col_meaning) as gli_meaning then
+					gli_meaning.set_text (utf8_to_utf32 (coded_text_string (a_node.node_id)))
+				end
 			end
-			row.set_item (Node_grid_col_meaning, create {EV_GRID_LABEL_ITEM}.make_with_text (utf8_to_utf32 (s)))
 
 			-- sibling order column
 			create s.make_empty
@@ -181,56 +186,72 @@ feature -- Visitor
 			row, sub_row: EV_GRID_ROW
 			i: INTEGER
 			gli: EV_GRID_LABEL_ITEM
+			s: STRING
 		do
 			start_c_object (a_node, depth)
+			row := node_grid_row_map.item (a_node)
 
 			if updating then
-				row := node_grid_row_map.item (a_node)
-				if a_node.has_includes or a_node.has_excludes then
-					from i := 1 until i > row.subrow_count loop
-						if attached {ASSERTION} row.subrow (i).data as assn then
-							row.subrow (i).set_item (Node_grid_col_constraint, create {EV_GRID_LABEL_ITEM}.make_with_text (object_invariant_string (assn)))
-						end
-						i := i + 1
-					end
-				end
+--				if a_node.has_includes or a_node.has_excludes then
+--					from i := 1 until i > row.subrow_count loop
+--						if attached {ASSERTION} row.subrow (i).data as assn then
+--							row.subrow (i).set_item (Node_grid_col_constraint, create {EV_GRID_LABEL_ITEM}.make_with_text (object_invariant_string (assn)))
+--						end
+--						i := i + 1
+--					end
+--				end
 			else
-				-- create child nodes for includes & excludes
-				if a_node.has_includes then
-					from a_node.includes.start until a_node.includes.off loop
-						ev_grid_row_stack.item.insert_subrow (ev_grid_row_stack.item.subrow_count + 1)
-						sub_row := ev_grid_row_stack.item.subrow (ev_grid_row_stack.item.subrow_count)
+				-- add closed indicator in constraint column
+				if a_node.is_closed then
+					create gli.make_with_text (Archetype_slot_closed)
+					gli.set_foreground_color (archetype_constraint_color)
+					row.set_item (Node_grid_col_constraint, gli)
+				else
+					-- create child nodes for includes & excludes
+					if a_node.has_includes then
+						from a_node.includes.start until a_node.includes.off loop
+							ev_grid_row_stack.item.insert_subrow (ev_grid_row_stack.item.subrow_count + 1)
+							sub_row := ev_grid_row_stack.item.subrow (ev_grid_row_stack.item.subrow_count)
 
-						-- put pixmap on RM col
-						create gli.default_create
-						gli.set_pixmap (get_icon_pixmap ("am/added/" + a_node.generating_type + "_include"))
-						sub_row.set_item (Node_grid_col_rm_name, gli)
+							-- put pixmap on RM col
+							create gli.default_create
+							gli.set_pixmap (get_icon_pixmap ("am/added/" + a_node.generating_type + "_include"))
+							sub_row.set_item (Node_grid_col_rm_name, gli)
 
-						-- put assertions in constraint col
-						create gli.make_with_text (object_invariant_string (a_node.includes.item))
-						sub_row.set_item (Node_grid_col_constraint, gli)
+							-- put assertions in constraint col
+							s := object_invariant_string (a_node.includes.item)
+							s.replace_substring_all (" ", "%N")
+							create gli.make_with_text (s)
+							gli.set_foreground_color (archetype_constraint_color)
+							sub_row.set_item (Node_grid_col_constraint, gli)
+							sub_row.set_height (gli.text_height)
 
-						sub_row.set_data (a_node.includes.item)
-						a_node.includes.forth
+							sub_row.set_data (a_node.includes.item)
+							a_node.includes.forth
+						end
 					end
-				end
 
-				if a_node.has_excludes then
-					from a_node.excludes.start until a_node.excludes.off loop
-						ev_grid_row_stack.item.insert_subrow (ev_grid_row_stack.item.subrow_count + 1)
-						sub_row := ev_grid_row_stack.item.subrow (ev_grid_row_stack.item.subrow_count)
+					if a_node.has_excludes then
+						from a_node.excludes.start until a_node.excludes.off loop
+							ev_grid_row_stack.item.insert_subrow (ev_grid_row_stack.item.subrow_count + 1)
+							sub_row := ev_grid_row_stack.item.subrow (ev_grid_row_stack.item.subrow_count)
 
-						-- put pixmap on RM col
-						create gli.default_create
-						gli.set_pixmap (get_icon_pixmap ("am/added/" + a_node.generating_type + "_exclude"))
-						sub_row.set_item (Node_grid_col_rm_name, gli)
+							-- put pixmap on RM col
+							create gli.default_create
+							gli.set_pixmap (get_icon_pixmap ("am/added/" + a_node.generating_type + "_exclude"))
+							sub_row.set_item (Node_grid_col_rm_name, gli)
 
-						-- put assertions in constraint col
-						create gli.make_with_text (object_invariant_string (a_node.excludes.item))
-						sub_row.set_item (Node_grid_col_constraint, gli)
+							-- put assertions in constraint col
+							s := object_invariant_string (a_node.excludes.item)
+							s.replace_substring_all (" ", "%N")
+							create gli.make_with_text (s)
+							gli.set_foreground_color (archetype_constraint_color)
+							sub_row.set_item (Node_grid_col_constraint, gli)
+							sub_row.set_height (gli.text_height)
 
-						sub_row.set_data (a_node.excludes.item)
-						a_node.excludes.forth
+							sub_row.set_data (a_node.excludes.item)
+							a_node.excludes.forth
+						end
 					end
 				end
 			end
@@ -248,15 +269,26 @@ feature -- Visitor
 			-- enter a C_ATTRIBUTE
 		local
 			gli: EV_GRID_LABEL_ITEM
+			s, s1: STRING
 		do
 			if not updating then
 				-- RM attr name / path
 				ev_grid_row_stack.item.insert_subrow (ev_grid_row_stack.item.subrow_count + 1)
 				last_row := ev_grid_row_stack.item.subrow (ev_grid_row_stack.item.subrow_count)
-				create gli.make_with_text (ontology.physical_to_logical_path (a_node.rm_attribute_path, language, True))
+				create s.make_empty
+				if a_node.has_differential_path then
+					s.append (ontology.physical_to_logical_path (a_node.rm_attribute_path, language, True))
+					s.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
+					s.remove_head (1)
+				else
+					s.append (a_node.rm_attribute_name)
+				end
+				create gli.make_with_text (s)
 				gli.set_pixmap (c_attribute_pixmap (a_node))
 				gli.set_tooltip (node_tooltip_str (a_node))
+				gli.set_foreground_color (rm_attribute_color)
 				last_row.set_item (Node_grid_col_rm_name, gli)
+				last_row.set_height (gli.text_height)
 
 				-- meaning field
 				create gli.make_with_text ("")
@@ -264,16 +296,22 @@ feature -- Visitor
 
 				-- existence
 				if attached a_node.existence then
-					last_row.set_item (Node_grid_col_existence, create {EV_GRID_LABEL_ITEM}.make_with_text (a_node.existence.as_string))
+					create gli.make_with_text (a_node.existence.as_string)
+					gli.set_foreground_color (archetype_constraint_color)
+					last_row.set_item (Node_grid_col_existence, gli)
 				end
 
 				-- cardinality
 				if attached a_node.cardinality then
-					last_row.set_item (Node_grid_col_card_occ, create {EV_GRID_LABEL_ITEM}.make_with_text (a_node.cardinality.as_string))
+					create gli.make_with_text (a_node.cardinality.as_string)
+					gli.set_foreground_color (archetype_constraint_color)
+					last_row.set_item (Node_grid_col_card_occ, gli)
 				end
 
 				if a_node.any_allowed then
-					last_row.set_item (Node_grid_col_constraint, create {EV_GRID_LABEL_ITEM}.make_with_text ("*"))
+					create gli.make_with_text (Archetype_any_constraint)
+					gli.set_foreground_color (archetype_constraint_color)
+					last_row.set_item (Node_grid_col_constraint, gli)
 				end
 
 				-- set the data
@@ -306,19 +344,23 @@ feature -- Visitor
 		local
 			s: STRING
 			row: EV_GRID_ROW
+			gli: EV_GRID_LABEL_ITEM
 		do
 			start_c_object (a_node, depth)
-
-			-- add Archetype root reference info
 			row := node_grid_row_map.item (a_node)
-			create s.make_empty
-			if attached a_node.slot_node_id and in_technical_mode then
-				s.append (" [" + a_node.slot_node_id + ", " + a_node.node_id + "]")
-			else
-				s.append (" [" + a_node.node_id + "]")
-			end
+
 			if not a_node.any_allowed then
-				row.set_item (Node_grid_col_constraint, create {EV_GRID_LABEL_ITEM}.make_with_text (s))
+				-- add Archetype root reference info
+				create s.make_empty
+				if attached a_node.slot_node_id and in_technical_mode then
+					s.append ("[" + a_node.slot_node_id + ",%N" + a_node.node_id + "]")
+				else
+					s.append ("[" + a_node.node_id + "]")
+				end
+				s.replace_substring_all ({ARCHETYPE_ID}.axis_separator_string, {ARCHETYPE_ID}.axis_separator_string + "%N")
+				create gli.make_with_text (s)
+				row.set_item (Node_grid_col_constraint, gli)
+				row.set_height (gli.text_height)
 			end
 
 			-- have to obtain the ontology from the main archetype directory because the archetype being serialised
@@ -338,8 +380,9 @@ feature -- Visitor
 	start_archetype_internal_ref (a_node: attached ARCHETYPE_INTERNAL_REF; depth: INTEGER)
 			-- enter an ARCHETYPE_INTERNAL_REF
 		local
-			s: STRING
+			p, s: STRING
 			row: EV_GRID_ROW
+			gli: EV_GRID_LABEL_ITEM
 		do
 			start_c_object (a_node, depth)
 
@@ -347,8 +390,14 @@ feature -- Visitor
 			row := node_grid_row_map.item (a_node)
 			create s.make_empty
 			s.append ("use ")
-			s.append (ontology.physical_to_logical_path (a_node.target_path, language, True))
-			row.set_item (Node_grid_col_constraint, create {EV_GRID_LABEL_ITEM}.make_with_text (s))
+			p := ontology.physical_to_logical_path (a_node.target_path, language, True)
+			p.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
+			p.remove_head (1)
+			s.append (p)
+			create gli.make_with_text (s)
+			gli.set_foreground_color (rm_attribute_color)
+			row.set_item (Node_grid_col_constraint, gli)
+			row.set_height (gli.text_height)
 		end
 
 	end_archetype_internal_ref (a_node: attached ARCHETYPE_INTERNAL_REF; depth: INTEGER)
@@ -391,11 +440,14 @@ feature -- Visitor
 			-- enter an C_PRIMITIVE_OBJECT
 		local
 			row: EV_GRID_ROW
+			gli: EV_GRID_LABEL_ITEM
 		do
 			start_c_object (a_node, depth)
 			row := node_grid_row_map.item (a_node)
 			if not a_node.any_allowed then
-				row.set_item (Node_grid_col_constraint, create {EV_GRID_LABEL_ITEM}.make_with_text (a_node.item.as_string))
+				create gli.make_with_text (a_node.item.as_string)
+				gli.set_foreground_color (Archetype_constraint_color)
+				row.set_item (Node_grid_col_constraint, gli)
 			end
 		end
 
@@ -435,7 +487,7 @@ feature -- Visitor
 					assumed_flag := a_node.has_assumed_value and then a_node.assumed_value.code_string.is_equal (a_node.code_list.item)
 					s := object_term_item_string (a_node.code_list.item, assumed_flag, a_node.is_local)
 					if updating then
-						if attached {EV_GRID_LABEL_ITEM} row.subrow (i).item (Node_grid_col_meaning) as gli2 then
+						if attached {EV_GRID_LABEL_ITEM} row.subrow (i).item (Node_grid_col_constraint) as gli2 then
 							gli2.set_text (s)
 						end
 					else
@@ -447,13 +499,14 @@ feature -- Visitor
 						gli.set_data (a_node.code_list.item) -- of type STRING
 						row.subrow (row.subrow_count).set_item (Node_grid_col_rm_name, gli)
 
-						-- meaning col
+						-- constraint col
 						create gli.make_with_text (s)
+						gli.set_foreground_color (Archetype_constraint_color)
 						-- add select event
 						if is_valid_code (a_node.code_list.item) and then ontology.has_term_code (a_node.code_list.item) then
 	 						gli.pointer_button_press_actions.force_extend (agent call_code_select_agent (a_node.code_list.item, ?, ?, ?))
 						end
-						row.subrow (row.subrow_count).set_item (Node_grid_col_meaning, gli)
+						row.subrow (row.subrow_count).set_item (Node_grid_col_constraint, gli)
 					end
 					a_node.code_list.forth
 					i := i + 1
@@ -491,7 +544,7 @@ feature -- Visitor
 					assumed_flag := a_node.has_assumed_value and then a_node.assumed_value.value = a_node.items.item.value
 					s := object_ordinal_item_string (a_node.items.item, assumed_flag)
 					if updating then
-						if attached {EV_GRID_LABEL_ITEM} row.subrow (i).item (Node_grid_col_meaning) as gli2 then
+						if attached {EV_GRID_LABEL_ITEM} row.subrow (i).item (Node_grid_col_constraint) as gli2 then
 							gli2.set_text (s)
 						end
 					else
@@ -503,13 +556,14 @@ feature -- Visitor
 						gli.set_data (a_node.items.item) -- of type ORDINAL
 						row.subrow (row.subrow_count).set_item (Node_grid_col_rm_name, gli)
 
-						-- meaning col
+						-- constraint col
 						create gli.make_with_text (s)
+						gli.set_foreground_color (archetype_constraint_color)
 						-- add select event
 						if a_node.items.item.symbol.terminology_id.is_local then
 	 						gli.pointer_button_press_actions.force_extend (agent call_code_select_agent (a_node.items.item.symbol.code_string, ?, ?, ?))
 						end
-						row.subrow (row.subrow_count).set_item (Node_grid_col_meaning, gli)
+						row.subrow (row.subrow_count).set_item (Node_grid_col_constraint, gli)
 					end
 					a_node.items.forth
 					i := i + 1
@@ -553,6 +607,7 @@ feature -- Visitor
 
 						-- constraint column
 						create gli.make_with_text (c_quantity_item_string (a_node.list.item))
+						gli.set_foreground_color (archetype_constraint_color)
 						row.subrow (row.subrow_count).set_item (Node_grid_col_constraint, gli)
 
 						a_node.list.forth
@@ -571,6 +626,7 @@ feature -- Visitor
 
 					-- constraint column
 					create gli.make_with_text (a_node.assumed_value.magnitude_as_string + " (" + get_text ("assumed_text") + ")")
+					gli.set_foreground_color (archetype_constraint_color)
 					row.subrow (row.subrow_count).set_item (Node_grid_col_constraint, gli)
 				end
 			end
@@ -685,11 +741,9 @@ feature {NONE} -- Implementation
 					rubric := ontology.constraint_definition (language, a_code).text
 				end
 				if in_technical_mode then
-					 Result.append (a_code + "|")
-				end
-				Result.append (rubric)
-				if in_technical_mode then
-					 Result.append ("|")
+					Result.append (a_code + "|" + rubric + "|")
+				else
+					Result.append (rubric)
 				end
 			else
 				Result.append (a_code)
@@ -729,7 +783,7 @@ feature {NONE} -- Implementation
 			-- and use it to set the kind of pixmap to use
 			-- Always colourise inherited & overidden nodes. If we want a switch for this, implement a new flag.
 		do
-			Result := get_icon_pixmap ("am/" + (specialisation_status_names.item (a_node.specialisation_status) + "/" + pixmap_path))
+			Result := get_icon_pixmap ("am" + resource_path_separator + (specialisation_status_names.item (a_node.specialisation_status) + resource_path_separator + pixmap_path))
 		end
 
 	c_object_pixmap (a_node: C_OBJECT): EV_PIXMAP
@@ -737,11 +791,13 @@ feature {NONE} -- Implementation
 		local
 			pixmap_name: STRING
 		do
-			pixmap_name := rm_icon_dir + "/" + rm_publisher + "/" + a_node.rm_type_name
+			pixmap_name := rm_icon_dir +  resource_path_separator + rm_publisher + resource_path_separator + a_node.rm_type_name
 			if use_rm_pixmaps and then has_icon_pixmap (pixmap_name) then
 				Result := get_icon_pixmap (pixmap_name)
-			else
+			elseif has_icon_pixmap (a_node.generating_type + a_node.occurrences_key_string) then
 				Result := spec_pixmap (a_node, a_node.generating_type + a_node.occurrences_key_string)
+			else
+				Result := spec_pixmap (a_node, a_node.generating_type)
 			end
 		end
 
@@ -757,9 +813,9 @@ feature {NONE} -- Implementation
 
 			-- if using RM pixmaps, nothing changes; if not, inheritance status is shown
 			if use_rm_pixmaps then
-				Result := get_icon_pixmap ("am/added/" + pixmap_name)
+				Result := get_icon_pixmap ("am" + resource_path_separator + "added" + resource_path_separator + pixmap_name)
 			else
-				Result := get_icon_pixmap ("am/" + (specialisation_status_names.item (a_node.specialisation_status) + "/" + pixmap_name))
+				Result := get_icon_pixmap ("am" + resource_path_separator + (specialisation_status_names.item (a_node.specialisation_status) + resource_path_separator + pixmap_name))
 			end
 		end
 

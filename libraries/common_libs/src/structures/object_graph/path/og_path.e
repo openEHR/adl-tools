@@ -36,6 +36,8 @@ feature -- Definitions
 
 	segment_separator: CHARACTER = '/'
 
+	segment_separator_string: STRING = "/"
+
 	feature_call_separator: CHARACTER = '/'
 
 feature -- Initialisation

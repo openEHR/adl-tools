@@ -61,6 +61,10 @@ feature -- Definitions
 
 	rm_icon_dir: STRING = "rm"
 
+	resource_path_separator: STRING = "/"
+			-- regardless of OS, this is used in paths to locate resources, including icons and also
+			-- .cfg file items
+
 	Node_grid_col_rm_name: INTEGER = 1
 	Node_grid_col_meaning: INTEGER = 2
 	Node_grid_col_existence: INTEGER = 3
@@ -81,6 +85,18 @@ feature -- Definitions
 			Result.put (get_text ("node_grid_col_card_occ_text"), Node_grid_col_card_occ)
 			Result.put (get_text ("node_grid_col_sibling_order_text"), Node_grid_col_sibling_order)
 			Result.put (get_text ("node_grid_col_constraint_text"), Node_grid_col_constraint)
+		end
+
+	rm_attribute_color: EV_COLOR
+			-- a rendering colour for rm_attributes in the UI
+		once
+			create Result.make_with_8_bit_rgb (0, 0, 0xff)
+		end
+
+	Archetype_constraint_color: EV_COLOR
+			-- a rendering colour for rm_attributes in the UI
+		once
+			create Result.make_with_8_bit_rgb (0xff, 0, 0)
 		end
 
 feature -- Access

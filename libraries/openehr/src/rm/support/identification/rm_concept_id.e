@@ -34,7 +34,13 @@ feature -- Definitions
 	axis_separator: CHARACTER = '.'
 			-- major separator between values on the different axes
 
+	axis_separator_string: STRING = "."
+			-- major separator between values on the different axes
+
 	section_separator: CHARACTER = '-'
+			-- separator between sections in an axis
+
+	section_separator_string: STRING = "-"
 			-- separator between sections in an axis
 
 	Default_id: STRING

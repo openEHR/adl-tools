@@ -16,6 +16,12 @@ note
 
 class ARCHETYPE_DEFINITIONS
 
+feature -- Syntax Elements
+
+	Archetype_any_constraint: STRING = "*"
+
+	Archetype_slot_closed: STRING = "closed"
+
 feature -- Definitions
 
 	Syntax_type_adl: STRING = "adl"
@@ -72,9 +78,9 @@ feature -- Definitions
 		once
 			create Result.make(0)
 			Result.compare_objects
-			Result.extend("1.4")
-			Result.extend("1.4.1")
-			Result.extend("1.5")
+			Result.extend ("1.4")
+			Result.extend ("1.4.1")
+			Result.extend ("1.5")
 		end
 
 	Latest_adl_version: STRING

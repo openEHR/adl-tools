@@ -68,12 +68,8 @@ feature -- Access
 			indexes: ARRAYED_LIST [INTEGER]
 			i: INTEGER
 		do
-			from
-				indexes := viewable_row_indexes
-				i := indexes.count
-			until
-				i = 1 or else indexes [i] <= index
-			loop
+			indexes := viewable_row_indexes
+			from i := indexes.count until i = 1 or else indexes [i] <= index loop
 				i := i - 1
 			end
 
@@ -240,6 +236,20 @@ feature -- Commands
 			a_row.collapse
 		ensure
 			row_collapsed: not a_row.is_expanded
+		end
+
+	resize_columns_to_content (expansion_factor: REAL)
+			-- resize all columns to content, applying `expansion_factor'
+		require
+			Sane_expansion_factor: 1.0 >= expansion_factor and expansion_factor <= 2.0
+		local
+			i: INTEGER
+		do
+			from i := 1 until i > column_count loop
+				column(i).resize_to_content
+				column(i).set_width ((column (i).width * expansion_factor).ceiling)
+				i := i + 1
+			end
 		end
 
 feature {NONE} -- Implementation
