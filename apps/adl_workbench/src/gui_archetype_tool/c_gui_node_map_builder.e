@@ -106,17 +106,6 @@ feature -- Visitor
 				last_row.set_data (a_node)
 				node_grid_row_map.put (last_row, a_node)
 
-				-- rm_name column
-				create gli.make_with_text (a_node.rm_type_name)
-				gli.set_foreground_color (archetype_rm_type_color)
-				last_row.set_item (Node_grid_col_rm_name, gli)
-
-				-- meaning column - blank text + add select event
-				last_row.set_item (Node_grid_col_meaning, create {EV_GRID_LABEL_ITEM}.make_with_text (""))
-				if a_node.is_addressable then
-		 			last_row.item (Node_grid_col_meaning).pointer_button_press_actions.force_extend (agent call_code_select_agent (a_node.node_id, ?, ?, ?))
-				end
-
 				-- card/occ column
 				create s.make_empty
 				if attached a_node.occurrences then
@@ -142,15 +131,32 @@ feature -- Visitor
 			end
 			row := node_grid_row_map.item (a_node)
 
-			-- update the pixmap and tooltip of rm_name column
-			if attached {EV_GRID_LABEL_ITEM} row.item (node_grid_col_rm_name) as gli2 then
-				gli2.set_pixmap (c_object_pixmap (a_node))
-				gli2.set_tooltip (node_tooltip_str (a_node))
+			-- rm_name column - only if in technical mode
+			if in_technical_mode then
+				create gli.make_with_text (a_node.rm_type_name)
+				gli.set_foreground_color (archetype_rm_type_color)
+				row.set_item (Node_grid_col_rm_name, gli)
 			end
 
-			-- update meaning column
-			if a_node.is_addressable and then attached {EV_GRID_LABEL_ITEM} row.item (Node_grid_col_meaning) as gli_meaning then
-				gli_meaning.set_text (utf8_to_utf32 (coded_text_string (a_node.node_id)))
+			-- meaning column - blank text + add select event
+			if a_node.is_addressable then
+				if in_technical_mode then
+					row.set_item (Node_grid_col_meaning, create {EV_GRID_LABEL_ITEM}.make_with_text (utf8_to_utf32 (coded_text_string (a_node.node_id))))
+		 			row.item (Node_grid_col_meaning).pointer_button_press_actions.force_extend (agent call_code_select_agent (a_node.node_id, ?, ?, ?))
+		 		else
+					row.set_item (Node_grid_col_rm_name, create {EV_GRID_LABEL_ITEM}.make_with_text (utf8_to_utf32 (coded_text_string (a_node.node_id))))
+		 			row.item (Node_grid_col_rm_name).pointer_button_press_actions.force_extend (agent call_code_select_agent (a_node.node_id, ?, ?, ?))
+					row.set_item (Node_grid_col_meaning, create {EV_GRID_LABEL_ITEM}.default_create)
+		 			row.item (Node_grid_col_meaning).pointer_button_press_actions.wipe_out
+				end
+			else
+				row.set_item (c_object_meaning_col, create {EV_GRID_LABEL_ITEM}.default_create)
+			end
+
+			-- update the pixmap and tooltip of rm_name column
+			if attached {EV_GRID_LABEL_ITEM} row.item (Node_grid_col_rm_name) as gli2 then
+				gli2.set_pixmap (c_object_pixmap (a_node))
+				gli2.set_tooltip (node_tooltip_str (a_node))
 			end
 
 			-- sibling order column
@@ -192,7 +198,7 @@ feature -- Visitor
 			row := node_grid_row_map.item (a_node)
 
 			-- try to find a slot pixmap even if in RM icon mode
-			if use_rm_pixmaps and attached {EV_GRID_LABEL_ITEM} row.item (node_grid_col_rm_name) as gli2 then
+			if use_rm_pixmaps and attached {EV_GRID_LABEL_ITEM} row.item (Node_grid_col_rm_name) as gli2 then
 				gli2.set_pixmap (c_object_slot_pixmap (a_node))
 			end
 
@@ -273,6 +279,7 @@ feature -- Visitor
 	start_c_attribute (a_node: attached C_ATTRIBUTE; depth: INTEGER)
 			-- enter a C_ATTRIBUTE
 		local
+			row: EV_GRID_ROW
 			gli: EV_GRID_LABEL_ITEM
 			s: STRING
 		do
@@ -280,6 +287,7 @@ feature -- Visitor
 				-- RM attr name / path
 				ev_grid_row_stack.item.insert_subrow (ev_grid_row_stack.item.subrow_count + 1)
 				last_row := ev_grid_row_stack.item.subrow (ev_grid_row_stack.item.subrow_count)
+				node_grid_row_map.put (last_row, a_node)
 				create s.make_empty
 				if a_node.has_differential_path then
 					s.append (ontology.physical_to_logical_path (a_node.rm_attribute_path, language, True))
@@ -290,7 +298,6 @@ feature -- Visitor
 				end
 				create gli.make_with_text (utf8_to_utf32 (s))
 				gli.set_pixmap (c_attribute_pixmap (a_node))
-				gli.set_tooltip (node_tooltip_str (a_node))
 				gli.set_foreground_color (rm_attribute_color)
 				last_row.set_item (Node_grid_col_rm_name, gli)
 				last_row.set_height (gli.text_height + Default_grid_row_expansion)
@@ -323,6 +330,15 @@ feature -- Visitor
 				last_row.set_data (a_node)
 
 				ev_grid_row_stack.extend (last_row)
+
+				row := last_row
+			else
+				row := node_grid_row_map.item (a_node)
+			end
+
+			-- set tooltip (including annotations, which can change with language)
+			if attached {EV_GRID_LABEL_ITEM} row.item (node_grid_col_rm_name) as gli2 then
+				gli2.set_tooltip (node_tooltip_str (a_node))
 			end
 		end
 
@@ -648,7 +664,7 @@ feature -- Visitor
 
 feature {NONE} -- Implementation
 
-	node_tooltip_str (a_node: attached ARCHETYPE_CONSTRAINT): STRING
+	node_tooltip_str (a_node: attached ARCHETYPE_CONSTRAINT): STRING_32
 			-- generate a tooltip for this node as UTF-32 String
 		local
 			s: STRING
@@ -839,6 +855,15 @@ feature {NONE} -- Implementation
 				Result := get_icon_pixmap ("am" + resource_path_separator + "added" + resource_path_separator + pixmap_name)
 			else
 				Result := get_icon_pixmap ("am" + resource_path_separator + (specialisation_status_names.item (a_node.specialisation_status) + resource_path_separator + pixmap_name))
+			end
+		end
+
+	c_object_meaning_col: INTEGER
+		do
+			if in_technical_mode then
+				Result :=  Node_grid_col_meaning
+			else
+				Result :=  Node_grid_col_rm_name
 			end
 		end
 
