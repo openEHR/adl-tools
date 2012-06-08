@@ -81,29 +81,24 @@ feature -- Initialisation
 			ev_view_controls_vbox.disable_item_expand (gui_treeview_control.ev_root_container)
 
 			-- ========= view detail level options  =========
-			create ev_view_detail_frame
-			ev_view_detail_frame.set_text (get_text ("view_detail_controls_text"))
-			ev_view_detail_frame.set_minimum_width (100)
-			ev_view_detail_frame.set_minimum_height (85)
-			ev_view_controls_vbox.extend (ev_view_detail_frame)
-			ev_view_controls_vbox.disable_item_expand (ev_view_detail_frame)
+			create view_detail_frame_ctl.make (get_text ("view_detail_controls_text"), 85, 100, False)
+			ev_view_controls_vbox.extend (view_detail_frame_ctl.ev_root_container)
+			ev_view_controls_vbox.disable_item_expand (view_detail_frame_ctl.ev_root_container)
 
-			create ev_view_detail_vbox
-			ev_view_detail_vbox.set_border_width (Default_border_width)
-			ev_view_detail_frame.extend (ev_view_detail_vbox)
+			-- view detail toggle button
+			create toggle_button_ctl.make (get_text ("domain_detail_button_text"), get_text ("technical_detail_button_text"),
+				get_text ("domain_detail_button_tooltip"),
+				agent :BOOLEAN do Result := not in_technical_mode end,
+				agent set_domain_view, 0, 0)
+			view_detail_frame_ctl.extend (toggle_button_ctl.ev_data_control, False)
 
-			create ev_view_detail_low_rb
-			ev_view_detail_low_rb.set_text (get_text ("domain_detail_button_text"))
-			ev_view_detail_low_rb.set_tooltip (get_text ("domain_detail_button_tooltip"))
-			ev_view_detail_low_rb.select_actions.extend (agent on_domain_selected)
-			ev_view_detail_vbox.extend (ev_view_detail_low_rb)
+			-- include codes checkbox
+			create add_codes_checkbox_ctl.make_edit (get_text ("domain_view_add_codes_text"), Void,
+				agent :BOOLEAN do Result := show_codes end, agent set_show_codes)
+			view_detail_frame_ctl.extend (add_codes_checkbox_ctl.ev_data_control, False)
 
-			create ev_view_detail_high_rb
-			ev_view_detail_high_rb.set_text (get_text ("technical_detail_button_text"))
-			ev_view_detail_high_rb.set_tooltip (get_text ("technical_detail_button_tooltip"))
-			ev_view_detail_high_rb.select_actions.extend (agent on_technical_selected)
-			ev_view_detail_vbox.extend (ev_view_detail_high_rb)
 
+			-- ========= RM view options =========
 			create ev_view_rm_frame
 			ev_view_rm_frame.set_text (get_text ("view_rm_controls_text"))
 			ev_view_rm_frame.set_minimum_width (100)
@@ -111,7 +106,6 @@ feature -- Initialisation
 			ev_view_controls_vbox.extend (ev_view_rm_frame)
 			ev_view_controls_vbox.disable_item_expand (ev_view_rm_frame)
 
-			-- ========= RM view options =========
 			create ev_view_rm_vbox
 			ev_view_rm_vbox.set_border_width (Default_border_width)
 			ev_view_rm_frame.extend (ev_view_rm_vbox)
@@ -137,11 +131,6 @@ feature -- Initialisation
 				ev_view_rm_attrs_on_cb.enable_select
 			end
 			in_technical_mode := show_technical_view
-			if in_technical_mode then
-				ev_view_detail_high_rb.enable_select
-			else
-				ev_view_detail_low_rb.enable_select
-			end
 			if use_rm_pixmaps then
 				ev_view_rm_use_icons_cb.enable_select
 			end
@@ -158,6 +147,9 @@ feature -- Status Report
 
 	in_reference_model_mode: BOOLEAN
 			-- True if reference model should be visible in tree
+
+	show_codes: BOOLEAN
+			-- True if codes should be shown in the definition rendering
 
 	in_reference_model_mode_changed: BOOLEAN
 			-- True if last call to set/unset in_reference_model_mode changed the flag's value
@@ -183,9 +175,14 @@ feature -- Commands
 			a_c_iterator: C_VISITOR_ITERATOR
 			c_node_map_builder: C_GUI_NODE_MAP_BUILDER
 		do
+-- FIXME: form buttons
+toggle_button_ctl.do_populate
+add_codes_checkbox_ctl.do_populate
+
 			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
 			create c_node_map_builder
-			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, ev_grid, in_technical_mode, True, gui_node_map, code_select_action_agent)
+			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, ev_grid,
+				in_technical_mode, True, show_codes, gui_node_map, code_select_action_agent)
 			create a_c_iterator.make (source_archetype.definition, c_node_map_builder)
 			a_c_iterator.do_all
 
@@ -217,22 +214,20 @@ feature -- Commands
 
 feature {NONE} -- Events
 
-	on_domain_selected
-			-- Hide technical details in `ev_grid'.
+	set_domain_view (a_flag: BOOLEAN)
+			-- change state from in_technical_mode
 		do
 			if attached source then
-				in_technical_mode := False
-				set_show_technical_view (False)
+				in_technical_mode := not a_flag
+				set_show_technical_view (in_technical_mode)
 				repopulate
 			end
 		end
 
-	on_technical_selected
-			-- Display technical details in `ev_grid'.
+	set_show_codes (a_flag: BOOLEAN)
 		do
 			if attached source then
-				in_technical_mode := True
-				set_show_technical_view (True)
+				show_codes := a_flag
 				repopulate
 			end
 		end
@@ -274,15 +269,19 @@ feature {NONE} -- Implementation
 
 	gui_treeview_control: GUI_TREEVIEW_CONTROL
 
-	ev_view_label: EV_LABEL
+	toggle_button_ctl: GUI_TOGGLE_BUTTON_CONTROL
 
-	ev_view_detail_low_rb, ev_view_detail_high_rb: EV_RADIO_BUTTON
+	add_codes_checkbox_ctl: GUI_CHECK_BOX_CONTROL
+
+	ev_view_label: EV_LABEL
 
 	ev_view_rm_attrs_on_cb, ev_view_rm_use_icons_cb: EV_CHECK_BUTTON
 
 	ev_view_controls_vbox, ev_view_detail_vbox, ev_view_rm_vbox: EV_VERTICAL_BOX
 
 	ev_view_detail_frame, ev_view_rm_frame: EV_FRAME
+
+	view_detail_frame_ctl, view_rm_frame_ctl: GUI_FRAME_CONTROL
 
 	rm_schema: BMM_SCHEMA
 
@@ -303,13 +302,18 @@ feature {NONE} -- Implementation
 			c_node_map_builder: C_GUI_NODE_MAP_BUILDER
 			i: INTEGER
 		do
+-- FIXME: form buttons
+toggle_button_ctl.do_populate
+add_codes_checkbox_ctl.do_populate
+
 			create gui_node_map.make (0)
 
 			rm_schema := source.rm_schema
 
 			-- populate from definition
 			create c_node_map_builder
-			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, ev_grid, in_technical_mode, False, gui_node_map, code_select_action_agent)
+			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, ev_grid,
+				in_technical_mode, False, show_codes, gui_node_map, code_select_action_agent)
 			create a_c_iterator.make (source_archetype.definition, c_node_map_builder)
 			a_c_iterator.do_all
 

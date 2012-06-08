@@ -1,15 +1,7 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "[
-				 Visual control for a BOOLEAN data source that outputs to an EV_CHECK_BUTTON.
-				 Visual control structure is a check-box with a title.
-				 
-					+-+
-					| | Title
-					+-+
-
-				 ]"
-	keywords:    "UI, ADL"
+	description: "Toggle button with two titles that change when toggled"
+	keywords:    "UI"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
@@ -20,7 +12,7 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class GUI_CHECK_BOX_CONTROL
+class GUI_TOGGLE_BUTTON_CONTROL
 
 inherit
 	GUI_DATA_CONTROL
@@ -29,49 +21,48 @@ inherit
 		end
 
 create
-	make, make_edit
+	make
 
 feature -- Initialisation
 
-	make (a_title, a_tooltip: detachable STRING; a_data_source_agent: like data_source_agent)
-			-- make with a data_source agent, typically for a Dialog box
-			-- caller should use `is_selected' to inspect state when OK is pressed
+	make (a_state_1_label, a_state_2_label: STRING;
+			a_tooltip_text: detachable STRING;
+			a_data_source_agent: like data_source_agent;
+			a_data_source_setter_agent: like data_source_setter_agent;
+			min_height, min_width: INTEGER)
 		do
+			can_edit := True
+
 			data_source_agent := a_data_source_agent
-
-			-- create the data control and add to ev_container
-			create_ev_data_control
-			ev_data_control.set_text (a_title)
-			if attached a_tooltip then
-				ev_data_control.set_tooltip (a_tooltip)
-			end
-		end
-
-	make_edit (a_title, a_tooltip: detachable STRING; a_data_source_agent: like data_source_agent;
-			a_data_source_setter_agent: like data_source_setter_agent)
-			-- make for a normal form with active semantics
-		do
-			make (a_title, a_tooltip, a_data_source_agent)
 			data_source_setter_agent := a_data_source_setter_agent
-			ev_data_control.select_actions.extend (agent on_select)
+
+			create state_1_settings
+			create state_2_settings
+
+			state_1_settings.label := utf8_to_utf32 (a_state_1_label)
+			state_2_settings.label := utf8_to_utf32 (a_state_2_label)
+
+			create ev_data_control
+			ev_data_control.set_minimum_height (default_min_height)
+			if attached a_tooltip_text then
+				ev_data_control.set_tooltip (utf8_to_utf32 (a_tooltip_text))
+			end
+
+			ev_data_control.select_actions.extend (agent toggle_state)
+		ensure
+			can_edit
 		end
 
 feature -- Access
 
-	ev_data_control: EV_CHECK_BUTTON
+	ev_data_control: EV_BUTTON
 
 	data_source_agent: FUNCTION [ANY, TUPLE, BOOLEAN]
 
 	data_source_setter_agent: detachable PROCEDURE [ANY, TUPLE [BOOLEAN]]
-			-- agent for setting the data source
+			-- agent for creating & setting the data source
 
-feature -- Status Report
-
-	is_selected: BOOLEAN
-			-- report state of checkbox
-		do
-			Result := ev_data_control.is_selected
-		end
+	state_1_settings, state_2_settings: TUPLE [label: STRING_32; pixmap: detachable EV_PIXMAP]
 
 feature -- Commands
 
@@ -90,20 +81,20 @@ feature -- Commands
 		end
 
 	do_clear
-			-- Wipe out content
 		do
-			ev_data_control.disable_select
 		end
 
 	do_populate
 		do
-			ev_data_control.select_actions.block
-			if data_source_agent.item ([]) then
-				ev_data_control.enable_select
-			else
-				ev_data_control.disable_select
-			end
-			ev_data_control.select_actions.resume
+			set_state (data_source_agent.item ([]))
+		end
+
+feature -- Modification
+
+	set_pixmaps (a_state_1_pixmap, a_state_2_pixmap: detachable EV_PIXMAP)
+		do
+			state_1_settings.pixmap := a_state_1_pixmap
+			state_2_settings.pixmap := a_state_2_pixmap
 		end
 
 feature {NONE} -- Implementation
@@ -113,13 +104,34 @@ feature {NONE} -- Implementation
 			create ev_data_control
 		end
 
-	on_select
+	toggle_state
+			-- change state
+		local
+			settings: like state_1_settings
 		do
-			data_source_setter_agent.call ([ev_data_control.is_selected])
+			if attached data_source_setter_agent then
+				data_source_setter_agent.call ([not data_source_agent.item ([])])
+			end
+		end
+
+	set_state (in_state_1: BOOLEAN)
+			-- set state
+		local
+			settings: like state_1_settings
+		do
+			if in_state_1 then
+				settings := state_1_settings
+			else
+				settings := state_2_settings
+			end
+
+			ev_data_control.set_text (settings.label)
+			if attached settings.pixmap then
+				ev_data_control.set_pixmap (settings.pixmap)
+			end
 		end
 
 end
-
 
 
 --|

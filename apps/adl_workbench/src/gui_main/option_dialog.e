@@ -90,12 +90,13 @@ feature {NONE} -- Initialization
 			compiler_settings_frame_ctl.add_row (False)
 
 			-- validation strict checkbox
-			create validation_strict_check_ctl.make (get_text ("validation_strict_text"), get_text ("validation_strict_tooltip"), agent validation_strict, 0, 0)
+			create validation_strict_check_ctl.make (get_text ("validation_strict_text"),
+				get_text ("validation_strict_tooltip"), agent validation_strict)
 			compiler_settings_frame_ctl.extend (validation_strict_check_ctl.ev_data_control, False)
 			gui_controls.extend (validation_strict_check_ctl)
 
 			-- RM flattening on checkbox
-			create rm_flattening_check_ctl.make (get_text ("rm_flattening_text"), get_text ("rm_flattening_tooltip"), agent rm_flattening_on, 0, 0)
+			create rm_flattening_check_ctl.make (get_text ("rm_flattening_text"), get_text ("rm_flattening_tooltip"), agent rm_flattening_on)
 			compiler_settings_frame_ctl.extend (rm_flattening_check_ctl.ev_data_control, False)
 			gui_controls.extend (rm_flattening_check_ctl)
 
@@ -111,12 +112,12 @@ feature {NONE} -- Initialization
 
 			-- Show definition tree expanded
 			create expand_definition_tree_check_ctl.make (get_text ("show_definition_tree_expanded_text"),
-				get_text ("show_definition_tree_expanded_tooltip"), agent expand_node_tree, 0, 0)
+				get_text ("show_definition_tree_expanded_tooltip"), agent expand_node_tree)
 			ui_settings_frame_ctl.extend (expand_definition_tree_check_ctl.ev_data_control, False)
 			gui_controls.extend (expand_definition_tree_check_ctl)
 
 			-- Show line numbers in ADL source
-			create show_line_numbers_check_ctl.make (get_text ("show_line_numbers"), Void, agent show_line_numbers, 0, 0)
+			create show_line_numbers_check_ctl.make (get_text ("show_line_numbers"), Void, agent show_line_numbers)
 			ui_settings_frame_ctl.extend  (show_line_numbers_check_ctl.ev_data_control, False)
 			gui_controls.extend (show_line_numbers_check_ctl)
 
@@ -124,17 +125,17 @@ feature {NONE} -- Initialization
 			ui_settings_frame_ctl.add_row (False)
 
 			-- show 'lf' marker in archetype tree to indicate original source form (legacy or authored)
-			create display_source_check_ctl.make (get_text ("show_source_form_text"), get_text ("show_source_form_tooltip"), agent display_archetype_source, 0, 0)
+			create display_source_check_ctl.make (get_text ("show_source_form_text"), get_text ("show_source_form_tooltip"), agent display_archetype_source)
 			ui_settings_frame_ctl.extend (display_source_check_ctl.ev_data_control, False)
 			gui_controls.extend (display_source_check_ctl)
 
 			-- show entire class hierarchy in archetype explorer
-			create show_all_classes_check_ctl.make (get_text ("show_all_classes_text"), get_text ("show_all_classes_tooltip"), agent show_entire_ontology, 0, 0)
+			create show_all_classes_check_ctl.make (get_text ("show_all_classes_text"), get_text ("show_all_classes_tooltip"), agent show_entire_ontology)
 			ui_settings_frame_ctl.extend (show_all_classes_check_ctl.ev_data_control, False)
 			gui_controls.extend (show_all_classes_check_ctl)
 
 			-- use RM pixmaps
-			create use_rm_icons_check_ctl.make (get_text ("use_rm_icons_text"), get_text ("use_rm_icons_tooltip"), agent use_rm_pixmaps, 0, 0)
+			create use_rm_icons_check_ctl.make (get_text ("use_rm_icons_text"), get_text ("use_rm_icons_tooltip"), agent use_rm_pixmaps)
 			ui_settings_frame_ctl.extend (use_rm_icons_check_ctl.ev_data_control, False)
 			gui_controls.extend (use_rm_icons_check_ctl)
 

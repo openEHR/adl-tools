@@ -234,9 +234,9 @@ templates = <
 
 		["view_detail_controls_text"] = <"Detail Level">
 		["domain_detail_button_text"] = <"Domain">
-		["domain_detail_button_tooltip"] = <"Show domain view; hide RM details of the archetyped nodes">
+		["domain_detail_button_tooltip"] = <"Show domain view (hide RM details of the archetyped nodes) or display RM details">
 		["technical_detail_button_text"] = <"Technical">
-		["technical_detail_button_tooltip"] = <"Display RM class names and attribute details of archetyped nodes">
+		["domain_view_add_codes_text"] = <"Add Codes">
 
 		["view_rm_controls_text"] = <"RM View">
 		["show_rm_properties_button_text"] = <"RM properties">

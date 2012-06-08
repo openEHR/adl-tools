@@ -66,7 +66,7 @@ inherit
 feature -- Initialisation
 
 	initialise (a_rm_schema: BMM_SCHEMA; an_archetype: attached ARCHETYPE; a_lang: attached STRING; a_gui_tree: EV_GRID;
-				technical_mode_flag, update_flag: BOOLEAN;
+				technical_mode_flag, update_flag, show_codes_flag: BOOLEAN;
 				a_gui_node_map: HASH_TABLE [EV_GRID_ROW, ARCHETYPE_CONSTRAINT];
 				a_code_select_agent: attached PROCEDURE [ANY, TUPLE [STRING]])
 			-- set ontology required for serialising cADL, and perform basic initialisation
@@ -78,6 +78,7 @@ feature -- Initialisation
 			ev_grid := a_gui_tree
 			node_grid_row_map := a_gui_node_map
 			in_technical_mode := technical_mode_flag
+			show_codes := show_codes_flag
 			updating := update_flag
 			language := a_lang
 			rm_publisher := an_archetype.archetype_id.rm_originator.as_lower
@@ -694,6 +695,8 @@ feature {NONE} -- Implementation
 
 	in_technical_mode: BOOLEAN
 
+	show_codes: BOOLEAN
+
 	rm_publisher: STRING
 			-- name of reference model of this archetype, for the purpose of finding pixmaps for RM-specific visualisation
 
@@ -761,7 +764,7 @@ feature {NONE} -- Implementation
 				elseif ontology.has_constraint_code (a_code) then
 					rubric := ontology.constraint_definition (language, a_code).text
 				end
-				if in_technical_mode then
+				if show_codes then
 					Result.append (a_code + "|" + rubric + "|")
 				else
 					Result.append (rubric)
@@ -777,7 +780,7 @@ feature {NONE} -- Implementation
 			s: STRING
 		do
 			s := an_inv.as_string
-			if not in_technical_mode then
+			if not show_codes then
 				s := ontology.substitute_codes (s, language)
 			end
 			Result := utf8_to_utf32 (s)
