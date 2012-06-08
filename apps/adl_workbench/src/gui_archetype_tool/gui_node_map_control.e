@@ -75,26 +75,12 @@ feature -- Initialisation
 			ev_view_controls_vbox.extend (ev_view_label)
 			ev_view_controls_vbox.disable_item_expand (ev_view_label)
 
-			create ev_collapse_expand_hbox
-			ev_view_controls_vbox.extend (ev_collapse_expand_hbox)
-			create ev_collapse_button
-			ev_collapse_button.set_text ("0")
-			ev_collapse_button.set_tooltip (get_text ("collapse_complete_tooltip"))
-			ev_collapse_expand_hbox.extend (ev_collapse_button)
-			create ev_collapse_one_button
-			ev_collapse_expand_hbox.extend (ev_collapse_one_button)
-			ev_collapse_one_button.set_text ("-")
-			ev_collapse_one_button.set_tooltip (get_text ("collapse_one_level_tooltip"))
-			create ev_expand_one_button
-			ev_expand_one_button.set_text ("+")
-			ev_expand_one_button.set_tooltip (get_text ("expand_one_level_tooltip"))
-			ev_collapse_expand_hbox.extend (ev_expand_one_button)
-			create ev_expand_button
-			ev_collapse_expand_hbox.extend (ev_expand_button)
-			ev_view_controls_vbox.disable_item_expand (ev_collapse_expand_hbox)
-			ev_expand_button.set_text ("*")
-			ev_expand_button.set_tooltip (get_text ("expand_complete_tooltip"))
+			-- tree collapse/expand control
+			create gui_treeview_control.make (create {GUI_TREE_CONTROL_GRID}.make (ev_grid))
+			ev_view_controls_vbox.extend (gui_treeview_control.ev_root_container)
+			ev_view_controls_vbox.disable_item_expand (gui_treeview_control.ev_root_container)
 
+			-- ========= view detail level options  =========
 			create ev_view_detail_frame
 			ev_view_detail_frame.set_text (get_text ("view_detail_controls_text"))
 			ev_view_detail_frame.set_minimum_width (100)
@@ -109,11 +95,13 @@ feature -- Initialisation
 			create ev_view_detail_low_rb
 			ev_view_detail_low_rb.set_text (get_text ("domain_detail_button_text"))
 			ev_view_detail_low_rb.set_tooltip (get_text ("domain_detail_button_tooltip"))
+			ev_view_detail_low_rb.select_actions.extend (agent on_domain_selected)
 			ev_view_detail_vbox.extend (ev_view_detail_low_rb)
 
 			create ev_view_detail_high_rb
 			ev_view_detail_high_rb.set_text (get_text ("technical_detail_button_text"))
 			ev_view_detail_high_rb.set_tooltip (get_text ("technical_detail_button_tooltip"))
+			ev_view_detail_high_rb.select_actions.extend (agent on_technical_selected)
 			ev_view_detail_vbox.extend (ev_view_detail_high_rb)
 
 			create ev_view_rm_frame
@@ -123,20 +111,27 @@ feature -- Initialisation
 			ev_view_controls_vbox.extend (ev_view_rm_frame)
 			ev_view_controls_vbox.disable_item_expand (ev_view_rm_frame)
 
+			-- ========= RM view options =========
 			create ev_view_rm_vbox
 			ev_view_rm_vbox.set_border_width (Default_border_width)
 			ev_view_rm_frame.extend (ev_view_rm_vbox)
 
+			-- add RM attrs into tree
 			create ev_view_rm_attrs_on_cb
 			ev_view_rm_attrs_on_cb.set_text (get_text ("show_rm_properties_button_text"))
 			ev_view_rm_attrs_on_cb.set_tooltip (get_text ("show_rm_properties_tooltip"))
+			ev_view_rm_attrs_on_cb.select_actions.extend (agent on_reference_model_selected)
 			ev_view_rm_vbox.extend (ev_view_rm_attrs_on_cb)
 
+			-- use RM icons check button
 			create ev_view_rm_use_icons_cb
 			ev_view_rm_use_icons_cb.set_text (get_text ("use_rm_icons_button_text"))
 			ev_view_rm_use_icons_cb.set_tooltip (get_text ("use_rm_icons_button_tooltip"))
+			ev_view_rm_use_icons_cb.select_actions.extend (agent on_ev_use_rm_icons_cb_selected)
 			ev_view_rm_vbox.extend (ev_view_rm_use_icons_cb)
 
+
+			-- ========= setup initial view ==========
 			in_reference_model_mode := show_reference_model_view
 			if in_reference_model_mode then
 				ev_view_rm_attrs_on_cb.enable_select
@@ -150,16 +145,6 @@ feature -- Initialisation
 			if use_rm_pixmaps then
 				ev_view_rm_use_icons_cb.enable_select
 			end
-
-			-- set events
-			ev_expand_button.select_actions.extend (agent on_expand_tree)
-			ev_collapse_button.select_actions.extend (agent on_collapse_tree)
-			ev_expand_one_button.select_actions.extend (agent on_expand_tree_one_level)
-			ev_collapse_one_button.select_actions.extend (agent on_collapse_tree_one_level)
-			ev_view_detail_low_rb.select_actions.extend (agent on_domain_selected)
-			ev_view_detail_high_rb.select_actions.extend (agent on_technical_selected)
-			ev_view_rm_attrs_on_cb.select_actions.extend (agent on_reference_model_selected)
-			ev_view_rm_use_icons_cb.select_actions.extend (agent on_ev_use_rm_icons_cb_selected)
 		end
 
 feature -- Access
@@ -207,9 +192,9 @@ feature -- Commands
 			-- update reference mode nodes
 			if in_reference_model_mode_changed then
 				if in_reference_model_mode then
-					ev_tree_do_all (agent grid_row_add_rm_attributes)
+					gui_treeview_control.ev_tree_do_all (agent grid_row_add_rm_attributes)
 				else
-					ev_tree_do_all (agent grid_row_remove_rm_attributes)
+					gui_treeview_control.ev_tree_do_all (agent grid_row_remove_rm_attributes)
 				end
 				in_reference_model_mode_changed := False
 			end
@@ -231,50 +216,6 @@ feature -- Commands
 		end
 
 feature {NONE} -- Events
-
-	on_collapse_tree_one_level
-		do
-			if attached source then
-				create ev_grid_row_list.make (0)
-				if ev_grid.row (1).is_expandable then
-					ev_grid_row_collapse_one_level (ev_grid.row (1))
-				end
-				from ev_grid_row_list.start until ev_grid_row_list.off loop
-					ev_grid_row_list.item.collapse
-					ev_grid_row_list.forth
-				end
-			end
-			ev_grid.resize_columns_to_content (Default_grid_expansion_factor)
-		end
-
-	on_expand_tree_one_level
-		do
-			if attached source then
-				create ev_grid_row_list.make (0)
-				if ev_grid.row (1).is_expandable then
-					ev_grid_row_expand_one_level (ev_grid.row (1))
-				end
-				from ev_grid_row_list.start until ev_grid_row_list.off loop
-					ev_grid_row_list.item.expand
-					ev_grid_row_list.forth
-				end
-			end
-			ev_grid.resize_columns_to_content (Default_grid_expansion_factor)
-		end
-
-	on_expand_tree
-		do
-			if ev_grid.row_count > 0 then
-				ev_grid.expand_tree (ev_grid.row (1))
-			end
-		end
-
-	on_collapse_tree
-		do
-			if ev_grid.row_count > 0 then
-				ev_grid.collapse_tree (ev_grid.row (1))
-			end
-		end
 
 	on_domain_selected
 			-- Hide technical details in `ev_grid'.
@@ -331,11 +272,9 @@ feature {NONE} -- Implementation
 
 	ev_grid: EV_GRID_KBD_MOUSE
 
+	gui_treeview_control: GUI_TREEVIEW_CONTROL
+
 	ev_view_label: EV_LABEL
-
-	ev_expand_button, ev_expand_one_button, ev_collapse_one_button, ev_collapse_button: EV_BUTTON
-
-	ev_collapse_expand_hbox: EV_HORIZONTAL_BOX
 
 	ev_view_detail_low_rb, ev_view_detail_high_rb: EV_RADIO_BUTTON
 
@@ -376,7 +315,7 @@ feature {NONE} -- Implementation
 
 			-- add RM attributes if in RM mode
 			if in_reference_model_mode then
-				ev_tree_do_all (agent grid_row_add_rm_attributes)
+				gui_treeview_control.ev_tree_do_all (agent grid_row_add_rm_attributes)
 			end
 
 			-- populate from invariants
@@ -384,13 +323,13 @@ feature {NONE} -- Implementation
 
 			-- make visualisation adjustments
 			if expand_node_tree then
-				on_expand_tree
+				gui_treeview_control.on_expand_all
 			else
-				on_collapse_tree
-				on_expand_tree_one_level
-				on_expand_tree_one_level
-				on_expand_tree_one_level
-				on_expand_tree_one_level
+				gui_treeview_control.on_collapse_all
+				gui_treeview_control.on_expand_one_level
+				gui_treeview_control.on_expand_one_level
+				gui_treeview_control.on_expand_one_level
+				gui_treeview_control.on_expand_one_level
 			end
 
 			if not differential_view then
@@ -479,7 +418,7 @@ feature {NONE} -- Implementation
 			archetype_selected: attached source
 		do
 			if source_archetype.is_specialised and not source_archetype.is_template then
-				ev_tree_do_all (agent ev_grid_row_roll_up)
+				gui_treeview_control.ev_tree_do_all (agent ev_grid_row_roll_up)
 			end
 		end
 
@@ -514,54 +453,6 @@ feature {NONE} -- Implementation
 				i := i + 1
 			end
 		end
-
-	ev_grid_row_expand_one_level (an_ev_grid_row: attached EV_GRID_ROW)
-		require
-			an_ev_grid_row.is_expandable
-		local
-			i: INTEGER
-		do
-			if an_ev_grid_row.is_expanded then
-				from i := 1 until i > an_ev_grid_row.subrow_count loop
-					if an_ev_grid_row.subrow (i).is_expandable then
-						if not an_ev_grid_row.subrow (i).is_expanded then
-							ev_grid_row_list.extend (an_ev_grid_row.subrow (i))
-						else
-							ev_grid_row_expand_one_level (an_ev_grid_row.subrow (i))
-						end
-					end
-					i := i + 1
-				end
-			else
-				ev_grid_row_list.extend (an_ev_grid_row)
-			end
-		end
-
-	ev_grid_row_collapse_one_level (an_ev_grid_row: attached EV_GRID_ROW)
-			-- record nodes for collapsing if they have all non-expanded children
-		require
-			an_ev_grid_row.is_expandable
-		local
-			i, exp_child_count: INTEGER
-		do
-			if an_ev_grid_row.is_expanded then
-				exp_child_count := 0
-				from i := 1 until i > an_ev_grid_row.subrow_count loop
-					if an_ev_grid_row.subrow (i).is_expandable then
-						if an_ev_grid_row.subrow (i).is_expanded then
-							ev_grid_row_collapse_one_level (an_ev_grid_row.subrow (i))
-							exp_child_count := exp_child_count + 1
-						end
-					end
-					i := i + 1
-				end
-				if exp_child_count = 0 then
-					ev_grid_row_list.extend (an_ev_grid_row)
-				end
-			end
-		end
-
-	ev_grid_row_list: ARRAYED_LIST [EV_GRID_ROW]
 
 	object_invariant_string (an_inv: attached ASSERTION): attached STRING
 			-- generate string form of node or object for use in tree node
@@ -603,33 +494,6 @@ feature {NONE} -- Implementation
 
 --				-- FIXME: TO BE IMPLEM - need to add sub nodes for each assertion
 --			end
-		end
-
-	ev_tree_do_all (a_node_action: attached PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
-			-- do enter_action and exit_action to all nodes in the structure
-		local
-			i: INTEGER
-			top_level_rows: ARRAYED_LIST [EV_GRID_ROW]
-		do
-			create top_level_rows.make (0)
-			from i := 1 until i > ev_grid.row_count loop
-				if ev_grid.depth_in_tree (i) = 1 then
-					top_level_rows.extend (ev_grid.row (i))
-				end
-				i := i + 1
-			end
-			top_level_rows.do_all (agent ev_tree_do_all_nodes (?, a_node_action))
-		end
-
-	ev_tree_do_all_nodes (a_grid_row: attached EV_GRID_ROW; a_node_action: PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
-		local
-			i: INTEGER
-		do
-			from i := 1 until i > a_grid_row.subrow_count loop
-				ev_tree_do_all_nodes (a_grid_row.subrow (i), a_node_action)
-				i := i + 1
-			end
-			a_node_action.call ([a_grid_row])
 		end
 
 end

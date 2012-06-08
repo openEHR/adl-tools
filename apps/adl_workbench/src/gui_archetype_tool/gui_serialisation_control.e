@@ -34,74 +34,78 @@ feature {NONE}-- Initialization
 		do
 			-- create root widget
 			create ev_root_container
+			ev_root_container.set_border_width (Default_border_width)
+			ev_root_container.set_padding_width (Default_padding_width)
 			ev_root_container.set_data (Current)
 
+			-- rich text
 			create ev_serialised_rich_text
+			ev_serialised_rich_text.disable_edit
+			ev_serialised_rich_text.set_tab_width ((ev_serialised_rich_text.tab_width/2).floor.max (1))  -- this is in pixels, and assumes 7-pixel wide chars
+			ev_root_container.extend (ev_serialised_rich_text)
+
+			-- serialise controls VBOX
 			create ev_serialise_controls_vbox
+			ev_root_container.extend (ev_serialise_controls_vbox)
+			ev_root_container.disable_item_expand (ev_serialise_controls_vbox)
+
+			-- serialise controls frame
 			create ev_serialise_controls_frame
+			ev_serialise_controls_frame.set_text (get_msg ("serialise_frame_text", Void))
+			ev_serialise_controls_frame.set_minimum_width (125)
+			ev_serialise_controls_vbox.extend (ev_serialise_controls_frame)
+			ev_serialise_controls_vbox.disable_item_expand (ev_serialise_controls_frame)
+
+			-- serialise radio button VBOX
 			create ev_serialise_rb_vbox
+			ev_serialise_rb_vbox.set_border_width (Default_border_width)
+			ev_serialise_controls_frame.extend (ev_serialise_rb_vbox)
+
+			-- serialise radio buttons
 			create ev_serialise_adl_rb
 			create ev_serialise_dadl_rb
 			create ev_serialise_xml_rb
 			create ev_serialise_json_rb
 			create ev_serialise_yaml_rb
-			create ev_flatten_with_rm_cb
-			create ev_line_numbers_cb
-			create ev_serialise_padding_cell
-
-			-- connect widgets
-			ev_root_container.extend (ev_serialised_rich_text)
-			ev_root_container.extend (ev_serialise_controls_vbox)
-			ev_serialise_controls_vbox.extend (ev_serialise_controls_frame)
-			ev_serialise_controls_frame.extend (ev_serialise_rb_vbox)
-			ev_serialise_rb_vbox.extend (ev_serialise_adl_rb)
-			ev_serialise_rb_vbox.extend (ev_serialise_dadl_rb)
-			ev_serialise_rb_vbox.extend (ev_serialise_xml_rb)
-			ev_serialise_rb_vbox.extend (ev_serialise_json_rb)
-			ev_serialise_rb_vbox.extend (ev_serialise_yaml_rb)
-
-			ev_serialise_controls_vbox.extend (ev_flatten_with_rm_cb)
-			ev_serialise_controls_vbox.disable_item_expand (ev_flatten_with_rm_cb)
-
-			ev_serialise_controls_vbox.extend (ev_line_numbers_cb)
-			ev_serialise_controls_vbox.disable_item_expand (ev_line_numbers_cb)
-
-			ev_serialise_controls_vbox.extend (ev_serialise_padding_cell)
-
-			-- set visual characteristics
-			ev_serialised_rich_text.disable_edit
-			ev_root_container.disable_item_expand (ev_serialise_controls_vbox)
-			ev_serialise_controls_vbox.disable_item_expand (ev_serialise_controls_frame)
-			ev_root_container.set_border_width (Default_border_width)
-			ev_root_container.set_padding_width (Default_padding_width)
-			ev_serialise_rb_vbox.set_border_width (Default_border_width)
-			ev_serialised_rich_text.set_tab_width ((ev_serialised_rich_text.tab_width/2).floor.max (1))  -- this is in pixels, and assumes 7-pixel wide chars
-			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_adl_rb)
-			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_dadl_rb)
-			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_xml_rb)
-			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_json_rb)
-			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_yaml_rb)
-			ev_serialise_controls_frame.set_text (get_msg ("serialise_frame_text", Void))
-			ev_serialise_controls_frame.set_minimum_width (125)
-		--	ev_serialise_controls_frame.set_minimum_height (110)
-			set_serialisation_control_texts
-
-			ev_flatten_with_rm_cb.set_text (get_msg ("flatten_with_rm_cb_text", Void))
-			ev_flatten_with_rm_cb.set_tooltip (get_msg ("flatten_with_rm_cb_tooltip", Void))
-
-			ev_line_numbers_cb.set_text (get_msg ("add_line_numbers_text", Void))
-			ev_line_numbers_cb.set_tooltip (get_msg ("add_line_numbers_tooltip", Void))
-
-			-- set events: serialisation controls
 			ev_serialise_adl_rb.select_actions.extend (agent try_repopulate)
 			ev_serialise_dadl_rb.select_actions.extend (agent try_repopulate)
 			ev_serialise_xml_rb.select_actions.extend (agent try_repopulate)
 			ev_serialise_json_rb.select_actions.extend (agent try_repopulate)
 			ev_serialise_yaml_rb.select_actions.extend (agent try_repopulate)
+			ev_serialise_rb_vbox.extend (ev_serialise_adl_rb)
+			ev_serialise_rb_vbox.extend (ev_serialise_dadl_rb)
+			ev_serialise_rb_vbox.extend (ev_serialise_xml_rb)
+			ev_serialise_rb_vbox.extend (ev_serialise_json_rb)
+			ev_serialise_rb_vbox.extend (ev_serialise_yaml_rb)
+			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_adl_rb)
+			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_dadl_rb)
+			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_xml_rb)
+			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_json_rb)
+			ev_serialise_rb_vbox.disable_item_expand (ev_serialise_yaml_rb)
+
+			-- flatten radio button
+			create ev_flatten_with_rm_cb
+			ev_flatten_with_rm_cb.set_text (get_msg ("flatten_with_rm_cb_text", Void))
 			ev_flatten_with_rm_cb.select_actions.extend (agent try_repopulate)
+			ev_flatten_with_rm_cb.set_tooltip (get_msg ("flatten_with_rm_cb_tooltip", Void))
+			ev_serialise_controls_vbox.extend (ev_flatten_with_rm_cb)
+			ev_serialise_controls_vbox.disable_item_expand (ev_flatten_with_rm_cb)
+
+			-- line numbers check button
+			create ev_line_numbers_cb
+			ev_line_numbers_cb.set_text (get_msg ("add_line_numbers_text", Void))
+			ev_line_numbers_cb.set_tooltip (get_msg ("add_line_numbers_tooltip", Void))
 			ev_line_numbers_cb.select_actions.extend (agent do set_show_line_numbers (ev_line_numbers_cb.is_selected) end)
 			ev_line_numbers_cb.select_actions.extend (agent try_repopulate)
+			ev_serialise_controls_vbox.extend (ev_line_numbers_cb)
+			ev_serialise_controls_vbox.disable_item_expand (ev_line_numbers_cb)
 
+			-- bottom padding cell
+			create ev_serialise_padding_cell
+			ev_serialise_controls_vbox.extend (ev_serialise_padding_cell)
+
+			-- set initial visual characteristics
+			set_serialisation_control_texts
 			differential_view := True
 		end
 
