@@ -128,7 +128,7 @@ feature -- Commands
 				ev_data_control.do_all (
 					agent (li: EV_LIST_ITEM; a_val: STRING)
 						do
-							if utf32_to_utf8 (li.text).same_string (a_val) then li.enable_select end
+							if utf32_to_utf8 (li.text).is_equal (a_val) then li.enable_select end
 						end (?, cur_val)
 				)
 			else

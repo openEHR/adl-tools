@@ -31,23 +31,23 @@ feature -- Definitions
 feature -- Access
 
 	error_type_name_table: HASH_TABLE [STRING, INTEGER]
-			-- names of message types
+			-- names of message types keyed by error type code
 		once
 			create Result.make(0)
-			Result.force(Error_type_error_name, Error_type_error)
-			Result.force(Error_type_warning_name, Error_type_warning)
-			Result.force(Error_type_info_name, Error_type_info)
-			Result.force(Error_type_debug_name, Error_type_debug)
+			Result.force (Error_type_error_name, Error_type_error)
+			Result.force (Error_type_warning_name, Error_type_warning)
+			Result.force (Error_type_info_name, Error_type_info)
+			Result.force (Error_type_debug_name, Error_type_debug)
 		end
 
 	error_type_id_table: HASH_TABLE [INTEGER, STRING]
-			-- ids of message types
+			-- codes of message types keyed by message type name
 		once
 			create Result.make(0)
-			Result.force(Error_type_error, Error_type_error_name)
-			Result.force(Error_type_warning, Error_type_warning_name)
-			Result.force(Error_type_info, Error_type_info_name)
-			Result.force(Error_type_debug, Error_type_debug_name)
+			Result.force (Error_type_error, Error_type_error_name)
+			Result.force (Error_type_warning, Error_type_warning_name)
+			Result.force (Error_type_info, Error_type_info_name)
+			Result.force (Error_type_debug, Error_type_debug_name)
 		end
 
 	error_type_names: ARRAYED_LIST [STRING]
@@ -55,15 +55,15 @@ feature -- Access
 		once
 			create Result.make(0)
 			Result.compare_objects
-			Result.force(Error_type_error_name)
-			Result.force(Error_type_warning_name)
-			Result.force(Error_type_info_name)
-			Result.force(Error_type_debug_name)
+			Result.force (Error_type_error_name)
+			Result.force (Error_type_warning_name)
+			Result.force (Error_type_info_name)
+			Result.force (Error_type_debug_name)
 		end
 
 feature -- Status Report
 
-	is_valid_error_type(i: INTEGER): BOOLEAN
+	is_valid_error_type (i: INTEGER): BOOLEAN
 		do
 			Result := i >= Error_type_debug and i <= Error_type_error
 		end
