@@ -132,7 +132,7 @@ feature -- Commands
 						end (?, cur_val)
 				)
 			else
-				create li2.make_with_text (Unknown_value)
+				create li2.make_with_text (utf8_to_utf32 (Unknown_value))
 				ev_data_control.extend (li2)
 				li2.enable_select
 			end

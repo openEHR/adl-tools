@@ -72,7 +72,7 @@ feature {NONE} -- Initialization
 
 			-- Error reporting level combo			
 			create parser_error_reporting_level_combo_box.make_editable (get_text ("error_reporting_level_text"),
-				agent error_type_name_table.item (error_reporting_level),
+				agent :STRING do Result := error_type_name_table.item (error_reporting_level) end,
 				error_type_names, agent (a_val: STRING) do  end,
 				Void, Void, 0, 100)
 			compiler_settings_frame_ctl.extend (parser_error_reporting_level_combo_box.ev_root_container, False)
