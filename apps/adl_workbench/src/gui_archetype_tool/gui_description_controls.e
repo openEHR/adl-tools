@@ -38,6 +38,7 @@ feature {NONE} -- Initialisation
 	make (an_undo_redo_update_agent: like undo_redo_update_agent)
 		do
 			-- set commit handling
+			create gui_controls.make (0)
 			undo_redo_update_agent := an_undo_redo_update_agent
 			create authoring_tab_undo_redo_chain.make (undo_redo_update_agent)
 			create description_tab_undo_redo_chain.make (undo_redo_update_agent)
@@ -45,8 +46,7 @@ feature {NONE} -- Initialisation
 			-- ======= root container ===========
 			create ev_root_container
 			ev_root_container.set_data (Current)
-
-			create gui_controls.make (0)
+			ev_root_container.selection_actions.extend (agent on_select_notebook)
 
 			-- ====== Authoring tab =======
 			create admin_vbox
@@ -239,7 +239,6 @@ feature {NONE} -- Initialisation
 			resource_frame_ctl.extend (original_resources_ctl.ev_root_container, False)
 
 			-- =========== set up events ==========
-			ev_root_container.selection_actions.extend (agent on_select_notebook)
 			ev_root_container.select_item (admin_vbox)
 
 			if not editing_enabled then

@@ -91,7 +91,9 @@ feature -- Commands
 	clear
 			-- Wipe out content
 		do
+			ev_data_control.select_actions.block
 			ev_data_control.disable_select
+			ev_data_control.select_actions.resume
 		end
 
 	populate

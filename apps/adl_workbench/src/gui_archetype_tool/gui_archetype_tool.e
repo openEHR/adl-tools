@@ -140,7 +140,9 @@ feature -- Commands
 	update_rm_icons_setting
 			-- call this routine if rm_icons setting changed elsewhere in tool
 		do
-			node_map_control.update_rm_icons_cb
+			if node_map_control.can_repopulate then
+				node_map_control.repopulate
+			end
 		end
 
 	disable_edit

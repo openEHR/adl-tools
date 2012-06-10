@@ -615,8 +615,8 @@ feature {BMM_CLASS_DEFINITION} -- Implementation
 feature {NONE} -- Implementation
 
 	do_property_supplier_closure (a_prop: attached BMM_PROPERTY_DEFINITION; flat_flag: BOOLEAN; max_depth: INTEGER;
-		enter_action: attached PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION, INTEGER]];
-		exit_action: PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION]])
+				enter_action: attached PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION, INTEGER]];
+				exit_action: PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION]])
 			-- On all nodes in supplier closure of `a_prop', execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 			-- If `flat_flag' = True, use the inheritance-flattened closure
 			-- THIS CAN BE AN EXPENSIVE COMPUTATION, so it is limited by the max_depth argument
@@ -644,7 +644,7 @@ feature {NONE} -- Implementation
 					end
 		--		end
 
-				if exit_action /= Void then
+				if attached exit_action then
 					exit_action.call ([a_prop])
 				end
 				supplier_closure_stack.remove

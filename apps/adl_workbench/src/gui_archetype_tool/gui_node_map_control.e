@@ -16,7 +16,7 @@ class GUI_NODE_MAP_CONTROL
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			can_populate, can_repopulate, repopulate
+			can_populate, can_repopulate, repopulate, disable_edit, enable_edit
 		end
 
 	SPECIALISATION_STATUSES
@@ -47,6 +47,8 @@ feature -- Initialisation
 
 	make (a_code_select_action_agent: like code_select_action_agent)
 		do
+			create gui_controls.make (0)
+
 			code_select_action_agent := a_code_select_action_agent
 
 			-- create widgets
@@ -84,52 +86,38 @@ feature -- Initialisation
 			-- view detail toggle button
 			create toggle_button_ctl.make (get_text ("domain_detail_button_text"), get_text ("technical_detail_button_text"),
 				get_text ("domain_detail_button_tooltip"),
-				agent :BOOLEAN do Result := not in_technical_mode end,
-				agent set_domain_view, 0, 0)
+				agent :BOOLEAN do Result := not show_technical_view end,
+				agent update_show_technical_view, 0, 0)
+			gui_controls.extend (toggle_button_ctl)
 			view_detail_frame_ctl.extend (toggle_button_ctl.ev_data_control, False)
 
 			-- include codes checkbox
 			create add_codes_checkbox_ctl.make_active (get_text ("domain_view_add_codes_text"), Void,
-				agent :BOOLEAN do Result := show_codes end, agent set_show_codes)
+				agent :BOOLEAN do Result := show_codes end, agent update_show_codes)
+			gui_controls.extend (add_codes_checkbox_ctl)
 			view_detail_frame_ctl.extend (add_codes_checkbox_ctl.ev_data_control, False)
 
 
 			-- ========= RM view options =========
-			create ev_view_rm_frame
-			ev_view_rm_frame.set_text (get_text ("view_rm_controls_text"))
-			ev_view_rm_frame.set_minimum_width (100)
-			ev_view_rm_frame.set_minimum_height (85)
-			ev_view_controls_vbox.extend (ev_view_rm_frame)
-			ev_view_controls_vbox.disable_item_expand (ev_view_rm_frame)
 
-			create ev_view_rm_vbox
-			ev_view_rm_vbox.set_border_width (Default_border_width)
-			ev_view_rm_frame.extend (ev_view_rm_vbox)
+			-- frame
+			create view_rm_frame_ctl.make (get_text ("view_rm_controls_text"), 85, 0, False)
+			ev_view_controls_vbox.extend (view_rm_frame_ctl.ev_root_container)
+			ev_view_controls_vbox.disable_item_expand (view_rm_frame_ctl.ev_root_container)
 
-			-- add RM attrs into tree
-			create ev_view_rm_attrs_on_cb
-			ev_view_rm_attrs_on_cb.set_text (get_text ("show_rm_properties_button_text"))
-			ev_view_rm_attrs_on_cb.set_tooltip (get_text ("show_rm_properties_tooltip"))
-			ev_view_rm_attrs_on_cb.select_actions.extend (agent on_reference_model_selected)
-			ev_view_rm_vbox.extend (ev_view_rm_attrs_on_cb)
+			-- add RM into tree check button
+			create view_rm_attrs_on_checkbox_ctl.make_active (get_text ("show_rm_properties_button_text"),
+				get_text ("show_rm_properties_tooltip"),
+				agent :BOOLEAN do Result := show_reference_model_view end, agent update_show_reference_model_view)
+			gui_controls.extend (view_rm_attrs_on_checkbox_ctl)
+			view_rm_frame_ctl.extend (view_rm_attrs_on_checkbox_ctl.ev_data_control, False)
 
 			-- use RM icons check button
-			create ev_view_rm_use_icons_cb
-			ev_view_rm_use_icons_cb.set_text (get_text ("use_rm_icons_button_text"))
-			ev_view_rm_use_icons_cb.set_tooltip (get_text ("use_rm_icons_button_tooltip"))
-			ev_view_rm_use_icons_cb.select_actions.extend (agent on_ev_use_rm_icons_cb_selected)
-			ev_view_rm_vbox.extend (ev_view_rm_use_icons_cb)
-
-
-			-- ========= setup initial view ==========
-			in_reference_model_mode := show_reference_model_view
-			if in_reference_model_mode then
-				ev_view_rm_attrs_on_cb.enable_select
-			end
-			in_technical_mode := show_technical_view
-			if use_rm_pixmaps then
-				ev_view_rm_use_icons_cb.enable_select
-			end
+			create view_rm_use_icons_checkbox_ctl.make_active (get_text ("use_rm_icons_button_text"),
+				get_text ("use_rm_icons_button_tooltip"),
+				agent :BOOLEAN do Result := use_rm_pixmaps end, agent update_use_rm_pixmaps)
+			gui_controls.extend (view_rm_use_icons_checkbox_ctl)
+			view_rm_frame_ctl.extend (view_rm_use_icons_checkbox_ctl.ev_data_control, False)
 		end
 
 feature -- Access
@@ -138,17 +126,11 @@ feature -- Access
 
 feature -- Status Report
 
-	in_technical_mode: BOOLEAN
-			-- If True, show more technical detail on each node
-
-	in_reference_model_mode: BOOLEAN
-			-- True if reference model should be visible in tree
-
 	show_codes: BOOLEAN
 			-- True if codes should be shown in the definition rendering
 
-	in_reference_model_mode_changed: BOOLEAN
-			-- True if last call to set/unset in_reference_model_mode changed the flag's value
+	show_reference_model_view_changed: BOOLEAN
+			-- True if last call to set/unset show_reference_model_view changed the flag's value
 
 	is_expanded: BOOLEAN
 			-- True if last whole tree operation was expand
@@ -165,82 +147,74 @@ feature -- Status Report
 
 feature -- Commands
 
+	enable_edit
+			-- enable editing
+		do
+			precursor
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.enable_active end)
+		end
+
+	disable_edit
+			-- enable editing
+		do
+			precursor
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.disable_active end)
+		end
+
 	repopulate
 			-- repopulate and/or refresh visual appearance if diff/flat view has changed or RM icons setting changed
 		local
 			a_c_iterator: C_VISITOR_ITERATOR
 			c_node_map_builder: C_GUI_NODE_MAP_BUILDER
 		do
--- FIXME: form buttons
-toggle_button_ctl.populate
-add_codes_checkbox_ctl.populate
+			-- populate peripheral controls
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.populate end)
 
 			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
 			create c_node_map_builder
 			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, ev_grid,
-				in_technical_mode, True, show_codes, gui_node_map, code_select_action_agent)
+				show_technical_view, True, show_codes, gui_node_map, code_select_action_agent)
 			create a_c_iterator.make (source_archetype.definition, c_node_map_builder)
 			a_c_iterator.do_all
 
 			-- update reference mode nodes
-			if in_reference_model_mode_changed then
-				if in_reference_model_mode then
+			if show_reference_model_view_changed then
+				if show_reference_model_view then
 					gui_treeview_control.ev_tree_do_all (agent grid_row_add_rm_attributes)
 				else
 					gui_treeview_control.ev_tree_do_all (agent grid_row_remove_rm_attributes)
 				end
-				in_reference_model_mode_changed := False
+				show_reference_model_view_changed := False
 			end
 
 			ev_grid.resize_columns_to_content (Default_grid_expansion_factor)
 		end
 
-	update_rm_icons_cb
-			-- update and repopulate if this setting was changed elsewhere in the tool
-		do
-			if attached source and use_rm_pixmaps /= ev_view_rm_use_icons_cb.is_selected then
-				if use_rm_pixmaps then
-					ev_view_rm_use_icons_cb.enable_select
-				else
-					ev_view_rm_use_icons_cb.disable_select
-				end
-				repopulate
-			end
-		end
-
 feature {NONE} -- Events
 
-	set_domain_view (a_flag: BOOLEAN)
-			-- change state from in_technical_mode
+	update_show_technical_view (a_flag: BOOLEAN)
+			-- change state from show_technical_view
 		do
+			set_show_technical_view (not a_flag)
 			if attached source then
-				in_technical_mode := not a_flag
-				set_show_technical_view (in_technical_mode)
 				repopulate
 			end
 		end
 
-	set_show_codes (a_flag: BOOLEAN)
+	update_show_codes (a_flag: BOOLEAN)
 		do
+			show_codes := a_flag
 			if attached source then
-				show_codes := a_flag
 				repopulate
 			end
 		end
 
-	on_reference_model_selected
+	update_show_reference_model_view (a_flag: BOOLEAN)
 			-- turn on or off the display of reference model details in `ev_grid'.
 		do
+			show_reference_model_view_changed := a_flag /= show_reference_model_view
+			set_show_reference_model_view (a_flag)
 			if attached source then
-				if ev_view_rm_attrs_on_cb.is_selected then
-					in_reference_model_mode_changed := not in_reference_model_mode
-					in_reference_model_mode := True
-					set_show_reference_model_view (True)
-				else
-					in_reference_model_mode_changed := in_reference_model_mode
-					in_reference_model_mode := False
-					set_show_reference_model_view (False)
-				end
 				repopulate
 			end
 		end
@@ -248,10 +222,11 @@ feature {NONE} -- Events
 	code_select_action_agent: PROCEDURE [ANY, TUPLE [STRING]]
 			-- action to perform when node is selected in tree
 
-	on_ev_use_rm_icons_cb_selected
+	update_use_rm_pixmaps (a_flag: BOOLEAN)
 		do
+			set_use_rm_pixmaps (a_flag)
+
 			if attached source then
-				set_use_rm_pixmaps (ev_view_rm_use_icons_cb.is_selected)
 				repopulate
 
 				-- reflect change to other editor tools
@@ -263,17 +238,15 @@ feature {NONE} -- Implementation
 
 	ev_grid: EV_GRID_KBD_MOUSE
 
+	gui_controls: ARRAYED_LIST [GUI_DATA_CONTROL]
+
 	gui_treeview_control: GUI_TREEVIEW_CONTROL
 
 	toggle_button_ctl: GUI_TOGGLE_BUTTON_CONTROL
 
-	add_codes_checkbox_ctl: GUI_CHECK_BOX_CONTROL
+	add_codes_checkbox_ctl, view_rm_attrs_on_checkbox_ctl, view_rm_use_icons_checkbox_ctl: GUI_CHECK_BOX_CONTROL
 
-	ev_view_rm_attrs_on_cb, ev_view_rm_use_icons_cb: EV_CHECK_BUTTON
-
-	ev_view_controls_vbox, ev_view_detail_vbox, ev_view_rm_vbox: EV_VERTICAL_BOX
-
-	ev_view_detail_frame, ev_view_rm_frame: EV_FRAME
+	ev_view_controls_vbox: EV_VERTICAL_BOX
 
 	view_detail_frame_ctl, view_rm_frame_ctl: GUI_FRAME_CONTROL
 
@@ -286,6 +259,7 @@ feature {NONE} -- Implementation
 	do_clear
 		do
 			ev_grid.wipe_out
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.clear end)
 		end
 
 	do_populate
@@ -296,23 +270,22 @@ feature {NONE} -- Implementation
 			c_node_map_builder: C_GUI_NODE_MAP_BUILDER
 			i: INTEGER
 		do
--- FIXME: form buttons
-toggle_button_ctl.populate
-add_codes_checkbox_ctl.populate
+			-- populate peripheral controls
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.populate end)
 
+			-- populate grid control
 			create gui_node_map.make (0)
 
 			rm_schema := source.rm_schema
 
-			-- populate from definition
 			create c_node_map_builder
 			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, ev_grid,
-				in_technical_mode, False, show_codes, gui_node_map, code_select_action_agent)
+				show_technical_view, False, show_codes, gui_node_map, code_select_action_agent)
 			create a_c_iterator.make (source_archetype.definition, c_node_map_builder)
 			a_c_iterator.do_all
 
 			-- add RM attributes if in RM mode
-			if in_reference_model_mode then
+			if show_reference_model_view then
 				gui_treeview_control.ev_tree_do_all (agent grid_row_add_rm_attributes)
 			end
 
@@ -342,6 +315,9 @@ add_codes_checkbox_ctl.populate
 				end
 			end
 			ev_grid.resize_columns_to_content (Default_grid_expansion_factor)
+
+			-- Initial settings
+			show_reference_model_view_changed := False
 		end
 
 	grid_row_add_rm_attributes (an_ev_grid_row: attached EV_GRID_ROW)
@@ -457,7 +433,7 @@ add_codes_checkbox_ctl.populate
 		do
 			Result := an_inv.as_string
 
-			if not in_technical_mode then
+			if not show_technical_view then
 				Result := source_archetype.ontology.substitute_codes (Result, current_language)
 			end
 		end

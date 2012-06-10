@@ -168,11 +168,8 @@ feature {NONE} -- Initialization
 
 			-- add another button to OK/cancel button row to enable edit of options file
 			ok_cancel_buttons.add_button (get_text ("option_dialog_edit_file_text"), agent on_edit_options_file)
-
 			enable_edit
-
 			old_show_entire_ontology := show_entire_ontology
-
 			do_populate
 		end
 

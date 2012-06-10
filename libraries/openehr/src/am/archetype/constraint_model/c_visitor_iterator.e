@@ -6,6 +6,7 @@ note
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safe:	 "yes, dirty"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -18,13 +19,13 @@ create
 
 feature -- Initialisation
 
-	make(a_target: C_COMPLEX_OBJECT; a_visitor: C_VISITOR)
+	make (a_target: C_COMPLEX_OBJECT; a_visitor: C_VISITOR)
 			-- create a new manager targetted to the parse tree `a_target'
 		require
 			Target_exists: a_target /= Void
 			Visitor_exists: a_visitor /= Void
 		do
-			create tree_iterator.make(a_target.representation)
+			create tree_iterator.make (a_target.representation)
 			visitor := a_visitor
 		end
 
@@ -33,7 +34,7 @@ feature -- Command
 	do_all
 			-- start the serialisation process; the result will be in `serialiser_output'
 		do
-			tree_iterator.do_all(agent node_enter_action(?,?), agent node_exit_action(?,?))
+			tree_iterator.do_all (agent node_enter_action (?,?), agent node_exit_action (?,?))
 		end
 
 feature {NONE} -- Implementation
@@ -42,18 +43,18 @@ feature {NONE} -- Implementation
 
 	visitor: C_VISITOR
 
-	node_enter_action(a_node: OG_ITEM; indent_level: INTEGER)
+	node_enter_action (a_node: OG_ITEM; indent_level: INTEGER)
 		require
 			Node_exists: a_node /= Void
 		do
-			a_node.enter_subtree(visitor, indent_level)
+			a_node.enter_subtree (visitor, indent_level)
 		end
 
-	node_exit_action(a_node: OG_ITEM; indent_level: INTEGER)
+	node_exit_action (a_node: OG_ITEM; indent_level: INTEGER)
 		require
 			Node_exists: a_node /= Void
 		do
-			a_node.exit_subtree(visitor, indent_level)
+			a_node.exit_subtree (visitor, indent_level)
 		end
 
 end

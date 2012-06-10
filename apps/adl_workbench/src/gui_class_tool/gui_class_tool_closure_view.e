@@ -63,6 +63,7 @@ feature -- Initialisation
 
 			-- closure depth control
 			create ev_closure_depth_spin_button
+			-- FIXME: can't set text on spin button; need to add a frame or ...
 			ev_closure_depth_spin_button.set_text (get_msg ("closure_depth_spin_button_text", Void))
 			ev_closure_depth_spin_button.set_tooltip (get_msg ("closure_depth_spin_button_tooltip", Void))
 			ev_closure_depth_spin_button.set_value (default_closure_depth)
@@ -107,27 +108,6 @@ feature -- Status Report
 			-- True if last whole tree operation was expand
 
 feature -- Events
-
-	on_shrink_tree_one_level
-		do
-			if is_populated then
-				shrink_one_level
-			end
-		end
-
-	on_expand_tree_one_level
-		do
-			if is_populated then
-				expand_one_level
-			end
-		end
-
-	on_toggle_expand_tree
-		do
-			if is_populated then
-				toggle_expand_tree
-			end
-		end
 
 	on_ev_use_rm_icons_cb_selected
 		do
@@ -181,7 +161,7 @@ feature {NONE} -- Implementation
 					agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
 
 			-- now collapse the tree, and then expand out just the top node
-			ev_property_tree.recursive_do_all (agent ev_tree_collapse)
+			gui_treeview_control.on_collapse_all
 			if not ev_property_tree.is_empty and then ev_property_tree.first.is_expandable then
 				ev_property_tree.first.expand
 			end
@@ -201,7 +181,7 @@ feature {NONE} -- Implementation
 
 	ev_closure_depth_spin_button: EV_SPIN_BUTTON
 
-	ev_tree_item_stack: ARRAYED_STACK[EV_TREE_ITEM]
+	ev_tree_item_stack: ARRAYED_STACK [EV_TREE_ITEM]
 
 	model_publisher: STRING
 			-- name of publisher, e.g. 'openehr', which is the key to RM-specific icons
@@ -488,99 +468,10 @@ feature {NONE} -- Implementation
 			end
 			do_with_wait_cursor (ev_root_container, agent bmm_class_def.do_supplier_closure (not differential_view, ev_closure_depth_spin_button.value - 1,
 				agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit))
-			ev_tree_item_expand (target_ti)
+			if a_ti.is_expandable then
+				a_ti.expand
+			end
 			ev_tree_item_stack.remove
-		end
-
-	ev_tree_collapse (node: attached EV_TREE_NODE)
-			--
-		do
- 			if node.is_expandable then
-				node.collapse
- 			end
-		end
-
-	toggle_expand_tree
-			-- Expand or shrink the tree control.
-		do
-			is_expanded := not is_expanded
-
-			if is_expanded then
-				ev_property_tree.recursive_do_all (agent ev_tree_item_expand)
-				ev_expand_button.set_text (get_msg ("expand_button_collapse_text", Void))
-			else
-				ev_property_tree.recursive_do_all (agent ev_tree_item_shrink)
-				ev_expand_button.set_text (get_msg ("expand_button_expand_text", Void))
-			end
-		end
-
-	expand_one_level
-			-- Expand the tree control one level further.
-		do
-			create node_list.make (0)
-			ev_property_tree.recursive_do_all (agent ev_tree_item_expand_one_level)
-
-			from node_list.start until node_list.off loop
-				node_list.item.expand
-				node_list.forth
-			end
-		end
-
-	shrink_one_level
-			-- Shrink the tree control one level further.
-		do
-			create node_list.make (0)
-			ev_property_tree.recursive_do_all (agent ev_tree_item_collapse_one_level)
-
-			from node_list.start until node_list.off loop
-				node_list.item.collapse
-				node_list.forth
-			end
-		end
-
-	ev_tree_item_expand (an_ev_tree_node: attached EV_TREE_NODE)
-			--
-		do
-			if an_ev_tree_node.is_expandable then -- and node_data.is_addressable then
-				an_ev_tree_node.expand
-			end
-		end
-
-	ev_tree_item_shrink (an_ev_tree_node: attached EV_TREE_NODE)
-			--
-		do
-			if an_ev_tree_node.is_expandable then -- and node_data.is_addressable then
-				an_ev_tree_node.collapse
-			end
-		end
-
-	ev_tree_item_expand_one_level (an_ev_tree_node: attached EV_TREE_NODE)
-			--
-		do
-			if an_ev_tree_node.is_expanded then
-				from an_ev_tree_node.start until an_ev_tree_node.off loop
-					if an_ev_tree_node.item.is_expandable and then not an_ev_tree_node.item.is_expanded then
-						node_list.extend (an_ev_tree_node.item)
-					end
-					an_ev_tree_node.forth
-				end
-			elseif an_ev_tree_node = ev_property_tree.item then
-				node_list.extend (an_ev_tree_node)
-			end
-		end
-
-	ev_tree_item_collapse_one_level (an_ev_tree_node: attached EV_TREE_NODE)
-			--
-		do
-			if an_ev_tree_node.is_expanded then
-				from an_ev_tree_node.start until an_ev_tree_node.off or else (an_ev_tree_node.item.is_expandable and then an_ev_tree_node.item.is_expanded) loop
-					an_ev_tree_node.forth
-				end
-
-				if an_ev_tree_node.off then -- didn't find any expanded children
-					node_list.extend (an_ev_tree_node)
-				end
-			end
 		end
 
 end
