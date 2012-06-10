@@ -117,7 +117,7 @@ feature -- Commands
 		do
 			a_c_serialiser := c_serialiser_for_format (a_format)
 			a_c_serialiser.initialise (an_archetype, a_lang)
-			create a_c_iterator.make (tree, a_c_serialiser)
+			create a_c_iterator.make (tree.representation, a_c_serialiser)
 			a_c_iterator.do_all
 			a_c_serialiser.finalise
 			serialised := a_c_serialiser.last_result

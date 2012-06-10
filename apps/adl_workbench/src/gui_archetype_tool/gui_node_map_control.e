@@ -175,7 +175,7 @@ feature -- Commands
 			create c_node_map_builder
 			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, ev_grid,
 				show_technical_view, True, show_codes, gui_node_map, code_select_action_agent)
-			create a_c_iterator.make (source_archetype.definition, c_node_map_builder)
+			create a_c_iterator.make (source_archetype.definition.representation, c_node_map_builder)
 			a_c_iterator.do_all
 
 			-- update reference mode nodes
@@ -282,7 +282,7 @@ feature {NONE} -- Implementation
 			create c_node_map_builder
 			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, ev_grid,
 				show_technical_view, False, show_codes, gui_node_map, code_select_action_agent)
-			create a_c_iterator.make (source_archetype.definition, c_node_map_builder)
+			create a_c_iterator.make (source_archetype.definition.representation, c_node_map_builder)
 			a_c_iterator.do_all
 
 			-- add RM attributes if in RM mode

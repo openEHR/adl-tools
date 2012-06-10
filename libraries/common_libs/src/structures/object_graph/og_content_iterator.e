@@ -19,13 +19,13 @@ create
 
 feature -- Initialisation
 
-	make (a_target: C_COMPLEX_OBJECT; a_visitor: C_VISITOR)
+	make (a_target: OG_OBJECT_NODE; a_visitor: ANY)
 			-- create a new manager targetted to the parse tree `a_target'
 		require
 			Target_exists: a_target /= Void
 			Visitor_exists: a_visitor /= Void
 		do
-			create tree_iterator.make (a_target.representation)
+			create tree_iterator.make (a_target)
 			visitor := a_visitor
 		end
 
@@ -41,7 +41,7 @@ feature {NONE} -- Implementation
 
 	tree_iterator: OG_ITERATOR
 
-	visitor: C_VISITOR
+	visitor: ANY
 
 	node_enter_action (a_node: OG_ITEM; indent_level: INTEGER)
 		require

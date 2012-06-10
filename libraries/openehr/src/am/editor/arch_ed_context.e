@@ -51,7 +51,7 @@ feature {NONE} -- Implementation
 			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
 			create c_ed_context_builder
 			c_ed_context_builder.initialise (target, in_reference_model_mode, rm_schema)
-			create a_c_iterator.make (target.definition, c_ed_context_builder)
+			create a_c_iterator.make (target.definition.representation, c_ed_context_builder)
 			a_c_iterator.do_all
 
 			definition_context := c_ed_context_builder.root_node

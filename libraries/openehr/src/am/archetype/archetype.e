@@ -342,7 +342,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 
 			create definition_xref_builder
 			definition_xref_builder.initialise (Current)
-			create a_c_iterator.make (definition, definition_xref_builder)
+			create a_c_iterator.make (definition.representation, definition_xref_builder)
 			a_c_iterator.do_all
 
 			if has_invariants then
@@ -368,7 +368,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 		do
 			create rollup_builder
 			rollup_builder.initialise (Current)
-			create a_c_iterator.make (definition, rollup_builder)
+			create a_c_iterator.make (definition.representation, rollup_builder)
 			a_c_iterator.do_all
 		end
 
