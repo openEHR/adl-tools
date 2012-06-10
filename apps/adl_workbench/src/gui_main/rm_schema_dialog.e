@@ -138,7 +138,7 @@ feature -- Commands
 	enable_edit
 			-- enable editing
 		do
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do if not an_item.is_readonly then an_item.enable_active end end)
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.enable_active end)
 		end
 
 feature -- Events
@@ -207,7 +207,7 @@ feature {NONE} -- Implementation
 	do_populate
 			-- Set the dialog widgets from shared settings.
 		do
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.do_populate end)
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.populate end)
 			populate_grid
 		end
 

@@ -71,18 +71,15 @@ feature {NONE} -- Initialization
 			compiler_settings_frame_ctl.add_row (False)
 
 			-- Error reporting level combo			
-			create parser_error_reporting_level_combo_box.make_active (get_text ("error_reporting_level_text"),
+			create parser_error_reporting_level_combo_box.make (get_text ("error_reporting_level_text"),
 				agent :STRING do Result := error_type_name_table.item (error_reporting_level) end,
-				error_type_names, agent (a_val: STRING) do  end,
-				Void, Void, 0, 100)
+				error_type_names, 0, 100)
 			compiler_settings_frame_ctl.extend (parser_error_reporting_level_combo_box.ev_root_container, False)
 			gui_controls.extend (parser_error_reporting_level_combo_box)
 
 			-- ADL save version
-			create adl_save_version_combo_box.make_active (get_text ("adl_serialisation_level_text"),
-				agent adl_version_for_flat_output, adl_versions,
-				agent (a_val: STRING) do  end,
-				Void, Void, 0, 0)
+			create adl_save_version_combo_box.make (get_text ("adl_serialisation_level_text"),
+				agent adl_version_for_flat_output, adl_versions, 0, 0)
 			compiler_settings_frame_ctl.extend (adl_save_version_combo_box.ev_root_container, False)
 			gui_controls.extend (adl_save_version_combo_box)
 
@@ -242,7 +239,7 @@ feature -- Commands
 	enable_edit
 			-- enable editing
 		do
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do if not an_item.is_readonly then an_item.enable_active end end)
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.enable_active end)
 		end
 
 feature {NONE} -- Implementation
@@ -253,7 +250,7 @@ feature {NONE} -- Implementation
 	do_populate
 			-- Set the dialog widgets from shared settings.
 		do
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.do_populate end)
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.populate end)
 		end
 
 	gui_controls: ARRAYED_LIST [GUI_DATA_CONTROL]

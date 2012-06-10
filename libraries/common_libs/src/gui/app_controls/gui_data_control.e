@@ -75,31 +75,31 @@ feature -- Modification
 
 feature -- Commands
 
-	do_clear
+	clear
 			-- Wipe out content.
 		deferred
 		end
 
-	do_populate
+	populate
 		deferred
 		end
 
 	enable_active
-			-- enable editing
-		require
-			not is_readonly
+			-- enable user interaction, do nothing if `is_readonly'
 		do
-			ev_data_control.enable_sensitive
-			is_active := True
+			if not is_readonly then
+				do_enable_active
+				is_active := True
+			end
 		end
 
 	disable_active
-			-- disable editing
-		require
-			not is_readonly
+			-- disable user interaction, do nothing if `is_readonly'
 		do
-			ev_data_control.disable_sensitive
-			is_active := False
+			if not is_readonly then
+				do_disable_active
+				is_active := False
+			end
 		end
 
 feature {NONE} -- Implementation
@@ -109,6 +109,22 @@ feature {NONE} -- Implementation
 		end
 
 	linked_data_controls: detachable ARRAYED_LIST [GUI_DATA_CONTROL]
+
+	do_enable_active
+			-- enable user interaction
+		require
+			not is_readonly
+		do
+			ev_data_control.enable_sensitive
+		end
+
+	do_disable_active
+			-- disable user interaction
+		require
+			not is_readonly
+		do
+			ev_data_control.disable_sensitive
+		end
 
 invariant
 	is_readonly implies not ev_data_control.is_sensitive

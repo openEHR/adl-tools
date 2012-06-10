@@ -37,7 +37,7 @@ inherit
 		export
 			{NONE} make_active
 		redefine
-			data_source_agent, enable_active, disable_active
+			data_source_agent, do_enable_active, do_disable_active
 		end
 
 create
@@ -62,27 +62,13 @@ feature -- Access
 
 feature -- Commands
 
-	enable_active
-			-- enable editing
-		do
-			precursor
-			ev_data_control.enable_edit
-		end
-
-	disable_active
-			-- disable editing
-		do
-			precursor
-			ev_data_control.disable_edit
-		end
-
-	do_clear
+	clear
 			-- Wipe out content
 		do
 			ev_data_control.wipe_out
 		end
 
-	do_populate
+	populate
 			-- Wipe out content.
 		do
 			ev_data_control.select_actions.block
@@ -103,7 +89,7 @@ feature {NONE} -- Implementation
 	propagate_select_action
 		do
 			if attached linked_data_controls then
-				linked_data_controls.do_all (agent (a_ctl: GUI_DATA_CONTROL) do a_ctl.do_populate end)
+				linked_data_controls.do_all (agent (a_ctl: GUI_DATA_CONTROL) do a_ctl.populate end)
 			end
 		end
 
@@ -112,6 +98,20 @@ feature {NONE} -- Implementation
 	create_ev_data_control
 		do
 			create ev_data_control
+		end
+
+	do_enable_active
+			-- enable editing
+		do
+			precursor
+			ev_data_control.enable_edit
+		end
+
+	do_disable_active
+			-- disable editing
+		do
+			precursor
+			ev_data_control.disable_edit
 		end
 
 end

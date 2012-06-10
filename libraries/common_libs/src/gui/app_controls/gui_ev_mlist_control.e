@@ -33,7 +33,7 @@ inherit
 		rename
 			make as make_data_control, make_active as make_active_data_control, make_readonly as make_readonly_data_control
 		redefine
-			do_populate, enable_active
+			populate, do_enable_active
 		end
 
 feature -- Initialisation
@@ -86,7 +86,7 @@ feature -- Access
 
 feature -- Commands
 
-	do_populate
+	populate
 		do
 			if attached header_strings_agent then
 				ev_data_control.set_column_titles (header_strings_agent.item ([]))
@@ -97,24 +97,7 @@ feature -- Commands
 			end
 		end
 
-	enable_active
-		local
-			root_win: EV_WINDOW
-		do
-			precursor
-
-			-- the following one-off initialisation has to be done now, because at make time, the call to
-			-- proximate_ev_window won't work because things are not connected up yet
-			if not data_control_initialised then
-				root_win := proximate_ev_window (ev_root_container)
-				ev_data_control.enable_editing (root_win)
-				ev_data_control.end_edit_actions.extend (agent process_in_place_edit)
-				ev_data_control.pointer_button_press_actions.force_extend (agent mlist_handler (ev_data_control, ?, ?, ?, ?, ?, ?, ?, ?))
-				data_control_initialised := True
-			end
-		end
-
-	do_clear
+	clear
 			-- Wipe out content.
 		do
 			ev_data_control.wipe_out
@@ -198,6 +181,23 @@ feature {NONE} -- Implementation
 	set_columns_editable
 		do
 			ev_data_control.set_all_columns_editable
+		end
+
+	do_enable_active
+		local
+			root_win: EV_WINDOW
+		do
+			precursor
+
+			-- the following one-off initialisation has to be done now, because at make time, the call to
+			-- proximate_ev_window won't work because things are not connected up yet
+			if not data_control_initialised then
+				root_win := proximate_ev_window (ev_root_container)
+				ev_data_control.enable_editing (root_win)
+				ev_data_control.end_edit_actions.extend (agent process_in_place_edit)
+				ev_data_control.pointer_button_press_actions.force_extend (agent mlist_handler (ev_data_control, ?, ?, ?, ?, ?, ?, ?, ?))
+				data_control_initialised := True
+			end
 		end
 
 end

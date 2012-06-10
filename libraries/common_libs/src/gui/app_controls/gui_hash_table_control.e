@@ -80,10 +80,10 @@ feature {NONE} -- Implementation
 					undo_redo_chain.add_link (
 						-- undo
 						agent ds.replace_key (old_key, new_key),
-						agent do_populate,
+						agent populate,
 						-- redo
 						agent ds.replace_key (new_key, old_key),
-						agent do_populate
+						agent populate
 					)
 				end
 			else -- value modified; it's a normal replace
@@ -93,10 +93,10 @@ feature {NONE} -- Implementation
 					undo_redo_chain.add_link (
 						-- undo
 						agent ds.force (old_val, old_key),
-						agent do_populate,
+						agent populate,
 						-- redo
 						agent ds.force (new_val, old_key),
-						agent do_populate
+						agent populate
 					)
 				end
 			end
@@ -119,8 +119,8 @@ feature {NONE} -- Implementation
 
 			data_source_setter_agent.call ([new_key, new_val])
 			undo_redo_chain.add_link (
-				agent data_source_remove_agent.call ([new_key]), agent do_populate, -- undo
-				agent data_source_setter_agent.call ([new_key, new_val]), agent do_populate -- redo
+				agent data_source_remove_agent.call ([new_key]), agent populate, -- undo
+				agent data_source_setter_agent.call ([new_key, new_val]), agent populate -- redo
 			)
 		end
 
@@ -135,8 +135,8 @@ feature {NONE} -- Implementation
 			ev_data_control.remove_selected_item
 
 			undo_redo_chain.add_link (
-				agent data_source_setter_agent.call ([old_key, old_val]), agent do_populate,  -- undo
-				agent data_source_remove_agent.call ([old_key]), agent do_populate -- redo
+				agent data_source_setter_agent.call ([old_key, old_val]), agent populate,  -- undo
+				agent data_source_remove_agent.call ([old_key]), agent populate -- redo
 			)
 		end
 

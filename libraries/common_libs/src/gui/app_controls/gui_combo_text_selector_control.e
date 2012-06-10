@@ -35,7 +35,7 @@ inherit
 		rename
 			make as make_text_control, make_active as make_active_text_control, make_readonly as make_readonly_text_control
 		redefine
-			data_source_setter_agent, do_populate
+			data_source_setter_agent, populate
 		end
 
 create
@@ -101,7 +101,7 @@ feature -- Access
 
 feature -- Commands
 
-	do_populate
+	populate
 			-- populate content
 		local
 			cur_val: STRING
@@ -147,7 +147,7 @@ feature {NONE} -- Implementation
 	propagate_select_action
 		do
 			if attached linked_data_controls then
-				linked_data_controls.do_all (agent (a_ctl: GUI_DATA_CONTROL) do a_ctl.do_populate end)
+				linked_data_controls.do_all (agent (a_ctl: GUI_DATA_CONTROL) do a_ctl.populate end)
 			end
 		end
 

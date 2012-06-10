@@ -66,11 +66,11 @@ feature -- Access
 
 feature -- Commands
 
-	do_clear
+	clear
 		do
 		end
 
-	do_populate
+	populate
 		do
 			set_state (data_source_agent.item ([]))
 		end

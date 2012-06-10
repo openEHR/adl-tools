@@ -176,8 +176,8 @@ feature -- Commands
 			c_node_map_builder: C_GUI_NODE_MAP_BUILDER
 		do
 -- FIXME: form buttons
-toggle_button_ctl.do_populate
-add_codes_checkbox_ctl.do_populate
+toggle_button_ctl.populate
+add_codes_checkbox_ctl.populate
 
 			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
 			create c_node_map_builder
@@ -303,8 +303,8 @@ feature {NONE} -- Implementation
 			i: INTEGER
 		do
 -- FIXME: form buttons
-toggle_button_ctl.do_populate
-add_codes_checkbox_ctl.do_populate
+toggle_button_ctl.populate
+add_codes_checkbox_ctl.populate
 
 			create gui_node_map.make (0)
 

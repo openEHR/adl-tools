@@ -137,10 +137,10 @@ feature {NONE} -- Implementation
 			undo_redo_chain.add_link (
 				-- undo
 				agent data_source_remove_agent.call ([new_val]),
-				agent do_populate,
+				agent populate,
 				-- redo
 				agent data_source_setter_agent.call ([new_val, 0]),
-				agent do_populate
+				agent populate
 			)
 		end
 
@@ -163,9 +163,9 @@ feature {NONE} -- Implementation
 			data_source_remove_agent.call ([old_val])
 			undo_redo_chain.add_link (
 				agent data_source_setter_agent.call ([old_val, undo_add_idx]),
-				agent do_populate,
+				agent populate,
 				agent data_source_remove_agent.call ([old_val]),
-				agent do_populate
+				agent populate
 			)
 			ev_data_control.remove_selected_item
 		end

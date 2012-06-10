@@ -27,7 +27,7 @@ inherit
 		rename
 			make as make_data_control, make_active as make_active_data_control
 		redefine
-			data_source_agent, data_source_setter_agent, enable_active, disable_active
+			data_source_agent, data_source_setter_agent, do_enable_active, do_disable_active
 		end
 
 feature -- Initialisation
@@ -71,29 +71,13 @@ feature -- Access
 
 feature -- Commands
 
-	enable_active
-			-- enable editing
-		do
-			precursor
-			ev_data_control.enable_edit
-		end
-
-	disable_active
-			-- disable editing
-		do
-			precursor
-			ev_data_control.disable_edit
-		end
-
-feature -- Commands
-
-	do_clear
+	clear
 			-- Wipe out content.
 		do
 			ev_data_control.remove_text
 		end
 
-	do_populate
+	populate
 			-- populate content.
 		do
 			if attached {STRING} data_source_agent.item ([]) as str then
@@ -138,7 +122,7 @@ feature {NONE} -- Implementation
 				data_source_setter_agent.call ([new_val])
 
 				if attached undo_redo_chain then
-					undo_redo_chain.add_link (undo_agt, agent do_populate, redo_agt, agent do_populate)
+					undo_redo_chain.add_link (undo_agt, agent populate, redo_agt, agent populate)
 				end
 			end
 		end
@@ -148,6 +132,20 @@ feature {NONE} -- Implementation
 			if ev_data_control.text_length > 0 then
 				ev_data_control.select_all
 			end
+		end
+
+	do_enable_active
+			-- enable editing
+		do
+			precursor
+			ev_data_control.enable_edit
+		end
+
+	do_disable_active
+			-- disable editing
+		do
+			precursor
+			ev_data_control.disable_edit
 		end
 
 end

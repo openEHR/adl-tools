@@ -115,14 +115,14 @@ feature -- Commands
 			-- enable editing
 		do
 			precursor
-			gui_controls.do_all (agent (an_item: GUI_TITLED_DATA_CONTROL) do if not an_item.is_readonly then an_item.enable_active end end)
+			gui_controls.do_all (agent (an_item: GUI_TITLED_DATA_CONTROL) do an_item.enable_active end)
 		end
 
 	disable_edit
 			-- disable editing
 		do
 			precursor
-			gui_controls.do_all (agent (an_item: GUI_TITLED_DATA_CONTROL) do if not an_item.is_readonly then an_item.disable_active end end)
+			gui_controls.do_all (agent (an_item: GUI_TITLED_DATA_CONTROL) do an_item.disable_active end)
 		end
 
 	select_term (a_term_code: attached STRING)
@@ -170,13 +170,13 @@ feature {NONE} -- Implementation
 	do_clear
 			-- wipe out content from ontology-related controls
 		do
-			gui_controls.do_all (agent (an_item: GUI_TITLED_DATA_CONTROL) do an_item.do_clear end)
+			gui_controls.do_all (agent (an_item: GUI_TITLED_DATA_CONTROL) do an_item.clear end)
 		end
 
 	do_populate
 		do
 			terminologies := ontology.terminologies_available
-			gui_controls.do_all (agent (an_item: GUI_TITLED_DATA_CONTROL) do an_item.do_populate end)
+			gui_controls.do_all (agent (an_item: GUI_TITLED_DATA_CONTROL) do an_item.populate end)
 		end
 
 	terminologies: ARRAYED_SET [STRING]

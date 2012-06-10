@@ -46,8 +46,7 @@ feature {NONE} -- Initialisation
 			create ev_root_container
 			ev_root_container.set_data (Current)
 
-			create gui_authoring_tab_controls.make (0)
-			create gui_description_tab_controls.make (0)
+			create gui_controls.make (0)
 
 			-- ====== Authoring tab =======
 			create admin_vbox
@@ -60,7 +59,7 @@ feature {NONE} -- Initialisation
 				archetype_lifecycle_states,
 				agent (a_str: STRING) do source_archetype.description.set_lifecycle_state (a_str) end,
 				Void, authoring_tab_undo_redo_chain, 0, 140)
-			gui_authoring_tab_controls.extend (lifecycle_state_text_ctl)
+			gui_controls.extend (lifecycle_state_text_ctl)
 			admin_vbox.extend (lifecycle_state_text_ctl.ev_root_container)
 			admin_vbox.disable_item_expand (lifecycle_state_text_ctl.ev_root_container)
 
@@ -74,7 +73,7 @@ feature {NONE} -- Initialisation
 				agent (a_key: STRING) do source_archetype.description.remove_original_author_item (a_key) end,
 				authoring_tab_undo_redo_chain,
 				65, min_entry_control_width, False, Void)
-			gui_authoring_tab_controls.extend (original_author_ctl)
+			gui_controls.extend (original_author_ctl)
 
 			-- contributors - list
 			create auth_contrib_list_ctl.make_active (get_text ("auth_contrib_label_text"),
@@ -83,7 +82,7 @@ feature {NONE} -- Initialisation
 				agent (a_str: STRING) do source_archetype.description.remove_other_contributor (a_str) end,
 				authoring_tab_undo_redo_chain,
 				30, min_entry_control_width, False)
-			gui_authoring_tab_controls.extend (auth_contrib_list_ctl)
+			gui_controls.extend (auth_contrib_list_ctl)
 			auth_frame_ctl.extend (original_author_ctl.ev_root_container, True)
 			auth_frame_ctl.extend (auth_contrib_list_ctl.ev_root_container, True)
 
@@ -96,7 +95,7 @@ feature {NONE} -- Initialisation
 			create original_language_text_ctl.make (get_text ("original_language_label_text"),
 				agent :STRING do Result := source_archetype.original_language.code_string end,
 				0, 0, True, False)
-			gui_authoring_tab_controls.extend (original_language_text_ctl)
+			gui_controls.extend (original_language_text_ctl)
 			lang_original_trans_hbox.extend (original_language_text_ctl.ev_root_container)
 
 			-- translation languages selector (not modifiable)
@@ -109,7 +108,7 @@ feature {NONE} -- Initialisation
 					end,
 				0, 0, True)
 			lang_original_trans_hbox.extend (trans_languages_ctl.ev_root_container)
-			gui_authoring_tab_controls.extend (trans_languages_ctl)
+			gui_controls.extend (trans_languages_ctl)
 
 			create lang_translations_hbox
 			lang_frame_ctl.extend (lang_translations_hbox, True)
@@ -122,7 +121,7 @@ feature {NONE} -- Initialisation
 				agent (a_key, a_val: STRING) do translation_details.put_author_item (a_key, a_val) end,
 				agent (a_key: STRING) do translation_details.remove_author_item (a_key) end,
 				authoring_tab_undo_redo_chain, 65, min_entry_control_width, False, Void)
-			gui_authoring_tab_controls.extend (trans_author_ctl)
+			gui_controls.extend (trans_author_ctl)
 			trans_languages_ctl.add_linked_control (trans_author_ctl)
 			trans_author_accreditation_vbox.extend (trans_author_ctl.ev_root_container)
 
@@ -132,7 +131,7 @@ feature {NONE} -- Initialisation
 				agent (a_str: STRING) do translation_details.set_accreditation (a_str) end,
 				agent do translation_details.clear_accreditation end,
 				authoring_tab_undo_redo_chain, 0, 0, False, True)
-			gui_authoring_tab_controls.extend (trans_accreditation_text_ctl)
+			gui_controls.extend (trans_accreditation_text_ctl)
 			trans_author_accreditation_vbox.extend (trans_accreditation_text_ctl.ev_root_container)
 			trans_languages_ctl.add_linked_control (trans_accreditation_text_ctl)
 
@@ -143,7 +142,7 @@ feature {NONE} -- Initialisation
 				agent (a_key: STRING) do translation_details.remove_other_details_item (a_key) end,
 				authoring_tab_undo_redo_chain,
 				40, min_entry_control_width, False, Void)
-			gui_authoring_tab_controls.extend (trans_other_details_ctl)
+			gui_controls.extend (trans_other_details_ctl)
 			trans_languages_ctl.add_linked_control (trans_other_details_ctl)
 			lang_translations_hbox.extend (trans_other_details_ctl.ev_root_container)
 
@@ -153,7 +152,7 @@ feature {NONE} -- Initialisation
 				agent (a_str: STRING) do description_details.set_copyright (a_str) end,
 				agent do description_details.clear_copyright end,
 				authoring_tab_undo_redo_chain, 44, min_entry_control_width, True, True)
-			gui_authoring_tab_controls.extend (copyright_text_ctl)
+			gui_controls.extend (copyright_text_ctl)
 			admin_vbox.extend (copyright_text_ctl.ev_root_container)
 			admin_vbox.disable_item_expand (copyright_text_ctl.ev_root_container)
 
@@ -173,7 +172,7 @@ feature {NONE} -- Initialisation
 				agent :STRING do if attached description_details then Result := description_details.purpose end end,
 				agent (a_str: STRING) do description_details.set_purpose (a_str) end,
 				Void, description_tab_undo_redo_chain, 0, 0, True, True)
-			gui_description_tab_controls.extend (purpose_text_ctl)
+			gui_controls.extend (purpose_text_ctl)
 			details_frame_ctl.extend (purpose_text_ctl.ev_root_container, True)
 
 			-- use - mutli-line String
@@ -182,7 +181,7 @@ feature {NONE} -- Initialisation
 				agent (a_str: STRING) do description_details.set_use (a_str) end,
 				agent do description_details.clear_use end,
 				description_tab_undo_redo_chain, 0, 0, True, True)
-			gui_description_tab_controls.extend (use_text_ctl)
+			gui_controls.extend (use_text_ctl)
 			details_frame_ctl.extend (use_text_ctl.ev_root_container, True)
 
 			-- misuse - mutli-line String
@@ -192,7 +191,7 @@ feature {NONE} -- Initialisation
 				agent do description_details.clear_misuse end,
 				description_tab_undo_redo_chain,
 				0, 0, True, True)
-			gui_description_tab_controls.extend (misuse_text_ctl)
+			gui_controls.extend (misuse_text_ctl)
 			details_frame_ctl.extend (misuse_text_ctl.ev_root_container, True)
 
 			-- keywords list
@@ -202,7 +201,7 @@ feature {NONE} -- Initialisation
 				agent (a_str: STRING) do description_details.remove_keyword (a_str) end,
 				description_tab_undo_redo_chain,
 				0, 200, False)
-			gui_description_tab_controls.extend (keywords_list_ctl)
+			gui_controls.extend (keywords_list_ctl)
 			details_hbox.extend (keywords_list_ctl.ev_root_container)
 			details_hbox.disable_item_expand (keywords_list_ctl.ev_root_container)
 
@@ -221,7 +220,7 @@ feature {NONE} -- Initialisation
 				agent (a_str: STRING) do source_archetype.description.set_resource_package_uri (a_str) end,
 				agent do source_archetype.description.clear_resource_package_uri end,
 				description_tab_undo_redo_chain, 0, 0, True, True)
-			gui_description_tab_controls.extend (resource_package_ctl)
+			gui_controls.extend (resource_package_ctl)
 			resource_frame_ctl.extend (resource_package_ctl.ev_root_container, False)
 
 			-- original resources - Hash
@@ -236,7 +235,7 @@ feature {NONE} -- Initialisation
 				agent (a_key: STRING) do description_details.remove_original_resource_uri_item (a_key) end,
 				description_tab_undo_redo_chain,
 				44, 0, True, Void)
-			gui_description_tab_controls.extend (original_resources_ctl)
+			gui_controls.extend (original_resources_ctl)
 			resource_frame_ctl.extend (original_resources_ctl.ev_root_container, False)
 
 			-- =========== set up events ==========
@@ -295,16 +294,14 @@ feature -- Commands
 			-- enable editing
 		do
 			precursor
-			gui_authoring_tab_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do if not an_item.is_readonly then an_item.enable_active end end)
-			gui_description_tab_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do if not an_item.is_readonly then an_item.enable_active end end)
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.enable_active end)
 		end
 
 	disable_edit
 			-- disable editing
 		do
 			precursor
-			gui_authoring_tab_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do if not an_item.is_readonly then an_item.disable_active end end)
-			gui_description_tab_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do if not an_item.is_readonly then an_item.disable_active end end)
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.disable_active end)
 		end
 
 feature {NONE} -- Implementation
@@ -329,20 +326,18 @@ feature {NONE} -- Implementation
 
 	undo_redo_update_agent: PROCEDURE [ANY, TUPLE [UNDO_REDO_CHAIN]]
 
-	gui_authoring_tab_controls, gui_description_tab_controls: ARRAYED_LIST [GUI_DATA_CONTROL]
+	gui_controls: ARRAYED_LIST [GUI_DATA_CONTROL]
 
 	authoring_tab_undo_redo_chain, description_tab_undo_redo_chain: UNDO_REDO_CHAIN
 
 	do_clear
 		do
-			gui_authoring_tab_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.do_clear end)
-			gui_description_tab_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.do_clear end)
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.clear end)
 		end
 
 	do_populate
 		do
-			gui_authoring_tab_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.do_populate end)
-			gui_description_tab_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.do_populate end)
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.populate end)
 		end
 
 	description_details: detachable RESOURCE_DESCRIPTION_ITEM

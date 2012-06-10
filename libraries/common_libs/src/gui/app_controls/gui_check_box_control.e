@@ -88,13 +88,13 @@ feature -- Status Report
 
 feature -- Commands
 
-	do_clear
+	clear
 			-- Wipe out content
 		do
 			ev_data_control.disable_select
 		end
 
-	do_populate
+	populate
 		do
 			ev_data_control.select_actions.block
 			if data_source_agent.item ([]) then
