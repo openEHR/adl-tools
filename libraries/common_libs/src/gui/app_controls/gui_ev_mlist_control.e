@@ -31,9 +31,9 @@ deferred class GUI_EV_MLIST_CONTROL
 inherit
 	GUI_TITLED_DATA_CONTROL
 		rename
-			make as make_data_control, make_editable as make_editable_data_control
+			make as make_data_control, make_active as make_active_data_control, make_readonly as make_readonly_data_control
 		redefine
-			do_populate, enable_edit
+			do_populate, enable_active
 		end
 
 feature -- Initialisation
@@ -44,14 +44,23 @@ feature -- Initialisation
 			a_header_strings_agent: like header_strings_agent)
 		do
 			make_data_control (a_title, a_data_source_agent, min_height, min_width, use_hbox_container, True)
-			if attached a_header_strings_agent then
-				header_strings_agent := a_header_strings_agent
-			else
-				ev_data_control.hide_title_row
-			end
+			initialise_data_control (a_header_strings_agent)
+		ensure
+			not is_readonly
 		end
 
-	make_editable (a_title: STRING; a_data_source_agent: like data_source_agent;
+	make_readonly (a_title: STRING; a_data_source_agent: like data_source_agent;
+			min_height, min_width: INTEGER;
+			use_hbox_container: BOOLEAN;
+			a_header_strings_agent: like header_strings_agent)
+		do
+			make_readonly_data_control (a_title, a_data_source_agent, min_height, min_width, use_hbox_container, True)
+			initialise_data_control (a_header_strings_agent)
+		ensure
+			is_readonly
+		end
+
+	make_active (a_title: STRING; a_data_source_agent: like data_source_agent;
 			a_data_source_create_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
 			an_undo_redo_chain: UNDO_REDO_CHAIN;
@@ -59,14 +68,12 @@ feature -- Initialisation
 			use_hbox_container: BOOLEAN;
 			a_header_strings_agent: like header_strings_agent)
 		do
-			make_editable_data_control (a_title,
+			make_active_data_control (a_title,
 				a_data_source_agent, a_data_source_create_agent, a_data_source_remove_agent, an_undo_redo_chain,
 				min_height, min_width, use_hbox_container, True)
-			if attached a_header_strings_agent then
-				header_strings_agent := a_header_strings_agent
-			else
-				ev_data_control.hide_title_row
-			end
+			initialise_data_control (a_header_strings_agent)
+		ensure
+			not is_readonly
 		end
 
 feature -- Access
@@ -85,26 +92,26 @@ feature -- Commands
 				ev_data_control.set_column_titles (header_strings_agent.item ([]))
 			end
 			do_populate_control_from_source
-
-			if edit_enabled then
+			if is_active then
 				set_columns_editable
---				from ev_data_control.start until ev_data_control.off loop
---					ev_data_control.item.pointer_button_press_actions.force_extend (agent mlist_row_handler (ev_data_control.item, ?, ?, ?))
---					ev_data_control.forth
---				end
-				ev_data_control.pointer_button_press_actions.force_extend (agent mlist_handler (ev_data_control, ?, ?, ?, ?, ?, ?, ?, ?))
 			end
 		end
 
-	enable_edit
-			-- enable editing
+	enable_active
 		local
 			root_win: EV_WINDOW
 		do
 			precursor
-			root_win := proximate_ev_window (ev_root_container)
-			ev_data_control.enable_editing (root_win)
-			ev_data_control.end_edit_actions.extend (agent process_in_place_edit)
+
+			-- the following one-off initialisation has to be done now, because at make time, the call to
+			-- proximate_ev_window won't work because things are not connected up yet
+			if not data_control_initialised then
+				root_win := proximate_ev_window (ev_root_container)
+				ev_data_control.enable_editing (root_win)
+				ev_data_control.end_edit_actions.extend (agent process_in_place_edit)
+				ev_data_control.pointer_button_press_actions.force_extend (agent mlist_handler (ev_data_control, ?, ?, ?, ?, ?, ?, ?, ?))
+				data_control_initialised := True
+			end
 		end
 
 	do_clear
@@ -154,6 +161,38 @@ feature {NONE} -- Implementation
 		    	menu.extend (an_mi)
 				menu.show
 			end
+		end
+
+	initialise_data_control (a_header_strings_agent: like header_strings_agent)
+		do
+			if attached a_header_strings_agent then
+				header_strings_agent := a_header_strings_agent
+			else
+				ev_data_control.hide_title_row
+			end
+		end
+
+	data_control_initialised: BOOLEAN
+			-- flag indicating that once-only initialisation of data control has been done
+
+	uniqueness_counter: INTEGER
+		do
+			Result := uniqueness_counter_cell.item
+		end
+
+	increment_uniqueness_counter
+		do
+			uniqueness_counter_cell.put (uniqueness_counter + 1)
+		end
+
+	uniqueness_counter_cell: CELL[INTEGER]
+		local
+			rnd: RANDOM
+			dt: DATE_TIME
+		once
+			create dt.make_now
+			create rnd.set_seed (dt.seconds)
+			create Result.put (rnd.i_th (1))
 		end
 
 	set_columns_editable

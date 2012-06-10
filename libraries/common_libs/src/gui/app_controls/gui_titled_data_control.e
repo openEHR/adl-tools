@@ -23,8 +23,7 @@ inherit
 feature -- Initialisation
 
 	make (a_title: detachable STRING; a_data_source_agent: like data_source_agent;
-			min_height, min_width: INTEGER;
-			use_hbox_container: BOOLEAN; allow_expansion: BOOLEAN)
+			min_height, min_width: INTEGER; arrange_horizontally, allow_expansion: BOOLEAN)
 		local
 			mh, mw: INTEGER
 		do
@@ -34,7 +33,7 @@ feature -- Initialisation
 			mw := min_width.max (default_min_width) + Default_border_width
 
 			-- create a container to hold title and data control
-			if use_hbox_container then
+			if arrange_horizontally then
 				create {EV_HORIZONTAL_BOX} ev_root_container
 			else
 				create {EV_VERTICAL_BOX} ev_root_container
@@ -56,7 +55,7 @@ feature -- Initialisation
 				mh := mh + Default_border_width
 				mw := mw + Default_border_width
 
-				if use_hbox_container then
+				if arrange_horizontally then
 					mw := mw + ev_title_label.width + Default_padding_width
 				else
 					mh := mh + ev_title_label.height + Default_padding_width
@@ -76,23 +75,36 @@ feature -- Initialisation
 				ev_root_container.extend (create {EV_CELL})
 				ev_root_container.disable_item_expand (ev_data_control)
 			end
+		ensure
+			not is_readonly
 		end
 
-	make_editable (a_title: STRING; a_data_source_agent: like data_source_agent;
-			a_data_source_create_agent: like data_source_setter_agent;
-			a_data_source_remove_agent: like data_source_remove_agent;
-			an_undo_redo_chain: UNDO_REDO_CHAIN;
-			min_height, min_width: INTEGER;
-			use_hbox_container: BOOLEAN; allow_expansion: BOOLEAN)
+	make_readonly (a_title: detachable STRING; a_data_source_agent: like data_source_agent;
+			min_height, min_width: INTEGER; arrange_horizontally, allow_expansion: BOOLEAN)
+			-- make so that no user interaction with visual control is possible
 		do
-			make (a_title, a_data_source_agent, min_height, min_width, use_hbox_container, allow_expansion)
+			make (a_title, a_data_source_agent, min_height, min_width, arrange_horizontally, allow_expansion)
+			is_readonly := True
+			ev_data_control.disable_sensitive
+		ensure
+			is_readonly
+		end
+
+	make_active (a_title: STRING; a_data_source_agent: like data_source_agent;
+				a_data_source_create_agent: like data_source_setter_agent;
+				a_data_source_remove_agent: like data_source_remove_agent;
+				an_undo_redo_chain: UNDO_REDO_CHAIN;
+				min_height, min_width: INTEGER;
+				arrange_horizontally, allow_expansion: BOOLEAN)
+			-- make with active editing agents so that changes made in the visual control
+			-- affect the data source
+		do
+			make (a_title, a_data_source_agent, min_height, min_width, arrange_horizontally, allow_expansion)
 			data_source_setter_agent := a_data_source_create_agent
 			data_source_remove_agent := a_data_source_remove_agent
 			undo_redo_chain := an_undo_redo_chain
-
-			can_edit := True
 		ensure
-			can_edit
+			not is_readonly
 		end
 
 feature -- Access

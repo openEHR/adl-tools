@@ -25,11 +25,11 @@ class GUI_CHECK_BOX_CONTROL
 inherit
 	GUI_DATA_CONTROL
 		redefine
-			data_source_agent, data_source_setter_agent, enable_edit, disable_edit
+			data_source_agent, data_source_setter_agent
 		end
 
 create
-	make, make_edit
+	make, make_active, make_readonly
 
 feature -- Initialisation
 
@@ -45,15 +45,28 @@ feature -- Initialisation
 			if attached a_tooltip then
 				ev_data_control.set_tooltip (a_tooltip)
 			end
+		ensure
+			not is_readonly
 		end
 
-	make_edit (a_title, a_tooltip: detachable STRING; a_data_source_agent: like data_source_agent;
-			a_data_source_setter_agent: like data_source_setter_agent)
+	make_readonly (a_title, a_tooltip: detachable STRING; a_data_source_agent: like data_source_agent)
+			-- make readonly with a data_source agent, typically for a Dialog box
+		do
+			make (a_title, a_tooltip, a_data_source_agent)
+			is_readonly := True
+		ensure
+			is_readonly
+		end
+
+	make_active (a_title, a_tooltip: detachable STRING; a_data_source_agent: like data_source_agent;
+				a_data_source_setter_agent: like data_source_setter_agent)
 			-- make for a normal form with active semantics
 		do
 			make (a_title, a_tooltip, a_data_source_agent)
 			data_source_setter_agent := a_data_source_setter_agent
 			ev_data_control.select_actions.extend (agent on_select)
+		ensure
+			not is_readonly
 		end
 
 feature -- Access
@@ -74,20 +87,6 @@ feature -- Status Report
 		end
 
 feature -- Commands
-
-	enable_edit
-			-- enable editing
-		do
-			precursor
-			ev_data_control.enable_sensitive
-		end
-
-	disable_edit
-			-- disable editing
-		do
-			precursor
-			ev_data_control.disable_sensitive
-		end
 
 	do_clear
 			-- Wipe out content

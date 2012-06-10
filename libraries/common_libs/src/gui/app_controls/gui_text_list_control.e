@@ -29,13 +29,13 @@ class GUI_TEXT_LIST_CONTROL
 inherit
 	GUI_EV_MLIST_CONTROL
 		rename
-			make as make_mlist, make_editable as make_editable_mlist
+			make as make_mlist, make_active as make_active_mlist
 		redefine
 			data_source_agent, data_source_setter_agent
 		end
 
 create
-	make, make_editable
+	make, make_active
 
 feature -- Initialisation
 
@@ -46,18 +46,22 @@ feature -- Initialisation
 			make_mlist (a_title, a_data_source_agent,
 				min_height, min_width,
 				use_hbox_container, Void)
+		ensure
+			not is_readonly
 		end
 
-	make_editable (a_title: STRING; a_data_source_agent: like data_source_agent;
+	make_active (a_title: STRING; a_data_source_agent: like data_source_agent;
 			a_data_source_create_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
 			an_undo_redo_chain: UNDO_REDO_CHAIN;
 			min_height, min_width: INTEGER;
 			use_hbox_container: BOOLEAN)
 		do
-			make_editable_mlist (a_title,
+			make_active_mlist (a_title,
 				a_data_source_agent, a_data_source_create_agent, a_data_source_remove_agent, an_undo_redo_chain,
 				min_height, min_width, use_hbox_container, Void)
+		ensure
+			not is_readonly
 		end
 
 feature -- Access
@@ -97,10 +101,22 @@ feature {NONE} -- Implementation
 				undo_redo_chain.add_link (
 					-- undo
 					agent ds.put_i_th (old_val, ds_index),
-					agent (ev_data_control.i_th (ev_data_control.widget_row)).put_i_th (utf8_to_utf32 (old_val), 1),
+					agent (a_val: STRING_32; row_idx: INTEGER)
+						local
+							a_row: EV_MULTI_COLUMN_LIST_ROW
+						do
+							a_row := ev_data_control.i_th (row_idx)
+							a_row.put_i_th (a_val, 1)
+						end (utf8_to_utf32 (old_val), ev_data_control.widget_row),
 					-- redo
 					agent ds.put_i_th (new_val, ds_index),
-					agent (ev_data_control.i_th (ev_data_control.widget_row)).put_i_th (new_val, 1)
+					agent (a_val: STRING_32; row_idx: INTEGER)
+						local
+							a_row: EV_MULTI_COLUMN_LIST_ROW
+						do
+							a_row := ev_data_control.i_th (row_idx)
+							a_row.put_i_th (a_val, 1)
+						end (utf8_to_utf32 (new_val), ev_data_control.widget_row)
 				)
 			end
 		end
@@ -110,17 +126,19 @@ feature {NONE} -- Implementation
 			new_row: EV_MULTI_COLUMN_LIST_ROW
 			new_val: STRING
 		do
-			new_val := "new_value"
+			new_val := "new_val#" + uniqueness_counter.out
 
 			create new_row
 			new_row.extend (new_val)
 			ev_data_control.extend (new_row)
-			new_row.pointer_button_press_actions.force_extend (agent mlist_handler (ev_data_control, ?, ?, ?, ?, ?, ?, ?, ?))
+	--		new_row.pointer_button_press_actions.force_extend (agent mlist_handler (ev_data_control, ?, ?, ?, ?, ?, ?, ?, ?))
 
 			data_source_setter_agent.call ([new_val, 0])
 			undo_redo_chain.add_link (
+				-- undo
 				agent data_source_remove_agent.call ([new_val]),
 				agent do_populate,
+				-- redo
 				agent data_source_setter_agent.call ([new_val, 0]),
 				agent do_populate
 			)

@@ -100,9 +100,8 @@ feature {NONE} -- Initialisation
 			ev_root_container.disable_item_expand (ev_cell_3)
 
 			-- ============ RM schema directory getter ============
-			create rm_dir_setter.make_editable (get_text ("rm_schema_dir_text"), agent :STRING do Result := rm_schema_directory end,
-				Void, Void, Void, 0, 0)
-			rm_dir_setter.set_post_setting_agent (agent on_rm_schema_dir_browse)
+			create rm_dir_setter.make (get_text ("rm_schema_dir_text"), agent :STRING do Result := rm_schema_directory end, 0, 0)
+			rm_dir_setter.set_post_select_agent (agent on_rm_schema_dir_browse)
 			ev_root_container.extend (rm_dir_setter.ev_root_container)
 			ev_root_container.disable_item_expand (rm_dir_setter.ev_root_container)
 			gui_controls.extend (rm_dir_setter)
@@ -139,7 +138,7 @@ feature -- Commands
 	enable_edit
 			-- enable editing
 		do
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do if an_item.can_edit then an_item.enable_edit end end)
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do if not an_item.is_readonly then an_item.enable_active end end)
 		end
 
 feature -- Events

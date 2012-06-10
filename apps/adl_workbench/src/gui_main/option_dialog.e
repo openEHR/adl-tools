@@ -71,7 +71,7 @@ feature {NONE} -- Initialization
 			compiler_settings_frame_ctl.add_row (False)
 
 			-- Error reporting level combo			
-			create parser_error_reporting_level_combo_box.make_editable (get_text ("error_reporting_level_text"),
+			create parser_error_reporting_level_combo_box.make_active (get_text ("error_reporting_level_text"),
 				agent :STRING do Result := error_type_name_table.item (error_reporting_level) end,
 				error_type_names, agent (a_val: STRING) do  end,
 				Void, Void, 0, 100)
@@ -79,7 +79,7 @@ feature {NONE} -- Initialization
 			gui_controls.extend (parser_error_reporting_level_combo_box)
 
 			-- ADL save version
-			create adl_save_version_combo_box.make_editable (get_text ("adl_serialisation_level_text"),
+			create adl_save_version_combo_box.make_active (get_text ("adl_serialisation_level_text"),
 				agent adl_version_for_flat_output, adl_versions,
 				agent (a_val: STRING) do  end,
 				Void, Void, 0, 0)
@@ -242,7 +242,7 @@ feature -- Commands
 	enable_edit
 			-- enable editing
 		do
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do if an_item.can_edit then an_item.enable_edit end end)
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do if not an_item.is_readonly then an_item.enable_active end end)
 		end
 
 feature {NONE} -- Implementation

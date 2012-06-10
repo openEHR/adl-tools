@@ -2,7 +2,8 @@ note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Visual control for a LIST [STRING] data source that outputs to an EV_COMBO_BOX.
-				 Visual control structure is a combo-box with a title, in-place editing and deletion, 
+				 Visual control structure is a combo-box with a title, in-place editing and deletion.
+				 Designed for selecting various values of a list or hash, not for editing. 
 				 
 								   Title
 						+-------------------------+-+
@@ -32,9 +33,11 @@ class GUI_COMBO_CONTROL
 inherit
 	GUI_TITLED_DATA_CONTROL
 		rename
-			make as make_data_control, make_editable as make_editable_data_control
+			make as make_data_control
+		export
+			{NONE} make_active
 		redefine
-			data_source_agent, enable_edit, disable_edit
+			data_source_agent, enable_active, disable_active
 		end
 
 create
@@ -43,11 +46,12 @@ create
 feature -- Initialisation
 
 	make (a_title: STRING; a_data_source_agent: like data_source_agent;
-			min_height, min_width: INTEGER; use_hbox_container: BOOLEAN)
+			min_height, min_width: INTEGER; arrange_horizontally: BOOLEAN)
 		do
-			make_data_control (a_title, a_data_source_agent, min_height, min_width, use_hbox_container, False)
+			make_data_control (a_title, a_data_source_agent, min_height, min_width, arrange_horizontally, False)
 			ev_root_container.disable_item_expand (ev_data_control)
 			ev_data_control.select_actions.extend (agent propagate_select_action)
+			enable_active
 		end
 
 feature -- Access
@@ -58,14 +62,14 @@ feature -- Access
 
 feature -- Commands
 
-	enable_edit
+	enable_active
 			-- enable editing
 		do
 			precursor
 			ev_data_control.enable_edit
 		end
 
-	disable_edit
+	disable_active
 			-- disable editing
 		do
 			precursor

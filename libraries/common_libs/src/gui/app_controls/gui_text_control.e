@@ -25,9 +25,9 @@ deferred class GUI_TEXT_CONTROL
 inherit
 	GUI_TITLED_DATA_CONTROL
 		rename
-			make as make_data_control, make_editable as make_editable_data_control
+			make as make_data_control, make_active as make_active_data_control
 		redefine
-			data_source_agent, data_source_setter_agent, enable_edit, disable_edit
+			data_source_agent, data_source_setter_agent, enable_active, disable_active
 		end
 
 feature -- Initialisation
@@ -39,16 +39,17 @@ feature -- Initialisation
 			ev_data_control.focus_in_actions.extend (agent on_select_all)
 		end
 
-	make_editable (a_title: STRING; a_data_source_agent: like data_source_agent;
+	make_active (a_title: STRING; a_data_source_agent: like data_source_agent;
 			a_data_source_setter_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
 			an_undo_redo_chain: like undo_redo_chain;
 			min_height, min_width: INTEGER; use_hbox_container: BOOLEAN; allow_expansion: BOOLEAN)
 		do
-			make_editable_data_control (a_title,
+			make_active_data_control (a_title,
 				a_data_source_agent, a_data_source_setter_agent, a_data_source_remove_agent,
 				an_undo_redo_chain, min_height, min_width, use_hbox_container, allow_expansion)
 			ev_data_control.focus_in_actions.extend (agent on_select_all)
+			ev_data_control.focus_out_actions.extend (agent process_edit)
 		end
 
 feature -- Access
@@ -70,22 +71,18 @@ feature -- Access
 
 feature -- Commands
 
-	enable_edit
+	enable_active
 			-- enable editing
 		do
 			precursor
 			ev_data_control.enable_edit
-			if attached data_source_setter_agent and attached data_source_remove_agent then
-				ev_data_control.focus_out_actions.extend (agent process_edit)
-			end
 		end
 
-	disable_edit
+	disable_active
 			-- disable editing
 		do
 			precursor
 			ev_data_control.disable_edit
-			ev_data_control.focus_out_actions.wipe_out
 		end
 
 feature -- Commands

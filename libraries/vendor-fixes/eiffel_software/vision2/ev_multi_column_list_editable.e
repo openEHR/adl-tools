@@ -61,6 +61,11 @@ feature -- Status report
 			Result := all_rows_editable or else editable_rows.has (i)
 		end
 
+	initialised: BOOLEAN
+		do
+			Result := attached relative_window
+		end
+
 feature -- Element Change
 
 	extend (v: like item)
@@ -100,6 +105,8 @@ feature -- Status setting
 
 	set_column_editable (a_flag: BOOLEAN; i: INTEGER)
 			-- Make column at index 'i' editable according to 'a_flag'.
+		require
+			initialised: initialised
 		do
 			if a_flag then
 				if not editable_columns.has (i) then
@@ -124,6 +131,7 @@ feature -- Status setting
 			-- Make every column editable.
 		require
 			has_columns: column_count > 0
+			initialised: initialised
 		local
 			i: INTEGER
 		do

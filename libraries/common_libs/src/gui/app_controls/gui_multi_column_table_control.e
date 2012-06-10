@@ -30,13 +30,13 @@ class GUI_MULTI_COLUMN_TABLE_CONTROL
 inherit
 	GUI_EV_MLIST_CONTROL
 		rename
-			make as make_mlist, make_editable as make_editable_mlist
+			make as make_mlist, make_active as make_active_mlist
 		redefine
 			data_source_agent, data_source_setter_agent, data_source_remove_agent, set_columns_editable
 		end
 
 create
-	make, make_editable
+	make, make_active
 
 feature -- Initialisation
 
@@ -47,9 +47,11 @@ feature -- Initialisation
 		do
 			make_mlist ("", a_data_source_agent, min_height, min_width, False, a_header_strings_agent)
 			data_row_agt := a_data_row_agt
+		ensure
+			not is_readonly
 		end
 
-	make_editable (a_data_source_agent: like data_source_agent;
+	make_active (a_data_source_agent: like data_source_agent;
 			a_data_source_create_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
 			a_data_source_modify_agent: like data_source_modify_agent;
@@ -58,11 +60,13 @@ feature -- Initialisation
 			a_header_strings_agent: like header_strings_agent;
 			a_data_row_agt: like data_row_agt)
 		do
-			make_editable_mlist ("",
+			make_active_mlist ("",
 				a_data_source_agent, a_data_source_create_agent, a_data_source_remove_agent, an_undo_redo_chain,
 				min_height, min_width, False, a_header_strings_agent)
 			data_source_modify_agent := a_data_source_modify_agent
 			data_row_agt := a_data_row_agt
+		ensure
+			not is_readonly
 		end
 
 feature -- Access
@@ -81,8 +85,6 @@ feature -- Access
 
 	data_row_agt: FUNCTION [ANY, TUPLE [key: STRING], ARRAYED_LIST [STRING_32]]
 			-- agent to generate a data row, taking a key from `data_source' as argument
-
-feature -- Commands
 
 feature {NONE} -- Implementation
 
@@ -170,9 +172,12 @@ feature {NONE} -- Implementation
 		end
 
 	set_columns_editable
+			-- set columns editable - can only do this when when populated
 		do
 			precursor
-			ev_data_control.set_column_editable (False, 1)
+			if is_active then
+				ev_data_control.set_column_editable (False, 1)
+			end
 		end
 
 end

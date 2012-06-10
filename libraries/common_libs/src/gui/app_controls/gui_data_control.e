@@ -1,7 +1,7 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-				 General model of a primitive data control, consisting of a data source, visual control, 
+				 General model of a primitive data control, consisting of a data source, a visual control, a title,
 				 routines for populate, clear, and agents for editing.
 				 ]"
 	keywords:    "UI, ADL"
@@ -56,11 +56,11 @@ feature -- Access
 
 feature -- Status Report
 
-	can_edit: BOOLEAN
-			-- True if this control is capable of editing
+	is_readonly: BOOLEAN
+			-- True if user interaction of this control is not allowed
 
-	edit_enabled: BOOLEAN
-			-- True if editing current enabled
+	is_active: BOOLEAN
+			-- True if `ev_data_control' enabled for user interaction
 
 feature -- Modification
 
@@ -84,20 +84,22 @@ feature -- Commands
 		deferred
 		end
 
-	enable_edit
+	enable_active
 			-- enable editing
 		require
-			can_edit
+			not is_readonly
 		do
-			edit_enabled := True
+			ev_data_control.enable_sensitive
+			is_active := True
 		end
 
-	disable_edit
+	disable_active
 			-- disable editing
 		require
-			can_edit
+			not is_readonly
 		do
-			edit_enabled := False
+			ev_data_control.disable_sensitive
+			is_active := False
 		end
 
 feature {NONE} -- Implementation
@@ -107,6 +109,9 @@ feature {NONE} -- Implementation
 		end
 
 	linked_data_controls: detachable ARRAYED_LIST [GUI_DATA_CONTROL]
+
+invariant
+	is_readonly implies not ev_data_control.is_sensitive
 
 end
 

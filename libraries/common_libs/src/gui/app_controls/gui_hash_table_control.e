@@ -37,7 +37,7 @@ inherit
 		end
 
 create
-	make, make_editable
+	make, make_active
 
 feature -- Access
 
@@ -115,7 +115,7 @@ feature {NONE} -- Implementation
 			new_row.extend (new_key)
 			new_row.extend (new_val)
 			ev_data_control.extend (new_row)
-			new_row.pointer_button_press_actions.force_extend (agent mlist_handler (ev_data_control, ?, ?, ?, ?, ?, ?, ?, ?))
+	--		new_row.pointer_button_press_actions.force_extend (agent mlist_handler (ev_data_control, ?, ?, ?, ?, ?, ?, ?, ?))
 
 			data_source_setter_agent.call ([new_key, new_val])
 			undo_redo_chain.add_link (
@@ -138,26 +138,6 @@ feature {NONE} -- Implementation
 				agent data_source_setter_agent.call ([old_key, old_val]), agent do_populate,  -- undo
 				agent data_source_remove_agent.call ([old_key]), agent do_populate -- redo
 			)
-		end
-
-	uniqueness_counter: INTEGER
-		do
-			Result := uniqueness_counter_cell.item
-		end
-
-	increment_uniqueness_counter
-		do
-			uniqueness_counter_cell.put (uniqueness_counter + 1)
-		end
-
-	uniqueness_counter_cell: CELL[INTEGER]
-		local
-			rnd: RANDOM
-			dt: DATE_TIME
-		once
-			create dt.make_now
-			create rnd.set_seed (dt.seconds)
-			create Result.put (rnd.next_random (1))
 		end
 
 end

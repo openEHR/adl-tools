@@ -33,28 +33,42 @@ class GUI_COMBO_TEXT_SELECTOR_CONTROL
 inherit
 	GUI_TEXT_CONTROL
 		rename
-			make as make_text_control, make_editable as make_editable_text_control
+			make as make_text_control, make_active as make_active_text_control, make_readonly as make_readonly_text_control
 		redefine
-			enable_edit, disable_edit, data_source_setter_agent, do_populate
+			data_source_setter_agent, do_populate
 		end
 
 create
-	make, make_editable
+	make, make_active, make_readonly
 
 feature -- Initialisation
 
 	make (a_title: STRING; a_data_source: like data_source_agent;
-			a_value_set: LIST [STRING];
-			min_height, min_width: INTEGER)
+			a_value_set: LIST [STRING]; min_height, min_width: INTEGER)
+		require
+			a_value_set.object_comparison
 		do
-			make_data_control (a_title, a_data_source, min_height, min_width, True, False)
+			make_text_control (a_title, a_data_source, min_height, min_width, True, False)
 			value_set := a_value_set
-			value_set.compare_objects
 			ev_root_container.disable_item_expand (ev_data_control)
 			ev_data_control.select_actions.extend (agent propagate_select_action)
+		ensure
+			not is_readonly
 		end
 
-	make_editable (a_title: STRING; a_data_source: like data_source_agent;
+	make_readonly (a_title: STRING; a_data_source: like data_source_agent;
+			a_value_set: LIST [STRING]; min_height, min_width: INTEGER)
+		require
+			a_value_set.object_comparison
+		do
+			make_readonly_text_control (a_title, a_data_source, min_height, min_width, True, False)
+			value_set := a_value_set
+			ev_root_container.disable_item_expand (ev_data_control)
+		ensure
+			is_readonly
+		end
+
+	make_active (a_title: STRING; a_data_source: like data_source_agent;
 			a_value_set: LIST [STRING];
 			a_data_source_setter_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
@@ -63,14 +77,16 @@ feature -- Initialisation
 		require
 			a_value_set.object_comparison
 		do
-			make_editable_data_control (a_title,
+			make_active_text_control (a_title,
 				a_data_source, a_data_source_setter_agent, a_data_source_remove_agent,
 				an_undo_redo_chain, min_height, min_width, True, False)
 			value_set := a_value_set
 			ev_root_container.disable_item_expand (ev_data_control)
 			ev_data_control.select_actions.extend (agent propagate_select_action)
 			ev_data_control.select_actions.extend (agent process_edit)
-			disable_edit
+			disable_active
+		ensure
+			not is_readonly
 		end
 
 feature -- Access
@@ -85,22 +101,6 @@ feature -- Access
 
 feature -- Commands
 
-	enable_edit
-			-- enable editing
-		do
-			precursor
-			ev_data_control.enable_edit
-			ev_data_control.enable_sensitive
-		end
-
-	disable_edit
-			-- disable editing
-		do
-			precursor
-			ev_data_control.disable_edit
-			ev_data_control.disable_sensitive
-		end
-
 	do_populate
 			-- populate content
 		local
@@ -108,7 +108,7 @@ feature -- Commands
 			li2: EV_LIST_ITEM
 		do
 			ev_data_control.select_actions.block
-			if not edit_enabled then
+			if not is_active then
 				ev_data_control.enable_sensitive
 			end
 
@@ -137,7 +137,7 @@ feature -- Commands
 				li2.enable_select
 			end
 			ev_data_control.select_actions.resume
-			if not edit_enabled then
+			if not is_active then
 				ev_data_control.disable_sensitive
 			end
 		end

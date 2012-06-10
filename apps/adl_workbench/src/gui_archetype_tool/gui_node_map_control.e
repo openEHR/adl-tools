@@ -93,7 +93,7 @@ feature -- Initialisation
 			view_detail_frame_ctl.extend (toggle_button_ctl.ev_data_control, False)
 
 			-- include codes checkbox
-			create add_codes_checkbox_ctl.make_edit (get_text ("domain_view_add_codes_text"), Void,
+			create add_codes_checkbox_ctl.make_active (get_text ("domain_view_add_codes_text"), Void,
 				agent :BOOLEAN do Result := show_codes end, agent set_show_codes)
 			view_detail_frame_ctl.extend (add_codes_checkbox_ctl.ev_data_control, False)
 

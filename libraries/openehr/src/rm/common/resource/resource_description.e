@@ -201,7 +201,7 @@ feature -- Modification
 		do
 			other_contributors.prune_all (a_contributor)
 		ensure
-			Other_contributor_set: not other_contributors.has(a_contributor)
+			Other_contributor_set: not other_contributors.has (a_contributor)
 		end
 
 	clear_other_contributors

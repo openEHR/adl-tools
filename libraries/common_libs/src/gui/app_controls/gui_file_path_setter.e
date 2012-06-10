@@ -31,7 +31,7 @@ class GUI_FILE_PATH_SETTER
 inherit
 	GUI_SINGLE_LINE_TEXT_CONTROL
 		rename
-			make as make_text_control, make_editable as make_editable_text_control
+			make as make_text_control, make_active as make_active_text_control, make_readonly as make_readonly_text_control
 		end
 
 	KL_SHARED_FILE_SYSTEM
@@ -40,7 +40,7 @@ inherit
 		end
 
 create
-	make, make_editable
+	make, make_active, make_readonly
 
 feature -- Initialisation
 
@@ -48,16 +48,27 @@ feature -- Initialisation
 		do
 			make_text_control (a_title, a_data_source, min_height, min_width, True, True)
 			initialise_browse_button
+		ensure
+			not is_readonly
 		end
 
-	make_editable (a_title: STRING; a_data_source: like data_source_agent;
+	make_readonly (a_title: STRING; a_data_source: like data_source_agent; min_height, min_width: INTEGER)
+		do
+			make_readonly_text_control (a_title, a_data_source, min_height, min_width, True, True)
+		ensure
+			is_readonly
+		end
+
+	make_active (a_title: STRING; a_data_source: like data_source_agent;
 			a_data_source_setter_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
 			an_undo_redo_chain: like undo_redo_chain;
 			min_height, min_width: INTEGER)
 		do
-			make_editable_text_control (a_title, a_data_source, a_data_source_setter_agent, a_data_source_remove_agent, an_undo_redo_chain, min_height, min_width, True, True)
+			make_active_text_control (a_title, a_data_source, a_data_source_setter_agent, a_data_source_remove_agent, an_undo_redo_chain, min_height, min_width, True, True)
 			initialise_browse_button
+		ensure
+			not is_readonly
 		end
 
 feature -- Access
@@ -110,7 +121,7 @@ feature {NONE} -- Implmentation
 			dialog: EV_FILE_OPEN_DIALOG
 			a_file: RAW_FILE
 			error_dialog: EV_INFORMATION_DIALOG
-			init_dirname: STRING
+			init_dirname, default_result: STRING
 		do
 			create dialog
 
@@ -119,6 +130,9 @@ feature {NONE} -- Implmentation
 				if (create {DIRECTORY}.make (init_dirname)).exists then
 					dialog.set_start_directory (init_dirname)
 				end
+				default_result := init_value
+			else
+				create default_result.make_empty
 			end
 
 			from
@@ -128,7 +142,7 @@ feature {NONE} -- Implmentation
 				dialog.show_modal_to_window (a_parent_window)
 
 				if dialog.selected_button = Void or else dialog.selected_button.is_equal (get_text ("cancel_button_text")) then
-					Result := init_value
+					Result := default_result
 				else
 					if not dialog.file_name.is_empty then
 						create a_file.make (dialog.file_name.as_string_8)

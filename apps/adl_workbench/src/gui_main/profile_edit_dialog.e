@@ -80,22 +80,19 @@ feature {NONE} -- Initialization
 			extend (ev_root_container)
 
 			-- ============ profile name text control ============
-			create profile_name_ctl.make_editable (get_text ("profile_name_text"), agent :STRING do Result := profile_name end,
-				Void, Void, Void, 0, 600, True, True)
+			create profile_name_ctl.make (get_text ("profile_name_text"), agent :STRING do Result := profile_name end, 0, 600, True, True)
 			ev_root_container.extend (profile_name_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (profile_name_ctl.ev_root_container)
 			gui_controls.extend (profile_name_ctl)
 
 			-- ============ Reference path ============
-			create ref_dir_setter.make_editable (get_text ("ref_repo_dir_text"), agent :STRING do Result := ref_dir end,
-				Void, Void, Void, 0, 0)
+			create ref_dir_setter.make (get_text ("ref_repo_dir_text"), agent :STRING do Result := ref_dir end, 0, 0)
 			ev_root_container.extend (ref_dir_setter.ev_root_container)
 			ev_root_container.disable_item_expand (ref_dir_setter.ev_root_container)
 			gui_controls.extend (ref_dir_setter)
 
 			-- ============ Work path ============
-			create work_dir_setter.make_editable (get_text ("work_repo_dir_text"), agent :STRING do Result := work_dir end,
-				Void, Void, Void, 0, 0)
+			create work_dir_setter.make (get_text ("work_repo_dir_text"), agent :STRING do Result := work_dir end, 0, 0)
 			work_dir_setter.set_default_directory_agent (agent :STRING do Result := ref_dir end)
 			ev_root_container.extend (work_dir_setter.ev_root_container)
 			ev_root_container.disable_item_expand (work_dir_setter.ev_root_container)
@@ -237,7 +234,7 @@ feature -- Commands
 	enable_edit
 			-- enable editing
 		do
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do if an_item.can_edit then an_item.enable_edit end end)
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do if not an_item.is_readonly then an_item.enable_active end end)
 		end
 
 feature {NONE} -- Implementation
