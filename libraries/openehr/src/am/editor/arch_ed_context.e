@@ -45,7 +45,7 @@ feature {NONE} -- Implementation
 	populate_definition
 			-- populate `definition_context'
 		local
-			a_c_iterator: C_VISITOR_ITERATOR
+			a_c_iterator: OG_CONTENT_ITERATOR
 			c_ed_context_builder: C_OBJECT_ED_CONTEXT_BUILDER
 		do
 			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation

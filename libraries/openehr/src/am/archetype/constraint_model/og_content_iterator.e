@@ -12,7 +12,7 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class C_VISITOR_ITERATOR
+class OG_CONTENT_ITERATOR
 
 create
 	make

@@ -6,6 +6,7 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWBPR"
 	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safe:	 "yes, dirty"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -164,7 +165,7 @@ feature -- Commands
 	repopulate
 			-- repopulate and/or refresh visual appearance if diff/flat view has changed or RM icons setting changed
 		local
-			a_c_iterator: C_VISITOR_ITERATOR
+			a_c_iterator: OG_CONTENT_ITERATOR
 			c_node_map_builder: C_GUI_NODE_MAP_BUILDER
 		do
 			-- populate peripheral controls
@@ -250,7 +251,7 @@ feature {NONE} -- Implementation
 
 	view_detail_frame_ctl, view_rm_frame_ctl: GUI_FRAME_CONTROL
 
-	rm_schema: BMM_SCHEMA
+	rm_schema: detachable BMM_SCHEMA
 
 	gui_node_map: HASH_TABLE [EV_GRID_ROW, ARCHETYPE_CONSTRAINT]
 			-- xref table from archetype definition nodes to GUI nodes (note that some C_X
@@ -266,7 +267,7 @@ feature {NONE} -- Implementation
 			-- build definition / ontology cross reference tables used for validation and
 			-- other purposes
 		local
-			a_c_iterator: C_VISITOR_ITERATOR
+			a_c_iterator: OG_CONTENT_ITERATOR
 			c_node_map_builder: C_GUI_NODE_MAP_BUILDER
 			i: INTEGER
 		do

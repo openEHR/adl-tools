@@ -328,7 +328,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 			-- build definition / ontology cross reference tables used for validation and
 			-- other purposes
 		local
-			a_c_iterator: C_VISITOR_ITERATOR
+			a_c_iterator: OG_CONTENT_ITERATOR
 			definition_xref_builder: C_XREF_BUILDER
 			expr_iterator: EXPR_VISITOR_ITERATOR
 			invariants_xref_builder: EXPR_XREF_BUILDER
@@ -363,7 +363,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 		require
 			is_specialised
 		local
-			a_c_iterator: C_VISITOR_ITERATOR
+			a_c_iterator: OG_CONTENT_ITERATOR
 			rollup_builder: C_ROLLUP_BUILDER
 		do
 			create rollup_builder

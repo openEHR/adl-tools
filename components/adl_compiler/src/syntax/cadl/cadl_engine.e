@@ -113,7 +113,7 @@ feature -- Commands
 			Language_valid: an_archetype.has_language (a_lang)
 		local
 			a_c_serialiser: C_SERIALISER
-			a_c_iterator: C_VISITOR_ITERATOR
+			a_c_iterator: OG_CONTENT_ITERATOR
 		do
 			a_c_serialiser := c_serialiser_for_format (a_format)
 			a_c_serialiser.initialise (an_archetype, a_lang)
