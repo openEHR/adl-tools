@@ -52,6 +52,8 @@ feature -- Initialisation
 			-- create widgets
 			create ev_root_container
 			ev_root_container.set_data (Current)
+			ev_root_container.set_padding (Default_padding_width)
+			ev_root_container.set_border_width (Default_border_width)
 
 			-- EV_GRID
 			create ev_grid.make
@@ -64,19 +66,13 @@ feature -- Initialisation
 			create ev_view_controls_vbox
 			ev_root_container.extend (ev_view_controls_vbox)
 			ev_root_container.disable_item_expand (ev_view_controls_vbox)
-			ev_view_controls_vbox.set_minimum_width (115)
-			ev_view_controls_vbox.set_minimum_height (170)
+	--		ev_view_controls_vbox.set_minimum_width (115)
+	--		ev_view_controls_vbox.set_minimum_height (170)
 			ev_view_controls_vbox.set_padding (Default_padding_width)
 			ev_view_controls_vbox.set_border_width (Default_border_width)
 
-			create ev_view_label
-			ev_view_label.set_text (get_text ("view_label_text"))
-			ev_view_label.align_text_left
-			ev_view_controls_vbox.extend (ev_view_label)
-			ev_view_controls_vbox.disable_item_expand (ev_view_label)
-
 			-- tree collapse/expand control
-			create gui_treeview_control.make (create {GUI_TREE_CONTROL_GRID}.make (ev_grid))
+			create gui_treeview_control.make (get_text ("view_label_text"), create {GUI_TREE_CONTROL_GRID}.make (ev_grid))
 			ev_view_controls_vbox.extend (gui_treeview_control.ev_root_container)
 			ev_view_controls_vbox.disable_item_expand (gui_treeview_control.ev_root_container)
 
@@ -272,8 +268,6 @@ feature {NONE} -- Implementation
 	toggle_button_ctl: GUI_TOGGLE_BUTTON_CONTROL
 
 	add_codes_checkbox_ctl: GUI_CHECK_BOX_CONTROL
-
-	ev_view_label: EV_LABEL
 
 	ev_view_rm_attrs_on_cb, ev_view_rm_use_icons_cb: EV_CHECK_BUTTON
 

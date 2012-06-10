@@ -44,74 +44,57 @@ feature -- Initialisation
 			create ev_root_container
 			ev_root_container.set_data (Current)
 
+			-- EV_TREE
 			create ev_property_tree
-			create ev_view_controls_vbox
-			create ev_expand_button
-			create ev_expand_one_button
-			create ev_collapse_one_button
-
-			create ev_closure_depth_spin_button
-			create ev_closure_recompute_button
-
-			create ev_cell
-			create ev_use_rm_icons_cb
-
-			-- connect widgets
 			ev_root_container.extend (ev_property_tree)
-			ev_root_container.extend (ev_view_controls_vbox)
-			ev_view_controls_vbox.extend (ev_expand_button)
-			ev_view_controls_vbox.extend (ev_expand_one_button)
-			ev_view_controls_vbox.extend (ev_collapse_one_button)
 
-			ev_view_controls_vbox.extend (ev_closure_depth_spin_button)
-			ev_view_controls_vbox.extend (ev_closure_recompute_button)
-			ev_view_controls_vbox.extend (ev_cell)
-			ev_view_controls_vbox.extend (ev_use_rm_icons_cb)
-
-			-- visual characteristics
-			ev_root_container.disable_item_expand (ev_view_controls_vbox)
-			ev_view_controls_vbox.set_minimum_width (100)
+			-- view controls VBOX
+			create ev_view_controls_vbox
+--			ev_view_controls_vbox.set_minimum_width (100)
 			ev_view_controls_vbox.set_padding (Default_padding_width)
 			ev_view_controls_vbox.set_border_width (Default_border_width)
-			ev_view_controls_vbox.disable_item_expand (ev_expand_button)
-			ev_view_controls_vbox.disable_item_expand (ev_expand_one_button)
-			ev_view_controls_vbox.disable_item_expand (ev_collapse_one_button)
-			ev_view_controls_vbox.disable_item_expand (ev_closure_depth_spin_button)
-			ev_view_controls_vbox.disable_item_expand (ev_closure_recompute_button)
+			ev_root_container.extend (ev_view_controls_vbox)
+			ev_root_container.disable_item_expand (ev_view_controls_vbox)
 
-			ev_expand_button.set_text (get_msg ("expand_collapse_complete_button_text", Void))
-			ev_expand_button.set_tooltip (get_msg ("expand_collapse_complete_tooltip", Void))
-			ev_expand_button.set_minimum_width (tree_control_panel_width)
-			ev_expand_one_button.set_text (get_msg ("expand_one_level_button_text", Void))
-			ev_expand_one_button.set_tooltip (get_msg ("expand_one_level_tooltip", Void))
-			ev_expand_one_button.set_minimum_width (tree_control_panel_width)
-			ev_collapse_one_button.set_text (get_msg ("collapse_one_level_button_text", Void))
-			ev_collapse_one_button.set_tooltip (get_msg ("collapse_one_level_tooltip", Void))
-			ev_collapse_one_button.set_minimum_width (tree_control_panel_width)
+			-- tree collapse/expand control
+			create gui_treeview_control.make (get_text ("view_label_text"), create {GUI_TREE_CONTROL_TREE}.make (ev_property_tree))
+			ev_view_controls_vbox.extend (gui_treeview_control.ev_root_container)
+			ev_view_controls_vbox.disable_item_expand (gui_treeview_control.ev_root_container)
 
+			-- closure depth control
+			create ev_closure_depth_spin_button
 			ev_closure_depth_spin_button.set_text (get_msg ("closure_depth_spin_button_text", Void))
 			ev_closure_depth_spin_button.set_tooltip (get_msg ("closure_depth_spin_button_tooltip", Void))
 			ev_closure_depth_spin_button.set_value (default_closure_depth)
+			ev_view_controls_vbox.extend (ev_closure_depth_spin_button)
+			ev_view_controls_vbox.disable_item_expand (ev_closure_depth_spin_button)
+
+			-- closure recompute button
+			create ev_closure_recompute_button
 			ev_closure_recompute_button.set_text (get_msg ("closure_depth_recompute_button_text", Void))
 			ev_closure_recompute_button.set_tooltip (get_msg ("closure_depth_recompute_button_tooltip", Void))
-			ev_cell.set_minimum_height (20)
+			ev_closure_recompute_button.select_actions.extend (agent repopulate)
+			ev_view_controls_vbox.extend (ev_closure_recompute_button)
+			ev_view_controls_vbox.disable_item_expand (ev_closure_recompute_button)
 
-			-- right hand side visibility controls
+			-- filler cell
+			create ev_cell
+			ev_cell.set_minimum_height (20)
+			ev_view_controls_vbox.extend (ev_cell)
 			ev_view_controls_vbox.disable_item_expand (ev_cell)
-			ev_view_controls_vbox.disable_item_expand (ev_use_rm_icons_cb)
+
+			-- RM icons check button
+			create ev_use_rm_icons_cb
 			ev_use_rm_icons_cb.set_text (get_msg ("use_rm_icons_button_text", Void))
 			ev_use_rm_icons_cb.set_tooltip (get_msg ("use_rm_icons_button_tooltip", Void))
+			ev_use_rm_icons_cb.select_actions.extend (agent on_ev_use_rm_icons_cb_selected)
+			ev_view_controls_vbox.extend (ev_use_rm_icons_cb)
+			ev_view_controls_vbox.disable_item_expand (ev_use_rm_icons_cb)
 
+			-- Initial visual settings
 			if use_rm_pixmaps then
 				ev_use_rm_icons_cb.enable_select
 			end
-
-			-- set events - visibility controls
-			ev_expand_button.select_actions.extend (agent on_toggle_expand_tree)
-			ev_expand_one_button.select_actions.extend (agent on_expand_tree_one_level)
-			ev_collapse_one_button.select_actions.extend (agent on_shrink_tree_one_level)
-			ev_use_rm_icons_cb.select_actions.extend (agent on_ev_use_rm_icons_cb_selected)
-			ev_closure_recompute_button.select_actions.extend (agent repopulate)
 		end
 
 feature -- Access
@@ -205,6 +188,8 @@ feature {NONE} -- Implementation
 		end
 
 	ev_property_tree: EV_TREE
+
+	gui_treeview_control: GUI_TREEVIEW_CONTROL
 
 	ev_expand_button, ev_expand_one_button, ev_collapse_one_button, ev_closure_recompute_button: EV_BUTTON
 

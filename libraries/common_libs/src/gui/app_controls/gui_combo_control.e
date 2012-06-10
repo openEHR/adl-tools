@@ -51,7 +51,7 @@ feature -- Initialisation
 			make_data_control (a_title, a_data_source_agent, min_height, min_width, arrange_horizontally, False)
 			ev_root_container.disable_item_expand (ev_data_control)
 			ev_data_control.select_actions.extend (agent propagate_select_action)
-			enable_active
+			do_enable_active
 		end
 
 feature -- Access

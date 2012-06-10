@@ -33,49 +33,70 @@ inherit
 			{NONE} all
 		end
 
+	STRING_UTILITIES
+		export
+			{NONE} all
+		end
+
 create
 	make
 
 feature -- Initialisation
 
-	make (a_tree_ctl: GUI_TREE_CONTROL_I)
+	make (a_title: detachable STRING; a_tree_ctl: GUI_TREE_CONTROL_I)
+		local
+			ev_view_label: EV_LABEL
+			ev_hbox: EV_HORIZONTAL_BOX
 		do
 			gui_tree_control := a_tree_ctl
 
 			create ev_root_container
+			ev_root_container.set_minimum_width (115)
+
+			-- add title
+			if attached a_title then
+				create ev_view_label.make_with_text (utf8_to_utf32 (a_title))
+				ev_view_label.align_text_left
+				ev_root_container.extend (ev_view_label)
+				ev_root_container.disable_item_expand (ev_view_label)
+			end
+
+			create ev_hbox
+			ev_root_container.extend (ev_hbox)
+			ev_root_container.disable_item_expand (ev_hbox)
 
 			-- collapse all button
 			create ev_collapse_button
 			ev_collapse_button.set_text ("0")
 			ev_collapse_button.set_tooltip (get_text ("collapse_complete_tooltip"))
-			ev_root_container.extend (ev_collapse_button)
 			ev_collapse_button.select_actions.extend (agent on_collapse_all)
+			ev_hbox.extend (ev_collapse_button)
 
 			-- collapse one level button
 			create ev_collapse_one_button
-			ev_root_container.extend (ev_collapse_one_button)
 			ev_collapse_one_button.set_text ("-")
 			ev_collapse_one_button.set_tooltip (get_text ("collapse_one_level_tooltip"))
 			ev_collapse_one_button.select_actions.extend (agent on_collapse_one_level)
+			ev_hbox.extend (ev_collapse_one_button)
 
 			-- expand one level button
 			create ev_expand_one_button
 			ev_expand_one_button.set_text ("+")
 			ev_expand_one_button.set_tooltip (get_text ("expand_one_level_tooltip"))
-			ev_root_container.extend (ev_expand_one_button)
 			ev_expand_one_button.select_actions.extend (agent on_expand_one_level)
+			ev_hbox.extend (ev_expand_one_button)
 
 			-- expand all button
 			create ev_expand_button
-			ev_root_container.extend (ev_expand_button)
 			ev_expand_button.set_text ("*")
 			ev_expand_button.set_tooltip (get_text ("expand_complete_tooltip"))
 			ev_expand_button.select_actions.extend (agent on_expand_all)
+			ev_hbox.extend (ev_expand_button)
 		end
 
 feature -- Access
 
-	ev_root_container: EV_HORIZONTAL_BOX
+	ev_root_container: EV_VERTICAL_BOX
 
 	gui_tree_control: GUI_TREE_CONTROL_I
 

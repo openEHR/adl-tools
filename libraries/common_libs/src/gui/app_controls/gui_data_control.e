@@ -112,16 +112,12 @@ feature {NONE} -- Implementation
 
 	do_enable_active
 			-- enable user interaction
-		require
-			not is_readonly
 		do
 			ev_data_control.enable_sensitive
 		end
 
 	do_disable_active
 			-- disable user interaction
-		require
-			not is_readonly
 		do
 			ev_data_control.disable_sensitive
 		end
