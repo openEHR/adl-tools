@@ -31,7 +31,7 @@ feature -- Access
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
 	type: BMM_TYPE_SPECIFIER
-			-- type name of this attribute from dADL schema
+			-- type of this attribute
 
 	is_mandatory: BOOLEAN
 			-- True if this propert is mandatory in its class

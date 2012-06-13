@@ -125,7 +125,7 @@ feature {NONE} -- Implementation
 						cco.attributes.forth
 					end
 				elseif attached {C_DOMAIN_TYPE} co as cdt then
-					a_class_stat_accum.add_rm_attribute_occurrences (cdt.report_rm_attributes)
+					a_class_stat_accum.add_rm_attribute_occurrences (cdt.constrained_rm_attributes)
 				end
 				stat_accums.do_all (agent (a_stat_accum: RM_CLASS_STATISTICS) do stats.add_rm_class_stats (a_stat_accum) end)
 			end

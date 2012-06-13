@@ -27,9 +27,9 @@ create
 
 feature -- Initialisation
 
-	make (a_grid: EV_GRID_KBD_MOUSE)
+	make (a_gui_grid: GUI_EV_GRID)
 		do
-			ev_grid := a_grid
+			ev_grid := a_gui_grid.ev_grid
 		end
 
 feature -- Access

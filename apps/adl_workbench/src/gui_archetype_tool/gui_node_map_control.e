@@ -59,23 +59,17 @@ feature -- Initialisation
 			ev_root_container.set_border_width (Default_border_width)
 
 			-- EV_GRID
-			create ev_grid.make
-			ev_grid.enable_tree
-			ev_grid.disable_row_height_fixed
-			ev_grid.row_expand_actions.extend (agent (a_row: EV_GRID_ROW) do ev_grid.resize_columns_to_content (Default_grid_expansion_factor) end)
-			ev_grid.row_collapse_actions.extend (agent (a_row: EV_GRID_ROW) do ev_grid.resize_columns_to_content (Default_grid_expansion_factor) end)
-			ev_root_container.extend (ev_grid)
+			create gui_grid.make (True, False, True)
+			ev_root_container.extend (gui_grid.ev_grid)
 
 			create ev_view_controls_vbox
 			ev_root_container.extend (ev_view_controls_vbox)
 			ev_root_container.disable_item_expand (ev_view_controls_vbox)
-	--		ev_view_controls_vbox.set_minimum_width (115)
-	--		ev_view_controls_vbox.set_minimum_height (170)
 			ev_view_controls_vbox.set_padding (Default_padding_width)
 			ev_view_controls_vbox.set_border_width (Default_border_width)
 
 			-- tree collapse/expand control
-			create gui_treeview_control.make (get_text ("view_label_text"), create {GUI_TREE_CONTROL_GRID}.make (ev_grid))
+			create gui_treeview_control.make (get_text ("view_label_text"), create {GUI_TREE_CONTROL_GRID}.make (gui_grid))
 			ev_view_controls_vbox.extend (gui_treeview_control.ev_root_container)
 			ev_view_controls_vbox.disable_item_expand (gui_treeview_control.ev_root_container)
 
@@ -106,7 +100,7 @@ feature -- Initialisation
 			ev_view_controls_vbox.extend (view_rm_frame_ctl.ev_root_container)
 			ev_view_controls_vbox.disable_item_expand (view_rm_frame_ctl.ev_root_container)
 
-			-- add RM into tree check button
+			-- add RM attributes check button
 			create view_rm_attrs_on_checkbox_ctl.make_active (get_text ("show_rm_properties_button_text"),
 				get_text ("show_rm_properties_tooltip"),
 				agent :BOOLEAN do Result := show_reference_model_view end, agent update_show_reference_model_view)
@@ -165,7 +159,7 @@ feature -- Commands
 	repopulate
 			-- repopulate and/or refresh visual appearance if diff/flat view has changed or RM icons setting changed
 		local
-			a_c_iterator: OG_CONTENT_ITERATOR
+			a_c_iterator: C_OBJECT_VISITOR_ITERATOR
 			c_node_map_builder: C_GUI_NODE_MAP_BUILDER
 		do
 			-- populate peripheral controls
@@ -173,22 +167,13 @@ feature -- Commands
 
 			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
 			create c_node_map_builder
-			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, ev_grid,
-				show_technical_view, True, show_codes, gui_node_map, code_select_action_agent)
-			create a_c_iterator.make (source_archetype.definition.representation, c_node_map_builder)
+			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, gui_grid,
+				show_technical_view, True, show_codes, node_grid_row_map, code_select_action_agent)
+			create a_c_iterator.make (source_archetype.definition, c_node_map_builder,
+				differential_view, show_reference_model_view_changed, rm_schema)
 			a_c_iterator.do_all
 
-			-- update reference mode nodes
-			if show_reference_model_view_changed then
-				if show_reference_model_view then
-					gui_treeview_control.ev_tree_do_all (agent grid_row_add_rm_attributes)
-				else
-					gui_treeview_control.ev_tree_do_all (agent grid_row_remove_rm_attributes)
-				end
-				show_reference_model_view_changed := False
-			end
-
-			ev_grid.resize_columns_to_content (Default_grid_expansion_factor)
+			gui_grid.resize_columns_to_content
 		end
 
 feature {NONE} -- Events
@@ -237,7 +222,7 @@ feature {NONE} -- Events
 
 feature {NONE} -- Implementation
 
-	ev_grid: EV_GRID_KBD_MOUSE
+	gui_grid: GUI_EV_GRID
 
 	gui_controls: ARRAYED_LIST [GUI_DATA_CONTROL]
 
@@ -253,13 +238,12 @@ feature {NONE} -- Implementation
 
 	rm_schema: detachable BMM_SCHEMA
 
-	gui_node_map: HASH_TABLE [EV_GRID_ROW, ARCHETYPE_CONSTRAINT]
-			-- xref table from archetype definition nodes to GUI nodes (note that some C_X
-			-- nodes have child GUI nodes; the visitor takes care of the details)
+	node_grid_row_map: HASH_TABLE [EV_GRID_ROW, ARCHETYPE_CONSTRAINT]
+			-- xref table from archetype definition nodes to GUI grid rows
 
 	do_clear
 		do
-			ev_grid.wipe_out
+			gui_grid.wipe_out
 			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.clear end)
 		end
 
@@ -267,7 +251,7 @@ feature {NONE} -- Implementation
 			-- build definition / ontology cross reference tables used for validation and
 			-- other purposes
 		local
-			a_c_iterator: OG_CONTENT_ITERATOR
+			a_c_iterator: C_OBJECT_VISITOR_ITERATOR
 			c_node_map_builder: C_GUI_NODE_MAP_BUILDER
 			i: INTEGER
 		do
@@ -275,20 +259,16 @@ feature {NONE} -- Implementation
 			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.populate end)
 
 			-- populate grid control
-			create gui_node_map.make (0)
+			create node_grid_row_map.make (0)
 
 			rm_schema := source.rm_schema
 
 			create c_node_map_builder
-			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, ev_grid,
-				show_technical_view, False, show_codes, gui_node_map, code_select_action_agent)
-			create a_c_iterator.make (source_archetype.definition.representation, c_node_map_builder)
+			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, gui_grid,
+				show_technical_view, False, show_codes, node_grid_row_map, code_select_action_agent)
+			create a_c_iterator.make (source_archetype.definition, c_node_map_builder,
+				differential_view, show_reference_model_view, rm_schema)
 			a_c_iterator.do_all
-
-			-- add RM attributes if in RM mode
-			if show_reference_model_view then
-				gui_treeview_control.ev_tree_do_all (agent grid_row_add_rm_attributes)
-			end
 
 			-- populate from invariants
 			populate_invariants
@@ -308,82 +288,10 @@ feature {NONE} -- Implementation
 				roll_up_to_specialisation_level
 			end
 
-			-- grid column titles
-			if ev_grid.row_count > 0 then
-				from i := 1 until i > ev_grid.column_count loop
-					ev_grid.column (i).set_title (Node_grid_col_names.item (i))
-					i := i + 1
-				end
-			end
-			ev_grid.resize_columns_to_content (Default_grid_expansion_factor)
+			gui_grid.set_column_titles (Node_grid_col_names.linear_representation)
 
 			-- Initial settings
 			show_reference_model_view_changed := False
-		end
-
-	grid_row_add_rm_attributes (an_ev_grid_row: attached EV_GRID_ROW)
-		local
-			props: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
-			rm_attr_sub_row: EV_GRID_ROW
-			gli: EV_GRID_LABEL_ITEM
-		do
-			if attached {C_COMPLEX_OBJECT} an_ev_grid_row.data as c_c_o then
-				if rm_schema.has_class_definition (c_c_o.rm_type_name) then
-					if differential_view then
-						props := rm_schema.class_definition (c_c_o.rm_type_name).properties
-					else
-						props := rm_schema.class_definition (c_c_o.rm_type_name).flat_properties
-					end
-					from props.start until props.off loop
-						if not c_c_o.has_attribute (props.key_for_iteration) then
-							an_ev_grid_row.insert_subrow (an_ev_grid_row.subrow_count + 1)
-							rm_attr_sub_row := an_ev_grid_row.subrow (an_ev_grid_row.subrow_count)
-							rm_attr_sub_row.set_data (props.item_for_iteration)
-
-							-- RM col
-							create gli.make_with_text (utf8_to_utf32 (props.key_for_iteration + ": " + props.item_for_iteration.type.as_type_string))
-							gli.set_pixmap (get_icon_pixmap ("rm/generic/" + props.item_for_iteration.multiplicity_key_string))
-							gli.set_foreground_color (rm_attribute_color)
-							rm_attr_sub_row.set_item (Node_grid_col_rm_name, gli)
-
-							-- existence col
-							create gli.make_with_text (props.item_for_iteration.existence.as_string)
-							gli.set_foreground_color (rm_attribute_color)
-							rm_attr_sub_row.set_item (Node_grid_col_existence, gli)
-
-							-- card/occ col
-							if attached {BMM_CONTAINER_PROPERTY} props.item_for_iteration as bmm_cont_prop then
-								create gli.make_with_text (bmm_cont_prop.cardinality.as_string)
-								gli.set_foreground_color (rm_attribute_color)
-								rm_attr_sub_row.set_item (Node_grid_col_card_occ, gli)
-							end
-						end
-						props.forth
-					end
-				end
-			end
-		end
-
-	grid_row_remove_rm_attributes (an_ev_grid_row: attached EV_GRID_ROW)
-		local
-			i: INTEGER
-			sub_row: EV_GRID_ROW
-			remove_list: SORTED_TWO_WAY_LIST [INTEGER]
-		do
-			if attached {C_COMPLEX_OBJECT} an_ev_grid_row.data as c_c_o then
-				create remove_list.make
-				from i := 1 until i > an_ev_grid_row.subrow_count loop
-					sub_row := an_ev_grid_row.subrow (i)
-					if attached {BMM_PROPERTY_DEFINITION} sub_row.data as a_bmm_prop then
-						remove_list.extend (sub_row.index)
-					end
-					i := i + 1
-				end
-				from remove_list.finish	until remove_list.off loop
-					ev_grid.remove_row (remove_list.item)
-					remove_list.back
-				end
-			end
 		end
 
 	roll_up_to_specialisation_level

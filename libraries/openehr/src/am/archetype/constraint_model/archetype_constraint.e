@@ -165,6 +165,18 @@ feature {ARCHETYPE_CONSTRAINT} -- Modification
 			parent := a_node
 		end
 
+feature -- Visitor
+
+	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
+			-- perform action at start of block for this node
+		deferred
+		end
+
+	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
+			-- perform action at end of block for this node
+		deferred
+		end
+
 feature -- Representation
 
 	representation: attached OG_ITEM

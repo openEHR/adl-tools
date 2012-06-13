@@ -1,10 +1,10 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Tree iterator for archetype nodes"
+	description: "Tree iterator for OG structures that deploys a visitor on the OG node content property."
 	keywords:    "archetype, constraint, definition"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2005-2012 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 	void_safe:	 "yes, dirty"
 

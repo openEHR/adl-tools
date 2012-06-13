@@ -34,7 +34,7 @@ feature -- Definitions
 	Default_closure_depth: INTEGER = 2
 			-- default depth to explore supplier closure
 
-	tree_control_panel_width: INTEGER = 100
+	Tree_control_panel_width: INTEGER = 100
 
 feature -- Initialisation
 

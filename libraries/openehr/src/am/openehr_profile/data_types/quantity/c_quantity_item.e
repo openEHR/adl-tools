@@ -19,10 +19,10 @@ create
 
 feature -- Initialisation
 
-	make (a_units: STRING; a_magnitude: INTERVAL [REAL]; a_precision: INTERVAL [INTEGER])
+	make (a_units: detachable STRING; a_magnitude: detachable INTERVAL [REAL]; a_precision: detachable INTERVAL [INTEGER])
 			-- add a units constraint. Void magnitude means any magnitude allowed
 		require
-			Magnitude_validity: a_magnitude /= Void implies a_units /= Void
+			Magnitude_validity: attached a_magnitude implies attached a_units
 		do
 			units := a_units
 			magnitude := a_magnitude
@@ -34,7 +34,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	units: attached STRING
+	units: detachable STRING
 			-- constraint on units
 
 	magnitude: detachable INTERVAL [REAL]

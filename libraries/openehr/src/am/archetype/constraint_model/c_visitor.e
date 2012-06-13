@@ -20,7 +20,7 @@ feature -- Initialisation
 		do
 			archetype := an_archetype
 			create ontologies.make(0)
-			ontologies.extend(archetype.ontology)
+			ontologies.extend (archetype.ontology)
 			is_differential := attached {DIFFERENTIAL_ARCHETYPE} archetype
 		end
 
@@ -153,6 +153,16 @@ feature -- Visitor
 
 	end_c_quantity (a_node: attached C_DV_QUANTITY; depth: INTEGER)
 			-- exit a C_DV_QUANTITY
+		do
+		end
+
+	do_rm_class (a_bmm_class: attached BMM_CLASS_DEFINITION; a_c_object: C_OBJECT; depth: INTEGER)
+			-- enter a BMM_CLASS_DEFINITION
+		do
+		end
+
+	do_rm_property (a_bmm_prop: BMM_PROPERTY_DEFINITION; a_c_object: C_OBJECT; depth: INTEGER)
+			-- enter a BMM_PROPERTY_DEFINITION
 		do
 		end
 

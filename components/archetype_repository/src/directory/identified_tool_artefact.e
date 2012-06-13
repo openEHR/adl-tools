@@ -25,7 +25,7 @@ feature -- Access
 		end
 
 	global_artefact_category: attached STRING
-			-- tool-wide category for this artefact, useful for indexing visual type indeicators
+			-- tool-wide category for this artefact, useful for indexing visual type indicators
 			-- like pixmap etc
 		deferred
 		end

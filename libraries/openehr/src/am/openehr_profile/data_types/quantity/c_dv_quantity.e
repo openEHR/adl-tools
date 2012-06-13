@@ -84,10 +84,11 @@ feature -- Access
 
 feature -- Statistics
 
-	report_rm_attributes: attached ARRAYED_SET [STRING]
+	constrained_rm_attributes: attached ARRAYED_SET [STRING]
 			-- report which attributes of the equivalent DV_QUANTITY are being constrained here
 		do
 			create Result.make(0)
+			Result.compare_objects
 			if attached list then
 				Result.extend ("units")
 				from list.start until list.off loop

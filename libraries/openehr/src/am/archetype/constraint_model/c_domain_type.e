@@ -77,7 +77,7 @@ feature -- Access
 
 feature -- Statistics
 
-	report_rm_attributes: attached ARRAYED_SET [STRING]
+	constrained_rm_attributes: attached ARRAYED_SET [STRING]
 			-- report which attributes of the equivalent RM type are being constrained here
 		deferred
 		end

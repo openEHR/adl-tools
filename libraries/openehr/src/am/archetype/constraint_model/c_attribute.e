@@ -632,13 +632,13 @@ feature -- Serialisation
 	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform serialisation at start of block for this node
 		do
-			visitor.start_c_attribute(Current, depth)
+			visitor.start_c_attribute (Current, depth)
 		end
 
 	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform serialisation at end of block for this node
 		do
-			visitor.end_c_attribute(Current, depth)
+			visitor.end_c_attribute (Current, depth)
 		end
 
 feature {NONE} -- Implementation
