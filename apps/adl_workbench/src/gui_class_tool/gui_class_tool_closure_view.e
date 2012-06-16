@@ -50,14 +50,13 @@ feature -- Initialisation
 
 			-- view controls VBOX
 			create ev_view_controls_vbox
---			ev_view_controls_vbox.set_minimum_width (100)
 			ev_view_controls_vbox.set_padding (Default_padding_width)
 			ev_view_controls_vbox.set_border_width (Default_border_width)
 			ev_root_container.extend (ev_view_controls_vbox)
 			ev_root_container.disable_item_expand (ev_view_controls_vbox)
 
 			-- tree collapse/expand control
-			create gui_treeview_control.make (get_text ("view_label_text"), create {GUI_TREE_CONTROL_TREE}.make (ev_property_tree))
+			create gui_treeview_control.make (get_text ("view_label_text"), create {GUI_TREE_CONTROL_TREE}.make (ev_property_tree), Void)
 			ev_view_controls_vbox.extend (gui_treeview_control.ev_root_container)
 			ev_view_controls_vbox.disable_item_expand (gui_treeview_control.ev_root_container)
 
@@ -222,7 +221,7 @@ feature {NONE} -- Implementation
    		local
 			a_ti: EV_TREE_ITEM
 			prop_str, type_str: STRING
-			is_terminal: BOOLEAN
+	--		is_terminal: BOOLEAN
 			has_type_subs: BOOLEAN
 			type_spec: BMM_TYPE_SPECIFIER
 		do
@@ -234,25 +233,25 @@ feature {NONE} -- Implementation
 
 			-- determine data for property and one or more (in the case of generics with > 1 param) class nodes
 			if attached {BMM_CLASS_DEFINITION} a_prop_def.type as bmm_class_def then
-				if bmm_class_def.is_primitive_type then
-					prop_str.append (": " + bmm_class_def.name)
-					is_terminal := True
-				else
+	--			if bmm_class_def.is_primitive_type then
+	--				prop_str.append (": " + bmm_class_def.name)
+	--				is_terminal := True
+	--			else
 					type_str := bmm_class_def.name
 					has_type_subs := bmm_class_def.has_type_substitutions
-				end
+	--			end
 				type_spec := bmm_class_def
 
 			elseif attached {BMM_CONTAINER_TYPE_REFERENCE} a_prop_def.type as bmm_cont_type_ref then
 				-- assume first gen param is only type of interest
-				if bmm_cont_type_ref.type.is_primitive_type then
-					prop_str.append (": " + bmm_cont_type_ref.as_type_string)
-					is_terminal := True
-				else
+	--			if bmm_cont_type_ref.type.is_primitive_type then
+	--				prop_str.append (": " + bmm_cont_type_ref.as_type_string)
+	--				is_terminal := True
+	--			else
 					prop_str.append (": " + bmm_cont_type_ref.container_type.name + Generic_left_delim.out + Generic_right_delim.out)
 					type_str := bmm_cont_type_ref.type.name
 					has_type_subs := bmm_cont_type_ref.type.has_type_substitutions
-				end
+	--			end
 				type_spec := bmm_cont_type_ref.type
 
 			elseif attached {BMM_GENERIC_TYPE_REFERENCE} a_prop_def.type as bmm_gen_type_ref then
@@ -261,10 +260,7 @@ feature {NONE} -- Implementation
 				type_spec := bmm_gen_type_ref.root_type
 
 			elseif attached {BMM_GENERIC_PARAMETER_DEFINITION} a_prop_def.type as bmm_gen_parm_def then -- type is T, U etc
-				type_str := bmm_gen_parm_def.name.twin
-				if bmm_gen_parm_def.is_constrained then
-					type_str.append (": " + bmm_gen_parm_def.conforms_to_type.name)
-				end
+				type_str := bmm_gen_parm_def.as_type_string
 				has_type_subs := bmm_gen_parm_def.has_type_substitutions
 				type_spec := a_prop_def.type
 			end
@@ -287,13 +283,13 @@ feature {NONE} -- Implementation
 			ev_tree_item_stack.extend (a_ti)
 
 			-- class / type node(s)
-			if not is_terminal then
+--			if not is_terminal then
 				create a_ti
 				set_class_node_details (a_ti, type_spec, type_str, has_type_subs)
 	 	 		a_ti.pointer_button_press_actions.force_extend (agent class_node_handler (a_ti, ?, ?, ?))
 				ev_tree_item_stack.item.extend (a_ti)
 				ev_tree_item_stack.extend (a_ti)
-			end
+--			end
 		end
 
 	set_class_node_details (a_ti: EV_TREE_ITEM; a_type_spec: BMM_TYPE_SPECIFIER; a_type_str: STRING; has_type_subs: BOOLEAN)
@@ -321,15 +317,15 @@ feature {NONE} -- Implementation
    		do
 			node_path.remove_last
 			ev_tree_item_stack.remove
-			if not (	-- some kind of primitive, that did not result in an object node
-				attached {BMM_CLASS_DEFINITION} a_prop_def.type as bmm_class_def and then
-					bmm_class_def.is_primitive_type or
-				attached {BMM_CONTAINER_TYPE_REFERENCE} a_prop_def.type as bmm_cont_type_ref and then
-					bmm_cont_type_ref.type.is_primitive_type
-			)
-			then
+--			if not (	-- some kind of primitive, that did not result in an object node
+--				attached {BMM_CLASS_DEFINITION} a_prop_def.type as bmm_class_def and then
+--					bmm_class_def.is_primitive_type or
+--				attached {BMM_CONTAINER_TYPE_REFERENCE} a_prop_def.type as bmm_cont_type_ref and then
+--					bmm_cont_type_ref.type.is_primitive_type
+--			)
+--			then
 				ev_tree_item_stack.remove
-			end
+--			end
 		end
 
 	refresh_node (a_ti: EV_TREE_NODE)
@@ -375,7 +371,7 @@ feature {NONE} -- Implementation
 		end
 
 	property_node_handler (eti: EV_TREE_ITEM; x,y, button: INTEGER)
-			-- creates the context menu for a right click action for class node
+			-- creates the context menu for a right click action for property node
 		local
 			menu: EV_MENU
 			an_mi: EV_MENU_ITEM
@@ -389,7 +385,6 @@ feature {NONE} -- Implementation
 		end
 
 	property_node_expand_handler (eti: EV_TREE_ITEM)
-			-- creates the context menu for a right click action for class node
 		do
 			from eti.start until eti.off loop
 				if eti.item.is_empty and attached {EV_TREE_ITEM} eti.item as a_ti and then attached {BMM_TYPE_SPECIFIER} a_ti.data as bmm_type_spec then

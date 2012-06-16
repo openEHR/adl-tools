@@ -1,65 +1,20 @@
 note
 	component:   "openEHR re-usable library"
-	description: "Abstract idea of specifying a type either by definition or by reference."
+	description: "Ancestor type of all BMM model element types"
 	keywords:    "model, UML"
 
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2009 The openEHR Foundation <http://www.openEHR.org>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2012 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-deferred class BMM_TYPE_SPECIFIER
+class BMM_MODEL_ELEMENT
 
-inherit
-	BMM_DEFINITIONS
-	BMM_MODEL_ELEMENT
-
-feature -- Access
-
-	flattened_type_list: attached ARRAYED_LIST [STRING]
-			-- completely flattened list of type names, flattening out all generic parameters
-		deferred
-		end
-
-	root_class: attached STRING
-			-- root class of type
-		do
-			Result := flattened_type_list.first
-		end
-
-	type_category: STRING
-			-- generate a type category of main target type from Type_category_xx values
-		deferred
-		end
-
-	type_substitutions: ARRAYED_SET [STRING]
-		deferred
-		end
-
-feature -- Status Report
-
-	has_type_substitutions: BOOLEAN
-		deferred
-		end
-
-feature -- Output
-
-	as_type_string: attached STRING
-			-- formal string form of the type
-		deferred
-		end
-
-	as_flattened_type_string: attached STRING
-			-- string form of the type for matching in archetypes - i.e. ignoring container type names
-		deferred
-		end
-
-invariant
-	type_category_valid: Type_categories.has (type_category)
+feature -- Definitions
 
 end
 
@@ -78,7 +33,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is bmm_type_specifier.e.
+--| The Original Code is bmm_definitions.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2009

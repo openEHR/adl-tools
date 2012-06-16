@@ -39,122 +39,34 @@ feature -- Access
 feature -- Commands
 
 	ev_tree_do_all (a_node_action: attached PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
-			-- do enter_action and exit_action to all nodes in the structure
-		local
-			i: INTEGER
-			top_level_rows: ARRAYED_LIST [EV_GRID_ROW]
+			-- do `a_node_action' to all nodes in the structure
 		do
-			create top_level_rows.make (0)
-			from i := 1 until i > ev_grid.row_count loop
-				if ev_grid.depth_in_tree (i) = 1 then
-					top_level_rows.extend (ev_grid.row (i))
-				end
-				i := i + 1
-			end
-			top_level_rows.do_all (agent ev_tree_do_all_nodes (?, a_node_action))
+			ev_grid.tree_do_all (a_node_action)
 		end
 
-feature -- Events
-
-	on_collapse_one_level
+	collapse_one_level (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
 		do
-			create ev_grid_row_list.make (0)
-			if ev_grid.row (1).is_expandable then
-				ev_grid_row_collapse_one_level (ev_grid.row (1))
-			end
-			from ev_grid_row_list.start until ev_grid_row_list.off loop
-				ev_grid_row_list.item.collapse
-				ev_grid_row_list.forth
-			end
-			ev_grid.resize_columns_to_content (Default_grid_expansion_factor)
+			ev_grid.collapse_one_level (test)
 		end
 
-	on_expand_one_level
+	expand_one_level (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
 		do
-			create ev_grid_row_list.make (0)
-			if ev_grid.row (1).is_expandable then
-				ev_grid_row_expand_one_level (ev_grid.row (1))
-			end
-			from ev_grid_row_list.start until ev_grid_row_list.off loop
-				ev_grid_row_list.item.expand
-				ev_grid_row_list.forth
-			end
-			ev_grid.resize_columns_to_content (Default_grid_expansion_factor)
+			ev_grid.expand_one_level (test)
 		end
 
-	on_expand_all
+	expand_all (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
 		do
-			if ev_grid.row_count > 0 then
-				ev_grid.expand_tree (ev_grid.row (1))
-			end
+			ev_grid.expand_all (test)
 		end
 
-	on_collapse_all
+	collapse_all
 		do
-			if ev_grid.row_count > 0 then
-				ev_grid.collapse_tree (ev_grid.row (1))
-			end
+			ev_grid.collapse_all
 		end
 
-feature {NONE} -- Implementation
-
-	ev_grid_row_list: ARRAYED_LIST [EV_GRID_ROW]
-
-	ev_grid_row_expand_one_level (an_ev_grid_row: attached EV_GRID_ROW)
-		require
-			an_ev_grid_row.is_expandable
-		local
-			i: INTEGER
+	resize_columns_to_content (grid_expansion_factor: REAL)
 		do
-			if an_ev_grid_row.is_expanded then
-				from i := 1 until i > an_ev_grid_row.subrow_count loop
-					if an_ev_grid_row.subrow (i).is_expandable then
-						if not an_ev_grid_row.subrow (i).is_expanded then
-							ev_grid_row_list.extend (an_ev_grid_row.subrow (i))
-						else
-							ev_grid_row_expand_one_level (an_ev_grid_row.subrow (i))
-						end
-					end
-					i := i + 1
-				end
-			else
-				ev_grid_row_list.extend (an_ev_grid_row)
-			end
-		end
-
-	ev_grid_row_collapse_one_level (an_ev_grid_row: attached EV_GRID_ROW)
-			-- record nodes for collapsing if they have all non-expanded children
-		require
-			an_ev_grid_row.is_expandable
-		local
-			i, exp_child_count: INTEGER
-		do
-			if an_ev_grid_row.is_expanded then
-				exp_child_count := 0
-				from i := 1 until i > an_ev_grid_row.subrow_count loop
-					if an_ev_grid_row.subrow (i).is_expandable then
-						if an_ev_grid_row.subrow (i).is_expanded then
-							ev_grid_row_collapse_one_level (an_ev_grid_row.subrow (i))
-							exp_child_count := exp_child_count + 1
-						end
-					end
-					i := i + 1
-				end
-				if exp_child_count = 0 then
-					ev_grid_row_list.extend (an_ev_grid_row)
-				end
-			end
-		end
-
-	ev_tree_do_all_nodes (a_grid_row: attached EV_GRID_ROW; a_node_action: PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
-		local
-			i: INTEGER
-		do
-			from i := 1 until i > a_grid_row.subrow_count loop
-				ev_tree_do_all_nodes (a_grid_row.subrow (i), a_node_action)
-				i := i + 1
-			end
-			a_node_action.call ([a_grid_row])
+			ev_grid.resize_columns_to_content (grid_expansion_factor)
 		end
 
 end

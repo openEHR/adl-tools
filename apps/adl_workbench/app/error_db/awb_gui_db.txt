@@ -255,6 +255,9 @@ templates = <
 
 		["menu_option_display_code"] = <"Display code">
 
+		["context_menu_convert_node_to_subtype"] = <"Convert to subtype">
+		["context_menu_add_subtype_mode"] = <"Add new subtype node">
+
 		-- GUI_TEST_ARCHETYPE_TREE_CONTROL
 		["Test_arch_compare_i1"] = <"Archetype source lengths same but texts differ">
 		["Test_arch_compare_i2"] = <"Archetype source lengths differ: original =  $1; new = $2">

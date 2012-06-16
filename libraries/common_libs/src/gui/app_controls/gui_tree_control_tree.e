@@ -42,39 +42,43 @@ feature -- Access
 
 feature -- Events
 
-	on_collapse_one_level
+	collapse_one_level (test: FUNCTION [ANY, TUPLE [EV_TREE_NODE], BOOLEAN])
 		do
 			create ev_tree_node_list.make (0)
 			ev_tree.recursive_do_all (agent ev_tree_item_collapse_one_level)
 			from ev_tree_node_list.start until ev_tree_node_list.off loop
-				ev_tree_node_list.item.collapse
+				if not attached test or else test.item ([ev_tree_node_list.item]) then
+					ev_tree_node_list.item.collapse
+				end
 				ev_tree_node_list.forth
 			end
 		end
 
-	on_expand_one_level
+	expand_one_level (test: FUNCTION [ANY, TUPLE [EV_TREE_NODE], BOOLEAN])
 		do
 			create ev_tree_node_list.make (0)
 			ev_tree.recursive_do_all (agent ev_tree_item_expand_one_level)
 			from ev_tree_node_list.start until ev_tree_node_list.off loop
-				ev_tree_node_list.item.expand
+				if not attached test or else test.item ([ev_tree_node_list.item]) then
+					ev_tree_node_list.item.expand
+				end
 				ev_tree_node_list.forth
 			end
 		end
 
-	on_expand_all
+	expand_all (test: FUNCTION [ANY, TUPLE [EV_TREE_NODE], BOOLEAN])
 		do
 			ev_tree.recursive_do_all (
-				agent (an_ev_tree_node: attached EV_TREE_NODE)
+				agent (an_ev_tree_node: attached EV_TREE_NODE; test_agt: FUNCTION [ANY, TUPLE [EV_TREE_NODE], BOOLEAN])
 					do
-						if an_ev_tree_node.is_expandable then
+						if an_ev_tree_node.is_expandable and (not attached test_agt or else test_agt.item ([an_ev_tree_node])) then
 							an_ev_tree_node.expand
 						end
 					end
 			)
 		end
 
-	on_collapse_all
+	collapse_all
 		do
 			ev_tree.recursive_do_all (
 				agent (an_ev_tree_node: attached EV_TREE_NODE)
@@ -130,6 +134,10 @@ feature {NONE} -- Implementation
 				a_target.forth
 			end
 			an_action.call ([a_target])
+		end
+
+	resize_columns_to_content (grid_expansion_factor: REAL)
+		do
 		end
 
 end

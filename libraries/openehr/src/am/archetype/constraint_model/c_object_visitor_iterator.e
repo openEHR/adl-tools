@@ -24,11 +24,11 @@ create
 feature -- Initialisation
 
 	make (a_target: attached C_COMPLEX_OBJECT; a_visitor: C_VISITOR;
-			differential_view_flag, visit_rm_nodes_flag: BOOLEAN; an_rm_schema: BMM_SCHEMA)
+			differential_view_flag, update_rm_nodes_flag: BOOLEAN; an_rm_schema: BMM_SCHEMA)
 		do
 			target := a_target
 			visitor := a_visitor
-			visit_rm_nodes := visit_rm_nodes_flag
+			update_rm_nodes := update_rm_nodes_flag
 			differential_view := differential_view_flag
 			rm_schema := an_rm_schema
 		end
@@ -43,7 +43,7 @@ feature -- Access
 
 feature -- Status Report
 
-	visit_rm_nodes: BOOLEAN
+	update_rm_nodes: BOOLEAN
 
 	differential_view: BOOLEAN
 
@@ -97,7 +97,7 @@ feature {NONE} -- Implementation
 			end
 
 			-- deal with RM visitor functions
-			if visit_rm_nodes and then attached {C_OBJECT} a_target as co then
+			if update_rm_nodes and then attached {C_OBJECT} a_target as co then
 				if rm_schema.has_class_definition (co.rm_type_name) then
 					visitor.do_rm_class (rm_schema.class_definition (co.rm_type_name), co, depth)
 					if differential_view then

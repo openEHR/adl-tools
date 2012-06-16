@@ -79,8 +79,8 @@ feature -- Definitions
 	Node_grid_col_names: HASH_TABLE [STRING, INTEGER]
 		once
 			create Result.make (0)
-			Result.put (get_text ("node_grid_col_meaning_text"), Node_grid_col_meaning)
 			Result.put (get_text ("node_grid_col_rm_name_text"), Node_grid_col_rm_name)
+			Result.put (get_text ("node_grid_col_meaning_text"), Node_grid_col_meaning)
 			Result.put (get_text ("node_grid_col_existence_text"), Node_grid_col_existence)
 			Result.put (get_text ("node_grid_col_card_occ_text"), Node_grid_col_card_occ)
 			Result.put (get_text ("node_grid_col_sibling_order_text"), Node_grid_col_sibling_order)
@@ -246,13 +246,13 @@ feature -- Application Switches
 			app_cfg.put_value ("/gui/test_split_position", v)
 		end
 
-	expand_node_tree: BOOLEAN
+	expand_definition_tree: BOOLEAN
 			-- Expand the archetype definition node tree by default?
 		do
 			Result := app_cfg.boolean_value ("/gui/expand_node_tree")
 		end
 
-	set_expand_node_tree (flag: BOOLEAN)
+	set_expand_definition_tree (flag: BOOLEAN)
 			-- Set flag for whether to expand the archetype definition node tree by default.
 		do
 			app_cfg.put_value("/gui/expand_node_tree", flag)

@@ -112,9 +112,9 @@ feature -- Modification
 feature -- Output
 
 	as_type_string: STRING
-			-- name of the type
+			-- full name of the type including generic parameters
 		do
-			create Result.make (0)
+			create Result.make_empty
 			Result.append (root_type.name)
 			Result.append_character (Generic_left_delim)
 			from generic_parameters.start until generic_parameters.off loop

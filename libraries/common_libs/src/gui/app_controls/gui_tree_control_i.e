@@ -21,21 +21,23 @@ feature -- Commands
 		deferred
 		end
 
-feature -- Events
-
-	on_collapse_one_level
+	collapse_one_level (test: FUNCTION [ANY, TUPLE [EV_SELECTABLE], BOOLEAN])
 		deferred
 		end
 
-	on_expand_one_level
+	expand_one_level (test: FUNCTION [ANY, TUPLE [EV_SELECTABLE], BOOLEAN])
 		deferred
 		end
 
-	on_expand_all
+	expand_all (test: FUNCTION [ANY, TUPLE [EV_SELECTABLE], BOOLEAN])
 		deferred
 		end
 
-	on_collapse_all
+	collapse_all
+		deferred
+		end
+
+	resize_columns_to_content (grid_expansion_factor: REAL)
 		deferred
 		end
 

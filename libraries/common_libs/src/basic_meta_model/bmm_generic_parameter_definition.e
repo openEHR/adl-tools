@@ -117,10 +117,11 @@ feature -- Output
 	as_type_string: STRING
 			-- name of the type
 		do
-			create Result.make(0)
-			Result.append(name)
+			create Result.make_empty
+			Result.append (name)
 			if is_constrained then
 				Result.append_character (Generic_constraint_delimiter)
+				Result.append_character (' ')
 				Result.append (flattened_conforms_to_type.as_type_string)
 			end
 		end

@@ -69,7 +69,8 @@ feature -- Initialisation
 			ev_view_controls_vbox.set_border_width (Default_border_width)
 
 			-- tree collapse/expand control
-			create gui_treeview_control.make (get_text ("view_label_text"), create {GUI_TREE_CONTROL_GRID}.make (gui_grid))
+			create gui_treeview_control.make (get_text ("view_label_text"), create {GUI_TREE_CONTROL_GRID}.make (gui_grid),
+				agent (a_row: EV_GRID_ROW): BOOLEAN do Result := not attached {BMM_MODEL_ELEMENT} a_row.data end)
 			ev_view_controls_vbox.extend (gui_treeview_control.ev_root_container)
 			ev_view_controls_vbox.disable_item_expand (gui_treeview_control.ev_root_container)
 
@@ -113,6 +114,12 @@ feature -- Initialisation
 				agent :BOOLEAN do Result := use_rm_pixmaps end, agent update_use_rm_pixmaps)
 			gui_controls.extend (view_rm_use_icons_checkbox_ctl)
 			view_rm_frame_ctl.extend (view_rm_use_icons_checkbox_ctl.ev_data_control, False)
+
+
+			-- initial state
+			if not show_technical_view then
+				view_rm_attrs_on_checkbox_ctl.disable_active
+			end
 		end
 
 feature -- Access
@@ -124,7 +131,7 @@ feature -- Status Report
 	show_codes: BOOLEAN
 			-- True if codes should be shown in the definition rendering
 
-	show_reference_model_view_changed: BOOLEAN
+	update_rm_view: BOOLEAN
 			-- True if last call to set/unset show_reference_model_view changed the flag's value
 
 	is_expanded: BOOLEAN
@@ -166,14 +173,16 @@ feature -- Commands
 			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.populate end)
 
 			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
+			gui_grid.ev_grid.lock_update
 			create c_node_map_builder
 			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, gui_grid,
-				show_technical_view, True, show_codes, node_grid_row_map, code_select_action_agent)
+				True, show_codes, node_grid_row_map, code_select_action_agent)
 			create a_c_iterator.make (source_archetype.definition, c_node_map_builder,
-				differential_view, show_reference_model_view_changed, rm_schema)
+				differential_view, update_rm_view, rm_schema)
 			a_c_iterator.do_all
 
 			gui_grid.resize_columns_to_content
+			gui_grid.ev_grid.unlock_update
 		end
 
 feature {NONE} -- Events
@@ -182,6 +191,12 @@ feature {NONE} -- Events
 			-- change state from show_technical_view
 		do
 			set_show_technical_view (not a_flag)
+			if show_technical_view then
+				view_rm_attrs_on_checkbox_ctl.enable_active
+			else
+				view_rm_attrs_on_checkbox_ctl.disable_active
+			end
+			update_rm_view := show_reference_model_view
 			if attached source then
 				repopulate
 			end
@@ -198,10 +213,12 @@ feature {NONE} -- Events
 	update_show_reference_model_view (a_flag: BOOLEAN)
 			-- turn on or off the display of reference model details in `ev_grid'.
 		do
-			show_reference_model_view_changed := a_flag /= show_reference_model_view
+			update_rm_view := a_flag /= show_reference_model_view
 			set_show_reference_model_view (a_flag)
-			if attached source then
-				repopulate
+			if show_technical_view then
+				if attached source then
+					repopulate
+				end
 			end
 		end
 
@@ -211,10 +228,9 @@ feature {NONE} -- Events
 	update_use_rm_pixmaps (a_flag: BOOLEAN)
 		do
 			set_use_rm_pixmaps (a_flag)
-
+			update_rm_view := True
 			if attached source then
 				repopulate
-
 				-- reflect change to other editor tools
 				gui_agents.update_all_tools_rm_icons_setting_agent.call ([])
 			end
@@ -260,38 +276,39 @@ feature {NONE} -- Implementation
 
 			-- populate grid control
 			create node_grid_row_map.make (0)
-
 			rm_schema := source.rm_schema
 
+			gui_grid.ev_grid.lock_update
 			create c_node_map_builder
 			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, gui_grid,
-				show_technical_view, False, show_codes, node_grid_row_map, code_select_action_agent)
+				False, show_codes, node_grid_row_map, code_select_action_agent)
 			create a_c_iterator.make (source_archetype.definition, c_node_map_builder,
 				differential_view, show_reference_model_view, rm_schema)
 			a_c_iterator.do_all
+
+			gui_grid.set_column_titles (Node_grid_col_names.linear_representation)
 
 			-- populate from invariants
 			populate_invariants
 
 			-- make visualisation adjustments
-			if expand_node_tree then
+			if expand_definition_tree then
 				gui_treeview_control.on_expand_all
-			else
+			elseif differential_view or not source.is_specialised then
 				gui_treeview_control.on_collapse_all
 				gui_treeview_control.on_expand_one_level
 				gui_treeview_control.on_expand_one_level
 				gui_treeview_control.on_expand_one_level
 				gui_treeview_control.on_expand_one_level
-			end
-
-			if not differential_view then
+			else
+				gui_treeview_control.on_expand_all
 				roll_up_to_specialisation_level
 			end
-
-			gui_grid.set_column_titles (Node_grid_col_names.linear_representation)
+			gui_grid.resize_columns_to_content
+			gui_grid.ev_grid.unlock_update
 
 			-- Initial settings
-			show_reference_model_view_changed := False
+			update_rm_view := False
 		end
 
 	roll_up_to_specialisation_level

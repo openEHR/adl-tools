@@ -43,7 +43,7 @@ create
 
 feature -- Initialisation
 
-	make (a_title: detachable STRING; a_tree_ctl: GUI_TREE_CONTROL_I)
+	make (a_title: detachable STRING; a_tree_ctl: GUI_TREE_CONTROL_I; a_collapse_expand_test_agt: like collapse_expand_test_agt)
 		local
 			ev_view_label: EV_LABEL
 			ev_hbox: EV_HORIZONTAL_BOX
@@ -92,6 +92,8 @@ feature -- Initialisation
 			ev_expand_button.set_tooltip (get_text ("expand_complete_tooltip"))
 			ev_expand_button.select_actions.extend (agent on_expand_all)
 			ev_hbox.extend (ev_expand_button)
+
+			collapse_expand_test_agt := a_collapse_expand_test_agt
 		end
 
 feature -- Access
@@ -101,6 +103,8 @@ feature -- Access
 	gui_tree_control: GUI_TREE_CONTROL_I
 
 	ev_expand_button, ev_expand_one_button, ev_collapse_one_button, ev_collapse_button: EV_BUTTON
+
+	collapse_expand_test_agt: detachable FUNCTION [ANY, TUPLE [EV_SELECTABLE], BOOLEAN]
 
 feature -- Commands
 
@@ -114,22 +118,26 @@ feature -- Events
 
 	on_collapse_one_level
 		do
-			gui_tree_control.on_collapse_one_level
+			gui_tree_control.collapse_one_level (collapse_expand_test_agt)
+			gui_tree_control.resize_columns_to_content (Default_grid_expansion_factor)
 		end
 
 	on_expand_one_level
 		do
-			gui_tree_control.on_expand_one_level
+			gui_tree_control.expand_one_level (collapse_expand_test_agt)
+			gui_tree_control.resize_columns_to_content (Default_grid_expansion_factor)
 		end
 
 	on_expand_all
 		do
-			gui_tree_control.on_expand_all
+			gui_tree_control.expand_all (collapse_expand_test_agt)
+			gui_tree_control.resize_columns_to_content (Default_grid_expansion_factor)
 		end
 
 	on_collapse_all
 		do
-			gui_tree_control.on_collapse_all
+			gui_tree_control.collapse_all
+			gui_tree_control.resize_columns_to_content (Default_grid_expansion_factor)
 		end
 
 feature {NONE} -- Implementation

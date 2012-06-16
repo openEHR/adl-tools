@@ -124,7 +124,7 @@ feature -- Events
 						elseif key.code = key_page_down then
 							step_to_row (index_of_viewable_offset_from_row (a_row.index, visible_row_indexes.count - 1))
 						elseif key.code = key_numpad_multiply then
-							expand_tree (a_row)
+							expand_tree (a_row, Void)
 						elseif key.code = key_numpad_add or key.code = key_right then
 							if a_row.is_expandable then
 								a_row.expand
@@ -208,20 +208,20 @@ feature -- Commands
 			end
 		end
 
-	expand_tree (a_row: attached EV_GRID_ROW)
+	expand_tree (a_row: attached EV_GRID_ROW; test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
 			-- Expand `row' and all of its sub-rows, recursively.
 		local
 			i: INTEGER
 		do
-			if a_row.is_expandable then
+			if a_row.is_expandable and (not attached test or else test.item ([a_row])) then
 				a_row.expand
 				from i := 1 until i > a_row.subrow_count loop
-					expand_tree (a_row.subrow (i))
+					expand_tree (a_row.subrow (i), test)
 					i := i + 1
 				end
 			end
 		ensure
-			row_expanded: a_row.is_expandable implies a_row.is_expanded
+			row_expanded: a_row.is_expandable and (not attached test or else test.item ([a_row])) implies a_row.is_expanded
 		end
 
 	collapse_tree (a_row: attached EV_GRID_ROW)
@@ -252,7 +252,124 @@ feature -- Commands
 			end
 		end
 
+	tree_do_all (a_node_action: attached PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
+			-- do `a_node_action' to all nodes in the structure
+		local
+			i: INTEGER
+			top_level_rows: ARRAYED_LIST [EV_GRID_ROW]
+		do
+			create top_level_rows.make (0)
+			from i := 1 until i > row_count loop
+				if depth_in_tree (i) = 1 then
+					top_level_rows.extend (row (i))
+				end
+				i := i + 1
+			end
+			top_level_rows.do_all (agent tree_do_all_nodes (?, a_node_action))
+		end
+
+	tree_do_all_nodes (a_grid_row: attached EV_GRID_ROW; a_node_action: PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
+		local
+			i: INTEGER
+		do
+			from i := 1 until i > a_grid_row.subrow_count loop
+				tree_do_all_nodes (a_grid_row.subrow (i), a_node_action)
+				i := i + 1
+			end
+			a_node_action.call ([a_grid_row])
+		end
+
+	collapse_one_level (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+		do
+			create ev_grid_row_list.make (0)
+			if row (1).is_expandable then
+				get_grid_row_collapsable_nodes (row (1))
+			end
+			from ev_grid_row_list.start until ev_grid_row_list.off loop
+				if not attached test or else test.item ([ev_grid_row_list.item]) then
+					ev_grid_row_list.item.collapse
+				end
+				ev_grid_row_list.forth
+			end
+		end
+
+	expand_one_level (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+		do
+			create ev_grid_row_list.make (0)
+			if row (1).is_expandable then
+				get_grid_row_expandable_nodes (row (1))
+			end
+			from ev_grid_row_list.start until ev_grid_row_list.off loop
+				if not attached test or else test.item ([ev_grid_row_list.item]) then
+					ev_grid_row_list.item.expand
+				end
+				ev_grid_row_list.forth
+			end
+		end
+
+	expand_all (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+		do
+			if row_count > 0 then
+				expand_tree (row (1), test)
+			end
+		end
+
+	collapse_all
+		do
+			if row_count > 0 then
+				collapse_tree (row (1))
+			end
+		end
+
 feature {NONE} -- Implementation
+
+	ev_grid_row_list: ARRAYED_LIST [EV_GRID_ROW]
+
+	get_grid_row_expandable_nodes (an_ev_grid_row: attached EV_GRID_ROW)
+		require
+			an_ev_grid_row.is_expandable
+		local
+			i: INTEGER
+		do
+			if an_ev_grid_row.is_expanded then
+				from i := 1 until i > an_ev_grid_row.subrow_count loop
+					if an_ev_grid_row.subrow (i).is_expandable then
+						if not an_ev_grid_row.subrow (i).is_expanded then
+							ev_grid_row_list.extend (an_ev_grid_row.subrow (i))
+						else
+							get_grid_row_expandable_nodes (an_ev_grid_row.subrow (i))
+						end
+					end
+					i := i + 1
+				end
+			else
+				ev_grid_row_list.extend (an_ev_grid_row)
+			end
+		end
+
+	get_grid_row_collapsable_nodes (an_ev_grid_row: attached EV_GRID_ROW)
+			-- record nodes for collapsing if they have all non-expanded children
+		require
+			an_ev_grid_row.is_expandable
+		local
+			i, exp_child_count: INTEGER
+		do
+			if an_ev_grid_row.is_expanded then
+				exp_child_count := 0
+				from i := 1 until i > an_ev_grid_row.subrow_count loop
+					if an_ev_grid_row.subrow (i).is_expandable then
+						if an_ev_grid_row.subrow (i).is_expanded then
+							get_grid_row_collapsable_nodes (an_ev_grid_row.subrow (i))
+							exp_child_count := exp_child_count + 1
+						end
+					end
+					i := i + 1
+				end
+				if exp_child_count = 0 then
+					ev_grid_row_list.extend (an_ev_grid_row)
+				end
+			end
+		end
 
 	user_key_map: HASH_TABLE [PROCEDURE [ANY, TUPLE], INTEGER]
 			-- user-defined key => actions map for other keys

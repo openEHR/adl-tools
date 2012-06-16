@@ -57,7 +57,31 @@ feature -- Access
 			Result := ev_grid.row_count
 		end
 
+	matching_sub_row (a_parent_row: EV_GRID_ROW; a_row_test: FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN]): detachable EV_GRID_ROW
+		local
+			sub_row: EV_GRID_ROW
+			i: INTEGER
+		do
+			from i := 1 until i > a_parent_row.subrow_count or attached Result loop
+				if a_row_test.item ([a_parent_row.subrow (i)]) then
+					Result := a_parent_row.subrow (i)
+				end
+				i := i + 1
+			end
+		end
+
 feature -- Status Report
+
+	has_matching_sub_row (a_parent_row: EV_GRID_ROW; a_row_test: FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN]): BOOLEAN
+		local
+			sub_row: EV_GRID_ROW
+			i: INTEGER
+		do
+			from i := 1 until i > a_parent_row.subrow_count or a_row_test.item ([a_parent_row.subrow (i)]) loop
+				i := i + 1
+			end
+			Result := i > a_parent_row.subrow_count
+		end
 
 feature -- Modification
 
@@ -152,6 +176,17 @@ feature -- Modification
 			from remove_list.finish	until remove_list.off loop
 				ev_grid.remove_row (remove_list.item)
 				remove_list.back
+			end
+		end
+
+	remove_sub_rows (a_parent_row: EV_GRID_ROW)
+		local
+			i, c: INTEGER
+		do
+			c := a_parent_row.subrow_count
+			from i := 1 until i > c loop
+				ev_grid.remove_row (a_parent_row.subrow (1).index)
+				i := i + 1
 			end
 		end
 

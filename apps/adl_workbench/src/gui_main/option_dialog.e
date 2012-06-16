@@ -109,7 +109,7 @@ feature {NONE} -- Initialization
 
 			-- Show definition tree expanded
 			create expand_definition_tree_check_ctl.make (get_text ("show_definition_tree_expanded_text"),
-				get_text ("show_definition_tree_expanded_tooltip"), agent expand_node_tree)
+				get_text ("show_definition_tree_expanded_tooltip"), agent expand_definition_tree)
 			ui_settings_frame_ctl.extend (expand_definition_tree_check_ctl.ev_data_control, False)
 			gui_controls.extend (expand_definition_tree_check_ctl)
 
@@ -196,7 +196,7 @@ feature -- Events
 			else
 				-- GUI options
 				has_changed_ui_options := True -- for now, just assume changes. since repainting archetype part of gui is cheap
-				set_expand_node_tree (expand_definition_tree_check_ctl.is_selected)
+				set_expand_definition_tree (expand_definition_tree_check_ctl.is_selected)
 				set_show_line_numbers (show_line_numbers_check_ctl.is_selected)
 				set_display_archetype_source (display_source_check_ctl.is_selected)
 				set_use_rm_pixmaps (use_rm_icons_check_ctl.is_selected)

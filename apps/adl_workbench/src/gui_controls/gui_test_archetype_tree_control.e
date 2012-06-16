@@ -372,7 +372,7 @@ feature -- Events
 				arch_test_tree_toggle_expand_bn.set_text ("Expand Tree")
 				is_expanded := False
 			else
-				ev_grid.expand_tree (ev_grid.row (1))
+				ev_grid.expand_tree (ev_grid.row (1), Void)
 				arch_test_tree_toggle_expand_bn.set_text ("Collapse Tree")
 				is_expanded := True
 			end
