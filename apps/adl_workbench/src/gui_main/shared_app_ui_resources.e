@@ -93,6 +93,18 @@ feature -- Definitions
 			create Result.make_with_8_bit_rgb (0, 0, 0xff)
 		end
 
+	rm_infrastructure_attribute_colour: EV_COLOR
+			-- a rendering colour for rm_attributes in the UI
+		once
+			create Result.make_with_8_bit_rgb (0x99, 0x99, 0x99)
+		end
+
+	rm_runtime_attribute_colour: EV_COLOR
+			-- a rendering colour for rm_attributes in the UI
+		once
+			create Result.make_with_8_bit_rgb (0x33, 0x99, 0xff)
+		end
+
 	archetype_rm_type_color: EV_COLOR
 			-- a rendering colour for rm_attributes in the UI
 		once
@@ -277,16 +289,28 @@ feature -- Application Switches
 			app_cfg.put_value("/gui/show_technical_view", flag)
 		end
 
-	show_reference_model_view: BOOLEAN
-			-- Display the reference model view in the archetype definition node tree by default?
+	show_rm_data_properties: BOOLEAN
+			-- Display the RM data properties in the archetype definition node tree?
 		do
-			Result := app_cfg.boolean_value ("/gui/show_reference_model_view")
+			Result := app_cfg.boolean_value ("/gui/show_rm_data_properties")
 		end
 
-	set_show_reference_model_view (flag: BOOLEAN)
-			-- Set flag for whether to show the technical view in the archetype definition node tree by default.
+	set_show_rm_data_properties (flag: BOOLEAN)
+			-- Set flag for whether to show the RM data properties in the archetype definition node tree
 		do
-			app_cfg.put_value("/gui/show_reference_model_view", flag)
+			app_cfg.put_value("/gui/show_rm_data_properties", flag)
+		end
+
+	show_rm_infrastructure_properties: BOOLEAN
+			-- Display the RM infrastructure properties in the archetype definition node tree?
+		do
+			Result := app_cfg.boolean_value ("/gui/show_rm_infrastructure_properties")
+		end
+
+	set_show_rm_infrastructure_properties (flag: BOOLEAN)
+			-- Set flag for whether to show the RM infrastructure properties in the archetype definition node tree
+		do
+			app_cfg.put_value ("/gui/show_rm_infrastructure_properties", flag)
 		end
 
 	show_line_numbers: BOOLEAN

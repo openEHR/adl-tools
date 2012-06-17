@@ -19,11 +19,13 @@ inherit
 
 feature -- Initialisation
 
-	make (a_name: STRING; a_type: attached like type; is_mandatory_flag, is_computed_flag: BOOLEAN)
+	make (a_name: STRING; a_type: attached like type; is_mandatory_flag, is_computed_flag, is_im_infrastructure_flag, is_im_runtime_flag: BOOLEAN)
 		do
 			name := a_name
 			is_mandatory := is_mandatory_flag
 			is_computed := is_computed_flag
+			is_im_infrastructure := is_im_infrastructure_flag
+			is_im_runtime := is_im_runtime_flag
 			type := a_type
 		end
 
@@ -41,6 +43,12 @@ feature -- Access
 
 	is_computed: BOOLEAN
 			-- True if this property is computed rather than stored in objects of this class
+
+	is_im_infrastructure: BOOLEAN
+			-- True if this property is info model 'infrastructure' rather than 'data'
+
+	is_im_runtime: BOOLEAN
+			-- True if this property is info model 'runtime' property
 
 	existence: MULTIPLICITY_INTERVAL
 			-- interval form of 0..1, 1..1 etc, generated from is_mandatory

@@ -38,6 +38,14 @@ feature -- Access (attributes from schema)
 
 	bmm_property_definition: detachable BMM_PROPERTY_DEFINITION
 
+	is_im_infrastructure: BOOLEAN
+			-- True if this property is info model 'infrastructure' rather than 'data'
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
+	is_im_runtime: BOOLEAN
+			-- True if this property is info model 'runtime' settable property
+			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+
 feature -- Factory
 
 	create_bmm_property_definition (a_bmm_schema: BMM_SCHEMA; a_class_def: attached BMM_CLASS_DEFINITION)

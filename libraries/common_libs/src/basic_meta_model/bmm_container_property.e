@@ -25,9 +25,9 @@ create
 
 feature -- Initialisation
 
-	make (a_name: STRING; a_type: attached like type; is_mandatory_flag, is_computed_flag: BOOLEAN)
+	make (a_name: STRING; a_type: attached like type; is_mandatory_flag, is_computed_flag, is_im_infrastructure_flag, is_im_runtime_flag: BOOLEAN)
 		do
-			precursor (a_name, a_type, is_mandatory_flag, is_computed_flag)
+			precursor (a_name, a_type, is_mandatory_flag, is_computed_flag, is_im_infrastructure_flag, is_im_runtime_flag)
 			create cardinality.make_open
 		end
 

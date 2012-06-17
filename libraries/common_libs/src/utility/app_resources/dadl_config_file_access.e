@@ -74,7 +74,7 @@ feature -- Access
 	boolean_value (a_path: attached STRING): BOOLEAN
 			-- get the boolean value for resource at `a_path'
 		do
-			if has_resource(a_path) then
+			if has_resource (a_path) then
 				Result ?= dt_tree.value_at_path (a_path)
 			end
 			requested_resources.extend (a_path)
@@ -83,7 +83,7 @@ feature -- Access
 	string_value (a_path: attached STRING): attached STRING
 			-- get the string value for resource at `a_path'; return empty string if nothing found
 		do
-			if has_resource(a_path) then
+			if has_resource (a_path) then
 				Result ?= dt_tree.value_at_path (a_path)
 			else
 				create Result.make (0)
@@ -94,7 +94,7 @@ feature -- Access
 	list_any_value (a_path: attached STRING): SEQUENCE [ANY]
 			-- List of items specified in file at `a_path'.
 		do
-			if has_resource(a_path) then
+			if has_resource (a_path) then
 				Result := dt_tree.value_list_at_path (a_path)
 			end
 			requested_resources.extend (a_path)

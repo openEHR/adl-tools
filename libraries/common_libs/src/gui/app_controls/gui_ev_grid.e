@@ -59,7 +59,6 @@ feature -- Access
 
 	matching_sub_row (a_parent_row: EV_GRID_ROW; a_row_test: FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN]): detachable EV_GRID_ROW
 		local
-			sub_row: EV_GRID_ROW
 			i: INTEGER
 		do
 			from i := 1 until i > a_parent_row.subrow_count or attached Result loop
@@ -74,7 +73,6 @@ feature -- Status Report
 
 	has_matching_sub_row (a_parent_row: EV_GRID_ROW; a_row_test: FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN]): BOOLEAN
 		local
-			sub_row: EV_GRID_ROW
 			i: INTEGER
 		do
 			from i := 1 until i > a_parent_row.subrow_count or a_row_test.item ([a_parent_row.subrow (i)]) loop

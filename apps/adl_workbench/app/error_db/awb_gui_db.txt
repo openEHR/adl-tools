@@ -238,9 +238,13 @@ templates = <
 		["technical_detail_button_text"] = <"Technical">
 		["domain_view_add_codes_text"] = <"Add Codes">
 
-		["view_rm_controls_text"] = <"RM View">
-		["show_rm_properties_button_text"] = <"RM properties">
-		["show_rm_properties_tooltip"] = <"Show non-archetyped RM properties">
+		["rm_visibility_controls_text"] = <"RM Visibility">
+		["show_rm_properties_button_text"] = <"Data Properties">
+		["show_rm_properties_tooltip"] = <"Show non-archetyped RM data properties">
+		["show_rm_if_properties_button_text"] = <"I/S Properties">
+		["show_rm_if_properties_tooltip"] = <"Show RM infrastructure properties">
+
+		["rm_rendering_controls_text"] = <"RM Rendering">
 		["use_rm_icons_button_text"] = <"RM icons">
 		["use_rm_icons_button_tooltip"] = <"Use RM-specific icons">
 

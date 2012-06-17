@@ -97,28 +97,40 @@ feature -- Initialisation
 			-- ========= RM view options =========
 
 			-- frame
-			create view_rm_frame_ctl.make (get_text ("view_rm_controls_text"), 85, 0, False)
-			ev_view_controls_vbox.extend (view_rm_frame_ctl.ev_root_container)
-			ev_view_controls_vbox.disable_item_expand (view_rm_frame_ctl.ev_root_container)
+			create rm_property_visibility_frame_ctl.make (get_text ("rm_visibility_controls_text"), 85, 0, False)
+			ev_view_controls_vbox.extend (rm_property_visibility_frame_ctl.ev_root_container)
+			ev_view_controls_vbox.disable_item_expand (rm_property_visibility_frame_ctl.ev_root_container)
 
 			-- add RM attributes check button
-			create view_rm_attrs_on_checkbox_ctl.make_active (get_text ("show_rm_properties_button_text"),
+			create rm_attrs_visible_checkbox_ctl.make_active (get_text ("show_rm_properties_button_text"),
 				get_text ("show_rm_properties_tooltip"),
-				agent :BOOLEAN do Result := show_reference_model_view end, agent update_show_reference_model_view)
-			gui_controls.extend (view_rm_attrs_on_checkbox_ctl)
-			view_rm_frame_ctl.extend (view_rm_attrs_on_checkbox_ctl.ev_data_control, False)
+				agent :BOOLEAN do Result := show_rm_data_properties end, agent update_show_rm_data_properties)
+			gui_controls.extend (rm_attrs_visible_checkbox_ctl)
+			rm_property_visibility_frame_ctl.extend (rm_attrs_visible_checkbox_ctl.ev_data_control, False)
+
+			-- add RM infrastructure attributes option check button
+			create rm_if_attrs_visible_checkbox_ctl.make_active (get_text ("show_rm_if_properties_button_text"),
+				get_text ("show_rm_if_properties_tooltip"),
+				agent :BOOLEAN do Result := show_rm_infrastructure_properties end, agent update_show_rm_infrastructure_properties)
+			gui_controls.extend (rm_if_attrs_visible_checkbox_ctl)
+			rm_property_visibility_frame_ctl.extend (rm_if_attrs_visible_checkbox_ctl.ev_data_control, False)
+
+			-- frame
+			create rm_rendering_frame_ctl.make (get_text ("rm_rendering_controls_text"), 85, 0, False)
+			ev_view_controls_vbox.extend (rm_rendering_frame_ctl.ev_root_container)
+			ev_view_controls_vbox.disable_item_expand (rm_rendering_frame_ctl.ev_root_container)
 
 			-- use RM icons check button
 			create view_rm_use_icons_checkbox_ctl.make_active (get_text ("use_rm_icons_button_text"),
 				get_text ("use_rm_icons_button_tooltip"),
 				agent :BOOLEAN do Result := use_rm_pixmaps end, agent update_use_rm_pixmaps)
 			gui_controls.extend (view_rm_use_icons_checkbox_ctl)
-			view_rm_frame_ctl.extend (view_rm_use_icons_checkbox_ctl.ev_data_control, False)
+			rm_rendering_frame_ctl.extend (view_rm_use_icons_checkbox_ctl.ev_data_control, False)
 
 
 			-- initial state
 			if not show_technical_view then
-				view_rm_attrs_on_checkbox_ctl.disable_active
+				rm_attrs_visible_checkbox_ctl.disable_active
 			end
 		end
 
@@ -192,11 +204,11 @@ feature {NONE} -- Events
 		do
 			set_show_technical_view (not a_flag)
 			if show_technical_view then
-				view_rm_attrs_on_checkbox_ctl.enable_active
+				rm_attrs_visible_checkbox_ctl.enable_active
 			else
-				view_rm_attrs_on_checkbox_ctl.disable_active
+				rm_attrs_visible_checkbox_ctl.disable_active
 			end
-			update_rm_view := show_reference_model_view
+			update_rm_view := show_rm_data_properties
 			if attached source then
 				repopulate
 			end
@@ -210,15 +222,28 @@ feature {NONE} -- Events
 			end
 		end
 
-	update_show_reference_model_view (a_flag: BOOLEAN)
-			-- turn on or off the display of reference model details in `ev_grid'.
+	update_show_rm_data_properties (a_flag: BOOLEAN)
+			-- turn on or off the display of reference model data properties details in `ev_grid'.
 		do
-			update_rm_view := a_flag /= show_reference_model_view
-			set_show_reference_model_view (a_flag)
-			if show_technical_view then
-				if attached source then
-					repopulate
-				end
+			update_rm_view := a_flag /= show_rm_data_properties
+			set_show_rm_data_properties (a_flag)
+			if not a_flag and show_rm_infrastructure_properties then
+				set_show_rm_infrastructure_properties (False)
+			end
+			if show_technical_view and attached source then
+				repopulate
+			end
+		end
+
+	update_show_rm_infrastructure_properties (a_flag: BOOLEAN)
+			-- turn on or off the display of reference model infrastructure properties details in `ev_grid'.
+		do
+			update_rm_view := a_flag /= show_rm_infrastructure_properties
+			set_show_rm_infrastructure_properties (a_flag)
+			if a_flag and not show_rm_data_properties then
+				rm_attrs_visible_checkbox_ctl.ev_data_control.enable_select
+			elseif show_technical_view and attached source then
+				repopulate
 			end
 		end
 
@@ -246,11 +271,11 @@ feature {NONE} -- Implementation
 
 	toggle_button_ctl: GUI_TOGGLE_BUTTON_CONTROL
 
-	add_codes_checkbox_ctl, view_rm_attrs_on_checkbox_ctl, view_rm_use_icons_checkbox_ctl: GUI_CHECK_BOX_CONTROL
+	add_codes_checkbox_ctl, rm_attrs_visible_checkbox_ctl, view_rm_use_icons_checkbox_ctl, rm_if_attrs_visible_checkbox_ctl: GUI_CHECK_BOX_CONTROL
 
 	ev_view_controls_vbox: EV_VERTICAL_BOX
 
-	view_detail_frame_ctl, view_rm_frame_ctl: GUI_FRAME_CONTROL
+	view_detail_frame_ctl, rm_property_visibility_frame_ctl, rm_rendering_frame_ctl: GUI_FRAME_CONTROL
 
 	rm_schema: detachable BMM_SCHEMA
 
@@ -283,7 +308,7 @@ feature {NONE} -- Implementation
 			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, gui_grid,
 				False, show_codes, node_grid_row_map, code_select_action_agent)
 			create a_c_iterator.make (source_archetype.definition, c_node_map_builder,
-				differential_view, show_reference_model_view, rm_schema)
+				differential_view, show_rm_data_properties, rm_schema)
 			a_c_iterator.do_all
 
 			gui_grid.set_column_titles (Node_grid_col_names.linear_representation)

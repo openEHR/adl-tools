@@ -37,7 +37,7 @@ feature -- Factory
 	create_bmm_property_definition (a_bmm_schema: BMM_SCHEMA; a_class_def: attached BMM_CLASS_DEFINITION)
 		do
 			type_def.create_bmm_generic_type_reference (a_bmm_schema)
-			create bmm_property_definition.make (name, type_def.bmm_generic_type_reference, is_mandatory, is_computed)
+			create bmm_property_definition.make (name, type_def.bmm_generic_type_reference, is_mandatory, is_computed, is_im_infrastructure, is_im_runtime)
 		end
 
 end
