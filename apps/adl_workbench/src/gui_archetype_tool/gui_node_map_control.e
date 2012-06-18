@@ -80,12 +80,16 @@ feature -- Initialisation
 			ev_view_controls_vbox.disable_item_expand (view_detail_frame_ctl.ev_root_container)
 
 			-- view detail toggle button
-			create toggle_button_ctl.make (get_text ("domain_detail_button_text"), get_text ("technical_detail_button_text"),
-				get_text ("domain_detail_button_tooltip"),
+--			create toggle_button_ctl.make (get_text ("domain_detail_button_text"), get_text ("technical_detail_button_text"),
+--				get_text ("domain_detail_button_tooltip"),
+--				agent :BOOLEAN do Result := not show_technical_view end,
+--				agent update_show_technical_view, 0, 0)
+			create view_detail_radio_ctl.make (get_text ("domain_detail_button_text"), get_text ("technical_detail_button_text"),
+				get_text ("domain_detail_button_tooltip"), get_text ("technical_detail_button_tooltip"),
 				agent :BOOLEAN do Result := not show_technical_view end,
 				agent update_show_technical_view, 0, 0)
-			gui_controls.extend (toggle_button_ctl)
-			view_detail_frame_ctl.extend (toggle_button_ctl.ev_data_control, False)
+			gui_controls.extend (view_detail_radio_ctl)
+			view_detail_frame_ctl.extend (view_detail_radio_ctl.ev_root_container, False)
 
 			-- include codes checkbox
 			create add_codes_checkbox_ctl.make_active (get_text ("domain_view_add_codes_text"), Void,
@@ -303,7 +307,7 @@ feature {NONE} -- Implementation
 
 	gui_treeview_control: GUI_TREEVIEW_CONTROL
 
-	toggle_button_ctl: GUI_TOGGLE_BUTTON_CONTROL
+	view_detail_radio_ctl: GUI_BOOLEAN_RADIO_CONTROL
 
 	add_codes_checkbox_ctl, rm_attrs_visible_checkbox_ctl, view_rm_use_icons_checkbox_ctl, rm_runtime_attrs_visible_checkbox_ctl, rm_if_attrs_visible_checkbox_ctl: GUI_CHECK_BOX_CONTROL
 

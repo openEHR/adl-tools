@@ -217,6 +217,7 @@ feature {NONE} -- Implementation
 				-- pre-populate the description and node-map controls, or else populate the validity control and show it
 				description_controls.populate (source, differential_view, selected_language)
 				node_map_control.populate (source, differential_view, selected_language)
+				ev_notebook.select_item (node_map_control.ev_root_container)
 			else
 				ev_notebook.select_item (validity_report_control.ev_root_container)
 			end

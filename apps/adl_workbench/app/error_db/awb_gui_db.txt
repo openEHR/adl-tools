@@ -234,8 +234,9 @@ templates = <
 
 		["view_detail_controls_text"] = <"Detail Level">
 		["domain_detail_button_text"] = <"Domain">
-		["domain_detail_button_tooltip"] = <"Show domain view (hide RM details of the archetyped nodes) or display RM details">
+		["domain_detail_button_tooltip"] = <"Show domain view (hide RM details of the archetyped nodes)">
 		["technical_detail_button_text"] = <"Technical">
+		["technical_detail_button_tooltip"] = <"Show technical view including RM classes & properties">
 		["domain_view_add_codes_text"] = <"Add Codes">
 
 		["rm_visibility_controls_text"] = <"RM Visibility">
@@ -263,6 +264,9 @@ templates = <
 
 		["context_menu_convert_node_to_subtype"] = <"Convert to subtype">
 		["context_menu_add_subtype_mode"] = <"Add new subtype node">
+
+		["include_text"] = <"[includes]">
+		["exclude_text"] = <"[excludes]">
 
 		-- GUI_TEST_ARCHETYPE_TREE_CONTROL
 		["Test_arch_compare_i1"] = <"Archetype source lengths same but texts differ">

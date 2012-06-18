@@ -103,6 +103,7 @@ feature -- Visitor
 			-- enter a C_OBJECT
 		local
 			s: STRING
+			lpos: INTEGER
 		do
 			if not updating then
 				-- create a new row
@@ -149,10 +150,21 @@ feature -- Visitor
 				end
 			else
 				if in_technical_view then
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, a_node.rm_type_name, Void, archetype_rm_type_color, c_object_pixmap (a_node))
+					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, a_node.rm_type_name, node_tooltip_str (a_node), archetype_rm_type_color, c_object_pixmap (a_node))
 					gui_grid.set_last_row_label_col (Node_grid_col_meaning, "", Void, Void, Void)
 				else
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, "", Void, Void, c_object_pixmap (a_node))
+					create s.make_empty
+					s.append_character ('[')
+					if a_node.rm_type_name.substring (1, 3).same_string ("DV_") then
+						lpos := 4
+					else
+						lpos := 1
+					end
+					s.append_character (a_node.rm_type_name.item (lpos))
+					s.append (a_node.rm_type_name.substring (lpos+1, a_node.rm_type_name.count).as_lower)
+					s.append_character (']')
+					s.to_lower
+					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, s, node_tooltip_str (a_node), archetype_rm_type_color, c_object_pixmap (a_node))
 				end
 			end
 
@@ -212,7 +224,7 @@ feature -- Visitor
 							gui_grid.add_sub_row (ev_grid_row_stack.item, a_node.includes.item)
 
 							-- put pixmap on RM col
-							gui_grid.set_last_row_label_col (Node_grid_col_rm_name, "", Void, Void, get_icon_pixmap ("am/added/" + a_node.generating_type + "_include"))
+							gui_grid.set_last_row_label_col (Node_grid_col_rm_name, get_text ("include_text"), Void, Void, get_icon_pixmap ("am/added/" + a_node.generating_type + "_include"))
 
 							-- put assertions in constraint col
 							constraint_str := object_invariant_string (a_node.includes.item)
@@ -227,7 +239,7 @@ feature -- Visitor
 							gui_grid.add_sub_row (ev_grid_row_stack.item, a_node.excludes.item)
 
 							-- put pixmap on RM col
-							gui_grid.set_last_row_label_col (Node_grid_col_rm_name, "", Void, Void, get_icon_pixmap ("am/added/" + a_node.generating_type + "_exclude"))
+							gui_grid.set_last_row_label_col (Node_grid_col_rm_name, get_text ("exclude_text"), Void, Void, get_icon_pixmap ("am/added/" + a_node.generating_type + "_exclude"))
 
 							-- put assertions in constraint col
 							constraint_str := object_invariant_string (a_node.excludes.item)
@@ -975,7 +987,6 @@ feature {NONE} -- Implementation
 	arch_class_node_handler (a_class_grid_row: EV_GRID_ROW; x,y, button: INTEGER)
 			-- creates the context menu for a right click action for class node
 		local
-			subs: ARRAYED_SET[STRING]
 			menu: EV_MENU
 		do
 			if button = {EV_POINTER_CONSTANTS}.right and attached {C_OBJECT} a_class_grid_row.data as co then

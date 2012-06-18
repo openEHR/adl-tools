@@ -113,17 +113,17 @@ feature {NONE} -- Implementation
 	do_enable_active
 			-- enable user interaction
 		do
-			ev_data_control.enable_sensitive
+	--		ev_data_control.enable_sensitive
 		end
 
 	do_disable_active
 			-- disable user interaction
 		do
-			ev_data_control.disable_sensitive
+	--		ev_data_control.disable_sensitive
 		end
 
-invariant
-	is_readonly implies not ev_data_control.is_sensitive
+-- invariant
+	-- is_readonly implies not ev_data_control.is_sensitive
 
 end
 
