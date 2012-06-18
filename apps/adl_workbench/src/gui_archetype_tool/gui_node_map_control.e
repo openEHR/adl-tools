@@ -108,6 +108,13 @@ feature -- Initialisation
 			gui_controls.extend (rm_attrs_visible_checkbox_ctl)
 			rm_property_visibility_frame_ctl.extend (rm_attrs_visible_checkbox_ctl.ev_data_control, False)
 
+			-- add RM runtime attributes option check button
+			create rm_runtime_attrs_visible_checkbox_ctl.make_active (get_text ("show_rm_runtime_properties_button_text"),
+				get_text ("show_rm_runtime_properties_tooltip"),
+				agent :BOOLEAN do Result := show_rm_runtime_properties end, agent update_show_rm_runtime_properties)
+			gui_controls.extend (rm_runtime_attrs_visible_checkbox_ctl)
+			rm_property_visibility_frame_ctl.extend (rm_runtime_attrs_visible_checkbox_ctl.ev_data_control, False)
+
 			-- add RM infrastructure attributes option check button
 			create rm_if_attrs_visible_checkbox_ctl.make_active (get_text ("show_rm_if_properties_button_text"),
 				get_text ("show_rm_if_properties_tooltip"),
@@ -187,11 +194,12 @@ feature -- Commands
 			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
 			gui_grid.ev_grid.lock_update
 			create c_node_map_builder
-			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, gui_grid,
-				True, show_codes, node_grid_row_map, code_select_action_agent)
+			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, gui_grid, True, show_codes,
+				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties,
+				node_grid_row_map, code_select_action_agent)
 			create a_c_iterator.make (source_archetype.definition, c_node_map_builder,
 				differential_view, update_rm_view, rm_schema)
-			a_c_iterator.do_all
+			do_with_wait_cursor (ev_root_container, agent a_c_iterator.do_all)
 
 			gui_grid.resize_columns_to_content
 			gui_grid.ev_grid.unlock_update
@@ -205,8 +213,12 @@ feature {NONE} -- Events
 			set_show_technical_view (not a_flag)
 			if show_technical_view then
 				rm_attrs_visible_checkbox_ctl.enable_active
+				rm_runtime_attrs_visible_checkbox_ctl.enable_active
+				rm_if_attrs_visible_checkbox_ctl.enable_active
 			else
 				rm_attrs_visible_checkbox_ctl.disable_active
+				rm_runtime_attrs_visible_checkbox_ctl.disable_active
+				rm_if_attrs_visible_checkbox_ctl.disable_active
 			end
 			update_rm_view := show_rm_data_properties
 			if attached source then
@@ -227,11 +239,33 @@ feature {NONE} -- Events
 		do
 			update_rm_view := a_flag /= show_rm_data_properties
 			set_show_rm_data_properties (a_flag)
-			if not a_flag and show_rm_infrastructure_properties then
-				set_show_rm_infrastructure_properties (False)
+			if not a_flag then
+				if show_rm_infrastructure_properties then
+					set_show_rm_infrastructure_properties (False)
+				end
+				if show_rm_runtime_properties then
+					set_show_rm_runtime_properties (False)
+				end
 			end
 			if show_technical_view and attached source then
 				repopulate
+			end
+		end
+
+	update_show_rm_runtime_properties (a_flag: BOOLEAN)
+			-- turn on or off the display of reference model runtime properties details in `ev_grid'.
+		do
+			update_rm_view := a_flag /= show_rm_runtime_properties
+			set_show_rm_runtime_properties (a_flag)
+			if a_flag and not show_rm_data_properties then
+				rm_attrs_visible_checkbox_ctl.ev_data_control.enable_select
+			else
+				if not a_flag and show_rm_infrastructure_properties then
+					set_show_rm_infrastructure_properties (False)
+				end
+				if show_technical_view and attached source then
+					repopulate
+				end
 			end
 		end
 
@@ -240,8 +274,8 @@ feature {NONE} -- Events
 		do
 			update_rm_view := a_flag /= show_rm_infrastructure_properties
 			set_show_rm_infrastructure_properties (a_flag)
-			if a_flag and not show_rm_data_properties then
-				rm_attrs_visible_checkbox_ctl.ev_data_control.enable_select
+			if a_flag and not show_rm_runtime_properties then
+				rm_runtime_attrs_visible_checkbox_ctl.ev_data_control.enable_select
 			elseif show_technical_view and attached source then
 				repopulate
 			end
@@ -271,7 +305,7 @@ feature {NONE} -- Implementation
 
 	toggle_button_ctl: GUI_TOGGLE_BUTTON_CONTROL
 
-	add_codes_checkbox_ctl, rm_attrs_visible_checkbox_ctl, view_rm_use_icons_checkbox_ctl, rm_if_attrs_visible_checkbox_ctl: GUI_CHECK_BOX_CONTROL
+	add_codes_checkbox_ctl, rm_attrs_visible_checkbox_ctl, view_rm_use_icons_checkbox_ctl, rm_runtime_attrs_visible_checkbox_ctl, rm_if_attrs_visible_checkbox_ctl: GUI_CHECK_BOX_CONTROL
 
 	ev_view_controls_vbox: EV_VERTICAL_BOX
 
@@ -305,11 +339,12 @@ feature {NONE} -- Implementation
 
 			gui_grid.ev_grid.lock_update
 			create c_node_map_builder
-			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, gui_grid,
-				False, show_codes, node_grid_row_map, code_select_action_agent)
+			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, gui_grid, False, show_codes,
+				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties,
+				node_grid_row_map, code_select_action_agent)
 			create a_c_iterator.make (source_archetype.definition, c_node_map_builder,
 				differential_view, show_rm_data_properties, rm_schema)
-			a_c_iterator.do_all
+			do_with_wait_cursor (ev_root_container, agent a_c_iterator.do_all)
 
 			gui_grid.set_column_titles (Node_grid_col_names.linear_representation)
 

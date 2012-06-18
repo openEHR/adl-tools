@@ -240,9 +240,11 @@ templates = <
 
 		["rm_visibility_controls_text"] = <"RM Visibility">
 		["show_rm_properties_button_text"] = <"Data Properties">
-		["show_rm_properties_tooltip"] = <"Show non-archetyped RM data properties">
+		["show_rm_properties_tooltip"] = <"Show archetypable RM data properties">
+		["show_rm_runtime_properties_button_text"] = <"Runtime Properties">
+		["show_rm_runtime_properties_tooltip"] = <"Show RM runtime-set properties">
 		["show_rm_if_properties_button_text"] = <"I/S Properties">
-		["show_rm_if_properties_tooltip"] = <"Show RM infrastructure properties">
+		["show_rm_if_properties_tooltip"] = <"Show RM infrastructure (non-content) properties">
 
 		["rm_rendering_controls_text"] = <"RM Rendering">
 		["use_rm_icons_button_text"] = <"RM icons">

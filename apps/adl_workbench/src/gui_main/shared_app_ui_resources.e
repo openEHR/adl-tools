@@ -301,6 +301,18 @@ feature -- Application Switches
 			app_cfg.put_value("/gui/show_rm_data_properties", flag)
 		end
 
+	show_rm_runtime_properties: BOOLEAN
+			-- Display the RM runtime properties in the archetype definition node tree?
+		do
+			Result := app_cfg.boolean_value ("/gui/show_rm_runtime_properties")
+		end
+
+	set_show_rm_runtime_properties (flag: BOOLEAN)
+			-- Set flag for whether to show the RM runtime properties in the archetype definition node tree
+		do
+			app_cfg.put_value ("/gui/show_rm_runtime_properties", flag)
+		end
+
 	show_rm_infrastructure_properties: BOOLEAN
 			-- Display the RM infrastructure properties in the archetype definition node tree?
 		do

@@ -54,6 +54,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_GUI_AGENTS
+		export
+			{NONE} all
+		end
+
 	SPECIALISATION_STATUSES
 		export
 			{NONE} all
@@ -67,7 +72,9 @@ inherit
 feature -- Initialisation
 
 	initialise (a_rm_schema: BMM_SCHEMA; an_archetype: attached ARCHETYPE; a_lang: attached STRING; a_gui_tree: GUI_EV_GRID;
-				update_flag, show_codes_flag: BOOLEAN; a_gui_node_map: HASH_TABLE [EV_GRID_ROW, ARCHETYPE_CONSTRAINT];
+				update_flag, show_codes_flag,
+				in_technical_view_flag, rm_data_properties_flag, rm_runtime_properties_flag, rm_infrastructure_properties_flag: BOOLEAN;
+				a_gui_node_map: HASH_TABLE [EV_GRID_ROW, ARCHETYPE_CONSTRAINT];
 				a_code_select_agent: attached PROCEDURE [ANY, TUPLE [STRING]])
 		do
 			initialise_visitor (an_archetype)
@@ -79,6 +86,11 @@ feature -- Initialisation
 			language := a_lang
 			rm_publisher := an_archetype.archetype_id.rm_originator.as_lower
 			code_select_agent := a_code_select_agent
+
+			in_technical_view := in_technical_view_flag
+			include_rm_data_properties := rm_data_properties_flag
+			include_rm_runtime_properties := rm_runtime_properties_flag
+			include_rm_infrastructure_properties := rm_infrastructure_properties_flag
 
 			create ev_grid_row_stack.make (0)
 			create ev_grid_rm_row_stack.make (0)
@@ -125,7 +137,7 @@ feature -- Visitor
 
 			-- RM name & meaning columns
 			if a_node.is_addressable then
-				if show_technical_view then
+				if in_technical_view then
 					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, a_node.rm_type_name, node_tooltip_str (a_node), archetype_rm_type_color, c_object_pixmap (a_node))
 					gui_grid.set_last_row_label_col (Node_grid_col_meaning, coded_text_string (a_node.node_id), node_tooltip_str (a_node), Void, Void)
 					gui_grid.last_row.item (Node_grid_col_meaning).pointer_button_press_actions.force_extend (agent call_code_select_agent (a_node.node_id, ?, ?, ?))
@@ -136,12 +148,17 @@ feature -- Visitor
 					gui_grid.set_last_row_label_col (Node_grid_col_meaning, "", Void, Void, Void)
 				end
 			else
-				if show_technical_view then
+				if in_technical_view then
 					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, a_node.rm_type_name, Void, archetype_rm_type_color, c_object_pixmap (a_node))
 					gui_grid.set_last_row_label_col (Node_grid_col_meaning, "", Void, Void, Void)
 				else
 					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, "", Void, Void, c_object_pixmap (a_node))
 				end
+			end
+
+			-- add a context menu to rm_name col
+			if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Node_grid_col_rm_name) as gli then
+ 	 			gli.pointer_button_press_actions.force_extend (agent arch_class_node_handler (gui_grid.last_row, ?, ?, ?))
 			end
 
 			-- sibling order column
@@ -260,7 +277,7 @@ feature -- Visitor
 			-- RM attr name / path
 			create attr_str.make_empty
 			if a_node.has_differential_path then
-				if show_technical_view then
+				if in_technical_view then
 					attr_str.append (a_node.rm_attribute_path)
 				else
 					attr_str.append (ontology.physical_to_logical_path (a_node.rm_attribute_path, language, True))
@@ -301,7 +318,7 @@ feature -- Visitor
 			start_c_object (a_node, depth)
 			row := node_grid_row_map.item (a_node)
 
-			if not a_node.any_allowed and show_technical_view then
+			if not a_node.any_allowed and in_technical_view then
 				-- add Archetype root reference info
 				create s.make_empty
 				if attached a_node.slot_node_id then
@@ -342,7 +359,7 @@ feature -- Visitor
 			-- set constraint column to referenced path
 			create s.make_empty
 			s.append ("use ")
-			if show_technical_view then
+			if in_technical_view then
 				p := a_node.target_path.twin
 			else
 				p := ontology.physical_to_logical_path (a_node.target_path, language, True)
@@ -638,7 +655,9 @@ feature -- Visitor
 		do
 			if not ev_grid_rm_row_removals_stack.item then -- don't do anything if descending into a removed subtree
 				-- first of all work out whether we want this property
-				show_prop := show_rm_data_properties and (not a_bmm_prop.is_im_infrastructure or else show_rm_infrastructure_properties)
+				show_prop := in_technical_view and include_rm_data_properties
+					and (not a_bmm_prop.is_im_runtime or else include_rm_runtime_properties)
+					and (not a_bmm_prop.is_im_infrastructure or else include_rm_infrastructure_properties)
 				parent_class_row := ev_grid_rm_row_stack.item
 				-- if the row already exists then refresh it or remove it depending on settings; otherwise create it or do nothing
 				if attached gui_grid.matching_sub_row (parent_class_row,
@@ -723,8 +742,6 @@ feature -- Visitor
 				 	 		gli.pointer_button_press_actions.force_extend (agent class_node_handler (gui_grid.last_row, ?, ?, ?))
 				 	 	end
 				 	else
-						ev_grid_rm_row_stack.extend (parent_class_row)
-						rm_node_path.append_segment (create {OG_PATH_ITEM}.make (a_bmm_prop.name))
 						ignore := True
 				 	end
 			 	end
@@ -779,6 +796,8 @@ feature {NONE} -- Implementation
 
 	show_codes: BOOLEAN
 			-- True if codes should be shown
+
+	in_technical_view, include_rm_data_properties, include_rm_runtime_properties, include_rm_infrastructure_properties: BOOLEAN
 
 	rm_publisher: STRING
 			-- name of reference model of this archetype, for the purpose of finding pixmaps for RM-specific visualisation
@@ -953,6 +972,19 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	arch_class_node_handler (a_class_grid_row: EV_GRID_ROW; x,y, button: INTEGER)
+			-- creates the context menu for a right click action for class node
+		local
+			subs: ARRAYED_SET[STRING]
+			menu: EV_MENU
+		do
+			if button = {EV_POINTER_CONSTANTS}.right and attached {C_OBJECT} a_class_grid_row.data as co then
+				create menu
+				add_class_context_menu (menu, rm_schema.class_definition (co.rm_type_name))
+				menu.show
+			end
+		end
+
 	class_node_handler (a_class_grid_row: EV_GRID_ROW; x,y, button: INTEGER)
 			-- creates the context menu for a right click action for class node
 		local
@@ -962,7 +994,9 @@ feature {NONE} -- Implementation
 			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_TYPE_SPECIFIER} a_class_grid_row.data as bmm_type_spec then
 				create menu
 				-- add menu item for retarget tool to current node / display in new tool
-				--	add_class_context_menu (menu, eti)
+				if attached {BMM_CLASS_DEFINITION} a_class_grid_row.data as a_class_def then
+					add_class_context_menu (menu, a_class_def)
+				end
 
 				-- if there are type substitutions available, add sub-menu for that
 				if attached {BMM_CLASS_DEFINITION} bmm_type_spec as bmm_class_def then
@@ -979,6 +1013,21 @@ feature {NONE} -- Implementation
 				end
 				menu.show
 			end
+		end
+
+	add_class_context_menu (menu: EV_MENU; a_bmm_class_def: BMM_CLASS_DEFINITION)
+			-- dynamically initializes the context menu for this tree
+		local
+			an_mi: EV_MENU_ITEM
+		do
+			create an_mi.make_with_text_and_action (get_msg ("display_in_new_tab", Void), agent display_context_selected_class_in_new_tool (a_bmm_class_def))
+			an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
+			menu.extend (an_mi)
+		end
+
+	display_context_selected_class_in_new_tool (a_class_def: BMM_CLASS_DEFINITION)
+		do
+			gui_agents.select_class_in_new_tool_agent.call ([a_class_def])
 		end
 
 	add_subtype_context_menu (menu: EV_MENU; a_substitutions: ARRAYED_SET[STRING]; a_class_grid_row: EV_GRID_ROW)
@@ -1042,7 +1091,7 @@ feature {NONE} -- Implementation
 		do
 			bmm_subtype_def := rm_schema.class_definition (a_subtype)
 			-- set the RM path from the sibling node; it is the regardless of whether we are replacing or adding nodes
-			if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Node_grid_col_rm_name) as gli then
+			if attached {EV_GRID_LABEL_ITEM} a_class_grid_row.item (Node_grid_col_rm_name) as gli then
 				create rm_node_path.make_from_string (utf32_to_utf8 (gli.tooltip))
 			end
 			if replace_mode then
@@ -1056,17 +1105,21 @@ feature {NONE} -- Implementation
 				gui_grid.set_last_row_label_col (Node_grid_col_rm_name, a_subtype, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def, a_subtype))
 				if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Node_grid_col_rm_name) as gli then
 	 	 			gli.pointer_button_press_actions.force_extend (agent class_node_handler (gui_grid.last_row, ?, ?, ?))
+					gui_grid.last_row.expand_actions.force_extend (agent property_node_expand_handler (gui_grid.last_row))
 				end
 				ev_grid_rm_row_stack.extend (gui_grid.last_row)
 			end
+
 			ev_grid_rm_row_removals_stack.extend (False)
 
 			bmm_subtype_def.do_supplier_closure (not is_differential, 1, agent enter_rm_property, agent exit_rm_property)
+
+			ev_grid_rm_row_stack.remove
+			ev_grid_rm_row_removals_stack.remove
+
 			if a_class_grid_row.is_expandable then
 				a_class_grid_row.expand
 			end
-			ev_grid_rm_row_stack.remove
-			ev_grid_rm_row_removals_stack.remove
 		end
 
 	refresh_row (a_row: EV_GRID_ROW)
