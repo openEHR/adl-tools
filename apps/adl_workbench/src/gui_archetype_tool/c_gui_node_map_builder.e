@@ -174,16 +174,18 @@ feature -- Visitor
 			end
 
 			-- sibling order column
-			create s.make_empty
-			if a_node.is_addressable and then attached a_node.sibling_order then
-				if a_node.sibling_order.is_after then
-					s.append ("after")
-				else
-					s.append ("before")
+			if is_differential then
+				if a_node.is_addressable and then attached a_node.sibling_order then
+					create s.make_empty
+					if a_node.sibling_order.is_after then
+						s.append ("after")
+					else
+						s.append ("before")
+					end
+					s.append ("%N" + coded_text_string (a_node.sibling_order.sibling_node_id))
+					gui_grid.set_last_row_label_col_multi_line (Node_grid_col_sibling_order, s, Void, archetype_constraint_color, Void)
 				end
-				s.append ("%N" + coded_text_string (a_node.sibling_order.sibling_node_id))
 			end
-			gui_grid.set_last_row_label_col (Node_grid_col_sibling_order, s, Void, archetype_constraint_color, Void)
 		end
 
 	start_c_complex_object (a_node: attached C_COMPLEX_OBJECT; depth: INTEGER)
@@ -296,10 +298,11 @@ feature -- Visitor
 				end
 				attr_str.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
 				attr_str.remove_head (1)
+				gui_grid.set_last_row_label_col_multi_line (Node_grid_col_rm_name, attr_str, node_tooltip_str (a_node), archetyped_attribute_color, c_attribute_pixmap (a_node))
 			else
 				attr_str.append (a_node.rm_attribute_name)
+				gui_grid.set_last_row_label_col (Node_grid_col_rm_name, attr_str, node_tooltip_str (a_node), archetyped_attribute_color, c_attribute_pixmap (a_node))
 			end
-			gui_grid.set_last_row_label_col_multi_line (Node_grid_col_rm_name, attr_str, node_tooltip_str (a_node), rm_attribute_color, c_attribute_pixmap (a_node))
 		end
 
 	end_c_attribute (a_node: attached C_ATTRIBUTE; depth: INTEGER)
