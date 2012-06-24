@@ -30,7 +30,6 @@ feature -- Initialization
 		-- Initialize `Current'.
 	local
 		file_path: STRING
-		attr_processor: XML_ATTR_PROCESSOR
 		value_set_processor: XML_VALUE_SET_PROCESSOR
 	do
 		-- for now we just make do with 'en' terminology

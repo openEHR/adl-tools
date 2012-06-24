@@ -201,6 +201,7 @@ feature -- Commands
 				differential_view, update_rm_view, rm_schema)
 			do_with_wait_cursor (ev_root_container, agent a_c_iterator.do_all)
 
+			gui_grid.ev_grid.lock_update
 			gui_grid.resize_columns_to_content
 			gui_grid.ev_grid.unlock_update
 		end
@@ -364,6 +365,7 @@ feature {NONE} -- Implementation
 				gui_treeview_control.on_expand_all
 				roll_up_to_specialisation_level
 			end
+			gui_grid.ev_grid.lock_update
 			gui_grid.resize_columns_to_content
 			gui_grid.ev_grid.unlock_update
 
