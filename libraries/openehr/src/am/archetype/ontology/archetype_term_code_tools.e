@@ -40,6 +40,8 @@ inherit
 
 feature -- Definitions
 
+	Local_terminology_id: STRING = "local"
+
 	Default_code_number_string: STRING = "0000"
 
 	Default_concept_code: STRING

@@ -148,7 +148,7 @@ feature -- Output
 	as_string: STRING
 		do
 			create Result.make(0)
-
+			Result.append (value)
 		end
 
 feature {DV_TEXT} -- Implementation

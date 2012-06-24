@@ -8,6 +8,7 @@ note
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
+	void_safe:   "yes"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -35,51 +36,68 @@ feature -- Definitions
 
 feature -- Access
 
-	terminology(name: STRING): TERMINOLOGY_ACCESS
+	terminology (name: STRING): TERMINOLOGY_ACCESS
 			-- return a terminology access object for a terminology identified in openEHR by openehr_id
 			-- Allowable names are:
 			--    * official names from the US NLM UMLS meta-data list at http://www.nlm.nih.gov/research/umls/metaa1.html
 			--    * "openehr"
 			--    * "cen13606-3"
 		require
-			name_valid: name /= Void and then has_terminology(name)
+			id_valid: has_terminology (name)
 		do
-			-- FIXME: dummy implementation
-			create Result.make(name)
-		ensure
-			Result /= Void
+			Result := terminologies.item (name)
 		end
 
-	code_set(openehr_id: STRING): CODE_SET_ACCESS
+	code_set (code_set_id: STRING): CODE_SET_ACCESS
 			-- Allowable names are taken from OPENEHR_CODE_SET_IDENTIFIERS class
 		require
-			name_valid: openehr_id /= Void and then has_code_set(openehr_id)
+			id_valid: has_code_set (code_set_id)
 		do
-			-- FIXME: dummy implementation
-			create Result.make(openehr_id)
-		ensure
-			Result /= Void
+			Result := code_sets.item (code_set_id)
 		end
 
 feature -- Status Report
 
-	has_terminology(name: STRING): BOOLEAN
+	has_terminology (a_name: STRING): BOOLEAN
 			-- True if terminology with name is known by this service
 			-- Allowable names are:
 			--    * official names from the US NLM UMLS meta-data list at http://www.nlm.nih.gov/research/umls/metaa1.html
 			--    * "openehr"
 			--    * "cen13606-3"
 		require
-			name_valid: name /= Void and then not name.is_empty
+			name_valid: not a_name.is_empty
 		do
+			Result := terminologies.has (a_name)
 		end
 
-	has_code_set(name: STRING): BOOLEAN
+	has_code_set (name: STRING): BOOLEAN
 			-- True if code set with name is known by this service
 			-- Allowable names are taken from OPENEHR_CODE_SET_IDENTIFIERS class
 		require
-			name_valid: name /= Void and then not name.is_empty
+			name_valid: not name.is_empty
 		do
+			Result := code_sets.has (name)
+		end
+
+feature -- Modification
+
+	add_terminology (a_name: STRING)
+		require
+			not has_terminology (a_name)
+		do
+			terminologies.put (create {TERMINOLOGY_ACCESS}.make (a_name), a_name)
+		end
+
+feature {NONE} -- Implementation
+
+	terminologies: HASH_TABLE [TERMINOLOGY_ACCESS, STRING]
+		once
+			create Result.make (0)
+		end
+
+	code_sets: HASH_TABLE [CODE_SET_ACCESS, STRING]
+		once
+			create Result.make (0)
 		end
 
 end

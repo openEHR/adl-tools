@@ -4,9 +4,9 @@ note
 	description: "Simple terminology interface definition"
 	keywords:    "terminology, vocabulary"
 
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2000-2004 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -26,6 +26,8 @@ feature -- Initialisation
 			Id_valid: not an_id.is_empty
 		do
 			id := an_id
+			create content_tables.make (0)
+			create term_index.make (0)
 		ensure
 			Id_set: id = an_id
 		end
@@ -37,47 +39,51 @@ feature -- Access
 
 	all_codes: SET [CODE_PHRASE]
 		do
-			create {ARRAYED_SET [CODE_PHRASE]} Result.make (0)
 		end
 
 	all_group_ids: SET [STRING]
 		do
-			create {ARRAYED_SET [STRING]} Result.make (0)
+
 		end
 
-	codes_for_group_id (a_group_id: STRING): SET [CODE_PHRASE]
+	group (a_group, a_lang: STRING): TERMINOLOGY_GROUP
+		require
+			has_group (a_group, a_lang)
 		do
-			create {ARRAYED_SET [CODE_PHRASE]} Result.make (0)
+			Result := content_tables.item (a_lang).item (a_group)
 		end
 
-	codes_for_group_name (a_group_rubric, a_language: STRING): SET [CODE_PHRASE]
+	term (a_concept_id, a_lang: STRING): DV_CODED_TEXT
+		require
+			has_concept_id (a_concept_id, a_lang)
 		do
-			create {ARRAYED_SET [CODE_PHRASE]} Result.make (0)
-		end
-
-	rubric_for_code (a_code: STRING; a_lang: STRING): STRING
-		do
-			create Result.make_empty
-		end
-
-	code_for_rubric(a_rubric, a_lang: STRING): CODE_PHRASE
-			--
-		do
-			create Result.default_create
+			Result := term_index.item (a_lang).item (a_concept_id)
 		end
 
 feature -- Status Report
 
-	has (a_code: CODE_PHRASE): BOOLEAN
+	has_concept_id (a_concept_id, a_lang: STRING): BOOLEAN
 			-- 	True if a_code exists in this code set
+		require
+			Concept_id_valid: not a_concept_id.is_empty
+			Lang_valid: not a_lang.is_empty
 		do
-
+			Result := term_index.has (a_lang) and then term_index.item (a_lang).has (a_concept_id)
 		end
 
-	has_group_id (gid: STRING): BOOLEAN
+	has_language (a_lang: STRING): BOOLEAN
 		require
-			gid_valid: not gid.is_empty
+			Lang_valid: not a_lang.is_empty
 		do
+			Result := content_tables.has (a_lang)
+		end
+
+	has_group (a_group_name, a_lang: STRING): BOOLEAN
+		require
+			Group_valid: not a_group_name.is_empty
+			Lang_valid: not a_lang.is_empty
+		do
+			Result := content_tables.has (a_lang) and then content_tables.item (a_lang).has (a_group_name)
 		end
 
 	has_code_for_group_id (group_id: STRING; a_code: CODE_PHRASE): BOOLEAN
@@ -85,6 +91,47 @@ feature -- Status Report
 		do
 
 		end
+
+feature -- Modification
+
+	add_group (a_group, a_lang: STRING)
+		require
+			Group_valid: not a_group.is_empty
+			Valid_lang: not a_lang.is_empty
+		do
+			if not content_tables.has (a_lang) then
+				content_tables.put (create {HASH_TABLE [TERMINOLOGY_GROUP, STRING]}.make (0), a_lang)
+			end
+			content_tables.item (a_lang).put (create {TERMINOLOGY_GROUP}.make (a_group), a_group)
+		end
+
+	add_term (a_concept_id, a_rubric, a_group, a_lang: STRING)
+		require
+			Concept_id_valid: not has_concept_id (a_concept_id, a_lang)
+			Rubric_valid: not a_rubric.is_empty
+		local
+			new_term: DV_CODED_TEXT
+		do
+			create new_term.make (a_rubric, create {CODE_PHRASE}.make (id, a_concept_id))
+			if not has_group (a_group, a_lang) then
+				add_group (a_group, a_lang)
+			end
+			group (a_group, a_lang).add_term (new_term)
+
+			if not term_index.has (a_lang) then
+				term_index.put (create {HASH_TABLE [DV_CODED_TEXT, STRING]}.make (0), a_lang)
+			end
+			term_index.item (a_lang).put (new_term, a_concept_id)
+
+		end
+
+feature {NONE} -- Implementation
+
+	content_tables: HASH_TABLE [HASH_TABLE [TERMINOLOGY_GROUP, STRING], STRING]
+			-- terminology contents as tables of {{group, group_name}, language}
+
+	term_index: HASH_TABLE [HASH_TABLE [DV_CODED_TEXT, STRING], STRING]
+			-- terminology contents as tables of {{term, concept_id}, language}
 
 end
 

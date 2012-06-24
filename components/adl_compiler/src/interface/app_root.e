@@ -47,6 +47,7 @@ feature -- Initialisation
 		local
 			dummy_error_accumulator: ERROR_ACCUMULATOR
 			strx: STRING
+			term_init: XML_TERMINOLOGY_SERVICE_POPULATOR
 		once
 			-- see DT_TYPES note above; a hack needed to make string name -> type_id work for class names
 			-- that clash with Eiffel type names
@@ -61,12 +62,10 @@ feature -- Initialisation
 				create dummy_error_accumulator.make
 				dummy_error_accumulator.set_error_reporting_level (error_reporting_level)
 
-				-- tell the user a few useful things
-				post_warning (Current, "initialise", "adl_version_warning", <<adl_version_for_flat_output>>)
-				if validation_strict then
-					post_warning (Current, "initialise", "validation_strict", Void)
-				else
-					post_warning (Current, "initialise", "validation_non_strict", Void)
+				-- initialise terminology
+				create term_init.make
+				if term_init.init_failed then
+					post_error (Current, "initialise", "terminology_init_failed", <<term_init.init_fail_reason>>)
 				end
 
 				-- initialise serialisers
@@ -94,6 +93,15 @@ feature -- Initialisation
 					repository_profiles.start
 					set_current_profile (repository_profiles.key_for_iteration)
 				end
+
+				-- tell the user a few useful things
+				post_warning (Current, "initialise", "adl_version_warning", <<adl_version_for_flat_output>>)
+				if validation_strict then
+					post_warning (Current, "initialise", "validation_strict", Void)
+				else
+					post_warning (Current, "initialise", "validation_non_strict", Void)
+				end
+
 			end
 		end
 

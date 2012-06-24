@@ -14,7 +14,7 @@ note
 deferred class AUTHORED_RESOURCE
 
 inherit
-	EXTERNAL_ENVIRONMENT_ACCESS
+	SHARED_TERMINOLOGY_SERVICE
 		export
 			{NONE} all
 		end
@@ -310,11 +310,11 @@ feature {NONE} -- Implementation
 			-- original_language and translations. Guaranteed to at least include original_language
 
 invariant
-	Original_language_valid: code_set(Code_set_id_languages).has(original_language)
+	Original_language_valid: ts.code_set (ts.Code_set_id_languages).has (original_language)
 	Revision_history_valid: is_controlled xor revision_history = Void
-	Current_revision_valid: not is_controlled implies current_revision.is_equal(Uncontrolled_revision_name)
+	Current_revision_valid: not is_controlled implies current_revision.is_equal (Uncontrolled_revision_name)
 	Translations_valid: has_translations implies (not translations.is_empty and
-		not translations.has(original_language.code_string))
+		not translations.has (original_language.code_string))
 --	Description_valid: has_translations implies (description.details.for_all
 --		(agent (d:RESOURCE_DESCRIPTION_ITEM):BOOLEAN do translations.has_key(d.language.code_string) end))
 

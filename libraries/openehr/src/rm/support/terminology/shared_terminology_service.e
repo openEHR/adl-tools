@@ -1,69 +1,27 @@
 note
 	component:   "openEHR common definitions"
 
-	description: "Simple code set interface definition"
-	keywords:    "terminology, vocabulary, code set"
+	description: "Shared access to terminology"
+	keywords:    "terminology, vocabulary, identifiers"
 
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
+	void_safe:   "yes"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class CODE_SET_ACCESS
-
-create
-	make
-
-feature -- Initialisation
-
-	make(an_id: STRING)
-			-- make a code_set interface with `an_id'
-		require
-			Id_valid: an_id /= Void and then not an_id.is_empty
-		do
-			id := an_id
-		ensure
-			Id_set: id = an_id
-		end
+class SHARED_TERMINOLOGY_SERVICE
 
 feature -- Access
 
-	id: STRING
-			-- identifier of this terminology
-
-	all_codes: SET [CODE_PHRASE]
-		do
-			create {LINKED_SET[CODE_PHRASE]} Result.make
-		ensure
-			Result_exists: Result /= Void
+	ts: TERMINOLOGY_SERVICE
+		once
+			create Result
 		end
-
-feature -- Status Report
-
-	has (a_code: CODE_PHRASE): BOOLEAN
-			-- 	True if a_code exists in thsi code set
-		require
-			Code_exists: a_code /= Void
-		do
-			-- FIXME: TO_BE_IMPLEM
-			Result := True
-		end
-
-	has_code (a_code: STRING): BOOLEAN
-		require
-			a_code_valid: a_code /= Void and then not a_code.is_empty
-		do
-			-- FIXME: TO_BE_IMPLEM
-			Result := True
-		end
-
-feature {NONE} -- Implementation
-
-	code_sets: HASH_TABLE [TERMINOLOGY_CODE_SET, STRING]
 
 end
 
@@ -83,7 +41,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is code_set_interface.e.
+--| The Original Code is terminology_service.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

@@ -16,9 +16,11 @@
 templates = <
 	["en"] = <
 		-- APP_ROOT
+		["terminology_init_failed"] = <"Terminology initialisation failed; reason: $1">
 		["adl_version_warning"] = <"Using ADL version $1 for output serialisation">
 		["validation_strict"] = <"Validation level STRICT">
 		["validation_non_strict"] = <"Validation level NON-STRICT; non-conforming existence, occurrences & cardinality will be removed">
+		["duplicate_term_found"] = <"Duplicate term found during terminology initialisation: code=$1; lang=$2; group=$3">
 
 		-- ARCHETYPE_COMPILER
 		["arch_context_make_flat_i1"] = <"Generated differential archetype from specialised flat archetype">

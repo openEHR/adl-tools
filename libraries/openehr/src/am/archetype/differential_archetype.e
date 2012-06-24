@@ -34,7 +34,7 @@ feature -- Initialisation
 			archetype_id := an_id
 			adl_version := 	Latest_adl_version
 			create ontology.make_empty(an_original_language, a_specialisation_depth)
-			create original_language.make (Default_language_code_set, an_original_language)
+			create original_language.make (ts.Default_language_code_set, an_original_language)
 			create description.default_create
 			create definition.make_identified(an_id.rm_entity, ontology.concept_code.twin)
 			is_dirty := True

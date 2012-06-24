@@ -79,11 +79,7 @@ feature -- Initialisation
 			ev_view_controls_vbox.extend (view_detail_frame_ctl.ev_root_container)
 			ev_view_controls_vbox.disable_item_expand (view_detail_frame_ctl.ev_root_container)
 
-			-- view detail toggle button
---			create toggle_button_ctl.make (get_text ("domain_detail_button_text"), get_text ("technical_detail_button_text"),
---				get_text ("domain_detail_button_tooltip"),
---				agent :BOOLEAN do Result := not show_technical_view end,
---				agent update_show_technical_view, 0, 0)
+			-- view detail radio buttons
 			create view_detail_radio_ctl.make (get_text ("domain_detail_button_text"), get_text ("technical_detail_button_text"),
 				get_text ("domain_detail_button_tooltip"), get_text ("technical_detail_button_tooltip"),
 				agent :BOOLEAN do Result := not show_technical_view end,
@@ -424,7 +420,7 @@ feature {NONE} -- Implementation
 			Result := an_inv.as_string
 
 			if not show_technical_view then
-				Result := source_archetype.ontology.substitute_codes (Result, current_language)
+				Result := source_archetype.ontology.substitute_codes (Result, archetype_view_language)
 			end
 		end
 

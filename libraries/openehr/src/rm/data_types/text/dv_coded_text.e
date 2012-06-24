@@ -39,6 +39,8 @@ feature -- Definitions
 
 	Default_primary_rubric: STRING = "unknown"
 
+	Value_delimiter: CHARACTER = '|'
+
 feature -- Initialization
 
 	default_create
@@ -85,10 +87,12 @@ feature -- Comparison
 feature -- Output
 
 	as_string: STRING
-			-- Result in same form as `value'
+			-- Result in form as `value'
 		do
-			Result := precursor
 			Result.append (defining_code.as_string)
+			Result.append_character (value_delimiter)
+			Result.append (value)
+			Result.append_character (value_delimiter)
 		end
 
 end

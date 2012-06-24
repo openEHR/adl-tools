@@ -34,6 +34,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_TERMINOLOGY_SERVICE
+		export
+			{NONE} all
+		end
+
 	STRING_UTILITIES
 		export
 			{NONE} all
@@ -140,10 +145,10 @@ feature -- Visitor
 			if a_node.is_addressable then
 				if in_technical_view then
 					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, a_node.rm_type_name, node_tooltip_str (a_node), archetype_rm_type_color, c_object_pixmap (a_node))
-					gui_grid.set_last_row_label_col (Node_grid_col_meaning, coded_text_string (a_node.node_id), node_tooltip_str (a_node), Void, Void)
+					gui_grid.set_last_row_label_col (Node_grid_col_meaning, local_term_string (a_node.node_id), node_tooltip_str (a_node), Void, Void)
 					gui_grid.last_row.item (Node_grid_col_meaning).pointer_button_press_actions.force_extend (agent call_code_select_agent (a_node.node_id, ?, ?, ?))
 		 		else
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, coded_text_string (a_node.node_id), node_tooltip_str (a_node), Void, c_object_pixmap (a_node))
+					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, local_term_string (a_node.node_id), node_tooltip_str (a_node), Void, c_object_pixmap (a_node))
 					gui_grid.last_row.item (Node_grid_col_rm_name).pointer_button_press_actions.force_extend (agent call_code_select_agent (a_node.node_id, ?, ?, ?))
 
 					gui_grid.set_last_row_label_col (Node_grid_col_meaning, "", Void, Void, Void)
@@ -182,7 +187,7 @@ feature -- Visitor
 					else
 						s.append ("before")
 					end
-					s.append ("%N" + coded_text_string (a_node.sibling_order.sibling_node_id))
+					s.append ("%N" + local_term_string (a_node.sibling_order.sibling_node_id))
 					gui_grid.set_last_row_label_col_multi_line (Node_grid_col_sibling_order, s, Void, archetype_constraint_color, Void)
 				end
 			end
@@ -407,7 +412,7 @@ feature -- Visitor
 
 			-- set meaning column to referenced path
 			create s.make_empty
-			s.append (coded_text_string (a_node.target))
+			s.append (local_term_string (a_node.target))
 			row.set_item (Node_grid_col_meaning, create {EV_GRID_LABEL_ITEM}.make_with_text (utf8_to_utf32 (s)))
 
 			-- add select event
@@ -455,7 +460,6 @@ feature -- Visitor
 	start_c_code_phrase (a_node: attached C_CODE_PHRASE; depth: INTEGER)
 			-- enter an C_CODE_PHRASE
 		local
-			assumed_flag: BOOLEAN
 			row, sub_row: EV_GRID_ROW
 			constraint_str: STRING
 			i: INTEGER
@@ -479,8 +483,11 @@ feature -- Visitor
 			if attached a_node.code_list then
 				create constraint_str.make_empty
 				from a_node.code_list.start until a_node.code_list.off loop
-					assumed_flag := a_node.has_assumed_value and then a_node.assumed_value.code_string.is_equal (a_node.code_list.item)
-					constraint_str.append_string (object_term_item_string (a_node.code_list.item, assumed_flag))
+					constraint_str.append_string (term_string (a_node.terminology_id.value, a_node.code_list.item))
+					if a_node.has_assumed_value and then a_node.assumed_value.code_string.is_equal (a_node.code_list.item) then
+						constraint_str.append (" (" + get_text ("assumed_text") + ")")
+					end
+
 					if not a_node.code_list.islast then
 						constraint_str.append_string ("%N")
 					end
@@ -587,7 +594,7 @@ feature -- Visitor
 				if attached a_node.property then
 					gui_grid.add_sub_row (row, Void)
 					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, "property", Void, archetype_constraint_color, get_icon_pixmap ("rm/generic/c_meta_attribute"))
-					gui_grid.set_last_row_label_col (Node_grid_col_constraint, a_node.property.as_string, Void, archetype_constraint_color, Void)
+					gui_grid.set_last_row_label_col (Node_grid_col_constraint, term_string (a_node.property.terminology_id.value, a_node.property.code_string), Void, archetype_constraint_color, Void)
 				end
 
 				-- magnitude / units / precision constraint
@@ -841,30 +848,19 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	object_term_item_string (a_code: attached STRING; assumed_flag: BOOLEAN): attached STRING
-			-- generate string form of node or object for use in tree node;
-			-- assumed_flag = True if this is an assumed value - will be marked visually
-		do
-			create Result.make_empty
-			Result.append (coded_text_string (a_code))
-			if assumed_flag then
-				Result.append (" (" + get_text ("assumed_text") + ")")
-			end
-		end
-
 	object_ordinal_item_string (an_ordinal: attached ORDINAL; assumed_flag: BOOLEAN): attached STRING
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make_empty
 			Result.append (an_ordinal.value.out)
 			Result.append (" - ")
-			Result.append (coded_text_string (an_ordinal.symbol.code_string))
+			Result.append (term_string (an_ordinal.symbol.terminology_id.value, an_ordinal.symbol.code_string))
 			if assumed_flag then
 				Result.append (" (" + get_text ("assumed_text") + ")")
 			end
 		end
 
-	coded_text_string (a_code: STRING): attached STRING
+	local_term_string (a_code: STRING): attached STRING
 			-- generate a string of the form "[code|rubric|]" if in technical mode,
 			-- or else "rubric"
 		local
@@ -881,6 +877,32 @@ feature {NONE} -- Implementation
 					Result.append (a_code + "|" + rubric + "|")
 				else
 					Result.append (rubric)
+				end
+			else
+				Result.append (a_code)
+			end
+		end
+
+	term_string (a_terminology_id, a_code: STRING): attached STRING
+			-- generate a string of the form "[code|rubric|]" if in technical mode,
+			-- or else "rubric"
+		local
+			rubric: STRING
+			a_term: DV_CODED_TEXT
+		do
+			create Result.make_empty
+			if a_terminology_id.is_equal (Local_terminology_id) then
+				Result := local_term_string (a_code)
+			elseif ts.has_terminology (a_terminology_id) then
+				if ts.terminology (a_terminology_id).has_concept_id (a_code, language) then
+					a_term := ts.terminology (a_terminology_id).term (a_code, language)
+				else
+					a_term := ts.terminology (a_terminology_id).term (a_code, Default_language)
+				end
+				if show_codes then
+					Result.append (a_term.as_string)
+				else
+					Result.append (a_term.value)
 				end
 			else
 				Result.append (a_code)

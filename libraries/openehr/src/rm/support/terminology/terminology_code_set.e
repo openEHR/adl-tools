@@ -1,69 +1,66 @@
 note
 	component:   "openEHR common definitions"
 
-	description: "Simple code set interface definition"
-	keywords:    "terminology, vocabulary, code set"
+	description: "Representation of a value domain whose codes are also the meanings"
+	keywords:    "terminology, vocabulary"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2012 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class CODE_SET_ACCESS
+class TERMINOLOGY_CODE_SET
 
 create
 	make
 
 feature -- Initialisation
 
-	make(an_id: STRING)
-			-- make a code_set interface with `an_id'
+	make (an_id, an_issuer: STRING)
+			-- make a terminology interface with `a_name'
 		require
-			Id_valid: an_id /= Void and then not an_id.is_empty
+			Id_valid: not an_id.is_empty
+			Issuer_valid: not an_issuer.is_empty
 		do
-			id := an_id
+			openehr_id := an_id
+			issuer := an_issuer
+			create codes.make
+			codes.compare_objects
 		ensure
-			Id_set: id = an_id
+			Openehr_id_set: openehr_id = an_id
+			Issuer_set: issuer = an_issuer
 		end
 
 feature -- Access
 
-	id: STRING
-			-- identifier of this terminology
+	openehr_id: STRING
+			-- identifier of this code_set
 
-	all_codes: SET [CODE_PHRASE]
-		do
-			create {LINKED_SET[CODE_PHRASE]} Result.make
-		ensure
-			Result_exists: Result /= Void
-		end
+	issuer: STRING
+
+	codes: TWO_WAY_SORTED_SET [STRING]
+			-- list of codes
 
 feature -- Status Report
 
-	has (a_code: CODE_PHRASE): BOOLEAN
-			-- 	True if a_code exists in thsi code set
-		require
-			Code_exists: a_code /= Void
-		do
-			-- FIXME: TO_BE_IMPLEM
-			Result := True
-		end
-
 	has_code (a_code: STRING): BOOLEAN
-		require
-			a_code_valid: a_code /= Void and then not a_code.is_empty
+			-- 	True if a_code exists in this code set
 		do
-			-- FIXME: TO_BE_IMPLEM
-			Result := True
+			Result := codes.has (a_code)
 		end
 
-feature {NONE} -- Implementation
+feature -- Modification
 
-	code_sets: HASH_TABLE [TERMINOLOGY_CODE_SET, STRING]
+	add_code (a_code: STRING)
+		require
+			not has_code (a_code)
+		do
+			codes.extend (a_code)
+		end
 
 end
 
@@ -83,7 +80,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is code_set_interface.e.
+--| The Original Code is terminology_interface.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

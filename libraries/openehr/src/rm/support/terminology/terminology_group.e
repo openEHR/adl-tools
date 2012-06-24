@@ -1,69 +1,71 @@
 note
 	component:   "openEHR common definitions"
 
-	description: "Simple code set interface definition"
-	keywords:    "terminology, vocabulary, code set"
+	description: "Representation of a value domain"
+	keywords:    "terminology, vocabulary"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2012 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
+	void_safe:	 "yes"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class CODE_SET_ACCESS
+class TERMINOLOGY_GROUP
 
 create
 	make
 
 feature -- Initialisation
 
-	make(an_id: STRING)
-			-- make a code_set interface with `an_id'
+	make (a_name: STRING)
+			-- make a terminology interface with `a_name'
 		require
-			Id_valid: an_id /= Void and then not an_id.is_empty
+			Name_valid: not a_name.is_empty
 		do
-			id := an_id
+			name := a_name
+			create terms.make (0)
 		ensure
-			Id_set: id = an_id
+			Name_set: name = a_name
 		end
 
 feature -- Access
 
-	id: STRING
-			-- identifier of this terminology
+	name: STRING
+			-- identifier of this terminology value set (group)
 
-	all_codes: SET [CODE_PHRASE]
+	term (a_code: STRING): DV_CODED_TEXT
+		require
+			has_term (a_code)
 		do
-			create {LINKED_SET[CODE_PHRASE]} Result.make
-		ensure
-			Result_exists: Result /= Void
+			Result := terms.item (a_code)
 		end
 
 feature -- Status Report
 
-	has (a_code: CODE_PHRASE): BOOLEAN
-			-- 	True if a_code exists in thsi code set
-		require
-			Code_exists: a_code /= Void
+	has_term (a_concept_code: STRING): BOOLEAN
+			-- 	True if a_concept_code exists in this code set
 		do
-			-- FIXME: TO_BE_IMPLEM
-			Result := True
+			Result := terms.has (a_concept_code)
 		end
 
-	has_code (a_code: STRING): BOOLEAN
+feature -- Modification
+
+	add_term (a_term: DV_CODED_TEXT)
 		require
-			a_code_valid: a_code /= Void and then not a_code.is_empty
+			not has_term (a_term.defining_code.code_string)
 		do
-			-- FIXME: TO_BE_IMPLEM
-			Result := True
+			terms.put (a_term, a_term.defining_code.code_string)
 		end
 
-feature {NONE} -- Implementation
+feature {NONE} -- mplementation
 
-	code_sets: HASH_TABLE [TERMINOLOGY_CODE_SET, STRING]
+	terms: HASH_TABLE [DV_CODED_TEXT, STRING]
+			-- table of terms indexed by concept code
+
 
 end
 
@@ -83,7 +85,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is code_set_interface.e.
+--| The Original Code is terminology_interface.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

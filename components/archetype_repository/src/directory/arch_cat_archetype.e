@@ -379,8 +379,8 @@ feature -- Access (semantic)
 			-- generate a valid language to display this archetype in, either the current_language
 			-- or the primary language of this archetype, if it doesn't support the current language
 		do
-			if differential_archetype.has_language (current_language) then
-				Result := current_language
+			if differential_archetype.has_language (archetype_view_language) then
+				Result := archetype_view_language
 			else
 				Result := differential_archetype.original_language.code_string
 			end
@@ -815,8 +815,8 @@ feature {NONE} -- Compilation
 					errors.add_error("compile_e1", <<parent_id.as_string>>, "")
 				else
 				 	compilation_state := Cs_ready_to_validate
-					if current_language.is_empty or not differential_archetype.has_language (current_language) then
-						set_current_language (differential_archetype.original_language.code_string)
+					if archetype_view_language.is_empty or not differential_archetype.has_language (archetype_view_language) then
+						set_archetype_view_language (differential_archetype.original_language.code_string)
 					end
 					validate
 					-- if differential archetype was generated from an old-style flat, perform path compression
@@ -872,8 +872,8 @@ feature {NONE} -- Compilation
 				else
 					compilation_state := Cs_ready_to_validate
 				end
-				if current_language.is_empty or not differential_archetype.has_language (current_language) then
-					set_current_language (differential_archetype.original_language.code_string)
+				if archetype_view_language.is_empty or not differential_archetype.has_language (archetype_view_language) then
+					set_archetype_view_language (differential_archetype.original_language.code_string)
 				end
 			end
 
@@ -1170,14 +1170,14 @@ feature {NONE} -- Implementation
 			-- The repository on which this item is found.
 
 	current_archetype_language: STRING
-			-- find a language from the current archetype that matches `current_language' either directly
+			-- find a language from the current archetype that matches `archetype_view_language' either directly
 			-- (e.g. "en" matches "en") or on a language group basis (e.g. "en-GB" matches "en"); if
 			-- none found, return archetype original language
 		do
-			if differential_archetype.has_language (current_language) then
-				Result := current_language
-			elseif differential_archetype.has_matching_language_tag (current_language) then
-				Result := differential_archetype.matching_language_tag (current_language)
+			if differential_archetype.has_language (archetype_view_language) then
+				Result := archetype_view_language
+			elseif differential_archetype.has_matching_language_tag (archetype_view_language) then
+				Result := differential_archetype.matching_language_tag (archetype_view_language)
 			else
 				Result := differential_archetype.original_language.code_string
 			end

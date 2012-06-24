@@ -180,27 +180,28 @@ feature -- Commands
 			err_type, i: INTEGER
 			category: STRING
 			message_lines: LIST [STRING]
-			ns: XM_NAMESPACE
-			document: XM_DOCUMENT
-			processing: XM_PROCESSING_INSTRUCTION
-			root, statistics_element, category_element, archetype_element: XM_ELEMENT
-			attr: XM_ATTRIBUTE
-			data: XM_CHARACTER_DATA
+			ns: XML_NAMESPACE
+			document: XML_DOCUMENT
+			processing: XML_PROCESSING_INSTRUCTION
+			root, statistics_element, category_element, archetype_element: XML_ELEMENT
+			attr: XML_ATTRIBUTE
+			data: XML_CHARACTER_DATA
 			create_category_element: PROCEDURE [ANY, TUPLE]
-			pretty_printer: XM_INDENT_PRETTY_PRINT_FILTER
-			xmlns_generator: XM_XMLNS_GENERATOR
-			file: KL_TEXT_OUTPUT_FILE
-			name1, name2: STRING
+			pretty_printer: XML_INDENT_PRETTY_PRINT_FILTER
+			xmlns_generator: XML_XMLNS_GENERATOR
+			xml_op_stream: XML_FILE_OUTPUT_STREAM
+			rpt_file_path: STRING
+			xml_file: RAW_FILE
 		do
 			create ns.make_default
 			create document.make
 			create processing.make_last_in_document (document, "xml-stylesheet", "type=%"text/xsl%" href=%"ArchetypeRepositoryReport.xsl%"")
 			create root.make_root (document, "archetype-repository-report", ns)
 
-			create_category_element := agent (parent: XM_ELEMENT; description: STRING; count: INTEGER)
+			create_category_element := agent (parent: XML_ELEMENT; description: STRING; count: INTEGER)
 				local
-					e: XM_ELEMENT
-					a: XM_ATTRIBUTE
+					e: XML_ELEMENT
+					a: XML_ATTRIBUTE
 				do
 					create e.make_last (parent, "category", parent.namespace)
 					create a.make_last ("description", parent.namespace, description, e)
@@ -233,16 +234,11 @@ feature -- Commands
 							create archetype_element.make_last (category_element, "archetype", ns)
 							create attr.make_last ("id", ns, ara.id.as_string, archetype_element)
 
-							from
-								message_lines := ara.errors.as_string.split ('%N')
-								message_lines.start
-							until
-								message_lines.off
-							loop
+							message_lines := ara.errors.as_string.split ('%N')
+							from message_lines.start until message_lines.off loop
 								if not message_lines.item.is_empty then
-									create data.make_last (create {XM_ELEMENT}.make_last (archetype_element, "message", ns), message_lines.item)
+									create data.make_last (create {XML_ELEMENT}.make_last (archetype_element, "message", ns), message_lines.item)
 								end
-
 								message_lines.forth
 							end
 						end
@@ -250,20 +246,19 @@ feature -- Commands
 				end
 			end
 
-			create file.make (xml_file_name)
-			file.open_write
-
-			if file.is_open_write then
+			create xml_file.make (xml_file_name)
+			xml_file.open_write
+			if xml_file.is_open_write then
+				create xml_op_stream.make (xml_file)
 				create pretty_printer.make_null
-				pretty_printer.set_output_stream (file)
+				pretty_printer.set_output_stream (xml_op_stream)
 				create xmlns_generator.set_next (pretty_printer)
 				document.process_to_events (xmlns_generator)
-				file.close
+				xml_file.close
 
-				name1 := file_system.pathname (application_startup_directory, "ArchetypeRepositoryReport.css")
-				name2 := file_system.pathname (file_system.dirname (xml_file_name), "ArchetypeRepositoryReport.css")
-				file_system.copy_file (name1, name2)
-				file_system.copy_file (extension_replaced (name1, ".xsl"), extension_replaced (name2, ".xsl"))
+				rpt_file_path := file_system.pathname (file_system.dirname (xml_file_name), Report_css_template_filename)
+				file_system.copy_file (Report_css_template_path, rpt_file_path)
+				file_system.copy_file (extension_replaced (Report_css_template_path, ".xsl"), extension_replaced (rpt_file_path, ".xsl"))
 			end
 		end
 

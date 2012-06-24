@@ -61,19 +61,37 @@ feature -- Definitions
 			Result.append(os_directory_separator.out + "rm_schemas")
 		end
 
-	Error_db_directory: attached STRING
+	Terminology_directory: STRING
+			-- directory of openEHR terminology files; structure is
+			-- $terminology_directory/lang/openehr_terminology.xml
+		once
+			Result := file_system.pathname (application_startup_directory, "terminology")
+		end
+
+	Terminology_filename: STRING = "openehr_terminology.xml"
+			-- name of a terminology file in a given language
+
+	Error_db_directory: STRING
 			-- directory of error database files in .dadl format e.g.
 			-- .../error_db/dadl_errors.txt etc
 		once
 			Result := file_system.pathname (application_startup_directory, "error_db")
 		end
 
-	xml_rules_file_path: attached STRING
+	xml_rules_file_path: STRING
 			-- Full path to XML rules file.
 		once
 			Result := file_system.pathname (user_config_file_directory, extension_replaced ("xml_rules", User_config_file_extension))
 		ensure
 			not_empty: not Result.is_empty
+		end
+
+	Report_css_template_filename: STRING = "ArchetypeRepositoryReport.css"
+
+	Report_css_template_path: STRING
+			-- path to .css template file to copy when generating HTML report files
+		once
+			Result := file_system.pathname (application_startup_directory, Report_css_template_filename)
 		end
 
 feature -- Initialisation
@@ -86,17 +104,17 @@ feature -- Initialisation
 
 feature -- Application Switches
 
-	current_language: attached STRING
+	archetype_view_language: attached STRING
 		do
-			Result := app_cfg.string_value ("/general/current_language")
+			Result := app_cfg.string_value ("/general/archetype_view_language")
 		end
 
-	set_current_language (a_lang: attached STRING)
+	set_archetype_view_language (a_lang: attached STRING)
 			-- set the language that should be used to display archetypes in the UI.
 		require
 			a_lang_attached: not a_lang.is_empty
 		do
-			app_cfg.put_value ("/general/current_language", a_lang)
+			app_cfg.put_value ("/general/archetype_view_language", a_lang)
 		end
 
 	error_reporting_level: INTEGER
