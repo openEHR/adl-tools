@@ -46,11 +46,12 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (a_code_select_action_agent: like code_select_action_agent)
+	make (a_code_select_action_agent: like code_select_action_agent; a_path_select_action_agent: detachable like path_select_action_agent)
 		do
 			create gui_controls.make (0)
 
 			code_select_action_agent := a_code_select_action_agent
+			path_select_action_agent := a_path_select_action_agent
 
 			-- create widgets
 			create ev_root_container
@@ -59,7 +60,9 @@ feature -- Initialisation
 			ev_root_container.set_border_width (Default_border_width)
 
 			-- EV_GRID
-			create gui_grid.make (True, False, True)
+			create gui_grid.make (True, False, True, True)
+			gui_grid.set_tree_expand_collapse_icons (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
+
 			ev_root_container.extend (gui_grid.ev_grid)
 
 			create ev_view_controls_vbox
@@ -196,7 +199,7 @@ feature -- Commands
 			create c_node_map_builder
 			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, gui_grid, True, show_codes,
 				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties,
-				node_grid_row_map, code_select_action_agent)
+				node_grid_row_map, code_select_action_agent, path_select_action_agent)
 			create a_c_iterator.make (source_archetype.definition, c_node_map_builder,
 				differential_view, update_rm_view, rm_schema)
 			do_with_wait_cursor (ev_root_container, agent a_c_iterator.do_all)
@@ -285,6 +288,9 @@ feature {NONE} -- Events
 	code_select_action_agent: PROCEDURE [ANY, TUPLE [STRING]]
 			-- action to perform when node is selected in tree
 
+	path_select_action_agent: PROCEDURE [ANY, TUPLE [STRING]]
+			-- action to perform when path is selected on an addressable node
+
 	update_use_rm_pixmaps (a_flag: BOOLEAN)
 		do
 			set_use_rm_pixmaps (a_flag)
@@ -342,7 +348,7 @@ feature {NONE} -- Implementation
 			create c_node_map_builder
 			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, gui_grid, False, show_codes,
 				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties,
-				node_grid_row_map, code_select_action_agent)
+				node_grid_row_map, code_select_action_agent, path_select_action_agent)
 			create a_c_iterator.make (source_archetype.definition, c_node_map_builder,
 				differential_view, show_rm_data_properties, rm_schema)
 			do_with_wait_cursor (ev_root_container, agent a_c_iterator.do_all)

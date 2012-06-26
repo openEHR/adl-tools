@@ -89,6 +89,7 @@ feature -- Output
 	as_string: STRING
 			-- Result in form as `value'
 		do
+			create Result.make_empty
 			Result.append (defining_code.as_string)
 			Result.append_character (value_delimiter)
 			Result.append (value)

@@ -29,17 +29,14 @@ feature {NONE} -- Initialisation
 			edit_archetype_agent := an_edit_archetype_agent
 			save_archetype_agent := a_save_archetype_agent
 
-			-- create widgets
+			-- root container
 			create ev_root_container
 			ev_root_container.set_data (Current)
+
+			-- tree control
 			create ev_tree
-
-			-- connect widgets
-			ev_root_container.extend (ev_tree)
-
-			-- visual characteristics
---			ev_tree.set_background_color (editable_colour)
   			ev_tree.set_minimum_width (180)
+			ev_root_container.extend (ev_tree)
 		end
 
 feature -- Access

@@ -46,22 +46,34 @@ feature -- Commands
 
 	collapse_one_level (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
 		do
+			ev_grid.row_collapse_actions.block
 			ev_grid.collapse_one_level (test)
+			ev_grid.row_collapse_actions.resume
+			resize_columns_to_content (default_grid_expansion_factor)
 		end
 
 	expand_one_level (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
 		do
+			ev_grid.row_expand_actions.block
 			ev_grid.expand_one_level (test)
+			ev_grid.row_expand_actions.resume
+			resize_columns_to_content (default_grid_expansion_factor)
 		end
 
 	expand_all (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
 		do
+			ev_grid.row_collapse_actions.block
 			ev_grid.expand_all (test)
+			ev_grid.row_collapse_actions.resume
+			resize_columns_to_content (default_grid_expansion_factor)
 		end
 
 	collapse_all
 		do
+			ev_grid.row_collapse_actions.block
 			ev_grid.collapse_all
+			ev_grid.row_collapse_actions.resume
+			resize_columns_to_content (default_grid_expansion_factor)
 		end
 
 	resize_columns_to_content (grid_expansion_factor: REAL)

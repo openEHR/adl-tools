@@ -34,6 +34,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_GUI_AGENTS
+		export
+			{NONE} all
+		end
+
 	SHARED_TERMINOLOGY_SERVICE
 		export
 			{NONE} all
@@ -80,7 +85,7 @@ feature -- Initialisation
 				update_flag, show_codes_flag,
 				in_technical_view_flag, rm_data_properties_flag, rm_runtime_properties_flag, rm_infrastructure_properties_flag: BOOLEAN;
 				a_gui_node_map: HASH_TABLE [EV_GRID_ROW, ARCHETYPE_CONSTRAINT];
-				a_code_select_agent: attached PROCEDURE [ANY, TUPLE [STRING]])
+				a_code_select_agent, a_path_select_agent: attached PROCEDURE [ANY, TUPLE [STRING]])
 		do
 			initialise_visitor (an_archetype)
 			rm_schema := a_rm_schema
@@ -91,6 +96,7 @@ feature -- Initialisation
 			language := a_lang
 			rm_publisher := an_archetype.archetype_id.rm_originator.as_lower
 			code_select_agent := a_code_select_agent
+			path_select_agent := a_path_select_agent
 
 			in_technical_view := in_technical_view_flag
 			include_rm_data_properties := rm_data_properties_flag
@@ -146,11 +152,8 @@ feature -- Visitor
 				if in_technical_view then
 					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, a_node.rm_type_name, node_tooltip_str (a_node), archetype_rm_type_color, c_object_pixmap (a_node))
 					gui_grid.set_last_row_label_col (Node_grid_col_meaning, local_term_string (a_node.node_id), node_tooltip_str (a_node), Void, Void)
-					gui_grid.last_row.item (Node_grid_col_meaning).pointer_button_press_actions.force_extend (agent call_code_select_agent (a_node.node_id, ?, ?, ?))
 		 		else
 					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, local_term_string (a_node.node_id), node_tooltip_str (a_node), Void, c_object_pixmap (a_node))
-					gui_grid.last_row.item (Node_grid_col_rm_name).pointer_button_press_actions.force_extend (agent call_code_select_agent (a_node.node_id, ?, ?, ?))
-
 					gui_grid.set_last_row_label_col (Node_grid_col_meaning, "", Void, Void, Void)
 				end
 			else
@@ -417,7 +420,7 @@ feature -- Visitor
 
 			-- add select event
 			if not updating then
-	 			row.item (Node_grid_col_meaning).pointer_button_press_actions.force_extend (agent call_code_select_agent (a_node.target, ?, ?, ?))
+	 			row.item (Node_grid_col_meaning).pointer_button_press_actions.force_extend (agent add_code_select_context_menu (a_node.target, ?, ?, ?))
 			end
 		end
 
@@ -887,7 +890,6 @@ feature {NONE} -- Implementation
 			-- generate a string of the form "[code|rubric|]" if in technical mode,
 			-- or else "rubric"
 		local
-			rubric: STRING
 			a_term: DV_CODED_TEXT
 		do
 			create Result.make_empty
@@ -918,7 +920,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	call_code_select_agent (a_code: STRING; x,y, button: INTEGER)
+	add_code_select_context_menu (a_code: STRING; x,y, button: INTEGER)
 		local
 			menu: EV_MENU
 			an_mi: EV_MENU_ITEM
@@ -933,6 +935,9 @@ feature {NONE} -- Implementation
 
 	code_select_agent: PROCEDURE [ANY, TUPLE [STRING]]
 			-- action to perform when node is selected in tree
+
+	path_select_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
+			-- action to perform when path is selected in tree
 
 	spec_pixmap (a_node: ARCHETYPE_CONSTRAINT; pixmap_path: STRING): EV_PIXMAP
 			-- determine source status of node in archetype text, i.e. inherited, redefined, added etc
@@ -1013,10 +1018,28 @@ feature {NONE} -- Implementation
 			-- creates the context menu for a right click action for class node
 		local
 			menu: EV_MENU
+			an_mi: EV_MENU_ITEM
 		do
 			if button = {EV_POINTER_CONSTANTS}.right and attached {C_OBJECT} a_class_grid_row.data as co then
+				a_class_grid_row.item (1).enable_select
 				create menu
 				add_class_context_menu (menu, rm_schema.class_definition (co.rm_type_name))
+
+				-- if this node is addressable, add menu item to show node_id in ontology
+				if co.is_addressable then
+					create an_mi.make_with_text_and_action (get_text ("view_node_id_in_ontology"), agent code_select_agent.call ([co.node_id]))
+					menu.extend (an_mi)
+				end
+
+				-- add menu item for displaying path in path map
+				if attached path_select_agent then
+					create an_mi.make_with_text_and_action (get_text ("menu_option_display_path"), agent path_select_agent.call ([co.path]))
+					menu.extend (an_mi)
+				end
+
+				if attached {ARCHETYPE_SLOT} co as arch_slot and then not arch_slot.is_closed then
+					add_slot_submenu (menu, arch_slot)
+				end
 				menu.show
 			end
 		end
@@ -1028,6 +1051,7 @@ feature {NONE} -- Implementation
 			menu: EV_MENU
 		do
 			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_TYPE_SPECIFIER} a_class_grid_row.data as bmm_type_spec then
+				a_class_grid_row.item (1).enable_select
 				create menu
 				-- add menu item for retarget tool to current node / display in new tool
 				if attached {BMM_CLASS_DEFINITION} a_class_grid_row.data as a_class_def then
@@ -1051,12 +1075,40 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	add_slot_submenu (menu: EV_MENU; a_slot: ARCHETYPE_SLOT)
+			-- dynamically initializes the context menu for this tree
+		local
+			an_mi: EV_MENU_ITEM
+			sub_menu: EV_MENU
+			slot_index: DS_HASH_TABLE [ARRAYED_LIST [STRING], STRING]
+			slot_match_ids: ARRAYED_LIST [STRING]
+			ara: ARCH_CAT_ARCHETYPE
+		do
+			create sub_menu.make_with_text (get_text ("archetype_slot_node_submenu_text"))
+
+			ara := current_arch_cat.archetype_index.item (archetype.archetype_id.as_string)
+			if ara.has_slots and then ara.slot_id_index.has (a_slot.path) then
+				slot_match_ids := ara.slot_id_index.item (a_slot.path)
+				from slot_match_ids.start until slot_match_ids.off loop
+					ara := current_arch_cat.archetype_index.item (slot_match_ids.item)
+					create an_mi.make_with_text_and_action (slot_match_ids.item, agent (gui_agents.select_archetype_in_new_tool_agent).call ([ara]))
+					an_mi.set_pixmap (get_icon_pixmap ("archetype/" + ara.group_name))
+					sub_menu.extend (an_mi)
+					slot_match_ids.forth
+				end
+			end
+
+			if not sub_menu.is_empty then
+				menu.extend (sub_menu)
+			end
+		end
+
 	add_class_context_menu (menu: EV_MENU; a_bmm_class_def: BMM_CLASS_DEFINITION)
 			-- dynamically initializes the context menu for this tree
 		local
 			an_mi: EV_MENU_ITEM
 		do
-			create an_mi.make_with_text_and_action (get_msg ("display_in_new_tab", Void), agent display_context_selected_class_in_new_tool (a_bmm_class_def))
+			create an_mi.make_with_text_and_action (get_msg ("display_class", Void), agent display_context_selected_class_in_new_tool (a_bmm_class_def))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
 			menu.extend (an_mi)
 		end

@@ -45,7 +45,7 @@ feature {NONE}-- Initialization
 
 			-- create subordinate widgets
 			create description_controls.make (agent update_undo_redo_controls)
-			create node_map_control.make (agent select_ontology_item_from_code) -- , agent update_undo_redo_controls)
+			create node_map_control.make (agent select_ontology_item_from_code, Void) -- , agent update_undo_redo_controls)
 			create ontology_controls.make (agent update_undo_redo_controls)
 			create serialisation_control.make -- (agent update_undo_redo_controls)
 
@@ -74,7 +74,7 @@ feature {NONE}-- Initialization
 feature -- UI Feedback
 
 	select_ontology_item_from_code (a_code: attached STRING)
-			-- if a code is selected in teh archetype definition tree, select the code in the ontology part of the UI
+			-- select `a_code' in the ontology tab of this tool
 		do
 			if not ontology_controls.is_populated then
 				ontology_controls.populate (source, differential_view, selected_language)

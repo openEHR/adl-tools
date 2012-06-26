@@ -44,7 +44,7 @@ feature {NONE}-- Initialization
 
 			-- create subordinate widgets
 			create description_controls.make (Void)
-			create node_map_control.make (agent select_ontology_item_from_code)
+			create node_map_control.make (agent select_ontology_item_from_code, agent select_path_item_from_path)
 			create path_map_control.make (agent on_path_map_key_press)
 			create slot_map_control.make (agent update_slots_tab_label)
 			create ontology_controls.make (Void)
@@ -114,7 +114,7 @@ feature -- UI Feedback
 		end
 
 	select_ontology_item_from_code (a_code: attached STRING)
-			-- if a code is selected in teh archetype definition tree, select the code in the ontology part of the UI
+			-- select `a_code' in the ontology tab of this tool
 		do
 			if not ontology_controls.is_populated then
 				ontology_controls.populate (source, differential_view, selected_language)
@@ -125,6 +125,16 @@ feature -- UI Feedback
 			elseif is_constraint_code (a_code) then
 				ontology_controls.select_constraint (a_code)
 			end
+		end
+
+	select_path_item_from_path (a_path: attached STRING)
+			-- select the `a_path' in the paths tab of this tool
+		do
+			if not path_map_control.is_populated then
+				path_map_control.populate (source, differential_view, selected_language)
+			end
+			ev_notebook.select_item (path_map_control.ev_root_container)
+			path_map_control.select_path (a_path)
 		end
 
 feature -- Commands

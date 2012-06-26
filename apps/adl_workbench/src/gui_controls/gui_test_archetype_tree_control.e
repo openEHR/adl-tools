@@ -119,6 +119,8 @@ feature {NONE} -- Initialisation
 
 			create ev_grid.make
 			ev_grid.enable_tree
+			ev_grid.hide_tree_node_connectors
+			ev_grid.set_node_pixmaps (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
 			ev_grid.add_key_event (key_space,
 				agent
 					do

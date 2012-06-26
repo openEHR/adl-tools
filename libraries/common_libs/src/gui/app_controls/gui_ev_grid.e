@@ -30,18 +30,21 @@ create
 
 feature -- Initialisation
 
-	make (enable_tree, row_height_fixed, col_resize_on_collapse_expand: BOOLEAN)
+	make (enable_tree, row_height_fixed, col_resize_on_collapse_expand, hide_tree_node_connectors: BOOLEAN)
 		do
 			create ev_grid.make
 			if enable_tree then
 				ev_grid.enable_tree
+				if hide_tree_node_connectors then
+					ev_grid.hide_tree_node_connectors
+				end
 			end
 			if not row_height_fixed then
 				ev_grid.disable_row_height_fixed
 			end
 			if col_resize_on_collapse_expand then
-				ev_grid.row_expand_actions.extend (agent (a_row: EV_GRID_ROW) do ev_grid.resize_columns_to_content (Default_grid_expansion_factor) end)
-				ev_grid.row_collapse_actions.extend (agent (a_row: EV_GRID_ROW) do ev_grid.resize_columns_to_content (Default_grid_expansion_factor) end)
+				ev_grid.row_expand_actions.extend (agent resize_columns)
+				ev_grid.row_collapse_actions.extend (agent resize_columns)
 			end
 		end
 
@@ -82,6 +85,13 @@ feature -- Status Report
 		end
 
 feature -- Modification
+
+	set_tree_expand_collapse_icons (an_expand_icon, a_collapse_icon: EV_PIXMAP)
+		do
+			if ev_grid.is_tree_enabled then
+				ev_grid.set_node_pixmaps (an_expand_icon, a_collapse_icon)
+			end
+		end
 
 	add_row (row_idx: INTEGER; a_data: detachable ANY)
 		require
@@ -215,6 +225,13 @@ feature -- Commands
 		end
 
 feature {NONE} -- Implementation
+
+	resize_columns (a_row: EV_GRID_ROW)
+		do
+			ev_grid.lock_update
+			ev_grid.resize_columns_to_content (Default_grid_expansion_factor)
+			ev_grid.unlock_update
+		end
 
 end
 

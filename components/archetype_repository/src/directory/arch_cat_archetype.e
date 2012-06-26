@@ -278,10 +278,10 @@ feature -- Access (semantic)
 			end
 		end
 
-	legacy_flat_path: STRING
+	legacy_flat_path: detachable STRING
 			-- Path of legacy flat file of archetype.
 
-	legacy_flat_text: STRING
+	legacy_flat_text: detachable STRING
 			-- Read `legacy_flat_text' and `text_timestamp' from `legacy_flat_path'.
 			-- The text of the legacy archetype, if it exists
 		require
@@ -305,7 +305,7 @@ feature -- Access (semantic)
 	legacy_flat_text_timestamp: INTEGER
 			-- File modification date/time when legacy flat file was last read
 
-	rm_schema: BMM_SCHEMA
+	rm_schema: detachable BMM_SCHEMA
 			-- set if this archetype has a valid package-class_name
 
 	artefact_type: INTEGER
@@ -321,11 +321,11 @@ feature -- Access (semantic)
 	parent_id: attached ARCHETYPE_ID
 			-- Archetype identifier of specialisation parent
 
-	suppliers_index: HASH_TABLE [ARCH_CAT_ARCHETYPE, STRING]
+	suppliers_index: detachable HASH_TABLE [ARCH_CAT_ARCHETYPE, STRING]
 			-- list of descriptors of slot fillers or other external references, keyed by archetype id
 			-- currently generated only from C_ARCHETYPE_ROOT index in archetype
 
-	clients_index: ARRAYED_LIST [STRING]
+	clients_index: detachable ARRAYED_LIST [STRING]
 			-- list of archetype_ids of archetypes that use this archetype
 
 	qualified_name: STRING
@@ -350,7 +350,7 @@ feature -- Access (semantic)
 			end
 		end
 
-	old_ontological_parent_name: STRING
+	old_ontological_parent_name: detachable STRING
 			-- old vaue of `old_ontological_parent_name', to facilitate handling changes due to external editing of archetypes
 
 	name: STRING
@@ -367,12 +367,12 @@ feature -- Access (semantic)
 			end
 		end
 
-	specialisation_parent: ARCH_CAT_ARCHETYPE
+	specialisation_parent: detachable ARCH_CAT_ARCHETYPE
 		do
 			Result ?= parent
 		end
 
-	slot_id_index: DS_HASH_TABLE [ARRAYED_SET[STRING], STRING]
+	slot_id_index: detachable DS_HASH_TABLE [ARRAYED_SET[STRING], STRING]
 			-- list of Archetype ids matching slots, keyed by slot path
 
 	display_language: STRING
@@ -386,10 +386,10 @@ feature -- Access (semantic)
 			end
 		end
 
-	differential_compiled_path: STRING
+	differential_compiled_path: detachable STRING
 			-- path to persisted compiled source form of archetype
 
-	flat_compiled_path: STRING
+	flat_compiled_path: detachable STRING
 			-- path to persisted compiled flat form of archetype
 
 	global_artefact_identifier: attached STRING
@@ -409,7 +409,7 @@ feature -- Access (compiler)
 	status: STRING
 			-- status of last operation
 
-	last_compile_attempt_timestamp: DATE_TIME
+	last_compile_attempt_timestamp: detachable DATE_TIME
 			-- time last compile attempt made, set by set_parse_attempted
 
 	group_name: STRING

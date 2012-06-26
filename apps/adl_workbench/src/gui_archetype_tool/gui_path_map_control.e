@@ -178,6 +178,31 @@ feature -- Commands
 			end
 		end
 
+	select_path (a_path: STRING)
+		require
+			not a_path.is_empty
+		local
+			match_path, l_path: STRING
+			found: BOOLEAN
+		do
+			if ev_nat_lang_paths_cb.is_selected then
+				match_path := source_archetype.ontology.physical_to_logical_path (a_path, selected_language, True)
+			else
+				match_path := a_path
+			end
+
+			-- use length comparison for more efficient matching
+			from ev_path_list.start until ev_path_list.off or found loop
+				l_path := ev_path_list.item.i_th (1).to_string_8
+				if l_path.same_string (match_path) then
+					ev_path_list.item.enable_select
+					ev_path_list.ensure_item_visible (ev_path_list.item)
+					found := True
+				end
+				ev_path_list.forth
+			end
+		end
+
 feature {NONE} -- Implementation
 
 	ev_vbox, ev_row_vbox, ev_col_vbox: EV_VERTICAL_BOX
