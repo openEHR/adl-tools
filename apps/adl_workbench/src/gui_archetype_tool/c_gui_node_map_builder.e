@@ -341,19 +341,18 @@ feature -- Visitor
 			start_c_object (a_node, depth)
 			row := node_grid_row_map.item (a_node)
 
-			if not a_node.any_allowed and in_technical_view then
-				-- add Archetype root reference info
-				create s.make_empty
-				if attached a_node.slot_node_id then
-					s.append ("[" + a_node.slot_node_id + ",%N" + a_node.node_id + "]")
-				else
-					s.append ("[" + a_node.node_id + "]")
-				end
-				s.replace_substring_all ({ARCHETYPE_ID}.axis_separator_string, {ARCHETYPE_ID}.axis_separator_string + "%N")
-				create gli.make_with_text (s)
-				row.set_item (Node_grid_col_constraint, gli)
-				row.set_height (gli.text_height + Default_grid_row_expansion)
-			end
+--			if not a_node.any_allowed and in_technical_view then
+--				-- add Archetype root reference info
+--				create s.make_empty
+--				if attached a_node.slot_node_id then
+--					s.append ("[" + a_node.slot_node_id + ", " + a_node.node_id + "]")
+--				else
+--					s.append ("[" + a_node.node_id + "]")
+--				end
+--				create gli.make_with_text (s)
+--				row.set_item (Node_grid_col_constraint, gli)
+--				row.set_height (gli.text_height + Default_grid_row_expansion)
+--			end
 
 			-- have to obtain the ontology from the main archetype directory because the archetype being serialised
 			-- here might be in differential form, and have no component_ontologies set up
