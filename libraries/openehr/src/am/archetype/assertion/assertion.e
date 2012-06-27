@@ -13,6 +13,14 @@ note
 
 class ASSERTION
 
+inherit
+	BASIC_DEFINITIONS
+
+	OPERATOR_TYPES
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -33,6 +41,26 @@ feature -- Access
 			-- tag name of assertion
 
 	expression: attached EXPR_ITEM
+
+	extract_regex: STRING
+			-- extract regex from id matches {/regex/} style assertion used in slots
+		do
+			if attached {EXPR_BINARY_OPERATOR} expression as bin_op and then bin_op.operator.value = op_matches then
+				if attached {EXPR_LEAF} bin_op.right_operand as a_leaf then
+					if attached {C_STRING} a_leaf.item as c_str then
+						Result := c_str.regexp
+					end
+				end
+			end
+		end
+
+feature -- Status Report
+
+	matches_any: BOOLEAN
+			-- True if the regex = {/.*/} i.e. matches anything
+		do
+			Result := extract_regex.is_equal (Regex_any_pattern)
+		end
 
 feature -- Output
 

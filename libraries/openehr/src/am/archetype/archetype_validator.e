@@ -26,19 +26,15 @@ inherit
 			target
 		end
 
-	OPERATOR_TYPES
-		export
-			{NONE} all
-		end
+--	OPERATOR_TYPES
+--		export
+--			{NONE} all
+--		end
 
 	SHARED_APP_RESOURCES
 		export
 			{NONE} all
 		end
-
-feature -- Definitions
-
-	Regex_any_pattern: STRING = ".*"
 
 feature {ADL15_ENGINE} -- Initialisation
 
@@ -90,9 +86,9 @@ feature {NONE} -- Implementation
 			-- process the includes
 			includes := a_slot.includes
 			excludes := a_slot.excludes
-			if not includes.is_empty and not assertion_matches_any (includes.first) and not excludes.is_empty then
+			if not includes.is_empty and not includes.first.matches_any and not excludes.is_empty then
 				from includes.start until includes.off or Result loop
-					if attached {STRING} extract_regex(includes.item) as a_regex then
+					if attached {STRING} includes.item.extract_regex as a_regex then
 						create regex_matcher.compile_case_insensitive (a_regex)
 						if regex_matcher.is_compiled then
 							Result := regex_matcher.matches (an_id)
@@ -100,9 +96,9 @@ feature {NONE} -- Implementation
 					end
 					includes.forth
 				end
-			elseif not excludes.is_empty and not assertion_matches_any (excludes.first) and includes.is_empty then
+			elseif not excludes.is_empty and not excludes.first.matches_any and includes.is_empty then
 				from excludes.start until excludes.off or not Result loop
-					if attached {STRING} extract_regex(excludes.item) as a_regex then
+					if attached {STRING} excludes.item.extract_regex as a_regex then
 						create regex_matcher.compile_case_insensitive (a_regex)
 						if regex_matcher.is_compiled then
 							Result := not regex_matcher.matches (an_id)
@@ -113,24 +109,6 @@ feature {NONE} -- Implementation
 			else
 				Result := True
 			end
-		end
-
-	extract_regex (an_assertion: attached ASSERTION): STRING
-			-- extract regex from id matches {/regex/} style assertion used in slots
-		do
-			if attached {EXPR_BINARY_OPERATOR} an_assertion.expression as bin_op and then bin_op.operator.value = op_matches then
-				if attached {EXPR_LEAF} bin_op.right_operand as a_leaf then
-					if attached {C_STRING} a_leaf.item as c_str then
-						Result := c_str.regexp
-					end
-				end
-			end
-		end
-
-	assertion_matches_any (an_assertion: attached ASSERTION): BOOLEAN
-			-- True if the regex = {/.*/} i.e. matches anything
-		do
-			Result := extract_regex (an_assertion).is_equal (Regex_any_pattern)
 		end
 
 end

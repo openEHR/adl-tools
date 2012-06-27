@@ -334,9 +334,9 @@ feature -- Visitor
 	start_c_archetype_root (a_node: attached C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- enter a C_ARCHETYPE_ROOT
 		local
-			s: STRING
+--			s: STRING
 			row: EV_GRID_ROW
-			gli: EV_GRID_LABEL_ITEM
+--			gli: EV_GRID_LABEL_ITEM
 		do
 			start_c_object (a_node, depth)
 			row := node_grid_row_map.item (a_node)
@@ -1075,26 +1075,32 @@ feature {NONE} -- Implementation
 		end
 
 	add_slot_submenu (menu: EV_MENU; a_slot: ARCHETYPE_SLOT)
-			-- dynamically initializes the context menu for this tree
+			-- create a sub-menu with preferred slot-filler archetypes for a given slot
 		local
 			an_mi: EV_MENU_ITEM
 			sub_menu: EV_MENU
-			slot_index: DS_HASH_TABLE [ARRAYED_LIST [STRING], STRING]
-			slot_match_ids: ARRAYED_LIST [STRING]
+			slot_match_ids: ARRAYED_SET [STRING]
 			ara: ARCH_CAT_ARCHETYPE
 		do
 			create sub_menu.make_with_text (get_text ("archetype_slot_node_submenu_text"))
-
-			ara := current_arch_cat.archetype_index.item (archetype.archetype_id.as_string)
-			if ara.has_slots and then ara.slot_id_index.has (a_slot.path) then
-				slot_match_ids := ara.slot_id_index.item (a_slot.path)
-				from slot_match_ids.start until slot_match_ids.off loop
-					ara := current_arch_cat.archetype_index.item (slot_match_ids.item)
-					create an_mi.make_with_text_and_action (slot_match_ids.item, agent (gui_agents.select_archetype_in_new_tool_agent).call ([ara]))
-					an_mi.set_pixmap (get_icon_pixmap ("archetype/" + ara.group_name))
-					sub_menu.extend (an_mi)
-					slot_match_ids.forth
+			create slot_match_ids.make (0)
+			slot_match_ids.compare_objects
+			if not a_slot.includes.is_empty and not a_slot.includes.first.matches_any then
+				from a_slot.includes.start until a_slot.includes.off loop
+					if attached {STRING} a_slot.includes.item.extract_regex as a_regex then
+						slot_match_ids.merge (current_arch_cat.matching_ids (a_regex, a_slot.rm_type_name, Void))
+					end
+					a_slot.includes.forth
 				end
+			end
+
+			-- ensure we have only a unique set
+			from slot_match_ids.start until slot_match_ids.off loop
+				ara := current_arch_cat.archetype_index.item (slot_match_ids.item)
+				create an_mi.make_with_text_and_action (slot_match_ids.item, agent (gui_agents.select_archetype_in_new_tool_agent).call ([ara]))
+				an_mi.set_pixmap (get_icon_pixmap ("archetype/" + ara.group_name))
+				sub_menu.extend (an_mi)
+				slot_match_ids.forth
 			end
 
 			if not sub_menu.is_empty then

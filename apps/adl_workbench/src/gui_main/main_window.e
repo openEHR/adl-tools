@@ -350,7 +350,7 @@ feature {NONE} -- Initialization
 
 			-- set visual characteristics - action bar
 			ev_main_vbox.disable_item_expand (action_bar)
-			action_bar.set_minimum_width (800)
+			action_bar.set_minimum_width (600)
 			action_bar.set_padding (10)
 			action_bar.set_border_width (4)
 			action_bar.disable_item_expand (archetype_profile_combo)
@@ -921,7 +921,7 @@ feature {NONE} -- Help events
 		do
 			create dialog.make_with_text (splash_text)
 			dialog.set_title (get_msg ("about_awb_dialog_title", Void))
-			dialog.set_pixmap (get_icon_pixmap ("tool/adl_workbench_logo"))
+			dialog.set_pixmap (adl_workbench_icon)
 			dialog.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 248))
 			dialog.set_position (app_x_position + (app_width - dialog.width) // 2, app_y_position + (app_height - dialog.height) // 2)
 			dialog.show_modal_to_window (Current)

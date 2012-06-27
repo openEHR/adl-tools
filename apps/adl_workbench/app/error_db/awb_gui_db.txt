@@ -208,7 +208,7 @@ templates = <
 		["annotation_value_text"] = <"Annotation value">
 
 		-- GUI_NODE_MAP_CONTROL 
-		["view_label_text"] = <"Tree View">
+		["view_label_text"] = <"Tree Zoom">
 		["occurrences_removed_text"] = <"(REMOVED)">
 		["annotations_text"] = <"Annotations">
 
@@ -270,7 +270,7 @@ templates = <
 		["include_text"] = <"[includes]">
 		["exclude_text"] = <"[excludes]">
 
-		["archetype_slot_node_submenu_text"] = <"Slots">
+		["archetype_slot_node_submenu_text"] = <"Slot-fillers (preferred)">
 		["view_node_id_in_ontology"] = <"View node id in ontology">
 
 		-- GUI_TEST_ARCHETYPE_TREE_CONTROL

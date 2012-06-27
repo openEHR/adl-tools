@@ -51,7 +51,7 @@ feature {NONE} -- Initialization
 			-- set visual characteristics
 			ev_root_container.disable_item_expand (ev_tool_bar)
 			ev_search_combo.set_tooltip ("Display or search for archetype id")
-			ev_search_combo.set_minimum_width (600)
+			ev_search_combo.set_minimum_width (400)
 			ev_tool_bar.set_minimum_width (20)
 			ev_tool_bar.set_minimum_height (20)
 			ev_tool_bar.disable_vertical_button_style

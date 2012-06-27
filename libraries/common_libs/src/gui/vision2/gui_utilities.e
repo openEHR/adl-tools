@@ -127,6 +127,17 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	resize_ev_multi_list_to_headers (ev_mlist: attached EV_MULTI_COLUMN_LIST)
+			-- perform sensible column resizing on a EV_MULTI_COLUMN_LIST based on column headings
+		local
+			i: INTEGER
+		do
+			from i := 1 until i > ev_mlist.column_count loop
+				ev_mlist.set_column_width (ev_mlist.column_width (i).max (ev_mlist.column_title (i).count * 12), i)
+				i := i + 1
+			end
+		end
+
 	populate_ev_list_from_hash_keys (ev_list: EV_LIST; ht: detachable HASH_TABLE [ANY, STRING])
 			-- populate list from hash table keys
 		local

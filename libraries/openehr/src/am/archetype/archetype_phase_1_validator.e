@@ -141,12 +141,12 @@ feature {NONE} -- Implementation
 				includes := target.slot_index.item.includes
 				excludes := target.slot_index.item.excludes
 
-				if not includes.is_empty and assertion_matches_any (includes.first) then
-					if not (excludes.is_empty or not assertion_matches_any (excludes.first)) then
+				if not includes.is_empty and includes.first.matches_any then
+					if not (excludes.is_empty or not excludes.first.matches_any) then
 						add_error("VDSEV1", <<target.slot_index.item.rm_type_name, target.slot_index.item.path>>)
 					end
-				elseif not includes.is_empty and not assertion_matches_any (includes.first) then
-					if not (excludes.is_empty or assertion_matches_any (excludes.first)) then
+				elseif not includes.is_empty and not includes.first.matches_any then
+					if not (excludes.is_empty or excludes.first.matches_any) then
 						add_error("VDSEV2", <<target.slot_index.item.rm_type_name, target.slot_index.item.path>>)
 					end
 				end
@@ -254,10 +254,10 @@ feature {NONE} -- Implementation
 				-- process the includes
 				includes := target.slot_index.item.includes
 				excludes := target.slot_index.item.excludes
-				if not includes.is_empty and not assertion_matches_any (includes.first) then
+				if not includes.is_empty and not includes.first.matches_any then
 					if not excludes.is_empty then -- create specific match list from includes constraint
 						from includes.start until includes.off loop
-							if attached {STRING} extract_regex (includes.item) as a_regex then
+							if attached {STRING} includes.item.extract_regex as a_regex then
 								target_descriptor.add_slot_ids (current_arch_cat.matching_ids (a_regex, target.slot_index.item.rm_type_name, Void), target.slot_index.item.path)
 							end
 							includes.forth
@@ -265,11 +265,11 @@ feature {NONE} -- Implementation
 					else -- excludes = empty ==> includes is just a recommendation => match all archetype ids of RM type
 						target_descriptor.add_slot_ids (current_arch_cat.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, target.archetype_id.rm_name), target.slot_index.item.path)
 					end
-				elseif not excludes.is_empty and not assertion_matches_any (excludes.first) then
+				elseif not excludes.is_empty and not excludes.first.matches_any then
 					target_descriptor.add_slot_ids (current_arch_cat.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, Void), target.slot_index.item.path)
 					if not includes.is_empty then -- means excludes is not a recommendation; need to actually process it
 						from excludes.start until excludes.off loop
-							if attached {STRING} extract_regex (excludes.item) as a_regex then
+							if attached {STRING} excludes.item.extract_regex as a_regex then
 								id_list := current_arch_cat.matching_ids (a_regex, target.slot_index.item.rm_type_name, target.archetype_id.rm_name)
 								from id_list.start until id_list.off loop
 									target_descriptor.slot_id_index.item (target.slot_index.item.path).prune (id_list.item)

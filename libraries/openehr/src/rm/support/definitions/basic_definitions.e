@@ -17,6 +17,8 @@ class BASIC_DEFINITIONS
 
 feature -- Definitions
 
+	Regex_any_pattern: STRING = ".*"
+
 	CR: CHARACTER = '%/015/'
 
 	LF: CHARACTER = '%/012/'

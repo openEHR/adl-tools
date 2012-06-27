@@ -92,7 +92,7 @@ feature {NONE} -- Implementation
 
 				source.terminology_bindings_statistics.forth
 			end
-			resize_ev_multi_list (ev_term_bindings_info_list)
+			resize_ev_multi_list_to_headers (ev_term_bindings_info_list)
 		end
 
 	ev_stats_info_frame, ev_term_bindings_info_frame: EV_FRAME
