@@ -25,8 +25,8 @@
       </table>
       <div id="wrapper">
         <div id="content">
-          <h2>The Archetype/Template Catalogue</h2>
-          <p>As soon as you have specified a profile (Repository &gt; Set repository), the left-hand side explorer controls will populate and you will initially see the explorer with the reference model (RM) class hierarchy. If you have selected 'Show entire ontology in explorer?' in the Options dialog, you will see all classes from all loaded RM schemas. This can be useful for understanding the reference models. In normal use, you will probably not use this option. At any time, you can select a class node in the explorer, and if you have the node map selected in the archetype view area, you will see the RM definition of the selected class, either in differential form (just attributes introduced by that class), or in flat form, i.e. compressed through inheritance. These various views are shown below.</p>
+          <h2>The Archetype and Template Catalogues</h2>
+          <p>As soon as you have specified a profile (Repository &gt; Set repository), the left-hand side explorer controls will populate and you will initially see the explorer with the reference model (RM) class hierarchy. If you have selected 'Show entire ontology in explorer?' in the Options dialog, you will see all classes from all loaded RM schemas. This can be useful for understanding the reference models. Normally you will probably not use this option. At any time, you can select a class node in the explorer, and its Reference Model definition will be displayed in flat form, i.e. compressed through inheritance.</p>
           <p></p>
           <div style="TEXT-ALIGN: left; PADDING-BOTTOM: 0px; TEXT-INDENT: 0px; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px">
             <table style="BACKGROUND-COLOR: #ffffff" border="0" cellspacing="2" cellpadding="2" width="70%">
@@ -38,11 +38,6 @@
                     <p>Initial view</p>
                   </td>
                   <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
-                    <a href="images/explorer_expanded_plus_RM_icons.png">
-                      <img border="0" alt="Expanded view in explorer" src="images/tn_explorer_expanded_plus_RM_icons.jpg" width="104" height="200"/> </a>
-                    <p>Expanded view</p>
-                  </td>
-                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
                     <a href="images/explorer_spec.png">
                       <img border="0" alt="Explorer showing specialisation" src="images/tn_explorer_spec.jpg" width="107" height="200"/> </a>
                     <p>Specialisation view</p>
@@ -52,9 +47,9 @@
             </table>
           </div>
           <h2>Compiling archetypes</h2>
-          <p>When you start the ADL Workbench, archetypes are not compiled. The easiest way to compile them is to hit F7, which will compile all of the archetypes in the currently selected repository in one go. This can be interrupted with Shift-ESC. 'Compiling' means parsing, validating and flattening. Archetypes can also be compiled individually by selecting them in the explorer. Other options under the repository menu allow you to compile archetypes in selected subtrees. Note that if you select a specialised archetype, its specialisation parents will automatically compile.</p>
-          <p>If your repository has templates in it, you can compile a template in the same ways. If you select a template (lower explorer), you will see that all its dependencies compile, i.e. all archetypes implicated in its slot-filling and specialisation statements.</p>
-          <p>If your repository contains legacy '.adl' archetypes, they will initially generate differential (.adls) source form archetypes, containing the 'generated' marker at the top. In this case, when you hit F7 or compile by another means, you will see the '(f)' marker in the archetype explorer, indicating those archetypes whose primary form is a legacy .adl file. If you subsequently change either the .adl file or the .adls file with an editor, the AWB will recompile from whichever one was changed. The archetype icons in the explorer change according to their current compilation status, as shown below.</p>
+          <p>When you start the ADL Workbench, archetypes are not compiled. The easiest way to compile them is to hit F7, which will compile all of the archetypes in the currently selected repository in one go. This can be interrupted with Shift-ESC. 'Compiling' means parsing, validating and flattening. Archetypes can also be compiled individually by selecting them in the explorer. Other options under the repository menu allow you to compile archetypes in selected subtrees. If you select a specialised archetype, its specialisation parents will automatically compile.</p>
+          <p>If your repository has templates in it, you can compile a template in the same way. If you select a template in the Template explorer tab, you will see that all its dependencies compile, i.e. all archetypes implicated in its slot-filling and specialisation statements.</p>
+          <p>If your repository contains legacy '.adl' archetypes, they will initially generate differential (.adls) source form archetypes, containing the 'generated' marker at the top. In this case, when you hit F7 or compile by another means, you will see the '(lf)' marker in the archetype explorer, indicating those archetypes whose primary form is a 'legacy flat' file. If you subsequently change either the .adl file or the .adls file with an editor, the AWB will recompile from whichever one was changed. The archetype icons in the explorer change according to their current compilation status, as shown below.</p>
           <a href="images/compiler_statuses.png">
             <img border="0" alt="Compiler statuses" src="images/tn_compiler_statuses.jpg" width="157" height="200"/> </a>
           <p>The compilation process performs validation on every archetype and reports errors. Errors fall into two categories: syntactic, denoted with codes starting with 'S', and validity errors, denoted with 'V' codes. The errors are shown both in the status tab and the errors tab at the bottom. The status window is shown below.</p>
@@ -100,7 +95,7 @@
                   <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
                     <a href="images/description_unicode.png">
                       <img border="0" alt="Description unicode" src="images/tn_description_unicode.jpg" width="200" height="158"/> </a>
-                    <p>Unicode description</p>
+                    <p>Description (unicode example)</p>
                   </td>
                 </tr>
               </tbody>
@@ -111,7 +106,6 @@
           <p>From the point of view of the AWB, you can see both the differential and flat forms of an archetype visualised. Most of the views below can be seen in differential and flat form. Use the Differential and Flat View tabs at the top to switch.</p>
           <h3>Node map</h3>
           <p>The node map is a way of viewing the definition part of the archetype structurally. The definition section contains the main definitional statements of the archetype, and can be thought of as a visualisation of an AOM structure, that is to say, each node corresponds to an AOM node type. In the differential form, the node map shows only those constraints introduced by the archetype on its own. If it is a non-specialised archetype, these constraints are in addition to constraints implied by the reference model (cardinality, types etc). For a specialised archetype, the constraints are in addition to the 'flat parent', i.e. the notional sum of constraints so far in the specialisation lineage. You will notice in particular that specialised archetypes have constraints whose parent attributes are not just a single attribute name like 'items', but are a path, like '/protocol', '/data/events[at0010]/items[at0023]' and so on.</p>
-          <p>You can use the radio button controls on the right to show each node in more or less detail. The last radio button control adds in the reference model attributes that have not been archetyped, but will/can be in the runtime data.</p>
           <div style="TEXT-ALIGN: left; PADDING-BOTTOM: 0px; TEXT-INDENT: 0px; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px">
             <table style="BACKGROUND-COLOR: #ffffff" border="0" cellspacing="2" cellpadding="0" width="70%">
               <tbody>
@@ -119,19 +113,19 @@
                   <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
                     <a href="images/node_map_diff_spec_no_RM.png">
                       <img border="0" alt="Differential, specialised, no RM classes" src="images/tn_node_map_diff_spec_no_RM.jpg" width="200" height="123"/> </a>
-                    <p>Differential, specialised, no RM classes</p>
+                    <p>Differential, specialised, domain view</p>
                   </td>
                   <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
                     <a href="images/node_map_diff_spec_RM_classes.png">
                       <img border="0" alt="Node map, differential, specialised, RM classes" src="images/tn_node_map_diff_spec_RM_classes.jpg" width="200" height="121"/> </a>
-                    <p>Node map, differential, specialised, RM classes</p>
+                    <p>Node map, differential, specialised, technical view (includes RM classes)</p>
                   </td>
                 </tr>
                 <tr valign="top">
                   <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
                     <a href="images/node_map_flat_spec_no_RM.png">
                       <img border="0" alt="Flat, specialised, no RM" src="images/tn_node_map_flat_spec_no_RM.jpg" width="186" height="200"/> </a>
-                    <p>Flat, specialised, no RM</p>
+                    <p>Flat, specialised, technical view</p>
                   </td>
                   <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
                     <a href="images/node_map_unicode.png">
@@ -143,6 +137,29 @@
             </table>
           </div>
           <p>Each node map node is shown in three possible forms. If the node is coloured, it is defined new within the current archetype. If it is coloured, with a yellow border, it redefines an existing node from the flat parent. If it is solid yellow/grey, it is purely inherited.</p>
+          <p>You can use the radio button controls on the right to show each node in more or less detail. The 'RM visibility' radio button controls enable three categories of reference model attribute that have not been archetyped to be seen. These are as follows:</p>
+		  <ul>
+			  <li><b>Data Properties</b>: properties from the reference model that are part of the clinical data, and could be archetyped;</li>
+			  <li><b>Runtime Properties</b>: properties from the reference model whose values are set at runtime, and for which no useful constraint could be set in an archetype (includes all dates and times);</li>
+			  <li><b>Infrastructure Properties</b>: properties from the reference model that do not represent clinical data, but are used to manage data representation, identification, versioning etc.</li>
+		  </ul>
+		  <p>The classifications of RM properties are defined in the reference model schemas and can be modified independently of the tool or any particular archetype.</p>
+          <div style="TEXT-ALIGN: left; PADDING-BOTTOM: 0px; TEXT-INDENT: 0px; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px">
+            <table style="BACKGROUND-COLOR: #ffffff" border="0" cellspacing="2" cellpadding="0" width="70%">
+              <tbody>
+                <tr valign="top">
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
+                    <a href="images/rm_differential.png"><img border="0" alt="RM properties, differential form" src="images/tn_rm_differential.jpg"/> </a>
+                    <p>RM properties (differential form)</p>
+                  </td>
+                  <td style="BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px">
+                    <a href="images/rm_flat.png"><img border="0" alt="RM properties, flat form" src="images/tn_rm_flat.jpg"/> </a>
+                    <p>RM properties (flat form)</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
           <h3>Path map</h3>
           <p>Archetype definitions are inherently hierarchical structures, and as a consequence a set of paths can be extracted from any archetype. This 'path map' is the basis for all queries written in AQL or a-path. Every node in an archetype is guaranteed to have a unique path. If you select the path map in the differential and flat forms, you will see the larger number of paths being extracted from the latter.</p>
           <div style="TEXT-ALIGN: left; PADDING-BOTTOM: 0px; TEXT-INDENT: 0px; MARGIN: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px">
@@ -187,8 +204,7 @@
           <p>Paths can be selected and saved to the clipboard for use in other tools, by selecting rows (including multiple rows, by using the Ctrl key) and then using Ctrl+C (copy) to copy to the clipboard. The clipboard contents can be viewed from the Edit menu.</p>
           <h3>Slot map</h3>
           <p>Some archetypes contain slots, which are joining points to other archetypes. A slot is defined as a constraint that specifies the <i>possible</i> archetypes that may be used at this point. We can think of the archetypes that could fill the slot as 'suppliers', i.e. archetypes that this archetype uses, and archetypes having slots which the current archetype matches as 'clients'. The ADL Workbench evaluates the slots and displays both of these lists, as shown below.</p>
-          <a href="images/slots_1.png">
-            <img border="0" src="images/tn_slots_1.jpg" width="180" height="200"/> </a>
+          <a href="images/slots_1.png"><img border="0" src="images/tn_slots_1.jpg" width="180" height="200"/> </a>
           <h3>Terminology</h3>
           <p>All archetypes contain an internal terminology, consisting of one or more 'at-codes'. They may also include constraint codes ('ac-codes'), and bindings between both of these and external terminologies and other ontology resources. These elements are found in the 'ontology' section of the archetype, such as shown here.</p>
           <a href="images/ontology.png">
@@ -235,7 +251,7 @@
         <li value="0"> <a href="support.html">Support and contributing</a> </li>
         <li value="0"> <a href="release_notes.html">Release notes</a> </li>
       </ul>
-      <p>Copyright 2010 openEHR Foundation - $LastChangedDate$ $LastChangedRevision$</p>
+      <p>Copyright 2010-2012 openEHR Foundation - $LastChangedDate$ $LastChangedRevision$</p>
     </div></div>
   </body>
 </html>
