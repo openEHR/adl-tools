@@ -91,7 +91,7 @@ Section -Main SEC0000
 
 	# Terminology
     SetOutPath $INSTDIR\terminology
-    File ..\..\..\app\terminology\*
+    File /r /x .svn ..\..\..\app\terminology\*
 
 	# Error files
     SetOutPath $INSTDIR\error_db
