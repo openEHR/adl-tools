@@ -46,11 +46,11 @@ feature -- Access
 
 		end
 
-	group (a_group, a_lang: STRING): TERMINOLOGY_GROUP
+	value_set (a_value_set_name, a_lang: STRING): TERMINOLOGY_GROUP
 		require
-			has_group (a_group, a_lang)
+			has_value_set (a_value_set_name, a_lang)
 		do
-			Result := content_tables.item (a_lang).item (a_group)
+			Result := content_tables.item (a_lang).item (a_value_set_name)
 		end
 
 	term (a_concept_id, a_lang: STRING): DV_CODED_TEXT
@@ -78,51 +78,55 @@ feature -- Status Report
 			Result := content_tables.has (a_lang)
 		end
 
-	has_group (a_group_name, a_lang: STRING): BOOLEAN
+	has_value_set (a_name, a_lang: STRING): BOOLEAN
 		require
-			Group_valid: not a_group_name.is_empty
+			Group_valid: not a_name.is_empty
 			Lang_valid: not a_lang.is_empty
 		do
-			Result := content_tables.has (a_lang) and then content_tables.item (a_lang).has (a_group_name)
+			Result := content_tables.has (a_lang) and then content_tables.item (a_lang).has (a_name)
 		end
 
-	has_code_for_group_id (group_id: STRING; a_code: CODE_PHRASE): BOOLEAN
-			-- True if ‘a_code’ is known in group ‘group_id’ in the openEHR terminology.
+	has_code_for_value_set (a_value_set_name: STRING; a_code: CODE_PHRASE): BOOLEAN
+			-- True if ‘a_code’ is known in value set `a_value_set_name' in the openEHR terminology.
 		do
-
+			-- TODO: implement when new representation is created, based on SNOMED CT
 		end
 
 feature -- Modification
 
-	add_group (a_group, a_lang: STRING)
+	add_value_set (a_name, a_lang: STRING)
 		require
-			Group_valid: not a_group.is_empty
+			Value_set_name_valid: not a_name.is_empty
 			Valid_lang: not a_lang.is_empty
 		do
 			if not content_tables.has (a_lang) then
 				content_tables.put (create {HASH_TABLE [TERMINOLOGY_GROUP, STRING]}.make (0), a_lang)
 			end
-			content_tables.item (a_lang).put (create {TERMINOLOGY_GROUP}.make (a_group), a_group)
+			content_tables.item (a_lang).put (create {TERMINOLOGY_GROUP}.make (a_name), a_name)
 		end
 
-	add_term (a_concept_id, a_rubric, a_group, a_lang: STRING)
+	add_term (a_concept_id, a_rubric, a_value_set_name, a_lang: STRING)
+			-- add the term defined by `a_concept_id' and `a_rubric' to `a_value_set_name' for `a_lang'
+			-- the same term can be added to different groups, but will be added to the
+			-- terminology as a whole only once
 		require
-			Concept_id_valid: not has_concept_id (a_concept_id, a_lang)
+			Concept_id_valid: not a_concept_id.is_empty and has_value_set (a_value_set_name, a_lang) implies not value_set (a_value_set_name, a_lang).has_term (a_concept_id)
 			Rubric_valid: not a_rubric.is_empty
+			Value_set_name_valid: not a_value_set_name.is_empty
+			Lang_valid: not a_lang.is_empty
 		local
 			new_term: DV_CODED_TEXT
 		do
 			create new_term.make (a_rubric, create {CODE_PHRASE}.make (id, a_concept_id))
-			if not has_group (a_group, a_lang) then
-				add_group (a_group, a_lang)
+			if not has_value_set (a_value_set_name, a_lang) then
+				add_value_set (a_value_set_name, a_lang)
 			end
-			group (a_group, a_lang).add_term (new_term)
+			value_set (a_value_set_name, a_lang).add_term (new_term)
 
 			if not term_index.has (a_lang) then
 				term_index.put (create {HASH_TABLE [DV_CODED_TEXT, STRING]}.make (0), a_lang)
 			end
 			term_index.item (a_lang).put (new_term, a_concept_id)
-
 		end
 
 feature {NONE} -- Implementation

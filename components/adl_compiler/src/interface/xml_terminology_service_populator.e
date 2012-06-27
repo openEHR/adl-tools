@@ -67,13 +67,9 @@ feature {NONE} -- Implementation
 		local
 			parser: XML_LITE_PARSER
 			callbacks: XML_CALLBACKS_DOCUMENT
-	--		pp_filter: XML_PRETTY_PRINT_FILTER
 		do
 			create parser.make
 			create callbacks.make_null
-	--		create pp_filter.set_next (callbacks)
-	--		pp_filter.set_output_standard
-	--		parser.set_callbacks (pp_filter)
 			parser.set_callbacks (callbacks)
 
 			parser.parse_from_filename (a_file_path)

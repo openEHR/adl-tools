@@ -83,7 +83,7 @@ feature -- Output
 invariant
 	Match_valid: is_valid_match_code(match)
 	Purpose_valid: purpose /= Void implies
-		terminology(terminology_id_openehr).has_code_for_group_id (Group_id_term_mapping_purpose, purpose.defining_code)
+		terminology(terminology_id_openehr).has_code_for_value_set (Group_id_term_mapping_purpose, purpose.defining_code)
 
 end
 

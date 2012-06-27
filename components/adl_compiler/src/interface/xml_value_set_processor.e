@@ -65,11 +65,7 @@ feature -- Processing
 				current_group := attr_vals.item ("name")
 
 			elseif e.name.is_equal ("concept") then
-				if not current_terminology.has_concept_id (attr_vals.item ("id"), current_language) then
-					current_terminology.add_term (attr_vals.item ("id"), attr_vals.item ("rubric"), current_group, current_language)
-				else
-					post_error (Current, "process_element", "duplicate_term_found", <<attr_vals.item ("id"), current_language, current_group>>)
-				end
+				current_terminology.add_term (attr_vals.item ("id"), attr_vals.item ("rubric"), current_group, current_language)
 			end
 		end
 

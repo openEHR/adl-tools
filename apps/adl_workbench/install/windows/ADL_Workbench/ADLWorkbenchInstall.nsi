@@ -89,11 +89,17 @@ Section -Main SEC0000
     SetOutPath $INSTDIR\icons
     File /r /x .svn ..\..\..\app\icons\*
 
-    SetOutPath $INSTDIR\rm_schemas
-    File ..\..\..\..\..\rm_schemas\*
+	# Terminology
+    SetOutPath $INSTDIR\terminology
+    File ..\..\..\app\terminology\*
 
+	# Error files
     SetOutPath $INSTDIR\error_db
     File ..\..\..\app\error_db\*
+
+	# RM schemas
+    SetOutPath $INSTDIR\rm_schemas
+    File ..\..\..\..\..\rm_schemas\*
 
     SetOutPath $INSTDIR\vim
     File ..\..\..\..\..\components\adl_compiler\etc\vim\*
@@ -150,6 +156,7 @@ Section /o un.Main UNSEC0000
     RMDir /r /REBOOTOK $INSTDIR\icons
     RMDir /r /REBOOTOK $INSTDIR\rm_schemas
     RMDir /r /REBOOTOK $INSTDIR\error_db
+    RMDir /r /REBOOTOK $INSTDIR\terminology
     RMDir /r /REBOOTOK $INSTDIR\vim
     DeleteRegValue HKLM "${REGKEY}\Components" Main
 SectionEnd
