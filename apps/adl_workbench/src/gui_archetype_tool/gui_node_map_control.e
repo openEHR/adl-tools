@@ -215,15 +215,6 @@ feature {NONE} -- Events
 			-- change state from show_technical_view
 		do
 			set_show_technical_view (not a_flag)
-			if show_technical_view then
-				rm_attrs_visible_checkbox_ctl.enable_active
-				rm_runtime_attrs_visible_checkbox_ctl.enable_active
-				rm_if_attrs_visible_checkbox_ctl.enable_active
-			else
-				rm_attrs_visible_checkbox_ctl.disable_active
-				rm_runtime_attrs_visible_checkbox_ctl.disable_active
-				rm_if_attrs_visible_checkbox_ctl.disable_active
-			end
 			update_rm_view := show_rm_data_properties
 			if attached source then
 				repopulate
@@ -241,6 +232,7 @@ feature {NONE} -- Events
 	update_show_rm_data_properties (a_flag: BOOLEAN)
 			-- turn on or off the display of reference model data properties details in `ev_grid'.
 		do
+			set_show_technical_view (True)
 			update_rm_view := a_flag /= show_rm_data_properties
 			set_show_rm_data_properties (a_flag)
 			if not a_flag then
@@ -259,6 +251,7 @@ feature {NONE} -- Events
 	update_show_rm_runtime_properties (a_flag: BOOLEAN)
 			-- turn on or off the display of reference model runtime properties details in `ev_grid'.
 		do
+			set_show_technical_view (True)
 			update_rm_view := a_flag /= show_rm_runtime_properties
 			set_show_rm_runtime_properties (a_flag)
 			if a_flag and not show_rm_data_properties then
@@ -276,6 +269,7 @@ feature {NONE} -- Events
 	update_show_rm_infrastructure_properties (a_flag: BOOLEAN)
 			-- turn on or off the display of reference model infrastructure properties details in `ev_grid'.
 		do
+			set_show_technical_view (True)
 			update_rm_view := a_flag /= show_rm_infrastructure_properties
 			set_show_rm_infrastructure_properties (a_flag)
 			if a_flag and not show_rm_runtime_properties then
