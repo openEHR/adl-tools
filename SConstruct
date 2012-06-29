@@ -96,13 +96,14 @@ if distrib and len(adl_workbench) > 0:
 	xml_rules = 'apps/adl_workbench/app/sample_xml_rules.cfg'
 	ui_config = 'apps/adl_workbench/app/default_ui_config.cfg'
 	icons = 'apps/adl_workbench/app/icons'
+	terminology = 'apps/adl_workbench/app/terminology'
 	rm_schemas = 'rm_schemas'
 	error_db = 'apps/adl_workbench/app/error_db'
 	vim = 'components/adl_compiler/etc/vim'
 	install = 'apps/adl_workbench/install/' + platform
 	adl_workbench_installer_sources = [adl_workbench[0], license, xsl, css, xml_rules, ui_config]
 
-	for root in [icons, rm_schemas, error_db, vim, install]:
+	for root in [icons, terminology, rm_schemas, error_db, vim, install]:
 		for dir, dirnames, filenames in os.walk(root):
 			if '.svn' in dirnames: dirnames.remove('.svn')
 			adl_workbench_installer_sources += env.Files(dir + '/*')
@@ -130,7 +131,7 @@ if distrib and len(adl_workbench) > 0:
 			for src in [str(adl_workbench[0]), license, xsl, css, xml_rules, ui_config]:
 				tar.add(src, os.path.basename(src))
 
-			for root in [icons, rm_schemas, error_db, vim]:
+			for root in [icons, terminology, rm_schemas, error_db, vim]:
 				root_dirname_length = len(os.path.dirname(root))
 
 				for dir, dirnames, filenames in os.walk(root):
@@ -175,7 +176,7 @@ if distrib and len(adl_workbench) > 0:
 				copy_tree(install, distrib)
 				copy_tree(vim, pkg_contents)
 
-				for src in [str(adl_workbench[0]), license, xsl, css, xml_rules, ui_config, icons, rm_schemas, error_db]:
+				for src in [str(adl_workbench[0]), license, xsl, css, xml_rules, ui_config, icons, terminology, rm_schemas, error_db]:
 					copy_tree(src, pkg_contents + '/ADL Workbench.app/Contents/Resources/')
 
 				for src, dst in [['apps/adl_workbench/doc/web/release_notes.html', 'Welcome.html'], ['apps/adl_workbench/doc/web/help-mac_install.html', 'ReadMe.html']]:
@@ -203,6 +204,7 @@ if distrib and len(adl_workbench) > 0:
 				pkg_name = match.group()
 				if pkg_name == '9': pkg_name = 'for Leopard'
 				if pkg_name == '10': pkg_name = 'for Snow Leopard'
+				if pkg_name == '11': pkg_name = 'for Lion'
 
 			pkg_name = 'ADL Workbench ' + pkg_name + ' ' + os.popen('uname -p').read().strip()
 			pkg_path = pkg_tree + '/' + pkg_name + '.pkg'
