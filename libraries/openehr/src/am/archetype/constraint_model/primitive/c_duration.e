@@ -11,6 +11,7 @@ note
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
+	void_safe:	 "yes"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -52,7 +53,7 @@ feature {NONE} -- Initialisation
 			valid_pattern: a_pattern /= Void implies valid_iso8601_duration_constraint_pattern (a_pattern)
 			valid_lower: a_lower /= void implies valid_iso8601_duration (a_lower)
 			valid_upper: an_upper /= void implies valid_iso8601_duration (an_upper)
-			valid_order: (a_lower /= Void and an_upper /= Void) implies iso8601_string_to_duration (a_lower) <= iso8601_string_to_duration (an_upper)
+			valid_order: (a_lower /= Void and an_upper /= Void) implies iso8601_string_to_comparable_duration (a_lower) <= iso8601_string_to_comparable_duration (an_upper)
 		local
 			lower_duration, upper_duration: ISO8601_DURATION
 		do
@@ -114,18 +115,18 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	pattern: STRING
+	pattern: detachable STRING
 			-- ISO8601-based pattern.
 			-- Allowed patterns:
 			-- P[Y|y][M|m][D|d][T[H|h][M|m][S|s]] or P[W|w]
 
-	range: INTERVAL [ISO8601_DURATION]
+	range: detachable INTERVAL [ISO8601_DURATION]
 			-- ISO8601-based interval.
 
 	prototype_value: ISO8601_DURATION
 			-- Default duration value.
 		do
-			if range /= Void then
+			if attached range then
 				Result := range.lower
 			else
 				-- FIXME: Return something based on `pattern'.
@@ -145,7 +146,7 @@ feature -- Status Report
 		do
 			Result := True
 
-			if pattern /= Void then
+			if attached pattern then
 				-- FIXME: TO BE IMPLEMENTED	
 			end
 
@@ -155,9 +156,25 @@ feature -- Status Report
 feature -- Comparison
 
 	node_conforms_to (other: like Current): BOOLEAN
-			-- True if this node is a subset of, or the same as `other'
+			-- True if this node constraint is a subset of `other'
 		do
-			if range /= Void and other.range /= Void then
+			Result := pattern_conforms_to (other) and range_conforms_to (other)
+		end
+
+	pattern_conforms_to (other: like Current): BOOLEAN
+			-- True if the pattern of this node is or narrower than that in `other'
+		do
+			if attached pattern and attached other.pattern then
+				Result := compute_pattern_conformance (pattern, other.pattern)
+			else
+				Result := True
+			end
+		end
+
+	range_conforms_to (other: like Current): BOOLEAN
+			-- True if the pattern of this node is or narrower than that in `other'
+		do
+			if attached range and attached other.range then
 				Result := other.range.contains (range)
 			else
 				Result := True
@@ -171,12 +188,12 @@ feature -- Output
 		do
 			create Result.make_empty
 
-			if pattern /= Void then
+			if attached pattern then
 				Result.append (pattern)
 			end
 
-			if range /= Void then
-				if pattern /= Void then
+			if attached range then
+				if attached pattern then
 					Result.append_character ('/')
 				end
 
@@ -190,9 +207,19 @@ feature -- Output
 			not_empty: not Result.is_empty
 		end
 
+feature {NONE} -- Implementation
+
+	compute_pattern_conformance (a_child_pattern, a_pattern: STRING): BOOLEAN
+		local
+			ymd_part, hmd_part: STRING
+		do
+			-- TODO: child pattern can only narrow parent pattern
+			Result := True
+		end
+
 invariant
-	basic_validity: pattern /= Void or range /= Void
-	pattern_valid: pattern /= Void implies valid_iso8601_duration_constraint_pattern (pattern)
+	basic_validity: attached pattern or attached range
+	pattern_valid: attached pattern implies valid_iso8601_duration_constraint_pattern (pattern)
 
 end
 

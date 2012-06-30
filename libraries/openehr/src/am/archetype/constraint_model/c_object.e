@@ -140,7 +140,7 @@ feature -- Comparison
 				if node_id.is_equal (other.node_id) then
 					Result := rm_type_name.is_equal (other.rm_type_name) and (occurrences = Void or else occurrences.is_prohibited)
 				else
-					Result := rm_type_conforms_to(other, an_rm_schema) and occurrences_conforms_to (other) and node_id_conforms_to (other)
+					Result := rm_type_conforms_to (other, an_rm_schema) and occurrences_conforms_to (other) and node_id_conforms_to (other)
 				end
 			elseif not is_addressable and not other.is_addressable then
 				Result := rm_type_conforms_to (other, an_rm_schema) and occurrences_conforms_to (other)

@@ -232,6 +232,16 @@ feature -- Conversion
 			end
 		end
 
+	to_definite_date_time_duration: attached DATE_TIME_DURATION
+			-- convert to definite DATE_TIME_DURATION object (will be slightly approximate)
+		do
+			if weeks > 0 then
+				create Result.make_definite (weeks * Days_in_week, 0, 0, 0)
+			else
+				create Result.make_definite (years * days_in_year + months * days_in_month (1, 1900) + days, hours, minutes, seconds)
+			end
+		end
+
 invariant
 	years_valid: years >= 0
 	months_valid: months >= 0

@@ -74,7 +74,7 @@ feature -- Conversion
 	iso8601_string_to_date_time (str: attached STRING): attached DATE_TIME
 			-- make from string using ISO8601 format "YYYY-MM-DDThh:mm:ss[.ssss]"
 		require
-			str_valid: valid_iso8601_date_time(str)
+			str_valid: valid_iso8601_date_time (str)
 		do
 			Result := (create {ISO8601_DATE_TIME}.make_from_string(str)).to_date_time
 		end
@@ -90,9 +90,17 @@ feature -- Conversion
 	iso8601_string_to_duration (str: attached STRING): attached DATE_TIME_DURATION
 			-- make from string using ISO8601 format "PNNDTNNhNNmNNs"
 		require
-			str_valid: valid_iso8601_duration(str)
+			str_valid: valid_iso8601_duration (str)
 		do
 			Result := (create {ISO8601_DURATION}.make_from_string (str)).to_date_time_duration
+		end
+
+	iso8601_string_to_comparable_duration (str: attached STRING): attached DATE_TIME_DURATION
+			-- make from string using ISO8601 format "PNNDTNNhNNmNNs"
+		require
+			str_valid: valid_iso8601_duration (str)
+		do
+			Result := (create {ISO8601_DURATION}.make_from_string (str)).to_definite_date_time_duration
 		end
 
 feature -- Validity
