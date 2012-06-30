@@ -49,7 +49,6 @@ feature -- Commands
 			ev_grid.row_collapse_actions.block
 			ev_grid.collapse_one_level (test)
 			ev_grid.row_collapse_actions.resume
-			resize_columns_to_content (default_grid_expansion_factor)
 		end
 
 	expand_one_level (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
@@ -57,7 +56,6 @@ feature -- Commands
 			ev_grid.row_expand_actions.block
 			ev_grid.expand_one_level (test)
 			ev_grid.row_expand_actions.resume
-			resize_columns_to_content (default_grid_expansion_factor)
 		end
 
 	expand_all (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])

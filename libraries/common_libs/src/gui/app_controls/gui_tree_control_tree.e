@@ -17,6 +17,11 @@ class GUI_TREE_CONTROL_TREE
 inherit
 	GUI_TREE_CONTROL_I
 
+	GUI_UTILITIES
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -56,25 +61,20 @@ feature -- Events
 
 	expand_one_level (test: FUNCTION [ANY, TUPLE [EV_TREE_NODE], BOOLEAN])
 		do
-			create ev_tree_node_list.make (0)
-			ev_tree.recursive_do_all (agent ev_tree_item_expand_one_level)
-			from ev_tree_node_list.start until ev_tree_node_list.off loop
-				if not attached test or else test.item ([ev_tree_node_list.item]) then
-					ev_tree_node_list.item.expand
-				end
-				ev_tree_node_list.forth
-			end
+			do_with_wait_cursor (ev_tree, agent do_expand_one_level (test))
 		end
 
 	expand_all (test: FUNCTION [ANY, TUPLE [EV_TREE_NODE], BOOLEAN])
 		do
-			ev_tree.recursive_do_all (
-				agent (an_ev_tree_node: attached EV_TREE_NODE; test_agt: FUNCTION [ANY, TUPLE [EV_TREE_NODE], BOOLEAN])
-					do
-						if an_ev_tree_node.is_expandable and (not attached test_agt or else test_agt.item ([an_ev_tree_node])) then
-							an_ev_tree_node.expand
-						end
-					end
+			do_with_wait_cursor (ev_tree,
+				agent ev_tree.recursive_do_all (
+					agent (an_ev_tree_node: EV_TREE_NODE; test_agt: FUNCTION [ANY, TUPLE [EV_TREE_NODE], BOOLEAN])
+						do
+							if an_ev_tree_node.is_expandable and (not attached test_agt or else test_agt.item ([an_ev_tree_node])) then
+								an_ev_tree_node.expand
+							end
+						end (?, test)
+				)
 			)
 		end
 
@@ -127,13 +127,25 @@ feature {NONE} -- Implementation
 
 	ev_tree_node_list: ARRAYED_LIST [EV_TREE_NODE]
 
-	ev_tree_do_all_nodes(a_target: attached EV_TREE_NODE; an_action: PROCEDURE[ANY, TUPLE [EV_TREE_NODE]])
+	ev_tree_do_all_nodes (a_target: attached EV_TREE_NODE; an_action: PROCEDURE[ANY, TUPLE [EV_TREE_NODE]])
 		do
 			from a_target.start until a_target.off loop
 				ev_tree_do_all_nodes (a_target.item, an_action)
 				a_target.forth
 			end
 			an_action.call ([a_target])
+		end
+
+	do_expand_one_level (test: FUNCTION [ANY, TUPLE [EV_TREE_NODE], BOOLEAN])
+		do
+			create ev_tree_node_list.make (0)
+			ev_tree.recursive_do_all (agent ev_tree_item_expand_one_level)
+			from ev_tree_node_list.start until ev_tree_node_list.off loop
+				if not attached test or else test.item ([ev_tree_node_list.item]) then
+					ev_tree_node_list.item.expand
+				end
+				ev_tree_node_list.forth
+			end
 		end
 
 	resize_columns_to_content (grid_expansion_factor: REAL)
