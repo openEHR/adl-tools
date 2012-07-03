@@ -21,7 +21,7 @@ feature -- Initialisation
 			archetype := an_archetype
 			create ontologies.make(0)
 			ontologies.extend (archetype.ontology)
-			is_differential := attached {DIFFERENTIAL_ARCHETYPE} archetype
+			differential_view := attached {DIFFERENTIAL_ARCHETYPE} archetype
 		end
 
 feature -- Visitor
@@ -188,7 +188,7 @@ feature {NONE} -- Implementation
 			Result := ontologies.item
 		end
 
-	is_differential: BOOLEAN
+	differential_view: BOOLEAN
 			-- True if archetype is differential form
 
 end

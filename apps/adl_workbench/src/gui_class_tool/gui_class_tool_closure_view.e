@@ -15,6 +15,9 @@ class GUI_CLASS_TOOL_CLOSURE_VIEW
 
 inherit
 	GUI_CLASS_TARGETTED_TOOL
+		redefine
+			repopulate
+		end
 
 	BMM_DEFINITIONS
 		export
@@ -40,13 +43,18 @@ feature -- Initialisation
 
 	make
 		do
+			create gui_controls.make (0)
+
 			-- create widgets
 			create ev_root_container
 			ev_root_container.set_data (Current)
+			ev_root_container.set_padding (Default_padding_width)
+			ev_root_container.set_border_width (Default_border_width)
 
-			-- EV_TREE
-			create ev_property_tree
-			ev_root_container.extend (ev_property_tree)
+			-- EV_GRID
+			create gui_grid.make (True, False, True, True)
+			gui_grid.set_tree_expand_collapse_icons (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
+			ev_root_container.extend (gui_grid.ev_grid)
 
 			-- view controls VBOX
 			create ev_view_controls_vbox
@@ -56,45 +64,63 @@ feature -- Initialisation
 			ev_root_container.disable_item_expand (ev_view_controls_vbox)
 
 			-- tree collapse/expand control
-			create gui_treeview_control.make (get_text ("view_label_text"), create {GUI_TREE_CONTROL_TREE}.make (ev_property_tree), Void)
+			create gui_treeview_control.make (get_text ("view_label_text"), create {GUI_TREE_CONTROL_GRID}.make (gui_grid), agent tree_recurse_node)
 			ev_view_controls_vbox.extend (gui_treeview_control.ev_root_container)
 			ev_view_controls_vbox.disable_item_expand (gui_treeview_control.ev_root_container)
 
+			-- ========= RM view options =========
+
+			-- frame
+			create rm_property_visibility_frame_ctl.make (get_text ("rm_visibility_controls_text"), 85, 0, False)
+			ev_view_controls_vbox.extend (rm_property_visibility_frame_ctl.ev_root_container)
+			ev_view_controls_vbox.disable_item_expand (rm_property_visibility_frame_ctl.ev_root_container)
+
+			-- add RM data properties check button
+			create rm_attrs_visible_checkbox_ctl.make_active (get_text ("show_rm_properties_button_text"),
+				get_text ("show_rm_properties_tooltip"),
+				agent :BOOLEAN do Result := include_rm_data_properties end, agent update_include_rm_data_properties)
+			gui_controls.extend (rm_attrs_visible_checkbox_ctl)
+			rm_property_visibility_frame_ctl.extend (rm_attrs_visible_checkbox_ctl.ev_data_control, False)
+
+			-- add RM runtime properties option check button
+			create rm_runtime_attrs_visible_checkbox_ctl.make_active (get_text ("show_rm_runtime_properties_button_text"),
+				get_text ("show_rm_runtime_properties_tooltip"),
+				agent :BOOLEAN do Result := include_rm_runtime_properties end, agent update_include_rm_runtime_properties)
+			gui_controls.extend (rm_runtime_attrs_visible_checkbox_ctl)
+			rm_property_visibility_frame_ctl.extend (rm_runtime_attrs_visible_checkbox_ctl.ev_data_control, False)
+
+			-- add RM infrastructure properties option check button
+			create rm_if_attrs_visible_checkbox_ctl.make_active (get_text ("show_rm_if_properties_button_text"),
+				get_text ("show_rm_if_properties_tooltip"),
+				agent :BOOLEAN do Result := include_rm_infrastructure_properties end, agent update_include_rm_infrastructure_properties)
+			gui_controls.extend (rm_if_attrs_visible_checkbox_ctl)
+			rm_property_visibility_frame_ctl.extend (rm_if_attrs_visible_checkbox_ctl.ev_data_control, False)
+
+			-- frame
+			create rm_rendering_frame_ctl.make (get_text ("rm_rendering_controls_text"), 85, 0, False)
+			ev_view_controls_vbox.extend (rm_rendering_frame_ctl.ev_root_container)
+			ev_view_controls_vbox.disable_item_expand (rm_rendering_frame_ctl.ev_root_container)
+
+			-- use RM icons check button
+			create view_rm_use_icons_checkbox_ctl.make_active (get_text ("use_rm_icons_button_text"),
+				get_text ("use_rm_icons_button_tooltip"),
+				agent :BOOLEAN do Result := use_rm_pixmaps end, agent update_use_rm_pixmaps)
+			gui_controls.extend (view_rm_use_icons_checkbox_ctl)
+			rm_rendering_frame_ctl.extend (view_rm_use_icons_checkbox_ctl.ev_data_control, False)
+
+			-- ========== recompute controls =========
+			create rm_recompute_frame_ctl.make (get_text ("rm_closure_depth_control_frame_text"), 0, 0, False)
+			ev_view_controls_vbox.extend (rm_recompute_frame_ctl.ev_root_container)
+			ev_view_controls_vbox.disable_item_expand (rm_recompute_frame_ctl.ev_root_container)
+
 			-- closure depth control
 			create ev_closure_depth_spin_button
-			-- FIXME: can't set text on spin button; need to add a frame or ...
-			ev_closure_depth_spin_button.set_text (get_msg ("closure_depth_spin_button_text", Void))
 			ev_closure_depth_spin_button.set_tooltip (get_msg ("closure_depth_spin_button_tooltip", Void))
 			ev_closure_depth_spin_button.set_value (default_closure_depth)
-			ev_view_controls_vbox.extend (ev_closure_depth_spin_button)
-			ev_view_controls_vbox.disable_item_expand (ev_closure_depth_spin_button)
+			rm_recompute_frame_ctl.extend (ev_closure_depth_spin_button, False)
 
-			-- closure recompute button
-			create ev_closure_recompute_button
-			ev_closure_recompute_button.set_text (get_msg ("closure_depth_recompute_button_text", Void))
-			ev_closure_recompute_button.set_tooltip (get_msg ("closure_depth_recompute_button_tooltip", Void))
-			ev_closure_recompute_button.select_actions.extend (agent repopulate)
-			ev_view_controls_vbox.extend (ev_closure_recompute_button)
-			ev_view_controls_vbox.disable_item_expand (ev_closure_recompute_button)
-
-			-- filler cell
-			create ev_cell
-			ev_cell.set_minimum_height (20)
-			ev_view_controls_vbox.extend (ev_cell)
-			ev_view_controls_vbox.disable_item_expand (ev_cell)
-
-			-- RM icons check button
-			create ev_use_rm_icons_cb
-			ev_use_rm_icons_cb.set_text (get_msg ("use_rm_icons_button_text", Void))
-			ev_use_rm_icons_cb.set_tooltip (get_msg ("use_rm_icons_button_tooltip", Void))
-			ev_use_rm_icons_cb.select_actions.extend (agent on_ev_use_rm_icons_cb_selected)
-			ev_view_controls_vbox.extend (ev_use_rm_icons_cb)
-			ev_view_controls_vbox.disable_item_expand (ev_use_rm_icons_cb)
-
-			-- Initial visual settings
-			if use_rm_pixmaps then
-				ev_use_rm_icons_cb.enable_select
-			end
+			-- initial state
+			include_rm_data_properties := True
 		end
 
 feature -- Access
@@ -106,37 +132,79 @@ feature -- Status Report
 	is_expanded: BOOLEAN
 			-- True if last whole tree operation was expand
 
+	include_rm_data_properties: BOOLEAN
+
+	include_rm_runtime_properties: BOOLEAN
+
+	include_rm_infrastructure_properties: BOOLEAN
+
 feature -- Events
 
-	on_ev_use_rm_icons_cb_selected
+	update_use_rm_pixmaps (a_flag: BOOLEAN)
 		do
-			if is_populated then
-				set_use_rm_pixmaps (ev_use_rm_icons_cb.is_selected)
-				refresh
-
+			set_use_rm_pixmaps (a_flag)
+			if attached source then
+				repopulate
 				-- reflect change to other editor tools
 				gui_agents.update_all_tools_rm_icons_setting_agent.call ([])
 			end
 		end
 
-	update_rm_icons_cb
-			-- update and repopulate if this setting was changed elsewhere in the tool
+	update_include_rm_data_properties (a_flag: BOOLEAN)
+			-- turn on or off the display of reference model data properties details in `ev_grid'.
 		do
-			if is_populated and use_rm_pixmaps /= ev_use_rm_icons_cb.is_selected then
-				if use_rm_pixmaps then
-					ev_use_rm_icons_cb.enable_select
-				else
-					ev_use_rm_icons_cb.disable_select
+			include_rm_data_properties := a_flag
+			if not a_flag then
+				if include_rm_infrastructure_properties then
+					include_rm_infrastructure_properties := False
 				end
-				refresh
+				if include_rm_runtime_properties then
+					include_rm_runtime_properties := False
+				end
+			end
+			if attached source then
+				repopulate
+			end
+		end
+
+	update_include_rm_runtime_properties (a_flag: BOOLEAN)
+			-- turn on or off the display of reference model runtime properties details in `ev_grid'.
+		do
+			include_rm_runtime_properties := a_flag
+			if a_flag and not include_rm_data_properties then
+				rm_attrs_visible_checkbox_ctl.ev_data_control.enable_select
+			else
+				if not a_flag and include_rm_infrastructure_properties then
+					include_rm_infrastructure_properties := False
+				end
+				if attached source then
+					do_with_wait_cursor (gui_grid.ev_grid, agent repopulate)
+				end
+			end
+		end
+
+	update_include_rm_infrastructure_properties (a_flag: BOOLEAN)
+			-- turn on or off the display of reference model infrastructure properties details in `ev_grid'.
+		do
+			include_rm_infrastructure_properties := a_flag
+			if a_flag and not include_rm_runtime_properties then
+				rm_runtime_attrs_visible_checkbox_ctl.ev_data_control.enable_select
+			elseif attached source then
+				do_with_wait_cursor (gui_grid.ev_grid, agent repopulate)
 			end
 		end
 
 feature -- Commands
 
-	refresh
+	repopulate
+			-- repopulate current tree items if needed
 		do
-			do_with_wait_cursor (ev_root_container, agent ev_property_tree.recursive_do_all (agent refresh_node))
+			-- populate peripheral controls
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.populate end)
+
+ 			-- populate the tree
+			source.do_supplier_closure (not differential_view, agent continue_rm_property,
+					agent enter_rm_property, agent exit_rm_property)
 		end
 
 feature {NONE} -- Implementation
@@ -144,48 +212,61 @@ feature {NONE} -- Implementation
 	do_clear
 		do
  			ev_closure_depth_spin_button.set_value (Default_closure_depth)
- 			ev_property_tree.wipe_out
+			gui_grid.wipe_out
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.clear end)
 		end
 
 	do_populate
 		do
- 			create ev_tree_item_stack.make (0)
+			-- populate peripheral controls
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.populate end)
 
 			-- for use in icon switching
- 			model_publisher := source.bmm_schema.rm_publisher
+ 			rm_publisher := source.bmm_schema.rm_publisher
 
  			-- populate the tree
+			create ev_grid_rm_row_stack.make (0)
+			create ev_grid_rm_row_removals_stack.make (0)
+
 			populate_root_node
-			source.do_supplier_closure (not differential_view, ev_closure_depth_spin_button.value-1,
-					agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+			source.do_supplier_closure (not differential_view, agent continue_rm_property,
+					agent enter_rm_property, agent exit_rm_property)
+
+			gui_grid.set_column_titles (Node_grid_col_names.linear_representation)
 
 			-- now collapse the tree, and then expand out just the top node
 			gui_treeview_control.on_collapse_all
-			if not ev_property_tree.is_empty and then ev_property_tree.first.is_expandable then
-				ev_property_tree.first.expand
-			end
+			gui_treeview_control.on_expand_one_level
 		end
 
-	ev_property_tree: EV_TREE
+	gui_grid: GUI_EV_GRID
+
+	view_rm_use_icons_checkbox_ctl: GUI_CHECK_BOX_CONTROL
+
+	rm_attrs_visible_checkbox_ctl, rm_runtime_attrs_visible_checkbox_ctl, rm_if_attrs_visible_checkbox_ctl: GUI_CHECK_BOX_CONTROL
+
+	view_detail_frame_ctl, rm_property_visibility_frame_ctl, rm_rendering_frame_ctl, rm_recompute_frame_ctl: GUI_FRAME_CONTROL
+
+	gui_controls: ARRAYED_LIST [GUI_DATA_CONTROL]
 
 	gui_treeview_control: GUI_TREEVIEW_CONTROL
 
-	ev_expand_button, ev_expand_one_button, ev_collapse_one_button, ev_closure_recompute_button: EV_BUTTON
-
-	ev_use_rm_icons_cb: EV_CHECK_BUTTON
-
 	ev_view_controls_vbox: EV_VERTICAL_BOX
-
-	ev_cell: EV_CELL
 
 	ev_closure_depth_spin_button: EV_SPIN_BUTTON
 
-	ev_tree_item_stack: ARRAYED_STACK [EV_TREE_ITEM]
+	ev_closure_recompute_button: EV_BUTTON
 
-	model_publisher: STRING
+	ev_grid_rm_row_stack: ARRAYED_STACK [EV_GRID_ROW]
+			-- stack for building the RM node tree
+
+	ev_grid_rm_row_removals_stack: ARRAYED_STACK [BOOLEAN]
+			-- stack for tracking removals
+
+	rm_publisher: STRING
 			-- name of publisher, e.g. 'openehr', which is the key to RM-specific icons
 
-	node_path: OG_PATH
+	rm_node_path: OG_PATH
 
 	node_list: ARRAYED_LIST [EV_TREE_NODE]
 
@@ -194,164 +275,168 @@ feature {NONE} -- Implementation
 
    	populate_root_node
 			-- Add root node representing class to `gui_file_tree'.
-   		local
-			a_ti: EV_TREE_ITEM
-			pixmap_name: STRING
 		do
-			create a_ti
-			a_ti.set_text (source.as_type_string)
-			a_ti.set_data (source)
-			pixmap_name := rm_icon_dir + "/" + model_publisher + "/" + source.name
-			if use_rm_pixmaps and then has_icon_pixmap (pixmap_name) then
-				a_ti.set_pixmap (get_icon_pixmap (pixmap_name))
-			else
-				a_ti.set_pixmap (get_icon_pixmap ("rm/generic/" + source.type_category))
-			end
-			ev_property_tree.extend (a_ti)
-			ev_tree_item_stack.extend (a_ti)
-			create node_path.make_root
+			create rm_node_path.make_root
+			gui_grid.add_row (1, source)
+			ev_grid_rm_row_stack.extend (gui_grid.last_row)
+			ev_grid_rm_row_removals_stack.extend (False)
+			gui_grid.set_last_row_label_col (Node_grid_col_rm_name, source.name, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (source, rm_publisher))
+			if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Node_grid_col_rm_name) as gli then
+	 	 		gli.pointer_button_press_actions.force_extend (agent class_node_handler (gui_grid.last_row, ?, ?, ?))
+	 	 	end
 		end
 
-   	populate_gui_tree_node_enter (a_prop_def: attached BMM_PROPERTY_DEFINITION; depth: INTEGER)
-   			-- Add a node representing `a_prop_def' to `gui_file_tree'.
-   			-- If depth = 0, but this property is not a terminal node, it means that computation on
-   			-- this branch of the closure won't go further due the closure_depth limit; therefore,
-   			-- display this node with a special icon that invite the user to manually further expand
-   			-- this node
-   		local
-			a_ti: EV_TREE_ITEM
+	continue_rm_property (a_bmm_prop: BMM_PROPERTY_DEFINITION; depth: INTEGER): BOOLEAN
+			-- detrmine whether to continue a BMM_PROPERTY_DEFINITION
+		local
+			parent_class_row: EV_GRID_ROW
+		do
+			if attached last_property_grid_row then
+				if last_property_grid_row.subrow (1).subrow_count > 0 then
+					Result := True
+				else
+					Result := depth < ev_closure_depth_spin_button.value
+				end
+			end
+		end
+
+	last_property_grid_row: EV_GRID_ROW
+
+	enter_rm_property (a_bmm_prop: BMM_PROPERTY_DEFINITION; depth: INTEGER)
+			-- enter a BMM_PROPERTY_DEFINITION
+		local
+			parent_class_row: EV_GRID_ROW
 			prop_str, type_str: STRING
-	--		is_terminal: BOOLEAN
 			has_type_subs: BOOLEAN
 			type_spec: BMM_TYPE_SPECIFIER
+			col: EV_COLOR
+			show_prop: BOOLEAN
+			ignore: BOOLEAN
 		do
-			closure_depth := depth
+			if not ev_grid_rm_row_removals_stack.item then -- don't do anything if descending into a removed subtree
+				-- first of all work out whether we want this property
+				show_prop := include_rm_data_properties
+					and (not a_bmm_prop.is_im_runtime or else include_rm_runtime_properties)
+					and (not a_bmm_prop.is_im_infrastructure or else include_rm_infrastructure_properties)
 
-			-- update path value
-			prop_str := a_prop_def.name.twin
-			node_path.append_segment (create {OG_PATH_ITEM}.make (prop_str))
+				parent_class_row := ev_grid_rm_row_stack.item
+				last_property_grid_row := Void
+				-- if a row for the property already exists then refresh it or remove it depending on settings; otherwise create it or do nothing
+				if attached gui_grid.matching_sub_row (parent_class_row,
+					agent (a_row: EV_GRID_ROW; match_bmm_prop: BMM_PROPERTY_DEFINITION): BOOLEAN
+						do
+							Result := attached {BMM_PROPERTY_DEFINITION} a_row.data as bmm_prop and then bmm_prop = match_bmm_prop
+						end (?, a_bmm_prop)) as a_prop_row
+				then
+					-- put something on the stack to match stack removal in exit routine
+					if show_prop then
+						last_property_grid_row := a_prop_row
+						-- refresh its object rows
+						refresh_row (a_prop_row.subrow (1))
+						rm_node_path.append_segment (create {OG_PATH_ITEM}.make (a_bmm_prop.name))
+						ev_grid_rm_row_stack.extend (a_prop_row.subrow (1))
+					else
+						gui_grid.ev_grid.remove_row (a_prop_row.index)
+						ignore := True
+					end
 
-			-- determine data for property and one or more (in the case of generics with > 1 param) class nodes
-			if attached {BMM_CLASS_DEFINITION} a_prop_def.type as bmm_class_def then
-	--			if bmm_class_def.is_primitive_type then
-	--				prop_str.append (": " + bmm_class_def.name)
-	--				is_terminal := True
-	--			else
-					type_str := bmm_class_def.name
-					has_type_subs := bmm_class_def.has_type_substitutions
-	--			end
-				type_spec := bmm_class_def
-
-			elseif attached {BMM_CONTAINER_TYPE_REFERENCE} a_prop_def.type as bmm_cont_type_ref then
-				-- assume first gen param is only type of interest
-	--			if bmm_cont_type_ref.type.is_primitive_type then
-	--				prop_str.append (": " + bmm_cont_type_ref.as_type_string)
-	--				is_terminal := True
-	--			else
-					prop_str.append (": " + bmm_cont_type_ref.container_type.name + Generic_left_delim.out + Generic_right_delim.out)
-					type_str := bmm_cont_type_ref.type.name
-					has_type_subs := bmm_cont_type_ref.type.has_type_substitutions
-	--			end
-				type_spec := bmm_cont_type_ref.type
-
-			elseif attached {BMM_GENERIC_TYPE_REFERENCE} a_prop_def.type as bmm_gen_type_ref then
-				type_str := bmm_gen_type_ref.as_type_string
-				has_type_subs := bmm_gen_type_ref.has_type_substitutions
-				type_spec := bmm_gen_type_ref.root_type
-
-			elseif attached {BMM_GENERIC_PARAMETER_DEFINITION} a_prop_def.type as bmm_gen_parm_def then -- type is T, U etc
-				type_str := bmm_gen_parm_def.as_type_string
-				has_type_subs := bmm_gen_parm_def.has_type_substitutions
-				type_spec := a_prop_def.type
-			end
-
-			if a_prop_def.is_mandatory then
-				prop_str.append (" [1]")
-			else
-				prop_str.append (" [0..1]")
-			end
-
-			-- property node
-			create a_ti
-			a_ti.set_data (a_prop_def)							-- node data = BMM property definition
-			a_ti.set_text (prop_str)							-- node text
-			a_ti.set_tooltip (node_path.as_string)				-- tooltip
-			a_ti.set_pixmap (get_icon_pixmap ("rm/generic/" + a_prop_def.multiplicity_key_string))	-- pixmap
- 	 		a_ti.pointer_button_press_actions.force_extend (agent property_node_handler (a_ti, ?, ?, ?))
- 	 		a_ti.expand_actions.force_extend (agent property_node_expand_handler (a_ti))
- 			ev_tree_item_stack.item.extend (a_ti)
-			ev_tree_item_stack.extend (a_ti)
-
-			-- class / type node(s)
---			if not is_terminal then
-				create a_ti
-				set_class_node_details (a_ti, type_spec, type_str, has_type_subs)
-	 	 		a_ti.pointer_button_press_actions.force_extend (agent class_node_handler (a_ti, ?, ?, ?))
-				ev_tree_item_stack.item.extend (a_ti)
-				ev_tree_item_stack.extend (a_ti)
---			end
-		end
-
-	set_class_node_details (a_ti: EV_TREE_ITEM; a_type_spec: BMM_TYPE_SPECIFIER; a_type_str: STRING; has_type_subs: BOOLEAN)
-		local
-			type_category, pixmap_name: STRING
-			pixmap: EV_PIXMAP
-		do
-			type_category := a_type_spec.type_category
-			a_ti.set_data (a_type_spec)						-- node data
-			a_ti.set_text (a_type_str)						-- node text
-			if not attached {BMM_GENERIC_PARAMETER_DEFINITION} a_type_spec then
-				pixmap_name := rm_icon_dir + "/" + model_publisher + "/" + type_name_root_type (a_type_str)
-				if use_rm_pixmaps and then has_icon_pixmap (pixmap_name) then
-					pixmap := get_icon_pixmap (pixmap_name)
 				else
-					pixmap := get_icon_pixmap ("rm/generic/" + type_category)
-				end
+					if show_prop then
+						-- determine data for property and one or more (in the case of generics with > 1 param) class nodes
+						prop_str := a_bmm_prop.name.twin
+						if attached {BMM_CLASS_DEFINITION} a_bmm_prop.type as bmm_class_def then
+							type_str := bmm_class_def.name
+							has_type_subs := bmm_class_def.has_type_substitutions
+							type_spec := bmm_class_def
+
+						elseif attached {BMM_CONTAINER_TYPE_REFERENCE} a_bmm_prop.type as bmm_cont_type_ref then
+							prop_str.append (": " + bmm_cont_type_ref.container_type.name + Generic_left_delim.out + Generic_right_delim.out)
+							type_str := bmm_cont_type_ref.type.name
+							has_type_subs := bmm_cont_type_ref.type.has_type_substitutions
+							type_spec := bmm_cont_type_ref.type
+
+						elseif attached {BMM_GENERIC_TYPE_REFERENCE} a_bmm_prop.type as bmm_gen_type_ref then
+							type_str := bmm_gen_type_ref.as_type_string
+							has_type_subs := bmm_gen_type_ref.has_type_substitutions
+							type_spec := bmm_gen_type_ref.root_type
+
+						elseif attached {BMM_GENERIC_PARAMETER_DEFINITION} a_bmm_prop.type as bmm_gen_parm_def then -- type is T, U etc
+							type_str := bmm_gen_parm_def.as_type_string
+							has_type_subs := bmm_gen_parm_def.has_type_substitutions
+							type_spec := a_bmm_prop.type
+						end
+
+						-- ======== property node =========
+						gui_grid.add_sub_row (parent_class_row, a_bmm_prop)
+						last_property_grid_row := gui_grid.last_row
+
+						if a_bmm_prop.is_im_infrastructure then
+							col := rm_infrastructure_attribute_colour
+						elseif a_bmm_prop.is_im_runtime then
+							col := rm_runtime_attribute_colour
+						else
+							col := rm_attribute_color
+						end
+						rm_node_path.append_segment (create {OG_PATH_ITEM}.make (a_bmm_prop.name))
+						gui_grid.set_last_row_label_col (Node_grid_col_rm_name, prop_str, rm_node_path.as_string,
+							col, get_icon_pixmap ("rm/generic/" + a_bmm_prop.multiplicity_key_string))
+
+						-- existence
+						gui_grid.set_last_row_label_col (Node_grid_col_existence, a_bmm_prop.existence.as_string, Void, col, Void)
+
+						-- cardinality
+						if attached {BMM_CONTAINER_PROPERTY} a_bmm_prop as bmm_cont_prop then
+							gui_grid.set_last_row_label_col (Node_grid_col_card_occ, bmm_cont_prop.cardinality.as_string, Void, col, Void)
+						end
+
+						-- add tree expand handler to this node
+						gui_grid.last_row.expand_actions.force_extend (agent property_node_expand_handler (gui_grid.last_row))
+
+						-- add right-click menu to property node for removal etc
+			--			if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Node_grid_col_rm_name) as gli then
+			--		 		gli.pointer_button_press_actions.force_extend (agent property_node_handler (gli, ?, ?, ?))
+			--			end
+
+						-- ======== type node =========
+						gui_grid.add_sub_row (gui_grid.last_row, type_spec)
+						ev_grid_rm_row_stack.extend (gui_grid.last_row)
+						gui_grid.set_last_row_label_col (Node_grid_col_rm_name, type_str, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (type_spec, rm_publisher))
+						if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Node_grid_col_rm_name) as gli then
+				 	 		gli.pointer_button_press_actions.force_extend (agent class_node_handler (gui_grid.last_row, ?, ?, ?))
+				 	 	end
+				 	else
+						ignore := True
+				 	end
+			 	end
 			else
-				pixmap := get_icon_pixmap ("rm/generic/" + type_category)
+				ignore := True
 			end
-			a_ti.set_pixmap (pixmap)
- 	 	end
-
-   	populate_gui_tree_node_exit (a_prop_def: attached BMM_PROPERTY_DEFINITION)
-   		do
-			node_path.remove_last
-			ev_tree_item_stack.remove
---			if not (	-- some kind of primitive, that did not result in an object node
---				attached {BMM_CLASS_DEFINITION} a_prop_def.type as bmm_class_def and then
---					bmm_class_def.is_primitive_type or
---				attached {BMM_CONTAINER_TYPE_REFERENCE} a_prop_def.type as bmm_cont_type_ref and then
---					bmm_cont_type_ref.type.is_primitive_type
---			)
---			then
-				ev_tree_item_stack.remove
---			end
+		 	ev_grid_rm_row_removals_stack.extend (ignore)
 		end
 
-	refresh_node (a_ti: EV_TREE_NODE)
-		local
-			pixmap_name: STRING
+	exit_rm_property (a_bmm_prop: BMM_PROPERTY_DEFINITION)
+			-- exit a BMM_PROPERTY_DEFINITION
 		do
-			if attached {BMM_TYPE_SPECIFIER} a_ti.data as a_type_spec  then
-				pixmap_name := rm_icon_dir + "/" + model_publisher + "/" + a_type_spec.root_class
-				if use_rm_pixmaps and then has_icon_pixmap (pixmap_name) then
-					a_ti.set_pixmap (get_icon_pixmap (pixmap_name))
-				else
-					a_ti.set_pixmap (get_icon_pixmap ("rm/generic/" + a_type_spec.type_category))
-				end
+			if not ev_grid_rm_row_removals_stack.item then
+				rm_node_path.remove_last
+				ev_grid_rm_row_stack.remove
 			end
+		 	ev_grid_rm_row_removals_stack.remove
 		end
 
-	class_node_handler (eti: EV_TREE_ITEM; x,y, button: INTEGER)
+	class_node_handler (a_class_grid_row: EV_GRID_ROW; x,y, button: INTEGER)
 			-- creates the context menu for a right click action for class node
 		local
 			subs: ARRAYED_SET[STRING]
 			menu: EV_MENU
 		do
-			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_TYPE_SPECIFIER} eti.data as bmm_type_spec then
+			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_TYPE_SPECIFIER} a_class_grid_row.data as bmm_type_spec then
+				a_class_grid_row.item (1).enable_select
 				create menu
 				-- add menu item for retarget tool to current node / display in new tool
-				add_class_context_menu (menu, eti)
+				if attached {BMM_CLASS_DEFINITION} a_class_grid_row.data as a_class_def then
+					add_class_context_menu (menu, a_class_def)
+				end
 
 				-- if there are type substitutions available, add sub-menu for that
 				if attached {BMM_CLASS_DEFINITION} bmm_type_spec as bmm_class_def then
@@ -364,47 +449,37 @@ feature {NONE} -- Implementation
 					subs := bmm_gen_parm_def.type_substitutions
 				end
 				if not subs.is_empty then
-					add_subtype_context_menu (menu, subs, eti)
+					add_subtype_context_menu (menu, subs, a_class_grid_row)
 				end
 				menu.show
 			end
 		end
 
-	property_node_handler (eti: EV_TREE_ITEM; x,y, button: INTEGER)
+	property_node_handler (a_prop_grid_row: EV_GRID_ROW; x,y, button: INTEGER)
 			-- creates the context menu for a right click action for property node
 		local
 			menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
-			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_PROPERTY_DEFINITION} eti.data as bmm_pd and then not bmm_pd.is_mandatory then
+			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_PROPERTY_DEFINITION} a_prop_grid_row.data as bmm_pd and then not bmm_pd.is_mandatory then
 				create menu
-				create an_mi.make_with_text_and_action ("Remove", agent remove_optional_property (eti))
+				create an_mi.make_with_text_and_action ("Remove", agent remove_optional_property (a_prop_grid_row))
 				menu.extend (an_mi)
 				menu.show
 			end
 		end
 
-	property_node_expand_handler (eti: EV_TREE_ITEM)
-		do
-			from eti.start until eti.off loop
-				if eti.item.is_empty and attached {EV_TREE_ITEM} eti.item as a_ti and then attached {BMM_TYPE_SPECIFIER} a_ti.data as bmm_type_spec then
-					rebuild_from_interior_node (bmm_type_spec.root_class, a_ti, True)
-				end
-				eti.forth
-			end
-		end
-
-	add_subtype_context_menu (menu: EV_MENU; a_substitutions: ARRAYED_SET[STRING]; a_ti: EV_TREE_ITEM)
+	add_subtype_context_menu (menu: EV_MENU; a_substitutions: ARRAYED_SET[STRING]; a_class_grid_row: EV_GRID_ROW)
 			-- dynamically initializes the context menu for this tree
 		local
 			an_mi: EV_MENU_ITEM
 			chg_sub_menu: EV_MENU
 		do
 			-- create sub menu listing subtypes to change current node into
-			create chg_sub_menu.make_with_text ("Convert this node to subtype")
+			create chg_sub_menu.make_with_text (get_text ("context_menu_convert_node_to_subtype"))
 			from a_substitutions.start until a_substitutions.off loop
-				create an_mi.make_with_text_and_action (a_substitutions.item, agent rebuild_from_interior_node (a_substitutions.item, a_ti, True))
-				if source.bmm_schema.class_definition (a_substitutions.item).is_abstract then
+				create an_mi.make_with_text_and_action (a_substitutions.item, agent convert_node_to_subtype (a_substitutions.item, a_class_grid_row, True))
+				if rm_schema.class_definition (a_substitutions.item).is_abstract then
 					an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))
 				else
 					an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_concrete"))
@@ -415,58 +490,95 @@ feature {NONE} -- Implementation
 			menu.extend (chg_sub_menu)
 
 			-- if owning attribute is multiple, allow adding of sibling nodes
-			if a_ti.has_parent and then attached {BMM_PROPERTY_DEFINITION} a_ti.parent.data as a_prop_def and then a_prop_def.is_container then
-				-- create sub menu listing subtypes to add to parent node
-				create chg_sub_menu.make_with_text ("Add new subtype node")
-				from a_substitutions.start until a_substitutions.off loop
-					create an_mi.make_with_text_and_action (a_substitutions.item, agent rebuild_from_interior_node (a_substitutions.item, a_ti, False))
-					if source.bmm_schema.class_definition (a_substitutions.item).is_abstract then
-						an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))
-					else
-						an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_concrete"))
-					end
-		    		chg_sub_menu.extend (an_mi)
-					a_substitutions.forth
-				end
-				menu.extend (chg_sub_menu)
-			end
+--			if attached a_class_grid_row.parent_row and then
+--				attached {BMM_PROPERTY_DEFINITION} a_class_grid_row.parent_row.data as a_prop_def and then a_prop_def.is_container
+--			then
+--				-- create sub menu listing subtypes to add to parent node
+--				create chg_sub_menu.make_with_text (get_text ("context_menu_add_subtype_mode"))
+--				from a_substitutions.start until a_substitutions.off loop
+--					create an_mi.make_with_text_and_action (a_substitutions.item, agent convert_node_to_subtype (a_substitutions.item, a_class_grid_row, False))
+--					if rm_schema.class_definition (a_substitutions.item).is_abstract then
+--						an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))
+--					else
+--						an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_concrete"))
+--					end
+--		    		chg_sub_menu.extend (an_mi)
+--					a_substitutions.forth
+--				end
+--				menu.extend (chg_sub_menu)
+--			end
 		end
 
-	remove_optional_property (a_ti: EV_TREE_ITEM)
+	remove_optional_property (a_prop_grid_row: EV_GRID_ROW)
 			-- remove this node
 		do
-			a_ti.parent.prune (a_ti)
+			a_prop_grid_row.parent.remove_row (a_prop_grid_row.index)
 		end
 
-	rebuild_from_interior_node (a_class_name: attached STRING; a_ti: EV_TREE_ITEM; replace_mode: BOOLEAN)
+	property_node_expand_handler (a_prop_grid_row: EV_GRID_ROW)
+		local
+			i: INTEGER
+		do
+			-- there can be more than one class subrow below a property because of additions done by user choosing
+			-- 'add_subtype' menu option
+			from i := 1 until i > a_prop_grid_row.subrow_count loop
+				if a_prop_grid_row.subrow (i).subrow_count = 0 and attached {BMM_TYPE_SPECIFIER} a_prop_grid_row.subrow (i).data as bmm_type_spec then
+					convert_node_to_subtype (bmm_type_spec.root_class, a_prop_grid_row.subrow (i), True)
+				end
+				i := i + 1
+			end
+		end
+
+	convert_node_to_subtype (a_subtype: attached STRING; a_class_grid_row: EV_GRID_ROW; replace_mode: BOOLEAN)
 			-- rebuild EV tree from interior node of class with a new tree of selected subtype
 		local
-			bmm_class_def: BMM_CLASS_DEFINITION
-			target_ti: EV_TREE_ITEM
+			bmm_subtype_def: BMM_CLASS_DEFINITION
 		do
-			a_ti.enable_select
+			bmm_subtype_def := rm_schema.class_definition (a_subtype)
+			-- set the RM path from the sibling node; it is the regardless of whether we are replacing or adding nodes
+			if attached {EV_GRID_LABEL_ITEM} a_class_grid_row.item (Node_grid_col_rm_name) as gli then
+				create rm_node_path.make_from_string (utf32_to_utf8 (gli.tooltip))
+			end
 			if replace_mode then
-				target_ti := a_ti
-				target_ti.wipe_out
+				gui_grid.remove_sub_rows (a_class_grid_row)
+				gui_grid.set_last_row (a_class_grid_row)
+				gui_grid.update_last_row_label_col (Node_grid_col_rm_name, a_subtype, Void, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def, rm_publisher))
+				gui_grid.last_row.set_data (bmm_subtype_def)
+				ev_grid_rm_row_stack.extend (a_class_grid_row)
 			else
-				create target_ti.default_create
-				a_ti.parent.extend (target_ti)
-				target_ti.set_data (a_ti.data)
-	 	 		target_ti.pointer_button_press_actions.force_extend (agent class_node_handler (target_ti, ?, ?, ?))
+				gui_grid.add_sub_row (a_class_grid_row.parent_row, bmm_subtype_def)
+				gui_grid.set_last_row_label_col (Node_grid_col_rm_name, a_subtype, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def, rm_publisher))
+				if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Node_grid_col_rm_name) as gli then
+	 	 			gli.pointer_button_press_actions.force_extend (agent class_node_handler (gui_grid.last_row, ?, ?, ?))
+					gui_grid.last_row.expand_actions.force_extend (agent property_node_expand_handler (gui_grid.last_row))
+				end
+				ev_grid_rm_row_stack.extend (gui_grid.last_row)
 			end
-			ev_tree_item_stack.extend (target_ti)
-			bmm_class_def := source.bmm_schema.class_definition (a_class_name)
-			closure_depth := 1
-			set_class_node_details (target_ti, bmm_class_def, a_class_name, True)
-			if attached {EV_TREE_ITEM} target_ti.parent as a_parent_ti then
-				create node_path.make_from_string (a_parent_ti.tooltip)
+
+			ev_grid_rm_row_removals_stack.extend (False)
+
+			bmm_subtype_def.do_supplier_closure (not differential_view, agent continue_rm_property, agent enter_rm_property, agent exit_rm_property)
+
+			ev_grid_rm_row_stack.remove
+			ev_grid_rm_row_removals_stack.remove
+
+			if a_class_grid_row.is_expandable then
+				a_class_grid_row.expand
 			end
-			do_with_wait_cursor (ev_root_container, agent bmm_class_def.do_supplier_closure (not differential_view, ev_closure_depth_spin_button.value - 1,
-				agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit))
-			if a_ti.is_expandable then
-				a_ti.expand
+		end
+
+	refresh_row (a_row: EV_GRID_ROW)
+		do
+			if attached {BMM_TYPE_SPECIFIER} a_row.data as a_type_spec then
+				if attached {EV_GRID_LABEL_ITEM} a_row.item (Node_grid_col_rm_name) as gli then
+					gli.set_pixmap (rm_type_pixmap (a_type_spec, rm_publisher))
+				end
 			end
-			ev_tree_item_stack.remove
+		end
+
+	tree_recurse_node (a_row: EV_GRID_ROW): BOOLEAN
+		do
+			Result := a_row.parent.depth_in_tree (a_row.index) < ev_closure_depth_spin_button.value or else a_row.is_expandable
 		end
 
 end

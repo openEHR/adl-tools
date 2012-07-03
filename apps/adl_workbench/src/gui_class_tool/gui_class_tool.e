@@ -157,7 +157,9 @@ feature -- Commands
 	update_rm_icons_setting
 			-- call this routine if rm_icons setting changed elsewhere in tool
 		do
-			closure_view.update_rm_icons_cb
+			if closure_view.can_repopulate then
+				closure_view.repopulate
+			end
 		end
 
 	go_to_selected_item

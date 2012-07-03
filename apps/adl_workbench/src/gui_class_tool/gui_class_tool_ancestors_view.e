@@ -110,7 +110,7 @@ feature {NONE} -- Implementation
 		do
 			if attached {BMM_CLASS_DEFINITION} eti.data as bmm_class_def and button = {EV_POINTER_CONSTANTS}.right then
 				create menu
-				add_class_context_menu (menu, eti)
+				add_class_context_menu (menu, bmm_class_def)
 				menu.show
 			end
 		end

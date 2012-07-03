@@ -14,6 +14,11 @@ note
 
 deferred class GUI_TREE_CONTROL_I
 
+feature -- Access
+
+	ev_root_widget: EV_WIDGET
+			-- provide access to tree widget
+
 feature -- Commands
 
 	ev_tree_do_all (a_node_action: attached PROCEDURE [ANY, TUPLE [ANY]])

@@ -30,6 +30,7 @@ feature -- Initialisation
 	make (a_gui_grid: GUI_EV_GRID)
 		do
 			ev_grid := a_gui_grid.ev_grid
+			ev_root_widget := ev_grid
 		end
 
 feature -- Access
@@ -63,7 +64,7 @@ feature -- Commands
 			ev_grid.row_collapse_actions.block
 			ev_grid.expand_all (test)
 			ev_grid.row_collapse_actions.resume
-			resize_columns_to_content (default_grid_expansion_factor)
+--			resize_columns_to_content (default_grid_expansion_factor)
 		end
 
 	collapse_all
@@ -71,7 +72,7 @@ feature -- Commands
 			ev_grid.row_collapse_actions.block
 			ev_grid.collapse_all
 			ev_grid.row_collapse_actions.resume
-			resize_columns_to_content (default_grid_expansion_factor)
+--			resize_columns_to_content (default_grid_expansion_factor)
 		end
 
 	resize_columns_to_content (grid_expansion_factor: REAL)

@@ -127,15 +127,18 @@ feature {NONE} -- Implementation
 				-- do property rows if we have not already encountered this class
 				if not anc_classes.has (a_class_def.name) then
 					from prop_list.start until prop_list.off loop
-	--					class_row.insert_subrow (class_row.subrow_count+1)
-	--					property_row := class_row.subrow (class_row.subrow_count)
-
 						-- property name
 						create gli.make_with_text (prop_list.item.name)
+						if prop_list.item.is_im_infrastructure then
+							gli.set_foreground_color (rm_infrastructure_attribute_colour)
+						elseif prop_list.item.is_im_runtime then
+							gli.set_foreground_color (rm_runtime_attribute_colour)
+						else
+							gli.set_foreground_color (rm_attribute_color)
+						end
 						gli.set_pixmap (get_icon_pixmap ("rm/generic/" + prop_list.item.multiplicity_key_string))
 						ev_grid.set_item (Grid_property_col, ev_grid.row_count + 1, gli)
 						property_row := gli.row
-	--					property_row.set_item (Grid_property_col, gli)
 
 						-- property type
 						create gli.make_with_text (prop_list.item.type.as_type_string)
@@ -147,8 +150,6 @@ feature {NONE} -- Implementation
 
 						prop_list.forth
 					end
-
-	--				class_row.expand
 				end
 				anc_classes.extend (a_class_def.name)
 			end
@@ -164,11 +165,17 @@ feature {NONE} -- Implementation
 			-- creates the context menu for a right click action for class node
 		local
 			menu: EV_MENU
+			bmm_class_def: BMM_CLASS_DEFINITION
 		do
 			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_TYPE_SPECIFIER} eti.data as bmm_type_spec then
+				if attached {BMM_CLASS_DEFINITION} bmm_type_spec as a_bmm_class_def then
+					bmm_class_def := a_bmm_class_def
+				else
+					bmm_class_def := rm_schema.class_definition (bmm_type_spec.root_class)
+				end
 				create menu
 				-- add menu item for retarget tool to current node / display in new tool
-				add_class_context_menu (menu, eti)
+				add_class_context_menu (menu, bmm_class_def)
 				menu.show
 			end
 		end

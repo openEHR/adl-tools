@@ -62,9 +62,9 @@ feature -- Initialisation
 			-- EV_GRID
 			create gui_grid.make (True, False, True, True)
 			gui_grid.set_tree_expand_collapse_icons (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
-
 			ev_root_container.extend (gui_grid.ev_grid)
 
+			-- view controls VBOX
 			create ev_view_controls_vbox
 			ev_root_container.extend (ev_view_controls_vbox)
 			ev_root_container.disable_item_expand (ev_view_controls_vbox)
@@ -104,21 +104,21 @@ feature -- Initialisation
 			ev_view_controls_vbox.extend (rm_property_visibility_frame_ctl.ev_root_container)
 			ev_view_controls_vbox.disable_item_expand (rm_property_visibility_frame_ctl.ev_root_container)
 
-			-- add RM attributes check button
+			-- add RM data properties check button
 			create rm_attrs_visible_checkbox_ctl.make_active (get_text ("show_rm_properties_button_text"),
 				get_text ("show_rm_properties_tooltip"),
 				agent :BOOLEAN do Result := show_rm_data_properties end, agent update_show_rm_data_properties)
 			gui_controls.extend (rm_attrs_visible_checkbox_ctl)
 			rm_property_visibility_frame_ctl.extend (rm_attrs_visible_checkbox_ctl.ev_data_control, False)
 
-			-- add RM runtime attributes option check button
+			-- add RM runtime properties option check button
 			create rm_runtime_attrs_visible_checkbox_ctl.make_active (get_text ("show_rm_runtime_properties_button_text"),
 				get_text ("show_rm_runtime_properties_tooltip"),
 				agent :BOOLEAN do Result := show_rm_runtime_properties end, agent update_show_rm_runtime_properties)
 			gui_controls.extend (rm_runtime_attrs_visible_checkbox_ctl)
 			rm_property_visibility_frame_ctl.extend (rm_runtime_attrs_visible_checkbox_ctl.ev_data_control, False)
 
-			-- add RM infrastructure attributes option check button
+			-- add RM infrastructure properties option check button
 			create rm_if_attrs_visible_checkbox_ctl.make_active (get_text ("show_rm_if_properties_button_text"),
 				get_text ("show_rm_if_properties_tooltip"),
 				agent :BOOLEAN do Result := show_rm_infrastructure_properties end, agent update_show_rm_infrastructure_properties)
@@ -244,7 +244,7 @@ feature {NONE} -- Events
 				end
 			end
 			if show_technical_view and attached source then
-				repopulate
+				do_with_wait_cursor (gui_grid.ev_grid, agent repopulate)
 			end
 		end
 
@@ -261,7 +261,7 @@ feature {NONE} -- Events
 					set_show_rm_infrastructure_properties (False)
 				end
 				if show_technical_view and attached source then
-					repopulate
+					do_with_wait_cursor (gui_grid.ev_grid, agent repopulate)
 				end
 			end
 		end
@@ -275,7 +275,7 @@ feature {NONE} -- Events
 			if a_flag and not show_rm_runtime_properties then
 				rm_runtime_attrs_visible_checkbox_ctl.ev_data_control.enable_select
 			elseif show_technical_view and attached source then
-				repopulate
+				do_with_wait_cursor (gui_grid.ev_grid, agent repopulate)
 			end
 		end
 
@@ -306,7 +306,9 @@ feature {NONE} -- Implementation
 
 	view_detail_radio_ctl: GUI_BOOLEAN_RADIO_CONTROL
 
-	add_codes_checkbox_ctl, rm_attrs_visible_checkbox_ctl, view_rm_use_icons_checkbox_ctl, rm_runtime_attrs_visible_checkbox_ctl, rm_if_attrs_visible_checkbox_ctl: GUI_CHECK_BOX_CONTROL
+	view_rm_use_icons_checkbox_ctl, add_codes_checkbox_ctl: GUI_CHECK_BOX_CONTROL
+
+	rm_attrs_visible_checkbox_ctl, rm_runtime_attrs_visible_checkbox_ctl, rm_if_attrs_visible_checkbox_ctl: GUI_CHECK_BOX_CONTROL
 
 	ev_view_controls_vbox: EV_VERTICAL_BOX
 

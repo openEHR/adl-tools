@@ -409,8 +409,9 @@ feature -- Status Report
 
 feature -- Traversal
 
-	do_supplier_closure (flat_flag: BOOLEAN; max_depth: INTEGER;
-				enter_action: attached PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION, INTEGER]]; exit_action: PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION]])
+	do_supplier_closure (flat_flag: BOOLEAN; continue_action: FUNCTION [ANY, TUPLE [BMM_PROPERTY_DEFINITION], BOOLEAN];
+				enter_action: PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION, INTEGER]];
+				exit_action: detachable PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION]])
 			-- On all nodes in supplier closure of this class, execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 			-- If `flat_flag' = True, use the inheritance-flattened closure
 			-- THIS CAN BE AN EXPENSIVE COMPUTATION, so it is limited by the max_depth argument
@@ -434,7 +435,7 @@ feature -- Traversal
 
 			props_csr := props.new_cursor
 			from props_csr.start until props_csr.after loop
-				do_property_supplier_closure (props_csr.item, flat_flag, max_depth, enter_action, exit_action)
+				do_property_supplier_closure (props_csr.item, flat_flag, continue_action, enter_action, exit_action, 0)
 				props_csr.forth
 			end
 		end
@@ -614,9 +615,11 @@ feature {BMM_CLASS_DEFINITION} -- Implementation
 
 feature {NONE} -- Implementation
 
-	do_property_supplier_closure (a_prop: attached BMM_PROPERTY_DEFINITION; flat_flag: BOOLEAN; max_depth: INTEGER;
-				enter_action: attached PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION, INTEGER]];
-				exit_action: PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION]])
+	do_property_supplier_closure (a_prop: attached BMM_PROPERTY_DEFINITION; flat_flag: BOOLEAN;
+				continue_action: FUNCTION [ANY, TUPLE [BMM_PROPERTY_DEFINITION], BOOLEAN];
+				enter_action: PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION, INTEGER]];
+				exit_action: detachable PROCEDURE [ANY, TUPLE [BMM_PROPERTY_DEFINITION]];
+				depth: INTEGER)
 			-- On all nodes in supplier closure of `a_prop', execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 			-- If `flat_flag' = True, use the inheritance-flattened closure
 			-- THIS CAN BE AN EXPENSIVE COMPUTATION, so it is limited by the max_depth argument
@@ -626,11 +629,11 @@ feature {NONE} -- Implementation
 			if not supplier_closure_stack.has (a_prop.type.root_class) then
 				supplier_closure_stack.extend (a_prop.type.root_class)
 
-				enter_action.call ([a_prop, max_depth])
+				enter_action.call ([a_prop, depth])
 
 		--		if not supplier_closure_class_record.has (a_prop.type.root_class) then
 		--			supplier_closure_class_record.extend (a_prop.type.root_class)
-					if max_depth > 0 then
+					if continue_action.item ([a_prop, depth]) then
 						if flat_flag then
 							props := bmm_schema.class_definition (a_prop.type.root_class).flat_properties
 						else
@@ -638,7 +641,7 @@ feature {NONE} -- Implementation
 						end
 
 						from props.start until props.off loop
-							do_property_supplier_closure (props.item_for_iteration, flat_flag, max_depth - 1, enter_action, exit_action)
+							do_property_supplier_closure (props.item_for_iteration, flat_flag, continue_action, enter_action, exit_action, depth + 1)
 							props.forth
 						end
 					end

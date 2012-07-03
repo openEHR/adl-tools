@@ -129,6 +129,22 @@ feature -- Definitions
 			create Result.make_with_8_bit_rgb (0xdd, 0, 0)
 		end
 
+	rm_type_pixmap (a_type_spec: BMM_TYPE_SPECIFIER; an_rm_publisher: STRING): EV_PIXMAP
+		local
+			pixmap_name: STRING
+		do
+			if not attached {BMM_GENERIC_PARAMETER_DEFINITION} a_type_spec then
+				pixmap_name := rm_icon_dir + resource_path_separator + an_rm_publisher + resource_path_separator + a_type_spec.root_class
+				if use_rm_pixmaps and then has_icon_pixmap (pixmap_name) then
+					Result := get_icon_pixmap (pixmap_name)
+				else
+					Result := get_icon_pixmap ("rm" + resource_path_separator + "generic" + resource_path_separator + a_type_spec.type_category)
+				end
+			else
+				Result := get_icon_pixmap ("rm" + resource_path_separator + "generic" + resource_path_separator + a_type_spec.type_category)
+			end
+		end
+
 feature -- Access
 
 	adl_workbench_icon: EV_PIXMAP

@@ -34,11 +34,6 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_GUI_AGENTS
-		export
-			{NONE} all
-		end
-
 	SHARED_TERMINOLOGY_SERVICE
 		export
 			{NONE} all
@@ -182,7 +177,7 @@ feature -- Visitor
 			end
 
 			-- sibling order column
-			if is_differential then
+			if differential_view then
 				if a_node.is_addressable and then attached a_node.sibling_order then
 					create s.make_empty
 					if a_node.sibling_order.is_after then
@@ -656,7 +651,7 @@ feature -- Visitor
 				-- if it wasn't removed, do its children, to a certain depth
 				if not ev_grid_rm_row_removals_stack.item then
 					bmm_class_def := rm_schema.class_definition (a_bmm_prop.type.root_class)
-					bmm_class_def.do_supplier_closure (not is_differential, 1, agent enter_rm_property, agent exit_rm_property)
+					bmm_class_def.do_supplier_closure (not differential_view, agent continue_rm_property, agent enter_rm_property, agent exit_rm_property)
 				end
 
 				exit_rm_property (a_bmm_prop)
@@ -665,6 +660,22 @@ feature -- Visitor
 				ev_grid_rm_row_removals_stack.remove
 			end
 		end
+
+	continue_rm_property (a_bmm_prop: BMM_PROPERTY_DEFINITION; depth: INTEGER): BOOLEAN
+			-- detrmine whether to continue a BMM_PROPERTY_DEFINITION
+		local
+			parent_class_row: EV_GRID_ROW
+		do
+			if attached last_property_grid_row then
+				if last_property_grid_row.subrow (1).subrow_count > 0 then
+					Result := True
+				else
+					Result := depth < 2
+				end
+			end
+		end
+
+	last_property_grid_row: EV_GRID_ROW
 
 	enter_rm_property (a_bmm_prop: BMM_PROPERTY_DEFINITION; depth: INTEGER)
 			-- enter a BMM_PROPERTY_DEFINITION
@@ -682,14 +693,19 @@ feature -- Visitor
 				show_prop := in_technical_view and include_rm_data_properties
 					and (not a_bmm_prop.is_im_runtime or else include_rm_runtime_properties)
 					and (not a_bmm_prop.is_im_infrastructure or else include_rm_infrastructure_properties)
-				parent_class_row := ev_grid_rm_row_stack.item
+
 				-- if the row already exists then refresh it or remove it depending on settings; otherwise create it or do nothing
+				parent_class_row := ev_grid_rm_row_stack.item
+				last_property_grid_row := Void
 				if attached gui_grid.matching_sub_row (parent_class_row,
 					agent (a_row: EV_GRID_ROW; match_bmm_prop: BMM_PROPERTY_DEFINITION): BOOLEAN
-						do Result := attached {BMM_PROPERTY_DEFINITION} a_row.data as bmm_prop and then bmm_prop = match_bmm_prop end (?, a_bmm_prop)) as a_prop_row
+						do
+							Result := attached {BMM_PROPERTY_DEFINITION} a_row.data as bmm_prop and then bmm_prop = match_bmm_prop
+						end (?, a_bmm_prop)) as a_prop_row
 				then
 					-- put something on the stack to match stack removal in exit routine
 					if show_prop then
+						last_property_grid_row := a_prop_row
 						-- refresh its object rows
 						refresh_row (a_prop_row.subrow (1))
 						rm_node_path.append_segment (create {OG_PATH_ITEM}.make (a_bmm_prop.name))
@@ -725,11 +741,9 @@ feature -- Visitor
 							type_spec := a_bmm_prop.type
 						end
 
-						-- make additions to the grid
-
 						-- ======== property node =========
 						gui_grid.add_sub_row (parent_class_row, a_bmm_prop)
-			--			ev_grid_rm_row_stack.extend (gui_grid.last_row)
+						last_property_grid_row := gui_grid.last_row
 
 						if a_bmm_prop.is_im_infrastructure then
 							col := rm_infrastructure_attribute_colour
@@ -761,7 +775,7 @@ feature -- Visitor
 						-- ======== type node =========
 						gui_grid.add_sub_row (gui_grid.last_row, type_spec)
 						ev_grid_rm_row_stack.extend (gui_grid.last_row)
-						gui_grid.set_last_row_label_col (Node_grid_col_rm_name, type_str, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (type_spec, type_str))
+						gui_grid.set_last_row_label_col (Node_grid_col_rm_name, type_str, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (type_spec, rm_publisher))
 						if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Node_grid_col_rm_name) as gli then
 				 	 		gli.pointer_button_press_actions.force_extend (agent class_node_handler (gui_grid.last_row, ?, ?, ?))
 				 	 	end
@@ -997,22 +1011,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	rm_type_pixmap (a_type_spec: BMM_TYPE_SPECIFIER; a_type_str: STRING): EV_PIXMAP
-		local
-			pixmap_name: STRING
-		do
-			if not attached {BMM_GENERIC_PARAMETER_DEFINITION} a_type_spec then
-				pixmap_name := rm_icon_dir + resource_path_separator + rm_publisher + resource_path_separator + type_name_root_type (a_type_str)
-				if use_rm_pixmaps and then has_icon_pixmap (pixmap_name) then
-					Result := get_icon_pixmap (pixmap_name)
-				else
-					Result := get_icon_pixmap ("rm" + resource_path_separator + "generic" + resource_path_separator + a_type_spec.type_category)
-				end
-			else
-				Result := get_icon_pixmap ("rm" + resource_path_separator + "generic" + resource_path_separator + a_type_spec.type_category)
-			end
-		end
-
 	arch_class_node_handler (a_class_grid_row: EV_GRID_ROW; x,y, button: INTEGER)
 			-- creates the context menu for a right click action for class node
 		local
@@ -1038,37 +1036,6 @@ feature {NONE} -- Implementation
 
 				if attached {ARCHETYPE_SLOT} co as arch_slot and then not arch_slot.is_closed then
 					add_slot_submenu (menu, arch_slot)
-				end
-				menu.show
-			end
-		end
-
-	class_node_handler (a_class_grid_row: EV_GRID_ROW; x,y, button: INTEGER)
-			-- creates the context menu for a right click action for class node
-		local
-			subs: ARRAYED_SET[STRING]
-			menu: EV_MENU
-		do
-			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_TYPE_SPECIFIER} a_class_grid_row.data as bmm_type_spec then
-				a_class_grid_row.item (1).enable_select
-				create menu
-				-- add menu item for retarget tool to current node / display in new tool
-				if attached {BMM_CLASS_DEFINITION} a_class_grid_row.data as a_class_def then
-					add_class_context_menu (menu, a_class_def)
-				end
-
-				-- if there are type substitutions available, add sub-menu for that
-				if attached {BMM_CLASS_DEFINITION} bmm_type_spec as bmm_class_def then
-					subs := bmm_class_def.type_substitutions
-				elseif attached {BMM_CONTAINER_TYPE_REFERENCE} bmm_type_spec as bmm_cont_type_ref then
-					subs := bmm_cont_type_ref.type.type_substitutions
-				elseif attached {BMM_GENERIC_TYPE_REFERENCE} bmm_type_spec as bmm_gen_type_ref then
-					subs := bmm_gen_type_ref.type_substitutions
-				elseif attached {BMM_GENERIC_PARAMETER_DEFINITION} bmm_type_spec as bmm_gen_parm_def then -- type is T, U etc
-					subs := bmm_gen_parm_def.type_substitutions
-				end
-				if not subs.is_empty then
-					add_subtype_context_menu (menu, subs, a_class_grid_row)
 				end
 				menu.show
 			end
@@ -1105,6 +1072,37 @@ feature {NONE} -- Implementation
 
 			if not sub_menu.is_empty then
 				menu.extend (sub_menu)
+			end
+		end
+
+	class_node_handler (a_class_grid_row: EV_GRID_ROW; x,y, button: INTEGER)
+			-- creates the context menu for a right click action for class node
+		local
+			subs: ARRAYED_SET[STRING]
+			menu: EV_MENU
+		do
+			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_TYPE_SPECIFIER} a_class_grid_row.data as bmm_type_spec then
+				a_class_grid_row.item (1).enable_select
+				create menu
+				-- add menu item for retarget tool to current node / display in new tool
+				if attached {BMM_CLASS_DEFINITION} a_class_grid_row.data as a_class_def then
+					add_class_context_menu (menu, a_class_def)
+				end
+
+				-- if there are type substitutions available, add sub-menu for that
+				if attached {BMM_CLASS_DEFINITION} bmm_type_spec as bmm_class_def then
+					subs := bmm_class_def.type_substitutions
+				elseif attached {BMM_CONTAINER_TYPE_REFERENCE} bmm_type_spec as bmm_cont_type_ref then
+					subs := bmm_cont_type_ref.type.type_substitutions
+				elseif attached {BMM_GENERIC_TYPE_REFERENCE} bmm_type_spec as bmm_gen_type_ref then
+					subs := bmm_gen_type_ref.type_substitutions
+				elseif attached {BMM_GENERIC_PARAMETER_DEFINITION} bmm_type_spec as bmm_gen_parm_def then -- type is T, U etc
+					subs := bmm_gen_parm_def.type_substitutions
+				end
+				if not subs.is_empty then
+					add_subtype_context_menu (menu, subs, a_class_grid_row)
+				end
+				menu.show
 			end
 		end
 
@@ -1190,12 +1188,14 @@ feature {NONE} -- Implementation
 			if replace_mode then
 				gui_grid.remove_sub_rows (a_class_grid_row)
 				gui_grid.set_last_row (a_class_grid_row)
-				gui_grid.update_last_row_label_col (Node_grid_col_rm_name, a_subtype, Void, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def, a_subtype))
+				gui_grid.update_last_row_label_col (Node_grid_col_rm_name, a_subtype, Void, archetype_rm_type_color,
+					rm_type_pixmap (bmm_subtype_def, rm_publisher))
 				gui_grid.last_row.set_data (bmm_subtype_def)
 				ev_grid_rm_row_stack.extend (a_class_grid_row)
 			else
 				gui_grid.add_sub_row (a_class_grid_row.parent_row, bmm_subtype_def)
-				gui_grid.set_last_row_label_col (Node_grid_col_rm_name, a_subtype, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def, a_subtype))
+				gui_grid.set_last_row_label_col (Node_grid_col_rm_name, a_subtype, rm_node_path.as_string, archetype_rm_type_color,
+					rm_type_pixmap (bmm_subtype_def, rm_publisher))
 				if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Node_grid_col_rm_name) as gli then
 	 	 			gli.pointer_button_press_actions.force_extend (agent class_node_handler (gui_grid.last_row, ?, ?, ?))
 					gui_grid.last_row.expand_actions.force_extend (agent property_node_expand_handler (gui_grid.last_row))
@@ -1205,7 +1205,7 @@ feature {NONE} -- Implementation
 
 			ev_grid_rm_row_removals_stack.extend (False)
 
-			bmm_subtype_def.do_supplier_closure (not is_differential, 1, agent enter_rm_property, agent exit_rm_property)
+			bmm_subtype_def.do_supplier_closure (not differential_view, agent continue_rm_property, agent enter_rm_property, agent exit_rm_property)
 
 			ev_grid_rm_row_stack.remove
 			ev_grid_rm_row_removals_stack.remove
@@ -1219,7 +1219,7 @@ feature {NONE} -- Implementation
 		do
 			if attached {BMM_TYPE_SPECIFIER} a_row.data as a_type_spec then
 				if attached {EV_GRID_LABEL_ITEM} a_row.item (Node_grid_col_rm_name) as gli then
-					gli.set_pixmap (rm_type_pixmap (a_type_spec, utf32_to_utf8 (gli.text)))
+					gli.set_pixmap (rm_type_pixmap (a_type_spec, rm_publisher))
 				end
 			end
 		end

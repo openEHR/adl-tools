@@ -252,10 +252,10 @@ templates = <
 		["use_rm_icons_button_text"] = <"RM icons">
 		["use_rm_icons_button_tooltip"] = <"Use RM-specific icons">
 
-		["closure_depth_spin_button_text"] = <"Depth">
+		["rm_closure_depth_control_frame_text"] = <"Closure pre-compute depth">
 		["closure_depth_spin_button_tooltip"] = <"Depth of closure to explore; this computation can be long for depths > 5">
 
-		["closure_depth_recompute_button_text"] = <"Recompute">
+		["closure_depth_recompute_button_text"] = <"Refresh">
 		["closure_depth_recompute_button_tooltip"] = <"Recompute with new depth">
 
 		["expand_button_collapse_text"] = <"Collapse All">

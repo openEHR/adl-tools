@@ -30,6 +30,7 @@ feature -- Initialisation
 	make (a_tree: EV_TREE)
 		do
 			ev_tree := a_tree
+			ev_root_widget := ev_tree
 		end
 
 feature -- Access

@@ -26,6 +26,8 @@ feature -- Access
 	source: BMM_CLASS_DEFINITION
 			-- class definition to which this tool is targetted
 
+	rm_schema: BMM_SCHEMA
+
 	tool_artefact_id: STRING
 			-- a system-wide unique artefact id that can be used to find a tool in a GUI collection like
 			-- docked panes or similar
@@ -46,6 +48,7 @@ feature -- Commands
 		do
 			differential_view := differential_view_flag
 			gui_tool_populate (a_source)
+			rm_schema := a_source.bmm_schema
 		end
 
 feature {NONE} -- Implementation
@@ -59,20 +62,18 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
-	add_class_context_menu (menu: EV_MENU; ev_ti: EV_SELECTABLE)
+	add_class_context_menu (menu: EV_MENU; a_bmm_class_def: BMM_CLASS_DEFINITION)
 			-- dynamically initializes the context menu for this tree
 		local
 			an_mi: EV_MENU_ITEM
 		do
-			if attached {BMM_CLASS_DEFINITION} ev_ti.data as a_class_def then
-				create an_mi.make_with_text_and_action (get_msg ("retarget_to_this_class", Void), agent display_context_selected_class_in_active_tool (a_class_def))
-				an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool"))
-		    	menu.extend (an_mi)
+			create an_mi.make_with_text_and_action (get_msg ("retarget_to_this_class", Void), agent display_context_selected_class_in_active_tool (a_bmm_class_def))
+			an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool"))
+	    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (get_msg ("display_in_new_tab", Void), agent display_context_selected_class_in_new_tool (a_class_def))
-				an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
-				menu.extend (an_mi)
-			end
+			create an_mi.make_with_text_and_action (get_msg ("display_in_new_tab", Void), agent display_context_selected_class_in_new_tool (a_bmm_class_def))
+			an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
+			menu.extend (an_mi)
 		end
 
 	display_context_selected_class_in_active_tool (a_class_def: BMM_CLASS_DEFINITION)

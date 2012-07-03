@@ -38,6 +38,11 @@ inherit
 			{NONE} all
 		end
 
+	GUI_UTILITIES
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -124,14 +129,24 @@ feature -- Events
 
 	on_expand_one_level
 		do
-			gui_tree_control.expand_one_level (collapse_expand_test_agt)
-			gui_tree_control.resize_columns_to_content (Default_grid_expansion_factor)
+			do_with_wait_cursor (gui_tree_control.ev_root_widget,
+				agent
+					do
+						gui_tree_control.expand_one_level (collapse_expand_test_agt)
+						gui_tree_control.resize_columns_to_content (Default_grid_expansion_factor)
+					end
+			)
 		end
 
 	on_expand_all
 		do
-			gui_tree_control.expand_all (collapse_expand_test_agt)
-			gui_tree_control.resize_columns_to_content (Default_grid_expansion_factor)
+			do_with_wait_cursor (gui_tree_control.ev_root_widget,
+				agent
+					do
+						gui_tree_control.expand_all (collapse_expand_test_agt)
+						gui_tree_control.resize_columns_to_content (Default_grid_expansion_factor)
+					end
+			)
 		end
 
 	on_collapse_all

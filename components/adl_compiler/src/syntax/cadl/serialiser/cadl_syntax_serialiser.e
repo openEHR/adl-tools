@@ -508,7 +508,7 @@ feature {NONE} -- Implementation
 	serialise_sibling_order (a_node: C_OBJECT; depth: INTEGER)
 			-- serialise C_OBJECT.sibling_order if this is a differential archetype (it should not be there otherwise)
 		do
-			if is_differential and attached a_node.sibling_order then
+			if differential_view and attached a_node.sibling_order then
 				last_result.append (create_indent (depth))
 				if a_node.sibling_order.is_after then
 					last_result.append (apply_style(symbol(SYM_AFTER), STYLE_KEYWORD) + format_item(FMT_SPACE))
