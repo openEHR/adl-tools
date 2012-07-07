@@ -38,7 +38,7 @@ BEGIN
             VALUE "FileDescription",  "Archetype Definition Language Workbench"
             VALUE "FileVersion",      VER_FILEVERSION_STR
             VALUE "InternalName",     "adl_workbench.exe"
-            VALUE "LegalCopyright",   "Copyright © 2003-2011"
+            VALUE "LegalCopyright",   "Copyright © 2003-2012"
             VALUE "OriginalFilename", "adl_workbench.exe"
             VALUE "ProductName",      "ADL Workbench"
             VALUE "ProductVersion",   VER_PRODUCTVERSION_STR

@@ -64,7 +64,7 @@ feature {NONE} -- Initialisation
 
 			Precursor {EV_DIALOG}
 
-			set_title ("ADL Workbench RM Schema Configuration")
+			set_title (get_text ("rm_schema_dialog_title"))
 			set_icon_pixmap (adl_workbench_icon)
 
 			-- ============ root container ============

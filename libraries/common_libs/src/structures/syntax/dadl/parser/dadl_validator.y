@@ -716,6 +716,10 @@ string_list_value: V_STRING ',' V_STRING
 			$1.extend($3)
 			$$ := $1
 		}
+	| string_list_value ',' SYM_LIST_CONTINUE
+		{
+			$$ := $1
+		}
 	| V_STRING ',' SYM_LIST_CONTINUE
 		{
 			create $$.make(0)

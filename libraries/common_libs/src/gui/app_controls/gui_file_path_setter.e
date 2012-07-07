@@ -135,18 +135,13 @@ feature {NONE} -- Implmentation
 				create default_result.make_empty
 			end
 
-			from
-			until
-				attached Result
-			loop
+			from until attached Result loop
 				dialog.show_modal_to_window (a_parent_window)
-
 				if dialog.selected_button = Void or else dialog.selected_button.is_equal (get_text ("cancel_button_text")) then
 					Result := default_result
 				else
 					if not dialog.file_name.is_empty then
-						create a_file.make (dialog.file_name.as_string_8)
-
+						create a_file.make (dialog.file_name.to_string_8)
 						if a_file.exists then
 							Result := a_file.name
 						else

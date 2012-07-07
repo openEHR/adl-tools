@@ -40,12 +40,9 @@ create
 feature -- Initialisation
 
 	make (a_title: STRING; a_data_source_agent: like data_source_agent;
-			min_height, min_width: INTEGER;
-			use_hbox_container: BOOLEAN)
+			min_height, min_width: INTEGER; arrange_horizontally: BOOLEAN)
 		do
-			make_mlist (a_title, a_data_source_agent,
-				min_height, min_width,
-				use_hbox_container, Void)
+			make_mlist (a_title, a_data_source_agent, min_height, min_width, arrange_horizontally, Void)
 		ensure
 			not is_readonly
 		end
@@ -55,11 +52,11 @@ feature -- Initialisation
 			a_data_source_remove_agent: like data_source_remove_agent;
 			an_undo_redo_chain: UNDO_REDO_CHAIN;
 			min_height, min_width: INTEGER;
-			use_hbox_container: BOOLEAN)
+			arrange_horizontally: BOOLEAN)
 		do
 			make_active_mlist (a_title,
 				a_data_source_agent, a_data_source_create_agent, a_data_source_remove_agent, an_undo_redo_chain,
-				min_height, min_width, use_hbox_container, Void)
+				min_height, min_width, arrange_horizontally, Void)
 		ensure
 			not is_readonly
 		end

@@ -471,7 +471,7 @@ feature -- Visitor
 				bmm_prop := rm_schema.property_definition ("CODE_PHRASE", "terminology_id")
 				if not updating then
 					gui_grid.add_sub_row (row, bmm_prop.name)
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop.name, Void, rm_attribute_color, get_icon_pixmap ("rm/generic/" + bmm_prop.multiplicity_key_string))
+					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop.name, Void, archetyped_attribute_color, get_icon_pixmap ("rm/generic/" + bmm_prop.multiplicity_key_string))
 					gui_grid.set_last_row_label_col (Node_grid_col_constraint, a_node.terminology_id.value, Void, Archetype_constraint_color, Void)
 				end
 			end
@@ -495,7 +495,7 @@ feature -- Visitor
 				bmm_prop := rm_schema.property_definition ("CODE_PHRASE", "code_string")
 				if not updating then
 					gui_grid.add_sub_row (row, bmm_prop.name)
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop.name, Void, rm_attribute_color, get_icon_pixmap ("rm/generic/" + bmm_prop.multiplicity_key_string))
+					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop.name, Void, archetyped_attribute_color, get_icon_pixmap ("rm/generic/" + bmm_prop.multiplicity_key_string))
 					gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, Archetype_constraint_color, Void)
 				else
 					from i := 1 until i > row.subrow_count or attached sub_row loop
@@ -550,7 +550,7 @@ feature -- Visitor
 				bmm_prop_key := bmm_prop_value.name + " - " + bmm_prop_symbol.name
 				if not updating then
 					gui_grid.add_sub_row (row, bmm_prop_key)
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop_key, Void, rm_attribute_color,
+					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop_key, Void, archetyped_attribute_color,
 						get_icon_pixmap ("rm/generic/" + bmm_prop_value.multiplicity_key_string))
 					gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, Archetype_constraint_color, Void)
 				else
@@ -616,7 +616,7 @@ feature -- Visitor
 					bmm_prop_key := bmm_prop_magnitude.name + " | " + bmm_prop_units.name + " | " + bmm_prop_precision.name
 
 					gui_grid.add_sub_row (row, Void)
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop_key, Void, rm_attribute_color,
+					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop_key, Void, archetyped_attribute_color,
 						get_icon_pixmap ("rm/generic/" + bmm_prop_magnitude.multiplicity_key_string))
 					gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, Archetype_constraint_color, Void)
 				end

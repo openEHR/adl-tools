@@ -138,7 +138,7 @@ feature {NONE} -- Implementation
 					Result := default_result
 				else
 					if not dialog.directory.is_empty then
-						create a_dir.make (dialog.directory.as_string_8)
+						create a_dir.make (dialog.directory.to_string_8)
 
 						if a_dir.exists then
 							Result := a_dir.name

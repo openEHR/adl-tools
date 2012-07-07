@@ -45,6 +45,17 @@ templates = <
 		["cant_remove_last_profile"] = <"Last profile cannot be removed; use 'Edit' to reconfigure">
 		["duplicate_profile"] = <"New profile name $1 already used">
 		["empty_profile"] = <"Profile name must not be empty">
+		["repository_dialog_title"] = <"ADL Workbench Repository Profile Configuration">
+
+		["profile_list_text"] = <"Profiles">
+		["add_new_profile_button_text"] = <"Add New">
+		["add_new_profile_button_tooltip"] = <"Add a new profile">
+		["remove_profile_button_text"] = <"Remove">
+		["remove_profile_button_tooltip"] = <"Remove selected profile">
+		["edit_profile_button_text"] = <"Edit">
+		["edit_profile_button_tooltip"] = <"Edit selected profile">
+		["ref_repo_text"] =  <"Reference Repository">
+		["work_repo_text"] = <"Work Repository">
 
 		-- PROFILE_EDIT_DIALOG
 		["profile_edit_dialog_title"] =  <"Edit Repository Profile">
@@ -83,6 +94,7 @@ templates = <
 		["use_rm_icons_tooltip"] = <"Use RM-specific icons in visualisation of archetype definition?">
 
 		-- RM_SCHEMA_DIALOG
+		["rm_schema_dialog_title"] = <"ADL Workbench RM Schema Configuration">
 		["rm_schema_dialog_header_label"] = <"Reference Model schemas loaded shown below.%NCheck or uncheck to load as required.">
 		["rm_schema_dir_not_found"] = <"Directory $1 not found; please specify a valid directory">
 		["rm_schema_dir_text"] = <"RM schema directory:">
@@ -252,7 +264,7 @@ templates = <
 		["use_rm_icons_button_text"] = <"RM icons">
 		["use_rm_icons_button_tooltip"] = <"Use RM-specific icons">
 
-		["rm_closure_depth_control_frame_text"] = <"Closure pre-compute depth">
+		["rm_closure_depth_control_frame_text"] = <"Closure depth">
 		["closure_depth_spin_button_tooltip"] = <"Depth of closure to explore; this computation can be long for depths > 5">
 
 		["closure_depth_recompute_button_text"] = <"Refresh">

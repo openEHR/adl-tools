@@ -31,6 +31,13 @@ inherit
 			is_equal, default_create, copy
 		end
 
+	STRING_UTILITIES
+		export
+			{NONE}
+		undefine
+			is_equal, default_create, copy
+		end
+
 feature {NONE} -- Initialization
 
 	initialize
@@ -38,98 +45,95 @@ feature {NONE} -- Initialization
 		do
 			Precursor {EV_DIALOG}
 
-			-- create widgets
-			create ev_vbox_1
-			create profile_frame
-			create ev_hbox_1
-			create profile_list
-			create ev_vbox_2
-			create profile_add_button
-			create profile_remove_button
-			create profile_edit_button
-			create ref_path_hbox
-			create reference_path_text
-			create work_path_hbox
-			create work_path_text
-			create ev_hbox_2
-			create ev_cell_1
-			create ok_button
-			create cancel_button
+			create gui_controls.make (0)
 
-			-- connect widgets
-			extend (ev_vbox_1)
-			ev_vbox_1.extend (profile_frame)
-			profile_frame.extend (ev_hbox_1)
-			ev_hbox_1.extend (profile_list)
-			ev_hbox_1.extend (ev_vbox_2)
-			ev_vbox_2.extend (profile_add_button)
-			ev_vbox_2.extend (profile_remove_button)
-			ev_vbox_2.extend (profile_edit_button)
-			ev_vbox_1.extend (ref_path_hbox)
-			ref_path_hbox.extend (reference_path_text)
-			ev_vbox_1.extend (work_path_hbox)
-			work_path_hbox.extend (work_path_text)
-			ev_vbox_1.extend (ev_hbox_2)
-			ev_hbox_2.extend (ev_cell_1)
-			ev_hbox_2.extend (ok_button)
-			ev_hbox_2.extend (cancel_button)
-
-			ev_vbox_1.set_minimum_height (220)
-			ev_vbox_1.set_padding (Default_padding_width)
-			ev_vbox_1.set_border_width (Default_border_width)
-			ev_vbox_1.disable_item_expand (ref_path_hbox)
-			ev_vbox_1.disable_item_expand (work_path_hbox)
-			ev_vbox_1.disable_item_expand (ev_hbox_2)
-			profile_frame.set_text ("Profiles")
-			profile_frame.set_minimum_height (120)
-			ev_hbox_1.set_minimum_height (110)
-			ev_hbox_1.set_padding (Default_padding_width)
-			ev_hbox_1.set_border_width (Default_border_width)
-			ev_hbox_1.disable_item_expand (ev_vbox_2)
-			profile_list.set_minimum_height (100)
-			ev_vbox_2.set_minimum_width (100)
-			ev_vbox_2.set_padding (Default_padding_width)
-			ev_vbox_2.set_border_width (Default_border_width)
-			ev_vbox_2.disable_item_expand (profile_add_button)
-			ev_vbox_2.disable_item_expand (profile_remove_button)
-			ev_vbox_2.disable_item_expand (profile_edit_button)
-			profile_add_button.set_text ("Add New")
-			profile_add_button.set_tooltip ("Add a new profile")
-			profile_remove_button.set_text ("Remove")
-			profile_remove_button.set_tooltip ("Remove selected profile")
-			profile_edit_button.set_text ("Edit")
-			profile_edit_button.set_tooltip ("Edit selected profile")
-			ref_path_hbox.set_text ("Reference repository")
-			reference_path_text.disable_edit
-			work_path_hbox.set_text ("Work repository")
-			work_path_text.disable_edit
-			ev_hbox_2.set_padding (15)
-			ev_hbox_2.set_border_width (Default_border_width)
-			ev_hbox_2.disable_item_expand (ok_button)
-			ev_hbox_2.disable_item_expand (cancel_button)
-			ok_button.set_text ("OK")
-			ok_button.set_minimum_width (100)
-			ok_button.set_minimum_height (26)
-			cancel_button.set_text ("Cancel")
-			cancel_button.set_minimum_width (100)
-			cancel_button.set_minimum_height (26)
-			set_minimum_width (500)
+			set_minimum_width (530)
 			set_minimum_height (280)
 			set_maximum_width (800)
 			set_maximum_height (800)
-			set_title ("ADL Workbench Repository Profile Configuration")
+			set_title (get_text ("repository_dialog_title"))
 			set_icon_pixmap (adl_workbench_icon)
 
-			-- Connect events.
+			-- ============ root container ============
+			create ev_root_container
+			extend (ev_root_container)
+			ev_root_container.set_padding (Default_padding_width)
+			ev_root_container.set_border_width (Default_border_width)
+
+			-- dialog frame
+			create profile_frame_ctl.make (get_text ("profile_list_text"), 0, 0, False)
+			ev_root_container.extend (profile_frame_ctl.ev_root_container)
+
+			-- profile list + buttons HBOX
+			profile_frame_ctl.add_row (False)
+
+			-- profile list
+			create profile_list
+			profile_list.set_minimum_height (100)
 			profile_list.select_actions.extend (agent on_select_profile)
+			profile_frame_ctl.extend (profile_list, True)
+
+			-- ========== buttons VBOX ==============
+			create ev_vbox_2
+			profile_frame_ctl.extend (ev_vbox_2, False)
+			ev_vbox_2.set_minimum_width (100)
+			ev_vbox_2.set_padding (Default_padding_width)
+			ev_vbox_2.set_border_width (Default_border_width)
+
+			-- add button
+			create profile_add_button
+			profile_add_button.set_text (get_text ("add_new_profile_button_text"))
+			profile_add_button.set_tooltip (get_text ("add_new_profile_button_tooltip"))
 			profile_add_button.select_actions.extend (agent add_new_profile)
+			ev_vbox_2.extend (profile_add_button)
+			ev_vbox_2.disable_item_expand (profile_add_button)
+
+			-- remove button
+			create profile_remove_button
+			profile_remove_button.set_text (get_text ("remove_profile_button_text"))
+			profile_remove_button.set_tooltip (get_text ("remove_profile_button_tooltip"))
 			profile_remove_button.select_actions.extend (agent remove_selected_profile)
+			ev_vbox_2.extend (profile_remove_button)
+			ev_vbox_2.disable_item_expand (profile_remove_button)
+
+			-- edit button
+			create profile_edit_button
+			profile_edit_button.set_text (get_text ("edit_profile_button_text"))
+			profile_edit_button.set_tooltip (get_text ("edit_profile_button_tooltip"))
 			profile_edit_button.select_actions.extend (agent edit_selected_profile)
-			ok_button.select_actions.extend (agent on_ok)
+			ev_vbox_2.extend (profile_edit_button)
+			ev_vbox_2.disable_item_expand (profile_edit_button)
+
+			-- reference path display control
+			create ref_path_ctl.make (get_text ("ref_repo_text"), agent :STRING do Result := rep_profiles_copy.profile (selected_profile_key).reference_repository end, 0, 0, True, True)
+			ev_root_container.extend (ref_path_ctl.ev_root_container)
+			ev_root_container.disable_item_expand (ref_path_ctl.ev_root_container)
+			gui_controls.extend (ref_path_ctl)
+
+			-- work path display control
+			create work_path_ctl.make (get_text ("work_repo_text"),
+				agent :STRING
+					do
+						if rep_profiles_copy.profile (selected_profile_key).has_work_repository then
+							Result := rep_profiles_copy.profile (selected_profile_key).work_repository
+						else
+							Result := ""
+						end
+					end,
+				0, 0, True, True)
+			ev_root_container.extend (work_path_ctl.ev_root_container)
+			ev_root_container.disable_item_expand (work_path_ctl.ev_root_container)
+			gui_controls.extend (work_path_ctl)
+
+			-- ============ Ok/Cancel buttons ============
+			create ok_cancel_buttons.make (agent on_ok, agent hide)
+			ev_root_container.extend (ok_cancel_buttons.ev_root_container)
+			ev_root_container.disable_item_expand (ok_cancel_buttons.ev_root_container)
+			set_default_cancel_button (ok_cancel_buttons.cancel_button)
+			set_default_push_button (ok_cancel_buttons.ok_button)
+
+			-- Connect events.
 			show_actions.extend (agent on_show)
-			cancel_button.select_actions.extend (agent hide)
-			set_default_cancel_button (cancel_button)
-			set_default_push_button (ok_button)
 
 			rep_profiles_copy := repository_profiles.deep_twin
 			selected_profile_key := rep_profiles_copy.current_profile_name
@@ -165,20 +169,8 @@ feature {NONE} -- Events
 			-- in the application)
 		do
 			if not profile_list.is_empty then
-				selected_profile_key := profile_list.selected_item.text.as_string_8
-				populate_path_controls
-			end
-		end
-
-	populate_path_controls
-		do
-			if not profile_list.is_empty then
-				reference_path_text.set_text (rep_profiles_copy.profile (selected_profile_key).reference_repository)
-				if rep_profiles_copy.profile (selected_profile_key).has_work_repository then
-					work_path_text.set_text (rep_profiles_copy.profile (selected_profile_key).work_repository)
-				else
-					work_path_text.remove_text
-				end
+				selected_profile_key := utf32_to_utf8 (profile_list.selected_item.text)
+				do_populate
 			end
 		end
 
@@ -276,6 +268,12 @@ feature -- Status
 
 feature {NONE} -- Implementation
 
+	do_populate
+			-- Set the dialog widgets from shared settings.
+		do
+			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.populate end)
+		end
+
 	any_profile_changes_made_pending: BOOLEAN
 			-- True if any change at all was made to `current_profile_removed'
 
@@ -304,20 +302,26 @@ feature {NONE} -- Implementation
 
 			if not profile_list.is_empty then
 				profile_list.i_th (profile_names.index_of (selected_profile_key, 1).max (1)).enable_select
-				populate_path_controls
+				do_populate
 			end
 		end
 
+	ev_root_container: EV_VERTICAL_BOX
 
-	ev_vbox_1, ev_vbox_2: EV_VERTICAL_BOX
-	profile_frame, ref_path_hbox, work_path_hbox: EV_FRAME
-	ev_hbox_1,
-	ev_hbox_2: EV_HORIZONTAL_BOX
+	gui_controls: ARRAYED_LIST [GUI_DATA_CONTROL]
+
+	ev_vbox_2: EV_VERTICAL_BOX
+
+	profile_frame_ctl: GUI_FRAME_CONTROL
+
+	ref_path_ctl, work_path_ctl: GUI_SINGLE_LINE_TEXT_CONTROL
+
 	profile_list: EV_LIST
-	profile_add_button, profile_remove_button, profile_edit_button,
-	ok_button, cancel_button: EV_BUTTON
+
+	profile_add_button, profile_remove_button, profile_edit_button: EV_BUTTON
 	reference_path_text, work_path_text: EV_TEXT_FIELD
-	ev_cell_1: EV_CELL
+
+	ok_cancel_buttons: GUI_OK_CANCEL_CONTROLS
 
 	is_in_default_state: BOOLEAN
 			-- Is `Current' in its default state?
