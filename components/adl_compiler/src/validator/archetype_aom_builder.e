@@ -1,86 +1,62 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Phase 3 validation: validating performed on flattened archetype."
+	description: "Perform post parse construction of the AOM structure."
 	keywords:    "constraint model"
 	author:      "Thomas Beale"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2007-2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class ARCHETYPE_PHASE_3_VALIDATOR
+class ARCHETYPE_AOM_BUILDER
 
 inherit
-	ARCHETYPE_VALIDATOR
-		redefine
-			validate, target, initialise
+	ADL_SYNTAX_CONVERTER
+		export
+			{NONE} all
 		end
 
 feature {ADL15_ENGINE} -- Initialisation
 
-	initialise (a_target_desc: attached like target_descriptor; an_rm_schema: attached BMM_SCHEMA)
-			-- set target_descriptor
-			-- initialise reporting variables
+	initialise (an_archetype: ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+			-- set target
 		do
 			rm_schema := an_rm_schema
-			target_descriptor := a_target_desc
-			initialise_authored_resource (target_descriptor.flat_archetype)
+			target := an_archetype
+		ensure
+			target_set: attached target
 		end
 
 feature -- Access
 
-	target: FLAT_ARCHETYPE
-			-- flat archetype being validated
+	target: ARCHETYPE
+			-- differential archetype being processed
 
-feature -- Status Report
+	rm_schema: BMM_SCHEMA
 
-	validation_candidate (ara: attached ARCH_CAT_ARCHETYPE): BOOLEAN
-		do
-			Result := attached ara.flat_archetype
-		end
+feature -- Commands
 
-feature -- Validation
-
-	validate
-		do
-			reset
-			validate_occurrences
-		end
-
-feature {NONE} -- Implementation
-
-	validate_occurrences
-			-- validate occurrences under container attributes, in flat definition
+	execute
 		local
-			def_it: C_ITERATOR
+			bmm_prop_def: BMM_PROPERTY_DEFINITION
+			cref_list: ARRAYED_LIST [CONSTRAINT_REF]
 		do
-			create def_it.make (target.definition)
-			def_it.do_all (agent flat_node_enter, agent flat_node_exit)
-		end
-
-	flat_node_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
---		local
---			sum_occ_ivl: MULTIPLICITY_INTERVAL
-		do
-			if attached {C_ATTRIBUTE} a_c_node as ca then
-				if attached ca.cardinality and ca.all_children_have_occurrences then
---					sum_occ_ivl := ca.occurrences_total_range
---					if (sum_occ_ivl.upper_unbounded and not ca.cardinality.interval.upper_unbounded) or else -- occ is n..*, card is n..m
---						(not sum_occ_ivl.upper_unbounded and not ca.cardinality.interval.upper_unbounded and -- occ.max > card.max
---							sum_occ_ivl.upper > ca.cardinality.interval.upper)
-					if not ca.occurrences_total_range.intersects (ca.cardinality.interval) then
-						add_error("VACMC2", <<ca.path, ca.cardinality.as_string>>)
-					end
+			-- populate CONSTRAINT_REF rm_type_name
+			from target.accodes_index.start until target.accodes_index.off loop
+				cref_list := target.accodes_index.item_for_iteration
+				from cref_list.start until cref_list.off loop
+					bmm_prop_def := rm_schema.property_definition (cref_list.item.parent.parent.rm_type_name, cref_list.item.parent.rm_attribute_name)
+					cref_list.item.set_rm_type_name (bmm_prop_def.type.root_class)
+					cref_list.forth
 				end
+				target.accodes_index.forth
 			end
 		end
 
-	flat_node_exit (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
-		do
-		end
+feature {NONE} -- Implementation
 
 end
 
@@ -99,10 +75,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is archetype_flat_validator.e.
+--| The Original Code is archetype_aom_builder.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2007
+--| Portions created by the Initial Developer are Copyright (C) 2012
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

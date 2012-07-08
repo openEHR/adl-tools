@@ -77,7 +77,7 @@ feature -- Visitor
 			-- enter a CONSTRAINT_REF
 		do
 			if not archetype.accodes_index.has(a_node.target) then
-				archetype.accodes_index.put (create {ARRAYED_LIST[C_OBJECT]}.make(0), a_node.target)
+				archetype.accodes_index.put (create {ARRAYED_LIST [CONSTRAINT_REF]}.make(0), a_node.target)
 			end
 			archetype.accodes_index.item (a_node.target).extend (a_node)
 		end

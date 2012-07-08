@@ -20,7 +20,12 @@ class CONSTRAINT_REF
 inherit
 	C_REFERENCE_OBJECT
 		redefine
-			default_create, representation, enter_subtree, exit_subtree
+			representation, enter_subtree, exit_subtree
+		end
+
+	BMM_DEFINITIONS
+		export
+			{NONE} all
 		end
 
 create
@@ -28,16 +33,10 @@ create
 
 feature -- Initialisation
 
-	default_create
-			--
-		do
-			rm_type_name := (create {CODE_PHRASE}.default_create).generator
-		end
-
 	make (a_code: attached STRING)
 			-- make from pattern of form "[acNNNN[.NN[etc]]]"
 		do
-			default_create
+			rm_type_name := Any_type
 			create representation.make_anonymous(Current)
 			target := a_code
 		ensure
@@ -100,6 +99,12 @@ feature -- Modification
 	set_external_reference (an_ext_ref: attached DV_PARSABLE)
 		do
 			external_reference := an_ext_ref
+		end
+
+	set_rm_type_name (a_type_name: STRING)
+			-- set `rm_type_name'
+		do
+			rm_type_name := a_type_name
 		end
 
 feature -- Representation

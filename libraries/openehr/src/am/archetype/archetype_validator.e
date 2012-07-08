@@ -26,11 +26,6 @@ inherit
 			target
 		end
 
---	OPERATOR_TYPES
---		export
---			{NONE} all
---		end
-
 	SHARED_APP_RESOURCES
 		export
 			{NONE} all
@@ -42,7 +37,7 @@ feature {ADL15_ENGINE} -- Initialisation
 			-- set target_descriptor
 			-- initialise reporting variables
 		require
-			valid_candidate: validation_candidiate (ara)
+			valid_candidate: validation_candidate (ara)
 		do
 			rm_schema := an_rm_schema
 			target_descriptor := ara
@@ -54,7 +49,7 @@ feature {ADL15_ENGINE} -- Initialisation
 
 feature -- Status Report
 
-	validation_candidiate (ara: attached ARCH_CAT_ARCHETYPE): BOOLEAN
+	validation_candidate (ara: attached ARCH_CAT_ARCHETYPE): BOOLEAN
 		deferred
 		end
 

@@ -291,19 +291,19 @@ c_object: c_complex_object
 		}
 	| c_archetype_root 
 		{
-			safe_put_c_attribute_child(c_attrs.item, $1)
+			safe_put_c_attribute_child (c_attrs.item, $1)
 		}
 	| archetype_internal_ref 
 		{
-			safe_put_c_attribute_child(c_attrs.item, $1)
+			safe_put_c_attribute_child (c_attrs.item, $1)
 		}
 	| archetype_slot
 		{
-			safe_put_c_attribute_child(c_attrs.item, archetype_slot)
+			safe_put_c_attribute_child (c_attrs.item, archetype_slot)
 		}
 	| constraint_ref
 		{
-			safe_put_c_attribute_child(c_attrs.item, constraint_ref)
+			safe_put_c_attribute_child (c_attrs.item, constraint_ref)
 		}
 	| c_code_phrase
 		{

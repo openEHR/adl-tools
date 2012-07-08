@@ -71,6 +71,8 @@ feature {NONE} -- Initialisation
 			create phase_1_validator
 			create phase_2_validator
 			create phase_3_validator
+
+			create pass_2_processor
 		end
 
 feature -- Access
@@ -381,6 +383,10 @@ feature {NONE} -- Implementation
 						end
 
 						Result.rebuild
+
+						-- perform post parse actions on AOM structure
+						pass_2_processor.initialise (Result, rm_schema)
+						pass_2_processor.execute
 					end
 				end
 			end
@@ -399,6 +405,8 @@ feature {NONE} -- Implementation
 	ontology_context: DADL_ENGINE
 
 	annotations_context: DADL_ENGINE
+
+	pass_2_processor: ARCHETYPE_AOM_BUILDER
 
 	rm_schema: BMM_SCHEMA
 

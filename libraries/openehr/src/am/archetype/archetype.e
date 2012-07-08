@@ -322,7 +322,7 @@ feature -- Status Setting
 			is_generated := False
 		end
 
-feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUILDER, ARCH_CAT_ARCHETYPE} -- Validation
+feature {ARCHETYPE_AOM_BUILDER, ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUILDER, ARCH_CAT_ARCHETYPE} -- Validation
 
 	build_xrefs
 			-- build definition / ontology cross reference tables used for validation and
@@ -381,7 +381,7 @@ feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUI
 			-- table of {list<node>, code} for term codes which appear in archetype nodes as data,
 			-- e.g. in C_DV_ORDINAL and C_CODE_PHRASE types
 
-	accodes_index: HASH_TABLE [ARRAYED_LIST [C_OBJECT], STRING]
+	accodes_index: HASH_TABLE [ARRAYED_LIST [CONSTRAINT_REF], STRING]
 			-- table of {list<node>, code} for constraint codes in archetype
 
 	use_node_index: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_INTERNAL_REF], STRING]

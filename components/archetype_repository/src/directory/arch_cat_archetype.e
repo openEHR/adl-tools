@@ -859,6 +859,8 @@ feature {NONE} -- Compilation
 				else
 					post_info (Current, "parse", "parse_i1", <<id.as_string>>)
 				end
+
+				-- determine the suppliers list for ongoing compilation
 				create suppliers_index.make (0)
 				if differential_archetype.has_suppliers then
 					supp_idx := differential_archetype.suppliers_index
@@ -872,6 +874,8 @@ feature {NONE} -- Compilation
 				else
 					compilation_state := Cs_ready_to_validate
 				end
+
+				-- determine what language to view archetype in
 				if archetype_view_language.is_empty or not differential_archetype.has_language (archetype_view_language) then
 					set_archetype_view_language (differential_archetype.original_language.code_string)
 				end
