@@ -2438,14 +2438,7 @@ feature {NONE} -- Implementation
 					Result := True
 				end
 			elseif an_attr.is_multiple then
-				if an_attr.cardinality /= Void and an_obj.occurrences /= Void and (
-					not an_attr.cardinality.interval.upper_unbounded and (an_obj.occurrences.upper_unbounded or 
-								an_attr.cardinality.interval.upper < an_obj.occurrences.upper)) 
-				then
-					ar.extend(an_attr.cardinality.interval.as_string)
-					ar.extend(an_obj.occurrences.as_string)
-					err_code := "VACMC1"
-				elseif not an_obj.is_addressable then
+				if not an_obj.is_addressable then
 					err_code := "VACMI"
 				elseif an_attr.has_child_with_id(an_obj.node_id) then
 					err_code := "VACMM"

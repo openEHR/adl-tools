@@ -960,7 +960,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 292")
 end
 
-			safe_put_c_attribute_child(c_attrs.item, yyvs9.item (yyvsp9))
+			safe_put_c_attribute_child (c_attrs.item, yyvs9.item (yyvsp9))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -990,7 +990,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 296")
 end
 
-			safe_put_c_attribute_child(c_attrs.item, yyvs10.item (yyvsp10))
+			safe_put_c_attribute_child (c_attrs.item, yyvs10.item (yyvsp10))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -1020,7 +1020,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 300")
 end
 
-			safe_put_c_attribute_child(c_attrs.item, archetype_slot)
+			safe_put_c_attribute_child (c_attrs.item, archetype_slot)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -1032,7 +1032,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 304")
 end
 
-			safe_put_c_attribute_child(c_attrs.item, constraint_ref)
+			safe_put_c_attribute_child (c_attrs.item, constraint_ref)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
@@ -8620,14 +8620,7 @@ feature {NONE} -- Implementation
 					Result := True
 				end
 			elseif an_attr.is_multiple then
-				if an_attr.cardinality /= Void and an_obj.occurrences /= Void and (
-					not an_attr.cardinality.interval.upper_unbounded and (an_obj.occurrences.upper_unbounded or 
-								an_attr.cardinality.interval.upper < an_obj.occurrences.upper)) 
-				then
-					ar.extend(an_attr.cardinality.interval.as_string)
-					ar.extend(an_obj.occurrences.as_string)
-					err_code := "VACMC1"
-				elseif not an_obj.is_addressable then
+				if not an_obj.is_addressable then
 					err_code := "VACMI"
 				elseif an_attr.has_child_with_id(an_obj.node_id) then
 					err_code := "VACMM"

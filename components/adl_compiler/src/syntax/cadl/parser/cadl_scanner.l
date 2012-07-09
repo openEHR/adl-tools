@@ -74,7 +74,7 @@ NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
 UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x80-\xBF][\x80-\xBF])|(\xF0[\x90-\xBF][\x80-\xBF][\x80-\xBF])|([\xF1-\xF7][\x80-\xBF][\x80-\xBF][\x80-\xBF]))
 
 --------------- Options --------------
-%x IN_STR IN_REGEXP1 IN_REGEXP2 IN_TERM_CONSTRAINT IN_C_DOMAIN_TYPE
+%x IN_STR IN_REGEXP1 IN_TERM_CONSTRAINT IN_C_DOMAIN_TYPE
 %option outfile="cadl_scanner.e"
 
 %%
@@ -492,11 +492,19 @@ P[yY]?[mM]?[Ww]?[dD]? {
 			}
 
 <IN_REGEXP1> {
-	[^/]*\\\/	{ 		-- match any segments with quoted slashes '\/'
+	[^/[]*	{ 		-- match segment consisting of non / or [
 				in_buffer.append_string (text)
 	}
 
-	[^/]*"/"	{ 		-- match final segment
+	"["[^]]*"]"	{ 		-- match [] segment
+				in_buffer.append_string (text)
+	}
+
+	[^/]*\\\/	{ 		-- match segment ending in quoted slashes '\/'
+				in_buffer.append_string (text)
+	}
+
+	[^/[]*"/"	{ 		-- match final segment
 				in_buffer.append_string (text)
 
 				create str_.make (in_buffer.count)
