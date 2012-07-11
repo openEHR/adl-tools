@@ -92,6 +92,18 @@ feature -- Test routines
 		do
 			assert ("COMPOSITION is a subclass of LOCATABLE", rm_schema.is_descendant_of ("COMPOSITION", "LOCATABLE"))
 			assert ("LOCATABLE is not subclass of COMPOSITION", not rm_schema.is_descendant_of ("LOCATABLE", "COMPOSITION"))
+			assert ("ITEM_STRUCTURE is subclass of LOCATABLE", rm_schema.is_descendant_of ("ITEM_STRUCTURE", "LOCATABLE"))
+		end
+
+	test_type_conforms_to
+			-- New test routine
+		note
+			testing:  "type_conforms_to", "bmm", "covers/{BMM_SCHEMA}.type_conforms_to"
+		do
+			assert ("COMPOSITION conforms to LOCATABLE", rm_schema.type_conforms_to ("COMPOSITION", "LOCATABLE"))
+			assert ("LOCATABLE conforms to COMPOSITION", not rm_schema.type_conforms_to ("LOCATABLE", "COMPOSITION"))
+			assert ("ITEM_STRUCTURE <T> conforms to LOCATABLE", rm_schema.type_conforms_to ("ITEM_STRUCTURE <T>", "LOCATABLE"))
+			assert ("EVENT <ITEM_STRUCTURE> conforms to LOCATABLE", rm_schema.type_conforms_to ("EVENT <ITEM_STRUCTURE>", "LOCATABLE"))
 		end
 
 	test_immediate_suppliers

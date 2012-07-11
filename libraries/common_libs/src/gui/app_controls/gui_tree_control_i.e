@@ -42,6 +42,10 @@ feature -- Commands
 		deferred
 		end
 
+	collapse_except (test: FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+		deferred
+		end
+
 	resize_columns_to_content (grid_expansion_factor: REAL)
 		deferred
 		end

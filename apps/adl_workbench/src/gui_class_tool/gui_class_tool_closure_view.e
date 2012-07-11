@@ -233,6 +233,7 @@ feature {NONE} -- Implementation
 					agent enter_rm_property, agent exit_rm_property)
 
 			gui_grid.set_column_titles (Node_grid_col_names.linear_representation)
+			gui_grid.hide_column (node_grid_col_meaning)
 
 			-- now collapse the tree, and then expand out just the top node
 			gui_treeview_control.on_collapse_all

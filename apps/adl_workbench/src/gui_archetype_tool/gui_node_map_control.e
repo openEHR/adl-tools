@@ -204,7 +204,6 @@ feature -- Commands
 				differential_view, update_rm_view, rm_schema)
 			do_with_wait_cursor (ev_root_container, agent a_c_iterator.do_all)
 
-			gui_grid.ev_grid.lock_update
 			gui_grid.resize_columns_to_content
 			gui_grid.ev_grid.unlock_update
 		end
@@ -298,6 +297,8 @@ feature {NONE} -- Events
 
 feature {NONE} -- Implementation
 
+	visualise_descendants_class: STRING
+
 	gui_grid: GUI_EV_GRID
 
 	gui_controls: ARRAYED_LIST [GUI_DATA_CONTROL]
@@ -333,12 +334,19 @@ feature {NONE} -- Implementation
 			c_node_map_builder: C_GUI_NODE_MAP_BUILDER
 			i: INTEGER
 		do
+			-- determine visualisation ancestor class
+			rm_schema := source.rm_schema
+			if attached rm_schema.archetype_parent_class then
+				visualise_descendants_class := rm_schema.archetype_parent_class
+			elseif attached rm_schema.archetype_visualise_descendants_of then
+				visualise_descendants_class := rm_schema.archetype_visualise_descendants_of
+			end
+
 			-- populate peripheral controls
 			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.populate end)
 
 			-- populate grid control
 			create node_grid_row_map.make (0)
-			rm_schema := source.rm_schema
 
 			gui_grid.ev_grid.lock_update
 			create c_node_map_builder
@@ -355,19 +363,25 @@ feature {NONE} -- Implementation
 			populate_invariants
 
 			-- make visualisation adjustments
-			if expand_definition_tree then
-				gui_treeview_control.on_expand_all
-			elseif differential_view or not source.is_specialised then
-				gui_treeview_control.on_collapse_all
-				gui_treeview_control.on_expand_one_level
-				gui_treeview_control.on_expand_one_level
-				gui_treeview_control.on_expand_one_level
-				gui_treeview_control.on_expand_one_level
+			if differential_view or not source.is_specialised then
+				if attached visualise_descendants_class then
+					gui_treeview_control.on_collapse_except (
+						agent (a_row: EV_GRID_ROW): BOOLEAN
+							do
+								if attached {C_OBJECT} a_row.data as co then
+									Result := rm_schema.is_descendant_of (co.rm_type_name, visualise_descendants_class)
+								end
+							end
+					)
+				else
+					gui_treeview_control.on_collapse_all
+					gui_treeview_control.on_expand_one_level
+					gui_treeview_control.on_expand_one_level
+				end
 			else
 				gui_treeview_control.on_expand_all
 				roll_up_to_specialisation_level
 			end
-			gui_grid.ev_grid.lock_update
 			gui_grid.resize_columns_to_content
 			gui_grid.ev_grid.unlock_update
 

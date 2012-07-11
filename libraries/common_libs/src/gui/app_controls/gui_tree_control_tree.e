@@ -91,6 +91,11 @@ feature -- Events
 			)
 		end
 
+	collapse_except (test: FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+		do
+			-- TODO
+		end
+
 feature {NONE} -- Implementation
 
 	ev_tree_item_expand_one_level (an_ev_tree_node: attached EV_TREE_NODE)

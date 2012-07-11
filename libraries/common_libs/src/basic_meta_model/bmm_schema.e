@@ -170,6 +170,7 @@ feature -- Status Report
 
 	is_descendant_of (a_class, a_parent_class: attached STRING): BOOLEAN
 			-- True if `a_class' is a descendant in the model of `a_parent_class'
+			-- Use `type_conforms_to' for full type names
 		require
 			Sub_class_valid: not a_class.is_empty
 			Parent_class_valid: has_class_definition (a_parent_class)
@@ -239,7 +240,7 @@ feature -- Status Report
 		end
 
 	type_conforms_to (type_1, type_2: attached STRING): BOOLEAN
-			-- check conformance of type 1 to type 2
+			-- check conformance of type 1 to type 2; the types may be generic
 		local
 			tlist1, tlist2: ARRAYED_LIST[STRING]
 		do
@@ -297,6 +298,13 @@ feature -- Modification
 			has_class_definition (a_class_name)
 		do
 			archetype_data_value_parent_class := a_class_name
+		end
+
+	set_archetype_visualise_descendants_of (a_class_name: attached STRING)
+		require
+			has_class_definition (a_class_name)
+		do
+			archetype_visualise_descendants_of := a_class_name
 		end
 
 feature -- Statistics

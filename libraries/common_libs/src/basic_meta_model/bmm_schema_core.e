@@ -110,6 +110,16 @@ feature -- Access
 			-- archetypes can be based on any class reachable from classes defined directly in these packages
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
+	archetype_visualise_descendants_of: STRING
+			-- If archetype_parent_class is not set, designate a class whose descendants should be
+			-- made visible in tree and grid renderings of the archetype definition. For openEHR
+			-- and CEN this class is normally the same as the archetype_parent_class, i.e. LOCATABLE
+			-- and RECORD_COMPONENT respectively. It is typically set for CEN, because archetype_
+			-- parent_class may not be stated, due to demographic types not inheriting from it.
+			--
+			-- The effect of this attribute in visualisation is to generate the most natural tree or
+			-- grid-based view of an archetype definition, from the semantic viewpoint.
+
 feature -- Status Report
 
 	has_archetype_parent_class: BOOLEAN

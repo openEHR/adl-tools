@@ -43,8 +43,8 @@ feature -- Initialisation
 				ev_grid.disable_row_height_fixed
 			end
 			if col_resize_on_collapse_expand then
-				ev_grid.row_expand_actions.extend (agent resize_columns)
-				ev_grid.row_collapse_actions.extend (agent resize_columns)
+				ev_grid.row_expand_actions.extend (agent (a_row: EV_GRID_ROW) do ev_grid.resize_columns_to_content (Default_grid_expansion_factor) end)
+				ev_grid.row_collapse_actions.extend (agent  (a_row: EV_GRID_ROW) do ev_grid.resize_columns_to_content (Default_grid_expansion_factor) end)
 			end
 		end
 
@@ -209,7 +209,11 @@ feature -- Modification
 					i := i + 1
 				end
 			end
-			ev_grid.resize_columns_to_content (Default_grid_expansion_factor)
+		end
+
+	hide_column (a_col: INTEGER)
+		do
+			ev_grid.hide_column (a_col)
 		end
 
 	wipe_out
@@ -222,15 +226,6 @@ feature -- Commands
 	resize_columns_to_content
 		do
 			ev_grid.resize_columns_to_content (Default_grid_expansion_factor)
-		end
-
-feature {NONE} -- Implementation
-
-	resize_columns (a_row: EV_GRID_ROW)
-		do
-			ev_grid.lock_update
-			ev_grid.resize_columns_to_content (Default_grid_expansion_factor)
-			ev_grid.unlock_update
 		end
 
 end

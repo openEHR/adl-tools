@@ -608,6 +608,10 @@ feature -- Factory
 			if attached archetype_data_value_parent_class then
 				bmm_schema.set_archetype_data_value_parent_class (archetype_data_value_parent_class)
 			end
+			-- set the archetype data value root class
+			if attached archetype_visualise_descendants_of then
+				bmm_schema.set_archetype_visualise_descendants_of (archetype_visualise_descendants_of)
+			end
 			-- add RM closure packages - clone because merging will change the structure in the BMM_SCHEMA
 			bmm_schema.set_archetype_rm_closure_packages (archetype_rm_closure_packages.deep_twin)
 

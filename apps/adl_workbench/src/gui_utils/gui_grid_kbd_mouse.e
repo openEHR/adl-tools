@@ -214,7 +214,9 @@ feature -- Commands
 			i: INTEGER
 		do
 			if a_row.is_expandable and (not attached test or else test.item ([a_row])) then
+				a_row.expand_actions.block
 				a_row.expand
+				a_row.expand_actions.resume
 				from i := 1 until i > a_row.subrow_count loop
 					expand_tree (a_row.subrow (i), test)
 					i := i + 1
@@ -233,7 +235,9 @@ feature -- Commands
 				collapse_tree (a_row.subrow (i))
 				i := i + 1
 			end
+			a_row.collapse_actions.block
 			a_row.collapse
+			a_row.collapse_actions.resume
 		ensure
 			row_collapsed: not a_row.is_expanded
 		end
@@ -246,8 +250,10 @@ feature -- Commands
 			i: INTEGER
 		do
 			from i := 1 until i > column_count loop
-				column(i).resize_to_content
-				column(i).set_width ((column (i).width * expansion_factor).ceiling)
+				if column (i).is_show_requested then
+					column(i).resize_to_content
+					column(i).set_width ((column (i).width * expansion_factor).ceiling)
+				end
 				i := i + 1
 			end
 		end
@@ -287,7 +293,9 @@ feature -- Commands
 			end
 			from ev_grid_row_list.start until ev_grid_row_list.off loop
 				if not attached test or else test.item ([ev_grid_row_list.item]) then
+					ev_grid_row_list.item.collapse_actions.block
 					ev_grid_row_list.item.collapse
+					ev_grid_row_list.item.collapse_actions.resume
 				end
 				ev_grid_row_list.forth
 			end
@@ -301,13 +309,16 @@ feature -- Commands
 			end
 			from ev_grid_row_list.start until ev_grid_row_list.off loop
 				if not attached test or else test.item ([ev_grid_row_list.item]) then
+					ev_grid_row_list.item.expand_actions.block
 					ev_grid_row_list.item.expand
+					ev_grid_row_list.item.expand_actions.resume
 				end
 				ev_grid_row_list.forth
 			end
 		end
 
 	expand_all (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+			-- expand rows that pass `test'
 		do
 			if row_count > 0 then
 				expand_tree (row (1), test)
@@ -318,6 +329,37 @@ feature -- Commands
 		do
 			if row_count > 0 then
 				collapse_tree (row (1))
+			end
+		end
+
+	collapse_except (test: FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+			-- collapse except rows that pass `test'
+		local
+			i: INTEGER
+			matching_rows: ARRAYED_LIST [INTEGER]
+			a_row, csr: EV_GRID_ROW
+		do
+			create matching_rows.make (0)
+			from i := 1 until i > row_count loop
+				if test.item ([row (i)]) and attached row (i).parent_row then
+					matching_rows.extend (i)
+				end
+				i := i + 1
+			end
+			collapse_all
+			from matching_rows.start until matching_rows.off loop
+				a_row := row (matching_rows.item).parent_row
+				if not a_row.is_expanded then
+					from csr := a_row until csr = Void or csr.is_expanded loop
+						if csr.is_expandable then
+							csr.expand_actions.block
+							csr.expand
+							csr.expand_actions.resume
+						end
+						csr := csr.parent_row
+					end
+				end
+				matching_rows.forth
 			end
 		end
 
