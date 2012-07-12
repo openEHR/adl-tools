@@ -87,43 +87,57 @@ feature -- Definitions
 			Result.put (get_text ("node_grid_col_constraint_text"), Node_grid_col_constraint)
 		end
 
+	archetype_rm_type_inherited_color: EV_COLOR
+			-- foreground colour for inherited RM attributes and typenames in the UI
+			-- GREY
+		once
+			create Result.make_with_8_bit_rgb (0xaa, 0xaa, 0xaa)
+		end
+
+	archetype_rm_type_redefined_color: EV_COLOR
+			-- foreground colour for inherited RM attributes and typenames in the UI
+			-- DARK GREY
+		once
+			create Result.make_with_8_bit_rgb (0x66, 0x66, 0x66)
+		end
+
 	archetype_rm_type_color: EV_COLOR
-			-- a rendering colour for rm_attributes in the UI
+			-- foreground rendering colour for rm_attributes in the UI
 			-- VERY DARK BLUE
 		once
 			create Result.make_with_8_bit_rgb (0, 0, 0x99)
 		end
 
 	archetyped_attribute_color: EV_COLOR
-			-- a rendering colour for rm_attributes in the UI
+			-- foreground colour for rm_attributes in the UI
 			-- DARK BLUE
 		once
 			create Result.make_with_8_bit_rgb (0, 0, 0xcc)
 		end
 
 	rm_attribute_color: EV_COLOR
-			-- a rendering colour for rm_attributes in the UI
+			-- foreground colour for rm_attributes in the UI
 			-- ROYAL BLUE
 		once
 			create Result.make_with_8_bit_rgb (0, 0, 0xff)
 		end
 
 	rm_runtime_attribute_colour: EV_COLOR
-			-- a rendering colour for rm_attributes in the UI
+			-- foreground colour for rm_attributes in the UI
 			-- MEDIUM BLUE
 		once
 			create Result.make_with_8_bit_rgb (0x33, 0x99, 0xff)
 		end
 
 	rm_infrastructure_attribute_colour: EV_COLOR
-			-- a rendering colour for rm_attributes in the UI
+			-- foreground colour for rm_attributes in the UI
 			-- MEDIUM GREY
 		once
 			create Result.make_with_8_bit_rgb (0x99, 0x99, 0x99)
 		end
 
 	Archetype_constraint_color: EV_COLOR
-			-- a rendering colour for rm_attributes in the UI
+			-- foreground colour for rm_attributes in the UI
 			-- RED
 		once
 			create Result.make_with_8_bit_rgb (0xdd, 0, 0)

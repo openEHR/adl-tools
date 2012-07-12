@@ -77,7 +77,7 @@ inherit
 feature -- Initialisation
 
 	initialise (a_rm_schema: BMM_SCHEMA; an_archetype: attached ARCHETYPE; a_lang: attached STRING; a_gui_tree: GUI_EV_GRID;
-				update_flag, show_codes_flag,
+				update_flag, show_codes_flag, show_rm_inheritance_flag,
 				in_technical_view_flag, rm_data_properties_flag, rm_runtime_properties_flag, rm_infrastructure_properties_flag: BOOLEAN;
 				a_gui_node_map: HASH_TABLE [EV_GRID_ROW, ARCHETYPE_CONSTRAINT];
 				a_code_select_agent, a_path_select_agent: attached PROCEDURE [ANY, TUPLE [STRING]])
@@ -87,6 +87,7 @@ feature -- Initialisation
 			gui_grid := a_gui_tree
 			node_grid_row_map := a_gui_node_map
 			show_codes := show_codes_flag
+			show_rm_inheritance := show_rm_inheritance_flag
 			updating := update_flag
 			language := a_lang
 			rm_publisher := an_archetype.archetype_id.rm_originator.as_lower
@@ -120,22 +121,6 @@ feature -- Visitor
 				end
 				node_grid_row_map.put (gui_grid.last_row, a_node)
 
-				-- card/occ column
-				create s.make_empty
-				if attached a_node.occurrences then
-					if not a_node.occurrences.is_prohibited then
-						s.append (a_node.occurrences_as_string)
-					else
-						s.append (get_text ("occurrences_removed_text"))
-					end
-				end
-				gui_grid.set_last_row_label_col (Node_grid_col_card_occ, s, Void, archetype_constraint_color, Void)
-
-				-- constraint column
-				if attached {C_DEFINED_OBJECT} a_node as c_do and then c_do.any_allowed then
-					gui_grid.set_last_row_label_col (Node_grid_col_constraint, Archetype_any_constraint, Void, archetype_constraint_color, Void)
-				end
-
 				-- remember on stack
 				ev_grid_row_stack.extend (gui_grid.last_row)
 			else
@@ -145,15 +130,15 @@ feature -- Visitor
 			-- RM name & meaning columns
 			if a_node.is_addressable then
 				if in_technical_view then
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, a_node.rm_type_name, node_tooltip_str (a_node), archetype_rm_type_color, c_object_pixmap (a_node))
-					gui_grid.set_last_row_label_col (Node_grid_col_meaning, local_term_string (a_node.node_id), node_tooltip_str (a_node), Void, Void)
+					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, a_node.rm_type_name, node_tooltip_str (a_node), c_object_colour (a_node), c_object_pixmap (a_node))
+					gui_grid.set_last_row_label_col (Node_grid_col_meaning, local_term_string (a_node.node_id), node_tooltip_str (a_node), c_meaning_colour (a_node), Void)
 		 		else
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, local_term_string (a_node.node_id), node_tooltip_str (a_node), Void, c_object_pixmap (a_node))
+					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, local_term_string (a_node.node_id), node_tooltip_str (a_node), c_meaning_colour (a_node), c_object_pixmap (a_node))
 					gui_grid.set_last_row_label_col (Node_grid_col_meaning, "", Void, Void, Void)
 				end
 			else
 				if in_technical_view then
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, a_node.rm_type_name, node_tooltip_str (a_node), archetype_rm_type_color, c_object_pixmap (a_node))
+					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, a_node.rm_type_name, node_tooltip_str (a_node), c_object_colour (a_node), c_object_pixmap (a_node))
 					gui_grid.set_last_row_label_col (Node_grid_col_meaning, "", Void, Void, Void)
 				else
 					create s.make_empty
@@ -167,13 +152,29 @@ feature -- Visitor
 					s.append (a_node.rm_type_name.substring (lpos+1, a_node.rm_type_name.count).as_lower)
 					s.append_character (']')
 					s.to_lower
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, s, node_tooltip_str (a_node), archetype_rm_type_color, c_object_pixmap (a_node))
+					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, s, node_tooltip_str (a_node), c_object_colour (a_node), c_object_pixmap (a_node))
 				end
 			end
 
 			-- add a context menu to rm_name col
 			if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Node_grid_col_rm_name) as gli then
  	 			gli.pointer_button_press_actions.force_extend (agent arch_class_node_handler (gui_grid.last_row, ?, ?, ?))
+			end
+
+			-- card/occ column
+			create s.make_empty
+			if attached a_node.occurrences then
+				if not a_node.occurrences.is_prohibited then
+					s.append (a_node.occurrences_as_string)
+				else
+					s.append (get_text ("occurrences_removed_text"))
+				end
+			end
+			gui_grid.set_last_row_label_col (Node_grid_col_card_occ, s, Void, c_constraint_colour (a_node), Void)
+
+			-- constraint column
+			if attached {C_DEFINED_OBJECT} a_node as c_do and then c_do.any_allowed then
+				gui_grid.set_last_row_label_col (Node_grid_col_constraint, Archetype_any_constraint, Void, c_constraint_colour (a_node), Void)
 			end
 
 			-- sibling order column
@@ -186,7 +187,7 @@ feature -- Visitor
 						s.append ("before")
 					end
 					s.append ("%N" + local_term_string (a_node.sibling_order.sibling_node_id))
-					gui_grid.set_last_row_label_col_multi_line (Node_grid_col_sibling_order, s, Void, archetype_constraint_color, Void)
+					gui_grid.set_last_row_label_col_multi_line (Node_grid_col_sibling_order, s, Void, c_constraint_colour (a_node), Void)
 				end
 			end
 		end
@@ -209,6 +210,7 @@ feature -- Visitor
 			-- enter an ARCHETYPE_SLOT
 		local
 			constraint_str: STRING
+			i: INTEGER
 		do
 			start_c_object (a_node, depth)
 			gui_grid.set_last_row (node_grid_row_map.item (a_node))
@@ -221,7 +223,7 @@ feature -- Visitor
 			if not updating then
 				-- add closed indicator in constraint column
 				if a_node.is_closed then
-					gui_grid.set_last_row_label_col (Node_grid_col_constraint, Archetype_slot_closed, Void, archetype_constraint_color, Void)
+					gui_grid.set_last_row_label_col (Node_grid_col_constraint, Archetype_slot_closed, Void, c_constraint_colour (a_node), Void)
 				else
 					-- create child nodes for includes & excludes
 					if a_node.has_includes then
@@ -229,12 +231,13 @@ feature -- Visitor
 							gui_grid.add_sub_row (ev_grid_row_stack.item, a_node.includes.item)
 
 							-- put pixmap on RM col
-							gui_grid.set_last_row_label_col (Node_grid_col_rm_name, get_text ("include_text"), Void, Void, get_icon_pixmap ("am/added/" + a_node.generating_type + "_include"))
+							gui_grid.set_last_row_label_col (Node_grid_col_rm_name, get_text ("include_text"), Void,
+								c_object_colour (a_node), get_icon_pixmap ("am/added/" + a_node.generating_type + "_include"))
 
 							-- put assertions in constraint col
 							constraint_str := object_invariant_string (a_node.includes.item)
 							constraint_str.replace_substring_all (" ", "%N")
-							gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, archetype_constraint_color, Void)
+							gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, c_constraint_colour (a_node), Void)
 							a_node.includes.forth
 						end
 					end
@@ -244,15 +247,21 @@ feature -- Visitor
 							gui_grid.add_sub_row (ev_grid_row_stack.item, a_node.excludes.item)
 
 							-- put pixmap on RM col
-							gui_grid.set_last_row_label_col (Node_grid_col_rm_name, get_text ("exclude_text"), Void, Void, get_icon_pixmap ("am/added/" + a_node.generating_type + "_exclude"))
+							gui_grid.set_last_row_label_col (Node_grid_col_rm_name, get_text ("exclude_text"), Void,
+								c_object_colour (a_node), get_icon_pixmap ("am/added/" + a_node.generating_type + "_exclude"))
 
 							-- put assertions in constraint col
 							constraint_str := object_invariant_string (a_node.excludes.item)
 							constraint_str.replace_substring_all (" ", "%N")
-							gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, archetype_constraint_color, Void)
+							gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, c_constraint_colour (a_node), Void)
 							a_node.excludes.forth
 						end
 					end
+				end
+			else
+				from i := 1 until i > gui_grid.last_row.subrow_count loop
+					gui_grid.last_row.subrow (i).item (Node_grid_col_constraint).set_foreground_color (c_constraint_colour (a_node))
+					i := i + 1
 				end
 			end
 		end
@@ -276,19 +285,20 @@ feature -- Visitor
 
 				gui_grid.set_last_row_label_col (Node_grid_col_meaning, "", Void, Void, Void)
 
-				if attached a_node.existence then
-					gui_grid.set_last_row_label_col (Node_grid_col_existence, a_node.existence.as_string, Void, archetype_constraint_color, Void)
-				end
-				if attached a_node.cardinality then
-					gui_grid.set_last_row_label_col (Node_grid_col_card_occ, a_node.cardinality.as_string, Void, archetype_constraint_color, Void)
-				end
-				if a_node.any_allowed then
-					gui_grid.set_last_row_label_col (Node_grid_col_constraint, Archetype_any_constraint, Void, archetype_constraint_color, Void)
-				end
-
 				ev_grid_row_stack.extend (gui_grid.last_row)
 			else
 				gui_grid.set_last_row (node_grid_row_map.item (a_node))
+			end
+
+			-- constraints
+			if attached a_node.existence then
+				gui_grid.set_last_row_label_col (Node_grid_col_existence, a_node.existence.as_string, Void, c_constraint_colour (a_node), Void)
+			end
+			if attached a_node.cardinality then
+				gui_grid.set_last_row_label_col (Node_grid_col_card_occ, a_node.cardinality.as_string, Void, c_constraint_colour (a_node), Void)
+			end
+			if a_node.any_allowed then
+				gui_grid.set_last_row_label_col (Node_grid_col_constraint, Archetype_any_constraint, Void, c_constraint_colour (a_node), Void)
 			end
 
 			-- RM attr name / path
@@ -301,10 +311,10 @@ feature -- Visitor
 				end
 				attr_str.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
 				attr_str.remove_head (1)
-				gui_grid.set_last_row_label_col_multi_line (Node_grid_col_rm_name, attr_str, node_tooltip_str (a_node), archetyped_attribute_color, c_attribute_pixmap (a_node))
+				gui_grid.set_last_row_label_col_multi_line (Node_grid_col_rm_name, attr_str, node_tooltip_str (a_node), c_attribute_colour (a_node), c_attribute_pixmap (a_node))
 			else
 				attr_str.append (a_node.rm_attribute_name)
-				gui_grid.set_last_row_label_col (Node_grid_col_rm_name, attr_str, node_tooltip_str (a_node), archetyped_attribute_color, c_attribute_pixmap (a_node))
+				gui_grid.set_last_row_label_col (Node_grid_col_rm_name, attr_str, node_tooltip_str (a_node), c_attribute_colour (a_node), c_attribute_pixmap (a_node))
 			end
 		end
 
@@ -385,7 +395,7 @@ feature -- Visitor
 			p.remove_head (1)
 			s.append (p)
 			create gli.make_with_text (utf8_to_utf32 (s))
-			gli.set_foreground_color (rm_attribute_color)
+			gli.set_foreground_color (c_object_attribute_colour (a_node))
 			row.set_item (Node_grid_col_constraint, gli)
 			row.set_height (gli.text_height + Default_grid_row_expansion)
 		end
@@ -436,7 +446,7 @@ feature -- Visitor
 			row := node_grid_row_map.item (a_node)
 			if not a_node.any_allowed then
 				create gli.make_with_text (a_node.item.as_string)
-				gli.set_foreground_color (Archetype_constraint_color)
+				gli.set_foreground_color (c_constraint_colour (a_node))
 				row.set_item (Node_grid_col_constraint, gli)
 			end
 		end
@@ -471,8 +481,8 @@ feature -- Visitor
 				bmm_prop := rm_schema.property_definition ("CODE_PHRASE", "terminology_id")
 				if not updating then
 					gui_grid.add_sub_row (row, bmm_prop.name)
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop.name, Void, archetyped_attribute_color, get_icon_pixmap ("rm/generic/" + bmm_prop.multiplicity_key_string))
-					gui_grid.set_last_row_label_col (Node_grid_col_constraint, a_node.terminology_id.value, Void, Archetype_constraint_color, Void)
+					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop.name, Void, c_object_attribute_colour (a_node), get_icon_pixmap ("rm/generic/" + bmm_prop.multiplicity_key_string))
+					gui_grid.set_last_row_label_col (Node_grid_col_constraint, a_node.terminology_id.value, Void, c_constraint_colour (a_node), Void)
 				end
 			end
 
@@ -495,8 +505,8 @@ feature -- Visitor
 				bmm_prop := rm_schema.property_definition ("CODE_PHRASE", "code_string")
 				if not updating then
 					gui_grid.add_sub_row (row, bmm_prop.name)
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop.name, Void, archetyped_attribute_color, get_icon_pixmap ("rm/generic/" + bmm_prop.multiplicity_key_string))
-					gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, Archetype_constraint_color, Void)
+					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop.name, Void, c_object_attribute_colour (a_node), get_icon_pixmap ("rm/generic/" + bmm_prop.multiplicity_key_string))
+					gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, c_constraint_colour (a_node), Void)
 				else
 					from i := 1 until i > row.subrow_count or attached sub_row loop
 						if attached {STRING} row.subrow (i).data as str and then str.is_equal (bmm_prop.name) then
@@ -550,9 +560,9 @@ feature -- Visitor
 				bmm_prop_key := bmm_prop_value.name + " - " + bmm_prop_symbol.name
 				if not updating then
 					gui_grid.add_sub_row (row, bmm_prop_key)
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop_key, Void, archetyped_attribute_color,
+					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop_key, Void, c_object_attribute_colour (a_node),
 						get_icon_pixmap ("rm/generic/" + bmm_prop_value.multiplicity_key_string))
-					gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, Archetype_constraint_color, Void)
+					gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, c_constraint_colour (a_node), Void)
 				else
 					from i := 1 until i > row.subrow_count or attached sub_row loop
 						if attached {STRING} row.subrow (i).data as str and then str.is_equal (bmm_prop_key) then
@@ -590,8 +600,8 @@ feature -- Visitor
 				-- property constraint
 				if attached a_node.property then
 					gui_grid.add_sub_row (row, Void)
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, "property", Void, archetype_constraint_color, get_icon_pixmap ("rm/generic/c_meta_attribute"))
-					gui_grid.set_last_row_label_col (Node_grid_col_constraint, term_string (a_node.property.terminology_id.value, a_node.property.code_string), Void, archetype_constraint_color, Void)
+					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, "property", Void, c_constraint_colour (a_node), get_icon_pixmap ("rm/generic/c_meta_attribute"))
+					gui_grid.set_last_row_label_col (Node_grid_col_constraint, term_string (a_node.property.terminology_id.value, a_node.property.code_string), Void, c_constraint_colour (a_node), Void)
 				end
 
 				-- magnitude / units / precision constraint
@@ -616,9 +626,9 @@ feature -- Visitor
 					bmm_prop_key := bmm_prop_magnitude.name + " | " + bmm_prop_units.name + " | " + bmm_prop_precision.name
 
 					gui_grid.add_sub_row (row, Void)
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop_key, Void, archetyped_attribute_color,
+					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop_key, Void, c_object_attribute_colour (a_node),
 						get_icon_pixmap ("rm/generic/" + bmm_prop_magnitude.multiplicity_key_string))
-					gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, Archetype_constraint_color, Void)
+					gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, c_constraint_colour (a_node), Void)
 				end
 			end
 		end
@@ -663,8 +673,6 @@ feature -- Visitor
 
 	continue_rm_property (a_bmm_prop: BMM_PROPERTY_DEFINITION; depth: INTEGER): BOOLEAN
 			-- detrmine whether to continue a BMM_PROPERTY_DEFINITION
-		local
-			parent_class_row: EV_GRID_ROW
 		do
 			if attached last_property_grid_row then
 				if last_property_grid_row.subrow (1).subrow_count > 0 then
@@ -835,6 +843,9 @@ feature {NONE} -- Implementation
 	show_codes: BOOLEAN
 			-- True if codes should be shown
 
+	show_rm_inheritance: BOOLEAN
+			-- True if inheritance colourisation should be used
+
 	in_technical_view, include_rm_data_properties, include_rm_runtime_properties, include_rm_infrastructure_properties: BOOLEAN
 
 	rm_publisher: STRING
@@ -952,12 +963,98 @@ feature {NONE} -- Implementation
 	path_select_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
 			-- action to perform when path is selected in tree
 
-	spec_pixmap (a_node: ARCHETYPE_CONSTRAINT; pixmap_path: STRING): EV_PIXMAP
-			-- determine source status of node in archetype text, i.e. inherited, redefined, added etc
-			-- and use it to set the kind of pixmap to use
-			-- Always colourise inherited & overidden nodes. If we want a switch for this, implement a new flag.
+	c_object_colour (a_node: C_OBJECT): EV_COLOR
+			-- generate a foreground colour for RM type representing inheritance status
 		do
-			Result := get_icon_pixmap ("am" + resource_path_separator + (specialisation_status_names.item (a_node.specialisation_status) + resource_path_separator + pixmap_path))
+			if show_rm_inheritance then
+				inspect a_node.specialisation_status
+				when ss_added then
+					Result := archetype_rm_type_color
+
+				when ss_redefined then
+					Result := archetype_rm_type_redefined_color
+
+				when ss_inherited then
+					Result := archetype_rm_type_inherited_color
+
+				else
+					Result := archetype_rm_type_color
+				end
+			else
+				Result := archetype_rm_type_color
+			end
+		end
+
+	c_attribute_colour (a_node: C_ATTRIBUTE): EV_COLOR
+			-- generate a foreground colour for RM attribute representing inheritance status
+		do
+			if show_rm_inheritance then
+				inspect a_node.specialisation_status
+				when ss_added then
+					Result := archetyped_attribute_color
+
+				when ss_redefined then
+					Result := archetype_rm_type_redefined_color
+
+				when ss_inherited then
+					Result := archetype_rm_type_inherited_color
+
+				else
+					Result := archetyped_attribute_color
+				end
+			else
+				Result := archetyped_attribute_color
+			end
+		end
+
+	c_object_attribute_colour (a_node: C_OBJECT): EV_COLOR
+			-- generate a foreground colour for RM attribute representing inheritance status
+		do
+			if show_rm_inheritance then
+				inspect a_node.specialisation_status
+				when ss_added then
+					Result := archetyped_attribute_color
+
+				when ss_redefined then
+					Result := archetype_rm_type_redefined_color
+
+				when ss_inherited then
+					Result := archetype_rm_type_inherited_color
+
+				else
+					Result := archetyped_attribute_color
+				end
+			else
+				Result := archetyped_attribute_color
+			end
+		end
+
+	c_constraint_colour (a_node: ARCHETYPE_CONSTRAINT): EV_COLOR
+			-- generate a foreground colour for RM attribute representing inheritance status
+		do
+			if show_rm_inheritance then
+				inspect a_node.specialisation_status
+				when ss_inherited then
+					Result := archetype_rm_type_inherited_color
+				else
+					Result := archetype_constraint_color
+				end
+			else
+				Result := archetype_constraint_color
+			end
+		end
+
+	c_meaning_colour (a_node: ARCHETYPE_CONSTRAINT): EV_COLOR
+			-- generate a foreground colour for RM attribute representing inheritance status
+		do
+			if show_rm_inheritance then
+				inspect a_node.specialisation_status
+				when ss_inherited then
+					Result := archetype_rm_type_inherited_color
+				else
+
+				end
+			end
 		end
 
 	c_object_pixmap (a_node: C_OBJECT): EV_PIXMAP
@@ -969,9 +1066,9 @@ feature {NONE} -- Implementation
 			if use_rm_pixmaps and then has_icon_pixmap (pixmap_name) then
 				Result := get_icon_pixmap (pixmap_name)
 			elseif has_icon_pixmap (a_node.generating_type + a_node.occurrences_key_string) then
-				Result := spec_pixmap (a_node, a_node.generating_type + a_node.occurrences_key_string)
+				Result := get_icon_pixmap ("am" + resource_path_separator + "added" + resource_path_separator + a_node.generating_type + a_node.occurrences_key_string)
 			else
-				Result := spec_pixmap (a_node, a_node.generating_type)
+				Result := get_icon_pixmap ("am" + resource_path_separator + "added" + resource_path_separator + a_node.generating_type)
 			end
 		end
 
@@ -1002,13 +1099,7 @@ feature {NONE} -- Implementation
 			else
 				pixmap_name := rm_schema.property_definition (a_node.parent.rm_type_name, a_node.rm_attribute_name).multiplicity_key_string
 			end
-
-			-- if using RM pixmaps, nothing changes; if not, inheritance status is shown
-			if use_rm_pixmaps then
-				Result := get_icon_pixmap ("am" + resource_path_separator + "added" + resource_path_separator + pixmap_name)
-			else
-				Result := get_icon_pixmap ("am" + resource_path_separator + (specialisation_status_names.item (a_node.specialisation_status) + resource_path_separator + pixmap_name))
-			end
+			Result := get_icon_pixmap ("am" + resource_path_separator + "added" + resource_path_separator + pixmap_name)
 		end
 
 	arch_class_node_handler (a_class_grid_row: EV_GRID_ROW; x,y, button: INTEGER)

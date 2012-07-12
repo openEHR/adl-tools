@@ -261,8 +261,8 @@ templates = <
 		["show_rm_if_properties_tooltip"] = <"Show RM infrastructure (non-content) properties">
 
 		["rm_rendering_controls_text"] = <"RM Rendering">
-		["use_rm_icons_button_text"] = <"RM icons">
-		["use_rm_icons_button_tooltip"] = <"Use RM-specific icons">
+		["show_rm_inh_button_text"] = <"Inheritance">
+		["show_rm_inh_button_tooltip"] = <"Show inheritance status: inherited, redefined or added here">
 
 		["rm_closure_depth_control_frame_text"] = <"Closure depth">
 		["closure_depth_spin_button_tooltip"] = <"Depth of closure to explore; this computation can be long for depths > 5">

@@ -130,13 +130,12 @@ feature -- Initialisation
 			ev_view_controls_vbox.extend (rm_rendering_frame_ctl.ev_root_container)
 			ev_view_controls_vbox.disable_item_expand (rm_rendering_frame_ctl.ev_root_container)
 
-			-- use RM icons check button
-			create view_rm_use_icons_checkbox_ctl.make_active (get_text ("use_rm_icons_button_text"),
-				get_text ("use_rm_icons_button_tooltip"),
-				agent :BOOLEAN do Result := use_rm_pixmaps end, agent update_use_rm_pixmaps)
-			gui_controls.extend (view_rm_use_icons_checkbox_ctl)
-			rm_rendering_frame_ctl.extend (view_rm_use_icons_checkbox_ctl.ev_data_control, False)
-
+			-- use RM inheritance rendering check button
+			create view_rm_display_inheritance_checkbox_ctl.make_active (get_text ("show_rm_inh_button_text"),
+				get_text ("show_rm_inh_button_tooltip"),
+				agent :BOOLEAN do Result := show_rm_inheritance end, agent update_show_rm_inheritance)
+			gui_controls.extend (view_rm_display_inheritance_checkbox_ctl)
+			rm_rendering_frame_ctl.extend (view_rm_display_inheritance_checkbox_ctl.ev_data_control, False)
 
 			-- initial state
 			if not show_technical_view then
@@ -152,6 +151,9 @@ feature -- Status Report
 
 	show_codes: BOOLEAN
 			-- True if codes should be shown in the definition rendering
+
+	show_rm_inheritance: BOOLEAN
+			-- True if inheritance status should be shown in definition rendering of specialised archetypes
 
 	update_rm_view: BOOLEAN
 			-- True if last call to set/unset show_reference_model_view changed the flag's value
@@ -197,7 +199,7 @@ feature -- Commands
 			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
 			gui_grid.ev_grid.lock_update
 			create c_node_map_builder
-			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, gui_grid, True, show_codes,
+			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, gui_grid, True, show_codes, show_rm_inheritance,
 				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties,
 				node_grid_row_map, code_select_action_agent, path_select_action_agent)
 			create a_c_iterator.make (source_archetype.definition, c_node_map_builder,
@@ -284,14 +286,12 @@ feature {NONE} -- Events
 	path_select_action_agent: PROCEDURE [ANY, TUPLE [STRING]]
 			-- action to perform when path is selected on an addressable node
 
-	update_use_rm_pixmaps (a_flag: BOOLEAN)
+	update_show_rm_inheritance (a_flag: BOOLEAN)
 		do
-			set_use_rm_pixmaps (a_flag)
+			show_rm_inheritance := a_flag
 			update_rm_view := True
 			if attached source then
 				repopulate
-				-- reflect change to other editor tools
-				gui_agents.update_all_tools_rm_icons_setting_agent.call ([])
 			end
 		end
 
@@ -307,7 +307,7 @@ feature {NONE} -- Implementation
 
 	view_detail_radio_ctl: GUI_BOOLEAN_RADIO_CONTROL
 
-	view_rm_use_icons_checkbox_ctl, add_codes_checkbox_ctl: GUI_CHECK_BOX_CONTROL
+	view_rm_display_inheritance_checkbox_ctl, add_codes_checkbox_ctl: GUI_CHECK_BOX_CONTROL
 
 	rm_attrs_visible_checkbox_ctl, rm_runtime_attrs_visible_checkbox_ctl, rm_if_attrs_visible_checkbox_ctl: GUI_CHECK_BOX_CONTROL
 
@@ -350,7 +350,7 @@ feature {NONE} -- Implementation
 
 			gui_grid.ev_grid.lock_update
 			create c_node_map_builder
-			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, gui_grid, False, show_codes,
+			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, gui_grid, False, show_codes, show_rm_inheritance,
 				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties,
 				node_grid_row_map, code_select_action_agent, path_select_action_agent)
 			create a_c_iterator.make (source_archetype.definition, c_node_map_builder,
@@ -363,24 +363,19 @@ feature {NONE} -- Implementation
 			populate_invariants
 
 			-- make visualisation adjustments
-			if differential_view or not source.is_specialised then
-				if attached visualise_descendants_class then
-					gui_treeview_control.on_collapse_except (
-						agent (a_row: EV_GRID_ROW): BOOLEAN
-							do
-								if attached {C_OBJECT} a_row.data as co then
-									Result := rm_schema.is_descendant_of (co.rm_type_name, visualise_descendants_class)
-								end
+			if attached visualise_descendants_class then
+				gui_treeview_control.on_collapse_except (
+					agent (a_row: EV_GRID_ROW): BOOLEAN
+						do
+							if attached {C_OBJECT} a_row.data as co then
+								Result := rm_schema.is_descendant_of (co.rm_type_name, visualise_descendants_class)
 							end
-					)
-				else
-					gui_treeview_control.on_collapse_all
-					gui_treeview_control.on_expand_one_level
-					gui_treeview_control.on_expand_one_level
-				end
+						end
+				)
 			else
-				gui_treeview_control.on_expand_all
-				roll_up_to_specialisation_level
+				gui_treeview_control.on_collapse_all
+				gui_treeview_control.on_expand_one_level
+				gui_treeview_control.on_expand_one_level
 			end
 			gui_grid.resize_columns_to_content
 			gui_grid.ev_grid.unlock_update
