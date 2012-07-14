@@ -41,8 +41,8 @@ feature -- Initialisation
 			create repositories.make (0)
 			create adhoc_source_repository.make (Group_id_adhoc)
 
-		-- FIXME: probably add adhoc repo to list and treat it as a normal source, although it is missing some features
-		--	source_repositories.put (adhoc_source_repository, adhoc_source_repository.group_id)
+			-- FIXME: probably add adhoc repo to list and treat it as a normal source, although it is missing some features
+			--	source_repositories.put (adhoc_source_repository, adhoc_source_repository.group_id)
 		end
 
 feature -- Access

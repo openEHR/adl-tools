@@ -48,7 +48,7 @@ create
 
 feature -- Initialisation
 
-	make (a_title: detachable STRING; a_tree_ctl: GUI_TREE_CONTROL_I; a_collapse_expand_test_agt: like collapse_expand_test_agt)
+	make (a_tree_ctl: GUI_TREE_CONTROL_I; a_collapse_expand_test_agt: like collapse_expand_test_agt)
 		local
 			ev_view_label: EV_LABEL
 			ev_hbox: EV_HORIZONTAL_BOX
@@ -59,16 +59,10 @@ feature -- Initialisation
 			ev_root_container.set_minimum_width (115)
 
 			-- add title
-			if attached a_title then
-				create ev_view_label.make_with_text (utf8_to_utf32 (a_title))
-				ev_view_label.align_text_left
-				ev_root_container.extend (ev_view_label)
-				ev_root_container.disable_item_expand (ev_view_label)
-			end
+			ev_root_container.set_text (utf8_to_utf32 (get_text ("view_label_text")))
 
 			create ev_hbox
 			ev_root_container.extend (ev_hbox)
-			ev_root_container.disable_item_expand (ev_hbox)
 
 			-- collapse all button
 			create ev_collapse_button
@@ -103,7 +97,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	ev_root_container: EV_VERTICAL_BOX
+	ev_root_container: EV_FRAME
 
 	gui_tree_control: GUI_TREE_CONTROL_I
 

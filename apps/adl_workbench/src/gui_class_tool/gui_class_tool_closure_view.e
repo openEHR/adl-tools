@@ -56,24 +56,20 @@ feature -- Initialisation
 			gui_grid.set_tree_expand_collapse_icons (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
 			ev_root_container.extend (gui_grid.ev_grid)
 
-			-- view controls VBOX
-			create ev_view_controls_vbox
-			ev_view_controls_vbox.set_padding (Default_padding_width)
-			ev_view_controls_vbox.set_border_width (Default_border_width)
-			ev_root_container.extend (ev_view_controls_vbox)
-			ev_root_container.disable_item_expand (ev_view_controls_vbox)
+			-- ============== view controls control panel ================
+			create control_panel.make
+			ev_root_container.extend (control_panel.ev_root_container)
+			ev_root_container.disable_item_expand (control_panel.ev_root_container)
 
 			-- tree collapse/expand control
-			create gui_treeview_control.make (get_text ("view_label_text"), create {GUI_TREE_CONTROL_GRID}.make (gui_grid), agent tree_recurse_node)
-			ev_view_controls_vbox.extend (gui_treeview_control.ev_root_container)
-			ev_view_controls_vbox.disable_item_expand (gui_treeview_control.ev_root_container)
+			create gui_treeview_control.make (create {GUI_TREE_CONTROL_GRID}.make (gui_grid), agent tree_recurse_node)
+			control_panel.add_frame (gui_treeview_control.ev_root_container, False)
 
 			-- ========= RM view options =========
 
 			-- frame
 			create rm_property_visibility_frame_ctl.make (get_text ("rm_visibility_controls_text"), 85, 0, False)
-			ev_view_controls_vbox.extend (rm_property_visibility_frame_ctl.ev_root_container)
-			ev_view_controls_vbox.disable_item_expand (rm_property_visibility_frame_ctl.ev_root_container)
+			control_panel.add_frame_control (rm_property_visibility_frame_ctl, False)
 
 			-- add RM data properties check button
 			create rm_attrs_visible_checkbox_ctl.make_active (get_text ("show_rm_properties_button_text"),
@@ -98,8 +94,7 @@ feature -- Initialisation
 
 			-- frame
 			create rm_rendering_frame_ctl.make (get_text ("rm_rendering_controls_text"), 85, 0, False)
-			ev_view_controls_vbox.extend (rm_rendering_frame_ctl.ev_root_container)
-			ev_view_controls_vbox.disable_item_expand (rm_rendering_frame_ctl.ev_root_container)
+			control_panel.add_frame_control (rm_rendering_frame_ctl, False)
 
 			-- use RM icons check button
 			create view_rm_use_icons_checkbox_ctl.make_active (get_text ("use_rm_icons_text"),
@@ -110,8 +105,7 @@ feature -- Initialisation
 
 			-- ========== recompute controls =========
 			create rm_recompute_frame_ctl.make (get_text ("rm_closure_depth_control_frame_text"), 0, 0, False)
-			ev_view_controls_vbox.extend (rm_recompute_frame_ctl.ev_root_container)
-			ev_view_controls_vbox.disable_item_expand (rm_recompute_frame_ctl.ev_root_container)
+			control_panel.add_frame_control (rm_recompute_frame_ctl, False)
 
 			-- closure depth control
 			create ev_closure_depth_spin_button
@@ -253,7 +247,7 @@ feature {NONE} -- Implementation
 
 	gui_treeview_control: GUI_TREEVIEW_CONTROL
 
-	ev_view_controls_vbox: EV_VERTICAL_BOX
+	control_panel: GUI_CONTROL_PANEL
 
 	ev_closure_depth_spin_button: EV_SPIN_BUTTON
 

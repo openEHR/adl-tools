@@ -19,6 +19,8 @@ templates = <
 		["browse_button_text"] = <"Browse...">
 		["ok_button_text"] = <"OK">
 		["cancel_button_text"] = <"Cancel">
+		["collapse_button_text"] = <">>">
+		["expand_button_text"] = <"<<">
 
 		-- context (right-click) menus, common items
 		["display_in_active_tab"] = <"Display">

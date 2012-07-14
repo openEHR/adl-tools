@@ -64,45 +64,40 @@ feature -- Initialisation
 			gui_grid.set_tree_expand_collapse_icons (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
 			ev_root_container.extend (gui_grid.ev_grid)
 
-			-- view controls VBOX
-			create ev_view_controls_vbox
-			ev_root_container.extend (ev_view_controls_vbox)
-			ev_root_container.disable_item_expand (ev_view_controls_vbox)
-			ev_view_controls_vbox.set_padding (Default_padding_width)
-			ev_view_controls_vbox.set_border_width (Default_border_width)
+			-- ========== view controls control panel ===========
+			create control_panel.make
+			ev_root_container.extend (control_panel.ev_root_container)
+			ev_root_container.disable_item_expand (control_panel.ev_root_container)
 
 			-- tree collapse/expand control
-			create gui_treeview_control.make (get_text ("view_label_text"), create {GUI_TREE_CONTROL_GRID}.make (gui_grid),
+			create gui_treeview_control.make (create {GUI_TREE_CONTROL_GRID}.make (gui_grid),
 				agent (a_row: EV_GRID_ROW): BOOLEAN do Result := not attached {BMM_MODEL_ELEMENT} a_row.data end)
-			ev_view_controls_vbox.extend (gui_treeview_control.ev_root_container)
-			ev_view_controls_vbox.disable_item_expand (gui_treeview_control.ev_root_container)
+			control_panel.add_frame (gui_treeview_control.ev_root_container, False)
 
 			-- ========= view detail level options  =========
 			create view_detail_frame_ctl.make (get_text ("view_detail_controls_text"), 85, 100, False)
-			ev_view_controls_vbox.extend (view_detail_frame_ctl.ev_root_container)
-			ev_view_controls_vbox.disable_item_expand (view_detail_frame_ctl.ev_root_container)
+			control_panel.add_frame_control (view_detail_frame_ctl, False)
 
 			-- view detail radio buttons
 			create view_detail_radio_ctl.make (get_text ("domain_detail_button_text"), get_text ("technical_detail_button_text"),
 				get_text ("domain_detail_button_tooltip"), get_text ("technical_detail_button_tooltip"),
 				agent :BOOLEAN do Result := not show_technical_view end,
 				agent update_show_technical_view, 0, 0)
-			gui_controls.extend (view_detail_radio_ctl)
 			view_detail_frame_ctl.extend (view_detail_radio_ctl.ev_root_container, False)
+			gui_controls.extend (view_detail_radio_ctl)
 
 			-- include codes checkbox
 			create add_codes_checkbox_ctl.make_active (get_text ("domain_view_add_codes_text"), Void,
 				agent :BOOLEAN do Result := show_codes end, agent update_show_codes)
-			gui_controls.extend (add_codes_checkbox_ctl)
 			view_detail_frame_ctl.extend (add_codes_checkbox_ctl.ev_data_control, False)
+			gui_controls.extend (add_codes_checkbox_ctl)
 
 
 			-- ========= RM view options =========
 
 			-- frame
 			create rm_property_visibility_frame_ctl.make (get_text ("rm_visibility_controls_text"), 85, 0, False)
-			ev_view_controls_vbox.extend (rm_property_visibility_frame_ctl.ev_root_container)
-			ev_view_controls_vbox.disable_item_expand (rm_property_visibility_frame_ctl.ev_root_container)
+			control_panel.add_frame_control (rm_property_visibility_frame_ctl, False)
 
 			-- add RM data properties check button
 			create rm_attrs_visible_checkbox_ctl.make_active (get_text ("show_rm_properties_button_text"),
@@ -127,8 +122,7 @@ feature -- Initialisation
 
 			-- frame
 			create rm_rendering_frame_ctl.make (get_text ("rm_rendering_controls_text"), 85, 0, False)
-			ev_view_controls_vbox.extend (rm_rendering_frame_ctl.ev_root_container)
-			ev_view_controls_vbox.disable_item_expand (rm_rendering_frame_ctl.ev_root_container)
+			control_panel.add_frame_control (rm_rendering_frame_ctl, False)
 
 			-- use RM inheritance rendering check button
 			create view_rm_display_inheritance_checkbox_ctl.make_active (get_text ("show_rm_inh_button_text"),
@@ -308,7 +302,7 @@ feature {NONE} -- Implementation
 
 	rm_attrs_visible_checkbox_ctl, rm_runtime_attrs_visible_checkbox_ctl, rm_if_attrs_visible_checkbox_ctl: GUI_CHECK_BOX_CONTROL
 
-	ev_view_controls_vbox: EV_VERTICAL_BOX
+	control_panel: GUI_CONTROL_PANEL
 
 	view_detail_frame_ctl, rm_property_visibility_frame_ctl, rm_rendering_frame_ctl: GUI_FRAME_CONTROL
 
