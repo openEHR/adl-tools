@@ -1399,6 +1399,7 @@ feature {NONE} -- Build commands
 
 			catalogue_tool.update_tree_node (aca)
 			test_tool.do_row_for_item (aca)
+			error_tool.extend_and_select (aca)
 
 			ev_application.process_events
 		end

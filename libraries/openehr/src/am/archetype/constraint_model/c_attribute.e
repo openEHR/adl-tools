@@ -129,28 +129,33 @@ feature -- Access
 			end
 		end
 
-	occurrences_total_range: MULTIPLICITY_INTERVAL
-			-- calculate total possible cardinality range based on occurrences of all children
-			-- only meaningful on flat archetypes
-		require
-			all_children_have_occurrences: all_children_have_occurrences
-		local
-			a_lower, an_upper: INTEGER
-			an_upper_unbounded: BOOLEAN
+	occurrences_lower_sum: INTEGER
+			-- calculate sum of all occurrences lower bounds; where no occurrences are stated, 0 is assumed
 		do
 			from children.start until children.off loop
-				a_lower := a_lower + children.item.occurrences.lower
-				an_upper_unbounded := children.item.occurrences.upper_unbounded
-				if not an_upper_unbounded then
-					an_upper := an_upper + children.item.occurrences.upper
+				if attached children.item.occurrences then
+					Result := Result + children.item.occurrences.lower
 				end
 				children.forth
 			end
+		end
 
-			if an_upper_unbounded then
-				create Result.make_upper_unbounded (a_lower)
-			else
-				create Result.make_bounded (a_lower, an_upper)
+	minimum_child_count: INTEGER
+			-- calculate minimum number of child objects that must occur in data; count 1 for every mandatory
+			-- object, and 1 for all optional objects
+		local
+			found_opt_obj: BOOLEAN
+		do
+			from children.start until children.off loop
+				if attached children.item.occurrences and then children.item.occurrences.lower > 0 then
+					Result := Result + 1
+				else
+					found_opt_obj := True
+				end
+				children.forth
+			end
+			if found_opt_obj then
+				Result := Result + 1
 			end
 		end
 
@@ -336,12 +341,6 @@ feature -- Status Report
 			if is_single and child_count > 1 then
 				Result := children.for_all (agent (a_child: C_OBJECT): BOOLEAN do Result := not a_child.is_addressable end)
 			end
-		end
-
-	all_children_have_occurrences: BOOLEAN
-			-- True if all immediate child nodes have occurrences set
-		do
-			Result := children.for_all (agent (a_child: C_OBJECT): BOOLEAN do Result := attached a_child.occurrences end)
 		end
 
 	candidate_child_requires_id (a_type_name: attached STRING): BOOLEAN
@@ -587,7 +586,7 @@ feature -- Validation
 			if Result then
 				if is_single then
 					Result := (an_obj.is_addressable and not has_child_with_id (an_obj.node_id))
-						or not has_child_with_rm_type_name(an_obj.rm_type_name)
+						or not has_child_with_rm_type_name (an_obj.rm_type_name)
 				else
 					Result := not has_child_with_id (an_obj.node_id)
 				end
@@ -615,10 +614,10 @@ feature -- Validation
 				if is_single then
 					Result := an_obj.occurrences = Void or else (not an_obj.occurrences.upper_unbounded and an_obj.occurrences.upper <= 1)
 				else
-					Result := (an_obj.occurrences = Void or cardinality = Void or else
-						(cardinality.interval.upper_unbounded or (not an_obj.occurrences.upper_unbounded and
-						cardinality.interval.upper >= an_obj.occurrences.upper))) and
-						an_obj.is_addressable
+					Result := an_obj.is_addressable and
+						(an_obj.occurrences = Void or cardinality = Void or else
+							(cardinality.interval.upper_unbounded or else
+								(an_obj.occurrences.upper_unbounded or else cardinality.interval.upper >= an_obj.occurrences.upper)))
 				end
 			end
 		end
@@ -662,29 +661,31 @@ feature {NONE} -- Implementation
 						end
 						cco.remove_attribute (ca)
 					end
-				elseif attached {C_ATTRIBUTE} csr.parent as ca2 and attached {C_COMPLEX_OBJECT} csr as cco2 then
-					if not cco2.has_attributes then
+				elseif attached {C_ATTRIBUTE} csr.parent as ca and attached {C_COMPLEX_OBJECT} csr as cco then
+					if not cco.has_attributes then
 						debug("compress")
-							io.put_string("%T%Tabout to remove ORPHAN object " + cco2.rm_type_name + "[" + cco2.node_id + "] from attribute " + ca2.rm_attribute_name + "%N")
+							io.put_string("%T%Tabout to remove ORPHAN object " + cco.rm_type_name + "[" + cco.node_id + "] from attribute " + ca.rm_attribute_name + "%N")
 						end
-						ca2.remove_child (cco2)
+						ca.remove_child (cco)
 					end
 				end
 				csr := csr.parent
 			end
-			if attached {C_COMPLEX_OBJECT} csr as cco3 then
+			if attached {C_COMPLEX_OBJECT} csr as cco then
 				debug("compress")
-					io.put_string("%T%Tabout to put REPARENTED attribute Current (" + rm_attribute_path + ") on ROOT object " + cco3.rm_type_name + "[" + cco3.node_id + "]%N")
+					io.put_string("%T%Tabout to put REPARENTED attribute Current (" + rm_attribute_path + ") on ROOT object " + cco.rm_type_name + "[" + cco.node_id + "]%N")
 				end
-				cco3.put_attribute (Current)
+				cco.put_attribute (Current)
 			end
 		end
 
 invariant
 	Rm_attribute_name_valid: not rm_attribute_name.is_empty
 	Any_allowed_validity: any_allowed xor not children.is_empty
---	Children_occurrences_validity: cardinality /= Void implies cardinality.interval.contains (occurrences_total_range)
+	Children_occurrences_lower_sum_validity: (cardinality /= Void and then not cardinality.interval.upper_unbounded) implies occurrences_lower_sum <= cardinality.interval.upper
+	Children_orphans_validity: (cardinality /= Void and then not cardinality.interval.upper_unbounded) implies minimum_child_count <= cardinality.interval.upper
 	Differential_path_valid: differential_path /= Void implies not differential_path.is_empty
+	Alternatives_valid: not is_multiple implies children.for_all (agent (co: C_OBJECT): BOOLEAN do Result := co.occurrences.upper <= 1 end)
 	Has_differential_path_valid: differential_path = Void xor has_differential_path
 
 end

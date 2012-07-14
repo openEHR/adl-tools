@@ -8592,7 +8592,6 @@ feature {NONE} -- Implementation
 	check_c_attribute_child (an_attr: C_ATTRIBUTE; an_obj: C_OBJECT): BOOLEAN
 			-- check a new child node
 			-- FIXME: the semantics here should be rationalised with C_ATTRIBUTE.valid_child and related functions
-			-- but doing so probably requires splitting out C_SINGLE_ATTRIBUTE and C_MULTIPLE_ATTRIBUTE
 		require
 			Attribute_exists: an_attr /= Void
 			Object_exists: an_obj /= Void
@@ -8600,21 +8599,21 @@ feature {NONE} -- Implementation
 			err_code: STRING
 			ar: ARRAYED_LIST[STRING]
 		do
-			create ar.make(0)
-			ar.extend(an_obj.generating_type) -- $1
+			create ar.make (0)
+			ar.extend (an_obj.generating_type) -- $1
 			if an_obj.is_addressable then
-				ar.extend("node_id=" + an_obj.node_id) -- $2
+				ar.extend ("node_id=" + an_obj.node_id) -- $2
 			else
-				ar.extend("rm_type_name=" + an_obj.rm_type_name) -- $2
+				ar.extend ("rm_type_name=" + an_obj.rm_type_name) -- $2
 			end
 			ar.extend(an_attr.rm_attribute_name) -- $3
 
 			if an_attr.is_single then
 				if an_obj.occurrences /= Void and then (an_obj.occurrences.upper_unbounded or an_obj.occurrences.upper > 1) then
 					err_code := "VACSO"
-				elseif an_obj.is_addressable and an_attr.has_child_with_id(an_obj.node_id) then
+				elseif an_obj.is_addressable and an_attr.has_child_with_id (an_obj.node_id) then
 					err_code := "VACSI"
-				elseif not an_obj.is_addressable and an_attr.has_child_with_rm_type_name(an_obj.rm_type_name) then
+				elseif not an_obj.is_addressable and an_attr.has_child_with_rm_type_name (an_obj.rm_type_name) then
 					err_code := "VACSIT"
 				else
 					Result := True
@@ -8622,8 +8621,14 @@ feature {NONE} -- Implementation
 			elseif an_attr.is_multiple then
 				if not an_obj.is_addressable then
 					err_code := "VACMI"
-				elseif an_attr.has_child_with_id(an_obj.node_id) then
+				elseif an_attr.has_child_with_id (an_obj.node_id) then
 					err_code := "VACMM"
+				elseif (an_attr.cardinality /= Void and then not an_attr.cardinality.interval.upper_unbounded) and 
+						(an_obj.occurrences /= Void and then not an_obj.occurrences.upper_unbounded) and
+						an_obj.occurrences.upper > an_attr.cardinality.interval.upper then
+					err_code := "VACMCU"
+					ar.extend (an_obj.occurrences.upper.out)
+					ar.extend (an_attr.cardinality.interval.upper.out)
 				else
 					Result := True
 				end

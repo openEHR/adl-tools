@@ -102,8 +102,10 @@ templates = <
 		["VACSI"] = <"cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same node id">
 		["VACSIT"] = <"cannot add $1 object with $2 to singly-valued attribute $3 because attribute already has child with same RM type">
 
-		["VACMC1"] = <"cannot add $1 object with $2 to multiply-valued attribute $3 because cardinality $4 does not contain occurrences $5 of object">
-		["VACMC2"] = <"occurrences of children of multiply-valued attribute $1 exceed its cardinality $2">
+		["VACMCU"] = <"cannot add $1 object with $2 to multiply-valued attribute $3 because occurrences upper bound $4 is greater than cardinality upper bound $5">
+		["VACMCL"] = <"for multiply-valued attribute $1 sum of occurrences lower bounds $2 must be less than cardinality upper limit $3">
+		["VACMCO"] = <"for multiply-valued attribute $1, minimum object count $2 not within the cardinality range $3 (it must be possible for at least one instance of one optional child object and one instance of every mandatory child object to contained in cardinality)">
+
 		["VACMI"] = <"cannot add $1 object with $2 to multiply-valued attribute $3 because object has no node id">
 		["VACMM"] = <"cannot add $1 object with $2 to multiply-valued attribute $3 because attribute already has child with same node id">
 

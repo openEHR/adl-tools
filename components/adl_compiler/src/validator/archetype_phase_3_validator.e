@@ -62,17 +62,13 @@ feature {NONE} -- Implementation
 		end
 
 	flat_node_enter (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
---		local
---			sum_occ_ivl: MULTIPLICITY_INTERVAL
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca then
-				if attached ca.cardinality and ca.all_children_have_occurrences then
---					sum_occ_ivl := ca.occurrences_total_range
---					if (sum_occ_ivl.upper_unbounded and not ca.cardinality.interval.upper_unbounded) or else -- occ is n..*, card is n..m
---						(not sum_occ_ivl.upper_unbounded and not ca.cardinality.interval.upper_unbounded and -- occ.max > card.max
---							sum_occ_ivl.upper > ca.cardinality.interval.upper)
-					if not ca.occurrences_total_range.intersects (ca.cardinality.interval) then
-						add_error("VACMC2", <<ca.path, ca.cardinality.as_string>>)
+				if attached ca.cardinality and then not ca.cardinality.interval.upper_unbounded then
+					if ca.occurrences_lower_sum > ca.cardinality.interval.upper then
+						add_error("VACMCL", <<ca.path, ca.occurrences_lower_sum.out, ca.cardinality.interval.upper.out>>)
+					elseif ca.minimum_child_count > ca.cardinality.interval.upper then
+						add_error("VACMCO", <<ca.path, ca.minimum_child_count.out, ca.cardinality.as_string>>)
 					end
 				end
 			end
