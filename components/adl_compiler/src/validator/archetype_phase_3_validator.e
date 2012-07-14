@@ -68,7 +68,7 @@ feature {NONE} -- Implementation
 					if ca.occurrences_lower_sum > ca.cardinality.interval.upper then
 						add_error("VACMCL", <<ca.path, ca.occurrences_lower_sum.out, ca.cardinality.interval.upper.out>>)
 					elseif ca.minimum_child_count > ca.cardinality.interval.upper then
-						add_error("VACMCO", <<ca.path, ca.minimum_child_count.out, ca.cardinality.as_string>>)
+						add_error("VACMCO", <<ca.path, ca.minimum_child_count.out, ca.cardinality.interval.upper.out>>)
 					end
 				end
 			end
