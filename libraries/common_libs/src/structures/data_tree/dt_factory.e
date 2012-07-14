@@ -72,7 +72,7 @@ feature -- Access
 			a_parent.put_child(Result)
 		end
 
-	create_primitive_object_term(a_parent: attached DT_ATTRIBUTE_NODE; a_qualified_code: attached STRING; a_node_id: STRING): DT_PRIMITIVE_OBJECT
+	create_primitive_object_term (a_parent: attached DT_ATTRIBUTE_NODE; a_qualified_code: attached STRING; a_node_id: STRING): DT_PRIMITIVE_OBJECT
 			-- an_item must be in the form TERMINOLOGY_ID::CODE
 		require
 			a_qualified_code_valid: not a_qualified_code.is_empty

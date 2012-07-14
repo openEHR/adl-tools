@@ -38,11 +38,6 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_DT_FACTORY
-		export
-			{NONE} all
-		end
-
 	UT_CHARACTER_CODES
 		export
 			{NONE} all

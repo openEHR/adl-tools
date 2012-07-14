@@ -698,7 +698,7 @@ feature -- Visitor
 		do
 			if not ev_grid_rm_row_removals_stack.item then -- don't do anything if descending into a removed subtree
 				-- first of all work out whether we want this property
-				show_prop := in_technical_view and include_rm_data_properties
+				show_prop := include_rm_data_properties
 					and (not a_bmm_prop.is_im_runtime or else include_rm_runtime_properties)
 					and (not a_bmm_prop.is_im_infrastructure or else include_rm_infrastructure_properties)
 
@@ -815,6 +815,9 @@ feature {NONE} -- Implementation
 			s: STRING
 		do
 			s := ontology.physical_to_logical_path (a_node.path, language, True)
+			if show_rm_inheritance then
+				s.append ("%N%N" + get_text ("inheritance_status_text") +  specialisation_status_names.item (a_node.specialisation_status))
+			end
 			if archetype.has_annotation_at_path (language, a_node.path) then
 				s.append ("%N%N" + get_text ("annotations_text") + ":%N")
 				s.append (archetype.annotations.annotations_at_path (language, a_node.path).as_string)
@@ -974,6 +977,9 @@ feature {NONE} -- Implementation
 				when ss_redefined then
 					Result := archetype_rm_type_redefined_color
 
+				when ss_id_redefined then
+					Result := archetype_rm_type_redefined_color
+
 				when ss_inherited then
 					Result := archetype_rm_type_inherited_color
 
@@ -1008,7 +1014,7 @@ feature {NONE} -- Implementation
 		end
 
 	c_object_attribute_colour (a_node: C_OBJECT): EV_COLOR
-			-- generate a foreground colour for RM attribute representing inheritance status
+			-- generate a foreground colour for an equivalent RM attribute representing inheritance status
 		do
 			if show_rm_inheritance then
 				inspect a_node.specialisation_status
@@ -1016,6 +1022,9 @@ feature {NONE} -- Implementation
 					Result := archetyped_attribute_color
 
 				when ss_redefined then
+					Result := archetype_rm_type_redefined_color
+
+				when ss_id_redefined then
 					Result := archetype_rm_type_redefined_color
 
 				when ss_inherited then
@@ -1051,6 +1060,8 @@ feature {NONE} -- Implementation
 				inspect a_node.specialisation_status
 				when ss_inherited then
 					Result := archetype_rm_type_inherited_color
+				when ss_redefined then
+					Result := archetype_rm_type_redefined_color
 				else
 
 				end

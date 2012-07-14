@@ -102,8 +102,8 @@ feature -- Initialisation
 			ev_view_controls_vbox.disable_item_expand (rm_rendering_frame_ctl.ev_root_container)
 
 			-- use RM icons check button
-			create view_rm_use_icons_checkbox_ctl.make_active (get_text ("use_rm_icons_button_text"),
-				get_text ("use_rm_icons_button_tooltip"),
+			create view_rm_use_icons_checkbox_ctl.make_active (get_text ("use_rm_icons_text"),
+				get_text ("use_rm_icons_tooltip"),
 				agent :BOOLEAN do Result := use_rm_pixmaps end, agent update_use_rm_pixmaps)
 			gui_controls.extend (view_rm_use_icons_checkbox_ctl)
 			rm_rendering_frame_ctl.extend (view_rm_use_icons_checkbox_ctl.ev_data_control, False)
@@ -203,6 +203,7 @@ feature -- Commands
 			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.populate end)
 
  			-- populate the tree
+			refresh_row (gui_grid.ev_grid.row (1))
 			source.do_supplier_closure (not differential_view, agent continue_rm_property,
 					agent enter_rm_property, agent exit_rm_property)
 		end

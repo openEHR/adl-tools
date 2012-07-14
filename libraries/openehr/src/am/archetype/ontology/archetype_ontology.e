@@ -20,13 +20,6 @@ inherit
 			default_create, finalise_dt
 		end
 
-	SHARED_DT_FACTORY
-		export
-			{NONE} all
-		undefine
-			default_create
-		end
-
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all;

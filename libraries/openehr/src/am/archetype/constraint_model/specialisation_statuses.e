@@ -50,7 +50,7 @@ feature -- Access
 			Result.put ("added", ss_added)
 			Result.put ("inherited", ss_inherited)
 			Result.put ("redefined", ss_redefined)
-			Result.put ("redefined", ss_id_redefined)
+			Result.put ("node id redefined", ss_id_redefined)
 			Result.put ("propagated", ss_propagated)
 		end
 

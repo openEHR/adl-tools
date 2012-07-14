@@ -223,6 +223,7 @@ templates = <
 		["view_label_text"] = <"Tree Zoom">
 		["occurrences_removed_text"] = <"(REMOVED)">
 		["annotations_text"] = <"Annotations">
+		["inheritance_status_text"] = <"Inheritance status: ">
 
 		["node_grid_col_meaning_text"] = <"Meaning">
 		["node_grid_col_rm_name_text"] = <"RM name">
