@@ -88,12 +88,13 @@ feature {NONE} -- Implementation
 	do_populate
 		do
  			source.do_all_archetypes (agent ev_tree_node_populate)
+			gui_grid.resize_columns_to_content
 		end
 
    	ev_tree_node_populate (ara: attached ARCH_CAT_ARCHETYPE)
    			-- Add a node representing `an_item' to `gui_file_tree'.
    		local
-			tree_iterator: OG_ITERATOR
+			og_iterator: OG_ITERATOR
 		do
 			-- make sure it is a template of some kind
 			if artefact_types.has (ara.artefact_type) then
@@ -101,13 +102,19 @@ feature {NONE} -- Implementation
 				if ev_node_descriptor_map.has (ara.qualified_name) then
 					if ara.is_valid then
 						ev_tree_item_stack.extend (ev_node_descriptor_map.item (ara.qualified_name))
-						ev_tree_item_stack.item.wipe_out
-						ev_tree_item_stack.item.set_pixmap (catalogue_node_pixmap (ara))
-						create tree_iterator.make (ara.flat_archetype.definition.representation)
-						tree_iterator.do_all (agent ev_node_build_enter_action, agent ev_node_build_exit_action)
+						gui_grid.remove_sub_rows (ev_tree_item_stack.item)
+						if attached {EV_GRID_LABEL_ITEM} ev_tree_item_stack.item.item (1) as gli then
+							gli.set_pixmap (catalogue_node_pixmap (ara))
+						end
+
+						-- add slot filler structure below this row
+						create og_iterator.make (ara.flat_archetype.definition.representation)
+						og_iterator.do_all (agent ev_node_build_enter_action, agent ev_node_build_exit_action)
 						ev_tree_item_stack.remove
 					else
-						ev_node_descriptor_map.item (ara.qualified_name).set_pixmap (catalogue_node_pixmap (ara))
+						if attached {EV_GRID_LABEL_ITEM} ev_node_descriptor_map.item (ara.qualified_name) as gli then
+							gli.set_pixmap (catalogue_node_pixmap (ara))
+						end
 					end
 				else -- otherwise just display the template root
 					attach_node (ara.id.rm_entity + "." + ara.name, catalogue_node_pixmap (ara), ara)
@@ -141,7 +148,7 @@ feature {NONE} -- Implementation
 						ca_path := c_attr.path
 					end
 					if not c_attr.children.off then
-						attach_node (ca_path, get_icon_pixmap ("archetype/" + c_attribute_pixmap_string(c_attr)), Void)
+						attach_node (ca_path, get_icon_pixmap ("archetype/" + c_attribute_pixmap_string (c_attr)), Void)
 					end
 				elseif attached {C_ARCHETYPE_ROOT} ca as car and attached source as dir then
 					ara := dir.archetype_index.item (car.archetype_id)
@@ -183,35 +190,35 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	attach_node (str: STRING; pixmap: EV_PIXMAP; ara: ARCH_CAT_ARCHETYPE)
+	attach_node (str: STRING; pixmap: EV_PIXMAP; ara: detachable ARCH_CAT_ARCHETYPE)
 			-- attach a node into the tree
-		local
-			a_ti: EV_TREE_ITEM
 		do
-			create a_ti.make_with_text (utf8_to_utf32 (str))
-			if attached ara then
-				a_ti.set_data (ara)
-				ev_node_descriptor_map.force (a_ti, ara.qualified_name)
-
-				-- select / menu handling					
-	 			a_ti.pointer_button_press_actions.force_extend (agent archetype_node_handler (a_ti, ?, ?, ?))
-	 			a_ti.select_actions.force_extend (agent select_archetype_with_delay (ara))
-			end
-			a_ti.set_pixmap (pixmap)
+			-- add row to grid
 			if ev_tree_item_stack.is_empty then
-				ev_tree.extend (a_ti)
+				gui_grid.add_row (1, ara)
 			else
-				ev_tree_item_stack.item.extend (a_ti)
+				gui_grid.add_sub_row (ev_tree_item_stack.item, ara)
 			end
-			ev_tree_item_stack.extend (a_ti)
+			ev_tree_item_stack.extend (gui_grid.last_row)
+			gui_grid.set_last_row_label_col (1, str, Void, Void, pixmap)
+
+			if attached ara then
+				ev_node_descriptor_map.force (gui_grid.last_row, ara.qualified_name)
+
+				-- context menu
+				if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (1) as gli then
+		 			gli.pointer_button_press_actions.force_extend (agent archetype_node_handler (gui_grid.last_row, ?, ?, ?))
+		 			gli.select_actions.force_extend (agent select_archetype_with_delay (ara))
+				end
+			end
 		end
 
-   	update_tree_node (node: attached EV_TREE_NODE)
+   	update_tree_node (ev_grid_row: EV_GRID_ROW)
    			-- Set the icon appropriate to the item attached to `node'.
 		do
- 			if attached {ARCH_CAT_MODEL_NODE} node.data as acmn then -- it is a model node
-				if acmn.is_class then
-					node.set_pixmap (catalogue_node_pixmap (acmn))
+ 			if attached {ARCH_CAT_MODEL_NODE} ev_grid_row.data as acmn then -- it is a model node
+				if acmn.is_class and attached {EV_GRID_LABEL_ITEM} ev_grid_row.item (1) as gli then
+					gli.set_pixmap (catalogue_node_pixmap (acmn))
 				end
 			end
 		end

@@ -57,9 +57,8 @@ feature -- Modification
 			if not items.has (a_path) then
 				items.put (create {RESOURCE_ANNOTATION_NODE_ITEMS}.make, a_path)
 			end
-			from an_annotations.items.start until an_annotations.items.off loop
-				items.item(a_path).items.force(an_annotations.items.item_for_iteration, an_annotations.items.key_for_iteration)
-				an_annotations.items.forth
+			across an_annotations.items as annots_csr loop
+				items.item (a_path).items.force (annots_csr.item, annots_csr.key)
 			end
 		end
 

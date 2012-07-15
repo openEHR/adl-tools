@@ -106,20 +106,17 @@ feature {NONE} -- Implementation
 			langs: ARRAYED_SET [STRING]
 		do
 			langs := ontology.languages_available
-			from langs.start until langs.off loop
-				from ontology.term_codes.start until ontology.term_codes.off loop
-					if not ontology.has_term_definition (langs.item, ontology.term_codes.item) then
-						add_error ("VONLC", <<ontology.term_codes.item, langs.item>>)
+			across langs as langs_csr loop
+				across ontology.term_codes as code_csr loop
+					if not ontology.has_term_definition (langs_csr.item, code_csr.item) then
+						add_error ("VONLC", <<code_csr.item, langs_csr.item>>)
 					end
-					ontology.term_codes.forth
 				end
-				from ontology.constraint_codes.start until ontology.constraint_codes.off loop
-					if not ontology.has_constraint_definition (langs.item, ontology.constraint_codes.item) then
-						add_error ("VONLC", <<ontology.constraint_codes.item, langs.item>>)
+				across ontology.constraint_codes as code_csr loop
+					if not ontology.has_constraint_definition (langs_csr.item, code_csr.item) then
+						add_error ("VONLC", <<code_csr.item, langs_csr.item>>)
 					end
-					ontology.constraint_codes.forth
 				end
-				langs.forth
 			end
 		end
 
@@ -128,76 +125,64 @@ feature {NONE} -- Implementation
 			-- Leave `passed' True if all found node_ids are defined in term_definitions, and term_definitions contains no extras.
 			-- For specialised archetypes, requires flat parent to be available
 		local
-			a_codes: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_CONSTRAINT], STRING]
 			depth, code_depth: INTEGER
 		do
 			depth := ontology.specialisation_depth
 
-			a_codes := target.id_atcodes_index
-			from a_codes.start until a_codes.off loop
-				code_depth := specialisation_depth_from_code (a_codes.key_for_iteration)
+			across target.id_atcodes_index as codes_csr loop
+				code_depth := specialisation_depth_from_code (codes_csr.key)
 				if code_depth > depth then
-					add_error ("VONSD", <<a_codes.key_for_iteration>>)
+					add_error ("VONSD", <<codes_csr.key>>)
 				elseif code_depth < depth then
-					if not flat_parent.ontology.has_term_code (a_codes.key_for_iteration) then
-						add_error ("VATDF1", <<a_codes.key_for_iteration>>)
+					if not flat_parent.ontology.has_term_code (codes_csr.key) then
+						add_error ("VATDF1", <<codes_csr.key>>)
 					end
-				elseif not ontology.has_term_code (a_codes.key_for_iteration) then
-					add_error ("VATDF2", <<a_codes.key_for_iteration>>)
+				elseif not ontology.has_term_code (codes_csr.key) then
+					add_error ("VATDF2", <<codes_csr.key>>)
 				end
-				a_codes.forth
 			end
 
 			-- see if every term code used in an ORDINAL or a CODE_PHRASE is in ontology
-			a_codes := target.data_atcodes_index
-			from a_codes.start until a_codes.off loop
-				code_depth := specialisation_depth_from_code (a_codes.key_for_iteration)
+			across target.data_atcodes_index as code_csr loop
+				code_depth := specialisation_depth_from_code (code_csr.key)
 				if code_depth > depth then
-					add_error ("VATCD", <<a_codes.key_for_iteration>>)
+					add_error ("VATCD", <<code_csr.key>>)
 				elseif code_depth < depth then
-					if not flat_parent.ontology.has_term_code (a_codes.key_for_iteration) then
-						add_error ("VATDC1", <<a_codes.key_for_iteration>>)
+					if not flat_parent.ontology.has_term_code (code_csr.key) then
+						add_error ("VATDC1", <<code_csr.key>>)
 					end
-				elseif not ontology.has_term_code (a_codes.key_for_iteration) then
-					add_error ("VATDC2", <<a_codes.key_for_iteration>>)
+				elseif not ontology.has_term_code (code_csr.key) then
+					add_error ("VATDC2", <<code_csr.key>>)
 				end
-				a_codes.forth
 			end
 
 			-- check if all found constraint_codes are defined in constraint_definitions,
-			a_codes := target.accodes_index
-			from a_codes.start until a_codes.off loop
-				code_depth := specialisation_depth_from_code (a_codes.key_for_iteration)
+			across target.accodes_index as code_csr loop
+				code_depth := specialisation_depth_from_code (code_csr.key)
 				if code_depth > depth then
-					add_error ("VATCD", <<a_codes.key_for_iteration>>)
+					add_error ("VATCD", <<code_csr.key>>)
 				elseif code_depth < depth then
-					if not flat_parent.ontology.has_constraint_code (a_codes.key_for_iteration) then
-						add_error ("VACDF1", <<a_codes.key_for_iteration>>)
+					if not flat_parent.ontology.has_constraint_code (code_csr.key) then
+						add_error ("VACDF1", <<code_csr.key>>)
 					end
-				elseif not ontology.has_constraint_code (a_codes.key_for_iteration) then
-					add_error ("VACDF2", <<a_codes.key_for_iteration>>)
+				elseif not ontology.has_constraint_code (code_csr.key) then
+					add_error ("VACDF2", <<code_csr.key>>)
 				end
-				a_codes.forth
 			end
 		end
 
 	validate_internal_references
 			-- Validate items in `found_internal_references'.
 			-- For specialised archetypes, requires flat parent to be available
-		local
-			use_refs: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_INTERNAL_REF], STRING]
 		do
-			use_refs := target.use_node_index
-			from use_refs.start until use_refs.off loop
-				-- check on paths in the current archetype
-				if target.definition.has_path (use_refs.key_for_iteration) then
-					convert_use_ref_paths (use_refs.item_for_iteration, use_refs.key_for_iteration, target)
-				elseif target.is_specialised and flat_parent.definition.has_path (use_refs.key_for_iteration) then
-					convert_use_ref_paths (use_refs.item_for_iteration, use_refs.key_for_iteration, flat_parent)
+			across target.use_node_index as use_refs_csr loop
+				if target.definition.has_path (use_refs_csr.key) then
+					convert_use_ref_paths (use_refs_csr.item, use_refs_csr.key, target)
+				elseif target.is_specialised and flat_parent.definition.has_path (use_refs_csr.key) then
+					convert_use_ref_paths (use_refs_csr.item, use_refs_csr.key, flat_parent)
 				else
-					add_error ("VUNP", <<use_refs.key_for_iteration>>)
+					add_error ("VUNP", <<use_refs_csr.key>>)
 				end
-				use_refs.forth
 			end
 		end
 
@@ -227,30 +212,26 @@ feature {NONE} -- Implementation
 			-- for each language, ensure that annotations are proper translations of each other (if present)
 			-- For specialised archetypes, requires flat parent to be available
 		local
-			ann_for_lang: RESOURCE_ANNOTATION_NODES
 			ann_path: STRING
 			apa: ARCHETYPE_PATH_ANALYSER
 		do
 			if target.has_annotations then
-				from target.annotations.items.start until not passed or target.annotations.items.off loop
-					ann_for_lang := target.annotations.items.item_for_iteration
-					from ann_for_lang.items.start until not passed or ann_for_lang.items.off loop
-						ann_path := ann_for_lang.items.key_for_iteration
+				across target.annotations.items as annots_csr loop
+					across annots_csr.item.items as annots_for_lang_csr loop
+						ann_path := annots_for_lang_csr.key
 						create apa.make_from_string (ann_path)
 
 						-- firstly see if annotation path is valid
 						if apa.is_archetype_path then
 							if not (target.has_path (ann_path) or else (target.is_specialised and then flat_parent.has_path (ann_path))) then
-								add_error ("VRANP1", <<target.annotations.items.key_for_iteration, ann_path>>)
+								add_error ("VRANP1", <<annots_csr.key, ann_path>>)
 							end
 						elseif not rm_schema.has_property_path (target.definition.rm_type_name, ann_path) then
-							add_error ("VRANP2", <<target.annotations.items.key_for_iteration, ann_path>>)
+							add_error ("VRANP2", <<annots_csr.key, ann_path>>)
 						end
 
 						-- FIXME: now we should do some other checks to see if contents are of same structure as annotations in other languages
-						ann_for_lang.items.forth
 					end
-					target.annotations.items.forth
 				end
 			end
 		end

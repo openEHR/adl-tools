@@ -33,24 +33,27 @@ feature {NONE} -- Initialisation
 			create ev_root_container
 			ev_root_container.set_data (Current)
 
-			-- tree control
-			create ev_tree
-  			ev_tree.set_minimum_width (180)
-			ev_root_container.extend (ev_tree)
+			-- EV_GRID
+			create gui_grid.make (True, True, True, True)
+			gui_grid.set_tree_expand_collapse_icons (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
+			ev_root_container.extend (gui_grid.ev_grid)
+  			gui_grid.ev_grid.set_minimum_width (100)
+  			gui_grid.ev_grid.hide_header
 		end
 
 feature -- Access
 
 	ev_root_container: EV_CELL
 
-	ev_tree: EV_TREE
+	gui_grid: GUI_EV_GRID
 
 feature -- Commands
 
 	repopulate
 			-- repopulate to update GUI settings
 		do
-			ev_tree.recursive_do_all (agent update_tree_node)
+			gui_grid.ev_grid.tree_do_all (agent update_tree_node)
+			gui_grid.resize_columns_to_content
 		end
 
 	update_tree_node_for_archetype (ara: attached ARCH_CAT_ARCHETYPE)
@@ -68,20 +71,20 @@ feature {NONE} -- Implementation
 	do_clear
 		do
 			create ev_node_descriptor_map.make(0)
-			ev_tree.wipe_out
+			gui_grid.wipe_out
  			create ev_tree_item_stack.make (0)
 		end
 
-	ev_node_descriptor_map: HASH_TABLE [EV_TREE_ITEM, STRING]
+	ev_node_descriptor_map: HASH_TABLE [EV_GRID_ROW, STRING]
 			-- list of GUI explorer nodes, keyed by artefact id
 
 	artefact_types: ARRAY [INTEGER]
 			-- types of artefact in this view
 
-	ev_tree_item_stack: ARRAYED_STACK [EV_TREE_ITEM]
+	ev_tree_item_stack: ARRAYED_STACK [EV_GRID_ROW]
 			-- Stack used during `populate_ev_tree_node_enter'.
 
-   	update_tree_node (node: attached EV_TREE_NODE)
+   	update_tree_node (node: EV_GRID_ROW)
    		deferred
    		end
 
@@ -96,7 +99,7 @@ feature {NONE} -- Implementation
 	save_archetype_agent: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE, BOOLEAN, BOOLEAN]]
 			-- agent with signature (aca: ARCH_CAT_ARCHETYPE; diff_flag, native_format_flag: BOOLEAN)
 
-	archetype_node_handler (ev_ti: EV_TREE_ITEM; x,y, button: INTEGER)
+	archetype_node_handler (ev_ti: EV_GRID_ROW; x,y, button: INTEGER)
 			-- creates the context menu for a right click action for an ARCH_REP_ARCHETYPE node
 		local
 			menu: EV_MENU
@@ -141,7 +144,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	display_context_selected_archetype_in_active_tool (ev_ti: EV_TREE_ITEM)
+	display_context_selected_archetype_in_active_tool (ev_ti: EV_GRID_ROW)
 		do
 			ev_ti.enable_select
 			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
@@ -149,7 +152,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	display_context_selected_archetype_in_new_tool (ev_ti: EV_TREE_ITEM)
+	display_context_selected_archetype_in_new_tool (ev_ti: EV_GRID_ROW)
 		do
 			ev_ti.enable_select
 			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
@@ -157,7 +160,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	edit_context_selected_archetype_in_new_tool (ev_ti: EV_TREE_ITEM)
+	edit_context_selected_archetype_in_new_tool (ev_ti: EV_GRID_ROW)
 		do
 			ev_ti.enable_select
 			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then

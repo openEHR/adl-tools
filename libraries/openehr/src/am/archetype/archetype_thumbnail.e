@@ -34,8 +34,10 @@ feature -- Access
 	artefact_type: INTEGER
 			-- design type of artefact, archetype, template, template-component, etc
 
-	parent_archetype_id: ARCHETYPE_ID
+	parent_archetype_id: detachable ARCHETYPE_ID
 			-- id of specialisation parent of this archetype
+
+	other_details: detachable HASH_TABLE [STRING, STRING]
 
 feature -- Status Report
 
@@ -123,6 +125,10 @@ feature -- Modification
 			create parent_archetype_id.make_from_string (an_id)
 		end
 
+	set_other_details (an_other_details: HASH_TABLE [STRING, STRING])
+		do
+			other_details := an_other_details
+		end
 
 end
 

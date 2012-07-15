@@ -583,6 +583,9 @@ feature -- Status Report - Semantic
 			Result := file_repository.is_valid_path (flat_compiled_path)
 		end
 
+	is_reference_archetype: BOOLEAN
+			-- True if archetype has path description/other_details["model_level"] = "reference"
+
 feature -- Compilation
 
 	compile
@@ -1234,6 +1237,20 @@ feature {NONE} -- Implementation
 			-- clone of current `flat_archetype'; usually used for editing
 
 	arch_flattener: ARCHETYPE_FLATTENER
+
+	post_parse_process
+		require
+			compilation_state = Cs_validated
+		do
+			-- extract reference archetype marker, if it exists
+			if attached differential_archetype.description as desc then
+				if attached desc.other_details as dets then
+					if dets.has ("model_level") then
+--						Result := dets.item ("model_level").is_equal ("reference")
+					end
+				end
+			end
+		end
 
 invariant
 	compilation_state_valid: valid_compilation_state (compilation_state)

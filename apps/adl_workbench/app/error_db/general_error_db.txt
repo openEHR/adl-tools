@@ -37,6 +37,7 @@ templates = <
 		["yes_response"] = <"Yes">
 		["no_response"] = <"No">
 		["could_not_create_file_text"] = <"Could not create file or directory $1">
+		["write_failed_file_does_not_exist"] = <"Write failed; file $1 does not exist">
 	>
 >
 

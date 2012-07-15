@@ -608,6 +608,9 @@ feature {NONE} -- Tests
 		do
 			if regression_test_on then
 				create val_code.make_empty
+
+				-- extract regression test meta-data. We do this on the raw file, since we need the meta-data
+				-- even if the archetype doesn't compile. Probably this should become part of the first pass load
 				create amp
 				if target.has_legacy_flat_file then
 					other_details := amp.extract_other_details (target.legacy_flat_text)

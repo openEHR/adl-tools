@@ -19,6 +19,11 @@ class
 inherit
 	UC_IMPORTED_UTF8_ROUTINES
 
+	SHARED_MESSAGE_DB
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -175,7 +180,7 @@ feature -- Commands
 
 					-- ignore if empty
 					if not in_file.last_string.is_empty and not in_file.last_string.starts_with (ignore_pattern) then
-						-- see if just whitespace
+						-- read past whitespace
 						from k := 1 until k > in_file.last_string.count or else not in_file.last_string.item (k).is_space loop
 							k := k + 1
 						end
@@ -186,8 +191,8 @@ feature -- Commands
 							end
 							if j <= start_patterns.upper then
 								file_lines.extend (in_file.last_string.twin)
-								file_lines.last.prune_all('%R')
-								items_found[j] := True
+								file_lines.last.prune_all ('%R')
+								items_found [j] := True
 							end
 							i := i + 1
 						end
@@ -196,7 +201,7 @@ feature -- Commands
 
 				in_file.close
 				if file_lines.count >= 1 then
-					clean_utf(file_lines[1])
+					clean_utf (file_lines[1])
 				end
 			else
 				last_op_failed := True
@@ -267,7 +272,7 @@ feature -- Commands
 				file_timestamp := out_file.date
 			else
 				last_op_failed := True
-				last_op_fail_reason := "Write failed; file " + a_file_name + " does not exist"
+				last_op_fail_reason := get_msg ("write_failed_file_does_not_exist", <<a_file_name>>)
 			end
 		end
 
