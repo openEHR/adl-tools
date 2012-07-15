@@ -31,6 +31,7 @@ templates = <
 		["edit_source"] = <"Edit source">
 		["edit"] = <"Edit">
 		["save_archetype_as"] = <"Save as">
+		["save_archetype_as_type"] = <"Save as $1">
 		["export_archetype_as"] = <"Export as">
 		["export_flat_archetype_as"] = <"Export flat as">
 		["edit_source_schema"] = <"Edit source schema">
@@ -203,6 +204,8 @@ templates = <
 		["catalogue_metrics_tab_text"] = <"Metrics">
 		["catalogue_stats_tab_text"] = <"Statistics">
 		["catalogue_tool_title"] = <"Repository">
+		["save_archetype_title"] = <"Save Archetype">
+		["export_archetype_title"] = <"Export Archetype">
 
 		-- GUI_PATH_MAP_CONTROL
 		["row_filter_frame_text"] = <"Row Filter">

@@ -19,7 +19,7 @@ inherit
 
 feature -- Commands
 
-	do_with_wait_cursor (an_ev_widget: EV_WIDGET; action: attached PROCEDURE [ANY, TUPLE])
+	do_with_wait_cursor (an_ev_widget: EV_WIDGET; action: PROCEDURE [ANY, TUPLE])
 			-- Perform `action' with an hourglass mouse cursor, restoring the cursor when done.
 		local
 			ptr_style: EV_POINTER_STYLE
@@ -34,7 +34,7 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	show_in_system_browser (url: attached STRING)
+	show_in_system_browser (url: STRING)
 			-- Launch the operating system's default browser to display the contents of `url'.
 		require
 			url_not_empty: not url.is_empty
@@ -64,7 +64,7 @@ feature {NONE} -- Implementation
    			end
 		end
 
-	populate_ev_multi_list_from_hash (ev_mlist: attached EV_MULTI_COLUMN_LIST; ht: detachable HASH_TABLE [ANY, STRING])
+	populate_ev_multi_list_from_hash (ev_mlist: EV_MULTI_COLUMN_LIST; ht: detachable HASH_TABLE [ANY, STRING])
 			-- populate rows of a multi-column list with name - value pairs in a HASH_TABLE
 			-- Note that the value type is assumed to have a sensible outpur from its 'out' function
 		local
@@ -93,7 +93,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_ev_multi_list_from_list (ev_mlist: attached EV_MULTI_COLUMN_LIST; a_list: detachable LIST [ANY])
+	populate_ev_multi_list_from_list (ev_mlist: EV_MULTI_COLUMN_LIST; a_list: detachable LIST [ANY])
 			-- populate rows of a multi-column list with a single column of strings from `a_list'
 			-- Note that the list value type is assumed to have a sensible outpur from its 'out' function
 		local
@@ -111,23 +111,26 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	resize_ev_multi_list (ev_mlist: attached EV_MULTI_COLUMN_LIST)
+	resize_ev_multi_list (ev_mlist: EV_MULTI_COLUMN_LIST)
 			-- perform sensible column resizing on a EV_MULTI_COLUMN_LIST
 		local
 			i: INTEGER
 		do
-			from i := 1 until i > ev_mlist.column_count loop
-				if not ev_mlist.is_empty then
+			if not ev_mlist.is_empty then
+				from i := 1 until i > ev_mlist.column_count loop
 					ev_mlist.resize_column_to_content (i)
-				elseif attached ev_mlist.column_title (i) then
-					-- FIXME: a pure hack to get round the problem of Multi-list column resizing not including title contents
-					ev_mlist.set_column_width (ev_mlist.column_width (i).max (ev_mlist.column_title (i).count * 12), i)
+					if attached ev_mlist.column_title (i) then
+						-- FIXME: a pure hack to get round the problem of Multi-list column resizing not including title contents
+						ev_mlist.set_column_width (ev_mlist.column_width (i).max (ev_mlist.column_title (i).count * 12), i)
+					end
+					i := i + 1
 				end
-				i := i + 1
+			else
+				resize_ev_multi_list_to_headers (ev_mlist)
 			end
 		end
 
-	resize_ev_multi_list_to_headers (ev_mlist: attached EV_MULTI_COLUMN_LIST)
+	resize_ev_multi_list_to_headers (ev_mlist: EV_MULTI_COLUMN_LIST)
 			-- perform sensible column resizing on a EV_MULTI_COLUMN_LIST based on column headings
 		local
 			i: INTEGER

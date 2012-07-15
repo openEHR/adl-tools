@@ -61,13 +61,13 @@ feature {NONE} -- Initialisation
 			ev_root_container.extend (stats_viewer.ev_root_container)
 
 			-- visual characteristics
-			ev_root_container.set_item_text (archetype_explorer.ev_root_container, get_msg ("catalogue_archetype_tab_text", Void))
+			ev_root_container.set_item_text (archetype_explorer.ev_root_container, get_text ("catalogue_archetype_tab_text"))
 			ev_root_container.item_tab (archetype_explorer.ev_root_container).set_pixmap (get_icon_pixmap ("tool/archetype_catalog"))
 
-			ev_root_container.set_item_text (template_explorer.ev_root_container, get_msg ("catalogue_template_tab_text", Void))
+			ev_root_container.set_item_text (template_explorer.ev_root_container, get_text ("catalogue_template_tab_text"))
 
-			ev_root_container.set_item_text (metrics_viewer.ev_root_container, get_msg ("catalogue_metrics_tab_text", Void))
-			ev_root_container.set_item_text (stats_viewer.ev_root_container, get_msg ("catalogue_stats_tab_text", Void))
+			ev_root_container.set_item_text (metrics_viewer.ev_root_container, get_text ("catalogue_metrics_tab_text"))
+			ev_root_container.set_item_text (stats_viewer.ev_root_container, get_text ("catalogue_stats_tab_text"))
 			set_stats_metric_tab_appearance
 
 			-- set events: select a notebook tab
@@ -163,7 +163,7 @@ feature -- Commands
 				if not source_repositories.adhoc_source_repository.has_path (fname) then
 					set_current_work_directory (file_system.dirname (fname))
 					if not file_system.file_exists (fname) then
-						(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" not found.")).show_modal_to_window (proximate_ev_window (ev_root_container))
+						(create {EV_INFORMATION_DIALOG}.make_with_text (get_msg ("file_not_found", <<fname>>))).show_modal_to_window (proximate_ev_window (ev_root_container))
 					else
 						source.add_adhoc_item (fname)
 						if not billboard.has_errors then
@@ -174,7 +174,7 @@ feature -- Commands
 						gui_agents.console_tool_append_agent.call ([billboard.content])
 					end
 				else
-					(create {EV_INFORMATION_DIALOG}.make_with_text ("%"" + fname + "%" already added.")).show_modal_to_window (proximate_ev_window (ev_root_container))
+					(create {EV_INFORMATION_DIALOG}.make_with_text (get_msg ("file_already_exists", <<fname>>))).show_modal_to_window (proximate_ev_window (ev_root_container))
 				end
 			end
 		end
@@ -260,8 +260,8 @@ feature {NONE} -- Implementation
 	do_populate
 			-- Populate content from visual controls.
 		do
-			docking_pane.set_short_title (get_msg ("catalogue_tool_title", Void))
-			docking_pane.set_long_title (get_msg ("catalogue_tool_title", Void) + " " + repository_profiles.current_profile_name)
+			docking_pane.set_short_title (get_text ("catalogue_tool_title"))
+			docking_pane.set_long_title (get_text ("catalogue_tool_title") + " " + repository_profiles.current_profile_name)
 			archetype_explorer.populate (source)
 			template_explorer.populate (source)
 			set_stats_metric_tab_appearance
@@ -311,10 +311,10 @@ feature {NONE} -- Implementation
 			if aca.is_valid then
 				if native_format_flag then
 					format_list := archetype_native_serialiser_formats
-					dialog_title := "Save Archetype"
+					dialog_title := get_text ("save_archetype_title")
 				else
 					format_list := archetype_all_serialiser_formats
-					dialog_title := "Export Archetype"
+					dialog_title := get_text ("export_archetype_title")
 				end
 				name := extension_replaced (aca.full_path, "")
 
@@ -326,7 +326,7 @@ feature {NONE} -- Implementation
 				-- ask the user what format
 				from format_list.start until format_list.off loop
 					format := format_list.item
-					save_dialog.filters.extend (["*" + archetype_file_extensions [format], "Save as " + format.as_upper])
+					save_dialog.filters.extend (["*" + archetype_file_extensions [format], get_msg ("save_archetype_as_type", <<format.as_upper>>)])
 					format_list.forth
 				end
 
@@ -346,7 +346,7 @@ feature {NONE} -- Implementation
 					ok_to_write := True
 					if file.exists then
 						create question_dialog.make_with_text (get_msg ("file_exists_replace_question", <<file_system.basename (name)>>))
-						question_dialog.set_title ("Save as " + format.as_upper)
+						question_dialog.set_title (get_msg ("save_archetype_as_type", <<format.as_upper>>))
 						question_dialog.set_buttons (<<"Yes", "No">>)
 						question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
 						ok_to_write := question_dialog.selected_button.same_string ("Yes")

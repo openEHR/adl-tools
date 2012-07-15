@@ -166,7 +166,7 @@ feature {NONE} -- Implementation
 					-- tooltip		
 					tooltip := utf8_to_utf32 (aca.full_path)
 					if aca.has_legacy_flat_file and aca.differential_generated then
-						tooltip.append ("%N" + get_msg ("archetype_tree_node_tooltip", Void))
+						tooltip.append ("%N" + get_text ("archetype_tree_node_tooltip"))
 					end
 	 				ev_node.set_tooltip (tooltip)
 
