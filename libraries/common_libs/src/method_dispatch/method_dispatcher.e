@@ -222,13 +222,6 @@ feature -- Routine Dispatch
 			Result := c_result_pointer
 		end
 
-	dispatch_bit_function (obj:ANY; feature_name:STRING; arg:ANY):BIT_REF
-			-- dispatch a call to a feature with signature: FEATURE (ARG) : BIT_REF
-		do
-			dispatch_function (obj, feature_name, arg, Bit_type)
-			Result := c_result_bit
-		end
-
 feature -- Field Dispatch
 
 	dispatch_reference_field (obj:ANY; feature_name:STRING):ANY
@@ -418,11 +411,6 @@ feature {NONE} -- External
 		end
 
 	c_result_pointer: POINTER
-		external
-		   "C"
-		end
-
-	c_result_bit: BIT_REF
 		external
 		   "C"
 		end
