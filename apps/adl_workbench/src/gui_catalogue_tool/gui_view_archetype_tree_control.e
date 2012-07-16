@@ -166,7 +166,7 @@ feature {NONE} -- Implementation
 					end
 
 					-- tooltip		
-					tooltip := aca.full_path
+					tooltip := aca.full_path.twin
 					if aca.has_legacy_flat_file and aca.differential_generated then
 						tooltip.append ("%N" + get_text ("archetype_tree_node_tooltip"))
 					end
