@@ -115,7 +115,7 @@ feature -- Visitor
 			if not updating then
 				-- create a new row
 				if a_node.is_root then
-					gui_grid.add_row (1, a_node)
+					gui_grid.add_row (a_node)
 				else
 					gui_grid.add_sub_row (ev_grid_row_stack.item, a_node)
 				end

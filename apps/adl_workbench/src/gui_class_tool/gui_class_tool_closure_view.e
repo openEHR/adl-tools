@@ -273,7 +273,7 @@ feature {NONE} -- Implementation
 			-- Add root node representing class to `gui_file_tree'.
 		do
 			create rm_node_path.make_root
-			gui_grid.add_row (1, source)
+			gui_grid.add_row (source)
 			ev_grid_rm_row_stack.extend (gui_grid.last_row)
 			ev_grid_rm_row_removals_stack.extend (False)
 			gui_grid.set_last_row_label_col (Node_grid_col_rm_name, source.name, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (source, rm_publisher))
@@ -284,8 +284,6 @@ feature {NONE} -- Implementation
 
 	continue_rm_property (a_bmm_prop: BMM_PROPERTY_DEFINITION; depth: INTEGER): BOOLEAN
 			-- detrmine whether to continue a BMM_PROPERTY_DEFINITION
-		local
-			parent_class_row: EV_GRID_ROW
 		do
 			if attached last_property_grid_row then
 				if last_property_grid_row.subrow (1).subrow_count > 0 then

@@ -93,12 +93,10 @@ feature -- Modification
 			end
 		end
 
-	add_row (row_idx: INTEGER; a_data: detachable ANY)
-		require
-			valid_row_index: row_idx > 0 and row_idx <= row_count + 1
+	add_row (a_data: detachable ANY)
 		do
-			ev_grid.insert_new_row (row_idx)
-			last_row := ev_grid.row (row_idx)
+			ev_grid.insert_new_row (ev_grid.row_count + 1)
+			last_row := ev_grid.row (ev_grid.row_count)
 			if attached a_data then
 				last_row.set_data (a_data)
 			end

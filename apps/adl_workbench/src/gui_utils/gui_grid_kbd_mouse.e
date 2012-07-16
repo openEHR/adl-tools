@@ -319,16 +319,22 @@ feature -- Commands
 
 	expand_all (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
 			-- expand rows that pass `test'
+		local
+			i: INTEGER
 		do
-			if row_count > 0 then
-				expand_tree (row (1), test)
+			from i := 1 until i > row_count loop
+				expand_tree (row (i), test)
+				i := i + row (i).subrow_count_recursive + 1
 			end
 		end
 
 	collapse_all
+		local
+			i: INTEGER
 		do
-			if row_count > 0 then
-				collapse_tree (row (1))
+			from i := 1 until i > row_count loop
+				collapse_tree (row (i))
+				i := i + row (i).subrow_count_recursive + 1
 			end
 		end
 

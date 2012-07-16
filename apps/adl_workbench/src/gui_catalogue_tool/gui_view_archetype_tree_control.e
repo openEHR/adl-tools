@@ -56,11 +56,8 @@ feature -- Commands
 
 	update_tree_node_for_archetype (aca: attached ARCH_CAT_ARCHETYPE)
 			-- update Catalogue tree node with changes in compilation status
-		local
-			an_id: STRING
 		do
-			an_id := aca.id.as_string
-			if ev_node_descriptor_map.has (an_id) then
+			if ev_node_descriptor_map.has (aca.qualified_name) then
 				update_tree_node (ev_node_descriptor_map.item (aca.qualified_name))
 			elseif attached aca.old_id then
 				if ev_node_descriptor_map.has (aca.old_id.as_string) then
@@ -114,7 +111,7 @@ feature {NONE} -- Implementation
 								(attached {ARCH_CAT_ARCHETYPE} aci as aca and then artefact_types.has (aca.artefact_type))) then
 				-- add row to grid
 				if ev_tree_item_stack.is_empty then
-					gui_grid.add_row (1, aci)
+					gui_grid.add_row (aci)
 				else
 					gui_grid.add_sub_row (ev_tree_item_stack.item, aci)
 				end
@@ -175,7 +172,7 @@ feature {NONE} -- Implementation
 					end
 
 					-- pixmap
-					pixmap := get_icon_pixmap ("archetype/" + aci.group_name)
+					pixmap := get_icon_pixmap ("archetype/" + aca.group_name)
 
 					if aca.is_reference_archetype then
 						col := archetype_rm_type_color
@@ -246,10 +243,8 @@ feature {NONE} -- Implementation
 
 	ev_tree_expand (ev_grid_row: EV_GRID_ROW): BOOLEAN
 		do
-			if attached {ARCH_CAT_MODEL_NODE} ev_grid_row.data as arf then
-	 			if (arf.is_abstract_class or arf.is_rm_closure) and ev_grid_row.is_expandable then
-					Result := True
-	 			end
+			if attached {ARCH_CAT_MODEL_NODE} ev_grid_row.data as acmn then
+	 			Result := (acmn.is_abstract_class or acmn.is_rm_closure) and ev_grid_row.is_expandable
 	 		end
 		end
 

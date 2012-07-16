@@ -323,7 +323,6 @@ feature {NONE} -- Implementation
 		local
 			a_c_iterator: C_OBJECT_VISITOR_ITERATOR
 			c_node_map_builder: C_GUI_NODE_MAP_BUILDER
-			i: INTEGER
 		do
 			-- determine visualisation ancestor class
 			rm_schema := source.rm_schema

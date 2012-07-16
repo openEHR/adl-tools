@@ -195,7 +195,7 @@ feature {NONE} -- Implementation
 		do
 			-- add row to grid
 			if ev_tree_item_stack.is_empty then
-				gui_grid.add_row (1, ara)
+				gui_grid.add_row (ara)
 			else
 				gui_grid.add_sub_row (ev_tree_item_stack.item, ara)
 			end
