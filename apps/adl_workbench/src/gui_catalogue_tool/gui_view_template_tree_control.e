@@ -213,7 +213,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-   	update_tree_node (ev_grid_row: EV_GRID_ROW)
+   	update_grid_row (ev_grid_row: EV_GRID_ROW; update_flag: BOOLEAN)
    			-- Set the icon appropriate to the item attached to `node'.
 		do
  			if attached {ARCH_CAT_MODEL_NODE} ev_grid_row.data as acmn then -- it is a model node

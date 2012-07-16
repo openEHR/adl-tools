@@ -52,7 +52,7 @@ feature -- Commands
 	repopulate
 			-- repopulate to update GUI settings
 		do
-			gui_grid.ev_grid.tree_do_all (agent update_tree_node)
+			gui_grid.ev_grid.tree_do_all (agent update_grid_row (?, True))
 			gui_grid.resize_columns_to_content
 		end
 
@@ -84,7 +84,7 @@ feature {NONE} -- Implementation
 	ev_tree_item_stack: ARRAYED_STACK [EV_GRID_ROW]
 			-- Stack used during `populate_ev_tree_node_enter'.
 
-   	update_tree_node (node: EV_GRID_ROW)
+   	update_grid_row (node: EV_GRID_ROW; update_flag: BOOLEAN)
    		deferred
    		end
 

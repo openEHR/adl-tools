@@ -58,11 +58,11 @@ feature -- Commands
 			-- update Catalogue tree node with changes in compilation status
 		do
 			if ev_node_descriptor_map.has (aca.qualified_name) then
-				update_tree_node (ev_node_descriptor_map.item (aca.qualified_name))
+				update_grid_row (ev_node_descriptor_map.item (aca.qualified_name), True)
 			elseif attached aca.old_id then
 				if ev_node_descriptor_map.has (aca.old_id.as_string) then
 					ev_node_descriptor_map.replace_key (aca.qualified_name, aca.old_id.as_string)
-					update_tree_node (ev_node_descriptor_map.item (aca.qualified_name))
+					update_grid_row (ev_node_descriptor_map.item (aca.qualified_name), True)
 				end
 			end
 		end
@@ -119,7 +119,7 @@ feature {NONE} -- Implementation
  				ev_node_descriptor_map.put (gui_grid.last_row, aci.global_artefact_identifier)
 
  				-- update contents
-	 			update_tree_node (gui_grid.last_row)
+	 			update_grid_row (gui_grid.last_row, False)
 
 				-- select / menu handling
 				if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (1) as gli then
@@ -145,7 +145,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-   	update_tree_node (ev_row: EV_GRID_ROW)
+   	update_grid_row (ev_row: EV_GRID_ROW; update_flag: BOOLEAN)
    			-- Set the text, tooltip and icon appropriate to the item attached to `node'.
    		local
 			text, tooltip: STRING
@@ -154,19 +154,24 @@ feature {NONE} -- Implementation
 		do
 			if attached {ARCH_CAT_ITEM} ev_row.data as aci then
 				create text.make_empty
+				create tooltip.make_empty
 
 				if attached {ARCH_CAT_ARCHETYPE} aci as aca then -- archetype / template node
 					-- text
 					if aca.has_legacy_flat_file and display_archetype_source then
 						text.append ("(lf) ")
 					end
-					text.append (aci.name)
+					if aca.is_reference_archetype then
+						text.append (aci.name.as_upper)
+					else
+						text.append (aci.name)
+					end
 					if aca.has_slots then
 						text.append (Right_arrow_char_utf8)
 					end
 
 					-- tooltip		
-					tooltip := aca.full_path.twin
+					tooltip.append (aca.full_path)
 					if aca.has_legacy_flat_file and aca.differential_generated then
 						tooltip.append ("%N" + get_text ("archetype_tree_node_tooltip"))
 					end
@@ -181,21 +186,25 @@ feature {NONE} -- Implementation
 	 			elseif attached {ARCH_CAT_MODEL_NODE} aci as acmn then -- it is a model node
 					if acmn.is_class then
 						pixmap := catalogue_node_pixmap (acmn)
-			 	 		tooltip := acmn.qualified_name + "%N" + acmn.class_definition.description
+			 	 		tooltip.append (acmn.qualified_name + "%N" + acmn.class_definition.description)
 						text.append (aci.name)
 						col := archetype_rm_type_color
 					else
 		 				text.append (acmn.qualified_name)
 						pixmap := get_icon_pixmap ("archetype/" + aci.group_name)
-						tooltip := get_msg ("rm_closure_tree_node_tooltip", <<acmn.qualified_name, acmn.bmm_schema.schema_id>>)
+						tooltip.append (get_msg ("rm_closure_tree_node_tooltip", <<acmn.qualified_name, acmn.bmm_schema.schema_id>>))
 					end
 	 				text.append (" (" + acmn.subtree_artefact_count (artefact_types).out + ")")
 
 				end
 
 				-- set text
-				gui_grid.set_last_row (ev_row)
-				gui_grid.set_last_row_label_col (1, text, tooltip, col, pixmap)
+				if update_flag then
+					gui_grid.set_last_row (ev_row)
+					gui_grid.update_last_row_label_col (1, text, tooltip, col, pixmap)
+				else
+					gui_grid.set_last_row_label_col (1, text, tooltip, col, pixmap)
+				end
 			end
 		end
 
