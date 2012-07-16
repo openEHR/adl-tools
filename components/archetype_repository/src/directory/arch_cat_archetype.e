@@ -612,6 +612,9 @@ feature -- Compilation
 					parse
 				when Cs_ready_to_validate then
 					validate
+				when Cs_validated then
+					post_parse_process
+					finished := True
 				else
 					finished := True
 				end
@@ -1246,7 +1249,7 @@ feature {NONE} -- Implementation
 			if attached differential_archetype.description as desc then
 				if attached desc.other_details as dets then
 					if dets.has ("model_level") then
---						Result := dets.item ("model_level").is_equal ("reference")
+						is_reference_archetype := dets.item ("model_level").is_equal ("reference")
 					end
 				end
 			end
