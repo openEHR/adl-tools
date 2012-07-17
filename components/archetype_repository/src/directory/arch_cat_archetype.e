@@ -360,7 +360,7 @@ feature -- Access (semantic)
 		local
 			str: STRING
 		do
-			str := id.domain_concept
+			str := id.domain_concept_version
 			if is_specialised and str.has ({ARCHETYPE_ID}.section_separator) then
 				Result := str.substring (str.last_index_of ({ARCHETYPE_ID}.section_separator, str.count)+1, str.count)
 			else

@@ -6,6 +6,7 @@ note
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -56,7 +57,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	group_name: attached STRING
+	group_name: STRING
 			-- Name distinguishing the type of item and the group to which its `repository' belongs.
 			-- Useful as a logical key to pixmap icons, etc.
 		deferred
@@ -64,7 +65,7 @@ feature -- Access
 			not_empty: not Result.is_empty
 		end
 
-	qualified_name: attached STRING
+	qualified_name: STRING
 			-- semantic name of this node, relative to parent concept, which is either class or package name, or else as concept name of archetype
 			-- used to generate ontological path
 			-- For Classes, will be the name of the top-level package & class e.g. EHR-OBSERVATION
@@ -72,7 +73,7 @@ feature -- Access
 		deferred
 		end
 
-	qualified_key: attached STRING
+	qualified_key: STRING
 			-- lower-case form of `qualified_name', for safe matching
 		deferred
 		ensure
@@ -97,7 +98,7 @@ feature -- Access
 			Result.append (name)
 		end
 
-   	subtree_artefact_count (artefact_types: attached ARRAY [INTEGER]): INTEGER
+   	subtree_artefact_count (artefact_types: ARRAY [INTEGER]): INTEGER
    			-- number of artefacts below this node of the types mentioned in `artefact_types'
    		local
 			i: INTEGER
@@ -108,7 +109,7 @@ feature -- Access
  			end
 		end
 
-	child_with_qualified_key (a_key: attached STRING): like child_type
+	child_with_qualified_key (a_key: STRING): like child_type
 		require
 			has_child_with_qualified_key (a_key)
 		do
@@ -118,7 +119,7 @@ feature -- Access
 			Result := children.item
 		end
 
-	global_artefact_category: attached STRING
+	global_artefact_category: STRING
 			-- tool-wide category for this artefact, useful for indexing visual type indeicators
 			-- like pixmap etc
 		do
@@ -151,7 +152,7 @@ feature -- Status Report
 			end
 		end
 
-	has_child_with_qualified_key (a_key: attached STRING): BOOLEAN
+	has_child_with_qualified_key (a_key: STRING): BOOLEAN
 		require
 			Lower_case_key: a_key.as_lower.same_string (a_key)
 		do
@@ -198,7 +199,7 @@ feature -- Iteration
 
 feature {ARCHETYPE_CATALOGUE} -- Modification
 
-	put_child (a_child: attached like child_type)
+	put_child (a_child: like child_type)
 		do
 			if children = Void then
 				create children.make
@@ -208,7 +209,7 @@ feature {ARCHETYPE_CATALOGUE} -- Modification
 			reset_subtree_artefact_count
 		end
 
-	remove_child (a_child: attached like child_type)
+	remove_child (a_child: like child_type)
 		require
 			has_child (a_child)
 		do
@@ -218,7 +219,7 @@ feature {ARCHETYPE_CATALOGUE} -- Modification
 
 feature {ARCH_CAT_ITEM} -- Modification
 
-	set_parent (a_parent: attached ARCH_CAT_ITEM)
+	set_parent (a_parent: ARCH_CAT_ITEM)
 		do
 			parent := a_parent
 		end

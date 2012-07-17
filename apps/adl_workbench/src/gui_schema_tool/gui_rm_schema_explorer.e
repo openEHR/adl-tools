@@ -322,13 +322,8 @@ feature {NONE} -- Implementation
 				agent (a_row: attached EV_GRID_ROW): BOOLEAN
 					do
 						Result := attached {BMM_SCHEMA} a_row.data or
-							(attached {BMM_PACKAGE_DEFINITION} a_row.data and then
-							not gui_grid.has_matching_sub_row (a_row,
-								agent (a_tn: EV_GRID_ROW): BOOLEAN
-									do
-										Result := attached {BMM_CLASS_DEFINITION} a_tn.data
-									end
-							))
+							attached {BMM_PACKAGE_DEFINITION} a_row.data and then
+							not gui_grid.has_matching_sub_row (a_row, agent (a_tn: EV_GRID_ROW): BOOLEAN do Result := attached {BMM_CLASS_DEFINITION} a_tn.data end)
 					end
 			)
 		end

@@ -10,6 +10,7 @@ note
 				 		version = string
 				 ]"
 	keywords:    "archetype"
+	void_safety: "initial"
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
@@ -49,7 +50,7 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (a_rm_originator, a_rm_name, a_rm_entity, a_domain_concept, a_version_id: attached STRING)
+	make (a_rm_originator, a_rm_name, a_rm_entity, a_domain_concept, a_version_id: STRING)
 			-- Create from "rm_originator-rm_name-rm_entity.domain_concept.ver_id".
 		require
 			not a_rm_originator.is_empty
@@ -72,7 +73,7 @@ feature -- Initialisation
 			value.append (a_version_id)
 		end
 
-	make_from_string (an_id: attached STRING)
+	make_from_string (an_id: STRING)
 			-- Create from "rm_entity.domain_concept.ver_id".
 		require
 			valid_id (an_id)
@@ -88,7 +89,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	qualified_rm_entity: attached STRING
+	qualified_rm_entity: STRING
 			-- identification of Reference Model entity being archetyped
 			-- e.g. openEHR-EHR-OBSERVATION, HL7-CDA-SECTION
 		local
@@ -100,7 +101,7 @@ feature -- Access
 			not_empty: not Result.is_empty
 		end
 
-	qualified_package_name, qualified_rm_name: attached STRING
+	qualified_package_name, qualified_rm_name: STRING
 			-- identification of Reference Model name
 			-- e.g. openEHR-EHR, HL7-CDA
 		local
@@ -115,7 +116,7 @@ feature -- Access
 			not_empty: not Result.is_empty
 		end
 
-	package_name: attached STRING
+	package_name: STRING
 			-- identification of Reference Model (package) name
 			-- e.g. EHR, DEMOGRAPHIC
 		local
@@ -130,7 +131,7 @@ feature -- Access
 			not_empty: not Result.is_empty
 		end
 
-	package_class_name: attached STRING
+	package_class_name: STRING
 			-- identification of Reference Model (package) + class name
 			-- e.g. EHR-OBSERVATION, DEMOGRAPHIC-PARTY
 		local
@@ -144,16 +145,27 @@ feature -- Access
 			not_empty: not Result.is_empty
 		end
 
-	domain_concept: attached STRING
+	domain_concept: STRING
 			-- shortened version of concept name, e.g.
 			-- "blood_pressure", "problem-diagnosis"
-			-- extracted from `value'
 		local
 			p, q: INTEGER
 		do
 			p := value.index_of (axis_separator, 1) + 1
 			q := value.index_of (axis_separator, p) - 1
 			Result := value.substring (p, q)
+		ensure
+			not_empty: not Result.is_empty
+		end
+
+	domain_concept_version: STRING
+			-- short concept part of id + version
+			-- "blood_pressure.v2", "problem-diagnosis.v0.9.0"
+		local
+			p: INTEGER
+		do
+			p := value.index_of (axis_separator, 1) + 1
+			Result := value.substring (p, value.count)
 		ensure
 			not_empty: not Result.is_empty
 		end
@@ -165,19 +177,6 @@ feature -- Access
 			p := value.index_of (axis_separator, 1) + 1
 			p := value.index_of (axis_separator, p) + 1
 			Result := value.substring (p, value.count)
-		end
-
-	version_number: INTEGER
-			-- generate the version number as an integer, for comparison purposes; if the version number is
-			-- not a valid numeric, 0 is returned
-		local
-			s: STRING
-		do
-			s := version_id
-			s.remove_head (1)
-			if s.is_integer then
-				Result := s.to_integer
-			end
 		end
 
 	rm_originator: STRING
@@ -192,7 +191,7 @@ feature -- Access
 			p := s.index_of(section_separator, 1) - 1
 			Result := s.substring(1, p)
 		ensure
-			Result_valid: Result /= Void and then not Result.is_empty
+			Result_valid: not Result.is_empty
 		end
 
 	rm_name: STRING
@@ -208,7 +207,7 @@ feature -- Access
 			q := s.index_of(section_separator, p) - 1
 			Result := s.substring(p, q)
 		ensure
-			Result_valid: Result /= Void and then not Result.is_empty
+			Result_valid: not Result.is_empty
 		end
 
 	rm_entity: STRING
@@ -226,10 +225,10 @@ feature -- Access
 			p := s.index_of(section_separator, p) + 1
 			Result := s.substring(p, s.count)
 		ensure
-			Result_valid: Result /= Void and then not Result.is_empty
+			Result_valid: not Result.is_empty
 		end
 
-	sortable_id, semantic_id: attached STRING
+	sortable_id, semantic_id: STRING
 			-- Semantic id as a string minus the version part at the end (which interferes with sensible sorting).
 		local
 			p: INTEGER
@@ -242,7 +241,7 @@ feature -- Access
 
 feature -- Status Report
 
-	valid_id (an_id: attached STRING): BOOLEAN
+	valid_id (an_id: STRING): BOOLEAN
 			-- Does `an_id' have the correct form for an archetype id?
 		do
 			Result := id_pattern_regex.matches (an_id)
@@ -258,14 +257,14 @@ feature -- Comparison
 
 feature -- Output
 
-	as_string: attached STRING
+	as_string: STRING
 		do
 			Result := value.twin
 		ensure
 			not_empty: not Result.is_empty
 		end
 
-	as_abbreviated_string: attached STRING
+	as_abbreviated_string: STRING
 			-- generate a shortened form suitable for use in GUI widgets
 			-- made up of shortened rm_entity '.' shortened domain_concept '.' version
 		do
@@ -279,7 +278,7 @@ feature -- Output
 
 feature {NONE} -- Implementation
 
-	id_pattern_regex: attached LX_DFA_REGULAR_EXPRESSION
+	id_pattern_regex: LX_DFA_REGULAR_EXPRESSION
 			-- Pattern matcher for archetype ids.
 		deferred
 		end

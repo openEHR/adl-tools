@@ -1387,7 +1387,7 @@ feature {NONE} -- Build commands
 		do
 			populate_compile_button
 			console_tool.append_text (a_msg)
-			ev_application.process_events
+		--	ev_application.process_events
 		end
 
 	compiler_archetype_gui_update (a_msg: attached STRING; aca: attached ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)

@@ -164,7 +164,7 @@ feature {NONE} -- Implementation
 					if aca.is_reference_archetype then
 						text.append (aci.name.as_upper)
 					else
-						text.append (aci.name)
+						text.append (aca.name)
 					end
 					if aca.has_slots then
 						text.append (Right_arrow_char_utf8)

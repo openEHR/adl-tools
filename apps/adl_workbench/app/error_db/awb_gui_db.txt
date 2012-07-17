@@ -199,6 +199,9 @@ templates = <
 		["xml_14_not_available_message"] = <"XML based on ADL 1.4 available in next release">
 
 		-- GUI_CATALOGUE_TOOL
+		["adl_14_files"] = <"ADL 1.4 files">
+		["adl_15_source_files"] = <"ADL 1.5 source files">
+
 		["catalogue_archetype_tab_text"] = <"Archetypes">
 		["catalogue_template_tab_text"] = <"Templates">
 		["catalogue_metrics_tab_text"] = <"Metrics">

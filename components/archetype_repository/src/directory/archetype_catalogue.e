@@ -507,8 +507,8 @@ end
 debug ("rm_ontology")
 	io.put_string ("%TClosure: " + rm_closure_name + "%N")
 end
-					else
-						model_node ?= parent_model_node.child_with_qualified_key (qualified_rm_closure_key)
+					elseif attached {ARCH_CAT_MODEL_NODE} parent_model_node.child_with_qualified_key (qualified_rm_closure_key) as mn then
+						model_node := mn
 debug ("rm_ontology")
 	io.put_string ("%TClosure: " + qualified_rm_closure_key + "%N")
 end
