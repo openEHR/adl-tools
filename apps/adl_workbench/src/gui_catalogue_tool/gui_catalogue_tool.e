@@ -262,11 +262,13 @@ feature {NONE} -- Implementation
 		do
 			docking_pane.set_short_title (get_text ("catalogue_tool_title"))
 			docking_pane.set_long_title (get_text ("catalogue_tool_title") + " " + repository_profiles.current_profile_name)
-			archetype_explorer.populate (source)
-			template_explorer.populate (source)
-			set_stats_metric_tab_appearance
-			on_select_notebook
-			go_to_selected_item
+			if attached source then
+				archetype_explorer.populate (source)
+				template_explorer.populate (source)
+				set_stats_metric_tab_appearance
+				on_select_notebook
+				go_to_selected_item
+			end
 		end
 
 	docking_pane: SD_CONTENT
