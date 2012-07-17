@@ -111,12 +111,10 @@ feature -- Creation
 		require
 			type_id_nonnegative: type_id >= 0
 			not_special_type: not is_special_type (type_id)
-		local
-			l_result: detachable ANY
 		do
-			l_result := {ISE_RUNTIME}.create_type (pure_implementation_type (type_id))
-			check l_result_attached: l_result /= Void end
-			Result := l_result
+			check attached {ISE_RUNTIME}.create_type (pure_implementation_type (type_id)) as l_result then
+				Result := l_result
+			end
 			if attached {TUPLE} Result as l_tuple and then attached tuple_native_array_field_info as l_info then
 					-- Create `native_array' field from TUPLE, otherwise we would violate
 					-- TUPLE invariant. Note that the `native_array' has one more element than
@@ -138,12 +136,14 @@ feature -- Creation
 			type_id_nonnegative: type_id >= 0
 			special_type: is_special_any_type (type_id)
 		local
-			l_result: detachable SPECIAL [detachable ANY]
+			l_assert: BOOLEAN
 		do
-			l_result ?= {ISE_RUNTIME}.create_type (pure_implementation_type (type_id))
-			check l_result_attached: l_result /= Void end
-			Result := l_result
-			Result.make_empty (count)
+			l_assert := {ISE_RUNTIME}.check_assert (False)
+			check attached {SPECIAL [detachable ANY]} {ISE_RUNTIME}.create_type (pure_implementation_type (type_id)) as l_result then
+				Result := l_result
+				Result.make_empty (count)
+			end
+			l_assert := {ISE_RUNTIME}.check_assert (l_assert)
 		ensure
 			special_type: is_special (Result)
 			dynamic_type_set: dynamic_type (Result) = type_id
@@ -157,7 +157,12 @@ feature -- Creation
 			if object /= Void then
 				Result := type_of_type (dynamic_type (object))
 			else
-				Result ?= new_instance_of (dynamic_type_from_string ("TYPE [NONE]"))
+				check
+					expected_type:
+						attached {TYPE [detachable ANY]} new_instance_of (dynamic_type_from_string ("TYPE [NONE]")) as t
+				then
+					Result := t
+				end
 			end
 		ensure
 			result_not_void: Result /= Void
@@ -167,12 +172,10 @@ feature -- Creation
 			-- Return type for type id `type_id'.
 		require
 			type_id_nonnegative: type_id >= 0
-		local
-			l_result: detachable like type_of_type
 		do
-			l_result ?= new_instance_of (dynamic_type_from_string ("TYPE [" + type_name_of_type (type_id) + "]"))
-			check l_result /= Void end
-			Result := l_result
+			check attached {detachable like type_of_type} new_instance_of (dynamic_type_from_string ("TYPE [" + type_name_of_type (type_id) + "]")) as l_result then
+				Result := l_result
+			end
 		ensure
 			result_not_void: Result /= Void
 		end
@@ -192,8 +195,7 @@ feature -- Status report
 				-- the implementation type.
 			if attached {RT_GENERIC_TYPE} id_to_eiffel_type.item (type_id) as l_gen_type and then l_gen_type.count = 1 then
 				l_dotnet_type := l_gen_type.dotnet_type
-				check l_dotnet_type_attached: l_dotnet_type /= Void end
-				Result := l_dotnet_type.equals (({SPECIAL [ANY]}).to_cil)
+				Result := l_dotnet_type /= Void and then l_dotnet_type.equals (({SPECIAL [ANY]}).to_cil)
 			end
 		end
 
@@ -209,8 +211,7 @@ feature -- Status report
 			fixme ("It might return True if another class is called SPECIAL")
 			if attached {RT_GENERIC_TYPE} pure_implementation_type (type_id) as l_gen_type and then l_gen_type.count = 1 then
 				l_class_name := l_gen_type.class_name
-				check l_class_name_attached: l_class_name /= Void end
-				Result := l_class_name.equals (("SPECIAL").to_cil)
+				Result := l_class_name /= Void and then l_class_name.equals (("SPECIAL").to_cil)
 			end
 		end
 
@@ -280,7 +281,6 @@ feature -- Status report
 			l_transients: ARRAYED_LIST [BOOLEAN]
 			l_members: like get_members
 			l_is_transient: BOOLEAN
-			l_field_ca: detachable NON_SERIALIZED_ATTRIBUTE
 			k, nb: INTEGER
 			l_attributes: detachable NATIVE_ARRAY [detachable SYSTEM_OBJECT]
 			l_field: FIELD_INFO
@@ -304,8 +304,7 @@ feature -- Status report
 						check
 							valid_number_of_custom_attributes: l_attributes.count = 1
 						end
-						l_field_ca ?= l_attributes.item (0)
-						l_is_transient := l_field_ca /= Void
+						l_is_transient := attached {NON_SERIALIZED_ATTRIBUTE} l_attributes.item (0)
 					else
 						l_is_transient := False
 					end
@@ -451,8 +450,9 @@ feature -- Access
 				create l_class_type.make
 				l_object := object
 				l_type := l_object.get_type
-				check l_type_attached: l_type /= Void end
-				l_class_type.set_type (interface_type (l_type).type_handle)
+				check l_type /= Void then
+					l_class_type.set_type (interface_type (l_type).type_handle)
+				end
 			end
 			Result := dynamic_type_from_rt_class_type (l_class_type)
 		ensure
@@ -511,11 +511,14 @@ feature -- Access
 		local
 			l_class_type: detachable RT_CLASS_TYPE
 		do
+			Result := -1
 			l_class_type := {ISE_RUNTIME}.type_of_generic (object, i)
-			check l_class_type_attached: l_class_type /= Void end
-			l_class_type := internal_pure_interface_type (l_class_type)
-			check l_class_type_attached: l_class_type /= Void end
-			Result := dynamic_type_from_rt_class_type (l_class_type)
+			if l_class_type /= Void then
+				l_class_type := internal_pure_interface_type (l_class_type)
+				if l_class_type /= Void then
+					Result := dynamic_type_from_rt_class_type (l_class_type)
+				end
+			end
 		ensure
 			dynamic_type_nonnegative: Result >= 0
 		end
@@ -526,21 +529,16 @@ feature -- Access
 			type_id_nonnegative: type_id >= 0
 			type_id_generic: generic_count_of_type (type_id) > 0
 			i_valid: i > 0 and i <= generic_count_of_type (type_id)
-		local
-			l_gen_type: detachable RT_GENERIC_TYPE
-			l_generics: detachable NATIVE_ARRAY [detachable RT_TYPE]
-			l_class_type: detachable RT_CLASS_TYPE
 		do
-			l_gen_type ?= id_to_eiffel_type.item (type_id)
-			check l_gen_type_attached: l_gen_type /= Void end
-			l_generics := l_gen_type.generics
-			check l_generics_attached: l_generics /= Void end
-			l_class_type ?= l_generics.item (i - 1)
-			check
-					-- It should be a fully instantiated type.
-				l_class_type_not_void: l_class_type /= Void
+			if
+				attached {RT_GENERIC_TYPE} id_to_eiffel_type.item (type_id) as l_gen_type and then
+				attached l_gen_type.generics as l_generics and then
+				attached {RT_CLASS_TYPE} l_generics.item (i - 1) as l_class_type
+			then
+				Result := dynamic_type_from_rt_class_type (l_class_type)
+			else
+				Result := -1
 			end
-			Result := dynamic_type_from_rt_class_type (l_class_type)
 		ensure
 			dynamic_type_nonnegative: Result >= 0
 		end
@@ -594,20 +592,6 @@ feature -- Access
 			not_special: not is_special (object)
 		local
 			l_obj: detachable SYSTEM_OBJECT
-			l_nat8: NATURAL_8
-			l_nat16: NATURAL_16
-			l_nat32: NATURAL_32
-			l_nat64: NATURAL_64
-			l_int8: INTEGER_8
-			l_int16: INTEGER_16
-			l_int32: INTEGER
-			l_int64: INTEGER_64
-			l_char: CHARACTER_8
-			l_wchar: CHARACTER_32
-			l_boolean: BOOLEAN
-			l_real: REAL
-			l_double: DOUBLE
-			l_pointer: POINTER
 			l_dtype: INTEGER
 		do
 			l_dtype := dynamic_type (object)
@@ -615,60 +599,102 @@ feature -- Access
 			inspect
 				field_type_of_type (i, l_dtype)
 			when Pointer_type then
-				l_pointer ?= l_obj
-				Result := l_pointer
+				check
+					expected_type: attached {POINTER} l_obj as p
+				then
+					Result := p
+				end
 
 			when character_8_type then
-				l_char ?= l_obj
-				Result := l_char
+				check
+					expected_type: attached {CHARACTER_8} l_obj as c
+				then
+					Result := c
+				end
 
 			when character_32_type then
-				l_wchar ?= l_obj
-				Result := l_wchar
+				check
+					expected_type: attached {CHARACTER_32} l_obj as c
+				then
+					Result := c
+				end
 
 			when Boolean_type then
-				l_boolean ?= l_obj
-				Result := l_boolean
+				check
+					expected_type: attached {BOOLEAN} l_obj as b
+				then
+					Result := b
+				end
 
 			when natural_8_type then
-				l_nat8 ?= l_obj
-				Result := l_nat8
+				check
+					expected_type: attached {NATURAL_8} l_obj as n
+				then
+					Result := n
+				end
 
 			when natural_16_type then
-				l_nat16 ?= l_obj
-				Result := l_nat16
+				check
+					expected_type: attached {NATURAL_16} l_obj as n
+				then
+					Result := n
+				end
 
 			when natural_32_type then
-				l_nat32 ?= l_obj
-				Result := l_nat32
+				check
+					expected_type: attached {NATURAL_32} l_obj as n
+				then
+					Result := n
+				end
 
 			when natural_64_type then
-				l_nat64 ?= l_obj
-				Result := l_nat64
+				check
+					expected_type: attached {NATURAL_64} l_obj as n
+				then
+					Result := n
+				end
 
 			when Integer_8_type then
-				l_int8 ?= l_obj
-				Result := l_int8
+				check
+					expected_type: attached {INTEGER_8} l_obj as v
+				then
+					Result := v
+				end
 
 			when Integer_16_type then
-				l_int16 ?= l_obj
-				Result := l_int16
+				check
+					expected_type: attached {INTEGER_16} l_obj as v
+				then
+					Result := v
+				end
 
 			when Integer_32_type then
-				l_int32 ?= l_obj
-				Result := l_int32
+				check
+					expected_type: attached {INTEGER_32} l_obj as v
+				then
+					Result := v
+				end
 
 			when Integer_64_type then
-				l_int64 ?= l_obj
-				Result := l_int64
+				check
+					expected_type: attached {INTEGER_64} l_obj as v
+				then
+					Result := v
+				end
 
 			when real_32_type then
-				l_real ?= l_obj
-				Result := l_real
+				check
+					expected_type: attached {REAL_32} l_obj as r
+				then
+					Result := r
+				end
 
 			when real_64_type then
-				l_double ?= l_obj
-				Result := l_double
+				check
+					expected_type: attached {REAL_64} l_obj as r
+				then
+					Result := r
+				end
 
 			else
 					-- A reference, so nothing to be done
@@ -699,7 +725,6 @@ feature -- Access
 			l_names: ARRAYED_LIST [STRING]
 			l_members: like get_members
 			l_name: detachable SYSTEM_STRING
-			l_eiffel_name: detachable EIFFEL_NAME_ATTRIBUTE
 			k, nb: INTEGER
 			l_attributes: detachable NATIVE_ARRAY [detachable SYSTEM_OBJECT]
 			l_field: FIELD_INFO
@@ -723,14 +748,19 @@ feature -- Access
 						check
 							valid_number_of_custom_attributes: l_attributes.count = 1
 						end
-						l_eiffel_name ?= l_attributes.item (0)
-						check l_eiffel_name_attached: l_eiffel_name /= Void end
-						l_name := l_eiffel_name.name
+						if attached {EIFFEL_NAME_ATTRIBUTE} l_attributes.item (0) as l_eiffel_name then
+							l_name := l_eiffel_name.name
+						else
+							l_name := l_field.name
+						end
 					else
 						l_name := l_field.name
 					end
-					check has_name: l_name /= Void end
-					l_names.extend (l_name)
+					if l_name /= Void then
+						l_names.extend (l_name)
+					else
+						l_names.extend ("Invalid field name")
+					end
 					k := k + 1
 				end
 				id_to_fields_name.put (l_names, type_id)
@@ -787,15 +817,24 @@ feature -- Access
 					k > nb
 				loop
 					l_type := l_members.i_th (k).field_type
-					check l_type_attached: l_type /= Void end
-					if not l_type.is_value_type and not l_type.is_enum then
-						l_abstract_type := Reference_type
-					else
-						if abstract_types.contains (l_type) then
-							l_abstract_type ?= abstract_types.item (l_type)
+					if l_type /= Void then
+						if not l_type.is_value_type and not l_type.is_enum then
+							l_abstract_type := Reference_type
 						else
-							l_abstract_type := Expanded_type
+							if abstract_types.contains (l_type) then
+								check
+									expected_type: attached {INTEGER} abstract_types.item (l_type) as t
+								then
+									l_abstract_type := t
+								end
+							else
+								l_abstract_type := Expanded_type
+							end
 						end
+					else
+							-- It should not happen, so we put a value that would
+							-- cause some failure.
+						l_abstract_type := -1
 					end
 					l_native_array.put (k - 1, l_abstract_type)
 					k := k + 1
@@ -814,108 +853,93 @@ feature -- Access
 			index_large_enough: i >= 1
 			index_small_enough: i <= field_count_of_type (type_id)
 		local
-			l_rt_type: detachable RT_TYPE
-			l_class_type, l_current_rt_type: detachable RT_CLASS_TYPE
+			l_class_type: detachable RT_CLASS_TYPE
 			l_current_rt_gen_type: detachable RT_GENERIC_TYPE
-			l_type, l_current_type: detachable SYSTEM_TYPE
+			l_type: detachable SYSTEM_TYPE
 			l_dtypes: detachable NATIVE_ARRAY [INTEGER]
 			l_attributes: detachable NATIVE_ARRAY [detachable SYSTEM_OBJECT]
 			k, nb, l_dtype: INTEGER
-			l_type_feature_name: detachable TYPE_FEATURE_ATTRIBUTE
-			l_name: detachable SYSTEM_STRING
 			l_members: like get_members
 			l_field: FIELD_INFO
-			l_meth: detachable METHOD_INFO
-			l_type_attr: detachable RT_INTERFACE_TYPE_ATTRIBUTE
 			l_provider: ICUSTOM_ATTRIBUTE_PROVIDER
-			l_object: detachable SYSTEM_OBJECT
 		do
 			l_dtypes := id_to_fields_static_type.item (type_id)
 			if l_dtypes = Void then
-				from
-					l_members := get_members (type_id)
-					k := 1
-					nb := l_members.count
-					create l_dtypes.make (nb)
-				until
-					k > nb
-				loop
-					l_field := l_members.i_th (k)
-					l_provider := l_field
-					l_attributes := l_provider.get_custom_attributes_type ({TYPE_FEATURE_ATTRIBUTE}, False)
-					if l_attributes /= Void and then l_attributes.count > 0 then
-						check
-							valid_number_of_custom_attributes: l_attributes.count = 1
-						end
-						l_type_feature_name ?= l_attributes.item (0)
-						check
-							l_type_feature_name_not_void: l_type_feature_name /= Void
-						end
-						l_name := l_type_feature_name.feature_name
-						if l_current_type = Void then
-							l_current_rt_type := pure_implementation_type (type_id)
-							if l_current_rt_type /= Void then
-								l_object := {ISE_RUNTIME}.create_type (l_current_rt_type)
-								l_current_type := {SYSTEM_TYPE}.get_type_from_handle (l_current_rt_type.type)
-									-- Get RT_GENERIC_TYPE from `l_current_rt_type' if it
-									-- is an instance of `RT_GENERIC_TYPE', otherwise we get
-									-- Void which is ok to, it simply means the call to `evaluated_type'
-									-- below will not require a generic type as it should include
-									-- no formals.
-								l_current_rt_gen_type ?= l_current_rt_type
-							end
-						end
-
-						check l_current_type_attached: l_current_type /= Void end
-
-						l_meth := l_current_type.get_method (l_name)
-						check
-							has_method: l_meth /= Void
-						end
-							-- Invoke method that is going to give us a RT_TYPE instance representing the
-							-- static type of the field for the base class of `type_id'.
-						l_rt_type ?= l_meth.invoke_object_object_array (l_object, Void)
-						check
-							l_rt_type_not_void: l_rt_type /= Void
-						end
-							-- Evaluate given type into context of `l_current_rt_gen_type' to resolve
-							-- formals to actual generic parameters. Of course if `l_current_rt_gen_type'
-							-- is Void, it means that `l_rt_type' does not contain any formals.
-						l_class_type ?= l_rt_type.evaluated_type (l_current_rt_gen_type)
-						check
-							l_class_type_not_void: l_class_type /= Void
-						end
-							-- Get the associated dynamic type.
-						l_class_type := internal_pure_interface_type (l_class_type)
-						check l_class_type_attached: l_class_type /= Void end
-						l_dtype := dynamic_type_from_rt_class_type (l_class_type)
-					else
-							-- Case of a non-generic attribute or non-formal one.
-						l_type := l_field.field_type
-						check l_type_attached: l_type /= Void end
-						l_type := interface_type (l_type)
-						if l_type.is_value_type then
-								-- Case of an expanded type.
-							l_dtype :=
-								dynamic_type_from_rt_class_type (associated_runtime_type (l_type))
-						else
-								-- Normal case, we handle a non-generic class type.
-							create l_class_type.make
-							l_attributes := l_field.get_custom_attributes_type ({RT_INTERFACE_TYPE_ATTRIBUTE}, False)
-							if l_attributes /= Void and then l_attributes.count > 0 then
-								l_type_attr ?= l_attributes.item (0)
-								check
-									l_type_attr_not_void: l_type_attr /= Void
-								end
-								l_type := l_type_attr.class_type
-								check l_type_attached: l_type /= Void end
-							end
-							l_class_type.set_type (l_type.type_handle)
-							l_dtype := dynamic_type_from_rt_class_type (l_class_type)
-						end
+				check
+					attached pure_implementation_type (type_id) as l_current_rt_type and then
+					attached {ISE_RUNTIME}.create_type (l_current_rt_type) as l_object and then
+					attached {SYSTEM_TYPE}.get_type_from_handle (l_current_rt_type.type) as l_current_type
+				then
+						-- Get RT_GENERIC_TYPE from `l_current_rt_type' if it
+						-- is an instance of `RT_GENERIC_TYPE', otherwise we get
+						-- Void which is ok to, it simply means the call to `evaluated_type'
+						-- below will not require a generic type as it should include
+						-- no formals.
+					if attached {RT_GENERIC_TYPE} l_current_rt_type as t then
+						l_current_rt_gen_type := t
 					end
-					l_dtypes.put (k - 1, l_dtype)
-					k := k + 1
+					from
+						l_members := get_members (type_id)
+						k := 1
+						nb := l_members.count
+						create l_dtypes.make (nb)
+					until
+						k > nb
+					loop
+							-- Default initialization to -1
+						l_dtype := -1
+						l_field := l_members.i_th (k)
+						l_provider := l_field
+						l_attributes := l_provider.get_custom_attributes_type ({TYPE_FEATURE_ATTRIBUTE}, False)
+						if
+							l_attributes /= Void and then l_attributes.count = 1 and then
+							attached {TYPE_FEATURE_ATTRIBUTE} l_attributes.item (0) as l_type_feature_name
+						then
+							if attached l_current_type.get_method (l_type_feature_name.feature_name) as l_meth then
+									-- Invoke method that is going to give us a RT_TYPE instance representing the
+									-- static type of the field for the base class of `type_id'.
+								if attached {RT_TYPE} l_meth.invoke_object_object_array (l_object, Void) as l_rt_type then
+										-- Evaluate given type into context of `l_current_rt_gen_type' to resolve
+										-- formals to actual generic parameters. Of course if `l_current_rt_gen_type'
+										-- is Void, it means that `l_rt_type' does not contain any formals.
+									if attached {RT_CLASS_TYPE} l_rt_type.evaluated_type (l_current_rt_gen_type) as t then
+											-- Get the associated dynamic type.
+										l_class_type := internal_pure_interface_type (t)
+										if l_class_type /= Void then
+											l_dtype := dynamic_type_from_rt_class_type (l_class_type)
+										end
+									end
+								end
+							end
+						else
+								-- Case of a non-generic attribute or non-formal one.
+							l_type := l_field.field_type
+							if l_type /= Void then
+								l_type := interface_type (l_type)
+								if l_type.is_value_type then
+										-- Case of an expanded type.
+									l_dtype :=
+										dynamic_type_from_rt_class_type (associated_runtime_type (l_type))
+								else
+										-- Normal case, we handle a non-generic class type.
+									create l_class_type.make
+									l_attributes := l_field.get_custom_attributes_type ({RT_INTERFACE_TYPE_ATTRIBUTE}, False)
+									if
+										l_attributes /= Void and then l_attributes.count > 0 and then
+										attached {RT_INTERFACE_TYPE_ATTRIBUTE} l_attributes.item (0) as l_type_attr
+									then
+										l_type := l_type_attr.class_type
+									end
+									if l_type /= Void then
+										l_class_type.set_type (l_type.type_handle)
+										l_dtype := dynamic_type_from_rt_class_type (l_class_type)
+									end
+								end
+							end
+						end
+						l_dtypes.put (k - 1, l_dtype)
+						k := k + 1
+					end
 				end
 				id_to_fields_static_type.put (l_dtypes, type_id)
 			end
@@ -948,7 +972,12 @@ feature -- Access
 			index_small_enough: i <= field_count (object)
 			character_8_field: field_type (i, object) = character_8_type
 		do
-			Result ?= internal_field (i, object, dynamic_type (object))
+			check
+				from_precondition:
+					attached {CHARACTER_8} internal_field (i, object, dynamic_type (object)) as c
+			then
+				Result := c
+			end
 		end
 
 	character_32_field (i: INTEGER; object: ANY): CHARACTER_32
@@ -959,7 +988,12 @@ feature -- Access
 			index_small_enough: i <= field_count (object)
 			character_32_field: field_type (i, object) = character_32_type
 		do
-			Result ?= internal_field (i, object, dynamic_type (object))
+			check
+				from_precondition:
+					attached {CHARACTER_32} internal_field (i, object, dynamic_type (object)) as c
+			then
+				Result := c
+			end
 		end
 
 	boolean_field (i: INTEGER; object: ANY): BOOLEAN
@@ -970,7 +1004,12 @@ feature -- Access
 			index_small_enough: i <= field_count (object)
 			boolean_field: field_type (i, object) = Boolean_type
 		do
-			Result ?= internal_field (i, object, dynamic_type (object))
+			check
+				from_precondition:
+					attached {BOOLEAN} internal_field (i, object, dynamic_type (object)) as b
+			then
+				Result := b
+			end
 		end
 
 	natural_8_field (i: INTEGER; object: ANY): NATURAL_8
@@ -981,7 +1020,12 @@ feature -- Access
 			index_small_enough: i <= field_count (object)
 			natural_8_field: field_type (i, object) = natural_8_type
 		do
-			Result ?= internal_field (i, object, dynamic_type (object))
+			check
+				from_precondition:
+					attached {NATURAL_8} internal_field (i, object, dynamic_type (object)) as n
+			then
+				Result := n
+			end
 		end
 
 	natural_16_field (i: INTEGER; object: ANY): NATURAL_16
@@ -992,7 +1036,12 @@ feature -- Access
 			index_small_enough: i <= field_count (object)
 			natural_16_field: field_type (i, object) = natural_16_type
 		do
-			Result ?= internal_field (i, object, dynamic_type (object))
+			check
+				from_precondition:
+					attached {NATURAL_16} internal_field (i, object, dynamic_type (object)) as n
+			then
+				Result := n
+			end
 		end
 
 	natural_32_field (i: INTEGER; object: ANY): NATURAL_32
@@ -1003,7 +1052,12 @@ feature -- Access
 			index_small_enough: i <= field_count (object)
 			natural_field: field_type (i, object) = natural_32_type
 		do
-			Result ?= internal_field (i, object, dynamic_type (object))
+			check
+				from_precondition:
+					attached {NATURAL_32} internal_field (i, object, dynamic_type (object)) as n
+			then
+				Result := n
+			end
 		end
 
 	natural_64_field (i: INTEGER; object: ANY): NATURAL_64
@@ -1014,7 +1068,12 @@ feature -- Access
 			index_small_enough: i <= field_count (object)
 			natural_64_field: field_type (i, object) = natural_64_type
 		do
-			Result ?= internal_field (i, object, dynamic_type (object))
+			check
+				from_precondition:
+					attached {NATURAL_64} internal_field (i, object, dynamic_type (object)) as n
+			then
+				Result := n
+			end
 		end
 
 	integer_8_field (i: INTEGER; object: ANY): INTEGER_8
@@ -1025,7 +1084,12 @@ feature -- Access
 			index_small_enough: i <= field_count (object)
 			integer_8_field: field_type (i, object) = Integer_8_type
 		do
-			Result ?= internal_field (i, object, dynamic_type (object))
+			check
+				from_precondition:
+					attached {INTEGER_8} internal_field (i, object, dynamic_type (object)) as v
+			then
+				Result := v
+			end
 		end
 
 	integer_16_field (i: INTEGER; object: ANY): INTEGER_16
@@ -1036,7 +1100,12 @@ feature -- Access
 			index_small_enough: i <= field_count (object)
 			integer_16_field: field_type (i, object) = Integer_16_type
 		do
-			Result ?= internal_field (i, object, dynamic_type (object))
+			check
+				from_precondition:
+					attached {INTEGER_16} internal_field (i, object, dynamic_type (object)) as v
+			then
+				Result := v
+			end
 		end
 
 	integer_field, integer_32_field (i: INTEGER; object: ANY): INTEGER
@@ -1047,7 +1116,12 @@ feature -- Access
 			index_small_enough: i <= field_count (object)
 			integer_32_field: field_type (i, object) = Integer_32_type
 		do
-			Result ?= internal_field (i, object, dynamic_type (object))
+			check
+				from_precondition:
+					attached {INTEGER_32} internal_field (i, object, dynamic_type (object)) as v
+			then
+				Result := v
+			end
 		end
 
 	integer_64_field (i: INTEGER; object: ANY): INTEGER_64
@@ -1058,7 +1132,12 @@ feature -- Access
 			index_small_enough: i <= field_count (object)
 			integer_64_field: field_type (i, object) = Integer_64_type
 		do
-			Result ?= internal_field (i, object, dynamic_type (object))
+			check
+				from_precondition:
+					attached {INTEGER_64} internal_field (i, object, dynamic_type (object)) as v
+			then
+				Result := v
+			end
 		end
 
 	real_32_field, real_field (i: INTEGER; object: ANY): REAL
@@ -1069,7 +1148,12 @@ feature -- Access
 			index_small_enough: i <= field_count (object)
 			real_32_field: field_type (i, object) = real_32_type
 		do
-			Result ?= internal_field (i, object, dynamic_type (object))
+			check
+				from_precondition:
+					attached {REAL} internal_field (i, object, dynamic_type (object)) as r
+			then
+				Result := r
+			end
 		end
 
 	pointer_field (i: INTEGER; object: ANY): POINTER
@@ -1080,7 +1164,12 @@ feature -- Access
 			index_small_enough: i <= field_count (object)
 			pointer_field: field_type (i, object) = Pointer_type
 		do
-			Result ?= internal_field (i, object, dynamic_type (object))
+			check
+				from_precondition:
+					attached {POINTER} internal_field (i, object, dynamic_type (object)) as p
+			then
+				Result := p
+			end
 		end
 
 	real_64_field, double_field (i: INTEGER; object: ANY): DOUBLE
@@ -1091,7 +1180,12 @@ feature -- Access
 			index_small_enough: i <= field_count (object)
 			real_64_field: field_type (i, object) = real_64_type
 		do
-			Result ?= internal_field (i, object, dynamic_type (object))
+			check
+				from_precondition:
+					attached {DOUBLE} internal_field (i, object, dynamic_type (object)) as r
+			then
+				Result := r
+			end
 		end
 
 feature -- Version
@@ -1481,45 +1575,44 @@ feature {TYPE, INTERNAL} -- Implementation
 			-- Given `a_class_type' which might include some reference to interface type,
 			-- returns the corresponding implementation type.
 		local
-			l_new_gen_type: RT_GENERIC_TYPE
 			i, nb: INTEGER
-			l_generics, l_other_generics: detachable NATIVE_ARRAY [detachable RT_TYPE]
+			l_generics: detachable NATIVE_ARRAY [detachable RT_TYPE]
 			l_stop, l_has_none: BOOLEAN
 			l_type: detachable SYSTEM_TYPE
 		do
 			if a_class_type = Void then
 					-- No specified type, return Void.
 			elseif attached {RT_GENERIC_TYPE} a_class_type as l_gen_type then
-				from
-					i := 0
-					l_other_generics := l_gen_type.generics
-					check l_other_generics_attached: l_other_generics /= Void end
-					nb := l_other_generics.count
-					create l_generics.make (nb)
-				until
-					i = nb or l_stop
-				loop
-					if
-						attached {RT_CLASS_TYPE} l_other_generics.item (i) as l_class_type and then
-						attached {RT_CLASS_TYPE} internal_pure_implementation_type (l_class_type) as l_int_class_type
-					then
-						l_generics.put (i, l_int_class_type)
-					else
-						l_stop := True
+				check attached l_gen_type.generics as l_other_generics then
+					from
+						i := 0
+						nb := l_other_generics.count
+						create l_generics.make (nb)
+					until
+						i = nb or l_stop
+					loop
+						if
+							attached {RT_CLASS_TYPE} l_other_generics.item (i) as l_class_type and then
+							attached {RT_CLASS_TYPE} internal_pure_implementation_type (l_class_type) as l_int_class_type
+						then
+							l_generics.put (i, l_int_class_type)
+						else
+							l_stop := True
+						end
+						i := i + 1
 					end
-					i := i + 1
-				end
-				if not l_stop then
-					if l_gen_type.is_tuple then
-						create {RT_TUPLE_TYPE} l_new_gen_type.make
-					else
-						create l_new_gen_type.make
+					if not l_stop then
+						l_type := l_gen_type.dotnet_type
+						if l_type /= Void then
+							if l_gen_type.is_tuple then
+								create {RT_TUPLE_TYPE} Result.make (
+									implementation_type (l_type).type_handle, l_generics)
+							else
+								create {RT_GENERIC_TYPE} Result.make (
+									implementation_type (l_type).type_handle, l_generics)
+							end
+						end
 					end
-					l_type := l_gen_type.dotnet_type
-					check l_type_attached: l_type /= Void end
-					l_new_gen_type.set_type (implementation_type (l_type).type_handle)
-					l_new_gen_type.set_generics (l_generics)
-					Result := l_new_gen_type
 				end
 			else
 				if attached {RT_BASIC_TYPE} a_class_type as l_basic_type then
@@ -1532,8 +1625,9 @@ feature {TYPE, INTERNAL} -- Implementation
 				end
 				if not l_has_none then
 					l_type := a_class_type.dotnet_type
-					check l_type_attached: l_type /= Void end
-					Result.set_type (implementation_type (l_type).type_handle)
+					if l_type /= Void then
+						Result.set_type (implementation_type (l_type).type_handle)
+					end
 				end
 			end
 		end
@@ -1544,43 +1638,42 @@ feature {TYPE, INTERNAL} -- Implementation
 		require
 			a_class_type_not_void: a_class_type /= Void
 		local
-			l_new_gen_type: RT_GENERIC_TYPE
 			i, nb: INTEGER
-			l_generics, l_other_generics: detachable NATIVE_ARRAY [detachable RT_TYPE]
+			l_generics: detachable NATIVE_ARRAY [detachable RT_TYPE]
 			l_stop, l_has_none: BOOLEAN
 			l_type: detachable SYSTEM_TYPE
 		do
 			if attached {RT_GENERIC_TYPE} a_class_type as l_gen_type then
-				from
-					i := 0
-					l_other_generics := l_gen_type.generics
-					check l_other_generics_attached: l_other_generics /= Void end
-					nb := l_other_generics.count
-					create l_generics.make (nb)
-				until
-					i = nb or l_stop
-				loop
-					if
-						attached {RT_CLASS_TYPE} l_other_generics.item (i) as l_class_type and then
-						attached {RT_CLASS_TYPE} internal_pure_interface_type (l_class_type) as l_int_class_type
-					then
-						l_generics.put (i, l_int_class_type)
-					else
-						l_stop := True
+				check attached l_gen_type.generics as l_other_generics then
+					from
+						i := 0
+						nb := l_other_generics.count
+						create l_generics.make (nb)
+					until
+						i = nb or l_stop
+					loop
+						if
+							attached {RT_CLASS_TYPE} l_other_generics.item (i) as l_class_type and then
+							attached {RT_CLASS_TYPE} internal_pure_interface_type (l_class_type) as l_int_class_type
+						then
+							l_generics.put (i, l_int_class_type)
+						else
+							l_stop := True
+						end
+						i := i + 1
 					end
-					i := i + 1
-				end
-				if not l_stop then
-					if l_gen_type.is_tuple then
-						create {RT_TUPLE_TYPE} l_new_gen_type.make
-					else
-						create l_new_gen_type.make
+					if not l_stop then
+						l_type := l_gen_type.dotnet_type
+						if l_type /= Void then
+							if l_gen_type.is_tuple then
+								create {RT_TUPLE_TYPE} Result.make (
+									interface_type (l_type).type_handle, l_generics)
+							else
+								create {RT_GENERIC_TYPE} Result.make (
+									interface_type (l_type).type_handle, l_generics)
+							end
+						end
 					end
-					l_type := l_gen_type.dotnet_type
-					check l_type_attached: l_type /= Void end
-					l_new_gen_type.set_type (interface_type (l_type).type_handle)
-					l_new_gen_type.set_generics (l_generics)
-					Result := l_new_gen_type
 				end
 			else
 				if attached {RT_BASIC_TYPE} a_class_type as l_basic_type then
@@ -1593,8 +1686,9 @@ feature {TYPE, INTERNAL} -- Implementation
 				end
 				if not l_has_none then
 					l_type := a_class_type.dotnet_type
-					check l_type_attached: l_type /= Void end
-					Result.set_type (interface_type (l_type).type_handle)
+					if l_type /= Void then
+						Result.set_type (interface_type (l_type).type_handle)
+					end
 				end
 			end
 		end
@@ -1603,16 +1697,15 @@ feature {TYPE, INTERNAL} -- Implementation
 			-- Interface type of Eiffel type `a_type' if it exists, otherwise `a_type'.
 		require
 			a_type_not_void: a_type /= Void
-		local
-			l_result: detachable SYSTEM_TYPE
 		do
-			l_result ?= implementation_to_interface.item (a_type)
-			if l_result = Void then
-				l_result := {ISE_RUNTIME}.interface_type (a_type)
-				check l_result_attached: l_result /= Void end
-				implementation_to_interface.set_item (a_type, l_result)
+			if attached {SYSTEM_TYPE} implementation_to_interface.item (a_type) as l_result then
+				Result := l_result
+			else
+				check attached {ISE_RUNTIME}.interface_type (a_type) as l_type then
+					implementation_to_interface.set_item (a_type, l_type)
+					Result := l_type
+				end
 			end
-			Result := l_result
 		ensure
 			interface_type_not_void: Result /= Void
 		end
@@ -1621,16 +1714,13 @@ feature {TYPE, INTERNAL} -- Implementation
 			-- Implementation type of Eiffel type `a_type' if it exists, otherwise `a_type'.
 		require
 			a_type_not_void: a_type /= Void
-		local
-			l_result: detachable SYSTEM_TYPE
 		do
 			load_assemblies
-			l_result ?= interface_to_implementation.item (a_type)
-			if l_result = Void then
+			if attached {SYSTEM_TYPE} interface_to_implementation.item (a_type) as t then
+				Result := t
+			else
 					-- No associated implementation, it must be itself
 				Result := a_type
-			else
-				Result := l_result
 			end
 		ensure
 			interface_type_not_void: Result /= Void
@@ -1646,7 +1736,9 @@ feature {TYPE, INTERNAL} -- Implementation
 			else
 				l_obj := eiffel_type_to_id.item (a_class_type)
 				if l_obj /= Void then
-					Result ?= l_obj
+					if attached {INTEGER} l_obj as i then
+						Result := i
+					end
 				else
 					if a_class_type.is_none then
 						Result := none_type
@@ -1685,13 +1777,11 @@ feature {TYPE, INTERNAL} -- Implementation
 		local
 			l_type: detachable RT_CLASS_TYPE
 			l_parameters: detachable ARRAYED_LIST [STRING]
-			l_list: detachable ARRAYED_LIST [RT_CLASS_TYPE]
 			l_type_name: STRING
 			l_start_pos, l_end_pos, i: INTEGER
 			l_types: NATIVE_ARRAY [detachable RT_TYPE]
 			l_found: BOOLEAN
 			l_class_type_name: STRING
-			l_gen_type: detachable RT_GENERIC_TYPE
 		do
 				-- Load data from all assemblies in case it is not yet done.
 			load_assemblies
@@ -1736,10 +1826,10 @@ feature {TYPE, INTERNAL} -- Implementation
 							-- Extract generic parameters and ensures that it matches the number of generic
 							-- parameter expected by the type `l_type_name'.
 						l_parameters := parameters_decomposition (l_class_type_name.substring (l_start_pos + 1, l_end_pos - 1))
-						l_list := eiffel_meta_type_mapping.found_item
-						check l_list_attached: l_list /= Void end
-						l_gen_type ?= l_list.first
-						if l_gen_type /= Void and l_parameters /= Void then
+						if
+							l_parameters /= Void and then attached eiffel_meta_type_mapping.found_item as l_list and then
+							attached {RT_GENERIC_TYPE} l_list.first as l_gen_type
+						then
 							check
 								valid_count: not l_gen_type.is_tuple implies l_parameters.count = l_gen_type.count
 							end
@@ -1761,11 +1851,7 @@ feature {TYPE, INTERNAL} -- Implementation
 							end
 							if l_found then
 								if l_gen_type.is_tuple then
-									l_type := l_gen_type
-									create {RT_TUPLE_TYPE} l_gen_type.make
-									l_gen_type.set_type (l_type.type)
-									l_gen_type.set_generics (l_types)
-									Result := l_gen_type
+									create {RT_TUPLE_TYPE} Result.make (l_gen_type.type, l_types)
 								else
 									from
 										l_found := False
@@ -1778,10 +1864,7 @@ feature {TYPE, INTERNAL} -- Implementation
 										l_list.forth
 									end
 									if l_found and then l_type /= Void then
-										create l_gen_type.make
-										l_gen_type.set_type (l_type.type)
-										l_gen_type.set_generics (l_types)
-										Result := l_gen_type
+										create {RT_GENERIC_TYPE} Result.make (l_type.type, l_types)
 									end
 								end
 							end
@@ -1797,13 +1880,10 @@ feature {TYPE, INTERNAL} -- Implementation
 			a_type_not_void: a_type /= Void
 			a_types_not_void: a_types /= Void
 		local
-			l_generics: detachable NATIVE_ARRAY [detachable RT_TYPE]
 			i, nb: INTEGER
 			l_type: detachable SYSTEM_TYPE
 		do
-			if attached {RT_GENERIC_TYPE} a_type as l_gen_type then
-				l_generics := l_gen_type.generics
-				check l_generics_attached: l_generics /= Void end
+			if attached {RT_GENERIC_TYPE} a_type as l_gen_type and then attached l_gen_type.generics as l_generics then
 				nb := l_generics.count
 				if nb = a_types.count then
 					from
@@ -1913,15 +1993,12 @@ feature {TYPE, INTERNAL} -- Implementation
 		require
 			a_type_not_void: a_type /= Void
 		local
-			l_name: detachable EIFFEL_NAME_ATTRIBUTE
 			l_cas: detachable NATIVE_ARRAY [detachable SYSTEM_OBJECT]
 			j, l_count: INTEGER
 			retried: BOOLEAN
 			l_class_type: RT_CLASS_TYPE
 			l_gen_type: RT_GENERIC_TYPE
-			l_array: detachable NATIVE_ARRAY [detachable SYSTEM_TYPE]
 			l_rt_array: NATIVE_ARRAY [detachable RT_TYPE]
-			l_param_type: detachable SYSTEM_TYPE
 			l_any_type, l_interface_type: SYSTEM_TYPE
 			l_formal_type: RT_FORMAL_TYPE
 			l_list: ARRAYED_LIST [RT_CLASS_TYPE]
@@ -1930,12 +2007,11 @@ feature {TYPE, INTERNAL} -- Implementation
 			if not retried then
 				l_provider := a_type
 				l_cas := l_provider.get_custom_attributes_type ({EIFFEL_NAME_ATTRIBUTE}, False)
-				if l_cas /= Void and then l_cas.count > 0 then
-					l_name ?= l_cas.item (0)
-					check l_name_not_void: l_name /= Void end
-					if l_name.is_generic then
-						l_array := l_name.generics
-						check has_generics: l_array /= Void end
+				if
+					l_cas /= Void and then l_cas.count > 0 and then
+					attached {EIFFEL_NAME_ATTRIBUTE} l_cas.item (0) as l_name
+				then
+					if l_name.is_generic and attached l_name.generics as l_array then
 						l_count := l_array.count
 						create l_rt_array.make (l_count)
 						from
@@ -1944,24 +2020,24 @@ feature {TYPE, INTERNAL} -- Implementation
 						until
 							j = l_count
 						loop
-							l_param_type := l_array.item (j)
-							check l_param_type_attached: l_param_type /= Void end
-								-- Special case here. If we load another Eiffel assembly which
-								-- contains its own version of ANY, then the comparison will fail.
-								-- Since the code was generated so that it is either ANY or a value type,
-								-- then if it is not a value type, then we need to do as if it was our ANY.
-							if l_param_type.equals (l_any_type) or else not l_param_type.is_value_type then
-									-- It is a formal
-								create l_formal_type.make
-								l_formal_type.set_position (j)
-								l_rt_array.put (j, l_formal_type)
-							else
-									-- It is an expanded type
-								check
-									l_param_type_is_value_type: l_param_type.is_value_type
+							check attached l_array.item (j) as l_param_type then
+									-- Special case here. If we load another Eiffel assembly which
+									-- contains its own version of ANY, then the comparison will fail.
+									-- Since the code was generated so that it is either ANY or a value type,
+									-- then if it is not a value type, then we need to do as if it was our ANY.
+								if l_param_type.equals (l_any_type) or else not l_param_type.is_value_type then
+										-- It is a formal
+									create l_formal_type.make
+									l_formal_type.set_position (j)
+									l_rt_array.put (j, l_formal_type)
+								else
+										-- It is an expanded type
+									check
+										l_param_type_is_value_type: l_param_type.is_value_type
+									end
+									l_rt_array.put (j,
+										associated_runtime_type (interface_type (l_param_type)))
 								end
-								l_rt_array.put (j,
-									associated_runtime_type (interface_type (l_param_type)))
 							end
 							j := j + 1
 						end
@@ -2197,36 +2273,39 @@ feature {TYPE, INTERNAL} -- Implementation
 							l_type := implementation_type (l_type)
 							allm := l_type.get_members_binding_flags ({BINDING_FLAGS}.instance |
 								{BINDING_FLAGS}.public | {BINDING_FLAGS}.non_public)
-							check allm_attached: allm /= Void end
-								-- Let count the number of attributes to minimize the memory footprint.
-								-- We include the `private_type_field_name'.
-							from
-								nb := 0
-								j := allm.count
-								create Result.make (nb)
-							until
-								i = j
-							loop
-								if attached {FIELD_INFO} allm.item (i) as l_field_info then
-									nb := nb + 1
-								end
-								i := i + 1
-							end
-								-- Fill `Result' with attributes.
-							from
-								create Result.make (nb)
-								i := 0
-								j := allm.count
-							until
-								i = j
-							loop
-								if attached {FIELD_INFO} allm.item (i) as l_field_info then
-									l_cv_f_name := l_field_info.name
-									if l_cv_f_name /= Void and then not l_cv_f_name.is_equal (private_type_field_name) then
-										Result.extend (l_field_info)
+							if allm /= Void then
+									-- Let count the number of attributes to minimize the memory footprint.
+									-- We include the `private_type_field_name'.
+								from
+									nb := 0
+									j := allm.count
+									create Result.make (nb)
+								until
+									i = j
+								loop
+									if attached {FIELD_INFO} allm.item (i) as l_field_info then
+										nb := nb + 1
 									end
+									i := i + 1
 								end
-								i := i + 1
+									-- Fill `Result' with attributes.
+								from
+									create Result.make (nb)
+									i := 0
+									j := allm.count
+								until
+									i = j
+								loop
+									if attached {FIELD_INFO} allm.item (i) as l_field_info then
+										l_cv_f_name := l_field_info.name
+										if l_cv_f_name /= Void and then not l_cv_f_name.is_equal (private_type_field_name) then
+											Result.extend (l_field_info)
+										end
+									end
+									i := i + 1
+								end
+							else
+								create Result.make (0)
 							end
 						else
 							create Result.make (0)
@@ -2258,14 +2337,14 @@ feature {TYPE, INTERNAL} -- Implementation
 			if max_type_id > l_new_count then
 				l_new_count := (max_type_id).max (l_new_count * 2)
 				array_upper_cell.put (l_new_count)
-				id_to_eiffel_type.conservative_resize (0, l_new_count)
-				id_to_eiffel_implementation_type.conservative_resize (0, l_new_count)
-				id_to_storable_version.conservative_resize (0, l_new_count)
-				id_to_fields.conservative_resize (0, l_new_count)
-				id_to_fields_static_type.conservative_resize (0, l_new_count)
-				id_to_fields_abstract_type.conservative_resize (0, l_new_count)
-				id_to_fields_name.conservative_resize (0, l_new_count)
-				id_to_fields_transient.conservative_resize (0, l_new_count)
+				id_to_eiffel_type.conservative_resize_with_default (Void, 0, l_new_count)
+				id_to_eiffel_implementation_type.conservative_resize_with_default (Void, 0, l_new_count)
+				id_to_storable_version.conservative_resize_with_default (Void, 0, l_new_count)
+				id_to_fields.conservative_resize_with_default (Void, 0, l_new_count)
+				id_to_fields_static_type.conservative_resize_with_default (Void, 0, l_new_count)
+				id_to_fields_abstract_type.conservative_resize_with_default (Void, 0, l_new_count)
+				id_to_fields_name.conservative_resize_with_default (Void, 0, l_new_count)
+				id_to_fields_transient.conservative_resize_with_default (Void, 0, l_new_count)
 				persistent_field_counts.conservative_resize_with_default (-1, 0, l_new_count)
 			end
 		end
@@ -2273,7 +2352,7 @@ feature {TYPE, INTERNAL} -- Implementation
 	id_to_eiffel_type: ARRAY [detachable RT_CLASS_TYPE]
 			-- Mapping between dynamic type id and Eiffel types.
 		once
-			create Result.make (min_predefined_type, array_upper_cell.item)
+			create Result.make_filled (Void, min_predefined_type, array_upper_cell.item)
 		ensure
 			id_to_eiffel_type_not_void: Result /= Void
 		end
@@ -2281,7 +2360,7 @@ feature {TYPE, INTERNAL} -- Implementation
 	id_to_eiffel_implementation_type: ARRAY [detachable RT_CLASS_TYPE]
 			-- Mapping between dynamic type id and Eiffel implementation types.
 		once
-			create Result.make (min_predefined_type, array_upper_cell.item)
+			create Result.make_filled (Void, min_predefined_type, array_upper_cell.item)
 		ensure
 			id_to_eiffel_type_not_void: Result /= Void
 		end
@@ -2289,7 +2368,7 @@ feature {TYPE, INTERNAL} -- Implementation
 	id_to_storable_version: ARRAY [detachable IMMUTABLE_STRING_8]
 			-- Buffer for `storable_version_of_type' lookups index by type_id.
 		once
-			create Result.make (min_predefined_type, array_upper_cell.item)
+			create Result.make_filled (Void, min_predefined_type, array_upper_cell.item)
 		ensure
 			id_to_storable_version_not_void: Result /= Void
 		end
@@ -2297,7 +2376,7 @@ feature {TYPE, INTERNAL} -- Implementation
 	id_to_fields: ARRAY [detachable ARRAYED_LIST [FIELD_INFO]]
 			-- Buffer for `get_members' lookups index by type_id.
 		once
-			create Result.make (min_predefined_type, array_upper_cell.item)
+			create Result.make_filled (Void, min_predefined_type, array_upper_cell.item)
 		ensure
 			id_to_fields_not_void: Result /= Void
 		end
@@ -2305,7 +2384,7 @@ feature {TYPE, INTERNAL} -- Implementation
 	id_to_fields_abstract_type: ARRAY [detachable NATIVE_ARRAY [INTEGER]]
 			-- Buffer for `field_type_of_type' lookups index by type_id.
 		once
-			create Result.make (min_predefined_type, array_upper_cell.item)
+			create Result.make_filled (Void, min_predefined_type, array_upper_cell.item)
 		ensure
 			id_to_fields_abstract_type_not_void: Result /= Void
 		end
@@ -2313,7 +2392,7 @@ feature {TYPE, INTERNAL} -- Implementation
 	id_to_fields_static_type: ARRAY [detachable NATIVE_ARRAY [INTEGER]]
 			-- Buffer for `field_static_type_of_type' lookups index by type_id.
 		once
-			create Result.make (min_predefined_type, array_upper_cell.item)
+			create Result.make_filled (Void, min_predefined_type, array_upper_cell.item)
 		ensure
 			id_to_fields_static_type_not_void: Result /= Void
 		end
@@ -2321,7 +2400,7 @@ feature {TYPE, INTERNAL} -- Implementation
 	id_to_fields_name: ARRAY [detachable ARRAYED_LIST [STRING]]
 			-- Buffer for `field_name_of_type' lookups index by type_id.
 		once
-			create Result.make (min_predefined_type, array_upper_cell.item)
+			create Result.make_filled (Void, min_predefined_type, array_upper_cell.item)
 		ensure
 			id_to_fields_name_not_void: Result /= Void
 		end
@@ -2329,7 +2408,7 @@ feature {TYPE, INTERNAL} -- Implementation
 	id_to_fields_transient: ARRAY [detachable ARRAYED_LIST [BOOLEAN]]
 			-- Buffer for `is_field_transient_of_type' lookups index by type_id.
 		once
-			create Result.make (min_predefined_type, array_upper_cell.item)
+			create Result.make_filled (Void, min_predefined_type, array_upper_cell.item)
 		ensure
 			id_to_fields_name_not_void: Result /= Void
 		end
@@ -2392,8 +2471,8 @@ feature {TYPE, INTERNAL} -- Implementation
 						until
 							i = nb
 						loop
-							Result ?= allm.item (i)
-							if Result /= Void then
+							if attached {FIELD_INFO} allm.item (i) as r then
+								Result := r
 								l_cv_f_name := Result.name
 								if l_cv_f_name /= Void and then not l_cv_f_name.is_equal (private_type_field_name) then
 									i := nb - 1 -- Jump out of loop
@@ -2408,16 +2487,14 @@ feature {TYPE, INTERNAL} -- Implementation
 
 note
 	library:	"EiffelBase: Library of reusable components for Eiffel."
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
-
-
 
 end -- class INTERNAL
