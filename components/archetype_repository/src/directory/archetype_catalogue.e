@@ -98,15 +98,15 @@ feature -- Initialisation
 
 feature -- Access
 
-	archetype_index: attached DS_HASH_TABLE [ARCH_CAT_ARCHETYPE, STRING]
+	archetype_index: DS_HASH_TABLE [ARCH_CAT_ARCHETYPE, STRING]
 			-- index of archetype descriptors keyed by mixed-case archetype id. Used in rest of application
 
-	item_index: attached DS_HASH_TABLE [ARCH_CAT_ITEM, STRING]
+	item_index: DS_HASH_TABLE [ARCH_CAT_ITEM, STRING]
 			-- Index of archetype & class nodes, keyed by lower-case ontology concept. Used during construction of `directory'
 			-- For class nodes, this will be model_publisher-model_name-class_name, e.g. openehr-demographic-party.
 			-- For archetype nodes, this will be the archetype id.
 
-	matching_ids (a_regex: attached STRING; an_rm_type, an_rm_package: STRING): attached ARRAYED_SET[STRING]
+	matching_ids (a_regex: STRING; an_rm_type, an_rm_package: detachable STRING): ARRAYED_SET[STRING]
 			-- generate list of archetype ids that match the regex pattern and optional rm_type. If rm_type is supplied,
 			-- we assume that the regex itself does not contain an rm type
 		require
@@ -179,6 +179,8 @@ feature -- Commands
 			create item_index.make (0)
 			item_tree := Void
 			compile_attempt_count := 0
+			create last_stats_build_timestamp.make_from_epoch (0)
+			create last_populate_timestamp.make_from_epoch (0)
 		end
 
 	populate
@@ -251,7 +253,7 @@ feature -- Commands
 
 feature -- Modification
 
-	add_adhoc_item (full_path: attached STRING)
+	add_adhoc_item (full_path: STRING)
 			-- Add the archetype designated by `full_path' to the ad hoc repository, and graft it into `directory'.
 		require
 			path_valid: adhoc_path_valid (full_path)
@@ -287,7 +289,7 @@ feature -- Modification
 			end
 		end
 
-	last_adhoc_item: ARCH_CAT_ARCHETYPE
+	last_adhoc_item: detachable ARCH_CAT_ARCHETYPE
 			-- adhoc archetype added by last call to `add_adhoc_item'
 
 	update_archetype_id (aca: attached ARCH_CAT_ARCHETYPE)
@@ -312,27 +314,25 @@ feature -- Modification
 
 feature -- Traversal
 
-	do_all (enter_action, exit_action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ITEM]])
+	do_all (enter_action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ITEM]]; exit_action: detachable PROCEDURE [ANY, TUPLE [ARCH_CAT_ITEM]])
 			-- On all nodes in tree, execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
-		require
-			enter_action_attached: attached enter_action
 		do
 			do_subtree (item_tree, enter_action, exit_action)
 		end
 
-	do_archetypes (aci: ARCH_CAT_ITEM; action: attached PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]])
+	do_archetypes (aci: ARCH_CAT_ITEM; action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]])
 			-- Execute `action' on all archetypes found below `aci' in the tree
 		do
 			do_subtree (aci, agent do_if_archetype (?, action), Void)
 		end
 
-	do_all_archetypes (action: attached PROCEDURE [ANY, TUPLE [attached ARCH_CAT_ARCHETYPE]])
+	do_all_archetypes (action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]])
 			-- On all archetype nodes, execute `action'
 		do
 			do_subtree (item_tree, agent do_if_archetype (?, action), Void)
 		end
 
-	do_if_archetype (aci: ARCH_CAT_ITEM; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_CAT_ARCHETYPE]])
+	do_if_archetype (aci: ARCH_CAT_ITEM; action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]])
 			-- If `aci' is an archetype, perform `action' on it.
 		do
 			if attached {ARCH_CAT_ARCHETYPE} aci as aca then
@@ -340,7 +340,7 @@ feature -- Traversal
 			end
 		end
 
-	do_archetype_lineage (aca: ARCH_CAT_ARCHETYPE; action: attached PROCEDURE [ANY, TUPLE [attached ARCH_CAT_ARCHETYPE]])
+	do_archetype_lineage (aca: ARCH_CAT_ARCHETYPE; action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]])
 			-- On all archetype nodes from top to `aca', execute `action'
 		local
 			csr: ARCH_CAT_ARCHETYPE
@@ -403,9 +403,9 @@ feature -- Statistics
 			Result := compile_attempt_count = archetype_count
 		end
 
-	catalogue_metrics: HASH_TABLE [INTEGER, STRING]
+	catalogue_metrics: detachable HASH_TABLE [INTEGER, STRING]
 
-	terminology_bindings_statistics: HASH_TABLE [ARRAYED_LIST[STRING], STRING]
+	terminology_bindings_statistics: detachable HASH_TABLE [ARRAYED_LIST[STRING], STRING]
 			-- table of archetypes containing terminology bindings, keyed by terminology;
 			-- some archetypes have more than one binding, so could appear in more than one list
 
@@ -421,14 +421,14 @@ feature -- Statistics
 						catalogue_metrics.put (0, metric_name)
 					end
 			)
-			last_stats_build_timestamp := Void
+			create last_stats_build_timestamp.make_from_epoch (0)
 		end
 
 	build_detailed_statistics
 		require
 			can_build_statistics
 		do
-			if not attached last_stats_build_timestamp or else last_stats_build_timestamp < last_populate_timestamp then
+			if last_stats_build_timestamp < last_populate_timestamp then
 				reset_statistics
 				do_all_archetypes (agent gather_statistics)
 				catalogue_metrics.put (archetype_count, Total_archetype_count)
@@ -436,16 +436,14 @@ feature -- Statistics
 			end
 		end
 
-	stats: HASH_TABLE [ARCHETYPE_STATISTICAL_REPORT, STRING]
+	stats: detachable HASH_TABLE [ARCHETYPE_STATISTICAL_REPORT, STRING]
 			-- table of aggregated stats, keyed by BMM_SCHEMA id to which the contributing archetypes relate
 			-- (a single logical archetpe repository can contain archetypes of multiple RMs)
 
 feature {NONE} -- Implementation
 
-	do_subtree (node: ARCH_CAT_ITEM; enter_action, exit_action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ITEM]])
+	do_subtree (node: ARCH_CAT_ITEM; enter_action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ITEM]]; exit_action: detachable PROCEDURE [ANY, TUPLE [ARCH_CAT_ITEM]])
 			-- On `node', execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
-		require
-			enter_action_attached: enter_action /= Void
 		do
 			if attached node then
 				enter_action.call ([node])
@@ -461,7 +459,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	item_tree: ARCH_CAT_MODEL_NODE
+	item_tree: detachable ARCH_CAT_MODEL_NODE
 			-- The logical directory of archetypes, whose structure is derived directly from the
 			-- reference model. The structure is a list of top-level packages, each containing
 			-- an inheritance tree of first degree descendants of the LOCATABLE class.
