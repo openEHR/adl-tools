@@ -157,9 +157,7 @@ feature -- Visitor
 			end
 
 			-- add a context menu to rm_name col
-			if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Node_grid_col_rm_name) as gli then
- 	 			gli.pointer_button_press_actions.force_extend (agent arch_class_node_handler (gui_grid.last_row, ?, ?, ?))
-			end
+			gui_grid.add_last_row_pointer_button_press_actions (Node_grid_col_rm_name, agent arch_class_node_handler (gui_grid.last_row, ?, ?, ?))
 
 			-- card/occ column
 			create s.make_empty
@@ -784,9 +782,7 @@ feature -- Visitor
 						gui_grid.add_sub_row (gui_grid.last_row, type_spec)
 						ev_grid_rm_row_stack.extend (gui_grid.last_row)
 						gui_grid.set_last_row_label_col (Node_grid_col_rm_name, type_str, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (type_spec, rm_publisher))
-						if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Node_grid_col_rm_name) as gli then
-				 	 		gli.pointer_button_press_actions.force_extend (agent class_node_handler (gui_grid.last_row, ?, ?, ?))
-				 	 	end
+						gui_grid.add_last_row_pointer_button_press_actions (Node_grid_col_rm_name, agent arch_class_node_handler (gui_grid.last_row, ?, ?, ?))
 				 	else
 						ignore := True
 				 	end

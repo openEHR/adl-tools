@@ -81,7 +81,7 @@ feature -- Status Report
 			from i := 1 until i > a_parent_row.subrow_count or a_row_test.item ([a_parent_row.subrow (i)]) loop
 				i := i + 1
 			end
-			Result := i > a_parent_row.subrow_count
+			Result := i <= a_parent_row.subrow_count
 		end
 
 feature -- Modification
@@ -136,6 +136,20 @@ feature -- Modification
 				gli.set_tooltip (utf8_to_utf32 (a_tooltip))
 			end
 			last_row.set_item (a_col, gli)
+		end
+
+	add_last_row_pointer_button_press_actions (a_col: INTEGER; an_action: PROCEDURE [ANY, TUPLE])
+		do
+			if attached {EV_GRID_LABEL_ITEM} last_row.item (a_col) as gli then
+				gli.pointer_button_press_actions.force_extend (an_action)
+			end
+		end
+
+	add_last_row_select_actions (a_col: INTEGER; an_action: PROCEDURE [ANY, TUPLE])
+		do
+			if attached {EV_GRID_LABEL_ITEM} last_row.item (a_col) as gli then
+				gli.select_actions.force_extend (an_action)
+			end
 		end
 
 	update_last_row_label_col (a_col: INTEGER; a_text, a_tooltip: detachable STRING; a_fg_colour: detachable EV_COLOR; a_pixmap: detachable EV_PIXMAP)
@@ -211,7 +225,9 @@ feature -- Modification
 
 	hide_column (a_col: INTEGER)
 		do
-			ev_grid.hide_column (a_col)
+			if ev_grid.column_count >= a_col then
+				ev_grid.hide_column (a_col)
+			end
 		end
 
 	wipe_out

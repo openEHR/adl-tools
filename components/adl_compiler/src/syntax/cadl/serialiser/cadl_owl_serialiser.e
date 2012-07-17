@@ -34,8 +34,6 @@ feature -- Modification
 			-- start serialising an C_COMPLEX_OBJECT
 		local
 			node_concept_ref:STRING
-			l_primitive_obj: C_PRIMITIVE_OBJECT
-			l_constraint_ref: CONSTRAINT_REF
 			l_object_pattern_key, l_attr_pattern_key, l_prim_obj_value: STRING
 			l_obj_buffer: STRING
 		do
@@ -93,16 +91,10 @@ feature -- Modification
 					symbol(SYM_INTERSECTION_OF) + symbol(SYM_OPEN_PAREN) +
 					"%"rm:" + a_node.rm_type_name + "%"" + format_item(FMT_NEWLINE)
 				)
-				from
-					a_node.attributes.start
-				until
-					a_node.attributes.off
-				loop
-					l_primitive_obj ?= a_node.attributes.item.children.first
-					l_constraint_ref ?= a_node.attributes.item.children.first
-					if l_primitive_obj /= Void then
+				across a_node.attributes as attrs_csr loop
+					if attached {C_PRIMITIVE_OBJECT} attrs_csr.item.children.first as l_primitive_obj then
 						l_prim_obj_value := "%"" + l_primitive_obj.as_string + "%""
-					elseif l_constraint_ref /= Void then
+					elseif attached {CONSTRAINT_REF} attrs_csr.item.children.first as l_constraint_ref then
 						l_prim_obj_value := symbol(SYM_ALL_VALUES_FROM) + symbol(SYM_OPEN_PAREN) +
 											"%"this:" + l_constraint_ref.as_string + "%"" + symbol(SYM_CLOSE_PAREN)
 					else
@@ -110,10 +102,9 @@ feature -- Modification
 					end
 					l_obj_buffer.append(create_indent(3) +
 						symbol(SYM_RESTRICTION) + symbol(SYM_OPEN_PAREN) +
-						"%"rm:" + a_node.attributes.item.rm_attribute_name + "%"" + format_item(FMT_SPACE) +
+						"%"rm:" + attrs_csr.item.rm_attribute_name + "%"" + format_item(FMT_SPACE) +
 						l_prim_obj_value + symbol(SYM_CLOSE_PAREN) + format_item(FMT_NEWLINE)
 					)
-					a_node.attributes.forth
 				end
 
 				l_obj_buffer.append(create_indent(2) + symbol(SYM_CLOSE_PAREN) +

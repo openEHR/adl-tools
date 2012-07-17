@@ -50,14 +50,19 @@ feature -- Modification
 			parser.execute(a_dadl_str, 1)
 			if not parser.syntax_error then
 				dt_tree := parser.output
-				init_helper ?= dt_tree.as_object_from_string("IN_MEMORY_MESSAGE_DB_INITIALISER")
-				if init_helper.templates.has (a_locale_lang) then
-					templates.merge (init_helper.templates.item (a_locale_lang))
+				if attached {IN_MEMORY_MESSAGE_DB_INITIALISER} dt_tree.as_object_from_string ("IN_MEMORY_MESSAGE_DB_INITIALISER") as init_helper then
+					if init_helper.templates.has (a_locale_lang) then
+						templates.merge (init_helper.templates.item (a_locale_lang))
+					else
+						templates.merge (init_helper.templates.item (Default_message_language))
+					end
 				else
-					templates.merge (init_helper.templates.item (Default_message_language))
+					-- NOTE: the following message should remain as English text, since it indicates that the main message DB has failed
+					io.put_string ("Message database failure: could not convert DT structure to object (check IN_MEMORY_MESSAGE_DB)%N")
 				end
 			else
-				io.put_string ("Message database failure: " + parser.error_text + " (check ADL_APPLICATION)%N")
+				-- NOTE: the following message should remain as English text, since it indicates that the main message DB has failed
+				io.put_string ("Message database failure: " + parser.error_text + " (check IN_MEMORY_MESSAGE_DB)%N")
 			end
 		end
 
