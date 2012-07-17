@@ -1409,7 +1409,9 @@ feature {NONE} -- Build commands
 		local
 			info_dialog: EV_INFORMATION_DIALOG
 		do
-			set_adl_version_for_flat_output (arch_output_version_combo.selected_text.as_string_8)
+			if arch_output_version_combo.has_selection then
+				set_adl_version_for_flat_output (arch_output_version_combo.selected_text.as_string_8)
+			end
 
 			-- update archetype tool
 			if archetype_tools.has_tools then
