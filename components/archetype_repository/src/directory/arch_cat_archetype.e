@@ -334,8 +334,9 @@ feature -- Access (semantic)
 		end
 
 	qualified_key: STRING
+			-- lower-case form of `qualified_name' for safe matching
 		do
-			Result := qualified_name.as_upper
+			Result := qualified_name.as_lower
 		end
 
 	ontological_parent_name: STRING

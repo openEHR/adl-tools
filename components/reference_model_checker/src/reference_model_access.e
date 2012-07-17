@@ -149,7 +149,7 @@ feature {NONE} -- Implementation
 			-- this is detected and used to populate `top_level_schemas'
 
 	schemas_by_rm_closure: attached HASH_TABLE [BMM_SCHEMA, STRING]
-			-- schemas keyed by qualified package name, i.e. model_publisher '-' package_name, e.g. "openehr-ehr";
+			-- schemas keyed by lower-case qualified package name, i.e. model_publisher '-' package_name, e.g. "openehr-ehr";
 			-- this matches the qualifide package name part of an ARCHETYPE_ID
 
 	load_schema_descriptors

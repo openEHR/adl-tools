@@ -182,17 +182,18 @@ feature -- Conversion
 		end
 
 	publisher_qualified_rm_closure_key (a_rm_publisher, a_rm_closure_name: attached STRING): attached STRING
-			-- generate a lower-case standard model-package name string, e.g. "openehr-ehr" for use in finding RM schemas
-			-- uses `package_base_name' to obtain terminal form of package name
+			-- lower-case form of `publisher_qualified_rm_closure_name'
 		require
 			Model_publisher_valid: not a_rm_publisher.is_empty
 			Closure_name_valid: not a_rm_closure_name.is_empty
 		do
 			Result := publisher_qualified_rm_closure_name (a_rm_publisher, a_rm_closure_name).as_lower
+		ensure
+			Is_lower: Result.same_string (Result.as_lower)
 		end
 
 	publisher_qualified_rm_closure_name (a_rm_publisher, a_rm_closure_name: attached STRING): attached STRING
-			-- generate a lower-case standard model-package name string, e.g. "openehr-ehr" for use in finding RM schemas
+			-- mixed-case standard model-package name string, e.g. "openEHR-EHR" for UI display
 			-- uses `package_base_name' to obtain terminal form of package name
 		require
 			Model_publisher_valid: not a_rm_publisher.is_empty

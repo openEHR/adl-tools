@@ -99,11 +99,11 @@ feature -- Initialisation
 feature -- Access
 
 	archetype_index: attached DS_HASH_TABLE [ARCH_CAT_ARCHETYPE, STRING]
-			-- index of archetype descriptors. Used in rest of application
+			-- index of archetype descriptors keyed by mixed-case archetype id. Used in rest of application
 
 	item_index: attached DS_HASH_TABLE [ARCH_CAT_ITEM, STRING]
-			-- Index of archetype & class nodes, keyed by ontology concept. Used during construction of `directory'
-			-- For class nodes, this will be model_publisher-model_name-class_name, e.g. OPENEHR-DEMOGRAPHIC-PARTY.
+			-- Index of archetype & class nodes, keyed by lower-case ontology concept. Used during construction of `directory'
+			-- For class nodes, this will be model_publisher-model_name-class_name, e.g. openehr-demographic-party.
 			-- For archetype nodes, this will be the archetype id.
 
 	matching_ids (a_regex: attached STRING; an_rm_type, an_rm_package: STRING): attached ARRAYED_SET[STRING]
@@ -167,7 +167,7 @@ feature -- Status Report
 	has_item_with_id (an_id: STRING): BOOLEAN
 			-- True if `an_id' exists in catalogue
 		do
-			Result := item_index.has (an_id.as_upper)
+			Result := item_index.has (an_id.as_lower)
 		end
 
 feature -- Commands
@@ -209,26 +209,25 @@ feature -- Commands
 
 				from i := 0 until i > 0 and added_during_pass = 0 loop
 					added_during_pass := 0
-					from archs.start until archs.off loop
-						if status_list [archs.index] >= 0 then
-							parent_key := archs.item.ontological_parent_name.as_upper
+					across archs as archs_csr loop
+						if status_list [archs_csr.target_index] >= 0 then
+							parent_key := archs_csr.item.ontological_parent_name.as_lower
 							if item_index.has (parent_key) then
-								child_key := archs.item.qualified_key
+								child_key := archs_csr.item.qualified_key
 								if not item_index.has (child_key) then
-									item_index.item (parent_key).put_child (archs.item)
-									item_index.force (archs.item, child_key)
-									archetype_index.force (archs.item, archs.item.qualified_name)
+									item_index.item (parent_key).put_child (archs_csr.item)
+									item_index.force (archs_csr.item, child_key)
+									archetype_index.force (archs_csr.item, archs_csr.item.qualified_name)
 									added_during_pass := added_during_pass + 1
-									status_list [archs.index] := -1
+									status_list [archs_csr.target_index] := -1
 								else
-									post_error (Current, "populate", "arch_dir_dup_archetype", <<archs.item.full_path>>)
-									status_list [archs.index] := -2
+									post_error (Current, "populate", "arch_dir_dup_archetype", <<archs_csr.item.full_path>>)
+									status_list [archs_csr.target_index] := -2
 								end
 							else
-								status_list [archs.index] := status_list [archs.index] + 1
+								status_list [archs_csr.target_index] := status_list [archs_csr.target_index] + 1
 							end
 						end
-						archs.forth
 					end
 					i := i + 1
 				end
@@ -267,7 +266,7 @@ feature -- Modification
 			source_repositories.adhoc_source_repository.add_item (full_path)
 			aca := source_repositories.adhoc_source_repository.item (full_path)
 			if source_repositories.adhoc_source_repository.has_path (full_path) then
-				parent_key := aca.ontological_parent_name.as_upper
+				parent_key := aca.ontological_parent_name.as_lower
 				if item_index.has (parent_key) then
 					child_key := aca.qualified_key
 					if not item_index.has (child_key) then
@@ -295,14 +294,14 @@ feature -- Modification
 			-- move `ara' in tree according to its current and old ids
 		require
 			old_id_valid: attached aca.old_id and then archetype_index.has (aca.old_id.as_string) and then archetype_index.item (aca.old_id.as_string) = aca
-			new_id_valid: not archetype_index.has(aca.id.as_string)
-			ontological_parent_exists: item_index.has(aca.ontological_parent_name)
+			new_id_valid: not archetype_index.has (aca.id.as_string)
+			ontological_parent_exists: item_index.has (aca.ontological_parent_name.as_lower)
 		do
 			archetype_index.remove (aca.old_id.as_string)
 			archetype_index.force (aca, aca.id.as_string)
-			item_index.remove (aca.old_id.as_string)
-			item_index.force (aca, aca.id.as_string)
-			aca.parent.remove_child(aca)
+			item_index.remove (aca.old_id.as_string.as_lower)
+			item_index.force (aca, aca.id.as_string.as_lower)
+			aca.parent.remove_child (aca)
 			item_index.item (aca.ontological_parent_name).put_child (aca)
 			aca.clear_old_ontological_parent_name
 		ensure
@@ -482,7 +481,7 @@ feature {NONE} -- Implementation
 		local
 			rm_closure_root_pkg: BMM_PACKAGE_DEFINITION
 			parent_model_node, model_node: ARCH_CAT_MODEL_NODE
-			rm_closure_name, qualified_rm_closure_name: STRING
+			rm_closure_name, qualified_rm_closure_key: STRING
 			supp_list, supp_list_copy: ARRAYED_SET[STRING]
 			supp_class_list: ARRAYED_LIST [BMM_CLASS_DEFINITION]
 			root_classes: ARRAYED_SET [BMM_CLASS_DEFINITION]
@@ -498,20 +497,20 @@ end
 				bmm_schema := rm_schemas_access.valid_top_level_schemas.item_for_iteration
 				from bmm_schema.archetype_rm_closure_packages.start until bmm_schema.archetype_rm_closure_packages.off loop
 					rm_closure_name := package_base_name (bmm_schema.archetype_rm_closure_packages.item)
-					qualified_rm_closure_name := publisher_qualified_rm_closure_key (bmm_schema.rm_publisher, rm_closure_name)
+					qualified_rm_closure_key := publisher_qualified_rm_closure_key (bmm_schema.rm_publisher, rm_closure_name)
 					rm_closure_root_pkg := bmm_schema.package_at_path (bmm_schema.archetype_rm_closure_packages.item)
 
 					-- create new model node if not already in existence
-					if not parent_model_node.has_child_with_qualified_name (qualified_rm_closure_name) then
+					if not parent_model_node.has_child_with_qualified_key (qualified_rm_closure_key) then
 						create model_node.make_rm_closure (rm_closure_name, bmm_schema)
 						parent_model_node.put_child (model_node)
 debug ("rm_ontology")
 	io.put_string ("%TClosure: " + rm_closure_name + "%N")
 end
 					else
-						model_node ?= parent_model_node.child_with_qualified_name (qualified_rm_closure_name)
+						model_node ?= parent_model_node.child_with_qualified_key (qualified_rm_closure_key)
 debug ("rm_ontology")
-	io.put_string ("%TClosure: " + qualified_rm_closure_name + "%N")
+	io.put_string ("%TClosure: " + qualified_rm_closure_key + "%N")
 end
 					end
 
@@ -602,7 +601,7 @@ end
 		do
 			item_tree := item_tree_prototype.item.deep_twin
 			create item_index.make (0)
-			do_all (agent (ari: attached ARCH_CAT_ITEM) do item_index.force (ari, ari.qualified_name.as_upper) end, Void)
+			do_all (agent (ari: attached ARCH_CAT_ITEM) do item_index.force (ari, ari.qualified_key) end, Void)
 		end
 
 	schema_load_counter: INTEGER

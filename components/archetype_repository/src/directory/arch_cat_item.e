@@ -73,8 +73,10 @@ feature -- Access
 		end
 
 	qualified_key: attached STRING
-			-- uppercase form of qualified_name, for safe matching
+			-- lower-case form of `qualified_name', for safe matching
 		deferred
+		ensure
+			Is_lower: Result.same_string (Result.as_lower)
 		end
 
 	name: STRING
@@ -106,11 +108,11 @@ feature -- Access
  			end
 		end
 
-	child_with_qualified_name (a_name: attached STRING): like child_type
+	child_with_qualified_key (a_key: attached STRING): like child_type
 		require
-			has_child_with_qualified_name (a_name)
+			has_child_with_qualified_key (a_key)
 		do
-			from children.start until children.off or children.item.qualified_name.same_string (a_name) loop
+			from children.start until children.off or children.item.qualified_key.same_string (a_key) loop
 				children.forth
 			end
 			Result := children.item
@@ -149,14 +151,16 @@ feature -- Status Report
 			end
 		end
 
-	has_child_with_qualified_name (a_name: attached STRING): BOOLEAN
+	has_child_with_qualified_key (a_key: attached STRING): BOOLEAN
+		require
+			Lower_case_key: a_key.as_lower.same_string (a_key)
 		do
 			if children /= Void then
 				Result := children.there_exists (
-					agent (a_child: like child_type; s: STRING):BOOLEAN
+					agent (a_child: like child_type; key: STRING):BOOLEAN
 						do
-							Result := a_child.qualified_key.same_string (s)
-						end (?, a_name.as_upper)
+							Result := a_child.qualified_key.same_string (key)
+						end (?, a_key)
 				)
 			end
 		end
@@ -229,13 +233,13 @@ feature -- Comparison
 
 feature {ARCH_CAT_ITEM, ARCHETYPE_CATALOGUE} -- Implementation
 
-	children: SORTED_TWO_WAY_LIST [like child_type]
+	children: detachable SORTED_TWO_WAY_LIST [like child_type]
 			-- list of child nodes
 
-	child_type: ARCH_CAT_ITEM
+	child_type: detachable ARCH_CAT_ITEM
 			-- type of allowable child node
 
-	parent: ARCH_CAT_ITEM
+	parent: detachable ARCH_CAT_ITEM
 			-- parent node
 
 	subtree_artefact_counts: HASH_TABLE [INTEGER, INTEGER]

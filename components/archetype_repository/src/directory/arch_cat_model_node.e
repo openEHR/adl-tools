@@ -49,7 +49,7 @@ feature -- Initialisation
 			make
 			bmm_schema := a_bmm_schema
 			qualified_name := publisher_qualified_rm_closure_name (bmm_schema.rm_publisher, an_rm_closure_name)
-			qualified_key := qualified_name.as_upper
+			qualified_key := qualified_name.as_lower
 			name := an_rm_closure_name
 			group_name := "model_group"
 			is_rm_closure := True
@@ -68,7 +68,7 @@ feature -- Initialisation
 			class_definition := a_class_desc
 			bmm_schema := class_definition.bmm_schema
 			qualified_name := bmm_schema.rm_publisher + section_separator.out + an_rm_closure_name + section_separator.out + class_definition.name
-			qualified_key := qualified_name.as_upper
+			qualified_key := qualified_name.as_lower
 			name := class_definition.name
 			group_name := class_definition.type_category
 		ensure
