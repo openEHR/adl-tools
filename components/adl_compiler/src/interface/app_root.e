@@ -48,6 +48,7 @@ feature -- Initialisation
 			dummy_error_accumulator: ERROR_ACCUMULATOR
 			strx: STRING
 			term_init: XML_TERMINOLOGY_SERVICE_POPULATOR
+			dead_profiles: ARRAYED_LIST [STRING]
 		once
 			-- see DT_TYPES note above; a hack needed to make string name -> type_id work for class names
 			-- that clash with Eiffel type names
@@ -89,9 +90,26 @@ feature -- Initialisation
 
 				-- adjust for repository profiles being out of sync with current profile setting (e.g. due to
 				-- manual editing of .cfg file)
-				if not repository_profiles.is_empty and not repository_profiles.has_current_profile then
-					repository_profiles.start
-					set_current_profile (repository_profiles.key_for_iteration)
+				-- first of all check for broken profiles and get rid of them
+				create dead_profiles.make (0)
+				from repository_profiles.start until repository_profiles.off loop
+					if not is_profile_valid (repository_profiles.key_for_iteration) then
+						dead_profiles.extend (repository_profiles.key_for_iteration)
+					end
+					repository_profiles.forth
+				end
+				across dead_profiles as profs_csr loop
+					post_error (Current, "current_arch_cat", "remove_profile", <<invalid_profile_reason (profs_csr.item)>>)
+					repository_profiles.remove_profile (profs_csr.item)
+				end
+
+				-- now choose a profile to start with
+				if not repository_profiles.is_empty then
+					if not has_current_profile then
+						repository_profiles.start
+						set_current_profile (repository_profiles.key_for_iteration)
+					end
+					use_current_profile (False)
 				end
 
 				-- tell the user a few useful things

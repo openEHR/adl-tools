@@ -57,6 +57,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_GUI_AGENTS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -68,18 +73,15 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (a_select_archetype_from_gui_data_agent: like select_archetype_from_gui_data;
-			an_update_gui_with_compiler_error_counts_agent: like update_gui_with_compiler_error_counts)
+	make (an_update_gui_with_compiler_error_counts_agent: like update_gui_with_compiler_error_counts)
 			-- Create to control `a_main_window.compiler_output_grid'.
 		do
-			select_archetype_from_gui_data := a_select_archetype_from_gui_data_agent
 			update_gui_with_compiler_error_counts := an_update_gui_with_compiler_error_counts_agent
 			create categories.make_filled (Void, Err_type_valid, Err_type_warning)
 			create ev_grid.make
 			ev_grid.enable_tree
 			ev_grid.disable_row_height_fixed
 			ev_grid.hide_tree_node_connectors
-			ev_grid.add_key_event (key_enter, agent select_node_in_archetype_tree_view)
 		end
 
 feature -- Commands
@@ -147,10 +149,11 @@ feature -- Commands
 				gli.set_pixmap (get_icon_pixmap ("archetype/" + ara.group_name))
 
 				gli.set_tooltip (utf8_to_utf32 (ara.errors.as_string))
-				gli.pointer_double_press_actions.force_extend (agent select_node_in_archetype_tree_view)
+				gli.pointer_button_press_actions.force_extend (agent archetype_node_handler (row, ?, ?, ?))
+
 				row.set_item (col_location, gli)
 				row.expand
-				gli.enable_select
+	--			gli.enable_select
 
 				if gli.is_displayed then
 					gli.ensure_visible
@@ -214,11 +217,7 @@ feature -- Commands
 			create_category_element.call ([statistics_element, "Archetypes with slots", current_arch_cat.catalogue_metrics.item (client_archetype_count)])
 			create_category_element.call ([statistics_element, "Archetypes used by others", current_arch_cat.catalogue_metrics.item (supplier_archetype_count)])
 
-			from
-				err_type := categories.lower
-			until
-				err_type = categories.upper
-			loop
+			from err_type := categories.lower until err_type = categories.upper loop
 				err_type := err_type + 1
 				category := err_type_names [err_type]
 				create_category_element.call ([statistics_element, category, count_for_category (err_type)])
@@ -286,20 +285,8 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	select_archetype_from_gui_data: PROCEDURE [ANY, TUPLE [EV_ANY]]
-			-- agent provided by upper level of GUI for doing something
-			-- when an archetype in this tool is selected
-
 	update_gui_with_compiler_error_counts: PROCEDURE [ANY, TUPLE [NATURAL, NATURAL, NATURAL]]
 			-- agent provided by upper GUI for providing feedback about current error counts
-
-	select_node_in_archetype_tree_view
-			-- Select the archetype represented by `selected_cell' in the main window's explorer tree.
-		do
-			if attached ev_grid.selected_cell and then ev_grid.selected_cell.column.index = Col_location then
-				select_archetype_from_gui_data.call ([ev_grid.selected_cell.row])
-			end
-		end
 
 	update_errors_tab_label
 			-- On the Errors tab, indicate parse errors, validity errors and warnings.
@@ -395,6 +382,42 @@ feature {NONE} -- Implementation
 
 	categories: attached ARRAY [EV_GRID_ROW]
 			-- Rows containing category grouper in column 1.
+
+	archetype_node_handler (ev_ti: EV_GRID_ROW; x,y, button: INTEGER)
+			-- creates the context menu for a right click action for an ARCH_REP_ARCHETYPE node
+		local
+			menu: EV_MENU
+			an_mi: EV_MENU_ITEM
+		do
+			if button = {EV_POINTER_CONSTANTS}.right and attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
+				create menu
+				create an_mi.make_with_text_and_action (get_msg ("display_in_active_tab", Void), agent display_context_selected_archetype_in_active_tool (ev_ti))
+				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool"))
+		    	menu.extend (an_mi)
+
+				create an_mi.make_with_text_and_action (get_msg ("display_in_new_tab", Void), agent display_context_selected_archetype_in_new_tool (ev_ti))
+				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
+				menu.extend (an_mi)
+
+				menu.show
+			end
+		end
+
+	display_context_selected_archetype_in_active_tool (ev_ti: EV_GRID_ROW)
+		do
+			ev_ti.enable_select
+			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
+				gui_agents.select_archetype_agent.call ([aca])
+			end
+		end
+
+	display_context_selected_archetype_in_new_tool (ev_ti: EV_GRID_ROW)
+		do
+			ev_ti.enable_select
+			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
+				gui_agents.select_archetype_in_new_tool_agent.call ([aca])
+			end
+		end
 
 end
 

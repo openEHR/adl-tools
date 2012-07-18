@@ -54,7 +54,7 @@ feature -- Access
 	path: attached STRING
 			-- full path of this package from root
 		local
-			csr: BMM_PACKAGE_DEFINITION
+			csr: detachable BMM_PACKAGE_DEFINITION
 		do
 			create Result.make(0)
 			from csr := Current until csr = Void loop

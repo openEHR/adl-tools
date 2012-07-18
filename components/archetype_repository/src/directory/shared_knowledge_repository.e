@@ -26,10 +26,10 @@ inherit
 
 feature -- Access
 
-	current_arch_cat: attached ARCHETYPE_CATALOGUE
+	current_arch_cat: ARCHETYPE_CATALOGUE
 			-- application-wide archetype directory access
 		require
-			has_current_profile
+			is_current_profile_valid
 		do
 			if not arch_cats.has (repository_profiles.current_profile_name) then
 				use_current_profile (False)
@@ -39,28 +39,20 @@ feature -- Access
 
 	use_current_profile (refresh: BOOLEAN)
 			-- switch to current profile; refresh flag forces archetype in memory directory to be refreshed from source repository
+		require
+			is_current_profile_valid
 		local
 			new_cat: ARCHETYPE_CATALOGUE
 		do
 			init_gen_dirs_from_current_profile
 			if not arch_cats.has (repository_profiles.current_profile_name) or else refresh then
 				create new_cat.make
-				if directory_exists (repository_profiles.current_reference_repository_path) then
-					source_repositories.set_reference_repository (repository_profiles.current_reference_repository_path)
-					if not repository_profiles.current_work_repository_path.is_empty then
-						if source_repositories.valid_working_repository_path (repository_profiles.current_work_repository_path) then
-							source_repositories.set_work_repository (repository_profiles.current_work_repository_path)
-						else
-							post_error (Current, "switch_to_profile", "work_repo_not_found", <<repository_profiles.current_work_repository_path>>)
-						end
-					else
-						source_repositories.remove_work_repository
-					end
-					new_cat.populate
-					arch_cats.force (new_cat, repository_profiles.current_profile_name) -- replace original copy if it was there
-				else
-					post_error (Current, "switch_to_profile", "ref_repo_not_found", <<repository_profiles.current_reference_repository_path>>)
+				source_repositories.set_reference_repository (repository_profiles.current_reference_repository_path)
+				if repository_profiles.current_profile.has_work_repository then
+					source_repositories.set_work_repository (repository_profiles.current_work_repository_path)
 				end
+				new_cat.populate
+				arch_cats.force (new_cat, repository_profiles.current_profile_name) -- replace original copy if it was there
 			end
 		end
 
@@ -71,10 +63,45 @@ feature -- Status Report
 			Result := repository_profiles.has_current_profile
 		end
 
+	is_profile_valid (a_profile_name: STRING): BOOLEAN
+			-- check validity of profile directories etc - can it be created and loaded?
+		do
+			Result := repository_profiles.has_profile (a_profile_name) and
+				directory_exists (repository_profiles.profile (a_profile_name).reference_repository) and
+				(repository_profiles.profile (a_profile_name).has_work_repository implies
+					directory_exists (repository_profiles.profile (a_profile_name).work_repository))
+
+			-- TODO: potentially other checks as well
+		end
+
+	is_current_profile_valid: BOOLEAN
+			-- check validity of profile directories etc - can it be created and loaded?
+		require
+			has_current_profile
+		do
+			Result := is_profile_valid (repository_profiles.current_profile_name)
+		end
+
+	invalid_profile_reason (a_profile_name: STRING): STRING
+			-- generate reason why profile is not valid
+		do
+			create Result.make_empty
+			if not repository_profiles.has_profile (a_profile_name) then
+				Result := get_msg ("invalid_profile", <<a_profile_name>>)
+			elseif not directory_exists (repository_profiles.profile (a_profile_name).reference_repository) then
+				Result := get_msg ("ref_repo_not_found", <<repository_profiles.profile (a_profile_name).reference_repository>>)
+			elseif repository_profiles.profile (a_profile_name).has_work_repository and then
+				not directory_exists (repository_profiles.profile (a_profile_name).work_repository)
+			then
+				Result := get_msg ("work_repo_not_found", <<repository_profiles.profile (a_profile_name).work_repository>>)
+			end
+		end
+
 feature {NONE} -- Implementation
 
-	arch_cats: attached HASH_TABLE [ARCHETYPE_CATALOGUE, STRING]
-			-- hash of all archetype directories used so far in the current session
+	arch_cats: HASH_TABLE [ARCHETYPE_CATALOGUE, STRING]
+			-- hash of all archetype directories used so far in the current session;
+			-- lazy populated
 		once
 			create Result.make(0)
 		end

@@ -67,7 +67,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	current_profile_name: STRING
+	current_profile_name: detachable STRING
 			-- name of profile that is currently in use
 
 	current_profile: REPOSITORY_PROFILE
@@ -85,7 +85,7 @@ feature -- Access
 		require
 			has_profile (a_profile_name)
 		do
-			Result := profiles.item(a_profile_name)
+			Result := profiles.item (a_profile_name)
 		end
 
 	current_reference_repository_path: attached STRING
@@ -101,7 +101,7 @@ feature -- Access
 	current_work_repository_path: attached STRING
 			-- path of root of ADL file tree
 		do
-			if has_current_profile and current_profile.has_work_repository then
+			if has_current_profile and then current_profile.has_work_repository then
 				Result := current_profile.work_repository
 			else
 				create Result.make_empty
@@ -126,7 +126,7 @@ feature -- Status Report
 
 	has_current_profile: BOOLEAN
 		do
-			Result := current_profile_name /= Void and then not current_profile_name.is_empty
+			Result := attached current_profile_name and then not current_profile_name.is_empty
 		end
 
 	has_profile (a_profile_name: attached STRING): BOOLEAN
@@ -188,8 +188,8 @@ feature -- Modification
 		require
 			has_profile (a_profile_name)
 		do
-			profiles.remove(a_profile_name)
-			if is_empty then
+			profiles.remove (a_profile_name)
+			if is_empty or a_profile_name.same_string (current_profile_name) then
 				clear_current_profile
 			end
 		end

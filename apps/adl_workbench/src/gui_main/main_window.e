@@ -1210,7 +1210,7 @@ feature -- Error Tool
 
 	error_tool: GUI_ERROR_TOOL
 		once
-			create Result.make (agent select_archetype_from_gui_node, agent error_tool_title_update)
+			create Result.make (agent error_tool_title_update)
 		end
 
 	error_docking_pane: SD_CONTENT

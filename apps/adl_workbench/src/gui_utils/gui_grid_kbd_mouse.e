@@ -286,34 +286,44 @@ feature -- Commands
 		end
 
 	collapse_one_level (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+		local
+			i: INTEGER
 		do
-			create ev_grid_row_list.make (0)
-			if row (1).is_expandable then
-				get_grid_row_collapsable_nodes (row (1))
-			end
-			from ev_grid_row_list.start until ev_grid_row_list.off loop
-				if not attached test or else test.item ([ev_grid_row_list.item]) then
-					ev_grid_row_list.item.collapse_actions.block
-					ev_grid_row_list.item.collapse
-					ev_grid_row_list.item.collapse_actions.resume
+			from i := 1 until i > row_count loop
+				create ev_grid_row_list.make (0)
+				if row (i).is_expandable then
+					get_grid_row_collapsable_nodes (row (i))
 				end
-				ev_grid_row_list.forth
+				from ev_grid_row_list.start until ev_grid_row_list.off loop
+					if not attached test or else test.item ([ev_grid_row_list.item]) then
+						ev_grid_row_list.item.collapse_actions.block
+						ev_grid_row_list.item.collapse
+						ev_grid_row_list.item.collapse_actions.resume
+					end
+					ev_grid_row_list.forth
+				end
+				i := i + row (i).subrow_count_recursive + 1
 			end
 		end
 
 	expand_one_level (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+		local
+			i: INTEGER
 		do
-			create ev_grid_row_list.make (0)
-			if row (1).is_expandable then
-				get_grid_row_expandable_nodes (row (1))
-			end
-			from ev_grid_row_list.start until ev_grid_row_list.off loop
-				if not attached test or else test.item ([ev_grid_row_list.item]) then
-					ev_grid_row_list.item.expand_actions.block
-					ev_grid_row_list.item.expand
-					ev_grid_row_list.item.expand_actions.resume
+			from i := 1 until i > row_count loop
+				create ev_grid_row_list.make (0)
+				if row (i).is_expandable then
+					get_grid_row_expandable_nodes (row (i))
 				end
-				ev_grid_row_list.forth
+				from ev_grid_row_list.start until ev_grid_row_list.off loop
+					if not attached test or else test.item ([ev_grid_row_list.item]) then
+						ev_grid_row_list.item.expand_actions.block
+						ev_grid_row_list.item.expand
+						ev_grid_row_list.item.expand_actions.resume
+					end
+					ev_grid_row_list.forth
+				end
+				i := i + row (i).subrow_count_recursive + 1
 			end
 		end
 

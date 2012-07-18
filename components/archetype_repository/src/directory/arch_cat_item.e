@@ -279,7 +279,7 @@ feature {ARCH_CAT_ITEM, ARCHETYPE_CATALOGUE} -- Implementation
 			Result := subtree_artefact_counts_cache
 		end
 
-	subtree_artefact_counts_cache: HASH_TABLE [INTEGER, INTEGER]
+	subtree_artefact_counts_cache: detachable HASH_TABLE [INTEGER, INTEGER]
 			-- stored counter of archetype child objects, keyed by artefact type,
 			-- i.e. archetype & template counts stored separately
 

@@ -207,7 +207,7 @@ feature -- Application Switches
 		end
 
 	init_gen_dirs_from_current_profile
-			-- create compiler source and flat generated files areas for current profile
+			-- create compiler source and flat generated file areas for current profile
 		do
 			compiler_gen_source_directory.copy (file_system.pathname (file_system.pathname (compiler_gen_directory, repository_profiles.current_profile_name), "source"))
 			if not file_system.directory_exists (compiler_gen_source_directory) then

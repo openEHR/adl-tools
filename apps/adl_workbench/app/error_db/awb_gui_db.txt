@@ -42,6 +42,9 @@ templates = <
 		["remove_mi"] = <"Remove row">
 
 		-- SHARED_KNOWLEDGE_REPOSITORY, REPOSITORY_DIALOG
+		["remove_profile"] = <"Removing invalid profile (error: $1)">
+		["profile_error"] = <"Profile error: $1">
+		["invalid_profile"] = <"Profile $1 not known in profiles">
 		["ref_repo_not_found"] = <"Reference Repository $1 does not exist or not readable">
 		["work_repo_not_found"] = <"Work Repository $1 does not exist or not readable">
 		["work_repo_not_valid"] = <"Work Repository $1 is the same as or a child of the reference repository $2">

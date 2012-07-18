@@ -31,14 +31,14 @@ inherit
 
 feature -- Access
 
-	source: ANY
+	source: detachable ANY
 			-- source object to which this tool is targetted
 
 	ev_root_container: EV_CONTAINER
 		deferred
 		end
 
-	last_populate_timestamp: attached DATE_TIME
+	last_populate_timestamp: detachable DATE_TIME
 			-- timestamp of last populate or repopulate
 
 	tool_unique_id: INTEGER
@@ -64,7 +64,7 @@ feature -- Access
 
 feature -- Status Report
 
-	can_populate (a_source: attached like source): BOOLEAN
+	can_populate (a_source: like source): BOOLEAN
 		do
 			Result := True
 		end
@@ -111,7 +111,7 @@ feature -- Commands
 			not is_populated
 		end
 
-	populate (a_source: attached like source)
+	populate (a_source: like source)
 			-- populate the control by creating it from scratch
 		require
 			can_populate (a_source)
@@ -206,10 +206,10 @@ feature {GUI_TOOL} -- Implementation
 			end
 		end
 
-	parent_tool: GUI_TOOL
+	parent_tool: detachable GUI_TOOL
 			-- reference to parent tool
 
-	sub_tools: LIST [GUI_TOOL]
+	sub_tools: detachable LIST [GUI_TOOL]
 			-- list of subtools of this tool
 
 	add_sub_tool (a_tool: GUI_TOOL)
