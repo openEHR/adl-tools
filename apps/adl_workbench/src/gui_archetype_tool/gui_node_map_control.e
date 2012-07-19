@@ -155,7 +155,7 @@ feature -- Status Report
 	is_expanded: BOOLEAN
 			-- True if last whole tree operation was expand
 
-	can_populate (a_source: attached like source): BOOLEAN
+	can_populate (a_source: like source): BOOLEAN
 		do
 			Result := a_source.is_valid
 		end
@@ -359,6 +359,20 @@ feature {NONE} -- Implementation
 						do
 							if attached {C_OBJECT} a_row.data as co then
 								Result := rm_schema.is_descendant_of (co.rm_type_name, visualise_descendants_class)
+							end
+						end
+				)
+
+				-- add 'power expander' action to leaf nodes
+				gui_treeview_control.ev_tree_do_all (
+					agent (a_row: EV_GRID_ROW)
+						do
+							if a_row.is_expandable and not a_row.is_expanded then
+								if attached {C_OBJECT} a_row.data as co and then
+									rm_schema.is_descendant_of (co.rm_type_name, visualise_descendants_class)
+								then
+									a_row.expand_actions.force_extend (agent (gui_grid.ev_grid).expand_tree (a_row, Void))
+								end
 							end
 						end
 				)

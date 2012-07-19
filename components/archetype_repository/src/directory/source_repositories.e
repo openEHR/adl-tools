@@ -8,6 +8,7 @@ note
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -47,27 +48,27 @@ feature -- Initialisation
 
 feature -- Access
 
-	reference_repository: attached ARCHETYPE_INDEXED_REPOSITORY_I
+	reference_repository: detachable ARCHETYPE_INDEXED_REPOSITORY_I
 			-- physical reference repository
 
-	work_repository: ARCHETYPE_INDEXED_REPOSITORY_I
+	work_repository: detachable ARCHETYPE_INDEXED_REPOSITORY_I
 			-- physical work repository (optional)
 
-	adhoc_source_repository: attached ARCHETYPE_ADHOC_FILE_REPOSITORY
+	adhoc_source_repository: ARCHETYPE_ADHOC_FILE_REPOSITORY
 			-- An additional 'repository' where archetypes may be found, but not necessarily classified
 			-- under any structure - used e.g. to represent the file local system where isolated archetypes
 			-- may be found, e.g. in c:\temp, /tmp or wherever. This repository is just a list of
 			-- archetypes keyed by path on the file system. They are not merged onto the directory
 			-- but 'grafted' - a simpler operation.
 
-	repositories: attached DS_HASH_TABLE [attached ARCHETYPE_INDEXED_REPOSITORY_I, INTEGER]
+	repositories: DS_HASH_TABLE [ARCHETYPE_INDEXED_REPOSITORY_I, INTEGER]
 			-- Physical repositories of archetypes, keyed by logical id.
 			-- Each such repository consists of archetypes arranged in a directory structure
 			-- mimicking an ontological structure, e.g. ehr/entry/observation, etc.
 
 feature -- Comparison
 
-	valid_working_repository_path (dir_name: attached STRING): BOOLEAN
+	valid_working_repository_path (dir_name: STRING): BOOLEAN
 			-- Does `dir_name' correspond to a real directory, which is not the same as, or a parent or child of,
 			-- any directory (except the working repository) already used to populate the tree?
 		local
@@ -90,24 +91,24 @@ feature -- Comparison
 					repositories.forth
 				end
 			end
-		ensure
-			false_if_void: Result implies dir_name /= Void
 		end
 
 feature -- Modification
 
-	set_reference_repository (dir_name: attached STRING)
+	set_reference_repository (dir_name: STRING)
 			-- Scan the reference repository at path `dir_name'.
 		require
 			dir_name_valid: directory_exists (dir_name)
 		do
 			create {ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP} reference_repository.make (file_system.canonical_pathname (dir_name), Group_id_reference)
 			repositories.force (reference_repository, reference_repository.group_id)
+			remove_work_repository
 		ensure
-			reference_repository /= Void
+			Ref_repo_attached: attached reference_repository
+			Work_repo_cleared: not attached work_repository
 		end
 
-	set_work_repository (dir_name: attached STRING)
+	set_work_repository (dir_name: STRING)
 			-- Scan the work repository at path `dir_name'.
 		require
 			dir_name_valid: valid_working_repository_path (dir_name)
@@ -115,7 +116,7 @@ feature -- Modification
 			create {ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP} work_repository.make (file_system.canonical_pathname (dir_name), Group_id_work)
 			repositories.force (work_repository, work_repository.group_id)
 		ensure
-			work_repository /= Void
+			Work_repo_attached: attached work_repository
 		end
 
 	remove_work_repository
@@ -125,11 +126,13 @@ feature -- Modification
 				repositories.remove (Group_id_work)
 				work_repository := Void
 			end
+		ensure
+			Work_repo_cleared: not attached work_repository
 		end
 
 invariant
 	adhoc_source_repository_group_id: adhoc_source_repository.group_id = 1
-	repositories_group_ids: repositories.for_all (agent (repository: attached ARCHETYPE_INDEXED_REPOSITORY_I): BOOLEAN
+	repositories_group_ids: repositories.for_all (agent (repository: ARCHETYPE_INDEXED_REPOSITORY_I): BOOLEAN
 		do Result := repository.group_id > 1 end)
 
 end
