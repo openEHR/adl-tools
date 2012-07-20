@@ -210,6 +210,8 @@ feature -- Commands
 
 	expand_tree (a_row: attached EV_GRID_ROW; test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
 			-- Expand `row' and all of its sub-rows, recursively.
+		require
+			is_tree_enabled
 		local
 			i: INTEGER
 		do
@@ -228,6 +230,8 @@ feature -- Commands
 
 	collapse_tree (a_row: attached EV_GRID_ROW)
 			-- Collapse `row' and all of its sub-rows, recursively.
+		require
+			is_tree_enabled
 		local
 			i: INTEGER
 		do
@@ -260,6 +264,8 @@ feature -- Commands
 
 	tree_do_all (a_node_action: attached PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
 			-- do `a_node_action' to all nodes in the structure
+		require
+			is_tree_enabled
 		local
 			i: INTEGER
 			top_level_rows: ARRAYED_LIST [EV_GRID_ROW]
@@ -275,6 +281,8 @@ feature -- Commands
 		end
 
 	tree_do_all_nodes (a_grid_row: attached EV_GRID_ROW; a_node_action: PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
+		require
+			is_tree_enabled
 		local
 			i: INTEGER
 		do
@@ -286,6 +294,8 @@ feature -- Commands
 		end
 
 	collapse_one_level (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+		require
+			is_tree_enabled
 		local
 			i: INTEGER
 		do
@@ -307,6 +317,8 @@ feature -- Commands
 		end
 
 	expand_one_level (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+		require
+			is_tree_enabled
 		local
 			i: INTEGER
 		do
@@ -329,6 +341,8 @@ feature -- Commands
 
 	expand_all (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
 			-- expand rows that pass `test'
+		require
+			is_tree_enabled
 		local
 			i: INTEGER
 		do
@@ -339,6 +353,8 @@ feature -- Commands
 		end
 
 	collapse_all
+		require
+			is_tree_enabled
 		local
 			i: INTEGER
 		do
@@ -350,10 +366,12 @@ feature -- Commands
 
 	collapse_except (test: FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
 			-- collapse except rows that pass `test'
+		require
+			is_tree_enabled
 		local
 			i: INTEGER
 			matching_rows: ARRAYED_LIST [INTEGER]
-			a_row, csr: EV_GRID_ROW
+			a_row: EV_GRID_ROW
 		do
 			create matching_rows.make (0)
 			from i := 1 until i > row_count loop
@@ -366,24 +384,44 @@ feature -- Commands
 			from matching_rows.start until matching_rows.off loop
 				a_row := row (matching_rows.item).parent_row
 				if not a_row.is_expanded then
-					from csr := a_row until csr = Void or csr.is_expanded loop
-						if csr.is_expandable then
-							csr.expand_actions.block
-							csr.expand
-							csr.expand_actions.resume
-						end
-						csr := csr.parent_row
-					end
+					expand_to_row (a_row)
 				end
 				matching_rows.forth
 			end
 		end
 
+	expand_to_row (a_row: EV_GRID_ROW)
+			-- ensure `a_row' is expanded to in tree
+		require
+			is_tree_enabled
+		local
+			csr: EV_GRID_ROW
+		do
+			from csr := a_row until csr = Void or csr.is_expanded loop
+				if csr.is_expandable then
+					csr.expand_actions.block
+					csr.expand
+					csr.expand_actions.resume
+				end
+				csr := csr.parent_row
+			end
+		end
+
+	ensure_visible (a_row: EV_GRID_ROW)
+			-- ensure `a_row' is visible in grid, expand it if necessary
+		require
+			is_tree_enabled
+		do
+			expand_to_row (a_row)
+			a_row.ensure_visible
+		end
+
 feature {NONE} -- Implementation
 
-	ev_grid_row_list: ARRAYED_LIST [EV_GRID_ROW]
+	ev_grid_row_list: detachable ARRAYED_LIST [EV_GRID_ROW]
 
-	get_grid_row_expandable_nodes (an_ev_grid_row: attached EV_GRID_ROW)
+	get_grid_row_expandable_nodes (an_ev_grid_row: EV_GRID_ROW)
+			-- for `an_ev_grid_row' generate list of expandable child rows
 		require
 			an_ev_grid_row.is_expandable
 		local
@@ -405,7 +443,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	get_grid_row_collapsable_nodes (an_ev_grid_row: attached EV_GRID_ROW)
+	get_grid_row_collapsable_nodes (an_ev_grid_row: EV_GRID_ROW)
 			-- record nodes for collapsing if they have all non-expanded children
 		require
 			an_ev_grid_row.is_expandable

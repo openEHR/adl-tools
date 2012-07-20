@@ -71,7 +71,7 @@ feature -- Commands
 			-- ensure node with global node id `ari_global_id' is visible in the tree
 		do
 			if ev_node_descriptor_map.has (ari_global_id) and gui_grid.ev_grid.is_displayed then
-				ev_node_descriptor_map.item (ari_global_id).ensure_visible
+				gui_grid.ev_grid.ensure_visible (ev_node_descriptor_map.item (ari_global_id))
 
 				-- if a class tool already exists with this id, then cause it to be shown
 				-- and then select corresponding tree node, but with events off. If no

@@ -996,8 +996,6 @@ feature -- Docking controls
 			l_result := docking_manager
 			check l_result /= Void end -- Implied by precondition `not_void'
 			Result := l_result
-		ensure
-			not_void: Result /= Void
 		end
 
 	docking_manager: detachable SD_DOCKING_MANAGER

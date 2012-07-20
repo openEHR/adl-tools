@@ -7,6 +7,7 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -22,25 +23,25 @@ create
 
 feature -- Access
 
-	term_definition (a_language, a_code: STRING): attached ARCHETYPE_TERM
+	term_definition (a_language, a_code: STRING): ARCHETYPE_TERM
 			-- retrieve the term definition in language `a_language' for code `a_code'
 		do
 			Result := term_definitions.item(a_language).item(a_code)
 		end
 
-	constraint_definition (a_language, a_code: STRING): attached ARCHETYPE_TERM
+	constraint_definition (a_language, a_code: STRING): ARCHETYPE_TERM
 			-- retrieve the constraint definition in language `a_language' for code `a_code'
 		do
 			Result := constraint_definitions.item(a_language).item(a_code)
 		end
 
-	term_binding (a_terminology, a_code: STRING): attached CODE_PHRASE
+	term_binding (a_terminology, a_code: STRING): CODE_PHRASE
 			-- retrieve the term binding from terminology `a_terminology' for code `a_code'
 		do
 			Result := term_bindings.item(a_terminology).item(a_code)
 		end
 
-	constraint_binding (a_terminology, a_code: STRING): attached URI
+	constraint_binding (a_terminology, a_code: STRING): URI
 			-- retrieve the constraint binding from terminology `a_terminology' for code `a_code'
 			-- in form of a string: "service::query"
 		do
@@ -123,7 +124,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	merge (other: attached FLAT_ARCHETYPE_ONTOLOGY)
+	merge (other: FLAT_ARCHETYPE_ONTOLOGY)
 			-- append all the codes from the other ontology to this one; used to create the ontology for flat-form archetypes
 			-- only languages that exist in the current ontology are merged from `other'
 		require
@@ -206,7 +207,7 @@ feature -- Modification
 
 feature -- Factory
 
-	to_differential: attached DIFFERENTIAL_ARCHETYPE_ONTOLOGY
+	to_differential: DIFFERENTIAL_ARCHETYPE_ONTOLOGY
 			-- Create a differential version from this flat ontology.
 		do
 			create Result.make_from_flat (Current)
