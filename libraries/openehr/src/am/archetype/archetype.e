@@ -506,8 +506,14 @@ feature {NONE} -- Implementation
 						-- now add the paths below it
 						from src_nodes.start until src_nodes.off loop
 							src_node_path := src_nodes.item.representation.path
-							src_node_path.last.set_object_id (tgt_path.last.object_id)
-							src_node_path.first.set_object_id (src_nodes.item.node_id)
+
+							-- pick up the node id from the root node of the target path
+							-- unless the source location has its own node id and is a sibling child of the target node of the reference
+							if src_nodes.item.is_addressable and then src_node_path.parent_path.is_equal (tgt_path.parent_path) then
+								src_node_path.last.set_object_id (src_nodes.item.node_id)
+							else
+								src_node_path.last.set_object_id (tgt_path.last.object_id)
+							end
 							src_node_path_str := src_node_path.as_string
 
 							object_path_map.force (c_o, src_node_path_str)

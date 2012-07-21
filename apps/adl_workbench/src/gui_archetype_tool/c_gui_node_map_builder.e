@@ -808,11 +808,15 @@ feature {NONE} -- Implementation
 	node_tooltip_str (a_node: attached ARCHETYPE_CONSTRAINT): STRING_32
 			-- generate a tooltip for this node as UTF-32 String
 		local
-			s: STRING
+			p, s: STRING
 		do
-			s := ontology.physical_to_logical_path (a_node.path, language, True)
+			p := a_node.path
+			s := ontology.physical_to_logical_path (p, language, True)
 			if show_rm_inheritance then
 				s.append ("%N%N" + get_text ("inheritance_status_text") +  specialisation_status_names.item (a_node.specialisation_status))
+			end
+			if ontology.has_any_term_binding (p) then
+
 			end
 			if archetype.has_annotation_at_path (language, a_node.path) then
 				s.append ("%N%N" + get_text ("annotations_text") + ":%N")

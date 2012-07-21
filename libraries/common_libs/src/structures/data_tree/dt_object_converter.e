@@ -791,7 +791,7 @@ feature {NONE} -- Implementation
 			if is_dt_primitive_interval_type (dynamic_hash_item_type) then -- it is a Hash of INTERVALs[some primitive or leaf type]; convert to DT_PRIMITIVE_OBJECT_INTERVAL
 				from a_hash_table.start until a_hash_table.off loop
 debug ("DT")
-	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj: from_obj_proc.call ([DT_ATTRIBUTE_NODE(" +
+	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj (Hash of INTERVAL[DT primitive type]): from_obj_proc.call ([DT_ATTRIBUTE_NODE (" +
 		a_dt_attr.im_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
 		", " + a_hash_table.key_for_iteration.out + ")%N")
 end
@@ -804,7 +804,7 @@ end
 			elseif is_dt_primitive_sequence_conforming_type (dynamic_hash_item_type) then -- it is a Hash of SEQUENCEs of some DT primitive type
 				from a_hash_table.start until a_hash_table.off loop
 debug ("DT")
-	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj: from_obj_proc.call ([DT_ATTRIBUTE_NODE(" +
+	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj (Hash of SEQUENCE): from_obj_proc.call ([DT_ATTRIBUTE_NODE (" +
 		a_dt_attr.im_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
 		", " + a_hash_table.key_for_iteration.out + ")%N")
 end
@@ -817,7 +817,7 @@ end
 			elseif is_dt_primitive_atomic_type (dynamic_hash_item_type) then -- it is a Hash of a DT primitive type then
 				from a_hash_table.start until a_hash_table.off loop
 debug ("DT")
-	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj: from_obj_proc.call ([DT_ATTRIBUTE_NODE(" +
+	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj (hash of DT primitive type): from_obj_proc.call ([DT_ATTRIBUTE_NODE (" +
 		a_dt_attr.im_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
 		", " + a_hash_table.key_for_iteration.out + ")%N")
 end
@@ -828,6 +828,11 @@ end
 			else -- it is a Hash of complex objects
 				static_hash_item_type := generic_dynamic_type_of_type (a_static_type, 1)
 				from a_hash_table.start until a_hash_table.off loop
+debug ("DT")
+	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj (Hash of complex objects): from_obj_proc.call ([DT_ATTRIBUTE_NODE (" +
+		a_dt_attr.im_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
+		", " + a_hash_table.key_for_iteration.out + ")%N")
+end
 					populate_dt_from_object (a_hash_table.item_for_iteration,
 						create_complex_object_node (a_dt_attr, a_hash_table.key_for_iteration.out), static_hash_item_type)
 					a_hash_table.forth
@@ -847,7 +852,7 @@ end
 			if is_dt_primitive_interval_type (dynamic_seq_item_type) then -- contained type is an INTERVAL[some primitive or leaf type]; convert to DT_PRIMITIVE_OBJECT_INTERVAL
 				from a_sequence.start until a_sequence.off loop
 debug ("DT")
-	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj (2): from_obj_proc.call ([DT_ATTRIBUTE_NODE(" +
+	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj (SEQUENCE of INTERVAL [DT primitive]): from_obj_proc.call ([DT_ATTRIBUTE_NODE (" +
 		a_dt_attr.im_attr_name + "), " + a_sequence.item.generating_type + ", " + a_sequence.index.out + ")%N")
 end
 					if attached {INTERVAL[PART_COMPARABLE]} a_sequence.item as v_typed then
@@ -859,7 +864,7 @@ end
 			elseif is_dt_primitive_sequence_conforming_type (dynamic_seq_item_type) then -- contained type is a SEQUENCE of some DT primitive type
 				from a_sequence.start until a_sequence.off loop
 debug ("DT")
-	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj (2): from_obj_proc.call ([DT_ATTRIBUTE_NODE(" +
+	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj (SEQUENCE of DT primitive): from_obj_proc.call ([DT_ATTRIBUTE_NODE (" +
 		a_dt_attr.im_attr_name + "), " + a_sequence.item.generating_type + ", " + a_sequence.index.out + ")%N")
 end
 					if attached {SEQUENCE[ANY]} a_sequence.item as v_typed then
@@ -871,7 +876,7 @@ end
 			elseif is_dt_primitive_atomic_type (dynamic_seq_item_type) then -- contained type is a DT primitive type then
 				from a_sequence.start until a_sequence.off loop
 debug ("DT")
-	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj (2): from_obj_proc.call ([DT_ATTRIBUTE_NODE(" +
+	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj (SEQUENCE of DT primitive): from_obj_proc.call ([DT_ATTRIBUTE_NODE (" +
 		a_dt_attr.im_attr_name + "), " + a_sequence.item.generating_type + ", " + a_sequence.index.out + ")%N")
 end
 					a_dt_attr.put_child (create {DT_PRIMITIVE_OBJECT}.make_identified (a_sequence.item, a_sequence.index.out))
@@ -881,6 +886,10 @@ end
 			else
 				static_seq_item_type := generic_dynamic_type_of_type (a_static_type, 1)
 				from a_sequence.start until a_sequence.off loop
+debug ("DT")
+	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj (SEQUENCE of complex objects): from_obj_proc.call ([DT_ATTRIBUTE_NODE (" +
+		a_dt_attr.im_attr_name + "), " + a_sequence.item.generating_type + ", " + a_sequence.index.out + ")%N")
+end
 					populate_dt_from_object (a_sequence.item, create_complex_object_node (a_dt_attr, a_sequence.index.out), static_seq_item_type)
 					a_sequence.forth
 				end

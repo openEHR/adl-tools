@@ -83,6 +83,8 @@ templates = <
 		["VATDC2"] = <"at-code $1 used in constraint not defined in ontology of current archetype">
 		["VACDF1"] = <"constraint code $1 from specialisation parent not defined in ontology of any parent archetype">
 		["VACDF2"] = <"constraint code $1 not found in ontology of current archetype">
+		["VOTBK"] = <"term binding key $1 must either be valid term code or valid path in flat archetype">
+		["VOCBK"] = <"constraint binding key $1 must be a valid constraint code">
 
 		-- annotations
 		["VRANP1"] = <"Annotation at language $1 has invalid archetype path $2">

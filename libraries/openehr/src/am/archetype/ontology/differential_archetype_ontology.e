@@ -76,9 +76,9 @@ feature -- Access
 			-- retrieve the term definition in language `a_language' for code `a_code'
 		do
 			if specialisation_depth_from_code (a_code) = specialisation_depth then
-				Result := term_definitions.item(a_language).item(a_code)
+				Result := term_definitions.item (a_language).item (a_code)
 			else
-				Result := parent_ontology.term_definition(a_language, a_code)
+				Result := parent_ontology.term_definition (a_language, a_code)
 			end
 		end
 
@@ -86,19 +86,19 @@ feature -- Access
 			-- retrieve the constraint definition in language `a_language' for code `a_code'
 		do
 			if specialisation_depth_from_code (a_code) = specialisation_depth then
-				Result := constraint_definitions.item(a_language).item(a_code)
+				Result := constraint_definitions.item (a_language).item(a_code)
 			else
-				Result := parent_ontology.constraint_definition(a_language, a_code)
+				Result := parent_ontology.constraint_definition (a_language, a_code)
 			end
 		end
 
-	term_binding (a_terminology, a_code: STRING): CODE_PHRASE
-			-- retrieve the term definition in language `a_language' for code `a_code'
+	term_binding (a_terminology, a_key: STRING): CODE_PHRASE
+			-- retrieve the term definition in language `a_language' for key `a_key' which is either a code or a path
 		do
-			if specialisation_depth_from_code (a_code) = specialisation_depth then
-				Result := term_bindings.item(a_terminology).item(a_code)
+			if term_bindings.has (a_terminology) and then term_bindings.item (a_terminology).has (a_key) then
+				Result := term_bindings.item (a_terminology).item (a_key)
 			else
-				Result := parent_ontology.term_binding(a_terminology, a_code)
+				Result := parent_ontology.term_binding (a_terminology, a_key)
 			end
 		end
 
@@ -106,18 +106,20 @@ feature -- Access
 			-- retrieve the constraint definition in language `a_language' for code `a_code'
 			-- in form of a string: "service::query"
 		do
-			if specialisation_depth_from_code (a_code) = specialisation_depth then
-				Result := constraint_bindings.item(a_terminology).item(a_code)
+			if constraint_bindings.has (a_terminology) and then constraint_bindings.item (a_terminology).has (a_code) then
+				Result := constraint_bindings.item (a_terminology).item (a_code)
+			else
+				Result := parent_ontology.constraint_binding (a_terminology, a_code)
 			end
 		end
 
 	terminology_extract_term (a_terminology, a_code: STRING): ARCHETYPE_TERM
 			-- true if there is an extract from terminology `a_terminology'
 		do
-			if terminology_extracts.item(a_terminology).has(a_code) then
-				Result := terminology_extracts.item(a_terminology).item(a_code)
+			if terminology_extracts.has (a_terminology) and then terminology_extracts.item (a_terminology).has (a_code) then
+				Result := terminology_extracts.item (a_terminology).item (a_code)
 			else
-				Result := parent_ontology.terminology_extracts.item(a_terminology).item(a_code)
+				Result := parent_ontology.terminology_extracts.item (a_terminology).item (a_code)
 			end
 		end
 
@@ -163,68 +165,43 @@ feature -- Status Report
 			end
 		end
 
-	has_any_term_binding (a_code: STRING): BOOLEAN
-			-- true if there is any term binding for ontology code `a_code'
+	has_any_term_binding (a_key: STRING): BOOLEAN
+			-- true if there is any term binding for ontology key `a_key', which is either a code or a path
 		do
-			if specialisation_depth_from_code (a_code) = specialisation_depth then
-				from term_bindings.start until term_bindings.off or term_bindings.item_for_iteration.has (a_code) loop
-					term_bindings.forth
-				end
-				Result := not term_bindings.off
-			else
-				Result := parent_ontology.has_any_term_binding (a_code)
-			end
+			Result := across term_bindings as bindings_csr some bindings_csr.item.has (a_key) end or else parent_ontology.has_any_term_binding (a_key)
 		end
 
-	has_term_binding (a_terminology, a_code: STRING): BOOLEAN
+	has_term_binding (a_terminology, a_key: STRING): BOOLEAN
 			-- true if there is a term binding for ontology code `a_code' in `a_terminology'
 		do
-			if specialisation_depth_from_code (a_code) = specialisation_depth then
-				Result := term_bindings.has (a_terminology) and then term_bindings.item (a_terminology).has (a_code)
-			else
-				Result := parent_ontology.has_term_binding (a_terminology, a_code)
-			end
+			Result := term_bindings.has (a_terminology) and then term_bindings.item (a_terminology).has (a_key)
+				or else parent_ontology.has_term_binding (a_terminology, a_key)
 		end
 
 	has_any_constraint_binding (a_code: STRING): BOOLEAN
 			-- true if there is any constraint binding for code `a_code'
 		do
-			if specialisation_depth_from_code (a_code) = specialisation_depth then
-				from constraint_bindings.start until constraint_bindings.off or constraint_bindings.item_for_iteration.has (a_code) loop
-					constraint_bindings.forth
-				end
-				Result := not constraint_bindings.off
-			else
-				Result := parent_ontology.has_any_constraint_binding (a_code)
-			end
+			Result := across constraint_bindings as bindings_csr some bindings_csr.item.has (a_code) end
+				or else parent_ontology.has_any_constraint_binding (a_code)
 		end
 
 	has_constraint_binding (a_terminology, a_code: STRING): BOOLEAN
 			-- true if there is a term binding for code `a_code' in `a_terminology'
 		do
-			if specialisation_depth_from_code (a_code) = specialisation_depth then
-				Result := constraint_bindings.has (a_terminology) and then constraint_bindings.item (a_terminology).has(a_code)
-			else
-				Result := parent_ontology.has_constraint_binding(a_terminology, a_code)
-			end
+			Result := constraint_bindings.has (a_terminology) and then constraint_bindings.item (a_terminology).has (a_code)
+				or else parent_ontology.has_constraint_binding (a_terminology, a_code)
 		end
 
 	has_terminology_extract (a_terminology: STRING): BOOLEAN
 			-- true if there is an extract from terminology `a_terminology'
 		do
-			if not terminology_extracts.has(a_terminology) then
-				Result := parent_ontology.has_terminology_extract(a_terminology)
-			end
+			Result := terminology_extracts.has(a_terminology) or else parent_ontology.has_terminology_extract(a_terminology)
 		end
 
 	has_terminology_extract_code (a_terminology, a_code: STRING): BOOLEAN
 			-- true if there is a term binding for code `a_code' in `a_terminology'
 		do
-			if specialisation_depth_from_code (a_code) = specialisation_depth then
-				Result := terminology_extracts.item(a_terminology).has(a_code)
-			else
-				Result := parent_ontology.has_terminology_extract_code(a_terminology, a_code)
-			end
+			Result := terminology_extracts.item (a_terminology).has (a_code) or else parent_ontology.has_terminology_extract_code (a_terminology, a_code)
 		end
 
 feature -- Modification

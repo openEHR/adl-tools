@@ -137,7 +137,7 @@ feature -- Access
 			-- table of constraint definitions, keyed by code, keyed by language
 
 	term_bindings: HASH_TABLE [HASH_TABLE [CODE_PHRASE, STRING], STRING]
-			-- tables of bindings of external terms to internal codes, keyed by external terminology id
+			-- tables of bindings of external terms to internal codes and/or paths, keyed by external terminology id
 
 	constraint_bindings: HASH_TABLE[HASH_TABLE[URI, STRING], STRING]
 			-- table of constraint bindings in the form of strings "service::query", keyed by terminology
@@ -305,31 +305,23 @@ feature -- Status Report
 			Result := constraint_bindings.has (a_terminology)
 		end
 
-	has_any_term_binding (a_code: STRING): BOOLEAN
-			-- true if there is any term binding for code `a_code'
-		require
-			Term_code_valid: is_valid_code (a_code)
+	has_any_term_binding (a_key: STRING): BOOLEAN
+			-- true if there is any term binding for code `a_key', which is either a code or a path
 		deferred
 		end
 
-	has_term_binding (a_terminology, a_code: STRING): BOOLEAN
-			-- true if there is a term binding for code `a_code' in `a_terminology'
-		require
-			Term_code_valid: is_valid_code (a_code)
+	has_term_binding (a_terminology, a_key: STRING): BOOLEAN
+			-- true if there is a term binding for code `a_key' in `a_terminology'
 		deferred
 		end
 
 	has_any_constraint_binding (a_code: STRING): BOOLEAN
 			-- true if there is any constraint binding for code `a_code'
-		require
-			Term_code_valid: is_valid_code (a_code)
 		deferred
 		end
 
 	has_constraint_binding (a_terminology, a_code: STRING): BOOLEAN
 			-- true if there is a term binding for code `a_code' in `a_terminology'
-		require
-			Term_code_valid: is_valid_code (a_code)
 		deferred
 		end
 

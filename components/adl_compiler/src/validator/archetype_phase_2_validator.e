@@ -77,6 +77,7 @@ feature -- Validation
 			-- validation of ontology requiring flat parent
 			if passed then
 				validate_ontology_languages
+				validate_ontology_bindings
 			end
 
 			-- validation requiring valid specialisation parent
@@ -115,6 +116,37 @@ feature {NONE} -- Implementation
 				across ontology.constraint_codes as code_csr loop
 					if not ontology.has_constraint_definition (langs_csr.item, code_csr.item) then
 						add_error ("VONLC", <<code_csr.item, langs_csr.item>>)
+					end
+				end
+			end
+		end
+
+	validate_ontology_bindings
+			-- Are all `term_bindings' valid, i.e.
+			-- for atomic bindings:
+			-- 		is every term mentioned in the term_definitions?
+			-- for path bindings:
+			-- 		does every path mentioned exist in flat archetype?
+			--
+			-- Are all `constraint_bindings' valid, i.e.
+			-- for atomic bindings:
+			-- 		is every term mentioned in the constraint_definitions?
+			--
+		do
+			across ontology.term_bindings as bindings_csr loop
+				across bindings_csr.item as bindings_for_lang_csr loop
+					if not ((is_valid_code (bindings_for_lang_csr.key) and then ontology.has_term_code (bindings_for_lang_csr.key)) or
+						(not target.is_specialised and then target.has_path (bindings_for_lang_csr.key)) or
+						(target.is_specialised and then flat_parent.has_path (bindings_for_lang_csr.key)))
+					then
+						add_error ("VOTBK", <<bindings_for_lang_csr.key>>)
+					end
+				end
+			end
+			across ontology.constraint_bindings as bindings_csr loop
+				across bindings_csr.item as bindings_for_lang_csr loop
+					if not (is_valid_code (bindings_for_lang_csr.key) and then ontology.has_term_code (bindings_for_lang_csr.key)) then
+						add_error ("VOCBK", <<bindings_for_lang_csr.key>>)
 					end
 				end
 			end
