@@ -167,10 +167,10 @@ feature -- Access
 		deferred
 		end
 
-	term_binding (a_terminology, a_code: STRING): CODE_PHRASE
-			-- retrieve the term definition in language `a_language' for code `a_code'
+	term_binding (a_terminology, a_key: STRING): CODE_PHRASE
+			-- retrieve the term definition in language `a_language' for code `a_key' which is either a code or a path
 		require
-			Term_code_valid: has_term_binding (a_terminology, a_code)
+			Term_code_valid: has_term_binding (a_terminology, a_key)
 		deferred
 		end
 
@@ -180,6 +180,19 @@ feature -- Access
 			Terminology_valid: term_bindings.has (a_terminology)
 		do
 			Result := term_bindings.item (a_terminology)
+		end
+
+	term_bindings_for_key (a_key: STRING): HASH_TABLE [CODE_PHRASE, STRING]
+			-- retrieve the term bindings for a key as a table of bound terms keyed by terminology_id
+		require
+			Terminology_valid: has_any_term_binding (a_key)
+		do
+			create Result.make (0)
+			across term_bindings as bindings_csr loop
+				if bindings_csr.item.has (a_key) then
+					Result.put (bindings_csr.item.item (a_key), bindings_csr.key)
+				end
+			end
 		end
 
 	constraint_binding (a_terminology, a_code: STRING): URI
@@ -344,17 +357,6 @@ feature -- Status Report
 			-- True if this ontology conforms to `other' by having the same or subset of languages
 		do
 			Result := languages_available.is_subset (other.languages_available)
-
---			if Result then
---				from
---					terminologies_available.start
---				until
---					terminologies_available.off or not other.terminologies_available.has(terminologies_available.item)
---				loop
---					terminologies_available.forth
---				end
---				Result := terminologies_available.off
---			end
 		end
 
 feature -- Modification

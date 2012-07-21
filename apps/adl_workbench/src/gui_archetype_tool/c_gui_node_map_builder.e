@@ -809,6 +809,7 @@ feature {NONE} -- Implementation
 			-- generate a tooltip for this node as UTF-32 String
 		local
 			p, s: STRING
+			bindings: HASH_TABLE [CODE_PHRASE, STRING]
 		do
 			p := a_node.path
 			s := ontology.physical_to_logical_path (p, language, True)
@@ -816,7 +817,11 @@ feature {NONE} -- Implementation
 				s.append ("%N%N" + get_text ("inheritance_status_text") +  specialisation_status_names.item (a_node.specialisation_status))
 			end
 			if ontology.has_any_term_binding (p) then
-
+				s.append ("%N%N" + get_text ("term_bindings_tooltip_text") + "%N")
+				bindings := ontology.term_bindings_for_key (p)
+				across bindings as bindings_csr loop
+					s.append ("%T" + bindings_csr.key + ": " + bindings_csr.item.as_string + "%N")
+				end
 			end
 			if archetype.has_annotation_at_path (language, a_node.path) then
 				s.append ("%N%N" + get_text ("annotations_text") + ":%N")
