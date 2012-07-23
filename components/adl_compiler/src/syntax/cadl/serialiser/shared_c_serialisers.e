@@ -6,6 +6,7 @@ note
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -15,31 +16,30 @@ class SHARED_C_SERIALISERS
 
 feature -- Access
 
-	c_serialiser_formats: attached ARRAYED_LIST[STRING]
+	c_serialiser_formats: ARRAYED_LIST [STRING]
 			-- list of format names
 		once
 			create Result.make(0)
 			Result.compare_objects
-			from c_serialisers.start until c_serialisers.off loop
-				Result.extend(c_serialisers.key_for_iteration)
-				c_serialisers.forth
+			across c_serialisers as serialisers_csr loop
+				Result.extend (serialisers_csr.key)
 			end
 		end
 
-	c_serialiser_for_format (a_format: attached STRING): attached C_SERIALISER
+	c_serialiser_for_format (an_archetype: ARCHETYPE; a_lang, a_format: STRING): C_SERIALISER
 			-- get a specific ADL serialiser
 		require
-			Format_valid: has_c_serialiser_format(a_format)
+			Format_valid: has_c_serialiser_format (a_format)
 		do
-			Result := c_serialisers.item(a_format)
+			Result := c_serialisers.item (a_format)
 		end
 
 feature -- Status Report
 
-	has_c_serialiser_format (a_format: attached STRING): BOOLEAN
+	has_c_serialiser_format (a_format: STRING): BOOLEAN
 			--
 		do
-			Result := c_serialisers.has(a_format)
+			Result := c_serialisers.has (a_format)
 		end
 
 feature {NONE} -- Implementation

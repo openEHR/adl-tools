@@ -6,6 +6,7 @@ note
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -76,10 +77,8 @@ feature {NONE} -- Initialization
 			main_window.show
 		end
 
-	new_abort_dialog (text: STRING): attached EV_MESSAGE_DIALOG
+	new_abort_dialog (text: STRING): EV_MESSAGE_DIALOG
 			-- A newly created dialog containing an "Abort" button and `text'.
-		require
-			text_attached: text /= Void
 		do
 			create Result.make_with_text (text)
 			Result.set_title ("Cannot launch ADL Workbench")

@@ -40,19 +40,15 @@ feature -- Access
 feature -- Commands
 
 	execute
+			-- populate CONSTRAINT_REF rm_type_name
 		local
 			bmm_prop_def: BMM_PROPERTY_DEFINITION
-			cref_list: ARRAYED_LIST [CONSTRAINT_REF]
 		do
-			-- populate CONSTRAINT_REF rm_type_name
-			from target.accodes_index.start until target.accodes_index.off loop
-				cref_list := target.accodes_index.item_for_iteration
-				from cref_list.start until cref_list.off loop
-					bmm_prop_def := rm_schema.property_definition (cref_list.item.parent.parent.rm_type_name, cref_list.item.parent.rm_attribute_name)
-					cref_list.item.set_rm_type_name (bmm_prop_def.type.root_class)
-					cref_list.forth
+			across target.accodes_index as ac_codes_csr loop
+				across ac_codes_csr.item as cref_list_csr loop
+					bmm_prop_def := rm_schema.property_definition (cref_list_csr.item.parent.parent.rm_type_name, cref_list_csr.item.parent.rm_attribute_name)
+					cref_list_csr.item.set_rm_type_name (bmm_prop_def.type.root_class)
 				end
-				target.accodes_index.forth
 			end
 		end
 

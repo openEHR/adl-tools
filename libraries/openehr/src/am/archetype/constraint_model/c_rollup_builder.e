@@ -19,6 +19,7 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2007-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -29,23 +30,21 @@ class C_ROLLUP_BUILDER
 inherit
 	C_VISITOR
 		redefine
-			initialise, end_c_complex_object, end_c_attribute
+			end_c_complex_object, end_c_attribute
 		end
 
 	SPECIALISATION_STATUSES
 		export
 			{NONE} all
 		end
+create
+	make
 
 feature -- Initialisation
 
-	initialise (an_archetype: attached ARCHETYPE)
-			-- set ontology required for interpreting meaning of object nodes
-			-- archetype is required as well since it contains the xref tables that are
-			-- populated by this visitor
+	make (an_archetype: ARCHETYPE)
 		do
-			precursor (an_archetype)
-			archetype_specialisation_level := an_archetype.specialisation_depth
+			initialise (an_archetype)
 		end
 
 feature -- Visitor
@@ -143,12 +142,6 @@ feature -- Visitor
 			-- enter a C_DV_QUANTITY
 		do
 		end
-
-feature {NONE} -- Implementation
-
-	archetype_specialisation_level: INTEGER
-			-- specialisation level of the archetype whose definition structure
-			-- this object processes
 
 end
 

@@ -11,6 +11,7 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2007-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -33,7 +34,7 @@ inherit
 
 feature {ADL15_ENGINE} -- Initialisation
 
-	initialise (ara: attached ARCH_CAT_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
+	initialise (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 			-- set target_descriptor
 			-- initialise reporting variables
 		require
@@ -49,28 +50,28 @@ feature {ADL15_ENGINE} -- Initialisation
 
 feature -- Status Report
 
-	validation_candidate (ara: attached ARCH_CAT_ARCHETYPE): BOOLEAN
+	validation_candidate (ara: ARCH_CAT_ARCHETYPE): BOOLEAN
 		deferred
 		end
 
 feature {NONE} -- Implementation
 
-	target_descriptor: attached ARCH_CAT_ARCHETYPE
+	target_descriptor: ARCH_CAT_ARCHETYPE
 			-- differential archetype being validated
 
 	target: ARCHETYPE
 			-- differential archetype being validated
 
-	ontology: attached ARCHETYPE_ONTOLOGY
+	ontology: ARCHETYPE_ONTOLOGY
 			-- The ontology of the current archetype.
 		do
 			Result := target.ontology
 		end
 
 
-	rm_schema: attached BMM_SCHEMA
+	rm_schema: BMM_SCHEMA
 
-	archetype_id_matches_slot (an_id: attached STRING; a_slot: attached ARCHETYPE_SLOT): BOOLEAN
+	archetype_id_matches_slot (an_id: STRING; a_slot: ARCHETYPE_SLOT): BOOLEAN
 			-- test an archetype id against slot spec (it might pass, even if no archetypes matching the slot were found)
 		require
 			Archetype_id_valid: not an_id.is_empty

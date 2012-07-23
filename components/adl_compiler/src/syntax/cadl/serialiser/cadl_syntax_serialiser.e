@@ -11,6 +11,7 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -535,7 +536,7 @@ feature {NONE} -- Implementation
 	last_object_simple: BOOLEAN
 			-- True if last object traversed was an OBJECT_SIMPLE
 
-	last_object_simple_buffer: STRING
+	last_object_simple_buffer: detachable STRING
 
 	dadl_engine: DADL_ENGINE
 			-- for handling inline dADL sections like for C_QUANTITY

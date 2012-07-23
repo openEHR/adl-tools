@@ -15,19 +15,20 @@ class C_OBJECT_ED_CONTEXT_BUILDER
 
 inherit
 	C_VISITOR
-		rename
-			initialise as initialise_visitor
 		redefine
 			end_c_archetype_root,
 			end_c_complex_object,
 			end_c_attribute
 		end
 
+create
+	make
+
 feature -- Initialisation
 
-	initialise (an_archetype: attached FLAT_ARCHETYPE; rm_mode_flag: BOOLEAN; an_rm_schema: BMM_SCHEMA)
+	make (an_archetype: FLAT_ARCHETYPE; rm_mode_flag: BOOLEAN; an_rm_schema: BMM_SCHEMA)
 		do
-			initialise_visitor (an_archetype)
+			initialise (an_archetype)
 			create obj_node_stack.make (0)
 			rm_schema := an_rm_schema
 		end

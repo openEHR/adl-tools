@@ -40,7 +40,6 @@ feature {NONE} -- Initialisation
 		do
 			create target.make_empty ("en", 1)
 			create parent.make_empty ("en", 0)
-			target.set_parent_ontology (parent)
 		end
 
 feature {NONE} -- Targets

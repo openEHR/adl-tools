@@ -39,7 +39,7 @@ inherit
 
 feature -- Status Report
 
-	validation_candidate (ara: attached ARCH_CAT_ARCHETYPE): BOOLEAN
+	validation_candidate (ara: ARCH_CAT_ARCHETYPE): BOOLEAN
 		do
 			Result := attached ara.differential_archetype
 		end
@@ -109,12 +109,16 @@ feature {NONE} -- Implementation
 			langs := ontology.languages_available
 			across langs as langs_csr loop
 				across ontology.term_codes as code_csr loop
-					if not ontology.has_term_definition (langs_csr.item, code_csr.item) then
+					if not (ontology.has_term_definition (langs_csr.item, code_csr.item) or
+						target.is_specialised and then flat_parent.ontology.has_term_definition (langs_csr.item, code_csr.item))
+					then
 						add_error ("VONLC", <<code_csr.item, langs_csr.item>>)
 					end
 				end
 				across ontology.constraint_codes as code_csr loop
-					if not ontology.has_constraint_definition (langs_csr.item, code_csr.item) then
+					if not (ontology.has_constraint_definition (langs_csr.item, code_csr.item) or
+						target.is_specialised and then flat_parent.ontology.has_constraint_definition (langs_csr.item, code_csr.item))
+					then
 						add_error ("VONLC", <<code_csr.item, langs_csr.item>>)
 					end
 				end
@@ -137,7 +141,7 @@ feature {NONE} -- Implementation
 				across bindings_csr.item as bindings_for_lang_csr loop
 					if not ((is_valid_code (bindings_for_lang_csr.key) and then ontology.has_term_code (bindings_for_lang_csr.key)) or
 						(not target.is_specialised and then target.has_path (bindings_for_lang_csr.key)) or
-						(target.is_specialised and then flat_parent.has_path (bindings_for_lang_csr.key)))
+						(target.is_specialised and then (flat_parent.ontology.has_term_code (bindings_for_lang_csr.key) or target.has_path (bindings_for_lang_csr.key))))
 					then
 						add_error ("VOTBK", <<bindings_for_lang_csr.key>>)
 					end
@@ -145,7 +149,9 @@ feature {NONE} -- Implementation
 			end
 			across ontology.constraint_bindings as bindings_csr loop
 				across bindings_csr.item as bindings_for_lang_csr loop
-					if not (is_valid_code (bindings_for_lang_csr.key) and then ontology.has_term_code (bindings_for_lang_csr.key)) then
+					if not (is_valid_code (bindings_for_lang_csr.key) and then ontology.has_constraint_code (bindings_for_lang_csr.key) or
+						target.is_specialised and flat_parent.ontology.has_constraint_code (bindings_for_lang_csr.key))
+					then
 						add_error ("VOCBK", <<bindings_for_lang_csr.key>>)
 					end
 				end

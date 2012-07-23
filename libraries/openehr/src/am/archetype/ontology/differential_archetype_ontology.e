@@ -2,12 +2,7 @@ note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Archetype ontology section class for differential, i.e. source form archetypes. The routines in this class
-				 correspond to the needs of creating and editing an archetype, i.e. modifying the contents. A differential 
-				 form archetype ontology that is specialised will have its parent_ontology set to the ontology of the parent
-				 differential archetype, and so on up the lineage. This allows many of the accessors to function using the
-				 rest of the lineage above.
-				 FIXME: whether we still need to do this needs to be investigated - it was added to support specialisation
-				 semanitcs, but now that flattening works, it may no longer be needed.
+				 correspond to the needs of creating and editing an archetype, i.e. modifying the contents.
 				 ]"
 	keywords:    "archetype, ontology, terminology"
 
@@ -68,143 +63,6 @@ feature -- Initialisation
 			term_bindings := a_flat_copy.term_bindings
 			constraint_bindings := a_flat_copy.constraint_bindings
 			highest_specialised_code_indexes := a_flat_copy.highest_specialised_code_indexes
-		end
-
-feature -- Access
-
-	term_definition (a_language, a_code: STRING): ARCHETYPE_TERM
-			-- retrieve the term definition in language `a_language' for code `a_code'
-		do
-			if specialisation_depth_from_code (a_code) = specialisation_depth then
-				Result := term_definitions.item (a_language).item (a_code)
-			elseif attached parent_ontology then
-				Result := parent_ontology.term_definition (a_language, a_code)
-			end
-		end
-
-	constraint_definition (a_language, a_code: STRING): ARCHETYPE_TERM
-			-- retrieve the constraint definition in language `a_language' for code `a_code'
-		do
-			if specialisation_depth_from_code (a_code) = specialisation_depth then
-				Result := constraint_definitions.item (a_language).item(a_code)
-			elseif attached parent_ontology then
-				Result := parent_ontology.constraint_definition (a_language, a_code)
-			end
-		end
-
-	term_binding (a_terminology, a_key: STRING): CODE_PHRASE
-			-- retrieve the term definition in language `a_language' for key `a_key' which is either a code or a path
-		do
-			if term_bindings.has (a_terminology) and then term_bindings.item (a_terminology).has (a_key) then
-				Result := term_bindings.item (a_terminology).item (a_key)
-			elseif attached parent_ontology then
-				Result := parent_ontology.term_binding (a_terminology, a_key)
-			end
-		end
-
-	constraint_binding (a_terminology, a_code: STRING): URI
-			-- retrieve the constraint definition in language `a_language' for code `a_code'
-			-- in form of a string: "service::query"
-		do
-			if constraint_bindings.has (a_terminology) and then constraint_bindings.item (a_terminology).has (a_code) then
-				Result := constraint_bindings.item (a_terminology).item (a_code)
-			elseif attached parent_ontology then
-				Result := parent_ontology.constraint_binding (a_terminology, a_code)
-			end
-		end
-
-	terminology_extract_term (a_terminology, a_code: STRING): ARCHETYPE_TERM
-			-- true if there is an extract from terminology `a_terminology'
-		do
-			if terminology_extracts.has (a_terminology) and then terminology_extracts.item (a_terminology).has (a_code) then
-				Result := terminology_extracts.item (a_terminology).item (a_code)
-			elseif attached parent_ontology then
-				Result := parent_ontology.terminology_extracts.item (a_terminology).item (a_code)
-			end
-		end
-
-feature -- Status Report
-
-	has_term_code (a_code: STRING): BOOLEAN
-			-- Is `a_code' known in this ontology?
-		do
-			if specialisation_depth_from_code (a_code) = specialisation_depth then
-				Result := term_codes.has (a_code)
-			elseif attached parent_ontology then
-				Result := parent_ontology.has_term_code (a_code)
-			end
-		end
-
-	has_constraint_code (a_code: STRING): BOOLEAN
-			-- Is `a_code' known in this ontology?
-		do
-			if specialisation_depth_from_code (a_code) = specialisation_depth then
-				Result := constraint_codes.has (a_code)
-			elseif parent_ontology /= Void then
-				Result := parent_ontology.has_constraint_code (a_code)
-			end
-		end
-
-	has_term_definition (a_language, a_code: STRING): BOOLEAN
-			-- is `a_code' defined in `a_language' in this ontology?
-		do
-			if specialisation_depth_from_code (a_code) = specialisation_depth then
-				Result := term_definitions.has (a_language) and then term_definitions.item(a_language).has(a_code)
-			elseif attached parent_ontology then
-				Result := parent_ontology.has_term_definition (a_language, a_code)
-			end
-		end
-
-	has_constraint_definition (a_language, a_code: STRING): BOOLEAN
-			-- is `a_code' defined in `a_language' in this ontology?
-		do
-			if specialisation_depth_from_code (a_code) = specialisation_depth then
-				Result := constraint_definitions.has (a_language) and then constraint_definitions.item (a_language).has(a_code)
-			elseif attached parent_ontology then
-				Result := parent_ontology.has_constraint_definition (a_language, a_code)
-			end
-		end
-
-	has_any_term_binding (a_key: STRING): BOOLEAN
-			-- true if there is any term binding for ontology key `a_key', which is either a code or a path
-		do
-			Result := across term_bindings as bindings_csr some bindings_csr.item.has (a_key) end
-				or else attached parent_ontology and then parent_ontology.has_any_term_binding (a_key)
-		end
-
-	has_term_binding (a_terminology, a_key: STRING): BOOLEAN
-			-- true if there is a term binding for ontology code `a_code' in `a_terminology'
-		do
-			Result := term_bindings.has (a_terminology) and then term_bindings.item (a_terminology).has (a_key)
-				or else attached parent_ontology and then parent_ontology.has_term_binding (a_terminology, a_key)
-		end
-
-	has_any_constraint_binding (a_code: STRING): BOOLEAN
-			-- true if there is any constraint binding for code `a_code'
-		do
-			Result := across constraint_bindings as bindings_csr some bindings_csr.item.has (a_code) end
-				or else attached parent_ontology and then parent_ontology.has_any_constraint_binding (a_code)
-		end
-
-	has_constraint_binding (a_terminology, a_code: STRING): BOOLEAN
-			-- true if there is a term binding for code `a_code' in `a_terminology'
-		do
-			Result := constraint_bindings.has (a_terminology) and then constraint_bindings.item (a_terminology).has (a_code)
-				or else attached parent_ontology and then parent_ontology.has_constraint_binding (a_terminology, a_code)
-		end
-
-	has_terminology_extract (a_terminology: STRING): BOOLEAN
-			-- true if there is an extract from terminology `a_terminology'
-		do
-			Result := terminology_extracts.has(a_terminology) or else
-				attached parent_ontology and then parent_ontology.has_terminology_extract(a_terminology)
-		end
-
-	has_terminology_extract_code (a_terminology, a_code: STRING): BOOLEAN
-			-- true if there is a term binding for code `a_code' in `a_terminology'
-		do
-			Result := terminology_extracts.item (a_terminology).has (a_code) or else
-				attached parent_ontology and then parent_ontology.has_terminology_extract_code (a_terminology, a_code)
 		end
 
 feature -- Modification
@@ -308,16 +166,6 @@ feature -- Modification
 			constraint_bindings.item (a_terminology).replace (a_uri, a_code)
 		ensure
 			Binding_added: has_constraint_binding (a_terminology, a_code)
-		end
-
-feature {ARCHETYPE} -- Modification
-
-	set_parent_ontology (an_ontology: ARCHETYPE_ONTOLOGY)
-			-- add a connection to the ontology of a parent archetype
-		require
-			Ontology_valid: an_ontology.specialisation_depth + 1 = specialisation_depth
-		do
-			parent_ontology := an_ontology
 		end
 
 feature -- Factory
@@ -465,9 +313,6 @@ feature -- Conversion
 				Result := ont
 			end
 		end
-
-	parent_ontology: detachable ARCHETYPE_ONTOLOGY
-			-- ARCHETYPE_ONTOLOGY objects of specialisation parent archetype
 
 end
 

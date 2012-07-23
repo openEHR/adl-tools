@@ -153,25 +153,48 @@ feature -- Access
 			non_negative: Result >= 0
 		end
 
+feature -- Access
+
 	term_definition (a_language, a_code: STRING): ARCHETYPE_TERM
 			-- retrieve the term definition in language `a_language' for code `a_code'
 		require
 			Term_definition_exists: has_term_definition (a_language, a_code)
-		deferred
+		do
+			Result := term_definitions.item (a_language).item (a_code)
 		end
 
 	constraint_definition (a_language, a_code: STRING): ARCHETYPE_TERM
 			-- retrieve the constraint definition in language `a_language' for code `a_code'
 		require
 			Term_definition_exists: has_constraint_definition (a_language, a_code)
-		deferred
+		do
+			Result := constraint_definitions.item (a_language).item (a_code)
 		end
 
 	term_binding (a_terminology, a_key: STRING): CODE_PHRASE
-			-- retrieve the term definition in language `a_language' for code `a_key' which is either a code or a path
+			-- retrieve the term binding from terminology `a_terminology' for code `a_key'
 		require
 			Term_code_valid: has_term_binding (a_terminology, a_key)
-		deferred
+		do
+			Result := term_bindings.item (a_terminology).item (a_key)
+		end
+
+	constraint_binding (a_terminology, a_code: STRING): URI
+			-- retrieve the constraint binding from terminology `a_terminology' for code `a_code'
+			-- in form of a string: "service::query"
+		require
+			Term_code_valid: has_constraint_binding (a_terminology, a_code)
+		do
+			Result := constraint_bindings.item (a_terminology).item (a_code)
+		end
+
+	terminology_extract_term (a_terminology, a_code: STRING): ARCHETYPE_TERM
+			-- true if there is an extract from terminology `a_terminology'
+		require
+			Terminology_valid: has_terminology_extract (a_terminology)
+			Term_code_valid: has_terminology_extract_code (a_terminology, a_code)
+		do
+			Result := terminology_extracts.item (a_terminology).item (a_code)
 		end
 
 	term_bindings_for_terminology (a_terminology: STRING): HASH_TABLE [CODE_PHRASE, STRING]
@@ -195,28 +218,12 @@ feature -- Access
 			end
 		end
 
-	constraint_binding (a_terminology, a_code: STRING): URI
-			-- retrieve the constraint definition in language `a_language' for code `a_code'
-			-- in form of a string: "service::query"
-		require
-			Term_code_valid: has_constraint_binding (a_terminology, a_code)
-		deferred
-		end
-
 	constraint_bindings_for_terminology (a_terminology: STRING): HASH_TABLE [URI, STRING]
 			-- retrieve the term bindings for a particular terminology
 		require
 			Terminology_valid: constraint_bindings.has (a_terminology)
 		do
 			Result := constraint_bindings.item (a_terminology)
-		end
-
-	terminology_extract_term (a_terminology, a_code: STRING): ARCHETYPE_TERM
-			-- true if there is an extract from terminology `a_terminology'
-		require
-			Terminology_valid: has_terminology_extract (a_terminology)
-			Term_code_valid: has_terminology_extract_code (a_terminology, a_code)
-		deferred
 		end
 
 	physical_to_logical_path (a_phys_path, a_language: STRING; with_codes: BOOLEAN): STRING
@@ -276,11 +283,22 @@ feature -- Status Report
 			Result := terminologies_available.has (a_terminology)
 		end
 
+feature -- Status Report
+
 	has_term_code (a_code: STRING): BOOLEAN
-			-- is `a_code' known in this ontology?
+			-- is `a_code' known in this ontology
 		require
 			Term_code_valid: is_valid_code(a_code)
-		deferred
+		do
+			Result := term_codes.has (a_code)
+		end
+
+	has_constraint_code (a_code: STRING): BOOLEAN
+			--
+		require
+			Code_valid: is_valid_code(a_code)
+		do
+			Result := constraint_codes.has (a_code)
 		end
 
 	has_term_definition (a_language, a_code: STRING): BOOLEAN
@@ -288,14 +306,8 @@ feature -- Status Report
 		require
 			Term_code_valid: is_valid_code(a_code)
 			Language_valid: not a_language.is_empty
-		deferred
-		end
-
-	has_constraint_code (a_code: STRING): BOOLEAN
-			--
-		require
-			Code_valid: is_valid_code(a_code)
-		deferred
+		do
+			Result := term_definitions.has (a_language) and then term_definitions.item (a_language).has (a_code)
 		end
 
 	has_constraint_definition (a_language, a_code: STRING): BOOLEAN
@@ -303,7 +315,49 @@ feature -- Status Report
 		require
 			Constraint_code_valid: is_valid_code(a_code)
 			Language_valid: not a_language.is_empty
-		deferred
+		do
+			Result := constraint_definitions.has (a_language) and then constraint_definitions.item (a_language).has (a_code)
+		end
+
+	has_any_term_binding (a_key: STRING): BOOLEAN
+			-- true if there is any term binding for code `a_key'
+		do
+			Result := across term_bindings as bindings_csr some bindings_csr.item.has (a_key) end
+		end
+
+	has_term_binding (a_terminology, a_key: STRING): BOOLEAN
+			-- true if there is a term binding for key `a_key' in `a_terminology'
+		do
+			Result := term_bindings.has (a_terminology) and then term_bindings.item (a_terminology).has (a_key)
+		end
+
+	has_any_constraint_binding (a_code: STRING): BOOLEAN
+			-- true if there is any constraint binding for code `a_code'
+		do
+			Result := across constraint_bindings as bindings_csr some bindings_csr.item.has (a_code) end
+		end
+
+	has_constraint_binding (a_terminology, a_code: STRING): BOOLEAN
+			-- true if there is a term binding for code `a_code' in `a_terminology'
+		do
+			Result := constraint_bindings.has (a_terminology) and then constraint_bindings.item (a_terminology).has (a_code)
+		end
+
+	has_terminology_extract (a_terminology: STRING): BOOLEAN
+			-- true if there is an extract from terminology `a_terminology'
+		require
+			Terminology_valid: not a_terminology.is_empty
+		do
+			Result := terminology_extracts.has (a_terminology)
+		end
+
+	has_terminology_extract_code (a_terminology, a_code: STRING): BOOLEAN
+			-- true if there is a term binding for code `a_code' in `a_terminology'
+		require
+			Terminology_valid: not has_terminology_extract (a_terminology)
+			Term_code_valid: not a_code.is_empty
+		do
+			Result := terminology_extracts.item (a_terminology).has (a_code)
 		end
 
 	has_term_bindings (a_terminology: STRING): BOOLEAN
@@ -316,41 +370,6 @@ feature -- Status Report
 			-- true if there are term bindings `a_terminology'
 		do
 			Result := constraint_bindings.has (a_terminology)
-		end
-
-	has_any_term_binding (a_key: STRING): BOOLEAN
-			-- true if there is any term binding for code `a_key', which is either a code or a path
-		deferred
-		end
-
-	has_term_binding (a_terminology, a_key: STRING): BOOLEAN
-			-- true if there is a term binding for code `a_key' in `a_terminology'
-		deferred
-		end
-
-	has_any_constraint_binding (a_code: STRING): BOOLEAN
-			-- true if there is any constraint binding for code `a_code'
-		deferred
-		end
-
-	has_constraint_binding (a_terminology, a_code: STRING): BOOLEAN
-			-- true if there is a term binding for code `a_code' in `a_terminology'
-		deferred
-		end
-
-	has_terminology_extract (a_terminology: STRING): BOOLEAN
-			-- true if there is an extract from terminology `a_terminology'
-		require
-			Terminology_valid: not a_terminology.is_empty
-		deferred
-		end
-
-	has_terminology_extract_code (a_terminology, a_code: STRING): BOOLEAN
-			-- true if there is a term binding for code `a_code' in `a_terminology'
-		require
-			Terminology_valid: not has_terminology_extract (a_terminology)
-			Term_code_valid: not a_code.is_empty
-		deferred
 		end
 
 	semantically_conforms_to (other: FLAT_ARCHETYPE_ONTOLOGY): BOOLEAN
@@ -478,28 +497,26 @@ feature -- Modification
 		do
 			create langs_to_remove.make(0)
 
-			from term_definitions.start until term_definitions.off loop
-				term_definitions.item_for_iteration.remove (a_code)
-				if term_definitions.item_for_iteration.count = 0 then
-					langs_to_remove.extend (term_definitions.key_for_iteration)
+			across term_definitions as term_defs_csr loop
+				term_defs_csr.item.remove (a_code)
+				if term_defs_csr.item.count = 0 then
+					langs_to_remove.extend (term_defs_csr.key)
 				end
-				term_definitions.forth
 			end
 
-			from langs_to_remove.start until langs_to_remove.off loop
-				term_definitions.remove (langs_to_remove.item)
-				langs_to_remove.forth
+			across langs_to_remove as lang_terms_csr loop
+				term_definitions.remove (lang_terms_csr.item)
 			end
 
 			-- make a copy of terminologies list, since the next action might modify it...
 			create terminologies.make_from_array (term_bindings.current_keys)
 			if has_any_term_binding (a_code) then
-				from terminologies.start until terminologies.off loop
-					if term_bindings.has(terminologies.item) and then
-						term_bindings.item (terminologies.item).has(a_code) then
-						remove_term_binding (a_code, terminologies.item)
+				across terminologies as terminologies_csr loop
+					if term_bindings.has (terminologies_csr.item) and then
+						term_bindings.item (terminologies_csr.item).has (a_code)
+					then
+						remove_term_binding (a_code, terminologies_csr.item)
 					end
-					terminologies.forth
 				end
 			end
 			term_codes.prune (a_code)
@@ -518,7 +535,7 @@ feature -- Modification
 			create langs_to_remove.make(0)
 
 			from constraint_definitions.start until constraint_definitions.off loop
-				constraint_definitions.item_for_iteration.remove(a_code)
+				constraint_definitions.item_for_iteration.remove (a_code)
 				if constraint_definitions.item_for_iteration.count = 0 then
 					langs_to_remove.extend (constraint_definitions.key_for_iteration)
 				end

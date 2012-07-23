@@ -199,14 +199,14 @@ feature -- Access (semantic)
 			-- a path derived from the ontological path of the nearest folder node + archetype_id
 		local
 			csr: ARCH_CAT_ITEM
-			acmn: ARCH_CAT_MODEL_NODE
 		do
 			create Result.make(0)
-			from csr := parent until csr = Void or acmn /= Void loop
-				acmn ?= csr
+			from csr := parent until attached {ARCH_CAT_MODEL_NODE} csr or csr = Void loop
 				csr := csr.parent
 			end
-			Result := acmn.path + Ontological_path_separator + id.as_string
+			if attached {ARCH_CAT_MODEL_NODE} csr as acmn then
+				Result := acmn.path + Ontological_path_separator + id.as_string
+			end
 		end
 
 	differential_path: attached STRING
@@ -370,7 +370,9 @@ feature -- Access (semantic)
 
 	specialisation_parent: detachable ARCH_CAT_ARCHETYPE
 		do
-			Result ?= parent
+			if attached {ARCH_CAT_ARCHETYPE} parent as aca then
+				Result := aca
+			end
 		end
 
 	slot_id_index: detachable DS_HASH_TABLE [ARRAYED_SET[STRING], STRING]
@@ -911,9 +913,7 @@ feature {NONE} -- Compilation
 
 			if adl15_engine.validation_passed then
 				compilation_state := Cs_validated_phase_1
-				if is_specialised then
-					differential_archetype.set_parent_archetype (specialisation_parent.differential_archetype)
-	 			end
+
 	 			-- phase 2: validate archetype against flat parent
 				adl15_engine.phase_2_validate (Current, rm_schema)
 				errors.append (adl15_engine.errors)
@@ -1118,10 +1118,6 @@ feature -- File Operations
 				if archetype_serialise_engine.parse_succeeded then
 					if attached {P_ARCHETYPE} archetype_serialise_engine.tree.as_object (({P_ARCHETYPE}).type_id, <<>>) as p_archetype then
 						if attached {DIFFERENTIAL_ARCHETYPE} p_archetype.create_archetype as an_arch then
-							if an_arch.is_specialised then
-								an_arch.set_parent_archetype (specialisation_parent.differential_archetype)
-							end
-
 							-- serialise into normal ADL format
 							Result := adl15_engine.serialise (an_arch, Syntax_type_adl, current_archetype_language)
 						end

@@ -11,12 +11,10 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class C_GUI_NODE_MAP_BUILDER
+class C_DEFINITION_RENDERER
 
 inherit
 	C_VISITOR
-		rename
-			initialise as initialise_visitor
 		redefine
 			end_c_archetype_root,
 			end_c_complex_object,
@@ -74,15 +72,28 @@ inherit
 			{NONE} all
 		end
 
+create
+	make
+
 feature -- Initialisation
 
-	initialise (a_rm_schema: BMM_SCHEMA; an_archetype: attached ARCHETYPE; a_lang: attached STRING; a_gui_tree: GUI_EV_GRID;
+	make (a_rm_schema: BMM_SCHEMA; aca: ARCH_CAT_ARCHETYPE; differential_flag: BOOLEAN; a_lang: STRING; a_gui_tree: GUI_EV_GRID;
 				update_flag, show_codes_flag, show_rm_inheritance_flag,
 				in_technical_view_flag, rm_data_properties_flag, rm_runtime_properties_flag, rm_infrastructure_properties_flag: BOOLEAN;
 				a_gui_node_map: HASH_TABLE [EV_GRID_ROW, ARCHETYPE_CONSTRAINT];
-				a_code_select_agent, a_path_select_agent: attached PROCEDURE [ANY, TUPLE [STRING]])
+				a_code_select_agent, a_path_select_agent: PROCEDURE [ANY, TUPLE [STRING]])
 		do
-			initialise_visitor (an_archetype)
+			target_descriptor := aca
+			if aca.is_specialised then
+				flat_parent := aca.flat_archetype
+			end
+			differential_view := differential_flag
+			if differential_view then
+				initialise (aca.differential_archetype)
+			else
+				initialise (aca.flat_archetype)
+			end
+
 			rm_schema := a_rm_schema
 			gui_grid := a_gui_tree
 			node_grid_row_map := a_gui_node_map
@@ -90,7 +101,7 @@ feature -- Initialisation
 			show_rm_inheritance := show_rm_inheritance_flag
 			updating := update_flag
 			language := a_lang
-			rm_publisher := an_archetype.archetype_id.rm_originator.as_lower
+			rm_publisher := archetype.archetype_id.rm_originator.as_lower
 			code_select_agent := a_code_select_agent
 			path_select_agent := a_path_select_agent
 
@@ -103,6 +114,14 @@ feature -- Initialisation
 			create ev_grid_rm_row_stack.make (0)
 			create ev_grid_rm_row_removals_stack.make (0)
 		end
+
+feature -- Access
+
+	target_descriptor: detachable ARCH_CAT_ARCHETYPE
+			-- differential archetype being processed
+
+	flat_parent: detachable FLAT_ARCHETYPE
+			-- flat parent if the target archetype is specialised
 
 feature -- Visitor
 
@@ -836,13 +855,13 @@ feature {NONE} -- Implementation
 	ev_grid_rm_row_stack: ARRAYED_STACK [EV_GRID_ROW]
 			-- stack for building the RM node tree
 
-	ev_grid_rm_row_removals_stack: ARRAYED_STACK [BOOLEAN]
+	ev_grid_rm_row_removals_stack: detachable ARRAYED_STACK [BOOLEAN]
 			-- stack for tracking removals
 
 	node_grid_row_map: HASH_TABLE [EV_GRID_ROW, ARCHETYPE_CONSTRAINT]
 			-- xref table from archetype definition nodes to GUI grid rows
 
-	rm_node_path: OG_PATH
+	rm_node_path: detachable OG_PATH
 
 	gui_grid: GUI_EV_GRID
 
@@ -903,10 +922,18 @@ feature {NONE} -- Implementation
 		do
 			create Result.make_empty
 			if is_valid_code (a_code) then
-				if ontology.has_term_code (a_code) then
-					rubric := ontology.term_definition (language, a_code).text
-				elseif ontology.has_constraint_code (a_code) then
-					rubric := ontology.constraint_definition (language, a_code).text
+				if is_term_code (a_code) then
+					if ontology.has_term_code (a_code) then
+						rubric := ontology.term_definition (language, a_code).text
+					else
+						rubric := flat_parent.ontology.term_definition (language, a_code).text
+					end
+				else
+					if ontology.has_constraint_code (a_code) then
+						rubric := ontology.constraint_definition (language, a_code).text
+					else
+						rubric := flat_parent.ontology.constraint_definition (language, a_code).text
+					end
 				end
 				if show_codes then
 					Result.append (a_code + "|" + rubric + "|")

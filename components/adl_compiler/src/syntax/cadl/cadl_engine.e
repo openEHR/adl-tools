@@ -4,8 +4,9 @@ note
 	keywords:    "ADL"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2003-2012 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -31,19 +32,19 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	source: STRING
+	source: detachable STRING
 			-- Source of current artifact.
 
 	source_start_line: INTEGER
 			-- Defaults to 0; can be set to line number of cADL text inside some other document.
 
-	tree: C_COMPLEX_OBJECT
+	tree: detachable C_COMPLEX_OBJECT
 			-- Set if parse succeeded.
 
-	serialised: STRING
+	serialised: detachable STRING
 			-- The last result of calling `serialise'.
 
-	errors: attached ERROR_ACCUMULATOR
+	errors: ERROR_ACCUMULATOR
 			-- Result of last parse.
 		do
 			Result := parser.errors
@@ -73,7 +74,7 @@ feature -- Commands
 			serialised := Void
 		end
 
-	set_source (in_text: attached STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: attached BMM_SCHEMA)
+	set_source (in_text: STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: BMM_SCHEMA)
 			-- Set `in_text' as working artifact.
 		require
 			start_line_positive: a_source_start_line > 0
@@ -106,7 +107,7 @@ feature -- Commands
 			end
 		end
 
-	serialise (an_archetype: attached ARCHETYPE; a_format, a_lang: attached STRING)
+	serialise (an_archetype: ARCHETYPE; a_format, a_lang: STRING)
 			-- Serialise current artifact into `a_format'.
 		require
 			Format_valid: has_c_serialiser_format (a_format)
@@ -115,7 +116,7 @@ feature -- Commands
 			a_c_serialiser: C_SERIALISER
 			a_c_iterator: OG_CONTENT_ITERATOR
 		do
-			a_c_serialiser := c_serialiser_for_format (a_format)
+			a_c_serialiser := c_serialiser_for_format (an_archetype, a_lang, a_format)
 			a_c_serialiser.initialise (an_archetype, a_lang)
 			create a_c_iterator.make (tree.representation, a_c_serialiser)
 			a_c_iterator.do_all
@@ -125,7 +126,7 @@ feature -- Commands
 			serialised_attached: attached serialised
 		end
 
-	set_tree (a_node: attached C_COMPLEX_OBJECT)
+	set_tree (a_node: C_COMPLEX_OBJECT)
 			-- Set root node of `tree' from e.g. GUI tool.
 		do
 			tree := a_node
@@ -137,9 +138,9 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	parser: CADL_VALIDATOR
+	parser: detachable CADL_VALIDATOR
 
-	rm_schema: BMM_SCHEMA
+	rm_schema: detachable BMM_SCHEMA
 
 end
 

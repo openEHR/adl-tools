@@ -6,6 +6,7 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -26,7 +27,7 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (a_profile: attached SERIALISATION_PROFILE)
+	make (a_profile: SERIALISATION_PROFILE)
 			-- set profile
 		do
 			profile := a_profile
@@ -43,7 +44,7 @@ feature -- Commands
 
 feature -- Access
 
-	last_result: attached STRING
+	last_result: STRING
 			-- result of last call to serialisation procedures
 --		once("OBJECT")
 --			create Result.make(Buffer_size)
@@ -115,7 +116,7 @@ feature -- Status Report
 
 feature -- Factory
 
-	apply_style (elem: attached STRING; a_style: INTEGER): attached STRING
+	apply_style (elem: STRING; a_style: INTEGER): STRING
 			-- apply `a_style' to `elem'
 		require
 			Style_valid: has_style (a_style)
@@ -123,7 +124,7 @@ feature -- Factory
 			Result := profile.apply_style (elem, a_style)
 		end
 
-	clean (elem: attached STRING): attached STRING
+	clean (elem: STRING): STRING
 			-- clean `elem' using quoting rules of ADL
 		do
 			Result := profile.clean (elem)
@@ -136,7 +137,7 @@ feature -- Factory
 			Result := profile.create_indent (indent_level)
 		end
 
-	safe_comment (a_text: attached STRING): attached STRING
+	safe_comment (a_text: STRING): STRING
 			-- make a comment text taken from the ontology safe for inclusion
 			-- by removing newlines and restricting its length
 		local

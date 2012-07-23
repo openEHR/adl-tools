@@ -278,26 +278,11 @@ feature -- Modification
 			end
 		end
 
-feature {ARCHETYPE_VALIDATOR, ARCH_CAT_ARCHETYPE} -- Implementation
+feature {NONE} -- Implementation
 
-	set_parent_archetype (an_archetype: attached DIFFERENTIAL_ARCHETYPE)
-			-- set `parent_archetype'
-		require
-			Archetype_valid: an_archetype.specialisation_depth + 1 = specialisation_depth
-		do
-			parent_archetype := an_archetype
-			ontology.set_parent_ontology (an_archetype.ontology)
-		end
-
-	parent_archetype: DIFFERENTIAL_ARCHETYPE
-			-- reference to parent, if this archetype is specialised
-
-	inherited_subtree_list: HASH_TABLE[ARCHETYPE_CONSTRAINT, STRING]
+	inherited_subtree_list: HASH_TABLE [ARCHETYPE_CONSTRAINT, STRING]
 			-- table of {object_node, path} of nodes at the top of inherited subtrees,
 			-- that if deleted should bring the archetype back to differential form
-
-invariant
-	Parent_archetype_validity: parent_archetype /= Void implies is_specialised
 
 end
 

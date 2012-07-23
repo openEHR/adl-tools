@@ -6,13 +6,13 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWBPR"
 	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
-	void_safe:	 "yes, dirty"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class GUI_NODE_MAP_CONTROL
+class GUI_DEFINITION_CONTROL
 
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
@@ -185,15 +185,14 @@ feature -- Commands
 			-- repopulate and/or refresh visual appearance if diff/flat view has changed or RM icons setting changed
 		local
 			a_c_iterator: C_OBJECT_VISITOR_ITERATOR
-			c_node_map_builder: C_GUI_NODE_MAP_BUILDER
+			c_node_map_builder: C_DEFINITION_RENDERER
 		do
 			-- populate peripheral controls
 			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.populate end)
 
 			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
 			gui_grid.ev_grid.lock_update
-			create c_node_map_builder
-			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, gui_grid, True, show_codes, show_rm_inheritance,
+			create c_node_map_builder.make (rm_schema, source, differential_view, selected_language, gui_grid, True, show_codes, show_rm_inheritance,
 				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties,
 				node_grid_row_map, code_select_action_agent, path_select_action_agent)
 			create a_c_iterator.make (source_archetype.definition, c_node_map_builder,
@@ -322,7 +321,7 @@ feature {NONE} -- Implementation
 			-- other purposes
 		local
 			a_c_iterator: C_OBJECT_VISITOR_ITERATOR
-			c_node_map_builder: C_GUI_NODE_MAP_BUILDER
+			c_node_map_builder: C_DEFINITION_RENDERER
 		do
 			-- determine visualisation ancestor class
 			rm_schema := source.rm_schema
@@ -339,8 +338,7 @@ feature {NONE} -- Implementation
 			create node_grid_row_map.make (0)
 
 			gui_grid.ev_grid.lock_update
-			create c_node_map_builder
-			c_node_map_builder.initialise (rm_schema, source_archetype, selected_language, gui_grid, False, show_codes, show_rm_inheritance,
+			create c_node_map_builder.make (rm_schema, source, differential_view, selected_language, gui_grid, False, show_codes, show_rm_inheritance,
 				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties,
 				node_grid_row_map, code_select_action_agent, path_select_action_agent)
 			create a_c_iterator.make (source_archetype.definition, c_node_map_builder,

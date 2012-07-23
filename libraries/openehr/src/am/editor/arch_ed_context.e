@@ -6,6 +6,7 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -18,13 +19,15 @@ create
 
 feature -- Initialisation
 
-	make (an_arch: FLAT_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
+	make (a_target: FLAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 		do
-			target := an_arch
+			target := a_target
 			rm_schema := an_rm_schema
 		end
 
 feature -- Access
+
+	target_descriptor: ARCH_CAT_ARCHETYPE
 
 	target: FLAT_ARCHETYPE
 			-- archetype being edited, created as a copy of an original
@@ -49,8 +52,7 @@ feature {NONE} -- Implementation
 			c_ed_context_builder: C_OBJECT_ED_CONTEXT_BUILDER
 		do
 			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
-			create c_ed_context_builder
-			c_ed_context_builder.initialise (target, in_reference_model_mode, rm_schema)
+			create c_ed_context_builder.make (target, in_reference_model_mode, rm_schema)
 			create a_c_iterator.make (target.definition.representation, c_ed_context_builder)
 			a_c_iterator.do_all
 

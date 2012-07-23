@@ -115,6 +115,8 @@ feature -- Initialisation
 
 			-- initial state
 			include_rm_data_properties := True
+			include_rm_runtime_properties := True
+			include_rm_infrastructure_properties := True
 		end
 
 feature -- Access

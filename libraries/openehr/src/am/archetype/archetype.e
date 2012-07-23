@@ -340,8 +340,7 @@ feature {ARCHETYPE_AOM_BUILDER, ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF
 			create accodes_index.make(0)
 			create slot_index.make(0)
 
-			create definition_xref_builder
-			definition_xref_builder.initialise (Current)
+			create definition_xref_builder.make (Current)
 			create a_c_iterator.make (definition.representation, definition_xref_builder)
 			a_c_iterator.do_all
 
@@ -366,8 +365,7 @@ feature {ARCHETYPE_AOM_BUILDER, ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF
 			a_c_iterator: OG_CONTENT_ITERATOR
 			rollup_builder: C_ROLLUP_BUILDER
 		do
-			create rollup_builder
-			rollup_builder.initialise (Current)
+			create rollup_builder.make (Current)
 			create a_c_iterator.make (definition.representation, rollup_builder)
 			a_c_iterator.do_all
 		end

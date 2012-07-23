@@ -6,6 +6,7 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -62,7 +63,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	archetype_all_serialiser_formats: attached ARRAYED_LIST [STRING]
+	archetype_all_serialiser_formats: ARRAYED_LIST [STRING]
 			-- List of all avalable archetype serialisation format names.
 		once
 			create Result.make (0)
@@ -82,7 +83,7 @@ feature -- Access
 			each_format_has_file_extension: Result.for_all (agent (format: STRING): BOOLEAN do Result := archetype_file_extensions.has (format) end)
 		end
 
-	archetype_native_serialiser_formats: attached ARRAYED_LIST [STRING]
+	archetype_native_serialiser_formats: ARRAYED_LIST [STRING]
 			-- List of native archetype serialisation format names.
 		once
 			create Result.make (0)
@@ -96,7 +97,7 @@ feature -- Access
 			each_format_has_file_extension: Result.for_all (agent (format: STRING): BOOLEAN do Result := archetype_file_extensions.has (format) end)
 		end
 
-	archetype_native_serialiser_for_format (a_format: attached STRING): attached ARCHETYPE_MULTIPART_SERIALISER
+	archetype_native_serialiser_for_format (a_format: STRING): ARCHETYPE_MULTIPART_SERIALISER
 			-- The archetype serialiser for `a_format'.
 		require
 			format_valid: has_archetype_native_serialiser_format (a_format)
@@ -104,7 +105,7 @@ feature -- Access
 			Result := archetype_native_serialisers [a_format]
 		end
 
-	archetype_file_extensions: attached HASH_TABLE [STRING, STRING]
+	archetype_file_extensions: HASH_TABLE [STRING, STRING]
 			-- File extensions for logical serialisation formats.
 		once
 			create Result.make (0)
@@ -120,7 +121,7 @@ feature -- Access
 
 feature -- Status Report
 
-	has_archetype_native_serialiser_format (a_format: attached STRING): BOOLEAN
+	has_archetype_native_serialiser_format (a_format: STRING): BOOLEAN
 			-- Is `a_format' supported for serialisation?
 		do
 			Result := archetype_native_serialisers.has (a_format)
@@ -128,7 +129,7 @@ feature -- Status Report
 
 feature {NONE} -- Implementation
 
-	archetype_native_serialisers: attached HASH_TABLE [ARCHETYPE_MULTIPART_SERIALISER, STRING]
+	archetype_native_serialisers: HASH_TABLE [ARCHETYPE_MULTIPART_SERIALISER, STRING]
 			-- The supported archetype native syntax serialisers, i.e. serialisers based on the ADL syntax
 		once
 			create Result.make (0)

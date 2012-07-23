@@ -171,7 +171,7 @@ feature {NONE} -- Implementation
 
 	description_controls: GUI_DESCRIPTION_CONTROLS
 
-	node_map_control: GUI_NODE_MAP_CONTROL
+	node_map_control: GUI_DEFINITION_CONTROL
 
 	ontology_controls: GUI_ONTOLOGY_CONTROLS
 

@@ -6,6 +6,7 @@ note
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -15,20 +16,34 @@ deferred class C_SERIALISER
 
 inherit
 	ANY_SERIALISER
+		redefine
+			make
+		end
 
 	C_VISITOR
 		rename
 			initialise as initialise_visitor
 		end
 
+	BASIC_DEFINITIONS
+		export
+			{NONE}
+		end
+
 feature -- Initialisation
 
-	initialise (an_archetype: attached ARCHETYPE; a_lang: attached STRING)
+	make (a_profile: SERIALISATION_PROFILE)
+			-- set profile
+		do
+			profile := a_profile
+			reset
+		end
+
+	initialise (an_archetype: ARCHETYPE; a_lang: STRING)
 			-- set ontology required for serialising cADL, and perform basic initialisation
 		require
 			Language_valid: an_archetype.has_language (a_lang)
 		do
-			reset
 			language := a_lang
 			initialise_visitor (an_archetype)
 		end
@@ -50,7 +65,7 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
-	language: attached STRING
+	language: STRING
 			-- IETF RFC 5646 language tag; wll be an exact text match
 			-- for one of the 'languages' in the archetype
 

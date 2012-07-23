@@ -6,6 +6,7 @@ note
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -18,7 +19,7 @@ inherit
 
 feature {NONE} -- Initialisation
 
-	initialise (a_target: attached like target)
+	initialise (a_target: like target)
 			-- set target and initialise reporting variables
 		do
 			target := a_target
@@ -30,7 +31,7 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	target: attached AUTHORED_RESOURCE
+	target: AUTHORED_RESOURCE
 			-- target of this validator
 
 	validate

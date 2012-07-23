@@ -118,6 +118,7 @@ feature {NONE} -- Initialisation
 			create test_status_area
 
 			create ev_grid.make
+			ev_grid.disable_row_height_fixed
 			ev_grid.enable_tree
 			ev_grid.hide_tree_node_connectors
 			ev_grid.set_node_pixmaps (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
@@ -491,8 +492,8 @@ feature {NONE} -- Commands
 			res_label: STRING
 			test_result: INTEGER
 		do
-			if attached {EV_GRID_CHECKABLE_LABEL_ITEM} row.item (2) as gcli and then gcli.is_checked then
-				target ?= row.data
+			if attached {EV_GRID_CHECKABLE_LABEL_ITEM} row.item (2) as gcli and then gcli.is_checked and attached {ARCH_CAT_ARCHETYPE} row.data as aca then
+				target := aca
 
 				if attached target then
 					row.ensure_visible

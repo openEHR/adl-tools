@@ -12,6 +12,7 @@ note
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -26,6 +27,16 @@ inherit
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all
+		end
+
+create
+	make
+
+feature -- Initialisation
+
+	make (an_archetype: ARCHETYPE)
+		do
+			initialise (an_archetype)
 		end
 
 feature -- Visitor
