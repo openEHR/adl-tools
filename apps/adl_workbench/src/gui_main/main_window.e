@@ -770,8 +770,8 @@ feature {NONE} -- Repository events
 		do
 			create dialog.make_with_text (get_msg_line ("export_question", <<a_syntax>>))
 			dialog.set_title (get_msg ("export_in_format_dialog_title", <<a_syntax>>))
-			yes_text := get_msg ("build_and_export_all", Void)
-			no_text := get_msg ("export_only_built", Void)
+			yes_text := get_text ("build_and_export_all")
+			no_text := get_text ("export_only_built")
 			cancel_text := get_msg_line ("cancel_button_text", Void)
 			dialog.set_buttons (<<yes_text, no_text, cancel_text>>)
 
@@ -801,42 +801,47 @@ feature {NONE} -- Repository events
 			file: PLAIN_TEXT_FILE
 			save_dialog: EV_FILE_SAVE_DIALOG
 			xml_name: STRING
+			info_dialog: EV_INFORMATION_DIALOG
 		do
-			create save_dialog
-			save_dialog.set_title (get_msg ("export_report_dialog_title", Void))
-			save_dialog.set_file_name (Repository_report_filename)
-			save_dialog.set_start_directory (current_work_directory)
-			save_dialog.filters.extend (["*.xml", "Save as XML"])
-			save_dialog.show_modal_to_window (Current)
-			xml_name := save_dialog.file_name.as_string_8
+			if current_arch_cat.has_statistics then
+				create save_dialog
+				save_dialog.set_title (get_text ("export_report_dialog_title"))
+				save_dialog.set_file_name (Repository_report_filename)
+				save_dialog.set_start_directory (current_work_directory)
+				save_dialog.filters.extend (["*.xml", get_msg ("save_archetype_as_type", <<"XML">>)])
+				save_dialog.show_modal_to_window (Current)
+				xml_name := save_dialog.file_name.as_string_8
 
-			if not xml_name.is_empty then
-				set_current_work_directory (file_system.dirname (xml_name))
+				if not xml_name.is_empty then
+					set_current_work_directory (file_system.dirname (xml_name))
 
-				if not file_system.has_extension (xml_name, ".xml") then
-					xml_name.append (".xml")
-				end
+					if not file_system.has_extension (xml_name, ".xml") then
+						xml_name.append (".xml")
+					end
 
-				ok_to_write := True
-				create file.make (xml_name)
+					ok_to_write := True
+					create file.make (xml_name)
 
-				if file.exists then
-					create question_dialog.make_with_text (get_msg_line ("file_exists_replace_question", <<xml_name>>))
-					question_dialog.set_title (get_msg ("export_dialog_title", Void))
-					question_dialog.set_buttons (<<get_msg ("yes_response", Void), get_msg ("no_response", Void)>>)
-					question_dialog.show_modal_to_window (Current)
-					ok_to_write := question_dialog.selected_button.same_string (get_msg ("yes_response", Void))
-				end
-
-				if ok_to_write then
-					do_with_wait_cursor (Current, agent error_tool.export_repository_report (xml_name))
 					if file.exists then
-						console_tool.append_text (get_msg_line ("export_repository_report_replace_info", <<xml_name>>))
-						show_in_system_browser (xml_name)
-					else
-						console_tool.append_text (get_msg_line ("export_repository_report_replace_err", <<xml_name>>))
+						create question_dialog.make_with_text (get_msg_line ("file_exists_replace_question", <<xml_name>>))
+						question_dialog.set_title (get_text ("export_dialog_title"))
+						question_dialog.set_buttons (<<get_text ("yes_response"), get_text ("no_response")>>)
+						question_dialog.show_modal_to_window (Current)
+						ok_to_write := question_dialog.selected_button.same_string (get_text ("yes_response"))
+					end
+
+					if ok_to_write then
+						do_with_wait_cursor (Current, agent error_tool.export_repository_report (xml_name))
+						if file.exists then
+							console_tool.append_text (get_msg_line ("export_repository_report_replace_info", <<xml_name>>))
+							show_in_system_browser (xml_name)
+						else
+							console_tool.append_text (get_msg_line ("export_repository_report_replace_err", <<xml_name>>))
+						end
 					end
 				end
+			else
+				create info_dialog.make_with_text (get_msg_line ("export_errors_stats_requires_build_text", Void))
 			end
 		end
 

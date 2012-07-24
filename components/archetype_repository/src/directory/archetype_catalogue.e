@@ -180,8 +180,8 @@ feature -- Commands
 			create item_index.make (0)
 			item_tree := Void
 			compile_attempt_count := 0
-			create last_stats_build_timestamp.make_from_epoch (0)
 			create last_populate_timestamp.make_from_epoch (0)
+			reset_statistics
 		end
 
 	populate
@@ -399,12 +399,18 @@ feature -- Metrics
 
 feature -- Statistics
 
+	has_statistics: BOOLEAN
+			-- True if stats have been computed
+		do
+			Result := last_stats_build_timestamp > time_epoch
+		end
+
 	can_build_statistics: BOOLEAN
 		do
 			Result := compile_attempt_count = archetype_count
 		end
 
-	catalogue_metrics: detachable HASH_TABLE [INTEGER, STRING]
+	catalogue_metrics: HASH_TABLE [INTEGER, STRING]
 
 	terminology_bindings_statistics: detachable HASH_TABLE [ARRAYED_LIST[STRING], STRING]
 			-- table of archetypes containing terminology bindings, keyed by terminology;
@@ -437,7 +443,7 @@ feature -- Statistics
 			end
 		end
 
-	stats: detachable HASH_TABLE [ARCHETYPE_STATISTICAL_REPORT, STRING]
+	stats: HASH_TABLE [ARCHETYPE_STATISTICAL_REPORT, STRING]
 			-- table of aggregated stats, keyed by BMM_SCHEMA id to which the contributing archetypes relate
 			-- (a single logical archetpe repository can contain archetypes of multiple RMs)
 
