@@ -84,8 +84,12 @@ feature -- Initialisation
 			-- assumed args are <<original_language, concept_code>>
 		do
 			default_create
-			original_language ?= make_args[1]
-			concept_code ?= make_args[2]
+			if attached {STRING} make_args[1] as str then
+				original_language := str
+			end
+			if attached {STRING} make_args[2] as str then
+				concept_code := str
+			end
 		end
 
 feature -- Access
@@ -121,7 +125,7 @@ feature -- Access
 			Result.merge (terminologies)
 		end
 
-	term_codes: TWO_WAY_SORTED_SET[STRING]
+	term_codes: TWO_WAY_SORTED_SET [STRING]
 			-- list of term codes
 
 	constraint_codes: TWO_WAY_SORTED_SET[STRING]
@@ -130,19 +134,19 @@ feature -- Access
 --	term_attribute_names: ARRAYED_LIST[STRING]
 --			-- the attribute names found in ARCHETYPE_TERM objects
 
-	term_definitions: HASH_TABLE[HASH_TABLE[ARCHETYPE_TERM, STRING], STRING]
+	term_definitions: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
 			-- table of term definitions, keyed by code, keyed by language
 
-	constraint_definitions: HASH_TABLE[HASH_TABLE[ARCHETYPE_TERM, STRING], STRING]
+	constraint_definitions: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
 			-- table of constraint definitions, keyed by code, keyed by language
 
 	term_bindings: HASH_TABLE [HASH_TABLE [CODE_PHRASE, STRING], STRING]
 			-- tables of bindings of external terms to internal codes and/or paths, keyed by external terminology id
 
-	constraint_bindings: HASH_TABLE[HASH_TABLE[URI, STRING], STRING]
+	constraint_bindings: HASH_TABLE [HASH_TABLE [URI, STRING], STRING]
 			-- table of constraint bindings in the form of strings "service::query", keyed by terminology
 
-	terminology_extracts: detachable HASH_TABLE[HASH_TABLE[ARCHETYPE_TERM, STRING], STRING]
+	terminology_extracts: detachable HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
 			-- table of {code, description} keyed by terminology_id containing extracted concepts from external terminologies
 
 	specialisation_depth: INTEGER
@@ -288,7 +292,7 @@ feature -- Status Report
 	has_term_code (a_code: STRING): BOOLEAN
 			-- is `a_code' known in this ontology
 		require
-			Term_code_valid: is_valid_code(a_code)
+			Term_code_valid: is_valid_code (a_code)
 		do
 			Result := term_codes.has (a_code)
 		end
@@ -810,35 +814,31 @@ feature -- Finalisation
 			done: BOOLEAN
 		do
 			-- populate term code list & set codes in ARCHETYPE_TERM objects
-			from term_definitions.start until term_definitions.off loop
-				from term_definitions.item_for_iteration.start until term_definitions.item_for_iteration.off loop
-					code := term_definitions.item_for_iteration.key_for_iteration
-					term_definitions.item_for_iteration.item_for_iteration.set_code (code)
+			across term_definitions as term_defs_csr loop
+				across term_defs_csr.item as term_defs_list_csr loop
+					code := term_defs_list_csr.key
+					term_defs_list_csr.item.set_code (code)
 					if not done then
 						term_codes.extend (code)
 						update_highest_specialised_code_index (code)
 						update_highest_term_code_index (code)
 					end
-					term_definitions.item_for_iteration.forth
 				end
-				term_definitions.forth
 				done := True
 			end
 
 			-- populate constraint code list & set codes in ARCHETYPE_TERM objects
 			done := False
-			from constraint_definitions.start until constraint_definitions.off loop
-				from constraint_definitions.item_for_iteration.start until constraint_definitions.item_for_iteration.off loop
-					code := constraint_definitions.item_for_iteration.key_for_iteration
-					constraint_definitions.item_for_iteration.item_for_iteration.set_code (code)
+			across constraint_definitions as constraint_defs_csr loop
+				across constraint_defs_csr.item as constraint_defs_list_csr loop
+					code := constraint_defs_list_csr.key
+					constraint_defs_list_csr.item.set_code (code)
 					if not done then
 						constraint_codes.extend (code)
 						update_highest_specialised_code_index (code)
 						update_highest_constraint_code_index(code)
 					end
-					constraint_definitions.item_for_iteration.forth
 				end
-				constraint_definitions.forth
 				done := True
 			end
 		end

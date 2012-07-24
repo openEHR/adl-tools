@@ -31,7 +31,7 @@ feature -- Initialisation
 			-- set profile
 		do
 			profile := a_profile
-			reset
+			create last_result.make (Buffer_size)
 		end
 
 feature -- Commands
@@ -46,9 +46,6 @@ feature -- Access
 
 	last_result: STRING
 			-- result of last call to serialisation procedures
---		once("OBJECT")
---			create Result.make(Buffer_size)
---		end
 
 	symbol (sym_id: INTEGER): STRING
 			-- retrieve symbol string for `sym_id'

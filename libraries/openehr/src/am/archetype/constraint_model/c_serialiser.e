@@ -16,9 +16,6 @@ deferred class C_SERIALISER
 
 inherit
 	ANY_SERIALISER
-		redefine
-			make
-		end
 
 	C_VISITOR
 		rename
@@ -32,13 +29,6 @@ inherit
 
 feature -- Initialisation
 
-	make (a_profile: SERIALISATION_PROFILE)
-			-- set profile
-		do
-			profile := a_profile
-			reset
-		end
-
 	initialise (an_archetype: ARCHETYPE; a_lang: STRING)
 			-- set ontology required for serialising cADL, and perform basic initialisation
 		require
@@ -46,6 +36,7 @@ feature -- Initialisation
 		do
 			language := a_lang
 			initialise_visitor (an_archetype)
+			reset
 		end
 
 feature {NONE} -- Implementation

@@ -41,7 +41,7 @@ feature {NONE} -- Initialization
 			create screen
 			set_position (app_x_position + (screen.width - width) // 2, app_y_position + (screen.height - height) // 2)
 
-			create timer.make_with_interval (5000)
+			create timer.make_with_interval (7000)
 			timer.actions.extend (agent close)
 		end
 

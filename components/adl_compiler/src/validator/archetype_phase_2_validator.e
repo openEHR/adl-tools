@@ -181,30 +181,30 @@ feature {NONE} -- Implementation
 			end
 
 			-- see if every term code used in an ORDINAL or a CODE_PHRASE is in ontology
-			across target.data_atcodes_index as code_csr loop
-				code_depth := specialisation_depth_from_code (code_csr.key)
+			across target.data_atcodes_index as codes_csr loop
+				code_depth := specialisation_depth_from_code (codes_csr.key)
 				if code_depth > depth then
-					add_error ("VATCD", <<code_csr.key>>)
+					add_error ("VATCD", <<codes_csr.key>>)
 				elseif code_depth < depth then
-					if not flat_parent.ontology.has_term_code (code_csr.key) then
-						add_error ("VATDC1", <<code_csr.key>>)
+					if not flat_parent.ontology.has_term_code (codes_csr.key) then
+						add_error ("VATDC1", <<codes_csr.key>>)
 					end
-				elseif not ontology.has_term_code (code_csr.key) then
-					add_error ("VATDC2", <<code_csr.key>>)
+				elseif not ontology.has_term_code (codes_csr.key) then
+					add_error ("VATDC2", <<codes_csr.key>>)
 				end
 			end
 
 			-- check if all found constraint_codes are defined in constraint_definitions,
-			across target.accodes_index as code_csr loop
-				code_depth := specialisation_depth_from_code (code_csr.key)
+			across target.accodes_index as codes_csr loop
+				code_depth := specialisation_depth_from_code (codes_csr.key)
 				if code_depth > depth then
-					add_error ("VATCD", <<code_csr.key>>)
+					add_error ("VATCD", <<codes_csr.key>>)
 				elseif code_depth < depth then
-					if not flat_parent.ontology.has_constraint_code (code_csr.key) then
-						add_error ("VACDF1", <<code_csr.key>>)
+					if not flat_parent.ontology.has_constraint_code (codes_csr.key) then
+						add_error ("VACDF1", <<codes_csr.key>>)
 					end
-				elseif not ontology.has_constraint_code (code_csr.key) then
-					add_error ("VACDF2", <<code_csr.key>>)
+				elseif not ontology.has_constraint_code (codes_csr.key) then
+					add_error ("VACDF2", <<codes_csr.key>>)
 				end
 			end
 		end
