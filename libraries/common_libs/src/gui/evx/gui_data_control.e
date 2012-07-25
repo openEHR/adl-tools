@@ -15,7 +15,7 @@ note
 	last_change: "$LastChangedDate$"
 
 
-deferred class EVX_DATA_CONTROL
+deferred class GUI_DATA_CONTROL
 
 inherit
 	SHARED_APP_UI_RESOURCES
@@ -23,7 +23,7 @@ inherit
 			{NONE} all
 		end
 
-	EVX_UTILITIES
+	GUI_UTILITIES
 		export
 			{NONE} all
 		end
@@ -64,7 +64,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	add_linked_control (a_control: EVX_TITLED_DATA_CONTROL)
+	add_linked_control (a_control: GUI_TITLED_DATA_CONTROL)
 			-- add a control that is to be repopulated if this control is selected in some way
 		do
 			if not attached linked_data_controls then
@@ -108,7 +108,7 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
-	linked_data_controls: detachable ARRAYED_LIST [EVX_DATA_CONTROL]
+	linked_data_controls: detachable ARRAYED_LIST [GUI_DATA_CONTROL]
 
 	do_enable_active
 			-- enable user interaction

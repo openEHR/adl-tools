@@ -1,15 +1,7 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "[
-				 Visual control for a data source that outputs to single_line EV_TEXT_FIELD control.
-				 Visual control structure is a text edit field with a title, in-place editing.
-				 
-					        +----------------------------+
-				    Title: 	|                            |
-						    +----------------------------+
-
-				 ]"
-	keywords:    "UI, ADL"
+	description: "EV_GRID form of GUI_TREE_CONTROL_I"
+	keywords:    "UI"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
@@ -20,26 +12,78 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class EVX_SINGLE_LINE_TEXT_CONTROL
+class GUI_TREE_CONTROL_GRID
 
 inherit
-	EVX_TEXT_CONTROL
-		redefine
-			ev_data_control
+	GUI_TREE_CONTROL_I
+
+	GUI_DEFINITIONS
+		export
+			{NONE} all
 		end
 
 create
-	make, make_readonly, make_active
+	make
+
+feature -- Initialisation
+
+	make (a_gui_grid: GUI_EV_GRID)
+		do
+			ev_grid := a_gui_grid.ev_grid
+			ev_root_widget := ev_grid
+		end
 
 feature -- Access
 
-	ev_data_control: EV_TEXT_FIELD
+	ev_grid: EV_GRID_KBD_MOUSE
 
-feature {NONE} -- Implementation
+feature -- Commands
 
-	create_ev_data_control
+	ev_tree_do_all (a_node_action: attached PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
+			-- do `a_node_action' to all nodes in the structure
 		do
-			create ev_data_control
+			ev_grid.tree_do_all (a_node_action)
+		end
+
+	collapse_one_level (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+		do
+			ev_grid.row_collapse_actions.block
+			ev_grid.collapse_one_level (test)
+			ev_grid.row_collapse_actions.resume
+		end
+
+	expand_one_level (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+		do
+			ev_grid.row_expand_actions.block
+			ev_grid.expand_one_level (test)
+			ev_grid.row_expand_actions.resume
+		end
+
+	expand_all (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+		do
+			ev_grid.row_collapse_actions.block
+			ev_grid.expand_all (test)
+			ev_grid.row_collapse_actions.resume
+		end
+
+	collapse_all
+		do
+			ev_grid.row_collapse_actions.block
+			ev_grid.collapse_all
+			ev_grid.row_collapse_actions.resume
+		end
+
+	collapse_except (test: FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+		do
+			ev_grid.row_collapse_actions.block
+			ev_grid.collapse_except (test)
+			ev_grid.row_collapse_actions.resume
+			resize_columns_to_content (default_grid_expansion_factor)
+		end
+
+	resize_columns_to_content (grid_expansion_factor: REAL)
+		do
+			ev_grid.resize_columns_to_content (grid_expansion_factor)
 		end
 
 end
@@ -60,7 +104,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is gui_hash_table.e.
+--| The Original Code is gui_grid_treeview_control.e
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2012

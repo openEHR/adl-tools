@@ -26,10 +26,10 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class EVX_FILE_PATH_SETTER
+class GUI_FILE_PATH_SETTER
 
 inherit
-	EVX_SINGLE_LINE_TEXT_CONTROL
+	GUI_SINGLE_LINE_TEXT_CONTROL
 		rename
 			make as make_text_control, make_active as make_active_text_control, make_readonly as make_readonly_text_control
 		end

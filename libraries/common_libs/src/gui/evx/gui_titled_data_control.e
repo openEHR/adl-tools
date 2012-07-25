@@ -15,10 +15,10 @@ note
 	last_change: "$LastChangedDate$"
 
 
-deferred class EVX_TITLED_DATA_CONTROL
+deferred class GUI_TITLED_DATA_CONTROL
 
 inherit
-	EVX_DATA_CONTROL
+	GUI_DATA_CONTROL
 
 feature -- Initialisation
 

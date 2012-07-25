@@ -1,7 +1,15 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-				 EV_FRAME-based control, containing a vbox or hbox, and with some style setting.
+				 Visual control for a data source that outputs to multi-line EV_TEXT control.
+				 Visual control structure is a text edit field with a title, in-place editing.
+				 
+					        +----------------------------+
+				            |                            |
+				    Title: 	|                            |
+				    	    |                            |
+						    +----------------------------+
+
 				 ]"
 	keywords:    "UI, ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
@@ -14,67 +22,27 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class EVX_FRAME_CONTROL
+class GUI_MULTILINE_TEXT_CONTROL
 
 inherit
-	EVX_DEFINITIONS
-		export
-			{NONE} all
+	GUI_TEXT_CONTROL
+		redefine
+			ev_data_control
 		end
 
 create
-	make
-
-feature -- Initialisation
-
-	make (a_title: STRING; min_height, min_width: INTEGER; horizontal_flag: BOOLEAN)
-		do
-			create ev_root_container
-			ev_root_container.set_text (a_title)
-			ev_root_container.set_style (1)
-
-			if horizontal_flag then
-				create {EV_HORIZONTAL_BOX} ev_root_box
-			else
-				create {EV_VERTICAL_BOX} ev_root_box
-			end
-			ev_root_box.set_border_width (Default_border_width)
-			ev_root_box.set_padding_width (Default_padding_width)
-			ev_root_container.extend (ev_root_box)
-			ev_current_box := ev_root_box
-		end
+	make, make_active
 
 feature -- Access
 
-	ev_root_container: EV_FRAME
-
-feature -- Modification
-
-	extend (a_widget: EV_WIDGET; can_expand: BOOLEAN)
-			-- extend current container with `a_widget'
-		do
-			ev_current_box.extend (a_widget)
-			if not can_expand then
-				ev_current_box.disable_item_expand (a_widget)
-			end
-		end
-
-	add_row (can_expand: BOOLEAN)
-			-- add an HBOX container; subsequent calls to `extend' will add to this HBOX
-		do
-			create {EV_HORIZONTAL_BOX} ev_current_box
-			ev_root_box.extend (ev_current_box)
-			if not can_expand then
-				ev_root_box.disable_item_expand (ev_current_box)
-			end
-		end
+	ev_data_control: EV_TEXT
 
 feature {NONE} -- Implementation
 
-	ev_root_box: EV_BOX
-
-	ev_current_box: EV_BOX
-			-- ref to box currently being added to
+	create_ev_data_control
+		do
+			create ev_data_control
+		end
 
 end
 

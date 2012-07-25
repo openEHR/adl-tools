@@ -12,7 +12,7 @@ note
 	last_change: "$LastChangedDate$"
 
 
-deferred class EVX_TREE_CONTROL_I
+deferred class GUI_TREE_CONTROL_I
 
 feature -- Access
 

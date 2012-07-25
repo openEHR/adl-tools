@@ -1,6 +1,6 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Boolean Radio button group, functionally same as a toggle button."
+	description: "Toggle button with two titles that change when toggled"
 	keywords:    "UI"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
@@ -12,10 +12,10 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class EVX_BOOLEAN_RADIO_CONTROL
+class GUI_TOGGLE_BUTTON_CONTROL
 
 inherit
-	EVX_DATA_CONTROL
+	GUI_DATA_CONTROL
 		redefine
 			data_source_agent, data_source_setter_agent
 		end
@@ -26,7 +26,7 @@ create
 feature -- Initialisation
 
 	make (a_state_1_label, a_state_2_label: STRING;
-			a_state_1_tooltip_text, a_state_2_tooltip_text: detachable STRING;
+			a_tooltip_text: detachable STRING;
 			a_data_source_agent: like data_source_agent;
 			a_data_source_setter_agent: like data_source_setter_agent;
 			min_height, min_width: INTEGER)
@@ -34,37 +34,35 @@ feature -- Initialisation
 			data_source_agent := a_data_source_agent
 			data_source_setter_agent := a_data_source_setter_agent
 
-			create_ev_data_control
-			ev_data_control.set_text (utf8_to_utf32 (a_state_1_label))
-			ev_data_control_peer.set_text (utf8_to_utf32 (a_state_2_label))
-			if attached a_state_1_tooltip_text then
-				ev_data_control.set_tooltip (utf8_to_utf32 (a_state_1_tooltip_text))
-			end
-			if attached a_state_2_tooltip_text then
-				ev_data_control_peer.set_tooltip (utf8_to_utf32 (a_state_2_tooltip_text))
+			create state_1_settings
+			create state_2_settings
+
+			-- reverse the lables, because a button shows the state
+			-- its not in, not the current state
+			state_2_settings.label := utf8_to_utf32 (a_state_1_label)
+			state_1_settings.label := utf8_to_utf32 (a_state_2_label)
+
+			create ev_data_control
+			ev_data_control.set_minimum_height (default_min_height)
+			if attached a_tooltip_text then
+				ev_data_control.set_tooltip (utf8_to_utf32 (a_tooltip_text))
 			end
 
 			ev_data_control.select_actions.extend (agent toggle_state)
-			ev_data_control_peer.select_actions.extend (agent toggle_state)
 		ensure
 			not is_readonly
 		end
 
 feature -- Access
 
-	ev_root_container: EV_VERTICAL_BOX
-			-- holding the two radio buttons; add this container to parent widget hierarchy
-
-	ev_data_control: EV_RADIO_BUTTON
-			-- first radio button
-
-	ev_data_control_peer: EV_RADIO_BUTTON
-			-- second radio button
+	ev_data_control: EV_BUTTON
 
 	data_source_agent: FUNCTION [ANY, TUPLE, BOOLEAN]
 
 	data_source_setter_agent: detachable PROCEDURE [ANY, TUPLE [BOOLEAN]]
 			-- agent for creating & setting the data source
+
+	state_1_settings, state_2_settings: TUPLE [label: STRING_32; pixmap: detachable EV_PIXMAP]
 
 feature -- Commands
 
@@ -74,23 +72,17 @@ feature -- Commands
 
 	populate
 		do
-			if data_source_agent.item ([]) then
-				ev_data_control.select_actions.block
-				ev_data_control.enable_select
-				ev_data_control.select_actions.resume
-			else
-				ev_data_control_peer.select_actions.block
-				ev_data_control_peer.enable_select
-				ev_data_control_peer.select_actions.resume
-			end
+			set_state (data_source_agent.item ([]))
 		end
 
 feature -- Modification
 
 	set_pixmaps (a_state_1_pixmap, a_state_2_pixmap: detachable EV_PIXMAP)
 		do
-			ev_data_control.set_pixmap (a_state_1_pixmap)
-			ev_data_control.set_pixmap (a_state_2_pixmap)
+			-- as for the labels, reverse the pixmaps because a button shows
+			-- the other state, not the current one
+			state_2_settings.pixmap := a_state_1_pixmap
+			state_1_settings.pixmap := a_state_2_pixmap
 		end
 
 feature {NONE} -- Implementation
@@ -98,12 +90,6 @@ feature {NONE} -- Implementation
 	create_ev_data_control
 		do
 			create ev_data_control
-			create ev_data_control_peer
-			create ev_root_container
-			ev_root_container.extend (ev_data_control)
-			ev_root_container.disable_item_expand (ev_data_control)
-			ev_root_container.extend (ev_data_control_peer)
-			ev_root_container.disable_item_expand (ev_data_control_peer)
 		end
 
 	toggle_state
@@ -111,6 +97,23 @@ feature {NONE} -- Implementation
 		do
 			if attached data_source_setter_agent then
 				data_source_setter_agent.call ([not data_source_agent.item ([])])
+			end
+		end
+
+	set_state (in_state_1: BOOLEAN)
+			-- set state
+		local
+			settings: like state_1_settings
+		do
+			if in_state_1 then
+				settings := state_1_settings
+			else
+				settings := state_2_settings
+			end
+
+			ev_data_control.set_text (settings.label)
+			if attached settings.pixmap then
+				ev_data_control.set_pixmap (settings.pixmap)
 			end
 		end
 

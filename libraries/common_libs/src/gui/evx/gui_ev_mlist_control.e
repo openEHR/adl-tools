@@ -26,10 +26,10 @@ note
 	last_change: "$LastChangedDate$"
 
 
-deferred class EVX_MLIST_CONTROL
+deferred class GUI_EV_MLIST_CONTROL
 
 inherit
-	EVX_TITLED_DATA_CONTROL
+	GUI_TITLED_DATA_CONTROL
 		rename
 			make as make_data_control, make_active as make_active_data_control, make_readonly as make_readonly_data_control
 		redefine

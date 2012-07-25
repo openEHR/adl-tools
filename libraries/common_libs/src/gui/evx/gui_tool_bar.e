@@ -14,15 +14,15 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class EVX_TOOL_BAR
+class GUI_TOOL_BAR
 
 inherit
-	EVX_DEFINITIONS
+	GUI_DEFINITIONS
 		export
 			{NONE} all
 		end
 
-	EVX_UTILITIES
+	GUI_UTILITIES
 		export
 			{NONE} all
 		end
@@ -185,7 +185,7 @@ feature -- Modification
 		require
 			has_ev_tool_bar: has_ev_tool_bar
 		local
-			gui_button: EVX_TOOL_BAR_BUTTON
+			gui_button: GUI_TOOL_BAR_BUTTON
 		do
 			create gui_button.make (an_active_pixmap, an_inactive_pixmap, a_tooltip_text, a_select_action)
 			last_tool_bar_button := gui_button.ev_button
@@ -195,14 +195,14 @@ feature -- Modification
 
 	activate_tool_bar_button (a_tool_bar_button: EV_TOOL_BAR_BUTTON)
 		do
-			if attached {EVX_TOOL_BAR_BUTTON} a_tool_bar_button.data as gui_button then
+			if attached {GUI_TOOL_BAR_BUTTON} a_tool_bar_button.data as gui_button then
 				gui_button.enable_active
 			end
 		end
 
 	deactivate_tool_bar_button (a_tool_bar_button: EV_TOOL_BAR_BUTTON)
 		do
-			if attached {EVX_TOOL_BAR_BUTTON} a_tool_bar_button.data as gui_button then
+			if attached {GUI_TOOL_BAR_BUTTON} a_tool_bar_button.data as gui_button then
 				gui_button.disable_active
 			end
 		end

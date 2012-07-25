@@ -1,7 +1,23 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "EV_GRID form of EVX_TREE_CONTROL_I"
-	keywords:    "UI"
+	description: "[
+				 Visual control for a LIST [STRING] data source that outputs to an EV_COMBO_BOX.
+				 Visual control structure is a combo-box with a title, in-place editing and deletion.
+				 Designed for selecting various values of a list or hash, not for editing. 
+				 
+								   Title
+						+-------------------------+-+
+						|                         |V|
+						+-------------------------+-+
+						
+				 or
+				 
+							+-------------------------+-+
+					Title	|                         |V|
+							+-------------------------+-+
+
+				 ]"
+	keywords:    "UI, ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
@@ -12,14 +28,16 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class EVX_TREE_CONTROL_GRID
+class GUI_COMBO_CONTROL
 
 inherit
-	EVX_TREE_CONTROL_I
-
-	EVX_DEFINITIONS
+	GUI_TITLED_DATA_CONTROL
+		rename
+			make as make_data_control
 		export
-			{NONE} all
+			{NONE} make_active
+		redefine
+			data_source_agent, do_enable_active, do_disable_active
 		end
 
 create
@@ -27,63 +45,73 @@ create
 
 feature -- Initialisation
 
-	make (a_gui_grid: EVX_GRID)
+	make (a_title: STRING; a_data_source_agent: like data_source_agent;
+			min_height, min_width: INTEGER; arrange_horizontally: BOOLEAN)
 		do
-			ev_grid := a_gui_grid.ev_grid
-			ev_root_widget := ev_grid
+			make_data_control (a_title, a_data_source_agent, min_height, min_width, arrange_horizontally, False)
+			ev_root_container.disable_item_expand (ev_data_control)
+			ev_data_control.select_actions.extend (agent propagate_select_action)
+			do_enable_active
 		end
 
 feature -- Access
 
-	ev_grid: EV_GRID_KBD_MOUSE
+	ev_data_control: EV_COMBO_BOX
+
+	data_source_agent: FUNCTION [ANY, TUPLE, LIST [STRING]]
 
 feature -- Commands
 
-	ev_tree_do_all (a_node_action: attached PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
-			-- do `a_node_action' to all nodes in the structure
+	clear
+			-- Wipe out content
 		do
-			ev_grid.tree_do_all (a_node_action)
+			ev_data_control.wipe_out
 		end
 
-	collapse_one_level (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+	populate
+			-- Wipe out content.
 		do
-			ev_grid.row_collapse_actions.block
-			ev_grid.collapse_one_level (test)
-			ev_grid.row_collapse_actions.resume
+			ev_data_control.select_actions.block
+			ev_data_control.wipe_out
+			if attached {LIST [STRING]} data_source_agent.item ([]) as strs then
+				strs.do_all (
+					agent (str:STRING)
+						do
+							ev_data_control.extend (create {EV_LIST_ITEM}.make_with_text (utf8_to_utf32 (str)))
+						end
+				)
+			end
+			ev_data_control.select_actions.resume
 		end
 
-	expand_one_level (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+feature {NONE} -- Implementation
+
+	propagate_select_action
 		do
-			ev_grid.row_expand_actions.block
-			ev_grid.expand_one_level (test)
-			ev_grid.row_expand_actions.resume
+			if attached linked_data_controls then
+				linked_data_controls.do_all (agent (a_ctl: GUI_DATA_CONTROL) do a_ctl.populate end)
+			end
 		end
 
-	expand_all (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+feature {NONE} -- Implementation
+
+	create_ev_data_control
 		do
-			ev_grid.row_collapse_actions.block
-			ev_grid.expand_all (test)
-			ev_grid.row_collapse_actions.resume
+			create ev_data_control
 		end
 
-	collapse_all
+	do_enable_active
+			-- enable editing
 		do
-			ev_grid.row_collapse_actions.block
-			ev_grid.collapse_all
-			ev_grid.row_collapse_actions.resume
+			precursor
+			ev_data_control.enable_edit
 		end
 
-	collapse_except (test: FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+	do_disable_active
+			-- disable editing
 		do
-			ev_grid.row_collapse_actions.block
-			ev_grid.collapse_except (test)
-			ev_grid.row_collapse_actions.resume
-			resize_columns_to_content (default_grid_expansion_factor)
-		end
-
-	resize_columns_to_content (grid_expansion_factor: REAL)
-		do
-			ev_grid.resize_columns_to_content (grid_expansion_factor)
+			precursor
+			ev_data_control.disable_edit
 		end
 
 end
@@ -104,7 +132,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is gui_grid_treeview_control.e
+--| The Original Code is gui_hash_table.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2012

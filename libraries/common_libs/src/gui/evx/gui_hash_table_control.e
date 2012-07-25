@@ -28,10 +28,10 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class EVX_HASH_TABLE_CONTROL
+class GUI_HASH_TABLE_CONTROL
 
 inherit
-	EVX_MLIST_CONTROL
+	GUI_EV_MLIST_CONTROL
 		redefine
 			data_source_agent, data_source_setter_agent, data_source_remove_agent
 		end

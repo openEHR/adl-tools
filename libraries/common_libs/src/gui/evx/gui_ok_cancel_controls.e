@@ -1,7 +1,7 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Tool bar button with active/inactive setting.
+				 OK and Cancel buttons, with left hand padding cell, to add to any dialog box.
 				 ]"
 	keywords:    "UI, ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
@@ -14,17 +14,19 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class EVX_TOOL_BAR_BUTTON
+class GUI_OK_CANCEL_CONTROLS
 
 inherit
-	EVX_DEFINITIONS
+	GUI_DEFINITIONS
 		export
 			{NONE} all
 		end
 
-	EVX_UTILITIES
+	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
+		undefine
+			copy, default_create
 		end
 
 create
@@ -32,66 +34,96 @@ create
 
 feature -- Initialisation
 
-	make (an_active_pixmap, an_inactive_pixmap: detachable EV_PIXMAP; a_tooltip_text: detachable STRING; a_select_action: detachable PROCEDURE [ANY, TUPLE])
+	make (ok_agent, cancel_agent: PROCEDURE [ANY, TUPLE])
 		do
-			active_pixmap := an_active_pixmap
-			inactive_pixmap := an_inactive_pixmap
-			select_action := a_select_action
+			create ev_root_container
+			ev_root_container.set_padding_width (default_padding_width)
+			ev_root_container.set_border_width (default_border_width)
 
-			create ev_button
-			if attached a_tooltip_text then
-				ev_button.set_tooltip (a_tooltip_text)
-			end
-			is_active := True
-			disable_active
+			-- Padding Cell
+			create ev_cell
+			ev_root_container.extend (ev_cell)
+			ev_cell.set_minimum_width (100)
+
+			-- OK button
+			create ok_button
+			ok_button.set_text (get_text ("ok_button_text"))
+			ok_button.set_minimum_width (100)
+			ok_button.set_minimum_height (26)
+			ev_root_container.extend (ok_button)
+			ev_root_container.disable_item_expand (ok_button)
+			ok_button.select_actions.extend (ok_agent)
+
+			-- Cancel button
+			create cancel_button
+			cancel_button.set_text (get_text ("cancel_button_text"))
+			cancel_button.set_minimum_width (100)
+			cancel_button.set_minimum_height (26)
+			ev_root_container.extend (cancel_button)
+			ev_root_container.disable_item_expand (cancel_button)
+			cancel_button.select_actions.extend (cancel_agent)
 		end
 
 feature -- Access
 
-	ev_button: EV_TOOL_BAR_BUTTON
+	ev_root_container: EV_HORIZONTAL_BOX
 
-	active_pixmap: detachable EV_PIXMAP
-
-	inactive_pixmap: detachable EV_PIXMAP
-
-	select_action: detachable PROCEDURE [ANY, TUPLE]
+	ok_button, cancel_button: EV_BUTTON
 
 feature -- Status Report
 
-	is_active: BOOLEAN
-
-feature -- Commands
-
-	enable_active
-			-- set active pixmap and install `select_action'
+	has_button (a_title: STRING): BOOLEAN
+			-- is there any button with title `a_title'?
 		do
-			if not is_active then
-				is_active := True
-				if attached active_pixmap then
-					ev_button.set_pixmap (active_pixmap)
-				end
-				if attached select_action then
-					ev_button.select_actions.extend (select_action)
-				end
-			end
+			Result := attached added_buttons and then
+				(added_buttons.has(a_title) or a_title.same_string (ok_button.text) or a_title.same_string (cancel_button.text))
 		end
 
-	disable_active
-			-- set inactive pixmap and uninstall `select_action'
+feature -- Modification
+
+	add_button (a_title: STRING; an_agent: PROCEDURE [ANY, TUPLE])
+			-- add another button, which will appear to the left of the OK/Cancel buttons
+		require
+			not has_button (a_title)
+		local
+			a_button: EV_BUTTON
 		do
-			if is_active then
-				is_active := False
-				if attached inactive_pixmap then
-					ev_button.set_pixmap (inactive_pixmap)
-				end
-				ev_button.select_actions.wipe_out
+			if not attached added_buttons then
+				create added_buttons.make (0)
 			end
+			create a_button
+			a_button.set_text (a_title)
+			a_button.select_actions.extend (an_agent)
+			added_buttons.put (a_button, a_title)
+			ev_root_container.start
+			ev_root_container.put_right (a_button)
+			ev_root_container.disable_item_expand (a_button)
+		end
+
+feature -- Command
+
+	enable_sensitive
+			-- enable user input
+		do
+			cancel_button.enable_sensitive
+			ok_button.enable_sensitive
+		end
+
+	disable_sensitive
+			-- disable user input
+		do
+			cancel_button.disable_sensitive
+			ok_button.disable_sensitive
 		end
 
 feature {NONE} -- Implementation
 
+	ev_cell: EV_CELL
+
+	added_buttons: detachable HASH_TABLE [EV_BUTTON, STRING]
 
 end
+
 
 
 --|

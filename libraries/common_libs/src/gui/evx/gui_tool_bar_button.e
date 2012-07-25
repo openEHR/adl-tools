@@ -1,6 +1,8 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Collapsable control panel container for adding to right or left of main viewing area in a window."
+	description: "[
+				 Tool bar button with active/inactive setting.
+				 ]"
 	keywords:    "UI, ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
@@ -12,10 +14,15 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class EVX_CONTROL_PANEL
+class GUI_TOOL_BAR_BUTTON
 
 inherit
-	SHARED_APP_UI_RESOURCES
+	GUI_DEFINITIONS
+		export
+			{NONE} all
+		end
+
+	GUI_UTILITIES
 		export
 			{NONE} all
 		end
@@ -25,76 +32,66 @@ create
 
 feature -- Initialisation
 
-	make
-		local
-			hbox: EV_HORIZONTAL_BOX
+	make (an_active_pixmap, an_inactive_pixmap: detachable EV_PIXMAP; a_tooltip_text: detachable STRING; a_select_action: detachable PROCEDURE [ANY, TUPLE])
 		do
-			create ev_root_container
-			ev_root_container.set_border_width (Default_border_width)
-			ev_root_container.set_padding_width (Default_padding_width)
+			active_pixmap := an_active_pixmap
+			inactive_pixmap := an_inactive_pixmap
+			select_action := a_select_action
 
-			-- add collapse / expand button group
-			create hbox
-			ev_root_container.extend (hbox)
-			ev_root_container.disable_item_expand (hbox)
-
-			-- add an expanding cell
-			hbox.extend (create {EV_CELL})
-
-			-- add button
-			create collapse_expand_button
-			collapse_expand_button.set_text (get_text ("collapse_button_text"))
-			collapse_expand_button.select_actions.extend (agent do_collapse_expand)
-			hbox.extend (collapse_expand_button)
-			hbox.disable_item_expand (collapse_expand_button)
-
-			-- add main box
-			create ev_main_vbox
-			ev_root_container.extend (ev_main_vbox)
-			ev_root_container.disable_item_expand (ev_main_vbox)
+			create ev_button
+			if attached a_tooltip_text then
+				ev_button.set_tooltip (a_tooltip_text)
+			end
+			is_active := True
+			disable_active
 		end
 
 feature -- Access
 
-	ev_root_container: EV_VERTICAL_BOX
+	ev_button: EV_TOOL_BAR_BUTTON
 
-feature -- Modification
+	active_pixmap: detachable EV_PIXMAP
 
-	add_frame_control (a_frame_ctl: EVX_FRAME_CONTROL; can_expand: BOOLEAN)
-			-- extend current container with frame inside `a_frame_ctl'
+	inactive_pixmap: detachable EV_PIXMAP
+
+	select_action: detachable PROCEDURE [ANY, TUPLE]
+
+feature -- Status Report
+
+	is_active: BOOLEAN
+
+feature -- Commands
+
+	enable_active
+			-- set active pixmap and install `select_action'
 		do
-			add_frame (a_frame_ctl.ev_root_container, can_expand)
+			if not is_active then
+				is_active := True
+				if attached active_pixmap then
+					ev_button.set_pixmap (active_pixmap)
+				end
+				if attached select_action then
+					ev_button.select_actions.extend (select_action)
+				end
+			end
 		end
 
-	add_frame (a_frame: EV_FRAME; can_expand: BOOLEAN)
-			-- extend current container with `a_frame'
+	disable_active
+			-- set inactive pixmap and uninstall `select_action'
 		do
-			ev_main_vbox.extend (a_frame)
-			if not can_expand then
-				ev_main_vbox.disable_item_expand (a_frame)
+			if is_active then
+				is_active := False
+				if attached inactive_pixmap then
+					ev_button.set_pixmap (inactive_pixmap)
+				end
+				ev_button.select_actions.wipe_out
 			end
 		end
 
 feature {NONE} -- Implementation
 
-	ev_main_vbox: EV_VERTICAL_BOX
-
-	collapse_expand_button: EV_TOGGLE_BUTTON
-
-	do_collapse_expand
-			-- collapse control except button
-		do
-			if collapse_expand_button.is_selected then
-				ev_main_vbox.hide
-				collapse_expand_button.set_text (get_text ("expand_button_text"))
-			else
-				ev_main_vbox.show
-				collapse_expand_button.set_text (get_text ("collapse_button_text"))
-			end
-		end
 
 end
-
 
 
 --|

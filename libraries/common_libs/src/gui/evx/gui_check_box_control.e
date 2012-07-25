@@ -20,10 +20,10 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class EVX_CHECK_BOX_CONTROL
+class GUI_CHECK_BOX_CONTROL
 
 inherit
-	EVX_DATA_CONTROL
+	GUI_DATA_CONTROL
 		redefine
 			data_source_agent, data_source_setter_agent
 		end

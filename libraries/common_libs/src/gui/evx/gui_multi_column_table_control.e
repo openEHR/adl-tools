@@ -25,10 +25,10 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class EVX_MULTI_COLUMN_TABLE_CONTROL
+class GUI_MULTI_COLUMN_TABLE_CONTROL
 
 inherit
-	EVX_MLIST_CONTROL
+	GUI_EV_MLIST_CONTROL
 		rename
 			make as make_mlist, make_active as make_active_mlist
 		redefine
