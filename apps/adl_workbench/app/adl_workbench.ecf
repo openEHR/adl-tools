@@ -129,6 +129,20 @@
 					<platform value="windows"/>
 				</condition>
 			</file_rule>
+			<file_rule>
+				<exclude>/other$</exclude>
+				<include>/windows$</include>
+				<condition>
+					<platform value="windows"/>
+				</condition>
+			</file_rule>
+			<file_rule>
+				<exclude>/windows$</exclude>
+				<include>/other$</include>
+				<condition>
+					<platform excluded_value="windows"/>
+				</condition>
+			</file_rule>
 		</override>
 	</target>
 </system>
