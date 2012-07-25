@@ -25,7 +25,7 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class GUI_TREEVIEW_CONTROL
+class EVX_TREEVIEW_CONTROL
 
 inherit
 	SHARED_APP_UI_RESOURCES
@@ -38,7 +38,7 @@ inherit
 			{NONE} all
 		end
 
-	GUI_UTILITIES
+	EVX_UTILITIES
 		export
 			{NONE} all
 		end
@@ -48,7 +48,7 @@ create
 
 feature -- Initialisation
 
-	make (a_tree_ctl: GUI_TREE_CONTROL_I; a_collapse_expand_test_agt: like collapse_expand_test_agt)
+	make (a_tree_ctl: EVX_TREE_CONTROL_I; a_collapse_expand_test_agt: like collapse_expand_test_agt)
 		local
 			ev_view_label: EV_LABEL
 			ev_hbox: EV_HORIZONTAL_BOX
@@ -99,7 +99,7 @@ feature -- Access
 
 	ev_root_container: EV_FRAME
 
-	gui_tree_control: GUI_TREE_CONTROL_I
+	gui_tree_control: EVX_TREE_CONTROL_I
 
 	ev_expand_button, ev_expand_one_button, ev_collapse_one_button, ev_collapse_button: EV_BUTTON
 

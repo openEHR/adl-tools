@@ -1,59 +1,83 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Application constant redefinitions"
-	keywords:    "constants"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2007 Ocean Informatics Pty Ltd"
+	description: "[
+				 EV_FRAME-based control, containing a vbox or hbox, and with some style setting.
+				 ]"
+	keywords:    "UI, ADL"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-	description: "Objects that provide access to constants loaded from files."
-	date: "$Date$"
-	revision: "$Revision$"
 
-class
-	GUI_DEFINITIONS
+class EVX_FRAME_CONTROL
 
-feature -- Definitions
-
-	Default_padding_width: INTEGER = 3
-
-	Default_border_width: INTEGER = 4
-
-	editable_colour: EV_COLOR
-		once
-			create Result.make_with_8_bit_rgb (255, 255, 255)
+inherit
+	EVX_DEFINITIONS
+		export
+			{NONE} all
 		end
 
-	background_colour: EV_COLOR
-		once
-			create Result.make_with_8_bit_rgb (240, 240, 240)
-		end
+create
+	make
 
-	screen_10_pt_regular_font: EV_FONT
+feature -- Initialisation
+
+	make (a_title: STRING; min_height, min_width: INTEGER; horizontal_flag: BOOLEAN)
 		do
-			create Result
-			Result.set_family ({EV_FONT_CONSTANTS}.Family_screen)
-			Result.set_weight ({EV_FONT_CONSTANTS}.Weight_regular)
-			Result.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
-			Result.set_height_in_points (10)
+			create ev_root_container
+			ev_root_container.set_text (a_title)
+			ev_root_container.set_style (1)
+
+			if horizontal_flag then
+				create {EV_HORIZONTAL_BOX} ev_root_box
+			else
+				create {EV_VERTICAL_BOX} ev_root_box
+			end
+			ev_root_box.set_border_width (Default_border_width)
+			ev_root_box.set_padding_width (Default_padding_width)
+			ev_root_container.extend (ev_root_box)
+			ev_current_box := ev_root_box
 		end
 
-	Text_min_height: INTEGER = 23
+feature -- Access
 
-	Label_min_width: INTEGER = 35
+	ev_root_container: EV_FRAME
 
-	Default_grid_expansion_factor: REAL = 1.05
-			-- amount to spread columns by to enhance readability
+feature -- Modification
 
-	Default_grid_row_expansion: INTEGER = 4
-			-- number of pixels to add to height of grid row to enhance readability
+	extend (a_widget: EV_WIDGET; can_expand: BOOLEAN)
+			-- extend current container with `a_widget'
+		do
+			ev_current_box.extend (a_widget)
+			if not can_expand then
+				ev_current_box.disable_item_expand (a_widget)
+			end
+		end
+
+	add_row (can_expand: BOOLEAN)
+			-- add an HBOX container; subsequent calls to `extend' will add to this HBOX
+		do
+			create {EV_HORIZONTAL_BOX} ev_current_box
+			ev_root_box.extend (ev_current_box)
+			if not can_expand then
+				ev_root_box.disable_item_expand (ev_current_box)
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	ev_root_box: EV_BOX
+
+	ev_current_box: EV_BOX
+			-- ref to box currently being added to
 
 end
+
 
 
 --|
@@ -70,10 +94,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is constants.e.
+--| The Original Code is gui_hash_table.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2007
+--| Portions created by the Initial Developer are Copyright (C) 2012
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

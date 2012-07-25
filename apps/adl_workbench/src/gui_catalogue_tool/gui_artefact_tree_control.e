@@ -45,7 +45,7 @@ feature -- Access
 
 	ev_root_container: EV_CELL
 
-	gui_grid: GUI_EV_GRID
+	gui_grid: EVX_GRID
 
 feature -- Commands
 

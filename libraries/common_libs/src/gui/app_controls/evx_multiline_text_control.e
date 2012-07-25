@@ -1,11 +1,13 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-				 Visual control for a data source that outputs to single_line EV_TEXT_FIELD control.
+				 Visual control for a data source that outputs to multi-line EV_TEXT control.
 				 Visual control structure is a text edit field with a title, in-place editing.
 				 
 					        +----------------------------+
+				            |                            |
 				    Title: 	|                            |
+				    	    |                            |
 						    +----------------------------+
 
 				 ]"
@@ -20,20 +22,20 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class GUI_SINGLE_LINE_TEXT_CONTROL
+class EVX_MULTILINE_TEXT_CONTROL
 
 inherit
-	GUI_TEXT_CONTROL
+	EVX_TEXT_CONTROL
 		redefine
 			ev_data_control
 		end
 
 create
-	make, make_readonly, make_active
+	make, make_active
 
 feature -- Access
 
-	ev_data_control: EV_TEXT_FIELD
+	ev_data_control: EV_TEXT
 
 feature {NONE} -- Implementation
 

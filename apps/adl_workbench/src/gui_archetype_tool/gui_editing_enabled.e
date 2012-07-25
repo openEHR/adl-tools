@@ -46,7 +46,7 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
-	tool_bar: GUI_TOOL_BAR
+	tool_bar: EVX_TOOL_BAR
 		deferred
 		end
 

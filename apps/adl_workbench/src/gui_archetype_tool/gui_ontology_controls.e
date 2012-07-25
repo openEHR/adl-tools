@@ -115,14 +115,14 @@ feature -- Commands
 			-- enable editing
 		do
 			precursor
-			gui_controls.do_all (agent (an_item: GUI_TITLED_DATA_CONTROL) do an_item.enable_active end)
+			gui_controls.do_all (agent (an_item: EVX_TITLED_DATA_CONTROL) do an_item.enable_active end)
 		end
 
 	disable_edit
 			-- disable editing
 		do
 			precursor
-			gui_controls.do_all (agent (an_item: GUI_TITLED_DATA_CONTROL) do an_item.disable_active end)
+			gui_controls.do_all (agent (an_item: EVX_TITLED_DATA_CONTROL) do an_item.disable_active end)
 		end
 
 	select_term (a_term_code: attached STRING)
@@ -149,13 +149,13 @@ feature -- Events
 
 feature {NONE} -- Implementation
 
-	term_defs_mlist_ctl, constraint_defs_mlist_ctl: GUI_MULTI_COLUMN_TABLE_CONTROL
+	term_defs_mlist_ctl, constraint_defs_mlist_ctl: EVX_MULTI_COLUMN_TABLE_CONTROL
 
 	ev_vsplit: EV_VERTICAL_SPLIT_AREA
 
-	term_defs_frame_ctl, constraint_defs_frame_ctl: GUI_FRAME_CONTROL
+	term_defs_frame_ctl, constraint_defs_frame_ctl: EVX_FRAME_CONTROL
 
-	gui_controls: ARRAYED_LIST [GUI_TITLED_DATA_CONTROL]
+	gui_controls: ARRAYED_LIST [EVX_TITLED_DATA_CONTROL]
 
 	undo_redo_update_agent: PROCEDURE [ANY, TUPLE [UNDO_REDO_CHAIN]]
 
@@ -170,13 +170,13 @@ feature {NONE} -- Implementation
 	do_clear
 			-- wipe out content from ontology-related controls
 		do
-			gui_controls.do_all (agent (an_item: GUI_TITLED_DATA_CONTROL) do an_item.clear end)
+			gui_controls.do_all (agent (an_item: EVX_TITLED_DATA_CONTROL) do an_item.clear end)
 		end
 
 	do_populate
 		do
 			terminologies := ontology.terminologies_available
-			gui_controls.do_all (agent (an_item: GUI_TITLED_DATA_CONTROL) do an_item.populate end)
+			gui_controls.do_all (agent (an_item: EVX_TITLED_DATA_CONTROL) do an_item.populate end)
 		end
 
 	terminologies: ARRAYED_SET [STRING]

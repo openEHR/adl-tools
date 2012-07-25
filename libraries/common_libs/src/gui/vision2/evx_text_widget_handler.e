@@ -12,7 +12,7 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class GUI_TEXT_WIDGET_HANDLER
+class EVX_TEXT_WIDGET_HANDLER
 
 inherit
 	EV_SHARED_APPLICATION

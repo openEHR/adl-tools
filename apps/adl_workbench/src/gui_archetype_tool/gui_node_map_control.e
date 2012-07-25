@@ -70,7 +70,7 @@ feature -- Initialisation
 			ev_root_container.disable_item_expand (control_panel.ev_root_container)
 
 			-- tree collapse/expand control
-			create gui_treeview_control.make (create {GUI_TREE_CONTROL_GRID}.make (gui_grid),
+			create gui_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (gui_grid),
 				agent (a_row: EV_GRID_ROW): BOOLEAN do Result := not attached {BMM_MODEL_ELEMENT} a_row.data end)
 			control_panel.add_frame (gui_treeview_control.ev_root_container, False)
 
@@ -171,14 +171,14 @@ feature -- Commands
 			-- enable editing
 		do
 			precursor
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.enable_active end)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.enable_active end)
 		end
 
 	disable_edit
 			-- enable editing
 		do
 			precursor
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.disable_active end)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.disable_active end)
 		end
 
 	repopulate
@@ -188,7 +188,7 @@ feature -- Commands
 			c_node_map_builder: C_DEFINITION_RENDERER
 		do
 			-- populate peripheral controls
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.populate end)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 
 			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
 			gui_grid.ev_grid.lock_update
@@ -289,21 +289,21 @@ feature {NONE} -- Implementation
 
 	visualise_descendants_class: STRING
 
-	gui_grid: GUI_EV_GRID
+	gui_grid: EVX_GRID
 
-	gui_controls: ARRAYED_LIST [GUI_DATA_CONTROL]
+	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
-	gui_treeview_control: GUI_TREEVIEW_CONTROL
+	gui_treeview_control: EVX_TREEVIEW_CONTROL
 
-	view_detail_radio_ctl: GUI_BOOLEAN_RADIO_CONTROL
+	view_detail_radio_ctl: EVX_BOOLEAN_RADIO_CONTROL
 
-	view_rm_display_inheritance_checkbox_ctl, add_codes_checkbox_ctl: GUI_CHECK_BOX_CONTROL
+	view_rm_display_inheritance_checkbox_ctl, add_codes_checkbox_ctl: EVX_CHECK_BOX_CONTROL
 
-	rm_attrs_visible_checkbox_ctl, rm_runtime_attrs_visible_checkbox_ctl, rm_if_attrs_visible_checkbox_ctl: GUI_CHECK_BOX_CONTROL
+	rm_attrs_visible_checkbox_ctl, rm_runtime_attrs_visible_checkbox_ctl, rm_if_attrs_visible_checkbox_ctl: EVX_CHECK_BOX_CONTROL
 
-	control_panel: GUI_CONTROL_PANEL
+	control_panel: EVX_CONTROL_PANEL
 
-	view_detail_frame_ctl, rm_property_visibility_frame_ctl, rm_rendering_frame_ctl: GUI_FRAME_CONTROL
+	view_detail_frame_ctl, rm_property_visibility_frame_ctl, rm_rendering_frame_ctl: EVX_FRAME_CONTROL
 
 	rm_schema: detachable BMM_SCHEMA
 
@@ -313,7 +313,7 @@ feature {NONE} -- Implementation
 	do_clear
 		do
 			gui_grid.wipe_out
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.clear end)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.clear end)
 		end
 
 	do_populate
@@ -332,7 +332,7 @@ feature {NONE} -- Implementation
 			end
 
 			-- populate peripheral controls
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.populate end)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 
 			-- populate grid control
 			create node_grid_row_map.make (0)

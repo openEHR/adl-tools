@@ -77,7 +77,7 @@ create
 
 feature -- Initialisation
 
-	make (a_rm_schema: BMM_SCHEMA; aca: ARCH_CAT_ARCHETYPE; differential_flag: BOOLEAN; a_lang: STRING; a_gui_tree: GUI_EV_GRID;
+	make (a_rm_schema: BMM_SCHEMA; aca: ARCH_CAT_ARCHETYPE; differential_flag: BOOLEAN; a_lang: STRING; a_gui_tree: EVX_GRID;
 				update_flag, show_codes_flag, show_rm_inheritance_flag,
 				in_technical_view_flag, rm_data_properties_flag, rm_runtime_properties_flag, rm_infrastructure_properties_flag: BOOLEAN;
 				a_gui_node_map: HASH_TABLE [EV_GRID_ROW, ARCHETYPE_CONSTRAINT];
@@ -863,7 +863,7 @@ feature {NONE} -- Implementation
 
 	rm_node_path: detachable OG_PATH
 
-	gui_grid: GUI_EV_GRID
+	gui_grid: EVX_GRID
 
 	rm_schema: BMM_SCHEMA
 

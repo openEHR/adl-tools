@@ -12,7 +12,7 @@ note
 	last_change: "$LastChangedDate$"
 
 deferred class
-	WINDOW_ACCELERATORS
+	EVX_WINDOW_ACCELERATORS
 
 inherit
 	EV_KEY_CONSTANTS

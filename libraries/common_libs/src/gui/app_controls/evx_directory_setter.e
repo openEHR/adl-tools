@@ -22,10 +22,10 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class GUI_DIRECTORY_SETTER
+class EVX_DIRECTORY_SETTER
 
 inherit
-	GUI_SINGLE_LINE_TEXT_CONTROL
+	EVX_SINGLE_LINE_TEXT_CONTROL
 		rename
 			make as make_text_control, make_active as make_active_text_control, make_readonly as make_readonly_text_control
 		end

@@ -1,6 +1,6 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "EV_TREE form of GUI_TREE_CONTROL_I"
+	description: "EV_TREE form of EVX_TREE_CONTROL_I"
 	keywords:    "UI"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
@@ -12,12 +12,12 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class GUI_TREE_CONTROL_TREE
+class EVX_TREE_CONTROL_TREE
 
 inherit
-	GUI_TREE_CONTROL_I
+	EVX_TREE_CONTROL_I
 
-	GUI_UTILITIES
+	EVX_UTILITIES
 		export
 			{NONE} all
 		end

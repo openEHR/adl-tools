@@ -12,7 +12,7 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class GUI_EV_GRID
+class EVX_GRID
 
 inherit
 	STRING_UTILITIES
@@ -20,7 +20,7 @@ inherit
 			{NONE} all
 		end
 
-	GUI_DEFINITIONS
+	EVX_DEFINITIONS
 		export
 			{NONE} all
 		end

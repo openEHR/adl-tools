@@ -12,7 +12,7 @@ inherit
 			initialize, is_in_default_state
 		end
 
-	GUI_DEFINITIONS
+	EVX_DEFINITIONS
 		undefine
 			is_equal, default_create, copy
 		end

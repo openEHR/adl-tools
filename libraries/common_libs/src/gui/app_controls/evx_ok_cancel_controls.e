@@ -1,7 +1,7 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "[
-				 EV_FRAME-based control, containing a vbox or hbox, and with some style setting.
+				 OK and Cancel buttons, with left hand padding cell, to add to any dialog box.
 				 ]"
 	keywords:    "UI, ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
@@ -14,12 +14,19 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class GUI_FRAME_CONTROL
+class EVX_OK_CANCEL_CONTROLS
 
 inherit
-	GUI_DEFINITIONS
+	EVX_DEFINITIONS
 		export
 			{NONE} all
+		end
+
+	SHARED_APP_UI_RESOURCES
+		export
+			{NONE} all
+		undefine
+			copy, default_create
 		end
 
 create
@@ -27,54 +34,93 @@ create
 
 feature -- Initialisation
 
-	make (a_title: STRING; min_height, min_width: INTEGER; horizontal_flag: BOOLEAN)
+	make (ok_agent, cancel_agent: PROCEDURE [ANY, TUPLE])
 		do
 			create ev_root_container
-			ev_root_container.set_text (a_title)
-			ev_root_container.set_style (1)
+			ev_root_container.set_padding_width (default_padding_width)
+			ev_root_container.set_border_width (default_border_width)
 
-			if horizontal_flag then
-				create {EV_HORIZONTAL_BOX} ev_root_box
-			else
-				create {EV_VERTICAL_BOX} ev_root_box
-			end
-			ev_root_box.set_border_width (Default_border_width)
-			ev_root_box.set_padding_width (Default_padding_width)
-			ev_root_container.extend (ev_root_box)
-			ev_current_box := ev_root_box
+			-- Padding Cell
+			create ev_cell
+			ev_root_container.extend (ev_cell)
+			ev_cell.set_minimum_width (100)
+
+			-- OK button
+			create ok_button
+			ok_button.set_text (get_text ("ok_button_text"))
+			ok_button.set_minimum_width (100)
+			ok_button.set_minimum_height (26)
+			ev_root_container.extend (ok_button)
+			ev_root_container.disable_item_expand (ok_button)
+			ok_button.select_actions.extend (ok_agent)
+
+			-- Cancel button
+			create cancel_button
+			cancel_button.set_text (get_text ("cancel_button_text"))
+			cancel_button.set_minimum_width (100)
+			cancel_button.set_minimum_height (26)
+			ev_root_container.extend (cancel_button)
+			ev_root_container.disable_item_expand (cancel_button)
+			cancel_button.select_actions.extend (cancel_agent)
 		end
 
 feature -- Access
 
-	ev_root_container: EV_FRAME
+	ev_root_container: EV_HORIZONTAL_BOX
+
+	ok_button, cancel_button: EV_BUTTON
+
+feature -- Status Report
+
+	has_button (a_title: STRING): BOOLEAN
+			-- is there any button with title `a_title'?
+		do
+			Result := attached added_buttons and then
+				(added_buttons.has(a_title) or a_title.same_string (ok_button.text) or a_title.same_string (cancel_button.text))
+		end
 
 feature -- Modification
 
-	extend (a_widget: EV_WIDGET; can_expand: BOOLEAN)
-			-- extend current container with `a_widget'
+	add_button (a_title: STRING; an_agent: PROCEDURE [ANY, TUPLE])
+			-- add another button, which will appear to the left of the OK/Cancel buttons
+		require
+			not has_button (a_title)
+		local
+			a_button: EV_BUTTON
 		do
-			ev_current_box.extend (a_widget)
-			if not can_expand then
-				ev_current_box.disable_item_expand (a_widget)
+			if not attached added_buttons then
+				create added_buttons.make (0)
 			end
+			create a_button
+			a_button.set_text (a_title)
+			a_button.select_actions.extend (an_agent)
+			added_buttons.put (a_button, a_title)
+			ev_root_container.start
+			ev_root_container.put_right (a_button)
+			ev_root_container.disable_item_expand (a_button)
 		end
 
-	add_row (can_expand: BOOLEAN)
-			-- add an HBOX container; subsequent calls to `extend' will add to this HBOX
+feature -- Command
+
+	enable_sensitive
+			-- enable user input
 		do
-			create {EV_HORIZONTAL_BOX} ev_current_box
-			ev_root_box.extend (ev_current_box)
-			if not can_expand then
-				ev_root_box.disable_item_expand (ev_current_box)
-			end
+			cancel_button.enable_sensitive
+			ok_button.enable_sensitive
+		end
+
+	disable_sensitive
+			-- disable user input
+		do
+			cancel_button.disable_sensitive
+			ok_button.disable_sensitive
 		end
 
 feature {NONE} -- Implementation
 
-	ev_root_box: EV_BOX
+	ev_cell: EV_CELL
 
-	ev_current_box: EV_BOX
-			-- ref to box currently being added to
+	added_buttons: detachable HASH_TABLE [EV_BUTTON, STRING]
 
 end
 

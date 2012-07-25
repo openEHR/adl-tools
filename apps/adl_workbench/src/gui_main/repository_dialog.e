@@ -271,7 +271,7 @@ feature {NONE} -- Implementation
 	do_populate
 			-- Set the dialog widgets from shared settings.
 		do
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.populate end)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 		end
 
 	any_profile_changes_made_pending: BOOLEAN
@@ -308,20 +308,21 @@ feature {NONE} -- Implementation
 
 	ev_root_container: EV_VERTICAL_BOX
 
-	gui_controls: ARRAYED_LIST [GUI_DATA_CONTROL]
+	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
 	ev_vbox_2: EV_VERTICAL_BOX
 
-	profile_frame_ctl: GUI_FRAME_CONTROL
+	profile_frame_ctl: EVX_FRAME_CONTROL
 
-	ref_path_ctl, work_path_ctl: GUI_SINGLE_LINE_TEXT_CONTROL
+	ref_path_ctl, work_path_ctl: EVX_SINGLE_LINE_TEXT_CONTROL
 
 	profile_list: EV_LIST
 
 	profile_add_button, profile_remove_button, profile_edit_button: EV_BUTTON
+
 	reference_path_text, work_path_text: EV_TEXT_FIELD
 
-	ok_cancel_buttons: GUI_OK_CANCEL_CONTROLS
+	ok_cancel_buttons: EVX_OK_CANCEL_CONTROLS
 
 	is_in_default_state: BOOLEAN
 			-- Is `Current' in its default state?

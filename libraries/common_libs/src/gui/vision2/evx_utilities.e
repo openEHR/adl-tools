@@ -12,7 +12,7 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class GUI_UTILITIES
+class EVX_UTILITIES
 
 inherit
 	STRING_UTILITIES

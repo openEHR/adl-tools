@@ -236,7 +236,7 @@ feature -- Commands
 	enable_edit
 			-- enable editing
 		do
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.enable_active end)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.enable_active end)
 		end
 
 feature {NONE} -- Implementation
@@ -247,26 +247,26 @@ feature {NONE} -- Implementation
 	do_populate
 			-- Set the dialog widgets from shared settings.
 		do
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.populate end)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 		end
 
-	gui_controls: ARRAYED_LIST [GUI_DATA_CONTROL]
+	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
-	export_dir_setter, test_files_dir_setter: GUI_DIRECTORY_SETTER
+	export_dir_setter, test_files_dir_setter: EVX_DIRECTORY_SETTER
 
-	text_editor_dir_setter, adl_editor_dir_setter, diff_tool_dir_setter: GUI_FILE_PATH_SETTER
+	text_editor_dir_setter, adl_editor_dir_setter, diff_tool_dir_setter: EVX_FILE_PATH_SETTER
 
-	path_settings_frame_ctl, tool_paths_frame_ctl, compiler_settings_frame_ctl, ui_settings_frame_ctl: GUI_FRAME_CONTROL
+	path_settings_frame_ctl, tool_paths_frame_ctl, compiler_settings_frame_ctl, ui_settings_frame_ctl: EVX_FRAME_CONTROL
 
 	ev_root_container: EV_VERTICAL_BOX
 
-	parser_error_reporting_level_combo_box, adl_save_version_combo_box: GUI_COMBO_TEXT_SELECTOR_CONTROL
+	parser_error_reporting_level_combo_box, adl_save_version_combo_box: EVX_COMBO_TEXT_SELECTOR_CONTROL
 
-	validation_strict_check_ctl, rm_flattening_check_ctl, expand_definition_tree_check_ctl, show_line_numbers_check_ctl: GUI_CHECK_BOX_CONTROL
+	validation_strict_check_ctl, rm_flattening_check_ctl, expand_definition_tree_check_ctl, show_line_numbers_check_ctl: EVX_CHECK_BOX_CONTROL
 
-	display_source_check_ctl, show_all_classes_check_ctl, use_rm_icons_check_ctl: GUI_CHECK_BOX_CONTROL
+	display_source_check_ctl, show_all_classes_check_ctl, use_rm_icons_check_ctl: EVX_CHECK_BOX_CONTROL
 
-	ok_cancel_buttons: GUI_OK_CANCEL_CONTROLS
+	ok_cancel_buttons: EVX_OK_CANCEL_CONTROLS
 
 	is_in_default_state: BOOLEAN
 			-- Is `Current' in its default state?

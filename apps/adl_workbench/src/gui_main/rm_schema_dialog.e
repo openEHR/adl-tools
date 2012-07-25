@@ -138,7 +138,7 @@ feature -- Commands
 	enable_edit
 			-- enable editing
 		do
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.enable_active end)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.enable_active end)
 		end
 
 feature -- Events
@@ -207,7 +207,7 @@ feature {NONE} -- Implementation
 	do_populate
 			-- Set the dialog widgets from shared settings.
 		do
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.populate end)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 			populate_grid
 		end
 
@@ -321,14 +321,16 @@ feature {NONE} -- Implementation
 			-- list of checked schemas in options dialog
 
 	ev_cell_1, ev_cell_2, ev_cell_3, ev_cell_4: EV_CELL
+
 	ev_label_1, ev_label_2: EV_LABEL
+
 	grid: EV_GRID_KBD_MOUSE
 
-	gui_controls: ARRAYED_LIST [GUI_DATA_CONTROL]
+	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
-	rm_dir_setter: GUI_DIRECTORY_SETTER
+	rm_dir_setter: EVX_DIRECTORY_SETTER
 
-	ok_cancel_buttons: GUI_OK_CANCEL_CONTROLS
+	ok_cancel_buttons: EVX_OK_CANCEL_CONTROLS
 
 	is_in_default_state: BOOLEAN
 			-- Is `Current' in its default state?

@@ -20,7 +20,7 @@ inherit
 			{NONE} all
 		end
 
-	GUI_UTILITIES
+	EVX_UTILITIES
 		export
 			{NONE} all
 		end

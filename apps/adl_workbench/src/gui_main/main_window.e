@@ -20,12 +20,12 @@ inherit
 			show, initialize, is_in_default_state
 		end
 
-	GUI_DEFINITIONS
+	EVX_DEFINITIONS
 		undefine
 			is_equal, default_create, copy
 		end
 
-	WINDOW_ACCELERATORS
+	EVX_WINDOW_ACCELERATORS
 		undefine
 			copy, default_create
 		end
@@ -62,7 +62,7 @@ inherit
 			copy, default_create
 		end
 
-	GUI_UTILITIES
+	EVX_UTILITIES
 		export
 			{NONE} all
 		undefine
@@ -1257,7 +1257,7 @@ feature {NONE} -- Implementation
 			info_dialog.show_modal_to_window (Current)
 		end
 
-	text_widget_handler: GUI_TEXT_WIDGET_HANDLER
+	text_widget_handler: EVX_TEXT_WIDGET_HANDLER
 			-- FIXME: this is a hack to get round lack of standard behaviour in Vision2 for
 			-- focussed text widgets & cut & paste behaviours
 		once

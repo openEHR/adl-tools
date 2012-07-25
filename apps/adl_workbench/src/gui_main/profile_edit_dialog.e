@@ -234,7 +234,7 @@ feature -- Commands
 	enable_edit
 			-- enable editing
 		do
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.enable_active end)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.enable_active end)
 		end
 
 feature {NONE} -- Implementation
@@ -242,7 +242,7 @@ feature {NONE} -- Implementation
 	do_populate
 			-- Set the dialog widgets from shared settings.
 		do
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.populate end)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 		end
 
 	initialise_dirs
@@ -275,13 +275,13 @@ feature {NONE} -- Implementation
 
 	ev_root_container: EV_VERTICAL_BOX
 
-	gui_controls: ARRAYED_LIST [GUI_DATA_CONTROL]
+	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
-	profile_name_ctl: GUI_SINGLE_LINE_TEXT_CONTROL
+	profile_name_ctl: EVX_SINGLE_LINE_TEXT_CONTROL
 
-	ref_dir_setter, work_dir_setter: GUI_DIRECTORY_SETTER
+	ref_dir_setter, work_dir_setter: EVX_DIRECTORY_SETTER
 
-	ok_cancel_buttons: GUI_OK_CANCEL_CONTROLS
+	ok_cancel_buttons: EVX_OK_CANCEL_CONTROLS
 
 	is_in_default_state: BOOLEAN
 			-- Is `Current' in its default state?

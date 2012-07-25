@@ -1,51 +1,59 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "[
-				 Visual control for a data source that outputs to multi-line EV_TEXT control.
-				 Visual control structure is a text edit field with a title, in-place editing.
-				 
-					        +----------------------------+
-				            |                            |
-				    Title: 	|                            |
-				    	    |                            |
-						    +----------------------------+
-
-				 ]"
-	keywords:    "UI, ADL"
-	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
-	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	description: "Application constant redefinitions"
+	keywords:    "constants"
+	author:      "Thomas Beale"
+	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	copyright:   "Copyright (c) 2003-2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
+	description: "Objects that provide access to constants loaded from files."
+	date: "$Date$"
+	revision: "$Revision$"
 
-class GUI_MULTILINE_TEXT_CONTROL
+class
+	EVX_DEFINITIONS
 
-inherit
-	GUI_TEXT_CONTROL
-		redefine
-			ev_data_control
+feature -- Definitions
+
+	Default_padding_width: INTEGER = 3
+
+	Default_border_width: INTEGER = 4
+
+	editable_colour: EV_COLOR
+		once
+			create Result.make_with_8_bit_rgb (255, 255, 255)
 		end
 
-create
-	make, make_active
+	background_colour: EV_COLOR
+		once
+			create Result.make_with_8_bit_rgb (240, 240, 240)
+		end
 
-feature -- Access
-
-	ev_data_control: EV_TEXT
-
-feature {NONE} -- Implementation
-
-	create_ev_data_control
+	screen_10_pt_regular_font: EV_FONT
 		do
-			create ev_data_control
+			create Result
+			Result.set_family ({EV_FONT_CONSTANTS}.Family_screen)
+			Result.set_weight ({EV_FONT_CONSTANTS}.Weight_regular)
+			Result.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
+			Result.set_height_in_points (10)
 		end
+
+	Text_min_height: INTEGER = 23
+
+	Label_min_width: INTEGER = 35
+
+	Default_grid_expansion_factor: REAL = 1.05
+			-- amount to spread columns by to enhance readability
+
+	Default_grid_row_expansion: INTEGER = 4
+			-- number of pixels to add to height of grid row to enhance readability
 
 end
-
 
 
 --|
@@ -62,10 +70,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is gui_hash_table.e.
+--| The Original Code is constants.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2012
+--| Portions created by the Initial Developer are Copyright (C) 2003-2007
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

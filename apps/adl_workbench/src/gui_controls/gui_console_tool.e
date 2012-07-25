@@ -6,6 +6,7 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -27,10 +28,7 @@ feature {NONE} -- Initialisation
 
 	make
 		do
-			-- create widgets
 			create ev_console
-
-			-- set visual characteristics
 			ev_console.set_minimum_height (200)
 			ev_console.disable_edit
 		end
@@ -41,10 +39,11 @@ feature -- Access
 
 feature -- Commands
 
-	append_text (a_text: attached STRING)
+	append_text (a_text: STRING)
 		do
 			ev_console.append_text (a_text)
-			ev_application.process_graphical_events
+			ev_console.scroll_to_end
+	--		ev_application.process_graphical_events
 		end
 
 	clear
@@ -60,7 +59,7 @@ feature -- Commands
 
 feature -- Modification
 
-	set_docking_pane (a_docking_pane: attached SD_CONTENT)
+	set_docking_pane (a_docking_pane: SD_CONTENT)
 		do
 			docking_pane := a_docking_pane
 		end

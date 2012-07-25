@@ -28,10 +28,10 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class GUI_COMBO_TEXT_SELECTOR_CONTROL
+class EVX_COMBO_TEXT_SELECTOR_CONTROL
 
 inherit
-	GUI_TEXT_CONTROL
+	EVX_TEXT_CONTROL
 		rename
 			make as make_text_control, make_active as make_active_text_control, make_readonly as make_readonly_text_control
 		redefine
@@ -147,7 +147,7 @@ feature {NONE} -- Implementation
 	propagate_select_action
 		do
 			if attached linked_data_controls then
-				linked_data_controls.do_all (agent (a_ctl: GUI_DATA_CONTROL) do a_ctl.populate end)
+				linked_data_controls.do_all (agent (a_ctl: EVX_DATA_CONTROL) do a_ctl.populate end)
 			end
 		end
 

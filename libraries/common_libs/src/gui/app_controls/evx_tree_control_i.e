@@ -1,9 +1,7 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "[
-				 Tool bar button with active/inactive setting.
-				 ]"
-	keywords:    "UI, ADL"
+	description: "Interface to common tree functionality of EV_TREE and EV_GRID"
+	keywords:    "UI"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
@@ -14,84 +12,46 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class GUI_TOOL_BAR_BUTTON
-
-inherit
-	GUI_DEFINITIONS
-		export
-			{NONE} all
-		end
-
-	GUI_UTILITIES
-		export
-			{NONE} all
-		end
-
-create
-	make
-
-feature -- Initialisation
-
-	make (an_active_pixmap, an_inactive_pixmap: detachable EV_PIXMAP; a_tooltip_text: detachable STRING; a_select_action: detachable PROCEDURE [ANY, TUPLE])
-		do
-			active_pixmap := an_active_pixmap
-			inactive_pixmap := an_inactive_pixmap
-			select_action := a_select_action
-
-			create ev_button
-			if attached a_tooltip_text then
-				ev_button.set_tooltip (a_tooltip_text)
-			end
-			is_active := True
-			disable_active
-		end
+deferred class EVX_TREE_CONTROL_I
 
 feature -- Access
 
-	ev_button: EV_TOOL_BAR_BUTTON
-
-	active_pixmap: detachable EV_PIXMAP
-
-	inactive_pixmap: detachable EV_PIXMAP
-
-	select_action: detachable PROCEDURE [ANY, TUPLE]
-
-feature -- Status Report
-
-	is_active: BOOLEAN
+	ev_root_widget: EV_WIDGET
+			-- provide access to tree widget
 
 feature -- Commands
 
-	enable_active
-			-- set active pixmap and install `select_action'
-		do
-			if not is_active then
-				is_active := True
-				if attached active_pixmap then
-					ev_button.set_pixmap (active_pixmap)
-				end
-				if attached select_action then
-					ev_button.select_actions.extend (select_action)
-				end
-			end
+	ev_tree_do_all (a_node_action: attached PROCEDURE [ANY, TUPLE [ANY]])
+			-- do enter_action and exit_action to all nodes in the structure
+		deferred
 		end
 
-	disable_active
-			-- set inactive pixmap and uninstall `select_action'
-		do
-			if is_active then
-				is_active := False
-				if attached inactive_pixmap then
-					ev_button.set_pixmap (inactive_pixmap)
-				end
-				ev_button.select_actions.wipe_out
-			end
+	collapse_one_level (test: FUNCTION [ANY, TUPLE [EV_SELECTABLE], BOOLEAN])
+		deferred
 		end
 
-feature {NONE} -- Implementation
+	expand_one_level (test: FUNCTION [ANY, TUPLE [EV_SELECTABLE], BOOLEAN])
+		deferred
+		end
 
+	expand_all (test: FUNCTION [ANY, TUPLE [EV_SELECTABLE], BOOLEAN])
+		deferred
+		end
+
+	collapse_all
+		deferred
+		end
+
+	collapse_except (test: FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+		deferred
+		end
+
+	resize_columns_to_content (grid_expansion_factor: REAL)
+		deferred
+		end
 
 end
+
 
 
 --|
@@ -108,7 +68,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is gui_hash_table.e.
+--| The Original Code is gui_grid_treeview_control.e
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2012

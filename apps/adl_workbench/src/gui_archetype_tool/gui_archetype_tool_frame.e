@@ -216,11 +216,11 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	text_widget_handler: GUI_TEXT_WIDGET_HANDLER
+	text_widget_handler: EVX_TEXT_WIDGET_HANDLER
 			-- FIXME: this is a hack to get round lack of standard behaviour in Vision2 for
 			-- focussed text widgets & cut & paste behaviours
 
-	tool_bar: GUI_TOOL_BAR
+	tool_bar: EVX_TOOL_BAR
 
 	ev_differential_view_button, ev_flat_view_button: EV_TOOL_BAR_RADIO_BUTTON
 

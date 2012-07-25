@@ -55,7 +55,7 @@ inherit
 			{NONE} all
 		end
 
-	GUI_DEFINITIONS
+	EVX_DEFINITIONS
 		export
 			{NONE} all
 		end

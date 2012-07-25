@@ -293,14 +293,14 @@ feature -- Commands
 			-- enable editing
 		do
 			precursor
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.enable_active end)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.enable_active end)
 		end
 
 	disable_edit
 			-- disable editing
 		do
 			precursor
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.disable_active end)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.disable_active end)
 		end
 
 feature {NONE} -- Implementation
@@ -309,34 +309,34 @@ feature {NONE} -- Implementation
 
 	details_hbox, lang_translations_hbox, lang_original_trans_hbox: EV_HORIZONTAL_BOX
 
-	auth_frame_ctl, lang_frame_ctl, details_frame_ctl, resource_frame_ctl: GUI_FRAME_CONTROL
+	auth_frame_ctl, lang_frame_ctl, details_frame_ctl, resource_frame_ctl: EVX_FRAME_CONTROL
 
-	original_language_text_ctl, resource_package_ctl: GUI_SINGLE_LINE_TEXT_CONTROL
+	original_language_text_ctl, resource_package_ctl: EVX_SINGLE_LINE_TEXT_CONTROL
 
-	lifecycle_state_text_ctl: GUI_COMBO_TEXT_SELECTOR_CONTROL
+	lifecycle_state_text_ctl: EVX_COMBO_TEXT_SELECTOR_CONTROL
 
-	original_author_ctl, trans_author_ctl, trans_other_details_ctl, original_resources_ctl: GUI_HASH_TABLE_CONTROL
+	original_author_ctl, trans_author_ctl, trans_other_details_ctl, original_resources_ctl: EVX_HASH_TABLE_CONTROL
 
-	auth_contrib_list_ctl, keywords_list_ctl: GUI_TEXT_LIST_CONTROL
+	auth_contrib_list_ctl, keywords_list_ctl: EVX_TEXT_LIST_CONTROL
 
-	trans_accreditation_text_ctl, copyright_text_ctl, purpose_text_ctl, use_text_ctl, misuse_text_ctl: GUI_MULTILINE_TEXT_CONTROL
+	trans_accreditation_text_ctl, copyright_text_ctl, purpose_text_ctl, use_text_ctl, misuse_text_ctl: EVX_MULTILINE_TEXT_CONTROL
 
-	trans_languages_ctl: GUI_COMBO_CONTROL
+	trans_languages_ctl: EVX_COMBO_CONTROL
 
 	undo_redo_update_agent: PROCEDURE [ANY, TUPLE [UNDO_REDO_CHAIN]]
 
-	gui_controls: ARRAYED_LIST [GUI_DATA_CONTROL]
+	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
 	authoring_tab_undo_redo_chain, description_tab_undo_redo_chain: UNDO_REDO_CHAIN
 
 	do_clear
 		do
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.clear end)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.clear end)
 		end
 
 	do_populate
 		do
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.populate end)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 		end
 
 	description_details: detachable RESOURCE_DESCRIPTION_ITEM

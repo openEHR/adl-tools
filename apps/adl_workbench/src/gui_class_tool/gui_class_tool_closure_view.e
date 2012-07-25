@@ -62,7 +62,7 @@ feature -- Initialisation
 			ev_root_container.disable_item_expand (control_panel.ev_root_container)
 
 			-- tree collapse/expand control
-			create gui_treeview_control.make (create {GUI_TREE_CONTROL_GRID}.make (gui_grid), agent tree_recurse_node)
+			create gui_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (gui_grid), agent tree_recurse_node)
 			control_panel.add_frame (gui_treeview_control.ev_root_container, False)
 
 			-- ========= RM view options =========
@@ -196,7 +196,7 @@ feature -- Commands
 			-- repopulate current tree items if needed
 		do
 			-- populate peripheral controls
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.populate end)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 
  			-- populate the tree
 			refresh_row (gui_grid.ev_grid.row (1))
@@ -210,13 +210,13 @@ feature {NONE} -- Implementation
 		do
  			ev_closure_depth_spin_button.set_value (Default_closure_depth)
 			gui_grid.wipe_out
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.clear end)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.clear end)
 		end
 
 	do_populate
 		do
 			-- populate peripheral controls
-			gui_controls.do_all (agent (an_item: GUI_DATA_CONTROL) do an_item.populate end)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 
 			-- for use in icon switching
  			rm_publisher := source.bmm_schema.rm_publisher
@@ -237,19 +237,19 @@ feature {NONE} -- Implementation
 			gui_treeview_control.on_expand_one_level
 		end
 
-	gui_grid: GUI_EV_GRID
+	gui_grid: EVX_GRID
 
-	view_rm_use_icons_checkbox_ctl: GUI_CHECK_BOX_CONTROL
+	view_rm_use_icons_checkbox_ctl: EVX_CHECK_BOX_CONTROL
 
-	rm_attrs_visible_checkbox_ctl, rm_runtime_attrs_visible_checkbox_ctl, rm_if_attrs_visible_checkbox_ctl: GUI_CHECK_BOX_CONTROL
+	rm_attrs_visible_checkbox_ctl, rm_runtime_attrs_visible_checkbox_ctl, rm_if_attrs_visible_checkbox_ctl: EVX_CHECK_BOX_CONTROL
 
-	view_detail_frame_ctl, rm_property_visibility_frame_ctl, rm_rendering_frame_ctl, rm_recompute_frame_ctl: GUI_FRAME_CONTROL
+	view_detail_frame_ctl, rm_property_visibility_frame_ctl, rm_rendering_frame_ctl, rm_recompute_frame_ctl: EVX_FRAME_CONTROL
 
-	gui_controls: ARRAYED_LIST [GUI_DATA_CONTROL]
+	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
-	gui_treeview_control: GUI_TREEVIEW_CONTROL
+	gui_treeview_control: EVX_TREEVIEW_CONTROL
 
-	control_panel: GUI_CONTROL_PANEL
+	control_panel: EVX_CONTROL_PANEL
 
 	ev_closure_depth_spin_button: EV_SPIN_BUTTON
 

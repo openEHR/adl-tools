@@ -1,7 +1,7 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "EV_GRID form of GUI_TREE_CONTROL_I"
-	keywords:    "UI"
+	description: "Collapsable control panel container for adding to right or left of main viewing area in a window."
+	keywords:    "UI, ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
@@ -12,12 +12,10 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class GUI_TREE_CONTROL_GRID
+class EVX_CONTROL_PANEL
 
 inherit
-	GUI_TREE_CONTROL_I
-
-	GUI_DEFINITIONS
+	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all
 		end
@@ -27,63 +25,72 @@ create
 
 feature -- Initialisation
 
-	make (a_gui_grid: GUI_EV_GRID)
+	make
+		local
+			hbox: EV_HORIZONTAL_BOX
 		do
-			ev_grid := a_gui_grid.ev_grid
-			ev_root_widget := ev_grid
+			create ev_root_container
+			ev_root_container.set_border_width (Default_border_width)
+			ev_root_container.set_padding_width (Default_padding_width)
+
+			-- add collapse / expand button group
+			create hbox
+			ev_root_container.extend (hbox)
+			ev_root_container.disable_item_expand (hbox)
+
+			-- add an expanding cell
+			hbox.extend (create {EV_CELL})
+
+			-- add button
+			create collapse_expand_button
+			collapse_expand_button.set_text (get_text ("collapse_button_text"))
+			collapse_expand_button.select_actions.extend (agent do_collapse_expand)
+			hbox.extend (collapse_expand_button)
+			hbox.disable_item_expand (collapse_expand_button)
+
+			-- add main box
+			create ev_main_vbox
+			ev_root_container.extend (ev_main_vbox)
+			ev_root_container.disable_item_expand (ev_main_vbox)
 		end
 
 feature -- Access
 
-	ev_grid: EV_GRID_KBD_MOUSE
+	ev_root_container: EV_VERTICAL_BOX
 
-feature -- Commands
+feature -- Modification
 
-	ev_tree_do_all (a_node_action: attached PROCEDURE [ANY, TUPLE [EV_GRID_ROW]])
-			-- do `a_node_action' to all nodes in the structure
+	add_frame_control (a_frame_ctl: EVX_FRAME_CONTROL; can_expand: BOOLEAN)
+			-- extend current container with frame inside `a_frame_ctl'
 		do
-			ev_grid.tree_do_all (a_node_action)
+			add_frame (a_frame_ctl.ev_root_container, can_expand)
 		end
 
-	collapse_one_level (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+	add_frame (a_frame: EV_FRAME; can_expand: BOOLEAN)
+			-- extend current container with `a_frame'
 		do
-			ev_grid.row_collapse_actions.block
-			ev_grid.collapse_one_level (test)
-			ev_grid.row_collapse_actions.resume
+			ev_main_vbox.extend (a_frame)
+			if not can_expand then
+				ev_main_vbox.disable_item_expand (a_frame)
+			end
 		end
 
-	expand_one_level (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
-		do
-			ev_grid.row_expand_actions.block
-			ev_grid.expand_one_level (test)
-			ev_grid.row_expand_actions.resume
-		end
+feature {NONE} -- Implementation
 
-	expand_all (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
-		do
-			ev_grid.row_collapse_actions.block
-			ev_grid.expand_all (test)
-			ev_grid.row_collapse_actions.resume
-		end
+	ev_main_vbox: EV_VERTICAL_BOX
 
-	collapse_all
-		do
-			ev_grid.row_collapse_actions.block
-			ev_grid.collapse_all
-			ev_grid.row_collapse_actions.resume
-		end
+	collapse_expand_button: EV_TOGGLE_BUTTON
 
-	collapse_except (test: FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+	do_collapse_expand
+			-- collapse control except button
 		do
-			ev_grid.row_collapse_actions.block
-			ev_grid.collapse_except (test)
-			ev_grid.row_collapse_actions.resume
-			resize_columns_to_content (default_grid_expansion_factor)
-		end
-
-	resize_columns_to_content (grid_expansion_factor: REAL)
-		do
-			ev_grid.resize_columns_to_content (grid_expansion_factor)
+			if collapse_expand_button.is_selected then
+				ev_main_vbox.hide
+				collapse_expand_button.set_text (get_text ("expand_button_text"))
+			else
+				ev_main_vbox.show
+				collapse_expand_button.set_text (get_text ("collapse_button_text"))
+			end
 		end
 
 end
@@ -104,7 +111,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is gui_grid_treeview_control.e
+--| The Original Code is gui_hash_table.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2012

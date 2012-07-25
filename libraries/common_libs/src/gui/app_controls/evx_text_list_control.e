@@ -24,10 +24,10 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class GUI_TEXT_LIST_CONTROL
+class EVX_TEXT_LIST_CONTROL
 
 inherit
-	GUI_EV_MLIST_CONTROL
+	EVX_MLIST_CONTROL
 		rename
 			make as make_mlist, make_active as make_active_mlist
 		redefine

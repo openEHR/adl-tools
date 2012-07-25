@@ -153,7 +153,7 @@ feature {NONE} -- Implementation
 
 	ev_label: EV_LABEL
 
-	gui_grid: GUI_EV_GRID
+	gui_grid: EVX_GRID
 
 	ev_hbox: EV_HORIZONTAL_BOX
 
@@ -178,7 +178,7 @@ feature {NONE} -- Implementation
 		do
 			-- add row to grid
 			gui_grid.add_row (a_schema)
-			gui_grid.set_last_row_label_col (1, a_schema.schema_id, Void, VOid, get_icon_pixmap ("tool/rm_schema"))
+			gui_grid.set_last_row_label_col (1, a_schema.schema_id, Void, Void, get_icon_pixmap ("tool/rm_schema"))
 			gui_grid.add_last_row_pointer_button_press_actions (1, agent schema_node_handler (gui_grid.last_row, ?, ?, ?))
 
 			across a_schema.packages as pkgs_csr loop
