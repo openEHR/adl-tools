@@ -320,9 +320,9 @@ feature {NONE} -- Implementation
 	rm_schemas_ll: LIST [STRING]
 			-- list of checked schemas in options dialog
 
-	ev_cell_1, ev_cell_2, ev_cell_3, ev_cell_4: EV_CELL
+	ev_cell_1, ev_cell_2, ev_cell_3: EV_CELL
 
-	ev_label_1, ev_label_2: EV_LABEL
+	ev_label_1: EV_LABEL
 
 	grid: EV_GRID_KBD_MOUSE
 

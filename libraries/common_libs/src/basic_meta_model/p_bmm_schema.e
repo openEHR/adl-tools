@@ -230,17 +230,17 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 		do
 			-- check top-level names - package names cannot contain each other and be siblings
 			pkg_names := packages.current_keys
-			from packages.start until packages.off loop
+			across packages as packages_csr loop
 				if pkg_names.there_exists (
-					agent (nm: STRING): BOOLEAN
+					agent (nm, pkg_name: STRING): BOOLEAN
 						do
-							Result := not packages.item_for_iteration.name.same_string (nm) and then
-								(packages.item_for_iteration.name.starts_with (nm) or nm.starts_with (packages.item_for_iteration.name))
-						end)
+							Result := not pkg_name.same_string (nm) and then
+								(pkg_name.starts_with (nm) or nm.starts_with (pkg_name))
+						end (?, packages_csr.item.name)
+					)
 				then
 					add_error ("BMM_PKGTL", <<schema_id>>)
 				end
-				packages.forth
 			end
 
 			-- check no duplicate properties
@@ -251,13 +251,12 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 					do
 						create prop_list.make (0)
 						prop_list.compare_objects
-						from a_class_def.properties.start until a_class_def.properties.off loop
-							if prop_list.has (a_class_def.properties.item_for_iteration.name) then
-								add_error ("BMM_PRDUP", <<schema_id, a_class_def.name, a_class_def.properties.item_for_iteration.name>>)
+						across a_class_def.properties as props_csr loop
+							if prop_list.has (props_csr.item.name) then
+								add_error ("BMM_PRDUP", <<schema_id, a_class_def.name, props_csr.item.name>>)
 							else
-								prop_list.extend (a_class_def.properties.item_for_iteration.name)
+								prop_list.extend (props_csr.item.name)
 							end
-							a_class_def.properties.forth
 						end
 					end
 			)
@@ -294,7 +293,7 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 		require
 			state = State_validated_created
 		local
-			top_pkg, child_pkg: P_BMM_PACKAGE_DEFINITION
+			child_pkg: P_BMM_PACKAGE_DEFINITION
 			child_pkg_names: LIST [STRING]
 			pkg_csr: like packages
 			child_pkg_key: STRING
@@ -302,37 +301,34 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 			-- top-level package canonicalisation: the result is that in each P_BMM_SCHEMA, the
 			-- attribute `canonical_packages' contains the mergeable structure
 			create canonical_packages.make(0)
-			from packages.start until packages.off loop
-				top_pkg := packages.item_for_iteration
-				if top_pkg.name.has (package_name_delimiter) then
+			across packages as top_packages_csr loop
+				if top_packages_csr.item.name.has (package_name_delimiter) then
 					-- iterate over qualified name, inserting new packages for each of these names.
 					-- E.g. 'rm.composition.content' causes three new packages 'rm', 'composition'
 					-- and 'content' to be created and linked, with the 'rm' one being put in
 					-- `canonical_packages'
 					pkg_csr := canonical_packages
-					child_pkg_names := top_pkg.name.split (Package_name_delimiter)
-					from child_pkg_names.start until child_pkg_names.off loop
-						child_pkg_key := child_pkg_names.item.as_upper
+					child_pkg_names := top_packages_csr.item.name.split (Package_name_delimiter)
+					across child_pkg_names as child_pkg_names_csr loop
+						child_pkg_key := child_pkg_names_csr.item.as_upper
 						if not pkg_csr.has (child_pkg_key) then
-							create child_pkg.make (child_pkg_names.item)
+							create child_pkg.make (child_pkg_names_csr.item)
 							pkg_csr.put (child_pkg, child_pkg_key)
 						else
 							child_pkg := pkg_csr.item (child_pkg_key)
 						end
 						pkg_csr := child_pkg.packages
-						child_pkg_names.forth
 					end
 
 					-- now we need to make the final package in the chain created above contain
 					-- the same references as the original package with the qualified name
-					child_pkg.make_from_other (top_pkg)
+					child_pkg.make_from_other (top_packages_csr.item)
 				else
 					-- just create a reference in the canonical packages; note that this precludes
 					-- the situation where top-level packages like 'rm' and 'rm.composition.content'
 					-- co-exist - this would be bad structure
-					canonical_packages.put (top_pkg, top_pkg.name.as_upper)
+					canonical_packages.put (top_packages_csr.item, top_packages_csr.item.name.as_upper)
 				end
-				packages.forth
 			end
 
 			-- set up the includes processing list
@@ -367,33 +363,31 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 
 
 			-- primitive types
-			from other.primitive_types.start until other.primitive_types.after loop
+			across other.primitive_types as other_prim_types_csr loop
 				-- note that `put' only puts the class defintion from the included schema only if the current one does not already
 				-- have a definition for that class name. Since higher-level schemas are processed first, any over-rides they
 				-- contain will stay, with the classes being overridden being ignored - which is the desired behaviour.
-				if primitive_types.has (other.primitive_types.key_for_iteration) then
-					if primitive_types.item (other.primitive_types.key_for_iteration).uid /= other.primitive_types.item_for_iteration.uid then
-						primitive_types.item (other.primitive_types.key_for_iteration).set_is_override
+				if primitive_types.has (other_prim_types_csr.key) then
+					if primitive_types.item (other_prim_types_csr.key).uid /= other_prim_types_csr.item.uid then
+						primitive_types.item (other_prim_types_csr.key).set_is_override
 					end
 				else
-					primitive_types.put (other.primitive_types.item_for_iteration.deep_twin, other.primitive_types.key_for_iteration)
+					primitive_types.put (other_prim_types_csr.item.deep_twin, other_prim_types_csr.key)
 				end
-				other.primitive_types.forth
 			end
 
 			-- classes
-			from other.class_definitions.start until other.class_definitions.after loop
+			across other.class_definitions as other_classes_csr loop
 				-- note that `put' only puts the class definition from the included schema only if the current one does not already
 				-- have a definition for that class name. Since higher-level schemas are processed first, any over-rides they
 				-- contain will stay, with the classes being overridden being ignored - which is the desired behaviour.
-				if class_definitions.has (other.class_definitions.key_for_iteration) then
-					if class_definitions.item (other.class_definitions.key_for_iteration).uid /= other.class_definitions.item_for_iteration.uid then
-						class_definitions.item (other.class_definitions.key_for_iteration).set_is_override
+				if class_definitions.has (other_classes_csr.key) then
+					if class_definitions.item (other_classes_csr.key).uid /= other_classes_csr.item.uid then
+						class_definitions.item (other_classes_csr.key).set_is_override
 					end
 				else
-					class_definitions.put (other.class_definitions.item_for_iteration.deep_twin, other.class_definitions.key_for_iteration)
+					class_definitions.put (other_classes_csr.item.deep_twin, other_classes_csr.key)
 				end
-				other.class_definitions.forth
 			end
 
 			-- compute ancestors index:
@@ -417,22 +411,20 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 						anc_copy: ARRAYED_SET [STRING]
 					do
 						anc_copy := ancestors_index.item (a_class_def.name.as_upper).deep_twin -- create a copy for iteration purposes
-						from anc_copy.start until anc_copy.off loop
-							ancestors_index.item (a_class_def.name.as_upper).merge (ancestors_index.item (anc_copy.item.as_upper))
-							anc_copy.forth
+						across anc_copy as anc_copy_csr loop
+							ancestors_index.item (a_class_def.name.as_upper).merge (ancestors_index.item (anc_copy_csr.item.as_upper))
 						end
 					end
 			)
 
 			-- packages
 			-- merge from other.packages, because that's where the proper hierarchically structured packages are
-			from other.canonical_packages.start until other.canonical_packages.off loop
-				if canonical_packages.has (other.canonical_packages.key_for_iteration) then
-					canonical_packages.item (other.canonical_packages.key_for_iteration).merge (other.canonical_packages.item_for_iteration)
+			across other.canonical_packages as other_pkgs_csr loop
+				if canonical_packages.has (other_pkgs_csr.key) then
+					canonical_packages.item (other_pkgs_csr.key).merge (other_pkgs_csr.item)
 				else
-					canonical_packages.put (other.canonical_packages.item_for_iteration, other.canonical_packages.key_for_iteration)
+					canonical_packages.put (other_pkgs_csr.item, other_pkgs_csr.key)
 				end
-				other.canonical_packages.forth
 			end
 
 			-- remove other schema from remaining list of included schemas to process
@@ -459,17 +451,16 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 			end
 
 			-- check that all models refer to declared packages
-			from archetype_rm_closure_packages.start until archetype_rm_closure_packages.off loop
-				if not has_canonical_package_path (archetype_rm_closure_packages.item) then
-					add_error ("BMM_MDLPK", <<schema_id, archetype_rm_closure_packages.item>>)
+			across archetype_rm_closure_packages as pkgs_csr loop
+				if not has_canonical_package_path (pkgs_csr.item) then
+					add_error ("BMM_MDLPK", <<schema_id, pkgs_csr.item>>)
 				end
-				archetype_rm_closure_packages.forth
 			end
 
 			-- check that no duplicate classes are found in packages
 			create package_classes.make (0)
-			from canonical_packages.start until canonical_packages.off loop
-				canonical_packages.item_for_iteration.do_recursive_classes (
+			across canonical_packages as pkgs_csr loop
+				pkgs_csr.item.do_recursive_classes (
 					agent (a_pkg: P_BMM_PACKAGE_DEFINITION; a_class_name: STRING; class_list: HASH_TABLE [STRING, STRING])
 						do
 							if class_list.has (a_class_name) then
@@ -479,7 +470,6 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 							end
 						end (?, ?, package_classes)
 				)
-				canonical_packages.forth
 			end
 
 			-- for all classes, validate all properties
@@ -489,27 +479,24 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 	validate_class (a_class_def: P_BMM_CLASS_DEFINITION)
 		do
 			-- check that all ancestors exist
-			from a_class_def.ancestors.start until a_class_def.ancestors.off loop
-				if not has_class_definition (a_class_def.ancestors.item) then
-					add_validity_error (a_class_def.source_schema_id, "BMM_ANC", <<a_class_def.source_schema_id, a_class_def.name, a_class_def.ancestors.item>>)
+			across a_class_def.ancestors as ancs_csr loop
+				if not has_class_definition (ancs_csr.item) then
+					add_validity_error (a_class_def.source_schema_id, "BMM_ANC", <<a_class_def.source_schema_id, a_class_def.name, ancs_csr.item>>)
 				end
-				a_class_def.ancestors.forth
 			end
 
 			-- check that all generic parameter.conforms_to_type exist exists
 			if a_class_def.is_generic then
-				from a_class_def.generic_parameter_defs.start until a_class_def.generic_parameter_defs.off loop
-					if attached a_class_def.generic_parameter_defs.item_for_iteration.conforms_to_type and then not has_class_definition (a_class_def.generic_parameter_defs.item_for_iteration.conforms_to_type) then
-						add_validity_error (a_class_def.source_schema_id, "BMM_GPCT", <<a_class_def.source_schema_id, a_class_def.name, a_class_def.generic_parameter_defs.item_for_iteration.name, a_class_def.generic_parameter_defs.item_for_iteration.conforms_to_type>>)
+				across a_class_def.generic_parameter_defs as gen_param_defs_csr loop
+					if attached gen_param_defs_csr.item.conforms_to_type and then not has_class_definition (gen_param_defs_csr.item.conforms_to_type) then
+						add_validity_error (a_class_def.source_schema_id, "BMM_GPCT", <<a_class_def.source_schema_id, a_class_def.name, gen_param_defs_csr.item.name, gen_param_defs_csr.item.conforms_to_type>>)
 					end
-					a_class_def.generic_parameter_defs.forth
 				end
 			end
 
 			-- validate the properties
-			from a_class_def.properties.start until a_class_def.properties.off loop
-				validate_property (a_class_def, a_class_def.properties.item_for_iteration)
-				a_class_def.properties.forth
+			across a_class_def.properties as props_csr loop
+				validate_property (a_class_def, props_csr.item)
 			end
 		end
 
@@ -518,13 +505,12 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 			gen_parm_type_name: STRING
 		do
 			-- first check if any property replicates a property from a parent class
-			from a_class_def.ancestors.start until a_class_def.ancestors.off loop
-				if class_definition (a_class_def.ancestors.item_for_iteration).properties.has (a_prop_def.name) and then not
-					property_conforms_to (a_class_def, a_prop_def, class_definition (a_class_def.ancestors.item_for_iteration).properties.item (a_prop_def.name))
+			across a_class_def.ancestors as ancs_csr loop
+				if class_definition (ancs_csr.item).properties.has (a_prop_def.name) and then not
+					property_conforms_to (a_class_def, a_prop_def, class_definition (ancs_csr.item).properties.item (a_prop_def.name))
 				then
-					add_validity_error (a_class_def.source_schema_id, "BMM_PRNCF", <<a_class_def.source_schema_id, a_class_def.name, a_prop_def.name, a_class_def.ancestors.item_for_iteration>>)
+					add_validity_error (a_class_def.source_schema_id, "BMM_PRNCF", <<a_class_def.source_schema_id, a_class_def.name, a_prop_def.name, ancs_csr.item>>)
 				end
-				a_class_def.ancestors.forth
 			end
 
 			if attached {P_BMM_SINGLE_PROPERTY} a_prop_def as a_single_prop_def then
@@ -588,16 +574,14 @@ feature -- Factory
 			bmm_schema.set_schema_description (schema_description)
 
 			-- packages - add package structure only, no classes yet
-			from canonical_packages.start until canonical_packages.off loop
-				canonical_packages.item_for_iteration.create_bmm_package_definition
-				bmm_schema.add_package (canonical_packages.item_for_iteration.bmm_package_definition)
-				canonical_packages.forth
+			across canonical_packages as pkgs_csr loop
+				pkgs_csr.item.create_bmm_package_definition
+				bmm_schema.add_package (pkgs_csr.item.bmm_package_definition)
 			end
 
 			-- now add classes
-			from canonical_packages.start until canonical_packages.off loop
-				canonical_packages.item_for_iteration.do_recursive_classes (agent add_bmm_schema_class_definition)
-				canonical_packages.forth
+			across canonical_packages as pkgs_csr loop
+				pkgs_csr.item.do_recursive_classes (agent add_bmm_schema_class_definition)
 			end
 
 			-- set the archetype root class
@@ -696,13 +680,11 @@ feature {NONE} -- Implementation
 	do_all_classes (action: PROCEDURE [ANY, TUPLE [P_BMM_CLASS_DEFINITION]])
 			-- do some action to all primitive type and class objects
 		do
-			from primitive_types.start until primitive_types.off loop
-				action.call ([primitive_types.item_for_iteration])
-				primitive_types.forth
+			across primitive_types as prim_types_csr loop
+				action.call ([prim_types_csr.item])
 			end
-			from class_definitions.start until class_definitions.off loop
-				action.call ([class_definitions.item_for_iteration])
-				class_definitions.forth
+			across class_definitions as class_defs_csr loop
+				action.call ([class_defs_csr.item])
 			end
 		end
 
