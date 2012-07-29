@@ -824,29 +824,28 @@ feature -- Visitor
 
 feature {NONE} -- Implementation
 
-	node_tooltip_str (a_node: attached ARCHETYPE_CONSTRAINT): STRING_32
+	node_tooltip_str (a_node: attached ARCHETYPE_CONSTRAINT): STRING
 			-- generate a tooltip for this node as UTF-32 String
 		local
-			p, s: STRING
+			p: STRING
 			bindings: HASH_TABLE [CODE_PHRASE, STRING]
 		do
 			p := a_node.path
-			s := ontology.physical_to_logical_path (p, language, True)
+			Result := ontology.physical_to_logical_path (p, language, True)
 			if show_rm_inheritance then
-				s.append ("%N%N" + get_text ("inheritance_status_text") +  specialisation_status_names.item (a_node.specialisation_status))
+				Result.append ("%N%N" + get_text ("inheritance_status_text") +  specialisation_status_names.item (a_node.specialisation_status))
 			end
 			if ontology.has_any_term_binding (p) then
-				s.append ("%N%N" + get_text ("term_bindings_tooltip_text") + "%N")
+				Result.append ("%N%N" + get_text ("term_bindings_tooltip_text") + "%N")
 				bindings := ontology.term_bindings_for_key (p)
 				across bindings as bindings_csr loop
-					s.append ("%T" + bindings_csr.key + ": " + bindings_csr.item.as_string + "%N")
+					Result.append ("%T" + bindings_csr.key + ": " + bindings_csr.item.as_string + "%N")
 				end
 			end
 			if archetype.has_annotation_at_path (language, a_node.path) then
-				s.append ("%N%N" + get_text ("annotations_text") + ":%N")
-				s.append (archetype.annotations.annotations_at_path (language, a_node.path).as_string)
+				Result.append ("%N%N" + get_text ("annotations_text") + ":%N")
+				Result.append (archetype.annotations.annotations_at_path (language, a_node.path).as_string)
 			end
-			Result := utf8_to_utf32 (s)
 		end
 
 	ev_grid_row_stack: ARRAYED_STACK [EV_GRID_ROW]
