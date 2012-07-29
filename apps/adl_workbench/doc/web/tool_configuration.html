@@ -33,42 +33,6 @@
         <p>In order to work with the examples described below, the following configuration is advised. Experienced
         users may skip this step.</p>
 
-        <h3>Repository configuration</h3>
-
-        <p>You should download the CKM and the <i>open</i>EHR test archetype repositories. The steps to do this are as
-        follows.</p>
-
-        <p>For the Clinical Knowledge Manager (CKM) repository:</p>
-
-        <ul>
-          <li value="0">Login to the repository at <a href="http://www.openehr.org/knowledge">http://www.openehr.org/knowledge</a>.</li>
-          <li value="0">Go to Archetypes &gt; Bulk Export and select all archetypes for download; save in any location.  For the purposes of this manual, we will refer to the location as $CKM.</li>
-          <li value="0">In the AWB, select Repository &gt; Set Repository</li>
-          <li value="0">On the dialog, use the large &#39;+&#39; button to add a new profile called &#39;CKM&#39;.</li>
-          <li value="0">Set the Reference repository to $CKM, as described above.</li>
-          <li value="0">Save the new profile.</li>
-        </ul>
-
-        <p>The <i>open</i>EHR test archetype repository is a Subversion repository located <a href="http://www.openehr.org/svn/knowledge2/TRUNK">here</a>. If you have a Subversion client such as TortoiseSVN installed on your machine, use it to check out this repository. If you do not have a Subversion tool, you can download the repository as a .zip file from <a href="http://www.openehr.org/wsvn/knowledge2/TRUNK">this page</a>. We will refer to the location of this repository on your file system as $knowledge2. Now, there is
-        actually more than one logical group of archetypes in the repository, so the configuration is as follows.</p>
-
-        <ul>
-          <li value="0">In the AWB, select Repository &gt; Configure Repositories.</li>
-          <li value="0">On the dialog, use the Add button to add a new profile called &#39;ADL 1.5 test&#39; or similar. A sub-dialog will appear on which the paths can be edited</li>
-          <li value="0">Set the Reference repository path to $knowledge2/archetypes/ADL_1.5_test.</li>
-          <li value="0">Hit OK to save the new profile.</li>
-		  <li value="0">Repeat the above steps and create another new profile called &#39;openEHR examples&#39; or similar, with the following paths:
-			<ul>
-			  <li value="0">Set the Reference Repository to $knowledge2/archetypes/openEHR_examples/demographic_template/Reference.</li>
-			  <li value="0">Set the Work Repository to $knowledge2/archetypes/openEHR_examples/demographic_template/Working.</li>
-			</ul>
-		  </li>
-          <li value="0">Save the new profile.</li>
-        </ul>
-
-        <p>If you are interested in EN 13606, you can use the above method to create a further profile called &#39;EN13606 examples&#39; or similar, using the Reference Repository path $knowledge2/archetypes/en13606_examples.</p>
-		<p>The Configure Repositories dialog can be used to add further profiles, remove profiles, and edit the details of a profile. The latter includes being able to rename a profile and/or change its paths.</p>
-
 		<a name="rm_schema_configuration" /><h3>RM Schema configuration</h3>
 
 			<p>Reference Model (RM) Schemas are used by the ADL Workbench to validate archetypes and templates. Schemas are currently expressed as dADL documents, whose structure follows a simple yet powerful meta-model (for those familiar with model infrastructures, neither UML/XMI nor Eclipse/EMF are currently used, because they lack proper semantics for generic types and some forms of type referencing common in object models). The schema files have a '.bmm' (basic meta-model) extension. The currently available RM schemas can be seen <a href="http://www.openehr.org/svn/knowledge2/TRUNK/rm_schemas/">here</a>. These schemas are defined in a nested way, with most files visible here being used as component schemas for a small number of top-level schemas representing the openEHR Reference Model, EN13606 model and so on.</p>
@@ -175,6 +139,7 @@ rm_schemas = &lt;
       <ul>
         <li value="0"><a href="index.html">Home</a></li>
         <li value="0"><a href="getting_started.html">Getting started</a></li>
+        <li value="0"> <a href="obtaining_archetypes.html">Obtaining Archetypes</a> </li>
         <li value="0"><a href="browsing_archetypes.html">Browsing and compiling</a></li>
         <li value="0"><a href="tool_configuration.html">Tool Configuration</a></li>
         <li value="0"><a href="learning_adl_15.html">Learning about ADL 1.5</a></li>
@@ -184,15 +149,12 @@ rm_schemas = &lt;
         <li value="0"><a href="support.html">Support and contributing</a></li>
         <li value="0"><a href="release_notes.html">Release notes</a></li>
       </ul>
-    </div><!--       <div id="extra">
-  <h2>XXXXXX</h2>
-  <p>xxxxx.</p>
-</div> -->
-
+    </div>
     <div id="footer">
       <ul>
         <li value="0"><a href="index.html">Home</a></li> 
         <li value="0"><a href="getting_started.html">Getting started</a></li>
+        <li value="0"> <a href="obtaining_archetypes.html">Obtaining Archetypes</a> </li>
         <li value="0"><a href="browsing_archetypes.html">Browsing and compiling</a></li>
         <li value="0"><a href="tool_configuration.html">Tool Configuration</a></li>
         <li value="0"><a href="learning_adl_15.html">Learning about ADL 1.5</a></li>
