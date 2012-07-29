@@ -215,7 +215,6 @@ feature {NONE} -- Implementation
 			qualified_rm_closure_name: STRING
 			rm_closures: ARRAYED_LIST [STRING]
 			included_schema: P_BMM_SCHEMA
-			sd: SCHEMA_DESCRIPTOR
 			i: INTEGER
 			finished, incompatible_schema_detected: BOOLEAN
 		do
@@ -292,27 +291,25 @@ feature {NONE} -- Implementation
 					-- Now we process the include relations on the P_BMM top-level schemas, creating fully populated schemas
 					from i := 1 until finished or i > Max_inclusion_depth loop
 						finished := True
-						from schema_inclusion_map.start until schema_inclusion_map.off loop
-							if candidate_schemas.has (schema_inclusion_map.key_for_iteration) then
-								included_schema := candidate_schemas.item (schema_inclusion_map.key_for_iteration).p_schema
+						across schema_inclusion_map as map_csr loop
+							if candidate_schemas.has (map_csr.key) then
+								included_schema := candidate_schemas.item (map_csr.key).p_schema
 								-- only process current schema if its lower level includes have already been copied into it,
 								-- or if it had no includes, since only then is it ready to be itself included in the next one up the chain
 								-- If this included schema is in this state, merge its contents into each schema that includes it
 								if included_schema.state = {P_BMM_SCHEMA}.State_includes_processed then
 									-- iterate over the schemas that include `included_schema' and process the inclusion
-									from schema_inclusion_map.item_for_iteration.start until schema_inclusion_map.item_for_iteration.off loop
-										if candidate_schemas.item (schema_inclusion_map.item_for_iteration.item).p_schema.state = {P_BMM_SCHEMA}.State_includes_pending then
-											candidate_schemas.item (schema_inclusion_map.item_for_iteration.item).p_schema.merge (included_schema)
-											post_info (Current, "load_schemas", "model_access_i2", <<included_schema.schema_id, candidate_schemas.item (schema_inclusion_map.item_for_iteration.item).schema_id>>)
+									across map_csr.item as schemas_csr loop
+										if candidate_schemas.item (schemas_csr.item).p_schema.state = {P_BMM_SCHEMA}.State_includes_pending then
+											candidate_schemas.item (schemas_csr.item).p_schema.merge (included_schema)
+											post_info (Current, "load_schemas", "model_access_i2", <<included_schema.schema_id, candidate_schemas.item (schemas_csr.item).schema_id>>)
 											finished := False
 										end
-										schema_inclusion_map.item_for_iteration.forth
 									end
 								end
 							else
 								post_error (Current, "load_schemas", "model_access_e10", <<schema_inclusion_map.key_for_iteration>>)
 							end
-							schema_inclusion_map.forth
 						end
 						i := i + 1
 					end
@@ -320,46 +317,42 @@ feature {NONE} -- Implementation
 					-- By this point the P_BMM schemas have been merged, and the top-level P_BMM schemas can be validated
 					-- This will cause each schema to potentially create errors to do with included schemas as well as itself
 					-- These errors then need to be integrated with the original schemas, so as to be reported correctly
-					from candidate_schemas.start until candidate_schemas.off loop
-						sd := candidate_schemas.item_for_iteration
-						if sd.is_top_level and schemas_load_list.has (sd.schema_id) then
-							if sd.passed and sd.p_schema.state = {P_BMM_SCHEMA}.State_includes_processed then
+					across candidate_schemas as schemas_csr loop
+						if schemas_csr.item.is_top_level and schemas_load_list.has (schemas_csr.item.schema_id) then
+							if schemas_csr.item.passed and schemas_csr.item.p_schema.state = {P_BMM_SCHEMA}.State_includes_processed then
 								-- validate the schema & if passed, put it into `top_level_schemas'
-								sd.validate
-								merge_validation_errors (sd)
-								if sd.passed then
-									sd.create_schema
-									valid_top_level_schemas.extend (sd.schema, sd.schema_id)
-									if sd.errors.has_warnings then
-										post_warning (Current, "load_schemas", "model_access_w8", <<sd.schema_id, sd.errors.as_string>>)
+								schemas_csr.item.validate
+								merge_validation_errors (schemas_csr.item)
+								if schemas_csr.item.passed then
+									schemas_csr.item.create_schema
+									valid_top_level_schemas.extend (schemas_csr.item.schema, schemas_csr.item.schema_id)
+									if schemas_csr.item.errors.has_warnings then
+										post_warning (Current, "load_schemas", "model_access_w8", <<schemas_csr.item.schema_id, schemas_csr.item.errors.as_string>>)
 									end
 								else
-									post_error (Current, "load_schemas", "model_access_e9", <<sd.schema_id, sd.errors.as_string>>)
+									post_error (Current, "load_schemas", "model_access_e9", <<schemas_csr.item.schema_id, schemas_csr.item.errors.as_string>>)
 								end
 							end
 						end
-						candidate_schemas.forth
 					end
 				end
 
 				-- now populate the `schemas_by_rm_closure' table
 				schemas_by_rm_closure.wipe_out
-				from valid_top_level_schemas.start until valid_top_level_schemas.off loop
-					model_publisher := valid_top_level_schemas.item_for_iteration.rm_publisher
-					rm_closures := valid_top_level_schemas.item_for_iteration.archetype_rm_closure_packages
+				across valid_top_level_schemas as schemas_csr loop
+					model_publisher := schemas_csr.item.rm_publisher
+					rm_closures := schemas_csr.item.archetype_rm_closure_packages
 
 					-- put a ref to schema, keyed by the model_publisher-package_name key (lower-case) for later lookup by compiler
-					from rm_closures.start until rm_closures.off loop
-						qualified_rm_closure_name := publisher_qualified_rm_closure_key (model_publisher, rm_closures.item)
+					across rm_closures as rm_closures_csr loop
+						qualified_rm_closure_name := publisher_qualified_rm_closure_key (model_publisher, rm_closures_csr.item)
 						if not schemas_by_rm_closure.has (qualified_rm_closure_name) then
-							schemas_by_rm_closure.put (valid_top_level_schemas.item_for_iteration, qualified_rm_closure_name.as_lower)
+							schemas_by_rm_closure.put (schemas_csr.item, qualified_rm_closure_name.as_lower)
 						else
 							post_info (Current, "load_schemas", "model_access_w3", <<qualified_rm_closure_name, schemas_by_rm_closure.item (qualified_rm_closure_name).schema_id,
-								valid_top_level_schemas.key_for_iteration>>)
+								schemas_csr.key>>)
 						end
-						rm_closures.forth
 					end
-					valid_top_level_schemas.forth
 				end
 				load_count := load_count.item + 1
 			end

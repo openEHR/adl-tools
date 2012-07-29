@@ -67,6 +67,11 @@ feature -- Access
 			end
 		end
 
+	tools_count: INTEGER
+		do
+			Result := docking_tools.count
+		end
+
 feature -- Status Report
 
 	has_tools: BOOLEAN
@@ -220,29 +225,31 @@ feature {NONE} -- Implementation
 			docking_pane: SD_CONTENT
 			keys: ARRAYED_LIST [INTEGER]
 		do
-			-- work out a sensible value for new current_archetype_tool_id
-			create keys.make_from_array (docking_tools.current_keys)
-			from keys.start until keys.off or keys.item = a_tool_id loop
-				keys.forth
-			end
-			if keys.isfirst then
-				if keys.count = 1 then
-					active_tool_id := 0
-				else
-					active_tool_id := keys.i_th (2)
+			if tools_count > 1 then
+				-- work out a sensible value for new current_archetype_tool_id
+				create keys.make_from_array (docking_tools.current_keys)
+				from keys.start until keys.off or keys.item = a_tool_id loop
+					keys.forth
 				end
-			else
-				keys.back
-				active_tool_id := keys.item
-			end
+				if keys.isfirst then
+					if keys.count = 1 then
+						active_tool_id := 0
+					else
+						active_tool_id := keys.i_th (2)
+					end
+				else
+					keys.back
+					active_tool_id := keys.item
+				end
 
-			-- destroy the docking pane and archetype tool controls
-			docking_pane := docking_tools.item (a_tool_id).docking_pane
-			docking_pane.close
-			docking_pane.destroy
-			docking_tools.remove (a_tool_id)
+				-- destroy the docking pane and archetype tool controls
+				docking_pane := docking_tools.item (a_tool_id).docking_pane
+				docking_pane.close
+				docking_pane.destroy
+				docking_tools.remove (a_tool_id)
+			end
 		ensure
-			not has_tool (a_tool_id)
+			old tools_count > 1 implies not has_tool (a_tool_id)
 		end
 
 	select_tool (a_tool_id: INTEGER)

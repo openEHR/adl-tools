@@ -68,15 +68,13 @@ feature -- Access
 		once
 			create Result.make (0)
 			Result.compare_objects
-			from archetype_native_serialisers.start until archetype_native_serialisers.off loop
-				Result.extend (archetype_native_serialisers.key_for_iteration)
-				archetype_native_serialisers.forth
+			across archetype_native_serialisers as serialisers_csr loop
+				Result.extend (serialisers_csr.key)
 			end
-			from dt_serialisers.start until dt_serialisers.off loop
-				if not Result.has (dt_serialisers.key_for_iteration) then
-					Result.extend (dt_serialisers.key_for_iteration)
+			across dt_serialisers as serialisers_csr loop
+				if not Result.has (serialisers_csr.key) then
+					Result.extend (serialisers_csr.key)
 				end
-				dt_serialisers.forth
 			end
 		ensure
 			not_empty: not Result.is_empty
@@ -88,9 +86,8 @@ feature -- Access
 		once
 			create Result.make (0)
 			Result.compare_objects
-			from archetype_native_serialisers.start until archetype_native_serialisers.off loop
-				Result.extend (archetype_native_serialisers.key_for_iteration)
-				archetype_native_serialisers.forth
+			across archetype_native_serialisers as serialisers_csr loop
+				Result.extend (serialisers_csr.key)
 			end
 		ensure
 			not_empty: not Result.is_empty
@@ -110,6 +107,20 @@ feature -- Access
 		once
 			create Result.make (0)
 			Result.put (File_ext_archetype_source, Syntax_type_adl)
+			Result.put (File_ext_archetype_web_page, Syntax_type_adl_html)
+			Result.put (File_ext_dadl, Syntax_type_dadl)
+			Result.put (File_ext_xml_default, Syntax_type_xml)
+			Result.put (File_ext_json_default, Syntax_type_json)
+			Result.put (File_ext_yaml_default, Syntax_type_yaml)
+		ensure
+			not_empty: not Result.is_empty
+		end
+
+	flat_archetype_file_extensions: HASH_TABLE [STRING, STRING]
+			-- File extensions for logical serialisation formats.
+		once
+			create Result.make (0)
+			Result.put (File_ext_archetype_flat, Syntax_type_adl)
 			Result.put (File_ext_archetype_web_page, Syntax_type_adl_html)
 			Result.put (File_ext_dadl, Syntax_type_dadl)
 			Result.put (File_ext_xml_default, Syntax_type_xml)

@@ -61,6 +61,9 @@ feature {NONE} -- Implementation
 
 	focus_archetype_agent: PROCEDURE [ANY, TUPLE [STRING]]
 
+	rm_schema: BMM_SCHEMA
+			-- schema of root template
+
 	select_archetype_with_delay (aca: ARCH_CAT_ARCHETYPE)
 		do
 			selected_archetype_node := aca
@@ -96,6 +99,10 @@ feature {NONE} -- Implementation
    		local
 			og_iterator: OG_ITERATOR
 		do
+			if not attached rm_schema then
+				rm_schema := ara.rm_schema
+			end
+
 			-- make sure it is a template of some kind
 			if artefact_types.has (ara.artefact_type) then
 				-- if it is compiled & valid, display its flat filler structure
@@ -148,7 +155,10 @@ feature {NONE} -- Implementation
 						ca_path := c_attr.path
 					end
 					if not c_attr.children.off then
-						attach_node (ca_path, get_icon_pixmap ("archetype/" + c_attribute_pixmap_string (c_attr)), Void)
+						gui_grid.add_sub_row (ev_tree_item_stack.item, c_attr)
+						ev_tree_item_stack.extend (gui_grid.last_row)
+						gui_grid.set_last_row_label_col (1, ca_path, Void, Void, get_icon_pixmap ("archetype/" +
+							rm_schema.property_definition (c_attr.parent.rm_type_name, c_attr.rm_attribute_name).multiplicity_key_string))
 					end
 				elseif attached {C_ARCHETYPE_ROOT} ca as car and attached source as dir then
 					ara := dir.archetype_index.item (car.archetype_id)
@@ -171,45 +181,34 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	c_attribute_pixmap_string (c_attr: C_ATTRIBUTE): STRING
-			-- string name of pixmap for attribute c_attr
-			-- FIXME: this is a straight copy from GUI_NODE_MAP_CONTROL and should be consolidated at some point
-		do
-			create Result.make(0)
-			Result.append ("c_attribute")
-			if c_attr.is_multiple then
-				if c_attr.cardinality = Void or else c_attr.cardinality.interval.lower = 0 then
-					Result.append (".multiple.optional")
-				else
-					Result.append (".multiple")
-				end
-			else
-				if c_attr.existence = Void or else c_attr.existence.lower = 0 then
-					Result.append (".optional")
-				end
-			end
-		end
-
-	attach_node (str: STRING; pixmap: EV_PIXMAP; ara: detachable ARCH_CAT_ARCHETYPE)
-			-- attach a node into the tree
+	attach_node (str: STRING; pixmap: EV_PIXMAP; aca: ARCH_CAT_ARCHETYPE)
+			-- attach a archetype/template node into the tree
+		local
+			tooltip: STRING
 		do
 			-- add row to grid
 			if ev_tree_item_stack.is_empty then
-				gui_grid.add_row (ara)
+				gui_grid.add_row (aca)
 			else
-				gui_grid.add_sub_row (ev_tree_item_stack.item, ara)
+				gui_grid.add_sub_row (ev_tree_item_stack.item, aca)
 			end
 			ev_tree_item_stack.extend (gui_grid.last_row)
-			gui_grid.set_last_row_label_col (1, str, Void, Void, pixmap)
 
-			if attached ara then
-				ev_node_descriptor_map.force (gui_grid.last_row, ara.qualified_name)
+			-- tooltip		
+			create tooltip.make_empty
+			tooltip.append (aca.full_path)
+			if aca.has_legacy_flat_file and aca.differential_generated then
+				tooltip.append ("%N" + get_text ("archetype_tree_node_tooltip"))
+			end
 
-				-- context menu
-				if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (1) as gli then
-		 			gli.pointer_button_press_actions.force_extend (agent archetype_node_handler (gui_grid.last_row, ?, ?, ?))
-		 			gli.select_actions.force_extend (agent select_archetype_with_delay (ara))
-				end
+			gui_grid.set_last_row_label_col (1, str, tooltip, Void, pixmap)
+
+			ev_node_descriptor_map.force (gui_grid.last_row, aca.qualified_name)
+
+			-- context menu
+			if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (1) as gli then
+	 			gli.pointer_button_press_actions.force_extend (agent archetype_node_handler (gui_grid.last_row, ?, ?, ?))
+	 			gli.select_actions.force_extend (agent select_archetype_with_delay (aca))
 			end
 		end
 

@@ -96,8 +96,8 @@ feature {NONE} -- Implementation
 
 	edit_archetype_agent: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]]
 
-	save_archetype_agent: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE, BOOLEAN, BOOLEAN]]
-			-- agent with signature (aca: ARCH_CAT_ARCHETYPE; diff_flag, native_format_flag: BOOLEAN)
+	save_archetype_agent: PROCEDURE [ANY, TUPLE [aca: ARCH_CAT_ARCHETYPE; diff_flag: BOOLEAN; native_format_flag: BOOLEAN]]
+			-- agent to do save-as with an archetype
 
 	archetype_node_handler (ev_ti: EV_GRID_ROW; x,y, button: INTEGER)
 			-- creates the context menu for a right click action for an ARCH_REP_ARCHETYPE node

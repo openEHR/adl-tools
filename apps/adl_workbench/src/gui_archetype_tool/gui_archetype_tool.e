@@ -44,62 +44,57 @@ feature {NONE}-- Initialization
 
 			-- create subordinate widgets
 			create description_controls.make (Void)
-			create node_map_control.make (agent select_ontology_item_from_code, agent select_path_item_from_path)
-			create path_map_control.make (agent on_path_map_key_press)
-			create slot_map_control.make (agent update_slots_tab_label)
-			create ontology_controls.make (Void)
-			create annotations_control.make
-			create serialisation_control.make
-			create source_control.make
-			create validity_report_control.make
-			create statistical_information_control.make
-
-			-- connect widgets
 			ev_notebook.extend (description_controls.ev_root_container)
-			ev_notebook.extend (node_map_control.ev_root_container)
-			ev_notebook.extend (annotations_control.ev_root_container)
-			ev_notebook.extend (path_map_control.ev_root_container)
-			ev_notebook.extend (slot_map_control.ev_root_container)
-			ev_notebook.extend (ontology_controls.ev_root_container)
-			ev_notebook.extend (source_control.ev_root_container)
-			ev_notebook.extend (serialisation_control.ev_root_container)
-			ev_notebook.extend (validity_report_control.ev_root_container)
-			ev_notebook.extend (statistical_information_control.ev_root_container)
-
-			-- set visual characteristics
-			ev_notebook.set_item_text (description_controls.ev_root_container, get_msg ("description_tab_text", Void))
+			ev_notebook.set_item_text (description_controls.ev_root_container, get_text ("description_tab_text"))
 			ev_notebook.item_tab (description_controls.ev_root_container).set_pixmap (get_icon_pixmap ("tool/description"))
 
-			ev_notebook.set_item_text (node_map_control.ev_root_container, get_msg ("definition_tab_text", Void))
+			create node_map_control.make (agent select_ontology_item_from_code, agent select_path_item_from_path)
+			ev_notebook.extend (node_map_control.ev_root_container)
+			ev_notebook.set_item_text (node_map_control.ev_root_container, get_text ("definition_tab_text"))
 			ev_notebook.item_tab (node_map_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/node_map"))
 
-			ev_notebook.set_item_text (path_map_control.ev_root_container, get_msg ("paths_tab_text", Void))
-			ev_notebook.item_tab (path_map_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/path_map"))
-
-			ev_notebook.set_item_text (slot_map_control.ev_root_container, get_msg ("slots_tab_text", Void))
-			ev_notebook.item_tab (slot_map_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/slot_map"))
-
-			ev_notebook.set_item_text (ontology_controls.ev_root_container, get_msg ("terminology_tab_text", Void))
+			create ontology_controls.make (Void)
+			ev_notebook.extend (ontology_controls.ev_root_container)
+			ev_notebook.set_item_text (ontology_controls.ev_root_container, get_text ("terminology_tab_text"))
 			ev_notebook.item_tab (ontology_controls.ev_root_container).set_pixmap (get_icon_pixmap ("tool/terminology"))
 
-			ev_notebook.set_item_text (annotations_control.ev_root_container, get_msg ("annotations_tab_text", Void))
+			create annotations_control.make
+			ev_notebook.extend (annotations_control.ev_root_container)
+			ev_notebook.set_item_text (annotations_control.ev_root_container, get_text ("annotations_tab_text"))
 			ev_notebook.item_tab (annotations_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/annotations"))
 
-			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_msg ("serialised_tab_text", Void))
-			ev_notebook.item_tab (serialisation_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/serialised"))
+			create path_map_control.make (agent on_path_map_key_press)
+			ev_notebook.extend (path_map_control.ev_root_container)
+			ev_notebook.set_item_text (path_map_control.ev_root_container, get_text ("paths_tab_text"))
+			ev_notebook.item_tab (path_map_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/path_map"))
 
-			ev_notebook.set_item_text (source_control.ev_root_container, get_msg ("source_tab_text", Void))
-			ev_notebook.item_tab (source_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/source"))
-
-			ev_notebook.set_item_text (validity_report_control.ev_root_container, get_msg ("validity_tab_text", Void))
-
-			ev_notebook.set_item_text (statistical_information_control.ev_root_container, get_msg ("stat_info_tab_text", Void))
-
-			-- set events: press Enter on Slots map trees
+			create slot_map_control.make (agent update_slots_tab_label)
+			ev_notebook.extend (slot_map_control.ev_root_container)
+			ev_notebook.set_item_text (slot_map_control.ev_root_container, get_text ("slots_tab_text"))
+			ev_notebook.item_tab (slot_map_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/slot_map"))
 			slot_map_control.ev_suppliers_tree.key_press_actions.force (agent on_slot_map_suppliers_tree_key_press)
 			slot_map_control.ev_clients_tree.key_press_actions.force (agent on_slot_map_clients_tree_key_press)
 			slot_map_control.ev_suppliers_tree.pointer_double_press_actions.force (agent on_slot_map_suppliers_tree_double_click)
 			slot_map_control.ev_clients_tree.pointer_double_press_actions.force (agent on_slot_map_clients_tree_double_click)
+
+			create source_control.make
+			ev_notebook.extend (source_control.ev_root_container)
+			ev_notebook.set_item_text (source_control.ev_root_container, get_text ("source_tab_text"))
+			ev_notebook.item_tab (source_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/source"))
+
+			create serialisation_control.make
+			ev_notebook.extend (serialisation_control.ev_root_container)
+			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_text ("serialised_tab_text"))
+			ev_notebook.item_tab (serialisation_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/serialised"))
+
+			create validity_report_control.make
+			ev_notebook.extend (validity_report_control.ev_root_container)
+			ev_notebook.set_item_text (validity_report_control.ev_root_container, get_text ("validity_tab_text"))
+
+			create statistical_information_control.make
+			ev_notebook.extend (statistical_information_control.ev_root_container)
+			ev_notebook.set_item_text (statistical_information_control.ev_root_container, get_text ("stat_info_tab_text"))
+
 
 			set_tab_appearance
 			set_tab_texts

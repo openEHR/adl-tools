@@ -177,7 +177,7 @@ templates = <
 
 		["config_dialog_warning"] = <"Configuration warning">
 
-		["export_errors_stats_requires_build_text"] = <"System needs to be compiled before error report can be generated">
+		["export_errors_stats_requires_build_text"] = <"Compile system (F7) and display statistics before generating error report">
 		["clean_generated_files_info"] = <"System needs to be compiled before generated files can be deleted">
 		["export_repository_report_replace_info"] = <"Exported report to $1">
 		["export_repository_report_replace_err"] = <"Failed to export report to $1">

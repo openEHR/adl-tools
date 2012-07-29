@@ -412,7 +412,7 @@ feature -- Statistics
 
 	catalogue_metrics: HASH_TABLE [INTEGER, STRING]
 
-	terminology_bindings_statistics: detachable HASH_TABLE [ARRAYED_LIST[STRING], STRING]
+	terminology_bindings_statistics: detachable HASH_TABLE [ARRAYED_LIST [STRING], STRING]
 			-- table of archetypes containing terminology bindings, keyed by terminology;
 			-- some archetypes have more than one binding, so could appear in more than one list
 

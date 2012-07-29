@@ -186,7 +186,7 @@ feature -- Commands
 			ns: XML_NAMESPACE
 			document: XML_DOCUMENT
 			processing: XML_PROCESSING_INSTRUCTION
-			root, statistics_element, category_element, archetype_element: XML_ELEMENT
+			root, statistics_element, archetype_element: XML_ELEMENT
 			attr: XML_ATTRIBUTE
 			data: XML_CHARACTER_DATA
 			create_category_element: PROCEDURE [ANY, TUPLE]
@@ -224,21 +224,21 @@ feature -- Commands
 
 				if attached {EV_GRID_ROW} categories [err_type] as row then
 					create_category_element.call ([root, category, row.subrow_count])
-					category_element ?= root.last
+					if attached {XML_ELEMENT} root.last as category_element then
+						from i := 0 until i = row.subrow_count loop
+							i := i + 1
 
-					from i := 0 until i = row.subrow_count loop
-						i := i + 1
+							if attached {ARCH_CAT_ARCHETYPE} row.subrow (i).data as ara then
+								create archetype_element.make_last (category_element, "archetype", ns)
+								create attr.make_last ("id", ns, ara.id.as_string, archetype_element)
 
-						if attached {ARCH_CAT_ARCHETYPE} row.subrow (i).data as ara then
-							create archetype_element.make_last (category_element, "archetype", ns)
-							create attr.make_last ("id", ns, ara.id.as_string, archetype_element)
-
-							message_lines := ara.errors.as_string.split ('%N')
-							from message_lines.start until message_lines.off loop
-								if not message_lines.item.is_empty then
-									create data.make_last (create {XML_ELEMENT}.make_last (archetype_element, "message", ns), message_lines.item)
+								message_lines := ara.errors.as_string.split ('%N')
+								from message_lines.start until message_lines.off loop
+									if not message_lines.item.is_empty then
+										create data.make_last (create {XML_ELEMENT}.make_last (archetype_element, "message", ns), message_lines.item)
+									end
+									message_lines.forth
 								end
-								message_lines.forth
 							end
 						end
 					end
@@ -265,19 +265,19 @@ feature -- Access
 
 	ev_grid: EV_GRID_KBD_MOUSE
 
-	parse_error_count: NATURAL
+	parse_error_count: INTEGER
 			-- Number of parser errors.
 		do
 			Result := count_for_category (err_type_parse_error)
 		end
 
-	validity_error_count: NATURAL
+	validity_error_count: INTEGER
 			-- Number of parser errors.
 		do
 			Result := count_for_category (err_type_validity_error)
 		end
 
-	warning_count: NATURAL
+	warning_count: INTEGER
 			-- Number of parser errors.
 		do
 			Result := count_for_category (err_type_warning)
@@ -285,7 +285,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	update_gui_with_compiler_error_counts: PROCEDURE [ANY, TUPLE [NATURAL, NATURAL, NATURAL]]
+	update_gui_with_compiler_error_counts: PROCEDURE [ANY, TUPLE [INTEGER, INTEGER, INTEGER]]
 			-- agent provided by upper GUI for providing feedback about current error counts
 
 	update_errors_tab_label
@@ -369,14 +369,14 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	count_for_category (err_type: INTEGER): NATURAL
+	count_for_category (err_type: INTEGER): INTEGER
 			-- Number of parser errors.
 		require
 			not_too_small: err_type >= categories.lower
 			not_too_big: err_type <= categories.upper
 		do
 			if attached {EV_GRID_ROW} categories [err_type] as row then
-				Result := row.subrow_count.as_natural_32
+				Result := row.subrow_count
 			end
 		end
 

@@ -306,7 +306,7 @@ feature {NONE} -- Implementation
 			error_dialog: EV_INFORMATION_DIALOG
 			file: PLAIN_TEXT_FILE
 			save_dialog: EV_FILE_SAVE_DIALOG
-			name, format: STRING
+			name, format, ext: STRING
 			format_list: ARRAYED_LIST [STRING]
 			dialog_title: STRING
 		do
@@ -326,10 +326,8 @@ feature {NONE} -- Implementation
 				save_dialog.set_start_directory (current_work_directory)
 
 				-- ask the user what format
-				from format_list.start until format_list.off loop
-					format := format_list.item
-					save_dialog.filters.extend (["*" + archetype_file_extensions [format], get_msg ("save_archetype_as_type", <<format.as_upper>>)])
-					format_list.forth
+				across format_list as formats_csr loop
+					save_dialog.filters.extend (["*" + archetype_file_extensions [formats_csr.item], get_msg ("save_archetype_as_type", <<formats_csr.item.as_upper>>)])
 				end
 
 				save_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
@@ -339,8 +337,13 @@ feature {NONE} -- Implementation
 					-- finalise the file path & create a handle
 					set_current_work_directory (file_system.dirname (name))
 					format := format_list [save_dialog.selected_filter_index]
-					if not file_system.has_extension (name, archetype_file_extensions [format]) then
-						name.append (archetype_file_extensions [format])
+					if diff_flag then
+						ext := archetype_file_extensions [format]
+					else
+						ext := flat_archetype_file_extensions [format]
+					end
+					if not file_system.has_extension (name, ext) then
+						name.append (ext)
 					end
 					create file.make (name)
 

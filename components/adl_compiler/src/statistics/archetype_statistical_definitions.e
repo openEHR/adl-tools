@@ -13,21 +13,48 @@ note
 
 class ARCHETYPE_STATISTICAL_DEFINITIONS
 
+inherit
+	SHARED_MESSAGE_DB
+		export
+			{NONE} all
+		end
+
 feature -- Definitions
 
-	Object_node_count: STRING = "Object nodes"
+	Object_node_count: STRING
+		once
+			Result := get_text ("arch_stats_object_nodes_text")
+		end
 
-	Archetypable_node_count: STRING = "Archetypable nodes"
+	Archetypable_node_count: STRING
+		once
+			Result := get_text ("arch_stats_archetypable_nodes_text")
+		end
 
-	Archetype_data_value_node_count: STRING = "Data value nodes"
+	Archetype_data_value_node_count: STRING
+		once
+			Result := get_text ("arch_stats_data_value_nodes_text")
+		end
 
-	At_code_count: STRING = "At-codes"
+	At_code_count: STRING
+		once
+			Result := get_text ("arch_stats_at_codes_text")
+		end
 
-	Ac_code_count: STRING = "Ac-codes"
+	Ac_code_count: STRING
+		once
+			Result := get_text ("arch_stats_ac_codes_text")
+		end
 
-	At_code_bindings_count: STRING = "At-code bindings"
+	At_code_bindings_count: STRING
+		once
+			Result := get_text ("arch_stats_at_code_bindings_text")
+		end
 
-	Ac_code_bindings_count: STRING = "Ac-code bindings"
+	Ac_code_bindings_count: STRING
+		once
+			Result := get_text ("arch_stats_ac_code_bindings_text")
+		end
 
 	Archetype_metric_names: ARRAY [STRING]
 		once
@@ -41,30 +68,51 @@ feature -- Definitions
 			>>
 		end
 
-	Total_archetype_count: STRING = "Total archetypes"
+	Total_archetype_count: STRING
+		once
+			Result := get_text ("arch_stats_total_archetypes_text")
+		end
 
-	Valid_archetype_count: STRING = "Valid archetypes"
+	Valid_archetype_count: STRING
+		once
+			Result := get_text ("arch_stats_valid_archetypes_text")
+		end
 			-- count of valid archetypes
 
-	Specialised_archetype_count: STRING = "Specialised archetypes"
+	Specialised_archetype_count: STRING
 			-- Count of specialised archetype descriptors in directory.
+		once
+			Result := get_text ("arch_stats_specialised_archetypes_text")
+		end
 
-	Client_archetype_count: STRING = "Client archetypes"
+	Client_archetype_count: STRING
 			-- Count of slot-containing archetype descriptors in directory.
+		once
+			Result := get_text ("arch_stats_client_archetypes_text")
+		end
 
-	Supplier_archetype_count: STRING = "Supplier archetypes"
+	Supplier_archetype_count: STRING
 			-- Count of archetype descriptors for archetypes used in slots in directory.
+		once
+			Result := get_text ("arch_stats_supplier_archetypes_text")
+		end
 
 	Catalogue_metric_names: ARRAY [STRING]
 		once
 			Result := <<Valid_archetype_count, Specialised_archetype_count, Client_archetype_count, Supplier_archetype_count>>
 		end
 
-	Rm_primitive_group_key: STRING = "Primitive"
+	Rm_primitive_group_key: STRING
 			-- name of group of RM breakdown stats based on classs that are primtiive types
+		once
+			Result := get_text ("arch_stats_primitive_text")
+		end
 
-	Rm_non_primitive_group_key: STRING = "Non-primitive"
+	Rm_non_primitive_group_key: STRING
 			-- name of group of RM breakdown stats based on classs that are non-primtiive types
+		once
+			Result := get_text ("arch_stats_non_primitive_text")
+		end
 
 end
 

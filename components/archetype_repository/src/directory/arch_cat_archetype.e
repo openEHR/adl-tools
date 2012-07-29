@@ -838,7 +838,7 @@ feature {NONE} -- Compilation
 				end
 			end
 
-			status.prepend(billboard.content)
+			status.prepend (billboard.content)
 			billboard.clear
 		ensure
 			Compilation_state: (<<Cs_validated, Cs_validate_failed, Cs_convert_legacy_failed, cs_lineage_invalid>>).has (compilation_state)
@@ -1033,6 +1033,7 @@ feature -- File Operations
 			is_valid
 		do
 			file_repository.save_text_to_file (differential_path, adl15_engine.serialise (differential_archetype, Syntax_type_adl, current_archetype_language))
+			status := get_msg_line ("file_saved_as_in_format", <<differential_path, Syntax_type_adl>>)
 		end
 
 	save_differential_as (a_full_path, a_format: attached STRING)
@@ -1047,6 +1048,7 @@ feature -- File Operations
 			else -- must be a DT serialisation format
 				file_repository.save_text_to_file (a_full_path, serialise_object (False, a_format))
 			end
+			status := get_msg_line ("file_saved_as_in_format", <<a_full_path, a_format>>)
 		end
 
 	save_flat_as (a_full_path, a_format: attached STRING)
@@ -1063,6 +1065,7 @@ feature -- File Operations
 			else -- must be a DT serialisation format
 				file_repository.save_text_to_file (a_full_path, serialise_object (True, a_format))
 			end
+			status := get_msg_line ("file_saved_as_in_format", <<a_full_path, a_format>>)
 		end
 
 	save_legacy_to (a_full_path: attached STRING)
@@ -1073,6 +1076,7 @@ feature -- File Operations
 			path_valid: not a_full_path.is_empty
 		do
 			file_repository.save_text_to_file (a_full_path, legacy_flat_text)
+			status := get_msg_line ("file_saved_as_in_format", <<a_full_path, file_ext_archetype_adl14>>)
 		end
 
 	save_compiled_differential

@@ -842,6 +842,7 @@ feature {NONE} -- Repository events
 				end
 			else
 				create info_dialog.make_with_text (get_msg_line ("export_errors_stats_requires_build_text", Void))
+				info_dialog.show_modal_to_window (Current)
 			end
 		end
 
@@ -1228,7 +1229,7 @@ feature -- Error Tool
 			error_docking_pane.set_auto_hide ({SD_ENUMERATION}.bottom)
 		end
 
-	error_tool_title_update (parse_error_count, validity_error_count, warning_count: NATURAL)
+	error_tool_title_update (parse_error_count, validity_error_count, warning_count: INTEGER)
 		do
 			error_docking_pane.set_short_title (get_msg ("error_tool_title", Void) + " (" + parse_error_count.out + "/" + validity_error_count.out + "/" + warning_count.out + ")")
 			error_docking_pane.set_long_title (get_msg ("error_tool_title", Void) + " (" + parse_error_count.out + "/" + validity_error_count.out + "/" + warning_count.out + ")")

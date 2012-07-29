@@ -170,7 +170,7 @@ feature {NONE} -- Implementation
 						text.append (Right_arrow_char_utf8)
 					end
 
-					-- tooltip		
+					-- tooltip
 					tooltip.append (aca.full_path)
 					if aca.has_legacy_flat_file and aca.differential_generated then
 						tooltip.append ("%N" + get_text ("archetype_tree_node_tooltip"))
