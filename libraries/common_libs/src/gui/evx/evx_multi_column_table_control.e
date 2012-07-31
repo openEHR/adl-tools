@@ -30,13 +30,13 @@ class EVX_MULTI_COLUMN_TABLE_CONTROL
 inherit
 	EVX_MLIST_CONTROL
 		rename
-			make as make_mlist, make_active as make_active_mlist
+			make as make_mlist, make_editable as make_editable_mlist
 		redefine
 			data_source_agent, data_source_setter_agent, data_source_remove_agent, set_columns_editable
 		end
 
 create
-	make, make_active
+	make, make_editable
 
 feature -- Initialisation
 
@@ -51,7 +51,7 @@ feature -- Initialisation
 			not is_readonly
 		end
 
-	make_active (a_data_source_agent: like data_source_agent;
+	make_editable (a_data_source_agent: like data_source_agent;
 			a_data_source_create_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
 			a_data_source_modify_agent: like data_source_modify_agent;
@@ -60,7 +60,7 @@ feature -- Initialisation
 			a_header_strings_agent: like header_strings_agent;
 			a_data_row_agt: like data_row_agt)
 		do
-			make_active_mlist ("",
+			make_editable_mlist ("",
 				a_data_source_agent, a_data_source_create_agent, a_data_source_remove_agent, an_undo_redo_chain,
 				min_height, min_width, False, a_header_strings_agent)
 			data_source_modify_agent := a_data_source_modify_agent
@@ -175,7 +175,7 @@ feature {NONE} -- Implementation
 			-- set columns editable - can only do this when when populated
 		do
 			precursor
-			if is_active then
+			if is_editable then
 				ev_data_control.set_column_editable (False, 1)
 			end
 		end

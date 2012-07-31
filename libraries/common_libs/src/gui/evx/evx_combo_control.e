@@ -35,9 +35,9 @@ inherit
 		rename
 			make as make_data_control
 		export
-			{NONE} make_active
+			{NONE} make_editable
 		redefine
-			data_source_agent, do_enable_active, do_disable_active
+			data_source_agent
 		end
 
 create
@@ -51,7 +51,6 @@ feature -- Initialisation
 			make_data_control (a_title, a_data_source_agent, min_height, min_width, arrange_horizontally, False)
 			ev_root_container.disable_item_expand (ev_data_control)
 			ev_data_control.select_actions.extend (agent propagate_select_action)
-			do_enable_active
 		end
 
 feature -- Access
@@ -98,20 +97,6 @@ feature {NONE} -- Implementation
 	create_ev_data_control
 		do
 			create ev_data_control
-		end
-
-	do_enable_active
-			-- enable editing
-		do
-			precursor
-			ev_data_control.enable_edit
-		end
-
-	do_disable_active
-			-- disable editing
-		do
-			precursor
-			ev_data_control.disable_edit
 		end
 
 end

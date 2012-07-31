@@ -59,7 +59,7 @@ feature -- Status Report
 	is_readonly: BOOLEAN
 			-- True if user interaction of this control is not allowed
 
-	is_active: BOOLEAN
+	is_editable: BOOLEAN
 			-- True if `ev_data_control' enabled for user interaction
 
 feature -- Modification
@@ -84,21 +84,21 @@ feature -- Commands
 		deferred
 		end
 
-	enable_active
-			-- enable user interaction, do nothing if `is_readonly'
+	enable_editable
+			-- enable user editing, do nothing if `is_readonly'
 		do
 			if not is_readonly then
-				do_enable_active
-				is_active := True
+				do_enable_editable
+				is_editable := True
 			end
 		end
 
-	disable_active
-			-- disable user interaction, do nothing if `is_readonly'
+	disable_editable
+			-- disable user editing, do nothing if `is_readonly'
 		do
 			if not is_readonly then
-				do_disable_active
-				is_active := False
+				do_disable_editable
+				is_editable := False
 			end
 		end
 
@@ -110,20 +110,17 @@ feature {NONE} -- Implementation
 
 	linked_data_controls: detachable ARRAYED_LIST [EVX_DATA_CONTROL]
 
-	do_enable_active
-			-- enable user interaction
+	do_enable_editable
 		do
 	--		ev_data_control.enable_sensitive
+	--		ev_data_control.set_background_color (editable_colour)
 		end
 
-	do_disable_active
-			-- disable user interaction
+	do_disable_editable
 		do
 	--		ev_data_control.disable_sensitive
+	--		ev_data_control.set_background_color (readonly_colour)
 		end
-
--- invariant
-	-- is_readonly implies not ev_data_control.is_sensitive
 
 end
 

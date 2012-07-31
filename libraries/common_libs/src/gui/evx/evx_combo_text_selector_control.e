@@ -33,13 +33,13 @@ class EVX_COMBO_TEXT_SELECTOR_CONTROL
 inherit
 	EVX_TEXT_CONTROL
 		rename
-			make as make_text_control, make_active as make_active_text_control, make_readonly as make_readonly_text_control
+			make as make_text_control, make_editable as make_editable_text_control, make_readonly as make_readonly_text_control
 		redefine
 			data_source_setter_agent, populate
 		end
 
 create
-	make, make_active, make_readonly
+	make, make_editable, make_readonly
 
 feature -- Initialisation
 
@@ -68,7 +68,7 @@ feature -- Initialisation
 			is_readonly
 		end
 
-	make_active (a_title: STRING; a_data_source: like data_source_agent;
+	make_editable (a_title: STRING; a_data_source: like data_source_agent;
 			a_value_set: LIST [STRING];
 			a_data_source_setter_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
@@ -77,14 +77,13 @@ feature -- Initialisation
 		require
 			a_value_set.object_comparison
 		do
-			make_active_text_control (a_title,
+			make_editable_text_control (a_title,
 				a_data_source, a_data_source_setter_agent, a_data_source_remove_agent,
 				an_undo_redo_chain, min_height, min_width, True, False)
 			value_set := a_value_set
 			ev_root_container.disable_item_expand (ev_data_control)
 			ev_data_control.select_actions.extend (agent propagate_select_action)
-			ev_data_control.select_actions.extend (agent process_edit)
-			disable_active
+			ev_data_control.select_actions.extend (agent do if is_editable then process_edit end end)
 		ensure
 			not is_readonly
 		end
@@ -108,7 +107,7 @@ feature -- Commands
 			li2: EV_LIST_ITEM
 		do
 			ev_data_control.select_actions.block
-			if not is_active then
+			if not is_editable then
 				ev_data_control.enable_sensitive
 			end
 
@@ -137,7 +136,7 @@ feature -- Commands
 				li2.enable_select
 			end
 			ev_data_control.select_actions.resume
-			if not is_active then
+			if not is_editable then
 				ev_data_control.disable_sensitive
 			end
 		end

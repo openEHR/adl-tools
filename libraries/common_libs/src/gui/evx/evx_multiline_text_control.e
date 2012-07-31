@@ -31,7 +31,7 @@ inherit
 		end
 
 create
-	make, make_active
+	make, make_editable
 
 feature -- Access
 

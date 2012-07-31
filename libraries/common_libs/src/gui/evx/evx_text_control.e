@@ -25,9 +25,9 @@ deferred class EVX_TEXT_CONTROL
 inherit
 	EVX_TITLED_DATA_CONTROL
 		rename
-			make as make_data_control, make_active as make_active_data_control
+			make as make_data_control, make_editable as make_editable_data_control
 		redefine
-			data_source_agent, data_source_setter_agent, do_enable_active, do_disable_active
+			data_source_agent, data_source_setter_agent, do_enable_editable, do_disable_editable
 		end
 
 feature -- Initialisation
@@ -39,17 +39,17 @@ feature -- Initialisation
 			ev_data_control.focus_in_actions.extend (agent on_select_all)
 		end
 
-	make_active (a_title: STRING; a_data_source_agent: like data_source_agent;
+	make_editable (a_title: STRING; a_data_source_agent: like data_source_agent;
 			a_data_source_setter_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
 			an_undo_redo_chain: like undo_redo_chain;
 			min_height, min_width: INTEGER; use_hbox_container: BOOLEAN; allow_expansion: BOOLEAN)
 		do
-			make_active_data_control (a_title,
+			make_editable_data_control (a_title,
 				a_data_source_agent, a_data_source_setter_agent, a_data_source_remove_agent,
 				an_undo_redo_chain, min_height, min_width, use_hbox_container, allow_expansion)
 			ev_data_control.focus_in_actions.extend (agent on_select_all)
-			ev_data_control.focus_out_actions.extend (agent process_edit)
+			ev_data_control.focus_out_actions.extend (agent do if is_editable then process_edit end end)
 		end
 
 feature -- Access
@@ -134,14 +134,14 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	do_enable_active
+	do_enable_editable
 			-- enable editing
 		do
 			precursor
 			ev_data_control.enable_edit
 		end
 
-	do_disable_active
+	do_disable_editable
 			-- disable editing
 		do
 			precursor

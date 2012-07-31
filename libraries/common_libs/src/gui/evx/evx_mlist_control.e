@@ -31,9 +31,9 @@ deferred class EVX_MLIST_CONTROL
 inherit
 	EVX_TITLED_DATA_CONTROL
 		rename
-			make as make_data_control, make_active as make_active_data_control, make_readonly as make_readonly_data_control
+			make as make_data_control, make_editable as make_editable_data_control, make_readonly as make_readonly_data_control
 		redefine
-			populate, do_enable_active
+			populate, do_enable_editable, do_disable_editable
 		end
 
 feature -- Initialisation
@@ -60,7 +60,7 @@ feature -- Initialisation
 			is_readonly
 		end
 
-	make_active (a_title: STRING; a_data_source_agent: like data_source_agent;
+	make_editable (a_title: STRING; a_data_source_agent: like data_source_agent;
 			a_data_source_create_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
 			an_undo_redo_chain: UNDO_REDO_CHAIN;
@@ -68,7 +68,7 @@ feature -- Initialisation
 			use_hbox_container: BOOLEAN;
 			a_header_strings_agent: like header_strings_agent)
 		do
-			make_active_data_control (a_title,
+			make_editable_data_control (a_title,
 				a_data_source_agent, a_data_source_create_agent, a_data_source_remove_agent, an_undo_redo_chain,
 				min_height, min_width, use_hbox_container, True)
 			initialise_data_control (a_header_strings_agent)
@@ -92,7 +92,7 @@ feature -- Commands
 				ev_data_control.set_column_titles (header_strings_agent.item ([]))
 			end
 			do_populate_control_from_source
-			if is_active then
+			if is_editable then
 				set_columns_editable
 			end
 		end
@@ -183,21 +183,28 @@ feature {NONE} -- Implementation
 			ev_data_control.set_all_columns_editable
 		end
 
-	do_enable_active
+	do_enable_editable
 		local
 			root_win: EV_WINDOW
 		do
 			precursor
+			ev_data_control.set_background_color (editable_colour)
 
 			-- the following one-off initialisation has to be done now, because at make time, the call to
 			-- proximate_ev_window won't work because things are not connected up yet
 			if not data_control_initialised then
 				root_win := proximate_ev_window (ev_root_container)
 				ev_data_control.enable_editing (root_win)
-				ev_data_control.end_edit_actions.extend (agent process_in_place_edit)
+				ev_data_control.end_edit_actions.extend (agent do if is_editable then process_in_place_edit end end)
 				ev_data_control.pointer_button_press_actions.force_extend (agent mlist_handler (ev_data_control, ?, ?, ?, ?, ?, ?, ?, ?))
 				data_control_initialised := True
 			end
+		end
+
+	do_disable_editable
+		do
+			precursor
+			ev_data_control.set_background_color (background_colour)
 		end
 
 end
