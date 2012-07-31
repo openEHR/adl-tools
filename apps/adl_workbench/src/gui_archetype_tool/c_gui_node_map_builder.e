@@ -484,7 +484,7 @@ feature -- Visitor
 	start_c_code_phrase (a_node: attached C_CODE_PHRASE; depth: INTEGER)
 			-- enter an C_CODE_PHRASE
 		local
-			row, sub_row: EV_GRID_ROW
+			row: EV_GRID_ROW
 			constraint_str: STRING
 			i: INTEGER
 			bmm_prop: BMM_PROPERTY_DEFINITION
@@ -511,7 +511,6 @@ feature -- Visitor
 					if a_node.has_assumed_value and then a_node.assumed_value.code_string.is_equal (a_node.code_list.item) then
 						constraint_str.append (" (" + get_text ("assumed_text") + ")")
 					end
-
 					if not a_node.code_list.islast then
 						constraint_str.append_string ("%N")
 					end
@@ -525,14 +524,13 @@ feature -- Visitor
 					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop.name, Void, c_object_attribute_colour (a_node), get_icon_pixmap ("rm/generic/" + bmm_prop.multiplicity_key_string))
 					gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, c_constraint_colour (a_node), Void)
 				else
-					from i := 1 until i > row.subrow_count or attached sub_row loop
+					from i := 1 until i > row.subrow_count loop
 						if attached {STRING} row.subrow (i).data as str and then str.is_equal (bmm_prop.name) then
-							sub_row := row.subrow (i)
+							gui_grid.set_last_row (row.subrow (i))
+							gui_grid.update_last_row_label_col (Node_grid_col_constraint, constraint_str, Void, Void, Void)
+							i := row.subrow_count + 1
 						end
 						i := i + 1
-					end
-					if attached {EV_GRID_LABEL_ITEM} sub_row.item (Node_grid_col_constraint) as gli2 then
-						gli2.set_text (constraint_str)
 					end
 				end
 			end
@@ -550,7 +548,7 @@ feature -- Visitor
 			-- enter an C_DV_ORDINAL
 		local
 			assumed_flag: BOOLEAN
-			row, sub_row: EV_GRID_ROW
+			row: EV_GRID_ROW
 			constraint_str: STRING
 			i: INTEGER
 			bmm_prop_key: STRING
@@ -581,14 +579,13 @@ feature -- Visitor
 						get_icon_pixmap ("rm/generic/" + bmm_prop_value.multiplicity_key_string))
 					gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, c_constraint_colour (a_node), Void)
 				else
-					from i := 1 until i > row.subrow_count or attached sub_row loop
+					from i := 1 until i > row.subrow_count loop
 						if attached {STRING} row.subrow (i).data as str and then str.is_equal (bmm_prop_key) then
-							sub_row := row.subrow (i)
+							gui_grid.set_last_row (row.subrow (i))
+							gui_grid.update_last_row_label_col (Node_grid_col_constraint, constraint_str, Void, Void, Void)
+							i := row.subrow_count + 1
 						end
 						i := i + 1
-					end
-					if attached {EV_GRID_LABEL_ITEM} sub_row.item (Node_grid_col_constraint) as gli2 then
-						gli2.set_text (constraint_str)
 					end
 				end
 			end

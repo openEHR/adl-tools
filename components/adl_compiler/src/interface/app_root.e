@@ -69,7 +69,7 @@ feature -- Initialisation
 					post_error (Current, "initialise", "terminology_init_failed", <<term_init.init_fail_reason>>)
 				end
 
-				-- check if no XML rules file, and copy in sample one if none
+				-- check if found an XML rules file, and copy in sample one if none
 				if not file_system.file_exists (xml_rules_file_path) then
 					if file_system.file_exists (xml_rules_sample_file_path) then
 						file_system.copy_file (xml_rules_sample_file_path, xml_rules_file_path)
