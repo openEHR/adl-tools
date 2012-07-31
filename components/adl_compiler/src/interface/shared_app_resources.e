@@ -86,6 +86,14 @@ feature -- Definitions
 			not_empty: not Result.is_empty
 		end
 
+	xml_rules_sample_file_path: STRING
+			-- Full path to XML rules file.
+		once
+			Result := file_system.pathname (application_startup_directory, extension_replaced ("sample_xml_rules", User_config_file_extension))
+		ensure
+			not_empty: not Result.is_empty
+		end
+
 	Report_css_template_filename: STRING = "ArchetypeRepositoryReport.css"
 
 	Report_css_template_path: STRING
