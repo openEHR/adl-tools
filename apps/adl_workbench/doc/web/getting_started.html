@@ -28,7 +28,9 @@
           <h2>Overview</h2>
 		  <p>The ADL Workbench is completely model-driven, and uses schema files expressed in a simple object model format to import reference model (RM) definitions. Multiple RMs can be imported during any one session, enabling comparison of models, classes and archetypes based on different models.</p>
 		  <p>The second key configuration required is to set up 'profiles' defining where archetypes and templates are to be found.</p>
-          <h2>Some Basic Configuration</h2>
+          <h2>Download some archetypes</h2>
+		  <p>For first-time use, you will be asked to provide paths to archetypes. It helps to have already downloaded some archetypes! See <a href="obtaining_archetypes.html">here</a> how to do this.</p>
+          <h2>Basic Configuration</h2>
           <h3>Setting RM Schemas</h3>
           <p>To import RM definition schemas, a directory has to be specified, and the particular models required selected. At installation, the AWB is normally set up to point to a set of schemas that is the latest copy at the time of distribution, of the schema files found in the knowledge2 SVN repository. You may want to check which Reference Model schemas are enabled initially. Choose RM Schemas &gt; Configure Schemas to do this. The dialog looks as follows.</p>
           <a href="images/options_rm_schema_config.png"><img border="0" alt="Options dialog" src="images/tn_options_rm_schema_config.jpg" width="200" height="187"/> </a>
@@ -39,9 +41,6 @@
             <img border="0" alt="Repository dialog at startup" src="images/tn_startup_repository.jpg" width="200" height="151"/> </a>
           <p>The repository dialog is used to define the location of a repository of archetypes/templates. The 'profile' is a logical name for a 'reference' repository, and optionally, a 'work' repository. You can create as many profiles as you like. The 'reference' repository is a directory containing archetypes that you will use, but not modify, such as the CKM archetypes, or a national library. These archetypes will be shown with blue icons. The optional 'work' repository is to indicate the directory under which you have archetypes/templates you are working on. The latter can include specialisations of the archetypes found in the reference location. These archetypes will be shown with green icons.</p>
           <p>The files in each repository area can be arranged in any manner - e.g. the traditional '<i>open</i>EHR' structure, or even a single directory. When the files are read by the AWB, they are classified under the class structure of the reference model on which each archetype is based.</p>
-          <p>
-            <b>New users and anyone wanting to experiment with ADL/AOM 1.5 are advised to follow the setup described <a href="tool_configuration.html">here</a>. This is the setup the tool authors most often use!</b>
-          </p>
           <h2>Using the Tool</h2>
           <h3>Docking</h3>
 		  <p>The AWB layout is docking-based, which means that the key components are all dockable 'tools'. <a href="images/docking_overview.png">This screenshot</a> shows multiple editor tabs, the Catalog tool, and various minimised tools at the bottom and right hand side. Docking can be used to arrange editor tools <b>side by side</b>, as shown <a href="images/docking_side_by_side_definitions.png">here</a>, and to 'pop' a tool out into an independent window, as shown <a href="images/template_compiled.png">here</a>.</p>
@@ -195,6 +194,7 @@
       <ul>
         <li value="0"> <a href="index.html">Home</a> </li>
         <li value="0"> <a href="getting_started.html">Getting started</a> </li>
+        <li value="0"> <a href="obtaining_archetypes.html">Obtaining Archetypes</a> </li>
         <li value="0"> <a href="browsing_archetypes.html">Browsing and compiling</a> </li>
         <li value="0"><a href="tool_configuration.html">Tool Configuration</a></li>
         <li value="0"> <a href="learning_adl_15.html">Learning about ADL 1.5</a> </li>
@@ -211,6 +211,7 @@
       <ul>
         <li value="0"> <a href="index.html">Home</a> </li>
         <li value="0"> <a href="getting_started.html">Getting started</a> </li>
+        <li value="0"> <a href="obtaining_archetypes.html">Obtaining Archetypes</a> </li>
         <li value="0"> <a href="browsing_archetypes.html">Browsing and compiling</a> </li>
         <li value="0"><a href="tool_configuration.html">Tool Configuration</a></li>
         <li value="0"> <a href="learning_adl_15.html">Learning about ADL 1.5</a> </li>
