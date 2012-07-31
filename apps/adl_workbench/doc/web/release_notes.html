@@ -31,6 +31,46 @@
       <div id="content">
         <h2>Release History</h2>
 
+		<h3>31 Jul 2012 ADL 1.5 beta Release 8 (<a href="http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/1819/BRANCHES/adl1.5/">SVN rev 1819</a>) (<a href="http://www.openehr.org/issues/secure/IssueNavigator.jspa?reset=true&mode=hide&sorter/order=DESC&sorter/field=priority&resolution=-1&pid=10070&fixfor=10110">Jira</a>)</h3>
+			<ul>
+				<li><b>GUI changes</b>:
+					<ul>
+						<li>All explorers now modern Grid controls;</li>
+						<li>Show archetype versions in UI;</li>
+						<li>Add collapsable control panel for main GRID Tree view controls;</li>
+						<li>Archetype specalisation now visualised in grey / dark grey / colour, and switchable in UI;</li>
+						<li>Automatic expand to logical leaf nodes (ELEMENTs in openEHR);</li>
+						<li>Add property colourisation, based on classifications defined in RM schema files;</li>
+						<li>Power-expand collapsed nodes of logical leaf types that are not literally leaves in the Grid tree, e.g. ELEMENT in openEHR models;</li>
+						<li>Fix the multi-column width display problem;</li>
+						<li>Numerous changes to icons.</li>
+					</ul>
+				</li>
+				<li><b>Tool behaviour changes</b>:
+					<ul>
+						<li>Fix bug where invalid profile on start-up caused a crash - now tool removes invalid profiles, and then opens valid profile, or else starts as for first time;</li>
+						<li>Correct XML report generation dialogs and behaviour;</li>
+						<li>Correct AWBPR-22 export of flat file was overwriting differential file;</li>
+					</ul>
+				</li>
+				<li><b>RM Schema changes</b>:
+					<ul>
+						<li>Major update to CEN 13606 and TS 14796 data types schemas; the latter is distinct from the 21090 DT schema;</li>
+						<li>Add property classification system to schemas: now properties can be classified as 'data' (default), 'runtime' and 'infrastructure';</li>
+					</ul>
+				</li>
+				<li><b>Compiler changes</b>:
+					<ul>
+						<li>Correct errors in term-binding logic - terms can now correctly be bound to at-codes, ac-codes, paths and paths created due to use_nodes;</li>
+						<li>Correct path computation where there are use_node internal references;</li>
+						<li>Add support for detecting model classification in other_details part of archetype description: e.g. ["model_level"] = &lt;"reference"&gt; indicates a reference archetype a la CIMI;</li>
+						<li>Remove VACMC1 error from parser (the rule which prevents member objects in a container having occurrences = 0..* when the owning attribute cardiality is limited);</li>
+						<li>Fix a bug in the dADL parser that was preventing lists which have multiple members, and also a (superfluous) ellipsis are accepted silently;</li>
+						<li>Add a post-parse AOM structure building stage to compiler, to allow RM-independent parsing;</li>
+					</ul>
+				</li>
+			</ul>
+
 		<h3>29 Jun 2012 ADL 1.5 beta Release 7 (<a href="http://www.openehr.org/svn/ref_impl_eiffel/!svn/bc/1757/BRANCHES/adl1.5/">SVN rev 1757</a>) (<a href="http://www.openehr.org/issues/secure/IssueNavigator.jspa?reset=true&mode=hide&sorter/order=DESC&sorter/field=priority&resolution=-1&pid=10070&fixfor=10110">Jira</a>)</h3>
 			<ul>
 				<li><b>GUI changes</b>:
