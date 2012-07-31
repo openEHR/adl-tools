@@ -133,7 +133,7 @@ feature -- Initialisation
 
 			-- initial state
 			if not show_technical_view then
-				rm_attrs_visible_checkbox_ctl.disable_active
+				rm_attrs_visible_checkbox_ctl.disable_editable
 			end
 		end
 
@@ -171,14 +171,14 @@ feature -- Commands
 			-- enable editing
 		do
 			precursor
-			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.enable_active end)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.enable_editable end)
 		end
 
 	disable_edit
 			-- enable editing
 		do
 			precursor
-			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.disable_active end)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.disable_editable end)
 		end
 
 	repopulate

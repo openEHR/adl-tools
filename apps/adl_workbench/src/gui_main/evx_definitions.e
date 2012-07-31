@@ -29,6 +29,11 @@ feature -- Definitions
 			create Result.make_with_8_bit_rgb (255, 255, 255)
 		end
 
+	readonly_colour: EV_COLOR
+		once
+			create Result.make_with_8_bit_rgb (250, 250, 250)
+		end
+
 	background_colour: EV_COLOR
 		once
 			create Result.make_with_8_bit_rgb (240, 240, 240)

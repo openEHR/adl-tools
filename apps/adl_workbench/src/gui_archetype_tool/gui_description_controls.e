@@ -54,7 +54,7 @@ feature {NONE} -- Initialisation
 			ev_root_container.set_item_text (admin_vbox, get_text ("authoring_tab_text"))
 
 			-- lifecycle state control - single line combo text-selection field
-			create lifecycle_state_text_ctl.make_active (get_text ("lifecycle_state_label_text"),
+			create lifecycle_state_text_ctl.make_editable (get_text ("lifecycle_state_label_text"),
 				agent :STRING do Result := source_archetype.description.lifecycle_state end,
 				archetype_lifecycle_states,
 				agent (a_str: STRING) do source_archetype.description.set_lifecycle_state (a_str) end,
@@ -67,7 +67,7 @@ feature {NONE} -- Initialisation
 			admin_vbox.extend (auth_frame_ctl.ev_root_container)
 
 			-- original_author control - Hash
-			create original_author_ctl.make_active (get_text ("auth_orig_auth_label_text"),
+			create original_author_ctl.make_editable (get_text ("auth_orig_auth_label_text"),
 				agent :HASH_TABLE [STRING, STRING] do Result := source_archetype.description.original_author end,
 				agent (a_key, a_val: STRING) do source_archetype.description.put_original_author_item (a_key, a_val) end,
 				agent (a_key: STRING) do source_archetype.description.remove_original_author_item (a_key) end,
@@ -76,7 +76,7 @@ feature {NONE} -- Initialisation
 			gui_controls.extend (original_author_ctl)
 
 			-- contributors - list
-			create auth_contrib_list_ctl.make_active (get_text ("auth_contrib_label_text"),
+			create auth_contrib_list_ctl.make_editable (get_text ("auth_contrib_label_text"),
 				agent :DYNAMIC_LIST [STRING] do if attached source_archetype.description.other_contributors then Result := source_archetype.description.other_contributors end end,
 				agent (a_str: STRING; i: INTEGER) do source_archetype.description.add_other_contributor (a_str, i) end,
 				agent (a_str: STRING) do source_archetype.description.remove_other_contributor (a_str) end,
@@ -98,7 +98,7 @@ feature {NONE} -- Initialisation
 			gui_controls.extend (original_language_text_ctl)
 			lang_original_trans_hbox.extend (original_language_text_ctl.ev_root_container)
 
-			-- translation languages selector (not modifiable)
+			-- translation languages selector
 			create trans_languages_ctl.make (get_text ("trans_languages_label_text"),
 				agent :DYNAMIC_LIST [STRING]
 					do
@@ -116,7 +116,7 @@ feature {NONE} -- Initialisation
 			-- translation author - Hash table
 			create trans_author_accreditation_vbox
 			lang_translations_hbox.extend (trans_author_accreditation_vbox)
-			create trans_author_ctl.make_active (get_text ("translator_label_text"),
+			create trans_author_ctl.make_editable (get_text ("translator_label_text"),
 				agent :HASH_TABLE [STRING, STRING] do if source_archetype.has_translations then Result := translation_details.author end end,
 				agent (a_key, a_val: STRING) do translation_details.put_author_item (a_key, a_val) end,
 				agent (a_key: STRING) do translation_details.remove_author_item (a_key) end,
@@ -126,7 +126,7 @@ feature {NONE} -- Initialisation
 			trans_author_accreditation_vbox.extend (trans_author_ctl.ev_root_container)
 
 			-- translator accreditation - multi-line text field
-			create trans_accreditation_text_ctl.make_active (get_text ("accreditation_label_text"),
+			create trans_accreditation_text_ctl.make_editable (get_text ("accreditation_label_text"),
 				agent :STRING do if source_archetype.has_translations then Result := translation_details.accreditation end end,
 				agent (a_str: STRING) do translation_details.set_accreditation (a_str) end,
 				agent do translation_details.clear_accreditation end,
@@ -136,7 +136,7 @@ feature {NONE} -- Initialisation
 			trans_languages_ctl.add_linked_control (trans_accreditation_text_ctl)
 
 			-- translator other_details - Hash
-			create trans_other_details_ctl.make_active (get_text ("translator_other_details_label_text"),
+			create trans_other_details_ctl.make_editable (get_text ("translator_other_details_label_text"),
 				agent :HASH_TABLE [STRING, STRING] do if source_archetype.has_translations then Result := translation_details.other_details end end,
 				agent (a_key, a_val: STRING) do translation_details.put_other_details_item (a_key, a_val) end,
 				agent (a_key: STRING) do translation_details.remove_other_details_item (a_key) end,
@@ -147,7 +147,7 @@ feature {NONE} -- Initialisation
 			lang_translations_hbox.extend (trans_other_details_ctl.ev_root_container)
 
 			-- copyright - multi-line text
-			create copyright_text_ctl.make_active (get_text ("copyright_label_text"),
+			create copyright_text_ctl.make_editable (get_text ("copyright_label_text"),
 				agent :STRING do if attached description_details then Result := description_details.copyright end end,
 				agent (a_str: STRING) do description_details.set_copyright (a_str) end,
 				agent do description_details.clear_copyright end,
@@ -168,7 +168,7 @@ feature {NONE} -- Initialisation
 			details_hbox.extend (details_frame_ctl.ev_root_container)
 
 			-- purpose - mutli-line String
-			create purpose_text_ctl.make_active (get_text ("purpose_label_text"),
+			create purpose_text_ctl.make_editable (get_text ("purpose_label_text"),
 				agent :STRING do if attached description_details then Result := description_details.purpose end end,
 				agent (a_str: STRING) do description_details.set_purpose (a_str) end,
 				Void, description_tab_undo_redo_chain, 0, 0, True, True)
@@ -176,7 +176,7 @@ feature {NONE} -- Initialisation
 			details_frame_ctl.extend (purpose_text_ctl.ev_root_container, True)
 
 			-- use - mutli-line String
-			create use_text_ctl.make_active (get_text ("use_label_text"),
+			create use_text_ctl.make_editable (get_text ("use_label_text"),
 				agent :STRING do if attached description_details then Result := description_details.use end end,
 				agent (a_str: STRING) do description_details.set_use (a_str) end,
 				agent do description_details.clear_use end,
@@ -185,7 +185,7 @@ feature {NONE} -- Initialisation
 			details_frame_ctl.extend (use_text_ctl.ev_root_container, True)
 
 			-- misuse - mutli-line String
-			create misuse_text_ctl.make_active (get_text ("misuse_label_text"),
+			create misuse_text_ctl.make_editable (get_text ("misuse_label_text"),
 				agent :STRING do if attached description_details then Result := description_details.misuse end end,
 				agent (a_str: STRING) do description_details.set_misuse (a_str) end,
 				agent do description_details.clear_misuse end,
@@ -195,7 +195,7 @@ feature {NONE} -- Initialisation
 			details_frame_ctl.extend (misuse_text_ctl.ev_root_container, True)
 
 			-- keywords list
-			create keywords_list_ctl.make_active (get_text ("keywords_label_text"),
+			create keywords_list_ctl.make_editable (get_text ("keywords_label_text"),
 				agent :DYNAMIC_LIST [STRING] do if attached description_details then Result := description_details.keywords end end,
 				agent (a_str: STRING; i: INTEGER) do description_details.add_keyword (a_str, i) end,
 				agent (a_str: STRING) do description_details.remove_keyword (a_str) end,
@@ -210,7 +210,7 @@ feature {NONE} -- Initialisation
 			description_vbox.disable_item_expand (resource_frame_ctl.ev_root_container)
 
 			-- resource package - String
-			create resource_package_ctl.make_active (get_text ("packages_label_text"),
+			create resource_package_ctl.make_editable (get_text ("packages_label_text"),
 				agent :STRING
 					do
 						if attached source_archetype.description.resource_package_uri then
@@ -224,7 +224,7 @@ feature {NONE} -- Initialisation
 			resource_frame_ctl.extend (resource_package_ctl.ev_root_container, False)
 
 			-- original resources - Hash
-			create original_resources_ctl.make_active (get_text ("resource_orig_res_label_text"),
+			create original_resources_ctl.make_editable (get_text ("resource_orig_res_label_text"),
 				agent :HASH_TABLE [STRING, STRING]
 					do
 						if attached description_details as dd and then attached dd.original_resource_uri then
@@ -293,14 +293,14 @@ feature -- Commands
 			-- enable editing
 		do
 			precursor
-			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.enable_active end)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.enable_editable end)
 		end
 
 	disable_edit
 			-- disable editing
 		do
 			precursor
-			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.disable_active end)
+			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.disable_editable end)
 		end
 
 feature {NONE} -- Implementation
