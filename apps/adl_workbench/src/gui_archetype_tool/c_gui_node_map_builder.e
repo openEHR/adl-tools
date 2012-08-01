@@ -836,7 +836,7 @@ feature {NONE} -- Implementation
 				Result.append ("%N%N" + get_text ("term_bindings_tooltip_text") + "%N")
 				bindings := ontology.term_bindings_for_key (p)
 				across bindings as bindings_csr loop
-					Result.append ("%T" + bindings_csr.key + ": " + bindings_csr.item.as_string + "%N")
+					Result.append ("  " + bindings_csr.key + ": " + bindings_csr.item.as_string + "%N")
 				end
 			end
 			if archetype.has_annotation_at_path (language, a_node.path) then

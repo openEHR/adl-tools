@@ -106,7 +106,7 @@ feature -- Commands
 			-- show class in RM explorer and display it in a class tool
 		do
 			if ev_node_map.has (id) and gui_grid.ev_grid.is_displayed then
-				ev_node_map.item (id).ensure_visible
+				gui_grid.ev_grid.ensure_visible (ev_node_map.item (id))
 
 				-- if a class tool already exists with this id, then cause it to be shown
 				-- and then select corresponding tree node, but with events off. If no
