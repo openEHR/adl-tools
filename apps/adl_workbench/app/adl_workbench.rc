@@ -57,4 +57,11 @@ END
 // The manifest for enabling Windows visual styles is required for compilation with MingW.
 // (Microsoft C doesn't need it because disptchr.c in WEL has a #pragma for it, but it does no harm putting it here too.)
 // It has to appear at the end, else MinGW will ignore it.
+// We also have to redefine CREATEPROCESS_MANIFEST_RESOURCE_ID and RT_MANIFEST because the definitions in MingW's
+// version of winuser.h produce syntax errors.
+
+#undef CREATEPROCESS_MANIFEST_RESOURCE_ID
+#define CREATEPROCESS_MANIFEST_RESOURCE_ID 1
+#undef RT_MANIFEST
+#define RT_MANIFEST 24
 CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "adl_workbench.exe.manifest"
