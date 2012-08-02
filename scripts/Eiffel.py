@@ -82,8 +82,10 @@ def ec_action(target, source, env):
 
 				if s:
 					icon_pattern = r'(\w+[ \t]+ICON[ \t]+[^"]*")([^"]+")'
+					manifest_pattern = r'(CREATEPROCESS_MANIFEST_RESOURCE_ID[ \t]+RT_MANIFEST[ \t]+")([^"]+")'
 					substitution = r'\g<1>' + os.path.dirname(rc).replace('\\', '/') + r'/\g<2>'
 					s = re.sub(icon_pattern, substitution, s)
+					s = re.sub(manifest_pattern, substitution, s)
 					f = open(rc_copied_to_target, 'w')
 					try: f.write(s)
 					finally: f.close()

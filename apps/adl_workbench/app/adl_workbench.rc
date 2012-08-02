@@ -4,11 +4,6 @@
 // remains consistent on all systems.
 Logo_icon    ICON    DISCARDABLE     "icons/openehr_awb_small_logo.ico"
 
-// It should be
-// CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "adl_workbench.exe.manifest"
-// but on older version of VC or older version of the Platform SDK they are not defined.
-// 1 24 "adl_workbench.exe.manifest"
-
 #define VER_FILEVERSION             1,5,0,0
 #define VER_FILEVERSION_STR         "1.5.0.0\0"
 
@@ -59,3 +54,7 @@ BEGIN
     END
 END
 
+// The manifest for enabling Windows visual styles is required for compilation with MingW.
+// (Microsoft C doesn't need it because disptchr.c in WEL has a #pragma for it, but it does no harm putting it here too.)
+// It has to appear at the end, else MinGW will ignore it.
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "adl_workbench.exe.manifest"
