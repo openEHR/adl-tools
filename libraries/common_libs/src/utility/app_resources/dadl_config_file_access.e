@@ -65,8 +65,8 @@ feature -- Access
 	integer_value (a_path: attached STRING): INTEGER
 			-- get the integer value for resource at `a_path'
 		do
-			if has_resource (a_path) then
-				Result ?= dt_tree.value_at_path (a_path)
+			if has_resource (a_path) and then attached {INTEGER} dt_tree.value_at_path (a_path) as int then
+				Result := int
 			end
 			requested_resources.extend (a_path)
 		end
@@ -74,8 +74,8 @@ feature -- Access
 	boolean_value (a_path: attached STRING): BOOLEAN
 			-- get the boolean value for resource at `a_path'
 		do
-			if has_resource (a_path) then
-				Result ?= dt_tree.value_at_path (a_path)
+			if has_resource (a_path) and then attached {BOOLEAN} dt_tree.value_at_path (a_path) as bool then
+				Result := bool
 			end
 			requested_resources.extend (a_path)
 		end
@@ -83,19 +83,10 @@ feature -- Access
 	string_value (a_path: attached STRING): attached STRING
 			-- get the string value for resource at `a_path'; return empty string if nothing found
 		do
-			if has_resource (a_path) then
-				Result ?= dt_tree.value_at_path (a_path)
+			if has_resource (a_path) and then attached {STRING} dt_tree.value_at_path (a_path) as str then
+				Result := str
 			else
 				create Result.make (0)
-			end
-			requested_resources.extend (a_path)
-		end
-
-	list_any_value (a_path: attached STRING): SEQUENCE [ANY]
-			-- List of items specified in file at `a_path'.
-		do
-			if has_resource (a_path) then
-				Result := dt_tree.value_list_at_path (a_path)
 			end
 			requested_resources.extend (a_path)
 		end
@@ -103,8 +94,8 @@ feature -- Access
 	string_list_value (a_path: attached STRING): attached ARRAYED_LIST [STRING]
 			-- List of items specified in file at `a_path'.
 		do
-			if has_resource(a_path) then
-				Result ?= dt_tree.value_list_at_path (a_path)
+			if has_resource(a_path) and then attached {ARRAYED_LIST [STRING]} dt_tree.value_list_at_path (a_path) as lst_str then
+				Result := lst_str
 			else
 				create Result.make (0)
 			end
@@ -114,9 +105,8 @@ feature -- Access
 	string_value_env_var_sub (a_path: attached STRING): attached STRING
 			-- get the string value for `a_path', with any env vars of form "$var" substituted
 		do
-			if has_resource(a_path) then
-				Result ?= dt_tree.value_at_path (a_path)
-				Result := substitute_env_vars(Result)
+			if has_resource(a_path) and then attached {STRING} dt_tree.value_at_path (a_path) as str then
+				Result := substitute_env_vars (str)
 			else
 				create Result.make (0)
 			end

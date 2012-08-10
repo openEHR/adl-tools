@@ -269,6 +269,18 @@ feature -- Access
 			Result := og_log_path.as_string
 		end
 
+	definition_for_code (a_lang, a_code: STRING): detachable ARCHETYPE_TERM
+			-- extract the term or constraint definition for `a_code'
+		do
+			if is_valid_code (a_code) and has_language (a_lang) then
+				if is_term_code (a_code) and has_term_code (a_code) then
+					Result := term_definition (a_lang, a_code)
+				elseif is_constraint_code (a_code) and has_constraint_code (a_code) then
+					Result := constraint_definition (a_lang, a_code)
+				end
+			end
+		end
+
 feature -- Status Report
 
 	has_language (a_language: STRING): BOOLEAN
@@ -300,7 +312,7 @@ feature -- Status Report
 	has_constraint_code (a_code: STRING): BOOLEAN
 			--
 		require
-			Code_valid: is_valid_code(a_code)
+			Code_valid: is_valid_code (a_code)
 		do
 			Result := constraint_codes.has (a_code)
 		end
@@ -324,7 +336,7 @@ feature -- Status Report
 		end
 
 	has_any_term_binding (a_key: STRING): BOOLEAN
-			-- true if there is any term binding for code `a_key'
+			-- true if there is any term binding for code `a_key' for any terminology
 		do
 			Result := across term_bindings as bindings_csr some bindings_csr.item.has (a_key) end
 		end
@@ -336,7 +348,7 @@ feature -- Status Report
 		end
 
 	has_any_constraint_binding (a_code: STRING): BOOLEAN
-			-- true if there is any constraint binding for code `a_code'
+			-- true if there is any constraint binding for code `a_code' for any terminology
 		do
 			Result := across constraint_bindings as bindings_csr some bindings_csr.item.has (a_code) end
 		end

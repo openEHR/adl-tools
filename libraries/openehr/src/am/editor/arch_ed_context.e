@@ -19,9 +19,15 @@ create
 
 feature -- Initialisation
 
-	make (a_target: FLAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+	make (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA; differential_view_flag: BOOLEAN)
 		do
-			target := a_target
+			target_descriptor := aca
+			in_differential_view := differential_view_flag
+			if in_differential_view then
+				target := target_descriptor.differential_archetype
+			else
+				target := target_descriptor.flat_archetype
+			end
 			rm_schema := an_rm_schema
 		end
 
@@ -29,13 +35,15 @@ feature -- Access
 
 	target_descriptor: ARCH_CAT_ARCHETYPE
 
-	target: FLAT_ARCHETYPE
+	target: ARCHETYPE
 			-- archetype being edited, created as a copy of an original
 
 	definition_context: C_COMPLEX_OBJECT_ED_CONTEXT
 			-- definition editing context
 
 feature -- Status Report
+
+	in_differential_view: BOOLEAN
 
 	in_reference_model_mode_changed: BOOLEAN
 
@@ -52,7 +60,7 @@ feature {NONE} -- Implementation
 			c_ed_context_builder: C_OBJECT_ED_CONTEXT_BUILDER
 		do
 			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
-			create c_ed_context_builder.make (target, in_reference_model_mode, rm_schema)
+			create c_ed_context_builder.make (target, in_reference_model_mode, rm_schema, target_descriptor.flat_archetype.ontology)
 			create a_c_iterator.make (target.definition.representation, c_ed_context_builder)
 			a_c_iterator.do_all
 

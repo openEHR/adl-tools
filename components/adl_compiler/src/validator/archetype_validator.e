@@ -38,7 +38,7 @@ feature {ADL15_ENGINE} -- Initialisation
 			-- set target_descriptor
 			-- initialise reporting variables
 		require
-			valid_candidate: validation_candidate (ara)
+			valid_candidate: is_validation_candidate (ara)
 		do
 			rm_schema := an_rm_schema
 			target_descriptor := ara
@@ -50,7 +50,7 @@ feature {ADL15_ENGINE} -- Initialisation
 
 feature -- Status Report
 
-	validation_candidate (ara: ARCH_CAT_ARCHETYPE): BOOLEAN
+	is_validation_candidate (ara: ARCH_CAT_ARCHETYPE): BOOLEAN
 		deferred
 		end
 

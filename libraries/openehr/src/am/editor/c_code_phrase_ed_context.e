@@ -16,26 +16,81 @@ class C_CODE_PHRASE_ED_CONTEXT
 inherit
 	C_OBJECT_ED_CONTEXT
 		redefine
-			arch_node, make
+			arch_node, prepare_display_in_grid, display_in_grid
 		end
 
 create
 	make
-
-feature -- Initialisation
-
-	make (an_arch_node: like arch_node; a_bmm_class_def: BMM_CLASS_DEFINITION)
-		do
-			precursor (an_arch_node, a_bmm_class_def)
-		end
 
 feature -- Access
 
 	arch_node: C_CODE_PHRASE
 			-- archetype node being edited
 
+feature -- Display
+
+	prepare_display_in_grid (a_gui_grid: EVX_GRID)
+		local
+			bmm_prop: BMM_PROPERTY_DEFINITION
+		do
+			precursor (a_gui_grid)
+
+			-- build the grid row for terminology id
+			if attached arch_node.terminology_id then
+				bmm_prop := rm_schema.property_definition ("CODE_PHRASE", "terminology_id")
+				gui_grid.add_sub_row (gui_grid_row, bmm_prop.name)
+				gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop.name, Void, c_attribute_colour, get_icon_pixmap ("rm/generic/" + bmm_prop.multiplicity_key_string))
+				gui_grid.set_last_row_label_col (Node_grid_col_constraint, arch_node.terminology_id.value, Void, c_constraint_colour, Void)
+			end
+
+			-- code_string field
+			if attached arch_node.code_list then
+				bmm_code_string_prop := rm_schema.property_definition ("CODE_PHRASE", "code_string")
+				gui_grid.add_sub_row (gui_grid_row, bmm_code_string_prop.name)
+				gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_code_string_prop.name, Void, c_attribute_colour,
+					get_icon_pixmap ("rm/generic/" + bmm_code_string_prop.multiplicity_key_string))
+				gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
+			end
+		end
+
+	display_in_grid (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag: BOOLEAN; a_lang: STRING)
+		local
+			i: INTEGER
+		do
+			precursor (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag, a_lang)
+
+			-- code_string field update
+			if attached arch_node.code_list then
+				from i := 1 until i > gui_grid_row.subrow_count loop
+					if attached {STRING} gui_grid_row.subrow (i).data as str and then str.is_equal (bmm_code_string_prop.name) then
+						gui_grid.set_last_row (gui_grid_row.subrow (i))
+						gui_grid.update_last_row_label_col (Node_grid_col_constraint, constraint_str, Void, Void, Void)
+						i := gui_grid_row.subrow_count + 1
+					end
+					i := i + 1
+				end
+			end
+		end
+
 feature -- Modification
 
+feature {NONE} -- Implementation
+
+	bmm_code_string_prop: BMM_PROPERTY_DEFINITION
+
+	constraint_str: STRING
+		do
+			create Result.make_empty
+			across arch_node.code_list as codes_csr loop
+				Result.append_string (term_string (arch_node.terminology_id.value, codes_csr.item))
+				if arch_node.has_assumed_value and then arch_node.assumed_value.code_string.is_equal (codes_csr.item) then
+					Result.append (" (" + get_text ("assumed_text") + ")")
+				end
+				if codes_csr.cursor_index < arch_node.code_list.count then
+					Result.append_string ("%N")
+				end
+			end
+		end
 
 end
 

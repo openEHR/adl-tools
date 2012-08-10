@@ -31,6 +31,9 @@ inherit
 		end
 
 	SHARED_KNOWLEDGE_REPOSITORY
+		export
+			{NONE} all
+		end
 
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
@@ -56,27 +59,33 @@ feature -- Initialisation
 			-- create widgets
 			create ev_root_container
 			ev_root_container.set_data (Current)
-			ev_root_container.set_padding (Default_padding_width)
-			ev_root_container.set_border_width (Default_border_width)
+
+			-- ============ DEFINITION HBOX, with GRID & control panel =============
+			create ev_definition_hbox
+			ev_definition_hbox.set_padding (Default_padding_width)
+			ev_definition_hbox.set_border_width (Default_border_width)
+			ev_root_container.extend (ev_definition_hbox)
 
 			-- EV_GRID
-			create gui_grid.make (True, False, True, True)
-			gui_grid.set_tree_expand_collapse_icons (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
-			ev_root_container.extend (gui_grid.ev_grid)
+			create gui_definition_grid.make (True, False, True, True)
+			gui_definition_grid.set_tree_expand_collapse_icons (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
+			ev_definition_hbox.extend (gui_definition_grid.ev_grid)
 
 			-- ========== view controls control panel ===========
-			create control_panel.make
-			ev_root_container.extend (control_panel.ev_root_container)
-			ev_root_container.disable_item_expand (control_panel.ev_root_container)
+			create gui_definition_control_panel.make
+			ev_definition_hbox.extend (gui_definition_control_panel.ev_root_container)
+			ev_definition_hbox.disable_item_expand (gui_definition_control_panel.ev_root_container)
 
 			-- tree collapse/expand control
-			create gui_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (gui_grid),
+			create gui_definition_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (gui_definition_grid),
 				agent (a_row: EV_GRID_ROW): BOOLEAN do Result := not attached {BMM_MODEL_ELEMENT} a_row.data end)
-			control_panel.add_frame (gui_treeview_control.ev_root_container, False)
+			gui_definition_control_panel.add_frame (gui_definition_treeview_control.ev_root_container, False)
 
 			-- ========= view detail level options  =========
+
+			-- 'Detail level' frame
 			create view_detail_frame_ctl.make (get_text ("view_detail_controls_text"), 85, 100, False)
-			control_panel.add_frame_control (view_detail_frame_ctl, False)
+			gui_definition_control_panel.add_frame_control (view_detail_frame_ctl, False)
 
 			-- view detail radio buttons
 			create view_detail_radio_ctl.make (get_text ("domain_detail_button_text"), get_text ("technical_detail_button_text"),
@@ -95,9 +104,9 @@ feature -- Initialisation
 
 			-- ========= RM view options =========
 
-			-- frame
+			-- 'RM visibility' frame
 			create rm_property_visibility_frame_ctl.make (get_text ("rm_visibility_controls_text"), 85, 0, False)
-			control_panel.add_frame_control (rm_property_visibility_frame_ctl, False)
+			gui_definition_control_panel.add_frame_control (rm_property_visibility_frame_ctl, False)
 
 			-- add RM data properties check button
 			create rm_attrs_visible_checkbox_ctl.make_active (get_text ("show_rm_properties_button_text"),
@@ -120,9 +129,9 @@ feature -- Initialisation
 			gui_controls.extend (rm_if_attrs_visible_checkbox_ctl)
 			rm_property_visibility_frame_ctl.extend (rm_if_attrs_visible_checkbox_ctl.ev_data_control, False)
 
-			-- frame
+			-- 'RM rendering' frame
 			create rm_rendering_frame_ctl.make (get_text ("rm_rendering_controls_text"), 85, 0, False)
-			control_panel.add_frame_control (rm_rendering_frame_ctl, False)
+			gui_definition_control_panel.add_frame_control (rm_rendering_frame_ctl, False)
 
 			-- use RM inheritance rendering check button
 			create view_rm_display_inheritance_checkbox_ctl.make_active (get_text ("show_rm_inh_button_text"),
@@ -131,6 +140,30 @@ feature -- Initialisation
 			gui_controls.extend (view_rm_display_inheritance_checkbox_ctl)
 			rm_rendering_frame_ctl.extend (view_rm_display_inheritance_checkbox_ctl.ev_data_control, False)
 
+			-- ============ RULES HBOX, with GRID & control panel =============
+			create ev_rules_hbox
+			ev_rules_hbox.set_padding (Default_padding_width)
+			ev_rules_hbox.set_border_width (Default_border_width)
+			ev_root_container.extend (ev_rules_hbox)
+			ev_root_container.disable_item_expand (ev_rules_hbox)
+
+			-- EV_GRID
+			create gui_rules_grid.make (True, False, True, False)
+			gui_rules_grid.set_tree_expand_collapse_icons (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
+			ev_rules_hbox.extend (gui_rules_grid.ev_grid)
+
+			-- ========== view controls control panel ===========
+			create gui_rules_control_panel.make
+			ev_definition_hbox.extend (gui_rules_control_panel.ev_root_container)
+			ev_definition_hbox.disable_item_expand (gui_rules_control_panel.ev_root_container)
+
+			-- tree collapse/expand control
+			create gui_rules_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (gui_rules_grid),
+				agent (a_row: EV_GRID_ROW): BOOLEAN do Result := not attached {BMM_MODEL_ELEMENT} a_row.data end)
+			gui_rules_control_panel.add_frame (gui_rules_treeview_control.ev_root_container, False)
+
+
+			-- ==================== setup ============================
 			-- initial state
 			if not show_technical_view then
 				rm_attrs_visible_checkbox_ctl.disable_editable
@@ -139,7 +172,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	ev_root_container: EV_HORIZONTAL_BOX
+	ev_root_container: EV_VERTICAL_SPLIT_AREA
 
 feature -- Status Report
 
@@ -191,16 +224,18 @@ feature -- Commands
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 
 			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
-			gui_grid.ev_grid.lock_update
-			create c_node_map_builder.make (rm_schema, source, differential_view, selected_language, gui_grid, True, show_codes, show_rm_inheritance,
+			gui_definition_grid.ev_grid.lock_update
+			create c_node_map_builder.make (rm_schema, source, differential_view, selected_language, gui_definition_grid, True, show_codes, show_rm_inheritance,
 				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties,
-				node_grid_row_map, code_select_action_agent, path_select_action_agent)
+				definition_grid_row_map, code_select_action_agent, path_select_action_agent)
 			create a_c_iterator.make (source_archetype.definition, c_node_map_builder,
 				differential_view, update_rm_view, rm_schema)
-			do_with_wait_cursor (ev_root_container, agent a_c_iterator.do_all)
+			do_with_wait_cursor (ev_definition_hbox, agent a_c_iterator.do_all)
 
-			gui_grid.resize_columns_to_content
-			gui_grid.ev_grid.unlock_update
+			gui_definition_grid.resize_columns_to_content
+			gui_definition_grid.ev_grid.unlock_update
+
+			-- repopulate rules grid, where applicable
 		end
 
 feature {NONE} -- Events
@@ -237,7 +272,7 @@ feature {NONE} -- Events
 				end
 			end
 			if attached source then
-				do_with_wait_cursor (gui_grid.ev_grid, agent repopulate)
+				do_with_wait_cursor (gui_definition_grid.ev_grid, agent repopulate)
 			end
 		end
 
@@ -253,7 +288,7 @@ feature {NONE} -- Events
 					set_show_rm_infrastructure_properties (False)
 				end
 				if attached source then
-					do_with_wait_cursor (gui_grid.ev_grid, agent repopulate)
+					do_with_wait_cursor (gui_definition_grid.ev_grid, agent repopulate)
 				end
 			end
 		end
@@ -266,7 +301,7 @@ feature {NONE} -- Events
 			if a_flag and not show_rm_runtime_properties then
 				rm_runtime_attrs_visible_checkbox_ctl.ev_data_control.enable_select
 			elseif attached source then
-				do_with_wait_cursor (gui_grid.ev_grid, agent repopulate)
+				do_with_wait_cursor (gui_definition_grid.ev_grid, agent repopulate)
 			end
 		end
 
@@ -289,11 +324,29 @@ feature {NONE} -- Implementation
 
 	visualise_descendants_class: STRING
 
-	gui_grid: EVX_GRID
-
 	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
-	gui_treeview_control: EVX_TREEVIEW_CONTROL
+	ev_definition_hbox: EV_HORIZONTAL_BOX
+
+	gui_definition_grid: EVX_GRID
+
+	gui_definition_control_panel: EVX_CONTROL_PANEL
+
+	gui_definition_treeview_control: EVX_TREEVIEW_CONTROL
+
+	definition_grid_row_map: HASH_TABLE [EV_GRID_ROW, ARCHETYPE_CONSTRAINT]
+			-- xref table from archetype definition nodes to GUI grid rows
+
+	ev_rules_hbox: EV_HORIZONTAL_BOX
+
+	gui_rules_grid: EVX_GRID
+
+	gui_rules_control_panel: EVX_CONTROL_PANEL
+
+	gui_rules_treeview_control: EVX_TREEVIEW_CONTROL
+
+--	rules_grid_row_map: HASH_TABLE [EV_GRID_ROW, ANY]
+			-- xref table from archetype rules nodes to GUI grid rows
 
 	view_detail_radio_ctl: EVX_BOOLEAN_RADIO_CONTROL
 
@@ -301,18 +354,13 @@ feature {NONE} -- Implementation
 
 	rm_attrs_visible_checkbox_ctl, rm_runtime_attrs_visible_checkbox_ctl, rm_if_attrs_visible_checkbox_ctl: EVX_CHECK_BOX_CONTROL
 
-	control_panel: EVX_CONTROL_PANEL
-
 	view_detail_frame_ctl, rm_property_visibility_frame_ctl, rm_rendering_frame_ctl: EVX_FRAME_CONTROL
 
 	rm_schema: detachable BMM_SCHEMA
 
-	node_grid_row_map: HASH_TABLE [EV_GRID_ROW, ARCHETYPE_CONSTRAINT]
-			-- xref table from archetype definition nodes to GUI grid rows
-
 	do_clear
 		do
-			gui_grid.wipe_out
+			gui_definition_grid.wipe_out
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.clear end)
 		end
 
@@ -323,7 +371,8 @@ feature {NONE} -- Implementation
 			a_c_iterator: C_OBJECT_VISITOR_ITERATOR
 			c_node_map_builder: C_DEFINITION_RENDERER
 		do
-			-- determine visualisation ancestor class
+			-- determine visualisation ancestor 'stopping' class (when C_OBJECT.rm_type_name = this class,
+			-- tree expanding stops)
 			rm_schema := source.rm_schema
 			if attached rm_schema.archetype_parent_class then
 				visualise_descendants_class := rm_schema.archetype_parent_class
@@ -335,24 +384,21 @@ feature {NONE} -- Implementation
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 
 			-- populate grid control
-			create node_grid_row_map.make (0)
+			create definition_grid_row_map.make (0)
 
-			gui_grid.ev_grid.lock_update
-			create c_node_map_builder.make (rm_schema, source, differential_view, selected_language, gui_grid, False, show_codes, show_rm_inheritance,
+			gui_definition_grid.ev_grid.lock_update
+			create c_node_map_builder.make (rm_schema, source, differential_view, selected_language, gui_definition_grid, False, show_codes, show_rm_inheritance,
 				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties,
-				node_grid_row_map, code_select_action_agent, path_select_action_agent)
+				definition_grid_row_map, code_select_action_agent, path_select_action_agent)
 			create a_c_iterator.make (source_archetype.definition, c_node_map_builder,
 				differential_view, show_rm_data_properties, rm_schema)
-			do_with_wait_cursor (ev_root_container, agent a_c_iterator.do_all)
+			do_with_wait_cursor (ev_definition_hbox, agent a_c_iterator.do_all)
 
-			gui_grid.set_column_titles (Node_grid_col_names.linear_representation)
-
-			-- populate from invariants
-			populate_invariants
+			gui_definition_grid.set_column_titles (Node_grid_col_names.linear_representation)
 
 			-- make visualisation adjustments
 			if attached visualise_descendants_class then
-				gui_treeview_control.on_collapse_except (
+				gui_definition_treeview_control.on_collapse_except (
 					agent (a_row: EV_GRID_ROW): BOOLEAN
 						do
 							if attached {C_OBJECT} a_row.data as co then
@@ -362,28 +408,45 @@ feature {NONE} -- Implementation
 				)
 
 				-- add 'power expander' action to leaf nodes
-				gui_treeview_control.ev_tree_do_all (
+				gui_definition_treeview_control.ev_tree_do_all (
 					agent (a_row: EV_GRID_ROW)
 						do
 							if a_row.is_expandable and not a_row.is_expanded then
 								if attached {C_OBJECT} a_row.data as co and then
 									rm_schema.is_descendant_of (co.rm_type_name, visualise_descendants_class)
 								then
-									a_row.expand_actions.force_extend (agent (gui_grid.ev_grid).expand_tree (a_row, Void))
+									a_row.expand_actions.force_extend (agent (gui_definition_grid.ev_grid).expand_tree (a_row, Void))
 								end
 							end
 						end
 				)
 			else
-				gui_treeview_control.on_collapse_all
-				gui_treeview_control.on_expand_one_level
-				gui_treeview_control.on_expand_one_level
+				gui_definition_treeview_control.on_collapse_all
+				gui_definition_treeview_control.on_expand_one_level
+				gui_definition_treeview_control.on_expand_one_level
 			end
-			gui_grid.resize_columns_to_content
-			gui_grid.ev_grid.unlock_update
+			gui_definition_grid.resize_columns_to_content
+			gui_definition_grid.ev_grid.unlock_update
 
 			-- Initial settings
 			update_rm_view := False
+
+
+			-- repopulate rules grid, where applicable
+--			create rules_grid_row_map.make (0)
+
+			gui_rules_grid.ev_grid.lock_update
+--			create c_node_map_builder.make (rm_schema, source, differential_view, selected_language, gui_definition_grid, False, show_codes, show_rm_inheritance,
+--				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties,
+--				definition_grid_row_map, code_select_action_agent, path_select_action_agent)
+--			create a_c_iterator.make (source_archetype.definition, c_node_map_builder,
+--				differential_view, show_rm_data_properties, rm_schema)
+--			do_with_wait_cursor (ev_rules_hbox, agent an_assn_iterator.do_all)
+
+			gui_rules_grid.set_column_titles (Node_grid_col_names.linear_representation)
+
+			gui_rules_grid.resize_columns_to_content
+			gui_rules_grid.ev_grid.unlock_update
 		end
 
 	roll_up_to_specialisation_level
@@ -393,7 +456,7 @@ feature {NONE} -- Implementation
 			archetype_selected: attached source
 		do
 			if source_archetype.is_specialised and not source_archetype.is_template then
-				gui_treeview_control.ev_tree_do_all (agent ev_grid_row_roll_up)
+				gui_definition_treeview_control.ev_tree_do_all (agent ev_grid_row_roll_up)
 			end
 		end
 

@@ -122,11 +122,11 @@ feature -- Access
 
 	ontology: attached DIFFERENTIAL_ARCHETYPE_ONTOLOGY
 
-	ontology_unused_term_codes: ARRAYED_LIST[STRING]
+	ontology_unused_term_codes: ARRAYED_LIST [STRING]
 			-- list of at codes found in ontology that are not referenced
 			-- anywhere in the archetype definition
 
-	ontology_unused_constraint_codes: ARRAYED_LIST[STRING]
+	ontology_unused_constraint_codes: ARRAYED_LIST [STRING]
 			-- list of ac codes found in ontology that are not referenced
 			-- anywhere in the archetype definition
 

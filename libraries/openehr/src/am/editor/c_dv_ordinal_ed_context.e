@@ -16,26 +16,85 @@ class C_DV_ORDINAL_ED_CONTEXT
 inherit
 	C_OBJECT_ED_CONTEXT
 		redefine
-			arch_node, make
+			arch_node, prepare_display_in_grid, display_in_grid
 		end
 
 create
 	make
-
-feature -- Initialisation
-
-	make (an_arch_node: like arch_node; a_bmm_class_def: BMM_CLASS_DEFINITION)
-		do
-			precursor (an_arch_node, a_bmm_class_def)
-		end
 
 feature -- Access
 
 	arch_node: C_DV_ORDINAL
 			-- archetype node being edited
 
+feature -- Display
+
+	prepare_display_in_grid (a_gui_grid: EVX_GRID)
+		do
+			precursor (a_gui_grid)
+			if not arch_node.any_allowed then
+				-- build the grid row
+				bmm_prop_value := rm_schema.property_definition ("DV_ORDINAL", "value")
+				bmm_prop_symbol := rm_schema.property_definition ("DV_ORDINAL", "symbol")
+				bmm_prop_key := bmm_prop_value.name + " - " + bmm_prop_symbol.name
+				gui_grid.add_sub_row (gui_grid_row, bmm_prop_key)
+				gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop_key, Void, c_attribute_colour,
+					get_icon_pixmap ("rm/generic/" + bmm_prop_value.multiplicity_key_string))
+				gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
+			end
+		end
+
+	display_in_grid (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag: BOOLEAN; a_lang: STRING)
+		local
+			i: INTEGER
+		do
+			precursor (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag, a_lang)
+			if not arch_node.any_allowed then
+				from i := 1 until i > gui_grid_row.subrow_count loop
+					if attached {STRING} gui_grid_row.subrow (i).data as str and then str.is_equal (bmm_prop_key) then
+						gui_grid.set_last_row (gui_grid_row.subrow (i))
+						gui_grid.update_last_row_label_col (Node_grid_col_constraint, constraint_str, Void, Void, Void)
+						i := gui_grid_row.subrow_count + 1
+					end
+					i := i + 1
+				end
+			end
+		end
+
 feature -- Modification
 
+feature {NONE} -- Implementation
+
+	object_ordinal_item_string (an_ordinal: ORDINAL; assumed_flag: BOOLEAN): STRING
+			-- generate string form of node or object for use in tree node
+		do
+			create Result.make_empty
+			Result.append (an_ordinal.value.out)
+			Result.append (" - ")
+			Result.append (term_string (an_ordinal.symbol.terminology_id.value, an_ordinal.symbol.code_string))
+			if assumed_flag then
+				Result.append (" (" + get_text ("assumed_text") + ")")
+			end
+		end
+
+	constraint_str: STRING
+			-- string to go in constraint column
+		local
+			assumed_flag: BOOLEAN
+		do
+			create Result.make_empty
+			across arch_node.items as ord_items_csr loop
+				assumed_flag := arch_node.has_assumed_value and then arch_node.assumed_value.value = ord_items_csr.item.value
+				Result.append_string (object_ordinal_item_string (ord_items_csr.item, assumed_flag))
+				if ord_items_csr.cursor_index < arch_node.items.count then
+					Result.append_string ("%N")
+				end
+			end
+		end
+
+	bmm_prop_key: STRING
+
+	bmm_prop_value, bmm_prop_symbol: BMM_PROPERTY_DEFINITION
 
 end
 

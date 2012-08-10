@@ -6,6 +6,7 @@ note
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -23,29 +24,23 @@ inherit
 
 feature -- Initialisation
 
-	initialise(an_archetype: ARCHETYPE; an_assertion: ASSERTION)
+	initialise (an_archetype: ARCHETYPE; an_assertion: ASSERTION)
 			-- set assertion
-		require
-			Archetype_valid: an_archetype /= Void
-			Assertion_valid: an_assertion /= Void
 		do
 			archetype := an_archetype
-			initialise_visitor(an_assertion)
+			initialise_visitor (an_assertion)
 		end
 
 feature -- Visitor
 
-	start_expr_leaf(a_node: EXPR_LEAF; depth: INTEGER)
+	start_expr_leaf (a_node: EXPR_LEAF; depth: INTEGER)
 			-- enter an EXPR_LEAF
-		local
-			tgt_path: STRING
 		do
-			if a_node.is_archetype_definition_ref then
-				tgt_path ?= a_node.item
-				if not archetype.invariants_index.has(tgt_path) then
-					archetype.invariants_index.put(create {ARRAYED_LIST[EXPR_LEAF]}.make(0), tgt_path)
+			if a_node.is_archetype_definition_ref and attached {STRING} a_node.item as tgt_path then
+				if not archetype.invariants_index.has (tgt_path) then
+					archetype.invariants_index.put (create {ARRAYED_LIST[EXPR_LEAF]}.make(0), tgt_path)
 				end
-				archetype.invariants_index.item(tgt_path).extend (a_node)
+				archetype.invariants_index.item (tgt_path).extend (a_node)
 			end
 		end
 

@@ -6,6 +6,7 @@ note
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -18,7 +19,7 @@ inherit
 
 feature -- Access
 
-	type: attached STRING
+	type: STRING
 			-- Type name of this item in the mathematical sense. For leaf nodes,
 			-- must be the name of a primitive type, or else a reference model type.
 			-- The type for any relational or boolean operator will be "Boolean",
@@ -26,7 +27,7 @@ feature -- Access
 
 feature -- Conversion
 
-	as_string: attached STRING
+	as_string: STRING
 			-- output expression as a string
 		deferred
 		end

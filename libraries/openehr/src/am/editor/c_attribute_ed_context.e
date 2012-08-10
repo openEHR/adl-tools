@@ -6,6 +6,7 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -13,15 +14,27 @@ note
 
 class C_ATTRIBUTE_ED_CONTEXT
 
+inherit
+	C_ARCHETYPE_CONSTRAINT_ED_CONTEXT
+		redefine
+			make, arch_node, parent, prepare_display_in_grid, display_in_grid
+		end
+
 create
 	make
 
+feature -- Definitions
+
 feature -- Initialisation
 
-	make (an_arch_node: C_ATTRIBUTE; a_bmm_prop_def: BMM_PROPERTY_DEFINITION)
+	make (an_arch_node: like arch_node; an_archetype: ARCHETYPE; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_rm_schema: BMM_SCHEMA)
 		do
-			arch_node := an_arch_node
-			rm_property := a_bmm_prop_def
+			precursor (an_arch_node, an_archetype, a_flat_ontology, an_rm_schema)
+			if arch_node.has_differential_path then
+				rm_property := rm_schema.property_definition_at_path (arch_node.parent.rm_type_name, arch_node.rm_attribute_path)
+			else
+				rm_property := rm_schema.property_definition (arch_node.parent.rm_type_name, arch_node.rm_attribute_name)
+			end
 			create children.make(0)
 		end
 
@@ -36,12 +49,66 @@ feature -- Access
 	children: ARRAYED_LIST [C_OBJECT_ED_CONTEXT]
 			-- child objects
 
+	parent: C_COMPLEX_OBJECT_ED_CONTEXT
+
+feature -- Display
+
+	prepare_display_in_grid (a_gui_grid: EVX_GRID)
+		do
+			precursor (a_gui_grid)
+
+			-- set an empty string in the meaning column, so later updates have an object to modify
+			gui_grid.set_last_row_label_col (Node_grid_col_meaning, "", Void, Void, Void)
+		end
+
+	display_in_grid (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag: BOOLEAN; a_lang: STRING)
+		local
+			attr_str: STRING
+		do
+			precursor (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag, a_lang)
+
+			-- constraints
+			if attached arch_node.existence then
+				gui_grid.set_last_row_label_col (Node_grid_col_existence, arch_node.existence.as_string, Void, c_constraint_colour, Void)
+			end
+			if attached arch_node.cardinality then
+				gui_grid.set_last_row_label_col (Node_grid_col_card_occ, arch_node.cardinality.as_string, Void, c_constraint_colour, Void)
+			end
+			if arch_node.any_allowed then
+				gui_grid.set_last_row_label_col (Node_grid_col_constraint, Archetype_any_constraint, Void, c_constraint_colour, Void)
+			end
+
+			-- RM attr name / path
+			create attr_str.make_empty
+			if arch_node.has_differential_path then
+				if in_technical_view then
+					attr_str.append (arch_node.rm_attribute_path)
+				else
+					attr_str.append (flat_ontology.physical_to_logical_path (arch_node.rm_attribute_path, language, True))
+				end
+				attr_str.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
+				attr_str.remove_head (1)
+				gui_grid.set_last_row_label_col_multi_line (Node_grid_col_rm_name, attr_str, node_tooltip_str, c_attribute_colour, c_pixmap)
+			else
+				attr_str.append (arch_node.rm_attribute_name)
+				gui_grid.set_last_row_label_col (Node_grid_col_rm_name, attr_str, node_tooltip_str, c_attribute_colour, c_pixmap)
+			end
+		end
+
 feature -- Modification
 
 	add_child (a_node: C_OBJECT_ED_CONTEXT)
 			-- add a new child
 		do
 			children.extend (a_node)
+			a_node.set_parent (Current)
+		end
+
+feature {NONE} -- Implementation
+
+	c_pixmap: EV_PIXMAP
+		do
+			Result := get_icon_pixmap ("am" + resource_path_separator + "added" + resource_path_separator + rm_property.multiplicity_key_string)
 		end
 
 end

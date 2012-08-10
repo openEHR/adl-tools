@@ -39,7 +39,7 @@ inherit
 
 feature -- Status Report
 
-	validation_candidate (ara: ARCH_CAT_ARCHETYPE): BOOLEAN
+	is_validation_candidate (ara: ARCH_CAT_ARCHETYPE): BOOLEAN
 		do
 			Result := attached ara.differential_archetype
 		end
@@ -301,7 +301,7 @@ feature {NONE} -- Implementation
 		local
 			co_parent_flat: attached C_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
-			slot_id_index: DS_HASH_TABLE [ARRAYED_SET[STRING], STRING]
+			slot_id_index: HASH_TABLE [ARRAYED_SET[STRING], STRING]
 			ca_path_in_flat: STRING
 			ca_parent_flat: C_ATTRIBUTE
 		do

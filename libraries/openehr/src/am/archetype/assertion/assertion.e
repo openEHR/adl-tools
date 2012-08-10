@@ -6,6 +6,7 @@ note
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -26,7 +27,7 @@ create
 
 feature -- Initialisation
 
-	make (an_expr: attached EXPR_ITEM; a_tag: STRING)
+	make (an_expr: EXPR_ITEM; a_tag: detachable STRING)
 			-- make assertion with an expression and an optional tag
 		require
 			Tag_valid: attached a_tag implies not a_tag.is_empty
@@ -37,12 +38,12 @@ feature -- Initialisation
 
 feature -- Access
 
-	tag: STRING
+	tag: detachable STRING
 			-- tag name of assertion
 
-	expression: attached EXPR_ITEM
+	expression: EXPR_ITEM
 
-	extract_regex: STRING
+	extract_regex: detachable STRING
 			-- extract regex from id matches {/regex/} style assertion used in slots
 		do
 			if attached {EXPR_BINARY_OPERATOR} expression as bin_op and then bin_op.operator.value = op_matches then

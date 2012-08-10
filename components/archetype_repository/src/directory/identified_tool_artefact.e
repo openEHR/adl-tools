@@ -9,6 +9,7 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -19,12 +20,12 @@ deferred class IDENTIFIED_TOOL_ARTEFACT
 
 feature -- Access
 
-	global_artefact_identifier: attached STRING
+	global_artefact_identifier: STRING
 			-- tool-wide unique id for this artefact
 		deferred
 		end
 
-	global_artefact_category: attached STRING
+	global_artefact_category: STRING
 			-- tool-wide category for this artefact, useful for indexing visual type indicators
 			-- like pixmap etc
 		deferred

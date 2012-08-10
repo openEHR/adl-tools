@@ -16,18 +16,11 @@ class C_PRIMITIVE_OBJECT_ED_CONTEXT
 inherit
 	C_OBJECT_ED_CONTEXT
 		redefine
-			arch_node, make
+			arch_node, display_in_grid
 		end
 
 create
 	make
-
-feature -- Initialisation
-
-	make (an_arch_node: like arch_node; a_bmm_class_def: BMM_CLASS_DEFINITION)
-		do
-			precursor (an_arch_node, a_bmm_class_def)
-		end
 
 feature -- Access
 
@@ -36,6 +29,19 @@ feature -- Access
 
 feature -- Modification
 
+feature -- Display
+
+	display_in_grid (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag: BOOLEAN; a_lang: STRING)
+		local
+			gli: EV_GRID_LABEL_ITEM
+		do
+			precursor (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag, a_lang)
+			if not arch_node.any_allowed then
+				create gli.make_with_text (arch_node.item.as_string)
+				gli.set_foreground_color (c_constraint_colour)
+				gui_grid_row.set_item (Node_grid_col_constraint, gli)
+			end
+		end
 
 end
 

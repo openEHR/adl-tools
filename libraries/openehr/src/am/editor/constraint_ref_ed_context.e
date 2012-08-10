@@ -16,23 +16,38 @@ class CONSTRAINT_REF_ED_CONTEXT
 inherit
 	C_OBJECT_ED_CONTEXT
 		redefine
-			arch_node, make
+			arch_node, prepare_display_in_grid, display_in_grid
 		end
 
 create
 	make
 
-feature -- Initialisation
-
-	make (an_arch_node: like arch_node; a_bmm_class_def: BMM_CLASS_DEFINITION)
-		do
-			precursor (an_arch_node, a_bmm_class_def)
-		end
-
 feature -- Access
 
 	arch_node: CONSTRAINT_REF
 			-- archetype node being edited
+
+feature -- Display
+
+	prepare_display_in_grid (a_gui_grid: EVX_GRID)
+		do
+			precursor (a_gui_grid)
+
+			-- add select event
+ 	--		gui_grid_row.item (Node_grid_col_meaning).pointer_button_press_actions.force_extend (agent add_code_select_context_menu (arch_node.target, ?, ?, ?))
+		end
+
+	display_in_grid (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag: BOOLEAN; a_lang: STRING)
+		local
+			s: STRING
+		do
+			precursor (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag, a_lang)
+
+			-- set meaning column to referenced path
+			create s.make_empty
+			s.append (local_term_string (arch_node.target))
+			gui_grid_row.set_item (Node_grid_col_meaning, create {EV_GRID_LABEL_ITEM}.make_with_text (utf8_to_utf32 (s)))
+		end
 
 feature -- Modification
 

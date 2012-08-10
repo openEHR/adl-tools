@@ -16,23 +16,42 @@ class ARCHETYPE_INTERNAL_REF_ED_CONTEXT
 inherit
 	C_OBJECT_ED_CONTEXT
 		redefine
-			arch_node, make
+			arch_node, display_in_grid
 		end
 
 create
 	make
 
-feature -- Initialisation
-
-	make (an_arch_node: like arch_node; a_bmm_class_def: BMM_CLASS_DEFINITION)
-		do
-			precursor (an_arch_node, a_bmm_class_def)
-		end
-
 feature -- Access
 
 	arch_node: ARCHETYPE_INTERNAL_REF
 			-- archetype node being edited
+
+feature -- Display
+
+	display_in_grid (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag: BOOLEAN; a_lang: STRING)
+		local
+			p, s: STRING
+			gli: EV_GRID_LABEL_ITEM
+		do
+			precursor (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag, a_lang)
+
+			-- set constraint column to referenced path
+			create s.make_empty
+			s.append ("use ")
+			if in_technical_view then
+				p := arch_node.target_path.twin
+			else
+				p := flat_ontology.physical_to_logical_path (arch_node.target_path, language, True)
+			end
+			p.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
+			p.remove_head (1)
+			s.append (p)
+			create gli.make_with_text (utf8_to_utf32 (s))
+			gli.set_foreground_color (c_attribute_colour)
+			gui_grid_row.set_item (Node_grid_col_constraint, gli)
+			gui_grid_row.set_height (gli.text_height + Default_grid_row_expansion)
+		end
 
 feature -- Modification
 

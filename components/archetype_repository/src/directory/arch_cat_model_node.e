@@ -6,6 +6,7 @@ note
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2006-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -25,13 +26,14 @@ create
 
 feature -- Initialisation
 
-	make_category (a_name: attached STRING)
+	make_category (a_name: STRING)
 			-- create with ontological name of artefact category, e.g. 'archetype', 'template' etc
 		require
 			a_name_valid: not a_name.is_empty
 		do
 			make
 			qualified_name := a_name
+			qualified_key := a_name.as_lower
 			name := a_name
 			group_name := "archetype_category"
 			is_rm_closure := True
@@ -40,7 +42,7 @@ feature -- Initialisation
 			display_name_set: name = qualified_name
 		end
 
-	make_rm_closure (an_rm_closure_name: attached STRING; a_bmm_schema: attached BMM_SCHEMA)
+	make_rm_closure (an_rm_closure_name: STRING; a_bmm_schema: BMM_SCHEMA)
 			-- create to represent a RM closure package, e.g. 'EHR', 'DEMOGRAPHIC' etc - these are
 			-- packages whose reachability closure provide the classes for archetyping in that closure
 		require
@@ -59,7 +61,7 @@ feature -- Initialisation
 			Schema_set: bmm_schema = a_bmm_schema
 		end
 
-	make_class (an_rm_closure_name: attached STRING; a_class_desc: attached BMM_CLASS_DEFINITION)
+	make_class (an_rm_closure_name: STRING; a_class_desc: BMM_CLASS_DEFINITION)
 			-- create with RM closure package name and class def
 		require
 			Rm_closure_valid: not an_rm_closure_name.is_empty and not an_rm_closure_name.has (Package_name_delimiter)
@@ -82,24 +84,26 @@ feature -- Access
 			-- Name distinguishing the type of item and the group to which its `repository' belongs.
 			-- Useful as a logical key to pixmap icons, etc.
 
-	class_definition: BMM_CLASS_DEFINITION
+	class_definition: detachable BMM_CLASS_DEFINITION
 
-	bmm_schema: BMM_SCHEMA
+	bmm_schema: detachable BMM_SCHEMA
 
 	qualified_name: STRING
 			-- model_name '-' class_name
 
 	qualified_key: STRING
-			-- uppercase form of `qualified_name' for safe matching
+			-- lowercase form of `qualified_name' for safe matching
 
 	name: STRING
 			-- class_name
 
-	global_artefact_identifier: attached STRING
+	global_artefact_identifier: STRING
 			-- tool-wide unique id for this artefact
 		do
 			if is_class then
 				Result := class_definition.global_artefact_identifier
+			else
+				Result := qualified_key
 			end
 		end
 
@@ -107,7 +111,7 @@ feature -- Status Report
 
 	is_abstract_class: BOOLEAN
 		do
-			Result := class_definition /= Void and then class_definition.is_abstract
+			Result := attached class_definition and then class_definition.is_abstract
 		end
 
 	is_rm_closure: BOOLEAN
@@ -117,16 +121,13 @@ feature -- Status Report
 
 	is_class: BOOLEAN
 		do
-			Result := class_definition /= Void
+			Result := attached class_definition
 		end
 
 	has_artefacts: BOOLEAN
 			-- True if there are any archetypes at or below this point
 		do
-			from subtree_artefact_counts.start until subtree_artefact_counts.off or subtree_artefact_counts.item_for_iteration > 0 loop
-				subtree_artefact_counts.forth
-			end
-			Result := not subtree_artefact_counts.off
+			Result := across subtree_artefact_counts as counts_csr some counts_csr.item > 0 end
 		end
 
 feature {ARCH_CAT_ITEM} -- Implementation

@@ -102,15 +102,14 @@ feature {NONE} -- Implementation
 			eti: EV_TREE_ITEM
 			ara: ARCH_CAT_ARCHETYPE
 		do
-			from ids.start until ids.off loop
-				create eti.make_with_text (utf8_to_utf32 (ids.item))
-				if current_arch_cat.archetype_index.has(ids.item) then
-					ara := current_arch_cat.archetype_index.item (ids.item)
+			across ids as id_csr loop
+				create eti.make_with_text (utf8_to_utf32 (id_csr.item))
+				if current_arch_cat.archetype_index.has(id_csr.item) then
+					ara := current_arch_cat.archetype_index.item (id_csr.item)
 					eti.set_pixmap (get_icon_pixmap ("archetype/" + ara.group_name))
 					eti.set_data (ara)
 				end
 				subtree.extend (eti)
-				ids.forth
 			end
 		ensure
 			appended: subtree.count = old subtree.count + ids.count
@@ -127,24 +126,19 @@ feature {NONE} -- Implementation
 			-- populate the ADL tree control by creating it from scratch
 		local
 			eti: EV_TREE_ITEM
-			slot_index: DS_HASH_TABLE [ARRAYED_LIST [STRING], STRING]
 			slots_count: INTEGER
 			used_by_count: INTEGER
 		do
 			if source.has_slots then
-				slot_index := source.slot_id_index
-				from slot_index.start until slot_index.off loop
-					create eti.make_with_text (utf8_to_utf32 (source.differential_archetype.ontology.physical_to_logical_path (slot_index.key_for_iteration, selected_language, True)))
+				across source.slot_id_index as slots_csr loop
+					create eti.make_with_text (utf8_to_utf32 (source.differential_archetype.ontology.physical_to_logical_path (slots_csr.key, selected_language, True)))
 					eti.set_pixmap (get_icon_pixmap ("am/added/archetype_slot"))
 					ev_suppliers_tree.extend (eti)
-					append_tree (eti, slot_index.item_for_iteration)
+					append_tree (eti, slots_csr.item)
 					slots_count := slots_count + eti.count
-
 					if eti.is_expandable then
 						eti.expand
 					end
-
-					slot_index.forth
 				end
 			end
 

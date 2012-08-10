@@ -6,6 +6,7 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -77,9 +78,11 @@ create
 
 feature -- Initialisation
 
-	make (a_rm_schema: BMM_SCHEMA; aca: ARCH_CAT_ARCHETYPE; differential_flag: BOOLEAN; a_lang: STRING; a_gui_tree: EVX_GRID;
+	make (a_rm_schema: BMM_SCHEMA; aca: ARCH_CAT_ARCHETYPE; differential_flag: BOOLEAN; a_lang: STRING;
+				a_gui_tree: EVX_GRID;
 				update_flag, show_codes_flag, show_rm_inheritance_flag,
-				in_technical_view_flag, rm_data_properties_flag, rm_runtime_properties_flag, rm_infrastructure_properties_flag: BOOLEAN;
+				in_technical_view_flag, rm_data_properties_flag,
+				rm_runtime_properties_flag, rm_infrastructure_properties_flag: BOOLEAN;
 				a_gui_node_map: HASH_TABLE [EV_GRID_ROW, ARCHETYPE_CONSTRAINT];
 				a_code_select_agent, a_path_select_agent: PROCEDURE [ANY, TUPLE [STRING]])
 		do
@@ -125,7 +128,7 @@ feature -- Access
 
 feature -- Visitor
 
-	start_c_object (a_node: attached C_OBJECT; depth: INTEGER)
+	start_c_object (a_node: C_OBJECT; depth: INTEGER)
 			-- enter a C_OBJECT
 		local
 			s: STRING
@@ -209,13 +212,13 @@ feature -- Visitor
 			end
 		end
 
-	start_c_complex_object (a_node: attached C_COMPLEX_OBJECT; depth: INTEGER)
+	start_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- enter a C_COMPLEX_OBJECT
 		do
 			start_c_object (a_node, depth)
 		end
 
-	end_c_complex_object (a_node: attached C_COMPLEX_OBJECT; depth: INTEGER)
+	end_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- exit a C_COMPLEX_OBJECT
 		do
 			if not a_node.is_root and not updating then
@@ -223,7 +226,7 @@ feature -- Visitor
 			end
 		end
 
-	start_archetype_slot (a_node: attached ARCHETYPE_SLOT; depth: INTEGER)
+	start_archetype_slot (a_node: ARCHETYPE_SLOT; depth: INTEGER)
 			-- enter an ARCHETYPE_SLOT
 		local
 			constraint_str: STRING
@@ -283,7 +286,7 @@ feature -- Visitor
 			end
 		end
 
-	end_archetype_slot (a_node: attached ARCHETYPE_SLOT; depth: INTEGER)
+	end_archetype_slot (a_node: ARCHETYPE_SLOT; depth: INTEGER)
 			-- exit a ARCHETYPE_SLOT
 		do
 			if not updating then
@@ -291,7 +294,7 @@ feature -- Visitor
 			end
 		end
 
-	start_c_attribute (a_node: attached C_ATTRIBUTE; depth: INTEGER)
+	start_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- enter a C_ATTRIBUTE
 		local
 			attr_str: STRING
@@ -335,7 +338,7 @@ feature -- Visitor
 			end
 		end
 
-	end_c_attribute (a_node: attached C_ATTRIBUTE; depth: INTEGER)
+	end_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- exit a C_ATTRIBUTE
 		do
 			if not updating then
@@ -343,17 +346,17 @@ feature -- Visitor
 			end
 		end
 
-	start_c_leaf_object (a_node: attached C_LEAF_OBJECT; depth: INTEGER)
+	start_c_leaf_object (a_node: C_LEAF_OBJECT; depth: INTEGER)
 			-- enter a C_LEAF_OBJECT
 		do
 		end
 
-	start_c_reference_object (a_node: attached C_REFERENCE_OBJECT; depth: INTEGER)
+	start_c_reference_object (a_node: C_REFERENCE_OBJECT; depth: INTEGER)
 			-- enter a C_REFERENCE_OBJECT
 		do
 		end
 
-	start_c_archetype_root (a_node: attached C_ARCHETYPE_ROOT; depth: INTEGER)
+	start_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- enter a C_ARCHETYPE_ROOT
 		local
 --			s: STRING
@@ -381,7 +384,7 @@ feature -- Visitor
 			ontologies.extend (current_arch_cat.archetype_index.item (a_node.archetype_id).flat_archetype.ontology)
 		end
 
-	end_c_archetype_root (a_node: attached C_ARCHETYPE_ROOT; depth: INTEGER)
+	end_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- exit a C_ARCHETYPE_ROOT
 		do
 			ontologies.remove
@@ -390,7 +393,7 @@ feature -- Visitor
 			end
 		end
 
-	start_archetype_internal_ref (a_node: attached ARCHETYPE_INTERNAL_REF; depth: INTEGER)
+	start_archetype_internal_ref (a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
 			-- enter an ARCHETYPE_INTERNAL_REF
 		local
 			p, s: STRING
@@ -417,7 +420,7 @@ feature -- Visitor
 			row.set_height (gli.text_height + Default_grid_row_expansion)
 		end
 
-	end_archetype_internal_ref (a_node: attached ARCHETYPE_INTERNAL_REF; depth: INTEGER)
+	end_archetype_internal_ref (a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
 			-- exit an ARCHETYPE_INTERNAL_REF
 		do
 			if not updating then
@@ -425,7 +428,7 @@ feature -- Visitor
 			end
 		end
 
-	start_constraint_ref (a_node: attached CONSTRAINT_REF; depth: INTEGER)
+	start_constraint_ref (a_node: CONSTRAINT_REF; depth: INTEGER)
 			-- enter a CONSTRAINT_REF
 		local
 			s: STRING
@@ -445,7 +448,7 @@ feature -- Visitor
 			end
 		end
 
-	end_constraint_ref (a_node: attached CONSTRAINT_REF; depth: INTEGER)
+	end_constraint_ref (a_node: CONSTRAINT_REF; depth: INTEGER)
 			-- exit a CONSTRAINT_REF
 		do
 			if not updating then
@@ -453,7 +456,7 @@ feature -- Visitor
 			end
 		end
 
-	start_c_primitive_object (a_node: attached C_PRIMITIVE_OBJECT; depth: INTEGER)
+	start_c_primitive_object (a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- enter an C_PRIMITIVE_OBJECT
 		local
 			row: EV_GRID_ROW
@@ -468,7 +471,7 @@ feature -- Visitor
 			end
 		end
 
-	end_c_primitive_object (a_node: attached C_PRIMITIVE_OBJECT; depth: INTEGER)
+	end_c_primitive_object (a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- exit an C_PRIMITIVE_OBJECT
 		do
 			if not updating then
@@ -476,12 +479,12 @@ feature -- Visitor
 			end
 		end
 
-	start_c_domain_type (a_node: attached C_DOMAIN_TYPE; depth: INTEGER)
+	start_c_domain_type (a_node: C_DOMAIN_TYPE; depth: INTEGER)
 			-- enter an C_DOMAIN_TYPE
 		do
 		end
 
-	start_c_code_phrase (a_node: attached C_CODE_PHRASE; depth: INTEGER)
+	start_c_code_phrase (a_node: C_CODE_PHRASE; depth: INTEGER)
 			-- enter an C_CODE_PHRASE
 		local
 			row: EV_GRID_ROW
@@ -536,7 +539,7 @@ feature -- Visitor
 			end
 		end
 
-	end_c_code_phrase (a_node: attached C_CODE_PHRASE; depth: INTEGER)
+	end_c_code_phrase (a_node: C_CODE_PHRASE; depth: INTEGER)
 			-- exit an C_CODE_PHRASE
 		do
 			if not updating then
@@ -544,7 +547,7 @@ feature -- Visitor
 			end
 		end
 
-	start_c_ordinal (a_node: attached C_DV_ORDINAL; depth: INTEGER)
+	start_c_ordinal (a_node: C_DV_ORDINAL; depth: INTEGER)
 			-- enter an C_DV_ORDINAL
 		local
 			assumed_flag: BOOLEAN
@@ -591,7 +594,7 @@ feature -- Visitor
 			end
 		end
 
-	end_c_ordinal (a_node: attached C_DV_ORDINAL; depth: INTEGER)
+	end_c_ordinal (a_node: C_DV_ORDINAL; depth: INTEGER)
 			-- exit an C_DV_ORDINAL
 		do
 			if not updating then
@@ -599,7 +602,7 @@ feature -- Visitor
 			end
 		end
 
-	start_c_quantity (a_node: attached C_DV_QUANTITY; depth: INTEGER)
+	start_c_quantity (a_node: C_DV_QUANTITY; depth: INTEGER)
 			-- enter a C_DV_QUANTITY
 		local
 			row: EV_GRID_ROW
@@ -647,7 +650,7 @@ feature -- Visitor
 			end
 		end
 
-	end_c_quantity (a_node: attached C_DV_QUANTITY; depth: INTEGER)
+	end_c_quantity (a_node: C_DV_QUANTITY; depth: INTEGER)
 			-- exit a C_DV_QUANTITY
 		do
 			if not updating then
@@ -821,7 +824,7 @@ feature -- Visitor
 
 feature {NONE} -- Implementation
 
-	node_tooltip_str (a_node: attached ARCHETYPE_CONSTRAINT): STRING
+	node_tooltip_str (a_node: ARCHETYPE_CONSTRAINT): STRING
 			-- generate a tooltip for this node as UTF-32 String
 		local
 			p: STRING
@@ -849,7 +852,7 @@ feature {NONE} -- Implementation
 			-- stack for building the tree
 
 	ev_grid_rm_row_stack: ARRAYED_STACK [EV_GRID_ROW]
-			-- stack for building the RM node tree
+			-- stack for building the RM node trees
 
 	ev_grid_rm_row_removals_stack: detachable ARRAYED_STACK [BOOLEAN]
 			-- stack for tracking removals
@@ -877,11 +880,11 @@ feature {NONE} -- Implementation
 	updating: BOOLEAN
 			-- True indicates that the visitor is just updating the text value of the nodes
 
-	language: attached STRING
+	language: STRING
 			-- IETF RFC 5646 language tag; wll be an exact text match
 			-- for one of the 'languages' in the archetype
 
-	c_quantity_item_string (a_node: attached C_QUANTITY_ITEM): attached STRING
+	c_quantity_item_string (a_node: C_QUANTITY_ITEM): attached STRING
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make_empty
@@ -898,7 +901,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	object_ordinal_item_string (an_ordinal: attached ORDINAL; assumed_flag: BOOLEAN): attached STRING
+	object_ordinal_item_string (an_ordinal: ORDINAL; assumed_flag: BOOLEAN): STRING
 			-- generate string form of node or object for use in tree node
 		do
 			create Result.make_empty
@@ -910,7 +913,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	local_term_string (a_code: STRING): attached STRING
+	local_term_string (a_code: STRING): STRING
 			-- generate a string of the form "[code|rubric|]" if in technical mode,
 			-- or else "rubric"
 		local
@@ -941,7 +944,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	term_string (a_terminology_id, a_code: STRING): attached STRING
+	term_string (a_terminology_id, a_code: STRING): STRING
 			-- generate a string of the form "[code|rubric|]" if in technical mode,
 			-- or else "rubric"
 		local
@@ -966,7 +969,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	object_invariant_string (an_inv: attached ASSERTION): attached STRING
+	object_invariant_string (an_inv: ASSERTION): STRING
 			-- generate string form of node or object for use in tree node
 		do
 			Result := an_inv.as_string
@@ -1305,7 +1308,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	convert_node_to_subtype (a_subtype: attached STRING; a_class_grid_row: EV_GRID_ROW; replace_mode: BOOLEAN)
+	convert_node_to_subtype (a_subtype: STRING; a_class_grid_row: EV_GRID_ROW; replace_mode: BOOLEAN)
 			-- rebuild EV tree from interior node of class with a new tree of selected subtype
 		local
 			bmm_subtype_def: BMM_CLASS_DEFINITION

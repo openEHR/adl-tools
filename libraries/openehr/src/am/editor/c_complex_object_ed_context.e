@@ -6,6 +6,7 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -24,9 +25,9 @@ create
 
 feature -- Initialisation
 
-	make (an_arch_node: like arch_node; a_bmm_class_def: BMM_CLASS_DEFINITION)
+	make (an_arch_node: like arch_node; an_archetype: ARCHETYPE; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_rm_schema: BMM_SCHEMA)
 		do
-			precursor (an_arch_node, a_bmm_class_def)
+			precursor (an_arch_node, an_archetype, a_flat_ontology, an_rm_schema)
 			create attributes.make (0)
 		end
 
@@ -39,10 +40,11 @@ feature -- Access
 
 feature -- Modification
 
-	add_attribute (an_attr_node: C_ATTRIBUTE_ED_CONTEXT)
+	add_attribute (a_node: C_ATTRIBUTE_ED_CONTEXT)
 			-- add a new attribute node
 		do
-			attributes.extend (an_attr_node)
+			attributes.extend (a_node)
+			a_node.set_parent (Current)
 		end
 
 end

@@ -31,24 +31,19 @@ create
 
 feature -- Modification
 
-	start_assertion(invs: ARRAYED_LIST[ASSERTION]; depth: INTEGER)
+	start_assertion (invs: ARRAYED_LIST [ASSERTION]; depth: INTEGER)
 			-- start serialising an ASSERTION
 		do
-			from
-				invs.start
-			until
-				invs.off
-			loop
+			across invs as invs_csr loop
 				last_result.append (create_indent(depth+1))
-				if invs.item.tag /= Void then
-					last_result.append (invs.item.tag + ": ")
+				if attached invs_csr.item.tag then
+					last_result.append (invs_csr.item.tag + ": ")
 				end
-				last_result.append (invs.item.expression.as_string + format_item(FMT_NEWLINE))
-				invs.forth
+				last_result.append (invs_csr.item.expression.as_string + format_item(FMT_NEWLINE))
 			end
 		end
 
-	end_assertion(a_node: ARRAYED_LIST[ASSERTION]; depth: INTEGER)
+	end_assertion (a_node: ARRAYED_LIST [ASSERTION]; depth: INTEGER)
 			-- end serialising an ASSERTION
 		do
 		end

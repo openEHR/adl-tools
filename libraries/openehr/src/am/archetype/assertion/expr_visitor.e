@@ -4,8 +4,9 @@ note
 	keywords:    "visitor, assertion expressions"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2008-2012 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -17,8 +18,6 @@ feature -- Initialisation
 
 	initialise(an_assertion: ASSERTION)
 			-- set assertion
-		require
-			Assertion_valid: an_assertion /= Void
 		do
 			assertion := an_assertion
 		end

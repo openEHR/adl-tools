@@ -6,6 +6,7 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -26,143 +27,146 @@ create
 
 feature -- Initialisation
 
-	make (an_archetype: FLAT_ARCHETYPE; rm_mode_flag: BOOLEAN; an_rm_schema: BMM_SCHEMA)
+	make (an_archetype: ARCHETYPE; rm_mode_flag: BOOLEAN; an_rm_schema: BMM_SCHEMA; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY)
 		do
 			initialise (an_archetype)
 			create obj_node_stack.make (0)
 			rm_schema := an_rm_schema
+			flat_ontology := a_flat_ontology
 		end
 
 feature -- Access
 
 	root_node: C_COMPLEX_OBJECT_ED_CONTEXT
 
+	flat_ontology: FLAT_ARCHETYPE_ONTOLOGY
+			-- access to archetype flat ontology
+
 feature -- Visitor
 
-	start_c_complex_object (a_node: attached C_COMPLEX_OBJECT; depth: INTEGER)
+	start_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- enter n C_COMPLEX_OBJECT
 		local
 			ed_node: C_COMPLEX_OBJECT_ED_CONTEXT
 		do
-			create ed_node.make (a_node, rm_schema.class_definition (a_node.rm_type_name))
-			attr_node_stack.item.add_child (ed_node)
+			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
 			obj_node_stack.extend (ed_node)
 			if a_node.is_root then
 				root_node := ed_node
+			else
+				attr_node_stack.item.add_child (ed_node)
 			end
 		end
 
-	end_c_complex_object (a_node: attached C_COMPLEX_OBJECT; depth: INTEGER)
+	end_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)
 			-- exit a C_COMPLEX_OBJECT
 		do
 			obj_node_stack.remove
 		end
 
-	start_archetype_slot (a_node: attached ARCHETYPE_SLOT; depth: INTEGER)
+	start_archetype_slot (a_node: ARCHETYPE_SLOT; depth: INTEGER)
 			-- enter an ARCHETYPE_SLOT
 		local
 			ed_node: ARCHETYPE_SLOT_ED_CONTEXT
 		do
-			create ed_node.make (a_node, rm_schema.class_definition (a_node.rm_type_name))
+			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
 			attr_node_stack.item.add_child (ed_node)
 		end
 
-	start_c_attribute (a_node: attached C_ATTRIBUTE; depth: INTEGER)
+	start_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- enter a C_ATTRIBUTE
 		local
-			bmm_prop_def: BMM_PROPERTY_DEFINITION
 			ed_node: C_ATTRIBUTE_ED_CONTEXT
 		do
-			bmm_prop_def := rm_schema.property_definition (a_node.parent.rm_type_name, a_node.rm_attribute_name)
-			create ed_node.make (a_node, bmm_prop_def)
+			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
 			obj_node_stack.item.add_attribute (ed_node)
 			attr_node_stack.extend (ed_node)
 		end
 
-	end_c_attribute (a_node: attached C_ATTRIBUTE; depth: INTEGER)
+	end_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
 			-- exit a C_ATTRIBUTE
 		do
 			attr_node_stack.remove
 		end
 
-	start_c_leaf_object (a_node: attached C_LEAF_OBJECT; depth: INTEGER)
+	start_c_leaf_object (a_node: C_LEAF_OBJECT; depth: INTEGER)
 			-- enter a C_LEAF_OBJECT
 		do
 		end
 
-	start_c_reference_object (a_node: attached C_REFERENCE_OBJECT; depth: INTEGER)
+	start_c_reference_object (a_node: C_REFERENCE_OBJECT; depth: INTEGER)
 			-- enter a C_REFERENCE_OBJECT
 		do
 		end
 
-	start_c_archetype_root (a_node: attached C_ARCHETYPE_ROOT; depth: INTEGER)
+	start_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- enter a C_ARCHETYPE_ROOT
 		do
 			start_c_complex_object (a_node, depth)
 		end
 
-	end_c_archetype_root (a_node: attached C_ARCHETYPE_ROOT; depth: INTEGER)
+	end_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- exit a C_ARCHETYPE_ROOT
 		do
 			end_c_complex_object (a_node, depth)
 		end
 
-	start_archetype_internal_ref (a_node: attached ARCHETYPE_INTERNAL_REF; depth: INTEGER)
+	start_archetype_internal_ref (a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
 			-- enter an ARCHETYPE_INTERNAL_REF
 		local
 			ed_node: ARCHETYPE_INTERNAL_REF_ED_CONTEXT
 		do
-			create ed_node.make (a_node, rm_schema.class_definition (a_node.rm_type_name))
+			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
 			attr_node_stack.item.add_child (ed_node)
 		end
 
-	start_constraint_ref (a_node: attached CONSTRAINT_REF; depth: INTEGER)
+	start_constraint_ref (a_node: CONSTRAINT_REF; depth: INTEGER)
 			-- enter a CONSTRAINT_REF
 		local
 			ed_node: CONSTRAINT_REF_ED_CONTEXT
 		do
-			create ed_node.make (a_node, rm_schema.class_definition (a_node.rm_type_name))
+			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
 			attr_node_stack.item.add_child (ed_node)
 		end
 
-	start_c_primitive_object (a_node: attached C_PRIMITIVE_OBJECT; depth: INTEGER)
+	start_c_primitive_object (a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
 			-- enter an C_PRIMITIVE_OBJECT
 		local
 			ed_node: C_PRIMITIVE_OBJECT_ED_CONTEXT
 		do
-			create ed_node.make (a_node, rm_schema.class_definition (a_node.rm_type_name))
+			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
 			attr_node_stack.item.add_child (ed_node)
 		end
 
-	start_c_domain_type (a_node: attached C_DOMAIN_TYPE; depth: INTEGER)
+	start_c_domain_type (a_node: C_DOMAIN_TYPE; depth: INTEGER)
 			-- enter an C_DOMAIN_TYPE
 		do
 		end
 
-	start_c_code_phrase (a_node: attached C_CODE_PHRASE; depth: INTEGER)
+	start_c_code_phrase (a_node: C_CODE_PHRASE; depth: INTEGER)
 			-- enter an C_CODE_PHRASE
 		local
 			ed_node: C_CODE_PHRASE_ED_CONTEXT
 		do
-			create ed_node.make (a_node, rm_schema.class_definition (a_node.rm_type_name))
+			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
 			attr_node_stack.item.add_child (ed_node)
 		end
 
-	start_c_ordinal (a_node: attached C_DV_ORDINAL; depth: INTEGER)
+	start_c_ordinal (a_node: C_DV_ORDINAL; depth: INTEGER)
 			-- enter an C_DV_ORDINAL
 		local
 			ed_node: C_DV_ORDINAL_ED_CONTEXT
 		do
-			create ed_node.make (a_node, rm_schema.class_definition (a_node.rm_type_name))
+			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
 			attr_node_stack.item.add_child (ed_node)
 		end
 
-	start_c_quantity (a_node: attached C_DV_QUANTITY; depth: INTEGER)
+	start_c_quantity (a_node: C_DV_QUANTITY; depth: INTEGER)
 			-- enter a C_DV_QUANTITY
 		local
 			ed_node: C_DV_QUANTITY_ED_CONTEXT
 		do
-			create ed_node.make (a_node, rm_schema.class_definition (a_node.rm_type_name))
+			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
 			attr_node_stack.item.add_child (ed_node)
 		end
 

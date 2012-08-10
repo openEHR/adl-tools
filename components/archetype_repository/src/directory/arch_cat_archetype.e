@@ -6,6 +6,7 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2006-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -195,7 +196,7 @@ feature -- Access (semantic)
 			flat_or_differential: Result = legacy_flat_path xor Result = differential_path
 		end
 
-	relative_path: attached STRING
+	relative_path: STRING
 			-- a path derived from the ontological path of the nearest folder node + archetype_id
 		local
 			csr: ARCH_CAT_ITEM
@@ -209,10 +210,10 @@ feature -- Access (semantic)
 			end
 		end
 
-	differential_path: attached STRING
+	differential_path: STRING
 			-- Path of differential source file of archetype.
 
-	differential_text: attached STRING
+	differential_text: STRING
 			-- Read `differential_text' and `text_timestamp' from `differential_path', returning
 			-- the text of the archetype source file, i.e. the differential form.
 		require
@@ -236,7 +237,7 @@ feature -- Access (semantic)
 			Result > 0
 		end
 
-	last_modify_timestamp: attached DATE_TIME
+	last_modify_timestamp: DATE_TIME
 			-- Modification timestamp of `differential_archetype' due to editing
 
 	differential_archetype: detachable DIFFERENTIAL_ARCHETYPE
@@ -244,7 +245,7 @@ feature -- Access (semantic)
 			-- if this is a non-specialised archetype, then it is the same as the flat form, else
 			-- it is just the differences (like an object-oriented source file for a subclass)
 
-	flat_archetype: attached FLAT_ARCHETYPE
+	flat_archetype: FLAT_ARCHETYPE
 			-- inheritance-flattened form of archetype
 		require
 			compilation_state = Cs_validated_phase_2 or compilation_state = Cs_validated
@@ -255,7 +256,7 @@ feature -- Access (semantic)
 			Result := flat_archetype_cache
 		end
 
-	flat_archetype_with_rm: attached FLAT_ARCHETYPE
+	flat_archetype_with_rm: FLAT_ARCHETYPE
 			-- inheritance-flattened form of archetype
 		require
 			compilation_state = Cs_validated_phase_2 or compilation_state = Cs_validated
@@ -312,13 +313,13 @@ feature -- Access (semantic)
 			-- type of artefact i.e. archetype, template, template_component, operational_template
 			-- see ARTEFACT_TYPE class
 
-	id: attached ARCHETYPE_ID
+	id: ARCHETYPE_ID
 			-- Archetype identifier.
 
-	old_id: ARCHETYPE_ID
+	old_id: detachable ARCHETYPE_ID
 			-- previous Archetype identifier, due to change by editing
 
-	parent_id: attached ARCHETYPE_ID
+	parent_id: detachable ARCHETYPE_ID
 			-- Archetype identifier of specialisation parent
 
 	suppliers_index: detachable HASH_TABLE [ARCH_CAT_ARCHETYPE, STRING]
@@ -375,7 +376,7 @@ feature -- Access (semantic)
 			end
 		end
 
-	slot_id_index: detachable DS_HASH_TABLE [ARRAYED_SET[STRING], STRING]
+	slot_id_index: detachable HASH_TABLE [ARRAYED_SET[STRING], STRING]
 			-- list of Archetype ids matching slots, keyed by slot path
 
 	display_language: STRING
@@ -395,7 +396,7 @@ feature -- Access (semantic)
 	flat_compiled_path: detachable STRING
 			-- path to persisted compiled flat form of archetype
 
-	global_artefact_identifier: attached STRING
+	global_artefact_identifier: STRING
 			-- tool-wide unique id for this artefact
 		do
 			Result := qualified_name
@@ -792,7 +793,7 @@ feature {NONE} -- Compilation
 					else
 						compilation_state := Cs_ready_to_parse
 					end
-				elseif differential_archetype /= Void then -- must have been newly created
+				elseif attached differential_archetype then -- must have been newly created
 					compilation_state := Cs_validated
 				end
 			end
@@ -946,7 +947,7 @@ feature {NONE} -- Compilation
 
 feature {ARCHETYPE_VALIDATOR} -- Modification
 
-	add_slot_ids (a_list: attached ARRAYED_SET [STRING]; a_slot_path: attached STRING)
+	add_slot_ids (a_list: ARRAYED_SET [STRING]; a_slot_path: STRING)
 			-- add list of matching archetypes to ids recorded for slot at a_slot_path
 		do
 			if slot_id_index = Void then
@@ -959,7 +960,7 @@ feature {ARCHETYPE_VALIDATOR} -- Modification
 			end
 		end
 
-	add_client (an_archetype_id: attached STRING)
+	add_client (an_archetype_id: STRING)
 			-- add the id of an archetype that has a slot that matches this archetype, i.e. that 'uses' this archetype
 		do
 			if clients_index = Void then
@@ -978,7 +979,7 @@ feature -- Modification
 
 feature -- Editing
 
-	flat_archetype_clone: FLAT_ARCHETYPE
+	flat_archetype_clone: detachable FLAT_ARCHETYPE
 			-- produce a clone of the current `flat_archetype'
 		do
 			if not attached flat_archetype_clone_cache then
@@ -987,7 +988,7 @@ feature -- Editing
 			Result := flat_archetype_clone_cache
 		end
 
-	differential_archetype_clone: DIFFERENTIAL_ARCHETYPE
+	differential_archetype_clone: detachable DIFFERENTIAL_ARCHETYPE
 			-- produce a clone of the current `differential_archetype'
 		do
 			if not attached differential_archetype_clone_cache then
@@ -996,13 +997,30 @@ feature -- Editing
 			Result := differential_archetype_clone_cache
 		end
 
+	create_display_context
+			-- set up a new display context
+		do
+			create differential_display_context.make (Current, rm_schema, True)
+			if is_specialised then
+				create flat_display_context.make (Current, rm_schema, False)
+			else
+				flat_display_context := differential_display_context
+			end
+		end
+
 	create_editor_context
 			-- set up a new editing context
 		do
-			create editor_context.make (flat_archetype_clone, rm_schema)
+			create editor_context.make (Current, rm_schema, True)
 		end
 
-	editor_context: ARCH_ED_CONTEXT
+	differential_display_context: detachable ARCH_ED_CONTEXT
+			-- differential archetype display context
+
+	flat_display_context: detachable ARCH_ED_CONTEXT
+			-- differential archetype display context
+
+	editor_context: detachable ARCH_ED_CONTEXT
 			-- archetype editor context
 
 	commit
@@ -1036,7 +1054,7 @@ feature -- File Operations
 			status := get_msg_line ("file_saved_as_in_format", <<differential_path, Syntax_type_adl>>)
 		end
 
-	save_differential_as (a_full_path, a_format: attached STRING)
+	save_differential_as (a_full_path, a_format: STRING)
 			-- Save current source archetype to `a_full_path' in `a_format'.
 		require
 			Archetype_valid: is_valid
@@ -1051,7 +1069,7 @@ feature -- File Operations
 			status := get_msg_line ("file_saved_as_in_format", <<a_full_path, a_format>>)
 		end
 
-	save_flat_as (a_full_path, a_format: attached STRING)
+	save_flat_as (a_full_path, a_format: STRING)
 			-- Save current flat archetype to `a_full_path' in `a_format'.
 		require
 			Archetype_valid: is_valid
@@ -1068,7 +1086,7 @@ feature -- File Operations
 			status := get_msg_line ("file_saved_as_in_format", <<a_full_path, a_format>>)
 		end
 
-	save_legacy_to (a_full_path: attached STRING)
+	save_legacy_to (a_full_path: STRING)
 			-- Save current legacy archetype, if it exists to `a_full_path' in `serialise_format'.
 		require
 			Archetype_valid: is_valid
@@ -1132,7 +1150,7 @@ feature -- File Operations
 
 feature -- Output
 
-	serialise_object (flat_flag: BOOLEAN; a_format: attached STRING): attached STRING
+	serialise_object (flat_flag: BOOLEAN; a_format: STRING): STRING
 			-- serialise internal structure in a brute-force object way, using
 			-- format like dADL, XML, JSON etc
 		require
@@ -1177,13 +1195,15 @@ feature -- Statistics
 
 feature {NONE} -- Implementation
 
-	file_repository: attached ARCHETYPE_REPOSITORY_I
+	file_repository: ARCHETYPE_REPOSITORY_I
 			-- The repository on which this item is found.
 
 	current_archetype_language: STRING
 			-- find a language from the current archetype that matches `archetype_view_language' either directly
 			-- (e.g. "en" matches "en") or on a language group basis (e.g. "en-GB" matches "en"); if
 			-- none found, return archetype original language
+		require
+			is_valid
 		do
 			if differential_archetype.has_language (archetype_view_language) then
 				Result := archetype_view_language
@@ -1262,7 +1282,7 @@ invariant
 	legacy_text_timestamp_valid: has_legacy_flat_file implies legacy_flat_text_timestamp > 0
 	differential_text_timestamp_valid: has_differential_file implies differential_text_timestamp > 0
 
-	differential_archetype_attached_if_valid: is_valid implies differential_archetype /= Void
+	differential_archetype_attached_if_valid: is_valid implies attached differential_archetype
 	flat_archetype_attached_if_valid: is_valid implies flat_archetype /= Void
 
 	parent_existence: specialisation_parent /= Void implies is_specialised

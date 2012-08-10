@@ -6,6 +6,7 @@ note
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -27,16 +28,12 @@ feature -- Access
 
 feature -- Modification
 
-	set_left_operand(an_item: EXPR_ITEM)
-		require
-			an_item_exists: an_item /= Void
+	set_left_operand (an_item: EXPR_ITEM)
 		do
 			left_operand := an_item
 		end
 
-	set_right_operand(an_item: EXPR_ITEM)
-		require
-			an_item_exists: an_item /= Void
+	set_right_operand (an_item: EXPR_ITEM)
 		do
 			right_operand := an_item
 		end
@@ -45,21 +42,21 @@ feature -- Conversion
 
 	as_string: STRING
 		do
-			create Result.make(0)
-			Result.append(left_operand.as_string)
-			Result.append(" " + operator.out + " ")
-			Result.append(right_operand.as_string)
+			create Result.make_empty
+			Result.append (left_operand.as_string)
+			Result.append (" " + operator.out + " ")
+			Result.append (right_operand.as_string)
 		end
 
 feature -- Visitor
 
-	enter_subtree(visitor: EXPR_VISITOR; depth: INTEGER)
+	enter_subtree (visitor: EXPR_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
 			visitor.start_expr_binary_operator (Current, depth)
 		end
 
-	exit_subtree(visitor: EXPR_VISITOR; depth: INTEGER)
+	exit_subtree (visitor: EXPR_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
 			visitor.end_expr_binary_operator (Current, depth)
