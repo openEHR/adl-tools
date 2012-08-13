@@ -71,11 +71,22 @@ feature {EXPR_ITEM_ED_CONTEXT} -- Implementation
 
 	meaning: STRING
 			-- generate useful string representatoin for meaning column
+		local
+			precedence_overridden: BOOLEAN
 		do
 			create Result.make_empty
+			if attached {EXPR_OPERATOR} arch_node.parent as parent_op then
+				precedence_overridden := parent_op.precedence_overrides (arch_node)
+			end
+			if precedence_overridden then
+				Result.append_character ('(')
+			end
 			Result.append (left_operand_ed_context.meaning)
 			Result.append (" " + arch_node.operator.out + " ")
 			Result.append (right_operand_ed_context.meaning)
+			if precedence_overridden then
+				Result.append_character (')')
+			end
 		end
 
 end

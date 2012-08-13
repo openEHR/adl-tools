@@ -41,6 +41,13 @@ feature -- Access
 
 	precedence_overridden: BOOLEAN
 
+feature -- Comparison
+
+	precedence_overrides (other: EXPR_OPERATOR): BOOLEAN
+		do
+			Result := higher_precedence (operator.value, other.operator.value)
+		end
+
 feature -- Modification
 
 	override_precedence

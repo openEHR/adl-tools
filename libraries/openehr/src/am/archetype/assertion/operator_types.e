@@ -169,6 +169,33 @@ feature -- Status Report
 
 feature -- Access
 
+	operator_precedence: HASH_TABLE [INTEGER, INTEGER]
+			-- precedence tables as a hash of precedence order keyed by operator id
+			-- Use: get the precendence of the two operators you want and compare them
+			-- A lower number beats a higher number
+		once
+			create Result.make (0)
+			Result.put(2, op_exp)
+			Result.put(3, op_multiply)
+			Result.put(3, op_divide)
+			Result.put(4, op_plus)
+			Result.put(4, op_minus)
+			Result.put(6, op_matches)
+			Result.put(6, op_le)
+			Result.put(6, op_lt)
+			Result.put(6, op_ge)
+			Result.put(6, op_gt)
+			Result.put(7, op_eq)
+			Result.put(7, op_ne)
+			Result.put(10, op_not)
+			Result.put(10, op_for_all)
+			Result.put(10, op_exists)
+			Result.put(11, op_and)
+			Result.put(12, op_or)
+			Result.put(12, op_xor)
+			Result.put(13, op_implies)
+		end
+
 	operator_names: HASH_TABLE [STRING, INTEGER]
 			-- english names of operators, keyed by value
 		once
@@ -318,6 +345,18 @@ feature -- Access
 			Result.put(op_multiply, "multiply")
 			Result.put(op_divide, "divide")
 			Result.put(op_exp, "exponent")
+		end
+
+feature -- Comparison
+
+	higher_precedence (op1, op2: INTEGER): BOOLEAN
+			-- is `op1' of higher precedence than `op2'?
+			-- if they are the same, the result is False
+		require
+			Op1_valid: valid_operator (op1)
+			Op2_valid: valid_operator (op2)
+		do
+			Result := operator_precedence.item (op1) < operator_precedence.item (op2)
 		end
 
 end
