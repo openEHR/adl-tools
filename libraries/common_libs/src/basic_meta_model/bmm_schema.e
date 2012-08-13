@@ -121,7 +121,7 @@ feature -- Access
 			-- retrieve the property definition for `a_property_path' in flattened class corresponding to `a_type_name'
 		require
 			Type_name_valid: has_class_definition (a_type_name)
-			Property_path_valid: has_property_path(a_type_name, a_property_path)
+			Property_path_valid: has_property_path (a_type_name, a_property_path)
 		local
 			an_og_path: OG_PATH
 			class_def: BMM_CLASS_DEFINITION
@@ -187,7 +187,7 @@ feature -- Status Report
 			create an_og_path.make_pure_from_string(a_property_path)
 			an_og_path.start
 			if has_class_definition (an_obj_type) then
-				Result := class_definition (an_obj_type).has_property_path(an_og_path)
+				Result := class_definition (an_obj_type).has_property_path (an_og_path)
 			end
 		end
 

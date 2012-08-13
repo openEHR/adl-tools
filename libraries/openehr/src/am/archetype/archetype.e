@@ -506,11 +506,11 @@ feature {NONE} -- Implementation
 
 			-- Add full paths of internal references thus giving full set of actual paths
 			use_refs_csr := use_node_index.cursor
-			from use_node_index.start until use_node_index.off loop
+			across use_node_index as use_node_csr loop
 				-- Hash table with arrayed list of ARCHETYPE_INTERNAL_REFs and Key of target
 				-- (ie the ref path of the internal reference)
-				src_nodes := use_node_index.item_for_iteration
-				tgt_path_str := use_node_index.key_for_iteration
+				src_nodes := use_node_csr.item
+				tgt_path_str := use_node_csr.key
 
 				-- only generate derived paths if we are in a flat archetype that has them all, or else in a
 				-- differential archetype that happens to have them
@@ -519,13 +519,13 @@ feature {NONE} -- Implementation
 					tgt_path_c_objects := definition.all_paths_at_path (tgt_path_str)
 					if attached {C_OBJECT} definition.c_object_at_path (tgt_path_str) as c_o then
 						-- now add the paths below it
-						from src_nodes.start until src_nodes.off loop
-							src_node_path := src_nodes.item.representation.path
+						across src_nodes as src_nodes_csr loop
+							src_node_path := src_nodes_csr.item.representation.path
 
 							-- pick up the node id from the root node of the target path
 							-- unless the source location has its own node id and is a sibling child of the target node of the reference
-							if src_nodes.item.is_addressable and then src_node_path.parent_path.is_equal (tgt_path.parent_path) then
-								src_node_path.last.set_object_id (src_nodes.item.node_id)
+							if src_nodes_csr.item.is_addressable and then src_node_path.parent_path.is_equal (tgt_path.parent_path) then
+								src_node_path.last.set_object_id (src_nodes_csr.item.node_id)
 							else
 								src_node_path.last.set_object_id (tgt_path.last.object_id)
 							end
@@ -533,27 +533,22 @@ feature {NONE} -- Implementation
 
 							object_path_map.force (c_o, src_node_path_str)
 
-							from tgt_path_c_objects.start until tgt_path_c_objects.off loop
-								object_path_map.put (tgt_path_c_objects.item_for_iteration,
-									src_node_path_str + "/" + tgt_path_c_objects.key_for_iteration)
-								tgt_path_c_objects.forth
+							across tgt_path_c_objects as c_objs_csr loop
+								object_path_map.put (c_objs_csr.item, src_node_path_str + "/" + c_objs_csr.key)
 							end
-							src_nodes.forth
 						end
 					end
 				end
-				use_node_index.forth
 			end
 			use_node_index.go_to (use_refs_csr)
 
 			create sorted_physical_paths.make
 			create sorted_physical_leaf_paths.make
-			from object_path_map.start until object_path_map.off loop
-				sorted_physical_paths.extend(object_path_map.key_for_iteration)
-				if attached object_path_map.item_for_iteration and object_path_map.item_for_iteration.is_leaf then
-					sorted_physical_leaf_paths.extend(object_path_map.key_for_iteration)
+			across object_path_map as c_objs_csr loop
+				sorted_physical_paths.extend (c_objs_csr.key)
+				if attached c_objs_csr.item and then c_objs_csr.item.is_leaf then
+					sorted_physical_leaf_paths.extend (c_objs_csr.key)
 				end
-				object_path_map.forth
 			end
 
 			create physical_paths_cache.make(0)
@@ -583,17 +578,16 @@ feature {NONE} -- Implementation
 		do
 			if not attached attr_path_map_cache then
 				create attr_path_map_cache.make(0)
-				from object_path_map.start until object_path_map.off loop
-					if attached object_path_map.item_for_iteration and then not object_path_map.item_for_iteration.is_root then
-						attr_path := object_path_map.key_for_iteration.twin
+				across object_path_map as c_obj_csr loop
+					if attached c_obj_csr.item and then not c_obj_csr.item.is_root then
+						attr_path := c_obj_csr.key.twin
 						if attr_path.item (attr_path.count) = {OG_PATH_ITEM}.predicate_right_delim then
 							attr_path.remove_tail (attr_path.count - attr_path.last_index_of ({OG_PATH_ITEM}.predicate_left_delim, attr_path.count) + 1)
 							if not attr_path_map_cache.has (attr_path) then
-								attr_path_map_cache.put (object_path_map.item_for_iteration.parent, attr_path)
+								attr_path_map_cache.put (c_obj_csr.item.parent, attr_path)
 							end
 						end
 					end
-					object_path_map.forth
 				end
 			end
 			Result := attr_path_map_cache

@@ -87,9 +87,7 @@ feature -- Initialisation
 				a_code_select_agent, a_path_select_agent: PROCEDURE [ANY, TUPLE [STRING]])
 		do
 			target_descriptor := aca
-			if aca.is_specialised then
-				flat_parent := aca.flat_archetype
-			end
+			flat_archetype := aca.flat_archetype
 			differential_view := differential_flag
 			if differential_view then
 				initialise (aca.differential_archetype)
@@ -123,7 +121,7 @@ feature -- Access
 	target_descriptor: detachable ARCH_CAT_ARCHETYPE
 			-- differential archetype being processed
 
-	flat_parent: detachable FLAT_ARCHETYPE
+	flat_archetype: detachable FLAT_ARCHETYPE
 			-- flat parent if the target archetype is specialised
 
 feature -- Visitor
@@ -925,13 +923,13 @@ feature {NONE} -- Implementation
 					if ontology.has_term_code (a_code) then
 						rubric := ontology.term_definition (language, a_code).text
 					else
-						rubric := flat_parent.ontology.term_definition (language, a_code).text
+						rubric := flat_archetype.ontology.term_definition (language, a_code).text
 					end
 				else
 					if ontology.has_constraint_code (a_code) then
 						rubric := ontology.constraint_definition (language, a_code).text
 					else
-						rubric := flat_parent.ontology.constraint_definition (language, a_code).text
+						rubric := flat_archetype.ontology.constraint_definition (language, a_code).text
 					end
 				end
 				if show_codes then
