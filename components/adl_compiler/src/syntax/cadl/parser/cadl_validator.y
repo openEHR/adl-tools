@@ -67,6 +67,7 @@ create
 %token <STRING> V_TYPE_IDENTIFIER V_GENERIC_TYPE_IDENTIFIER V_ATTRIBUTE_IDENTIFIER V_FEATURE_CALL_IDENTIFIER V_STRING
 %token <STRING> V_LOCAL_CODE V_LOCAL_TERM_CODE_REF V_QUALIFIED_TERM_CODE_REF V_TERM_CODE_CONSTRAINT
 %token <STRING> V_REGEXP
+%token <STRING> V_ABS_PATH V_REL_PATH
 %token <CHARACTER> V_CHARACTER
 %token <STRING> V_URI
 %token <STRING> V_ISO8601_EXTENDED_DATE V_ISO8601_EXTENDED_TIME V_ISO8601_EXTENDED_DATE_TIME V_ISO8601_DURATION
@@ -110,7 +111,6 @@ create
 
 %type <STRING> type_identifier
 %type <SIBLING_ORDER> sibling_order
-%type <OG_PATH> absolute_path relative_path
 %type <INTEGER> cardinality_limit_value
 %type <MULTIPLICITY_INTERVAL> c_occurrences c_existence occurrence_spec existence_spec
 %type <C_PRIMITIVE_OBJECT> c_primitive_object
@@ -137,7 +137,6 @@ create
 %type <STRING> any_identifier
 %type <STRING> string_value
 %type <URI> uri_value
-%type <OG_PATH_ITEM> path_segment
 
 %type <ARRAYED_LIST[STRING]> string_list_value
 %type <ARRAYED_LIST[INTEGER]> integer_list_value
@@ -368,18 +367,19 @@ c_archetype_root: SYM_USE_ARCHETYPE type_identifier '[' V_ARCHETYPE_ID ']' c_occ
 		}
 	;
 
-archetype_internal_ref: archetype_internal_ref_head c_occurrences absolute_path 
+archetype_internal_ref: archetype_internal_ref_head c_occurrences V_ABS_PATH
 		{
+			create og_path.make_from_string ($3)
 			if attached arch_internal_ref_node_id then
-				create $$.make_identified (arch_internal_ref_rm_type_name, arch_internal_ref_node_id, $3.as_string)
+				create $$.make_identified (arch_internal_ref_rm_type_name, arch_internal_ref_node_id, $3)
 			else
-				create $$.make (arch_internal_ref_rm_type_name, $3.as_string)
+				create $$.make (arch_internal_ref_rm_type_name, $3)
 
 				-- if the C_ATTRIBUTE above this node requires that this node has an identifier, then take it from the target path
 				if c_attrs.item.candidate_child_requires_id ($$.rm_type_name) then
 					-- default to the id from the target path
-					if not $3.last.object_id.is_empty then
-						$$.set_node_id ($3.last.object_id)
+					if not og_path.last.object_id.is_empty then
+						$$.set_node_id (og_path.last.object_id)
 					else
 						-- error will be generated when attempt is made to add this object to C_ATTRIBUTE
 					end
@@ -647,22 +647,22 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 				abort_with_error("VCATU", <<rm_attribute_name>>)
 			end
 		}
-	| absolute_path c_existence c_cardinality
+	| V_ABS_PATH c_existence c_cardinality
 		{
-			rm_attribute_name := $1.last.attr_name
-			parent_path_str := $1.parent_path.as_string
-			path_str := $1.as_string
+			create og_path.make_from_string ($1)
+			rm_attribute_name := og_path.last.attr_name
+			parent_path_str := og_path.parent_path.as_string
 
-			if not object_nodes.item.has_attribute(path_str) then
+			if not object_nodes.item.has_attribute($1) then
 				-- check RM to see if path is valid, and if it is a container
-				if rm_schema.has_property_path (object_nodes.item.rm_type_name, path_str) then
-					bmm_prop_def := rm_schema.property_definition_at_path (object_nodes.item.rm_type_name, path_str)
+				if rm_schema.has_property_path (object_nodes.item.rm_type_name, $1) then
+					bmm_prop_def := rm_schema.property_definition_at_path (object_nodes.item.rm_type_name, $1)
 					if bmm_prop_def.is_container then
 						create attr_node.make_multiple(rm_attribute_name, $2, $3)
 						attr_node.set_differential_path (parent_path_str)
 						c_attrs.put(attr_node)
 						debug("ADL_parse")
-							io.put_string(indent + "PUSH create ATTR_NODE " + path_str + "; container = " + attr_node.is_multiple.out) 
+							io.put_string(indent + "PUSH create ATTR_NODE " + $1 + "; container = " + attr_node.is_multiple.out) 
 							if $2 /= Void then io.put_string(" existence={" + $2.as_string + "}") end
 							io.new_line
 							io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute(REL)%N") 
@@ -674,7 +674,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 						attr_node.set_differential_path (parent_path_str)
 						c_attrs.put(attr_node)
 						debug("ADL_parse")
-							io.put_string(indent + "PUSH create ATTR_NODE " + path_str + "; container = " + attr_node.is_multiple.out) 
+							io.put_string(indent + "PUSH create ATTR_NODE " + $1 + "; container = " + attr_node.is_multiple.out) 
 							if $2 /= Void then io.put_string(" existence={" + $2.as_string + "}") end
 							io.new_line
 							io.put_string(indent + "OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "] put_attribute(REL)%N") 
@@ -682,13 +682,13 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
 						end
 						object_nodes.item.put_attribute(attr_node)
 					else -- error - cardinality stated, but on a non-container attribute
-						abort_with_error("VSAM2", <<path_str>>)
+						abort_with_error("VSAM2", <<$1>>)
 					end
 				else
-					abort_with_error("VDIFP2", <<path_str>>)
+					abort_with_error("VDIFP2", <<$1>>)
 				end
 			else
-				abort_with_error("VCATU", <<path_str>>)
+				abort_with_error("VCATU", <<$1>>)
 			end
 		}
 	;
@@ -785,24 +785,24 @@ boolean_expression: boolean_leaf
 		}
 	;
 		
-arch_constraint_node: relative_path SYM_MATCHES SYM_START_CBLOCK c_primitive SYM_END_CBLOCK
+arch_constraint_node: V_REL_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive SYM_END_CBLOCK
 		{
 			debug("ADL_invariant")
 				io.put_string(indent + "Archetype feature matches {" + $4.as_string + "}%N") 
 			end
 			create $$.make(create {OPERATOR_KIND}.make(op_matches))
-			$$.set_left_operand (create {EXPR_LEAF}.make_archetype_ref ($1.as_string))
+			$$.set_left_operand (create {EXPR_LEAF}.make_archetype_ref ($1))
 			$$.set_right_operand (create {EXPR_LEAF}.make_constraint ($4))
 		}
 	;
 
-boolean_unop_node: SYM_EXISTS absolute_path
+boolean_unop_node: SYM_EXISTS V_ABS_PATH
 		{
 			debug("ADL_invariant")
-				io.put_string(indent + "Exists " + $2.as_string + "%N") 
+				io.put_string(indent + "Exists " + $2 + "%N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (op_exists))
-			create expr_leaf.make_archetype_definition_ref ($2.as_string)
+			create expr_leaf.make_archetype_definition_ref ($2)
 			$$.set_operand (expr_leaf)
 		}
 	| SYM_NOT boolean_expression
@@ -899,12 +899,12 @@ arithmetic_leaf:  integer_value
 			end
 			create $$.make_real ($1)
 		}
-	| absolute_path
+	| V_ABS_PATH
 		{
 			debug("ADL_invariant")
-				io.put_string(indent + "arith_leaf - path: " + $1.as_string + "%N") 
+				io.put_string(indent + "arith_leaf - path: " + $1 + "%N") 
 			end
-			create $$.make_archetype_definition_ref ($1.as_string)
+			create $$.make_archetype_definition_ref ($1)
 		}
 	;
 
@@ -983,79 +983,6 @@ arithmetic_binop_symbol: '/'
 			$$ := operator_symbols.item (op_exp)
 		}
 	;
-
---------------------------------------------------------------------------------------------------
---------------- THE FOLLOWING SOURCE TAKEN FROM OG_PATH_VALIDATOR.Y - DO NOT MODIFY  -------------
---------------- except to remove movable_path ----------------------------------------------------
---------------------------------------------------------------------------------------------------
-
---
--- We used to allow just s single '/', but this seems of no use in archetypes,
--- and clashes with the '/' arithmetic operator
---
--- absolute_path: '/'
--- 		{
--- 			create $$.make_root
--- 			debug("OG_PATH_parse")
--- 				io.put_string("....absolute_path (root); %N")
--- 			end
--- 		}
-
-absolute_path: '/' relative_path
-		{
-			$$ := $2
-			$$.set_absolute
-			debug("OG_PATH_parse")
-				io.put_string("....absolute_path; %N")
-			end
-		}
-	| absolute_path '/' relative_path
-		{
-			$$ := $1
-			$$.append_path($3)
-			debug("OG_PATH_parse")
-				io.put_string("....absolute_path (appended relative path); %N")
-			end
-		}
-	;
-
-relative_path: path_segment
-		{
-			create $$.make_relative($1)
-		}
-	| relative_path '/' path_segment
-		{
-			$$ := $1
-			$$.append_segment($3)
-		}
-	;
-
-path_segment: V_ATTRIBUTE_IDENTIFIER V_LOCAL_TERM_CODE_REF
-		{
-			create $$.make_with_object_id($1, $2)
-			debug("OG_PATH_parse")
-				io.put_string("...path_segment: " + $1 + "[" + $2 + "]%N")
-			end
-		}
-	| V_ATTRIBUTE_IDENTIFIER '[' V_ARCHETYPE_ID ']'
-		{
-			create $$.make_with_object_id($1, $3)
-			debug("OG_PATH_parse")
-				io.put_string("...path_segment: " + $1 + "[" + $3 + "]%N")
-			end
-		}
-	| V_ATTRIBUTE_IDENTIFIER
-		{
-			create $$.make($1)
-			debug("OG_PATH_parse")
-				io.put_string("...path_segment: " + $1 + "%N")
-			end
-		}
-	;
-
---------------------------------------------------------------------------------------------------
--------------------------------- END SOURCE TAKEN FROM OG_PATH_VALIDATOR.Y ----------------------
---------------------------------------------------------------------------------------------------
 
 
 ---------------- existence, occurrences, cardinality ----------------
@@ -2337,7 +2264,6 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 	abort_with_error (err_code: STRING; args: ARRAY [STRING])
 		do
 			add_error_with_location (err_code, args, error_loc)
-			raise_error
 			abort
 		end
 
@@ -2472,7 +2398,7 @@ feature {NONE} -- Parse Tree
 	cardinality_limit_pos_infinity: BOOLEAN
 
 	rm_attribute_name: STRING
-	parent_path_str, path_str: STRING
+	parent_path_str: STRING
 
 	occurrences: STRING
 
@@ -2508,5 +2434,7 @@ feature {NONE} -- Implementation
 
 	indent: STRING
 	str: STRING
+
+	og_path: OG_PATH
 
 end

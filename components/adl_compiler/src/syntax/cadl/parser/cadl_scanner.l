@@ -65,6 +65,7 @@ NAMECHAR [a-zA-Z0-9._\-]
 NAMECHAR_SPACE [a-zA-Z0-9._\- ]
 NAMECHAR_PAREN [a-zA-Z0-9._\-()]
 NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
+PATH_SEG [a-z][a-zA-Z0-9_]*(\[a[ct][0-9.]+\])?
 
 UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x80-\xBF][\x80-\xBF])|(\xF0[\x90-\xBF][\x80-\xBF][\x80-\xBF])|([\xF1-\xF7][\x80-\xBF][\x80-\xBF][\x80-\xBF]))
 
@@ -477,6 +478,18 @@ P[yY]?[mM]?[Ww]?[dD]? {
 [a-z]{IDCHAR}*	{
 					last_token := V_ATTRIBUTE_IDENTIFIER
 					last_string_value := text
+			}
+
+----------/* V_ABS_PATH */ -------------------------------------------------
+(\/{PATH_SEG})+ {		-- matches an absolute path string with segments of form "/attr_name" or "/attr_name[code]"
+				last_token := V_ABS_PATH
+				last_string_value := text
+			}
+
+----------/* V_REL_PATH */ -------------------------------------------------
+{PATH_SEG}(\/{PATH_SEG})+ {		-- matches a relative path string with segments of form "/attr_name" or "/attr_name[code]"
+				last_token := V_REL_PATH
+				last_string_value := text
 			}
 
 ----------/* V_REGEXP */ -------------------------------------------------

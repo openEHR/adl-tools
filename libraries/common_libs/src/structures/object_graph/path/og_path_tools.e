@@ -2,9 +2,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "ADL archetype path"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -17,24 +17,25 @@ feature -- Access
 
 	path_parse_error: STRING
 			-- result of last failed parse
-	
+
 feature -- Validation
 
-	valid_path_string(a_path: STRING): BOOLEAN
+	valid_path_string (a_path: STRING): BOOLEAN
 			-- True if a_path parses properly
 		require
 			a_path /= Void and then not a_path.is_empty
 		local
 			path_parser: OG_PATH_VALIDATOR
 		do
+			create path_parse_error.make_empty
 			create path_parser.make
-			path_parser.execute(a_path)
+			path_parser.execute (a_path)
 			Result := path_parser.error_count = 0
 			if not Result then
-				path_parse_error := path_parser.error_text
+				path_parse_error.append (path_parser.error_text)
 			end
 		ensure
-			Error_supplied: not Result implies (path_parse_error /= Void and then not path_parse_error.is_empty)
+			Error_supplied: not Result implies not path_parse_error.is_empty
 		end
 
 end

@@ -361,9 +361,7 @@ end
 			if arch_id.valid_id (yyvs2.item (yyvsp2)) then
 				create archetype_id.make_from_string (yyvs2.item (yyvsp2))
 			else
-				raise_error
-				report_error (get_msg_line ("SASID", Void))
-				abort
+				abort_with_error ("SASID", Void)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -372,14 +370,12 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 15 then
---|#line 158 "adl_validator.y"
+--|#line 156 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 158")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 156")
 end
 
-			raise_error
-			report_error (get_msg_line ("SARID", Void))
-			abort
+			abort_with_error ("SARID", Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -387,6 +383,36 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 16 then
+--|#line 162 "adl_validator.y"
+debug ("GEYACC")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 162")
+end
+
+			yyval2 := text
+		
+if yy_parsing_status >= yyContinue then
+	yyssp := yyssp - 1
+	yyvsp2 := yyvsp2 + 1
+	yyvsp1 := yyvsp1 -1
+	if yyvsp2 >= yyvsc2 then
+		if yyvs2 = Void then
+			debug ("GEYACC")
+				std.error.put_line ("Create yyvs2")
+			end
+			create yyspecial_routines2
+			yyvsc2 := yyInitial_yyvs_size
+			yyvs2 := yyspecial_routines2.make (yyvsc2)
+		else
+			debug ("GEYACC")
+				std.error.put_line ("Resize yyvs2")
+			end
+			yyvsc2 := yyvsc2 + yyInitial_yyvs_size
+			yyvs2 := yyspecial_routines2.resize (yyvs2, yyvsc2)
+		end
+	end
+	yyvs2.put (yyval2, yyvsp2)
+end
+when 17 then
 --|#line 166 "adl_validator.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 166")
@@ -416,7 +442,7 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs2.put (yyval2, yyvsp2)
 end
-when 17 then
+when 18 then
 --|#line 170 "adl_validator.y"
 debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 170")
@@ -446,40 +472,10 @@ if yy_parsing_status >= yyContinue then
 	end
 	yyvs2.put (yyval2, yyvsp2)
 end
-when 18 then
---|#line 174 "adl_validator.y"
-debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 174")
-end
-
-			yyval2 := text
-		
-if yy_parsing_status >= yyContinue then
-	yyssp := yyssp - 1
-	yyvsp2 := yyvsp2 + 1
-	yyvsp1 := yyvsp1 -1
-	if yyvsp2 >= yyvsc2 then
-		if yyvs2 = Void then
-			debug ("GEYACC")
-				std.error.put_line ("Create yyvs2")
-			end
-			create yyspecial_routines2
-			yyvsc2 := yyInitial_yyvs_size
-			yyvs2 := yyspecial_routines2.make (yyvsc2)
-		else
-			debug ("GEYACC")
-				std.error.put_line ("Resize yyvs2")
-			end
-			yyvsc2 := yyvsc2 + yyInitial_yyvs_size
-			yyvs2 := yyspecial_routines2.resize (yyvs2, yyvsc2)
-		end
-	end
-	yyvs2.put (yyval2, yyvsp2)
-end
 when 19 then
---|#line 180 "adl_validator.y"
+--|#line 176 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 180")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 176")
 end
 
 			yyvs2.item (yyvsp2 - 1).right_adjust
@@ -487,9 +483,7 @@ end
 			if arch_id.valid_id (yyvs2.item (yyvsp2)) then
 				create archetype_id.make_from_string (yyvs2.item (yyvsp2))
 			else
-				raise_error
-				report_error (get_msg_line ("SASID", Void))
-				abort
+				abort_with_error ("SASID", Void)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -498,14 +492,12 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 20 then
---|#line 192 "adl_validator.y"
+--|#line 186 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 192")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 186")
 end
 
-			raise_error
-			report_error (get_msg_line ("SARID", Void))
-			abort
+			abort_with_error ("SARID", Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -513,9 +505,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 21 then
---|#line 200 "adl_validator.y"
+--|#line 192 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 200")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 192")
 end
 
 			yyval2 := text
@@ -543,9 +535,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs2.put (yyval2, yyvsp2)
 end
 when 22 then
---|#line 206 "adl_validator.y"
+--|#line 198 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 206")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 198")
 end
 
 
@@ -571,9 +563,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 23 then
---|#line 207 "adl_validator.y"
+--|#line 199 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 207")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 199")
 end
 
 
@@ -583,9 +575,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 24 then
---|#line 210 "adl_validator.y"
+--|#line 202 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 210")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 202")
 end
 
 
@@ -594,9 +586,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 25 then
---|#line 211 "adl_validator.y"
+--|#line 203 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 211")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 203")
 end
 
 
@@ -606,9 +598,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 26 then
---|#line 214 "adl_validator.y"
+--|#line 206 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 214")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 206")
 end
 
 			adl_version := yyvs2.item (yyvsp2)
@@ -620,9 +612,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 27 then
---|#line 218 "adl_validator.y"
+--|#line 210 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 218")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 210")
 end
 
 			is_controlled := True
@@ -632,9 +624,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 28 then
---|#line 222 "adl_validator.y"
+--|#line 214 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 222")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 214")
 end
 
 			is_generated := True
@@ -644,17 +636,15 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 29 then
---|#line 228 "adl_validator.y"
+--|#line 220 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 228")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 220")
 end
 
 			if arch_id.valid_id (yyvs2.item (yyvsp2)) then
 				create parent_archetype_id.make_from_string (yyvs2.item (yyvsp2))
 			else
-				raise_error
-				report_error (get_msg_line ("SASID", Void))
-				abort
+				abort_with_error ("SASID", Void)
 			end
 		
 if yy_parsing_status >= yyContinue then
@@ -663,14 +653,12 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 30 then
---|#line 238 "adl_validator.y"
+--|#line 228 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 238")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 228")
 end
 
-			raise_error
-			report_error (get_msg_line ("SASID", Void))
-			abort
+			abort_with_error ("SASID", Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -678,9 +666,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 31 then
---|#line 246 "adl_validator.y"
+--|#line 234 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 246")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 234")
 end
 
 			concept := yyvs2.item (yyvsp2)
@@ -694,14 +682,12 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 32 then
---|#line 253 "adl_validator.y"
+--|#line 241 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 253")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 241")
 end
 
-			raise_error
-			report_error (get_msg_line ("SACO", Void))
-			abort
+			abort_with_error ("SACO", Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -709,9 +695,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 33 then
---|#line 261 "adl_validator.y"
+--|#line 247 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 261")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 247")
 end
 
 			convert_dadl_language(yyvs2.item (yyvsp2))
@@ -723,14 +709,12 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 34 then
---|#line 266 "adl_validator.y"
+--|#line 252 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 266")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 252")
 end
 
-			raise_error
-			report_error (get_msg_line ("SALA", Void))
-			abort
+			abort_with_error ("SALA", Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -738,9 +722,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 35 then
---|#line 274 "adl_validator.y"
+--|#line 258 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 274")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 258")
 end
 
 			convert_dadl_language(yyvs2.item (yyvsp2))
@@ -752,14 +736,12 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 36 then
---|#line 279 "adl_validator.y"
+--|#line 263 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 279")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 263")
 end
 
-			raise_error
-			report_error (get_msg_line ("SADS", Void))
-			abort
+			abort_with_error ("SADS", Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -767,9 +749,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 37 then
---|#line 288 "adl_validator.y"
+--|#line 270 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 288")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 270")
 end
 
 			definition_text := yyvs2.item (yyvsp2)
@@ -780,14 +762,12 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 38 then
---|#line 292 "adl_validator.y"
+--|#line 274 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 292")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 274")
 end
 
-			raise_error
-			report_error (get_msg_line ("SADF", Void))
-			abort
+			abort_with_error ("SADF", Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -795,9 +775,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 39 then
---|#line 300 "adl_validator.y"
+--|#line 280 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 300")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 280")
 end
 
 
@@ -823,9 +803,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 40 then
---|#line 301 "adl_validator.y"
+--|#line 281 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 301")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 281")
 end
 
 			invariant_text := yyvs2.item (yyvsp2)
@@ -836,14 +816,12 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 41 then
---|#line 305 "adl_validator.y"
+--|#line 285 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 305")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 285")
 end
 
-			raise_error
-			report_error (get_msg_line ("SAIV", Void))
-			abort
+			abort_with_error ("SAIV", Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -851,9 +829,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 42 then
---|#line 313 "adl_validator.y"
+--|#line 291 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 313")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 291")
 end
 
 			ontology_text := yyvs2.item (yyvsp2)
@@ -864,14 +842,12 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 43 then
---|#line 317 "adl_validator.y"
+--|#line 295 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 317")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 295")
 end
 
-			raise_error
-			report_error (get_msg_line ("SAON", Void))
-			abort
+			abort_with_error ("SAON", Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -879,9 +855,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 44 then
---|#line 325 "adl_validator.y"
+--|#line 301 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 325")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 301")
 end
 
 
@@ -907,9 +883,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 45 then
---|#line 326 "adl_validator.y"
+--|#line 302 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 326")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 302")
 end
 
 			annotations_text := yyvs2.item (yyvsp2)
@@ -920,14 +896,12 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 46 then
---|#line 330 "adl_validator.y"
+--|#line 306 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 330")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 306")
 end
 
-			raise_error
-			report_error (get_msg_line ("SAAS", Void))
-			abort
+			abort_with_error ("SAAS", Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -935,9 +909,9 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 47 then
---|#line 338 "adl_validator.y"
+--|#line 312 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 338")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 312")
 end
 
 			component_ontologies_text := yyvs2.item (yyvsp2)
@@ -948,14 +922,12 @@ if yy_parsing_status >= yyContinue then
 	yyvs1.put (yyval1, yyvsp1)
 end
 when 48 then
---|#line 342 "adl_validator.y"
+--|#line 316 "adl_validator.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 342")
+	std.error.put_line ("Executing parser user-code from file 'adl_validator.y' at line 316")
 end
 
-			raise_error
-			report_error (get_msg_line ("SAAS", Void))
-			abort
+			abort_with_error ("SAAS", Void)
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
@@ -1213,13 +1185,12 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 	report_error (a_message: STRING)
 			-- Print error message.
 		do
-			add_error_with_location("general_error", <<a_message>>, error_loc)
+			add_error_with_location ("general_error", <<a_message>>, error_loc)
 		end
 
 	abort_with_error (err_code: STRING; args: ARRAY [STRING])
 		do
-			add_error_with_location(err_code, args, error_loc)
-			raise_error
+			add_error_with_location (err_code, args, error_loc)
 			abort
 		end
 

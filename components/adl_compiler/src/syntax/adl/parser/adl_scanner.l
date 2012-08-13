@@ -244,10 +244,13 @@ NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
 }
 
 <IN_ASSERTION_SECTION>{
-	^[ \t]+[^\n]*\n {
+	^[ \t]+[^\n]*\n {			-- match TAB whitsepace <anything> \n
 				in_buffer.append_string(text)
 				in_lineno := in_lineno + 1
 	}
+
+	\n+				in_lineno := in_lineno + text_count
+
 	^[^ \t] { -- non-white space at start
 				unread_character(text.item(1))
 				last_token := V_ASSERTION_TEXT
