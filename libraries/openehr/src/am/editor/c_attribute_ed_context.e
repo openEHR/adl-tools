@@ -15,7 +15,7 @@ note
 class C_ATTRIBUTE_ED_CONTEXT
 
 inherit
-	C_ARCHETYPE_CONSTRAINT_ED_CONTEXT
+	ARCHETYPE_CONSTRAINT_ED_CONTEXT
 		redefine
 			make, arch_node, parent, prepare_display_in_grid, display_in_grid
 		end
@@ -58,7 +58,7 @@ feature -- Display
 			precursor (a_gui_grid)
 
 			-- set an empty string in the meaning column, so later updates have an object to modify
-			gui_grid.set_last_row_label_col (Node_grid_col_meaning, "", Void, Void, Void)
+			gui_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
 		end
 
 	display_in_grid (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag: BOOLEAN; a_lang: STRING)
@@ -69,13 +69,13 @@ feature -- Display
 
 			-- constraints
 			if attached arch_node.existence then
-				gui_grid.set_last_row_label_col (Node_grid_col_existence, arch_node.existence.as_string, Void, c_constraint_colour, Void)
+				gui_grid.set_last_row_label_col (Definition_grid_col_existence, arch_node.existence.as_string, Void, c_constraint_colour, Void)
 			end
 			if attached arch_node.cardinality then
-				gui_grid.set_last_row_label_col (Node_grid_col_card_occ, arch_node.cardinality.as_string, Void, c_constraint_colour, Void)
+				gui_grid.set_last_row_label_col (Definition_grid_col_card_occ, arch_node.cardinality.as_string, Void, c_constraint_colour, Void)
 			end
 			if arch_node.any_allowed then
-				gui_grid.set_last_row_label_col (Node_grid_col_constraint, Archetype_any_constraint, Void, c_constraint_colour, Void)
+				gui_grid.set_last_row_label_col (Definition_grid_col_constraint, Archetype_any_constraint, Void, c_constraint_colour, Void)
 			end
 
 			-- RM attr name / path
@@ -88,10 +88,10 @@ feature -- Display
 				end
 				attr_str.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
 				attr_str.remove_head (1)
-				gui_grid.set_last_row_label_col_multi_line (Node_grid_col_rm_name, attr_str, node_tooltip_str, c_attribute_colour, c_pixmap)
+				gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_rm_name, attr_str, node_tooltip_str, c_attribute_colour, c_pixmap)
 			else
 				attr_str.append (arch_node.rm_attribute_name)
-				gui_grid.set_last_row_label_col (Node_grid_col_rm_name, attr_str, node_tooltip_str, c_attribute_colour, c_pixmap)
+				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, attr_str, node_tooltip_str, c_attribute_colour, c_pixmap)
 			end
 		end
 

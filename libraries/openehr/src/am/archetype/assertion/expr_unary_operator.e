@@ -26,10 +26,9 @@ feature -- Access
 feature -- Modification
 
 	set_operand (an_item: EXPR_ITEM)
-		require
-			an_item_exists: an_item /= Void
 		do
 			operand := an_item
+			an_item.set_parent (Current)
 		end
 
 feature -- Conversion
@@ -43,13 +42,13 @@ feature -- Conversion
 
 feature -- Visitor
 
-	enter_subtree(visitor: EXPR_VISITOR; depth: INTEGER)
+	enter_subtree (visitor: EXPR_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
 			visitor.start_expr_unary_operator (Current, depth)
 		end
 
-	exit_subtree(visitor: EXPR_VISITOR; depth: INTEGER)
+	exit_subtree (visitor: EXPR_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
 			visitor.end_expr_unary_operator (Current, depth)

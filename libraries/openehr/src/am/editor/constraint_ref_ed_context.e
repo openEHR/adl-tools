@@ -46,7 +46,7 @@ feature -- Display
 			-- set meaning column to referenced path
 			create s.make_empty
 			s.append (local_term_string (arch_node.target))
-			gui_grid_row.set_item (Node_grid_col_meaning, create {EV_GRID_LABEL_ITEM}.make_with_text (utf8_to_utf32 (s)))
+			gui_grid_row.set_item (Definition_grid_col_meaning, create {EV_GRID_LABEL_ITEM}.make_with_text (utf8_to_utf32 (s)))
 		end
 
 feature -- Modification

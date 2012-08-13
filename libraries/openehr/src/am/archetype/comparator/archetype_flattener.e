@@ -734,9 +734,8 @@ end
 			-- build the flat archetype invariants as the sum of parent and source invariants
 		do
 			if arch_child_diff.has_invariants then
-				from arch_child_diff.invariants.start until arch_child_diff.invariants.off loop
-					arch_output_flat.add_invariant (arch_child_diff.invariants.item.deep_twin)
-					arch_child_diff.invariants.forth
+				across arch_child_diff.invariants as invs_csr loop
+					arch_output_flat.add_invariant (invs_csr.item.deep_twin)
 				end
 			end
 		end

@@ -29,6 +29,11 @@ feature -- Initialisation
 				target := target_descriptor.flat_archetype
 			end
 			rm_schema := an_rm_schema
+
+--			build_definition
+
+			create assertion_contexts.make (0)
+			build_assertions
 		end
 
 feature -- Access
@@ -40,6 +45,9 @@ feature -- Access
 
 	definition_context: C_COMPLEX_OBJECT_ED_CONTEXT
 			-- definition editing context
+
+	assertion_contexts: ARRAYED_LIST [ASSERTION_ED_CONTEXT]
+			-- assertion editing contexts
 
 feature -- Status Report
 
@@ -53,18 +61,33 @@ feature {NONE} -- Implementation
 
 	rm_schema: BMM_SCHEMA
 
-	populate_definition
-			-- populate `definition_context'
+	build_definition
+			-- build `definition_context'
 		local
 			a_c_iterator: OG_CONTENT_ITERATOR
 			c_ed_context_builder: C_OBJECT_ED_CONTEXT_BUILDER
 		do
-			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
 			create c_ed_context_builder.make (target, in_reference_model_mode, rm_schema, target_descriptor.flat_archetype.ontology)
 			create a_c_iterator.make (target.definition.representation, c_ed_context_builder)
 			a_c_iterator.do_all
 
 			definition_context := c_ed_context_builder.root_node
+		end
+
+	build_assertions
+			-- build `assertion_contexts'
+		local
+			assn_iterator: EXPR_VISITOR_ITERATOR
+			assn_ed_context_builder: ASSERTION_ED_CONTEXT_BUILDER
+		do
+			if target.has_invariants then
+				create assn_ed_context_builder.make (target, rm_schema, target_descriptor.flat_archetype.ontology)
+				across target.invariants as inv_csr loop
+					create assn_iterator.make (inv_csr.item, assn_ed_context_builder)
+					assn_iterator.do_all
+					assertion_contexts.extend (assn_ed_context_builder.root_node)
+				end
+			end
 		end
 
 end

@@ -1,8 +1,8 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Perform post parse construction of the AOM structure."
-	keywords:    "constraint model"
-	author:      "Thomas Beale"
+	description: "Editor context interface for EXPR_UNARY_OPERATOR node"
+	keywords:    "archetype, editing"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
@@ -11,48 +11,59 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class ARCHETYPE_AOM_BUILDER
+class EXPR_UNARY_OP_ED_CONTEXT
 
 inherit
-	ADL_SYNTAX_CONVERTER
-		export
-			{NONE} all
+	EXPR_OPERATOR_ED_CONTEXT
+		redefine
+			arch_node, display_in_grid
 		end
 
-feature {ADL15_ENGINE} -- Initialisation
-
-	initialise (an_archetype: ARCHETYPE; an_rm_schema: BMM_SCHEMA)
-			-- set target
-		do
-			rm_schema := an_rm_schema
-			target := an_archetype
-		ensure
-			target_set: attached target
-		end
+create
+	make
 
 feature -- Access
 
-	target: ARCHETYPE
-			-- differential archetype being processed
+	arch_node: EXPR_UNARY_OPERATOR
 
-	rm_schema: BMM_SCHEMA
+	operand_ed_context: EXPR_ITEM_ED_CONTEXT
 
-feature -- Commands
+feature -- Display
 
-	execute
-			-- populate CONSTRAINT_REF rm_type_name
-		local
-			bmm_prop_def: BMM_PROPERTY_DEFINITION
+	prepare_display_in_grid (a_gui_grid: EVX_GRID)
 		do
-			across target.accodes_index as ac_codes_csr loop
-				across ac_codes_csr.item as cref_list_csr loop
-					bmm_prop_def := rm_schema.property_definition (cref_list_csr.item.parent.parent.rm_type_name, cref_list_csr.item.parent.rm_attribute_name)
-					cref_list_csr.item.set_rm_type_name (bmm_prop_def.type.root_class)
-				end
-			end
+			gui_grid := a_gui_grid
+			gui_grid.add_sub_row (parent.gui_grid_row, arch_node)
+			gui_grid_row := gui_grid.last_row
+			operand_ed_context.prepare_display_in_grid (gui_grid)
 		end
 
-feature {NONE} -- Implementation
+	display_in_grid (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag: BOOLEAN; a_lang: STRING)
+		do
+			precursor (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag, a_lang)
+			operand_ed_context.display_in_grid (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag, a_lang)
+
+			gui_grid.set_last_row (gui_grid_row)
+			gui_grid.set_last_row_label_col (Rules_grid_col_expr_type, Void, Void, Void, c_pixmap)
+		end
+
+feature -- Modification
+
+	set_operand_ed_context (an_ed_context: EXPR_ITEM_ED_CONTEXT)
+		do
+			operand_ed_context := an_ed_context
+			an_ed_context.set_parent (Current)
+		end
+
+feature {EXPR_ITEM_ED_CONTEXT} -- Implementation
+
+	meaning: STRING
+			-- generate useful string representatoin for meaning column
+		do
+			create Result.make_empty
+			Result.append (arch_node.operator.out + " ")
+			Result.append (operand_ed_context.meaning)
+		end
 
 end
 
@@ -71,13 +82,14 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is archetype_aom_builder.e.
+--| The Original Code is arch_ed_context.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2012
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
+--|	Sam Heard
 --|
 --| Alternatively, the contents of this file may be used under the terms of
 --| either the GNU General Public License Version 2 or later (the 'GPL'), or

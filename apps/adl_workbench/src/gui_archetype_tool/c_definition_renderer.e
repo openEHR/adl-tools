@@ -152,16 +152,16 @@ feature -- Visitor
 			-- RM name & meaning columns
 			if a_node.is_addressable then
 				if in_technical_view then
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, a_node.rm_type_name, node_tooltip_str (a_node), c_object_colour (a_node), c_object_pixmap (a_node))
-					gui_grid.set_last_row_label_col (Node_grid_col_meaning, local_term_string (a_node.node_id), node_tooltip_str (a_node), c_meaning_colour (a_node), Void)
+					gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, a_node.rm_type_name, node_tooltip_str (a_node), c_object_colour (a_node), c_object_pixmap (a_node))
+					gui_grid.set_last_row_label_col (Definition_grid_col_meaning, local_term_string (a_node.node_id), node_tooltip_str (a_node), c_meaning_colour (a_node), Void)
 		 		else
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, local_term_string (a_node.node_id), node_tooltip_str (a_node), c_meaning_colour (a_node), c_object_pixmap (a_node))
-					gui_grid.set_last_row_label_col (Node_grid_col_meaning, "", Void, Void, Void)
+					gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, local_term_string (a_node.node_id), node_tooltip_str (a_node), c_meaning_colour (a_node), c_object_pixmap (a_node))
+					gui_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
 				end
 			else
 				if in_technical_view then
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, a_node.rm_type_name, node_tooltip_str (a_node), c_object_colour (a_node), c_object_pixmap (a_node))
-					gui_grid.set_last_row_label_col (Node_grid_col_meaning, "", Void, Void, Void)
+					gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, a_node.rm_type_name, node_tooltip_str (a_node), c_object_colour (a_node), c_object_pixmap (a_node))
+					gui_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
 				else
 					create s.make_empty
 					s.append_character ('[')
@@ -174,12 +174,12 @@ feature -- Visitor
 					s.append (a_node.rm_type_name.substring (lpos+1, a_node.rm_type_name.count).as_lower)
 					s.append_character (']')
 					s.to_lower
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, s, node_tooltip_str (a_node), c_object_colour (a_node), c_object_pixmap (a_node))
+					gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, s, node_tooltip_str (a_node), c_object_colour (a_node), c_object_pixmap (a_node))
 				end
 			end
 
 			-- add a context menu to rm_name col
-			gui_grid.add_last_row_pointer_button_press_actions (Node_grid_col_rm_name, agent arch_class_node_handler (gui_grid.last_row, ?, ?, ?))
+			gui_grid.add_last_row_pointer_button_press_actions (Definition_grid_col_rm_name, agent arch_class_node_handler (gui_grid.last_row, ?, ?, ?))
 
 			-- card/occ column
 			create s.make_empty
@@ -190,11 +190,11 @@ feature -- Visitor
 					s.append (get_text ("occurrences_removed_text"))
 				end
 			end
-			gui_grid.set_last_row_label_col (Node_grid_col_card_occ, s, Void, c_constraint_colour (a_node), Void)
+			gui_grid.set_last_row_label_col (Definition_grid_col_card_occ, s, Void, c_constraint_colour (a_node), Void)
 
 			-- constraint column
 			if attached {C_DEFINED_OBJECT} a_node as c_do and then c_do.any_allowed then
-				gui_grid.set_last_row_label_col (Node_grid_col_constraint, Archetype_any_constraint, Void, c_constraint_colour (a_node), Void)
+				gui_grid.set_last_row_label_col (Definition_grid_col_constraint, Archetype_any_constraint, Void, c_constraint_colour (a_node), Void)
 			end
 
 			-- sibling order column
@@ -207,7 +207,7 @@ feature -- Visitor
 						s.append ("before")
 					end
 					s.append ("%N" + local_term_string (a_node.sibling_order.sibling_node_id))
-					gui_grid.set_last_row_label_col_multi_line (Node_grid_col_sibling_order, s, Void, c_constraint_colour (a_node), Void)
+					gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_sibling_order, s, Void, c_constraint_colour (a_node), Void)
 				end
 			end
 		end
@@ -236,14 +236,14 @@ feature -- Visitor
 			gui_grid.set_last_row (node_grid_row_map.item (a_node))
 
 			-- try to find a slot pixmap even if in RM icon mode
-			if use_rm_pixmaps and attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Node_grid_col_rm_name) as gli2 then
+			if use_rm_pixmaps and attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Definition_grid_col_rm_name) as gli2 then
 				gli2.set_pixmap (c_object_slot_pixmap (a_node))
 			end
 
 			if not updating then
 				-- add closed indicator in constraint column
 				if a_node.is_closed then
-					gui_grid.set_last_row_label_col (Node_grid_col_constraint, Archetype_slot_closed, Void, c_constraint_colour (a_node), Void)
+					gui_grid.set_last_row_label_col (Definition_grid_col_constraint, Archetype_slot_closed, Void, c_constraint_colour (a_node), Void)
 				else
 					-- create child nodes for includes & excludes
 					if a_node.has_includes then
@@ -251,13 +251,13 @@ feature -- Visitor
 							gui_grid.add_sub_row (ev_grid_row_stack.item, a_node.includes.item)
 
 							-- put pixmap on RM col
-							gui_grid.set_last_row_label_col (Node_grid_col_rm_name, get_text ("include_text"), Void,
+							gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text ("include_text"), Void,
 								c_object_colour (a_node), get_icon_pixmap ("am/added/" + a_node.generating_type + "_include"))
 
 							-- put assertions in constraint col
 							constraint_str := object_invariant_string (a_node.includes.item)
 							constraint_str.replace_substring_all (" ", "%N")
-							gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, c_constraint_colour (a_node), Void)
+							gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour (a_node), Void)
 							a_node.includes.forth
 						end
 					end
@@ -267,20 +267,20 @@ feature -- Visitor
 							gui_grid.add_sub_row (ev_grid_row_stack.item, a_node.excludes.item)
 
 							-- put pixmap on RM col
-							gui_grid.set_last_row_label_col (Node_grid_col_rm_name, get_text ("exclude_text"), Void,
+							gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text ("exclude_text"), Void,
 								c_object_colour (a_node), get_icon_pixmap ("am/added/" + a_node.generating_type + "_exclude"))
 
 							-- put assertions in constraint col
 							constraint_str := object_invariant_string (a_node.excludes.item)
 							constraint_str.replace_substring_all (" ", "%N")
-							gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, c_constraint_colour (a_node), Void)
+							gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour (a_node), Void)
 							a_node.excludes.forth
 						end
 					end
 				end
 			else
 				from i := 1 until i > gui_grid.last_row.subrow_count loop
-					gui_grid.last_row.subrow (i).item (Node_grid_col_constraint).set_foreground_color (c_constraint_colour (a_node))
+					gui_grid.last_row.subrow (i).item (Definition_grid_col_constraint).set_foreground_color (c_constraint_colour (a_node))
 					i := i + 1
 				end
 			end
@@ -303,7 +303,7 @@ feature -- Visitor
 				gui_grid.add_sub_row (ev_grid_row_stack.item, a_node)
 				node_grid_row_map.put (gui_grid.last_row, a_node)
 
-				gui_grid.set_last_row_label_col (Node_grid_col_meaning, "", Void, Void, Void)
+				gui_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
 
 				ev_grid_row_stack.extend (gui_grid.last_row)
 			else
@@ -312,13 +312,13 @@ feature -- Visitor
 
 			-- constraints
 			if attached a_node.existence then
-				gui_grid.set_last_row_label_col (Node_grid_col_existence, a_node.existence.as_string, Void, c_constraint_colour (a_node), Void)
+				gui_grid.set_last_row_label_col (Definition_grid_col_existence, a_node.existence.as_string, Void, c_constraint_colour (a_node), Void)
 			end
 			if attached a_node.cardinality then
-				gui_grid.set_last_row_label_col (Node_grid_col_card_occ, a_node.cardinality.as_string, Void, c_constraint_colour (a_node), Void)
+				gui_grid.set_last_row_label_col (Definition_grid_col_card_occ, a_node.cardinality.as_string, Void, c_constraint_colour (a_node), Void)
 			end
 			if a_node.any_allowed then
-				gui_grid.set_last_row_label_col (Node_grid_col_constraint, Archetype_any_constraint, Void, c_constraint_colour (a_node), Void)
+				gui_grid.set_last_row_label_col (Definition_grid_col_constraint, Archetype_any_constraint, Void, c_constraint_colour (a_node), Void)
 			end
 
 			-- RM attr name / path
@@ -331,10 +331,10 @@ feature -- Visitor
 				end
 				attr_str.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
 				attr_str.remove_head (1)
-				gui_grid.set_last_row_label_col_multi_line (Node_grid_col_rm_name, attr_str, node_tooltip_str (a_node), c_attribute_colour (a_node), c_attribute_pixmap (a_node))
+				gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_rm_name, attr_str, node_tooltip_str (a_node), c_attribute_colour (a_node), c_attribute_pixmap (a_node))
 			else
 				attr_str.append (a_node.rm_attribute_name)
-				gui_grid.set_last_row_label_col (Node_grid_col_rm_name, attr_str, node_tooltip_str (a_node), c_attribute_colour (a_node), c_attribute_pixmap (a_node))
+				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, attr_str, node_tooltip_str (a_node), c_attribute_colour (a_node), c_attribute_pixmap (a_node))
 			end
 		end
 
@@ -416,7 +416,7 @@ feature -- Visitor
 			s.append (p)
 			create gli.make_with_text (utf8_to_utf32 (s))
 			gli.set_foreground_color (c_object_attribute_colour (a_node))
-			row.set_item (Node_grid_col_constraint, gli)
+			row.set_item (Definition_grid_col_constraint, gli)
 			row.set_height (gli.text_height + Default_grid_row_expansion)
 		end
 
@@ -440,11 +440,11 @@ feature -- Visitor
 			-- set meaning column to referenced path
 			create s.make_empty
 			s.append (local_term_string (a_node.target))
-			row.set_item (Node_grid_col_meaning, create {EV_GRID_LABEL_ITEM}.make_with_text (utf8_to_utf32 (s)))
+			row.set_item (Definition_grid_col_meaning, create {EV_GRID_LABEL_ITEM}.make_with_text (utf8_to_utf32 (s)))
 
 			-- add select event
 			if not updating then
-	 			row.item (Node_grid_col_meaning).pointer_button_press_actions.force_extend (agent add_code_select_context_menu (a_node.target, ?, ?, ?))
+	 			row.item (Definition_grid_col_meaning).pointer_button_press_actions.force_extend (agent add_code_select_context_menu (a_node.target, ?, ?, ?))
 			end
 		end
 
@@ -467,7 +467,7 @@ feature -- Visitor
 			if not a_node.any_allowed then
 				create gli.make_with_text (a_node.item.as_string)
 				gli.set_foreground_color (c_constraint_colour (a_node))
-				row.set_item (Node_grid_col_constraint, gli)
+				row.set_item (Definition_grid_col_constraint, gli)
 			end
 		end
 
@@ -501,8 +501,8 @@ feature -- Visitor
 				bmm_prop := rm_schema.property_definition ("CODE_PHRASE", "terminology_id")
 				if not updating then
 					gui_grid.add_sub_row (row, bmm_prop.name)
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop.name, Void, c_object_attribute_colour (a_node), get_icon_pixmap ("rm/generic/" + bmm_prop.multiplicity_key_string))
-					gui_grid.set_last_row_label_col (Node_grid_col_constraint, a_node.terminology_id.value, Void, c_constraint_colour (a_node), Void)
+					gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, bmm_prop.name, Void, c_object_attribute_colour (a_node), get_icon_pixmap ("rm/generic/" + bmm_prop.multiplicity_key_string))
+					gui_grid.set_last_row_label_col (Definition_grid_col_constraint, a_node.terminology_id.value, Void, c_constraint_colour (a_node), Void)
 				end
 			end
 
@@ -524,13 +524,13 @@ feature -- Visitor
 				bmm_prop := rm_schema.property_definition ("CODE_PHRASE", "code_string")
 				if not updating then
 					gui_grid.add_sub_row (row, bmm_prop.name)
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop.name, Void, c_object_attribute_colour (a_node), get_icon_pixmap ("rm/generic/" + bmm_prop.multiplicity_key_string))
-					gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, c_constraint_colour (a_node), Void)
+					gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, bmm_prop.name, Void, c_object_attribute_colour (a_node), get_icon_pixmap ("rm/generic/" + bmm_prop.multiplicity_key_string))
+					gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour (a_node), Void)
 				else
 					from i := 1 until i > row.subrow_count loop
 						if attached {STRING} row.subrow (i).data as str and then str.is_equal (bmm_prop.name) then
 							gui_grid.set_last_row (row.subrow (i))
-							gui_grid.update_last_row_label_col (Node_grid_col_constraint, constraint_str, Void, Void, Void)
+							gui_grid.update_last_row_label_col (Definition_grid_col_constraint, constraint_str, Void, Void, Void)
 							i := row.subrow_count + 1
 						end
 						i := i + 1
@@ -578,14 +578,14 @@ feature -- Visitor
 				bmm_prop_key := bmm_prop_value.name + " - " + bmm_prop_symbol.name
 				if not updating then
 					gui_grid.add_sub_row (row, bmm_prop_key)
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop_key, Void, c_object_attribute_colour (a_node),
+					gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, bmm_prop_key, Void, c_object_attribute_colour (a_node),
 						get_icon_pixmap ("rm/generic/" + bmm_prop_value.multiplicity_key_string))
-					gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, c_constraint_colour (a_node), Void)
+					gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour (a_node), Void)
 				else
 					from i := 1 until i > row.subrow_count loop
 						if attached {STRING} row.subrow (i).data as str and then str.is_equal (bmm_prop_key) then
 							gui_grid.set_last_row (row.subrow (i))
-							gui_grid.update_last_row_label_col (Node_grid_col_constraint, constraint_str, Void, Void, Void)
+							gui_grid.update_last_row_label_col (Definition_grid_col_constraint, constraint_str, Void, Void, Void)
 							i := row.subrow_count + 1
 						end
 						i := i + 1
@@ -617,8 +617,8 @@ feature -- Visitor
 				-- property constraint
 				if attached a_node.property then
 					gui_grid.add_sub_row (row, Void)
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, "property", Void, c_constraint_colour (a_node), get_icon_pixmap ("rm/generic/c_meta_attribute"))
-					gui_grid.set_last_row_label_col (Node_grid_col_constraint, term_string (a_node.property.terminology_id.value, a_node.property.code_string), Void, c_constraint_colour (a_node), Void)
+					gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, "property", Void, c_constraint_colour (a_node), get_icon_pixmap ("rm/generic/c_meta_attribute"))
+					gui_grid.set_last_row_label_col (Definition_grid_col_constraint, term_string (a_node.property.terminology_id.value, a_node.property.code_string), Void, c_constraint_colour (a_node), Void)
 				end
 
 				-- magnitude / units / precision constraint
@@ -643,9 +643,9 @@ feature -- Visitor
 					bmm_prop_key := bmm_prop_magnitude.name + " | " + bmm_prop_units.name + " | " + bmm_prop_precision.name
 
 					gui_grid.add_sub_row (row, Void)
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop_key, Void, c_object_attribute_colour (a_node),
+					gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, bmm_prop_key, Void, c_object_attribute_colour (a_node),
 						get_icon_pixmap ("rm/generic/" + bmm_prop_magnitude.multiplicity_key_string))
-					gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, c_constraint_colour (a_node), Void)
+					gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour (a_node), Void)
 				end
 			end
 		end
@@ -778,15 +778,15 @@ feature -- Visitor
 							col := rm_attribute_color
 						end
 						rm_node_path.append_segment (create {OG_PATH_ITEM}.make (a_bmm_prop.name))
-						gui_grid.set_last_row_label_col (Node_grid_col_rm_name, prop_str, rm_node_path.as_string,
+						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, prop_str, rm_node_path.as_string,
 							col, get_icon_pixmap ("rm/generic/" + a_bmm_prop.multiplicity_key_string))
 
 						-- existence
-						gui_grid.set_last_row_label_col (Node_grid_col_existence, a_bmm_prop.existence.as_string, Void, col, Void)
+						gui_grid.set_last_row_label_col (Definition_grid_col_existence, a_bmm_prop.existence.as_string, Void, col, Void)
 
 						-- cardinality
 						if attached {BMM_CONTAINER_PROPERTY} a_bmm_prop as bmm_cont_prop then
-							gui_grid.set_last_row_label_col (Node_grid_col_card_occ, bmm_cont_prop.cardinality.as_string, Void, col, Void)
+							gui_grid.set_last_row_label_col (Definition_grid_col_card_occ, bmm_cont_prop.cardinality.as_string, Void, col, Void)
 						end
 
 						-- add tree expand handler to this node
@@ -800,8 +800,8 @@ feature -- Visitor
 						-- ======== type node =========
 						gui_grid.add_sub_row (gui_grid.last_row, type_spec)
 						ev_grid_rm_row_stack.extend (gui_grid.last_row)
-						gui_grid.set_last_row_label_col (Node_grid_col_rm_name, type_str, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (type_spec, rm_publisher))
-						gui_grid.add_last_row_pointer_button_press_actions (Node_grid_col_rm_name, agent class_node_handler (gui_grid.last_row, ?, ?, ?))
+						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, type_str, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (type_spec, rm_publisher))
+						gui_grid.add_last_row_pointer_button_press_actions (Definition_grid_col_rm_name, agent class_node_handler (gui_grid.last_row, ?, ?, ?))
 				 	else
 						ignore := True
 				 	end
@@ -1315,21 +1315,21 @@ feature {NONE} -- Implementation
 		do
 			bmm_subtype_def := rm_schema.class_definition (a_subtype)
 			-- set the RM path from the sibling node; it is the regardless of whether we are replacing or adding nodes
-			if attached {EV_GRID_LABEL_ITEM} a_class_grid_row.item (Node_grid_col_rm_name) as gli then
+			if attached {EV_GRID_LABEL_ITEM} a_class_grid_row.item (Definition_grid_col_rm_name) as gli then
 				create rm_node_path.make_from_string (utf32_to_utf8 (gli.tooltip))
 			end
 			if replace_mode then
 				gui_grid.remove_sub_rows (a_class_grid_row)
 				gui_grid.set_last_row (a_class_grid_row)
-				gui_grid.update_last_row_label_col (Node_grid_col_rm_name, a_subtype, Void, archetype_rm_type_color,
+				gui_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_subtype, Void, archetype_rm_type_color,
 					rm_type_pixmap (bmm_subtype_def, rm_publisher))
 				gui_grid.last_row.set_data (bmm_subtype_def)
 				ev_grid_rm_row_stack.extend (a_class_grid_row)
 			else
 				gui_grid.add_sub_row (a_class_grid_row.parent_row, bmm_subtype_def)
-				gui_grid.set_last_row_label_col (Node_grid_col_rm_name, a_subtype, rm_node_path.as_string, archetype_rm_type_color,
+				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, a_subtype, rm_node_path.as_string, archetype_rm_type_color,
 					rm_type_pixmap (bmm_subtype_def, rm_publisher))
-				if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Node_grid_col_rm_name) as gli then
+				if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Definition_grid_col_rm_name) as gli then
 	 	 			gli.pointer_button_press_actions.force_extend (agent class_node_handler (gui_grid.last_row, ?, ?, ?))
 					gui_grid.last_row.expand_actions.force_extend (agent property_node_expand_handler (gui_grid.last_row))
 				end
@@ -1351,7 +1351,7 @@ feature {NONE} -- Implementation
 	refresh_row (a_row: EV_GRID_ROW)
 		do
 			if attached {BMM_TYPE_SPECIFIER} a_row.data as a_type_spec then
-				if attached {EV_GRID_LABEL_ITEM} a_row.item (Node_grid_col_rm_name) as gli then
+				if attached {EV_GRID_LABEL_ITEM} a_row.item (Definition_grid_col_rm_name) as gli then
 					gli.set_pixmap (rm_type_pixmap (a_type_spec, rm_publisher))
 				end
 			end

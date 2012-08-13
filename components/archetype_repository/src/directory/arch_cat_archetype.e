@@ -874,11 +874,10 @@ feature {NONE} -- Compilation
 				create suppliers_index.make (0)
 				if differential_archetype.has_suppliers then
 					supp_idx := differential_archetype.suppliers_index
-					from supp_idx.start until supp_idx.off loop
-						if current_arch_cat.archetype_index.has (supp_idx.key_for_iteration) then
-							suppliers_index.put (current_arch_cat.archetype_index.item (supp_idx.key_for_iteration), supp_idx.key_for_iteration)
+					across supp_idx as supp_idx_csr loop
+						if current_arch_cat.archetype_index.has (supp_idx_csr.key) then
+							suppliers_index.put (current_arch_cat.archetype_index.item (supp_idx_csr.key), supp_idx_csr.key)
 						end
-						supp_idx.forth
 					end
 					compilation_state := Cs_suppliers_known
 				else
@@ -928,6 +927,8 @@ feature {NONE} -- Compilation
 					if adl15_engine.validation_passed then
 						post_info (Current, "validate", "parse_archetype_i2", <<id.as_string>>)
 						compilation_state := Cs_validated
+					-- not yet in use
+					--	adl15_engine.post_compile_process (Current, rm_schema)
 					else
 						compilation_state := Cs_validate_failed
 					end

@@ -35,11 +35,11 @@ feature -- Access
 
 feature -- Traversal
 
-	do_all(node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE[EXPR_ITEM, INTEGER]])
+	do_all (node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE[EXPR_ITEM, INTEGER]])
 			-- do enter_action and exit_action to all nodes in the structure
 		do
 			depth := 0
-			do_all_nodes(target, node_enter_action, node_exit_action)
+			do_all_nodes (target, node_enter_action, node_exit_action)
 		end
 
 feature {NONE} -- Implementation
@@ -49,12 +49,14 @@ feature {NONE} -- Implementation
 			depth := depth + 1
 			node_enter_action.call ([a_target, depth])
 			if attached {EXPR_BINARY_OPERATOR} a_target as a_binary_op then
-				do_all_nodes(a_binary_op.left_operand, node_enter_action, node_exit_action)
-				do_all_nodes(a_binary_op.right_operand, node_enter_action, node_exit_action)
+				do_all_nodes (a_binary_op.left_operand, node_enter_action, node_exit_action)
+				do_all_nodes (a_binary_op.right_operand, node_enter_action, node_exit_action)
 			elseif attached {EXPR_UNARY_OPERATOR} a_target as a_unary_op then
-				do_all_nodes(a_unary_op.operand, node_enter_action, node_exit_action)
+				do_all_nodes (a_unary_op.operand, node_enter_action, node_exit_action)
+			elseif attached {ASSERTION} a_target as assn then
+				do_all_nodes (assn.expression, node_enter_action, node_exit_action)
 			end
-			node_exit_action.call([a_target, depth])
+			node_exit_action.call ([a_target, depth])
 			depth := depth - 1
 		end
 

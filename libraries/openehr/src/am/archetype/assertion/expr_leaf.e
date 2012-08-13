@@ -38,13 +38,13 @@ create
 
 feature -- Definitions
 
-	Ref_type_attribute: STRING = "attibute"
+	Ref_type_attribute: STRING = "attribute"
 	Ref_type_constant: STRING = "constant"
 	Ref_type_constraint: STRING = "constraint"
 
 feature -- Initialisation
 
-	make_archetype_ref (a_ref: attached STRING)
+	make_archetype_ref (a_ref: STRING)
 			-- node refers to a feature in the main part of an archetype
 			-- (not the definition section)
 		require
@@ -52,19 +52,19 @@ feature -- Initialisation
 		do
 			item := a_ref
 			type := "String" -- FIXME: need access to ref model to know what type it really is
-			reference_type := Ref_type_attribute.twin
+			reference_type := Ref_type_attribute
 		ensure
 			is_archetype_ref
 		end
 
-	make_archetype_definition_ref (a_ref: attached STRING)
+	make_archetype_definition_ref (a_ref: STRING)
 			-- node refers to a feature in the archetype definition
 		require
 			ref_exists: not a_ref.is_empty
 		do
 			item := a_ref
 			type := "Any" -- FIXME: need access to ref model to know what type it really is
-			reference_type := Ref_type_attribute.twin
+			reference_type := Ref_type_attribute
 		ensure
 			is_archetype_definition_ref
 		end
@@ -74,7 +74,7 @@ feature -- Initialisation
    		do
 			item := an_item
 			type := "Boolean"
-			reference_type := Ref_type_constant.twin
+			reference_type := Ref_type_constant
 		end
 
 	make_real (an_item: REAL)
@@ -82,7 +82,7 @@ feature -- Initialisation
    		do
 			item := an_item
 			type := "Real"
-			reference_type := Ref_type_constant.twin
+			reference_type := Ref_type_constant
 		end
 
 	make_integer (an_item: INTEGER)
@@ -90,10 +90,10 @@ feature -- Initialisation
    		do
 			item := an_item
 			type := "Integer"
-			reference_type := Ref_type_constant.twin
+			reference_type := Ref_type_constant
 		end
 
-	make_string (an_item: attached STRING)
+	make_string (an_item: STRING)
 			-- node is a string value
    		do
 			item := an_item
@@ -101,7 +101,7 @@ feature -- Initialisation
 			reference_type := Ref_type_constant
 		end
 
-	make_character (an_item: attached CHARACTER)
+	make_character (an_item: CHARACTER)
 			-- node is a character value
    		do
 			item := an_item
@@ -109,23 +109,23 @@ feature -- Initialisation
 			reference_type := Ref_type_constant
 		end
 
-	make_ordinal (an_item: attached ORDINAL)
+	make_ordinal (an_item: ORDINAL)
 			-- node is a ordinal value
    		do
 			item := an_item
-			type := "ORDINAL"
+			type := an_item.generator
 			reference_type := Ref_type_constant
 		end
 
-	make_coded_term (an_item: attached CODE_PHRASE)
+	make_coded_term (an_item: CODE_PHRASE)
 			-- node is a term value
    		do
 			item := an_item
-			type := "CODE_PHRASE"
+			type := an_item.generator
 			reference_type := Ref_type_constraint
 		end
 
-	make_constraint (an_item: attached C_PRIMITIVE)
+	make_constraint (an_item: C_PRIMITIVE)
 			-- node is a constraint on a primitive type; can only be used with "matches" function
    		do
 			item := an_item
@@ -146,23 +146,17 @@ feature -- Status Report
 
 	is_archetype_ref: BOOLEAN
 			-- True if this leaf node is a reference to a node in an archetype outer structure (i.e., not the definition part)
-		local
-			a_path: STRING
 		do
-			if reference_type.is_equal (Ref_type_attribute) then
-				a_path ?= item
-				Result := a_path.item(1) /= '/'
+			if reference_type.is_equal (Ref_type_attribute) and then attached {STRING} item as a_path then
+				Result := a_path.item (1) /= {OG_PATH}.segment_separator
 			end
 		end
 
 	is_archetype_definition_ref: BOOLEAN
 			-- True if this leaf node is a reference to a node in an archetype definition
-		local
-			a_path: STRING
 		do
-			if reference_type.is_equal (Ref_type_attribute) then
-				a_path ?= item
-				Result := a_path.item(1) = '/'
+			if reference_type.is_equal (Ref_type_attribute) and then attached {STRING} item as a_path then
+				Result := a_path.item (1) = {OG_PATH}.segment_separator
 			end
 		end
 
@@ -177,13 +171,25 @@ feature -- Conversion
 	as_string: STRING
 		do
 			create Result.make(0)
-			if reference_type.is_equal("constraint") then
+			if reference_type.is_equal ("constraint") then
 				Result.append ("{")
 			end
 			Result.append (item.out)
-			if reference_type.is_equal("constraint") then
+			if reference_type.is_equal ("constraint") then
 				Result.append ("}")
 			end
+		end
+
+feature -- Modification
+
+	update_type (a_type: STRING)
+			-- update type information if this is a reference object - type information
+			-- is not available when object is built (using just a path); the path has
+			-- to be followed into the reference model to determine the actual target type
+		require
+			is_archetype_ref or is_archetype_definition_ref
+		do
+			type := a_type
 		end
 
 feature -- Visitor

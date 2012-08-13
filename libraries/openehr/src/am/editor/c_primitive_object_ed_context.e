@@ -39,7 +39,7 @@ feature -- Display
 			if not arch_node.any_allowed then
 				create gli.make_with_text (arch_node.item.as_string)
 				gli.set_foreground_color (c_constraint_colour)
-				gui_grid_row.set_item (Node_grid_col_constraint, gli)
+				gui_grid_row.set_item (Definition_grid_col_constraint, gli)
 			end
 		end
 

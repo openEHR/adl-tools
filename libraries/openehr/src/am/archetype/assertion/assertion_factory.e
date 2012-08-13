@@ -15,7 +15,7 @@ class ASSERTION_FACTORY
 
 feature -- Factory
 
-	create_expr_leaf_archetype_definition_ref(an_absolute_path: STRING): EXPR_LEAF
+	create_expr_leaf_archetype_definition_ref (an_absolute_path: STRING): EXPR_LEAF
 			-- node refers to a feature in an archetype definition
 		require
 			path_exists: an_absolute_path /= Void and then not an_absolute_path.is_empty

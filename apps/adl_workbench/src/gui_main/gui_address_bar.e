@@ -118,17 +118,17 @@ feature -- Commands
 					elseif key.count >= 3 then
 						 -- it is a partial id, get a list of candidates
 						matching_ids := client_controls.item (current_client).matching_ids (regex_from_string(key))
-						if matching_ids.count > 0 then
-							ev_search_combo.set_strings (matching_ids)
-							windows_show_combo_dropdown_agent.call ([ev_search_combo])
 
-							if ev_search_combo.count = 1 then
-								client_controls.item (current_client).select_item_by_id (ev_search_combo.text)
-							end
-						else
+						if matching_ids.count = 0 then
 							ev_search_combo.set_text (get_msg ("no_match_found", Void))
 							ev_search_combo.set_focus
 							ev_search_combo.select_all
+						elseif matching_ids.count = 1 then
+							ev_search_combo.set_strings (matching_ids)
+							client_controls.item (current_client).select_item_by_id (ev_search_combo.text)
+						else
+							ev_search_combo.set_strings (matching_ids)
+							windows_show_combo_dropdown_agent.call ([ev_search_combo])
 						end
 
 					else -- key too short

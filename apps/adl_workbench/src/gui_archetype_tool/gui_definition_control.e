@@ -145,7 +145,6 @@ feature -- Initialisation
 			ev_rules_hbox.set_padding (Default_padding_width)
 			ev_rules_hbox.set_border_width (Default_border_width)
 			ev_root_container.extend (ev_rules_hbox)
-			ev_root_container.disable_item_expand (ev_rules_hbox)
 
 			-- EV_GRID
 			create gui_rules_grid.make (True, False, True, False)
@@ -154,8 +153,8 @@ feature -- Initialisation
 
 			-- ========== view controls control panel ===========
 			create gui_rules_control_panel.make
-			ev_definition_hbox.extend (gui_rules_control_panel.ev_root_container)
-			ev_definition_hbox.disable_item_expand (gui_rules_control_panel.ev_root_container)
+			ev_rules_hbox.extend (gui_rules_control_panel.ev_root_container)
+			ev_rules_hbox.disable_item_expand (gui_rules_control_panel.ev_root_container)
 
 			-- tree collapse/expand control
 			create gui_rules_treeview_control.make (create {EVX_TREE_CONTROL_GRID}.make (gui_rules_grid),
@@ -236,6 +235,14 @@ feature -- Commands
 			gui_definition_grid.ev_grid.unlock_update
 
 			-- repopulate rules grid, where applicable
+			if source_archetype.has_invariants then
+				gui_rules_grid.ev_grid.lock_update
+				across arch_ed_context.assertion_contexts as assn_ed_contexts_csr loop
+					assn_ed_contexts_csr.item.display_in_grid (show_technical_view, show_rm_inheritance, show_codes, selected_language)
+				end
+				gui_rules_grid.resize_columns_to_content
+				gui_rules_grid.ev_grid.unlock_update
+			end
 		end
 
 feature {NONE} -- Events
@@ -308,7 +315,7 @@ feature {NONE} -- Events
 	code_select_action_agent: PROCEDURE [ANY, TUPLE [STRING]]
 			-- action to perform when node is selected in tree
 
-	path_select_action_agent: PROCEDURE [ANY, TUPLE [STRING]]
+	path_select_action_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
 			-- action to perform when path is selected on an addressable node
 
 	update_show_rm_inheritance (a_flag: BOOLEAN)
@@ -322,7 +329,7 @@ feature {NONE} -- Events
 
 feature {NONE} -- Implementation
 
-	visualise_descendants_class: STRING
+	visualise_descendants_class: detachable STRING
 
 	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
@@ -345,9 +352,6 @@ feature {NONE} -- Implementation
 
 	gui_rules_treeview_control: EVX_TREEVIEW_CONTROL
 
---	rules_grid_row_map: HASH_TABLE [EV_GRID_ROW, ANY]
-			-- xref table from archetype rules nodes to GUI grid rows
-
 	view_detail_radio_ctl: EVX_BOOLEAN_RADIO_CONTROL
 
 	view_rm_display_inheritance_checkbox_ctl, add_codes_checkbox_ctl: EVX_CHECK_BOX_CONTROL
@@ -361,6 +365,7 @@ feature {NONE} -- Implementation
 	do_clear
 		do
 			gui_definition_grid.wipe_out
+			gui_rules_grid.wipe_out
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.clear end)
 		end
 
@@ -394,7 +399,7 @@ feature {NONE} -- Implementation
 				differential_view, show_rm_data_properties, rm_schema)
 			do_with_wait_cursor (ev_definition_hbox, agent a_c_iterator.do_all)
 
-			gui_definition_grid.set_column_titles (Node_grid_col_names.linear_representation)
+			gui_definition_grid.set_column_titles (Definition_grid_col_names.linear_representation)
 
 			-- make visualisation adjustments
 			if attached visualise_descendants_class then
@@ -432,22 +437,33 @@ feature {NONE} -- Implementation
 			update_rm_view := False
 
 
-			-- repopulate rules grid, where applicable
---			create rules_grid_row_map.make (0)
+			-- populate rules grid, where applicable
+			if source_archetype.has_invariants then
+				gui_rules_grid.ev_grid.lock_update
+				source.create_display_context
+				if differential_view then
+					arch_ed_context := source.differential_display_context
+				else
+					arch_ed_context := source.flat_display_context
+				end
+				across arch_ed_context.assertion_contexts as assn_ed_contexts_csr loop
+					assn_ed_contexts_csr.item.prepare_display_in_grid (gui_rules_grid)
+					assn_ed_contexts_csr.item.display_in_grid (show_technical_view, show_rm_inheritance, show_codes, selected_language)
+				end
 
-			gui_rules_grid.ev_grid.lock_update
---			create c_node_map_builder.make (rm_schema, source, differential_view, selected_language, gui_definition_grid, False, show_codes, show_rm_inheritance,
---				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties,
---				definition_grid_row_map, code_select_action_agent, path_select_action_agent)
---			create a_c_iterator.make (source_archetype.definition, c_node_map_builder,
---				differential_view, show_rm_data_properties, rm_schema)
---			do_with_wait_cursor (ev_rules_hbox, agent an_assn_iterator.do_all)
+				gui_rules_grid.set_column_titles (Rules_grid_col_names.linear_representation)
+				gui_rules_treeview_control.on_expand_all
 
-			gui_rules_grid.set_column_titles (Node_grid_col_names.linear_representation)
-
-			gui_rules_grid.resize_columns_to_content
-			gui_rules_grid.ev_grid.unlock_update
+				gui_rules_grid.resize_columns_to_content
+				gui_rules_grid.ev_grid.unlock_update
+				ev_rules_hbox.show
+			else
+				ev_rules_hbox.hide
+			end
+			ev_root_container.set_split_position (ev_root_container.minimum_split_position.max (ev_root_container.maximum_split_position - gui_rules_grid.ev_grid.row_height * gui_rules_grid.ev_grid.row_count))
 		end
+
+	arch_ed_context: ARCH_ED_CONTEXT
 
 	roll_up_to_specialisation_level
 			-- roll the tree up so that nodes whose rolled_up_specialisation_status is
@@ -460,7 +476,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	ev_grid_row_roll_up (an_ev_grid_row: attached EV_GRID_ROW)
+	ev_grid_row_roll_up (an_ev_grid_row: EV_GRID_ROW)
 			-- close rows that have rolled_up_specialisation_status = ss_inherited; open others
 		do
 			if an_ev_grid_row.is_expandable then
@@ -474,7 +490,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	ev_grid_node_has_non_inherited_child (an_ev_grid_row: attached EV_GRID_ROW): BOOLEAN
+	ev_grid_node_has_non_inherited_child (an_ev_grid_row: EV_GRID_ROW): BOOLEAN
 			-- True if `an_ev_grid_row' is either already expanded, which implies it is not inherited,
 			-- or else its specialisation status is not ss_inherited
 		local
@@ -492,7 +508,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	object_invariant_string (an_inv: attached ASSERTION): attached STRING
+	object_invariant_string (an_inv: ASSERTION): STRING
 			-- generate string form of node or object for use in tree node
 		do
 			Result := an_inv.as_string
@@ -500,38 +516,6 @@ feature {NONE} -- Implementation
 			if not show_technical_view then
 				Result := source_archetype.ontology.substitute_codes (Result, archetype_view_language)
 			end
-		end
-
-	populate_invariants
-			-- populate invariants of archetype into bottom nodes of tree
-		local
-			a_ti_sub, a_ti_sub2: EV_TREE_ITEM
-			invariants: ARRAYED_LIST[ASSERTION]
-			s: STRING
-		do
---			if source_archetype.has_invariants then
---				invariants := source_archetype.invariants
---				create a_ti_sub.make_with_text ("rules:")
---				a_ti_sub.set_pixmap (get_icon_pixmap ("added/rules"))
---				ev_tree.extend (a_ti_sub)
-
---				from invariants.start until invariants.off loop
---					create s.make_empty
-
---					if invariants.item.tag /= Void then
---						s.append (invariants.item.tag + ": ")
---					end
-
---					s.append (object_invariant_string (invariants.item))
---					create a_ti_sub2.make_with_text (utf8_to_utf32 (s))
---					a_ti_sub2.set_pixmap (get_icon_pixmap ("added/" + invariants.item.generator))
---					a_ti_sub2.set_data (invariants.item)
---					a_ti_sub.extend (a_ti_sub2)
---					invariants.forth
---				end
-
---				-- FIXME: TO BE IMPLEM - need to add sub nodes for each assertion
---			end
 		end
 
 end

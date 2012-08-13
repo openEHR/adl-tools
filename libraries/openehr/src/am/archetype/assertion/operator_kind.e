@@ -6,6 +6,7 @@ note
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -24,20 +25,20 @@ create
 
 feature -- Initialisation
 
-	make(an_op: INTEGER)
+	make (an_op: INTEGER)
 			-- make from operator code
 		require
-			valid_operator: valid_operator(an_op)
+			valid_operator: valid_operator (an_op)
 		do
 			value := an_op
 		end
 
-	make_from_string(an_op_name: STRING)
+	make_from_string (an_op_name: STRING)
 			-- make from operator name
 		require
-			valid_operator_name: an_op_name /= Void and then valid_operator_name(an_op_name)
+			valid_operator_name: valid_operator_name (an_op_name)
 		do
-			value := operator_values.item(an_op_name)
+			value := operator_values.item (an_op_name)
 		end
 
 feature -- Access
@@ -56,15 +57,22 @@ feature -- Output
 	as_string_symbol: STRING
 			-- output symbolic form, e.g. "="
 		do
-			create Result.make(0)
+			create Result.make_empty
 			Result.append (operator_symbols.item(value))
 		end
 
 	as_string_name: STRING
 			-- output word form e.g. "equals"
 		do
-			create Result.make(0)
+			create Result.make_empty
 			Result.append (operator_names.item(value))
+		end
+
+	as_text_symbol: STRING
+			-- output word form e.g. "equals"
+		do
+			create Result.make_empty
+			Result.append (operator_text_identifiers.item (value))
 		end
 
 invariant

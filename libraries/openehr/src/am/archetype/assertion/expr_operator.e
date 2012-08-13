@@ -6,6 +6,7 @@ note
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -23,16 +24,14 @@ inherit
 feature -- Initialisation
 
 	make (an_op: OPERATOR_KIND)
-		require
-			an_op_exists: an_op /= Void
    		do
 			operator := an_op
 
 			-- this should be replaced by code that infers typs properly from operands
 			if boolean_operator (an_op.value) or relational_operator(an_op.value) or set_operator(an_op.value) then
-				type := "Boolean"
+				type := op_type_boolean
 			elseif arithmetic_operator (an_op.value) then
-				type := "Integer"
+				type := op_type_arithmetic
 			end
 		end
 

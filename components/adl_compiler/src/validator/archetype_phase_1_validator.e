@@ -68,7 +68,6 @@ feature -- Validation
 			if passed then
 				validate_slots
 				validate_suppliers
-				validate_invariants
 			end
 
 			-- basic validation ontology
@@ -195,19 +194,6 @@ feature {NONE} -- Implementation
 					add_error ("VONSD", <<ontology.constraint_codes.item>>)
 				end
 				ontology.constraint_codes.forth
-			end
-		end
-
-	validate_invariants
-			-- validate the invariants if any, which entails checking that all path references are valid against
-			-- the flat archetype if specialised
-			-- FIXME: do the actual validation
-		do
-			if target.has_invariants then
-				from target.invariants_index.start until target.invariants_index.off loop
-					convert_invariant_paths (target.invariants_index.item_for_iteration, target)
-					target.invariants_index.forth
-				end
 			end
 		end
 

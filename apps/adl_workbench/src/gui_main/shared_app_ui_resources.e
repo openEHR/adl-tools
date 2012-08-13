@@ -65,26 +65,36 @@ feature -- Definitions
 			-- regardless of OS, this is used in paths to locate resources, including icons and also
 			-- .cfg file items
 
-	Node_grid_col_rm_name: INTEGER = 1
-	Node_grid_col_meaning: INTEGER = 2
-	Node_grid_col_existence: INTEGER = 3
-	Node_grid_col_card_occ: INTEGER = 4
-	Node_grid_col_sibling_order: INTEGER = 5
-	Node_grid_col_constraint: INTEGER = 6
-	Node_grid_col_max: INTEGER
+	Definition_grid_col_rm_name: INTEGER = 1
+	Definition_grid_col_meaning: INTEGER = 2
+	Definition_grid_col_existence: INTEGER = 3
+	Definition_grid_col_card_occ: INTEGER = 4
+	Definition_grid_col_sibling_order: INTEGER = 5
+	Definition_grid_col_constraint: INTEGER = 6
+	Definition_grid_col_max: INTEGER
 		once
-			Result := Node_grid_col_constraint
+			Result := Definition_grid_col_constraint
 		end
 
-	Node_grid_col_names: HASH_TABLE [STRING, INTEGER]
+	Definition_grid_col_names: HASH_TABLE [STRING, INTEGER]
 		once
 			create Result.make (0)
-			Result.put (get_text ("node_grid_col_rm_name_text"), Node_grid_col_rm_name)
-			Result.put (get_text ("node_grid_col_meaning_text"), Node_grid_col_meaning)
-			Result.put (get_text ("node_grid_col_existence_text"), Node_grid_col_existence)
-			Result.put (get_text ("node_grid_col_card_occ_text"), Node_grid_col_card_occ)
-			Result.put (get_text ("node_grid_col_sibling_order_text"), Node_grid_col_sibling_order)
-			Result.put (get_text ("node_grid_col_constraint_text"), Node_grid_col_constraint)
+			Result.put (get_text ("definition_grid_col_rm_name_text"), Definition_grid_col_rm_name)
+			Result.put (get_text ("definition_grid_col_meaning_text"), Definition_grid_col_meaning)
+			Result.put (get_text ("definition_grid_col_existence_text"), Definition_grid_col_existence)
+			Result.put (get_text ("definition_grid_col_card_occ_text"), Definition_grid_col_card_occ)
+			Result.put (get_text ("definition_grid_col_sibling_order_text"), Definition_grid_col_sibling_order)
+			Result.put (get_text ("definition_grid_col_constraint_text"), Definition_grid_col_constraint)
+		end
+
+	Rules_grid_col_expr_type: INTEGER = 1
+	Rules_grid_col_expr_value: INTEGER = 2
+
+	Rules_grid_col_names: HASH_TABLE [STRING, INTEGER]
+		once
+			create Result.make (0)
+			Result.put (get_text ("rules_grid_col_expr_type_text"), Rules_grid_col_expr_type)
+			Result.put (get_text ("rules_grid_col_expr_value_text"), Rules_grid_col_expr_value)
 		end
 
 	archetype_rm_type_inherited_color: EV_COLOR

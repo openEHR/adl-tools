@@ -58,6 +58,20 @@ feature -- Access
 
 	ev_root_container: EV_VERTICAL_BOX
 
+feature -- Commands
+
+	collapse
+		do
+			ev_main_vbox.hide
+			collapse_expand_button.set_text (get_text ("expand_button_text"))
+		end
+
+	expand
+		do
+			ev_main_vbox.show
+			collapse_expand_button.set_text (get_text ("collapse_button_text"))
+		end
+
 feature -- Modification
 
 	add_frame_control (a_frame_ctl: EVX_FRAME_CONTROL; can_expand: BOOLEAN)

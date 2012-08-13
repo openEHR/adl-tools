@@ -11,7 +11,7 @@ note
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-	void_safe:	 "yes"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -81,7 +81,7 @@ feature {NONE} -- Initialisation
 			interval_if_lower_or_upper: (a_lower /= Void or an_upper /= Void) xor range = Void
 		end
 
-	make_range (an_interval: attached like range)
+	make_range (an_interval: like range)
 			-- Create from an ISO8601-based interval.
 		do
 			range := an_interval
@@ -90,7 +90,7 @@ feature {NONE} -- Initialisation
 			pattern_void: pattern = Void
 		end
 
-	make_from_pattern (a_pattern: attached STRING)
+	make_from_pattern (a_pattern: STRING)
 			-- Create from an ISO8601-based pattern.
 		require
 			a_pattern_valid: valid_iso8601_duration_constraint_pattern (a_pattern)
@@ -101,7 +101,7 @@ feature {NONE} -- Initialisation
 			interval_void: range = Void
 		end
 
-	make_pattern_with_range (a_pattern: attached STRING; an_interval: attached like range)
+	make_pattern_with_range (a_pattern: STRING; an_interval: like range)
 			-- Create from an ISO8601-based pattern, together with an ISO8601-based interval.
 		require
 			a_pattern_valid: valid_iso8601_duration_constraint_pattern (a_pattern)

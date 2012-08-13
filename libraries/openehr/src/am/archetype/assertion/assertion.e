@@ -22,6 +22,8 @@ inherit
 			{NONE} all
 		end
 
+	EXPR_ITEM
+
 create
 	make
 
@@ -34,6 +36,8 @@ feature -- Initialisation
    		do
 			tag := a_tag
 			expression := an_expr
+			an_expr.set_parent (Current)
+			type := op_type_boolean
 		end
 
 feature -- Access
@@ -69,6 +73,20 @@ feature -- Output
 			-- generate string version
 		do
 			Result := expression.as_string
+		end
+
+feature -- Visitor
+
+	enter_subtree (visitor: EXPR_VISITOR; depth: INTEGER)
+			-- perform action at start of block for this node
+		do
+			visitor.start_assertion (Current, depth)
+		end
+
+	exit_subtree (visitor: EXPR_VISITOR; depth: INTEGER)
+			-- perform action at end of block for this node
+		do
+			visitor.end_assertion (Current, depth)
 		end
 
 invariant

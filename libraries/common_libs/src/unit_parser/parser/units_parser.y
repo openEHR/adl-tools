@@ -57,6 +57,8 @@ create
 %left '/' '*'
 %right '^'
 
+%type <STRING> type_identifie
+
 %%
 
 input: units
@@ -94,29 +96,27 @@ units_item: unit_ref {			-- // meaning is unit with exponent of +1
 			;
 
 unit_ref: V_IDENTIFIER {	-- // note - we cannot tell if prefix is included or not - that requires	
-					-- // character level parsing, since prefixes are not lexically separate
-				str1 ?= $1
-				create_unit_ref(str1, False)
+							-- // character level parsing, since prefixes are not lexically separate
+				str1 := $1
+				create_unit_ref (str1, False)
 				$$ := unit_ref
 			}
 	| V_IDENTIFIER suffix {
-				str1 ?= $1
-				create_unit_ref(str1, True)
+				str1 := $1
+				create_unit_ref (str1, True)
 				$$ := unit_ref
 			}
 	       	;
 
 annotation: SYM_START_ANNOT V_IDENTIFIER SYM_END_ANNOT {
-				str1 ?= $2
-				annot := str1.twin
-				$$ := annot
+				$$ := $2
+				annot := $$.twin
 			}
 	       	;
 
 suffix: SYM_START_SUFFIX V_IDENTIFIER SYM_END_SUFFIX {
-				str1 ?= $2
-				suffix := str1.twin
-				$$ := suffix
+				$$ := $2
+				suffix := $$.twin
 			}
 	       	;
 

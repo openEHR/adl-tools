@@ -102,21 +102,19 @@ feature -- Commands
 			if not parser.syntax_error then
 				tree := parser.assertion_list
 			end
-		ensure
-			parse_succeeded or else attached tree
 		end
 
-	serialise(a_format: STRING)
+	serialise (a_format: STRING)
 			-- serialise current artifact into format
 		require
-			Format_valid: has_assertion_serialiser_format(a_format)
+			Format_valid: has_assertion_serialiser_format (a_format)
 		do
-			create serialiser_mgr.make(tree, a_format)
+			create serialiser_mgr.make (tree, a_format)
 			serialiser_mgr.serialise
 			serialised := serialiser_mgr.last_result
 		end
 
-	set_tree(a_node: like tree)
+	set_tree (a_node: like tree)
 			-- set root node from e.g. GUI tool
 		require
 			a_node /= Void

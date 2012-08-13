@@ -229,8 +229,8 @@ feature {NONE} -- Implementation
 			source.do_supplier_closure (not differential_view, agent continue_rm_property,
 					agent enter_rm_property, agent exit_rm_property)
 
-			gui_grid.set_column_titles (Node_grid_col_names.linear_representation)
-			gui_grid.hide_column (node_grid_col_meaning)
+			gui_grid.set_column_titles (Definition_grid_col_names.linear_representation)
+			gui_grid.hide_column (Definition_grid_col_meaning)
 
 			-- now collapse the tree, and then expand out just the top node
 			gui_treeview_control.on_collapse_all
@@ -278,8 +278,8 @@ feature {NONE} -- Implementation
 			gui_grid.add_row (source)
 			ev_grid_rm_row_stack.extend (gui_grid.last_row)
 			ev_grid_rm_row_removals_stack.extend (False)
-			gui_grid.set_last_row_label_col (Node_grid_col_rm_name, source.name, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (source, rm_publisher))
-			if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Node_grid_col_rm_name) as gli then
+			gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, source.name, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (source, rm_publisher))
+			if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Definition_grid_col_rm_name) as gli then
 	 	 		gli.pointer_button_press_actions.force_extend (agent class_node_handler (gui_grid.last_row, ?, ?, ?))
 	 	 	end
 		end
@@ -374,15 +374,15 @@ feature {NONE} -- Implementation
 							col := rm_attribute_color
 						end
 						rm_node_path.append_segment (create {OG_PATH_ITEM}.make (a_bmm_prop.name))
-						gui_grid.set_last_row_label_col (Node_grid_col_rm_name, prop_str, rm_node_path.as_string,
+						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, prop_str, rm_node_path.as_string,
 							col, get_icon_pixmap ("rm/generic/" + a_bmm_prop.multiplicity_key_string))
 
 						-- existence
-						gui_grid.set_last_row_label_col (Node_grid_col_existence, a_bmm_prop.existence.as_string, Void, col, Void)
+						gui_grid.set_last_row_label_col (Definition_grid_col_existence, a_bmm_prop.existence.as_string, Void, col, Void)
 
 						-- cardinality
 						if attached {BMM_CONTAINER_PROPERTY} a_bmm_prop as bmm_cont_prop then
-							gui_grid.set_last_row_label_col (Node_grid_col_card_occ, bmm_cont_prop.cardinality.as_string, Void, col, Void)
+							gui_grid.set_last_row_label_col (Definition_grid_col_card_occ, bmm_cont_prop.cardinality.as_string, Void, col, Void)
 						end
 
 						-- add tree expand handler to this node
@@ -396,8 +396,8 @@ feature {NONE} -- Implementation
 						-- ======== type node =========
 						gui_grid.add_sub_row (gui_grid.last_row, type_spec)
 						ev_grid_rm_row_stack.extend (gui_grid.last_row)
-						gui_grid.set_last_row_label_col (Node_grid_col_rm_name, type_str, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (type_spec, rm_publisher))
-						if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Node_grid_col_rm_name) as gli then
+						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, type_str, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (type_spec, rm_publisher))
+						if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Definition_grid_col_rm_name) as gli then
 				 	 		gli.pointer_button_press_actions.force_extend (agent class_node_handler (gui_grid.last_row, ?, ?, ?))
 				 	 	end
 				 	else
@@ -532,19 +532,19 @@ feature {NONE} -- Implementation
 		do
 			bmm_subtype_def := rm_schema.class_definition (a_subtype)
 			-- set the RM path from the sibling node; it is the regardless of whether we are replacing or adding nodes
-			if attached {EV_GRID_LABEL_ITEM} a_class_grid_row.item (Node_grid_col_rm_name) as gli then
+			if attached {EV_GRID_LABEL_ITEM} a_class_grid_row.item (Definition_grid_col_rm_name) as gli then
 				create rm_node_path.make_from_string (utf32_to_utf8 (gli.tooltip))
 			end
 			if replace_mode then
 				gui_grid.remove_sub_rows (a_class_grid_row)
 				gui_grid.set_last_row (a_class_grid_row)
-				gui_grid.update_last_row_label_col (Node_grid_col_rm_name, a_subtype, Void, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def, rm_publisher))
+				gui_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_subtype, Void, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def, rm_publisher))
 				gui_grid.last_row.set_data (bmm_subtype_def)
 				ev_grid_rm_row_stack.extend (a_class_grid_row)
 			else
 				gui_grid.add_sub_row (a_class_grid_row.parent_row, bmm_subtype_def)
-				gui_grid.set_last_row_label_col (Node_grid_col_rm_name, a_subtype, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def, rm_publisher))
-				if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Node_grid_col_rm_name) as gli then
+				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, a_subtype, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (bmm_subtype_def, rm_publisher))
+				if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Definition_grid_col_rm_name) as gli then
 	 	 			gli.pointer_button_press_actions.force_extend (agent class_node_handler (gui_grid.last_row, ?, ?, ?))
 					gui_grid.last_row.expand_actions.force_extend (agent property_node_expand_handler (gui_grid.last_row))
 				end
@@ -566,7 +566,7 @@ feature {NONE} -- Implementation
 	refresh_row (a_row: EV_GRID_ROW)
 		do
 			if attached {BMM_TYPE_SPECIFIER} a_row.data as a_type_spec then
-				if attached {EV_GRID_LABEL_ITEM} a_row.item (Node_grid_col_rm_name) as gli then
+				if attached {EV_GRID_LABEL_ITEM} a_row.item (Definition_grid_col_rm_name) as gli then
 					gli.set_pixmap (rm_type_pixmap (a_type_spec, rm_publisher))
 				end
 			end

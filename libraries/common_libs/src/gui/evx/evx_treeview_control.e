@@ -19,6 +19,7 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -50,7 +51,6 @@ feature -- Initialisation
 
 	make (a_tree_ctl: EVX_TREE_CONTROL_I; a_collapse_expand_test_agt: like collapse_expand_test_agt)
 		local
-			ev_view_label: EV_LABEL
 			ev_hbox: EV_HORIZONTAL_BOX
 		do
 			gui_tree_control := a_tree_ctl

@@ -37,7 +37,7 @@ feature -- Display
 
 			-- add closed indicator in constraint column
 			if arch_node.is_closed then
-				gui_grid.set_last_row_label_col (Node_grid_col_constraint, Archetype_slot_closed, Void, c_constraint_colour, Void)
+				gui_grid.set_last_row_label_col (Definition_grid_col_constraint, Archetype_slot_closed, Void, c_constraint_colour, Void)
 			else
 				-- create child nodes for includes & excludes
 				if arch_node.has_includes then
@@ -45,13 +45,13 @@ feature -- Display
 						gui_grid.add_sub_row (gui_grid_row, includes_csr.item)
 
 						-- put pixmap on RM col
-						gui_grid.set_last_row_label_col (Node_grid_col_rm_name, get_text ("include_text"), Void,
+						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text ("include_text"), Void,
 							c_object_colour, get_icon_pixmap ("am/added/" + arch_node.generating_type + "_include"))
 
 						-- put assertions in constraint col
 						constraint_str := object_invariant_string (includes_csr.item)
 						constraint_str.replace_substring_all (" ", "%N")
-						gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
+						gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
 					end
 				end
 
@@ -60,13 +60,13 @@ feature -- Display
 						gui_grid.add_sub_row (gui_grid_row, excludes_csr.item)
 
 						-- put pixmap on RM col
-						gui_grid.set_last_row_label_col (Node_grid_col_rm_name, get_text ("exclude_text"), Void,
+						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text ("exclude_text"), Void,
 							c_object_colour, get_icon_pixmap ("am/added/" + arch_node.generating_type + "_exclude"))
 
 						-- put assertions in constraint col
 						constraint_str := object_invariant_string (excludes_csr.item)
 						constraint_str.replace_substring_all (" ", "%N")
-						gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
+						gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
 					end
 				end
 			end
@@ -78,7 +78,7 @@ feature -- Display
 		do
 			precursor (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag, a_lang)
 			from i := 1 until i > gui_grid.last_row.subrow_count loop
-				gui_grid.last_row.subrow (i).item (Node_grid_col_constraint).set_foreground_color (c_constraint_colour)
+				gui_grid.last_row.subrow (i).item (Definition_grid_col_constraint).set_foreground_color (c_constraint_colour)
 				i := i + 1
 			end
 		end

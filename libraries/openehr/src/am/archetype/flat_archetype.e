@@ -158,8 +158,6 @@ feature -- Factory
 	node_diff_extract_redefinitions (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER)
 		local
 			ss: INTEGER
-			new_ca: C_ATTRIBUTE
-			a_path: OG_PATH
 		do
 			ss := a_c_node.specialisation_status
 			if attached {C_OBJECT} a_c_node as co then

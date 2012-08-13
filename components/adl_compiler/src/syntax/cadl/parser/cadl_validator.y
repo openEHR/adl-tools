@@ -81,7 +81,6 @@ create
 %token SYM_INTERVAL_DELIM
 %token SYM_TRUE SYM_FALSE 
 %token SYM_GE SYM_LE SYM_NE
--- %token SYM_AND SYM_OR SYM_NOT SYM_XOR SYM_IMPLIES
 %token SYM_EXISTS SYM_FORALL
 %token SYM_THEN SYM_ELSE
 
@@ -104,6 +103,7 @@ create
 %right SYM_NOT
 
 %type <ARRAYED_LIST [ASSERTION]> assertions c_includes c_excludes
+%type <ASSERTION> assertion
 
 %type <C_ARCHETYPE_ROOT> c_archetype_root
 %type <ARCHETYPE_INTERNAL_REF> archetype_internal_ref
@@ -115,8 +115,13 @@ create
 %type <MULTIPLICITY_INTERVAL> c_occurrences c_existence occurrence_spec existence_spec
 %type <C_PRIMITIVE_OBJECT> c_primitive_object
 %type <C_PRIMITIVE> c_primitive
-%type <EXPR_ITEM> boolean_expression boolean_node boolean_leaf
-%type <EXPR_ITEM> arithmetic_expression arithmetic_node arithmetic_leaf
+
+%type <EXPR_ITEM> boolean_expression boolean_leaf
+%type <EXPR_UNARY_OPERATOR> boolean_unop_node
+%type <EXPR_BINARY_OPERATOR> boolean_binop_node arithmetic_relop_node arithmetic_arithop_node arch_constraint_node
+%type <EXPR_LEAF> arithmetic_leaf
+%type <EXPR_ITEM> arithmetic_expression
+
 %type <CARDINALITY> c_cardinality
 %type <C_DATE> c_date_constraint c_date
 
@@ -152,7 +157,9 @@ create
 %type <INTERVAL[ISO8601_DATE_TIME]> date_time_interval_value
 %type <INTERVAL[ISO8601_DURATION]> duration_interval_value
 
-
+%type <STRING> arithmetic_binop_symbol
+%type <STRING> relational_binop_symbol
+%type <STRING> boolean_binop_symbol
 
 %%
 
@@ -732,25 +739,25 @@ assertions: assertion
 			if assertion_list = Void then 
 				create assertion_list.make(0)
 			end
-			assertion_list.extend(assertion)
+			assertion_list.extend ($1)
 		}
 	| assertions assertion
 		{
-			assertion_list.extend(assertion)
+			assertion_list.extend ($2)
 		}
 	;
 
 assertion: any_identifier ':' boolean_expression
 		{
-			create assertion.make($3, $1)
+			create $$.make ($3, $1)
 		}
 	| boolean_expression
 		{
-			create assertion.make($1, Void)
+			create $$.make ($1, Void)
 		}
 	| any_identifier ':' error
 		{
-			abort_with_error("SINVS", <<$1>>)
+			abort_with_error ("SINVS", <<$1>>)
 		}
 	;
 
@@ -760,144 +767,66 @@ boolean_expression: boolean_leaf
 		{
 			$$ := $1
 		}
-	| boolean_node
+	| boolean_unop_node
+		{
+			$$ := $1
+		}
+	| boolean_binop_node
+		{
+			$$ := $1
+		}
+	| arithmetic_relop_node
+		{
+			$$ := $1
+		}
+	| arch_constraint_node
 		{
 			$$ := $1
 		}
 	;
-
-boolean_node: SYM_EXISTS absolute_path
-		{
-			debug("ADL_invariant")
-				io.put_string(indent + "Exists " + $2.as_string + "%N") 
-			end
-			create expr_unary_operator.make(create {OPERATOR_KIND}.make(op_exists))
-			create expr_leaf.make_archetype_definition_ref($2.as_string)
-			expr_unary_operator.set_operand(expr_leaf)
-			$$ := expr_unary_operator
-		}
-	| SYM_EXISTS error 
-		{
-			abort_with_error("SEXPT", Void)
-		}
-	| relative_path SYM_MATCHES SYM_START_CBLOCK c_primitive SYM_END_CBLOCK
+		
+arch_constraint_node: relative_path SYM_MATCHES SYM_START_CBLOCK c_primitive SYM_END_CBLOCK
 		{
 			debug("ADL_invariant")
 				io.put_string(indent + "Archetype feature matches {" + $4.as_string + "}%N") 
 			end
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_matches))
-			expr_binary_operator.set_left_operand(create {EXPR_LEAF}.make_archetype_ref($1.as_string))
-			expr_binary_operator.set_right_operand(create {EXPR_LEAF}.make_constraint($4))
-			$$ := expr_binary_operator
+			create $$.make(create {OPERATOR_KIND}.make(op_matches))
+			$$.set_left_operand (create {EXPR_LEAF}.make_archetype_ref ($1.as_string))
+			$$.set_right_operand (create {EXPR_LEAF}.make_constraint ($4))
 		}
-	| SYM_NOT boolean_leaf
+	;
+
+boolean_unop_node: SYM_EXISTS absolute_path
 		{
 			debug("ADL_invariant")
-				io.put_string(indent + "NOT bool_leaf %N") 
+				io.put_string(indent + "Exists " + $2.as_string + "%N") 
 			end
-			create expr_unary_operator.make(create {OPERATOR_KIND}.make(op_not))
-			expr_unary_operator.set_operand($2)
-			$$ := expr_unary_operator
+			create $$.make (create {OPERATOR_KIND}.make (op_exists))
+			create expr_leaf.make_archetype_definition_ref ($2.as_string)
+			$$.set_operand (expr_leaf)
 		}
-	| arithmetic_expression '=' arithmetic_expression
+	| SYM_NOT boolean_expression
 		{
 			debug("ADL_invariant")
-				io.put_string(indent + "arith_expr = arith_leaf %N") 
+				io.put_string(indent + "NOT bool_expr %N") 
 			end
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_eq))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
+			create $$.make (create {OPERATOR_KIND}.make (op_not))
+			$$.set_operand ($2)
 		}
-	| arithmetic_expression SYM_NE arithmetic_expression
+	| SYM_EXISTS error 
+		{
+			abort_with_error ("SEXPT", Void)
+		}
+	;
+
+boolean_binop_node: boolean_expression boolean_binop_symbol boolean_expression
 		{
 			debug("ADL_invariant")
-				io.put_string(indent + "arith_expr != arith_leaf %N") 
+				io.put_string(indent + "bool_expr " + $2 + " bool_expr %N") 
 			end
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_ne))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
-		}
-	| arithmetic_expression SYM_LT arithmetic_expression
-		{
-			debug("ADL_invariant")
-				io.put_string(indent + "arith_expr < arith_leaf %N") 
-			end
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_lt))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
-		}
-	| arithmetic_expression SYM_GT arithmetic_expression
-		{
-			debug("ADL_invariant")
-				io.put_string(indent + "arith_expr > arith_leaf %N") 
-			end
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_gt))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
-		}
-	| arithmetic_expression SYM_LE arithmetic_expression
-		{
-			debug("ADL_invariant")
-				io.put_string(indent + "arith_expr <= arith_leaf %N") 
-			end
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_le))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
-		}
-	| arithmetic_expression SYM_GE arithmetic_expression
-		{
-			debug("ADL_invariant")
-				io.put_string(indent + "arith_expr >= arith_leaf %N") 
-			end
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_ge))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
-		}
-	| boolean_expression SYM_AND boolean_expression
-		{
-			debug("ADL_invariant")
-				io.put_string(indent + "bool_expr AND bool_leaf %N") 
-			end
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_and))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
-		}
-	| boolean_expression SYM_OR boolean_expression
-		{
-			debug("ADL_invariant")
-				io.put_string(indent + "bool_expr OR bool_leaf %N") 
-			end
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_or))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
-		}
-	| boolean_expression SYM_XOR boolean_expression
-		{
-			debug("ADL_invariant")
-				io.put_string(indent + "bool_expr XOR bool_leaf %N") 
-			end
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_xor))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
-		}
-	| boolean_expression SYM_IMPLIES boolean_expression
-		{
-			debug("ADL_invariant")
-				io.put_string(indent + "bool_expr IMPLIES bool_leaf %N") 
-			end
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_implies))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
+			create $$.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item ($2)))
+			$$.set_left_operand($1)
+			$$.set_right_operand($3)
 		}
 	;
 
@@ -907,13 +836,24 @@ boolean_leaf: '(' boolean_expression ')'
 		}
 	| SYM_TRUE
 		{
-			create expr_leaf.make_boolean(True)
+			create expr_leaf.make_boolean (True)
 			$$ := expr_leaf
 		}
 	| SYM_FALSE
 		{
-			create expr_leaf.make_boolean(False)
+			create expr_leaf.make_boolean (False)
 			$$ := expr_leaf
+		}
+	;
+
+arithmetic_relop_node: arithmetic_expression relational_binop_symbol arithmetic_expression
+		{
+			debug("ADL_invariant")
+				io.put_string(indent + "arith_expr " + $2 + " arith_expr %N") 
+			end
+			create $$.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item ($2)))
+			$$.set_left_operand ($1)
+			$$.set_right_operand ($3)
 		}
 	;
 
@@ -921,94 +861,126 @@ arithmetic_expression: arithmetic_leaf
 		{
 			$$ := $1
 		}
-	| arithmetic_node
+	| arithmetic_arithop_node
 		{
 			$$ := $1
 		}
-	;
-
-arithmetic_node: arithmetic_expression '+' arithmetic_leaf
+	| '(' arithmetic_expression ')'
 		{
 			debug("ADL_invariant")
-				io.put_string(indent + "arith_expr + arith_leaf %N") 
-			end
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_plus))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
-		}
-	| arithmetic_expression '-' arithmetic_leaf
-		{
-			debug("ADL_invariant")
-				io.put_string(indent + "arith_expr - arith_leaf %N") 
-			end
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_minus))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
-		}
-	| arithmetic_expression '*' arithmetic_leaf
-		{
-			debug("ADL_invariant")
-				io.put_string(indent + "arith_expr * arith_leaf %N") 
-			end
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_multiply))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
-		}
-	| arithmetic_expression '/' arithmetic_leaf
-		{
-			debug("ADL_invariant")
-				io.put_string(indent + "arith_expr / arith_leaf %N") 
-			end
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_divide))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
-		}
-	| arithmetic_expression '^' arithmetic_leaf
-		{
-			debug("ADL_invariant")
-				io.put_string(indent + "arith_expr ^ arith_leaf %N") 
-			end
-			create expr_binary_operator.make(create {OPERATOR_KIND}.make(op_exp))
-			expr_binary_operator.set_left_operand($1)
-			expr_binary_operator.set_right_operand($3)
-			$$ := expr_binary_operator
-		}
-	;
-
-arithmetic_leaf:  '(' arithmetic_expression ')'
-		{
-			debug("ADL_invariant")
-				io.put_string(indent + "arith_leaf - (expr) %N") 
+				io.put_string (indent + "(expr) %N") 
 			end
 			$$ := $2
 		}
-	| integer_value
+	;
+
+arithmetic_arithop_node: arithmetic_expression arithmetic_binop_symbol arithmetic_expression
+		{
+			debug("ADL_invariant")
+				io.put_string(indent + "arith_expr " + $2 + " arith_expr %N") 
+			end
+			create $$.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item ($2)))
+			$$.set_left_operand ($1)
+			$$.set_right_operand ($3)
+		}
+	;
+
+arithmetic_leaf:  integer_value
 		{
 			debug("ADL_invariant")
 				io.put_string(indent + "arith_leaf - integer: " + $1.out + "%N") 
 			end
-			create expr_leaf.make_integer($1)
-			$$ := expr_leaf
+			create $$.make_integer ($1)
 		}
 	| real_value
 		{
 			debug("ADL_invariant")
 				io.put_string(indent + "arith_leaf - real: " + $1.out + "%N") 
 			end
-			create expr_leaf.make_real($1)
-			$$ := expr_leaf
+			create $$.make_real ($1)
 		}
 	| absolute_path
 		{
 			debug("ADL_invariant")
 				io.put_string(indent + "arith_leaf - path: " + $1.as_string + "%N") 
 			end
-			create expr_leaf.make_archetype_definition_ref($1.as_string)
-			$$ := expr_leaf
+			create $$.make_archetype_definition_ref ($1.as_string)
+		}
+	;
+
+boolean_unop_symbol: SYM_EXISTS
+		{
+			$$ := $1
+		}
+	| SYM_NOT
+		{
+			$$ := $1
+		}
+	;
+
+boolean_binop_symbol: SYM_OR
+		{
+			$$ := operator_symbols.item (op_or)
+		}
+	| SYM_AND
+		{
+			$$ := operator_symbols.item (op_and)
+		}
+	| SYM_XOR
+		{
+			$$ := operator_symbols.item (op_xor)
+		}
+	| SYM_IMPLIES
+		{
+			$$ := operator_symbols.item (op_implies)
+		}
+	;
+
+relational_binop_symbol: '='
+		{
+			$$ := operator_symbols.item (op_eq)
+		}
+	| SYM_NE
+		{
+			$$ := operator_symbols.item (op_ne)
+		}
+	| SYM_LE
+		{
+			$$ := operator_symbols.item (op_le)
+		}
+	| SYM_LT
+		{
+			$$ := operator_symbols.item (op_lt)
+		}
+	| SYM_GE
+		{
+			$$ := operator_symbols.item (op_ge)
+		}
+	| SYM_GT
+		{
+			$$ := operator_symbols.item (op_gt)
+		}
+	;
+
+arithmetic_binop_symbol: '/'
+		{
+			$$ := operator_symbols.item (op_divide)
+		}
+	| '*'
+		{
+			$$ := operator_symbols.item (op_multiply)
+		}
+	| '+'
+		{
+			$$ := operator_symbols.item (op_plus)
+		}
+	| '-'
+		{
+			$$ := operator_symbols.item (op_minus)
+		}
+	| '^'
+		{
+			$$ := operator_symbols.item (op_exp)
 		}
 	;
 
@@ -1017,14 +989,19 @@ arithmetic_leaf:  '(' arithmetic_expression ')'
 --------------- except to remove movable_path ----------------------------------------------------
 --------------------------------------------------------------------------------------------------
 
-absolute_path: '/'
-		{
-			create $$.make_root
-			debug("OG_PATH_parse")
-				io.put_string("....absolute_path (root); %N")
-			end
-		}
-	|'/' relative_path
+--
+-- We used to allow just s single '/', but this seems of no use in archetypes,
+-- and clashes with the '/' arithmetic operator
+--
+-- absolute_path: '/'
+-- 		{
+-- 			create $$.make_root
+-- 			debug("OG_PATH_parse")
+-- 				io.put_string("....absolute_path (root); %N")
+-- 			end
+-- 		}
+
+absolute_path: '/' relative_path
 		{
 			$$ := $2
 			$$.set_absolute
@@ -2354,12 +2331,12 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 	report_error (a_message: STRING)
 			-- Print error message.
 		do
-			add_error_with_location("general_error", <<a_message>>, error_loc)
+			add_error_with_location ("general_error", <<a_message>>, error_loc)
 		end
 
 	abort_with_error (err_code: STRING; args: ARRAY [STRING])
 		do
-			add_error_with_location(err_code, args, error_loc)
+			add_error_with_location (err_code, args, error_loc)
 			raise_error
 			abort
 		end
@@ -2480,11 +2457,7 @@ feature {NONE} -- Parse Tree
 	a_code_phrase: CODE_PHRASE
 
 	expr_tree: EXPR_OPERATOR
-	expr_binary_operator: EXPR_BINARY_OPERATOR
-	expr_unary_operator: EXPR_UNARY_OPERATOR
 	expr_leaf: EXPR_LEAF
-
-	assertion: ASSERTION
 
 	c_string: C_STRING
 	string_list: ARRAYED_LIST [STRING]

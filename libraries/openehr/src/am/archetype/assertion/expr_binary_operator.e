@@ -31,11 +31,13 @@ feature -- Modification
 	set_left_operand (an_item: EXPR_ITEM)
 		do
 			left_operand := an_item
+			an_item.set_parent (Current)
 		end
 
 	set_right_operand (an_item: EXPR_ITEM)
 		do
 			right_operand := an_item
+			an_item.set_parent (Current)
 		end
 
 feature -- Conversion

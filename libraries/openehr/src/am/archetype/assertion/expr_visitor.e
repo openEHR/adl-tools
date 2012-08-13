@@ -2,9 +2,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Generic visitor class for ASSERTION objects"
 	keywords:    "visitor, assertion expressions"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2008-2012 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2008-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 	void_safety: "initial"
 
@@ -16,7 +16,7 @@ deferred class EXPR_VISITOR
 
 feature -- Initialisation
 
-	initialise(an_assertion: ASSERTION)
+	initialise (an_assertion: ASSERTION)
 			-- set assertion
 		do
 			assertion := an_assertion
@@ -24,32 +24,42 @@ feature -- Initialisation
 
 feature -- Visitor
 
-	start_expr_binary_operator(a_node: EXPR_BINARY_OPERATOR; depth: INTEGER)
+	start_assertion (a_node: ASSERTION; depth: INTEGER)
+			-- enter an ASSERTION
+		do
+		end
+
+	end_assertion (a_node: ASSERTION; depth: INTEGER)
+			-- exit an ASSERTION
+		do
+		end
+
+	start_expr_binary_operator (a_node: EXPR_BINARY_OPERATOR; depth: INTEGER)
 			-- enter an EXPR_BINARY_OPERATOR
 		do
 		end
 
-	end_expr_binary_operator(a_node: EXPR_BINARY_OPERATOR; depth: INTEGER)
+	end_expr_binary_operator (a_node: EXPR_BINARY_OPERATOR; depth: INTEGER)
 			-- exit an EXPR_BINARY_OPERATOR
 		do
 		end
 
-	start_expr_unary_operator(a_node: EXPR_UNARY_OPERATOR; depth: INTEGER)
+	start_expr_unary_operator (a_node: EXPR_UNARY_OPERATOR; depth: INTEGER)
 			-- enter an EXPR_UNARY_OPERATOR
 		do
 		end
 
-	end_expr_unary_operator(a_node: EXPR_UNARY_OPERATOR; depth: INTEGER)
+	end_expr_unary_operator (a_node: EXPR_UNARY_OPERATOR; depth: INTEGER)
 			-- exit an EXPR_UNARY_OPERATOR
 		do
 		end
 
-	start_expr_leaf(a_node: EXPR_LEAF; depth: INTEGER)
+	start_expr_leaf (a_node: EXPR_LEAF; depth: INTEGER)
 			-- enter an EXPR_LEAF
 		do
 		end
 
-	end_expr_leaf(a_node: EXPR_LEAF; depth: INTEGER)
+	end_expr_leaf (a_node: EXPR_LEAF; depth: INTEGER)
 			-- exit an EXPR_LEAF
 		do
 		end

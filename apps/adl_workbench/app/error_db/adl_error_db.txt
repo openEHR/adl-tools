@@ -153,6 +153,10 @@ templates = <
 		["VONTBC"] = <"Expecting CODE_PHRASE, e.g. [terminology_id::code]">
 		["VONG"] = <"Expecting primitive object node at path $1">
 
+		-- rules section
+		["VRRLPAR"] = <"Path $1 in rule not matched by any path in archetype">
+		["VRRLPRM"] = <"Path $1 matched by archetype but tail extension $2 not found in RM for type $3">
+	
 		-- description-related validity
 		["VDEOL"] = <"original_language section missing">
 

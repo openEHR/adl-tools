@@ -31,6 +31,7 @@ feature -- Initialisation
 		do
 			initialise (an_archetype)
 			create obj_node_stack.make (0)
+			create attr_node_stack.make (0)
 			rm_schema := an_rm_schema
 			flat_ontology := a_flat_ontology
 		end

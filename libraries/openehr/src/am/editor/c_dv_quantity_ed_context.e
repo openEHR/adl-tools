@@ -39,9 +39,9 @@ feature -- Display
 			-- property constraint
 			if attached arch_node.property then
 				gui_grid.add_sub_row (gui_grid_row, Void)
-				gui_grid.set_last_row_label_col (Node_grid_col_rm_name, "property", Void, c_constraint_colour,
+				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, "property", Void, c_constraint_colour,
 					get_icon_pixmap ("rm/generic/c_meta_attribute"))
-				gui_grid.set_last_row_label_col (Node_grid_col_constraint, term_string (arch_node.property.terminology_id.value,
+				gui_grid.set_last_row_label_col (Definition_grid_col_constraint, term_string (arch_node.property.terminology_id.value,
 					arch_node.property.code_string), Void, c_constraint_colour, Void)
 			end
 
@@ -55,9 +55,9 @@ feature -- Display
 				bmm_prop_key := bmm_prop_magnitude.name + " | " + bmm_prop_units.name + " | " + bmm_prop_precision.name
 
 				gui_grid.add_sub_row (gui_grid_row, Void)
-				gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop_key, Void, c_attribute_colour,
+				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, bmm_prop_key, Void, c_attribute_colour,
 					get_icon_pixmap ("rm/generic/" + bmm_prop_magnitude.multiplicity_key_string))
-				gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
+				gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
 			end
 		end
 

@@ -4,7 +4,7 @@ note
 			 Parser for unit strings conforming to the Unified Code for Units 
 	             of Measure (UCUM), developed by Gunther Schadow and Clement J. McDonald 
 	             of The Regenstrief Institute For Health Care, Indianapolis. Published at 
-	             http://aurora.rg.iupui.edu/UCUM. 
+	             http://aurora.rg.iupui.edu/UCUM.
 			 ]"
 	keywords:    "units, UCUM"
 
@@ -252,7 +252,7 @@ debug ("GEYACC")
 end
 
 				create units.make(units_items)
-			
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -264,7 +264,7 @@ debug ("GEYACC")
 end
 
 				create units.make(units_items)
-			
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
@@ -277,7 +277,7 @@ debug ("GEYACC")
 end
 
 				units_items.extend(units_item)
-			
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -289,7 +289,7 @@ debug ("GEYACC")
 end
 
 				units_items.extend(units_item)
-			
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -304,7 +304,7 @@ end
 -- // make the exponent negative of what it was
 				units_items.extend(units_item)
 				units_item.set_exponent(- units_item.exponent)
-			
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -316,10 +316,10 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 86")
 end
 
--- // meaning is unit with exponent of +1 
+-- // meaning is unit with exponent of +1
 				create units_item.make(unit_ref, 1)
 				yyval1 := units_item
-			
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvs1.put (yyval1, yyvsp1)
@@ -330,10 +330,10 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 90")
 end
 
--- // meaning is unit with exponent of +1 
+-- // meaning is unit with exponent of +1
 				create units_item.make(unit_ref, int_val)
 				yyval1 := units_item
-			
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
@@ -347,10 +347,10 @@ end
 
 -- // note - we cannot tell if prefix is included or not - that requires	
 					-- // character level parsing, since prefixes are not lexically separate
-				str1 ?= yyvs3.item (yyvsp3)
+				str1 := yyvs3.item (yyvsp3)
 				create_unit_ref(str1, False)
 				yyval1 := unit_ref
-			
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -379,10 +379,10 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 102")
 end
 
-				str1 ?= yyvs3.item (yyvsp3)
+				str1 := yyvs3.item (yyvsp3)
 				create_unit_ref(str1, True)
 				yyval1 := unit_ref
-			
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp3 := yyvsp3 -1
@@ -394,10 +394,10 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 109")
 end
 
-				str1 ?= yyvs3.item (yyvsp3)
+				str1 := yyvs3.item (yyvsp3)
 				annot := str1.twin
 				yyval1 := annot
-			
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -410,10 +410,10 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 116")
 end
 
-				str1 ?= yyvs3.item (yyvsp3)
+				str1 := yyvs3.item (yyvsp3)
 				suffix := str1.twin
 				yyval1 := suffix
-			
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
@@ -428,7 +428,7 @@ end
 
 				int_val := last_string_value.to_integer
 				yyval1 := int_val
-			
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -459,7 +459,7 @@ end
 
 				int_val := last_string_value.to_integer
 				yyval1 := int_val
-			
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -473,7 +473,7 @@ end
 
 				int_val := - last_string_value.to_integer
 				yyval1 := int_val
-			
+
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
@@ -719,7 +719,7 @@ feature -- Access
 	error_message: STRING
 			-- parsing failure error
 
-feature {NONE} -- Implementation 
+feature {NONE} -- Implementation
 
 	create_unit_ref (a_unit_name: STRING; suffix_flag: BOOLEAN)
 			-- try and create a simple unit from a_unit_name, using unit database.
@@ -732,10 +732,10 @@ feature {NONE} -- Implementation
 			good_symbol, u_symbol:STRING
 			pfx:STRING
 		do
-			from 
+			from
 				i := 1
-			until 
-				i > a_unit_name.count or else good_ud /= Void 
+			until
+				i > a_unit_name.count or else good_ud /= Void
 			loop
 				u_symbol := a_unit_name.substring(i, a_unit_name.count)
 				ud := unit_database.unit_descriptor_for_symbol(u_symbol)
@@ -746,7 +746,7 @@ feature {NONE} -- Implementation
 						pfx := a_unit_name.substring(1, i-1)
 					end
 				end
-				i := i + 1	
+				i := i + 1
 			end
 
 			if good_ud /= Void then

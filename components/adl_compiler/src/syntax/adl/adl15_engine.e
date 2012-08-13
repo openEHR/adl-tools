@@ -72,7 +72,8 @@ feature {NONE} -- Initialisation
 			create phase_2_validator
 			create phase_3_validator
 
-			create pass_2_processor
+			create post_parse_processor
+			create post_compile_processor
 		end
 
 feature -- Access
@@ -125,11 +126,11 @@ feature -- Validation
 			errors := phase_3_validator.errors
 		end
 
-	phase_1_validator: ARCHETYPE_PHASE_1_VALIDATOR
-
-	phase_2_validator: ARCHETYPE_PHASE_2_VALIDATOR
-
-	phase_3_validator: ARCHETYPE_PHASE_3_VALIDATOR
+	post_compile_process (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
+		do
+			post_compile_processor.initialise (ara, an_rm_schema)
+			post_compile_processor.execute
+		end
 
 	validation_passed: BOOLEAN
 			-- result of last validation
@@ -385,8 +386,8 @@ feature {NONE} -- Implementation
 						Result.rebuild
 
 						-- perform post parse actions on AOM structure
-						pass_2_processor.initialise (Result, rm_schema)
-						pass_2_processor.execute
+						post_parse_processor.initialise (Result, rm_schema)
+						post_parse_processor.execute
 					end
 				end
 			end
@@ -406,7 +407,15 @@ feature {NONE} -- Implementation
 
 	annotations_context: DADL_ENGINE
 
-	pass_2_processor: ARCHETYPE_AOM_BUILDER
+	post_parse_processor: AOM_POST_PARSE_PROCESSOR
+
+	phase_1_validator: ARCHETYPE_PHASE_1_VALIDATOR
+
+	phase_2_validator: ARCHETYPE_PHASE_2_VALIDATOR
+
+	phase_3_validator: ARCHETYPE_PHASE_3_VALIDATOR
+
+	post_compile_processor: AOM_POST_COMPILE_PROCESSOR
 
 	rm_schema: BMM_SCHEMA
 

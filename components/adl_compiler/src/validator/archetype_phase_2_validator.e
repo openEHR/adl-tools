@@ -88,6 +88,7 @@ feature -- Validation
 					validate_specialised_definition
 				end
 				validate_internal_references
+				validate_assertions
 				validate_annotations
 			end
 		end
@@ -242,6 +243,59 @@ feature {NONE} -- Implementation
 			if attached {C_ATTRIBUTE} a_c_node as ca then
 				if not target.is_specialised and then ca.has_differential_path then
 					add_error ("VDIFV", <<ca.path>>)
+				end
+			end
+		end
+
+	validate_assertions
+			-- validate the invariants if any, which entails checking that all path references are valid against
+			-- the flat archetype if specialised
+			-- update ASSERTION EXPR_ITEM_LEAF object reference nodes with proper type names
+			-- obtained from the AOM objects pointed to
+		local
+			arch_rm_type_name, ref_rm_type_name, arch_path, tail_path: STRING
+			bmm_class: BMM_CLASS_DEFINITION
+			bmm_prop: BMM_PROPERTY_DEFINITION
+			og_tail_path: OG_PATH
+			object_at_matching_path: C_OBJECT
+		do
+			if target.has_invariants then
+				across target.invariants_index as ref_path_csr loop
+					-- get a matching path from archetype - has to be there, either exact or partial
+					ref_rm_type_name := Void
+					object_at_matching_path := Void
+					if attached target.matching_path (ref_path_csr.key) as p then
+						arch_path := p
+						object_at_matching_path := target.c_object_at_path (arch_path)
+					elseif attached flat_parent and then attached flat_parent.matching_path (ref_path_csr.key) as p then
+						arch_path := p
+						object_at_matching_path := flat_parent.c_object_at_path (arch_path)
+					end
+					if attached object_at_matching_path then
+						arch_rm_type_name := object_at_matching_path.rm_type_name
+						-- if it was a partial match, we have to obtain the real RM type by going into the RM
+						if arch_path.count < ref_path_csr.key.count then
+							tail_path := ref_path_csr.key.substring (arch_path.count+1, ref_path_csr.key.count)
+							bmm_class := rm_schema.class_definition (arch_rm_type_name)
+							create og_tail_path.make_from_string (tail_path)
+							og_tail_path.start
+							if bmm_class.has_property_path (og_tail_path) then
+								bmm_prop := bmm_class.property_definition_at_path (og_tail_path)
+								ref_rm_type_name := bmm_prop.type.root_class
+							else
+								add_error ("VRRLPRM", <<ref_path_csr.key, tail_path, arch_rm_type_name>>)
+							end
+						else
+							ref_rm_type_name := arch_rm_type_name
+						end
+					else
+						add_error ("VRRLPAR", <<ref_path_csr.key>>)
+					end
+					if attached ref_rm_type_name then
+						across ref_path_csr.item as expr_leaf_csr loop
+							expr_leaf_csr.item.update_type (ref_rm_type_name)
+						end
+					end
 				end
 			end
 		end

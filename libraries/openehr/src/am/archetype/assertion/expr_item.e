@@ -25,11 +25,20 @@ feature -- Access
 			-- The type for any relational or boolean operator will be "Boolean",
 			-- while the type for any arithmetic operator, will be "Real" or "Integer".
 
+	parent: detachable EXPR_ITEM
+
 feature -- Conversion
 
 	as_string: STRING
 			-- output expression as a string
 		deferred
+		end
+
+feature -- Modification
+
+	set_parent (an_expr_item: EXPR_ITEM)
+		do
+			parent := an_expr_item
 		end
 
 invariant

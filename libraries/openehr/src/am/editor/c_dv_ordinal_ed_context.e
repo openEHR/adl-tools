@@ -38,9 +38,9 @@ feature -- Display
 				bmm_prop_symbol := rm_schema.property_definition ("DV_ORDINAL", "symbol")
 				bmm_prop_key := bmm_prop_value.name + " - " + bmm_prop_symbol.name
 				gui_grid.add_sub_row (gui_grid_row, bmm_prop_key)
-				gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop_key, Void, c_attribute_colour,
+				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, bmm_prop_key, Void, c_attribute_colour,
 					get_icon_pixmap ("rm/generic/" + bmm_prop_value.multiplicity_key_string))
-				gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
+				gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
 			end
 		end
 
@@ -53,7 +53,7 @@ feature -- Display
 				from i := 1 until i > gui_grid_row.subrow_count loop
 					if attached {STRING} gui_grid_row.subrow (i).data as str and then str.is_equal (bmm_prop_key) then
 						gui_grid.set_last_row (gui_grid_row.subrow (i))
-						gui_grid.update_last_row_label_col (Node_grid_col_constraint, constraint_str, Void, Void, Void)
+						gui_grid.update_last_row_label_col (Definition_grid_col_constraint, constraint_str, Void, Void, Void)
 						i := gui_grid_row.subrow_count + 1
 					end
 					i := i + 1

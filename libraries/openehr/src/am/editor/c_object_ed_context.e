@@ -15,7 +15,7 @@ note
 class C_OBJECT_ED_CONTEXT
 
 inherit
-	C_ARCHETYPE_CONSTRAINT_ED_CONTEXT
+	ARCHETYPE_CONSTRAINT_ED_CONTEXT
 		redefine
 			make, arch_node, parent, display_in_grid
 		end
@@ -69,16 +69,16 @@ feature -- Display
 			-- RM name & meaning columns
 			if arch_node.is_addressable then
 				if in_technical_view then
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, arch_node.rm_type_name, node_tooltip_str, c_object_colour, c_pixmap)
-					gui_grid.set_last_row_label_col (Node_grid_col_meaning, node_id_text, node_tooltip_str, c_meaning_colour, Void)
+					gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, arch_node.rm_type_name, node_tooltip_str, c_object_colour, c_pixmap)
+					gui_grid.set_last_row_label_col (Definition_grid_col_meaning, node_id_text, node_tooltip_str, c_meaning_colour, Void)
 		 		else
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, node_id_text, node_tooltip_str, c_meaning_colour, c_pixmap)
-					gui_grid.set_last_row_label_col (Node_grid_col_meaning, "", Void, Void, Void)
+					gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, node_id_text, node_tooltip_str, c_meaning_colour, c_pixmap)
+					gui_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
 				end
 			else
 				if in_technical_view then
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, arch_node.rm_type_name, node_tooltip_str , c_object_colour, c_pixmap)
-					gui_grid.set_last_row_label_col (Node_grid_col_meaning, "", Void, Void, Void)
+					gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, arch_node.rm_type_name, node_tooltip_str , c_object_colour, c_pixmap)
+					gui_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
 				else -- in non-technical view, display a friendly type name; for openEHR data types, remove the "DV_"
 					create s.make_empty
 					s.append_character ('[')
@@ -90,7 +90,7 @@ feature -- Display
 					s.append (arch_node.rm_type_name.substring (lpos+1, arch_node.rm_type_name.count).as_lower)
 					s.append_character (']')
 					s.to_lower
-					gui_grid.set_last_row_label_col (Node_grid_col_rm_name, s, node_tooltip_str, c_object_colour, c_pixmap)
+					gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, s, node_tooltip_str, c_object_colour, c_pixmap)
 				end
 			end
 
@@ -106,11 +106,11 @@ feature -- Display
 					s.append (get_text ("occurrences_removed_text"))
 				end
 			end
-			gui_grid.set_last_row_label_col (Node_grid_col_card_occ, s, Void, c_constraint_colour, Void)
+			gui_grid.set_last_row_label_col (Definition_grid_col_card_occ, s, Void, c_constraint_colour, Void)
 
 			-- constraint column
 			if attached {C_DEFINED_OBJECT} arch_node as c_do and then c_do.any_allowed then
-				gui_grid.set_last_row_label_col (Node_grid_col_constraint, Archetype_any_constraint, Void, c_constraint_colour, Void)
+				gui_grid.set_last_row_label_col (Definition_grid_col_constraint, Archetype_any_constraint, Void, c_constraint_colour, Void)
 			end
 
 			-- sibling order column
@@ -123,7 +123,7 @@ feature -- Display
 						s.append ("before")
 					end
 					s.append ("%N" + local_term_string (arch_node.sibling_order.sibling_node_id))
-					gui_grid.set_last_row_label_col_multi_line (Node_grid_col_sibling_order, s, Void, c_constraint_colour, Void)
+					gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_sibling_order, s, Void, c_constraint_colour, Void)
 				end
 			end
 		end

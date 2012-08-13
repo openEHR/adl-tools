@@ -39,17 +39,17 @@ feature -- Display
 			if attached arch_node.terminology_id then
 				bmm_prop := rm_schema.property_definition ("CODE_PHRASE", "terminology_id")
 				gui_grid.add_sub_row (gui_grid_row, bmm_prop.name)
-				gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_prop.name, Void, c_attribute_colour, get_icon_pixmap ("rm/generic/" + bmm_prop.multiplicity_key_string))
-				gui_grid.set_last_row_label_col (Node_grid_col_constraint, arch_node.terminology_id.value, Void, c_constraint_colour, Void)
+				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, bmm_prop.name, Void, c_attribute_colour, get_icon_pixmap ("rm/generic/" + bmm_prop.multiplicity_key_string))
+				gui_grid.set_last_row_label_col (Definition_grid_col_constraint, arch_node.terminology_id.value, Void, c_constraint_colour, Void)
 			end
 
 			-- code_string field
 			if attached arch_node.code_list then
 				bmm_code_string_prop := rm_schema.property_definition ("CODE_PHRASE", "code_string")
 				gui_grid.add_sub_row (gui_grid_row, bmm_code_string_prop.name)
-				gui_grid.set_last_row_label_col (Node_grid_col_rm_name, bmm_code_string_prop.name, Void, c_attribute_colour,
+				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, bmm_code_string_prop.name, Void, c_attribute_colour,
 					get_icon_pixmap ("rm/generic/" + bmm_code_string_prop.multiplicity_key_string))
-				gui_grid.set_last_row_label_col_multi_line (Node_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
+				gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
 			end
 		end
 
@@ -64,7 +64,7 @@ feature -- Display
 				from i := 1 until i > gui_grid_row.subrow_count loop
 					if attached {STRING} gui_grid_row.subrow (i).data as str and then str.is_equal (bmm_code_string_prop.name) then
 						gui_grid.set_last_row (gui_grid_row.subrow (i))
-						gui_grid.update_last_row_label_col (Node_grid_col_constraint, constraint_str, Void, Void, Void)
+						gui_grid.update_last_row_label_col (Definition_grid_col_constraint, constraint_str, Void, Void, Void)
 						i := gui_grid_row.subrow_count + 1
 					end
 					i := i + 1

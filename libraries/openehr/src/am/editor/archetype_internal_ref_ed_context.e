@@ -49,7 +49,7 @@ feature -- Display
 			s.append (p)
 			create gli.make_with_text (utf8_to_utf32 (s))
 			gli.set_foreground_color (c_attribute_colour)
-			gui_grid_row.set_item (Node_grid_col_constraint, gli)
+			gui_grid_row.set_item (Definition_grid_col_constraint, gli)
 			gui_grid_row.set_height (gli.text_height + Default_grid_row_expansion)
 		end
 

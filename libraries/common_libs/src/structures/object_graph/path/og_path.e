@@ -14,6 +14,7 @@ note
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2003-2012 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -139,8 +140,6 @@ feature -- Access
 			not is_empty
 		do
 			Result := items.item
-		ensure
-			Result_exists: Result /= Void
 		end
 
 	first: OG_PATH_ITEM
@@ -148,8 +147,6 @@ feature -- Access
 			not is_empty
 		do
 			Result := items.first
-		ensure
-			Result_exists: Result /= Void
 		end
 
 	last: OG_PATH_ITEM
@@ -157,8 +154,6 @@ feature -- Access
 			not is_empty
 		do
 			Result := items.last
-		ensure
-			Result_exists: Result /= Void
 		end
 
 	count: INTEGER
@@ -224,6 +219,23 @@ feature -- Access
 			Result_relative: not Result.is_absolute
 		end
 
+	last_object_node_id: STRING
+			-- obtain last object node_id in path if it exists, else return an empty string
+		do
+			from
+				items.finish
+			until
+				items.off or items.item.is_addressable
+			loop
+				items.back
+			end
+			if not items.off then
+				Result := items.item.object_id
+			else
+				create Result.make_empty
+			end
+		end
+
 feature -- Cursor Movement
 
 	start
@@ -254,7 +266,7 @@ feature -- Cursor Movement
 
 feature -- Status Report
 
-	is_equal(other: OG_PATH): BOOLEAN
+	is_equal (other: OG_PATH): BOOLEAN
 			-- True if `other' and this path are identical
 		do
 			debug("ADL_tree")
@@ -316,11 +328,11 @@ feature -- Status Report
 
 feature -- Validation
 
-	valid_path_string(a_path: STRING): BOOLEAN
+	valid_path_string (a_path: STRING): BOOLEAN
 			-- True if a_path parses properly;
 			-- if False, error in invalid_path_string_reason
 		require
-			a_path /= Void and then not a_path.is_empty
+			not a_path.is_empty
 		do
 			create invalid_path_string_reason.make(0)
 			parser.execute(a_path)
@@ -350,37 +362,33 @@ feature -- Modification
 			items.remove
 		end
 
-	append_segment(an_item: OG_PATH_ITEM)
+	append_segment (an_item: OG_PATH_ITEM)
 			-- add segment to the end
 		require
-			item_valid: an_item /= Void
 			Segment_not_compressed: not an_item.is_compressed
 		do
 			items.extend(an_item)
 		end
 
-	prepend_segment(an_item: OG_PATH_ITEM)
+	prepend_segment (an_item: OG_PATH_ITEM)
 			-- add segment to the front
 		require
-			item_valid: an_item /= Void
 			Not_compressed: not is_compressed
 		do
 			items.put_front(an_item)
 		end
 
-	append_path(a_path: OG_PATH)
+	append_path (a_path: OG_PATH)
 			-- add a_path to the end
 		require
-			path_valid: a_path /= Void
 			Path_not_compressed: not a_path.is_compressed
 		do
-			items.append(a_path.items)
+			items.append (a_path.items)
 		end
 
-	prepend_path(a_path: OG_PATH)
+	prepend_path (a_path: OG_PATH)
 			-- add a_path to the beginning, and copy `is_absolute' and `is_movable' if necessary
 		require
-			path_valid: a_path /= Void
 			Not_compressed: not is_compressed
 		local
 			p: ARRAYED_LIST[OG_PATH_ITEM]
@@ -392,11 +400,11 @@ feature -- Modification
 			is_movable := a_path.is_movable
 		end
 
-	compress_path(a_path: STRING)
+	compress_path (a_path: STRING)
 			-- set attr_name of first item to a path ending in an attribute rather than the usual single attribute name;
 			-- used for differential path processing
 		require
-			Path_valid: a_path /= Void and then not a_path.is_empty
+			Path_valid: not a_path.is_empty
 		do
 			items.first.set_compressed_attr (a_path)
 		ensure
@@ -427,7 +435,7 @@ feature -- Comparison
 	matches (a_path: STRING): BOOLEAN
 			-- is `a_path' the same is the current path?
 		require
-			a_path /= Void and then valid_path_string(a_path)
+			valid_path_string(a_path)
 		do
 			if a_path.count <= count then
 				parser.execute(a_path)
@@ -490,8 +498,6 @@ feature {NONE} -- Implementation
 
 	strip_predicates (a_path: STRING): STRING
 			-- remove all [] enclosed sections of `a_path'
-		require
-			a_path /= Void
 		local
 			i: INTEGER
 		do
@@ -509,7 +515,6 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	Items_valid: items /= Void
 	Movable_validity: not (is_movable and is_absolute)
 
 end

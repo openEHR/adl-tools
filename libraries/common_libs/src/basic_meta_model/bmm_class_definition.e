@@ -243,29 +243,10 @@ feature -- Access
 			-- note that the internal cursor of the path is used to know how much to read - from cursor to end (this allows
 			-- recursive evaluation)
 		require
-			Property_path_valid: has_property_path(a_prop_path)
-		local
-			a_path_pos: INTEGER
-			class_def: BMM_CLASS_DEFINITION
-			i: INTEGER
+			Property_path_valid: has_property_path (a_prop_path)
 		do
-			a_path_pos := a_prop_path.items.index
-			if has_property (a_prop_path.item.attr_name) then
-				Result := flat_properties.item (a_prop_path.item.attr_name)
-				a_prop_path.forth
-				if not a_prop_path.off then
-					class_def := bmm_schema.class_definition (Result.type.root_class)
-					Result := class_def.property_definition_at_path(a_prop_path)
-				end
-			else -- look in the descendants
-				from i := 1 until i > immediate_descendants.count or Result /= Void loop
-					if immediate_descendants.i_th(i).has_property_path(a_prop_path) then
-						Result := immediate_descendants.i_th(i).property_definition_at_path(a_prop_path)
-					end
-					i := i + 1
-				end
-			end
-			a_prop_path.go_i_th (a_path_pos)
+			a_prop_path.start
+			Result := do_property_definition_at_path (a_prop_path)
 		end
 
 	property_type (a_class_type_name, a_prop_name: attached STRING): attached STRING
@@ -372,27 +353,9 @@ feature -- Status Report
 			-- is `a_path' possible based on this reference model?
 			-- note that the internal cursor of the path is used to know how much to read - from cursor to end (this allows
 			-- recursive evaluation)
-		local
-			a_path_pos: INTEGER
-			class_def: BMM_CLASS_DEFINITION
-			i: INTEGER
 		do
-			a_path_pos := a_path.items.index
-			if has_property (a_path.item.attr_name) then
-				class_def := bmm_schema.class_definition (flat_properties.item (a_path.item.attr_name).type.root_class)
-				a_path.forth
-				if not a_path.off then
-					Result := class_def.has_property_path (a_path)
-				else
-					Result := True
-				end
-			else -- look in the descendants
-				from i := 1 until i > immediate_descendants.count or Result loop
-					Result := immediate_descendants.i_th(i).has_property_path(a_path)
-					i := i + 1
-				end
-			end
-			a_path.go_i_th (a_path_pos)
+			a_path.start
+			Result := do_has_property_path (a_path)
 		end
 
 	valid_candidate_property (a_prop_def: attached BMM_PROPERTY_DEFINITION): BOOLEAN
@@ -652,6 +615,61 @@ feature {NONE} -- Implementation
 				end
 				supplier_closure_stack.remove
 			end
+		end
+
+	do_has_property_path (a_path: attached OG_PATH): BOOLEAN
+			-- is `a_path' possible based on this reference model?
+			-- note that the internal cursor of the path is used to know how much to read - from cursor to end (this allows
+			-- recursive evaluation)
+		local
+			a_path_pos: INTEGER
+			class_def: BMM_CLASS_DEFINITION
+			i: INTEGER
+		do
+			a_path_pos := a_path.items.index
+			if has_property (a_path.item.attr_name) then
+				class_def := bmm_schema.class_definition (flat_properties.item (a_path.item.attr_name).type.root_class)
+				a_path.forth
+				if not a_path.off then
+					Result := class_def.has_property_path (a_path)
+				else
+					Result := True
+				end
+			else -- look in the descendants
+				from i := 1 until i > immediate_descendants.count or Result loop
+					Result := immediate_descendants.i_th (i).has_property_path (a_path)
+					i := i + 1
+				end
+			end
+			a_path.go_i_th (a_path_pos)
+		end
+
+	do_property_definition_at_path (a_prop_path: attached OG_PATH): attached BMM_PROPERTY_DEFINITION
+			-- retrieve the property definition for `a_prop_path' in flattened class corresponding to `a_type_name'
+			-- note that the internal cursor of the path is used to know how much to read - from cursor to end (this allows
+			-- recursive evaluation)
+		local
+			a_path_pos: INTEGER
+			class_def: BMM_CLASS_DEFINITION
+			i: INTEGER
+		do
+			a_path_pos := a_prop_path.items.index
+			if has_property (a_prop_path.item.attr_name) then
+				Result := flat_properties.item (a_prop_path.item.attr_name)
+				a_prop_path.forth
+				if not a_prop_path.off then
+					class_def := bmm_schema.class_definition (Result.type.root_class)
+					Result := class_def.property_definition_at_path(a_prop_path)
+				end
+			else -- look in the descendants
+				from i := 1 until i > immediate_descendants.count or Result /= Void loop
+					if immediate_descendants.i_th(i).has_property_path(a_prop_path) then
+						Result := immediate_descendants.i_th(i).property_definition_at_path(a_prop_path)
+					end
+					i := i + 1
+				end
+			end
+			a_prop_path.go_i_th (a_path_pos)
 		end
 
 	supplier_closure_stack: ARRAYED_STACK [STRING]

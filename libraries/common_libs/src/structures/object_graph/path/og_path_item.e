@@ -10,6 +10,7 @@ note
 	support:     "Ocean Informatics <support@OceanInformatics.biz>"
 	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
@@ -28,6 +29,8 @@ create
 
 feature -- Definitions
 
+	Anonymous_node_id: STRING = "unknown"
+
 	feature_call_arg_delimiters: STRING = "()"
 
 	predicate_left_delim: CHARACTER = '['
@@ -36,7 +39,7 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (an_attr_name: attached STRING)
+	make (an_attr_name: STRING)
 			-- make a path segment with an attribute and an empty object id -
 			-- corresponds to single cardinality attribute or it could be
 			-- a path segment for a multiple cardinality attribute but defaulting
@@ -56,8 +59,7 @@ feature -- Initialisation
 			-- make a path segment with an attribute name and an object id -
 			-- corresponds to multiple child attribute
 		require
-			an_attr_name_valid: an_attr_name /= Void and then not an_attr_name.is_empty
-			an_object_id_valid: an_object_id /= Void
+			an_attr_name_valid: not an_attr_name.is_empty
 		do
 			attr_name := an_attr_name
 	--		if an_object_id.has_substring(Anonymous_node_id) then
@@ -72,7 +74,7 @@ feature -- Initialisation
 
 	make_feature_call (a_feat_name: STRING)
 		require
-			a_feat_name_valid: a_feat_name /= Void and then not a_feat_name.is_empty
+			a_feat_name_valid: not a_feat_name.is_empty
 		do
 			attr_name := a_feat_name
 			is_feature_call := True
@@ -89,10 +91,6 @@ feature -- Initialisation
 			attr_name := other.attr_name.twin
 			object_id := other.object_id.twin
 		end
-
-feature -- Definitions
-
-	Anonymous_node_id: STRING = "unknown"
 
 feature -- Access
 
@@ -112,7 +110,7 @@ feature -- Status Report
 			Result := not object_id.is_empty
 		end
 
-	is_equal(other: OG_PATH_ITEM): BOOLEAN
+	is_equal (other: OG_PATH_ITEM): BOOLEAN
 			-- True if `other' and this path item are identical
 		do
 			if other /= Void then
@@ -150,7 +148,7 @@ feature {OG_PATH} -- Modification
 	set_compressed_attr (a_path: STRING)
 			-- set attr_name to a path ending in an attribute rather than the usual single attribute name
 		require
-			Path_valid: a_path /= Void and then not a_path.is_empty
+			Path_valid: not a_path.is_empty
 		do
 			attr_name := a_path
 		ensure
@@ -174,8 +172,7 @@ feature -- Output
 
 invariant
 	Validity: not (is_addressable and is_feature_call)
-	Attr_name_valid: attr_name /= Void and then not attr_name.is_empty
-	Object_id_valid: object_id /= Void
+	Attr_name_valid: not attr_name.is_empty
 
 end
 
