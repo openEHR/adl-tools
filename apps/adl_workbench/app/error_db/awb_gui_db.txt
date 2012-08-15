@@ -301,7 +301,8 @@ templates = <
 		["archetype_slot_node_submenu_text"] = <"Slot-fillers (preferred)">
 		["view_node_id_in_ontology"] = <"View node id in ontology">
 
-		["term_bindings_tooltip_text"] = <"Term bindings:">
+		["path_term_bindings_tooltip_text"] = <"Term bindings to path:">
+		["node_term_bindings_tooltip_text"] = <"Term bindings to node id:">
 
 		-- GUI_TEST_ARCHETYPE_TREE_CONTROL
 		["Test_arch_compare_i1"] = <"Archetype source lengths same but texts differ">

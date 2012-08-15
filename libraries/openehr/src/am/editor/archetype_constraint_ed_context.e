@@ -63,13 +63,25 @@ feature {NONE} -- Implementation
 			if show_rm_inheritance then
 				Result.append ("%N%N" + get_text ("inheritance_status_text") +  specialisation_status_names.item (arch_node.specialisation_status))
 			end
+
+			-- node-based bindings
+			if attached {C_OBJECT} arch_node as co and then co.is_addressable and then flat_ontology.has_any_term_binding (co.node_id) then
+				Result.append ("%N%N" + get_text ("node_term_bindings_tooltip_text") + "%N")
+				bindings := flat_ontology.term_bindings_for_key (co.node_id)
+				across bindings as bindings_csr loop
+					Result.append ("  " + bindings_csr.key + ": " + bindings_csr.item.as_string + "%N")
+				end
+			end
+
+			-- path-based bindings
 			if flat_ontology.has_any_term_binding (p) then
-				Result.append ("%N%N" + get_text ("term_bindings_tooltip_text") + "%N")
+				Result.append ("%N%N" + get_text ("path_term_bindings_tooltip_text") + "%N")
 				bindings := flat_ontology.term_bindings_for_key (p)
 				across bindings as bindings_csr loop
 					Result.append ("  " + bindings_csr.key + ": " + bindings_csr.item.as_string + "%N")
 				end
 			end
+
 			if archetype.has_annotation_at_path (language, arch_node.path) then
 				Result.append ("%N%N" + get_text ("annotations_text") + ":%N")
 				Result.append (archetype.annotations.annotations_at_path (language, arch_node.path).as_string)
