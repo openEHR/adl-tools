@@ -121,7 +121,7 @@ feature -- Modification
 			list = an_list
 		end
 
-	set_assumed_value_from_units_magnitude (a_units: STRING; a_magnitude: REAL; a_precision: INTEGER)
+	set_assumed_value_from_units_magnitude (a_units: detachable STRING; a_magnitude: REAL; a_precision: INTEGER)
 			-- Set `assumed_value'; set precision to -1 if no precision.
 		require
 			Units_valid: a_units /= Void implies not a_units.is_empty
@@ -131,7 +131,7 @@ feature -- Modification
 			assumed_value_set: assumed_value.magnitude = a_magnitude and assumed_value.units = a_units and assumed_value.precision = a_precision
 		end
 
-	add_unit_constraint (a_units: attached STRING; a_magnitude: INTERVAL [REAL]; a_precision: INTERVAL [INTEGER])
+	add_unit_constraint (a_units: attached STRING; a_magnitude: detachable INTERVAL [REAL]; a_precision: detachable INTERVAL [INTEGER])
 			-- add a units constraint. Void magnitude means any magnitude allowed
 		require
 			Units_valid: not a_units.is_empty

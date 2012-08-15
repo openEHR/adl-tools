@@ -17,7 +17,7 @@ class C_CODE_PHRASE
 inherit
 	C_DOMAIN_TYPE
 		redefine
-			enter_subtree, exit_subtree, synchronise_to_tree, inferred_specialisation_status, node_conforms_to
+			out, enter_subtree, exit_subtree, synchronise_to_tree, inferred_specialisation_status, node_conforms_to
 		end
 
 create
@@ -184,9 +184,8 @@ feature -- Status Report
 					codes := code_str.split (',')
 					create code_set.make (0)
 					code_set.compare_objects
-					from codes.start until codes.off loop
-						code_set.extend (codes.item)
-						codes.forth
+					across codes as codes_csr loop
+						code_set.extend (codes_csr.item)
 					end
 					if code_set.count /= codes.count then
 						fail_reason := "duplicate code(s) found in code list"
@@ -216,15 +215,8 @@ feature -- Comparison
 					if terminology_id.is_equal (other.terminology_id) then
 						if other.code_list = Void then
 							Result := True
-						elseif code_list /= Void then
-							from
-								code_list.start
-							until
-								code_list.off or not (other.has_code (code_list.item) or else other.has_parent_code(code_list.item))
-							loop
-								code_list.forth
-							end
-							Result := code_list.off
+						elseif attached code_list then
+							Result := across code_list as code_list_csr all other.has_code (code_list_csr.item) or else other.has_parent_code (code_list_csr.item) end
 						end
 					end
 				end
@@ -242,9 +234,8 @@ feature -- Source Control
 		do
 			create Result.make (ss_propagated)
 			if not any_allowed and terminology_id.is_local and code_list /= Void then
-				from code_list.start until code_list.off loop
-					Result := Result.specialisation_dominant_status (specialisation_status_from_code (code_list.item, spec_level))
-					code_list.forth
+				across code_list as code_list_csr loop
+					Result := Result.specialisation_dominant_status (specialisation_status_from_code (code_list_csr.item, spec_level))
 				end
 			end
 		end
@@ -273,6 +264,13 @@ feature -- Modification
 			code_list.compare_objects
 		end
 
+feature -- Output
+
+	out: STRING
+		do
+			Result := as_string
+		end
+
 feature -- Conversion
 
 	as_string: STRING
@@ -286,12 +284,11 @@ feature -- Conversion
 				Result.append ("[" + terminology_id.value + separator)
 
 				if code_list /= Void then
-					from code_list.start until code_list.off loop
-						if not code_list.isfirst then
+					across code_list as code_list_csr loop
+						if code_list_csr.cursor_index > 1 then
 							Result.append (", ")
 						end
-						Result.append (code_list.item)
-						code_list.forth
+						Result.append (code_list_csr.item)
 					end
 				end
 

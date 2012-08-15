@@ -17,7 +17,7 @@ class C_DV_ORDINAL
 inherit
 	C_DOMAIN_TYPE
 		redefine
-			enter_subtree, exit_subtree, synchronise_to_tree, inferred_specialisation_status, node_conforms_to
+			out, enter_subtree, exit_subtree, synchronise_to_tree, inferred_specialisation_status, node_conforms_to
 		end
 
 create
@@ -69,11 +69,10 @@ feature -- Source Control
 			-- from an outside terminology, there is no way to know definitively.
 		do
 			create Result.make (ss_propagated)
-			if items /= Void then
-				from items.start until items.off loop
-					if items.item.symbol.is_local then
-						Result := Result.specialisation_dominant_status (specialisation_status_from_code (items.item.symbol.code_string, spec_level))
-						items.forth
+			if attached items then
+				across items as items_csr loop
+					if items_csr.item.symbol.is_local then
+						Result := Result.specialisation_dominant_status (specialisation_status_from_code (items_csr.item.symbol.code_string, spec_level))
 					end
 				end
 			end
@@ -130,11 +129,8 @@ feature -- Comparison
 					Result := True
 				elseif not any_allowed then
 					if items.count <= other.items.count then
-						from items.start until items.off or not other.has_item (items.item.value) loop
-							items.forth
-						end
+						Result := not across items as items_csr some other.has_item (items_csr.item.value) end
 					end
-					Result := items.off
 				end
 			end
 		end
@@ -150,10 +146,10 @@ feature -- Modification
 				create items.make
 				create index.make(0)
 			end
-			items.extend(an_ordinal)
-			index.put(an_ordinal, an_ordinal.value)
+			items.extend (an_ordinal)
+			index.put (an_ordinal, an_ordinal.value)
 		ensure
-			Item_added: items.has(an_ordinal)
+			Item_added: items.has (an_ordinal)
 		end
 
 	set_items (an_items: attached ARRAYED_LIST [ORDINAL])
@@ -161,9 +157,8 @@ feature -- Modification
 			create items.make
 			items.append (an_items)
 			create index.make (0)
-			from items.start until items.off loop
-				index.put (items.item, items.item.value)
-				items.forth
+			across items as items_csr loop
+				index.put (items_csr.item, items_csr.item.value)
 			end
 		end
 
@@ -171,11 +166,18 @@ feature -- Modification
 			-- set `assumed_value' from an integer in the ordinal enumeration
 		require
 			Not_any_allowed: not any_allowed
-			Valid_index: has_item(a_value)
+			Valid_index: has_item (a_value)
 		do
-			assumed_value := item_at_ordinal(a_value)
+			assumed_value := item_at_ordinal (a_value)
 		ensure
-			assumed_value_set: assumed_value = item_at_ordinal(a_value)
+			assumed_value_set: assumed_value = item_at_ordinal (a_value)
+		end
+
+feature -- Output
+
+	out: STRING
+		do
+			Result := as_string
 		end
 
 feature -- Conversion
@@ -184,12 +186,11 @@ feature -- Conversion
 			--
 		do
 			create Result.make (0)
-			from items.start until items.off loop
-				if not items.isfirst then
+			across items as items_csr loop
+				if items_csr.cursor_index > 1 then
 					Result.append (", ")
 				end
-				Result.append (items.item.as_string)
-				items.forth
+				Result.append (items_csr.item.as_string)
 			end
 
 			if assumed_value /= Void then
