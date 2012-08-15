@@ -117,7 +117,7 @@ feature -- Initialisation
 			reference_type := Ref_type_constant
 		end
 
-	make_coded_term (an_item: CODE_PHRASE)
+	make_coded_term (an_item: C_CODE_PHRASE)
 			-- node is a term value
    		do
 			item := an_item
@@ -158,6 +158,12 @@ feature -- Status Report
 			if reference_type.is_equal (Ref_type_attribute) and then attached {STRING} item as a_path then
 				Result := a_path.item (1) = {OG_PATH}.segment_separator
 			end
+		end
+
+	is_constraint: BOOLEAN
+			-- True if this leaf node is a constraint value
+		do
+			Result := reference_type.is_equal (Ref_type_constraint)
 		end
 
 feature -- Conversion

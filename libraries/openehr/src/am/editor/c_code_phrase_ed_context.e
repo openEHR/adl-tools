@@ -49,7 +49,7 @@ feature -- Display
 				gui_grid.add_sub_row (gui_grid_row, bmm_code_string_prop.name)
 				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, bmm_code_string_prop.name, Void, c_attribute_colour,
 					get_icon_pixmap ("rm/generic/" + bmm_code_string_prop.multiplicity_key_string))
-				gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
+				gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, c_code_phrase_str (arch_node), Void, c_constraint_colour, Void)
 			end
 		end
 
@@ -64,7 +64,7 @@ feature -- Display
 				from i := 1 until i > gui_grid_row.subrow_count loop
 					if attached {STRING} gui_grid_row.subrow (i).data as str and then str.is_equal (bmm_code_string_prop.name) then
 						gui_grid.set_last_row (gui_grid_row.subrow (i))
-						gui_grid.update_last_row_label_col (Definition_grid_col_constraint, constraint_str, Void, Void, Void)
+						gui_grid.update_last_row_label_col (Definition_grid_col_constraint, c_code_phrase_str (arch_node), Void, Void, Void)
 						i := gui_grid_row.subrow_count + 1
 					end
 					i := i + 1
@@ -77,20 +77,6 @@ feature -- Modification
 feature {NONE} -- Implementation
 
 	bmm_code_string_prop: BMM_PROPERTY_DEFINITION
-
-	constraint_str: STRING
-		do
-			create Result.make_empty
-			across arch_node.code_list as codes_csr loop
-				Result.append_string (term_string (arch_node.terminology_id.value, codes_csr.item))
-				if arch_node.has_assumed_value and then arch_node.assumed_value.code_string.is_equal (codes_csr.item) then
-					Result.append (" (" + get_text ("assumed_text") + ")")
-				end
-				if codes_csr.cursor_index < arch_node.code_list.count then
-					Result.append_string ("%N")
-				end
-			end
-		end
 
 end
 

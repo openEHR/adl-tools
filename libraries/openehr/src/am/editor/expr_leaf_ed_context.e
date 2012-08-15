@@ -59,6 +59,8 @@ feature {NONE} -- Implementation
 				else
 					Result.append (arch_node.item.out)
 				end
+			elseif arch_node.is_constraint and attached {C_CODE_PHRASE} arch_node.item as c_cp then
+				Result.append (c_code_phrase_str (c_cp))
 			else
 				Result.append (arch_node.as_string)
 			end

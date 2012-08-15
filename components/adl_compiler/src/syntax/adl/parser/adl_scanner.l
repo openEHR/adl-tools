@@ -281,7 +281,7 @@ NAMESTR ([a-zA-Z][a-zA-Z0-9_]+)
 			}
 
 ----------/* identifiers */ -------------------------------------------------
-[a-zA-Z][a-zA-Z0-9_]*	{
+{NAMESTR}	{
 					last_token := V_IDENTIFIER
 					last_string_value := text
 			}

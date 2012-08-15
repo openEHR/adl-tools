@@ -835,6 +835,15 @@ boolean_constraint_expr: V_ABS_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive SYM
 			$$.set_left_operand (create {EXPR_LEAF}.make_archetype_definition_ref ($1))
 			$$.set_right_operand (create {EXPR_LEAF}.make_constraint ($4))
 		}
+	| V_ABS_PATH SYM_MATCHES SYM_START_CBLOCK c_code_phrase SYM_END_CBLOCK
+		{
+			debug("ADL_invariant")
+				io.put_string(indent + "boolean_constraint_expr:" + $1 + " matches {" + $4.as_string + "}%N") 
+			end
+			create $$.make (create {OPERATOR_KIND}.make (op_matches))
+			$$.set_left_operand (create {EXPR_LEAF}.make_archetype_definition_ref ($1))
+			$$.set_right_operand (create {EXPR_LEAF}.make_coded_term ($4))
+		}
 	;
 
 --

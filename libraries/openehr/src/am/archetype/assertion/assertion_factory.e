@@ -72,10 +72,10 @@ feature -- Factory
 			create Result.make_ordinal(an_item)
 		end
 
-	create_expr_leaf_coded_term(an_item: CODE_PHRASE): EXPR_LEAF
+	create_expr_leaf_coded_term(an_item: C_CODE_PHRASE): EXPR_LEAF
 			-- node is a coded term value
    		do
-			create Result.make_coded_term(an_item)
+			create Result.make_coded_term (an_item)
 		end
 
 	create_expr_leaf_constraint(an_item: C_PRIMITIVE): EXPR_LEAF
