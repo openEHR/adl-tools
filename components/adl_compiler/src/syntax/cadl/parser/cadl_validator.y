@@ -61,6 +61,7 @@ inherit
 create
 	make
 %}
+
 %token <STRING> V_ARCHETYPE_ID
 %token <INTEGER> V_INTEGER 
 %token <REAL> V_REAL 
@@ -81,8 +82,6 @@ create
 
 %token SYM_INTERVAL_DELIM
 %token SYM_TRUE SYM_FALSE 
-%token SYM_GE SYM_LE SYM_NE
-%token SYM_EXISTS SYM_FORALL
 %token SYM_THEN SYM_ELSE
 
 %token SYM_EXISTENCE SYM_OCCURRENCES SYM_CARDINALITY 
@@ -97,11 +96,12 @@ create
 %left SYM_IMPLIES
 %left SYM_OR SYM_XOR
 %left SYM_AND
-%left '=' SYM_NE SYM_LT SYM_GT SYM_LE SYM_GE
+%left SYM_EXISTS SYM_FORALL SYM_NOT
+%left '=' SYM_NE SYM_LT SYM_GT SYM_LE SYM_GE SYM_MATCHES
 %left '+' '-'
 %left '*' '/' SYM_DIV SYM_MODULO
-%right '^'
-%right SYM_NOT
+%left UNARY_MINUS
+%left '^'
 
 %type <ARRAYED_LIST [ASSERTION]> assertions c_includes c_excludes
 %type <ASSERTION> assertion
@@ -111,19 +111,15 @@ create
 
 %type <STRING> type_identifier
 %type <SIBLING_ORDER> sibling_order
-%type <INTEGER> cardinality_limit_value
 %type <MULTIPLICITY_INTERVAL> c_occurrences c_existence occurrence_spec existence_spec
 %type <C_PRIMITIVE_OBJECT> c_primitive_object
 %type <C_PRIMITIVE> c_primitive
 
-%type <EXPR_ITEM> boolean_expression boolean_leaf
-%type <EXPR_UNARY_OPERATOR> boolean_unop_node
-%type <EXPR_BINARY_OPERATOR> boolean_binop_node arithmetic_relop_node arithmetic_arithop_node arch_constraint_node
-%type <EXPR_LEAF> arithmetic_leaf
-%type <EXPR_ITEM> arithmetic_expression
-
-%type <CARDINALITY> c_cardinality
-%type <C_DATE> c_date_constraint c_date
+%type <EXPR_ITEM> boolean_node
+%type <EXPR_UNARY_OPERATOR> boolean_unop_expr
+%type <EXPR_BINARY_OPERATOR> boolean_binop_expr arithmetic_relop_expr arithmetic_arith_binop_expr arch_outer_constraint_expr boolean_constraint_expr
+%type <EXPR_LEAF> arithmetic_leaf boolean_leaf 
+%type <EXPR_ITEM> arithmetic_node
 
 %type <INTEGER> integer_value
 %type <REAL> real_value
@@ -138,7 +134,7 @@ create
 %type <STRING> string_value
 %type <URI> uri_value
 
-%type <ARRAYED_LIST[STRING]> string_list_value
+%type <ARRAYED_LIST[STRING]> string_list_value string_list_value_continue
 %type <ARRAYED_LIST[INTEGER]> integer_list_value
 %type <ARRAYED_LIST[REAL]> real_list_value
 %type <ARRAYED_LIST[CHARACTER_REF]> character_list_value
@@ -159,6 +155,20 @@ create
 %type <STRING> arithmetic_binop_symbol
 %type <STRING> relational_binop_symbol
 %type <STRING> boolean_binop_symbol
+
+%type <CARDINALITY> c_cardinality cardinality_range
+%type <CONSTRAINT_REF> constraint_ref
+%type <C_CODE_PHRASE> c_code_phrase
+%type <C_DV_ORDINAL> c_ordinal
+%type <ORDINAL> ordinal
+%type <C_BOOLEAN> c_boolean
+%type <C_STRING> c_string
+%type <C_DATE_TIME> c_date_time
+%type <C_DURATION> c_duration
+%type <C_DATE> c_date
+%type <C_TIME> c_time
+%type <C_REAL> c_real
+%type <C_INTEGER> c_integer
 
 %%
 
@@ -309,16 +319,15 @@ c_object: c_complex_object
 		}
 	| constraint_ref
 		{
-			safe_put_c_attribute_child (c_attrs.item, constraint_ref)
+			safe_put_c_attribute_child (c_attrs.item, $1)
 		}
 	| c_code_phrase
 		{
-			safe_put_c_attribute_child(c_attrs.item, c_code_phrase_obj)
+			safe_put_c_attribute_child(c_attrs.item, $1)
 		}
 	| c_ordinal 
 		{
-			safe_put_c_attribute_child(c_attrs.item, ordinal_node)
-			ordinal_node := Void
+			safe_put_c_attribute_child (c_attrs.item, $1)
 		}
 	| c_primitive_object
 		{
@@ -515,16 +524,16 @@ c_primitive_object: c_primitive
 c_primitive: c_integer 
 		{
 			debug("ADL_parse")
-				io.put_string(indent + "C_INTEGER: " +  c_integer.as_string + "%N")
+				io.put_string(indent + "C_INTEGER: " +  $1.as_string + "%N")
 			end
-			$$ := c_integer
+			$$ := $1
 		}
 	| c_real
 		{
 			debug("ADL_parse")
-				io.put_string(indent + "C_REAL: " +  c_real.as_string + "%N")
+				io.put_string(indent + "C_REAL: " +  $1.as_string + "%N")
 			end
-			$$ := c_real
+			$$ := $1
 		}
 	| c_date
 		{
@@ -536,37 +545,37 @@ c_primitive: c_integer
 	| c_time
 		{
 			debug("ADL_parse")
-				io.put_string(indent + "C_TIME: " +  c_time.as_string + "%N")
+				io.put_string(indent + "C_TIME: " +  $1.as_string + "%N")
 			end
-			$$ := c_time
+			$$ := $1
 		}
 	| c_date_time
 		{
 			debug("ADL_parse")
-				io.put_string(indent + "C_DATE_TIME: " +  c_date_time.as_string + "%N")
+				io.put_string(indent + "C_DATE_TIME: " +  $1.as_string + "%N")
 			end
-			$$ := c_date_time
+			$$ := $1
 		}
 	| c_duration
 		{
 			debug("ADL_parse")
-				io.put_string(indent + "C_DURATION: " +  c_duration.as_string + "%N")
+				io.put_string(indent + "C_DURATION: " +  $1.as_string + "%N")
 			end
-			$$ := c_duration
+			$$ := $1
 		}
 	| c_string
 		{
 			debug("ADL_parse")
-				io.put_string(indent + "C_STRING: " +  c_string.as_string + "%N")
+				io.put_string(indent + "C_STRING: " +  $1.as_string + "%N")
 			end
-			$$ := c_string
+			$$ := $1
 		}
 	| c_boolean
 		{
 			debug("ADL_parse")
-				io.put_string(indent + "C_BOOLEAN: " +  c_boolean.as_string + "%N")
+				io.put_string(indent + "C_BOOLEAN: " +  $1.as_string + "%N")
 			end
-			$$ := c_boolean
+			$$ := $1
 		}
 	;
 
@@ -707,7 +716,6 @@ c_attr_values: c_object
 		}
 	;
 
-
 c_includes: -- Empty
 	| SYM_INCLUDE assertions
 		{
@@ -747,11 +755,19 @@ assertions: assertion
 		}
 	;
 
-assertion: any_identifier ':' boolean_expression
+assertion: any_identifier ':' boolean_node
 		{
 			create $$.make ($3, $1)
 		}
-	| boolean_expression
+	| boolean_node
+		{
+			create $$.make ($1, Void)
+		}
+	-- 
+	-- TODO: redesign path referencing mechanism for constraints on archetype
+	-- elements outside the definition
+	--
+	| arch_outer_constraint_expr
 		{
 			create $$.make ($1, Void)
 		}
@@ -763,32 +779,46 @@ assertion: any_identifier ':' boolean_expression
 
 ---------------------- expressions ---------------------
 
-boolean_expression: boolean_leaf
+boolean_node: boolean_leaf
 		{
 			$$ := $1
 		}
-	| boolean_unop_node
+	| boolean_unop_expr
+		{
+			debug("ADL_invariant")
+				io.put_string(indent + "boolean_node: REDUCE from boolean_unop_expr: [" + $1.as_string + "]%N") 
+			end
+			$$ := $1
+		}
+	| boolean_binop_expr
 		{
 			$$ := $1
 		}
-	| boolean_binop_node
+	| arithmetic_relop_expr
 		{
 			$$ := $1
 		}
-	| arithmetic_relop_node
+	| boolean_constraint_expr
 		{
+			debug("ADL_invariant")
+				io.put_string(indent + "boolean_node: REDUCE from boolean_constraint_expr: [" + $1.as_string + "]%N") 
+			end
 			$$ := $1
 		}
-	| arch_constraint_node
+	| '(' boolean_node ')'
 		{
-			$$ := $1
+			$$ := $2
 		}
 	;
 		
-arch_constraint_node: V_REL_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive SYM_END_CBLOCK
+--
+-- the following form of expression has a relative path which is only allowed with Slot definitions.
+-- The absolute path form is for assertions in the rules section
+--
+arch_outer_constraint_expr: V_REL_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive SYM_END_CBLOCK
 		{
 			debug("ADL_invariant")
-				io.put_string(indent + "Archetype feature matches {" + $4.as_string + "}%N") 
+				io.put_string(indent + "arch_outer_constraint_expr: Archetype outer feature " + $1 + " matches {" + $4.as_string + "}%N") 
 			end
 			create $$.make(create {OPERATOR_KIND}.make(op_matches))
 			$$.set_left_operand (create {EXPR_LEAF}.make_archetype_ref ($1))
@@ -796,22 +826,44 @@ arch_constraint_node: V_REL_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive SYM_EN
 		}
 	;
 
-boolean_unop_node: SYM_EXISTS V_ABS_PATH
+boolean_constraint_expr: V_ABS_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive SYM_END_CBLOCK
 		{
 			debug("ADL_invariant")
-				io.put_string(indent + "Exists " + $2 + "%N") 
+				io.put_string(indent + "boolean_constraint_expr:" + $1 + " matches {" + $4.as_string + "}%N") 
+			end
+			create $$.make(create {OPERATOR_KIND}.make(op_matches))
+			$$.set_left_operand (create {EXPR_LEAF}.make_archetype_definition_ref ($1))
+			$$.set_right_operand (create {EXPR_LEAF}.make_constraint ($4))
+		}
+	;
+
+--
+-- expressions with signature
+--	OP BOOLEAN: BOOLEAN
+--
+boolean_unop_expr: SYM_EXISTS V_ABS_PATH
+		{
+			debug("ADL_invariant")
+				io.put_string(indent + "boolean_unop_expr: exists " + $2 + "%N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (op_exists))
-			create expr_leaf.make_archetype_definition_ref ($2)
-			$$.set_operand (expr_leaf)
+			$$.set_operand (create {EXPR_LEAF}.make_archetype_definition_ref ($2))
 		}
-	| SYM_NOT boolean_expression
+	| SYM_NOT V_ABS_PATH
 		{
 			debug("ADL_invariant")
-				io.put_string(indent + "NOT bool_expr %N") 
+				io.put_string(indent + "boolean_unop_expr: not " + $2 + "%N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (op_not))
-			$$.set_operand ($2)
+			$$.set_operand (create {EXPR_LEAF}.make_archetype_definition_ref ($2))
+		}
+	| SYM_NOT '(' boolean_node ')'
+		{
+			debug("ADL_invariant")
+				io.put_string(indent + "boolean_unop_expr: not [(" + $3.as_string + ")] %N") 
+			end
+			create $$.make (create {OPERATOR_KIND}.make (op_not))
+			$$.set_operand ($3)
 		}
 	| SYM_EXISTS error 
 		{
@@ -819,10 +871,14 @@ boolean_unop_node: SYM_EXISTS V_ABS_PATH
 		}
 	;
 
-boolean_binop_node: boolean_expression boolean_binop_symbol boolean_expression
+--
+-- expressions with signature
+--	BOOLEAN OP BOOLEAN: BOOLEAN
+--
+boolean_binop_expr: boolean_node boolean_binop_symbol boolean_node
 		{
 			debug("ADL_invariant")
-				io.put_string(indent + "bool_expr " + $2 + " bool_expr %N") 
+				io.put_string(indent + "boolean_binop_expr: [" + $1.as_string + "] " + $2 + " [" + $3.as_string + "]%N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item ($2)))
 			$$.set_left_operand($1)
@@ -830,26 +886,46 @@ boolean_binop_node: boolean_expression boolean_binop_symbol boolean_expression
 		}
 	;
 
-boolean_leaf: '(' boolean_expression ')'
+boolean_binop_symbol: SYM_OR
 		{
-			$$ := $2
+			$$ := operator_symbols.item (op_or)
 		}
-	| SYM_TRUE
+	| SYM_AND
 		{
-			create expr_leaf.make_boolean (True)
-			$$ := expr_leaf
+			$$ := operator_symbols.item (op_and)
 		}
-	| SYM_FALSE
+	| SYM_XOR
 		{
-			create expr_leaf.make_boolean (False)
-			$$ := expr_leaf
+			$$ := operator_symbols.item (op_xor)
+		}
+	| SYM_IMPLIES
+		{
+			$$ := operator_symbols.item (op_implies)
 		}
 	;
 
-arithmetic_relop_node: arithmetic_expression relational_binop_symbol arithmetic_expression
+--
+-- leaves with signature
+--	BOOLEAN
+--
+boolean_leaf: SYM_TRUE
+		{
+			create $$.make_boolean (True)
+		}
+	| SYM_FALSE
+		{
+			create $$.make_boolean (False)
+		}
+	;
+
+--
+-- expressions with signature
+--	ARITHMETIC OP ARITHMETIC: BOOLEAN
+--
+arithmetic_relop_expr: arithmetic_node relational_binop_symbol arithmetic_node
 		{
 			debug("ADL_invariant")
-				io.put_string(indent + "arith_expr " + $2 + " arith_expr %N") 
+				io.put_string(indent + "arithmetic_relop_expr: [" + $1.as_string + "] " + $2 + " [" + $3.as_string + "]%N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item ($2)))
 			$$.set_left_operand ($1)
@@ -857,15 +933,19 @@ arithmetic_relop_node: arithmetic_expression relational_binop_symbol arithmetic_
 		}
 	;
 
-arithmetic_expression: arithmetic_leaf
+--
+-- nodes with signature
+--	ARITHMETIC
+--
+arithmetic_node: arithmetic_leaf
 		{
 			$$ := $1
 		}
-	| arithmetic_arithop_node
+	| arithmetic_arith_binop_expr
 		{
 			$$ := $1
 		}
-	| '(' arithmetic_expression ')'
+	| '(' arithmetic_node ')'
 		{
 			debug("ADL_invariant")
 				io.put_string (indent + "(expr) %N") 
@@ -874,10 +954,14 @@ arithmetic_expression: arithmetic_leaf
 		}
 	;
 
-arithmetic_arithop_node: arithmetic_expression arithmetic_binop_symbol arithmetic_expression
+--
+-- expressions with signature
+--	ARITHMETIC OP ARITHMETIC: ARITHMETIC
+--
+arithmetic_arith_binop_expr: arithmetic_node arithmetic_binop_symbol arithmetic_node
 		{
 			debug("ADL_invariant")
-				io.put_string(indent + "arith_expr " + $2 + " arith_expr %N") 
+				io.put_string(indent + "arithmetic_arith_binop_expr: [" + $1.as_string + "] " + $2 + " [" + $3.as_string + "]%N") 
 			end
 			create $$.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item ($2)))
 			$$.set_left_operand ($1)
@@ -885,6 +969,10 @@ arithmetic_arithop_node: arithmetic_expression arithmetic_binop_symbol arithmeti
 		}
 	;
 
+--
+-- leaves with signature
+--	ARITHMETIC
+--
 arithmetic_leaf:  integer_value
 		{
 			debug("ADL_invariant")
@@ -905,34 +993,6 @@ arithmetic_leaf:  integer_value
 				io.put_string(indent + "arith_leaf - path: " + $1 + "%N") 
 			end
 			create $$.make_archetype_definition_ref ($1)
-		}
-	;
-
-boolean_unop_symbol: SYM_EXISTS
-		{
-			$$ := $1
-		}
-	| SYM_NOT
-		{
-			$$ := $1
-		}
-	;
-
-boolean_binop_symbol: SYM_OR
-		{
-			$$ := operator_symbols.item (op_or)
-		}
-	| SYM_AND
-		{
-			$$ := operator_symbols.item (op_and)
-		}
-	| SYM_XOR
-		{
-			$$ := operator_symbols.item (op_xor)
-		}
-	| SYM_IMPLIES
-		{
-			$$ := operator_symbols.item (op_implies)
 		}
 	;
 
@@ -1027,61 +1087,51 @@ existence_spec:  V_INTEGER -- can only be 0 or 1
 	;
 
 c_cardinality: -- empty is ok
-	| SYM_CARDINALITY SYM_MATCHES SYM_START_CBLOCK cardinality_spec SYM_END_CBLOCK	
+	| SYM_CARDINALITY SYM_MATCHES SYM_START_CBLOCK cardinality_range SYM_END_CBLOCK	
 		{
-			$$ := a_cardinality
+			$$ := $4
 		}
 	;
 
-cardinality_spec: occurrence_spec
+cardinality_range: occurrence_spec
 		{
-			create a_cardinality.make(multiplicity_interval)
+			create $$.make ($1)
 		}
 	| occurrence_spec ';' SYM_ORDERED
 		{
-			create a_cardinality.make(multiplicity_interval)
+			create $$.make ($1)
 		}
 	| occurrence_spec ';' SYM_UNORDERED
 		{
-			create a_cardinality.make(multiplicity_interval)
-			a_cardinality.set_unordered
+			create $$.make ($1)
+			$$.set_unordered
 		}
 	| occurrence_spec ';' SYM_UNIQUE
 		{
-			create a_cardinality.make(multiplicity_interval)
-			a_cardinality.set_unique
+			create $$.make ($1)
+			$$.set_unique
 		}
 	| occurrence_spec ';' SYM_ORDERED ';' SYM_UNIQUE
 		{
-			create a_cardinality.make(multiplicity_interval)
-			a_cardinality.set_unique
+			create $$.make ($1)
+			$$.set_unique
 		}
 	| occurrence_spec ';' SYM_UNORDERED ';' SYM_UNIQUE
 		{
-			create a_cardinality.make(multiplicity_interval)
-			a_cardinality.set_unique
-			a_cardinality.set_unordered
+			create $$.make ($1)
+			$$.set_unique
+			$$.set_unordered
 		}
 	| occurrence_spec ';' SYM_UNIQUE ';' SYM_ORDERED
 		{
-			create a_cardinality.make(multiplicity_interval)
-			a_cardinality.set_unique
+			create $$.make ($1)
+			$$.set_unique
 		}
 	| occurrence_spec ';' SYM_UNIQUE ';' SYM_UNORDERED
 		{
-			create a_cardinality.make(multiplicity_interval)
-			a_cardinality.set_unique
-			a_cardinality.set_unordered
-		}
-	;
-
-cardinality_limit_value: integer_value 
-		{
-			$$ := $1
-		}
-	| '*' 
-		{
-			cardinality_limit_pos_infinity := True
+			create $$.make ($1)
+			$$.set_unique
+			$$.set_unordered
 		}
 	;
 
@@ -1092,117 +1142,85 @@ c_occurrences:  -- empty is ok
 		}
 	| SYM_OCCURRENCES error
 		{
-			abort_with_error("SOCCF", Void)
+			abort_with_error ("SOCCF", Void)
 		}
 	;
 
-occurrence_spec: cardinality_limit_value 	-- single integer or '*'
+occurrence_spec: integer_value
 		{
-			if not cardinality_limit_pos_infinity then
-				create multiplicity_interval.make_point($1)
-			else
-				create multiplicity_interval.make_upper_unbounded(0)
-				cardinality_limit_pos_infinity := False
-			end
-			$$ := multiplicity_interval
+			create $$.make_point ($1)
 		}
-	| V_INTEGER SYM_ELLIPSIS cardinality_limit_value 
+	| '*'
 		{
-			if cardinality_limit_pos_infinity then
-				create multiplicity_interval.make_upper_unbounded($1)
-				cardinality_limit_pos_infinity := False
-			else
-				create multiplicity_interval.make_bounded($1, $3)
-			end
-			$$ := multiplicity_interval
+			create $$.make_upper_unbounded (0)
+		}
+	| V_INTEGER SYM_ELLIPSIS integer_value 
+		{
+			create $$.make_bounded ($1, $3)
+		}
+	| V_INTEGER SYM_ELLIPSIS '*' 
+		{
+			create $$.make_upper_unbounded ($1)
 		}
 	;
 
 ---------------------- leaf constraint types -----------------------
 
-c_integer_spec: integer_value
+c_integer: integer_value
 		{
-			create int_list.make(0)
-			int_list.extend($1)
-			create c_integer.make_list(int_list)
+			create $$.make_list (create {ARRAYED_LIST [INTEGER]}.make_from_array (<<$1>>))
 		}
 	| integer_list_value
 		{
-			create c_integer.make_list($1)
+			create $$.make_list ($1)
 		}
 	| integer_interval_value
 		{
-			if integer_interval.lower_unbounded then
-				create int_interval.make_lower_unbounded(integer_interval.upper.item, integer_interval.upper_included)
+			create $$.make_range ($1)
+		}
+	| c_integer ';' integer_value
+		{
+			if $1.valid_value ($3) then
+				$1.set_assumed_value ($3)
+				$$ := $1
 			else
-				if integer_interval.upper_unbounded then
-					create int_interval.make_upper_unbounded(integer_interval.lower.item, integer_interval.lower_included)
-				else
-					create int_interval.make_bounded(integer_interval.lower.item, integer_interval.upper.item, integer_interval.lower_included, integer_interval.upper_included)
-				end
+				abort_with_error ("VOBAV", <<$3.out>>)
 			end
-
-			create c_integer.make_range(int_interval)
+		}
+	| c_integer ';' error
+		{
+			abort_with_error ("SCIAV", Void)
 		}
 	;
 
-c_integer: c_integer_spec
-	| c_integer_spec ';' integer_value
+c_real: real_value
 		{
-			if c_integer.valid_value($3) then
-				c_integer.set_assumed_value($3)
-			else
-				abort_with_error("VOBAV", <<$3.out>>)
-			end
-		}
-	| c_integer_spec ';' error
-		{
-			abort_with_error("SCIAV", Void)
-		}
-	;
-
-c_real_spec: real_value
-		{
-			create real_list.make(0)
-			real_list.extend($1)
-			create c_real.make_list(real_list)
+			create $$.make_list (create {ARRAYED_LIST [REAL]}.make_from_array (<<$1>>))
 		}
 	| real_list_value
 		{
-			create c_real.make_list($1)
+			create $$.make_list ($1)
 		}
 	| real_interval_value
 		{
-			if real_interval.lower_unbounded then
-				create rl_interval.make_lower_unbounded(real_interval.upper.item, real_interval.upper_included)
-			else
-				if real_interval.upper_unbounded then
-					create rl_interval.make_upper_unbounded(real_interval.lower.item, real_interval.lower_included)
-				else
-					create rl_interval.make_bounded(real_interval.lower.item, real_interval.upper.item, real_interval.lower_included, real_interval.upper_included)
-				end
-			end
-
-			create c_real.make_range(rl_interval)
+			create $$.make_range ($1)
 		}
-	;
-
-c_real: c_real_spec
-	| c_real_spec ';' real_value
+	| c_real ';' real_value
 		{
-			if c_real.valid_value($3) then
-				c_real.set_assumed_value($3)
+			if $1.valid_value ($3) then
+				$1.set_assumed_value ($3)
+				$$ := $1
 			else
-				abort_with_error("VOBAV", <<$3.out>>)
+				abort_with_error ("VOBAV", <<$3.out>>)
 			end
 		}
-	| c_real_spec ';' error
+	| c_real ';' error
 		{
 			abort_with_error("SCRAV", Void)
 		}
 	;
 
-c_date_constraint: V_ISO8601_DATE_CONSTRAINT_PATTERN
+c_date: V_ISO8601_DATE_CONSTRAINT_PATTERN
 		{
 			if valid_iso8601_date_constraint_pattern($1) then
 				create $$.make_from_pattern($1)
@@ -1215,26 +1233,94 @@ c_date_constraint: V_ISO8601_DATE_CONSTRAINT_PATTERN
 					str.append(valid_date_constraint_patterns.item)
 					valid_date_constraint_patterns.forth
 				end
-
 				abort_with_error("SCDPT", <<str>>)
 			end
 		}
 	| date_value
 		{
-			create date_interval.make_point($1)
-			create $$.make_range(date_interval)
+			create $$.make_range (create {INTERVAL [ISO8601_DATE]}.make_point($1))
 		}
 	| date_interval_value
 		{
-			create $$.make_range(date_interval)
+			create $$.make_range ($1)
+		}
+	| c_date ';' date_value
+		{
+			if $1.valid_value ($3) then
+				$1.set_assumed_value ($3)
+				$$ := $1
+			else
+				abort_with_error ("VOBAV", <<$3.out>>)
+			end
+		}
+	| c_date ';' error
+		{
+			abort_with_error ("SCDAV", Void)
 		}
 	;
 
-c_date: c_date_constraint
+c_time: V_ISO8601_TIME_CONSTRAINT_PATTERN
 		{
-			$$ := $1
+			if valid_iso8601_time_constraint_pattern($1) then
+				create $$.make_from_pattern($1)
+			else
+				create str.make(0)
+				across valid_time_constraint_patterns as patterns_csr loop
+					if patterns_csr.cursor_index > 1 then
+						str.append(", ")
+					end
+					str.append (patterns_csr.item)
+				end
+				abort_with_error("SCTPT", <<str>>)
+			end
 		}
-	| c_date_constraint ';' date_value
+	| time_value
+		{
+			create $$.make_range (create {INTERVAL [ISO8601_TIME]}.make_point($1))
+		}
+	| time_interval_value
+		{
+			create $$.make_range ($1)
+		}
+	| c_time ';' time_value
+		{
+			if $1.valid_value ($3) then
+				$1.set_assumed_value ($3)
+				$$ := $1
+			else
+				abort_with_error ("VOBAV", <<$3.out>>)
+			end
+		}
+	| c_time ';' error
+		{
+			abort_with_error ("SCTAV", Void)
+		}
+	;
+
+c_date_time: V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
+		{
+			if valid_iso8601_date_time_constraint_pattern ($1) then
+				create $$.make_from_pattern($1)
+			else
+				create str.make (0)
+				across valid_date_time_constraint_patterns as patterns_csr loop
+					if patterns_csr.cursor_index > 1 then
+						str.append(", ")
+					end
+					str.append (patterns_csr.item)
+				end
+				abort_with_error("SCDTPT", <<str>>)
+			end
+		}
+	| date_time_value
+		{
+			create $$.make_range (create {INTERVAL [ISO8601_DATE_TIME]}.make_point($1))
+		}
+	| date_time_interval_value
+		{
+			create $$.make_range ($1)
+		}
+	| c_date_time ';' date_time_value
 		{
 			if $1.valid_value($3) then
 				$1.set_assumed_value($3)
@@ -1243,277 +1329,173 @@ c_date: c_date_constraint
 				abort_with_error("VOBAV", <<$3.out>>)
 			end
 		}
-	| c_date_constraint ';' error
-		{
-			abort_with_error("SCDAV", Void)
-		}
-	;
-
-c_time_constraint: V_ISO8601_TIME_CONSTRAINT_PATTERN
-		{
-			if valid_iso8601_time_constraint_pattern($1) then
-				create c_time.make_from_pattern($1)
-			else
-				create str.make(0)
-				from 
-					valid_time_constraint_patterns.start
-				until
-					valid_time_constraint_patterns.off
-				loop
-					if not valid_time_constraint_patterns.isfirst then
-						str.append(", ")
-					end
-					str.append(valid_time_constraint_patterns.item)
-					valid_time_constraint_patterns.forth
-				end
-
-				abort_with_error("SCTPT", <<str>>)
-			end
-		}
-	| time_value
-		{
-			create time_interval.make_point($1)
-			create c_time.make_range(time_interval)
-		}
-	| time_interval_value
-		{
-			create c_time.make_range(time_interval)
-		}
-	;
-
-c_time: c_time_constraint
-	| c_time_constraint ';' time_value
-		{
-			if c_time.valid_value($3) then
-				c_time.set_assumed_value($3)
-			else
-				abort_with_error("VOBAV", <<$3.out>>)
-			end
-		}
-	| c_time_constraint ';' error
-		{
-			abort_with_error("SCTAV", Void)
-		}
-	;
-
-c_date_time_constraint: V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN
-		{
-			if valid_iso8601_date_time_constraint_pattern($1) then
-				create c_date_time.make_from_pattern($1)
-			else
-				create str.make(0)
-				from 
-					valid_date_time_constraint_patterns.start
-				until
-					valid_date_time_constraint_patterns.off
-				loop
-					if not valid_date_time_constraint_patterns.isfirst then
-						str.append(", ")
-					end
-					str.append(valid_date_time_constraint_patterns.item)
-					valid_date_time_constraint_patterns.forth
-				end
-
-				abort_with_error("SCDTPT", <<str>>)
-			end
-		}
-	| date_time_value
-		{
-			create date_time_interval.make_point($1)
-			create c_date_time.make_range(date_time_interval)
-		}
-	| date_time_interval_value
-		{
-			create c_date_time.make_range(date_time_interval)
-		}
-	;
-
-c_date_time: c_date_time_constraint
-	| c_date_time_constraint ';' date_time_value
-		{
-			if c_date_time.valid_value($3) then
-				c_date_time.set_assumed_value($3)
-			else
-				abort_with_error("VOBAV", <<$3.out>>)
-			end
-		}
-	| c_date_time_constraint ';' error
+	| c_date_time ';' error
 		{
 			abort_with_error("SCDTAV", Void)
 		}
 	;
 
-c_duration_constraint: duration_pattern
-	| duration_pattern '/' duration_interval_value
-		{
-			create c_duration.make_pattern_with_range (c_duration.pattern, duration_interval)
-		}
-	| duration_value
-		{
-			create duration_interval.make_point($1)
-			create c_duration.make_range(duration_interval)
-		}
-	| duration_interval_value
-		{
-			create c_duration.make_range(duration_interval)
-		}
-	;
-
-duration_pattern: V_ISO8601_DURATION_CONSTRAINT_PATTERN
+c_duration: V_ISO8601_DURATION_CONSTRAINT_PATTERN
 		{
 			if valid_iso8601_duration_constraint_pattern ($1) then
-				create c_duration.make_from_pattern ($1)
+				create $$.make_from_pattern ($1)
 			else
 				abort_with_error("SCDUPT", Void)
 			end
 		}
-	;
-
-c_duration: c_duration_constraint
-	| c_duration_constraint ';' duration_value
+	| V_ISO8601_DURATION_CONSTRAINT_PATTERN '/' duration_interval_value
 		{
-			if c_duration.valid_value($3) then
-				c_duration.set_assumed_value($3)
+			if valid_iso8601_duration_constraint_pattern ($1) then
+				create $$.make_pattern_with_range ($1, $3)
 			else
-				abort_with_error("VOBAV", <<$3.out>>)
+				abort_with_error("SCDUPT", Void)
 			end
 		}
-	| c_duration_constraint ';' error
+	| duration_value
+		{
+			create $$.make_range (create {INTERVAL [ISO8601_DURATION]}.make_point($1))
+		}
+	| duration_interval_value
+		{
+			create $$.make_range ($1)
+		}
+	| c_duration ';' duration_value
+		{
+			if $1.valid_value ($3) then
+				$1.set_assumed_value ($3)
+				$$ := $1
+			else
+				abort_with_error ("VOBAV", <<$3.out>>)
+			end
+		}
+	| c_duration ';' error
 		{
 			abort_with_error("SCDUAV", Void)
 		}
 	;
 
-c_string_spec:  V_STRING 	-- single value, generates closed list
+c_string: V_STRING 	-- single value, generates closed list
 		{
-			create string_list.make(0)
-			string_list.extend($1)
-			create c_string.make_from_string_list(string_list)
-			string_list := Void
+			create $$.make_from_string_list (create {ARRAYED_LIST [STRING]}.make_from_array (<<$1>>))
 		}
-	| string_list_value	-- closed list
+	| string_list_value
 		{
-			create c_string.make_from_string_list($1)
+			create $$.make_from_string_list ($1)
 		}
-	| string_list_value ',' SYM_LIST_CONTINUE -- open list
+	| string_list_value_continue
 		{
-			create c_string.make_from_string_list($1)
-			c_string.set_open
+			create $$.make_from_string_list ($1)
+			$$.set_open
 		}
 	| V_REGEXP -- regular expression with "//" or "^^" delimiters
 		{
-			create c_string.make_from_regexp($1.substring (2, $1.count - 1), $1.item(1) = '/')
-			if c_string.regexp.is_equal(c_string.regexp_compile_error) then
-				abort_with_error("SCSRE", <<$1>>)
+			create $$.make_from_regexp ($1.substring (2, $1.count - 1), $1.item(1) = '/')
+			if $$.regexp.is_equal ({C_STRING}.regexp_compile_error) then
+				abort_with_error ("SCSRE", <<$1>>)
 			end
 		}
-	;
-
-c_string: c_string_spec
-	| c_string_spec ';' string_value
+	| c_string ';' string_value
 		{
-			if c_string.valid_value($3) then
-				c_string.set_assumed_value($3)
+			if $1.valid_value ($3) then
+				$1.set_assumed_value ($3)
+				$$ := $1
 			else
-				abort_with_error("VOBAV", <<$3.out>>)
+				abort_with_error ("VOBAV", <<$3.out>>)
 			end
 		}
-	| c_string_spec ';' error
+	| c_string ';' error
 		{
-			abort_with_error("SCSAV", Void)
+			abort_with_error ("SCSAV", Void)
 		}
 	;
 
-c_boolean_spec: SYM_TRUE
+c_boolean: SYM_TRUE
 		{
-			create c_boolean.make_true
+			create $$.make_true
 		}
 	| SYM_FALSE 
 		{
-			create c_boolean.make_false
+			create $$.make_false
 		}
 	| SYM_TRUE ',' SYM_FALSE 
 		{
-			create c_boolean.make_true_false
+			create $$.make_true_false
 		}
 	| SYM_FALSE ',' SYM_TRUE 
 		{
-			create c_boolean.make_true_false
+			create $$.make_true_false
+		}
+	| c_boolean ';' boolean_value
+		{
+			if $1.valid_value ($3) then
+				$1.set_assumed_value ($3)
+			else
+				abort_with_error ("VOBAV", <<$3.out>>)
+			end
+			$$ := $1
+		}
+	| c_boolean ';' error
+		{
+			abort_with_error ("SCBAV", Void)
 		}
 	;
 
-c_boolean: c_boolean_spec
-	| c_boolean_spec ';' boolean_value
+c_ordinal: ordinal
 		{
-			if c_boolean.valid_value($3) then
-				c_boolean.set_assumed_value($3)
+			create $$.make
+			$$.add_item ($1)
+		}
+	| c_ordinal ',' ordinal
+		{
+			if $1.has_item ($3.value) then
+				abort_with_error ("VCOV", <<$3.value.out>>)
+			elseif $1.has_code_phrase ($3.symbol) then
+				abort_with_error ("VCOC", <<$3.symbol.code_string>>)
+			else
+				$1.add_item ($3)
+			end
+			$$ := $1
+		}
+ 	| c_ordinal ';' integer_value
+ 		{
+			if $1.has_item ($3) then
+				$1.set_assumed_value_from_integer ($3)
 			else
 				abort_with_error("VOBAV", <<$3.out>>)
 			end
-		}
-	| c_boolean_spec ';' error
-		{
-			abort_with_error("SCBAV", Void)
-		}
-	;
-
-c_ordinal: c_ordinal_spec
- 	| c_ordinal_spec ';' integer_value
- 		{
-			if ordinal_node.has_item ($3) then
-				ordinal_node.set_assumed_value_from_integer ($3)
-			else
-				abort_with_error("VOBAV", <<$3.out>>)
-			end
+			$$ := $1
  		}
- 	| c_ordinal_spec ';' error
+ 	| c_ordinal ';' error
  		{
-			abort_with_error("SCOAV", Void)
+			abort_with_error ("SCOAV", Void)
  		}
-	;
-
-c_ordinal_spec: ordinal
-	| c_ordinal_spec ',' ordinal
 	;
 
 ordinal: integer_value SYM_INTERVAL_DELIM V_QUALIFIED_TERM_CODE_REF
 		{
-			if ordinal_node = Void then
-				create ordinal_node.make
-			end
-
-			create a_code_phrase.make_from_string ($3)
-			create an_ordinal.make ($1, a_code_phrase)
-
-			if ordinal_node.has_item ($1) then
-				abort_with_error("VCOV", <<$1.out>>)
-			elseif ordinal_node.has_code_phrase (a_code_phrase) then
-				abort_with_error("VCOC", <<$3>>)
-			else
-				ordinal_node.add_item (an_ordinal)
-			end
+			create $$.make ($1, create {CODE_PHRASE}.make_from_string ($3))
 		}
 	;
 
 c_code_phrase: V_TERM_CODE_CONSTRAINT	-- e.g. "[local::at0040, at0041; at0040]"
 		{
-			create c_code_phrase_obj.default_create
+			create $$.default_create
 
-			if c_code_phrase_obj.valid_pattern ($1) then
-				c_code_phrase_obj.make_from_pattern ($1)
+			if $$.valid_pattern ($1) then
+				$$.make_from_pattern ($1)
 			else
-				abort_with_error("VOBAV", <<c_code_phrase_obj.fail_reason>>)
+				abort_with_error("VOBAV", <<$$.fail_reason>>)
 			end
 		}
 	| V_QUALIFIED_TERM_CODE_REF
 		{
-			create c_code_phrase_obj.make_from_pattern($1)
+			create $$.make_from_pattern($1)
 		}
 	;
  
 constraint_ref: V_LOCAL_TERM_CODE_REF	-- e.g. "ac0003"
 		{
-			create constraint_ref.make($1)
+			create $$.make($1)
 		}
 	;
 
@@ -1568,7 +1550,12 @@ string_list_value: V_STRING ',' V_STRING
 			$1.extend($3)
 			$$ := $1
 		}
-	| string_list_value ',' SYM_LIST_CONTINUE
+	;
+
+--
+-- FIXME: the first one below only for badly formed lists with superfluous continue marks
+--
+string_list_value_continue: string_list_value ',' SYM_LIST_CONTINUE
 		{
 			$$ := $1
 		}
@@ -1611,8 +1598,7 @@ integer_list_value: integer_value ',' integer_value
 integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $4 then
-				create integer_interval.make_bounded($2, $4, True, True)
-				$$ := integer_interval
+				create $$.make_bounded($2, $4, True, True)
 			else
 				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
@@ -1620,8 +1606,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 	| SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS integer_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $5 then
-				create integer_interval.make_bounded($3, $5, False, True)
-				$$ := integer_interval
+				create $$.make_bounded($3, $5, False, True)
 			else
 				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
@@ -1629,8 +1614,7 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 	| SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $5 then
-				create integer_interval.make_bounded($2, $5, True, False)
-				$$ := integer_interval
+				create $$.make_bounded($2, $5, True, False)
 			else
 				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
@@ -1638,36 +1622,30 @@ integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_va
 	| SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $6 then
-				create integer_interval.make_bounded($3, $6, False, False)
-				$$ := integer_interval
+				create $$.make_bounded($3, $6, False, False)
 			else
 				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT integer_value SYM_INTERVAL_DELIM
 		{
-			create integer_interval.make_lower_unbounded($3, False)
-			$$ := integer_interval
+			create $$.make_lower_unbounded($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_LE integer_value SYM_INTERVAL_DELIM
 		{
-			create integer_interval.make_lower_unbounded($3, True)
-			$$ := integer_interval
+			create $$.make_lower_unbounded($3, True)
 		}
 	| SYM_INTERVAL_DELIM SYM_GT integer_value SYM_INTERVAL_DELIM
 		{
-			create integer_interval.make_upper_unbounded($3, False)
-			$$ := integer_interval
+			create $$.make_upper_unbounded($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_GE integer_value SYM_INTERVAL_DELIM
 		{
-			create integer_interval.make_upper_unbounded($3, True)
-			$$ := integer_interval
+			create $$.make_upper_unbounded($3, True)
 		}
 	| SYM_INTERVAL_DELIM integer_value SYM_INTERVAL_DELIM
 		{
-			create integer_interval.make_point($2)
-			$$ := integer_interval
+			create $$.make_point($2)
 		}
 	;
 
@@ -1675,11 +1653,11 @@ real_value: V_REAL
 		{
 			$$ := $1
 		}
-	| '+' V_REAL 
+	| '+' V_REAL %prec UNARY_MINUS
 		{
 			$$ := $2
 		}
-	| '-' V_REAL 
+	| '-' V_REAL %prec UNARY_MINUS
 		{
 			$$ := - $2
 		}
@@ -1706,8 +1684,7 @@ real_list_value: real_value ',' real_value
 real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $4 then
-				create real_interval.make_bounded($2, $4, True, True)
-				$$ := real_interval
+				create $$.make_bounded($2, $4, True, True)
 			else
 				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
@@ -1715,8 +1692,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 	| SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS real_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $5 then
-				create real_interval.make_bounded($3, $5, False, True)
-				$$ := real_interval
+				create $$.make_bounded($3, $5, False, True)
 			else
 				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
@@ -1724,8 +1700,7 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 	| SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $5 then
-				create real_interval.make_bounded($2, $5, True, False)
-				$$ := real_interval
+				create $$.make_bounded($2, $5, True, False)
 			else
 				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
@@ -1733,36 +1708,30 @@ real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_I
 	| SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $6 then
-				create real_interval.make_bounded($3, $6, False, False)
-				$$ := real_interval
+				create $$.make_bounded($3, $6, False, False)
 			else
 				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT real_value SYM_INTERVAL_DELIM
 		{
-			create real_interval.make_lower_unbounded($3, False)
-			$$ := real_interval
+			create $$.make_lower_unbounded($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_LE real_value SYM_INTERVAL_DELIM
 		{
-			create real_interval.make_lower_unbounded($3, True)
-			$$ := real_interval
+			create $$.make_lower_unbounded($3, True)
 		}
 	| SYM_INTERVAL_DELIM SYM_GT real_value SYM_INTERVAL_DELIM
 		{
-			create real_interval.make_upper_unbounded($3, False)
-			$$ := real_interval
+			create $$.make_upper_unbounded($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_GE real_value SYM_INTERVAL_DELIM
 		{
-			create real_interval.make_upper_unbounded($3, True)
-			$$ := real_interval
+			create $$.make_upper_unbounded($3, True)
 		}
 	| SYM_INTERVAL_DELIM real_value SYM_INTERVAL_DELIM
 		{
-			create real_interval.make_point($2)
-			$$ := real_interval
+			create $$.make_point($2)
 		}
 	;
 
@@ -1849,8 +1818,7 @@ date_list_value: date_value ',' date_value
 date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $4 then
-				create date_interval.make_bounded($2, $4, True, True)
-				$$ := date_interval
+				create $$.make_bounded($2, $4, True, True)
 			else
 				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
@@ -1858,8 +1826,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 	| SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS date_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $5 then
-				create date_interval.make_bounded($3, $5, False, True)
-				$$ := date_interval
+				create $$.make_bounded($3, $5, False, True)
 			else
 				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
@@ -1867,8 +1834,7 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 	| SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $5 then
-				create date_interval.make_bounded($2, $5, True, False)
-				$$ := date_interval
+				create $$.make_bounded($2, $5, True, False)
 			else
 				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
@@ -1876,36 +1842,30 @@ date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_I
 	| SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $6 then
-				create date_interval.make_bounded($3, $6, False, False)
-				$$ := date_interval
+				create $$.make_bounded($3, $6, False, False)
 			else
 				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT date_value SYM_INTERVAL_DELIM
 		{
-			create date_interval.make_lower_unbounded($3, False)
-			$$ := date_interval
+			create $$.make_lower_unbounded($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_LE date_value SYM_INTERVAL_DELIM
 		{
-			create date_interval.make_lower_unbounded($3, True)
-			$$ := date_interval
+			create $$.make_lower_unbounded($3, True)
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_value SYM_INTERVAL_DELIM
 		{
-			create date_interval.make_upper_unbounded($3, False)
-			$$ := date_interval
+			create $$.make_upper_unbounded($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_GE date_value SYM_INTERVAL_DELIM
 		{
-			create date_interval.make_upper_unbounded($3, True)
-			$$ := date_interval
+			create $$.make_upper_unbounded($3, True)
 		}
 	| SYM_INTERVAL_DELIM date_value SYM_INTERVAL_DELIM
 		{
-			create date_interval.make_point($2)
-			$$ := date_interval
+			create $$.make_point($2)
 		}
 	;
 
@@ -1940,8 +1900,7 @@ time_list_value: time_value ',' time_value
 time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $4 then
-				create time_interval.make_bounded($2, $4, True, True)
-				$$ := time_interval
+				create $$.make_bounded($2, $4, True, True)
 			else
 				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
@@ -1949,8 +1908,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 	| SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS time_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $5 then
-				create time_interval.make_bounded($3, $5, False, True)
-				$$ := time_interval
+				create $$.make_bounded($3, $5, False, True)
 			else
 				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
@@ -1958,8 +1916,7 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 	| SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $5 then
-				create time_interval.make_bounded($2, $5, True, False)
-				$$ := time_interval
+				create $$.make_bounded($2, $5, True, False)
 			else
 				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
@@ -1967,36 +1924,30 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
 	| SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $6 then
-				create time_interval.make_bounded($3, $6, False, False)
-				$$ := time_interval
+				create $$.make_bounded($3, $6, False, False)
 			else
 				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT time_value SYM_INTERVAL_DELIM
 		{
-			create time_interval.make_lower_unbounded($3, False)
-			$$ := time_interval
+			create $$.make_lower_unbounded($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_LE time_value SYM_INTERVAL_DELIM
 		{
-			create time_interval.make_lower_unbounded($3, True)
-			$$ := time_interval
+			create $$.make_lower_unbounded($3, True)
 		}
 	| SYM_INTERVAL_DELIM SYM_GT time_value SYM_INTERVAL_DELIM
 		{
-			create time_interval.make_upper_unbounded($3, False)
-			$$ := time_interval
+			create $$.make_upper_unbounded($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_GE time_value SYM_INTERVAL_DELIM
 		{
-			create time_interval.make_upper_unbounded($3, True)
-			$$ := time_interval
+			create $$.make_upper_unbounded($3, True)
 		}
 	| SYM_INTERVAL_DELIM time_value SYM_INTERVAL_DELIM
 		{
-			create time_interval.make_point($2)
-			$$ := time_interval
+			create $$.make_point($2)
 		}
 	;
 
@@ -2031,8 +1982,7 @@ date_time_list_value: date_time_value ',' date_time_value
 date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_time_value  SYM_INTERVAL_DELIM
 		{
 			if $2 <= $4 then
-				create date_time_interval.make_bounded($2, $4, True, True)
-				$$ := date_time_interval
+				create $$.make_bounded($2, $4, True, True)
 			else
 				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
@@ -2040,8 +1990,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 	| SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS date_time_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $5 then
-				create date_time_interval.make_bounded($3, $5, False, True)
-				$$ := date_time_interval
+				create $$.make_bounded($3, $5, False, True)
 			else
 				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
@@ -2049,8 +1998,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 	| SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $5 then
-				create date_time_interval.make_bounded($2, $5, True, False)
-				$$ := date_time_interval
+				create $$.make_bounded($2, $5, True, False)
 			else
 				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
@@ -2058,36 +2006,30 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 	| SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $6 then
-				create date_time_interval.make_bounded($3, $6, False, False)
-				$$ := date_time_interval
+				create $$.make_bounded($3, $6, False, False)
 			else
 				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT date_time_value SYM_INTERVAL_DELIM
 		{
-			create date_time_interval.make_lower_unbounded($3, False)
-			$$ := date_time_interval
+			create $$.make_lower_unbounded($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_LE date_time_value SYM_INTERVAL_DELIM
 		{
-			create date_time_interval.make_lower_unbounded($3, True)
-			$$ := date_time_interval
+			create $$.make_lower_unbounded($3, True)
 		}
 	| SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_INTERVAL_DELIM
 		{
-			create date_time_interval.make_upper_unbounded($3, False)
-			$$ := date_time_interval
+			create $$.make_upper_unbounded($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_GE date_time_value SYM_INTERVAL_DELIM
 		{
-			create date_time_interval.make_upper_unbounded($3, True)
-			$$ := date_time_interval
+			create $$.make_upper_unbounded($3, True)
 		}
 	| SYM_INTERVAL_DELIM date_time_value SYM_INTERVAL_DELIM
 		{
-			create date_time_interval.make_point($2)
-			$$ := date_time_interval
+			create $$.make_point($2)
 		}
 	;
 
@@ -2122,8 +2064,7 @@ duration_list_value: duration_value ',' duration_value
 duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $4 then
-				create duration_interval.make_bounded($2, $4, True, True)
-				$$ := duration_interval
+				create $$.make_bounded($2, $4, True, True)
 			else
 				abort_with_error("VIVLO", <<$2.out, $4.out>>)
 			end
@@ -2131,8 +2072,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 	| SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS duration_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $5 then
-				create duration_interval.make_bounded($3, $5, False, True)
-				$$ := duration_interval
+				create $$.make_bounded($3, $5, False, True)
 			else
 				abort_with_error("VIVLO", <<$3.out, $5.out>>)
 			end
@@ -2140,8 +2080,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 	| SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM
 		{
 			if $2 <= $5 then
-				create duration_interval.make_bounded($2, $5, True, False)
-				$$ := duration_interval
+				create $$.make_bounded($2, $5, True, False)
 			else
 				abort_with_error("VIVLO", <<$2.out, $5.out>>)
 			end
@@ -2149,47 +2088,40 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 	| SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM
 		{
 			if $3 <= $6 then
-				create duration_interval.make_bounded($3, $6, False, False)
-				$$ := duration_interval
+				create $$.make_bounded($3, $6, False, False)
 			else
 				abort_with_error("VIVLO", <<$3.out, $6.out>>)
 			end
 		}
 	| SYM_INTERVAL_DELIM SYM_LT duration_value SYM_INTERVAL_DELIM
 		{
-			create duration_interval.make_lower_unbounded($3, False)
-			$$ := duration_interval
+			create $$.make_lower_unbounded($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_LE duration_value SYM_INTERVAL_DELIM
 		{
-			create duration_interval.make_lower_unbounded($3, True)
-			$$ := duration_interval
+			create $$.make_lower_unbounded($3, True)
 		}
 	| SYM_INTERVAL_DELIM SYM_GT duration_value SYM_INTERVAL_DELIM
 		{
-			create duration_interval.make_upper_unbounded($3, False)
-			$$ := duration_interval
+			create $$.make_upper_unbounded($3, False)
 		}
 	| SYM_INTERVAL_DELIM SYM_GE duration_value SYM_INTERVAL_DELIM
 		{
-			create duration_interval.make_upper_unbounded($3, True)
-			$$ := duration_interval
+			create $$.make_upper_unbounded($3, True)
 		}
 	| SYM_INTERVAL_DELIM duration_value SYM_INTERVAL_DELIM
 		{
-			create duration_interval.make_point($2)
-			$$ := duration_interval
+			create $$.make_point($2)
 		}
 	;
 
 term_code: V_QUALIFIED_TERM_CODE_REF
 		{
-			create term.make_from_string($1)
-			$$ := term
+			create $$.make_from_string($1)
 		}
 	| ERR_V_QUALIFIED_TERM_CODE_REF
 		{
-			abort_with_error("STCV", <<$1>>)
+			abort_with_error ("STCV", <<$1>>)
 		}
 	;
 
@@ -2213,8 +2145,7 @@ term_code_list_value: term_code ',' term_code
 
 uri_value: V_URI
 		{
-			create a_uri.make_from_string($1)
-			$$ := a_uri
+			create $$.make_from_string($1)
 		}
 	;
 
@@ -2223,6 +2154,10 @@ uri_value: V_URI
 -----------------------------------------------------------------
 
 %%
+
+feature -- Definitions
+
+	Unbounded_value: INTEGER = -1
 
 feature -- Initialization
 
@@ -2374,33 +2309,10 @@ feature {NONE} -- Parse Tree
 	attr_node: C_ATTRIBUTE
 
 	c_prim_obj: C_PRIMITIVE_OBJECT
-	c_code_phrase_obj: C_CODE_PHRASE
-	constraint_ref: CONSTRAINT_REF
 	archetype_slot: ARCHETYPE_SLOT
-
-	ordinal_node: C_DV_ORDINAL
-	an_ordinal: ORDINAL
-	a_code_phrase: CODE_PHRASE
-
-	expr_tree: EXPR_OPERATOR
-	expr_leaf: EXPR_LEAF
-
-	c_string: C_STRING
-	string_list: ARRAYED_LIST [STRING]
-	c_boolean: C_BOOLEAN
-	c_real: C_REAL
-	c_integer:  C_INTEGER
-	c_time: C_TIME
-	c_date_time: C_DATE_TIME
-	c_duration: C_DURATION
-
-	a_cardinality: CARDINALITY
-	cardinality_limit_pos_infinity: BOOLEAN
 
 	rm_attribute_name: STRING
 	parent_path_str: STRING
-
-	occurrences: STRING
 
 	invariant_expr: STRING
 
@@ -2412,25 +2324,8 @@ feature {NONE} -- Parse Tree
 -------------- FOLLOWING TAKEN FROM DADL_VALIDATOR.Y ---------------
 feature {NONE} -- Implementation 
 
-	term: CODE_PHRASE
-	a_uri: URI
-
 	arch_internal_ref_rm_type_name: STRING
 	arch_internal_ref_node_id: STRING
-
-	multiplicity_interval: MULTIPLICITY_INTERVAL
-	int_interval: INTERVAL [INTEGER]
-	rl_interval: INTERVAL [REAL]
-
-	integer_interval: INTERVAL [INTEGER]
-	real_interval: INTERVAL [REAL]
-	date_interval: INTERVAL [ISO8601_DATE]
-	time_interval: INTERVAL [ISO8601_TIME]
-	date_time_interval: INTERVAL [ISO8601_DATE_TIME]
-	duration_interval: INTERVAL [ISO8601_DURATION]
-
-	int_list: ARRAYED_LIST [INTEGER]
-	real_list: ARRAYED_LIST [REAL]
 
 	indent: STRING
 	str: STRING

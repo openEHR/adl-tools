@@ -97,6 +97,8 @@ feature -- Access
 				Result := "ERR_V_QUALIFIED_TERM_CODE_REF"
 			when ERR_V_LOCAL_TERM_CODE_REF then
 				Result := "ERR_V_LOCAL_TERM_CODE_REF"
+			when UNARY_MINUS then
+				Result := "UNARY_MINUS"
 			else
 				Result := yy_character_token_name (a_token)
 			end
@@ -139,5 +141,6 @@ feature -- Token codes
 	ERR_CADL_MISPLACED: INTEGER = 290
 	ERR_V_QUALIFIED_TERM_CODE_REF: INTEGER = 291
 	ERR_V_LOCAL_TERM_CODE_REF: INTEGER = 292
+	UNARY_MINUS: INTEGER = 293
 
 end

@@ -65,8 +65,23 @@ feature {NONE} -- Implementation
 		end
 
 	c_pixmap: EV_PIXMAP
+		local
+			pixmap_name: STRING
 		do
-			Result := get_icon_pixmap (Pixmap_path + "operands" + resource_path_separator + arch_node.type.as_lower)
+			pixmap_name := Pixmap_path + "operands" + resource_path_separator + arch_node.type
+			if has_icon_pixmap (pixmap_name) then
+				Result := get_icon_pixmap (pixmap_name)
+			else
+				pixmap_name := rm_icon_dir + resource_path_separator + rm_schema.rm_publisher + resource_path_separator + arch_node.type
+				if has_icon_pixmap (pixmap_name) then
+					Result := get_icon_pixmap (pixmap_name)
+				else
+					pixmap_name := "am" + resource_path_separator + "added" + resource_path_separator + arch_node.type
+					if has_icon_pixmap (pixmap_name) then
+						Result := get_icon_pixmap (pixmap_name)
+					end
+				end
+			end
 		end
 
 end

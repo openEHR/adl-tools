@@ -213,7 +213,7 @@ feature -- Access
 			Result.put("xor", op_xor)
 			Result.put("implies", op_implies)
 			Result.put("for all", op_for_all)
-			Result.put("there exists", op_exists)
+			Result.put("exists", op_exists)
 			Result.put("plus", op_plus)
 			Result.put("minus", op_minus)
 			Result.put("multiply", op_multiply)
@@ -238,7 +238,7 @@ feature -- Access
 			Result.put("xor", op_xor)
 			Result.put("implies", op_implies)
 			Result.put("for_all", op_for_all)
-			Result.put("there_exists", op_exists)
+			Result.put("exists", op_exists)
 			Result.put("plus", op_plus)
 			Result.put("minus", op_minus)
 			Result.put("multiply", op_multiply)
@@ -263,7 +263,7 @@ feature -- Access
 			Result.put("xor", op_xor)
 			Result.put("implies", op_implies)
 			Result.put("for_all", op_for_all)
-			Result.put("there_exists", op_exists)
+			Result.put("exists", op_exists)
 			Result.put("+", op_plus)
 			Result.put("-", op_minus)
 			Result.put("*", op_multiply)
@@ -288,7 +288,7 @@ feature -- Access
 			Result.put(op_xor, "xor")
 			Result.put(op_implies, "implies")
 			Result.put(op_for_all, "for_all")
-			Result.put(op_exists, "there_exists")
+			Result.put(op_exists, "exists")
 			Result.put(op_plus, "+")
 			Result.put(op_minus, "-")
 			Result.put(op_multiply, "*")
@@ -313,7 +313,7 @@ feature -- Access
 			Result.put("xor", op_xor)	-- U+22BB
 			Result.put("implies", op_implies) -- U+21D2
 			Result.put("for_all", op_for_all) -- U+2200
-			Result.put("there_exists", op_exists) -- U+2203
+			Result.put("exists", op_exists) -- U+2203
 			Result.put("+", op_plus)
 			Result.put("-", op_minus)
 			Result.put("*", op_multiply)
