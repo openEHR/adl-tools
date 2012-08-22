@@ -1193,29 +1193,31 @@ feature {NONE} -- Implementation
 			slot_match_ids: ARRAYED_SET [STRING]
 			ara: ARCH_CAT_ARCHETYPE
 		do
-			create sub_menu.make_with_text (get_text ("archetype_slot_node_submenu_text"))
 			create slot_match_ids.make (0)
 			slot_match_ids.compare_objects
-			if not a_slot.includes.is_empty and not a_slot.includes.first.matches_any then
-				from a_slot.includes.start until a_slot.includes.off loop
-					if attached {STRING} a_slot.includes.item.extract_regex as a_regex then
+			if a_slot.has_includes and not a_slot.includes.first.matches_any then
+				across a_slot.includes as slot_includes_csr loop
+					if attached {STRING} slot_includes_csr.item.extract_regex as a_regex then
 						slot_match_ids.merge (current_arch_cat.matching_ids (a_regex, a_slot.rm_type_name, Void))
 					end
-					a_slot.includes.forth
 				end
-			end
+				if a_slot.has_excludes and then a_slot.excludes.first.matches_any then
+					create sub_menu.make_with_text (get_text ("archetype_slot_node_submenu_exact_text"))
+				else
+					create sub_menu.make_with_text (get_text ("archetype_slot_node_submenu_preferred_text"))
+				end
 
-			-- ensure we have only a unique set
-			from slot_match_ids.start until slot_match_ids.off loop
-				ara := current_arch_cat.archetype_index.item (slot_match_ids.item)
-				create an_mi.make_with_text_and_action (slot_match_ids.item, agent (gui_agents.select_archetype_in_new_tool_agent).call ([ara]))
-				an_mi.set_pixmap (get_icon_pixmap ("archetype/" + ara.group_name))
-				sub_menu.extend (an_mi)
-				slot_match_ids.forth
-			end
+				-- ensure we have only a unique set
+				across slot_match_ids as slot_match_ids_csr loop
+					ara := current_arch_cat.archetype_index.item (slot_match_ids_csr.item)
+					create an_mi.make_with_text_and_action (slot_match_ids_csr.item, agent (gui_agents.select_archetype_in_new_tool_agent).call ([ara]))
+					an_mi.set_pixmap (get_icon_pixmap ("archetype/" + ara.group_name))
+					sub_menu.extend (an_mi)
+				end
 
-			if not sub_menu.is_empty then
-				menu.extend (sub_menu)
+				if not sub_menu.is_empty then
+					menu.extend (sub_menu)
+				end
 			end
 		end
 
@@ -1273,15 +1275,14 @@ feature {NONE} -- Implementation
 		do
 			-- create sub menu listing subtypes to change current node into
 			create chg_sub_menu.make_with_text (get_text ("context_menu_convert_node_to_subtype"))
-			from a_substitutions.start until a_substitutions.off loop
-				create an_mi.make_with_text_and_action (a_substitutions.item, agent convert_node_to_subtype (a_substitutions.item, a_class_grid_row, True))
-				if rm_schema.class_definition (a_substitutions.item).is_abstract then
+			across a_substitutions as subs_csr loop
+				create an_mi.make_with_text_and_action (subs_csr.item, agent convert_node_to_subtype (subs_csr.item, a_class_grid_row, True))
+				if rm_schema.class_definition (subs_csr.item).is_abstract then
 					an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))
 				else
 					an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_concrete"))
 				end
 	    		chg_sub_menu.extend (an_mi)
-				a_substitutions.forth
 			end
 			menu.extend (chg_sub_menu)
 
@@ -1291,15 +1292,14 @@ feature {NONE} -- Implementation
 --			then
 --				-- create sub menu listing subtypes to add to parent node
 --				create chg_sub_menu.make_with_text (get_text ("context_menu_add_subtype_mode"))
---				from a_substitutions.start until a_substitutions.off loop
---					create an_mi.make_with_text_and_action (a_substitutions.item, agent convert_node_to_subtype (a_substitutions.item, a_class_grid_row, False))
---					if rm_schema.class_definition (a_substitutions.item).is_abstract then
+--				across a_substitutions as subs_csr loop
+--					create an_mi.make_with_text_and_action (subs_csr.item, agent convert_node_to_subtype (subs_csr.item, a_class_grid_row, False))
+--					if rm_schema.class_definition (subs_csr.item).is_abstract then
 --						an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))
 --					else
 --						an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_concrete"))
 --					end
 --		    		chg_sub_menu.extend (an_mi)
---					a_substitutions.forth
 --				end
 --				menu.extend (chg_sub_menu)
 --			end
@@ -1361,10 +1361,8 @@ feature {NONE} -- Implementation
 
 	refresh_row (a_row: EV_GRID_ROW)
 		do
-			if attached {BMM_TYPE_SPECIFIER} a_row.data as a_type_spec then
-				if attached {EV_GRID_LABEL_ITEM} a_row.item (Definition_grid_col_rm_name) as gli then
-					gli.set_pixmap (rm_type_pixmap (a_type_spec, rm_publisher))
-				end
+			if attached {BMM_TYPE_SPECIFIER} a_row.data as a_type_spec and then attached {EV_GRID_LABEL_ITEM} a_row.item (Definition_grid_col_rm_name) as gli then
+				gli.set_pixmap (rm_type_pixmap (a_type_spec, rm_publisher))
 			end
 		end
 

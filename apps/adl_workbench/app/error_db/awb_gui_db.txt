@@ -298,7 +298,8 @@ templates = <
 		["include_text"] = <"[includes]">
 		["exclude_text"] = <"[excludes]">
 
-		["archetype_slot_node_submenu_text"] = <"Slot-fillers (preferred)">
+		["archetype_slot_node_submenu_preferred_text"] = <"Slot-fillers (preferred)">
+		["archetype_slot_node_submenu_exact_text"] = <"Slot-fillers (mandated)">
 		["view_node_id_in_ontology"] = <"View node id in ontology">
 
 		["path_term_bindings_tooltip_text"] = <"Term bindings to path:">

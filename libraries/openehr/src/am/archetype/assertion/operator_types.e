@@ -296,30 +296,30 @@ feature -- Access
 			Result.put(op_exp, "^")
 		end
 
-	operator_glyphs: HASH_TABLE [STRING, INTEGER]
-			-- graphic symbols of operators, keyed by value
-		once
-			create Result.make(0)
-			Result.put("=", op_eq)
-			Result.put("<>", op_ne)		-- U+2260
-			Result.put("<=", op_le)		-- U+2264
-			Result.put("<", op_lt)
-			Result.put(">=", op_ge)		-- U+2265
-			Result.put(">", op_gt)
-			Result.put("matches", op_matches) -- U+2208
-			Result.put("not", op_not)	-- U+00AC
-			Result.put("and", op_and)	-- U+2227
-			Result.put("or", op_or)		-- U+2228
-			Result.put("xor", op_xor)	-- U+22BB
-			Result.put("implies", op_implies) -- U+21D2
-			Result.put("for_all", op_for_all) -- U+2200
-			Result.put("exists", op_exists) -- U+2203
-			Result.put("+", op_plus)
-			Result.put("-", op_minus)
-			Result.put("*", op_multiply)
-			Result.put("/", op_divide)
-			Result.put("^", op_exp)
-		end
+--	operator_glyphs: HASH_TABLE [STRING_32, INTEGER]
+--			-- graphic symbols of operators, keyed by value
+--		once
+--			create Result.make(0)
+--			Result.put("=", op_eq)
+--			Result.put({STRING_32} "%/0x2260/", op_ne)		-- U+2260
+--			Result.put({STRING_32} "%/0x2264/", op_le)		-- U+2264
+--			Result.put("<", op_lt)
+--			Result.put({STRING_32} "%/0x2265/", op_ge)		-- U+2265
+--			Result.put(">", op_gt)
+--			Result.put({STRING_32} "%/0x2208/", op_matches) -- U+2208
+--			Result.put({STRING_32} "%/0x00AC/", op_not)	-- U+00AC
+--			Result.put({STRING_32} "%/0x2227/", op_and)	-- U+2227
+--			Result.put({STRING_32} "%/0x2228/", op_or)		-- U+2228
+--			Result.put({STRING_32} "%/0x22BB/", op_xor)	-- U+22BB
+--			Result.put({STRING_32} "%/0x21D2/", op_implies) -- U+21D2
+--			Result.put({STRING_32} "%/0x2200/", op_for_all) -- U+2200
+--			Result.put({STRING_32} "%/0x2203/", op_exists) -- U+2203
+--			Result.put("+", op_plus)
+--			Result.put("-", op_minus)
+--			Result.put("*", op_multiply)
+--			Result.put("/", op_divide)
+--			Result.put("^", op_exp)
+--		end
 
 	operator_values: HASH_TABLE [INTEGER, STRING]
 			-- english names of operators, keyed by value

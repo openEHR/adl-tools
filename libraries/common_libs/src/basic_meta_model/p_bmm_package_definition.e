@@ -78,13 +78,11 @@ feature -- Modification
 	do_recursive_classes (action: PROCEDURE [ANY, TUPLE [P_BMM_PACKAGE_DEFINITION, STRING]])
 			-- recursively execute `action' procedure, taking package and class name as arguments
 		do
-			from classes.start until classes.off loop
-				action.call ([Current, classes.item])
-				classes.forth
+			across classes as classes_csr loop
+				action.call ([Current, classes_csr.item])
 			end
-			from packages.start until packages.off loop
-				packages.item_for_iteration.do_recursive_classes (action)
-				packages.forth
+			across packages as pkgs_csr loop
+				pkgs_csr.item.do_recursive_classes (action)
 			end
 		end
 
@@ -94,13 +92,12 @@ feature -- Modification
 			classes.merge (other.classes)
 
 			-- merge the packages
-			from other.packages.start until other.packages.after loop
-				if packages.has (other.packages.key_for_iteration) then
-					packages.item (other.packages.key_for_iteration).merge (other.packages.item_for_iteration)
+			across other.packages as pkgs_csr loop
+				if packages.has (pkgs_csr.key) then
+					packages.item (pkgs_csr.key).merge (pkgs_csr.item)
 				else
-					add_package (other.packages.item_for_iteration.deep_twin)
+					add_package (pkgs_csr.item.deep_twin)
 				end
-				other.packages.forth
 			end
 		end
 
@@ -110,10 +107,9 @@ feature -- Factory
 			-- generate a BMM_PACKAGE_DEFINITION object
 		do
 			create bmm_package_definition.make (name)
-			from packages.start until packages.off loop
-				packages.item_for_iteration.create_bmm_package_definition
-				bmm_package_definition.add_package (packages.item_for_iteration.bmm_package_definition)
-				packages.forth
+			across packages as pkgs_csr loop
+				pkgs_csr.item.create_bmm_package_definition
+				bmm_package_definition.add_package (pkgs_csr.item.bmm_package_definition)
 			end
 		end
 
@@ -128,9 +124,8 @@ feature {DT_OBJECT_CONVERTER} -- Finalisation
 			if attached classes then
 				create classes_copy.make (0)
 				classes_copy.compare_objects
-				from classes.start until classes.off loop
-					classes_copy.extend (classes.item)
-					classes.forth
+				across classes as classes_csr loop
+					classes_copy.extend (classes_csr.item)
 				end
 				classes := classes_copy
 			end

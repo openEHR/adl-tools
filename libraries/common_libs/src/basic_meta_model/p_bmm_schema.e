@@ -463,10 +463,10 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 				pkgs_csr.item.do_recursive_classes (
 					agent (a_pkg: P_BMM_PACKAGE_DEFINITION; a_class_name: STRING; class_list: HASH_TABLE [STRING, STRING])
 						do
-							if class_list.has (a_class_name) then
-								add_error ("BMM_CLDUP", <<schema_id, a_class_name, a_pkg.name, class_list.item (a_class_name)>>)
+							if class_list.has (a_class_name.as_lower) then
+								add_error ("BMM_CLDUP", <<schema_id, a_class_name, a_pkg.name, class_list.item (a_class_name.as_lower)>>)
 							else
-								class_list.put (a_pkg.name, a_class_name)
+								class_list.put (a_pkg.name, a_class_name.as_lower)
 							end
 						end (?, ?, package_classes)
 				)
