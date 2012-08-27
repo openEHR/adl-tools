@@ -1,53 +1,35 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Serialisation profile for native CADL"
-	keywords:    "test, ADL"
+	description: "Agents required to specify definition tree context menu actions"
+	keywords:    "archetype, definition, gui"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	support:     "http://www.openehr.org/issues/browse/AWBPR"
+	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class NATIVE_CADL_SERIALISATION_PROFILE
+class GUI_ARCHETYPE_TOOL_AGENTS
 
-inherit
-	NATIVE_SERIALISATION_PROFILE
+feature -- Access
 
-	CADL_TOKENS
-		export
-			{NONE} all
+	path_select_action_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
+
+	code_select_action_agent: PROCEDURE [ANY, TUPLE [STRING]]
+
+feature -- Modification
+
+	set_code_select_action_agent (agt: like code_select_action_agent)
+		do
+			code_select_action_agent := agt
 		end
 
-create
-	make
-
-feature {NONE} -- Implementation
-
-	symbols: HASH_TABLE[STRING, INTEGER]
-			-- keywords in this format, keyed by logical name
-		once
-			create Result.make(0)
-			Result.put("matches",			SYM_MATCHES)
-			Result.put("occurrences",		SYM_OCCURRENCES)
-			Result.put("existence",			SYM_EXISTENCE)
-			Result.put("cardinality",		SYM_CARDINALITY)
-			Result.put("use_node",			SYM_USE_NODE)
-			Result.put("allow_archetype",		SYM_ALLOW_ARCHETYPE)
-			Result.put("use_archetype",		SYM_USE_ARCHETYPE)
-
-			Result.put("closed",			SYM_CLOSED)
-			Result.put("include",			SYM_INCLUDE)
-			Result.put("exclude",			SYM_EXCLUDE)
-
-			Result.put("before",			SYM_BEFORE)
-			Result.put("after",			SYM_AFTER)
-
-			Result.put("{",				SYM_START_CBLOCK)
-			Result.put("}",				SYM_END_CBLOCK)
-			Result.put("*",				SYM_ANY)
+	set_path_select_action_agent (agt: like path_select_action_agent)
+		do
+			path_select_action_agent := agt
 		end
 
 end
@@ -67,7 +49,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is native_cadl_serialisation_profile.e.
+--| The Original Code is adl_node_map_control.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

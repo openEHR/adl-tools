@@ -17,7 +17,7 @@ class C_OBJECT_ED_CONTEXT
 inherit
 	ARCHETYPE_CONSTRAINT_ED_CONTEXT
 		redefine
-			make, arch_node, parent, display_in_grid
+			make, arch_node, parent, prepare_display_in_grid, display_in_grid
 		end
 
 create
@@ -55,30 +55,37 @@ feature -- Access
 
 	parent: C_ATTRIBUTE_ED_CONTEXT
 
-feature -- Status Report
-
 feature -- Display
 
-	display_in_grid (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag: BOOLEAN; a_lang: STRING)
+	prepare_display_in_grid (a_gui_grid: EVX_GRID)
+		do
+			precursor (a_gui_grid)
+			gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, "", Void, Void, c_pixmap)
+
+			build_arch_node_context_menu
+			gui_grid.add_last_row_pointer_button_press_actions (Definition_grid_col_rm_name, agent arch_class_node_handler (?, ?, ?))
+		end
+
+	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		local
 			s: STRING
 			lpos: INTEGER
 		do
-			precursor (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag, a_lang)
+			precursor (ui_settings)
 
 			-- RM name & meaning columns
 			if arch_node.is_addressable then
 				if in_technical_view then
-					gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, arch_node.rm_type_name, node_tooltip_str, c_object_colour, c_pixmap)
-					gui_grid.set_last_row_label_col (Definition_grid_col_meaning, node_id_text, node_tooltip_str, c_meaning_colour, Void)
+					gui_grid.update_last_row_label_col (Definition_grid_col_rm_name, arch_node.rm_type_name, node_tooltip_str, c_object_colour, c_pixmap)
+					gui_grid.update_last_row_label_col (Definition_grid_col_meaning, node_id_text, node_tooltip_str, c_meaning_colour, Void)
 		 		else
-					gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, node_id_text, node_tooltip_str, c_meaning_colour, c_pixmap)
-					gui_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
+					gui_grid.update_last_row_label_col (Definition_grid_col_rm_name, node_id_text, node_tooltip_str, c_meaning_colour, c_pixmap)
+					gui_grid.update_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
 				end
 			else
 				if in_technical_view then
-					gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, arch_node.rm_type_name, node_tooltip_str , c_object_colour, c_pixmap)
-					gui_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
+					gui_grid.update_last_row_label_col (Definition_grid_col_rm_name, arch_node.rm_type_name, node_tooltip_str , c_object_colour, c_pixmap)
+					gui_grid.update_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
 				else -- in non-technical view, display a friendly type name; for openEHR data types, remove the "DV_"
 					create s.make_empty
 					s.append_character ('[')
@@ -90,7 +97,7 @@ feature -- Display
 					s.append (arch_node.rm_type_name.substring (lpos+1, arch_node.rm_type_name.count).as_lower)
 					s.append_character (']')
 					s.to_lower
-					gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, s, node_tooltip_str, c_object_colour, c_pixmap)
+					gui_grid.update_last_row_label_col (Definition_grid_col_rm_name, s, node_tooltip_str, c_object_colour, c_pixmap)
 				end
 			end
 
@@ -167,6 +174,47 @@ feature {NONE} -- Implementation
 				else
 					Result := get_icon_pixmap ("am" + resource_path_separator + "added" + resource_path_separator + arch_node.generating_type)
 				end
+			end
+		end
+
+	arch_class_node_handler (x,y, button: INTEGER)
+			-- creates the context menu for a right click action for class node
+		do
+			if button = {EV_POINTER_CONSTANTS}.right then
+				gui_grid_row.item (1).enable_select
+				arch_node_context_menu.show
+			end
+		end
+
+	arch_node_context_menu: EV_MENU
+
+	class_node_context_menu: EV_MENU
+
+	display_context_selected_class_in_new_tool (a_class_def: BMM_CLASS_DEFINITION)
+		do
+			gui_agents.select_class_in_new_tool_agent.call ([a_class_def])
+		end
+
+	build_arch_node_context_menu
+		local
+			an_mi: EV_MENU_ITEM
+		do
+			-- create context menu
+			create arch_node_context_menu
+			create an_mi.make_with_text_and_action (get_msg ("display_class", Void), agent display_context_selected_class_in_new_tool (rm_schema.class_definition (arch_node.rm_type_name)))
+			an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
+			arch_node_context_menu.extend (an_mi)
+
+			-- if this node is addressable, add menu item to show node_id in ontology
+			if arch_node.is_addressable then
+				create an_mi.make_with_text_and_action (get_text ("view_node_id_in_ontology"), agent do gui_archetype_tool_agents.code_select_action_agent.call ([arch_node.node_id]) end)
+				arch_node_context_menu.extend (an_mi)
+			end
+
+			-- add menu item for displaying path in path map
+			if attached gui_archetype_tool_agents.path_select_action_agent then
+				create an_mi.make_with_text_and_action (get_text ("menu_option_display_path"), agent do gui_archetype_tool_agents.path_select_action_agent.call ([arch_node.path]) end)
+				arch_node_context_menu.extend (an_mi)
 			end
 		end
 

@@ -128,10 +128,10 @@ feature {REFERENCE_MODEL_ACCESS} -- Commands
 				parser.execute(model_file.last_string, 1)
 				if not parser.syntax_error then
 					dt_tree := parser.output
-					p_schema ?= dt_tree.as_object_from_string ("P_BMM_SCHEMA", Void)
-					if p_schema = Void then
+					if not attached {P_BMM_SCHEMA} dt_tree.as_object_from_string ("P_BMM_SCHEMA", Void) as p_sch then
 						add_error ("model_access_e4", <<meta_data.item (Metadata_schema_path)>>)
 					else
+						p_schema := p_sch
 						passed := True
 						p_schema.validate_created
 						merge_errors (p_schema.errors)
@@ -157,13 +157,12 @@ feature {REFERENCE_MODEL_ACCESS} -- Commands
 			all_schemas.compare_objects
 			all_schemas.make_from_array (all_schemas_list)
 			if attached p_schema.includes then
-				from p_schema.includes.start until p_schema.includes.off loop
-					if not all_schemas.has (p_schema.includes.item_for_iteration.id) then
-						add_error("BMM_INC", <<schema_id, p_schema.includes.item_for_iteration.id>>)
+				across p_schema.includes as supplier_schemas_csr loop
+					if not all_schemas.has (supplier_schemas_csr.item.id) then
+						add_error("BMM_INC", <<schema_id, supplier_schemas_csr.item.id>>)
 					else
-						includes.extend (p_schema.includes.item_for_iteration.id)
+						includes.extend (supplier_schemas_csr.item.id)
 					end
-					p_schema.includes.forth
 				end
 			end
 		end

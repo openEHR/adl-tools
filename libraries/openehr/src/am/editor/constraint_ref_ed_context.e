@@ -37,11 +37,11 @@ feature -- Display
  	--		gui_grid_row.item (Node_grid_col_meaning).pointer_button_press_actions.force_extend (agent add_code_select_context_menu (arch_node.target, ?, ?, ?))
 		end
 
-	display_in_grid (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag: BOOLEAN; a_lang: STRING)
+	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		local
 			s: STRING
 		do
-			precursor (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag, a_lang)
+			precursor (ui_settings)
 
 			-- set meaning column to referenced path
 			create s.make_empty

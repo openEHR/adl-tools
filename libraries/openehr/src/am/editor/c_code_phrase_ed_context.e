@@ -49,26 +49,21 @@ feature -- Display
 				gui_grid.add_sub_row (gui_grid_row, bmm_code_string_prop.name)
 				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, bmm_code_string_prop.name, Void, c_attribute_colour,
 					get_icon_pixmap ("rm/generic/" + bmm_code_string_prop.multiplicity_key_string))
-				gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, c_code_phrase_str (arch_node), Void, c_constraint_colour, Void)
+				gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, "", Void, c_constraint_colour, Void)
+
+				-- remember the code_string ev row
+				code_string_row := gui_grid.last_row
 			end
 		end
 
-	display_in_grid (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag: BOOLEAN; a_lang: STRING)
-		local
-			i: INTEGER
+	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		do
-			precursor (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag, a_lang)
+			precursor (ui_settings)
 
 			-- code_string field update
 			if attached arch_node.code_list then
-				from i := 1 until i > gui_grid_row.subrow_count loop
-					if attached {STRING} gui_grid_row.subrow (i).data as str and then str.is_equal (bmm_code_string_prop.name) then
-						gui_grid.set_last_row (gui_grid_row.subrow (i))
-						gui_grid.update_last_row_label_col (Definition_grid_col_constraint, c_code_phrase_str (arch_node), Void, Void, Void)
-						i := gui_grid_row.subrow_count + 1
-					end
-					i := i + 1
-				end
+				gui_grid.set_last_row (code_string_row)
+				gui_grid.update_last_row_label_col_multi_line (Definition_grid_col_constraint, c_code_phrase_str (arch_node), Void, Void, Void)
 			end
 		end
 
@@ -77,6 +72,8 @@ feature -- Modification
 feature {NONE} -- Implementation
 
 	bmm_code_string_prop: BMM_PROPERTY_DEFINITION
+
+	code_string_row: EV_GRID_ROW
 
 end
 

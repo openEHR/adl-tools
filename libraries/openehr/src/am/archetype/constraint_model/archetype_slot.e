@@ -77,19 +77,49 @@ feature -- Status Report
 			-- True if any value allowed i.e. no includes or excludes defined, and
 			-- slot is not closed
 		do
-			Result := not (has_includes or has_excludes) and not is_closed
+			Result := includes.is_empty and excludes.is_empty and not is_closed
 		end
 
-	has_includes: BOOLEAN
-			-- true if there are invariants
+	has_any_includes: BOOLEAN
+			-- true if there are any includes at all
 		do
-			Result := includes.count > 0
+			Result := not includes.is_empty and then not includes.first.matches_any
 		end
 
-	has_excludes: BOOLEAN
-			-- true if there are invariants
+	has_any_excludes: BOOLEAN
+			-- true if there are any excludes at all
 		do
-			Result := excludes.count > 0
+			Result := not excludes.is_empty and then not excludes.first.matches_any
+		end
+
+	has_substantive_includes: BOOLEAN
+			-- true if there are substantive includes, i.e. not just matching 'any'
+		do
+			Result := not includes.is_empty and then not includes.first.matches_any
+		end
+
+	has_substantive_excludes: BOOLEAN
+			-- true if there are substantive excludes, i.e. not just matching 'any'
+		do
+			Result := not excludes.is_empty and then not excludes.first.matches_any
+		end
+
+	has_open_includes: BOOLEAN
+			-- true if there are substantive includes, i.e. not just matching 'any'
+		do
+			Result := not includes.is_empty and then includes.first.matches_any
+		end
+
+	has_open_excludes: BOOLEAN
+			-- true if there are substantive excludes, i.e. not just matching 'any'
+		do
+			Result := not excludes.is_empty and then excludes.first.matches_any
+		end
+
+	status_required: BOOLEAN
+			-- True if there are substantive includes or excludes which are required
+		do
+			Result := (not includes.is_empty and excludes.is_empty) or (not excludes.is_empty and includes.is_empty)
 		end
 
 	is_closed: BOOLEAN
@@ -129,7 +159,7 @@ feature -- Modification
 			excludes.has(assn)
 		end
 
-	set_includes(assn_list: attached ARRAYED_LIST[ASSERTION])
+	set_includes (assn_list: attached ARRAYED_LIST[ASSERTION])
 			-- set includes constraints
 		do
 			includes := assn_list

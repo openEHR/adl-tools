@@ -103,7 +103,6 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 ")"			last_token := Right_parenthesis_code
 "$"			last_token := Dollar_code
 
-"??"			last_token := SYM_DT_UNKNOWN
 "?"			last_token := Question_mark_code
 
 "|"			last_token := SYM_INTERVAL_DELIM
@@ -170,8 +169,6 @@ UTF8CHAR (([\xC2-\xDF][\x80-\xBF])|(\xE0[\xA0-\xBF][\x80-\xBF])|([\xE1-\xEF][\x8
 [Uu][Nn][Oo][Rr][Dd][Ee][Rr][Ee][Dd]			last_token := SYM_UNORDERED
 
 [Uu][Nn][Ii][Qq][Uu][Ee]					last_token := SYM_UNIQUE
-
-[Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy]				last_token := SYM_INFINITY
 
 [Uu][Ss][Ee][_][Nn][Oo][Dd][Ee]				last_token := SYM_USE_NODE
 

@@ -1,54 +1,56 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Serialisation profile for native CADL"
-	keywords:    "test, ADL"
+	description: "Model of a vector of UI settings required to specify definition tree visual appearance."
+	keywords:    "archetype, definition, gui"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	support:     "http://www.openehr.org/issues/browse/AWBPR"
+	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class NATIVE_CADL_SERIALISATION_PROFILE
-
-inherit
-	NATIVE_SERIALISATION_PROFILE
-
-	CADL_TOKENS
-		export
-			{NONE} all
-		end
+class GUI_DEFINITION_SETTINGS
 
 create
 	make
 
-feature {NONE} -- Implementation
+feature -- Initialisation
 
-	symbols: HASH_TABLE[STRING, INTEGER]
-			-- keywords in this format, keyed by logical name
-		once
-			create Result.make(0)
-			Result.put("matches",			SYM_MATCHES)
-			Result.put("occurrences",		SYM_OCCURRENCES)
-			Result.put("existence",			SYM_EXISTENCE)
-			Result.put("cardinality",		SYM_CARDINALITY)
-			Result.put("use_node",			SYM_USE_NODE)
-			Result.put("allow_archetype",		SYM_ALLOW_ARCHETYPE)
-			Result.put("use_archetype",		SYM_USE_ARCHETYPE)
-
-			Result.put("closed",			SYM_CLOSED)
-			Result.put("include",			SYM_INCLUDE)
-			Result.put("exclude",			SYM_EXCLUDE)
-
-			Result.put("before",			SYM_BEFORE)
-			Result.put("after",			SYM_AFTER)
-
-			Result.put("{",				SYM_START_CBLOCK)
-			Result.put("}",				SYM_END_CBLOCK)
-			Result.put("*",				SYM_ANY)
+	make (a_selected_language: STRING; 
+			a_show_codes, 
+			a_show_rm_inheritance, 
+			a_show_technical_view, 
+			a_show_rm_data_properties, 
+			a_show_rm_runtime_properties, 
+			a_show_rm_infrastructure_properties: BOOLEAN)
+		do
+			selected_language := a_selected_language
+			show_codes := a_show_codes
+			show_rm_inheritance := a_show_rm_inheritance
+			show_technical_view := a_show_technical_view
+			show_rm_data_properties := a_show_rm_data_properties
+			show_rm_runtime_properties := a_show_rm_runtime_properties
+			show_rm_infrastructure_properties := a_show_rm_infrastructure_properties
 		end
+
+feature -- Access
+
+	selected_language: STRING
+
+	show_codes: BOOLEAN
+
+	show_rm_inheritance: BOOLEAN
+
+	show_technical_view: BOOLEAN
+
+	show_rm_data_properties: BOOLEAN
+
+	show_rm_runtime_properties: BOOLEAN
+
+	show_rm_infrastructure_properties: BOOLEAN
 
 end
 
@@ -67,7 +69,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is native_cadl_serialisation_profile.e.
+--| The Original Code is adl_node_map_control.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

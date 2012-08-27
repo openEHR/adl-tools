@@ -45,7 +45,7 @@ feature {NONE}-- Initialization
 
 			-- create subordinate widgets
 			create description_controls.make (agent update_undo_redo_controls)
-			create node_map_control.make (agent select_ontology_item_from_code, Void) -- , agent update_undo_redo_controls)
+			create node_map_control.make
 			create ontology_controls.make (agent update_undo_redo_controls)
 			create serialisation_control.make -- (agent update_undo_redo_controls)
 

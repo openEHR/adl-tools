@@ -134,23 +134,21 @@ feature {NONE} -- Implementation
 			--		not (excludes empty or = 'any') ==> Error
 			--	END
 		local
-			includes, excludes: ARRAYED_LIST[ASSERTION]
+			includes, excludes: ARRAYED_LIST [ASSERTION]
 		do
-			from target.slot_index.start until target.slot_index.off loop
-				includes := target.slot_index.item.includes
-				excludes := target.slot_index.item.excludes
+			across target.slot_index as slot_csr loop
+				includes := slot_csr.item.includes
+				excludes := slot_csr.item.excludes
 
 				if not includes.is_empty and includes.first.matches_any then
 					if not (excludes.is_empty or not excludes.first.matches_any) then
-						add_error("VDSEV1", <<target.slot_index.item.rm_type_name, target.slot_index.item.path>>)
+						add_error("VDSEV1", <<slot_csr.item.rm_type_name, slot_csr.item.path>>)
 					end
 				elseif not includes.is_empty and not includes.first.matches_any then
 					if not (excludes.is_empty or excludes.first.matches_any) then
-						add_error("VDSEV2", <<target.slot_index.item.rm_type_name, target.slot_index.item.path>>)
+						add_error("VDSEV2", <<slot_csr.item.rm_type_name, slot_csr.item.path>>)
 					end
 				end
-
-				target.slot_index.forth
 			end
 		end
 
@@ -160,22 +158,20 @@ feature {NONE} -- Implementation
 			c_ar_list: ARRAYED_LIST [C_ARCHETYPE_ROOT]
 			filler_id: ARCHETYPE_ID
 		do
-			from target.suppliers_index.start until target.suppliers_index.off loop
-				if not current_arch_cat.archetype_index.has (target.suppliers_index.key_for_iteration) then
-					add_error("VARXR", <<target.suppliers_index.item_for_iteration.first.parent.path, target.suppliers_index.key_for_iteration>>)
+			across target.suppliers_index as supp_csr loop
+				if not current_arch_cat.archetype_index.has (supp_csr.key) then
+					add_error("VARXR", <<supp_csr.item.first.parent.path, supp_csr.key>>)
 				end
 
 				-- check that the RM type in the archetype references is compatible with the RM type of the C_ARCHETYPE_ROOT node
-				c_ar_list := target.suppliers_index.item_for_iteration
-				from c_ar_list.start until c_ar_list.off loop
-					create filler_id.make_from_string (c_ar_list.item.archetype_id)
-					if not (c_ar_list.item.rm_type_name.is_equal (filler_id.rm_entity) or else
-						rm_schema.type_conforms_to (c_ar_list.item.rm_type_name, filler_id.rm_entity)) then
-						add_error("VARXTV", <<c_ar_list.item.archetype_id, c_ar_list.item.rm_type_name>>)
+				c_ar_list := supp_csr.item
+				across c_ar_list as arch_root_csr loop
+					create filler_id.make_from_string (arch_root_csr.item.archetype_id)
+					if not (arch_root_csr.item.rm_type_name.is_equal (filler_id.rm_entity) or else
+						rm_schema.type_conforms_to (arch_root_csr.item.rm_type_name, filler_id.rm_entity)) then
+						add_error("VARXTV", <<arch_root_csr.item.archetype_id, arch_root_csr.item.rm_type_name>>)
 					end
-					c_ar_list.forth
 				end
-				target.suppliers_index.forth
 			end
 		end
 
@@ -183,17 +179,15 @@ feature {NONE} -- Implementation
 			-- See if there are any codes in the ontology that should not be there - either or lower or higher
 			-- level of specialisation.
 		do
-			from ontology.term_codes.start until ontology.term_codes.off loop
-				if specialisation_depth_from_code (ontology.term_codes.item) /= ontology.specialisation_depth then
-					add_error ("VONSD", <<ontology.term_codes.item>>)
+			across ontology.term_codes as terms_csr loop
+				if specialisation_depth_from_code (terms_csr.item) /= ontology.specialisation_depth then
+					add_error ("VONSD", <<terms_csr.item>>)
 				end
-				ontology.term_codes.forth
 			end
-			from ontology.constraint_codes.start until ontology.constraint_codes.off loop
-				if specialisation_depth_from_code (ontology.constraint_codes.item) /= ontology.specialisation_depth then
-					add_error ("VONSD", <<ontology.constraint_codes.item>>)
+			across ontology.constraint_codes as terms_csr loop
+				if specialisation_depth_from_code (terms_csr.item) /= ontology.specialisation_depth then
+					add_error ("VONSD", <<terms_csr.item>>)
 				end
-				ontology.constraint_codes.forth
 			end
 		end
 
@@ -201,13 +195,11 @@ feature {NONE} -- Implementation
 			-- populate lists of at-codes and ac-codes found in ontology that
 			-- are not referenced anywhere in the archetype definition
 		do
-			from target.ontology_unused_term_codes.start until target.ontology_unused_term_codes.off loop
-				add_warning ("WOUC", <<target.ontology_unused_term_codes.item>>)
-				target.ontology_unused_term_codes.forth
+			across target.ontology_unused_term_codes as unused_codes_csr loop
+				add_warning ("WOUC", <<unused_codes_csr.item>>)
 			end
-			from target.ontology_unused_constraint_codes.start until target.ontology_unused_constraint_codes.off loop
-				add_warning ("WOUC", <<target.ontology_unused_constraint_codes.item>>)
-				target.ontology_unused_constraint_codes.forth
+			across target.ontology_unused_constraint_codes as unused_codes_csr loop
+				add_warning ("WOUC", <<unused_codes_csr.item>>)
 			end
 		end
 
@@ -233,52 +225,44 @@ feature {NONE} -- Implementation
 			target.has_slots
 		local
 			includes, excludes: ARRAYED_LIST[ASSERTION]
-			id_list: ARRAYED_LIST[STRING]
 			ara: ARCH_CAT_ARCHETYPE
 		do
-			from target.slot_index.start until target.slot_index.off loop
+			across target.slot_index as slots_csr loop
 				-- process the includes
-				includes := target.slot_index.item.includes
-				excludes := target.slot_index.item.excludes
+				includes := slots_csr.item.includes
+				excludes := slots_csr.item.excludes
 				if not includes.is_empty and not includes.first.matches_any then
 					if not excludes.is_empty then -- create specific match list from includes constraint
-						from includes.start until includes.off loop
-							if attached {STRING} includes.item.extract_regex as a_regex then
-								target_descriptor.add_slot_ids (current_arch_cat.matching_ids (a_regex, target.slot_index.item.rm_type_name, Void), target.slot_index.item.path)
+						across includes as includes_csr loop
+							if attached {STRING} includes_csr.item.extract_regex as a_regex then
+								target_descriptor.add_slot_ids (current_arch_cat.matching_ids (a_regex, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
 							end
-							includes.forth
 						end
 					else -- excludes = empty ==> includes is just a recommendation => match all archetype ids of RM type
-						target_descriptor.add_slot_ids (current_arch_cat.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, target.archetype_id.rm_name), target.slot_index.item.path)
+						target_descriptor.add_slot_ids (current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, target.archetype_id.rm_name), slots_csr.item.path)
 					end
 				elseif not excludes.is_empty and not excludes.first.matches_any then
-					target_descriptor.add_slot_ids (current_arch_cat.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, Void), target.slot_index.item.path)
+					target_descriptor.add_slot_ids (current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
 					if not includes.is_empty then -- means excludes is not a recommendation; need to actually process it
-						from excludes.start until excludes.off loop
-							if attached {STRING} excludes.item.extract_regex as a_regex then
-								id_list := current_arch_cat.matching_ids (a_regex, target.slot_index.item.rm_type_name, target.archetype_id.rm_name)
-								from id_list.start until id_list.off loop
-									target_descriptor.slot_id_index.item (target.slot_index.item.path).prune (id_list.item)
-									id_list.forth
+						across excludes as excludes_csr loop
+							if attached {STRING} excludes_csr.item.extract_regex as a_regex then
+								across current_arch_cat.matching_ids (a_regex, slots_csr.item.rm_type_name, target.archetype_id.rm_name) as ids_csr loop
+									target_descriptor.slot_id_index.item (slots_csr.item.path).prune (ids_csr.item)
 								end
 							end
-							excludes.forth
 						end
 					end
 				else
-					target_descriptor.add_slot_ids (current_arch_cat.matching_ids (Regex_any_pattern, target.slot_index.item.rm_type_name, target.archetype_id.rm_name), target.slot_index.item.path)
+					target_descriptor.add_slot_ids (current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, target.archetype_id.rm_name), slots_csr.item.path)
 				end
 
 				-- now post the results in the reverse indexes
-				id_list := target_descriptor.slot_id_index.item (target.slot_index.item.path)
-				from id_list.start until id_list.off loop
-					ara := current_arch_cat.archetype_index.item (id_list.item)
+				across target_descriptor.slot_id_index.item (slots_csr.item.path) as ids_csr loop
+					ara := current_arch_cat.archetype_index.item (ids_csr.item)
 					if not ara.is_supplier or else not ara.clients_index.has (target.archetype_id.as_string) then
 						ara.add_client (target.archetype_id.as_string)
 					end
-					id_list.forth
 				end
-				target.slot_index.forth
 			end
 		end
 

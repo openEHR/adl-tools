@@ -42,13 +42,17 @@ feature {NONE}-- Initialization
 		do
 			precursor
 
+			-- set up shared agents
+			gui_archetype_tool_agents.set_code_select_action_agent (agent select_ontology_item_from_code)
+			gui_archetype_tool_agents.set_path_select_action_agent (agent select_path_item_from_path)
+
 			-- create subordinate widgets
 			create description_controls.make (Void)
 			ev_notebook.extend (description_controls.ev_root_container)
 			ev_notebook.set_item_text (description_controls.ev_root_container, get_text ("description_tab_text"))
 			ev_notebook.item_tab (description_controls.ev_root_container).set_pixmap (get_icon_pixmap ("tool/description"))
 
-			create node_map_control.make (agent select_ontology_item_from_code, agent select_path_item_from_path)
+			create node_map_control.make
 			ev_notebook.extend (node_map_control.ev_root_container)
 			ev_notebook.set_item_text (node_map_control.ev_root_container, get_text ("definition_tab_text"))
 			ev_notebook.item_tab (node_map_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/node_map"))

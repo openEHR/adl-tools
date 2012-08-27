@@ -16,11 +16,25 @@ class ARCHETYPE_SLOT_ED_CONTEXT
 inherit
 	C_OBJECT_ED_CONTEXT
 		redefine
-			arch_node, c_pixmap, prepare_display_in_grid, display_in_grid
+			make, arch_node, c_pixmap, prepare_display_in_grid, display_in_grid, build_arch_node_context_menu
+		end
+
+	SHARED_KNOWLEDGE_REPOSITORY
+		export
+			{NONE} all
 		end
 
 create
 	make
+
+feature -- Initialisation
+
+	make (an_arch_node: like arch_node; an_archetype: ARCHETYPE; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_rm_schema: BMM_SCHEMA)
+		do
+			precursor (an_arch_node, an_archetype, a_flat_ontology, an_rm_schema)
+			create assertions_index.make (0)
+			create ev_row_index.make (0)
+		end
 
 feature -- Access
 
@@ -30,8 +44,6 @@ feature -- Access
 feature -- Display
 
 	prepare_display_in_grid (a_gui_grid: EVX_GRID)
-		local
-			constraint_str: STRING
 		do
 			precursor (a_gui_grid)
 
@@ -40,7 +52,7 @@ feature -- Display
 				gui_grid.set_last_row_label_col (Definition_grid_col_constraint, Archetype_slot_closed, Void, c_constraint_colour, Void)
 			else
 				-- create child nodes for includes & excludes
-				if arch_node.has_includes then
+				if arch_node.has_substantive_includes then
 					across arch_node.includes as includes_csr loop
 						gui_grid.add_sub_row (gui_grid_row, includes_csr.item)
 
@@ -48,14 +60,16 @@ feature -- Display
 						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text ("include_text"), Void,
 							c_object_colour, get_icon_pixmap ("am/added/" + arch_node.generating_type + "_include"))
 
-						-- put assertions in constraint col
-						constraint_str := object_invariant_string (includes_csr.item)
-						constraint_str.replace_substring_all (" ", "%N")
-						gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
-					end
-				end
+						-- put blank text in constraint col
+						gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, "", Void, c_constraint_colour, Void)
 
-				if arch_node.has_excludes then
+						-- remember the association
+						assertions_index.extend (includes_csr.item)
+						ev_row_index.extend (gui_grid.last_row)
+
+						is_required := arch_node.has_open_excludes
+					end
+				elseif arch_node.has_substantive_excludes then
 					across arch_node.excludes as excludes_csr loop
 						gui_grid.add_sub_row (gui_grid_row, excludes_csr.item)
 
@@ -63,23 +77,27 @@ feature -- Display
 						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text ("exclude_text"), Void,
 							c_object_colour, get_icon_pixmap ("am/added/" + arch_node.generating_type + "_exclude"))
 
-						-- put assertions in constraint col
-						constraint_str := object_invariant_string (excludes_csr.item)
-						constraint_str.replace_substring_all (" ", "%N")
-						gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
+						-- put blank text in constraint col
+						gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, "", Void, c_constraint_colour, Void)
+
+						-- remember the association
+						assertions_index.extend (excludes_csr.item)
+						ev_row_index.extend (gui_grid.last_row)
+
+						is_required := arch_node.has_open_includes
 					end
 				end
 			end
 		end
 
-	display_in_grid (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag: BOOLEAN; a_lang: STRING)
-		local
-			i: INTEGER
+	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		do
-			precursor (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag, a_lang)
-			from i := 1 until i > gui_grid.last_row.subrow_count loop
-				gui_grid.last_row.subrow (i).item (Definition_grid_col_constraint).set_foreground_color (c_constraint_colour)
-				i := i + 1
+			precursor (ui_settings)
+
+			-- iterate through the assertions
+			across assertions_index as assn_csr loop
+				gui_grid.set_last_row (ev_row_index.i_th (assn_csr.cursor_index))
+				gui_grid.update_last_row_label_col_multi_line (Definition_grid_col_constraint, assertion_string (assn_csr.item), Void, c_constraint_colour, Void)
 			end
 		end
 
@@ -105,12 +123,64 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	object_invariant_string (an_inv: ASSERTION): STRING
+	assertion_string (an_inv: ASSERTION): STRING
 			-- generate string form of node or object for use in tree node
 		do
 			Result := an_inv.as_string
 			if not show_codes then
 				Result := flat_ontology.substitute_codes (Result, language)
+			end
+			Result.replace_substring_all (" ", "%N")
+			Result.replace_substring_all ("|", "|%N")
+			if is_required then
+				Result.append (get_text ("%N(" + get_text ("slot_match_required_text") + ")"))
+			else
+				Result.append (get_text ("%N(" + get_text ("slot_match_recommended_text") + ")"))
+			end
+		end
+
+	assertions_index: ARRAYED_LIST [ASSERTION]
+			-- index of includes and excludes assertions
+
+	ev_row_index: ARRAYED_LIST [EV_GRID_ROW]
+			-- index of grid sub-row objects coresponding to items in `assertions_index'
+
+	is_required: BOOLEAN
+
+	context_slot_sub_menu: EV_MENU
+
+	build_arch_node_context_menu
+		local
+			an_mi: EV_MENU_ITEM
+			slot_match_ids: ARRAYED_SET [STRING]
+			ara: ARCH_CAT_ARCHETYPE
+		do
+			precursor
+			create slot_match_ids.make (0)
+			slot_match_ids.compare_objects
+			if arch_node.has_substantive_includes then
+				across arch_node.includes as slot_includes_csr loop
+					if attached {STRING} slot_includes_csr.item.extract_regex as a_regex then
+						slot_match_ids.merge (current_arch_cat.matching_ids (a_regex, arch_node.rm_type_name, Void))
+					end
+				end
+				if arch_node.has_open_excludes then
+					create context_slot_sub_menu.make_with_text (get_text ("archetype_slot_node_submenu_exact_text"))
+				else
+					create context_slot_sub_menu.make_with_text (get_text ("archetype_slot_node_submenu_preferred_text"))
+				end
+
+				-- ensure we have only a unique set
+				across slot_match_ids as slot_match_ids_csr loop
+					ara := current_arch_cat.archetype_index.item (slot_match_ids_csr.item)
+					create an_mi.make_with_text_and_action (slot_match_ids_csr.item, agent (gui_agents.select_archetype_in_new_tool_agent).call ([ara]))
+					an_mi.set_pixmap (get_icon_pixmap ("archetype/" + ara.group_name))
+					context_slot_sub_menu.extend (an_mi)
+				end
+
+				if not context_slot_sub_menu.is_empty then
+					arch_node_context_menu.extend (context_slot_sub_menu)
+				end
 			end
 		end
 

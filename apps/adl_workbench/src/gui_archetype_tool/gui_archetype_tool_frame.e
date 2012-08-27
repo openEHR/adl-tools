@@ -28,6 +28,11 @@ inherit
 			enable_edit, disable_edit
 		end
 
+	SHARED_GUI_ARCHETYPE_TOOL_AGENTS
+		export
+			{NONE} all
+		end
+
 feature -- Definitions
 
 	arch_notebook_min_height: INTEGER = 350

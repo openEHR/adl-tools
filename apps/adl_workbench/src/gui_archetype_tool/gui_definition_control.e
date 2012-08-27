@@ -35,6 +35,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_GUI_ARCHETYPE_TOOL_AGENTS
+		export
+			{NONE} all
+		end
+
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all
@@ -49,12 +54,9 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (a_code_select_action_agent: like code_select_action_agent; a_path_select_action_agent: detachable like path_select_action_agent)
+	make
 		do
 			create gui_controls.make (0)
-
-			code_select_action_agent := a_code_select_action_agent
-			path_select_action_agent := a_path_select_action_agent
 
 			-- create widgets
 			create ev_root_container
@@ -216,20 +218,29 @@ feature -- Commands
 	repopulate
 			-- repopulate and/or refresh visual appearance if diff/flat view has changed or RM icons setting changed
 		local
-			a_c_iterator: C_OBJECT_VISITOR_ITERATOR
-			c_node_map_builder: C_DEFINITION_RENDERER
+--			a_c_iterator: C_OBJECT_VISITOR_ITERATOR
+--			c_node_map_builder: C_DEFINITION_RENDERER
+			ui_settings: GUI_DEFINITION_SETTINGS
 		do
 			-- populate peripheral controls
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 
 			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
 			gui_definition_grid.ev_grid.lock_update
-			create c_node_map_builder.make (rm_schema, source, differential_view, selected_language, gui_definition_grid, True, show_codes, show_rm_inheritance,
-				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties,
-				definition_grid_row_map, code_select_action_agent, path_select_action_agent)
-			create a_c_iterator.make (source_archetype.definition, c_node_map_builder,
-				differential_view, update_rm_view, rm_schema)
-			do_with_wait_cursor (ev_definition_hbox, agent a_c_iterator.do_all)
+
+			-- old way
+--			create c_node_map_builder.make (rm_schema, source, differential_view, selected_language, gui_definition_grid, True, show_codes, show_rm_inheritance,
+--				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties,
+--				definition_grid_row_map, code_select_action_agent, path_select_action_agent)
+--			create a_c_iterator.make (source_archetype.definition, c_node_map_builder,
+--				differential_view, update_rm_view, rm_schema)
+--			do_with_wait_cursor (ev_definition_hbox, agent a_c_iterator.do_all)
+
+			-- repopulate main definition
+			create ui_settings.make (selected_language,
+				show_codes, show_rm_inheritance, show_technical_view,
+				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
+			arch_ed_context.definition_context.display_in_grid (ui_settings)
 
 			gui_definition_grid.resize_columns_to_content
 			gui_definition_grid.ev_grid.unlock_update
@@ -238,7 +249,7 @@ feature -- Commands
 			if source_archetype.has_invariants then
 				gui_rules_grid.ev_grid.lock_update
 				across arch_ed_context.assertion_contexts as assn_ed_contexts_csr loop
-					assn_ed_contexts_csr.item.display_in_grid (show_technical_view, show_rm_inheritance, show_codes, selected_language)
+					assn_ed_contexts_csr.item.display_in_grid (ui_settings)
 				end
 				gui_rules_grid.resize_columns_to_content
 				gui_rules_grid.ev_grid.unlock_update
@@ -312,12 +323,6 @@ feature {NONE} -- Events
 			end
 		end
 
-	code_select_action_agent: PROCEDURE [ANY, TUPLE [STRING]]
-			-- action to perform when node is selected in tree
-
-	path_select_action_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
-			-- action to perform when path is selected on an addressable node
-
 	update_show_rm_inheritance (a_flag: BOOLEAN)
 		do
 			show_rm_inheritance := a_flag
@@ -370,11 +375,11 @@ feature {NONE} -- Implementation
 		end
 
 	do_populate
-			-- build definition / ontology cross reference tables used for validation and
-			-- other purposes
+			-- build definition / ontology cross reference tables used for validation and other purposes
 		local
-			a_c_iterator: C_OBJECT_VISITOR_ITERATOR
-			c_node_map_builder: C_DEFINITION_RENDERER
+--			a_c_iterator: C_OBJECT_VISITOR_ITERATOR
+--			c_node_map_builder: C_DEFINITION_RENDERER
+			ui_settings: GUI_DEFINITION_SETTINGS
 		do
 			-- determine visualisation ancestor 'stopping' class (when C_OBJECT.rm_type_name = this class,
 			-- tree expanding stops)
@@ -388,18 +393,34 @@ feature {NONE} -- Implementation
 			-- populate peripheral controls
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 
-			-- populate grid control
-			create definition_grid_row_map.make (0)
+			-- build the visual & editor control tree
+			source.create_display_context
+			if differential_view then
+				arch_ed_context := source.differential_display_context
+			else
+				arch_ed_context := source.flat_display_context
+			end
 
-			gui_definition_grid.ev_grid.lock_update
-			create c_node_map_builder.make (rm_schema, source, differential_view, selected_language, gui_definition_grid, False, show_codes, show_rm_inheritance,
-				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties,
-				definition_grid_row_map, code_select_action_agent, path_select_action_agent)
-			create a_c_iterator.make (source_archetype.definition, c_node_map_builder,
-				differential_view, show_rm_data_properties, rm_schema)
-			do_with_wait_cursor (ev_definition_hbox, agent a_c_iterator.do_all)
+			-- populate the main definition grid
+			create ui_settings.make (selected_language,
+				show_codes, show_rm_inheritance, show_technical_view,
+				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
 
 			gui_definition_grid.set_column_titles (Definition_grid_col_names.linear_representation)
+			arch_ed_context.definition_context.prepare_display_in_grid (gui_definition_grid)
+			arch_ed_context.definition_context.display_in_grid (ui_settings)
+
+			-- populate grid control (OLD WAY)
+--			create definition_grid_row_map.make (0)
+
+--			gui_definition_grid.ev_grid.lock_update
+--			create c_node_map_builder.make (rm_schema, source, differential_view, selected_language, gui_definition_grid, False, show_codes, show_rm_inheritance,
+--				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties,
+--				definition_grid_row_map, code_select_action_agent, path_select_action_agent)
+--			create a_c_iterator.make (source_archetype.definition, c_node_map_builder,
+--				differential_view, show_rm_data_properties, rm_schema)
+--			do_with_wait_cursor (ev_definition_hbox, agent a_c_iterator.do_all)
+
 
 			-- make visualisation adjustments
 			if attached visualise_descendants_class then
@@ -440,15 +461,9 @@ feature {NONE} -- Implementation
 			-- populate rules grid, where applicable
 			if source_archetype.has_invariants then
 				gui_rules_grid.ev_grid.lock_update
-				source.create_display_context
-				if differential_view then
-					arch_ed_context := source.differential_display_context
-				else
-					arch_ed_context := source.flat_display_context
-				end
 				across arch_ed_context.assertion_contexts as assn_ed_contexts_csr loop
 					assn_ed_contexts_csr.item.prepare_display_in_grid (gui_rules_grid)
-					assn_ed_contexts_csr.item.display_in_grid (show_technical_view, show_rm_inheritance, show_codes, selected_language)
+					assn_ed_contexts_csr.item.display_in_grid (ui_settings)
 				end
 
 				gui_rules_grid.set_column_titles (Rules_grid_col_names.linear_representation)
@@ -460,7 +475,8 @@ feature {NONE} -- Implementation
 			else
 				ev_rules_hbox.hide
 			end
-			ev_root_container.set_split_position (ev_root_container.minimum_split_position.max (ev_root_container.maximum_split_position - gui_rules_grid.ev_grid.row_height * gui_rules_grid.ev_grid.row_count))
+			ev_root_container.set_split_position (ev_root_container.minimum_split_position.max (ev_root_container.maximum_split_position -
+				gui_rules_grid.ev_grid.row_height * gui_rules_grid.ev_grid.row_count))
 		end
 
 	arch_ed_context: ARCH_ED_CONTEXT

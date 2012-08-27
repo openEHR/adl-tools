@@ -30,7 +30,7 @@ feature -- Initialisation
 			end
 			rm_schema := an_rm_schema
 
---			build_definition
+			build_definition
 
 			create assertion_contexts.make (0)
 			build_assertions

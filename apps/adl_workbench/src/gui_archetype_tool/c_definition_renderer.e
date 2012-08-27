@@ -244,35 +244,33 @@ feature -- Visitor
 					gui_grid.set_last_row_label_col (Definition_grid_col_constraint, Archetype_slot_closed, Void, c_constraint_colour (a_node), Void)
 				else
 					-- create child nodes for includes & excludes
-					if a_node.has_includes then
-						from a_node.includes.start until a_node.includes.off loop
-							gui_grid.add_sub_row (ev_grid_row_stack.item, a_node.includes.item)
+					if a_node.has_any_includes then
+						across a_node.includes as includes_csr loop
+							gui_grid.add_sub_row (ev_grid_row_stack.item, includes_csr.item)
 
 							-- put pixmap on RM col
 							gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text ("include_text"), Void,
 								c_object_colour (a_node), get_icon_pixmap ("am/added/" + a_node.generating_type + "_include"))
 
 							-- put assertions in constraint col
-							constraint_str := object_invariant_string (a_node.includes.item)
+							constraint_str := object_invariant_string (includes_csr.item)
 							constraint_str.replace_substring_all (" ", "%N")
 							gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour (a_node), Void)
-							a_node.includes.forth
 						end
 					end
 
-					if a_node.has_excludes then
-						from a_node.excludes.start until a_node.excludes.off loop
-							gui_grid.add_sub_row (ev_grid_row_stack.item, a_node.excludes.item)
+					if a_node.has_any_excludes then
+						across a_node.excludes as excludes_csr loop
+							gui_grid.add_sub_row (ev_grid_row_stack.item, excludes_csr.item)
 
 							-- put pixmap on RM col
 							gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, get_text ("exclude_text"), Void,
 								c_object_colour (a_node), get_icon_pixmap ("am/added/" + a_node.generating_type + "_exclude"))
 
 							-- put assertions in constraint col
-							constraint_str := object_invariant_string (a_node.excludes.item)
+							constraint_str := object_invariant_string (excludes_csr.item)
 							constraint_str.replace_substring_all (" ", "%N")
 							gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour (a_node), Void)
-							a_node.excludes.forth
 						end
 					end
 				end
@@ -1195,13 +1193,13 @@ feature {NONE} -- Implementation
 		do
 			create slot_match_ids.make (0)
 			slot_match_ids.compare_objects
-			if a_slot.has_includes and not a_slot.includes.first.matches_any then
+			if a_slot.has_substantive_includes then
 				across a_slot.includes as slot_includes_csr loop
 					if attached {STRING} slot_includes_csr.item.extract_regex as a_regex then
 						slot_match_ids.merge (current_arch_cat.matching_ids (a_regex, a_slot.rm_type_name, Void))
 					end
 				end
-				if a_slot.has_excludes and then a_slot.excludes.first.matches_any then
+				if a_slot.has_open_excludes then
 					create sub_menu.make_with_text (get_text ("archetype_slot_node_submenu_exact_text"))
 				else
 					create sub_menu.make_with_text (get_text ("archetype_slot_node_submenu_preferred_text"))

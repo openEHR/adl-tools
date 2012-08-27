@@ -16,7 +16,7 @@ class C_DV_QUANTITY_ED_CONTEXT
 inherit
 	C_OBJECT_ED_CONTEXT
 		redefine
-			arch_node, prepare_display_in_grid
+			arch_node, prepare_display_in_grid, display_in_grid
 		end
 
 create
@@ -38,16 +38,17 @@ feature -- Display
 
 			-- property constraint
 			if attached arch_node.property then
-				gui_grid.add_sub_row (gui_grid_row, Void)
+				gui_grid.add_sub_row (gui_grid_row, "property")
 				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, "property", Void, c_constraint_colour,
 					get_icon_pixmap ("rm/generic/c_meta_attribute"))
-				gui_grid.set_last_row_label_col (Definition_grid_col_constraint, term_string (arch_node.property.terminology_id.value,
-					arch_node.property.code_string), Void, c_constraint_colour, Void)
+				gui_grid.set_last_row_label_col (Definition_grid_col_constraint, "", Void, c_constraint_colour, Void)
+
+				-- remember the grid row
+				property_grid_row := gui_grid.last_row
 			end
 
 			-- magnitude / units / precision constraint
 			if attached arch_node.list then
-
 				-- build the grid row
 				bmm_prop_magnitude := rm_schema.property_definition ("DV_QUANTITY", "magnitude")
 				bmm_prop_units := rm_schema.property_definition ("DV_QUANTITY", "units")
@@ -61,7 +62,15 @@ feature -- Display
 			end
 		end
 
-feature -- Modification
+	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
+		do
+			precursor (ui_settings)
+			if attached arch_node.property then
+				gui_grid.set_last_row (property_grid_row)
+				gui_grid.update_last_row_label_col (Definition_grid_col_constraint, term_string (arch_node.property.terminology_id.value,
+							arch_node.property.code_string), Void, Void, Void)
+			end
+		end
 
 feature {NONE} -- Implementation
 
@@ -96,6 +105,8 @@ feature {NONE} -- Implementation
 				Result.append (a_node.precision.as_string)
 			end
 		end
+
+	property_grid_row: EV_GRID_ROW
 
 end
 

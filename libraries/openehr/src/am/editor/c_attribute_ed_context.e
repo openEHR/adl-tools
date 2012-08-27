@@ -58,14 +58,19 @@ feature -- Display
 			precursor (a_gui_grid)
 
 			-- set an empty string in the meaning column, so later updates have an object to modify
-			gui_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
+			gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, Void, Void, Void, c_pixmap)
+	--		gui_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
+
+			across children as children_csr loop
+				children_csr.item.prepare_display_in_grid (a_gui_grid)
+			end
 		end
 
-	display_in_grid (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag: BOOLEAN; a_lang: STRING)
+	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		local
 			attr_str: STRING
 		do
-			precursor (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag, a_lang)
+			precursor (ui_settings)
 
 			-- constraints
 			if attached arch_node.existence then
@@ -92,6 +97,10 @@ feature -- Display
 			else
 				attr_str.append (arch_node.rm_attribute_name)
 				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, attr_str, node_tooltip_str, c_attribute_colour, c_pixmap)
+			end
+
+			across children as children_csr loop
+				children_csr.item.display_in_grid (ui_settings)
 			end
 		end
 

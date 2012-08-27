@@ -145,8 +145,6 @@ feature -- Visitor
 
 	end_archetype_slot (a_node: ARCHETYPE_SLOT; depth: INTEGER)
 			-- end serialising an ARCHETYPE_SLOT
-		local
-			invs: ARRAYED_LIST[ASSERTION]
 		do
 			if a_node.any_allowed then
 				-- output '}%N' or '} -- comment%N'
@@ -159,27 +157,17 @@ feature -- Visitor
 				last_result.append (format_item(FMT_NEWLINE))
 
 			else -- output includes & excludes, indent the end block, since must be on new line
-				-- includes section
-				if a_node.has_includes then
-					last_result.append (create_indent(depth+1) + apply_style(symbol(SYM_INCLUDE), STYLE_KEYWORD) +
-						format_item(FMT_NEWLINE))
-
-					invs := a_node.includes
-					from invs.start until invs.off loop
-						last_result.append (create_indent(depth+2) + invs.item.expression.as_string + format_item(FMT_NEWLINE))
-						invs.forth
+				if a_node.has_any_includes then
+					last_result.append (create_indent(depth+1) + apply_style(symbol(SYM_INCLUDE), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
+					across a_node.includes as includes_csr loop
+						last_result.append (create_indent(depth+2) + includes_csr.item.expression.as_string + format_item(FMT_NEWLINE))
 					end
 				end
 
-				-- excludes section
-				if a_node.has_excludes then
-					last_result.append (create_indent(depth+1) + apply_style(symbol(SYM_EXCLUDE), STYLE_KEYWORD) +
-						format_item(FMT_NEWLINE))
-
-					invs := a_node.excludes
-					from invs.start until invs.off loop
-						last_result.append (create_indent(depth+2) + invs.item.expression.as_string + format_item(FMT_NEWLINE))
-						invs.forth
+				if a_node.has_any_includes then
+					last_result.append (create_indent(depth+1) + apply_style(symbol(SYM_EXCLUDE), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
+					across a_node.excludes as excludes_csr loop
+						last_result.append (create_indent(depth+2) + excludes_csr.item.expression.as_string + format_item(FMT_NEWLINE))
 					end
 				end
 				last_result.append (create_indent(depth))

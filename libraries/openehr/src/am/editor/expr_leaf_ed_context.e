@@ -36,9 +36,9 @@ feature -- Display
 			gui_grid_row := gui_grid.last_row
 		end
 
-	display_in_grid (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag: BOOLEAN; a_lang: STRING)
+	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		do
-			precursor (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag, a_lang)
+			precursor (ui_settings)
 			gui_grid.set_last_row_label_col (Rules_grid_col_expr_type, meaning, Void, c_meaning_colour, c_pixmap)
 		end
 

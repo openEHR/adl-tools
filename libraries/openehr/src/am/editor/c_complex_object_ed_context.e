@@ -17,7 +17,7 @@ class C_COMPLEX_OBJECT_ED_CONTEXT
 inherit
 	C_OBJECT_ED_CONTEXT
 		redefine
-			arch_node, make
+			arch_node, make, prepare_display_in_grid, display_in_grid
 		end
 
 create
@@ -37,6 +37,25 @@ feature -- Access
 			-- archetype node being edited
 
 	attributes: ARRAYED_LIST [C_ATTRIBUTE_ED_CONTEXT]
+
+feature -- Display
+
+	prepare_display_in_grid (a_gui_grid: EVX_GRID)
+		do
+			precursor (a_gui_grid)
+
+			across attributes as attr_csr loop
+				attr_csr.item.prepare_display_in_grid (a_gui_grid)
+			end
+		end
+
+	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
+		do
+			precursor (ui_settings)
+			across attributes as attr_csr loop
+				attr_csr.item.display_in_grid (ui_settings)
+			end
+		end
 
 feature -- Modification
 

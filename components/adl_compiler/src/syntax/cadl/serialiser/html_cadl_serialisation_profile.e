@@ -47,7 +47,6 @@ feature {NONE} -- Implementation
 			Result.put("{",				SYM_START_CBLOCK)
 			Result.put("}",				SYM_END_CBLOCK)
 			Result.put("*",				SYM_ANY)
-			Result.put("invariant",			SYM_INVARIANT)
 		end
 
 end

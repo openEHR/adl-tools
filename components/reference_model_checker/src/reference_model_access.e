@@ -226,9 +226,8 @@ feature {NONE} -- Implementation
 
 				if not all_schemas.is_empty then
 					-- reset all schemas error logs
-					from all_schemas.start until all_schemas.off loop
-						all_schemas.item_for_iteration.reset
-						all_schemas.forth
+					across all_schemas as all_schemas_csr loop
+						all_schemas_csr.item.reset
 					end
 
 					-- set list of schemas to load; used later to determine what to put in `top_level_schemas'
@@ -248,19 +247,18 @@ feature {NONE} -- Implementation
 					end
 
 					-- initial load of all schemas, which populates `schema_inclusion_map';
-					from all_schemas.start until all_schemas.off loop
-						if all_schemas.item_for_iteration.passed then
-							load_schema_include_closure (all_schemas.key_for_iteration)
-							if all_schemas.item_for_iteration.errors.has_warnings then
-								post_warning (Current, "load_schemas", "model_access_w8", <<all_schemas.key_for_iteration, all_schemas.item_for_iteration.errors.as_string>>)
+					across all_schemas as all_schemas_csr loop
+						if all_schemas_csr.item.passed then
+							load_schema_include_closure (all_schemas_csr.key)
+							if all_schemas_csr.item.errors.has_warnings then
+								post_warning (Current, "load_schemas", "model_access_w8", <<all_schemas_csr.key, all_schemas_csr.item.errors.as_string>>)
 							end
 						else
-							post_error (Current, "load_schemas", "model_access_e12", <<all_schemas.key_for_iteration, all_schemas.item_for_iteration.errors.as_string>>)
-							if not all_schemas.item_for_iteration.is_bmm_compatible then
+							post_error (Current, "load_schemas", "model_access_e12", <<all_schemas_csr.key, all_schemas_csr.item.errors.as_string>>)
+							if not all_schemas_csr.item.is_bmm_compatible then
 								incompatible_schema_detected := True
 							end
 						end
-						all_schemas.forth
 					end
 					if incompatible_schema_detected then
 						post_error (Current, "load_schemas", "model_access_e16", <<schema_directory>>)
@@ -268,24 +266,22 @@ feature {NONE} -- Implementation
 
 					-- propagate errors found so far
 					-- Also here: mark the 'top-level' schemas, inferred from the inclusion maps in each schema
-					from all_schemas.start until all_schemas.off loop
-						if not all_schemas.item_for_iteration.passed then
-							merge_validation_errors (all_schemas.item_for_iteration)
+					across all_schemas as all_schemas_csr loop
+						if not all_schemas_csr.item.passed then
+							merge_validation_errors (all_schemas_csr.item)
 						end
-						if not schema_inclusion_map.has (all_schemas.item_for_iteration.schema_id) then
-							all_schemas.item_for_iteration.set_top_level
+						if not schema_inclusion_map.has (all_schemas_csr.item.schema_id) then
+							all_schemas_csr.item.set_top_level
 						end
-						all_schemas.forth
 					end
 
 					-- Copy all SCHEMA_DESCRIPTORs validated to this point to `validated_schemas'
 					-- we do this in a separate pass, because each iteration of the previous loop can result in a closure
 					-- of schemas being loaded
-					from all_schemas.start until all_schemas.off loop
-						if all_schemas.item_for_iteration.passed then
-							candidate_schemas.put (all_schemas.item_for_iteration, all_schemas.key_for_iteration)
+					across all_schemas as all_schemas_csr loop
+						if all_schemas_csr.item.passed then
+							candidate_schemas.put (all_schemas_csr.item, all_schemas_csr.key)
 						end
-						all_schemas.forth
 					end
 
 					-- Now we process the include relations on the P_BMM top-level schemas, creating fully populated schemas
@@ -408,59 +404,52 @@ feature {NONE} -- Implementation
 		local
 			err_table: HASH_TABLE [ERROR_ACCUMULATOR, STRING]
 			errors_to_propagate: BOOLEAN
-			targ_sd: SCHEMA_DESCRIPTOR
+			targ_sd, client_sd: SCHEMA_DESCRIPTOR
 		do
-			err_table := sd.p_schema.schema_error_table
-			from err_table.start until err_table.off loop
-				-- merge errors into the offending schema error accumulator
-				all_schemas.item (err_table.key_for_iteration).merge_errors (err_table.item_for_iteration)
+			if attached sd.p_schema then
+				err_table := sd.p_schema.schema_error_table
+				across err_table as err_table_csr loop
+					-- merge errors into the offending schema error accumulator
+					all_schemas.item (err_table_csr.key).merge_errors (err_table_csr.item)
 
-				-- iterate through all schemas including err_table.key_for_iteration, except for `sd' since it will already have been marked
-				-- Note that there will be an entry in err_table for warnings as well as errors, so we have to process these properly
-				if schema_inclusion_map.has (err_table.key_for_iteration) then
-					schema_inclusion_map.item (err_table.key_for_iteration).do_all (
-						agent (an_including_schema, a_source_schema: STRING; err_accum: ERROR_ACCUMULATOR)
-							do
-								if err_accum.has_errors then
-									all_schemas.item (an_including_schema).add_error ("BMM_INCERR", <<an_including_schema, a_source_schema>>)
-								else
-									all_schemas.item (an_including_schema).add_warning ("BMM_INCWARN", <<an_including_schema, a_source_schema>>)
-								end
-							end (?, err_table.key_for_iteration, err_table.item_for_iteration)
-					)
+					-- iterate through all schemas including err_table.key_for_iteration, except for `sd' since it will already have been marked
+					-- Note that there will be an entry in err_table for warnings as well as errors, so we have to process these properly
+					if schema_inclusion_map.has (err_table_csr.key) then
+						schema_inclusion_map.item (err_table_csr.key).do_all (
+							agent (a_client_schema, a_source_schema: STRING; err_accum: ERROR_ACCUMULATOR)
+								do
+									if err_accum.has_errors then
+										all_schemas.item (a_client_schema).add_error ("BMM_INCERR", <<a_client_schema, a_source_schema>>)
+									else
+										all_schemas.item (a_client_schema).add_warning ("BMM_INCWARN", <<a_client_schema, a_source_schema>>)
+									end
+								end (?, err_table_csr.key, err_table_csr.item)
+						)
+					end
 				end
-				err_table.forth
 			end
 
-			-- now propagate the errors to all schemas in the inclusion hierarchy
+			-- propagate a BMM_INCERR or BMM_INCWARN to all schemas in the inclusion hierarchy from source schemas
 			from errors_to_propagate := True until not errors_to_propagate loop
 				errors_to_propagate := False
-				from schema_inclusion_map.start until schema_inclusion_map.off loop
-					targ_sd := all_schemas.item (schema_inclusion_map.key_for_iteration)
+				across schema_inclusion_map as schema_inclusion_map_csr loop
+					targ_sd := all_schemas.item (schema_inclusion_map_csr.key)
 					if not targ_sd.passed or else targ_sd.errors.has_warnings then
-						from schema_inclusion_map.item_for_iteration.start until schema_inclusion_map.item_for_iteration.off loop
-							if all_schemas.item (schema_inclusion_map.item_for_iteration.item).passed and not
-								all_schemas.item (schema_inclusion_map.item_for_iteration.item).errors.has_warnings
-							then
+						across schema_inclusion_map_csr.item as client_schemas_csr loop
+							client_sd := all_schemas.item (client_schemas_csr.item)
+							if client_sd.passed and not client_sd.errors.has_warnings then
 								if not targ_sd.passed then
-									all_schemas.item (schema_inclusion_map.item_for_iteration.item).add_error ("BMM_INCERR",
-										<<schema_inclusion_map.item_for_iteration.item, schema_inclusion_map.key_for_iteration>>)
+									client_sd.add_error ("BMM_INCERR", <<client_schemas_csr.item, schema_inclusion_map_csr.key>>)
 								else
-									all_schemas.item (schema_inclusion_map.item_for_iteration.item).add_warning ("BMM_INCWARN",
-										<<schema_inclusion_map.item_for_iteration.item, schema_inclusion_map.key_for_iteration>>)
+									client_sd.add_warning ("BMM_INCWARN", <<client_schemas_csr.item, schema_inclusion_map_csr.key>>)
 								end
 								errors_to_propagate := True
 							end
-							schema_inclusion_map.item_for_iteration.forth
 						end
 					end
-					schema_inclusion_map.forth
 				end
 			end
 		end
-
-invariant
-	-- all_schemas_basic_validity: all_schemas.for_all (agent (sch: SCHEMA_ACCESS):BOOLEAN do Result := sch.passed end)
 
 end
 

@@ -37,6 +37,9 @@ feature -- Definitions
 			-- a safe invalid type number to use to represent 'no static type specified' for routine
 			-- `populate_dt_from_object'
 
+feature -- Access
+
+
 feature -- Conversion
 
 	object_to_dt (an_obj: attached ANY): attached DT_COMPLEX_OBJECT_NODE
@@ -50,6 +53,102 @@ feature -- Conversion
 		do
 			populate_dt_from_object (an_obj, a_dt_co, No_type)
 		end
+
+	dt_to_object_from_string (a_dt_co: attached DT_COMPLEX_OBJECT_NODE; a_type_name: attached STRING; make_args: ARRAY[ANY]): ANY
+			-- make an object whose classes and attributes correspond to the structure
+			-- of this DT_OBJECT
+		do
+			Result := dt_to_object (a_dt_co, dt_dynamic_type_from_string (a_type_name), make_args)
+		end
+
+	dt_to_object (a_dt_co: attached DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER; make_args: ARRAY[ANY]): ANY
+			-- make an object whose classes and attributes correspond to the structure
+			-- of this DT_OBJECT; should be called externally only on top-level DT structure;
+			-- recursive calling from populate_object_from_dt calling
+			-- set_container_object_data_from_dt also occurs.
+			-- The main job of this routine is to set up cross references.
+		local
+			src_obj, targ_obj: ANY
+			src_obj_fld: INTEGER
+			path_list: SEQUENCE [OG_PATH]
+			exception_caught: BOOLEAN
+		do
+			if not exception_caught then
+				-- wipe the reference list out if on a top-level object
+				if a_dt_co.is_root then
+					create object_ref_list.make (0)
+				end
+
+				-- make the object
+				Result := populate_object_from_dt (a_dt_co, a_type_id, make_args)
+
+				-- if there were object references in the DT structure, process them now
+				if a_dt_co.is_root and not object_ref_list.is_empty then
+					from object_ref_list.start until object_ref_list.off loop
+						src_obj := object_ref_list.item.source_object_ref
+						src_obj_fld := object_ref_list.item.source_object_field_index
+						if attached {DT_OBJECT_REFERENCE} object_ref_list.item as a_dt_obj_ref then
+							if a_dt_co.has_path (a_dt_obj_ref.value.as_string) then
+								targ_obj := a_dt_co.node_at_path (a_dt_obj_ref.value.as_string).as_object_ref
+								if a_dt_obj_ref.is_source_object_container then
+									if attached {HASH_TABLE [ANY, HASHABLE]} src_obj as a_hash_table then
+										a_hash_table.extend (targ_obj, a_dt_obj_ref.hash_key)
+									elseif attached {SEQUENCE [ANY]} src_obj as a_sequence then
+										a_sequence.extend (targ_obj)
+									end
+								else
+									set_reference_field (src_obj_fld, src_obj, targ_obj)
+								end
+							else
+								post_error (Current, "dt_to_object", "non_existent_path", <<a_dt_obj_ref.value.as_string>>)
+							end
+						elseif attached {DT_OBJECT_REFERENCE_LIST} object_ref_list.item as a_dt_obj_ref_list then
+							-- make the generic container, it will be a SEQUENCE (some kind of list)
+							if attached {SEQUENCE[ANY]} new_instance_of (field_static_type_of_type (src_obj_fld, dynamic_type (src_obj))) as a_sequence2 then
+								-- do a reasonable make call on it
+								if attached {ARRAYED_LIST[ANY]} a_sequence2 as an_arr_list then
+									an_arr_list.make (0)
+								end
+
+								path_list := a_dt_obj_ref_list.value
+								from path_list.start until path_list.off loop
+									if a_dt_co.has_path (path_list.item.as_string) then
+										a_sequence2.extend (a_dt_co.node_at_path (path_list.item.as_string).as_object_ref)
+									else
+										post_error (Current, "dt_to_object", "non_existent_path_in_list", <<path_list.item.as_string>>)
+									end
+									path_list.forth
+								end
+
+								-- now we detect if the whole thing is going inside another container, or a standard object
+								if a_dt_obj_ref_list.is_source_object_container then
+									if attached {HASH_TABLE [ANY, HASHABLE]} src_obj as a_hash_table2 then
+										a_hash_table2.extend (a_sequence2, a_dt_obj_ref_list.hash_key)
+									elseif attached {SEQUENCE [ANY]} src_obj as a_sequence3 then
+										a_sequence3.extend (a_sequence2)
+									end
+								else
+									set_reference_field (src_obj_fld, src_obj, a_sequence2)
+								end
+							end
+						end
+
+						object_ref_list.forth
+					end
+				end
+			else
+				Result := Void
+			end
+		rescue
+			if assertion_violation then
+				-- check that the original was set_reference_field () - this indicates a type mismatch
+				post_error (Current, "dt_to_object", "dt_to_object_type_mismatch", <<original_recipient_name>>)
+			end
+			exception_caught := True
+			retry
+		end
+
+feature {NONE} -- Implementation
 
 	populate_dt_from_object (an_obj: attached ANY; a_dt_co: attached DT_COMPLEX_OBJECT_NODE; a_static_type: INTEGER)
 			-- make a data tree from an object; this routine is recursive. Compare `a_static_type' to `an_obj' dynamic
@@ -216,100 +315,6 @@ end
 			end
 		end
 
-	dt_to_object_from_string (a_dt_co: attached DT_COMPLEX_OBJECT_NODE; a_type_name: attached STRING; make_args: ARRAY[ANY]): ANY
-			-- make an object whose classes and attributes correspond to the structure
-			-- of this DT_OBJECT
-		do
-			Result := dt_to_object (a_dt_co, dt_dynamic_type_from_string (a_type_name), make_args)
-		end
-
-	dt_to_object (a_dt_co: attached DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER; make_args: ARRAY[ANY]): ANY
-			-- make an object whose classes and attributes correspond to the structure
-			-- of this DT_OBJECT; should be called externally only on top-level DT structure;
-			-- recursive calling from populate_object_from_dt calling
-			-- set_container_object_data_from_dt also occurs.
-			-- The main job of this routine is to set up cross references.
-		local
-			src_obj, targ_obj: ANY
-			src_obj_fld: INTEGER
-			path_list: SEQUENCE [OG_PATH]
-			exception_caught: BOOLEAN
-		do
-			if not exception_caught then
-				-- wipe the reference list out if on a top-level object
-				if a_dt_co.is_root then
-					create object_ref_list.make (0)
-				end
-
-				-- make the object
-				Result := populate_object_from_dt (a_dt_co, a_type_id, make_args)
-
-				-- if there were object references in the DT structure, process them now
-				if a_dt_co.is_root and not object_ref_list.is_empty then
-					from object_ref_list.start until object_ref_list.off loop
-						src_obj := object_ref_list.item.source_object_ref
-						src_obj_fld := object_ref_list.item.source_object_field_index
-						if attached {DT_OBJECT_REFERENCE} object_ref_list.item as a_dt_obj_ref then
-							if a_dt_co.has_path (a_dt_obj_ref.value.as_string) then
-								targ_obj := a_dt_co.node_at_path (a_dt_obj_ref.value.as_string).as_object_ref
-								if a_dt_obj_ref.is_source_object_container then
-									if attached {HASH_TABLE [ANY, HASHABLE]} src_obj as a_hash_table then
-										a_hash_table.extend (targ_obj, a_dt_obj_ref.hash_key)
-									elseif attached {SEQUENCE [ANY]} src_obj as a_sequence then
-										a_sequence.extend (targ_obj)
-									end
-								else
-									set_reference_field (src_obj_fld, src_obj, targ_obj)
-								end
-							else
-								post_error (Current, "dt_to_object", "non_existent_path", <<a_dt_obj_ref.value.as_string>>)
-							end
-						elseif attached {DT_OBJECT_REFERENCE_LIST} object_ref_list.item as a_dt_obj_ref_list then
-							-- make the generic container, it will be a SEQUENCE (some kind of list)
-							if attached {SEQUENCE[ANY]} new_instance_of (field_static_type_of_type (src_obj_fld, dynamic_type (src_obj))) as a_sequence2 then
-								-- do a reasonable make call on it
-								if attached {ARRAYED_LIST[ANY]} a_sequence2 as an_arr_list then
-									an_arr_list.make (0)
-								end
-
-								path_list := a_dt_obj_ref_list.value
-								from path_list.start until path_list.off loop
-									if a_dt_co.has_path (path_list.item.as_string) then
-										a_sequence2.extend (a_dt_co.node_at_path (path_list.item.as_string).as_object_ref)
-									else
-										post_error (Current, "dt_to_object", "non_existent_path_in_list", <<path_list.item.as_string>>)
-									end
-									path_list.forth
-								end
-
-								-- now we detect if the whole thing is going inside another container, or a standard object
-								if a_dt_obj_ref_list.is_source_object_container then
-									if attached {HASH_TABLE [ANY, HASHABLE]} src_obj as a_hash_table2 then
-										a_hash_table2.extend (a_sequence2, a_dt_obj_ref_list.hash_key)
-									elseif attached {SEQUENCE [ANY]} src_obj as a_sequence3 then
-										a_sequence3.extend (a_sequence2)
-									end
-								else
-									set_reference_field (src_obj_fld, src_obj, a_sequence2)
-								end
-							end
-						end
-
-						object_ref_list.forth
-					end
-				end
-			else
-				Result := Void
-			end
-		rescue
-			if assertion_violation then
-				-- check that the original was set_reference_field () - this indicates a type mismatch
-				post_error (Current, "dt_to_object", "dt_to_object_type_mismatch", <<original_recipient_name>>)
-			end
-			exception_caught := True
-			retry
-		end
-
 	populate_object_from_dt (a_dt_co: attached DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER; make_args: ARRAY[ANY]): ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT; recursive. Be careful of the 3 'kinds' of type id in Eiffel:
@@ -418,8 +423,8 @@ end
 							-- primitive types, because these are atomic in dadl)
 							else
 								a_dt_attr.start
-								a_dt_obj_leaf ?= a_dt_attr.item
-								if a_dt_obj_leaf /= Void then
+								if attached {DT_OBJECT_LEAF} a_dt_attr.item as dt_leaf then
+									a_dt_obj_leaf := dt_leaf
 
 									-- In the DT tree, it is a REF; look up object that was created at target path of this reference in xref table
 									if attached {DT_REFERENCE} a_dt_obj_leaf as a_dt_ref then
@@ -628,7 +633,7 @@ feature {NONE} -- Conversion to object
 
 			-- for all other types just use the value as is
 			else
-				v ?= value
+				v := value
 			end
 
 			set_reference_field (i, object, v)

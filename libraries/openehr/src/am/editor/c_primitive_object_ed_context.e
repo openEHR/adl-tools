@@ -31,11 +31,11 @@ feature -- Modification
 
 feature -- Display
 
-	display_in_grid (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag: BOOLEAN; a_lang: STRING)
+	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		local
 			gli: EV_GRID_LABEL_ITEM
 		do
-			precursor (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag, a_lang)
+			precursor (ui_settings)
 			if not arch_node.any_allowed then
 				create gli.make_with_text (arch_node.item.as_string)
 				gli.set_foreground_color (c_constraint_colour)

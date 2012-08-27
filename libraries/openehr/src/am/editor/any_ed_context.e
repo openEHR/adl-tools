@@ -40,6 +40,16 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_GUI_AGENTS
+		export
+			{NONE} all
+		end
+
+	SHARED_GUI_ARCHETYPE_TOOL_AGENTS
+		export
+			{NONE} all
+		end
+
 feature -- Definitions
 
 	c_meaning_colours: HASH_TABLE [EV_COLOR, INTEGER]
@@ -118,12 +128,12 @@ feature -- Display
 			gui_grid_set: gui_grid = a_gui_grid
 		end
 
-	display_in_grid (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag: BOOLEAN; a_lang: STRING)
+	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		do
-			in_technical_view := in_technical_view_flag
-			show_rm_inheritance := show_rm_inheritance_flag
-			show_codes := show_codes_flag
-			language := a_lang
+			in_technical_view := ui_settings.show_technical_view
+			show_rm_inheritance := ui_settings.show_rm_inheritance
+			show_codes := ui_settings.show_codes
+			language := ui_settings.selected_language
 			gui_grid.set_last_row (gui_grid_row)
 		end
 

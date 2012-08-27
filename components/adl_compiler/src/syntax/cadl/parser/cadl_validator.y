@@ -85,11 +85,10 @@ create
 %token SYM_THEN SYM_ELSE
 
 %token SYM_EXISTENCE SYM_OCCURRENCES SYM_CARDINALITY 
-%token SYM_UNORDERED SYM_ORDERED SYM_UNIQUE SYM_ELLIPSIS SYM_INFINITY SYM_LIST_CONTINUE
-%token SYM_INVARIANT SYM_MATCHES SYM_USE_ARCHETYPE SYM_ALLOW_ARCHETYPE SYM_USE_NODE 
+%token SYM_UNORDERED SYM_ORDERED SYM_UNIQUE SYM_ELLIPSIS SYM_LIST_CONTINUE
+%token SYM_MATCHES SYM_USE_ARCHETYPE SYM_ALLOW_ARCHETYPE SYM_USE_NODE 
 %token SYM_INCLUDE SYM_EXCLUDE
 %token SYM_AFTER SYM_BEFORE SYM_CLOSED
-%token SYM_DT_UNKNOWN
 
 %token ERR_CHARACTER ERR_STRING ERR_C_DOMAIN_TYPE ERR_TERM_CODE_CONSTRAINT ERR_V_QUALIFIED_TERM_CODE_REF ERR_V_ISO8601_DURATION
 
@@ -114,6 +113,7 @@ create
 %type <MULTIPLICITY_INTERVAL> c_occurrences c_existence occurrence_spec existence_spec
 %type <C_PRIMITIVE_OBJECT> c_primitive_object
 %type <C_PRIMITIVE> c_primitive
+%type <ARCHETYPE_SLOT> c_archetype_slot_id c_archetype_slot_head archetype_slot
 
 %type <EXPR_ITEM> boolean_node
 %type <EXPR_UNARY_OPERATOR> boolean_unop_expr
@@ -189,6 +189,7 @@ input: c_complex_object
 			debug("ADL_parse")
 				io.put_string("assertion definition parsed%N")
 			end
+			assertion_list := $1
 
 			accept
 		}
@@ -315,7 +316,7 @@ c_object: c_complex_object
 		}
 	| archetype_slot
 		{
-			safe_put_c_attribute_child (c_attrs.item, archetype_slot)
+			safe_put_c_attribute_child (c_attrs.item, $1)
 		}
 	| constraint_ref
 		{
@@ -331,7 +332,7 @@ c_object: c_complex_object
 		}
 	| c_primitive_object
 		{
-			safe_put_c_attribute_child(c_attrs.item, c_prim_obj)
+			safe_put_c_attribute_child(c_attrs.item, $1)
 		}
 	| V_C_DOMAIN_TYPE
 		{
@@ -436,77 +437,80 @@ archetype_internal_ref_head: SYM_USE_NODE type_identifier
 
 archetype_slot: c_archetype_slot_head SYM_MATCHES SYM_START_CBLOCK c_includes c_excludes SYM_END_CBLOCK
 		{
-			if $4 /= Void then
-				archetype_slot.set_includes($4)
+			if attached $4 then
+				$1.set_includes($4)
 			end
-			if $5 /= Void then
-				archetype_slot.set_excludes($5)
+			if attached $5 then
+				$1.set_excludes($5)
 			end
 
 			debug("ADL_parse")
 				indent.remove_tail(1)
 			end
+			$$ := $1
 		}
 	| c_archetype_slot_head -- if closed or occurrences = 0
 		{
-			if not (archetype_slot.is_closed or archetype_slot.is_prohibited) then
-				abort_with_error("VASMD", <<archetype_slot.rm_type_name, c_attrs.item.path>>)
+			if not ($1.is_closed or $1.is_prohibited) then
+				abort_with_error("VASMD", <<$1.rm_type_name, c_attrs.item.path>>)
 			end
+			$$ := $1
 		}
 	;
 
 c_archetype_slot_head: c_archetype_slot_id c_occurrences 
 		{
-			if $2 /= Void then
-				archetype_slot.set_occurrences($2)
+			if attached $2 then
+				$1.set_occurrences($2)
 			end
 
 			debug("ADL_parse")
-				io.put_string(indent + "create ARCHETYPE_SLOT " + archetype_slot.rm_type_name + " [id=" + archetype_slot.node_id + "]")
-				if $2 /= Void then
+				io.put_string(indent + "create ARCHETYPE_SLOT " + $1.rm_type_name + " [id=" + $1.node_id + "]")
+				if attached $2 then
 					io.put_string("; occurrences=(" + $2.as_string + ")") 
 				end
 				io.new_line
 				indent.append("%T")
 			end
+			$$ := $1
 		}
 	;
 
 c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier
 		{
-			create archetype_slot.make_anonymous($2)
+			create $$.make_anonymous($2)
 		}
 	| sibling_order SYM_ALLOW_ARCHETYPE type_identifier
 		{
 			if differential_syntax then
-				create archetype_slot.make_anonymous($3)
-				archetype_slot.set_sibling_order($1)
+				create $$.make_anonymous($3)
+				$$.set_sibling_order($1)
 			else
 				abort_with_error("SDSF", Void)
 			end
 		}
 	| SYM_ALLOW_ARCHETYPE type_identifier V_LOCAL_TERM_CODE_REF
 		{
-			create archetype_slot.make_identified($2, $3)
+			create $$.make_identified($2, $3)
 		}
 	| sibling_order SYM_ALLOW_ARCHETYPE type_identifier V_LOCAL_TERM_CODE_REF
 		{
 			if differential_syntax then
-				create archetype_slot.make_identified($3, $4)
-				archetype_slot.set_sibling_order($1)
+				create $$.make_identified($3, $4)
+				$$.set_sibling_order($1)
 			else
 				abort_with_error("SDSF", Void)
 			end
 		}
 	| SYM_ALLOW_ARCHETYPE type_identifier SYM_CLOSED
 		{
-			create archetype_slot.make_anonymous($2)
-			archetype_slot.set_closed
+			create $$.make_anonymous($2)
+			$$.set_closed
 		}
 	| SYM_ALLOW_ARCHETYPE type_identifier V_LOCAL_TERM_CODE_REF SYM_CLOSED
 		{
-			create archetype_slot.make_identified($2, $3)
-			archetype_slot.set_closed
+			create $$.make_identified($2, $3)
+			$$.set_closed
 		}
 	| SYM_ALLOW_ARCHETYPE error
 		{
@@ -516,8 +520,7 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier
 
 c_primitive_object: c_primitive
 		{
-			create c_prim_obj.make($1)
-			$$ := c_prim_obj
+			create $$.make ($1)
 		}
 	;
 
@@ -722,8 +725,7 @@ c_includes: -- Empty
 			debug("include list")
 				io.put_string(indent + "[---assertion expression---] %N")
 			end
-			$$ := assertion_list
-			assertion_list := Void
+			$$ := $2
 		}
 	;
 
@@ -733,8 +735,7 @@ c_excludes: -- Empty
 			debug("exclude list")
 				io.put_string(indent + "[---assertion expression---] %N")
 			end
-			$$ := assertion_list
-			assertion_list := Void
+			$$ := $2
 		}
 	;
 
@@ -744,14 +745,13 @@ c_excludes: -- Empty
 
 assertions: assertion
 		{
-			if assertion_list = Void then 
-				create assertion_list.make(0)
-			end
-			assertion_list.extend ($1)
+			create $$.make(0)
+			$$.extend ($1)
 		}
 	| assertions assertion
 		{
-			assertion_list.extend ($2)
+			$1.extend ($2)
+			$$ := $1
 		}
 	;
 
@@ -2187,7 +2187,6 @@ feature -- Initialization
 			create indent.make(0)
 
 			create object_nodes.make(0)
-			assertion_list := Void
 			create c_attrs.make(0)
 
 			create time_vc
@@ -2316,9 +2315,6 @@ feature {NONE} -- Parse Tree
 			-- reference list of attributes with differential paths that require a special grafting process
 
 	attr_node: C_ATTRIBUTE
-
-	c_prim_obj: C_PRIMITIVE_OBJECT
-	archetype_slot: ARCHETYPE_SLOT
 
 	rm_attribute_name: STRING
 	parent_path_str: STRING

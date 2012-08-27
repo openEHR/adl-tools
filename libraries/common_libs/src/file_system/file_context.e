@@ -200,12 +200,12 @@ feature -- Commands
 				end
 
 				in_file.close
-				if file_lines.count >= 1 then
-					clean_utf (file_lines[1])
+				if file_lines.count > 0 then
+					clean_utf (file_lines [1])
 				end
 			else
 				last_op_failed := True
-				last_op_fail_reason := "Read failed; file " + current_full_path + " does not exist"
+				last_op_fail_reason := get_msg ("read_failed_file_does_not_exist", <<current_full_path>>)
 			end
 		ensure
 			file_lines_empty_on_failure: last_op_failed implies file_lines.is_empty
@@ -234,14 +234,14 @@ feature -- Commands
 					if has_byte_order_marker then
 						create file_content.make_empty
 						last_op_failed := True
-						last_op_fail_reason := "Read failed; file " + current_full_path + " has UTF-8 marker but is not valid UTF-8"
+						last_op_fail_reason := get_msg ("invalid_utf8_file", <<current_full_path>>)
 					else
 						file_content := utf8.to_utf8 (file_content)
 					end
 				end
 			else
 				last_op_failed := True
-				last_op_fail_reason := "Read failed; file " + current_full_path + " does not exist"
+				last_op_fail_reason := get_msg ("read_failed_file_does_not_exist", <<current_full_path>>)
 			end
 		ensure
 			file_content_empty_on_failure: last_op_failed implies file_content.is_empty

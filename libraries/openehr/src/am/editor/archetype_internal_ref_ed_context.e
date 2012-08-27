@@ -29,12 +29,12 @@ feature -- Access
 
 feature -- Display
 
-	display_in_grid (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag: BOOLEAN; a_lang: STRING)
+	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		local
 			p, s: STRING
 			gli: EV_GRID_LABEL_ITEM
 		do
-			precursor (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag, a_lang)
+			precursor (ui_settings)
 
 			-- set constraint column to referenced path
 			create s.make_empty

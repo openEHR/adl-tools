@@ -179,6 +179,26 @@ feature -- Modification
 			end
 		end
 
+	update_last_row_label_col_multi_line (a_col: INTEGER; a_text, a_tooltip: detachable STRING; a_fg_colour: detachable EV_COLOR; a_pixmap: detachable EV_PIXMAP)
+			-- update column details to `last_sub_row'; any detail that is Void is not changed in existing column
+		do
+			if attached {EV_GRID_LABEL_ITEM} last_row.item (a_col) as gli then
+				if attached a_text then
+					gli.set_text (utf8_to_utf32 (a_text))
+					last_row.set_height (gli.text_height + Default_grid_row_expansion)
+				end
+				if attached a_tooltip then
+					gli.set_tooltip (utf8_to_utf32 (a_tooltip))
+				end
+				if attached a_fg_colour then
+					gli.set_foreground_color (a_fg_colour)
+				end
+				if attached a_pixmap then
+					gli.set_pixmap (a_pixmap)
+				end
+			end
+		end
+
 	remove_matching_sub_rows (a_parent_row: EV_GRID_ROW; a_row_test: FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
 		local
 			remove_list: SORTED_TWO_WAY_LIST [INTEGER]

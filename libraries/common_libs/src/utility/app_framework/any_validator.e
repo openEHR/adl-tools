@@ -81,7 +81,7 @@ feature -- Modification
 	add_info_with_location(a_key: STRING; args: ARRAY [STRING]; a_location: STRING)
 			-- append an information message with key `a_key' and `args' array to the `information' string
 		do
-			errors.extend(create {ERROR_DESCRIPTOR}.make_info(a_key, get_msg(a_key, args), a_location))
+			errors.extend (create {ERROR_DESCRIPTOR}.make_info (a_key, get_msg(a_key, args), a_location))
 		end
 
 	merge_errors (other_errors: attached ERROR_ACCUMULATOR)

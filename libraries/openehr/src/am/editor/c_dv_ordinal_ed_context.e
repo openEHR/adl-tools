@@ -40,30 +40,25 @@ feature -- Display
 				gui_grid.add_sub_row (gui_grid_row, bmm_prop_key)
 				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, bmm_prop_key, Void, c_attribute_colour,
 					get_icon_pixmap ("rm/generic/" + bmm_prop_value.multiplicity_key_string))
-				gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, c_constraint_colour, Void)
+				gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_constraint, "", Void, c_constraint_colour, Void)
+				value_symbol_subrow := gui_grid.last_row
 			end
 		end
 
-	display_in_grid (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag: BOOLEAN; a_lang: STRING)
-		local
-			i: INTEGER
+	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		do
-			precursor (in_technical_view_flag, show_rm_inheritance_flag, show_codes_flag, a_lang)
+			precursor (ui_settings)
 			if not arch_node.any_allowed then
-				from i := 1 until i > gui_grid_row.subrow_count loop
-					if attached {STRING} gui_grid_row.subrow (i).data as str and then str.is_equal (bmm_prop_key) then
-						gui_grid.set_last_row (gui_grid_row.subrow (i))
-						gui_grid.update_last_row_label_col (Definition_grid_col_constraint, constraint_str, Void, Void, Void)
-						i := gui_grid_row.subrow_count + 1
-					end
-					i := i + 1
-				end
+				gui_grid.set_last_row (value_symbol_subrow)
+				gui_grid.update_last_row_label_col_multi_line (Definition_grid_col_constraint, constraint_str, Void, Void, Void)
 			end
 		end
 
 feature -- Modification
 
 feature {NONE} -- Implementation
+
+	value_symbol_subrow: EV_GRID_ROW
 
 	object_ordinal_item_string (an_ordinal: ORDINAL; assumed_flag: BOOLEAN): STRING
 			-- generate string form of node or object for use in tree node
