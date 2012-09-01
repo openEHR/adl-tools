@@ -38,12 +38,13 @@ feature -- Access
 
 	attributes: ARRAYED_LIST [C_ATTRIBUTE_ED_CONTEXT]
 
+--	rm_properties: ARRAYED_LIST [RM_PROPERTY_ED_CONTEXT]
+
 feature -- Display
 
 	prepare_display_in_grid (a_gui_grid: EVX_GRID)
 		do
 			precursor (a_gui_grid)
-
 			across attributes as attr_csr loop
 				attr_csr.item.prepare_display_in_grid (a_gui_grid)
 			end

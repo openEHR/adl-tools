@@ -237,8 +237,7 @@ feature -- Commands
 --			do_with_wait_cursor (ev_definition_hbox, agent a_c_iterator.do_all)
 
 			-- repopulate main definition
-			create ui_settings.make (selected_language,
-				show_codes, show_rm_inheritance, show_technical_view,
+			create ui_settings.make (selected_language, show_codes, show_rm_inheritance, show_technical_view,
 				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
 			arch_ed_context.definition_context.display_in_grid (ui_settings)
 
@@ -406,7 +405,6 @@ feature {NONE} -- Implementation
 				show_codes, show_rm_inheritance, show_technical_view,
 				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
 
-			gui_definition_grid.set_column_titles (Definition_grid_col_names.linear_representation)
 			arch_ed_context.definition_context.prepare_display_in_grid (gui_definition_grid)
 			arch_ed_context.definition_context.display_in_grid (ui_settings)
 
@@ -417,8 +415,7 @@ feature {NONE} -- Implementation
 --			create c_node_map_builder.make (rm_schema, source, differential_view, selected_language, gui_definition_grid, False, show_codes, show_rm_inheritance,
 --				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties,
 --				definition_grid_row_map, code_select_action_agent, path_select_action_agent)
---			create a_c_iterator.make (source_archetype.definition, c_node_map_builder,
---				differential_view, show_rm_data_properties, rm_schema)
+--			create a_c_iterator.make (source_archetype.definition, c_node_map_builder, differential_view, show_rm_data_properties, rm_schema)
 --			do_with_wait_cursor (ev_definition_hbox, agent a_c_iterator.do_all)
 
 
@@ -451,6 +448,7 @@ feature {NONE} -- Implementation
 				gui_definition_treeview_control.on_expand_one_level
 				gui_definition_treeview_control.on_expand_one_level
 			end
+			gui_definition_grid.set_column_titles (Definition_grid_col_names.linear_representation)
 			gui_definition_grid.resize_columns_to_content
 			gui_definition_grid.ev_grid.unlock_update
 

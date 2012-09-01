@@ -61,6 +61,7 @@ feature -- Display
 		do
 			precursor (a_gui_grid)
 			gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, "", Void, Void, c_pixmap)
+			gui_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
 
 			build_arch_node_context_menu
 			gui_grid.add_last_row_pointer_button_press_actions (Definition_grid_col_rm_name, agent arch_class_node_handler (?, ?, ?))
@@ -100,9 +101,6 @@ feature -- Display
 					gui_grid.update_last_row_label_col (Definition_grid_col_rm_name, s, node_tooltip_str, c_object_colour, c_pixmap)
 				end
 			end
-
-			-- add a context menu to rm_name col
-		--	gui_grid.add_last_row_pointer_button_press_actions (Node_grid_col_rm_name, agent arch_class_node_handler (gui_grid.last_row, ?, ?, ?))
 
 			-- card/occ column
 			create s.make_empty

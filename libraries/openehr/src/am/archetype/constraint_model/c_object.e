@@ -38,7 +38,7 @@ feature -- Source Control
 
 feature -- Access
 
-	rm_type_name: attached STRING
+	rm_type_name: STRING
 			-- type name from reference model, of object to instantiate
 
 	node_id: STRING

@@ -19,10 +19,8 @@ create
 
 feature -- Initialisation
 
-	make (a_units: detachable STRING; a_magnitude: detachable INTERVAL [REAL]; a_precision: detachable INTERVAL [INTEGER])
+	make (a_units: STRING; a_magnitude: detachable INTERVAL [REAL]; a_precision: detachable INTERVAL [INTEGER])
 			-- add a units constraint. Void magnitude means any magnitude allowed
-		require
-			Magnitude_validity: attached a_magnitude implies attached a_units
 		do
 			units := a_units
 			magnitude := a_magnitude
@@ -34,7 +32,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	units: detachable STRING
+	units: STRING
 			-- constraint on units
 
 	magnitude: detachable INTERVAL [REAL]
@@ -48,13 +46,26 @@ feature -- Status Report
 	any_magnitude_allowed: BOOLEAN
 			-- True if there is no constraint on magnitude
 		do
-			Result := attached magnitude
+			Result := not attached magnitude
 		end
 
 	any_precision_allowed: BOOLEAN
 			-- True if there is no constraint on precision
 		do
-			Result := attached precision
+			Result := not attached precision
+		end
+
+feature -- Comparison
+
+	node_conforms_to (other: like Current): BOOLEAN
+			-- True if this node is a subset, i.e. a redefinition of, `other' in the ADL constraint sense, i.e. that all
+			-- aspects of the definition of this node and all child nodes define a narrower, wholly
+			-- contained instance space of `other'.
+			-- Returns False if they are the same, or if they do not correspond
+		do
+			Result := units.same_string (other.units) and
+				(attached magnitude and attached other.magnitude and then other.magnitude.contains (magnitude) or else
+				not attached magnitude)
 		end
 
 invariant

@@ -77,8 +77,8 @@ feature -- Commands
 			create last_parse_content.make (0)
 
 			if file_context.file_lines.count > 0 then
-				from file_context.file_lines.start until file_context.file_lines.off loop
-					line := file_context.file_lines.item
+				across file_context.file_lines as file_lines_csr loop
+					line := file_lines_csr.item
 					lpos := line.index_of ('<', 1)+1
 					if lpos > 1 then
 						rpos := line.index_of ('>', lpos)-1
@@ -100,7 +100,6 @@ feature -- Commands
 					else
 						last_parse_fail_reason := "left delimiter ('<') not found for key " + key
 					end
-					file_context.file_lines.forth
 				end
 			else
 				last_parse_fail_reason := "no attributes found; was expecting "

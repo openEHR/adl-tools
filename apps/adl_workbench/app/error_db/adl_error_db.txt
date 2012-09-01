@@ -120,11 +120,16 @@ templates = <
 		["VSONIRrm"] = <"object node at path $1 RM type $2 redefines parent node RM type $3 but node_id $4 not redefined">
 		["VSCNR"] = <"illegal redefinition of $1 node at $2 in parent into $3 node at $4 in child">
 		["VCOCDocc"] = <"object node of RM type $1 at path $2 definition missing (empty definition only allowed when occurrences redefined in specialised child)">
-		["VSONT"] = <"object node at path $1 (AOM type $2) does not conform to node at parent path $3 AOM type $4">
+		["VSONT"] = <"$1 object node at path $2 (AOM type $3) does not conform to $4 node at parent path $5 (AOM type $6)">
 		["VSONCT"] = <"object node at path $1 (RM type $2) does not conform to node at parent path $3 RM type $4">
 		["VSONCO"] = <"object node at path $1 occurrences $2 does not conform to node at parent path $3 occurrences $4">
 		["VSONCI"] = <"object node at path $1 node_id $2 does not conform to node at parent path $3 node_id $4">
 		["VCATU"] = <"cADL object duplicate attribute $1">
+
+		-- C_DOMAIN_TYPE
+		["VDTV"] = <"$1 object node at path $2 does not conform to $3 node at parent path $4">
+
+		["VUNK"] = <"$1 object node at path $2 does not conform to $3 node at parent path $4 (unknown reason)">
 
 		-- ARCHETYPE_INTERNAL_REF
 		["VUNP"] = <"ARCHETYPE_INTERNAL_REF path $1 not found in archetype">

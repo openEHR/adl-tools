@@ -164,12 +164,13 @@ feature -- Commands
 			Valid_max_lines: max_lines > 0
 		local
 			in_file: PLAIN_TEXT_FILE
-			i, j, k: INTEGER
-			items_found: ARRAY[BOOLEAN]
+			i, j: INTEGER
+			items_found: ARRAY [BOOLEAN]
+			line: STRING
    		do
    			last_op_failed := False
-			create in_file.make(current_full_path)
-			create file_lines.make(0)
+			create in_file.make (current_full_path)
+			create file_lines.make (0)
 
 			if in_file.exists then
 				in_file.open_read
@@ -177,25 +178,20 @@ feature -- Commands
 
 				from i := 1 until i > max_lines or file_lines.count = start_patterns.count or in_file.end_of_file loop
 					in_file.read_line
+					line := in_file.last_string
+					line.left_adjust
 
-					-- ignore if empty
-					if not in_file.last_string.is_empty and not in_file.last_string.starts_with (ignore_pattern) then
-						-- read past whitespace
-						from k := 1 until k > in_file.last_string.count or else not in_file.last_string.item (k).is_space loop
-							k := k + 1
+					-- ignore if empty or a comment
+					if not line.is_empty and then not line.starts_with (ignore_pattern) then
+						from j := start_patterns.lower until j > start_patterns.upper or else (line.starts_with (start_patterns[j]) and not items_found[j]) loop
+							j := j + 1
 						end
-
-						if k <= in_file.last_string.count then
-							from j := start_patterns.lower until j > start_patterns.upper or else (in_file.last_string.starts_with (start_patterns[j]) and not items_found[j]) loop
-								j := j + 1
-							end
-							if j <= start_patterns.upper then
-								file_lines.extend (in_file.last_string.twin)
-								file_lines.last.prune_all ('%R')
-								items_found [j] := True
-							end
-							i := i + 1
+						if j <= start_patterns.upper then
+							file_lines.extend (line.twin)
+							file_lines.last.prune_all ('%R')
+							items_found [j] := True
 						end
+						i := i + 1
 					end
 				end
 

@@ -26,6 +26,10 @@ feature -- Access
 			-- while the type for any arithmetic operator, will be "Real" or "Integer".
 
 	parent: detachable EXPR_ITEM
+		note
+			option: transient
+		attribute
+		end
 
 feature -- Conversion
 

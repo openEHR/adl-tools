@@ -166,11 +166,8 @@ feature -- Comparison
 			-- aspects of the definition of this node and all child nodes define a narrower, wholly
 			-- contained instance space of `other'.
 			-- Returns False if they are the same, or if they do not correspond
-		local
-			other_item: C_QUANTITY_ITEM
-			fail: BOOLEAN
 		do
-			if precursor(other, an_rm_schema) then
+			if precursor (other, an_rm_schema) then
 				if other.any_allowed then
 					Result := True
 				elseif not any_allowed then
@@ -178,16 +175,11 @@ feature -- Comparison
 						if (list = Void and other.list = Void) then
 							Result := True
 						elseif list /= Void and other.list /= Void and list.count <= other.list.count then
-							from list.start until list.off or fail loop
-								other_item := other.list_item_by_units (list.item.units)
-								if not attached other_item or else  -- there was no item in `other' matching this unit in Current
-									attached other_item.magnitude and then not other_item.magnitude.contains (list.item.magnitude)
-								then
-									fail := True
-								end
-								list.forth
+							-- there has to be an item in `other' with same units as item in Current, and conformant magnitude
+							Result := across list as list_csr all
+								attached {C_QUANTITY_ITEM} other.list_item_by_units (list_csr.item.units) as other_cqi
+									and then list_csr.item.node_conforms_to (other_cqi)
 							end
-							Result := list.off
 						end
 					end
 				end

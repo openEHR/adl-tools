@@ -58,8 +58,7 @@ feature -- Display
 			precursor (a_gui_grid)
 
 			-- set an empty string in the meaning column, so later updates have an object to modify
-			gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, Void, Void, Void, c_pixmap)
-	--		gui_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
+			gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_rm_name, "", Void, Void, c_pixmap)
 
 			across children as children_csr loop
 				children_csr.item.prepare_display_in_grid (a_gui_grid)
@@ -93,10 +92,10 @@ feature -- Display
 				end
 				attr_str.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
 				attr_str.remove_head (1)
-				gui_grid.set_last_row_label_col_multi_line (Definition_grid_col_rm_name, attr_str, node_tooltip_str, c_attribute_colour, c_pixmap)
+				gui_grid.update_last_row_label_col_multi_line (Definition_grid_col_rm_name, attr_str, node_tooltip_str, c_attribute_colour, c_pixmap)
 			else
 				attr_str.append (arch_node.rm_attribute_name)
-				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, attr_str, node_tooltip_str, c_attribute_colour, c_pixmap)
+				gui_grid.update_last_row_label_col (Definition_grid_col_rm_name, attr_str, node_tooltip_str, c_attribute_colour, c_pixmap)
 			end
 
 			across children as children_csr loop

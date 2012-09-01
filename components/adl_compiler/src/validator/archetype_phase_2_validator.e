@@ -512,8 +512,8 @@ end
 
 					-- by here the AOM meta-types must be the same; if not, it is an error
 					if dynamic_type (co_child_diff) /= dynamic_type (co_parent_flat) then
-						add_error ("VSONT", <<ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
-							co_child_diff.generating_type,
+						add_error ("VSONT", <<co_child_diff.rm_type_name, ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+							co_child_diff.generating_type, co_parent_flat.rm_type_name,
 							ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True),
 							co_parent_flat.generating_type>>)
 
@@ -576,7 +576,7 @@ end
 
 						-- node id non-conformance presence / absence was the reason
 						elseif co_parent_flat.is_addressable then
-							add_error("VSONI", <<co_child_diff.rm_type_name, ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+							add_error ("VSONI", <<co_child_diff.rm_type_name, ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
 								co_parent_flat.rm_type_name,
 								ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True)>>)
 
@@ -585,6 +585,15 @@ end
 							add_error("VPOV", <<cpo_child.rm_type_name, ontology.physical_to_logical_path (cpo_child.path, target_descriptor.archetype_view_language, True),
 								cpo_child.item.as_string, cpo_flat.item.as_string, cpo_flat.rm_type_name,
 								ontology.physical_to_logical_path (cpo_flat.path, target_descriptor.archetype_view_language, True)>>)
+
+						elseif attached {C_DOMAIN_TYPE} co_child_diff as cdt_child and attached {C_DOMAIN_TYPE} co_parent_flat as cdt_flat then
+							add_error("VDTV", <<cdt_child.rm_type_name, ontology.physical_to_logical_path (cdt_child.path, target_descriptor.archetype_view_language, True),
+								cdt_flat.rm_type_name, ontology.physical_to_logical_path (cdt_flat.path, target_descriptor.archetype_view_language, True)>>)
+
+						else
+							add_error("VUNK", <<co_child_diff.rm_type_name, ontology.physical_to_logical_path (co_child_diff.path, target_descriptor.archetype_view_language, True),
+								co_parent_flat.rm_type_name, ontology.physical_to_logical_path (co_parent_flat.path, target_descriptor.archetype_view_language, True)>>)
+
 						end
 					else
 						-- nodes are at least conformant; Now check for congruence for C_COMPLEX_OBJECTs, i.e. if no changes at all, other than possible node_id redefinition,
@@ -809,9 +818,14 @@ end
 			-- Return True if node is a C_OBJECT and class is known in RM, or if it is a C_ATTRIBUTE
 		do
 			Result := True
-			if attached {C_OBJECT} a_c_node as co then
-				if not rm_schema.has_class_definition(co.rm_type_name) then
-					if not invalid_types.has(co.rm_type_name) then
+			if attached {C_OBJECT} a_c_node as co and then not rm_schema.has_class_definition (co.rm_type_name) then
+				if attached {C_DOMAIN_TYPE} co as c_dt then
+					-- normally just report an error, but C_DOMAIN_TYPEs like C_DV_QUANTITY are a special case - they may be used
+					-- in archetypes based on a non-openEHR RM, which means the type DV_QUANTITY might not be there, but nevertheless
+					-- C_DV_QUANTITY is used in some places
+					add_warning ("VCORM", <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.archetype_view_language, True)>>)
+				else
+					if not invalid_types.has (co.rm_type_name) then
 						add_error ("VCORM", <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.archetype_view_language, True)>>)
 						invalid_types.extend (co.rm_type_name)
 					end
