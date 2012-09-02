@@ -422,8 +422,7 @@ end
 							-- according to DT tree, it is a single-valued attribute (note in DT, this can be a HASH or ARRAYED_LIST of a supported
 							-- primitive types, because these are atomic in dadl)
 							else
-								a_dt_attr.start
-								if attached {DT_OBJECT_LEAF} a_dt_attr.item as dt_leaf then
+								if attached {DT_OBJECT_LEAF} a_dt_attr.first_child as dt_leaf then
 									a_dt_obj_leaf := dt_leaf
 
 									-- In the DT tree, it is a REF; look up object that was created at target path of this reference in xref table
@@ -565,11 +564,11 @@ end
 									end
 
 								-- must be a reference type field of type DT_COMPLEX_OBJECT
-								elseif attached {DT_COMPLEX_OBJECT_NODE} a_dt_attr.item as a_dt_co_fld then
+								elseif attached {DT_COMPLEX_OBJECT_NODE} a_dt_attr.first_child as a_dt_co_fld then
 									-- this is where the recursive call is
 									-- first, check if the static type is overridden by a type specified in the DT tree
-									if a_dt_attr.item.type_visible then
-										fld_type_id := dt_dynamic_type_from_string (a_dt_attr.item.im_type_name)
+									if a_dt_attr.first_child.type_visible then
+										fld_type_id := dt_dynamic_type_from_string (a_dt_attr.first_child.im_type_name)
 									end
 									set_reference_field (i, Result, populate_object_from_dt (a_dt_co_fld, fld_type_id, Void))
 								end
@@ -729,34 +728,33 @@ feature {NONE} -- Implementation
 			-- determine dynamic type of generic type
 			if attached {HASH_TABLE [ANY, HASHABLE]} a_gen_obj as a_hash_table then -- it is a HASH_TABLE
 				a_hash_table.make (0)
-				from a_dt_attr.start until a_dt_attr.off loop
-					if attached {DT_REFERENCE} a_dt_attr.item as a_dt_ref then
+				across a_dt_attr as a_dt_attr_csr loop
+					if attached {DT_REFERENCE} a_dt_attr_csr.item as a_dt_ref then
 						debug ("DT")
 							io.put_string ("%TDT_REFERENCE (inside HASH_TABLE DT_ATTRIBUTE)" + a_dt_ref.as_string + "%N")
 						end
-						a_dt_ref.set_hash_table_source_object_details (a_hash_table, a_dt_attr.item.id)
+						a_dt_ref.set_hash_table_source_object_details (a_hash_table, a_dt_attr_csr.item.id)
 						object_ref_list.extend (a_dt_ref)
 					else -- the static type may be overridden by a type specified in the DT tree
-						if a_dt_attr.item.type_visible then
-							dynamic_object_type_id := dt_dynamic_type_from_string (a_dt_attr.item.im_type_name)
+						if a_dt_attr_csr.item.type_visible then
+							dynamic_object_type_id := dt_dynamic_type_from_string (a_dt_attr_csr.item.im_type_name)
 							if dynamic_object_type_id <= 0 then
-								post_error (Current, "set_container_object_data_from_dt", "model_access_e3", <<a_dt_attr.item.im_type_name>>)
+								post_error (Current, "set_container_object_data_from_dt", "model_access_e3", <<a_dt_attr_csr.item.im_type_name>>)
 							end
 						else
 							dynamic_object_type_id := static_eif_container_content_type_id
 						end
 						if dynamic_object_type_id > 0 then
-							a_hash_table.extend (a_dt_attr.item.as_object (dynamic_object_type_id, Void), a_dt_attr.item.id)
+							a_hash_table.extend (a_dt_attr_csr.item.as_object (dynamic_object_type_id, Void), a_dt_attr_csr.item.id)
 						end
 					end
-					a_dt_attr.forth
 				end
 			elseif attached {SEQUENCE[ANY]} a_gen_obj as a_sequence then  -- must be a linear SEQUENCE of some kind
 				if attached {ARRAYED_LIST[ANY]} a_sequence as an_arrayed_list then
 					an_arrayed_list.make (0)
 				end
-				from a_dt_attr.start until a_dt_attr.off loop
-					if attached {DT_REFERENCE} a_dt_attr.item as a_dt_ref2 then
+				across a_dt_attr as a_dt_attr_csr loop
+					if attached {DT_REFERENCE} a_dt_attr_csr.item as a_dt_ref2 then
 						debug ("DT")
 							io.put_string ("%TDT_REFERENCE (inside SEQUENCE DT_ATTRIBUTE)" + a_dt_ref2.as_string + "%N")
 						end
@@ -764,19 +762,18 @@ feature {NONE} -- Implementation
 						object_ref_list.extend (a_dt_ref2)
 					else
 						-- the static type may be overridden by a type specified in the DT tree
-						if a_dt_attr.item.type_visible then
-							dynamic_object_type_id := dt_dynamic_type_from_string (a_dt_attr.item.im_type_name)
+						if a_dt_attr_csr.item.type_visible then
+							dynamic_object_type_id := dt_dynamic_type_from_string (a_dt_attr_csr.item.im_type_name)
 							if dynamic_object_type_id <= 0 then
-								post_error (Current, "set_container_object_data_from_dt", "model_access_e3", <<a_dt_attr.item.im_type_name>>)
+								post_error (Current, "set_container_object_data_from_dt", "model_access_e3", <<a_dt_attr_csr.item.im_type_name>>)
 							end
 						else
 							dynamic_object_type_id := static_eif_container_content_type_id
 						end
 						if dynamic_object_type_id > 0 then
-							a_sequence.extend (a_dt_attr.item.as_object (dynamic_object_type_id, Void))
+							a_sequence.extend (a_dt_attr_csr.item.as_object (dynamic_object_type_id, Void))
 						end
 					end
-					a_dt_attr.forth
 				end
 			else -- something else; should fail in some way here
 				debug ("DT")
@@ -807,40 +804,37 @@ end
 				end
 
 			elseif is_dt_primitive_sequence_conforming_type (dynamic_hash_item_type) then -- it is a Hash of SEQUENCEs of some DT primitive type
-				from a_hash_table.start until a_hash_table.off loop
+				across a_hash_table as ht_csr loop
 debug ("DT")
 	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj (Hash of SEQUENCE): from_obj_proc.call ([DT_ATTRIBUTE_NODE (" +
-		a_dt_attr.im_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
-		", " + a_hash_table.key_for_iteration.out + ")%N")
+		a_dt_attr.im_attr_name + "), " + ht_csr.item.generating_type +
+		", " + ht_csr.key.out + ")%N")
 end
-					if attached {SEQUENCE[ANY]} a_hash_table.item_for_iteration as eif_prim_seq then
-						a_dt_attr.put_child (create {DT_PRIMITIVE_OBJECT_LIST}.make_identified (eif_prim_seq, a_hash_table.key_for_iteration.out))
+					if attached {SEQUENCE[ANY]} ht_csr.item as eif_prim_seq then
+						a_dt_attr.put_child (create {DT_PRIMITIVE_OBJECT_LIST}.make_identified (eif_prim_seq, ht_csr.key.out))
 					end
-					a_hash_table.forth
 				end
 
 			elseif is_dt_primitive_atomic_type (dynamic_hash_item_type) then -- it is a Hash of a DT primitive type then
-				from a_hash_table.start until a_hash_table.off loop
+				across a_hash_table as ht_csr loop
 debug ("DT")
 	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj (hash of DT primitive type): from_obj_proc.call ([DT_ATTRIBUTE_NODE (" +
-		a_dt_attr.im_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
-		", " + a_hash_table.key_for_iteration.out + ")%N")
+		a_dt_attr.im_attr_name + "), " + ht_csr.item.generating_type +
+		", " + ht_csr.key.out + ")%N")
 end
-					a_dt_attr.put_child (create {DT_PRIMITIVE_OBJECT}.make_identified (a_hash_table.item_for_iteration, a_hash_table.key_for_iteration.out))
-					a_hash_table.forth
+					a_dt_attr.put_child (create {DT_PRIMITIVE_OBJECT}.make_identified (ht_csr.item, ht_csr.key.out))
 				end
 
 			else -- it is a Hash of complex objects
 				static_hash_item_type := generic_dynamic_type_of_type (a_static_type, 1)
-				from a_hash_table.start until a_hash_table.off loop
+				across a_hash_table as ht_csr loop
 debug ("DT")
 	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj (Hash of complex objects): from_obj_proc.call ([DT_ATTRIBUTE_NODE (" +
-		a_dt_attr.im_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
-		", " + a_hash_table.key_for_iteration.out + ")%N")
+		a_dt_attr.im_attr_name + "), " + ht_csr.item.generating_type +
+		", " + ht_csr.key.out + ")%N")
 end
-					populate_dt_from_object (a_hash_table.item_for_iteration,
-						create_complex_object_node (a_dt_attr, a_hash_table.key_for_iteration.out), static_hash_item_type)
-					a_hash_table.forth
+					populate_dt_from_object (ht_csr.item,
+						create_complex_object_node (a_dt_attr, ht_csr.key.out), static_hash_item_type)
 				end
 			end
 debug ("DT")

@@ -38,6 +38,11 @@ inherit
 			out, default_create, is_equal
 		end
 
+	ITERABLE [DT_ATTRIBUTE_NODE]
+		undefine
+			out, default_create, is_equal
+		end
+
 create
 	make_identified, make_anonymous, make_from_object
 
@@ -173,26 +178,10 @@ feature -- Access
 			end
 		end
 
-feature -- Iteration
-
-	start
+	new_cursor: ITERATION_CURSOR [DT_ATTRIBUTE_NODE]
+			-- Fresh cursor associated with current structure
 		do
-			attributes.start
-		end
-
-	forth
-		do
-			attributes.forth
-		end
-
-	off: BOOLEAN
-		do
-			Result := attributes.off
-		end
-
-	item: DT_ATTRIBUTE_NODE
-		do
-			Result := attributes.item
+			Result := attributes.new_cursor
 		end
 
 feature -- Status Report
@@ -210,15 +199,7 @@ feature -- Status Report
 		require
 			Attr_name_valid: not an_attr_name.is_empty
 		do
-			Result := representation.has_child_with_id(an_attr_name)
-		end
-
-	is_valid: BOOLEAN
-			-- report on validity
-		do
-			create invalid_reason.make(0)
-			invalid_reason.append (im_type_name + id + ":")
-			Result := True
+			Result := representation.has_child_with_id (an_attr_name)
 		end
 
 	is_empty: BOOLEAN
@@ -229,7 +210,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	put_attribute(an_attr_node: attached DT_ATTRIBUTE_NODE)
+	put_attribute (an_attr_node: attached DT_ATTRIBUTE_NODE)
 			-- put a new child node
 		require
 			Node_exists: not has_attribute (an_attr_node.im_attr_name)

@@ -30,8 +30,6 @@ feature -- Access
 	im_type_name: STRING
 			-- reference model type name of object to instantiate
 
-	invalid_reason: STRING
-
 	path: STRING
 			-- path from root to this node
 		do
@@ -59,13 +57,6 @@ feature -- Status Report
 			-- True if is root of parse tree structure
 		do
 			Result := representation.is_root
-		end
-
-	is_valid: BOOLEAN
-			-- True if node valid; if False, reason in `invalid_reason'
-		deferred
-		ensure
-			not Result implies invalid_reason /= Void and then not invalid_reason.is_empty
 		end
 
 	set_type_name (a_type_name: attached STRING)

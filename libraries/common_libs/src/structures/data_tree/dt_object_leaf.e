@@ -54,20 +54,6 @@ feature -- Access
 		deferred
 		end
 
-feature -- Status Report
-
-	is_valid: BOOLEAN
-			-- report on validity
-		do
-			create invalid_reason.make(0)
-			invalid_reason.append(im_type_name + ": ")
-			if value = Void then
-				invalid_reason.append("leaf value Void")
-			else
-				Result := True
-			end
-		end
-
 feature -- Representation
 
 	representation: OG_OBJECT_LEAF

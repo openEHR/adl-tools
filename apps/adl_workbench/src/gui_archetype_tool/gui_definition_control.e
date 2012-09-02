@@ -465,7 +465,7 @@ feature {NONE} -- Implementation
 				end
 
 				gui_rules_grid.set_column_titles (Rules_grid_col_names.linear_representation)
-				gui_rules_treeview_control.on_expand_all
+				gui_rules_treeview_control.on_collapse_all
 
 				gui_rules_grid.resize_columns_to_content
 				gui_rules_grid.ev_grid.unlock_update
@@ -474,7 +474,7 @@ feature {NONE} -- Implementation
 				ev_rules_hbox.hide
 			end
 			ev_root_container.set_split_position (ev_root_container.minimum_split_position.max (ev_root_container.maximum_split_position -
-				gui_rules_grid.ev_grid.row_height * gui_rules_grid.ev_grid.row_count))
+				gui_rules_grid.ev_grid.row_height * gui_rules_grid.ev_grid.visible_row_count))
 		end
 
 	arch_ed_context: ARCH_ED_CONTEXT

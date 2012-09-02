@@ -86,7 +86,7 @@ feature -- Access
 			end
 		end
 
-	has_parent(a_node: attached OG_NODE): BOOLEAN
+	has_parent (a_node: attached OG_NODE): BOOLEAN
 			-- return True if `a_node' found in line of parent nodes back to ultimate_parent,
 			-- including if it is the immediate parent
 		local

@@ -109,7 +109,6 @@ feature -- Commands
 
 		require
 			Format_valid: has_dt_serialiser_format (a_format)
-			Archetype_valid: attached tree implies tree.is_valid
 		local
 			a_dt_serialiser: DT_SERIALISER
 			a_dt_iterator: DT_VISITOR_ITERATOR

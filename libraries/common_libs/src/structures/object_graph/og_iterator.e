@@ -67,14 +67,13 @@ feature {NONE} -- Implementation
 		do
 			depth := depth + 1
 			node_enter_action.call ([a_target, depth])
-			from a_target.start until a_target.off loop
-				if attached {OG_NODE} a_target.item_for_iteration as a_node then
+			across a_target as a_target_csr loop
+				if attached {OG_NODE} a_target_csr.item as a_node then
 					do_all_nodes (a_node, node_enter_action, node_exit_action)
 				else -- terminal child node
-					node_enter_action.call ([a_target.item_for_iteration, depth+1])
-					node_exit_action.call ([a_target.item_for_iteration, depth+1])
+					node_enter_action.call ([a_target_csr.item, depth+1])
+					node_exit_action.call ([a_target_csr.item, depth+1])
 				end
-				a_target.forth
 			end
 			node_exit_action.call ([a_target, depth])
 			depth := depth - 1
@@ -87,13 +86,12 @@ feature {NONE} -- Implementation
 			if node_is_at_surface.item ([a_target]) then
 				node_action.call ([a_target, 0])
 			else -- haven't hit the surface yet, descend...
-				from a_target.start until a_target.off loop
-					if attached {OG_NODE} a_target.item_for_iteration as a_node then
+				across a_target as a_target_csr loop
+					if attached {OG_NODE} a_target_csr.item as a_node then
 						do_at_surface_nodes (a_node, node_action, node_is_at_surface)
-					elseif node_is_at_surface.item ([a_target.item_for_iteration]) then -- terminal child node
-						node_action.call ([a_target.item_for_iteration, 0])
+					elseif node_is_at_surface.item ([a_target_csr.item]) then -- terminal child node
+						node_action.call ([a_target_csr.item, 0])
 					end
-					a_target.forth
 				end
 			end
 		end
@@ -104,13 +102,12 @@ feature {NONE} -- Implementation
 		do
 			if node_is_included.item ([a_target]) then
 				node_action.call ([a_target, 0])
-				from a_target.start until a_target.off loop
-					if attached {OG_NODE} a_target.item_for_iteration as a_node then
+				across a_target as a_target_csr loop
+					if attached {OG_NODE} a_target_csr.item as a_node then
 						do_until_surface_nodes (a_node, node_action, node_is_included)
-					elseif node_is_included.item ([a_target.item_for_iteration]) then -- terminal child node
-						node_action.call ([a_target.item_for_iteration, 0])
+					elseif node_is_included.item ([a_target_csr.item]) then -- terminal child node
+						node_action.call ([a_target_csr.item, 0])
 					end
-					a_target.forth
 				end
 			end
 		end

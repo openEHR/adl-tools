@@ -26,6 +26,11 @@ inherit
 			default_create
 		end
 
+	ITERABLE [DT_OBJECT_ITEM]
+		undefine
+			default_create, is_equal
+		end
+
 create
 	make_single, make_container, make_nested_container
 
@@ -80,7 +85,7 @@ feature -- Access
 	children: attached ARRAYED_LIST [DT_OBJECT_ITEM]
 			-- next nodes, keyed by node id or attribute name
 
-	children_sorted: attached SORTED_TWO_WAY_LIST[DT_OBJECT_ITEM]
+	children_sorted: attached SORTED_TWO_WAY_LIST [DT_OBJECT_ITEM]
 
 	im_attr_name: attached STRING
 			-- attribute name in information model
@@ -90,20 +95,32 @@ feature -- Access
 
 	child_with_id (a_node_id: attached STRING): attached DT_OBJECT_ITEM
 			-- find the child node with `a_path_id'
+		require
+			has_child_with_id (a_node_id)
 		do
-			Result ?= representation.child_with_id(a_node_id).content_item
+			if attached {DT_OBJECT_ITEM} representation.child_with_id (a_node_id).content_item as dt_oi then
+				Result := dt_oi
+			end
 		end
 
 	first_child: DT_OBJECT_ITEM
 			--
 		do
-			Result := children.first
+			if using_children_sorted then
+				Result := children_sorted.first
+			else
+				Result := children.first
+			end
 		end
 
 	last_child: DT_OBJECT_ITEM
 			--
 		do
-			Result := children.last
+			if using_children_sorted then
+				Result := children_sorted.last
+			else
+				Result := children.last
+			end
 		end
 
 	child_count: INTEGER
@@ -112,41 +129,13 @@ feature -- Access
 			Result := children.count
 		end
 
-feature -- Iteration
-
-	start
+	new_cursor: ITERATION_CURSOR [DT_OBJECT_ITEM]
+			-- Fresh cursor associated with current structure
 		do
 			if using_children_sorted then
-				children_sorted.start
+				Result := children_sorted.new_cursor
 			else
-				children.start
-			end
-		end
-
-	forth
-		do
-			if using_children_sorted then
-				children_sorted.forth
-			else
-				children.forth
-			end
-		end
-
-	off: BOOLEAN
-		do
-			if using_children_sorted then
-				Result := children_sorted.off
-			else
-				Result := children.off
-			end
-		end
-
-	item: DT_OBJECT_ITEM
-		do
-			if using_children_sorted then
-				Result := children_sorted.item
-			else
-				Result := children.item
+				Result := children.new_cursor
 			end
 		end
 
@@ -161,35 +150,13 @@ feature -- Status Report
 	is_nested: BOOLEAN
 			-- True if this attribute represents an assumed attribute of a parent container object
 
-	is_valid: BOOLEAN
-			-- report on validity
-		do
-			create invalid_reason.make(0)
-			invalid_reason.append(im_attr_name)
-			Result := True
-			if not children.is_empty then
-				from
-					children.start
-				until
-					not Result or else representation.off
-				loop
-					Result := children.item.is_valid
-					if Result then
-						children.forth
-					else
-						invalid_reason.append("(invalid child node) " + children.item.invalid_reason)
-					end
-				end
-			end
-		end
-
-	has_child_with_id(a_node_id: STRING): BOOLEAN
+	has_child_with_id (a_node_id: STRING): BOOLEAN
 			-- valid OBJ children of a REL node might not all be unique
 		do
-			Result := representation.has_child_with_id(a_node_id)
+			Result := representation.has_child_with_id (a_node_id)
 		end
 
-	has_child(a_node: DT_OBJECT_ITEM): BOOLEAN
+	has_child (a_node: DT_OBJECT_ITEM): BOOLEAN
 			-- True if a_node is among children of this node
 		do
 			Result := children.has (a_node)

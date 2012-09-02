@@ -76,11 +76,10 @@ feature -- Access
 			create regex_matcher.compile_case_insensitive (a_regex)
 			if regex_matcher.is_compiled then
 				Result.compare_objects
-				from ev_node_map.start until ev_node_map.off loop
-					if regex_matcher.matches (ev_node_map.key_for_iteration) then
-						Result.extend (ev_node_map.key_for_iteration)
+				across ev_node_map as ev_node_map_csr loop
+					if regex_matcher.matches (ev_node_map_csr.key) then
+						Result.extend (ev_node_map_csr.key)
 					end
-					ev_node_map.forth
 				end
 			else
 				Result.extend (get_msg_line("regex_e1", <<a_regex>>))
@@ -175,14 +174,17 @@ feature {NONE} -- Implementation
 		end
 
 	populate_schema (a_schema: BMM_SCHEMA)
+		local
+			pkg_row: EV_GRID_ROW
 		do
 			-- add row to grid
 			gui_grid.add_row (a_schema)
 			gui_grid.set_last_row_label_col (1, a_schema.schema_id, Void, Void, get_icon_pixmap ("tool/rm_schema"))
 			gui_grid.add_last_row_pointer_button_press_actions (1, agent schema_node_handler (gui_grid.last_row, ?, ?, ?))
+			pkg_row := gui_grid.last_row
 
 			across a_schema.packages as pkgs_csr loop
- 				populate_packages (gui_grid.last_row, pkgs_csr.item)
+ 				populate_packages (pkg_row, pkgs_csr.item)
 			end
 		end
 
@@ -200,10 +202,7 @@ feature {NONE} -- Implementation
 			across a_pkg.classes as classes_csr loop
  				-- only do top classes in each package; if this class has an ancestor in the same package,
  				-- don't do this class, it will get taken care of via the parent
- 				from classes_csr.item.ancestors.start until classes_csr.item.ancestors.off or classes_csr.item.ancestors.item_for_iteration.package = a_pkg loop
- 					classes_csr.item.ancestors.forth
- 				end
-				if classes_csr.item.ancestors.off then
+ 				if not across classes_csr.item.ancestors as anc_csr some anc_csr.item.package = a_pkg end then
 	 				populate_classes (pkg_row, classes_csr.item)
 	 			end
 			end

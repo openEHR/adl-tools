@@ -19,6 +19,11 @@ inherit
 			default_create
 		end
 
+	ITERABLE [OG_ITEM]
+		undefine
+			is_equal, default_create
+		end
+
 feature -- Initialisation
 
 	default_create
@@ -56,20 +61,20 @@ feature -- Access
 			end
 		end
 
-	item_for_iteration: like child_type
-			--
-		do
-			if using_children_sorted then
-				Result := children_sorted.item
-			else
-				Result := children_ordered.item
-			end
-		end
-
 	child_count: INTEGER
 			-- number of child nodes
 		do
 			Result := children.count
+		end
+
+	new_cursor: ITERATION_CURSOR [like child_type]
+			-- Fresh cursor associated with current structure
+		do
+			if using_children_sorted then
+				Result := children_sorted.new_cursor
+			else
+				Result := children_ordered.new_cursor
+			end
 		end
 
 feature -- Status Report
@@ -86,35 +91,25 @@ feature -- Status Report
 			Result := not children.is_empty
 		end
 
-	has_child_with_id(a_node_key: attached STRING): BOOLEAN
+	has_child_with_id (a_node_key: attached STRING): BOOLEAN
 		do
 			-- FIXME: should just be able to search with node_key, but we are still
 			-- using the 'unknown' node_keys rather than empty strings
 			if a_node_key.is_empty then
 				Result := has_children
 			else
-				Result := children.has(a_node_key)
+				Result := children.has (a_node_key)
 			end
 		end
 
-	has_child(a_node: attached like child_type): BOOLEAN
+	has_child (a_node: attached like child_type): BOOLEAN
 		do
 			Result := children.has_item (a_node)
 		end
 
-	off: BOOLEAN
-			--
+	valid_child_for_insertion (a_node: like child_type): BOOLEAN
 		do
-			if using_children_sorted then
-				Result := children_sorted.off
-			else
-				Result := children_ordered.off
-			end
-		end
-
-	valid_child_for_insertion(a_node: like child_type): BOOLEAN
-		do
-			Result := not has_child(a_node) and not has_child_with_id(a_node.node_key)
+			Result := not has_child (a_node) and not has_child_with_id (a_node.node_key)
 		end
 
 	using_children_sorted: BOOLEAN
@@ -127,28 +122,6 @@ feature -- Status Setting
 			-- use sorted list
 		do
 			using_children_sorted := True
-		end
-
-feature -- Cursor Movement
-
-	start
-			-- iteration children in insertion order
-		do
-			if using_children_sorted then
-				children_sorted.start
-			else
-				children_ordered.start
-			end
-		end
-
-	forth
-			--
-		do
-			if using_children_sorted then
-				children_sorted.forth
-			else
-				children_ordered.forth
-			end
 		end
 
 feature -- Modification
@@ -243,7 +216,7 @@ feature -- Modification
 			Children_removed: children.is_empty
 		end
 
-	replace_node_id(an_old_node_key, a_new_node_key: attached STRING)
+	replace_node_id (an_old_node_key, a_new_node_key: attached STRING)
 			-- replace `an_old_node_key' with `a_new_node_key' in the children
 			-- this has the effect of making an object indexed by a new node id,
 			-- that it doesn't itself carry
@@ -260,10 +233,10 @@ feature {OG_NODE} -- Implementation
 	children: attached HASH_TABLE [like child_type, STRING]
 			-- next nodes, keyed by node id or attribute name
 
-	children_ordered: attached ARRAYED_LIST[like child_type]
+	children_ordered: attached ARRAYED_LIST [like child_type]
 			-- reference list of child, in order of insertion (i.e. order of original parsing)
 
-	children_sorted: SORTED_TWO_WAY_LIST[like child_type]
+	children_sorted: SORTED_TWO_WAY_LIST [like child_type]
 			-- reference list of child, in lexical order of node_ids
 
 	child_type: OG_ITEM
