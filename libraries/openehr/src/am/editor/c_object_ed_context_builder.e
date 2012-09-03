@@ -22,6 +22,11 @@ inherit
 			end_c_attribute
 		end
 
+	SHARED_KNOWLEDGE_REPOSITORY
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -32,8 +37,9 @@ feature -- Initialisation
 			initialise (an_archetype)
 			create obj_node_stack.make (0)
 			create attr_node_stack.make (0)
+			create flat_ontologies_stack.make (0)
 			rm_schema := an_rm_schema
-			flat_ontology := a_flat_ontology
+			flat_ontologies_stack.extend (a_flat_ontology)
 		end
 
 feature -- Access
@@ -42,6 +48,9 @@ feature -- Access
 
 	flat_ontology: FLAT_ARCHETYPE_ONTOLOGY
 			-- access to archetype flat ontology
+		do
+			Result := flat_ontologies_stack.item
+		end
 
 feature -- Visitor
 
@@ -102,14 +111,20 @@ feature -- Visitor
 
 	start_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- enter a C_ARCHETYPE_ROOT
+		local
+			ed_node: C_ARCHETYPE_ROOT_ED_CONTEXT
 		do
-			start_c_complex_object (a_node, depth)
+			flat_ontologies_stack.extend (current_arch_cat.archetype_index.item (a_node.archetype_id).flat_archetype.ontology)
+			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
+			obj_node_stack.extend (ed_node)
+			attr_node_stack.item.add_child (ed_node)
 		end
 
 	end_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- exit a C_ARCHETYPE_ROOT
 		do
-			end_c_complex_object (a_node, depth)
+			obj_node_stack.remove
+			flat_ontologies_stack.remove
 		end
 
 	start_archetype_internal_ref (a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
@@ -176,6 +191,8 @@ feature {NONE} -- Implementation
 	obj_node_stack: ARRAYED_STACK [C_COMPLEX_OBJECT_ED_CONTEXT]
 
 	attr_node_stack: ARRAYED_STACK [C_ATTRIBUTE_ED_CONTEXT]
+
+	flat_ontologies_stack: ARRAYED_STACK [FLAT_ARCHETYPE_ONTOLOGY]
 
 	rm_schema: BMM_SCHEMA
 

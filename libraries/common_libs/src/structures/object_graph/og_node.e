@@ -31,7 +31,6 @@ feature -- Initialisation
 		do
 			create children.make(0)
 			create children_ordered.make(0)
-			create children_sorted.make
 		end
 
 feature -- Access
@@ -39,14 +38,14 @@ feature -- Access
 	child_with_id (a_node_key: attached STRING): attached like child_type
 			-- find the child node with `a_node_key'
 		require
-			has_child_with_id(a_node_key)
+			has_child_with_id (a_node_key)
 		do
 			-- FIXME: should just be able to search with node_key, but we are still
 			-- using the 'unknown' node_keys rather than empty strings
 			if a_node_key.is_empty then
 				Result := first_child
 			else
-				Result := children.item(a_node_key)
+				Result := children.item (a_node_key)
 			end
 		end
 
@@ -54,11 +53,7 @@ feature -- Access
 			-- 	get first child; typically used when it is known that there is only one child
 			-- and we don't care what it is called
 		do
-			if using_children_sorted then
-				Result := children_sorted.first
-			else
-				Result := children_ordered.first
-			end
+			Result := children_ordered.first
 		end
 
 	child_count: INTEGER
@@ -70,11 +65,7 @@ feature -- Access
 	new_cursor: ITERATION_CURSOR [like child_type]
 			-- Fresh cursor associated with current structure
 		do
-			if using_children_sorted then
-				Result := children_sorted.new_cursor
-			else
-				Result := children_ordered.new_cursor
-			end
+			Result := children_ordered.new_cursor
 		end
 
 feature -- Status Report
@@ -112,29 +103,16 @@ feature -- Status Report
 			Result := not has_child (a_node) and not has_child_with_id (a_node.node_key)
 		end
 
-	using_children_sorted: BOOLEAN
-			-- True if using sorted order list for iteration rather than
-			-- added order
-
-feature -- Status Setting
-
-	use_children_sorted
-			-- use sorted list
-		do
-			using_children_sorted := True
-		end
-
 feature -- Modification
 
 	put_child (a_node: attached like child_type)
 			-- put a new child node at the end of the list
 		require
-			Node_exists: valid_child_for_insertion(a_node)
+			Node_exists: valid_child_for_insertion (a_node)
 		do
-			children.put(a_node, a_node.node_key)
-			a_node.set_parent(Current)
-			children_ordered.extend(a_node)
-			children_sorted.extend(a_node)
+			children.put (a_node, a_node.node_key)
+			a_node.set_parent (Current)
+			children_ordered.extend (a_node)
 		ensure
 			has_child (a_node)
 		end
@@ -142,14 +120,13 @@ feature -- Modification
 	put_child_left (a_node, before_node: attached like child_type)
 			-- insert a new child node before another node in the list
 		require
-			Node_valid: valid_child_for_insertion(a_node)
-			Before_node_valid: has_child(before_node)
+			Node_valid: valid_child_for_insertion (a_node)
+			Before_node_valid: has_child (before_node)
 		do
-			children.put(a_node, a_node.node_key)
-			a_node.set_parent(Current)
+			children.put (a_node, a_node.node_key)
+			a_node.set_parent (Current)
 			children_ordered.go_i_th (children_ordered.index_of (before_node, 1))
 			children_ordered.put_left (a_node)
-			children_sorted.extend(a_node)
 		ensure
 			has_child (a_node)
 		end
@@ -157,14 +134,13 @@ feature -- Modification
 	put_child_right (a_node, after_node: attached like child_type)
 			-- insert a new child node before another node in the list
 		require
-			Node_valid: valid_child_for_insertion(a_node)
-			After_node_valid: has_child(after_node)
+			Node_valid: valid_child_for_insertion (a_node)
+			After_node_valid: has_child (after_node)
 		do
-			children.put(a_node, a_node.node_key)
-			a_node.set_parent(Current)
+			children.put (a_node, a_node.node_key)
+			a_node.set_parent (Current)
 			children_ordered.go_i_th (children_ordered.index_of (after_node, 1))
 			children_ordered.put_right (a_node)
-			children_sorted.extend(a_node)
 		ensure
 			has_child (a_node)
 		end
@@ -174,19 +150,16 @@ feature -- Modification
 		do
 			children_ordered.go_i_th (children_ordered.index_of (child_with_id(an_id), 1))
 			children_ordered.replace (a_node)
-			children_sorted.go_i_th (children_sorted.index_of (child_with_id(an_id), 1))
-			children_sorted.replace (a_node)
 			children.replace (a_node, an_id)
-			a_node.set_parent(Current)
+			a_node.set_parent (Current)
 		end
 
 	remove_child (a_node: attached like child_type)
 			-- remove the child node `a_node'
 		require
-			Node_exists: has_child(a_node)
+			Node_exists: has_child (a_node)
 		do
 			children_ordered.prune_all (a_node)
-			children_sorted.prune_all (a_node)
 			children.remove (a_node.node_key)
 			a_node.set_root
 		ensure
@@ -209,9 +182,8 @@ feature -- Modification
 	remove_all_children
 			-- remove all children
 		do
-			create children.make(0)
-			create children_ordered.make(0)
-			create children_sorted.make
+			create children.make (0)
+			create children_ordered.make (0)
 		ensure
 			Children_removed: children.is_empty
 		end
@@ -235,9 +207,6 @@ feature {OG_NODE} -- Implementation
 
 	children_ordered: attached ARRAYED_LIST [like child_type]
 			-- reference list of child, in order of insertion (i.e. order of original parsing)
-
-	children_sorted: SORTED_TWO_WAY_LIST [like child_type]
-			-- reference list of child, in lexical order of node_ids
 
 	child_type: OG_ITEM
 

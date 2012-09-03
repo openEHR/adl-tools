@@ -136,14 +136,18 @@ feature -- Display
 feature {NONE} -- Implementation
 
 	node_id_text: STRING
-			-- show node_id text either as just rubric, or as nodeid|rubric|, depending on `show_codes' setting
+			-- show node_id text either as just rubric, or as node_id|rubric|, depending on `show_codes' setting
 		require
 			arch_node.is_addressable
 		do
-			if show_codes then
-				Result := arch_node.node_id + "|" + flat_ontology.term_definition (language, arch_node.node_id).text + "|"
+			if is_valid_code (arch_node.node_id) then
+				if show_codes then
+					Result := arch_node.node_id + "|" + flat_ontology.term_definition (language, arch_node.node_id).text + "|"
+				else
+					Result := flat_ontology.term_definition (language, arch_node.node_id).text
+				end
 			else
-				Result := flat_ontology.term_definition (language, arch_node.node_id).text
+				Result := arch_node.node_id
 			end
 		end
 

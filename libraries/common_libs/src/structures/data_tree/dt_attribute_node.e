@@ -40,7 +40,6 @@ feature -- Initialisation
 			--
 		do
 			create children.make (0)
-			create children_sorted.make
 		end
 
 	make_single (a_name: attached STRING)
@@ -85,8 +84,6 @@ feature -- Access
 	children: attached ARRAYED_LIST [DT_OBJECT_ITEM]
 			-- next nodes, keyed by node id or attribute name
 
-	children_sorted: attached SORTED_TWO_WAY_LIST [DT_OBJECT_ITEM]
-
 	im_attr_name: attached STRING
 			-- attribute name in information model
 		do
@@ -106,21 +103,13 @@ feature -- Access
 	first_child: DT_OBJECT_ITEM
 			--
 		do
-			if using_children_sorted then
-				Result := children_sorted.first
-			else
-				Result := children.first
-			end
+			Result := children.first
 		end
 
 	last_child: DT_OBJECT_ITEM
 			--
 		do
-			if using_children_sorted then
-				Result := children_sorted.last
-			else
-				Result := children.last
-			end
+			Result := children.last
 		end
 
 	child_count: INTEGER
@@ -132,11 +121,7 @@ feature -- Access
 	new_cursor: ITERATION_CURSOR [DT_OBJECT_ITEM]
 			-- Fresh cursor associated with current structure
 		do
-			if using_children_sorted then
-				Result := children_sorted.new_cursor
-			else
-				Result := children.new_cursor
-			end
+			Result := children.new_cursor
 		end
 
 feature -- Status Report
@@ -161,9 +146,6 @@ feature -- Status Report
 		do
 			Result := children.has (a_node)
 		end
-
-	using_children_sorted: BOOLEAN
-			-- True if using sorted child list
 
 	is_empty: BOOLEAN
 		do
@@ -217,7 +199,6 @@ feature -- Modification
 		do
 			representation.put_child (a_node.representation)
 			children.extend(a_node)
-			children_sorted.extend(a_node)
 			a_node.set_parent(Current)
 		ensure
 			Has_child: has_child(a_node)
@@ -230,7 +211,6 @@ feature -- Modification
 		do
 			representation.remove_child (a_node.representation)
 			children.prune_all(a_node)
-			children_sorted.prune_all(a_node)
 		ensure
 			Child_removed: not has_child(a_node)
 		end
@@ -241,17 +221,9 @@ feature -- Modification
 			if child_count > 0 then
 				representation.remove_all_children
 				children.wipe_out
-				children_sorted.wipe_out
 			end
 		ensure
 			Child_count: child_count = 0
-		end
-
-	use_children_sorted
-			-- use sorted list
-		do
-			using_children_sorted := True
-			representation.use_children_sorted
 		end
 
 feature -- Representation
