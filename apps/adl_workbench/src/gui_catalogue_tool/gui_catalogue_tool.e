@@ -46,7 +46,7 @@ feature {NONE} -- Initialisation
 	make
 		do
 			create archetype_explorer.make (agent edit_archetype, agent save_archetype)
-			create template_explorer.make (agent edit_archetype, agent save_archetype, agent archetype_explorer.ensure_item_visible)
+			create template_explorer.make (agent edit_archetype, agent save_archetype, agent archetype_explorer.select_item_in_tree)
 			create metrics_viewer.make
 			create stats_viewer.make
 

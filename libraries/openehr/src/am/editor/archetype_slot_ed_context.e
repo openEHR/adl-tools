@@ -133,9 +133,9 @@ feature {NONE} -- Implementation
 			Result.replace_substring_all (" ", "%N")
 			Result.replace_substring_all ("|", "|%N")
 			if is_required then
-				Result.append (get_text ("%N(" + get_text ("slot_match_required_text") + ")"))
+				Result.append ("%N(" + get_text ("slot_match_required_text") + ")")
 			else
-				Result.append (get_text ("%N(" + get_text ("slot_match_recommended_text") + ")"))
+				Result.append ("%N(" + get_text ("slot_match_recommended_text") + ")")
 			end
 		end
 

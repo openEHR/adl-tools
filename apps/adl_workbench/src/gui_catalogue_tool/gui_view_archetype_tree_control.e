@@ -70,12 +70,12 @@ feature -- Commands
 	select_item_in_tree (ari_global_id: attached STRING)
 			-- ensure node with global node id `ari_global_id' is visible in the tree
 		do
-			if ev_node_descriptor_map.has (ari_global_id) and gui_grid.ev_grid.is_displayed then
+			if ev_node_descriptor_map.has (ari_global_id) then -- and gui_grid.ev_grid.is_displayed then
 				gui_grid.ev_grid.ensure_visible (ev_node_descriptor_map.item (ari_global_id))
 
-				-- if a class tool already exists with this id, then cause it to be shown
+				-- if an archetype tool already exists with this id, then cause it to be shown
 				-- and then select corresponding tree node, but with events off. If no
-				-- class tool available, treat as if it were a first tme request for this class
+				-- archetype tool available, treat as if it were a first time request for this archetype
 				-- and do a normal tree node select
 				if gui_agents.show_tool_with_artefact_agent.item ([ari_global_id]) then
 					ev_node_descriptor_map.item (ari_global_id).select_actions.block
@@ -84,14 +84,6 @@ feature -- Commands
 				else
 					ev_node_descriptor_map.item (ari_global_id).enable_select
 				end
-			end
-		end
-
-	ensure_item_visible (ari_global_id: attached STRING)
-			-- ensure node with ontological node id `ari_global_id' is visible in the tree
-		do
-			if ev_node_descriptor_map.has (ari_global_id) and gui_grid.ev_grid.is_displayed then
-				ev_node_descriptor_map.item (ari_global_id).ensure_visible
 			end
 		end
 

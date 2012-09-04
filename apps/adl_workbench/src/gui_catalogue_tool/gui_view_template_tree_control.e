@@ -80,9 +80,11 @@ feature {NONE} -- Implementation
 				agent
 					do
 						delayed_select_archetype_agent.set_interval (0)
+
+						-- select the archetype in the archetype explorer; this will display it
 						focus_archetype_agent.call ([selected_archetype_node.global_artefact_identifier])
-						selection_history.set_selected_item (selected_archetype_node)
-						gui_agents.select_archetype_agent.call ([selected_archetype_node])
+
+						-- populate filler structure under the node in the template explorer
 						ev_tree_node_populate (selected_archetype_node)
 					end
 			)

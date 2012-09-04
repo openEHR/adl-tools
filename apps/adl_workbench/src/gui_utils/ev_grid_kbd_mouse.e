@@ -413,7 +413,9 @@ feature -- Commands
 			is_tree_enabled
 		do
 			expand_to_row (a_row)
-			a_row.ensure_visible
+			if is_displayed then
+				a_row.ensure_visible
+			end
 		end
 
 feature {NONE} -- Implementation
