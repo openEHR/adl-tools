@@ -495,22 +495,25 @@ feature {NONE} -- Implementation
 		do
 			create parent_model_node.make_category (Archetype_category.twin)
 debug ("rm_ontology")
-	io.put_string ("Category: " + Archetype_category + "%N")
+	io.put_string ("================ Category: " + Archetype_category + " =================%N")
 end
 			item_tree_prototype.put (parent_model_node)
-			from rm_schemas_access.valid_top_level_schemas.start until rm_schemas_access.valid_top_level_schemas.off loop
-				bmm_schema := rm_schemas_access.valid_top_level_schemas.item_for_iteration
-				from bmm_schema.archetype_rm_closure_packages.start until bmm_schema.archetype_rm_closure_packages.off loop
-					rm_closure_name := package_base_name (bmm_schema.archetype_rm_closure_packages.item)
+			across rm_schemas_access.valid_top_level_schemas as top_level_schemas_csr loop
+				bmm_schema := top_level_schemas_csr.item
+debug ("rm_ontology")
+	io.put_string ("------------ Schema: " + bmm_schema.schema_id + "--------------%N")
+end
+				across bmm_schema.archetype_rm_closure_packages as rm_closure_packages_csr loop
+					rm_closure_name := package_base_name (rm_closure_packages_csr.item)
 					qualified_rm_closure_key := publisher_qualified_rm_closure_key (bmm_schema.rm_publisher, rm_closure_name)
-					rm_closure_root_pkg := bmm_schema.package_at_path (bmm_schema.archetype_rm_closure_packages.item)
+					rm_closure_root_pkg := bmm_schema.package_at_path (rm_closure_packages_csr.item)
 
 					-- create new model node if not already in existence
 					if not parent_model_node.has_child_with_qualified_key (qualified_rm_closure_key) then
 						create model_node.make_rm_closure (rm_closure_name, bmm_schema)
 						parent_model_node.put_child (model_node)
 debug ("rm_ontology")
-	io.put_string ("%TClosure: " + rm_closure_name + "%N")
+	io.put_string ("......... Closure: " + rm_closure_name + ".........%N")
 end
 					elseif attached {ARCH_CAT_MODEL_NODE} parent_model_node.child_with_qualified_key (qualified_rm_closure_key) as mn then
 						model_node := mn
@@ -531,36 +534,60 @@ end
 						-- create the list of supplier classes for all the classes in the closure root package
 						create supp_list.make (0)
 						supp_list.compare_objects
-						from root_classes.start until root_classes.off loop
-							supp_list.merge (root_classes.item.supplier_closure)
-							supp_list.extend (root_classes.item.name)
-							root_classes.forth
+						across root_classes as root_classes_csr loop
+							supp_list.merge (root_classes_csr.item.supplier_closure)
+							supp_list.extend (root_classes_csr.item.name)
+debug ("rm_ontology")
+	io.put_string ("%TMerging supplier_closure classes of " + root_classes_csr.item.name + ": ")
+	across root_classes_csr.item.supplier_closure as supp_csr loop
+		io.put_string (supp_csr.item + ", ")
+	end
+	io.new_line
+end
 						end
 
 						-- now filter this list to keep only those classes inheriting from the archetype_parent_class
 						-- that are among the suppliers of the top-level class of the package; this gives the classes
 						-- that could be archetyped in that package
 						if bmm_schema.has_archetype_parent_class then
+debug ("rm_ontology")
+	io.put_string ("%Tremoving closure classes not inheriting from " + bmm_schema.archetype_parent_class + ": ")
+end
 							from supp_list.start until supp_list.off loop
 								if not bmm_schema.is_descendant_of (supp_list.item, bmm_schema.archetype_parent_class) then
+debug ("rm_ontology")
+	io.put_string (supp_list.item + ", ")
+end
 									supp_list.remove
 								else
 									supp_list.forth
 								end
 							end
+debug ("rm_ontology")
+	io.new_line
+end
 						end
 
 						-- filter list list again so that only highest class in any inheritance subtree remains
 						supp_list_copy := supp_list.deep_twin
 						from supp_list.start until supp_list.off loop
 							removed := False
+debug ("rm_ontology")
+	io.put_string ("%Tremoving closure classes not at a lineage root: ")
+end
 							from supp_list_copy.start until supp_list_copy.off or removed loop
 								if bmm_schema.is_descendant_of (supp_list.item, supp_list_copy.item) then
+debug ("rm_ontology")
+	io.put_string (supp_list.item + ", ")
+end
 									supp_list.remove
 									removed := True
 								end
 								supp_list_copy.forth
 							end
+debug ("rm_ontology")
+	io.new_line
+end
 
 							if not removed then
 								supp_list.forth
@@ -569,15 +596,12 @@ end
 
 						-- convert to BMM_CLASS_DESCRIPTORs
 						create supp_class_list.make(0)
-						from supp_list.start until supp_list.off loop
-							supp_class_list.extend (bmm_schema.class_definition (supp_list.item))
-							supp_list.forth
+						across supp_list as supp_list_csr loop
+							supp_class_list.extend (bmm_schema.class_definition (supp_list_csr.item))
 						end
 						add_child_nodes (rm_closure_name, supp_class_list, model_node)
 					end
-					bmm_schema.archetype_rm_closure_packages.forth
 				end
-				rm_schemas_access.valid_top_level_schemas.forth
 			end
 		end
 
@@ -589,15 +613,14 @@ end
 			children: ARRAYED_LIST [BMM_CLASS_DEFINITION]
 			model_node: ARCH_CAT_MODEL_NODE
 		do
-			from class_list.start until class_list.off loop
-				create model_node.make_class (an_rm_closure_name, class_list.item)
+			across class_list as class_list_csr loop
+				create model_node.make_class (an_rm_closure_name, class_list_csr.item)
 				a_parent_node.put_child (model_node)
 debug ("rm_ontology")
-	io.put_string ("%T%TClass: " + class_list.item.name + "%N")
+	io.put_string ("%T%TClass: " + class_list_csr.item.name + "%N")
 end
-				children := class_list.item.immediate_descendants
+				children := class_list_csr.item.immediate_descendants
 				add_child_nodes (an_rm_closure_name, children, model_node)
-				class_list.forth
 			end
 		end
 

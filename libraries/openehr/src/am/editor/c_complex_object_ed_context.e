@@ -56,6 +56,20 @@ feature -- Display
 			end
 		end
 
+	expand_to_rm
+		local
+			props: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
+		do
+			if in_differential_view then
+				props := rm_class.properties
+			else
+				props := rm_class.flat_properties
+			end
+			across props as props_csr loop
+				do_rm_property (props.item_for_iteration)
+			end
+		end
+
 feature -- Modification
 
 	add_attribute (a_node: C_ATTRIBUTE_ED_CONTEXT)
@@ -63,6 +77,38 @@ feature -- Modification
 		do
 			attributes.extend (a_node)
 			a_node.set_parent (Current)
+		end
+
+feature {NONE} -- Implementation
+
+	do_rm_property (a_bmm_prop: BMM_PROPERTY_DEFINITION)
+			-- enter a BMM_PROPERTY_DEFINITION
+		local
+			bmm_class_def: BMM_CLASS_DEFINITION
+		do
+--			-- first of all work out whether we want this property
+--			if not (attached {C_COMPLEX_OBJECT} co as cco and then cco.has_attribute (a_bmm_prop.name))
+--				and not attached {C_REFERENCE_OBJECT} co
+--				and not (attached {C_DOMAIN_TYPE} co as cdt and then cdt.constrained_rm_attributes.has (a_bmm_prop.name))
+--			then
+--				ev_grid_rm_row_stack.extend (node_grid_row_map.item (co))
+--				ev_grid_rm_row_removals_stack.extend (False)
+--				create rm_node_path.make_from_string (co.path)
+
+--				-- do this property
+--				enter_rm_property (a_bmm_prop, depth)
+
+--				-- if it wasn't removed, do its children, to a certain depth
+--				if not ev_grid_rm_row_removals_stack.item then
+--					bmm_class_def := rm_schema.class_definition (a_bmm_prop.type.root_class)
+--					bmm_class_def.do_supplier_closure (not differential_view, agent continue_rm_property, agent enter_rm_property, agent exit_rm_property)
+--				end
+
+--				exit_rm_property (a_bmm_prop)
+
+--				ev_grid_rm_row_stack.remove
+--				ev_grid_rm_row_removals_stack.remove
+--			end
 		end
 
 end

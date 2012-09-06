@@ -121,19 +121,20 @@ feature -- Test routines
 			assert ("COMPOSITION immediate suppliers includes CONTENT_ITEM", supps.has ("CONTENT_ITEM"))
 		end
 
-	test_all_suppliers
+	test_supplier_closure
 			-- New test routine
 		note
-			testing:  "all_suppliers", "bmm", "covers/{BMM_CLASS_DEFINITION}.all_suppliers"
+			testing:  "all_suppliers", "bmm", "covers/{BMM_CLASS_DEFINITION}.supplier_closure"
 		local
 			supps: ARRAYED_SET [STRING]
 		do
 			supps := rm_schema.class_definition ("COMPOSITION").supplier_closure
-			assert ("COMPOSITION immediate suppliers includes CODE_PHRASE", supps.has ("CODE_PHRASE"))
-			assert ("COMPOSITION immediate suppliers includes DV_CODED_TEXT", supps.has ("DV_CODED_TEXT"))
-			assert ("COMPOSITION immediate suppliers includes PARTY_PROXY", supps.has ("PARTY_PROXY"))
-			assert ("COMPOSITION immediate suppliers includes EVENT_CONTEXT", supps.has ("EVENT_CONTEXT"))
-			assert ("COMPOSITION immediate suppliers includes CONTENT_ITEM", supps.has ("CONTENT_ITEM"))
+			assert ("COMPOSITION supplier closure includes CODE_PHRASE", supps.has ("CODE_PHRASE"))
+			assert ("COMPOSITION supplier closure includes DV_CODED_TEXT", supps.has ("DV_CODED_TEXT"))
+			assert ("COMPOSITION supplier closure includes PARTY_PROXY", supps.has ("PARTY_PROXY"))
+			assert ("COMPOSITION supplier closure includes EVENT_CONTEXT", supps.has ("EVENT_CONTEXT"))
+			assert ("COMPOSITION supplier closure includes CONTENT_ITEM", supps.has ("CONTENT_ITEM"))
+			assert ("COMPOSITION supplier closure includes LINK", supps.has ("LINK"))
 		end
 
 end

@@ -82,9 +82,7 @@ feature -- Initialisation
 		do
 			arch_node := an_arch_node
 			archetype := an_archetype
-			if attached {DIFFERENTIAL_ARCHETYPE} archetype then
-				in_differential_view := True
-			end
+			in_differential_view := attached {DIFFERENTIAL_ARCHETYPE} archetype
 			flat_ontology := a_flat_ontology
 			rm_schema := an_rm_schema
 		end

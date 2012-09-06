@@ -90,10 +90,9 @@ feature -- Access
 			if not attached all_descendants_cache then
 				create all_descendants_cache.make(0)
 				all_descendants_cache.compare_objects
-				from immediate_descendants.start until immediate_descendants.off loop
-					all_descendants_cache.extend (immediate_descendants.item.name)
-					all_descendants_cache.merge (immediate_descendants.item.type_substitutions)
-					immediate_descendants.forth
+				across immediate_descendants as imm_descs_csr loop
+					all_descendants_cache.extend (imm_descs_csr.item.name)
+					all_descendants_cache.merge (imm_descs_csr.item.type_substitutions)
 				end
 			end
 			Result := all_descendants_cache
@@ -137,39 +136,38 @@ feature -- Access
 		end
 
 	suppliers: attached ARRAYED_SET [STRING]
-			-- list of names of immediate supplier classes, including concrete generic parameters and
-			-- concrete descendants of abstract statically defined types.
+			-- list of names of immediate supplier classes, including concrete generic parameters,
+			-- concrete descendants of abstract statically defined types, and inherited suppliers.
 			-- (where generics are unconstrained, no class name is added, since logically it would be
 			-- 'ANY' and this can always be assumed anyway)
 			-- This list includes primitive types
 		local
 			ftl: ARRAYED_LIST [STRING]
-			imm_descs: ARRAYED_LIST [BMM_CLASS_DEFINITION]
 		do
 			if not attached suppliers_cache then
 				create suppliers_cache.make(0)
 				suppliers_cache.compare_objects
+
+				-- get the types defined in formal generics
 				if is_generic then
 					ftl := flattened_type_list
 					ftl.go_i_th (1)
 					ftl.remove
 					suppliers_cache.merge (ftl)
 				end
-				from properties.start until properties.off loop
+
+				-- get the types of all the properties (including inherited)
+				across flat_properties as props_csr loop
 					-- get the statically defined type(s) of the property (could be >1 due to generics)
-					ftl := properties.item_for_iteration.type.flattened_type_list
+					ftl := props_csr.item.type.flattened_type_list
 					suppliers_cache.merge (ftl)
 
-					-- now get the descendant types
-					from ftl.start until ftl.off loop
-						imm_descs := bmm_schema.class_definition (ftl.item).immediate_descendants
-						from imm_descs.start until imm_descs.off loop
-							suppliers_cache.extend (imm_descs.item.name)
-							imm_descs.forth
+					-- now get the descendant types, since these could be bound at runtime
+					across ftl as gen_types_csr loop
+						across bmm_schema.class_definition (gen_types_csr.item).immediate_descendants as imm_descs_csr loop
+							suppliers_cache.extend (imm_descs_csr.item.name)
 						end
-						ftl.forth
 					end
-					properties.forth
 				end
 			end
 			Result := suppliers_cache
@@ -188,18 +186,22 @@ feature -- Access
 		end
 
 	supplier_closure: attached ARRAYED_SET [STRING]
-			-- list of names of all classes in supplier closure, including concrete generic parameters;
+			-- list of names of all classes in full supplier closure, including concrete generic parameters;
 			-- (where generics are unconstrained, no class name is added, since logically it would be
 			-- 'ANY' and this can always be assumed anyway)
 			-- This list includes primitive types
 		do
 			if supplier_closure_cache = Void then
+				create closure_types_done.make (0)
+				closure_types_done.compare_objects
+				closure_types_done.extend (name)
 				create supplier_closure_cache.make(0)
 				supplier_closure_cache.compare_objects
 				supplier_closure_cache.merge (suppliers)
-				from suppliers.start until suppliers.off loop
-					supplier_closure_cache.merge (bmm_schema.class_definition (suppliers.item).supplier_closure)
-					suppliers.forth
+				across suppliers as suppliers_csr loop
+					if not closure_types_done.has (suppliers_csr.item) then
+						supplier_closure_cache.merge (bmm_schema.class_definition (suppliers_csr.item).supplier_closure)
+					end
 				end
 			end
 			Result := supplier_closure_cache
@@ -212,9 +214,8 @@ feature -- Access
 				create flat_properties_cache.make(0)
 				flat_properties_cache.compare_objects
 
-				from ancestors.start until ancestors.off loop
-					flat_properties_cache.merge (ancestors.item_for_iteration.flat_properties)
-					ancestors.forth
+				across ancestors as ancestors_csr loop
+					flat_properties_cache.merge (ancestors_csr.item.flat_properties)
 				end
 
 				-- now merge the current properties - merging afterward will correctly replace ancestor properties of same name
@@ -417,15 +418,14 @@ feature -- Traversal
 			-- THIS CAN BE AN EXPENSIVE COMPUTATION, so it is limited by the max_depth argument
 		local
 			props: attached HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
-			props_csr: HASH_TABLE_ITERATION_CURSOR [BMM_PROPERTY_DEFINITION, STRING]
 		do
-			create supplier_closure_stack.make(0)
+			create supplier_closure_stack.make (0)
 			supplier_closure_stack.compare_objects
-			supplier_closure_stack.extend(name)
+			supplier_closure_stack.extend (name)
 
-			create supplier_closure_class_record.make(0)
+			create supplier_closure_class_record.make (0)
 			supplier_closure_class_record.compare_objects
-			supplier_closure_class_record.extend(name)
+			supplier_closure_class_record.extend (name)
 
 			if flat_flag then
 				props := flat_properties
@@ -433,10 +433,8 @@ feature -- Traversal
 				props := properties
 			end
 
-			props_csr := props.new_cursor
-			from props_csr.start until props_csr.after loop
+			across props as props_csr loop
 				do_property_supplier_closure (props_csr.item, flat_flag, continue_action, enter_action, exit_action, 0)
-				props_csr.forth
 			end
 		end
 
@@ -659,6 +657,10 @@ feature {NONE} -- Implementation
 
 	supplier_closure_class_record: ARRAYED_LIST [STRING]
 			-- list of classes already done, to prevent fully expanded form of each class being generated after its first occurrence
+
+	closure_types_done: ARRAYED_SET [STRING]
+			-- list of types for which supplier_closure has already been called, used to avoid doing rework
+
 
 invariant
 	Generic_validity: is_generic implies generic_parameters /= Void and then not generic_parameters.is_empty
