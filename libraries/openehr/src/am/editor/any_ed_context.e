@@ -142,6 +142,8 @@ feature {NONE} -- Implementation
 		do
 			if show_rm_inheritance and c_meaning_colours.has (node_specialisation_status) then
 				Result := c_meaning_colours.item (node_specialisation_status)
+			else
+				Result := archetype_rm_type_color
 			end
 		end
 

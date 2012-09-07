@@ -97,6 +97,7 @@ feature -- Display
 			-- iterate through the assertions
 			across assertions_index as assn_csr loop
 				gui_grid.set_last_row (ev_row_index.i_th (assn_csr.cursor_index))
+				gui_grid.update_last_row_label_col (Definition_grid_col_rm_name, Void, Void, c_object_colour, Void)
 				gui_grid.update_last_row_label_col_multi_line (Definition_grid_col_constraint, assertion_string (assn_csr.item), Void, c_constraint_colour, Void)
 			end
 		end
