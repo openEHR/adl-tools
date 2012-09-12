@@ -16,9 +16,12 @@ templates = <
 		-- DADL_CONFIG_FILE_ACCESS
 		["config_settings_line1"] = <"$1 configuration settings (dADL format)">
 		["config_settings_line2"] = <"Automatically written by application">
+		["put_object_conversion_failure"] = <"put_object call to object_converter.object_to_dt with object of type $1 failed">
 
 		-- DT_OBJECT_CONVERTER.dt_to_object
+		["dt_unknown_error"] = <"[Exception caught]: Exception type $1 - trace: $2">
 		["container_type_mismatch"] = <"Mismatch in data and model for field $1 in type $2. Parsed data implies container type but is not in model">
+		["dt_container_gen_param_type_mismatch"] = <"Mismatch in data and model for generic parameter $1 in type $2. Expected $3 but got $4">
 		["interval_type_mismatch"] = <"Mismatch in data and model for field $1 in type $2. Parsed data implies interval type but is not in model">
 		["atomic_type_mismatch"] = <"Mismatch in data and model for field $1 in type $2. Parsed data implies atomic type but no conversion available">
 		["primitive_type_mismatch"] = <"Mismatch in data and model for field $1 in type $2. Parsed data implies primitive, sequence<primitive> or interval<primitive> type but model does not">
@@ -27,6 +30,8 @@ templates = <
 		["non_existent_path"] = <"non-existent path $1 in data tree structure">
 		["non_existent_path_in_list"] = <"non-existent path (in list) $1 in data tree structure">
 		["dt_to_object_type_mismatch"] = <"[Exception caught]: Mismatch error - original recipient = $1">
+		["dt_nested_type_mismatch"] = <"[Software exception]: Nested structure mismatch for type $1, attribute $2: DT structure is nested, object type is not">
+		["dt_unknown_type_in_source"] = <"Data source mentions unknown type $1 (object add failed)">
 
 		-- dADL
 		["VOBAV"] = <"assumed value $1 not within constraint value space">

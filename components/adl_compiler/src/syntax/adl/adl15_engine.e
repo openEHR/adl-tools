@@ -242,8 +242,11 @@ feature {NONE} -- Implementation
 				language_context.parse
 				if not language_context.parse_succeeded then
 					errors.append (language_context.errors)
-				elseif not attached {LANGUAGE_TRANSLATIONS} language_context.tree.as_object (({LANGUAGE_TRANSLATIONS}).type_id, Void) as lt then
+				elseif not attached {LANGUAGE_TRANSLATIONS} language_context.tree.as_object (({LANGUAGE_TRANSLATIONS}).type_id, Void) as lt
+					or object_converter.errors.has_errors
+				then
 					errors.add_error ("deserialise_e1", <<({LANGUAGE_TRANSLATIONS}).name>>, generator + ".parse")
+					errors.append (object_converter.errors)
 				else
 					orig_lang_trans := lt
 				end
@@ -256,8 +259,11 @@ feature {NONE} -- Implementation
 						description_context.parse
 						if not description_context.parse_succeeded then
 							errors.append (description_context.errors)
-						elseif not attached {RESOURCE_DESCRIPTION} description_context.tree.as_object (({RESOURCE_DESCRIPTION}).type_id, Void) as rd then
+						elseif not attached {RESOURCE_DESCRIPTION} description_context.tree.as_object (({RESOURCE_DESCRIPTION}).type_id, Void) as rd
+							or object_converter.errors.has_errors
+						then
 							errors.add_error ("deserialise_e1", <<({RESOURCE_DESCRIPTION}).name>>, generator + ".parse")
+							errors.append (object_converter.errors)
 						else
 							res_desc := rd
 						end
@@ -308,8 +314,11 @@ feature {NONE} -- Implementation
 						annotations_context.parse
 						if not annotations_context.parse_succeeded then
 							errors.append (annotations_context.errors)
-						elseif not attached {RESOURCE_ANNOTATIONS} annotations_context.tree.as_object (({RESOURCE_ANNOTATIONS}).type_id, Void) as res_ann then
+						elseif not attached {RESOURCE_ANNOTATIONS} annotations_context.tree.as_object (({RESOURCE_ANNOTATIONS}).type_id, Void) as res_ann
+							or object_converter.errors.has_errors
+						then
 							errors.add_error ("deserialise_e1", <<({RESOURCE_ANNOTATIONS}).name>>, generator + ".parse")
+							errors.append (object_converter.errors)
 						else
 							annots := res_ann
 						end
@@ -327,6 +336,7 @@ feature {NONE} -- Implementation
 						if is_legacy_flat then
 							if attached orig_lang_trans and then attached {FLAT_ARCHETYPE_ONTOLOGY}
 								ontology_context.tree.as_object (({FLAT_ARCHETYPE_ONTOLOGY}).type_id, <<orig_lang_trans.original_language.code_string, definition.node_id>>) as flat_ont
+								and not object_converter.errors.has_errors
 							then
 								create {FLAT_ARCHETYPE} Result.make (
 									adl_parser.artefact_type,
@@ -336,10 +346,14 @@ feature {NONE} -- Implementation
 									definition,
 									flat_ont
 								)
+							else
+								errors.add_error ("SAON", Void, generator + ".parse")
+								errors.append (object_converter.errors)
 							end
 						else
 							if attached orig_lang_trans and then attached {DIFFERENTIAL_ARCHETYPE_ONTOLOGY}
 								ontology_context.tree.as_object (({DIFFERENTIAL_ARCHETYPE_ONTOLOGY}).type_id, <<orig_lang_trans.original_language.code_string, definition.node_id>>) as diff_ont
+								and not object_converter.errors.has_errors
 							then
 								create {DIFFERENTIAL_ARCHETYPE} Result.make (
 									adl_parser.artefact_type,
@@ -349,45 +363,50 @@ feature {NONE} -- Implementation
 									definition,
 									diff_ont
 								)
+							else
+								errors.add_error ("SAON", Void, generator + ".parse")
+								errors.append (object_converter.errors)
 							end
 						end
 
-						-- add optional parts
-						if attached {ARCHETYPE_ID} adl_parser.parent_archetype_id as parent_id then
-							Result.set_parent_archetype_id (parent_id)
+						if attached Result then
+							-- add optional parts
+							if attached {ARCHETYPE_ID} adl_parser.parent_archetype_id as parent_id then
+								Result.set_parent_archetype_id (parent_id)
+							end
+
+							if attached adl_parser.adl_version then
+								Result.set_adl_version (adl_parser.adl_version)
+							else
+								Result.set_adl_version (latest_adl_version)
+							end
+
+							if adl_parser.is_controlled then
+								Result.set_is_controlled
+							end
+
+							if adl_parser.is_generated then
+								Result.set_is_generated
+							end
+
+							if orig_lang_trans.translations /= Void then
+								Result.set_translations(orig_lang_trans.translations)
+							end
+
+							if invariant_context.tree /= Void then
+								Result.set_invariants (invariant_context.tree)
+							end
+
+							if attached annots then
+								Result.set_annotations (annots)
+							end
+
+							Result.rebuild
+
+							-- perform post parse actions on AOM structure
+							post_parse_processor.initialise (Result, rm_schema)
+							post_parse_processor.execute
 						end
-
-						if attached adl_parser.adl_version then
-							Result.set_adl_version (adl_parser.adl_version)
-						else
-							Result.set_adl_version (latest_adl_version)
-						end
-
-						if adl_parser.is_controlled then
-							Result.set_is_controlled
-						end
-
-						if adl_parser.is_generated then
-							Result.set_is_generated
-						end
-
-						if orig_lang_trans.translations /= Void then
-							Result.set_translations(orig_lang_trans.translations)
-						end
-
-						if invariant_context.tree /= Void then
-							Result.set_invariants (invariant_context.tree)
-						end
-
-						if attached annots then
-							Result.set_annotations (annots)
-						end
-
-						Result.rebuild
-
-						-- perform post parse actions on AOM structure
-						post_parse_processor.initialise (Result, rm_schema)
-						post_parse_processor.execute
 					end
 				end
 			end

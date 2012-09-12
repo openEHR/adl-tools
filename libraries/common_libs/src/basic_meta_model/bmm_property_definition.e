@@ -35,6 +35,12 @@ feature -- Access
 			-- name of this attribute
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
+	display_name: STRING
+			-- name of this attribute to display in screen form, grid etc
+		do
+			Result := name
+		end
+
 	type: BMM_TYPE_SPECIFIER
 			-- type of this attribute
 

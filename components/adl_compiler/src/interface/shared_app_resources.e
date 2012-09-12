@@ -201,7 +201,7 @@ feature -- Application Switches
 			--
 		do
 			repository_profiles_cache.put(profiles)
-			app_cfg.put_object("/profile", repository_profiles_cache.item)
+			app_cfg.put_object ("/profile", repository_profiles_cache.item)
 		end
 
 	set_current_profile (a_profile_name: attached STRING)
@@ -209,7 +209,7 @@ feature -- Application Switches
 			profile_name_valid: not a_profile_name.is_empty
 		do
 			repository_profiles.set_current_profile_name (a_profile_name)
-			app_cfg.put_object("/profile", repository_profiles)
+			app_cfg.put_object ("/profile", repository_profiles)
 		ensure
 			profile_set: repository_profiles.current_profile_name.same_string (a_profile_name)
 		end

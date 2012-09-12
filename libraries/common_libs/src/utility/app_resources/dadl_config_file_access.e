@@ -25,9 +25,20 @@ inherit
 			is_equal, out, default_create
 		end
 
-	SHARED_RESOURCES
-
 	SHARED_MESSAGE_DB
+		export
+			{NONE} all
+		end
+
+	SHARED_RESOURCES
+		export
+			{NONE} all
+		end
+
+	EXCEPTIONS
+		export
+			{NONE} all
+		end
 
 create
 	make
@@ -166,18 +177,23 @@ feature -- Modification
 			if not attached dt_tree then
 				create_default_dt_tree
 			end
-			obj_dt_tree := object_converter.object_to_dt(a_value)
-			if has_resource(a_path) then
-				dt_attr := dt_tree.attribute_node_at_path (a_path)
-				dt_attr.remove_all_children
-				dt_attr.put_child (obj_dt_tree)
+			obj_dt_tree := object_converter.object_to_dt (a_value)
+			if not object_converter.errors.has_errors then
+				if has_resource (a_path) then
+					dt_attr := dt_tree.attribute_node_at_path (a_path)
+					dt_attr.remove_all_children
+					dt_attr.put_child (obj_dt_tree)
+				else
+					dt_tree.put_object_at_path (obj_dt_tree, a_path)
+				end
 			else
-				dt_tree.put_object_at_path (obj_dt_tree, a_path)
+				io.put_string (get_msg ("put_object_conversion_failure", <<a_value.generating_type>>))
+				raise ("put_object_conversion_failure")
 			end
 		end
 
 	add_refresh_listener (an_agent: PROCEDURE [ANY, TUPLE])
-			-- adda listener to be executed on file reload
+			-- add a listener to be executed on file reload
 		do
 
 		end
@@ -260,9 +276,8 @@ feature {NONE} -- Implementation
 			end
 
 			-- update any refresh listeners
-			from refresh_listeners.start until refresh_listeners.off loop
-				 refresh_listeners.item.call ([])
-				 refresh_listeners.forth
+			across refresh_listeners as listeners_csr loop
+				 listeners_csr.item.call ([])
 			end
 		end
 

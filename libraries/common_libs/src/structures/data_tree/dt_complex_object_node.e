@@ -53,7 +53,7 @@ feature -- Initialisation
 		do
 			create attributes.make(0)
 			create im_type_name.make(0)
-			im_type_name.append(Unknown_type_name)
+			im_type_name.append (Unknown_type_name)
 		ensure then
 			not is_typed
 		end

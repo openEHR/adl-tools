@@ -106,6 +106,14 @@ feature -- Access
 	gui_grid_row: detachable EV_GRID_ROW
 			-- note: stable once attached
 
+feature -- Status Report
+
+	is_shown_in_grid: BOOLEAN
+			-- True if this node is included in the grid tree; False if it is there but hidden
+		do
+			Result := gui_grid_row.is_show_requested
+		end
+
 feature -- Display Settings
 
 	in_technical_view: BOOLEAN
@@ -135,6 +143,13 @@ feature -- Display
 			gui_grid.set_last_row (gui_grid_row)
 		end
 
+	hide_in_grid
+		do
+			gui_grid_row.hide
+		ensure
+			not is_shown_in_grid
+		end
+
 feature {NONE} -- Implementation
 
 	c_meaning_colour: EV_COLOR
@@ -160,11 +175,15 @@ feature {NONE} -- Implementation
 	c_attribute_colour: EV_COLOR
 			-- generate a foreground colour for RM attribute representing inheritance status
 		do
-			if show_rm_inheritance and c_attribute_colours.has (node_specialisation_status) then
-				Result := c_attribute_colours.item (node_specialisation_status)
-			else
-				Result := archetyped_attribute_color
-			end
+--			if is_unconstrained then
+
+--			else
+				if show_rm_inheritance and c_attribute_colours.has (node_specialisation_status) then
+					Result := c_attribute_colours.item (node_specialisation_status)
+				else
+					Result := archetyped_attribute_color
+				end
+--			end
 		end
 
 	c_pixmap: EV_PIXMAP

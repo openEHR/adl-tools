@@ -43,7 +43,7 @@ feature -- Status Report
 			-- True if this node has a proper node_id
 			-- node_id must not be something like "unknown" or "unknown_1", "unknown_2" etc
 		do
-			Result := not node_id.has_substring(Anonymous_node_id)
+			Result := not node_id.starts_with (Anonymous_node_id)
 		end
 
 end

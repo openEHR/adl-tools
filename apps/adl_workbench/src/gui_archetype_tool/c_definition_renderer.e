@@ -63,6 +63,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_GUI_ARCHETYPE_TOOL_AGENTS
+		export
+			{NONE} all
+		end
+
 	SPECIALISATION_STATUSES
 		export
 			{NONE} all
@@ -83,8 +88,7 @@ feature -- Initialisation
 				update_flag, show_codes_flag, show_rm_inheritance_flag,
 				in_technical_view_flag, rm_data_properties_flag,
 				rm_runtime_properties_flag, rm_infrastructure_properties_flag: BOOLEAN;
-				a_gui_node_map: HASH_TABLE [EV_GRID_ROW, ARCHETYPE_CONSTRAINT];
-				a_code_select_agent, a_path_select_agent: PROCEDURE [ANY, TUPLE [STRING]])
+				a_gui_node_map: HASH_TABLE [EV_GRID_ROW, ARCHETYPE_CONSTRAINT])
 		do
 			target_descriptor := aca
 			flat_archetype := aca.flat_archetype
@@ -103,8 +107,6 @@ feature -- Initialisation
 			updating := update_flag
 			language := a_lang
 			rm_publisher := archetype.archetype_id.rm_originator.as_lower
-			code_select_agent := a_code_select_agent
-			path_select_agent := a_path_select_agent
 
 			in_technical_view := in_technical_view_flag
 			include_rm_data_properties := rm_data_properties_flag
@@ -703,7 +705,6 @@ feature -- Visitor
 		local
 			parent_class_row: EV_GRID_ROW
 			prop_str, type_str: STRING
-			has_type_subs: BOOLEAN
 			type_spec: BMM_TYPE_SPECIFIER
 			col: EV_COLOR
 			show_prop: BOOLEAN
@@ -742,23 +743,19 @@ feature -- Visitor
 						prop_str := a_bmm_prop.name.twin
 						if attached {BMM_CLASS_DEFINITION} a_bmm_prop.type as bmm_class_def then
 							type_str := bmm_class_def.name
-							has_type_subs := bmm_class_def.has_type_substitutions
 							type_spec := bmm_class_def
 
 						elseif attached {BMM_CONTAINER_TYPE_REFERENCE} a_bmm_prop.type as bmm_cont_type_ref then
 							prop_str.append (": " + bmm_cont_type_ref.container_type.name + Generic_left_delim.out + Generic_right_delim.out)
 							type_str := bmm_cont_type_ref.type.name
-							has_type_subs := bmm_cont_type_ref.type.has_type_substitutions
 							type_spec := bmm_cont_type_ref.type
 
 						elseif attached {BMM_GENERIC_TYPE_REFERENCE} a_bmm_prop.type as bmm_gen_type_ref then
 							type_str := bmm_gen_type_ref.as_type_string
-							has_type_subs := bmm_gen_type_ref.has_type_substitutions
 							type_spec := bmm_gen_type_ref.root_type
 
 						elseif attached {BMM_GENERIC_PARAMETER_DEFINITION} a_bmm_prop.type as bmm_gen_parm_def then -- type is T, U etc
 							type_str := bmm_gen_parm_def.as_type_string
-							has_type_subs := bmm_gen_parm_def.has_type_substitutions
 							type_spec := a_bmm_prop.type
 						end
 
@@ -994,17 +991,11 @@ feature {NONE} -- Implementation
 		do
 			if button = {EV_POINTER_CONSTANTS}.right then
 				create menu
-				create an_mi.make_with_text_and_action (get_text ("menu_option_display_code"), agent code_select_agent.call ([a_code]))
+				create an_mi.make_with_text_and_action (get_text ("menu_option_display_code"), agent (gui_archetype_tool_agents.code_select_action_agent).call ([a_code]))
 				menu.extend (an_mi)
 				menu.show
 			end
 		end
-
-	code_select_agent: PROCEDURE [ANY, TUPLE [STRING]]
-			-- action to perform when node is selected in tree
-
-	path_select_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
-			-- action to perform when path is selected in tree
 
 	c_object_colour (a_node: C_OBJECT): EV_COLOR
 			-- generate a foreground colour for RM type representing inheritance status
@@ -1166,13 +1157,13 @@ feature {NONE} -- Implementation
 
 				-- if this node is addressable, add menu item to show node_id in ontology
 				if co.is_addressable then
-					create an_mi.make_with_text_and_action (get_text ("view_node_id_in_ontology"), agent code_select_agent.call ([co.node_id]))
+					create an_mi.make_with_text_and_action (get_text ("view_node_id_in_ontology"), agent (gui_archetype_tool_agents.code_select_action_agent).call ([co.node_id]))
 					menu.extend (an_mi)
 				end
 
 				-- add menu item for displaying path in path map
-				if attached path_select_agent then
-					create an_mi.make_with_text_and_action (get_text ("menu_option_display_path"), agent path_select_agent.call ([co.path]))
+				if attached gui_archetype_tool_agents.path_select_action_agent then
+					create an_mi.make_with_text_and_action (get_text ("menu_option_display_path"), agent (gui_archetype_tool_agents.path_select_action_agent).call ([co.path]))
 					menu.extend (an_mi)
 				end
 

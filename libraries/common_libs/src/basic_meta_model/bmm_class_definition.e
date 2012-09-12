@@ -19,6 +19,9 @@ class BMM_CLASS_DEFINITION
 
 inherit
 	BMM_TYPE_SPECIFIER
+		export
+			{ANY} is_well_formed_type_name
+		end
 
 	IDENTIFIED_TOOL_ARTEFACT
 		export

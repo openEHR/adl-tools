@@ -39,6 +39,10 @@ feature -- Definitions
 
 feature -- Access
 
+	errors: ERROR_ACCUMULATOR
+		once
+			create Result.make
+		end
 
 feature -- Conversion
 
@@ -46,11 +50,13 @@ feature -- Conversion
 			-- generate a DT_OBJECT from an Eiffel object; called only on top-level object
 		do
 			create Result.make_anonymous
+			errors.wipe_out
 			populate_dt_from_object (an_obj, Result, No_type)
 		end
 
 	populate_dt_from_root_object (an_obj: attached ANY; a_dt_co: attached DT_COMPLEX_OBJECT_NODE)
 		do
+			errors.wipe_out
 			populate_dt_from_object (an_obj, a_dt_co, No_type)
 		end
 
@@ -71,9 +77,9 @@ feature -- Conversion
 			src_obj, targ_obj: ANY
 			src_obj_fld: INTEGER
 			path_list: SEQUENCE [OG_PATH]
-			exception_caught: BOOLEAN
 		do
-			if not exception_caught then
+			errors.wipe_out
+			if not errors.has_errors then
 				-- wipe the reference list out if on a top-level object
 				if a_dt_co.is_root then
 					create object_ref_list.make (0)
@@ -100,7 +106,7 @@ feature -- Conversion
 									set_reference_field (src_obj_fld, src_obj, targ_obj)
 								end
 							else
-								post_error (Current, "dt_to_object", "non_existent_path", <<a_dt_obj_ref.value.as_string>>)
+								errors.add_error ("non_existent_path", <<a_dt_obj_ref.value.as_string>>, "dt_to_object")
 							end
 						elseif attached {DT_OBJECT_REFERENCE_LIST} object_ref_list.item as a_dt_obj_ref_list then
 							-- make the generic container, it will be a SEQUENCE (some kind of list)
@@ -115,7 +121,7 @@ feature -- Conversion
 									if a_dt_co.has_path (path_list.item.as_string) then
 										a_sequence2.extend (a_dt_co.node_at_path (path_list.item.as_string).as_object_ref)
 									else
-										post_error (Current, "dt_to_object", "non_existent_path_in_list", <<path_list.item.as_string>>)
+										errors.add_error ("non_existent_path_in_list", <<path_list.item.as_string>>, "dt_to_object")
 									end
 									path_list.forth
 								end
@@ -142,9 +148,10 @@ feature -- Conversion
 		rescue
 			if assertion_violation then
 				-- check that the original was set_reference_field () - this indicates a type mismatch
-				post_error (Current, "dt_to_object", "dt_to_object_type_mismatch", <<original_recipient_name>>)
+				errors.add_error ("dt_to_object_type_mismatch", <<original_recipient_name>>, "dt_to_object")
+			else
+				errors.add_error ("dt_unknown", <<exception.out, exception_trace>>, "dt_to_object")
 			end
-			exception_caught := True
 			retry
 		end
 
@@ -331,7 +338,6 @@ end
 			fld_name: STRING
 			eif_abstract_fld_type_id, fld_type_id, dyn_dt_val_type_id, i: INTEGER
 			a_gen_field: ANY
-			exception_caught: BOOLEAN
 		do
 debug ("DT")
 	io.put_string ("DT_OBJECT_CONVERTER.populate_object_from_dt: ENTER%N")
@@ -358,12 +364,11 @@ end
 				end
 			end
 
-			if not exception_caught then
+			if not errors.has_errors then
 				if generic_count_of_type (a_type_id) > 0 then
-					-- we are on a container object, and the correspoding DT object must
-					-- have a single attribute which is_generic and is_multiple
-					-- we don't go through its fields, instead we just go to the next
-					-- object level down in the DT tree
+					-- we are on a container object, and the correspoding DT object must have a single attribute
+					-- which is_generic and is_multiple we don't go through its fields, instead we just go to the
+					-- next object level down in the DT tree
 					if not a_dt_co.is_empty then
 						a_dt_attr := a_dt_co.first
 						if a_dt_attr.is_nested then
@@ -371,6 +376,7 @@ end
 						else
 							-- should never get here: it means that the DT data parsed as a
 							-- nested generic, but that the corresponding object types are not
+							errors.add_error ("dt_nested_type_mismatch", <<Result.generating_type, a_dt_attr.im_attr_name>>, "populate_object_from_dt")
 						end
 					else -- even if it is empty, we still have to create the generic object properly
 						-- note that the invariants of the containing business object might easily not be satisfied
@@ -414,9 +420,8 @@ end
 									populate_eif_container_from_dt (a_gen_field, a_dt_attr)
 
 								else -- type in parsed DT is container, but not in Eiffel class		
-									post_error (Current, "populate_object_from_dt", "container_type_mismatch",
-										<<type_name_of_type (fld_type_id), type_name_of_type (a_type_id)>>
-									)
+									errors.add_error ("container_type_mismatch",
+										<<type_name_of_type (fld_type_id), type_name_of_type (a_type_id)>>, "populate_object_from_dt")
 								end
 
 							-- according to DT tree, it is a single-valued attribute (note in DT, this can be a HASH or ARRAYED_LIST of a supported
@@ -520,9 +525,8 @@ end
 												if is_eiffel_container_type (fld_type_id) then -- Eiffel field type is compatible
 													set_primitive_sequence_field (i, Result, fld_type_id, a_dt_obj_leaf.value)
 												else -- type in parsed DT is container, but not in Eiffel class		
-													post_error (Current, "populate_object_from_dt", "container_type_mismatch",
-														<<type_name_of_type (fld_type_id), type_name_of_type (dyn_dt_val_type_id)>>
-													)
+													errors.add_error ("container_type_mismatch",
+														<<type_name_of_type (fld_type_id), type_name_of_type (dyn_dt_val_type_id)>>, "populate_object_from_dt")
 												end
 
 											-- it is an INTERVAL[primitive type]
@@ -530,9 +534,8 @@ end
 												if is_eiffel_interval_type (fld_type_id) then -- Eiffel field type is compatible
 													set_primitive_interval_field (i, Result, fld_type_id, a_dt_obj_leaf.value)
 												else -- type in parsed DT is INTERVAL, but not in Eiffel class		
-													post_error (Current, "populate_object_from_dt", "interval_type_mismatch",
-														<<type_name_of_type (fld_type_id), type_name_of_type (dyn_dt_val_type_id)>>
-													)
+													errors.add_error ("interval_type_mismatch",
+														<<type_name_of_type (fld_type_id), type_name_of_type (dyn_dt_val_type_id)>>, "populate_object_from_dt")
 												end
 
 											-- must be an atomic reference type
@@ -554,9 +557,8 @@ end
 													elseif attached type_converted (a_dt_obj_leaf.value) as tc_val then
 														set_reference_field (i, Result, tc_val)
 													else
-														post_error (Current, "populate_object_from_dt", "atomic_type_mismatch",
-															<<type_name_of_type (fld_type_id), type_name_of_type (dyn_dt_val_type_id)>>
-														)
+														errors.add_error ("atomic_type_mismatch",
+															<<type_name_of_type (fld_type_id), type_name_of_type (dyn_dt_val_type_id)>>, "populate_object_from_dt")
 													end
 												end
 											end
@@ -583,10 +585,11 @@ end
 			end
 		rescue
 			if dyn_dt_val_type_id /= 0 then -- this must have been an argument type mismatch which killed the from_dt_proc.call[]
-				post_error (Current, "populate_object_from_dt", "dt_proc_arg_type_mismatch",
-					<<type_name_of_type (a_type_id), fld_name, type_name_of_type (fld_type_id), type_name (a_dt_obj_leaf.value)>>)
+				errors.add_error ("dt_proc_arg_type_mismatch",
+					<<type_name_of_type (a_type_id), fld_name, type_name_of_type (fld_type_id), type_name (a_dt_obj_leaf.value)>>, "populate_object_from_dt")
+			else
+				errors.add_error ("dt_unknown", <<exception.out, exception_trace>>, "populate_object_from_dt")
 			end
-			exception_caught := True
 			retry
 		end
 
@@ -722,6 +725,7 @@ feature {NONE} -- Implementation
 			Dt_attr_node_multiple: a_dt_attr.is_container_type
 		local
 			static_eif_container_content_type_id, dynamic_object_type_id: INTEGER
+			val: ANY
 		do
 			static_eif_container_content_type_id := generic_dynamic_type (a_gen_obj, 1)
 
@@ -739,13 +743,20 @@ feature {NONE} -- Implementation
 						if a_dt_attr_csr.item.type_visible then
 							dynamic_object_type_id := dt_dynamic_type_from_string (a_dt_attr_csr.item.im_type_name)
 							if dynamic_object_type_id <= 0 then
-								post_error (Current, "set_container_object_data_from_dt", "model_access_e3", <<a_dt_attr_csr.item.im_type_name>>)
+								errors.add_error ("dt_unknown_type_in_source", <<a_dt_attr_csr.item.im_type_name>>, "populate_eif_container_from_dt")
 							end
 						else
 							dynamic_object_type_id := static_eif_container_content_type_id
 						end
-						if dynamic_object_type_id > 0 then
-							a_hash_table.extend (a_dt_attr_csr.item.as_object (dynamic_object_type_id, Void), a_dt_attr_csr.item.id)
+						if dynamic_object_type_id > 0 then -- and then type_conforms_to (dynamic_object_type_id, static_eif_container_content_type_id) then
+							val := a_dt_attr_csr.item.as_object (dynamic_object_type_id, Void)
+							if type_conforms_to (dynamic_type (val), static_eif_container_content_type_id) then
+								a_hash_table.extend (val, a_dt_attr_csr.item.id)
+							else
+								errors.add_error ("dt_container_gen_param_type_mismatch",
+									<<(1).out, a_hash_table.generating_type, type_name_of_type (static_eif_container_content_type_id),
+										val.generating_type>>, "populate_eif_container_from_dt")
+							end
 						end
 					end
 				end
@@ -765,13 +776,20 @@ feature {NONE} -- Implementation
 						if a_dt_attr_csr.item.type_visible then
 							dynamic_object_type_id := dt_dynamic_type_from_string (a_dt_attr_csr.item.im_type_name)
 							if dynamic_object_type_id <= 0 then
-								post_error (Current, "set_container_object_data_from_dt", "model_access_e3", <<a_dt_attr_csr.item.im_type_name>>)
+								errors.add_error ("dt_unknown_type_in_source", <<a_dt_attr_csr.item.im_type_name>>, "populate_eif_container_from_dt")
 							end
 						else
 							dynamic_object_type_id := static_eif_container_content_type_id
 						end
 						if dynamic_object_type_id > 0 then
-							a_sequence.extend (a_dt_attr_csr.item.as_object (dynamic_object_type_id, Void))
+							val := a_dt_attr_csr.item.as_object (dynamic_object_type_id, Void)
+							if type_conforms_to (dynamic_type (val), static_eif_container_content_type_id) then
+								a_sequence.extend (val)
+							else
+								errors.add_error ("dt_container_gen_param_type_mismatch",
+									<<(1).out, a_sequence.generating_type, type_name_of_type (static_eif_container_content_type_id),
+										val.generating_type>>, "populate_eif_container_from_dt")
+							end
 						end
 					end
 				end
@@ -791,24 +809,21 @@ feature {NONE} -- Implementation
 		do
 			dynamic_hash_item_type := generic_dynamic_type (a_hash_table, 1)
 			if is_dt_primitive_interval_type (dynamic_hash_item_type) then -- it is a Hash of INTERVALs[some primitive or leaf type]; convert to DT_PRIMITIVE_OBJECT_INTERVAL
-				from a_hash_table.start until a_hash_table.off loop
+				across a_hash_table as ht_csr loop
 debug ("DT")
 	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj (Hash of INTERVAL[DT primitive type]): from_obj_proc.call ([DT_ATTRIBUTE_NODE (" +
-		a_dt_attr.im_attr_name + "), " + a_hash_table.item_for_iteration.generating_type +
-		", " + a_hash_table.key_for_iteration.out + ")%N")
+		a_dt_attr.im_attr_name + "), " + ht_csr.item.generating_type + ", " + ht_csr.key.out + ")%N")
 end
-					if attached {INTERVAL[PART_COMPARABLE]} a_hash_table.item_for_iteration as eif_prim_ivl then
-						a_dt_attr.put_child (create {DT_PRIMITIVE_OBJECT_INTERVAL}.make_identified (eif_prim_ivl, a_hash_table.key_for_iteration.out))
+					if attached {INTERVAL[PART_COMPARABLE]} ht_csr.item as eif_prim_ivl then
+						a_dt_attr.put_child (create {DT_PRIMITIVE_OBJECT_INTERVAL}.make_identified (eif_prim_ivl, ht_csr.key.out))
 					end
-					a_hash_table.forth
 				end
 
 			elseif is_dt_primitive_sequence_conforming_type (dynamic_hash_item_type) then -- it is a Hash of SEQUENCEs of some DT primitive type
 				across a_hash_table as ht_csr loop
 debug ("DT")
 	io.put_string ("DT_OBJECT_CONVERTER.create_dt_from_generic_obj (Hash of SEQUENCE): from_obj_proc.call ([DT_ATTRIBUTE_NODE (" +
-		a_dt_attr.im_attr_name + "), " + ht_csr.item.generating_type +
-		", " + ht_csr.key.out + ")%N")
+		a_dt_attr.im_attr_name + "), " + ht_csr.item.generating_type + ", " + ht_csr.key.out + ")%N")
 end
 					if attached {SEQUENCE[ANY]} ht_csr.item as eif_prim_seq then
 						a_dt_attr.put_child (create {DT_PRIMITIVE_OBJECT_LIST}.make_identified (eif_prim_seq, ht_csr.key.out))

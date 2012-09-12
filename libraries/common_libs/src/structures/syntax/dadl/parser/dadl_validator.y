@@ -530,16 +530,16 @@ end
 primitive_object: primitive_value
 		{
 			if obj_key /= Void then
-				create {DT_PRIMITIVE_OBJECT} $$.make_identified($1, obj_key)
+				create {DT_PRIMITIVE_OBJECT} $$.make_identified ($1, obj_key)
 				obj_key := Void
 			else
-				create {DT_PRIMITIVE_OBJECT} $$.make_anonymous($1)
+				create {DT_PRIMITIVE_OBJECT} $$.make_anonymous ($1)
 			end
 		}
 	| primitive_list_value
 		{
 			if obj_key /= Void then
-				create {DT_PRIMITIVE_OBJECT_LIST} $$.make_identified($1, obj_key)
+				create {DT_PRIMITIVE_OBJECT_LIST} $$.make_identified ($1, obj_key)
 				obj_key := Void
 			else
 				create {DT_PRIMITIVE_OBJECT_LIST} $$.make_anonymous($1)
@@ -566,10 +566,10 @@ primitive_object: primitive_value
 	| term_code_list_value
 		{
 			if obj_key /= Void then
-				create {DT_PRIMITIVE_OBJECT_LIST} $$.make_identified($1, obj_key)
+				create {DT_PRIMITIVE_OBJECT_LIST} $$.make_identified ($1, obj_key)
 				obj_key := Void
 			else
-				create {DT_PRIMITIVE_OBJECT_LIST} $$.make_anonymous($1)
+				create {DT_PRIMITIVE_OBJECT_LIST} $$.make_anonymous ($1)
 			end
 		}
 	;

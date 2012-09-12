@@ -136,7 +136,7 @@ feature -- Definitions
 			-- foreground colour for rm_attributes in the UI
 			-- MEDIUM BLUE
 		once
-			create Result.make_with_8_bit_rgb (0x33, 0x99, 0xff)
+			create Result.make_with_8_bit_rgb (0x44, 0x99, 0xff)
 		end
 
 	rm_infrastructure_attribute_colour: EV_COLOR

@@ -14,6 +14,12 @@ note
 
 class BMM_MODEL_ELEMENT
 
+inherit
+	BMM_DEFINITIONS
+		export
+			{NONE} all
+		end
+
 feature -- Definitions
 
 end

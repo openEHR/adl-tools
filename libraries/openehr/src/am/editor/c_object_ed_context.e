@@ -21,7 +21,7 @@ inherit
 		end
 
 create
-	make
+	make, make_unconstrained
 
 feature -- Definition
 
@@ -45,6 +45,14 @@ feature -- Initialisation
 			rm_class := rm_schema.class_definition (arch_node.rm_type_name)
 		end
 
+	make_unconstrained (an_rm_class: BMM_CLASS_DEFINITION; an_archetype: ARCHETYPE; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_rm_schema: BMM_SCHEMA)
+		local
+			co: like arch_node
+		do
+			-- FIXME: make this routine deferred and implement in descendants
+			make (co, an_archetype, a_flat_ontology, an_rm_schema)
+		end
+
 feature -- Access
 
 	arch_node: C_OBJECT
@@ -54,6 +62,16 @@ feature -- Access
 			-- RM class of node being edited
 
 	parent: C_ATTRIBUTE_ED_CONTEXT
+
+	path: STRING
+			-- path of this node with respect to top of archetype
+		do
+			if attached arch_node then
+				Result := arch_node.path
+			else
+				Result := parent.path
+			end
+		end
 
 feature -- Display
 

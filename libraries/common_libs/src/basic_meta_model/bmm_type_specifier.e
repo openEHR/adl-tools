@@ -15,7 +15,6 @@ note
 deferred class BMM_TYPE_SPECIFIER
 
 inherit
-	BMM_DEFINITIONS
 	BMM_MODEL_ELEMENT
 
 feature -- Access

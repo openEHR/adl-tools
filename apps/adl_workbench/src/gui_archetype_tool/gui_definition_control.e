@@ -35,11 +35,6 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_GUI_ARCHETYPE_TOOL_AGENTS
-		export
-			{NONE} all
-		end
-
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all
@@ -218,8 +213,10 @@ feature -- Commands
 	repopulate
 			-- repopulate and/or refresh visual appearance if diff/flat view has changed or RM icons setting changed
 		local
---			a_c_iterator: C_OBJECT_VISITOR_ITERATOR
---			c_node_map_builder: C_DEFINITION_RENDERER
+			-- **************** OLD WAY ***************
+			a_c_iterator: C_OBJECT_VISITOR_ITERATOR
+			c_node_map_builder: C_DEFINITION_RENDERER
+			-- **************** END OLD WAY ***************
 			ui_settings: GUI_DEFINITION_SETTINGS
 		do
 			-- populate peripheral controls
@@ -228,18 +225,21 @@ feature -- Commands
 			-- repopulate from definition; visiting nodes doesn't change them, only updates their visual presentation
 			gui_definition_grid.ev_grid.lock_update
 
-			-- old way
---			create c_node_map_builder.make (rm_schema, source, differential_view, selected_language, gui_definition_grid, True, show_codes, show_rm_inheritance,
---				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties,
---				definition_grid_row_map, code_select_action_agent, path_select_action_agent)
---			create a_c_iterator.make (source_archetype.definition, c_node_map_builder,
---				differential_view, update_rm_view, rm_schema)
---			do_with_wait_cursor (ev_definition_hbox, agent a_c_iterator.do_all)
-
-			-- repopulate main definition
 			create ui_settings.make (selected_language, show_codes, show_rm_inheritance, show_technical_view,
 				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
-			arch_ed_context.definition_context.display_in_grid (ui_settings)
+
+			-- old way
+			-- **************** OLD WAY ***************
+			create c_node_map_builder.make (rm_schema, source, differential_view, selected_language, gui_definition_grid, True, show_codes, show_rm_inheritance,
+				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties, definition_grid_row_map)
+			create a_c_iterator.make (source_archetype.definition, c_node_map_builder, differential_view, update_rm_view, rm_schema)
+			do_with_wait_cursor (ev_definition_hbox, agent a_c_iterator.do_all)
+			-- **************** END OLD WAY ***************
+
+			-- **************** NEW WAY ***************
+			-- repopulate main definition
+--			arch_ed_context.definition_context.display_in_grid (ui_settings)
+			-- **************** END NEW WAY ***************
 
 			gui_definition_grid.resize_columns_to_content
 			gui_definition_grid.ev_grid.unlock_update
@@ -376,8 +376,10 @@ feature {NONE} -- Implementation
 	do_populate
 			-- build definition / ontology cross reference tables used for validation and other purposes
 		local
---			a_c_iterator: C_OBJECT_VISITOR_ITERATOR
---			c_node_map_builder: C_DEFINITION_RENDERER
+			-- **************** OLD WAY ***************
+			a_c_iterator: C_OBJECT_VISITOR_ITERATOR
+			c_node_map_builder: C_DEFINITION_RENDERER
+			-- **************** END OLD WAY ***************
 			ui_settings: GUI_DEFINITION_SETTINGS
 		do
 			-- determine visualisation ancestor 'stopping' class (when C_OBJECT.rm_type_name = this class,
@@ -400,24 +402,25 @@ feature {NONE} -- Implementation
 				arch_ed_context := source.flat_display_context
 			end
 
-			-- populate the main definition grid
 			create ui_settings.make (selected_language,
 				show_codes, show_rm_inheritance, show_technical_view,
 				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
 
-			arch_ed_context.definition_context.prepare_display_in_grid (gui_definition_grid)
-			arch_ed_context.definition_context.display_in_grid (ui_settings)
+			-- **************** NEW WAY ***************
+			-- populate the main definition grid
 
-			-- populate grid control (OLD WAY)
---			create definition_grid_row_map.make (0)
+--			arch_ed_context.definition_context.prepare_display_in_grid (gui_definition_grid)
+--			arch_ed_context.definition_context.display_in_grid (ui_settings)
 
---			gui_definition_grid.ev_grid.lock_update
---			create c_node_map_builder.make (rm_schema, source, differential_view, selected_language, gui_definition_grid, False, show_codes, show_rm_inheritance,
---				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties,
---				definition_grid_row_map, code_select_action_agent, path_select_action_agent)
---			create a_c_iterator.make (source_archetype.definition, c_node_map_builder, differential_view, show_rm_data_properties, rm_schema)
---			do_with_wait_cursor (ev_definition_hbox, agent a_c_iterator.do_all)
+			-- *********** populate grid control (OLD WAY) ***********
+			create definition_grid_row_map.make (0)
 
+			gui_definition_grid.ev_grid.lock_update
+			create c_node_map_builder.make (rm_schema, source, differential_view, selected_language, gui_definition_grid, False, show_codes, show_rm_inheritance,
+				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties, definition_grid_row_map)
+			create a_c_iterator.make (source_archetype.definition, c_node_map_builder, differential_view, show_rm_data_properties, rm_schema)
+			do_with_wait_cursor (ev_definition_hbox, agent a_c_iterator.do_all)
+			-- *********** END OLD WAY CODE **************
 
 			-- make visualisation adjustments
 			if attached visualise_descendants_class then
@@ -454,7 +457,6 @@ feature {NONE} -- Implementation
 
 			-- Initial settings
 			update_rm_view := False
-
 
 			-- populate rules grid, where applicable
 			if source_archetype.has_invariants then

@@ -17,16 +17,21 @@ deferred class ARCHETYPE_CONSTRAINT_ED_CONTEXT
 inherit
 	ANY_ED_CONTEXT
 		redefine
-			arch_node
+			arch_node, c_attribute_colour
 		end
 
 feature -- Access
 
-	arch_node: ARCHETYPE_CONSTRAINT
+	arch_node: detachable ARCHETYPE_CONSTRAINT
 			-- archetype node being edited
 
 	parent: ARCHETYPE_CONSTRAINT_ED_CONTEXT
-			-- parent node in tree	
+			-- parent node in tree
+
+	path: STRING
+			-- path of this node with respect to top of archetype
+		deferred
+		end
 
 feature -- Display
 
@@ -35,10 +40,10 @@ feature -- Display
 			gui_grid := a_gui_grid
 
 			-- create a new row
-			if arch_node.is_root then
-				gui_grid.add_row (arch_node)
+			if attached arch_node and then arch_node.is_root then
+				gui_grid.add_row (Current)
 			else
-				gui_grid.add_sub_row (parent.gui_grid_row, arch_node)
+				gui_grid.add_sub_row (parent.gui_grid_row, Current)
 			end
 			gui_grid_row := gui_grid.last_row
 		end
@@ -52,39 +57,57 @@ feature -- Modification
 
 feature {NONE} -- Implementation
 
+	c_attribute_colour: EV_COLOR
+			-- generate a foreground colour for RM attribute representing inheritance status
+		do
+			if attached arch_node then
+				if show_rm_inheritance and c_attribute_colours.has (node_specialisation_status) then
+					Result := c_attribute_colours.item (node_specialisation_status)
+				else
+					Result := archetyped_attribute_color
+				end
+			else
+				-- RM node
+			end
+		end
+
 	node_tooltip_str: STRING
 			-- generate a tooltip for this node
 		local
 			p: STRING
 			bindings: HASH_TABLE [CODE_PHRASE, STRING]
 		do
-			p := arch_node.path
-			Result := flat_ontology.physical_to_logical_path (p, language, True)
-			if show_rm_inheritance then
-				Result.append ("%N%N" + get_text ("inheritance_status_text") +  specialisation_status_names.item (arch_node.specialisation_status))
-			end
-
-			-- node-based bindings
-			if attached {C_OBJECT} arch_node as co and then co.is_addressable and then flat_ontology.has_any_term_binding (co.node_id) then
-				Result.append ("%N%N" + get_text ("node_term_bindings_tooltip_text") + "%N")
-				bindings := flat_ontology.term_bindings_for_key (co.node_id)
-				across bindings as bindings_csr loop
-					Result.append ("  " + bindings_csr.key + ": " + bindings_csr.item.as_string + "%N")
+			if attached arch_node then
+				p := arch_node.path
+				Result := flat_ontology.physical_to_logical_path (p, language, True)
+				if show_rm_inheritance then
+					Result.append ("%N%N" + get_text ("inheritance_status_text") +  specialisation_status_names.item (node_specialisation_status))
 				end
-			end
 
-			-- path-based bindings
-			if flat_ontology.has_any_term_binding (p) then
-				Result.append ("%N%N" + get_text ("path_term_bindings_tooltip_text") + "%N")
-				bindings := flat_ontology.term_bindings_for_key (p)
-				across bindings as bindings_csr loop
-					Result.append ("  " + bindings_csr.key + ": " + bindings_csr.item.as_string + "%N")
+				-- node-based bindings
+				if attached {C_OBJECT} arch_node as co and then co.is_addressable and then flat_ontology.has_any_term_binding (co.node_id) then
+					Result.append ("%N%N" + get_text ("node_term_bindings_tooltip_text") + "%N")
+					bindings := flat_ontology.term_bindings_for_key (co.node_id)
+					across bindings as bindings_csr loop
+						Result.append ("  " + bindings_csr.key + ": " + bindings_csr.item.as_string + "%N")
+					end
 				end
-			end
 
-			if archetype.has_annotation_at_path (language, arch_node.path) then
-				Result.append ("%N%N" + get_text ("annotations_text") + ":%N")
-				Result.append (archetype.annotations.annotations_at_path (language, arch_node.path).as_string)
+				-- path-based bindings
+				if flat_ontology.has_any_term_binding (p) then
+					Result.append ("%N%N" + get_text ("path_term_bindings_tooltip_text") + "%N")
+					bindings := flat_ontology.term_bindings_for_key (p)
+					across bindings as bindings_csr loop
+						Result.append ("  " + bindings_csr.key + ": " + bindings_csr.item.as_string + "%N")
+					end
+				end
+
+				if archetype.has_annotation_at_path (language, arch_node.path) then
+					Result.append ("%N%N" + get_text ("annotations_text") + ":%N")
+					Result.append (archetype.annotations.annotations_at_path (language, arch_node.path).as_string)
+				end
+			else
+				Result := path
 			end
 		end
 

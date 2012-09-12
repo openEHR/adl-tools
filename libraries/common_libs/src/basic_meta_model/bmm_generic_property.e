@@ -20,11 +20,6 @@ inherit
 			type
 		end
 
-	BMM_DEFINITIONS
-		export
-			{NONE} all
-		end
-
 create
 	make
 

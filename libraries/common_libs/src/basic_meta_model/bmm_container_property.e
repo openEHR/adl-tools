@@ -17,7 +17,7 @@ class BMM_CONTAINER_PROPERTY
 inherit
 	BMM_PROPERTY_DEFINITION
 		redefine
-			type, make
+			type, make, display_name
 		end
 
 create
@@ -32,6 +32,13 @@ feature -- Initialisation
 		end
 
 feature -- Access
+
+	display_name: STRING
+			-- name of this attribute to display in screen form, grid etc
+		do
+			Result := name.twin
+			Result.append (": " + type.container_type.name + Generic_left_delim.out + Generic_right_delim.out)
+		end
 
 	cardinality: MULTIPLICITY_INTERVAL
 
