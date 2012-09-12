@@ -308,8 +308,8 @@ debug ("flatten")
 		cco_child_diff.node_id + "]**%N")
 end
 								-- take care of the children of the object node in the differential
-								from cco_child_diff.attributes.start until cco_child_diff.attributes.off loop
-									ca_child := cco_child_diff.attributes.item
+								across cco_child_diff.attributes as child_attrs_csr loop
+									ca_child := child_attrs_csr.item
 debug ("flatten")
 	io.put_string ("%T%T~~~~ attribute = " + ca_child.rm_attribute_path + "%N")
 end
@@ -322,7 +322,6 @@ debug ("flatten")
 		" in output%N")
 end
 									cco_output_flat.put_attribute (ca_child_copy)
-									cco_child_diff.attributes.forth
 								end
 								child_grafted_path_list.extend (cco_child_diff.path)
 							else
@@ -333,8 +332,8 @@ end
 debug ("flatten")
 	io.put_string ("%T%T~~~~~~~~ iterating cco_child_diff attributes ~~~~~~~~~%N")
 end
-								from cco_child_diff.attributes.start until cco_child_diff.attributes.off loop
-									ca_child := cco_child_diff.attributes.item
+								across cco_child_diff.attributes as child_attrs_csr loop
+									ca_child := child_attrs_csr.item
 debug ("flatten")
 	io.put_string ("%T%T~~~~ attribute = " + ca_child.rm_attribute_path + "%N")
 end
@@ -344,31 +343,36 @@ end
 									-- has a differential path, its true object parent in the flat parent archetype is given by the differential path
 									if ca_child.has_differential_path then
 										create apa.make_from_string (ca_child.differential_path)
-										cco_output_flat_proximate ?= arch_output_flat.c_object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth))
+										if attached {C_COMPLEX_OBJECT} arch_output_flat.c_object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth)) as cco then
+											cco_output_flat_proximate := cco
 debug ("flatten")
 	io.put_string ("%T%Tchild has differential path " +
 		ca_child.differential_path + "; flat proximate path = " +
 		cco_output_flat_proximate.path + "%N")
 end
 
-										-- there may be object ids on the path from the original parent attribute to the proximate attribute in the flat parent
-										-- that are overridden by object-ids in the differential path; for these we need to replace the node ids of the relevant
-										-- nodes in the flat output
-										create c_path_in_diff.make_from_string (ca_child.differential_path)
-										c_path_in_diff.finish
-										from cco_csr := cco_output_flat_proximate until cco_csr = cco_output_flat loop
-											if c_path_in_diff.item.is_addressable and then c_path_in_diff.item.object_id.count > cco_csr.node_id.count and then
-													c_path_in_diff.item.object_id.starts_with (cco_csr.node_id)
-											then
+											-- there may be object ids on the path from the original parent attribute to the proximate attribute in the flat parent
+											-- that are overridden by object-ids in the differential path; for these we need to replace the node ids of the relevant
+											-- nodes in the flat output
+											create c_path_in_diff.make_from_string (ca_child.differential_path)
+											c_path_in_diff.finish
+											from cco_csr := cco_output_flat_proximate until cco_csr = cco_output_flat loop
+												if c_path_in_diff.item.is_addressable and then c_path_in_diff.item.object_id.count > cco_csr.node_id.count and then
+														c_path_in_diff.item.object_id.starts_with (cco_csr.node_id)
+												then
 debug ("flatten")
 	io.put_string ("%T%T%Treplacing node id " + cco_csr.node_id +
 		" in flat structure with " + c_path_in_diff.item.object_id + "%N")
 end
-												cco_csr.parent.replace_node_id (cco_csr.node_id, c_path_in_diff.item.object_id)
-												cco_csr.set_specialisation_status_id_redefined
+													cco_csr.parent.replace_node_id (cco_csr.node_id, c_path_in_diff.item.object_id)
+													cco_csr.set_specialisation_status_id_redefined
+												end
+												cco_csr := cco_csr.parent.parent
+												c_path_in_diff.back
 											end
-											cco_csr := cco_csr.parent.parent
-											c_path_in_diff.back
+										else
+											-- should never get here; raise software exception?
+
 										end
 									else
 										cco_output_flat_proximate := cco_output_flat
@@ -433,7 +437,6 @@ debug ("flatten")
 end
 										cco_output_flat_proximate.put_attribute (ca_child_copy)
 									end -- if proximate object in flat output has attribute from diff
-									cco_child_diff.attributes.forth
 								end
 							end -- if flat output object is any_allowed
 debug ("flatten")
@@ -540,11 +543,11 @@ end
 			-- Phase 2: do the merging, using the merge descriptors to clone objects of the (differential) source list onto
 			-- the target (flat) output list, ignoring any redefined nodes - only merge new ones
 			--
-			from merge_list.start until merge_list.off loop
-				insert_obj ?= merge_list.item.insert_obj
+			across merge_list as merge_list_csr loop
+				insert_obj ?= merge_list_csr.item.insert_obj
 				-- this loop corresponds to the sublist of objects in the source container (i.e. child archetype container node) that are
 				-- to be merged either before or after the insert_obj in the flattened output.
-				from i := merge_list.item.start_pos until i > merge_list.item.end_pos loop
+				from i := merge_list_csr.item.start_pos until i > merge_list_csr.item.end_pos loop
 
 					-- this is where we figure out which nodes from the source are 'new' with respect to the flat output.
 					-- They are nodes that are identified nodes (all children of multiply-valued attributes are identified)
@@ -562,7 +565,7 @@ end
 						else
 							merge_obj := ca_child.children.i_th(i).safe_deep_twin
 					--		merge_obj.clear_sibling_order -- no sibling_order markers in flat archetypes!
-							if merge_list.item.before_flag then -- True = insert before
+							if merge_list_csr.item.before_flag then -- True = insert before
 								ca_output.put_child_left (merge_obj, insert_obj)
 							else
 								ca_output.put_child_right (merge_obj, insert_obj)
@@ -599,7 +602,6 @@ end
 					end
 					i := i + 1
 				end
-				merge_list.forth
 			end
 		end
 

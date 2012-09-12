@@ -21,19 +21,30 @@ inherit
 
 feature {ADL15_ENGINE} -- Initialisation
 
-	initialise (an_archetype: ARCHETYPE; an_rm_schema: BMM_SCHEMA)
-			-- set target
+	initialise (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
+			-- set target_descriptor
+			-- initialise reporting variables
 		do
 			rm_schema := an_rm_schema
-			target := an_archetype
+			target_descriptor := ara
+			target := ara.differential_archetype
+			if ara.is_specialised then
+				arch_parent_flat := target_descriptor.specialisation_parent.flat_archetype
+			end
 		ensure
+			target_descriptor_set: target_descriptor = ara
 			target_set: attached target
 		end
 
 feature -- Access
 
-	target: ARCHETYPE
+	target_descriptor: ARCH_CAT_ARCHETYPE
+			-- differential archetype being validated
+
+	target: DIFFERENTIAL_ARCHETYPE
 			-- differential archetype being processed
+
+	arch_parent_flat: detachable FLAT_ARCHETYPE
 
 	rm_schema: BMM_SCHEMA
 
@@ -50,10 +61,22 @@ feature {NONE} -- Implementation
 			-- populate CONSTRAINT_REF rm_type_name
 		local
 			bmm_prop_def: BMM_PROPERTY_DEFINITION
+			proximal_ca: C_ATTRIBUTE
+			proximal_co: C_COMPLEX_OBJECT
+			apa: ARCHETYPE_PATH_ANALYSER
 		do
 			across target.accodes_index as ac_codes_csr loop
 				across ac_codes_csr.item as cref_list_csr loop
-					bmm_prop_def := rm_schema.property_definition (cref_list_csr.item.parent.parent.rm_type_name, cref_list_csr.item.parent.rm_attribute_name)
+					proximal_ca := cref_list_csr.item.parent
+					if proximal_ca.has_differential_path then
+						create apa.make_from_string (proximal_ca.differential_path)
+						if attached {C_COMPLEX_OBJECT} arch_parent_flat.c_object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth)) as cco then
+							proximal_co := cco
+						end
+					else
+						proximal_co := proximal_ca.parent
+					end
+					bmm_prop_def := rm_schema.property_definition (proximal_co.rm_type_name, proximal_ca.rm_attribute_name)
 					cref_list_csr.item.set_rm_type_name (bmm_prop_def.type.root_class)
 				end
 			end

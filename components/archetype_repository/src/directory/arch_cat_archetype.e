@@ -824,6 +824,9 @@ feature {NONE} -- Compilation
 					compilation_state := cs_lineage_invalid
 					errors.add_error("compile_e1", <<parent_id.as_string>>, "")
 				else
+					-- perform post-parse object structure finalisation
+					adl15_engine.post_parse_process (Current, rm_schema)
+
 				 	compilation_state := Cs_ready_to_validate
 					if archetype_view_language.is_empty or not differential_archetype.has_language (archetype_view_language) then
 						set_archetype_view_language (differential_archetype.original_language.code_string)
@@ -864,11 +867,14 @@ feature {NONE} -- Compilation
 				errors.append (adl15_engine.errors)
 				compilation_state := Cs_parse_failed
 			else
-				if is_specialised and not parent_id.is_equal(differential_archetype.parent_archetype_id) then
+				if is_specialised and not parent_id.is_equal (differential_archetype.parent_archetype_id) then
 					errors.add_warning ("parse_w1", <<id.as_string, parent_id.as_string, differential_archetype.parent_archetype_id.as_string>>, "")
 				else
 					post_info (Current, "parse", "parse_i1", <<id.as_string>>)
 				end
+
+				-- perform post-parse object structure finalisation
+				adl15_engine.post_parse_process (Current, rm_schema)
 
 				-- determine the suppliers list for ongoing compilation
 				create suppliers_index.make (0)

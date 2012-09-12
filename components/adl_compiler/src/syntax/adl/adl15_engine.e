@@ -87,17 +87,27 @@ feature -- Parsing
 			-- parse text as differential archetype. If successful, `archetype' contains the parse structure.
 		do
 			rm_schema := an_rm_schema
-			Result ?= parse (a_text, False)
+			if attached {DIFFERENTIAL_ARCHETYPE} parse (a_text, False) as da then
+				Result := da
+			end
 		end
 
 	parse_legacy_flat (a_text: attached STRING; an_rm_schema: attached BMM_SCHEMA): detachable FLAT_ARCHETYPE
 			-- parse text as flat archetype. If successful, `archetype' contains the parse structure.
 		do
 			rm_schema := an_rm_schema
-			Result ?= parse (a_text, True)
+			if attached {FLAT_ARCHETYPE} parse (a_text, True) as fa then
+				Result := fa
+			end
 		end
 
 feature -- Validation
+
+	post_parse_process (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
+		do
+			post_parse_processor.initialise (ara, an_rm_schema)
+			post_parse_processor.execute
+		end
 
 	phase_1_validate (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
 		do
@@ -221,7 +231,7 @@ feature {NONE} -- Implementation
 
 	parse (a_text: attached STRING; is_legacy_flat: BOOLEAN): ARCHETYPE
 			-- parse text as either a differential source archetype or template, or else a legacy flat. If successful, `archetype' contains the parse
-			-- structure. Then validate the tree
+			-- structure.
 		local
 			res_desc: detachable RESOURCE_DESCRIPTION
 			annots: detachable RESOURCE_ANNOTATIONS
@@ -390,7 +400,7 @@ feature {NONE} -- Implementation
 							end
 
 							if orig_lang_trans.translations /= Void then
-								Result.set_translations(orig_lang_trans.translations)
+								Result.set_translations (orig_lang_trans.translations)
 							end
 
 							if invariant_context.tree /= Void then
@@ -402,10 +412,6 @@ feature {NONE} -- Implementation
 							end
 
 							Result.rebuild
-
-							-- perform post parse actions on AOM structure
-							post_parse_processor.initialise (Result, rm_schema)
-							post_parse_processor.execute
 						end
 					end
 				end

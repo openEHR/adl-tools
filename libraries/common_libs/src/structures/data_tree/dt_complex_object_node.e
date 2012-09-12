@@ -105,9 +105,11 @@ feature -- Access
 	attribute_node (an_attr_name: attached STRING): attached DT_ATTRIBUTE_NODE
 			-- return attribute node at an_attr_name
 		require
-			An_attr_name_valid: has_attribute(an_attr_name)
+			An_attr_name_valid: has_attribute (an_attr_name)
 		do
-			Result ?= representation.child_with_id(an_attr_name).content_item
+			if attached {DT_ATTRIBUTE_NODE} representation.child_with_id (an_attr_name).content_item as dt_attr then
+				Result := dt_attr
+			end
 		end
 
 	node_at_path (a_path: attached STRING): attached DT_OBJECT_ITEM
@@ -115,7 +117,9 @@ feature -- Access
 		require
 			Path_valid: has_path(a_path)
 		do
-			Result ?= representation.object_node_at_path(create {OG_PATH}.make_from_string(a_path)).content_item
+			if attached {DT_OBJECT_ITEM} representation.object_node_at_path(create {OG_PATH}.make_from_string(a_path)).content_item as dt_obj then
+				Result := dt_obj
+			end
 		end
 
 	attribute_node_at_path (a_path: attached STRING): attached DT_ATTRIBUTE_NODE
@@ -123,7 +127,9 @@ feature -- Access
 		require
 			Path_valid: has_path(a_path)
 		do
-			Result ?= representation.attribute_node_at_path(create {OG_PATH}.make_from_string(a_path)).content_item
+			if attached {DT_ATTRIBUTE_NODE} representation.attribute_node_at_path(create {OG_PATH}.make_from_string(a_path)).content_item as dt_attr then
+				Result := dt_attr
+			end
 		end
 
 	all_paths: attached ARRAYED_LIST[STRING]
@@ -318,7 +324,9 @@ feature -- Modification
 					else
 						-- error state
 					end
-					parent_dt_obj ?= dt_obj
+					if attached {DT_COMPLEX_OBJECT_NODE} dt_obj as dt_complex_obj then
+						parent_dt_obj := dt_complex_obj
+					end
 				end
 				an_og_path.forth
 			end
@@ -327,20 +335,20 @@ feature -- Modification
 	replace_attribute_name (old_name, new_name: attached STRING)
 			-- change the name of an attribute
 		require
-			Old_name_valid: has_attribute(old_name)
+			Old_name_valid: has_attribute (old_name)
 			New_name_valid: not new_name.is_empty
 		do
-			representation.replace_attribute_name(old_name, new_name)
+			representation.replace_attribute_name (old_name, new_name)
 		end
 
 	remove_attribute (attr_name: attached STRING)
 			-- remove attribute node at `attr_name'
 		require
-			Attr_name_valid: has_attribute(attr_name)
+			Attr_name_valid: has_attribute (attr_name)
 		local
 			attr_node: DT_ATTRIBUTE_NODE
 		do
-			attr_node := attribute_node(attr_name)
+			attr_node := attribute_node (attr_name)
 			representation.remove_child (attr_node.representation)
 			attributes.prune (attr_node)
 		end
