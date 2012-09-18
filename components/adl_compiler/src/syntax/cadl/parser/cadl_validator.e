@@ -9460,7 +9460,7 @@ feature {NONE} -- Implementation
 					c_attrs.item.put_child(an_obj)
 				end
 			else
-				abort_with_error("VCORM", <<an_obj.rm_type_name, an_obj.path>>)
+				abort_with_error("VCORM", <<an_obj.rm_type_name, c_attrs.item.path>>)
 			end
 		end
 

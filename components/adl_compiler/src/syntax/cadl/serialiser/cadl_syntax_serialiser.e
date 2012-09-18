@@ -164,7 +164,7 @@ feature -- Visitor
 					end
 				end
 
-				if a_node.has_any_includes then
+				if a_node.has_any_excludes then
 					last_result.append (create_indent(depth+1) + apply_style(symbol(SYM_EXCLUDE), STYLE_KEYWORD) + format_item(FMT_NEWLINE))
 					across a_node.excludes as excludes_csr loop
 						last_result.append (create_indent(depth+2) + excludes_csr.item.expression.as_string + format_item(FMT_NEWLINE))

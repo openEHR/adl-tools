@@ -62,6 +62,17 @@ feature -- Access
 
 feature -- Status Report
 
+	has_concept (a_concept_id: STRING): BOOLEAN
+			-- 	True if a_code exists in this code set
+		require
+			Concept_id_valid: not a_concept_id.is_empty
+		do
+			if not term_index.is_empty then
+				term_index.start
+				Result := term_index.item_for_iteration.has (a_concept_id)
+			end
+		end
+
 	has_concept_id (a_concept_id, a_lang: STRING): BOOLEAN
 			-- 	True if a_code exists in this code set
 		require

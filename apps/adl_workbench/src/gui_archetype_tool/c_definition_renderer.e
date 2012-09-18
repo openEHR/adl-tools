@@ -960,15 +960,19 @@ feature {NONE} -- Implementation
 			if a_terminology_id.is_equal (Local_terminology_id) then
 				Result := local_term_string (a_code)
 			elseif ts.has_terminology (a_terminology_id) then
-				if ts.terminology (a_terminology_id).has_concept_id (a_code, language) then
-					a_term := ts.terminology (a_terminology_id).term (a_code, language)
+				if ts.terminology (a_terminology_id).has_concept (a_code) then
+					if ts.terminology (a_terminology_id).has_language (language) then
+						a_term := ts.terminology (a_terminology_id).term (a_code, language)
+					elseif ts.terminology (a_terminology_id).has_language (Default_language) then
+						a_term := ts.terminology (a_terminology_id).term (a_code, Default_language)
+					end
+					if show_codes then
+						Result.append (a_term.as_string)
+					else
+						Result.append (a_term.value)
+					end
 				else
-					a_term := ts.terminology (a_terminology_id).term (a_code, Default_language)
-				end
-				if show_codes then
-					Result.append (a_term.as_string)
-				else
-					Result.append (a_term.value)
+					Result.append (a_code)
 				end
 			else
 				Result.append (a_code)
