@@ -205,6 +205,7 @@ if distrib and len(adl_workbench) > 0:
 				if pkg_name == '9': pkg_name = 'for Leopard'
 				if pkg_name == '10': pkg_name = 'for Snow Leopard'
 				if pkg_name == '11': pkg_name = 'for Lion'
+				if pkg_name == '12': pkg_name = 'for Mountain Lion'
 
 			pkg_name = 'ADL Workbench ' + pkg_name + ' ' + os.popen('uname -p').read().strip()
 			pkg_path = pkg_tree + '/' + pkg_name + '.pkg'
