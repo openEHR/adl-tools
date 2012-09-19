@@ -207,7 +207,7 @@ feature -- Access
 			if icon_pixmaps.has (pixmap_name) then
 				Result := icon_pixmaps.item (pixmap_name)
 			else
-				io.put_string ("No pixmap for " + key + "%N")
+				post_error (Current, "get_icon_pixmap", "no_pixmap_found", <<key>>)
 				create Result.default_create
 			end
 		end

@@ -15,6 +15,9 @@
 
 templates = <
 	["en"] = <
+		-- basic errors
+		["get_icon_pixmap"] = <"No pixmap found for $1">
+
 		-- standard button texts
 		["browse_button_text"] = <"Browse...">
 		["ok_button_text"] = <"OK">
