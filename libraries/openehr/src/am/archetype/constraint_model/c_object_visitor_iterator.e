@@ -85,14 +85,12 @@ feature {NONE} -- Implementation
 			-- main recursion
 			if attached {C_COMPLEX_OBJECT} a_target as cco then
 				last_cco := cco
-				from cco.attributes.start until cco.attributes.off loop
-					do_all_nodes (cco.attributes.item)
-					cco.attributes.forth
+				across cco.attributes as attrs_csr loop
+					do_all_nodes (attrs_csr.item)
 				end
 			elseif attached {C_ATTRIBUTE} a_target as ca then
-				from ca.children.start until ca.children.off loop
-					do_all_nodes (ca.children.item)
-					ca.children.forth
+				across ca.children as co_csr loop
+					do_all_nodes (co_csr.item)
 				end
 			end
 
@@ -105,9 +103,8 @@ feature {NONE} -- Implementation
 					else
 						props := rm_schema.class_definition (co.rm_type_name).flat_properties
 					end
-					from props.start until props.off loop
-						visitor.do_rm_property (props.item_for_iteration, co, depth)
-						props.forth
+					across props as props_csr loop
+						visitor.do_rm_property (props_csr.item_, co, depth)
 					end
 				end
 			end
