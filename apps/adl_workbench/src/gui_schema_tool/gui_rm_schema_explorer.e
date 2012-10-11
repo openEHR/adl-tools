@@ -306,6 +306,10 @@ feature {NONE} -- Implementation
 				an_mi.set_pixmap (get_icon_pixmap ("tool/edit"))
 		    	menu.extend (an_mi)
 
+				create an_mi.make_with_text_and_action ("Export as XML", agent do_export_as_xml (bmm_sch.schema_id))
+				an_mi.set_pixmap (get_icon_pixmap ("tool/xml"))
+				menu.extend (an_mi)
+
 				menu.show
 		    end
 		end
@@ -368,6 +372,28 @@ feature {NONE} -- Implementation
 			-- launch external editor with schema, or info box if none defined
 		do
 			execution_environment.launch (text_editor_command + " %"" + source.all_schemas.item (a_schema_id).meta_data.item (metadata_schema_path) + "%"")
+		end
+
+	do_export_as_xml (a_schema_id: STRING)
+			-- export schema as XML
+		local
+			schema: SCHEMA_DESCRIPTOR
+			serialise_engine: DADL_ENGINE
+			path: STRING
+			fd: PLAIN_TEXT_FILE
+		do
+			if source.all_schemas.has (a_schema_id) then
+				schema := source.all_schemas.item (a_schema_id)
+				schema.p_schema.synchronise_to_tree		-- FIXME: This line crashes with a stack overflow.
+
+				create serialise_engine.make
+				serialise_engine.set_tree (schema.p_schema.dt_representation)
+				serialise_engine.serialise (syntax_type_xml, False, False)
+
+				create fd.make_create_read_write (schema.meta_data.item (metadata_schema_path) + ".xml")
+				fd.put_string (serialise_engine.serialised)
+				fd.close
+			end
 		end
 
 	selected_class_def: BMM_CLASS_DEFINITION
