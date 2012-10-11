@@ -59,7 +59,7 @@ feature -- Initialisation
 
 	initialise_with_load_list (an_rm_dir: attached STRING; a_schemas_load_list: attached LIST [STRING])
 			-- initialise with a specific schema load list, usually a sub-set of schemas that will be
-			-- found in the directory `a_rm_dir'
+			-- found in the directory `an_rm_dir'
 		require
 			Rm_dir_valid: directory_exists (an_rm_dir)
 		do
@@ -69,6 +69,12 @@ feature -- Initialisation
 			reload_schemas
 		ensure
 			Schemas_dir_set: schema_directory = an_rm_dir
+		end
+
+	initialise_all (an_rm_dir: attached STRING)
+			-- initialise with all schemas found in the directory `a_rm_dir'
+		do
+			initialise_with_load_list (an_rm_dir, create {ARRAYED_LIST [STRING]}.make(0))
 		end
 
 feature -- Access

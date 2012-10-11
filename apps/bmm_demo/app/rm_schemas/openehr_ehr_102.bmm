@@ -15,12 +15,20 @@
 -- 
 
 ------------------------------------------------------
--- schema identification
--- (schema_id computed as <model_publisher>_<schema_name>_<model_release>)
+-- BMM version on which these schemas are based.
+-- Current BMM version can be found as value of 'Bmm_internal_version' in 
+--     http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/adl1.5/libraries/common_libs/src/basic_meta_model/bmm_definitions.e
+--
 ------------------------------------------------------
-model_publisher = <"openehr">
+bmm_version = <"2.0">
+
+------------------------------------------------------
+-- schema identification
+-- (schema_id computed as <rm_publisher>_<schema_name>_<rm_release>)
+------------------------------------------------------
+rm_publisher = <"openehr">
 schema_name = <"ehr">
-model_release = <"1.0.2">
+rm_release = <"1.0.2">
 
 ------------------------------------------------------
 -- schema documentation
@@ -38,17 +46,47 @@ includes = <
 	>
 >
 
+
 ------------------------------------------------------
--- packages
+-- archetyping
+------------------------------------------------------
+archetype_rm_closure_packages = <"org.openehr.rm.ehr", "org.openehr.rm.common.directory">
+
+
+------------------------------------------------------
+-- packages - software structure
 ------------------------------------------------------
 
 packages = <
-	["rm.ehr"] = <
-		name = <"rm.ehr">
-		classes = <"COMPOSITION", ...> 
+	["org.openehr.rm.ehr"] = <
+		name = <"org.openehr.rm.ehr">
+		classes = <"EHR", "EHR_ACCESS", "EHR_STATUS", "ACCESS_CONTROL_SETTINGS"> 
+	>
+	["org.openehr.rm.composition"] = <
+		name = <"org.openehr.rm.composition">
+		classes = <"COMPOSITION", "EVENT_CONTEXT"> 
+		packages = <
+			["content"] = <
+				name = <"content">
+				classes = <"CONTENT_ITEM", ...>
+				packages = <
+					["navigation"] = <
+						name = <"navigation">
+						classes = <"SECTION", ...> 
+					>
+					["entry"] = <
+						name = <"entry">
+						classes = <"ENTRY", "CARE_ENTRY", "ADMIN_ENTRY", "OBSERVATION", "EVALUATION", "INSTRUCTION", "ACTION", "ACTIVITY", "ISM_TRANSITION", "INSTRUCTION_DETAILS"> 
+					>
+					["integration"] = <
+						name = <"integration">
+						classes = <"GENERIC_ENTRY"> 
+					>
+				>
+			>
+		>
 	>
 >
-
 
 ------------------------------------------------------
 -- classes
@@ -56,35 +94,149 @@ packages = <
 
 class_definitions = <
 
+	--
+	--------------------- rm.ehr ------------------
+	--
+	["EHR"] = <
+		name = <"EHR">
+		properties = <
+			["system_id"] = (P_BMM_SINGLE_PROPERTY) <
+				name = <"system_id">
+				type = <"String">
+				is_mandatory = <True>
+			>
+			["ehr_id"] = (P_BMM_SINGLE_PROPERTY) <
+				name = <"ehr_id">
+				type = <"HIER_OBJECT_ID">
+				is_mandatory = <True>
+			>
+			["time_created"] = (P_BMM_SINGLE_PROPERTY) <
+				name = <"time_created">
+				type = <"DV_DATE_TIME">
+				is_mandatory = <True>
+			>
+			["ehr_access"] = (P_BMM_SINGLE_PROPERTY) <
+				name = <"ehr_access">
+				type = <"OBJECT_REF">
+				is_mandatory = <True>
+			>
+			["ehr_status"] = (P_BMM_SINGLE_PROPERTY) <
+				name = <"ehr_status">
+				type = <"OBJECT_REF">
+				is_mandatory = <True>
+			>
+			["directory"] = (P_BMM_SINGLE_PROPERTY) <
+				name = <"directory">
+				type = <"OBJECT_REF">
+			>
+			["compositions"] = (P_BMM_CONTAINER_PROPERTY) <
+				name = <"compositions">
+				type_def = <
+					container_type = <"List">
+					type = <"OBJECT_REF">
+				>
+				cardinality = <|>=0|>
+				is_mandatory = <True>
+			>
+			["contributions"] = (P_BMM_CONTAINER_PROPERTY) <
+				name = <"contributions">
+				type_def = <
+					container_type = <"List">
+					type = <"OBJECT_REF">
+				>
+				cardinality = <|>=0|>
+				is_mandatory = <True>
+			>
+			--
+			-- add this function to create a reachability link from EHR to COMPOSITION, which allows
+			-- correct inference that openEHR-EHR-XXX archetypes can be archetypes of COMPOSITION as 
+			-- well as EHR objects
+			--
+			["most_recent_composition"] = (P_BMM_SINGLE_PROPERTY) <
+				name = <"most_recent_composition">
+				type = <"COMPOSITION">
+				is_computed = <True>
+			>
+		>
+	>
+
+	["EHR_ACCESS"] = <
+		name = <"EHR_ACCESS">
+		ancestors = <"LOCATABLE", ...>
+		properties = <
+			["settings"] = (P_BMM_SINGLE_PROPERTY) <
+				name = <"settings">
+				type = <"ACCESS_CONTROL_SETTINGS">
+				is_mandatory = <True>
+			>
+		>
+	>
+
+	["ACCESS_CONTROL_SETTINGS"] = <
+		name = <"ACCESS_CONTROL_SETTINGS">
+		ancestors = <"Any", ...>
+		is_abstract = <True>
+	>
+
+	["EHR_STATUS"] = <
+		name = <"EHR_STATUS">
+		ancestors = <"LOCATABLE", ...>
+		properties = <
+			["subject"] = (P_BMM_SINGLE_PROPERTY) <
+				name = <"subject">
+				type = <"PARTY_SELF">
+				is_mandatory = <True>
+			>
+			["is_queryable"] = (P_BMM_SINGLE_PROPERTY) <
+				name = <"is_queryable">
+				type = <"Boolean">
+				is_mandatory = <True>
+			>
+			["is_modifiable"] = (P_BMM_SINGLE_PROPERTY) <
+				name = <"is_modifiable">
+				type = <"Boolean">
+				is_mandatory = <True>
+			>
+			["other_details"] = (P_BMM_SINGLE_PROPERTY) <
+				name = <"other_details">
+				type = <"ITEM_STRUCTURE">
+			>
+		>
+	>
+
+	--
+	--------------------- rm.composition ------------------
+	--
+
 	["COMPOSITION"] = <
 		name = <"COMPOSITION">
 		ancestors = <"LOCATABLE", ...>
 		properties = <
-			["language"] = (BMM_SINGLE_PROPERTY) <
+			["language"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"language">
 				type = <"CODE_PHRASE">
 				is_mandatory = <True>
 			>
-			["territory"] = (BMM_SINGLE_PROPERTY) <
+			["territory"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"territory">
 				type = <"CODE_PHRASE">
 				is_mandatory = <True>
 			>
-			["category"] = (BMM_SINGLE_PROPERTY) <
+			["category"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"category">
 				type = <"DV_CODED_TEXT">
 				is_mandatory = <True>
 			>
-			["composer"] = (BMM_SINGLE_PROPERTY) <
+			["composer"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"composer">
 				type = <"PARTY_PROXY">
 				is_mandatory = <True>
 			>
-			["context"] = (BMM_SINGLE_PROPERTY) <
+			["context"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"context">
 				type = <"EVENT_CONTEXT">
 			>
-			["content"] = (BMM_CONTAINER_PROPERTY) <
+			["content"] = (P_BMM_CONTAINER_PROPERTY) <
 				name = <"content">
 				type_def = <
 					container_type = <"List">
@@ -99,20 +251,20 @@ class_definitions = <
 		name = <"EVENT_CONTEXT">
 		ancestors = <"PATHABLE", ...>
 		properties = <
-			["health_care_facility"] = (BMM_SINGLE_PROPERTY) <
+			["health_care_facility"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"health_care_facility">
 				type = <"PARTY_IDENTIFIED">
 			>
-			["start_time"] = (BMM_SINGLE_PROPERTY) <
+			["start_time"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"start_time">
 				type = <"DV_DATE_TIME">
 				is_mandatory = <True>
 			>
-			["end_time"] = (BMM_SINGLE_PROPERTY) <
+			["end_time"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"end_time">
 				type = <"DV_DATE_TIME">
 			>
-			["participations"] = (BMM_CONTAINER_PROPERTY) <
+			["participations"] = (P_BMM_CONTAINER_PROPERTY) <
 				name = <"participations">
 				type_def = <
 					container_type = <"List">
@@ -120,16 +272,16 @@ class_definitions = <
 				>
 				cardinality = <|>=0|>
 			>
-			["location"] = (BMM_SINGLE_PROPERTY) <
+			["location"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"location">
 				type = <"String">
 			>
-			["setting"] = (BMM_SINGLE_PROPERTY) <
+			["setting"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"setting">
 				type = <"DV_CODED_TEXT">
 				is_mandatory = <True>
 			>
-			["other_context"] = (BMM_SINGLE_PROPERTY) <
+			["other_context"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"other_context">
 				type = <"ITEM_STRUCTURE">
 				is_mandatory = <True>
@@ -138,7 +290,7 @@ class_definitions = <
 	>
 
 	--
-	--------------------- rm.data_types.composition.content ------------------
+	--------------------- rm.composition.content ------------------
 	--
 
 	["CONTENT_ITEM"] = <
@@ -148,14 +300,14 @@ class_definitions = <
 	>
 
 	--
-	--------------- rm.data_types.composition.content.navigation -------------
+	--------------- rm.composition.content.navigation -------------
 	--
 
 	["SECTION"] = <
 		name = <"SECTION">
 		ancestors = <"CONTENT_ITEM", ...>
 		properties = <
-			["items"] = (BMM_CONTAINER_PROPERTY) <
+			["items"] = (P_BMM_CONTAINER_PROPERTY) <
 				name = <"items">
 				type_def = <
 					container_type = <"List">
@@ -167,7 +319,7 @@ class_definitions = <
 	>
 
 	--
-	--------------- rm.data_types.composition.content.navigation -------------
+	--------------- rm.composition.content.entry -------------
 	--
 
 	["ENTRY"] = <
@@ -175,26 +327,28 @@ class_definitions = <
 		is_abstract = <True>
 		ancestors = <"CONTENT_ITEM", ...>
 		properties = <
-			["language"] = (BMM_SINGLE_PROPERTY) <
+			["language"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"language">
 				type = <"CODE_PHRASE">
 				is_mandatory = <True>
+				is_im_infrastructure = <True>
 			>
-			["encoding"] = (BMM_SINGLE_PROPERTY) <
+			["encoding"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"encoding">
 				type = <"CODE_PHRASE">
 				is_mandatory = <True>
+				is_im_infrastructure = <True>
 			>
-			["subject"] = (BMM_SINGLE_PROPERTY) <
+			["subject"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"subject">
 				type = <"PARTY_PROXY">
 				is_mandatory = <True>
 			>
-			["provider"] = (BMM_SINGLE_PROPERTY) <
+			["provider"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"provider">
 				type = <"PARTY_PROXY">
 			>
-			["other_participations"] = (BMM_CONTAINER_PROPERTY) <
+			["other_participations"] = (P_BMM_CONTAINER_PROPERTY) <
 				name = <"other_participations">
 				type_def = <
 					container_type = <"List">
@@ -202,9 +356,10 @@ class_definitions = <
 				>
 				cardinality = <|>=0|>
 			>
-			["workflow_id"] = (BMM_SINGLE_PROPERTY) <
+			["workflow_id"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"workflow_id">
 				type = <"OBJECT_REF">
+				is_im_runtime = <True>
 			>
 		>
 	>
@@ -213,7 +368,7 @@ class_definitions = <
 		name = <"ADMIN_ENTRY">
 		ancestors = <"ENTRY", ...>
 		properties = <
-			["data"] = (BMM_SINGLE_PROPERTY) <
+			["data"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"data">
 				type = <"ITEM_STRUCTURE">
 				is_mandatory = <True>
@@ -226,13 +381,14 @@ class_definitions = <
 		is_abstract = <True>
 		ancestors = <"ENTRY", ...>
 		properties = <
-			["protocol"] = (BMM_SINGLE_PROPERTY) <
+			["protocol"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"protocol">
 				type = <"ITEM_STRUCTURE">
 			>
-			["guideline_id"] = (BMM_SINGLE_PROPERTY) <
+			["guideline_id"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"guideline_id">
 				type = <"OBJECT_REF">
+				is_im_runtime = <True>
 			>
 		>
 	>
@@ -241,7 +397,7 @@ class_definitions = <
 		name = <"OBSERVATION">
 		ancestors = <"CARE_ENTRY", ...>
 		properties = <
-			["data"] = (BMM_GENERIC_PROPERTY) <
+			["data"] = (P_BMM_GENERIC_PROPERTY) <
 				name = <"data">
 				is_mandatory = <True>
 				type_def = <
@@ -249,7 +405,7 @@ class_definitions = <
 					generic_parameters = <"ITEM_STRUCTURE">
 				>
 			>
-			["state"] = (BMM_GENERIC_PROPERTY) <
+			["state"] = (P_BMM_GENERIC_PROPERTY) <
 				name = <"state">
 				type_def = <
 					root_type = <"HISTORY">
@@ -263,7 +419,7 @@ class_definitions = <
 		name = <"EVALUATION">
 		ancestors = <"CARE_ENTRY", ...>
 		properties = <
-			["data"] = (BMM_SINGLE_PROPERTY) <
+			["data"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"data">
 				type = <"ITEM_STRUCTURE">
 				is_mandatory = <True>
@@ -275,20 +431,21 @@ class_definitions = <
 		name = <"INSTRUCTION">
 		ancestors = <"CARE_ENTRY", ...>
 		properties = <
-			["narrative"] = (BMM_SINGLE_PROPERTY) <
+			["narrative"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"narrative">
 				type = <"DV_TEXT">
 				is_mandatory = <True>
 			>
-			["expiry_time"] = (BMM_SINGLE_PROPERTY) <
+			["expiry_time"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"expiry_time">
 				type = <"DV_DATE_TIME">
 			>
-			["wf_definition"] = (BMM_SINGLE_PROPERTY) <
+			["wf_definition"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"wf_definition">
 				type = <"DV_PARSABLE">
+				is_im_runtime = <True>
 			>
-			["activities"] = (BMM_CONTAINER_PROPERTY) <
+			["activities"] = (P_BMM_CONTAINER_PROPERTY) <
 				name = <"activities">
 				type_def = <
 					container_type = <"List">
@@ -303,17 +460,17 @@ class_definitions = <
 		name = <"ACTIVITY">
 		ancestors = <"LOCATABLE", ...>
 		properties = <
-			["description"] = (BMM_SINGLE_PROPERTY) <
+			["description"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"description">
 				type = <"ITEM_STRUCTURE">
 				is_mandatory = <True>
 			>
-			["timing"] = (BMM_SINGLE_PROPERTY) <
+			["timing"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"timing">
 				type = <"DV_PARSABLE">
 				is_mandatory = <True>
 			>
-			["action_archetype_id"] = (BMM_SINGLE_PROPERTY) <
+			["action_archetype_id"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"action_archetype_id">
 				type = <"String">
 				is_mandatory = <True>
@@ -325,22 +482,23 @@ class_definitions = <
 		name = <"ACTION">
 		ancestors = <"CARE_ENTRY", ...>
 		properties = <
-			["time"] = (BMM_SINGLE_PROPERTY) <
+			["time"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"time">
 				type = <"DV_DATE_TIME">
 				is_mandatory = <True>
+				is_im_runtime = <True>
 			>
-			["description"] = (BMM_SINGLE_PROPERTY) <
+			["description"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"description">
 				type = <"ITEM_STRUCTURE">
 				is_mandatory = <True>
 			>
-			["ism_transition"] = (BMM_SINGLE_PROPERTY) <
+			["ism_transition"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"ism_transition">
 				type = <"ISM_TRANSITION">
 				is_mandatory = <True>
 			>
-			["instruction_details"] = (BMM_SINGLE_PROPERTY) <
+			["instruction_details"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"instruction_details">
 				type = <"INSTRUCTION_DETAILS">
 			>
@@ -351,19 +509,22 @@ class_definitions = <
 		name = <"INSTRUCTION_DETAILS">
 		ancestors = <"PATHABLE", ...>
 		properties = <
-			["instruction_id"] = (BMM_SINGLE_PROPERTY) <
+			["instruction_id"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"instruction_id">
 				type = <"LOCATABLE_REF">
 				is_mandatory = <True>
+				is_im_runtime = <True>
 			>
-			["wf_details"] = (BMM_SINGLE_PROPERTY) <
+			["wf_details"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"wf_details">
 				type = <"ITEM_STRUCTURE">
+				is_im_runtime = <True>
 			>
-			["activity_id"] = (BMM_SINGLE_PROPERTY) <
+			["activity_id"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"activity_id">
 				type = <"String">
 				is_mandatory = <True>
+				is_im_runtime = <True>
 			>
 		>
 	>
@@ -372,21 +533,33 @@ class_definitions = <
 		name = <"ISM_TRANSITION">
 		ancestors = <"PATHABLE", ...>
 		properties = <
-			["current_state"] = (BMM_SINGLE_PROPERTY) <
+			["current_state"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"current_state">
 				type = <"DV_CODED_TEXT">
 				is_mandatory = <True>
 			>
-			["transition"] = (BMM_SINGLE_PROPERTY) <
+			["transition"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"transition">
 				type = <"DV_CODED_TEXT">
 			>
-			["careflow_step"] = (BMM_SINGLE_PROPERTY) <
+			["careflow_step"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"careflow_step">
 				type = <"DV_CODED_TEXT">
 			>
 		>
 	>
+
+	["GENERIC_ENTRY"] = <
+		name = <"GENERIC_ENTRY">
+		ancestors = <"CONTENT_ITEM", ...>
+		properties = <
+			["data"] = (P_BMM_SINGLE_PROPERTY) <
+				name = <"data">
+				type = <"ITEM_TREE">
+			>
+		>
+	>
+	
 >
 
 --|

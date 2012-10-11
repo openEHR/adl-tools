@@ -15,12 +15,20 @@
 -- 
 
 ------------------------------------------------------
--- schema identification
--- (schema_id computed as <model_publisher>_<schema_name>_<model_release>)
+-- BMM version on which these schemas are based.
+-- Current BMM version can be found as value of 'Bmm_internal_version' in 
+--     http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/adl1.5/libraries/common_libs/src/basic_meta_model/bmm_definitions.e
+--
 ------------------------------------------------------
-model_publisher = <"openehr">
+bmm_version = <"2.0">
+
+------------------------------------------------------
+-- schema identification
+-- (schema_id computed as <rm_publisher>_<schema_name>_<rm_release>)
+------------------------------------------------------
+rm_publisher = <"openehr">
 schema_name = <"rm">
-model_release = <"1.0.2">
+rm_release = <"1.0.2">
 
 ------------------------------------------------------
 -- schema documentation

@@ -49,8 +49,6 @@ feature -- Initialization
 
 	make
 			-- Run application.
-		local
-			supps: ARRAYED_SET [STRING]
 		do
 			initialise
 			io.put_string (billboard.content)
@@ -58,7 +56,7 @@ feature -- Initialization
 				output_schema_info
 
 				-- now dmonstrate some usage of the schemas
-				rm_schema := rm_schemas_access.schema_for_package ("openehr-ehr")
+				rm_schema := rm_schemas_access.schema_for_rm_closure ("openehr-ehr")
 
 				io.put_string ("---------------- rm_schema.has_property_path() --------------%N")
 				io.put_string ("CARE_ENTRY has /protocol: " + rm_schema.has_property_path ("CARE_ENTRY", "/protocol").out + "%N")
@@ -78,21 +76,10 @@ feature -- Initialization
 				io.put_string ("LOCATABLE is not subclass of COMPOSITION" + (not rm_schema.is_descendant_of ("LOCATABLE", "COMPOSITION")).out + "%N")
 				io.new_line
 
-				io.put_string ("---------------- rm_schema.rm_schema.immediate_suppliers --------------%N")
-				supps := rm_schema.class_definition ("COMPOSITION").immediate_suppliers
-				io.put_string ("Immediate supplier classes of COMPOSITION: %N")
-				from supps.start until supps.off loop
-					io.put_string (supps.item + "%N")
-					supps.forth
-				end
-				io.new_line
-
-				io.put_string ("---------------- rm_schema.rm_schema.all_suppliers --------------%N")
-				supps := rm_schema.class_definition ("COMPOSITION").all_suppliers
+				io.put_string ("---------------- rm_schema.rm_schema.suppliers --------------%N")
 				io.put_string ("All supplier classes of COMPOSITION: %N")
-				from supps.start until supps.off loop
-					io.put_string (supps.item + "%N")
-					supps.forth
+				across rm_schema.class_definition ("COMPOSITION").suppliers as supps_csr loop
+					io.put_string (supps_csr.item + "%N")
 				end
 				io.new_line
 			end
@@ -101,16 +88,15 @@ feature -- Initialization
 	output_schema_info
 		local
 			schema_id: STRING
-			i: INTEGER
 			schema_meta_data: HASH_TABLE [STRING, STRING]
 		do
 			-- create row containinng widgets for: check column, name column, status column, edit button column
-			from rm_schemas_access.all_schemas.start until rm_schemas_access.all_schemas.off loop
-				schema_id := rm_schemas_access.all_schemas.key_for_iteration
-				schema_meta_data := rm_schemas_access.all_schemas.item (schema_id).meta_data
+			across rm_schemas_access.all_schemas as rm_schemas_csr loop
+				schema_id := rm_schemas_csr.key
+				schema_meta_data := rm_schemas_csr.item.meta_data
 
 				-- column 1 - check box to indicate loaded; only on top-level schemas
-				if rm_schemas_access.all_schemas.item_for_iteration.is_top_level then
+				if rm_schemas_csr.item.is_top_level then
 					io.put_string ("(top-level)")
 				else
 					io.put_string ("           ")
@@ -131,14 +117,13 @@ feature -- Initialization
 
 				-- column 4 - validated
 
-				if rm_schemas_access.all_schemas.item_for_iteration.passed then
+				if rm_schemas_csr.item.passed then
 					io.put_string ("validated")
 				else
 					io.put_string ("failed")
 				end
 				io.put_character ('%N')
 
-				rm_schemas_access.all_schemas.forth
 			end
 		end
 
@@ -148,7 +133,6 @@ feature -- Initialization
 		once
 			message_db.populate (Error_db_directory, locale_language_short)
 			if message_db.database_loaded then
-
 				-- set error reporting level in billboard and all error accumulator objects
 				billboard.set_error_reporting_level (Error_type_warning)
 				create dummy_error_accumulator.make
@@ -156,8 +140,7 @@ feature -- Initialization
 
 				-- set up the RM schemas
 				if directory_exists (rm_schema_directory) then
-					rm_schemas_access.initialise (rm_schema_directory)
-					rm_schemas_access.load_schemas
+					rm_schemas_access.initialise_all (rm_schema_directory)
 					if not rm_schemas_access.found_valid_schemas then
 						post_warning (Current, "initialise", "model_access_e6", <<rm_schema_directory, schema_file_extension>>)
 					else
@@ -180,14 +163,14 @@ feature -- Access
 			-- .../rm_schemas/openehr_rm_102.dadl
 		once
 			Result := application_startup_directory.twin
-			Result.append(os_directory_separator.out + "rm_schemas")
+			Result.append (os_directory_separator.out + "rm_schemas")
 		end
 
 	Error_db_directory: STRING
 			-- directory of error database files in .dadl format e.g.
 			-- .../error_db/dadl_errors.txt etc
 		once
-			Result := file_system.pathname(application_startup_directory, "error_db")
+			Result := file_system.pathname (application_startup_directory, "error_db")
 		end
 
 feature -- Status Report

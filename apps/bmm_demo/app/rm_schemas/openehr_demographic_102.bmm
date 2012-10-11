@@ -15,12 +15,20 @@
 -- 
 
 ------------------------------------------------------
--- schema identification
--- (schema_id computed as <model_publisher>_<schema_name>_<model_release>)
+-- BMM version on which these schemas are based.
+-- Current BMM version can be found as value of 'Bmm_internal_version' in 
+--     http://www.openehr.org/svn/ref_impl_eiffel/BRANCHES/adl1.5/libraries/common_libs/src/basic_meta_model/bmm_definitions.e
+--
 ------------------------------------------------------
-model_publisher = <"openehr">
+bmm_version = <"2.0">
+
+------------------------------------------------------
+-- schema identification
+-- (schema_id computed as <rm_publisher>_<schema_name>_<rm_release>)
+------------------------------------------------------
+rm_publisher = <"openehr">
 schema_name = <"demographic">
-model_release = <"1.0.2">
+rm_release = <"1.0.2">
 
 ------------------------------------------------------
 -- schema documentation
@@ -39,15 +47,20 @@ includes = <
 >
 
 ------------------------------------------------------
+-- archetyping
+------------------------------------------------------
+archetype_rm_closure_packages = <"org.openehr.rm.demographic", ...>
+
+
+------------------------------------------------------
 -- packages
 ------------------------------------------------------
 packages = <
-	["rm.demographic"] = <
-		name = <"rm.demographic">
-		classes = <"PARTY", "PARTY_RELATIONSHIP">
+	["org.openehr.rm.demographic"] = <
+		name = <"org.openehr.rm.demographic">
+		classes = <"PARTY", "ROLE", "ACTOR", "PERSON", "ORGANISATION", "AGENT", "GROUP", "PARTY_RELATIONSHIP", "CAPABILITY", "CONTACT", "ADDRESS", "PARTY_IDENTITY">
 	>
 >
-
 
 ------------------------------------------------------
 -- classes
@@ -60,11 +73,11 @@ class_definitions = <
 		is_abstract = <True>
 		ancestors = <"LOCATABLE", ...>
 		properties = <
-			["details"] = (BMM_SINGLE_PROPERTY) <
+			["details"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"details">
 				type = <"ITEM_STRUCTURE">
 			>
-			["identities"] = (BMM_CONTAINER_PROPERTY) <
+			["identities"] = (P_BMM_CONTAINER_PROPERTY) <
 				name = <"identities">
 				type_def = <
 					container_type = <"Set">
@@ -72,7 +85,7 @@ class_definitions = <
 				>
 				cardinality = <|>=1|>
 			>
-			["contacts"] = (BMM_CONTAINER_PROPERTY) <
+			["contacts"] = (P_BMM_CONTAINER_PROPERTY) <
 				name = <"contacts">
 				type_def = <
 					container_type = <"Set">
@@ -80,7 +93,7 @@ class_definitions = <
 				>
 				cardinality = <|>=0|>
 			>
-			["relationships"] = (BMM_CONTAINER_PROPERTY) <
+			["relationships"] = (P_BMM_CONTAINER_PROPERTY) <
 				name = <"relationships">
 				type_def = <
 					container_type = <"Set">
@@ -88,15 +101,16 @@ class_definitions = <
 				>
 				cardinality = <|>=0|>
 			>
-			["reverse_relationships"] = (BMM_CONTAINER_PROPERTY) <
+			["reverse_relationships"] = (P_BMM_CONTAINER_PROPERTY) <
 				name = <"reverse_relationships">
 				type_def = <
 					container_type = <"Set">
 					type = <"LOCATABLE_REF">
 				>
 				cardinality = <|>=0|>
+				is_im_runtime = <True>
 			>
-			["type"] = (BMM_SINGLE_PROPERTY) <
+			["type"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"type">
 				type = <"DV_TEXT">
 				is_computed = <True>
@@ -108,12 +122,12 @@ class_definitions = <
 		name = <"PARTY_IDENTITY">
 		ancestors = <"LOCATABLE", ...>
 		properties = <
-			["details"] = (BMM_SINGLE_PROPERTY) <
+			["details"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"details">
 				type = <"ITEM_STRUCTURE">
 				is_mandatory = <True>
 			>
-			["purpose"] = (BMM_SINGLE_PROPERTY) <
+			["purpose"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"purpose">
 				type = <"DV_TEXT">
 				is_computed = <True>
@@ -125,14 +139,15 @@ class_definitions = <
 		name = <"CONTACT">
 		ancestors = <"LOCATABLE", ...>
 		properties = <
-			["time_validity"] = (BMM_GENERIC_PROPERTY) <
+			["time_validity"] = (P_BMM_GENERIC_PROPERTY) <
 				name = <"time_validity">
 				type_def = <
 					root_type = <"DV_INTERVAL">
 					generic_parameters = <"DV_DATE">
 				>
+				is_im_runtime = <True>
 			>
-			["addresses"] = (BMM_CONTAINER_PROPERTY) <
+			["addresses"] = (P_BMM_CONTAINER_PROPERTY) <
 				name = <"addresses">
 				type_def = <
 					container_type = <"List">
@@ -140,7 +155,7 @@ class_definitions = <
 				>
 				cardinality = <|>=1|>
 			>
-			["purpose"] = (BMM_SINGLE_PROPERTY) <
+			["purpose"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"purpose">
 				type = <"DV_TEXT">
 				is_computed = <True>
@@ -152,12 +167,12 @@ class_definitions = <
 		name = <"ADDRESS">
 		ancestors = <"LOCATABLE", ...>
 		properties = <
-			["details"] = (BMM_SINGLE_PROPERTY) <
+			["details"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"details">
 				type = <"ITEM_STRUCTURE">
 				is_mandatory = <True>
 			>
-			["type"] = (BMM_SINGLE_PROPERTY) <
+			["type"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"type">
 				type = <"DV_TEXT">
 				is_computed = <True>
@@ -170,7 +185,7 @@ class_definitions = <
 		is_abstract = <True>
 		ancestors = <"PARTY", ...>
 		properties = <
-			["roles"] = (BMM_CONTAINER_PROPERTY) <
+			["roles"] = (P_BMM_CONTAINER_PROPERTY) <
 				name = <"roles">
 				type_def = <
 					container_type = <"Set">
@@ -178,7 +193,7 @@ class_definitions = <
 				>
 				cardinality = <|>=1|>
 			>
-			["languages"] = (BMM_CONTAINER_PROPERTY) <
+			["languages"] = (P_BMM_CONTAINER_PROPERTY) <
 				name = <"languages">
 				type_def = <
 					container_type = <"List">
@@ -213,12 +228,12 @@ class_definitions = <
 		name = <"ROLE">
 		ancestors = <"PARTY", ...>
 		properties = <
-			["performer"] = (BMM_SINGLE_PROPERTY) <
+			["performer"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"performer">
 				type = <"PARTY_REF">
 				is_mandatory = <True>
 			>
-			["capabilities"] = (BMM_CONTAINER_PROPERTY) <
+			["capabilities"] = (P_BMM_CONTAINER_PROPERTY) <
 				name = <"capabilities">
 				type_def = <
 					container_type = <"List">
@@ -226,12 +241,13 @@ class_definitions = <
 				>
 				cardinality = <|>=0|>
 			>
-			["time_validity"] = (BMM_GENERIC_PROPERTY) <
+			["time_validity"] = (P_BMM_GENERIC_PROPERTY) <
 				name = <"time_validity">
 				type_def = <
 					root_type = <"DV_INTERVAL">
 					generic_parameters = <"DV_DATE">
 				>
+				is_im_runtime = <True>
 			>
 		>
 	>
@@ -240,17 +256,18 @@ class_definitions = <
 		name = <"CAPABILITY">
 		ancestors = <"LOCATABLE", ...>
 		properties = <
-			["credentials"] = (BMM_SINGLE_PROPERTY) <
+			["credentials"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"credentials">
 				type = <"ITEM_STRUCTURE">
 				is_mandatory = <True>
 			>
-			["time_validity"] = (BMM_GENERIC_PROPERTY) <
+			["time_validity"] = (P_BMM_GENERIC_PROPERTY) <
 				name = <"time_validity">
 				type_def = <
 					root_type = <"DV_INTERVAL">
 					generic_parameters = <"DV_DATE">
 				>
+				is_im_runtime = <True>
 			>
 		>
 	>
@@ -259,24 +276,25 @@ class_definitions = <
 		name = <"PARTY_RELATIONSHIP">
 		ancestors = <"LOCATABLE", ...>
 		properties = <
-			["source"] = (BMM_SINGLE_PROPERTY) <
+			["source"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"source">
 				type = <"PARTY_REF">
 			>
-			["target"] = (BMM_SINGLE_PROPERTY) <
+			["target"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"target">
 				type = <"PARTY_REF">
 			>
-			["details"] = (BMM_SINGLE_PROPERTY) <
+			["details"] = (P_BMM_SINGLE_PROPERTY) <
 				name = <"details">
 				type = <"ITEM_STRUCTURE">
 			>
-			["time_validity"] = (BMM_GENERIC_PROPERTY) <
+			["time_validity"] = (P_BMM_GENERIC_PROPERTY) <
 				name = <"time_validity">
 				type_def = <
 					root_type = <"DV_INTERVAL">
 					generic_parameters = <"DV_DATE">
 				>
+				is_im_runtime = <True>
 			>
 		>
 	>
