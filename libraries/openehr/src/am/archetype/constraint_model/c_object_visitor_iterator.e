@@ -104,7 +104,7 @@ feature {NONE} -- Implementation
 						props := rm_schema.class_definition (co.rm_type_name).flat_properties
 					end
 					across props as props_csr loop
-						visitor.do_rm_property (props_csr.item_, co, depth)
+						visitor.do_rm_property (props_csr.item, co, depth)
 					end
 				end
 			end
