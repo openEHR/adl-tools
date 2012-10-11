@@ -69,6 +69,9 @@
 					<platform excluded_value="windows"/>
 				</condition>
 			</file_rule>
+			<file_rule>
+				<exclude>/testing$</exclude>
+			</file_rule>
 		</cluster>
 		<cluster name="openehr" location="..\..\..\libraries\openehr\src\" recursive="true">
 			<visible class="C_QUANTITY_ITEM"/>
@@ -78,7 +81,32 @@
 		</cluster>
 		<cluster name="reference_model_checker" location="..\..\..\components\reference_model_checker\src\" recursive="true"/>
 		<cluster name="version" location="..\..\..\libraries\version\" recursive="true"/>
-		<override name="vendor_fixes" location="..\..\..\libraries\vendor-fixes\" recursive="true"/>
+		<override name="vendor_fixes" location="..\..\..\libraries\vendor-fixes\" recursive="true">
+			<file_rule>
+				<exclude>/base_net$</exclude>
+			</file_rule>
+			<file_rule>
+				<exclude>/implementation_gtk$</exclude>
+				<condition>
+					<platform value="windows"/>
+				</condition>
+			</file_rule>
+			<file_rule>
+				<exclude>/other$</exclude>
+				<include>/windows$</include>
+				<condition>
+					<platform value="windows"/>
+				</condition>
+			</file_rule>
+			<file_rule>
+				<exclude>/windows$</exclude>
+				<include>/other$</include>
+				<condition>
+					<platform excluded_value="windows"/>
+				</condition>
+			</file_rule>
+		</override>
+
 	</target>
 	<target name="adl_parser_debug" extends="adl_parser">
 		<setting name="line_generation" value="true"/>

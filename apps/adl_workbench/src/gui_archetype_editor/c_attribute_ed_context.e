@@ -36,14 +36,15 @@ feature -- Initialisation
 			create children.make(0)
 		end
 
-	make_rm (an_rm_property: BMM_PROPERTY_DEFINITION; an_archetype: ARCHETYPE; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_rm_schema: BMM_SCHEMA)
+	make_rm (an_rm_prop: BMM_PROPERTY_DEFINITION; an_archetype: ARCHETYPE; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_rm_schema: BMM_SCHEMA)
+			-- make with a C_ATTRIBUTE created based on `an_rm_prop'
 		local
 			ca: C_ATTRIBUTE
 		do
-			if an_rm_property.is_container then
-				create ca.make_multiple (an_rm_property.name, Void, Void)
+			if an_rm_prop.is_container then
+				create ca.make_multiple (an_rm_prop.name, Void, Void)
 			else
-				create ca.make_single (an_rm_property.name, Void)
+				create ca.make_single (an_rm_prop.name, Void)
 			end
 			make (ca, an_archetype, a_flat_ontology, an_rm_schema)
 		end
@@ -169,7 +170,8 @@ feature {NONE} -- Implementation
 		end
 
 	rm_attribute_colour: EV_COLOR
-			-- foreground colours for RM type representing attribute classification
+			-- foreground colours for RM type to visualise BMM attribute classification, i.e.
+			-- 'runtime', 'infrastructure' etc
 		do
 			if rm_property.is_im_infrastructure then
 				Result := rm_infrastructure_attribute_colour

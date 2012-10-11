@@ -614,8 +614,8 @@ end
 			merge_obj: C_OBJECT
 			node_id_in_parent: STRING
 		do
-			from ca_child.children.start until ca_child.children.off loop
-				if attached {ARCHETYPE_SLOT} ca_child.children.item as arch_slot then
+			across ca_child.children as c_obj_csr loop
+				if attached {ARCHETYPE_SLOT} c_obj_csr.item as arch_slot then
 					node_id_in_parent := code_at_level (arch_slot.node_id, arch_parent_flat.specialisation_depth)
 					if arch_slot.is_prohibited then
 						ca_output.remove_child_by_id (node_id_in_parent)
@@ -634,7 +634,7 @@ end
 						merge_obj.set_specialisation_status_redefined
 					end
 
-				elseif attached {C_ARCHETYPE_ROOT} ca_child.children.item as car then
+				elseif attached {C_ARCHETYPE_ROOT} c_obj_csr.item as car then
 					merge_obj := car.safe_deep_twin
 					if attached {C_ARCHETYPE_ROOT} merge_obj as merge_car then
 						merge_car.set_subtree_specialisation_status ({SPECIALISATION_STATUSES}.ss_added)
@@ -642,12 +642,12 @@ end
 					ca_output.put_child (merge_obj)
 					child_grafted_path_list.extend (car.path)
 
-				elseif not attached {C_COMPLEX_OBJECT} ca_child.children.item then
-					merge_obj := ca_child.children.item.safe_deep_twin
+				elseif not attached {C_COMPLEX_OBJECT} c_obj_csr.item then
+					merge_obj := c_obj_csr.item.safe_deep_twin
 					merge_obj.set_specialisation_status_redefined
 
 					-- if identified, find corresponding node in parent & replace completely
-					if ca_child.children.item.is_addressable then
+					if c_obj_csr.item.is_addressable then
 						ca_output.replace_child_by_id (merge_obj, code_at_level (merge_obj.node_id, arch_parent_flat.specialisation_depth))
 
 					-- not identified - find a node of same type, then replace completely
@@ -665,13 +665,12 @@ end
 							ca_output.put_child (merge_obj)
 						end
 					end
-					child_grafted_path_list.extend (ca_child.children.item.path)
+					child_grafted_path_list.extend (c_obj_csr.item.path)
 				else
 					debug ("flatten")
-						io.put_string ("%T%T%TARCHETYPE_FLATTENER.merge_single_attribute; IGNORING " + ca_child.children.item.path + "%N")
+						io.put_string ("%T%T%TARCHETYPE_FLATTENER.merge_single_attribute; IGNORING " + c_obj_csr.item.path + "%N")
 					end
 				end
-				ca_child.children.forth
 			end
 		end
 
@@ -798,40 +797,32 @@ end
 		local
 			arch_root_cco: C_COMPLEX_OBJECT
 			ca_clone: C_ATTRIBUTE
-			xref_idx: HASH_TABLE[ARRAYED_LIST[C_ARCHETYPE_ROOT], STRING]
-			xref_list: ARRAYED_LIST[C_ARCHETYPE_ROOT]
 		do
 debug ("flatten")
 	io.put_string ("&&&&&& flattening template root nodes &&&&&&%N")
 end
-			xref_idx := arch_output_flat.suppliers_index
-			from xref_idx.start until xref_idx.off loop
+			across arch_output_flat.suppliers_index as xref_idx_csr loop
 				-- get the definition structure of the flat archetype corresponding to the archetype id in the suppliers list
-				arch_root_cco := current_arch_cat.archetype_index.item (xref_idx.key_for_iteration).flat_archetype.definition
+				arch_root_cco := current_arch_cat.archetype_index.item (xref_idx_csr.key).flat_archetype.definition
 
 				-- get list of C_ARCHETYPE_ROOT nodes in this archetype or template corresponding to the supplier archetype id xref_idx.key_for_iteration
-				xref_list := xref_idx.item_for_iteration
-
 				-- into each one of these C_ARCHETYPE_ROOT nodes, clone the flat definition structure from the supplier archetype
-				from xref_list.start until xref_list.off loop
-					if not xref_list.item.has_attributes then -- it is empty and needs to be filled
+				across xref_idx_csr.item as xref_list_csr loop
+					if not xref_list_csr.item.has_attributes then -- it is empty and needs to be filled
 debug ("flatten")
-	io.put_string ("%T node at " + xref_list.item.path +
-	" with " + xref_idx.key_for_iteration + "%N")
+	io.put_string ("%T node at " + xref_list_csr.item.path +
+	" with " + xref_idx_csr.key + "%N")
 end
-						from arch_root_cco.attributes.start until arch_root_cco.attributes.off loop
-							ca_clone := arch_root_cco.attributes.item.safe_deep_twin
-							xref_list.item.put_attribute (ca_clone)
+						across arch_root_cco.attributes as attrs_csr loop
+							ca_clone := attrs_csr.item.safe_deep_twin
+							xref_list_csr.item.put_attribute (ca_clone)
 debug ("flatten")
 	io.put_string ("%T%T cloning attribute " +
 	ca_clone.rm_attribute_path + "%N")
 end
-							arch_root_cco.attributes.forth
 						end
 					end
-					xref_list.forth
 				end
-				xref_idx.forth
 			end
 		end
 
@@ -844,14 +835,13 @@ debug ("flatten")
 	io.put_string ("&&&&&& flattening template ontologies &&&&&&%N")
 end
 			if attached {OPERATIONAL_TEMPLATE} arch_output_flat as opt then
-				from child_desc.suppliers_index.start until child_desc.suppliers_index.off loop
-					ont := child_desc.suppliers_index.item_for_iteration.flat_archetype.ontology
-					opt.add_component_ontology (ont, child_desc.suppliers_index.key_for_iteration)
+				across child_desc.suppliers_index as supp_idx_csr loop
+					ont := supp_idx_csr.item.flat_archetype.ontology
+					opt.add_component_ontology (ont, supp_idx_csr.key)
 debug ("flatten")
 	io.put_string ("%T adding ontology from " +
-	child_desc.suppliers_index.key_for_iteration + "%N")
+	supp_idx_csr.key + "%N")
 end
-					child_desc.suppliers_index.forth
 				end
 			end
 		end

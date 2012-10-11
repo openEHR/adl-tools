@@ -76,7 +76,9 @@ feature -- Display
 			create ev_grid_rm_row_removals_stack.make (0)
 
 			across props as props_csr loop
-				prepare_rm_property (props.item_for_iteration)
+				if not c_attributes.has (props_csr.item.name) then
+					prepare_rm_property (props_csr.item)
+				end
 			end
 		end
 
@@ -86,6 +88,13 @@ feature -- Modification
 			-- add a new attribute node
 		do
 			c_attributes.put (a_node, a_node.rm_property.name)
+			a_node.set_parent (Current)
+		end
+
+	add_rm_attribute (a_node: C_ATTRIBUTE_ED_CONTEXT)
+			-- add a new attribute node
+		do
+			rm_attributes.put (a_node, a_node.rm_property.name)
 			a_node.set_parent (Current)
 		end
 
@@ -101,39 +110,34 @@ feature {NONE} -- Implementation
 
 	last_property_grid_row: EV_GRID_ROW
 
-	prepare_rm_property (a_bmm_prop: BMM_PROPERTY_DEFINITION)
+	prepare_rm_property (an_rm_prop: BMM_PROPERTY_DEFINITION)
 			-- enter a BMM_PROPERTY_DEFINITION
 		local
 			bmm_class_def: BMM_CLASS_DEFINITION
 			show_prop: BOOLEAN
 			child_ed_node: C_ATTRIBUTE_ED_CONTEXT
 		do
-			-- first of all work out whether this property is in the existing constrained properties,
-			-- i.e. actually in the archetype
-			if not c_attributes.has (a_bmm_prop.name) then
-				-- see if this property should be shown; if not, leave it for now
-				show_prop := show_rm_data_properties
-					and (not a_bmm_prop.is_im_runtime or else show_rm_runtime_properties)
-					and (not a_bmm_prop.is_im_infrastructure or else show_rm_infrastructure_properties)
+			-- see if this property should be shown; if not, leave it for now
+			show_prop := show_rm_data_properties
+				and (not an_rm_prop.is_im_runtime or else show_rm_runtime_properties)
+				and (not an_rm_prop.is_im_infrastructure or else show_rm_infrastructure_properties)
 
-				if show_prop then
-					-- see if the property was created previously; if not create it new
-					if not rm_attributes.has (a_bmm_prop.name) then
-						create child_ed_node.make_rm (a_bmm_prop, archetype, flat_ontology, rm_schema)
-						rm_attributes.put (child_ed_node, a_bmm_prop.name)
-						child_ed_node.set_parent (Current)
-					else
-						child_ed_node := rm_attributes.item (a_bmm_prop.name)
-					end
-
-					-- see if it is already shown, which means it must not be hidden
-					if not child_ed_node.is_shown_in_grid then
-
-					end
+			if show_prop then
+				-- see if the property was created previously; if not create it new
+				if not rm_attributes.has (an_rm_prop.name) then
+					create child_ed_node.make_rm (an_rm_prop, archetype, flat_ontology, rm_schema)
+					add_rm_attribute (child_ed_node)
 				else
-					child_ed_node := rm_attributes.item (a_bmm_prop.name)
-					child_ed_node.hide_in_grid
+					child_ed_node := rm_attributes.item (an_rm_prop.name)
 				end
+
+				-- see if it is already shown, which means it must not be hidden
+				if not child_ed_node.is_shown_in_grid then
+
+				end
+			else
+				child_ed_node := rm_attributes.item (an_rm_prop.name)
+				child_ed_node.hide_in_grid
 			end
 		end
 
