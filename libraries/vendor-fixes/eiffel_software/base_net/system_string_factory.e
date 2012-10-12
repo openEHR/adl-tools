@@ -34,7 +34,7 @@ feature -- Conversion
 					i := i + 1
 				end
 
-				Result := {ENCODING}.utf8.get_string (bytes)
+				Result := {DOTNET_ENCODING}.utf8.get_string (bytes)
 			else
 				nb := a_str.count
 				create l_str.make (nb)
@@ -67,8 +67,8 @@ feature -- Conversion
 		do
 			if attached {STRING_8} a_result as l_str8 then
 				i := a_str.length
-				create bytes.make ({ENCODING}.utf8.get_max_byte_count (i))
-				i := {ENCODING}.utf8.get_bytes (a_str, 0, i, bytes, 0)
+				create bytes.make ({DOTNET_ENCODING}.utf8.get_max_byte_count (i))
+				i := {DOTNET_ENCODING}.utf8.get_bytes (a_str, 0, i, bytes, 0)
 				l_str8.make (i)
 				l_str8.set_count (i)
 				{SYSTEM_ARRAY}.copy (bytes, l_str8.area.native_array, i)

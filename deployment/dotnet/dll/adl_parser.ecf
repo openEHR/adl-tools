@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-6-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-6-0 http://www.eiffel.com/developers/xml/configuration-1-6-0.xsd" name="adl_parser" uuid="F1152FD5-F5A8-4937-8866-6F615D6F326C">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-10-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-10-0 http://www.eiffel.com/developers/xml/configuration-1-10-0.xsd" name="adl_parser" uuid="F1152FD5-F5A8-4937-8866-6F615D6F326C">
 	<target name="adl_parser">
 		<root class="ARCHETYPE_PARSER"/>
 		<version major="1" minor="5" release="0" build="0" company="Ocean Informatics" product="ADL Parser" copyright="Ocean Informatics, 2003-2011"/>
 		<file_rule>
 			<exclude>/\.svn$</exclude>
 		</file_rule>
-		<option trace="false" profile="false" debug="false" warning="true" msil_application_optimize="true" syntax="standard" namespace="AdlParser">
+		<option trace="false" profile="false" debug="false" warning="true" msil_application_optimize="true" is_attached_by_default="false" syntax="standard" namespace="AdlParser">
 			<assertions precondition="true" supplier_precondition="true"/>
 			<warning name="export_class_missing" enabled="false"/>
 			<warning name="old_verbatim_strings" enabled="false"/>
@@ -30,12 +30,13 @@
 		<setting name="msil_generation" value="true"/>
 		<setting name="msil_generation_type" value="dll"/>
 		<setting name="msil_key_file_name" value="openEHR.snk"/>
-		<setting name="multithreaded" value="false"/>
 		<setting name="use_all_cluster_name_as_namespace" value="false"/>
 		<setting name="use_cluster_name_as_namespace" value="false"/>
+		<setting name="concurrency" value="none"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf">
 			<renaming old_name="C_STRING" new_name="BASE_C_STRING"/>
 		</library>
+		<library name="encoding" location="$ISE_LIBRARY\library\encoding\encoding.ecf"/>
 		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
 		<library name="gobo_lexical" location="$ISE_LIBRARY\library\gobo\gobo_lexical.ecf"/>
 		<library name="gobo_parse" location="$ISE_LIBRARY\library\gobo\gobo_parse.ecf"/>
@@ -48,10 +49,10 @@
 		</library>
 		<library name="xml_parser" location="$ISE_LIBRARY\library\text\parser\xml\parser\xml_parser.ecf"/>
 		<library name="xml_tree" location="$ISE_LIBRARY\library\text\parser\xml\tree\xml_tree.ecf"/>
-
 		<assembly name="eiffelsoftware.runtime.dll" location="$ISE_EIFFEL\studio\spec\$ISE_PLATFORM\lib\EiffelSoftware.Runtime.dll"/>
 		<assembly name="mscorlib" location="$ISE_DOTNET_FRAMEWORK\mscorlib.dll">
 			<renaming old_name="C_ATTRIBUTE" new_name="DOTNET_C_ATTRIBUTE"/>
+			<renaming old_name="ENCODING" new_name="DOTNET_ENCODING"/>
 		</assembly>
 		<assembly name="system" location="$ISE_DOTNET_FRAMEWORK\System.dll" prefix="SYSTEM_DLL_"/>
 		<assembly name="system.xml" location="$ISE_DOTNET_FRAMEWORK\System.Xml.dll" prefix="XML_"/>
@@ -106,7 +107,6 @@
 				</condition>
 			</file_rule>
 		</override>
-
 	</target>
 	<target name="adl_parser_debug" extends="adl_parser">
 		<setting name="line_generation" value="true"/>
