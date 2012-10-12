@@ -214,8 +214,8 @@ feature -- Commands
 			-- repopulate and/or refresh visual appearance if diff/flat view has changed or RM icons setting changed
 		local
 			-- **************** OLD WAY ***************
-			a_c_iterator: C_OBJECT_VISITOR_ITERATOR
-			c_node_map_builder: C_DEFINITION_RENDERER
+--			a_c_iterator: C_OBJECT_VISITOR_ITERATOR
+--			c_node_map_builder: C_DEFINITION_RENDERER
 			-- **************** END OLD WAY ***************
 			ui_settings: GUI_DEFINITION_SETTINGS
 		do
@@ -230,15 +230,15 @@ feature -- Commands
 
 			-- old way
 			-- **************** OLD WAY ***************
-			create c_node_map_builder.make (rm_schema, source, differential_view, selected_language, gui_definition_grid, True, show_codes, show_rm_inheritance,
-				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties, definition_grid_row_map)
-			create a_c_iterator.make (source_archetype.definition, c_node_map_builder, differential_view, update_rm_view, rm_schema)
-			do_with_wait_cursor (ev_definition_hbox, agent a_c_iterator.do_all)
+--			create c_node_map_builder.make (rm_schema, source, differential_view, selected_language, gui_definition_grid, True, show_codes, show_rm_inheritance,
+--				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties, definition_grid_row_map)
+--			create a_c_iterator.make (source_archetype.definition, c_node_map_builder, differential_view, update_rm_view, rm_schema)
+--			do_with_wait_cursor (ev_definition_hbox, agent a_c_iterator.do_all)
 			-- **************** END OLD WAY ***************
 
 			-- **************** NEW WAY ***************
 			-- repopulate main definition
---			arch_ed_context.definition_context.display_in_grid (ui_settings)
+			arch_ed_context.definition_context.display_in_grid (ui_settings)
 			-- **************** END NEW WAY ***************
 
 			gui_definition_grid.resize_columns_to_content
@@ -377,8 +377,8 @@ feature {NONE} -- Implementation
 			-- build definition / ontology cross reference tables used for validation and other purposes
 		local
 			-- **************** OLD WAY ***************
-			a_c_iterator: C_OBJECT_VISITOR_ITERATOR
-			c_node_map_builder: C_DEFINITION_RENDERER
+--			a_c_iterator: C_OBJECT_VISITOR_ITERATOR
+--			c_node_map_builder: C_DEFINITION_RENDERER
 			-- **************** END OLD WAY ***************
 			ui_settings: GUI_DEFINITION_SETTINGS
 		do
@@ -409,17 +409,17 @@ feature {NONE} -- Implementation
 			-- **************** NEW WAY ***************
 			-- populate the main definition grid
 
---			arch_ed_context.definition_context.prepare_display_in_grid (gui_definition_grid)
---			arch_ed_context.definition_context.display_in_grid (ui_settings)
+			arch_ed_context.definition_context.prepare_display_in_grid (gui_definition_grid)
+			arch_ed_context.definition_context.display_in_grid (ui_settings)
 
 			-- *********** populate grid control (OLD WAY) ***********
-			create definition_grid_row_map.make (0)
+--			create definition_grid_row_map.make (0)
 
-			gui_definition_grid.ev_grid.lock_update
-			create c_node_map_builder.make (rm_schema, source, differential_view, selected_language, gui_definition_grid, False, show_codes, show_rm_inheritance,
-				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties, definition_grid_row_map)
-			create a_c_iterator.make (source_archetype.definition, c_node_map_builder, differential_view, show_rm_data_properties, rm_schema)
-			do_with_wait_cursor (ev_definition_hbox, agent a_c_iterator.do_all)
+--			gui_definition_grid.ev_grid.lock_update
+--			create c_node_map_builder.make (rm_schema, source, differential_view, selected_language, gui_definition_grid, False, show_codes, show_rm_inheritance,
+--				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties, definition_grid_row_map)
+--			create a_c_iterator.make (source_archetype.definition, c_node_map_builder, differential_view, show_rm_data_properties, rm_schema)
+--			do_with_wait_cursor (ev_definition_hbox, agent a_c_iterator.do_all)
 			-- *********** END OLD WAY CODE **************
 
 			-- make visualisation adjustments

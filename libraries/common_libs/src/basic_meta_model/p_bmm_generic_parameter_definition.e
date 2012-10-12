@@ -30,6 +30,10 @@ feature -- Access (attributes from schema)
 feature -- Access
 
 	bmm_generic_parameter_definition: BMM_GENERIC_PARAMETER_DEFINITION
+		note
+			option: transient
+		attribute
+		end
 
 feature -- Factory
 

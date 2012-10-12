@@ -37,6 +37,10 @@ feature -- Access (attributes from schema)
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
 	bmm_property_definition: detachable BMM_PROPERTY_DEFINITION
+		note
+			option: transient
+		attribute
+		end
 
 	is_im_infrastructure: BOOLEAN
 			-- True if this property is info model 'infrastructure' rather than 'data'

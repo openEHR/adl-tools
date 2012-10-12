@@ -285,28 +285,28 @@ feature {NONE} -- Implementation
 			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_SCHEMA} ev_ti.data as bmm_sch then
 				create menu
 
-				create an_mi.make_with_text_and_action (get_msg ("display_in_active_tab", Void), agent display_context_selected_rm_in_active_tool (ev_ti))
+				create an_mi.make_with_text_and_action (get_text ("display_in_active_tab"), agent display_context_selected_rm_in_active_tool (ev_ti))
 		    	menu.extend (an_mi)
 				an_mi.set_pixmap (get_icon_pixmap ("tool/rm_schema_tool"))
 
-				create an_mi.make_with_text_and_action (get_msg ("display_in_new_tab", Void), agent display_context_selected_rm_in_new_tool (ev_ti))
+				create an_mi.make_with_text_and_action (get_text ("display_in_new_tab"), agent display_context_selected_rm_in_new_tool (ev_ti))
 		    	menu.extend (an_mi)
 				an_mi.set_pixmap (get_icon_pixmap ("tool/rm_schema_tool_new"))
 
-				create an_mi.make_with_text_and_action (get_msg ("expand_button_expand_text", Void), agent schema_expand_all (ev_ti))
+				create an_mi.make_with_text_and_action (get_text ("expand_button_expand_text"), agent schema_expand_all (ev_ti))
 		    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (get_msg ("expand_packages", Void), agent schema_expand_packages (ev_ti))
+				create an_mi.make_with_text_and_action (get_text ("expand_packages"), agent schema_expand_packages (ev_ti))
 		    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (get_msg ("expand_button_collapse_text", Void), agent schema_collapse (ev_ti))
+				create an_mi.make_with_text_and_action (get_text ("expand_button_collapse_text"), agent schema_collapse (ev_ti))
 		    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (get_msg ("edit_source_schema", Void), agent do_edit_schema (bmm_sch.schema_id))
+				create an_mi.make_with_text_and_action (get_text ("edit_source_schema"), agent do_edit_schema (bmm_sch.schema_id))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/edit"))
 		    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action ("Export as XML", agent do_export_as_xml (bmm_sch.schema_id))
+				create an_mi.make_with_text_and_action (get_text ("export_as_xml"), agent do_export_as_xml (bmm_sch.schema_id))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/xml"))
 				menu.extend (an_mi)
 
@@ -377,22 +377,33 @@ feature {NONE} -- Implementation
 	do_export_as_xml (a_schema_id: STRING)
 			-- export schema as XML
 		local
-			schema: SCHEMA_DESCRIPTOR
+			sd: SCHEMA_DESCRIPTOR
 			serialise_engine: DADL_ENGINE
 			path: STRING
 			fd: PLAIN_TEXT_FILE
+			save_dialog: EV_FILE_SAVE_DIALOG
 		do
 			if source.all_schemas.has (a_schema_id) then
-				schema := source.all_schemas.item (a_schema_id)
-				schema.p_schema.synchronise_to_tree		-- FIXME: This line crashes with a stack overflow.
+				sd := source.all_schemas.item (a_schema_id)
+				sd.p_schema.synchronise_to_tree
 
 				create serialise_engine.make
-				serialise_engine.set_tree (schema.p_schema.dt_representation)
+				serialise_engine.set_tree (sd.p_schema.dt_representation)
 				serialise_engine.serialise (syntax_type_xml, False, False)
 
-				create fd.make_create_read_write (schema.meta_data.item (metadata_schema_path) + ".xml")
-				fd.put_string (serialise_engine.serialised)
-				fd.close
+				create save_dialog
+				save_dialog.set_title (get_text ("export_bmm_schema_dialog_title"))
+				save_dialog.set_file_name (sd.schema_id + ".xml")
+				save_dialog.set_start_directory (export_directory)
+				save_dialog.filters.extend (["*.xml", get_msg ("save_schema_as", <<"XML">>)])
+				save_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+				path := save_dialog.file_name.as_string_8
+
+				if not path.is_empty then
+					create fd.make_create_read_write (path)
+					fd.put_string (serialise_engine.serialised)
+					fd.close
+				end
 			end
 		end
 

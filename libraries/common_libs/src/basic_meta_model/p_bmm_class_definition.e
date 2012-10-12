@@ -58,6 +58,10 @@ feature -- Access
 			-- reference to original source schema defining this class
 
 	bmm_class_definition: detachable BMM_CLASS_DEFINITION
+		note
+			option: transient
+		attribute
+		end
 
 feature -- Status Report
 
@@ -107,26 +111,23 @@ feature -- Factory
 		do
 			-- populate references to ancestor classes; should be every class except Any
 			if attached ancestors then
-				from ancestors.start until ancestors.off loop
-					bmm_class_definition.add_ancestor (a_bmm_schema.class_definition (ancestors.item))
-					ancestors.forth
+				across ancestors as ancs_csr loop
+					bmm_class_definition.add_ancestor (a_bmm_schema.class_definition (ancs_csr.item))
 				end
 			end
 
 			-- create generic parameters
 			if attached generic_parameter_defs then
-				from generic_parameter_defs.start until generic_parameter_defs.off loop
-					generic_parameter_defs.item_for_iteration.create_bmm_generic_parameter_definition (a_bmm_schema)
-					bmm_class_definition.add_generic_parameter (generic_parameter_defs.item_for_iteration.bmm_generic_parameter_definition)
-					generic_parameter_defs.forth
+				across generic_parameter_defs as gen_parm_defs_csr loop
+					gen_parm_defs_csr.item.create_bmm_generic_parameter_definition (a_bmm_schema)
+					bmm_class_definition.add_generic_parameter (gen_parm_defs_csr.item.bmm_generic_parameter_definition)
 				end
 			end
 
 			-- populate properties
-			from properties.start until properties.off loop
-				properties.item_for_iteration.create_bmm_property_definition (a_bmm_schema, bmm_class_definition)
-				bmm_class_definition.add_property (properties.item_for_iteration.bmm_property_definition)
-				properties.forth
+			across properties as props_csr loop
+				props_csr.item.create_bmm_property_definition (a_bmm_schema, bmm_class_definition)
+				bmm_class_definition.add_property (props_csr.item.bmm_property_definition)
 			end
 		end
 

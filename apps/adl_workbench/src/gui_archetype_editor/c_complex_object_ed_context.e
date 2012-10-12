@@ -48,9 +48,12 @@ feature -- Display
 
 	prepare_display_in_grid (a_gui_grid: EVX_GRID)
 		do
+			-- set up this node in grid
 			precursor (a_gui_grid)
+
+			-- set up child property nodes in grid
 			across c_attributes as attr_csr loop
-				attr_csr.item.prepare_display_in_grid (a_gui_grid)
+				attr_csr.item.prepare_display_in_grid (gui_grid)
 			end
 		end
 
@@ -60,9 +63,11 @@ feature -- Display
 			across c_attributes as attr_csr loop
 				attr_csr.item.display_in_grid (ui_settings)
 			end
+
+			expand_to_rm (ui_settings)
 		end
 
-	expand_to_rm
+	expand_to_rm (ui_settings: GUI_DEFINITION_SETTINGS)
 		local
 			props: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 		do
@@ -72,12 +77,9 @@ feature -- Display
 				props := rm_class.flat_properties
 			end
 
-			create ev_grid_rm_row_stack.make (0)
-			create ev_grid_rm_row_removals_stack.make (0)
-
 			across props as props_csr loop
 				if not c_attributes.has (props_csr.item.name) then
-					prepare_rm_property (props_csr.item)
+					prepare_rm_property (props_csr.item, ui_settings)
 				end
 			end
 		end
@@ -100,22 +102,16 @@ feature -- Modification
 
 feature {NONE} -- Implementation
 
-	ev_grid_rm_row_stack: ARRAYED_STACK [EV_GRID_ROW]
-			-- stack for building the RM node trees
-
-	ev_grid_rm_row_removals_stack: detachable ARRAYED_STACK [BOOLEAN]
-			-- stack for tracking removals
-
 	rm_node_path: detachable OG_PATH
 
 	last_property_grid_row: EV_GRID_ROW
 
-	prepare_rm_property (an_rm_prop: BMM_PROPERTY_DEFINITION)
+	prepare_rm_property (an_rm_prop: BMM_PROPERTY_DEFINITION; ui_settings: GUI_DEFINITION_SETTINGS)
 			-- enter a BMM_PROPERTY_DEFINITION
 		local
 			bmm_class_def: BMM_CLASS_DEFINITION
 			show_prop: BOOLEAN
-			child_ed_node: C_ATTRIBUTE_ED_CONTEXT
+			c_attr_ed_node: C_ATTRIBUTE_ED_CONTEXT
 		do
 			-- see if this property should be shown; if not, leave it for now
 			show_prop := show_rm_data_properties
@@ -125,19 +121,25 @@ feature {NONE} -- Implementation
 			if show_prop then
 				-- see if the property was created previously; if not create it new
 				if not rm_attributes.has (an_rm_prop.name) then
-					create child_ed_node.make_rm (an_rm_prop, archetype, flat_ontology, rm_schema)
-					add_rm_attribute (child_ed_node)
+					-- first time creation
+					create c_attr_ed_node.make_rm (an_rm_prop, archetype, flat_ontology, rm_schema)
+					add_rm_attribute (c_attr_ed_node)
+
+					-- once-only prepare step
+					c_attr_ed_node.prepare_display_in_grid (gui_grid)
+
+					-- once-only display step, based on knowledge that RM property display is unchangeable
+					c_attr_ed_node.display_in_grid (ui_settings)
 				else
-					child_ed_node := rm_attributes.item (an_rm_prop.name)
+					c_attr_ed_node := rm_attributes.item (an_rm_prop.name)
 				end
 
 				-- see if it is already shown, which means it must not be hidden
-				if not child_ed_node.is_shown_in_grid then
-
+				if not c_attr_ed_node.is_shown_in_grid then
+					c_attr_ed_node.show_in_grid
 				end
-			else
-				child_ed_node := rm_attributes.item (an_rm_prop.name)
-				child_ed_node.hide_in_grid
+			elseif rm_attributes.has (an_rm_prop.name) then
+				rm_attributes.item (an_rm_prop.name).hide_in_grid
 			end
 		end
 

@@ -23,6 +23,10 @@ inherit
 feature -- Access
 
 	bmm_property_definition: detachable BMM_SINGLE_PROPERTY_OPEN
+		note
+			option: transient
+		attribute
+		end
 
 feature -- Factory
 

@@ -80,11 +80,11 @@ feature -- Initialisation
 
 	make (an_arch_node: like arch_node; an_archetype: ARCHETYPE; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_rm_schema: BMM_SCHEMA)
 		do
-			arch_node := an_arch_node
 			archetype := an_archetype
 			in_differential_view := attached {DIFFERENTIAL_ARCHETYPE} archetype
 			flat_ontology := a_flat_ontology
 			rm_schema := an_rm_schema
+			arch_node := an_arch_node
 		end
 
 feature -- Access
@@ -148,6 +148,13 @@ feature -- Display
 			gui_grid_row.hide
 		ensure
 			not is_shown_in_grid
+		end
+
+	show_in_grid
+		do
+			gui_grid_row.show
+		ensure
+			is_shown_in_grid
 		end
 
 feature {NONE} -- Implementation

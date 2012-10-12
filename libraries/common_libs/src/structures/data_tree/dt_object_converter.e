@@ -232,14 +232,13 @@ end
 				end
 				from i := 1 until i > field_count (an_obj) loop
 					eif_fld_name := field_name (i, an_obj)
--- enable following line when transient attirbutes working then	
---					if attached field (i, an_obj) as eif_fld_val and not is_field_transient (i, an_obj) then
 debug ("DT")
 	io.put_string ("DT_OBJECT_CONVERTER.populate_dt_from_object: field_name = " + eif_fld_name + " ")
 	if is_field_transient (i, an_obj) then
 		io.put_string (" [EIFFEL TRANSIENT FIELD] ")
 	end
 end
+					-- TODO: get rid of the fld_lst at some point
 					if attached field (i, an_obj) as eif_fld_val and not is_field_transient (i, an_obj) and (not attached fld_lst or else fld_lst.has (eif_fld_name)) then
 debug ("DT")
 	io.put_string ("DT_OBJECT_CONVERTER.populate_dt_from_object: field_name = " + eif_fld_name + "%N")

@@ -31,6 +31,10 @@ feature -- Access
 			-- type of the container of this attribute from its containing class
 
 	bmm_property_definition: detachable BMM_GENERIC_PROPERTY
+		note
+			option: transient
+		attribute
+		end
 
 feature -- Factory
 

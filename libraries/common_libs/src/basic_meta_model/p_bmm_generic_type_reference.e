@@ -28,6 +28,10 @@ feature -- Access (attributes from schema)
 			-- FIXME: currently the code below is limited to handling only 1 level of generic parameter nesting
 
 	bmm_generic_type_reference: BMM_GENERIC_TYPE_REFERENCE
+		note
+			option: transient
+		attribute
+		end
 
 feature -- Factory
 
@@ -37,13 +41,12 @@ feature -- Factory
 		do
 			a_root_class_def := a_bmm_schema.class_definition (root_type)
 			create bmm_generic_type_reference.make (a_root_class_def)
-			from generic_parameters.start until generic_parameters.off loop
-				if a_bmm_schema.has_class_definition (generic_parameters.item) then -- it is a real class name
-					bmm_generic_type_reference.add_generic_parameter (a_bmm_schema.class_definition (generic_parameters.item))
+			across generic_parameters as gen_parms_csr loop
+				if a_bmm_schema.has_class_definition (gen_parms_csr.item) then -- it is a real class name
+					bmm_generic_type_reference.add_generic_parameter (a_bmm_schema.class_definition (gen_parms_csr.item))
 				else -- it is an open generic parameter like 'T', 'U' etc
-					bmm_generic_type_reference.add_generic_parameter (a_root_class_def.generic_parameters.item (generic_parameters.item))
+					bmm_generic_type_reference.add_generic_parameter (a_root_class_def.generic_parameters.item (gen_parms_csr.item))
 				end
-				generic_parameters.forth
 			end
 		end
 
@@ -60,7 +63,6 @@ feature -- Output
 				if not generic_parameters.islast then
 					Result.append_character (generic_separator)
 				end
-				generic_parameters.forth
 			end
 			Result.append_character (Generic_right_delim)
 		end

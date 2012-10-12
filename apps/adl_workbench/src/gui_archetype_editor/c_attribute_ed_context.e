@@ -46,7 +46,7 @@ feature -- Initialisation
 			else
 				create ca.make_single (an_rm_prop.name, Void)
 			end
-			make (ca, an_archetype, a_flat_ontology, an_rm_schema)
+		--	precursor {ARCHETYPE_CONSTRAINT_ED_CONTEXT} make (ca, an_archetype, a_flat_ontology, an_rm_schema)
 		end
 
 feature -- Access
@@ -135,6 +135,7 @@ feature -- Display
 					gui_grid.update_last_row_label_col (Definition_grid_col_card_occ, bmm_cont_prop.cardinality.as_string, Void, c_attribute_colour, Void)
 				end
 			end
+
 			if not gui_grid_row.is_displayed then
 				gui_grid_row.show
 			end

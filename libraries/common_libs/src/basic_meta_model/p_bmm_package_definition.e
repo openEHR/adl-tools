@@ -72,6 +72,10 @@ feature -- Access (attributes from schema)
 feature -- Access
 
 	bmm_package_definition: BMM_PACKAGE_DEFINITION
+		note
+			option: transient
+		attribute
+		end
 
 feature -- Modification
 

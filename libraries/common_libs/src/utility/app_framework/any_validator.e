@@ -37,6 +37,10 @@ feature -- Access
 
 	errors: attached ERROR_ACCUMULATOR
 			-- error output of validator - things that must be corrected
+		note
+			option: transient
+		attribute
+		end
 
 feature -- Status Report
 

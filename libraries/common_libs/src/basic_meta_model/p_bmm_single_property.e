@@ -23,6 +23,10 @@ inherit
 feature -- Access
 
 	bmm_property_definition: BMM_SINGLE_PROPERTY
+		note
+			option: transient
+		attribute
+		end
 
 feature -- Factory
 

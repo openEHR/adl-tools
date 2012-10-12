@@ -28,6 +28,10 @@ feature -- Access
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
 	bmm_container_type_reference: BMM_CONTAINER_TYPE_REFERENCE
+		note
+			option: transient
+		attribute
+		end
 
 feature -- Factory
 

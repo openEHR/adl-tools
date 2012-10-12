@@ -32,6 +32,10 @@ feature -- Access
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
 	bmm_property_definition: detachable BMM_CONTAINER_PROPERTY
+		note
+			option: transient
+		attribute
+		end
 
 feature -- Factory
 

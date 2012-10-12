@@ -34,11 +34,13 @@ templates = <
 		["edit_source"] = <"Edit source">
 		["edit"] = <"Edit">
 		["save_archetype_as"] = <"Save as">
+		["save_schema_as"] = <"Save schema as">
 		["save_archetype_as_type"] = <"Save as $1">
 		["export_archetype_as"] = <"Export as">
 		["export_flat_archetype_as"] = <"Export flat as">
 		["edit_source_schema"] = <"Edit source schema">
 		["expand_packages"] = <"Expand packages">
+		["export_as_xml"] = <"Export as XML...">
 
 		-- GUI_HASH_TABLE_CONTROL
 		["add_mi"] = <"Add new row">
@@ -165,6 +167,7 @@ templates = <
 		-- MAIN_WINDOW - titles
 		["main_window_title"] = <"Archetype Definition Language $1 Workbench">
 		["export_report_dialog_title"] = <"Export Repository Report">
+		["export_bmm_schema_dialog_title"] = <"Export BMM Schema">
 		["about_awb_dialog_title"] = <"About ADL Workbench">
 		["reference_models_docking_area_title"] = <"Reference Models">
 		["error_tool_title"] = <"Errors">

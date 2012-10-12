@@ -85,23 +85,47 @@ feature -- Access (Attributes from schema load post-processing)
 
 	state: INTEGER
 			-- state machine state for this schema
+		note
+			option: transient
+		attribute
+		end
 
 	canonical_packages: HASH_TABLE [P_BMM_PACKAGE_DEFINITION, STRING]
 			-- package structure in which all top-level qualified package names like xx.yy.zz have been
 			-- expanded out to a hierarchy of BMM_PACKAGE_DEFINITION objects
+		note
+			option: transient
+		attribute
+		end
 
 	bmm_schema: BMM_SCHEMA
+		note
+			option: transient
+		attribute
+		end
 
 	includes_to_process: ARRAYED_LIST [STRING]
 			-- list of includes to process during setup
+		note
+			option: transient
+		attribute
+		end
 
 	bmm_version_from_schema: BOOLEAN
 			-- True if the bmm_version attribute was actually set in the schema; False means
 			-- the `assumed_bmm_version' value is used instead. This flag enables the situation to
 			-- be reported properly during schema validation.
+		note
+			option: transient
+		attribute
+		end
 
 	ancestors_index: HASH_TABLE [ARRAYED_SET [STRING], STRING]
 			-- index of all ancestors of each class
+		note
+			option: transient
+		attribute
+		end
 
 feature -- Access
 
@@ -669,6 +693,10 @@ feature {REFERENCE_MODEL_ACCESS} -- Implementation
 
 	schema_error_table: HASH_TABLE [ERROR_ACCUMULATOR, STRING]
 			-- set of error accumulators for other schemas, keyed by schema id
+		note
+			option: transient
+		attribute
+		end
 
 feature {NONE} -- Implementation
 
