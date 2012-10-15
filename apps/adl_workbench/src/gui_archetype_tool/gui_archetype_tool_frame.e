@@ -72,7 +72,7 @@ feature {NONE}-- Initialization
 			tool_bar.add_expanding_text_field ("", "")
 			ev_archetype_id := tool_bar.last_text_field
 
-			-- 'Form' label + diff & flat controls
+			-- diff/flat 'View' label + diff & flat controls
 			tool_bar.add_tool_bar_with_title (get_msg ("diff_flat_form_label", Void))
 			tool_bar.add_tool_bar_radio_button (get_icon_pixmap ("tool/diff_class"),
 				get_msg ("differential_view_button_tooltip", Void), agent on_differential_view)

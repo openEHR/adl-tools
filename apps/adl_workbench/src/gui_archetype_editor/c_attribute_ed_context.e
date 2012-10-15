@@ -16,8 +16,10 @@ class C_ATTRIBUTE_ED_CONTEXT
 
 inherit
 	ARCHETYPE_CONSTRAINT_ED_CONTEXT
+		rename
+			rm_element as rm_property
 		redefine
-			make, arch_node, parent, prepare_display_in_grid, display_in_grid, c_attribute_colour
+			make, make_rm, rm_property, arch_node, parent, prepare_display_in_grid, display_in_grid, c_attribute_colour
 		end
 
 create
@@ -39,19 +41,31 @@ feature -- Initialisation
 	make_rm (an_rm_prop: BMM_PROPERTY_DEFINITION; an_archetype: ARCHETYPE; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_rm_schema: BMM_SCHEMA)
 			-- make with a C_ATTRIBUTE created based on `an_rm_prop'
 		local
-			ca: C_ATTRIBUTE
+--			ca: C_ATTRIBUTE
+			co_ed_node: C_OBJECT_ED_CONTEXT
+			sem_type_class: BMM_CLASS_DEFINITION
 		do
-			if an_rm_prop.is_container then
-				create ca.make_multiple (an_rm_prop.name, Void, Void)
+			precursor (an_rm_prop, an_archetype, a_flat_ontology, an_rm_schema)
+--			if rm_property.is_container then
+--				create ca.make_multiple (rm_property.name, Void, Void)
+--			else
+--				create ca.make_single (rm_property.name, Void)
+--			end
+			create children.make(0)
+
+			-- make RM object child either as a C_COMPLEX_OBJECT or C_PRIMITIVE_OBJECT node
+			sem_type_class := rm_schema.class_definition (an_rm_prop.semantic_type.root_class)
+			if rm_schema.is_primitive_type (an_rm_prop.semantic_type.root_class) then
+				create {C_PRIMITIVE_OBJECT_ED_CONTEXT}  co_ed_node.make_rm (sem_type_class, an_archetype, a_flat_ontology, an_rm_schema)
 			else
-				create ca.make_single (an_rm_prop.name, Void)
+				create {C_COMPLEX_OBJECT_ED_CONTEXT} co_ed_node.make_rm (sem_type_class, an_archetype, a_flat_ontology, an_rm_schema)
 			end
-		--	precursor {ARCHETYPE_CONSTRAINT_ED_CONTEXT} make (ca, an_archetype, a_flat_ontology, an_rm_schema)
+			add_child (co_ed_node)
 		end
 
 feature -- Access
 
-	arch_node: C_ATTRIBUTE
+	arch_node: detachable C_ATTRIBUTE
 			-- archetype node being edited
 
 	rm_property: BMM_PROPERTY_DEFINITION
@@ -67,8 +81,22 @@ feature -- Access
 		do
 			if attached arch_node then
 				Result := arch_node.path
+			elseif parent.is_root then
+				Result := parent.path + rm_property.name
 			else
 				Result := parent.path + {OG_PATH}.segment_separator_string + rm_property.name
+			end
+		end
+
+	rm_depth: INTEGER
+			-- depth of this node with respect to its top-most RM (non-constrained) node
+			-- note that this will always be intermediate in the structure, since it has
+			-- to be the child of some archetyped node
+		do
+			if parent.is_rm then
+				Result := parent.rm_depth + 1
+			else
+				Result := 1
 			end
 		end
 
@@ -87,7 +115,7 @@ feature -- Display
 			gui_grid.set_last_row_label_col (Definition_grid_col_constraint, "", Void, Void, Void)
 
 			across children as children_csr loop
-				children_csr.item.prepare_display_in_grid (a_gui_grid)
+				children_csr.item.prepare_display_in_grid (gui_grid)
 			end
 		end
 
@@ -97,7 +125,7 @@ feature -- Display
 		do
 			precursor (ui_settings)
 
-			if attached arch_node then
+			if not is_rm then
 				-- RM attr name / path
 				if arch_node.has_differential_path then
 					create attr_str.make_empty
@@ -159,12 +187,8 @@ feature {NONE} -- Implementation
 	c_attribute_colour: EV_COLOR
 			-- generate a foreground colour for RM attribute representing inheritance status
 		do
-			if attached arch_node then
-				if show_rm_inheritance and c_attribute_colours.has (node_specialisation_status) then
-					Result := c_attribute_colours.item (node_specialisation_status)
-				else
-					Result := archetyped_attribute_color
-				end
+			if not is_rm then
+				Result := precursor
 			else
 				Result := rm_attribute_colour
 			end

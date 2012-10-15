@@ -80,16 +80,25 @@ feature -- Initialisation
 
 	make (an_arch_node: like arch_node; an_archetype: ARCHETYPE; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_rm_schema: BMM_SCHEMA)
 		do
-			archetype := an_archetype
-			in_differential_view := attached {DIFFERENTIAL_ARCHETYPE} archetype
-			flat_ontology := a_flat_ontology
-			rm_schema := an_rm_schema
+			make_base (an_archetype, a_flat_ontology, an_rm_schema)
 			arch_node := an_arch_node
+		ensure
+			not is_rm
+		end
+
+	make_rm (an_rm_element: like rm_element; an_archetype: ARCHETYPE; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_rm_schema: BMM_SCHEMA)
+		do
+			make_base (an_archetype, a_flat_ontology, an_rm_schema)
+			rm_element := an_rm_element
+		ensure
+			is_rm
 		end
 
 feature -- Access
 
-	arch_node: ANY
+	rm_element: BMM_MODEL_ELEMENT
+
+	arch_node: detachable ANY
 			-- archetype node being edited in this context
 
 	archetype: ARCHETYPE
@@ -112,6 +121,12 @@ feature -- Status Report
 			-- True if this node is included in the grid tree; False if it is there but hidden
 		do
 			Result := gui_grid_row.is_show_requested
+		end
+
+	is_rm: BOOLEAN
+			-- True if this node represents an unarchetyped RM property
+		do
+			Result := not attached arch_node
 		end
 
 feature -- Display Settings
@@ -159,6 +174,14 @@ feature -- Display
 
 feature {NONE} -- Implementation
 
+	make_base (an_archetype: ARCHETYPE; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_rm_schema: BMM_SCHEMA)
+		do
+			archetype := an_archetype
+			in_differential_view := attached {DIFFERENTIAL_ARCHETYPE} archetype
+			flat_ontology := a_flat_ontology
+			rm_schema := an_rm_schema
+		end
+
 	c_meaning_colour: EV_COLOR
 			-- generate a foreground colour for RM attribute representing inheritance status
 		do
@@ -182,15 +205,11 @@ feature {NONE} -- Implementation
 	c_attribute_colour: EV_COLOR
 			-- generate a foreground colour for RM attribute representing inheritance status
 		do
---			if is_unconstrained then
-
---			else
-				if show_rm_inheritance and c_attribute_colours.has (node_specialisation_status) then
-					Result := c_attribute_colours.item (node_specialisation_status)
-				else
-					Result := archetyped_attribute_color
-				end
---			end
+			if show_rm_inheritance and c_attribute_colours.has (node_specialisation_status) then
+				Result := c_attribute_colours.item (node_specialisation_status)
+			else
+				Result := archetyped_attribute_color
+			end
 		end
 
 	c_pixmap: EV_PIXMAP
@@ -254,6 +273,8 @@ feature {NONE} -- Implementation
 
 	node_specialisation_status: INTEGER
 			-- specialisation status of `arch_node'
+		require
+			not is_rm
 		deferred
 		end
 

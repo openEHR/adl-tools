@@ -1007,11 +1007,11 @@ feature -- Editing
 	create_display_context
 			-- set up a new display context
 		do
-			create differential_display_context.make (Current, rm_schema, True)
-			if is_specialised then
+			if not attached differential_display_context then
+				create differential_display_context.make (Current, rm_schema, True)
+			end
+			if not attached flat_display_context then
 				create flat_display_context.make (Current, rm_schema, False)
-			else
-				flat_display_context := differential_display_context
 			end
 		end
 

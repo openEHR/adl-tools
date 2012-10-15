@@ -5,7 +5,7 @@ note
 
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2009 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2009-2012 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -44,9 +44,8 @@ feature -- Access
 			create Result.make(0)
 			Result.compare_objects
 			Result.extend (root_type.name)
-			from generic_parameters.start until generic_parameters.off loop
-				Result.append(generic_parameters.item.flattened_type_list)
-				generic_parameters.forth
+			across generic_parameters as gen_parm_csr loop
+				Result.append (gen_parm_csr.item.flattened_type_list)
 			end
 		end
 
@@ -55,11 +54,10 @@ feature -- Access
 		local
 			has_abstract_gen_parms: BOOLEAN
 		do
-			from generic_parameters.start until generic_parameters.off loop
-				if not generic_parameters.item.type_category.is_equal (Type_cat_concrete_class) then
+			across generic_parameters as gen_parm_csr loop
+				if not gen_parm_csr.item.type_category.is_equal (Type_cat_concrete_class) then
 					has_abstract_gen_parms := True
 				end
-				generic_parameters.forth
 			end
 			if root_type.is_abstract and has_abstract_gen_parms then
 				Result := Type_cat_abstract_class
@@ -86,12 +84,10 @@ feature -- Access
 			end
 
 			create Result.make (0)
-			from root_sub_type_list.start until root_sub_type_list.off loop
-				from gen_param_sub_type_list.start until gen_param_sub_type_list.off loop
-					Result.extend (root_sub_type_list.item + generic_left_delim.out + gen_param_sub_type_list.item + generic_right_delim.out)
-					gen_param_sub_type_list.forth
+			across root_sub_type_list as sub_type_csr loop
+				across gen_param_sub_type_list as gen_parm_csr loop
+					Result.extend (sub_type_csr.item + generic_left_delim.out + gen_parm_csr.item + generic_right_delim.out)
 				end
-				root_sub_type_list.forth
 			end
 		end
 
@@ -117,12 +113,11 @@ feature -- Output
 			create Result.make_empty
 			Result.append (root_type.name)
 			Result.append_character (Generic_left_delim)
-			from generic_parameters.start until generic_parameters.off loop
-				Result.append (generic_parameters.item.as_type_string)
-				if not generic_parameters.islast then
+			across generic_parameters as gen_parms_csr loop
+				Result.append (gen_parms_csr.item.as_type_string)
+				if gen_parms_csr.cursor_index < generic_parameters.count then
 					Result.append_character (generic_separator)
 				end
-				generic_parameters.forth
 			end
 			Result.append_character (Generic_right_delim)
 		end

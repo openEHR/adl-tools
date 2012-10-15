@@ -89,7 +89,7 @@ feature -- Visitor
 			ed_node: C_ATTRIBUTE_ED_CONTEXT
 		do
 			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
-			obj_node_stack.item.add_attribute (ed_node)
+			obj_node_stack.item.add_c_attribute (ed_node)
 			attr_node_stack.extend (ed_node)
 		end
 

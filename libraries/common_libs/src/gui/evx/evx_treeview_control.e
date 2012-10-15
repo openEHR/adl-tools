@@ -152,7 +152,7 @@ feature -- Events
 	on_collapse_except (test: FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
 		do
 			gui_tree_control.collapse_except (test)
-			gui_tree_control.resize_columns_to_content (Default_grid_expansion_factor)
+		--	gui_tree_control.resize_columns_to_content (Default_grid_expansion_factor)
 		end
 
 feature {NONE} -- Implementation

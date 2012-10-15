@@ -178,9 +178,6 @@ feature -- Status Report
 	show_rm_inheritance: BOOLEAN
 			-- True if inheritance status should be shown in definition rendering of specialised archetypes
 
-	update_rm_view: BOOLEAN
-			-- True if last call to set/unset show_reference_model_view changed the flag's value
-
 	is_expanded: BOOLEAN
 			-- True if last whole tree operation was expand
 
@@ -213,10 +210,6 @@ feature -- Commands
 	repopulate
 			-- repopulate and/or refresh visual appearance if diff/flat view has changed or RM icons setting changed
 		local
-			-- **************** OLD WAY ***************
-			a_c_iterator: C_OBJECT_VISITOR_ITERATOR
-			c_node_map_builder: C_DEFINITION_RENDERER
-			-- **************** END OLD WAY ***************
 			ui_settings: GUI_DEFINITION_SETTINGS
 		do
 			-- populate peripheral controls
@@ -228,18 +221,8 @@ feature -- Commands
 			create ui_settings.make (selected_language, show_codes, show_rm_inheritance, show_technical_view,
 				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
 
-			-- old way
-			-- **************** OLD WAY ***************
-			create c_node_map_builder.make (rm_schema, source, differential_view, selected_language, gui_definition_grid, True, show_codes, show_rm_inheritance,
-				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties, definition_grid_row_map)
-			create a_c_iterator.make (source_archetype.definition, c_node_map_builder, differential_view, update_rm_view, rm_schema)
-			do_with_wait_cursor (ev_definition_hbox, agent a_c_iterator.do_all)
-			-- **************** END OLD WAY ***************
-
-			-- **************** NEW WAY ***************
 			-- repopulate main definition
---			arch_ed_context.definition_context.display_in_grid (ui_settings)
-			-- **************** END NEW WAY ***************
+			arch_ed_context.definition_context.display_in_grid (ui_settings)
 
 			gui_definition_grid.resize_columns_to_content
 			gui_definition_grid.ev_grid.unlock_update
@@ -261,7 +244,6 @@ feature {NONE} -- Events
 			-- change state from show_technical_view
 		do
 			set_show_technical_view (not a_flag)
-			update_rm_view := show_rm_data_properties
 			if attached source then
 				repopulate
 			end
@@ -278,7 +260,6 @@ feature {NONE} -- Events
 	update_show_rm_data_properties (a_flag: BOOLEAN)
 			-- turn on or off the display of reference model data properties details in `ev_grid'.
 		do
-			update_rm_view := a_flag /= show_rm_data_properties
 			set_show_rm_data_properties (a_flag)
 			if not a_flag then
 				if show_rm_infrastructure_properties then
@@ -296,7 +277,6 @@ feature {NONE} -- Events
 	update_show_rm_runtime_properties (a_flag: BOOLEAN)
 			-- turn on or off the display of reference model runtime properties details in `ev_grid'.
 		do
-			update_rm_view := a_flag /= show_rm_runtime_properties
 			set_show_rm_runtime_properties (a_flag)
 			if a_flag and not show_rm_data_properties then
 				rm_attrs_visible_checkbox_ctl.ev_data_control.enable_select
@@ -313,7 +293,6 @@ feature {NONE} -- Events
 	update_show_rm_infrastructure_properties (a_flag: BOOLEAN)
 			-- turn on or off the display of reference model infrastructure properties details in `ev_grid'.
 		do
-			update_rm_view := a_flag /= show_rm_infrastructure_properties
 			set_show_rm_infrastructure_properties (a_flag)
 			if a_flag and not show_rm_runtime_properties then
 				rm_runtime_attrs_visible_checkbox_ctl.ev_data_control.enable_select
@@ -325,7 +304,6 @@ feature {NONE} -- Events
 	update_show_rm_inheritance (a_flag: BOOLEAN)
 		do
 			show_rm_inheritance := a_flag
-			update_rm_view := True
 			if attached source then
 				repopulate
 			end
@@ -376,10 +354,6 @@ feature {NONE} -- Implementation
 	do_populate
 			-- build definition / ontology cross reference tables used for validation and other purposes
 		local
-			-- **************** OLD WAY ***************
-			a_c_iterator: C_OBJECT_VISITOR_ITERATOR
-			c_node_map_builder: C_DEFINITION_RENDERER
-			-- **************** END OLD WAY ***************
 			ui_settings: GUI_DEFINITION_SETTINGS
 		do
 			-- determine visualisation ancestor 'stopping' class (when C_OBJECT.rm_type_name = this class,
@@ -406,43 +380,18 @@ feature {NONE} -- Implementation
 				show_codes, show_rm_inheritance, show_technical_view,
 				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
 
-			-- **************** NEW WAY ***************
 			-- populate the main definition grid
-
---			arch_ed_context.definition_context.prepare_display_in_grid (gui_definition_grid)
---			arch_ed_context.definition_context.display_in_grid (ui_settings)
-
-			-- *********** populate grid control (OLD WAY) ***********
-			create definition_grid_row_map.make (0)
-
-			gui_definition_grid.ev_grid.lock_update
-			create c_node_map_builder.make (rm_schema, source, differential_view, selected_language, gui_definition_grid, False, show_codes, show_rm_inheritance,
-				show_technical_view, show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties, definition_grid_row_map)
-			create a_c_iterator.make (source_archetype.definition, c_node_map_builder, differential_view, show_rm_data_properties, rm_schema)
-			do_with_wait_cursor (ev_definition_hbox, agent a_c_iterator.do_all)
-			-- *********** END OLD WAY CODE **************
+			arch_ed_context.definition_context.prepare_display_in_grid (gui_definition_grid)
+			arch_ed_context.definition_context.display_in_grid (ui_settings)
 
 			-- make visualisation adjustments
 			if attached visualise_descendants_class then
+				-- collapse the tree except nodes inheriting from `visualise_descendants_class'
 				gui_definition_treeview_control.on_collapse_except (
 					agent (a_row: EV_GRID_ROW): BOOLEAN
 						do
-							if attached {C_OBJECT} a_row.data as co then
-								Result := rm_schema.is_descendant_of (co.rm_type_name, visualise_descendants_class)
-							end
-						end
-				)
-
-				-- add 'power expander' action to leaf nodes
-				gui_definition_treeview_control.ev_tree_do_all (
-					agent (a_row: EV_GRID_ROW)
-						do
-							if a_row.is_expandable and not a_row.is_expanded then
-								if attached {C_OBJECT} a_row.data as co and then
-									rm_schema.is_descendant_of (co.rm_type_name, visualise_descendants_class)
-								then
-									a_row.expand_actions.force_extend (agent (gui_definition_grid.ev_grid).expand_tree (a_row, Void))
-								end
+							if attached {C_OBJECT_ED_CONTEXT} a_row.data as co_ed_ctx then
+								Result := not co_ed_ctx.is_rm and rm_schema.is_descendant_of (co_ed_ctx.rm_class.name, visualise_descendants_class)
 							end
 						end
 				)
@@ -454,9 +403,6 @@ feature {NONE} -- Implementation
 			gui_definition_grid.set_column_titles (Definition_grid_col_names.linear_representation)
 			gui_definition_grid.resize_columns_to_content
 			gui_definition_grid.ev_grid.unlock_update
-
-			-- Initial settings
-			update_rm_view := False
 
 			-- populate rules grid, where applicable
 			if source_archetype.has_invariants then

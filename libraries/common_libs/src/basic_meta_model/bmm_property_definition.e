@@ -42,19 +42,12 @@ feature -- Access
 		end
 
 	type: BMM_TYPE_SPECIFIER
-			-- type of this attribute
+			-- formal type of this attribute
 
-	is_mandatory: BOOLEAN
-			-- True if this propert is mandatory in its class
-
-	is_computed: BOOLEAN
-			-- True if this property is computed rather than stored in objects of this class
-
-	is_im_infrastructure: BOOLEAN
-			-- True if this property is info model 'infrastructure' rather than 'data'
-
-	is_im_runtime: BOOLEAN
-			-- True if this property is info model 'runtime' property
+	semantic_type: BMM_TYPE_SPECIFIER
+			-- the 'design' type of this property, ignoring containers, multiplicity etc.
+		deferred
+		end
 
 	existence: MULTIPLICITY_INTERVAL
 			-- interval form of 0..1, 1..1 etc, generated from is_mandatory
@@ -83,6 +76,18 @@ feature -- Access
 		end
 
 feature -- Status Report
+
+	is_mandatory: BOOLEAN
+			-- True if this propert is mandatory in its class
+
+	is_computed: BOOLEAN
+			-- True if this property is computed rather than stored in objects of this class
+
+	is_im_infrastructure: BOOLEAN
+			-- True if this property is info model 'infrastructure' rather than 'data'
+
+	is_im_runtime: BOOLEAN
+			-- True if this property is info model 'runtime' property
 
 	is_container: BOOLEAN
 			-- True if type is a container type

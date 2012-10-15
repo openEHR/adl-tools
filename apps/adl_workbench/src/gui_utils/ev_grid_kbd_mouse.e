@@ -381,12 +381,11 @@ feature -- Commands
 				i := i + 1
 			end
 			collapse_all
-			from matching_rows.start until matching_rows.off loop
-				a_row := row (matching_rows.item).parent_row
+			across matching_rows as rows_csr loop
+				a_row := row (rows_csr.item).parent_row
 				if not a_row.is_expanded then
 					expand_to_row (a_row)
 				end
-				matching_rows.forth
 			end
 		end
 

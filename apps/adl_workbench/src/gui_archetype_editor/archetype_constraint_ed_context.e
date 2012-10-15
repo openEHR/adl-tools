@@ -17,7 +17,7 @@ deferred class ARCHETYPE_CONSTRAINT_ED_CONTEXT
 inherit
 	ANY_ED_CONTEXT
 		redefine
-			arch_node, c_attribute_colour
+			arch_node
 		end
 
 feature -- Access
@@ -33,6 +33,15 @@ feature -- Access
 		deferred
 		end
 
+	rm_depth: INTEGER
+			-- depth of this node with respect to its top-most RM (non-constrained) node
+			-- note that this will always be intermediate in the structure, since it has
+			-- to be the child of some archetyped node
+		require
+			is_rm
+		deferred
+		end
+
 feature -- Display
 
 	prepare_display_in_grid (a_gui_grid: EVX_GRID)
@@ -40,7 +49,7 @@ feature -- Display
 			gui_grid := a_gui_grid
 
 			-- create a new row
-			if attached arch_node and then arch_node.is_root then
+			if not is_rm and then arch_node.is_root then
 				gui_grid.add_row (Current)
 			else
 				gui_grid.add_sub_row (parent.gui_grid_row, Current)
@@ -57,27 +66,13 @@ feature -- Modification
 
 feature {NONE} -- Implementation
 
-	c_attribute_colour: EV_COLOR
-			-- generate a foreground colour for RM attribute representing inheritance status
-		do
-			if attached arch_node then
-				if show_rm_inheritance and c_attribute_colours.has (node_specialisation_status) then
-					Result := c_attribute_colours.item (node_specialisation_status)
-				else
-					Result := archetyped_attribute_color
-				end
-			else
-				-- RM node
-			end
-		end
-
 	node_tooltip_str: STRING
 			-- generate a tooltip for this node
 		local
 			p: STRING
 			bindings: HASH_TABLE [CODE_PHRASE, STRING]
 		do
-			if attached arch_node then
+			if not is_rm then
 				p := arch_node.path
 				Result := flat_ontology.physical_to_logical_path (p, language, True)
 				if show_rm_inheritance then

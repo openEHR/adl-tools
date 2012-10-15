@@ -20,7 +20,7 @@ inherit
 		end
 
 create
-	make
+	make, make_rm
 
 feature -- Access
 
@@ -36,7 +36,7 @@ feature -- Display
 			gli: EV_GRID_LABEL_ITEM
 		do
 			precursor (ui_settings)
-			if not arch_node.any_allowed then
+			if not is_rm and then not arch_node.any_allowed then
 				create gli.make_with_text (arch_node.item.as_string)
 				gli.set_foreground_color (c_constraint_colour)
 				gui_grid_row.set_item (Definition_grid_col_constraint, gli)

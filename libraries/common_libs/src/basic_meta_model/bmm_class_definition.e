@@ -448,17 +448,17 @@ feature -- Output
 		local
 			i: INTEGER
 		do
-			create Result.make(0)
-			Result.append(name)
+			create Result.make_empty
+			Result.append (name)
 			if is_generic then
 				Result.append_character (generic_left_delim)
 				from
 					generic_parameters.start
 					i := 1
 				until generic_parameters.off loop
-					Result.append(generic_parameters.item_for_iteration.as_type_string)
+					Result.append (generic_parameters.item_for_iteration.as_type_string)
 					if i < generic_parameters.count then
-						Result.append_character(generic_separator)
+						Result.append_character (generic_separator)
 					end
 					generic_parameters.forth
 					i := i + 1

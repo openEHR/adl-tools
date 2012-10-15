@@ -17,11 +17,11 @@ class C_COMPLEX_OBJECT_ED_CONTEXT
 inherit
 	C_OBJECT_ED_CONTEXT
 		redefine
-			arch_node, make, prepare_display_in_grid, display_in_grid
+			arch_node, make, make_rm, prepare_display_in_grid, display_in_grid
 		end
 
 create
-	make
+	make, make_rm
 
 feature -- Initialisation
 
@@ -32,9 +32,16 @@ feature -- Initialisation
 			create rm_attributes.make (0)
 		end
 
+	make_rm (an_rm_class: BMM_CLASS_DEFINITION; an_archetype: ARCHETYPE; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_rm_schema: BMM_SCHEMA)
+		do
+			precursor (an_rm_class, an_archetype, a_flat_ontology, an_rm_schema)
+			create c_attributes.make (0)
+			create rm_attributes.make (0)
+		end
+
 feature -- Access
 
-	arch_node: C_COMPLEX_OBJECT
+	arch_node: detachable C_COMPLEX_OBJECT
 			-- archetype node being edited
 
 	c_attributes: HASH_TABLE [C_ATTRIBUTE_ED_CONTEXT, STRING]
@@ -43,6 +50,23 @@ feature -- Access
 	rm_attributes: HASH_TABLE [C_ATTRIBUTE_ED_CONTEXT, STRING]
 			-- Editor nodes for unconstrained RM attributes that have been lazy-requested for viewing
 			-- Once created, they don't leave, they are just displayed or hidden in the EV_GRID tree
+
+	rm_properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
+		do
+			if in_differential_view then
+				Result := rm_class.properties
+			else
+				Result := rm_class.flat_properties
+			end
+		end
+
+feature -- Status Report
+
+	is_root: BOOLEAN
+			-- True if this node has no parent
+		do
+			Result := not attached parent
+		end
 
 feature -- Display
 
@@ -64,30 +88,17 @@ feature -- Display
 				attr_csr.item.display_in_grid (ui_settings)
 			end
 
-			expand_to_rm (ui_settings)
-		end
-
-	expand_to_rm (ui_settings: GUI_DEFINITION_SETTINGS)
-		local
-			props: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
-		do
-			if in_differential_view then
-				props := rm_class.properties
-			else
-				props := rm_class.flat_properties
-			end
-
-			across props as props_csr loop
-				if not c_attributes.has (props_csr.item.name) then
-					prepare_rm_property (props_csr.item, ui_settings)
-				end
+			if not rm_properties.is_empty then
+				expand_to_rm (ui_settings)
 			end
 		end
 
 feature -- Modification
 
-	add_attribute (a_node: C_ATTRIBUTE_ED_CONTEXT)
+	add_c_attribute (a_node: C_ATTRIBUTE_ED_CONTEXT)
 			-- add a new attribute node
+		require
+			not a_node.is_rm
 		do
 			c_attributes.put (a_node, a_node.rm_property.name)
 			a_node.set_parent (Current)
@@ -95,6 +106,8 @@ feature -- Modification
 
 	add_rm_attribute (a_node: C_ATTRIBUTE_ED_CONTEXT)
 			-- add a new attribute node
+		require
+			a_node.is_rm
 		do
 			rm_attributes.put (a_node, a_node.rm_property.name)
 			a_node.set_parent (Current)
@@ -102,9 +115,52 @@ feature -- Modification
 
 feature {NONE} -- Implementation
 
-	rm_node_path: detachable OG_PATH
+	expand_to_rm (ui_settings: GUI_DEFINITION_SETTINGS)
+			--  (if this is an RM node) or else go do the work
+		do
+			if is_rm and gui_grid_row.subrow_count = 0 then
+				-- if there are any candidate properties to be displayed given the current UI settings,
+				-- then set an expand-actions event
+				if can_show_rm_properties then
+					gui_grid_row.expand_actions.force_extend (agent process_rm_properties (ui_settings))
+					gui_grid_row.ensure_expandable
+				else
+					gui_grid_row.expand_actions.wipe_out
+					gui_grid_row.ensure_non_expandable
+				end
+			else
+				process_rm_properties (ui_settings)
+			end
+		end
 
-	last_property_grid_row: EV_GRID_ROW
+	process_rm_properties (ui_settings: GUI_DEFINITION_SETTINGS)
+		do
+			-- for previously expanded RM nodes, remove lazy-expand event
+			if is_rm and then not can_show_rm_properties then
+				gui_grid_row.expand_actions.wipe_out
+				gui_grid_row.ensure_non_expandable
+			else
+				across rm_properties as props_csr loop
+					if not c_attributes.has (props_csr.item.name) then
+						prepare_rm_property (props_csr.item, ui_settings)
+					end
+				end
+			end
+		end
+
+	can_show_rm_properties: BOOLEAN
+			-- True if there are any candidate properties to be displayed given the current UI settings
+		do
+			Result := across rm_properties as props_csr some can_show_rm_property (props_csr.item) end
+		end
+
+	can_show_rm_property (an_rm_prop: BMM_PROPERTY_DEFINITION): BOOLEAN
+			-- True if `an_rm_prop' should be shown below current object node given current UI settings
+		do
+			Result := show_rm_data_properties
+				and (not an_rm_prop.is_im_runtime or else show_rm_runtime_properties)
+				and (not an_rm_prop.is_im_infrastructure or else show_rm_infrastructure_properties)
+		end
 
 	prepare_rm_property (an_rm_prop: BMM_PROPERTY_DEFINITION; ui_settings: GUI_DEFINITION_SETTINGS)
 			-- enter a BMM_PROPERTY_DEFINITION
@@ -114,11 +170,7 @@ feature {NONE} -- Implementation
 			c_attr_ed_node: C_ATTRIBUTE_ED_CONTEXT
 		do
 			-- see if this property should be shown; if not, leave it for now
-			show_prop := show_rm_data_properties
-				and (not an_rm_prop.is_im_runtime or else show_rm_runtime_properties)
-				and (not an_rm_prop.is_im_infrastructure or else show_rm_infrastructure_properties)
-
-			if show_prop then
+			if can_show_rm_property (an_rm_prop) then
 				-- see if the property was created previously; if not create it new
 				if not rm_attributes.has (an_rm_prop.name) then
 					-- first time creation
@@ -128,7 +180,7 @@ feature {NONE} -- Implementation
 					-- once-only prepare step
 					c_attr_ed_node.prepare_display_in_grid (gui_grid)
 
-					-- once-only display step, based on knowledge that RM property display is unchangeable
+					-- first-time display step
 					c_attr_ed_node.display_in_grid (ui_settings)
 				else
 					c_attr_ed_node := rm_attributes.item (an_rm_prop.name)
@@ -136,122 +188,11 @@ feature {NONE} -- Implementation
 
 				-- see if it is already shown, which means it must not be hidden
 				if not c_attr_ed_node.is_shown_in_grid then
-					c_attr_ed_node.show_in_grid
+					c_attr_ed_node.display_in_grid (ui_settings)
 				end
 			elseif rm_attributes.has (an_rm_prop.name) then
 				rm_attributes.item (an_rm_prop.name).hide_in_grid
 			end
-		end
-
-	continue_rm_property (a_bmm_prop: BMM_PROPERTY_DEFINITION; depth: INTEGER): BOOLEAN
-			-- detrmine whether to continue a BMM_PROPERTY_DEFINITION
-		do
---			if attached last_property_grid_row then
---				if last_property_grid_row.subrow (1).subrow_count > 0 then
---					Result := True
---				else
---					Result := depth < 2
---				end
---			end
-		end
-
-	enter_rm_property (a_bmm_prop: BMM_PROPERTY_DEFINITION; depth: INTEGER)
-			-- enter a BMM_PROPERTY_DEFINITION
-		local
-			parent_class_row: EV_GRID_ROW
-			prop_str, type_str: STRING
-			type_spec: BMM_TYPE_SPECIFIER
-			col: EV_COLOR
-			show_prop: BOOLEAN
-			ignore: BOOLEAN
-		do
---			if not ev_grid_rm_row_removals_stack.item then -- don't do anything if descending into a removed subtree
---				-- first of all work out whether we want this property
---				show_prop := show_rm_data_properties
---					and (not a_bmm_prop.is_im_runtime or else show_rm_runtime_properties)
---					and (not a_bmm_prop.is_im_infrastructure or else show_rm_infrastructure_properties)
-
---				-- if the row already exists then refresh it or remove it depending on settings; otherwise create it or do nothing
---				last_property_grid_row := Void
---				if attached gui_grid.matching_sub_row (gui_grid_row,
---					agent (a_row: EV_GRID_ROW; match_bmm_prop: BMM_PROPERTY_DEFINITION): BOOLEAN
---						do
---							Result := attached {BMM_PROPERTY_DEFINITION} a_row.data as bmm_prop and then bmm_prop = match_bmm_prop
---						end (?, a_bmm_prop)) as a_prop_row
---				then
---					-- put something on the stack to match stack removal in exit routine
---					if show_prop then
---						last_property_grid_row := a_prop_row
---						-- refresh its object rows
---						refresh_row (a_prop_row.subrow (1))
---						rm_node_path.append_segment (create {OG_PATH_ITEM}.make (a_bmm_prop.name))
---						ev_grid_rm_row_stack.extend (a_prop_row.subrow (1))
---					else
---						gui_grid.ev_grid.remove_row (a_prop_row.index)
---						ignore := True
---					end
-
---				else
---					if show_prop then
---						-- determine data for property and one or more (in the case of generics with > 1 param) class nodes
---						prop_str := a_bmm_prop.name.twin
---						if attached {BMM_CLASS_DEFINITION} a_bmm_prop.type as bmm_class_def then
---							type_str := bmm_class_def.name
---							type_spec := bmm_class_def
-
---						elseif attached {BMM_CONTAINER_TYPE_REFERENCE} a_bmm_prop.type as bmm_cont_type_ref then
---							prop_str.append (": " + bmm_cont_type_ref.container_type.name + Generic_left_delim.out + Generic_right_delim.out)
---							type_str := bmm_cont_type_ref.type.name
---							type_spec := bmm_cont_type_ref.type
-
---						elseif attached {BMM_GENERIC_TYPE_REFERENCE} a_bmm_prop.type as bmm_gen_type_ref then
---							type_str := bmm_gen_type_ref.as_type_string
---							type_spec := bmm_gen_type_ref.root_type
-
---						elseif attached {BMM_GENERIC_PARAMETER_DEFINITION} a_bmm_prop.type as bmm_gen_parm_def then -- type is T, U etc
---							type_str := bmm_gen_parm_def.as_type_string
---							type_spec := a_bmm_prop.type
---						end
-
---						-- ======== property node =========
---						gui_grid.add_sub_row (parent_class_row, a_bmm_prop)
---						last_property_grid_row := gui_grid.last_row
-
---						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, prop_str, rm_node_path.as_string,
---							col, get_icon_pixmap ("rm/generic/" + a_bmm_prop.multiplicity_key_string))
-
-
---						-- add tree expand handler to this node
---						gui_grid.last_row.expand_actions.force_extend (agent property_node_expand_handler (gui_grid.last_row))
-
---						-- add right-click menu to property node for removal etc
---			--			if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Node_grid_col_rm_name) as gli then
---			--		 		gli.pointer_button_press_actions.force_extend (agent property_node_handler (a_ti, ?, ?, ?))
---			--			end
-
---						-- ======== type node =========
---						gui_grid.add_sub_row (gui_grid.last_row, type_spec)
---						ev_grid_rm_row_stack.extend (gui_grid.last_row)
---						gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, type_str, rm_node_path.as_string, archetype_rm_type_color, rm_type_pixmap (type_spec, rm_publisher))
---						gui_grid.add_last_row_pointer_button_press_actions (Definition_grid_col_rm_name, agent class_node_handler (gui_grid.last_row, ?, ?, ?))
---				 	else
---						ignore := True
---				 	end
---			 	end
---			else
---				ignore := True
---			end
---		 	ev_grid_rm_row_removals_stack.extend (ignore)
-		end
-
-	exit_rm_property (a_bmm_prop: BMM_PROPERTY_DEFINITION)
-			-- exit a BMM_PROPERTY_DEFINITION
-		do
---			if not ev_grid_rm_row_removals_stack.item then
---				rm_node_path.remove_last
---				ev_grid_rm_row_stack.remove
---			end
---		 	ev_grid_rm_row_removals_stack.remove
 		end
 
 end
