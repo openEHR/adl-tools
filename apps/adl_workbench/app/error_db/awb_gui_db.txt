@@ -212,6 +212,9 @@ templates = <
 		["adl_14_files"] = <"ADL 1.4 files">
 		["adl_15_source_files"] = <"ADL 1.5 source files">
 
+		["catalogue_edit_dialog_title"] = <"Edit $1">
+		["catalogue_edit_differential_button_text"] = <"Differential">
+		["catalogue_edit_adl14_button_text"] = <"Original source (ADL 1.4)">
 		["catalogue_archetype_tab_text"] = <"Archetypes">
 		["catalogue_template_tab_text"] = <"Templates">
 		["catalogue_metrics_tab_text"] = <"Metrics">

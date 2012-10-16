@@ -52,7 +52,7 @@ feature -- Access
 	arch_node: C_OBJECT
 			-- archetype node being edited
 
-	rm_class: BMM_CLASS_DEFINITION
+	rm_class: BMM_CLASS_DEFINITION -- BMM_TYPE_SPECIFIER
 			-- RM class of node being edited
 
 	parent: C_ATTRIBUTE_ED_CONTEXT
@@ -140,6 +140,7 @@ feature -- Display
 					else -- in non-technical view, display a friendly type name; for openEHR data types, remove the "DV_"
 						create s.make_empty
 						s.append_character ('[')
+						-- FIXME: openEHR specific "DV_" leader processing
 						lpos := 1
 						if arch_node.rm_type_name.starts_with (openehr_dv_type_name_leader) then
 							lpos := lpos + openehr_dv_type_name_leader.count

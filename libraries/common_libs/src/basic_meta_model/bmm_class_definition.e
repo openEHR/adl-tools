@@ -452,16 +452,11 @@ feature -- Output
 			Result.append (name)
 			if is_generic then
 				Result.append_character (generic_left_delim)
-				from
-					generic_parameters.start
-					i := 1
-				until generic_parameters.off loop
-					Result.append (generic_parameters.item_for_iteration.as_type_string)
-					if i < generic_parameters.count then
+				across generic_parameters as gen_parms_csr loop
+					Result.append (gen_parms_csr.item.as_type_string)
+					if gen_parms_csr.cursor_index < generic_parameters.count then
 						Result.append_character (generic_separator)
 					end
-					generic_parameters.forth
-					i := i + 1
 				end
 				Result.append_character (generic_right_delim)
 			end

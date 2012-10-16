@@ -41,16 +41,10 @@ feature -- Initialisation
 	make_rm (an_rm_prop: BMM_PROPERTY_DEFINITION; an_archetype: ARCHETYPE; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_rm_schema: BMM_SCHEMA)
 			-- make with a C_ATTRIBUTE created based on `an_rm_prop'
 		local
---			ca: C_ATTRIBUTE
 			co_ed_node: C_OBJECT_ED_CONTEXT
 			sem_type_class: BMM_CLASS_DEFINITION
 		do
 			precursor (an_rm_prop, an_archetype, a_flat_ontology, an_rm_schema)
---			if rm_property.is_container then
---				create ca.make_multiple (rm_property.name, Void, Void)
---			else
---				create ca.make_single (rm_property.name, Void)
---			end
 			create children.make(0)
 
 			-- make RM object child either as a C_COMPLEX_OBJECT or C_PRIMITIVE_OBJECT node
@@ -61,6 +55,16 @@ feature -- Initialisation
 				create {C_COMPLEX_OBJECT_ED_CONTEXT} co_ed_node.make_rm (sem_type_class, an_archetype, a_flat_ontology, an_rm_schema)
 			end
 			add_child (co_ed_node)
+		end
+
+	convert_to_c_attribute
+			-- convert to constrained form with a C_ATTRIBUTE created based on `an_rm_prop'
+		do
+			if rm_property.is_container then
+				create arch_node.make_multiple (rm_property.name, Void, Void)
+			else
+				create arch_node.make_single (rm_property.name, Void)
+			end
 		end
 
 feature -- Access

@@ -170,6 +170,22 @@ feature -- Access
 
 	ev_root_container: EV_VERTICAL_SPLIT_AREA
 
+	source_context: ARCH_ED_CONTEXT
+			-- display / editor context, loaded with archetype for display, or a clone, for editing
+		do
+			if not editing_enabled then
+				source.create_display_context
+				if differential_view then
+					Result := source.differential_display_context
+				else
+					Result := source.flat_display_context
+				end
+			else
+				source.create_editor_context
+				Result := source.editor_context
+			end
+		end
+
 feature -- Status Report
 
 	show_codes: BOOLEAN
@@ -222,7 +238,7 @@ feature -- Commands
 				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
 
 			-- repopulate main definition
-			arch_ed_context.definition_context.display_in_grid (ui_settings)
+			source_context.definition_context.display_in_grid (ui_settings)
 
 			gui_definition_grid.resize_columns_to_content
 			gui_definition_grid.ev_grid.unlock_update
@@ -230,7 +246,7 @@ feature -- Commands
 			-- repopulate rules grid, where applicable
 			if source_archetype.has_invariants then
 				gui_rules_grid.ev_grid.lock_update
-				across arch_ed_context.assertion_contexts as assn_ed_contexts_csr loop
+				across source_context.assertion_contexts as assn_ed_contexts_csr loop
 					assn_ed_contexts_csr.item.display_in_grid (ui_settings)
 				end
 				gui_rules_grid.resize_columns_to_content
@@ -368,21 +384,13 @@ feature {NONE} -- Implementation
 			-- populate peripheral controls
 			gui_controls.do_all (agent (an_item: EVX_DATA_CONTROL) do an_item.populate end)
 
-			-- build the visual & editor control tree
-			source.create_display_context
-			if differential_view then
-				arch_ed_context := source.differential_display_context
-			else
-				arch_ed_context := source.flat_display_context
-			end
-
 			create ui_settings.make (selected_language,
 				show_codes, show_rm_inheritance, show_technical_view,
 				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
 
 			-- populate the main definition grid
-			arch_ed_context.definition_context.prepare_display_in_grid (gui_definition_grid)
-			arch_ed_context.definition_context.display_in_grid (ui_settings)
+			source_context.definition_context.prepare_display_in_grid (gui_definition_grid)
+			source_context.definition_context.display_in_grid (ui_settings)
 
 			-- make visualisation adjustments
 			if attached visualise_descendants_class then
@@ -407,7 +415,7 @@ feature {NONE} -- Implementation
 			-- populate rules grid, where applicable
 			if source_archetype.has_invariants then
 				gui_rules_grid.ev_grid.lock_update
-				across arch_ed_context.assertion_contexts as assn_ed_contexts_csr loop
+				across source_context.assertion_contexts as assn_ed_contexts_csr loop
 					assn_ed_contexts_csr.item.prepare_display_in_grid (gui_rules_grid)
 					assn_ed_contexts_csr.item.display_in_grid (ui_settings)
 				end
@@ -425,60 +433,57 @@ feature {NONE} -- Implementation
 				gui_rules_grid.ev_grid.row_height * gui_rules_grid.ev_grid.visible_row_count))
 		end
 
-	arch_ed_context: ARCH_ED_CONTEXT
+--	roll_up_to_specialisation_level
+--			-- roll the tree up so that nodes whose rolled_up_specialisation_status is
+--			-- ss_inherited are closed, but nodes with
+--		require
+--			archetype_selected: attached source
+--		do
+--			if source_archetype.is_specialised and not source_archetype.is_template then
+--				gui_definition_treeview_control.ev_tree_do_all (agent ev_grid_row_roll_up)
+--			end
+--		end
 
-	roll_up_to_specialisation_level
-			-- roll the tree up so that nodes whose rolled_up_specialisation_status is
-			-- ss_inherited are closed, but nodes with
-		require
-			archetype_selected: attached source
-		do
-			if source_archetype.is_specialised and not source_archetype.is_template then
-				gui_definition_treeview_control.ev_tree_do_all (agent ev_grid_row_roll_up)
-			end
-		end
+--	ev_grid_row_roll_up (an_ev_grid_row: EV_GRID_ROW)
+--			-- close rows that have rolled_up_specialisation_status = ss_inherited; open others
+--		do
+--			if an_ev_grid_row.is_expandable then
+--				if attached {ARCHETYPE_CONSTRAINT} an_ev_grid_row.data as ac then
+--					if ac.specialisation_status = ss_inherited and not ev_grid_node_has_non_inherited_child (an_ev_grid_row) then
+--						an_ev_grid_row.collapse
+--					else
+--						an_ev_grid_row.expand
+--					end
+--				end
+--			end
+--		end
 
-	ev_grid_row_roll_up (an_ev_grid_row: EV_GRID_ROW)
-			-- close rows that have rolled_up_specialisation_status = ss_inherited; open others
-		do
-			if an_ev_grid_row.is_expandable then
-				if attached {ARCHETYPE_CONSTRAINT} an_ev_grid_row.data as ac then
-					if ac.specialisation_status = ss_inherited and not ev_grid_node_has_non_inherited_child (an_ev_grid_row) then
-						an_ev_grid_row.collapse
-					else
-						an_ev_grid_row.expand
-					end
-				end
-			end
-		end
+--	ev_grid_node_has_non_inherited_child (an_ev_grid_row: EV_GRID_ROW): BOOLEAN
+--			-- True if `an_ev_grid_row' is either already expanded, which implies it is not inherited,
+--			-- or else its specialisation status is not ss_inherited
+--		local
+--			i: INTEGER
+--			sub_row: EV_GRID_ROW
+--		do
+--			from i := 1 until i > an_ev_grid_row.subrow_count or Result loop
+--				sub_row := an_ev_grid_row.subrow (i)
+--				if sub_row.is_expandable then
+--					Result := sub_row.is_expanded
+--				elseif attached {ARCHETYPE_CONSTRAINT} sub_row.data as ac then
+--					Result := ac.specialisation_status /= ss_inherited
+--				end
+--				i := i + 1
+--			end
+--		end
 
-	ev_grid_node_has_non_inherited_child (an_ev_grid_row: EV_GRID_ROW): BOOLEAN
-			-- True if `an_ev_grid_row' is either already expanded, which implies it is not inherited,
-			-- or else its specialisation status is not ss_inherited
-		local
-			i: INTEGER
-			sub_row: EV_GRID_ROW
-		do
-			from i := 1 until i > an_ev_grid_row.subrow_count or Result loop
-				sub_row := an_ev_grid_row.subrow (i)
-				if sub_row.is_expandable then
-					Result := sub_row.is_expanded
-				elseif attached {ARCHETYPE_CONSTRAINT} sub_row.data as ac then
-					Result := ac.specialisation_status /= ss_inherited
-				end
-				i := i + 1
-			end
-		end
-
-	object_invariant_string (an_inv: ASSERTION): STRING
-			-- generate string form of node or object for use in tree node
-		do
-			Result := an_inv.as_string
-
-			if not show_technical_view then
-				Result := source_archetype.ontology.substitute_codes (Result, archetype_view_language)
-			end
-		end
+--	object_invariant_string (an_inv: ASSERTION): STRING
+--			-- generate string form of node or object for use in tree node
+--		do
+--			Result := an_inv.as_string
+--			if not show_technical_view then
+--				Result := source_archetype.ontology.substitute_codes (Result, archetype_view_language)
+--			end
+--		end
 
 end
 
@@ -500,7 +505,7 @@ end
 --| The Original Code is adl_node_map_control.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2003-2012
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

@@ -1018,7 +1018,9 @@ feature -- Editing
 	create_editor_context
 			-- set up a new editing context
 		do
-			create editor_context.make (Current, rm_schema, True)
+			if not attached editor_context then
+				create editor_context.make (Current, rm_schema, True)
+			end
 		end
 
 	differential_display_context: detachable ARCH_ED_CONTEXT
