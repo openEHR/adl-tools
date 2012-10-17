@@ -28,12 +28,6 @@ feature -- Access (attributes from schema)
 	type: BMM_GENERIC_TYPE_REFERENCE
 			-- type of the container of this attribute from its containing class
 
-	semantic_type: BMM_TYPE_SPECIFIER
-			-- the 'design' type of this property, ignoring containers, multiplicity etc.
-		do
-			Result := type.root_type
-		end
-
 end
 
 

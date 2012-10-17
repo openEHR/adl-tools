@@ -53,15 +53,21 @@ feature -- Access
 	name: attached STRING
 			-- name of the class FROM SCHEMA
 
+	semantic_class: BMM_CLASS_DEFINITION
+			-- the 'design' class of this type, ignoring containers, multiplicity etc.
+		do
+			Result := Current
+		end
+
 	generic_parameters: detachable HASH_TABLE [BMM_GENERIC_PARAMETER_DEFINITION, STRING]
 			-- list of generic parameter definitions, keyed by name of generic parameter;
 			-- these are defined either directly on this class or by the addition of an
 			-- ancestor class which is generic
 
-	ancestors: attached HASH_TABLE [BMM_CLASS_DEFINITION, STRING]
+	ancestors: HASH_TABLE [BMM_CLASS_DEFINITION, STRING]
 			-- list of immediate inheritance parents
 
-	properties: attached HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
+	properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 			-- list of attributes defined in this class
 
 	package: detachable BMM_PACKAGE_DEFINITION
@@ -445,8 +451,6 @@ feature -- Output
 
 	as_type_string: STRING
 			-- name of the type
-		local
-			i: INTEGER
 		do
 			create Result.make_empty
 			Result.append (name)

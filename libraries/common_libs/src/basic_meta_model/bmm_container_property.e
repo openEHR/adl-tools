@@ -45,12 +45,6 @@ feature -- Access
 	type: BMM_CONTAINER_TYPE_REFERENCE
 			-- type of the contained type
 
-	semantic_type: BMM_TYPE_SPECIFIER
-			-- the 'design' type of this property, ignoring containers, multiplicity etc.
-		do
-			Result := type.type
-		end
-
 feature -- Modification
 
 	set_cardinality (a_cardinality: MULTIPLICITY_INTERVAL)

@@ -17,9 +17,9 @@ class C_OBJECT_ED_CONTEXT
 inherit
 	ARCHETYPE_CONSTRAINT_ED_CONTEXT
 		rename
-			rm_element as rm_class
+			rm_element as rm_type
 		redefine
-			make, rm_class, arch_node, parent, prepare_display_in_grid, display_in_grid
+			make, rm_type, arch_node, parent, prepare_display_in_grid, display_in_grid
 		end
 
 create
@@ -44,7 +44,7 @@ feature -- Initialisation
 	make (an_arch_node: like arch_node; an_archetype: ARCHETYPE; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_rm_schema: BMM_SCHEMA)
 		do
 			precursor (an_arch_node, an_archetype, a_flat_ontology, an_rm_schema)
-			rm_class := rm_schema.class_definition (arch_node.rm_type_name)
+			rm_type := rm_schema.class_definition (arch_node.rm_type_name)
 		end
 
 feature -- Access
@@ -52,7 +52,7 @@ feature -- Access
 	arch_node: C_OBJECT
 			-- archetype node being edited
 
-	rm_class: BMM_CLASS_DEFINITION -- BMM_TYPE_SPECIFIER
+	rm_type: BMM_TYPE_SPECIFIER
 			-- RM class of node being edited
 
 	parent: C_ATTRIBUTE_ED_CONTEXT
@@ -107,7 +107,7 @@ feature -- Display
 					)
 				end
 			else
-				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, rm_class.as_type_string, path, archetype_rm_type_color, rm_type_pixmap (rm_class, rm_schema.rm_publisher.as_lower))
+				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, rm_type_text, path, archetype_rm_type_color, rm_type_pixmap (rm_type, rm_schema.rm_publisher.as_lower))
 
 				-- add RM class node context menu
 				build_class_node_context_menu
@@ -203,6 +203,11 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	rm_type_text: STRING
+		do
+			Result := rm_type.semantic_class.name
+		end
+
 	c_object_colour: EV_COLOR
 			-- generate a foreground colour for RM type representing inheritance status
 		do
@@ -279,19 +284,18 @@ feature {NONE} -- Implementation
 	build_class_node_context_menu
 			-- creates the context menu for a right click action for class node
 		local
-			subs: ARRAYED_SET[STRING]
 			an_mi: EV_MENU_ITEM
 		do
 			create class_node_context_menu
 
 			-- add menu item for retarget tool to current node / display in new tool
-			create an_mi.make_with_text_and_action (get_msg ("display_class", Void), agent display_context_selected_class_in_new_tool (rm_class))
+			create an_mi.make_with_text_and_action (get_msg ("display_class", Void), agent display_context_selected_class_in_new_tool (rm_type.semantic_class))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
 			class_node_context_menu.extend (an_mi)
 
 			-- if there are type substitutions available, add sub-menu for that
-			if rm_class.has_type_substitutions then
-				add_subtype_context_menu (rm_class.type_substitutions)
+			if rm_type.has_type_substitutions then
+				add_subtype_context_menu (rm_type.type_substitutions)
 			end
 		end
 

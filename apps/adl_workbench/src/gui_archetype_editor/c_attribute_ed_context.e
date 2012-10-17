@@ -42,17 +42,15 @@ feature -- Initialisation
 			-- make with a C_ATTRIBUTE created based on `an_rm_prop'
 		local
 			co_ed_node: C_OBJECT_ED_CONTEXT
-			sem_type_class: BMM_CLASS_DEFINITION
 		do
 			precursor (an_rm_prop, an_archetype, a_flat_ontology, an_rm_schema)
 			create children.make(0)
 
 			-- make RM object child either as a C_COMPLEX_OBJECT or C_PRIMITIVE_OBJECT node
-			sem_type_class := rm_schema.class_definition (an_rm_prop.semantic_type.root_class)
-			if rm_schema.is_primitive_type (an_rm_prop.semantic_type.root_class) then
-				create {C_PRIMITIVE_OBJECT_ED_CONTEXT}  co_ed_node.make_rm (sem_type_class, an_archetype, a_flat_ontology, an_rm_schema)
+			if rm_schema.is_primitive_type (an_rm_prop.type.semantic_class.name) then
+				create {C_PRIMITIVE_OBJECT_ED_CONTEXT} co_ed_node.make_rm (an_rm_prop.type, an_archetype, a_flat_ontology, an_rm_schema)
 			else
-				create {C_COMPLEX_OBJECT_ED_CONTEXT} co_ed_node.make_rm (sem_type_class, an_archetype, a_flat_ontology, an_rm_schema)
+				create {C_COMPLEX_OBJECT_ED_CONTEXT} co_ed_node.make_rm (an_rm_prop.type, an_archetype, a_flat_ontology, an_rm_schema)
 			end
 			add_child (co_ed_node)
 		end
@@ -155,6 +153,7 @@ feature -- Display
 				if arch_node.any_allowed then
 					gui_grid.update_last_row_label_col (Definition_grid_col_constraint, Archetype_any_constraint, Void, c_constraint_colour, Void)
 				end
+
 			else
 				-- RM name
 				gui_grid.update_last_row_label_col (Definition_grid_col_rm_name, rm_property.display_name, node_tooltip_str, c_attribute_colour, c_pixmap)

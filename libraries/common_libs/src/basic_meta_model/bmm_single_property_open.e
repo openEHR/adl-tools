@@ -27,12 +27,6 @@ feature -- Access
 
 	type: BMM_GENERIC_PARAMETER_DEFINITION
 
-	semantic_type: BMM_TYPE_SPECIFIER
-			-- the 'design' type of this property, ignoring containers, multiplicity etc.
-		do
-			Result := type
-		end
-
 end
 
 

@@ -36,6 +36,12 @@ feature -- Access
 	container_type: BMM_CLASS_DEFINITION
 			-- the type of the container. This converts to the root_type in BMM_GENERIC_TYPE_SPECIFIER
 
+	semantic_class: BMM_CLASS_DEFINITION
+			-- the 'design' type of this type, ignoring containers, multiplicity etc.
+		do
+			Result := type
+		end
+
 	flattened_type_list: ARRAYED_LIST [STRING]
 			-- completely flattened list of type names, flattening out all generic parameters
 			-- note that for this type, we throw away the container_type because we are tring to match

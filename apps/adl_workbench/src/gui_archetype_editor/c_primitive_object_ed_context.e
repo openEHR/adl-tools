@@ -16,7 +16,7 @@ class C_PRIMITIVE_OBJECT_ED_CONTEXT
 inherit
 	C_OBJECT_ED_CONTEXT
 		redefine
-			arch_node, display_in_grid
+			arch_node, display_in_grid, rm_type_text
 		end
 
 create
@@ -26,8 +26,6 @@ feature -- Access
 
 	arch_node: C_PRIMITIVE_OBJECT
 			-- archetype node being edited
-
-feature -- Modification
 
 feature -- Display
 
@@ -41,6 +39,13 @@ feature -- Display
 				gli.set_foreground_color (c_constraint_colour)
 				gui_grid_row.set_item (Definition_grid_col_constraint, gli)
 			end
+		end
+
+feature {NONE} -- Implementation
+
+	rm_type_text: STRING
+		do
+			Result := rm_type.as_type_string
 		end
 
 end

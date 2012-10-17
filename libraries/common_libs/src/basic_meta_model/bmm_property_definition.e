@@ -44,11 +44,6 @@ feature -- Access
 	type: BMM_TYPE_SPECIFIER
 			-- formal type of this attribute
 
-	semantic_type: BMM_TYPE_SPECIFIER
-			-- the 'design' type of this property, ignoring containers, multiplicity etc.
-		deferred
-		end
-
 	existence: MULTIPLICITY_INTERVAL
 			-- interval form of 0..1, 1..1 etc, generated from is_mandatory
 		do

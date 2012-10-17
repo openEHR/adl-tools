@@ -37,6 +37,12 @@ feature -- Access
 			-- generic parameters of the root_type in this type specifier
 			-- The order must match the order of the owning class's formal generic parameter declarations
 
+	semantic_class: BMM_CLASS_DEFINITION
+			-- the 'design' type of this property, ignoring containers, multiplicity etc.
+		do
+			Result := root_type
+		end
+
 	flattened_type_list: attached ARRAYED_LIST [STRING]
 			-- completely flattened list of type names, flattening out all generic parameters
 			-- Note: can include repeats, e.g. HASH_TABLE [STRING, STRING] => HASH_TABLE, STRING, STRING
@@ -95,7 +101,7 @@ feature -- Status Report
 
 	has_type_substitutions: BOOLEAN
 		do
-			Result := root_type.has_type_substitutions or generic_parameters.first.has_type_substitutions
+			Result := root_type.has_type_substitutions or else across generic_parameters as gen_parms_csr some gen_parms_csr.item.has_type_substitutions end
 		end
 
 feature -- Modification

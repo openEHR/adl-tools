@@ -32,9 +32,9 @@ feature -- Initialisation
 			create rm_attributes.make (0)
 		end
 
-	make_rm (an_rm_class: BMM_CLASS_DEFINITION; an_archetype: ARCHETYPE; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_rm_schema: BMM_SCHEMA)
+	make_rm (an_rm_type: BMM_TYPE_SPECIFIER; an_archetype: ARCHETYPE; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_rm_schema: BMM_SCHEMA)
 		do
-			precursor (an_rm_class, an_archetype, a_flat_ontology, an_rm_schema)
+			precursor (an_rm_type, an_archetype, a_flat_ontology, an_rm_schema)
 			create c_attributes.make (0)
 			create rm_attributes.make (0)
 		end
@@ -54,9 +54,9 @@ feature -- Access
 	rm_properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 		do
 			if in_differential_view then
-				Result := rm_class.properties
+				Result := rm_type.semantic_class.properties
 			else
-				Result := rm_class.flat_properties
+				Result := rm_type.semantic_class.flat_properties
 			end
 		end
 
@@ -120,7 +120,7 @@ feature {NONE} -- Implementation
 		do
 			if is_rm and gui_grid_row.subrow_count = 0 then
 				-- if there are any candidate properties to be displayed given the current UI settings,
-				-- then set an expand-actions event
+				-- then set an expand-actions event; if not, get rid of any previously set event
 				if can_show_rm_properties then
 					gui_grid_row.expand_actions.force_extend (agent process_rm_properties (ui_settings))
 					gui_grid_row.ensure_expandable
@@ -135,21 +135,25 @@ feature {NONE} -- Implementation
 
 	process_rm_properties (ui_settings: GUI_DEFINITION_SETTINGS)
 		do
+			-- if we entered here due to lazy load event, get rid of the lazy load
 			-- for previously expanded RM nodes, remove lazy-expand event
-			if is_rm and then not can_show_rm_properties then
+			if is_rm and gui_grid_row.subrow_count = 0 then
 				gui_grid_row.expand_actions.wipe_out
 				gui_grid_row.ensure_non_expandable
-			else
-				across rm_properties as props_csr loop
-					if not c_attributes.has (props_csr.item.name) then
-						prepare_rm_property (props_csr.item, ui_settings)
-					end
+			end
+
+			-- process the properties, which may involve simply hiding ones that are currently visible
+			across rm_properties as props_csr loop
+				if not c_attributes.has (props_csr.item.name) then
+					prepare_rm_property (props_csr.item, ui_settings)
 				end
 			end
 		end
 
 	can_show_rm_properties: BOOLEAN
 			-- True if there are any candidate properties to be displayed given the current UI settings
+		require
+			is_rm
 		do
 			Result := across rm_properties as props_csr some can_show_rm_property (props_csr.item) end
 		end
@@ -165,8 +169,6 @@ feature {NONE} -- Implementation
 	prepare_rm_property (an_rm_prop: BMM_PROPERTY_DEFINITION; ui_settings: GUI_DEFINITION_SETTINGS)
 			-- enter a BMM_PROPERTY_DEFINITION
 		local
-			bmm_class_def: BMM_CLASS_DEFINITION
-			show_prop: BOOLEAN
 			c_attr_ed_node: C_ATTRIBUTE_ED_CONTEXT
 		do
 			-- see if this property should be shown; if not, leave it for now
@@ -186,10 +188,10 @@ feature {NONE} -- Implementation
 					c_attr_ed_node := rm_attributes.item (an_rm_prop.name)
 				end
 
-				-- see if it is already shown, which means it must not be hidden
-				if not c_attr_ed_node.is_shown_in_grid then
-					c_attr_ed_node.display_in_grid (ui_settings)
-				end
+				-- display it (even if it has already been displayed, and can't change,
+				-- because there may be changes deeper under the node
+				c_attr_ed_node.display_in_grid (ui_settings)
+
 			elseif rm_attributes.has (an_rm_prop.name) then
 				rm_attributes.item (an_rm_prop.name).hide_in_grid
 			end

@@ -24,14 +24,14 @@ create
 
 feature -- Initialisation
 
-	make (a_name: STRING; any_type_def: attached BMM_CLASS_DEFINITION)
+	make (a_name: STRING; any_type_def: BMM_CLASS_DEFINITION)
 			-- any_type is a reference to the Any definition from this schema
 		do
 			name := a_name
 			any_class_definition := any_type_def
 		end
 
-	make_constrained (a_name: STRING; a_conforms_to_type: attached BMM_CLASS_DEFINITION)
+	make_constrained (a_name: STRING; a_conforms_to_type: BMM_CLASS_DEFINITION)
 			-- any_type is a reference to the Any definition from this schema
 		do
 			name := a_name
@@ -40,14 +40,24 @@ feature -- Initialisation
 
 feature -- Access (attributes from schema)
 
-	name: attached STRING
+	name: STRING
 			-- name of the parameter, e.g. 'T' etc
 
-	conforms_to_type: BMM_CLASS_DEFINITION
+	conforms_to_type: detachable BMM_CLASS_DEFINITION
 			-- optional conformance constraint derived from `conforms_to_type'
 
 	inheritance_precursor: detachable BMM_GENERIC_PARAMETER_DEFINITION
 			-- if set, is the corresponding generic parameter definition in an ancestor class
+
+	semantic_class: BMM_CLASS_DEFINITION
+			-- the 'design' class of this type, ignoring containers, multiplicity etc.
+		do
+			if is_constrained then
+				Result := conforms_to_type
+			else
+				Result := any_class_definition
+			end
+		end
 
 feature -- Access
 
@@ -61,7 +71,7 @@ feature -- Access
 			end
 		end
 
-	flattened_type_list: attached ARRAYED_LIST [STRING]
+	flattened_type_list: ARRAYED_LIST [STRING]
 			-- completely flattened list of type names, flattening out all generic parameters
 			-- note that for this type, we output "ANY" if there is no constraint
 		do

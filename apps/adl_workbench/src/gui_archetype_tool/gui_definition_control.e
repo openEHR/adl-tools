@@ -399,7 +399,7 @@ feature {NONE} -- Implementation
 					agent (a_row: EV_GRID_ROW): BOOLEAN
 						do
 							if attached {C_OBJECT_ED_CONTEXT} a_row.data as co_ed_ctx then
-								Result := not co_ed_ctx.is_rm and rm_schema.is_descendant_of (co_ed_ctx.rm_class.name, visualise_descendants_class)
+								Result := not co_ed_ctx.is_rm and rm_schema.is_descendant_of (co_ed_ctx.rm_type.semantic_class.name, visualise_descendants_class)
 							end
 						end
 				)
