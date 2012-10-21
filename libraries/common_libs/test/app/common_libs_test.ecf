@@ -3,6 +3,7 @@
 		<root class="APPLICATION" feature="make"/>
 		<file_rule>
 			<exclude>/\.svn$</exclude>
+			<exclude>/\.git$</exclude>
 		</file_rule>
 		<option trace="false" profile="false" debug="false" warning="true">
 			<debug name="__unnamed_debug__" enabled="false"/>
