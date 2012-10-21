@@ -4,6 +4,7 @@
 		<root class="GUI_APP_ROOT" feature="make_and_launch"/>
 		<file_rule>
 			<exclude>/\.svn$</exclude>
+			<exclude>/\.git$</exclude>
 		</file_rule>
 		<option trace="false" profile="false" debug="true" warning="true" full_class_checking="false" syntax="standard" namespace="openehr">
 			<debug name="__unnamed_debug__" enabled="false"/>

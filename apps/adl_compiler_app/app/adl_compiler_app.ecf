@@ -5,6 +5,7 @@
 		<file_rule>
 			<exclude>/EIFGENs$</exclude>
 			<exclude>/.svn$</exclude>
+			<exclude>/.git$</exclude>
 			<exclude>/CVS$</exclude>
 		</file_rule>
 		<option warning="true">
