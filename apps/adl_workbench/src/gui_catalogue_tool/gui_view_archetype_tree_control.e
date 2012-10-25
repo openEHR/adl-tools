@@ -365,7 +365,7 @@ feature {NONE} -- Implementation
 	ev_filesys_tree_expand (ev_grid_row: EV_GRID_ROW): BOOLEAN
 		do
 			Result := attached {ARCH_CAT_FILESYS_NODE} ev_grid_row.data as acfs and then
-				not acfs.has_children_of_type (<<{ARTEFACT_TYPE}.archetype, {ARTEFACT_TYPE}.template>>) and
+				acfs.has_matching_children (agent (aci: ARCH_CAT_ITEM): BOOLEAN do Result := attached {ARCH_CAT_FILESYS_NODE} aci end) and
 				ev_grid_row.is_expandable
 		end
 

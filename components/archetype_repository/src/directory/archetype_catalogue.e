@@ -232,6 +232,7 @@ feature -- Modification
 				end
 
 				-- add to filesys index
+				add_arch_to_filesys_tree (aca)
 			else
 				post_error (Current, "add_adhoc_item", "invalid_filename_e1", <<full_path>>)
 			end
@@ -494,20 +495,27 @@ feature {NONE} -- Implementation
 				-- filesystem nodes sa required
 				archs := profile_repos_csr.item.fast_archetype_list
 				across archs as archs_csr loop
-					if not archs_csr.item.is_specialised then
-						parent_dir := file_system.dirname (archs_csr.item.differential_path).as_lower
-						if not filesys_item_index.has (parent_dir) then
-							add_filesys_nodes (parent_dir)
-						end
-						filesys_item_index.item (parent_dir).put_child (archs_csr.item)
-						filesys_item_index.force (archs_csr.item, archs_csr.item.qualified_key)
-					end
+					add_arch_to_filesys_tree (archs_csr.item)
 				end
 			end
 		end
 
+	add_arch_to_filesys_tree (aca: ARCH_CAT_ARCHETYPE)
+		local
+			parent_dir: STRING
+		do
+			if not aca.is_specialised then
+				parent_dir := file_system.dirname (aca.differential_path).as_lower
+				if not filesys_item_index.has (parent_dir) then
+					add_filesys_nodes (parent_dir)
+				end
+				filesys_item_index.item (parent_dir).put_child (aca)
+				filesys_item_index.force (aca, aca.qualified_key)
+			end
+		end
+
 	add_filesys_nodes (a_dir_path: STRING)
-			-- create file system nodes in `filesys_item_tree' based on `a_dir_path'
+			-- create intermediate file system nodes in `filesys_item_tree' based on `a_dir_path'
 		local
 			parent_dir: STRING
 			filesys_node: ARCH_CAT_FILESYS_NODE
