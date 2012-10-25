@@ -251,6 +251,8 @@ feature -- Modification
 			archetype_index.force (aca, aca.id.as_string)
 			semantic_item_index.remove (aca.old_id.as_string.as_lower)
 			semantic_item_index.force (aca, aca.id.as_string.as_lower)
+			filesys_item_index.remove (aca.old_id.as_string.as_lower)
+			filesys_item_index.force (aca, aca.id.as_string.as_lower)
 			aca.parent.remove_child (aca)
 			semantic_item_index.item (aca.ontological_parent_name).put_child (aca)
 			aca.clear_old_ontological_parent_name
@@ -492,12 +494,14 @@ feature {NONE} -- Implementation
 				-- filesystem nodes sa required
 				archs := profile_repos_csr.item.fast_archetype_list
 				across archs as archs_csr loop
-					parent_dir := file_system.dirname (archs_csr.item.differential_path).as_lower
-					if not filesys_item_index.has (parent_dir) then
-						add_filesys_nodes (parent_dir)
+					if not archs_csr.item.is_specialised then
+						parent_dir := file_system.dirname (archs_csr.item.differential_path).as_lower
+						if not filesys_item_index.has (parent_dir) then
+							add_filesys_nodes (parent_dir)
+						end
+						filesys_item_index.item (parent_dir).put_child (archs_csr.item)
+						filesys_item_index.force (archs_csr.item, archs_csr.item.qualified_key)
 					end
-					filesys_item_index.item (parent_dir).put_child (archs_csr.item)
-					filesys_item_index.force (archs_csr.item, archs_csr.item.qualified_key)
 				end
 			end
 		end

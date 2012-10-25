@@ -17,6 +17,9 @@ class ARCH_CAT_FILESYS_NODE
 
 inherit
 	ARCH_CAT_MODEL_NODE
+		redefine
+			put_child
+		end
 
 	KL_SHARED_FILE_SYSTEM
 		export
@@ -48,6 +51,20 @@ feature -- Access
 			-- tool-wide unique id for this artefact
 		do
 			Result := qualified_key
+		end
+
+feature -- Modification
+
+	put_child (a_child: like child_type)
+		do
+			if children = Void then
+				create children.make
+			end
+			children.extend (a_child)
+			if attached {ARCH_CAT_FILESYS_NODE} a_child then
+				a_child.set_parent (Current)
+			end
+			reset_subtree_artefact_count
 		end
 
 end
