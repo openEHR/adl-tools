@@ -84,8 +84,8 @@ feature -- Commands
 				grid_row := semantic_grid_row_map.item (ari_global_id)
 				gui_semantic_grid.ev_grid.ensure_visible (grid_row)
 				select_grid_row (grid_row, ari_global_id)
-
-			elseif filesys_grid_row_map.has (ari_global_id) then
+			end
+			if filesys_grid_row_map.has (ari_global_id) then
 				grid_row := filesys_grid_row_map.item (ari_global_id)
 				gui_filesys_grid.ev_grid.ensure_visible (grid_row)
 				select_grid_row (grid_row, ari_global_id)
@@ -364,7 +364,9 @@ feature {NONE} -- Implementation
 
 	ev_filesys_tree_expand (ev_grid_row: EV_GRID_ROW): BOOLEAN
 		do
-			Result := attached {ARCH_CAT_FILESYS_NODE} ev_grid_row.data as acfs and ev_grid_row.is_expandable
+			Result := attached {ARCH_CAT_FILESYS_NODE} ev_grid_row.data as acfs and then
+				not acfs.has_children_of_type (<<{ARTEFACT_TYPE}.archetype, {ARTEFACT_TYPE}.template>>) and
+				ev_grid_row.is_expandable
 		end
 
 	class_node_handler (ev_grid_row: EV_GRID_ROW; x,y, button: INTEGER)

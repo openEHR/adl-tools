@@ -167,6 +167,15 @@ feature -- Status Report
 			)
 		end
 
+   	has_children_of_type (artefact_types: ARRAY [INTEGER]): BOOLEAN
+   			-- true if any direct children of the types mentioned in `artefact_types'
+		do
+ 			Result := attached children and then
+ 				across children as child_csr some
+ 					attached {ARCH_CAT_ARCHETYPE} child_csr.item as ara and then artefact_types.has (ara.artefact_type)
+ 				end
+		end
+
 feature {ARCHETYPE_CATALOGUE} -- Modification
 
 	put_child (a_child: like child_type)
