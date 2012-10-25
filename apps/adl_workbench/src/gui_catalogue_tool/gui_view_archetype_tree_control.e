@@ -2,15 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Populate ontology controls in ADL editor"
 	keywords:    "ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2004-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 
 class GUI_VIEW_ARCHETYPE_TREE_CONTROL
 
@@ -18,6 +13,8 @@ inherit
 	GUI_ARTEFACT_TREE_CONTROL
 		rename
 			make as make_tree_control
+		redefine
+			on_rotate_view
 		end
 
 	BMM_DEFINITIONS
@@ -57,33 +54,54 @@ feature -- Commands
 	update_tree_node_for_archetype (aca: attached ARCH_CAT_ARCHETYPE)
 			-- update Catalogue tree node with changes in compilation status
 		do
-			if ev_node_descriptor_map.has (aca.qualified_name) then
-				update_grid_row (ev_node_descriptor_map.item (aca.qualified_name), True)
+			-- update semantic grid
+			if semantic_grid_row_map.has (aca.qualified_name) then
+				semantic_grid_update_row (semantic_grid_row_map.item (aca.qualified_name), True)
 			elseif attached aca.old_id then
-				if ev_node_descriptor_map.has (aca.old_id.as_string) then
-					ev_node_descriptor_map.replace_key (aca.qualified_name, aca.old_id.as_string)
-					update_grid_row (ev_node_descriptor_map.item (aca.qualified_name), True)
+				if semantic_grid_row_map.has (aca.old_id.as_string) then
+					semantic_grid_row_map.replace_key (aca.qualified_name, aca.old_id.as_string)
+					semantic_grid_update_row (semantic_grid_row_map.item (aca.qualified_name), True)
+				end
+			end
+
+			-- update filesys grid
+			if filesys_grid_row_map.has (aca.qualified_name) then
+				filesys_grid_update_row (filesys_grid_row_map.item (aca.qualified_name), True)
+			elseif attached aca.old_id then
+				if filesys_grid_row_map.has (aca.old_id.as_string) then
+					filesys_grid_row_map.replace_key (aca.qualified_name, aca.old_id.as_string)
+					filesys_grid_update_row (filesys_grid_row_map.item (aca.qualified_name), True)
 				end
 			end
 		end
 
 	select_item_in_tree (ari_global_id: attached STRING)
 			-- ensure node with global node id `ari_global_id' is visible in the tree
+		local
+			grid_row: detachable EV_GRID_ROW
 		do
-			if ev_node_descriptor_map.has (ari_global_id) then -- and gui_grid.ev_grid.is_displayed then
-				gui_grid.ev_grid.ensure_visible (ev_node_descriptor_map.item (ari_global_id))
+			if semantic_grid_row_map.has (ari_global_id) then
+				grid_row := semantic_grid_row_map.item (ari_global_id)
+				gui_semantic_grid.ev_grid.ensure_visible (grid_row)
+				select_grid_row (grid_row, ari_global_id)
 
-				-- if an archetype tool already exists with this id, then cause it to be shown
-				-- and then select corresponding tree node, but with events off. If no
-				-- archetype tool available, treat as if it were a first time request for this archetype
-				-- and do a normal tree node select
-				if gui_agents.show_tool_with_artefact_agent.item ([ari_global_id]) then
-					ev_node_descriptor_map.item (ari_global_id).select_actions.block
-					ev_node_descriptor_map.item (ari_global_id).enable_select
-					ev_node_descriptor_map.item (ari_global_id).select_actions.resume
-				else
-					ev_node_descriptor_map.item (ari_global_id).enable_select
-				end
+			elseif filesys_grid_row_map.has (ari_global_id) then
+				grid_row := filesys_grid_row_map.item (ari_global_id)
+				gui_filesys_grid.ev_grid.ensure_visible (grid_row)
+				select_grid_row (grid_row, ari_global_id)
+			end
+		end
+
+feature -- Events
+
+	on_rotate_view
+		do
+			if gui_semantic_grid.ev_grid.is_displayed then
+				gui_semantic_grid.ev_grid.hide
+				gui_filesys_grid.ev_grid.show
+			else
+				gui_filesys_grid.ev_grid.hide
+				gui_semantic_grid.ev_grid.show
 			end
 		end
 
@@ -91,44 +109,50 @@ feature {NONE} -- Implementation
 
 	do_populate
 		do
-	 		source.do_all (agent ev_tree_node_populate_enter, agent ev_tree_node_populate_exit)
-			gui_grid.ev_grid.expand_all (agent ev_tree_expand)
-			gui_grid.resize_columns_to_content
+			-- populate semantic grid by default
+	 		source.do_all_semantic (agent ev_semantic_grid_populate_enter, agent ev_semantic_grid_populate_exit)
+			gui_semantic_grid.ev_grid.expand_all (agent ev_semantic_tree_expand)
+			gui_semantic_grid.resize_columns_to_content
+
+			-- populate filesys grid on demand
+	 		source.do_all_filesys (agent ev_filesys_grid_populate_enter, agent ev_filesys_grid_populate_exit)
+			gui_filesys_grid.ev_grid.expand_all (agent ev_filesys_tree_expand)
+			gui_filesys_grid.resize_columns_to_content
 		end
 
-   	ev_tree_node_populate_enter (aci: attached ARCH_CAT_ITEM)
+   	ev_semantic_grid_populate_enter (aci: attached ARCH_CAT_ITEM)
    			-- Add a node representing `an_item' to `gui_file_tree'.
 		do
 			if not aci.is_root and (aci.subtree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
 								(attached {ARCH_CAT_ARCHETYPE} aci as aca and then artefact_types.has (aca.artefact_type))) then
 				-- add row to grid
 				if ev_tree_item_stack.is_empty then
-					gui_grid.add_row (aci)
+					gui_semantic_grid.add_row (aci)
 				else
-					gui_grid.add_sub_row (ev_tree_item_stack.item, aci)
+					gui_semantic_grid.add_sub_row (ev_tree_item_stack.item, aci)
 				end
-				ev_tree_item_stack.extend (gui_grid.last_row)
- 				ev_node_descriptor_map.put (gui_grid.last_row, aci.global_artefact_identifier)
+				ev_tree_item_stack.extend (gui_semantic_grid.last_row)
+ 				semantic_grid_row_map.put (gui_semantic_grid.last_row, aci.global_artefact_identifier)
 
  				-- update contents
-	 			update_grid_row (gui_grid.last_row, False)
+	 			semantic_grid_update_row (gui_semantic_grid.last_row, False)
 
 				-- select / menu handling
-				if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (1) as gli then
+				if attached {EV_GRID_LABEL_ITEM} gui_semantic_grid.last_row.item (1) as gli then
 					if attached {ARCH_CAT_ARCHETYPE} aci as aca then -- archetype / template node
-			 			gli.pointer_button_press_actions.force_extend (agent archetype_node_handler (gui_grid.last_row, ?, ?, ?))
+			 			gli.pointer_button_press_actions.force_extend (agent archetype_node_handler (gui_semantic_grid.last_row, ?, ?, ?))
 			 			gli.select_actions.force_extend (agent select_archetype_with_delay (aca))
 
-		 			elseif attached {ARCH_CAT_MODEL_NODE} aci as acmn and then acmn.is_class then -- it is a model node
-			 			gli.pointer_button_press_actions.force_extend (agent class_node_handler (gui_grid.last_row, ?, ?, ?))
-			 			gli.select_actions.force_extend (agent select_class_with_delay (acmn))
+		 			elseif attached {ARCH_CAT_CLASS_NODE} aci as acc then
+			 			gli.pointer_button_press_actions.force_extend (agent class_node_handler (gui_semantic_grid.last_row, ?, ?, ?))
+			 			gli.select_actions.force_extend (agent select_class_with_delay (acc))
 					end
 					gli.pointer_button_press_actions.force_extend (agent do gui_agents.history_set_active_agent.call ([ultimate_parent_tool]) end)
 				end
 			end
 		end
 
-   	ev_tree_node_populate_exit (aci: ARCH_CAT_ITEM)
+   	ev_semantic_grid_populate_exit (aci: ARCH_CAT_ITEM)
    		do
 			if not aci.is_root and (aci.subtree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
 				(attached {ARCH_CAT_ARCHETYPE} aci as aca and then artefact_types.has (aca.artefact_type)))
@@ -137,7 +161,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-   	update_grid_row (ev_row: EV_GRID_ROW; update_flag: BOOLEAN)
+   	semantic_grid_update_row (ev_row: EV_GRID_ROW; update_flag: BOOLEAN)
    			-- Set the text, tooltip and icon appropriate to the item attached to `node'.
    		local
 			text, tooltip: STRING
@@ -175,36 +199,125 @@ feature {NONE} -- Implementation
 						col := archetype_rm_type_color
 					end
 
-	 			elseif attached {ARCH_CAT_MODEL_NODE} aci as acmn then -- it is a model node
-					if acmn.is_class then
-						pixmap := catalogue_node_pixmap (acmn)
-			 	 		tooltip.append (acmn.qualified_name + "%N" + acmn.class_definition.description)
-						text.append (aci.name)
-						col := archetype_rm_type_color
-					else
-		 				text.append (acmn.qualified_name)
-						pixmap := get_icon_pixmap ("archetype/" + aci.group_name)
-						tooltip.append (get_msg ("rm_closure_tree_node_tooltip", <<acmn.qualified_name, acmn.bmm_schema.schema_id>>))
-					end
-	 				text.append (" (" + acmn.subtree_artefact_count (artefact_types).out + ")")
+	 			elseif attached {ARCH_CAT_CLASS_NODE} aci as acc then
+					pixmap := catalogue_node_pixmap (acc)
+		 	 		tooltip.append (acc.qualified_name + "%N" + acc.class_definition.description)
+					text.append (aci.name)
+					col := archetype_rm_type_color
+	 				text.append (" (" + acc.subtree_artefact_count (artefact_types).out + ")")
+
+	 			elseif attached {ARCH_CAT_CLOSURE_NODE} aci as accl then
+	 				text.append (accl.qualified_name)
+					pixmap := get_icon_pixmap ("archetype/" + aci.group_name)
+					tooltip.append (get_msg ("rm_closure_tree_node_tooltip", <<accl.qualified_name, accl.bmm_schema.schema_id>>))
+	 				text.append (" (" + accl.subtree_artefact_count (artefact_types).out + ")")
 
 				end
 
 				-- set text
 				if update_flag then
-					gui_grid.set_last_row (ev_row)
-					gui_grid.update_last_row_label_col (1, text, tooltip, col, pixmap)
+					gui_semantic_grid.set_last_row (ev_row)
+					gui_semantic_grid.update_last_row_label_col (1, text, tooltip, col, pixmap)
 				else
-					gui_grid.set_last_row_label_col (1, text, tooltip, col, pixmap)
+					gui_semantic_grid.set_last_row_label_col (1, text, tooltip, col, pixmap)
 				end
 			end
 		end
 
-	selected_class_node: ARCH_CAT_MODEL_NODE
-
-	select_class_with_delay (acmn: attached ARCH_CAT_MODEL_NODE)
+   	ev_filesys_grid_populate_enter (aci: attached ARCH_CAT_ITEM)
+   			-- Add a node representing `an_item' to `gui_file_tree'.
 		do
-			selected_class_node := acmn
+			if not aci.is_root then
+				-- add row to grid
+				if ev_tree_item_stack.is_empty then
+					gui_filesys_grid.add_row (aci)
+				else
+					gui_filesys_grid.add_sub_row (ev_tree_item_stack.item, aci)
+				end
+				ev_tree_item_stack.extend (gui_filesys_grid.last_row)
+ 				filesys_grid_row_map.put (gui_filesys_grid.last_row, aci.global_artefact_identifier)
+
+ 				-- update contents
+	 			filesys_grid_update_row (gui_filesys_grid.last_row, False)
+
+				-- select / menu handling
+				if attached {EV_GRID_LABEL_ITEM} gui_filesys_grid.last_row.item (1) as gli then
+					if attached {ARCH_CAT_ARCHETYPE} aci as aca then -- archetype / template node
+			 			gli.pointer_button_press_actions.force_extend (agent archetype_node_handler (gui_filesys_grid.last_row, ?, ?, ?))
+			 			gli.select_actions.force_extend (agent select_archetype_with_delay (aca))
+					end
+					gli.pointer_button_press_actions.force_extend (agent do gui_agents.history_set_active_agent.call ([ultimate_parent_tool]) end)
+				end
+			end
+		end
+
+   	ev_filesys_grid_populate_exit (aci: ARCH_CAT_ITEM)
+   		do
+			if not aci.is_root then
+				ev_tree_item_stack.remove
+			end
+		end
+
+   	filesys_grid_update_row (ev_row: EV_GRID_ROW; update_flag: BOOLEAN)
+   			-- Set the text, tooltip and icon appropriate to the item attached to `node'.
+   		local
+			text, tooltip: STRING
+			pixmap: EV_PIXMAP
+			col: EV_COLOR
+		do
+			if attached {ARCH_CAT_ITEM} ev_row.data as aci then
+				create text.make_empty
+				create tooltip.make_empty
+
+				if attached {ARCH_CAT_ARCHETYPE} aci as aca then -- archetype / template node
+					-- text
+					if aca.has_legacy_flat_file and display_archetype_source then
+						text.append ("(lf) ")
+					end
+					if aca.is_reference_archetype then
+						text.append (aci.name.as_upper)
+					else
+						text.append (aca.name)
+					end
+					if aca.has_slots then
+						text.append (Right_arrow_char_utf8)
+					end
+
+					-- tooltip
+					tooltip.append (aca.full_path)
+					if aca.has_legacy_flat_file and aca.differential_generated then
+						tooltip.append ("%N" + get_text ("archetype_tree_node_tooltip"))
+					end
+
+					-- pixmap
+					pixmap := get_icon_pixmap ("archetype/" + aca.group_name)
+
+					if aca.is_reference_archetype then
+						col := archetype_rm_type_color
+					end
+
+	 			elseif attached {ARCH_CAT_FILESYS_NODE} aci as acfsn then
+	 				text.append (acfsn.name)
+					pixmap := get_icon_pixmap ("archetype/" + aci.group_name)
+	 				text.append (" (" + acfsn.subtree_artefact_count (artefact_types).out + ")")
+
+				end
+
+				-- set text
+				if update_flag then
+					gui_filesys_grid.set_last_row (ev_row)
+					gui_filesys_grid.update_last_row_label_col (1, text, tooltip, col, pixmap)
+				else
+					gui_filesys_grid.set_last_row_label_col (1, text, tooltip, col, pixmap)
+				end
+			end
+		end
+
+	selected_class_node: ARCH_CAT_CLASS_NODE
+
+	select_class_with_delay (acc: attached ARCH_CAT_CLASS_NODE)
+		do
+			selected_class_node := acc
 			delayed_select_class_agent.set_interval (300)
 		end
 
@@ -242,11 +355,16 @@ feature {NONE} -- Implementation
 			)
 		end
 
-	ev_tree_expand (ev_grid_row: EV_GRID_ROW): BOOLEAN
+	ev_semantic_tree_expand (ev_grid_row: EV_GRID_ROW): BOOLEAN
 		do
-			if attached {ARCH_CAT_MODEL_NODE} ev_grid_row.data as acmn then
-	 			Result := (acmn.is_abstract_class or acmn.is_rm_closure) and ev_grid_row.is_expandable
-	 		end
+			Result := (attached {ARCH_CAT_CLASS_NODE} ev_grid_row.data as acc and then acc.class_definition.is_abstract or
+				attached {ARCH_CAT_CLOSURE_NODE} ev_grid_row.data) and
+	 			ev_grid_row.is_expandable
+		end
+
+	ev_filesys_tree_expand (ev_grid_row: EV_GRID_ROW): BOOLEAN
+		do
+			Result := attached {ARCH_CAT_FILESYS_NODE} ev_grid_row.data as acfs and ev_grid_row.is_expandable
 		end
 
 	class_node_handler (ev_grid_row: EV_GRID_ROW; x,y, button: INTEGER)
@@ -255,7 +373,7 @@ feature {NONE} -- Implementation
 			menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
-			if button = {EV_POINTER_CONSTANTS}.right and attached {ARCH_CAT_MODEL_NODE} ev_grid_row.data as acmn then
+			if button = {EV_POINTER_CONSTANTS}.right and attached {ARCH_CAT_CLASS_NODE} ev_grid_row.data then
 				create menu
 				create an_mi.make_with_text_and_action (get_msg ("display_in_active_tab", Void), agent display_context_selected_class_in_active_tool (ev_grid_row))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool"))
@@ -276,27 +394,43 @@ feature {NONE} -- Implementation
 	display_context_selected_class_in_active_tool (ev_grid_row: EV_GRID_ROW)
 		do
 			ev_grid_row.enable_select
-			if attached {ARCH_CAT_MODEL_NODE} ev_grid_row.data as acmn then
-				gui_agents.select_class_agent.call ([acmn.class_definition])
+			if attached {ARCH_CAT_CLASS_NODE} ev_grid_row.data as acc then
+				gui_agents.select_class_agent.call ([acc.class_definition])
 			end
 		end
 
 	display_context_selected_class_in_new_tool (ev_grid_row: EV_GRID_ROW)
 		do
 			ev_grid_row.enable_select
-			if attached {ARCH_CAT_MODEL_NODE} ev_grid_row.data as acmn then
-				gui_agents.select_class_in_new_tool_agent.call ([acmn.class_definition])
+			if attached {ARCH_CAT_CLASS_NODE} ev_grid_row.data as acc then
+				gui_agents.select_class_in_new_tool_agent.call ([acc.class_definition])
 			end
 		end
 
 	display_context_selected_class_in_rm_schema_tool (ev_grid_row: EV_GRID_ROW)
 		do
 			ev_grid_row.enable_select
-			if attached {ARCH_CAT_MODEL_NODE} ev_grid_row.data as acmn then
-				gui_agents.select_class_in_rm_schema_tool_agent.call ([acmn.class_definition.globally_qualified_path])
+			if attached {ARCH_CAT_CLASS_NODE} ev_grid_row.data as acc then
+				gui_agents.select_class_in_rm_schema_tool_agent.call ([acc.class_definition.globally_qualified_path])
 			end
 		end
 
+	select_grid_row (a_grid_row: EV_GRID_ROW; ari_global_id: STRING)
+			-- if an archetype tool already exists with this id, then cause it to be shown
+			-- and then select corresponding tree node, but with events off. If no
+			-- archetype tool available, treat as if it were a first time request for this archetype
+			-- and do a normal tree node select
+		do
+			if attached a_grid_row then
+				if gui_agents.show_tool_with_artefact_agent.item ([ari_global_id]) then
+					a_grid_row.select_actions.block
+					a_grid_row.enable_select
+					a_grid_row.select_actions.resume
+				else
+					a_grid_row.enable_select
+				end
+			end
+		end
 end
 
 

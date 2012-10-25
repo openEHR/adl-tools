@@ -4,15 +4,10 @@ note
 				 Directory representation of a file-system archetype repository.
 				 ]"
 	keywords:    "ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2006-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL: $"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate: $"
-
 
 deferred class ARCHETYPE_INDEXED_REPOSITORY_I
 
@@ -52,9 +47,8 @@ feature -- Commands
 			create archetype_id_index.make (0)
 			create fast_archetype_list.make (0)
 			get_archetypes_in_folder (full_path)
-			from archetype_id_index.start until archetype_id_index.off loop
-				fast_archetype_list.extend (archetype_id_index.item_for_iteration)
-				archetype_id_index.forth
+			across archetype_id_index as arch_ids_csr loop
+				fast_archetype_list.extend (arch_ids_csr.item)
 			end
 		end
 

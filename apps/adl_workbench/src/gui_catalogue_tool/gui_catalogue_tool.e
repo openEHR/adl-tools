@@ -2,20 +2,15 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Combined control for viewing archetype and template artefacts in 2 trees"
 	keywords:    "ADL, archetype, template, UI"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 
 class GUI_CATALOGUE_TOOL
 
 inherit
-	SHARED_SOURCE_REPOSITORIES
+	SHARED_KNOWLEDGE_REPOSITORY
 		export
 			{NONE} all
 		end
@@ -35,7 +30,7 @@ inherit
 
 	GUI_CATALOGUE_TARGETTED_TOOL
 		redefine
-			go_to_selected_item
+			go_to_selected_item, on_rotate_view, mini_tool_bar
 		end
 
 create
@@ -70,6 +65,14 @@ feature {NONE} -- Initialisation
 			ev_root_container.set_item_text (stats_viewer.ev_root_container, get_text ("catalogue_stats_tab_text"))
 			set_stats_metric_tab_appearance
 
+			-- docking pane mini-toolbar with rotate-view button
+			create gui_mini_tool_bar.make
+			gui_mini_tool_bar.add_tool_bar
+			gui_mini_tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/view_rotate_active"), get_icon_pixmap ("tool/view_rotate_inactive"),
+				get_text ("catalogue_mini_toolbar_view_rotate"), agent on_rotate_view)
+			rotate_view_button := gui_mini_tool_bar.last_tool_bar_button
+			gui_mini_tool_bar.activate_tool_bar_button (rotate_view_button)
+
 			-- set events: select a notebook tab
 			ev_root_container.selection_actions.extend (agent on_select_notebook)
 
@@ -92,6 +95,11 @@ feature -- Access
 			else
 				create Result.make(0)
 			end
+		end
+
+	mini_tool_bar: EV_TOOL_BAR
+		do
+			Result := gui_mini_tool_bar.last_tool_bar
 		end
 
 feature -- Status Report
@@ -160,7 +168,7 @@ feature -- Commands
 			fname := dialog.file_name.as_string_8
 
 			if not fname.is_empty then
-				if not source_repositories.adhoc_source_repository.has_path (fname) then
+				if not current_arch_cat.profile_repo_access.adhoc_source_repository.has_path (fname) then
 					set_current_work_directory (file_system.dirname (fname))
 					if not file_system.file_exists (fname) then
 						(create {EV_INFORMATION_DIALOG}.make_with_text (get_msg ("file_not_found", <<fname>>))).show_modal_to_window (proximate_ev_window (ev_root_container))
@@ -248,6 +256,13 @@ feature -- Events
 			set_stats_metric_tab_appearance
 		end
 
+	on_rotate_view
+		do
+			if attached {GUI_CATALOGUE_TARGETTED_TOOL} ev_root_container.selected_item.data as cat_tool and attached source then
+				cat_tool.on_rotate_view
+			end
+		end
+
 feature {NONE} -- Implementation
 
 	do_clear
@@ -272,6 +287,10 @@ feature {NONE} -- Implementation
 		end
 
 	docking_pane: SD_CONTENT
+
+	gui_mini_tool_bar: EVX_TOOL_BAR
+
+	rotate_view_button: EV_TOOL_BAR_BUTTON
 
 	archetype_explorer: GUI_VIEW_ARCHETYPE_TREE_CONTROL
 
@@ -327,7 +346,8 @@ feature {NONE} -- Implementation
 
 				-- ask the user what format
 				across format_list as formats_csr loop
-					save_dialog.filters.extend (["*" + archetype_file_extensions [formats_csr.item], get_msg ("save_archetype_as_type", <<formats_csr.item.as_upper>>)])
+					save_dialog.filters.extend (["*" + archetype_file_extensions [formats_csr.item],
+							get_msg ("save_archetype_as_type", <<formats_csr.item.as_upper>>)])
 				end
 
 				save_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))

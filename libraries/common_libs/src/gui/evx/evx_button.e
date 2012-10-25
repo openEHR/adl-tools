@@ -1,77 +1,88 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Specialised form of SELECTION_HISTORY for ARCHETYPE_CATALOGUE"
-	keywords:    "ADL"
-	author:      "Thomas Beale"
+	description: "EV_BUTTON with active/inactive setting."
+	keywords:    "UI, ADL"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
-class ARCHETYPE_CATALOGUE_SELECTION_HISTORY
+class EVX_BUTTON
 
 inherit
-	SELECTION_HISTORY
-		redefine
-			selected_item
+	EVX_DEFINITIONS
+		export
+			{NONE} all
+		end
+
+	EVX_UTILITIES
+		export
+			{NONE} all
 		end
 
 create
 	make
 
+feature -- Initialisation
+
+	make (an_active_pixmap, an_inactive_pixmap: detachable EV_PIXMAP; a_tooltip_text: detachable STRING; a_select_action: detachable PROCEDURE [ANY, TUPLE])
+		do
+			active_pixmap := an_active_pixmap
+			inactive_pixmap := an_inactive_pixmap
+			select_action := a_select_action
+
+			create ev_button
+			if attached a_tooltip_text then
+				ev_button.set_tooltip (a_tooltip_text)
+			end
+			is_active := True
+			disable_active
+		end
+
 feature -- Access
 
-	selected_item: detachable ARCH_CAT_ITEM
-			-- The archetype at `selected_item'.
-		do
-			if attached {ARCH_CAT_ITEM} precursor as aci then
-				Result := aci
-			end
-		end
+	ev_button: EV_BUTTON
 
-	selected_archetype: detachable ARCH_CAT_ARCHETYPE
-			-- The archetype at `selected_item'.
-		do
-			if attached {ARCH_CAT_ARCHETYPE} selected_item as aca then
-				Result := aca
-			end
-		ensure
-			consistent_with_history: attached Result implies Result = selected_item
-		end
+	active_pixmap: detachable EV_PIXMAP
 
-	selected_class: detachable ARCH_CAT_CLASS_NODE
-			-- The class node at `selected_item'.
-		do
-			if attached {ARCH_CAT_CLASS_NODE} selected_item as acc then
-				Result := acc
-			end
-		ensure
-			consistent_with_history: attached Result implies Result = selected_item
-		end
+	inactive_pixmap: detachable EV_PIXMAP
+
+	select_action: detachable PROCEDURE [ANY, TUPLE]
 
 feature -- Status Report
 
-	has_selected_archetype: BOOLEAN
-			-- Has an archetype been selected?
+	is_active: BOOLEAN
+
+feature -- Commands
+
+	enable_active
+			-- set active pixmap and install `select_action'
 		do
-			Result := attached selected_archetype
+			if not is_active then
+				is_active := True
+				if attached active_pixmap then
+					ev_button.set_pixmap (active_pixmap)
+				end
+				if attached select_action then
+					ev_button.select_actions.extend (select_action)
+				end
+			end
 		end
 
-	has_validated_selected_archetype: BOOLEAN
-			-- Has a valid archetype been selected?
+	disable_active
+			-- set inactive pixmap and uninstall `select_action'
 		do
-			Result := attached selected_archetype and then selected_archetype.is_valid
+			if is_active then
+				is_active := False
+				if attached inactive_pixmap then
+					ev_button.set_pixmap (inactive_pixmap)
+				end
+				ev_button.select_actions.wipe_out
+			end
 		end
 
-	has_selected_class: BOOLEAN
-			-- Has a class been selected?
-		do
-			Result := attached selected_class
-		end
+feature {NONE} -- Implementation
+
 
 end
 
@@ -90,10 +101,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is archetype_directory.e.
+--| The Original Code is gui_hash_table.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2008
+--| Portions created by the Initial Developer are Copyright (C) 2012
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

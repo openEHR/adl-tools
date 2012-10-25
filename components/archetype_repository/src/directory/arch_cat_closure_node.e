@@ -1,79 +1,64 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Specialised form of SELECTION_HISTORY for ARCHETYPE_CATALOGUE"
-	keywords:    "ADL"
-	author:      "Thomas Beale"
+	description: "Descriptor of an RM closure node in a directory of archetypes"
+	keywords:    "ADL, archetype"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2006-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
 
-class ARCHETYPE_CATALOGUE_SELECTION_HISTORY
+class ARCH_CAT_CLOSURE_NODE
 
 inherit
-	SELECTION_HISTORY
+	ARCH_CAT_MODEL_NODE
 		redefine
-			selected_item
+			parent
 		end
 
 create
 	make
 
+feature -- Initialisation
+
+	make (an_rm_closure_name: STRING; a_bmm_schema: BMM_SCHEMA)
+			-- create to represent a RM closure package, e.g. 'EHR', 'DEMOGRAPHIC' etc - these are
+			-- packages whose reachability closure provide the classes for archetyping in that closure
+		require
+			Rm_closure_name_valid: not an_rm_closure_name.is_empty
+		do
+			bmm_schema := a_bmm_schema
+			qualified_name := publisher_qualified_rm_closure_name (bmm_schema.rm_publisher, an_rm_closure_name)
+			name := an_rm_closure_name
+			group_name := "model_group"
+		ensure
+			ontological_name_set: qualified_name.is_equal (publisher_qualified_rm_closure_name (bmm_schema.rm_publisher, an_rm_closure_name))
+			display_name_set: name = an_rm_closure_name
+			Schema_set: bmm_schema = a_bmm_schema
+		end
+
 feature -- Access
 
-	selected_item: detachable ARCH_CAT_ITEM
-			-- The archetype at `selected_item'.
+	bmm_schema: detachable BMM_SCHEMA
+
+	global_artefact_identifier: STRING
+			-- tool-wide unique id for this artefact
 		do
-			if attached {ARCH_CAT_ITEM} precursor as aci then
-				Result := aci
-			end
+			Result := qualified_key
 		end
 
-	selected_archetype: detachable ARCH_CAT_ARCHETYPE
-			-- The archetype at `selected_item'.
-		do
-			if attached {ARCH_CAT_ARCHETYPE} selected_item as aca then
-				Result := aca
-			end
-		ensure
-			consistent_with_history: attached Result implies Result = selected_item
-		end
+feature {ARCH_CAT_ITEM} -- Implementation
 
-	selected_class: detachable ARCH_CAT_CLASS_NODE
-			-- The class node at `selected_item'.
-		do
-			if attached {ARCH_CAT_CLASS_NODE} selected_item as acc then
-				Result := acc
-			end
-		ensure
-			consistent_with_history: attached Result implies Result = selected_item
-		end
-
-feature -- Status Report
-
-	has_selected_archetype: BOOLEAN
-			-- Has an archetype been selected?
-		do
-			Result := attached selected_archetype
-		end
-
-	has_validated_selected_archetype: BOOLEAN
-			-- Has a valid archetype been selected?
-		do
-			Result := attached selected_archetype and then selected_archetype.is_valid
-		end
-
-	has_selected_class: BOOLEAN
-			-- Has a class been selected?
-		do
-			Result := attached selected_class
-		end
+	parent: ARCH_CAT_CATEGORY_NODE
+			-- parent node
 
 end
+
 
 
 --|
@@ -90,10 +75,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is archetype_directory.e.
+--| The Original Code is archetype_directory_item.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2008
+--| Portions created by the Initial Developer are Copyright (C) 2006
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

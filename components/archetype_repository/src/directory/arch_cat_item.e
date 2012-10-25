@@ -43,17 +43,16 @@ inherit
 			is_equal
 		end
 
+	ITERABLE [ARCH_CAT_ITEM]
+		undefine
+			is_equal
+		end
+
 	COMPARABLE
 
 feature -- Definitions
 
 	Ontological_path_separator: STRING = "/"
-
-feature -- Initialisation
-
-	make
-		do
-		end
 
 feature -- Access
 
@@ -74,8 +73,9 @@ feature -- Access
 		end
 
 	qualified_key: STRING
-			-- lower-case form of `qualified_name', for safe matching
-		deferred
+			-- lower-case form of `qualified_name' for safe matching
+		do
+			Result := qualified_name.as_lower
 		ensure
 			Is_lower: Result.same_string (Result.as_lower)
 		end
@@ -86,7 +86,7 @@ feature -- Access
 		end
 
 	path: STRING
-			-- path from root of ontology structure down to this point
+			-- path from root of directory structure down to this point
 			-- for classes in the RM, it will look lie 			/content_item/care_entry/observation
 			-- for archetypes, it will look like 				/content_item/care_entry/observation/lab_result
 			-- for specialised archetypes, it will look like 	/content_item/care_entry/observation/lab_result/microbiology
@@ -126,17 +126,17 @@ feature -- Access
 			Result := group_name
 		end
 
+	new_cursor: ITERATION_CURSOR [like child_type]
+			-- Fresh cursor associated with current structure
+		do
+			Result := children.new_cursor
+		end
+
 feature -- Status Report
 
 	has_artefacts: BOOLEAN
 			-- True if there are any artefacts at or below this point
 		deferred
-		end
-
-	has_children: BOOLEAN
-			-- True if there are any child nodes
-		do
-			Result := children /= Void
 		end
 
 	is_root: BOOLEAN
@@ -145,56 +145,26 @@ feature -- Status Report
 			Result := parent = Void
 		end
 
+	has_children: BOOLEAN
+		do
+			Result := attached children
+		end
+
 	has_child (a_child: attached like child_type): BOOLEAN
 		do
-			if children /= Void then
-				Result := children.has (a_child)
-			end
+			Result := attached children and then children.has (a_child)
 		end
 
 	has_child_with_qualified_key (a_key: STRING): BOOLEAN
 		require
 			Lower_case_key: a_key.as_lower.same_string (a_key)
 		do
-			if children /= Void then
-				Result := children.there_exists (
-					agent (a_child: like child_type; key: STRING):BOOLEAN
-						do
-							Result := a_child.qualified_key.same_string (key)
-						end (?, a_key)
-				)
-			end
-		end
-
-feature -- Iteration
-
-	child_start
-			-- iterate through child nodes
-		require
-			has_chidlren: has_children
-		do
-			children.start
-		end
-
-	child_off: BOOLEAN
-		require
-			has_chidlren: has_children
-		do
-			Result := children.off
-		end
-
-	child_forth
-		require
-			has_chidlren: has_children
-		do
-			children.forth
-		end
-
-	child_item: like child_type
-		require
-			has_chidlren: has_children
-		do
-			Result := children.item
+			Result := attached children and then children.there_exists (
+				agent (a_child: like child_type; key: STRING):BOOLEAN
+					do
+						Result := a_child.qualified_key.same_string (key)
+					end (?, a_key)
+			)
 		end
 
 feature {ARCHETYPE_CATALOGUE} -- Modification
@@ -253,26 +223,22 @@ feature {ARCH_CAT_ITEM, ARCHETYPE_CATALOGUE} -- Implementation
 				-- create empty set of counters
 				create subtree_artefact_counts_cache.make(0)
 				atf_types := (create {ARTEFACT_TYPE}).types.linear_representation
-				from atf_types.start until atf_types.off loop
-					subtree_artefact_counts_cache.put (0, atf_types.item)
-					atf_types.forth
+				across atf_types as atf_types_csr loop
+					subtree_artefact_counts_cache.put (0, atf_types_csr.item)
 				end
 
 				-- aggregate child counts and local count
 				if has_children then
-					from children.start until children.off loop
-						-- the following is technically naughty, since it creates a dependency on a descendant type, but
+					across children as child_csr loop
+						-- FIXME: the following is technically naughty, since it creates a dependency on a descendant type, but
 						-- the code reduction seems worth it
-						from subtree_artefact_counts_cache.start until subtree_artefact_counts_cache.off loop
-							subtree_artefact_counts_cache.replace (subtree_artefact_counts_cache.item_for_iteration +
-																	children.item.subtree_artefact_counts.item (subtree_artefact_counts_cache.key_for_iteration),
-																	subtree_artefact_counts_cache.key_for_iteration)
-							subtree_artefact_counts_cache.forth
+						across subtree_artefact_counts_cache as subtree_counts_csr loop
+							subtree_artefact_counts_cache.replace (subtree_counts_csr.item +
+									child_csr.item.subtree_artefact_counts.item (subtree_counts_csr.key), subtree_counts_csr.key)
 						end
-						if attached {ARCH_CAT_ARCHETYPE} children.item as ara then
+						if attached {ARCH_CAT_ARCHETYPE} child_csr.item as ara then
 							subtree_artefact_counts_cache.replace (subtree_artefact_counts_cache.item (ara.artefact_type) + 1, ara.artefact_type)
 						end
-						children.forth
 					end
 				end
 			end

@@ -222,6 +222,7 @@ templates = <
 		["catalogue_tool_title"] = <"Repository">
 		["save_archetype_title"] = <"Save Archetype">
 		["export_archetype_title"] = <"Export Archetype">
+		["catalogue_mini_toolbar_view_rotate"] = <"Cycle through available views of artefacts">
 
 		-- GUI_PATH_MAP_CONTROL
 		["row_filter_frame_text"] = <"Row Filter">

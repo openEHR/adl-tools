@@ -50,8 +50,8 @@ feature {NONE} -- Implementation
 				create dir_name_index.make
 
 				-- deal with legacy archetype files and directories first
-				from fs_node_names.start until fs_node_names.off loop
-					fn := fs_node_names.item
+				across fs_node_names as fs_node_names_csr loop
+					fn := fs_node_names_csr.item
 					if fn.item (1) /= '.' then
 						l_full_path := file_system.pathname (a_path, fn)
 						if file_system.directory_exists (l_full_path) then
@@ -73,12 +73,11 @@ feature {NONE} -- Implementation
 							end
 						end
 					end
-					fs_node_names.forth
 				end
 
 				-- deal with differential files; can be generated from legacy, or may be the primary artefact
-				from fs_node_names.start until fs_node_names.off loop
-					fn := fs_node_names.item
+				across fs_node_names as fs_node_names_csr loop
+					fn := fs_node_names_csr.item
 					if fn.item (1) /= '.' then
 						if adl_differential_filename_pattern_regex.matches (fn) then
 							l_full_path := file_system.pathname (a_path, fn)
@@ -93,14 +92,12 @@ feature {NONE} -- Implementation
 							end
 						end
 					end
-					fs_node_names.forth
 				end
 			end
 
 			-- for all directories below this one, call this routine recursively
-			from dir_name_index.start until dir_name_index.off loop
-				get_archetypes_in_folder (file_system.pathname (a_path, dir_name_index.item))
-				dir_name_index.forth
+			across dir_name_index as dir_names_csr loop
+				get_archetypes_in_folder (file_system.pathname (a_path, dir_names_csr.item))
 			end
 
    			debug("arch_dir")

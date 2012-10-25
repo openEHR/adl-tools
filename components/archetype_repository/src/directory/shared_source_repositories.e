@@ -1,12 +1,12 @@
-note	
+note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Shared access to archteype source repositories.
 				 ]"
 	keywords:    "ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2010-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 	file:        "$URL$"
@@ -14,14 +14,14 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class SHARED_SOURCE_REPOSITORIES
+class SHARED_PROFILE_REPOSITORY_ACCESS
 
 feature -- Access
 
-	source_repositories: SOURCE_REPOSITORIES
+	current_profile_repository_access: PROFILE_REPOSITORY_ACCESS
 			-- application-wide archetype source access
 		once
-			create Result.make
+--			create Result.make
 		end
 
 end

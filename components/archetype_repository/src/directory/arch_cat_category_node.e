@@ -1,79 +1,51 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Specialised form of SELECTION_HISTORY for ARCHETYPE_CATALOGUE"
-	keywords:    "ADL"
-	author:      "Thomas Beale"
+	description: "Descriptor of a top-level category node in a directory of archetypes, e.g. 'archetype', 'template' etc"
+	keywords:    "ADL, archetype"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2006-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
 
-class ARCHETYPE_CATALOGUE_SELECTION_HISTORY
+class ARCH_CAT_CATEGORY_NODE
 
 inherit
-	SELECTION_HISTORY
-		redefine
-			selected_item
-		end
+	ARCH_CAT_MODEL_NODE
 
 create
 	make
 
+feature -- Initialisation
+
+	make (a_name: STRING)
+			-- create with ontological name of artefact category, e.g. 'archetype', 'template' etc
+		require
+			a_name_valid: not a_name.is_empty
+		do
+			qualified_name := a_name
+			name := a_name
+			group_name := "archetype_category"
+		ensure
+			ontological_name_set: qualified_name.is_equal (a_name)
+			display_name_set: name = qualified_name
+		end
+
 feature -- Access
 
-	selected_item: detachable ARCH_CAT_ITEM
-			-- The archetype at `selected_item'.
+	global_artefact_identifier: STRING
+			-- tool-wide unique id for this artefact
 		do
-			if attached {ARCH_CAT_ITEM} precursor as aci then
-				Result := aci
-			end
-		end
-
-	selected_archetype: detachable ARCH_CAT_ARCHETYPE
-			-- The archetype at `selected_item'.
-		do
-			if attached {ARCH_CAT_ARCHETYPE} selected_item as aca then
-				Result := aca
-			end
-		ensure
-			consistent_with_history: attached Result implies Result = selected_item
-		end
-
-	selected_class: detachable ARCH_CAT_CLASS_NODE
-			-- The class node at `selected_item'.
-		do
-			if attached {ARCH_CAT_CLASS_NODE} selected_item as acc then
-				Result := acc
-			end
-		ensure
-			consistent_with_history: attached Result implies Result = selected_item
-		end
-
-feature -- Status Report
-
-	has_selected_archetype: BOOLEAN
-			-- Has an archetype been selected?
-		do
-			Result := attached selected_archetype
-		end
-
-	has_validated_selected_archetype: BOOLEAN
-			-- Has a valid archetype been selected?
-		do
-			Result := attached selected_archetype and then selected_archetype.is_valid
-		end
-
-	has_selected_class: BOOLEAN
-			-- Has a class been selected?
-		do
-			Result := attached selected_class
+			Result := qualified_key
 		end
 
 end
+
 
 
 --|
@@ -90,10 +62,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is archetype_directory.e.
+--| The Original Code is archetype_directory_item.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2008
+--| Portions created by the Initial Developer are Copyright (C) 2006
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

@@ -37,7 +37,7 @@ feature -- Access
 
 feature {ARCHETYPE_CATALOGUE} -- Access
 
-	archetype_id_index: DS_HASH_TABLE [ARCH_CAT_ARCHETYPE, STRING]
+	archetype_id_index: HASH_TABLE [ARCH_CAT_ARCHETYPE, STRING]
 			-- list of all archetypes found in this directory tree, keyed by id
 
 feature -- Status Report

@@ -22,8 +22,6 @@ class SHARED_KNOWLEDGE_REPOSITORY
 inherit
 	SHARED_APP_RESOURCES
 
-	SHARED_SOURCE_REPOSITORIES
-
 feature -- Access
 
 	current_arch_cat: ARCHETYPE_CATALOGUE
@@ -43,14 +41,15 @@ feature -- Access
 			is_current_profile_valid
 		local
 			new_cat: ARCHETYPE_CATALOGUE
+			prof_repo_access: PROFILE_REPOSITORY_ACCESS
 		do
 			init_gen_dirs_from_current_profile
 			if not arch_cats.has (repository_profiles.current_profile_name) or else refresh then
-				create new_cat.make
-				source_repositories.set_reference_repository (repository_profiles.current_reference_repository_path)
+				create prof_repo_access.make (repository_profiles.current_reference_repository_path)
 				if repository_profiles.current_profile.has_work_repository then
-					source_repositories.set_work_repository (repository_profiles.current_work_repository_path)
+					prof_repo_access.set_work_repository (repository_profiles.current_work_repository_path)
 				end
+				create new_cat.make (prof_repo_access)
 				new_cat.populate
 				arch_cats.force (new_cat, repository_profiles.current_profile_name) -- replace original copy if it was there
 			end
@@ -100,7 +99,8 @@ feature -- Status Report
 feature {NONE} -- Implementation
 
 	arch_cats: HASH_TABLE [ARCHETYPE_CATALOGUE, STRING]
-			-- hash of all archetype directories used so far in the current session;
+			-- hash of all archetype catalogues used so far in the current session;
+			-- keyed by profile name;
 			-- lazy populated
 		once
 			create Result.make(0)

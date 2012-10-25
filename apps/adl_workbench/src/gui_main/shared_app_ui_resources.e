@@ -2,7 +2,7 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Shared UI resources"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale "
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
@@ -474,8 +474,8 @@ feature -- Conversion
 		local
 			pixmap_name: STRING
 		do
-			if attached {ARCH_CAT_MODEL_NODE} ara as acmn and then acmn.is_class then
-				pixmap_name := "rm/" + acmn.bmm_schema.rm_publisher + "/" + acmn.class_definition.name
+			if attached {ARCH_CAT_CLASS_NODE} ara as acc then
+				pixmap_name := "rm/" + acc.bmm_schema.rm_publisher + "/" + acc.class_definition.name
 				if use_rm_pixmaps and then has_icon_pixmap (pixmap_name) then
 					Result := get_icon_pixmap (pixmap_name)
 				else

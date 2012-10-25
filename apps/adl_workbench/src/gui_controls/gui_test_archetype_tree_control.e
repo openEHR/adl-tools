@@ -308,7 +308,7 @@ feature -- Commands
 			clear
 
  			if has_current_profile then
-	 			current_arch_cat.do_all (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
+	 			current_arch_cat.do_all_semantic (agent populate_gui_tree_node_enter, agent populate_gui_tree_node_exit)
  			end
 
 			-- put names on columns

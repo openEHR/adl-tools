@@ -69,11 +69,6 @@ feature -- Definitions
    			end
    		end
 
-	time_epoch: DATE_TIME
-		once
-			create Result.make_from_epoch (0)
-		end
-
 feature -- Environment
 
 	is_windows: BOOLEAN

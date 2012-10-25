@@ -27,7 +27,7 @@ create
 feature {NONE} -- Initialisation
 
 	make (a_group_id: INTEGER)
-			-- Create as part of `a_group_id', with a sensible default `work_path'.
+			-- Create as part of `a_group_id'
 		require
 			group_id_valid: a_group_id > 0
 		do

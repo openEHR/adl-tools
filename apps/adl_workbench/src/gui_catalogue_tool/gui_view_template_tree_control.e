@@ -93,7 +93,7 @@ feature {NONE} -- Implementation
 	do_populate
 		do
  			source.do_all_archetypes (agent ev_tree_node_populate)
-			gui_grid.resize_columns_to_content
+			gui_semantic_grid.resize_columns_to_content
 		end
 
    	ev_tree_node_populate (ara: attached ARCH_CAT_ARCHETYPE)
@@ -108,10 +108,10 @@ feature {NONE} -- Implementation
 			-- make sure it is a template of some kind
 			if artefact_types.has (ara.artefact_type) then
 				-- if it is compiled & valid, display its flat filler structure
-				if ev_node_descriptor_map.has (ara.qualified_name) then
+				if semantic_grid_row_map.has (ara.qualified_name) then
 					if ara.is_valid then
-						ev_tree_item_stack.extend (ev_node_descriptor_map.item (ara.qualified_name))
-						gui_grid.remove_sub_rows (ev_tree_item_stack.item)
+						ev_tree_item_stack.extend (semantic_grid_row_map.item (ara.qualified_name))
+						gui_semantic_grid.remove_sub_rows (ev_tree_item_stack.item)
 						if attached {EV_GRID_LABEL_ITEM} ev_tree_item_stack.item.item (1) as gli then
 							gli.set_pixmap (catalogue_node_pixmap (ara))
 						end
@@ -121,13 +121,13 @@ feature {NONE} -- Implementation
 						og_iterator.do_all (agent ev_node_build_enter_action, agent ev_node_build_exit_action)
 						ev_tree_item_stack.remove
 					else
-						if attached {EV_GRID_LABEL_ITEM} ev_node_descriptor_map.item (ara.qualified_name) as gli then
+						if attached {EV_GRID_LABEL_ITEM} semantic_grid_row_map.item (ara.qualified_name) as gli then
 							gli.set_pixmap (catalogue_node_pixmap (ara))
 						end
 					end
 				else -- otherwise just display the template root
 					attach_node (ara.id.rm_entity + "." + ara.name, catalogue_node_pixmap (ara), ara)
-					ev_node_descriptor_map.force (ev_tree_item_stack.item, ara.qualified_name)
+					semantic_grid_row_map.force (ev_tree_item_stack.item, ara.qualified_name)
 					ev_tree_item_stack.remove
 				end
 			end
@@ -157,9 +157,9 @@ feature {NONE} -- Implementation
 						ca_path := c_attr.path
 					end
 					if not c_attr.children.off then
-						gui_grid.add_sub_row (ev_tree_item_stack.item, c_attr)
-						ev_tree_item_stack.extend (gui_grid.last_row)
-						gui_grid.set_last_row_label_col (1, ca_path, Void, Void, get_icon_pixmap ("archetype/" +
+						gui_semantic_grid.add_sub_row (ev_tree_item_stack.item, c_attr)
+						ev_tree_item_stack.extend (gui_semantic_grid.last_row)
+						gui_semantic_grid.set_last_row_label_col (1, ca_path, Void, Void, get_icon_pixmap ("archetype/" +
 							rm_schema.property_definition (c_attr.parent.rm_type_name, c_attr.rm_attribute_name).multiplicity_key_string))
 					end
 				elseif attached {C_ARCHETYPE_ROOT} ca as car and attached source as dir then
@@ -190,11 +190,11 @@ feature {NONE} -- Implementation
 		do
 			-- add row to grid
 			if ev_tree_item_stack.is_empty then
-				gui_grid.add_row (aca)
+				gui_semantic_grid.add_row (aca)
 			else
-				gui_grid.add_sub_row (ev_tree_item_stack.item, aca)
+				gui_semantic_grid.add_sub_row (ev_tree_item_stack.item, aca)
 			end
-			ev_tree_item_stack.extend (gui_grid.last_row)
+			ev_tree_item_stack.extend (gui_semantic_grid.last_row)
 
 			-- tooltip		
 			create tooltip.make_empty
@@ -203,26 +203,31 @@ feature {NONE} -- Implementation
 				tooltip.append ("%N" + get_text ("archetype_tree_node_tooltip"))
 			end
 
-			gui_grid.set_last_row_label_col (1, str, tooltip, Void, pixmap)
+			gui_semantic_grid.set_last_row_label_col (1, str, tooltip, Void, pixmap)
 
-			ev_node_descriptor_map.force (gui_grid.last_row, aca.qualified_name)
+			semantic_grid_row_map.force (gui_semantic_grid.last_row, aca.qualified_name)
 
 			-- context menu
-			if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (1) as gli then
-	 			gli.pointer_button_press_actions.force_extend (agent archetype_node_handler (gui_grid.last_row, ?, ?, ?))
+			if attached {EV_GRID_LABEL_ITEM} gui_semantic_grid.last_row.item (1) as gli then
+	 			gli.pointer_button_press_actions.force_extend (agent archetype_node_handler (gui_semantic_grid.last_row, ?, ?, ?))
 	 			gli.select_actions.force_extend (agent select_archetype_with_delay (aca))
 			end
 		end
 
-   	update_grid_row (ev_grid_row: EV_GRID_ROW; update_flag: BOOLEAN)
+   	semantic_grid_update_row (ev_grid_row: EV_GRID_ROW; update_flag: BOOLEAN)
    			-- Set the icon appropriate to the item attached to `node'.
 		do
- 			if attached {ARCH_CAT_MODEL_NODE} ev_grid_row.data as acmn then -- it is a model node
-				if acmn.is_class and attached {EV_GRID_LABEL_ITEM} ev_grid_row.item (1) as gli then
-					gli.set_pixmap (catalogue_node_pixmap (acmn))
-				end
+ 			if attached {ARCH_CAT_CLASS_NODE} ev_grid_row.data as acc and attached {EV_GRID_LABEL_ITEM} ev_grid_row.item (1) as gli then
+				gli.set_pixmap (catalogue_node_pixmap (acc))
 			end
 		end
+
+   	filesys_grid_update_row (ev_grid_row: EV_GRID_ROW; update_flag: BOOLEAN)
+   		do
+ 			if attached {ARCH_CAT_CLASS_NODE} ev_grid_row.data as acc and attached {EV_GRID_LABEL_ITEM} ev_grid_row.item (1) as gli then
+				gli.set_pixmap (catalogue_node_pixmap (acc))
+			end
+   		end
 
 end
 

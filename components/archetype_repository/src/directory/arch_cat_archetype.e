@@ -16,6 +16,11 @@ note
 class ARCH_CAT_ARCHETYPE
 
 inherit
+	ARCH_CAT_ITEM
+		redefine
+			child_type
+		end
+
 	SHARED_KNOWLEDGE_REPOSITORY
 		undefine
 			is_equal
@@ -50,13 +55,6 @@ inherit
 			is_equal
 		end
 
-	ARCH_CAT_ITEM
-		rename
-			make as make_item
-		redefine
-			child_type, make_item
-		end
-
 	COMPILER_ERROR_TYPES
 		export
 			{NONE} all
@@ -76,7 +74,6 @@ feature {NONE} -- Initialisation
 
 	make_item
 		do
-			precursor
 			create status.make_empty
 			create errors.make
 			create last_modify_timestamp.make_from_epoch (0)
@@ -332,12 +329,6 @@ feature -- Access (semantic)
 	qualified_name: STRING
 		do
 			Result := id.as_string
-		end
-
-	qualified_key: STRING
-			-- lower-case form of `qualified_name' for safe matching
-		do
-			Result := qualified_name.as_lower
 		end
 
 	ontological_parent_name: STRING

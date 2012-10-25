@@ -13,69 +13,12 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class ARCH_CAT_MODEL_NODE
+deferred class ARCH_CAT_MODEL_NODE
 
 inherit
 	ARCH_CAT_ITEM
 		redefine
 			parent
-		end
-
-create
-	make_class, make_rm_closure, make_category
-
-feature -- Initialisation
-
-	make_category (a_name: STRING)
-			-- create with ontological name of artefact category, e.g. 'archetype', 'template' etc
-		require
-			a_name_valid: not a_name.is_empty
-		do
-			make
-			qualified_name := a_name
-			qualified_key := a_name.as_lower
-			name := a_name
-			group_name := "archetype_category"
-			is_rm_closure := True
-		ensure
-			ontological_name_set: qualified_name.is_equal (a_name)
-			display_name_set: name = qualified_name
-		end
-
-	make_rm_closure (an_rm_closure_name: STRING; a_bmm_schema: BMM_SCHEMA)
-			-- create to represent a RM closure package, e.g. 'EHR', 'DEMOGRAPHIC' etc - these are
-			-- packages whose reachability closure provide the classes for archetyping in that closure
-		require
-			Rm_closure_name_valid: not an_rm_closure_name.is_empty
-		do
-			make
-			bmm_schema := a_bmm_schema
-			qualified_name := publisher_qualified_rm_closure_name (bmm_schema.rm_publisher, an_rm_closure_name)
-			qualified_key := qualified_name.as_lower
-			name := an_rm_closure_name
-			group_name := "model_group"
-			is_rm_closure := True
-		ensure
-			ontological_name_set: qualified_name.is_equal (publisher_qualified_rm_closure_name (bmm_schema.rm_publisher, an_rm_closure_name))
-			display_name_set: name = an_rm_closure_name
-			Schema_set: bmm_schema = a_bmm_schema
-		end
-
-	make_class (an_rm_closure_name: STRING; a_class_desc: BMM_CLASS_DEFINITION)
-			-- create with RM closure package name and class def
-		require
-			Rm_closure_valid: not an_rm_closure_name.is_empty and not an_rm_closure_name.has (Package_name_delimiter)
-		do
-			make
-			class_definition := a_class_desc
-			bmm_schema := class_definition.bmm_schema
-			qualified_name := bmm_schema.rm_publisher + section_separator.out + an_rm_closure_name + section_separator.out + class_definition.name
-			qualified_key := qualified_name.as_lower
-			name := class_definition.name
-			group_name := class_definition.type_category
-		ensure
-			qualified_name_set: qualified_name.is_equal (bmm_schema.rm_publisher + section_separator.out + an_rm_closure_name + section_separator.out +  class_definition.name)
-			display_name_set: name = class_definition.name
 		end
 
 feature -- Access
@@ -84,45 +27,13 @@ feature -- Access
 			-- Name distinguishing the type of item and the group to which its `repository' belongs.
 			-- Useful as a logical key to pixmap icons, etc.
 
-	class_definition: detachable BMM_CLASS_DEFINITION
-
-	bmm_schema: detachable BMM_SCHEMA
-
 	qualified_name: STRING
-			-- model_name '-' class_name
-
-	qualified_key: STRING
-			-- lowercase form of `qualified_name' for safe matching
+			-- name of this node
 
 	name: STRING
 			-- class_name
 
-	global_artefact_identifier: STRING
-			-- tool-wide unique id for this artefact
-		do
-			if is_class then
-				Result := class_definition.global_artefact_identifier
-			else
-				Result := qualified_key
-			end
-		end
-
 feature -- Status Report
-
-	is_abstract_class: BOOLEAN
-		do
-			Result := attached class_definition and then class_definition.is_abstract
-		end
-
-	is_rm_closure: BOOLEAN
-			-- RM closure name, which is a package name from the RM whose class closure can be archetyped within
-			-- that closure space. E.g. the class closure of the 'EHR' package in openEHR have archetypes with ids
-			-- like 'openEHR-EHR-XXXX' where XXXX is a class name
-
-	is_class: BOOLEAN
-		do
-			Result := attached class_definition
-		end
 
 	has_artefacts: BOOLEAN
 			-- True if there are any archetypes at or below this point
@@ -134,9 +45,6 @@ feature {ARCH_CAT_ITEM} -- Implementation
 
 	parent: ARCH_CAT_MODEL_NODE
 			-- parent node
-
-invariant
-	Class_definition_validity: not (is_rm_closure and is_class)
 
 end
 

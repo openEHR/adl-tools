@@ -60,7 +60,7 @@ feature {NONE}-- Initialization
 
 			-- archetype set-to-primary-source button (= not is_generated flag)
 			tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/edit_active"), get_icon_pixmap ("tool/edit_inactive"),
-				get_msg ("archetype_is_primary_source_button_text", Void), Void)
+				get_text ("archetype_is_primary_source_button_text"), Void)
 			ev_primary_source_button := tool_bar.last_tool_bar_button
 
 			-- if editing, add undo and redo buttons

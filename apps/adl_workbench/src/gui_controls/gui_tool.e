@@ -62,6 +62,10 @@ feature -- Access
 			Result := selection_history.selected_item
 		end
 
+	mini_tool_bar: EV_WIDGET
+		do
+		end
+
 feature -- Status Report
 
 	can_populate (a_source: like source): BOOLEAN
@@ -183,6 +187,11 @@ feature {GUI_TOOL} -- Events
 
 	on_selected
 			-- processing required if this tool is visually selected, e.g. in a notebook
+		do
+		end
+
+	on_rotate_view
+			-- if there are multiple views available within one area, tat can be rotated with a tool-frame mini-control
 		do
 		end
 

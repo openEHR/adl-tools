@@ -4,9 +4,9 @@ note
 				 Source repositories providing access to source archetypes & templates.
 				 ]"
 	keywords:    "ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2010-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 	void_safety: "initial"
 
@@ -15,7 +15,7 @@ note
 	last_change: "$LastChangedDate$"
 
 
-class SOURCE_REPOSITORIES
+class PROFILE_REPOSITORY_ACCESS
 
 inherit
 	SHARED_RESOURCES
@@ -37,13 +37,17 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make
+	make (a_ref_repo_dir_path: STRING)
+		require
+			dir_name_valid: directory_exists (a_ref_repo_dir_path)
 		do
 			create repositories.make (0)
 			create adhoc_source_repository.make (Group_id_adhoc)
-
-			-- FIXME: probably add adhoc repo to list and treat it as a normal source, although it is missing some features
-			--	source_repositories.put (adhoc_source_repository, adhoc_source_repository.group_id)
+			create {ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP} reference_repository.make (file_system.canonical_pathname (a_ref_repo_dir_path), Group_id_reference)
+			repositories.force (reference_repository, reference_repository.group_id)
+		ensure
+			Ref_repo_attached: attached reference_repository
+			Work_repo_cleared: not attached work_repository
 		end
 
 feature -- Access
@@ -61,7 +65,7 @@ feature -- Access
 			-- archetypes keyed by path on the file system. They are not merged onto the directory
 			-- but 'grafted' - a simpler operation.
 
-	repositories: DS_HASH_TABLE [ARCHETYPE_INDEXED_REPOSITORY_I, INTEGER]
+	repositories: HASH_TABLE [ARCHETYPE_INDEXED_REPOSITORY_I, INTEGER]
 			-- Physical repositories of archetypes, keyed by logical id.
 			-- Each such repository consists of archetypes arranged in a directory structure
 			-- mimicking an ontological structure, e.g. ehr/entry/observation, etc.
@@ -95,25 +99,12 @@ feature -- Comparison
 
 feature -- Modification
 
-	set_reference_repository (dir_name: STRING)
-			-- Scan the reference repository at path `dir_name'.
+	set_work_repository (a_work_repo_dir_path: STRING)
+			-- Scan the work repository at path `a_work_repo_dir_path'.
 		require
-			dir_name_valid: directory_exists (dir_name)
+			dir_name_valid: valid_working_repository_path (a_work_repo_dir_path)
 		do
-			create {ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP} reference_repository.make (file_system.canonical_pathname (dir_name), Group_id_reference)
-			repositories.force (reference_repository, reference_repository.group_id)
-			remove_work_repository
-		ensure
-			Ref_repo_attached: attached reference_repository
-			Work_repo_cleared: not attached work_repository
-		end
-
-	set_work_repository (dir_name: STRING)
-			-- Scan the work repository at path `dir_name'.
-		require
-			dir_name_valid: valid_working_repository_path (dir_name)
-		do
-			create {ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP} work_repository.make (file_system.canonical_pathname (dir_name), Group_id_work)
+			create {ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP} work_repository.make (file_system.canonical_pathname (a_work_repo_dir_path), Group_id_work)
 			repositories.force (work_repository, work_repository.group_id)
 		ensure
 			Work_repo_attached: attached work_repository
@@ -132,8 +123,7 @@ feature -- Modification
 
 invariant
 	adhoc_source_repository_group_id: adhoc_source_repository.group_id = 1
-	repositories_group_ids: repositories.for_all (agent (repository: ARCHETYPE_INDEXED_REPOSITORY_I): BOOLEAN
-		do Result := repository.group_id > 1 end)
+	repositories_group_ids: repositories.linear_representation.for_all (agent (repo: ARCHETYPE_INDEXED_REPOSITORY_I): BOOLEAN do Result := repo.group_id > 1 end)
 
 end
 

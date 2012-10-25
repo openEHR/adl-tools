@@ -28,41 +28,21 @@ note
 				 the screen.
 				 ]"
 	keywords:    "ADL"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2006-2011 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2006-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 
 class ARCHETYPE_CATALOGUE
 
 inherit
-	SHARED_RESOURCES
-		export
-			{NONE} all
-		end
-
 	SHARED_REFERENCE_MODEL_ACCESS
 		export
 			{NONE} all
 		end
 
-	SHARED_MESSAGE_DB
-		export
-			{NONE} all
-		end
-
 	SHARED_MESSAGE_BILLBOARD
-		export
-			{NONE} all
-		end
-
-	SHARED_SOURCE_REPOSITORIES
 		export
 			{NONE} all
 		end
@@ -77,6 +57,11 @@ inherit
 			{NONE} all
 		end
 
+	KL_SHARED_FILE_SYSTEM
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -86,26 +71,39 @@ feature -- Definitions
 
 	Template_category: STRING = "templates"
 
+	time_epoch: DATE_TIME
+		once
+			create Result.make_from_epoch (0)
+		end
+
 feature -- Initialisation
 
-	make
+	make (a_profile_repo_access: PROFILE_REPOSITORY_ACCESS)
 		do
 			clear
-			if not attached item_tree_prototype.item then
-				initialise_item_tree_prototype
+			profile_repo_access := a_profile_repo_access
+			if not attached semantic_item_tree_prototype.item then
+				initialise_semantic_item_tree_prototype
 				schema_load_counter := rm_schemas_access.load_count
 			end
 		end
 
 feature -- Access
 
-	archetype_index: DS_HASH_TABLE [ARCH_CAT_ARCHETYPE, STRING]
+	profile_repo_access: PROFILE_REPOSITORY_ACCESS
+			-- the repository profile accessor from which this catalogue gets its contents
+
+	archetype_index: HASH_TABLE [ARCH_CAT_ARCHETYPE, STRING]
 			-- index of archetype descriptors keyed by mixed-case archetype id. Used in rest of application
 
-	item_index: DS_HASH_TABLE [ARCH_CAT_ITEM, STRING]
+	semantic_item_index: HASH_TABLE [ARCH_CAT_ITEM, STRING]
 			-- Index of archetype & class nodes, keyed by lower-case ontology concept. Used during construction of `directory'
-			-- For class nodes, this will be model_publisher-model_name-class_name, e.g. openehr-demographic-party.
+			-- For class nodes, this will be model_publisher-closure_name-class_name, e.g. openehr-demographic-party.
 			-- For archetype nodes, this will be the archetype id.
+
+	filesys_item_index: HASH_TABLE [ARCH_CAT_ITEM, STRING]
+			-- Index of archetype & file-system nodes, keyed by relative path of node under repository root path for directory nodes
+			-- and for archetype nodes, the archetype id.
 
 	matching_ids (a_regex: STRING; an_rm_type, an_rm_package: detachable STRING): ARRAYED_SET[STRING]
 			-- generate list of archetype ids that match the regex pattern and optional rm_type. If rm_type is supplied,
@@ -123,10 +121,10 @@ feature -- Access
 			Result.compare_objects
 			create regex_matcher.compile_case_insensitive (a_regex)
 			if regex_matcher.is_compiled then
-				from archetype_index.start until archetype_index.off loop
-					if regex_matcher.matches (archetype_index.key_for_iteration) then
+				across archetype_index as archs_csr loop
+					if regex_matcher.matches (archs_csr.key) then
 						if an_rm_type /= Void then
-							create arch_id.make_from_string (archetype_index.key_for_iteration)
+							create arch_id.make_from_string (archs_csr.key)
 							is_candidate := an_rm_type.as_lower.is_equal (arch_id.rm_entity.as_lower)
 							if is_candidate and an_rm_package /= Void then
 								is_candidate := an_rm_package.as_lower.is_equal (arch_id.rm_name.as_lower)
@@ -135,10 +133,9 @@ feature -- Access
 							is_candidate := True
 						end
 						if is_candidate then
-							Result.extend(archetype_index.key_for_iteration)
+							Result.extend (archs_csr.key)
 						end
 					end
-					archetype_index.forth
 				end
 			else
 				Result.extend (get_msg_line("regex_e1", <<a_regex>>))
@@ -156,19 +153,19 @@ feature -- Status Report
 	adhoc_path_valid (a_full_path: STRING): BOOLEAN
 			-- True if path is valid in adhoc repository
 		do
-			Result := source_repositories.adhoc_source_repository.is_valid_path (a_full_path)
+			Result := profile_repo_access.adhoc_source_repository.is_valid_path (a_full_path)
 		end
 
 	has_item (an_item: ARCH_CAT_ITEM): BOOLEAN
 			-- True if `an_item' in catalogue
 		do
-			Result := item_index.has_item (an_item)
+			Result := semantic_item_index.has_item (an_item)
 		end
 
 	has_item_with_id (an_id: STRING): BOOLEAN
 			-- True if `an_id' exists in catalogue
 		do
-			Result := item_index.has (an_id.as_lower)
+			Result := semantic_item_index.has (an_id.as_lower)
 		end
 
 feature -- Commands
@@ -177,79 +174,25 @@ feature -- Commands
 			-- reduce to initial state
 		do
 			create archetype_index.make (0)
-			create item_index.make (0)
-			item_tree := Void
+			create semantic_item_index.make (0)
+			create filesys_item_index.make (0)
+			semantic_item_tree := Void
+			filesys_item_tree := Void
 			compile_attempt_count := 0
 			create last_populate_timestamp.make_from_epoch (0)
 			reset_statistics
 		end
 
 	populate
-			-- Rebuild `archetype_index' and `item_index' from source repositories.
-		local
-			archs: ARRAYED_LIST [ARCH_CAT_ARCHETYPE]
-			parent_key, child_key: STRING
-			added_during_pass: INTEGER
-			status_list: ARRAY[INTEGER]
-			i: INTEGER
+			-- populate all indexes from repository source
 		do
-			if schema_load_counter < rm_schemas_access.load_count then
-				initialise_item_tree_prototype
+			-- populate source repos from physical medium
+			across profile_repo_access.repositories as profile_repos_csr loop
+				profile_repos_csr.item.populate
 			end
 
-			clone_item_tree_prototype
-
-			from source_repositories.repositories.start until source_repositories.repositories.off loop
-				source_repositories.repositories.item_for_iteration.populate
-				archs := source_repositories.repositories.item_for_iteration.fast_archetype_list
-
-				-- maintain a list indicating status of each attempted archetype; values:
-				-- -1 = succeeded
-				-- -2 = failed (duplicate)
-				--  0 = not yet tried
-				-- +ve number = number of passes attempted with no success
-				create status_list.make_filled (0, 1, archs.count)
-
-				from i := 0 until i > 0 and added_during_pass = 0 loop
-					added_during_pass := 0
-					across archs as archs_csr loop
-						if status_list [archs_csr.target_index] >= 0 then
-							parent_key := archs_csr.item.ontological_parent_name.as_lower
-							if item_index.has (parent_key) then
-								child_key := archs_csr.item.qualified_key
-								if not item_index.has (child_key) then
-									item_index.item (parent_key).put_child (archs_csr.item)
-									item_index.force (archs_csr.item, child_key)
-									archetype_index.force (archs_csr.item, archs_csr.item.qualified_name)
-									added_during_pass := added_during_pass + 1
-									status_list [archs_csr.target_index] := -1
-								else
-									post_error (Current, "populate", "arch_dir_dup_archetype", <<archs_csr.item.full_path>>)
-									status_list [archs_csr.target_index] := -2
-								end
-							else
-								status_list [archs_csr.target_index] := status_list [archs_csr.target_index] + 1
-							end
-						end
-					end
-					i := i + 1
-				end
-
-				-- now report on all the archetypes which could not be attached into the hierarchy
-				from archs.start until archs.off loop
-					if status_list [archs.index] > 0 then
-						if archs.item.is_specialised then
-							post_error (Current, "populate", "arch_dir_orphan_archetype", <<archs.item.ontological_parent_name, archs.item.qualified_name>>)
-						else
-							post_error (Current, "populate", "arch_dir_orphan_archetype_e2", <<archs.item.ontological_parent_name, archs.item.qualified_name>>)
-						end
-					end
-					archs.forth
-				end
-
-				source_repositories.repositories.forth
-			end
-			create last_populate_timestamp.make_now
+			populate_semantic_indexes
+			populate_filesys_indexes
 		end
 
 feature -- Modification
@@ -262,19 +205,21 @@ feature -- Modification
 			parent_key, child_key: STRING
 			aca: ARCH_CAT_ARCHETYPE
 		do
-			if item_index.is_empty then
-				clone_item_tree_prototype
+			if semantic_item_index.is_empty then
+				clone_semantic_item_tree_prototype
 			end
 
-			source_repositories.adhoc_source_repository.add_item (full_path)
-			aca := source_repositories.adhoc_source_repository.item (full_path)
-			if source_repositories.adhoc_source_repository.has_path (full_path) then
+			profile_repo_access.adhoc_source_repository.add_item (full_path)
+			aca := profile_repo_access.adhoc_source_repository.item (full_path)
+			if profile_repo_access.adhoc_source_repository.has_path (full_path) then
+
+				-- add to semantic index
 				parent_key := aca.ontological_parent_name.as_lower
-				if item_index.has (parent_key) then
+				if semantic_item_index.has (parent_key) then
 					child_key := aca.qualified_key
-					if not item_index.has (child_key) then
-						item_index.item (parent_key).put_child(aca)
-						item_index.force (aca, child_key)
+					if not semantic_item_index.has (child_key) then
+						semantic_item_index.item (parent_key).put_child(aca)
+						semantic_item_index.force (aca, child_key)
 						archetype_index.force (aca, child_key)
 						last_adhoc_item := aca
 					else
@@ -285,6 +230,8 @@ feature -- Modification
 				else
 					post_error (Current, "add_adhoc_item", "arch_dir_orphan_archetype_e2", <<parent_key, child_key>>)
 				end
+
+				-- add to filesys index
 			else
 				post_error (Current, "add_adhoc_item", "invalid_filename_e1", <<full_path>>)
 			end
@@ -298,27 +245,33 @@ feature -- Modification
 		require
 			old_id_valid: attached aca.old_id and then archetype_index.has (aca.old_id.as_string) and then archetype_index.item (aca.old_id.as_string) = aca
 			new_id_valid: not archetype_index.has (aca.id.as_string)
-			ontological_parent_exists: item_index.has (aca.ontological_parent_name.as_lower)
+			ontological_parent_exists: semantic_item_index.has (aca.ontological_parent_name.as_lower)
 		do
 			archetype_index.remove (aca.old_id.as_string)
 			archetype_index.force (aca, aca.id.as_string)
-			item_index.remove (aca.old_id.as_string.as_lower)
-			item_index.force (aca, aca.id.as_string.as_lower)
+			semantic_item_index.remove (aca.old_id.as_string.as_lower)
+			semantic_item_index.force (aca, aca.id.as_string.as_lower)
 			aca.parent.remove_child (aca)
-			item_index.item (aca.ontological_parent_name).put_child (aca)
+			semantic_item_index.item (aca.ontological_parent_name).put_child (aca)
 			aca.clear_old_ontological_parent_name
 		ensure
 			Node_added_to_archetype_index: archetype_index.has (aca.id.as_string)
-			Node_added_to_ontology_index: item_index.has (aca.id.as_string)
+			Node_added_to_ontology_index: semantic_item_index.has (aca.id.as_string)
 			Node_parent_set: aca.parent.qualified_name.is_equal (aca.ontological_parent_name)
 		end
 
 feature -- Traversal
 
-	do_all (enter_action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ITEM]]; exit_action: detachable PROCEDURE [ANY, TUPLE [ARCH_CAT_ITEM]])
-			-- On all nodes in tree, execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
+	do_all_semantic (enter_action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ITEM]]; exit_action: detachable PROCEDURE [ANY, TUPLE [ARCH_CAT_ITEM]])
+			-- On all nodes in `semantic_item_tree', execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 		do
-			do_subtree (item_tree, enter_action, exit_action)
+			do_subtree (semantic_item_tree, enter_action, exit_action)
+		end
+
+	do_all_filesys (enter_action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ITEM]]; exit_action: detachable PROCEDURE [ANY, TUPLE [ARCH_CAT_ITEM]])
+			-- On all nodes in `filesys_item_tree', execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
+		do
+			do_subtree (filesys_item_tree, enter_action, exit_action)
 		end
 
 	do_archetypes (aci: ARCH_CAT_ITEM; action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]])
@@ -330,7 +283,7 @@ feature -- Traversal
 	do_all_archetypes (action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]])
 			-- On all archetype nodes, execute `action'
 		do
-			do_subtree (item_tree, agent do_if_archetype (?, action), Void)
+			do_subtree (semantic_item_tree, agent do_if_archetype (?, action), Void)
 		end
 
 	do_if_archetype (aci: ARCH_CAT_ITEM; action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]])
@@ -366,11 +319,10 @@ feature -- Metrics
 	template_count: INTEGER
 			-- count of artefacts designated as templates or template_components
 		do
-			from archetype_index.start until archetype_index.off loop
-				if archetype_index.item_for_iteration.artefact_type /= {ARTEFACT_TYPE}.archetype then
+			across archetype_index as archs_csr loop
+				if archs_csr.item.artefact_type /= {ARTEFACT_TYPE}.archetype then
 					Result := Result + 1
 				end
-				archetype_index.forth
 			end
 		end
 
@@ -449,15 +401,132 @@ feature -- Statistics
 
 feature {NONE} -- Implementation
 
+	Populate_status_not_attempted: INTEGER = 0
+
+	Populate_status_succeeded: INTEGER = -1
+
+	Populate_status_failed: INTEGER = -2
+
+	populate_semantic_indexes
+			-- Rebuild `archetype_index' and `item_index' from source repositories.
+		local
+			archs: ARRAYED_LIST [ARCH_CAT_ARCHETYPE]
+			parent_key, child_key: STRING
+			added_during_pass: INTEGER
+			status_list: ARRAY[INTEGER]
+			i: INTEGER
+		do
+			if schema_load_counter < rm_schemas_access.load_count then
+				initialise_semantic_item_tree_prototype
+			end
+
+			clone_semantic_item_tree_prototype
+
+			across profile_repo_access.repositories as profile_repos_csr loop
+				archs := profile_repos_csr.item.fast_archetype_list
+
+				-- maintain a list indicating status of each attempted archetype; values:
+				-- -1 = succeeded
+				-- -2 = failed (duplicate)
+				--  0 = not yet tried
+				-- +ve number = number of passes attempted with no success
+				create status_list.make_filled (0, 1, archs.count)
+
+				from i := 0 until i > 0 and added_during_pass = 0 loop
+					added_during_pass := 0
+					across archs as archs_csr loop
+						if status_list [archs_csr.target_index] >= 0 then
+							parent_key := archs_csr.item.ontological_parent_name.as_lower
+							if semantic_item_index.has (parent_key) then
+								child_key := archs_csr.item.qualified_key
+								if not semantic_item_index.has (child_key) then
+									semantic_item_index.item (parent_key).put_child (archs_csr.item)
+									semantic_item_index.force (archs_csr.item, child_key)
+									archetype_index.force (archs_csr.item, archs_csr.item.qualified_name)
+									added_during_pass := added_during_pass + 1
+									status_list [archs_csr.target_index] := Populate_status_succeeded
+								else
+									post_error (Current, "populate", "arch_dir_dup_archetype", <<archs_csr.item.full_path>>)
+									status_list [archs_csr.target_index] := Populate_status_failed
+								end
+							else
+								status_list [archs_csr.target_index] := status_list [archs_csr.target_index] + 1
+							end
+						end
+					end
+					i := i + 1
+				end
+
+				-- now report on all the archetypes which could not be attached into the hierarchy
+				across archs as archs_csr loop
+					if status_list [archs_csr.cursor_index] > 0 then
+						if archs_csr.item.is_specialised then
+							post_error (Current, "populate", "arch_dir_orphan_archetype", <<archs_csr.item.ontological_parent_name, archs_csr.item.qualified_name>>)
+						else
+							post_error (Current, "populate", "arch_dir_orphan_archetype_e2", <<archs_csr.item.ontological_parent_name, archs_csr.item.qualified_name>>)
+						end
+					end
+				end
+			end
+			create last_populate_timestamp.make_now
+		end
+
+	populate_filesys_indexes
+		local
+			repo_path, parent_dir: STRING
+			archs: ARRAYED_LIST [ARCH_CAT_ARCHETYPE]
+			filesys_node: ARCH_CAT_FILESYS_NODE
+		do
+			-- create top node (never seen in GUI)
+			create filesys_item_tree.make (Archetype_category.twin)
+
+			-- create nodes for archetypes based on their paths in repository
+			across profile_repo_access.repositories as profile_repos_csr loop
+				-- add a node representing repository root path
+				repo_path := profile_repos_csr.item.full_path
+				create filesys_node.make (repo_path)
+				filesys_item_tree.put_child (filesys_node)
+				filesys_item_index.force (filesys_node, repo_path.as_lower)
+
+				-- now go through archetypes and add them in to tree, adding intermediate
+				-- filesystem nodes sa required
+				archs := profile_repos_csr.item.fast_archetype_list
+				across archs as archs_csr loop
+					parent_dir := file_system.dirname (archs_csr.item.differential_path).as_lower
+					if not filesys_item_index.has (parent_dir) then
+						add_filesys_nodes (parent_dir)
+					end
+					filesys_item_index.item (parent_dir).put_child (archs_csr.item)
+					filesys_item_index.force (archs_csr.item, archs_csr.item.qualified_key)
+				end
+			end
+		end
+
+	add_filesys_nodes (a_dir_path: STRING)
+			-- create file system nodes in `filesys_item_tree' based on `a_dir_path'
+		local
+			parent_dir: STRING
+			filesys_node: ARCH_CAT_FILESYS_NODE
+		do
+			parent_dir := file_system.dirname (a_dir_path)
+			if not filesys_item_index.has (parent_dir) then
+				add_filesys_nodes (parent_dir)
+			end
+
+			-- now parent node must be there
+			create filesys_node.make (a_dir_path)
+			filesys_item_index.item (parent_dir).put_child (filesys_node)
+			filesys_item_index.force (filesys_node, filesys_node.qualified_key)
+		end
+
 	do_subtree (node: ARCH_CAT_ITEM; enter_action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ITEM]]; exit_action: detachable PROCEDURE [ANY, TUPLE [ARCH_CAT_ITEM]])
 			-- On `node', execute `enter_action', then recurse into its subnodes, then execute `exit_action'.
 		do
 			if attached node then
 				enter_action.call ([node])
 				if node.has_children then
-					from node.child_start until node.child_off loop
-						do_subtree (node.child_item, enter_action, exit_action)
-						node.child_forth
+					across node as child_csr loop
+						do_subtree (child_csr.item, enter_action, exit_action)
 					end
 				end
 				if attached exit_action then
@@ -466,7 +535,10 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	item_tree: detachable ARCH_CAT_MODEL_NODE
+	filesys_item_tree: detachable ARCH_CAT_CATEGORY_NODE
+			-- The directory of archetypes in the filesystem structure, with specialisation shown
+
+	semantic_item_tree: detachable ARCH_CAT_CATEGORY_NODE
 			-- The logical directory of archetypes, whose structure is derived directly from the
 			-- reference model. The structure is a list of top-level packages, each containing
 			-- an inheritance tree of first degree descendants of the LOCATABLE class.
@@ -474,18 +546,19 @@ feature {NONE} -- Implementation
 			-- working repositories, and are subsequently attached into the structure.
 			-- Archetypes opened adhoc are also grafted here.
 
-	item_tree_prototype: CELL [ARCH_CAT_MODEL_NODE]
+	semantic_item_tree_prototype: CELL [ARCH_CAT_CATEGORY_NODE]
 			-- pure ontology structure created from RM schemas; to be used to create a copy for each refresh of the repository
 			-- We use a CELL here because we only want one of these shared between all instances
 		once
 			create Result.put (Void)
 		end
 
-	initialise_item_tree_prototype
-			-- rebuild `item_tree_prototype'
+	initialise_semantic_item_tree_prototype
+			-- rebuild `semantic_item_tree_prototype'
 		local
 			rm_closure_root_pkg: BMM_PACKAGE_DEFINITION
-			parent_model_node, model_node: ARCH_CAT_MODEL_NODE
+			category_node: ARCH_CAT_CATEGORY_NODE
+			closure_node: ARCH_CAT_CLOSURE_NODE
 			rm_closure_name, qualified_rm_closure_key: STRING
 			supp_list, supp_list_copy: ARRAYED_SET[STRING]
 			supp_class_list: ARRAYED_LIST [BMM_CLASS_DEFINITION]
@@ -493,43 +566,25 @@ feature {NONE} -- Implementation
 			removed: BOOLEAN
 			bmm_schema: BMM_SCHEMA
 		do
-			create parent_model_node.make_category (Archetype_category.twin)
-debug ("rm_ontology")
-	io.put_string ("================ Category: " + Archetype_category + " =================%N")
-end
-			item_tree_prototype.put (parent_model_node)
+			create category_node.make (Archetype_category.twin)
+			semantic_item_tree_prototype.put (category_node)
 			across rm_schemas_access.valid_top_level_schemas as top_level_schemas_csr loop
 				bmm_schema := top_level_schemas_csr.item
-debug ("rm_ontology")
-	io.put_string ("------------ Schema: " + bmm_schema.schema_id + "--------------%N")
-end
 				across bmm_schema.archetype_rm_closure_packages as rm_closure_packages_csr loop
 					rm_closure_name := package_base_name (rm_closure_packages_csr.item)
 					qualified_rm_closure_key := publisher_qualified_rm_closure_key (bmm_schema.rm_publisher, rm_closure_name)
 					rm_closure_root_pkg := bmm_schema.package_at_path (rm_closure_packages_csr.item)
 
 					-- create new model node if not already in existence
-					if not parent_model_node.has_child_with_qualified_key (qualified_rm_closure_key) then
-						create model_node.make_rm_closure (rm_closure_name, bmm_schema)
-						parent_model_node.put_child (model_node)
-debug ("rm_ontology")
-	io.put_string ("......... Closure: " + rm_closure_name + ".........%N")
-end
-					elseif attached {ARCH_CAT_MODEL_NODE} parent_model_node.child_with_qualified_key (qualified_rm_closure_key) as mn then
-						model_node := mn
-debug ("rm_ontology")
-	io.put_string ("%TClosure: " + qualified_rm_closure_key + "%N")
-end
+					if not category_node.has_child_with_qualified_key (qualified_rm_closure_key) then
+						create closure_node.make (rm_closure_name, bmm_schema)
+						category_node.put_child (closure_node)
+					elseif attached {ARCH_CAT_CLOSURE_NODE} category_node.child_with_qualified_key (qualified_rm_closure_key) as mn then
+						closure_node := mn
 					end
 
-					-- obtain the top-most classes from the package structure; they might not always be in the top-most
-					-- package
+					-- obtain the top-most classes from the package structure; they might not always be in the top-most package
 					root_classes := rm_closure_root_pkg.root_classes
-debug ("rm_ontology")
-	io.put_string ("%TInitial class set: ")
-	root_classes.linear_representation.do_all (agent (a_bmm_class: BMM_CLASS_DEFINITION) do io.put_string (a_bmm_class.name + ", ") end)
-	io.new_line
-end
 					if not root_classes.is_empty then
 						-- create the list of supplier classes for all the classes in the closure root package
 						create supp_list.make (0)
@@ -537,57 +592,32 @@ end
 						across root_classes as root_classes_csr loop
 							supp_list.merge (root_classes_csr.item.supplier_closure)
 							supp_list.extend (root_classes_csr.item.name)
-debug ("rm_ontology")
-	io.put_string ("%TMerging supplier_closure classes of " + root_classes_csr.item.name + ": ")
-	across root_classes_csr.item.supplier_closure as supp_csr loop
-		io.put_string (supp_csr.item + ", ")
-	end
-	io.new_line
-end
 						end
 
 						-- now filter this list to keep only those classes inheriting from the archetype_parent_class
 						-- that are among the suppliers of the top-level class of the package; this gives the classes
 						-- that could be archetyped in that package
 						if bmm_schema.has_archetype_parent_class then
-debug ("rm_ontology")
-	io.put_string ("%Tremoving closure classes not inheriting from " + bmm_schema.archetype_parent_class + ": ")
-end
 							from supp_list.start until supp_list.off loop
 								if not bmm_schema.is_descendant_of (supp_list.item, bmm_schema.archetype_parent_class) then
-debug ("rm_ontology")
-	io.put_string (supp_list.item + ", ")
-end
 									supp_list.remove
 								else
 									supp_list.forth
 								end
 							end
-debug ("rm_ontology")
-	io.new_line
-end
 						end
 
 						-- filter list list again so that only highest class in any inheritance subtree remains
 						supp_list_copy := supp_list.deep_twin
 						from supp_list.start until supp_list.off loop
 							removed := False
-debug ("rm_ontology")
-	io.put_string ("%Tremoving closure classes not at a lineage root: ")
-end
 							from supp_list_copy.start until supp_list_copy.off or removed loop
 								if bmm_schema.is_descendant_of (supp_list.item, supp_list_copy.item) then
-debug ("rm_ontology")
-	io.put_string (supp_list.item + ", ")
-end
 									supp_list.remove
 									removed := True
 								end
 								supp_list_copy.forth
 							end
-debug ("rm_ontology")
-	io.new_line
-end
 
 							if not removed then
 								supp_list.forth
@@ -599,7 +629,7 @@ end
 						across supp_list as supp_list_csr loop
 							supp_class_list.extend (bmm_schema.class_definition (supp_list_csr.item))
 						end
-						add_child_nodes (rm_closure_name, supp_class_list, model_node)
+						add_child_nodes (rm_closure_name, supp_class_list, closure_node)
 					end
 				end
 			end
@@ -611,25 +641,22 @@ end
 			-- which will match with corresponding part of archetype identifier
 		local
 			children: ARRAYED_LIST [BMM_CLASS_DEFINITION]
-			model_node: ARCH_CAT_MODEL_NODE
+			class_node: ARCH_CAT_CLASS_NODE
 		do
 			across class_list as class_list_csr loop
-				create model_node.make_class (an_rm_closure_name, class_list_csr.item)
-				a_parent_node.put_child (model_node)
-debug ("rm_ontology")
-	io.put_string ("%T%TClass: " + class_list_csr.item.name + "%N")
-end
+				create class_node.make (an_rm_closure_name, class_list_csr.item)
+				a_parent_node.put_child (class_node)
 				children := class_list_csr.item.immediate_descendants
-				add_child_nodes (an_rm_closure_name, children, model_node)
+				add_child_nodes (an_rm_closure_name, children, class_node)
 			end
 		end
 
-	clone_item_tree_prototype
-			-- clone `item_tree_prototype' for use in an `item_tree'
+	clone_semantic_item_tree_prototype
+			-- clone `semantic_item_tree_prototype' for use in an `semantic_item_tree'
 		do
-			item_tree := item_tree_prototype.item.deep_twin
-			create item_index.make (0)
-			do_all (agent (ari: attached ARCH_CAT_ITEM) do item_index.force (ari, ari.qualified_key) end, Void)
+			semantic_item_tree := semantic_item_tree_prototype.item.deep_twin
+			create semantic_item_index.make (0)
+			do_all_semantic (agent (ari: attached ARCH_CAT_ITEM) do semantic_item_index.force (ari, ari.qualified_key) end, Void)
 		end
 
 	schema_load_counter: INTEGER

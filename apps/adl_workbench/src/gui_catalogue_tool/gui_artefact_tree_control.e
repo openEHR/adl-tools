@@ -7,11 +7,6 @@ note
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
 deferred class GUI_ARTEFACT_TREE_CONTROL
 
 inherit
@@ -33,27 +28,44 @@ feature {NONE} -- Initialisation
 			create ev_root_container
 			ev_root_container.set_data (Current)
 
-			-- EV_GRID
-			create gui_grid.make (True, True, True, True)
-			gui_grid.set_tree_expand_collapse_icons (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
-			ev_root_container.extend (gui_grid.ev_grid)
-  			gui_grid.ev_grid.set_minimum_width (100)
-  			gui_grid.ev_grid.hide_header
+			-- semantic EV_GRID
+			create gui_semantic_grid.make (True, True, True, True)
+			gui_semantic_grid.set_tree_expand_collapse_icons (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
+			ev_root_container.extend (gui_semantic_grid.ev_grid)
+  			gui_semantic_grid.ev_grid.set_minimum_width (100)
+  			gui_semantic_grid.ev_grid.hide_header
+
+			-- filesys EV_GRID
+			create gui_filesys_grid.make (True, True, True, True)
+			gui_filesys_grid.set_tree_expand_collapse_icons (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
+			ev_root_container.extend (gui_filesys_grid.ev_grid)
+  			gui_filesys_grid.ev_grid.set_minimum_width (100)
+  			gui_filesys_grid.ev_grid.hide_header
+  			gui_filesys_grid.ev_grid.hide
 		end
 
 feature -- Access
 
-	ev_root_container: EV_CELL
+	ev_root_container: EV_HORIZONTAL_BOX
 
-	gui_grid: EVX_GRID
+	gui_semantic_grid: EVX_GRID
+			-- grid control for view of archetypes based on RM types & archetype ids
+
+	gui_filesys_grid: EVX_GRID
+			-- grid control for view of archetypes based on file-system structure in profile
 
 feature -- Commands
 
 	repopulate
 			-- repopulate to update GUI settings
 		do
-			gui_grid.ev_grid.tree_do_all (agent update_grid_row (?, True))
-			gui_grid.resize_columns_to_content
+			gui_semantic_grid.ev_grid.tree_do_all (agent semantic_grid_update_row (?, True))
+			gui_semantic_grid.resize_columns_to_content
+
+			if gui_filesys_grid.ev_grid.is_displayed then
+				gui_filesys_grid.ev_grid.tree_do_all (agent filesys_grid_update_row (?, True))
+				gui_filesys_grid.resize_columns_to_content
+			end
 		end
 
 	update_tree_node_for_archetype (ara: attached ARCH_CAT_ARCHETYPE)
@@ -70,13 +82,18 @@ feature {NONE} -- Implementation
 
 	do_clear
 		do
-			create ev_node_descriptor_map.make(0)
-			gui_grid.wipe_out
+			create semantic_grid_row_map.make(0)
+			create filesys_grid_row_map.make(0)
+			gui_semantic_grid.wipe_out
+			gui_filesys_grid.wipe_out
  			create ev_tree_item_stack.make (0)
 		end
 
-	ev_node_descriptor_map: HASH_TABLE [EV_GRID_ROW, STRING]
-			-- list of GUI explorer nodes, keyed by artefact id
+	semantic_grid_row_map: HASH_TABLE [EV_GRID_ROW, STRING]
+			-- list of semantic EV_GRID rows, keyed by artefact id
+
+	filesys_grid_row_map: HASH_TABLE [EV_GRID_ROW, STRING]
+			-- list of filesys EV_GRID rows, keyed by artefact id
 
 	artefact_types: ARRAY [INTEGER]
 			-- types of artefact in this view
@@ -84,7 +101,11 @@ feature {NONE} -- Implementation
 	ev_tree_item_stack: ARRAYED_STACK [EV_GRID_ROW]
 			-- Stack used during `populate_ev_tree_node_enter'.
 
-   	update_grid_row (node: EV_GRID_ROW; update_flag: BOOLEAN)
+   	semantic_grid_update_row (node: EV_GRID_ROW; update_flag: BOOLEAN)
+   		deferred
+   		end
+
+   	filesys_grid_update_row (node: EV_GRID_ROW; update_flag: BOOLEAN)
    		deferred
    		end
 

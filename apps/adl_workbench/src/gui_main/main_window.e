@@ -7,10 +7,6 @@ note
 	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class
 	MAIN_WINDOW
 
@@ -1077,8 +1073,11 @@ feature -- Catalogue tool
 			a_docking_pane: SD_CONTENT
 		do
 			create a_docking_pane.make_with_widget_title_pixmap (catalogue_tool.ev_root_container, get_icon_pixmap ("tool/archetype_category"), get_msg ("catalogue_tool_title", Void))
-			attached_docking_manager.contents.extend (a_docking_pane)
+			if attached catalogue_tool.mini_tool_bar then
+				a_docking_pane.set_mini_toolbar (catalogue_tool.mini_tool_bar)
+			end
 			catalogue_tool.set_docking_pane (a_docking_pane)
+			attached_docking_manager.contents.extend (a_docking_pane)
 			a_docking_pane.set_long_title (get_msg ("catalogue_tool_title", Void))
 			a_docking_pane.set_short_title (get_msg ("catalogue_tool_title", Void))
 			a_docking_pane.set_type ({SD_ENUMERATION}.tool)
