@@ -434,8 +434,8 @@ feature {NONE} -- Initialization
 			create_new_console_tool
 			create_new_error_tool
 			create_new_test_tool
-			archetype_tools.create_new_tool
-			view_menu_new_archetype_tool.select_actions.extend (agent archetype_tools.create_new_tool)
+			archetype_viewers.create_new_tool
+			view_menu_new_archetype_tool.select_actions.extend (agent archetype_viewers.create_new_tool)
 			view_menu_new_class_tool.select_actions.extend (agent class_tools.create_new_tool)
 
 			-- populate any statically populated controls
@@ -625,8 +625,8 @@ feature -- View Events
 	on_differential_view
 			-- set differential view on currently visible Archetype and Class Tools
 		do
-			archetype_tools.do_all_visible_tools (agent
-				(a_tool: GUI_ARCHETYPE_TOOL) do a_tool.select_differential_view end
+			archetype_viewers.do_all_visible_tools (agent
+				(a_viewer: GUI_ARCHETYPE_VIEWER) do a_viewer.select_differential_view end
 			)
 			class_tools.do_all_visible_tools (agent
 				(a_tool: GUI_CLASS_TOOL) do a_tool.select_differential_view end
@@ -636,8 +636,8 @@ feature -- View Events
 	on_flat_view
 			-- set flat view on currently visible Tool
 		do
-			archetype_tools.do_all_visible_tools (agent
-				(a_tool: GUI_ARCHETYPE_TOOL) do a_tool.select_flat_view end
+			archetype_viewers.do_all_visible_tools (agent
+				(a_viewer: GUI_ARCHETYPE_VIEWER) do a_viewer.select_flat_view end
 			)
 			class_tools.do_all_visible_tools (agent
 				(a_tool: GUI_CLASS_TOOL) do a_tool.select_flat_view end
@@ -870,7 +870,7 @@ feature {NONE} -- Tools menu events
 			if dialog.has_changed_ui_options then
 				save_resources
 				populate_ui_arch_output_version
-				if archetype_tools.has_tools then
+				if archetype_viewers.has_tools then
 					update_all_tools_rm_icons_setting
 				end
 			end
@@ -883,7 +883,7 @@ feature {NONE} -- Tools menu events
 
 	update_all_tools_rm_icons_setting
 		do
-			archetype_tools.do_all_tools (agent (a_tool: GUI_ARCHETYPE_TOOL) do a_tool.update_rm_icons_setting end)
+			archetype_viewers.do_all_tools (agent (a_tool: GUI_ARCHETYPE_VIEWER) do a_tool.update_rm_icons_setting end)
 			class_tools.do_all_tools (agent (a_tool: GUI_CLASS_TOOL) do a_tool.update_rm_icons_setting end)
 			catalogue_tool.update_rm_icons_setting
 		end
@@ -1008,7 +1008,7 @@ feature -- Docking controls
 
 	show_tool_with_artefact_agent (an_id: STRING): BOOLEAN
 		do
-			Result := class_tools.show_docking_pane_by_tool_artefact_id (an_id) or else archetype_tools.show_docking_pane_by_tool_artefact_id (an_id)
+			Result := class_tools.show_docking_pane_by_tool_artefact_id (an_id) or else archetype_viewers.show_docking_pane_by_tool_artefact_id (an_id)
 		end
 
 feature -- RM Schema explorer
@@ -1095,9 +1095,9 @@ feature -- Catalogue tool
 			end
 		end
 
-feature -- Archetype tools
+feature -- Archetype viewers
 
-	archetype_tools: GUI_ARCHETYPE_TOOLS_CONTROLLER
+	archetype_viewers: GUI_ARCHETYPE_VIEWERS_CONTROLLER
 		once
 			create Result.make (attached_docking_manager)
 		end
@@ -1108,13 +1108,13 @@ feature -- Archetype tools
 			if attached aca.last_compile_attempt_timestamp then
 				error_tool.extend_and_select (aca)
 			end
-			archetype_tools.populate_active_tool (aca)
-			archetype_tools.active_tool.on_select_notebook
+			archetype_viewers.populate_active_tool (aca)
+			archetype_viewers.active_tool.on_select_notebook
 		end
 
 	display_archetype_in_new_tool (aca: ARCH_CAT_ARCHETYPE)
 		do
-			archetype_tools.create_new_tool
+			archetype_viewers.create_new_tool
 			display_archetype (aca)
 		end
 
@@ -1141,8 +1141,8 @@ feature -- Archetype editors
 	refresh_archetype_viewers (an_archetype_id: STRING)
 			-- refresh all viewers of archetype with `an_archetype_id'
 		do
-			archetype_tools.do_all_tools (
-				agent (a_tool: GUI_ARCHETYPE_TOOL; an_id: STRING)
+			archetype_viewers.do_all_tools (
+				agent (a_tool: GUI_ARCHETYPE_VIEWER; an_id: STRING)
 					do
 						if a_tool.source.id.as_string.same_string (an_id) then
 							a_tool.repopulate
@@ -1310,7 +1310,7 @@ feature {NONE} -- Implementation
 
 	clear_all_editors
 		do
-		--	archetype_tools.clear_all_tools_content
+		--	archetype_editors.clear_all_tools_content
 		end
 
 	populate_archetype_profile_combo
@@ -1353,8 +1353,8 @@ feature {NONE} -- Implementation
 			)
 
 			-- archetype tool
-			if archetype_tools.has_tools then
-				archetype_tools.active_tool.change_adl_serialisation_version
+			if archetype_viewers.has_tools then
+				archetype_viewers.active_tool.change_adl_serialisation_version
 			end
 		end
 
@@ -1417,8 +1417,8 @@ feature {NONE} -- Build commands
 			end
 
 			-- update archetype tool
-			if archetype_tools.has_tools then
-				archetype_tools.active_tool.change_adl_serialisation_version
+			if archetype_viewers.has_tools then
+				archetype_viewers.active_tool.change_adl_serialisation_version
 			end
 
 			-- for the moment, post a message about ADL 1.4 XML not being available

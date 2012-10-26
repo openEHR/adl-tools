@@ -93,7 +93,7 @@ feature -- Initialisation
 	make_editable (a_title: STRING; a_data_source_agent: like data_source_agent;
 				a_data_source_create_agent: like data_source_setter_agent;
 				a_data_source_remove_agent: like data_source_remove_agent;
-				an_undo_redo_chain: UNDO_REDO_CHAIN;
+				an_undo_redo_chain: detachable UNDO_REDO_CHAIN;
 				min_height, min_width: INTEGER;
 				arrange_horizontally, allow_expansion: BOOLEAN)
 			-- make with active editing agents so that changes made in the visual control

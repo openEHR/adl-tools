@@ -55,7 +55,7 @@ feature -- Initialisation
 			a_data_source_create_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
 			a_data_source_modify_agent: like data_source_modify_agent;
-			an_undo_redo_chain: UNDO_REDO_CHAIN;
+			an_undo_redo_chain: detachable UNDO_REDO_CHAIN;
 			min_height, min_width: INTEGER;
 			a_header_strings_agent: like header_strings_agent;
 			a_data_row_agt: like data_row_agt)

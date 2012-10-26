@@ -21,7 +21,7 @@ inherit
 		end
 
 create
-	make
+	make, make_editable
 
 feature -- Definitions
 
@@ -35,13 +35,18 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (an_undo_redo_update_agent: like undo_redo_update_agent)
+	make_editable (an_undo_redo_update_agent: like undo_redo_update_agent)
 		do
-			-- set commit handling
-			create gui_controls.make (0)
 			undo_redo_update_agent := an_undo_redo_update_agent
 			create authoring_tab_undo_redo_chain.make (undo_redo_update_agent)
 			create description_tab_undo_redo_chain.make (undo_redo_update_agent)
+			make
+		end
+
+	make
+		do
+			-- set commit handling
+			create gui_controls.make (0)
 
 			-- ======= root container ===========
 			create ev_root_container
@@ -323,11 +328,11 @@ feature {NONE} -- Implementation
 
 	trans_languages_ctl: EVX_COMBO_CONTROL
 
-	undo_redo_update_agent: PROCEDURE [ANY, TUPLE [UNDO_REDO_CHAIN]]
+	undo_redo_update_agent: detachable PROCEDURE [ANY, TUPLE [UNDO_REDO_CHAIN]]
 
 	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
-	authoring_tab_undo_redo_chain, description_tab_undo_redo_chain: UNDO_REDO_CHAIN
+	authoring_tab_undo_redo_chain, description_tab_undo_redo_chain: detachable UNDO_REDO_CHAIN
 
 	do_clear
 		do

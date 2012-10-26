@@ -11,7 +11,7 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class GUI_ARCHETYPE_TOOLS_CONTROLLER
+class GUI_ARCHETYPE_VIEWERS_CONTROLLER
 
 inherit
 	GUI_DOCKING_EDITOR_CONTROLLER
@@ -70,7 +70,7 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	tool_type: GUI_ARCHETYPE_TOOL
+	tool_type: GUI_ARCHETYPE_VIEWER
 
 end
 

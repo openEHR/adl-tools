@@ -14,9 +14,8 @@ note
 class GUI_ARCHETYPE_EDITOR
 
 inherit
-	GUI_ARCHETYPE_TOOL_FRAME
+	GUI_ARCHETYPE_TOOL
 		redefine
-			make, do_clear,
 			do_populate, can_populate,
 			can_edit, enable_edit, disable_edit,
 			add_editing_controls, on_set_primary_source
@@ -29,63 +28,8 @@ inherit
 			populate_undo_redo_controls
 		end
 
-	ARCHETYPE_TERM_CODE_TOOLS
-		export
-			{NONE} all
-		end
-
 create
 	make
-
-feature {NONE}-- Initialization
-
-	make
-		do
-			precursor
-
-			-- create subordinate widgets
-			create description_controls.make (agent update_undo_redo_controls)
-			create node_map_control.make
-			create ontology_controls.make (agent update_undo_redo_controls)
-			create serialisation_control.make -- (agent update_undo_redo_controls)
-
-			-- connect widgets
-			ev_notebook.extend (description_controls.ev_root_container)
-			ev_notebook.extend (node_map_control.ev_root_container)
-			ev_notebook.extend (ontology_controls.ev_root_container)
-			ev_notebook.extend (serialisation_control.ev_root_container)
-
-			-- set visual characteristics
-			ev_notebook.set_item_text (description_controls.ev_root_container, get_msg ("description_tab_text", Void))
-			ev_notebook.item_tab (description_controls.ev_root_container).set_pixmap (get_icon_pixmap ("tool/description"))
-
-			ev_notebook.set_item_text (node_map_control.ev_root_container, get_msg ("definition_tab_text", Void))
-			ev_notebook.item_tab (node_map_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/node_map"))
-
-			ev_notebook.set_item_text (ontology_controls.ev_root_container, get_msg ("terminology_tab_text", Void))
-			ev_notebook.item_tab (ontology_controls.ev_root_container).set_pixmap (get_icon_pixmap ("tool/terminology"))
-
-			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_msg ("serialised_tab_text", Void))
-			ev_notebook.item_tab (serialisation_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/serialised"))
-
-			set_tab_texts
-		end
-
-feature -- UI Feedback
-
-	select_ontology_item_from_code (a_code: attached STRING)
-			-- select `a_code' in the ontology tab of this tool
-		do
-			if not ontology_controls.is_populated then
-				ontology_controls.populate (source, differential_view, selected_language)
-			end
-			ev_notebook.select_item (ontology_controls.ev_root_container)
-			if is_term_code (a_code) then
-				ontology_controls.select_term (a_code)
-			elseif is_constraint_code (a_code) then
-				ontology_controls.select_constraint (a_code)
-			end
-		end
 
 feature -- Status Report
 
@@ -112,16 +56,7 @@ feature -- Commands
 	disable_edit
 		do
 			precursor
-			description_controls.disable_edit
 			ontology_controls.disable_edit
-		end
-
-	update_rm_icons_setting
-			-- call this routine if rm_icons setting changed elsewhere in tool
-		do
-			if node_map_control.can_repopulate then
-				node_map_control.repopulate
-			end
 		end
 
 feature -- Events
@@ -138,14 +73,13 @@ feature -- Events
 
 feature {NONE} -- Implementation
 
-	do_clear
-			-- Wipe out content from visual controls.
+	make_core_tools
 		do
-			precursor
-			description_controls.clear
-			node_map_control.clear
-			ontology_controls.clear
-			serialisation_control.clear
+			create description_controls.make_editable (agent update_undo_redo_controls)
+			create definition_control.make
+			create ontology_controls.make_editable (agent update_undo_redo_controls)
+			create serialisation_control.make
+			create annotations_control.make
 		end
 
 	do_populate
@@ -153,7 +87,7 @@ feature {NONE} -- Implementation
 		do
 			precursor
 			description_controls.populate (source, differential_view, selected_language)
-			node_map_control.populate (source, differential_view, selected_language)
+			definition_control.populate (source, differential_view, selected_language)
 		end
 
 	do_commit
@@ -167,26 +101,6 @@ feature {NONE} -- Implementation
 		do
 			precursor
 			populate_primary_source
-		end
-
-	description_controls: GUI_DESCRIPTION_CONTROLS
-
-	node_map_control: GUI_DEFINITION_CONTROL
-
-	ontology_controls: GUI_ONTOLOGY_CONTROLS
-
-	serialisation_control: GUI_SERIALISATION_CONTROL
-
-	set_differential_tab_texts
-			-- set text on tabs for differential form of archetype
-		do
-			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_msg ("serialised_diff_tab_text", Void))
-		end
-
-	set_flat_tab_texts
-			-- set text on tabs for flat form of archetype
-		do
-			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_msg ("serialised_flat_tab_text", Void))
 		end
 
 	add_editing_controls

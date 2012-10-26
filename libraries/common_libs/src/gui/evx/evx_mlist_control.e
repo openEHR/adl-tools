@@ -63,7 +63,7 @@ feature -- Initialisation
 	make_editable (a_title: STRING; a_data_source_agent: like data_source_agent;
 			a_data_source_create_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
-			an_undo_redo_chain: UNDO_REDO_CHAIN;
+			an_undo_redo_chain: detachable UNDO_REDO_CHAIN;
 			min_height, min_width: INTEGER;
 			use_hbox_container: BOOLEAN;
 			a_header_strings_agent: like header_strings_agent)
