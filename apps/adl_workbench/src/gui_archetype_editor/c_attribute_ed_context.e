@@ -185,7 +185,7 @@ feature -- Modification
 			a_node.set_parent (Current)
 		end
 
-feature {NONE} -- Implementation
+feature {ANY_ED_CONTEXT} -- Implementation
 
 	c_attribute_colour: EV_COLOR
 			-- generate a foreground colour for RM attribute representing inheritance status

@@ -107,7 +107,7 @@ feature -- Display
 					)
 				end
 			else
-				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, rm_type_text, path, archetype_rm_type_color, rm_type_pixmap (rm_type, rm_schema.rm_publisher.as_lower))
+				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, rm_type_text, path, parent.rm_attribute_colour, rm_type_pixmap (rm_type, rm_schema.rm_publisher.as_lower))
 
 				-- add RM class node context menu
 				build_class_node_context_menu
@@ -294,8 +294,8 @@ feature {NONE} -- Implementation
 			class_node_context_menu.extend (an_mi)
 
 			-- if there are type substitutions available, add sub-menu for that
-			if rm_type.has_type_substitutions then
-				add_subtype_context_menu (rm_type.type_substitutions)
+			if rm_type.semantic_class.has_type_substitutions then
+				add_subtype_context_menu (rm_type.semantic_class.type_substitutions)
 			end
 		end
 

@@ -99,7 +99,7 @@ feature -- Definitions
 
 	archetype_rm_type_inherited_color: EV_COLOR
 			-- foreground colour for inherited RM attributes and typenames in the UI
-			-- GREY
+			-- LIGHT GREY
 		once
 			create Result.make_with_8_bit_rgb (0xaa, 0xaa, 0xaa)
 		end
@@ -125,25 +125,34 @@ feature -- Definitions
 			create Result.make_with_8_bit_rgb (0, 0, 0xcc)
 		end
 
+	rm_type_color: EV_COLOR
+			-- foreground rendering colour for rm_attributes in the UI
+			-- VERY DARK GREY
+		once
+			create Result.make_with_8_bit_rgb (0x22, 0x22, 0x22)
+		end
+
 	rm_attribute_color: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
-			-- ROYAL BLUE
+			-- VERY DARK GREY
 		once
-			create Result.make_with_8_bit_rgb (0, 0, 0xff)
+			create Result.make_with_8_bit_rgb (0x22, 0x22, 0x22)
+			-- create Result.make_with_8_bit_rgb (0, 0, 0xff)
 		end
 
 	rm_runtime_attribute_colour: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
-			-- MEDIUM BLUE
+			-- MEDIUM GREY
 		once
-			create Result.make_with_8_bit_rgb (0x44, 0x99, 0xff)
+			-- create Result.make_with_8_bit_rgb (0x44, 0x99, 0xff)
+			create Result.make_with_8_bit_rgb (0x77, 0x77, 0x77)
 		end
 
 	rm_infrastructure_attribute_colour: EV_COLOR
 			-- foreground colour for rm_attributes in the UI
-			-- MEDIUM GREY
+			-- LIGHT GREY
 		once
-			create Result.make_with_8_bit_rgb (0x99, 0x99, 0x99)
+			create Result.make_with_8_bit_rgb (0xaa, 0xaa, 0xaa)
 		end
 
 	Archetype_constraint_color: EV_COLOR
