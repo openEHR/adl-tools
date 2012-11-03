@@ -17,7 +17,7 @@ class GUI_DEFINITION_CONTROL
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			can_populate, can_repopulate, repopulate, disable_edit, enable_edit
+			can_edit, can_populate, can_repopulate, repopulate, disable_edit, enable_edit
 		end
 
 	SPECIALISATION_STATUSES
@@ -41,13 +41,20 @@ inherit
 		end
 
 create
-	make
+	make, make_editable
 
 feature -- Definitions
 
 	Tree_control_panel_width: INTEGER = 100
 
 feature -- Initialisation
+
+	make_editable (an_undo_redo_update_agent: like undo_redo_update_agent)
+		do
+			undo_redo_update_agent := an_undo_redo_update_agent
+			create undo_redo_chain.make (undo_redo_update_agent)
+			make
+		end
 
 	make
 		do
@@ -174,14 +181,15 @@ feature -- Access
 			-- display / editor context, loaded with archetype for display, or a clone, for editing
 		do
 			if not editing_enabled then
-				source.create_display_context
 				if differential_view then
 					Result := source.differential_display_context
 				else
 					Result := source.flat_display_context
 				end
 			else
-				source.create_editor_context
+				if not attached source.editor_context then
+					source.build_editor_context (undo_redo_chain)
+				end
 				Result := source.editor_context
 			end
 		end
@@ -205,6 +213,12 @@ feature -- Status Report
 	can_repopulate: BOOLEAN
 		do
 			Result := is_populated and source.is_valid
+		end
+
+	can_edit: BOOLEAN
+			-- True if this tool has editing capability
+		do
+			Result := True
 		end
 
 feature -- Commands
@@ -329,7 +343,9 @@ feature {NONE} -- Implementation
 
 	visualise_descendants_class: detachable STRING
 
-	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
+	undo_redo_update_agent: detachable PROCEDURE [ANY, TUPLE [UNDO_REDO_CHAIN]]
+
+	undo_redo_chain: detachable UNDO_REDO_CHAIN
 
 	ev_definition_hbox: EV_HORIZONTAL_BOX
 
@@ -360,6 +376,8 @@ feature {NONE} -- Implementation
 
 	rm_schema: detachable BMM_SCHEMA
 
+	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
+
 	do_clear
 		do
 			gui_definition_grid.wipe_out
@@ -389,6 +407,7 @@ feature {NONE} -- Implementation
 				show_rm_data_properties, show_rm_runtime_properties, show_rm_infrastructure_properties)
 
 			-- populate the main definition grid
+			gui_definition_grid.ev_grid.lock_update
 			source_context.definition_context.prepare_display_in_grid (gui_definition_grid)
 			source_context.definition_context.display_in_grid (ui_settings)
 
@@ -432,58 +451,6 @@ feature {NONE} -- Implementation
 			ev_root_container.set_split_position (ev_root_container.minimum_split_position.max (ev_root_container.maximum_split_position -
 				gui_rules_grid.ev_grid.row_height * gui_rules_grid.ev_grid.visible_row_count))
 		end
-
---	roll_up_to_specialisation_level
---			-- roll the tree up so that nodes whose rolled_up_specialisation_status is
---			-- ss_inherited are closed, but nodes with
---		require
---			archetype_selected: attached source
---		do
---			if source_archetype.is_specialised and not source_archetype.is_template then
---				gui_definition_treeview_control.ev_tree_do_all (agent ev_grid_row_roll_up)
---			end
---		end
-
---	ev_grid_row_roll_up (an_ev_grid_row: EV_GRID_ROW)
---			-- close rows that have rolled_up_specialisation_status = ss_inherited; open others
---		do
---			if an_ev_grid_row.is_expandable then
---				if attached {ARCHETYPE_CONSTRAINT} an_ev_grid_row.data as ac then
---					if ac.specialisation_status = ss_inherited and not ev_grid_node_has_non_inherited_child (an_ev_grid_row) then
---						an_ev_grid_row.collapse
---					else
---						an_ev_grid_row.expand
---					end
---				end
---			end
---		end
-
---	ev_grid_node_has_non_inherited_child (an_ev_grid_row: EV_GRID_ROW): BOOLEAN
---			-- True if `an_ev_grid_row' is either already expanded, which implies it is not inherited,
---			-- or else its specialisation status is not ss_inherited
---		local
---			i: INTEGER
---			sub_row: EV_GRID_ROW
---		do
---			from i := 1 until i > an_ev_grid_row.subrow_count or Result loop
---				sub_row := an_ev_grid_row.subrow (i)
---				if sub_row.is_expandable then
---					Result := sub_row.is_expanded
---				elseif attached {ARCHETYPE_CONSTRAINT} sub_row.data as ac then
---					Result := ac.specialisation_status /= ss_inherited
---				end
---				i := i + 1
---			end
---		end
-
---	object_invariant_string (an_inv: ASSERTION): STRING
---			-- generate string form of node or object for use in tree node
---		do
---			Result := an_inv.as_string
---			if not show_technical_view then
---				Result := source_archetype.ontology.substitute_codes (Result, archetype_view_language)
---			end
---		end
 
 end
 

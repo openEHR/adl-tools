@@ -24,9 +24,6 @@ deferred class GUI_ARCHETYPE_TOOL_FRAME
 
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
-		redefine
-			enable_edit, disable_edit
-		end
 
 	SHARED_GUI_ARCHETYPE_TOOL_AGENTS
 		export
@@ -148,20 +145,6 @@ feature -- Commands
 				ev_differential_view_button.enable_select
 				set_view (True)
 			end
-		end
-
-	enable_edit
-		do
-			precursor
---			ev_archetype_id.enable_edit
---			ev_language_combo.enable_edit
-		end
-
-	disable_edit
-		do
-			precursor
---			ev_archetype_id.disable_edit
---			ev_language_combo.disable_edit
 		end
 
 feature {NONE} -- Events

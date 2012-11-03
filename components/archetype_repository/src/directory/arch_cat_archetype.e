@@ -638,6 +638,12 @@ feature -- Compilation
 			end
 
 			differential_archetype := Void
+
+			flat_archetype_cache := Void
+			differential_display_context_cache := Void
+			flat_display_context_cache := Void
+			editor_context_cache := Void
+
 			last_compile_attempt_timestamp := Void
 
 			compilation_state := Cs_unread
@@ -707,7 +713,7 @@ feature -- Compilation
 			-- signal event of differential in-memory being changed by editing at UI
 		do
 			compilation_state := cs_ready_to_validate
-			flat_archetype_cache := Void
+			clear_cache
 		ensure
 			Compilation_state_set: compilation_state = Cs_ready_to_validate
 		end
@@ -742,7 +748,7 @@ feature -- Compilation
 		do
 			compilation_state := cs_invalid
 			differential_archetype := Void
-			flat_archetype_cache := Void
+			clear_cache
 		ensure
 			Compilation_state_set: compilation_state = Cs_invalid
 		end
@@ -977,17 +983,10 @@ feature -- Modification
 
 feature -- Editing
 
-	flat_archetype_clone: detachable FLAT_ARCHETYPE
-			-- produce a clone of the current `flat_archetype'
-		do
-			if not attached flat_archetype_clone_cache then
-				create flat_archetype_clone_cache.make_from_other (flat_archetype)
-			end
-			Result := flat_archetype_clone_cache
-		end
-
-	differential_archetype_clone: detachable DIFFERENTIAL_ARCHETYPE
+	differential_archetype_clone: DIFFERENTIAL_ARCHETYPE
 			-- produce a clone of the current `differential_archetype'
+		require
+			is_valid
 		do
 			if not attached differential_archetype_clone_cache then
 				create differential_archetype_clone_cache.make_from_other (differential_archetype)
@@ -995,33 +994,31 @@ feature -- Editing
 			Result := differential_archetype_clone_cache
 		end
 
-	create_display_context
-			-- set up a new display context
+	differential_display_context: ARCH_ED_CONTEXT
 		do
-			if not attached differential_display_context then
-				create differential_display_context.make (Current, rm_schema, True)
+			if not attached differential_display_context_cache then
+				create differential_display_context_cache.make (Current, rm_schema, True)
 			end
-			if not attached flat_display_context then
-				create flat_display_context.make (Current, rm_schema, False)
-			end
+			Result := differential_display_context_cache
 		end
 
-	create_editor_context
-			-- set up a new editing context
+	flat_display_context: ARCH_ED_CONTEXT
 		do
-			if not attached editor_context then
-				create editor_context.make (Current, rm_schema, True)
+			if not attached flat_display_context_cache then
+				create flat_display_context_cache.make (Current, rm_schema, False)
 			end
+			Result := flat_display_context_cache
 		end
 
-	differential_display_context: detachable ARCH_ED_CONTEXT
-			-- differential archetype display context
+	build_editor_context (an_undo_redo_chain: UNDO_REDO_CHAIN)
+		do
+			create editor_context_cache.make_editable (Current, rm_schema, an_undo_redo_chain)
+		end
 
-	flat_display_context: detachable ARCH_ED_CONTEXT
-			-- differential archetype display context
-
-	editor_context: detachable ARCH_ED_CONTEXT
-			-- archetype editor context
+	editor_context: ARCH_ED_CONTEXT
+		do
+			Result := editor_context_cache
+		end
 
 	commit
 			-- commit modified differential clone to archetype
@@ -1257,10 +1254,24 @@ feature {NONE} -- Implementation
 	differential_archetype_clone_cache: detachable DIFFERENTIAL_ARCHETYPE
 			-- clone of current `differential_archetype'; usually used for editing
 
-	flat_archetype_clone_cache: detachable FLAT_ARCHETYPE
-			-- clone of current `flat_archetype'; usually used for editing
+	differential_display_context_cache: ARCH_ED_CONTEXT
+			-- differential archetype display context
+
+	flat_display_context_cache: ARCH_ED_CONTEXT
+			-- differential archetype display context
+
+	editor_context_cache: ARCH_ED_CONTEXT
+			-- archetype editor context
 
 	arch_flattener: ARCHETYPE_FLATTENER
+
+	clear_cache
+		do
+			flat_archetype_cache := Void
+			differential_display_context_cache := Void
+			flat_display_context_cache := Void
+			editor_context_cache := Void
+		end
 
 	post_parse_process
 		require

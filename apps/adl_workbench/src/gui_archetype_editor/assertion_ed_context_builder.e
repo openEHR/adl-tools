@@ -25,22 +25,17 @@ create
 
 feature -- Initialisation
 
-	make (an_archetype: ARCHETYPE; an_rm_schema: BMM_SCHEMA; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY)
+	make (an_ed_context: ARCH_ED_CONTEXT_STATE)
 		do
 			create expr_stack.make (0)
-			rm_schema := an_rm_schema
-			flat_ontology := a_flat_ontology
-			archetype := an_archetype
+			ed_context := an_ed_context
 		end
 
 feature -- Access
 
-	rm_schema: BMM_SCHEMA
-
 	root_node: ASSERTION_ED_CONTEXT
 
-	flat_ontology: FLAT_ARCHETYPE_ONTOLOGY
-			-- access to archetype flat ontology
+	ed_context: ARCH_ED_CONTEXT_STATE
 
 feature -- Visitor
 
@@ -49,7 +44,7 @@ feature -- Visitor
 		local
 			ed_node: ASSERTION_ED_CONTEXT
 		do
-			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
+			create ed_node.make (a_node, ed_context)
 			root_node := ed_node
 		end
 
@@ -58,7 +53,7 @@ feature -- Visitor
 		local
 			ed_node: EXPR_BINARY_OP_ED_CONTEXT
 		do
-			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
+			create ed_node.make (a_node, ed_context)
 			attach_to_tree (a_node, ed_node)
 			expr_stack.extend (ed_node)
 		end
@@ -74,7 +69,7 @@ feature -- Visitor
 		local
 			ed_node: EXPR_UNARY_OP_ED_CONTEXT
 		do
-			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
+			create ed_node.make (a_node, ed_context)
 			attach_to_tree (a_node, ed_node)
 			expr_stack.extend (ed_node)
 		end
@@ -90,14 +85,11 @@ feature -- Visitor
 		local
 			ed_node: EXPR_LEAF_ED_CONTEXT
 		do
-			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
+			create ed_node.make (a_node, ed_context)
 			attach_to_tree (a_node, ed_node)
 		end
 
 feature {NONE} -- Implementation
-
-	archetype: ARCHETYPE
-			-- archetype containing definition section being serialised
 
 	expr_stack: ARRAYED_STACK [EXPR_ITEM_ED_CONTEXT]
 

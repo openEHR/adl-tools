@@ -55,7 +55,7 @@ feature {NONE} -- Implementation
 				create og_path.make_from_string (arch_node.item.out)
 				last_node_id := og_path.last_object_node_id
 				if not last_node_id.is_empty then
-					Result.append (flat_ontology.term_definition (language, last_node_id).text)
+					Result.append (ed_context.flat_ontology.term_definition (display_settings.language, last_node_id).text)
 				else
 					Result.append (arch_node.item.out)
 				end
@@ -74,7 +74,7 @@ feature {NONE} -- Implementation
 			if has_icon_pixmap (pixmap_name) then
 				Result := get_icon_pixmap (pixmap_name)
 			else
-				pixmap_name := rm_icon_dir + resource_path_separator + rm_schema.rm_publisher + resource_path_separator + arch_node.type
+				pixmap_name := rm_icon_dir + resource_path_separator + ed_context.rm_schema.rm_publisher + resource_path_separator + arch_node.type
 				if has_icon_pixmap (pixmap_name) then
 					Result := get_icon_pixmap (pixmap_name)
 				else

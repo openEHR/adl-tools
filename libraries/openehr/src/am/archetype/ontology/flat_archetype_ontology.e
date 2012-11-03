@@ -42,7 +42,7 @@ feature -- Modification
 						if has_term_code (lang_terms_csr.key) then
 							replace_term_definition (a_lang, lang_terms_csr.item.deep_twin, False)
 						else
-							add_term_definition (a_lang, lang_terms_csr.item.deep_twin)
+							merge_term_definition (a_lang, lang_terms_csr.item.deep_twin)
 						end
 					end
 				end
@@ -59,7 +59,7 @@ feature -- Modification
 						if has_constraint_code (lang_terms_csr.key) then
 							replace_constraint_definition (a_lang, lang_terms_csr.item.deep_twin, False)
 						else
-							add_constraint_definition (a_lang, lang_terms_csr.item.deep_twin)
+							merge_constraint_definition (a_lang, lang_terms_csr.item.deep_twin)
 						end
 					end
 				end

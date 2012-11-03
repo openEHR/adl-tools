@@ -78,42 +78,41 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (an_arch_node: like arch_node; an_archetype: ARCHETYPE; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_rm_schema: BMM_SCHEMA)
+	make (an_arch_node: like arch_node; an_ed_context: ARCH_ED_CONTEXT_STATE)
 		do
-			make_base (an_archetype, a_flat_ontology, an_rm_schema)
+			ed_context := an_ed_context
 			arch_node := an_arch_node
+			create display_settings.make_default
 		ensure
 			not is_rm
 		end
 
-	make_rm (an_rm_element: like rm_element; an_archetype: ARCHETYPE; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_rm_schema: BMM_SCHEMA)
+	make_rm (an_rm_element: like rm_element; an_ed_context: ARCH_ED_CONTEXT_STATE)
 		do
-			make_base (an_archetype, a_flat_ontology, an_rm_schema)
+			ed_context := an_ed_context
 			rm_element := an_rm_element
+			create display_settings.make_default
 		ensure
 			is_rm
 		end
 
 feature -- Access
 
+	ed_context: ARCH_ED_CONTEXT_STATE
+			-- assembled context information for display / editing
+
 	rm_element: BMM_MODEL_ELEMENT
 
 	arch_node: detachable ANY
 			-- archetype node being edited in this context
-
-	archetype: ARCHETYPE
-			-- owning archetype
-
-	flat_ontology: FLAT_ARCHETYPE_ONTOLOGY
-			-- access to archetype flat ontology
-
-	rm_schema: BMM_SCHEMA
 
 	gui_grid: detachable EVX_GRID
 			-- note: stable once attached
 
 	gui_grid_row: detachable EV_GRID_ROW
 			-- note: stable once attached
+
+	display_settings: GUI_DEFINITION_SETTINGS
 
 feature -- Status Report
 
@@ -129,32 +128,24 @@ feature -- Status Report
 			Result := not attached arch_node
 		end
 
-feature -- Display Settings
-
-	in_technical_view: BOOLEAN
-
-	in_differential_view: BOOLEAN
-
-	show_rm_inheritance: BOOLEAN
-
-	show_codes: BOOLEAN
-
-	language: STRING
+	is_prepared: BOOLEAN
+		do
+			Result := attached gui_grid and attached gui_grid_row
+		end
 
 feature -- Display
 
 	prepare_display_in_grid (a_gui_grid: EVX_GRID)
 		deferred
 		ensure
-			gui_grid_set: gui_grid = a_gui_grid
+			prepared: is_prepared
 		end
 
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
+		require
+			is_prepared
 		do
-			in_technical_view := ui_settings.show_technical_view
-			show_rm_inheritance := ui_settings.show_rm_inheritance
-			show_codes := ui_settings.show_codes
-			language := ui_settings.selected_language
+			display_settings := ui_settings
 			gui_grid.set_last_row (gui_grid_row)
 		end
 
@@ -174,18 +165,10 @@ feature -- Display
 
 feature {NONE} -- Implementation
 
-	make_base (an_archetype: ARCHETYPE; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_rm_schema: BMM_SCHEMA)
-		do
-			archetype := an_archetype
-			in_differential_view := attached {DIFFERENTIAL_ARCHETYPE} archetype
-			flat_ontology := a_flat_ontology
-			rm_schema := an_rm_schema
-		end
-
 	c_meaning_colour: EV_COLOR
 			-- generate a foreground colour for RM attribute representing inheritance status
 		do
-			if show_rm_inheritance and c_meaning_colours.has (node_specialisation_status) then
+			if display_settings.show_rm_inheritance and c_meaning_colours.has (node_specialisation_status) then
 				Result := c_meaning_colours.item (node_specialisation_status)
 			else
 				Result := archetype_rm_type_color
@@ -195,7 +178,7 @@ feature {NONE} -- Implementation
 	c_constraint_colour: EV_COLOR
 			-- generate a foreground colour for RM attribute representing inheritance status
 		do
-			if show_rm_inheritance and c_constraint_colours.has (node_specialisation_status) then
+			if display_settings.show_rm_inheritance and c_constraint_colours.has (node_specialisation_status) then
 				Result := c_constraint_colours.item (node_specialisation_status)
 			else
 				Result := archetype_constraint_color
@@ -205,7 +188,7 @@ feature {NONE} -- Implementation
 	c_attribute_colour: EV_COLOR
 			-- generate a foreground colour for RM attribute representing inheritance status
 		do
-			if show_rm_inheritance and c_attribute_colours.has (node_specialisation_status) then
+			if display_settings.show_rm_inheritance and c_attribute_colours.has (node_specialisation_status) then
 				Result := c_attribute_colours.item (node_specialisation_status)
 			else
 				Result := archetyped_attribute_color
@@ -221,8 +204,8 @@ feature {NONE} -- Implementation
 			-- or else "rubric"
 		do
 			create Result.make_empty
-			if attached {ARCHETYPE_TERM} flat_ontology.definition_for_code (language, a_code) as ont_term then
-				if show_codes then
+			if attached {ARCHETYPE_TERM} ed_context.flat_ontology.definition_for_code (display_settings.language, a_code) as ont_term then
+				if display_settings.show_codes then
 					Result.append (a_code + "|" + ont_term.text + "|")
 				else
 					Result.append (ont_term.text)
@@ -242,12 +225,12 @@ feature {NONE} -- Implementation
 			if a_terminology_id.is_equal (Local_terminology_id) then
 				Result := local_term_string (a_code)
 			elseif ts.has_terminology (a_terminology_id) then
-				if ts.terminology (a_terminology_id).has_concept_id (a_code, language) then
-					a_term := ts.terminology (a_terminology_id).term (a_code, language)
+				if ts.terminology (a_terminology_id).has_concept_id (a_code, display_settings.language) then
+					a_term := ts.terminology (a_terminology_id).term (a_code, display_settings.language)
 				else
 					a_term := ts.terminology (a_terminology_id).term (a_code, Default_language)
 				end
-				if show_codes then
+				if display_settings.show_codes then
 					Result.append (a_term.as_string)
 				else
 					Result.append (a_term.value)

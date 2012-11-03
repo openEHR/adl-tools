@@ -50,9 +50,9 @@ feature -- Display
 			-- magnitude / units / precision constraint
 			if attached arch_node.list then
 				-- build the grid row
-				bmm_prop_magnitude := rm_schema.property_definition ("DV_QUANTITY", "magnitude")
-				bmm_prop_units := rm_schema.property_definition ("DV_QUANTITY", "units")
-				bmm_prop_precision := rm_schema.property_definition ("DV_QUANTITY", "precision")
+				bmm_prop_magnitude := ed_context.rm_schema.property_definition ("DV_QUANTITY", "magnitude")
+				bmm_prop_units := ed_context.rm_schema.property_definition ("DV_QUANTITY", "units")
+				bmm_prop_precision := ed_context.rm_schema.property_definition ("DV_QUANTITY", "precision")
 				bmm_prop_key := bmm_prop_magnitude.name + " | " + bmm_prop_units.name + " | " + bmm_prop_precision.name
 
 				gui_grid.add_sub_row (gui_grid_row, Void)

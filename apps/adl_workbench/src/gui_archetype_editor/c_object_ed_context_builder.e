@@ -32,24 +32,25 @@ create
 
 feature -- Initialisation
 
-	make (an_archetype: ARCHETYPE; rm_mode_flag: BOOLEAN; an_rm_schema: BMM_SCHEMA; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY)
+	make (an_ed_context: ARCH_ED_CONTEXT_STATE)
 		do
-			initialise (an_archetype)
+			initialise (an_ed_context.archetype)
 			create obj_node_stack.make (0)
 			create attr_node_stack.make (0)
-			create flat_ontologies_stack.make (0)
-			rm_schema := an_rm_schema
-			flat_ontologies_stack.extend (a_flat_ontology)
+			create ed_context_stack.make (0)
+
+			-- we have a stack of contexts because the flat_ontology can vary if this is a template, i.e. contains C_ARCHETYPE_ROOTs
+			ed_context_stack.extend (an_ed_context)
 		end
 
 feature -- Access
 
 	root_node: C_COMPLEX_OBJECT_ED_CONTEXT
 
-	flat_ontology: FLAT_ARCHETYPE_ONTOLOGY
-			-- access to archetype flat ontology
+	ed_context: ARCH_ED_CONTEXT_STATE
+			-- access to ed context with current archetype flat ontology
 		do
-			Result := flat_ontologies_stack.item
+			Result := ed_context_stack.item
 		end
 
 feature -- Visitor
@@ -59,12 +60,12 @@ feature -- Visitor
 		local
 			ed_node: C_COMPLEX_OBJECT_ED_CONTEXT
 		do
-			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
+			create ed_node.make (a_node, ed_context)
 			obj_node_stack.extend (ed_node)
 			if a_node.is_root then
 				root_node := ed_node
 			else
-				attr_node_stack.item.add_child (ed_node)
+				attr_node_stack.item.put_child (ed_node)
 			end
 		end
 
@@ -79,8 +80,8 @@ feature -- Visitor
 		local
 			ed_node: ARCHETYPE_SLOT_ED_CONTEXT
 		do
-			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
-			attr_node_stack.item.add_child (ed_node)
+			create ed_node.make (a_node, ed_context)
+			attr_node_stack.item.put_child (ed_node)
 		end
 
 	start_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
@@ -88,8 +89,8 @@ feature -- Visitor
 		local
 			ed_node: C_ATTRIBUTE_ED_CONTEXT
 		do
-			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
-			obj_node_stack.item.add_c_attribute (ed_node)
+			create ed_node.make (a_node, ed_context)
+			obj_node_stack.item.put_c_attribute (ed_node)
 			attr_node_stack.extend (ed_node)
 		end
 
@@ -113,18 +114,21 @@ feature -- Visitor
 			-- enter a C_ARCHETYPE_ROOT
 		local
 			ed_node: C_ARCHETYPE_ROOT_ED_CONTEXT
+			new_ed_context: ARCH_ED_CONTEXT_STATE
 		do
-			flat_ontologies_stack.extend (current_arch_cat.archetype_index.item (a_node.archetype_id).flat_archetype.ontology)
-			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
+			new_ed_context := ed_context.twin
+			new_ed_context.set_flat_ontology (current_arch_cat.archetype_index.item (a_node.archetype_id).flat_archetype.ontology)
+			ed_context_stack.extend (new_ed_context)
+			create ed_node.make (a_node, ed_context)
 			obj_node_stack.extend (ed_node)
-			attr_node_stack.item.add_child (ed_node)
+			attr_node_stack.item.put_child (ed_node)
 		end
 
 	end_c_archetype_root (a_node: C_ARCHETYPE_ROOT; depth: INTEGER)
 			-- exit a C_ARCHETYPE_ROOT
 		do
 			obj_node_stack.remove
-			flat_ontologies_stack.remove
+			ed_context_stack.remove
 		end
 
 	start_archetype_internal_ref (a_node: ARCHETYPE_INTERNAL_REF; depth: INTEGER)
@@ -132,8 +136,8 @@ feature -- Visitor
 		local
 			ed_node: ARCHETYPE_INTERNAL_REF_ED_CONTEXT
 		do
-			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
-			attr_node_stack.item.add_child (ed_node)
+			create ed_node.make (a_node, ed_context)
+			attr_node_stack.item.put_child (ed_node)
 		end
 
 	start_constraint_ref (a_node: CONSTRAINT_REF; depth: INTEGER)
@@ -141,8 +145,8 @@ feature -- Visitor
 		local
 			ed_node: CONSTRAINT_REF_ED_CONTEXT
 		do
-			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
-			attr_node_stack.item.add_child (ed_node)
+			create ed_node.make (a_node, ed_context)
+			attr_node_stack.item.put_child (ed_node)
 		end
 
 	start_c_primitive_object (a_node: C_PRIMITIVE_OBJECT; depth: INTEGER)
@@ -150,8 +154,8 @@ feature -- Visitor
 		local
 			ed_node: C_PRIMITIVE_OBJECT_ED_CONTEXT
 		do
-			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
-			attr_node_stack.item.add_child (ed_node)
+			create ed_node.make (a_node, ed_context)
+			attr_node_stack.item.put_child (ed_node)
 		end
 
 	start_c_domain_type (a_node: C_DOMAIN_TYPE; depth: INTEGER)
@@ -164,8 +168,8 @@ feature -- Visitor
 		local
 			ed_node: C_CODE_PHRASE_ED_CONTEXT
 		do
-			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
-			attr_node_stack.item.add_child (ed_node)
+			create ed_node.make (a_node, ed_context)
+			attr_node_stack.item.put_child (ed_node)
 		end
 
 	start_c_ordinal (a_node: C_DV_ORDINAL; depth: INTEGER)
@@ -173,8 +177,8 @@ feature -- Visitor
 		local
 			ed_node: C_DV_ORDINAL_ED_CONTEXT
 		do
-			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
-			attr_node_stack.item.add_child (ed_node)
+			create ed_node.make (a_node, ed_context)
+			attr_node_stack.item.put_child (ed_node)
 		end
 
 	start_c_quantity (a_node: C_DV_QUANTITY; depth: INTEGER)
@@ -182,8 +186,8 @@ feature -- Visitor
 		local
 			ed_node: C_DV_QUANTITY_ED_CONTEXT
 		do
-			create ed_node.make (a_node, archetype, flat_ontology, rm_schema)
-			attr_node_stack.item.add_child (ed_node)
+			create ed_node.make (a_node, ed_context)
+			attr_node_stack.item.put_child (ed_node)
 		end
 
 feature {NONE} -- Implementation
@@ -192,9 +196,7 @@ feature {NONE} -- Implementation
 
 	attr_node_stack: ARRAYED_STACK [C_ATTRIBUTE_ED_CONTEXT]
 
-	flat_ontologies_stack: ARRAYED_STACK [FLAT_ARCHETYPE_ONTOLOGY]
-
-	rm_schema: BMM_SCHEMA
+	ed_context_stack: ARRAYED_STACK [ARCH_ED_CONTEXT_STATE]
 
 end
 

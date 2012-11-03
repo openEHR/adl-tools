@@ -16,11 +16,11 @@ class GUI_ANNOTATIONS_CONTROL
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			can_populate, can_repopulate
+			can_edit, can_populate, can_repopulate
 		end
 
 create
-	make
+	make, make_editable
 
 feature -- Definitions
 
@@ -29,6 +29,13 @@ feature -- Definitions
 	Grid_ann_value_col: INTEGER = 3
 
 feature {NONE} -- Initialisation
+
+	make_editable (an_undo_redo_update_agent: like undo_redo_update_agent)
+		do
+			undo_redo_update_agent := an_undo_redo_update_agent
+			create undo_redo_chain.make (undo_redo_update_agent)
+			make
+		end
 
 	make
 			-- Create controller for the annotations grid.
@@ -44,6 +51,12 @@ feature -- Access
 	ev_root_container: EV_GRID_KBD_MOUSE
 
 feature -- Status Report
+
+	can_edit: BOOLEAN
+			-- True if this tool has editing capability
+		do
+			Result := True
+		end
 
 	can_populate (a_source: attached like source): BOOLEAN
 		do
@@ -76,6 +89,10 @@ feature -- Commands
 		end
 
 feature {NONE} -- Implementation
+
+	undo_redo_update_agent: detachable PROCEDURE [ANY, TUPLE [UNDO_REDO_CHAIN]]
+
+	undo_redo_chain: detachable UNDO_REDO_CHAIN
 
 	do_clear
 			-- Wipe out content from widgets.

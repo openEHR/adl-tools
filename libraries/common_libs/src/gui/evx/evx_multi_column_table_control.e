@@ -100,11 +100,10 @@ feature {NONE} -- Implementation
 			ev_data_control.wipe_out
 
 			-- populate the table rows using the data source as the first column keys
-			from key_list.start until key_list.off loop
+			across key_list as key_list_csr loop
 				create list_row
-				list_row.append (data_row_agt.item ([key_list.item]))
+				list_row.append (data_row_agt.item ([key_list_csr.item]))
 				ev_data_control.extend (list_row)
-				key_list.forth
 			end
 
 			-- resize columns based on data or headers if no data

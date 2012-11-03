@@ -37,7 +37,7 @@ feature -- Display
 
 			-- build the grid row for terminology id
 			if attached arch_node.terminology_id then
-				bmm_prop := rm_schema.property_definition ("CODE_PHRASE", "terminology_id")
+				bmm_prop := ed_context.rm_schema.property_definition ("CODE_PHRASE", "terminology_id")
 				gui_grid.add_sub_row (gui_grid_row, bmm_prop.name)
 				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, bmm_prop.name, Void, c_attribute_colour, get_icon_pixmap ("rm/generic/" + bmm_prop.multiplicity_key_string))
 				gui_grid.set_last_row_label_col (Definition_grid_col_constraint, arch_node.terminology_id.value, Void, c_constraint_colour, Void)
@@ -45,7 +45,7 @@ feature -- Display
 
 			-- code_string field
 			if attached arch_node.code_list then
-				bmm_code_string_prop := rm_schema.property_definition ("CODE_PHRASE", "code_string")
+				bmm_code_string_prop := ed_context.rm_schema.property_definition ("CODE_PHRASE", "code_string")
 				gui_grid.add_sub_row (gui_grid_row, bmm_code_string_prop.name)
 				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, bmm_code_string_prop.name, Void, c_attribute_colour,
 					get_icon_pixmap ("rm/generic/" + bmm_code_string_prop.multiplicity_key_string))

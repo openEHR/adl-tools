@@ -14,20 +14,31 @@ note
 
 class GUI_DEFINITION_SETTINGS
 
+inherit
+	BASIC_DEFINITIONS
+		export
+			{NONE} all
+		end
+
 create
-	make
+	make, make_default
 
 feature -- Initialisation
 
-	make (a_selected_language: STRING; 
-			a_show_codes, 
-			a_show_rm_inheritance, 
-			a_show_technical_view, 
-			a_show_rm_data_properties, 
-			a_show_rm_runtime_properties, 
+	make_default
+		do
+			language := default_language
+		end
+
+	make (a_language: STRING;
+			a_show_codes,
+			a_show_rm_inheritance,
+			a_show_technical_view,
+			a_show_rm_data_properties,
+			a_show_rm_runtime_properties,
 			a_show_rm_infrastructure_properties: BOOLEAN)
 		do
-			selected_language := a_selected_language
+			language := a_language
 			show_codes := a_show_codes
 			show_rm_inheritance := a_show_rm_inheritance
 			show_technical_view := a_show_technical_view
@@ -38,7 +49,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	selected_language: STRING
+	language: STRING
 
 	show_codes: BOOLEAN
 

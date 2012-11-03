@@ -377,6 +377,30 @@ feature -- Comparison
 			Result := a_child_code.starts_with (a_parent_code)
 		end
 
+feature -- Factory
+
+	new_concept_code_at_level (at_level: INTEGER): STRING
+			-- make a new term code for use as the root concept code of an archetype
+			-- at level = 0 -> Default_concept_code
+			-- at level = 1 -> Default_concept_code.1
+			-- at level = 2 -> Default_concept_code.1.1
+			-- etc
+		require
+			level_valid: at_level >= 0
+		local
+			i: INTEGER
+		do
+			create Result.make_from_string (default_concept_code)
+			from until i >= at_level loop
+				Result.append_character (Specialisation_separator)
+				Result.append_character ('1')
+				i := i + 1
+			end
+		ensure
+			valid: is_valid_concept_code (Result)
+			level_set: specialisation_depth_from_code (Result) = at_level
+		end
+
 feature -- Conversion
 
 	annotated_code (a_code, a_text: attached STRING): attached STRING

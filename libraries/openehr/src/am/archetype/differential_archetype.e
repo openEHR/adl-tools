@@ -247,11 +247,11 @@ feature -- Modification
 			definition.remove_all_attributes
 		end
 
-	add_language_tag(a_lang_tag: STRING)
+	add_language_tag (a_lang_tag: STRING)
 			-- add a new language to the archetype - creates new language section in
 			-- ontology, translations and resource description
 		do
-			precursor(a_lang_tag)
+			precursor (a_lang_tag)
 			ontology.add_language (a_lang_tag)
 		end
 
@@ -266,15 +266,13 @@ feature -- Modification
 			end
 
 			code_list := ontology_unused_term_codes
-			from code_list.start until code_list.off loop
-				ontology.remove_term_definition (code_list.item)
-				code_list.forth
+			across code_list as codes_csr loop
+				ontology.remove_term_definition (codes_csr.item)
 			end
 
 			code_list := ontology_unused_constraint_codes
-			from code_list.start until code_list.off loop
-				ontology.remove_constraint_definition (code_list.item)
-				code_list.forth
+			across code_list as codes_csr loop
+				ontology.remove_constraint_definition (codes_csr.item)
 			end
 		end
 

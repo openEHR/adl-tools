@@ -104,9 +104,8 @@ feature -- Access
 		do
 			create Result.make(0)
 			Result.compare_objects
-			from term_definitions.start until term_definitions.off loop
-				Result.extend(term_definitions.key_for_iteration)
-				term_definitions.forth
+			across term_definitions as term_defs_csr loop
+				Result.extend (term_defs_csr.key)
 			end
 		end
 
@@ -130,9 +129,6 @@ feature -- Access
 
 	constraint_codes: TWO_WAY_SORTED_SET[STRING]
 			-- list of constraint codes
-
---	term_attribute_names: ARRAYED_LIST[STRING]
---			-- the attribute names found in ARCHETYPE_TERM objects
 
 	term_definitions: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
 			-- table of term definitions, keyed by code, keyed by language
@@ -299,8 +295,6 @@ feature -- Status Report
 			Result := terminologies_available.has (a_terminology)
 		end
 
-feature -- Status Report
-
 	has_term_code (a_code: STRING): BOOLEAN
 			-- is `a_code' known in this ontology
 		require
@@ -320,7 +314,7 @@ feature -- Status Report
 	has_term_definition (a_language, a_code: STRING): BOOLEAN
 			-- is `a_code' defined in `a_language' in this ontology?
 		require
-			Term_code_valid: is_valid_code(a_code)
+			Term_code_valid: is_valid_code (a_code)
 			Language_valid: not a_language.is_empty
 		do
 			Result := term_definitions.has (a_language) and then term_definitions.item (a_language).has (a_code)
@@ -329,7 +323,7 @@ feature -- Status Report
 	has_constraint_definition (a_language, a_code: STRING): BOOLEAN
 			-- is `a_code' defined in `a_language' in this ontology?
 		require
-			Constraint_code_valid: is_valid_code(a_code)
+			Constraint_code_valid: is_valid_code (a_code)
 			Language_valid: not a_language.is_empty
 		do
 			Result := constraint_definitions.has (a_language) and then constraint_definitions.item (a_language).has (a_code)
@@ -394,81 +388,35 @@ feature -- Status Report
 			Result := languages_available.is_subset (other.languages_available)
 		end
 
+feature -- Conversion
+
+	substitute_codes (str, lang: STRING): STRING
+			-- substitute all occurrences of archetype codes in 'str'
+			-- with their term texts from this ontology, in 'lang'
+		require
+			Str_valid: not str.is_empty
+			Lang_valid: has_language(lang)
+		local
+			code: STRING
+			start_pos, end_pos: INTEGER
+		do
+			create Result.make(0)
+			Result.append (str)
+			from
+				start_pos := str.substring_index("[" + Term_code_leader, 1)
+			until
+				start_pos <= 0
+			loop
+				end_pos := str.index_of(']', start_pos)
+				code := str.substring(start_pos+1, end_pos-1)
+				if has_term_code(code) then
+					Result.replace_substring_all (code, term_definition(lang, code).text)
+				end
+				start_pos := str.substring_index ("[" + Term_code_leader, end_pos)
+			end
+		end
+
 feature -- Modification
-
-	set_concept_code (a_code: STRING)
-			-- set the primary language of the ontology
-		do
-			concept_code := a_code
-		ensure
-			Concept_code_set: concept_code.is_equal(a_code)
-		end
-
-	set_original_language (a_language: STRING)
-			-- set the primary language of the ontology
-		do
-			original_language := a_language
-		ensure
-			Language_set: original_language.is_equal(a_language)
-		end
-
-	add_term_definition (a_language: STRING; a_term: ARCHETYPE_TERM)
-			-- add a new term definition for language `a_language' and
-			-- automatically add translation placeholders in all other languages
-		require
-			Language_valid: has_language(a_language)
-			Term_valid: not has_term_code(a_term.code) and specialisation_depth_from_code (a_term.code) <= specialisation_depth
-		do
-			put_term_definition (a_language, a_term)
-			term_codes.extend (a_term.code)
-			update_highest_specialised_code_index (a_term.code)
-			update_highest_term_code_index (a_term.code)
-		ensure
-			Code_valid: has_term_code(a_term.code)
-		end
-
-	replace_term_definition (a_language: STRING; a_term: ARCHETYPE_TERM; replace_translations: BOOLEAN)
-			-- replace the definition of an existing term code; replace all translations
-			-- if flag set and `a_language' is the primary language
-		require
-			Language_valid: has_language (a_language)
-			Term_valid: has_term_code (a_term.code)
-		do
-			if a_language.is_equal (original_language) and replace_translations then
-				put_term_definition (a_language, a_term) -- replace all translations as well
-			else
-				term_definitions.item (a_language).replace (a_term, a_term.code) -- just do this translation
-			end
-		end
-
-	add_constraint_definition (a_language: STRING; a_term: ARCHETYPE_TERM)
-			-- add a new constraint definition for language `a_language' and
-			-- automatically add translation placeholders
-		require
-			Language_valid: has_language(a_language)
-			Term_valid: not has_constraint_code(a_term.code) and specialisation_depth_from_code (a_term.code) <= specialisation_depth
-		do
-			put_constraint_definition (a_language, a_term)
-			constraint_codes.extend (a_term.code)
-			update_highest_specialised_code_index (a_term.code)
-			update_highest_constraint_code_index (a_term.code)
-		ensure
-			has_constraint_code(a_term.code)
-		end
-
-	replace_constraint_definition (a_language: STRING; a_term: ARCHETYPE_TERM; replace_translations: BOOLEAN)
-			-- replace the definition of an existing constraint code; replace all translations
-			-- if flag set and `a_language' is the primary language
-		require
-			Language_valid: has_language (a_language)
-			Term_valid: has_constraint_code (a_term.code)
-		do
-			if a_language.is_equal (original_language) and replace_translations then
-				put_constraint_definition (a_language, a_term) -- replace all translations as well
-			else
-				constraint_definitions.item (a_language).replace(a_term, a_term.code) -- just do this translation
-			end
-		end
 
 	add_term_binding (a_code_phrase: CODE_PHRASE; a_code: STRING)
 			-- add a new term binding to local code a_code, in the terminology
@@ -502,6 +450,68 @@ feature -- Modification
 		ensure
 			Binding_added: has_constraint_binding (a_terminology, a_code)
 		end
+
+feature {ARCHETYPE_ONTOLOGY, TEST_DIFFERENTIAL_ARCHETYPE_ONTOLOGY} -- Modification
+
+	merge_term_definition (a_language: STRING; a_term: ARCHETYPE_TERM)
+			-- add a new term definition for language `a_language' and
+			-- automatically add translation placeholders in all other languages
+		require
+			Language_valid: has_language (a_language)
+			Term_valid: not has_term_code (a_term.code) and specialisation_depth_from_code (a_term.code) <= specialisation_depth
+		do
+			put_term_definition (a_language, a_term)
+			term_codes.extend (a_term.code)
+			update_highest_specialised_code_index (a_term.code)
+			update_highest_term_code_index (a_term.code)
+		ensure
+			Code_valid: has_term_code (a_term.code)
+		end
+
+	replace_term_definition (a_language: STRING; a_term: ARCHETYPE_TERM; replace_translations: BOOLEAN)
+			-- replace the definition of an existing term code; replace all translations
+			-- if flag set and `a_language' is the primary language
+		require
+			Language_valid: has_language (a_language)
+			Term_valid: has_term_code (a_term.code)
+		do
+			if a_language.is_equal (original_language) and replace_translations then
+				put_term_definition (a_language, a_term) -- replace all translations as well
+			else
+				term_definitions.item (a_language).replace (a_term, a_term.code) -- just do this translation
+			end
+		end
+
+	merge_constraint_definition (a_language: STRING; a_term: ARCHETYPE_TERM)
+			-- add a new constraint definition for language `a_language' and
+			-- automatically add translation placeholders
+		require
+			Language_valid: has_language(a_language)
+			Term_valid: not has_constraint_code(a_term.code) and specialisation_depth_from_code (a_term.code) <= specialisation_depth
+		do
+			put_constraint_definition (a_language, a_term)
+			constraint_codes.extend (a_term.code)
+			update_highest_specialised_code_index (a_term.code)
+			update_highest_constraint_code_index (a_term.code)
+		ensure
+			has_constraint_code(a_term.code)
+		end
+
+	replace_constraint_definition (a_language: STRING; a_term: ARCHETYPE_TERM; replace_translations: BOOLEAN)
+			-- replace the definition of an existing constraint code; replace all translations
+			-- if flag set and `a_language' is the primary language
+		require
+			Language_valid: has_language (a_language)
+			Term_valid: has_constraint_code (a_term.code)
+		do
+			if a_language.is_equal (original_language) and replace_translations then
+				put_constraint_definition (a_language, a_term) -- replace all translations as well
+			else
+				constraint_definitions.item (a_language).replace(a_term, a_term.code) -- just do this translation
+			end
+		end
+
+feature {DIFFERENTIAL_ARCHETYPE} -- Modification
 
 	remove_term_definition (a_code: STRING)
 			-- completely remove the term from the ontology
@@ -550,28 +560,25 @@ feature -- Modification
 		do
 			create langs_to_remove.make(0)
 
-			from constraint_definitions.start until constraint_definitions.off loop
-				constraint_definitions.item_for_iteration.remove (a_code)
-				if constraint_definitions.item_for_iteration.count = 0 then
-					langs_to_remove.extend (constraint_definitions.key_for_iteration)
+			across constraint_definitions as constraint_defs_csr loop
+				constraint_defs_csr.item.remove (a_code)
+				if constraint_defs_csr.item.count = 0 then
+					langs_to_remove.extend (constraint_defs_csr.key)
 				end
-				constraint_definitions.forth
 			end
 
-			from langs_to_remove.start until langs_to_remove.off loop
-				constraint_definitions.remove(langs_to_remove.item)
-				langs_to_remove.forth
+			across langs_to_remove as langs_csr loop
+				constraint_definitions.remove (langs_csr.item)
 			end
 
 			-- make a copy of terminologies list, since the next action might modify it...
 			create terminologies.make_from_array (constraint_bindings.current_keys)
 			if has_any_constraint_binding (a_code) then
-				from terminologies.start until terminologies.off loop
-					if constraint_bindings.has (terminologies.item) and then
-						constraint_bindings.item (terminologies.item).has (a_code) then
-						remove_constraint_binding (a_code, terminologies.item)
+				across terminologies as terminologies_csr loop
+					if constraint_bindings.has (terminologies_csr.item) and then
+						constraint_bindings.item (terminologies_csr.item).has (a_code) then
+						remove_constraint_binding (a_code, terminologies_csr.item)
 					end
-					terminologies.forth
 				end
 			end
 
@@ -608,6 +615,26 @@ feature -- Modification
 			Binding_removed: not has_constraint_binding (a_terminology, a_code)
 		end
 
+feature -- Modification
+
+--	set_concept_code (a_code: STRING)
+--			-- set the primary language of the ontology
+--		do
+--			concept_code := a_code
+--		ensure
+--			Concept_code_set: concept_code.is_equal(a_code)
+--		end
+
+--	set_original_language (a_language: STRING)
+--			-- set the primary language of the ontology
+--		do
+--			original_language := a_language
+--		ensure
+--			Language_set: original_language.is_equal(a_language)
+--		end
+
+feature {ARCHETYPE_ONTOLOGY, P_ARCHETYPE_ONTOLOGY} -- Implementation
+
 	set_term_definitions (a_term_defs: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING])
 		do
 			term_definitions := a_term_defs
@@ -633,42 +660,12 @@ feature -- Modification
 			terminology_extracts := a_term_extracts
 		end
 
-feature -- Conversion
-
-	substitute_codes (str, lang: STRING): STRING
-			-- substitute all occurrences of archetype codes in 'str'
-			-- with their term texts from this ontology, in 'lang'
-		require
-			Str_valid: not str.is_empty
-			Lang_valid: has_language(lang)
-		local
-			code: STRING
-			start_pos, end_pos: INTEGER
-		do
-			create Result.make(0)
-			Result.append (str)
-			from
-				start_pos := str.substring_index("[" + Term_code_leader, 1)
-			until
-				start_pos <= 0
-			loop
-				end_pos := str.index_of(']', start_pos)
-				code := str.substring(start_pos+1, end_pos-1)
-				if has_term_code(code) then
-					Result.replace_substring_all(code, term_definition(lang, code).text)
-				end
-				start_pos := str.substring_index("[" + Term_code_leader, end_pos)
-			end
-		end
-
-feature {ARCHETYPE_ONTOLOGY, P_ARCHETYPE_ONTOLOGY} -- Implementation
-
 	has_path (a_path: STRING): BOOLEAN
 			-- True if path `a_path' exists in structure
 		require
 			a_path_valid: not a_path.is_empty
 		do
-			Result := dt_representation.has_path(a_path)
+			Result := dt_representation.has_path (a_path)
 		end
 
 	highest_specialised_code_indexes: HASH_TABLE [INTEGER, STRING]
@@ -691,11 +688,10 @@ feature {ARCHETYPE_ONTOLOGY, P_ARCHETYPE_ONTOLOGY} -- Implementation
 		do
 			term_definitions.item (a_language).force (a_term, a_term.code)
 			trans_term := a_term.create_translated_term (original_language)
-			from term_definitions.start until term_definitions.off loop
-				if not term_definitions.key_for_iteration.is_equal (a_language) then
-					term_definitions.item_for_iteration.force (trans_term.deep_twin, trans_term.code)
+			across term_definitions as term_defs_csr loop
+				if not term_defs_csr.key.is_equal (a_language) then
+					term_defs_csr.item.force (trans_term.deep_twin, trans_term.code)
 				end
-				term_definitions.forth
 			end
 		ensure
 			term_definitions.item (a_language).has (a_term.code)
@@ -714,14 +710,13 @@ feature {ARCHETYPE_ONTOLOGY, P_ARCHETYPE_ONTOLOGY} -- Implementation
 			trans_term := a_term.create_translated_term(a_language)
 
 			-- in the following, iterate over term_definitions to get definitive list of languages
-			from term_definitions.start until term_definitions.off loop
-				if not term_definitions.key_for_iteration.is_equal(a_language) then
-					if not constraint_definitions.has(term_definitions.key_for_iteration) then
-						constraint_definitions.put(create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), term_definitions.key_for_iteration)
+			across term_definitions as term_defs_csr loop
+				if not term_defs_csr.key.is_equal(a_language) then
+					if not constraint_definitions.has (term_defs_csr.key) then
+						constraint_definitions.put (create {HASH_TABLE[ARCHETYPE_TERM, STRING]}.make(0), term_defs_csr.key)
 					end
-					constraint_definitions.item(term_definitions.key_for_iteration).force(trans_term, a_term.code)
+					constraint_definitions.item (term_defs_csr.key).force (trans_term, a_term.code)
 				end
-				term_definitions.forth
 			end
 		ensure
 			constraint_definitions.item(a_language).has(a_term.code)

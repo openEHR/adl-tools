@@ -158,8 +158,6 @@ feature {NONE} -- Implementation
 
 	term_defs_frame_ctl, constraint_defs_frame_ctl: EVX_FRAME_CONTROL
 
-	gui_controls: ARRAYED_LIST [EVX_TITLED_DATA_CONTROL]
-
 	undo_redo_update_agent: detachable PROCEDURE [ANY, TUPLE [UNDO_REDO_CHAIN]]
 
 	undo_redo_chain: detachable UNDO_REDO_CHAIN
@@ -169,6 +167,8 @@ feature {NONE} -- Implementation
 		do
 			Result := source_archetype.ontology
 		end
+
+	gui_controls: ARRAYED_LIST [EVX_TITLED_DATA_CONTROL]
 
 	do_clear
 			-- wipe out content from ontology-related controls
@@ -239,13 +239,12 @@ feature {NONE} -- Implementation
 			Result.extend (utf8_to_utf32 (a_term.description))
 
 			-- populate bindings
-			from terminologies.start until terminologies.off loop
-				if ontology.has_constraint_binding (terminologies.item, a_term.code) then
-					Result.extend (utf8_to_utf32 (ontology.constraint_binding (terminologies.item, a_term.code).as_string))
+			across terminologies as terminologies_csr loop
+				if ontology.has_constraint_binding (terminologies_csr.item, a_term.code) then
+					Result.extend (utf8_to_utf32 (ontology.constraint_binding (terminologies_csr.item, a_term.code).as_string))
 				else
 					Result.extend ("")
 				end
-				terminologies.forth
 			end
 		end
 

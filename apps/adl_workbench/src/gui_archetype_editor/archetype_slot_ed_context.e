@@ -16,7 +16,7 @@ class ARCHETYPE_SLOT_ED_CONTEXT
 inherit
 	C_OBJECT_ED_CONTEXT
 		redefine
-			make, arch_node, c_pixmap, prepare_display_in_grid, display_in_grid, build_arch_node_context_menu
+			make, arch_node, c_pixmap, prepare_display_in_grid, display_in_grid, build_context_menu
 		end
 
 	SHARED_KNOWLEDGE_REPOSITORY
@@ -29,9 +29,9 @@ create
 
 feature -- Initialisation
 
-	make (an_arch_node: like arch_node; an_archetype: ARCHETYPE; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_rm_schema: BMM_SCHEMA)
+	make (an_arch_node: like arch_node; an_ed_context: ARCH_ED_CONTEXT_STATE)
 		do
-			precursor (an_arch_node, an_archetype, a_flat_ontology, an_rm_schema)
+			precursor (an_arch_node, an_ed_context)
 			create assertions_index.make (0)
 			create ev_row_index.make (0)
 		end
@@ -66,9 +66,9 @@ feature -- Display
 						-- remember the association
 						assertions_index.extend (includes_csr.item)
 						ev_row_index.extend (gui_grid.last_row)
-
-						is_required := arch_node.has_open_excludes
 					end
+					is_required := arch_node.has_open_excludes
+
 				elseif arch_node.has_substantive_excludes then
 					across arch_node.excludes as excludes_csr loop
 						gui_grid.add_sub_row (gui_grid_row, excludes_csr.item)
@@ -83,9 +83,8 @@ feature -- Display
 						-- remember the association
 						assertions_index.extend (excludes_csr.item)
 						ev_row_index.extend (gui_grid.last_row)
-
-						is_required := arch_node.has_open_includes
 					end
+					is_required := arch_node.has_open_includes
 				end
 			end
 		end
@@ -96,7 +95,7 @@ feature -- Display
 
 			-- iterate through the assertions
 			across assertions_index as assn_csr loop
-				gui_grid.set_last_row (ev_row_index.i_th (assn_csr.cursor_index))
+				gui_grid.set_last_row (ev_row_index.i_th (assn_csr.target_index))
 				gui_grid.update_last_row_label_col (Definition_grid_col_rm_name, Void, Void, c_object_colour, Void)
 				gui_grid.update_last_row_label_col_multi_line (Definition_grid_col_constraint, assertion_string (assn_csr.item), Void, c_constraint_colour, Void)
 			end
@@ -110,7 +109,7 @@ feature {NONE} -- Implementation
 			base_pixmap_name, slot_pixmap_name: STRING
 		do
 			if use_rm_pixmaps then
-				base_pixmap_name := rm_icon_dir + resource_path_separator + rm_schema.rm_publisher.as_lower + resource_path_separator + arch_node.rm_type_name
+				base_pixmap_name := rm_icon_dir + resource_path_separator + ed_context.rm_schema.rm_publisher.as_lower + resource_path_separator + arch_node.rm_type_name
 				create slot_pixmap_name.make_empty
 				slot_pixmap_name.append (base_pixmap_name)
 				slot_pixmap_name.append ("_slot")
@@ -128,8 +127,8 @@ feature {NONE} -- Implementation
 			-- generate string form of node or object for use in tree node
 		do
 			Result := an_inv.as_string
-			if not show_codes then
-				Result := flat_ontology.substitute_codes (Result, language)
+			if not display_settings.show_codes then
+				Result := ed_context.flat_ontology.substitute_codes (Result, display_settings.language)
 			end
 			Result.replace_substring_all (" ", "%N")
 			Result.replace_substring_all ("|", "|%N")
@@ -150,7 +149,7 @@ feature {NONE} -- Implementation
 
 	context_slot_sub_menu: EV_MENU
 
-	build_arch_node_context_menu
+	build_context_menu
 		local
 			an_mi: EV_MENU_ITEM
 			slot_match_ids: ARRAYED_SET [STRING]
@@ -180,7 +179,7 @@ feature {NONE} -- Implementation
 				end
 
 				if not context_slot_sub_menu.is_empty then
-					arch_node_context_menu.extend (context_slot_sub_menu)
+					context_menu.extend (context_slot_sub_menu)
 				end
 			end
 		end

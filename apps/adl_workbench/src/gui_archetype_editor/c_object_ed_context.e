@@ -41,10 +41,10 @@ feature -- Definition
 
 feature -- Initialisation
 
-	make (an_arch_node: like arch_node; an_archetype: ARCHETYPE; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_rm_schema: BMM_SCHEMA)
+	make (an_arch_node: like arch_node; an_ed_context: ARCH_ED_CONTEXT_STATE)
 		do
-			precursor (an_arch_node, an_archetype, a_flat_ontology, an_rm_schema)
-			rm_type := rm_schema.class_definition (arch_node.rm_type_name)
+			precursor (an_arch_node, an_ed_context)
+			rm_type := ed_context.rm_schema.class_definition (arch_node.rm_type_name)
 		end
 
 feature -- Access
@@ -85,17 +85,13 @@ feature -- Display
 			if not is_rm then
 				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, "", Void, Void, c_pixmap)
 
-				-- add archetype C_OBJECT node context menu
-				build_arch_node_context_menu
-				gui_grid.add_last_row_pointer_button_press_actions (Definition_grid_col_rm_name, agent arch_class_node_handler)
-
 				-- add 'power expander' action to logical C_OBJECT leaf nodes
-				if attached rm_schema.archetype_parent_class then
-					visualise_descendants_class := rm_schema.archetype_parent_class
-				elseif attached rm_schema.archetype_visualise_descendants_of then
-					visualise_descendants_class := rm_schema.archetype_visualise_descendants_of
+				if attached ed_context.rm_schema.archetype_parent_class then
+					visualise_descendants_class := ed_context.rm_schema.archetype_parent_class
+				elseif attached ed_context.rm_schema.archetype_visualise_descendants_of then
+					visualise_descendants_class := ed_context.rm_schema.archetype_visualise_descendants_of
 				end
-				if rm_schema.is_descendant_of (arch_node.rm_type_name, visualise_descendants_class) then
+				if ed_context.rm_schema.is_descendant_of (arch_node.rm_type_name, visualise_descendants_class) then
 					gui_grid_row.expand_actions.force_extend (agent (gui_grid.ev_grid).expand_tree (gui_grid_row,
 						agent (a_row: EV_GRID_ROW): BOOLEAN
 							do
@@ -107,13 +103,13 @@ feature -- Display
 					)
 				end
 			else
-				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, rm_type_text, path, parent.rm_attribute_colour, rm_type_pixmap (rm_type, rm_schema.rm_publisher.as_lower))
-
-				-- add RM class node context menu
-				build_class_node_context_menu
-				gui_grid.add_last_row_pointer_button_press_actions (Definition_grid_col_rm_name, agent class_node_handler)
+				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, rm_type_text, path, parent.rm_attribute_colour, rm_type_pixmap (rm_type, ed_context.rm_schema.rm_publisher.as_lower))
 			end
 			gui_grid.set_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
+
+			-- add context menu
+			build_context_menu
+			gui_grid.add_last_row_pointer_button_press_actions (Definition_grid_col_rm_name, agent context_menu_event_handler)
 		end
 
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
@@ -126,7 +122,7 @@ feature -- Display
 			if not is_rm then
 				-- RM name & meaning columns
 				if arch_node.is_addressable then
-					if in_technical_view then
+					if display_settings.show_technical_view then
 						gui_grid.update_last_row_label_col (Definition_grid_col_rm_name, arch_node.rm_type_name, node_tooltip_str, c_object_colour, c_pixmap)
 						gui_grid.update_last_row_label_col (Definition_grid_col_meaning, node_id_text, node_tooltip_str, c_meaning_colour, Void)
 			 		else
@@ -134,7 +130,7 @@ feature -- Display
 						gui_grid.update_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
 					end
 				else
-					if in_technical_view then
+					if display_settings.show_technical_view then
 						gui_grid.update_last_row_label_col (Definition_grid_col_rm_name, arch_node.rm_type_name, node_tooltip_str , c_object_colour, c_pixmap)
 						gui_grid.update_last_row_label_col (Definition_grid_col_meaning, "", Void, Void, Void)
 					else -- in non-technical view, display a friendly type name; for openEHR data types, remove the "DV_"
@@ -170,7 +166,7 @@ feature -- Display
 				end
 
 				-- sibling order column
-				if in_differential_view then
+				if ed_context.in_differential_view then
 					if arch_node.is_addressable and then attached arch_node.sibling_order then
 						create s.make_empty
 						if arch_node.sibling_order.is_after then
@@ -193,10 +189,10 @@ feature {NONE} -- Implementation
 			arch_node.is_addressable
 		do
 			if is_valid_code (arch_node.node_id) then
-				if show_codes then
-					Result := arch_node.node_id + "|" + flat_ontology.term_definition (language, arch_node.node_id).text + "|"
+				if display_settings.show_codes then
+					Result := arch_node.node_id + "|" + ed_context.flat_ontology.term_definition (display_settings.language, arch_node.node_id).text + "|"
 				else
-					Result := flat_ontology.term_definition (language, arch_node.node_id).text
+					Result := ed_context.flat_ontology.term_definition (display_settings.language, arch_node.node_id).text
 				end
 			else
 				Result := arch_node.node_id
@@ -211,7 +207,7 @@ feature {NONE} -- Implementation
 	c_object_colour: EV_COLOR
 			-- generate a foreground colour for RM type representing inheritance status
 		do
-			if show_rm_inheritance and c_object_colours.has (arch_node.specialisation_status) then
+			if display_settings.show_rm_inheritance and c_object_colours.has (arch_node.specialisation_status) then
 				Result := c_object_colours.item (arch_node.specialisation_status)
 			else
 				Result := archetype_rm_type_color
@@ -223,7 +219,7 @@ feature {NONE} -- Implementation
 		local
 			pixmap_name, c_type_occ_str: STRING
 		do
-			pixmap_name := rm_icon_dir + resource_path_separator + rm_schema.rm_publisher.as_lower + resource_path_separator + arch_node.rm_type_name
+			pixmap_name := rm_icon_dir + resource_path_separator + ed_context.rm_schema.rm_publisher.as_lower + resource_path_separator + arch_node.rm_type_name
 			if use_rm_pixmaps and then has_icon_pixmap (pixmap_name) then
 				Result := get_icon_pixmap (pixmap_name)
 			else
@@ -236,66 +232,45 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	arch_class_node_handler (x,y, button: INTEGER)
+	context_menu_event_handler (x,y, button: INTEGER)
 			-- creates the context menu for a right click action for class node
 		do
 			if button = {EV_POINTER_CONSTANTS}.right then
 				gui_grid_row.item (1).enable_select
-				arch_node_context_menu.show
+				context_menu.show
 			end
 		end
 
-	arch_node_context_menu: EV_MENU
+	context_menu: EV_MENU
 
-	build_arch_node_context_menu
-		local
-			an_mi: EV_MENU_ITEM
-		do
+	build_context_menu
 			-- create context menu
-			create arch_node_context_menu
-			create an_mi.make_with_text_and_action (get_msg ("display_class", Void), agent display_context_selected_class_in_new_tool (rm_schema.class_definition (arch_node.rm_type_name)))
-			an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
-			arch_node_context_menu.extend (an_mi)
-
-			-- if this node is addressable, add menu item to show node_id in ontology
-			if arch_node.is_addressable then
-				create an_mi.make_with_text_and_action (get_text ("view_node_id_in_ontology"), agent do gui_archetype_tool_agents.code_select_action_agent.call ([arch_node.node_id]) end)
-				arch_node_context_menu.extend (an_mi)
-			end
-
-			-- add menu item for displaying path in path map
-			if attached gui_archetype_tool_agents.path_select_action_agent then
-				create an_mi.make_with_text_and_action (get_text ("menu_option_display_path"), agent do gui_archetype_tool_agents.path_select_action_agent.call ([arch_node.path]) end)
-				arch_node_context_menu.extend (an_mi)
-			end
-		end
-
-	class_node_context_menu: EV_MENU
-
-	class_node_handler (x,y, button: INTEGER)
-			-- invokes the context menu for a right click action for class node
-		do
-			if button = {EV_POINTER_CONSTANTS}.right then
-				gui_grid_row.item (1).enable_select
-				class_node_context_menu.show
-			end
-		end
-
-	build_class_node_context_menu
-			-- creates the context menu for a right click action for class node
 		local
 			an_mi: EV_MENU_ITEM
 		do
-			create class_node_context_menu
-
-			-- add menu item for retarget tool to current node / display in new tool
+			create context_menu
 			create an_mi.make_with_text_and_action (get_msg ("display_class", Void), agent display_context_selected_class_in_new_tool (rm_type.semantic_class))
 			an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
-			class_node_context_menu.extend (an_mi)
+			context_menu.extend (an_mi)
 
-			-- if there are type substitutions available, add sub-menu for that
-			if rm_type.semantic_class.has_type_substitutions then
-				add_subtype_context_menu (rm_type.semantic_class.type_substitutions)
+			if not is_rm then
+				-- if this node is addressable, add menu item to show node_id in ontology
+				if arch_node.is_addressable then
+					create an_mi.make_with_text_and_action (get_text ("menu_option_display_code"), agent do gui_archetype_tool_agents.code_select_action_agent.call ([arch_node.node_id]) end)
+					context_menu.extend (an_mi)
+				end
+			end
+
+			if not ed_context.editing_enabled then
+				-- add menu item for displaying path in path map
+				if not is_rm and attached gui_archetype_tool_agents.path_select_action_agent then
+					create an_mi.make_with_text_and_action (get_text ("object_context_menu_display_path"), agent do gui_archetype_tool_agents.path_select_action_agent.call ([arch_node.path]) end)
+					context_menu.extend (an_mi)
+				end
+			else
+				-- add menu item for deleting node
+				create an_mi.make_with_text_and_action (get_text ("object_context_menu_delete"), agent do_edit_delete_node)
+				context_menu.extend (an_mi)
 			end
 		end
 
@@ -304,83 +279,10 @@ feature {NONE} -- Implementation
 			gui_agents.select_class_in_new_tool_agent.call ([a_class_def])
 		end
 
-	add_subtype_context_menu (a_substitutions: ARRAYED_SET[STRING])
-			-- dynamically initializes the context menu for this tree
-		local
-			an_mi: EV_MENU_ITEM
-			chg_sub_menu: EV_MENU
+	do_edit_delete_node
 		do
-			-- create sub menu listing subtypes to change current node into
-			create chg_sub_menu.make_with_text (get_text ("context_menu_convert_node_to_subtype"))
-			across a_substitutions as subs_csr loop
-				create an_mi.make_with_text_and_action (subs_csr.item, agent convert_node_to_subtype (subs_csr.item, True))
-				if rm_schema.class_definition (subs_csr.item).is_abstract then
-					an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))
-				else
-					an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_concrete"))
-				end
-	    		chg_sub_menu.extend (an_mi)
-			end
-			class_node_context_menu.extend (chg_sub_menu)
-
-			-- if owning attribute is multiple, allow adding of sibling nodes
---			if attached a_class_grid_row.parent_row and then
---				attached {BMM_PROPERTY_DEFINITION} gui_grid_row.parent_row.data as a_prop_def and then a_prop_def.is_container
---			then
---				-- create sub menu listing subtypes to add to parent node
---				create chg_sub_menu.make_with_text (get_text ("context_menu_add_subtype_mode"))
---				across a_substitutions as subs_csr loop
---					create an_mi.make_with_text_and_action (subs_csr.item, agent convert_node_to_subtype (subs_csr.item, gui_grid_row, False))
---					if rm_schema.class_definition (subs_csr.item).is_abstract then
---						an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))
---					else
---						an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_concrete"))
---					end
---		    		chg_sub_menu.extend (an_mi)
---				end
---				class_node_context_menu.extend (chg_sub_menu)
---			end
-		end
-
-	convert_node_to_subtype (a_subtype: STRING; replace_mode: BOOLEAN)
-			-- rebuild EV tree from interior node of class with a new tree of selected subtype
-		local
-			bmm_subtype_def: BMM_CLASS_DEFINITION
-		do
-			bmm_subtype_def := rm_schema.class_definition (a_subtype)
-
---			-- set the RM path from the sibling node; it is the same regardless of whether we are replacing or adding nodes
---			if attached {EV_GRID_LABEL_ITEM} gui_grid_row.item (Definition_grid_col_rm_name) as gli then
---				create rm_node_path.make_from_string (utf32_to_utf8 (gli.tooltip))
---			end
---			if replace_mode then
---				gui_grid.remove_sub_rows (gui_grid_row)
---				gui_grid.set_last_row (gui_grid_row)
---				gui_grid.update_last_row_label_col (Definition_grid_col_rm_name, a_subtype, Void, archetype_rm_type_color,
---					rm_type_pixmap (bmm_subtype_def, rm_publisher))
---				gui_grid.last_row.set_data (bmm_subtype_def)
---				ev_grid_rm_row_stack.extend (gui_grid_row)
---			else
---				gui_grid.add_sub_row (gui_grid_row.parent_row, bmm_subtype_def)
---				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, a_subtype, rm_node_path.as_string, archetype_rm_type_color,
---					rm_type_pixmap (bmm_subtype_def, rm_publisher))
---				if attached {EV_GRID_LABEL_ITEM} gui_grid.last_row.item (Definition_grid_col_rm_name) as gli then
---	 	 			gli.pointer_button_press_actions.force_extend (agent class_node_handler (gui_grid.last_row, ?, ?, ?))
---					gui_grid.last_row.expand_actions.force_extend (agent property_node_expand_handler (gui_grid.last_row))
---				end
---				ev_grid_rm_row_stack.extend (gui_grid.last_row)
---			end
-
---			ev_grid_rm_row_removals_stack.extend (False)
-
---			bmm_subtype_def.do_supplier_closure (not differential_view, agent continue_rm_property, agent enter_rm_property, agent exit_rm_property)
-
---			ev_grid_rm_row_stack.remove
---			ev_grid_rm_row_removals_stack.remove
-
---			if a_class_grid_row.is_expandable then
---				a_class_grid_row.expand
---			end
+			parent.remove_child (Current)
+			ed_context.undo_redo_chain.add_link (agent parent.remove_child (Current), Void, agent parent.put_child (Current), Void)
 		end
 
 end

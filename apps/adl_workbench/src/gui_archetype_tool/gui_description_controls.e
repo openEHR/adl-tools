@@ -330,9 +330,9 @@ feature {NONE} -- Implementation
 
 	undo_redo_update_agent: detachable PROCEDURE [ANY, TUPLE [UNDO_REDO_CHAIN]]
 
-	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
-
 	authoring_tab_undo_redo_chain, description_tab_undo_redo_chain: detachable UNDO_REDO_CHAIN
+
+	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
 	do_clear
 		do

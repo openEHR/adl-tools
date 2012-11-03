@@ -24,32 +24,12 @@ inherit
 			{ANY} archetype_native_serialiser_formats, has_archetype_native_serialiser_format
 		end
 
-	ARCHETYPE_TERM_CODE_TOOLS
-		export
-			{NONE} all
-		end
-
-	SHARED_C_FACTORY
-		export
-			{NONE} all
-		end
-
 	ADL_SYNTAX_CONVERTER
 		export
 			{NONE} all
 		end
 
 	SHARED_DT_OBJECT_CONVERTER
-		export
-			{NONE} all
-		end
-
-	SHARED_MESSAGE_DB
-		export
-			{NONE} all
-		end
-
-	INTERNAL
 		export
 			{NONE} all
 		end

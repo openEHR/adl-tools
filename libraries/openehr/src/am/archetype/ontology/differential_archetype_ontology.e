@@ -6,9 +6,9 @@ note
 				 ]"
 	keywords:    "archetype, ontology, terminology"
 
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2009 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 	void_safety: "initial"
 
@@ -65,6 +65,12 @@ feature -- Initialisation
 			highest_specialised_code_indexes := a_flat_copy.highest_specialised_code_indexes
 		end
 
+feature -- Access
+
+	last_added_term_definition_code: STRING
+
+	last_added_constraint_definition_code: STRING
+
 feature -- Modification
 
 	add_language (a_language: STRING)
@@ -73,7 +79,7 @@ feature -- Modification
 		require
 			Language_valid: not a_language.is_empty
 		local
-			term_defs_one_lang, constraint_defs_one_lang, term_defs_orig_lang, constraint_defs_orig_lang: HASH_TABLE[ARCHETYPE_TERM, STRING]
+			term_defs_one_lang, constraint_defs_one_lang: HASH_TABLE[ARCHETYPE_TERM, STRING]
 		do
 			if not term_definitions.has (a_language) then
 				create term_defs_one_lang.make(0)
@@ -86,20 +92,16 @@ feature -- Modification
 				-- if not the primary language, add set of translation place-holder terms in this language
 				if attached original_language and then not a_language.is_equal(original_language) then
 					-- term definitions
-					term_defs_orig_lang := term_definitions.item(original_language)
-					from term_defs_orig_lang.start until term_defs_orig_lang.off loop
-						term_defs_one_lang.put (term_defs_orig_lang.item_for_iteration.create_translated_term(original_language),
-							term_defs_orig_lang.item_for_iteration.code)
-						term_defs_orig_lang.forth
+					across term_definitions.item (original_language) as term_defs_csr loop
+						term_defs_one_lang.put (term_defs_csr.item.create_translated_term (original_language),
+							term_defs_csr.item.code)
 					end
 
 					-- do constraint definitions as well
 					if not constraint_definitions.is_empty then
-						constraint_defs_orig_lang := constraint_definitions.item (original_language)
-						from constraint_defs_orig_lang.start until constraint_defs_orig_lang.off loop
-							constraint_defs_one_lang.put (constraint_defs_orig_lang.item_for_iteration.create_translated_term (original_language),
-								constraint_defs_orig_lang.item_for_iteration.code)
-							constraint_defs_orig_lang.forth
+						across constraint_definitions.item (original_language) as constraint_defs_csr loop
+							constraint_defs_one_lang.put (constraint_defs_csr.item.create_translated_term (original_language),
+								constraint_defs_csr.item.code)
 						end
 					end
 				end
@@ -118,6 +120,26 @@ feature -- Modification
 			Term_definitions_populated: term_definitions.item (original_language).item(concept_code) = a_term
 		end
 
+	add_new_non_refined_term_definition
+			-- add a new term definition with default content;
+			-- automatically add translation placeholders in all other languages
+			-- return the new code in `last_added_term_definition'
+		do
+			last_added_term_definition_code := new_non_refined_term_code
+			merge_term_definition (original_language, create {ARCHETYPE_TERM}.make (last_added_term_definition_code))
+		end
+
+	add_new_refined_term_definition (parent_code: STRING)
+			-- add a new term definition as child of `parent_code' with default content;
+			-- automatically add translation placeholders in all other languages
+			-- return the new code in `last_added_term_definition'
+		require
+			Term_valid: specialisation_depth_from_code (parent_code) < specialisation_depth
+		do
+			last_added_term_definition_code := new_refined_term_code (parent_code)
+			merge_term_definition (original_language, create {ARCHETYPE_TERM}.make (last_added_term_definition_code))
+		end
+
 	replace_term_definition_item (a_language: STRING; a_code, a_key, a_value: STRING)
 			-- replace a field denoted by `a_key' of the term with code `a_code'
 		require
@@ -130,6 +152,26 @@ feature -- Modification
 			if term.has_key (a_key) then
 				term.set_value (a_value, a_key)
 			end
+		end
+
+	add_new_non_refined_constraint_definition: STRING
+			-- add a new constraint definition with default content;
+			-- automatically add translation placeholders in all other languages
+			-- return the new code in `last_added_constraint_definition'
+		do
+			last_added_constraint_definition_code := new_non_refined_constraint_code
+			merge_constraint_definition (original_language, create {ARCHETYPE_TERM}.make (last_added_constraint_definition_code))
+		end
+
+	add_new_refined_constraint_definition (parent_code: STRING)
+			-- add a new constraint definition as child of `parent_code' with default content;
+			-- automatically add translation placeholders in all other languages
+			-- return the new code in `last_added_constraint_definition'
+		require
+			Term_valid: specialisation_depth_from_code (parent_code) < specialisation_depth
+		do
+			last_added_constraint_definition_code := new_refined_constraint_code (parent_code)
+			merge_constraint_definition (original_language, create {ARCHETYPE_TERM}.make (last_added_constraint_definition_code))
 		end
 
 	replace_constraint_definition_item (a_language: STRING; a_code, a_key, a_value: STRING)
@@ -170,8 +212,8 @@ feature -- Modification
 
 feature -- Factory
 
-	new_non_specialised_term_code: STRING
-			-- create a new code at level of current top code index at current specialisation depth
+	new_non_refined_term_code: STRING
+			-- create a new at-code at current specialisation depth
 			-- code will have form atnnn or at0.n or at0.0.n etc
 		local
 			new_idx_str: STRING
@@ -182,24 +224,24 @@ feature -- Factory
 				Result.append (Term_code_leader)
 
 				from i := 0 until i = specialisation_depth loop
-					Result.append_character('0')
-					Result.append_character(Specialisation_separator)
+					Result.append_character ('0')
+					Result.append_character (Specialisation_separator)
 					i := i + 1
 				end
 
-				Result.append_integer(highest_term_code_index + 1)
+				Result.append_integer (highest_term_code_index + 1)
 			else
 				create Result.make_filled ('0', Term_code_length)
-				Result.replace_substring(Term_code_leader, 1, Term_code_leader.count)
+				Result.replace_substring (Term_code_leader, 1, Term_code_leader.count)
 				new_idx_str := (highest_term_code_index + 1).out
-				Result.replace_substring(new_idx_str, Result.count-new_idx_str.count + 1, Result.count)
+				Result.replace_substring (new_idx_str, Result.count - new_idx_str.count + 1, Result.count)
 			end
 		ensure
 			Result_exists: specialisation_depth_from_code(Result) = specialisation_depth
 		end
 
-	new_specialised_term_code (a_parent_code: STRING): STRING
-			-- Make a new specialised code based on `a_parent_code'
+	new_refined_term_code (a_parent_code: STRING): STRING
+			-- Create a new at-code at current specialisation depth, based on `a_parent_code'
 			-- e.g. "at0001" at level 2 will produce "at0001.0.1"
 			-- Note: a code of "at0001" has specialisation depth 0
 		require
@@ -211,21 +253,21 @@ feature -- Factory
 			create Result.make(0)
 			Result.append (a_parent_code)
 
-			from i := specialisation_depth_from_code(a_parent_code) + 1 until i >= specialisation_depth loop
-				Result.append_character(Specialisation_separator)
-				Result.append_character('0')
+			from i := specialisation_depth_from_code (a_parent_code) + 1 until i >= specialisation_depth loop
+				Result.append_character (Specialisation_separator)
+				Result.append_character ('0')
 				i := i + 1
 			end
 
-			Result.append_character(Specialisation_separator)
+			Result.append_character (Specialisation_separator)
 			Result.append_integer (highest_specialised_code_indexes [a_parent_code] + 1)
 		ensure
 			Result_valid: specialised_code_tail (Result).to_integer > 0
 		end
 
-	new_non_specialised_constraint_code: STRING
-			-- create a new code at level of current top code index at current specialisation depth
-			-- code will have form acnnn or ac0.n or ac0.0.n etc
+	new_non_refined_constraint_code: STRING
+			-- create a new ac-code at current specialisation depth
+			-- code will have form atnnn or ac0.n or ac0.0.n etc
 		local
 			new_idx_str: STRING
 			i: INTEGER
@@ -234,24 +276,24 @@ feature -- Factory
 				create Result.make(0)
 				Result.append (Constraint_code_leader)
 				from i := 0 until i = specialisation_depth loop
-					Result.append_character('0')
-					Result.append_character(Specialisation_separator)
+					Result.append_character ('0')
+					Result.append_character (Specialisation_separator)
 					i := i + 1
 				end
 
 				Result.append_integer(highest_constraint_code_index + 1)
 			else
 				create Result.make_filled ('0', Constraint_code_length)
-				Result.replace_substring(Constraint_code_leader, 1, Constraint_code_leader.count)
+				Result.replace_substring (Constraint_code_leader, 1, Constraint_code_leader.count)
 				new_idx_str := (highest_constraint_code_index + 1).out
-				Result.replace_substring(new_idx_str, Result.count-new_idx_str.count+1, Result.count)
+				Result.replace_substring (new_idx_str, Result.count-new_idx_str.count+1, Result.count)
 			end
 		ensure
 			Result_exists: specialisation_depth_from_code(Result) = specialisation_depth
 		end
 
-	new_specialised_constraint_code (a_parent_code: STRING): STRING
-			-- Make a new specialised code based on `a_parent_code'
+	new_refined_constraint_code (a_parent_code: STRING): STRING
+			-- Make a new ac-code based on `a_parent_code'
 			-- e.g. "ac0001" at level 2 will produce "ac0001.0.1"
 			-- Note: a code of "ac0001" has specialisation depth 0
 		require
@@ -264,41 +306,19 @@ feature -- Factory
 			Result.append (a_parent_code)
 
 			from
-				i := specialisation_depth_from_code(a_parent_code) + 1
+				i := specialisation_depth_from_code (a_parent_code) + 1
 			until
 				i >= specialisation_depth
 			loop
-				Result.append_character(Specialisation_separator)
-				Result.append_character('0')
+				Result.append_character (Specialisation_separator)
+				Result.append_character ('0')
 				i := i + 1
 			end
 
-			Result.append_character(Specialisation_separator)
+			Result.append_character (Specialisation_separator)
 			Result.append_integer (highest_specialised_code_indexes [a_parent_code] + 1)
 		ensure
 			Result_valid: specialised_code_tail (Result).to_integer > 0
-		end
-
-	new_concept_code_at_level (at_level: INTEGER): STRING
-			-- make a new term code for use as the root concept code of an archetype
-			-- at level = 0 -> Default_concept_code
-			-- at level = 1 -> Default_concept_code.1
-			-- at level = 2 -> Default_concept_code.1.1
-			-- etc
-		require
-			level_valid: at_level >= 0
-		local
-			i: INTEGER
-		do
-			create Result.make_from_string (default_concept_code)
-			from until i >= at_level loop
-				Result.append_character (Specialisation_separator)
-				Result.append_character ('1')
-				i := i + 1
-			end
-		ensure
-			valid: is_valid_concept_code (Result)
-			level_set: specialisation_depth_from_code (Result) = at_level
 		end
 
 feature -- Conversion

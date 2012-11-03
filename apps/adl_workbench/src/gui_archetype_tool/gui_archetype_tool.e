@@ -56,15 +56,15 @@ feature {NONE}-- Initialization
 			ev_notebook.set_item_text (ontology_controls.ev_root_container, get_text ("terminology_tab_text"))
 			ev_notebook.item_tab (ontology_controls.ev_root_container).set_pixmap (get_icon_pixmap ("tool/terminology"))
 
-			-- serialisation control
-			ev_notebook.extend (serialisation_control.ev_root_container)
-			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_text ("serialised_tab_text"))
-			ev_notebook.item_tab (serialisation_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/serialised"))
-
 			-- annotation control
 			ev_notebook.extend (annotations_control.ev_root_container)
 			ev_notebook.set_item_text (annotations_control.ev_root_container, get_text ("annotations_tab_text"))
 			ev_notebook.item_tab (annotations_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/annotations"))
+
+			-- serialisation control
+			ev_notebook.extend (serialisation_control.ev_root_container)
+			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_text ("serialised_tab_text"))
+			ev_notebook.item_tab (serialisation_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/serialised"))
 
 			set_tab_texts
 		end

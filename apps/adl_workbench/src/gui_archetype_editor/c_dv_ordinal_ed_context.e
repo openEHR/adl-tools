@@ -34,8 +34,8 @@ feature -- Display
 			precursor (a_gui_grid)
 			if not arch_node.any_allowed then
 				-- build the grid row
-				bmm_prop_value := rm_schema.property_definition ("DV_ORDINAL", "value")
-				bmm_prop_symbol := rm_schema.property_definition ("DV_ORDINAL", "symbol")
+				bmm_prop_value := ed_context.rm_schema.property_definition ("DV_ORDINAL", "value")
+				bmm_prop_symbol := ed_context.rm_schema.property_definition ("DV_ORDINAL", "symbol")
 				bmm_prop_key := bmm_prop_value.name + " - " + bmm_prop_symbol.name
 				gui_grid.add_sub_row (gui_grid_row, bmm_prop_key)
 				gui_grid.set_last_row_label_col (Definition_grid_col_rm_name, bmm_prop_key, Void, c_attribute_colour,

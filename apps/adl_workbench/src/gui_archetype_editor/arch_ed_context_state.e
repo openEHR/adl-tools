@@ -1,60 +1,59 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Editor context for a C_PRMITIVE_OBJECT"
-	keywords:    "archetype, editing"
-	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	description: "Shared state information for all nodes of editor tree"
+	keywords:    "visitor, constraint model"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-class ARCHETYPE_INTERNAL_REF_ED_CONTEXT
-
-inherit
-	C_OBJECT_ED_CONTEXT
-		redefine
-			arch_node, display_in_grid
-		end
+class ARCH_ED_CONTEXT_STATE
 
 create
 	make
 
+feature -- Initialisation
+
+	make (an_archetype: ARCHETYPE; an_rm_schema: BMM_SCHEMA; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_undo_redo_chain: detachable UNDO_REDO_CHAIN)
+		do
+			archetype := an_archetype
+			in_differential_view := attached {DIFFERENTIAL_ARCHETYPE} archetype
+			flat_ontology := a_flat_ontology
+			rm_schema := an_rm_schema
+			undo_redo_chain := an_undo_redo_chain
+			if attached {DIFFERENTIAL_ARCHETYPE} archetype as da then
+				differential_archetype := da
+			end
+		end
+
 feature -- Access
 
-	arch_node: ARCHETYPE_INTERNAL_REF
-			-- archetype node being edited
+	archetype: ARCHETYPE
 
-feature -- Display
+	differential_archetype: detachable DIFFERENTIAL_ARCHETYPE
 
-	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
-		local
-			p, s: STRING
-			gli: EV_GRID_LABEL_ITEM
+	in_differential_view: BOOLEAN
+
+	flat_ontology: FLAT_ARCHETYPE_ONTOLOGY
+
+	undo_redo_chain: detachable UNDO_REDO_CHAIN
+
+	rm_schema: BMM_SCHEMA
+
+feature -- Status Report
+
+	editing_enabled: BOOLEAN
 		do
-			precursor (ui_settings)
-
-			-- set constraint column to referenced path
-			create s.make_empty
-			s.append ("use ")
-			if display_settings.show_technical_view then
-				p := arch_node.target_path.twin
-			else
-				p := ed_context.flat_ontology.physical_to_logical_path (arch_node.target_path, display_settings.language, True)
-			end
-			p.replace_substring_all ({OG_PATH}.segment_separator_string, "%N" + {OG_PATH}.segment_separator_string)
-			p.remove_head (1)
-			s.append (p)
-			create gli.make_with_text (utf8_to_utf32 (s))
-			gli.set_foreground_color (c_attribute_colour)
-			gui_grid_row.set_item (Definition_grid_col_constraint, gli)
-			gui_grid_row.set_height (gli.text_height + Default_grid_row_expansion)
+			Result := attached undo_redo_chain
 		end
 
 feature -- Modification
 
+	set_flat_ontology (a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY)
+		do
+			flat_ontology := a_flat_ontology
+		end
 
 end
 
@@ -73,14 +72,13 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is arch_ed_context.e.
+--| The Original Code is c_object_ed_context_builder.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2012
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):
---|	Sam Heard
 --|
 --| Alternatively, the contents of this file may be used under the terms of
 --| either the GNU General Public License Version 2 or later (the 'GPL'), or

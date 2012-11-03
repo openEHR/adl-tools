@@ -25,16 +25,16 @@ create
 
 feature -- Initialisation
 
-	make (an_arch_node: like arch_node; an_archetype: ARCHETYPE; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_rm_schema: BMM_SCHEMA)
+	make (an_arch_node: like arch_node; an_ed_context: ARCH_ED_CONTEXT_STATE)
 		do
-			precursor (an_arch_node, an_archetype, a_flat_ontology, an_rm_schema)
+			precursor (an_arch_node, an_ed_context)
 			create c_attributes.make (0)
 			create rm_attributes.make (0)
 		end
 
-	make_rm (an_rm_type: BMM_TYPE_SPECIFIER; an_archetype: ARCHETYPE; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_rm_schema: BMM_SCHEMA)
+	make_rm (an_rm_type: BMM_TYPE_SPECIFIER; an_ed_context: ARCH_ED_CONTEXT_STATE)
 		do
-			precursor (an_rm_type, an_archetype, a_flat_ontology, an_rm_schema)
+			precursor (an_rm_type, an_ed_context)
 			create c_attributes.make (0)
 			create rm_attributes.make (0)
 		end
@@ -53,7 +53,7 @@ feature -- Access
 
 	rm_properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 		do
-			if in_differential_view then
+			if ed_context.in_differential_view and not ed_context.editing_enabled then
 				Result := rm_type.semantic_class.properties
 			else
 				Result := rm_type.semantic_class.flat_properties
@@ -84,6 +84,7 @@ feature -- Display
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)
 		do
 			precursor (ui_settings)
+
 			across c_attributes as attr_csr loop
 				attr_csr.item.display_in_grid (ui_settings)
 			end
@@ -95,7 +96,7 @@ feature -- Display
 
 feature -- Modification
 
-	add_c_attribute (a_node: C_ATTRIBUTE_ED_CONTEXT)
+	put_c_attribute (a_node: C_ATTRIBUTE_ED_CONTEXT)
 			-- add a new attribute node
 		require
 			not a_node.is_rm
@@ -104,7 +105,7 @@ feature -- Modification
 			a_node.set_parent (Current)
 		end
 
-	add_rm_attribute (a_node: C_ATTRIBUTE_ED_CONTEXT)
+	put_rm_attribute (a_node: C_ATTRIBUTE_ED_CONTEXT)
 			-- add a new attribute node
 		require
 			a_node.is_rm
@@ -176,8 +177,8 @@ feature {NONE} -- Implementation
 				-- see if the property was created previously; if not create it new
 				if not rm_attributes.has (an_rm_prop.name) then
 					-- first time creation
-					create c_attr_ed_node.make_rm (an_rm_prop, archetype, flat_ontology, rm_schema)
-					add_rm_attribute (c_attr_ed_node)
+					create c_attr_ed_node.make_rm (an_rm_prop, ed_context)
+					put_rm_attribute (c_attr_ed_node)
 
 					-- once-only prepare step
 					c_attr_ed_node.prepare_display_in_grid (gui_grid)

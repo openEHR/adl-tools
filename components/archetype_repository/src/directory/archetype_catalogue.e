@@ -476,7 +476,7 @@ feature {NONE} -- Implementation
 
 	populate_filesys_indexes
 		local
-			repo_path, parent_dir: STRING
+			repo_path: STRING
 			archs: ARRAYED_LIST [ARCH_CAT_ARCHETYPE]
 			filesys_node: ARCH_CAT_FILESYS_NODE
 		do

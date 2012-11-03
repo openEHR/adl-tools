@@ -37,11 +37,7 @@ feature -- Access
 					Result := source.flat_archetype
 				end
 			else
-				if differential_view then
-					Result := source.differential_archetype_clone
-				else
-					Result := source.flat_archetype_clone
-				end
+				Result := source.differential_archetype_clone
 			end
 		end
 

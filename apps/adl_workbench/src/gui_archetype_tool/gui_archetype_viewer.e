@@ -148,8 +148,8 @@ feature {NONE} -- Implementation
 			create description_controls.make
 			create definition_control.make
 			create ontology_controls.make
-			create serialisation_control.make
 			create annotations_control.make
+			create serialisation_control.make
 		end
 
 	do_clear

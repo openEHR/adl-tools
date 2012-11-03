@@ -24,7 +24,7 @@ inherit
 		end
 
 create
-	make
+	make, make_any
 
 feature -- Initialisation
 
@@ -36,9 +36,16 @@ feature -- Initialisation
 			create representation.make_anonymous (Current)
 		end
 
+	make_any (an_rm_type_name: STRING)
+		do
+			default_create
+			rm_type_name := an_rm_type_name
+			create representation.make_anonymous (Current)
+		end
+
 feature -- Access
 
-	item: C_PRIMITIVE
+	item: detachable C_PRIMITIVE
 
 	prototype_value: ANY
 			-- 	generate a default value from this constraint object
@@ -92,17 +99,17 @@ feature -- Representation
 
 feature -- Visitor
 
-	enter_subtree(visitor: C_VISITOR; depth: INTEGER)
+	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
 			precursor(visitor, depth)
 			visitor.start_c_primitive_object(Current, depth)
 		end
 
-	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
+	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
-			precursor(visitor, depth)
+			precursor (visitor, depth)
 			visitor.end_c_primitive_object(Current, depth)
 		end
 

@@ -241,7 +241,7 @@ templates = <
 		["annotation_key_text"] = <"Annotation key">
 		["annotation_value_text"] = <"Annotation value">
 
-		-- GUI_NODE_MAP_CONTROL 
+		-- GUI_DEFINITION_CONTROL 
 		["view_label_text"] = <"Tree Zoom">
 		["occurrences_removed_text"] = <"(REMOVED)">
 		["annotations_text"] = <"Annotations">
@@ -300,10 +300,10 @@ templates = <
 		["expand_button_expand_text"] = <"Expand All">
 
 		["menu_option_display_code"] = <"Display code in ontology">
-		["menu_option_display_path"] = <"Display path in path map">
+		["object_context_menu_display_path"] = <"Display path in path map">
+		["object_context_menu_delete"] = <"Delete node">
 
-		["context_menu_convert_node_to_subtype"] = <"Convert to subtype">
-		["context_menu_add_subtype_mode"] = <"Add new subtype node">
+		["attribute_context_menu_add_child"] = <"Add new child node">
 
 		["include_text"] = <"[includes]">
 		["exclude_text"] = <"[excludes]">
@@ -313,7 +313,6 @@ templates = <
 
 		["archetype_slot_node_submenu_preferred_text"] = <"Slot-fillers (preferred)">
 		["archetype_slot_node_submenu_exact_text"] = <"Slot-fillers (mandated)">
-		["view_node_id_in_ontology"] = <"View node id in ontology">
 
 		["path_term_bindings_tooltip_text"] = <"Term bindings to path:">
 		["node_term_bindings_tooltip_text"] = <"Term bindings to node id:">

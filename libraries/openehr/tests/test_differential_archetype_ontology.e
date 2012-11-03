@@ -77,9 +77,9 @@ feature -- Test routines
 			create_parented_target
 
 			from i := 1 until i = 12 loop
-				code := target.new_non_specialised_term_code
+				code := target.new_non_refined_term_code
 				assert_equal ("at0." + i.out, code)
-				target.add_term_definition ("en", create {ARCHETYPE_TERM}.make (code))
+				target.merge_term_definition ("en", create {ARCHETYPE_TERM}.make (code))
 				i := i + 1
 			end
 		end
@@ -93,12 +93,12 @@ feature -- Test routines
 			i: INTEGER
 		do
 			create_parented_target
-			parent.add_term_definition ("en", create {ARCHETYPE_TERM}.make ("at0001"))
+			parent.merge_term_definition ("en", create {ARCHETYPE_TERM}.make ("at0001"))
 
 			from i := 1 until i = 12 loop
-				code := target.new_specialised_term_code ("at0001")
+				code := target.new_refined_term_code ("at0001")
 				assert_equal ("at0001." + i.out, code)
-				target.add_term_definition ("en", create {ARCHETYPE_TERM}.make (code))
+				target.merge_term_definition ("en", create {ARCHETYPE_TERM}.make (code))
 				i := i + 1
 			end
 		end
@@ -114,9 +114,9 @@ feature -- Test routines
 			create_parented_target
 
 			from i := 1 until i = 12 loop
-				code := target.new_non_specialised_constraint_code
+				code := target.new_non_refined_constraint_code
 				assert_equal ("ac0." + i.out, code)
-				target.add_constraint_definition ("en", create {ARCHETYPE_TERM}.make (code))
+				target.merge_constraint_definition ("en", create {ARCHETYPE_TERM}.make (code))
 				i := i + 1
 			end
 		end
@@ -130,12 +130,12 @@ feature -- Test routines
 			i: INTEGER
 		do
 			create_parented_target
-			parent.add_constraint_definition ("en", create {ARCHETYPE_TERM}.make ("ac0001"))
+			parent.merge_constraint_definition ("en", create {ARCHETYPE_TERM}.make ("ac0001"))
 
 			from i := 1 until i = 12 loop
-				code := target.new_specialised_constraint_code ("ac0001")
+				code := target.new_refined_constraint_code ("ac0001")
 				assert_equal ("ac0001." + i.out, code)
-				target.add_constraint_definition ("en", create {ARCHETYPE_TERM}.make (code))
+				target.merge_constraint_definition ("en", create {ARCHETYPE_TERM}.make (code))
 				i := i + 1
 			end
 		end

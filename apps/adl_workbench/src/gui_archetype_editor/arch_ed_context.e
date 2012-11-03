@@ -15,33 +15,39 @@ note
 class ARCH_ED_CONTEXT
 
 create
-	make
+	make, make_editable
 
 feature -- Initialisation
 
-	make (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA; differential_view_flag: BOOLEAN)
+	make_editable (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA; an_undo_redo_chain: UNDO_REDO_CHAIN)
 		do
-			target_descriptor := aca
-			in_differential_view := differential_view_flag
-			if in_differential_view then
-				target := target_descriptor.differential_archetype
-			else
-				target := target_descriptor.flat_archetype
-			end
-			rm_schema := an_rm_schema
+			source := aca
+			create ed_context.make (source.differential_archetype_clone, an_rm_schema, source.flat_archetype.ontology, an_undo_redo_chain)
 
 			build_definition
+			create assertion_contexts.make (0)
+			build_assertions
+		end
 
+	make (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA; differential_view_flag: BOOLEAN)
+		do
+			source := aca
+			if differential_view_flag then
+				create ed_context.make (source.differential_archetype, an_rm_schema, source.flat_archetype.ontology, Void)
+			else
+				create ed_context.make (source.flat_archetype, an_rm_schema, source.flat_archetype.ontology, Void)
+			end
+
+			build_definition
 			create assertion_contexts.make (0)
 			build_assertions
 		end
 
 feature -- Access
 
-	target_descriptor: ARCH_CAT_ARCHETYPE
+	source: ARCH_CAT_ARCHETYPE
 
-	target: ARCHETYPE
-			-- archetype being edited, created as a copy of an original
+	ed_context: ARCH_ED_CONTEXT_STATE
 
 	definition_context: C_COMPLEX_OBJECT_ED_CONTEXT
 			-- definition editing context
@@ -49,17 +55,7 @@ feature -- Access
 	assertion_contexts: ARRAYED_LIST [ASSERTION_ED_CONTEXT]
 			-- assertion editing contexts
 
-feature -- Status Report
-
-	in_differential_view: BOOLEAN
-
-	in_reference_model_mode_changed: BOOLEAN
-
-	in_reference_model_mode: BOOLEAN
-
 feature {NONE} -- Implementation
-
-	rm_schema: BMM_SCHEMA
 
 	build_definition
 			-- build `definition_context'
@@ -67,8 +63,8 @@ feature {NONE} -- Implementation
 			a_c_iterator: OG_CONTENT_ITERATOR
 			c_ed_context_builder: C_OBJECT_ED_CONTEXT_BUILDER
 		do
-			create c_ed_context_builder.make (target, in_reference_model_mode, rm_schema, target_descriptor.flat_archetype.ontology)
-			create a_c_iterator.make (target.definition.representation, c_ed_context_builder)
+			create c_ed_context_builder.make (ed_context)
+			create a_c_iterator.make (ed_context.archetype.definition.representation, c_ed_context_builder)
 			a_c_iterator.do_all
 
 			definition_context := c_ed_context_builder.root_node
@@ -80,9 +76,9 @@ feature {NONE} -- Implementation
 			assn_iterator: EXPR_VISITOR_ITERATOR
 			assn_ed_context_builder: ASSERTION_ED_CONTEXT_BUILDER
 		do
-			if target.has_invariants then
-				create assn_ed_context_builder.make (target, rm_schema, target_descriptor.flat_archetype.ontology)
-				across target.invariants as inv_csr loop
+			if ed_context.archetype.has_invariants then
+				create assn_ed_context_builder.make (ed_context)
+				across ed_context.archetype.invariants as inv_csr loop
 					create assn_iterator.make (inv_csr.item, assn_ed_context_builder)
 					assn_iterator.do_all
 					assertion_contexts.extend (assn_ed_context_builder.root_node)

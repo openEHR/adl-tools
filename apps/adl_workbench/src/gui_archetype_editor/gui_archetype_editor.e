@@ -16,7 +16,7 @@ class GUI_ARCHETYPE_EDITOR
 inherit
 	GUI_ARCHETYPE_TOOL
 		redefine
-			do_populate, can_populate,
+			make, do_populate, can_populate,
 			can_edit, enable_edit, disable_edit,
 			add_editing_controls, on_set_primary_source
 		end
@@ -30,6 +30,14 @@ inherit
 
 create
 	make
+
+feature {NONE}-- Initialization
+
+	make
+		do
+			precursor
+			select_flat_view
+		end
 
 feature -- Status Report
 
@@ -50,24 +58,29 @@ feature -- Commands
 		do
 			precursor
 			description_controls.enable_edit
+			definition_control.enable_edit
 			ontology_controls.enable_edit
+			annotations_control.enable_edit
 		end
 
 	disable_edit
 		do
 			precursor
+			description_controls.disable_edit
+			definition_control.disable_edit
 			ontology_controls.disable_edit
+			annotations_control.disable_edit
 		end
 
 feature -- Events
 
 	on_set_primary_source
 		do
-			if source_archetype.is_generated then
-				edit_archetype.set_is_generated
-			else
-				edit_archetype.clear_is_generated
-			end
+--			if source_archetype.is_generated then
+--				edit_archetype.set_is_generated
+--			else
+--				edit_archetype.clear_is_generated
+--			end
 			populate_primary_source
 		end
 
@@ -76,10 +89,10 @@ feature {NONE} -- Implementation
 	make_core_tools
 		do
 			create description_controls.make_editable (agent update_undo_redo_controls)
-			create definition_control.make
+			create definition_control.make_editable (agent update_undo_redo_controls)
 			create ontology_controls.make_editable (agent update_undo_redo_controls)
-			create serialisation_control.make
 			create annotations_control.make
+			create serialisation_control.make
 		end
 
 	do_populate
