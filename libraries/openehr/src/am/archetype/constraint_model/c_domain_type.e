@@ -21,6 +21,8 @@ deferred class C_DOMAIN_TYPE
 
 inherit
 	C_LEAF_OBJECT
+		rename
+			safe_deep_twin as c_safe_deep_twin
 		redefine
 			default_create, representation, enter_subtree, exit_subtree, node_id
 		end
@@ -29,7 +31,7 @@ inherit
 		undefine
 			default_create
 		redefine
-			synchronise_to_tree, finalise_dt
+			synchronise_to_tree, finalise_dt, safe_deep_twin
 		end
 
 feature -- Initialisation
@@ -92,6 +94,18 @@ feature -- Conversion
 feature -- Representation
 
 	representation: OG_OBJECT_LEAF
+
+feature -- Duplication
+
+	safe_deep_twin: like Current
+		local
+			dt_co: DT_COMPLEX_OBJECT_NODE
+		do
+			dt_co := dt_representation
+			dt_representation := Void
+			Result := c_safe_deep_twin
+			dt_representation := dt_co
+		end
 
 feature -- Synchronisation
 

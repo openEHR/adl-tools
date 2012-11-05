@@ -18,7 +18,8 @@ inherit
 		redefine
 			make, do_populate, can_populate,
 			can_edit, enable_edit, disable_edit,
-			add_editing_controls, on_set_primary_source
+			add_editing_controls, on_set_primary_source,
+			tool_refresh_required
 		end
 
 	GUI_EDITING_ENABLED
@@ -96,7 +97,7 @@ feature {NONE} -- Implementation
 		end
 
 	do_populate
-			-- pre-populate the description and node-map controls, or else populate the validity control and show it
+			-- pre-populate the description and node-map controls
 		do
 			precursor
 			description_controls.populate (source, differential_view, selected_language)
@@ -119,6 +120,12 @@ feature {NONE} -- Implementation
 	add_editing_controls
 		do
 			add_undo_redo_commit_toolbar
+		end
+
+	tool_refresh_required (an_arch_tool: GUI_ARCHETYPE_TARGETTED_TOOL): BOOLEAN
+			-- Return True if `an_arch_tool' should be refreshed with its current content
+		do
+			Result := True
 		end
 
 end

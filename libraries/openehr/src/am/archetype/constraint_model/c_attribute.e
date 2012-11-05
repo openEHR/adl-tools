@@ -271,7 +271,7 @@ feature -- Status Report
 		end
 
 	is_multiple: BOOLEAN
-			-- True if this attribute has multiple cardinality
+			-- True if this node logically represents a container attribute
 		do
 			Result := representation.is_multiple
 		end

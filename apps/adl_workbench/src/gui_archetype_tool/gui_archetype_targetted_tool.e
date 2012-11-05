@@ -37,14 +37,14 @@ feature -- Access
 					Result := source.flat_archetype
 				end
 			else
-				Result := source.differential_archetype_clone
+				Result := source.flat_archetype_clone
 			end
 		end
 
-	edit_archetype: DIFFERENTIAL_ARCHETYPE
+	edit_archetype: FLAT_ARCHETYPE
 			-- modifiable target of editing
 		do
-			Result := source.differential_archetype_clone
+			Result := source.flat_archetype_clone
 		end
 
 	tool_artefact_id: STRING

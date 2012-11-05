@@ -994,6 +994,17 @@ feature -- Editing
 			Result := differential_archetype_clone_cache
 		end
 
+	flat_archetype_clone: FLAT_ARCHETYPE
+			-- produce a clone of the current `flat_archetype'
+		require
+			is_valid
+		do
+			if not attached flat_archetype_clone_cache then
+				create flat_archetype_clone_cache.make_from_other (flat_archetype)
+			end
+			Result := flat_archetype_clone_cache
+		end
+
 	differential_display_context: ARCH_ED_CONTEXT
 		do
 			if not attached differential_display_context_cache then
@@ -1252,15 +1263,18 @@ feature {NONE} -- Implementation
 			-- which kind of flattening was last used? Used to know whether to regenerate flat or not
 
 	differential_archetype_clone_cache: detachable DIFFERENTIAL_ARCHETYPE
-			-- clone of current `differential_archetype'; usually used for editing
+			-- clone of current `differential_archetype'
 
-	differential_display_context_cache: ARCH_ED_CONTEXT
+	flat_archetype_clone_cache: detachable FLAT_ARCHETYPE
+			-- clone of current `flat_archetype'; used for editing
+
+	differential_display_context_cache: detachable ARCH_ED_CONTEXT
 			-- differential archetype display context
 
-	flat_display_context_cache: ARCH_ED_CONTEXT
+	flat_display_context_cache: detachable ARCH_ED_CONTEXT
 			-- differential archetype display context
 
-	editor_context_cache: ARCH_ED_CONTEXT
+	editor_context_cache: detachable ARCH_ED_CONTEXT
 			-- archetype editor context
 
 	arch_flattener: ARCHETYPE_FLATTENER
@@ -1271,6 +1285,8 @@ feature {NONE} -- Implementation
 			differential_display_context_cache := Void
 			flat_display_context_cache := Void
 			editor_context_cache := Void
+			differential_archetype_clone_cache := Void
+			flat_archetype_clone_cache := Void
 		end
 
 	post_parse_process

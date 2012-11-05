@@ -19,28 +19,18 @@ create
 
 feature -- Initialisation
 
-	make_editable (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA; an_undo_redo_chain: UNDO_REDO_CHAIN)
-		do
-			source := aca
-			create ed_context.make (source.differential_archetype_clone, an_rm_schema, source.flat_archetype.ontology, an_undo_redo_chain)
-
-			build_definition
-			create assertion_contexts.make (0)
-			build_assertions
-		end
-
 	make (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA; differential_view_flag: BOOLEAN)
 		do
 			source := aca
-			if differential_view_flag then
-				create ed_context.make (source.differential_archetype, an_rm_schema, source.flat_archetype.ontology, Void)
-			else
-				create ed_context.make (source.flat_archetype, an_rm_schema, source.flat_archetype.ontology, Void)
-			end
+			create ed_context.make (source, an_rm_schema, differential_view_flag)
+			build_context
+		end
 
-			build_definition
-			create assertion_contexts.make (0)
-			build_assertions
+	make_editable (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA; an_undo_redo_chain: UNDO_REDO_CHAIN)
+		do
+			source := aca
+			create ed_context.make_editable (source, an_rm_schema, an_undo_redo_chain)
+			build_context
 		end
 
 feature -- Access
@@ -57,17 +47,23 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	build_definition
-			-- build `definition_context'
+	build_context
+		do
+			definition_context := build_definition_context (ed_context.archetype.definition.representation)
+			create assertion_contexts.make (0)
+			build_assertions
+		end
+
+	build_definition_context (og_root: OG_OBJECT_NODE): C_COMPLEX_OBJECT_ED_CONTEXT
+			-- build a C_COMPLEX_OBJECT_ED_CONTEXT from any part of an archetype definition tree
 		local
 			a_c_iterator: OG_CONTENT_ITERATOR
 			c_ed_context_builder: C_OBJECT_ED_CONTEXT_BUILDER
 		do
 			create c_ed_context_builder.make (ed_context)
-			create a_c_iterator.make (ed_context.archetype.definition.representation, c_ed_context_builder)
+			create a_c_iterator.make (og_root, c_ed_context_builder)
 			a_c_iterator.do_all
-
-			definition_context := c_ed_context_builder.root_node
+			Result := c_ed_context_builder.root_node
 		end
 
 	build_assertions

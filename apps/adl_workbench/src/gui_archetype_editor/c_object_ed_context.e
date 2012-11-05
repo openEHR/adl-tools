@@ -232,6 +232,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
+feature {NONE} -- Context menu
+
 	context_menu_event_handler (x,y, button: INTEGER)
 			-- creates the context menu for a right click action for class node
 		do
@@ -261,15 +263,15 @@ feature {NONE} -- Implementation
 				end
 			end
 
+			-- add menu item for displaying path in path map
 			if not ed_context.editing_enabled then
-				-- add menu item for displaying path in path map
 				if not is_rm and attached gui_archetype_tool_agents.path_select_action_agent then
 					create an_mi.make_with_text_and_action (get_text ("object_context_menu_display_path"), agent do gui_archetype_tool_agents.path_select_action_agent.call ([arch_node.path]) end)
 					context_menu.extend (an_mi)
 				end
-			else
-				-- add menu item for deleting node
-				create an_mi.make_with_text_and_action (get_text ("object_context_menu_delete"), agent do_edit_delete_node)
+			-- add menu item for deleting this node
+			elseif not is_rm and then not arch_node.is_root then
+				create an_mi.make_with_text_and_action (get_text ("object_context_menu_delete"), agent do_edit_remove_node)
 				context_menu.extend (an_mi)
 			end
 		end
@@ -279,10 +281,10 @@ feature {NONE} -- Implementation
 			gui_agents.select_class_in_new_tool_agent.call ([a_class_def])
 		end
 
-	do_edit_delete_node
+	do_edit_remove_node
 		do
-			parent.remove_child (Current)
-			ed_context.undo_redo_chain.add_link (agent parent.remove_child (Current), Void, agent parent.put_child (Current), Void)
+			parent.detach_child_context (Current)
+			ed_context.undo_redo_chain.add_link_simple (agent parent.reattach_child_context (Current), agent parent.detach_child_context (Current))
 		end
 
 end

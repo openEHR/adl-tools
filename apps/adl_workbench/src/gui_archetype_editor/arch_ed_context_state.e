@@ -11,27 +11,38 @@ note
 class ARCH_ED_CONTEXT_STATE
 
 create
-	make
+	make, make_editable
 
 feature -- Initialisation
 
-	make (an_archetype: ARCHETYPE; an_rm_schema: BMM_SCHEMA; a_flat_ontology: FLAT_ARCHETYPE_ONTOLOGY; an_undo_redo_chain: detachable UNDO_REDO_CHAIN)
+	make (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA; differential_view_flag: BOOLEAN)
 		do
-			archetype := an_archetype
-			in_differential_view := attached {DIFFERENTIAL_ARCHETYPE} archetype
-			flat_ontology := a_flat_ontology
+			source := aca
+			in_differential_view := differential_view_flag
 			rm_schema := an_rm_schema
-			undo_redo_chain := an_undo_redo_chain
-			if attached {DIFFERENTIAL_ARCHETYPE} archetype as da then
-				differential_archetype := da
+			if differential_view_flag then
+				archetype := source.differential_archetype
+			else
+				archetype := source.flat_archetype
 			end
+			flat_ontology := source.flat_archetype.ontology
+		end
+
+	make_editable (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA; an_undo_redo_chain: UNDO_REDO_CHAIN)
+		do
+			source := aca
+			in_differential_view := False
+			rm_schema := an_rm_schema
+			archetype := source.flat_archetype_clone
+			flat_ontology := source.flat_archetype_clone.ontology
+			undo_redo_chain := an_undo_redo_chain
 		end
 
 feature -- Access
 
-	archetype: ARCHETYPE
+	source: ARCH_CAT_ARCHETYPE
 
-	differential_archetype: detachable DIFFERENTIAL_ARCHETYPE
+	archetype: ARCHETYPE
 
 	in_differential_view: BOOLEAN
 

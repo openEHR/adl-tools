@@ -115,13 +115,16 @@ feature -- Initialisation
 	make_from_other (other: like Current)
 			-- duplicate from another archetype
 		local
-			a_copy: like Current
+			other_parent_arch_id: ARCHETYPE_ID
 		do
-			a_copy := other.deep_twin
-			make_all (a_copy.artefact_type, a_copy.adl_version, a_copy.archetype_id, a_copy.parent_archetype_id, a_copy.is_controlled,
-					a_copy.original_language, a_copy.translations,
-					a_copy.description, a_copy.definition, a_copy.invariants,
-					a_copy.ontology, a_copy.annotations)
+			if attached other.parent_archetype_id then
+				other_parent_arch_id := other.parent_archetype_id.deep_twin
+			end
+			make_all (other.artefact_type.twin, other.adl_version.twin, other.archetype_id.deep_twin,
+					other_parent_arch_id, other.is_controlled,
+					other.original_language.deep_twin, other.translations.deep_twin,
+					other.description.safe_deep_twin, other.definition.deep_twin, other.invariants.deep_twin,
+					other.ontology.safe_deep_twin, other.annotations.safe_deep_twin)
 			is_generated := other.is_generated
 			is_valid := other.is_valid
 		ensure then
@@ -168,7 +171,7 @@ feature -- Access
 
 	definition: attached C_COMPLEX_OBJECT
 
-	invariants: ARRAYED_LIST[ASSERTION]
+	invariants: ARRAYED_LIST [ASSERTION]
 
 	ontology: attached ARCHETYPE_ONTOLOGY
 

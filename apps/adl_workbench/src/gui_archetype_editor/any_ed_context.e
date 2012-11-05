@@ -133,6 +133,9 @@ feature -- Status Report
 			Result := attached gui_grid and attached gui_grid_row
 		end
 
+	is_displayed: BOOLEAN
+			-- True if `display_in_grid' has ever been called
+
 feature -- Display
 
 	prepare_display_in_grid (a_gui_grid: EVX_GRID)
@@ -147,6 +150,9 @@ feature -- Display
 		do
 			display_settings := ui_settings
 			gui_grid.set_last_row (gui_grid_row)
+			is_displayed := True
+		ensure
+			has_been_displayed: is_displayed
 		end
 
 	hide_in_grid

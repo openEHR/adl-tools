@@ -5,7 +5,7 @@ note
 
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2003-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 	void_safety: "initial"
 
@@ -24,7 +24,7 @@ inherit
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all;
-			{ANY} is_valid_concept_code, is_valid_code, specialisation_depth_from_code, deep_twin
+			{ANY} is_valid_concept_code, is_valid_code, specialisation_depth_from_code
 		undefine
 			default_create
 		end
@@ -63,7 +63,7 @@ feature -- Initialisation
 
 			create term_bindings.make (0)
 			create constraint_bindings.make (0)
-			create highest_specialised_code_indexes.make (0)
+			create highest_refined_code_index.make (0)
 		end
 
 	make (an_original_lang, a_concept_code: STRING)
@@ -277,6 +277,10 @@ feature -- Access
 			end
 		end
 
+	last_added_term_definition_code: STRING
+
+	last_added_constraint_definition_code: STRING
+
 feature -- Status Report
 
 	has_language (a_language: STRING): BOOLEAN
@@ -418,6 +422,46 @@ feature -- Conversion
 
 feature -- Modification
 
+	add_new_non_refined_term_definition
+			-- add a new term definition with default content;
+			-- automatically add translation placeholders in all other languages
+			-- return the new code in `last_added_term_definition'
+		do
+			last_added_term_definition_code := new_non_refined_term_code
+			merge_term_definition (original_language, create {ARCHETYPE_TERM}.make (last_added_term_definition_code))
+		end
+
+	add_new_refined_term_definition (parent_code: STRING)
+			-- add a new term definition as child of `parent_code' with default content;
+			-- automatically add translation placeholders in all other languages
+			-- return the new code in `last_added_term_definition'
+		require
+			Term_valid: specialisation_depth_from_code (parent_code) < specialisation_depth
+		do
+			last_added_term_definition_code := new_refined_term_code (parent_code)
+			merge_term_definition (original_language, create {ARCHETYPE_TERM}.make (last_added_term_definition_code))
+		end
+
+	add_new_non_refined_constraint_definition: STRING
+			-- add a new constraint definition with default content;
+			-- automatically add translation placeholders in all other languages
+			-- return the new code in `last_added_constraint_definition'
+		do
+			last_added_constraint_definition_code := new_non_refined_constraint_code
+			merge_constraint_definition (original_language, create {ARCHETYPE_TERM}.make (last_added_constraint_definition_code))
+		end
+
+	add_new_refined_constraint_definition (parent_code: STRING)
+			-- add a new constraint definition as child of `parent_code' with default content;
+			-- automatically add translation placeholders in all other languages
+			-- return the new code in `last_added_constraint_definition'
+		require
+			Term_valid: specialisation_depth_from_code (parent_code) < specialisation_depth
+		do
+			last_added_constraint_definition_code := new_refined_constraint_code (parent_code)
+			merge_constraint_definition (original_language, create {ARCHETYPE_TERM}.make (last_added_constraint_definition_code))
+		end
+
 	add_term_binding (a_code_phrase: CODE_PHRASE; a_code: STRING)
 			-- add a new term binding to local code a_code, in the terminology
 			-- group corresponding to the a_code_phrase.terminology
@@ -451,64 +495,54 @@ feature -- Modification
 			Binding_added: has_constraint_binding (a_terminology, a_code)
 		end
 
-feature {ARCHETYPE_ONTOLOGY, TEST_DIFFERENTIAL_ARCHETYPE_ONTOLOGY} -- Modification
-
-	merge_term_definition (a_language: STRING; a_term: ARCHETYPE_TERM)
-			-- add a new term definition for language `a_language' and
-			-- automatically add translation placeholders in all other languages
+	replace_term_definition_item (a_language: STRING; a_code, a_key, a_value: STRING)
+			-- replace a field denoted by `a_key' of the term with code `a_code'
 		require
 			Language_valid: has_language (a_language)
-			Term_valid: not has_term_code (a_term.code) and specialisation_depth_from_code (a_term.code) <= specialisation_depth
+			Term_valid: has_term_code (a_code)
+		local
+			term: ARCHETYPE_TERM
 		do
-			put_term_definition (a_language, a_term)
-			term_codes.extend (a_term.code)
-			update_highest_specialised_code_index (a_term.code)
-			update_highest_term_code_index (a_term.code)
-		ensure
-			Code_valid: has_term_code (a_term.code)
-		end
-
-	replace_term_definition (a_language: STRING; a_term: ARCHETYPE_TERM; replace_translations: BOOLEAN)
-			-- replace the definition of an existing term code; replace all translations
-			-- if flag set and `a_language' is the primary language
-		require
-			Language_valid: has_language (a_language)
-			Term_valid: has_term_code (a_term.code)
-		do
-			if a_language.is_equal (original_language) and replace_translations then
-				put_term_definition (a_language, a_term) -- replace all translations as well
-			else
-				term_definitions.item (a_language).replace (a_term, a_term.code) -- just do this translation
+			term := term_definitions.item (a_language).item (a_code)
+			if term.has_key (a_key) then
+				term.set_value (a_value, a_key)
 			end
 		end
 
-	merge_constraint_definition (a_language: STRING; a_term: ARCHETYPE_TERM)
-			-- add a new constraint definition for language `a_language' and
-			-- automatically add translation placeholders
-		require
-			Language_valid: has_language(a_language)
-			Term_valid: not has_constraint_code(a_term.code) and specialisation_depth_from_code (a_term.code) <= specialisation_depth
-		do
-			put_constraint_definition (a_language, a_term)
-			constraint_codes.extend (a_term.code)
-			update_highest_specialised_code_index (a_term.code)
-			update_highest_constraint_code_index (a_term.code)
-		ensure
-			has_constraint_code(a_term.code)
-		end
-
-	replace_constraint_definition (a_language: STRING; a_term: ARCHETYPE_TERM; replace_translations: BOOLEAN)
-			-- replace the definition of an existing constraint code; replace all translations
-			-- if flag set and `a_language' is the primary language
+	replace_constraint_definition_item (a_language: STRING; a_code, a_key, a_value: STRING)
+			-- replace a field denoted by `a_key' of the term with code `a_code'
 		require
 			Language_valid: has_language (a_language)
-			Term_valid: has_constraint_code (a_term.code)
+			Term_valid: has_constraint_code (a_code)
+		local
+			term: ARCHETYPE_TERM
 		do
-			if a_language.is_equal (original_language) and replace_translations then
-				put_constraint_definition (a_language, a_term) -- replace all translations as well
-			else
-				constraint_definitions.item (a_language).replace(a_term, a_term.code) -- just do this translation
+			term := constraint_definitions.item (a_language).item (a_code)
+			if term.has_key (a_key) then
+				term.set_value (a_value, a_key)
 			end
+		end
+
+	replace_term_binding (a_code_phrase: CODE_PHRASE; a_code: STRING)
+			-- replaces existing a term binding to local code a_code, in group a_terminology
+		require
+			Local_code_valid: has_term_code (a_code)
+			Already_added: has_term_binding (a_code_phrase.terminology_id.value, a_code)
+		do
+			term_bindings.item (a_code_phrase.terminology_id.value).replace (a_code_phrase, a_code)
+		ensure
+			Binding_added: has_term_binding (a_code_phrase.terminology_id.value, a_code)
+		end
+
+	replace_constraint_binding (a_uri: URI; a_terminology, a_code: STRING)
+			-- replaces existing constraint binding to local code a_code, in group a_terminology
+		require
+			Local_code_valid: has_constraint_code (a_code)
+			Already_added: has_constraint_binding (a_terminology, a_code)
+		do
+			constraint_bindings.item (a_terminology).replace (a_uri, a_code)
+		ensure
+			Binding_added: has_constraint_binding (a_terminology, a_code)
 		end
 
 feature {DIFFERENTIAL_ARCHETYPE} -- Modification
@@ -615,7 +649,186 @@ feature {DIFFERENTIAL_ARCHETYPE} -- Modification
 			Binding_removed: not has_constraint_binding (a_terminology, a_code)
 		end
 
-feature -- Modification
+feature {TEST_DIFFERENTIAL_ARCHETYPE_ONTOLOGY} -- Modification
+
+	merge_term_definition (a_language: STRING; a_term: ARCHETYPE_TERM)
+			-- add a new term definition for language `a_language' and
+			-- automatically add translation placeholders in all other languages
+		require
+			Language_valid: has_language (a_language)
+			Term_valid: not has_term_code (a_term.code) and specialisation_depth_from_code (a_term.code) <= specialisation_depth
+		do
+			put_term_definition (a_language, a_term)
+			term_codes.extend (a_term.code)
+			update_highest_refined_codes (a_term.code)
+			update_highest_term_code (a_term.code)
+		ensure
+			Code_valid: has_term_code (a_term.code)
+		end
+
+	replace_term_definition (a_language: STRING; a_term: ARCHETYPE_TERM; replace_translations: BOOLEAN)
+			-- replace the definition of an existing term code; replace all translations
+			-- if flag set and `a_language' is the primary language
+		require
+			Language_valid: has_language (a_language)
+			Term_valid: has_term_code (a_term.code)
+		do
+			if a_language.is_equal (original_language) and replace_translations then
+				put_term_definition (a_language, a_term) -- replace all translations as well
+			else
+				term_definitions.item (a_language).replace (a_term, a_term.code) -- just do this translation
+			end
+		end
+
+	merge_constraint_definition (a_language: STRING; a_term: ARCHETYPE_TERM)
+			-- add a new constraint definition for language `a_language' and
+			-- automatically add translation placeholders
+		require
+			Language_valid: has_language(a_language)
+			Term_valid: not has_constraint_code(a_term.code) and specialisation_depth_from_code (a_term.code) <= specialisation_depth
+		do
+			put_constraint_definition (a_language, a_term)
+			constraint_codes.extend (a_term.code)
+			update_highest_refined_codes (a_term.code)
+			update_highest_constraint_code_index (a_term.code)
+		ensure
+			has_constraint_code(a_term.code)
+		end
+
+	replace_constraint_definition (a_language: STRING; a_term: ARCHETYPE_TERM; replace_translations: BOOLEAN)
+			-- replace the definition of an existing constraint code; replace all translations
+			-- if flag set and `a_language' is the primary language
+		require
+			Language_valid: has_language (a_language)
+			Term_valid: has_constraint_code (a_term.code)
+		do
+			if a_language.is_equal (original_language) and replace_translations then
+				put_constraint_definition (a_language, a_term) -- replace all translations as well
+			else
+				constraint_definitions.item (a_language).replace(a_term, a_term.code) -- just do this translation
+			end
+		end
+
+feature {TEST_DIFFERENTIAL_ARCHETYPE_ONTOLOGY} -- Factory
+
+	new_non_refined_term_code: STRING
+			-- create a new at-code at current specialisation depth
+			-- code will have form atnnn or at0.n or at0.0.n etc
+		local
+			new_idx_str: STRING
+			i: INTEGER
+		do
+			if specialisation_depth > 0 then
+				create Result.make(0)
+				Result.append (Term_code_leader)
+
+				from i := 0 until i = specialisation_depth loop
+					Result.append_character ('0')
+					Result.append_character (Specialisation_separator)
+					i := i + 1
+				end
+
+				Result.append_integer (highest_term_code + 1)
+			else
+				create Result.make_filled ('0', Term_code_length)
+				Result.replace_substring (Term_code_leader, 1, Term_code_leader.count)
+				new_idx_str := (highest_term_code + 1).out
+				Result.replace_substring (new_idx_str, Result.count - new_idx_str.count + 1, Result.count)
+			end
+		ensure
+			Result_exists: specialisation_depth_from_code(Result) = specialisation_depth
+		end
+
+	new_refined_term_code (a_parent_code: STRING): STRING
+			-- Create a new at-code at current specialisation depth, based on `a_parent_code'
+			-- e.g. "at0001" at level 2 will produce "at0001.0.1"
+			-- Note: a code of "at0001" has specialisation depth 0
+		require
+			a_parent_code_valid: has_term_code (a_parent_code)
+			level_valid: specialisation_depth > 0
+		local
+			i: INTEGER
+		do
+			create Result.make(0)
+			Result.append (a_parent_code)
+
+			from i := specialisation_depth_from_code (a_parent_code) + 1 until i >= specialisation_depth loop
+				Result.append_character (Specialisation_separator)
+				Result.append_character ('0')
+				i := i + 1
+			end
+
+			Result.append_character (Specialisation_separator)
+			if highest_refined_code_index.has (a_parent_code) then
+				Result.append_integer (highest_refined_code_index [a_parent_code] + 1)
+			else
+				Result.append_integer (1)
+			end
+		ensure
+			Result_valid: specialised_code_tail (Result).to_integer > 0
+		end
+
+	new_non_refined_constraint_code: STRING
+			-- create a new ac-code at current specialisation depth
+			-- code will have form atnnn or ac0.n or ac0.0.n etc
+		local
+			new_idx_str: STRING
+			i: INTEGER
+		do
+			if specialisation_depth > 0 then
+				create Result.make(0)
+				Result.append (Constraint_code_leader)
+				from i := 0 until i = specialisation_depth loop
+					Result.append_character ('0')
+					Result.append_character (Specialisation_separator)
+					i := i + 1
+				end
+
+				Result.append_integer(highest_constraint_code + 1)
+			else
+				create Result.make_filled ('0', Constraint_code_length)
+				Result.replace_substring (Constraint_code_leader, 1, Constraint_code_leader.count)
+				new_idx_str := (highest_constraint_code + 1).out
+				Result.replace_substring (new_idx_str, Result.count-new_idx_str.count+1, Result.count)
+			end
+		ensure
+			Result_exists: specialisation_depth_from_code(Result) = specialisation_depth
+		end
+
+	new_refined_constraint_code (a_parent_code: STRING): STRING
+			-- Make a new ac-code based on `a_parent_code'
+			-- e.g. "ac0001" at level 2 will produce "ac0001.0.1"
+			-- Note: a code of "ac0001" has specialisation depth 0
+		require
+			a_parent_code_valid: has_constraint_code (a_parent_code)
+			level_valid: specialisation_depth > 0
+		local
+			i: INTEGER
+		do
+			create Result.make(0)
+			Result.append (a_parent_code)
+
+			from
+				i := specialisation_depth_from_code (a_parent_code) + 1
+			until
+				i >= specialisation_depth
+			loop
+				Result.append_character (Specialisation_separator)
+				Result.append_character ('0')
+				i := i + 1
+			end
+
+			Result.append_character (Specialisation_separator)
+			if highest_refined_code_index.has (a_parent_code) then
+				Result.append_integer (highest_refined_code_index [a_parent_code] + 1)
+			else
+				Result.append_integer (1)
+			end
+		ensure
+			Result_valid: specialised_code_tail (Result).to_integer > 0
+		end
+
+feature {ARCHETYPE_ONTOLOGY} -- Modification
 
 --	set_concept_code (a_code: STRING)
 --			-- set the primary language of the ontology
@@ -633,33 +846,6 @@ feature -- Modification
 --			Language_set: original_language.is_equal(a_language)
 --		end
 
-feature {ARCHETYPE_ONTOLOGY, P_ARCHETYPE_ONTOLOGY} -- Implementation
-
-	set_term_definitions (a_term_defs: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING])
-		do
-			term_definitions := a_term_defs
-		end
-
-	set_constraint_definitions (a_constraint_defs: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING])
-		do
-			constraint_definitions := a_constraint_defs
-		end
-
-	set_term_bindings (a_term_bindings: HASH_TABLE [HASH_TABLE [CODE_PHRASE, STRING], STRING])
-		do
-			term_bindings := a_term_bindings
-		end
-
-	set_constraint_bindings (a_constraint_bindings: HASH_TABLE [HASH_TABLE [URI, STRING], STRING])
-		do
-			constraint_bindings := a_constraint_bindings
-		end
-
-	set_terminology_extracts (a_term_extracts: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING])
-		do
-			terminology_extracts := a_term_extracts
-		end
-
 	has_path (a_path: STRING): BOOLEAN
 			-- True if path `a_path' exists in structure
 		require
@@ -668,21 +854,21 @@ feature {ARCHETYPE_ONTOLOGY, P_ARCHETYPE_ONTOLOGY} -- Implementation
 			Result := dt_representation.has_path (a_path)
 		end
 
-	highest_specialised_code_indexes: HASH_TABLE [INTEGER, STRING]
-			-- Table of child code tails keyed by immediate parent code.
+	highest_refined_code_index: HASH_TABLE [INTEGER, STRING]
+			-- Table of current highest code keyed by its parent code, for all specialised codes in this ontology at its
+			-- level of specialisation.
+			-- For example the entry for key 'at0007' could be 5, meaning that current top child code of 'at0007' is 'at0007.5'
 
-	highest_term_code_index: INTEGER
-			-- index of highest non-specialised code at the level of this ontology; 0 if none so far
+	highest_term_code: INTEGER
+			-- highest non-specialised term code at the level of this ontology; 0 if none so far
 
-	highest_constraint_code_index: INTEGER
-			-- index of the highest constraint code in the ontology
-
-	highest_code_specialisation_level: INTEGER
-			-- level of most specialised code in this ontology; used for detecting codes from a lower level than the archetype itself
+	highest_constraint_code: INTEGER
+			-- highest non-specialised constraint code at the level of this ontology; 0 if none so far
 
 	put_term_definition (a_language: STRING; a_term: ARCHETYPE_TERM)
-			-- put a new term definition for language `a_language' and
+			-- put a term definition for language `a_language' and
 			-- automatically add translation placeholders in all other languages
+			-- Has the effect of adding a new term or replacing an existing one
 		local
 			trans_term: ARCHETYPE_TERM
 		do
@@ -694,12 +880,13 @@ feature {ARCHETYPE_ONTOLOGY, P_ARCHETYPE_ONTOLOGY} -- Implementation
 				end
 			end
 		ensure
-			term_definitions.item (a_language).has (a_term.code)
+			term_definitions.item (a_language).item (a_term.code) = a_term
 		end
 
 	put_constraint_definition (a_language: STRING; a_term: ARCHETYPE_TERM)
-			-- add a new constraint definition for language `a_language' and
+			-- put a constraint definition for language `a_language' and
 			-- automatically add translation placeholders
+			-- Has the effect of adding a new term or replacing an existing one
 		local
 			trans_term: ARCHETYPE_TERM
 		do
@@ -719,11 +906,11 @@ feature {ARCHETYPE_ONTOLOGY, P_ARCHETYPE_ONTOLOGY} -- Implementation
 				end
 			end
 		ensure
-			constraint_definitions.item(a_language).has(a_term.code)
+			constraint_definitions.item (a_language).item (a_term.code) = a_term
 		end
 
-	update_highest_specialised_code_index (a_code: STRING)
-			-- Update `highest_specialised_code_indexes' list with `a_code', if it happens to be specialised.
+	update_highest_refined_codes (a_code: STRING)
+			-- Update `highest_refined_code_index' list with `a_code', if it happens to be refined at this level.
 		require
 			Code_valid: is_valid_code (a_code)
 		local
@@ -733,13 +920,13 @@ feature {ARCHETYPE_ONTOLOGY, P_ARCHETYPE_ONTOLOGY} -- Implementation
 			if is_refined_code (a_code) then
 				parent_code := specialisation_parent_from_code (a_code)
 				idx := specialised_code_tail (a_code).to_integer
-				if idx > highest_specialised_code_indexes [parent_code] then
-					highest_specialised_code_indexes [parent_code] := idx
+				if idx > highest_refined_code_index [parent_code] then
+					highest_refined_code_index [parent_code] := idx
 				end
 			end
 		end
 
-	update_highest_term_code_index (a_code: STRING)
+	update_highest_term_code (a_code: STRING)
 			-- update highest non-specialised term code index at the specialisation depth of this archetype
 			-- spec depth = 0: at0047 -> use the 0047 & compare with current highest
 			-- spec depth = 3: at0.0.12 -> use the 12 & compare with current highest
@@ -753,8 +940,8 @@ feature {ARCHETYPE_ONTOLOGY, P_ARCHETYPE_ONTOLOGY} -- Implementation
 				idx_string := index_from_code_at_level (a_code, specialisation_depth)
 				if idx_string.is_integer then
 					idx := idx_string.to_integer
-					if idx > highest_term_code_index then
-						highest_term_code_index := idx
+					if idx > highest_term_code then
+						highest_term_code := idx
 					end
 				end
 			end
@@ -773,8 +960,8 @@ feature {ARCHETYPE_ONTOLOGY, P_ARCHETYPE_ONTOLOGY} -- Implementation
 				idx_string := index_from_code_at_level (a_code, specialisation_depth)
 				if idx_string.is_integer then
 					idx := idx_string.to_integer
-					if idx > highest_constraint_code_index then
-						highest_constraint_code_index := idx
+					if idx > highest_constraint_code then
+						highest_constraint_code := idx
 					end
 				end
 			end
@@ -812,41 +999,64 @@ feature {ARCHETYPE_ONTOLOGY, P_ARCHETYPE_ONTOLOGY} -- Implementation
 			end
 		end
 
+feature {P_ARCHETYPE_ONTOLOGY} -- Implementation
+
+	set_term_definitions (a_term_defs: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING])
+		do
+			term_definitions := a_term_defs
+		end
+
+	set_constraint_definitions (a_constraint_defs: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING])
+		do
+			constraint_definitions := a_constraint_defs
+		end
+
+	set_term_bindings (a_term_bindings: HASH_TABLE [HASH_TABLE [CODE_PHRASE, STRING], STRING])
+		do
+			term_bindings := a_term_bindings
+		end
+
+	set_constraint_bindings (a_constraint_bindings: HASH_TABLE [HASH_TABLE [URI, STRING], STRING])
+		do
+			constraint_bindings := a_constraint_bindings
+		end
+
+	set_terminology_extracts (a_term_extracts: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING])
+		do
+			terminology_extracts := a_term_extracts
+		end
+
 feature -- Finalisation
 
 	finalise_dt
 			-- finalisation routine to guarantee validity on creation
 		local
 			code: STRING
-			done: BOOLEAN
 		do
 			-- populate term code list & set codes in ARCHETYPE_TERM objects
 			across term_definitions as term_defs_csr loop
 				across term_defs_csr.item as term_defs_list_csr loop
 					code := term_defs_list_csr.key
 					term_defs_list_csr.item.set_code (code)
-					if not done then
+					if term_defs_csr.cursor_index = 1 then
 						term_codes.extend (code)
-						update_highest_specialised_code_index (code)
-						update_highest_term_code_index (code)
+						update_highest_refined_codes (code)
+						update_highest_term_code (code)
 					end
 				end
-				done := True
 			end
 
 			-- populate constraint code list & set codes in ARCHETYPE_TERM objects
-			done := False
 			across constraint_definitions as constraint_defs_csr loop
 				across constraint_defs_csr.item as constraint_defs_list_csr loop
 					code := constraint_defs_list_csr.key
 					constraint_defs_list_csr.item.set_code (code)
-					if not done then
+					if constraint_defs_list_csr.cursor_index = 1 then
 						constraint_codes.extend (code)
-						update_highest_specialised_code_index (code)
+						update_highest_refined_codes (code)
 						update_highest_constraint_code_index(code)
 					end
 				end
-				done := True
 			end
 		end
 
@@ -868,9 +1078,8 @@ invariant
 	Original_language_valid: not original_language.is_empty
 	root_code_valid: is_valid_concept_code (concept_code)
 	root_code_in_terms: term_codes.has (concept_code)
-	Highest_term_code_index_valid: highest_term_code_index >= 0
-	Highest_constraint_code_index_valid: highest_constraint_code_index >= 0
-	Highest_code_specialisation_level_valid: highest_code_specialisation_level >= 0
+	Highest_term_code_index_valid: highest_term_code >= 0
+	Highest_constraint_code_index_valid: highest_constraint_code >= 0
 	term_codes_compares_objects: term_codes.object_comparison
 	constraint_codes_compares_objects: constraint_codes.object_comparison
 

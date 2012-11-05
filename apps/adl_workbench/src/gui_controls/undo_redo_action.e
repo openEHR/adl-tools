@@ -17,7 +17,7 @@ note
 class UNDO_REDO_ACTION
 
 create
-	make
+	make, make_simple
 
 feature -- Initialisation
 
@@ -29,28 +29,38 @@ feature -- Initialisation
 			redo_display_action := a_redo_display_action
 		end
 
+	make_simple (an_undo_action, a_redo_action: PROCEDURE [ANY, TUPLE])
+		do
+			undo_action := an_undo_action
+			redo_action := a_redo_action
+		end
+
 feature -- Access
 
 	undo_action: PROCEDURE [ANY, TUPLE]
 
 	redo_action: PROCEDURE [ANY, TUPLE]
 
-	undo_display_action: PROCEDURE [ANY, TUPLE]
+	undo_display_action: detachable PROCEDURE [ANY, TUPLE]
 
-	redo_display_action: PROCEDURE [ANY, TUPLE]
+	redo_display_action: detachable PROCEDURE [ANY, TUPLE]
 
 feature -- Commands
 
 	undo
 		do
 			undo_action.call ([])
-			undo_display_action.call ([])
+			if attached undo_display_action then
+				undo_display_action.call ([])
+			end
 		end
 
 	redo
 		do
 			redo_action.call ([])
-			redo_display_action.call ([])
+			if attached redo_display_action then
+				redo_display_action.call ([])
+			end
 		end
 
 feature {NONE} -- Implementation

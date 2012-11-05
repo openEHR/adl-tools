@@ -215,13 +215,12 @@ feature {NONE} -- Implementation
 			Result.extend (utf8_to_utf32 (a_term.description))
 
 			-- populate bindings
-			from terminologies.start until terminologies.off loop
-				if ontology.has_term_binding (terminologies.item, a_term.code) then
-					Result.extend (utf8_to_utf32 (ontology.term_binding (terminologies.item, a_term.code).as_string))
+			across terminologies as terminologies_csr loop
+				if ontology.has_term_binding (terminologies_csr.item, a_term.code) then
+					Result.extend (utf8_to_utf32 (ontology.term_binding (terminologies_csr.item, a_term.code).as_string))
 				else
 					Result.extend ("")
 				end
-				terminologies.forth
 			end
 		end
 
@@ -249,7 +248,7 @@ feature {NONE} -- Implementation
 		end
 
 	update_term_table_item (a_col_name, a_code: STRING; a_value: STRING_32)
-			-- update either term definition or binding in ontology
+			-- update either term definition or binding in ontology based on `a_col_name' column in displayed table
 		do
 			if archetype_term_keys.has (a_col_name) then
 				edit_archetype.ontology.replace_term_definition_item (selected_language, a_code, a_col_name, a_value)
@@ -261,7 +260,7 @@ feature {NONE} -- Implementation
 		end
 
 	update_constraint_table_item (a_col_name, a_code: STRING; a_value: STRING_32)
-			-- update either constraint definition or binding in ontology
+			-- update either constraint definition or binding in ontology based on `a_col_name' column in displayed table
 		do
 			if archetype_term_keys.has (a_col_name) then
 				edit_archetype.ontology.replace_constraint_definition_item (selected_language, a_code, a_col_name, a_value)

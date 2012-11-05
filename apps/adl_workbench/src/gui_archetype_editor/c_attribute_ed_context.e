@@ -182,20 +182,52 @@ feature -- Display
 
 feature -- Modification
 
-	put_child (a_node: C_OBJECT_ED_CONTEXT)
-			-- add a new child
+	put_child_context (a_node: C_OBJECT_ED_CONTEXT)
+			-- add `a_node' to end of children
 		do
 			children.extend (a_node)
 			a_node.set_parent (Current)
+			if is_prepared then
+				a_node.prepare_display_in_grid (gui_grid)
+				if is_displayed then
+					a_node.display_in_grid (display_settings)
+				end
+			end
 		end
 
-	remove_child (a_node: C_OBJECT_ED_CONTEXT)
+	remove_child_context (a_node: C_OBJECT_ED_CONTEXT)
 		require
 			has_child (a_node)
 		do
 			children.prune (a_node)
---			gui_grid_row.remove_subrow (a_node.gui_grid_row)
-			gui_grid.ev_grid.remove_row (gui_grid_row.index)
+			if is_prepared then
+				gui_grid.ev_grid.remove_row (a_node.gui_grid_row.index)
+				if is_displayed then
+					display_in_grid (display_settings)
+				end
+			end
+		end
+
+	detach_child_context (a_node: C_OBJECT_ED_CONTEXT)
+			-- reattach a context node whose arch_node is also detached
+		require
+			has_child (a_node)
+		do
+			remove_child_context (a_node)
+			if is_rm then
+				arch_node.remove_child (a_node.arch_node)
+			end
+		end
+
+	reattach_child_context (a_node: C_OBJECT_ED_CONTEXT)
+			-- reattach a context node whose arch_node is also detached
+		require
+			not has_child (a_node)
+		do
+			if is_rm then
+				arch_node.put_child (a_node.arch_node)
+			end
+			put_child_context (a_node)
 		end
 
 feature {ANY_ED_CONTEXT} -- Implementation
@@ -227,6 +259,46 @@ feature {ANY_ED_CONTEXT} -- Implementation
 		do
 			Result := get_icon_pixmap ("am" + resource_path_separator + "added" + resource_path_separator + rm_property.multiplicity_key_string)
 		end
+
+	add_child_node (a_type_spec: BMM_TYPE_SPECIFIER)
+			-- make C_OBJECT child either as a C_COMPLEX_OBJECT or C_PRIMITIVE_OBJECT node
+		require
+			not is_rm
+		local
+			cpo: C_PRIMITIVE_OBJECT
+			cco: C_COMPLEX_OBJECT
+		do
+			if a_type_spec.semantic_class.is_primitive_type then
+				create cpo.make_any (a_type_spec.semantic_class.name)
+				arch_node.put_child (cpo)
+				create {C_PRIMITIVE_OBJECT_ED_CONTEXT} added_co_ed_node.make (cpo, ed_context)
+			else
+				if arch_node.is_multiple or arch_node.has_children then
+					ed_context.archetype.ontology.add_new_non_refined_term_definition
+					create cco.make_identified (a_type_spec.semantic_class.name, ed_context.archetype.ontology.last_added_term_definition_code)
+				else
+					create cco.make_anonymous (a_type_spec.semantic_class.name)
+				end
+				arch_node.put_child (cco)
+				create {C_COMPLEX_OBJECT_ED_CONTEXT} added_co_ed_node.make (cco, ed_context)
+			end
+			put_child_context (added_co_ed_node)
+		end
+
+	add_child_rm_node (a_type_spec: BMM_TYPE_SPECIFIER)
+			-- make RM object child either as a C_COMPLEX_OBJECT or C_PRIMITIVE_OBJECT node
+		require
+			is_rm
+		do
+			if a_type_spec.semantic_class.is_primitive_type then
+				create {C_PRIMITIVE_OBJECT_ED_CONTEXT} added_co_ed_node.make_rm (a_type_spec, ed_context)
+			else
+				create {C_COMPLEX_OBJECT_ED_CONTEXT} added_co_ed_node.make_rm (a_type_spec, ed_context)
+			end
+			put_child_context (added_co_ed_node)
+		end
+
+feature {NONE} -- Context menu
 
 	context_menu_event_handler (x,y, button: INTEGER)
 			-- creates the context menu for a right click action for class node
@@ -277,51 +349,11 @@ feature {ANY_ED_CONTEXT} -- Implementation
 		do
 			if is_rm then
 				add_child_rm_node (a_type_spec)
-				ed_context.undo_redo_chain.add_link (agent remove_child (added_co_ed_node), Void, agent add_child_rm_node (a_type_spec), Void)
+				ed_context.undo_redo_chain.add_link_simple (agent detach_child_context (added_co_ed_node), agent reattach_child_context (added_co_ed_node))
 			else
 				add_child_node (a_type_spec)
-				ed_context.undo_redo_chain.add_link (agent remove_child (added_co_ed_node), Void, agent add_child_node (a_type_spec), Void)
+				ed_context.undo_redo_chain.add_link_simple (agent detach_child_context (added_co_ed_node), agent reattach_child_context (added_co_ed_node))
 			end
-			added_co_ed_node.prepare_display_in_grid (gui_grid)
-			added_co_ed_node.display_in_grid (display_settings)
-		end
-
-	add_child_node (a_type_spec: BMM_TYPE_SPECIFIER)
-			-- make C_OBJECT child either as a C_COMPLEX_OBJECT or C_PRIMITIVE_OBJECT node
-		require
-			not is_rm
-		local
-			cpo: C_PRIMITIVE_OBJECT
-			cco: C_COMPLEX_OBJECT
-		do
-			if a_type_spec.semantic_class.is_primitive_type then
-				create cpo.make_any (a_type_spec.semantic_class.name)
-				arch_node.put_child (cpo)
-				create {C_PRIMITIVE_OBJECT_ED_CONTEXT} added_co_ed_node.make (cpo, ed_context)
-			else
-				if arch_node.is_multiple or arch_node.has_children then
-					ed_context.differential_archetype.ontology.add_new_non_refined_term_definition
-					create cco.make_identified (a_type_spec.semantic_class.name, ed_context.differential_archetype.ontology.last_added_term_definition_code)
-				else
-					create cco.make_anonymous (a_type_spec.semantic_class.name)
-				end
-				arch_node.put_child (cco)
-				create {C_COMPLEX_OBJECT_ED_CONTEXT} added_co_ed_node.make (cco, ed_context)
-			end
-			put_child (added_co_ed_node)
-		end
-
-	add_child_rm_node (a_type_spec: BMM_TYPE_SPECIFIER)
-			-- make RM object child either as a C_COMPLEX_OBJECT or C_PRIMITIVE_OBJECT node
-		require
-			is_rm
-		do
-			if a_type_spec.semantic_class.is_primitive_type then
-				create {C_PRIMITIVE_OBJECT_ED_CONTEXT} added_co_ed_node.make_rm (a_type_spec, ed_context)
-			else
-				create {C_COMPLEX_OBJECT_ED_CONTEXT} added_co_ed_node.make_rm (a_type_spec, ed_context)
-			end
-			put_child (added_co_ed_node)
 		end
 
 	added_co_ed_node: C_OBJECT_ED_CONTEXT

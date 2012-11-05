@@ -79,6 +79,11 @@ feature -- Display
 			across c_attributes as attr_csr loop
 				attr_csr.item.prepare_display_in_grid (gui_grid)
 			end
+
+			-- set up child property rm nodes in grid
+			across rm_attributes as attr_csr loop
+				attr_csr.item.prepare_display_in_grid (gui_grid)
+			end
 		end
 
 	display_in_grid (ui_settings: GUI_DEFINITION_SETTINGS)

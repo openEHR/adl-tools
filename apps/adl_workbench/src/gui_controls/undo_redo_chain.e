@@ -67,18 +67,12 @@ feature -- Element Change
 
 	add_link (an_undo_action, an_undo_display_action, a_redo_action, a_redo_display_action: PROCEDURE [ANY, TUPLE])
 		do
-			if not chain.is_empty then
-				if chain.before then
-					create chain.make
-				elseif not chain.islast then -- remove everything to the right of current position
-					chain.forth
-					chain.split (chain.count)
-				end
-			end
-			chain.extend (create {UNDO_REDO_ACTION}.make (an_undo_action, an_undo_display_action, a_redo_action, a_redo_display_action))
-			chain.finish
-			create last_action_time.make_now
-			gui_update_agent.call ([Current])
+			do_add_link (create {UNDO_REDO_ACTION}.make (an_undo_action, an_undo_display_action, a_redo_action, a_redo_display_action))
+		end
+
+	add_link_simple (an_undo_action, a_redo_action: PROCEDURE [ANY, TUPLE])
+		do
+			do_add_link (create {UNDO_REDO_ACTION}.make_simple (an_undo_action, a_redo_action))
 		end
 
 feature -- Commands
@@ -112,6 +106,22 @@ feature -- Commands
 		end
 
 feature {NONE} -- Implementation
+
+	do_add_link (a_link: UNDO_REDO_ACTION)
+		do
+			if not chain.is_empty then
+				if chain.before then
+					create chain.make
+				elseif not chain.islast then -- remove everything to the right of current position
+					chain.forth
+					chain.split (chain.count)
+				end
+			end
+			chain.extend (a_link)
+			chain.finish
+			create last_action_time.make_now
+			gui_update_agent.call ([Current])
+		end
 
 end
 

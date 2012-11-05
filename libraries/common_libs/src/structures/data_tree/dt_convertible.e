@@ -53,6 +53,18 @@ feature -- Finalisation
 		do
 		end
 
+feature -- Duplication
+
+	safe_deep_twin: like Current
+		local
+			dt_co: DT_COMPLEX_OBJECT_NODE
+		do
+			dt_co := dt_representation
+			dt_representation := Void
+			Result := deep_twin
+			dt_representation := dt_co
+		end
+
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
 	persistent_attributes: ARRAYED_LIST [STRING]

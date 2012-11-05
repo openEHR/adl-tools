@@ -17,27 +17,7 @@ class GUI_DEFINITION_CONTROL
 inherit
 	GUI_ARCHETYPE_TARGETTED_TOOL
 		redefine
-			can_edit, can_populate, can_repopulate, repopulate, disable_edit, enable_edit
-		end
-
-	SPECIALISATION_STATUSES
-		export
-			{NONE} all
-		end
-
-	STRING_UTILITIES
-		export
-			{NONE} all
-		end
-
-	SHARED_KNOWLEDGE_REPOSITORY
-		export
-			{NONE} all
-		end
-
-	ARCHETYPE_TERM_CODE_TOOLS
-		export
-			{NONE} all
+			can_edit, can_populate, can_repopulate, repopulate, disable_edit, enable_edit, on_selected
 		end
 
 create
@@ -265,6 +245,14 @@ feature -- Commands
 				end
 				gui_rules_grid.resize_columns_to_content
 				gui_rules_grid.ev_grid.unlock_update
+			end
+		end
+
+	on_selected
+			-- perform when this tool made visible, e.g. by selection of parent notebook tab
+		do
+			if editing_enabled then
+				undo_redo_update_agent.call ([undo_redo_chain])
 			end
 		end
 
