@@ -116,15 +116,27 @@ feature -- Initialisation
 			-- duplicate from another archetype
 		local
 			other_parent_arch_id: ARCHETYPE_ID
+			other_annotations: RESOURCE_ANNOTATIONS
+			other_translations: HASH_TABLE [TRANSLATION_DETAILS, STRING]
+			other_invariants: ARRAYED_LIST [ASSERTION]
 		do
 			if attached other.parent_archetype_id then
 				other_parent_arch_id := other.parent_archetype_id.deep_twin
 			end
+			if attached other.translations then
+				other_translations := other.translations.deep_twin
+			end
+			if attached other.annotations then
+				other_annotations := other.annotations.safe_deep_twin
+			end
+			if attached other.invariants then
+				other_invariants := other.invariants.deep_twin
+			end
 			make_all (other.artefact_type.twin, other.adl_version.twin, other.archetype_id.deep_twin,
 					other_parent_arch_id, other.is_controlled,
-					other.original_language.deep_twin, other.translations.deep_twin,
-					other.description.safe_deep_twin, other.definition.deep_twin, other.invariants.deep_twin,
-					other.ontology.safe_deep_twin, other.annotations.safe_deep_twin)
+					other.original_language.deep_twin, other_translations,
+					other.description.safe_deep_twin, other.definition.deep_twin, other_invariants,
+					other.ontology.safe_deep_twin, other_annotations)
 			is_generated := other.is_generated
 			is_valid := other.is_valid
 		ensure then
@@ -171,7 +183,7 @@ feature -- Access
 
 	definition: attached C_COMPLEX_OBJECT
 
-	invariants: ARRAYED_LIST [ASSERTION]
+	invariants: detachable ARRAYED_LIST [ASSERTION]
 
 	ontology: attached ARCHETYPE_ONTOLOGY
 
