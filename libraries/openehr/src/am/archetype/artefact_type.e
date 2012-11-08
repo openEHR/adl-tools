@@ -14,7 +14,7 @@ note
 class ARTEFACT_TYPE
 
 create
-	default_create, make, make_from_type_name, make_operational_template
+	default_create, make, make_from_type_name, make_archetype, make_template, make_operational_template
 
 feature -- Defnition
 
@@ -51,7 +51,19 @@ feature -- Initialisation
 			value := operational_template
 		end
 
+	make_archetype
+		do
+			value := archetype
+		end
+
+	make_template
+		do
+			value := template
+		end
+
 feature -- Access
+
+	value: INTEGER
 
 	simplified_type_names: HASH_TABLE [STRING, INTEGER]
 			-- type names to use for visual classification; treat all template variants as 'templates'
@@ -123,10 +135,6 @@ feature -- Validation
 		do
 			Result := a_list.for_all (agent (i: INTEGER): BOOLEAN do Result := valid_type(i) end)
 		end
-
-feature {NONE} -- Implementation
-
-	value: INTEGER
 
 invariant
 	Valid_value: valid_type(value)

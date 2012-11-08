@@ -69,6 +69,15 @@ feature -- Access
 	data_source_setter_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
 			-- agent for creating & setting the data source
 
+	update_validity_agent: detachable FUNCTION [ANY, TUPLE [STRING], BOOLEAN]
+			-- agent that if set will be used to check data entered into the control
+			-- for validity; if invalid, an error dialog will be displayed and the
+			-- value will be reverted to its previous value
+
+	validity_error_msg_agent: detachable FUNCTION [ANY, TUPLE [args: detachable ARRAY [STRING]], STRING]
+			-- agent that if passed optional string args, will generate a message with the arguments
+			-- correctly interpolated, suitable for screen display.
+
 feature -- Commands
 
 	clear
@@ -87,6 +96,21 @@ feature -- Commands
 			end
 		end
 
+	set_focus
+			-- select text
+		do
+			ev_data_control.select_all
+			ev_data_control.set_focus
+		end
+
+feature -- Modification
+
+	set_validity_agents (an_update_validity_agent: like update_validity_agent; a_validity_error_msg_agent: like validity_error_msg_agent)
+		do
+			update_validity_agent := an_update_validity_agent
+			validity_error_msg_agent := a_validity_error_msg_agent
+		end
+
 feature {NONE} -- Implementation
 
 	process_edit
@@ -96,6 +120,7 @@ feature {NONE} -- Implementation
 			old_val, new_val: STRING
 			undo_agt, redo_agt: PROCEDURE [ANY, TUPLE]
 			ds: STRING
+			error_dialog: EV_INFORMATION_DIALOG
 		do
 			new_val := utf32_to_utf8 (ev_data_control.text)
 			ds := data_source_agent.item ([])
@@ -106,23 +131,33 @@ feature {NONE} -- Implementation
 			end
 
 			if not old_val.same_string (new_val) then
-				-- if user is removing value then use the remove agent, else use the setting agent
-				if old_val.is_empty then
-					undo_agt := data_source_remove_agent
+				if attached update_validity_agent and attached validity_error_msg_agent and then
+					 not update_validity_agent.item ([new_val])
+				then
+					ev_data_control.focus_out_actions.block
+					create error_dialog.make_with_text (validity_error_msg_agent.item ([<<new_val>>]))
+					error_dialog.show_modal_to_window (proximate_ev_window (ev_data_control))
+					populate
+					ev_data_control.focus_out_actions.resume
 				else
-					undo_agt := agent data_source_setter_agent.call ([old_val])
-				end
+					-- if user is removing value then use the remove agent, else use the setting agent
+					if old_val.is_empty then
+						undo_agt := data_source_remove_agent
+					else
+						undo_agt := agent data_source_setter_agent.call ([old_val])
+					end
 
-				if new_val.is_empty then
-					redo_agt := data_source_remove_agent
-				else
-					redo_agt := agent data_source_setter_agent.call ([new_val])
-				end
+					if new_val.is_empty then
+						redo_agt := data_source_remove_agent
+					else
+						redo_agt := agent data_source_setter_agent.call ([new_val])
+					end
 
-				data_source_setter_agent.call ([new_val])
+					data_source_setter_agent.call ([new_val])
 
-				if attached undo_redo_chain then
-					undo_redo_chain.add_link (undo_agt, agent populate, redo_agt, agent populate)
+					if attached undo_redo_chain then
+						undo_redo_chain.add_link (undo_agt, agent populate, redo_agt, agent populate)
+					end
 				end
 			end
 		end

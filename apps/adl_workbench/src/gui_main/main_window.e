@@ -161,7 +161,7 @@ feature {NONE} -- Initialization
 
 			create file_menu_open
 			file_menu_open.set_text (get_msg ("file_menu_open_text", Void))
-			file_menu_open.select_actions.extend (agent catalogue_tool.open_archetype)
+			file_menu_open.select_actions.extend (agent catalogue_tool.open_adhoc_archetype)
 			file_menu_open.set_pixmap (get_icon_pixmap ("tool/open_archetype"))
 			file_menu.extend (file_menu_open)
 

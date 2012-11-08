@@ -105,29 +105,37 @@ feature -- Access
 			-- Index of archetype & file-system nodes, keyed by relative path of node under repository root path for directory nodes
 			-- and for archetype nodes, the archetype id.
 
-	matching_ids (a_regex: STRING; an_rm_type, an_rm_package: detachable STRING): ARRAYED_SET[STRING]
+	matching_ids (a_regex: STRING; an_rm_type, an_rm_closure: detachable STRING): ARRAYED_SET [STRING]
 			-- generate list of archetype ids that match the regex pattern and optional rm_type. If rm_type is supplied,
-			-- we assume that the regex itself does not contain an rm type
+			-- we assume that the regex itself does not contain an rm type. Matching using `an_tm_type' and
+			-- `an_rm_closure' is done in lower case. Any case may be supplied for these two
 		require
 			Regex_valid: not a_regex.is_empty
 			Rm_type_valid: an_rm_type /= Void implies not an_rm_type.is_empty
-			Rm_package_valid: an_rm_package /= Void implies not an_rm_package.is_empty
+			Rm_closure_valid: an_rm_closure /= Void implies not an_rm_closure.is_empty
 		local
 			regex_matcher: LX_DFA_REGULAR_EXPRESSION
 			arch_id: ARCHETYPE_ID
 			is_candidate: BOOLEAN
+			rm_type, rm_closure: STRING
 		do
 			create Result.make (0)
 			Result.compare_objects
 			create regex_matcher.compile_case_insensitive (a_regex)
+			if attached an_rm_type then
+				rm_type := an_rm_type.as_lower
+			end
+			if attached an_rm_closure then
+				rm_closure := an_rm_closure.as_lower
+			end
 			if regex_matcher.is_compiled then
 				across archetype_index as archs_csr loop
 					if regex_matcher.matches (archs_csr.key) then
-						if an_rm_type /= Void then
+						if attached rm_type then
 							create arch_id.make_from_string (archs_csr.key)
-							is_candidate := an_rm_type.as_lower.is_equal (arch_id.rm_entity.as_lower)
-							if is_candidate and an_rm_package /= Void then
-								is_candidate := an_rm_package.as_lower.is_equal (arch_id.rm_name.as_lower)
+							is_candidate := rm_type.is_equal (arch_id.rm_entity.as_lower)
+							if is_candidate and attached rm_closure then
+								is_candidate := rm_closure.is_equal (arch_id.rm_name.as_lower)
 							end
 						else
 							is_candidate := True
@@ -140,6 +148,8 @@ feature -- Access
 			else
 				Result.extend (get_msg_line("regex_e1", <<a_regex>>))
 			end
+		ensure
+			across Result as ids_csr all has_item_with_id (ids_csr.item.as_lower) end
 		end
 
 	last_stats_build_timestamp: DATE_TIME
@@ -197,10 +207,32 @@ feature -- Commands
 
 feature -- Modification
 
-	add_adhoc_item (full_path: STRING)
-			-- Add the archetype designated by `full_path' to the ad hoc repository, and graft it into `directory'.
+	add_new_non_specialised_archetype (accn: ARCH_CAT_CLASS_NODE; an_archetype_id: ARCHETYPE_ID; in_dir_path: STRING)
+			-- create a new archetype of class represented by `accn' in path `in_dir_path'
+		local
+			parent_key, child_key: STRING
+			aca: ARCH_CAT_ARCHETYPE
+		do
+			create aca.make_new_archetype (an_archetype_id, profile_repo_access.reference_repository, in_dir_path)
+			put_archetype (aca, in_dir_path)
+		end
+
+	add_new_specialised_archetype (parent_aca: ARCH_CAT_ARCHETYPE; an_archetype_id: ARCHETYPE_ID; in_dir_path: STRING)
+			-- create a new specialised archetype as child of archetype represented by `parent_aca' in path `in_dir_path'
+		local
+			aca: ARCH_CAT_ARCHETYPE
+		do
+			create aca.make_new_specialised_archetype (an_archetype_id, parent_aca.id, profile_repo_access.reference_repository, in_dir_path)
+			put_archetype (aca, in_dir_path)
+		end
+
+	last_added_archetype: detachable ARCH_CAT_ARCHETYPE
+			-- archetype added by last call to `add_new_archetype' or `add_new_specialised_archetype'
+
+	add_adhoc_item (in_dir_path: STRING)
+			-- Add the archetype designated by `in_dir_path' to the ad hoc repository, and graft it into `directory'.
 		require
-			path_valid: adhoc_path_valid (full_path)
+			path_valid: adhoc_path_valid (in_dir_path)
 		local
 			parent_key, child_key: STRING
 			aca: ARCH_CAT_ARCHETYPE
@@ -209,37 +241,15 @@ feature -- Modification
 				clone_semantic_item_tree_prototype
 			end
 
-			profile_repo_access.adhoc_source_repository.add_item (full_path)
-			aca := profile_repo_access.adhoc_source_repository.item (full_path)
-			if profile_repo_access.adhoc_source_repository.has_path (full_path) then
-
+			profile_repo_access.adhoc_source_repository.add_item (in_dir_path)
+			aca := profile_repo_access.adhoc_source_repository.item (in_dir_path)
+			if profile_repo_access.adhoc_source_repository.has_path (in_dir_path) then
 				-- add to semantic index
-				parent_key := aca.ontological_parent_name.as_lower
-				if semantic_item_index.has (parent_key) then
-					child_key := aca.qualified_key
-					if not semantic_item_index.has (child_key) then
-						semantic_item_index.item (parent_key).put_child(aca)
-						semantic_item_index.force (aca, child_key)
-						archetype_index.force (aca, child_key)
-						last_adhoc_item := aca
-					else
-						post_error (Current, "add_adhoc_item", "arch_dir_dup_archetype", <<full_path>>)
-					end
-				elseif aca.is_specialised then
-					post_error (Current, "add_adhoc_item", "arch_dir_orphan_archetype", <<parent_key, child_key>>)
-				else
-					post_error (Current, "add_adhoc_item", "arch_dir_orphan_archetype_e2", <<parent_key, child_key>>)
-				end
-
-				-- add to filesys index
-				add_arch_to_filesys_tree (aca)
+				put_archetype (aca, in_dir_path)
 			else
-				post_error (Current, "add_adhoc_item", "invalid_filename_e1", <<full_path>>)
+				post_error (Current, "add_adhoc_item", "invalid_filename_e1", <<in_dir_path>>)
 			end
 		end
-
-	last_adhoc_item: detachable ARCH_CAT_ARCHETYPE
-			-- adhoc archetype added by last call to `add_adhoc_item'
 
 	update_archetype_id (aca: attached ARCH_CAT_ARCHETYPE)
 			-- move `ara' in tree according to its current and old ids
@@ -669,6 +679,34 @@ feature {NONE} -- Implementation
 			semantic_item_tree := semantic_item_tree_prototype.item.deep_twin
 			create semantic_item_index.make (0)
 			do_all_semantic (agent (ari: attached ARCH_CAT_ITEM) do semantic_item_index.force (ari, ari.qualified_key) end, Void)
+		end
+
+	put_archetype (aca: ARCH_CAT_ARCHETYPE; in_dir_path: STRING)
+			-- put `aca' into the structure
+		local
+			parent_key, child_key: STRING
+		do
+			-- add to semantic index
+			parent_key := aca.ontological_parent_name.as_lower
+			if semantic_item_index.has (parent_key) then
+				child_key := aca.qualified_key
+				if not semantic_item_index.has (child_key) then
+					semantic_item_index.item (parent_key).put_child (aca)
+					semantic_item_index.force (aca, child_key)
+					archetype_index.force (aca, child_key)
+
+					-- add to filesys index
+					add_arch_to_filesys_tree (aca)
+
+					last_added_archetype := aca
+				else
+					post_error (Current, "add_adhoc_item", "arch_dir_dup_archetype", <<in_dir_path>>)
+				end
+			elseif aca.is_specialised then
+				post_error (Current, "add_adhoc_item", "arch_dir_orphan_archetype", <<parent_key, child_key>>)
+			else
+				post_error (Current, "add_adhoc_item", "arch_dir_orphan_archetype_e2", <<parent_key, child_key>>)
+			end
 		end
 
 	schema_load_counter: INTEGER

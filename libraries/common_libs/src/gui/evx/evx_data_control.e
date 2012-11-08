@@ -43,7 +43,7 @@ feature -- Access
 	data_source_agent: FUNCTION [ANY, TUPLE, ANY]
 			-- specialise in descendants
 
-	data_source_setter_agent: detachable PROCEDURE [ANY, TUPLE[ANY]]
+	data_source_setter_agent: detachable PROCEDURE [ANY, TUPLE [ANY]]
 			-- agent for creating & setting the data source
 
 	data_source_remove_agent: detachable PROCEDURE [ANY, TUPLE]
@@ -52,7 +52,7 @@ feature -- Access
 			-- of its owning class.
 
 	undo_redo_chain: detachable UNDO_REDO_CHAIN
-		-- reference to undo/redo chain from owning visual context
+			-- reference to undo/redo chain from owning visual context
 
 feature -- Status Report
 

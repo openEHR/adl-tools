@@ -18,6 +18,8 @@ inherit
 	GUI_ARTEFACT_TREE_CONTROL
 		rename
 			make as make_tree_control
+		redefine
+			do_select_archetype
 		end
 
 	STRING_UTILITIES
@@ -30,12 +32,9 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (an_edit_archetype_agent: like edit_archetype_agent;
-			a_save_archetype_agent: like save_archetype_agent;
-			a_focus_archetype_agent: like focus_archetype_agent)
+	make
 		do
-			make_tree_control (an_edit_archetype_agent, a_save_archetype_agent)
-			focus_archetype_agent := a_focus_archetype_agent
+			make_tree_control
 			artefact_types := <<{ARTEFACT_TYPE}.template>>
 		end
 
@@ -59,35 +58,13 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	focus_archetype_agent: PROCEDURE [ANY, TUPLE [STRING]]
-
 	rm_schema: BMM_SCHEMA
 			-- schema of root template
 
-	select_archetype_with_delay (aca: ARCH_CAT_ARCHETYPE)
+	do_select_archetype
 		do
-			selected_archetype_node := aca
-			if selection_history.selected_item /= aca then
-				delayed_select_archetype_agent.set_interval (300)
-			end
-		end
-
-	delayed_select_archetype_agent: EV_TIMEOUT
-			-- Timer to delay a moment before calling `select_archetype_agent'.
-		once
-			create Result
-			Result.actions.extend (
-				agent
-					do
-						delayed_select_archetype_agent.set_interval (0)
-
-						-- select the archetype in the archetype explorer; this will display it
-						focus_archetype_agent.call ([selected_archetype_node.global_artefact_identifier])
-
-						-- populate filler structure under the node in the template explorer
-						ev_tree_node_populate (selected_archetype_node)
-					end
-			)
+			precursor
+			tool_agents.archetype_explorer_select_in_tree_agent.call ([selected_archetype_node.global_artefact_identifier])
 		end
 
 	do_populate
@@ -121,7 +98,7 @@ feature {NONE} -- Implementation
 						og_iterator.do_all (agent ev_node_build_enter_action, agent ev_node_build_exit_action)
 						ev_tree_item_stack.remove
 					else
-						if attached {EV_GRID_LABEL_ITEM} semantic_grid_row_map.item (ara.qualified_name) as gli then
+						if attached {EV_GRID_LABEL_ITEM} semantic_grid_row_map.item (ara.qualified_name).item (1) as gli then
 							gli.set_pixmap (catalogue_node_pixmap (ara))
 						end
 					end
@@ -206,12 +183,6 @@ feature {NONE} -- Implementation
 			gui_semantic_grid.set_last_row_label_col (1, str, tooltip, Void, pixmap)
 
 			semantic_grid_row_map.force (gui_semantic_grid.last_row, aca.qualified_name)
-
-			-- context menu
-			if attached {EV_GRID_LABEL_ITEM} gui_semantic_grid.last_row.item (1) as gli then
-	 			gli.pointer_button_press_actions.force_extend (agent archetype_node_handler (gui_semantic_grid.last_row, ?, ?, ?))
-	 			gli.select_actions.force_extend (agent select_archetype_with_delay (aca))
-			end
 		end
 
    	semantic_grid_update_row (ev_grid_row: EV_GRID_ROW; update_flag: BOOLEAN)
@@ -221,13 +192,6 @@ feature {NONE} -- Implementation
 				gli.set_pixmap (catalogue_node_pixmap (acc))
 			end
 		end
-
-   	filesys_grid_update_row (ev_grid_row: EV_GRID_ROW; update_flag: BOOLEAN)
-   		do
- 			if attached {ARCH_CAT_CLASS_NODE} ev_grid_row.data as acc and attached {EV_GRID_LABEL_ITEM} ev_grid_row.item (1) as gli then
-				gli.set_pixmap (catalogue_node_pixmap (acc))
-			end
-   		end
 
 end
 

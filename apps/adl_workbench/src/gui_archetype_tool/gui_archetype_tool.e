@@ -36,7 +36,7 @@ feature {NONE}-- Initialization
 			precursor
 
 			-- set up shared agents
-			gui_archetype_tool_agents.set_code_select_action_agent (agent select_ontology_item_from_code)
+			tool_agents.set_code_select_action_agent (agent select_ontology_item_from_code)
 
 			-- core tool creation
 			make_core_tools

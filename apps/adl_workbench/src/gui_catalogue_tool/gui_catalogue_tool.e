@@ -40,8 +40,11 @@ feature {NONE} -- Initialisation
 
 	make
 		do
-			create archetype_explorer.make (agent edit_archetype, agent save_archetype)
-			create template_explorer.make (agent edit_archetype, agent save_archetype, agent archetype_explorer.select_item_in_tree)
+			tool_agents.set_edit_archetype_source_agent (agent edit_archetype)
+			tool_agents.set_save_archetype_agent (agent save_archetype)
+
+			create archetype_explorer.make
+			create template_explorer.make
 			create metrics_viewer.make
 			create stats_viewer.make
 
@@ -154,7 +157,7 @@ feature -- Commands
 			docking_pane.show
 		end
 
-	open_archetype
+	open_adhoc_archetype
 			-- open currently selected archetype
 		local
 			dialog: EV_FILE_OPEN_DIALOG
@@ -175,7 +178,7 @@ feature -- Commands
 					else
 						source.add_adhoc_item (fname)
 						if not billboard.has_errors then
-							selection_history.set_selected_item (source.last_adhoc_item)
+							selection_history.set_selected_item (source.last_added_archetype)
 							show
 							repopulate
 						end
@@ -187,13 +190,13 @@ feature -- Commands
 			end
 		end
 
-	edit_source_archetype
-			-- Launch the external editor with the archetype currently selected in `archetype_directory'.
-		do
-			if selection_history.has_selected_archetype then
-				edit_archetype (selection_history.selected_archetype)
-			end
-		end
+--	edit_source_archetype
+--			-- Launch the external editor with the archetype currently selected in `archetype_directory'.
+--		do
+--			if selection_history.has_selected_archetype then
+--				edit_archetype (selection_history.selected_archetype)
+--			end
+--		end
 
 	save_source_archetype_as
 			-- Save source (differential) archetype to a user-specified path

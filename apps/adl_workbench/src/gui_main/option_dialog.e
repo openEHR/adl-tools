@@ -44,14 +44,23 @@ feature {NONE} -- Initialization
 			set_icon_pixmap (adl_workbench_icon)
 			extend (ev_root_container)
 
-			-- =========== path settings ===========
+			-- =========== notebook ===========
+			create ev_notebook
+			ev_root_container.extend (ev_notebook)
+
+			-- =========== Tab 1 - container ===========
+			create ev_notebook_paths_vb
+			ev_notebook.extend (ev_notebook_paths_vb)
+			ev_notebook.set_item_text (ev_notebook_paths_vb, get_text ("options_path_tab_text"))
+
+			-- =========== Tab 1 - path settings ===========
 
 			-- frame
 			create path_settings_frame_ctl.make (get_text ("path_settings_frame_text"), 0, 0, False)
-			ev_root_container.extend (path_settings_frame_ctl.ev_root_container)
+			ev_notebook_paths_vb.extend (path_settings_frame_ctl.ev_root_container)
 
 			-- Export directory setting
-			create export_dir_setter.make (get_text ("export_directory_text"), agent export_directory, 0, 500)
+			create export_dir_setter.make (get_text ("export_directory_text"), agent export_directory, 0, 400)
 			path_settings_frame_ctl.extend (export_dir_setter.ev_root_container, False)
 			gui_controls.extend (export_dir_setter)
 
@@ -61,87 +70,11 @@ feature {NONE} -- Initialization
 			gui_controls.extend (test_files_dir_setter)
 
 
-			-- ========== compiler settings ==========
-
-			-- frame
-			create compiler_settings_frame_ctl.make (get_text ("compiler_settings_frame_text"), 0, 0, False)
-			ev_root_container.extend (compiler_settings_frame_ctl.ev_root_container)
-
-			-- add a row
-			compiler_settings_frame_ctl.add_row (False)
-
-			-- Error reporting level combo			
-			create parser_error_reporting_level_combo_box.make (get_text ("error_reporting_level_text"),
-				agent :STRING do Result := error_type_name_table.item (error_reporting_level) end,
-				error_type_names, 0, 100)
-			compiler_settings_frame_ctl.extend (parser_error_reporting_level_combo_box.ev_root_container, False)
-			gui_controls.extend (parser_error_reporting_level_combo_box)
-
-			-- ADL save version
-			create adl_save_version_combo_box.make (get_text ("adl_serialisation_level_text"),
-				agent adl_version_for_flat_output, adl_versions, 0, 0)
-			compiler_settings_frame_ctl.extend (adl_save_version_combo_box.ev_root_container, False)
-			gui_controls.extend (adl_save_version_combo_box)
-
-			-- add a row
-			compiler_settings_frame_ctl.add_row (False)
-
-			-- validation strict checkbox
-			create validation_strict_check_ctl.make (get_text ("validation_strict_text"),
-				get_text ("validation_strict_tooltip"), agent validation_strict)
-			compiler_settings_frame_ctl.extend (validation_strict_check_ctl.ev_data_control, False)
-			gui_controls.extend (validation_strict_check_ctl)
-
-			-- RM flattening on checkbox
-			create rm_flattening_check_ctl.make (get_text ("rm_flattening_text"), get_text ("rm_flattening_tooltip"), agent rm_flattening_on)
-			compiler_settings_frame_ctl.extend (rm_flattening_check_ctl.ev_data_control, False)
-			gui_controls.extend (rm_flattening_check_ctl)
-
-
-			-- ========== UI settings ==========
-
-			-- frame
-			create ui_settings_frame_ctl.make (get_text ("ui_settings_frame_text"), 0, 0, False)
-			ev_root_container.extend (ui_settings_frame_ctl.ev_root_container)
-
-			-- add a row
-			ui_settings_frame_ctl.add_row (False)
-
-			-- Show definition tree expanded
-			create expand_definition_tree_check_ctl.make (get_text ("show_definition_tree_expanded_text"),
-				get_text ("show_definition_tree_expanded_tooltip"), agent expand_definition_tree)
-			ui_settings_frame_ctl.extend (expand_definition_tree_check_ctl.ev_data_control, False)
-			gui_controls.extend (expand_definition_tree_check_ctl)
-
-			-- Show line numbers in ADL source
-			create show_line_numbers_check_ctl.make (get_text ("show_line_numbers"), Void, agent show_line_numbers)
-			ui_settings_frame_ctl.extend  (show_line_numbers_check_ctl.ev_data_control, False)
-			gui_controls.extend (show_line_numbers_check_ctl)
-
-			-- add a row
-			ui_settings_frame_ctl.add_row (False)
-
-			-- show 'lf' marker in archetype tree to indicate original source form (legacy or authored)
-			create display_source_check_ctl.make (get_text ("show_source_form_text"), get_text ("show_source_form_tooltip"), agent display_archetype_source)
-			ui_settings_frame_ctl.extend (display_source_check_ctl.ev_data_control, False)
-			gui_controls.extend (display_source_check_ctl)
-
-			-- show entire class hierarchy in archetype explorer
-			create show_all_classes_check_ctl.make (get_text ("show_all_classes_text"), get_text ("show_all_classes_tooltip"), agent show_entire_ontology)
-			ui_settings_frame_ctl.extend (show_all_classes_check_ctl.ev_data_control, False)
-			gui_controls.extend (show_all_classes_check_ctl)
-
-			-- use RM pixmaps
-			create use_rm_icons_check_ctl.make (get_text ("use_rm_icons_text"), get_text ("use_rm_icons_tooltip"), agent use_rm_pixmaps)
-			ui_settings_frame_ctl.extend (use_rm_icons_check_ctl.ev_data_control, False)
-			gui_controls.extend (use_rm_icons_check_ctl)
-
-
-			-- ========== external tools settings ==========
+			-- ========== Tab 1 - external tools settings ==========
 
 			-- frame
 			create tool_paths_frame_ctl.make (get_msg ("tool_paths_frame_text", Void), 0, 0, False)
-			ev_root_container.extend (tool_paths_frame_ctl.ev_root_container)
+			ev_notebook_paths_vb.extend (tool_paths_frame_ctl.ev_root_container)
 
 			-- Text editor path setter control
 			create text_editor_dir_setter.make (get_text ("text_editor_directory_text"), agent text_editor_command, 0, 0)
@@ -157,6 +90,109 @@ feature {NONE} -- Initialization
 			create diff_tool_dir_setter.make (get_text ("diff_tool_directory_text"), agent difftool_command, 0, 0)
 			tool_paths_frame_ctl.extend (diff_tool_dir_setter.ev_root_container, False)
 			gui_controls.extend (diff_tool_dir_setter)
+
+
+			-- ========== Tab 2 - compiler settings ==========
+
+			create ev_notebook_compiler_settings_vb
+			ev_notebook.extend (ev_notebook_compiler_settings_vb)
+			ev_notebook.set_item_text (ev_notebook_compiler_settings_vb, get_text ("options_compiler_settings_tab_text"))
+
+			-- Error reporting level combo			
+			create parser_error_reporting_level_combo_box.make (get_text ("error_reporting_level_text"),
+				agent :STRING do Result := error_type_name_table.item (error_reporting_level) end,
+				error_type_names, 0, 100)
+			ev_notebook_compiler_settings_vb.extend (parser_error_reporting_level_combo_box.ev_root_container)
+			gui_controls.extend (parser_error_reporting_level_combo_box)
+
+			-- ADL save version
+			create adl_save_version_combo_box.make (get_text ("adl_serialisation_level_text"),
+				agent adl_version_for_flat_output, adl_versions, 0, 0)
+			ev_notebook_compiler_settings_vb.extend (adl_save_version_combo_box.ev_root_container)
+			ev_notebook_compiler_settings_vb.disable_item_expand (adl_save_version_combo_box.ev_root_container)
+			gui_controls.extend (adl_save_version_combo_box)
+
+			-- validation strict checkbox
+			create validation_strict_check_ctl.make (get_text ("validation_strict_text"),
+				get_text ("validation_strict_tooltip"), agent validation_strict)
+			ev_notebook_compiler_settings_vb.extend (validation_strict_check_ctl.ev_data_control)
+			ev_notebook_compiler_settings_vb.disable_item_expand (validation_strict_check_ctl.ev_data_control)
+			gui_controls.extend (validation_strict_check_ctl)
+
+			-- RM flattening on checkbox
+			create rm_flattening_check_ctl.make (get_text ("rm_flattening_text"), get_text ("rm_flattening_tooltip"), agent rm_flattening_on)
+			ev_notebook_compiler_settings_vb.extend (rm_flattening_check_ctl.ev_data_control)
+			gui_controls.extend (rm_flattening_check_ctl)
+
+
+			-- ========== Tab 3 - UI settings ==========
+
+			create ev_notebook_ui_settings_vb
+			ev_notebook.extend (ev_notebook_ui_settings_vb)
+			ev_notebook.set_item_text (ev_notebook_ui_settings_vb, get_text ("options_ui_settings_tab_text"))
+
+			-- Show definition tree expanded
+			create expand_definition_tree_check_ctl.make (get_text ("show_definition_tree_expanded_text"),
+				get_text ("show_definition_tree_expanded_tooltip"), agent expand_definition_tree)
+			ev_notebook_ui_settings_vb.extend (expand_definition_tree_check_ctl.ev_data_control)
+			gui_controls.extend (expand_definition_tree_check_ctl)
+
+			-- Show line numbers in ADL source
+			create show_line_numbers_check_ctl.make (get_text ("show_line_numbers"), Void, agent show_line_numbers)
+			ev_notebook_ui_settings_vb.extend  (show_line_numbers_check_ctl.ev_data_control)
+			gui_controls.extend (show_line_numbers_check_ctl)
+
+			-- show 'lf' marker in archetype tree to indicate original source form (legacy or authored)
+			create display_source_check_ctl.make (get_text ("show_source_form_text"), get_text ("show_source_form_tooltip"), agent display_archetype_source)
+			ev_notebook_ui_settings_vb.extend (display_source_check_ctl.ev_data_control)
+			gui_controls.extend (display_source_check_ctl)
+
+			-- show entire class hierarchy in archetype explorer
+			create show_all_classes_check_ctl.make (get_text ("show_all_classes_text"), get_text ("show_all_classes_tooltip"), agent show_entire_ontology)
+			ev_notebook_ui_settings_vb.extend (show_all_classes_check_ctl.ev_data_control)
+			gui_controls.extend (show_all_classes_check_ctl)
+
+			-- use RM pixmaps
+			create use_rm_icons_check_ctl.make (get_text ("use_rm_icons_text"), get_text ("use_rm_icons_tooltip"), agent use_rm_pixmaps)
+			ev_notebook_ui_settings_vb.extend (use_rm_icons_check_ctl.ev_data_control)
+			gui_controls.extend (use_rm_icons_check_ctl)
+
+
+			-- ========== Tab 4 - Authoring settings ==========
+
+			create ev_notebook_authoring_vb
+			ev_notebook.extend (ev_notebook_authoring_vb)
+			ev_notebook.set_item_text (ev_notebook_authoring_vb, get_text ("options_authoring_tab_text"))
+
+			create auth_name_text_ctl.make_editable (get_text ("options_auth_name_label"),
+				agent :STRING do Result := author_name end,
+				agent (a_str :STRING) do set_author_name (a_str) end,
+				agent do set_author_name ("") end,
+				Void,
+				0, 0, True, True)
+			ev_notebook_authoring_vb.extend (auth_name_text_ctl.ev_root_container)
+			ev_notebook_authoring_vb.disable_item_expand (auth_name_text_ctl.ev_root_container)
+			gui_controls.extend (auth_name_text_ctl)
+
+			create auth_org_text_ctl.make_editable (get_text ("options_auth_org_label"),
+				agent :STRING do Result := author_org end,
+				agent (a_str :STRING) do set_author_org (a_str) end,
+				agent do set_author_org ("") end,
+				Void,
+				0, 0, True, True)
+			ev_notebook_authoring_vb.extend (auth_org_text_ctl.ev_root_container)
+			ev_notebook_authoring_vb.disable_item_expand (auth_org_text_ctl.ev_root_container)
+			gui_controls.extend (auth_org_text_ctl)
+
+			create auth_copyright_text_ctl.make_editable (get_text ("options_auth_copyright_label"),
+				agent :STRING do Result := author_copyright end,
+				agent (a_str :STRING) do set_author_copyright (a_str) end,
+				agent do set_author_copyright ("") end,
+				Void,
+				0, 0, True, True)
+			ev_notebook_authoring_vb.extend (auth_copyright_text_ctl.ev_root_container)
+			ev_notebook_authoring_vb.disable_item_expand (auth_copyright_text_ctl.ev_root_container)
+			gui_controls.extend (auth_copyright_text_ctl)
 
 
 			-- ============ Ok/Cancel buttons ============
@@ -194,6 +230,22 @@ feature -- Events
 			if has_edited_options_file then
 				app_cfg.load
 			else
+				-- paths options: set directly; NO FURTHER ACTION REQUIRED IN GUI
+				set_export_directory (export_dir_setter.data_control_text)
+				set_test_diff_directory (test_files_dir_setter.data_control_text)
+
+				-- tool commands
+				set_text_editor_command (text_editor_dir_setter.data_control_text)
+				set_editor_app_command (adl_editor_dir_setter.data_control_text)
+				set_difftool_command (diff_tool_dir_setter.data_control_text)
+
+				-- compilation options: set directly; NO FURTHER ACTION REQUIRED IN GUI
+				set_adl_version_for_flat_output (adl_save_version_combo_box.data_control_text)
+				set_validation_strict (validation_strict_check_ctl.is_selected)
+				set_rm_flattening_on (rm_flattening_check_ctl.is_selected)
+				set_error_reporting_level (error_type_id_table.item (parser_error_reporting_level_combo_box.data_control_text))
+				billboard.set_error_reporting_level (error_reporting_level)
+
 				-- GUI options
 				has_changed_ui_options := True -- for now, just assume changes. since repainting archetype part of gui is cheap
 				set_expand_definition_tree (expand_definition_tree_check_ctl.is_selected)
@@ -206,22 +258,6 @@ feature -- Events
 				else
 					has_changed_navigator_options := False
 				end
-
-				-- paths options: set directly; NO FURTHER ACTION REQUIRED IN GUI
-				set_export_directory (export_dir_setter.data_control_text)
-				set_test_diff_directory (test_files_dir_setter.data_control_text)
-
-				-- compilation options: set directly; NO FURTHER ACTION REQUIRED IN GUI
-				set_adl_version_for_flat_output (adl_save_version_combo_box.data_control_text)
-				set_validation_strict (validation_strict_check_ctl.is_selected)
-				set_rm_flattening_on (rm_flattening_check_ctl.is_selected)
-				set_error_reporting_level (error_type_id_table.item (parser_error_reporting_level_combo_box.data_control_text))
-				billboard.set_error_reporting_level (error_reporting_level)
-
-				-- tool commands
-				set_text_editor_command (text_editor_dir_setter.data_control_text)
-				set_editor_app_command (adl_editor_dir_setter.data_control_text)
-				set_difftool_command (diff_tool_dir_setter.data_control_text)
 			end
 		end
 
@@ -256,15 +292,21 @@ feature {NONE} -- Implementation
 
 	text_editor_dir_setter, adl_editor_dir_setter, diff_tool_dir_setter: EVX_FILE_PATH_SETTER
 
-	path_settings_frame_ctl, tool_paths_frame_ctl, compiler_settings_frame_ctl, ui_settings_frame_ctl: EVX_FRAME_CONTROL
+	path_settings_frame_ctl, tool_paths_frame_ctl: EVX_FRAME_CONTROL
 
 	ev_root_container: EV_VERTICAL_BOX
+
+	ev_notebook: EV_NOTEBOOK
+
+	ev_notebook_paths_vb, ev_notebook_compiler_settings_vb, ev_notebook_ui_settings_vb, ev_notebook_authoring_vb: EV_VERTICAL_BOX
 
 	parser_error_reporting_level_combo_box, adl_save_version_combo_box: EVX_COMBO_TEXT_SELECTOR_CONTROL
 
 	validation_strict_check_ctl, rm_flattening_check_ctl, expand_definition_tree_check_ctl, show_line_numbers_check_ctl: EVX_CHECK_BOX_CONTROL
 
 	display_source_check_ctl, show_all_classes_check_ctl, use_rm_icons_check_ctl: EVX_CHECK_BOX_CONTROL
+
+	auth_name_text_ctl, auth_org_text_ctl, auth_copyright_text_ctl: EVX_SINGLE_LINE_TEXT_CONTROL
 
 	ok_cancel_buttons: EVX_OK_CANCEL_CONTROLS
 

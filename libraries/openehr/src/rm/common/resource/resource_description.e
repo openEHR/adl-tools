@@ -119,6 +119,12 @@ feature -- Access
 			Result := details.item(a_lang)
 		end
 
+	detail_for_original_language: RESOURCE_DESCRIPTION_ITEM
+			-- get the RESOURCE_DESCRIPTION_ITEM for a_lang
+		do
+			Result := details.item (original_language.code_string)
+		end
+
 feature -- Status Report
 
 	has_details: BOOLEAN
@@ -130,18 +136,9 @@ feature -- Status Report
 feature -- Comparison
 
 	valid_detail (a_detail: attached RESOURCE_DESCRIPTION_ITEM): BOOLEAN
-			-- is a_detail valid to be added to details list? Checks to see
-			-- that two detail objects both with is_original_language set
-			-- cannot be added.
+			-- True if `a_detail' language is not already in `details'
 		do
-			if not details.has (a_detail.language.code_string) then
-				if a_detail.is_original_language then
-					from details.start until details.off or details.item_for_iteration.is_original_language loop
-						details.forth
-					end
-				end
-				Result := not details.off
-			end
+			Result := not details.has (a_detail.language.code_string)
 		end
 
 feature -- Modification
@@ -173,25 +170,25 @@ feature -- Modification
 			create original_author.make(0)
 		end
 
-	add_other_contributor (a_contributor: attached STRING; i: INTEGER)
-			-- add a_contributor to `add_other_contributor' at position `i', or end if i is 0
+	add_other_contributor (a_contributor: attached STRING; at_pos: INTEGER)
+			-- add a_contributor to `add_other_contributor' at position `at_pos', or end if i is 0
 		require
 			Contributor_valid: not a_contributor.is_empty
-			Valid_max_index: attached other_contributors implies i <= other_contributors.count
+			Valid_max_index: attached other_contributors implies at_pos <= other_contributors.count
 		do
 			if other_contributors = Void then
 				create other_contributors.make(0)
 				other_contributors.compare_objects
 			end
-			if i > 0 then
-				other_contributors.go_i_th (i)
+			if at_pos > 0 then
+				other_contributors.go_i_th (at_pos)
 				other_contributors.put_left (a_contributor)
 			else
 				other_contributors.extend (a_contributor)
 			end
 		ensure
 			Other_contributor_set: other_contributors.has (a_contributor)
-			Insert_position: i > 0 implies other_contributors.i_th (i) = a_contributor
+			Insert_position: at_pos > 0 implies other_contributors.i_th (at_pos) = a_contributor
 		end
 
 	remove_other_contributor (a_contributor: attached STRING)
@@ -243,11 +240,17 @@ feature -- Modification
 	add_detail (a_detail: attached RESOURCE_DESCRIPTION_ITEM)
 			-- Add a language, value pair to `details'.
 		require
-			Detail_valid: valid_detail(a_detail)
+			Detail_valid: valid_detail (a_detail)
 		do
-			details.force (a_detail, a_detail.language.code_string)
+			details.put (a_detail, a_detail.language.code_string)
 		ensure
-			Details_set: details.has(a_detail.language.code_string)
+			Details_set: details.has (a_detail.language.code_string)
+		end
+
+	add_original_language_details
+			-- add a details object for the original language of the archetype
+		do
+			add_detail (create {RESOURCE_DESCRIPTION_ITEM}.make_from_language (original_language.code_string))
 		end
 
 	add_language (a_new_lang: attached STRING)

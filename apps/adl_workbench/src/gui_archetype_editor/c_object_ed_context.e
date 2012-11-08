@@ -258,15 +258,15 @@ feature {NONE} -- Context menu
 			if not is_rm then
 				-- if this node is addressable, add menu item to show node_id in ontology
 				if arch_node.is_addressable then
-					create an_mi.make_with_text_and_action (get_text ("menu_option_display_code"), agent do gui_archetype_tool_agents.code_select_action_agent.call ([arch_node.node_id]) end)
+					create an_mi.make_with_text_and_action (get_text ("menu_option_display_code"), agent do tool_agents.code_select_action_agent.call ([arch_node.node_id]) end)
 					context_menu.extend (an_mi)
 				end
 			end
 
 			-- add menu item for displaying path in path map
 			if not ed_context.editing_enabled then
-				if not is_rm and attached gui_archetype_tool_agents.path_select_action_agent then
-					create an_mi.make_with_text_and_action (get_text ("object_context_menu_display_path"), agent do gui_archetype_tool_agents.path_select_action_agent.call ([arch_node.path]) end)
+				if not is_rm and attached tool_agents.path_select_action_agent then
+					create an_mi.make_with_text_and_action (get_text ("object_context_menu_display_path"), agent do tool_agents.path_select_action_agent.call ([arch_node.path]) end)
 					context_menu.extend (an_mi)
 				end
 			-- add menu item for deleting this node

@@ -33,6 +33,7 @@ templates = <
 		["show_class_in_rm"] = <"Show in RM explorer">
 		["edit_source"] = <"Edit source">
 		["edit"] = <"Edit">
+		["create_new_archetype"] = <"Create new archetype">
 		["save_archetype_as"] = <"Save as">
 		["save_schema_as"] = <"Save schema as">
 		["save_archetype_as_type"] = <"Save as $1">
@@ -83,9 +84,7 @@ templates = <
 		["adl_editor_directory_text"] = <"ADL Editor:">
 		["diff_tool_directory_text"] = <"Diff Tool:">
 		["path_settings_frame_text"] = <"Directory Paths">
-		["compiler_settings_frame_text"] = <"Compiler Settings">
 		["tool_paths_frame_text"] = <"External Tool Paths">
-		["ui_settings_frame_text"] = <"User Interface Settings">
 		["adl_serialisation_level_text"] = <"ADL version for serialisation:">
 		["adl_serialisation_level_tooltip"] = <"Which version of the ADL syntax to use when saving archetypes.">
 		["error_reporting_level_text"] = <"Error Reporting Level:">
@@ -104,6 +103,17 @@ templates = <
 		["use_rm_icons_text"] = <"Use RM icons">
 		["use_rm_icons_tooltip"] = <"Use RM-specific icons in visualisation of archetype definition?">
 
+		["options_path_tab_text"] = <"Paths">
+
+		["options_compiler_settings_tab_text"] = <"Compiler Settings">
+
+		["options_ui_settings_tab_text"] = <"User Interface Settings">
+
+		["options_authoring_tab_text"] = <"Authoring">
+		["options_auth_name_label"] = <"Name: ">
+		["options_auth_org_label"] = <"Organisation: ">
+		["options_auth_copyright_label"] = <"Copyright: ">
+
 		-- RM_SCHEMA_DIALOG
 		["rm_schema_dialog_title"] = <"ADL Workbench RM Schema Configuration">
 		["rm_schema_dialog_header_label"] = <"Reference Model schemas loaded shown below.%NCheck or uncheck to load as required.">
@@ -112,6 +122,14 @@ templates = <
 		["rm_schema_grid_schema_col_title"] = <"Schema">
 		["rm_schema_grid_lifecycle_state_col_title"] = <"Lifecycle state">
 		["rm_schema_grid_validated_col_title"] = <"Validated">
+
+		-- NEW_ARCHETYPE_DIALOG
+		["create_archetype_dialog_title"] = <"Create new archetype">
+		["archetype_dir_label_text"] = <"Create in directory: ">
+		["archetype_id_label_text"] = <"Archetype id: ">
+		["parent_archetype_id_label_text"] = <"Parent id: ">
+		["duplicate_archetype_id_err_msg"] = <"Id $1 already exists in catalogue">
+		["invalid_archetype_id_concept_err"] = <"Concept $1 contains invalid characters">
 
 		-- MAIN_WINDOW - menus
 		["file_menu_text"] = <"&File">

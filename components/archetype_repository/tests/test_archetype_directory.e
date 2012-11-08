@@ -81,9 +81,9 @@ feature -- Test routines
 
 			name := file_system.pathname (test_directory, "openehr-TEST_PKG-WHOLE.add_adhoc_item.v1.adls")
 			file_context.save_file (name, adl)
-			assert_equal (False, attached current_arch_cat.last_adhoc_item)
+			assert_equal (False, attached current_arch_cat.last_added_archetype)
 			current_arch_cat.add_adhoc_item (name)
-			assert_equal (True, attached current_arch_cat.last_adhoc_item)
+			assert_equal (True, attached current_arch_cat.last_added_archetype)
 		end
 
 	test_populate

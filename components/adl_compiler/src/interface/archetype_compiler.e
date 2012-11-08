@@ -266,7 +266,7 @@ feature {NONE} -- Implementation
 				if not exception_encountered then
 					ara.check_compilation_currency
 					if not ara.is_in_terminal_compilation_state then
-						build_status := get_msg_line ("compiler_compiling_archetype", <<ara.artefact_name.as_upper, ara.id.value>>)
+						build_status := get_msg_line ("compiler_compiling_archetype", <<ara.artefact_type_name.as_upper, ara.id.value>>)
 						call_archetype_visual_update_action (build_status, ara, dependency_depth)
 
 						-- first phase
@@ -288,12 +288,12 @@ feature {NONE} -- Implementation
 
 					elseif ara.is_valid then
 						if not ara.errors.is_empty then
-							build_status := get_msg_line ("compiler_already_attempted_validated_with_warnings", <<ara.artefact_name.as_upper, ara.id.value, ara.errors.as_string>>)
+							build_status := get_msg_line ("compiler_already_attempted_validated_with_warnings", <<ara.artefact_type_name.as_upper, ara.id.value, ara.errors.as_string>>)
 						else
-							build_status := get_msg_line ("compiler_already_attempted_validated", <<ara.artefact_name.as_upper, ara.id.value>>)
+							build_status := get_msg_line ("compiler_already_attempted_validated", <<ara.artefact_type_name.as_upper, ara.id.value>>)
 						end
 					else
-						build_status := get_msg_line ("compiler_already_attempted_failed", <<ara.artefact_name.as_upper, ara.id.value, ara.errors.as_string>>)
+						build_status := get_msg_line ("compiler_already_attempted_failed", <<ara.artefact_type_name.as_upper, ara.id.value, ara.errors.as_string>>)
 					end
 					build_status.append (ara.status)
 					call_archetype_visual_update_action (build_status, ara, dependency_depth)

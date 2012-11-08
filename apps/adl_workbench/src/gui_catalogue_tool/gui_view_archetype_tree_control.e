@@ -14,7 +14,7 @@ inherit
 		rename
 			make as make_tree_control
 		redefine
-			on_rotate_view
+			on_rotate_view, add_tool_specific_archetype_menu_items, grid_item_select_handler, grid_item_event_handler, repopulate, do_clear
 		end
 
 	BMM_DEFINITIONS
@@ -42,14 +42,40 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make (an_edit_archetype_agent: like edit_archetype_agent; a_save_archetype_agent: like save_archetype_agent)
+	make
 			-- Create controller for the tree representing archetype files found in `archetype_directory'.
 		do
 			artefact_types := <<{ARTEFACT_TYPE}.archetype, {ARTEFACT_TYPE}.template_overlay, {ARTEFACT_TYPE}.template>>
-			make_tree_control (an_edit_archetype_agent, a_save_archetype_agent)
+			make_tree_control
+			tool_agents.set_archetype_explorer_select_in_tree_agent (agent select_item_in_tree)
+
+			-- filesys EV_GRID
+			create gui_filesys_grid.make (True, True, True, True)
+			gui_filesys_grid.set_tree_expand_collapse_icons (get_icon_pixmap ("tool/tree_expand"), get_icon_pixmap ("tool/tree_collapse"))
+			ev_root_container.extend (gui_filesys_grid.ev_grid)
+  			gui_filesys_grid.ev_grid.set_minimum_width (100)
+  			gui_filesys_grid.ev_grid.hide_header
+  			gui_filesys_grid.ev_grid.hide
+
+			-- set events
+			gui_filesys_grid.ev_grid.pointer_button_press_item_actions.extend (agent grid_item_event_handler)
+			gui_filesys_grid.ev_grid.item_select_actions.extend (agent grid_item_select_handler)
+			gui_filesys_grid.ev_grid.disable_selection_on_click
+			gui_filesys_grid.ev_grid.enable_selection_on_single_button_click
 		end
 
 feature -- Commands
+
+	repopulate
+			-- repopulate to update GUI settings
+		do
+			precursor
+
+			if gui_filesys_grid.ev_grid.is_displayed then
+				gui_filesys_grid.ev_grid.tree_do_all (agent filesys_grid_update_row (?, True))
+				gui_filesys_grid.resize_columns_to_content
+			end
+		end
 
 	update_tree_node_for_archetype (aca: attached ARCH_CAT_ARCHETYPE)
 			-- update Catalogue tree node with changes in compilation status
@@ -83,12 +109,12 @@ feature -- Commands
 			if semantic_grid_row_map.has (ari_global_id) then
 				grid_row := semantic_grid_row_map.item (ari_global_id)
 				gui_semantic_grid.ev_grid.ensure_visible (grid_row)
-				select_grid_row (grid_row, ari_global_id)
+				select_item_in_grid (grid_row, ari_global_id)
 			end
 			if filesys_grid_row_map.has (ari_global_id) then
 				grid_row := filesys_grid_row_map.item (ari_global_id)
 				gui_filesys_grid.ev_grid.ensure_visible (grid_row)
-				select_grid_row (grid_row, ari_global_id)
+				select_item_in_grid (grid_row, ari_global_id)
 			end
 		end
 
@@ -106,6 +132,19 @@ feature -- Events
 		end
 
 feature {NONE} -- Implementation
+
+	gui_filesys_grid: EVX_GRID
+			-- grid control for view of archetypes based on file-system structure in profile
+
+	filesys_grid_row_map: HASH_TABLE [EV_GRID_ROW, STRING]
+			-- list of filesys EV_GRID rows, keyed by artefact id
+
+	do_clear
+		do
+			precursor
+			create filesys_grid_row_map.make(0)
+			gui_filesys_grid.wipe_out
+ 		end
 
 	do_populate
 		do
@@ -136,19 +175,6 @@ feature {NONE} -- Implementation
 
  				-- update contents
 	 			semantic_grid_update_row (gui_semantic_grid.last_row, False)
-
-				-- select / menu handling
-				if attached {EV_GRID_LABEL_ITEM} gui_semantic_grid.last_row.item (1) as gli then
-					if attached {ARCH_CAT_ARCHETYPE} aci as aca then -- archetype / template node
-			 			gli.pointer_button_press_actions.force_extend (agent archetype_node_handler (gui_semantic_grid.last_row, ?, ?, ?))
-			 			gli.select_actions.force_extend (agent select_archetype_with_delay (aca))
-
-		 			elseif attached {ARCH_CAT_CLASS_NODE} aci as acc then
-			 			gli.pointer_button_press_actions.force_extend (agent class_node_handler (gui_semantic_grid.last_row, ?, ?, ?))
-			 			gli.select_actions.force_extend (agent select_class_with_delay (acc))
-					end
-					gli.pointer_button_press_actions.force_extend (agent do gui_agents.history_set_active_agent.call ([ultimate_parent_tool]) end)
-				end
 			end
 		end
 
@@ -239,15 +265,6 @@ feature {NONE} -- Implementation
 
  				-- update contents
 	 			filesys_grid_update_row (gui_filesys_grid.last_row, False)
-
-				-- select / menu handling
-				if attached {EV_GRID_LABEL_ITEM} gui_filesys_grid.last_row.item (1) as gli then
-					if attached {ARCH_CAT_ARCHETYPE} aci as aca then -- archetype / template node
-			 			gli.pointer_button_press_actions.force_extend (agent archetype_node_handler (gui_filesys_grid.last_row, ?, ?, ?))
-			 			gli.select_actions.force_extend (agent select_archetype_with_delay (aca))
-					end
-					gli.pointer_button_press_actions.force_extend (agent do gui_agents.history_set_active_agent.call ([ultimate_parent_tool]) end)
-				end
 			end
 		end
 
@@ -335,26 +352,6 @@ feature {NONE} -- Implementation
 			)
 		end
 
-	select_archetype_with_delay (aca: ARCH_CAT_ARCHETYPE)
-		do
-			selected_archetype_node := aca
-			delayed_select_archetype_agent.set_interval (300)
-		end
-
-	delayed_select_archetype_agent: EV_TIMEOUT
-			-- Timer to delay a moment before calling `select_archetype_agent'.
-		once
-			create Result
-			Result.actions.extend (
-				agent
-					do
-						delayed_select_archetype_agent.set_interval (0)
-						selection_history.set_selected_item (selected_archetype_node)
-						gui_agents.select_archetype_agent.call ([selected_archetype_node])
-					end
-			)
-		end
-
 	ev_semantic_tree_expand (ev_grid_row: EV_GRID_ROW): BOOLEAN
 		do
 			Result := (attached {ARCH_CAT_CLASS_NODE} ev_grid_row.data as acc and then acc.class_definition.is_abstract or
@@ -369,70 +366,154 @@ feature {NONE} -- Implementation
 				ev_grid_row.is_expandable
 		end
 
-	class_node_handler (ev_grid_row: EV_GRID_ROW; x,y, button: INTEGER)
-			-- creates the context menu for a right click action for an ARCH_REP_ARCHETYPE node
+	grid_item_select_handler (an_ev_grid_item: detachable EV_GRID_ITEM)
+		do
+			if attached an_ev_grid_item then
+				if attached {ARCH_CAT_ARCHETYPE} an_ev_grid_item.row.data as aca then
+					select_archetype_with_delay  (aca)
+				elseif attached {ARCH_CAT_CLASS_NODE} an_ev_grid_item.row.data as accn then
+					select_class_with_delay (accn)
+				end
+			end
+			gui_agents.history_set_active_agent.call ([ultimate_parent_tool])
+		end
+
+	grid_item_event_handler (x,y, button: INTEGER; an_ev_grid_item: detachable EV_GRID_ITEM)
+		do
+			if button = {EV_POINTER_CONSTANTS}.right then
+				if attached an_ev_grid_item then
+					if attached {ARCH_CAT_ARCHETYPE} an_ev_grid_item.row.data as aca then
+						build_archetype_node_context_menu (aca)
+					elseif attached {ARCH_CAT_CLASS_NODE} an_ev_grid_item.row.data as accn then
+						build_class_node_context_menu (accn)
+					end
+				end
+			end
+			gui_agents.history_set_active_agent.call ([ultimate_parent_tool])
+		end
+
+	build_class_node_context_menu (accn: ARCH_CAT_CLASS_NODE)
+			-- creates the context menu for a right click action for an ARCH_CAT_CLASS_NODE node
 		local
 			menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
-			if button = {EV_POINTER_CONSTANTS}.right and attached {ARCH_CAT_CLASS_NODE} ev_grid_row.data then
-				create menu
-				create an_mi.make_with_text_and_action (get_msg ("display_in_active_tab", Void), agent display_context_selected_class_in_active_tool (ev_grid_row))
-				an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool"))
-		    	menu.extend (an_mi)
+			create menu
 
-				create an_mi.make_with_text_and_action (get_msg ("display_in_new_tab", Void), agent display_context_selected_class_in_new_tool (ev_grid_row))
-				an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
-				menu.extend (an_mi)
+			-- show class in current tab
+			create an_mi.make_with_text_and_action (get_msg ("display_in_active_tab", Void), agent display_context_selected_class_in_active_tool (accn))
+			an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool"))
+	    	menu.extend (an_mi)
 
-				create an_mi.make_with_text_and_action (get_msg ("show_class_in_rm", Void), agent display_context_selected_class_in_rm_schema_tool (ev_grid_row))
-				an_mi.set_pixmap (get_icon_pixmap ("tool/rm_schema"))
-				menu.extend (an_mi)
+			-- show class in new tab
+			create an_mi.make_with_text_and_action (get_msg ("display_in_new_tab", Void), agent display_context_selected_class_in_new_tool (accn))
+			an_mi.set_pixmap (get_icon_pixmap ("tool/class_tool_new"))
+			menu.extend (an_mi)
 
-				menu.show
-			end
+			-- show class in RM
+			create an_mi.make_with_text_and_action (get_msg ("show_class_in_rm", Void), agent display_context_selected_class_in_rm_schema_tool (accn))
+			an_mi.set_pixmap (get_icon_pixmap ("tool/rm_schema"))
+			menu.extend (an_mi)
+
+			-- create a new non-specialised archetype
+			create an_mi.make_with_text_and_action (get_msg ("create_new_archetype", Void), agent create_new_non_specialised_archetype (accn))
+			an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
+			menu.extend (an_mi)
+
+			menu.show
 		end
 
-	display_context_selected_class_in_active_tool (ev_grid_row: EV_GRID_ROW)
+	display_context_selected_class_in_active_tool (accn: ARCH_CAT_CLASS_NODE)
 		do
-			ev_grid_row.enable_select
-			if attached {ARCH_CAT_CLASS_NODE} ev_grid_row.data as acc then
-				gui_agents.select_class_agent.call ([acc.class_definition])
-			end
+			gui_agents.select_class_agent.call ([accn.class_definition])
 		end
 
-	display_context_selected_class_in_new_tool (ev_grid_row: EV_GRID_ROW)
+	display_context_selected_class_in_new_tool (accn: ARCH_CAT_CLASS_NODE)
 		do
-			ev_grid_row.enable_select
-			if attached {ARCH_CAT_CLASS_NODE} ev_grid_row.data as acc then
-				gui_agents.select_class_in_new_tool_agent.call ([acc.class_definition])
-			end
+			gui_agents.select_class_in_new_tool_agent.call ([accn.class_definition])
 		end
 
-	display_context_selected_class_in_rm_schema_tool (ev_grid_row: EV_GRID_ROW)
+	display_context_selected_class_in_rm_schema_tool (accn: ARCH_CAT_CLASS_NODE)
 		do
-			ev_grid_row.enable_select
-			if attached {ARCH_CAT_CLASS_NODE} ev_grid_row.data as acc then
-				gui_agents.select_class_in_rm_schema_tool_agent.call ([acc.class_definition.globally_qualified_path])
-			end
+			gui_agents.select_class_in_rm_schema_tool_agent.call ([accn.class_definition.globally_qualified_path])
 		end
 
-	select_grid_row (a_grid_row: EV_GRID_ROW; ari_global_id: STRING)
+	select_item_in_grid (an_ev_grid_row: EV_GRID_ROW; ari_global_id: STRING)
 			-- if an archetype tool already exists with this id, then cause it to be shown
 			-- and then select corresponding tree node, but with events off. If no
 			-- archetype tool available, treat as if it were a first time request for this archetype
 			-- and do a normal tree node select
 		do
-			if attached a_grid_row then
+			if attached {EV_GRID_LABEL_ITEM} an_ev_grid_row.item (1) as gli then
 				if gui_agents.show_tool_with_artefact_agent.item ([ari_global_id]) then
-					a_grid_row.select_actions.block
-					a_grid_row.enable_select
-					a_grid_row.select_actions.resume
+					gli.select_actions.block
+					gli.enable_select
+					gli.select_actions.resume
 				else
-					a_grid_row.enable_select
+					gli.enable_select
 				end
 			end
 		end
+
+	add_tool_specific_archetype_menu_items (a_menu: EV_MENU; aca: ARCH_CAT_ARCHETYPE)
+			-- add further menu items specific to descendant tools
+		local
+			an_mi: EV_MENU_ITEM
+		do
+			if aca.is_valid then
+				create an_mi.make_with_text_and_action (get_text ("create_new_archetype"), agent create_new_specialised_archetype (aca))
+				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
+				a_menu.extend (an_mi)
+			end
+		end
+
+	create_new_specialised_archetype (parent_aca: ARCH_CAT_ARCHETYPE)
+		local
+			dialog: NEW_ARCHETYPE_DIALOG
+		do
+			create dialog.make_specialised (file_system.dirname (parent_aca.differential_path), parent_aca.id.deep_twin, parent_aca.id, source)
+			dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+			if dialog.is_valid then
+				source.add_new_specialised_archetype (parent_aca, dialog.archetype_id, dialog.archetype_directory)
+				if not billboard.has_errors then
+					populate (source)
+					select_item_in_tree (source.last_added_archetype.id.as_string)
+				else
+					gui_agents.console_tool_append_agent.call ([billboard.content])
+				end
+			end
+			dialog.destroy
+		end
+
+	create_new_non_specialised_archetype (accn: ARCH_CAT_CLASS_NODE)
+		local
+			dialog: NEW_ARCHETYPE_DIALOG
+			matching_ids: ARRAYED_SET [STRING]
+			in_dir_path: STRING
+		do
+			-- figure out a reasonable path as the path of some other archetype of the same class
+			matching_ids := source.matching_ids (".*", accn.class_definition.name, Void)
+			if not matching_ids.is_empty then
+				matching_ids.start
+				in_dir_path := file_system.dirname (source.archetype_index.item (matching_ids.item).differential_path)
+			else
+				in_dir_path := repository_profiles.current_reference_repository_path
+			end
+
+			create dialog.make (in_dir_path, create {ARCHETYPE_ID}.make_new (accn.qualified_name), source)
+			dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+			if dialog.is_valid then
+				source.add_new_non_specialised_archetype (accn, dialog.archetype_id, dialog.archetype_directory)
+				if not billboard.has_errors then
+					populate (source)
+					select_item_in_tree (source.last_added_archetype.id.as_string)
+				else
+					gui_agents.console_tool_append_agent.call ([billboard.content])
+				end
+			end
+			dialog.destroy
+		end
+
 end
 
 

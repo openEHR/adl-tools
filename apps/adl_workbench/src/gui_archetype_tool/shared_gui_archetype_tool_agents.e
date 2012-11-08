@@ -15,7 +15,7 @@ class SHARED_GUI_ARCHETYPE_TOOL_AGENTS
 
 feature -- Access
 
-	gui_archetype_tool_agents: GUI_ARCHETYPE_TOOL_AGENTS
+	tool_agents: GUI_ARCHETYPE_TOOL_AGENTS
 		once
 			create Result
 		end

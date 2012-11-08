@@ -46,7 +46,7 @@ feature -- Initialisation
 			purpose.append (Default_purpose)
 		end
 
-	make(a_lang: CODE_PHRASE; a_purpose: STRING)
+	make (a_lang: CODE_PHRASE; a_purpose: STRING)
 		require
 			Lang_valid: a_lang /= Void
 			Purpose_valid: a_purpose /= Void and then not a_purpose.is_empty
@@ -58,17 +58,16 @@ feature -- Initialisation
 			Purpose_set: purpose = a_purpose
 		end
 
-	make_from_language(a_lang_name, a_purpose: attached STRING)
+	make_from_language (a_lang_name: STRING)
 			-- make using a_lang_name and default language code ste
 		require
 			Lang_valid: not a_lang_name.is_empty
-			Purpose_valid: not a_purpose.is_empty
 		do
-			create language.make(default_language_code_set, a_lang_name)
-			purpose := a_purpose
+			create language.make (default_language_code_set, a_lang_name)
+			purpose := Default_purpose.twin
 		ensure
-			Language_set: language.code_string.is_equal(a_lang_name)
-			Purpose_set: purpose = a_purpose
+			Language_set: language.code_string.is_equal (a_lang_name)
+			Purpose_set: purpose.is_equal (Default_purpose)
 		end
 
 feature -- Access
@@ -108,8 +107,6 @@ feature -- Status Report
 		do
 			Result := attached keywords and then keywords.has (a_keyword)
 		end
-
-	is_original_language: BOOLEAN
 
 feature -- Modification
 

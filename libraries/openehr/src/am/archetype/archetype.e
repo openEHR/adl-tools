@@ -38,10 +38,10 @@ feature -- Initialisation
 		do
 		end
 
-	make (an_artefact_type: attached ARTEFACT_TYPE;
+	make (an_artefact_type: ARTEFACT_TYPE;
 			an_id: like archetype_id;
-			an_original_language: attached CODE_PHRASE;
-			a_description: RESOURCE_DESCRIPTION;
+			an_original_language: CODE_PHRASE;
+			a_description: detachable RESOURCE_DESCRIPTION;
 			a_definition: like definition;
 			an_ontology: like ontology)
 				-- make from pieces obtained by parsing
@@ -51,7 +51,7 @@ feature -- Initialisation
 			archetype_id := an_id
 			original_language := an_original_language
 
-			if a_description = Void then
+			if not attached a_description then
 				create description.default_create
 			else
 				description := a_description
@@ -120,16 +120,16 @@ feature -- Initialisation
 			other_translations: HASH_TABLE [TRANSLATION_DETAILS, STRING]
 			other_invariants: ARRAYED_LIST [ASSERTION]
 		do
-			if attached other.parent_archetype_id then
+			if other.is_specialised then
 				other_parent_arch_id := other.parent_archetype_id.deep_twin
 			end
-			if attached other.translations then
+			if other.has_translations then
 				other_translations := other.translations.deep_twin
 			end
-			if attached other.annotations then
+			if other.has_annotations then
 				other_annotations := other.annotations.safe_deep_twin
 			end
-			if attached other.invariants then
+			if other.has_invariants then
 				other_invariants := other.invariants.deep_twin
 			end
 			make_all (other.artefact_type.twin, other.adl_version.twin, other.archetype_id.deep_twin,
@@ -138,10 +138,8 @@ feature -- Initialisation
 					other.description.safe_deep_twin, other.definition.deep_twin, other_invariants,
 					other.ontology.safe_deep_twin, other_annotations)
 			is_generated := other.is_generated
-			is_valid := other.is_valid
 		ensure then
 			Is_generated_preserved: other.is_generated implies is_generated
-			Is_valid_preserved: other.is_valid implies is_valid
 		end
 
 feature -- Access
@@ -322,9 +320,6 @@ feature -- Status Report
 			-- marker to be used to indicate if structure has changed in such a way that cached elements have to be regenerated,
 			-- or re-validation is needed. Set to False after validation
 
-	is_valid: BOOLEAN
-			-- True if archetype is completely validated, including with respect to specialisation parents, where they exist
-
 	is_generated: BOOLEAN
 			-- True if this archetype was generated from another one, rather than being an original authored archetype
 
@@ -335,13 +330,6 @@ feature -- Status Report
 		end
 
 feature -- Status Setting
-
-	set_is_valid (a_validity: BOOLEAN)
-			-- set is_valid flag
-		do
-			is_valid := a_validity
-			is_dirty := False
-		end
 
 	set_is_generated
 			-- set is_generated flag

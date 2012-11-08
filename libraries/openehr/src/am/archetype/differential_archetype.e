@@ -16,13 +16,22 @@ class DIFFERENTIAL_ARCHETYPE
 inherit
 	ARCHETYPE
 		redefine
-			add_language_tag, build_xrefs, ontology
+			add_language_tag, build_xrefs, ontology, make_from_other
 		end
 
 create
 	make, make_minimal, make_from_legacy_flat, make_all, make_from_other
 
 feature -- Initialisation
+
+	make_from_other (other: like Current)
+			-- duplicate from another archetype
+		do
+			precursor (other)
+			is_valid := other.is_valid
+		ensure then
+			Is_valid_preserved: other.is_valid implies is_valid
+		end
 
 	make_minimal (an_artefact_type: attached ARTEFACT_TYPE; an_id: attached like archetype_id; an_original_language: attached STRING; a_specialisation_depth: INTEGER)
 			-- make a new differential form archetype
@@ -38,6 +47,7 @@ feature -- Initialisation
 			create description.default_create
 			create definition.make_identified(an_id.rm_entity, ontology.concept_code.twin)
 			is_dirty := True
+			is_valid := True
 		ensure
 			Artefact_type_set: artefact_type = an_artefact_type
 			Adl_version_set: adl_version = Latest_adl_version
@@ -46,22 +56,23 @@ feature -- Initialisation
 			Ontology_original_language_set: original_language.code_string.is_equal (ontology.original_language)
 			Specialisation_depth_set: specialisation_depth = a_specialisation_depth
 			Definition_root_node_id: definition.node_id.is_equal (concept)
+			Not_generated: not is_generated
 			Is_dirty: is_dirty
+			Is_valid: is_valid
 		end
 
 	make_from_legacy_flat (a_flat: attached FLAT_ARCHETYPE)
 			-- create from a legacy flat archetype (which has no overlay markers) by cloning and then removing inherited parts
+			-- the pieces of `a_flat' will be used, without cloning
 		require
 			not a_flat.is_generated
 		local
 			c_it: C_ITERATOR
-			a_flat_copy: FLAT_ARCHETYPE
 		do
-			a_flat_copy := a_flat.deep_twin
-			make_all (a_flat.artefact_type, Latest_adl_version, a_flat_copy.archetype_id, a_flat_copy.parent_archetype_id, a_flat_copy.is_controlled,
-					a_flat_copy.original_language, a_flat_copy.translations,
-					a_flat_copy.description, a_flat_copy.definition, a_flat_copy.invariants,
-					a_flat_copy.ontology.to_differential, a_flat_copy.annotations)
+			make_all (a_flat.artefact_type, Latest_adl_version, a_flat.archetype_id, a_flat.parent_archetype_id,
+					a_flat.is_controlled, a_flat.original_language, a_flat.translations,
+					a_flat.description, a_flat.definition, a_flat.invariants,
+					a_flat.ontology.to_differential, a_flat.annotations)
 
 			if is_specialised then
 				build_rolled_up_status
@@ -76,8 +87,8 @@ feature -- Initialisation
 				)
 
 				-- add before/after ordering markers to new nodes whose parent attributes are ordered containers
-				from inherited_subtree_list.start until inherited_subtree_list.off loop
-					if attached {C_OBJECT} inherited_subtree_list.item_for_iteration as cco_1 then
+				across inherited_subtree_list as subtree_csr loop
+					if attached {C_OBJECT} subtree_csr.item as cco_1 then
 						-- FIXME: in the following statement, we are assuming that if the cardinality of the parent attribute
 						-- does not exist (typical for a differential archetype), that it is ordered; really we should look up
 						-- the RM schema
@@ -94,21 +105,19 @@ feature -- Initialisation
 							end
 						end
 					end
-					inherited_subtree_list.forth
 				end
 
 				-- now remove inherited subtrees
-				from inherited_subtree_list.start until inherited_subtree_list.off loop
-					if attached {C_OBJECT} inherited_subtree_list.item_for_iteration as cco_2 then
+				across inherited_subtree_list as subtree_csr loop
+					if attached {C_OBJECT} subtree_csr.item as cco_2 then
 						if cco_2.parent /= Void then
 							cco_2.parent.remove_child (cco_2)
 						else
 							-- cco_2 must be the parent, which means the entire definition is a copy of that from the parent archetype
 						end
-					elseif attached {C_ATTRIBUTE} inherited_subtree_list.item_for_iteration as c_attr then
+					elseif attached {C_ATTRIBUTE} subtree_csr.item as c_attr then
 						c_attr.parent.remove_attribute (c_attr)
 					end
-					inherited_subtree_list.forth
 				end
 			end
 
@@ -129,6 +138,20 @@ feature -- Access
 	ontology_unused_constraint_codes: ARRAYED_LIST [STRING]
 			-- list of ac codes found in ontology that are not referenced
 			-- anywhere in the archetype definition
+
+feature -- Status Report
+
+	is_valid: BOOLEAN
+			-- True if archetype is completely validated, including with respect to specialisation parents, where they exist
+
+feature -- Status Setting
+
+	set_is_valid (a_validity: BOOLEAN)
+			-- set is_valid flag
+		do
+			is_valid := a_validity
+			is_dirty := False
+		end
 
 feature {ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER} -- Validation
 

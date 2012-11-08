@@ -1,51 +1,22 @@
 note
-	component:   "openEHR Common Reference Model"
-
-	description: "[
-				 Multi-axial archetype identifier of the form:
-				 		qualified_rm_entity.domain_concept.version
-				 	where:
-				 		qualified_rm_entity	= rm_originator-rm_name-rm_entity_name
-				 		domain_concept = string name of concept, including specialised parts
-				 						 separated by '-'s
-				 		version = string
-				 ]"
-	keywords:    "archetype"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
+	component:   "openEHR Archetype Project"
+	description: "Shared agents for use across GUI catalogue tool"
+	keywords:    "AWB, archetypes, workbench"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+class SHARED_GUI_CATALOGUE_TOOL_AGENTS
 
-class ARCHETYPE_ID
+feature -- Access
 
-inherit
-	RM_CONCEPT_ID
-
-create
-	make,
-	make_from_string,
-	make_new,
-	default_create
-
-feature -- Definitions
-
-	Default_id: STRING = "openehr-ehr-ENTRY.any.v1"
-
-feature {NONE} -- Implementation
-
-	id_pattern_regex: LX_DFA_REGULAR_EXPRESSION
-			-- Pattern matcher for archetype ids.
+	tool_agents: GUI_CATALOGUE_TOOL_AGENTS
 		once
-			create Result.compile_case_insensitive ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z0-9_]+){2}\.[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*\.v[1-9][0-9]*$")
+			create Result
 		end
 
 end
-
 
 
 --|
@@ -62,10 +33,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is archetype_id.e.
+--| The Original Code is gui_agents.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2011
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

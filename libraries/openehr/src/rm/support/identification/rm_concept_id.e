@@ -44,6 +44,10 @@ feature -- Definitions
 	section_separator_string: STRING = "-"
 			-- separator between sections in an axis
 
+	Default_concept: STRING = "any"
+
+	Default_version_id: STRING = "v1"
+
 	Default_id: STRING
 		deferred
 		end
@@ -71,6 +75,21 @@ feature -- Initialisation
 
 			value.append_character(axis_separator)
 			value.append (a_version_id)
+		end
+
+	make_new (a_qualified_rm_entity: STRING)
+			-- Create a new id for a given RM/closure/class
+		require
+			a_qualified_rm_entity.occurrences (section_separator) = 2 and a_qualified_rm_entity.occurrences (axis_separator) = 0
+		do
+			create value.make(0)
+			value.append (a_qualified_rm_entity)
+
+			value.append_character(axis_separator)
+			value.append (Default_concept)
+
+			value.append_character(axis_separator)
+			value.append (Default_version_id)
 		end
 
 	make_from_string (an_id: STRING)
@@ -188,7 +207,7 @@ feature -- Access
 			p: INTEGER
 		do
 			s := qualified_rm_entity
-			p := s.index_of(section_separator, 1) - 1
+			p := s.index_of (section_separator, 1) - 1
 			Result := s.substring(1, p)
 		ensure
 			Result_valid: not Result.is_empty
@@ -203,8 +222,8 @@ feature -- Access
 			p, q: INTEGER
 		do
 			s := qualified_rm_entity
-			p := s.index_of(section_separator, 1) + 1
-			q := s.index_of(section_separator, p) - 1
+			p := s.index_of (section_separator, 1) + 1
+			q := s.index_of (section_separator, p) - 1
 			Result := s.substring(p, q)
 		ensure
 			Result_valid: not Result.is_empty
@@ -221,9 +240,9 @@ feature -- Access
 			p: INTEGER
 		do
 			s := qualified_rm_entity
-			p := s.index_of(section_separator, 1) + 1
-			p := s.index_of(section_separator, p) + 1
-			Result := s.substring(p, s.count)
+			p := s.index_of (section_separator, 1) + 1
+			p := s.index_of (section_separator, p) + 1
+			Result := s.substring (p, s.count)
 		ensure
 			Result_valid: not Result.is_empty
 		end
@@ -247,12 +266,34 @@ feature -- Status Report
 			Result := id_pattern_regex.matches (an_id)
 		end
 
+	valid_domain_concept (a_concept: STRING): BOOLEAN
+			-- Is `a_concept' a valid string to be part of an archetype id?
+		do
+			Result := domain_concept_pattern_regex.matches (a_concept)
+		end
+
 feature -- Comparison
 
 	is_less alias "<" (other: like Current): BOOLEAN
 			-- Is current object less than `other'?
 		do
 			Result := sortable_id < other.sortable_id
+		end
+
+feature -- Modification
+
+	set_domain_concept (a_concept: STRING)
+			-- set semantic_id part of identifier
+		require
+			valid_domain_concept (a_concept)
+		local
+			p, q: INTEGER
+		do
+			p := value.index_of (axis_separator, 1) + 1
+			q := value.index_of (axis_separator, p) - 1
+			value.replace_substring (a_concept, p, q)
+		ensure
+			domain_concept.is_equal (a_concept)
 		end
 
 feature -- Output
@@ -281,6 +322,12 @@ feature {NONE} -- Implementation
 	id_pattern_regex: LX_DFA_REGULAR_EXPRESSION
 			-- Pattern matcher for archetype ids.
 		deferred
+		end
+
+	domain_concept_pattern_regex: LX_DFA_REGULAR_EXPRESSION
+			-- Pattern matcher for concept part of archetype ids.
+		once
+			create Result.compile_case_insensitive ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*$")
 		end
 
 end

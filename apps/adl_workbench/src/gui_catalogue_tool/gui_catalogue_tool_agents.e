@@ -1,51 +1,41 @@
 note
-	component:   "openEHR Common Reference Model"
-
-	description: "[
-				 Multi-axial archetype identifier of the form:
-				 		qualified_rm_entity.domain_concept.version
-				 	where:
-				 		qualified_rm_entity	= rm_originator-rm_name-rm_entity_name
-				 		domain_concept = string name of concept, including specialised parts
-				 						 separated by '-'s
-				 		version = string
-				 ]"
-	keywords:    "archetype"
-
+	component:   "openEHR Archetype Project"
+	description: "Agents required by GUI_CATALOGUE_TOOL subtools"
+	keywords:    "archetype, definition, gui"
 	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2006 The openEHR Foundation <http://www.openEHR.org>"
+	support:     "http://www.openehr.org/issues/browse/AWBPR"
+	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
+	void_safety: "initial"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+class GUI_CATALOGUE_TOOL_AGENTS
 
-class ARCHETYPE_ID
+feature -- Access
 
-inherit
-	RM_CONCEPT_ID
+	edit_archetype_source_agent: PROCEDURE [ANY, TUPLE [aca:ARCH_CAT_ARCHETYPE]]
 
-create
-	make,
-	make_from_string,
-	make_new,
-	default_create
+	save_archetype_agent: PROCEDURE [ANY, TUPLE [aca: ARCH_CAT_ARCHETYPE; diff_flag, native_format_flag: BOOLEAN]]
 
-feature -- Definitions
+	archetype_explorer_select_in_tree_agent: PROCEDURE [ANY, TUPLE [key: STRING]]
 
-	Default_id: STRING = "openehr-ehr-ENTRY.any.v1"
+feature -- Modification
 
-feature {NONE} -- Implementation
+	set_edit_archetype_source_agent (agt: like edit_archetype_source_agent)
+		do
+			edit_archetype_source_agent := agt
+		end
 
-	id_pattern_regex: LX_DFA_REGULAR_EXPRESSION
-			-- Pattern matcher for archetype ids.
-		once
-			create Result.compile_case_insensitive ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z0-9_]+){2}\.[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*\.v[1-9][0-9]*$")
+	set_save_archetype_agent (agt: like save_archetype_agent)
+		do
+			save_archetype_agent := agt
+		end
+
+	set_archetype_explorer_select_in_tree_agent (agt: like archetype_explorer_select_in_tree_agent)
+		do
+			archetype_explorer_select_in_tree_agent := agt
 		end
 
 end
-
 
 
 --|
@@ -62,7 +52,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is archetype_id.e.
+--| The Original Code is adl_node_map_control.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

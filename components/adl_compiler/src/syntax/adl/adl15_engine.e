@@ -130,7 +130,6 @@ feature -- Serialisation
 	serialise (an_archetype: attached ARCHETYPE; a_format, a_lang: attached STRING): attached STRING
 			-- serialise current archetype into any semantic multi-part format.
 		require
-			archetype_valid: an_archetype.is_valid
 			Language_valid: an_archetype.has_language (a_lang)
 			format_valid: has_archetype_native_serialiser_format (a_format)
 		local

@@ -43,7 +43,6 @@ feature -- Initialisation
 				parent_archetype_id := an_archetype.parent_archetype_id.as_string
 			end
 
-			is_valid := an_archetype.is_valid
 			is_generated := an_archetype.is_generated
 
 			create definition.make (an_archetype.definition)
@@ -88,8 +87,6 @@ feature -- Access
 feature -- Status Report
 
 	is_generated: BOOLEAN
-
-	is_valid: BOOLEAN
 
 	has_path (a_path: attached STRING): BOOLEAN
 			-- True if `a_path' is found in resource; define in descendants
@@ -151,7 +148,6 @@ feature -- Factory
 				)
 			end
 
-			Result.set_is_valid (is_valid)
 			if is_generated then
 				Result.set_is_generated
 			end

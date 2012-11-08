@@ -15,6 +15,11 @@ inherit
 			source, selection_history, selected_item
 		end
 
+	SHARED_GUI_CATALOGUE_TOOL_AGENTS
+		export
+			{NONE} all
+		end
+
 feature -- Access
 
 	source: ARCHETYPE_CATALOGUE

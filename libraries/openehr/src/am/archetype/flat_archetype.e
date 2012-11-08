@@ -32,7 +32,7 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 		do
 			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
 					a_diff.original_language.deep_twin,
-					a_diff.description.deep_twin,
+					a_diff.description.safe_deep_twin,
 					a_diff.definition.deep_twin, a_diff.ontology.to_flat)
 			if a_diff.has_translations then
 				translations := a_diff.translations.deep_twin
@@ -41,13 +41,11 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 				invariants := a_diff.invariants.deep_twin
 			end
 			if a_diff.has_annotations then
-				annotations := a_diff.annotations.deep_twin
+				annotations := a_diff.annotations.safe_deep_twin
 			end
 			rebuild
-			is_valid := True
 			is_generated := True
 		ensure
-			Valid: is_valid
 			Generated: is_generated
 			Top_level: not is_specialised
 		end
@@ -62,7 +60,7 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 		do
 			make (a_diff.artefact_type.deep_twin, a_diff.archetype_id.deep_twin,
 					a_diff.original_language.deep_twin,
-					a_diff.description.deep_twin,
+					a_diff.description.safe_deep_twin,
 					a_flat_parent.definition.deep_twin,
 					a_diff.ontology.to_flat)
 			if a_diff.has_translations then
@@ -72,13 +70,11 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 				invariants := a_flat_parent.invariants.deep_twin
 			end
 			if a_flat_parent.has_annotations then
-				annotations := a_flat_parent.annotations.deep_twin
+				annotations := a_flat_parent.annotations.safe_deep_twin
 			end
 			rebuild
-			is_valid := True
 			is_generated := True
 		ensure
-			Valid: is_valid
 			Generated: is_generated
 			Specialised: is_specialised
 		end
@@ -89,14 +85,6 @@ feature -- Access
 
 feature -- Factory
 
-	to_legacy_differential: DIFFERENTIAL_ARCHETYPE
-			-- generate differential form of archetype from a legacy flat
-		require
-			not is_generated
-		do
-			create Result.make_from_legacy_flat (Current)
-		end
-
 	to_differential: DIFFERENTIAL_ARCHETYPE
 			-- generate differential form of archetype if specialised, to be in differential form,
 			-- based on inspecting each node's `specialisation_level'
@@ -105,34 +93,40 @@ feature -- Factory
 		local
 			def_it: C_ITERATOR
 		do
-			-- ======= deal with main archetype =======
+			if not is_specialised then
+				create Result.make_all (artefact_type, Latest_adl_version, archetype_id, parent_archetype_id,
+					is_controlled, original_language, translations, description, definition, invariants,
+					ontology.to_differential, annotations)
+			else
+				-- ======= deal with main archetype =======
 
-			-- ======= description =======
+				-- ======= description =======
 
-			-- ======= definition =========
-			create diff_added_obj_nodes.make (0)
-			create diff_added_attr_nodes.make (0)
-			create diff_redefined_obj_nodes.make (0)
-			create diff_redefined_attr_nodes.make (0)
-			create diff_redefined_id_nodes.make (0)
-			create def_it.make (definition)
+				-- ======= definition =========
+				create diff_added_obj_nodes.make (0)
+				create diff_added_attr_nodes.make (0)
+				create diff_redefined_obj_nodes.make (0)
+				create diff_redefined_attr_nodes.make (0)
+				create diff_redefined_id_nodes.make (0)
+				create def_it.make (definition)
 
-			-- extract the added nodes first
-			def_it.do_at_surface (agent node_diff_extract_additions,
-				agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := a_c_node.specialisation_status = ss_added end
-			)
+				-- extract the added nodes first
+				def_it.do_at_surface (agent node_diff_extract_additions,
+					agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := a_c_node.specialisation_status = ss_added end
+				)
 
-			-- now find redefined nodes
-			def_it.do_until_surface (agent node_diff_extract_redefinitions,
-				agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := a_c_node.specialisation_status /= ss_added end
-			)
+				-- now find redefined nodes
+				def_it.do_until_surface (agent node_diff_extract_redefinitions,
+					agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := a_c_node.specialisation_status /= ss_added end
+				)
 
-			-- ======= rules section =======
+				-- ======= rules section =======
 
-			-- ======= ontology =======
+				-- ======= ontology =======
 
-			-- ======= annotations =======
+				-- ======= annotations =======
 
+			end
 		end
 
 	node_diff_extract_additions (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER)

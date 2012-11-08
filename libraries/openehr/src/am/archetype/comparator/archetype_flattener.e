@@ -106,7 +106,6 @@ end
 				flatten_ontology
 				flatten_annotations
 				arch_output_flat.set_parent_archetype_id (arch_parent_flat.archetype_id)
-				arch_output_flat.set_is_valid (True)
 				arch_output_flat.rebuild
 			else
 				create arch_output_flat.make_non_specialised (arch_child_diff)

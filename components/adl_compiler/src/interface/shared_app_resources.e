@@ -102,6 +102,16 @@ feature -- Definitions
 			Result := file_system.pathname (application_startup_directory, Report_css_template_filename)
 		end
 
+	Default_author_name: STRING = "My Name <my_email_id@my_org.org>"
+
+	Default_author_org: STRING = "Org name <http://www.my_org.org>"
+
+	Default_author_copyright: STRING_32
+		once
+		--	Result := "Copyright " + UTF8_copyright_char.out + (create {DATE}.make_now).year.out + " My Name OR Some Org"
+			Result := "Copyright (c) " + (create {DATE}.make_now).year.out + " My Name OR Some Org"
+		end
+
 feature -- Initialisation
 
 	app_cfg_initialise
@@ -383,6 +393,63 @@ feature -- Application Switches
 			path_not_empty: not a_path.is_empty
 		do
 			app_cfg.put_value("/file_system/compiler_gen_directory", a_path)
+		end
+
+	author_name: attached STRING
+			-- default name string to insert into newly created archetype description section
+		do
+			Result := app_cfg.string_value ("/authoring/author_name")
+			if Result.is_empty then
+				Result := Default_author_name.twin
+			end
+		ensure
+			not Result.is_empty
+		end
+
+	set_author_name (a_value: attached STRING)
+			-- Set `author_name'
+		require
+			value_not_empty: not a_value.is_empty
+		do
+			app_cfg.put_value ("/authoring/author_name", a_value)
+		end
+
+	author_org: attached STRING
+			-- default organisation name string to insert into newly created archetype description section
+		do
+			Result := app_cfg.string_value ("/authoring/author_org")
+			if Result.is_empty then
+				Result := Default_author_org.twin
+			end
+		ensure
+			not Result.is_empty
+		end
+
+	set_author_org (a_value: attached STRING)
+			-- Set `author_org'
+		require
+			value_not_empty: not a_value.is_empty
+		do
+			app_cfg.put_value ("/authoring/author_org", a_value)
+		end
+
+	author_copyright: attached STRING
+			-- default copyright string to insert into newly created archetype description section
+		do
+			Result := app_cfg.string_value ("/authoring/author_copyright")
+			if Result.is_empty then
+				Result := Default_author_copyright.twin
+			end
+		ensure
+			not Result.is_empty
+		end
+
+	set_author_copyright (a_value: attached STRING)
+			-- Set `author_copyright'
+		require
+			value_not_empty: not a_value.is_empty
+		do
+			app_cfg.put_value ("/authoring/author_copyright", a_value)
 		end
 
 feature {NONE} -- Cached Settings
