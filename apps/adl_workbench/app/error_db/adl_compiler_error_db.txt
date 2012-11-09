@@ -70,9 +70,9 @@ templates = <
 		["compile_e2"] = <"component artefact $1 failed to validate">
 
 		-- ARCHETYPE_CATALOGUE
-		["arch_dir_orphan_archetype"] = <"No parent matching $1 found for archetype $2">
-		["arch_dir_orphan_archetype_e2"] = <"No ontology node matching $1 found for archetype $2; incorrect id?">
-		["arch_dir_dup_archetype"] = <"Duplicate archetype $1">
+		["arch_cat_orphan_archetype"] = <"No parent matching $1 found for archetype $2">
+		["arch_cat_orphan_archetype_e2"] = <"No class node matching $1 found for archetype $2; incorrect id?">
+		["arch_cat_dup_archetype"] = <"Duplicate archetype $1">
 		["regex_e1"] = <"Invalid regular expression $1">
 
 		-- ADL_SYNTAX_CONTERTER

@@ -176,7 +176,7 @@ feature -- Commands
 					if not file_system.file_exists (fname) then
 						(create {EV_INFORMATION_DIALOG}.make_with_text (get_msg ("file_not_found", <<fname>>))).show_modal_to_window (proximate_ev_window (ev_root_container))
 					else
-						source.add_adhoc_item (fname)
+						source.add_adhoc_archetype (fname)
 						if not billboard.has_errors then
 							selection_history.set_selected_item (source.last_added_archetype)
 							show

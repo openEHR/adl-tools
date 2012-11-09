@@ -178,6 +178,14 @@ feature -- Status Report
 			Result := semantic_item_index.has (an_id.as_lower)
 		end
 
+	valid_candidate (aca: ARCH_CAT_ARCHETYPE): BOOLEAN
+			-- True if `aca' does not exist in the catalogue, but has a viable parent under
+			-- which it can be attached
+		do
+			Result := has_item_with_id (aca.ontological_parent_name) and
+				not has_item_with_id (aca.qualified_key)
+		end
+
 feature -- Commands
 
 	clear
@@ -229,7 +237,7 @@ feature -- Modification
 	last_added_archetype: detachable ARCH_CAT_ARCHETYPE
 			-- archetype added by last call to `add_new_archetype' or `add_new_specialised_archetype'
 
-	add_adhoc_item (in_dir_path: STRING)
+	add_adhoc_archetype (in_dir_path: STRING)
 			-- Add the archetype designated by `in_dir_path' to the ad hoc repository, and graft it into `directory'.
 		require
 			path_valid: adhoc_path_valid (in_dir_path)
@@ -243,11 +251,21 @@ feature -- Modification
 
 			profile_repo_access.adhoc_source_repository.add_item (in_dir_path)
 			aca := profile_repo_access.adhoc_source_repository.item (in_dir_path)
+
 			if profile_repo_access.adhoc_source_repository.has_path (in_dir_path) then
-				-- add to semantic index
-				put_archetype (aca, in_dir_path)
+				if valid_candidate (aca) then
+					put_archetype (aca, in_dir_path)
+				elseif not has_item_with_id (aca.ontological_parent_name.as_lower) then
+					if aca.is_specialised then
+						post_error (Current, "add_adhoc_archetype", "arch_cat_orphan_archetype", <<aca.ontological_parent_name, aca.qualified_key>>)
+					else
+						post_error (Current, "add_adhoc_item", "arch_cat_orphan_archetype_e2", <<aca.ontological_parent_name, aca.qualified_key>>)
+					end
+				elseif has_item_with_id (aca.qualified_key) then
+					post_error (Current, "add_adhoc_archetype", "arch_cat_dup_archetype", <<in_dir_path>>)
+				end
 			else
-				post_error (Current, "add_adhoc_item", "invalid_filename_e1", <<in_dir_path>>)
+				post_error (Current, "add_adhoc_archetype", "invalid_filename_e1", <<in_dir_path>>)
 			end
 		end
 
@@ -683,30 +701,26 @@ feature {NONE} -- Implementation
 
 	put_archetype (aca: ARCH_CAT_ARCHETYPE; in_dir_path: STRING)
 			-- put `aca' into the structure
+		require
+			valid_candidate (aca)
 		local
 			parent_key, child_key: STRING
 		do
-			-- add to semantic index
 			parent_key := aca.ontological_parent_name.as_lower
-			if semantic_item_index.has (parent_key) then
-				child_key := aca.qualified_key
-				if not semantic_item_index.has (child_key) then
-					semantic_item_index.item (parent_key).put_child (aca)
-					semantic_item_index.force (aca, child_key)
-					archetype_index.force (aca, child_key)
+			child_key := aca.qualified_key
 
-					-- add to filesys index
-					add_arch_to_filesys_tree (aca)
+			-- add to semantic index
+			semantic_item_index.item (parent_key).put_child (aca)
+			semantic_item_index.force (aca, child_key)
+			archetype_index.force (aca, child_key)
 
-					last_added_archetype := aca
-				else
-					post_error (Current, "add_adhoc_item", "arch_dir_dup_archetype", <<in_dir_path>>)
-				end
-			elseif aca.is_specialised then
-				post_error (Current, "add_adhoc_item", "arch_dir_orphan_archetype", <<parent_key, child_key>>)
-			else
-				post_error (Current, "add_adhoc_item", "arch_dir_orphan_archetype_e2", <<parent_key, child_key>>)
-			end
+			-- add to filesys index
+			add_arch_to_filesys_tree (aca)
+
+			last_added_archetype := aca
+		ensure
+			Last_added_archetype_set: last_added_archetype = aca
+			Archetype_in_index: semantic_item_index.item (aca.qualified_key) = aca
 		end
 
 	schema_load_counter: INTEGER
@@ -738,12 +752,11 @@ feature {NONE} -- Implementation
 				catalogue_metrics.force (catalogue_metrics.item (valid_archetype_count) + 1, valid_archetype_count)
 
 				terminologies := aca.differential_archetype.ontology.terminologies_available
-				from terminologies.start until terminologies.off loop
-					if not terminology_bindings_statistics.has (terminologies.item) then
-						terminology_bindings_statistics.put (create {ARRAYED_LIST[STRING]}.make(0), terminologies.item)
+				across terminologies as terminologies_csr loop
+					if not terminology_bindings_statistics.has (terminologies_csr.item) then
+						terminology_bindings_statistics.put (create {ARRAYED_LIST[STRING]}.make(0), terminologies_csr.item)
 					end
-					terminology_bindings_statistics.item (terminologies.item).extend (aca.qualified_name)
-					terminologies.forth
+					terminology_bindings_statistics.item (terminologies_csr.item).extend (aca.qualified_name)
 				end
 
 				aca.generate_statistics (True)
