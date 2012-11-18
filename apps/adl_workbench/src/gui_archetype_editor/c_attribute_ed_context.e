@@ -47,16 +47,6 @@ feature -- Initialisation
 			add_child_rm_node (rm_property.type)
 		end
 
-	convert_to_c_attribute
-			-- convert to constrained form with a C_ATTRIBUTE created based on `an_rm_prop'
-		do
-			if rm_property.is_container then
-				create arch_node.make_multiple (rm_property.name, Void, Void)
-			else
-				create arch_node.make_single (rm_property.name, Void)
-			end
-		end
-
 feature -- Access
 
 	arch_node: detachable C_ATTRIBUTE
@@ -230,6 +220,19 @@ feature -- Modification
 			put_child_context (a_node)
 		end
 
+	convert_to_constraint
+			-- convert to constrained form with a C_ATTRIBUTE created based on `an_rm_prop'
+		require
+			not parent.is_rm
+		do
+			if rm_property.is_container then
+				create arch_node.make_multiple (rm_property.name, Void, Void)
+			else
+				create arch_node.make_single (rm_property.name, Void)
+			end
+			parent.convert_rm_property_to_constraint (Current)
+		end
+
 feature {ANY_ED_CONTEXT} -- Implementation
 
 	c_attribute_colour: EV_COLOR
@@ -320,7 +323,7 @@ feature {NONE} -- Context menu
 			create context_menu
 
 			-- add sub-menu of types to add as children
-			if ed_context.editing_enabled then
+			if not is_rm and ed_context.editing_enabled then
 				create types_sub_menu.make_with_text (get_text ("attribute_context_menu_add_child"))
 				create an_mi.make_with_text_and_action (rm_property.type.semantic_class.name, agent do_edit_add_child_node (rm_property.type.semantic_class))
 				if rm_property.type.semantic_class.is_abstract then
@@ -329,31 +332,26 @@ feature {NONE} -- Context menu
 					an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_concrete"))
 				end
 	    		types_sub_menu.extend (an_mi)
-	--			if rm_property.type.semantic_class.has_type_substitutions then
-					across rm_property.type.semantic_class.type_substitutions as subs_csr loop
-						subtype_class_def := ed_context.rm_schema.class_definition (subs_csr.item)
-						create an_mi.make_with_text_and_action (subs_csr.item, agent do_edit_add_child_node (subtype_class_def))
-						if subtype_class_def.is_abstract then
-							an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))
-						else
-							an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_concrete"))
-						end
-			    		types_sub_menu.extend (an_mi)
+				across rm_property.type.semantic_class.type_substitutions as subs_csr loop
+					subtype_class_def := ed_context.rm_schema.class_definition (subs_csr.item)
+					create an_mi.make_with_text_and_action (subs_csr.item, agent do_edit_add_child_node (subtype_class_def))
+					if subtype_class_def.is_abstract then
+						an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_abstract"))
+					else
+						an_mi.set_pixmap (get_icon_pixmap ("rm/generic/class_concrete"))
 					end
-	--			end
+		    		types_sub_menu.extend (an_mi)
+				end
 				context_menu.extend (types_sub_menu)
 			end
 		end
 
 	do_edit_add_child_node (a_type_spec: BMM_TYPE_SPECIFIER)
+		require
+			not is_rm
 		do
-			if is_rm then
-				add_child_rm_node (a_type_spec)
-				ed_context.undo_redo_chain.add_link_simple (agent detach_child_context (added_co_ed_node), agent reattach_child_context (added_co_ed_node))
-			else
-				add_child_node (a_type_spec)
-				ed_context.undo_redo_chain.add_link_simple (agent detach_child_context (added_co_ed_node), agent reattach_child_context (added_co_ed_node))
-			end
+			add_child_node (a_type_spec)
+			ed_context.undo_redo_chain.add_link_simple (agent detach_child_context (added_co_ed_node), agent reattach_child_context (added_co_ed_node))
 		end
 
 	added_co_ed_node: C_OBJECT_ED_CONTEXT

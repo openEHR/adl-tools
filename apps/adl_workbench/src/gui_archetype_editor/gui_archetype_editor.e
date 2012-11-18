@@ -93,7 +93,6 @@ feature {NONE} -- Implementation
 			create definition_control.make_editable (agent update_undo_redo_controls)
 			create ontology_controls.make_editable (agent update_undo_redo_controls)
 			create annotations_control.make
-			create serialisation_control.make
 		end
 
 	do_populate

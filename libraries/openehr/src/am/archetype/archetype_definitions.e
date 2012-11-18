@@ -111,6 +111,39 @@ feature -- Definitions
 
 	Unknown_value: STRING = "(Unknown)"
 
+	c_object_constraint_types: HASH_TABLE [STRING, STRING]
+			-- C_OBJECT meanings keyed by class-names (meanings are message tags to be converted to
+			-- natural language via calls to get_text ())
+		once
+			create Result.make (0)
+			Result.put ("c_type_complex_object", "C_COMPLEX_OBJECT")
+			Result.put ("c_type_primitive_object", "C_PRIMITIVE_OBJECT")
+			Result.put ("c_type_internal_reference", "ARCHETYPE_INTERNAL_REF")
+			Result.put ("c_type_external_constraint_reference", "C_CONSTRAINT_REF")
+			Result.put ("c_type_archetype_reference", "C_ARCHETYPE_ROOT")
+			Result.put ("c_type_slot", "ARCHETYPE_SLOT")
+			Result.put ("c_type_quantity", "C_DV_QUANTITY")
+			Result.put ("c_type_ordinal", "C_DV_ORDINAL")
+			Result.put ("c_type_code_phrase", "C_CODE_PHRASE")
+		end
+
+	occurrences_default_list: HASH_TABLE [MULTIPLICITY_INTERVAL, STRING]
+		local
+			mult_int: MULTIPLICITY_INTERVAL
+		once
+			create Result.make (0)
+			create mult_int.make_optional
+			Result.put (mult_int, mult_int.as_string)
+			create mult_int.make_mandatory
+			Result.put (mult_int, mult_int.as_string)
+			create mult_int.make_prohibited
+			Result.put (mult_int, mult_int.as_string)
+			create mult_int.make_upper_unbounded (0)
+			Result.put (mult_int, mult_int.as_string)
+			create mult_int.make_upper_unbounded (1)
+			Result.put (mult_int, mult_int.as_string)
+		end
+
 feature -- Comparison
 
 	valid_adl_version (a_ver: attached STRING): BOOLEAN

@@ -30,7 +30,7 @@ class EVX_MULTI_COLUMN_TABLE_CONTROL
 inherit
 	EVX_MLIST_CONTROL
 		rename
-			make as make_mlist, make_editable as make_editable_mlist
+			make as make_mlist, make_linked as make_editable_mlist
 		redefine
 			data_source_agent, data_source_setter_agent, data_source_remove_agent, set_columns_editable
 		end

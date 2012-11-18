@@ -19,11 +19,17 @@ deferred class EVX_TITLED_DATA_CONTROL
 
 inherit
 	EVX_DATA_CONTROL
+		redefine
+			hide, show
+		end
 
 feature -- Initialisation
 
 	make (a_title: detachable STRING; a_data_source_agent: like data_source_agent;
-			min_height, min_width: INTEGER; arrange_horizontally, allow_expansion: BOOLEAN)
+			min_height, min_width: INTEGER; arrange_horizontally: BOOLEAN)
+			-- create the control with title if specified, horizontally or vertically arranged as
+			-- specified. The main control (i.e. not the title) will expand automatically if
+			-- `min_width' = 0
 		local
 			mh, mw: INTEGER
 		do
@@ -71,7 +77,7 @@ feature -- Initialisation
 			ev_root_container.set_minimum_width (mw)
 
 			-- control expanding characteristics of main control
-			if not allow_expansion then
+			if (arrange_horizontally and min_width > 0) or else (not arrange_horizontally and min_height > 0) then
 				ev_root_container.extend (create {EV_CELL})
 				ev_root_container.disable_item_expand (ev_data_control)
 			end
@@ -80,26 +86,25 @@ feature -- Initialisation
 		end
 
 	make_readonly (a_title: detachable STRING; a_data_source_agent: like data_source_agent;
-			min_height, min_width: INTEGER; arrange_horizontally, allow_expansion: BOOLEAN)
+			min_height, min_width: INTEGER; arrange_horizontally: BOOLEAN)
 			-- make so that no user interaction with visual control is possible
 		do
-			make (a_title, a_data_source_agent, min_height, min_width, arrange_horizontally, allow_expansion)
+			make (a_title, a_data_source_agent, min_height, min_width, arrange_horizontally)
 			is_readonly := True
 			do_disable_editable
 		ensure
 			is_readonly
 		end
 
-	make_editable (a_title: STRING; a_data_source_agent: like data_source_agent;
+	make_linked (a_title: STRING; a_data_source_agent: like data_source_agent;
 				a_data_source_create_agent: like data_source_setter_agent;
 				a_data_source_remove_agent: like data_source_remove_agent;
 				an_undo_redo_chain: detachable UNDO_REDO_CHAIN;
-				min_height, min_width: INTEGER;
-				arrange_horizontally, allow_expansion: BOOLEAN)
+				min_height, min_width: INTEGER; arrange_horizontally: BOOLEAN)
 			-- make with active editing agents so that changes made in the visual control
 			-- affect the data source
 		do
-			make (a_title, a_data_source_agent, min_height, min_width, arrange_horizontally, allow_expansion)
+			make (a_title, a_data_source_agent, min_height, min_width, arrange_horizontally)
 			data_source_setter_agent := a_data_source_create_agent
 			data_source_remove_agent := a_data_source_remove_agent
 			undo_redo_chain := an_undo_redo_chain
@@ -112,6 +117,18 @@ feature -- Access
 	ev_root_container: EV_BOX
 
 	ev_title_label: EV_LABEL
+
+feature -- Commands
+
+	hide
+		do
+			ev_root_container.hide
+		end
+
+	show
+		do
+			ev_root_container.show
+		end
 
 end
 

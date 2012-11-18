@@ -42,6 +42,14 @@ feature -- Access
 		deferred
 		end
 
+feature -- Status Report
+
+	is_root: BOOLEAN
+			-- True if this node is the top of tree structure
+		do
+			Result := not attached parent
+		end
+
 feature -- Display
 
 	prepare_display_in_grid (a_gui_grid: EVX_GRID)

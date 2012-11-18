@@ -33,6 +33,7 @@ templates = <
 		["SUAID"] = <"Syntax error: expecting [archetype_id], or [at-code ',' archetype_id] in use_archetype statement">
 		["SOCCF"] = <"Syntax error: expecting an 'occurrences expression', e.g. 'occurrences matches {n..m}'">
 		["SUNPA"] = <"Syntax error: expecting absolute path in use_node statement">
+		["SCOAT"] = <"Syntax error: expecting attribute definition(s)">
 		["SUAS"] = <"Syntax error: error after 'use_archetype' keyword; expecting Object node definition">
 		["SCAS"] = <"Syntax error: expecting a 'any' node, 'leaf' node, or new node definition">
 		["SINVS"] = <"Syntax error: illegal invariant expression at identifier $1">

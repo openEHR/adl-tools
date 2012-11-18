@@ -42,6 +42,8 @@ feature -- Definitions
 
 	State_includes_processed: INTEGER = 4
 
+	Max_add_attempts: INTEGER = 10
+
 feature -- Initialisation
 
 	make_dt (make_args: ARRAY[ANY])
@@ -267,7 +269,7 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 				end
 			end
 
-			-- check no duplicate properties
+			-- check no duplicate properties in any class
 			do_all_classes (
 				agent (a_class_def: P_BMM_CLASS_DEFINITION)
 					local
@@ -359,9 +361,8 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 			if includes.is_empty then
 				state := State_includes_processed
 			else
-				from includes.start until includes.off loop
-					includes_to_process.extend (includes.item_for_iteration.id)
-					includes.forth
+				across includes as includes_csr loop
+					includes_to_process.extend (includes_csr.item.id)
 				end
 				state := State_includes_pending
 			end
@@ -384,7 +385,6 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 			end
 			-- archetype closures
 			archetype_rm_closure_packages.merge (other.archetype_rm_closure_packages)
-
 
 			-- primitive types
 			across other.primitive_types as other_prim_types_csr loop
@@ -436,7 +436,9 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 					do
 						anc_copy := ancestors_index.item (a_class_def.name.as_upper).deep_twin -- create a copy for iteration purposes
 						across anc_copy as anc_copy_csr loop
-							ancestors_index.item (a_class_def.name.as_upper).merge (ancestors_index.item (anc_copy_csr.item.as_upper))
+							if ancestors_index.has (anc_copy_csr.item.as_upper) then
+								ancestors_index.item (a_class_def.name.as_upper).merge (ancestors_index.item (anc_copy_csr.item.as_upper))
+							end
 						end
 					end
 			)
@@ -468,6 +470,7 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 			-- correct schema
 		local
 			package_classes: HASH_TABLE [STRING, STRING]
+			desc_list: STRING
 		do
 			-- check archetype parent class in list of class names
 			if attached archetype_parent_class and then not has_class_definition (archetype_parent_class) then
@@ -603,7 +606,8 @@ feature -- Factory
 				bmm_schema.add_package (pkgs_csr.item.bmm_package_definition)
 			end
 
-			-- now add classes
+			-- now add classes. We do this in such a way that all ancestors of a class
+			-- are added before the class itself.
 			across canonical_packages as pkgs_csr loop
 				pkgs_csr.item.do_recursive_classes (agent add_bmm_schema_class_definition)
 			end
@@ -625,7 +629,7 @@ feature -- Factory
 
 			--------- PASS 2 ----------
 			-- populate BMM_CLASS_DEFINITION objects
-			do_all_classes (agent (a_class_def: P_BMM_CLASS_DEFINITION) do a_class_def.populate_bmm_class_definition (bmm_schema) end)
+			do_all_classes_in_order (agent (a_class_def: P_BMM_CLASS_DEFINITION) do a_class_def.populate_bmm_class_definition (bmm_schema) end)
 		end
 
 	add_bmm_schema_class_definition (a_pkg: P_BMM_PACKAGE_DEFINITION; a_class_name: STRING)
@@ -644,6 +648,8 @@ feature -- Factory
 			end
 			bmm_schema.add_class_definition (bmm_class_def, a_pkg.bmm_package_definition)
 		end
+
+	missed_class_count: INTEGER
 
 feature {DT_OBJECT_CONVERTER} -- Persistence
 
@@ -707,12 +713,57 @@ feature {NONE} -- Implementation
 
 	do_all_classes (action: PROCEDURE [ANY, TUPLE [P_BMM_CLASS_DEFINITION]])
 			-- do some action to all primitive type and class objects
+			-- process in any order
 		do
 			across primitive_types as prim_types_csr loop
 				action.call ([prim_types_csr.item])
 			end
 			across class_definitions as class_defs_csr loop
 				action.call ([class_defs_csr.item])
+			end
+		end
+
+	do_all_classes_in_order (action: PROCEDURE [ANY, TUPLE [P_BMM_CLASS_DEFINITION]])
+			-- do some action to all primitive type and class objects
+			-- process in breadth first order of inheritance tree
+		local
+			attempts, missed_count: INTEGER
+			visited_classes: ARRAYED_LIST [STRING]
+		do
+			create visited_classes.make (0)
+			visited_classes.compare_objects
+			from missed_count := 1 until missed_count = 0 or else attempts > max_add_attempts loop
+				missed_count := 0
+				across primitive_types as prim_types_csr loop
+					if not visited_classes.has (prim_types_csr.item.name.as_upper) then
+						if prim_types_csr.item.ancestors.is_empty or else
+							across prim_types_csr.item.ancestors as ancs_csr all visited_classes.has (ancs_csr.item.as_upper) end
+						then
+							action.call ([prim_types_csr.item])
+							visited_classes.extend (prim_types_csr.item.name.as_upper)
+						else
+							missed_count := missed_count + 1
+						end
+					end
+				end
+				attempts := attempts + 1
+			end
+			attempts := 0
+			from missed_count := 1 until missed_count = 0 or else attempts > max_add_attempts loop
+				missed_count := 0
+				across class_definitions as class_defs_csr loop
+					if not visited_classes.has (class_defs_csr.item.name.as_upper) then
+						if class_defs_csr.item.ancestors.is_empty or else
+							across class_defs_csr.item.ancestors as ancs_csr all visited_classes.has (ancs_csr.item.as_upper) end
+						then
+							action.call ([class_defs_csr.item])
+							visited_classes.extend (class_defs_csr.item.name.as_upper)
+						else
+							missed_count := missed_count + 1
+						end
+					end
+				end
+				attempts := attempts + 1
 			end
 		end
 

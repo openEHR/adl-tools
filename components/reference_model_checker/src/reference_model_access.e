@@ -161,46 +161,22 @@ feature {NONE} -- Implementation
 	load_schema_descriptors
 			-- initialise `rm_schema_metadata_table'
 		local
-			dir: DIRECTORY
-			dmp: DADL_MINI_PARSER
+			dir: KL_DIRECTORY
 			schema_path: STRING
 			sd: SCHEMA_DESCRIPTOR
+			file_repo: FILE_REPOSITORY
 		do
 			if not exception_encountered then
 				all_schemas.wipe_out
-				create dir.make_open_read (schema_directory)
+				create dir.make (schema_directory)
 				if not (dir.exists and dir.is_readable) then
 					post_error (Current, "load_schema_descriptors", "model_access_e5", <<schema_directory>>)
 				elseif dir.is_empty then
 					post_error (Current, "load_schema_descriptors", "model_access_e6", <<schema_directory, Schema_file_extension>>)
 				else
-					create dmp
-					from
-						dir.start
-						dir.readentry
-					until
-						dir.lastentry = Void
-					loop
-						if dir.lastentry.ends_with (schema_file_extension) then
-							schema_path := schema_directory + os_directory_separator.out + dir.lastentry
-							dmp.extract_attr_values (schema_path, Schema_fast_parse_attrs)
-							if dmp.last_parse_valid then
-								dmp.last_parse_content.put (schema_path, Metadata_schema_path)
-								create sd.make (dmp.last_parse_content)
-
-								-- check for two schema files purporting to be the exact same schema (including release)
-								if sd.errors.has_errors then
-									post_error (Current, "load_schema_descriptors", "model_access_e2", <<sd.schema_id, sd.errors.as_string>>)
-								elseif all_schemas.has (sd.schema_id) then
-									post_warning (Current, "load_schema_descriptors", "model_access_w2", <<sd.schema_id, schema_path>>)
-								else
-									all_schemas.put (sd, sd.schema_id)
-								end
-							else
-								post_warning (Current, "load_schema_descriptors", "model_access_w4", <<schema_path, dmp.last_parse_fail_reason>>)
-							end
-						end
-						dir.readentry
+					create file_repo.make (schema_directory, Bmm_file_match_regex)
+					across file_repo.matching_paths as paths_csr loop
+						process_schema_file (paths_csr.item)
 					end
 					if all_schemas.is_empty then
 						post_error (Current, "load_schema_descriptors", "model_access_e6", <<schema_directory, Schema_file_extension>>)
@@ -211,6 +187,31 @@ feature {NONE} -- Implementation
 			exception_encountered := True
 			post_error (Current, "load_schemas", "model_access_e14", Void)
 			retry
+		end
+
+	process_schema_file (a_schema_file_path: STRING)
+			-- read in the schema `a_schema_file_path'
+		local
+			dmp: DADL_MINI_PARSER
+			sd: SCHEMA_DESCRIPTOR
+		do
+			create dmp
+			dmp.extract_attr_values (a_schema_file_path, Schema_fast_parse_attrs)
+			if dmp.last_parse_valid then
+				dmp.last_parse_content.put (a_schema_file_path, Metadata_schema_path)
+				create sd.make (dmp.last_parse_content)
+
+				-- check for two schema files purporting to be the exact same schema (including release)
+				if sd.errors.has_errors then
+					post_error (Current, "load_schema_descriptors", "model_access_e2", <<sd.schema_id, sd.errors.as_string>>)
+				elseif all_schemas.has (sd.schema_id) then
+					post_warning (Current, "load_schema_descriptors", "model_access_w2", <<sd.schema_id, a_schema_file_path>>)
+				else
+					all_schemas.put (sd, sd.schema_id)
+				end
+			else
+				post_warning (Current, "load_schema_descriptors", "model_access_w4", <<a_schema_file_path, dmp.last_parse_fail_reason>>)
+			end
 		end
 
 	load_schemas

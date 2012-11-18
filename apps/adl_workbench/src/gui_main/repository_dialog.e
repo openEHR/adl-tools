@@ -105,7 +105,7 @@ feature {NONE} -- Initialization
 			ev_vbox_2.disable_item_expand (profile_edit_button)
 
 			-- reference path display control
-			create ref_path_ctl.make_readonly (get_text ("ref_repo_text"), agent :STRING do Result := rep_profiles_copy.profile (selected_profile_key).reference_repository end, 0, 0, True, True)
+			create ref_path_ctl.make_readonly (get_text ("ref_repo_text"), agent :STRING do Result := rep_profiles_copy.profile (selected_profile_key).reference_repository end, 0, 0, True)
 			ev_root_container.extend (ref_path_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (ref_path_ctl.ev_root_container)
 			gui_controls.extend (ref_path_ctl)
@@ -120,7 +120,7 @@ feature {NONE} -- Initialization
 							Result := ""
 						end
 					end,
-				0, 0, True, True)
+				0, 0, True)
 			ev_root_container.extend (work_path_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (work_path_ctl.ev_root_container)
 			gui_controls.extend (work_path_ctl)

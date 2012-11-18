@@ -12,7 +12,7 @@ note
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
 
-class C_OBJECT_ED_CONTEXT
+deferred class C_OBJECT_ED_CONTEXT
 
 inherit
 	ARCHETYPE_CONSTRAINT_ED_CONTEXT
@@ -22,8 +22,10 @@ inherit
 			make, rm_type, arch_node, parent, prepare_display_in_grid, display_in_grid
 		end
 
-create
-	make, make_rm
+	SHARED_KNOWLEDGE_REPOSITORY
+		export
+			{NONE} all
+		end
 
 feature -- Definition
 
@@ -181,6 +183,14 @@ feature -- Display
 			end
 		end
 
+feature -- Modification
+
+	convert_to_constraint
+			-- convert to constrained C_OBJECT form
+		do
+
+		end
+
 feature {NONE} -- Implementation
 
 	node_id_text: STRING
@@ -263,16 +273,24 @@ feature {NONE} -- Context menu
 				end
 			end
 
-			-- add menu item for displaying path in path map
 			if not ed_context.editing_enabled then
+				-- add menu item for displaying path in path map
 				if not is_rm and attached tool_agents.path_select_action_agent then
 					create an_mi.make_with_text_and_action (get_text ("object_context_menu_display_path"), agent do tool_agents.path_select_action_agent.call ([arch_node.path]) end)
 					context_menu.extend (an_mi)
 				end
-			-- add menu item for deleting this node
-			elseif not is_rm and then not arch_node.is_root then
-				create an_mi.make_with_text_and_action (get_text ("object_context_menu_delete"), agent do_edit_remove_node)
-				context_menu.extend (an_mi)
+			else
+				if not is_rm then
+					if not arch_node.is_root then
+						-- add menu item for deleting this node
+						create an_mi.make_with_text_and_action (get_text ("object_context_menu_delete"), agent do_edit_remove_node)
+						context_menu.extend (an_mi)
+					end
+				elseif not is_root and then not parent.parent.is_rm and parent.is_rm then
+					-- add menu item for 'convert to constraint'
+					create an_mi.make_with_text_and_action (get_text ("object_context_menu_convert"), agent do_edit_convert_to_constraint)
+					context_menu.extend (an_mi)
+				end
 			end
 		end
 
@@ -285,6 +303,79 @@ feature {NONE} -- Context menu
 		do
 			parent.detach_child_context (Current)
 			ed_context.undo_redo_chain.add_link_simple (agent parent.reattach_child_context (Current), agent parent.detach_child_context (Current))
+		end
+
+	do_edit_convert_to_constraint
+		local
+			dialog: INITIAL_C_OBJECT_DIALOG
+			def_occ: MULTIPLICITY_INTERVAL
+			rm_type_substitutions: ARRAYED_SET [STRING]
+		do
+			rm_type_substitutions := rm_type.semantic_class.type_substitutions
+			rm_type_substitutions.extend (rm_type.semantic_class.name)
+			if attached {BMM_CONTAINER_PROPERTY} parent.rm_property as bmm_cont_prop then
+				def_occ := bmm_cont_prop.cardinality
+			else
+				def_occ := parent.rm_property.existence
+			end
+			create dialog.make (c_type_substitutions, rm_type_substitutions, arch_node_type, rm_type.semantic_class.name, def_occ, ed_context, display_settings)
+			dialog.show_modal_to_window (proximate_ev_window (gui_grid.ev_grid))
+			if dialog.is_valid then
+				do_convert_to_constraint (dialog.current_rm_type, dialog.current_constraint_type, dialog.current_occurrences)
+			end
+		end
+
+	do_convert_to_constraint (a_c_object_type, an_rm_type, occ_str: STRING)
+		local
+			c_obj: C_OBJECT
+			rm_type_spec: BMM_CLASS_DEFINITION
+		do
+			parent.convert_to_constraint
+			parent.remove_child_context (Current)
+			rm_type_spec := ed_context.rm_schema.class_definition (an_rm_type)
+			if a_c_object_type.is_equal ("C_COMPLEX_OBJECT") or a_c_object_type.is_equal ("C_PRIMITIVE_OBJECT") then
+				parent.add_child_node (rm_type_spec)
+			elseif a_c_object_type.is_equal ("C_ARCHETYPE_ROOT") then
+--				parent.add_ext_ref_node (rm_type_spec, an_arch_id)
+			elseif a_c_object_type.is_equal ("ARCHETYPE_SLOT") then
+--				parent.add_slot_node (rm_type_spec)
+			elseif a_c_object_type.is_equal ("CONSTRAINT_REF") then
+--				parent.add_constraint_ref_node (rm_type_spec)
+			end
+		end
+
+	c_type_substitutions: ARRAYED_SET [STRING]
+			-- list of possible C_OBJECT concrete descendants that can be used here
+		local
+			c_dv_type_name: STRING
+		do
+			create Result.make (0)
+			Result.compare_objects
+			if rm_type.semantic_class.is_primitive_type then
+				Result.extend ("C_PRIMITIVE_OBJECT")
+			elseif ed_context.rm_schema.has_archetype_data_value_parent_class and then ed_context.rm_schema.is_archetype_data_value_type (rm_type.root_class) then
+				c_dv_type_name := "C_" + rm_type.root_class
+				if c_object_constraint_types.has (c_dv_type_name) then
+					Result.extend (c_dv_type_name)
+					if c_dv_type_name.is_equal ("C_CODE_PHRASE") then
+						Result.extend ("CONSTRAINT_REF")
+					end
+				else
+					Result.extend ("C_COMPLEX_OBJECT")
+					if not ed_context.archetype.matching_logical_paths (display_settings.language, rm_type.root_class).is_empty then
+						Result.extend ("ARCHETYPE_INTERNAL_REF")
+					end
+				end
+			else
+				Result.extend ("C_COMPLEX_OBJECT")
+				Result.extend ("ARCHETYPE_SLOT")
+				if not current_arch_cat.matching_ids (".*", rm_type.root_class, Void).is_empty then
+					Result.extend ("C_ARCHETYPE_ROOT")
+				end
+				if not ed_context.archetype.matching_logical_paths (display_settings.language, rm_type.root_class).is_empty then
+					Result.extend ("ARCHETYPE_INTERNAL_REF")
+				end
+			end
 		end
 
 end

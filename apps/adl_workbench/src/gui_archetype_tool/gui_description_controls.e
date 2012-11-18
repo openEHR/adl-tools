@@ -59,7 +59,7 @@ feature {NONE} -- Initialisation
 			ev_root_container.set_item_text (admin_vbox, get_text ("authoring_tab_text"))
 
 			-- lifecycle state control - single line combo text-selection field
-			create lifecycle_state_text_ctl.make_editable (get_text ("lifecycle_state_label_text"),
+			create lifecycle_state_text_ctl.make_linked (get_text ("lifecycle_state_label_text"),
 				agent :STRING do Result := source_archetype.description.lifecycle_state end,
 				archetype_lifecycle_states,
 				agent (a_str: STRING) do source_archetype.description.set_lifecycle_state (a_str) end,
@@ -72,21 +72,21 @@ feature {NONE} -- Initialisation
 			admin_vbox.extend (auth_frame_ctl.ev_root_container)
 
 			-- original_author control - Hash
-			create original_author_ctl.make_editable (get_text ("auth_orig_auth_label_text"),
+			create original_author_ctl.make_linked (get_text ("auth_orig_auth_label_text"),
 				agent :HASH_TABLE [STRING, STRING] do Result := source_archetype.description.original_author end,
 				agent (a_key, a_val: STRING) do source_archetype.description.put_original_author_item (a_key, a_val) end,
 				agent (a_key: STRING) do source_archetype.description.remove_original_author_item (a_key) end,
 				authoring_tab_undo_redo_chain,
-				65, min_entry_control_width, False, Void)
+				0, min_entry_control_width, False, Void)
 			gui_controls.extend (original_author_ctl)
 
 			-- contributors - list
-			create auth_contrib_list_ctl.make_editable (get_text ("auth_contrib_label_text"),
+			create auth_contrib_list_ctl.make_linked (get_text ("auth_contrib_label_text"),
 				agent :DYNAMIC_LIST [STRING] do if attached source_archetype.description.other_contributors then Result := source_archetype.description.other_contributors end end,
 				agent (a_str: STRING; i: INTEGER) do source_archetype.description.add_other_contributor (a_str, i) end,
 				agent (a_str: STRING) do source_archetype.description.remove_other_contributor (a_str) end,
 				authoring_tab_undo_redo_chain,
-				30, min_entry_control_width, False)
+				0, min_entry_control_width, False)
 			gui_controls.extend (auth_contrib_list_ctl)
 			auth_frame_ctl.extend (original_author_ctl.ev_root_container, True)
 			auth_frame_ctl.extend (auth_contrib_list_ctl.ev_root_container, True)
@@ -99,7 +99,7 @@ feature {NONE} -- Initialisation
 			-- original_language - text field (not modifiable)
 			create original_language_text_ctl.make (get_text ("original_language_label_text"),
 				agent :STRING do Result := source_archetype.original_language.code_string end,
-				0, 0, True, False)
+				0, 0, True)
 			gui_controls.extend (original_language_text_ctl)
 			lang_original_trans_hbox.extend (original_language_text_ctl.ev_root_container)
 
@@ -111,7 +111,7 @@ feature {NONE} -- Initialisation
 							Result := create {ARRAYED_LIST [STRING]}.make_from_array (source_archetype.translations.current_keys)
 						end
 					end,
-				0, 0, True)
+				0, 100, True)
 			lang_original_trans_hbox.extend (trans_languages_ctl.ev_root_container)
 			gui_controls.extend (trans_languages_ctl)
 
@@ -121,42 +121,42 @@ feature {NONE} -- Initialisation
 			-- translation author - Hash table
 			create trans_author_accreditation_vbox
 			lang_translations_hbox.extend (trans_author_accreditation_vbox)
-			create trans_author_ctl.make_editable (get_text ("translator_label_text"),
+			create trans_author_ctl.make_linked (get_text ("translator_label_text"),
 				agent :HASH_TABLE [STRING, STRING] do if source_archetype.has_translations then Result := translation_details.author end end,
 				agent (a_key, a_val: STRING) do translation_details.put_author_item (a_key, a_val) end,
 				agent (a_key: STRING) do translation_details.remove_author_item (a_key) end,
-				authoring_tab_undo_redo_chain, 65, min_entry_control_width, False, Void)
+				authoring_tab_undo_redo_chain, 0, min_entry_control_width, False, Void)
 			gui_controls.extend (trans_author_ctl)
 			trans_languages_ctl.add_linked_control (trans_author_ctl)
 			trans_author_accreditation_vbox.extend (trans_author_ctl.ev_root_container)
 
 			-- translator accreditation - multi-line text field
-			create trans_accreditation_text_ctl.make_editable (get_text ("accreditation_label_text"),
+			create trans_accreditation_text_ctl.make_linked (get_text ("accreditation_label_text"),
 				agent :STRING do if source_archetype.has_translations then Result := translation_details.accreditation end end,
 				agent (a_str: STRING) do translation_details.set_accreditation (a_str) end,
 				agent do translation_details.clear_accreditation end,
-				authoring_tab_undo_redo_chain, 0, 0, False, True)
+				authoring_tab_undo_redo_chain, 0, 0, False)
 			gui_controls.extend (trans_accreditation_text_ctl)
 			trans_author_accreditation_vbox.extend (trans_accreditation_text_ctl.ev_root_container)
 			trans_languages_ctl.add_linked_control (trans_accreditation_text_ctl)
 
 			-- translator other_details - Hash
-			create trans_other_details_ctl.make_editable (get_text ("translator_other_details_label_text"),
+			create trans_other_details_ctl.make_linked (get_text ("translator_other_details_label_text"),
 				agent :HASH_TABLE [STRING, STRING] do if source_archetype.has_translations then Result := translation_details.other_details end end,
 				agent (a_key, a_val: STRING) do translation_details.put_other_details_item (a_key, a_val) end,
 				agent (a_key: STRING) do translation_details.remove_other_details_item (a_key) end,
 				authoring_tab_undo_redo_chain,
-				40, min_entry_control_width, False, Void)
+				0, min_entry_control_width, False, Void)
 			gui_controls.extend (trans_other_details_ctl)
 			trans_languages_ctl.add_linked_control (trans_other_details_ctl)
 			lang_translations_hbox.extend (trans_other_details_ctl.ev_root_container)
 
 			-- copyright - multi-line text
-			create copyright_text_ctl.make_editable (get_text ("copyright_label_text"),
+			create copyright_text_ctl.make_linked (get_text ("copyright_label_text"),
 				agent :STRING do if attached description_details then Result := description_details.copyright end end,
 				agent (a_str: STRING) do description_details.set_copyright (a_str) end,
 				agent do description_details.clear_copyright end,
-				authoring_tab_undo_redo_chain, 44, min_entry_control_width, True, True)
+				authoring_tab_undo_redo_chain, 44, 0, True)
 			gui_controls.extend (copyright_text_ctl)
 			admin_vbox.extend (copyright_text_ctl.ev_root_container)
 			admin_vbox.disable_item_expand (copyright_text_ctl.ev_root_container)
@@ -173,34 +173,34 @@ feature {NONE} -- Initialisation
 			details_hbox.extend (details_frame_ctl.ev_root_container)
 
 			-- purpose - mutli-line String
-			create purpose_text_ctl.make_editable (get_text ("purpose_label_text"),
+			create purpose_text_ctl.make_linked (get_text ("purpose_label_text"),
 				agent :STRING do if attached description_details then Result := description_details.purpose end end,
 				agent (a_str: STRING) do description_details.set_purpose (a_str) end,
-				Void, description_tab_undo_redo_chain, 0, 0, True, True)
+				Void, description_tab_undo_redo_chain, 0, 0, True)
 			gui_controls.extend (purpose_text_ctl)
 			details_frame_ctl.extend (purpose_text_ctl.ev_root_container, True)
 
 			-- use - mutli-line String
-			create use_text_ctl.make_editable (get_text ("use_label_text"),
+			create use_text_ctl.make_linked (get_text ("use_label_text"),
 				agent :STRING do if attached description_details then Result := description_details.use end end,
 				agent (a_str: STRING) do description_details.set_use (a_str) end,
 				agent do description_details.clear_use end,
-				description_tab_undo_redo_chain, 0, 0, True, True)
+				description_tab_undo_redo_chain, 0, 0, True)
 			gui_controls.extend (use_text_ctl)
 			details_frame_ctl.extend (use_text_ctl.ev_root_container, True)
 
 			-- misuse - mutli-line String
-			create misuse_text_ctl.make_editable (get_text ("misuse_label_text"),
+			create misuse_text_ctl.make_linked (get_text ("misuse_label_text"),
 				agent :STRING do if attached description_details then Result := description_details.misuse end end,
 				agent (a_str: STRING) do description_details.set_misuse (a_str) end,
 				agent do description_details.clear_misuse end,
 				description_tab_undo_redo_chain,
-				0, 0, True, True)
+				0, 0, True)
 			gui_controls.extend (misuse_text_ctl)
 			details_frame_ctl.extend (misuse_text_ctl.ev_root_container, True)
 
 			-- keywords list
-			create keywords_list_ctl.make_editable (get_text ("keywords_label_text"),
+			create keywords_list_ctl.make_linked (get_text ("keywords_label_text"),
 				agent :DYNAMIC_LIST [STRING] do if attached description_details then Result := description_details.keywords end end,
 				agent (a_str: STRING; i: INTEGER) do description_details.add_keyword (a_str, i) end,
 				agent (a_str: STRING) do description_details.remove_keyword (a_str) end,
@@ -215,7 +215,7 @@ feature {NONE} -- Initialisation
 			description_vbox.disable_item_expand (resource_frame_ctl.ev_root_container)
 
 			-- resource package - String
-			create resource_package_ctl.make_editable (get_text ("packages_label_text"),
+			create resource_package_ctl.make_linked (get_text ("packages_label_text"),
 				agent :STRING
 					do
 						if attached source_archetype.description.resource_package_uri then
@@ -224,12 +224,12 @@ feature {NONE} -- Initialisation
 					end,
 				agent (a_str: STRING) do source_archetype.description.set_resource_package_uri (a_str) end,
 				agent do source_archetype.description.clear_resource_package_uri end,
-				description_tab_undo_redo_chain, 0, 0, True, True)
+				description_tab_undo_redo_chain, 0, 0, True)
 			gui_controls.extend (resource_package_ctl)
 			resource_frame_ctl.extend (resource_package_ctl.ev_root_container, False)
 
 			-- original resources - Hash
-			create original_resources_ctl.make_editable (get_text ("resource_orig_res_label_text"),
+			create original_resources_ctl.make_linked (get_text ("resource_orig_res_label_text"),
 				agent :HASH_TABLE [STRING, STRING]
 					do
 						if attached description_details as dd and then attached dd.original_resource_uri then

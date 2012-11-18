@@ -72,7 +72,7 @@ feature {NONE} -- Initialization
 			extend (ev_root_container)
 
 			-- ============ archetype id data entry control ============
-			create archetype_id_ctl.make_editable (archetype_id, get_text ("archetype_id_label_text"),
+			create archetype_id_ctl.make_linked (archetype_id, get_text ("archetype_id_label_text"),
 				agent :STRING do Result := archetype_id.domain_concept end,
 				agent (a_str: STRING) do archetype_id.set_domain_concept (a_str) end,
 				Void, Void

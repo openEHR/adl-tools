@@ -127,7 +127,7 @@ feature -- Access
 	term_codes: TWO_WAY_SORTED_SET [STRING]
 			-- list of term codes
 
-	constraint_codes: TWO_WAY_SORTED_SET[STRING]
+	constraint_codes: TWO_WAY_SORTED_SET [STRING]
 			-- list of constraint codes
 
 	term_definitions: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
@@ -1051,7 +1051,7 @@ feature -- Finalisation
 				across constraint_defs_csr.item as constraint_defs_list_csr loop
 					code := constraint_defs_list_csr.key
 					constraint_defs_list_csr.item.set_code (code)
-					if constraint_defs_list_csr.cursor_index = 1 then
+					if constraint_defs_csr.cursor_index = 1 then
 						constraint_codes.extend (code)
 						update_highest_refined_codes (code)
 						update_highest_constraint_code_index(code)

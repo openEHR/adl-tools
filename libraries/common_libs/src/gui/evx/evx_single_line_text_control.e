@@ -29,7 +29,7 @@ inherit
 		end
 
 create
-	make, make_readonly, make_editable
+	make, make_readonly, make_linked
 
 feature -- Access
 

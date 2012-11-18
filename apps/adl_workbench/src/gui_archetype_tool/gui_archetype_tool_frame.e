@@ -172,7 +172,7 @@ feature {NONE} -- Events
 				(not differential_flag and differential_view)  -- changing from diff to flat
 			then
 				differential_view := differential_flag
-				set_tab_texts
+				set_view_tab_texts
 				on_select_notebook
 			end
 		end
@@ -243,8 +243,8 @@ feature {NONE} -- Implementation
 			ev_language_combo.select_actions.resume
 		end
 
-	set_tab_texts
-			-- set text on tabs depending on view
+	set_view_tab_texts
+			-- set text on tabs depending on flat / differential view
 		do
 			-- serialised rich text tab
 			if differential_view then
@@ -256,12 +256,12 @@ feature {NONE} -- Implementation
 
 	set_differential_tab_texts
 			-- set text on tabs for differential form of archetype
-		deferred
+		do
 		end
 
 	set_flat_tab_texts
 			-- set text on tabs for flat form of archetype
-		deferred
+		do
 		end
 
 	add_editing_controls

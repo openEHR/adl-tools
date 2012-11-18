@@ -17,7 +17,7 @@ note
 class FILE_REPOSITORY
 
 inherit
-	ANY
+	KL_SHARED_FILE_SYSTEM
 		export
 			{NONE} all
 		end
@@ -27,124 +27,61 @@ create
 
 feature -- Initialisation
 
-	make(a_dir_name, a_base_name_pattern: STRING)
-			-- initialise with root directory, and file basename pattern
-			-- (default will be set if `a_base_name_pattern' is Void)
+	make (a_dir_name, a_match_pattern: STRING)
+			-- initialise with `a_dir_name', and a filename match regex `a_match_pattern'
 		require
-			Dir_name_exists: a_dir_name /= Void and then not a_dir_name.is_empty
-			Ext_valid: a_base_name_pattern /= Void and then not a_base_name_pattern.is_empty
+			Dir_name_exists: not a_dir_name.is_empty
+			Ext_valid: not a_match_pattern.is_empty
    		do
-			create base_name_pattern.make(0)
-			base_name_pattern.append(a_base_name_pattern)
-			create base_name_pattern_regex.compile_case_insensitive(base_name_pattern)
+			base_name_pattern := a_match_pattern
+			create base_name_pattern_regex.compile_case_insensitive (base_name_pattern)
+			create errors.make
 			if not base_name_pattern_regex.is_compiled then
-				make_error := "pattern " + base_name_pattern + " did not compile; reason: "
+				errors.add_error ("regex_invalid", <<base_name_pattern>>, generator + ".make")
 			else
-				create file_paths.make(0)
-				find_file_paths(a_dir_name)
-				if file_paths.is_empty then
-					make_error := "No files matching pattern " + base_name_pattern + 
-						" found in directory " + a_dir_name + 
-						" (use .cfg file to set path)"
-				end
+				create matching_paths.make (0)
+				find_matching_file_paths (a_dir_name)
 			end
-
-		ensure
-			make_failed or else not file_paths.is_empty
 		end
 
 feature -- Access
 
 	base_name_pattern: STRING
 			-- pattern to use for files
-	
-	make_error: STRING
+
+	errors: ERROR_ACCUMULATOR
 			-- set if make failed
 
-	file_ids: ARRAYED_LIST[STRING]
-			-- file names not including extension
-		do
-			if stored_file_ids = Void then
-				create stored_file_ids.make(file_paths.count)
-				from 
-					file_paths.start
-				until
-					file_paths.off
-				loop
-					stored_file_ids.extend(file_paths.key_for_iteration)
-					file_paths.forth
-				end
-			end
-			Result := stored_file_ids
-		end
-	
-	file_path(id: STRING): STRING
-			-- get path for archetype id `id'
-		require
-			Id_valid: id /= Void and then has_file_id(id)
-		do
-			Result := file_paths.item(id)
-		end
-		
-feature -- Status Report
-
-	make_failed: BOOLEAN 
-			-- True if created with invalid directory
-		do
-			Result := make_error /= Void
-		end
-		
-	has_file_id(file_id: STRING): BOOLEAN
-		require
-			file_id /= Void and then not file_id.is_empty
-		do
-			Result := file_paths.has(file_id)
-		end
+	matching_paths: ARRAYED_LIST [STRING]
+			-- file paths matching `base_name_pattern'
 
 feature {NONE} -- Implementation
 
-	stored_file_ids: ARRAYED_LIST[STRING]
-
 	base_name_pattern_regex: LX_DFA_REGULAR_EXPRESSION
-	
-	file_paths: HASH_TABLE[STRING, STRING]
-			-- archetype full pathnames keyed by archetype ids
 
-	find_file_paths(a_dir_name: STRING)
-			-- add archetype ids found in directory and subdirectories to file_ids table
+	find_matching_file_paths (a_dir_name: STRING)
+			-- add file paths found in `a_dir_name' that match `base_name_pattern'
 		require
-			Dir_name_exists: a_dir_name /= Void and then not a_dir_name.is_empty
+			Dir_name_valid: not a_dir_name.is_empty
 		local
-			fn, fpath: STRING
+			fpath: STRING
 			a_dir: DIRECTORY
-			fnames: ARRAYED_LIST[STRING]
 			a_file: RAW_FILE
    		do
 			create a_dir.make(a_dir_name)
-			if a_dir.exists then
+			if a_dir.exists and a_dir.is_readable then
 				a_dir.open_read
-				fnames := a_dir.linear_representation
-				from 
-					fnames.start
-				until 
-					fnames.off
-				loop
-					fn := fnames.item
-					if not (fn.is_equal(".") or fn.is_equal("..")) then
-						fpath := a_dir_name + "\" + fn
-						create a_file.make(fpath)	
+				across a_dir.linear_representation as fnames_csr loop
+					if not (fnames_csr.item.is_equal (file_system.relative_current_directory) or fnames_csr.item.is_equal (file_system.relative_parent_directory)) then
+						fpath := file_system.pathname (a_dir_name, fnames_csr.item)
+						create a_file.make (fpath)
 						if a_file.is_directory then
-							find_file_paths(fpath.twin)
-						elseif a_file.is_plain then
-							if base_name_pattern_regex.matches(fn) then
-								file_paths.put(fpath, fn.substring(1, fn.count-fn.last_index_of('.', 1)))
-							end
-						end			
+							find_matching_file_paths (fpath.twin)
+						elseif base_name_pattern_regex.matches (fnames_csr.item) then
+							matching_paths.extend (fpath)
+						end
 					end
-					fnames.forth						
 				end
-			else
-				make_error := "could not open directory " + a_dir_name
 			end
 		end
 

@@ -29,13 +29,13 @@ class EVX_TEXT_LIST_CONTROL
 inherit
 	EVX_MLIST_CONTROL
 		rename
-			make as make_mlist, make_editable as make_editable_mlist
+			make as make_mlist, make_linked as make_linked_mlist
 		redefine
 			data_source_agent, data_source_setter_agent
 		end
 
 create
-	make, make_editable
+	make, make_linked
 
 feature -- Initialisation
 
@@ -47,14 +47,14 @@ feature -- Initialisation
 			not is_readonly
 		end
 
-	make_editable (a_title: STRING; a_data_source_agent: like data_source_agent;
+	make_linked (a_title: STRING; a_data_source_agent: like data_source_agent;
 			a_data_source_create_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
 			an_undo_redo_chain: UNDO_REDO_CHAIN;
 			min_height, min_width: INTEGER;
 			arrange_horizontally: BOOLEAN)
 		do
-			make_editable_mlist (a_title,
+			make_linked_mlist (a_title,
 				a_data_source_agent, a_data_source_create_agent, a_data_source_remove_agent, an_undo_redo_chain,
 				min_height, min_width, arrange_horizontally, Void)
 		ensure

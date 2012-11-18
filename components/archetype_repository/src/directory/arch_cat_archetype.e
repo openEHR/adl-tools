@@ -164,8 +164,6 @@ feature {NONE} -- Initialisation
 			-- Create a new archetype with `an_id' as a child of the archetype with id `a_parent_id', belonging to `a_repository'.
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
-		local
-			at: ARTEFACT_TYPE
 		do
 			parent_id := a_parent_id
 			make_new_archetype (an_id, a_repository, a_directory)

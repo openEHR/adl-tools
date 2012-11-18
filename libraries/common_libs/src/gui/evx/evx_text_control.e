@@ -25,7 +25,7 @@ deferred class EVX_TEXT_CONTROL
 inherit
 	EVX_TITLED_DATA_CONTROL
 		rename
-			make as make_data_control, make_editable as make_editable_data_control
+			make as make_data_control, make_linked as make_linked_data_control
 		redefine
 			data_source_agent, data_source_setter_agent, do_enable_editable, do_disable_editable
 		end
@@ -33,21 +33,21 @@ inherit
 feature -- Initialisation
 
 	make (a_title: STRING; a_data_source_agent: like data_source_agent;
-			min_height, min_width: INTEGER; use_hbox_container, allow_expansion: BOOLEAN)
+			min_height, min_width: INTEGER; arrange_horizontally: BOOLEAN)
 		do
-			make_data_control (a_title, a_data_source_agent, min_height, min_width, use_hbox_container, allow_expansion)
+			make_data_control (a_title, a_data_source_agent, min_height, min_width, arrange_horizontally)
 			ev_data_control.focus_in_actions.extend (agent on_select_all)
 		end
 
-	make_editable (a_title: STRING; a_data_source_agent: like data_source_agent;
+	make_linked (a_title: STRING; a_data_source_agent: like data_source_agent;
 			a_data_source_setter_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
 			an_undo_redo_chain: like undo_redo_chain;
-			min_height, min_width: INTEGER; use_hbox_container: BOOLEAN; allow_expansion: BOOLEAN)
+			min_height, min_width: INTEGER; arrange_horizontally: BOOLEAN)
 		do
-			make_editable_data_control (a_title,
+			make_linked_data_control (a_title,
 				a_data_source_agent, a_data_source_setter_agent, a_data_source_remove_agent,
-				an_undo_redo_chain, min_height, min_width, use_hbox_container, allow_expansion)
+				an_undo_redo_chain, min_height, min_width, arrange_horizontally)
 			ev_data_control.focus_in_actions.extend (agent on_select_all)
 			ev_data_control.focus_out_actions.extend (agent do if is_editable then process_edit end end)
 		end

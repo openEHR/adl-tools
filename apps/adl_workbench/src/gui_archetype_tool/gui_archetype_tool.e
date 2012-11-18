@@ -60,13 +60,6 @@ feature {NONE}-- Initialization
 			ev_notebook.extend (annotations_control.ev_root_container)
 			ev_notebook.set_item_text (annotations_control.ev_root_container, get_text ("annotations_tab_text"))
 			ev_notebook.item_tab (annotations_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/annotations"))
-
-			-- serialisation control
-			ev_notebook.extend (serialisation_control.ev_root_container)
-			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_text ("serialised_tab_text"))
-			ev_notebook.item_tab (serialisation_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/serialised"))
-
-			set_tab_texts
 		end
 
 feature -- UI Feedback
@@ -114,7 +107,6 @@ feature {NONE} -- Implementation
 			definition_control.clear
 			ontology_controls.clear
 			annotations_control.clear
-			serialisation_control.clear
 		end
 
 	description_controls: GUI_DESCRIPTION_CONTROLS
@@ -124,20 +116,6 @@ feature {NONE} -- Implementation
 	ontology_controls: GUI_ONTOLOGY_CONTROLS
 
 	annotations_control: GUI_ANNOTATIONS_CONTROL
-
-	serialisation_control: GUI_SERIALISATION_CONTROL
-
-	set_differential_tab_texts
-			-- set text on tabs for differential form of archetype
-		do
-			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_msg ("serialised_diff_tab_text", Void))
-		end
-
-	set_flat_tab_texts
-			-- set text on tabs for flat form of archetype
-		do
-			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_msg ("serialised_flat_tab_text", Void))
-		end
 
 end
 

@@ -116,7 +116,6 @@ feature {ARCHETYPE_ONTOLOGY} -- Implementation
 			end
 			across rm_constraint_codes as rm_constraint_codes_csr loop
 				remove_constraint_definition (rm_constraint_codes_csr.item)
-				rm_constraint_codes_csr.forth
 			end
 		end
 

@@ -234,7 +234,7 @@ feature -- Status Report
 			Property_valid: has_property(a_type_name, a_property_name)
 			Property_type_name_valid: has_class_definition (a_property_type_name)
 		do
-			if valid_type_for_class (a_type_name, a_type_name) and valid_type_for_class(a_property_type_name, a_property_type_name) then
+			if valid_type_for_class (a_type_name, a_type_name) and valid_type_for_class (a_property_type_name, a_property_type_name) then
 				Result := type_conforms_to (a_property_type_name, property_definition (a_type_name, a_property_name).type.as_flattened_type_string)
 			end
 		end
@@ -258,6 +258,15 @@ feature -- Status Report
 					class_definition (tlist1.item).has_ancestor (tlist2.item))
 				tlist1.forth
 				tlist2.forth
+			end
+		end
+
+	is_archetype_data_value_type (a_type: STRING): BOOLEAN
+			-- True if `has_archetype_data_value_parent_class' and then root type of `a_type'
+			-- conforms to `archetype_data_value_parent_class'
+		do
+			if has_archetype_data_value_parent_class then
+				Result := type_conforms_to (a_type, archetype_data_value_parent_class)
 			end
 		end
 

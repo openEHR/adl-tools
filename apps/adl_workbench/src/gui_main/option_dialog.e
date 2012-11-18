@@ -37,11 +37,13 @@ feature {NONE} -- Initialization
 			create gui_controls.make (0)
 
 			-- ========== root container ============
+			set_minimum_width (400)
+			set_title (get_text ("option_dialog_title"))
+			set_icon_pixmap (adl_workbench_icon)
+
 			create ev_root_container
 			ev_root_container.set_padding (Default_padding_width)
 			ev_root_container.set_border_width (Default_border_width)
-			set_title (get_text ("option_dialog_title"))
-			set_icon_pixmap (adl_workbench_icon)
 			extend (ev_root_container)
 
 			-- =========== notebook ===========
@@ -60,7 +62,7 @@ feature {NONE} -- Initialization
 			ev_notebook_paths_vb.extend (path_settings_frame_ctl.ev_root_container)
 
 			-- Export directory setting
-			create export_dir_setter.make (get_text ("export_directory_text"), agent export_directory, 0, 400)
+			create export_dir_setter.make (get_text ("export_directory_text"), agent export_directory, 0, 0)
 			path_settings_frame_ctl.extend (export_dir_setter.ev_root_container, False)
 			gui_controls.extend (export_dir_setter)
 
@@ -103,11 +105,12 @@ feature {NONE} -- Initialization
 				agent :STRING do Result := error_type_name_table.item (error_reporting_level) end,
 				error_type_names, 0, 100)
 			ev_notebook_compiler_settings_vb.extend (parser_error_reporting_level_combo_box.ev_root_container)
+			ev_notebook_compiler_settings_vb.disable_item_expand (parser_error_reporting_level_combo_box.ev_root_container)
 			gui_controls.extend (parser_error_reporting_level_combo_box)
 
 			-- ADL save version
 			create adl_save_version_combo_box.make (get_text ("adl_serialisation_level_text"),
-				agent adl_version_for_flat_output, adl_versions, 0, 0)
+				agent adl_version_for_flat_output, adl_versions, 0, 100)
 			ev_notebook_compiler_settings_vb.extend (adl_save_version_combo_box.ev_root_container)
 			ev_notebook_compiler_settings_vb.disable_item_expand (adl_save_version_combo_box.ev_root_container)
 			gui_controls.extend (adl_save_version_combo_box)
@@ -122,6 +125,7 @@ feature {NONE} -- Initialization
 			-- RM flattening on checkbox
 			create rm_flattening_check_ctl.make (get_text ("rm_flattening_text"), get_text ("rm_flattening_tooltip"), agent rm_flattening_on)
 			ev_notebook_compiler_settings_vb.extend (rm_flattening_check_ctl.ev_data_control)
+			ev_notebook_compiler_settings_vb.disable_item_expand (rm_flattening_check_ctl.ev_data_control)
 			gui_controls.extend (rm_flattening_check_ctl)
 
 
@@ -164,32 +168,32 @@ feature {NONE} -- Initialization
 			ev_notebook.extend (ev_notebook_authoring_vb)
 			ev_notebook.set_item_text (ev_notebook_authoring_vb, get_text ("options_authoring_tab_text"))
 
-			create auth_name_text_ctl.make_editable (get_text ("options_auth_name_label"),
+			create auth_name_text_ctl.make_linked (get_text ("options_auth_name_label"),
 				agent :STRING do Result := author_name end,
 				agent (a_str :STRING) do set_author_name (a_str) end,
 				agent do set_author_name ("") end,
 				Void,
-				0, 0, True, True)
+				0, 0, True)
 			ev_notebook_authoring_vb.extend (auth_name_text_ctl.ev_root_container)
 			ev_notebook_authoring_vb.disable_item_expand (auth_name_text_ctl.ev_root_container)
 			gui_controls.extend (auth_name_text_ctl)
 
-			create auth_org_text_ctl.make_editable (get_text ("options_auth_org_label"),
+			create auth_org_text_ctl.make_linked (get_text ("options_auth_org_label"),
 				agent :STRING do Result := author_org end,
 				agent (a_str :STRING) do set_author_org (a_str) end,
 				agent do set_author_org ("") end,
 				Void,
-				0, 0, True, True)
+				0, 0, True)
 			ev_notebook_authoring_vb.extend (auth_org_text_ctl.ev_root_container)
 			ev_notebook_authoring_vb.disable_item_expand (auth_org_text_ctl.ev_root_container)
 			gui_controls.extend (auth_org_text_ctl)
 
-			create auth_copyright_text_ctl.make_editable (get_text ("options_auth_copyright_label"),
+			create auth_copyright_text_ctl.make_linked (get_text ("options_auth_copyright_label"),
 				agent :STRING do Result := author_copyright end,
 				agent (a_str :STRING) do set_author_copyright (a_str) end,
 				agent do set_author_copyright ("") end,
 				Void,
-				0, 0, True, True)
+				0, 0, True)
 			ev_notebook_authoring_vb.extend (auth_copyright_text_ctl.ev_root_container)
 			ev_notebook_authoring_vb.disable_item_expand (auth_copyright_text_ctl.ev_root_container)
 			gui_controls.extend (auth_copyright_text_ctl)

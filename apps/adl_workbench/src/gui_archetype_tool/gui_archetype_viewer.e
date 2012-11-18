@@ -16,7 +16,7 @@ class GUI_ARCHETYPE_VIEWER
 inherit
 	GUI_ARCHETYPE_TOOL
 		redefine
-			make, do_clear, do_populate
+			make, do_clear, do_populate, set_differential_tab_texts, set_flat_tab_texts
 		end
 
 	EV_SHARED_APPLICATION
@@ -58,6 +58,12 @@ feature {NONE}-- Initialization
 			ev_notebook.set_item_text (source_control.ev_root_container, get_text ("source_tab_text"))
 			ev_notebook.item_tab (source_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/source"))
 
+			-- serialisation control
+			create serialisation_control.make
+			ev_notebook.extend (serialisation_control.ev_root_container)
+			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_text ("serialised_tab_text"))
+			ev_notebook.item_tab (serialisation_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/serialised"))
+
 			-- validity control
 			create validity_report_control.make
 			ev_notebook.extend (validity_report_control.ev_root_container)
@@ -69,6 +75,7 @@ feature {NONE}-- Initialization
 			ev_notebook.set_item_text (statistical_information_control.ev_root_container, get_text ("stat_info_tab_text"))
 
 			set_tab_appearance
+			set_view_tab_texts
 		end
 
 feature -- UI Feedback
@@ -161,6 +168,7 @@ feature {NONE} -- Implementation
 			validity_report_control.clear
 			statistical_information_control.clear
 			source_control.clear
+			serialisation_control.clear
 		end
 
 	do_populate
@@ -186,6 +194,20 @@ feature {NONE} -- Implementation
 	validity_report_control: GUI_VALIDITY_REPORT_CONTROL
 
 	statistical_information_control: GUI_ARCHETYPE_INFORMATION_TOOL
+
+	serialisation_control: GUI_SERIALISATION_CONTROL
+
+	set_differential_tab_texts
+			-- set text on tabs for differential form of archetype
+		do
+			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_msg ("serialised_diff_tab_text", Void))
+		end
+
+	set_flat_tab_texts
+			-- set text on tabs for flat form of archetype
+		do
+			ev_notebook.set_item_text (serialisation_control.ev_root_container, get_msg ("serialised_flat_tab_text", Void))
+		end
 
 	selected_path_filter: STRING
 			-- currently selected filter in path map, for saving across sessions

@@ -62,6 +62,12 @@ feature -- Status Report
 	is_editable: BOOLEAN
 			-- True if `ev_data_control' enabled for user interaction
 
+	is_show_requested: BOOLEAN
+			-- True if `ev_data_control' shown
+		do
+			Result := ev_data_control.is_show_requested
+		end
+
 feature -- Modification
 
 	add_linked_control (a_control: EVX_TITLED_DATA_CONTROL)
@@ -100,6 +106,16 @@ feature -- Commands
 				do_disable_editable
 				is_editable := False
 			end
+		end
+
+	hide
+		do
+			ev_data_control.hide
+		end
+
+	show
+		do
+			ev_data_control.show
 		end
 
 feature {NONE} -- Implementation

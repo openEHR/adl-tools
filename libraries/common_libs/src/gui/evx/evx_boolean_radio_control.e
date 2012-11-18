@@ -17,7 +17,7 @@ class EVX_BOOLEAN_RADIO_CONTROL
 inherit
 	EVX_DATA_CONTROL
 		redefine
-			data_source_agent, data_source_setter_agent
+			data_source_agent, data_source_setter_agent, hide, show
 		end
 
 create
@@ -83,6 +83,18 @@ feature -- Commands
 				ev_data_control_peer.enable_select
 				ev_data_control_peer.select_actions.resume
 			end
+		end
+
+feature -- Commands
+
+	hide
+		do
+			ev_root_container.hide
+		end
+
+	show
+		do
+			ev_root_container.show
 		end
 
 feature -- Modification

@@ -138,6 +138,7 @@ feature -- Initialisation
 					other.description.safe_deep_twin, other.definition.deep_twin, other_invariants,
 					other.ontology.safe_deep_twin, other_annotations)
 			is_generated := other.is_generated
+			rebuild
 		ensure then
 			Is_generated_preserved: other.is_generated implies is_generated
 		end
@@ -191,7 +192,7 @@ feature -- Paths
 			-- physical paths from definition structure for all objects; if no changes made on archetype,
 			-- return cached value
 		do
-			if object_path_map = Void then
+			if not attached physical_paths_cache then
 				build_physical_paths
 			end
 			Result := physical_paths_cache
@@ -201,10 +202,20 @@ feature -- Paths
 			-- physical paths from definition structure for leaf objects only; if no changes made on archetype,
 			-- return cached value
 		do
-			if object_path_map = Void then
+			if not attached physical_leaf_paths_cache then
 				build_physical_paths
 			end
 			Result := physical_leaf_paths_cache
+		end
+
+	object_path_map: HASH_TABLE [C_OBJECT, STRING]
+			-- physical paths from definition structure for leaf objects only; if no changes made on archetype,
+			-- return cached value
+		do
+			if not attached object_path_map_cache then
+				build_physical_paths
+			end
+			Result := object_path_map_cache
 		end
 
 	logical_paths (a_lang: attached STRING; leaves_only: BOOLEAN): ARRAYED_LIST [STRING]
@@ -222,9 +233,24 @@ feature -- Paths
 				phys_paths := physical_paths
 			end
 
-			from phys_paths.start until phys_paths.off loop
-				Result.extend (ontology.physical_to_logical_path (phys_paths.item, a_lang, True))
-				phys_paths.forth
+			across phys_paths as phys_paths_csr loop
+				Result.extend (ontology.physical_to_logical_path (phys_paths_csr.item, a_lang, True))
+			end
+		end
+
+	matching_logical_paths (a_lang, rm_type: STRING): ARRAYED_LIST [STRING]
+			-- paths to nodes which have type `rm_type', with human readable terms substituted
+		require
+			has_language: ontology.has_language(a_lang)
+		local
+			phys_paths: ARRAYED_LIST [STRING]
+		do
+			create Result.make (0)
+			Result.compare_objects
+			across object_path_map as object_path_map_csr loop
+				if attached object_path_map_csr.item and then object_path_map_csr.item.rm_type_name.is_equal (rm_type) then
+					Result.extend (ontology.physical_to_logical_path (object_path_map_csr.key, a_lang, True))
+				end
 			end
 		end
 
@@ -505,7 +531,7 @@ feature {NONE} -- Implementation
 			use_refs_csr: CURSOR
 			sorted_physical_paths, sorted_physical_leaf_paths: SORTED_TWO_WAY_LIST [STRING]
 		do
-			object_path_map := definition.all_paths
+			object_path_map_cache := definition.all_paths
 
 			-- Add full paths of internal references thus giving full set of actual paths
 			use_refs_csr := use_node_index.cursor
@@ -534,10 +560,10 @@ feature {NONE} -- Implementation
 							end
 							src_node_path_str := src_node_path.as_string
 
-							object_path_map.force (c_o, src_node_path_str)
+							object_path_map_cache.force (c_o, src_node_path_str)
 
 							across tgt_path_c_objects as c_objs_csr loop
-								object_path_map.put (c_objs_csr.item, src_node_path_str + "/" + c_objs_csr.key)
+								object_path_map_cache.put (c_objs_csr.item, src_node_path_str + "/" + c_objs_csr.key)
 							end
 						end
 					end
@@ -547,7 +573,7 @@ feature {NONE} -- Implementation
 
 			create sorted_physical_paths.make
 			create sorted_physical_leaf_paths.make
-			across object_path_map as c_objs_csr loop
+			across object_path_map_cache as c_objs_csr loop
 				sorted_physical_paths.extend (c_objs_csr.key)
 				if attached c_objs_csr.item and then c_objs_csr.item.is_leaf then
 					sorted_physical_leaf_paths.extend (c_objs_csr.key)
@@ -563,13 +589,18 @@ feature {NONE} -- Implementation
 			physical_leaf_paths_cache.compare_objects
 
 			attr_path_map_cache := Void
+		ensure
+			attached object_path_map_cache
+			attached physical_leaf_paths_cache
+			attached physical_paths_cache
+			not attached attr_path_map_cache
 		end
 
-	physical_paths_cache: ARRAYED_LIST [STRING]
+	physical_paths_cache: detachable ARRAYED_LIST [STRING]
 
-	physical_leaf_paths_cache: ARRAYED_LIST [STRING]
+	physical_leaf_paths_cache: detachable ARRAYED_LIST [STRING]
 
-	object_path_map: HASH_TABLE [C_OBJECT, STRING]
+	object_path_map_cache: detachable HASH_TABLE [C_OBJECT, STRING]
 			-- complete map of object nodes keyed by path, including paths implied by
 			-- use_nodes in definition structure.
 

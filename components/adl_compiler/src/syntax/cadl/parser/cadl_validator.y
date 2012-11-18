@@ -297,6 +297,10 @@ c_complex_object_body: c_any -- used to indicate that any value of a type is ok
 	| c_attributes			
 		{
 		}
+	| error
+		{
+			abort_with_error ("SCOAT", Void)
+		}
 	;
 
 
@@ -2242,9 +2246,10 @@ feature {NONE} -- Implementation
 			debug("ADL_parse")
 				io.put_string(indent + "ATTR_NODE " + an_attr.rm_attribute_name + " put_child(" + 
 						an_obj.generating_type + ": " + an_obj.rm_type_name + " [id=" + an_obj.node_id + "])%N") 
-				
 			end
-			if rm_schema.has_class_definition (an_obj.rm_type_name) then
+			-- attach the object if it is either in the RM or if it is a built-in domain type like C_CODE_PHRASE
+			-- This still might fail later on, because the domain type needs to have a wrapper in the RM
+			if rm_schema.has_class_definition (an_obj.rm_type_name) or attached {C_DOMAIN_TYPE} an_obj then
 				if check_c_attribute_child(an_attr, an_obj) then
 					c_attrs.item.put_child(an_obj)
 				end

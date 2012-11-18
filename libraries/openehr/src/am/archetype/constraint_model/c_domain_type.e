@@ -40,7 +40,7 @@ feature -- Initialisation
 			-- set `rm_type_name' from typename of this object
 		do
 			rm_type_name := generator.substring (3, generator.count)
-			create representation.make_anonymous(Current)
+			create representation.make_anonymous (Current)
 			create node_id.make_empty
 		end
 
@@ -67,7 +67,7 @@ feature -- Finalisation
 			-- used by DT_OBJECT_CONVERTER
 		do
 			if node_id /= Void and not node_id.is_empty then
-				create representation.make(node_id, Current)
+				create representation.make (node_id, Current)
 			else
 				create representation.make_anonymous (Current)
 			end

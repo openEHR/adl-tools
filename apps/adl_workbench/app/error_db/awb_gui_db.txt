@@ -131,6 +131,25 @@ templates = <
 		["duplicate_archetype_id_err_msg"] = <"Id $1 already exists in catalogue">
 		["invalid_archetype_id_concept_err"] = <"Concept $1 contains invalid characters">
 
+		-- INITIAL_C_OBJECT_DIALOG
+		["initial_c_object_config_dialog_title"] = <"Configure object constraint">
+		["object_context_menu_convert"] = <"Convert to constraint ...">
+		["initial_c_object_config_constraint_type_text"] = <"Constraint type: ">
+		["initial_c_object_config_rm_type_text"] = <"RM type: ">
+		["initial_c_object_config_occurrences_text"] = <"Occurrences: ">
+		["initial_c_object_config_ext_ref_text"] = <"Archetype ref: ">
+		["initial_c_object_config_path_ref_text"] = <"Path ref: ">
+
+		["c_type_complex_object"] = <"Complex object">
+		["c_type_primitive_object"] = <"Primitive Object">
+		["c_type_external_constraint_reference"] = <"External ref set">
+		["c_type_archetype_reference"] = <"Archetype reference">
+		["c_type_internal_reference"] = <"Internal reference">
+		["c_type_slot"] = <"Archteype slot">
+		["c_type_quantity"] = <"Quantity">
+		["c_type_ordinal"] = <"Ordinal">
+		["c_type_code_phrase"] = <"Code phrase">
+
 		-- MAIN_WINDOW - menus
 		["file_menu_text"] = <"&File">
 		["file_menu_open_text"] = <"&Open...">
@@ -407,9 +426,9 @@ templates = <
 		["translator_other_details_label_text"] = <"Translator Other Details">
 		["copyright_label_text"] = <"Copyright:">
 		["archetype_details_label_text"] = <"Archetype Details">
-		["purpose_label_text"] = <"Purpose">
-		["use_label_text"] = <"Use">
-		["misuse_label_text"] = <"Misuse">
+		["purpose_label_text"] = <"Purpose: ">
+		["use_label_text"] = <"        Use: ">
+		["misuse_label_text"] = <"Misuse: ">
 		["keywords_label_text"] = <"Keywords">
 		["resources_label_text"] = <"Resources">
 		["packages_label_text"] = <"Package">

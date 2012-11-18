@@ -20,7 +20,7 @@ inherit
 			{NONE} all
 		end
 
-	STRING_UTILITIES
+	EVX_UTILITIES
 		export
 			{NONE} all
 		end
@@ -265,6 +265,15 @@ feature {NONE} -- Implementation
 		require
 			not is_rm
 		deferred
+		end
+
+	arch_node_type: STRING
+			-- generate the type name of `arch_node'
+			-- FIXME: this is a hack, but there seems no other nice way to do it - once functions to generate
+			-- a default instance can't be anchored!
+		do
+			Result := generator
+			Result.remove_tail (("_ED_CONTEXT").count)
 		end
 
 end

@@ -31,7 +31,7 @@ deferred class EVX_MLIST_CONTROL
 inherit
 	EVX_TITLED_DATA_CONTROL
 		rename
-			make as make_data_control, make_editable as make_editable_data_control, make_readonly as make_readonly_data_control
+			make as make_data_control, make_linked as make_linked_data_control, make_readonly as make_readonly_data_control
 		redefine
 			populate, do_enable_editable, do_disable_editable
 		end
@@ -40,10 +40,10 @@ feature -- Initialisation
 
 	make (a_title: STRING; a_data_source_agent: like data_source_agent;
 			min_height, min_width: INTEGER;
-			use_hbox_container: BOOLEAN;
+			arrange_horizontally: BOOLEAN;
 			a_header_strings_agent: like header_strings_agent)
 		do
-			make_data_control (a_title, a_data_source_agent, min_height, min_width, use_hbox_container, True)
+			make_data_control (a_title, a_data_source_agent, min_height, min_width, arrange_horizontally)
 			initialise_data_control (a_header_strings_agent)
 		ensure
 			not is_readonly
@@ -51,26 +51,26 @@ feature -- Initialisation
 
 	make_readonly (a_title: STRING; a_data_source_agent: like data_source_agent;
 			min_height, min_width: INTEGER;
-			use_hbox_container: BOOLEAN;
+			arrange_horizontally: BOOLEAN;
 			a_header_strings_agent: like header_strings_agent)
 		do
-			make_readonly_data_control (a_title, a_data_source_agent, min_height, min_width, use_hbox_container, True)
+			make_readonly_data_control (a_title, a_data_source_agent, min_height, min_width, arrange_horizontally)
 			initialise_data_control (a_header_strings_agent)
 		ensure
 			is_readonly
 		end
 
-	make_editable (a_title: STRING; a_data_source_agent: like data_source_agent;
+	make_linked (a_title: STRING; a_data_source_agent: like data_source_agent;
 			a_data_source_create_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
 			an_undo_redo_chain: detachable UNDO_REDO_CHAIN;
 			min_height, min_width: INTEGER;
-			use_hbox_container: BOOLEAN;
+			arrange_horizontally: BOOLEAN;
 			a_header_strings_agent: like header_strings_agent)
 		do
-			make_editable_data_control (a_title,
+			make_linked_data_control (a_title,
 				a_data_source_agent, a_data_source_create_agent, a_data_source_remove_agent, an_undo_redo_chain,
-				min_height, min_width, use_hbox_container, True)
+				min_height, min_width, arrange_horizontally)
 			initialise_data_control (a_header_strings_agent)
 		ensure
 			not is_readonly

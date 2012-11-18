@@ -218,7 +218,6 @@ feature -- Modification
 	add_new_non_specialised_archetype (accn: ARCH_CAT_CLASS_NODE; an_archetype_id: ARCHETYPE_ID; in_dir_path: STRING)
 			-- create a new archetype of class represented by `accn' in path `in_dir_path'
 		local
-			parent_key, child_key: STRING
 			aca: ARCH_CAT_ARCHETYPE
 		do
 			create aca.make_new_archetype (an_archetype_id, profile_repo_access.reference_repository, in_dir_path)
@@ -242,7 +241,6 @@ feature -- Modification
 		require
 			path_valid: adhoc_path_valid (in_dir_path)
 		local
-			parent_key, child_key: STRING
 			aca: ARCH_CAT_ARCHETYPE
 		do
 			if semantic_item_index.is_empty then

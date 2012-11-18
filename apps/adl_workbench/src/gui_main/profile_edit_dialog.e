@@ -72,6 +72,7 @@ feature {NONE} -- Initialization
 			-- window characteristics
 			set_title (get_text ("profile_edit_dialog_title"))
 			set_icon_pixmap (adl_workbench_icon)
+			set_minimum_width (600)
 
 			-- create widgets
 			create ev_root_container
@@ -80,7 +81,7 @@ feature {NONE} -- Initialization
 			extend (ev_root_container)
 
 			-- ============ profile name text control ============
-			create profile_name_ctl.make (get_text ("profile_name_text"), agent :STRING do Result := profile_name end, 0, 600, True, True)
+			create profile_name_ctl.make (get_text ("profile_name_text"), agent :STRING do Result := profile_name end, 0, 0, True)
 			ev_root_container.extend (profile_name_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (profile_name_ctl.ev_root_container)
 			gui_controls.extend (profile_name_ctl)

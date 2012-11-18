@@ -107,11 +107,10 @@ feature {NONE} -- Implementation
 			-- there could be properties which were overridden in some lower descendant, and which
 			-- therefore should not be displayed as being from the original class
 			create prop_list.make (0)
-			from a_class_def.properties.start until a_class_def.properties.off loop
-				if flat_properties.has_item (a_class_def.properties.item_for_iteration) then
-					prop_list.extend (a_class_def.properties.item_for_iteration)
+			across a_class_def.properties as properties_csr loop
+				if flat_properties.has_item (properties_csr.item) then
+					prop_list.extend (properties_csr.item)
 				end
-				a_class_def.properties.forth
 			end
 
 			-- if there were any, populate the class and then the properties
@@ -124,40 +123,38 @@ feature {NONE} -- Implementation
 				ev_grid.set_item (Grid_declared_in_col, ev_grid.row_count + 1, gli)
 				class_row := gli.row
 
-				-- do property rows if we have not already encountered this class
+				-- do property rows if we have not already encountered this class due to
+				-- multiple inheritance
 				if not anc_classes.has (a_class_def.name) then
-					from prop_list.start until prop_list.off loop
+					across prop_list as props_csr loop
 						-- property name
-						create gli.make_with_text (prop_list.item.name)
-						if prop_list.item.is_im_infrastructure then
+						create gli.make_with_text (props_csr.item.name)
+						if props_csr.item.is_im_infrastructure then
 							gli.set_foreground_color (rm_infrastructure_attribute_colour)
-						elseif prop_list.item.is_im_runtime then
+						elseif props_csr.item.is_im_runtime then
 							gli.set_foreground_color (rm_runtime_attribute_colour)
 						else
 							gli.set_foreground_color (rm_attribute_color)
 						end
-						gli.set_pixmap (get_icon_pixmap ("rm/generic/" + prop_list.item.multiplicity_key_string))
+						gli.set_pixmap (get_icon_pixmap ("rm/generic/" + props_csr.item.multiplicity_key_string))
 						ev_grid.set_item (Grid_property_col, ev_grid.row_count + 1, gli)
 						property_row := gli.row
 
 						-- property type
-						create gli.make_with_text (prop_list.item.type.as_type_string)
-						prop_class := source.bmm_schema.class_definition (prop_list.item.type.root_class)
+						create gli.make_with_text (props_csr.item.type.as_type_string)
+						prop_class := source.bmm_schema.class_definition (props_csr.item.type.root_class)
 						gli.set_pixmap (get_icon_pixmap ("rm/generic/" + prop_class.type_category))
 						gli.set_data (prop_class)
 						gli.pointer_button_press_actions.force_extend (agent class_node_handler (gli, ?, ?, ?))
 						property_row.set_item (Grid_property_type_col, gli)
-
-						prop_list.forth
 					end
 				end
 				anc_classes.extend (a_class_def.name)
 			end
 
 			-- visit ancestors, recursively
-			from a_class_def.ancestors.start until a_class_def.ancestors.off loop
-				populate_class_node (a_class_def.ancestors.item_for_iteration)
-				a_class_def.ancestors.forth
+			across a_class_def.ancestors as ancestors_csr loop
+				populate_class_node (ancestors_csr.item)
 			end
 		end
 

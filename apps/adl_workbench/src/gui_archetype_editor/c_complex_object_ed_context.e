@@ -60,14 +60,6 @@ feature -- Access
 			end
 		end
 
-feature -- Status Report
-
-	is_root: BOOLEAN
-			-- True if this node has no parent
-		do
-			Result := not attached parent
-		end
-
 feature -- Display
 
 	prepare_display_in_grid (a_gui_grid: EVX_GRID)
@@ -104,22 +96,34 @@ feature -- Modification
 	put_c_attribute (a_node: C_ATTRIBUTE_ED_CONTEXT)
 			-- add a new attribute node
 		require
-			not a_node.is_rm
+			not a_node.is_rm and not c_attributes.has (a_node.arch_node.rm_attribute_path)
 		do
-			c_attributes.put (a_node, a_node.rm_property.name)
+			c_attributes.put (a_node, a_node.arch_node.rm_attribute_path)
 			a_node.set_parent (Current)
 		end
+
+	convert_rm_property_to_constraint (a_child_node: C_ATTRIBUTE_ED_CONTEXT)
+			-- move RM property `a_child_node' to `c_attributes'
+		require
+			Valid_child: rm_attributes.has (a_child_node.rm_property.name) and not a_child_node.is_rm
+			C_attributes_valid: not c_attributes.has (a_child_node.rm_property.name)
+		do
+			c_attributes.force (a_child_node, a_child_node.rm_property.name)
+			rm_attributes.remove (a_child_node.rm_property.name)
+		ensure
+			c_attributes.item (a_child_node.rm_property.name) = a_child_node
+		end
+
+feature {NONE} -- Implementation
 
 	put_rm_attribute (a_node: C_ATTRIBUTE_ED_CONTEXT)
 			-- add a new attribute node
 		require
-			a_node.is_rm
+			Valid_node: a_node.is_rm and not rm_attributes.has (a_node.rm_property.name)
 		do
 			rm_attributes.put (a_node, a_node.rm_property.name)
 			a_node.set_parent (Current)
 		end
-
-feature {NONE} -- Implementation
 
 	expand_to_rm (ui_settings: GUI_DEFINITION_SETTINGS)
 			--  (if this is an RM node) or else go do the work

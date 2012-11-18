@@ -82,10 +82,9 @@ feature -- Access
 			if not attached all_ancestors_cache then
 				create all_ancestors_cache.make (0)
 				all_ancestors_cache.compare_objects
-				from ancestors.start until ancestors.off loop
-					all_ancestors_cache.extend (ancestors.key_for_iteration)
-					all_ancestors_cache.merge (ancestors.item_for_iteration.all_ancestors)
-					ancestors.forth
+				across ancestors as ancestors_csr loop
+					all_ancestors_cache.extend (ancestors_csr.key)
+					all_ancestors_cache.merge (ancestors_csr.item.all_ancestors)
 				end
 			end
 			Result := all_ancestors_cache
@@ -216,7 +215,7 @@ feature -- Access
 			Result := supplier_closure_cache
 		end
 
-	flat_properties: attached HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
+	flat_properties: HASH_TABLE [BMM_PROPERTY_DEFINITION, STRING]
 			-- list of all properties due to current and ancestor classes, keyed by property name
 		do
 			if not attached flat_properties_cache then
@@ -233,7 +232,7 @@ feature -- Access
 			Result := flat_properties_cache
 		end
 
-	flattened_type_list: attached ARRAYED_LIST [STRING]
+	flattened_type_list: ARRAYED_LIST [STRING]
 			-- completely flattened list of type names, flattening out all generic parameters
 			-- e.g. "HASH_TABLE [LINKED_LIST[STRING], STRING]" => <<"HASH_TABLE", "LINKED_LIST", "STRING", "STRING">>
 		do
@@ -248,7 +247,7 @@ feature -- Access
 			end
 		end
 
-	property_definition_at_path (a_prop_path: attached OG_PATH): attached BMM_PROPERTY_DEFINITION
+	property_definition_at_path (a_prop_path: attached OG_PATH): BMM_PROPERTY_DEFINITION
 			-- retrieve the property definition for `a_prop_path' in flattened class corresponding to `a_type_name'
 			-- note that the internal cursor of the path is used to know how much to read - from cursor to end (this allows
 			-- recursive evaluation)

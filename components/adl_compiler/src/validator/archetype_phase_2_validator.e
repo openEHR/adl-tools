@@ -65,7 +65,7 @@ feature -- Validation
 			-- FIXME: currently specialised archetypes are not RM_validated because the RM-validation
 			-- logic needs to be fixed for them; to see how, change the following line back to just
 			-- 'if passed' and see the result
-			if passed and not target.is_specialised then
+			if passed then -- and not target.is_specialised then
 				validate_reference_model
 			end
 
@@ -819,11 +819,12 @@ end
 		do
 			Result := True
 			if attached {C_OBJECT} a_c_node as co and then not rm_schema.has_class_definition (co.rm_type_name) then
-				if attached {C_DOMAIN_TYPE} co as c_dt then
+				if attached {C_DOMAIN_TYPE} co then
 					-- normally just report an error, but C_DOMAIN_TYPEs like C_DV_QUANTITY are a special case - they may be used
 					-- in archetypes based on a non-openEHR RM, which means the type DV_QUANTITY might not be there, but nevertheless
-					-- C_DV_QUANTITY is used in some places
-					add_warning ("VCORM", <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.archetype_view_language, True)>>)
+					-- C_DV_QUANTITY is used
+					add_error ("VCORM", <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.archetype_view_language, True)>>)
+					Result := False
 				else
 					if not invalid_types.has (co.rm_type_name) then
 						add_error ("VCORM", <<co.rm_type_name, ontology.physical_to_logical_path (co.path, target_descriptor.archetype_view_language, True)>>)

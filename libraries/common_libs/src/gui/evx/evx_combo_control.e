@@ -2,7 +2,7 @@ note
 	component:   "openEHR Archetype Project"
 	description: "[
 				 Visual control for a LIST [STRING] data source that outputs to an EV_COMBO_BOX.
-				 Visual control structure is a combo-box with a title, in-place editing and deletion.
+				 Visual control structure is a combo-box with a title.
 				 Designed for selecting various values of a list or hash, not for editing. 
 				 
 								   Title
@@ -35,7 +35,7 @@ inherit
 		rename
 			make as make_data_control
 		export
-			{NONE} make_editable
+			{NONE} make_linked
 		redefine
 			data_source_agent
 		end
@@ -48,8 +48,7 @@ feature -- Initialisation
 	make (a_title: STRING; a_data_source_agent: like data_source_agent;
 			min_height, min_width: INTEGER; arrange_horizontally: BOOLEAN)
 		do
-			make_data_control (a_title, a_data_source_agent, min_height, min_width, arrange_horizontally, False)
-			ev_root_container.disable_item_expand (ev_data_control)
+			make_data_control (a_title, a_data_source_agent, min_height, min_width, arrange_horizontally)
 			ev_data_control.select_actions.extend (agent propagate_select_action)
 		end
 

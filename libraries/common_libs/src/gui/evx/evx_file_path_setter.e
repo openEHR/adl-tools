@@ -31,7 +31,7 @@ class EVX_FILE_PATH_SETTER
 inherit
 	EVX_SINGLE_LINE_TEXT_CONTROL
 		rename
-			make as make_text_control, make_editable as make_editable_text_control, make_readonly as make_readonly_text_control
+			make as make_text_control, make_linked as make_linked_text_control, make_readonly as make_readonly_text_control
 		end
 
 	KL_SHARED_FILE_SYSTEM
@@ -40,13 +40,13 @@ inherit
 		end
 
 create
-	make, make_editable, make_readonly
+	make, make_linked, make_readonly
 
 feature -- Initialisation
 
 	make (a_title: STRING; a_data_source: like data_source_agent; min_height, min_width: INTEGER)
 		do
-			make_text_control (a_title, a_data_source, min_height, min_width, True, True)
+			make_text_control (a_title, a_data_source, min_height, min_width, True)
 			initialise_browse_button
 		ensure
 			not is_readonly
@@ -54,18 +54,18 @@ feature -- Initialisation
 
 	make_readonly (a_title: STRING; a_data_source: like data_source_agent; min_height, min_width: INTEGER)
 		do
-			make_readonly_text_control (a_title, a_data_source, min_height, min_width, True, True)
+			make_readonly_text_control (a_title, a_data_source, min_height, min_width, True)
 		ensure
 			is_readonly
 		end
 
-	make_editable (a_title: STRING; a_data_source: like data_source_agent;
+	make_linked (a_title: STRING; a_data_source: like data_source_agent;
 			a_data_source_setter_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
 			an_undo_redo_chain: like undo_redo_chain;
 			min_height, min_width: INTEGER)
 		do
-			make_editable_text_control (a_title, a_data_source, a_data_source_setter_agent, a_data_source_remove_agent, an_undo_redo_chain, min_height, min_width, True, True)
+			make_linked_text_control (a_title, a_data_source, a_data_source_setter_agent, a_data_source_remove_agent, an_undo_redo_chain, min_height, min_width, True)
 			initialise_browse_button
 		ensure
 			not is_readonly
