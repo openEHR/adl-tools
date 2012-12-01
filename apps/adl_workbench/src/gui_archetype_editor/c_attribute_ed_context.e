@@ -174,6 +174,8 @@ feature -- Modification
 
 	put_child_context (a_node: C_OBJECT_ED_CONTEXT)
 			-- add `a_node' to end of children
+		require
+			not has_child (a_node)
 		do
 			children.extend (a_node)
 			a_node.set_parent (Current)
@@ -183,9 +185,12 @@ feature -- Modification
 					a_node.display_in_grid (display_settings)
 				end
 			end
+		ensure
+			has_child (a_node)
 		end
 
 	remove_child_context (a_node: C_OBJECT_ED_CONTEXT)
+			-- remove the child `a_node'
 		require
 			has_child (a_node)
 		do
@@ -196,17 +201,21 @@ feature -- Modification
 					display_in_grid (display_settings)
 				end
 			end
+		ensure
+			not has_child (a_node)
 		end
 
 	detach_child_context (a_node: C_OBJECT_ED_CONTEXT)
-			-- reattach a context node whose arch_node is also detached
+			-- remove context node `a_node' and its `arch_node'
 		require
 			has_child (a_node)
 		do
 			remove_child_context (a_node)
-			if is_rm then
+			if not is_rm then
 				arch_node.remove_child (a_node.arch_node)
 			end
+		ensure
+			not has_child (a_node)
 		end
 
 	reattach_child_context (a_node: C_OBJECT_ED_CONTEXT)

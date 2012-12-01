@@ -871,7 +871,7 @@ feature {NONE} -- Compilation
 			post_info (Current, "parse", "parse_i2", Void)
 			differential_archetype := adl15_engine.parse_differential (differential_text, rm_schema)
 			flat_archetype_cache := Void
-			if differential_archetype = Void then
+			if not attached differential_archetype then
 				errors.append (adl15_engine.errors)
 				compilation_state := Cs_parse_failed
 			else
@@ -884,12 +884,12 @@ feature {NONE} -- Compilation
 				-- perform post-parse object structure finalisation
 				adl15_engine.post_parse_process (Current, rm_schema)
 
-				-- determine the suppliers list for ongoing compilation
+				-- determine the suppliers list for ongoing compilation; exclude an reference to the current archetype to avoid an infinite recursion
 				create suppliers_index.make (0)
 				if differential_archetype.has_suppliers then
 					supp_idx := differential_archetype.suppliers_index
 					across supp_idx as supp_idx_csr loop
-						if current_arch_cat.archetype_index.has (supp_idx_csr.key) then
+						if current_arch_cat.archetype_index.has (supp_idx_csr.key) and not supp_idx_csr.key.is_case_insensitive_equal (id.as_string) then
 							suppliers_index.put (current_arch_cat.archetype_index.item (supp_idx_csr.key), supp_idx_csr.key)
 						end
 					end

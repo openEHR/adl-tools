@@ -17,6 +17,7 @@ templates = <
 	["en"] = <
 		-- basic errors
 		["get_icon_pixmap"] = <"No pixmap found for $1">
+		["no_pixmap_found"] = <"No pixmap found for $1">
 
 		-- standard button texts
 		["browse_button_text"] = <"Browse...">
@@ -386,6 +387,7 @@ templates = <
 		["source_tab_text"] = <"Source">
 		["validity_tab_text"] = <"Validity">
 		["stat_info_tab_text"] = <"Statistics">
+		["translation_tab_text"] = <"Translation">
 
 		["show_adl_serialisation_tooltip"] = <"Show ADL $1 serialisation">
 		["show_dadl_serialisation_tooltip"] = <"Show dADL $1 serialisation">
@@ -454,6 +456,10 @@ templates = <
 		["flatten_with_rm_cb_tooltip"] = <"Include RM in flattening process, causing RM existence and cardinality to be included and occurrences to be generated">
 		["add_line_numbers_text"] = <"+ Line Numbers">
 		["add_line_numbers_tooltip"] = <"Add line numbers to text">
+
+		-- GUI_TRANSLATION_CONTROL
+		["translation_original_label_text"] = <"Original text">
+		["translation_translated_label_text"] = <"Translated text">
 
 		-- GUI_VIEW_ARCHETYPE_TREE_CONTROL
 		["rm_closure_tree_node_tooltip"] = <"Archetype model namespace: RM package closure $1%Nfrom schema $2">

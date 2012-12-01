@@ -73,6 +73,14 @@ feature -- Definitions
 	Term_code_leader: STRING = "at"
 			-- leader of all internal term codes
 
+	Term_code_regex_pattern: STRING
+			-- a regex to match any term of any depth
+		once
+			create Result.make_empty
+			Result.append (Term_code_leader)
+			Result.append ("[0-9]+(\.[0-9]+)*")
+		end
+
 	Constraint_code_length: INTEGER
 			-- length of top-level constraint codes, e.g. "ac0001"
 		once
@@ -81,11 +89,22 @@ feature -- Definitions
 
 	Constraint_code_leader: STRING = "ac"
 
+	Constraint_code_regex_pattern: STRING
+			-- a regex to match any term of any depth
+		once
+			create Result.make_empty
+			Result.append (Constraint_code_leader)
+			Result.append ("[0-9]+(\.[0-9]+)*")
+		end
+
 	Zero_filler: STRING = ".0"
 
 	Annotated_code_text_delimiter: CHARACTER = '|'
 			-- delimiter for creating annotated terms of form 'nnnn|term text|'
 			-- as commonly used in SNOMED CT
+
+	Annotated_code_text_delimiter_string: STRING = "|"
+			-- string form of above
 
 feature -- Access
 
@@ -411,6 +430,20 @@ feature -- Conversion
 			Result.append_character (Annotated_code_text_delimiter)
 			Result.append (a_text)
 			Result.append_character (Annotated_code_text_delimiter)
+		end
+
+feature -- Pattern Matching
+
+	Term_code_regex_matcher: LX_DFA_REGULAR_EXPRESSION
+			-- match any term code
+		once
+			create Result.compile_case_insensitive (Term_code_regex_pattern)
+		end
+
+	Constraint_code_regex_matcher: LX_DFA_REGULAR_EXPRESSION
+			-- match any term code
+		once
+			create Result.compile_case_insensitive (Constraint_code_regex_pattern)
 		end
 
 end

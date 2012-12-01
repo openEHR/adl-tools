@@ -384,16 +384,15 @@ feature {NONE} -- Implementation
 						all_schemas.item (a_schema_id).p_schema.primitive_types.count.out, all_schemas.item (a_schema_id).p_schema.class_definitions.count.out>>)
 					includes := all_schemas.item (a_schema_id).p_schema.includes
 					if not includes.is_empty then
-						from includes.start until includes.off loop
-							if not schema_inclusion_map.has (includes.item_for_iteration.id) then
+						across includes as includes_csr loop
+							if not schema_inclusion_map.has (includes_csr.item.id) then
 								create includers.make (0)
-								schema_inclusion_map.put (includers, includes.item_for_iteration.id)
+								schema_inclusion_map.put (includers, includes_csr.item.id)
 							end
-							schema_inclusion_map.item (includes.item_for_iteration.id).extend (a_schema_id)
-							if not all_schemas.has (includes.item_for_iteration.id) then
-								load_schema_include_closure (includes.item_for_iteration.id)
+							schema_inclusion_map.item (includes_csr.item.id).extend (a_schema_id)
+							if not all_schemas.has (includes_csr.item.id) then
+								load_schema_include_closure (includes_csr.item.id)
 							end
-							includes.forth
 						end
 					end
 				else

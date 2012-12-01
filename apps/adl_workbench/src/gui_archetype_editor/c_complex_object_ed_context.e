@@ -111,7 +111,8 @@ feature -- Modification
 			c_attributes.force (a_child_node, a_child_node.rm_property.name)
 			rm_attributes.remove (a_child_node.rm_property.name)
 		ensure
-			c_attributes.item (a_child_node.rm_property.name) = a_child_node
+			Converted: c_attributes.item (a_child_node.rm_property.name) = a_child_node
+			Removed_from_rm: not rm_attributes.has (a_child_node.rm_property.name)
 		end
 
 feature {NONE} -- Implementation
