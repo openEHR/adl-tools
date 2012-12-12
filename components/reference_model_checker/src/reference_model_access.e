@@ -57,7 +57,7 @@ feature -- Initialisation
 			schemas_load_list.compare_objects
 		end
 
-	initialise_with_load_list (an_rm_dir: attached STRING; a_schemas_load_list: attached LIST [STRING])
+	initialise_with_load_list (an_rm_dir: STRING; a_schemas_load_list: LIST [STRING])
 			-- initialise with a specific schema load list, usually a sub-set of schemas that will be
 			-- found in the directory `an_rm_dir'
 		require
@@ -71,7 +71,7 @@ feature -- Initialisation
 			Schemas_dir_set: schema_directory = an_rm_dir
 		end
 
-	initialise_all (an_rm_dir: attached STRING)
+	initialise_all (an_rm_dir: STRING)
 			-- initialise with all schemas found in the directory `a_rm_dir'
 		do
 			initialise_with_load_list (an_rm_dir, create {ARRAYED_LIST [STRING]}.make(0))
@@ -79,7 +79,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	schema_directory: STRING
+	schema_directory: detachable STRING
 			-- directory where all the schemas loaded here are found
 
 	all_schemas: HASH_TABLE [SCHEMA_DESCRIPTOR, STRING]
@@ -93,7 +93,7 @@ feature -- Access
 	candidate_schemas: HASH_TABLE [SCHEMA_DESCRIPTOR, STRING]
 			-- includes only fully validated schemas
 
-	valid_top_level_schemas: attached HASH_TABLE [BMM_SCHEMA, STRING]
+	valid_top_level_schemas: HASH_TABLE [BMM_SCHEMA, STRING]
 			-- top-level (root) schemas in use. Table is keyed by logical schema_name, i.e. model_publisher '_' model_name, e.g. "openehr_rm"
 			-- Schemas containing different variants of same model (i.e. model_publisher + model_name) are considered duplicates
 
@@ -105,7 +105,7 @@ feature -- Access
 			Result := schemas_by_rm_closure.item (a_qualified_rm_closure_name.as_lower)
 		end
 
-	schemas_load_list: attached LIST [STRING]
+	schemas_load_list: LIST [STRING]
 			-- initial load list for this session, set during initialisation. This may initially be empty
 			-- or contain invalid entries; it will be modified to correctly list the actual schemas found
 
@@ -116,6 +116,11 @@ feature -- Access
 			-- set to True if any processing failed
 
 feature -- Status Report
+
+	has_schema_directory: BOOLEAN
+		do
+			Result := attached schema_directory
+		end
 
 	has_schema_for_rm_closure (a_qualified_rm_closure_name: STRING): BOOLEAN
 			-- True if there is a schema containing the qualified package key `a_qualified_rm_closure_name', e.g. "openEHR-EHR"
@@ -141,6 +146,8 @@ feature -- Commands
 
 	reload_schemas
 			-- reload schemas from current schema dir
+		require
+			has_schema_directory
 		do
 			load_schema_descriptors
 			load_schemas
@@ -148,18 +155,20 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	schema_inclusion_map: attached HASH_TABLE [ARRAYED_LIST [STRING], STRING]
+	schema_inclusion_map: HASH_TABLE [ARRAYED_LIST [STRING], STRING]
 			-- map of inclusions among schemas found in the directory; structure:
 			-- {key = schema_id; {list of schemas that 'include' key}}
 			-- Schemas not included by other schemas have NO ENTRY in this list
 			-- this is detected and used to populate `top_level_schemas'
 
-	schemas_by_rm_closure: attached HASH_TABLE [BMM_SCHEMA, STRING]
+	schemas_by_rm_closure: HASH_TABLE [BMM_SCHEMA, STRING]
 			-- schemas keyed by lower-case qualified package name, i.e. model_publisher '-' package_name, e.g. "openehr-ehr";
 			-- this matches the qualifide package name part of an ARCHETYPE_ID
 
 	load_schema_descriptors
 			-- initialise `rm_schema_metadata_table'
+		require
+			has_schema_directory
 		local
 			dir: KL_DIRECTORY
 			schema_path: STRING

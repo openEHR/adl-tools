@@ -242,8 +242,6 @@ feature -- Paths
 			-- paths to nodes which have type `rm_type', with human readable terms substituted
 		require
 			has_language: ontology.has_language(a_lang)
-		local
-			phys_paths: ARRAYED_LIST [STRING]
 		do
 			create Result.make (0)
 			Result.compare_objects
@@ -310,18 +308,6 @@ feature -- Status Report
 			Result := physical_paths.has (a_path)
 		end
 
-	has_slots: BOOLEAN
-			-- true if there are any slots
-		do
-			Result := attached slot_index and then slot_index.count > 0
-		end
-
-	has_suppliers: BOOLEAN
-			-- true if there are any external references / fillers, i.e. any C_ARCHETYPE_ROOTs
-		do
-			Result := attached suppliers_index and then suppliers_index.count > 0
-		end
-
 	has_invariants: BOOLEAN
 			-- true if there are invariants
 		do
@@ -371,37 +357,6 @@ feature -- Status Setting
 
 feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, ARCHETYPE_VALIDATOR, ARCHETYPE_FLATTENER, C_XREF_BUILDER, EXPR_XREF_BUILDER, ARCH_CAT_ARCHETYPE} -- Validation
 
-	build_xrefs
-			-- build definition / ontology cross reference tables used for validation and
-			-- other purposes
-		local
-			a_c_iterator: OG_CONTENT_ITERATOR
-			definition_xref_builder: C_XREF_BUILDER
-			expr_iterator: EXPR_VISITOR_ITERATOR
-			invariants_xref_builder: EXPR_XREF_BUILDER
-		do
-			create id_atcodes_index.make(0)
-			create data_atcodes_index.make(0)
-			create use_node_index.make(0)
-			create suppliers_index.make(0)
-			create accodes_index.make(0)
-			create slot_index.make(0)
-
-			create definition_xref_builder.make (Current)
-			create a_c_iterator.make (definition.representation, definition_xref_builder)
-			a_c_iterator.do_all
-
-			if has_invariants then
-				create invariants_index.make(0)
-				create invariants_xref_builder
-				across invariants as inv_csr loop
-					invariants_xref_builder.initialise (Current, inv_csr.item)
-					create expr_iterator.make (inv_csr.item, invariants_xref_builder)
-					expr_iterator.do_all
-				end
-			end
-		end
-
 	build_rolled_up_status
 			-- set rolled_up_specialisation statuses in nodes of definition
 			-- only useful to call for specialised archetypes
@@ -420,28 +375,177 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, ARCHETYPE_VALIDAT
 			-- table of {list<node>, code} for term codes which identify nodes in archetype (note that there
 			-- are other uses of term codes from the ontology, which is why this attribute is not just called
 			-- 'term_codes_xref_table')
+		local
+			def_it: C_ITERATOR
+		do
+			create Result.make (0)
+			create def_it.make (definition)
+			def_it.do_all (
+				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_CONSTRAINT], STRING])
+					local
+						og_path: OG_PATH
+					do
+						if attached {C_ATTRIBUTE} a_c_node as ca then
+							if ca.has_differential_path then
+								create og_path.make_from_string (ca.differential_path)
+								across og_path as path_csr loop
+									if path_csr.item.is_addressable and is_valid_code (path_csr.item.object_id) then
+										if not idx.has (path_csr.item.object_id) then
+											idx.put (create {ARRAYED_LIST[ARCHETYPE_CONSTRAINT]}.make(0), path_csr.item.object_id)
+										end
+										idx.item (path_csr.item.object_id).extend (ca)
+									end
+								end
+							end
+						elseif attached {C_OBJECT} a_c_node as co then
+							if co.is_addressable and is_valid_code (co.node_id) then
+								if not idx.has (co.node_id) then
+									idx.put (create {ARRAYED_LIST [C_OBJECT]}.make(0), co.node_id)
+								end
+								idx.item (co.node_id).extend (co)
+							end
+						end
+					end (?, ?, Result),
+				Void)
+		end
 
 	data_atcodes_index: HASH_TABLE [ARRAYED_LIST [C_OBJECT], STRING]
 			-- table of {list<node>, code} for term codes which appear in archetype nodes as data,
 			-- e.g. in C_DV_ORDINAL and C_CODE_PHRASE types
+		local
+			def_it: C_ITERATOR
+		do
+			create Result.make (0)
+			create def_it.make (definition)
+			def_it.do_all (
+				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [C_OBJECT], STRING])
+					do
+						if attached {C_CODE_PHRASE} a_c_node as ccp then
+							if not ccp.any_allowed and then (ccp.is_local and ccp.code_count > 0) then
+								across ccp.code_list as codes_csr loop
+									if not idx.has (codes_csr.item) then
+										idx.put (create {ARRAYED_LIST[C_OBJECT]}.make(0), codes_csr.item)
+									end
+									idx.item (codes_csr.item).extend (ccp)
+								end
+							end
+						elseif attached {C_DV_ORDINAL} a_c_node as c_dvo then
+							if not c_dvo.any_allowed and then c_dvo.is_local then
+								across c_dvo.items as items_csr loop
+									if not idx.has (items_csr.item.symbol.code_string) then
+										idx.put (create {ARRAYED_LIST[C_OBJECT]}.make(0), items_csr.item.symbol.code_string)
+									end
+									idx.item (items_csr.item.symbol.code_string).extend (c_dvo)
+								end
+							end
+						end
+					end (?, ?, Result),
+				Void)
+		end
 
 	accodes_index: HASH_TABLE [ARRAYED_LIST [CONSTRAINT_REF], STRING]
 			-- table of {list<node>, code} for constraint codes in archetype
+		local
+			def_it: C_ITERATOR
+		do
+			create Result.make (0)
+			create def_it.make (definition)
+			def_it.do_all (
+				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [CONSTRAINT_REF], STRING])
+					do
+						if attached {CONSTRAINT_REF} a_c_node as cr then
+							if not idx.has(cr.target) then
+								idx.put (create {ARRAYED_LIST [CONSTRAINT_REF]}.make(0), cr.target)
+							end
+							idx.item (cr.target).extend (cr)
+						end
+					end (?, ?, Result),
+				Void)
+		end
 
 	use_node_index: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_INTERNAL_REF], STRING]
 			-- table of {list<ARCHETYPE_INTERNAL_REF>, target_path}
 			-- i.e. <list of use_nodes> keyed by path they point to
+		local
+			def_it: C_ITERATOR
+		do
+			create Result.make (0)
+			create def_it.make (definition)
+			def_it.do_all (
+				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_INTERNAL_REF], STRING])
+					do
+						if attached {ARCHETYPE_INTERNAL_REF} a_c_node as air then
+							if not idx.has (air.target_path) then
+								idx.put (create {ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]}.make(0), air.target_path)
+							end
+							idx.item (air.target_path).extend (air)
+						end
+					end (?, ?, Result),
+				Void)
+		end
 
 	suppliers_index: HASH_TABLE [ARRAYED_LIST [C_ARCHETYPE_ROOT], STRING]
 			-- table of {list<C_ARCHETYPE_ROOT>, archetype_id}
 			-- i.e. <list of use_archetype nodes> keyed by archetype id they refer to
+		local
+			def_it: C_ITERATOR
+		do
+			create Result.make (0)
+			create def_it.make (definition)
+			def_it.do_all (
+				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [C_ARCHETYPE_ROOT], STRING])
+					do
+						if attached {C_ARCHETYPE_ROOT} a_c_node as car then
+							if not idx.has (car.archetype_id) then
+								idx.put (create {ARRAYED_LIST [C_ARCHETYPE_ROOT]}.make(0), car.archetype_id)
+							end
+							idx.item (car.archetype_id).extend (car)
+						end
+					end (?, ?, Result),
+				Void)
+		end
 
 	invariants_index: HASH_TABLE [ARRAYED_LIST [EXPR_LEAF], STRING]
 			-- table of {list<EXPR_LEAF>, target_path}
 			-- i.e. <list of invariant leaf nodes> keyed by path they point to
+		local
+			def_it: EXPR_ITERATOR
+		do
+			create Result.make (0)
+			if has_invariants then
+				across invariants as inv_csr loop
+					create def_it.make (inv_csr.item)
+					def_it.do_all (
+						agent (a_node: EXPR_ITEM; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [EXPR_LEAF], STRING])
+							do
+								if attached {EXPR_LEAF} a_node as el then
+									if el.is_archetype_definition_ref and attached {STRING} el.item as tgt_path then
+										if not idx.has (tgt_path) then
+											idx.put (create {ARRAYED_LIST[EXPR_LEAF]}.make(0), tgt_path)
+										end
+										idx.item (tgt_path).extend (el)
+									end
+								end
+							end (?, ?, Result),
+						Void)
+				end
+			end
+		end
 
 	slot_index: ARRAYED_LIST [ARCHETYPE_SLOT]
 			-- list of archetype slots in this archetype
+		local
+			def_it: C_ITERATOR
+		do
+			create Result.make (0)
+			create def_it.make (definition)
+			def_it.do_all (
+				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: ARRAYED_LIST [ARCHETYPE_SLOT])
+					do
+						if attached {ARCHETYPE_SLOT} a_c_node as a_slot then idx.extend (a_slot) end
+					end (?, ?, Result),
+				Void)
+		end
 
 feature -- Modification
 
@@ -499,7 +603,6 @@ feature -- Modification
 	rebuild
 			-- rebuild any cached state after changes to definition or invariant structure
 		do
-			build_xrefs
 			build_physical_paths
 			if is_specialised then
 				build_rolled_up_status
@@ -528,13 +631,11 @@ feature {NONE} -- Implementation
 			tgt_path_c_objects: HASH_TABLE [C_OBJECT, STRING]
 			tgt_path_str: STRING
 			tgt_path: OG_PATH
-			use_refs_csr: CURSOR
 			sorted_physical_paths, sorted_physical_leaf_paths: SORTED_TWO_WAY_LIST [STRING]
 		do
 			object_path_map_cache := definition.all_paths
 
 			-- Add full paths of internal references thus giving full set of actual paths
-			use_refs_csr := use_node_index.cursor
 			across use_node_index as use_node_csr loop
 				-- Hash table with arrayed list of ARCHETYPE_INTERNAL_REFs and Key of target
 				-- (ie the ref path of the internal reference)
@@ -569,7 +670,6 @@ feature {NONE} -- Implementation
 					end
 				end
 			end
-			use_node_index.go_to (use_refs_csr)
 
 			create sorted_physical_paths.make
 			create sorted_physical_leaf_paths.make

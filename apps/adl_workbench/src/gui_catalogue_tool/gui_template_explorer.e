@@ -1,21 +1,16 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "Composite control for viewing templates"
-	keywords:    "ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	keywords:    "ADL, archetype, template, UI"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2010-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
-class GUI_VIEW_TEMPLATE_TREE_CONTROL
+class GUI_TEMPLATE_EXPLORER
 
 inherit
-	GUI_ARTEFACT_TREE_CONTROL
+	GUI_ARTEFACT_EXPLORER
 		rename
 			make as make_tree_control
 		redefine
@@ -78,9 +73,7 @@ feature {NONE} -- Implementation
    		local
 			og_iterator: OG_ITERATOR
 		do
-			if not attached rm_schema then
-				rm_schema := ara.rm_schema
-			end
+			rm_schema := ara.rm_schema
 
 			-- make sure it is a template of some kind
 			if artefact_types.has (ara.artefact_type) then
@@ -119,7 +112,7 @@ feature {NONE} -- Implementation
 			if attached {ARCHETYPE_CONSTRAINT} an_og_node.content_item as ca then
 				if attached {C_ATTRIBUTE} ca as c_attr then
 					-- first see if it is an atribute containing any ext ref nodes
-					from c_attr.children.start until c_attr.children.off or attached {C_ARCHETYPE_ROOT} c_attr.children.item as car loop
+					from c_attr.children.start until c_attr.children.off or attached {C_ARCHETYPE_ROOT} c_attr.children.item loop
 						c_attr.children.forth
 					end
 

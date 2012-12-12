@@ -1,16 +1,16 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "Populate ontology controls in ADL editor"
-	keywords:    "ADL"
+	keywords:    "ADL, archetype, template, UI"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2004-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-class GUI_VIEW_ARCHETYPE_TREE_CONTROL
+class GUI_ARCHETYPE_EXPLORER
 
 inherit
-	GUI_ARTEFACT_TREE_CONTROL
+	GUI_ARTEFACT_EXPLORER
 		rename
 			make as make_tree_control
 		redefine
@@ -144,6 +144,7 @@ feature {NONE} -- Implementation
 			precursor
 			create filesys_grid_row_map.make(0)
 			gui_filesys_grid.wipe_out
+			selected_class_node := Void
  		end
 
 	do_populate
@@ -330,7 +331,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	selected_class_node: ARCH_CAT_CLASS_NODE
+	selected_class_node: detachable ARCH_CAT_CLASS_NODE
 
 	select_class_with_delay (acc: attached ARCH_CAT_CLASS_NODE)
 		do

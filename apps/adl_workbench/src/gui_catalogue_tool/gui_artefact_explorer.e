@@ -2,12 +2,12 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Composite control for viewing archetype or template artefacts"
 	keywords:    "ADL, archetype, template, UI"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-deferred class GUI_ARTEFACT_TREE_CONTROL
+deferred class GUI_ARTEFACT_EXPLORER
 
 inherit
 	GUI_CATALOGUE_TARGETTED_TOOL
@@ -71,6 +71,7 @@ feature {NONE} -- Implementation
 			create semantic_grid_row_map.make(0)
 			gui_semantic_grid.wipe_out
  			create ev_tree_item_stack.make (0)
+ 			selected_archetype_node := Void
 		end
 
 	semantic_grid_row_map: HASH_TABLE [EV_GRID_ROW, STRING]
@@ -86,7 +87,7 @@ feature {NONE} -- Implementation
    		deferred
    		end
 
-	selected_archetype_node: ARCH_CAT_ARCHETYPE
+	selected_archetype_node: detachable ARCH_CAT_ARCHETYPE
 
 	select_archetype_with_delay (aca: ARCH_CAT_ARCHETYPE)
 		do
@@ -98,7 +99,7 @@ feature {NONE} -- Implementation
 
 	delayed_select_archetype_agent: EV_TIMEOUT
 			-- Timer to delay a moment before calling `select_archetype_agent'.
-		once
+		once ("OBJECT")
 			create Result
 			Result.actions.extend (
 				agent

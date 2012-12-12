@@ -41,10 +41,10 @@ inherit
 
 feature -- Definitions
 
-	ADL_help_page_url: STRING = "http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/adl_workbench/doc/web/index.html"
+	ADL_help_page_url: STRING = "http://www-test.openehr.org/downloads/ADLworkbench/home"
 			-- The URL to ADL Workbench's online help.
 
-	Release_notes_file_path: STRING = "http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/apps/adl_workbench/doc/web/release_notes.html"
+	Release_notes_file_path: STRING = "http://www-test.openehr.org/downloads/ADLworkbench/releasenotes"
 			-- The path to ADL Workbench's release notes.
 
 	clinical_knowledge_manager_url: STRING = "http://www.openehr.org/knowledge/"

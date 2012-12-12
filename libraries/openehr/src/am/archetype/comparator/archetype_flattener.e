@@ -120,7 +120,6 @@ end
 
 			-- now finalise template flattening
 			if arch_child_diff.is_template then
-				arch_output_flat.build_xrefs
 				template_overlay_supplier_definitions
 				template_overlay_supplier_ontologies
 			end
@@ -139,65 +138,61 @@ feature {NONE} -- Implementation
 			-- have to expand out a copy of the structures pointed to by the use_nodes in the parent, so that
 			-- the override can be correctly applied.
 		local
-			int_refs: ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]
 			c_obj: C_OBJECT
-			child_paths, child_paths_at_parent_level: ARRAYED_LIST [STRING]
+			child_paths_at_parent_level: ARRAYED_LIST [STRING]
 			apa: ARCHETYPE_PATH_ANALYSER
 			a_path: STRING
 			clone_performed: BOOLEAN
+			use_nodes: HASH_TABLE [ARRAYED_LIST [ARCHETYPE_INTERNAL_REF], STRING]
 		do
-			if not arch_output_flat.use_node_index.is_empty then
+			use_nodes := arch_output_flat.use_node_index
+			if not use_nodes.is_empty then
 debug ("flatten")
 	io.put_string ("--> expand_definition_use_nodes%N")
 end
 				create child_paths_at_parent_level.make (0)
 				child_paths_at_parent_level.compare_objects
-				child_paths := arch_child_diff.physical_paths
-				from child_paths.start until child_paths.off loop
-					create apa.make_from_string (child_paths.item)
+				across arch_child_diff.physical_paths as child_paths_csr loop
+					create apa.make_from_string (child_paths_csr.item)
 					if not apa.is_phantom_path_at_level (arch_parent_flat.specialisation_depth) then
 						a_path := apa.path_at_level (arch_parent_flat.specialisation_depth)
 						if not child_paths_at_parent_level.has (a_path) then
 							child_paths_at_parent_level.extend (a_path)
 						end
 					end
-					child_paths.forth
 				end
 
 				-- iterate through use nodes in parent and find any source paths that are matched by any paths
 				-- within the child archetype (i.e. that the child archetype wants to override); clone the
 				-- structure at the target location and replace the use_node in the flattened structure with it,
 				-- so that the override will work properly.
-				from arch_output_flat.use_node_index.start until arch_output_flat.use_node_index.off loop
-					int_refs := arch_output_flat.use_node_index.item_for_iteration
-					from int_refs.start until int_refs.off loop
+				across use_nodes as use_nodes_csr loop
+					across use_nodes_csr.item as int_refs_csr loop
 debug ("flatten")
 	io.put_string ("%T...checking flat parent use_node path " +
-	int_refs.item.path + " against child path map%N")
+	int_refs_csr.item.path + " against child path map%N")
 end
 						clone_performed := False
 						from child_paths_at_parent_level.start until child_paths_at_parent_level.off or clone_performed loop
-							if child_paths_at_parent_level.item.starts_with (int_refs.item.path) then
+							if child_paths_at_parent_level.item.starts_with (int_refs_csr.item.path) then
 debug ("flatten")
 	io.put_string ("%T...cloning node at " +
-	arch_output_flat.use_node_index.key_for_iteration +
-	" and replacing at " + int_refs.item.path + "%N")
+	use_nodes_csr.key + " and replacing at " +
+	int_refs_csr.item.path + "%N")
 end
-								c_obj := arch_output_flat.c_object_at_path (arch_output_flat.use_node_index.key_for_iteration).safe_deep_twin
-								if int_refs.item.is_addressable then
-									c_obj.set_node_id (int_refs.item.node_id)
+								c_obj := arch_output_flat.c_object_at_path (use_nodes_csr.key).safe_deep_twin
+								if int_refs_csr.item.is_addressable then
+									c_obj.set_node_id (int_refs_csr.item.node_id)
 								end
-								if attached int_refs.item.occurrences then
-									c_obj.set_occurrences (int_refs.item.occurrences.deep_twin)
+								if attached int_refs_csr.item.occurrences then
+									c_obj.set_occurrences (int_refs_csr.item.occurrences.deep_twin)
 								end
-								int_refs.item.parent.replace_child_by_id (c_obj, int_refs.item.node_id)
+								int_refs_csr.item.parent.replace_child_by_id (c_obj, int_refs_csr.item.node_id)
 								clone_performed := True
 							end
 							child_paths_at_parent_level.forth
 						end
-						int_refs.forth
 					end
-					arch_output_flat.use_node_index.forth
 				end
 				arch_output_flat.rebuild
 debug ("flatten")

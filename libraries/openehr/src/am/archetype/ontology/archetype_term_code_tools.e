@@ -121,36 +121,40 @@ feature -- Access
 	code_at_level (a_code: attached STRING; a_level: INTEGER): STRING
 			-- get valid form of this code at `a_level'
 		require
-			Code_valid: code_exists_at_level(a_code, a_level)
-			Level_valid: a_level >= 0 and a_level <= specialisation_depth_from_code(a_code)
+			Level_valid: a_level >= 0
+			Code_valid: code_exists_at_level (a_code, a_level)
 		local
 			i, idx: INTEGER
 			finished: BOOLEAN
 		do
-			-- this loop finds the index in a code string of the character just before a_level-1'th '.'
-			from
-				i := specialisation_depth_from_code (a_code)
-				idx := a_code.count
-			until
-				i = a_level
-			loop
-				idx := a_code.last_index_of (Specialisation_separator, idx) - 1
-				i := i - 1
-			end
-
-			-- if there are trailing 0s, get rid of them
-			from
-			until
-				finished
-			loop
-				if a_code.substring (idx-1, idx).is_equal (Zero_filler) then
-					idx := idx - 2
-				else
-					finished := True
+			if specialisation_depth_from_code (a_code) < a_level then
+				Result := a_code.twin
+			else
+				-- this loop finds the index in a code string of the character just before a_level-1'th '.'
+				from
+					i := specialisation_depth_from_code (a_code)
+					idx := a_code.count
+				until
+					i = a_level
+				loop
+					idx := a_code.last_index_of (Specialisation_separator, idx) - 1
+					i := i - 1
 				end
-			end
 
-			Result := a_code.substring (1, idx)
+				-- if there are trailing 0s, get rid of them
+				from
+				until
+					finished
+				loop
+					if a_code.substring (idx-1, idx).is_equal (Zero_filler) then
+						idx := idx - 2
+					else
+						finished := True
+					end
+				end
+
+				Result := a_code.substring (1, idx)
+			end
 		ensure
 			Valid_result: is_valid_code (Result)
 		end

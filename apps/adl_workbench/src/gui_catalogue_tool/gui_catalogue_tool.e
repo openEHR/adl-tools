@@ -130,7 +130,7 @@ feature -- Commands
 			-- Select and display the node of `archetype_file_tree' corresponding to the selection in `archetype_catalogue'.
 			-- No events will be processed because archetype selected in ARCHETYPE_CATALOGUE already matches selected tree node
 		do
-			if selection_history.has_selected_item then
+			if selection_history.has_selected_item and then source.has_item_with_id (selection_history.selected_item.global_artefact_identifier) then
 				archetype_explorer.select_item_in_tree (selection_history.selected_item.global_artefact_identifier)
 				docking_pane.set_focus
 			end
@@ -190,14 +190,6 @@ feature -- Commands
 			end
 		end
 
---	edit_source_archetype
---			-- Launch the external editor with the archetype currently selected in `archetype_directory'.
---		do
---			if selection_history.has_selected_archetype then
---				edit_archetype (selection_history.selected_archetype)
---			end
---		end
-
 	save_source_archetype_as
 			-- Save source (differential) archetype to a user-specified path
 		do
@@ -244,9 +236,8 @@ feature -- Events
 				if source.can_build_statistics then
 					source.build_detailed_statistics
 					if not attached stats_viewer.last_populate_timestamp or else stats_viewer.last_populate_timestamp < source.last_stats_build_timestamp then
-						from source.stats.start until source.stats.off loop
-							stats_viewer.populate (source.stats.item_for_iteration, True)
-							source.stats.forth
+						across source.stats as stats_csr loop
+							stats_viewer.populate (stats_csr.item, True)
 						end
 					end
 				end
@@ -295,9 +286,9 @@ feature {NONE} -- Implementation
 
 	rotate_view_button: EV_TOOL_BAR_BUTTON
 
-	archetype_explorer: GUI_VIEW_ARCHETYPE_TREE_CONTROL
+	archetype_explorer: GUI_ARCHETYPE_EXPLORER
 
-	template_explorer: GUI_VIEW_TEMPLATE_TREE_CONTROL
+	template_explorer: GUI_TEMPLATE_EXPLORER
 
 	metrics_viewer: GUI_STATISTICS_TOOL
 

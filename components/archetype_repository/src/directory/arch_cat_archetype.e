@@ -102,6 +102,7 @@ feature {NONE} -- Initialisation
 			file_repository_set: file_repository = a_repository
 			id_set: id = arch_thumbnail.archetype_id
 			parent_id_set: arch_thumbnail.is_specialised implies parent_id = arch_thumbnail.parent_archetype_id
+			is_legacy: is_legacy
 		end
 
 	make (a_path: STRING; a_repository: ARCHETYPE_REPOSITORY_I; arch_thumbnail: ARCHETYPE_THUMBNAIL)
@@ -369,8 +370,8 @@ feature -- Access (semantic)
 			str: STRING
 		do
 			str := id.domain_concept_version
-			if is_specialised and str.has ({ARCHETYPE_ID}.section_separator) then
-				Result := str.substring (str.last_index_of ({ARCHETYPE_ID}.section_separator, str.count)+1, str.count)
+			if is_specialised and is_legacy and str.has ({ARCHETYPE_ID}.section_separator) then
+				Result := str.substring (str.last_index_of ({ARCHETYPE_ID}.section_separator, str.count) + 1, str.count)
 			else
 				Result := str
 			end
@@ -383,8 +384,32 @@ feature -- Access (semantic)
 			end
 		end
 
-	slot_id_index: detachable HASH_TABLE [ARRAYED_SET[STRING], STRING]
+	slot_id_index: HASH_TABLE [ARRAYED_SET[STRING], STRING]
 			-- list of Archetype ids matching slots, keyed by slot path
+			-- Current slot logic of include/exclude lists:
+			-- 	IF includes not empty and /= 'any' THEN
+			-- 		IF not excludes empty THEN -- excludes must = any; means not a recommendation
+			--			create match list = includes constraint
+			--		ELSE -- it is just a recommendation;formally it means match all
+			--			create match list = all archetypes of compatible RM type
+			--		END
+			--	ELSEIF excludes not empty and /= 'any' THEN
+			-- 		IF not includes empty THEN -- includes must = any; means not a recommendation
+			--			create match list = all achetypes - excludes constraint matchlist
+			--		ELSE -- just a recommendation; formally it means match all
+			--			create match list = all archetypes of compatible RM type
+			--		END
+			--  ELSE
+			--		create match list = all archetypes of compatible RM type
+			--	END
+		require
+			compilation_state >= Cs_validated_phase_1
+		do
+			if not attached slot_id_index_cache then
+				compute_slot_id_index
+			end
+			Result := slot_id_index_cache
+		end
 
 	display_language: STRING
 			-- generate a valid language to display this archetype in, either the current_language
@@ -553,7 +578,7 @@ feature -- Status Report - Semantic
 	has_slots: BOOLEAN
 			-- Does this archetype have any slots?
 		do
-			Result := attached slot_id_index
+			Result := compilation_state = Cs_validated_phase_1 and then not slot_id_index.is_empty
 		end
 
 	is_supplier: BOOLEAN
@@ -581,6 +606,11 @@ feature -- Status Report - Semantic
 			-- Does the repository have a legacy flat-form file for this archetype?
 		do
 			Result := file_repository.is_valid_path (legacy_flat_path)
+		end
+
+	is_legacy: BOOLEAN
+		do
+			Result := attached legacy_flat_path
 		end
 
 	has_differential_compiled_file: BOOLEAN
@@ -886,13 +916,12 @@ feature {NONE} -- Compilation
 
 				-- determine the suppliers list for ongoing compilation; exclude an reference to the current archetype to avoid an infinite recursion
 				create suppliers_index.make (0)
-				if differential_archetype.has_suppliers then
-					supp_idx := differential_archetype.suppliers_index
-					across supp_idx as supp_idx_csr loop
-						if current_arch_cat.archetype_index.has (supp_idx_csr.key) and not supp_idx_csr.key.is_case_insensitive_equal (id.as_string) then
-							suppliers_index.put (current_arch_cat.archetype_index.item (supp_idx_csr.key), supp_idx_csr.key)
-						end
+				across differential_archetype.suppliers_index as supp_idx_csr loop
+					if current_arch_cat.archetype_index.has (supp_idx_csr.key) and not supp_idx_csr.key.is_case_insensitive_equal (id.as_string) then
+						suppliers_index.put (current_arch_cat.archetype_index.item (supp_idx_csr.key), supp_idx_csr.key)
 					end
+				end
+				if not suppliers_index.is_empty then
 					compilation_state := Cs_suppliers_known
 				else
 					compilation_state := Cs_ready_to_validate
@@ -960,20 +989,14 @@ feature {NONE} -- Compilation
 			Compilation_state: (<<Cs_validated, Cs_validate_failed>>).has (compilation_state)
 		end
 
-feature {ARCHETYPE_VALIDATOR} -- Modification
+feature {ARCHETYPE_CATALOGUE} -- Modification
 
-	add_slot_ids (a_list: ARRAYED_SET [STRING]; a_slot_path: STRING)
-			-- add list of matching archetypes to ids recorded for slot at a_slot_path
+	clear_old_ontological_parent_name
 		do
-			if slot_id_index = Void then
-				create slot_id_index.make (0)
-			end
-			if not slot_id_index.has (a_slot_path) then
-				slot_id_index.force (a_list, a_slot_path)
-			else
-				slot_id_index.item (a_slot_path).merge (a_list)
-			end
+			old_ontological_parent_name := Void
 		end
+
+feature {ARCH_CAT_ARCHETYPE} -- Modification
 
 	add_client (an_archetype_id: STRING)
 			-- add the id of an archetype that has a slot that matches this archetype, i.e. that 'uses' this archetype
@@ -983,13 +1006,6 @@ feature {ARCHETYPE_VALIDATOR} -- Modification
 				clients_index.compare_objects
 			end
 			clients_index.extend (an_archetype_id)
-		end
-
-feature -- Modification
-
-	clear_old_ontological_parent_name
-		do
-			old_ontological_parent_name := Void
 		end
 
 feature -- Editing
@@ -1324,6 +1340,69 @@ feature {NONE} -- Implementation
 			an_arch.description.add_original_language_details
 			an_arch.description.detail_for_original_language.set_copyright (author_copyright)
 		end
+
+	compute_slot_id_index
+			-- generate `slot_id_index_cache'
+		require
+			compilation_state >= Cs_validated_phase_1
+		local
+			includes, excludes: ARRAYED_LIST[ASSERTION]
+			ara: ARCH_CAT_ARCHETYPE
+		do
+			if is_specialised then
+				slot_id_index_cache := specialisation_parent.slot_id_index
+			else
+				create slot_id_index_cache.make (0)
+			end
+			across differential_archetype.slot_index as slots_csr loop
+				includes := slots_csr.item.includes
+				excludes := slots_csr.item.excludes
+				if not includes.is_empty and not includes.first.matches_any then
+					if not excludes.is_empty then -- create specific match list from includes constraint
+						across includes as includes_csr loop
+							if attached {STRING} includes_csr.item.extract_regex as a_regex then
+								add_slot_ids (slot_id_index_cache, current_arch_cat.matching_ids (a_regex, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
+							end
+						end
+					else -- excludes = empty ==> includes is just a recommendation => match all archetype ids of RM type
+						add_slot_ids (slot_id_index_cache, current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_name), slots_csr.item.path)
+					end
+				elseif not excludes.is_empty and not excludes.first.matches_any then
+					add_slot_ids (slot_id_index_cache, current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
+					if not includes.is_empty then -- means excludes is not a recommendation; need to actually process it
+						across excludes as excludes_csr loop
+							if attached {STRING} excludes_csr.item.extract_regex as a_regex then
+								across current_arch_cat.matching_ids (a_regex, slots_csr.item.rm_type_name, id.rm_name) as ids_csr loop
+									slot_id_index_cache.item (slots_csr.item.path).prune (ids_csr.item)
+								end
+							end
+						end
+					end
+				else
+					add_slot_ids (slot_id_index_cache, current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_name), slots_csr.item.path)
+				end
+
+				-- now post the results in the reverse indexes
+				across slot_id_index_cache.item (slots_csr.item.path) as ids_csr loop
+					ara := current_arch_cat.archetype_index.item (ids_csr.item)
+					if not ara.is_supplier or else not ara.clients_index.has (id.as_string) then
+						ara.add_client (id.as_string)
+					end
+				end
+			end
+		end
+
+	add_slot_ids (idx: HASH_TABLE [ARRAYED_SET[STRING], STRING]; a_list: ARRAYED_SET [STRING]; a_slot_path: STRING)
+			-- add list of matching archetypes to ids recorded for slot at a_slot_path
+		do
+			if not idx.has (a_slot_path) then
+				idx.force (a_list, a_slot_path)
+			else
+				idx.item (a_slot_path).merge (a_list)
+			end
+		end
+
+	slot_id_index_cache: HASH_TABLE [ARRAYED_SET[STRING], STRING]
 
 invariant
 	compilation_state_valid: valid_compilation_state (compilation_state)

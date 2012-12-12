@@ -28,6 +28,11 @@ inherit
 			is_equal, out
 		end
 
+	ITERABLE [OG_PATH_ITEM]
+		undefine
+			is_equal, out
+		end
+
 create
 	make_absolute, make_relative, make_movable, make_from_string, make_from_other, make_root, make_pure_from_string
 
@@ -134,6 +139,12 @@ feature -- Initialisation
 feature -- Access
 
 	items: ARRAYED_LIST[OG_PATH_ITEM]
+
+	new_cursor: ITERATION_CURSOR [OG_PATH_ITEM]
+			-- Fresh cursor associated with current structure
+		do
+			Result := items.new_cursor
+		end
 
 	item: OG_PATH_ITEM
 		require

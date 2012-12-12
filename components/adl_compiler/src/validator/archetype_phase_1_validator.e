@@ -75,11 +75,6 @@ feature -- Validation
 				report_unused_ontology_codes
 				validate_ontology_code_spec_levels
 			end
-
-			-- build slots map
-			if passed and target.has_slots then
-				build_slot_id_index
-			end
 		end
 
 feature {NONE} -- Implementation
@@ -200,69 +195,6 @@ feature {NONE} -- Implementation
 			end
 			across target.ontology_unused_constraint_codes as unused_codes_csr loop
 				add_warning ("WOUC", <<unused_codes_csr.item>>)
-			end
-		end
-
-	build_slot_id_index
-			-- build slot_id_index in ARCH_REP_ARCHETYPE.
-			-- Current slot logic of include/exclude lists:
-			-- 	IF includes not empty and /= 'any' THEN
-			-- 		IF not excludes empty THEN -- excludes must = any; means not a recommendation
-			--			create match list = includes constraint
-			--		ELSE -- it is just a recommendation;formally it means match all
-			--			create match list = all archetypes of compatible RM type
-			--		END
-			--	ELSEIF excludes not empty and /= 'any' THEN
-			-- 		IF not includes empty THEN -- includes must = any; means not a recommendation
-			--			create match list = all achetypes - excludes constraint matchlist
-			--		ELSE -- just a recommendation; formally it means match all
-			--			create match list = all archetypes of compatible RM type
-			--		END
-			--  ELSE
-			--		create match list = all archetypes of compatible RM type
-			--	END
-		require
-			target.has_slots
-		local
-			includes, excludes: ARRAYED_LIST[ASSERTION]
-			ara: ARCH_CAT_ARCHETYPE
-		do
-			across target.slot_index as slots_csr loop
-				-- process the includes
-				includes := slots_csr.item.includes
-				excludes := slots_csr.item.excludes
-				if not includes.is_empty and not includes.first.matches_any then
-					if not excludes.is_empty then -- create specific match list from includes constraint
-						across includes as includes_csr loop
-							if attached {STRING} includes_csr.item.extract_regex as a_regex then
-								target_descriptor.add_slot_ids (current_arch_cat.matching_ids (a_regex, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
-							end
-						end
-					else -- excludes = empty ==> includes is just a recommendation => match all archetype ids of RM type
-						target_descriptor.add_slot_ids (current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, target.archetype_id.rm_name), slots_csr.item.path)
-					end
-				elseif not excludes.is_empty and not excludes.first.matches_any then
-					target_descriptor.add_slot_ids (current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
-					if not includes.is_empty then -- means excludes is not a recommendation; need to actually process it
-						across excludes as excludes_csr loop
-							if attached {STRING} excludes_csr.item.extract_regex as a_regex then
-								across current_arch_cat.matching_ids (a_regex, slots_csr.item.rm_type_name, target.archetype_id.rm_name) as ids_csr loop
-									target_descriptor.slot_id_index.item (slots_csr.item.path).prune (ids_csr.item)
-								end
-							end
-						end
-					end
-				else
-					target_descriptor.add_slot_ids (current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, target.archetype_id.rm_name), slots_csr.item.path)
-				end
-
-				-- now post the results in the reverse indexes
-				across target_descriptor.slot_id_index.item (slots_csr.item.path) as ids_csr loop
-					ara := current_arch_cat.archetype_index.item (ids_csr.item)
-					if not ara.is_supplier or else not ara.clients_index.has (target.archetype_id.as_string) then
-						ara.add_client (target.archetype_id.as_string)
-					end
-				end
 			end
 		end
 

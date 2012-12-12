@@ -40,21 +40,20 @@ feature -- Access
 
 	c_node_enter_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]
 
-	c_node_exit_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]
+	c_node_exit_action: detachable PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]
 
 	c_node_test: FUNCTION [ANY, TUPLE [ARCHETYPE_CONSTRAINT], BOOLEAN]
 
 feature -- Command
 
-	do_all (a_c_node_enter_action, a_c_node_exit_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]])
+	do_all (a_c_node_enter_action: like c_node_enter_action; a_c_node_exit_action: like c_node_exit_action)
 		do
 			c_node_enter_action := a_c_node_enter_action
 			c_node_exit_action := a_c_node_exit_action
 			tree_iterator.do_all (agent node_enter_action, agent node_exit_action)
 		end
 
-	do_at_surface (a_c_node_enter_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]];
-				a_c_node_test: FUNCTION [ANY, TUPLE [ARCHETYPE_CONSTRAINT], BOOLEAN])
+	do_at_surface (a_c_node_enter_action: like c_node_enter_action; a_c_node_test: like c_node_test)
 			-- do the enter action at the surface detected by a_c_node_test
 		do
 			c_node_enter_action := a_c_node_enter_action
@@ -62,8 +61,7 @@ feature -- Command
 			tree_iterator.do_at_surface (agent node_action, agent node_is_included)
 		end
 
-	do_until_surface (a_c_node_enter_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]];
-				a_c_node_test: FUNCTION [ANY, TUPLE [ARCHETYPE_CONSTRAINT], BOOLEAN])
+	do_until_surface (a_c_node_enter_action: like c_node_enter_action; a_c_node_test: like c_node_test)
 			-- do the enter action while a_c_node_test returns true; where it is false, stop processing child nodes
 		do
 			c_node_enter_action := a_c_node_enter_action
@@ -83,7 +81,9 @@ feature {NONE} -- Implementation
 
 	node_exit_action (a_node: attached OG_ITEM; depth: INTEGER)
 		do
-			c_node_exit_action.call ([arch_node, depth])
+			if attached c_node_exit_action then
+				c_node_exit_action.call ([arch_node, depth])
+			end
 		end
 
 	node_is_included (a_node: attached OG_ITEM): BOOLEAN

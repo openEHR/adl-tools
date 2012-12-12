@@ -101,13 +101,13 @@ feature {NONE} -- Initialisation
 
 			-- ============ RM schema directory getter ============
 			create rm_dir_setter.make (get_text ("rm_schema_dir_text"), agent :STRING do Result := rm_schema_directory end, 0, 0)
-			rm_dir_setter.set_post_select_agent (agent on_rm_schema_dir_browse)
+			rm_dir_setter.set_post_select_agent (agent on_set_rm_schema_dir)
 			ev_root_container.extend (rm_dir_setter.ev_root_container)
 			ev_root_container.disable_item_expand (rm_dir_setter.ev_root_container)
 			gui_controls.extend (rm_dir_setter)
 
 			-- ============ Ok/Cancel buttons ============
-			create ok_cancel_buttons.make (agent on_ok, agent hide)
+			create ok_cancel_buttons.make (agent on_ok, agent on_cancel)
 			ev_root_container.extend (ok_cancel_buttons.ev_root_container)
 			ev_root_container.disable_item_expand (ok_cancel_buttons.ev_root_container)
 			set_default_cancel_button (ok_cancel_buttons.cancel_button)
@@ -147,31 +147,62 @@ feature -- Events
 			-- Set shared settings from the dialog widgets.
 		local
 			i: INTEGER
+			error_dialog: EV_INFORMATION_DIALOG
 		do
-			hide
-			if not last_populated_rm_schema_dir.same_string (rm_schema_directory) and directory_exists (last_populated_rm_schema_dir) then
-				set_rm_schema_directory (last_populated_rm_schema_dir)
-				has_changed_schema_dir := True
-			end
+			-- we do this call again, even though it might have alredy been executed due to the user using the
+			-- directory browse button (multiple times). We do it here because the user might have also set the
+			-- directory by directlyy typing in the directory text box (in which case there is no other event to
+			-- link this call to)
+			on_set_rm_schema_dir
 
-			-- get the user-chosen list of schemas from the load list Grid
-			create {ARRAYED_LIST [STRING]} rm_schemas_ll.make (0)
-			rm_schemas_ll.compare_objects
-			from i := 1 until i > grid.row_count loop
-				if attached {EV_GRID_CHECKABLE_LABEL_ITEM} grid.row (i).item (Grid_schema_col) as gcli and then gcli.is_checked then
-					rm_schemas_ll.extend (gcli.text)
+			-- case where the directory no longer exists or is readable
+			if not directory_exists (last_populated_rm_schema_dir) then
+				post_error (Current, "load_schemas", "model_access_e5", <<last_populated_rm_schema_dir>>)
+				create error_dialog.make_with_text (billboard.content)
+				billboard.clear
+				error_dialog.show_modal_to_window (Current)
+			else
+				hide
+				if not last_populated_rm_schema_dir.same_string (rm_schema_directory) and directory_exists (last_populated_rm_schema_dir) then
+					set_rm_schema_directory (last_populated_rm_schema_dir)
+					has_changed_schema_dir := True
 				end
-				i := i + 1
-			end
 
-			if not rm_schemas_ll.is_empty and not rm_schemas_ll.is_equal (rm_schemas_load_list) then
-				set_rm_schemas_load_list (rm_schemas_ll)
-				rm_schemas_access.set_schema_load_list (rm_schemas_ll)
-				has_changed_schema_load_list := True
+				-- get the user-chosen list of schemas from the load list Grid
+				create {ARRAYED_LIST [STRING]} rm_schemas_ll.make (0)
+				rm_schemas_ll.compare_objects
+				from i := 1 until i > grid.row_count loop
+					if attached {EV_GRID_CHECKABLE_LABEL_ITEM} grid.row (i).item (Grid_schema_col) as gcli and then gcli.is_checked then
+						rm_schemas_ll.extend (gcli.text)
+					end
+					i := i + 1
+				end
+
+				if not rm_schemas_ll.is_empty and not rm_schemas_ll.is_equal (rm_schemas_load_list) then
+					set_rm_schemas_load_list (rm_schemas_ll)
+					rm_schemas_access.set_schema_load_list (rm_schemas_ll)
+					has_changed_schema_load_list := True
+				end
 			end
 		end
 
-	on_rm_schema_dir_browse
+	on_cancel
+			-- Set shared settings from the dialog widgets.
+		local
+			i: INTEGER
+			error_dialog: EV_INFORMATION_DIALOG
+		do
+			if not directory_exists (last_populated_rm_schema_dir) then
+				post_error (Current, "load_schemas", "model_access_e5", <<last_populated_rm_schema_dir>>)
+				create error_dialog.make_with_text (billboard.content)
+				billboard.clear
+				error_dialog.show_modal_to_window (Current)
+			else
+				hide
+			end
+		end
+
+	on_set_rm_schema_dir
 			-- Let the user browse for the directory where RM schemas are found.
 			-- if a change is made, reload schemas immediately, then repopulate this dialog
 		local
@@ -179,23 +210,17 @@ feature -- Events
 			new_rm_dir: STRING
 		do
 			new_rm_dir := rm_dir_setter.data_control_text
-
 			if not new_rm_dir.same_string (last_populated_rm_schema_dir) and directory_exists (new_rm_dir) then
 				ok_cancel_buttons.disable_sensitive
-
 				rm_schemas_access.initialise_with_load_list (new_rm_dir, rm_schemas_load_list)
-
 				if not rm_schemas_access.found_valid_schemas then
 					post_error (Current, "load_schemas", "model_access_e13", <<new_rm_dir>>)
 					create error_dialog.make_with_text (billboard.content)
 					billboard.clear
 					error_dialog.show_modal_to_window (Current)
 				end
-
 				populate_grid
-
 				ok_cancel_buttons.enable_sensitive
-
 				last_populated_rm_schema_dir := new_rm_dir
 			end
 		end
@@ -223,11 +248,10 @@ feature {NONE} -- Implementation
 			grid.set_minimum_height (rm_schemas_access.all_schemas.count * grid.row_height + grid.header.height)
 
 			-- create row containinng widgets for each top-level schema, with child schemas in tree
-			from rm_schemas_access.all_schemas.start until rm_schemas_access.all_schemas.off loop
-				if rm_schemas_access.all_schemas.item_for_iteration.is_top_level then
-					add_schema_grid_rows (rm_schemas_access.all_schemas.item_for_iteration, Void)
+			across rm_schemas_access.all_schemas as all_schemas_csr loop
+				if all_schemas_csr.item.is_top_level then
+					add_schema_grid_rows (all_schemas_csr.item, Void)
 				end
-				rm_schemas_access.all_schemas.forth
 			end
 
 			-- make the columnn content visible

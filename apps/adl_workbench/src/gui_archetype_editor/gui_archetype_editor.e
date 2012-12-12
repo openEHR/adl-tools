@@ -37,6 +37,11 @@ feature {NONE}-- Initialization
 	make
 		do
 			precursor
+			-- translation control
+			ev_notebook.extend (translation_control.ev_root_container)
+			ev_notebook.set_item_text (translation_control.ev_root_container, get_text ("translation_tab_text"))
+			-- ev_notebook.item_tab (translation_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/translation"))
+
 			select_flat_view
 		end
 
@@ -62,6 +67,7 @@ feature -- Commands
 			definition_control.enable_edit
 			ontology_controls.enable_edit
 			annotations_control.enable_edit
+			translation_control.enable_edit
 		end
 
 	disable_edit
@@ -71,6 +77,7 @@ feature -- Commands
 			definition_control.disable_edit
 			ontology_controls.disable_edit
 			annotations_control.disable_edit
+			translation_control.disable_edit
 		end
 
 feature -- Events
@@ -93,6 +100,7 @@ feature {NONE} -- Implementation
 			create definition_control.make_editable (agent update_undo_redo_controls)
 			create ontology_controls.make_editable (agent update_undo_redo_controls)
 			create annotations_control.make
+			create translation_control.make
 		end
 
 	do_populate
@@ -126,6 +134,8 @@ feature {NONE} -- Implementation
 		do
 			Result := True
 		end
+
+	translation_control: GUI_TRANSLATION_CONTROLS
 
 end
 

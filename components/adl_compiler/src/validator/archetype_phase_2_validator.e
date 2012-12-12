@@ -345,9 +345,12 @@ feature {NONE} -- Implementation
 		local
 			def_it: C_ITERATOR
 		do
+			parent_slot_id_index := target_descriptor.specialisation_parent.slot_id_index
 			create def_it.make (target.definition)
 			def_it.do_until_surface (agent specialised_node_validate, agent specialised_node_validate_test)
 		end
+
+	parent_slot_id_index: HASH_TABLE [ARRAYED_SET[STRING], STRING]
 
 	specialised_node_validate (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- validate nodes in differential specialised archetype
@@ -355,7 +358,6 @@ feature {NONE} -- Implementation
 		local
 			co_parent_flat: attached C_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
-			slot_id_index: HASH_TABLE [ARRAYED_SET[STRING], STRING]
 			ca_path_in_flat: STRING
 			ca_parent_flat: C_ATTRIBUTE
 		do
@@ -433,12 +435,11 @@ end
 				co_parent_flat := flat_parent.c_object_at_path (apa.path_at_level (flat_parent.specialisation_depth))
 
 				if attached {ARCHETYPE_SLOT} co_parent_flat as a_slot then
-					slot_id_index := target_descriptor.specialisation_parent.slot_id_index
-					if attached slot_id_index and then slot_id_index.has (a_slot.path) then
+					if parent_slot_id_index.has (a_slot.path) then
 						if not archetype_id_matches_slot (car.archetype_id, a_slot) then -- doesn't even match the slot definition
 							add_error ("VARXS", <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.archetype_id>>)
 
-						elseif not slot_id_index.item (a_slot.path).has (car.archetype_id) then -- matches def, but not found in actual list from current repo
+						elseif not parent_slot_id_index.item (a_slot.path).has (car.archetype_id) then -- matches def, but not found in actual list from current repo
 							add_error ("VARXR", <<ontology.physical_to_logical_path (car.path, target_descriptor.archetype_view_language, True), car.archetype_id>>)
 
 						elseif not car.occurrences_conforms_to (a_slot) then
