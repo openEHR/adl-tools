@@ -116,7 +116,6 @@ feature -- Visitor
 			last_result.append (apply_style(symbol(SYM_ALLOW_ARCHETYPE), STYLE_KEYWORD) + format_item(FMT_SPACE))
 
 			serialise_type_node_id (a_node, depth)
-			serialise_occurrences(a_node, depth)
 
 			if a_node.is_closed then
 				-- output 'closed ' or 'closed -- comment'
@@ -126,6 +125,7 @@ feature -- Visitor
 			elseif a_node.any_allowed then
 				-- output 'matches {*'
 				-- (comment has to be serialised in end_ routine)
+				serialise_occurrences(a_node, depth)
 				if not (attached a_node.occurrences or
 					a_node.is_addressable and archetype.is_specialised and then specialisation_depth_from_code (a_node.node_id) = archetype.specialisation_depth)
 				then
@@ -135,7 +135,9 @@ feature -- Visitor
 				end
 
 			else
-				-- output 'matches { -- comment%N' or 'matches {%N'
+				-- output occurrences
+				-- 'matches { -- comment%N' or 'matches {%N'
+				serialise_occurrences(a_node, depth)
 				last_result.append (apply_style(symbol(SYM_MATCHES), STYLE_OPERATOR) + format_item(FMT_SPACE))
 				last_result.append (symbol(SYM_START_CBLOCK))
 				serialise_comment (a_node)
@@ -146,7 +148,10 @@ feature -- Visitor
 	end_archetype_slot (a_node: ARCHETYPE_SLOT; depth: INTEGER)
 			-- end serialising an ARCHETYPE_SLOT
 		do
-			if a_node.any_allowed then
+			if a_node.is_closed then
+				last_result.append (format_item(FMT_NEWLINE))
+
+			elseif a_node.any_allowed then
 				-- output '}%N' or '} -- comment%N'
 				if not (attached a_node.occurrences or
 					a_node.is_addressable and archetype.is_specialised and then specialisation_depth_from_code (a_node.node_id) = archetype.specialisation_depth)

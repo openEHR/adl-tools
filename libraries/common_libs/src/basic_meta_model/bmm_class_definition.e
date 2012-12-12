@@ -47,7 +47,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	bmm_schema: BMM_SCHEMA
+	bmm_schema: detachable BMM_SCHEMA
 			-- reverse reference to parent schema
 
 	name: attached STRING
@@ -240,9 +240,8 @@ feature -- Access
 			Result.compare_objects
 			Result.extend (name)
 			if is_generic then
-				from generic_parameters.start until generic_parameters.off loop
-					Result.append(generic_parameters.item_for_iteration.flattened_type_list)
-					generic_parameters.forth
+				across generic_parameters as gen_parms_csr loop
+					Result.append (gen_parms_csr.item.flattened_type_list)
 				end
 			end
 		end
@@ -371,10 +370,7 @@ feature -- Status Report
 		require
 			Class_name_valid: not a_class_name.is_empty
 		do
-			from immediate_descendants.start until immediate_descendants.off or Result loop
-				Result := immediate_descendants.item.name.is_equal(a_class_name)
-				immediate_descendants.forth
-			end
+			Result := across immediate_descendants as descs_csr some descs_csr.item.name.is_equal (a_class_name) end
 		end
 
 	has_property_path (a_path: attached OG_PATH): BOOLEAN
@@ -639,9 +635,8 @@ feature {NONE} -- Implementation
 							props := bmm_schema.class_definition (a_prop.type.root_class).properties
 						end
 
-						from props.start until props.off loop
-							do_property_supplier_closure (props.item_for_iteration, flat_flag, continue_action, enter_action, exit_action, depth + 1)
-							props.forth
+						across props as props_csr loop
+							do_property_supplier_closure (props_csr.item, flat_flag, continue_action, enter_action, exit_action, depth + 1)
 						end
 					end
 		--		end
