@@ -74,6 +74,17 @@ if env.EiffelEnvironmentVariable('ISE_C_COMPILER') == 'msc':
 adl_compiler_lib = env.Command('${SOURCE.dir}/lib${SOURCE.filebase}$LIBSUFFIX', adl_compiler, [make + ['cecil']], chdir = 1)
 env.Program(['deployment/c/c_tester_for_adl_compiler/adlc_test_app.c', adl_compiler_lib], CPPPATH=include, LIBS=libs)
 
+# Define how to generate the reference model schemas directory.
+
+rm_schemas = []
+
+for dir, dirnames, filenames in os.walk('reference-models'):
+		if '.svn' in dirnames: dirnames.remove('.svn')
+		if '.git' in dirnames: dirnames.remove('.git')
+		rm_schemas += env.Install('rm_schemas', env.Files(dir + '/*.bmm'))
+
+Alias('rm_schemas', rm_schemas)
+
 # Define how to put installers, etc., into the distribution directory.
 # These are not performed unless a path containing 'oe_distrib' is explicitly requested on the command line.
 
@@ -97,15 +108,15 @@ if distrib and len(adl_workbench) > 0:
 	ui_config = 'apps/adl_workbench/app/default_ui_config.cfg'
 	icons = 'apps/adl_workbench/app/icons'
 	terminology = 'apps/adl_workbench/app/terminology'
-	rm_schemas = 'rm_schemas'
 	error_db = 'apps/adl_workbench/app/error_db'
 	vim = 'components/adl_compiler/etc/vim'
 	install = 'apps/adl_workbench/install/' + platform
-	adl_workbench_installer_sources = [adl_workbench[0], license, xsl, css, xml_rules, ui_config]
+	adl_workbench_installer_sources = [adl_workbench[0], license, xsl, css, xml_rules, ui_config] + rm_schemas
 
-	for root in [icons, terminology, rm_schemas, error_db, vim, install]:
+	for root in [icons, terminology, error_db, vim, install]:
 		for dir, dirnames, filenames in os.walk(root):
 			if '.svn' in dirnames: dirnames.remove('.svn')
+			if '.git' in dirnames: dirnames.remove('.git')
 			adl_workbench_installer_sources += env.Files(dir + '/*')
 
 	if platform == 'windows':
@@ -131,12 +142,12 @@ if distrib and len(adl_workbench) > 0:
 			for src in [str(adl_workbench[0]), license, xsl, css, xml_rules, ui_config]:
 				tar.add(src, os.path.basename(src))
 
-			for root in [icons, terminology, rm_schemas, error_db, vim]:
+			for root in [icons, terminology, error_db, vim, 'rm_schemas']:
 				root_dirname_length = len(os.path.dirname(root))
 
 				for dir, dirnames, filenames in os.walk(root):
-					if '.svn' in dirnames:
-						dirnames.remove('.svn')
+					if '.svn' in dirnames: dirnames.remove('.svn')
+					if '.git' in dirnames: dirnames.remove('.git')
 
 					if root_dirname_length > 0:
 						archived_dir = dir[root_dirname_length + 1:]
@@ -176,7 +187,7 @@ if distrib and len(adl_workbench) > 0:
 				copy_tree(install, distrib)
 				copy_tree(vim, pkg_contents)
 
-				for src in [str(adl_workbench[0]), license, xsl, css, xml_rules, ui_config, icons, terminology, rm_schemas, error_db]:
+				for src in [str(adl_workbench[0]), license, xsl, css, xml_rules, ui_config, icons, terminology, error_db, 'rm_schemas']:
 					copy_tree(src, pkg_contents + '/ADL Workbench.app/Contents/Resources/')
 
 				for src, dst in [['apps/adl_workbench/doc/web/release_notes.html', 'Welcome.html'], ['apps/adl_workbench/doc/web/help-mac_install.html', 'ReadMe.html']]:
