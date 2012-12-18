@@ -86,7 +86,7 @@ for dir, dirnames, filenames in os.walk('reference-models'):
 Alias('rm_schemas', rm_schemas)
 
 # Define how to put installers, etc., into the distribution directory.
-# These are not performed unless a path containing 'oe_distrib' is explicitly requested on the command line.
+# These are not performed unless a path containing 'downloads' is explicitly requested on the command line.
 
 distrib = None
 installer = None
@@ -95,7 +95,7 @@ for target in COMMAND_LINE_TARGETS:
 	s = os.path.normpath(target)
 
 	while distrib == None and s != os.path.dirname(s):
-		if os.path.basename(s) == 'oe_distrib':
+		if os.path.basename(s) == 'downloads':
 			distrib = s + '/' + platform
 		else:
 			s = os.path.dirname(s)
@@ -132,7 +132,7 @@ if distrib and len(adl_workbench) > 0:
 				install + '/ADL_Workbench/ADLWorkbenchInstall.nsi'
 			]
 
-			installer = env.Command(distrib + '/tools/ADLWorkbenchInstall.exe', adl_workbench_installer_sources + env.Files(install + '/ADL_Workbench/*'), [command])
+			installer = env.Command(distrib + '/adl_workbench/ADLWorkbenchInstall.exe', adl_workbench_installer_sources + env.Files(install + '/ADL_Workbench/*'), [command])
 
 	if platform == 'linux':
 		def create_linux_installer(target, source, env):
@@ -158,7 +158,7 @@ if distrib and len(adl_workbench) > 0:
 
 			tar.close()
 
-		env.Command(distrib + '/tools/adl_workbench-linux.tar.bz2', adl_workbench_installer_sources, create_linux_installer)
+		env.Command(distrib + '/adl_workbench/adl_workbench-linux.tar.bz2', adl_workbench_installer_sources, create_linux_installer)
 
 	if platform == 'mac_osx':
 		packagemaker = '/Developer/usr/bin/packagemaker'
@@ -230,7 +230,7 @@ if distrib and len(adl_workbench) > 0:
 				'-d', pkg_tree + '/Description.plist'
 			]
 
-			installer = env.Command(distrib + '/tools/' + pkg_name + '.dmg', adl_workbench_installer_sources, [
+			installer = env.Command(distrib + '/adl_workbench/' + pkg_name + '.dmg', adl_workbench_installer_sources, [
 				Delete(pkg_tree),
 				env.Action(copy_mac_osx_installer_sources, 'Copying installer files to ' + pkg_tree),
 				command,
