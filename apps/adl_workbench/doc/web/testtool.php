@@ -7,7 +7,7 @@ $pageOn = basename($_SERVER['PHP_SELF']);
 <head>
 	<title>openEHR - ADL Workbench</title>
 	<link rel="bookmark" href="http://www.openehr.org/downloads/ADLworkbench/testtool" title="openEHR - ADL Workbench">
-	<?php include '../../panel/headpanel.php' ?>
+	<?php include 'http://www.openehr.org/panel/headpanel.php' ?>
 </head>
 
 
@@ -16,13 +16,13 @@ $pageOn = basename($_SERVER['PHP_SELF']);
 <div id="MainFrame">
 	
 	<div id="TopPanel">
-		<?php include '../../panel/toppanel.php' ?>
+		<?php include 'http://www.openehr.org/panel/toppanel.php' ?>
 	</div>
 	
 	<div id="TopMenu" style="text-align:left">
 	
 		<div class="nav">
-			<?php include '../../menu/topmenu.php' ?>
+			<?php include 'http://www.openehr.org/menu/topmenu.php' ?>
 		</div>
 		
 	</div> 
@@ -102,11 +102,11 @@ $pageOn = basename($_SERVER['PHP_SELF']);
 	</div>
 
 	<div id="BottomMenu">
-		<?php include '../../menu/bottommenu.php' ?>
+		<?php include 'http://www.openehr.org/menu/bottommenu.php' ?>
 	</div>
 
 	<div id="BottomPanel">
-		<?php include '../../panel/bottompanel.php' ?>
+		<?php include 'http://www.openehr.org/panel/bottompanel.php' ?>
 	</div>
 
 </div>

@@ -8,7 +8,7 @@ $pageOn = basename($_SERVER['PHP_SELF']);
 
 	<title>openEHR - ADL Workbench</title>
 	<link rel="bookmark" href="http://www.openehr.org/downloads/ADLworkbench/obtainingarchetypes" title="openEHR - ADL Workbench">
-	<?php include '../../panel/headpanel.php' ?>
+	<?php include 'http://www.openehr.org/panel/headpanel.php' ?>
 	
 </head>
 
@@ -18,13 +18,13 @@ $pageOn = basename($_SERVER['PHP_SELF']);
 <div id="MainFrame">
 	
 	<div id="TopPanel">
-		<?php include '../../panel/toppanel.php' ?>
+		<?php include 'http://www.openehr.org/panel/toppanel.php' ?>
 	</div>
 	
 	<div id="TopMenu" style="text-align:left">
 	
 		<div class="nav">
-			<?php include '../../menu/topmenu.php' ?>
+			<?php include 'http://www.openehr.org/menu/topmenu.php' ?>
 		</div>
 
 	</div> 
@@ -45,7 +45,7 @@ $pageOn = basename($_SERVER['PHP_SELF']);
 				<li><a href="http://www.openehr.org/knowledge">openEHR Knowledge Repository</a></li>
 				<li><a href="http://dcm.nehta.org.au/ckm">Australian National (Nehta) Knowledge Repository</a></li>
 				<li><a href="https://ckm.nca.stuba.sk/">Slovak National (STUBA) Knowledge Repository</a></li>
-				<li><a href="http://www.openehr.org/svn/knowledge2/TRUNK/archetypes/">openEHR test and sample archetypes</a></li>
+				<li><a href="https://github.com/openEHR/adl-archetypes">openEHR test and sample archetypes</a></li>
 			</ul>
 			 
 			<h3>Downloading from a Clinical Knowledge Manager (CKM) site</h3>
@@ -55,8 +55,8 @@ $pageOn = basename($_SERVER['PHP_SELF']);
 			  <li>Go to Archetypes &gt; Bulk Export and select all archetypes for download; save in any convenient location. For the purposes of this documentation, we will refer to the location as $CKM for each of these CKM downloads (i.e. you will probably have directores like .../openEHR_CKM, .../Nehta_CKM, etc).</li>
 			</ul>
 
-			<h3>Downloading the openEHR knowledge2 test and sample archetypes</h3>
-			<p>The <i>open</i>EHR test archetype repository is a Subversion repository located <a href="http://www.openehr.org/svn/knowledge2/TRUNK/archetypes">here</a>. If you have a Subversion client such as TortoiseSVN installed on your machine, use it to check out this repository. Check this repository out to a convenient location on your computer.</p>
+			<h3>Downloading the openEHR test and sample archetypes</h3>
+			<p>The <i>open</i>EHR test archetype repository is a GitHub repository located <a href="https://github.com/openEHR/adl-archetypes">here</a>. If you have a Git client installed on your machine, use it to check out this repository; you can also obtain the repo as a <a href ="https://github.com/openEHR/adl-archetypes/archive/master.zip">clean .zip file</a>. Check this repository out to a convenient location on your computer.</p>
 			<p>Now, there is actually more than one logical group of archetypes in the repository, found in the following sub-directories:</p>
 			<ul>
 				<li><em>ADL_1.5_test</em>: ADL 1.5 validity testing archetypes; </li>
@@ -100,11 +100,11 @@ $pageOn = basename($_SERVER['PHP_SELF']);
 	</div>
 
 	<div id="BottomMenu">
-		<?php include '../../menu/bottommenu.php' ?>
+		<?php include 'http://www.openehr.org/menu/bottommenu.php' ?>
 	</div>
 
 	<div id="BottomPanel">
-		<?php include '../../panel/bottompanel.php' ?>
+		<?php include 'http://www.openehr.org/panel/bottompanel.php' ?>
 	</div>
 
 </div>
