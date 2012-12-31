@@ -7,10 +7,6 @@ note
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class GUI_ARCHETYPE_EDITOR
 
 inherit
@@ -109,6 +105,19 @@ feature {NONE} -- Implementation
 			precursor
 			description_controls.populate (source, differential_view, selected_language)
 			definition_control.populate (source, differential_view, selected_language)
+		end
+
+	attach_gui_context
+		local
+			gui_context: GUI_ARCH_CAT_EDITOR_STATE
+		do
+			if not source.has_gui_context then
+				create gui_context.make (source)
+				source.set_gui_context (gui_context)
+			elseif attached {GUI_ARCH_CAT_EDITOR_STATE} source.gui_context as gc then
+				gui_context := gc
+			end
+			gui_context.set_editable (undo_redo_chain)
 		end
 
 	do_commit

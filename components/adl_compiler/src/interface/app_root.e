@@ -9,14 +9,10 @@ note
 	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class APP_ROOT
 
 inherit
-	SHARED_KNOWLEDGE_REPOSITORY
+	SHARED_ARCHETYPE_CATALOGUES
 
 	SHARED_ARCHETYPE_COMPILER
 
@@ -34,21 +30,23 @@ inherit
 			{NONE} all
 		end
 
+	ANY_VALIDATOR
+		rename
+			validate as initialise_app, ready_to_validate as ready_to_initialise_app
+		redefine
+			ready_to_initialise_app
+		end
+
 feature -- Initialisation
 
-	set_application_developer_name (a_name: attached STRING)
+	set_application_developer_name (a_name: STRING)
 			-- override the default of "openEHR" for the developer (i.e. vendor) name; this
 			-- name is what gets used in the user's app config path, install directory and so on
 		do
 			application_developer_name.make_from_string (a_name)
 		end
 
-	initialise
-		local
-			dummy_error_accumulator: ERROR_ACCUMULATOR
-			strx: STRING
-			term_init: XML_TERMINOLOGY_SERVICE_POPULATOR
-			dead_profiles: ARRAYED_LIST [STRING]
+	initialise_shell
 		once
 			-- see DT_TYPES note above; a hack needed to make string name -> type_id work for class names
 			-- that clash with Eiffel type names
@@ -56,80 +54,93 @@ feature -- Initialisation
 			add_custom_dt_dynamic_type_from_string ("C_DATE", ({C_DATE}).type_id)
 
 			message_db.populate (Error_db_directory, locale_language_short)
-			if message_db.database_loaded then
 
-				-- set error reporting level in billboard and all error accumulator objects
-				billboard.set_error_reporting_level(error_reporting_level)
-				create dummy_error_accumulator.make
-				dummy_error_accumulator.set_error_reporting_level (error_reporting_level)
+			-- initialise serialisers
+			initialise_serialisers
 
-				-- initialise terminology
-				create term_init.make
-				if term_init.init_failed then
-					post_error (Current, "initialise", "terminology_init_failed", <<term_init.init_fail_reason>>)
-				end
+			reset
+		end
 
-				-- check if found an XML rules file, and copy in sample one if none
-				if not file_system.file_exists (xml_rules_file_path) then
-					if file_system.file_exists (xml_rules_sample_file_path) then
-						file_system.copy_file (xml_rules_sample_file_path, xml_rules_file_path)
-					else
-						post_error (Current, "initialise", "xml_rules_sample_file_missing", <<xml_rules_sample_file_path>>)
-					end
-				end
+	initialise_app
+		local
+			strx: STRING
+			term_init: XML_TERMINOLOGY_SERVICE_POPULATOR
+			dead_profiles: ARRAYED_LIST [STRING]
+		once
+			-- set error reporting level in billboard and all error accumulator objects
+			billboard.set_error_reporting_level(error_reporting_level)
+			errors.set_error_reporting_level (error_reporting_level)
 
-				-- initialise serialisers
-				initialise_serialisers
-
-				-- set up the RM schemas
-				if rm_schema_directory.is_empty then
-					set_rm_schema_directory (default_rm_schema_directory)
-				end
-				if directory_exists (rm_schema_directory) then
-					rm_schemas_access.initialise_with_load_list (rm_schema_directory, rm_schemas_load_list)
-					if not rm_schemas_access.found_valid_schemas then
-						create strx.make_empty
-						rm_schemas_load_list.do_all (agent (s: STRING; err_str: STRING) do err_str.append(s + ", ") end (?, strx))
-						strx.remove_tail (2) -- remove final ", "
-						post_warning (Current, "initialise", "model_access_e0", <<strx, rm_schema_directory>>)
-					end
-				else
-					post_error (Current, "initialise", "model_access_e5", <<rm_schema_directory>>)
-				end
-
-				-- adjust for repository profiles being out of sync with current profile setting (e.g. due to
-				-- manual editing of .cfg file)
-				-- first of all check for broken profiles and get rid of them
-				create dead_profiles.make (0)
-				from repository_profiles.start until repository_profiles.off loop
-					if not is_profile_valid (repository_profiles.key_for_iteration) then
-						dead_profiles.extend (repository_profiles.key_for_iteration)
-					end
-					repository_profiles.forth
-				end
-				across dead_profiles as profs_csr loop
-					post_error (Current, "current_arch_cat", "remove_profile", <<invalid_profile_reason (profs_csr.item)>>)
-					repository_profiles.remove_profile (profs_csr.item)
-				end
-
-				-- now choose a profile to start with
-				if not repository_profiles.is_empty then
-					if not has_current_profile then
-						repository_profiles.start
-						set_current_profile (repository_profiles.key_for_iteration)
-					end
-					use_current_profile (False)
-				end
-
-				-- tell the user a few useful things
-				post_warning (Current, "initialise", "adl_version_warning", <<adl_version_for_flat_output>>)
-				if validation_strict then
-					post_warning (Current, "initialise", "validation_strict", Void)
-				else
-					post_warning (Current, "initialise", "validation_non_strict", Void)
-				end
-
+			-- initialise terminology
+			if terminology_directory.is_empty then
+				set_terminology_directory (Default_terminology_directory)
 			end
+			create term_init.make
+			if term_init.init_failed then
+				add_error ("terminology_init_failed", <<term_init.init_fail_reason>>)
+			end
+
+			-- check if found an XML rules file, and copy in sample one if none
+			if not file_system.file_exists (xml_rules_file_path) then
+				if file_system.file_exists (xml_rules_sample_file_path) then
+					file_system.copy_file (xml_rules_sample_file_path, xml_rules_file_path)
+				else
+					add_error ("xml_rules_sample_file_missing", <<xml_rules_sample_file_path>>)
+				end
+			end
+
+			-- set up the RM schemas
+			if rm_schema_directory.is_empty then
+				set_rm_schema_directory (Default_rm_schema_directory)
+			end
+			if directory_exists (rm_schema_directory) then
+				rm_schemas_access.initialise_with_load_list (rm_schema_directory, rm_schemas_load_list)
+				if not rm_schemas_access.found_valid_schemas then
+					create strx.make_empty
+					rm_schemas_load_list.do_all (agent (s: STRING; err_str: STRING) do err_str.append(s + ", ") end (?, strx))
+					strx.remove_tail (2) -- remove final ", "
+					add_warning ("model_access_e0", <<strx, rm_schema_directory>>)
+				end
+			else
+				add_error ("model_access_e5", <<rm_schema_directory>>)
+			end
+
+			-- adjust for repository profiles being out of sync with current profile setting (e.g. due to
+			-- manual editing of .cfg file)
+			-- first of all check for broken profiles and get rid of them
+			create dead_profiles.make (0)
+			across repository_profiles as profs_csr loop
+				if not is_profile_valid (profs_csr.key) then
+					dead_profiles.extend (profs_csr.key)
+				end
+			end
+			across dead_profiles as profs_csr loop
+				add_error ("remove_profile", <<invalid_profile_reason (profs_csr.item)>>)
+				repository_profiles.remove_profile (profs_csr.item)
+			end
+
+			-- now choose a profile to start with
+			if not repository_profiles.is_empty then
+				if not has_current_profile then
+					set_current_profile (repository_profiles.first_profile)
+				end
+				use_current_profile (False)
+			end
+
+			-- tell the user a few useful things
+			add_warning ("adl_version_warning", <<adl_version_for_flat_output>>)
+			if validation_strict then
+				add_warning ("validation_strict", Void)
+			else
+				add_warning ("validation_non_strict", Void)
+			end
+		end
+
+feature -- Status Report
+
+	ready_to_initialise_app: BOOLEAN
+		do
+			Result := message_db.database_loaded
 		end
 
 end

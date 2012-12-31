@@ -22,7 +22,7 @@ inherit
 			make, rm_type, arch_node, parent, prepare_display_in_grid, display_in_grid
 		end
 
-	SHARED_KNOWLEDGE_REPOSITORY
+	SHARED_ARCHETYPE_CATALOGUES
 		export
 			{NONE} all
 		end

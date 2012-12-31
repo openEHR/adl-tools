@@ -20,7 +20,7 @@ inherit
 			can_populate, can_repopulate
 		end
 
-	SHARED_KNOWLEDGE_REPOSITORY
+	SHARED_ARCHETYPE_CATALOGUES
 		export
 			{NONE} all;
 			{ANY} has_current_profile

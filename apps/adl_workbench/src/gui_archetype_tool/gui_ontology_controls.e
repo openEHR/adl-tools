@@ -251,11 +251,11 @@ feature {NONE} -- Implementation
 			-- update either term definition or binding in ontology based on `a_col_name' column in displayed table
 		do
 			if archetype_term_keys.has (a_col_name) then
-				edit_archetype.ontology.replace_term_definition_item (selected_language, a_code, a_col_name, a_value)
-			elseif edit_archetype.ontology.has_term_binding (a_col_name, a_code) then -- replace an existing binding
-				edit_archetype.ontology.replace_term_binding (create {CODE_PHRASE}.make_from_string (a_value), a_code)
-			elseif edit_archetype.ontology.has_terminology (a_col_name) then -- terminology known
-				edit_archetype.ontology.add_term_binding (create {CODE_PHRASE}.make_from_string (a_value), a_code)
+				source_archetype.ontology.replace_term_definition_item (selected_language, a_code, a_col_name, a_value)
+			elseif source_archetype.ontology.has_term_binding (a_col_name, a_code) then -- replace an existing binding
+				source_archetype.ontology.replace_term_binding (create {CODE_PHRASE}.make_from_string (a_value), a_code)
+			elseif source_archetype.ontology.has_terminology (a_col_name) then -- terminology known
+				source_archetype.ontology.add_term_binding (create {CODE_PHRASE}.make_from_string (a_value), a_code)
 			end
 		end
 
@@ -263,11 +263,11 @@ feature {NONE} -- Implementation
 			-- update either constraint definition or binding in ontology based on `a_col_name' column in displayed table
 		do
 			if archetype_term_keys.has (a_col_name) then
-				edit_archetype.ontology.replace_constraint_definition_item (selected_language, a_code, a_col_name, a_value)
-			elseif edit_archetype.ontology.has_constraint_binding (a_col_name, a_code) then -- replace an existing binding
-				edit_archetype.ontology.replace_constraint_binding (create {URI}.make_from_string (a_value), a_col_name, a_code)
-			elseif edit_archetype.ontology.has_terminology (a_col_name) then -- terminology known
-				edit_archetype.ontology.add_constraint_binding (create {URI}.make_from_string (a_value), a_col_name, a_code)
+				source_archetype.ontology.replace_constraint_definition_item (selected_language, a_code, a_col_name, a_value)
+			elseif source_archetype.ontology.has_constraint_binding (a_col_name, a_code) then -- replace an existing binding
+				source_archetype.ontology.replace_constraint_binding (create {URI}.make_from_string (a_value), a_col_name, a_code)
+			elseif source_archetype.ontology.has_terminology (a_col_name) then -- terminology known
+				source_archetype.ontology.add_constraint_binding (create {URI}.make_from_string (a_value), a_col_name, a_code)
 			end
 		end
 

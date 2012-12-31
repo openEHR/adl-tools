@@ -1,17 +1,13 @@
 note
 	component:   "openEHR Project"
 	description: "[
-				 General idea of a validator object that reports errors, warnings.
+				 Abstract model of a validator object that reports errors, warnings.
 				 ]"
 	keywords:    "ADL, archetype"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 
 deferred class ANY_VALIDATOR
@@ -35,7 +31,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	errors: attached ERROR_ACCUMULATOR
+	errors: ERROR_ACCUMULATOR
 			-- error output of validator - things that must be corrected
 		note
 			option: transient
@@ -43,6 +39,11 @@ feature -- Access
 		end
 
 feature -- Status Report
+
+	has_errors: BOOLEAN
+		do
+			Result := errors.has_errors
+		end
 
 	has_error (a_code: STRING): BOOLEAN
 		do
@@ -88,7 +89,7 @@ feature -- Modification
 			errors.extend (create {ERROR_DESCRIPTOR}.make_info (a_key, get_msg(a_key, args), a_location))
 		end
 
-	merge_errors (other_errors: attached ERROR_ACCUMULATOR)
+	merge_errors (other_errors: ERROR_ACCUMULATOR)
 		do
 			errors.append (other_errors)
 			passed := passed and not other_errors.has_errors

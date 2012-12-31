@@ -33,7 +33,10 @@ feature {NONE} -- Implementation
 			dir_name_index: SORTED_TWO_WAY_LIST [STRING]
 			ara: ARCH_CAT_ARCHETYPE
 			amp: ARCHETYPE_MINI_PARSER
+			aof: APP_OBJECT_FACTORY
    		do
+   			create aof
+
    			-- generate lists of immediate child directory and archetype file names
    			-- in the current directory 'a_parent_node.item.full_path'
    			debug("arch_dir")
@@ -65,7 +68,7 @@ feature {NONE} -- Implementation
 								elseif amp.last_archetype.is_specialised and amp.last_archetype.parent_archetype_id_is_old_style then
 									post_error (Current, "build_directory", "parse_archetype_e11", <<fn, amp.last_archetype.parent_archetype_id.as_string>>)
 								else -- create the descriptor and put it into a local Hash for this node
-									create ara.make_legacy (l_full_path, Current, amp.last_archetype)
+									ara := aof.create_arch_cat_archetype_make_legacy (l_full_path, Current, amp.last_archetype)
 									archetype_id_index.force (ara, ara.id.as_string)
 								end
 							else
@@ -84,7 +87,7 @@ feature {NONE} -- Implementation
 							amp.parse (l_full_path)
 							if amp.last_parse_valid then
 								if not archetype_id_index.has (amp.last_archetype.archetype_id.as_string) then
-									create ara.make (l_full_path, Current, amp.last_archetype)
+									ara := aof.create_arch_cat_archetype_make (l_full_path, Current, amp.last_archetype)
 									archetype_id_index.force (ara, ara.id.as_string)
 								end
 							else

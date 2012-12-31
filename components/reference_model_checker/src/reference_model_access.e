@@ -171,8 +171,6 @@ feature {NONE} -- Implementation
 			has_schema_directory
 		local
 			dir: KL_DIRECTORY
-			schema_path: STRING
-			sd: SCHEMA_DESCRIPTOR
 			file_repo: FILE_REPOSITORY
 		do
 			if not exception_encountered then

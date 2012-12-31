@@ -36,6 +36,11 @@ inherit
 			default_create
 		end
 
+	TABLE_ITERABLE [REPOSITORY_PROFILE, STRING]
+		undefine
+			default_create
+		end
+
 create
 	make, default_create
 
@@ -142,28 +147,17 @@ feature -- Status Report
 
 feature -- Iteration
 
-	start
+	new_cursor: TABLE_ITERATION_CURSOR [REPOSITORY_PROFILE, STRING]
+			-- Fresh cursor associated with current structure
+		do
+			Result := profiles.new_cursor
+		end
+
+	first_profile: STRING
+		require
+			not is_empty
 		do
 			profiles.start
-		end
-
-	off: BOOLEAN
-		do
-			Result := profiles.off
-		end
-
-	forth
-		do
-			profiles.forth
-		end
-
-	item_for_iteration: REPOSITORY_PROFILE
-		do
-			Result := profiles.item_for_iteration
-		end
-
-	key_for_iteration: STRING
-		do
 			Result := profiles.key_for_iteration
 		end
 
@@ -189,7 +183,7 @@ feature -- Modification
 			has_profile (a_profile_name)
 		do
 			profiles.remove (a_profile_name)
-			if is_empty or a_profile_name.same_string (current_profile_name) then
+			if is_empty or (has_current_profile and then a_profile_name.same_string (current_profile_name)) then
 				clear_current_profile
 			end
 		end
@@ -242,7 +236,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 
 feature {NONE} -- Implementation
 
-	profiles: attached HASH_TABLE [REPOSITORY_PROFILE, STRING]
+	profiles: HASH_TABLE [REPOSITORY_PROFILE, STRING]
 			-- Hash table of profiles, keyed by their names.
 
 invariant

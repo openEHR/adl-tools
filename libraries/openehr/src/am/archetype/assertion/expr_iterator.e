@@ -35,7 +35,7 @@ feature -- Access
 
 feature -- Traversal
 
-	do_all (node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE[EXPR_ITEM, INTEGER]])
+	do_all (node_enter_action: PROCEDURE[ANY, TUPLE[EXPR_ITEM, INTEGER]]; node_exit_action: detachable PROCEDURE[ANY, TUPLE[EXPR_ITEM, INTEGER]])
 			-- do enter_action and exit_action to all nodes in the structure
 		do
 			depth := 0
@@ -44,7 +44,7 @@ feature -- Traversal
 
 feature {NONE} -- Implementation
 
-	do_all_nodes (a_target: EXPR_ITEM; node_enter_action, node_exit_action: PROCEDURE[ANY, TUPLE[EXPR_ITEM, INTEGER]])
+	do_all_nodes (a_target: EXPR_ITEM; node_enter_action: PROCEDURE[ANY, TUPLE[EXPR_ITEM, INTEGER]]; node_exit_action: detachable PROCEDURE[ANY, TUPLE[EXPR_ITEM, INTEGER]])
 		do
 			depth := depth + 1
 			node_enter_action.call ([a_target, depth])
@@ -56,7 +56,9 @@ feature {NONE} -- Implementation
 			elseif attached {ASSERTION} a_target as assn then
 				do_all_nodes (assn.expression, node_enter_action, node_exit_action)
 			end
-			node_exit_action.call ([a_target, depth])
+			if attached node_exit_action then
+				node_exit_action.call ([a_target, depth])
+			end
 			depth := depth - 1
 		end
 

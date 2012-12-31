@@ -20,7 +20,7 @@ inherit
 		end
 
 create
-	make, make_minimal, make_from_legacy_flat, make_all, make_from_other
+	make, make_minimal, make_minimal_child, make_from_legacy_flat, make_all, make_from_other
 
 feature -- Initialisation
 
@@ -33,19 +33,18 @@ feature -- Initialisation
 			Is_valid_preserved: other.is_valid implies is_valid
 		end
 
-	make_minimal (an_artefact_type: attached ARTEFACT_TYPE; an_id: attached like archetype_id; an_original_language: attached STRING; a_specialisation_depth: INTEGER)
+	make_minimal (an_artefact_type: ARTEFACT_TYPE; an_id: like archetype_id; an_original_language: STRING)
 			-- make a new differential form archetype
 		require
 			Language_valid: not an_original_language.is_empty
-			Specialisation_depth_valid: a_specialisation_depth >= 0
 		do
 			artefact_type := an_artefact_type
 			archetype_id := an_id
 			adl_version := 	Latest_adl_version
-			create ontology.make_empty(an_original_language, a_specialisation_depth)
+			create ontology.make_empty(an_original_language, 0)
 			create original_language.make (ts.Default_language_code_set, an_original_language)
 			create description.default_create
-			create definition.make_identified(an_id.rm_entity, ontology.concept_code.twin)
+			create definition.make_identified (an_id.rm_entity, ontology.concept_code.twin)
 			is_dirty := True
 			is_valid := True
 		ensure
@@ -54,7 +53,36 @@ feature -- Initialisation
 			Id_set: archetype_id = an_id
 			Original_language_set: original_language.code_string.is_equal (an_original_language)
 			Ontology_original_language_set: original_language.code_string.is_equal (ontology.original_language)
-			Specialisation_depth_set: specialisation_depth = a_specialisation_depth
+			Not_specialised: not is_specialised
+			Definition_root_node_id: definition.node_id.is_equal (concept)
+			Not_generated: not is_generated
+			Is_dirty: is_dirty
+			Is_valid: is_valid
+		end
+
+	make_minimal_child (an_artefact_type: ARTEFACT_TYPE; an_id: like archetype_id; an_original_language: STRING; a_parent: ARCHETYPE)
+			-- make a new differential form archetype as a child of `a_parent'
+		require
+			Language_valid: not an_original_language.is_empty
+		do
+			artefact_type := an_artefact_type
+			archetype_id := an_id
+			adl_version := 	Latest_adl_version
+			create ontology.make_empty (an_original_language, a_parent.specialisation_depth + 1)
+			create original_language.make (ts.Default_language_code_set, an_original_language)
+			create description.default_create
+			create definition.make_identified (an_id.rm_entity, ontology.concept_code.twin)
+			parent_archetype_id := a_parent.archetype_id.deep_twin
+			is_dirty := True
+			is_valid := True
+		ensure
+			Artefact_type_set: artefact_type = an_artefact_type
+			Adl_version_set: adl_version = Latest_adl_version
+			Id_set: archetype_id = an_id
+			Original_language_set: original_language.code_string.is_equal (an_original_language)
+			Ontology_original_language_set: original_language.code_string.is_equal (ontology.original_language)
+			Specialisation_depth_valid: specialisation_depth = a_parent.specialisation_depth + 1
+			Parent_set: parent_archetype_id.as_string.same_string (a_parent.archetype_id.as_string)
 			Definition_root_node_id: definition.node_id.is_equal (concept)
 			Not_generated: not is_generated
 			Is_dirty: is_dirty

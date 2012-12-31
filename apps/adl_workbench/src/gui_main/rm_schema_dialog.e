@@ -7,10 +7,6 @@ note
 	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class
 	RM_SCHEMA_DIALOG
 
@@ -189,7 +185,6 @@ feature -- Events
 	on_cancel
 			-- Set shared settings from the dialog widgets.
 		local
-			i: INTEGER
 			error_dialog: EV_INFORMATION_DIALOG
 		do
 			if not directory_exists (last_populated_rm_schema_dir) then

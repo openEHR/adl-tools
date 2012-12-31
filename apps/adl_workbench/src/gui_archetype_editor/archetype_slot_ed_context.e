@@ -19,7 +19,7 @@ inherit
 			make, arch_node, c_pixmap, prepare_display_in_grid, display_in_grid, build_context_menu
 		end
 
-	SHARED_KNOWLEDGE_REPOSITORY
+	SHARED_ARCHETYPE_CATALOGUES
 		export
 			{NONE} all
 		end
@@ -153,7 +153,6 @@ feature {NONE} -- Implementation
 		local
 			an_mi: EV_MENU_ITEM
 			slot_match_ids: ARRAYED_SET [STRING]
-			ara: ARCH_CAT_ARCHETYPE
 		do
 			precursor
 			create slot_match_ids.make (0)
@@ -172,10 +171,11 @@ feature {NONE} -- Implementation
 
 				-- ensure we have only a unique set
 				across slot_match_ids as slot_match_ids_csr loop
-					ara := current_arch_cat.archetype_index.item (slot_match_ids_csr.item)
-					create an_mi.make_with_text_and_action (slot_match_ids_csr.item, agent (gui_agents.select_archetype_in_new_tool_agent).call ([ara]))
-					an_mi.set_pixmap (get_icon_pixmap ("archetype/" + ara.group_name))
-					context_slot_sub_menu.extend (an_mi)
+					if attached {ARCH_CAT_ARCHETYPE_UI_STATE} current_arch_cat.archetype_index.item (slot_match_ids_csr.item) as aca then
+						create an_mi.make_with_text_and_action (slot_match_ids_csr.item, agent (gui_agents.select_archetype_in_new_tool_agent).call ([aca]))
+						an_mi.set_pixmap (get_icon_pixmap ("archetype/" + aca.group_name))
+						context_slot_sub_menu.extend (an_mi)
+					end
 				end
 
 				if not context_slot_sub_menu.is_empty then

@@ -157,23 +157,6 @@ feature -- Access
 
 	ev_root_container: EV_VERTICAL_SPLIT_AREA
 
-	source_context: ARCH_ED_CONTEXT
-			-- display / editor context, loaded with archetype for display, or a clone, for editing
-		do
-			if not editing_enabled then
-				if differential_view then
-					Result := source.differential_display_context
-				else
-					Result := source.flat_display_context
-				end
-			else
-				if not attached source.editor_context then
-					source.build_editor_context (undo_redo_chain)
-				end
-				Result := source.editor_context
-			end
-		end
-
 feature -- Status Report
 
 	show_codes: BOOLEAN

@@ -470,7 +470,6 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 			-- correct schema
 		local
 			package_classes: HASH_TABLE [STRING, STRING]
-			desc_list: STRING
 		do
 			-- check archetype parent class in list of class names
 			if attached archetype_parent_class and then not has_class_definition (archetype_parent_class) then

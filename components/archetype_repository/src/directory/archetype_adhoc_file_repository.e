@@ -65,7 +65,9 @@ feature -- Modification
 		local
 			ara: ARCH_CAT_ARCHETYPE
 			amp: ARCHETYPE_MINI_PARSER
+			aof: APP_OBJECT_FACTORY
 		do
+			create aof
 			create amp
 			amp.parse (full_path)
 			if amp.last_parse_valid then
@@ -75,9 +77,9 @@ feature -- Modification
 					post_error (Current, "build_directory", "parse_archetype_e11", <<full_path, amp.last_archetype.parent_archetype_id.as_string>>)
 				elseif not archetype_id_index.has (amp.last_archetype.archetype_id.as_string) then
 					if adl_legacy_flat_filename_pattern_regex.matches (file_system.basename (full_path)) then
-						create ara.make_legacy (full_path, Current, amp.last_archetype)
+						ara := aof.create_arch_cat_archetype_make_legacy (full_path, Current, amp.last_archetype)
 					else
-						create ara.make (full_path, Current, amp.last_archetype)
+						ara := aof.create_arch_cat_archetype_make (full_path, Current, amp.last_archetype)
 					end
 					archetype_id_index.force (ara, full_path)
 				else

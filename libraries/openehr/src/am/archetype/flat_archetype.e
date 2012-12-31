@@ -63,6 +63,8 @@ feature {ARCHETYPE_FLATTENER} -- Initialisation
 					a_diff.description.safe_deep_twin,
 					a_flat_parent.definition.deep_twin,
 					a_diff.ontology.to_flat)
+
+			definition.set_node_id (a_diff.definition.node_id.twin)
 			if a_diff.has_translations then
 				translations := a_diff.translations.deep_twin
 			end

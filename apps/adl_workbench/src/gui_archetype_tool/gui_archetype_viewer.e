@@ -185,6 +185,13 @@ feature {NONE} -- Implementation
 			set_tab_appearance
 		end
 
+	attach_gui_context
+		do
+			if not source.has_gui_context then
+				source.set_gui_context (create {GUI_ARCH_CAT_EDITOR_STATE}.make (source))
+			end
+		end
+
 	path_map_control: GUI_PATH_MAP_CONTROL
 
 	slot_map_control: GUI_SLOT_MAP_CONTROL

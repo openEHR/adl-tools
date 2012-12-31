@@ -8,11 +8,6 @@ note
 	license:     "See notice at bottom of class"
 	void_safety: "initial"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
 class ARCH_CAT_ARCHETYPE
 
 inherit
@@ -21,7 +16,7 @@ inherit
 			child_type
 		end
 
-	SHARED_KNOWLEDGE_REPOSITORY
+	SHARED_ARCHETYPE_CATALOGUES
 		undefine
 			is_equal
 		end
@@ -50,7 +45,7 @@ inherit
 	SHARED_ARCHETYPE_SERIALISERS
 		export
 			{NONE} all
-			{ANY} has_archetype_native_serialiser_format, archetype_native_serialiser_formats, archetype_all_serialiser_formats, has_dt_serialiser_format
+			{ANY} has_serialiser_format, has_archetype_native_serialiser_format, archetype_native_serialiser_formats, archetype_all_serialiser_formats, has_dt_serialiser_format
 		undefine
 			is_equal
 		end
@@ -67,7 +62,7 @@ inherit
 			is_equal
 		end
 
-create
+create {APP_OBJECT_FACTORY}
 	make, make_legacy, make_new_archetype, make_new_specialised_archetype
 
 feature {NONE} -- Initialisation
@@ -148,7 +143,7 @@ feature {NONE} -- Initialisation
 
 			create at.make_archetype
 			artefact_type := at.value
-			create differential_archetype.make_minimal (at, an_id, locale_language_short, 0)
+			create differential_archetype.make_minimal (at, an_id, locale_language_short)
 			set_archetype_default_details (differential_archetype)
 			finalise_make
 
@@ -161,13 +156,28 @@ feature {NONE} -- Initialisation
 			validated: is_valid
 		end
 
-	make_new_specialised_archetype (an_id, a_parent_id: ARCHETYPE_ID; a_repository: ARCHETYPE_REPOSITORY_I; a_directory: STRING)
+	make_new_specialised_archetype (an_id: ARCHETYPE_ID; a_parent: ARCHETYPE; a_repository: ARCHETYPE_REPOSITORY_I; a_directory: STRING)
 			-- Create a new archetype with `an_id' as a child of the archetype with id `a_parent_id', belonging to `a_repository'.
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
+		local
+			at: ARTEFACT_TYPE
 		do
-			parent_id := a_parent_id
-			make_new_archetype (an_id, a_repository, a_directory)
+			make_item
+			id := an_id
+			differential_path := file_system.pathname (a_directory, id.as_string + File_ext_archetype_source)
+			file_repository := a_repository
+			parent_id := a_parent.archetype_id
+
+			create at.make_archetype
+			artefact_type := at.value
+			create differential_archetype.make_minimal_child (at, an_id, locale_language_short, a_parent)
+			set_archetype_default_details (differential_archetype)
+			finalise_make
+
+			initialise
+			create last_compile_attempt_timestamp.make_now
+			save_differential
 		ensure
 			Is_specialised: is_specialised
 		end
@@ -198,7 +208,7 @@ feature -- Access (semantic)
 
 	artefact_type_name: STRING
 
-	full_path: attached STRING
+	full_path: STRING
 			-- Full path to the primary version of the item (differential or legacy) on the storage medium.
 		do
 			if legacy_flat_path /= Void then
@@ -687,14 +697,8 @@ feature -- Compilation
 			end
 
 			differential_archetype := Void
-
 			flat_archetype_cache := Void
-			differential_display_context_cache := Void
-			flat_display_context_cache := Void
-			editor_context_cache := Void
-
 			last_compile_attempt_timestamp := Void
-
 			compilation_state := Cs_unread
 		ensure
 			Differential_archetype_cleared: differential_archetype = Void
@@ -895,8 +899,6 @@ feature {NONE} -- Compilation
 		require
 			Initial_state: compilation_state = Cs_ready_to_parse
 			Has_differential_file: has_differential_file
-		local
-			supp_idx: HASH_TABLE [ARRAYED_LIST [C_ARCHETYPE_ROOT], STRING]
 		do
 			post_info (Current, "parse", "parse_i2", Void)
 			differential_archetype := adl15_engine.parse_differential (differential_text, rm_schema)
@@ -1008,75 +1010,6 @@ feature {ARCH_CAT_ARCHETYPE} -- Modification
 			clients_index.extend (an_archetype_id)
 		end
 
-feature -- Editing
-
-	differential_archetype_clone: DIFFERENTIAL_ARCHETYPE
-			-- produce a clone of the current `differential_archetype'
-		require
-			is_valid
-		do
-			if not attached differential_archetype_clone_cache then
-				create differential_archetype_clone_cache.make_from_other (differential_archetype)
-			end
-			Result := differential_archetype_clone_cache
-		end
-
-	flat_archetype_clone: FLAT_ARCHETYPE
-			-- produce a clone of the current `flat_archetype'
-		require
-			is_valid
-		do
-			if not attached flat_archetype_clone_cache then
-				create flat_archetype_clone_cache.make_from_other (flat_archetype)
-			end
-			Result := flat_archetype_clone_cache
-		end
-
-	differential_display_context: ARCH_ED_CONTEXT
-		do
-			if not attached differential_display_context_cache then
-				create differential_display_context_cache.make (Current, rm_schema, True)
-			end
-			Result := differential_display_context_cache
-		end
-
-	flat_display_context: ARCH_ED_CONTEXT
-		do
-			if not attached flat_display_context_cache then
-				create flat_display_context_cache.make (Current, rm_schema, False)
-			end
-			Result := flat_display_context_cache
-		end
-
-	build_editor_context (an_undo_redo_chain: UNDO_REDO_CHAIN)
-		do
-			create editor_context_cache.make_editable (Current, rm_schema, an_undo_redo_chain)
-		end
-
-	editor_context: ARCH_ED_CONTEXT
-		do
-			Result := editor_context_cache
-		end
-
-	commit
-			-- commit modified differential clone to archetype
-		do
-			-- do something with previous version of archetype
-
-			-- copy in differential_archetype_clone
-			differential_archetype := flat_archetype_clone.to_differential
-			differential_archetype.clear_is_generated
-			save_differential
-			create last_modify_timestamp.make_now
-
-			-- regenerate flat form
-			flatten (False)
-
-			-- set revision appropriately
-		ensure
-			Differential_is_primary: not differential_generated and not differential_archetype.is_generated
-		end
-
 feature -- File Operations
 
 	save_differential
@@ -1096,7 +1029,7 @@ feature -- File Operations
 		require
 			Archetype_valid: is_valid
 			path_valid: not a_full_path.is_empty
-			Serialise_format_valid: has_archetype_native_serialiser_format (a_format) or has_dt_serialiser_format (a_format)
+			Serialise_format_valid: has_serialiser_format (a_format)
 		do
 			if has_archetype_native_serialiser_format (a_format) then
 				file_repository.save_text_to_file (a_full_path, adl15_engine.serialise (differential_archetype, a_format, current_archetype_language))
@@ -1111,7 +1044,7 @@ feature -- File Operations
 		require
 			Archetype_valid: is_valid
 			path_valid: not a_full_path.is_empty
-			Serialise_format_valid: has_archetype_native_serialiser_format (a_format) or has_dt_serialiser_format (a_format)
+			Serialise_format_valid: has_serialiser_format (a_format)
 		do
 			if a_format.same_string (Syntax_type_adl) then
 				file_repository.save_text_to_file (a_full_path, flat_text (False))
@@ -1186,6 +1119,29 @@ feature -- File Operations
 		end
 
 feature -- Output
+
+	serialise (flat_flag: BOOLEAN; a_format: STRING): STRING
+			-- serialise current archetype in `a_format'.
+		require
+			Archetype_valid: is_valid
+			Serialise_format_valid: has_serialiser_format (a_format)
+		do
+			if a_format.same_string (Syntax_type_adl) then
+				if flat_flag then
+					Result := flat_text (False)
+				else
+					Result := differential_text
+				end
+			elseif has_archetype_native_serialiser_format (a_format) then
+				if flat_flag then
+					Result := adl15_engine.serialise (flat_archetype, a_format, current_archetype_language)
+				else
+					Result := adl15_engine.serialise (differential_archetype, a_format, current_archetype_language)
+				end
+			else -- must be a DT serialisation format
+				Result := serialise_object (flat_flag, a_format)
+			end
+		end
 
 	serialise_object (flat_flag: BOOLEAN; a_format: STRING): STRING
 			-- serialise internal structure in a brute-force object way, using
@@ -1291,31 +1247,18 @@ feature {NONE} -- Implementation
 	last_include_rm: BOOLEAN
 			-- which kind of flattening was last used? Used to know whether to regenerate flat or not
 
-	differential_archetype_clone_cache: detachable DIFFERENTIAL_ARCHETYPE
-			-- clone of current `differential_archetype'
-
-	flat_archetype_clone_cache: detachable FLAT_ARCHETYPE
-			-- clone of current `flat_archetype'; used for editing
-
-	differential_display_context_cache: detachable ARCH_ED_CONTEXT
-			-- differential archetype display context
-
-	flat_display_context_cache: detachable ARCH_ED_CONTEXT
-			-- differential archetype display context
-
-	editor_context_cache: detachable ARCH_ED_CONTEXT
-			-- archetype editor context
+--	flat_archetype_clone_cache: detachable FLAT_ARCHETYPE
+--			-- clone of current `flat_archetype'; used for editing
 
 	arch_flattener: ARCHETYPE_FLATTENER
 
 	clear_cache
 		do
 			flat_archetype_cache := Void
-			differential_display_context_cache := Void
-			flat_display_context_cache := Void
-			editor_context_cache := Void
-			differential_archetype_clone_cache := Void
-			flat_archetype_clone_cache := Void
+--			flat_archetype_clone_cache := Void
+--			if has_gui_context then
+--				gui_context.clear
+--			end
 		end
 
 	post_parse_process
@@ -1415,7 +1358,6 @@ invariant
 
 	parent_existence: specialisation_parent /= Void implies is_specialised
 	parent_validity: (specialisation_parent /= Void and not ontology_location_changed) implies parent_id.is_equal (specialisation_parent.id)
-	slot_id_index_valid: slot_id_index /= Void implies not slot_id_index.is_empty
 	clients_index_valid: clients_index /= Void implies not clients_index.is_empty
 
 end

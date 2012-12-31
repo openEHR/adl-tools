@@ -32,7 +32,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_KNOWLEDGE_REPOSITORY
+	SHARED_ARCHETYPE_CATALOGUES
 		export
 			{NONE} all
 		end
@@ -389,7 +389,7 @@ feature {NONE} -- Implementation
 			menu: EV_MENU
 			an_mi: EV_MENU_ITEM
 		do
-			if button = {EV_POINTER_CONSTANTS}.right and attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
+			if button = {EV_POINTER_CONSTANTS}.right and attached {ARCH_CAT_ARCHETYPE_UI_STATE} ev_ti.data as aca then
 				create menu
 				create an_mi.make_with_text_and_action (get_msg ("display_in_active_tab", Void), agent display_context_selected_archetype_in_active_tool (ev_ti))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool"))
@@ -406,7 +406,7 @@ feature {NONE} -- Implementation
 	display_context_selected_archetype_in_active_tool (ev_ti: EV_GRID_ROW)
 		do
 			ev_ti.enable_select
-			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
+			if attached {ARCH_CAT_ARCHETYPE_UI_STATE} ev_ti.data as aca then
 				gui_agents.select_archetype_agent.call ([aca])
 			end
 		end
@@ -414,7 +414,7 @@ feature {NONE} -- Implementation
 	display_context_selected_archetype_in_new_tool (ev_ti: EV_GRID_ROW)
 		do
 			ev_ti.enable_select
-			if attached {ARCH_CAT_ARCHETYPE} ev_ti.data as aca then
+			if attached {ARCH_CAT_ARCHETYPE_UI_STATE} ev_ti.data as aca then
 				gui_agents.select_archetype_in_new_tool_agent.call ([aca])
 			end
 		end

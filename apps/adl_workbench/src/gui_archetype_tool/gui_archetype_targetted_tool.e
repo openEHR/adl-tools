@@ -24,7 +24,7 @@ inherit
 
 feature -- Access
 
-	source: ARCH_CAT_ARCHETYPE
+	source: ARCH_CAT_ARCHETYPE_UI_STATE
 			-- archetype to which this tool is targetted
 
 	source_archetype: ARCHETYPE
@@ -41,10 +41,18 @@ feature -- Access
 			end
 		end
 
-	edit_archetype: FLAT_ARCHETYPE
-			-- modifiable target of editing
+	source_context: ARCH_ED_CONTEXT
+			-- display / editor context, loaded with archetype for display, or a clone, for editing
 		do
-			Result := source.flat_archetype_clone
+			if not editing_enabled then
+				if differential_view then
+					Result := source.gui_context.differential_display_context
+				else
+					Result := source.gui_context.flat_display_context
+				end
+			else
+				Result := source.gui_context.editor_context
+			end
 		end
 
 	tool_artefact_id: STRING

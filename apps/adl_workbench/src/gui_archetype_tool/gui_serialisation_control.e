@@ -165,13 +165,8 @@ feature {NONE} -- Implementation
 				elseif ev_serialise_yaml_rb.is_selected then
 					syntax_type := Syntax_type_yaml
 				end
-				if differential_view then
-					s := source.serialise_object (False, syntax_type)
-				else
-					s := source.serialise_object (True, syntax_type)
-				end
+				s := source.serialise_object (not differential_view, syntax_type)
 			end
-
 			populate_serialised_rich_text (s)
 		end
 

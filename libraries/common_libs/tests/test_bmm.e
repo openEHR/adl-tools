@@ -41,9 +41,12 @@ feature {NONE} -- Events
 	on_prepare
 			-- <Precursor>
 		do
-			app_root.initialise
-			assert ("No RM schemas", rm_schemas_access.found_valid_schemas)
-			rm_schema := rm_schemas_access.schema_for_rm_closure ("openehr-ehr")
+			app_root.initialise_shell
+			if app_root.ready_to_initialise_app then
+				app_root.initialise_app
+				assert ("No RM schemas", rm_schemas_access.found_valid_schemas)
+				rm_schema := rm_schemas_access.schema_for_rm_closure ("openehr-ehr")
+			end
 		end
 
 feature -- Access

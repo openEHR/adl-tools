@@ -61,6 +61,11 @@ feature {NONE} -- Initialization
 			create path_settings_frame_ctl.make (get_text ("path_settings_frame_text"), 0, 0, False)
 			ev_notebook_paths_vb.extend (path_settings_frame_ctl.ev_root_container)
 
+			-- Terminology directory setting
+			create terminology_dir_setter.make (get_text ("terminology_directory_text"), agent terminology_directory, 0, 0)
+			path_settings_frame_ctl.extend (terminology_dir_setter.ev_root_container, False)
+			gui_controls.extend (terminology_dir_setter)
+
 			-- Export directory setting
 			create export_dir_setter.make (get_text ("export_directory_text"), agent export_directory, 0, 0)
 			path_settings_frame_ctl.extend (export_dir_setter.ev_root_container, False)
@@ -235,6 +240,7 @@ feature -- Events
 				app_cfg.load
 			else
 				-- paths options: set directly; NO FURTHER ACTION REQUIRED IN GUI
+				set_terminology_directory (terminology_dir_setter.data_control_text)
 				set_export_directory (export_dir_setter.data_control_text)
 				set_test_diff_directory (test_files_dir_setter.data_control_text)
 
@@ -292,7 +298,7 @@ feature {NONE} -- Implementation
 
 	gui_controls: ARRAYED_LIST [EVX_DATA_CONTROL]
 
-	export_dir_setter, test_files_dir_setter: EVX_DIRECTORY_SETTER
+	terminology_dir_setter, export_dir_setter, test_files_dir_setter: EVX_DIRECTORY_SETTER
 
 	text_editor_dir_setter, adl_editor_dir_setter, diff_tool_dir_setter: EVX_FILE_PATH_SETTER
 

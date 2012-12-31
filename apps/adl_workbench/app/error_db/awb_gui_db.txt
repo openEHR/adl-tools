@@ -35,6 +35,7 @@ templates = <
 		["edit_source"] = <"Edit source">
 		["edit"] = <"Edit">
 		["create_new_archetype"] = <"Create new archetype">
+		["create_new_child_archetype"] = <"Create new child archetype">
 		["save_archetype_as"] = <"Save as">
 		["save_schema_as"] = <"Save schema as">
 		["save_archetype_as_type"] = <"Save as $1">
@@ -79,6 +80,7 @@ templates = <
 		-- OPTION_DIALOG
 		["option_dialog_title"] = <"ADL Workbench Options">
 		["option_dialog_edit_file_text"] = <"Edit File">
+		["terminology_directory_text"] = <"Terminology directory:">
 		["export_directory_text"] = <"Export directory:">
 		["test_diff_files_directory_text"] = <"Save test diff files to:">
 		["text_editor_directory_text"] = <"Text Editor:">

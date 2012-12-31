@@ -24,7 +24,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_KNOWLEDGE_REPOSITORY
+	SHARED_ARCHETYPE_CATALOGUES
 
 create
 	make
@@ -58,7 +58,7 @@ feature -- Commands
 			add_new_tool (new_tool)
 		end
 
-	populate_active_tool (aca: ARCH_CAT_ARCHETYPE)
+	populate_active_tool (aca: ARCH_CAT_ARCHETYPE_UI_STATE)
 			-- Populate content from visual controls.
 		do
 			if not has_tools then

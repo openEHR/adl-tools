@@ -40,19 +40,22 @@ feature {NONE} -- Events
 			Precursor
 			application_developer_name.make_from_string ("openEHR")
 			app_cfg.make (user_config_file_path)
-			app_root.initialise
+			app_root.initialise_shell
+			if app_root.ready_to_initialise_app then
+				app_root.initialise_app
 
-			if repository_profiles.has_profile ("Test") then
-				set_current_profile ("Test")
-			elseif repository_profiles.has_profile ("test") then
-				set_current_profile ("test")
-			else
-				assert ("Please define the %"Test%" repository profile in " + app_cfg.file_path, False)
+				if repository_profiles.has_profile ("Test") then
+					set_current_profile ("Test")
+				elseif repository_profiles.has_profile ("test") then
+					set_current_profile ("test")
+				else
+					assert ("Please define the %"Test%" repository profile in " + app_cfg.file_path, False)
+				end
+
+				set_error_reporting_level (Error_type_error)
+				use_current_profile (True)
+				test_repository := repository_profiles.current_profile.reference_repository
 			end
-
-			set_error_reporting_level (Error_type_error)
-			use_current_profile (True)
-			test_repository := repository_profiles.current_profile.reference_repository
 		end
 
 feature -- Access

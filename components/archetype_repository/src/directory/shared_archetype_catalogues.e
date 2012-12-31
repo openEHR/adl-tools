@@ -12,12 +12,7 @@ note
 	copyright:   "Copyright (c) 2006-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
-class SHARED_KNOWLEDGE_REPOSITORY
+class SHARED_ARCHETYPE_CATALOGUES
 
 inherit
 	SHARED_APP_RESOURCES
@@ -103,7 +98,7 @@ feature {NONE} -- Implementation
 			-- keyed by profile name;
 			-- lazy populated
 		once
-			create Result.make(0)
+			create Result.make (0)
 		end
 
 end

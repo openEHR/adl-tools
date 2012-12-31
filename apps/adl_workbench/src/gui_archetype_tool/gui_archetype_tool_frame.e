@@ -199,6 +199,7 @@ feature {NONE} -- Implementation
 
 	do_populate
 		do
+			attach_gui_context
 			ev_archetype_id.set_text (source.qualified_name)
 			populate_primary_source
 			if source.is_valid then
@@ -206,6 +207,10 @@ feature {NONE} -- Implementation
 				selected_language := source.differential_archetype.original_language.code_string
 				populate_languages
 			end
+		end
+
+	attach_gui_context
+		deferred
 		end
 
 	text_widget_handler: EVX_TEXT_WIDGET_HANDLER

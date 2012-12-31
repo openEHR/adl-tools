@@ -77,7 +77,7 @@ feature -- Commands
 			end
 		end
 
-	update_tree_node_for_archetype (aca: attached ARCH_CAT_ARCHETYPE)
+	update_tree_node_for_archetype (aca: ARCH_CAT_ARCHETYPE)
 			-- update Catalogue tree node with changes in compilation status
 		do
 			-- update semantic grid
@@ -101,7 +101,7 @@ feature -- Commands
 			end
 		end
 
-	select_item_in_tree (ari_global_id: attached STRING)
+	select_item_in_tree (ari_global_id: STRING)
 			-- ensure node with global node id `ari_global_id' is visible in the tree
 		local
 			grid_row: detachable EV_GRID_ROW
@@ -160,7 +160,7 @@ feature {NONE} -- Implementation
 			gui_filesys_grid.resize_columns_to_content
 		end
 
-   	ev_semantic_grid_populate_enter (aci: attached ARCH_CAT_ITEM)
+   	ev_semantic_grid_populate_enter (aci: ARCH_CAT_ITEM)
    			-- Add a node representing `an_item' to `gui_file_tree'.
 		do
 			if not aci.is_root and (aci.subtree_artefact_count (artefact_types) > 0 or else show_entire_ontology or else
@@ -370,7 +370,7 @@ feature {NONE} -- Implementation
 	grid_item_select_handler (an_ev_grid_item: detachable EV_GRID_ITEM)
 		do
 			if attached an_ev_grid_item then
-				if attached {ARCH_CAT_ARCHETYPE} an_ev_grid_item.row.data as aca then
+				if attached {ARCH_CAT_ARCHETYPE_UI_STATE} an_ev_grid_item.row.data as aca then
 					select_archetype_with_delay  (aca)
 				elseif attached {ARCH_CAT_CLASS_NODE} an_ev_grid_item.row.data as accn then
 					select_class_with_delay (accn)
@@ -383,7 +383,7 @@ feature {NONE} -- Implementation
 		do
 			if button = {EV_POINTER_CONSTANTS}.right then
 				if attached an_ev_grid_item then
-					if attached {ARCH_CAT_ARCHETYPE} an_ev_grid_item.row.data as aca then
+					if attached {ARCH_CAT_ARCHETYPE_UI_STATE} an_ev_grid_item.row.data as aca then
 						build_archetype_node_context_menu (aca)
 					elseif attached {ARCH_CAT_CLASS_NODE} an_ev_grid_item.row.data as accn then
 						build_class_node_context_menu (accn)
@@ -456,19 +456,19 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_tool_specific_archetype_menu_items (a_menu: EV_MENU; aca: ARCH_CAT_ARCHETYPE)
+	add_tool_specific_archetype_menu_items (a_menu: EV_MENU; aca: ARCH_CAT_ARCHETYPE_UI_STATE)
 			-- add further menu items specific to descendant tools
 		local
 			an_mi: EV_MENU_ITEM
 		do
 			if aca.is_valid then
-				create an_mi.make_with_text_and_action (get_text ("create_new_archetype"), agent create_new_specialised_archetype (aca))
+				create an_mi.make_with_text_and_action (get_text ("create_new_child_archetype"), agent create_new_specialised_archetype (aca))
 				an_mi.set_pixmap (get_icon_pixmap ("tool/archetype_tool_new"))
 				a_menu.extend (an_mi)
 			end
 		end
 
-	create_new_specialised_archetype (parent_aca: ARCH_CAT_ARCHETYPE)
+	create_new_specialised_archetype (parent_aca: ARCH_CAT_ARCHETYPE_UI_STATE)
 		local
 			dialog: NEW_ARCHETYPE_DIALOG
 		do

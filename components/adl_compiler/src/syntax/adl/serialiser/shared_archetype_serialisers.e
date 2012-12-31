@@ -63,6 +63,18 @@ feature -- Initialisation
 
 feature -- Access
 
+	archetype_all_serialiser_formats_string: STRING
+			-- utility string indicating valid serialisation formats
+		once
+			create Result.make_empty
+			across archetype_all_serialiser_formats as fmts_csr loop
+				Result.append (fmts_csr.item)
+				if fmts_csr.target_index < archetype_all_serialiser_formats.count then
+					Result.append (", ")
+				end
+			end
+		end
+
 	archetype_all_serialiser_formats: ARRAYED_LIST [STRING]
 			-- List of all avalable archetype serialisation format names.
 		once
@@ -133,9 +145,15 @@ feature -- Access
 feature -- Status Report
 
 	has_archetype_native_serialiser_format (a_format: STRING): BOOLEAN
-			-- Is `a_format' supported for serialisation?
+			-- Is `a_format' supported for native (ADL-based) serialisation?
 		do
 			Result := archetype_native_serialisers.has (a_format)
+		end
+
+	has_serialiser_format (a_format: STRING): BOOLEAN
+			-- Is `a_format' supported for serialisation?
+		do
+			Result := archetype_all_serialiser_formats.has (a_format)
 		end
 
 feature {NONE} -- Implementation

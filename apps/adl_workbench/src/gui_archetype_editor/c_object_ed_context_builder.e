@@ -22,7 +22,7 @@ inherit
 			end_c_attribute
 		end
 
-	SHARED_KNOWLEDGE_REPOSITORY
+	SHARED_ARCHETYPE_CATALOGUES
 		export
 			{NONE} all
 		end

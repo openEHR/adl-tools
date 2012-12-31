@@ -41,10 +41,10 @@ inherit
 
 feature -- Definitions
 
-	ADL_help_page_url: STRING = "http://www-test.openehr.org/downloads/ADLworkbench/home"
+	ADL_help_page_url: STRING = "http://www.openehr.org/downloads/ADLworkbench/home"
 			-- The URL to ADL Workbench's online help.
 
-	Release_notes_file_path: STRING = "http://www-test.openehr.org/downloads/ADLworkbench/releasenotes"
+	Release_notes_file_path: STRING = "http://www.openehr.org/downloads/ADLworkbench/releasenotes"
 			-- The path to ADL Workbench's release notes.
 
 	clinical_knowledge_manager_url: STRING = "http://www.openehr.org/knowledge/"
@@ -53,15 +53,15 @@ feature -- Definitions
 	Repository_report_filename: STRING = "ArchetypeRepositoryReport.xml"
 
 	Default_rm_schema_directory: attached STRING
-			-- directory of Reference Model schema files; same as full path to app + "/rm_schemas";
+			-- default directory of Reference Model schema files; same as full path to app + "/rm_schemas";
 			-- contains schema files in .dadl format e.g.
 			-- .../rm_schemas/openehr_rm_102.dadl
 		once
-			Result := application_startup_directory.twin
-			Result.append(os_directory_separator.out + "rm_schemas")
+			Result := file_system.pathname (application_startup_directory, "rm_schemas")
 		end
 
-	Terminology_directory: STRING
+	Default_terminology_directory: STRING
+			-- default directory of Reference Model terminology files; same as full path to app + "/terminology";
 			-- directory of openEHR terminology files; structure is
 			-- $terminology_directory/lang/openehr_terminology.xml
 		once
@@ -310,21 +310,35 @@ feature -- Application Switches
 			app_cfg.put_value ("/compiler/rm_flattening", flag)
 		end
 
-	rm_schema_directory: attached STRING
+	rm_schema_directory: STRING
 			-- Path of directory where RM schemas are found - note: this should be writable.
 		do
 			Result := app_cfg.string_value_env_var_sub ("/file_system/rm_schema_directory")
 		end
 
-	set_rm_schema_directory (a_path: attached STRING)
-			-- Set the path of directory where RM schemas are found; note - this should be writable
+	set_rm_schema_directory (a_path: STRING)
+			-- Set the path of directory where RM schemas are found
 		require
 			path_not_empty: not a_path.is_empty
 		do
 			app_cfg.put_value ("/file_system/rm_schema_directory", a_path)
 		end
 
-	export_directory: attached STRING
+	terminology_directory: STRING
+			-- Path of directory where RM schemas are found - note: this should be writable.
+		do
+			Result := app_cfg.string_value_env_var_sub ("/file_system/terminology_directory")
+		end
+
+	set_terminology_directory (a_path: attached STRING)
+			-- Set the path of directory where openEHR reference terminology is found
+		require
+			path_not_empty: not a_path.is_empty
+		do
+			app_cfg.put_value ("/file_system/terminology_directory", a_path)
+		end
+
+	export_directory: STRING
 			-- Path of directory to which HTML is exported.
 		do
 			Result := app_cfg.string_value_env_var_sub ("/file_system/export_directory")
@@ -334,7 +348,7 @@ feature -- Application Switches
 			end
 		end
 
-	set_export_directory (a_path: attached STRING)
+	set_export_directory (a_path: STRING)
 			-- Set the root path of directories to which serialised files are exported.
 		require
 			path_not_empty: not a_path.is_empty

@@ -32,7 +32,7 @@ feature {NONE} -- Initialisation
 	on_prepare
 			-- Satisfy the invariant of `DIFFERENTIAL_ARCHETYPE'.
 		do
-			make_minimal (create {ARTEFACT_TYPE}, create {ARCHETYPE_ID}, "en", 0)
+			make_minimal (create {ARTEFACT_TYPE}, create {ARCHETYPE_ID}, "en")
 		end
 
 	create_parented_target

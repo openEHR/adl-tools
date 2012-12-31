@@ -26,7 +26,7 @@ inherit
 			is_equal, default_create, copy
 		end
 
-	SHARED_KNOWLEDGE_REPOSITORY
+	SHARED_ARCHETYPE_CATALOGUES
 		export
 			{NONE} all
 		undefine

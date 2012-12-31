@@ -38,11 +38,18 @@ feature {NONE} -- Initialization
 			-- Create and launch the application, showing a splash window followed by the main window.
 		do
 			default_create
-			app_root.initialise
-			show_splash_window
-			if not is_destroyed then
-				post_launch_actions.extend_kamikaze (agent show_main_window)
-				launch
+			app_root.initialise_shell
+			if app_root.ready_to_initialise_app then
+				app_root.initialise_app
+				if not app_root.has_errors then
+					show_splash_window
+					if not is_destroyed then
+						post_launch_actions.extend_kamikaze (agent show_main_window)
+						launch
+					end
+				else
+					io.put_string (app_root.errors.as_string)
+				end
 			end
 		end
 

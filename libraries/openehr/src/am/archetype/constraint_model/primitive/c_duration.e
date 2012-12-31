@@ -210,8 +210,6 @@ feature -- Output
 feature {NONE} -- Implementation
 
 	compute_pattern_conformance (a_child_pattern, a_pattern: STRING): BOOLEAN
-		local
-			ymd_part, hmd_part: STRING
 		do
 			-- TODO: child pattern can only narrow parent pattern
 			Result := True

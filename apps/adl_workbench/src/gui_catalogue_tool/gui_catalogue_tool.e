@@ -10,7 +10,7 @@ note
 class GUI_CATALOGUE_TOOL
 
 inherit
-	SHARED_KNOWLEDGE_REPOSITORY
+	SHARED_ARCHETYPE_CATALOGUES
 		export
 			{NONE} all
 		end
@@ -91,7 +91,7 @@ feature -- Access
 
 	ev_root_container: EV_NOTEBOOK
 
-	matching_ids (a_key: attached STRING): attached ARRAYED_SET [STRING]
+	matching_ids (a_key: attached STRING): ARRAYED_SET [STRING]
 		do
 			if attached source then
 				Result := source.matching_ids (a_key, Void, Void)
@@ -112,7 +112,7 @@ feature -- Status Report
 			Result := is_populated
 		end
 
-	valid_item_id (a_key: attached STRING): BOOLEAN
+	valid_item_id (a_key: STRING): BOOLEAN
 			-- key is a valid identifier of an item managed in this tool
 		do
 			Result := (create {ARCHETYPE_ID}.default_create).valid_id (a_key)
@@ -120,7 +120,7 @@ feature -- Status Report
 
 feature -- Commands
 
-	update_tree_node (aca: attached ARCH_CAT_ARCHETYPE)
+	update_tree_node (aca: ARCH_CAT_ARCHETYPE)
 		do
 			archetype_explorer.update_tree_node_for_archetype (aca)
 			template_explorer.update_tree_node_for_archetype (aca)

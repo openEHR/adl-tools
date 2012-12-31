@@ -17,7 +17,7 @@ note
 class ARCHETYPE_COMPILER
 
 inherit
-	SHARED_KNOWLEDGE_REPOSITORY
+	SHARED_ARCHETYPE_CATALOGUES
 		export
 			{NONE} all
 		end
@@ -275,9 +275,8 @@ feature {NONE} -- Implementation
 						-- second phase - needed if there are suppliers (i.e. slot-fillers or plain
 						-- external references) to compile first
 						if ara.compilation_state = Cs_suppliers_known then
-							from ara.suppliers_index.start until ara.suppliers_index.off loop
-								build_lineage (ara.suppliers_index.item_for_iteration, dependency_depth+1)
-								ara.suppliers_index.forth
+							across ara.suppliers_index as suppliers_csr loop
+								build_lineage (suppliers_csr.item, dependency_depth+1)
 							end
 
 							-- continue compilation - remaining steps after suppliers compilation

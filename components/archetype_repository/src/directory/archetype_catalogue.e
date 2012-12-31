@@ -218,19 +218,19 @@ feature -- Modification
 	add_new_non_specialised_archetype (accn: ARCH_CAT_CLASS_NODE; an_archetype_id: ARCHETYPE_ID; in_dir_path: STRING)
 			-- create a new archetype of class represented by `accn' in path `in_dir_path'
 		local
-			aca: ARCH_CAT_ARCHETYPE
+			aof: APP_OBJECT_FACTORY
 		do
-			create aca.make_new_archetype (an_archetype_id, profile_repo_access.reference_repository, in_dir_path)
-			put_archetype (aca, in_dir_path)
+			create aof
+			put_archetype (aof.create_arch_cat_archetype_make_new_archetype (an_archetype_id, profile_repo_access.reference_repository, in_dir_path), in_dir_path)
 		end
 
 	add_new_specialised_archetype (parent_aca: ARCH_CAT_ARCHETYPE; an_archetype_id: ARCHETYPE_ID; in_dir_path: STRING)
 			-- create a new specialised archetype as child of archetype represented by `parent_aca' in path `in_dir_path'
 		local
-			aca: ARCH_CAT_ARCHETYPE
+			aof: APP_OBJECT_FACTORY
 		do
-			create aca.make_new_specialised_archetype (an_archetype_id, parent_aca.id, profile_repo_access.reference_repository, in_dir_path)
-			put_archetype (aca, in_dir_path)
+			create aof
+			put_archetype (aof.create_arch_cat_archetype_make_new_specialised_archetype (an_archetype_id, parent_aca.differential_archetype, profile_repo_access.reference_repository, in_dir_path), in_dir_path)
 		end
 
 	last_added_archetype: detachable ARCH_CAT_ARCHETYPE
@@ -303,16 +303,16 @@ feature -- Traversal
 			do_subtree (filesys_item_tree, enter_action, exit_action)
 		end
 
-	do_archetypes (aci: ARCH_CAT_ITEM; action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]])
-			-- Execute `action' on all archetypes found below `aci' in the tree
-		do
-			do_subtree (aci, agent do_if_archetype (?, action), Void)
-		end
-
 	do_all_archetypes (action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]])
 			-- On all archetype nodes, execute `action'
 		do
 			do_subtree (semantic_item_tree, agent do_if_archetype (?, action), Void)
+		end
+
+	do_archetypes (aci: ARCH_CAT_ITEM; action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]])
+			-- Execute `action' on all archetypes found below `aci' in the tree
+		do
+			do_subtree (aci, agent do_if_archetype (?, action), Void)
 		end
 
 	do_if_archetype (aci: ARCH_CAT_ITEM; action: PROCEDURE [ANY, TUPLE [ARCH_CAT_ARCHETYPE]])
