@@ -29,6 +29,24 @@ feature -- Definitions
 
 	User_config_file_extension: STRING = ".cfg"
 
+	Default_application_name: STRING = "adl_workbench"
+
+	Default_user_config_file_directory: STRING
+			-- Default OS-specific place for user config file(s) for all applications ased on adl_workbench code base.
+			-- Follows the model home_path/app_vendor/adl_workbench.
+			-- This default directory can be used as a fallback rather than forcing every related app to have its
+			-- own .cfg file, with essentially the same information (configured directories etc).
+			-- (On Unix/Linux/Macosx(?) systems, we would normally locate this in /etc/adl_workbench)
+		do
+			Result := file_system.pathname (execution_environment.home_directory_name, Default_application_name)
+		end
+
+	Default_user_config_file_path: STRING
+			-- Full path to resource configuration file.
+		do
+			Result := file_system.pathname (Default_user_config_file_directory, Default_application_name)
+		end
+
 	Default_editor_app_command: STRING
 			-- An editor application based on operating system.
 		once
@@ -93,36 +111,32 @@ feature -- Environment
 			Result.append(execution_environment.root_directory_name + "etc")
 		end
 
-	user_config_file_directory: attached STRING
+	user_config_file_directory: STRING
 			-- OS-specific place for user config file(s) for this application.
 			-- Follows the model home_path/app_vendor/app_name.
 		do
 			Result := file_system.pathname (execution_environment.home_directory_name, application_developer_name)
 			Result := file_system.pathname (Result, extension_removed (application_name))
-		ensure
-			not_empty: not Result.is_empty
 		end
 
-	user_config_file_path: attached STRING
+	user_config_file_path: STRING
 			-- Full path to resource configuration file.
 		do
 			Result := file_system.pathname (user_config_file_directory, extension_replaced (application_name, User_config_file_extension))
-		ensure
-			not_empty: not Result.is_empty
 		end
 
-	system_temp_file_directory: attached STRING
+	system_temp_file_directory: STRING
 			-- Standard place for temporary files.
 			-- By default /tmp on unix-like systems and C:\Temp on windows-like systems.
 			-- Windows would normally be "C:\Documents and Settings\(user)\Local Settings\Temp".
 		once
 			Result := execution_environment.get ("TMP")
 
-			if Result = Void or else Result.is_empty then
+			if not attached Result or else Result.is_empty then
 				Result := execution_environment.get ("TEMP")
 			end
 
-			if Result /= Void and then not Result.is_empty then
+			if attached Result and then not Result.is_empty then
 				Result := (create {WINDOWS_SHORT_PATH}.make (Result)).as_long_path
 			else
 				if is_windows then

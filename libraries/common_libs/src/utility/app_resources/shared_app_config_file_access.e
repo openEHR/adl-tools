@@ -8,10 +8,6 @@ note
 	copyright:   "Copyright (c) 2010 openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class SHARED_APP_CONFIG_FILE_ACCESS
 
 inherit
@@ -22,7 +18,11 @@ feature -- Access
 	app_cfg: DADL_CONFIG_FILE_ACCESS
 			-- accessor object for application config file
 		once
-			create Result.make (user_config_file_path)
+			if file_system.file_exists (user_config_file_path) then
+				create Result.make (user_config_file_path)
+			else
+				create Result.make (Default_user_config_file_path)
+			end
 			app_cfg_initialise
 		end
 

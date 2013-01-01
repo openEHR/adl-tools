@@ -115,7 +115,7 @@ feature -- Initialisation
 				end
 			end
 			across dead_profiles as profs_csr loop
-				add_error ("remove_profile", <<invalid_profile_reason (profs_csr.item)>>)
+				add_warning ("remove_profile", <<invalid_profile_reason (profs_csr.item)>>)
 				repository_profiles.remove_profile (profs_csr.item)
 			end
 
@@ -130,9 +130,9 @@ feature -- Initialisation
 			-- tell the user a few useful things
 			add_warning ("adl_version_warning", <<adl_version_for_flat_output>>)
 			if validation_strict then
-				add_warning ("validation_strict", Void)
+				add_info ("validation_strict", Void)
 			else
-				add_warning ("validation_non_strict", Void)
+				add_info ("validation_non_strict", Void)
 			end
 		end
 

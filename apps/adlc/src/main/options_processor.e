@@ -57,7 +57,7 @@ feature -- Definitions
 			-- <Precursor>
 		once
 			create Result.make (2)
-			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (show_config_switch) >>, False))
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (quiet_switch), switch_of_name (show_config_switch) >>, False))
 			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (quiet_switch), switch_of_name (flat_switch),
 														switch_of_name (cfg_switch), switch_of_name (profile_switch),
 														switch_of_name (action_switch), switch_of_name (format_switch) >>, True))
