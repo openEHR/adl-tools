@@ -78,6 +78,14 @@ feature -- Definitions
 			Result := file_system.pathname (application_startup_directory, "error_db")
 		end
 
+	Default_xml_rules_file_path: STRING
+			-- Default full path to XML rules file for all adl_workbench-derived apps - use the adl_workbench one
+		once
+			Result := file_system.pathname (Default_user_config_file_directory, extension_replaced ("xml_rules", User_config_file_extension))
+		ensure
+			not_empty: not Result.is_empty
+		end
+
 	xml_rules_file_path: STRING
 			-- Full path to XML rules file.
 		once

@@ -23,6 +23,9 @@ inherit
 
 feature -- Definitions
 
+	application_developer_name: STRING = "openEHR"
+			-- usually the company or organisation name of the application vendor.
+
 	Default_windows_temp_dir: STRING = "C:\Temp"
 
 	Default_unix_temp_dir: STRING = "/tmp"
@@ -38,13 +41,14 @@ feature -- Definitions
 			-- own .cfg file, with essentially the same information (configured directories etc).
 			-- (On Unix/Linux/Macosx(?) systems, we would normally locate this in /etc/adl_workbench)
 		do
-			Result := file_system.pathname (execution_environment.home_directory_name, Default_application_name)
+			Result := file_system.pathname (execution_environment.home_directory_name, application_developer_name)
+			Result := file_system.pathname (Result, Default_application_name)
 		end
 
 	Default_user_config_file_path: STRING
 			-- Full path to resource configuration file.
 		do
-			Result := file_system.pathname (Default_user_config_file_directory, Default_application_name)
+			Result := file_system.pathname (Default_user_config_file_directory, Default_application_name + User_config_file_extension)
 		end
 
 	Default_editor_app_command: STRING
@@ -193,12 +197,6 @@ feature -- Environment
 	    once
 			Result := file_system.basename (application_full_path)
 	    end
-
-	application_developer_name: attached STRING
-			-- usually the company or organisation name of the application vendor.
-		once
-			create Result.make_from_string ("openEHR")
-		end
 
 	locale_language_short: STRING
 			-- The ISO 2-char code for the locale language, e.g. "en"

@@ -57,7 +57,7 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make (a_file_path: attached STRING)
+	make (a_file_path: STRING)
 		do
 			create refresh_listeners.make (0)
 			create requested_resources.make (0)
@@ -70,10 +70,10 @@ feature -- Access
 	file_path: STRING
 			-- path to resource file
 
-	requested_resources: attached ARRAYED_SET [STRING]
+	requested_resources: ARRAYED_SET [STRING]
 			-- paths that the application has requsted so far
 
-	integer_value (a_path: attached STRING): INTEGER
+	integer_value (a_path: STRING): INTEGER
 			-- get the integer value for resource at `a_path'
 		do
 			if has_resource (a_path) and then attached {INTEGER} dt_tree.value_at_path (a_path) as int then
@@ -82,7 +82,7 @@ feature -- Access
 			requested_resources.extend (a_path)
 		end
 
-	boolean_value (a_path: attached STRING): BOOLEAN
+	boolean_value (a_path: STRING): BOOLEAN
 			-- get the boolean value for resource at `a_path'
 		do
 			if has_resource (a_path) and then attached {BOOLEAN} dt_tree.value_at_path (a_path) as bool then
@@ -91,7 +91,7 @@ feature -- Access
 			requested_resources.extend (a_path)
 		end
 
-	string_value (a_path: attached STRING): attached STRING
+	string_value (a_path: STRING): STRING
 			-- get the string value for resource at `a_path'; return empty string if nothing found
 		do
 			if has_resource (a_path) and then attached {STRING} dt_tree.value_at_path (a_path) as str then
@@ -102,7 +102,7 @@ feature -- Access
 			requested_resources.extend (a_path)
 		end
 
-	string_list_value (a_path: attached STRING): attached ARRAYED_LIST [STRING]
+	string_list_value (a_path: STRING): ARRAYED_LIST [STRING]
 			-- List of items specified in file at `a_path'.
 		do
 			if has_resource(a_path) and then attached {ARRAYED_LIST [STRING]} dt_tree.value_list_at_path (a_path) as lst_str then
@@ -113,7 +113,7 @@ feature -- Access
 			requested_resources.extend (a_path)
 		end
 
-	string_value_env_var_sub (a_path: attached STRING): attached STRING
+	string_value_env_var_sub (a_path: STRING): STRING
 			-- get the string value for `a_path', with any env vars of form "$var" substituted
 		do
 			if has_resource(a_path) and then attached {STRING} dt_tree.value_at_path (a_path) as str then
@@ -124,7 +124,7 @@ feature -- Access
 			requested_resources.extend (a_path)
 		end
 
-	any_value (a_path: attached STRING): ANY
+	any_value (a_path:  STRING): detachable ANY
 			-- get the value for resource_name
 		do
 			if has_resource(a_path) then
@@ -133,7 +133,7 @@ feature -- Access
 			requested_resources.extend (a_path)
 		end
 
-	object_value (a_path: attached STRING; a_type_name: attached STRING): ANY
+	object_value (a_path: STRING; a_type_name: STRING): detachable ANY
 			-- get complex object at `a_path'
 		do
 			if has_resource(a_path) then
@@ -146,7 +146,7 @@ feature -- Access
 
 feature -- Status Report
 
-	has_resource (a_path: attached STRING): BOOLEAN
+	has_resource (a_path:  STRING): BOOLEAN
 			-- True if there is a resource at `a_path'
 		do
 			Result := attached dt_tree and then dt_tree.has_path (a_path)
@@ -154,7 +154,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	put_value (a_path: attached STRING; a_value: attached ANY)
+	put_value (a_path: STRING; a_value: ANY)
 			-- put an instance of any dADL leaf value type
 		do
 			if not attached dt_tree then
@@ -167,7 +167,7 @@ feature -- Modification
 			end
 		end
 
-	put_object (a_path: attached STRING; a_value: attached ANY)
+	put_object (a_path: STRING; a_value: ANY)
 			-- convert a complex object to Data Tree form and put at `a_path' in current tree
 			-- FIXME: currently only works for single child paths, i.e. not where the paths ends with xxx[zzz]
 		local
@@ -200,7 +200,7 @@ feature -- Modification
 
 feature -- Element Removal
 
-	remove_resource (a_path: attached STRING)
+	remove_resource (a_path: STRING)
 			-- remove the resource resource_name
 		require
             Valid_path: has_resource(a_path)

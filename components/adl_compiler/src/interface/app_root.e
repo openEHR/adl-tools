@@ -54,10 +54,7 @@ feature -- Initialisation
 			add_custom_dt_dynamic_type_from_string ("C_DATE", ({C_DATE}).type_id)
 
 			message_db.populate (Error_db_directory, locale_language_short)
-
-			-- initialise serialisers
 			initialise_serialisers
-
 			reset
 		end
 
@@ -81,11 +78,11 @@ feature -- Initialisation
 			end
 
 			-- check if found an XML rules file, and copy in sample one if none
-			if not file_system.file_exists (xml_rules_file_path) then
+			if not file_system.file_exists (xml_rules_file_path) and not file_system.file_exists (Default_xml_rules_file_path) then
 				if file_system.file_exists (xml_rules_sample_file_path) then
 					file_system.copy_file (xml_rules_sample_file_path, xml_rules_file_path)
 				else
-					add_error ("xml_rules_sample_file_missing", <<xml_rules_sample_file_path>>)
+					add_warning ("xml_rules_sample_file_missing", <<xml_rules_sample_file_path>>)
 				end
 			end
 

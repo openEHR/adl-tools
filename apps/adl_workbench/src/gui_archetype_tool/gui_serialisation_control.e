@@ -185,15 +185,15 @@ feature {NONE} -- Implementation
 
 	set_serialisation_control_texts
 		do
-			ev_serialise_adl_rb.set_text ("ADL " + adl_version_for_flat_output)
+			ev_serialise_adl_rb.set_text (syntax_type_adl.as_upper + " " + adl_version_for_flat_output)
 			ev_serialise_adl_rb.set_tooltip (get_msg ("show_adl_serialisation_tooltip", <<adl_version_for_flat_output>>))
-			ev_serialise_dadl_rb.set_text ("dADL " + adl_version_for_flat_output)
+			ev_serialise_dadl_rb.set_text (syntax_type_dadl.as_upper + " " + adl_version_for_flat_output)
 			ev_serialise_dadl_rb.set_tooltip (get_msg ("show_dadl_serialisation_tooltip", <<adl_version_for_flat_output>>))
-			ev_serialise_xml_rb.set_text ("XML " + adl_version_for_flat_output)
+			ev_serialise_xml_rb.set_text (syntax_type_xml.as_upper + " " + adl_version_for_flat_output)
 			ev_serialise_xml_rb.set_tooltip (get_msg ("show_xml_serialisation_tooltip", <<adl_version_for_flat_output>>))
-			ev_serialise_json_rb.set_text ("JSON " + adl_version_for_flat_output)
+			ev_serialise_json_rb.set_text (syntax_type_json.as_upper + " " + adl_version_for_flat_output)
 			ev_serialise_json_rb.set_tooltip (get_msg ("show_json_serialisation_tooltip", <<adl_version_for_flat_output>>))
-			ev_serialise_yaml_rb.set_text ("YAML " + adl_version_for_flat_output)
+			ev_serialise_yaml_rb.set_text (syntax_type_yaml + " " + adl_version_for_flat_output)
 			ev_serialise_yaml_rb.set_tooltip (get_msg ("show_yaml_serialisation_tooltip", <<adl_version_for_flat_output>>))
 		end
 
