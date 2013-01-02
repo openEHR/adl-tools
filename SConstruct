@@ -50,7 +50,8 @@ def eiffel(target, ecf):
 	return result
 
 adl_workbench = eiffel('adl_workbench', 'apps/adl_workbench/app/adl_workbench.ecf')
-versioned_targets = [adl_workbench]
+adlc = eiffel('adlc', 'apps/adlc/app/adlc.ecf')
+versioned_targets = [adl_workbench, adlc]
 
 if platform == 'windows':
 	adl_parser = eiffel('adl_parser', 'deployment/dotnet/dll/adl_parser.ecf')
@@ -111,7 +112,7 @@ if distrib and len(adl_workbench) > 0:
 	error_db = 'apps/adl_workbench/app/error_db'
 	vim = 'components/adl_compiler/etc/vim'
 	install = 'apps/adl_workbench/install/' + platform
-	adl_workbench_installer_sources = [adl_workbench[0], license, xsl, css, xml_rules, ui_config] + rm_schemas
+	adl_workbench_installer_sources = [adl_workbench[0], adlc[0], license, xsl, css, xml_rules, ui_config] + rm_schemas
 
 	for root in [icons, terminology, error_db, vim, install]:
 		for dir, dirnames, filenames in os.walk(root):
@@ -128,7 +129,8 @@ if distrib and len(adl_workbench) > 0:
 			command = [
 				'makensis', '-V1',
 				'-XOutFile ${TARGET.abspath}',
-				'-DADL_WORKBENCH_EXE=${SOURCE.abspath}',
+				'-DADL_WORKBENCH_EXE=${SOURCES[0].abspath}',
+				'-DADLC_EXE=${SOURCES[1].abspath}',
 				install + '/ADL_Workbench/ADLWorkbenchInstall.nsi'
 			]
 
@@ -139,7 +141,7 @@ if distrib and len(adl_workbench) > 0:
 			import tarfile
 			tar = tarfile.open(str(target[0]), 'w:bz2')
 
-			for src in [str(adl_workbench[0]), license, xsl, css, xml_rules, ui_config]:
+			for src in [str(adl_workbench[0]), str(adlc[0]), license, xsl, css, xml_rules, ui_config]:
 				tar.add(src, os.path.basename(src))
 
 			for root in [icons, terminology, error_db, vim, 'rm_schemas']:
@@ -187,7 +189,7 @@ if distrib and len(adl_workbench) > 0:
 				copy_tree(install, distrib)
 				copy_tree(vim, pkg_contents)
 
-				for src in [str(adl_workbench[0]), license, xsl, css, xml_rules, ui_config, icons, terminology, error_db, 'rm_schemas']:
+				for src in [str(adl_workbench[0]), str(adlc[0]), license, xsl, css, xml_rules, ui_config, icons, terminology, error_db, 'rm_schemas']:
 					copy_tree(src, pkg_contents + '/ADL Workbench.app/Contents/Resources/')
 
 				for src, dst in [['apps/adl_workbench/doc/web/release_notes.html', 'Welcome.html'], ['apps/adl_workbench/doc/web/help-mac_install.html', 'ReadMe.html']]:

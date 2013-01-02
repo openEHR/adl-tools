@@ -60,7 +60,7 @@ VIAddVersionKey CompanyName "${COMPANY}"
 VIAddVersionKey CompanyWebsite "${URL}"
 VIAddVersionKey FileVersion "${VERSION}"
 VIAddVersionKey FileDescription "ADL Workbench Installer"
-VIAddVersionKey LegalCopyright "Copyright 2003-2012 openEHR Foundation"
+VIAddVersionKey LegalCopyright "Copyright 2003-2013 openEHR Foundation"
 InstallDirRegKey HKLM "${REGKEY}" Path
 ShowUninstDetails show
 
@@ -74,6 +74,12 @@ Section -Main SEC0000
         File ${ADL_WORKBENCH_EXE}
     !else
         File ..\..\..\app\EIFGENs\adl_workbench\F_code\adl_workbench.exe
+    !endif
+
+    !ifdef ADLC_EXE
+        File ${ADLC_EXE}
+    !else
+        File ..\..\..\..\adlc\app\EIFGENs\adlc\F_code\adlc.exe
     !endif
 
     File ..\..\..\app\ArchetypeRepositoryReport.xsl
@@ -149,6 +155,7 @@ done${UNSECTION_ID}:
 Section /o un.Main UNSEC0000
 
     Delete /REBOOTOK $INSTDIR\adl_workbench.exe
+    Delete /REBOOTOK $INSTDIR\adlc.exe
     Delete /REBOOTOK $INSTDIR\ArchetypeRepositoryReport.xsl
     Delete /REBOOTOK $INSTDIR\ArchetypeRepositoryReport.css
     Delete /REBOOTOK $INSTDIR\sample_xml_rules.cfg
