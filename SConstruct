@@ -108,7 +108,7 @@ if distrib and len(adl_workbench) > 0:
 	xml_rules = 'apps/adl_workbench/app/sample_xml_rules.cfg'
 	ui_config = 'apps/adl_workbench/app/default_ui_config.cfg'
 	icons = 'apps/adl_workbench/app/icons'
-	terminology = 'apps/adl_workbench/app/terminology'
+	terminology = 'terminology'
 	error_db = 'apps/adl_workbench/app/error_db'
 	vim = 'components/adl_compiler/etc/vim'
 	install = 'apps/adl_workbench/install/' + platform
