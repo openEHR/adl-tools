@@ -9,6 +9,7 @@ if env['PLATFORM'] == 'win32': platform = 'windows'
 if env['PLATFORM'] == 'posix': platform = 'linux'
 if env['PLATFORM'] == 'darwin': platform = 'mac_osx'
 
+###################################################################################################
 # Define how to build the parser classes, using the Gobo tools.
 # These are not performed unless explicitly requested on the command line in one of the following ways:
 # * The target 'gobo' builds all of the lex and parser targets.
@@ -42,6 +43,7 @@ for scanner, parser, tokens, dir in [
 	gobo(parser, [dir + parser + '.e', dir + tokens + '.e'], dir + parser + '.y', [geyacc, eiffel_syntax_updater])
 	gobo(parser, [dir + parser + '.html'], dir + parser + '.y', [geyacc_html])
 
+###################################################################################################
 # Define how to build the Eiffel projects.
 
 def eiffel(target, ecf):
@@ -62,6 +64,7 @@ eiffel('dadl_test', 'apps/dadl_test/app/dadl_test.ecf')
 eiffel('adl_compiler_app', 'apps/adl_compiler_app/app/adl_compiler_app.ecf')
 adl_compiler = eiffel('adl_compiler', 'deployment/c/adl_compiler/adl_compiler.ecf')
 
+###################################################################################################
 # Define how to build the ADL compiler static library and its test C language wrapper.
 
 make = ['make']
@@ -75,6 +78,7 @@ if env.EiffelEnvironmentVariable('ISE_C_COMPILER') == 'msc':
 adl_compiler_lib = env.Command('${SOURCE.dir}/lib${SOURCE.filebase}$LIBSUFFIX', adl_compiler, [make + ['cecil']], chdir = 1)
 env.Program(['deployment/c/c_tester_for_adl_compiler/adlc_test_app.c', adl_compiler_lib], CPPPATH=include, LIBS=libs)
 
+###################################################################################################
 # Define how to generate the reference model schemas directory.
 
 rm_schemas = []
@@ -86,6 +90,7 @@ for dir, dirnames, filenames in os.walk('reference-models'):
 
 Alias('rm_schemas', rm_schemas)
 
+###################################################################################################
 # Define how to put installers, etc., into the distribution directory.
 # These are not performed unless a path containing 'downloads' is explicitly requested on the command line.
 
@@ -241,21 +246,29 @@ if distrib and len(adl_workbench) > 0:
 				Delete(pkg_tree)
 				])
 
-# Set the Subversion revision number as the final part of the file version string.
+###################################################################################################
+# Set the revision number at the end of the file string.
+# The revision is retrieved from git as the numeric part of a string similar to "Revision-925-g749e8be".
+# This gives us a monotonically increasing number, roughly like Subversion revision numbers.
+# We add 1000 to it so as to preserve continuity, more or less, with the old Subversion revision numbering.
+# For this to work, a git tag called "Revision" must previously have been set up with a command similar to:
+#	git tag -m 'Tag for the initial commit.' Revision b900305458cf617ac511c7fdbc5cd183f9bdbd15
 
-if not env.Detect('svnversion'):
-	print 'WARNING! The svnversion command is missing from your path: cannot set the revision part of the version number.'
+if not env.Detect('git'):
+	print 'WARNING! The git command is missing from your path: cannot set the revision part of the version number.'
 else:
-	match = re.match(r'\d+', os.popen('svnversion .').read())
+	match = re.match(r'Revision-(\d+)', os.popen('git describe --match Revision').read())
 
-	if match:
-		revision = match.group()
+	if not match:
+		print 'WARNING! The git Revision tag was missing: cannot set the revision part of the version number.'
+	else:
+		revision = str(int(match.group(1)) + 1000)
 
 		def backup_filename(filename):
 			split = os.path.split(filename)
 			return os.path.join(split[0], '.' + split[1] + '.bak.' + revision)
 
-		def set_revision_from_subversion(target, source, env):
+		def set_revision(target, source, env):
 			global backed_up_files
 			backed_up_files = []
 			substitutions = [['libraries/version/openehr_version.e', r'\b(revision:\s*INTEGER\s*=\s*)\d+']]
@@ -303,5 +316,5 @@ else:
 					os.rename(bak, filename)
 
 		if installer: versioned_targets += [installer]
-		env.AddPreAction(versioned_targets, env.Action(set_revision_from_subversion, 'Setting revision ' + revision + ' ...'))
+		env.AddPreAction(versioned_targets, env.Action(set_revision, 'Setting revision ' + revision + ' ...'))
 		env.AddPostAction(versioned_targets, env.Action(restore_backed_up_files, None))
