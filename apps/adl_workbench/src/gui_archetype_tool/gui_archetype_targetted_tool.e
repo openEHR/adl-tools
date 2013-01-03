@@ -10,6 +10,7 @@ note
 	file:        "$URL$"
 	revision:    "$LastChangedRevision$"
 	last_change: "$LastChangedDate$"
+	void_safety: "Initial"
 
 deferred class
 	GUI_ARCHETYPE_TARGETTED_TOOL
@@ -24,8 +25,8 @@ inherit
 
 feature -- Access
 
-	source: ARCH_CAT_ARCHETYPE_UI_STATE
-			-- archetype to which this tool is targetted
+	source: detachable ARCH_CAT_ARCHETYPE_UI_STATE
+			-- archetype descriptor to which this tool is targetted
 
 	source_archetype: ARCHETYPE
 			-- differential or flat version of archetype, depending on setting of `differential_view'
@@ -62,7 +63,7 @@ feature -- Access
 			Result := source.id.as_string
 		end
 
-	selected_language: attached STRING
+	selected_language: STRING
 
 feature -- Status Report
 
@@ -70,7 +71,7 @@ feature -- Status Report
 
 feature -- Commands
 
-	populate (a_source: attached like source; differential_view_flag: BOOLEAN; a_selected_language: attached STRING)
+	populate (a_source: like source; differential_view_flag: BOOLEAN; a_selected_language: STRING)
 			-- populate the control by creating it from scratch
 		require
 			can_populate (a_source)
@@ -80,7 +81,7 @@ feature -- Commands
 			gui_tool_populate (a_source)
 		end
 
-	repopulate_with_language (a_selected_language: attached STRING)
+	repopulate_with_language (a_selected_language: STRING)
 			-- repopulate with changed language
 		do
 			selected_language := a_selected_language

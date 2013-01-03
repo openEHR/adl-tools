@@ -5,12 +5,8 @@ note
 
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011 openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2011-2012 openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class SHARED_XML_RULES_FILE_ACCESS
 

@@ -58,6 +58,8 @@ feature -- Definitions
 feature -- Initialisation
 
 	make (a_file_path: STRING)
+			-- Make with `a_file_path', which doesn't necessarily exist as a file. If it does, it will be read;
+			-- if not, nothing will be read, and the first save request will create the file new.
 		do
 			create refresh_listeners.make (0)
 			create requested_resources.make (0)

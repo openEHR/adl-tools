@@ -91,7 +91,7 @@ feature -- Access
 
 	ev_root_container: EV_NOTEBOOK
 
-	matching_ids (a_key: attached STRING): ARRAYED_SET [STRING]
+	matching_ids (a_key: STRING): ARRAYED_SET [STRING]
 		do
 			if attached source then
 				Result := source.matching_ids (a_key, Void, Void)
@@ -136,7 +136,7 @@ feature -- Commands
 			end
 		end
 
-	select_item_by_id (a_globally_qualified_id: attached STRING)
+	select_item_by_id (a_globally_qualified_id: STRING)
 			-- Select `a_globally_qualified_id' in the GUI catalogue tree, unless it is the same as the current selection
 		do
 			if not selection_history.has_selected_archetype or else not a_globally_qualified_id.is_equal (selection_history.selected_archetype.qualified_name) then

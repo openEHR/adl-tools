@@ -28,11 +28,11 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_gui_context (a_plugin: GUI_ARCH_CAT_EDITOR_STATE)
+	set_gui_context (a_context: GUI_ARCH_CAT_EDITOR_STATE)
 		require
 			is_valid
 		do
-			gui_context := a_plugin
+			gui_context := a_context
 		end
 
 feature -- Compilation
