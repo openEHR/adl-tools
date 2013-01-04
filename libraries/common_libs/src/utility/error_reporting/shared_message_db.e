@@ -15,24 +15,24 @@ class SHARED_MESSAGE_DB
 
 feature -- Access
 
-	get_msg_line (an_id: attached STRING; args: ARRAY[STRING]): attached STRING
+	get_msg_line (an_id: STRING; args: detachable ARRAY[STRING]): STRING
 		do
 			Result := message_db.create_message_line (an_id, args)
 		end
 
-	get_msg (an_id: attached STRING; args: ARRAY[STRING]): attached STRING
+	get_msg (an_id: STRING; args: detachable ARRAY[STRING]): STRING
 		do
 			Result := message_db.create_message_content (an_id, args)
 		end
 
-	get_text (an_id: attached STRING): attached STRING
+	get_text (an_id: STRING): STRING
 		do
 			Result := message_db.create_message_content (an_id, Void)
 		end
 
 feature {NONE} -- Access
 
-	message_db: MESSAGE_DB
+	message_db: COMPILED_MESSAGE_DB
 			-- error database keyed by id
 		once
 			create Result.make

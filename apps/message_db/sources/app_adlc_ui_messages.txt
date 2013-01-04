@@ -19,8 +19,9 @@ templates = <
 		["app_exit_with_errors"] = <"Exiting....APP_ROOT initialisation completed with errors">
 
 		-- simple command line options
-		["verbose_switch_desc"] = <"generate verbose feedback, including configuration information on startup">
+		["quiet_switch_desc"] = <"suppress verbose feedback, including configuration information on startup">
 		["flat_switch_desc"] = <"use flat form of archetype[s] for actions, e.g. path extraction etc">
+		["show_config_switch_desc"] = <"show current configuration and defaults">
 
 		-- command line options with arguments
 		["format_switch_desc"] = <"output format for generated files">
@@ -29,10 +30,27 @@ templates = <
 		["cfg_switch_desc"] = <"output default configuration file location">
 		["cfg_switch_arg_desc"] = <".cfg file path">
 
+		["profile_switch_desc"] = <"profile to use">
+		["profile_switch_arg_desc"] = <"profile name">
+
+		["action_switch_desc"] = <"action to perform">
+		["action_switch_arg_desc"] = <"action: validate | flatten">
+
 		-- non-switched command-line options
-		["action_arg_name"] = <"action">
-		["action_arg_description"] = <"action to perform">
-		["action_arg_type"] = <"validate | flatten">
+		["id_pattern_arg_name"] = <"id_pattern">
+		["id_pattern_arg_description"] = <"archetype id regex">
+		["id_patter_arg_type"] = <"regex string">
+
+		-- other messages
+		["config_file_location"] = <"User .cfg file location: $1%N">
+		["profiles_info_text"] = <"Configured repository profiles%N">
+		["current_profile_info_text"] = <"Current profile: $1%N">
+		["rm_schemas_info_text"] = <"Loaded RM schemas (BMM files)%N">
+
+		["no_matching_ids_err"] = <"No archetype ids matching pattern '$1' in repository $2 (use -s to see current config)%N">
+		["profile_does_not_exist_err"] = <"No profile with name '$1' (use -s to see all profiles)%N">
+		["invalid_serialisation_format_err"] = <"Invalid serialisation format '$1'; valid formats: $2%N">
+		["invalid_action_err"] = <"Invalid action '$1'; valid actions: $2%N">
 	>
 >
 

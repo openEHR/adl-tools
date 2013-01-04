@@ -12,12 +12,6 @@ class SHARED_APP_UI_RESOURCES
 inherit
 	SHARED_APP_RESOURCES
 
-feature -- Definitions
-
-	resource_path_separator: STRING = "/"
-			-- regardless of OS, this is used in paths to locate resources, including icons and also
-			-- .cfg file items
-
 feature -- Access
 
 	splash_text: STRING
@@ -73,15 +67,12 @@ feature -- Access
 feature -- Application Switches
 
 	current_work_directory: attached STRING
-			-- Directory where archetypes are currently being opened and saved
-			-- from GUI open and save buttons; automatic opens (due to clicking
-			-- on archetype name) still use main repository directory.
 		do
 			Result := app_cfg.string_value ("/file_system/current_work_directory")
 		end
 
 	set_current_work_directory (a_path: attached STRING)
-			-- set the directory where archetypes are currently being opened and saved.
+			-- set the directory that app works in
 		do
 			if not a_path.is_empty then
 				app_cfg.put_value ("/file_system/current_work_directory", a_path)

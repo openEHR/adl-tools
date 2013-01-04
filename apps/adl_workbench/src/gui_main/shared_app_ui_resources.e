@@ -61,10 +61,6 @@ feature -- Definitions
 
 	rm_icon_dir: STRING = "rm"
 
-	resource_path_separator: STRING = "/"
-			-- regardless of OS, this is used in paths to locate resources, including icons and also
-			-- .cfg file items
-
 	Definition_grid_col_rm_name: INTEGER = 1
 	Definition_grid_col_meaning: INTEGER = 2
 	Definition_grid_col_existence: INTEGER = 3

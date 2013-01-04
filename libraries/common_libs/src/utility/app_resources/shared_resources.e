@@ -5,7 +5,7 @@ note
 
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003-2011 openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2003-2012 openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 class SHARED_RESOURCES
@@ -86,6 +86,9 @@ feature -- Definitions
    				Result := "sdiff"
    			end
    		end
+
+	Resource_path_separator: STRING = "/"
+			-- regardless of OS, this is used in paths to locate resources, including icons and also .cfg file items
 
 feature -- Environment
 

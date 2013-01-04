@@ -475,7 +475,7 @@ feature {NONE} -- Implementation
 									added_during_pass := added_during_pass + 1
 									status_list [archs_csr.target_index] := Populate_status_succeeded
 								else
-									post_error (Current, "populate", "arch_dir_dup_archetype", <<archs_csr.item.full_path>>)
+									post_error (Current, "populate", "arch_cat_dup_archetype", <<archs_csr.item.full_path>>)
 									status_list [archs_csr.target_index] := Populate_status_failed
 								end
 							else
@@ -490,9 +490,9 @@ feature {NONE} -- Implementation
 				across archs as archs_csr loop
 					if status_list [archs_csr.cursor_index] > 0 then
 						if archs_csr.item.is_specialised then
-							post_error (Current, "populate", "arch_dir_orphan_archetype", <<archs_csr.item.ontological_parent_name, archs_csr.item.qualified_name>>)
+							post_error (Current, "populate", "arch_cat_orphan_archetype", <<archs_csr.item.ontological_parent_name, archs_csr.item.qualified_name>>)
 						else
-							post_error (Current, "populate", "arch_dir_orphan_archetype_e2", <<archs_csr.item.ontological_parent_name, archs_csr.item.qualified_name>>)
+							post_error (Current, "populate", "arch_cat_orphan_archetype_e2", <<archs_csr.item.ontological_parent_name, archs_csr.item.qualified_name>>)
 						end
 					end
 				end

@@ -22,27 +22,27 @@ create
 
 feature -- Initialisation
 
-	make_error (a_code, a_message: attached STRING; a_loc: STRING)
+	make_error (a_code, a_message: STRING; a_loc: detachable STRING)
 		do
 			make (a_code, error_type_error, a_message, a_loc)
 		end
 
-	make_warning (a_code, a_message: attached STRING; a_loc: STRING)
+	make_warning (a_code, a_message: STRING; a_loc: detachable STRING)
 		do
 			make (a_code, error_type_warning, a_message, a_loc)
 		end
 
-	make_info (a_code, a_message: attached STRING; a_loc: STRING)
+	make_info (a_code, a_message: STRING; a_loc: detachable STRING)
 		do
 			make (a_code, error_type_info, a_message, a_loc)
 		end
 
-	make_debug (a_message: attached STRING; a_loc: STRING)
+	make_debug (a_message: STRING; a_loc: detachable STRING)
 		do
 			make ("", error_type_debug, a_message, a_loc)
 		end
 
-	make (a_code: attached STRING; a_severity: INTEGER; a_message: attached STRING; a_loc: STRING)
+	make (a_code: STRING; a_severity: INTEGER; a_message: STRING; a_loc: detachable STRING)
 		require
 			Severity_valid: is_valid_error_type (a_severity)
 		do
@@ -54,19 +54,19 @@ feature -- Initialisation
 
 feature -- Access
 
-	code: attached STRING
+	code: STRING
 
 	severity: INTEGER
 
-	message: attached STRING
+	message: STRING
 
-	location: STRING
+	location: detachable STRING
 
 feature -- Output
 
-	as_string: attached STRING
+	as_string: STRING
 		do
-			create Result.make (0)
+			create Result.make_empty
 			Result.append (error_type_name_table.item (severity) + " ")
 			if attached location and not location.is_empty then
 				Result.append (location + ": ")

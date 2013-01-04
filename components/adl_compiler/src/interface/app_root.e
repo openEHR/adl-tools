@@ -53,7 +53,6 @@ feature -- Initialisation
 			add_custom_dt_dynamic_type_from_string ("C_STRING", ({C_STRING}).type_id)
 			add_custom_dt_dynamic_type_from_string ("C_DATE", ({C_DATE}).type_id)
 
-			message_db.populate (Error_db_directory, locale_language_short)
 			initialise_serialisers
 			reset
 		end
