@@ -223,7 +223,7 @@ end
 			-- only interested in C_COMPLEX_OBJECTs; we deal with all the other node types by iterating the
 			-- children of C_COMPLEX_OBJECTs
 		local
-			cco_output_flat, cco_output_flat_proximate, cco_csr, new_cco_child: C_COMPLEX_OBJECT
+			cco_output_flat_proximate, cco_csr, new_cco_child: C_COMPLEX_OBJECT
 			apa: ARCHETYPE_PATH_ANALYSER
 			a_path: STRING
 			c_path_in_diff: OG_PATH
@@ -254,9 +254,9 @@ end
 						new_cco_child.set_specialisation_status_redefined
 						ca_output.put_sibling_child (new_cco_child)
 						child_grafted_path_list.extend (cco_child_diff.path)
-					else
-						-- obtain the node in the flat output to start working at
-						cco_output_flat ?= arch_output_flat.c_object_at_path (a_path)
+
+					-- obtain the node in the flat output to start working at
+					elseif attached {C_COMPLEX_OBJECT} arch_output_flat.c_object_at_path (a_path) as cco_output_flat then
 debug ("flatten")
 	io.put_string ("%TFirst replacement in flat parent " +
 	cco_child_diff.path + "%N")
@@ -446,7 +446,7 @@ end
 			end -- if C_COMPLEX_OBJECT
 		end
 
-	merge_container_attribute (ca_output, ca_child: attached C_ATTRIBUTE)
+	merge_container_attribute (ca_output, ca_child: C_ATTRIBUTE)
 			-- merge objects in container attribute `ca_child' into the corresponding container attribute
 			-- `ca_output' in the output structure, using ordering information in source attribute
 			-- objects, and replacing or inserting as appropriate. Essentially, we can think of both the
@@ -534,63 +534,65 @@ end
 			-- the target (flat) output list, ignoring any redefined nodes - only merge new ones
 			--
 			across merge_list as merge_list_csr loop
-				insert_obj ?= merge_list_csr.item.insert_obj
-				-- this loop corresponds to the sublist of objects in the source container (i.e. child archetype container node) that are
-				-- to be merged either before or after the insert_obj in the flattened output.
-				from i := merge_list_csr.item.start_pos until i > merge_list_csr.item.end_pos loop
+				if attached merge_list_csr.item then
+					insert_obj := merge_list_csr.item
+					-- this loop corresponds to the sublist of objects in the source container (i.e. child archetype container node) that are
+					-- to be merged either before or after the insert_obj in the flattened output.
+					from i := merge_list_csr.item.start_pos until i > merge_list_csr.item.end_pos loop
 
-					-- this is where we figure out which nodes from the source are 'new' with respect to the flat output.
-					-- They are nodes that are identified nodes (all children of multiply-valued attributes are identified)
-					-- AND that have been added OR ELSE are C_ARCHETYPE_ROOTs
-					if is_valid_code (ca_child.children.i_th(i).node_id)
-						and specialisation_status_from_code (ca_child.children.i_th(i).node_id, arch_child_diff.specialisation_depth).value = ss_added
-						or attached {C_ARCHETYPE_ROOT} ca_child.children.i_th (i)
-					then
-						child_grafted_path_list.extend (ca_child.children.i_th (i).path) -- remember the path, so we don't try to do it again later on
+						-- this is where we figure out which nodes from the source are 'new' with respect to the flat output.
+						-- They are nodes that are identified nodes (all children of multiply-valued attributes are identified)
+						-- AND that have been added OR ELSE are C_ARCHETYPE_ROOTs
+						if is_valid_code (ca_child.children.i_th(i).node_id)
+							and specialisation_status_from_code (ca_child.children.i_th(i).node_id, arch_child_diff.specialisation_depth).value = ss_added
+							or attached {C_ARCHETYPE_ROOT} ca_child.children.i_th (i)
+						then
+							child_grafted_path_list.extend (ca_child.children.i_th (i).path) -- remember the path, so we don't try to do it again later on
 
-						-- now we either merge the object, or deal with the special case of occurrences = 0,
-						-- in which case, remove the target object
-						if ca_child.children.i_th (i).is_prohibited then
-							ca_output.remove_child (insert_obj)
-						else
-							merge_obj := ca_child.children.i_th(i).safe_deep_twin
-					--		merge_obj.clear_sibling_order -- no sibling_order markers in flat archetypes!
-							if merge_list_csr.item.before_flag then -- True = insert before
-								ca_output.put_child_left (merge_obj, insert_obj)
+							-- now we either merge the object, or deal with the special case of occurrences = 0,
+							-- in which case, remove the target object
+							if ca_child.children.i_th (i).is_prohibited then
+								ca_output.remove_child (insert_obj)
 							else
-								ca_output.put_child_right (merge_obj, insert_obj)
-								insert_obj := ca_output.child_after (insert_obj) -- move 1 to the right, so adding occurs after
+								merge_obj := ca_child.children.i_th(i).safe_deep_twin
+						--		merge_obj.clear_sibling_order -- no sibling_order markers in flat archetypes!
+								if merge_list_csr.item.before_flag then -- True = insert before
+									ca_output.put_child_left (merge_obj, insert_obj)
+								else
+									ca_output.put_child_right (merge_obj, insert_obj)
+									insert_obj := ca_output.child_after (insert_obj) -- move 1 to the right, so adding occurs after
+								end
+								if attached {C_ARCHETYPE_ROOT} merge_obj as merge_car then
+									merge_car.set_subtree_specialisation_status ({SPECIALISATION_STATUSES}.ss_added)
+								else
+									merge_obj.set_specialisation_status ({SPECIALISATION_STATUSES}.ss_added)
+								end
 							end
-							if attached {C_ARCHETYPE_ROOT} merge_obj as merge_car then
-								merge_car.set_subtree_specialisation_status ({SPECIALISATION_STATUSES}.ss_added)
-							else
-								merge_obj.set_specialisation_status ({SPECIALISATION_STATUSES}.ss_added)
-							end
-						end
 
-					-- ARCHETYPE_SLOT override
-					elseif attached {ARCHETYPE_SLOT} ca_child.children.i_th(i) as arch_slot then
-						node_id_in_parent := code_at_level (arch_slot.node_id, arch_parent_flat.specialisation_depth)
-						child_grafted_path_list.extend (arch_slot.path) -- remember the path, so we don't try to do it again later on
-						if arch_slot.is_prohibited then
-							ca_output.remove_child_by_id (node_id_in_parent)
-						elseif arch_slot.is_closed then
-							if attached {ARCHETYPE_SLOT} ca_output.child_with_id (node_id_in_parent) as flat_arch_slot then
-								flat_arch_slot.set_closed
-								flat_arch_slot.set_specialisation_status_redefined
+						-- ARCHETYPE_SLOT override
+						elseif attached {ARCHETYPE_SLOT} ca_child.children.i_th(i) as arch_slot then
+							node_id_in_parent := code_at_level (arch_slot.node_id, arch_parent_flat.specialisation_depth)
+							child_grafted_path_list.extend (arch_slot.path) -- remember the path, so we don't try to do it again later on
+							if arch_slot.is_prohibited then
+								ca_output.remove_child_by_id (node_id_in_parent)
+							elseif arch_slot.is_closed then
+								if attached {ARCHETYPE_SLOT} ca_output.child_with_id (node_id_in_parent) as flat_arch_slot then
+									flat_arch_slot.set_closed
+									flat_arch_slot.set_specialisation_status_redefined
+								end
+							else
+								merge_obj := arch_slot.safe_deep_twin
+								ca_output.replace_child_by_id (merge_obj, node_id_in_parent)
+								merge_obj.set_specialisation_status_redefined
 							end
 						else
-							merge_obj := arch_slot.safe_deep_twin
-							ca_output.replace_child_by_id (merge_obj, node_id_in_parent)
-							merge_obj.set_specialisation_status_redefined
+							debug ("flatten")
+								io.put_string ("%T%T%TARCHETYPE_FLATTENER.merge_container_attribute location 1; IGNORING " +
+									ca_child.children.i_th(i).path + " (" + i.out + "-th child)%N")
+							end
 						end
-					else
-						debug ("flatten")
-							io.put_string ("%T%T%TARCHETYPE_FLATTENER.merge_container_attribute location 1; IGNORING " +
-								ca_child.children.i_th(i).path + " (" + i.out + "-th child)%N")
-						end
+						i := i + 1
 					end
-					i := i + 1
 				end
 			end
 		end

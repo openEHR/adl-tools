@@ -48,11 +48,10 @@ feature -- Comparison
 
 	valid_percentage (v: REAL): BOOLEAN
 			-- True if v between 0 and 1
-		local
-			a_comparable: COMPARABLE
 		do
-			a_comparable ?= v
-			Result := a_comparable >= 0.0 and a_comparable <= 1.0
+			if attached {COMPARABLE} v as a_comparable then
+				Result := a_comparable >= 0.0 and a_comparable <= 1.0
+			end
 		end
 
 feature -- Basic Operations

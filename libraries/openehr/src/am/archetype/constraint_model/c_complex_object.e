@@ -14,10 +14,7 @@ note
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
 	copyright:   "Copyright (c) 2003-2009 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	void_safety: "checked"
 
 class C_COMPLEX_OBJECT
 
@@ -39,7 +36,7 @@ feature -- Initialisation
 			create attributes.make(0)
 		end
 
-	make_identified (a_rm_type_name, an_object_id: attached STRING)
+	make_identified (a_rm_type_name, an_object_id: STRING)
 			-- set type name, object_id
 		require
 			Rm_type_name_valid: not a_rm_type_name.is_empty
@@ -50,7 +47,7 @@ feature -- Initialisation
 			rm_type_name := a_rm_type_name
 		end
 
-	make_anonymous (a_rm_type_name: attached STRING)
+	make_anonymous (a_rm_type_name: STRING)
 			-- set type name
 		require
 			Rm_type_name_valid: not a_rm_type_name.is_empty
@@ -69,11 +66,11 @@ feature -- Source Control
 		do
 			create def_it.make (Current)
 			def_it.do_all (
-				agent (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER; a_spec_sts: INTEGER)
+				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; a_spec_sts: INTEGER)
 					do
 						a_c_node.set_specialisation_status (a_spec_sts)
 					end (?, ?, a_spec_status),
-				agent (a_c_node: attached ARCHETYPE_CONSTRAINT; depth: INTEGER)
+				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 					do
 					end
 			)
@@ -81,55 +78,61 @@ feature -- Source Control
 
 feature -- Access
 
-	attributes: attached ARRAYED_LIST [C_ATTRIBUTE]
+	attributes: ARRAYED_LIST [C_ATTRIBUTE]
 
-	c_attribute (an_attr_name: attached STRING): C_ATTRIBUTE
+	c_attribute (an_attr_name: STRING): C_ATTRIBUTE
 		require
 			an_attr_name_valid: has_attribute(an_attr_name)
 		do
-			Result ?= representation.child_with_id(an_attr_name).content_item
+			if attached {C_ATTRIBUTE} representation.child_with_id(an_attr_name).content_item as ca then
+				Result := ca
+			end
 		end
 
-	c_attribute_at_path (a_path: attached STRING): C_ATTRIBUTE
+	c_attribute_at_path (a_path: STRING): C_ATTRIBUTE
 			-- get C_ATTRIBUTE at a path (which doesn't terminate in '/')
 		require
-			a_path_valid: has_path(a_path)
+			a_path_valid: has_path (a_path)
 		do
-			Result ?= representation.attribute_node_at_path (create {OG_PATH}.make_from_string(a_path)).content_item
+			if attached {C_ATTRIBUTE} representation.attribute_node_at_path (create {OG_PATH}.make_from_string (a_path)).content_item as ca then
+				Result := ca
+			end
 		end
 
-	c_object_at_path (a_path: attached STRING): C_OBJECT
+	c_object_at_path (a_path: STRING): C_OBJECT
 			-- get C_OBJECT at a path (which terminates in '/')
 		require
 			a_path_valid: has_path(a_path)
 		do
-			Result ?= representation.object_node_at_path (create {OG_PATH}.make_from_string(a_path)).content_item
+			if attached {C_OBJECT} representation.object_node_at_path (create {OG_PATH}.make_from_string(a_path)).content_item as co then
+				Result := co
+			end
 		end
 
-	all_paths_at_path (a_path: attached STRING): attached HASH_TABLE [C_OBJECT, STRING]
+	all_paths_at_path (a_path: STRING): HASH_TABLE [C_OBJECT, STRING]
 			-- all paths starting at node found at a_path, including itself
 		require
 			Path_valid: has_path(a_path)
 		local
 			og_paths: HASH_TABLE [OG_OBJECT, OG_PATH]
-			og_node: OG_OBJECT_NODE
 		do
-			og_node ?= representation.object_node_at_path(create {OG_PATH}.make_from_string(a_path))
-			og_paths := og_node.all_paths
 			create Result.make(0)
-			from og_paths.start until og_paths.off loop
-				if attached {OG_OBJECT} og_paths.item_for_iteration as og_obj then
-					if attached {C_OBJECT} og_obj.content_item as c_obj then
-						Result.put (c_obj, og_paths.key_for_iteration.as_string)
+			if attached {OG_OBJECT_NODE} representation.object_node_at_path(create {OG_PATH}.make_from_string(a_path)) as og_node then
+				og_paths := og_node.all_paths
+				from og_paths.start until og_paths.off loop
+					if attached {OG_OBJECT} og_paths.item_for_iteration as og_obj then
+						if attached {C_OBJECT} og_obj.content_item as c_obj then
+							Result.put (c_obj, og_paths.key_for_iteration.as_string)
+						end
+					else
+						Result.put (Void, og_paths.key_for_iteration.as_string)
 					end
-				else
-					Result.put (Void, og_paths.key_for_iteration.as_string)
+					og_paths.forth
 				end
-				og_paths.forth
 			end
 		end
 
-	all_paths: attached HASH_TABLE [C_OBJECT, STRING]
+	all_paths: HASH_TABLE [C_OBJECT, STRING]
 			-- All paths below this point, including this node.
 		local
 			og_paths: HASH_TABLE [OG_OBJECT, OG_PATH]
@@ -169,25 +172,25 @@ feature -- Status Report
 			Result := attributes.count > 0
 		end
 
-	has_path (a_path: attached STRING): BOOLEAN
+	has_path (a_path: STRING): BOOLEAN
 			-- does a_path exist from this node?
 		do
 			Result := representation.has_path (create {OG_PATH}.make_from_string(a_path))
 		end
 
-	has_object_path (a_path: attached STRING): BOOLEAN
+	has_object_path (a_path: STRING): BOOLEAN
 			-- does a_path exist to an object node from this node?
 		do
 			Result := representation.has_object_path (create {OG_PATH}.make_from_string(a_path))
 		end
 
-	has_attribute_path (a_path: attached STRING): BOOLEAN
+	has_attribute_path (a_path: STRING): BOOLEAN
 			-- does a_path to an object node exist from this node?
 		do
 			Result := representation.has_attribute_path (create {OG_PATH}.make_from_string(a_path))
 		end
 
-	has_attribute (an_attr_name: attached STRING): BOOLEAN
+	has_attribute (an_attr_name: STRING): BOOLEAN
 		require
 			an_attr_name_valid: not an_attr_name.is_empty
 		do
@@ -201,7 +204,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	put_attribute (an_attr: attached C_ATTRIBUTE)
+	put_attribute (an_attr: C_ATTRIBUTE)
 			-- put a new attribute
 		require
 			Attribute_valid: not has_attribute (an_attr.rm_attribute_path)
@@ -211,7 +214,7 @@ feature -- Modification
 			an_attr.set_parent (Current)
 		end
 
-	remove_attribute (an_attr: attached C_ATTRIBUTE)
+	remove_attribute (an_attr: C_ATTRIBUTE)
 			-- remove an existing attribute
 		require
 			Attribute_valid: has_attribute (an_attr.rm_attribute_path)
@@ -222,7 +225,7 @@ feature -- Modification
 			not has_attribute (an_attr.rm_attribute_path)
 		end
 
-	remove_attribute_by_name (an_attr_name: attached STRING)
+	remove_attribute_by_name (an_attr_name: STRING)
 			-- remove an existing attribute
 		require
 			Attribute_name_valid: has_attribute (an_attr_name)
@@ -245,7 +248,7 @@ feature -- Modification
 
 feature -- Output
 
-	out: attached STRING
+	out: STRING
 			--
 		do
 			create Result.make(0)
@@ -257,7 +260,7 @@ feature -- Output
 
 feature -- Representation
 
-	representation: attached OG_OBJECT_NODE
+	representation: OG_OBJECT_NODE
 
 feature -- Visitor
 

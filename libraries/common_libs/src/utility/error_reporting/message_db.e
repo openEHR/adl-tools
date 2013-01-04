@@ -150,17 +150,17 @@ feature -- Modification
 		local
 			parser: DADL_VALIDATOR
 			dt_tree: DT_COMPLEX_OBJECT_NODE
-			init_helper: IN_MEMORY_MESSAGE_DB_INITIALISER
 		do
 			create parser.make
 			parser.execute(a_dadl_str, 1)
 			if not parser.syntax_error then
 				dt_tree := parser.output
-				init_helper ?= dt_tree.as_object_from_string("IN_MEMORY_MESSAGE_DB_INITIALISER", Void)
-				if init_helper.templates.has (a_locale_lang) then
-					templates.merge (init_helper.templates.item (a_locale_lang))
-				else
-					templates.merge (init_helper.templates.item (Default_message_language))
+				if attached {IN_MEMORY_MESSAGE_DB_INITIALISER} dt_tree.as_object_from_string("IN_MEMORY_MESSAGE_DB_INITIALISER", Void) as init_helper then
+					if init_helper.templates.has (a_locale_lang) then
+						templates.merge (init_helper.templates.item (a_locale_lang))
+					else
+						templates.merge (init_helper.templates.item (Default_message_language))
+					end
 				end
 			else
 				io.put_string ("Message database failure: " + parser.errors.as_string + "%N")
