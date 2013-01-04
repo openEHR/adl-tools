@@ -1,4 +1,4 @@
-import os, shutil, re
+import os, shutil, re, fnmatch
 
 EnsurePythonVersion(2, 4)
 EnsureSConsVersion(1, 0, 0)
@@ -79,16 +79,17 @@ adl_compiler_lib = env.Command('${SOURCE.dir}/lib${SOURCE.filebase}$LIBSUFFIX', 
 env.Program(['deployment/c/c_tester_for_adl_compiler/adlc_test_app.c', adl_compiler_lib], CPPPATH=include, LIBS=libs)
 
 ###################################################################################################
-# Define how to generate the reference model schemas directory.
+# Define how to generate the terminology and reference model schemas directories.
 
-rm_schemas = []
+terminology = 'terminology'
+rm_schemas = 'rm_schemas'
 
-for dir, dirnames, filenames in os.walk('reference-models'):
-		if '.svn' in dirnames: dirnames.remove('.svn')
-		if '.git' in dirnames: dirnames.remove('.git')
-		rm_schemas += env.Install('rm_schemas', env.Files(dir + '/*.bmm'))
+env.Install(terminology, env.Glob('../terminology/openEHR_RM/RM/Release-1.0.2/*'))
 
-Alias('rm_schemas', rm_schemas)
+for dir, dirnames, filenames in os.walk('../reference-models'):
+	if '.svn' in dirnames: dirnames.remove('.svn')
+	if '.git' in dirnames: dirnames.remove('.git')
+	env.Install(rm_schemas, [os.path.join(dir, filename) for filename in fnmatch.filter(filenames, '*.bmm')])
 
 ###################################################################################################
 # Define how to put installers, etc., into the distribution directory.
@@ -113,17 +114,16 @@ if distrib and len(adl_workbench) > 0:
 	xml_rules = 'apps/adl_workbench/app/sample_xml_rules.cfg'
 	ui_config = 'apps/adl_workbench/app/default_ui_config.cfg'
 	icons = 'apps/adl_workbench/app/icons'
-	terminology = 'terminology'
 	error_db = 'apps/adl_workbench/app/error_db'
 	vim = 'components/adl_compiler/etc/vim'
 	install = 'apps/adl_workbench/install/' + platform
-	adl_workbench_installer_sources = [adl_workbench[0], adlc[0], license, xsl, css, xml_rules, ui_config] + rm_schemas
+	adl_workbench_installer_sources = [adl_workbench[0], adlc[0], license, xsl, css, xml_rules, ui_config, terminology, rm_schemas]
 
-	for root in [icons, terminology, error_db, vim, install]:
+	for root in [icons, error_db, vim, install]:
 		for dir, dirnames, filenames in os.walk(root):
 			if '.svn' in dirnames: dirnames.remove('.svn')
 			if '.git' in dirnames: dirnames.remove('.git')
-			adl_workbench_installer_sources += env.Files(dir + '/*')
+			adl_workbench_installer_sources += [os.path.join(dir, filename) for filename in filenames]
 
 	if platform == 'windows':
 		Install(distrib + '/adl_parser/dotnet', adl_parser)
@@ -139,7 +139,7 @@ if distrib and len(adl_workbench) > 0:
 				install + '/ADL_Workbench/ADLWorkbenchInstall.nsi'
 			]
 
-			installer = env.Command(distrib + '/adl_workbench/ADLWorkbenchInstall.exe', adl_workbench_installer_sources + env.Files(install + '/ADL_Workbench/*'), [command])
+			installer = env.Command(distrib + '/adl_workbench/ADLWorkbenchInstall.exe', adl_workbench_installer_sources + env.Glob(install + '/ADL_Workbench/*'), [command])
 
 	if platform == 'linux':
 		def create_linux_installer(target, source, env):
@@ -149,7 +149,7 @@ if distrib and len(adl_workbench) > 0:
 			for src in [str(adl_workbench[0]), str(adlc[0]), license, xsl, css, xml_rules, ui_config]:
 				tar.add(src, os.path.basename(src))
 
-			for root in [icons, terminology, error_db, vim, 'rm_schemas']:
+			for root in [icons, terminology, rm_schemas, error_db, vim]:
 				root_dirname_length = len(os.path.dirname(root))
 
 				for dir, dirnames, filenames in os.walk(root):
@@ -194,7 +194,7 @@ if distrib and len(adl_workbench) > 0:
 				copy_tree(install, distrib)
 				copy_tree(vim, pkg_contents)
 
-				for src in [str(adl_workbench[0]), str(adlc[0]), license, xsl, css, xml_rules, ui_config, icons, terminology, error_db, 'rm_schemas']:
+				for src in [str(adl_workbench[0]), str(adlc[0]), license, xsl, css, xml_rules, ui_config, icons, terminology, rm_schemas, error_db]:
 					copy_tree(src, pkg_contents + '/ADL Workbench.app/Contents/Resources/')
 
 				substitutions = 's|\&|\&amp;|;'
