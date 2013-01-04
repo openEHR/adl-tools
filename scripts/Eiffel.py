@@ -272,11 +272,11 @@ def ecf_scanner(node, env, path):
 			if os.path.isfile(location):
 				result += [location]
 			elif tag == 'external_include':
-				result += files(env, location + '/*.h') + files(env, location + '/*.hpp')
+				result += env.Glob(location + '/*.h') + env.Glob(location + '/*.hpp')
 			elif element.attributes.get('recursive', None):
 				result += classes_in_cluster(env, location)
 			else:
-				result += files(env, location + '/*.e')
+				result += env.Glob(location + '/*.e')
 
 	return result
 
@@ -302,7 +302,6 @@ def generate(env):
 	env['BUILDERS']['Eiffel'] = Builder(action = Action(ec_action, ecf_target), emitter = ec_emitter, target_factory = Entry)
 	env.Append(SCANNERS = Scanner(ecf_scanner, skeys = ['.ecf']))
 	env.AddMethod(environment_variable, "EiffelEnvironmentVariable")
-	env.AddMethod(files, "Files")
 	env.AddMethod(classes_in_cluster, "EiffelClassesInCluster")
 	env.AddMethod(spec_path, "EiffelSpecPath")
 
@@ -346,17 +345,13 @@ def environment_variable(env, var):
 
 	return result
 
-def files(env, pattern):
-	"""All files matching a pattern, excluding directories."""
-	return [file for file in glob.glob(pattern) if os.path.isfile(file)]
-
 def classes_in_cluster(env, cluster):
 	"""All Eiffel class files in the given cluster and its subclusters."""
 	result = []
 
 	for root, dirnames, filenames in os.walk(cluster):
 		if '.svn' in dirnames: dirnames.remove('.svn')
-		result += files(env, root + '/*.e')
+		result += env.Glob(root + '/*.e')
 
 	return result
 
