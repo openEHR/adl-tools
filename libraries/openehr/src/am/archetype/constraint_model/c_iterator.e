@@ -27,7 +27,7 @@ create
 
 feature -- Initialisation
 
-	make (a_target: attached C_COMPLEX_OBJECT)
+	make (a_target: C_COMPLEX_OBJECT)
 			-- create a new iterator targetted to the parse tree `a_target'
 		do
 			target := a_target
@@ -73,26 +73,30 @@ feature {NONE} -- Implementation
 
 	tree_iterator: OG_ITERATOR
 
-	node_enter_action (a_node: attached OG_ITEM; depth: INTEGER)
+	node_enter_action (a_node: OG_ITEM; depth: INTEGER)
 		do
-			arch_node ?= a_node.content_item
-			c_node_enter_action.call ([arch_node, depth])
+			if attached {ARCHETYPE_CONSTRAINT} a_node.content_item as ac then
+				arch_node := ac
+				c_node_enter_action.call ([arch_node, depth])
+			end
 		end
 
-	node_exit_action (a_node: attached OG_ITEM; depth: INTEGER)
+	node_exit_action (a_node: OG_ITEM; depth: INTEGER)
 		do
 			if attached c_node_exit_action then
 				c_node_exit_action.call ([arch_node, depth])
 			end
 		end
 
-	node_is_included (a_node: attached OG_ITEM): BOOLEAN
+	node_is_included (a_node: OG_ITEM): BOOLEAN
 		do
-			arch_node ?= a_node.content_item
-			Result := arch_node /= Void and then c_node_test.item ([arch_node])
+			if attached {ARCHETYPE_CONSTRAINT} a_node.content_item as ac then
+				arch_node := ac
+				Result := c_node_test.item ([arch_node])
+			end
 		end
 
-	node_action (a_node: attached OG_ITEM; depth: INTEGER)
+	node_action (a_node: OG_ITEM; depth: INTEGER)
 		do
 			c_node_enter_action.call([arch_node, depth])
 		end

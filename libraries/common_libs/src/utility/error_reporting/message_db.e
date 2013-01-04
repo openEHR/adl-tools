@@ -81,6 +81,42 @@ feature -- Status Report
 
 end
 
+	populate_from_text (a_dadl_str, a_locale_lang: attached STRING)
+			-- populate message database using messages in `a_dadl_str' in language `a_locale_lang'.
+			-- The latter should be a 2-digit ISO 639 language code, e.g. "en", "de" etc
+			-- The format of `a_dadl_str' (dADL):
+			--	templates = <
+			--		["en"] = <
+			--			["key1"] = <"Message string with $1 argument $2 argument etc">
+			--			["key2"] = <"Message string with $1 argument $2 argument etc">
+			--		>
+			--	>
+			-- caller should check database_loaded after call.
+		require
+			Valid_message_string:  not a_dadl_str.is_empty
+			Valid_local_lang: not a_locale_lang.is_empty
+		local
+			parser: DADL_VALIDATOR
+			dt_tree: DT_COMPLEX_OBJECT_NODE
+		do
+			create parser.make
+			parser.execute(a_dadl_str, 1)
+			if not parser.syntax_error then
+				dt_tree := parser.output
+				if attached {IN_MEMORY_MESSAGE_DB_INITIALISER} dt_tree.as_object_from_string("IN_MEMORY_MESSAGE_DB_INITIALISER", Void) as init_helper then
+					if init_helper.templates.has (a_locale_lang) then
+						templates.merge (init_helper.templates.item (a_locale_lang))
+					else
+						templates.merge (init_helper.templates.item (Default_message_language))
+					end
+				end
+			else
+				io.put_string ("Message database failure: " + parser.errors.as_string + "%N")
+			end
+		end
+
+end
+
 --|
 --| ***** BEGIN LICENSE BLOCK *****
 --| Version: MPL 1.1/GPL 2.0/LGPL 2.1

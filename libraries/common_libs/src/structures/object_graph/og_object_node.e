@@ -154,16 +154,14 @@ feature {OG_OBJECT_NODE} -- Implementation
 	internal_has_path (a_path: OG_PATH): BOOLEAN
 			-- find the child at the path `a_path'
 		local
-			child_obj_node: OG_OBJECT_NODE
 			child_obj: OG_OBJECT
 		do
 			-- find child node relating to first relation path item
 			if has_object_at_path_segment(a_path.item) then
-				child_obj := object_at_path_segment(a_path.item)
+				child_obj := object_at_path_segment (a_path.item)
 				a_path.forth
 				if not a_path.off then
-					child_obj_node ?= child_obj
-					if child_obj_node /= Void then
+					if attached {OG_OBJECT_NODE} child_obj as child_obj_node then
 						Result := child_obj_node.internal_has_path(a_path)
 					end
 				else
@@ -171,7 +169,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 				end
 				a_path.back
 			else -- if it's the last segment, it could be valid as an attribute name, only if no object_id
-				Result := a_path.is_last and not a_path.last.is_addressable and has_child_with_id(a_path.last.attr_name)
+				Result := a_path.is_last and not a_path.last.is_addressable and has_child_with_id (a_path.last.attr_name)
 			end
 		end
 
@@ -244,7 +242,6 @@ feature {OG_OBJECT_NODE} -- Implementation
 			attr_node: like child_type
 			a_path: OG_PATH
 			child_objs: HASH_TABLE [OG_OBJECT, STRING]
-			child_obj: OG_OBJECT
 			obj_predicate_required, created_attr_path: BOOLEAN
 		do
 			create Result.make(0)
@@ -252,69 +249,67 @@ feature {OG_OBJECT_NODE} -- Implementation
 
 			-- get the attributes of this object
 			if has_children then
-				from children.start until children.off loop
-					attr_node := children.item_for_iteration
+				across children as child_csr loop
+					attr_node := child_csr.item
 
 					-- get the objects of this attribute
 					child_objs := attr_node.children
 					created_attr_path := False
-					from child_objs.start until child_objs.off loop
-						child_obj ?= child_objs.item_for_iteration
-						obj_predicate_required := is_unique or
-												(attr_node.is_single and child_obj.is_addressable) or
-												-- use this line of code te get rid of node ids on single nodes	
-												--	(attr_node.is_single and attr_node.child_count > 1 and child_obj.is_addressable) or
-												attr_node.is_multiple
-						if attached {OG_OBJECT_NODE} child_obj as child_obj_node then
-							child_paths := child_obj_node.all_paths
-							from child_paths.start until child_paths.off loop
-								a_path := child_paths.key_for_iteration.twin
-								if obj_predicate_required then
-									a_path.prepend_segment(create {OG_PATH_ITEM}.make_with_object_id(attr_node.node_id, child_obj_node.node_id))
-								else
-									a_path.prepend_segment(create {OG_PATH_ITEM}.make(attr_node.node_id))
+					across child_objs as child_objs_csr loop
+						if attached {OG_OBJECT} child_objs_csr.item as child_obj then
+							obj_predicate_required := is_unique or
+													(attr_node.is_single and child_obj.is_addressable) or
+													-- use this line of code to get rid of node ids on single nodes	
+													--	(attr_node.is_single and attr_node.child_count > 1 and child_obj.is_addressable) or
+													attr_node.is_multiple
+							if attached {OG_OBJECT_NODE} child_obj as child_obj_node then
+								child_paths := child_obj_node.all_paths
+								across child_paths as child_paths_csr loop
+									a_path := child_paths_csr.key.twin
+									if obj_predicate_required then
+										a_path.prepend_segment (create {OG_PATH_ITEM}.make_with_object_id (attr_node.node_id, child_obj_node.node_id))
+									else
+										a_path.prepend_segment (create {OG_PATH_ITEM}.make (attr_node.node_id))
+									end
+									if attr_node.has_differential_path then
+										a_path.prepend_path (attr_node.differential_path.deep_twin)
+									end
+									if is_root then
+										a_path.set_absolute
+									end
+									Result.put (child_paths_csr.item, a_path)
 								end
-								if attr_node.has_differential_path then
-									a_path.prepend_path(attr_node.differential_path.deep_twin)
-								end
-								if is_root then
-									a_path.set_absolute
-								end
-								Result.put(child_paths.item_for_iteration, a_path)
-								child_paths.forth
 							end
-						end
 
-						-- add path for the current child
-						if obj_predicate_required then
-							create a_path.make_relative(create {OG_PATH_ITEM}.make_with_object_id(attr_node.node_id, child_obj.node_id))
-						else
-							create a_path.make_relative(create {OG_PATH_ITEM}.make(attr_node.node_id))
-							created_attr_path := True -- this kind of path (with no node id) is the same as the path to the attribute...
+							-- add path for the current child
+							if obj_predicate_required then
+								create a_path.make_relative (create {OG_PATH_ITEM}.make_with_object_id (attr_node.node_id, child_obj.node_id))
+							else
+								create a_path.make_relative (create {OG_PATH_ITEM}.make (attr_node.node_id))
+								created_attr_path := True -- this kind of path (with no node id) is the same as the path to the attribute...
+							end
+							if attr_node.has_differential_path then
+								a_path.prepend_path (attr_node.differential_path.deep_twin)
+							end
+							if is_root then
+								a_path.set_absolute
+							end
+							Result.put (child_obj, a_path)
 						end
-						if attr_node.has_differential_path then
-							a_path.prepend_path(attr_node.differential_path.deep_twin)
-						end
-						if is_root then
-							a_path.set_absolute
-						end
-						Result.put(child_obj, a_path)
-						child_objs.forth
 					end
 
 					if not created_attr_path then
-						create a_path.make_relative(create {OG_PATH_ITEM}.make(attr_node.node_id))
+						create a_path.make_relative (create {OG_PATH_ITEM}.make (attr_node.node_id))
 						if is_root then
 							a_path.set_absolute
 						end
-						Result.put(Void, a_path)
+						Result.put (Void, a_path)
 					end
-					children.forth
 				end
 			end
 		end
 
-	compress_path(a_path: attached OG_PATH): attached OG_PATH
+	compress_path (a_path: attached OG_PATH): attached OG_PATH
 			-- if there is an attribute under this object node with a differential path matching `a_path',
 			-- generate a new path whose first attribute contains the differential section in it;
 			-- else return the original `a_path'
@@ -326,19 +321,18 @@ feature {OG_OBJECT_NODE} -- Implementation
 			if is_root then
 				a_path_str := a_path.as_string
 				create cand_path.make (0)
-				from children.start until children.off loop
+				across children as child_csr loop
 					-- if there is a differential path and it fits inside the search path, the search path could be off that attribute
-					if children.item_for_iteration.has_differential_path and then a_path_str.substring_index (children.key_for_iteration, 1) = 1 then
-						if children.key_for_iteration.count > cand_path.count then
-							cand_path := children.key_for_iteration
-						end
+					if child_csr.item.has_differential_path and then a_path_str.substring_index (child_csr.key, 1) = 1 and
+						children.key_for_iteration.count > cand_path.count
+					then
+						cand_path := child_csr.key
 					end
-					children.forth
 				end
 				if not cand_path.is_empty then
-					a_path.go_i_th(children.item (cand_path).differential_path.count + 1)
+					a_path.go_i_th (children.item (cand_path).differential_path.count + 1)
 					Result := a_path.sub_path_from_item
-					Result.compress_path(cand_path)
+					Result.compress_path (cand_path)
 					if a_path.is_absolute then
 						Result.set_absolute
 					end
