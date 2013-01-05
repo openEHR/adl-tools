@@ -535,7 +535,7 @@ end
 			--
 			across merge_list as merge_list_csr loop
 				if attached merge_list_csr.item then
-					insert_obj := merge_list_csr.item
+					insert_obj := merge_list_csr.item.insert_obj
 					-- this loop corresponds to the sublist of objects in the source container (i.e. child archetype container node) that are
 					-- to be merged either before or after the insert_obj in the flattened output.
 					from i := merge_list_csr.item.start_pos until i > merge_list_csr.item.end_pos loop

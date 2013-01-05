@@ -48,8 +48,6 @@ feature -- Access
 feature -- Comparison
 
 	is_less alias "<" (other: like Current): BOOLEAN
-		local
-			this_c, other_c: COMPARABLE
 		do
 			if attached {COMPARABLE} magnitude as this_c and attached {COMPARABLE} other.magnitude as other_c then
 				Result := other_c < this_c
@@ -68,7 +66,6 @@ feature -- Comparison
 		end
 
 invariant
-	Magnitude_exists: magnitude /= Void
 	Magnitude_status_valid: magnitude_status /= Void implies valid_magnitude_status(magnitude_status)
 
 end
