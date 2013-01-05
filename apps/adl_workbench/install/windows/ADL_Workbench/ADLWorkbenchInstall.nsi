@@ -99,10 +99,6 @@ Section -Main SEC0000
     SetOutPath $INSTDIR\terminology
     File /r /x .svn ..\..\..\..\..\terminology\*
 
-	# Error files
-    SetOutPath $INSTDIR\error_db
-    File ..\..\..\app\error_db\*
-
 	# RM schemas
     SetOutPath $INSTDIR\rm_schemas
     File ..\..\..\..\..\rm_schemas\*
@@ -162,7 +158,6 @@ Section /o un.Main UNSEC0000
     Delete /REBOOTOK $INSTDIR\default_ui_config.cfg
     RMDir /r /REBOOTOK $INSTDIR\icons
     RMDir /r /REBOOTOK $INSTDIR\rm_schemas
-    RMDir /r /REBOOTOK $INSTDIR\error_db
     RMDir /r /REBOOTOK $INSTDIR\terminology
     RMDir /r /REBOOTOK $INSTDIR\vim
     DeleteRegValue HKLM "${REGKEY}\Components" Main
