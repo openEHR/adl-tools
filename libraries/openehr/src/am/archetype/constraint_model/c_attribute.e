@@ -263,11 +263,8 @@ feature -- Status Report
 			-- (in the UML sense) - True if attribute target type is not a primitive data type
 		require
 			has_children: not any_allowed
-		local
-			a_prim: C_PRIMITIVE_OBJECT
 		do
-			a_prim ?= children.first
-			Result := a_prim = Void
+			Result := not attached {C_PRIMITIVE_OBJECT} children.first
 		end
 
 	is_multiple: BOOLEAN

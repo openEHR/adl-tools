@@ -180,7 +180,7 @@ feature -- Serialisation
 
 feature {NONE} -- Implementation
 
-	generate_path (unique_flag: BOOLEAN; stop_node: OG_ITEM): attached OG_PATH
+	generate_path (unique_flag: BOOLEAN; stop_node: OG_ITEM): OG_PATH
 			-- absolute path of this node relative to the root; if unique_flag set then
 			-- generate a completely unique path by including the "unknown" ids that are
 			-- automatically set at node-creation time on nodes that otherwise would have no id
@@ -188,7 +188,6 @@ feature {NONE} -- Implementation
 			csr: OG_NODE
 			og_nodes: ARRAYED_LIST [OG_ITEM]
 			a_path_item: OG_PATH_ITEM
-			og_attr: OG_ATTRIBUTE_NODE
 		do
 			-- get the node list from here back up to the root, but don't include the root OG_OBJECT_NODE
 			create og_nodes.make(0)
@@ -205,31 +204,31 @@ feature {NONE} -- Implementation
 			else -- process the node list; we are starting on an OG_ATTR_NODE
 				from
 					og_nodes.start
-					og_attr ?= og_nodes.item
-					if og_attr.has_differential_path then
+					if attached {OG_ATTRIBUTE_NODE} og_nodes.item as og_attr and then og_attr.has_differential_path then
 						Result := og_attr.differential_path.deep_twin
 					end
 				until
 					og_nodes.off
 				loop
 					-- now on an OG_ATTR_NODE
-					og_attr ?= og_nodes.item
-					create a_path_item.make(og_attr.node_id)
-					if not attached Result then
-						create Result.make_absolute(a_path_item)
-					else
-						Result.append_segment (a_path_item)
-					end
-
-					og_nodes.forth
-					if not og_nodes.off then -- now on an OG_OBJECT_NODE
-						if unique_flag or og_attr.is_multiple or
-								(og_attr.is_single and og_nodes.item.is_addressable) then
-							-- use this line of code to get rid of codes on single attributes
-							--	(og_attr.is_single and og_attr.child_count > 1 and og_nodes.item.is_addressable) then
-							a_path_item.set_object_id(og_nodes.item.node_id)
+					if attached {OG_ATTRIBUTE_NODE} og_nodes.item as og_attr then
+						create a_path_item.make (og_attr.node_id)
+						if not attached Result then
+							create Result.make_absolute(a_path_item)
+						else
+							Result.append_segment (a_path_item)
 						end
+
 						og_nodes.forth
+						if not og_nodes.off then -- now on an OG_OBJECT_NODE
+							if unique_flag or og_attr.is_multiple or
+									(og_attr.is_single and og_nodes.item.is_addressable) then
+								-- use this line of code to get rid of codes on single attributes
+								--	(og_attr.is_single and og_attr.child_count > 1 and og_nodes.item.is_addressable) then
+								a_path_item.set_object_id (og_nodes.item.node_id)
+							end
+							og_nodes.forth
+						end
 					end
 				end
 			end
