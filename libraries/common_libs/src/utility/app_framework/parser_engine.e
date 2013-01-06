@@ -1,117 +1,122 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "Any node in a data tree"
-	keywords:    "dADL"
+	description: "Abstract interface to any parser"
+	keywords:    "ADL"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-deferred class DT_ITEM
+deferred class PARSER_ENGINE
 
-inherit
-	VISITABLE
-		export
-			{NONE} all;
-			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
+feature {NONE} -- Initialisation
+
+	make
+		deferred
 		end
-
-feature -- Definitions
-
-	Unknown_type_name: STRING = "UNKNOWN"
 
 feature -- Access
 
-	parent: detachable DT_ITEM
+	source: detachable STRING
+			-- Source of current artifact.
 
-	im_type_name: STRING
-			-- reference model type name of object to instantiate
-        attribute
-            create Result.make_from_string (Unknown_type_name)
-        end
+	source_start_line: INTEGER
+			-- Defaults to 0; can be set to line number of text inside some other document.
 
-	path: STRING
-			-- path from root to this node
+	tree: detachable ANY
+			-- Parser output.
+
+	serialised: detachable STRING
+			-- The last result of calling `serialise'.
+
+	errors: ERROR_ACCUMULATOR
+			-- Result of last parse.
 		do
-			Result := representation.path.as_string
+			Result := parser.errors
 		end
 
 feature -- Status Report
 
-	is_typed: BOOLEAN
-			-- True if this node has a known type
+	in_parse_mode: BOOLEAN
+			-- True if engine in mode where archetype was created from source
+
+	parse_succeeded: BOOLEAN
+			-- True if parse succeeded; call after parse()
 		do
-			Result := attached im_type_name and then not im_type_name.is_equal (Unknown_type_name)
+			Result := attached tree
 		end
 
-	type_visible: BOOLEAN
-			-- True if type names are to be shown in serialised forms
-
-	is_addressable: BOOLEAN
-			-- True if this node has a non-anonymous node_id
+	has_source: BOOLEAN
 		do
-			Result := representation.is_addressable
+			Result := attached source
 		end
 
-	is_root: BOOLEAN
-			-- True if is root of parse tree structure
+feature -- Commands
+
+	reset
+			-- Clear current state.
 		do
-			Result := representation.is_root
+			source := Void
+			tree := Void
+			serialised := Void
 		end
 
-	set_type_name (a_type_name: STRING)
-			-- set type name
+	set_source (in_text: STRING; a_source_start_line: INTEGER)
+			-- Set `in_text' as working artifact.
 		require
-			Type_name_valid: not a_type_name.is_empty
+			start_line_positive: a_source_start_line > 0
 		do
-			im_type_name := a_type_name
+			source := in_text
+			source_start_line := a_source_start_line
+			in_parse_mode := True
+		ensure
+			source_set: source = in_text
+			source_start_line_set: source_start_line = a_source_start_line
+			parsing: in_parse_mode
 		end
 
-feature -- Modification
-
-	set_visible_type_name (a_type_name: STRING)
-			-- set type name
+	parse
+			-- Parse artifact into `tree', then validate the artifact.
 		require
-			Type_name_valid: not a_type_name.is_empty
+			source_attached: has_source
+			parsing: in_parse_mode
 		do
-			set_type_name (a_type_name)
-			set_type_visible
+			tree := Void
+			serialised := Void
+			parser_execute
+			if not parser.syntax_error then
+				assign_parser_result
+			end
+		ensure
+			parse_succeeded implies attached tree
 		end
 
-	set_type_visible
-			-- show type of this object in generated form like dADL
-		require
-			is_typed
+	set_tree (a_node: like tree)
+			-- Set root node of `tree' from e.g. GUI tool.
 		do
-			type_visible := True
+			tree := a_node
+			in_parse_mode := False
+		ensure
+			tree_set: tree = a_node
+			not_parsing: not in_parse_mode
 		end
 
-feature {DT_ITEM} -- Modification
+feature {NONE} -- Implementation
 
-	set_parent (a_node: like parent)
-			-- connect child to parent
+	assign_parser_result
+			-- override in descendants to get around limitations in gobo parsers not being able
+			-- to be componentised
 		do
-			parent := a_node
+			tree := parser.output
 		end
 
-feature -- Representation
-
-	representation: OG_ITEM
-
-feature -- Serialisation
-
-	enter_subtree (serialiser: DT_SERIALISER; depth: INTEGER)
-			-- perform serialisation at start of block for this node
+	parser_execute
+			-- call the parser.execute with specific args
 		deferred
 		end
 
-	exit_subtree (serialiser: DT_SERIALISER; depth: INTEGER)
-			-- perform serialisation at end of block for this node
-		deferred
-		end
-
-invariant
-	Rm_type_name_validity:	attached im_type_name implies not im_type_name.is_empty
+	parser: PARSER_VALIDATOR
+			-- parser
 
 end
 
@@ -130,7 +135,7 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is dadl_item.e.
+--| The Original Code is dadl_engine.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
 --| Portions created by the Initial Developer are Copyright (C) 2003-2004

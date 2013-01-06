@@ -10,16 +10,13 @@ note
 	copyright:   "Copyright (c) 2006-2009 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class ADL_SYNTAX_CONVERTER
 
 inherit
 	OPENEHR_TERMINOLOGY_IDS
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
 	SHARED_APP_RESOURCES

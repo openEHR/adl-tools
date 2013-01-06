@@ -2,21 +2,18 @@ note
 	component:   "openEHR Reusable Libraries"
 	description: "Shared access to error and information messages."
 	keywords:    "logging"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class SHARED_MESSAGE_BILLBOARD
 
 inherit
 	ERROR_SEVERITY_TYPES
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
 feature -- Access
@@ -29,7 +26,7 @@ feature -- Access
 
 feature -- Commands
 
-	post_error (poster_object: attached ANY; poster_routine: attached STRING; id: STRING; args: ARRAY[STRING])
+	post_error (poster_object: ANY; poster_routine: STRING; id: STRING; args: detachable ARRAY[STRING])
 			-- append to the  current contents of billboard an error message corresponding to id,
 			-- with positional parameters replaced by contents of optional args
 		require
@@ -38,7 +35,7 @@ feature -- Commands
 			billboard.post_error (poster_object, poster_routine, id, args)
 		end
 
-	post_warning (poster_object: attached ANY; poster_routine: attached STRING; id: STRING; args: ARRAY[STRING])
+	post_warning (poster_object: ANY; poster_routine: STRING; id: STRING; args: detachable ARRAY[STRING])
 			-- append to the  current contents of billboard a warning message corresponding to id,
 			-- with positional parameters replaced by contents of optional args
 		require
@@ -47,7 +44,7 @@ feature -- Commands
 			billboard.post_warning (poster_object, poster_routine, id, args)
 		end
 
-	post_info (poster_object: attached ANY; poster_routine: attached STRING; id: STRING; args: ARRAY[STRING])
+	post_info (poster_object: ANY; poster_routine: STRING; id: STRING; args: detachable ARRAY[STRING])
 			-- append to the  current contents of billboard an info message corresponding to id,
 			-- with positional parameters replaced by contents of optional args
 		require

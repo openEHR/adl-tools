@@ -1,6 +1,6 @@
 note
 	component:   "openEHR Support Reference Model"
-	
+
 	description: "[
 				 Abstract model of UID-based identifiers consisting of a root part and an optional extension; 
 				 lexical form: root '::' extension
@@ -8,30 +8,25 @@ note
 	keywords:    "object identifiers"
 
 	design:      "openEHR Common Reference Model 1.4.1"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2007 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL: http://svn.openehr.org/ref_impl_eiffel/TRUNK/libraries/openehr/src/rm/support/identification/hier_object_id.e $"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate: 2006-02-08 17:57:50 +0000 (Wed, 08 Feb 2006) $"
 
 deferred class UID_BASED_ID
 
 inherit
 	OBJECT_ID
-	
+
 feature -- Definitions
-	
+
 	Extension_separator: STRING = "::"
 
 feature -- Access
 
 	root: UID
-			-- The identifier of the conceptual namespace in which the object exists, 
-			-- within the identification scheme.  Returns the part to the left of the 
+			-- The identifier of the conceptual namespace in which the object exists,
+			-- within the identification scheme.  Returns the part to the left of the
 			-- first '::' separator, if any, or else the whole string.
 		local
 			end_pos: INTEGER
@@ -40,7 +35,7 @@ feature -- Access
 			if end_pos <= 0 then
 				end_pos := value.count
 			end
-			Result := string_to_uid(value.substring (1, end_pos))
+			Result := string_to_uid (value.substring (1, end_pos))
 		end
 
 	extension: STRING
@@ -49,10 +44,10 @@ feature -- Access
 		require
 			has_extension
 		do
-			Result := value.substring(value.substring_index(Extension_separator, 1) + 
+			Result := value.substring(value.substring_index(Extension_separator, 1) +
 						Extension_separator.count, value.count)
 		ensure
-			Result /= Void and then not Result.is_empty
+			not Result.is_empty
 		end
 
 feature -- Status Report
@@ -60,7 +55,7 @@ feature -- Status Report
 	has_extension: BOOLEAN
 			-- True if there is a root part - at least one '.' in id before version part
 		do
-			Result := value.substring_index(Extension_separator, 1) > 0
+			Result := value.substring_index (Extension_separator, 1) > 0
 		end
 
 feature -- Output
@@ -69,10 +64,10 @@ feature -- Output
 			-- string form displayable for humans - e.g. ICD9;1989::M17(en-au)
 		do
 			create Result.make(0)
-			Result.append(root.value)
+			Result.append (root.value)
 			if has_extension then
-				Result.append(Extension_separator)
-				Result.append(extension)
+				Result.append (Extension_separator)
+				Result.append (extension)
 			end
 		end
 
@@ -81,31 +76,31 @@ feature -- Output
 			-- in data item
 		do
 			create Result.make(0)
-			Result.append("<root>" + root.value + "</root>")
+			Result.append ("<root>" + root.value + "</root>")
 			if has_extension then
-				Result.append("<extension>" + extension + "</extension>")
+				Result.append ("<extension>" + extension + "</extension>")
 			end
 		end
 
 feature {NONE} -- Implementation
 
-	string_to_uid(s: STRING): UID
-			-- The identifier of the conceptual namespace in which the object exists, 
-			-- within the identification scheme.  Returns the part to the left of the 
+	string_to_uid (s: STRING): UID
+			-- The identifier of the conceptual namespace in which the object exists,
+			-- within the identification scheme.  Returns the part to the left of the
 			-- first '::' separator, if any, or else the whole string.
 		require
-			string_valid: s /= Void and then not s.is_empty
+			string_valid: not s.is_empty
 		do
 			create {UUID} Result.default_create
 			if Result.valid_id (s) then
 				create {UUID} Result.make(s)
-			else	
+			else
 				create {ISO_OID} Result.default_create
-				if Result.valid_id (s) then			
+				if Result.valid_id (s) then
 					create {ISO_OID} Result.make(s)
 				else
 					create {INTERNET_ID} Result.default_create
-					if Result.valid_id (s) then			
+					if Result.valid_id (s) then
 						create {INTERNET_ID} Result.make(s)
 					else
 						-- error
@@ -115,9 +110,7 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	Root_valid: root /= Void
-	Extension_validity: extension /= Void
-	Has_extension_validity: extension.is_empty xor has_extension	
+	Has_extension_validity: extension.is_empty xor has_extension
 
 end
 

@@ -8,17 +8,11 @@ note
 				 Call specification, Appendix A. Also known as a GUID.
 				 ]"
 	keywords:    "universal unique identifiers, UUID, GUID"
-
 	design:      "openEHR Support Information Model 1.5"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class UUID
 
@@ -26,7 +20,7 @@ inherit
 	UID
 
 create
-	default_create, make
+	make, default_create
 
 feature -- Definitions
 

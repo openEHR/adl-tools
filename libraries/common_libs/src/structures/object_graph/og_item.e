@@ -2,14 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "item in an OBJECT/ATTRIBUTE parse tree"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class OG_ITEM
 
@@ -24,13 +20,9 @@ inherit
 
 	COMPARABLE
 
-feature -- Definitions
-
-	Anonymous_node_id: STRING = "unknown"
-
 feature -- Initialisation
 
-	make (a_node_id: attached STRING; a_content_item: VISITABLE)
+	make (a_node_id: STRING; a_content_item: detachable VISITABLE)
 			-- create with node id and optional content_item
 		require
 			Node_id_valid: not a_node_id.is_empty
@@ -44,16 +36,16 @@ feature -- Initialisation
 
 feature -- Access
 
-	node_id: attached STRING
+	node_id: STRING
 				-- id of this node
 
-	node_key: attached STRING
+	node_key: STRING
 			-- uses compressed path if it exists
 		do
 			Result := node_id
 		end
 
-	content_item: VISITABLE
+	content_item: detachable VISITABLE
 				-- content of this node
 
 	path: OG_PATH
@@ -62,7 +54,7 @@ feature -- Access
 			Result := generate_path (False, Void)
 		end
 
-	path_to_node (a_node: attached OG_ITEM): OG_PATH
+	path_to_node (a_node: OG_ITEM): OG_PATH
 			-- absolute path of this node relative to the root; may produce non-unique paths
 		do
 			Result := generate_path (False, a_node)
@@ -74,7 +66,7 @@ feature -- Access
 			Result := generate_path (True, Void)
 		end
 
-	parent: OG_NODE
+	parent: detachable OG_NODE
 
 	ultimate_parent: OG_NODE
 			-- return the root node of the tree
@@ -86,7 +78,7 @@ feature -- Access
 			end
 		end
 
-	has_parent (a_node: attached OG_NODE): BOOLEAN
+	has_parent (a_node: OG_NODE): BOOLEAN
 			-- return True if `a_node' found in line of parent nodes back to ultimate_parent,
 			-- including if it is the immediate parent
 		local
@@ -139,20 +131,20 @@ feature -- Modification
 			is_root
 		end
 
-	set_node_id (a_node_id: attached STRING)
+	set_node_id (a_node_id: STRING)
 		require
 			Node_id_valid: not a_node_id.is_empty
 		do
 			node_id := a_node_id
 		end
 
-	set_parent (a_node: attached like parent)
+	set_parent (a_node: like parent)
 			-- connect child to parent
 		do
 			parent := a_node
 		end
 
-	set_content (a_content_item: attached VISITABLE)
+	set_content (a_content_item: VISITABLE)
 			-- set item
 		do
 			content_item := a_content_item
@@ -162,7 +154,7 @@ feature -- Modification
 
 feature -- Serialisation
 
-	enter_subtree (visitor: attached ANY; depth: INTEGER)
+	enter_subtree (visitor: ANY; depth: INTEGER)
 			-- perform action at start of block for this node
 		require
 			Depth_valid: depth >= 0
@@ -170,7 +162,7 @@ feature -- Serialisation
 			content_item.enter_subtree (visitor, depth)
 		end
 
-	exit_subtree (visitor: attached ANY; depth: INTEGER)
+	exit_subtree (visitor:  ANY; depth: INTEGER)
 			-- perform action at end of block for this node
 		require
 			Depth_valid: depth >= 0
@@ -191,7 +183,7 @@ feature {NONE} -- Implementation
 		do
 			-- get the node list from here back up to the root, but don't include the root OG_OBJECT_NODE
 			create og_nodes.make(0)
-			if parent /= Void then
+			if attached parent then
 				og_nodes.extend (Current)
 				from csr := parent until csr.parent = Void or csr ~ stop_node loop
 					og_nodes.put_front(csr)

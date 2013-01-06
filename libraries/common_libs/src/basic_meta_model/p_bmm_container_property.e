@@ -22,7 +22,7 @@ inherit
 
 feature -- Access
 
-	cardinality: INTERVAL [INTEGER]
+	cardinality: detachable INTERVAL [INTEGER]
 			-- needs to be this basic type because this attribute is scanned in from schema, else would
 			-- have used MULTIPLICITY_INTERVAL
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
@@ -39,12 +39,14 @@ feature -- Access
 
 feature -- Factory
 
-	create_bmm_property_definition (a_bmm_schema: BMM_SCHEMA; a_class_def: attached BMM_CLASS_DEFINITION)
+	create_bmm_property_definition (a_bmm_schema: BMM_SCHEMA; a_class_def: BMM_CLASS_DEFINITION)
 		do
-			type_def.create_bmm_container_type_reference (a_bmm_schema)
-			create bmm_property_definition.make (name, type_def.bmm_container_type_reference, is_mandatory, is_computed, is_im_infrastructure, is_im_runtime)
-			if attached cardinality then
-				bmm_property_definition.set_cardinality (cardinality)
+			if attached type_def as td then
+				td.create_bmm_container_type_reference (a_bmm_schema)
+				create bmm_property_definition.make (name, td.bmm_container_type_reference, is_mandatory, is_computed, is_im_infrastructure, is_im_runtime)
+				if attached cardinality then
+					bmm_property_definition.set_cardinality (cardinality)
+				end
 			end
 		end
 

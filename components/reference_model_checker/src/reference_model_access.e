@@ -7,18 +7,13 @@ note
 	copyright:   "Copyright (c) 2010-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
 class REFERENCE_MODEL_ACCESS
 
 inherit
 	SHARED_RESOURCES
 		export
 			{NONE} all;
-			{ANY} directory_exists
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, directory_exists
 		end
 
 	BMM_DEFINITIONS

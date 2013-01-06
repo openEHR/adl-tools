@@ -27,7 +27,7 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make_from_other (other: attached AUTHORED_RESOURCE)
+	make_from_other (other: AUTHORED_RESOURCE)
 		local
 			a_copy: like other
 		do
@@ -43,7 +43,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	original_language: attached CODE_PHRASE
+	original_language: CODE_PHRASE
 			-- Language in which this resource was initially authored. Although there
 			-- is no language primacy of resources overall, the language of original
 			-- authoring is required to ensure natural language translations can preserve
@@ -54,7 +54,7 @@ feature -- Access
 			-- language tag. For each translation listed here, there must be corresponding
 			-- sections in all language-dependent parts of the resource.
 
-	description: attached RESOURCE_DESCRIPTION
+	description: RESOURCE_DESCRIPTION
 			-- Description and lifecycle information of the resource.
 
 	revision_history: detachable REVISION_HISTORY
@@ -64,8 +64,11 @@ feature -- Access
 	annotations: detachable RESOURCE_ANNOTATIONS
 			-- list of annotations, keyed by language. Annotations may be present for only one or
 			-- some languages; if they are present for more than one, the structures must match
+        attribute
+            create Result.make_dt (Void)
+        end
 
-	current_revision: attached STRING
+	current_revision: STRING
 			-- Current revision if revision_history exists else "(uncontrolled)".
 		do
 			if has_revision_history then
@@ -75,18 +78,15 @@ feature -- Access
 			end
 		end
 
-	languages_available: attached ARRAYED_SET [STRING]
+	languages_available: ARRAYED_SET [STRING]
 			-- Total list of languages available in this resource, derived from
 			-- original_language and translations. Guaranteed to at least include original_language
 		do
-			if languages_available_cache = Void then
-				create languages_available_cache.make (0)
-				languages_available_cache.compare_objects
+			if languages_available_cache.is_empty then
 				languages_available_cache.extend (original_language.code_string)
-				if has_translations then
-					from translations.start until translations.off loop
-						languages_available_cache.extend (translations.key_for_iteration)
-						translations.forth
+				if attached translations as trans then
+					across trans as trans_csr loop
+						languages_available_cache.extend (trans_csr.key)
 					end
 				end
 			end
@@ -95,16 +95,18 @@ feature -- Access
 			not Result.is_empty
 		end
 
-	translation_for_language (a_lang: attached STRING): attached TRANSLATION_DETAILS
+	translation_for_language (a_lang: STRING): detachable TRANSLATION_DETAILS
 			-- get translation details for a_lang
 			-- Void if nothing for that language
 		require
-			Lang_valid: translations.has (a_lang)
+			Lang_valid: has_translations and then translations.has (a_lang)
 		do
-			Result := translations.item (a_lang)
+			if attached translations as trans then
+				Result := trans.item (a_lang)
+			end
 		end
 
-	matching_language_tag (a_lang: attached STRING): attached STRING
+	matching_language_tag (a_lang: STRING): STRING
 			-- Currently defined language tag for language `a_lang', e.g.
 			-- The current set might be {"en-GB", "es-CL"} and `a_lang' might be "es"
 			-- FIXME: this currently returns the FIRST matching tag
@@ -123,13 +125,13 @@ feature -- Status Report
 			-- True if this resource is under any kind of change control (even file
 			-- copying), in which case revision history is created.
 
-	has_language (a_lang_tag: attached STRING): BOOLEAN
+	has_language (a_lang_tag: STRING): BOOLEAN
 			-- True if either original_language or translations has a_lang_tag
 		do
 			Result := original_language.code_string.is_equal (a_lang_tag) or else (has_translations and then translations.has (a_lang_tag))
 		end
 
-	has_matching_language_tag (a_lang: attached STRING): BOOLEAN
+	has_matching_language_tag (a_lang: STRING): BOOLEAN
 			-- True if the currently defined language tags match the language `a_lang', e.g.
 			-- The current set might be {"en-GB", "es-CL"} and `a_lang' might be "es"
 		require
@@ -159,13 +161,13 @@ feature -- Status Report
 			Result := attached annotations
 		end
 
-	has_annotation_at_path (a_lang, a_path: attached STRING): BOOLEAN
+	has_annotation_at_path (a_lang, a_path: STRING): BOOLEAN
 			-- True if `a_path' is found in  `annotations'
 		do
 			Result := has_annotations and then annotations.has_language (a_lang) and then annotations.has_annotation_at_path (a_lang, a_path)
 		end
 
-	has_path (a_path: attached STRING): BOOLEAN
+	has_path (a_path: STRING): BOOLEAN
 			-- True if `a_path' is found in resource; define in descendants
 		require
 			a_path_valid: not a_path.is_empty
@@ -174,14 +176,14 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_description (a_desc: attached RESOURCE_DESCRIPTION)
+	set_description (a_desc: RESOURCE_DESCRIPTION)
 		require
 			Description_valid: a_desc.languages.is_equal(languages_available)
 		do
 			description := a_desc
 		end
 
-	add_default_translation (a_lang_tag: attached STRING)
+	add_default_translation (a_lang_tag: STRING)
 			-- add a blank translation object for a_lang_tag
 		require
 			Lang_tag_valid: valid_language_tag(a_lang_tag)
@@ -194,7 +196,7 @@ feature -- Modification
 			add_translation (a_trans)
 		end
 
-	add_translation (a_trans: attached TRANSLATION_DETAILS)
+	add_translation (a_trans: TRANSLATION_DETAILS)
 			-- add a translation for a_lang
 		require
 			Translation_valid: not languages_available.has(a_trans.language.code_string)
@@ -203,50 +205,47 @@ feature -- Modification
 				create translations.make(0)
 			end
 			translations.put (a_trans, a_trans.language.code_string)
-			languages_available_cache := Void
+			languages_available_cache.wipe_out
 		ensure
 			languages_available.has(a_trans.language.code_string)
 		end
 
-	add_language_tag (a_lang_tag: attached STRING)
+	add_language_tag (a_lang_tag: STRING)
 			-- add a new translation language to the resource, creating appropriate copies
 		require
 			Lang_tag_valid: valid_language_tag(a_lang_tag)
 			Lang_tag_not_already_present: not has_language(a_lang_tag)
 		do
-			add_default_translation(a_lang_tag)
-			description.add_language(a_lang_tag)
-			languages_available_cache := Void
+			add_default_translation (a_lang_tag)
+			description.add_language (a_lang_tag)
+			languages_available_cache.wipe_out
 		ensure
 			has_language(a_lang_tag)
 		end
 
-	merge_annotations (a_lang_tag: attached STRING; a_path: attached STRING; an_annotations: attached RESOURCE_ANNOTATION_NODE_ITEMS)
+	merge_annotations (a_lang_tag: STRING; a_path: STRING; an_annotations: RESOURCE_ANNOTATION_NODE_ITEMS)
 			-- add `an_annotations' at key `a_path'; replace any existing at same path
 		do
-			if not has_annotations then
-				create annotations
-			end
 			if not annotations.has_language (a_lang_tag) then
 				annotations.add_annotation_table (create {RESOURCE_ANNOTATION_NODES}.make, a_lang_tag)
 			end
 			annotations.merge_annotation_items (a_lang_tag, a_path, an_annotations)
 		end
 
-	set_annotations (an_annotations: attached RESOURCE_ANNOTATIONS)
+	set_annotations (an_annotations: RESOURCE_ANNOTATIONS)
 			-- set annotations
 		do
 			annotations := an_annotations
 		end
 
-	merge_annotations_from_resource (other: attached AUTHORED_RESOURCE)
+	merge_annotations_from_resource (other: AUTHORED_RESOURCE)
 			-- merge annotations, if any found in `other' to current
 		do
-			if other.has_annotations then
-				if not has_annotations then
-					annotations := other.annotations.deep_twin
+			if attached other.annotations as other_anns then
+				if attached annotations as anns then
+					anns.merge (other_anns)
 				else
-					annotations.merge (other.annotations)
+					annotations := other_anns.deep_twin
 				end
 			end
 		end
@@ -261,16 +260,15 @@ feature -- Status setting
 
 feature -- Output
 
-	languages_available_out: attached STRING
+	languages_available_out: STRING
 			-- generate readable comma-separated list of languages available
 		do
 			create Result.make_empty
-			from languages_available.start until languages_available.off loop
+			across languages_available as langs_csr loop
 				if not Result.is_empty then
 					Result.append (", ")
 				end
-				Result.append (languages_available.item)
-				languages_available.forth
+				Result.append (langs_csr.item)
 			end
 		end
 
@@ -283,24 +281,24 @@ feature {ADL15_ENGINE} -- Implementation
 			-- whole archetype will just be a dADL doc
 			create orig_lang_translations.make
 			orig_lang_translations.set_original_language (original_language)
-			if has_translations then
-				orig_lang_translations.set_translations(translations)
+			if attached translations as tr then
+				orig_lang_translations.set_translations (tr)
 			end
 			orig_lang_translations.synchronise_to_tree
 			description.synchronise_to_tree
-			if has_annotations then
-				annotations.synchronise_to_tree
+			if attached annotations as ann then
+				ann.synchronise_to_tree
 			end
 		end
 
-	set_translations (a_trans: attached HASH_TABLE [TRANSLATION_DETAILS, STRING])
+	set_translations (a_trans: HASH_TABLE [TRANSLATION_DETAILS, STRING])
 			-- set translations
 		do
 			translations := a_trans
-			languages_available_cache := Void
+			languages_available_cache.wipe_out
 		end
 
-	orig_lang_translations: LANGUAGE_TRANSLATIONS
+	orig_lang_translations: detachable LANGUAGE_TRANSLATIONS
 			-- holds a copy of translations for purposes of DT object/dADL reading and writing
 
 feature {NONE} -- Implementation
@@ -308,6 +306,10 @@ feature {NONE} -- Implementation
 	languages_available_cache: ARRAYED_SET [STRING]
 			-- Total list of languages available in this resource, derived from
 			-- original_language and translations. Guaranteed to at least include original_language
+		attribute
+			create Result.make (0)
+			Result.compare_objects
+		end
 
 invariant
 	Original_language_valid: ts.code_set (ts.Code_set_id_languages).has (original_language)

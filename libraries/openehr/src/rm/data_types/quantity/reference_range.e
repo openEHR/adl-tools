@@ -57,7 +57,7 @@ feature -- Conversion
 
 	as_string: STRING
 		do
-			Result.make_empty
+			create Result.make_empty
 			Result.append (range.as_string + " (" + meaning.as_string + ")")
 		end
 

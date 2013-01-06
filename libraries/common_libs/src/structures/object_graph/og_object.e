@@ -23,9 +23,16 @@ inherit
 			parent
 		end
 
+	ARCHETYPE_DEFINITIONS
+		export
+			{NONE} all;
+		undefine
+			is_equal
+		end
+
 feature -- Initialisation
 
-	make_anonymous(a_content_item: VISITABLE)
+	make_anonymous (a_content_item: VISITABLE)
 			-- make an anonymous node with optional content item
 		do
 			make (Anonymous_node_id, a_content_item)

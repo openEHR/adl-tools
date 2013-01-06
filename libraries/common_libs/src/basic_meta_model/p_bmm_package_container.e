@@ -8,16 +8,13 @@ note
 	copyright:   "Copyright (c) 2011 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class P_BMM_PACKAGE_CONTAINER
 
 inherit
 	BMM_DEFINITIONS
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
 feature -- Initialisation

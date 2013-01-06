@@ -3,24 +3,20 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Validating parser for data Archetype Description Language (dADL)"
 	keywords:    "dADL"
-	
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2004-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2004- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class DADL_VALIDATOR
 
 inherit
-	YY_PARSER_SKELETON
+	PARSER_VALIDATOR
 		rename
+			reset as validator_reset,
 			make as make_parser_skeleton
 		redefine
-			report_error
+			output
 		end
 
 	OG_DEFINITIONS
@@ -41,6 +37,8 @@ inherit
 	DADL_SCANNER
 		rename
 			make as make_scanner
+		redefine
+			reset
 		end
 
 	KL_SHARED_EXCEPTIONS
@@ -1444,6 +1442,17 @@ feature -- Initialization
 		do
 			make_scanner
 			make_parser_skeleton
+			create time_vc
+			create date_vc
+			create complex_object_nodes.make(0)
+			create attr_nodes.make(0)
+			create indent.make(0)
+		end
+
+	reset
+		do
+			precursor
+			validator_reset
 		end
 
 	execute (in_text:STRING; a_source_start_line: INTEGER)
@@ -1453,9 +1462,9 @@ feature -- Initialization
 
 			source_start_line := a_source_start_line
 
-			create indent.make(0)
-			create complex_object_nodes.make(0)
-			create attr_nodes.make(0)
+			indent.wipe_out
+			complex_object_nodes.wipe_out
+			attr_nodes.wipe_out
 
 			create time_vc
 			create date_vc
@@ -1464,51 +1473,24 @@ feature -- Initialization
 			parse
 		end
 
-feature {YY_PARSER_ACTION} -- Basic Operations
-
-	report_error (a_message: STRING)
-			-- Print error message.
-		do
-			add_error_with_location("general_error", <<a_message>>, error_loc)
-		end
-
-	abort_with_error (err_code: STRING; args: ARRAY [STRING])
-		do
-			add_error_with_location(err_code, args, error_loc)
-			abort
-		end
-
-	error_loc: attached STRING
-		do
-			create Result.make_empty
-			if attached {YY_FILE_BUFFER} input_buffer as f_buffer then
-				Result.append (f_buffer.file.name + ", ")
-			end
-			Result.append ("line " + (in_lineno + source_start_line).out)
-			Result.append(" [last dADL token = " + token_name(last_token) + "]")
-		end
-
 feature -- Access
 
 	source_start_line: INTEGER
 			-- offset of source in other document, else 0
 
-	output: DT_COMPLEX_OBJECT_NODE
+	output: detachable DT_COMPLEX_OBJECT_NODE
 			-- parsed structure
 
 feature {NONE} -- Parse Tree
 
 	complex_object_nodes: ARRAYED_STACK [DT_COMPLEX_OBJECT_NODE]
-	complex_object_node: DT_COMPLEX_OBJECT_NODE
-	last_object_node: DT_OBJECT_ITEM
+	complex_object_node: detachable DT_COMPLEX_OBJECT_NODE
 
 	attr_nodes: ARRAYED_STACK [DT_ATTRIBUTE_NODE]
-	attr_node: DT_ATTRIBUTE_NODE
+	attr_node: detachable DT_ATTRIBUTE_NODE
 
-	obj_key: STRING
+	obj_key: detachable STRING
 			-- qualifier of last rel name; use for next object creation
-
-	im_attr_name: STRING
 
 	time_vc: TIME_VALIDITY_CHECKER
 	date_vc: DATE_VALIDITY_CHECKER

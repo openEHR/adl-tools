@@ -38,12 +38,14 @@ feature -- Initialization
 			-- make from a single string
 		do
 			-- TO_BE_IMPLEM
+			value := str
 		end
 
 	make_from_canonical_string (str: STRING)
 			-- make from a canonical string
 		do
 			-- TO_BE_IMPLEM
+			value := str
 		end
 
 feature -- Status Report
@@ -66,6 +68,7 @@ feature -- Access
 			-- others. Refer to WWW URI RFC for a full list.
 			-- New information spaces can be accommodated  within  the URI specification.
 		do
+			create Result.make_empty
 		end
 
 	path: STRING
@@ -76,6 +79,7 @@ feature -- Access
 			-- Paths may include internet/intranet location identifiers of the form: sub_domain...domain,
 			-- e.g. "info.cern.ch"
 		do
+			create Result.make_empty
 		end
 
 	fragment_id: STRING
@@ -83,6 +87,7 @@ feature -- Access
 			-- sub-parts of objects, such as a certain line and  character  position  in  a  text
 			-- object. The  syntax  and semantics are defined by the application responsible for the object.
 		do
+			create Result.make_empty
 		end
 
 	query: STRING
@@ -90,6 +95,7 @@ feature -- Access
 			-- to applications, including databases  to  be  included  in  the  URI   Any   query
 			-- meaningful to the server, including SQL.
 		do
+			create Result.make_empty
 		end
 
 feature -- Output
@@ -97,7 +103,7 @@ feature -- Output
 	as_string: STRING
 			-- string form displayable for humans
 		do
-			create Result.make(0)
+			create Result.make_empty
 			Result.append(value)
 		end
 
@@ -109,7 +115,7 @@ feature -- Output
 		end
 
 invariant
-	Value_exists: value /= Void and then not value.is_empty
+	Value_exists: not value.is_empty
 
 end
 

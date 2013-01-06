@@ -3,21 +3,18 @@ note
 	description: "Abstraction of a model component that contains packages and classes"
 	keywords:    "model, UML"
 
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2011 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class BMM_PACKAGE_CONTAINER
 
 inherit
 	BMM_DEFINITIONS
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
 feature -- Initialisation
@@ -32,7 +29,7 @@ feature -- Access
 	packages: HASH_TABLE [BMM_PACKAGE_DEFINITION, STRING]
 			-- child packages; keys all in upper case for guaranteed matching
 
-	package_at_path (a_path: attached STRING): BMM_PACKAGE_DEFINITION
+	package_at_path (a_path: STRING): BMM_PACKAGE_DEFINITION
 			-- package at the path `a_path'
 		require
 			has_package_path (a_path)
@@ -50,7 +47,7 @@ feature -- Access
 
 feature -- Status Report
 
-	has_package_path (a_path: attached STRING): BOOLEAN
+	has_package_path (a_path: STRING): BOOLEAN
 			-- True if there is a package at the path `a_path'
 		local
 			pkg_names: LIST [STRING]
@@ -84,7 +81,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	add_package (a_pkg: attached BMM_PACKAGE_DEFINITION)
+	add_package (a_pkg: BMM_PACKAGE_DEFINITION)
 		require
 			Valid_package: not packages.has_item (a_pkg) and not packages.has (a_pkg.name.as_upper)
 		do

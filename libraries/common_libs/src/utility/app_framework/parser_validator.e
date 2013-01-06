@@ -1,31 +1,61 @@
 note
-	component:   "openEHR Common Reference Model"
-	description: "[
-			 Reference to PARTY object, e.g. in a demographic service.
-			 ]"
-	keywords:    "Party reference"
-	design:      "openEHR Common Reference Model 1.4.1"
+	component:   "openEHR Project"
+	description: "Interface for gobo parser with added error collection"
+	keywords:    "ADL, archetype"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2000- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-class PARTY_REF
+deferred class PARSER_VALIDATOR
 
 inherit
-	OBJECT_REF
+	ANY_VALIDATOR
 
-create
-	make
+	YY_PARSER_SKELETON
+		redefine
+			report_error
+		end
 
-invariant
-	Type_validity: generating_type.out.is_equal ("PERSON") or
-					generating_type.out.is_equal ("ORGANISATION") or
-					generating_type.out.is_equal ("GROUP") or
-					generating_type.out.is_equal ("AGENT")
+feature -- Access
+
+	source_start_line: INTEGER
+		deferred
+		end
+
+	output: detachable ANY
+
+feature -- Commands
+
+	validate
+		do
+		end
+
+feature {YY_PARSER_ACTION} -- Basic Operations
+
+	report_error (a_message: STRING)
+			-- Print error message.
+		do
+			add_error_with_location ("general_error", <<a_message>>, error_loc)
+		end
+
+	abort_with_error (err_code: STRING; args: ARRAY [STRING])
+		do
+			add_error_with_location (err_code, args, error_loc)
+			abort
+		end
+
+	error_loc: attached STRING
+		do
+			create Result.make_empty
+			if attached {YY_FILE_BUFFER} input_buffer as f_buffer then
+				Result.append (f_buffer.file.name + ", ")
+			end
+			Result.append ("line " + (in_lineno + source_start_line).out)
+			Result.append(" [last token = " + token_name(last_token) + "]")
+		end
 
 end
-
 
 
 --|
@@ -42,10 +72,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is party_ref.e.
+--| The Original Code is any_validator.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2007
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

@@ -11,26 +11,23 @@ note
 	keywords:    "object identifiers"
 
 	design:      "openEHR Common Reference Model 1.4.1"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2000- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class OBJECT_REF
 
-feature -- Initialization
+create
+	make
+
+feature {NONE} -- Initialization
 
 	make (a_namespace, a_type: STRING; an_object_id: OBJECT_ID)
 			-- build an external ID
 		require
-			Namespace_exists: a_namespace /= Void and then not a_namespace.is_empty
-			Type_exists: a_type /= Void and then not a_type.is_empty
-			Id_exists: an_object_id /= Void
+			Namespace_exists: not a_namespace.is_empty
+			Type_exists: not a_type.is_empty
 		do
 			namespace := a_namespace
 			type := a_type
@@ -61,13 +58,12 @@ feature -- Access
 	as_string: STRING
 			-- 	
 		do
-
+			create Result.make_empty
 		end
 
 invariant
-	Id_exists: id /= Void
-	namespace_exists: namespace /= Void and then not namespace.is_empty
-	type_exists: type /= Void and then not type.is_empty
+	namespace_valid: not namespace.is_empty
+	type_valid: not type.is_empty
 
 end
 

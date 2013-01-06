@@ -16,15 +16,10 @@ note
 	              being persistent.
 	              ]"
 	keywords:    "www, uri, uniform, resource, identifier"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2005-2006 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2005- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class URI
 
@@ -104,6 +99,7 @@ feature -- Access
 			-- New information spaces can be accommodated  within  the
 			-- URI specification.
 		do
+			create Result.make_empty
 		end
 
 	path: STRING
@@ -116,6 +112,7 @@ feature -- Access
 			-- Paths may include internet/intranet location identifiers
 			-- of the form: sub_domain...domain, e.g. "info.cern.ch"
 		do
+			create Result.make_empty
 		end
 
 	fragment_id: STRING
@@ -125,6 +122,7 @@ feature -- Access
 			-- object.   The  syntax  and semantics are defined by the
 			-- application responsible for the object.
 		do
+			create Result.make_empty
 		end
 
 	query: STRING
@@ -133,14 +131,13 @@ feature -- Access
 			-- databases  to  be  included  in  the  URI   Any   query
 			-- meaningful to the server, including SQL.
 		do
+			create Result.make_empty
 		end
 
 feature -- Status Report
 
-	valid_uri(a_str: STRING): BOOLEAN
+	valid_uri (a_str: STRING): BOOLEAN
 			-- True if a_str in valid URI syntax
-		require
-			str_valid: a_str /= Void
 		do
 			-- FIXME: for the moment, anything is valid. We need to use the Gobo UT_URI class to
 			-- do proper validation

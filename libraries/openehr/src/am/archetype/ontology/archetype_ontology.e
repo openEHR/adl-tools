@@ -2,38 +2,29 @@ note
 	component:   "openEHR Archetype Project"
 	description: "ADL Terminology class"
 	keywords:    "archetype, ontology, terminology"
-
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class ARCHETYPE_ONTOLOGY
 
 inherit
 	DT_CONVERTIBLE
 		redefine
-			default_create, finalise_dt
+			finalise_dt
 		end
 
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all;
 			{ANY} is_valid_concept_code, is_valid_code, specialisation_depth_from_code
-		undefine
-			default_create
 		end
 
 	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all
-		undefine
-			default_create
 		end
 
 feature -- Definitions
@@ -50,29 +41,12 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	default_create
-			--
-		do
-			create term_definitions.make (0)
-			create constraint_definitions.make (0)
-
-			create term_codes.make
-			term_codes.compare_objects
-			create constraint_codes.make
-			constraint_codes.compare_objects
-
-			create term_bindings.make (0)
-			create constraint_bindings.make (0)
-			create highest_refined_code_index.make (0)
-		end
-
 	make (an_original_lang, a_concept_code: STRING)
 			-- make ontology from concept code and original language
 		require
 			Original_language_valid: not an_original_lang.is_empty
 			root_code_valid: is_valid_concept_code (a_concept_code)
 		do
-			default_create
 			concept_code := a_concept_code
 			original_language := an_original_lang
 		ensure
@@ -80,10 +54,9 @@ feature -- Initialisation
 			original_language_set: original_language.is_equal (an_original_lang)
 		end
 
-	make_dt (make_args: ARRAY[ANY])
+	make_dt (make_args: detachable ARRAY[ANY])
 			-- assumed args are <<original_language, concept_code>>
 		do
-			default_create
 			if attached {STRING} make_args[1] as str then
 				original_language := str
 			end
@@ -126,21 +99,41 @@ feature -- Access
 
 	term_codes: TWO_WAY_SORTED_SET [STRING]
 			-- list of term codes
+        attribute
+            create Result.make (0)
+            Result.compare_objects
+        end
 
 	constraint_codes: TWO_WAY_SORTED_SET [STRING]
 			-- list of constraint codes
+        attribute
+            create Result.make (0)
+            Result.compare_objects
+        end
 
 	term_definitions: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
 			-- table of term definitions, keyed by code, keyed by language
+        attribute
+            create Result.make (0)
+        end
 
 	constraint_definitions: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
 			-- table of constraint definitions, keyed by code, keyed by language
+        attribute
+            create Result.make (0)
+        end
 
 	term_bindings: HASH_TABLE [HASH_TABLE [CODE_PHRASE, STRING], STRING]
 			-- tables of bindings of external terms to internal codes and/or paths, keyed by external terminology id
+        attribute
+            create Result.make (0)
+        end
 
 	constraint_bindings: HASH_TABLE [HASH_TABLE [URI, STRING], STRING]
 			-- table of constraint bindings in the form of strings "service::query", keyed by terminology
+        attribute
+            create Result.make (0)
+        end
 
 	terminology_extracts: detachable HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
 			-- table of {code, description} keyed by terminology_id containing extracted concepts from external terminologies
@@ -858,6 +851,9 @@ feature {ARCHETYPE_ONTOLOGY} -- Modification
 			-- Table of current highest code keyed by its parent code, for all specialised codes in this ontology at its
 			-- level of specialisation.
 			-- For example the entry for key 'at0007' could be 5, meaning that current top child code of 'at0007' is 'at0007.5'
+        attribute
+            create Result.make (0)
+        end
 
 	highest_term_code: INTEGER
 			-- highest non-specialised term code at the level of this ontology; 0 if none so far

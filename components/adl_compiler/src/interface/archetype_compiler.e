@@ -19,7 +19,8 @@ class ARCHETYPE_COMPILER
 inherit
 	SHARED_ARCHETYPE_CATALOGUES
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
 	SHARED_APP_RESOURCES

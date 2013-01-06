@@ -8,15 +8,10 @@ note
 
 	requirements:"ISO 18308 TS V1.0 STR 2.6"
 	design:      "openEHR Data Types Reference Model 1.7"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2000- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class DV_ENCAPSULATED
 
@@ -28,15 +23,21 @@ inherit
 feature -- Access
 
 	charset: CODE_PHRASE
+		attribute
+			create Result
+		end
 
 	language: CODE_PHRASE
+		attribute
+			create Result
+		end
 
 	size: INTEGER
 
 invariant
 	Size_positive: size >= 0
-	Language_valid: language /= Void and then code_set("languages").has(language)
-	charset_valid: charset /= Void and then code_set("character sets").has(charset)
+	Language_valid: code_set("languages").has (language)
+	charset_valid: code_set("character sets").has (charset)
 
 end
 

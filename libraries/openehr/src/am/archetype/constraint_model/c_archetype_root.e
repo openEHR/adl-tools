@@ -9,14 +9,10 @@ note
 				 	- New object in any level of archetype: archetype_id, no node_id (if not required); path cannot be found in flat parent
 			     ]"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class C_ARCHETYPE_ROOT
 
@@ -34,7 +30,7 @@ create
 
 feature -- Initialisation
 
-	make (a_rm_type_name, an_archetype_id: attached STRING)
+	make (a_rm_type_name, an_archetype_id: STRING)
 			-- make as an archetype external reference
 		require
 			Rm_type_name_valid: not a_rm_type_name.is_empty
@@ -43,7 +39,7 @@ feature -- Initialisation
 			cco_make_identified (a_rm_type_name, an_archetype_id)
 		end
 
-	make_with_slot_id (a_rm_type_name, an_archetype_id, a_slot_node_id: attached STRING)
+	make_with_slot_id (a_rm_type_name, an_archetype_id, a_slot_node_id: STRING)
 			-- make as a slot filler, specialising a slot
 		require
 			Rm_type_name_valid: not a_rm_type_name.is_empty
@@ -56,7 +52,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	slot_node_id: STRING
+	slot_node_id: detachable STRING
 			-- record node id of slot in parent archetype that this object fills, in the case a slot exists;
 			-- only set in flat form of archetype
 

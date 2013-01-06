@@ -5,12 +5,8 @@ note
 
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2011- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class P_BMM_SCHEMA
 
@@ -51,10 +47,7 @@ feature -- Initialisation
 		do
 			reset
 			make_core
-			create primitive_types.make (0)
-			create class_definitions.make (0)
 			create packages.make (0)
-			create includes.make (0)
 			create archetype_rm_closure_packages.make (0)
 			archetype_rm_closure_packages.compare_objects
 			create includes_to_process.make (0)
@@ -74,14 +67,23 @@ feature -- Access (attributes from schema)
 			-- each of which at least specifies the id of another schema, and may specify
 			-- a namespace via which types from the included schemas are known in this schema
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+		attribute
+			create Result.make (0)
+		end
 
 	primitive_types: HASH_TABLE [P_BMM_CLASS_DEFINITION, STRING]
 			-- types like Integer, Boolean etc
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+		attribute
+			create Result.make (0)
+		end
 
 	class_definitions: HASH_TABLE [P_BMM_CLASS_DEFINITION, STRING]
 			-- constructed classes
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+		attribute
+			create Result.make (0)
+		end
 
 feature -- Access (Attributes from schema load post-processing)
 
@@ -98,6 +100,7 @@ feature -- Access (Attributes from schema load post-processing)
 		note
 			option: transient
 		attribute
+			create Result.make (0)
 		end
 
 	bmm_schema: BMM_SCHEMA
@@ -180,7 +183,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	property_conforms_to (a_class_def: attached P_BMM_CLASS_DEFINITION; a_child_prop_def, a_parent_prop_def: attached P_BMM_PROPERTY_DEFINITION): BOOLEAN
+	property_conforms_to (a_class_def: P_BMM_CLASS_DEFINITION; a_child_prop_def, a_parent_prop_def: P_BMM_PROPERTY_DEFINITION): BOOLEAN
 			-- True if this property conforms to `other' such that it could be used to override it; same types are not considered conforming
 		do
 			-- check basics first

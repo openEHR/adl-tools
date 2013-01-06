@@ -2,7 +2,7 @@ note
 	component:   "openEHR Support Information Model"
 
 	description: "[
-				 Model of ISO’s Object Identifier (oid) as defined by the standard 
+				 Model of ISO s Object Identifier (oid) as defined by the standard 
 				 ISO/IEC 8824 . Oids are formed from integers separated by dots. 
 				 Each non-leaf node in an Oid starting from the left corresponds 
 				 to an assigning authority, and identifies that authority’s namespace, 
@@ -11,15 +11,10 @@ note
 	keywords:    "unique identifiers, OID"
 
 	design:      "openEHR Support Information Model 1.5"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class ISO_OID
 
@@ -27,7 +22,7 @@ inherit
 	UID
 
 create
-	default_create, make
+	make, default_create
 
 feature -- Definitions
 

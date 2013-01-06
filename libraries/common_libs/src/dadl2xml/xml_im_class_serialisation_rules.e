@@ -7,10 +7,6 @@ note
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class XML_IM_CLASS_SERIALISATION_RULES
 
 create
@@ -26,6 +22,9 @@ feature -- Access
 
 	convert_to_xml_attr_attr_names: ARRAYED_LIST [STRING]
 			-- set of IM class attribute names that should become, along with their value, an XML attribute on the enclosing XML tag
+        attribute
+            create Result.make (0)
+        end
 
 feature -- Status Report
 
@@ -34,14 +33,10 @@ feature -- Status Report
 
 feature -- Element Change
 
-	merge (other: attached XML_IM_CLASS_SERIALISATION_RULES)
+	merge (other: XML_IM_CLASS_SERIALISATION_RULES)
 			-- merge in rules in `other'
 		do
-			if not attached convert_to_xml_attr_attr_names then
-				create convert_to_xml_attr_attr_names.make(0)
-			end
 			convert_to_xml_attr_attr_names.append (other.convert_to_xml_attr_attr_names)
-
 			output_dt_im_type_name_as_xml_attr := output_dt_im_type_name_as_xml_attr or other.output_dt_im_type_name_as_xml_attr
 		end
 

@@ -5,10 +5,9 @@ note
 			     a dADL text.
 				 ]"
 	keywords:    "error status reporting"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2005- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 deferred class MESSAGE_DB
@@ -38,7 +37,7 @@ feature -- Access
 		local
 			i: INTEGER
 			idx_str: STRING
-			args_list: ARRAY[STRING]
+			args_list: detachable ARRAY[STRING]
 			replacement: STRING
 		do
 			if message_table.has (an_id) then
@@ -51,7 +50,7 @@ feature -- Access
 				Result := Catchall_error.twin
 			end
 			Result.replace_substring_all ("%%N", "%N")
-			if args_list /= Void then
+			if attached args_list then
 				from i := args_list.lower until i > args_list.upper loop
 					replacement := args_list.item(i)
 					if not attached replacement then

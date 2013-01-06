@@ -14,8 +14,9 @@ class ARCHETYPE_FLATTENER
 
 inherit
 	SHARED_ARCHETYPE_CATALOGUES
-		export {NONE}
-			all
+		export
+			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
 	ARCHETYPE_TERM_CODE_TOOLS
@@ -33,7 +34,7 @@ create
 
 feature -- Initialisation
 
-	make (a_child_desc: attached ARCH_CAT_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
+	make (a_child_desc: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 			-- create with source (differential) archetype of archetype for which we wish to generate a flat archetype
 		require
 			Child_desc_valid: a_child_desc.is_valid
@@ -56,9 +57,9 @@ feature -- Access
 
 	flat_parent_desc: detachable ARCH_CAT_ARCHETYPE
 
-	child_desc: attached ARCH_CAT_ARCHETYPE
+	child_desc: ARCH_CAT_ARCHETYPE
 
-	arch_parent_flat: attached FLAT_ARCHETYPE
+	arch_parent_flat: FLAT_ARCHETYPE
 			-- flat archetype of parent, if applicable
 		require
 			child_desc.is_specialised
@@ -66,7 +67,7 @@ feature -- Access
 			Result := flat_parent_desc.flat_archetype
 		end
 
-	arch_child_diff: attached DIFFERENTIAL_ARCHETYPE
+	arch_child_diff: DIFFERENTIAL_ARCHETYPE
 			-- archetype for which flat form is being generated
 		do
 			Result := child_desc.differential_archetype

@@ -44,17 +44,17 @@ feature -- Factory
 
 	create_archetype_slot: attached ARCHETYPE_SLOT
 		do
-			if attached node_id then
-				create Result.make_identified (rm_type_name, node_id)
+			if attached node_id as nid then
+				create Result.make_identified (rm_type_name, nid)
 			else
 				create Result.make_anonymous (rm_type_name)
 			end
 			populate_c_instance (Result)
-			if attached includes then
-				Result.set_includes (includes)
+			if attached includes as incls then
+				Result.set_includes (incls)
 			end
-			if attached excludes then
-				Result.set_excludes (excludes)
+			if attached excludes as excls then
+				Result.set_excludes (excls)
 			end
 			if is_closed then
 				Result.set_closed

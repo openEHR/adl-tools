@@ -2,14 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Persistent form of C_PRIMITIVE_OBJECT."
 	keywords:    "persistence, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class P_C_PRIMITIVE_OBJECT
 
@@ -36,11 +32,9 @@ feature -- Access
 
 feature -- Factory
 
-	create_c_primitive_object: attached C_PRIMITIVE_OBJECT
+	create_c_primitive_object: C_PRIMITIVE_OBJECT
 		do
-			if attached item then
-				create Result.make (item)
-			end
+			create Result.make (item)
 			populate_c_instance (Result)
 		end
 

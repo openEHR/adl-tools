@@ -8,10 +8,6 @@ note
 	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class C_DV_QUANTITY
 
 inherit
@@ -38,7 +34,7 @@ feature -- Access
 	list: detachable ARRAYED_LIST [C_QUANTITY_ITEM]
 			-- list of items constraining magnitude/units pairs
 
-	prototype_value: attached QUANTITY
+	prototype_value: QUANTITY
 			-- Generate a default value from this constraint object.
 			-- FIXME: This should be of type DV_QUANTITY.
 		local
@@ -84,7 +80,7 @@ feature -- Access
 
 feature -- Statistics
 
-	constrained_rm_attributes: attached ARRAYED_SET [STRING]
+	constrained_rm_attributes: ARRAYED_SET [STRING]
 			-- report which attributes of the equivalent DV_QUANTITY are being constrained here
 		do
 			create Result.make(0)
@@ -105,7 +101,7 @@ feature -- Statistics
 
 feature -- Modification
 
-	set_property (a_property: attached CODE_PHRASE)
+	set_property (a_property: CODE_PHRASE)
 			-- set property constraint
 		require
 			Property_valid: has_property (a_property)
@@ -114,7 +110,7 @@ feature -- Modification
 			default_units := units_for_property (a_property).first
 		end
 
-	set_list (an_list: attached ARRAYED_LIST [C_QUANTITY_ITEM])
+	set_list (an_list: ARRAYED_LIST [C_QUANTITY_ITEM])
 		do
 			list := an_list
 		ensure
@@ -131,7 +127,7 @@ feature -- Modification
 			assumed_value_set: assumed_value.magnitude = a_magnitude and assumed_value.units = a_units and assumed_value.precision = a_precision
 		end
 
-	add_unit_constraint (a_units: attached STRING; a_magnitude: detachable INTERVAL [REAL]; a_precision: detachable INTERVAL [INTEGER])
+	add_unit_constraint (a_units: STRING; a_magnitude: detachable INTERVAL [REAL]; a_precision: detachable INTERVAL [INTEGER])
 			-- add a units constraint. Void magnitude means any magnitude allowed
 		require
 			Units_valid: not a_units.is_empty

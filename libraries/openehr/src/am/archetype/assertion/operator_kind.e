@@ -57,26 +57,23 @@ feature -- Output
 	as_string_symbol: STRING
 			-- output symbolic form, e.g. "="
 		do
-			create Result.make_empty
-			Result.append (operator_symbols.item(value))
+			create Result.make_from_string (operator_symbol (value))
 		end
 
 	as_string_name: STRING
 			-- output word form e.g. "equals"
 		do
-			create Result.make_empty
-			Result.append (operator_names.item(value))
+			create Result.make_from_string (operator_name (value))
 		end
 
 	as_text_symbol: STRING
 			-- output word form e.g. "equals"
 		do
-			create Result.make_empty
-			Result.append (operator_text_identifiers.item (value))
+			create Result.make_from_string (operator_text_identifier (value))
 		end
 
 invariant
-	Validity: valid_operator(value)
+	Validity: valid_operator (value)
 
 end
 

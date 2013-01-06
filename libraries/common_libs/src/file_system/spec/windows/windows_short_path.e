@@ -2,15 +2,10 @@ note
 	component:   "openEHR Reusable Libraries"
 	description: "Short (8-dot-3) MS-DOS style paths on Windows."
 	keywords:    "path, Windows"
-
-	author:      "Peter Gummer"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	author:      "Peter Gummer <peter.gummer@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class
 	WINDOWS_SHORT_PATH
@@ -20,8 +15,8 @@ inherit
 		rename
 			string as as_long_path
 		export
-			{NONE} all
-			{ANY} as_long_path
+			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, as_long_path
 		redefine
 			make
 		end

@@ -5,14 +5,10 @@ note
 				 model reported in last_op_fail and fail_reason.
 				 ]"
 	keywords:    "dADL"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2005-2010 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2005- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class DT_OBJECT_CONVERTER
 
@@ -46,7 +42,7 @@ feature -- Access
 
 feature -- Conversion
 
-	object_to_dt (an_obj: attached ANY): attached DT_COMPLEX_OBJECT_NODE
+	object_to_dt (an_obj: ANY): DT_COMPLEX_OBJECT_NODE
 			-- generate a DT_OBJECT from an Eiffel object; called only on top-level object
 		do
 			create Result.make_anonymous
@@ -54,20 +50,20 @@ feature -- Conversion
 			populate_dt_from_object (an_obj, Result, No_type)
 		end
 
-	populate_dt_from_root_object (an_obj: attached ANY; a_dt_co: attached DT_COMPLEX_OBJECT_NODE)
+	populate_dt_from_root_object (an_obj: ANY; a_dt_co: DT_COMPLEX_OBJECT_NODE)
 		do
 			errors.wipe_out
 			populate_dt_from_object (an_obj, a_dt_co, No_type)
 		end
 
-	dt_to_object_from_string (a_dt_co: attached DT_COMPLEX_OBJECT_NODE; a_type_name: attached STRING; make_args: ARRAY[ANY]): ANY
+	dt_to_object_from_string (a_dt_co: DT_COMPLEX_OBJECT_NODE; a_type_name: STRING; make_args: detachable ARRAY[ANY]): ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		do
 			Result := dt_to_object (a_dt_co, dt_dynamic_type_from_string (a_type_name), make_args)
 		end
 
-	dt_to_object (a_dt_co: attached DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER; make_args: ARRAY[ANY]): ANY
+	dt_to_object (a_dt_co: DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER; make_args: detachable ARRAY[ANY]): ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT; should be called externally only on top-level DT structure;
 			-- recursive calling from populate_object_from_dt calling
@@ -157,7 +153,7 @@ feature -- Conversion
 
 feature {NONE} -- Implementation
 
-	populate_dt_from_object (an_obj: attached ANY; a_dt_co: attached DT_COMPLEX_OBJECT_NODE; a_static_type: INTEGER)
+	populate_dt_from_object (an_obj: ANY; a_dt_co: DT_COMPLEX_OBJECT_NODE; a_static_type: INTEGER)
 			-- make a data tree from an object; this routine is recursive. Compare `a_static_type' to `an_obj' dynamic
 			-- type; if different, set the `type_visible' flag on `a_dt_co'. During serialisation, the flag is used
 			-- to decide to output the type information (unless full type marking is on). If `a_static_type' is No_type
@@ -321,7 +317,7 @@ end
 			end
 		end
 
-	populate_object_from_dt (a_dt_co: attached DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER; make_args: ARRAY[ANY]): ANY
+	populate_object_from_dt (a_dt_co: DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER; make_args: detachable ARRAY[ANY]): ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT; recursive. Be careful of the 3 'kinds' of type id in Eiffel:
 			-- an 'abstract type' is defined in INTERNAL; all ref types have one abstract type
@@ -336,7 +332,7 @@ end
 			a_dt_obj_leaf: DT_OBJECT_LEAF
 			fld_name: STRING
 			eif_abstract_fld_type_id, fld_type_id, dyn_dt_val_type_id, i: INTEGER
-			a_gen_field: ANY
+			a_gen_field: detachable ANY
 		do
 debug ("DT")
 	io.put_string ("DT_OBJECT_CONVERTER.populate_object_from_dt: ENTER%N")
@@ -594,7 +590,7 @@ end
 
 feature {NONE} -- Conversion to object
 
-	set_primitive_interval_field (i: INTEGER; object: attached ANY; fld_type:INTEGER; value: ANY)
+	set_primitive_interval_field (i: INTEGER; object: ANY; fld_type:INTEGER; value: ANY)
 			-- set a field of a specific Eiffel type like INTERVAL[INTEGER_8] from the parsed form, which is always (currently)
 			-- INTERVAL[INTEGER_32] (larger numbers will have to be parsed as INTERVAL[INTEGER_64]; same for large reals => REAL_64).
 			-- This is currently a total hack, awaiting ES to implement INTEGER_GENERAL, REAL_GENERAL etc from the ECMA spec.
@@ -640,7 +636,7 @@ feature {NONE} -- Conversion to object
 			set_reference_field (i, object, v)
 		end
 
-	set_primitive_sequence_field (i: INTEGER; object: attached ANY; eif_fld_type: INTEGER; dt_seq_value: ANY)
+	set_primitive_sequence_field (i: INTEGER; object: ANY; eif_fld_type: INTEGER; dt_seq_value: ANY)
 			-- set i-th field of an Eiffel object which is some kind of sequence of a DT primitive type,
 			-- from a DT value which is either an ARRAYED_LIST or a single object like an INTEGER,
 			-- which we want to turn into the member of a new sequence. The latter case caters for
@@ -717,7 +713,7 @@ feature {NONE} -- Implementation
 			-- list of DT_OBJECT_REFERENCE and DT_OBJECT_REFERENCE_LIST objects found in last top-level
 			-- call to `dt_to_object'
 
-	populate_eif_container_from_dt (a_gen_obj: attached ANY; a_dt_attr: attached DT_ATTRIBUTE_NODE)
+	populate_eif_container_from_dt (a_gen_obj: ANY; a_dt_attr: DT_ATTRIBUTE_NODE)
 			-- set generic values in a generic object, from a_dt_attr
 			-- only deals with first generic parameter; generally safe for HASH_TABLE and LIST types
 		require
@@ -925,6 +921,8 @@ end
 				Result := iso_date_time.to_date_time
 			elseif attached {ISO8601_DURATION} dt_val as iso_duration then
 				Result := iso_duration.to_date_time_duration
+			else
+				Result := "error"
 			end
 		end
 

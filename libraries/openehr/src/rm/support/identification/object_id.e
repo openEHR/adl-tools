@@ -9,15 +9,10 @@ note
 	keywords:    "object identifiers"
 
 	design:      "openEHR Common Reference Model 1.4.1"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2000- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class OBJECT_ID
 
@@ -27,13 +22,16 @@ inherit
 feature -- Access
 
 	value: STRING
+        attribute
+            create Result.make_empty
+        end
 
 feature -- Status Report
 
 	valid_id (an_id: STRING): BOOLEAN
 			--
 		require
-			an_id_valid: an_id /= Void and then not an_id.is_empty
+			an_id_valid: not an_id.is_empty
 		deferred
 		end
 
@@ -46,7 +44,7 @@ feature -- Comparison
 		end
 
 invariant
-	value_exists: value /= Void and then not value.is_empty
+	value_valid: not value.is_empty
 
 end
 

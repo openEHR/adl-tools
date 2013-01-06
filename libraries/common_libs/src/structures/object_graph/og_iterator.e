@@ -13,14 +13,10 @@ note
 				 past these nodes.
 				 ]"
 	keywords:    "object graph, recursive iterator"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class OG_ITERATOR
 
@@ -29,33 +25,33 @@ create
 
 feature -- Initialisation
 
-	make (a_target: attached OG_OBJECT_NODE)
+	make (a_target: OG_OBJECT_NODE)
 		do
 			target := a_target
 		end
 
 feature -- Access
 
-	target: attached OG_OBJECT_NODE
+	target: OG_OBJECT_NODE
 
 feature -- Traversal
 
-	do_all (node_enter_action, node_exit_action: attached PROCEDURE [ANY, TUPLE [OG_ITEM, INTEGER]])
+	do_all (node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [OG_ITEM, INTEGER]])
 			-- do enter_action and exit_action to all nodes in the structure
 		do
 			depth := 0
 			do_all_nodes (target, node_enter_action, node_exit_action)
 		end
 
-	do_at_surface (node_action: attached PROCEDURE [ANY, TUPLE [OG_ITEM, INTEGER]];
-			node_is_included: attached FUNCTION [ANY, TUPLE [OG_ITEM], BOOLEAN])
+	do_at_surface (node_action: PROCEDURE [ANY, TUPLE [OG_ITEM, INTEGER]];
+			node_is_included: FUNCTION [ANY, TUPLE [OG_ITEM], BOOLEAN])
 			-- Do action only to nodes at surface, where membership is defined by `node_is_included'.
 		do
 			do_at_surface_nodes (target, node_action, node_is_included)
 		end
 
-	do_until_surface (node_action: attached PROCEDURE [ANY, TUPLE [OG_ITEM, INTEGER]];
-			node_is_included: attached FUNCTION [ANY, TUPLE[OG_ITEM], BOOLEAN])
+	do_until_surface (node_action: PROCEDURE [ANY, TUPLE [OG_ITEM, INTEGER]];
+			node_is_included: FUNCTION [ANY, TUPLE[OG_ITEM], BOOLEAN])
 			-- Do action only to nodes from top until surface (inclusive), where membership is defined by `node_is_included'.
 		do
 			do_until_surface_nodes (target, node_action, node_is_included)
@@ -63,7 +59,7 @@ feature -- Traversal
 
 feature {NONE} -- Implementation
 
-	do_all_nodes (a_target: attached OG_NODE; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [OG_ITEM, INTEGER]])
+	do_all_nodes (a_target: OG_NODE; node_enter_action, node_exit_action: PROCEDURE [ANY, TUPLE [OG_ITEM, INTEGER]])
 		do
 			depth := depth + 1
 			node_enter_action.call ([a_target, depth])
@@ -79,7 +75,7 @@ feature {NONE} -- Implementation
 			depth := depth - 1
 		end
 
-	do_at_surface_nodes (a_target: attached OG_NODE; node_action: PROCEDURE [ANY, TUPLE [OG_ITEM, INTEGER]];
+	do_at_surface_nodes (a_target: OG_NODE; node_action: PROCEDURE [ANY, TUPLE [OG_ITEM, INTEGER]];
 				node_is_at_surface: FUNCTION [ANY, TUPLE [OG_ITEM], BOOLEAN])
 			-- Do action only to nodes at surface, where membership is defined by `node_is_at_surface'.
 		do
@@ -96,7 +92,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	do_until_surface_nodes (a_target: attached OG_NODE; node_action: PROCEDURE [ANY, TUPLE [OG_ITEM, INTEGER]];
+	do_until_surface_nodes (a_target: OG_NODE; node_action: PROCEDURE [ANY, TUPLE [OG_ITEM, INTEGER]];
 				node_is_included: FUNCTION [ANY, TUPLE [OG_ITEM], BOOLEAN])
 			-- Do action only to nodes from top down to surface, where membership is defined by `node_is_included'.
 		do

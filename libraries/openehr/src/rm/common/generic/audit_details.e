@@ -1,40 +1,32 @@
 note
 	component:   "openEHR Common Reference Model"
-
-	description: "[
-				 Generic details of an audit trail
-				 ]"
+	description: "Generic details of an audit trail"
 	keywords:    "version control"
-
 	design:      "openEHR Common Reference Model 2.0"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2005 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2005- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class AUDIT_DETAILS
 
 inherit
 	EXTERNAL_ENVIRONMENT_ACCESS
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
+
+create
+	make
 
 feature -- Initialization
 
-	make(a_system_id: STRING; a_committer: PARTY_PROXY;
+	make (a_system_id: STRING; a_committer: PARTY_PROXY;
 						a_time_committed: DV_DATE_TIME; a_change_type: DV_CODED_TEXT;
 						a_description: DV_TEXT)
 		require
-			a_system_id_valid: a_system_id /= Void and then not a_system_id.is_empty
-			a_committer_valid: a_committer /= Void
-			a_time_committed_valid: a_time_committed /= Void
-			a_change_type_valid: a_change_type /= Void
+			a_system_id_valid: not a_system_id.is_empty
 		do
 			system_id := a_system_id
 			committer := a_committer
@@ -67,11 +59,8 @@ feature -- Access
 			-- description of this contribution overall
 
 invariant
-	System_id_exists: system_id /= Void and then not system_id.is_empty
-	Committer_exists: committer /= Void
-	Time_committed_exists: time_committed /= Void
-	Change_type_exists: change_type /= Void and then
-		terminology(Terminology_id_openehr).has_code_for_value_set (Group_id_audit_change_type, change_type.defining_code)
+	System_id_valid: not system_id.is_empty
+	Change_type_valid: terminology(Terminology_id_openehr).has_code_for_value_set (Group_id_audit_change_type, change_type.defining_code)
 
 end
 

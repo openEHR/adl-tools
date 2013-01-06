@@ -6,14 +6,10 @@ note
 				 directory, and setting of flags in the GUI.
 				 ]"
 	keywords:    "archetype"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class ARCHETYPE_THUMBNAIL
 
@@ -21,7 +17,7 @@ inherit
 	ARCHETYPE_DEFINITIONS
 		export
 			{NONE} all;
-			{ANY} valid_adl_version
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, valid_adl_version
 		end
 
 feature -- Access

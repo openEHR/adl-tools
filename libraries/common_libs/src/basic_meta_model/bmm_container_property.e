@@ -3,14 +3,10 @@ note
 	description: "Subtype of BMM_PROPERTY_DEFINITION that represents a typical container type."
 	keywords:    "model, UML"
 
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2009-2010 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2009- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class BMM_CONTAINER_PROPERTY
 
@@ -25,7 +21,7 @@ create
 
 feature -- Initialisation
 
-	make (a_name: STRING; a_type: attached like type; is_mandatory_flag, is_computed_flag, is_im_infrastructure_flag, is_im_runtime_flag: BOOLEAN)
+	make (a_name: STRING; a_type: like type; is_mandatory_flag, is_computed_flag, is_im_infrastructure_flag, is_im_runtime_flag: BOOLEAN)
 		do
 			precursor (a_name, a_type, is_mandatory_flag, is_computed_flag, is_im_infrastructure_flag, is_im_runtime_flag)
 			create cardinality.make_open
@@ -40,7 +36,7 @@ feature -- Access
 			Result.append (": " + type.container_type.name + Generic_left_delim.out + Generic_right_delim.out)
 		end
 
-	cardinality: MULTIPLICITY_INTERVAL
+	cardinality: detachable MULTIPLICITY_INTERVAL
 
 	type: BMM_CONTAINER_TYPE_REFERENCE
 			-- type of the contained type

@@ -4,14 +4,10 @@ note
 			     Object node representing root object in dADL parse tree
 		         ]"
 	keywords:    "ADL"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class DT_COMPLEX_OBJECT_NODE
 
@@ -20,14 +16,14 @@ inherit
 		export
 			{NONE} all
 		undefine
-			is_equal, out, default_create
+			is_equal, out
 		end
 
 	DT_OBJECT_ITEM
 		undefine
 			out
 		redefine
-			parent, representation, default_create
+			parent, representation
 		end
 
 	OG_PATH_TOOLS
@@ -48,22 +44,11 @@ create
 
 feature -- Initialisation
 
-	default_create
-			--
-		do
-			create attributes.make(0)
-			create im_type_name.make(0)
-			im_type_name.append (Unknown_type_name)
-		ensure then
-			not is_typed
-		end
-
-	make_identified (an_id: attached STRING)
+	make_identified (an_id: STRING)
 			-- set node id, type_name = 'unknown'
 		require
 			Id_valid: not an_id.is_empty
 		do
-			default_create
 			create representation.make (an_id, Current)
 		ensure
 			not is_typed
@@ -71,13 +56,12 @@ feature -- Initialisation
 
 	make_anonymous
 		do
-			default_create
 			create representation.make_anonymous (Current)
 		ensure
 			not is_typed
 		end
 
-	make_from_object (an_obj: attached ANY)
+	make_from_object (an_obj: ANY)
 			-- make a data tree from an object
 		do
 			make_anonymous
@@ -86,10 +70,13 @@ feature -- Initialisation
 
 feature -- Access
 
-	parent: DT_ATTRIBUTE_NODE
+	parent: detachable DT_ATTRIBUTE_NODE
 
-	attributes: attached ARRAYED_LIST [DT_ATTRIBUTE_NODE]
+	attributes: ARRAYED_LIST [DT_ATTRIBUTE_NODE]
 			-- next nodes, keyed by node id or attribute name
+		attribute
+			create Result.make (0)
+		end
 
 	first: DT_ATTRIBUTE_NODE
 		do
@@ -102,7 +89,7 @@ feature -- Access
 			Result := attributes.last
 		end
 
-	attribute_node (an_attr_name: attached STRING): attached DT_ATTRIBUTE_NODE
+	attribute_node (an_attr_name: STRING): DT_ATTRIBUTE_NODE
 			-- return attribute node at an_attr_name
 		require
 			An_attr_name_valid: has_attribute (an_attr_name)
@@ -112,7 +99,7 @@ feature -- Access
 			end
 		end
 
-	node_at_path (a_path: attached STRING): attached DT_OBJECT_ITEM
+	node_at_path (a_path: STRING): DT_OBJECT_ITEM
 			-- find the child at the relative path `a_path'; paths can only ever return an object
 		require
 			Path_valid: has_path(a_path)
@@ -122,7 +109,7 @@ feature -- Access
 			end
 		end
 
-	attribute_node_at_path (a_path: attached STRING): attached DT_ATTRIBUTE_NODE
+	attribute_node_at_path (a_path: STRING): DT_ATTRIBUTE_NODE
 			-- find the child at the relative path `a_path'; paths can only ever return an object
 		require
 			Path_valid: has_path(a_path)
@@ -132,7 +119,7 @@ feature -- Access
 			end
 		end
 
-	all_paths: attached ARRAYED_LIST[STRING]
+	all_paths: ARRAYED_LIST[STRING]
 			-- all paths below this point, including this node
 		local
 			og_paths: HASH_TABLE [OG_OBJECT, OG_PATH]
@@ -148,7 +135,7 @@ feature -- Access
 			Result_exists: Result.object_comparison
 		end
 
-	value_at_path (a_path: attached STRING): attached ANY
+	value_at_path (a_path: STRING): ANY
 			-- retrieve leaf value object, including list or interval object at `a_path'
 		require
 			Path_valid: valid_path_string(a_path) and has_path(a_path)
@@ -162,7 +149,7 @@ feature -- Access
 			end
 		end
 
-	value_list_at_path (a_path: attached STRING): SEQUENCE[ANY]
+	value_list_at_path (a_path: STRING): detachable SEQUENCE[ANY]
 			-- attempt to get list value from path `a_path'; relies on
 			-- prior knowledge that this path corresponds to a list object
 		require
@@ -173,7 +160,7 @@ feature -- Access
 			end
 		end
 
-	value_interval_at_path (a_path: attached STRING): INTERVAL[PART_COMPARABLE]
+	value_interval_at_path (a_path: STRING): detachable INTERVAL[PART_COMPARABLE]
 			-- attempt to get interval value from path `a_path'; relies on
 			-- prior knowledge that this path corresponds to an interval object
 		require
@@ -192,7 +179,7 @@ feature -- Access
 
 feature -- Status Report
 
-	has_path (a_path: attached STRING): BOOLEAN
+	has_path (a_path: STRING): BOOLEAN
 			-- find the child at the relative path `a_path'
 		require
 			Path_valid: not a_path.is_empty
@@ -200,7 +187,7 @@ feature -- Status Report
 			Result := representation.has_path (create {OG_PATH}.make_from_string (a_path))
 		end
 
-	has_attribute (an_attr_name: attached STRING): BOOLEAN
+	has_attribute (an_attr_name: STRING): BOOLEAN
 			-- valid REL children of an object node must all be unique
 		require
 			Attr_name_valid: not an_attr_name.is_empty
@@ -216,7 +203,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	put_attribute (an_attr_node: attached DT_ATTRIBUTE_NODE)
+	put_attribute (an_attr_node: DT_ATTRIBUTE_NODE)
 			-- put a new child node
 		require
 			Node_exists: not has_attribute (an_attr_node.im_attr_name)
@@ -226,7 +213,7 @@ feature -- Modification
 			an_attr_node.set_parent (Current)
 		end
 
-	set_value_at_path (a_value: attached ANY; a_path: attached STRING)
+	set_value_at_path (a_value: ANY; a_path: STRING)
 			-- set a leaf value at a path, replacing any previous value
 		require
 			Path_valid: has_path(a_path)
@@ -242,7 +229,7 @@ feature -- Modification
 			Value_set: value_at_path (a_path) = a_value
 		end
 
-	put_value_at_path (a_value: attached ANY; a_path: attached STRING)
+	put_value_at_path (a_value: ANY; a_path: STRING)
 			-- create a new set of objects corresponding to `a_path'. At least the final segment
 			-- of `a_path' does not already exist in the structure below the current object node
 		require
@@ -275,7 +262,7 @@ feature -- Modification
 			put_object_at_path (dt_obj, a_path)
 		end
 
-	put_object_at_path (new_dt_obj: attached DT_OBJECT_ITEM; a_path: attached STRING)
+	put_object_at_path (new_dt_obj: DT_OBJECT_ITEM; a_path: STRING)
 			-- put `an_obj' at `a_path'; create the intervening structure if it doesn't already exist
 			-- At least the final segment of `a_path' does not already exist in the structure below
 			-- the current object node
@@ -332,7 +319,7 @@ feature -- Modification
 			end
 		end
 
-	replace_attribute_name (old_name, new_name: attached STRING)
+	replace_attribute_name (old_name, new_name: STRING)
 			-- change the name of an attribute
 		require
 			Old_name_valid: has_attribute (old_name)
@@ -341,7 +328,7 @@ feature -- Modification
 			representation.replace_attribute_name (old_name, new_name)
 		end
 
-	remove_attribute (attr_name: attached STRING)
+	remove_attribute (attr_name: STRING)
 			-- remove attribute node at `attr_name'
 		require
 			Attr_name_valid: has_attribute (attr_name)
@@ -362,7 +349,7 @@ feature -- Conversion
 			Result.append (im_type_name + "[" + id + "] ")
 		end
 
-	as_object (a_type_id: INTEGER; make_args: ARRAY[ANY]): ANY
+	as_object (a_type_id: INTEGER; make_args: detachable ARRAY[ANY]): ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		do
@@ -370,7 +357,7 @@ feature -- Conversion
 			as_object_ref := Result
 		end
 
-	as_object_from_string (a_type_name: attached STRING; make_args: ARRAY[ANY]): ANY
+	as_object_from_string (a_type_name: STRING; make_args: detachable ARRAY[ANY]): ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		do

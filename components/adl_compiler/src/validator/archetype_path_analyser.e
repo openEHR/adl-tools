@@ -1,17 +1,11 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "[
-				 Validator of archeype paths.
-		         ]"
+	description: "Validator of archeype paths."
 	keywords:    "path"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class ARCHETYPE_PATH_ANALYSER
 
@@ -19,7 +13,7 @@ inherit
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all;
-			{ANY} is_valid_concept_code
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, is_valid_concept_code
 		end
 
 create

@@ -7,21 +7,18 @@ note
 				 the new language.
 				 ]"
 	keywords:    "archetype"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2004- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class RESOURCE_DESCRIPTION_ITEM
 
 inherit
 	EXTERNAL_ENVIRONMENT_ACCESS
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
 	DT_CONVERTIBLE
@@ -38,7 +35,7 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make_dt (make_args: ARRAY[ANY])
+	make_dt (make_args: detachable ARRAY[ANY])
 			--
 		do
 			language := Default_language_code
@@ -48,8 +45,7 @@ feature -- Initialisation
 
 	make (a_lang: CODE_PHRASE; a_purpose: STRING)
 		require
-			Lang_valid: a_lang /= Void
-			Purpose_valid: a_purpose /= Void and then not a_purpose.is_empty
+			Purpose_valid: not a_purpose.is_empty
 		do
 			language := a_lang
 			purpose := a_purpose
@@ -72,10 +68,10 @@ feature -- Initialisation
 
 feature -- Access
 
-	language: attached CODE_PHRASE
+	language: CODE_PHRASE
 			-- Language of this item
 
-	purpose: attached STRING
+	purpose: STRING
 			-- Purpose of the archetype.
 
 	use: detachable STRING
@@ -110,7 +106,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_purpose (a_purpose: attached STRING)
+	set_purpose (a_purpose: STRING)
 			-- set purpose
 		require
 			Purpose_valid: not a_purpose.is_empty
@@ -120,7 +116,7 @@ feature -- Modification
 			Purpose_set: purpose = a_purpose
 		end
 
-	set_use (a_use: attached STRING)
+	set_use (a_use: STRING)
 			-- set use
 		require
 			Purpose_valid: not a_use.is_empty
@@ -138,7 +134,7 @@ feature -- Modification
 			not attached use
 		end
 
-	set_misuse (a_misuse: attached STRING)
+	set_misuse (a_misuse: STRING)
 			-- set misuse
 		require
 			Misuse_valid: not a_misuse.is_empty
@@ -156,7 +152,7 @@ feature -- Modification
 			not attached misuse
 		end
 
-	set_copyright (a_copyright: attached STRING)
+	set_copyright (a_copyright: STRING)
 			-- set copyright
 		require
 			Copyright_valid: not a_copyright.is_empty
@@ -174,7 +170,7 @@ feature -- Modification
 			not attached copyright
 		end
 
-	add_keyword (a_keyword: attached STRING; i: INTEGER)
+	add_keyword (a_keyword: STRING; i: INTEGER)
 			-- add a_keyword to `keywords' at position `i', or end if i is 0
 		require
 			Keyword_valid: not has_keyword (a_keyword)
@@ -195,7 +191,7 @@ feature -- Modification
 			Insert_position: i > 0 implies keywords.i_th (i) = a_keyword
 		end
 
-	remove_keyword (a_keyword: attached STRING)
+	remove_keyword (a_keyword: STRING)
 			-- remove a_keyword from `keywords'
 		require
 			Contributor_valid: has_keyword (a_keyword)
@@ -205,7 +201,7 @@ feature -- Modification
 			Keyword_removed: not has_keyword (a_keyword)
 		end
 
-	put_other_details_item (a_key, a_value: attached STRING)
+	put_other_details_item (a_key, a_value: STRING)
 			-- put the key, value pair to other_details
 		require
 			Key_valid: not a_key.is_empty
@@ -219,7 +215,7 @@ feature -- Modification
 			Other_details_set: other_details.item(a_key) = a_value
 		end
 
-	remove_other_details_item (a_key: attached STRING)
+	remove_other_details_item (a_key: STRING)
 			-- remove item with key `a_key' from other_details
 		require
 			Key_valid: other_details.has (a_key)
@@ -232,7 +228,7 @@ feature -- Modification
 			old other_details.count = 1 implies other_details = Void
 		end
 
-	put_original_resource_uri_item (a_key, a_value: attached STRING)
+	put_original_resource_uri_item (a_key, a_value: STRING)
 			-- add the key, value pair to original_resource_uri
 		require
 			Key_valid: not a_key.is_empty
@@ -247,7 +243,7 @@ feature -- Modification
 			Original_resource_uri_added: original_resource_uri.item (a_key) = a_value
 		end
 
-	remove_original_resource_uri_item (a_key: attached STRING)
+	remove_original_resource_uri_item (a_key: STRING)
 			-- remove item with key `a_key' from `original_resource_uri'
 		require
 			Key_valid: original_resource_uri.has (a_key)
@@ -262,7 +258,7 @@ feature -- Modification
 
 feature -- Copying
 
-	translated_copy (a_lang: attached STRING): attached RESOURCE_DESCRIPTION_ITEM
+	translated_copy (a_lang: STRING): RESOURCE_DESCRIPTION_ITEM
 			-- generate a copy of this object, with all strings sss replaced by
 			-- "*sss(orig_lang)"
 		require

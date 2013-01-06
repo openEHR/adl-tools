@@ -21,22 +21,22 @@ inherit
 
 feature -- Initialisation
 
-	make_identified (a_value: attached like value; a_node_id: attached STRING)
+	make_identified (a_value: like value; a_node_id: STRING)
 		require
 			Node_id_valid: not a_node_id.is_empty
 		do
 			default_create
-			create representation.make(a_node_id, Current)
-			set_value(a_value)
+			create representation.make (a_node_id, Current)
+			set_value (a_value)
 		ensure
 			is_addressable
 		end
 
-	make_anonymous (a_value: attached like value)
+	make_anonymous (a_value: like value)
 		do
 			default_create
-			create representation.make_anonymous(Current)
-			set_value(a_value)
+			create representation.make_anonymous (Current)
+			set_value (a_value)
 		ensure
 			not is_addressable
 		end
@@ -60,7 +60,7 @@ feature -- Representation
 
 feature -- Conversion
 
-	as_object (a_type_id: INTEGER; make_args: ARRAY[ANY]): ANY
+	as_object (a_type_id: INTEGER; make_args: detachable ARRAY[ANY]): ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		do
@@ -70,7 +70,7 @@ feature -- Conversion
 
 feature -- Modification
 
-	set_value (a_value: attached like value)
+	set_value (a_value: like value)
 		deferred
 		ensure
 			Value_set: value = a_value
@@ -78,7 +78,7 @@ feature -- Modification
 
 feature -- Output
 
-	as_string: attached STRING
+	as_string: STRING
 		deferred
 		end
 

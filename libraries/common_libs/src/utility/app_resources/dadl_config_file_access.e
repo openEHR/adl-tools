@@ -11,10 +11,6 @@ note
 	copyright:   "Copyright (c) 2010 openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class DADL_CONFIG_FILE_ACCESS
 
 inherit
@@ -32,7 +28,8 @@ inherit
 
 	SHARED_RESOURCES
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
 	EXCEPTIONS

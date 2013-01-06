@@ -2,15 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Object node type representing constraint on text or term"
 	keywords:    "codephrase, ADL"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class C_CODE_PHRASE
 
@@ -32,7 +27,7 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make_from_terminology_id (a_terminology_id: attached STRING)
+	make_from_terminology_id (a_terminology_id: STRING)
 			-- Make from `terminology_id'.
 		do
 			default_create
@@ -42,7 +37,7 @@ feature -- Initialisation
 			Terminology_id_set: terminology_id.value.is_equal (a_terminology_id)
 		end
 
-	make_from_pattern (a_pattern: attached STRING)
+	make_from_pattern (a_pattern: STRING)
 			-- Make from pattern of form "terminology_id::code, code, ... [; code]".
 			-- Pattern "terminology_id::" is legal.
 		require
@@ -57,9 +52,12 @@ feature -- Initialisation
 
 feature -- Access
 
-	terminology_id: detachable TERMINOLOGY_ID
+	terminology_id: TERMINOLOGY_ID
 			-- id of terminology from which codes come. If code list empty, any code from
 			-- this terminology is allowed
+		attribute
+			create Result.make
+		end
 
 	code_list: detachable ARRAYED_LIST[STRING]
 			-- list of codes in terminology designated by terminology_id
@@ -67,7 +65,7 @@ feature -- Access
 	code_count: INTEGER
 			-- number of codes in code_list
 		do
-			if code_list /= Void then
+			if attached code_list then
 				Result := code_list.count
 			end
 		end

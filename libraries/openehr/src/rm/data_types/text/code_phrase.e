@@ -13,15 +13,10 @@ note
 
 	requirements:"ISO 18308 TS V1.0 STR 4.2"
 	design:      "openEHR Data Types Reference Model 1.7"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2000- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class CODE_PHRASE
 
@@ -29,13 +24,10 @@ inherit
 	COMPARABLE
 		undefine
 			out
-		redefine
-			default_create
 		end
 
 create
-	default_create,
-	make, make_from_string
+	default_create, make, make_from_string
 
 feature -- Definitions
 
@@ -45,15 +37,7 @@ feature -- Definitions
 
 feature -- Initialization
 
-	default_create
-		do
-			create terminology_id.default_create
-			code_string := default_code_string.twin
-		ensure then
-			Code_string_set: code_string.is_equal (default_code_string)
-		end
-
-	make_from_string (a_key: attached STRING)
+	make_from_string (a_key: STRING)
 			-- make from a string of the form terminology_id::code_string, e.g. ICD10(1998)::M10
 			-- the form terminology_id:: is also allowable, in which case the default_code_string will
 			-- be used
@@ -71,7 +55,7 @@ feature -- Initialization
 			end
 		end
 
-	make (a_terminology_id, a_code_string: attached STRING)
+	make (a_terminology_id, a_code_string: STRING)
 			-- make from two strings
 		require
 			Terminology_id_valid: not a_terminology_id.is_empty
@@ -94,15 +78,21 @@ feature -- Status Report
 
 feature -- Access
 
-	terminology_id: attached TERMINOLOGY_ID
+	terminology_id: TERMINOLOGY_ID
 			-- Identifier of the distinct terminology from which the code_string
 			-- (or its elements) was extracted
+		attribute
+			create Result.default_create
+		end
 
-	code_string: attached STRING
+	code_string: STRING
 			-- The key used by the terminology service to identify a concept or
 			-- coordination of concepts. This string is most likely parsable inside
 			-- the terminology service, but nothing can be assumed about its syntax
 			-- outside that context.
+		attribute
+			create Result.make_from_string (default_code_string)
+		end
 
 feature -- Comparison
 

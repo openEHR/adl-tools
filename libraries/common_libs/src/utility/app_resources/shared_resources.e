@@ -13,7 +13,8 @@ class SHARED_RESOURCES
 inherit
 	KL_SHARED_FILE_SYSTEM
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
 	ERROR_SEVERITY_TYPES

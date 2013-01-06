@@ -2,14 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "node in ADL parse tree"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2008 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class P_C_ATTRIBUTE
 
@@ -21,7 +17,7 @@ create
 
 feature -- Initialisation
 
-	make (a_ca: attached C_ATTRIBUTE)
+	make (a_ca: C_ATTRIBUTE)
 			-- make from C_ATTRIBUTE
 		do
 			rm_attribute_name := a_ca.rm_attribute_name
@@ -64,13 +60,13 @@ feature -- Access
 
 	rm_attribute_name: STRING
 
-	differential_path: STRING
+	differential_path: detachable STRING
 
-	children: ARRAYED_LIST [P_C_OBJECT]
+	children: detachable ARRAYED_LIST [P_C_OBJECT]
 
-	existence: STRING
+	existence: detachable STRING
 
-	cardinality: STRING
+	cardinality: detachable STRING
 
 feature -- Status Report
 
@@ -78,50 +74,49 @@ feature -- Status Report
 
 feature -- Factory
 
-	create_c_attribute: attached C_ATTRIBUTE
+	create_c_attribute: C_ATTRIBUTE
 			-- recreate original C_ATTRIBUTE
 		local
-			ex: MULTIPLICITY_INTERVAL
-			card: CARDINALITY
+			ex: detachable MULTIPLICITY_INTERVAL
+			card: detachable CARDINALITY
 		do
-			if attached existence then
-				create ex.make_from_string (existence)
+			if attached existence as e then
+				create ex.make_from_string (e)
 			end
 			if is_multiple then
-				if attached cardinality then
-					create card.make_from_string (cardinality)
+				if attached cardinality as c then
+					create card.make_from_string (c)
 				end
 				create Result.make_multiple (rm_attribute_name, ex, card)
 			else
 				create Result.make_single (rm_attribute_name, ex)
 			end
 
-			if attached differential_path then
-				Result.set_differential_path (differential_path)
+			if attached differential_path as dp then
+				Result.set_differential_path (dp)
 			end
 
 			if attached children then
-				from children.start until children.off loop
-					if attached {P_C_ARCHETYPE_ROOT} children.item as p_c_ar then
+				across children as children_csr loop
+					if attached {P_C_ARCHETYPE_ROOT} children_csr.item as p_c_ar then
 						Result.put_child (p_c_ar.create_c_archetype_root)
-					elseif attached {P_C_COMPLEX_OBJECT} children.item as p_c_co then
+					elseif attached {P_C_COMPLEX_OBJECT} children_csr.item as p_c_co then
 						Result.put_child (p_c_co.create_c_complex_object)
-					elseif attached {P_ARCHETYPE_SLOT} children.item as p_a_s then
+					elseif attached {P_ARCHETYPE_SLOT} children_csr.item as p_a_s then
 						Result.put_child (p_a_s.create_archetype_slot)
-					elseif attached {P_ARCHETYPE_INTERNAL_REF} children.item as p_a_ir then
+					elseif attached {P_ARCHETYPE_INTERNAL_REF} children_csr.item as p_a_ir then
 						Result.put_child (p_a_ir.create_archetype_internal_ref)
-					elseif attached {P_CONSTRAINT_REF} children.item as p_cr then
+					elseif attached {P_CONSTRAINT_REF} children_csr.item as p_cr then
 						Result.put_child (p_cr.create_constraint_ref)
-					elseif attached {P_C_CODE_PHRASE} children.item as p_c_cp then
+					elseif attached {P_C_CODE_PHRASE} children_csr.item as p_c_cp then
 						Result.put_child (p_c_cp.create_c_code_phrase)
-					elseif attached {P_C_DV_ORDINAL} children.item as p_c_dvo then
+					elseif attached {P_C_DV_ORDINAL} children_csr.item as p_c_dvo then
 						Result.put_child (p_c_dvo.create_c_dv_ordinal)
-					elseif attached {P_C_DV_QUANTITY} children.item as p_c_dvq then
+					elseif attached {P_C_DV_QUANTITY} children_csr.item as p_c_dvq then
 						Result.put_child (p_c_dvq.create_c_dv_quantity)
-					elseif attached {P_C_PRIMITIVE_OBJECT} children.item as p_c_po then
+					elseif attached {P_C_PRIMITIVE_OBJECT} children_csr.item as p_c_po then
 						Result.put_child (p_c_po.create_c_primitive_object)
 					end
-					children.forth
 				end
 			end
 		end

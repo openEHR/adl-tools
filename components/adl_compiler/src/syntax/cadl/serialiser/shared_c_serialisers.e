@@ -26,7 +26,7 @@ feature -- Access
 			end
 		end
 
-	c_serialiser_for_format (an_archetype: ARCHETYPE; a_lang, a_format: STRING): C_SERIALISER
+	c_serialiser_for_format (an_archetype: ARCHETYPE; a_lang, a_format: STRING): detachable C_SERIALISER
 			-- get a specific ADL serialiser
 		require
 			Format_valid: has_c_serialiser_format (a_format)

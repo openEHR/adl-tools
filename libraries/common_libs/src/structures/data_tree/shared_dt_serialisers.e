@@ -15,7 +15,7 @@ class SHARED_DT_SERIALISERS
 
 feature -- Access
 
-	dt_serialiser_formats: attached ARRAYED_LIST[STRING]
+	dt_serialiser_formats: ARRAYED_LIST[STRING]
 			-- list of format names
 		once
 			create Result.make(0)
@@ -26,7 +26,7 @@ feature -- Access
 			end
 		end
 
-	dt_serialiser_for_format (a_format: attached STRING): attached DT_SERIALISER
+	dt_serialiser_for_format (a_format: STRING): detachable DT_SERIALISER
 			-- get a specific ADL serialiser
 		require
 			Format_valid: has_dt_serialiser_format (a_format)
@@ -36,7 +36,7 @@ feature -- Access
 
 feature -- Status Report
 
-	has_dt_serialiser_format (a_format: attached STRING): BOOLEAN
+	has_dt_serialiser_format (a_format: STRING): BOOLEAN
 		do
 			Result := dt_serialisers.has (a_format)
 		end

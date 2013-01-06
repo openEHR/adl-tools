@@ -21,13 +21,12 @@ create
 
 feature -- Initialisation
 
-	make(a_target: ARRAYED_LIST [ASSERTION]; format: STRING)
+	make (a_target: ARRAYED_LIST [ASSERTION]; format: STRING)
 			-- create a new manager targetted to the parse tree `a_target'
 		require
-			Target_exists: a_target /= Void
-			Format_valid: format /= Void and then has_assertion_serialiser_format(format)
+			Format_valid: has_assertion_serialiser_format(format)
 		do
-			serialiser := assertion_serialiser_for_format(format)
+			serialiser := assertion_serialiser_for_format (format)
 			target := a_target
 			serialiser.reset
 		end
@@ -37,19 +36,25 @@ feature -- Command
 	serialise
 			-- start the serialisation process; the result will be in `serialiser_output'
 		do
-			serialiser.start_assertion(target, 0)
+			if attached serialiser as ser then
+				ser.start_assertion (target, 0)
+			end
 		end
 
 feature -- Access
 
 	last_result: STRING
 		do
-			Result := serialiser.last_result
+			if attached serialiser as ser then
+				Result := ser.last_result
+			else
+				create Result.make_empty
+			end
 		end
 
 feature {NONE} -- Implementation
 
-	serialiser: ASSERTION_SERIALISER
+	serialiser: detachable ASSERTION_SERIALISER
 
 	target: ARRAYED_LIST [ASSERTION]
 

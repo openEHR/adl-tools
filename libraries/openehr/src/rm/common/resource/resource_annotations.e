@@ -21,52 +21,38 @@ note
 				 as other parts of an archetype.
 				 ]"
 	keywords:    "archetype"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class RESOURCE_ANNOTATIONS
 
 inherit
 	LANGUAGE_TAG_TOOLS
-		undefine
-			default_create
-		end
 
 	DT_CONVERTIBLE
-		redefine
-			default_create
-		end
 
 create
-	make_dt, default_create
+	make_dt
 
 feature -- Initialisation
 
-	default_create
-			--
-		do
-			create items.make (0)
-		end
-
-	make_dt (make_args: ARRAY[ANY])
+	make_dt (make_args: detachable ARRAY[ANY])
 			-- make used by DT_OBJECT_CONVERTER
 		do
-			default_create
 		end
 
 feature -- Access
 
-	items: attached HASH_TABLE [RESOURCE_ANNOTATION_NODES, STRING]
+	items: HASH_TABLE [RESOURCE_ANNOTATION_NODES, STRING]
 			-- list of annotation tables, keyed by language. Annotations may be present for only one or
 			-- some languages; if they are present for more than one, the structures must match
+		attribute
+			create Result.make (0)
+		end
 
-	matching_language_tag (a_lang_tag: attached STRING): attached STRING
+	matching_language_tag (a_lang_tag: STRING): STRING
 			-- The actual language tag e.g. "en-GB" matching `a_lang_tag' in `items'
 		require
 			has_matching_language_tag (a_lang_tag)
@@ -81,7 +67,7 @@ feature -- Access
 			end
 		end
 
-	annotations_at_path (a_lang, a_path: attached STRING): attached RESOURCE_ANNOTATION_NODE_ITEMS
+	annotations_at_path (a_lang, a_path: STRING): RESOURCE_ANNOTATION_NODE_ITEMS
 			-- Get annotations for `a_lang' at `a_path' from `items'
 		require
 			has_annotation_at_path (a_lang, a_path)
@@ -89,7 +75,7 @@ feature -- Access
 			Result := items.item (a_lang).item_at_path(a_path)
 		end
 
-	node_table_for_language (a_lang: attached STRING): attached RESOURCE_ANNOTATION_NODES
+	node_table_for_language (a_lang: STRING): RESOURCE_ANNOTATION_NODES
 			-- Get annotations for `a_lang' at `a_path' from `items'
 		require
 			has_language (a_lang)
@@ -99,13 +85,13 @@ feature -- Access
 
 feature -- Status Report
 
-	has_language (a_lang_tag: attached STRING): BOOLEAN
+	has_language (a_lang_tag: STRING): BOOLEAN
 			-- True if either original_language or translations has a_lang_tag
 		do
 			Result := items.has (a_lang_tag)
 		end
 
-	has_matching_language_tag (a_lang_tag: attached STRING): BOOLEAN
+	has_matching_language_tag (a_lang_tag: STRING): BOOLEAN
 			-- True if either items has `a_lang_tag' (e.g. "en"), which it might not even if the language is available,
 			-- since this section is only optionally populated with respect to languages, or has a matching tag, e.g.
 			-- "en-GB"
@@ -114,7 +100,7 @@ feature -- Status Report
 				items.current_keys.there_exists (agent language_tag_has_language (?, a_lang_tag))
 		end
 
-	has_annotation_at_path (a_lang, a_path: attached STRING): BOOLEAN
+	has_annotation_at_path (a_lang, a_path: STRING): BOOLEAN
 			-- True if `a_path' is found in  `items'
 		do
 			Result := items.has (a_lang) and then items.item (a_lang).has_path(a_path)
@@ -122,14 +108,14 @@ feature -- Status Report
 
 feature -- Modification
 
-	add_annotation_table (an_annot_table: attached RESOURCE_ANNOTATION_NODES; a_lang: attached STRING)
+	add_annotation_table (an_annot_table: RESOURCE_ANNOTATION_NODES; a_lang: STRING)
 		require
 			not has_language (a_lang)
 		do
 			items.put (an_annot_table, a_lang)
 		end
 
-	merge_annotation_items (a_lang_tag: attached STRING; a_path: attached STRING; ann_items: attached RESOURCE_ANNOTATION_NODE_ITEMS)
+	merge_annotation_items (a_lang_tag: STRING; a_path: STRING; ann_items: RESOURCE_ANNOTATION_NODE_ITEMS)
 			-- add `ann_items' at key `a_path'; replace any existing at same path
 		do
 			if not items.has (a_lang_tag) then
@@ -138,18 +124,15 @@ feature -- Modification
 			items.item(a_lang_tag).merge_items_at_node(a_path, ann_items)
 		end
 
-	merge (other: attached RESOURCE_ANNOTATIONS)
+	merge (other: RESOURCE_ANNOTATIONS)
 			-- merge annotations in `other' to current
 		do
 			-- iterate on languages
-			from other.items.start until other.items.off loop
+			across other.items as other_items_csr loop
 				-- iterate on paths
-				from other.items.item_for_iteration.items.start until other.items.item_for_iteration.items.off loop
-					merge_annotation_items (other.items.key_for_iteration, other.items.item_for_iteration.items.key_for_iteration,
-						other.items.item_for_iteration.items.item_for_iteration)
-					other.items.item_for_iteration.items.forth
+				across other_items_csr.item.items as paths_csr loop
+					merge_annotation_items (other.items.key_for_iteration, paths_csr.key, paths_csr.item)
 				end
-				other.items.forth
 			end
 		end
 

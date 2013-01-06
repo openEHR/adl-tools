@@ -6,17 +6,11 @@ note
 			 container. Supports distributed version control.
 			 ]"
 	keywords:    "object identifiers"
-
 	design:      "openEHR Support Information Model 1.5"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class OBJECT_VERSION_ID
 
@@ -39,14 +33,22 @@ feature -- Access
 		local
 			sep_pos1, sep_pos2: INTEGER
 		do
-			sep_pos1 := value.substring_index(Extension_separator, 1) + Extension_separator.count
-			sep_pos2 := value.substring_index(Extension_separator, sep_pos1) - 1
-			create Result.make(value.substring(sep_pos1, sep_pos2))
+			sep_pos1 := value.substring_index (Extension_separator, 1) + Extension_separator.count
+			sep_pos2 := value.substring_index (Extension_separator, sep_pos1) - 1
+			create Result.make (value.substring(sep_pos1, sep_pos2))
 		end
 
 	creating_system_id: UID
 			-- Identifier of the system that created the Version corresponding to this Object version id.
+		local
+			sep_pos1, sep_pos2: INTEGER
+			sys_id: STRING
 		do
+			sep_pos1 := value.substring_index (Extension_separator, 1) + Extension_separator.count
+			sep_pos2 := value.substring_index (Extension_separator, sep_pos1) + 1
+			sys_id := value.substring (sep_pos2, value.count)
+			create {UUID} Result.default_create
+			-- TODO: finish implementation
 		end
 
 feature -- Status Report
@@ -55,11 +57,6 @@ feature -- Status Report
 			--
 		do
 		end
-
-invariant
-	Object_valid: object_id /= Void
-	Version_tree_id: version_tree_id /= Void
-	creating_system_id: creating_system_id /= Void
 
 end
 

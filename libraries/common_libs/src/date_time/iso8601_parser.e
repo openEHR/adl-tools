@@ -72,7 +72,7 @@ feature -- Status Report
 --			end
 --		end
 
-	valid_iso8601_time(str: STRING): BOOLEAN
+	valid_iso8601_time (str: STRING): BOOLEAN
 			-- True if string in one of the forms:
 			--	hh
 			--	hhmm
@@ -186,7 +186,7 @@ feature -- Status Report
 			end
 		end
 
-	valid_iso8601_date(str: STRING): BOOLEAN
+	valid_iso8601_date (str: STRING): BOOLEAN
 			-- True if string in one of the forms
 			--	YYYY
 			--	YYYYMM
@@ -253,7 +253,7 @@ feature -- Status Report
 			end
 		end
 
-	valid_iso8601_date_time(str: STRING): BOOLEAN
+	valid_iso8601_date_time (str: STRING): BOOLEAN
 			-- True if string in one of the forms
 			--	YYYYMMDDThh
 			--	YYYYMMDDThhmm
@@ -306,7 +306,7 @@ feature -- Status Report
 			end
 		end
 
-	valid_iso8601_duration(str: attached STRING): BOOLEAN
+	valid_iso8601_duration (str: STRING): BOOLEAN
 			-- True if string in form "PnYnMnWnDTnHnMnS"
 		local
 			str1, ymd_part, hms_part: STRING
@@ -610,32 +610,32 @@ feature {ISO8601_ROUTINES} -- Implementation
 			end
 		end
 
-	cached_iso8601_time_string: STRING
+	cached_iso8601_time_string: detachable STRING
 			-- last time string on which is_valid_iso8601_time was called; used for matching
 			-- to decide on whether to use cached ISO8601_TIME value or not
 
-	cached_iso8601_time: ISO8601_TIME
+	cached_iso8601_time: detachable ISO8601_TIME
 			-- side-effect of calling valid_time_strings with valid input
 
-	cached_iso8601_date_string: STRING
+	cached_iso8601_date_string: detachable STRING
 			-- last date string on which is_valid_iso8601_date was called; used for matching
 			-- to decide on whether to use cached ISO8601_DATE value or not
 
-	cached_iso8601_date: ISO8601_DATE
+	cached_iso8601_date: detachable ISO8601_DATE
 			-- side-effect of calling valid_time_strings with valid input
 
-	cached_iso8601_date_time_string: STRING
+	cached_iso8601_date_time_string: detachable STRING
 			-- last date string on which is_valid_iso8601_date was called; used for matching
 			-- to decide on whether to use cached ISO8601_DATE value or not
 
-	cached_iso8601_date_time: ISO8601_DATE_TIME
+	cached_iso8601_date_time: detachable ISO8601_DATE_TIME
 			-- side-effect of calling valid_time_strings with valid input
 
-	cached_iso8601_duration_string: STRING
+	cached_iso8601_duration_string: detachable STRING
 			-- last date string on which is_valid_iso8601_date was called; used for matching
 			-- to decide on whether to use cached ISO8601_DATE value or not
 
-	cached_iso8601_duration: ISO8601_DURATION
+	cached_iso8601_duration: detachable ISO8601_DURATION
 			-- side-effect of calling valid_time_strings with valid input
 end
 

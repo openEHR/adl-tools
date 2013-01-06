@@ -15,17 +15,11 @@ note
 				  management.
 			 ]"
 	keywords:    "Terminology identifier"
-
 	design:      "openEHR Common Reference Model 1.4.1"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2000- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class TERMINOLOGY_ID
 
@@ -60,7 +54,7 @@ feature -- Initialization
 			value.is_equal (default_value)
 		end
 
-	make (a_terminology_id: attached STRING)
+	make (a_terminology_id: STRING)
 		require
 			Id_exists: not a_terminology_id.is_empty
 		do
@@ -72,7 +66,7 @@ feature -- Initialization
 
 feature -- Access
 
-	name: attached STRING
+	name: STRING
 			-- Return the terminology id (which includes the "version" in some cases). Distinct names
 			-- correspond to distinct (i.e. non-compatible) terminologies. Thus the names "ICD10AM" and "ICD10"
 			-- refer to distinct terminologies.
@@ -84,16 +78,18 @@ feature -- Access
 			end
 		end
 
-	version_id: STRING
+	version_id: detachable STRING
 			-- version id if there is a version or else Void
 		require
 			has_version_id
 		local
-			left_pos, right_pos: INTEGER
+			lpos, rpos: INTEGER
 		do
-			left_pos := value.substring_index(Version_id_left_delimiter, 1)
-			right_pos := value.substring_index(Version_id_right_delimiter, 1)
-			Result := value.substring(left_pos+1, right_pos-1)
+			lpos := value.substring_index (Version_id_left_delimiter, 1)
+			rpos := value.substring_index (Version_id_right_delimiter, 1)
+			if lpos > 0 and rpos > lpos then
+				Result := value.substring (lpos+1, rpos-1)
+			end
 		end
 
 feature -- Status Report
@@ -108,7 +104,7 @@ feature -- Status Report
 			Result := left_pos > 0 and right_pos > left_pos
 		end
 
-	valid_id (an_id: attached STRING): BOOLEAN
+	valid_id (an_id: STRING): BOOLEAN
 			--
 		do
 		end

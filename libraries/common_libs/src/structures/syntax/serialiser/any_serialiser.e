@@ -1,23 +1,20 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "Common things for all SML archetypes"
-	keywords:    "test, SML"
+	keywords:    "serialiser, serialisation"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class ANY_SERIALISER
 
 inherit
 	SERIALISER_DEFINITIONS
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
 feature -- Definitions
@@ -46,13 +43,19 @@ feature -- Access
 
 	last_result: STRING
 			-- result of last call to serialisation procedures
+        attribute
+            create Result.make_empty
+        end
 
 	symbol (sym_id: INTEGER): STRING
 			-- retrieve symbol string for `sym_id'
 		require
 			has_symbol (sym_id)
 		do
-			Result := profile.symbols.item (sym_id)
+			create Result.make_empty
+			if attached profile.symbols.item (sym_id) as s then
+				Result.append (s)
+			end
 		end
 
 	tag (tag_id: INTEGER): STRING
@@ -60,7 +63,10 @@ feature -- Access
 		require
 			has_tag (tag_id)
 		do
-			Result := profile.tags.item (tag_id)
+			create Result.make_empty
+			if attached profile.tags.item (tag_id) as s then
+				Result.append (s)
+			end
 		end
 
 	format_item (fmt_id: INTEGER): STRING
@@ -68,15 +74,21 @@ feature -- Access
 		require
 			has_format_item (fmt_id)
 		do
-			Result := profile.format_items.item (fmt_id)
+			create Result.make_empty
+			if attached profile.format_items.item (fmt_id) as s then
+				Result.append (s)
+			end
 		end
 
 	style (style_id: INTEGER): STRING
 			-- retrieve formatting string for `style_id'
 		require
-			has_style(style_id)
+			has_style (style_id)
 		do
-			Result := profile.styles.item (style_id)
+			create Result.make_empty
+			if attached profile.styles.item (style_id) as s then
+				Result.append (s)
+			end
 		end
 
 	output_format: STRING

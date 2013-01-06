@@ -3,29 +3,25 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Validating parser for Archetype Description Language (ADL)"
 	keywords:	 "ADL"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2009 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class CADL_VALIDATOR
 
 inherit
-	YY_PARSER_SKELETON
+	PARSER_VALIDATOR
 		rename
+			reset as validator_reset,
 			make as make_parser_skeleton
-		redefine
-			report_error
 		end
 
 	CADL_SCANNER
 		rename
 			make as make_scanner
+		redefine
+			reset
 		end
 
 	C_COMMON
@@ -177,20 +173,15 @@ input: c_complex_object
 			debug("ADL_parse")
 				io.put_string("CADL definition parsed%N")
 			end
-
-			if is_valid_concept_code(output.node_id) then
-				accept
-			else
-				abort_with_error("VARCN", <<output.node_id>>)
-			end
+			output := $1
+			accept
 		}
 	| assertions
 		{
 			debug("ADL_parse")
 				io.put_string("assertion definition parsed%N")
 			end
-			assertion_list := $1
-
+			output := $1
 			accept
 		}
 	| error
@@ -208,6 +199,7 @@ c_complex_object: c_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_complex_o
 				io.put_string(indent + "POP OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "]%N") 
 				indent.remove_tail(1)
 			end
+			$$ := object_nodes.item
 			object_nodes.remove
 		}
 	| c_complex_object_head
@@ -218,6 +210,7 @@ c_complex_object: c_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_complex_o
 					io.put_string(indent + "POP OBJECT_NODE " + object_nodes.item.rm_type_name + " [id=" + object_nodes.item.node_id + "]%N") 
 					indent.remove_tail(1)
 				end
+				$$ := object_nodes.item
 				object_nodes.remove
 			else
 				abort_with_error("VCOCDocc", <<complex_obj.rm_type_name, complex_obj.path>>)
@@ -245,12 +238,7 @@ c_complex_object_head: c_complex_object_id c_occurrences
 				-- put it under current attribute, unless it is the root object, in which case it will be returned
 				-- via the 'output' attribute of this parser
 				if not c_attrs.is_empty then
-					safe_put_c_attribute_child(c_attrs.item, complex_obj)
-				end
-
-				-- set root node to current node if not already set - guarantees it is set to outermost block
-				if output = Void then
-					output := object_nodes.item
+					safe_put_c_attribute_child (c_attrs.item, complex_obj)
 				end
 			else
 				abort_with_error("VCORM", <<complex_obj.rm_type_name, complex_obj.path>>)
@@ -859,24 +847,21 @@ boolean_unop_expr: SYM_EXISTS V_ABS_PATH
 			debug("ADL_invariant")
 				io.put_string(indent + "boolean_unop_expr: exists " + $2 + "%N") 
 			end
-			create $$.make (create {OPERATOR_KIND}.make (op_exists))
-			$$.set_operand (create {EXPR_LEAF}.make_archetype_definition_ref ($2))
+			create $$.make (create {OPERATOR_KIND}.make (op_exists), create {EXPR_LEAF}.make_archetype_definition_ref ($2))
 		}
 	| SYM_NOT V_ABS_PATH
 		{
 			debug("ADL_invariant")
 				io.put_string(indent + "boolean_unop_expr: not " + $2 + "%N") 
 			end
-			create $$.make (create {OPERATOR_KIND}.make (op_not))
-			$$.set_operand (create {EXPR_LEAF}.make_archetype_definition_ref ($2))
+			create $$.make (create {OPERATOR_KIND}.make (op_not), create {EXPR_LEAF}.make_archetype_definition_ref ($2))
 		}
 	| SYM_NOT '(' boolean_node ')'
 		{
 			debug("ADL_invariant")
 				io.put_string(indent + "boolean_unop_expr: not [(" + $3.as_string + ")] %N") 
 			end
-			create $$.make (create {OPERATOR_KIND}.make (op_not))
-			$$.set_operand ($3)
+			create $$.make (create {OPERATOR_KIND}.make (op_not), $3)
 		}
 	| SYM_EXISTS error 
 		{
@@ -940,9 +925,7 @@ arithmetic_relop_expr: arithmetic_node relational_binop_symbol arithmetic_node
 			debug("ADL_invariant")
 				io.put_string(indent + "arithmetic_relop_expr: [" + $1.as_string + "] " + $2 + " [" + $3.as_string + "]%N") 
 			end
-			create $$.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item ($2)))
-			$$.set_left_operand ($1)
-			$$.set_right_operand ($3)
+			create $$.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item ($2)), $1, $3)
 		}
 	;
 
@@ -976,9 +959,7 @@ arithmetic_arith_binop_expr: arithmetic_node arithmetic_binop_symbol arithmetic_
 			debug("ADL_invariant")
 				io.put_string(indent + "arithmetic_arith_binop_expr: [" + $1.as_string + "] " + $2 + " [" + $3.as_string + "]%N") 
 			end
-			create $$.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item ($2)))
-			$$.set_left_operand ($1)
-			$$.set_right_operand ($3)
+			create $$.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item ($2)), $1, $3)
 		}
 	;
 
@@ -2175,23 +2156,32 @@ feature -- Definitions
 feature -- Initialization
 
 	make
-			-- Create a new Eiffel parser.
 		do
 			make_scanner
 			make_parser_skeleton
+			create object_nodes.make(0)
+			create c_attrs.make(0)
+			create time_vc
+			create date_vc
 		end
 
-	execute (in_text:STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: attached BMM_SCHEMA)
+	reset
+		do
+			precursor
+			validator_reset
+		end
+
+	execute (in_text:STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: BMM_SCHEMA)
 		do
 			reset
 			rm_schema := an_rm_schema
 			source_start_line := a_source_start_line
 			differential_syntax := differential_flag
 
-			create indent.make(0)
+			indent.wipe_out
 
-			create object_nodes.make(0)
-			create c_attrs.make(0)
+			object_nodes.wipe_out
+			c_attrs.wipe_out
 
 			create time_vc
 			create date_vc
@@ -2200,35 +2190,7 @@ feature -- Initialization
 			parse
 		end
 
-feature {YY_PARSER_ACTION} -- Basic Operations
-
-	report_error (a_message: STRING)
-			-- Print error message.
-		do
-			add_error_with_location ("general_error", <<a_message>>, error_loc)
-		end
-
-	abort_with_error (err_code: STRING; args: ARRAY [STRING])
-		do
-			add_error_with_location (err_code, args, error_loc)
-			abort
-		end
-
-	error_loc: attached STRING
-		do
-			create Result.make_empty
-			if attached {YY_FILE_BUFFER} input_buffer as f_buffer then
-				Result.append (f_buffer.file.name + ", ")
-			end
-			Result.append ("line " + (in_lineno + source_start_line).out)
-			Result.append(" [last cADL token = " + token_name(last_token) + "]")
-		end
-
 feature -- Access
-
-	output: C_COMPLEX_OBJECT
-			
-	assertion_list: ARRAYED_LIST [ASSERTION]
 
 	differential_syntax: BOOLEAN
 			-- True if the supplied text to parse is differential, in which case it can contain the 
@@ -2236,7 +2198,7 @@ feature -- Access
 
 feature {NONE} -- Implementation
 
-	rm_schema: BMM_SCHEMA
+	rm_schema: detachable BMM_SCHEMA
 
 	safe_put_c_attribute_child (an_attr: C_ATTRIBUTE; an_obj: C_OBJECT)
 			-- check child object for validity and then put as new child
@@ -2261,9 +2223,6 @@ feature {NONE} -- Implementation
 	check_c_attribute_child (an_attr: C_ATTRIBUTE; an_obj: C_OBJECT): BOOLEAN
 			-- check a new child node
 			-- FIXME: the semantics here should be rationalised with C_ATTRIBUTE.valid_child and related functions
-		require
-			Attribute_exists: an_attr /= Void
-			Object_exists: an_obj /= Void
 		local
 			err_code: STRING
 			ar: ARRAYED_LIST[STRING]
@@ -2315,31 +2274,41 @@ feature {NONE} -- Parse Tree
 
 	c_attrs: ARRAYED_STACK [C_ATTRIBUTE]
 			-- main stack of attributes during construction
+		attribute
+			create Result.make (0)
+		end
 
 	c_diff_attrs: ARRAYED_LIST [C_ATTRIBUTE]
 			-- reference list of attributes with differential paths that require a special grafting process
+		attribute
+			create Result.make (0)
+		end
 
-	attr_node: C_ATTRIBUTE
+	attr_node: detachable C_ATTRIBUTE
 
-	rm_attribute_name: STRING
-	parent_path_str: STRING
+	rm_attribute_name: detachable STRING
+	parent_path_str: detachable STRING
 
-	invariant_expr: STRING
+	invariant_expr: detachable STRING
 
 	time_vc: TIME_VALIDITY_CHECKER
 	date_vc: DATE_VALIDITY_CHECKER
 
-	bmm_prop_def: BMM_PROPERTY_DEFINITION
+	bmm_prop_def: detachable BMM_PROPERTY_DEFINITION
 
 -------------- FOLLOWING TAKEN FROM DADL_VALIDATOR.Y ---------------
 feature {NONE} -- Implementation 
 
-	arch_internal_ref_rm_type_name: STRING
-	arch_internal_ref_node_id: STRING
+	arch_internal_ref_rm_type_name: detachable STRING
+	arch_internal_ref_node_id: detachable STRING
 
 	indent: STRING
-	str: STRING
+		attribute
+			create Result.make_empty
+		end
 
-	og_path: OG_PATH
+	str: detachable STRING
+
+	og_path: detachable OG_PATH
 
 end

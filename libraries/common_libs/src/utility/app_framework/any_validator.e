@@ -4,18 +4,18 @@ note
 				 Abstract model of a validator object that reports errors, warnings.
 				 ]"
 	keywords:    "ADL, archetype"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
 
 deferred class ANY_VALIDATOR
 
 inherit
 	SHARED_MESSAGE_DB
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
 feature -- Initialisation
@@ -23,7 +23,6 @@ feature -- Initialisation
 	reset
 			-- initialise reporting variables
 		do
-			create errors.make
 			passed := True
 		ensure
 			Passed: passed
@@ -36,6 +35,7 @@ feature -- Access
 		note
 			option: transient
 		attribute
+			create Result.make
 		end
 
 feature -- Status Report

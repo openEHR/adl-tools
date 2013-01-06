@@ -7,16 +7,13 @@ note
 	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 deferred class SERIALISATION_PROFILE
 
 inherit
 	SERIALISER_DEFINITIONS
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
 	STRING_UTILITIES
@@ -26,7 +23,7 @@ inherit
 
 feature -- Initialisation
 
-	make (an_output_format: attached STRING)
+	make (an_output_format: STRING)
 			-- make with the output format name this serialiser is to be associated with
 		require
 			an_output_format_valid: not an_output_format.is_empty
@@ -41,36 +38,36 @@ feature {ANY_SERIALISER} -- Access
 			-- associated with, usually "adl", "xml", "html" etc; needed to allow
 			-- embedded dADL in cADL and vice-versa to be serialised
 
-	symbols: attached HASH_TABLE[STRING, INTEGER]
+	symbols: HASH_TABLE[STRING, INTEGER]
 			-- keywords in this format, keyed by logical name
 		deferred
 		end
 
-	tags: attached HASH_TABLE[STRING, INTEGER]
+	tags: HASH_TABLE[STRING, INTEGER]
 			-- keywords in this format, keyed by logical name
 		deferred
 		end
 
-	format_items: attached HASH_TABLE[STRING, INTEGER]
+	format_items: HASH_TABLE[STRING, INTEGER]
 			-- formatting items
 		deferred
 		end
 
-	styles: attached HASH_TABLE[STRING, INTEGER]
+	styles: HASH_TABLE[STRING, INTEGER]
 			-- styles in this format, keyed by logical name
 		deferred
 		end
 
 feature  {ANY_SERIALISER} -- Factory
 
-	apply_style (elem: attached STRING; a_style: INTEGER): attached STRING
+	apply_style (elem: STRING; a_style: INTEGER): STRING
 			-- apply `a_style' to `elem'
 		require
 			A_style_valid: styles.has(a_style)
 		deferred
 		end
 
-	create_indent (indent_level: INTEGER): attached STRING
+	create_indent (indent_level: INTEGER): STRING
 		require
 			indent_level >= 0
 		local
@@ -83,7 +80,7 @@ feature  {ANY_SERIALISER} -- Factory
 			end
 		end
 
-	clean (str: attached STRING): attached STRING
+	clean (str: STRING): STRING
 			-- generate clean copy of `str' by inserting \ quoting for chars in `quoted_chars' not already quoted in `str':
 			-- find all instances of '\' and '"' that are not already being used in the quote patterns, e.g. like:
 			--	\n, \r, \t, \\, \", \'

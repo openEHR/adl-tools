@@ -30,7 +30,7 @@ create
 
 feature -- Initialization
 
-	make (a_value, a_formalism: attached STRING)
+	make (a_value, a_formalism: STRING)
 		require
 			Value_valid: not a_value.is_empty
 			Formalism_valid: not a_formalism.is_empty
@@ -39,23 +39,33 @@ feature -- Initialization
 			formalism := a_formalism
 		end
 
-	make_from_string (str:STRING)
+	make_from_string (str: STRING)
 		do
 		end
 
 feature -- Access
 
-	value: attached STRING
+	value: STRING
 			-- the string, which may validly be empty in some syntaxes
+        attribute
+            create Result.make_empty
+        end
 
-	formalism: attached STRING
+	formalism: STRING
 			-- name of the formalism, e.g. “GLIF 1.0”, “proforma” etc.
+        attribute
+            create Result.make_empty
+        end
 
 feature -- Output
 
 	as_string: STRING
 			-- string form displayable for humans
 		do
+			create Result.make_empty
+			Result.append (value)
+			Result.append ("::")
+			Result.append (formalism)
 		end
 
 invariant

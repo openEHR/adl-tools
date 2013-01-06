@@ -32,37 +32,20 @@ class REPOSITORY_PROFILE_CONFIG
 
 inherit
 	DT_CONVERTIBLE
-		redefine
-			default_create
-		end
 
 	TABLE_ITERABLE [REPOSITORY_PROFILE, STRING]
-		undefine
-			default_create
-		end
 
 create
-	make, default_create
+	make
 
 feature -- Initialisation
 
-	default_create
+	make_dt (make_args: detachable ARRAY[ANY])
 			-- Basic make routine to guarantee validity on creation.
 		do
-			create profiles.make (0)
-		ensure then
-			initially_empty: is_empty
 		end
 
-	make_dt (make_args: ARRAY[ANY])
-			-- Basic make routine to guarantee validity on creation.
-		do
-			default_create
-		ensure then
-			initially_empty: is_empty
-		end
-
-	make (a_profiles: attached HASH_TABLE [REPOSITORY_PROFILE, STRING])
+	make (a_profiles: HASH_TABLE [REPOSITORY_PROFILE, STRING])
 			-- Make from a given hash table of repository profiles.
 		do
 			profiles := a_profiles
@@ -75,7 +58,7 @@ feature -- Access
 	current_profile_name: detachable STRING
 			-- name of profile that is currently in use
 
-	current_profile: REPOSITORY_PROFILE
+	current_profile: detachable REPOSITORY_PROFILE
 		do
 			if not is_empty then
 				if not has_profile (current_profile_name) then
@@ -86,14 +69,14 @@ feature -- Access
 			end
 		end
 
-	profile (a_profile_name: attached STRING): attached REPOSITORY_PROFILE
+	profile (a_profile_name: STRING): REPOSITORY_PROFILE
 		require
 			has_profile (a_profile_name)
 		do
 			Result := profiles.item (a_profile_name)
 		end
 
-	current_reference_repository_path: attached STRING
+	current_reference_repository_path: STRING
 			-- path of root of ADL file tree
 		do
 			if has_current_profile then
@@ -103,7 +86,7 @@ feature -- Access
 			end
 		end
 
-	current_work_repository_path: attached STRING
+	current_work_repository_path: STRING
 			-- path of root of ADL file tree
 		do
 			if has_current_profile and then current_profile.has_work_repository then
@@ -119,7 +102,7 @@ feature -- Access
 			Result := profiles.count
 		end
 
-	names: attached ARRAY [STRING]
+	names: ARRAY [STRING]
 			-- New array containing all profile names.
 		do
 			Result := profiles.current_keys
@@ -134,7 +117,7 @@ feature -- Status Report
 			Result := attached current_profile_name and then not current_profile_name.is_empty
 		end
 
-	has_profile (a_profile_name: attached STRING): BOOLEAN
+	has_profile (a_profile_name: STRING): BOOLEAN
 		do
 			Result := profiles.has (a_profile_name)
 		end
@@ -163,7 +146,7 @@ feature -- Iteration
 
 feature -- Modification
 
-	put_profile (a_profile: attached REPOSITORY_PROFILE; a_profile_name: attached STRING)
+	put_profile (a_profile: REPOSITORY_PROFILE; a_profile_name: STRING)
 			-- put `a_profile', replacing any previous profile of that name
 		require
 			name_not_empty: not a_profile_name.is_empty
@@ -178,7 +161,7 @@ feature -- Modification
 			current_profile_set: old not has_current_profile implies current_profile_name ~ a_profile_name
 		end
 
-	remove_profile (a_profile_name: attached STRING)
+	remove_profile (a_profile_name: STRING)
 		require
 			has_profile (a_profile_name)
 		do
@@ -188,7 +171,7 @@ feature -- Modification
 			end
 		end
 
-	rename_profile (old_profile_name, new_profile_name: attached STRING)
+	rename_profile (old_profile_name, new_profile_name: STRING)
 		require
 			old_name_not_empty: not old_profile_name.is_empty
 			new_name_not_empty: not new_profile_name.is_empty
@@ -206,7 +189,7 @@ feature -- Modification
 			current_name_replaced: old current_profile_name.twin ~ old_profile_name implies current_profile_name ~ new_profile_name
 		end
 
-	set_current_profile_name (a_profile_name: attached STRING)
+	set_current_profile_name (a_profile_name: STRING)
 		require
 			name_not_empty: not a_profile_name.is_empty
 			has_profile (a_profile_name)
@@ -232,12 +215,16 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		do
+			create Result.make (0)
 		end
 
 feature {NONE} -- Implementation
 
 	profiles: HASH_TABLE [REPOSITORY_PROFILE, STRING]
 			-- Hash table of profiles, keyed by their names.
+		attribute
+			create Result.make (0)
+		end
 
 invariant
 -- FIXME: This is commented because we cannot satisfy the invariant immediately after creation via DT_OBJECT_CONVERTER:

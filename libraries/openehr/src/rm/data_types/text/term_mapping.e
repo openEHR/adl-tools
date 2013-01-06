@@ -6,16 +6,10 @@ note
 
 	requirements:"ISO 18308 TS V1.0 STR 4.5"
 	design:      "openEHR Data Types Reference Model 1.7"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2000- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 
 class TERM_MAPPING
 
@@ -33,7 +27,7 @@ create
 
 feature -- Initialization
 
-	make (a_target: attached CODE_PHRASE; a_match: CHARACTER; a_purpose: attached DV_CODED_TEXT)
+	make (a_target: CODE_PHRASE; a_match: CHARACTER; a_purpose: detachable DV_CODED_TEXT)
 			--
 		require
 			Valid_match_code: is_valid_match_code(a_match)
@@ -49,7 +43,7 @@ feature -- Initialization
 
 feature -- Access
 
-	target: attached CODE_PHRASE
+	target: CODE_PHRASE
 
 	match: CHARACTER
 			-- The relative match of the target term with respect to the mapped text item.
@@ -64,7 +58,7 @@ feature -- Access
 			-- and development of monolingual thesauri”) and 5964 (“Guide to Establishment
 			-- and development of multilingual thesauri”).
 
-	purpose: DV_CODED_TEXT
+	purpose: detachable DV_CODED_TEXT
 			-- Purpose of the mapping e.g. "automated data mining", "billing", "epidemiology"
 
 feature -- Output
@@ -72,9 +66,9 @@ feature -- Output
 	as_string: STRING
 			-- Result in form "-> <target> (<match>; <purpose>)
 		do
-			Result := target.as_string + " (" + match_codes.item(match) + "; "
-			if purpose /= Void then
-				Result.append (purpose.as_string + ")")
+			Result := target.as_string + " (" + match_code (match) + "; "
+			if attached purpose as p then
+				Result.append (p.as_string + ")")
 			else
 				Result.append (")")
 			end

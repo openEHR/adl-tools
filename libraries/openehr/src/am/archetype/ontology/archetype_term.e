@@ -17,17 +17,12 @@ inherit
 	ARCHETYPE_TERM_CODE_TOOLS
 		export
 			{NONE} all
-		redefine
-			default_create
 		end
 
 	DT_CONVERTIBLE
-		undefine
-			default_create
-		end
 
 create
-	make, make_all, default_create --, make_from_string, make_from_data_tree
+	make, make_all --, make_from_string, make_from_data_tree
 
 feature -- Definitions
 
@@ -45,27 +40,15 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make_dt (make_args: ARRAY[ANY])
+	make_dt (make_args: detachable ARRAY[ANY])
 			-- basic make routine to guarantee validity on creation
 		do
-			default_create
 		end
 
-	default_create
-			-- basic creation
-		do
-			set_code (Default_concept_code)
-			set_text (Unknown_value)
-			set_description (Unknown_value)
-		ensure then
-			code_set: code.same_string (default_concept_code)
-		end
-
-	make (a_code: attached STRING)
+	make (a_code: STRING)
 		require
 			Code_valid: not a_code.is_empty
 		do
-			default_create
 			code := a_code
 		ensure
 			code_set: code.same_string (a_code)
@@ -73,7 +56,7 @@ feature -- Initialisation
 			description_set: description.same_string (Unknown_value)
 		end
 
-	make_all (a_code, a_text, a_description: attached STRING)
+	make_all (a_code, a_text, a_description: STRING)
 		require
 			Code_valid: not a_code.is_empty
 			Text_valid: not a_text.is_empty
@@ -90,15 +73,24 @@ feature -- Initialisation
 
 feature -- Access
 
-	code: attached STRING
+	code: STRING
+        attribute
+            create Result.make_from_string (Default_concept_code)
+        end
 
-	text: attached STRING
+	text: STRING
+        attribute
+            create Result.make_from_string (Unknown_value)
+        end
 
-	description: attached STRING
+	description: STRING
+        attribute
+            create Result.make_from_string (Unknown_value)
+        end
 
 --	provenance: attached STRING
 
-	item (a_key: attached STRING): STRING
+	item (a_key: STRING): detachable STRING
 		require
 			has_key (a_key)
 		do
@@ -134,7 +126,7 @@ feature -- Modification
 			end
 		end
 
-	set_code (a_code: attached STRING)
+	set_code (a_code: STRING)
 		require
 			Code_valid: not a_code.is_empty
 		do
@@ -143,7 +135,7 @@ feature -- Modification
 			code_set: code.same_string (a_code)
 		end
 
-	set_text (a_text: attached STRING)
+	set_text (a_text: STRING)
 		require
 			Text_valid: not a_text.is_empty
 		do
@@ -152,7 +144,7 @@ feature -- Modification
 			text_set: text.same_string (a_text)
 		end
 
-	set_description (a_description: attached STRING)
+	set_description (a_description: STRING)
 		require
 			Description_valid: not a_description.is_empty
 		do
@@ -163,7 +155,7 @@ feature -- Modification
 
 feature -- Factory
 
-	create_translated_term (a_lang: attached STRING): ARCHETYPE_TERM
+	create_translated_term (a_lang: STRING): ARCHETYPE_TERM
 			-- create a new ARCHETYPE_TERM whose members are the same as those in the current object,
 			-- with '*' prepended and '(lang)' appended - this acts as an obvious
 			-- placeholder for translation. The lang is the original lang of a_term.
@@ -179,7 +171,7 @@ feature -- Factory
 			translated_description: Result.description.has_substring (description) and not Result.description.is_equal (description)
 		end
 
-	create_derived_term (a_code: attached STRING): attached ARCHETYPE_TERM
+	create_derived_term (a_code: STRING): ARCHETYPE_TERM
 			-- create a new ARCHETYPE_TERM whose members are the same as those in the current object,
 			-- with an '!' prepended and appended to each term to indicate that it needs to be edited.
 			-- The new term has the code `a_code'.

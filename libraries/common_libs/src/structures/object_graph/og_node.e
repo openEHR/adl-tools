@@ -2,14 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "node in ADL parse tree"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "http://www.openehr.org/issues/browse/AWBPR"
-	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class OG_NODE
 
@@ -35,7 +31,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	child_with_id (a_node_key: attached STRING): attached like child_type
+	child_with_id (a_node_key: STRING): like child_type
 			-- find the child node with `a_node_key'
 		require
 			has_child_with_id (a_node_key)
@@ -82,7 +78,7 @@ feature -- Status Report
 			Result := not children.is_empty
 		end
 
-	has_child_with_id (a_node_key: attached STRING): BOOLEAN
+	has_child_with_id (a_node_key: STRING): BOOLEAN
 		do
 			-- FIXME: should just be able to search with node_key, but we are still
 			-- using the 'unknown' node_keys rather than empty strings
@@ -93,7 +89,7 @@ feature -- Status Report
 			end
 		end
 
-	has_child (a_node: attached like child_type): BOOLEAN
+	has_child (a_node: like child_type): BOOLEAN
 		do
 			Result := children.has_item (a_node)
 		end
@@ -105,7 +101,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	put_child (a_node: attached like child_type)
+	put_child (a_node: like child_type)
 			-- put a new child node at the end of the list
 		require
 			Node_exists: valid_child_for_insertion (a_node)
@@ -117,7 +113,7 @@ feature -- Modification
 			has_child (a_node)
 		end
 
-	put_child_left (a_node, before_node: attached like child_type)
+	put_child_left (a_node, before_node: like child_type)
 			-- insert a new child node before another node in the list
 		require
 			Node_valid: valid_child_for_insertion (a_node)
@@ -131,7 +127,7 @@ feature -- Modification
 			has_child (a_node)
 		end
 
-	put_child_right (a_node, after_node: attached like child_type)
+	put_child_right (a_node, after_node: like child_type)
 			-- insert a new child node before another node in the list
 		require
 			Node_valid: valid_child_for_insertion (a_node)
@@ -145,7 +141,7 @@ feature -- Modification
 			has_child (a_node)
 		end
 
-	replace_child_by_id (a_node: like child_type; an_id: attached STRING)
+	replace_child_by_id (a_node: like child_type; an_id: STRING)
 			-- replace node with id `an_id' by `an_obj'
 		do
 			children_ordered.go_i_th (children_ordered.index_of (child_with_id(an_id), 1))
@@ -166,12 +162,12 @@ feature -- Modification
 			Child_removed: not has_child (a_node)
 		end
 
-	remove_child_by_id (a_node_key: attached STRING)
+	remove_child_by_id (a_node_key: STRING)
 			-- remove the child node identified by a_node_key
 		require
-			Node_exists: has_child_with_id(a_node_key)
+			Node_exists: has_child_with_id (a_node_key)
 		local
-			c: OG_ITEM
+			c: like child_type
 		do
 			c := child_with_id (a_node_key)
 			remove_child(c)
@@ -188,7 +184,7 @@ feature -- Modification
 			Children_removed: children.is_empty
 		end
 
-	replace_node_id (an_old_node_key, a_new_node_key: attached STRING)
+	replace_node_id (an_old_node_key, a_new_node_key: STRING)
 			-- replace `an_old_node_key' with `a_new_node_key' in the children
 			-- this has the effect of making an object indexed by a new node id,
 			-- that it doesn't itself carry
@@ -202,10 +198,10 @@ feature -- Modification
 
 feature {OG_NODE} -- Implementation
 
-	children: attached HASH_TABLE [like child_type, STRING]
+	children: HASH_TABLE [like child_type, STRING]
 			-- next nodes, keyed by node id or attribute name
 
-	children_ordered: attached ARRAYED_LIST [like child_type]
+	children_ordered: ARRAYED_LIST [like child_type]
 			-- reference list of child, in order of insertion (i.e. order of original parsing)
 
 	child_type: OG_ITEM

@@ -3,24 +3,14 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Scanner for CADL syntax items"
 	keywords:    "CADL, archetype"
-
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
-	support:     "http://www.openehr.org/issues"
-	copyright:   "Copyright (c) 2003-2007 Ocean Informatics Pty Ltd"
-	license:     "Mozilla tri-license"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	license:     "See notice at bottom of class"
 
 class CADL_SCANNER
 
 inherit
-	ANY_VALIDATOR
-		rename
-			reset as validator_reset
-		end
-
 	YY_COMPRESSED_SCANNER_SKELETON
 		rename
 			make as make_compressed_scanner_skeleton,
@@ -667,11 +657,6 @@ feature -- Commands
 			reset_compressed_scanner_skeleton
 			in_lineno := 1
 			in_buffer.wipe_out
-			validator_reset
-		end
-
-	validate
-		do
 		end
 
 feature -- Access
@@ -698,7 +683,7 @@ feature {NONE} -- Implementation
 			create Result.make
 		end
 
-	dadl_parser_error: STRING
+	dadl_parser_error: detachable STRING
 
 	term_code_count: INTEGER
 			-- Number of term codes found so far parsing a TERM_CONSTRAINT.
@@ -706,11 +691,8 @@ feature {NONE} -- Implementation
 	assumed_term_code_index: INTEGER
 			-- Index of term code in 'assumed' position when parsing a TERM_CONSTRAINT.
 
-	c_domain_type: C_DOMAIN_TYPE
+	c_domain_type: detachable C_DOMAIN_TYPE
 
 	tid: INTEGER
-
-invariant
-	in_buffer_not_void: in_buffer /= Void
 
 end

@@ -49,13 +49,21 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	make_from_string (str: attached STRING)
+	make_from_string (str: STRING)
 			-- Make from a valid ISO duration string.
 		require
 			str_valid_duration: valid_iso8601_duration (str)
 		do
 			if valid_iso8601_duration (str) then
-				deep_copy (iso8601_parser.cached_iso8601_duration)
+				days := iso8601_parser.cached_iso8601_duration.days
+				months := iso8601_parser.cached_iso8601_duration.months
+				weeks := iso8601_parser.cached_iso8601_duration.weeks
+				years := iso8601_parser.cached_iso8601_duration.years
+				seconds := iso8601_parser.cached_iso8601_duration.seconds
+				minutes := iso8601_parser.cached_iso8601_duration.minutes
+				hours := iso8601_parser.cached_iso8601_duration.hours
+				fractional_seconds := iso8601_parser.cached_iso8601_duration.fractional_seconds
+				has_time := iso8601_parser.cached_iso8601_duration.has_time
 			end
 
 			if is_zero then
@@ -100,7 +108,7 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	value: attached STRING
+	value: STRING
 			-- ISO8601 string form of duration, always synchronised with as_string
 
 	years: INTEGER
@@ -151,7 +159,7 @@ feature -- Comparison
 
 feature -- Output
 
-	as_string: attached STRING
+	as_string: STRING
 			-- output as ISO8601 duration string
 		local
 			sec_frac_str: STRING
@@ -222,7 +230,7 @@ feature -- Conversion
 			Result := Result + fractional_seconds -- (Double-precision fp operation)
 		end
 
-	to_date_time_duration: attached DATE_TIME_DURATION
+	to_date_time_duration: DATE_TIME_DURATION
 			-- convert to DATE_TIME_DURATION object
 		do
 			if weeks > 0 then
@@ -232,7 +240,7 @@ feature -- Conversion
 			end
 		end
 
-	to_definite_date_time_duration: attached DATE_TIME_DURATION
+	to_definite_date_time_duration: DATE_TIME_DURATION
 			-- convert to definite DATE_TIME_DURATION object (will be slightly approximate)
 		do
 			if weeks > 0 then

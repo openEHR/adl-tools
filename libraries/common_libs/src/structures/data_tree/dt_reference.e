@@ -2,14 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Abstract characteristics of a node that contains a reference to another node, implemented by paths. Serialises an object non-containment reference."
 	keywords:    "data tree, serialisation, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2009 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class DT_REFERENCE
 
@@ -27,13 +23,11 @@ feature -- Output
 
 	as_string: STRING
 		deferred
-		ensure
-			Result_exists: Result /= Void
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	source_object_ref: ANY
+	source_object_ref: detachable ANY
 			-- reference to the object whose `source_object_field_index' field should be
 			-- connected to the object referred to by the reference in this DT object
 
@@ -44,10 +38,10 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 	is_source_object_container: BOOLEAN
 			-- True if the source object is a container
 
-	hash_key: HASHABLE
+	hash_key: detachable HASHABLE
 			-- key for hash insertion if is_source_object_container set and the container is a hash_table
 
-	set_source_object_details(an_object_ref: ANY; a_field_index: INTEGER)
+	set_source_object_details (an_object_ref: ANY; a_field_index: INTEGER)
 			-- set the source_object values for a non-container source object into with the reference has to
 			-- pasted at the i-th field
 		do
@@ -55,27 +49,22 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 			source_object_field_index := a_field_index
 		end
 
-	set_hash_table_source_object_details(an_object_ref: ANY; a_hash_key: HASHABLE)
+	set_hash_table_source_object_details (an_object_ref: ANY; a_hash_key: HASHABLE)
 			-- set the source_object values for a container object, for which the reference has
 			-- to be added to the container via a call to extend, after a check on whether it is a
 			-- SEQUENCE or HASH_TABLE
-		require
-			Object_ref_exists: an_object_ref /= Void
-			Hash_key_provided: a_hash_key /= Void
 		do
 			source_object_ref := an_object_ref
 			is_source_object_container := True
 			hash_key := a_hash_key
 		end
 
-	set_sequence_source_object_details(an_object_ref: ANY)
+	set_sequence_source_object_details (an_object_ref: ANY)
 			-- set the source_object values for a SEQUENCE object, for which the reference has
 			-- to be added to the container via a call to extend, after a check on whether it is a
 			-- SEQUENCE or HASH_TABLE
 			-- FIXME: it should ideally record position, and do inserts, but this is tricky to compute, and
 			-- doesn't work for HASH_TABLE anyway, so we assume extend semantics for now
-		require
-			Object_ref_exists: an_object_ref /= Void
 		do
 			source_object_ref := an_object_ref
 			is_source_object_container := True

@@ -22,7 +22,7 @@ inherit
 			file_exists as is_valid_path
 		export
 			{NONE} all;
-			{ANY} is_valid_path
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, is_valid_path
 		end
 
 feature -- Definitions

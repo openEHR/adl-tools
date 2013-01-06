@@ -2,15 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Persistent version of CONSTRAINT_REF."
 	keywords:    "persistence, ADL"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics<support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 20011 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class P_CONSTRAINT_REF
 
@@ -25,29 +20,27 @@ create
 
 feature -- Initialisation
 
-	make (a_cr: attached CONSTRAINT_REF)
+	make (a_cr: CONSTRAINT_REF)
 		do
 			precursor (a_cr)
 			target := a_cr.target
-			if attached a_cr.external_reference then
-				external_reference := a_cr.external_reference
-			end
+			external_reference := a_cr.external_reference
 		end
 
 feature -- Access
 
-	target: attached STRING
+	target: STRING
 
-	external_reference: DV_PARSABLE
+	external_reference: detachable DV_PARSABLE
 
 feature -- Factory
 
-	create_constraint_ref: attached CONSTRAINT_REF
+	create_constraint_ref: CONSTRAINT_REF
 		do
 			create Result.make (target)
 			populate_c_instance (Result)
-			if attached external_reference then
-				Result.set_external_reference (external_reference)
+			if attached external_reference as er then
+				Result.set_external_reference (er)
 			end
 		end
 

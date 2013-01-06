@@ -2,14 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "leaf OBJECT item in an dADL parse tree"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class DT_OBJECT_ITEM
 
@@ -21,21 +17,24 @@ inherit
 			parent, representation
 		end
 
+	ARCHETYPE_DEFINITIONS
+		export
+			{NONE} all;
+		undefine
+			is_equal
+		end
+
 	COMPARABLE
-
-feature -- Definitions
-
-	Anonymous_node_id: STRING = "unknown"
 
 feature -- Access
 
-	id: attached STRING
+	id: STRING
 			-- locally unique node id
 		do
 			Result := representation.node_id
 		end
 
-	parent: DT_ATTRIBUTE_NODE
+	parent: detachable DT_ATTRIBUTE_NODE
 			-- parent of all object types must be an attribute node
 
 feature -- Comparison
@@ -48,7 +47,7 @@ feature -- Comparison
 
 feature -- Modification
 
-	set_id (an_id: attached STRING)
+	set_id (an_id: STRING)
 			-- set node id
 		require
 			Id_valid: not an_id.is_empty
@@ -58,7 +57,7 @@ feature -- Modification
 
 feature -- Conversion
 
-	as_object (a_type_id: INTEGER; make_args: ARRAY[ANY]): attached ANY
+	as_object (a_type_id: INTEGER; make_args: detachable ARRAY[ANY]): ANY
 			-- make an object of type `a_type_id' whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		require

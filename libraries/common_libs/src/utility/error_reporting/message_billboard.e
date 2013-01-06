@@ -6,15 +6,10 @@ note
 				 messages.
 				 ]"
 	keywords:    "error status reporting"
-
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2005- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class MESSAGE_BILLBOARD
 
@@ -22,7 +17,7 @@ inherit
 	ERROR_SEVERITY_TYPES
 		export
 			{NONE} all;
-			{ANY} is_valid_error_type
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, is_valid_error_type
 		end
 
 	SHARED_MESSAGE_DB

@@ -5,21 +5,18 @@ note
 				 Constraint model nodes. To send a visitor around, use C_VISITOR_ITERATOR.
 		         ]"
 	keywords:    "visitor, constraint model"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class C_ITERATOR
 
 inherit
 	SPECIALISATION_STATUSES
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
 create
@@ -32,6 +29,9 @@ feature -- Initialisation
 		do
 			target := a_target
 			create tree_iterator.make (a_target.representation)
+
+			-- this assignment to ensure void-safety of arch_node; it will be re-assigned during exeuction of the iterator
+			arch_node := target
 		end
 
 feature -- Access
@@ -39,10 +39,16 @@ feature -- Access
 	target: C_COMPLEX_OBJECT
 
 	c_node_enter_action: PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]
+		attribute
+			Result := agent no_op
+		end
 
 	c_node_exit_action: detachable PROCEDURE [ANY, TUPLE [ARCHETYPE_CONSTRAINT, INTEGER]]
 
 	c_node_test: FUNCTION [ANY, TUPLE [ARCHETYPE_CONSTRAINT], BOOLEAN]
+		attribute
+			Result := agent no_op_test
+		end
 
 feature -- Command
 
@@ -83,8 +89,8 @@ feature {NONE} -- Implementation
 
 	node_exit_action (a_node: OG_ITEM; depth: INTEGER)
 		do
-			if attached c_node_exit_action then
-				c_node_exit_action.call ([arch_node, depth])
+			if attached c_node_exit_action as ea then
+				ea.call ([arch_node, depth])
 			end
 		end
 
@@ -98,10 +104,18 @@ feature {NONE} -- Implementation
 
 	node_action (a_node: OG_ITEM; depth: INTEGER)
 		do
-			c_node_enter_action.call([arch_node, depth])
+			c_node_enter_action.call ([arch_node, depth])
 		end
 
 	arch_node: ARCHETYPE_CONSTRAINT
+
+	no_op (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
+		do
+		end
+
+	no_op_test (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER): BOOLEAN
+		do
+		end
 
 end
 

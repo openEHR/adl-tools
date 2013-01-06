@@ -3,15 +3,10 @@ note
 
 	description: "Simple code set interface definition"
 	keywords:    "terminology, vocabulary, code set"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2000- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class CODE_SET_ACCESS
 
@@ -20,12 +15,13 @@ create
 
 feature -- Initialisation
 
-	make(an_id: STRING)
+	make (an_id: STRING)
 			-- make a code_set interface with `an_id'
 		require
-			Id_valid: an_id /= Void and then not an_id.is_empty
+			Id_valid: not an_id.is_empty
 		do
 			id := an_id
+			create code_sets.make (0)
 		ensure
 			Id_set: id = an_id
 		end
@@ -38,8 +34,6 @@ feature -- Access
 	all_codes: SET [CODE_PHRASE]
 		do
 			create {LINKED_SET[CODE_PHRASE]} Result.make
-		ensure
-			Result_exists: Result /= Void
 		end
 
 feature -- Status Report
@@ -55,7 +49,7 @@ feature -- Status Report
 
 	has_code (a_code: STRING): BOOLEAN
 		require
-			a_code_valid: a_code /= Void and then not a_code.is_empty
+			a_code_valid: not a_code.is_empty
 		do
 			-- FIXME: TO_BE_IMPLEM
 			Result := True

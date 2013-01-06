@@ -4,30 +4,21 @@ note
 	keywords:    "resource, meta-data"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2006-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class RESOURCE_DESCRIPTION
 
 inherit
 	DT_CONVERTIBLE
-		redefine
-			default_create
-		end
 
 	TERMINOLOGY_SERVICE
 		export
 			{NONE} all
-		undefine
-			default_create
 		end
 
 create
-	make, make_dt, default_create
+	make, make_dt
 
 feature -- Definitions
 
@@ -37,31 +28,17 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	default_create
-			--
-		do
-			lifecycle_state := Default_lifecycle_state.twin
-			create details.make (0)
-			create original_author.make (0)
-			put_original_author_item ("name", Default_original_author)
-			create original_language.make (default_language_code_set, default_language)
-		ensure then
-			lifecycle_state_set: lifecycle_state.is_equal (Default_lifecycle_state)
-		end
-
-	make_dt (make_args: ARRAY[ANY])
+	make_dt (make_args: detachable ARRAY[ANY])
 			-- make used by DT_OBJECT_CONVERTER
 		do
-			default_create
 		end
 
-	make (an_author_name, orig_lang: attached STRING)
+	make (an_author_name, orig_lang: STRING)
 			-- make an empty description
 		require
 			An_author_name_exists: not an_author_name.is_empty
 			Language_valid: not orig_lang.is_empty
 		do
-			default_create
 			put_original_author_item ("name", an_author_name)
 			create original_language.make(default_language_code_set, orig_lang)
 		ensure
@@ -73,22 +50,35 @@ feature -- Access
 
 	original_language: CODE_PHRASE
 			-- a copy of original_language from parent object
+        attribute
+            create Result.make (default_language_code_set, default_language)
+        end
 
 	original_author: HASH_TABLE [STRING, STRING]
 			-- Original author of this archetype, with all relevant details,
 			-- including organisation.
+        attribute
+            create Result.make (0)
+            Result.put (Default_original_author, "name")
+       end
 
-	details: detachable HASH_TABLE [RESOURCE_DESCRIPTION_ITEM, STRING]
+	details: HASH_TABLE [RESOURCE_DESCRIPTION_ITEM, STRING]
 			-- list of descriptive details, keyed by language
 			-- NOTE: this attribute is only detachable because it will be Void for a short time, when an instance
 			-- of this class is created during reading a serialised instance, until the details part from the
 			-- text is also deserialised and attached. The code here treats it as if it were attached for all
 			-- practical purposes.
+        attribute
+            create Result.make (0)
+        end
 
 	lifecycle_state: STRING
 			-- Lifecycle state of the archetype. Includes states such as
 			-- submitted, experimental, awaiting_approval, approved,
 			-- superseded, obsolete. State machine defined by archetype system
+		attribute
+			create Result.make_from_string (Default_lifecycle_state)
+		end
 
 	other_contributors: detachable ARRAYED_LIST [STRING]
 			-- Other contributors to the resource, probably listed in “name <email>” form
@@ -101,25 +91,24 @@ feature -- Access
 	resource_package_uri: detachable URI
 			-- URI of archetype package
 
-	languages: attached ARRAYED_SET[STRING]
+	languages: ARRAYED_SET[STRING]
 			-- list of all languages in details
 		do
 			create Result.make(0)
-			from details.start until details.off loop
-				Result.extend (details.key_for_iteration.twin)
-				details.forth
+			across details as details_csr loop
+				Result.extend (details_csr.key.twin)
 			end
 		end
 
-	detail_for_language (a_lang: attached STRING): RESOURCE_DESCRIPTION_ITEM
+	detail_for_language (a_lang: STRING): detachable RESOURCE_DESCRIPTION_ITEM
 			-- get the RESOURCE_DESCRIPTION_ITEM for a_lang
 		require
 			Language_valid: details.has (a_lang)
 		do
-			Result := details.item(a_lang)
+			Result := details.item (a_lang)
 		end
 
-	detail_for_original_language: RESOURCE_DESCRIPTION_ITEM
+	detail_for_original_language: detachable RESOURCE_DESCRIPTION_ITEM
 			-- get the RESOURCE_DESCRIPTION_ITEM for a_lang
 		do
 			Result := details.item (original_language.code_string)
@@ -135,7 +124,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	valid_detail (a_detail: attached RESOURCE_DESCRIPTION_ITEM): BOOLEAN
+	valid_detail (a_detail: RESOURCE_DESCRIPTION_ITEM): BOOLEAN
 			-- True if `a_detail' language is not already in `details'
 		do
 			Result := not details.has (a_detail.language.code_string)
@@ -143,7 +132,7 @@ feature -- Comparison
 
 feature -- Modification
 
-	put_original_author_item (a_key, a_value: attached STRING)
+	put_original_author_item (a_key, a_value: STRING)
 			-- add the key, value pair to original_author
 		require
 			Key_valid: not a_key.is_empty
@@ -154,7 +143,7 @@ feature -- Modification
 			Original_author_set: original_author.item (a_key) = a_value
 		end
 
-	remove_original_author_item (a_key: attached STRING)
+	remove_original_author_item (a_key: STRING)
 			-- remove the key, value pair from `original_author'
 		require
 			Key_valid: original_author.has (a_key)
@@ -170,7 +159,7 @@ feature -- Modification
 			create original_author.make(0)
 		end
 
-	add_other_contributor (a_contributor: attached STRING; at_pos: INTEGER)
+	add_other_contributor (a_contributor: STRING; at_pos: INTEGER)
 			-- add a_contributor to `add_other_contributor' at position `at_pos', or end if i is 0
 		require
 			Contributor_valid: not a_contributor.is_empty
@@ -191,7 +180,7 @@ feature -- Modification
 			Insert_position: at_pos > 0 implies other_contributors.i_th (at_pos) = a_contributor
 		end
 
-	remove_other_contributor (a_contributor: attached STRING)
+	remove_other_contributor (a_contributor: STRING)
 			-- add a_contributor to add_other_contributor
 		require
 			Contributor_valid: other_contributors.has (a_contributor)
@@ -209,7 +198,7 @@ feature -- Modification
 			not attached other_contributors
 		end
 
-	set_resource_package_uri (a_uri: attached STRING)
+	set_resource_package_uri (a_uri: STRING)
 			-- set `resource_package_uri'
 		require
 			Uri_valid: not a_uri.is_empty
@@ -227,7 +216,7 @@ feature -- Modification
 			not attached resource_package_uri
 		end
 
-	set_lifecycle_state (a_lifecycle_state: attached STRING)
+	set_lifecycle_state (a_lifecycle_state: STRING)
 			-- set lifecycle_state
 		require
 			Lifecycle_state_valid: not a_lifecycle_state.is_empty
@@ -237,7 +226,7 @@ feature -- Modification
 			Lifecycle_state_set: lifecycle_state = a_lifecycle_state
 		end
 
-	add_detail (a_detail: attached RESOURCE_DESCRIPTION_ITEM)
+	add_detail (a_detail: RESOURCE_DESCRIPTION_ITEM)
 			-- Add a language, value pair to `details'.
 		require
 			Detail_valid: valid_detail (a_detail)
@@ -253,7 +242,7 @@ feature -- Modification
 			add_detail (create {RESOURCE_DESCRIPTION_ITEM}.make_from_language (original_language.code_string))
 		end
 
-	add_language (a_new_lang: attached STRING)
+	add_language (a_new_lang: STRING)
 			-- add a new details object created from the object for orig_lang,
 			-- with all string fields ready for translation
 		require
@@ -262,7 +251,7 @@ feature -- Modification
 			add_detail (details.item (original_language.code_string).translated_copy (a_new_lang))
 		end
 
-	remove_detail, remove_language (a_lang: attached STRING)
+	remove_detail, remove_language (a_lang: STRING)
 			-- remove details item for a_lang from the resource
 		require
 			Lang_valid: details.has (a_lang)
@@ -276,7 +265,7 @@ feature -- Modification
 			create details.make(0)
 		end
 
-	add_other_detail (a_key, a_value: attached STRING)
+	add_other_detail (a_key, a_value: STRING)
 			-- Add the key, value pair to `other_details'.
 		require
 			Key_valid: not a_key.is_empty
@@ -296,7 +285,7 @@ feature -- Modification
 			other_details_removed: a_value.is_empty implies not other_details.has (a_key)
 		end
 
-	set_parent_resource (a_res: attached AUTHORED_RESOURCE)
+	set_parent_resource (a_res: AUTHORED_RESOURCE)
 			-- set parent_resource
 		do
 			parent_resource := a_res

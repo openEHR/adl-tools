@@ -2,14 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Peersistent form of C_DEFINED_OBJECT"
 	keywords:    "ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class P_C_DEFINED_OBJECT
 
@@ -21,7 +17,7 @@ inherit
 
 feature -- Initialisation
 
-	make (a_c_do: attached C_DEFINED_OBJECT)
+	make (a_c_do: C_DEFINED_OBJECT)
 		do
 			precursor (a_c_do)
 			assumed_value := a_c_do.assumed_value
@@ -29,17 +25,17 @@ feature -- Initialisation
 
 feature -- Access
 
-    assumed_value: ANY
+    assumed_value: detachable ANY
             -- value to be assumed if none sent in data
 
 feature -- Factory
 
-	populate_c_instance (a_c_o: attached C_DEFINED_OBJECT)
+	populate_c_instance (a_c_o: C_DEFINED_OBJECT)
 			-- populate fields not already populated from creation of a C_XXX instance
 		do
 			precursor (a_c_o)
-			if attached assumed_value then
-				a_c_o.set_assumed_value (assumed_value)
+			if attached assumed_value as av then
+				a_c_o.set_assumed_value (av)
 			end
 		end
 

@@ -9,25 +9,13 @@ note
 				 UID, internet addresses.
 				 ]"
 	keywords:    "unique identifiers"
-
 	design:      "openEHR Support Information Model 1.5"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 deferred class UID
-
-inherit
-	ANY
-		redefine
-			default_create
-		end
 
 feature -- Definitions
 
@@ -37,12 +25,6 @@ feature -- Definitions
 		end
 
 feature -- Initialisation
-
-	default_create
-			-- create a default version
-		do
-			create value.make_from_string (Default_value)
-		end
 
 	make (a_str: STRING)
 			-- make from a string
@@ -57,18 +39,21 @@ feature -- Initialisation
 feature -- Access
 
 	value: STRING
+		attribute
+			create Result.make_from_string (Default_value)
+		end
 
 feature -- Status Report
 
 	valid_id (an_id: STRING): BOOLEAN
 			--
 		require
-			an_id_valid: an_id /= Void and then not an_id.is_empty
+			an_id_valid: not an_id.is_empty
 		deferred
 		end
 
 invariant
-	value_exists: value /= Void and then not value.is_empty
+	value_exists: not value.is_empty
 
 end
 

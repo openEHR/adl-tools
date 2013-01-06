@@ -196,6 +196,16 @@ feature -- Access
 			Result.put(13, op_implies)
 		end
 
+	operator_name (an_op: INTEGER): STRING
+		require
+			valid_operator (an_op)
+		do
+			create Result.make_empty
+			if attached operator_names.item (an_op) as sym then
+				Result.append (sym)
+			end
+		end
+
 	operator_names: HASH_TABLE [STRING, INTEGER]
 			-- english names of operators, keyed by value
 		once
@@ -221,6 +231,16 @@ feature -- Access
 			Result.put("exponent", op_exp)
 		end
 
+	operator_text_identifier (an_op: INTEGER): STRING
+		require
+			valid_operator (an_op)
+		do
+			create Result.make_empty
+			if attached operator_text_identifiers.item (an_op) as sym then
+				Result.append (sym)
+			end
+		end
+
 	operator_text_identifiers: HASH_TABLE [STRING, INTEGER]
 			-- text names of operators, keyed by value, useful for filenames
 		once
@@ -244,6 +264,16 @@ feature -- Access
 			Result.put("multiply", op_multiply)
 			Result.put("divide", op_divide)
 			Result.put("exponent", op_exp)
+		end
+
+	operator_symbol (an_op: INTEGER): STRING
+		require
+			valid_operator (an_op)
+		do
+			create Result.make_empty
+			if attached operator_symbols.item (an_op) as sym then
+				Result.append (sym)
+			end
 		end
 
 	operator_symbols: HASH_TABLE [STRING, INTEGER]

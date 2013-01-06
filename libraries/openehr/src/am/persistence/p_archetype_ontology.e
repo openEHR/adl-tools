@@ -2,15 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Persistent form of ARCHETYPE_ONTOLOGY class"
 	keywords:    "archetype, ontology, terminology"
-
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class P_ARCHETYPE_ONTOLOGY
 
@@ -19,7 +14,7 @@ create
 
 feature -- Initialisation
 
-	make (an_ontology: attached ARCHETYPE_ONTOLOGY)
+	make (an_ontology: ARCHETYPE_ONTOLOGY)
 		local
 			tb_ont: HASH_TABLE [CODE_PHRASE, STRING]
 			cb_ont: HASH_TABLE [URI, STRING]
@@ -62,25 +57,37 @@ feature -- Initialisation
 
 feature -- Access
 
-	term_definitions: attached HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
+	term_definitions: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
 			-- table of term definitions, keyed by code, keyed by language
+		attribute
+			create Result.make (0)
+		end
 
 	constraint_definitions: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
 			-- table of constraint definitions, keyed by code, keyed by language
+		attribute
+			create Result.make (0)
+		end
 
-	term_bindings: detachable HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
+	term_bindings: HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
 			-- tables of bindings of external terms to internal codes, keyed by external terminology id
+		attribute
+			create Result.make (0)
+		end
 
-	constraint_bindings: detachable HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
+	constraint_bindings: HASH_TABLE [HASH_TABLE [STRING, STRING], STRING]
 			-- table of constraint bindings in the form of strings "service::query", keyed by terminology
+		attribute
+			create Result.make (0)
+		end
 
-	terminology_extracts: HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
+	terminology_extracts: detachable HASH_TABLE [HASH_TABLE [ARCHETYPE_TERM, STRING], STRING]
 			-- table of {code, description} keyed by terminology_id containing extracted concepts from external terminologies
 
 
 feature -- Factory
 
-	populate_ontology (an_ont: attached ARCHETYPE_ONTOLOGY)
+	populate_ontology (an_ont: ARCHETYPE_ONTOLOGY)
 			-- populate fields not already populated from creation of a C_XXX instance
 		local
 			tb_ont: HASH_TABLE [HASH_TABLE [CODE_PHRASE, STRING], STRING]
@@ -91,39 +98,29 @@ feature -- Factory
 			cb_p_ont: HASH_TABLE [STRING, STRING]
 		do
 			an_ont.set_term_definitions (term_definitions)
-			if attached constraint_definitions then
-				an_ont.set_constraint_definitions (constraint_definitions)
-			end
+			an_ont.set_constraint_definitions (constraint_definitions)
 
-			if attached term_bindings then
-				create tb_ont.make (0)
-				from term_bindings.start until term_bindings.off loop
-					tb_p_ont := term_bindings.item_for_iteration
-					create tb_ont_code_table.make (0)
-					tb_ont.put (tb_ont_code_table, term_bindings.key_for_iteration)
-					from tb_p_ont.start until tb_p_ont.off loop
-						tb_ont_code_table.put (create {CODE_PHRASE}.make_from_string (tb_p_ont.item_for_iteration), tb_p_ont.key_for_iteration)
-						tb_p_ont.forth
-					end
-					term_bindings.forth
+			create tb_ont.make (0)
+			across term_bindings as term_bindings_csr loop
+				tb_p_ont := term_bindings_csr.item
+				create tb_ont_code_table.make (0)
+				tb_ont.put (tb_ont_code_table, term_bindings_csr.key)
+				across tb_p_ont as p_term_bindings_csr loop
+					tb_ont_code_table.put (create {CODE_PHRASE}.make_from_string (p_term_bindings_csr.item), p_term_bindings_csr.key)
 				end
-				an_ont.set_term_bindings (tb_ont)
 			end
+			an_ont.set_term_bindings (tb_ont)
 
-			if attached constraint_bindings then
-				create cb_ont.make (0)
-				from constraint_bindings.start until constraint_bindings.off loop
-					cb_p_ont := constraint_bindings.item_for_iteration
-					create cb_ont_code_table.make (0)
-					cb_ont.put (cb_ont_code_table, constraint_bindings.key_for_iteration)
-					from cb_p_ont.start until cb_p_ont.off loop
-						cb_ont_code_table.put (create {URI}.make_from_string (cb_p_ont.item_for_iteration), cb_p_ont.key_for_iteration)
-						cb_p_ont.forth
-					end
-					constraint_bindings.forth
+			create cb_ont.make (0)
+			across constraint_bindings as constraint_bindings_csr loop
+				cb_p_ont := constraint_bindings_csr.item
+				create cb_ont_code_table.make (0)
+				cb_ont.put (cb_ont_code_table, constraint_bindings_csr.key)
+				across cb_p_ont as p_constraint_bindings_csr loop
+					cb_ont_code_table.put (create {URI}.make_from_string (p_constraint_bindings_csr.item), p_constraint_bindings_csr.key)
 				end
-				an_ont.set_constraint_bindings (cb_ont)
 			end
+			an_ont.set_constraint_bindings (cb_ont)
 		end
 
 end

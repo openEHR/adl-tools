@@ -2,33 +2,27 @@ note
 	component:   "openEHR Archetype Project"
 	description: "node in ADL parse tree"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003-2005 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class DT_ATTRIBUTE_NODE
 
 inherit
 	DT_ITEM
 		redefine
-			parent, representation, default_create
+			parent, representation
 		end
 
 	DT_DEFINITIONS
 		export
 			{NONE} all
-		undefine
-			default_create
 		end
 
 	ITERABLE [DT_OBJECT_ITEM]
 		undefine
-			default_create, is_equal
+			is_equal
 		end
 
 create
@@ -36,30 +30,22 @@ create
 
 feature -- Initialisation
 
-	default_create
-			--
-		do
-			create children.make (0)
-		end
-
-	make_single (a_name: attached STRING)
+	make_single (a_name: STRING)
 			-- make as a single type attribute; set attr name
 		require
 			a_name_valid: not a_name.is_empty
 		do
-			default_create
 			create representation.make_single (a_name, Current)
 		ensure
 			not is_container_type
 			not is_nested
 		end
 
-	make_container (a_name: attached STRING)
+	make_container (a_name: STRING)
 			-- make as a container type attribute; set attr name
 		require
 			a_name_valid: not a_name.is_empty
 		do
-			default_create
 			create representation.make_multiple (a_name, Current)
 		ensure
 			is_container_type
@@ -79,18 +65,21 @@ feature -- Initialisation
 
 feature -- Access
 
-	parent: DT_COMPLEX_OBJECT_NODE
+	parent: detachable DT_COMPLEX_OBJECT_NODE
 
-	children: attached ARRAYED_LIST [DT_OBJECT_ITEM]
+	children: ARRAYED_LIST [DT_OBJECT_ITEM]
 			-- next nodes, keyed by node id or attribute name
+		attribute
+			create Result.make (0)
+		end
 
-	im_attr_name: attached STRING
+	im_attr_name: STRING
 			-- attribute name in information model
 		do
 			Result := representation.node_id
 		end
 
-	child_with_id (a_node_id: attached STRING): attached DT_OBJECT_ITEM
+	child_with_id (a_node_id: STRING): DT_OBJECT_ITEM
 			-- find the child node with `a_path_id'
 		require
 			has_child_with_id (a_node_id)
@@ -154,7 +143,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_attr_name (a_name: attached STRING)
+	set_attr_name (a_name: STRING)
 			-- set attr name
 		require
 			a_name_valid: not a_name.is_empty
@@ -191,7 +180,7 @@ feature -- Modification
 			not is_nested
 		end
 
-	put_child(a_node: attached DT_OBJECT_ITEM)
+	put_child (a_node: DT_OBJECT_ITEM)
 			-- put a new child node
 		require
 			Node_valid: not has_child(a_node)
@@ -204,15 +193,15 @@ feature -- Modification
 			Has_child: has_child(a_node)
 		end
 
-	remove_child(a_node: attached DT_OBJECT_ITEM)
+	remove_child (a_node: DT_OBJECT_ITEM)
 			-- remove child node
 		require
 			Node_valid: has_child(a_node)
 		do
 			representation.remove_child (a_node.representation)
-			children.prune_all(a_node)
+			children.prune_all (a_node)
 		ensure
-			Child_removed: not has_child(a_node)
+			Child_removed: not has_child (a_node)
 		end
 
 	remove_all_children
@@ -232,16 +221,16 @@ feature -- Representation
 
 feature -- Serialisation
 
-	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
+	enter_subtree (serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at start of block for this node
 		do
-			serialiser.start_attribute_node(Current, depth)
+			serialiser.start_attribute_node (Current, depth)
 		end
 
-	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
+	exit_subtree (serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at end of block for this node
 		do
-			serialiser.end_attribute_node(Current, depth)
+			serialiser.end_attribute_node (Current, depth)
 		end
 
 invariant

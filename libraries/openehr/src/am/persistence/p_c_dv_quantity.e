@@ -2,15 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Persistent form of C_DV_QUANTITY"
 	keywords:    "quantity, archetype, clinical type, ADL"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class P_C_DV_QUANTITY
 
@@ -28,26 +23,30 @@ feature -- Initialisation
 	make (a_c_dvq: C_DV_QUANTITY)
 		do
 			precursor (a_c_dvq)
-			property := a_c_dvq.property.as_string
+			if attached a_c_dvq.property then
+				property := a_c_dvq.property.as_string
+			end
 			list := a_c_dvq.list
 		end
 
 feature -- Access
 
-	property: STRING
+	property: detachable STRING
 			-- property
 
-	list: ARRAYED_LIST [C_QUANTITY_ITEM]
+	list: detachable ARRAYED_LIST [C_QUANTITY_ITEM]
 			-- list of items constraining magnitude/units pairs
 
 feature -- Factory
 
-	create_c_dv_quantity: attached C_DV_QUANTITY
+	create_c_dv_quantity: C_DV_QUANTITY
 		do
 			create Result.make
-			Result.set_property (create {CODE_PHRASE}.make_from_string(property))
-			if attached list then
-				Result.set_list (list)
+			if attached property as p then
+				Result.set_property (create {CODE_PHRASE}.make_from_string (p))
+			end
+			if attached list as l then
+				Result.set_list (l)
 			end
 			populate_c_instance (Result)
 		end

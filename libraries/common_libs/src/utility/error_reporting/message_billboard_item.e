@@ -8,15 +8,10 @@ note
 				 not when created.
 				 ]"
 	keywords:    "error status reporting"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2005- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class MESSAGE_BILLBOARD_ITEM
 
@@ -28,7 +23,7 @@ create
 
 feature -- Initialisation
 
-	make (a_type_name, a_routine_name, a_message_id: attached STRING; an_args: detachable ARRAY[STRING]; an_error_type: INTEGER)
+	make (a_type_name, a_routine_name, a_message_id: STRING; an_args: detachable ARRAY[STRING]; an_error_type: INTEGER)
 		require
 			Type_name_valid: not a_type_name.is_empty
 			Routine_name_valid: not a_routine_name.is_empty
@@ -53,7 +48,7 @@ feature -- Access
 	message_id: STRING
 			-- id of message message template
 
-	args: ARRAY[STRING]
+	args: detachable ARRAY[STRING]
 			-- string arguments to be substituted into message message
 
 	error_type: INTEGER

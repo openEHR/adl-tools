@@ -2,15 +2,11 @@ note
 	component:   "openEHR Archetype Project"
 	description: "node in ADL parse tree"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class EXPR_OPERATOR
 
@@ -28,7 +24,7 @@ feature -- Initialisation
 			operator := an_op
 
 			-- this should be replaced by code that infers typs properly from operands
-			if boolean_operator (an_op.value) or relational_operator(an_op.value) or set_operator(an_op.value) then
+			if boolean_operator (an_op.value) or relational_operator (an_op.value) or set_operator (an_op.value) then
 				type := op_type_boolean
 			elseif arithmetic_operator (an_op.value) then
 				type := op_type_arithmetic

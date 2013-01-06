@@ -2,15 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Persistent form of C_DV_ORDINAL"
 	keywords:    "ordinal, ADL"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class P_C_DV_ORDINAL
 
@@ -28,23 +23,23 @@ feature -- Initiaisation
 	make (a_c_dvo: C_DV_ORDINAL)
 		do
 			precursor (a_c_dvo)
-			if attached a_c_dvo.items then
+			if attached a_c_dvo.items as dvoi then
 				create items.make (0)
-				items.append (a_c_dvo.items)
+				items.append (dvoi)
 			end
 		end
 
 feature -- Access
 
-	items: ARRAYED_LIST [ORDINAL]
+	items: detachable ARRAYED_LIST [ORDINAL]
 
 feature -- Factory
 
-	create_c_dv_ordinal: attached C_DV_ORDINAL
+	create_c_dv_ordinal: C_DV_ORDINAL
 		do
 			create Result.make
-			if attached items then
-				Result.set_items (items)
+			if attached items as i then
+				Result.set_items (i)
 			end
 			populate_c_instance (Result)
 		end

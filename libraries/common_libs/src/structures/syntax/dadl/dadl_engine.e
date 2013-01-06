@@ -7,17 +7,18 @@ note
 	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class DADL_ENGINE
 
 inherit
+	PARSER_ENGINE
+		redefine
+			tree, parser
+		end
+
 	SHARED_DT_SERIALISERS
 		export
-			{NONE} all
-			{ANY} has_dt_serialiser_format
+			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, has_dt_serialiser_format
 		end
 
 create
@@ -32,77 +33,12 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	source: STRING
-			-- Source of current artifact.
-
-	source_start_line: INTEGER
-			-- Defaults to 0; can be set to line number of dADL text inside some other document.
-
-	tree: DT_COMPLEX_OBJECT_NODE
+	tree: detachable DT_COMPLEX_OBJECT_NODE
 			-- Set if parse succeeded.
-
-	serialised: STRING
-			-- The last result of calling `serialise'.
-
-	errors: attached ERROR_ACCUMULATOR
-			-- Result of last parse.
-		do
-			Result := parser.errors
-		end
-
-feature -- Status Report
-
-	in_parse_mode: BOOLEAN
-			-- True if engine in mode where archetype was created from source
-
-	parse_succeeded: BOOLEAN
-			-- True if parse succeeded; call after parse()
-		do
-			Result := tree /= Void
-		end
 
 feature -- Commands
 
-	reset
-			-- Clear current state.
-		do
-			source := Void
-			tree := Void
-			serialised := Void
-		end
-
-	set_source (in_text: attached STRING; a_source_start_line: INTEGER)
-			-- Set `in_text' as working artifact.
-		require
-			start_line_positive: a_source_start_line > 0
-		do
-			source := in_text
-			source_start_line := a_source_start_line
-			in_parse_mode := True
-		ensure
-			source_set: source = in_text
-			source_start_line_set: source_start_line = a_source_start_line
-			parsing: in_parse_mode
-		end
-
-	parse
-			-- Parse artifact into `tree', then validate the artifact.
-		require
-			source_attached: attached source
-			parsing: in_parse_mode
-		do
-			tree := Void
-			serialised := Void
-			parser.execute (source, source_start_line)
-
-			if not parser.syntax_error then
-				tree := parser.output
-			end
-		ensure
-			parse_succeeded implies attached tree
-		end
-
-	serialise (a_format: attached STRING; full_type_marking_on, output_typed_encapsulated: BOOLEAN)
+	serialise (a_format: STRING; full_type_marking_on, output_typed_encapsulated: BOOLEAN)
 			-- Serialise current artifact into `a_format'.
 			-- `full_type_marking_on' = True if type marking even for inferrable primitive types should be added to serialised output
 			-- `output_typed_encapsulated' = True: output with typed object wrapper, rather than just the series of attributes innside the object
@@ -110,11 +46,9 @@ feature -- Commands
 		require
 			Format_valid: has_dt_serialiser_format (a_format)
 		local
-			a_dt_serialiser: DT_SERIALISER
 			a_dt_iterator: DT_VISITOR_ITERATOR
 		do
-			if attached tree then
-				a_dt_serialiser := dt_serialiser_for_format (a_format)
+			if attached tree as att_tree and attached dt_serialiser_for_format (a_format) as a_dt_serialiser then
 				a_dt_serialiser.reset
 				if full_type_marking_on then
 					a_dt_serialiser.set_full_type_marking_on
@@ -122,7 +56,7 @@ feature -- Commands
 				if output_typed_encapsulated then
 					a_dt_serialiser.set_output_typed_encapsulated
 				end
-				create a_dt_iterator.make (tree, a_dt_serialiser)
+				create a_dt_iterator.make (att_tree, a_dt_serialiser)
 				a_dt_iterator.do_all
 				serialised := a_dt_serialiser.last_result
 			else
@@ -132,19 +66,17 @@ feature -- Commands
 			serialised_attached: attached serialised
 		end
 
-	set_tree (a_node: attached DT_COMPLEX_OBJECT_NODE)
-			-- Set root node of `tree' from e.g. GUI tool.
-		do
-			tree := a_node
-			in_parse_mode := False
-		ensure
-			tree_set: tree = a_node
-			not_parsing: not in_parse_mode
-		end
-
 feature {NONE} -- Implementation
 
-	parser: attached DADL_VALIDATOR
+	parser_execute
+			-- call the parser.execute with specific args
+		do
+			if attached source as att_source then
+				parser.execute (att_source, source_start_line)
+			end
+		end
+
+	parser: DADL_VALIDATOR
 			-- dADL parser.
 
 end

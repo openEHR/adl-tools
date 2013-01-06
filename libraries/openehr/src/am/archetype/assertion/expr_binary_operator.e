@@ -2,23 +2,33 @@ note
 	component:   "openEHR Archetype Project"
 	description: "node in ADL parse tree"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class EXPR_BINARY_OPERATOR
 
 inherit
 	EXPR_OPERATOR
+		rename
+			make as make_operator
+		end
 
 create
 	make
+
+feature -- Initialisation
+
+	make (an_op: OPERATOR_KIND; a_left_item, a_right_item: EXPR_ITEM)
+   		do
+			make_operator (an_op)
+			left_operand := a_left_item
+			right_operand := a_right_item
+			a_left_item.set_parent (Current)
+			a_right_item.set_parent (Current)
+		end
 
 feature -- Access
 

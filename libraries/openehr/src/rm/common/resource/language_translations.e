@@ -5,29 +5,20 @@ note
 				 used by pre-ADL2 parsing to convert dADL text of translations in language section
 				 of archetype into an object that can then be pasted into the archetype.
 				 ]"
-	keywords:    "archetype"
+	keywords:    "archetype, translation"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2007-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class LANGUAGE_TRANSLATIONS
 
 inherit
 	DT_CONVERTIBLE
-		redefine
-			default_create
-		end
 
 	TERMINOLOGY_SERVICE
 		export
 			{NONE} all
-		undefine
-			default_create
 		end
 
 create
@@ -35,53 +26,49 @@ create
 
 feature -- Initialisation
 
-	default_create
-			--
-		do
-		end
-
 	make
 			-- default make
 		do
-			default_create
 		end
 
-	make_dt (make_args: ARRAY[ANY])
+	make_dt (make_args: detachable ARRAY[ANY])
 			-- make used by DT_OBJECT_CONVERTER
 		do
-			make
 		end
 
 feature -- Access
 
 	original_language: CODE_PHRASE
+		attribute
+			create Result.make
+		end
 
-	translations: HASH_TABLE [TRANSLATION_DETAILS, STRING]
+	translations: detachable HASH_TABLE [TRANSLATION_DETAILS, STRING]
 			-- List of details for each natural translation made of this resource, keyed by
 			-- language. For each translation listed here, there must be corresponding
 			-- sections in all language-dependent parts of the resource.
 
 feature -- Modification
 
-	set_translations (a_trans: attached HASH_TABLE [TRANSLATION_DETAILS, STRING])
+	set_translations (a_trans: HASH_TABLE [TRANSLATION_DETAILS, STRING])
 			-- set translations
 		do
 			translations := a_trans
 		end
 
-	set_original_language (a_lang: attached CODE_PHRASE)
+	set_original_language (a_lang: CODE_PHRASE)
 			--
 		do
 			original_language := a_lang
 		end
 
-	set_original_language_from_string (a_lang: attached STRING)
+	set_original_language_from_string (a_lang: STRING)
 			--
 		do
 			create original_language.make (Default_language_code_set, a_lang)
 		end
 
-	add_new_translation (a_lang: attached STRING)
+	add_new_translation (a_lang: STRING)
 			-- add a blank translation object for a_lang
 		local
 			a_trans: TRANSLATION_DETAILS

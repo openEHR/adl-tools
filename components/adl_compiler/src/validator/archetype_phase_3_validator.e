@@ -21,7 +21,7 @@ inherit
 
 feature {ADL15_ENGINE} -- Initialisation
 
-	initialise (a_target_desc: attached like target_descriptor; an_rm_schema: attached BMM_SCHEMA)
+	initialise (a_target_desc: like target_descriptor; an_rm_schema: BMM_SCHEMA)
 			-- set target_descriptor
 			-- initialise reporting variables
 		do
@@ -37,7 +37,7 @@ feature -- Access
 
 feature -- Status Report
 
-	is_validation_candidate (ara: attached ARCH_CAT_ARCHETYPE): BOOLEAN
+	is_validation_candidate (ara: ARCH_CAT_ARCHETYPE): BOOLEAN
 		do
 			Result := attached ara.flat_archetype
 		end

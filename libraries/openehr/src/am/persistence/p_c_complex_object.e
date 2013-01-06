@@ -2,14 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Persistent form of C_COMPLEX_OBJECT"
 	keywords:    "persistence, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class P_C_COMPLEX_OBJECT
 
@@ -38,28 +34,27 @@ feature -- Initialisation
 
 feature -- Access
 
-	attributes: ARRAYED_LIST [P_C_ATTRIBUTE]
+	attributes: detachable ARRAYED_LIST [P_C_ATTRIBUTE]
 
 feature -- Factory
 
-	create_c_complex_object: attached C_COMPLEX_OBJECT
+	create_c_complex_object: C_COMPLEX_OBJECT
 		do
-			if attached node_id then
-				create Result.make_identified (rm_type_name, node_id)
+			if attached node_id as nid then
+				create Result.make_identified (rm_type_name, nid)
 			else
 				create Result.make_anonymous (rm_type_name)
 			end
 			populate_c_instance (Result)
 		end
 
-	populate_c_instance (a_c_o: attached C_COMPLEX_OBJECT)
+	populate_c_instance (a_c_o: C_COMPLEX_OBJECT)
 			-- populate fields not already populated from creation of a C_XXX instance
 		do
 			precursor (a_c_o)
 			if attached attributes then
-				from attributes.start until attributes.off loop
-					a_c_o.put_attribute (attributes.item.create_c_attribute)
-					attributes.forth
+				across attributes as attrs_csr loop
+					a_c_o.put_attribute (attrs_csr.item.create_c_attribute)
 				end
 			end
 		end

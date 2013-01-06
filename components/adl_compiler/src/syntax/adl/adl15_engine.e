@@ -11,10 +11,6 @@ note
 	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class ADL15_ENGINE
 
 inherit
@@ -31,7 +27,8 @@ inherit
 
 	SHARED_DT_OBJECT_CONVERTER
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
 create
@@ -58,12 +55,12 @@ feature {NONE} -- Initialisation
 
 feature -- Access
 
-	errors: attached ERROR_ACCUMULATOR
+	errors: ERROR_ACCUMULATOR
 			-- errors of last parse
 
 feature -- Parsing
 
-	parse_differential (a_text: attached STRING; an_rm_schema: attached BMM_SCHEMA): detachable DIFFERENTIAL_ARCHETYPE
+	parse_differential (a_text: STRING; an_rm_schema: BMM_SCHEMA): DIFFERENTIAL_ARCHETYPE
 			-- parse text as differential archetype. If successful, `archetype' contains the parse structure.
 		do
 			rm_schema := an_rm_schema
@@ -72,7 +69,7 @@ feature -- Parsing
 			end
 		end
 
-	parse_legacy_flat (a_text: attached STRING; an_rm_schema: attached BMM_SCHEMA): detachable FLAT_ARCHETYPE
+	parse_legacy_flat (a_text: STRING; an_rm_schema: BMM_SCHEMA): FLAT_ARCHETYPE
 			-- parse text as flat archetype. If successful, `archetype' contains the parse structure.
 		do
 			rm_schema := an_rm_schema
@@ -83,13 +80,13 @@ feature -- Parsing
 
 feature -- Validation
 
-	post_parse_process (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
+	post_parse_process (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 		do
 			post_parse_processor.initialise (ara, an_rm_schema)
 			post_parse_processor.execute
 		end
 
-	phase_1_validate (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
+	phase_1_validate (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 		do
 			validation_passed := False
 			phase_1_validator.initialise (ara, an_rm_schema)
@@ -98,7 +95,7 @@ feature -- Validation
 			errors := phase_1_validator.errors
 		end
 
-	phase_2_validate (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
+	phase_2_validate (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 		do
 			validation_passed := False
 			phase_2_validator.initialise (ara, an_rm_schema)
@@ -107,7 +104,7 @@ feature -- Validation
 			errors := phase_2_validator.errors
 		end
 
-	phase_3_validate (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
+	phase_3_validate (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 		do
 			validation_passed := False
 			phase_3_validator.initialise (ara, an_rm_schema)
@@ -116,7 +113,7 @@ feature -- Validation
 			errors := phase_3_validator.errors
 		end
 
-	post_compile_process (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: attached BMM_SCHEMA)
+	post_compile_process (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 		do
 			post_compile_processor.initialise (ara, an_rm_schema)
 			post_compile_processor.execute
@@ -127,7 +124,7 @@ feature -- Validation
 
 feature -- Serialisation
 
-	serialise (an_archetype: attached ARCHETYPE; a_format, a_lang: attached STRING): attached STRING
+	serialise (an_archetype: ARCHETYPE; a_format, a_lang: STRING): STRING
 			-- serialise current archetype into any semantic multi-part format.
 		require
 			Language_valid: an_archetype.has_language (a_lang)
@@ -208,7 +205,7 @@ feature -- Serialisation
 
 feature {NONE} -- Implementation
 
-	parse (a_text: attached STRING; is_legacy_flat: BOOLEAN): ARCHETYPE
+	parse (a_text: STRING; is_legacy_flat: BOOLEAN): ARCHETYPE
 			-- parse text as either a differential source archetype or template, or else a legacy flat. If successful, `archetype' contains the parse
 			-- structure.
 		local
@@ -421,22 +418,17 @@ feature {NONE} -- Implementation
 
 	post_compile_processor: AOM_POST_COMPILE_PROCESSOR
 
-	rm_schema: BMM_SCHEMA
+	rm_schema: detachable BMM_SCHEMA
 
-	original_language_and_translations_from_ontology (ontology: attached ARCHETYPE_ONTOLOGY): attached LANGUAGE_TRANSLATIONS
+	original_language_and_translations_from_ontology (ontology: ARCHETYPE_ONTOLOGY): LANGUAGE_TRANSLATIONS
 			-- The original language and translations, mined from `ontology'.
-		local
-			languages: SEQUENCE [STRING]
 		do
 			create Result.make
 			Result.set_original_language_from_string (ontology.original_language)
-
-			languages := ontology.languages_available
-			from languages.start until languages.off loop
-				if not languages.item.is_equal (ontology.original_language) then
-					Result.add_new_translation (languages.item)
+			across ontology.languages_available as langs_csr loop
+				if not langs_csr.item.is_equal (ontology.original_language) then
+					Result.add_new_translation (langs_csr.item)
 				end
-				languages.forth
 			end
 		end
 

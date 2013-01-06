@@ -2,15 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Persistent form of C_CODE_PHRASE"
 	keywords:    "codephrase, ADL"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class P_C_CODE_PHRASE
 
@@ -37,16 +32,16 @@ feature -- Access
 
 	terminology_id: STRING
 
-	code_list: ARRAYED_LIST [STRING]
+	code_list: detachable ARRAYED_LIST [STRING]
 			-- list of codes in terminology designated by terminology_id
 
 feature -- Factory
 
-	create_c_code_phrase: attached C_CODE_PHRASE
+	create_c_code_phrase: C_CODE_PHRASE
 		do
 			create Result.make_from_terminology_id (terminology_id)
-			if attached code_list then
-				Result.set_code_list (code_list)
+			if attached code_list as cl then
+				Result.set_code_list (cl)
 			end
 			populate_c_instance (Result)
 		end

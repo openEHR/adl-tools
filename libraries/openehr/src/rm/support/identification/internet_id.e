@@ -7,17 +7,11 @@ note
 				 specified by IETF RFC 1034 (http://www.ietf.org/rfc/rfc1034.txt).
 				 ]"
 	keywords:    "object identifiers"
-
 	design:      "openEHR Support Model 1.5"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class INTERNET_ID
 
@@ -25,7 +19,7 @@ inherit
 	UID
 
 create
-	default_create, make
+	make, default_create
 
 feature -- Definitions
 

@@ -2,15 +2,10 @@ note
 	component:   "openEHR re-usable library"
 	description: "Basic Meta-model model abstraction - 'include' specifier"
 	keywords:    "model, UML"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2010 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "openEHR AWB project <http://www.openehr.org/issues/browse/AWB>"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class BMM_INCLUDE_SPEC
 
@@ -18,9 +13,15 @@ feature -- Access
 
 	id: STRING
 			-- id of schema
+        attribute
+            create Result.make_empty
+        end
 
 	namespace: STRING
 			-- namespace under which types of included schema will be known in this schema
+        attribute
+            create Result.make_empty
+        end
 
 end
 

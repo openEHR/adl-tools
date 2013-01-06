@@ -2,14 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Enumeration of archetype-based artefact types"
 	keywords:    "archetype"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "openEHR AWB project <http://www.openehr.org/issues/browse/AWB>"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class ARTEFACT_TYPE
 
@@ -93,16 +89,16 @@ feature -- Access
 			Result.extend("operational_template", operational_template)
 		end
 
-	type_name_to_type (a_name: attached STRING): INTEGER
+	type_name_to_type (a_name: STRING): INTEGER
 		require
 			valid_type_name(a_name)
 		do
 			Result := types.item (a_name)
 		end
 
-	type_name: STRING
+	type_name: detachable STRING
 		do
-			Result := type_names.item(value)
+			Result := type_names.item (value)
 		end
 
 feature -- Status report

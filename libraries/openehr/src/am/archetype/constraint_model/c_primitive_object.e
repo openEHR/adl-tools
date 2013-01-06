@@ -6,14 +6,10 @@ note
 				 BOOLEAN. Occurrences set to the default of {1..1}
 				 ]"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class C_PRIMITIVE_OBJECT
 
@@ -28,7 +24,7 @@ create
 
 feature -- Initialisation
 
-	make (an_item: attached C_PRIMITIVE)
+	make (an_item: C_PRIMITIVE)
 		do
 			default_create
 			item := an_item
@@ -50,7 +46,11 @@ feature -- Access
 	prototype_value: ANY
 			-- 	generate a default value from this constraint object
 		do
-			Result := item.prototype_value
+			if attached item as cp then
+				Result := cp.prototype_value
+			else
+				create {STRING} Result.make_from_string ("any")
+			end
 		end
 
 feature -- Status Report
@@ -59,12 +59,16 @@ feature -- Status Report
 			-- True if any value allowed ('*' received in parsed input)
 			-- i.e. no item
 		do
-			Result := item = Void
+			Result := not attached item
 		end
 
 	valid_value (a_value: like prototype_value): BOOLEAN
 		do
-			Result := item.valid_value (a_value)
+			if attached item as cp then
+				Result := cp.valid_value (a_value)
+			else
+				Result := True
+			end
 		end
 
 feature -- Comparison
@@ -75,17 +79,20 @@ feature -- Comparison
 			if precursor (other, an_rm_schema) then
 				if other.any_allowed then
 					Result := True
-				elseif not any_allowed then
-					Result := item.node_conforms_to (other.item)
+				elseif attached item as cp and attached other.item as other_cp then
+					Result := cp.node_conforms_to (other_cp)
 				end
 			end
 		end
 
 feature -- Output
 
-	as_string: attached STRING
+	as_string: STRING
 		do
-			Result := item.as_string
+			create Result.make_empty
+			if attached item as cp then
+				Result.append (cp.as_string)
+			end
 		end
 
 	out: STRING
@@ -95,7 +102,7 @@ feature -- Output
 
 feature -- Representation
 
-	representation: attached OG_OBJECT_LEAF
+	representation: OG_OBJECT_LEAF
 
 feature -- Visitor
 

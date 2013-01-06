@@ -2,14 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Persistent form of ARCHETYPE_INTERNAL_REF."
 	keywords:    "persistence, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class P_ARCHETYPE_INTERNAL_REF
 
@@ -37,11 +33,11 @@ feature -- Access
 
 feature -- Factory
 
-	create_archetype_internal_ref: attached ARCHETYPE_INTERNAL_REF
+	create_archetype_internal_ref: ARCHETYPE_INTERNAL_REF
 		do
 			create Result.make (rm_type_name, target_path)
-			if attached node_id then
-				Result.set_node_id (node_id)
+			if attached node_id as nid then
+				Result.set_node_id (nid)
 			end
 			populate_c_instance (Result)
 		end

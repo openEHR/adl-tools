@@ -8,10 +8,6 @@ note
 	copyright:   "Copyright (c) 2011 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class P_BMM_SINGLE_PROPERTY
 
 inherit
@@ -22,7 +18,7 @@ inherit
 
 feature -- Access
 
-	bmm_property_definition: BMM_SINGLE_PROPERTY
+	bmm_property_definition: detachable BMM_SINGLE_PROPERTY
 		note
 			option: transient
 		attribute

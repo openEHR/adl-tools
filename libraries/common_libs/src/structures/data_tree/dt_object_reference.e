@@ -2,14 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "A node that contains a reference to another node, implemented by a path. Serialises an object non-containment reference."
 	keywords:    "data tree, serialisation, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2009 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class DT_OBJECT_REFERENCE
 
@@ -33,7 +29,7 @@ feature -- Access
 
 feature -- Modification
 
-	set_value(a_value: like value)
+	set_value (a_value: like value)
 		do
 			value := a_value
 		end
@@ -47,16 +43,16 @@ feature -- Output
 
 feature -- Serialisation
 
-	enter_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
+	enter_subtree (serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at start of block for this node
 		do
-			serialiser.start_object_reference(Current, depth)
+			serialiser.start_object_reference (Current, depth)
 		end
 
-	exit_subtree(serialiser: DT_SERIALISER; depth: INTEGER)
+	exit_subtree (serialiser: DT_SERIALISER; depth: INTEGER)
 			-- perform serialisation at end of block for this node
 		do
-			serialiser.end_object_reference(Current, depth)
+			serialiser.end_object_reference (Current, depth)
 		end
 
 end

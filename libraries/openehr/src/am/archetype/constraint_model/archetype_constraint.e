@@ -26,7 +26,7 @@ inherit
 
 feature -- Access
 
-	parent: ARCHETYPE_CONSTRAINT
+	parent: detachable ARCHETYPE_CONSTRAINT
 
 	path: STRING
 			-- path to this object in the tree with respect to root
@@ -138,12 +138,12 @@ feature -- Status report
 
 feature -- Comparison
 
-	node_congruent_to (other: attached like Current; an_rm_schema: attached BMM_SCHEMA): BOOLEAN
+	node_congruent_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same constraints as `other'.
 		deferred
 		end
 
-	node_conforms_to (other: attached like Current; an_rm_schema: attached BMM_SCHEMA): BOOLEAN
+	node_conforms_to (other: like Current; an_rm_schema: BMM_SCHEMA): BOOLEAN
 			-- True if this node on its own (ignoring any subparts) expresses the same or narrower constraints as `other'.
 			-- An error message can be obtained by calling node_conformance_failure_reason
 		deferred
@@ -179,7 +179,7 @@ feature -- Visitor
 
 feature -- Representation
 
-	representation: attached OG_ITEM
+	representation: OG_ITEM
 		note
 			option: transient
 		attribute
@@ -200,7 +200,7 @@ feature -- Duplication
 			-- safe version of deep_twin that Voids `parent' first so as not to clone backwards up tree
 		local
 			p: like parent
-			og_p: OG_NODE
+			og_p: like representation.parent
 		do
 			p := parent
 			parent := Void

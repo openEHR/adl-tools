@@ -44,18 +44,19 @@ convert
 
 feature -- Initialisation
 
-	make_from_string(str: attached STRING)
+	make_from_string (str: STRING)
 			-- make from any valid ISO date/time string
 		require
 			String_valid: valid_iso8601_date_time(str)
 		do
 			if valid_iso8601_date_time(str) then
-				deep_copy(iso8601_parser.cached_iso8601_date_time)
+				date_part := iso8601_parser.cached_iso8601_date_time.date_part.deep_twin
+				time_part := iso8601_parser.cached_iso8601_date_time.time_part.deep_twin
 			end
 			value := as_string
 		end
 
-	make_date_and_time(a_date: attached ISO8601_DATE; a_time: ISO8601_TIME)
+	make_date_and_time(a_date: ISO8601_DATE; a_time: detachable ISO8601_TIME)
 			-- create from date and time parts
 		require
 			Date_validity: not a_date.is_partial
@@ -66,10 +67,10 @@ feature -- Initialisation
 			value := as_string
 		end
 
-	make_date_time (a_dt: attached DATE_TIME)
+	make_date_time (a_dt: DATE_TIME)
 			-- make from a DATE_TIME object
 		do
-			make_date_and_time(create {ISO8601_DATE}.make_date(a_dt.date), create {ISO8601_TIME}.make_time(a_dt.time))
+			make_date_and_time (create {ISO8601_DATE}.make_date(a_dt.date), create {ISO8601_TIME}.make_time(a_dt.time))
 		end
 
 feature -- Access
@@ -94,35 +95,35 @@ feature -- Access
 
 	hour: INTEGER
 		do
-			if time_part /= Void then
+			if attached time_part then
 				Result := time_part.hour
 			end
 		end
 
 	minute: INTEGER
 		do
-			if time_part /= Void then
+			if attached time_part then
 				Result := time_part.minute
 			end
 		end
 
 	second: INTEGER
 		do
-			if time_part /= Void then
+			if attached time_part then
 				Result := time_part.minute
 			end
 		end
 
 	fractional_second: DOUBLE
 		do
-			if time_part /= Void then
+			if attached time_part then
 				Result := time_part.fractional_second
 			end
 		end
 
 	timezone: ISO8601_TIMEZONE
 		do
-			if time_part /= Void then
+			if attached time_part then
 				Result := time_part.timezone
 			end
 		end
@@ -218,9 +219,9 @@ feature -- Output
 
 feature {ISO8601_DATE_TIME} -- Implementation
 
-	date_part: attached ISO8601_DATE
+	date_part: ISO8601_DATE
 
-	time_part: ISO8601_TIME
+	time_part: detachable ISO8601_TIME
 
 invariant
 	Year_valid: valid_year(year)

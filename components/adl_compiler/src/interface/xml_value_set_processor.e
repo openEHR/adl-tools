@@ -6,12 +6,8 @@ note
 
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class XML_VALUE_SET_PROCESSOR
 
@@ -33,13 +29,13 @@ inherit
 
 feature -- Access
 
-	current_terminology: TERMINOLOGY_ACCESS
+	current_terminology: detachable TERMINOLOGY_ACCESS
 			-- current terminology
 
-	current_language: STRING
+	current_language: detachable STRING
 			-- current language
 
-	current_group: STRING
+	current_group: detachable STRING
 			-- current group we are in
 
 feature -- Processing
@@ -51,9 +47,8 @@ feature -- Processing
 		do
 			attrs := e.attributes
 			create attr_vals.make (0)
-			from attrs.start until attrs.off loop
-				attr_vals.put (attrs.item.value, attrs.item.name)
-				attrs.forth
+			across attrs as attrs_csr loop
+				attr_vals.put (attrs_csr.item.value, attrs_csr.item.name)
 			end
 
 			if e.name.is_equal ("terminology") then

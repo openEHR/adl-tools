@@ -2,136 +2,95 @@ note
 	component:   "openEHR Archetype Project"
 	description: "interface class to assertion parser and parse tree"
 	keywords:    "ADL, assertion"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2005- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class ASSERTION_ENGINE
 
 inherit
+	PARSER_ENGINE
+		rename
+			set_source as parser_set_source
+		redefine
+			tree, parser, assign_parser_result
+		end
+
 	SHARED_ASSERTION_SERIALISERS
 		export
-			{NONE} all
-			{ANY} has_assertion_serialiser_format
+			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, has_assertion_serialiser_format
 		end
 
 create
 	make
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
 	make
 		do
-		end
-
-	reset
-			-- clear current state
-		do
-			source := Void
-			tree := Void
-			serialised := Void
+			create parser.make
 		end
 
 feature -- Access
 
-	source: STRING
-			-- source of current artifact
-
-	source_start_line: INTEGER
-			-- defaults to 0; can be set to line number of input text inside some other document
-
 	tree: detachable ARRAYED_LIST [ASSERTION]
 			-- set if parse succeeded
 
-	serialised: STRING
-
-	errors: attached ERROR_ACCUMULATOR
-			-- Result of last parse.
-		do
-			Result := parser.errors
-		end
-
 feature -- Status Report
-
-	in_parse_mode: BOOLEAN
-			-- True if engine in mode where tree was created from source
-
-	parse_succeeded: BOOLEAN
-			-- True if parse succeeded; call after parse()
-		do
-			Result := attached tree
-		end
 
 	is_differential: BOOLEAN
 			-- True if archetype is differential
 
 feature -- Commands
 
-	set_source(in_text: attached STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: attached BMM_SCHEMA)
-			-- set `in_text' as working artifact
-		require
-			Text_valid: not in_text.is_empty
-			Start_line_valid: a_source_start_line > 0
+	set_source (in_text: STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: BMM_SCHEMA)
+			-- Set `in_text' as working artifact.
 		do
+			parser_set_source (in_text, a_source_start_line)
 			rm_schema := an_rm_schema
-			source := in_text
-			source_start_line := a_source_start_line
-			in_parse_mode := True
 			is_differential := differential_flag
-		ensure
-			in_parse_mode: in_parse_mode
+		ensure then
 			is_differential_set: is_differential = differential_flag
-		end
-
-	parse
-			-- parse artifact. If successful, `tree' contains the parse
-			-- structure. Then validate the artifact
-		require
-			Source_exists: attached source
-			in_parse_mode
-		do
-			tree := Void
-			serialised := Void
-			create parser.make
-			parser.execute(source, source_start_line, is_differential, rm_schema)
-			if not parser.syntax_error then
-				tree := parser.assertion_list
-			end
 		end
 
 	serialise (a_format: STRING)
 			-- serialise current artifact into format
 		require
 			Format_valid: has_assertion_serialiser_format (a_format)
+		local
+			serialiser_mgr: ASSERTION_SERIALISER_MGR
 		do
-			create serialiser_mgr.make (tree, a_format)
-			serialiser_mgr.serialise
-			serialised := serialiser_mgr.last_result
-		end
-
-	set_tree (a_node: like tree)
-			-- set root node from e.g. GUI tool
-		require
-			a_node /= Void
-		do
-			tree := a_node
-			in_parse_mode := False
-		ensure
-			not in_parse_mode
+			if attached tree as att_tree then
+				create serialiser_mgr.make (att_tree, a_format)
+				serialiser_mgr.serialise
+				serialised := serialiser_mgr.last_result
+			end
 		end
 
 feature {NONE} -- Implementation
 
+	assign_parser_result
+			-- override in descendants to get around limitations in gobo parsers not being able
+			-- to be componentised
+		do
+			if attached {ARRAYED_LIST [ASSERTION]} parser.output as al then
+				tree := al
+			end
+		end
+
+	parser_execute
+			-- call the parser.execute with specific args
+		do
+			if attached source as att_source and attached rm_schema as rms then
+				parser.execute (att_source, source_start_line, is_differential, rms)
+			end
+		end
+
 	parser: CADL_VALIDATOR
 
-	serialiser_mgr: ASSERTION_SERIALISER_MGR
-
-	rm_schema: BMM_SCHEMA
+	rm_schema: detachable BMM_SCHEMA
 
 end
 

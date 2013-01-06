@@ -6,15 +6,10 @@ note
 	keywords:    "archetype, boolean, data"
 
 	design:      "openEHR Common Archetype Model 0.2"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2000- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class C_INTEGER
 
@@ -26,12 +21,12 @@ create
 
 feature -- Initialisation
 
-	make_range (an_interval: attached INTERVAL [INTEGER])
+	make_range (an_interval: INTERVAL [INTEGER])
 		do
 			range := an_interval
 		end
 
-	make_list (a_list: attached LIST [INTEGER])
+	make_list (a_list: LIST [INTEGER])
 			-- make from a list of integers
 		require
 			a_list_valid: not a_list.is_empty
@@ -42,9 +37,9 @@ feature -- Initialisation
 
 feature -- Access
 
-	range: INTERVAL [INTEGER]
+	range: detachable INTERVAL [INTEGER]
 
-	list: ARRAYED_LIST [INTEGER]
+	list: detachable ARRAYED_LIST [INTEGER]
 
 	prototype_value: INTEGER_REF
 		do
@@ -71,13 +66,13 @@ feature -- Comparison
 	node_conforms_to (other: like Current): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		do
-			if attached range and attached other.range then
-				Result := other.range.contains (range)
-			elseif attached list and attached other.list then
-				from list.start until list.off or not other.list.has (list.item) loop
-					list.forth
+			if attached range as rng and attached other.range as other_rng then
+				Result := other_rng.contains (rng)
+			elseif attached list as l and attached other.list as other_l then
+				from l.start until l.off or not other_l.has (l.item) loop
+					l.forth
 				end
-				Result := list.off
+				Result := l.off
 			end
 		end
 
@@ -86,21 +81,20 @@ feature -- Output
 	as_string: STRING
 		do
 			create Result.make(0)
-			if attached range then
-				Result.append("|" + range.as_string + "|")
-			else
-				from list.start until list.off loop
-					if not list.isfirst then
+			if attached range as rng then
+				Result.append("|" + rng.as_string + "|")
+			elseif attached list as l then
+
+				across l as list_csr loop
+					if not list_csr.isfirst then
 						Result.append(", ")
 					end
-					Result.append(list.item.out)
-					list.forth
+					Result.append (list_csr.item.out)
 				end
 			end
-			if attached assumed_value then
-				Result.append("; " + assumed_value.out)
+			if attached assumed_value as av then
+				Result.append ("; " + av.out)
 			end
-
 		end
 
 	as_canonical_string: STRING

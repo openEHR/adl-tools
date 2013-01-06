@@ -30,9 +30,11 @@ feature -- Access
 
 feature -- Factory
 
-	create_bmm_property_definition (a_bmm_schema: attached BMM_SCHEMA; a_class_def: attached BMM_CLASS_DEFINITION)
+	create_bmm_property_definition (a_bmm_schema: BMM_SCHEMA; a_class_def: BMM_CLASS_DEFINITION)
 		do
-			create bmm_property_definition.make (name, a_class_def.generic_parameters.item (type), is_mandatory, is_computed, is_im_infrastructure, is_im_runtime)
+			if attached a_class_def.generic_parameters.item (type) as ts then
+				create bmm_property_definition.make (name, ts, is_mandatory, is_computed, is_im_infrastructure, is_im_runtime)
+			end
 		end
 
 end

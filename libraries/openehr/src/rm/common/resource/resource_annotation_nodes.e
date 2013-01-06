@@ -2,14 +2,10 @@ note
 	component:   "openEHR Common Information Model"
 	description: "Model of tables of annotations keyed by path for a resource."
 	keywords:    "archetype"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class RESOURCE_ANNOTATION_NODES
 
@@ -29,7 +25,7 @@ feature -- Access
 			-- List of form:
 			-- {{tag, value}+, path}
 
-	item_at_path (a_path: attached STRING): RESOURCE_ANNOTATION_NODE_ITEMS
+	item_at_path (a_path: STRING): detachable RESOURCE_ANNOTATION_NODE_ITEMS
 			-- Return annotations at `a_path' from `items'
 		do
 			Result := items.item (a_path)
@@ -37,7 +33,7 @@ feature -- Access
 
 feature -- Status Report
 
-	has_path (a_path: attached STRING): BOOLEAN
+	has_path (a_path: STRING): BOOLEAN
 			-- True if `a_path' found in `items'
 		do
 			Result := items.has (a_path)
@@ -45,13 +41,13 @@ feature -- Status Report
 
 feature -- Modification
 
-	replace_items_at_node (a_path: attached STRING; an_annotations: attached RESOURCE_ANNOTATION_NODE_ITEMS)
+	replace_items_at_node (a_path: STRING; an_annotations: RESOURCE_ANNOTATION_NODE_ITEMS)
 			-- add `an_annotations' at key `a_path'; replace any existing at that path
 		do
 			items.force(an_annotations, a_path)
 		end
 
-	merge_items_at_node (a_path: attached STRING; an_annotations: attached RESOURCE_ANNOTATION_NODE_ITEMS)
+	merge_items_at_node (a_path: STRING; an_annotations: RESOURCE_ANNOTATION_NODE_ITEMS)
 			-- add `an_annotations' at key `a_path' to existing annotations
 		do
 			if not items.has (a_path) then
@@ -62,7 +58,7 @@ feature -- Modification
 			end
 		end
 
-	add_item_at_node (a_path, annot_key, annot_content: attached STRING)
+	add_item_at_node (a_path, annot_key, annot_content: STRING)
 			-- add an annotation consisting of key `annot_key' & `annot_content' at path `a_path';
 			-- replace any existing at same path
 		do

@@ -10,18 +10,13 @@ note
 	license:     "See notice at bottom of class"
 	void_safety: "initial"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
 class PROFILE_REPOSITORY_ACCESS
 
 inherit
 	SHARED_RESOURCES
 		export
 			{NONE} all;
-			{ANY} directory_exists
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, directory_exists
 		end
 
 create

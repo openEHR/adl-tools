@@ -5,39 +5,27 @@ note
 
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2011- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class BMM_SCHEMA_CORE
 
 inherit
 	BMM_DEFINITIONS
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
 feature -- Definitions
 
+	Default_schema_option_class_name: STRING = "Any"
 	Default_schema_lifecycle_state: STRING = "Unknown"
 	Default_schema_revision: STRING = "Unknown"
 	Default_schema_author: STRING = "Unknown"
 	Default_schema_description: STRING = "(none)"
 
 feature -- Initialisation
-
-	make_core
-		do
-			schema_revision := Default_schema_revision.twin
-			schema_author := Default_schema_author.twin
-			schema_description := Default_schema_description.twin
-			create schema_contributors.make (0)
-			create archetype_rm_closure_packages.make (0)
-			archetype_rm_closure_packages.compare_objects
-		end
 
 	make (a_rm_publisher, a_schema_name, a_rm_release: attached STRING)
 		require
@@ -56,11 +44,17 @@ feature -- Identification
 	rm_publisher: STRING
 			-- publisher of model expressed in the schema
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+		attribute
+			create Result.make_from_string (Default_schema_revision)
+		end
 
 	schema_name: STRING
 			-- name of model expressed in schema; a 'schema' usually contains all of the packages of one 'model' of a publisher.
 			-- A publisher with more than one model can have multiple schemas.
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+		attribute
+			create Result.make_from_string (Default_schema_revision)
+		end
 
 	rm_release: STRING
 			-- release of model expressed in the schema
@@ -75,6 +69,9 @@ feature -- Identification
 	schema_revision: STRING
 			-- revision of schema
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+		attribute
+			create Result.make_from_string (Default_schema_revision)
+		end
 
 	schema_lifecycle_state: STRING
 			-- lifecycle state of schema
@@ -83,14 +80,23 @@ feature -- Identification
 	schema_author: STRING
 			-- primary author of schema
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+		attribute
+			create Result.make_from_string (Default_schema_author)
+		end
 
-	schema_contributors: attached ARRAYED_LIST [STRING]
+	schema_contributors: ARRAYED_LIST [STRING]
 			-- contributing authors of schema
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+        attribute
+            create Result.make_empty
+        end
 
 	schema_description: STRING
 			-- description of schema
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+		attribute
+			create Result.make_from_string (Default_schema_description)
+		end
 
 feature -- Access
 
@@ -98,19 +104,29 @@ feature -- Access
 			-- name of a parent class used within the schema to provide archetype capability,
 			-- enabling filtering of classes in RM visualisation. If empty, 'Any' is assumed
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+		attribute
+			create Result.make_from_string (Default_schema_option_class_name)
+		end
 
 	archetype_data_value_parent_class: STRING
 			-- name of a parent class of logical 'data types' used within the schema to provide archetype capability,
 			-- enabling filtering of classes in RM visualisation. If empty, 'Any' is assumed
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+		attribute
+			create Result.make_from_string (Default_schema_option_class_name)
+		end
 
-	archetype_rm_closure_packages: attached ARRAYED_SET [STRING]
+	archetype_rm_closure_packages: detachable ARRAYED_SET [STRING]
 			-- list of top-level package paths that provide the RM 'model' part in achetype identifiers,
 			-- e.g. the path "org.openehr.ehr" gives "EHR" in "openEHR-EHR". Within this namespace,
 			-- archetypes can be based on any class reachable from classes defined directly in these packages
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+		attribute
+			create Result.make (0)
+			Result.compare_objects
+		end
 
-	archetype_visualise_descendants_of: STRING
+	archetype_visualise_descendants_of: detachable STRING
 			-- If archetype_parent_class is not set, designate a class whose descendants should be
 			-- made visible in tree and grid renderings of the archetype definition. For openEHR
 			-- and CEN this class is normally the same as the archetype_parent_class, i.e. LOCATABLE
@@ -122,17 +138,17 @@ feature -- Access
 
 feature -- Status Report
 
-	has_archetype_parent_class: BOOLEAN
-			-- True if this schema has an archetype_parent_class
-		do
-			Result := attached archetype_parent_class
-		end
+--	has_archetype_parent_class: BOOLEAN
+--			-- True if this schema has an archetype_parent_class
+--		do
+--			Result := attached archetype_parent_class
+--		end
 
-	has_archetype_data_value_parent_class: BOOLEAN
-			-- True if this schema has an archetype_parent_class
-		do
-			Result := attached archetype_data_value_parent_class
-		end
+--	has_archetype_data_value_parent_class: BOOLEAN
+--			-- True if this schema has an archetype_parent_class
+--		do
+--			Result := attached archetype_data_value_parent_class
+--		end
 
 	has_rm_closure_package (a_package_path: attached STRING): BOOLEAN
 			-- `a_package_path' is a qualified package name, like 'org.openehr.ehr', 'org.openehr.demographic'
@@ -151,35 +167,35 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_schema_revision (a_revision: attached STRING)
+	set_schema_revision (a_revision: STRING)
 		require
 			valid_revision: not a_revision.is_empty
 		do
 			schema_revision := a_revision
 		end
 
-	set_schema_lifecycle_state (a_lifecycle_state: attached STRING)
+	set_schema_lifecycle_state (a_lifecycle_state: STRING)
 		require
 			valid_lifecycle_state: not a_lifecycle_state.is_empty
 		do
 			schema_lifecycle_state := a_lifecycle_state
 		end
 
-	set_schema_author (an_author: attached STRING)
+	set_schema_author (an_author: STRING)
 		require
 			valid_author: not an_author.is_empty
 		do
 			schema_author := an_author
 		end
 
-	add_schema_contributor (a_contributor: attached STRING)
+	add_schema_contributor (a_contributor: STRING)
 		require
 			valid_contributor: not a_contributor.is_empty and not has_schema_contributor (a_contributor)
 		do
 			schema_contributors.extend (a_contributor)
 		end
 
-	set_schema_contributors (a_contributors: attached ARRAYED_LIST [STRING])
+	set_schema_contributors (a_contributors: ARRAYED_LIST [STRING])
 		require
 			valid_contributor: not a_contributors.is_empty
 		do
@@ -191,7 +207,7 @@ feature -- Modification
 			archetype_rm_closure_packages := a_package_list
 		end
 
-	set_schema_description (a_description: attached STRING)
+	set_schema_description (a_description: STRING)
 		require
 			valid_description: not a_description.is_empty
 		do

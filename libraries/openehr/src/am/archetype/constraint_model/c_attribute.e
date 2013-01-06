@@ -2,14 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "node in ADL parse tree"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2008 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class C_ATTRIBUTE
 
@@ -44,7 +40,7 @@ feature -- Initialisation
 			create children.make (0)
 		end
 
-	make_single (a_name: attached STRING; an_existence: MULTIPLICITY_INTERVAL)
+	make_single (a_name: STRING; an_existence: detachable MULTIPLICITY_INTERVAL)
 			-- make representing a single-valued attribute with attr name and optional existence
 		require
 			a_name_valid: not a_name.is_empty
@@ -57,7 +53,7 @@ feature -- Initialisation
 			Existence_set: existence = an_existence
 		end
 
-	make_multiple (a_name: attached STRING; an_existence: MULTIPLICITY_INTERVAL; a_cardinality: CARDINALITY)
+	make_multiple (a_name: STRING; an_existence: detachable MULTIPLICITY_INTERVAL; a_cardinality: detachable CARDINALITY)
 			-- make representing a container attribute with attr name & optional existence and cardinality
 		require
 			a_name_valid: not a_name.is_empty
@@ -167,7 +163,7 @@ feature -- Access
 			Result := children.count
 		end
 
-	child_before (an_obj: attached C_OBJECT): C_OBJECT
+	child_before (an_obj: C_OBJECT): detachable C_OBJECT
 			-- return child node before `an_obj' if there is one, else Void
 		require
 			Object_valid: has_child (an_obj)
@@ -182,7 +178,7 @@ feature -- Access
 			has_result: attached Result implies has_child (Result)
 		end
 
-	child_after (an_obj: attached C_OBJECT): C_OBJECT
+	child_after (an_obj: C_OBJECT): detachable C_OBJECT
 			-- return child node after `an_obj' if there is one, else Void
 		require
 			Object_valid: has_child (an_obj)
@@ -197,7 +193,7 @@ feature -- Access
 			has_result: attached Result implies has_child (Result)
 		end
 
-	child_with_id (a_node_id: attached STRING): attached C_OBJECT
+	child_with_id (a_node_id: STRING): C_OBJECT
 			-- find the child node with `a_node_id'
 		require
 			has_child_with_id (a_node_id)
@@ -212,7 +208,7 @@ feature -- Access
 			Result := children.item
 		end
 
-	children_matching_id (a_node_id: attached STRING): attached ARRAYED_LIST[C_OBJECT]
+	children_matching_id (a_node_id: STRING): ARRAYED_LIST[C_OBJECT]
 			-- find child nodes with node_ids that contain `a_node_id', e.g. 'at0013' would match
 			-- nodes with ids 'at0013.1', 'at0013.2', 'at0013.1.5' and so on
 		do
@@ -225,7 +221,7 @@ feature -- Access
 			end
 		end
 
-	child_with_rm_type_name (an_rm_type: attached STRING): C_OBJECT
+	child_with_rm_type_name (an_rm_type: STRING): C_OBJECT
 			-- return a child node with rm_type_name = `an_rm_type'
 		require
 			Rm_type_valid: has_child_with_rm_type_name(an_rm_type)
@@ -304,7 +300,7 @@ feature -- Status Report
 			Result := differential_path /= Void
 		end
 
-	has_child_with_id (a_node_id: attached STRING): BOOLEAN
+	has_child_with_id (a_node_id: STRING): BOOLEAN
 			-- has a child node with id a_node_id
 		require
 			Node_id_valid: not a_node_id.is_empty
@@ -312,7 +308,7 @@ feature -- Status Report
 			Result := representation.has_child_with_id (a_node_id)
 		end
 
-	has_child_with_rm_type_name (a_type_name: attached STRING): BOOLEAN
+	has_child_with_rm_type_name (a_type_name: STRING): BOOLEAN
 			-- has a child node with rm_type_name = `a_type_name'
 		require
 			Type_name_valid: not a_type_name.is_empty
@@ -325,7 +321,7 @@ feature -- Status Report
 			)
 		end
 
-	has_child (a_node: attached C_OBJECT): BOOLEAN
+	has_child (a_node: C_OBJECT): BOOLEAN
 			-- True if a_node is actually one of the children
 		do
 			Result := children.has (a_node)
@@ -340,7 +336,7 @@ feature -- Status Report
 			end
 		end
 
-	candidate_child_requires_id (a_type_name: attached STRING): BOOLEAN
+	candidate_child_requires_id (a_type_name: STRING): BOOLEAN
 			-- True if a candidate child node with rm_type_name = `a_type_name' needs a node id;
 			-- i.e. if is_multiple or else `has_child_with_rm_type_name'
 		require
@@ -366,13 +362,13 @@ feature -- Comparison
 			Result := existence_conforms_to (other) and ((is_single and other.is_single) or else (is_multiple and cardinality_conforms_to (other)))
 		end
 
-	existence_conforms_to (other: attached like Current): BOOLEAN
+	existence_conforms_to (other: like Current): BOOLEAN
 			-- True if the existence of this node conforms to other.existence
 		do
 			Result := existence = Void or else other.existence = Void or else other.existence.contains (existence)
 		end
 
-	cardinality_conforms_to (other: attached like Current): BOOLEAN
+	cardinality_conforms_to (other: like Current): BOOLEAN
 			-- True if the cardinality of this node conforms to other.cardinality, if it exists
 		do
 			Result := cardinality = Void or else other.cardinality = Void or else other.cardinality.contains (cardinality)
@@ -380,13 +376,13 @@ feature -- Comparison
 
 feature -- Modification
 
-	set_existence (an_interval: attached MULTIPLICITY_INTERVAL)
+	set_existence (an_interval: MULTIPLICITY_INTERVAL)
 			-- set existence constraint on this relation - applies whether single or multiple
 		do
 			existence := an_interval
 		end
 
-	set_cardinality (a_cardinality: attached CARDINALITY)
+	set_cardinality (a_cardinality: CARDINALITY)
 			--
 		do
 			cardinality := a_cardinality
@@ -406,7 +402,7 @@ feature -- Modification
 			not attached existence
 		end
 
-	set_differential_path (a_path: attached STRING)
+	set_differential_path (a_path: STRING)
 			-- set `differential_path'
 		require
 			Path_valid: not a_path.is_empty
@@ -433,7 +429,7 @@ feature -- Modification
 			Differential_path_set: differential_path /= Void
 		end
 
-	put_child (an_obj: attached C_OBJECT)
+	put_child (an_obj: C_OBJECT)
 			-- put a new child node
 		require
 			Object_valid: valid_new_child (an_obj)
@@ -443,7 +439,7 @@ feature -- Modification
 			an_obj.set_parent(Current)
 		end
 
-	put_child_left (an_obj, before_obj: attached C_OBJECT)
+	put_child_left (an_obj, before_obj: C_OBJECT)
 			-- insert a new child node before another node
 		require
 			Object_valid: valid_new_child (an_obj)
@@ -455,7 +451,7 @@ feature -- Modification
 			an_obj.set_parent(Current)
 		end
 
-	put_child_right (an_obj, after_obj: attached C_OBJECT)
+	put_child_right (an_obj, after_obj: C_OBJECT)
 			-- insert a new child node after another node
 		require
 			Object_valid: valid_new_child (an_obj)
@@ -467,7 +463,7 @@ feature -- Modification
 			an_obj.set_parent(Current)
 		end
 
-	put_sibling_child (an_obj: attached C_OBJECT)
+	put_sibling_child (an_obj: C_OBJECT)
 			-- put a new child node after any sibling that is already there
 			-- 'sibling' is defined as an object with a node_id with the same parent as the node_id of `an_obj';
 			-- usually it is a specialised node id with a common parent, but may be a top level id
@@ -487,7 +483,7 @@ feature -- Modification
 			end
 		end
 
-	replace_child_by_id (an_obj: attached C_OBJECT; an_id: attached STRING)
+	replace_child_by_id (an_obj: C_OBJECT; an_id: STRING)
 			-- replace node with id `an_id' by `an_obj'
 		require
 			Object_valid: valid_replacement_child (an_obj)
@@ -499,7 +495,7 @@ feature -- Modification
 			an_obj.set_parent(Current)
 		end
 
-	replace_child_by_rm_type_name (an_obj: attached C_OBJECT)
+	replace_child_by_rm_type_name (an_obj: C_OBJECT)
 			-- replace node with rm_type_name `a_type_name' by `an_obj'
 		require
 			Attribute_validity: is_single
@@ -511,7 +507,7 @@ feature -- Modification
 			an_obj.set_parent(Current)
 		end
 
-	remove_child (an_obj: attached C_OBJECT)
+	remove_child (an_obj: C_OBJECT)
 			-- remove an existing child node
 		require
 			Object_valid: has_child (an_obj)
@@ -520,7 +516,7 @@ feature -- Modification
 			children.prune_all(an_obj)
 		end
 
-	remove_child_by_id (an_id: attached STRING)
+	remove_child_by_id (an_id: STRING)
 			-- remove an existing child node
 		require
 			Id_valid: has_child_with_id (an_id)
@@ -538,7 +534,7 @@ feature -- Modification
 			representation.remove_all_children
 		end
 
-	replace_node_id (old_id, new_id: attached STRING)
+	replace_node_id (old_id, new_id: STRING)
 			-- replace old_id with new_id in relevant child node, and also in attribute parent list
 		require
 			Old_id_valid: has_child_with_id (old_id)
@@ -550,7 +546,7 @@ feature -- Modification
 			has_child_with_id (new_id)
 		end
 
-	overlay_differential (a_flat_obj, diff_obj: attached C_OBJECT; an_rm_schema: attached BMM_SCHEMA)
+	overlay_differential (a_flat_obj, diff_obj: C_OBJECT; an_rm_schema: BMM_SCHEMA)
 			-- apply any differences from `diff_obj' to `an_obj' node including node_id
 		require
 			Flat_obj_valid: has_child (a_flat_obj)
@@ -576,7 +572,7 @@ feature -- Modification
 
 feature -- Validation
 
-	valid_new_child (an_obj: attached C_OBJECT): BOOLEAN
+	valid_new_child (an_obj: C_OBJECT): BOOLEAN
 			-- test an_obj for addition as a new child node (including for replacement)
 		do
 			Result := valid_child (an_obj)
@@ -590,7 +586,7 @@ feature -- Validation
 			end
 		end
 
-	valid_replacement_child (an_obj: attached C_OBJECT): BOOLEAN
+	valid_replacement_child (an_obj: C_OBJECT): BOOLEAN
 			-- test an_obj for addition as a new child node (including for replacement)
 		do
 			Result := valid_child (an_obj)
@@ -621,7 +617,7 @@ feature -- Validation
 
 feature -- Representation
 
-	representation: attached OG_ATTRIBUTE_NODE
+	representation: OG_ATTRIBUTE_NODE
 
 feature -- Serialisation
 

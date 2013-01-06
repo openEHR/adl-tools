@@ -196,7 +196,7 @@ feature {ARCHETYPE_CATALOGUE} -- Modification
 
 feature {ARCH_CAT_ITEM} -- Modification
 
-	set_parent (a_parent: ARCH_CAT_ITEM)
+	set_parent (a_parent: like parent)
 		do
 			parent := a_parent
 		end
@@ -214,7 +214,7 @@ feature {ARCH_CAT_ITEM, ARCHETYPE_CATALOGUE} -- Implementation
 	children: detachable SORTED_TWO_WAY_LIST [like child_type]
 			-- list of child nodes
 
-	child_type: detachable ARCH_CAT_ITEM
+	child_type: ARCH_CAT_ITEM
 			-- type of allowable child node
 
 	parent: detachable ARCH_CAT_ITEM

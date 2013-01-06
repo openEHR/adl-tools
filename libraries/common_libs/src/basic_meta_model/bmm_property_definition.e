@@ -19,7 +19,7 @@ inherit
 
 feature -- Initialisation
 
-	make (a_name: STRING; a_type: attached like type; is_mandatory_flag, is_computed_flag, is_im_infrastructure_flag, is_im_runtime_flag: BOOLEAN)
+	make (a_name: STRING; a_type: like type; is_mandatory_flag, is_computed_flag, is_im_infrastructure_flag, is_im_runtime_flag: BOOLEAN)
 		do
 			name := a_name
 			is_mandatory := is_mandatory_flag
@@ -92,7 +92,7 @@ feature -- Status Report
 
 feature -- Comparison
 
-	bmm_conforms_to (other: attached BMM_PROPERTY_DEFINITION): BOOLEAN
+	bmm_conforms_to (other: BMM_PROPERTY_DEFINITION): BOOLEAN
 			-- True if this property conforms to `other' such that it could be used to override it
 		do
 			-- FIXME: to be implemented

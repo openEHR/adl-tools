@@ -2,23 +2,26 @@ note
 	component:   "openEHR Archetype Project"
 	description: "interface class to ADL parser and parse tree"
 	keywords:    "ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003-2012 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class CADL_ENGINE
 
 inherit
+	PARSER_ENGINE
+		rename
+			set_source as parser_set_source
+		redefine
+			tree, parser, assign_parser_result
+		end
+
 	SHARED_C_SERIALISERS
 		export
-			{NONE} all
-			{ANY} has_c_serialiser_format
+			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, has_c_serialiser_format
 		end
 
 create
@@ -28,83 +31,29 @@ feature {NONE} -- Initialisation
 
 	make
 		do
+			create parser.make
 		end
 
 feature -- Access
 
-	source: detachable STRING
-			-- Source of current artifact.
-
-	source_start_line: INTEGER
-			-- Defaults to 0; can be set to line number of cADL text inside some other document.
-
 	tree: detachable C_COMPLEX_OBJECT
 			-- Set if parse succeeded.
 
-	serialised: detachable STRING
-			-- The last result of calling `serialise'.
-
-	errors: ERROR_ACCUMULATOR
-			-- Result of last parse.
-		do
-			Result := parser.errors
-		end
-
 feature -- Status Report
-
-	in_parse_mode: BOOLEAN
-			-- True if engine in mode where tree was created from source
-
-	parse_succeeded: BOOLEAN
-			-- True if parse succeeded; call after parse()
-		do
-			Result := attached tree
-		end
 
 	is_differential: BOOLEAN
 			-- True if archetype is differential
 
 feature -- Commands
 
-	reset
-			-- Clear current state.
-		do
-			source := Void
-			tree := Void
-			serialised := Void
-		end
-
 	set_source (in_text: STRING; a_source_start_line: INTEGER; differential_flag: BOOLEAN; an_rm_schema: BMM_SCHEMA)
 			-- Set `in_text' as working artifact.
-		require
-			start_line_positive: a_source_start_line > 0
 		do
+			parser_set_source (in_text, a_source_start_line)
 			rm_schema := an_rm_schema
-			source := in_text
-			source_start_line := a_source_start_line
-			in_parse_mode := True
 			is_differential := differential_flag
-		ensure
-			source_set: source = in_text
-			source_start_line_set: source_start_line = a_source_start_line
-			parsing: in_parse_mode
+		ensure then
 			is_differential_set: is_differential = differential_flag
-		end
-
-	parse
-			-- Parse artifact into `tree', then validate the artifact.
-		require
-			source_attached: attached source
-			parsing: in_parse_mode
-		do
-			tree := Void
-			serialised := Void
-			create parser.make
-			parser.execute (source, source_start_line, is_differential, rm_schema)
-
-			if not parser.syntax_error then
-				tree := parser.output
-			end
 		end
 
 	serialise (an_archetype: ARCHETYPE; a_format, a_lang: STRING)
@@ -113,32 +62,39 @@ feature -- Commands
 			Format_valid: has_c_serialiser_format (a_format)
 			Language_valid: an_archetype.has_language (a_lang)
 		local
-			a_c_serialiser: C_SERIALISER
 			a_c_iterator: OG_CONTENT_ITERATOR
 		do
-			a_c_serialiser := c_serialiser_for_format (an_archetype, a_lang, a_format)
-			a_c_serialiser.initialise (an_archetype, a_lang)
-			create a_c_iterator.make (tree.representation, a_c_serialiser)
-			a_c_iterator.do_all
-			a_c_serialiser.finalise
-			serialised := a_c_serialiser.last_result
+			if attached tree as att_tree and attached c_serialiser_for_format (an_archetype, a_lang, a_format) as a_c_serialiser then
+				a_c_serialiser.initialise (an_archetype, a_lang)
+				create a_c_iterator.make (att_tree.representation, a_c_serialiser)
+				a_c_iterator.do_all
+				a_c_serialiser.finalise
+				serialised := a_c_serialiser.last_result
+			end
 		ensure
 			serialised_attached: attached serialised
 		end
 
-	set_tree (a_node: C_COMPLEX_OBJECT)
-			-- Set root node of `tree' from e.g. GUI tool.
-		do
-			tree := a_node
-			in_parse_mode := False
-		ensure
-			tree_set: tree = a_node
-			not_parsing: not in_parse_mode
-		end
-
 feature {NONE} -- Implementation
 
-	parser: detachable CADL_VALIDATOR
+	assign_parser_result
+			-- override in descendants to get around limitations in gobo parsers not being able
+			-- to be componentised
+		do
+			if attached {C_COMPLEX_OBJECT} parser.output as cco then
+				tree := cco
+			end
+		end
+
+	parser_execute
+			-- call the parser.execute with specific args
+		do
+			if attached source as att_source and attached rm_schema as rms then
+				parser.execute (att_source, source_start_line, is_differential, rms)
+			end
+		end
+
+	parser: CADL_VALIDATOR
 
 	rm_schema: detachable BMM_SCHEMA
 

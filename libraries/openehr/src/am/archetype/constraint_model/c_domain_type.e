@@ -8,14 +8,10 @@ note
 			 ]"
 	keywords:    "test, ADL"
 
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2004- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class C_DOMAIN_TYPE
 
@@ -53,7 +49,7 @@ feature -- Initialisation
 			Any_allowed: any_allowed
 		end
 
-	make_dt (make_args: ARRAY[ANY])
+	make_dt (make_args: detachable ARRAY[ANY])
 			-- make used by DT_OBJECT_CONVERTER
 		do
 			make
@@ -66,8 +62,8 @@ feature -- Finalisation
 	finalise_dt
 			-- used by DT_OBJECT_CONVERTER
 		do
-			if node_id /= Void and not node_id.is_empty then
-				create representation.make (node_id, Current)
+			if attached node_id as nid and then not nid.is_empty then
+				create representation.make (nid, Current)
 			else
 				create representation.make_anonymous (Current)
 			end
@@ -79,7 +75,7 @@ feature -- Access
 
 feature -- Statistics
 
-	constrained_rm_attributes: attached ARRAYED_SET [STRING]
+	constrained_rm_attributes: ARRAYED_SET [STRING]
 			-- report which attributes of the equivalent RM type are being constrained here
 		deferred
 		end
@@ -123,19 +119,19 @@ feature -- Synchronisation
 
 feature -- Visitor
 
-	enter_subtree(visitor: C_VISITOR; depth: INTEGER)
+	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
 			synchronise_to_tree
-			precursor(visitor, depth)
-			visitor.start_c_domain_type(Current, depth)
+			precursor (visitor, depth)
+			visitor.start_c_domain_type (Current, depth)
 		end
 
-	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
+	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
-			precursor(visitor, depth)
-			visitor.end_c_domain_type(Current, depth)
+			precursor (visitor, depth)
+			visitor.end_c_domain_type (Current, depth)
 		end
 
 end

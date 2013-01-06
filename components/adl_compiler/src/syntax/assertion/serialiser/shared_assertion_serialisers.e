@@ -15,7 +15,7 @@ class SHARED_ASSERTION_SERIALISERS
 
 feature -- Access
 
-	assertion_serialiser_formats: attached ARRAYED_LIST[STRING]
+	assertion_serialiser_formats: ARRAYED_LIST[STRING]
 			-- list of format names
 		once
 			create Result.make (0)
@@ -26,7 +26,7 @@ feature -- Access
 			end
 		end
 
-	assertion_serialiser_for_format (a_format: attached STRING): attached ASSERTION_SERIALISER
+	assertion_serialiser_for_format (a_format: STRING): detachable ASSERTION_SERIALISER
 			-- get a specific ADL serialiser
 		require
 			Format_valid: has_assertion_serialiser_format(a_format)
@@ -36,7 +36,7 @@ feature -- Access
 
 feature -- Status Report
 
-	has_assertion_serialiser_format (a_format: attached STRING): BOOLEAN
+	has_assertion_serialiser_format (a_format: STRING): BOOLEAN
 		do
 			Result := assertion_serialisers.has (a_format)
 		end

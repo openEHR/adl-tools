@@ -7,25 +7,18 @@ note
 	copyright:   "Copyright (c) 2006-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class TRANSLATION_DETAILS
 
 inherit
 	EXTERNAL_ENVIRONMENT_ACCESS
 		export
-			{NONE} all
-		undefine
-			default_create
+			{NONE} all;
+			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
 	DT_CONVERTIBLE
 		export
 			{NONE} all
-		redefine
-			default_create
 		end
 
 create
@@ -33,36 +26,34 @@ create
 
 feature -- Initialisation
 
-	default_create
-			--
-		do
-			language := default_language_code
-			create author.make(0)
-			put_author_item ("name", "????")
-		end
 
 	make_from_language (a_lang: attached STRING)
 			-- make
 		require
 			Language_valid: not a_lang.is_empty
 		do
-			default_create
 			create language.make (default_language_code_set, a_lang)
 		end
 
-	make_dt (make_args: ARRAY[ANY])
+	make_dt (make_args: detachable ARRAY[ANY])
 			-- make used by DT_OBJECT_CONVERTER
 		do
-			default_create
 		end
 
 feature -- Access
 
-	language: attached CODE_PHRASE
+	language: CODE_PHRASE
 			-- Language of translation
+		attribute
+			Result := default_language_code.deep_twin
+		end
 
-	author: attached HASH_TABLE [STRING, STRING]
+	author: HASH_TABLE [STRING, STRING]
 			-- Translator name and other demographic details
+		attribute
+			create Result.make (0)
+			Result.force ("????", "name")
+		end
 
 	accreditation: detachable STRING
 			-- Accreditation of translator, usually a national translator's association id
@@ -72,13 +63,13 @@ feature -- Access
 
 feature -- Modification
 
-	set_language (a_lang: attached CODE_PHRASE)
+	set_language (a_lang: CODE_PHRASE)
 			-- set language
 		do
 			language := a_lang
 		end
 
-	set_author (auth_details: attached HASH_TABLE [STRING, STRING])
+	set_author (auth_details: HASH_TABLE [STRING, STRING])
 			-- set author from a complete hash table
 		require
 			not auth_details.is_empty
@@ -86,7 +77,7 @@ feature -- Modification
 			author := auth_details
 		end
 
-	set_accreditation (an_accreditation: attached STRING)
+	set_accreditation (an_accreditation: STRING)
 			-- set accreditation
 		require
 			not an_accreditation.is_empty
@@ -104,7 +95,7 @@ feature -- Modification
 			not attached accreditation
 		end
 
-	put_author_item (a_key, a_value: attached STRING)
+	put_author_item (a_key, a_value: STRING)
 			-- set key=value pair into author
 		require
 			Key_valid: not a_key.is_empty
@@ -113,7 +104,7 @@ feature -- Modification
 			author.force (a_value, a_key)
 		end
 
-	remove_author_item (a_key: attached STRING)
+	remove_author_item (a_key: STRING)
 			-- remove item with key `a_key' from author
 		require
 			Key_valid: author.has (a_key)

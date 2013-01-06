@@ -3,14 +3,10 @@ note
 	description: "Magnitude/unit constrainer item for C_QUANTITY"
 	keywords:    "quantity, archetype, clinical type, ADL"
 
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2004- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class C_QUANTITY_ITEM
 
@@ -63,9 +59,14 @@ feature -- Comparison
 			-- contained instance space of `other'.
 			-- Returns False if they are the same, or if they do not correspond
 		do
-			Result := units.same_string (other.units) and
-				(attached magnitude and attached other.magnitude and then other.magnitude.contains (magnitude) or else
-				not attached magnitude)
+			Result := units.same_string (other.units)
+			if Result then
+				if attached magnitude as mag and attached other.magnitude as other_mag then
+					Result := other_mag.contains (mag)
+				else
+					Result := not attached magnitude
+				end
+			end
 		end
 
 invariant

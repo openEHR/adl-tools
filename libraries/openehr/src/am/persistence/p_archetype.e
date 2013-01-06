@@ -4,12 +4,8 @@ note
 	keywords:    "archetype, persistence"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class P_ARCHETYPE
 
@@ -23,12 +19,12 @@ create
 
 feature -- Initialisation
 
-	make_dt (make_args: ARRAY[ANY])
+	make_dt (make_args: detachable ARRAY[ANY])
 			-- basic make routine to guarantee validity on creation
 		do
 		end
 
-	make (an_archetype: attached ARCHETYPE)
+	make (an_archetype: ARCHETYPE)
 			-- basic make routine to guarantee validity on creation
 		do
 			artefact_object_type := an_archetype.generating_type
@@ -65,30 +61,30 @@ feature -- Access
 	artefact_object_type: STRING
 			-- records object model type of the original artefact
 
-	archetype_id: attached STRING
+	archetype_id: STRING
 
-	adl_version: attached STRING
+	adl_version: STRING
 			-- ADL version of this archetype
 
-	artefact_type: attached STRING
+	artefact_type: STRING
 			-- design type of artefact, archetype, template, template-component, etc
 
-	parent_archetype_id: STRING
+	parent_archetype_id: detachable STRING
 			-- id of specialisation parent of this archetype
 
-	definition: attached P_C_COMPLEX_OBJECT
+	definition: P_C_COMPLEX_OBJECT
 
-	invariants: ARRAYED_LIST [ASSERTION]
+	invariants: detachable ARRAYED_LIST [ASSERTION]
 
-	ontology: attached P_ARCHETYPE_ONTOLOGY
+	ontology: P_ARCHETYPE_ONTOLOGY
 
-	component_ontologies: attached HASH_TABLE [P_ARCHETYPE_ONTOLOGY, STRING]
+	component_ontologies: HASH_TABLE [P_ARCHETYPE_ONTOLOGY, STRING]
 
 feature -- Status Report
 
 	is_generated: BOOLEAN
 
-	has_path (a_path: attached STRING): BOOLEAN
+	has_path (a_path: STRING): BOOLEAN
 			-- True if `a_path' is found in resource; define in descendants
 		do
 		end

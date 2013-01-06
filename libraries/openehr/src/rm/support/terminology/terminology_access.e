@@ -3,15 +3,10 @@ note
 
 	description: "Simple terminology interface definition"
 	keywords:    "terminology, vocabulary"
-
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2000-2004 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2000- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class TERMINOLOGY_ACCESS
 
@@ -39,21 +34,22 @@ feature -- Access
 
 	all_codes: SET [CODE_PHRASE]
 		do
+			create {ARRAYED_SET [CODE_PHRASE]} Result.make (0)
 		end
 
 	all_group_ids: SET [STRING]
 		do
-
+			create {ARRAYED_SET [STRING_8]} Result.make (0)
 		end
 
-	value_set (a_value_set_name, a_lang: STRING): TERMINOLOGY_GROUP
+	value_set (a_value_set_name, a_lang: STRING): detachable TERMINOLOGY_GROUP
 		require
 			has_value_set (a_value_set_name, a_lang)
 		do
 			Result := content_tables.item (a_lang).item (a_value_set_name)
 		end
 
-	term (a_concept_id, a_lang: STRING): DV_CODED_TEXT
+	term (a_concept_id, a_lang: STRING): detachable DV_CODED_TEXT
 		require
 			has_concept_id (a_concept_id, a_lang)
 		do

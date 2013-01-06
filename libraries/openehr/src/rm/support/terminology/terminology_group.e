@@ -3,16 +3,11 @@ note
 
 	description: "Representation of a value domain"
 	keywords:    "terminology, vocabulary"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2012 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 	void_safe:	 "yes"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class TERMINOLOGY_GROUP
 
@@ -37,7 +32,7 @@ feature -- Access
 	name: STRING
 			-- identifier of this terminology value set (group)
 
-	term (a_code: STRING): DV_CODED_TEXT
+	term (a_code: STRING): detachable DV_CODED_TEXT
 		require
 			has_term (a_code)
 		do

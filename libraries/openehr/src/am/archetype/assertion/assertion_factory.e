@@ -2,14 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "operand in an expression tree"
 	keywords:    "assertion, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2004- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class ASSERTION_FACTORY
 
@@ -18,18 +14,18 @@ feature -- Factory
 	create_expr_leaf_archetype_definition_ref (an_absolute_path: STRING): EXPR_LEAF
 			-- node refers to a feature in an archetype definition
 		require
-			path_exists: an_absolute_path /= Void and then not an_absolute_path.is_empty
+			path_exists: not an_absolute_path.is_empty
 		do
 			create Result.make_archetype_definition_ref(an_absolute_path)
 		end
 
-	create_expr_leaf_archetype_ref(a_rel_path: STRING): EXPR_LEAF
+	create_expr_leaf_archetype_ref (a_rel_path: STRING): EXPR_LEAF
 			-- node refers to a feature in an outer archetype structure (not the
 			-- definition - use create_expr_leaf_archetype_definition_ref for that)
 			-- e.g. 'archetype_id' - see AOM for allowable features; / notation
 			-- can be used if need to go deeper
 		require
-			ref_exists: a_rel_path /= Void and then not a_rel_path.is_empty
+			ref_exists: not a_rel_path.is_empty
 		do
 			create Result.make_archetype_ref(a_rel_path)
 		end
@@ -52,10 +48,8 @@ feature -- Factory
 			create Result.make_integer(an_item)
 		end
 
-	create_expr_leaf_string(an_item: STRING): EXPR_LEAF
+	create_expr_leaf_string (an_item: STRING): EXPR_LEAF
 			-- node is a string value
-		require
-			Item_exists: an_item /= Void
    		do
 			create Result.make_string(an_item)
 		end
@@ -66,13 +60,13 @@ feature -- Factory
 			create Result.make_character(an_item)
 		end
 
-	create_expr_leaf_ordinal(an_item: ORDINAL): EXPR_LEAF
+	create_expr_leaf_ordinal (an_item: ORDINAL): EXPR_LEAF
 			-- node is a ordinal value
    		do
-			create Result.make_ordinal(an_item)
+			create Result.make_ordinal (an_item)
 		end
 
-	create_expr_leaf_coded_term(an_item: C_CODE_PHRASE): EXPR_LEAF
+	create_expr_leaf_coded_term (an_item: C_CODE_PHRASE): EXPR_LEAF
 			-- node is a coded term value
    		do
 			create Result.make_coded_term (an_item)
@@ -81,40 +75,27 @@ feature -- Factory
 	create_expr_leaf_constraint(an_item: C_PRIMITIVE): EXPR_LEAF
 			-- node is a constraint on a primitive type; can only be used with "matches" function
 			-- an_item is C_STRING, C_INTEGER, C_REAL, C_DOUBLE, C_BOOLEAN
-		require
-			Item_exists: an_item /= Void
    		do
 			create Result.make_constraint(an_item)
 		end
 
-	create_expr_unary_operator_node(an_operator: OPERATOR_KIND; an_operand: EXPR_ITEM): EXPR_UNARY_OPERATOR
+	create_expr_unary_operator_node (an_operator: OPERATOR_KIND; an_operand: EXPR_ITEM): EXPR_UNARY_OPERATOR
 			-- operators with one operand, e.g. not x, -5 etc
-		require
-			an_operator_exists: an_operator /= Void
-			an_operand_exists: an_operand /= Void
    		do
-			create Result.make(an_operator)
-			Result.set_operand (an_operand)
+			create Result.make(an_operator, an_operand)
 		end
 
-	create_expr_binary_operator_node(an_operator: OPERATOR_KIND; a_left_operand, a_right_operand: EXPR_ITEM): EXPR_BINARY_OPERATOR
+	create_expr_binary_operator_node (an_operator: OPERATOR_KIND; a_left_operand, a_right_operand: EXPR_ITEM): EXPR_BINARY_OPERATOR
 			-- operators with boolean results, e.g.
 			-- and, or, xor, etc
-		require
-			an_operator_exists: an_operator /= Void
-			a_left_operand_exists: a_left_operand /= Void
-			a_right_operand_exists: a_right_operand /= Void
    		do
-			create Result.make(an_operator)
-			Result.set_left_operand (a_left_operand)
-			Result.set_right_operand (a_right_operand)
+			create Result.make (an_operator, a_left_operand, a_right_operand)
 		end
 
 	create_assertion (an_expr: EXPR_ITEM; a_tag: STRING): ASSERTION
 			-- make assertion with an expression and an optional tag
 		require
 			Tag_valid: a_tag /= Void implies not a_tag.is_empty
-			Expr_valid: an_expr /= Void
    		do
 			create Result.make(an_expr, a_tag)
 		end

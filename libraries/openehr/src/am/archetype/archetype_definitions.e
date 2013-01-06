@@ -24,6 +24,9 @@ feature -- Syntax Elements
 
 feature -- Definitions
 
+	Anonymous_node_id: STRING = "unknown"
+			-- default node id for non-identified C_OBJECT nodes
+
 	Syntax_type_adl: STRING = "adl"
 			-- Name of native ADL syntax type.
 

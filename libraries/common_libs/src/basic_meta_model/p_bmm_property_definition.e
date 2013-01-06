@@ -5,24 +5,26 @@ note
 
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2011- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class P_BMM_PROPERTY_DEFINITION
 
 feature -- Access (attributes from schema)
 
-	name: detachable STRING
+	name: STRING
 			-- name of this attribute
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+        attribute
+            create Result.make_empty
+        end
 
-	type: detachable STRING
+	type: STRING
 			-- type name of this property
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+        attribute
+            create Result.make_empty
+        end
 
 	type_def: detachable P_BMM_TYPE_SPECIFIER
 			-- type definition of this property, if not a simple String type reference

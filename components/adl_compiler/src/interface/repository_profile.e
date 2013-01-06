@@ -2,14 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Config of one repository profile."
 	keywords:    "test, dADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL"
-	revision:    "$LastChangedRevision"
-	last_change: "$LastChangedDate"
 
 class REPOSITORY_PROFILE
 
@@ -18,8 +14,11 @@ feature -- Access
 	reference_repository: STRING
 			-- path to reference repository
 			-- NOTE: this attribute is used for dADL persistence in the .cfg file
+        attribute
+            create Result.make_empty
+        end
 
-	work_repository: STRING
+	work_repository: detachable STRING
 			-- [optional] path to work repository
 			-- NOTE: this attribute is used for dADL persistence in the .cfg file
 
@@ -33,7 +32,7 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_reference_repository (a_path: attached STRING)
+	set_reference_repository (a_path: STRING)
 			-- Set the path to the reference repository.
 		require
 			not a_path.is_empty
@@ -41,7 +40,7 @@ feature -- Modification
 			reference_repository := a_path
 		end
 
-	set_work_repository (a_path: attached STRING)
+	set_work_repository (a_path: STRING)
 			-- Set the path to the work repository.
 		do
 			work_repository := a_path
