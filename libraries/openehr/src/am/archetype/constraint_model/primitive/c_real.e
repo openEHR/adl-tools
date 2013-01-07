@@ -26,12 +26,12 @@ create
 
 feature -- Initialisation
 
-	make_range (an_interval: attached INTERVAL[REAL])
+	make_range (an_interval: INTERVAL[REAL])
 		do
 			range := an_interval
 		end
 
-	make_list (a_list: attached LIST[REAL])
+	make_list (a_list: LIST[REAL])
 			-- make from a list of integers
 		require
 			a_list_valid: not a_list.is_empty
@@ -42,9 +42,9 @@ feature -- Initialisation
 
 feature -- Access
 
-	range: INTERVAL [REAL]
+	range: detachable INTERVAL [REAL]
 
-	list: ARRAYED_LIST [REAL]
+	list: detachable ARRAYED_LIST [REAL]
 
 	prototype_value: REAL_REF
 		do
@@ -59,10 +59,10 @@ feature -- Status Report
 
 	valid_value (a_value: REAL_REF): BOOLEAN
 		do
-			if attached range then
-				Result := range.has (a_value)
-			else
-				Result := list.has (a_value)
+			if attached range as r then
+				Result := r.has (a_value)
+			elseif attached list as l then
+				Result := l.has (a_value)
 			end
 		end
 
@@ -71,13 +71,10 @@ feature -- Comparison
 	node_conforms_to (other: like Current): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		do
-			if attached range and attached other.range then
-				Result := other.range.contains (range)
-			elseif attached list and attached other.list then
-				from list.start until list.off or not other.list.has (list.item) loop
-					list.forth
-				end
-				Result := list.off
+			if attached range as rng and attached other.range as other_rng then
+				Result := other_rng.contains (rng)
+			elseif attached list as l and attached other.list as other_l then
+				Result := across l as l_csr some other_l.has (l_csr.item) end
 			end
 		end
 
@@ -88,28 +85,26 @@ feature -- Output
 			out_val: STRING
 		do
 			create Result.make(0)
-			if attached range then
-				Result.append ("|" + range.as_string + "|")
-			else
-				from list.start until list.off loop
-					if not list.isfirst then
+			if attached range as rng then
+				Result.append ("|" + rng.as_string + "|")
+			elseif attached list as l then
+				across l as l_csr loop
+					if l_csr.target_index > 1 then
 						Result.append (", ")
 					end
 
 					-- FIXME: REAL.out is broken; forgets to output '.0'
-					out_val := list.item.out
-					if out_val.index_of('.', 1) = 0 then
+					out_val := l_csr.item.out
+					if out_val.index_of ('.', 1) = 0 then
 						out_val.append (".0")
 					end
 					Result.append (out_val)
-
-					list.forth
 				end
 			end
-			if attached assumed_value then
+			if attached assumed_value as av then
 				-- FIXME: REAL.out is broken; forgets to output '.0'
-				out_val := assumed_value.out
-				if out_val.index_of('.', 1) = 0 then
+				out_val := av.out
+				if out_val.index_of ('.', 1) = 0 then
 					out_val.append (".0")
 				end
 				Result.append ("; " + out_val)

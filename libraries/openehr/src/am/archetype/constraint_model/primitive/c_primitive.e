@@ -26,12 +26,12 @@ inherit
 
 feature -- Access
 
-	prototype_value: attached ANY
+	prototype_value: ANY
 			-- 	generate a prototype value from this constraint object
 		deferred
 		end
 
-	assumed_value: like prototype_value
+	assumed_value: detachable like prototype_value
 			-- assumed value for this constraint object
 			-- FIXME: consider consolidating with assumed_value in C_DOMAIN_TYPE
 
@@ -46,19 +46,19 @@ feature -- Access
 
 feature -- Status Report
 
-	valid_value (a_value: attached like prototype_value): BOOLEAN
+	valid_value (a_value: like prototype_value): BOOLEAN
 		deferred
 		end
 
 	has_assumed_value: BOOLEAN
 			-- True if there is an assumed value
 		do
-			Result := assumed_value /= Void
+			Result := attached assumed_value
 		end
 
 feature -- Modification
 
-	set_assumed_value(a_value: attached like assumed_value)
+	set_assumed_value (a_value: like assumed_value)
 			-- set `assumed_value'
 		require
 			valid_value(a_value)
@@ -70,7 +70,7 @@ feature -- Modification
 
 feature -- Comparison
 
-	node_conforms_to (other: attached like Current): BOOLEAN
+	node_conforms_to (other: like Current): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		deferred
 		end
@@ -79,8 +79,6 @@ feature -- Output
 
 	as_string: STRING
 		deferred
-		ensure
-			Result_exists: Result /= Void
 		end
 
 	out: STRING
@@ -89,7 +87,7 @@ feature -- Output
 		end
 
 invariant
-	Assumed_value_valid: assumed_value /= Void implies valid_value(assumed_value)
+	Assumed_value_valid: attached assumed_value as av implies valid_value (av)
 
 end
 

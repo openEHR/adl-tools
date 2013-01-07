@@ -82,10 +82,10 @@ feature -- Output
 				Result.append("|" + rng.as_string + "|")
 			elseif attached list as l then
 				across l as list_csr loop
-					Result.append (list_csr.item.out)
-					if list_csr.target_index < list_csr.count then
+					if list_csr.target_index > 1 then
 						Result.append (", ")
 					end
+					Result.append (list_csr.item.out)
 				end
 			end
 			if attached assumed_value as av then

@@ -207,37 +207,31 @@ feature -- Output
 		do
 			create Result.make(0)
 
-			if strings /= Void then
-				from
-					strings.start
-				until
-					strings.off
-				loop
-					if not strings.isfirst then
+			if attached strings as strs then
+				across strs as strings_csr loop
+					if strings_csr.target_index > 1 then
 						Result.append(", ")
 					end
-					Result.append_character('%"')
-					Result.append(cleaner.item ([strings.item]))
-					Result.append_character('%"')
-					strings.forth
+					Result.append_character ('%"')
+					Result.append (cleaner.item ([strings_csr.item]))
+					Result.append_character ('%"')
 				end
 				if is_open then
-					Result.append(", ...")
+					Result.append (", ...")
 				end
 			else -- its a regexp
-				Result.append_character(regexp_delimiter)
-				Result.append(regexp)
-				Result.append_character(regexp_delimiter)
+				Result.append_character (regexp_delimiter)
+				Result.append (regexp)
+				Result.append_character (regexp_delimiter)
 			end
-			if assumed_value /= Void then
-				Result.append("; %"" + cleaner.item ([assumed_value.out]) + "%"")
+			if attached assumed_value then
+				Result.append ("; %"" + cleaner.item ([assumed_value.out]) + "%"")
 			end
-
 		end
 
 feature {NONE} -- Implementation
 
-	regexp_parser: LX_DFA_REGULAR_EXPRESSION
+	regexp_parser: detachable LX_DFA_REGULAR_EXPRESSION
 		note
 			option: transient
 		attribute
