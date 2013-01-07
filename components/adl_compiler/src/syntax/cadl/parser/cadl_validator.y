@@ -812,9 +812,9 @@ arch_outer_constraint_expr: V_REL_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive 
 			debug("ADL_invariant")
 				io.put_string(indent + "arch_outer_constraint_expr: Archetype outer feature " + $1 + " matches {" + $4.as_string + "}%N") 
 			end
-			create $$.make(create {OPERATOR_KIND}.make(op_matches))
-			$$.set_left_operand (create {EXPR_LEAF}.make_archetype_ref ($1))
-			$$.set_right_operand (create {EXPR_LEAF}.make_constraint ($4))
+			create $$.make(create {OPERATOR_KIND}.make(op_matches),
+				create {EXPR_LEAF}.make_archetype_ref ($1),
+				create {EXPR_LEAF}.make_constraint ($4))
 		}
 	;
 
@@ -823,18 +823,18 @@ boolean_constraint_expr: V_ABS_PATH SYM_MATCHES SYM_START_CBLOCK c_primitive SYM
 			debug("ADL_invariant")
 				io.put_string(indent + "boolean_constraint_expr:" + $1 + " matches {" + $4.as_string + "}%N") 
 			end
-			create $$.make(create {OPERATOR_KIND}.make(op_matches))
-			$$.set_left_operand (create {EXPR_LEAF}.make_archetype_definition_ref ($1))
-			$$.set_right_operand (create {EXPR_LEAF}.make_constraint ($4))
+			create $$.make(create {OPERATOR_KIND}.make(op_matches), 
+				create {EXPR_LEAF}.make_archetype_definition_ref ($1),
+				create {EXPR_LEAF}.make_constraint ($4))
 		}
 	| V_ABS_PATH SYM_MATCHES SYM_START_CBLOCK c_code_phrase SYM_END_CBLOCK
 		{
 			debug("ADL_invariant")
 				io.put_string(indent + "boolean_constraint_expr:" + $1 + " matches {" + $4.as_string + "}%N") 
 			end
-			create $$.make (create {OPERATOR_KIND}.make (op_matches))
-			$$.set_left_operand (create {EXPR_LEAF}.make_archetype_definition_ref ($1))
-			$$.set_right_operand (create {EXPR_LEAF}.make_coded_term ($4))
+			create $$.make (create {OPERATOR_KIND}.make (op_matches), 
+				create {EXPR_LEAF}.make_archetype_definition_ref ($1),
+				create {EXPR_LEAF}.make_coded_term ($4))
 		}
 	;
 
@@ -878,9 +878,7 @@ boolean_binop_expr: boolean_node boolean_binop_symbol boolean_node
 			debug("ADL_invariant")
 				io.put_string(indent + "boolean_binop_expr: [" + $1.as_string + "] " + $2 + " [" + $3.as_string + "]%N") 
 			end
-			create $$.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item ($2)))
-			$$.set_left_operand($1)
-			$$.set_right_operand($3)
+			create $$.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item ($2)), $1, $2)
 		}
 	;
 
