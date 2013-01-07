@@ -45,14 +45,8 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 			abort
 		end
 
-	error_loc: attached STRING
-		do
-			create Result.make_empty
-			if attached {YY_FILE_BUFFER} input_buffer as f_buffer then
-				Result.append (f_buffer.file.name + ", ")
-			end
-			Result.append ("line " + (in_lineno + source_start_line).out)
-			Result.append(" [last token = " + token_name (last_token) + "]")
+	error_loc: STRING
+		deferred
 		end
 
 end

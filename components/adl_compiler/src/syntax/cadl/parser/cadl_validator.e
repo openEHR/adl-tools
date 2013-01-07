@@ -3078,7 +3078,7 @@ end
 			debug("ADL_invariant")
 				io.put_string(indent + "boolean_binop_expr: [" + yyvs16.item (yyvsp16 - 1).as_string + "] " + yyvs2.item (yyvsp2) + " [" + yyvs16.item (yyvsp16).as_string + "]%N") 
 			end
-			create yyval18.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item (yyvs2.item (yyvsp2))), yyvs16.item (yyvsp16 - 1), yyvs2.item (yyvsp2))
+			create yyval18.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item (yyvs2.item (yyvsp2))), yyvs16.item (yyvsp16 - 1), yyvs16.item (yyvsp16))
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
@@ -9405,6 +9405,16 @@ feature -- Initialization
 	
 			set_input_buffer (new_string_buffer (in_text))
 			parse
+		end
+
+	error_loc: STRING
+		do
+			create Result.make_empty
+			if attached {YY_FILE_BUFFER} input_buffer as f_buffer then
+				Result.append (f_buffer.file.name + ", ")
+			end
+			Result.append ("line " + (in_lineno + source_start_line).out)
+			Result.append(" [last token = " + token_name (last_token) + "]")
 		end
 
 feature -- Access

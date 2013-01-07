@@ -878,7 +878,7 @@ boolean_binop_expr: boolean_node boolean_binop_symbol boolean_node
 			debug("ADL_invariant")
 				io.put_string(indent + "boolean_binop_expr: [" + $1.as_string + "] " + $2 + " [" + $3.as_string + "]%N") 
 			end
-			create $$.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item ($2)), $1, $2)
+			create $$.make (create {OPERATOR_KIND}.make (operator_ids_from_symbols.item ($2)), $1, $3)
 		}
 	;
 
@@ -2186,6 +2186,16 @@ feature -- Initialization
 	
 			set_input_buffer (new_string_buffer (in_text))
 			parse
+		end
+
+	error_loc: STRING
+		do
+			create Result.make_empty
+			if attached {YY_FILE_BUFFER} input_buffer as f_buffer then
+				Result.append (f_buffer.file.name + ", ")
+			end
+			Result.append ("line " + (in_lineno + source_start_line).out)
+			Result.append(" [last token = " + token_name (last_token) + "]")
 		end
 
 feature -- Access
