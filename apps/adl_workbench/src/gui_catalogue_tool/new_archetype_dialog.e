@@ -2,9 +2,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Dialog to ask for details of a new archetype - directory path and concept name."
 	keywords:    "GUI, ADL, archetype"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 class
@@ -14,14 +14,15 @@ inherit
 	EV_DIALOG
 		export
 			{NONE} all;
-			{ANY} show_modal_to_window, destroy
+			{ANY} show_modal_to_window, destroy, is_destroyed, is_modal
 		redefine
 			initialize, is_in_default_state
 		end
 
 	SHARED_APP_UI_RESOURCES
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} standard_is_equal, deep_twin, is_deep_equal
 		undefine
 			is_equal, default_create, copy
 		end

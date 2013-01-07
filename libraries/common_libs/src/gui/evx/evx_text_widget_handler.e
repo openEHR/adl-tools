@@ -2,22 +2,18 @@ note
 	component:   "openEHR Re-usable Components"
 	description: "Add standard cut & paste capabilities to any text widget within an EV_XX structure"
 	keywords:    "EiffelVision, GUI"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 
 class EVX_TEXT_WIDGET_HANDLER
 
 inherit
 	EV_SHARED_APPLICATION
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} standard_is_equal, deep_twin, is_deep_equal
 		end
 
 create
@@ -25,7 +21,7 @@ create
 
 feature -- Initialisation
 
-	make (a_root: attached EV_CONTAINER)
+	make (a_root: EV_CONTAINER)
 		do
 			root := a_root
 		end
@@ -134,7 +130,7 @@ feature -- Edit events
 
 feature {NONE} -- Implementation
 
-	notebook_containing_focused_widget: EV_NOTEBOOK
+	notebook_containing_focused_widget: detachable EV_NOTEBOOK
 			-- The notebook, if any, containing the currently focused widget.
 		local
 			container: EV_CONTAINER
@@ -147,7 +143,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	focused_text: EV_TEXT_COMPONENT
+	focused_text: detachable EV_TEXT_COMPONENT
 			-- The currently focused text widget, if any.
 		do
 			Result ?= ev_application.focused_widget

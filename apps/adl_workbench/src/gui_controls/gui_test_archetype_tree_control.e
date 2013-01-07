@@ -2,15 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Test page in ADL test workbench"
 	keywords:    "ADL"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 
 class GUI_TEST_ARCHETYPE_TREE_CONTROL
 
@@ -27,7 +22,8 @@ inherit
 
 	SHARED_ARCHETYPE_CATALOGUES
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} standard_is_equal, deep_twin, is_deep_equal
 		end
 
 	SHARED_ARCHETYPE_COMPILER

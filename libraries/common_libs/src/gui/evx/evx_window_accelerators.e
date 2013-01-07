@@ -7,17 +7,14 @@ note
 	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 deferred class
 	EVX_WINDOW_ACCELERATORS
 
 inherit
 	EV_KEY_CONSTANTS
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} standard_is_equal, deep_twin, is_deep_equal
 		end
 
 feature {NONE} -- Implementation

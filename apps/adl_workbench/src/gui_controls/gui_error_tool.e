@@ -11,13 +11,8 @@ note
 	keywords:    "ADL"
 	author:      "Peter Gummer <peter.gummer@oceaninformatics.com>"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 
 class GUI_ERROR_TOOL
 
@@ -39,7 +34,8 @@ inherit
 
 	SHARED_APP_UI_RESOURCES
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} standard_is_equal, deep_twin, is_deep_equal
 		end
 
 	STRING_UTILITIES

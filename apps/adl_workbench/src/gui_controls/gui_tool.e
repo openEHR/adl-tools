@@ -4,7 +4,7 @@ note
 	keywords:    "GUI, ADL"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 deferred class GUI_TOOL
@@ -12,7 +12,8 @@ deferred class GUI_TOOL
 inherit
 	SHARED_APP_UI_RESOURCES
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} standard_is_equal, deep_twin, is_deep_equal
 		end
 
 	EVX_UTILITIES

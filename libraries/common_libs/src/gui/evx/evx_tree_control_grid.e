@@ -45,21 +45,21 @@ feature -- Commands
 			ev_grid.tree_do_all (a_node_action)
 		end
 
-	collapse_one_level (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+	collapse_one_level (test: FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
 		do
 			ev_grid.row_collapse_actions.block
 			ev_grid.collapse_one_level (test)
 			ev_grid.row_collapse_actions.resume
 		end
 
-	expand_one_level (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+	expand_one_level (test: FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
 		do
 			ev_grid.row_expand_actions.block
 			ev_grid.expand_one_level (test)
 			ev_grid.row_expand_actions.resume
 		end
 
-	expand_all (test: detachable FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
+	expand_all (test: FUNCTION [ANY, TUPLE [EV_GRID_ROW], BOOLEAN])
 		do
 			ev_grid.row_collapse_actions.block
 			ev_grid.expand_all (test)

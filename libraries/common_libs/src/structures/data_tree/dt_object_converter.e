@@ -332,8 +332,10 @@ end
 			a_dt_obj_leaf: DT_OBJECT_LEAF
 			fld_name: STRING
 			eif_abstract_fld_type_id, fld_type_id, dyn_dt_val_type_id, i: INTEGER
-			a_gen_field: detachable ANY
+			a_gen_field: ANY
 		do
+			-- void-safety settings
+			create fld_name.make_empty
 debug ("DT")
 	io.put_string ("DT_OBJECT_CONVERTER.populate_object_from_dt: ENTER%N")
 end
@@ -404,15 +406,13 @@ debug ("DT")
 end
 										a_gen_field := new_instance_of (fld_type_id)
 										set_reference_field (i, Result, a_gen_field)
+										populate_eif_container_from_dt (a_gen_field, a_dt_attr)
 debug ("DT")
 	io.put_string ("%T%T(return)%N")
 end
-									else
-										a_gen_field := field (i, Result)
+									elseif attached field (i, Result) as a_gen_field2 then
+										populate_eif_container_from_dt (a_gen_field2, a_dt_attr)
 									end
-
-									-- FIXME: can only deal with one generic parameter for the moment
-									populate_eif_container_from_dt (a_gen_field, a_dt_attr)
 
 								else -- type in parsed DT is container, but not in Eiffel class		
 									errors.add_error ("container_type_mismatch",
@@ -579,9 +579,9 @@ end
 				end
 			end
 		rescue
-			if dyn_dt_val_type_id /= 0 then -- this must have been an argument type mismatch which killed the from_dt_proc.call[]
+			if dyn_dt_val_type_id /= 0 and attached a_dt_obj_leaf as dt_o_l  then -- this must have been an argument type mismatch which killed the from_dt_proc.call[]
 				errors.add_error ("dt_proc_arg_type_mismatch",
-					<<type_name_of_type (a_type_id), fld_name, type_name_of_type (fld_type_id), type_name (a_dt_obj_leaf.value)>>, "populate_object_from_dt")
+					<<type_name_of_type (a_type_id), fld_name, type_name_of_type (fld_type_id), type_name (dt_o_l.value)>>, "populate_object_from_dt")
 			else
 				errors.add_error ("dt_unknown", <<exception.out, exception_trace>>, "populate_object_from_dt")
 			end
