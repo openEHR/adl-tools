@@ -18,7 +18,7 @@ inherit
 		end
 
 create
-	make, make_dt
+	make, make_dt, default_create
 
 feature -- Definitions
 

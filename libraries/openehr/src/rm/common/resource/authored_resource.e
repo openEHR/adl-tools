@@ -56,6 +56,9 @@ feature -- Access
 
 	description: RESOURCE_DESCRIPTION
 			-- Description and lifecycle information of the resource.
+		attribute
+			create Result.default_create
+		end
 
 	revision_history: detachable REVISION_HISTORY
 			-- The revision history of the resource. Only required if is_controlled = True

@@ -30,6 +30,9 @@ feature -- Access
 	packages: HASH_TABLE [P_BMM_PACKAGE_DEFINITION, STRING]
 			-- child packages
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+		attribute
+			create Result.make (0)
+		end
 
 feature -- Status Report
 

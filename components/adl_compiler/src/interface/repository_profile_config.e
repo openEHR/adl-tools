@@ -36,7 +36,7 @@ inherit
 	TABLE_ITERABLE [REPOSITORY_PROFILE, STRING]
 
 create
-	make
+	make, default_create
 
 feature -- Initialisation
 

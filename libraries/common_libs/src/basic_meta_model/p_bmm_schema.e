@@ -46,14 +46,6 @@ feature -- Initialisation
 			-- make in a safe way for DT building purposes
 		do
 			reset
-			make_core
-			create packages.make (0)
-			create archetype_rm_closure_packages.make (0)
-			archetype_rm_closure_packages.compare_objects
-			create includes_to_process.make (0)
-			includes_to_process.compare_objects
-			create schema_error_table.make (0)
-			state := State_created
 		end
 
 feature -- Access (attributes from schema)
@@ -92,6 +84,7 @@ feature -- Access (Attributes from schema load post-processing)
 		note
 			option: transient
 		attribute
+			Result := State_created
 		end
 
 	canonical_packages: HASH_TABLE [P_BMM_PACKAGE_DEFINITION, STRING]
@@ -114,6 +107,8 @@ feature -- Access (Attributes from schema load post-processing)
 		note
 			option: transient
 		attribute
+			create Result.make (0)
+			Result.compare_objects
 		end
 
 	bmm_version_from_schema: BOOLEAN
@@ -704,6 +699,7 @@ feature {REFERENCE_MODEL_ACCESS} -- Implementation
 		note
 			option: transient
 		attribute
+			create Result.make (0)
 		end
 
 feature {NONE} -- Implementation

@@ -22,7 +22,7 @@ inherit
 	DT_CONVERTIBLE
 
 create
-	make, make_all --, make_from_string, make_from_data_tree
+	make, make_all, default_create --, make_from_string, make_from_data_tree
 
 feature -- Definitions
 

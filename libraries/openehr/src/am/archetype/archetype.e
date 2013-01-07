@@ -51,10 +51,8 @@ feature -- Initialisation
 			archetype_id := an_id
 			original_language := an_original_language
 
-			if not attached a_description then
-				create description.default_create
-			else
-				description := a_description
+			if attached a_description as d then
+				description := d
 			end
 
 			definition := a_definition
