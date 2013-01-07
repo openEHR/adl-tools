@@ -100,14 +100,14 @@ feature -- Access
 	term_codes: TWO_WAY_SORTED_SET [STRING]
 			-- list of term codes
         attribute
-            create Result.make (0)
+            create Result.make
             Result.compare_objects
         end
 
 	constraint_codes: TWO_WAY_SORTED_SET [STRING]
 			-- list of constraint codes
         attribute
-            create Result.make (0)
+            create Result.make
             Result.compare_objects
         end
 

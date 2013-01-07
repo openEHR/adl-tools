@@ -52,7 +52,7 @@ feature {YY_PARSER_ACTION} -- Basic Operations
 				Result.append (f_buffer.file.name + ", ")
 			end
 			Result.append ("line " + (in_lineno + source_start_line).out)
-			Result.append(" [last token = " + token_name(last_token) + "]")
+			Result.append(" [last token = " + token_name (last_token) + "]")
 		end
 
 end

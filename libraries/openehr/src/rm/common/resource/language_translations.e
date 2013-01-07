@@ -40,7 +40,7 @@ feature -- Access
 
 	original_language: CODE_PHRASE
 		attribute
-			create Result.make
+			create Result.default_create
 		end
 
 	translations: detachable HASH_TABLE [TRANSLATION_DETAILS, STRING]

@@ -36,7 +36,6 @@ feature -- Initialisation
 			rm_publisher := a_rm_publisher
 			schema_name := a_schema_name
 			rm_release := a_rm_release
-			make_core
 		end
 
 feature -- Identification
@@ -88,7 +87,7 @@ feature -- Identification
 			-- contributing authors of schema
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
         attribute
-            create Result.make_empty
+            create Result.make (0)
         end
 
 	schema_description: STRING
@@ -100,21 +99,15 @@ feature -- Identification
 
 feature -- Access
 
-	archetype_parent_class: STRING
+	archetype_parent_class: detachable STRING
 			-- name of a parent class used within the schema to provide archetype capability,
 			-- enabling filtering of classes in RM visualisation. If empty, 'Any' is assumed
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
-		attribute
-			create Result.make_from_string (Default_schema_option_class_name)
-		end
 
-	archetype_data_value_parent_class: STRING
+	archetype_data_value_parent_class: detachable STRING
 			-- name of a parent class of logical 'data types' used within the schema to provide archetype capability,
 			-- enabling filtering of classes in RM visualisation. If empty, 'Any' is assumed
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
-		attribute
-			create Result.make_from_string (Default_schema_option_class_name)
-		end
 
 	archetype_rm_closure_packages: detachable ARRAYED_SET [STRING]
 			-- list of top-level package paths that provide the RM 'model' part in achetype identifiers,
@@ -138,17 +131,17 @@ feature -- Access
 
 feature -- Status Report
 
---	has_archetype_parent_class: BOOLEAN
---			-- True if this schema has an archetype_parent_class
---		do
---			Result := attached archetype_parent_class
---		end
+	has_archetype_parent_class: BOOLEAN
+			-- True if this schema has an archetype_parent_class
+		do
+			Result := attached archetype_parent_class
+		end
 
---	has_archetype_data_value_parent_class: BOOLEAN
---			-- True if this schema has an archetype_parent_class
---		do
---			Result := attached archetype_data_value_parent_class
---		end
+	has_archetype_data_value_parent_class: BOOLEAN
+			-- True if this schema has an archetype_parent_class
+		do
+			Result := attached archetype_data_value_parent_class
+		end
 
 	has_rm_closure_package (a_package_path: attached STRING): BOOLEAN
 			-- `a_package_path' is a qualified package name, like 'org.openehr.ehr', 'org.openehr.demographic'

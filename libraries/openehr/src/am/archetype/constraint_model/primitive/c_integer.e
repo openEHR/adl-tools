@@ -69,10 +69,7 @@ feature -- Comparison
 			if attached range as rng and attached other.range as other_rng then
 				Result := other_rng.contains (rng)
 			elseif attached list as l and attached other.list as other_l then
-				from l.start until l.off or not other_l.has (l.item) loop
-					l.forth
-				end
-				Result := l.off
+				Result := across l as l_csr some other_l.has (l_csr.item) end
 			end
 		end
 
@@ -84,12 +81,11 @@ feature -- Output
 			if attached range as rng then
 				Result.append("|" + rng.as_string + "|")
 			elseif attached list as l then
-
 				across l as list_csr loop
-					if not list_csr.isfirst then
-						Result.append(", ")
-					end
 					Result.append (list_csr.item.out)
+					if list_csr.target_index < list_csr.count then
+						Result.append (", ")
+					end
 				end
 			end
 			if attached assumed_value as av then

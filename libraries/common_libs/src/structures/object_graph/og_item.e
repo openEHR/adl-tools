@@ -18,6 +18,13 @@ inherit
 			is_equal
 		end
 
+	ARCHETYPE_DEFINITIONS
+		export
+			{NONE} all
+		undefine
+			is_equal
+		end
+
 	COMPARABLE
 
 feature -- Initialisation

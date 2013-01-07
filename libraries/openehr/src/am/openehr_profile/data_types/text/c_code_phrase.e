@@ -56,7 +56,7 @@ feature -- Access
 			-- id of terminology from which codes come. If code list empty, any code from
 			-- this terminology is allowed
 		attribute
-			create Result.make
+			create Result.default_create
 		end
 
 	code_list: detachable ARRAYED_LIST[STRING]

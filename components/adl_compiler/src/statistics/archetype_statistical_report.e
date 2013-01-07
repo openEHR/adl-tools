@@ -99,30 +99,26 @@ feature -- Modification
 			rm_class_table, other_rm_class_table: HASH_TABLE [RM_CLASS_STATISTICS, STRING]
 		do
 			-- archetype metrics table
-			from other.archetype_metrics.start until other.archetype_metrics.off loop
-				archetype_metrics.item (other.archetype_metrics.key_for_iteration).merge (other.archetype_metrics.item_for_iteration)
-				other.archetype_metrics.forth
+			across other.archetype_metrics as metrics_csr loop
+				archetype_metrics.item (metrics_csr.key).merge (metrics_csr.item)
 			end
 
 			-- rm class table
-			from other.rm_grouped_class_table.start until other.rm_grouped_class_table.off loop
-				if rm_grouped_class_table.has (other.rm_grouped_class_table.key_for_iteration) then
-					rm_class_table := rm_grouped_class_table.item (other.rm_grouped_class_table.key_for_iteration)
-					other_rm_class_table := other.rm_grouped_class_table.item_for_iteration
-					from other_rm_class_table.start until other_rm_class_table.off loop
-						if rm_class_table.has (other_rm_class_table.key_for_iteration) then
-							merged_class_stats := rm_class_table.item (other_rm_class_table.key_for_iteration).deep_twin
-							merged_class_stats.merge (other_rm_class_table.item_for_iteration)
-							rm_class_table.force (merged_class_stats, other_rm_class_table.key_for_iteration)
+			across other.rm_grouped_class_table as other_grouped_table_csr loop
+				if rm_grouped_class_table.has (other_grouped_table_csr.key) then
+					rm_class_table := rm_grouped_class_table.item (other_grouped_table_csr.key)
+					across other.rm_grouped_class_table.item_for_iteration as other_table_csr loop
+						if rm_class_table.has (other_table_csr.key) then
+							merged_class_stats := rm_class_table.item (other_table_csr.key).deep_twin
+							merged_class_stats.merge (other_table_csr.item)
+							rm_class_table.force (merged_class_stats, other_table_csr.key)
 						else
-							rm_class_table.put (other_rm_class_table.item_for_iteration.deep_twin, other_rm_class_table.key_for_iteration)
+							rm_class_table.put (other_table_csr.item.deep_twin, other_table_csr.key)
 						end
-						other_rm_class_table.forth
 					end
 				else
-					rm_grouped_class_table.put (other.rm_grouped_class_table.item_for_iteration.deep_twin, other.rm_grouped_class_table.key_for_iteration)
+					rm_grouped_class_table.put (other_grouped_table_csr.item.deep_twin, other_grouped_table_csr.key)
 				end
-				other.rm_grouped_class_table.forth
 			end
 		end
 
