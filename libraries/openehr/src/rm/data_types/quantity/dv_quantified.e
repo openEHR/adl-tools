@@ -1,22 +1,15 @@
 note
 	component:   "openEHR Data Types"
-
 	description: "[
 				 Abstract class defining the concept of true quantified values, i.e. values which are 
 				 not only ordered, but which have a precise magnitude.
 				 ]"
 	keywords:    "data, quantified, quantity"
-
 	design:      "openEHR Data Types Reference Model 1.7"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2000- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class DV_QUANTIFIED
 
@@ -35,7 +28,7 @@ feature -- Access
 		deferred
 		end
 
-	magnitude_status: STRING
+	magnitude_status: detachable STRING
 			-- Optional status of magnitude with values:
 			-- "=" : magnitude is a point value
 			-- "<" : value is < magnitude
@@ -66,7 +59,7 @@ feature -- Comparison
 		end
 
 invariant
-	Magnitude_status_valid: magnitude_status /= Void implies valid_magnitude_status(magnitude_status)
+	Magnitude_status_valid: attached magnitude_status as ms implies valid_magnitude_status (ms)
 
 end
 

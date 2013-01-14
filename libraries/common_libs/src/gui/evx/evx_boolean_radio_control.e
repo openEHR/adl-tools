@@ -4,13 +4,8 @@ note
 	keywords:    "UI"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 
 class EVX_BOOLEAN_RADIO_CONTROL
 
@@ -101,8 +96,12 @@ feature -- Modification
 
 	set_pixmaps (a_state_1_pixmap, a_state_2_pixmap: detachable EV_PIXMAP)
 		do
-			ev_data_control.set_pixmap (a_state_1_pixmap)
-			ev_data_control.set_pixmap (a_state_2_pixmap)
+			if attached a_state_1_pixmap as pm1 then
+				ev_data_control.set_pixmap (pm1)
+			end
+			if attached a_state_2_pixmap then
+				ev_data_control.set_pixmap (pm2)
+			end
 		end
 
 feature {NONE} -- Implementation

@@ -4,12 +4,8 @@ note
 	keywords:    "archetype"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class ARCHETYPE
 
@@ -38,10 +34,10 @@ feature -- Initialisation
 		do
 		end
 
-	make (an_artefact_type: ARTEFACT_TYPE;
+	make (an_artefact_type: like artefact_type;
 			an_id: like archetype_id;
-			an_original_language: CODE_PHRASE;
-			a_description: detachable RESOURCE_DESCRIPTION;
+			an_original_language: like original_language;
+			a_description: like description;
 			a_definition: like definition;
 			an_ontology: like ontology)
 				-- make from pieces obtained by parsing
@@ -69,18 +65,18 @@ feature -- Initialisation
 			Not_generated: not is_generated
 		end
 
-	make_all (an_artefact_type: attached ARTEFACT_TYPE;
+	make_all (an_artefact_type: like artefact_type;
 			an_adl_version: STRING;
 			an_id: like archetype_id;
-			a_parent_archetype_id: ARCHETYPE_ID;
+			a_parent_archetype_id: like parent_archetype_id;
 			is_controlled_flag: BOOLEAN;
-			an_original_language: attached CODE_PHRASE;
-			a_translations: HASH_TABLE [TRANSLATION_DETAILS, STRING];
-			a_description: RESOURCE_DESCRIPTION;
+			an_original_language: like original_language;
+			a_translations: like translations;
+			a_description: like description;
 			a_definition: like definition;
-			an_invariants: ARRAYED_LIST[ASSERTION];
+			an_invariants: like invariants;
 			an_ontology: like ontology;
-			an_annotations: RESOURCE_ANNOTATIONS)
+			an_annotations: like annotations)
 				-- make from all possible items
 		require
 			Translations_valid: a_translations /= Void implies not a_translations.is_empty
@@ -113,19 +109,19 @@ feature -- Initialisation
 	make_from_other (other: like Current)
 			-- duplicate from another archetype
 		local
-			other_parent_arch_id: ARCHETYPE_ID
-			other_annotations: RESOURCE_ANNOTATIONS
-			other_translations: HASH_TABLE [TRANSLATION_DETAILS, STRING]
-			other_invariants: ARRAYED_LIST [ASSERTION]
+			other_parent_arch_id: detachable ARCHETYPE_ID
+			other_annotations: detachable RESOURCE_ANNOTATIONS
+			other_translations: detachable HASH_TABLE [TRANSLATION_DETAILS, STRING]
+			other_invariants: detachable  ARRAYED_LIST [ASSERTION]
 		do
-			if other.is_specialised then
-				other_parent_arch_id := other.parent_archetype_id.deep_twin
+			if attached other.parent_archetype_id as other_pid then
+				other_parent_arch_id := other_pid.deep_twin
 			end
-			if other.has_translations then
-				other_translations := other.translations.deep_twin
+			if attached other.translations as other_trans then
+				other_translations := other_trans.deep_twin
 			end
-			if other.has_annotations then
-				other_annotations := other.annotations.safe_deep_twin
+			if attached other.annotations as other_annots then
+				other_annotations := other_annots.safe_deep_twin
 			end
 			if other.has_invariants then
 				other_invariants := other.invariants.deep_twin
@@ -143,16 +139,16 @@ feature -- Initialisation
 
 feature -- Access
 
-	uid: HIER_OBJECT_ID
+	uid: detachable HIER_OBJECT_ID
 			-- optional UID identifier of this artefact
 			-- FIXME: should really be in AUTHORED_RESOURCE
 
-	archetype_id: attached ARCHETYPE_ID
+	archetype_id: ARCHETYPE_ID
 
-	adl_version: attached STRING
+	adl_version: STRING
 			-- ADL version of this archetype
 
-	artefact_type: attached ARTEFACT_TYPE
+	artefact_type: ARTEFACT_TYPE
 			-- design type of artefact, archetype, template, template-component, etc
 
 	version: STRING
@@ -161,7 +157,7 @@ feature -- Access
 			Result := archetype_id.version_id
 		end
 
-	parent_archetype_id: ARCHETYPE_ID
+	parent_archetype_id: detachable ARCHETYPE_ID
 			-- id of specialisation parent of this archetype
 
 	specialisation_depth: INTEGER
@@ -172,17 +168,17 @@ feature -- Access
 			non_negative: Result >= 0
 		end
 
-	concept: attached STRING
+	concept: STRING
 			-- at-code of concept of the archetype as a whole and the code of its root node
 		do
 			Result := definition.node_id
 		end
 
-	definition: attached C_COMPLEX_OBJECT
+	definition: C_COMPLEX_OBJECT
 
 	invariants: detachable ARRAYED_LIST [ASSERTION]
 
-	ontology: attached ARCHETYPE_ONTOLOGY
+	ontology: ARCHETYPE_ONTOLOGY
 
 feature -- Paths
 
@@ -193,7 +189,11 @@ feature -- Paths
 			if not attached physical_paths_cache then
 				build_physical_paths
 			end
-			Result := physical_paths_cache
+			if attached physical_paths_cache as ppc then
+				Result := ppc
+			else
+				create Result.make (0)
+			end
 		end
 
 	physical_leaf_paths: ARRAYED_LIST [STRING]
@@ -203,20 +203,28 @@ feature -- Paths
 			if not attached physical_leaf_paths_cache then
 				build_physical_paths
 			end
-			Result := physical_leaf_paths_cache
+			if attached physical_leaf_paths_cache as plpc then
+				Result := plpc
+			else
+				create Result.make (0)
+			end
 		end
 
-	object_path_map: HASH_TABLE [C_OBJECT, STRING]
+	object_path_map: HASH_TABLE [detachable C_OBJECT, STRING]
 			-- physical paths from definition structure for leaf objects only; if no changes made on archetype,
 			-- return cached value
 		do
 			if not attached object_path_map_cache then
 				build_physical_paths
 			end
-			Result := object_path_map_cache
+			if attached object_path_map_cache as opmc then
+				Result := opmc
+			else
+				create Result.make (0)
+			end
 		end
 
-	logical_paths (a_lang: attached STRING; leaves_only: BOOLEAN): ARRAYED_LIST [STRING]
+	logical_paths (a_lang: STRING; leaves_only: BOOLEAN): ARRAYED_LIST [STRING]
 			-- paths with human readable terms substituted
 		require
 			has_language: ontology.has_language(a_lang)
@@ -250,7 +258,7 @@ feature -- Paths
 			end
 		end
 
-	c_object_at_path (a_path: attached STRING): attached C_OBJECT
+	c_object_at_path (a_path: STRING): detachable C_OBJECT
 			-- find the c_object from the path_map matching the path; uses path map so as to pick up
 			-- paths generated by internal references
 		require
@@ -259,7 +267,7 @@ feature -- Paths
 			Result := object_path_map.item (a_path)
 		end
 
-	c_attr_at_path (a_path: attached STRING): attached C_ATTRIBUTE
+	c_attr_at_path (a_path: STRING): detachable C_ATTRIBUTE
 			-- find the C_ATTRIBUTE from the path_map matching the path; uses path map so as to pick up
 			-- paths generated by internal references
 		require
@@ -384,8 +392,8 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, ARCHETYPE_VALIDAT
 						og_path: OG_PATH
 					do
 						if attached {C_ATTRIBUTE} a_c_node as ca then
-							if ca.has_differential_path then
-								create og_path.make_from_string (ca.differential_path)
+							if attached ca.differential_path as diff_path then
+								create og_path.make_from_string (diff_path)
 								across og_path as path_csr loop
 									if path_csr.item.is_addressable and is_valid_code (path_csr.item.object_id) then
 										if not idx.has (path_csr.item.object_id) then
@@ -451,11 +459,11 @@ feature {AOM_POST_COMPILE_PROCESSOR, AOM_POST_PARSE_PROCESSOR, ARCHETYPE_VALIDAT
 			def_it.do_all (
 				agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; idx: HASH_TABLE [ARRAYED_LIST [CONSTRAINT_REF], STRING])
 					do
-						if attached {CONSTRAINT_REF} a_c_node as cr then
-							if not idx.has(cr.target) then
-								idx.put (create {ARRAYED_LIST [CONSTRAINT_REF]}.make(0), cr.target)
+						if attached {CONSTRAINT_REF} a_c_node as cref then
+							if not idx.has (cref.target) then
+								idx.put (create {ARRAYED_LIST [CONSTRAINT_REF]}.make(0), cref.target)
 							end
-							idx.item (cr.target).extend (cr)
+							idx.item (cref.target).extend (cref)
 						end
 					end (?, ?, Result),
 				Void)
@@ -626,7 +634,7 @@ feature {NONE} -- Implementation
 			src_node_path: OG_PATH
 			src_node_path_str: STRING
 			src_nodes: ARRAYED_LIST [ARCHETYPE_INTERNAL_REF]
-			tgt_path_c_objects: HASH_TABLE [C_OBJECT, STRING]
+			tgt_path_c_objects: HASH_TABLE [detachable C_OBJECT, STRING]
 			tgt_path_str: STRING
 			tgt_path: OG_PATH
 			sorted_physical_paths, sorted_physical_leaf_paths: SORTED_TWO_WAY_LIST [STRING]
@@ -698,7 +706,7 @@ feature {NONE} -- Implementation
 
 	physical_leaf_paths_cache: detachable ARRAYED_LIST [STRING]
 
-	object_path_map_cache: detachable HASH_TABLE [C_OBJECT, STRING]
+	object_path_map_cache: detachable HASH_TABLE [detachable C_OBJECT, STRING]
 			-- complete map of object nodes keyed by path, including paths implied by
 			-- use_nodes in definition structure.
 
@@ -708,24 +716,26 @@ feature {NONE} -- Implementation
 		local
 			attr_path: STRING
 		do
-			if not attached attr_path_map_cache then
-				create attr_path_map_cache.make(0)
+			if attached attr_path_map_cache as apmc then
+				Result := apmc
+			else
+				create Result.make(0)
 				across object_path_map as c_obj_csr loop
-					if attached c_obj_csr.item and then not c_obj_csr.item.is_root then
+					if attached c_obj_csr.item as c_obj and then not c_obj.is_root then
 						attr_path := c_obj_csr.key.twin
 						if attr_path.item (attr_path.count) = {OG_PATH_ITEM}.predicate_right_delim then
 							attr_path.remove_tail (attr_path.count - attr_path.last_index_of ({OG_PATH_ITEM}.predicate_left_delim, attr_path.count) + 1)
-							if not attr_path_map_cache.has (attr_path) then
-								attr_path_map_cache.put (c_obj_csr.item.parent, attr_path)
+							if not Result.has (attr_path) and attached c_obj.parent as p then
+								Result.put (p, attr_path)
 							end
 						end
 					end
 				end
+				attr_path_map_cache := Result
 			end
-			Result := attr_path_map_cache
 		end
 
-	attr_path_map_cache: HASH_TABLE [C_ATTRIBUTE, STRING]
+	attr_path_map_cache: detachable HASH_TABLE [C_ATTRIBUTE, STRING]
 
 invariant
 	Concept_valid: concept.is_equal (ontology.concept_code)

@@ -20,41 +20,24 @@ inherit
 		rename
 			safe_deep_twin as c_safe_deep_twin
 		redefine
-			default_create, representation, enter_subtree, exit_subtree, node_id
+			enter_subtree, exit_subtree, node_id, rm_type_name
 		end
 
 	DT_CONVERTIBLE
-		undefine
-			default_create
 		redefine
 			synchronise_to_tree, finalise_dt, safe_deep_twin
 		end
 
-feature -- Initialisation
-
-	default_create
-			-- set `rm_type_name' from typename of this object
-		do
-			rm_type_name := generator.substring (3, generator.count)
-			create representation.make_anonymous (Current)
-			create node_id.make_empty
+	BASIC_DEFINITIONS
+		export
+			{NONE} all
 		end
 
 feature -- Initialisation
-
-	make
-		do
-			default_create
-		ensure
-			Any_allowed: any_allowed
-		end
 
 	make_dt (make_args: detachable ARRAY[ANY])
 			-- make used by DT_OBJECT_CONVERTER
 		do
-			make
-		ensure then
-			Any_allowed: any_allowed
 		end
 
 feature -- Finalisation
@@ -63,15 +46,25 @@ feature -- Finalisation
 			-- used by DT_OBJECT_CONVERTER
 		do
 			if attached node_id as nid and then not nid.is_empty then
-				create representation.make (nid, Current)
+				create representation_cache.make (nid)
 			else
-				create representation.make_anonymous (Current)
+				create representation_cache.make_anonymous
 			end
+			representation.set_content (Current)
 		end
 
 feature -- Access
 
+	rm_type_name: STRING
+			-- type name from reference model, of object to instantiate
+		attribute
+			create Result.make_from_string (generator.substring (3, generator.count))
+		end
+
 	node_id: STRING
+		attribute
+			create Result.make_empty
+		end
 
 feature -- Statistics
 
@@ -87,20 +80,20 @@ feature -- Conversion
 		deferred
 		end
 
-feature -- Representation
-
-	representation: OG_OBJECT_LEAF
-
 feature -- Duplication
 
 	safe_deep_twin: like Current
 		local
-			dt_co: DT_COMPLEX_OBJECT_NODE
+			dt_c_obj: detachable DT_COMPLEX_OBJECT_NODE
 		do
-			dt_co := dt_representation
-			dt_representation := Void
+			if attached dt_representation as dt_co then
+				dt_c_obj := dt_co
+				dt_representation := Void
+			end
 			Result := c_safe_deep_twin
-			dt_representation := dt_co
+			if attached dt_c_obj as dt_co then
+				dt_representation := dt_co
+			end
 		end
 
 feature -- Synchronisation
@@ -109,10 +102,12 @@ feature -- Synchronisation
 			-- synchronise to parse tree representation
 		do
 			precursor
-			dt_representation.set_type_visible
-			if node_id = Void or else node_id.is_empty then
-				if dt_representation.has_attribute ("node_id") then
-					dt_representation.remove_attribute ("node_id")
+			if attached dt_representation as dt_rep then
+				dt_rep.set_type_visible
+				if not attached node_id or else attached node_id as nid and then nid.is_empty then
+					if dt_rep.has_attribute ("node_id") then
+						dt_rep.remove_attribute ("node_id")
+					end
 				end
 			end
 		end

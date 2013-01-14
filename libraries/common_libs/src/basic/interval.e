@@ -209,9 +209,12 @@ feature -- Comparison
 			-- True if there is any overlap between intervals represented by Current and other
 		do
 			Result := unbounded or other.unbounded or
-				(lower_unbounded and (other.lower_unbounded or upper >= other.lower)) or
-				(upper_unbounded and (other.upper_unbounded or lower <= other.upper)) or
-				(upper >= other.lower or lower <= other.upper)
+				(lower_unbounded and (other.lower_unbounded or
+					(attached other.lower as other_l and attached upper as u and then u >= other_l))) or
+				(upper_unbounded and (other.upper_unbounded or
+					(attached other.upper as other_u and attached lower as l and then l <= other_u))) or
+				((attached other.lower as other_l and attached upper as u and then u >= other_l) or
+					 (attached other.upper as other_u and attached lower as l and then l <= other_u))
 		end
 
 	contains (other: like Current): BOOLEAN
@@ -268,7 +271,7 @@ feature -- Comparison
 	limits_equal: BOOLEAN
 			-- true if limits bounded and equal
 		do
-			Result := not (lower_unbounded or upper_unbounded) and (lower.is_equal(upper))
+			Result := not (lower_unbounded or upper_unbounded) and (attached lower as l and then attached upper as u and then l.is_equal(u))
 		end
 
 feature -- Output

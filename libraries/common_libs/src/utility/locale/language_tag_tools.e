@@ -81,15 +81,10 @@ note
 
 				 ]"
 	keywords:    "internationalisation, language"
-
-	author:      "Thomas Beale"
-	support:     "openEHR support <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2010 Ocean Informatics"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	licence:     "See notice at end of file"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class LANGUAGE_TAG_TOOLS
 

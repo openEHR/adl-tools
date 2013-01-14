@@ -25,22 +25,22 @@ create
 
 feature -- Initialisation
 
-	make_single (a_node_id: attached STRING; a_content_item: VISITABLE)
+	make_single (a_node_id: STRING)
 			-- make an attribute representing a single-valued attribute in some model
 		require
 			Node_id_valid: not a_node_id.is_empty
 		do
-			make_og_node (a_node_id, a_content_item)
+			make_og_node (a_node_id)
 		ensure
-			Is_multiple: not is_multiple
+			Is_single: not is_multiple
 		end
 
-	make_multiple (a_node_id: attached STRING; a_content_item: VISITABLE)
+	make_multiple (a_node_id: STRING)
 			-- make an attribute representing a multiple-valued (i.e. container) attribute in some model
 		require
 			Node_id_valid: not a_node_id.is_empty
 		do
-			make_og_node (a_node_id, a_content_item)
+			make_og_node (a_node_id)
 			is_multiple := True
 		ensure
 			Is_multiple: is_multiple
@@ -48,14 +48,14 @@ feature -- Initialisation
 
 feature -- Access
 
-	parent: OG_OBJECT_NODE
+	parent: detachable OG_OBJECT_NODE
 
 	differential_path: detachable OG_PATH
 			-- if set, contains the path to this attribute, excluding the name of this attribute, allowing this
 			-- OG_ATTRIBUTE_NODE to stand as a 'path-compressed' replacement for a string of OG_OBJECT_NODE/
 			-- OG_ATTRIBUTE_NODE objects. Only valid in differential archetypes and templates.
 
-	node_key: attached STRING
+	node_key: STRING
 			-- uses differential path if it exists
 		do
 			if has_differential_path then
@@ -109,7 +109,7 @@ feature -- Status Setting
 
 feature -- Modification
 
-	put_child (obj_node: attached like child_type)
+	put_child (obj_node: like child_type)
 			-- put a new child node
 			-- if new child is an OBJECT_NODE id is already known in children, generate a unique id for it
 		local
@@ -123,7 +123,7 @@ feature -- Modification
 			precursor(obj_node)
 		end
 
-	put_child_left (obj_node, before_obj_node: attached like child_type)
+	put_child_left (obj_node, before_obj_node: like child_type)
 			-- insert a new child node before another object node
 			-- if new child is an OBJECT_NODE id is already known in children, generate a unique id for it
 		local
@@ -137,7 +137,7 @@ feature -- Modification
 			precursor(obj_node, before_obj_node)
 		end
 
-	put_child_right (obj_node, after_obj_node: attached like child_type)
+	put_child_right (obj_node, after_obj_node: like child_type)
 			-- insert a new child node before another object node
 			-- if new child is an OBJECT_NODE id is already known in children, generate a unique id for it
 		local
@@ -151,11 +151,11 @@ feature -- Modification
 			precursor(obj_node, after_obj_node)
 		end
 
-	set_differential_path (a_path: attached OG_PATH)
+	set_differential_path (a_path: OG_PATH)
 			-- set `differential_path'
 		do
 			differential_path := a_path
-			if parent /= Void then
+			if attached parent then
 				parent.replace_node_id (node_id, node_key)
 			end
 		ensure
@@ -187,6 +187,9 @@ feature {NONE} -- Implementation
 
 	child_type: OG_OBJECT
 			-- relationship target type
+		once
+			create {OG_OBJECT_LEAF} Result.make_anonymous
+		end
 
 	duplicate_child_id_count: INTEGER
 			-- cumulative count of children with 'unknown' ids - used to generate unique ids
@@ -194,12 +197,14 @@ feature {NONE} -- Implementation
 	reparent_to_root
 			-- reparent this node to the root node, removing intervening orphaned nodes on the way
 		local
-			p: like parent
+			p: attached like parent
 			csr: OG_NODE
 		do
-			p := parent
-			p.remove_child (Current)
-			from csr := p until csr.parent = Void loop
+			check attached parent as p then
+				csr := p
+			end
+			csr.remove_child (Current)
+			from until csr.parent = Void loop
 				if not csr.has_children then
 					csr.parent.remove_child (csr)
 				end

@@ -9,15 +9,10 @@ note
 				repeatedly recomputed on the fly, due to the amount of work involved).
 				]"
 	keywords:    "date time"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2006- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class ISO8601_DATE_TIME
 
@@ -27,16 +22,16 @@ inherit
 			{NONE} all;
 			{ANY} valid_iso8601_date_time
 		undefine
-			is_equal, out
+			is_equal, out, default_create
 		end
 
 	COMPARABLE
 		redefine
-			out
+			out, default_create
 		end
 
 create
-	make_from_string, make_date_and_time, make_date_time
+	make_from_string, make_date_and_time, make_date_time, default_create
 
 convert
 	make_date_time ({DATE_TIME}),
@@ -44,23 +39,28 @@ convert
 
 feature -- Initialisation
 
+	default_create
+		do
+			make_date_time (create {DATE_TIME}.make_now)
+		end
+
 	make_from_string (str: STRING)
 			-- make from any valid ISO date/time string
 		require
 			String_valid: valid_iso8601_date_time(str)
 		do
+			make_date_time (create {DATE_TIME}.make_now)
 			if valid_iso8601_date_time(str) then
 				date_part := iso8601_parser.cached_iso8601_date_time.date_part.deep_twin
 				time_part := iso8601_parser.cached_iso8601_date_time.time_part.deep_twin
 			end
-			value := as_string
 		end
 
-	make_date_and_time(a_date: ISO8601_DATE; a_time: detachable ISO8601_TIME)
+	make_date_and_time (a_date: ISO8601_DATE; a_time: detachable ISO8601_TIME)
 			-- create from date and time parts
 		require
 			Date_validity: not a_date.is_partial
-			Extended_validity: a_time /= Void implies (a_date.is_extended = a_time.is_extended)
+			Extended_validity: attached a_time as tm implies (a_date.is_extended = tm.is_extended)
 		do
 			date_part := a_date
 			time_part := a_time
@@ -95,36 +95,36 @@ feature -- Access
 
 	hour: INTEGER
 		do
-			if attached time_part then
-				Result := time_part.hour
+			if attached time_part as tp then
+				Result := tp.hour
 			end
 		end
 
 	minute: INTEGER
 		do
-			if attached time_part then
-				Result := time_part.minute
+			if attached time_part as tp then
+				Result := tp.minute
 			end
 		end
 
 	second: INTEGER
 		do
-			if attached time_part then
-				Result := time_part.minute
+			if attached time_part as tp then
+				Result := tp.minute
 			end
 		end
 
 	fractional_second: DOUBLE
 		do
-			if attached time_part then
-				Result := time_part.fractional_second
+			if attached time_part as tp then
+				Result := tp.fractional_second
 			end
 		end
 
-	timezone: ISO8601_TIMEZONE
+	timezone: detachable ISO8601_TIMEZONE
 		do
-			if attached time_part then
-				Result := time_part.timezone
+			if attached time_part as tp then
+				Result := tp.timezone
 			end
 		end
 
@@ -154,19 +154,19 @@ feature -- Status Report
 	minute_unknown: BOOLEAN
 			-- True if minute unknown
 		do
-			Result := (time_part /= Void and time_part.minute_unknown)
+			Result := attached time_part as tp and then tp.minute_unknown
 		end
 
 	second_unknown: BOOLEAN
 			-- True if second unknown
 		do
-			Result := (time_part /= Void and time_part.second_unknown)
+			Result := attached time_part as tp and then tp.second_unknown
 		end
 
 	has_fractional_second: BOOLEAN
 			-- True if second fraction incuded
 		do
-			Result := (time_part /= Void and time_part.has_fractional_second)
+			Result := attached time_part as tp and then tp.has_fractional_second
 		end
 
 	is_partial: BOOLEAN
@@ -191,7 +191,7 @@ feature -- Conversion
 			Result := date_part.to_days * seconds_in_day + time_part.to_seconds
 		end
 
-	to_date_time: attached DATE_TIME
+	to_date_time: DATE_TIME
 			-- convert to DATE_TIME object
 		do
 			create Result.make_by_date_time (date_part.to_date, time_part.to_time)
@@ -199,17 +199,17 @@ feature -- Conversion
 
 feature -- Output
 
-	as_string: attached STRING
+	as_string: STRING
 			-- express as ISO8601 format string
 		do
 			create Result.make(0)
-			Result.append(date_part.as_string)
-			if time_part /= Void then
-				Result.append_character(Time_leader)
-				Result.append(time_part.as_string)
+			Result.append (date_part.as_string)
+			if attached time_part as tp then
+				Result.append_character (Time_leader)
+				Result.append (tp.as_string)
 			end
 		ensure
-			valid_iso8601_date_time(Result)
+			valid_iso8601_date_time (Result)
 		end
 
 	out: STRING
@@ -220,6 +220,9 @@ feature -- Output
 feature {ISO8601_DATE_TIME} -- Implementation
 
 	date_part: ISO8601_DATE
+		attribute
+			create Result.make_date (create {DATE}.make_now)
+		end
 
 	time_part: detachable ISO8601_TIME
 

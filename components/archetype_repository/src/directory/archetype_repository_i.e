@@ -19,7 +19,7 @@ inherit
 
 feature -- Access
 
-	text: STRING
+	text: detachable STRING
 			-- Contents of the last opened archetype file.
 		deferred
 		end
@@ -60,7 +60,7 @@ feature -- Status Report
 			false_if_void: Result implies attached path
 		end
 
-	has_file_changed_on_disk (a_path: attached STRING; a_timestamp: INTEGER): BOOLEAN
+	has_file_changed_on_disk (a_path: STRING; a_timestamp: INTEGER): BOOLEAN
 			-- Has the loaded archetype designated by `path' changed on disk since last read?
 		require
 			path_valid: not a_path.is_empty
@@ -69,7 +69,7 @@ feature -- Status Report
 
 feature -- Commands
 
-	read_text_from_file (full_path: attached STRING)
+	read_text_from_file (full_path: STRING)
 			-- Read `text' and `text_timestamp' from the file designated by `full_path' on the repository medium.
 		require
 			path_valid: is_valid_directory_part (full_path)
@@ -78,7 +78,7 @@ feature -- Commands
 			text_attached: attached text
 		end
 
-	save_text_to_file (full_path, a_text: attached STRING)
+	save_text_to_file (full_path, a_text: STRING)
 			-- Save `a_text' to the file designated by `full_path' on the repository medium.
 		require
 			path_valid: is_valid_directory_part (full_path)
@@ -86,7 +86,7 @@ feature -- Commands
 		deferred
 		end
 
-	delete_file (full_path: attached STRING)
+	delete_file (full_path: STRING)
 			-- Delete file designated by `full_path' on the repository medium.
 		require
 			path_valid: is_valid_directory_part (full_path)

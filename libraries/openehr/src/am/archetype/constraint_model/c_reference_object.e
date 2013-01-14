@@ -5,19 +5,18 @@ note
 				 such as other archetypes, ontologies and so on.
 				 ]"
 	keywords:    "ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2006- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class C_REFERENCE_OBJECT
 
 inherit
 	C_OBJECT
+		redefine
+			representation_cache
+		end
 
 feature -- Visitor
 
@@ -31,6 +30,20 @@ feature -- Visitor
 			-- perform action at end of block for this node
 		do
 			visitor.end_c_reference_object (Current, depth)
+		end
+
+feature {NONE} -- Implementation
+
+	representation_cache: detachable OG_OBJECT_LEAF
+		note
+			option: transient
+		attribute
+		end
+
+	create_default_representation: attached like representation_cache
+			-- create a reasonable `representation' instance
+		do
+			create Result.make_anonymous
 		end
 
 end

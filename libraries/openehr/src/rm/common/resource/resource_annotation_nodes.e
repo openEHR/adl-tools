@@ -44,7 +44,7 @@ feature -- Modification
 	replace_items_at_node (a_path: STRING; an_annotations: RESOURCE_ANNOTATION_NODE_ITEMS)
 			-- add `an_annotations' at key `a_path'; replace any existing at that path
 		do
-			items.force(an_annotations, a_path)
+			items.force (an_annotations, a_path)
 		end
 
 	merge_items_at_node (a_path: STRING; an_annotations: RESOURCE_ANNOTATION_NODE_ITEMS)

@@ -56,21 +56,20 @@ feature -- Conversion
 			populate_dt_from_object (an_obj, a_dt_co, No_type)
 		end
 
-	dt_to_object_from_string (a_dt_co: DT_COMPLEX_OBJECT_NODE; a_type_name: STRING; make_args: detachable ARRAY[ANY]): ANY
+	dt_to_object_from_string (a_dt_co: DT_COMPLEX_OBJECT_NODE; a_type_name: STRING; make_args: detachable ARRAY[ANY]): detachable ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		do
 			Result := dt_to_object (a_dt_co, dt_dynamic_type_from_string (a_type_name), make_args)
 		end
 
-	dt_to_object (a_dt_co: DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER; make_args: detachable ARRAY[ANY]): ANY
+	dt_to_object (a_dt_co: DT_COMPLEX_OBJECT_NODE; a_type_id: INTEGER; make_args: detachable ARRAY[ANY]): detachable ANY
 			-- make an object whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT; should be called externally only on top-level DT structure;
 			-- recursive calling from populate_object_from_dt calling
 			-- set_container_object_data_from_dt also occurs.
 			-- The main job of this routine is to set up cross references.
 		local
-			src_obj, targ_obj: ANY
 			src_obj_fld: INTEGER
 			path_list: SEQUENCE [OG_PATH]
 		do
@@ -78,7 +77,7 @@ feature -- Conversion
 			if not errors.has_errors then
 				-- wipe the reference list out if on a top-level object
 				if a_dt_co.is_root then
-					create object_ref_list.make (0)
+					object_ref_list.wipe_out
 				end
 
 				-- make the object
@@ -86,15 +85,15 @@ feature -- Conversion
 
 				-- if there were object references in the DT structure, process them now
 				if a_dt_co.is_root and not object_ref_list.is_empty then
-					from object_ref_list.start until object_ref_list.off loop
-						src_obj := object_ref_list.item.source_object_ref
-						src_obj_fld := object_ref_list.item.source_object_field_index
-						if attached {DT_OBJECT_REFERENCE} object_ref_list.item as a_dt_obj_ref then
+					across object_ref_list as obj_ref_csr loop
+						if attached obj_ref_csr.item.source_object_ref as src_obj then
+							src_obj_fld := obj_ref_csr.item.source_object_field_index
+							if attached {DT_OBJECT_REFERENCE} obj_ref_csr.item as a_dt_obj_ref then
 							if a_dt_co.has_path (a_dt_obj_ref.value.as_string) then
-								targ_obj := a_dt_co.node_at_path (a_dt_obj_ref.value.as_string).as_object_ref
+									if attached a_dt_co.node_at_path (a_dt_obj_ref.value.as_string).as_object_ref as targ_obj then
 								if a_dt_obj_ref.is_source_object_container then
-									if attached {HASH_TABLE [ANY, HASHABLE]} src_obj as a_hash_table then
-										a_hash_table.extend (targ_obj, a_dt_obj_ref.hash_key)
+											if attached {HASH_TABLE [ANY, HASHABLE]} src_obj as a_hash_table and attached a_dt_obj_ref.hash_key as hk then
+												a_hash_table.extend (targ_obj, hk)
 									elseif attached {SEQUENCE [ANY]} src_obj as a_sequence then
 										a_sequence.extend (targ_obj)
 									end
@@ -102,9 +101,13 @@ feature -- Conversion
 									set_reference_field (src_obj_fld, src_obj, targ_obj)
 								end
 							else
+										-- should not arrive here
+										raise ("dt_to_object software exception LOC #1")
+									end
+								else
 								errors.add_error ("non_existent_path", <<a_dt_obj_ref.value.as_string>>, "dt_to_object")
 							end
-						elseif attached {DT_OBJECT_REFERENCE_LIST} object_ref_list.item as a_dt_obj_ref_list then
+							elseif attached {DT_OBJECT_REFERENCE_LIST} obj_ref_csr.item as a_dt_obj_ref_list then
 							-- make the generic container, it will be a SEQUENCE (some kind of list)
 							if attached {SEQUENCE[ANY]} new_instance_of (field_static_type_of_type (src_obj_fld, dynamic_type (src_obj))) as a_sequence2 then
 								-- do a reasonable make call on it
@@ -114,8 +117,10 @@ feature -- Conversion
 
 								path_list := a_dt_obj_ref_list.value
 								from path_list.start until path_list.off loop
-									if a_dt_co.has_path (path_list.item.as_string) then
-										a_sequence2.extend (a_dt_co.node_at_path (path_list.item.as_string).as_object_ref)
+										if a_dt_co.has_path (path_list.item.as_string) and attached a_dt_co.node_at_path (path_list.item.as_string) as dt_co_at_path and then
+											attached dt_co_at_path.as_object_ref as seq_obj
+										then
+											a_sequence2.extend (seq_obj)
 									else
 										errors.add_error ("non_existent_path_in_list", <<path_list.item.as_string>>, "dt_to_object")
 									end
@@ -124,8 +129,8 @@ feature -- Conversion
 
 								-- now we detect if the whole thing is going inside another container, or a standard object
 								if a_dt_obj_ref_list.is_source_object_container then
-									if attached {HASH_TABLE [ANY, HASHABLE]} src_obj as a_hash_table2 then
-										a_hash_table2.extend (a_sequence2, a_dt_obj_ref_list.hash_key)
+										if attached {HASH_TABLE [ANY, HASHABLE]} src_obj as a_hash_table2 and attached a_dt_obj_ref_list.hash_key as hk then
+											a_hash_table2.extend (a_sequence2, hk)
 									elseif attached {SEQUENCE [ANY]} src_obj as a_sequence3 then
 										a_sequence3.extend (a_sequence2)
 									end
@@ -134,9 +139,8 @@ feature -- Conversion
 								end
 							end
 						end
-
-						object_ref_list.forth
 					end
+				end
 				end
 			else
 				Result := Void
@@ -144,9 +148,15 @@ feature -- Conversion
 		rescue
 			if assertion_violation then
 				-- check that the original was set_reference_field () - this indicates a type mismatch
-				errors.add_error ("dt_to_object_type_mismatch", <<original_recipient_name>>, "dt_to_object")
+				if attached original_recipient_name as orn then
+					errors.add_error ("dt_to_object_type_mismatch", <<orn>>, "dt_to_object")
 			else
-				errors.add_error ("dt_unknown", <<exception.out, exception_trace>>, "dt_to_object")
+					errors.add_error ("dt_to_object_type_mismatch", <<"Original recipient name not available">>, "dt_to_object")
+			end
+			elseif attached exception_trace as et then
+				errors.add_error ("dt_unknown", <<exception.out, et>>, "dt_to_object")
+			else
+				errors.add_error ("dt_unknown", <<exception.out, "no exception trace avalable">>, "dt_to_object")
 			end
 			retry
 		end
@@ -163,7 +173,7 @@ feature {NONE} -- Implementation
 			a_dt_attr: DT_ATTRIBUTE_NODE
 			eif_fld_static_type, eif_fld_dynamic_type, i: INTEGER
 			eif_fld_name: STRING
-			fld_lst: ARRAYED_LIST[STRING]
+			fld_lst: detachable ARRAYED_LIST[STRING]
 		do
 debug ("DT")
 	io.put_string ("DT_OBJECT_CONVERTER.populate_dt_from_object: populating from a " +
@@ -328,9 +338,6 @@ end
 --		require
 --			object_from_dt_types_conform (a_dt_co, a_type_id)
 		local
-			a_dt_attr: DT_ATTRIBUTE_NODE
-			a_dt_obj_leaf: DT_OBJECT_LEAF
-			fld_name: STRING
 			eif_abstract_fld_type_id, fld_type_id, dyn_dt_val_type_id, i: INTEGER
 			a_gen_field: detachable ANY
 		do
@@ -365,7 +372,7 @@ end
 					-- which is_generic and is_multiple we don't go through its fields, instead we just go to the
 					-- next object level down in the DT tree
 					if not a_dt_co.is_empty then
-						a_dt_attr := a_dt_co.first
+						if attached a_dt_co.first as a_dt_attr then
 						if a_dt_attr.is_nested then
 							populate_eif_container_from_dt (Result, a_dt_attr)
 						else
@@ -373,6 +380,10 @@ end
 							-- nested generic, but that the corresponding object types are not
 							errors.add_error ("dt_nested_type_mismatch", <<Result.generating_type, a_dt_attr.im_attr_name>>, "populate_object_from_dt")
 						end
+						else
+							raise ("populate_object_from_dt software exception LOC #1")
+						end
+
 					else -- even if it is empty, we still have to create the generic object properly
 						-- note that the invariants of the containing business object might easily not be satisfied
 						if attached {HASH_TABLE [ANY, HASHABLE]} Result as a_hash_table then
@@ -386,8 +397,7 @@ end
 					from i := 1 until i > field_count (Result) loop
 						fld_name := field_name (i, Result)
 
-						if a_dt_co.has_attribute (fld_name) then
-							a_dt_attr := a_dt_co.attribute_node (fld_name)
+						if a_dt_co.has_attribute (fld_name) and then attached a_dt_co.attribute_node (fld_name) as a_dt_attr then
 							fld_type_id := field_static_type_of_type (i, a_type_id)
 
 debug ("DT")
@@ -570,6 +580,8 @@ end
 									set_reference_field (i, Result, populate_object_from_dt (a_dt_co_fld, fld_type_id, Void))
 								end
 							end
+						else
+							-- TODO check on meaning of arriving here...it means that not all fields were present in the data.
 						end
 						i := i + 1
 					end
@@ -579,13 +591,25 @@ end
 				end
 			end
 		rescue
-			if dyn_dt_val_type_id /= 0 then -- this must have been an argument type mismatch which killed the from_dt_proc.call[]
+			if dyn_dt_val_type_id /= 0 then
 				errors.add_error ("dt_proc_arg_type_mismatch",
 					<<type_name_of_type (a_type_id), fld_name, type_name_of_type (fld_type_id), type_name (a_dt_obj_leaf.value)>>, "populate_object_from_dt")
+			elseif attached exception_trace as et then
+				errors.add_error ("dt_unknown", <<exception.out, et>>, "populate_object_from_dt")
 			else
-				errors.add_error ("dt_unknown", <<exception.out, exception_trace>>, "populate_object_from_dt")
+				errors.add_error ("dt_unknown", <<exception.out, "no stack trace available">>, "populate_object_from_dt")
 			end
 			retry
+		end
+
+	a_dt_obj_leaf: DT_OBJECT_LEAF
+		attribute
+			create {DT_PRIMITIVE_OBJECT} Result.make_anonymous ("")
+		end
+
+	fld_name: STRING
+		attribute
+			create Result.make_empty
 		end
 
 feature {NONE} -- Conversion to object
@@ -712,6 +736,9 @@ feature {NONE} -- Implementation
 	object_ref_list: ARRAYED_LIST [DT_REFERENCE]
 			-- list of DT_OBJECT_REFERENCE and DT_OBJECT_REFERENCE_LIST objects found in last top-level
 			-- call to `dt_to_object'
+		attribute
+			create Result.make (0)
+		end
 
 	populate_eif_container_from_dt (a_gen_obj: ANY; a_dt_attr: DT_ATTRIBUTE_NODE)
 			-- set generic values in a generic object, from a_dt_attr
@@ -720,7 +747,6 @@ feature {NONE} -- Implementation
 			Dt_attr_node_multiple: a_dt_attr.is_container_type
 		local
 			static_eif_container_content_type_id, dynamic_object_type_id: INTEGER
-			val: ANY
 		do
 			static_eif_container_content_type_id := generic_dynamic_type (a_gen_obj, 1)
 
@@ -744,7 +770,7 @@ feature {NONE} -- Implementation
 							dynamic_object_type_id := static_eif_container_content_type_id
 						end
 						if dynamic_object_type_id > 0 then -- and then type_conforms_to (dynamic_object_type_id, static_eif_container_content_type_id) then
-							val := a_dt_attr_csr.item.as_object (dynamic_object_type_id, Void)
+							if attached a_dt_attr_csr.item.as_object (dynamic_object_type_id, Void) as val then
 							if type_conforms_to (dynamic_type (val), static_eif_container_content_type_id) then
 								a_hash_table.extend (val, a_dt_attr_csr.item.id)
 							else
@@ -754,6 +780,7 @@ feature {NONE} -- Implementation
 							end
 						end
 					end
+				end
 				end
 			elseif attached {SEQUENCE[ANY]} a_gen_obj as a_sequence then  -- must be a linear SEQUENCE of some kind
 				if attached {ARRAYED_LIST[ANY]} a_sequence as an_arrayed_list then
@@ -777,7 +804,7 @@ feature {NONE} -- Implementation
 							dynamic_object_type_id := static_eif_container_content_type_id
 						end
 						if dynamic_object_type_id > 0 then
-							val := a_dt_attr_csr.item.as_object (dynamic_object_type_id, Void)
+							if attached a_dt_attr_csr.item.as_object (dynamic_object_type_id, Void) as val then
 							if type_conforms_to (dynamic_type (val), static_eif_container_content_type_id) then
 								a_sequence.extend (val)
 							else
@@ -787,6 +814,7 @@ feature {NONE} -- Implementation
 							end
 						end
 					end
+				end
 				end
 			else -- something else; should fail in some way here
 				debug ("DT")

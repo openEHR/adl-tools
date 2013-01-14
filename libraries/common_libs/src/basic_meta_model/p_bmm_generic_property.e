@@ -2,15 +2,10 @@ note
 	component:   "openEHR re-usable library"
 	description: "Persistent form of BMM_GENERIC_PROPERTY"
 	keywords:    "Basic meta-model"
-
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2011 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class P_BMM_GENERIC_PROPERTY
 
@@ -38,10 +33,14 @@ feature -- Access
 
 feature -- Factory
 
-	create_bmm_property_definition (a_bmm_schema: BMM_SCHEMA; a_class_def: attached BMM_CLASS_DEFINITION)
+	create_bmm_property_definition (a_bmm_schema: BMM_SCHEMA; a_class_def: BMM_CLASS_DEFINITION)
 		do
-			type_def.create_bmm_generic_type_reference (a_bmm_schema)
-			create bmm_property_definition.make (name, type_def.bmm_generic_type_reference, is_mandatory, is_computed, is_im_infrastructure, is_im_runtime)
+			if attached type_def as td then
+				td.create_bmm_generic_type_reference (a_bmm_schema)
+				if attached td.bmm_generic_type_reference as gen_type_ref then
+					create bmm_property_definition.make (name, gen_type_ref, is_mandatory, is_computed, is_im_infrastructure, is_im_runtime)
+				end
+			end
 		end
 
 end

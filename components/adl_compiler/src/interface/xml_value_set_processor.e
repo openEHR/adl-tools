@@ -3,7 +3,6 @@ note
 
 	description: "Visitor to get attributes on any node."
 	keywords:    "terminology, vocabulary, XML"
-
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
@@ -51,16 +50,20 @@ feature -- Processing
 				attr_vals.put (attrs_csr.item.value, attrs_csr.item.name)
 			end
 
-			if e.name.is_equal ("terminology") then
-				ts.add_terminology (attr_vals.item ("name"))
-				current_terminology := ts.terminology (attr_vals.item ("name"))
-				current_language := attr_vals.item ("language")
+			if e.name.is_equal ("terminology") and attached attr_vals.item ("name") as val_name then
+				ts.add_terminology (val_name)
+				current_terminology := ts.terminology (val_name)
+				if attached attr_vals.item ("language") as val_lang then
+					current_language := val_lang
+				end
 
 			elseif e.name.is_equal ("group") then
 				current_group := attr_vals.item ("name")
 
-			elseif e.name.is_equal ("concept") then
-				current_terminology.add_term (attr_vals.item ("id"), attr_vals.item ("rubric"), current_group, current_language)
+			elseif e.name.is_equal ("concept") and attached attr_vals.item ("id") as val_id and attached attr_vals.item ("rubric") as val_rubric then
+				check attached current_group as cg and attached current_language as cl then
+					current_terminology.add_term (val_id, val_rubric, cg, cl)
+				end
 			end
 		end
 

@@ -161,7 +161,7 @@ feature -- Environment
 			ends_with_directory_separator: Result @ Result.count = os_directory_separator
 		end
 
-	application_full_path: attached STRING
+	application_full_path: STRING
 			-- The full path to the application; else, if the application is in an Eiffel project's W_code
 			-- or F_code directory, a path within the Eiffel project directory. This must be called before
 			-- any change_dir calls are made since there is no easy way to get the startup directory.
@@ -169,9 +169,13 @@ feature -- Environment
 			path: KI_PATHNAME
 			dir: STRING
 		once
-			path := file_system.string_to_pathname (file_system.absolute_pathname (execution_environment.command_line.command_name))
+			check attached file_system.string_to_pathname (file_system.absolute_pathname (execution_environment.command_line.command_name)) as p then
+				path := p
+			end
 			path.set_canonical
-			Result := file_system.pathname_to_string (path)
+			check attached file_system.pathname_to_string (path) as p then
+				Result := p
+			end
 
 			if path.count > 3 then
 				dir := path.item (path.count - 1)
@@ -186,20 +190,24 @@ feature -- Environment
 			not_empty: not Result.is_empty
 	    end
 
-	application_startup_directory: attached STRING
+	application_startup_directory: STRING
 			-- The directory in which the application is installed; else, if the application is in an Eiffel project's W_code
 			-- or F_code directory, the Eiffel project directory. This must be called before any change_dir calls are made
 			-- since there is no easy way to get the startup directory.
 		once
-			Result := file_system.dirname (application_full_path)
+			check attached file_system.dirname (application_full_path) as dn then
+				Result := dn
+			end
 		ensure
 			not_empty: not Result.is_empty
 		end
 
-	application_name: attached STRING
+	application_name: STRING
 			-- The name of the application executable, with any leading directory components removed.
 	    once
-			Result := file_system.basename (application_full_path)
+			check attached file_system.basename (application_full_path) as bn then
+				Result := bn
+			end
 	    end
 
 	locale_language_short: STRING
@@ -230,7 +238,7 @@ feature  {NONE} -- Conversion
 			-- in the string s
 		local
 			i, p,q: INTEGER
-			var_name, var_val: STRING
+			var_name: STRING
 			c: CHARACTER
 		do
 			Result := s.twin
@@ -258,8 +266,7 @@ feature  {NONE} -- Conversion
 				end
 
 				var_name := s.substring(p+1, q)
-				var_val := execution_environment.get(var_name)
-				if var_val /= Void then
+				if attached execution_environment.get(var_name) as var_val then
 					Result.replace_substring_all("$" + var_name, var_val)
 				end
 				p := s.index_of('$', q)

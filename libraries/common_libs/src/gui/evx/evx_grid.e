@@ -52,7 +52,7 @@ feature -- Access
 
 	ev_grid: EV_GRID_KBD_MOUSE
 
-	last_row: EV_GRID_ROW
+	last_row: detachable EV_GRID_ROW
 			-- result of last successful call to `add_row' or `add_sub_row'
 
 	row_count: INTEGER

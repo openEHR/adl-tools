@@ -67,15 +67,17 @@ feature -- Access
 			end
 		end
 
-	annotations_at_path (a_lang, a_path: STRING): RESOURCE_ANNOTATION_NODE_ITEMS
+	annotations_at_path (a_lang, a_path: STRING): detachable RESOURCE_ANNOTATION_NODE_ITEMS
 			-- Get annotations for `a_lang' at `a_path' from `items'
 		require
 			has_annotation_at_path (a_lang, a_path)
 		do
-			Result := items.item (a_lang).item_at_path(a_path)
+			if attached items.item (a_lang) as item_at_lang then
+				Result := item_at_lang.item_at_path (a_path)
+			end
 		end
 
-	node_table_for_language (a_lang: STRING): RESOURCE_ANNOTATION_NODES
+	node_table_for_language (a_lang: STRING): detachable RESOURCE_ANNOTATION_NODES
 			-- Get annotations for `a_lang' at `a_path' from `items'
 		require
 			has_language (a_lang)
@@ -103,7 +105,9 @@ feature -- Status Report
 	has_annotation_at_path (a_lang, a_path: STRING): BOOLEAN
 			-- True if `a_path' is found in  `items'
 		do
-			Result := items.has (a_lang) and then items.item (a_lang).has_path(a_path)
+			if items.has (a_lang) and then attached items.item (a_lang) as item_at_lang then
+				Result := item_at_lang.has_path (a_path)
+			end
 		end
 
 feature -- Modification

@@ -10,15 +10,10 @@ note
 				 as if it contained no predicates, i.e. /items[at0004/events[1] would be read as /items/events.
 				 ]"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2012 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class OG_PATH
 
@@ -29,6 +24,11 @@ inherit
 		end
 
 	ITERABLE [OG_PATH_ITEM]
+		undefine
+			is_equal, out
+		end
+
+	SHARED_MESSAGE_DB
 		undefine
 			is_equal, out
 		end
@@ -60,8 +60,6 @@ feature -- Initialisation
 
 	make_absolute (a_path_segment: OG_PATH_ITEM)
 			-- make a path of the form /attr_name[xxx]/attr_name/attr_name[xxx]...
-		require
-			Path_segment_valid: a_path_segment /= Void
 		do
 			create items.make(0)
 			items.extend(a_path_segment)
@@ -72,8 +70,6 @@ feature -- Initialisation
 
 	make_relative (a_path_segment: OG_PATH_ITEM)
 			-- make a path of the form attr_name[xxx]/attr_name[xxx]...
-		require
-			Path_segment_valid: a_path_segment /= Void
 		do
 			create items.make(0)
 			items.extend (a_path_segment)
@@ -84,8 +80,6 @@ feature -- Initialisation
 	make_movable (a_path_segment: OG_PATH_ITEM)
 			-- make a path of the form //attr_name[xxx]/attr_name[xxx]...
 			-- point, equivalen to Xpath "//" path
-		require
-			Path_segment_valid: a_path_segment /= Void
 		do
 			create items.make(0)
 			items.extend (a_path_segment)
@@ -97,7 +91,7 @@ feature -- Initialisation
 	make_from_string (s: STRING)
 			--
 		require
-			s /= Void and then valid_path_string (s)
+			valid_path_string (s)
 		do
 			parser.execute(s)
 			is_absolute := parser.output.is_absolute
@@ -108,7 +102,7 @@ feature -- Initialisation
 	make_pure_from_string (s: STRING)
 			-- make a path containing no predicates, only attribute names
 		require
-			s /= Void and then valid_path_string(s)
+			valid_path_string(s)
 		local
 			s1: STRING
 		do
@@ -119,20 +113,15 @@ feature -- Initialisation
 			items := parser.output.items
 		end
 
-	make_from_other(other: OG_PATH)
+	make_from_other (other: OG_PATH)
 			-- FIXME: created because clone does not work in dotnet
 		do
 			is_absolute := other.is_absolute
 			is_terminal := other.is_terminal
 			is_movable := other.is_movable
 			create items.make(0)
-			from
-				other.items.start
-			until
-				other.items.off
-			loop
-				items.extend(create {OG_PATH_ITEM}.make_from_other(other.items.item))
-				other.items.forth
+			across other.items as other_csr loop
+				items.extend (create {OG_PATH_ITEM}.make_from_other (other_csr.item))
 			end
 		end
 
@@ -183,7 +172,7 @@ feature -- Access
 		require
 			not is_root
 		do
-			create Result.make_from_other(Current)
+			create Result.make_from_other (Current)
 			Result.remove_last
 		end
 
@@ -269,7 +258,7 @@ feature -- Cursor Movement
 			items.back
 		end
 
-	go_i_th(i: INTEGER)
+	go_i_th (i: INTEGER)
 			-- move to ith item from start
 		do
 			items.go_i_th (i)
@@ -334,7 +323,7 @@ feature -- Status Report
 	has_addressable_item: BOOLEAN
 			-- True if there is at least one addressable item (i.e. predicate) in this path
 		do
-			Result := items.there_exists (agent (a_path_item: OG_PATH_ITEM):BOOLEAN do Result := a_path_item.is_addressable end)
+			Result := items.there_exists (agent (a_path_item: OG_PATH_ITEM): BOOLEAN do Result := a_path_item.is_addressable end)
 		end
 
 feature -- Validation
@@ -345,17 +334,22 @@ feature -- Validation
 		require
 			not a_path.is_empty
 		do
-			create invalid_path_string_reason.make(0)
-			parser.execute(a_path)
-
+			parser.execute (a_path)
 			if parser.syntax_error then
-				invalid_path_string_reason.append(parser.error_text)
+				if attached parser.error_text as err_txt then
+					invalid_path_string_reason.append (err_txt)
+				else
+					invalid_path_string_reason.append (get_text ("path_parser_no_error_available"))
+				end
 			else
 				Result := True
 			end
 		end
 
 	invalid_path_string_reason: STRING
+		attribute
+			create Result.make_empty
+		end
 
 feature -- Modification
 
@@ -446,10 +440,10 @@ feature -- Comparison
 	matches (a_path: STRING): BOOLEAN
 			-- is `a_path' the same is the current path?
 		require
-			valid_path_string(a_path)
+			valid_path_string (a_path)
 		do
 			if a_path.count <= count then
-				parser.execute(a_path)
+				parser.execute (a_path)
 
 				from
 					parser.output.start

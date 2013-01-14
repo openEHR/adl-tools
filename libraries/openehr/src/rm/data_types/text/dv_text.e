@@ -1,24 +1,17 @@
 note
 	component:   "openEHR Data Types"
-
 	description: "[
 				 Abstract type representing any kind of atomic text item, coded or uncoded. 
 				 Note that 'atomic text item' includes coded items, i.e. TERM_TEXTs, which
 				 themselves may be a code phrase, since TERM_TEXT allows qualifiers.
 				 ]"
 	keywords:    "text, data"
-
 	requirements:"ISO 18308 TS V1.0 STR 2.6, 2.9"
 	design:      "openEHR Data Types Reference Model 1.7"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2000- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class DV_TEXT
 
@@ -26,15 +19,11 @@ inherit
 	DATA_VALUE
 		undefine
 			is_equal
-		redefine
-			default_create
 		end
 
 	HASHABLE
 		export
 			{NONE} all
-		undefine
-			default_create
 		redefine
 			is_equal
 		end
@@ -44,16 +33,15 @@ inherit
 			{NONE} all;
 			{ANY} is_valid_match_code, generating_type, twin
 		undefine
-			is_equal, default_create
+			is_equal
 		end
 
 	EXTERNAL_ENVIRONMENT_ACCESS
 		undefine
-			default_create, is_equal
+			is_equal
 		end
 
 create
-	default_create,
 	make, make_from_string
 
 feature -- Definitions
@@ -62,58 +50,55 @@ feature -- Definitions
 
 feature -- Initialization
 
-	default_create
-		do
-			language := Default_language_code.deep_twin
-			value := Default_value.twin
-		ensure then
-			Value_set: value.is_equal(Default_value)
-			Language_set: language.code_string.is_equal(default_language)
-		end
-
 	make, make_from_string (str: STRING)
 			-- make from str of form "xxxxx(terminology::lang_code)"
 			-- e.g. "tension de sang(ISO:639-1(1988)::fr-fr)"
 		do
 			value := str
 		ensure then
-			Value_set: value.is_equal(str)
+			Value_set: value.is_equal (str)
 		end
 
 feature -- Access
 
-	value: attached STRING
+	value: STRING
 			-- displayable rendition of the item, regardless of its underlying structure
+		attribute
+			create Result.make_from_string (Default_value)
+		end
 
-	mappings: LINKED_LIST [TERM_MAPPING]
+	mappings: detachable LINKED_LIST [TERM_MAPPING]
 			-- terms mapped to this term
 
-	formatting: STRING
+	formatting: detachable STRING
 			-- optional format string of the form "name:value; name:value...",
 			-- e.g. "font-weight : bold; font-family : Arial; font-size : 12pt;".
 			-- Values taken from W3C CSS2 properties lists "background" and "font".
 
-	hyperlink: DV_URI
+	hyperlink: detachable DV_URI
 			-- optional link behind this item of text
 
-	language: attached CODE_PHRASE
+	language: CODE_PHRASE
 			-- The localised language in which the value is written. Coded from
 			-- openEHR Code Set “languages”.
+		attribute
+			Result := Default_language_code
+		end
 
-	encoding: attached CODE_PHRASE
+	encoding: CODE_PHRASE
 			-- Name of character set in which value expressed. Coded from openEHR
 			-- Code Set “character sets”.
+		attribute
+			Result := Default_encoding_code
+		end
 
 feature -- Status Report
 
-	has_mapping (other: attached CODE_PHRASE): BOOLEAN
+	has_mapping (other: CODE_PHRASE): BOOLEAN
 			-- True if there is any mapping `other' in the list of mappings
 		do
-			if attached mappings then
-				from mappings.start until mappings.off or else mappings.item.target.is_equal(other) loop
-					mappings.forth
-				end
-				Result := not mappings.off
+			if attached mappings as mpgs then
+				Result := across mpgs as mpgs_csr some mpgs_csr.item.target.is_equal(other) end
 			end
 		end
 
@@ -127,20 +112,23 @@ feature -- Comparison
 
 feature -- Modification
 
-	add_mapping (a_target: CODE_PHRASE; a_match:CHARACTER; a_purpose: DV_CODED_TEXT)
+	add_mapping (a_target: CODE_PHRASE; a_match: CHARACTER; a_purpose: DV_CODED_TEXT)
 		require
-			mapping: a_target /= void and then not has_mapping (a_target)
-			match: is_valid_match_code(a_match)
-			purpose_valid: a_purpose /= void
+			mapping: not has_mapping (a_target)
+			match: is_valid_match_code (a_match)
 		local
 			tm: TERM_MAPPING
+			new_mappings: LINKED_LIST [TERM_MAPPING]
 		do
-			if mappings = void then
-				create mappings.make
-				mappings.compare_objects
+			create tm.make (a_target, a_match, a_purpose)
+			if attached mappings as mpgs then
+				mpgs.extend (tm)
+			else
+				create new_mappings.make
+				mappings := new_mappings
+				new_mappings.compare_objects
+				new_mappings.extend (tm)
 			end
-			create tm.make(a_target, a_match, a_purpose)
-			mappings.extend (tm)
 		end
 
 feature -- Output

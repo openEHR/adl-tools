@@ -20,12 +20,26 @@ inherit
 			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal, valid_adl_version
 		end
 
+create
+	make
+
+feature -- Initialisation
+
+	make (an_id: STRING; id_is_old_style_flag: BOOLEAN; artefact_type_str: STRING; is_differential_flag, is_generated_flag: BOOLEAN)
+		do
+			create archetype_id.make_from_string (an_id)
+			archetype_id_is_old_style := id_is_old_style_flag
+			artefact_type := (create {ARTEFACT_TYPE}).type_name_to_type (artefact_type_str)
+			is_differential := is_differential_flag
+			is_generated := is_generated_flag
+		end
+
 feature -- Access
 
 	archetype_id: ARCHETYPE_ID
 
-	adl_version: STRING
-			-- ADL version of this archetype
+--	adl_version: STRING
+--			-- ADL version of this archetype
 
 	artefact_type: INTEGER
 			-- design type of artefact, archetype, template, template-component, etc
@@ -52,7 +66,7 @@ feature -- Status Report
 	is_specialised: BOOLEAN
 			-- True if a 'specialise' statement with a parent archetype id was found
 		do
-			Result := parent_archetype_id /= Void
+			Result := attached parent_archetype_id
 		end
 
 	archetype_id_is_old_style: BOOLEAN
@@ -67,58 +81,21 @@ feature -- Status Report
 			Result := is_differential and is_generated
 		end
 
-feature -- Status Setting
-
-	set_is_differential
-			-- set is_differential flag
-		do
-			is_differential := True
-		end
-
-	set_is_generated
-			-- set is_generated flag
-		do
-			is_generated := True
-		end
-
-	set_archetype_id_is_old_style
-			-- set `archetype_id_is_old_style' flag
-		do
-			archetype_id_is_old_style := True
-		end
-
-	set_parent_archetype_id_is_old_style
-			-- set `parent_archetype_id_is_old_style' flag
-		do
-			parent_archetype_id_is_old_style := True
-		end
-
 feature -- Modification
 
-	set_artefact_type (s: STRING)
-		require
-			s /= Void and then (create {ARTEFACT_TYPE}).valid_type_name(s)
-		do
-			artefact_type := (create {ARTEFACT_TYPE}).type_name_to_type (s)
-		end
+--	set_adl_version(a_ver: STRING)
+--			-- set adl_version with a string containing only '.' and numbers,
+--			-- not commencing or finishing in '.'
+--		require
+--			Valid_version: a_ver /= Void and then valid_adl_version(a_ver)
+--		do
+--			adl_version := a_ver
+--		end
 
-	set_adl_version(a_ver: STRING)
-			-- set adl_version with a string containing only '.' and numbers,
-			-- not commencing or finishing in '.'
-		require
-			Valid_version: a_ver /= Void and then valid_adl_version(a_ver)
-		do
-			adl_version := a_ver
-		end
-
-	set_archetype_id (an_id: attached STRING)
-		do
-			create archetype_id.make_from_string (an_id)
-		end
-
-	set_parent_archetype_id (an_id: attached STRING)
+	set_parent_archetype_id (an_id: STRING; id_is_old_style_flag: BOOLEAN)
 		do
 			create parent_archetype_id.make_from_string (an_id)
+			parent_archetype_id_is_old_style := id_is_old_style_flag
 		end
 
 	set_other_details (an_other_details: HASH_TABLE [STRING, STRING])

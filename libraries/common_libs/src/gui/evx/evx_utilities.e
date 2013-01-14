@@ -2,15 +2,10 @@ note
 	component:   "openEHR Re-usable Components"
 	description: "Populate various Eiffel Vision2 standard controls from standard EiffelBase data structures"
 	keywords:    "EiffelVision, GUI"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 
 class EVX_UTILITIES
 
@@ -22,14 +17,16 @@ feature -- Commands
 	do_with_wait_cursor (an_ev_widget: EV_WIDGET; action: PROCEDURE [ANY, TUPLE])
 			-- Perform `action' with an hourglass mouse cursor, restoring the cursor when done.
 		local
-			ptr_style: EV_POINTER_STYLE
+			ptr_style: detachable EV_POINTER_STYLE
 		do
 			ptr_style := an_ev_widget.pointer_style
 			an_ev_widget.set_pointer_style ((create {EV_STOCK_PIXMAPS}).wait_cursor)
 			action.call ([])
 			an_ev_widget.set_pointer_style (ptr_style)
 		rescue
-			an_ev_widget.set_pointer_style (ptr_style)
+			if attached ptr_style as ps then
+				an_ev_widget.set_pointer_style (ps)
+			end
 		end
 
 feature {NONE} -- Implementation
@@ -180,15 +177,17 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	proximate_ev_window (a_widget: EV_WIDGET): EV_WINDOW
+	proximate_ev_window (a_widget: EV_WIDGET): detachable EV_WINDOW
 			-- find closest EV_WINDOW containing `a_widget'
 		local
-			csr: EV_WIDGET
+			csr: detachable EV_WIDGET
 		do
 			from csr := a_widget.parent until not attached csr or else attached {EV_WINDOW} csr loop
 				csr := csr.parent
 			end
-			Result ?= csr
+			if attached {EV_WINDOW} csr as ev_win then
+				Result := ev_win
+			end
 		end
 
 end

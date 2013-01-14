@@ -35,11 +35,16 @@ feature -- Initialisation
 	make (a_ref_repo_dir_path: STRING)
 		require
 			dir_name_valid: directory_exists (a_ref_repo_dir_path)
+		local
+			ref_repo: attached like reference_repository
 		do
 			create repositories.make (0)
 			create adhoc_source_repository.make (Group_id_adhoc)
-			create {ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP} reference_repository.make (file_system.canonical_pathname (a_ref_repo_dir_path), Group_id_reference)
-			repositories.force (reference_repository, reference_repository.group_id)
+			check attached file_system.canonical_pathname (a_ref_repo_dir_path) as cpn then
+				create {ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP} ref_repo.make (cpn, Group_id_reference)
+			end
+			repositories.force (ref_repo, ref_repo.group_id)
+			reference_repository := ref_repo
 		ensure
 			Ref_repo_attached: attached reference_repository
 			Work_repo_cleared: not attached work_repository
@@ -75,7 +80,9 @@ feature -- Comparison
 		do
 			Result := directory_exists (dir_name)
 			if Result then
-				s1 := file_system.canonical_pathname (dir_name)
+				check attached file_system.canonical_pathname (dir_name) as cpn then
+					s1 := cpn
+				end
 				if s1.item (s1.count) /= os_directory_separator then
 					s1.append_character (os_directory_separator)
 				end
@@ -98,9 +105,14 @@ feature -- Modification
 			-- Scan the work repository at path `a_work_repo_dir_path'.
 		require
 			dir_name_valid: valid_working_repository_path (a_work_repo_dir_path)
+		local
+			work_repo: attached like work_repository
 		do
-			create {ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP} work_repository.make (file_system.canonical_pathname (a_work_repo_dir_path), Group_id_work)
-			repositories.force (work_repository, work_repository.group_id)
+			check attached file_system.canonical_pathname (a_work_repo_dir_path) as wdp then
+				create {ARCHETYPE_INDEXED_FILE_REPOSITORY_IMP} work_repo.make (wdp, Group_id_work)
+			end
+			repositories.force (work_repo, work_repo.group_id)
+			work_repository := work_repo
 		ensure
 			Work_repo_attached: attached work_repository
 		end

@@ -107,7 +107,7 @@ feature -- Modification
 			global_visual_update_action_set: global_visual_update_action = a_routine
 		end
 
-	set_archetype_visual_update_action (a_routine: attached PROCEDURE [ANY, TUPLE [STRING, ARCH_CAT_ARCHETYPE, INTEGER]])
+	set_archetype_visual_update_action (a_routine: PROCEDURE [ANY, TUPLE [STRING, ARCH_CAT_ARCHETYPE, INTEGER]])
 			-- Set `archetype_visual_update_action'.
 		do
 			archetype_visual_update_action := a_routine
@@ -257,7 +257,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	build_archetype (ara: attached ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
+	build_archetype (ara: ARCH_CAT_ARCHETYPE; dependency_depth: INTEGER)
 			-- Build `ara' only if `from_scratch' is true, or if it is has changed since it was last validly built.
 		local
 			exception_encountered: BOOLEAN

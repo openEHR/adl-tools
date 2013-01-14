@@ -44,7 +44,6 @@ feature -- Initialisation
 			else
 				create {EV_VERTICAL_BOX} ev_root_container
 			end
-			ev_root_container.set_data (Current)
 
 			-- if there is a title, set appropriate padding & border
 			if attached a_title and then not a_title.is_empty then
@@ -81,6 +80,7 @@ feature -- Initialisation
 				ev_root_container.extend (create {EV_CELL})
 				ev_root_container.disable_item_expand (ev_data_control)
 			end
+			ev_root_container.set_data (Current)
 		ensure
 			not is_readonly
 		end

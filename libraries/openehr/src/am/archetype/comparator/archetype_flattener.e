@@ -561,7 +561,10 @@ end
 									ca_output.put_child_left (merge_obj, insert_obj)
 								else
 									ca_output.put_child_right (merge_obj, insert_obj)
-									insert_obj := ca_output.child_after (insert_obj) -- move 1 to the right, so adding occurs after
+									-- move 1 to the right, so adding occurs after
+									check attached ca_output.child_after (insert_obj) as ch then
+										insert_obj := ch
+									end
 								end
 								if attached {C_ARCHETYPE_ROOT} merge_obj as merge_car then
 									merge_car.set_subtree_specialisation_status ({SPECIALISATION_STATUSES}.ss_added)
@@ -757,10 +760,10 @@ end
 					ca.set_existence(rm_attr_desc.existence)
 				end
 				if ca.is_multiple and ca.cardinality = Void then
-					if attached {BMM_CONTAINER_PROPERTY} rm_attr_desc as cont_prop then
-						ca.set_cardinality (create {CARDINALITY}.make (cont_prop.cardinality))
+					if attached {BMM_CONTAINER_PROPERTY} rm_attr_desc as cont_prop and then attached cont_prop.cardinality as card then
+						ca.set_cardinality (create {CARDINALITY}.make (card))
 					else -- should never get here
-
+						raise ("rm_node_flatten_enter location #1")
 					end
 				end
 			elseif attached {C_OBJECT} a_c_node as co then

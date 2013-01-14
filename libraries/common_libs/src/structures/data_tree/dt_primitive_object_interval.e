@@ -65,10 +65,10 @@ feature -- Conversion
 				Result.append (equal_symbol)
 				Result.append (value_string_formatter.item ([value_serialiser.item ([value.lower_unbounded.to_reference])]))
 				Result.append (attr_delimiter)
-			else
+			elseif attached value.lower as val_lower then
 				Result.append (attr_name_formatter.item (["lower"]))
 				Result.append (equal_symbol)
-				Result.append (value_string_formatter.item ([value_serialiser.item ([value.lower])]))
+				Result.append (value_string_formatter.item ([value_serialiser.item ([val_lower])]))
 				Result.append (attr_delimiter)
 				if not value.lower_included then
 					Result.append (attr_name_formatter.item (["lower_included"]))
@@ -81,10 +81,10 @@ feature -- Conversion
 				Result.append (attr_name_formatter.item (["upper_unbounded"]))
 				Result.append (equal_symbol)
 				Result.append (value_string_formatter.item ([value_serialiser.item ([value.upper_unbounded.to_reference])]))
-			else
+			elseif attached value.upper as val_upper then
 				Result.append (attr_name_formatter.item (["upper"]))
 				Result.append (equal_symbol)
-				Result.append (value_string_formatter.item ([value_serialiser.item ([value.upper])]))
+				Result.append (value_string_formatter.item ([value_serialiser.item ([val_upper])]))
 				if not value.upper_included then
 					Result.append (attr_delimiter)
 					Result.append (attr_name_formatter.item (["upper_included"]))

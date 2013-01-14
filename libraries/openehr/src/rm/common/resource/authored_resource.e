@@ -7,14 +7,15 @@ note
 	copyright:   "Copyright (c) 2006-2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 deferred class AUTHORED_RESOURCE
 
 inherit
 	SHARED_TERMINOLOGY_SERVICE
+		export
+			{NONE} all
+		end
+
+	BASIC_DEFINITIONS
 		export
 			{NONE} all
 		end
@@ -48,6 +49,9 @@ feature -- Access
 			-- is no language primacy of resources overall, the language of original
 			-- authoring is required to ensure natural language translations can preserve
 			-- quality. Language is relevant in both the description and ontology sections.
+		attribute
+			Result := Default_language_code
+		end
 
 	translations: detachable HASH_TABLE [TRANSLATION_DETAILS, STRING]
 			-- List of details for each natural translation made of this resource, keyed by

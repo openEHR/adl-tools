@@ -1,12 +1,9 @@
 note
 	component:   "openEHR Data Types"
-
 	description: "Implementation of DV_DATE_TIME_DURATION"
 	keywords:    "date, time, duration"
-
 	requirements:"ISO 18308 TS V1.0 STR 3.10"
 	design:      "openEHR Data Types Reference Model 1.7"
-
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2000- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
@@ -30,14 +27,14 @@ inherit
 		end
 
 create
-	default_create, make, make_from_seconds, make_from_string, make_from_canonical_string
+	default_create, make, make_from_seconds, make_from_string, make_date_time_duration
 
 feature -- Initialization
 
 	default_create
 			-- make of duration days = 0, hours = 0, mins = 0, seconds = 0
 		do
-			make(0, 0, 0, 0, 0, 0, 0, 0.0)
+			make (0, 0, 0, 0, 0, 0, 0, 0.0)
 		ensure then
 			years_set: years = 0
 			months_set: months = 0
@@ -48,24 +45,10 @@ feature -- Initialization
 			seconds_set: seconds = 0
 		end
 
-	make_from_seconds(v: DOUBLE)
+	make_from_seconds (v: DOUBLE)
 			-- create from a number of seconds, and turn into DHMS canonical form
 		do
-
-		end
-
-	make_from_canonical_string (str: STRING)
-			-- make from string using default format
-		do
-			make_from_string(str)
-		end
-
-feature -- Status Report
-
-	valid_canonical_string(str: STRING): BOOLEAN
-			-- True if str contains required tags
-		do
-			Result := valid_iso8601_duration (str)
+			make (0, 0, 0, 0, 0, 0, v.truncated_to_integer, v - v.truncated_to_integer)
 		end
 
 feature -- Access
@@ -105,9 +88,9 @@ feature -- Output
 			Result := magnitude_as_string
 			if accuracy /= 0 then
 				if accuracy_is_percent then
-					Result.append(" +/-" + accuracy.out + "%%")
+					Result.append (" +/-" + accuracy.out + "%%")
 				else
-					Result.append(" +/-" + (create {DV_DURATION}.make_from_seconds(accuracy)).magnitude_as_string)
+					Result.append (" +/-" + (create {DV_DURATION}.make_from_seconds(accuracy)).magnitude_as_string)
 				end
 			end
 		end

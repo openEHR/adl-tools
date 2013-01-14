@@ -74,9 +74,11 @@ feature  {ANY_SERIALISER} -- Factory
 			i: INTEGER
 		do
 			create Result.make(0)
-			from i := 1 until i > indent_level loop
-				Result.append (format_items.item (FMT_INDENT))
-				i := i + 1
+			if attached format_items.item (FMT_INDENT) as ind then
+				from i := 1 until i > indent_level loop
+					Result.append (ind)
+					i := i + 1
+				end
 			end
 		end
 
@@ -89,7 +91,7 @@ feature  {ANY_SERIALISER} -- Factory
 			-- 	" to \"
 		do
 			if not str.is_empty then
-				Result := quote_clean(str)
+				Result := quote_clean (str)
 			else
 				Result := str
 			end

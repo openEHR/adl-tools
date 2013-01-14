@@ -10,15 +10,10 @@ note
 				repeatedly recomputed on the fly, due to the amount of work involved).
 				]"
 	keywords:    "date, time, duration"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2006- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class ISO8601_DURATION
 
@@ -28,16 +23,16 @@ inherit
 			{NONE} all;
 			{ANY} valid_iso8601_duration
 		undefine
-			is_equal, out
+			is_equal, default_create, out
 		end
 
 	COMPARABLE
 		redefine
-			out
+			default_create, out
 		end
 
 create
-	make, make_from_string, make_date_time_duration
+	make, make_from_string, make_date_time_duration, default_create
 
 convert
 	make_date_time_duration ({DATE_TIME_DURATION}),
@@ -48,6 +43,11 @@ feature -- Definitions
 	Default_zero_value: STRING = "PT0S"
 
 feature {NONE} -- Initialisation
+
+	default_create
+		do
+			make_from_string (Default_zero_value)
+		end
 
 	make_from_string (str: STRING)
 			-- Make from a valid ISO duration string.
@@ -99,7 +99,7 @@ feature {NONE} -- Initialisation
 			value := as_string
 		end
 
-	make_date_time_duration (a_dur: attached DATE_TIME_DURATION)
+	make_date_time_duration (a_dur: DATE_TIME_DURATION)
 			-- make from a DATE_TIME_DURATION object
 		do
 			make (a_dur.year, a_dur.month, 0, a_dur.day, a_dur.hour, a_dur.minute,

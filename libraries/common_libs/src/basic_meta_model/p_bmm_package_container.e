@@ -2,10 +2,9 @@ note
 	component:   "openEHR re-usable library"
 	description: "Abstraction of a model component that contains packages"
 	keywords:    "model, UML"
-
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2011- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 class P_BMM_PACKAGE_CONTAINER
@@ -15,14 +14,6 @@ inherit
 		export
 			{NONE} all;
 			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
-		end
-
-feature -- Initialisation
-
-	make
-			-- make in a safe way for DT building purposes
-		do
-			create packages.make (0)
 		end
 
 feature -- Access
@@ -48,11 +39,11 @@ feature -- Status Report
 			end
 		end
 
-	has_package_path (a_path: attached STRING): BOOLEAN
+	has_package_path (a_path: STRING): BOOLEAN
 			-- True if there is a package at the path `a_path' under this package
 		local
 			pkg_names: LIST [STRING]
-			pkg_csr: P_BMM_PACKAGE_CONTAINER
+			pkg_csr: detachable P_BMM_PACKAGE_CONTAINER
 		do
 			pkg_names := a_path.as_upper.split (Package_name_delimiter)
 			pkg_csr := Current
@@ -75,7 +66,7 @@ feature -- Modification
 			end
 		end
 
-	add_package (a_pkg: attached P_BMM_PACKAGE_DEFINITION)
+	add_package (a_pkg: P_BMM_PACKAGE_DEFINITION)
 		do
 			packages.put (a_pkg, a_pkg.name.as_upper)
 		end

@@ -25,7 +25,7 @@ create
 
 feature -- Initialisation
 
-	make (an_arch_node: like arch_node; an_ed_context: ARCH_ED_CONTEXT_STATE)
+	make (an_arch_node: attached like arch_node; an_ed_context: ARCH_ED_CONTEXT_STATE)
 		do
 			precursor (an_arch_node, an_ed_context)
 			create c_attributes.make (0)

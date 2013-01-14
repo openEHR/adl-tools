@@ -25,7 +25,7 @@ feature -- Access
 	arch_node: detachable ARCHETYPE_CONSTRAINT
 			-- archetype node being edited
 
-	parent: ARCHETYPE_CONSTRAINT_ED_CONTEXT
+	parent: detachable ARCHETYPE_CONSTRAINT_ED_CONTEXT
 			-- parent node in tree
 
 	path: STRING

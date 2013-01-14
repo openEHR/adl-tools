@@ -12,42 +12,32 @@ class C_ATTRIBUTE
 inherit
 	ARCHETYPE_CONSTRAINT
 		redefine
-			default_create, parent, representation, path
+			parent, representation_cache, path
 		end
 
 	ARCHETYPE_TERM_CODE_TOOLS
 		export {NONE}
 			all
-		redefine
-			default_create
 		end
 
 	C_COMMON
 		export {NONE}
 			all
-		redefine
-			default_create
 		end
 
 create
-	make_single, make_multiple
+	make_single, make_multiple, default_create
 
 feature -- Initialisation
-
-	default_create
-			--
-		do
-			create children.make (0)
-		end
 
 	make_single (a_name: STRING; an_existence: detachable MULTIPLICITY_INTERVAL)
 			-- make representing a single-valued attribute with attr name and optional existence
 		require
 			a_name_valid: not a_name.is_empty
 		do
-			default_create
-			create representation.make_single (a_name, Current)
 			existence := an_existence
+			create representation_cache.make_single (a_name)
+			representation_cache.set_content (Current)
 		ensure
 			Is_single: not is_multiple
 			Existence_set: existence = an_existence
@@ -58,10 +48,10 @@ feature -- Initialisation
 		require
 			a_name_valid: not a_name.is_empty
 		do
-			default_create
-			create representation.make_multiple (a_name, Current)
 			existence := an_existence
 			cardinality := a_cardinality
+			create representation_cache.make_multiple (a_name)
+			representation_cache.set_content (Current)
 		ensure
 			Is_multiple: is_multiple
 			Existence_set: existence = an_existence
@@ -100,6 +90,9 @@ feature -- Access
 		end
 
 	children: ARRAYED_LIST [C_OBJECT]
+		attribute
+			create Result.make (0)
+		end
 
 	existence: detachable MULTIPLICITY_INTERVAL
 
@@ -365,13 +358,21 @@ feature -- Comparison
 	existence_conforms_to (other: like Current): BOOLEAN
 			-- True if the existence of this node conforms to other.existence
 		do
-			Result := existence = Void or else other.existence = Void or else other.existence.contains (existence)
+			if attached existence as ex and attached other.existence as other_ex then
+				Result := other_ex.contains (ex)
+			else
+				Result := True
+			end
 		end
 
 	cardinality_conforms_to (other: like Current): BOOLEAN
 			-- True if the cardinality of this node conforms to other.cardinality, if it exists
 		do
-			Result := cardinality = Void or else other.cardinality = Void or else other.cardinality.contains (cardinality)
+			if attached cardinality as card and attached other.cardinality as other_card then
+				Result := other_card.contains (card)
+			else
+				Result := True
+			end
 		end
 
 feature -- Modification
@@ -615,10 +616,6 @@ feature -- Validation
 			end
 		end
 
-feature -- Representation
-
-	representation: OG_ATTRIBUTE_NODE
-
 feature -- Serialisation
 
 	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
@@ -638,38 +635,50 @@ feature {NONE} -- Implementation
 	reparent_to_root
 			-- reparent this node to the root node, removing intervening orphaned nodes on the way
 		local
-			p: like parent
-			csr: ARCHETYPE_CONSTRAINT
+			csr: detachable ARCHETYPE_CONSTRAINT
 		do
-			p := parent
-			debug("compress")
-				io.put_string("%T%Tabout to REPARENT attribute Current (" + rm_attribute_path + ") from parent object " + p.rm_type_name + "[" + p.node_id + "]%N")
-			end
-			p.remove_attribute (Current)
-			from csr := p until csr.parent = Void loop
-				if attached {C_COMPLEX_OBJECT} csr.parent as cco and attached {C_ATTRIBUTE} csr as ca then
-					if not ca.has_children then
-						debug("compress")
-							io.put_string("%T%Tabout to remove ORPHAN attribute " + ca.rm_attribute_name + " from object " + cco.rm_type_name + "[" + cco.node_id + "]%N")
-						end
-						cco.remove_attribute (ca)
-					end
-				elseif attached {C_ATTRIBUTE} csr.parent as ca and attached {C_COMPLEX_OBJECT} csr as cco then
-					if not cco.has_attributes then
-						debug("compress")
-							io.put_string("%T%Tabout to remove ORPHAN object " + cco.rm_type_name + "[" + cco.node_id + "] from attribute " + ca.rm_attribute_name + "%N")
-						end
-						ca.remove_child (cco)
-					end
-				end
-				csr := csr.parent
-			end
-			if attached {C_COMPLEX_OBJECT} csr as cco then
+			if attached parent as p then
 				debug("compress")
-					io.put_string("%T%Tabout to put REPARENTED attribute Current (" + rm_attribute_path + ") on ROOT object " + cco.rm_type_name + "[" + cco.node_id + "]%N")
+					io.put_string("%T%Tabout to REPARENT attribute Current (" + rm_attribute_path + ") from parent object " + p.rm_type_name + "[" + p.node_id + "]%N")
 				end
-				cco.put_attribute (Current)
+				p.remove_attribute (Current)
+				from csr := p until csr.parent = Void loop
+					if attached {C_COMPLEX_OBJECT} csr.parent as cco and attached {C_ATTRIBUTE} csr as ca then
+						if not ca.has_children then
+							debug("compress")
+								io.put_string("%T%Tabout to remove ORPHAN attribute " + ca.rm_attribute_name + " from object " + cco.rm_type_name + "[" + cco.node_id + "]%N")
+							end
+							cco.remove_attribute (ca)
+						end
+					elseif attached {C_ATTRIBUTE} csr.parent as ca and attached {C_COMPLEX_OBJECT} csr as cco then
+						if not cco.has_attributes then
+							debug("compress")
+								io.put_string("%T%Tabout to remove ORPHAN object " + cco.rm_type_name + "[" + cco.node_id + "] from attribute " + ca.rm_attribute_name + "%N")
+							end
+							ca.remove_child (cco)
+						end
+					end
+					csr := csr.parent
+				end
+				if attached {C_COMPLEX_OBJECT} csr as cco then
+					debug("compress")
+						io.put_string("%T%Tabout to put REPARENTED attribute Current (" + rm_attribute_path + ") on ROOT object " + cco.rm_type_name + "[" + cco.node_id + "]%N")
+					end
+					cco.put_attribute (Current)
+				end
 			end
+		end
+
+	representation_cache: detachable OG_ATTRIBUTE_NODE
+		note
+			option: transient
+		attribute
+		end
+
+	create_default_representation: attached like representation_cache
+			-- create a reasonable `representation' instance
+		do
+			create Result.make_single ("initial")
 		end
 
 invariant

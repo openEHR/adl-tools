@@ -57,7 +57,7 @@ feature -- Modification
 
 feature -- Conversion
 
-	as_object (a_type_id: INTEGER; make_args: detachable ARRAY[ANY]): ANY
+	as_object (a_type_id: INTEGER; make_args: detachable ARRAY[ANY]): detachable ANY
 			-- make an object of type `a_type_id' whose classes and attributes correspond to the structure
 			-- of this DT_OBJECT
 		require
@@ -67,7 +67,7 @@ feature -- Conversion
 			as_object_ref = Result
 		end
 
-	as_object_ref: ANY
+	as_object_ref: detachable ANY
 			-- cached reference to object created from last call to as_object or as_object_from_string
 
 feature -- Representation

@@ -1,21 +1,12 @@
 note
-
 	component:   "openEHR Common Archetype Model"
-
 	description: "Constrainer type for instances of DURATION"
 	keywords:    "archetype, date, data"
-
 	design:      "openEHR Common Archetype Model 0.2"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2000- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class C_DURATION
 
@@ -43,45 +34,44 @@ create
 
 feature {NONE} -- Initialisation
 
-	make (a_pattern, a_lower, an_upper: STRING; include_lower, include_upper: BOOLEAN)
+	make (a_pattern, a_lower_str, an_upper_str: detachable STRING; include_lower, include_upper: BOOLEAN)
 			-- Create from an ISO8601-based pattern, together with two ISO8601 strings representing an interval.
 			-- If either `a_lower' or `an_upper' is Void, the interval is open-ended;
 			-- if they are the same, the interval is a single point.
 			-- Boolean flags indicate whether to include limits in the range or not.
 		require
-			not_all_void: a_pattern /= Void or a_lower /= Void or an_upper /= Void
-			valid_pattern: a_pattern /= Void implies valid_iso8601_duration_constraint_pattern (a_pattern)
-			valid_lower: a_lower /= void implies valid_iso8601_duration (a_lower)
-			valid_upper: an_upper /= void implies valid_iso8601_duration (an_upper)
-			valid_order: (a_lower /= Void and an_upper /= Void) implies iso8601_string_to_comparable_duration (a_lower) <= iso8601_string_to_comparable_duration (an_upper)
+			not_all_void: a_pattern /= Void or a_lower_str /= Void or an_upper_str /= Void
+			valid_pattern: attached a_pattern as p implies valid_iso8601_duration_constraint_pattern (p)
+			valid_lower: attached a_lower_str as l_str implies valid_iso8601_duration (l_str)
+			valid_upper: attached an_upper_str as u_str implies valid_iso8601_duration (u_str)
+			valid_order: (attached a_lower_str as l_str and attached an_upper_str as u_str) implies
+				iso8601_string_to_comparable_duration (l_str) <= iso8601_string_to_comparable_duration (u_str)
 		local
-			lower_duration, upper_duration: ISO8601_DURATION
+			lower_duration, upper_duration: detachable ISO8601_DURATION
 		do
 			pattern := a_pattern
 
-			if a_lower /= Void or an_upper /= Void then
-				if a_lower /= Void then
-					create lower_duration.make_from_string (a_lower)
-				end
+			if attached a_lower_str as lower_dur then
+				create lower_duration.make_from_string (lower_dur)
+			end
 
-				if an_upper /= Void then
-					create upper_duration.make_from_string (an_upper)
-				end
+			if attached an_upper_str as upper_dur then
+				create upper_duration.make_from_string (upper_dur)
+			end
 
-				if lower_duration = Void then
-					create range.make_lower_unbounded (upper_duration, include_upper)
-				elseif upper_duration = Void then
-					create range.make_upper_unbounded (lower_duration, include_lower)
-				else
-					create range.make_bounded (lower_duration, upper_duration, include_lower, include_upper)
-				end
+			if attached upper_duration as upper_dur and attached lower_duration as lower_dur then
+				create range.make_bounded (lower_dur, upper_dur, include_lower, include_upper)
+			elseif attached upper_duration as upper_dur then
+				create range.make_lower_unbounded (upper_dur, include_upper)
+			elseif attached lower_duration as lower_dur then
+				create range.make_upper_unbounded (lower_dur, include_lower)
 			end
 		ensure
 			pattern_set: pattern = a_pattern
-			interval_if_lower_or_upper: (a_lower /= Void or an_upper /= Void) xor range = Void
+			interval_if_lower_or_upper: (a_lower_str /= Void or an_upper_str /= Void) xor range = Void
 		end
 
-	make_range (an_interval: like range)
+	make_range (an_interval: attached like range)
 			-- Create from an ISO8601-based interval.
 		do
 			range := an_interval
@@ -101,7 +91,7 @@ feature {NONE} -- Initialisation
 			interval_void: range = Void
 		end
 
-	make_pattern_with_range (a_pattern: STRING; an_interval: like range)
+	make_pattern_with_range (a_pattern: STRING; an_interval: attached like range)
 			-- Create from an ISO8601-based pattern, together with an ISO8601-based interval.
 		require
 			a_pattern_valid: valid_iso8601_duration_constraint_pattern (a_pattern)
@@ -126,10 +116,17 @@ feature -- Access
 	prototype_value: ISO8601_DURATION
 			-- Default duration value.
 		do
-			if attached range then
-				Result := range.lower
+			if attached range as rng then
+				if attached rng.lower as l then
+					Result := l
+				elseif attached rng.upper as u then
+					Result := u
+				else
+					create Result.default_create
+				end
 			else
-				-- FIXME: Return something based on `pattern'.
+				-- Result := FIXME - generate a default from a pattern
+				create Result.default_create
 			end
 		end
 
@@ -164,8 +161,8 @@ feature -- Comparison
 	pattern_conforms_to (other: like Current): BOOLEAN
 			-- True if the pattern of this node is or narrower than that in `other'
 		do
-			if attached pattern and attached other.pattern then
-				Result := compute_pattern_conformance (pattern, other.pattern)
+			if attached pattern as pat and attached other.pattern as other_pat then
+				Result := compute_pattern_conformance (pat, other_pat)
 			else
 				Result := True
 			end
@@ -174,8 +171,8 @@ feature -- Comparison
 	range_conforms_to (other: like Current): BOOLEAN
 			-- True if the pattern of this node is or narrower than that in `other'
 		do
-			if attached range and attached other.range then
-				Result := other.range.contains (range)
+			if attached range as rng and attached other.range as other_rng then
+				Result := other_rng.contains (rng)
 			else
 				Result := True
 			end
@@ -187,21 +184,17 @@ feature -- Output
 			-- Textual representation.
 		do
 			create Result.make_empty
-
-			if attached pattern then
-				Result.append (pattern)
+			if attached pattern as pat then
+				Result.append (pat)
 			end
-
-			if attached range then
+			if attached range as rng then
 				if attached pattern then
 					Result.append_character ('/')
 				end
-
-				Result.append ("|" + range.as_string + "|")
+				Result.append ("|" + rng.as_string + "|")
 			end
-
-			if assumed_value /= Void then
-				Result.append ("; " + assumed_value.as_string)
+			if attached assumed_value as av then
+				Result.append ("; " + av.as_string)
 			end
 		ensure then
 			not_empty: not Result.is_empty
@@ -217,7 +210,7 @@ feature {NONE} -- Implementation
 
 invariant
 	basic_validity: attached pattern or attached range
-	pattern_valid: attached pattern implies valid_iso8601_duration_constraint_pattern (pattern)
+	pattern_valid: attached pattern as p implies valid_iso8601_duration_constraint_pattern (p)
 
 end
 

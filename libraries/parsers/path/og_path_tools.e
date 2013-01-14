@@ -28,9 +28,12 @@ feature -- Validation
 		do
 			create path_parser.make
 			path_parser.execute (a_path)
-			Result := path_parser.error_count = 0
-			if not Result then
-				path_parse_error.append (path_parser.error_text)
+			if path_parser.syntax_error then
+				if attached path_parser.error_text as err_str then
+					path_parse_error.append (err_str)
+				end
+			else
+				Result := True
 			end
 		ensure
 			Error_supplied: not Result implies not path_parse_error.is_empty

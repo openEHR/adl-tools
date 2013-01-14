@@ -2,16 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Descriptor of a model node in a directory of archetypes"
 	keywords:    "ADL, archetype"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006-2010 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2006- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 
 deferred class ARCH_CAT_MODEL_NODE
 

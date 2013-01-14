@@ -21,6 +21,8 @@ feature {ADL15_ENGINE} -- Initialisation
 	initialise (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 			-- set target_descriptor
 			-- initialise reporting variables
+		require
+			ara.is_valid
 		do
 			rm_schema := an_rm_schema
 			target_descriptor := ara

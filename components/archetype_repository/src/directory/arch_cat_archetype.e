@@ -4,7 +4,7 @@ note
 	keywords:    "ADL, archetype"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2006-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 	void_safety: "initial"
 
@@ -72,12 +72,14 @@ feature {NONE} -- Initialisation
 			-- Can be created with a .adl or .adls file name extension
 		require
 			Path_valid: not a_path.is_empty
+			Valid_id: has_rm_schema_for_id (arch_thumbnail.archetype_id)
 		do
 			make_item
 
 			file_repository := a_repository
 
 			id := arch_thumbnail.archetype_id
+			rm_schema := rm_schema_for_id (id)
 			if arch_thumbnail.is_specialised then
 				parent_id := arch_thumbnail.parent_archetype_id
 			end
@@ -105,12 +107,14 @@ feature {NONE} -- Initialisation
 			-- Can be created with a .adl or .adls file name extension
 		require
 			Path_valid: not a_path.is_empty
+			Valid_id: has_rm_schema_for_id (arch_thumbnail.archetype_id)
 		do
 			make_item
 
 			file_repository := a_repository
 
 			id := arch_thumbnail.archetype_id
+			rm_schema := rm_schema_for_id (id)
 			if arch_thumbnail.is_specialised then
 				parent_id := arch_thumbnail.parent_archetype_id
 			end
@@ -133,11 +137,13 @@ feature {NONE} -- Initialisation
 			-- Create a new archetype with `an_id', belonging to `a_repository'.
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
+			Valid_id: has_rm_schema_for_id (an_id)
 		local
 			at: ARTEFACT_TYPE
 		do
 			make_item
 			id := an_id
+			rm_schema := rm_schema_for_id (id)
 			differential_path := file_system.pathname (a_directory, id.as_string + File_ext_archetype_source)
 			file_repository := a_repository
 
@@ -160,11 +166,13 @@ feature {NONE} -- Initialisation
 			-- Create a new archetype with `an_id' as a child of the archetype with id `a_parent_id', belonging to `a_repository'.
 		require
 			Valid_directory: file_system.directory_exists (a_directory)
+			Valid_id: has_rm_schema_for_id (an_id)
 		local
 			at: ARTEFACT_TYPE
 		do
 			make_item
 			id := an_id
+			rm_schema := rm_schema_for_id (id)
 			differential_path := file_system.pathname (a_directory, id.as_string + File_ext_archetype_source)
 			file_repository := a_repository
 			parent_id := a_parent.archetype_id
@@ -194,14 +202,6 @@ feature {NONE} -- Initialisation
 			differential_compiled_path := file_system.pathname (compiler_gen_source_directory, id.as_string + File_ext_dadl)
 			flat_compiled_path := file_system.pathname (compiler_gen_flat_directory, id.as_string + File_ext_dadl)
 			artefact_type_name := (create {ARTEFACT_TYPE}).type_names.item (artefact_type)
-			if rm_schema = Void then
-				if rm_schemas_access.has_schema_for_rm_closure (id.qualified_package_name) then
-					rm_schema := rm_schemas_access.schema_for_rm_closure (id.qualified_package_name)
-				else
-					compilation_state := Cs_rm_class_unknown
-					errors.add_error ("model_access_e7", <<id.qualified_rm_name>>, "")
-				end
-			end
 		end
 
 feature -- Access (semantic)
@@ -330,7 +330,7 @@ feature -- Access (semantic)
 	legacy_flat_text_timestamp: INTEGER
 			-- File modification date/time when legacy flat file was last read
 
-	rm_schema: detachable BMM_SCHEMA
+	rm_schema: BMM_SCHEMA
 			-- set if this archetype has a valid package-class_name
 
 	artefact_type: INTEGER
@@ -508,22 +508,19 @@ feature -- Status Report - Compilation
 	compile_attempted: BOOLEAN
 			-- has a compile been attempted in this session?
 		do
-			Result := last_compile_attempt_timestamp /= Void
+			Result := attached last_compile_attempt_timestamp
 		end
 
 	is_out_of_date: BOOLEAN
 			-- It this archetype out of date with respect to parents or suppliers?
 		do
-			if compile_attempted then
+			if attached last_compile_attempt_timestamp as lcats then
 				-- see if parents were recompiled more recently
-				Result := is_specialised and then specialisation_parent.last_compile_attempt_timestamp > last_compile_attempt_timestamp
+				Result := is_specialised and then attached specialisation_parent.last_compile_attempt_timestamp as parent_lcats and then parent_lcats > lcats
 
 				-- see if any supplier was recompiled more recently
-				if not Result and suppliers_index /= Void then
-					from suppliers_index.start until suppliers_index.off or suppliers_index.item_for_iteration.last_compile_attempt_timestamp > last_compile_attempt_timestamp loop
-						suppliers_index.forth
-					end
-					Result := not suppliers_index.off
+				if not Result and attached suppliers_index as supp_idx then
+					Result := across supp_idx as supp_idx_csr some attached supp_idx.item.last_compile_attempt_timestamp as supp_lcats and then supp_lcats > lcats end
 				end
 			end
 		end
@@ -627,14 +624,14 @@ feature -- Status Report - Semantic
 			-- Does the compile generated area have a differential file for this archetype from a previous compile?
 			-- If it is newer than the source file, it can be read instead
 		do
-			Result := file_repository.is_valid_path (differential_compiled_path)
+			Result := attached differential_compiled_path as dcp and then file_repository.is_valid_path (dcp)
 		end
 
 	has_flat_compiled_file: BOOLEAN
 			-- Does the compile generated area have a flat file for this archetype from a previous compile?
 			-- If it is newer than the source file, it can be read instead
 		do
-			Result := file_repository.is_valid_path (flat_compiled_path)
+			Result := attached flat_compiled_path as fcp and then file_repository.is_valid_path (fcp)
 		end
 
 	is_reference_archetype: BOOLEAN

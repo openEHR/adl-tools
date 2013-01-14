@@ -144,7 +144,7 @@ feature -- Access
 			end
 		end
 
-	action: STRING
+	action: detachable STRING
 			-- action to perform
 		require
 			is_successful: is_successful

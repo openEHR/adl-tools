@@ -5,15 +5,11 @@ note
 				 types include: STRING, INTEGER, REAL, CHARACTER,
 				 BOOLEAN. Occurrences set to the default of {1..1}
 			 ]"
-	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	keywords:    "serialisation, ADL"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class DT_PRIMITIVE_OBJECT
 

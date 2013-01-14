@@ -29,14 +29,12 @@ inherit
 
 feature -- Initialisation
 
-	make (a_node_id: STRING; a_content_item: detachable VISITABLE)
+	make (a_node_id: STRING)
 			-- create with node id and optional content_item
 		require
 			Node_id_valid: not a_node_id.is_empty
 		do
-			default_create
 			node_id := a_node_id
-			content_item := a_content_item
 		ensure
 			Node_id_set: node_id = a_node_id
 		end
@@ -75,7 +73,7 @@ feature -- Access
 
 	parent: detachable OG_NODE
 
-	ultimate_parent: OG_NODE
+	ultimate_parent: detachable OG_NODE
 			-- return the root node of the tree
 		require
 			not is_root
@@ -89,7 +87,7 @@ feature -- Access
 			-- return True if `a_node' found in line of parent nodes back to ultimate_parent,
 			-- including if it is the immediate parent
 		local
-			csr: OG_NODE
+			csr: detachable OG_NODE
 		do
 			from csr := parent until csr.is_root or csr = a_node loop
 				csr := csr.parent
@@ -213,7 +211,7 @@ feature {NONE} -- Implementation
 					if attached {OG_ATTRIBUTE_NODE} og_nodes.item as og_attr then
 						create a_path_item.make (og_attr.node_id)
 						if not attached Result then
-							create Result.make_absolute(a_path_item)
+							create Result.make_absolute (a_path_item)
 						else
 							Result.append_segment (a_path_item)
 						end

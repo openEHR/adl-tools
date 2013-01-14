@@ -268,34 +268,30 @@ feature -- Copying
 		do
 			prefix_str := "*"
 			suffix_str := "(" + a_lang + ")"
-			create Result.make(create {CODE_PHRASE}.make(Default_language_code_set, a_lang), prefix_str + purpose + suffix_str)
-			if attached use then
-				Result.set_use(prefix_str + use + suffix_str)
+			create Result.make (create {CODE_PHRASE}.make (Default_language_code_set, a_lang), prefix_str + purpose + suffix_str)
+			if attached use as att_use then
+				Result.set_use (prefix_str + att_use + suffix_str)
 			end
-			if attached misuse then
-				Result.set_misuse(prefix_str + misuse + suffix_str)
+			if attached misuse as att_misuse then
+				Result.set_misuse (prefix_str + att_misuse + suffix_str)
 			end
-			if attached copyright then
-				Result.set_copyright(prefix_str + copyright + suffix_str)
+			if attached copyright as att_copyright then
+				Result.set_copyright (prefix_str + att_copyright + suffix_str)
 			end
-			if attached keywords then
-				from keywords.start until keywords.off loop
-					Result.add_keyword (prefix_str + keywords.item + suffix_str, 0)
-					keywords.forth
+			if attached keywords as att_keywords then
+				across att_keywords as keywords_csr loop
+					Result.add_keyword (prefix_str + keywords_csr.item + suffix_str, 0)
 				end
 			end
-			if attached original_resource_uri then
-				from original_resource_uri.start until original_resource_uri.off loop
-					Result.put_original_resource_uri_item (prefix_str + original_resource_uri.key_for_iteration + suffix_str,
-						original_resource_uri.item_for_iteration)
-					original_resource_uri.forth
+			if attached original_resource_uri as att_uri then
+				across att_uri as uri_csr loop
+					Result.put_original_resource_uri_item (prefix_str + uri_csr.key + suffix_str, uri_csr.item)
 				end
 			end
-			if attached other_details then
-				from other_details.start until other_details.off loop
-					Result.put_other_details_item (prefix_str + other_details.key_for_iteration + suffix_str,
-						prefix_str + other_details.item_for_iteration + suffix_str)
-					other_details.forth
+			if attached other_details as att_other_details then
+				across att_other_details as other_details_csr loop
+					Result.put_other_details_item (prefix_str + other_details_csr.key + suffix_str,
+						prefix_str + other_details_csr.item + suffix_str)
 				end
 			end
 		end
@@ -319,7 +315,7 @@ feature {DT_OBJECT_CONVERTER} -- Conversion
 		end
 
 invariant
-	language_valid: code_set(code_set_id_languages).has(language)
+	language_valid: code_set (code_set_id_languages).has(language)
 	purpose_valid: not purpose.is_empty
 	use_valid: use /= Void implies not use.is_empty
 	misuse_valid: misuse /= Void implies not misuse.is_empty

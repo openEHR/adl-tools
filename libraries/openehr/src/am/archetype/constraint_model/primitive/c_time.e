@@ -1,20 +1,12 @@
 note
-
 	component:   "openEHR Common Archetype Model"
-
 	description: "Constrainer type for instances of TIME"
 	keywords:    "archetype, date, data"
-
 	design:      "openEHR Common Archetype Model 0.2"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2000- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class C_TIME
 
@@ -38,7 +30,7 @@ create
 
 feature -- Initialisation
 
-	make_range (an_interval: attached INTERVAL[ISO8601_TIME])
+	make_range (an_interval: INTERVAL[ISO8601_TIME])
 			-- make from a time interval
 		do
 			range := an_interval
@@ -46,33 +38,39 @@ feature -- Initialisation
 			Interval_set: range = an_interval
 		end
 
-	make_string_range (a_lower, an_upper: STRING)
+	make_string_range (a_lower_str, an_upper_str: detachable STRING)
 			-- make from two iso8601 strings. Either may be Void, indicating an open-ended interval;
-			-- they may also be the same, meaning a single point. Limits, where provided are automatically
+			-- they may also be the same, meaning a single point. Limits, where provided, are automatically
 			-- included in the interval
 		require
-			valid_interval: a_lower /= Void or an_upper /= Void
-			lower_exists: a_lower /= void implies valid_iso8601_time(a_lower)
-			upper_exists: an_upper /= void implies valid_iso8601_time(an_upper)
-			valid_order: (a_lower /= Void and an_upper /= Void) implies
-						(iso8601_string_to_time(a_lower) <= iso8601_string_to_time(an_upper))
+			valid_interval: a_lower_str /= Void or an_upper_str /= Void
+			lower_valid: attached a_lower_str as l_str implies valid_iso8601_time (l_str)
+			upper_valid: attached an_upper_str as u_str implies valid_iso8601_time (u_str)
+			valid_order: (attached a_lower_str as l_str and attached an_upper_str as u_str) implies
+						(iso8601_string_to_time (l_str) <= iso8601_string_to_time (u_str))
+		local
+			lower, upper: detachable ISO8601_TIME
 		do
-			if a_lower = Void then
-				create range.make_lower_unbounded (create {ISO8601_TIME}.make_from_string(an_upper), True)
-			else
-				if an_upper = Void then
-					create range.make_upper_unbounded (create {ISO8601_TIME}.make_from_string(a_lower), True)
-				else
-					create range.make_bounded (create {ISO8601_TIME}.make_from_string(a_lower),
-						create {ISO8601_TIME}.make_from_string(an_upper), True, True)
-				end
+			if attached a_lower_str as l_str then
+				create lower.make_from_string (l_str)
+			end
+			if attached an_upper_str as u_str then
+				create upper.make_from_string (u_str)
+			end
+
+			if attached lower as l and attached upper as u then
+				create range.make_bounded (l, u, True, True)
+			elseif attached upper as u then
+				create range.make_lower_unbounded (u, True)
+			elseif attached lower as l then
+				create range.make_upper_unbounded (l, True)
 			end
 		end
 
-	make_from_pattern(a_pattern: STRING)
+	make_from_pattern (a_pattern: STRING)
 			-- create Result from an ISO8601-based pattern like "hh:mm:??"
 		require
-			a_pattern_valid: a_pattern /= Void and then valid_iso8601_time_constraint_pattern(a_pattern)
+			a_pattern_valid: valid_iso8601_time_constraint_pattern(a_pattern)
 		do
 			pattern := a_pattern
 		ensure
@@ -81,17 +79,24 @@ feature -- Initialisation
 
 feature -- Access
 
-	range: INTERVAL[ISO8601_TIME]
+	range: detachable INTERVAL [ISO8601_TIME]
 
-	pattern: STRING
+	pattern: detachable STRING
 			-- ISO8601-based pattern like "hh:mm:??"
 
 	prototype_value: ISO8601_TIME
 		do
-			if range /= Void then
-				Result := range.lower
+			if attached range as rng then
+				if attached rng.lower as l then
+					Result := l
+				elseif attached rng.upper as u then
+					Result := u
+				else
+					create Result.default_create
+				end
 			else
 				-- Result := FIXME - generate a default from a pattern
+				create Result.default_create
 			end
 		end
 
@@ -105,8 +110,8 @@ feature -- Status Report
 
 	valid_value (a_value: ISO8601_TIME): BOOLEAN
 		do
-			if range /= Void then
-				Result := range.has(a_value)
+			if attached range as att_rng then
+				Result := att_rng.has (a_value)
 			else
 				-- Result := a_value matches pattern FIXME - to be implemented
 				Result := True
@@ -118,10 +123,10 @@ feature -- Comparison
 	node_conforms_to (other: like Current): BOOLEAN
 			-- True if this node is a subset of, or the same as `other'
 		do
-			if pattern /= Void then
-				Result := valid_time_constraint_replacements.item(other.pattern.as_upper).has(pattern.as_upper)
-			else
-				Result := other.range.contains (range)
+			if attached pattern as att_pattern and attached other.pattern as att_other_pattern then
+				Result := valid_time_constraint_replacements.item (att_other_pattern.as_upper).has (att_pattern.as_upper)
+			elseif attached range as att_range and attached other.range as other_att_range then
+				Result := other_att_range.contains (att_range)
 			end
 		end
 
@@ -130,19 +135,19 @@ feature -- Output
 	as_string: STRING
 		do
 			create Result.make(0)
-			if range /= Void then
-				Result.append ("|" + range.as_string + "|")
-			else
-				Result.append (pattern)
+			if attached range as rng then
+				Result.append ("|" + rng.as_string + "|")
+			elseif attached pattern as pat then
+				Result.append (pat)
 			end
-			if assumed_value /= Void then
-				Result.append ("; " + assumed_value.out)
+			if attached assumed_value as av then
+				Result.append ("; " + av.out)
 			end
 		end
 
 invariant
 	Basic_validity: range /= Void xor pattern /= Void
-	Pattern_validity: pattern /= Void implies valid_iso8601_time_constraint_pattern(pattern)
+	Pattern_validity: attached pattern as p implies valid_iso8601_time_constraint_pattern (p)
 
 end
 

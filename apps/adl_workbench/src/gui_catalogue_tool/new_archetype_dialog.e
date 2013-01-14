@@ -120,6 +120,9 @@ feature -- Events
 			if source.has_item_with_id (archetype_id.as_string) then
 				create error_dialog.make_with_text (get_msg ("duplicate_archetype_id_err_msg", <<archetype_id.as_string>>))
 				error_dialog.show_modal_to_window (Current)
+			elseif not has_rm_schema_for_id (archetype_id) then
+				create error_dialog.make_with_text (get_msg ("model_access_e7", <<archetype_id.qualified_package_name>>))
+				error_dialog.show_modal_to_window (Current)
 			else
 				archetype_directory := dir_setter.data_control_text
 				is_valid := True

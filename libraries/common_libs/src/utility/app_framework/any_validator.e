@@ -24,6 +24,7 @@ feature -- Initialisation
 			-- initialise reporting variables
 		do
 			passed := True
+			create error_cache.make
 		ensure
 			Passed: passed
 		end
@@ -32,10 +33,13 @@ feature -- Access
 
 	errors: ERROR_ACCUMULATOR
 			-- error output of validator - things that must be corrected
-		note
-			option: transient
-		attribute
-			create Result.make
+		do
+			if attached error_cache as att_errors then
+				Result := att_errors
+			else
+				create Result.make
+				error_cache := Result
+			end
 		end
 
 feature -- Status Report
@@ -52,38 +56,38 @@ feature -- Status Report
 
 feature -- Modification
 
-	add_error (a_key: STRING; args: ARRAY [STRING])
+	add_error (a_key: STRING; args: detachable ARRAY [STRING])
 			-- append an error with key `a_key' and `args' array to the `errors' string
 		do
 			add_error_with_location (a_key, args, "")
 		end
 
-	add_warning (a_key: STRING; args: ARRAY [STRING])
+	add_warning (a_key: STRING; args: detachable ARRAY [STRING])
 			-- append a warning with key `a_key' and `args' array to the `warnings' string
 		do
 			add_warning_with_location (a_key, args, "")
 		end
 
-	add_info (a_key: STRING; args: ARRAY [STRING])
+	add_info (a_key: STRING; args: detachable ARRAY [STRING])
 			-- append an information message with key `a_key' and `args' array to the `information' string
 		do
 			add_info_with_location (a_key, args, "")
 		end
 
-	add_error_with_location (a_key: STRING; args: ARRAY [STRING]; a_location: STRING)
+	add_error_with_location (a_key: STRING; args: detachable ARRAY [STRING]; a_location: STRING)
 			-- append an error with key `a_key' and `args' array to the `errors' string
 		do
 			errors.extend (create {ERROR_DESCRIPTOR}.make_error (a_key, get_msg(a_key, args), a_location))
 			passed := False
 		end
 
-	add_warning_with_location (a_key: STRING; args: ARRAY [STRING]; a_location: STRING)
+	add_warning_with_location (a_key: STRING; args: detachable ARRAY [STRING]; a_location: STRING)
 			-- append a warning with key `a_key' and `args' array to the `warnings' string
 		do
 			errors.extend (create {ERROR_DESCRIPTOR}.make_warning (a_key, get_msg(a_key, args), a_location))
 		end
 
-	add_info_with_location(a_key: STRING; args: ARRAY [STRING]; a_location: STRING)
+	add_info_with_location(a_key: STRING; args: detachable ARRAY [STRING]; a_location: STRING)
 			-- append an information message with key `a_key' and `args' array to the `information' string
 		do
 			errors.extend (create {ERROR_DESCRIPTOR}.make_info (a_key, get_msg(a_key, args), a_location))
@@ -111,6 +115,15 @@ feature -- Validation
 		require
 			ready_to_validate
 		deferred
+		end
+
+feature {NONE} -- Access
+
+	error_cache: detachable ERROR_ACCUMULATOR
+			-- error output of validator - things that must be corrected
+		note
+			option: transient
+		attribute
 		end
 
 end

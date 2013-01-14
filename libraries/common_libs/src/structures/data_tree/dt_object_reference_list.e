@@ -2,14 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "A node that contains a list of references to other nodes, implemented by paths. Serialises an object non-containment reference list."
 	keywords:    "data tree, serialisation, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2009 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class DT_OBJECT_REFERENCE_LIST
 
@@ -28,12 +24,12 @@ create
 
 feature -- Access
 
-	value: SEQUENCE[OG_PATH]
+	value: SEQUENCE [OG_PATH]
 			-- list of path references
 
 feature -- Modification
 
-	set_value(a_value: like value)
+	set_value (a_value: like value)
 		do
 			value := a_value
 		end

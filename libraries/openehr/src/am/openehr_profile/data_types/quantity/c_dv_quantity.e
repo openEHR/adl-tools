@@ -2,10 +2,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Object node type representing constraint on QUANTITY"
 	keywords:    "quantity, archetype, clinical type, ADL"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2004- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 class C_DV_QUANTITY
@@ -24,7 +23,7 @@ inherit
 		end
 
 create
-	make, make_dt
+	make_dt, default_create
 
 feature -- Access
 
@@ -39,42 +38,37 @@ feature -- Access
 			-- FIXME: This should be of type DV_QUANTITY.
 		local
 			a_mag: REAL
-			a_mag_ivl: INTERVAL [REAL]
 			a_prec: INTEGER
-			a_prec_ivl: INTERVAL [INTEGER]
  		do
- 			if assumed_value /= Void then
- 				Result := assumed_value
+ 			if attached assumed_value as av then
+ 				Result := av
  			elseif any_allowed then
  				create Result
- 			elseif list /= Void then
-				a_mag_ivl := list.first.magnitude
-
- 				if a_mag_ivl /= Void then
-					if not a_mag_ivl.lower_unbounded then
-						a_mag := a_mag_ivl.upper
-					elseif not a_mag_ivl.upper_unbounded then
-						a_mag := a_mag_ivl.lower
+ 			elseif attached list as att_list then
+				if attached att_list.first.magnitude as mag_ivl then
+					if not mag_ivl.lower_unbounded then
+						a_mag := mag_ivl.upper
+					elseif not mag_ivl.upper_unbounded then
+						a_mag := mag_ivl.lower
 					else
 						-- a_mag := 0.0
 					end
 				end
 
-				a_prec_ivl := list.first.precIsion
-
- 				if a_prec_ivl /= Void then
-					if not a_prec_ivl.lower_unbounded then
-						a_prec := a_prec_ivl.upper
-					elseif not a_prec_ivl.upper_unbounded then
-						a_prec := a_prec_ivl.lower
+				if attached list.first.precIsion as prec_ivl then
+					if not prec_ivl.lower_unbounded then
+						a_prec := prec_ivl.upper
+					elseif not prec_ivl.upper_unbounded then
+						a_prec := prec_ivl.lower
 					else
 						-- a_prec := 0.0
 					end
 				end
 
 				create Result.make (a_mag, list.first.units, a_prec)
+
 			else -- property must be the only thing set...
-				create Result.make (a_mag, default_units, -1)
+				create Result.make (0.0, default_units, -1)
  			end
 		end
 
@@ -85,16 +79,15 @@ feature -- Statistics
 		do
 			create Result.make(0)
 			Result.compare_objects
-			if attached list then
+			if attached list as att_list then
 				Result.extend ("units")
-				from list.start until list.off loop
-					if attached list.item.magnitude then
+				across att_list as list_csr loop
+					if attached list_csr.item.magnitude then
 						Result.extend ("magnitude")
 					end
-					if attached list.item.precision then
+					if attached list_csr.item.precision then
 						Result.extend ("precision")
 					end
-					list.forth
 				end
 			end
 		end
@@ -167,12 +160,14 @@ feature -- Comparison
 				if other.any_allowed then
 					Result := True
 				elseif not any_allowed then
-					if (property = Void and other.property = Void) or else property.is_equal (other.property) then
+					if (property = Void and other.property = Void) or else
+						attached property as prop and then attached other.property as other_prop and then prop.is_equal (other_prop)
+					then
 						if (list = Void and other.list = Void) then
 							Result := True
-						elseif list /= Void and other.list /= Void and list.count <= other.list.count then
+						elseif attached list as lst and then attached other.list as other_lst and then lst.count <= other_lst.count then
 							-- there has to be an item in `other' with same units as item in Current, and conformant magnitude
-							Result := across list as list_csr all
+							Result := across lst as list_csr all
 								attached {C_QUANTITY_ITEM} other.list_item_by_units (list_csr.item.units) as other_cqi
 									and then list_csr.item.node_conforms_to (other_cqi)
 							end
@@ -193,6 +188,7 @@ feature -- Conversion
 	standard_equivalent: C_COMPLEX_OBJECT
 		do
 			-- FIXME: to be implemented
+			create Result.make_anonymous (rm_type_name)
 		end
 
 feature -- Visitor
@@ -207,7 +203,7 @@ feature -- Visitor
 	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
-            precursor(visitor, depth)
+            precursor (visitor, depth)
 			visitor.end_c_quantity(Current, depth)
 		end
 

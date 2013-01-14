@@ -7,15 +7,10 @@ note
 				 archetype.
 		         ]"
 	keywords:    "constraint model"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2007-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class ARCHETYPE_VALIDATOR
 
@@ -42,7 +37,9 @@ feature {ADL15_ENGINE} -- Initialisation
 		do
 			rm_schema := an_rm_schema
 			target_descriptor := ara
-			initialise_authored_resource (target_descriptor.differential_archetype)
+			if attached target_descriptor.differential_archetype as arch then
+				initialise_authored_resource (arch)
+			end
 		ensure
 			target_descriptor_set: target_descriptor = ara
 			target_set: attached target

@@ -287,8 +287,6 @@ feature {NONE} -- Implementation
 
 	xml_attrs_for_dt_complex_object (a_dt_obj: DT_COMPLEX_OBJECT_NODE): HASH_TABLE [STRING, STRING]
 			-- generate XML attribute table for `a_dt_obj' based on XML rules, if any found
-		local
-			attr_name: STRING
 		do
 			if attached serialisation_rules.rules_for_type (a_dt_obj.im_type_name) as srt then
 				create Result.make (0)
@@ -309,22 +307,20 @@ feature {NONE} -- Implementation
 
 				-- for each rule of type 'convert object value to XML attribute', see if the attribute exists
 				-- and if so, construct the appropriate XML attribute information to put into the tag, below
-				if attached srt.convert_to_xml_attr_attr_names then
-					from srt.convert_to_xml_attr_attr_names.start until srt.convert_to_xml_attr_attr_names.off loop
-						attr_name := srt.convert_to_xml_attr_attr_names.item
-						if a_dt_obj.has_attribute (attr_name) and then
-							attached {DT_PRIMITIVE_OBJECT} a_dt_obj.attribute_node (attr_name).first_child as dt_po
+				if attached srt.convert_to_xml_attr_attr_names as cvt_names then
+					across cvt_names as cvt_names_csr loop
+						if a_dt_obj.has_attribute (cvt_names_csr.item) and then
+							attached {DT_PRIMITIVE_OBJECT} a_dt_obj.attribute_node (cvt_names_csr.item).first_child as dt_po
 						then
-							dt_attr_nodes_to_ignore.extend (a_dt_obj.attribute_node (attr_name))
-							Result.put (dt_po.value.out, attr_name)
+							dt_attr_nodes_to_ignore.extend (a_dt_obj.attribute_node (cvt_names_csr.item))
+							Result.put (dt_po.value.out, cvt_names_csr.item)
 						end
-						srt.convert_to_xml_attr_attr_names.forth
 					end
 				end
 			end
 		end
 
-	xml_attrs_for_dt_primitive_object (a_dt_obj: DT_PRIMITIVE_OBJECT): HASH_TABLE [STRING, STRING]
+	xml_attrs_for_dt_primitive_object (a_dt_obj: DT_PRIMITIVE_OBJECT): detachable HASH_TABLE [STRING, STRING]
 			-- generate XML attribute table for `a_dt_obj' based on XML rules, if any found
 		do
 			if attached serialisation_rules.rules_for_type (a_dt_obj.im_type_name) as srt then

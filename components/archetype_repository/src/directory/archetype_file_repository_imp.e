@@ -2,14 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "File-system repository of archetypes - implementation of ARCHETYPE_REPOSITORY_I."
 	keywords:    "ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class
 	ARCHETYPE_FILE_REPOSITORY_IMP
@@ -25,9 +21,14 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_REFERENCE_MODEL_ACCESS
+		export
+			{NONE} all
+		end
+
 feature -- Access
 
-	text: STRING
+	text: detachable STRING
 			-- Contents of the last opened archetype file.
 
 	text_timestamp: INTEGER
@@ -35,15 +36,15 @@ feature -- Access
 
 feature -- Status Report
 
-	is_valid_directory_part (path: attached STRING): BOOLEAN
+	is_valid_directory_part (path: STRING): BOOLEAN
 			-- Is the directory part of `path', whose last section is a filename, valid on the repository medium?
 		do
-			if not path.is_empty then
-				Result := is_valid_directory (file_system.dirname (path))
+			if not path.is_empty and attached file_system.dirname (path) as dn then
+				Result := is_valid_directory (dn)
 			end
 		end
 
-	has_file_changed_on_disk (path: attached STRING; timestamp: INTEGER): BOOLEAN
+	has_file_changed_on_disk (path: STRING; timestamp: INTEGER): BOOLEAN
 			-- Has the loaded archetype designated by `path' changed on disk since last read?
 		do
 			file_context.set_target (path)
@@ -53,7 +54,7 @@ feature -- Status Report
 
 feature -- Commands
 
-	read_text_from_file (full_path: attached STRING)
+	read_text_from_file (full_path: STRING)
 			-- Read `text' and `text_timestamp' from the file designated by `full_path' on the repository medium.
 		do
 			file_context.set_target (full_path)
@@ -62,7 +63,7 @@ feature -- Commands
 			text_timestamp := file_context.file_timestamp
 		end
 
-	save_text_to_file (full_path, a_text: attached STRING)
+	save_text_to_file (full_path, a_text: STRING)
 			-- Save `a_text' to the file designated by `full_path' on the repository medium.
 		do
 			if file_context.file_writable (full_path) then
@@ -74,7 +75,7 @@ feature -- Commands
 			end
 		end
 
-	delete_file (full_path: attached STRING)
+	delete_file (full_path: STRING)
 			-- Delete file designated by `full_path' on the repository medium.
 		do
 			file_system.delete_file (full_path)
@@ -82,19 +83,19 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	file_context: attached FILE_CONTEXT
+	file_context: FILE_CONTEXT
 			-- Access to the file system.
 		once
-			create Result.make
+			create Result
 		end
 
-	adl_legacy_flat_filename_pattern_regex: attached LX_DFA_REGULAR_EXPRESSION
+	adl_legacy_flat_filename_pattern_regex: LX_DFA_REGULAR_EXPRESSION
 			-- Pattern matcher for filenames ending in ".adl".
 		once
 			create Result.compile_case_insensitive (".*\" + File_ext_archetype_adl14 + "$")
 		end
 
-	adl_differential_filename_pattern_regex: attached LX_DFA_REGULAR_EXPRESSION
+	adl_differential_filename_pattern_regex: LX_DFA_REGULAR_EXPRESSION
 			-- Pattern matcher for filenames ending in ".adls".
 		once
 			create Result.compile_case_insensitive (".*\" + File_ext_archetype_source + "$")

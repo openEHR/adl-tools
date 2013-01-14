@@ -1,18 +1,16 @@
 note
 	component:   "openEHR re-usable library"
 	description: "Definition concepts for the basic meta-model"
-	keywords:    "model, UML"
-
-	author:      "Thomas Beale"
+	keywords:    "basic meta-model"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2009 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class BMM_DEFINITIONS
+
+inherit
+	BASIC_DEFINITIONS
 
 feature -- Software-dependent definitions
 
@@ -22,6 +20,8 @@ feature -- Software-dependent definitions
 			-- found, the `Assumed_bmm_version' is used.
 
 feature -- Definitions
+
+	Ontological_path_separator: STRING = "/"
 
 	Section_separator: CHARACTER = '-'
 			-- separator between sections in an archetype identifier axis
@@ -39,9 +39,13 @@ feature -- Definitions
 	Generic_constraint_delimiter: CHARACTER = ':'
 			-- appears between 'T' and constraining type if there is one
 
-	Unknown_package_name: STRING = "unknown_package"
+	Unknown_package_name: STRING = "(uninitialised)"
 
-	Any_type: STRING = "Any"
+	Unknown_schema_id: STRING = "(uninitialised)"
+
+	Unknown_schema_name: STRING = "(uninitialised)"
+
+	Unknown_type_name: STRING = "UNKNOWN"
 
 	Type_cat_primitive_class: STRING = "class_primitive"
 	Type_cat_concrete_class: STRING = "class_concrete"
@@ -106,6 +110,15 @@ feature -- Definitions
 			-- version of BMM to assume for a schema that doesn't have the bmm_version attribute
 
 feature -- Comparison
+
+	valid_meta_data (a_meta_data: HASH_TABLE [STRING, STRING]): BOOLEAN
+			-- True if `a_meta_data' is valid for creation of a SCHEMA_DESCRIPTOR
+		do
+			Result := attached a_meta_data.item (metadata_rm_publisher) and
+				attached a_meta_data.item (metadata_schema_name) and
+				attached a_meta_data.item (metadata_rm_release) and
+				attached a_meta_data.item (Metadata_schema_path)
+		end
 
 	is_well_formed_type_name (a_type_name: attached STRING): BOOLEAN
 			-- True if the type name has a valid form, either a single name or a well-formed generic

@@ -2,16 +2,11 @@ note
 	component:   "openEHR Archetype Project"
 	description: "ADL Terminology class"
 	keywords:    "archetype, ontology, terminology"
-
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class FLAT_ARCHETYPE_ONTOLOGY
 
@@ -19,7 +14,32 @@ inherit
 	ARCHETYPE_ONTOLOGY
 
 create
-	make
+	make, make_from_differential
+
+feature -- Initialisation
+
+	make_from_differential (a_diff: DIFFERENTIAL_ARCHETYPE_ONTOLOGY)
+			-- populate from a differential ontology. Finalisation will involve
+			-- merging of codes from parent archetype ontologies if this ontology
+			-- belongs to a specialised archetype
+		local
+			a_diff_copy: DIFFERENTIAL_ARCHETYPE_ONTOLOGY
+		do
+			a_diff_copy := a_diff.deep_twin
+
+			concept_code := a_diff_copy.concept_code
+			original_language := a_diff_copy.original_language
+
+			term_definitions := a_diff_copy.term_definitions
+			constraint_definitions := a_diff_copy.constraint_definitions
+
+			term_codes := a_diff_copy.term_codes
+			constraint_codes := a_diff_copy.constraint_codes
+
+			term_bindings := a_diff_copy.term_bindings
+			constraint_bindings := a_diff_copy.constraint_bindings
+			highest_refined_code_index := a_diff_copy.highest_refined_code_index
+		end
 
 feature -- Modification
 

@@ -7,9 +7,9 @@ note
 				 enabling archetypes to be added adhoc to a directory.
 				 ]"
 	keywords:    "ADL"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2006-2010 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 class SHARED_ARCHETYPE_CATALOGUES
@@ -23,11 +23,16 @@ feature -- Access
 			-- application-wide archetype directory access
 		require
 			is_current_profile_valid
+		local
+			curr_prof_name: STRING
 		do
-			if not arch_cats.has (repository_profiles.current_profile_name) then
+			check attached repository_profiles.current_profile_name as cpn then
+				curr_prof_name := cpn
+			end
+			if not arch_cats.has (curr_prof_name) then
 				use_current_profile (False)
 			end
-			Result := arch_cats.item (repository_profiles.current_profile_name)
+			Result := arch_cats.item (curr_prof_name)
 		end
 
 	use_current_profile (refresh: BOOLEAN)
@@ -39,14 +44,14 @@ feature -- Access
 			prof_repo_access: PROFILE_REPOSITORY_ACCESS
 		do
 			init_gen_dirs_from_current_profile
-			if not arch_cats.has (repository_profiles.current_profile_name) or else refresh then
+			if attached repository_profiles.current_profile_name as cpn and then not arch_cats.has (cpn) or else refresh then
 				create prof_repo_access.make (repository_profiles.current_reference_repository_path)
 				if repository_profiles.current_profile.has_work_repository then
 					prof_repo_access.set_work_repository (repository_profiles.current_work_repository_path)
 				end
 				create new_cat.make (prof_repo_access)
 				new_cat.populate
-				arch_cats.force (new_cat, repository_profiles.current_profile_name) -- replace original copy if it was there
+				arch_cats.force (new_cat, cpn) -- replace original copy if it was there
 			end
 		end
 
@@ -63,7 +68,8 @@ feature -- Status Report
 			Result := repository_profiles.has_profile (a_profile_name) and
 				directory_exists (repository_profiles.profile (a_profile_name).reference_repository) and
 				(repository_profiles.profile (a_profile_name).has_work_repository implies
-					directory_exists (repository_profiles.profile (a_profile_name).work_repository))
+					attached repository_profiles.profile (a_profile_name).work_repository as wr_dir and then
+					directory_exists (wr_dir))
 
 			-- TODO: potentially other checks as well
 		end
@@ -73,7 +79,7 @@ feature -- Status Report
 		require
 			has_current_profile
 		do
-			Result := is_profile_valid (repository_profiles.current_profile_name)
+			Result := attached repository_profiles.current_profile_name as cpn and then is_profile_valid (cpn)
 		end
 
 	invalid_profile_reason (a_profile_name: STRING): STRING
@@ -85,9 +91,9 @@ feature -- Status Report
 			elseif not directory_exists (repository_profiles.profile (a_profile_name).reference_repository) then
 				Result := get_msg ("ref_repo_not_found", <<repository_profiles.profile (a_profile_name).reference_repository>>)
 			elseif repository_profiles.profile (a_profile_name).has_work_repository and then
-				not directory_exists (repository_profiles.profile (a_profile_name).work_repository)
+				attached repository_profiles.profile (a_profile_name).work_repository as wr_dir and then not directory_exists (wr_dir)
 			then
-				Result := get_msg ("work_repo_not_found", <<repository_profiles.profile (a_profile_name).work_repository>>)
+				Result := get_msg ("work_repo_not_found", <<wr_dir>>)
 			end
 		end
 

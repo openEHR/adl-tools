@@ -4,13 +4,8 @@ note
 	keywords:    "archetype, editing"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class C_OBJECT_ED_CONTEXT
 
@@ -43,7 +38,7 @@ feature -- Definition
 
 feature -- Initialisation
 
-	make (an_arch_node: like arch_node; an_ed_context: ARCH_ED_CONTEXT_STATE)
+	make (an_arch_node: attached like arch_node; an_ed_context: ARCH_ED_CONTEXT_STATE)
 		do
 			precursor (an_arch_node, an_ed_context)
 			rm_type := ed_context.rm_schema.class_definition (arch_node.rm_type_name)
@@ -51,19 +46,19 @@ feature -- Initialisation
 
 feature -- Access
 
-	arch_node: C_OBJECT
+	arch_node: detachable C_OBJECT
 			-- archetype node being edited
 
 	rm_type: BMM_TYPE_SPECIFIER
 			-- RM class of node being edited
 
-	parent: C_ATTRIBUTE_ED_CONTEXT
+	parent: detachable C_ATTRIBUTE_ED_CONTEXT
 
 	path: STRING
 			-- path of this node with respect to top of archetype
 		do
-			if attached arch_node then
-				Result := arch_node.path
+			if attached arch_node as an then
+				Result := an.path
 			else
 				Result := parent.path
 			end

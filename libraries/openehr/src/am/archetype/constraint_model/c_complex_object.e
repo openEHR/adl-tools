@@ -10,9 +10,9 @@ note
 			     	- 'any' node, meaning no constraint other than the type
 			     ]"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2009 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 	void_safety: "checked"
 
@@ -21,7 +21,7 @@ class C_COMPLEX_OBJECT
 inherit
 	C_DEFINED_OBJECT
 		redefine
-			default_create, representation, out
+			representation_cache, out
 		end
 
 create
@@ -29,22 +29,15 @@ create
 
 feature -- Initialisation
 
-	default_create
-			--
-		do
-			precursor
-			create attributes.make(0)
-		end
-
 	make_identified (a_rm_type_name, an_object_id: STRING)
 			-- set type name, object_id
 		require
 			Rm_type_name_valid: not a_rm_type_name.is_empty
 			Object_id_valid: not an_object_id.is_empty
 		do
-			default_create
-			create representation.make (an_object_id, Current)
 			rm_type_name := a_rm_type_name
+			create representation_cache.make (an_object_id)
+			representation_cache.set_content (Current)
 		end
 
 	make_anonymous (a_rm_type_name: STRING)
@@ -52,9 +45,9 @@ feature -- Initialisation
 		require
 			Rm_type_name_valid: not a_rm_type_name.is_empty
 		do
-			default_create
-			create representation.make_anonymous(Current)
 			rm_type_name := a_rm_type_name
+			create representation_cache.make_anonymous
+			representation_cache.set_content (Current)
 		end
 
 feature -- Source Control
@@ -79,8 +72,11 @@ feature -- Source Control
 feature -- Access
 
 	attributes: ARRAYED_LIST [C_ATTRIBUTE]
+		attribute
+			create Result.make (0)
+		end
 
-	c_attribute (an_attr_name: STRING): C_ATTRIBUTE
+	c_attribute (an_attr_name: STRING): detachable C_ATTRIBUTE
 		require
 			an_attr_name_valid: has_attribute(an_attr_name)
 		do
@@ -89,7 +85,7 @@ feature -- Access
 			end
 		end
 
-	c_attribute_at_path (a_path: STRING): C_ATTRIBUTE
+	c_attribute_at_path (a_path: STRING): detachable C_ATTRIBUTE
 			-- get C_ATTRIBUTE at a path (which doesn't terminate in '/')
 		require
 			a_path_valid: has_path (a_path)
@@ -99,7 +95,7 @@ feature -- Access
 			end
 		end
 
-	c_object_at_path (a_path: STRING): C_OBJECT
+	c_object_at_path (a_path: STRING): detachable C_OBJECT
 			-- get C_OBJECT at a path (which terminates in '/')
 		require
 			a_path_valid: has_path(a_path)
@@ -109,45 +105,37 @@ feature -- Access
 			end
 		end
 
-	all_paths_at_path (a_path: STRING): HASH_TABLE [C_OBJECT, STRING]
+	all_paths_at_path (a_path: STRING): HASH_TABLE [detachable C_OBJECT, STRING]
 			-- all paths starting at node found at a_path, including itself
 		require
 			Path_valid: has_path(a_path)
-		local
-			og_paths: HASH_TABLE [OG_OBJECT, OG_PATH]
 		do
 			create Result.make(0)
 			if attached {OG_OBJECT_NODE} representation.object_node_at_path(create {OG_PATH}.make_from_string(a_path)) as og_node then
-				og_paths := og_node.all_paths
-				from og_paths.start until og_paths.off loop
-					if attached {OG_OBJECT} og_paths.item_for_iteration as og_obj then
+				across og_node.all_paths as paths_csr loop
+					if attached {OG_OBJECT} paths_csr.item as og_obj then
 						if attached {C_OBJECT} og_obj.content_item as c_obj then
-							Result.put (c_obj, og_paths.key_for_iteration.as_string)
+							Result.put (c_obj, paths_csr.key.as_string)
 						end
 					else
-						Result.put (Void, og_paths.key_for_iteration.as_string)
+						Result.put (Void, paths_csr.key.as_string)
 					end
-					og_paths.forth
 				end
 			end
 		end
 
-	all_paths: HASH_TABLE [C_OBJECT, STRING]
+	all_paths: HASH_TABLE [detachable C_OBJECT, STRING]
 			-- All paths below this point, including this node.
-		local
-			og_paths: HASH_TABLE [OG_OBJECT, OG_PATH]
 		do
-			og_paths := representation.all_paths
 			create Result.make (0)
-			from og_paths.start until og_paths.off loop
-				if attached {OG_OBJECT} og_paths.item_for_iteration as og_obj then
+			across representation.all_paths as paths_csr loop
+				if attached {OG_OBJECT} paths_csr.item as og_obj then
 					if attached {C_OBJECT} og_obj.content_item as c_obj then
-						Result.put (c_obj, og_paths.key_for_iteration.as_string)
+						Result.put (c_obj, paths_csr.key.as_string)
 					end
 				else
-					Result.put (Void, og_paths.key_for_iteration.as_string)
+					Result.put (Void, paths_csr.key.as_string)
 				end
-				og_paths.forth
 			end
 		end
 
@@ -155,6 +143,7 @@ feature -- Access
 			-- 	generate a default value from this constraint object
 		do
 			-- FIXME: to be implemented
+			Result := "to be implemented"
 		end
 
 feature -- Status Report
@@ -229,12 +218,11 @@ feature -- Modification
 			-- remove an existing attribute
 		require
 			Attribute_name_valid: has_attribute (an_attr_name)
-		local
-			ca: C_ATTRIBUTE
 		do
-			ca := c_attribute (an_attr_name)
-			attributes.prune_all(ca)
-			representation.remove_child (ca.representation)
+			if attached c_attribute (an_attr_name) as ca then
+				attributes.prune_all (ca)
+				representation.remove_child (ca.representation)
+			end
 		ensure
 			not has_attribute (an_attr_name)
 		end
@@ -253,14 +241,10 @@ feature -- Output
 		do
 			create Result.make(0)
 			Result.append (rm_type_name + "[" + node_id + "] ")
-			if attached occurrences then
-				Result.append(occurrences.as_string)
+			if attached occurrences as occ then
+				Result.append (occ.as_string)
 			end
 		end
-
-feature -- Representation
-
-	representation: OG_OBJECT_NODE
 
 feature -- Visitor
 
@@ -280,9 +264,22 @@ feature {NONE} -- Implementation
 
 	child_type: C_ATTRIBUTE
 			-- child parse nodes
+		once
+			create Result
+		end
+
+feature -- Representation
+
+	representation_cache: detachable OG_OBJECT_NODE
 		note
 			option: transient
 		attribute
+		end
+
+	create_default_representation: attached like representation_cache
+			-- create a reasonable `representation' instance
+		do
+			create Result.make_anonymous
 		end
 
 invariant

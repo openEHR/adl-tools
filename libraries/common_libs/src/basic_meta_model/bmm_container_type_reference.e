@@ -95,13 +95,6 @@ feature -- Status Report
 			Result := container_type.has_type_substitutions or type.has_type_substitutions
 		end
 
-feature -- Conversion
-
-	as_generic_type_specifier: BMM_GENERIC_TYPE_REFERENCE
-		do
-			-- create Result.make(container_type, <<type>>)
-		end
-
 feature -- Output
 
 	as_type_string: STRING

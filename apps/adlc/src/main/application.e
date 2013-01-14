@@ -53,6 +53,9 @@ feature -- Initialization
 feature -- Access
 
 	output_format: STRING
+		attribute
+			create Result.make_from_string (Syntax_type_adl)
+		end
 
 feature -- Status Report
 
@@ -124,14 +127,14 @@ feature -- Commands
 									io.put_string (get_msg ("invalid_serialisation_format_err", <<of, archetype_all_serialiser_formats_string>>))
 									finished := True
 								end
-							else
-								output_format := Syntax_type_adl
 							end
 
 							-- perform action for all matching archetypes
 							if not finished then
 								across matched_archetype_ids as arch_ids_csr loop
-									aca := current_arch_cat.archetype_index.item (arch_ids_csr.item)
+									check attached current_arch_cat.archetype_index.item (arch_ids_csr.item) as aii then
+										aca := aii
+									end
 									archetype_compiler.build_lineage (aca, 0)
 
 									-- process action
@@ -158,6 +161,9 @@ feature -- Commands
 feature {NONE} -- Implementation
 
 	matched_archetype_ids: ARRAYED_LIST [STRING]
+		attribute
+			create Result.make (0)
+		end
 
 	valid_actions_string: STRING
 		once
@@ -184,7 +190,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	compiler_archetype_gui_update (msg: STRING; ara: detachable ARCH_CAT_ARCHETYPE; depth: INTEGER)
+	compiler_archetype_gui_update (msg: STRING; ara: ARCH_CAT_ARCHETYPE; depth: INTEGER)
 			-- Update UI with progress on build.
 		do
 			if verbose_output then

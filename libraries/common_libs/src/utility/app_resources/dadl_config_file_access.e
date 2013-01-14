@@ -171,15 +171,13 @@ feature -- Modification
 			-- FIXME: currently only works for single child paths, i.e. not where the paths ends with xxx[zzz]
 		local
 			obj_dt_tree: DT_COMPLEX_OBJECT_NODE
-			dt_attr: DT_ATTRIBUTE_NODE
 		do
 			if not attached dt_tree then
 				create_default_dt_tree
 			end
 			obj_dt_tree := object_converter.object_to_dt (a_value)
 			if not object_converter.errors.has_errors then
-				if has_resource (a_path) then
-					dt_attr := dt_tree.attribute_node_at_path (a_path)
+				if has_resource (a_path) and then attached dt_tree.attribute_node_at_path (a_path) as dt_attr then
 					dt_attr.remove_all_children
 					dt_attr.put_child (obj_dt_tree)
 				else
@@ -202,16 +200,15 @@ feature -- Element Removal
 	remove_resource (a_path: STRING)
 			-- remove the resource resource_name
 		require
-            Valid_path: has_resource(a_path)
-        local
-        	dt_obj: DT_OBJECT_ITEM
+            Valid_path: has_resource (a_path)
 		do
-			dt_obj := dt_tree.node_at_path (a_path)
-			if not dt_obj.is_root then
-				dt_obj.parent.remove_child (dt_obj)
+			check attached dt_tree.node_at_path (a_path) as dt_obj then
+				if not dt_obj.is_root then
+					dt_obj.parent.remove_child (dt_obj)
+				end
 			end
 		ensure
-			Path_removed: not has_resource(a_path)
+			Path_removed: not has_resource (a_path)
 		end
 
 feature -- Commands
@@ -227,22 +224,26 @@ feature -- Commands
 		end
 
 	save
+		require
+			attached dt_tree
 		local
 			a_dt_iterator: DT_VISITOR_ITERATOR
 			res_file: PLAIN_TEXT_FILE
-			dir: STRING
 		do
 			-- serialise to a String
 			dt_serialiser.reset
-			create a_dt_iterator.make (dt_tree, dt_serialiser)
+			check attached dt_tree as dtt then
+				create a_dt_iterator.make (dtt, dt_serialiser)
+			end
 			a_dt_iterator.do_all
 
 			-- write to the config file
 			create res_file.make (file_path)
 			if not file_system.file_exists (file_path) then
-				dir := file_system.dirname (file_path)
-				if not file_system.directory_exists (dir) then
-					file_system.recursive_create_directory (dir)
+				check attached file_system.dirname (file_path) as dir then
+					if not file_system.directory_exists (dir) then
+						file_system.recursive_create_directory (dir)
+					end
 				end
 				res_file.create_read_write
 			else
@@ -288,11 +289,11 @@ feature {NONE} -- Implementation
 
 	env_var_pattern: STRING = "\$[a-zA-Z0-9_]+"
 
-	dt_tree: DT_COMPLEX_OBJECT_NODE
+	dt_tree: detachable DT_COMPLEX_OBJECT_NODE
 
-	dt_serialiser: attached DT_DADL_SERIALISER
+	dt_serialiser: DT_DADL_SERIALISER
 		once
-			create Result.make(create {NATIVE_DADL_SERIALISATION_PROFILE}.make("dadl"))
+			create Result.make(create {NATIVE_DADL_SERIALISATION_PROFILE}.make ("dadl"))
 		end
 
 	create_default_dt_tree

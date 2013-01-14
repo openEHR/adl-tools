@@ -2,16 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Descriptor of a node in a directory of archetypes"
 	keywords:    "ADL, archetype"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 
 deferred class ARCH_CAT_ITEM
 
@@ -49,10 +43,6 @@ inherit
 		end
 
 	COMPARABLE
-
-feature -- Definitions
-
-	Ontological_path_separator: STRING = "/"
 
 feature -- Access
 
@@ -92,8 +82,8 @@ feature -- Access
 			-- for specialised archetypes, it will look like 	/content_item/care_entry/observation/lab_result/microbiology
 		do
 			create Result.make (0)
-			if parent /= Void then
-				Result.append (parent.path + Ontological_path_separator)
+			if attached parent as p then
+				Result.append (p.path + Ontological_path_separator)
 			end
 			Result.append (name)
 		end
@@ -113,10 +103,12 @@ feature -- Access
 		require
 			has_child_with_qualified_key (a_key)
 		do
-			from children.start until children.off or children.item.qualified_key.same_string (a_key) loop
-				children.forth
+			check attached children as c then
+				from c.start until c.off or c.item.qualified_key.same_string (a_key) loop
+					c.forth
+				end
+				Result := c.item
 			end
-			Result := children.item
 		end
 
 	global_artefact_category: STRING
@@ -152,14 +144,14 @@ feature -- Status Report
 
 	has_child (a_child: attached like child_type): BOOLEAN
 		do
-			Result := attached children and then children.has (a_child)
+			Result := attached children as c and then c.has (a_child)
 		end
 
 	has_child_with_qualified_key (a_key: STRING): BOOLEAN
 		require
 			Lower_case_key: a_key.as_lower.same_string (a_key)
 		do
-			Result := attached children and then children.there_exists (
+			Result := attached children as c and then c.there_exists (
 				agent (a_child: like child_type; key: STRING):BOOLEAN
 					do
 						Result := a_child.qualified_key.same_string (key)
@@ -170,18 +162,23 @@ feature -- Status Report
    	has_matching_children (test_agt: FUNCTION [ANY, TUPLE [ARCH_CAT_ITEM], BOOLEAN]): BOOLEAN
    			-- true if any direct children of the types mentioned in `artefact_types'
 		do
- 			Result := attached children and then
- 				across children as child_csr some test_agt.item ([child_csr.item]) end
+ 			Result := attached children as c and then
+ 				across c as child_csr some test_agt.item ([child_csr.item]) end
 		end
 
 feature {ARCHETYPE_CATALOGUE} -- Modification
 
 	put_child (a_child: like child_type)
+		local
+			att_children: attached like children
 		do
-			if children = Void then
-				create children.make
+			if attached children as c then
+				att_children := c
+			else
+				create att_children.make
+				children := att_children
 			end
-			children.extend (a_child)
+			att_children.extend (a_child)
 			a_child.set_parent (Current)
 			reset_subtree_artefact_count
 		end
@@ -190,8 +187,15 @@ feature {ARCHETYPE_CATALOGUE} -- Modification
 		require
 			has_child (a_child)
 		do
-			children.prune (a_child)
+			check attached children as c then
+				c.prune (a_child)
+			end
 			reset_subtree_artefact_count
+		end
+
+	wipe_out
+		do
+			children := Void
 		end
 
 feature {ARCH_CAT_ITEM} -- Modification
@@ -258,7 +262,7 @@ feature {ARCH_CAT_ITEM, ARCHETYPE_CATALOGUE} -- Implementation
 
 	reset_subtree_artefact_count
 		local
-			csr: ARCH_CAT_ITEM
+			csr: detachable ARCH_CAT_ITEM
 		do
 			subtree_artefact_counts_cache := Void
 			from csr := parent until csr = Void loop

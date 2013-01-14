@@ -6,14 +6,10 @@ note
 				 which represent constraints on other archetypes.
 				 ]"
 	keywords:    "object graph, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2004- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class OG_OBJECT
 
@@ -32,10 +28,10 @@ inherit
 
 feature -- Initialisation
 
-	make_anonymous (a_content_item: VISITABLE)
+	make_anonymous
 			-- make an anonymous node with optional content item
 		do
-			make (Anonymous_node_id, a_content_item)
+			make (Anonymous_node_id)
 		end
 
 feature -- Access

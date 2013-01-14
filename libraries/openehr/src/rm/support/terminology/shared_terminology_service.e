@@ -1,18 +1,12 @@
 note
 	component:   "openEHR common definitions"
-
 	description: "Shared access to terminology"
 	keywords:    "terminology, vocabulary, identifiers"
-
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 	void_safe:   "yes"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class SHARED_TERMINOLOGY_SERVICE
 

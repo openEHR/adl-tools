@@ -8,10 +8,6 @@ note
 	license:     "See notice at bottom of class"
 	void_safety: "initial"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class C_ATTRIBUTE_ED_CONTEXT
 
 inherit
@@ -27,7 +23,7 @@ create
 
 feature -- Initialisation
 
-	make (an_arch_node: like arch_node; an_ed_context: ARCH_ED_CONTEXT_STATE)
+	make (an_arch_node: attached like arch_node; an_ed_context: ARCH_ED_CONTEXT_STATE)
 		do
 			precursor (an_arch_node, an_ed_context)
 			if arch_node.has_differential_path then

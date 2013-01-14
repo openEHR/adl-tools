@@ -74,8 +74,11 @@ feature -- Initialisation
 
 feature -- Access
 
-	schema_directory: detachable STRING
+	schema_directory: STRING
 			-- directory where all the schemas loaded here are found
+		attribute
+			create Result.make_empty
+		end
 
 	all_schemas: HASH_TABLE [SCHEMA_DESCRIPTOR, STRING]
 			-- all schemas found and loaded from `schema_directory'
@@ -97,7 +100,9 @@ feature -- Access
 		require
 			has_schema_for_rm_closure (a_qualified_rm_closure_name)
 		do
-			Result := schemas_by_rm_closure.item (a_qualified_rm_closure_name.as_lower)
+			check attached schemas_by_rm_closure.item (a_qualified_rm_closure_name.as_lower) as sch then
+				Result := sch
+			end
 		end
 
 	schemas_load_list: LIST [STRING]
@@ -131,7 +136,7 @@ feature -- Status Report
 
 feature -- Commands
 
-	set_schema_load_list (a_schemas_load_list: attached LIST [STRING])
+	set_schema_load_list (a_schemas_load_list: LIST [STRING])
 		do
 			schemas_load_list.wipe_out
 			schemas_load_list.append (a_schemas_load_list)
@@ -223,7 +228,6 @@ feature {NONE} -- Implementation
 			model_publisher: STRING
 			qualified_rm_closure_name: STRING
 			rm_closures: ARRAYED_LIST [STRING]
-			included_schema: P_BMM_SCHEMA
 			i: INTEGER
 			finished, incompatible_schema_detected: BOOLEAN
 		do
@@ -297,8 +301,7 @@ feature {NONE} -- Implementation
 					from i := 1 until finished or i > Max_inclusion_depth loop
 						finished := True
 						across schema_inclusion_map as map_csr loop
-							if candidate_schemas.has (map_csr.key) then
-								included_schema := candidate_schemas.item (map_csr.key).p_schema
+							if candidate_schemas.has (map_csr.key) and then attached candidate_schemas.item (map_csr.key).p_schema as included_schema then
 								-- only process current schema if its lower level includes have already been copied into it,
 								-- or if it had no includes, since only then is it ready to be itself included in the next one up the chain
 								-- If this included schema is in this state, merge its contents into each schema that includes it
@@ -330,7 +333,9 @@ feature {NONE} -- Implementation
 								merge_validation_errors (schemas_csr.item)
 								if schemas_csr.item.passed then
 									schemas_csr.item.create_schema
-									valid_top_level_schemas.extend (schemas_csr.item.schema, schemas_csr.item.schema_id)
+									check attached schemas_csr.item.schema as sch then
+										valid_top_level_schemas.extend (sch, schemas_csr.item.schema_id)
+									end
 									if schemas_csr.item.errors.has_warnings then
 										post_warning (Current, "load_schemas", "model_access_w8", <<schemas_csr.item.schema_id, schemas_csr.item.errors.as_string>>)
 									end
@@ -364,8 +369,8 @@ feature {NONE} -- Implementation
 
 		rescue
 			exception_encountered := True
-			if assertion_violation then
-				post_error (Current, "load_schemas", "model_access_e14a", <<original_class_name + "." + original_recipient_name + "%N" + exception_trace>>)
+			if assertion_violation and attached original_class_name as ocn and attached original_recipient_name as orn and attached exception_trace as et then
+				post_error (Current, "load_schemas", "model_access_e14a", <<ocn + "." + orn + "%N" + et>>)
 			else
 				post_error (Current, "load_schemas", "model_access_e14", Void)
 			end
@@ -441,10 +446,14 @@ feature {NONE} -- Implementation
 			from errors_to_propagate := True until not errors_to_propagate loop
 				errors_to_propagate := False
 				across schema_inclusion_map as schema_inclusion_map_csr loop
-					targ_sd := all_schemas.item (schema_inclusion_map_csr.key)
+					check attached all_schemas.item (schema_inclusion_map_csr.key) as sch then
+						targ_sd := sch
+					end
 					if not targ_sd.passed or else targ_sd.errors.has_warnings then
 						across schema_inclusion_map_csr.item as client_schemas_csr loop
-							client_sd := all_schemas.item (client_schemas_csr.item)
+							check attached all_schemas.item (client_schemas_csr.item) as sch then
+								client_sd := sch
+							end
 							if client_sd.passed and not client_sd.errors.has_warnings then
 								if not targ_sd.passed then
 									client_sd.add_error ("BMM_INCERR", <<client_schemas_csr.item, schema_inclusion_map_csr.key>>)

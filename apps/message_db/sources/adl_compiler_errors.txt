@@ -83,12 +83,18 @@ templates = <
 		["save_as_i1"] = <"Archetype saved to $2">
 		["save_as_e1"] = <"Save-as failed; could not write to file $1">
 		["duplicate_filename"] = <"Duplicate file name or alternate version $1">
+		["parse_archetype_e4"] = <"No BMM Schema found for archetype $1 with id $2 (wrong id, or schema not loaded)">
 
 		-- ARCHETYPE_ADHOC_FILE_REPOSITORY, ARCHETYPE_INDEXED_FILE_REPOSITORY
 		["pair_filename_i1"] = <"(Differential/flat pair archetype filename found $1)">
 		["parse_archetype_e5"] = <"Archetype $1 basic error in 'archetype' clause">
 		["parse_archetype_e7"] = <"Archetype $1 invalid: old-style 'draft' identifier $2">
 		["parse_archetype_e11"] = <"Archetype at $1 invalid: old-style 'draft' parent identifier $2">
+
+		-- DADL_MINI_PARSER
+		["parse_dadl_missing_left_delim"] = <"No left delimiter ('<') found in line $1">
+		["parse_dadl_missing_right_delim"] = <"Missing right delimiter ('>') in line $1">
+		["parse_dadl_no_attribs_found"] = <"No attributes found, was expecting $1">
 
 		-- ARCHETYPE_MINI_PARSER
 		["parse_archetype_e8"] = <"Archetype at $1 invalid identifier $2">

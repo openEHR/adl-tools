@@ -33,7 +33,7 @@ create
 
 feature -- Initialisation
 
-	make (a_title, a_tooltip: detachable STRING; a_data_source_agent: like data_source_agent)
+	make (a_title: STRING; a_tooltip: detachable STRING; a_data_source_agent: like data_source_agent)
 			-- make with a data_source agent, typically for a Dialog box
 			-- caller should use `is_selected' to inspect state when OK is pressed
 		do
@@ -49,7 +49,7 @@ feature -- Initialisation
 			not is_readonly
 		end
 
-	make_readonly (a_title, a_tooltip: detachable STRING; a_data_source_agent: like data_source_agent)
+	make_readonly (a_title: STRING; a_tooltip: detachable STRING; a_data_source_agent: like data_source_agent)
 			-- make readonly with a data_source agent, typically for a Dialog box
 		do
 			make (a_title, a_tooltip, a_data_source_agent)
@@ -58,7 +58,7 @@ feature -- Initialisation
 			is_readonly
 		end
 
-	make_active (a_title, a_tooltip: detachable STRING; a_data_source_agent: like data_source_agent;
+	make_active (a_title: STRING; a_tooltip: detachable STRING; a_data_source_agent: like data_source_agent;
 				a_data_source_setter_agent: like data_source_setter_agent)
 			-- make for a normal form with active semantics
 		do

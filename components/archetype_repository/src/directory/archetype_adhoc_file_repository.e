@@ -6,15 +6,10 @@ note
 				 scan of a directory tree.
 				 ]"
 	keywords:    "ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2007- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL: $"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate: $"
-
 
 class ARCHETYPE_ADHOC_FILE_REPOSITORY
 
@@ -70,16 +65,18 @@ feature -- Modification
 			create aof
 			create amp
 			amp.parse (full_path)
-			if amp.last_parse_valid then
-				if amp.last_archetype.archetype_id_is_old_style then
+			if amp.last_parse_valid and then attached amp.last_archetype as arch then
+				if arch.archetype_id_is_old_style then
 					post_error (Current, "build_directory", "parse_archetype_e7", <<full_path>>)
-				elseif amp.last_archetype.is_specialised and then amp.last_archetype.parent_archetype_id_is_old_style then
-					post_error (Current, "build_directory", "parse_archetype_e11", <<full_path, amp.last_archetype.parent_archetype_id.as_string>>)
-				elseif not archetype_id_index.has (amp.last_archetype.archetype_id.as_string) then
+				elseif arch.is_specialised and then arch.parent_archetype_id_is_old_style then
+					post_error (Current, "build_directory", "parse_archetype_e11", <<full_path, arch.parent_archetype_id.as_string>>)
+				elseif not has_rm_schema_for_id (arch.archetype_id) then
+					post_error (Current, "build_directory", "parse_archetype_e4", <<full_path, arch.archetype_id.as_string>>)
+				elseif not archetype_id_index.has (arch.archetype_id.as_string) then
 					if adl_legacy_flat_filename_pattern_regex.matches (file_system.basename (full_path)) then
-						ara := aof.create_arch_cat_archetype_make_legacy (full_path, Current, amp.last_archetype)
+						ara := aof.create_arch_cat_archetype_make_legacy (full_path, Current, arch)
 					else
-						ara := aof.create_arch_cat_archetype_make (full_path, Current, amp.last_archetype)
+						ara := aof.create_arch_cat_archetype_make (full_path, Current, arch)
 					end
 					archetype_id_index.force (ara, full_path)
 				else

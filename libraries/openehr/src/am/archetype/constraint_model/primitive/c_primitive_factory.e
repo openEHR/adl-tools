@@ -281,9 +281,9 @@ feature -- Factory
 	create_c_time_make_upper_unbounded (a_lower: STRING): C_TIME
 			-- create Result from `a_lower' in ISO8601 string form, to +infinity
 		require
-			lower_exists: a_lower /= void and then valid_iso8601_time(a_lower)
+			lower_valid: attached a_lower as l and then valid_iso8601_time (l)
 		do
-			create Result.make_string_range(a_lower, Void)
+			create Result.make_string_range (a_lower, Void)
 		end
 
 	create_c_time_make_unbounded: C_TIME

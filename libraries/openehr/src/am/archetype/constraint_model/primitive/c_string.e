@@ -1,20 +1,12 @@
 note
-
 	component:   "openEHR Common Archetype Model"
-
 	description: "Constrainer type for instances of STRING"
 	keywords:    "archetype, string, data"
-
 	design:      "openEHR Common Archetype Model 0.2"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2000- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class C_STRING
 
@@ -52,14 +44,14 @@ feature -- Initialization
 			str_valid: valid_value (str)
 		end
 
-	make_from_regexp (str: attached STRING; using_default_delimiter: BOOLEAN)
+	make_from_regexp (str: STRING; using_default_delimiter: BOOLEAN)
 			-- make from a regular expression contained in 'str' (not including delimiters);
 			-- if `using_default_delimiter' is True, the '/' delimiter is being used,
 			-- else the '^' delimiter is being used
 		do
 			regexp := str.twin
 			regexp_default_delimiter := using_default_delimiter
-			create regexp_parser.compile_case_sensitive(regexp)
+			create regexp_parser.compile_case_sensitive (regexp)
 			if not regexp_parser.is_compiled then
 				regexp := Regexp_compile_error.twin
 			end
@@ -69,7 +61,7 @@ feature -- Initialization
 			regexp.is_equal(str) xor regexp.is_equal(Regexp_compile_error)
 		end
 
-	make_from_string_list (lst: attached LIST[STRING])
+	make_from_string_list (lst: LIST[STRING])
 		do
 			create strings.make(0)
 			strings.fill(lst)
@@ -98,28 +90,29 @@ feature -- Modification
 
 feature -- Access
 
-	strings: ARRAYED_LIST[STRING]
+	strings: detachable ARRAYED_LIST [STRING]
 			-- representation of constraint as allowed values for the constrained string
 
-	regexp: STRING
+	regexp: detachable STRING
 			-- representation of constraint as PERL-compliant regexp pattern
 
 	prototype_value: STRING
 			-- 	generate a default value from this constraint object
 		do
-			if strings /= Void then
+			if attached strings then
 				if is_open then
 					Result := "*"
 				elseif strings.count > 0 then
 					Result := strings.first
 				else
-					Result := ""
+					create Result.make_empty
 				end
-			elseif regexp /= Void then
-				Result := "" -- FIXME - what is default from regexp?
+			elseif attached regexp then
+				create Result.make_empty
+				-- FIXME - what is default from regexp?
+			else
+				create Result.make_empty
 			end
-		ensure then
-			Result /= Void
 		end
 
 	regexp_delimiter: CHARACTER
@@ -140,7 +133,7 @@ feature -- Status Report
 	is_regexp: BOOLEAN
 			-- True if this constraint is a regular expression
 		do
-			Result := regexp /= Void
+			Result := attached regexp
 		end
 
 feature -- Status Report
@@ -149,10 +142,10 @@ feature -- Status Report
 		do
 			if is_open then
 				Result := True
-			elseif strings /= Void then
+			elseif attached strings then
 				Result := strings.has (a_value)
-			else
-				Result := regexp_parser.matches(a_value)
+			elseif attached regexp_parser as rexpp then
+				Result := rexpp.matches (a_value)
 			end
 		end
 
@@ -174,29 +167,24 @@ feature -- Output
 		do
 			create Result.make(0)
 
-			if strings /= Void then
-				from
-					strings.start
-				until
-					strings.off
-				loop
-					if not strings.isfirst then
+			if attached strings then
+				across strings as strings_csr loop
+					if strings_csr.target_index > 1 then
 						Result.append(", ")
 					end
 					Result.append_character('%"')
 					Result.append(strings.item)
 					Result.append_character('%"')
-					strings.forth
 				end
 				if is_open then
 					Result.append(", ...")
 				end
-			else -- its a regexp
-				Result.append_character(regexp_delimiter)
-				Result.append(regexp)
-				Result.append_character(regexp_delimiter)
+			elseif attached regexp as rexp then
+				Result.append_character (regexp_delimiter)
+				Result.append (rexp)
+				Result.append_character (regexp_delimiter)
 			end
-			if assumed_value /= Void then
+			if attached assumed_value then
 				Result.append("; %"" + assumed_value.out + "%"")
 			end
 
@@ -206,7 +194,6 @@ feature -- Output
 			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
 		do
 			create Result.make(0)
-
 			if attached strings as strs then
 				across strs as strings_csr loop
 					if strings_csr.target_index > 1 then
@@ -219,9 +206,9 @@ feature -- Output
 				if is_open then
 					Result.append (", ...")
 				end
-			else -- its a regexp
+			elseif attached regexp as rexp then
 				Result.append_character (regexp_delimiter)
-				Result.append (regexp)
+				Result.append (rexp)
 				Result.append_character (regexp_delimiter)
 			end
 			if attached assumed_value then
