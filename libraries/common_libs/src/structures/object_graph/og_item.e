@@ -177,32 +177,33 @@ feature -- Serialisation
 
 feature {NONE} -- Implementation
 
-	generate_path (unique_flag: BOOLEAN; stop_node: OG_ITEM): OG_PATH
+	generate_path (unique_flag: BOOLEAN; stop_node: detachable OG_ITEM): OG_PATH
 			-- absolute path of this node relative to the root; if unique_flag set then
 			-- generate a completely unique path by including the "unknown" ids that are
 			-- automatically set at node-creation time on nodes that otherwise would have no id
 		local
-			csr: OG_NODE
+			csr: detachable OG_NODE
 			og_nodes: ARRAYED_LIST [OG_ITEM]
 			a_path_item: OG_PATH_ITEM
+			og_path: detachable OG_PATH
 		do
 			-- get the node list from here back up to the root, but don't include the root OG_OBJECT_NODE
 			create og_nodes.make(0)
-			if attached parent then
+			if attached parent as p then
 				og_nodes.extend (Current)
-				from csr := parent until csr.parent = Void or csr ~ stop_node loop
-					og_nodes.put_front(csr)
+				from csr := p until csr = Void or csr.parent = Void or csr ~ stop_node loop
+					og_nodes.put_front (csr)
 					csr := csr.parent
 				end
 			end
 
 			if og_nodes.is_empty then
-				create Result.make_root
+				create og_path.make_root
 			else -- process the node list; we are starting on an OG_ATTR_NODE
 				from
 					og_nodes.start
 					if attached {OG_ATTRIBUTE_NODE} og_nodes.item as og_attr and then og_attr.has_differential_path then
-						Result := og_attr.differential_path.deep_twin
+						og_path := og_attr.differential_path.deep_twin
 					end
 				until
 					og_nodes.off
@@ -210,10 +211,10 @@ feature {NONE} -- Implementation
 					-- now on an OG_ATTR_NODE
 					if attached {OG_ATTRIBUTE_NODE} og_nodes.item as og_attr then
 						create a_path_item.make (og_attr.node_id)
-						if not attached Result then
-							create Result.make_absolute (a_path_item)
+						if attached og_path as ogp then
+							ogp.append_segment (a_path_item)
 						else
-							Result.append_segment (a_path_item)
+							create og_path.make_absolute (a_path_item)
 						end
 
 						og_nodes.forth
@@ -228,6 +229,9 @@ feature {NONE} -- Implementation
 						end
 					end
 				end
+			end
+			check attached og_path as ogp then
+				Result := ogp
 			end
 		ensure
 			not unique_flag implies not Result.as_string.has_substring (anonymous_node_id)

@@ -1,12 +1,10 @@
 note
 	component:   "openEHR common definitions"
-
 	description: "Simple XML implementation of TERMINOLOGY_ACCESS"
 	keywords:    "terminology, vocabulary, XML"
-
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 class XML_TERMINOLOGY_SERVICE_POPULATOR
@@ -30,8 +28,12 @@ feature -- Initialization
 		value_set_processor: XML_VALUE_SET_PROCESSOR
 	do
 		-- for now we just make do with 'en' terminology
-		file_path := file_system.pathname (terminology_directory, "en")
-		file_path := file_system.pathname (file_path, terminology_filename)
+		check attached file_system.pathname (terminology_directory, "en") as fp then
+			file_path := fp
+		end
+		check attached file_system.pathname (file_path, terminology_filename) as fp then
+			file_path := fp
+		end
 
 		if file_system.file_exists (file_path) then
 			xml_doc := deserialize_text (file_path)
@@ -48,8 +50,11 @@ feature -- Initialization
 feature -- Access
 
 	init_fail_reason: STRING
+		attribute
+			create Result.make_empty
+		end
 
-	xml_doc: XML_DOCUMENT
+	xml_doc: detachable XML_DOCUMENT
 			-- result of successful parse
 
 feature -- Status Report
@@ -58,7 +63,7 @@ feature -- Status Report
 
 feature {NONE} -- Implementation
 
-	deserialize_text (a_file_path: STRING): XML_DOCUMENT
+	deserialize_text (a_file_path: STRING): detachable XML_DOCUMENT
 			-- Retrieve xml document from content of `a_text'.
 			-- If deserialization fails, return Void.
 		local
@@ -71,6 +76,7 @@ feature {NONE} -- Implementation
 
 			parser.parse_from_filename (a_file_path)
 
+			init_fail_reason.wipe_out
 			if not parser.error_occurred then
 				Result := callbacks.document
 			else

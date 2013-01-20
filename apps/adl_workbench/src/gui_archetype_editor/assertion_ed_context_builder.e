@@ -2,15 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Generic visitor class for ASSERTION objects"
 	keywords:    "visitor, assertion expressions"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2008-2012 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class ASSERTION_ED_CONTEXT_BUILDER
 
@@ -33,7 +28,11 @@ feature -- Initialisation
 
 feature -- Access
 
-	root_node: ASSERTION_ED_CONTEXT
+	root_node: detachable ASSERTION_ED_CONTEXT
+		note
+			option: stable
+		attribute
+		end
 
 	ed_context: ARCH_ED_CONTEXT_STATE
 

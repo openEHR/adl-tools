@@ -62,8 +62,6 @@ feature -- Modification
 
 	set_value (a_value: like value)
 		deferred
-		ensure
-			Value_set: value = a_value
 		end
 
 feature -- Output

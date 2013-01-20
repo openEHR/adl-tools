@@ -4,12 +4,8 @@ note
 	keywords:    "statistics, archteype"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class GUI_CLASS_TARGETTED_TOOL
 
@@ -23,7 +19,7 @@ inherit
 
 feature -- Access
 
-	source: BMM_CLASS_DEFINITION
+	source: detachable BMM_CLASS_DEFINITION
 			-- class definition to which this tool is targetted
 
 	rm_schema: BMM_SCHEMA

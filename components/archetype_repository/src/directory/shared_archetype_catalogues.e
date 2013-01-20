@@ -32,7 +32,9 @@ feature -- Access
 			if not arch_cats.has (curr_prof_name) then
 				use_current_profile (False)
 			end
-			Result := arch_cats.item (curr_prof_name)
+			check attached arch_cats.item (curr_prof_name) as ac then
+				Result := ac
+			end
 		end
 
 	use_current_profile (refresh: BOOLEAN)
@@ -42,16 +44,20 @@ feature -- Access
 		local
 			new_cat: ARCHETYPE_CATALOGUE
 			prof_repo_access: PROFILE_REPOSITORY_ACCESS
+			curr_prof: STRING
 		do
 			init_gen_dirs_from_current_profile
-			if attached repository_profiles.current_profile_name as cpn and then not arch_cats.has (cpn) or else refresh then
+			check attached repository_profiles.current_profile_name as cpn then
+				curr_prof := cpn
+			end
+			if not arch_cats.has (curr_prof) or else refresh then
 				create prof_repo_access.make (repository_profiles.current_reference_repository_path)
 				if repository_profiles.current_profile.has_work_repository then
 					prof_repo_access.set_work_repository (repository_profiles.current_work_repository_path)
 				end
 				create new_cat.make (prof_repo_access)
 				new_cat.populate
-				arch_cats.force (new_cat, cpn) -- replace original copy if it was there
+				arch_cats.force (new_cat, curr_prof) -- replace original copy if it was there
 			end
 		end
 

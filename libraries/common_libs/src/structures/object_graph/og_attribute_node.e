@@ -197,7 +197,6 @@ feature {NONE} -- Implementation
 	reparent_to_root
 			-- reparent this node to the root node, removing intervening orphaned nodes on the way
 		local
-			p: attached like parent
 			csr: OG_NODE
 		do
 			check attached parent as p then
@@ -205,10 +204,12 @@ feature {NONE} -- Implementation
 			end
 			csr.remove_child (Current)
 			from until csr.parent = Void loop
-				if not csr.has_children then
-					csr.parent.remove_child (csr)
+				check attached csr.parent as p then
+					if not csr.has_children then
+						p.remove_child (csr)
+					end
+					csr := p
 				end
-				csr := csr.parent
 			end
 			csr.put_child (Current)
 		end

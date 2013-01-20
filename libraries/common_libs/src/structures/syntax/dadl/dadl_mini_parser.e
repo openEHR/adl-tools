@@ -33,10 +33,14 @@ feature -- Access
 
 	last_parse_content: HASH_TABLE [STRING, STRING]
 			-- table of {attr_name, value} pairs
+		attribute
+			create Result.make (0)
+		end
 
 	last_parse_fail_reason: STRING
-
-	last_parse_status: STRING
+		attribute
+			create Result.make_empty
+		end
 
 	last_parse_content_item (a_key: STRING): STRING
 			-- more forgiving form of access to items in parse table; if nothing available
@@ -70,7 +74,7 @@ feature -- Commands
 			last_parse_valid := False
 			file_context.set_target (a_full_path)
 			file_context.read_matching_lines (attr_names, Comment_leader, Max_lines)
-			create last_parse_content.make (0)
+			last_parse_content.wipe_out
 
 			if file_context.file_lines.count > 0 then
 				across file_context.file_lines as file_lines_csr loop

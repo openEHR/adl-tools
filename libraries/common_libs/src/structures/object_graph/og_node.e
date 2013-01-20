@@ -29,7 +29,9 @@ feature -- Access
 			if a_node_key.is_empty then
 				Result := first_child
 			else
-				Result := children.item (a_node_key)
+				check attached children.item (a_node_key) as c then
+					Result := c
+				end
 			end
 		end
 

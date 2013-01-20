@@ -8,16 +8,13 @@ note
 	license:     "See notice at bottom of class"
 	void_safety: "initial"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class GUI_DEFINITION_SETTINGS
 
 inherit
 	BASIC_DEFINITIONS
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} standard_is_equal, is_deep_equal, deep_copy, deep_twin
 		end
 
 create

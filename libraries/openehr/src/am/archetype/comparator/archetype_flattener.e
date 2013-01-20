@@ -29,6 +29,11 @@ inherit
 			{NONE} all
 		end
 
+	EXCEPTIONS
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -70,7 +75,9 @@ feature -- Access
 	arch_child_diff: DIFFERENTIAL_ARCHETYPE
 			-- archetype for which flat form is being generated
 		do
-			Result := child_desc.differential_archetype
+			check attached child_desc.differential_archetype as da then
+				Result := da
+			end
 		end
 
 	arch_output_flat: detachable FLAT_ARCHETYPE
@@ -206,11 +213,8 @@ end
 		local
 			def_it: C_ITERATOR
 		do
-			create parent_path_list.make(0)
-			parent_path_list.compare_objects
-
-			create child_grafted_path_list.make(0)
-			child_grafted_path_list.compare_objects
+			parent_path_list.wipe_out
+			child_grafted_path_list.wipe_out
 
 			-- traverse flat output and mark every node as inherited
 			arch_output_flat.definition.set_subtree_specialisation_status ({SPECIALISATION_STATUSES}.ss_inherited)
@@ -228,7 +232,7 @@ end
 			apa: ARCHETYPE_PATH_ANALYSER
 			a_path: STRING
 			c_path_in_diff: OG_PATH
-			ca_child, ca_child_copy, ca_output: C_ATTRIBUTE
+			ca_child, ca_child_copy, ca_output, cco_csr_parent: C_ATTRIBUTE
 		do
 			if attached {C_COMPLEX_OBJECT} a_c_node as cco_child_diff and not attached {C_ARCHETYPE_ROOT} a_c_node as car then
 				create apa.make_from_string (cco_child_diff.path)
@@ -249,7 +253,9 @@ end
 debug ("flatten")
 	io.put_string ("%TObject in flat parent ALREADY REPLACED - grafting new sibling object " + cco_child_diff.path + "%N")
 end
-						ca_output := arch_output_flat.definition.c_attribute_at_path (cco_child_diff.parent.path)
+						check attached arch_output_flat.definition.c_attribute_at_path (cco_child_diff.parent.path) as ca then
+							ca_output := ca
+						end
 						new_cco_child := cco_child_diff.safe_deep_twin
 						new_cco_child.set_subtree_specialisation_status ({SPECIALISATION_STATUSES}.ss_added)
 						new_cco_child.set_specialisation_status_redefined
@@ -332,38 +338,40 @@ end
 									-- now we have to figure out the 'proximate' C_COMPLEX_OBJECT in the flat parent - it is either the cco_output_flat that
 									-- corresponds to the parent object from the differential child with we started this routine, or if the current attribute
 									-- has a differential path, its true object parent in the flat parent archetype is given by the differential path
-									if ca_child.has_differential_path then
-										create apa.make_from_string (ca_child.differential_path)
-										if attached {C_COMPLEX_OBJECT} arch_output_flat.c_object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth)) as cco then
+									if ca_child.has_differential_path and then attached ca_child.differential_path as child_diff_path then
+										create apa.make_from_string (child_diff_path)
+										check attached {C_COMPLEX_OBJECT} arch_output_flat.c_object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth)) as cco then
 											cco_output_flat_proximate := cco
+										end
 debug ("flatten")
 	io.put_string ("%T%Tchild has differential path " +
-		ca_child.differential_path + "; flat proximate path = " +
+		child_diff_path + "; flat proximate path = " +
 		cco_output_flat_proximate.path + "%N")
 end
 
-											-- there may be object ids on the path from the original parent attribute to the proximate attribute in the flat parent
-											-- that are overridden by object-ids in the differential path; for these we need to replace the node ids of the relevant
-											-- nodes in the flat output
-											create c_path_in_diff.make_from_string (ca_child.differential_path)
-											c_path_in_diff.finish
-											from cco_csr := cco_output_flat_proximate until cco_csr = cco_output_flat loop
-												if c_path_in_diff.item.is_addressable and then c_path_in_diff.item.object_id.count > cco_csr.node_id.count and then
-														c_path_in_diff.item.object_id.starts_with (cco_csr.node_id)
-												then
+										-- there may be object ids on the path from the original parent attribute to the proximate attribute in the flat parent
+										-- that are overridden by object-ids in the differential path; for these we need to replace the node ids of the relevant
+										-- nodes in the flat output
+										create c_path_in_diff.make_from_string (child_diff_path)
+										c_path_in_diff.finish
+										from cco_csr := cco_output_flat_proximate until cco_csr = cco_output_flat loop
+											check attached cco_csr.parent as p then
+												cco_csr_parent := p
+											end
+											if c_path_in_diff.item.is_addressable and then c_path_in_diff.item.object_id.count > cco_csr.node_id.count and then
+													c_path_in_diff.item.object_id.starts_with (cco_csr.node_id)
+											then
 debug ("flatten")
 	io.put_string ("%T%T%Treplacing node id " + cco_csr.node_id +
 		" in flat structure with " + c_path_in_diff.item.object_id + "%N")
 end
-													cco_csr.parent.replace_node_id (cco_csr.node_id, c_path_in_diff.item.object_id)
-													cco_csr.set_specialisation_status_id_redefined
-												end
-												cco_csr := cco_csr.parent.parent
-												c_path_in_diff.back
+												cco_csr_parent.replace_node_id (cco_csr.node_id, c_path_in_diff.item.object_id)
+												cco_csr.set_specialisation_status_id_redefined
 											end
-										else
-											-- should never get here; raise software exception?
-
+											check attached cco_csr_parent.parent as p then
+												cco_csr := p
+											end
+											c_path_in_diff.back
 										end
 									else
 										cco_output_flat_proximate := cco_output_flat
@@ -380,9 +388,9 @@ debug ("flatten")
 	io.put_string ("%T%Tmatched attr " + ca_child.rm_attribute_name +
 	" in parent object in flat archetype%N")
 end
-
-										ca_output := cco_output_flat_proximate.c_attribute (ca_child.rm_attribute_name)
-
+										check attached cco_output_flat_proximate.c_attribute (ca_child.rm_attribute_name) as ca then
+											ca_output := ca
+										end
 										if ca_child.is_prohibited then -- existence = {0}; remove the attribute completely
 											ca_output.parent.remove_attribute_by_name (ca_child.rm_attribute_name)
 										else
@@ -476,7 +484,7 @@ end
 			--
 			-- Phase 1: figure out the merge records
 			--
-			create merge_list.make (0)
+			merge_list.wipe_out
 			start_pos := 1
 			insert_obj := ca_output.children.first
 			from ca_child.children.start until ca_child.children.off loop
@@ -676,10 +684,17 @@ end
 			--	end pos in source list: INTEGER
 			-- 	insert obj in target list: C_OBJECT (can't be an index, because insertions will make the list change)
 			-- 	operation: BOOLEAN; True = prepend before, False = append after
+		attribute
+			create Result.make (0)
+		end
 
-	merge_desc: TUPLE [start_pos: INTEGER; end_pos: INTEGER; insert_obj: C_OBJECT; before_flag: BOOLEAN]
+	merge_desc: detachable TUPLE [start_pos: INTEGER; end_pos: INTEGER; insert_obj: C_OBJECT; before_flag: BOOLEAN]
+		note
+			option: stable
+		attribute
+		end
 
-	add_merge_desc (src_start_pos, src_end_pos: INTEGER; tgt_insert_obj: attached C_OBJECT; before_flag: BOOLEAN)
+	add_merge_desc (src_start_pos, src_end_pos: INTEGER; tgt_insert_obj: C_OBJECT; before_flag: BOOLEAN)
 			-- create a merge tuple for use in later merging
 		do
 			create merge_desc
@@ -722,10 +737,18 @@ end
 			-- list of paths matched in parent archetype by child archetype nodes. Used to remember paths that
 			-- disappear due to being overwritten by a specialised node (e.g. at0013 becomes at0013.1 in the flat output)
 			-- but then specialised siblings (e.g. at0013.2, at0013.3) turn up and need to be grafted in.
+		attribute
+			create Result.make(0)
+			Result.compare_objects
+		end
 
 	child_grafted_path_list: ARRAYED_LIST [STRING]
 			-- list of root paths of child sub-trees in the child that have been completely grafted from child to parent
 			-- don't descend into paths lower than any path in this list
+		attribute
+			create Result.make(0)
+			Result.compare_objects
+		end
 
 	flatten_invariants
 			-- build the flat archetype invariants as the sum of parent and source invariants

@@ -27,7 +27,7 @@ feature -- Validation
 
 	has_rm_schema_for_id (an_id: ARCHETYPE_ID): BOOLEAN
 		do
-			Result := not rm_schemas_access.has_schema_for_rm_closure (an_id.qualified_package_name)
+			Result := rm_schemas_access.has_schema_for_rm_closure (an_id.qualified_package_name)
 		end
 
 end

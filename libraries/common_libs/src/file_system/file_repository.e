@@ -22,7 +22,7 @@ inherit
 create
 	make
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
 	make (a_dir_name, a_match_pattern: STRING)
 			-- initialise with `a_dir_name', and a filename match regex `a_match_pattern'
@@ -69,8 +69,7 @@ feature {NONE} -- Implementation
 			a_file: RAW_FILE
 			rel_cur_dir, rel_parent_dir, fpath: STRING
    		do
-   			matching_paths.wipe_out
-    			check attached file_system.relative_current_directory as cd and attached file_system.relative_parent_directory as pd then
+    		check attached file_system.relative_current_directory as cd and attached file_system.relative_parent_directory as pd then
    				rel_cur_dir := cd
    				rel_parent_dir := pd
    			end

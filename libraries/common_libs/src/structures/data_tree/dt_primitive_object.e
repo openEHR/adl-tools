@@ -45,14 +45,14 @@ feature -- Conversion
 			Result := primitive_value_to_dadl_string (value)
 		end
 
-	as_serialised_string (string_converter: attached FUNCTION [ANY, TUPLE [ANY], STRING]; cleaner: FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
+	as_serialised_string (string_converter: FUNCTION [ANY, TUPLE [ANY], STRING]; cleaner: detachable FUNCTION [ANY, TUPLE [STRING], STRING]): STRING
 			-- generate a cleaned form of this object as a string, using `cleaner' to do the work
 		local
 			v: ANY
 		do
 			-- if cleaning string, do it first before converting
-			if attached {STRING} value as s and attached cleaner then
-				v := cleaner.item ([s])
+			if attached {STRING} value as s and attached cleaner as c then
+				v := c.item ([s])
 			else
 				v := value
 			end

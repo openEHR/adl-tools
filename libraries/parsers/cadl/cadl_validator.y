@@ -1434,7 +1434,7 @@ c_boolean: SYM_TRUE
 
 c_ordinal: ordinal
 		{
-			create $$.make
+			create $$.default_create
 			$$.add_item ($1)
 		}
 	| c_ordinal ',' ordinal
@@ -2176,7 +2176,7 @@ feature -- Initialization
 			source_start_line := a_source_start_line
 			differential_syntax := differential_flag
 
-			indent.wipe_out
+			create indent.make_empty
 
 			object_nodes.wipe_out
 			c_attrs.wipe_out

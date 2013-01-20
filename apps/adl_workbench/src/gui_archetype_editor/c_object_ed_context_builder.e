@@ -4,13 +4,8 @@ note
 	keywords:    "visitor, constraint model"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class C_OBJECT_ED_CONTEXT_BUILDER
 
@@ -45,7 +40,11 @@ feature -- Initialisation
 
 feature -- Access
 
-	root_node: C_COMPLEX_OBJECT_ED_CONTEXT
+	root_node: detachable C_COMPLEX_OBJECT_ED_CONTEXT
+		note
+			option: stable
+		attribute
+		end
 
 	ed_context: ARCH_ED_CONTEXT_STATE
 			-- access to ed context with current archetype flat ontology

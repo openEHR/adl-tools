@@ -36,6 +36,9 @@ feature {ARCHETYPE_CATALOGUE} -- Access
 
 	archetype_id_index: HASH_TABLE [ARCH_CAT_ARCHETYPE, STRING]
 			-- list of all archetypes found in this directory tree, keyed by id
+		attribute
+			create Result.make (0)
+		end
 
 feature -- Status Report
 

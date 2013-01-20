@@ -36,7 +36,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	parent: OG_ATTRIBUTE_NODE
+	parent: detachable OG_ATTRIBUTE_NODE
 
 feature -- Status Report
 

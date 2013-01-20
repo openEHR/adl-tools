@@ -391,23 +391,29 @@ feature {NONE} -- Implementation
 			question_dialog: EV_QUESTION_DIALOG
 			info_dialog: EV_INFORMATION_DIALOG
 			path: STRING
+			legacy_path: detachable STRING
 		do
 			path := aca.differential_path
-			if aca.has_differential_file and aca.has_legacy_flat_file then
-				create question_dialog.make_with_text (get_msg_line ("edit_which_file_question",
-					<<file_system.basename (path), file_system.basename (aca.legacy_flat_path)>>))
-				question_dialog.set_title (get_msg ("catalogue_edit_differential_button_text", <<aca.qualified_name>>))
-				question_dialog.set_buttons (<<get_text ("catalogue_edit_differential_button_text"), get_text ("catalogue_edit_adl14_button_text")>>)
-				question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
-				if question_dialog.selected_button.starts_with ("L") then
-					path := aca.legacy_flat_path
+			if aca.has_legacy_flat_file then
+				check attached aca.legacy_flat_path as lfp then
+					legacy_path := lfp
 				end
-			elseif aca.has_legacy_flat_file then
-				create info_dialog.make_with_text (get_msg_line ("edit_legacy_file_info",
-					<<file_system.basename (aca.legacy_flat_path)>>))
-				info_dialog.set_title (get_msg ("catalogue_edit_differential_button_text", <<aca.id.as_string>>))
-				info_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
-				path := aca.legacy_flat_path
+				if aca.has_differential_file then
+					create question_dialog.make_with_text (get_msg_line ("edit_which_file_question",
+						<<file_system.basename (path), file_system.basename (legacy_path)>>))
+					question_dialog.set_title (get_msg ("catalogue_edit_differential_button_text", <<aca.qualified_name>>))
+					question_dialog.set_buttons (<<get_text ("catalogue_edit_differential_button_text"), get_text ("catalogue_edit_adl14_button_text")>>)
+					question_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+					if question_dialog.selected_button.starts_with ("L") then
+						path := legacy_path
+					end
+				else
+					create info_dialog.make_with_text (get_msg_line ("edit_legacy_file_info",
+						<<file_system.basename (legacy_path)>>))
+					info_dialog.set_title (get_msg ("catalogue_edit_differential_button_text", <<aca.id.as_string>>))
+					info_dialog.show_modal_to_window (proximate_ev_window (ev_root_container))
+					path := legacy_path
+				end
 			end
 			execution_environment.launch (editor_app_command + " %"" + path + "%"")
 		end

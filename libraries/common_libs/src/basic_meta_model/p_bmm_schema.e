@@ -42,6 +42,9 @@ feature -- Initialisation
 			-- make in a safe way for DT building purposes
 		do
 			reset
+			state := State_created
+			create archetype_rm_closure_packages.make (0)
+			archetype_rm_closure_packages.compare_objects
 		end
 
 feature -- Access (attributes from schema)

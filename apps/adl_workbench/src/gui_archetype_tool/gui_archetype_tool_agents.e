@@ -6,11 +6,6 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWBPR"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class GUI_ARCHETYPE_TOOL_AGENTS
 
@@ -18,7 +13,7 @@ feature -- Access
 
 	path_select_action_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
 
-	code_select_action_agent: PROCEDURE [ANY, TUPLE [STRING]]
+	code_select_action_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
 
 feature -- Modification
 

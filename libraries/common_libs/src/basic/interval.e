@@ -179,11 +179,11 @@ feature -- Status report
 	is_point: BOOLEAN
 			-- Is current interval a point (width = 0)?
 		do
-			Result := not (lower_unbounded or upper_unbounded) and
-						lower_included and upper_included and lower.is_equal (upper)
-		ensure
-			Result = (not (lower_unbounded or upper_unbounded) and
-				lower_included and upper_included and lower.is_equal (upper))
+			Result := attached lower as l and then attached upper as u and then
+						(lower_included and upper_included) and then l.is_equal (u)
+--		ensure
+--			Result = attached lower as l and then attached upper as u and then
+--						(lower_included and upper_included) and then l.is_equal (u)
 		end
 
 	unbounded: BOOLEAN
@@ -197,8 +197,13 @@ feature -- Comparison
 	has (v: G): BOOLEAN
 			-- Does current interval have `v' between its bounds?
 		do
-			Result := (lower_unbounded or ((lower_included and v >= lower) or v > lower)) and
-			(upper_unbounded or ((upper_included and v <= upper or v < upper)))
+-- original
+--			Result := (lower_unbounded or else ((lower_included and v >= lower) or v > lower)) and
+--			(upper_unbounded or else ((upper_included and v <= upper or v < upper)))
+
+			Result := (attached lower as l implies ((lower_included and v >= l) or else v > l)) and
+				(attached upper as u implies ((upper_included and v <= u or v < u)))
+
 		-- FIXME: this post-condition fails
 		-- ensure
 		--	result_definition: Result = (lower_unbounded or ((lower_included and v >= lower) or v > lower)) and
@@ -210,11 +215,11 @@ feature -- Comparison
 		do
 			Result := unbounded or other.unbounded or
 				(lower_unbounded and (other.lower_unbounded or
-					(attached other.lower as other_l and attached upper as u and then u >= other_l))) or
+					(attached other.lower as other_l and then attached upper as u and then u >= other_l))) or
 				(upper_unbounded and (other.upper_unbounded or
-					(attached other.upper as other_u and attached lower as l and then l <= other_u))) or
-				((attached other.lower as other_l and attached upper as u and then u >= other_l) or
-					 (attached other.upper as other_u and attached lower as l and then l <= other_u))
+					(attached other.upper as other_u and then attached lower as l and then l <= other_u))) or
+				((attached other.lower as other_l and then attached upper as u and then u >= other_l) or
+					 (attached other.upper as other_u and then attached lower as l and then l <= other_u))
 		end
 
 	contains (other: like Current): BOOLEAN
@@ -225,25 +230,27 @@ feature -- Comparison
 				if other.upper_unbounded then
 					Result := lower_unbounded and upper_unbounded
 				else
-					Result := lower_unbounded and other.upper < upper
+					Result := lower_unbounded and then attached other.upper as other_u and then attached upper as u and then other_u < u
 				end
 			elseif other.upper_unbounded then
-				Result := upper_unbounded and lower < other.lower
+				Result := upper_unbounded and then attached other.lower as other_l and then attached lower as l and then l < other_l
 			elseif lower_unbounded then
 				if upper_unbounded then
 					Result := True
 				else
-					Result := other.upper <= upper
+					Result := attached other.upper as other_u and then attached upper as u and then other_u <= u
 				end
 			elseif upper_unbounded then
-				Result := lower <= other.lower
-			else
-				if lower = other.lower then
-					Result := other.upper < upper
-				elseif upper = other.upper then
-					Result := lower < other.lower
+				Result := attached other.lower as other_l and then attached lower as l and then l <= other_l
+			elseif attached other.lower as other_l and then attached lower as l and then
+				attached other.upper as other_u and then attached upper as u
+			then
+				if l = other_l then
+					Result := other_u < u
+				elseif u = other_u then
+					Result := l < other_l
 				else
-					Result :=  lower < other.lower and other.upper < upper
+					Result :=  l < other_l and other_u < u
 				end
 			end
 		end
@@ -252,18 +259,18 @@ feature -- Comparison
 			-- compare two intervals, allows subtypes like MULTIPLICITY_INTERVAL to be compared
 		do
 			if lower_unbounded then
-				Result := other.lower_unbounded
+				Result := not attached other.lower
 			else
-				Result := not other.lower_unbounded and
-						((lower_included = other.lower_included) and lower.is_equal(other.lower))
+				Result := attached lower as l and then attached other.lower as other_l and then
+						((lower_included = other.lower_included) and l.is_equal (other_l))
 			end
 
 			if Result then
 				if upper_unbounded then
-					Result := other.upper_unbounded
+					Result := not attached other.upper
 				else
-					Result := not other.upper_unbounded and
-					((upper_included = other.upper_included) and upper.is_equal(other.upper))
+					Result := attached upper as u and then attached other.upper as other_u and then
+					((upper_included = other.upper_included) and u.is_equal (other_u))
 				end
 			end
 		end
@@ -279,37 +286,37 @@ feature -- Output
 	as_string: STRING
 		do
 			create Result.make(0)
-			if lower_unbounded then
+			if lower_unbounded and attached upper as u then
 				if upper_included then
-					Result.append("<=" + primitive_value_to_simple_string (upper))
+					Result.append("<=" + primitive_value_to_simple_string (u))
 				else
-					Result.append("<" + primitive_value_to_simple_string (upper))
+					Result.append("<" + primitive_value_to_simple_string (u))
 				end
-			elseif upper_unbounded then
+			elseif upper_unbounded and attached lower as l then
 				if lower_included then
-					Result.append(">=" + primitive_value_to_simple_string (lower))
+					Result.append(">=" + primitive_value_to_simple_string (l))
 				else
-					Result.append(">" + primitive_value_to_simple_string (lower))
+					Result.append(">" + primitive_value_to_simple_string (l))
 				end
-			elseif not limits_equal then
+			elseif not limits_equal and attached lower as l and then attached upper as u then
 				if lower_included and upper_included then
-					Result.append(primitive_value_to_simple_string (lower) + ".." + primitive_value_to_simple_string (upper))
+					Result.append(primitive_value_to_simple_string (l) + ".." + primitive_value_to_simple_string (u))
 				elseif lower_included then
-					Result.append(primitive_value_to_simple_string (lower) + "..<" + primitive_value_to_simple_string (upper))
+					Result.append(primitive_value_to_simple_string (l) + "..<" + primitive_value_to_simple_string (u))
 				elseif upper_included then
-					Result.append(">" + primitive_value_to_simple_string (lower) + ".." + primitive_value_to_simple_string (upper))
+					Result.append(">" + primitive_value_to_simple_string (l) + ".." + primitive_value_to_simple_string (u))
 				else
-					Result.append(">" + primitive_value_to_simple_string (lower) + "..<" + primitive_value_to_simple_string (upper))
+					Result.append(">" + primitive_value_to_simple_string (l) + "..<" + primitive_value_to_simple_string (u))
 				end
-			else
-				Result.append(primitive_value_to_dadl_string(lower))
+			elseif attached lower as l then
+				Result.append (primitive_value_to_dadl_string (l))
 			end
 		end
 
 invariant
 	lower_attached_if_bounded: not lower_unbounded implies attached lower
 	upper_attached_if_bounded: not upper_unbounded implies attached upper
-	limits_consistent: not (upper_unbounded or lower_unbounded) implies lower <= upper
+	limits_consistent: attached lower as l and then attached upper as u implies l <= u
 
 end
 

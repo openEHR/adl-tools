@@ -22,6 +22,7 @@ templates = <
 		["quiet_switch_desc"] = <"suppress verbose feedback, including configuration information on startup">
 		["flat_switch_desc"] = <"use flat form of archetype[s] for actions, e.g. path extraction etc">
 		["show_config_switch_desc"] = <"show current configuration and defaults">
+		["list_archetypes_switch_desc"] = <"list archetypes in current profile repository">
 
 		-- command line options with arguments
 		["format_switch_desc"] = <"output format for generated files">
@@ -51,6 +52,9 @@ templates = <
 		["profile_does_not_exist_err"] = <"No profile with name '$1' (use -s to see all profiles)%N">
 		["invalid_serialisation_format_err"] = <"Invalid serialisation format '$1'; valid formats: $2%N">
 		["invalid_action_err"] = <"Invalid action '$1'; valid actions: $2%N">
+
+		["archs_list_text"] = <"------------ Archetypes in profile '$1 --------------'%N">
+		["archs_list_text_end"] = <"-----------------------------------------------------'%N">
 	>
 >
 

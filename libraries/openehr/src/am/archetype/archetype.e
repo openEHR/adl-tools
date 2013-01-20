@@ -41,16 +41,14 @@ feature -- Initialisation
 			a_definition: like definition;
 			an_ontology: like ontology)
 				-- make from pieces obtained by parsing
+		require
+			Description_valid: not an_artefact_type.is_overlay implies attached a_description
 		do
 			artefact_type := an_artefact_type
 			adl_version := 	Latest_adl_version
 			archetype_id := an_id
 			original_language := an_original_language
-
-			if attached a_description as d then
-				description := d
-			end
-
+			description := a_description
 			definition := a_definition
 			ontology := an_ontology
 			is_dirty := True
@@ -80,6 +78,7 @@ feature -- Initialisation
 				-- make from all possible items
 		require
 			Translations_valid: a_translations /= Void implies not a_translations.is_empty
+			Description_valid: not an_artefact_type.is_overlay implies attached a_description
 			Invariants_valid: an_invariants /= Void implies not an_invariants.is_empty
 		do
 			make (an_artefact_type, an_id,
@@ -111,6 +110,7 @@ feature -- Initialisation
 		local
 			other_parent_arch_id: detachable ARCHETYPE_ID
 			other_annotations: detachable RESOURCE_ANNOTATIONS
+			other_description: detachable RESOURCE_DESCRIPTION
 			other_translations: detachable HASH_TABLE [TRANSLATION_DETAILS, STRING]
 			other_invariants: detachable  ARRAYED_LIST [ASSERTION]
 		do
@@ -119,6 +119,9 @@ feature -- Initialisation
 			end
 			if attached other.translations as other_trans then
 				other_translations := other_trans.deep_twin
+			end
+			if attached other.description as other_desc then
+				other_description := other_desc.safe_deep_twin
 			end
 			if attached other.annotations as other_annots then
 				other_annotations := other_annots.safe_deep_twin
@@ -129,7 +132,7 @@ feature -- Initialisation
 			make_all (other.artefact_type.twin, other.adl_version.twin, other.archetype_id.deep_twin,
 					other_parent_arch_id, other.is_controlled,
 					other.original_language.deep_twin, other_translations,
-					other.description.safe_deep_twin, other.definition.deep_twin, other_invariants,
+					other_description, other.definition.deep_twin, other_invariants,
 					other.ontology.safe_deep_twin, other_annotations)
 			is_generated := other.is_generated
 			rebuild
@@ -738,6 +741,7 @@ feature {NONE} -- Implementation
 	attr_path_map_cache: detachable HASH_TABLE [C_ATTRIBUTE, STRING]
 
 invariant
+	Description_valid: not artefact_type.is_overlay implies attached description
 	Concept_valid: concept.is_equal (ontology.concept_code)
 	Invariants_valid: attached invariants implies not invariants.is_empty
 	RM_type_validity: definition.rm_type_name.as_lower.is_equal (archetype_id.rm_entity.as_lower)

@@ -7,17 +7,13 @@ note
 	copyright:   "Copyright (c) 2007 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
 class EVX_TEXT_WIDGET_HANDLER
 
 inherit
 	EV_SHARED_APPLICATION
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} standard_is_equal, is_deep_equal, deep_copy, deep_twin
 		end
 
 create
@@ -134,7 +130,7 @@ feature -- Edit events
 
 feature {NONE} -- Implementation
 
-	notebook_containing_focused_widget: EV_NOTEBOOK
+	notebook_containing_focused_widget: detachable EV_NOTEBOOK
 			-- The notebook, if any, containing the currently focused widget.
 		local
 			container: detachable EV_CONTAINER
@@ -149,7 +145,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	focused_text: EV_TEXT_COMPONENT
+	focused_text: detachable EV_TEXT_COMPONENT
 			-- The currently focused text widget, if any.
 		do
 			if attached {EV_TEXT_COMPONENT} ev_application.focused_widget as fw and then root.has_recursive (fw) then

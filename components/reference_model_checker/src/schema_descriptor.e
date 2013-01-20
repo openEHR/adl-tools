@@ -26,6 +26,11 @@ inherit
 			{ANY} valid_meta_data
 		end
 
+	SHARED_DT_OBJECT_CONVERTER
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -141,6 +146,8 @@ feature {REFERENCE_MODEL_ACCESS} -- Commands
 				if not parser.syntax_error and then attached parser.output as dt_tree then
 					if not attached {P_BMM_SCHEMA} dt_tree.as_object_from_string ("P_BMM_SCHEMA", Void) as p_sch then
 						add_error ("model_access_e4", <<schema_path>>)
+					elseif object_converter.errors.has_errors then
+						add_error ("load_conv_fail_err", <<schema_path, object_converter.errors.as_string>>)
 					else
 						p_schema := p_sch
 						passed := True

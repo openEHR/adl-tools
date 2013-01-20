@@ -37,7 +37,7 @@ feature -- Status Report
 
 feature {ARCH_CAT_ITEM} -- Implementation
 
-	parent: ARCH_CAT_MODEL_NODE
+	parent: detachable ARCH_CAT_MODEL_NODE
 			-- parent node
 
 end

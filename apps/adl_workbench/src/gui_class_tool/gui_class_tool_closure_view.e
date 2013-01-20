@@ -4,12 +4,8 @@ note
 	keywords:    "archetype, ADL, gui"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2010-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class GUI_CLASS_TOOL_CLOSURE_VIEW
 
@@ -296,7 +292,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	last_property_grid_row: EV_GRID_ROW
+	last_property_grid_row: detachable EV_GRID_ROW
 
 	enter_rm_property (a_bmm_prop: BMM_PROPERTY_DEFINITION; depth: INTEGER)
 			-- enter a BMM_PROPERTY_DEFINITION
@@ -340,24 +336,25 @@ feature {NONE} -- Implementation
 					if show_prop then
 						-- determine data for property and one or more (in the case of generics with > 1 param) class nodes
 						prop_str := a_bmm_prop.name.twin
+						create type_str.make_empty
 						if attached {BMM_CLASS_DEFINITION} a_bmm_prop.type as bmm_class_def then
-							type_str := bmm_class_def.name
+							type_str.append (bmm_class_def.name)
 							has_type_subs := bmm_class_def.has_type_substitutions
 							type_spec := bmm_class_def
 
 						elseif attached {BMM_CONTAINER_TYPE_REFERENCE} a_bmm_prop.type as bmm_cont_type_ref then
 							prop_str.append (": " + bmm_cont_type_ref.container_type.name + Generic_left_delim.out + Generic_right_delim.out)
-							type_str := bmm_cont_type_ref.type.name
+							type_str.append (bmm_cont_type_ref.type.name)
 							has_type_subs := bmm_cont_type_ref.type.has_type_substitutions
 							type_spec := bmm_cont_type_ref.type
 
 						elseif attached {BMM_GENERIC_TYPE_REFERENCE} a_bmm_prop.type as bmm_gen_type_ref then
-							type_str := bmm_gen_type_ref.as_type_string
+							type_str.append (bmm_gen_type_ref.as_type_string)
 							has_type_subs := bmm_gen_type_ref.has_type_substitutions
 							type_spec := bmm_gen_type_ref.root_type
 
 						elseif attached {BMM_GENERIC_PARAMETER_DEFINITION} a_bmm_prop.type as bmm_gen_parm_def then -- type is T, U etc
-							type_str := bmm_gen_parm_def.as_type_string
+							type_str.append (bmm_gen_parm_def.as_type_string)
 							has_type_subs := bmm_gen_parm_def.has_type_substitutions
 							type_spec := a_bmm_prop.type
 						end
@@ -423,7 +420,7 @@ feature {NONE} -- Implementation
 	class_node_handler (a_class_grid_row: EV_GRID_ROW; x,y, button: INTEGER)
 			-- creates the context menu for a right click action for class node
 		local
-			subs: ARRAYED_SET[STRING]
+			subs: detachable ARRAYED_SET[STRING]
 			menu: EV_MENU
 		do
 			if button = {EV_POINTER_CONSTANTS}.right and attached {BMM_TYPE_SPECIFIER} a_class_grid_row.data as bmm_type_spec then
@@ -444,8 +441,8 @@ feature {NONE} -- Implementation
 				elseif attached {BMM_GENERIC_PARAMETER_DEFINITION} bmm_type_spec as bmm_gen_parm_def then -- type is T, U etc
 					subs := bmm_gen_parm_def.type_substitutions
 				end
-				if not subs.is_empty then
-					add_subtype_context_menu (menu, subs, a_class_grid_row)
+				if attached subs as s then
+					add_subtype_context_menu (menu, s, a_class_grid_row)
 				end
 				menu.show
 			end

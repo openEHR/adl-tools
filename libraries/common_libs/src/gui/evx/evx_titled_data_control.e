@@ -10,11 +10,6 @@ note
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
 deferred class EVX_TITLED_DATA_CONTROL
 
 inherit
@@ -116,7 +111,7 @@ feature -- Access
 
 	ev_root_container: EV_BOX
 
-	ev_title_label: EV_LABEL
+	ev_title_label: detachable EV_LABEL
 
 feature -- Commands
 

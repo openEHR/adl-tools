@@ -59,10 +59,9 @@ feature -- Modification
 	do_recursive_packages (action: PROCEDURE [ANY, TUPLE [P_BMM_PACKAGE_DEFINITION]])
 			-- recursively execute `action' procedure, taking package as argument
 		do
-			from packages.start until packages.off loop
-				action.call ([packages.item_for_iteration])
-				packages.item_for_iteration.do_recursive_packages (action)
-				packages.forth
+			across packages as pkgs_csr loop
+				action.call ([pkgs_csr.item])
+				pkgs_csr.item.do_recursive_packages (action)
 			end
 		end
 

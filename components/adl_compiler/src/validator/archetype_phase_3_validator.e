@@ -19,6 +19,9 @@ inherit
 			validate, target, initialise
 		end
 
+create
+	initialise
+
 feature {ADL15_ENGINE} -- Initialisation
 
 	initialise (a_target_desc: like target_descriptor; an_rm_schema: BMM_SCHEMA)

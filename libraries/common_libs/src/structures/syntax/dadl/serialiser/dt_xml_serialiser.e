@@ -1,15 +1,11 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "Serialise DADL archetype to any tagged format"
-	keywords:    "test, DADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 20011 Ocean Informatics Pty Ltd"
+	keywords:    "serialisation, DADL"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class DT_XML_SERIALISER
 
@@ -114,7 +110,7 @@ feature -- Modification
 	start_attribute_node (a_node: DT_ATTRIBUTE_NODE; depth: INTEGER)
 			-- start serialising an DT_ATTRIBUTE_NODE
 		local
-			xml_attrs: HASH_TABLE [STRING, STRING]
+			xml_attrs: detachable HASH_TABLE [STRING, STRING]
 		do
 			if dt_attr_nodes_to_ignore.has (a_node) then
 				ignoring_dt_objects := True
@@ -257,7 +253,7 @@ feature -- Commands
 
 feature {NONE} -- Implementation
 
-	serialisation_rules: XML_SERIALISATION_RULES
+	serialisation_rules: detachable XML_SERIALISATION_RULES
 			-- serialisation rules for the type of the root object being processed here
 
 	last_object_primitive: BOOLEAN
@@ -272,6 +268,9 @@ feature {NONE} -- Implementation
 
 	doc_tag_value: STRING
 			-- document level tag string
+		attribute
+			create Result.make_empty
+		end
 
 	start_object_leaf (a_node: DT_OBJECT_LEAF; depth: INTEGER)
 			-- start serialising a DT_OBJECT_LEAF
@@ -285,7 +284,7 @@ feature {NONE} -- Implementation
 			last_result.append (a_node.as_string)
 		end
 
-	xml_attrs_for_dt_complex_object (a_dt_obj: DT_COMPLEX_OBJECT_NODE): HASH_TABLE [STRING, STRING]
+	xml_attrs_for_dt_complex_object (a_dt_obj: DT_COMPLEX_OBJECT_NODE): detachable HASH_TABLE [STRING, STRING]
 			-- generate XML attribute table for `a_dt_obj' based on XML rules, if any found
 		do
 			if attached serialisation_rules.rules_for_type (a_dt_obj.im_type_name) as srt then
@@ -310,9 +309,9 @@ feature {NONE} -- Implementation
 				if attached srt.convert_to_xml_attr_attr_names as cvt_names then
 					across cvt_names as cvt_names_csr loop
 						if a_dt_obj.has_attribute (cvt_names_csr.item) and then
-							attached {DT_PRIMITIVE_OBJECT} a_dt_obj.attribute_node (cvt_names_csr.item).first_child as dt_po
+							attached a_dt_obj.attribute_node (cvt_names_csr.item) as dt_attr and then attached {DT_PRIMITIVE_OBJECT} dt_attr.first_child as dt_po
 						then
-							dt_attr_nodes_to_ignore.extend (a_dt_obj.attribute_node (cvt_names_csr.item))
+							dt_attr_nodes_to_ignore.extend (dt_attr)
 							Result.put (dt_po.value.out, cvt_names_csr.item)
 						end
 					end
@@ -347,7 +346,7 @@ feature {NONE} -- Implementation
 			create Result.make (0)
 		end
 
-	primitive_value_to_xml_tagged_string (a_tag: attached STRING; an_indent: INTEGER; a_prim_val: attached ANY): STRING
+	primitive_value_to_xml_tagged_string (a_tag: STRING; an_indent: INTEGER; a_prim_val: ANY): STRING
 			-- generate a XML-tagged string containing `a_prim_val'
 		do
 			create Result.make_empty
@@ -366,9 +365,9 @@ feature {NONE} -- Implementation
 				Result.append (primitive_value_to_simple_string (value.lower_unbounded))
 				Result.append (xml_tag_end ("lower_unbounded"))
 				Result.append ("%N")
-			else
+			elseif attached value.lower as val_l then
 				Result.append (xml_tag_start ("lower", Void))
-				Result.append (primitive_value_to_simple_string (value.lower))
+				Result.append (primitive_value_to_simple_string (val_l))
 				Result.append (xml_tag_end ("lower"))
 				Result.append ("%N")
 				if not value.lower_included then
@@ -382,9 +381,9 @@ feature {NONE} -- Implementation
 				Result.append (xml_tag_start ("upper_unbounded", Void))
 				Result.append (primitive_value_to_simple_string (value.upper_unbounded))
 				Result.append (xml_tag_end ("upper_unbounded"))
-			else
+			elseif attached value.upper as val_u then
 				Result.append (xml_tag_start ("upper", Void))
-				Result.append (primitive_value_to_simple_string (value.upper))
+				Result.append (primitive_value_to_simple_string (val_u))
 				Result.append (xml_tag_end ("upper"))
 				if not value.upper_included then
 					Result.append ("%N")

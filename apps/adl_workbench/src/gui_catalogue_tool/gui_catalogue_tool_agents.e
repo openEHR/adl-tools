@@ -6,17 +6,16 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWBPR"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
 
 class GUI_CATALOGUE_TOOL_AGENTS
 
 feature -- Access
 
-	edit_archetype_source_agent: PROCEDURE [ANY, TUPLE [aca:ARCH_CAT_ARCHETYPE]]
+	edit_archetype_source_agent: detachable PROCEDURE [ANY, TUPLE [aca:ARCH_CAT_ARCHETYPE]]
 
-	save_archetype_agent: PROCEDURE [ANY, TUPLE [aca: ARCH_CAT_ARCHETYPE; diff_flag, native_format_flag: BOOLEAN]]
+	save_archetype_agent: detachable PROCEDURE [ANY, TUPLE [aca: ARCH_CAT_ARCHETYPE; diff_flag, native_format_flag: BOOLEAN]]
 
-	archetype_explorer_select_in_tree_agent: PROCEDURE [ANY, TUPLE [key: STRING]]
+	archetype_explorer_select_in_tree_agent: detachable PROCEDURE [ANY, TUPLE [key: STRING]]
 
 feature -- Modification
 

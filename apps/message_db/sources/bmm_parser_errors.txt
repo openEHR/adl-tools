@@ -32,8 +32,9 @@ templates = <
 		["model_access_e13"] = <"No valid schemas found at path $1">
 		["model_access_e14"] = <"Unknown exception processing RM schemas">
 		["model_access_e14a"] = <"Assertion violation processing RM schemas; original recipient: $1">
-		["model_access_e15"] = <"Reference Model schema includes validation failed: %N$2">
+		["model_access_e15"] = <"Reference Model schema $1 includes validation failed: %N$2">
 		["model_access_e16"] = <"Reference Model schemas at $1 incompatible with current release of the tool; obtain up to date schemas">
+		["load_conv_fail_err"] = <"Reference Model schema $1 load data conversion failure; reason: $2">
 
 		["model_access_i1"] = <"Reference Model schema $1 loaded: $2 primitive types, $3 class definitions">
 		["model_access_i2"] = <"Merged schema $1 into schema $2">

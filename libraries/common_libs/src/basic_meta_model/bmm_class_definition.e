@@ -150,7 +150,7 @@ feature -- Access
 			Result := bmm_schema.schema_id + Schema_name_delimiter + class_path
 		end
 
-	suppliers: attached ARRAYED_SET [STRING]
+	suppliers: ARRAYED_SET [STRING]
 			-- list of names of immediate supplier classes, including concrete generic parameters,
 			-- concrete descendants of abstract statically defined types, and inherited suppliers.
 			-- (where generics are unconstrained, no class name is added, since logically it would be
@@ -209,25 +209,22 @@ feature -- Access
 			-- (where generics are unconstrained, no class name is added, since logically it would be
 			-- 'ANY' and this can always be assumed anyway)
 			-- This list includes primitive types
-		local
-			closure_types_done: ARRAYED_SET [STRING]
-			-- list of types for which supplier_closure has already been called, used to avoid doing rework
 		do
 			if attached supplier_closure_cache as scc then
 				Result := scc
 			else
-				create closure_types_done.make (0)
-				closure_types_done.compare_objects
+				closure_types_done.wipe_out
 				closure_types_done.extend (name)
 				create Result.make(0)
+				supplier_closure_cache := Result
 				Result.compare_objects
 				Result.merge (suppliers)
 				across suppliers as suppliers_csr loop
 					if not closure_types_done.has (suppliers_csr.item) then
 						Result.merge (bmm_schema.class_definition (suppliers_csr.item).supplier_closure)
+						closure_types_done.extend (suppliers_csr.item)
 					end
 				end
-				supplier_closure_cache := Result
 			end
 		end
 
@@ -678,6 +675,13 @@ feature {NONE} -- Implementation
 
 	supplier_closure_class_record: ARRAYED_LIST [STRING]
 			-- list of classes already done, to prevent fully expanded form of each class being generated after its first occurrence
+		attribute
+			create Result.make (0)
+			Result.compare_objects
+		end
+
+	closure_types_done: ARRAYED_SET [STRING]
+			-- list of types for which supplier_closure has already been called, used to avoid doing rework
 		attribute
 			create Result.make (0)
 			Result.compare_objects

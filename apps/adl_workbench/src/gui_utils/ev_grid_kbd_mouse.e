@@ -7,10 +7,6 @@ note
 	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class
 	EV_GRID_KBD_MOUSE
 
@@ -44,12 +40,12 @@ feature {NONE} -- Initialisation
 			key_press_actions.extend (agent on_grid_key_press)
 			mouse_wheel_actions.wipe_out
 			mouse_wheel_actions.extend (agent on_mouse_wheel)
-			create user_key_map.make (0)
+			user_key_map.wipe_out
 		end
 
 feature -- Access
 
-	selected_cell: EV_GRID_ITEM
+	selected_cell: detachable EV_GRID_ITEM
 			-- The currently selected cell in `grid'; else Void if no cell is selected.
 		local
 			items: ARRAYED_LIST [EV_GRID_ITEM]
@@ -185,7 +181,7 @@ feature -- Commands
 			has_rows: row_count > 0
 		local
 			a_row: EV_GRID_ROW
-			an_item: EV_GRID_ITEM
+			an_item: detachable EV_GRID_ITEM
 			i: INTEGER
 		do
 			a_row := row (index_of_viewable_offset_from_row (an_index, 0))
@@ -193,9 +189,9 @@ feature -- Commands
 				an_item := a_row.item (i)
 				i := i + 1
 			end
-			if attached an_item and then not an_item.is_selected then
+			if attached an_item as it and then not it.is_selected then
 				remove_selection
-				an_item.enable_select
+				it.enable_select
 				a_row.ensure_visible
 			end
 		end
@@ -371,7 +367,6 @@ feature -- Commands
 		local
 			i: INTEGER
 			matching_rows: ARRAYED_LIST [INTEGER]
-			a_row: EV_GRID_ROW
 		do
 			create matching_rows.make (0)
 			from i := 1 until i > row_count loop
@@ -382,9 +377,10 @@ feature -- Commands
 			end
 			collapse_all
 			across matching_rows as rows_csr loop
-				a_row := row (rows_csr.item).parent_row
-				if not a_row.is_expanded then
-					expand_to_row (a_row)
+				check attached row (rows_csr.item).parent_row as a_row then
+					if not a_row.is_expanded then
+						expand_to_row (a_row)
+					end
 				end
 			end
 		end
@@ -470,6 +466,9 @@ feature {NONE} -- Implementation
 
 	user_key_map: HASH_TABLE [PROCEDURE [ANY, TUPLE], INTEGER]
 			-- user-defined key => actions map for other keys
+		attribute
+			create Result.make (0)
+		end
 
 end
 

@@ -60,7 +60,7 @@ feature {NONE} -- Implementation
    		local
 			a_ti: EV_TREE_ITEM
 		do
- 			create ev_tree_item_stack.make (0)
+ 			ev_tree_item_stack.wipe_out
  			a_ti := create_node (source)
  			ev_tree.extend (a_ti)
 			ev_tree_item_stack.extend (a_ti)
@@ -69,6 +69,9 @@ feature {NONE} -- Implementation
 		end
 
 	ev_tree_item_stack: ARRAYED_STACK [EV_TREE_ITEM]
+		attribute
+			create Result.make (0)
+		end
 
    	create_node (a_class_def: attached BMM_CLASS_DEFINITION): EV_TREE_ITEM
 			-- create a node for `a_class_def'

@@ -39,7 +39,9 @@ feature -- Access
 		require
 			has_full_path: has_path (full_path)
 		do
-			Result := archetype_id_index.item (full_path)
+			check attached archetype_id_index.item (full_path) as aca then
+				Result := aca
+			end
 		end
 
 feature -- Status Report

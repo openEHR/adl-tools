@@ -12,11 +12,11 @@ class C_CODE_PHRASE
 inherit
 	C_DOMAIN_TYPE
 		redefine
-			out, enter_subtree, exit_subtree, synchronise_to_tree, inferred_specialisation_status, node_conforms_to
+			out, enter_subtree, exit_subtree, synchronise_to_tree, inferred_specialisation_status, node_conforms_to, default_create
 		end
 
 create
-	make_from_pattern, make_from_terminology_id, make_dt
+	make_from_pattern, make_from_terminology_id, make_dt, default_create
 
 feature -- Definitions
 
@@ -26,6 +26,11 @@ feature -- Definitions
 	separator: STRING = "::"
 
 feature -- Initialisation
+
+	default_create
+		do
+			make_from_terminology_id ("(uninitialised)")
+		end
 
 	make_from_terminology_id (a_terminology_id: STRING)
 			-- Make from `terminology_id'.

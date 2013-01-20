@@ -156,7 +156,7 @@ feature -- Access
 		require
 			Path_valid: valid_path_string(a_path) and has_path(a_path)
 		do
-			if attached {DT_PRIMITIVE_OBJECT_LIST} node_at_path(a_path) as a_primitive_list_node then
+			if attached {DT_PRIMITIVE_OBJECT_LIST} node_at_path (a_path) as a_primitive_list_node then
 				Result := a_primitive_list_node.value
 			end
 		end

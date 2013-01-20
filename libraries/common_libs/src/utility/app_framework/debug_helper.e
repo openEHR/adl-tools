@@ -1,48 +1,32 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "[
-			 Serialise assertion to any syntax format, i.e. where the
-			 output reflects the tree hierarchy of the parse tree inline - nodes
-			 are presented in the order of the tree traversal, and the semantics 
-			 of the tree are output as language syntax keywords, symbols etc.
-	             ]"
-	keywords:    "serialiser, assertion"
+	description: "simple debug indent routines"
+	keywords:    "debug"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2005- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-class ASSERTION_SYNTAX_SERIALISER
+class DEBUG_HELPER
 
-inherit
-	ASSERTION_SERIALISER
+feature -- Access
 
-	CADL_TOKENS
-		export
-			{NONE} all
+	indent_str_src: STRING
+		attribute
+			create Result.make_filled (' ', 50)
 		end
 
-create
-	make
-
-feature -- Modification
-
-	start_assertion (invs: ARRAYED_LIST [ASSERTION]; depth: INTEGER)
-			-- start serialising an ASSERTION
+	inc_indent
 		do
-			across invs as invs_csr loop
-				last_result.append (create_indent(depth+1))
-				if attached invs_csr.item.tag then
-					last_result.append (invs_csr.item.tag + ": ")
-				end
-				last_result.append (invs_csr.item.expression.as_string + format_item(FMT_NEWLINE))
-			end
+			indent_count := indent_count + 2
 		end
 
-	end_assertion (a_node: ARRAYED_LIST [ASSERTION]; depth: INTEGER)
-			-- end serialising an ASSERTION
+	dec_indent
 		do
+			indent_count := indent_count - 2
 		end
+
+	indent_count: INTEGER
 
 end
 
@@ -61,10 +45,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is cadl_serialiser.e.
+--| The Original Code is dt_object_converter.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2005
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

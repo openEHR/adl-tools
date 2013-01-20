@@ -37,8 +37,8 @@ feature {ADL15_ENGINE} -- Initialisation
 		do
 			rm_schema := an_rm_schema
 			target_descriptor := ara
-			if attached target_descriptor.differential_archetype as arch then
-				initialise_authored_resource (arch)
+			check attached target_descriptor.differential_archetype as da then
+				initialise_authored_resource (da)
 			end
 		ensure
 			target_descriptor_set: target_descriptor = ara
@@ -65,8 +65,10 @@ feature {NONE} -- Implementation
 			Result := target.ontology
 		end
 
-
 	rm_schema: BMM_SCHEMA
+		attribute
+			create Result.make (unknown_value, unknown_value, unknown_value)
+		end
 
 	archetype_id_matches_slot (an_id: STRING; a_slot: ARCHETYPE_SLOT): BOOLEAN
 			-- test an archetype id against slot spec (it might pass, even if no archetypes matching the slot were found)

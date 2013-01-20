@@ -64,11 +64,18 @@ feature -- Access
 			-- message source directory; default to ".", i.e. current working directory of app
 		require
 			is_successful: is_successful
+		local
+			app_dir_name: STRING
 		once
 			if has_option (msg_source_dir_switch) and then attached option_of_name (msg_source_dir_switch) as opt and then opt.has_value then
 				Result := opt.value
 			else
-				Result := "."
+				check attached file_system.dirname (application_startup_directory) as dn then
+					app_dir_name := dn
+				end
+				check attached file_system.pathname (app_dir_name, "sources") as pn then
+					Result := pn
+				end
 			end
 		end
 
@@ -76,11 +83,18 @@ feature -- Access
 			-- message source directory; default to ".", i.e. current working directory of app
 		require
 			is_successful: is_successful
+		local
+			app_dir_name: STRING
 		once
 			if has_option (output_file_dir_switch) and then attached option_of_name (output_file_dir_switch) as opt and then opt.has_value then
 				Result := opt.value
 			else
-				Result := "../generated/"
+				check attached file_system.dirname (application_startup_directory) as dn then
+					app_dir_name := dn
+				end
+				check attached file_system.pathname (app_dir_name, "generated") as pn then
+					Result := pn
+				end
 			end
 		end
 
@@ -96,8 +110,6 @@ feature -- Access
 			end
 		end
 
-feature -- Status Report
-
 feature {NONE} -- Usage
 
 	copyright: STRING = "Copyright (c) 2012 openEHR Foundation"
@@ -109,7 +121,7 @@ feature {NONE} -- Usage
 			Result := application_name
 		end
 
-	version: attached STRING
+	version: STRING
 			--  <Precursor>
 		once
 			Result := (create {OPENEHR_VERSION}).out

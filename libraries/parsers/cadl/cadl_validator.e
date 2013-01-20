@@ -5589,7 +5589,7 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'cadl_validator.y' at line 1435")
 end
 
-			create yyval48.make
+			create yyval48.default_create
 			yyval48.add_item (yyvs49.item (yyvsp49))
 		
 if yy_parsing_status >= yyContinue then
@@ -9395,7 +9395,7 @@ feature -- Initialization
 			source_start_line := a_source_start_line
 			differential_syntax := differential_flag
 
-			indent.wipe_out
+			create indent.make_empty
 
 			object_nodes.wipe_out
 			c_attrs.wipe_out

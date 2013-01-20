@@ -11,11 +11,7 @@ note
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-class GUI_DOCKING_EDITOR_CONTROLLER
+deferred class GUI_DOCKING_EDITOR_CONTROLLER
 
 inherit
 	SHARED_GUI_HISTORY_TOOLBAR
@@ -37,9 +33,8 @@ feature -- Definitions
 
 feature -- Initialisation
 
-	make_docking (a_docking_manager: attached SD_DOCKING_MANAGER)
+	make_docking (a_docking_manager: SD_DOCKING_MANAGER)
 		do
-			create docking_tools.make (0)
 			docking_manager := a_docking_manager
 		end
 
@@ -146,18 +141,20 @@ feature {NONE} -- Implementation
 
 	docking_tools: HASH_TABLE [TUPLE [tool: like tool_type; docking_pane: SD_CONTENT], INTEGER]
 			-- table of [GUI_TOOL, docking pane} tuples keyed by tool id
+		attribute
+			create Result.make (0)
+		end
 
-	docking_manager: attached SD_DOCKING_MANAGER
+	docking_manager: SD_DOCKING_MANAGER
 
-	docking_manager_last_tool: SD_CONTENT
+	docking_manager_last_tool: detachable SD_CONTENT
 			-- obtain last (i.e. rightmost) editor from docking manager
 			-- FIXME: should be managed inside SD_DOCKING_MANAGER
 		do
-			from docking_manager.contents.start until docking_manager.contents.off loop
-				if docking_manager.contents.item.type = {SD_ENUMERATION}.editor then
-					Result := docking_manager.contents.item
+			across docking_manager.contents as dm_contents_csr loop
+				if dm_contents_csr.item.type = {SD_ENUMERATION}.editor then
+					Result := dm_contents_csr.item
 				end
-				docking_manager.contents.forth
 			end
 		end
 
@@ -168,11 +165,10 @@ feature {NONE} -- Implementation
 			has_tools
 		do
 			create Result.make (0)
-			from docking_tools.start until docking_tools.off loop
-				if not only_visible_tools or else docking_tools.item_for_iteration.tool.ev_root_container.is_displayed then
-					Result.extend (docking_tools.item_for_iteration.tool)
+			across docking_tools as dt_csr loop
+				if not only_visible_tools or else dt_csr.item.tool.ev_root_container.is_displayed then
+					Result.extend (dt_csr.item.tool)
 				end
-				docking_tools.forth
 			end
 		end
 

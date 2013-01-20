@@ -1,47 +1,34 @@
 note
 	component:   "openEHR Archetype Project"
-	description: "[
-			 Serialise assertion to any syntax format, i.e. where the
-			 output reflects the tree hierarchy of the parse tree inline - nodes
-			 are presented in the order of the tree traversal, and the semantics 
-			 of the tree are output as language syntax keywords, symbols etc.
-	             ]"
-	keywords:    "serialiser, assertion"
+	description: "simple debug indent routines"
+	keywords:    "debug"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2005- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2013- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-class ASSERTION_SYNTAX_SERIALISER
+class SHARED_DEBUG_HELPER
 
-inherit
-	ASSERTION_SERIALISER
+feature -- Debug
 
-	CADL_TOKENS
-		export
-			{NONE} all
+	dbh: DEBUG_HELPER
+		once
+			create Result
 		end
 
-create
-	make
-
-feature -- Modification
-
-	start_assertion (invs: ARRAYED_LIST [ASSERTION]; depth: INTEGER)
-			-- start serialising an ASSERTION
+	indent_str: STRING
 		do
-			across invs as invs_csr loop
-				last_result.append (create_indent(depth+1))
-				if attached invs_csr.item.tag then
-					last_result.append (invs_csr.item.tag + ": ")
-				end
-				last_result.append (invs_csr.item.expression.as_string + format_item(FMT_NEWLINE))
-			end
+			Result := dbh.indent_str_src.substring (1, dbh.indent_count)
 		end
 
-	end_assertion (a_node: ARRAYED_LIST [ASSERTION]; depth: INTEGER)
-			-- end serialising an ASSERTION
+	inc_indent
 		do
+			dbh.inc_indent
+		end
+
+	dec_indent
+		do
+			dbh.dec_indent
 		end
 
 end
@@ -61,10 +48,10 @@ end
 --| for the specific language governing rights and limitations under the
 --| License.
 --|
---| The Original Code is cadl_serialiser.e.
+--| The Original Code is dt_object_converter.e.
 --|
 --| The Initial Developer of the Original Code is Thomas Beale.
---| Portions created by the Initial Developer are Copyright (C) 2003-2004
+--| Portions created by the Initial Developer are Copyright (C) 2005
 --| the Initial Developer. All Rights Reserved.
 --|
 --| Contributor(s):

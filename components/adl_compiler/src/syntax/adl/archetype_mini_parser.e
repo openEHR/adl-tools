@@ -45,6 +45,9 @@ feature -- Access
 			-- thumbnail form of last parsed archetype
 
 	last_parse_fail_reason: STRING
+		attribute
+			create Result.make_empty
+		end
 
 feature -- Status Report
 
@@ -63,10 +66,10 @@ feature -- Commands
 			artefact_types: ARTEFACT_TYPE
 			id_bad: BOOLEAN
 			arch_is_differential, arch_is_generated, arch_id_is_old_style, arch_parent_id_is_old_style: BOOLEAN
-			arch_artefact_type_name, archetype_id_str, parent_id_str: STRING
+			arch_artefact_type_name, archetype_id_str: STRING
+			parent_id_str: detachable STRING
 		do
 			last_parse_valid := False
-			create last_archetype
 			create artefact_types.default_create
 
 			-- determine from the path whether it is a differential (source form) archetype
@@ -146,6 +149,7 @@ feature -- Commands
 			key, val: STRING
 		do
 			create Result.make(0)
+			create key.make_empty
 			start_pos := adl_text.substring_index (Other_details_dadl_name, 1) + Other_details_dadl_name.count
 			if start_pos > 0 then
 				i := adl_text.index_of (Dadl_left_delim, start_pos) + 1
@@ -187,7 +191,7 @@ feature {NONE} -- Implementation
 	file_context: FILE_CONTEXT
 			-- Access to the file system.
 		once
-			create Result.make
+			create Result
 		end
 
 end

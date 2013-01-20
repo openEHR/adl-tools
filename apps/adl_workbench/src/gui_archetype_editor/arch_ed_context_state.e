@@ -21,9 +21,13 @@ feature -- Initialisation
 			in_differential_view := differential_view_flag
 			rm_schema := an_rm_schema
 			if differential_view_flag then
-				archetype := source.differential_archetype
+				check attached source.differential_archetype as da then
+					archetype := da
+				end
 			else
-				archetype := source.flat_archetype
+				check attached source.flat_archetype as fa then
+					archetype := fa
+				end
 			end
 			flat_ontology := source.flat_archetype.ontology
 		end

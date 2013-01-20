@@ -224,8 +224,6 @@ feature -- Commands
 		end
 
 	save
-		require
-			attached dt_tree
 		local
 			a_dt_iterator: DT_VISITOR_ITERATOR
 			res_file: PLAIN_TEXT_FILE

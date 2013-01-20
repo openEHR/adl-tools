@@ -10,17 +10,13 @@ note
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class
 	PROFILE_EDIT_DIALOG
 
 inherit
 	EV_DIALOG
 		redefine
-			initialize, is_in_default_state
+			create_interface_objects, is_in_default_state
 		end
 
 	SHARED_APP_UI_RESOURCES
@@ -37,7 +33,7 @@ feature -- Definition
 
 feature {NONE} -- Initialization
 
-	make_edit (profiles: attached REPOSITORY_PROFILE_CONFIG; an_existing_profile: attached STRING)
+	make_edit (profiles: REPOSITORY_PROFILE_CONFIG; an_existing_profile: STRING)
 			-- Make with a reference to the table of profiles and the name of the profile being edited.
 		require
 			profiles.has_profile (an_existing_profile)
@@ -50,7 +46,7 @@ feature {NONE} -- Initialization
 			Existing_profile: not is_new_profile
 		end
 
-	make_new (profiles: attached REPOSITORY_PROFILE_CONFIG)
+	make_new (profiles: REPOSITORY_PROFILE_CONFIG)
 			-- Make with a reference to the table of profiles being edited.
 		do
 			rep_profiles := profiles
@@ -60,7 +56,7 @@ feature {NONE} -- Initialization
 			New_profile: is_new_profile
 		end
 
-	initialize
+	create_interface_objects
 			-- Initialize `Current'.
 		do
 			initialise_dirs
@@ -195,16 +191,16 @@ feature -- Events
 
 feature -- Access
 
-	rep_profiles: attached REPOSITORY_PROFILE_CONFIG
+	rep_profiles: REPOSITORY_PROFILE_CONFIG
 			-- Profiles being edited, as a table of {{ref_path, working path}, prof_name}.
 
-	initial_profile_name: STRING
+	initial_profile_name: detachable STRING
 			-- copy of profile name if editing an existing one, used for checking if a rename has occurred in `on_ok'
 
-	initial_ref_dir: attached STRING
+	initial_ref_dir: STRING
 			-- initial value of reference directory, based on whether `initial_profile_name' was set
 
-	initial_work_dir: STRING
+	initial_work_dir: detachable STRING
 			-- initial value of work directory, based on whether `initial_profile_name' was set
 
 	profile_name: STRING
@@ -215,6 +211,9 @@ feature -- Access
 
 	work_dir: STRING
 			-- current value of work directory setting based on choosing so far
+		attribute
+			create Result.make_empty
+		end
 
 feature -- Status Report
 
@@ -258,19 +257,19 @@ feature {NONE} -- Implementation
 				end
 				profile_name := New_profile_name.twin
 			else
-				initial_ref_dir := rep_profiles.profile (initial_profile_name).reference_repository
-				if rep_profiles.profile (initial_profile_name).has_work_repository then
-					initial_work_dir := rep_profiles.profile (initial_profile_name).work_repository
+				check attached initial_profile_name as ipn and then attached rep_profiles.profile (ipn) as prof then
+					initial_ref_dir := prof.reference_repository
+					if prof.has_work_repository and then attached prof.work_repository as wr then
+						initial_work_dir := wr
+					end
 				end
 				profile_name := initial_profile_name.twin
 			end
 
 			-- set current values
 			ref_dir := initial_ref_dir.twin
-			if attached initial_work_dir then
-				work_dir := initial_work_dir.twin
-			else
-				create work_dir.make_empty
+			if attached initial_work_dir as iwd then
+				work_dir := iwd.twin
 			end
 		end
 

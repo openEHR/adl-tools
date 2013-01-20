@@ -217,10 +217,10 @@ feature -- Conversion
 				else
 					from dt_primitive_sequence_types.start until dt_primitive_sequence_types.off or Result /= 0 loop
 debug ("DT-types")
-	io.put_string(generator + ".primitive_sequence_conforming_type: call to type_conforms_to(" +
+	io.put_string(generator + ".primitive_sequence_conforming_type: call to field_conforms_to (" +
 		type_name_of_type(a_type_id) + ", " + type_name_of_type(dt_primitive_sequence_types.item) + "):")
 end
-						if type_conforms_to(a_type_id, dt_primitive_sequence_types.item) then
+						if field_conforms_to (a_type_id, dt_primitive_sequence_types.item) then
 							Result := dt_primitive_sequence_types.item
 debug ("DT-types")
 	io.put_string(" True%N")
@@ -239,7 +239,7 @@ end
 			end
 		end
 
-	dt_dynamic_type_from_string (a_type_str: attached STRING): INTEGER
+	dt_dynamic_type_from_string (a_type_str: STRING): INTEGER
 		do
 			if not dt_dynamic_types.has (a_type_str) then
 				dt_dynamic_types.put (dynamic_type_from_string (a_type_str), a_type_str)
@@ -318,12 +318,12 @@ feature -- Status Report
 		do
 debug ("DT-types")
 	io.put_string(generator +
-	".is_container_type: call to type_conforms_to(" + type_name_of_type (a_type_id) + ", " +
-	type_name_of_type (sequence_any_type_id) + "), type_conforms_to(" + type_name_of_type (a_type_id) + ", " +
+	".is_container_type: call to field_conforms_to (" + type_name_of_type (a_type_id) + ", " +
+	type_name_of_type (sequence_any_type_id) + "), field_conforms_to (" + type_name_of_type (a_type_id) + ", " +
 	type_name_of_type (hash_table_any_hashable_type_id) + ")%N")
 end
-			Result := type_conforms_to (a_type_id, sequence_any_type_id) or
-				type_conforms_to (a_type_id, hash_table_any_hashable_type_id)
+			Result := field_conforms_to (a_type_id, sequence_any_type_id) or
+				field_conforms_to (a_type_id, hash_table_any_hashable_type_id)
 debug ("DT-types")
 	io.put_string("%T(Result = " + Result.out + ")%N")
 end
@@ -334,11 +334,11 @@ end
 		do
 debug ("DT-types")
 	io.put_string(generator +
-	".is_container_type: call to type_conforms_to(" + type_name_of_type (a_type_id) + ", " +
-	type_name_of_type (sequence_any_type_id) + "), type_conforms_to(" + type_name_of_type (a_type_id) + ", " +
+	".is_container_type: call to field_conforms_to (" + type_name_of_type (a_type_id) + ", " +
+	type_name_of_type (sequence_any_type_id) + "), field_conforms_to (" + type_name_of_type (a_type_id) + ", " +
 	type_name_of_type (hash_table_any_hashable_type_id) + ")%N")
 end
-			Result := type_conforms_to (a_type_id, interval_any_type_id)
+			Result := field_conforms_to (a_type_id, interval_any_type_id)
 debug ("DT-types")
 	io.put_string("%T(Result = " + Result.out + ")%N")
 end
@@ -348,7 +348,7 @@ end
 		do
 			Result := dadl_inferred_primitive_sequence_types.has (type_id) or dadl_inferred_primitive_sequence_conforming_types.has (type_id)
 			if not Result then
-				from dadl_inferred_primitive_sequence_types.start until dadl_inferred_primitive_sequence_types.off or type_conforms_to (type_id, dadl_inferred_primitive_sequence_types.item) loop
+				from dadl_inferred_primitive_sequence_types.start until dadl_inferred_primitive_sequence_types.off or field_conforms_to (type_id, dadl_inferred_primitive_sequence_types.item) loop
 					dadl_inferred_primitive_sequence_types.forth
 				end
 				Result := not dadl_inferred_primitive_sequence_types.off
@@ -360,7 +360,7 @@ end
 
 feature -- Modification
 
-	add_custom_dt_dynamic_type_from_string (a_type_str: attached STRING; a_type_id: INTEGER)
+	add_custom_dt_dynamic_type_from_string (a_type_str: STRING; a_type_id: INTEGER)
 			-- add any custom correspondences that will fail due to INTERNAL.dynamic_type_from_string being
 			-- used on raw type strings read from the environment, e.g. files
 		do

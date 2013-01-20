@@ -38,7 +38,7 @@ feature -- Definitions
 
 	Max_inclusion_depth: INTEGER = 10
 
-feature -- Initialisation
+feature {NONE} -- Initialisation
 
 	make
 		do
@@ -51,6 +51,8 @@ feature -- Initialisation
 			create {ARRAYED_LIST[STRING]} schemas_load_list.make(0)
 			schemas_load_list.compare_objects
 		end
+
+feature {APP_ROOT} -- Initialisation
 
 	initialise_with_load_list (an_rm_dir: STRING; a_schemas_load_list: LIST [STRING])
 			-- initialise with a specific schema load list, usually a sub-set of schemas that will be
@@ -150,7 +152,9 @@ feature -- Commands
 			has_schema_directory
 		do
 			load_schema_descriptors
-			load_schemas
+			if not billboard.has_errors then
+				load_schemas
+			end
 		end
 
 feature {NONE} -- Implementation
@@ -308,15 +312,17 @@ feature {NONE} -- Implementation
 								if included_schema.state = {P_BMM_SCHEMA}.State_includes_processed then
 									-- iterate over the schemas that include `included_schema' and process the inclusion
 									across map_csr.item as schemas_csr loop
-										if candidate_schemas.item (schemas_csr.item).p_schema.state = {P_BMM_SCHEMA}.State_includes_pending then
-											candidate_schemas.item (schemas_csr.item).p_schema.merge (included_schema)
-											post_info (Current, "load_schemas", "model_access_i2", <<included_schema.schema_id, candidate_schemas.item (schemas_csr.item).schema_id>>)
-											finished := False
+										check attached candidate_schemas.item (schemas_csr.item).p_schema as including_schema then
+											if including_schema.state = {P_BMM_SCHEMA}.State_includes_pending then
+												including_schema.merge (included_schema)
+												post_info (Current, "load_schemas", "model_access_i2", <<included_schema.schema_id, candidate_schemas.item (schemas_csr.item).schema_id>>)
+												finished := False
+											end
 										end
 									end
 								end
 							else
-								post_error (Current, "load_schemas", "model_access_e10", <<schema_inclusion_map.key_for_iteration>>)
+								post_error (Current, "load_schemas", "model_access_e10", <<map_csr.key>>)
 							end
 						end
 						i := i + 1

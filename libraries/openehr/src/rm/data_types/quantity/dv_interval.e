@@ -54,7 +54,7 @@ feature -- Conversion
 
 invariant
 
-	Limits_consistent: (not upper_unbounded and not lower_unbounded) implies (lower.is_strictly_comparable_to(upper) and lower <= upper)
+	Limits_consistent: (attached lower as l and attached upper as u) implies (l.is_strictly_comparable_to (u) and l <= u)
 
 end
 

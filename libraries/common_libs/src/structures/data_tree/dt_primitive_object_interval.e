@@ -6,14 +6,10 @@ note
 				 look like dADL, JSON, YAML or any other such format.
 			 	 ]"
 	keywords:    "ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2004- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class DT_PRIMITIVE_OBJECT_INTERVAL
 
@@ -25,7 +21,7 @@ create
 
 feature -- Access
 
-	value: INTERVAL[PART_COMPARABLE]
+	value: INTERVAL [PART_COMPARABLE]
 
 feature -- Modification
 
@@ -45,9 +41,9 @@ feature -- Conversion
 			Result.append_character ('|')
 		end
 
-	as_serialised_string (value_serialiser: attached FUNCTION [ANY, TUPLE [ANY], STRING];
-			attr_name_formatter: attached FUNCTION [ANY, TUPLE [STRING], STRING];
-			value_string_formatter: attached FUNCTION [ANY, TUPLE [STRING], STRING];
+	as_serialised_string (value_serialiser: FUNCTION [ANY, TUPLE [ANY], STRING];
+			attr_name_formatter: FUNCTION [ANY, TUPLE [STRING], STRING];
+			value_string_formatter: FUNCTION [ANY, TUPLE [STRING], STRING];
 			equal_symbol, attr_delimiter: STRING): STRING
 			-- generate a cleaned form of this object as a structured string following the general model (in dADL)
 			-- 		lower = <0.0>

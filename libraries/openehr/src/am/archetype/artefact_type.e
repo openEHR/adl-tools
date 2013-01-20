@@ -109,6 +109,12 @@ feature -- Status report
 			Result := value /= archetype
 		end
 
+	is_overlay: BOOLEAN
+			-- True if any type other than `template_overlay'
+		do
+			Result := value /= template_overlay
+		end
+
 feature -- Validation
 
 	valid_type (n: INTEGER): BOOLEAN

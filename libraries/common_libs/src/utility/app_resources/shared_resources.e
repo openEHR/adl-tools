@@ -2,10 +2,9 @@ note
 	component:   "openEHR Reusable Libraries"
 	description: "Shared access to application-wide configuration settings for any Eiffel app, stored in a config file."
 	keywords:    "config, resources"
-
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003-2012 openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2003- openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
 class SHARED_RESOURCES
@@ -42,14 +41,19 @@ feature -- Definitions
 			-- own .cfg file, with essentially the same information (configured directories etc).
 			-- (On Unix/Linux/Macosx(?) systems, we would normally locate this in /etc/adl_workbench)
 		do
-			Result := file_system.pathname (execution_environment.home_directory_name, application_developer_name)
-			Result := file_system.pathname (Result, Default_application_name)
+			check attached file_system.pathname (execution_environment.home_directory_name, application_developer_name) as pn and then
+				attached file_system.pathname (pn, Default_application_name) as pn2
+			then
+				Result := pn2
+			end
 		end
 
 	Default_user_config_file_path: STRING
 			-- Full path to resource configuration file.
 		do
-			Result := file_system.pathname (Default_user_config_file_directory, Default_application_name + User_config_file_extension)
+			check attached file_system.pathname (Default_user_config_file_directory, Default_application_name + User_config_file_extension) as pn then
+				Result := pn
+			end
 		end
 
 	Default_editor_app_command: STRING
@@ -116,36 +120,46 @@ feature -- Environment
 			-- UNIX only
 		once
 			create Result.make(0)
-			Result.append(execution_environment.root_directory_name + "etc")
+			Result.append (execution_environment.root_directory_name + "etc")
 		end
 
 	user_config_file_directory: STRING
 			-- OS-specific place for user config file(s) for this application.
 			-- Follows the model home_path/app_vendor/app_name.
+		local
+			pathname: STRING
 		do
-			Result := file_system.pathname (execution_environment.home_directory_name, application_developer_name)
-			Result := file_system.pathname (Result, extension_removed (application_name))
+			check attached file_system.pathname (execution_environment.home_directory_name, application_developer_name) as pn then
+				pathname := pn
+			end
+			check attached file_system.pathname (pathname, extension_removed (application_name)) as pn2 then
+				Result := pn2
+			end
 		end
 
 	user_config_file_path: STRING
 			-- Full path to resource configuration file.
 		do
-			Result := file_system.pathname (user_config_file_directory, extension_replaced (application_name, User_config_file_extension))
+			check attached file_system.pathname (user_config_file_directory, extension_replaced (application_name, User_config_file_extension)) as pn then
+				Result := pn
+			end
 		end
 
 	system_temp_file_directory: STRING
 			-- Standard place for temporary files.
 			-- By default /tmp on unix-like systems and C:\Temp on windows-like systems.
 			-- Windows would normally be "C:\Documents and Settings\(user)\Local Settings\Temp".
+		local
+			tmp_dir: detachable STRING
 		once
-			Result := execution_environment.get ("TMP")
+			tmp_dir := execution_environment.get ("TMP")
 
-			if not attached Result or else Result.is_empty then
-				Result := execution_environment.get ("TEMP")
+			if not attached tmp_dir or else tmp_dir.is_empty then
+				tmp_dir := execution_environment.get ("TEMP")
 			end
 
-			if attached Result and then not Result.is_empty then
-				Result := (create {WINDOWS_SHORT_PATH}.make (Result)).as_long_path
+			if attached tmp_dir as t and then not t.is_empty then
+				Result := (create {WINDOWS_SHORT_PATH}.make (t)).as_long_path
 			else
 				if is_windows then
 					Result := default_windows_temp_dir.twin
@@ -167,7 +181,6 @@ feature -- Environment
 			-- any change_dir calls are made since there is no easy way to get the startup directory.
 		local
 			path: KI_PATHNAME
-			dir: STRING
 		once
 			check attached file_system.string_to_pathname (file_system.absolute_pathname (execution_environment.command_line.command_name)) as p then
 				path := p
@@ -177,12 +190,19 @@ feature -- Environment
 				Result := p
 			end
 
-			if path.count > 3 then
-				dir := path.item (path.count - 1)
+			if path.count > 3 and then attached path.item (path.count - 1) as dir then
 				if dir.is_equal ("W_code") or dir.is_equal ("F_code") then
 					if path.item (path.count - 3).is_equal ("EIFGENs") then
-						dir := file_system.dirname (file_system.dirname (file_system.dirname (file_system.dirname (Result))))
-						Result := file_system.pathname (dir, file_system.basename (Result))
+						check
+							attached file_system.dirname (Result) as d1 and then
+							attached file_system.dirname (d1) as d2 and then
+							attached file_system.dirname (d2) as d3 and then
+							attached file_system.dirname (d3) as d4
+						then
+							check attached file_system.pathname (d4, file_system.basename (Result)) as pn then
+								Result := pn
+							end
+						end
 					end
 				end
 			end
@@ -309,7 +329,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	extension_replaced (path, new_extension: STRING): attached STRING
+	extension_replaced (path, new_extension: STRING): STRING
 			-- Copy of `path', with its extension replaced by `new_extension'.
 		require
 			path_attached: path /= Void
@@ -326,10 +346,8 @@ feature {NONE} -- Implementation
 			ends_with_new_extension: Result.ends_with (new_extension)
 		end
 
-	extension_removed (path: STRING): attached STRING
+	extension_removed (path: STRING): STRING
 			-- Copy of `path', with its extension (final segment preceded by '.'), if any, removed
-		require
-			path_attached: path /= Void
 		do
 			Result := path.substring (1, path.count - file_system.extension (path).count)
 		ensure

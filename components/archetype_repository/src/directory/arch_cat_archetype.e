@@ -13,7 +13,7 @@ class ARCH_CAT_ARCHETYPE
 inherit
 	ARCH_CAT_ITEM
 		redefine
-			child_type
+			children
 		end
 
 	SHARED_ARCHETYPE_CATALOGUES
@@ -139,18 +139,23 @@ feature {NONE} -- Initialisation
 			Valid_directory: file_system.directory_exists (a_directory)
 			Valid_id: has_rm_schema_for_id (an_id)
 		local
+			a_diff_arch: DIFFERENTIAL_ARCHETYPE
 			at: ARTEFACT_TYPE
 		do
 			make_item
 			id := an_id
 			rm_schema := rm_schema_for_id (id)
-			differential_path := file_system.pathname (a_directory, id.as_string + File_ext_archetype_source)
+			check attached file_system.pathname (a_directory, id.as_string + File_ext_archetype_source) as pn then
+				differential_path := pn
+			end
+
 			file_repository := a_repository
 
 			create at.make_archetype
 			artefact_type := at.value
-			create differential_archetype.make_minimal (at, an_id, locale_language_short)
-			set_archetype_default_details (differential_archetype)
+			create a_diff_arch.make_minimal (at, an_id, locale_language_short)
+			differential_archetype := a_diff_arch
+			set_archetype_default_details (a_diff_arch)
 			finalise_make
 
 			initialise
@@ -168,19 +173,23 @@ feature {NONE} -- Initialisation
 			Valid_directory: file_system.directory_exists (a_directory)
 			Valid_id: has_rm_schema_for_id (an_id)
 		local
+			a_diff_arch: DIFFERENTIAL_ARCHETYPE
 			at: ARTEFACT_TYPE
 		do
 			make_item
 			id := an_id
 			rm_schema := rm_schema_for_id (id)
-			differential_path := file_system.pathname (a_directory, id.as_string + File_ext_archetype_source)
+			check attached file_system.pathname (a_directory, id.as_string + File_ext_archetype_source) as pn then
+				differential_path := pn
+			end
 			file_repository := a_repository
 			parent_id := a_parent.archetype_id
 
 			create at.make_archetype
 			artefact_type := at.value
-			create differential_archetype.make_minimal_child (at, an_id, locale_language_short, a_parent)
-			set_archetype_default_details (differential_archetype)
+			create a_diff_arch.make_minimal_child (at, an_id, locale_language_short, a_parent)
+			set_archetype_default_details (a_diff_arch)
+			differential_archetype := a_diff_arch
 			finalise_make
 
 			initialise
@@ -199,9 +208,15 @@ feature {NONE} -- Initialisation
 
 	finalise_make
 		do
-			differential_compiled_path := file_system.pathname (compiler_gen_source_directory, id.as_string + File_ext_dadl)
-			flat_compiled_path := file_system.pathname (compiler_gen_flat_directory, id.as_string + File_ext_dadl)
-			artefact_type_name := (create {ARTEFACT_TYPE}).type_names.item (artefact_type)
+			check attached file_system.pathname (compiler_gen_source_directory, id.as_string + File_ext_dadl) as pn then
+				differential_compiled_path := pn
+			end
+			check attached file_system.pathname (compiler_gen_flat_directory, id.as_string + File_ext_dadl) as pn then
+				flat_compiled_path := pn
+			end
+			check attached (create {ARTEFACT_TYPE}).type_names.item (artefact_type) as af_name then
+				artefact_type_name := af_name
+			end
 		end
 
 feature -- Access (semantic)
@@ -211,19 +226,19 @@ feature -- Access (semantic)
 	full_path: STRING
 			-- Full path to the primary version of the item (differential or legacy) on the storage medium.
 		do
-			if legacy_flat_path /= Void then
-				Result := legacy_flat_path
+			if attached legacy_flat_path as lfp then
+				Result := lfp
 			else
 				Result := differential_path
 			end
 		ensure
-			flat_or_differential: Result = legacy_flat_path xor Result = differential_path
+			flat_or_differential: attached legacy_flat_path as lfp implies Result = lfp xor Result = differential_path
 		end
 
 	relative_path: STRING
 			-- a path derived from the ontological path of the nearest folder node + archetype_id
 		local
-			csr: ARCH_CAT_ITEM
+			csr: detachable ARCH_CAT_ITEM
 		do
 			create Result.make(0)
 			from csr := parent until attached {ARCH_CAT_MODEL_NODE} csr or csr = Void loop
@@ -244,7 +259,9 @@ feature -- Access (semantic)
 			differential_file_available: has_differential_file
 		do
 			file_repository.read_text_from_file (differential_path)
-			Result := file_repository.text
+			check attached file_repository.text as t then
+				Result := t
+			end
 			differential_text_timestamp := differential_file_timestamp
 		end
 
@@ -277,7 +294,9 @@ feature -- Access (semantic)
 			if flat_archetype_cache = Void or last_include_rm then
 				flatten (False)
 			end
-			Result := flat_archetype_cache
+			check attached flat_archetype_cache as fac then
+				Result := fac
+			end
 		end
 
 	flat_archetype_with_rm: FLAT_ARCHETYPE
@@ -288,7 +307,9 @@ feature -- Access (semantic)
 			if flat_archetype_cache = Void or not last_include_rm then
 				flatten (True)
 			end
-			Result := flat_archetype_cache
+			check attached flat_archetype_cache as fac then
+				Result := fac
+			end
 		end
 
 	flat_text (include_rm: BOOLEAN): STRING
@@ -312,7 +333,9 @@ feature -- Access (semantic)
 		require
 			flat_file_available: has_legacy_flat_file
 		do
-			file_repository.read_text_from_file (legacy_flat_path)
+			check attached legacy_flat_path as lfp then
+				file_repository.read_text_from_file (lfp)
+			end
 			Result := file_repository.text
 			legacy_flat_text_timestamp := legacy_flat_file_timestamp
 		end
@@ -418,7 +441,9 @@ feature -- Access (semantic)
 			if not attached slot_id_index_cache then
 				compute_slot_id_index
 			end
-			Result := slot_id_index_cache
+			check attached slot_id_index_cache as sic then
+				Result := sic
+			end
 		end
 
 	display_language: STRING
@@ -432,10 +457,10 @@ feature -- Access (semantic)
 			end
 		end
 
-	differential_compiled_path: detachable STRING
+	differential_compiled_path: STRING
 			-- path to persisted compiled source form of archetype
 
-	flat_compiled_path: detachable STRING
+	flat_compiled_path: STRING
 			-- path to persisted compiled flat form of archetype
 
 	global_artefact_identifier: STRING
@@ -520,7 +545,7 @@ feature -- Status Report - Compilation
 
 				-- see if any supplier was recompiled more recently
 				if not Result and attached suppliers_index as supp_idx then
-					Result := across supp_idx as supp_idx_csr some attached supp_idx.item.last_compile_attempt_timestamp as supp_lcats and then supp_lcats > lcats end
+					Result := across supp_idx as supp_idx_csr some attached supp_idx_csr.item.last_compile_attempt_timestamp as supp_lcats and then supp_lcats > lcats end
 				end
 			end
 		end
@@ -612,7 +637,7 @@ feature -- Status Report - Semantic
 	has_legacy_flat_file: BOOLEAN
 			-- Does the repository have a legacy flat-form file for this archetype?
 		do
-			Result := file_repository.is_valid_path (legacy_flat_path)
+			Result := attached legacy_flat_path as lfp and then file_repository.is_valid_path (lfp)
 		end
 
 	is_legacy: BOOLEAN
@@ -624,14 +649,14 @@ feature -- Status Report - Semantic
 			-- Does the compile generated area have a differential file for this archetype from a previous compile?
 			-- If it is newer than the source file, it can be read instead
 		do
-			Result := attached differential_compiled_path as dcp and then file_repository.is_valid_path (dcp)
+			Result := file_system.file_exists (differential_compiled_path)
 		end
 
 	has_flat_compiled_file: BOOLEAN
 			-- Does the compile generated area have a flat file for this archetype from a previous compile?
 			-- If it is newer than the source file, it can be read instead
 		do
-			Result := attached flat_compiled_path as fcp and then file_repository.is_valid_path (fcp)
+			Result := file_repository.is_valid_path (flat_compiled_path)
 		end
 
 	is_reference_archetype: BOOLEAN
@@ -728,9 +753,11 @@ feature -- Compilation
 					id := amp.last_archetype.archetype_id
 				end
 				if amp.last_archetype.is_specialised then
-					if not amp.last_archetype.parent_archetype_id.is_equal (parent_id) then
-						old_ontological_parent_name := old_ont_parent
-						parent_id := amp.last_archetype.parent_archetype_id
+					check attached parent_id as pid then
+						if not amp.last_archetype.parent_archetype_id.is_equal (pid) then
+							old_ontological_parent_name := old_ont_parent
+							parent_id := amp.last_archetype.parent_archetype_id
+						end
 					end
 				end
 				signal_from_scratch
@@ -849,19 +876,19 @@ feature {NONE} -- Compilation
 			Compilation_state_valid: compilation_state = cs_ready_to_parse_legacy
 			Legacy_file_available: has_legacy_flat_file
 		local
-			legacy_flat_archetype: FLAT_ARCHETYPE
+			legacy_flat_archetype: detachable FLAT_ARCHETYPE
 		do
-			legacy_flat_archetype := adl15_engine.parse_legacy_flat (legacy_flat_text, rm_schema)
+			check attached legacy_flat_text as lft then
+				legacy_flat_archetype := adl15_engine.parse_legacy_flat (lft, rm_schema)
+			end
 			flat_archetype_cache := Void
-			if not attached legacy_flat_archetype then
-				errors.append (adl15_engine.errors)
-			 	compilation_state := Cs_convert_legacy_failed
-			else
+			if attached legacy_flat_archetype as lft then
 				post_info (Current, "compile_legacy", "compile_legacy_i1", <<id.as_string>>)
-				create differential_archetype.make_from_legacy_flat (legacy_flat_archetype)
+				create differential_archetype.make_from_legacy_flat (lft)
+			 	compilation_state := Cs_parsed
 				if is_specialised and not specialisation_parent.is_valid then
 					compilation_state := cs_lineage_invalid
-					errors.add_error("compile_e1", <<parent_id.as_string>>, "")
+					errors.add_error ("compile_e1", <<parent_id.as_string>>, "")
 				else
 					-- perform post-parse object structure finalisation
 					adl15_engine.post_parse_process (Current, rm_schema)
@@ -879,6 +906,9 @@ feature {NONE} -- Compilation
 				 		save_differential
 					end
 				end
+			else
+				errors.append (adl15_engine.errors)
+			 	compilation_state := Cs_convert_legacy_failed
 			end
 
 			status.prepend (billboard.content)
@@ -898,14 +928,12 @@ feature {NONE} -- Compilation
 			Has_differential_file: has_differential_file
 		do
 			post_info (Current, "parse", "parse_i2", Void)
-			differential_archetype := adl15_engine.parse_differential (differential_text, rm_schema)
 			flat_archetype_cache := Void
-			if not attached differential_archetype then
-				errors.append (adl15_engine.errors)
-				compilation_state := Cs_parse_failed
-			else
-				if is_specialised and not parent_id.is_equal (differential_archetype.parent_archetype_id) then
-					errors.add_warning ("parse_w1", <<id.as_string, parent_id.as_string, differential_archetype.parent_archetype_id.as_string>>, "")
+			differential_archetype := adl15_engine.parse_differential (differential_text, rm_schema)
+		 	compilation_state := Cs_parsed
+			if attached differential_archetype as diff_arch then
+				if is_specialised and then attached parent_id as pid and then attached diff_arch.parent_archetype_id as da_pid and then not pid.is_equal (da_pid) then
+					errors.add_warning ("parse_w1", <<id.as_string, pid.as_string, da_pid.as_string>>, "")
 				else
 					post_info (Current, "parse", "parse_i1", <<id.as_string>>)
 				end
@@ -915,9 +943,11 @@ feature {NONE} -- Compilation
 
 				-- determine the suppliers list for ongoing compilation; exclude an reference to the current archetype to avoid an infinite recursion
 				create suppliers_index.make (0)
-				across differential_archetype.suppliers_index as supp_idx_csr loop
-					if current_arch_cat.archetype_index.has (supp_idx_csr.key) and not supp_idx_csr.key.is_case_insensitive_equal (id.as_string) then
-						suppliers_index.put (current_arch_cat.archetype_index.item (supp_idx_csr.key), supp_idx_csr.key)
+				across diff_arch.suppliers_index as supp_idx_csr loop
+					if current_arch_cat.archetype_index.has (supp_idx_csr.key) and then attached current_arch_cat.archetype_index.item (supp_idx_csr.key) as supp_arch and then
+						not supp_idx_csr.key.is_case_insensitive_equal (id.as_string)
+					then
+						suppliers_index.put (supp_arch, supp_idx_csr.key)
 					end
 				end
 				if not suppliers_index.is_empty then
@@ -927,9 +957,12 @@ feature {NONE} -- Compilation
 				end
 
 				-- determine what language to view archetype in
-				if archetype_view_language.is_empty or not differential_archetype.has_language (archetype_view_language) then
-					set_archetype_view_language (differential_archetype.original_language.code_string)
+				if archetype_view_language.is_empty or not diff_arch.has_language (archetype_view_language) then
+					set_archetype_view_language (diff_arch.original_language.code_string)
 				end
+			else
+				errors.append (adl15_engine.errors)
+				compilation_state := Cs_parse_failed
 			end
 
 			status.copy (billboard.content)
@@ -1014,7 +1047,9 @@ feature -- File Operations
 		require
 			is_valid
 		do
-			file_repository.save_text_to_file (differential_path, adl15_engine.serialise (differential_archetype, Syntax_type_adl, current_archetype_language))
+			check attached differential_archetype as da then
+				file_repository.save_text_to_file (differential_path, adl15_engine.serialise (da, Syntax_type_adl, current_archetype_language))
+			end
 			differential_text_timestamp := differential_file_timestamp
 			status := get_msg_line ("file_saved_as_in_format", <<differential_path, Syntax_type_adl>>)
 		ensure
@@ -1029,7 +1064,9 @@ feature -- File Operations
 			Serialise_format_valid: has_serialiser_format (a_format)
 		do
 			if has_archetype_native_serialiser_format (a_format) then
-				file_repository.save_text_to_file (a_full_path, adl15_engine.serialise (differential_archetype, a_format, current_archetype_language))
+				check attached differential_archetype as da then
+					file_repository.save_text_to_file (a_full_path, adl15_engine.serialise (da, a_format, current_archetype_language))
+				end
 			else -- must be a DT serialisation format
 				file_repository.save_text_to_file (a_full_path, serialise_object (False, a_format))
 			end
@@ -1060,7 +1097,9 @@ feature -- File Operations
 			Archetype_has_legacy: has_legacy_flat_file
 			path_valid: not a_full_path.is_empty
 		do
-			file_repository.save_text_to_file (a_full_path, legacy_flat_text)
+			check attached legacy_flat_text as lft then
+				file_repository.save_text_to_file (a_full_path, lft)
+			end
 			status := get_msg_line ("file_saved_as_in_format", <<a_full_path, file_ext_archetype_adl14>>)
 		end
 
@@ -1094,6 +1133,7 @@ feature -- File Operations
 			fd: PLAIN_TEXT_FILE
 			dadl_text: STRING
 		do
+			create Result.make_empty
 			if file_system.file_exists (differential_compiled_path) then
 				-- read the serialised P_ARCHETYPE (dADL format) file
 				create fd.make_open_read (differential_compiled_path)
@@ -1131,9 +1171,13 @@ feature -- Output
 				end
 			elseif has_archetype_native_serialiser_format (a_format) then
 				if flat_flag then
-					Result := adl15_engine.serialise (flat_archetype, a_format, current_archetype_language)
+					check attached flat_archetype as fa then
+						Result := adl15_engine.serialise (fa, a_format, current_archetype_language)
+					end
 				else
-					Result := adl15_engine.serialise (differential_archetype, a_format, current_archetype_language)
+					check attached differential_archetype as da then
+						Result := adl15_engine.serialise (da, a_format, current_archetype_language)
+					end
 				end
 			else -- must be a DT serialisation format
 				Result := serialise_object (flat_flag, a_format)
@@ -1158,9 +1202,13 @@ feature -- Output
 				end
 			else
 				if flat_flag then
-					create {P_ARCHETYPE} dt_arch.make (flat_archetype)
+					check attached flat_archetype as fa then
+						create {P_ARCHETYPE} dt_arch.make (fa)
+					end
 				else
-					create {P_ARCHETYPE} dt_arch.make (differential_archetype)
+					check attached differential_archetype as da then
+						create {P_ARCHETYPE} dt_arch.make (da)
+					end
 				end
 
 				dt_arch.synchronise_to_tree
@@ -1182,6 +1230,11 @@ feature -- Statistics
 		end
 
 	statistical_analyser: detachable ARCHETYPE_STATISTICAL_ANALYSER
+
+feature {ARCH_CAT_ITEM, ARCHETYPE_CATALOGUE} -- Implementation
+
+	children: detachable SORTED_TWO_WAY_LIST [ARCH_CAT_ARCHETYPE]
+			-- list of child nodes
 
 feature {NONE} -- Implementation
 
@@ -1218,11 +1271,6 @@ feature {NONE} -- Implementation
 		require
 			is_valid
 		do
-			if not attached arch_flattener then
-				create arch_flattener.make (Current, rm_schema)
-			else
-				arch_flattener.make (Current, rm_schema)
-			end
 			arch_flattener.flatten (include_rm)
 			flat_archetype_cache := arch_flattener.arch_output_flat
 			last_include_rm := include_rm
@@ -1233,10 +1281,7 @@ feature {NONE} -- Implementation
 	flat_archetype_cache: detachable FLAT_ARCHETYPE
 			-- archetype generated by flattening process
 
-	child_type: ARCH_CAT_ARCHETYPE
-			-- child node type
-
-	archetype_serialise_engine: attached DADL_ENGINE
+	archetype_serialise_engine: DADL_ENGINE
 		once
 			create Result.make
 		end
@@ -1244,10 +1289,10 @@ feature {NONE} -- Implementation
 	last_include_rm: BOOLEAN
 			-- which kind of flattening was last used? Used to know whether to regenerate flat or not
 
---	flat_archetype_clone_cache: detachable FLAT_ARCHETYPE
---			-- clone of current `flat_archetype'; used for editing
-
 	arch_flattener: ARCHETYPE_FLATTENER
+		once ("OBJECT")
+			create Result.make (Current, rm_schema)
+		end
 
 	clear_cache
 		do
@@ -1287,13 +1332,15 @@ feature {NONE} -- Implementation
 			compilation_state >= Cs_validated_phase_1
 		local
 			includes, excludes: ARRAYED_LIST[ASSERTION]
-			ara: ARCH_CAT_ARCHETYPE
+			slot_idx: like slot_id_index
 		do
 			if is_specialised then
-				slot_id_index_cache := specialisation_parent.slot_id_index
+				slot_idx := specialisation_parent.slot_id_index
 			else
-				create slot_id_index_cache.make (0)
+				create slot_idx.make (0)
 			end
+			slot_id_index_cache := slot_idx
+
 			across differential_archetype.slot_index as slots_csr loop
 				includes := slots_csr.item.includes
 				excludes := slots_csr.item.excludes
@@ -1301,32 +1348,33 @@ feature {NONE} -- Implementation
 					if not excludes.is_empty then -- create specific match list from includes constraint
 						across includes as includes_csr loop
 							if attached {STRING} includes_csr.item.extract_regex as a_regex then
-								add_slot_ids (slot_id_index_cache, current_arch_cat.matching_ids (a_regex, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
+								add_slot_ids (slot_idx, current_arch_cat.matching_ids (a_regex, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
 							end
 						end
 					else -- excludes = empty ==> includes is just a recommendation => match all archetype ids of RM type
-						add_slot_ids (slot_id_index_cache, current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_name), slots_csr.item.path)
+						add_slot_ids (slot_idx, current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_name), slots_csr.item.path)
 					end
 				elseif not excludes.is_empty and not excludes.first.matches_any then
-					add_slot_ids (slot_id_index_cache, current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
+					add_slot_ids (slot_idx, current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, Void), slots_csr.item.path)
 					if not includes.is_empty then -- means excludes is not a recommendation; need to actually process it
 						across excludes as excludes_csr loop
 							if attached {STRING} excludes_csr.item.extract_regex as a_regex then
 								across current_arch_cat.matching_ids (a_regex, slots_csr.item.rm_type_name, id.rm_name) as ids_csr loop
-									slot_id_index_cache.item (slots_csr.item.path).prune (ids_csr.item)
+									slot_idx.item (slots_csr.item.path).prune (ids_csr.item)
 								end
 							end
 						end
 					end
 				else
-					add_slot_ids (slot_id_index_cache, current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_name), slots_csr.item.path)
+					add_slot_ids (slot_idx, current_arch_cat.matching_ids (Regex_any_pattern, slots_csr.item.rm_type_name, id.rm_name), slots_csr.item.path)
 				end
 
 				-- now post the results in the reverse indexes
-				across slot_id_index_cache.item (slots_csr.item.path) as ids_csr loop
-					ara := current_arch_cat.archetype_index.item (ids_csr.item)
-					if not ara.is_supplier or else not ara.clients_index.has (id.as_string) then
-						ara.add_client (id.as_string)
+				across slot_idx.item (slots_csr.item.path) as ids_csr loop
+					check attached current_arch_cat.archetype_index.item (ids_csr.item) as ara then
+						if not ara.is_supplier or else not ara.clients_index.has (id.as_string) then
+							ara.add_client (id.as_string)
+						end
 					end
 				end
 			end
@@ -1342,7 +1390,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	slot_id_index_cache: HASH_TABLE [ARRAYED_SET[STRING], STRING]
+	slot_id_index_cache: detachable HASH_TABLE [ARRAYED_SET[STRING], STRING]
 
 invariant
 	compilation_state_valid: valid_compilation_state (compilation_state)

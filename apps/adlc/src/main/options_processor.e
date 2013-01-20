@@ -42,6 +42,7 @@ feature -- Definitions
 			Result.extend (create {ARGUMENT_SWITCH}.make (quiet_switch, get_text ("quiet_switch_desc"), True, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (flat_switch, get_text ("flat_switch_desc"), True, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (show_config_switch, get_text ("show_config_switch_desc"), True, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (list_archetypes_switch, get_text ("list_archetypes_switch_desc"), True, False))
 
 			-- switches with arguments
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (format_switch, get_text ("format_switch_desc"), True, False, format_switch_arg, get_msg ("format_switch_arg_desc", <<archetype_all_serialiser_formats_string>>), False))
@@ -58,6 +59,7 @@ feature -- Definitions
 		once
 			create Result.make (2)
 			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (quiet_switch), switch_of_name (show_config_switch) >>, False))
+			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (quiet_switch), switch_of_name (list_archetypes_switch) >>, False))
 			Result.extend (create {ARGUMENT_GROUP}.make (<< switch_of_name (quiet_switch), switch_of_name (flat_switch),
 														switch_of_name (cfg_switch), switch_of_name (profile_switch),
 														switch_of_name (action_switch), switch_of_name (format_switch) >>, True))
@@ -66,6 +68,7 @@ feature -- Definitions
 	quiet_switch: STRING = "q|quiet"
 	flat_switch: STRING = "flat"
 	show_config_switch: STRING = "s|show_config"
+	list_archetypes_switch: STRING = "l|list_archetypes"
 
 	action_switch: STRING = "a|action"
 	action_switch_arg: STRING = "action"
@@ -109,6 +112,7 @@ feature {NONE} -- Initialization
 				is_verbose := not has_option (quiet_switch)
 				use_flat_source := has_option (flat_switch)
 				show_config := has_option (show_config_switch)
+				list_archetypes := has_option (list_archetypes_switch)
 			end
 		end
 
@@ -168,6 +172,9 @@ feature -- Status Report
 	show_config: BOOLEAN
 			-- request to show configuration information
 
+	list_archetypes: BOOLEAN
+			-- True for -l switch to list archetypes
+
 feature {NONE} -- Usage
 
 	copyright: STRING = "Copyright (c) 2012 openEHR Foundation"
@@ -179,7 +186,7 @@ feature {NONE} -- Usage
 			Result := application_name
 		end
 
-	version: attached STRING
+	version: STRING
 			--  <Precursor>
 		once
 			Result := (create {OPENEHR_VERSION}).out

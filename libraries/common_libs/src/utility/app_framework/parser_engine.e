@@ -26,8 +26,11 @@ feature -- Access
 	tree: detachable ANY
 			-- Parser output.
 
-	serialised: detachable STRING
+	serialised: STRING
 			-- The last result of calling `serialise'.
+		attribute
+			create Result.make_empty
+		end
 
 	errors: ERROR_ACCUMULATOR
 			-- Result of last parse.
@@ -58,7 +61,7 @@ feature -- Commands
 		do
 			source := Void
 			tree := Void
-			serialised := Void
+			serialised.wipe_out
 		end
 
 	set_source (in_text: STRING; a_source_start_line: INTEGER)
@@ -82,7 +85,7 @@ feature -- Commands
 			parsing: in_parse_mode
 		do
 			tree := Void
-			serialised := Void
+			serialised.wipe_out
 			parser_execute
 			if not parser.syntax_error then
 				assign_parser_result

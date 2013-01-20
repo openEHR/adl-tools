@@ -62,7 +62,7 @@ feature -- Access (attributes from schema)
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 		attribute
 			create Result.make (0)
-			classes.compare_objects
+			Result.compare_objects
 		end
 
 feature -- Access
@@ -127,15 +127,12 @@ feature {DT_OBJECT_CONVERTER} -- Finalisation
 			classes_copy: ARRAYED_SET [STRING]
 		do
 			if not classes.object_comparison then
-				io.put_string ("P_BMM_PACKAGE_DEFINITION.classes already not properly self-initialised")
 				create classes_copy.make (0)
 				classes_copy.compare_objects
 				across classes as classes_csr loop
 					classes_copy.extend (classes_csr.item)
 				end
 				classes := classes_copy
-			else
-				io.put_string ("P_BMM_PACKAGE_DEFINITION.classes already has object_comparison")
 			end
 
 			correct_packages_keys

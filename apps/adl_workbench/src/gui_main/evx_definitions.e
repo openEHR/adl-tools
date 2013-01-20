@@ -4,16 +4,8 @@ note
 	keywords:    "constants"
 	author:      "Thomas Beale"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2007 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-	description: "Objects that provide access to constants loaded from files."
-	date: "$Date$"
-	revision: "$Revision$"
 
 class
 	EVX_DEFINITIONS

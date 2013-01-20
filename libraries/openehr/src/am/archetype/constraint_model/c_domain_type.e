@@ -28,11 +28,6 @@ inherit
 			synchronise_to_tree, finalise_dt, safe_deep_twin
 		end
 
-	BASIC_DEFINITIONS
-		export
-			{NONE} all
-		end
-
 feature -- Initialisation
 
 	make_dt (make_args: detachable ARRAY[ANY])

@@ -365,6 +365,14 @@ feature -- Comparison
 			end
 		end
 
+	existence_matches (other: like Current): BOOLEAN
+			-- True if the existence of this node is a duplicate of other.existence, which is
+			-- non-conformant except in non-strict mode
+		do
+			Result := attached existence as ex and then attached other.existence as other_ex and then
+				other_ex.equal_interval (ex)
+		end
+
 	cardinality_conforms_to (other: like Current): BOOLEAN
 			-- True if the cardinality of this node conforms to other.cardinality, if it exists
 		do
@@ -373,6 +381,14 @@ feature -- Comparison
 			else
 				Result := True
 			end
+		end
+
+	cardinality_matches (other: like Current): BOOLEAN
+			-- True if the cardinality of this node is a duplicate of other.cardinality, which is
+			-- non-conformant except in non-strict mode
+		do
+			Result := attached cardinality as card and then attached other.cardinality as other_card and then
+				other_card.equal_interval (card)
 		end
 
 feature -- Modification

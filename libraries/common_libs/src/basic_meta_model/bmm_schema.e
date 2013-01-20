@@ -37,7 +37,7 @@ feature -- Initialisation
 
 feature -- Definitions
 
-	substitutions: attached HASH_TABLE [STRING, STRING]
+	substitutions: HASH_TABLE [STRING, STRING]
 			-- allowed type substitutions due to archetyping as a table of
 			-- allowable substitution keyed by expected type
 		once

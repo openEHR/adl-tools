@@ -7,10 +7,6 @@ note
 	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class SHARED_APP_UI_RESOURCES
 
 inherit
@@ -515,32 +511,39 @@ feature {NONE} -- Implementation
 			dir: KL_DIRECTORY
 			dir_items: ARRAYED_LIST [STRING]
 		do
-			abs_path := file_system.pathname (icon_directory, rel_path)
+			check attached file_system.pathname (icon_directory, rel_path) as pn then
+				abs_path := pn
+			end
 			create dir.make (abs_path)
 
 			-- process files
-			create dir_items.make_from_array (dir.filenames)
-			from dir_items.start until dir_items.off loop
-				if dir_items.item.ends_with (icon_ico_extension) or dir_items.item.ends_with (icon_png_extension) then
-					create pixmap
-					pixmap.set_with_named_file (file_system.pathname (abs_path, dir_items.item))
-					pixmap.set_minimum_size (pixmap.width, pixmap.height)
-					key := file_system.pathname (rel_path, dir_items.item)
-					key.remove_tail (key.count - key.last_index_of ('.', key.count) + 1)
-					key.to_lower
-					key.replace_substring_all ("\", "/")
-					pixmap_table.put (pixmap, key)
+			if attached dir.filenames as df then
+				create dir_items.make_from_array (df)
+				across dir_items as dir_items_csr loop
+					if dir_items_csr.item.ends_with (icon_ico_extension) or dir_items_csr.item.ends_with (icon_png_extension) then
+						create pixmap
+						check attached file_system.pathname (abs_path, dir_items_csr.item) as pn then
+							pixmap.set_with_named_file (pn)
+						end
+						pixmap.set_minimum_size (pixmap.width, pixmap.height)
+						check attached file_system.pathname (rel_path, dir_items_csr.item) as pn then
+							key := pn
+						end
+						key.remove_tail (key.count - key.last_index_of ('.', key.count) + 1)
+						key.to_lower
+						key.replace_substring_all ("\", "/")
+						pixmap_table.put (pixmap, key)
+					end
 				end
-				dir_items.forth
-			end
 
-			-- process child directories
-			create dir_items.make_from_array (dir.directory_names)
-			from dir_items.start until dir_items.off loop
-				if not dir_items.item.starts_with (".") then
-					recursive_load_pixmaps (pixmap_table, file_system.pathname (rel_path, dir_items.item))
+				-- process child directories
+				create dir_items.make_from_array (dir.directory_names)
+				from dir_items.start until dir_items.off loop
+					if not dir_items.item.starts_with (".") then
+						recursive_load_pixmaps (pixmap_table, file_system.pathname (rel_path, dir_items.item))
+					end
+					dir_items.forth
 				end
-				dir_items.forth
 			end
 		end
 

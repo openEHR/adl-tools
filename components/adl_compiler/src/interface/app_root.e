@@ -95,40 +95,49 @@ feature -- Initialisation
 					create strx.make_empty
 					rm_schemas_load_list.do_all (agent (s: STRING; err_str: STRING) do err_str.append(s + ", ") end (?, strx))
 					strx.remove_tail (2) -- remove final ", "
-					add_warning ("model_access_e0", <<strx, rm_schema_directory>>)
+
+					if repository_profiles.is_empty then
+						add_warning ("model_access_e0", <<strx, rm_schema_directory>>)
+					else
+						add_error ("model_access_e0", <<strx, rm_schema_directory>>)
+					end
+				else
+					add_info ("general", <<billboard.content>>)
 				end
 			else
-				add_error ("model_access_e5", <<rm_schema_directory>>)
+				add_error ("general_error", <<billboard.content>>)
 			end
 
 			-- adjust for repository profiles being out of sync with current profile setting (e.g. due to
 			-- manual editing of .cfg file)
 			-- first of all check for broken profiles and get rid of them
-			create dead_profiles.make (0)
-			across repository_profiles as profs_csr loop
-				if not is_profile_valid (profs_csr.key) then
-					dead_profiles.extend (profs_csr.key)
+			if not has_errors then
+				create dead_profiles.make (0)
+				across repository_profiles as profs_csr loop
+					if not is_profile_valid (profs_csr.key) then
+						dead_profiles.extend (profs_csr.key)
+					end
 				end
-			end
-			across dead_profiles as profs_csr loop
-				add_warning ("remove_profile", <<invalid_profile_reason (profs_csr.item)>>)
-				repository_profiles.remove_profile (profs_csr.item)
-			end
-
-			-- now choose a profile to start with
-			if not repository_profiles.is_empty then
-				if not has_current_profile then
-					set_current_profile (repository_profiles.first_profile)
+				across dead_profiles as profs_csr loop
+					add_warning ("remove_profile", <<invalid_profile_reason (profs_csr.item)>>)
+					repository_profiles.remove_profile (profs_csr.item)
 				end
-				use_current_profile (False)
-			end
 
-			-- tell the user a few useful things
-			add_warning ("adl_version_warning", <<adl_version_for_flat_output>>)
-			if validation_strict then
-				add_info ("validation_strict", Void)
-			else
-				add_info ("validation_non_strict", Void)
+				-- now choose a profile to start with
+				if not repository_profiles.is_empty then
+					if not has_current_profile then
+						set_current_profile (repository_profiles.first_profile)
+					end
+					use_current_profile (False)
+				end
+
+				-- tell the user a few useful things
+				add_warning ("adl_version_warning", <<adl_version_for_flat_output>>)
+				if validation_strict then
+					add_info ("validation_strict", Void)
+				else
+					add_info ("validation_non_strict", Void)
+				end
 			end
 		end
 

@@ -7,11 +7,6 @@ note
 	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
 class GUI_TEST_ARCHETYPE_TREE_CONTROL
 
 inherit
@@ -663,12 +658,16 @@ feature {NONE} -- Tests
 			Result := Test_failed
 			if target.is_valid then
 				if diff_dirs_available then
-					flat_path := file_system.pathname (diff_dir_flat_new, target.qualified_name + File_ext_archetype_flat)
+					check attachde file_system.pathname (diff_dir_flat_new, target.qualified_name + File_ext_archetype_flat) as pn then
+						flat_path := pn
+					end
 					target.save_flat_as (flat_path, Syntax_type_adl)
 
 					-- copy above flat file to $profile/source_flat/orig area as well, using extension .adlx (flat also uses this - diff tool needs to see same
 					-- extensions or else it gets confused)
-					file_system.copy_file (flat_path, file_system.pathname (diff_dir_source_flat_new, target.qualified_name + File_ext_archetype_adl_diff))
+					check attached file_system.pathname (diff_dir_source_flat_new, target.qualified_name + File_ext_archetype_adl_diff) as pn then
+						file_system.copy_file (flat_path, pn)
+					end
 				end
 				if target.status.is_empty then
 					Result := test_passed
@@ -705,7 +704,9 @@ feature {NONE} -- Tests
 			Result := Test_failed
 			if target.is_valid then
 				target.save_compiled_differential
-				file_system.copy_file (target.differential_compiled_path, file_system.pathname (dadl_source_dir, target.qualified_name + File_ext_dadl))
+				check attached file_system.pathname (dadl_source_dir, target.qualified_name + File_ext_dadl) as pn
+					file_system.copy_file (target.differential_compiled_path, pn)
+				end
 				Result := test_passed
 			else
 				Result := test_not_applicable
@@ -770,7 +771,7 @@ feature {NONE} -- Implementation
 	original_differential_text: STRING
 			-- copy of archetype text after successful parse; = what was on file
 
-	populate_gui_tree_node_enter (ari: attached ARCH_CAT_ITEM)
+	populate_gui_tree_node_enter (ari: ARCH_CAT_ITEM)
 			-- Add a node representing `an_item' to `gui_file_tree'.
 		local
 			gli: EV_GRID_LABEL_ITEM
@@ -811,7 +812,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	populate_gui_tree_node_exit (an_item: attached ARCH_CAT_ITEM)
+	populate_gui_tree_node_exit (an_item: ARCH_CAT_ITEM)
 		do
 			if an_item.has_artefacts then
 				grid_row_stack.remove
@@ -936,13 +937,15 @@ feature {NONE} -- Implementation
 				file_system.recursive_create_directory (diff_dadl_round_trip_source_orig_dir)
 			end
 
-			diff_dadl_round_trip_source_new_dir := file_system.pathname (dadl_adl_root, "new")
+			check attached file_system.pathname (dadl_adl_root, "new") as pn then
+				diff_dadl_round_trip_source_new_dir := pn
+			end
 			if not file_system.directory_exists (diff_dadl_round_trip_source_new_dir) then
 				file_system.recursive_create_directory (diff_dadl_round_trip_source_new_dir)
 			end
 		end
 
-	display_arrayed_list (str_lst: attached ARRAYED_LIST [STRING]): attached STRING
+	display_arrayed_list (str_lst: ARRAYED_LIST [STRING]): STRING
 			--
 		do
 			create Result.make_empty
@@ -955,7 +958,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_checkbox (row: attached EV_GRID_ROW)
+	add_checkbox (row: EV_GRID_ROW)
 			-- Add the checkbox column to `row' of a grid control
 		local
 			gcli: EV_GRID_CHECKABLE_LABEL_ITEM
@@ -968,7 +971,7 @@ feature {NONE} -- Implementation
 			at_least_2_columns: row.count >= 2
 		end
 
-	set_checkboxes_recursively (a_gcli: attached EV_GRID_CHECKABLE_LABEL_ITEM)
+	set_checkboxes_recursively (a_gcli: EV_GRID_CHECKABLE_LABEL_ITEM)
 			-- For all sub-items of `item' in a grid control, set their check boxes to match `item', recursively.
 		local
 			i: INTEGER

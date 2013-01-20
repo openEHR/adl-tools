@@ -29,7 +29,7 @@ create
 
 feature -- Access
 
-	parent: OG_ATTRIBUTE_NODE
+	parent: detachable OG_ATTRIBUTE_NODE
 
 	all_paths: HASH_TABLE [detachable OG_OBJECT, OG_PATH]
 			-- all paths below this point, including this node
@@ -169,7 +169,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 			end
 		end
 
-	internal_object_node_at_path (a_path: OG_PATH): OG_OBJECT
+	internal_object_node_at_path (a_path: OG_PATH): detachable OG_OBJECT
 			-- find the child at the path `a_path'
 		do
 			if has_object_at_path_segment (a_path.item) and then attached object_at_path_segment (a_path.item) as child_obj then
@@ -225,7 +225,7 @@ feature {OG_OBJECT_NODE} -- Implementation
 			-- then include the "unknown" ids on non-identified object nodes to give
 			-- completely unique paths
 		local
-			child_paths: HASH_TABLE [OG_OBJECT, OG_PATH]
+			child_paths: like all_paths
 			attr_node: like child_type
 			a_path: OG_PATH
 			child_objs: HASH_TABLE [OG_OBJECT, STRING]

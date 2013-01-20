@@ -7,10 +7,6 @@ note
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 deferred class ARCHETYPE_SERIALISER
 
 inherit
@@ -18,15 +14,17 @@ inherit
 
 feature -- Serialisation
 
-	serialise (an_archetype: attached ARCHETYPE)
+	serialise (an_archetype: ARCHETYPE)
 		deferred
-		ensure
-			attached archetype
 		end
 
 feature {NONE} -- Access
 
-	archetype: ARCHETYPE
+	archetype: detachable ARCHETYPE
+		note
+			option: stable
+		attribute
+		end
 
 end
 

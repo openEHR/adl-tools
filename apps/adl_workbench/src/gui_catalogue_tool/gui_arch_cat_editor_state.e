@@ -6,7 +6,6 @@ note
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
 
 class GUI_ARCH_CAT_EDITOR_STATE
 
@@ -33,21 +32,25 @@ feature -- Access
 
 	differential_display_context: ARCH_ED_CONTEXT
 		do
-			if not attached differential_display_context_cache then
-				create differential_display_context_cache.make (target, target.rm_schema, True)
+			if attached differential_display_context_cache as ddcc then
+				Result := ddcc
+			else
+				create Result.make (target, target.rm_schema, True)
+				differential_display_context_cache := Result
 			end
-			Result := differential_display_context_cache
 		end
 
 	flat_display_context: ARCH_ED_CONTEXT
 		do
-			if not attached flat_display_context_cache then
-				create flat_display_context_cache.make (target, target.rm_schema, False)
+			if attached flat_display_context_cache as fdcc then
+				Result := fdcc
+			else
+				create Result.make (target, target.rm_schema, False)
+				flat_display_context_cache := Result
 			end
-			Result := flat_display_context_cache
 		end
 
-	editor_context: ARCH_ED_CONTEXT
+	editor_context: detachable ARCH_ED_CONTEXT
 
 feature -- Commands
 

@@ -16,6 +16,9 @@ inherit
 			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
+create
+	initialise
+
 feature {ADL15_ENGINE} -- Initialisation
 
 	initialise (aca: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
@@ -25,8 +28,12 @@ feature {ADL15_ENGINE} -- Initialisation
 		do
 			target_descriptor := aca
 			rm_schema := an_rm_schema
-			target := aca.differential_archetype
-			target_flat := aca.flat_archetype
+			check attached aca.differential_archetype as da then
+				target := da
+			end
+			check attached aca.flat_archetype as fa then
+				target_flat := fa
+			end
 		end
 
 feature -- Access
@@ -60,7 +67,6 @@ feature {NONE} -- Implementation
 		local
 			ref_rm_type_name, tail_path: STRING
 			bmm_class: BMM_CLASS_DEFINITION
-			bmm_prop: BMM_PROPERTY_DEFINITION
 		do
 			across target.invariants_index as ref_path_csr loop
 				-- get a matching path from archetype - has to be there, either exact or partial
@@ -70,12 +76,13 @@ feature {NONE} -- Implementation
 					if arch_path.count < ref_path_csr.key.count then
 						tail_path := ref_path_csr.key.substring (arch_path.count+1, ref_path_csr.key.count)
 						bmm_class := rm_schema.class_definition (ref_rm_type_name)
-						bmm_prop := bmm_class.property_definition_at_path (create {OG_PATH}.make_from_string (tail_path))
-						ref_rm_type_name := bmm_prop.type.root_class
+						if attached bmm_class.property_definition_at_path (create {OG_PATH}.make_from_string (tail_path)) as bmm_prop then
+							ref_rm_type_name := bmm_prop.type.root_class
+						end
 					end
-				end
-				across ref_path_csr.item as expr_leaf_csr loop
-					expr_leaf_csr.item.update_type (ref_rm_type_name)
+					across ref_path_csr.item as expr_leaf_csr loop
+						expr_leaf_csr.item.update_type (ref_rm_type_name)
+					end
 				end
 			end
 		end

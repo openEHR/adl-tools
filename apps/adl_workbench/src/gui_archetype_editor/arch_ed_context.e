@@ -63,7 +63,9 @@ feature {NONE} -- Implementation
 			create c_ed_context_builder.make (ed_context)
 			create a_c_iterator.make (og_root, c_ed_context_builder)
 			a_c_iterator.do_all
-			Result := c_ed_context_builder.root_node
+			check attached c_ed_context_builder.root_node as rn then
+				Result := rn
+			end
 		end
 
 	build_assertions
@@ -77,7 +79,9 @@ feature {NONE} -- Implementation
 				across ed_context.archetype.invariants as inv_csr loop
 					create assn_iterator.make (inv_csr.item, assn_ed_context_builder)
 					assn_iterator.do_all
-					assertion_contexts.extend (assn_ed_context_builder.root_node)
+					check attached assn_ed_context_builder.root_node as rn then
+						assertion_contexts.extend (rn)
+					end
 				end
 			end
 		end
