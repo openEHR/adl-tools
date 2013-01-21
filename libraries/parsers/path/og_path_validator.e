@@ -111,7 +111,7 @@ feature {NONE} -- Implementation
 						yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
 					end
 				end
-				yyvs1.put (last_any_value, yyvsp1)
+				yyspecial_routines1.force (yyvs1, last_any_value, yyvsp1)
 			when 2 then
 				yyvsp2 := yyvsp2 + 1
 				if yyvsp2 >= yyvsc2 then
@@ -130,7 +130,7 @@ feature {NONE} -- Implementation
 						yyvs2 := yyspecial_routines2.resize (yyvs2, yyvsc2)
 					end
 				end
-				yyvs2.put (last_string_value, yyvsp2)
+				yyspecial_routines2.force (yyvs2, last_string_value, yyvsp2)
 			else
 				debug ("GEYACC")
 					std.error.put_string ("Error in parser: not a token type: ")
@@ -164,7 +164,7 @@ feature {NONE} -- Implementation
 					yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
 				end
 			end
-			yyvs1.put (yyval1, yyvsp1)
+			yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 		end
 
 	yy_pop_last_value (yystate: INTEGER)
@@ -190,6 +190,11 @@ feature {NONE} -- Implementation
 				end
 				abort
 			end
+		end
+
+	yy_run_geyacc
+			-- You must run geyacc to regenerate this class.
+		do
 		end
 
 feature {NONE} -- Semantic actions
@@ -231,7 +236,7 @@ if yy_parsing_status >= yyContinue then
 			yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
 		end
 	end
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 2 then
 --|#line 53 "og_path_validator.y"
@@ -262,7 +267,7 @@ if yy_parsing_status >= yyContinue then
 			yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
 		end
 	end
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 3 then
 --|#line 58 "og_path_validator.y"
@@ -293,7 +298,7 @@ if yy_parsing_status >= yyContinue then
 			yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
 		end
 	end
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 4 then
 --|#line 63 "og_path_validator.y"
@@ -308,7 +313,7 @@ end
 		
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 5 then
 --|#line 72 "og_path_validator.y"
@@ -322,7 +327,7 @@ end
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
-	yyvs4.put (yyval4, yyvsp4)
+	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
 end
 when 6 then
 --|#line 79 "og_path_validator.y"
@@ -355,7 +360,7 @@ if yy_parsing_status >= yyContinue then
 			yyvs4 := yyspecial_routines4.resize (yyvs4, yyvsc4)
 		end
 	end
-	yyvs4.put (yyval4, yyvsp4)
+	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
 end
 when 7 then
 --|#line 86 "og_path_validator.y"
@@ -372,7 +377,7 @@ end
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
-	yyvs4.put (yyval4, yyvsp4)
+	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
 end
 when 8 then
 --|#line 94 "og_path_validator.y"
@@ -390,7 +395,7 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp4 := yyvsp4 -1
 	yyvsp1 := yyvsp1 -1
-	yyvs4.put (yyval4, yyvsp4)
+	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
 end
 when 9 then
 --|#line 104 "og_path_validator.y"
@@ -420,7 +425,7 @@ if yy_parsing_status >= yyContinue then
 			yyvs4 := yyspecial_routines4.resize (yyvs4, yyvsc4)
 		end
 	end
-	yyvs4.put (yyval4, yyvsp4)
+	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
 end
 when 10 then
 --|#line 108 "og_path_validator.y"
@@ -435,7 +440,7 @@ if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp3 := yyvsp3 -1
-	yyvs4.put (yyval4, yyvsp4)
+	yyspecial_routines4.force (yyvs4, yyval4, yyvsp4)
 end
 when 11 then
 --|#line 115 "og_path_validator.y"
@@ -468,7 +473,7 @@ if yy_parsing_status >= yyContinue then
 			yyvs3 := yyspecial_routines3.resize (yyvs3, yyvsc3)
 		end
 	end
-	yyvs3.put (yyval3, yyvsp3)
+	yyspecial_routines3.force (yyvs3, yyval3, yyvsp3)
 end
 when 12 then
 --|#line 122 "og_path_validator.y"
@@ -501,7 +506,7 @@ if yy_parsing_status >= yyContinue then
 			yyvs3 := yyspecial_routines3.resize (yyvs3, yyvsc3)
 		end
 	end
-	yyvs3.put (yyval3, yyvsp3)
+	yyspecial_routines3.force (yyvs3, yyval3, yyvsp3)
 end
 when 13 then
 --|#line 129 "og_path_validator.y"
@@ -534,7 +539,7 @@ if yy_parsing_status >= yyContinue then
 			yyvs3 := yyspecial_routines3.resize (yyvs3, yyvsc3)
 		end
 	end
-	yyvs3.put (yyval3, yyvsp3)
+	yyspecial_routines3.force (yyvs3, yyval3, yyvsp3)
 end
 			else
 				debug ("GEYACC")
