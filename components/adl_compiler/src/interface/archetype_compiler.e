@@ -305,7 +305,7 @@ feature {NONE} -- Implementation
 			else
 				create exc_trace_str.make_from_string ("(Exception trace not available)")
 			end
-			post_error (Current, "build_archetype", "compile_exception", <<ara.qualified_name, exception.out, exc_trace_str>>)
+			post_error (generator, "build_archetype", "compile_exception", <<ara.qualified_name, exception.out, exc_trace_str>>)
 			exception_encountered := True
 			retry
 		end

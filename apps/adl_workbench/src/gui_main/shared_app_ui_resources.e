@@ -177,7 +177,7 @@ feature -- Access
 			Result := get_icon_pixmap ("openehr_adl_workbench_logo")
 		end
 
-	icon_directory: attached STRING
+	icon_directory: STRING
 		once
 			Result := file_system.pathname (application_startup_directory, "icons")
 		ensure
@@ -206,16 +206,18 @@ feature -- Access
 		do
 			pixmap_name := key.as_lower
 			if icon_pixmaps.has (pixmap_name) then
-				Result := icon_pixmaps.item (pixmap_name)
+				check attached icon_pixmaps.item (pixmap_name) as pxm then
+					Result := pxm
+				end
 			else
-				post_error (Current, "get_icon_pixmap", "no_pixmap_found", <<key>>)
+				post_error (generator, "get_icon_pixmap", "no_pixmap_found", <<key>>)
 				create Result.default_create
 			end
 		end
 
 feature -- Application Switches
 
-	current_work_directory: attached STRING
+	current_work_directory: STRING
 			-- Directory where archetypes are currently being opened and saved
 			-- from GUI open and save buttons; automatic opens (due to clicking
 			-- on archetype name) still use main repository directory.
@@ -507,47 +509,45 @@ feature {NONE} -- Implementation
 			has_icon_directory
 		local
 			pixmap: EV_PIXMAP
-			abs_path, key: STRING
-			dir: KL_DIRECTORY
+			abs_path, full_path, new_rel_path, key: STRING
+			dir: DIRECTORY
 			dir_items: ARRAYED_LIST [STRING]
 		do
 			check attached file_system.pathname (icon_directory, rel_path) as pn then
 				abs_path := pn
 			end
 			create dir.make (abs_path)
+			dir.open_read
+			dir_items := dir.linear_representation
 
 			-- process files
-			if attached dir.filenames as df then
-				create dir_items.make_from_array (df)
-				across dir_items as dir_items_csr loop
-					if dir_items_csr.item.ends_with (icon_ico_extension) or dir_items_csr.item.ends_with (icon_png_extension) then
+			across dir_items as dir_items_csr loop
+				if dir_items_csr.item.item (1) /= '.' then
+					check attached file_system.pathname (abs_path, dir_items_csr.item) as pn then
+						full_path := pn
+					end
+					check attached file_system.pathname (rel_path, dir_items_csr.item) as pn then
+						new_rel_path := pn
+					end
+					if file_system.directory_exists (full_path) then
+						-- process child directory
+						recursive_load_pixmaps (pixmap_table, new_rel_path)
+
+					elseif full_path.ends_with (icon_ico_extension) or full_path.ends_with (icon_png_extension) then
 						create pixmap
-						check attached file_system.pathname (abs_path, dir_items_csr.item) as pn then
-							pixmap.set_with_named_file (pn)
-						end
+						pixmap.set_with_named_file (full_path)
 						pixmap.set_minimum_size (pixmap.width, pixmap.height)
-						check attached file_system.pathname (rel_path, dir_items_csr.item) as pn then
-							key := pn
-						end
+						key := new_rel_path.twin
 						key.remove_tail (key.count - key.last_index_of ('.', key.count) + 1)
 						key.to_lower
 						key.replace_substring_all ("\", "/")
 						pixmap_table.put (pixmap, key)
 					end
 				end
-
-				-- process child directories
-				create dir_items.make_from_array (dir.directory_names)
-				from dir_items.start until dir_items.off loop
-					if not dir_items.item.starts_with (".") then
-						recursive_load_pixmaps (pixmap_table, file_system.pathname (rel_path, dir_items.item))
-					end
-					dir_items.forth
-				end
 			end
 		end
 
-	splash_text: attached STRING
+	splash_text: STRING
 			-- Text for splash screens, About boxes, etc.
 		local
 			version: OPENEHR_VERSION

@@ -12,4 +12,4 @@
 #	last_change: "% %E% %U% %"
 #
 
-$GOBO/bin/gelex units_scanner.l
+gelex units_scanner.l

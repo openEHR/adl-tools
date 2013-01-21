@@ -69,9 +69,9 @@ feature -- Commands
 			if file_context.file_writable (full_path) then
 				file_context.save_file (full_path, a_text)
 				text_timestamp := file_context.file_timestamp
-				post_info (Current, "save_as", "save_as_i1", <<full_path>>)
+				post_info (generator, "save_as", "save_as_i1", <<full_path>>)
 			else
-				post_error (Current, "save_as", "save_as_e1", <<full_path>>)
+				post_error (generator, "save_as", "save_as_e1", <<full_path>>)
 			end
 		end
 

@@ -4,7 +4,7 @@ note
 			 Parser for unit strings conforming to the Unified Code for Units 
 	             of Measure (UCUM), developed by Gunther Schadow and Clement J. McDonald 
 	             of The Regenstrief Institute For Health Care, Indianapolis. Published at 
-	             http://aurora.rg.iupui.edu/UCUM.
+	             http://aurora.rg.iupui.edu/UCUM. 
 			 ]"
 	keywords:    "units, UCUM"
 
@@ -117,7 +117,7 @@ feature {NONE} -- Implementation
 						yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
 					end
 				end
-				yyvs1.put (last_any_value, yyvsp1)
+				yyspecial_routines1.force (yyvs1, last_any_value, yyvsp1)
 			when 2 then
 				yyvsp2 := yyvsp2 + 1
 				if yyvsp2 >= yyvsc2 then
@@ -136,7 +136,7 @@ feature {NONE} -- Implementation
 						yyvs2 := yyspecial_routines2.resize (yyvs2, yyvsc2)
 					end
 				end
-				yyvs2.put (last_integer_value, yyvsp2)
+				yyspecial_routines2.force (yyvs2, last_integer_value, yyvsp2)
 			when 3 then
 				yyvsp3 := yyvsp3 + 1
 				if yyvsp3 >= yyvsc3 then
@@ -155,7 +155,7 @@ feature {NONE} -- Implementation
 						yyvs3 := yyspecial_routines3.resize (yyvs3, yyvsc3)
 					end
 				end
-				yyvs3.put (last_string_value, yyvsp3)
+				yyspecial_routines3.force (yyvs3, last_string_value, yyvsp3)
 			else
 				debug ("GEYACC")
 					std.error.put_string ("Error in parser: not a token type: ")
@@ -189,7 +189,7 @@ feature {NONE} -- Implementation
 					yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
 				end
 			end
-			yyvs1.put (yyval1, yyvsp1)
+			yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 		end
 
 	yy_pop_last_value (yystate: INTEGER)
@@ -215,6 +215,11 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	yy_run_geyacc
+			-- You must run geyacc to regenerate this class.
+		do
+		end
+
 feature {NONE} -- Semantic actions
 
 	yy_do_action (yy_act: INTEGER)
@@ -232,7 +237,7 @@ end
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 2 then
 --|#line 63 "units_parser.y"
@@ -243,7 +248,7 @@ end
 
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 3 then
 --|#line 66 "units_parser.y"
@@ -252,10 +257,10 @@ debug ("GEYACC")
 end
 
 				create units.make(units_items)
-
+			
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 4 then
 --|#line 69 "units_parser.y"
@@ -264,11 +269,11 @@ debug ("GEYACC")
 end
 
 				create units.make(units_items)
-
+			
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp1 := yyvsp1 -1
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 5 then
 --|#line 74 "units_parser.y"
@@ -277,10 +282,10 @@ debug ("GEYACC")
 end
 
 				units_items.extend(units_item)
-
+			
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 6 then
 --|#line 77 "units_parser.y"
@@ -289,11 +294,11 @@ debug ("GEYACC")
 end
 
 				units_items.extend(units_item)
-
+			
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 7 then
 --|#line 80 "units_parser.y"
@@ -304,11 +309,11 @@ end
 -- // make the exponent negative of what it was
 				units_items.extend(units_item)
 				units_item.set_exponent(- units_item.exponent)
-
+			
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 8 then
 --|#line 86 "units_parser.y"
@@ -316,13 +321,13 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 86")
 end
 
--- // meaning is unit with exponent of +1
+-- // meaning is unit with exponent of +1 
 				create units_item.make(unit_ref, 1)
 				yyval1 := units_item
-
+			
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 9 then
 --|#line 90 "units_parser.y"
@@ -330,14 +335,14 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 90")
 end
 
--- // meaning is unit with exponent of +1
+-- // meaning is unit with exponent of +1 
 				create units_item.make(unit_ref, int_val)
 				yyval1 := units_item
-
+			
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -2
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 10 then
 --|#line 96 "units_parser.y"
@@ -346,11 +351,11 @@ debug ("GEYACC")
 end
 
 -- // note - we cannot tell if prefix is included or not - that requires	
-					-- // character level parsing, since prefixes are not lexically separate
+							-- // character level parsing, since prefixes are not lexically separate
 				str1 := yyvs3.item (yyvsp3)
-				create_unit_ref(str1, False)
+				create_unit_ref (str1, False)
 				yyval1 := unit_ref
-
+			
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -371,7 +376,7 @@ if yy_parsing_status >= yyContinue then
 			yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
 		end
 	end
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 11 then
 --|#line 102 "units_parser.y"
@@ -380,13 +385,13 @@ debug ("GEYACC")
 end
 
 				str1 := yyvs3.item (yyvsp3)
-				create_unit_ref(str1, True)
+				create_unit_ref (str1, True)
 				yyval1 := unit_ref
-
+			
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp3 := yyvsp3 -1
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 12 then
 --|#line 109 "units_parser.y"
@@ -394,41 +399,39 @@ debug ("GEYACC")
 	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 109")
 end
 
-				str1 := yyvs3.item (yyvsp3)
-				annot := str1.twin
-				yyval1 := annot
-
+				yyval1 := yyvs3.item (yyvsp3)
+				annot := yyval1.twin
+			
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp3 := yyvsp3 -1
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 13 then
---|#line 116 "units_parser.y"
+--|#line 115 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 116")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 115")
 end
 
-				str1 := yyvs3.item (yyvsp3)
-				suffix := str1.twin
-				yyval1 := suffix
-
+				yyval1 := yyvs3.item (yyvsp3)
+				suffix := yyval1.twin
+			
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 3
 	yyvsp1 := yyvsp1 -1
 	yyvsp3 := yyvsp3 -1
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 14 then
---|#line 123 "units_parser.y"
+--|#line 121 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 123")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 121")
 end
 
 				int_val := last_string_value.to_integer
 				yyval1 := int_val
-
+			
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 1
 	yyvsp1 := yyvsp1 + 1
@@ -449,35 +452,35 @@ if yy_parsing_status >= yyContinue then
 			yyvs1 := yyspecial_routines1.resize (yyvs1, yyvsc1)
 		end
 	end
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 15 then
---|#line 127 "units_parser.y"
+--|#line 125 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 127")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 125")
 end
 
 				int_val := last_string_value.to_integer
 				yyval1 := int_val
-
+			
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 when 16 then
---|#line 131 "units_parser.y"
+--|#line 129 "units_parser.y"
 debug ("GEYACC")
-	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 131")
+	std.error.put_line ("Executing parser user-code from file 'units_parser.y' at line 129")
 end
 
 				int_val := - last_string_value.to_integer
 				yyval1 := int_val
-
+			
 if yy_parsing_status >= yyContinue then
 	yyssp := yyssp - 2
 	yyvsp2 := yyvsp2 -1
-	yyvs1.put (yyval1, yyvsp1)
+	yyspecial_routines1.force (yyvs1, yyval1, yyvsp1)
 end
 			else
 				debug ("GEYACC")
@@ -719,7 +722,7 @@ feature -- Access
 	error_message: STRING
 			-- parsing failure error
 
-feature {NONE} -- Implementation
+feature {NONE} -- Implementation 
 
 	create_unit_ref (a_unit_name: STRING; suffix_flag: BOOLEAN)
 			-- try and create a simple unit from a_unit_name, using unit database.
@@ -732,10 +735,10 @@ feature {NONE} -- Implementation
 			good_symbol, u_symbol:STRING
 			pfx:STRING
 		do
-			from
+			from 
 				i := 1
-			until
-				i > a_unit_name.count or else good_ud /= Void
+			until 
+				i > a_unit_name.count or else good_ud /= Void 
 			loop
 				u_symbol := a_unit_name.substring(i, a_unit_name.count)
 				ud := unit_database.unit_descriptor_for_symbol(u_symbol)
@@ -746,7 +749,7 @@ feature {NONE} -- Implementation
 						pfx := a_unit_name.substring(1, i-1)
 					end
 				end
-				i := i + 1
+				i := i + 1	
 			end
 
 			if good_ud /= Void then

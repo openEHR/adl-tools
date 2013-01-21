@@ -41,11 +41,16 @@ feature -- Definitions
 			-- own .cfg file, with essentially the same information (configured directories etc).
 			-- (On Unix/Linux/Macosx(?) systems, we would normally locate this in /etc/adl_workbench)
 		do
-			check attached file_system.pathname (execution_environment.home_directory_name, application_developer_name) as pn and then
-				attached file_system.pathname (pn, Default_application_name) as pn2
-			then
-				Result := pn2
+			if attached execution_environment.home_directory_name as hd then
+				Result := file_system.pathname (hd, application_developer_name)
+			else
+				Result := file_system.current_working_directory
 			end
+--			check attached file_system.pathname (hd, application_developer_name) as pn and then
+--				attached file_system.pathname (pn, Default_application_name) as pn2
+--			then
+--				Result := pn2
+--			end
 		end
 
 	Default_user_config_file_path: STRING
@@ -129,7 +134,7 @@ feature -- Environment
 		local
 			pathname: STRING
 		do
-			check attached file_system.pathname (execution_environment.home_directory_name, application_developer_name) as pn then
+			check attached execution_environment.home_directory_name as hd and then attached file_system.pathname (hd, application_developer_name) as pn then
 				pathname := pn
 			end
 			check attached file_system.pathname (pathname, extension_removed (application_name)) as pn2 then

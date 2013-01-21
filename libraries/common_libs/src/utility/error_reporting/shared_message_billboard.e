@@ -26,31 +26,31 @@ feature -- Access
 
 feature -- Commands
 
-	post_error (poster_object: ANY; poster_routine: STRING; id: STRING; args: detachable ARRAY[STRING])
+	post_error (poster_object_classname: STRING; poster_routine: STRING; id: STRING; args: detachable ARRAY[STRING])
 			-- append to the  current contents of billboard an error message corresponding to id,
 			-- with positional parameters replaced by contents of optional args
 		require
 			Poster_valid: not poster_routine.is_empty
 		do
-			billboard.post_error (poster_object, poster_routine, id, args)
+			billboard.post_error (poster_object_classname, poster_routine, id, args)
 		end
 
-	post_warning (poster_object: ANY; poster_routine: STRING; id: STRING; args: detachable ARRAY[STRING])
+	post_warning (poster_object_classname: STRING; poster_routine: STRING; id: STRING; args: detachable ARRAY[STRING])
 			-- append to the  current contents of billboard a warning message corresponding to id,
 			-- with positional parameters replaced by contents of optional args
 		require
 			Poster_valid: not poster_routine.is_empty
 		do
-			billboard.post_warning (poster_object, poster_routine, id, args)
+			billboard.post_warning (poster_object_classname, poster_routine, id, args)
 		end
 
-	post_info (poster_object: ANY; poster_routine: STRING; id: STRING; args: detachable ARRAY[STRING])
+	post_info (poster_object_classname: STRING; poster_routine: STRING; id: STRING; args: detachable ARRAY[STRING])
 			-- append to the  current contents of billboard an info message corresponding to id,
 			-- with positional parameters replaced by contents of optional args
 		require
 			Poster_valid: not poster_routine.is_empty
 		do
-			billboard.post_info (poster_object, poster_routine, id, args)
+			billboard.post_info (poster_object_classname, poster_routine, id, args)
 		end
 
 end

@@ -2,14 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Class map control - Visualise a reference model class as a node map"
 	keywords:    "archetype, cadl, gui"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class GUI_CLASS_TOOL_ANCESTORS_VIEW
 
@@ -30,16 +26,11 @@ feature -- Initialisation
 		do
 			-- create widgets
 			create ev_root_container
-			ev_root_container.set_data (Current)
-
 			create ev_tree
 
 			-- connect widgets
 			ev_root_container.extend (ev_tree)
-
-			-- visual characteristics
-
-			-- set events
+			ev_root_container.set_data (Current)
 		end
 
 feature -- Access

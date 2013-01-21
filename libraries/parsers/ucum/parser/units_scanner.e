@@ -216,8 +216,7 @@ else
 debug ("GELEX")
 	std.error.put_line ("Executing scanner user-code from file 'units_scanner.l' at line 0")
 end
-last_token := yyError_token
-fatal_error ("scanner jammed")
+default_action
 end
 end
 end

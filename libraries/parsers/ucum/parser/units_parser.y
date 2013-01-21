@@ -57,8 +57,6 @@ create
 %left '/' '*'
 %right '^'
 
-%type <STRING> type_identifie
-
 %%
 
 input: units

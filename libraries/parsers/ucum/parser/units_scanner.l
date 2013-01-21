@@ -48,7 +48,7 @@ create
 	make
 %}
 
-%option nodefault outfile="units_scanner.e"
+%option outfile="units_scanner.e"
 
 %%
 

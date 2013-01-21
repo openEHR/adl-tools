@@ -51,7 +51,7 @@ feature -- ADL 1.4 conversions
 				lang := dadl_text.substring (lpos+1, rpos-1)
 				rep_str := "[" + Terminology_ISO_639_1 + "::" + lang + "]"
 				dadl_text.replace_substring (rep_str, lpos, rpos)
-				post_info(Current, "convert_dadl_language", "syntax_upgraded_i1",
+				post_info (generator, "convert_dadl_language", "syntax_upgraded_i1",
 					<<"language = <%"" + lang + "%">", "language = <[" + Terminology_ISO_639_1 + "::" + lang + "]>">>)
 				pos := dadl_text.substring_index("language = <%"", rpos)
 			end
@@ -68,12 +68,12 @@ feature -- ADL 1.4 conversions
 			if pos > 0 then
 				dadl_text.replace_substring ("C_DV_QUANTITY", pos, pos+("C_QUANTITY").count-1)
 				convert_c_quantity_property(dadl_text)
-				post_info(Current, "convert_dadl_language", "syntax_upgraded_i1", <<"C_QUANTITY", "C_DV_QUANTITY">>)
+				post_info (generator, "convert_dadl_language", "syntax_upgraded_i1", <<"C_QUANTITY", "C_DV_QUANTITY">>)
 			else
 				pos := dadl_text.substring_index("C_ORDINAL", 1)
 				if pos > 0 then
 					dadl_text.replace_substring ("C_DV_ORDINAL", pos, pos+("C_ORDINAL").count-1)
-					post_info(Current, "convert_dadl_language", "syntax_upgraded_i1", <<"C_ORDINAL", "C_DV_ORDINAL">>)
+					post_info (generator, "convert_dadl_language", "syntax_upgraded_i1", <<"C_ORDINAL", "C_DV_ORDINAL">>)
 				end
 			end
 		end
@@ -103,7 +103,7 @@ feature -- ADL 1.4 conversions
 				end
 
 				dadl_text.replace_substring (new_str, lpos, rpos)
-				post_info(Current, "convert_dadl_language", "syntax_upgraded_i1", <<"property = <%"xxx%">", "language = <[openehr::xxx]>">>)
+				post_info (generator, "convert_dadl_language", "syntax_upgraded_i1", <<"property = <%"xxx%">", "language = <[openehr::xxx]>">>)
 			end
 		end
 
@@ -148,7 +148,7 @@ feature -- ADL 1.4 conversions
 				end
 				-- have to insert a 'T' to the right of the cursor
 				Result.insert_character ('T', i+1)
-				post_info(Current, "convert_dadl_language", "syntax_upgraded_i1", <<"ISO 8601 duration", "(missing 'T' added)">>)
+				post_info (generator, "convert_dadl_language", "syntax_upgraded_i1", <<"ISO 8601 duration", "(missing 'T' added)">>)
 			end
 		end
 

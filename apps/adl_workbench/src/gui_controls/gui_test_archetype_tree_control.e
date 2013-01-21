@@ -1,10 +1,10 @@
 note
 	component:   "openEHR Archetype Project"
 	description: "Test page in ADL test workbench"
-	keywords:    "ADL"
-	author:      "Thomas Beale"
+	keywords:    "ADL, regression"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 class GUI_TEST_ARCHETYPE_TREE_CONTROL
@@ -658,7 +658,7 @@ feature {NONE} -- Tests
 			Result := Test_failed
 			if target.is_valid then
 				if diff_dirs_available then
-					check attachde file_system.pathname (diff_dir_flat_new, target.qualified_name + File_ext_archetype_flat) as pn then
+					check attached file_system.pathname (diff_dir_flat_new, target.qualified_name + File_ext_archetype_flat) as pn then
 						flat_path := pn
 					end
 					target.save_flat_as (flat_path, Syntax_type_adl)
@@ -764,12 +764,18 @@ feature {NONE} -- Implementation
 
 	test_status: STRING
 			-- Cumulative status message during running of test.
+		attribute
+			create Result.make (0)
+		end
 
 	target: ARCH_CAT_ARCHETYPE
 			-- current target of compilation operation
 
 	original_differential_text: STRING
 			-- copy of archetype text after successful parse; = what was on file
+		attribute
+			create Result.make (0)
+		end
 
 	populate_gui_tree_node_enter (ari: ARCH_CAT_ITEM)
 			-- Add a node representing `an_item' to `gui_file_tree'.

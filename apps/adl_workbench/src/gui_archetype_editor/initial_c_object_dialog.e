@@ -16,7 +16,7 @@ inherit
 			{NONE} all;
 			{ANY} show_modal_to_window, destroy
 		redefine
-			initialize, is_in_default_state
+			create_interface_objects, is_in_default_state
 		end
 
 	SHARED_APP_UI_RESOURCES
@@ -59,7 +59,7 @@ feature {NONE} -- Initialization
 			default_create
 		end
 
-	initialize
+	create_interface_objects
 			-- Initialize `Current'.
 		do
 			create gui_controls.make (0)

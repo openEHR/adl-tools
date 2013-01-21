@@ -13,7 +13,7 @@ class
 inherit
 	EV_DIALOG
 		redefine
-			initialize, is_in_default_state
+			create_interface_objects, is_in_default_state
 		end
 
 	SHARED_APP_UI_RESOURCES
@@ -52,7 +52,7 @@ feature -- Definitions
 
 feature {NONE} -- Initialisation
 
-	initialize
+	create_interface_objects
 			-- Initialize `Current'.
 		do
 			create gui_controls.make (0)

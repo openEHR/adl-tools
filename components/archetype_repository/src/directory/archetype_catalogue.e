@@ -283,15 +283,15 @@ feature -- Modification
 					put_archetype (aca, in_dir_path)
 				elseif not has_item_with_id (aca.ontological_parent_name.as_lower) then
 					if aca.is_specialised then
-						post_error (Current, "add_adhoc_archetype", "arch_cat_orphan_archetype", <<aca.ontological_parent_name, aca.qualified_key>>)
+						post_error (generator, "add_adhoc_archetype", "arch_cat_orphan_archetype", <<aca.ontological_parent_name, aca.qualified_key>>)
 					else
-						post_error (Current, "add_adhoc_item", "arch_cat_orphan_archetype_e2", <<aca.ontological_parent_name, aca.qualified_key>>)
+						post_error (generator, "add_adhoc_item", "arch_cat_orphan_archetype_e2", <<aca.ontological_parent_name, aca.qualified_key>>)
 					end
 				elseif has_item_with_id (aca.qualified_key) then
-					post_error (Current, "add_adhoc_archetype", "arch_cat_dup_archetype", <<in_dir_path>>)
+					post_error (generator, "add_adhoc_archetype", "arch_cat_dup_archetype", <<in_dir_path>>)
 				end
 			else
-				post_error (Current, "add_adhoc_archetype", "invalid_filename_e1", <<in_dir_path>>)
+				post_error (generator, "add_adhoc_archetype", "invalid_filename_e1", <<in_dir_path>>)
 			end
 		end
 
@@ -512,7 +512,7 @@ feature {NONE} -- Implementation
 									added_during_pass := added_during_pass + 1
 									status_list [archs_csr.target_index] := Populate_status_succeeded
 								else
-									post_error (Current, "populate", "arch_cat_dup_archetype", <<archs_csr.item.full_path>>)
+									post_error (generator, "populate", "arch_cat_dup_archetype", <<archs_csr.item.full_path>>)
 									status_list [archs_csr.target_index] := Populate_status_failed
 								end
 							else
@@ -527,9 +527,9 @@ feature {NONE} -- Implementation
 				across archs as archs_csr loop
 					if status_list [archs_csr.cursor_index] > 0 then
 						if archs_csr.item.is_specialised then
-							post_error (Current, "populate", "arch_cat_orphan_archetype", <<archs_csr.item.ontological_parent_name, archs_csr.item.qualified_name>>)
+							post_error (generator, "populate", "arch_cat_orphan_archetype", <<archs_csr.item.ontological_parent_name, archs_csr.item.qualified_name>>)
 						else
-							post_error (Current, "populate", "arch_cat_orphan_archetype_e2", <<archs_csr.item.ontological_parent_name, archs_csr.item.qualified_name>>)
+							post_error (generator, "populate", "arch_cat_orphan_archetype_e2", <<archs_csr.item.ontological_parent_name, archs_csr.item.qualified_name>>)
 						end
 					end
 				end

@@ -69,11 +69,11 @@ feature -- Modification
 			amp.parse (full_path)
 			if amp.last_parse_valid and then attached amp.last_archetype as arch then
 				if arch.archetype_id_is_old_style then
-					post_error (Current, "build_directory", "parse_archetype_e7", <<full_path>>)
+					post_error (generator, "build_directory", "parse_archetype_e7", <<full_path>>)
 				elseif arch.is_specialised and then arch.parent_archetype_id_is_old_style then
-					post_error (Current, "build_directory", "parse_archetype_e11", <<full_path, arch.parent_archetype_id.as_string>>)
+					post_error (generator, "build_directory", "parse_archetype_e11", <<full_path, arch.parent_archetype_id.as_string>>)
 				elseif not has_rm_schema_for_id (arch.archetype_id) then
-					post_error (Current, "build_directory", "parse_archetype_e4", <<full_path, arch.archetype_id.as_string>>)
+					post_error (generator, "build_directory", "parse_archetype_e4", <<full_path, arch.archetype_id.as_string>>)
 				elseif not archetype_id_index.has (arch.archetype_id.as_string) then
 					if adl_legacy_flat_filename_pattern_regex.matches (file_system.basename (full_path)) then
 						ara := aof.create_arch_cat_archetype_make_legacy (full_path, Current, arch)
@@ -82,10 +82,10 @@ feature -- Modification
 					end
 					archetype_id_index.force (ara, full_path)
 				else
-					post_info (Current, "build_directory", "pair_filename_i1", <<full_path>>)
+					post_info (generator, "build_directory", "pair_filename_i1", <<full_path>>)
 				end
 			else
-				post_error (Current, "build_directory", "parse_archetype_e5", <<full_path>>)
+				post_error (generator, "build_directory", "parse_archetype_e5", <<full_path>>)
 			end
 		ensure
 			added_1_or_none: (0 |..| 1).has (archetype_id_index.count - old archetype_id_index.count)
