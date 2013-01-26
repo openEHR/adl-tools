@@ -53,9 +53,7 @@ feature {NONE} -- Implementation
 				across fs_node_names as fs_node_names_csr loop
 					fn := fs_node_names_csr.item
 					if fn.item (1) /= '.' then
-						check attached file_system.pathname (a_path, fn) as pn then
-							l_full_path := pn
-						end
+						l_full_path := file_system.pathname (a_path, fn)
 						if file_system.directory_exists (l_full_path) then
 							dir_name_index.extend (fn)
 						elseif adl_legacy_flat_filename_pattern_regex.matches (fn) then
@@ -84,9 +82,7 @@ feature {NONE} -- Implementation
 					fn := fs_node_names_csr.item
 					if fn.item (1) /= '.' then
 						if adl_differential_filename_pattern_regex.matches (fn) then
-							check attached file_system.pathname (a_path, fn) as pn then
-								l_full_path := pn
-							end
+							l_full_path := file_system.pathname (a_path, fn)
 							amp.parse (l_full_path)
 							if amp.last_parse_valid and then attached amp.last_archetype as arch then
 								if not has_rm_schema_for_id (arch.archetype_id) then
@@ -105,9 +101,7 @@ feature {NONE} -- Implementation
 				end
 				-- for all directories below this one, call this routine recursively
 				across dir_name_index as dir_names_csr loop
-					check attached file_system.pathname (a_path, dir_names_csr.item) as pn then
-						get_archetypes_in_folder (pn)
-					end
+					get_archetypes_in_folder (file_system.pathname (a_path, dir_names_csr.item))
 				end
 			end
 

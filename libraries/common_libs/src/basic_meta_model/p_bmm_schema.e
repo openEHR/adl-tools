@@ -83,7 +83,6 @@ feature -- Access (Attributes from schema load post-processing)
 		note
 			option: transient
 		attribute
-			Result := State_created
 		end
 
 	canonical_packages: HASH_TABLE [P_BMM_PACKAGE_DEFINITION, STRING]

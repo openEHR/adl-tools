@@ -46,19 +46,12 @@ feature -- Definitions
 			else
 				Result := file_system.current_working_directory
 			end
---			check attached file_system.pathname (hd, application_developer_name) as pn and then
---				attached file_system.pathname (pn, Default_application_name) as pn2
---			then
---				Result := pn2
---			end
 		end
 
 	Default_user_config_file_path: STRING
 			-- Full path to resource configuration file.
 		do
-			check attached file_system.pathname (Default_user_config_file_directory, Default_application_name + User_config_file_extension) as pn then
-				Result := pn
-			end
+			Result := file_system.pathname (Default_user_config_file_directory, Default_application_name + User_config_file_extension)
 		end
 
 	Default_editor_app_command: STRING
@@ -131,23 +124,16 @@ feature -- Environment
 	user_config_file_directory: STRING
 			-- OS-specific place for user config file(s) for this application.
 			-- Follows the model home_path/app_vendor/app_name.
-		local
-			pathname: STRING
 		do
-			check attached execution_environment.home_directory_name as hd and then attached file_system.pathname (hd, application_developer_name) as pn then
-				pathname := pn
-			end
-			check attached file_system.pathname (pathname, extension_removed (application_name)) as pn2 then
-				Result := pn2
+			check attached execution_environment.home_directory_name as hd then
+				Result := file_system.pathname (file_system.pathname (hd, application_developer_name), extension_removed (application_name))
 			end
 		end
 
 	user_config_file_path: STRING
 			-- Full path to resource configuration file.
 		do
-			check attached file_system.pathname (user_config_file_directory, extension_replaced (application_name, User_config_file_extension)) as pn then
-				Result := pn
-			end
+			Result := file_system.pathname (user_config_file_directory, extension_replaced (application_name, User_config_file_extension))
 		end
 
 	system_temp_file_directory: STRING
@@ -186,28 +172,18 @@ feature -- Environment
 			-- any change_dir calls are made since there is no easy way to get the startup directory.
 		local
 			path: KI_PATHNAME
+			dir: STRING
 		once
-			check attached file_system.string_to_pathname (file_system.absolute_pathname (execution_environment.command_line.command_name)) as p then
-				path := p
-			end
+			path := file_system.string_to_pathname (file_system.absolute_pathname (execution_environment.command_line.command_name))
 			path.set_canonical
-			check attached file_system.pathname_to_string (path) as p then
-				Result := p
-			end
+			Result := file_system.pathname_to_string (path)
 
-			if path.count > 3 and then attached path.item (path.count - 1) as dir then
+			if path.count > 3 then
+				dir := path.item (path.count - 1)
 				if dir.is_equal ("W_code") or dir.is_equal ("F_code") then
 					if path.item (path.count - 3).is_equal ("EIFGENs") then
-						check
-							attached file_system.dirname (Result) as d1 and then
-							attached file_system.dirname (d1) as d2 and then
-							attached file_system.dirname (d2) as d3 and then
-							attached file_system.dirname (d3) as d4
-						then
-							check attached file_system.pathname (d4, file_system.basename (Result)) as pn then
-								Result := pn
-							end
-						end
+						dir := file_system.dirname (file_system.dirname (file_system.dirname (file_system.dirname (Result))))
+						Result := file_system.pathname (dir, file_system.basename (Result))
 					end
 				end
 			end

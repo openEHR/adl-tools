@@ -52,7 +52,7 @@ feature {NONE} -- Initialisation
 			schemas_load_list.compare_objects
 		end
 
-feature {APP_ROOT} -- Initialisation
+feature -- Initialisation
 
 	initialise_with_load_list (an_rm_dir: STRING; a_schemas_load_list: LIST [STRING])
 			-- initialise with a specific schema load list, usually a sub-set of schemas that will be

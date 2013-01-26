@@ -2,9 +2,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Shared application resources for any ADL application, GUI or non-GUI"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 class SHARED_APP_RESOURCES
@@ -53,9 +53,7 @@ feature -- Definitions
 			-- contains schema files in .dadl format e.g.
 			-- .../rm_schemas/openehr_rm_102.bmm
 		once
-			check attached file_system.pathname (application_startup_directory, "rm_schemas") as pn then
-				Result := pn
-			end
+			Result := file_system.pathname (application_startup_directory, "rm_schemas")
 		end
 
 	Default_terminology_directory: STRING
@@ -63,9 +61,7 @@ feature -- Definitions
 			-- directory of openEHR terminology files; structure is
 			-- $terminology_directory/lang/openehr_terminology.xml
 		once
-			check attached file_system.pathname (application_startup_directory, "terminology") as pn then
-				Result := pn
-			end
+			Result := file_system.pathname (application_startup_directory, "terminology")
 		end
 
 	Terminology_filename: STRING = "openehr_terminology.xml"
@@ -75,17 +71,13 @@ feature -- Definitions
 			-- directory of error database files in .dadl format e.g.
 			-- .../error_db/dadl_errors.txt etc
 		once
-			check attached file_system.pathname (application_startup_directory, "error_db") as pn then
-				Result := pn
-			end
+			Result := file_system.pathname (application_startup_directory, "error_db")
 		end
 
 	Default_xml_rules_file_path: STRING
 			-- Default full path to XML rules file for all adl_workbench-derived apps - use the adl_workbench one
 		once
-			check attached file_system.pathname (Default_user_config_file_directory, extension_replaced ("xml_rules", User_config_file_extension)) as pn then
-				Result := pn
-			end
+			Result := file_system.pathname (Default_user_config_file_directory, extension_replaced ("xml_rules", User_config_file_extension))
 		ensure
 			not_empty: not Result.is_empty
 		end
@@ -93,9 +85,7 @@ feature -- Definitions
 	xml_rules_file_path: STRING
 			-- Full path to XML rules file.
 		once
-			check attached file_system.pathname (user_config_file_directory, extension_replaced ("xml_rules", User_config_file_extension)) as pn then
-				Result := pn
-			end
+			Result := file_system.pathname (user_config_file_directory, extension_replaced ("xml_rules", User_config_file_extension))
 		ensure
 			not_empty: not Result.is_empty
 		end
@@ -103,9 +93,7 @@ feature -- Definitions
 	xml_rules_sample_file_path: STRING
 			-- Full path to XML rules file.
 		once
-			check attached file_system.pathname (application_startup_directory, extension_replaced ("sample_xml_rules", User_config_file_extension)) as pn then
-				Result := pn
-			end
+			Result :=  file_system.pathname (application_startup_directory, extension_replaced ("sample_xml_rules", User_config_file_extension))
 		ensure
 			not_empty: not Result.is_empty
 		end
@@ -115,9 +103,7 @@ feature -- Definitions
 	Report_css_template_path: STRING
 			-- path to .css template file to copy when generating HTML report files
 		once
-			check attached file_system.pathname (application_startup_directory, Report_css_template_filename) as pn then
-				Result := pn
-			end
+			Result := file_system.pathname (application_startup_directory, Report_css_template_filename)
 		end
 
 	Default_author_name: STRING = "My Name <my_email_id@my_org.org>"
@@ -249,24 +235,17 @@ feature -- Application Switches
 		require
 			repository_profiles.has_current_profile
 		local
-			curr_prof, comp_gen_dir: STRING
+			curr_prof: STRING
 		do
-			check attached repository_profiles.current_profile_name as cpf then
-				curr_prof := cpf
+			check attached repository_profiles.current_profile_name as cpn then
+				curr_prof := cpn
 			end
-			check attached file_system.pathname (compiler_gen_directory, curr_prof) as pn1 then
-				comp_gen_dir := pn1
-			end
-			check attached file_system.pathname (comp_gen_dir, "source") as src_dir then
-				compiler_gen_source_directory.copy (src_dir)
-			end
+			compiler_gen_source_directory.copy (file_system.pathname (file_system.pathname (compiler_gen_directory, curr_prof), "source"))
 			if not file_system.directory_exists (compiler_gen_source_directory) then
 				file_system.recursive_create_directory (compiler_gen_source_directory)
 			end
 
-			check attached file_system.pathname (comp_gen_dir, "flat") as flat_dir then
-				compiler_gen_flat_directory.copy (flat_dir)
-			end
+			compiler_gen_flat_directory.copy (file_system.pathname (file_system.pathname (compiler_gen_directory, curr_prof), "flat"))
 			if not file_system.directory_exists (compiler_gen_flat_directory) then
 				file_system.recursive_create_directory (compiler_gen_flat_directory)
 			end
@@ -376,8 +355,8 @@ feature -- Application Switches
 			-- Path of directory to which HTML is exported.
 		do
 			Result := app_cfg.string_value_env_var_sub ("/file_system/export_directory")
-			if Result.is_empty and attached file_system.pathname (user_config_file_directory, "export") as pn then
-				Result := pn
+			if Result.is_empty then
+				Result := file_system.pathname (user_config_file_directory, "export")
 				set_export_directory (Result)
 			end
 		end
@@ -394,8 +373,8 @@ feature -- Application Switches
 			-- Path of directory to which HTML is exported.
 		do
 			Result := app_cfg.string_value_env_var_sub ("/file_system/html_export_directory")
-			if Result.is_empty and attached file_system.pathname (export_directory, Syntax_type_adl_html) as pn then
-				Result := pn
+			if Result.is_empty then
+				Result := file_system.pathname (export_directory, Syntax_type_adl_html)
 			end
 		end
 
@@ -411,8 +390,8 @@ feature -- Application Switches
 			-- Path of directory where .adls files are saved by GUI_TEST_ARCHETYPE_TREE_CONTROL for diff testing.
 		do
 			Result := app_cfg.string_value_env_var_sub ("/file_system/test_diff_directory")
-			if Result.is_empty and attached file_system.pathname (user_config_file_directory, "diff_test") as pn then
-				Result := pn
+			if Result.is_empty then
+				Result := file_system.pathname (user_config_file_directory, "diff_test")
 				set_test_diff_directory (Result)
 			end
 		end

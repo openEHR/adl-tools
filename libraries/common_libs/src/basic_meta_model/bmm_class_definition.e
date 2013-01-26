@@ -40,6 +40,10 @@ feature -- Access
 
 	bmm_schema: detachable BMM_SCHEMA
 			-- reverse reference to parent schema
+		note
+			option: stable
+		attribute
+		end
 
 	name: STRING
 			-- name of the class FROM SCHEMA
