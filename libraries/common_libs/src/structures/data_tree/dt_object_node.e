@@ -9,9 +9,9 @@ indexing
 	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TAGS/Aug2007/libraries/common_libs/src/structures/data_tree/dt_object_node.e $"
+	revision:    "$LastChangedRevision: 761 $"
+	last_change: "$LastChangedDate: 2008-12-05 00:39:42 +1100 (Fri, 05 Dec 2008) $"
 
 class DT_COMPLEX_OBJECT_NODE
 
@@ -289,6 +289,18 @@ feature -- Modification
 			New_name_valid: new_name /= Void and then not new_name.is_empty
 		do
 			representation.replace_attribute_name(old_name, new_name)
+		end
+
+	remove_attribute (attr_name: STRING) is
+			-- remove attribute node at `attr_name'
+		require
+			Attr_name_valid: has_attribute (attr_name)
+		local
+			attr_node: DT_ATTRIBUTE_NODE
+		do
+			attr_node := attribute (attr_name)
+			representation.remove_child (attr_node.representation)
+			attributes.prune (attr_node)
 		end
 
 feature -- Conversion

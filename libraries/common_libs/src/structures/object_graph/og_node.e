@@ -7,9 +7,9 @@ indexing
 	copyright:   "Copyright (c) 2003. 2004 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TAGS/Aug2007/libraries/common_libs/src/structures/object_graph/og_node.e $"
+	revision:    "$LastChangedRevision: 761 $"
+	last_change: "$LastChangedDate: 2008-12-05 00:39:42 +1100 (Fri, 05 Dec 2008) $"
 
 deferred class OG_NODE
 
@@ -171,6 +171,18 @@ feature -- Modification
 			children_sorted.extend(a_node)
 		ensure
 			has_child (a_node)
+		end
+
+	remove_child (a_node: like child_type) is
+			-- remove the child node `a_node'
+		require
+			Node_exists: has_child (a_node)
+		do
+			children_ordered.prune_all (a_node)
+			children.remove (a_node.node_key)
+			a_node.set_root
+		ensure
+			Child_removed: not has_child (a_node)
 		end
 
 	remove_all_children is

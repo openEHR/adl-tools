@@ -7,9 +7,9 @@ indexing
 	copyright:   "Copyright (c) 2003, 2004 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TAGS/Aug2007/libraries/common_libs/src/structures/object_graph/og_item.e $"
+	revision:    "$LastChangedRevision: 135 $"
+	last_change: "$LastChangedDate: 2006-12-23 11:25:36 +1100 (Sat, 23 Dec 2006) $"
 
 deferred class OG_ITEM
 
@@ -21,7 +21,7 @@ inherit
 		undefine
 			is_equal
 		end
-		
+
 	COMPARABLE
 
 feature -- Definitions
@@ -41,12 +41,18 @@ feature -- Initialisation
 		ensure
 			Node_id_set: node_id = a_node_id
 		end
-	
+
 feature -- Access
-	
+
 	node_id: STRING
 				-- id of this node
-				
+
+	node_key: STRING is
+			-- uses compressed path if it exists
+		do
+			Result := node_id
+		end
+
 	content_item: SERIALISABLE
 				-- content of this node
 
@@ -55,16 +61,16 @@ feature -- Access
 		do
 			Result := generate_path(False)
 		end
-	
+
 	unique_path: OG_PATH is
 			-- absolute unique path of this node relative to the root
 		do
 			Result := generate_path(True)
 		end
-	
+
 	sibling_order: INTEGER
 			-- position of this sibling as child of parent in parsed input
-			
+
 	parent: OG_NODE
 
 feature -- Comparison
@@ -74,7 +80,7 @@ feature -- Comparison
 		do
 			Result := node_id < other.node_id
 		end
-		
+
 feature -- Status Report
 
 	is_addressable: BOOLEAN is
@@ -92,8 +98,16 @@ feature -- Status Report
 		do
 			Result := parent = Void
 		end
-		
+
 feature -- Modification
+
+	set_root is
+			-- set this node to root, i.e. remove its parent
+		do
+			parent := Void
+		ensure
+			is_root
+		end
 
 	set_node_id(a_node_id:STRING) is
 		require
@@ -109,7 +123,7 @@ feature -- Modification
 		do
 			parent := a_node
 		end
-		
+
 	set_sibling_order(i: INTEGER) is
 			-- set sibling order
 		require
@@ -117,7 +131,7 @@ feature -- Modification
 		do
 			sibling_order := i
 		end
-	
+
 	set_content (a_content_item: SERIALISABLE) is
 			-- set item
 		require
@@ -127,7 +141,7 @@ feature -- Modification
 		ensure
 			Content_set: content_item = a_content_item
 		end
-		
+
 feature -- Serialisation
 
 	enter_block(serialiser: ANY_SERIALISER; depth: INTEGER) is
@@ -138,7 +152,7 @@ feature -- Serialisation
 		do
 			content_item.enter_block(serialiser, depth)
 		end
-		
+
 	exit_block(serialiser: ANY_SERIALISER; depth: INTEGER) is
 			-- perform serialisation at end of block for this node
 		require
@@ -171,11 +185,11 @@ feature {NONE} -- Implementation
 				loop
 					og_nodes.put_front(csr)
 					csr := csr.parent
-				end	
+				end
 			end
 
 			if og_nodes.is_empty then
-				create Result.make_root				
+				create Result.make_root
 			else -- process the node list; we are starting on an OG_ATTR_NODE
 				og_nodes.start
 				create a_path_item.make(og_nodes.item.node_id)
@@ -183,12 +197,12 @@ feature {NONE} -- Implementation
 				og_nodes.forth
 				if not og_nodes.off then -- now on an OG_OBJECT_NODE
 					if og_attr.is_addressable or (unique_flag and og_attr.is_multiple) then
-						a_path_item.set_object_id(og_nodes.item.node_id)				
+						a_path_item.set_object_id(og_nodes.item.node_id)
 					end
 					og_nodes.forth
 				end
 				create Result.make_absolute(a_path_item)
-				
+
 				from
 				until
 					og_nodes.off
@@ -199,7 +213,7 @@ feature {NONE} -- Implementation
 					og_nodes.forth
 					if not og_nodes.off then -- now on an OG_OBJECT_NODE
 						if og_attr.is_addressable or (unique_flag and og_attr.is_multiple) then
-							a_path_item.set_object_id(og_nodes.item.node_id)				
+							a_path_item.set_object_id(og_nodes.item.node_id)
 						end
 						og_nodes.forth
 					end

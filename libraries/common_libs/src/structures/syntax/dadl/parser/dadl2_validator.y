@@ -9,9 +9,9 @@ indexing
 	copyright:   "Copyright (c) 2004, 2005 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
+	file:        "$URL: http://www.openehr.org/svn/ref_impl_eiffel/TAGS/Aug2007/libraries/common_libs/src/structures/syntax/dadl/parser/dadl2_validator.y $"
+	revision:    "$LastChangedRevision: 761 $"
+	last_change: "$LastChangedDate: 2008-12-05 00:39:42 +1100 (Fri, 05 Dec 2008) $"
 
 class DADL2_VALIDATOR
 
@@ -197,7 +197,7 @@ attr_id: V_ATTRIBUTE_IDENTIFIER
 				indent.append("%T")
 			end
 			attr_nodes.extend(attr_node)
-			obj_id := Void
+			obj_key := Void
 		}
 	| V_ATTRIBUTE_IDENTIFIER error
 		{
@@ -212,6 +212,13 @@ attr_id: V_ATTRIBUTE_IDENTIFIER
 --
 object_block: complex_object_block
 	| primitive_object_block
+	| SYM_START_DBLOCK SYM_END_DBLOCK -- empty object
+		{
+			-- for single-valued attributes, remove the attribute
+			if obj_key = Void then
+				complex_object_nodes.item.remove_attribute(attr_node.rm_attr_name)
+			end
+		}
 	;
 
 complex_object_block: single_attr_object_block
@@ -269,10 +276,10 @@ untyped_multiple_attr_object_block: multiple_attr_object_block_head keyed_object
 
 multiple_attr_object_block_head: SYM_START_DBLOCK
 		{
-			if obj_id /= Void then
+			if obj_key /= Void then
 				-- we are in a multi-block which is the value of a keyed object
 				-- so create the object with the key id
-				create complex_object_node.make_identified(obj_id)
+				create complex_object_node.make_identified(obj_key)
 				if not attr_nodes.item.has_child_with_id(complex_object_node.node_id) then
 					debug("dADL_parse")
 						io.put_string(indent + "multiple_attr_object_block_head; attr_nodes(<<" + 
@@ -336,10 +343,10 @@ keyed_object: object_key SYM_EQ object_block
 
 object_key: '[' simple_value ']'
 		{
-			obj_id := $2.out
+			obj_key := $2.out
 
 			debug("dADL_parse")
-				io.put_string(indent + "object_key: " + obj_id + 
+				io.put_string(indent + "object_key: " + obj_key + 
 					" (setting " + attr_nodes.item.rm_attr_name + " to Multiple)%N")
 			end
 			if not attr_nodes.is_empty then
@@ -413,10 +420,10 @@ single_attr_object_complex_head: SYM_START_DBLOCK
 				create complex_object_node.make_anonymous
 			else
 				debug("dADL_parse")
-					io.put_string(indent + "single_attr_object_complex_head: create complex_object_node.make (" + obj_id + ")%N")
+					io.put_string(indent + "single_attr_object_complex_head: create complex_object_node.make (" + obj_key + ")%N")
 				end
-				create complex_object_node.make_identified(obj_id)
-				obj_id := Void
+				create complex_object_node.make_identified(obj_key)
+				obj_key := Void
 			end
 
 			-- now put the new object under its attribute, if one exists
@@ -487,45 +494,45 @@ untyped_primitive_object_block: SYM_START_DBLOCK primitive_object_value SYM_END_
 
 primitive_object_value: simple_value
 		{
-			if obj_id /= Void then
-				create {DT_PRIMITIVE_OBJECT} leaf_object_node.make_identified($1, obj_id)
-				obj_id := Void
+			if obj_key /= Void then
+				create {DT_PRIMITIVE_OBJECT} leaf_object_node.make_identified($1, obj_key)
+				obj_key := Void
 			else
 				create {DT_PRIMITIVE_OBJECT} leaf_object_node.make_anonymous($1)
 			end
 		}
 	| simple_list_value
 		{
-			if obj_id /= Void then
-				create {DT_PRIMITIVE_OBJECT_LIST} leaf_object_node.make_identified($1, obj_id)
-				obj_id := Void
+			if obj_key /= Void then
+				create {DT_PRIMITIVE_OBJECT_LIST} leaf_object_node.make_identified($1, obj_key)
+				obj_key := Void
 			else
 				create {DT_PRIMITIVE_OBJECT_LIST} leaf_object_node.make_anonymous($1)
 			end
 		}
 	| simple_interval_value
 		{
-			if obj_id /= Void then
-				create {DT_PRIMITIVE_OBJECT_INTERVAL} leaf_object_node.make_identified($1, obj_id)
-				obj_id := Void
+			if obj_key /= Void then
+				create {DT_PRIMITIVE_OBJECT_INTERVAL} leaf_object_node.make_identified($1, obj_key)
+				obj_key := Void
 			else
 				create {DT_PRIMITIVE_OBJECT_INTERVAL} leaf_object_node.make_anonymous($1)
 			end
 		}
 	| term_code
 		{
-			if obj_id /= Void then
-				create {DT_PRIMITIVE_OBJECT} leaf_object_node.make_identified($1, obj_id)
-				obj_id := Void
+			if obj_key /= Void then
+				create {DT_PRIMITIVE_OBJECT} leaf_object_node.make_identified($1, obj_key)
+				obj_key := Void
 			else
 				create {DT_PRIMITIVE_OBJECT} leaf_object_node.make_anonymous($1)
 			end
 		}
 	| term_code_list_value
 		{
-			if obj_id /= Void then
-				create {DT_PRIMITIVE_OBJECT_LIST} leaf_object_node.make_identified($1, obj_id)
-				obj_id := Void
+			if obj_key /= Void then
+				create {DT_PRIMITIVE_OBJECT_LIST} leaf_object_node.make_identified($1, obj_key)
+				obj_key := Void
 			else
 				create {DT_PRIMITIVE_OBJECT_LIST} leaf_object_node.make_anonymous($1)
 			end
@@ -1453,7 +1460,7 @@ feature {NONE} -- Parse Tree
 	attr_nodes: ARRAYED_STACK[DT_ATTRIBUTE_NODE]
 	attr_node: DT_ATTRIBUTE_NODE
 
-	obj_id: STRING
+	obj_key: STRING
 			-- qualifier of last rel name; use for next object creation
 
 	rm_attr_name: STRING
