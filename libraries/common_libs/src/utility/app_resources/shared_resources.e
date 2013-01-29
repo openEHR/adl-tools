@@ -42,7 +42,7 @@ feature -- Definitions
 			-- (On Unix/Linux/Macosx(?) systems, we would normally locate this in /etc/adl_workbench)
 		do
 			if attached execution_environment.home_directory_name as hd then
-				Result := file_system.pathname (hd, application_developer_name)
+				Result := file_system.pathname (file_system.pathname (hd, application_developer_name), Default_application_name)
 			else
 				Result := file_system.current_working_directory
 			end

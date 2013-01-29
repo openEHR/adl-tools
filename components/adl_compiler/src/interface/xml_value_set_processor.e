@@ -72,6 +72,11 @@ feature -- Processing
 		do
 		end
 
+	process_xml_declaration (a_decl: XML_DECLARATION)
+			-- Process xml declaration `a_decl'
+		do
+		end
+
 	process_processing_instruction (a_pi: XML_PROCESSING_INSTRUCTION)
 			-- Process processing instruction `a_pi'.
 		do

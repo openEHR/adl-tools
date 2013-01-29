@@ -3,10 +3,32 @@ note
 	description : "[
 				   Command-line form of the compiler.
 				   
-				   Command line:
-				   	adlc [options] action archetype_id_pattern
-				   	
-				   Options:
+					USAGE:
+					   adlc [-q] -s
+					   adlc [-q] -l
+					   adlc <id_pattern> [-q] [-flat] [-cfg <file path>] [-p <profile name>] [-a <action>] [-f <format>]
+
+					OPTIONS:
+					   Options should be prefixed with: '-' or '/'
+
+					   -q --quiet          : suppress verbose feedback, including configuration information on startup (Optional)
+					      --flat           : use flat form of archetype[s] for actions, e.g. path extraction etc (Optional)
+					   -s --show_config    : show current configuration and defaults
+					   -l --list_archetypes: list archetypes in current profile repository
+					   -f --format         : output format for generated files (Optional)
+					                         <format>: file formats: json, adl, dadl, yaml, xml (default = adl)
+					      --cfg            : output default configuration file location (Optional)
+					                         <file path>: .cfg file path
+					   -p --profile        : profile to use (Optional)
+					                         <profile name>: profile name
+					   -a --action         : action to perform (Optional)
+					                         <action>: action: validate | flatten
+					   -? --help           : Display usage information. (Optional)
+					   -v --version        : Displays version information. (Optional)
+
+					NON-SWITCHED ARGUMENTS:
+					   <id_pattern>: archetype id regex
+
 				   	(see OPTIONS_PROCESSOR class)
 				   ]"
 	keywords:    "ADL, archetype, compiler, command line"

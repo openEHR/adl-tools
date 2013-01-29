@@ -41,8 +41,8 @@ feature -- Definitions
 			-- non-argument swtiches
 			Result.extend (create {ARGUMENT_SWITCH}.make (quiet_switch, get_text ("quiet_switch_desc"), True, False))
 			Result.extend (create {ARGUMENT_SWITCH}.make (flat_switch, get_text ("flat_switch_desc"), True, False))
-			Result.extend (create {ARGUMENT_SWITCH}.make (show_config_switch, get_text ("show_config_switch_desc"), True, False))
-			Result.extend (create {ARGUMENT_SWITCH}.make (list_archetypes_switch, get_text ("list_archetypes_switch_desc"), True, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (show_config_switch, get_text ("show_config_switch_desc"), False, False))
+			Result.extend (create {ARGUMENT_SWITCH}.make (list_archetypes_switch, get_text ("list_archetypes_switch_desc"), False, False))
 
 			-- switches with arguments
 			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (format_switch, get_text ("format_switch_desc"), True, False, format_switch_arg, get_msg ("format_switch_arg_desc", <<archetype_all_serialiser_formats_string>>), False))
