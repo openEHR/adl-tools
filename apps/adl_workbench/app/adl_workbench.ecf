@@ -68,16 +68,9 @@
 		<library name="xml_parser" location="$ISE_LIBRARY\library\text\parser\xml\parser\xml_parser-safe.ecf"/>
 		<library name="xml_tree" location="$ISE_LIBRARY\library\text\parser\xml\tree\xml_tree-safe.ecf"/>
 
-		<library name="gobo_kernel" location="$GOBO\library\gobo_kernel-safe.ecf"/>
-
-		<cluster name="gobo_lexical" location="$GOBO/library/lexical" recursive="true" />
-		<cluster name="gobo_parse" location="$GOBO/library/parse" recursive="true" />
-		<cluster name="gobo_structure" location="$GOBO/library/structure" recursive="true" />
-		<cluster name="gobo_utility" location="$GOBO/library/utility" recursive="true" />
-		<cluster name="gobo_pattern" location="$GOBO/library/pattern" recursive="true" />
-		<cluster name="gobo_regexp" location="$GOBO/library/regexp" recursive="true" />
-		<cluster name="gobo_string_support" location="$GOBO/library/string/support" recursive="true" />
-
+		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel-safe.ecf"/>
+		<library name="gobo_lexical" location="$ISE_LIBRARY\library\gobo\gobo_lexical-safe.ecf"/>
+		<library name="gobo_parse" location="$ISE_LIBRARY\library\gobo\gobo_parse-safe.ecf"/>
 
 		<cluster name="adl_compiler" location="..\..\..\components\adl_compiler\src\" recursive="true">
 			<option void_safety="initialization">
