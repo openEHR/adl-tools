@@ -7,10 +7,6 @@ note
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class
 	GUI_SERIALISATION_CONTROL
 
@@ -36,7 +32,6 @@ feature {NONE}-- Initialization
 			create ev_root_container
 			ev_root_container.set_border_width (Default_border_width)
 			ev_root_container.set_padding_width (Default_padding_width)
-			ev_root_container.set_data (Current)
 
 			-- rich text
 			create ev_serialised_rich_text
@@ -107,6 +102,8 @@ feature {NONE}-- Initialization
 			-- set initial visual characteristics
 			set_serialisation_control_texts
 			differential_view := True
+
+			ev_root_container.set_data (Current)
 		end
 
 feature -- Access

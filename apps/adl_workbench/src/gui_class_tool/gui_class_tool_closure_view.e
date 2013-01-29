@@ -43,7 +43,6 @@ feature -- Initialisation
 
 			-- create widgets
 			create ev_root_container
-			ev_root_container.set_data (Current)
 			ev_root_container.set_padding (Default_padding_width)
 			ev_root_container.set_border_width (Default_border_width)
 
@@ -113,6 +112,8 @@ feature -- Initialisation
 			include_rm_data_properties := True
 			include_rm_runtime_properties := True
 			include_rm_infrastructure_properties := True
+
+			ev_root_container.set_data (Current)
 		end
 
 feature -- Access

@@ -2,9 +2,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Dialog to ask for initial details of a new C_OBJECT node to enable conversion from an RM object node"
 	keywords:    "GUI, ADL, archetype"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2012- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 class
@@ -14,9 +14,9 @@ inherit
 	EV_DIALOG
 		export
 			{NONE} all;
-			{ANY} show_modal_to_window, destroy
+			{ANY} show_modal_to_window, destroy, is_destroyed, is_modal
 		redefine
-			create_interface_objects, is_in_default_state
+			initialize, create_interface_objects, is_in_default_state
 		end
 
 	SHARED_APP_UI_RESOURCES
@@ -74,7 +74,6 @@ feature {NONE} -- Initialization
 			create ev_root_container
 			ev_root_container.set_padding (Default_padding_width)
 			ev_root_container.set_border_width (Default_border_width)
-			extend (ev_root_container)
 
 			-- ============ constraint type combo-box control ============
 			create constraint_type_ctl.make_linked (get_text ("initial_c_object_config_constraint_type_text"),
@@ -142,6 +141,12 @@ feature {NONE} -- Initialization
 			enable_edit
 			do_populate
 --			show_actions.extend (agent constraint_type_ctl.set_focus)
+		end
+
+	initialize
+		do
+			extend (ev_root_container)
+			precursor
 		end
 
 feature -- Events

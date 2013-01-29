@@ -31,6 +31,8 @@ feature {NONE} -- Initialisation
 		do
 			make_tree_control
 			artefact_types := <<{ARTEFACT_TYPE}.template>>
+
+			ev_root_container.set_data (Current)
 		end
 
 feature -- Commands

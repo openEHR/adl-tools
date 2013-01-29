@@ -16,10 +16,17 @@ inherit
 			{NONE} all;
 			{ANY} show_modal_to_window, destroy
 		redefine
-			initialize, is_in_default_state
+			create_interface_objects, is_in_default_state
 		end
 
 	SHARED_APP_UI_RESOURCES
+		export
+			{NONE} all
+		undefine
+			is_equal, default_create, copy
+		end
+
+	SHARED_REFERENCE_MODEL_ACCESS
 		export
 			{NONE} all
 		undefine
@@ -54,7 +61,7 @@ feature {NONE} -- Initialization
 			Parent_id_set: parent_archetype_id = a_parent_id
 		end
 
-	initialize
+	create_interface_objects
 			-- Initialize `Current'.
 		do
 			create gui_controls.make (0)
@@ -69,7 +76,6 @@ feature {NONE} -- Initialization
 			create ev_root_container
 			ev_root_container.set_padding (Default_padding_width)
 			ev_root_container.set_border_width (Default_border_width)
-			extend (ev_root_container)
 
 			-- ============ archetype id data entry control ============
 			create archetype_id_ctl.make_linked (archetype_id, get_text ("archetype_id_label_text"),
@@ -104,6 +110,8 @@ feature {NONE} -- Initialization
 			ev_root_container.disable_item_expand (ok_cancel_buttons.ev_root_container)
 			set_default_cancel_button (ok_cancel_buttons.cancel_button)
 			set_default_push_button (ok_cancel_buttons.ok_button)
+
+			extend (ev_root_container)
 
 			-- set up form for display
 			enable_edit

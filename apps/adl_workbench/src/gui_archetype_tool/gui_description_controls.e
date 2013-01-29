@@ -7,11 +7,6 @@ note
 	copyright:   "Copyright (c) 2005 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
 class GUI_DESCRIPTION_CONTROLS
 
 inherit
@@ -44,7 +39,6 @@ feature {NONE} -- Initialisation
 
 			-- ======= root container ===========
 			create ev_root_container
-			ev_root_container.set_data (Current)
 			ev_root_container.selection_actions.extend (agent on_select_notebook)
 
 			-- ====== Authoring tab =======
@@ -147,7 +141,7 @@ feature {NONE} -- Initialisation
 
 			-- copyright - multi-line text
 			create copyright_text_ctl.make_linked (get_text ("copyright_label_text"),
-				agent :STRING do if attached description_details then Result := description_details.copyright end end,
+				agent :STRING do if attached description_details as dd then Result := dd.copyright end end,
 				agent (a_str: STRING) do description_details.set_copyright (a_str) end,
 				agent do description_details.clear_copyright end,
 				authoring_tab_undo_redo_chain, 44, 0, True)
@@ -168,7 +162,7 @@ feature {NONE} -- Initialisation
 
 			-- purpose - mutli-line String
 			create purpose_text_ctl.make_linked (get_text ("purpose_label_text"),
-				agent :STRING do if attached description_details then Result := description_details.purpose end end,
+				agent :STRING do if attached description_details as dd then Result := dd.purpose end end,
 				agent (a_str: STRING) do description_details.set_purpose (a_str) end,
 				Void, description_tab_undo_redo_chain, 0, 0, True)
 			gui_controls.extend (purpose_text_ctl)
@@ -176,7 +170,7 @@ feature {NONE} -- Initialisation
 
 			-- use - mutli-line String
 			create use_text_ctl.make_linked (get_text ("use_label_text"),
-				agent :STRING do if attached description_details then Result := description_details.use end end,
+				agent :STRING do if attached description_details as dd then Result := dd.use end end,
 				agent (a_str: STRING) do description_details.set_use (a_str) end,
 				agent do description_details.clear_use end,
 				description_tab_undo_redo_chain, 0, 0, True)
@@ -185,7 +179,7 @@ feature {NONE} -- Initialisation
 
 			-- misuse - mutli-line String
 			create misuse_text_ctl.make_linked (get_text ("misuse_label_text"),
-				agent :STRING do if attached description_details then Result := description_details.misuse end end,
+				agent :STRING do if attached description_details as dd then Result := dd.misuse end end,
 				agent (a_str: STRING) do description_details.set_misuse (a_str) end,
 				agent do description_details.clear_misuse end,
 				description_tab_undo_redo_chain,
@@ -195,7 +189,7 @@ feature {NONE} -- Initialisation
 
 			-- keywords list
 			create keywords_list_ctl.make_linked (get_text ("keywords_label_text"),
-				agent :DYNAMIC_LIST [STRING] do if attached description_details then Result := description_details.keywords end end,
+				agent :DYNAMIC_LIST [STRING] do if attached description_details as dd then Result := dd.keywords end end,
 				agent (a_str: STRING; i: INTEGER) do description_details.add_keyword (a_str, i) end,
 				agent (a_str: STRING) do description_details.remove_keyword (a_str) end,
 				description_tab_undo_redo_chain,
@@ -236,6 +230,8 @@ feature {NONE} -- Initialisation
 				44, 0, True, Void)
 			gui_controls.extend (original_resources_ctl)
 			resource_frame_ctl.extend (original_resources_ctl.ev_root_container, False)
+
+			ev_root_container.set_data (Current)
 
 			-- =========== set up events ==========
 			ev_root_container.select_item (admin_vbox)
@@ -339,6 +335,8 @@ feature {NONE} -- Implementation
 		end
 
 	description_details: detachable RESOURCE_DESCRIPTION_ITEM
+		require
+			is_populated
 		do
 			if source_archetype.description.has_details then
 				Result := source_archetype.description.detail_for_language (selected_language)

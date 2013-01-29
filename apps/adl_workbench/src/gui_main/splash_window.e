@@ -2,21 +2,17 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Splash window"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class SPLASH_WINDOW
 
 inherit
 	EV_POPUP_WINDOW
 		redefine
-			initialize
+			create_interface_objects
 		end
 
 	SHARED_APP_UI_RESOURCES
@@ -45,7 +41,7 @@ feature {NONE} -- Initialization
 			timer.actions.extend (agent close)
 		end
 
-	initialize
+	create_interface_objects
 			-- Add the openEHR logo with the text label to its right.
 		local
 			hb, border: EV_HORIZONTAL_BOX

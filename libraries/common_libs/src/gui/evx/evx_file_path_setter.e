@@ -21,11 +21,6 @@ note
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
 class EVX_FILE_PATH_SETTER
 
 inherit
@@ -75,10 +70,10 @@ feature -- Access
 
 	ev_browse_button: EV_BUTTON
 
-	file_path: STRING
+	file_path: detachable STRING
 			-- file path only, with any options removed
 
-	options: STRING
+	options: detachable STRING
 			-- any options from original data_source string
 
 feature -- Events

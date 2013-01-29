@@ -2,9 +2,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "RM schemas dialog window"
 	keywords:    "ADL, archeytpes, openEHR"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 class
@@ -13,7 +13,7 @@ class
 inherit
 	EV_DIALOG
 		redefine
-			create_interface_objects, is_in_default_state
+			initialize, create_interface_objects, is_in_default_state
 		end
 
 	SHARED_APP_UI_RESOURCES
@@ -65,7 +65,6 @@ feature {NONE} -- Initialisation
 
 			-- ============ root container ============
 			create ev_root_container
-			extend (ev_root_container)
 			ev_root_container.set_padding (Default_padding_width)
 			ev_root_container.set_border_width (Default_border_width)
 
@@ -117,6 +116,12 @@ feature {NONE} -- Initialisation
 			ev_root_container.refresh_now
 		end
 
+	initialize
+		do
+			extend (ev_root_container)
+			precursor
+		end
+
 feature -- Access
 
 	ev_root_container: EV_VERTICAL_BOX
@@ -153,7 +158,7 @@ feature -- Events
 
 			-- case where the directory no longer exists or is readable
 			if not directory_exists (last_populated_rm_schema_dir) then
-				post_error (Current, "load_schemas", "model_access_e5", <<last_populated_rm_schema_dir>>)
+				post_error (generator, "load_schemas", "model_access_e5", <<last_populated_rm_schema_dir>>)
 				create error_dialog.make_with_text (billboard.content)
 				billboard.clear
 				error_dialog.show_modal_to_window (Current)
@@ -165,8 +170,7 @@ feature -- Events
 				end
 
 				-- get the user-chosen list of schemas from the load list Grid
-				create {ARRAYED_LIST [STRING]} rm_schemas_ll.make (0)
-				rm_schemas_ll.compare_objects
+				rm_schemas_ll.wipe_out
 				from i := 1 until i > grid.row_count loop
 					if attached {EV_GRID_CHECKABLE_LABEL_ITEM} grid.row (i).item (Grid_schema_col) as gcli and then gcli.is_checked then
 						rm_schemas_ll.extend (gcli.text)
@@ -188,7 +192,7 @@ feature -- Events
 			error_dialog: EV_INFORMATION_DIALOG
 		do
 			if not directory_exists (last_populated_rm_schema_dir) then
-				post_error (Current, "load_schemas", "model_access_e5", <<last_populated_rm_schema_dir>>)
+				post_error (generator, "load_schemas", "model_access_e5", <<last_populated_rm_schema_dir>>)
 				create error_dialog.make_with_text (billboard.content)
 				billboard.clear
 				error_dialog.show_modal_to_window (Current)
@@ -209,7 +213,7 @@ feature -- Events
 				ok_cancel_buttons.disable_sensitive
 				rm_schemas_access.initialise_with_load_list (new_rm_dir, rm_schemas_load_list)
 				if not rm_schemas_access.found_valid_schemas then
-					post_error (Current, "load_schemas", "model_access_e13", <<new_rm_dir>>)
+					post_error (generator, "load_schemas", "model_access_e13", <<new_rm_dir>>)
 					create error_dialog.make_with_text (billboard.content)
 					billboard.clear
 					error_dialog.show_modal_to_window (Current)
@@ -287,8 +291,8 @@ feature {NONE} -- Implementation
 			end
 
 			-- column 2 - lifecycle state
-			if a_schema.meta_data.has (Metadata_schema_lifecycle_state) then
-				create gli.make_with_text (a_schema.meta_data.item (Metadata_schema_lifecycle_state))
+			if a_schema.meta_data.has (Metadata_schema_lifecycle_state) and then attached a_schema.meta_data.item (Metadata_schema_lifecycle_state) as ls then
+				create gli.make_with_text (ls)
 			else
 				create gli.make_with_text ("(unknown)")
 			end
@@ -338,6 +342,10 @@ feature {NONE} -- Implementation
 
 	rm_schemas_ll: LIST [STRING]
 			-- list of checked schemas in options dialog
+		attribute
+			create {ARRAYED_LIST [STRING]} Result.make (0)
+			Result.compare_objects
+		end
 
 	ev_cell_1, ev_cell_2, ev_cell_3: EV_CELL
 

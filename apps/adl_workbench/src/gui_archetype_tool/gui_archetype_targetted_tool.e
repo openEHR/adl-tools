@@ -7,11 +7,6 @@ note
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-	void_safety: "Initial"
-
 deferred class
 	GUI_ARCHETYPE_TARGETTED_TOOL
 
@@ -20,15 +15,19 @@ inherit
 		rename
 			populate as gui_tool_populate
 		redefine
-			source
+			is_populated, source
 		end
 
 feature -- Access
 
 	source: detachable ARCH_CAT_ARCHETYPE_UI_STATE
 			-- archetype descriptor to which this tool is targetted
+		note
+			option: stable
+		attribute
+		end
 
-	source_archetype: ARCHETYPE
+	source_archetype: detachable ARCHETYPE
 			-- differential or flat version of archetype, depending on setting of `differential_view'
 		do
 			if not editing_enabled then
@@ -42,7 +41,7 @@ feature -- Access
 			end
 		end
 
-	source_context: ARCH_ED_CONTEXT
+	source_context: detachable ARCH_ED_CONTEXT
 			-- display / editor context, loaded with archetype for display, or a clone, for editing
 		do
 			if not editing_enabled then
@@ -69,6 +68,11 @@ feature -- Status Report
 
 	differential_view: BOOLEAN
 
+	is_populated: BOOLEAN
+		do
+			Result := precursor and attached selected_language
+		end
+
 feature -- Commands
 
 	populate (a_source: like source; differential_view_flag: BOOLEAN; a_selected_language: STRING)
@@ -79,6 +83,8 @@ feature -- Commands
 			differential_view := differential_view_flag
 			selected_language := a_selected_language
 			gui_tool_populate (a_source)
+		ensure
+			is_populated
 		end
 
 	repopulate_with_language (a_selected_language: STRING)

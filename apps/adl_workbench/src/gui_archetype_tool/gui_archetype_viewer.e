@@ -76,6 +76,8 @@ feature {NONE}-- Initialization
 
 			set_tab_appearance
 			set_view_tab_texts
+
+			ev_root_container.set_data (Current)
 		end
 
 feature -- UI Feedback

@@ -22,7 +22,6 @@ feature {NONE} -- Initialisation
 		do
 			-- root container
 			create ev_root_container
-			ev_root_container.set_data (Current)
 
 			-- semantic EV_GRID
 			create gui_semantic_grid.make (True, True, True, True)

@@ -7,11 +7,6 @@ note
 	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
 class GUI_PATH_MAP_CONTROL
 
 inherit
@@ -55,7 +50,6 @@ feature {NONE} -- Initialisation
 		do
 			-- create widgets
 			create ev_root_container
-			ev_root_container.set_data (Current)
 			ev_root_container.set_minimum_width (140)
 			ev_root_container.set_minimum_height (93)
 
@@ -114,6 +108,8 @@ feature {NONE} -- Initialisation
 
 			-- set events: path map
 			ev_path_list.key_press_actions.extend (on_path_map_key_press_agent)
+
+			ev_root_container.set_data (Current)
 		end
 
 feature -- Access

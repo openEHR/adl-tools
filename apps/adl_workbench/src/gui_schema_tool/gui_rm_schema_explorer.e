@@ -7,11 +7,6 @@ note
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
 class GUI_RM_SCHEMA_EXPLORER
 
 inherit
@@ -41,7 +36,6 @@ feature {NONE} -- Initialisation
 		do
 			-- create widgets
 			create ev_root_container
-			ev_root_container.set_data (Current)
 
 			-- EV_GRID
 			create gui_grid.make (True, True, True, True)
@@ -52,11 +46,12 @@ feature {NONE} -- Initialisation
 
 			-- events
 			enable_selection_history
+			ev_root_container.set_data (Current)
 		end
 
 feature -- Access
 
-	source: REFERENCE_MODEL_ACCESS
+	source: detachable REFERENCE_MODEL_ACCESS
 
 	tool_artefact_id: STRING
 			-- a system-wide unique artefact id that can be used to find a tool in a GUI collection like
@@ -67,7 +62,7 @@ feature -- Access
 
 	ev_root_container: EV_VERTICAL_BOX
 
-	matching_ids (a_regex: attached STRING): attached ARRAYED_SET[STRING]
+	matching_ids (a_regex: STRING): ARRAYED_SET[STRING]
 			-- generate list of schema elemtn ids (packages and classes)
 		local
 			regex_matcher: LX_DFA_REGULAR_EXPRESSION
@@ -93,7 +88,7 @@ feature -- Status Report
 			Result := True
 		end
 
-	valid_item_id (a_key: attached STRING): BOOLEAN
+	valid_item_id (a_key: STRING): BOOLEAN
 			-- key is a valid identifier of an item managed in this tool
 		do
 			Result := ev_node_map.has (a_key)
@@ -101,7 +96,7 @@ feature -- Status Report
 
 feature -- Commands
 
-	select_item_by_id (id: attached STRING)
+	select_item_by_id (id: STRING)
 			-- show class in RM explorer and display it in a class tool
 		do
 			if ev_node_map.has (id) and gui_grid.ev_grid.is_displayed then
@@ -121,7 +116,7 @@ feature -- Commands
 			end
 		end
 
-	show_item (id: attached STRING)
+	show_item (id: STRING)
 			-- show class in RM explorer
 		do
 			if ev_node_map.has (id) and gui_grid.ev_grid.is_displayed then
@@ -141,7 +136,7 @@ feature -- Commands
 
 feature -- Modification
 
-	set_docking_pane (a_docking_pane: attached SD_CONTENT)
+	set_docking_pane (a_docking_pane: SD_CONTENT)
 		do
 			docking_pane := a_docking_pane
 		end
@@ -150,13 +145,13 @@ feature {NONE} -- Implementation
 
 	ev_pixmap: EV_PIXMAP
 
-	ev_label: EV_LABEL
-
 	gui_grid: EVX_GRID
 
-	ev_hbox: EV_HORIZONTAL_BOX
-
-	docking_pane: SD_CONTENT
+	docking_pane: detachable SD_CONTENT
+		note
+			option: stable
+		attribute
+		end
 
 	do_clear
 			-- Wipe out content from visual controls and reset controls to reasonable state
@@ -225,7 +220,9 @@ feature {NONE} -- Implementation
  				pixmap_name.append ("_override")
  			end
 			gui_grid.set_last_row_label_col (1, a_class_def.as_type_string, a_class_def.description, Void, get_icon_pixmap (pixmap_name))
-			ev_class_row := gui_grid.last_row
+			check attached gui_grid.last_row as cr then
+				ev_class_row := cr
+			end
 			ev_node_map.put (ev_class_row, a_class_def.global_artefact_identifier)
 
 			-- context menu

@@ -7,10 +7,6 @@ note
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class
 	GUI_VALIDITY_REPORT_CONTROL
 
@@ -27,12 +23,13 @@ feature {NONE} -- Initialization
 		do
 			-- create widgets
 			create ev_root_container
-			ev_root_container.set_data (Current)
 
 			create ev_rich_text
 
 			-- connect them together
 			ev_root_container.extend (ev_rich_text)
+
+			ev_root_container.set_data (Current)
 		end
 
 feature -- Access

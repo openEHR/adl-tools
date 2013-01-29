@@ -4,7 +4,7 @@ note
 	keywords:    "test, ADL"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
 class SHARED_APP_UI_RESOURCES
@@ -35,7 +35,7 @@ feature -- Definitions
 	bug_reporter_url: STRING = "http://www.openehr.org/issues/browse/AWBPR/"
 			-- The URL to ADL Workbench's problem reporter.
 
-	user_docking_layout_file_path: attached STRING
+	user_docking_layout_file_path: STRING
 			-- Full path to docking layout configuration file.
 		do
 			Result := file_system.pathname (user_config_file_directory, extension_replaced ("ui_config", User_config_file_extension))
@@ -43,7 +43,7 @@ feature -- Definitions
 			not_empty: not Result.is_empty
 		end
 
-	default_docking_layout_file_path: attached STRING
+	default_docking_layout_file_path: STRING
 			-- Full path to docking layout configuration file.
 		do
 			Result := file_system.pathname (application_startup_directory, extension_replaced ("default_ui_config", User_config_file_extension))
@@ -225,7 +225,7 @@ feature -- Application Switches
 			Result := app_cfg.string_value ("/file_system/current_work_directory")
 		end
 
-	set_current_work_directory (a_path: attached STRING)
+	set_current_work_directory (a_path: STRING)
 			-- set the directory where archetypes are currently being opened and saved.
 		do
 			if not a_path.is_empty then
@@ -429,13 +429,13 @@ feature -- Application Switches
 			app_cfg.put_value ("/gui/use_rm_pixmaps", flag)
 		end
 
-	text_editor_command: attached STRING
+	text_editor_command: STRING
 			-- Path of editor application for ADL files.
 		do
 			Result := app_cfg.string_value_env_var_sub ("/commands/text_editor_command")
 		end
 
-	set_text_editor_command (a_value: attached STRING)
+	set_text_editor_command (a_value: STRING)
 			-- set editor
 		require
 			value_not_empty: not a_value.is_empty
@@ -443,13 +443,13 @@ feature -- Application Switches
 			app_cfg.put_value ("/commands/text_editor_command", a_value)
 		end
 
-	editor_app_command: attached STRING
+	editor_app_command: STRING
 			-- Path of editor application for ADL files.
 		do
 			Result := app_cfg.string_value_env_var_sub ("/commands/editor_app_command")
 		end
 
-	set_editor_app_command (a_value: attached STRING)
+	set_editor_app_command (a_value: STRING)
 			-- set editor
 		require
 			value_not_empty: not a_value.is_empty
@@ -457,13 +457,13 @@ feature -- Application Switches
 			app_cfg.put_value ("/commands/editor_app_command", a_value)
 		end
 
-	difftool_command: attached STRING
+	difftool_command: STRING
 			-- Path of diff tool application for ADL files.
 		do
 			Result := app_cfg.string_value_env_var_sub ("/commands/difftool_command")
 		end
 
-	set_difftool_command (a_value: attached STRING)
+	set_difftool_command (a_value: STRING)
 			-- set editor
 		require
 			value_not_empty: not a_value.is_empty
@@ -513,22 +513,16 @@ feature {NONE} -- Implementation
 			dir: DIRECTORY
 			dir_items: ARRAYED_LIST [STRING]
 		do
-			check attached file_system.pathname (icon_directory, rel_path) as pn then
-				abs_path := pn
-			end
+			abs_path := file_system.pathname (icon_directory, rel_path)
 			create dir.make (abs_path)
 			dir.open_read
-			dir_items := dir.linear_representation
+			dir_items := dir.linear_representation_32
 
 			-- process files
 			across dir_items as dir_items_csr loop
 				if dir_items_csr.item.item (1) /= '.' then
-					check attached file_system.pathname (abs_path, dir_items_csr.item) as pn then
-						full_path := pn
-					end
-					check attached file_system.pathname (rel_path, dir_items_csr.item) as pn then
-						new_rel_path := pn
-					end
+					full_path := file_system.pathname (abs_path, dir_items_csr.item)
+					new_rel_path := file_system.pathname (rel_path, dir_items_csr.item)
 					if file_system.directory_exists (full_path) then
 						-- process child directory
 						recursive_load_pixmaps (pixmap_table, new_rel_path)

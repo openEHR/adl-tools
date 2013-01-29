@@ -4,7 +4,7 @@ note
 	keywords:    "ADL, archetype, template, UI"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 class GUI_CATALOGUE_TOOL
@@ -50,7 +50,6 @@ feature {NONE} -- Initialisation
 
 			-- create widgets
 			create ev_root_container
-			ev_root_container.set_data (Current)
 
 			-- connect widgets
 			ev_root_container.extend (archetype_explorer.ev_root_container)
@@ -85,6 +84,8 @@ feature {NONE} -- Initialisation
 			add_sub_tool (metrics_viewer)
 			add_sub_tool (stats_viewer)
 			enable_selection_history
+
+			ev_root_container.set_data (Current)
 		end
 
 feature -- Access

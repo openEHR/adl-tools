@@ -39,6 +39,8 @@ feature {NONE}-- Initialization
 			-- ev_notebook.item_tab (translation_control.ev_root_container).set_pixmap (get_icon_pixmap ("tool/translation"))
 
 			select_flat_view
+
+			ev_root_container.set_data (Current)
 		end
 
 feature -- Status Report

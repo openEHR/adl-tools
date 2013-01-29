@@ -37,7 +37,6 @@ feature -- Initialisation
 
 			-- create widgets
 			create ev_root_container
-			ev_root_container.set_data (Current)
 
 			-- ============ DEFINITION HBOX, with GRID & control panel =============
 			create ev_definition_hbox
@@ -146,6 +145,8 @@ feature -- Initialisation
 			if not show_technical_view then
 				rm_attrs_visible_checkbox_ctl.disable_editable
 			end
+
+			ev_root_container.set_data (Current)
 		end
 
 feature -- Access

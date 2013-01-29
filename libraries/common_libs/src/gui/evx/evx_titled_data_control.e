@@ -41,13 +41,13 @@ feature -- Initialisation
 			end
 
 			-- if there is a title, set appropriate padding & border
-			if attached a_title and then not a_title.is_empty then
+			if attached a_title as t and then not t.is_empty then
 				ev_root_container.set_padding (Default_padding_width)
 				ev_root_container.set_border_width (Default_border_width)
 
 				-- create the title and add to ev_container
 				create ev_title_label
-				ev_title_label.set_text (a_title)
+				ev_title_label.set_text (t)
 				ev_root_container.extend (ev_title_label)
 				ev_root_container.disable_item_expand (ev_title_label)
 
@@ -75,7 +75,7 @@ feature -- Initialisation
 				ev_root_container.extend (create {EV_CELL})
 				ev_root_container.disable_item_expand (ev_data_control)
 			end
-			ev_root_container.set_data (Current)
+	--		ev_root_container.set_data (Current)
 		ensure
 			not is_readonly
 		end

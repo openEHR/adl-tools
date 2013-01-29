@@ -2,14 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Options dialog window"
 	keywords:    "ADL"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2004 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2004- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class
 	OPTION_DIALOG
@@ -17,7 +13,7 @@ class
 inherit
 	EV_DIALOG
 		redefine
-			initialize, is_in_default_state
+			initialize, create_interface_objects, is_in_default_state
 		end
 
 	SHARED_APP_UI_RESOURCES
@@ -29,7 +25,7 @@ inherit
 
 feature {NONE} -- Initialization
 
-	initialize
+	create_interface_objects
 			-- Initialize `Current'.
 		do
 			Precursor {EV_DIALOG}
@@ -44,7 +40,6 @@ feature {NONE} -- Initialization
 			create ev_root_container
 			ev_root_container.set_padding (Default_padding_width)
 			ev_root_container.set_border_width (Default_border_width)
-			extend (ev_root_container)
 
 			-- =========== notebook ===========
 			create ev_notebook
@@ -107,7 +102,12 @@ feature {NONE} -- Initialization
 
 			-- Error reporting level combo			
 			create parser_error_reporting_level_combo_box.make (get_text ("error_reporting_level_text"),
-				agent :STRING do Result := error_type_name_table.item (error_reporting_level) end,
+				agent :STRING
+					do
+						check attached error_type_name_table.item (error_reporting_level) as errname then
+							Result := errname
+						end
+					end,
 				error_type_names, 0, 100)
 			ev_notebook_compiler_settings_vb.extend (parser_error_reporting_level_combo_box.ev_root_container)
 			ev_notebook_compiler_settings_vb.disable_item_expand (parser_error_reporting_level_combo_box.ev_root_container)
@@ -216,6 +216,12 @@ feature {NONE} -- Initialization
 			enable_edit
 			old_show_entire_ontology := show_entire_ontology
 			do_populate
+		end
+
+	initialize
+		do
+			extend (ev_root_container)
+			precursor
 		end
 
 feature -- Status

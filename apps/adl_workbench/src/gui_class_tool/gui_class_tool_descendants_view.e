@@ -26,16 +26,13 @@ feature -- Initialisation
 		do
 			-- create widgets
 			create ev_root_container
-			ev_root_container.set_data (Current)
 
 			create ev_tree
 
 			-- connect widgets
 			ev_root_container.extend (ev_tree)
 
-			-- visual characteristics
-
-			-- set events
+			ev_root_container.set_data (Current)
 		end
 
 feature -- Access

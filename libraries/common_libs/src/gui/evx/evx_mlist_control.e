@@ -21,11 +21,6 @@ note
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
 deferred class EVX_MLIST_CONTROL
 
 inherit
@@ -184,8 +179,6 @@ feature {NONE} -- Implementation
 		end
 
 	do_enable_editable
-		local
-			root_win: EV_WINDOW
 		do
 			precursor
 			ev_data_control.set_background_color (editable_colour)
@@ -193,8 +186,9 @@ feature {NONE} -- Implementation
 			-- the following one-off initialisation has to be done now, because at make time, the call to
 			-- proximate_ev_window won't work because things are not connected up yet
 			if not data_control_initialised then
-				root_win := proximate_ev_window (ev_root_container)
-				ev_data_control.enable_editing (root_win)
+				check attached proximate_ev_window (ev_root_container) as root_win then
+					ev_data_control.enable_editing (root_win)
+				end
 				ev_data_control.end_edit_actions.extend (agent do if is_editable then process_in_place_edit end end)
 				ev_data_control.pointer_button_press_actions.force_extend (agent mlist_handler (ev_data_control, ?, ?, ?, ?, ?, ?, ?, ?))
 				data_control_initialised := True

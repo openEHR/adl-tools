@@ -7,10 +7,6 @@ note
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 deferred class GUI_EDITING_ENABLED
 
 inherit
@@ -29,17 +25,23 @@ feature {NONE}-- Initialization
 			-- undo button
 			tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/undo_active"), get_icon_pixmap ("tool/undo_inactive"),
 				get_msg ("undo_button_tooltip", Void), agent on_undo)
-			ev_undo_button := tool_bar.last_tool_bar_button
+			check attached tool_bar.last_tool_bar_button as ltbb then
+				ev_undo_button := ltbb
+			end
 
 			-- redo button
 			tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/redo_active"), get_icon_pixmap ("tool/redo_inactive"),
 				get_msg ("redo_button_tooltip", Void), agent on_redo)
-			ev_redo_button := tool_bar.last_tool_bar_button
+			check attached tool_bar.last_tool_bar_button as ltbb then
+				ev_redo_button := ltbb
+			end
 
 			-- commit button
 			tool_bar.add_tool_bar_button (get_icon_pixmap ("tool/synchronise_active"), get_icon_pixmap ("tool/synchronise_inactive"),
 				get_msg ("commit_button_tooltip", Void), agent on_commit)
-			ev_commit_button := tool_bar.last_tool_bar_button
+			check attached tool_bar.last_tool_bar_button as ltbb then
+				ev_commit_button := ltbb
+			end
 
 			create last_commit_time.make_from_epoch (0)
 		end
@@ -89,7 +91,7 @@ feature {NONE} -- Implementation
 			-- set undo/redo buttons appropriately
 		do
 			undo_redo_chain := a_chain
-			if undo_redo_chain.last_action_time > last_commit_time then
+			if attached last_commit_time as lct and then undo_redo_chain.last_action_time > lct then
 				is_dirty := True
 			end
 			populate_undo_redo_controls

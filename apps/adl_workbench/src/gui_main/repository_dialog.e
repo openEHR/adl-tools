@@ -13,17 +13,13 @@ note
 	copyright:   "Copyright (c) 2008-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class
 	REPOSITORY_DIALOG
 
 inherit
 	EV_DIALOG
 		redefine
-			initialize, is_in_default_state
+			initialize, create_interface_objects, is_in_default_state
 		end
 
 	SHARED_APP_UI_RESOURCES
@@ -40,7 +36,7 @@ inherit
 
 feature {NONE} -- Initialization
 
-	initialize
+	create_interface_objects
 			-- Initialize `Current'.
 		do
 			Precursor {EV_DIALOG}
@@ -56,7 +52,6 @@ feature {NONE} -- Initialization
 
 			-- ============ root container ============
 			create ev_root_container
-			extend (ev_root_container)
 			ev_root_container.set_padding (Default_padding_width)
 			ev_root_container.set_border_width (Default_border_width)
 
@@ -105,7 +100,14 @@ feature {NONE} -- Initialization
 			ev_vbox_2.disable_item_expand (profile_edit_button)
 
 			-- reference path display control
-			create ref_path_ctl.make_readonly (get_text ("ref_repo_text"), agent :STRING do Result := rep_profiles_copy.profile (selected_profile_key).reference_repository end, 0, 0, True)
+			create ref_path_ctl.make_readonly (get_text ("ref_repo_text"),
+				agent :STRING
+					do
+						check attached selected_profile_key as spk then
+							Result := rep_profiles_copy.profile (spk).reference_repository
+						end
+					end,
+				0, 0, True)
 			ev_root_container.extend (ref_path_ctl.ev_root_container)
 			ev_root_container.disable_item_expand (ref_path_ctl.ev_root_container)
 			gui_controls.extend (ref_path_ctl)
@@ -114,10 +116,13 @@ feature {NONE} -- Initialization
 			create work_path_ctl.make_readonly (get_text ("work_repo_text"),
 				agent :STRING
 					do
-						if rep_profiles_copy.profile (selected_profile_key).has_work_repository then
-							Result := rep_profiles_copy.profile (selected_profile_key).work_repository
-						else
-							Result := ""
+						create Result.make_empty
+						check attached selected_profile_key as spk then
+							if rep_profiles_copy.profile (spk).has_work_repository and then
+								attached rep_profiles_copy.profile (spk).work_repository as wrep
+							then
+								Result := wrep
+							end
 						end
 					end,
 				0, 0, True)
@@ -138,6 +143,12 @@ feature {NONE} -- Initialization
 			rep_profiles_copy := repository_profiles.deep_twin
 			selected_profile_key := rep_profiles_copy.current_profile_name
 			populate_controls
+		end
+
+	initialize
+		do
+			extend (ev_root_container)
+			precursor
 		end
 
 feature {NONE} -- Events
@@ -181,8 +192,8 @@ feature {NONE} -- Events
 		do
 			create edit_dialog.make_new (rep_profiles_copy)
 			edit_dialog.show_modal_to_window (Current)
-			if edit_dialog.is_valid then
-				selected_profile_key := rep_profiles_copy.current_profile_name
+			if edit_dialog.is_valid and attached rep_profiles_copy.current_profile_name as cpn then
+				selected_profile_key := cpn
 				any_profile_changes_made_pending := any_profile_changes_made_pending or edit_dialog.has_changed_profile
 				-- if there was no profile initially, and one was just created => register change
 				current_profile_changed_pending := current_profile_changed_pending or not repository_profiles.has_current_profile
@@ -196,11 +207,11 @@ feature {NONE} -- Events
 		local
 			edit_dialog: PROFILE_EDIT_DIALOG
 		do
-			if attached selected_profile_key then
-				create edit_dialog.make_edit (rep_profiles_copy, selected_profile_key)
+			if attached selected_profile_key as spk then
+				create edit_dialog.make_edit (rep_profiles_copy, spk)
 				edit_dialog.show_modal_to_window (Current)
-				if edit_dialog.is_valid and edit_dialog.has_changed_profile then
-					selected_profile_key := rep_profiles_copy.current_profile_name
+				if edit_dialog.is_valid and edit_dialog.has_changed_profile and attached rep_profiles_copy.current_profile_name as cpn then
+					selected_profile_key := cpn
 					populate_controls
 					current_profile_changed_pending := current_profile_changed_pending or repository_profiles.current_profile_name ~ edit_dialog.initial_profile_name
 					any_profile_changes_made_pending := True
@@ -214,21 +225,25 @@ feature {NONE} -- Events
 		local
 			prof_names: ARRAYED_LIST [STRING]
 			error_dialog: EV_INFORMATION_DIALOG
+			prof_to_remove: STRING
 		do
 			if rep_profiles_copy.count > 1 then
-				current_profile_removed_pending := current_profile_removed_pending or repository_profiles.current_profile_name ~ selected_profile_key
-				rep_profiles_copy.remove_profile (selected_profile_key)
+				check attached selected_profile_key as spk then
+					prof_to_remove := spk
+				end
+				current_profile_removed_pending := current_profile_removed_pending or repository_profiles.current_profile_name ~ prof_to_remove
+				rep_profiles_copy.remove_profile (prof_to_remove)
 
 				-- figure out which profile to make the new current one
 				prof_names := profile_names
-				prof_names.search (selected_profile_key)
+				prof_names.search (prof_to_remove)
 				prof_names.remove
 				if not prof_names.is_empty then
 					if prof_names.off then
 						prof_names.finish
 					end
 					selected_profile_key := prof_names.item
-					rep_profiles_copy.set_current_profile_name (selected_profile_key)
+					rep_profiles_copy.set_current_profile_name (prof_names.item)
 				else
 					selected_profile_key := Void
 				end
@@ -241,11 +256,11 @@ feature {NONE} -- Events
 
 feature {NONE} -- Access
 
-	rep_profiles_copy: attached REPOSITORY_PROFILE_CONFIG
+	rep_profiles_copy: REPOSITORY_PROFILE_CONFIG
 			-- local copy of the state of profiles at dialog launch, as a table of
 			-- {{ref_path, working path}, prof_name}
 
-	selected_profile_key: STRING
+	selected_profile_key: detachable STRING
 			-- name of profile currently chosen in dialog
 
 feature -- Status
@@ -299,9 +314,8 @@ feature {NONE} -- Implementation
 			-- Initialise the dialog's widgets from shared settings.
 		do
 			profile_list.set_strings (rep_profiles_copy.names)
-
-			if not profile_list.is_empty then
-				profile_list.i_th (profile_names.index_of (selected_profile_key, 1).max (1)).enable_select
+			if not profile_list.is_empty and attached selected_profile_key as spf then
+				profile_list.i_th (profile_names.index_of (spf, 1).max (1)).enable_select
 				do_populate
 			end
 		end
@@ -319,8 +333,6 @@ feature {NONE} -- Implementation
 	profile_list: EV_LIST
 
 	profile_add_button, profile_remove_button, profile_edit_button: EV_BUTTON
-
-	reference_path_text, work_path_text: EV_TEXT_FIELD
 
 	ok_cancel_buttons: EVX_OK_CANCEL_CONTROLS
 

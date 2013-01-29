@@ -35,7 +35,6 @@ feature {NONE} -- Initialisation
 		do
 			-- create widgets
 			create ev_root_container
-			ev_root_container.set_data (Current)
 
 			create ev_suppliers_tree
 			create ev_clients_tree
@@ -61,6 +60,8 @@ feature {NONE} -- Initialisation
 			client_vbox.set_border_width (Default_border_width)
 
 			visual_update_action := a_visual_update_action
+
+			ev_root_container.set_data (Current)
 		end
 
 feature -- Access

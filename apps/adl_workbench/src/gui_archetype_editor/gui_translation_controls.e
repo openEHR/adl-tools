@@ -46,7 +46,6 @@ feature {NONE} -- Initialisation
 			create ev_root_container
 			ev_root_container.set_padding (Default_padding_width)
 			ev_root_container.set_border_width (Default_border_width)
-			ev_root_container.set_data (Current)
 
 			-- ========== Main split area =======================
 			create ev_main_split_area
@@ -82,6 +81,7 @@ feature {NONE} -- Initialisation
 
 			ev_main_split_area.set_proportion (0.5)
 
+			ev_root_container.set_data (Current)
 		end
 
 feature -- Access

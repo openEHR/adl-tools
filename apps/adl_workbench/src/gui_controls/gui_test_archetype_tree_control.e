@@ -233,35 +233,68 @@ feature -- Access
 
 	diff_dir_source_orig: STRING
 			-- directory where copies of original .adls files go
+		attribute
+			create Result.make_empty
+		end
 
 	diff_dir_source_new: STRING
 			-- directory where first generation serialised .adls files go
+		attribute
+			create Result.make_empty
+		end
 
 	diff_dir_flat_orig: STRING
 			-- directory where copies of original legacy .adl files go
+		attribute
+			create Result.make_empty
+		end
 
 	diff_dir_flat_new: STRING
 			-- directory where first generation serialised .adlf files go
+		attribute
+			create Result.make_empty
+		end
 
 	diff_dir_source_flat_orig: STRING
 			-- directory where copies of original .adls files go, renamed to .adlx, for comparison with flat form
 			-- This diff will show expanded internal refs
+		attribute
+			create Result.make_empty
+		end
 
 	diff_dir_source_flat_new: STRING
 			-- directory where flat files go, renamed to .adlx, for source/flat
 			-- comparison, non-specialised archetypes only
+		attribute
+			create Result.make_empty
+		end
 
 	dadl_source_dir: STRING
 			-- directory where dADL files from source form archetypes are saved
+		attribute
+			create Result.make_empty
+		end
 
 	dadl_flat_dir: STRING
 			-- directory where dADL files from flat form archetypes are saved
+		attribute
+			create Result.make_empty
+		end
 
 	dadl_adl_root: STRING
+		attribute
+			create Result.make_empty
+		end
 
 	diff_dadl_round_trip_source_orig_dir: STRING
+		attribute
+			create Result.make_empty
+		end
 
 	diff_dadl_round_trip_source_new_dir: STRING
+		attribute
+			create Result.make_empty
+		end
 
 feature -- Status Setting
 
@@ -704,9 +737,7 @@ feature {NONE} -- Tests
 			Result := Test_failed
 			if target.is_valid then
 				target.save_compiled_differential
-				check attached file_system.pathname (dadl_source_dir, target.qualified_name + File_ext_dadl) as pn
-					file_system.copy_file (target.differential_compiled_path, pn)
-				end
+				file_system.copy_file (target.differential_compiled_path, file_system.pathname (dadl_source_dir, target.qualified_name + File_ext_dadl))
 				Result := test_passed
 			else
 				Result := test_not_applicable
@@ -768,8 +799,12 @@ feature {NONE} -- Implementation
 			create Result.make (0)
 		end
 
-	target: ARCH_CAT_ARCHETYPE
+	target: detachable ARCH_CAT_ARCHETYPE
 			-- current target of compilation operation
+		note
+			option: stable
+		attribute
+		end
 
 	original_differential_text: STRING
 			-- copy of archetype text after successful parse; = what was on file
@@ -853,29 +888,31 @@ feature {NONE} -- Implementation
 			--							+---- orig
 			--							+---- new
 			--
+		require
+			has_current_profile
 		local
-			diff_dir_root, diff_dir_source_root, diff_dir_flat_root, diff_dir_source_flat_root, dadl_root: STRING
+			curr_prof, diff_dir_root, diff_dir_source_root, diff_dir_flat_root, diff_dir_source_flat_root, dadl_root: STRING
 		do
 			diff_dirs_available := False
 
 			-- source diff dirs
-			if attached repository_profiles.current_profile_name as profile_name then
-				diff_dir_root := file_system.pathname (test_diff_directory, profile_name)
+			check attached repository_profiles.current_profile_name as cpn then
+				curr_prof := cpn
+			end
+			diff_dir_root := file_system.pathname (test_diff_directory, curr_prof)
+			diff_dir_source_root := file_system.pathname (diff_dir_root, "source")
+			diff_dir_source_orig := file_system.pathname (diff_dir_source_root, "orig")
+			diff_dir_source_new := file_system.pathname (diff_dir_source_root, "new")
 
-				diff_dir_source_root := file_system.pathname (diff_dir_root, "source")
-				diff_dir_source_orig := file_system.pathname (diff_dir_source_root, "orig")
-				diff_dir_source_new := file_system.pathname (diff_dir_source_root, "new")
-
-				if not file_system.directory_exists (diff_dir_source_orig) then
-					file_system.recursive_create_directory (diff_dir_source_orig)
+			if not file_system.directory_exists (diff_dir_source_orig) then
+				file_system.recursive_create_directory (diff_dir_source_orig)
+			end
+			if file_system.directory_exists (diff_dir_source_orig) then
+				if not file_system.directory_exists (diff_dir_source_new) then
+					file_system.recursive_create_directory (diff_dir_source_new)
 				end
-				if file_system.directory_exists (diff_dir_source_orig) then
-					if not file_system.directory_exists (diff_dir_source_new) then
-						file_system.recursive_create_directory (diff_dir_source_new)
-					end
-					if file_system.directory_exists (diff_dir_source_new) then
-						diff_dirs_available := True
-					end
+				if file_system.directory_exists (diff_dir_source_new) then
+					diff_dirs_available := True
 				end
 			end
 
@@ -943,9 +980,7 @@ feature {NONE} -- Implementation
 				file_system.recursive_create_directory (diff_dadl_round_trip_source_orig_dir)
 			end
 
-			check attached file_system.pathname (dadl_adl_root, "new") as pn then
-				diff_dadl_round_trip_source_new_dir := pn
-			end
+			diff_dadl_round_trip_source_new_dir := file_system.pathname (dadl_adl_root, "new")
 			if not file_system.directory_exists (diff_dadl_round_trip_source_new_dir) then
 				file_system.recursive_create_directory (diff_dadl_round_trip_source_new_dir)
 			end

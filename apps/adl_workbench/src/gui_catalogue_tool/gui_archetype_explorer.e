@@ -62,6 +62,8 @@ feature {NONE} -- Initialisation
 			gui_filesys_grid.ev_grid.item_select_actions.extend (agent grid_item_select_handler)
 			gui_filesys_grid.ev_grid.disable_selection_on_click
 			gui_filesys_grid.ev_grid.enable_selection_on_single_button_click
+
+			ev_root_container.set_data (Current)
 		end
 
 feature -- Commands
@@ -280,8 +282,8 @@ feature {NONE} -- Implementation
    			-- Set the text, tooltip and icon appropriate to the item attached to `node'.
    		local
 			text, tooltip: STRING
-			pixmap: EV_PIXMAP
-			col: EV_COLOR
+			pixmap: detachable EV_PIXMAP
+			col: detachable EV_COLOR
 		do
 			if attached {ARCH_CAT_ITEM} ev_row.data as aci then
 				create text.make_empty

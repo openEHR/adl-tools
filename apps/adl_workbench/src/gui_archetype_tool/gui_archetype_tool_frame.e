@@ -16,10 +16,6 @@ note
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 deferred class GUI_ARCHETYPE_TOOL_FRAME
 
 inherit
@@ -42,7 +38,6 @@ feature {NONE}-- Initialization
 		do
 			-- create root widget
 			create ev_root_container
-			ev_root_container.set_data (Current)
 
 			-- text field handling
 			create text_widget_handler.make (ev_root_container)
@@ -73,10 +68,14 @@ feature {NONE}-- Initialization
 			tool_bar.add_tool_bar_with_title (get_msg ("diff_flat_form_label", Void))
 			tool_bar.add_tool_bar_radio_button (get_icon_pixmap ("tool/diff_class"),
 				get_msg ("differential_view_button_tooltip", Void), agent on_differential_view)
-			ev_differential_view_button := tool_bar.last_tool_bar_radio_button
+			check attached tool_bar.last_tool_bar_radio_button as tbrb then
+				ev_differential_view_button := tbrb
+			end
 			tool_bar.add_tool_bar_radio_button (get_icon_pixmap ("tool/flat_class"),
 				get_msg ("flat_view_button_tooltip", Void), agent on_flat_view)
-			ev_flat_view_button := tool_bar.last_tool_bar_radio_button
+			check attached tool_bar.last_tool_bar_radio_button as tbrb then
+				ev_flat_view_button := tbrb
+			end
 
 			-- add language combo box
 			tool_bar.add_fixed_combo_box (get_msg ("language_label", Void),

@@ -7,10 +7,6 @@ note
 	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class GUI_CLASS_TOOL_PROPERTY_VIEW
 
 inherit
@@ -41,13 +37,13 @@ feature -- Initialisation
 		do
 			-- create widgets
 			create ev_root_container
-			ev_root_container.set_data (Current)
 
 			create ev_grid.make
 			ev_grid.enable_tree
 
 			-- connect widgets
 			ev_root_container.extend (ev_grid)
+			ev_root_container.set_data (Current)
 		end
 
 feature -- Access

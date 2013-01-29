@@ -49,13 +49,15 @@ feature -- Access
 		deferred
 		end
 
-	selection_history: SELECTION_HISTORY
+	selection_history: detachable SELECTION_HISTORY
 
 	selected_item: IDENTIFIED_TOOL_ARTEFACT
 		require
 			is_selection_history_enabled
 		do
-			Result := selection_history.selected_item
+			check attached selection_history.selected_item as i then
+				Result := i
+			end
 		end
 
 	mini_tool_bar: EV_WIDGET
@@ -120,6 +122,8 @@ feature -- Commands
 			source := a_source
 			do_populate
 			create last_populate_timestamp.make_now
+		ensure
+			is_populated
 		end
 
 	repopulate

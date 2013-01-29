@@ -7,11 +7,6 @@ note
 	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
 class GUI_ONTOLOGY_CONTROLS
 
 inherit
@@ -43,7 +38,6 @@ feature {NONE} -- Initialisation
 			create gui_controls.make (0)
 
 			create ev_root_container
-			ev_root_container.set_data (Current)
 			ev_root_container.set_padding (Default_padding_width)
 			ev_root_container.set_border_width (Default_border_width)
 
@@ -88,6 +82,8 @@ feature {NONE} -- Initialisation
 			if not editing_enabled then
 				disable_edit
 			end
+
+			ev_root_container.set_data (Current)
 		end
 
 feature -- Access

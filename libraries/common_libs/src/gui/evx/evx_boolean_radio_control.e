@@ -99,7 +99,7 @@ feature -- Modification
 			if attached a_state_1_pixmap as pm1 then
 				ev_data_control.set_pixmap (pm1)
 			end
-			if attached a_state_2_pixmap then
+			if attached a_state_2_pixmap as pm2 then
 				ev_data_control.set_pixmap (pm2)
 			end
 		end

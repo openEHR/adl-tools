@@ -7,10 +7,6 @@ note
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class
 	GUI_SOURCE_CONTROL
 
@@ -31,7 +27,6 @@ feature {NONE}-- Initialization
 		do
 			-- create root widget
 			create ev_root_container
-			ev_root_container.set_data (Current)
 			create ev_souce_rich_text
 			create ev_source_controls_vbox
 			create ev_line_numbers_cb
@@ -60,6 +55,8 @@ feature {NONE}-- Initialization
 			ev_line_numbers_cb.select_actions.extend (agent try_repopulate)
 
 			differential_view := True
+
+			ev_root_container.set_data (Current)
 		end
 
 feature -- Access

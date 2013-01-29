@@ -327,6 +327,8 @@ feature {NONE} -- Actions
 	update_actions
 			-- Actions to be performed when change widget is updated, redefine for custom
 			-- behaviour.
+		require
+			is_initialized
 		local
 			l_widget: like widget
 			l_saved_text: like saved_text
@@ -345,7 +347,9 @@ feature {NONE} -- Actions
 						create l_error_dialog.make_with_text
 							("This column identifier is in use by another row.%N Please choose another.")
 						error_dialog := l_error_dialog
-						l_error_dialog.show_modal_to_window (relative_window)
+						check attached relative_window as rw then
+							l_error_dialog.show_modal_to_window (rw)
+						end
 					end
 				else
 					l_selected_item.put_i_th (l_widget.text, widget_column)
@@ -390,8 +394,10 @@ feature {NONE} -- Commands
 
 	generate_edit_dialog
 			-- Generate new edit dialog for row editing in column at index 'i'.
+		require
+			is_initialized
 		local
-			textable: EV_TEXTABLE
+			textable: EV_TEXT_FIELD
 			l_widget: like widget
 			l_internal_dialog: like internal_dialog
 			l_saved_text: like saved_text
@@ -409,7 +415,7 @@ feature {NONE} -- Commands
 					widget := tw
 				else
 						-- Use text field as default widget type
-					create {EV_TEXT_FIELD} textable
+					create textable
 					change_widgets.put (textable, widget_column)
 					widget := textable
 				end
@@ -424,7 +430,9 @@ feature {NONE} -- Commands
 				l_internal_dialog.extend (l_widget)
 				l_internal_dialog.disable_user_resize
 				l_internal_dialog.set_size (dialog_width, dialog_height)
-				l_internal_dialog.show_relative_to_window (relative_window)
+				check attached relative_window as rw then
+					l_internal_dialog.show_relative_to_window (rw)
+				end
 				l_internal_dialog.set_position (x_offset, y_offset)
 				initialize_observers
 

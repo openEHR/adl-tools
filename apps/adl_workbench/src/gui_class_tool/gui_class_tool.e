@@ -33,7 +33,6 @@ feature -- Initialisation
 		do
 			-- create widgets
 			create ev_root_container
-			ev_root_container.set_data (Current)
 
 			create ev_action_bar
 			create ev_class_id
@@ -103,6 +102,8 @@ feature -- Initialisation
 			add_sub_tool (descendants_view)
 			add_sub_tool (closure_view)
 			enable_selection_history
+
+			ev_root_container.set_data (Current)
 		end
 
 feature -- Access
