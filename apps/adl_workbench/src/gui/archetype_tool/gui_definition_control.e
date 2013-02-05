@@ -74,7 +74,7 @@ feature -- Initialisation
 			gui_controls.extend (view_detail_radio_ctl)
 
 			-- include codes checkbox
-			create add_codes_checkbox_ctl.make_active (get_text ("domain_view_add_codes_text"), Void,
+			create add_codes_checkbox_ctl.make_linked (get_text ("domain_view_add_codes_text"), Void,
 				agent :BOOLEAN do Result := show_codes end, agent update_show_codes)
 			view_detail_frame_ctl.extend (add_codes_checkbox_ctl.ev_data_control, False)
 			gui_controls.extend (add_codes_checkbox_ctl)
@@ -87,21 +87,21 @@ feature -- Initialisation
 			gui_definition_control_panel.add_frame_control (rm_property_visibility_frame_ctl, False)
 
 			-- add RM data properties check button
-			create rm_attrs_visible_checkbox_ctl.make_active (get_text ("show_rm_properties_button_text"),
+			create rm_attrs_visible_checkbox_ctl.make_linked (get_text ("show_rm_properties_button_text"),
 				get_text ("show_rm_properties_tooltip"),
 				agent :BOOLEAN do Result := show_rm_data_properties end, agent update_show_rm_data_properties)
 			gui_controls.extend (rm_attrs_visible_checkbox_ctl)
 			rm_property_visibility_frame_ctl.extend (rm_attrs_visible_checkbox_ctl.ev_data_control, False)
 
 			-- add RM runtime properties option check button
-			create rm_runtime_attrs_visible_checkbox_ctl.make_active (get_text ("show_rm_runtime_properties_button_text"),
+			create rm_runtime_attrs_visible_checkbox_ctl.make_linked (get_text ("show_rm_runtime_properties_button_text"),
 				get_text ("show_rm_runtime_properties_tooltip"),
 				agent :BOOLEAN do Result := show_rm_runtime_properties end, agent update_show_rm_runtime_properties)
 			gui_controls.extend (rm_runtime_attrs_visible_checkbox_ctl)
 			rm_property_visibility_frame_ctl.extend (rm_runtime_attrs_visible_checkbox_ctl.ev_data_control, False)
 
 			-- add RM infrastructure properties option check button
-			create rm_if_attrs_visible_checkbox_ctl.make_active (get_text ("show_rm_if_properties_button_text"),
+			create rm_if_attrs_visible_checkbox_ctl.make_linked (get_text ("show_rm_if_properties_button_text"),
 				get_text ("show_rm_if_properties_tooltip"),
 				agent :BOOLEAN do Result := show_rm_infrastructure_properties end, agent update_show_rm_infrastructure_properties)
 			gui_controls.extend (rm_if_attrs_visible_checkbox_ctl)
@@ -112,7 +112,7 @@ feature -- Initialisation
 			gui_definition_control_panel.add_frame_control (rm_rendering_frame_ctl, False)
 
 			-- use RM inheritance rendering check button
-			create view_rm_display_inheritance_checkbox_ctl.make_active (get_text ("show_rm_inh_button_text"),
+			create view_rm_display_inheritance_checkbox_ctl.make_linked (get_text ("show_rm_inh_button_text"),
 				get_text ("show_rm_inh_button_tooltip"),
 				agent :BOOLEAN do Result := show_rm_inheritance end, agent update_show_rm_inheritance)
 			gui_controls.extend (view_rm_display_inheritance_checkbox_ctl)

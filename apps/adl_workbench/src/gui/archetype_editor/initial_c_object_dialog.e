@@ -12,9 +12,6 @@ class
 
 inherit
 	EV_DIALOG
-		export
-			{NONE} all;
-			{ANY} show_modal_to_window, destroy, is_destroyed, is_modal
 		redefine
 			initialize, create_interface_objects, is_in_default_state
 		end

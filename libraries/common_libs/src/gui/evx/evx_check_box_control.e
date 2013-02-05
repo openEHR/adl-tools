@@ -15,11 +15,6 @@ note
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
 class EVX_CHECK_BOX_CONTROL
 
 inherit
@@ -29,7 +24,7 @@ inherit
 		end
 
 create
-	make, make_active, make_readonly
+	make, make_linked, make_readonly
 
 feature -- Initialisation
 
@@ -58,8 +53,9 @@ feature -- Initialisation
 			is_readonly
 		end
 
-	make_active (a_title: STRING; a_tooltip: detachable STRING; a_data_source_agent: like data_source_agent;
-				a_data_source_setter_agent: like data_source_setter_agent)
+	make_linked (a_title: STRING; a_tooltip: detachable STRING;
+				a_data_source_agent: like data_source_agent;
+				a_data_source_setter_agent: attached like data_source_setter_agent)
 			-- make for a normal form with active semantics
 		do
 			make (a_title, a_tooltip, a_data_source_agent)

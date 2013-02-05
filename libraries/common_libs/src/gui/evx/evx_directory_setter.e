@@ -59,7 +59,11 @@ feature -- Initialisation
 
 feature -- Access
 
-	ev_browse_button: EV_BUTTON
+	ev_browse_button: detachable EV_BUTTON
+		note
+			option: stable
+		attribute
+		end
 
 feature -- Modification
 
@@ -86,7 +90,9 @@ feature -- Events
 			else
 				initial_dir := ds_val
 			end
-			ev_data_control.set_text (get_directory (initial_dir, proximate_ev_window (ev_root_container)))
+			check attached proximate_ev_window (ev_root_container) as pw then
+				ev_data_control.set_text (get_directory (initial_dir, pw))
+			end
 			if attached post_select_agent then
 				post_select_agent.call ([])
 			end
@@ -109,16 +115,18 @@ feature {NONE} -- Implementation
 			ev_browse_button.select_actions.extend (agent on_browse)
 		end
 
-	get_directory (init_value: detachable STRING; a_parent_window: attached EV_WINDOW): STRING
+	get_directory (init_value: detachable STRING; a_parent_window: EV_WINDOW): STRING
 			-- get a directory from user. `init_value' may be Void or empty
 		local
 			dialog: EV_DIRECTORY_DIALOG
 			a_dir: DIRECTORY
 			error_dialog: EV_INFORMATION_DIALOG
 			default_result: STRING
+			user_dir: detachable STRING
 		do
 			create dialog
 
+			-- work out an appropriate default
 			if attached init_value and then (create {DIRECTORY}.make (init_value)).exists then
 				dialog.set_start_directory (init_value)
 				default_result := init_value
@@ -126,17 +134,18 @@ feature {NONE} -- Implementation
 				create default_result.make_empty
 			end
 
-			from until attached Result loop
+			-- make the user provide something sensible
+			from until attached user_dir loop
 				dialog.show_modal_to_window (a_parent_window)
 
 				if not attached dialog.selected_button or else dialog.selected_button.is_equal (get_text ("cancel_button_text")) then
-					Result := default_result
+					user_dir := default_result
 				else
 					if not dialog.directory.is_empty then
 						create a_dir.make (dialog.directory.to_string_8)
 
 						if a_dir.exists then
-							Result := a_dir.name
+							user_dir := a_dir.name
 						else
 							create error_dialog.make_with_text (get_msg ("directory_does_not_exist", <<dialog.directory>>))
 							error_dialog.show_modal_to_window (a_parent_window)
@@ -146,6 +155,9 @@ feature {NONE} -- Implementation
 						error_dialog.show_modal_to_window (a_parent_window)
 					end
 				end
+			end
+			check attached user_dir then
+				Result := user_dir
 			end
 		end
 

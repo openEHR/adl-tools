@@ -45,7 +45,7 @@ feature -- Initialisation
 	make_linked (a_title: STRING; a_data_source_agent: like data_source_agent;
 			a_data_source_create_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
-			an_undo_redo_chain: UNDO_REDO_CHAIN;
+			an_undo_redo_chain: like undo_redo_chain;
 			min_height, min_width: INTEGER;
 			arrange_horizontally: BOOLEAN)
 		do
@@ -144,7 +144,9 @@ feature {NONE} -- Implementation
 			ds_index: INTEGER
 		do
 			ds := data_source_agent.item ([])
-			ds_index := ev_data_control.index_of (ev_data_control.selected_item, 1)
+			check attached ev_data_control.selected_item as sel_item then
+				ds_index := ev_data_control.index_of (sel_item, 1)
+			end
 			old_val := ds.i_th (ds_index)
 
 			if ds_index = ev_data_control.count then -- removing last element

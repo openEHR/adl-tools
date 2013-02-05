@@ -1275,7 +1275,7 @@ feature {NONE} -- Implementation
 			-- Save the application configuration file and update the status area.
 		do
 			app_cfg.save
-			post_info (Current, "save_resources_and_show_status", "cfg_file_i1", <<user_config_file_path>>)
+			post_info (generator, "save_resources_and_show_status", "cfg_file_i1", <<user_config_file_path>>)
 		end
 
 	refresh_profile_context (refresh_from_repository: BOOLEAN)

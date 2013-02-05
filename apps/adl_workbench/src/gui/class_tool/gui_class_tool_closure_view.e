@@ -67,21 +67,21 @@ feature -- Initialisation
 			control_panel.add_frame_control (rm_property_visibility_frame_ctl, False)
 
 			-- add RM data properties check button
-			create rm_attrs_visible_checkbox_ctl.make_active (get_text ("show_rm_properties_button_text"),
+			create rm_attrs_visible_checkbox_ctl.make_linked (get_text ("show_rm_properties_button_text"),
 				get_text ("show_rm_properties_tooltip"),
 				agent :BOOLEAN do Result := include_rm_data_properties end, agent update_include_rm_data_properties)
 			gui_controls.extend (rm_attrs_visible_checkbox_ctl)
 			rm_property_visibility_frame_ctl.extend (rm_attrs_visible_checkbox_ctl.ev_data_control, False)
 
 			-- add RM runtime properties option check button
-			create rm_runtime_attrs_visible_checkbox_ctl.make_active (get_text ("show_rm_runtime_properties_button_text"),
+			create rm_runtime_attrs_visible_checkbox_ctl.make_linked (get_text ("show_rm_runtime_properties_button_text"),
 				get_text ("show_rm_runtime_properties_tooltip"),
 				agent :BOOLEAN do Result := include_rm_runtime_properties end, agent update_include_rm_runtime_properties)
 			gui_controls.extend (rm_runtime_attrs_visible_checkbox_ctl)
 			rm_property_visibility_frame_ctl.extend (rm_runtime_attrs_visible_checkbox_ctl.ev_data_control, False)
 
 			-- add RM infrastructure properties option check button
-			create rm_if_attrs_visible_checkbox_ctl.make_active (get_text ("show_rm_if_properties_button_text"),
+			create rm_if_attrs_visible_checkbox_ctl.make_linked (get_text ("show_rm_if_properties_button_text"),
 				get_text ("show_rm_if_properties_tooltip"),
 				agent :BOOLEAN do Result := include_rm_infrastructure_properties end, agent update_include_rm_infrastructure_properties)
 			gui_controls.extend (rm_if_attrs_visible_checkbox_ctl)
@@ -92,7 +92,7 @@ feature -- Initialisation
 			control_panel.add_frame_control (rm_rendering_frame_ctl, False)
 
 			-- use RM icons check button
-			create view_rm_use_icons_checkbox_ctl.make_active (get_text ("use_rm_icons_text"),
+			create view_rm_use_icons_checkbox_ctl.make_linked (get_text ("use_rm_icons_text"),
 				get_text ("use_rm_icons_tooltip"),
 				agent :BOOLEAN do Result := use_rm_pixmaps end, agent update_use_rm_pixmaps)
 			gui_controls.extend (view_rm_use_icons_checkbox_ctl)

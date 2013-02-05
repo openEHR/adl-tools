@@ -220,8 +220,8 @@ feature {NONE} -- Implementation
  				pixmap_name.append ("_override")
  			end
 			gui_grid.set_last_row_label_col (1, a_class_def.as_type_string, a_class_def.description, Void, get_icon_pixmap (pixmap_name))
-			check attached gui_grid.last_row as cr then
-				ev_class_row := cr
+			check attached gui_grid.last_row as lr then
+				ev_class_row := lr
 			end
 			ev_node_map.put (ev_class_row, a_class_def.global_artefact_identifier)
 

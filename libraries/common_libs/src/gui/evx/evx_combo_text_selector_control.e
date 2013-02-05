@@ -39,30 +39,30 @@ create
 feature -- Initialisation
 
 	make (a_title: STRING; a_data_source: like data_source_agent;
-			a_value_set: LIST [STRING]; min_height, min_width: INTEGER)
+			a_value_set: like value_set; min_height, min_width: INTEGER)
 		require
 			a_value_set.object_comparison
 		do
-			make_text_control (a_title, a_data_source, min_height, min_width, True)
 			value_set := a_value_set
+			make_text_control (a_title, a_data_source, min_height, min_width, True)
 			ev_data_control.select_actions.extend (agent propagate_select_action)
 		ensure
 			not is_readonly
 		end
 
 	make_readonly (a_title: STRING; a_data_source: like data_source_agent;
-			a_value_set: LIST [STRING]; min_height, min_width: INTEGER)
+			a_value_set: like value_set; min_height, min_width: INTEGER)
 		require
 			a_value_set.object_comparison
 		do
-			make_readonly_text_control (a_title, a_data_source, min_height, min_width, True)
 			value_set := a_value_set
+			make_readonly_text_control (a_title, a_data_source, min_height, min_width, True)
 		ensure
 			is_readonly
 		end
 
 	make_linked (a_title: STRING; a_data_source: like data_source_agent;
-			a_value_set: LIST [STRING];
+			a_value_set: like value_set;
 			a_data_source_setter_agent: like data_source_setter_agent;
 			a_data_source_remove_agent: like data_source_remove_agent;
 			an_undo_redo_chain: like undo_redo_chain;
@@ -70,10 +70,10 @@ feature -- Initialisation
 		require
 			a_value_set.object_comparison
 		do
+			value_set := a_value_set
 			make_linked_text_control (a_title,
 				a_data_source, a_data_source_setter_agent, a_data_source_remove_agent,
 				an_undo_redo_chain, min_height, min_width, True)
-			value_set := a_value_set
 			ev_data_control.select_actions.extend (agent propagate_select_action)
 			ev_data_control.select_actions.extend (agent do if is_editable then process_edit end end)
 		ensure

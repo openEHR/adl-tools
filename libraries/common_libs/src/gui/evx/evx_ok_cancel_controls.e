@@ -19,7 +19,8 @@ inherit
 
 	SHARED_APP_UI_RESOURCES
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} deep_twin, is_deep_equal, standard_is_equal
 		undefine
 			copy, default_create
 		end

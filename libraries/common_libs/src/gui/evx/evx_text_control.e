@@ -113,7 +113,7 @@ feature {NONE} -- Implementation
 			Setter_agent_available: attached data_source_setter_agent
 		local
 			old_val, new_val: STRING
-			undo_agt, redo_agt: PROCEDURE [ANY, TUPLE]
+			undo_agt, redo_agt: detachable PROCEDURE [ANY, TUPLE]
 			ds: STRING
 			error_dialog: EV_INFORMATION_DIALOG
 		do
@@ -131,7 +131,9 @@ feature {NONE} -- Implementation
 				then
 					ev_data_control.focus_out_actions.block
 					create error_dialog.make_with_text (validity_error_msg_agent.item ([<<new_val>>]))
-					error_dialog.show_modal_to_window (proximate_ev_window (ev_data_control))
+					check attached proximate_ev_window (ev_data_control) as pw then
+						error_dialog.show_modal_to_window (pw)
+					end
 					populate
 					ev_data_control.focus_out_actions.resume
 				else

@@ -21,17 +21,13 @@ note
 	license:     "See notice at bottom of class"
 	void_safety: "initial"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
 class EVX_TREEVIEW_CONTROL
 
 inherit
 	SHARED_APP_UI_RESOURCES
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} deep_twin, is_deep_equal, standard_is_equal
 		end
 
 	STRING_UTILITIES

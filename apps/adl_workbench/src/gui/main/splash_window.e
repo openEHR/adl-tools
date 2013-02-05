@@ -12,7 +12,7 @@ class SPLASH_WINDOW
 inherit
 	EV_POPUP_WINDOW
 		redefine
-			create_interface_objects
+			initialize
 		end
 
 	SHARED_APP_UI_RESOURCES
@@ -41,8 +41,7 @@ feature {NONE} -- Initialization
 			timer.actions.extend (agent close)
 		end
 
-	create_interface_objects
-			-- Add the openEHR logo with the text label to its right.
+	initialize
 		local
 			hb, border: EV_HORIZONTAL_BOX
 			label: EV_LABEL

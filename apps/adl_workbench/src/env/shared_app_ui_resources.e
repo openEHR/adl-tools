@@ -511,7 +511,7 @@ feature {NONE} -- Implementation
 			pixmap: EV_PIXMAP
 			abs_path, full_path, new_rel_path, key: STRING
 			dir: DIRECTORY
-			dir_items: ARRAYED_LIST [STRING]
+			dir_items: ARRAYED_LIST [STRING_32]
 		do
 			abs_path := file_system.pathname (icon_directory, rel_path)
 			create dir.make (abs_path)

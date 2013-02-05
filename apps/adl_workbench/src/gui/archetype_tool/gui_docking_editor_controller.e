@@ -36,6 +36,7 @@ feature -- Initialisation
 	make_docking (a_docking_manager: SD_DOCKING_MANAGER)
 		do
 			docking_manager := a_docking_manager
+			create docking_tools.make (0)
 		end
 
 feature -- Access
@@ -141,9 +142,6 @@ feature {NONE} -- Implementation
 
 	docking_tools: HASH_TABLE [TUPLE [tool: like tool_type; docking_pane: SD_CONTENT], INTEGER]
 			-- table of [GUI_TOOL, docking pane} tuples keyed by tool id
-		attribute
-			create Result.make (0)
-		end
 
 	docking_manager: SD_DOCKING_MANAGER
 

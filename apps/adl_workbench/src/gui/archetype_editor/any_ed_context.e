@@ -8,16 +8,13 @@ note
 	license:     "See notice at bottom of class"
 	void_safety: "initial"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 deferred class ANY_ED_CONTEXT
 
 inherit
 	SHARED_APP_UI_RESOURCES
 		export
-			{NONE} all
+			{NONE} all;
+			{ANY} deep_twin, is_deep_equal, standard_is_equal
 		end
 
 	EVX_UTILITIES

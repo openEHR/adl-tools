@@ -2,9 +2,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Form of EV_GRID to add keyboard and mouse wheel accessibility to a grid widget."
 	keywords:    "ADL"
-	author:      "Peter Gummer"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2008 Ocean Informatics Pty Ltd"
+	author:      "Peter Gummer <peter.gummer@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2008- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 class
@@ -40,7 +40,7 @@ feature {NONE} -- Initialisation
 			key_press_actions.extend (agent on_grid_key_press)
 			mouse_wheel_actions.wipe_out
 			mouse_wheel_actions.extend (agent on_mouse_wheel)
-			user_key_map.wipe_out
+			create user_key_map.make (0)
 		end
 
 feature -- Access
@@ -466,9 +466,6 @@ feature {NONE} -- Implementation
 
 	user_key_map: HASH_TABLE [PROCEDURE [ANY, TUPLE], INTEGER]
 			-- user-defined key => actions map for other keys
-		attribute
-			create Result.make (0)
-		end
 
 end
 
