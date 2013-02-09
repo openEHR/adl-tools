@@ -105,7 +105,7 @@ feature -- Initialisation
 					add_info ("general", <<billboard.content>>)
 				end
 			else
-				add_error ("general_error", <<billboard.content>>)
+				add_error ("model_access_e5", <<rm_schema_directory>>)
 			end
 
 			-- adjust for repository profiles being out of sync with current profile setting (e.g. due to
