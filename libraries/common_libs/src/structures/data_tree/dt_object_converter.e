@@ -205,7 +205,7 @@ end
 			a_dt_co.set_type_name (an_obj.generating_type)
 
 			-- if the static type is known, and different from the dynamic type of the object, set the visible flag
-			if a_static_type /= No_type and a_static_type /= dynamic_type (an_obj) then
+			if a_static_type /= No_type and attached_type (a_static_type) /= attached_type (dynamic_type (an_obj)) then
 debug ("DT")
 	io.put_string ("... setting TYPE VISIBLE flag")
 end
