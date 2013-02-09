@@ -13,7 +13,7 @@ class
 inherit
 	EV_DIALOG
 		redefine
-			create_interface_objects, is_in_default_state
+			initialize, create_interface_objects, is_in_default_state
 		end
 
 	SHARED_APP_UI_RESOURCES
@@ -65,10 +65,6 @@ feature {NONE} -- Initialization
 
 			Precursor {EV_DIALOG}
 
-			-- window characteristics
-			set_title (get_text ("create_archetype_dialog_title"))
-			set_icon_pixmap (adl_workbench_icon)
-
 			-- create widgets
 			create ev_root_container
 			ev_root_container.set_padding (Default_padding_width)
@@ -105,10 +101,20 @@ feature {NONE} -- Initialization
 			create ok_cancel_buttons.make (agent on_ok, agent hide)
 			ev_root_container.extend (ok_cancel_buttons.ev_root_container)
 			ev_root_container.disable_item_expand (ok_cancel_buttons.ev_root_container)
-			set_default_cancel_button (ok_cancel_buttons.cancel_button)
-			set_default_push_button (ok_cancel_buttons.ok_button)
+		end
+
+	initialize
+			-- Initialize `Current'.
+		do
+			Precursor {EV_DIALOG}
+
+			-- window characteristics
+			set_title (get_text ("create_archetype_dialog_title"))
+			set_icon_pixmap (adl_workbench_icon)
 
 			extend (ev_root_container)
+			set_default_cancel_button (ok_cancel_buttons.cancel_button)
+			set_default_push_button (ok_cancel_buttons.ok_button)
 
 			-- set up form for display
 			enable_edit

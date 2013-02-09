@@ -95,7 +95,6 @@ feature -- Commands
 	populate
 			-- populate content
 		local
-			cur_val: STRING
 			li2: EV_LIST_ITEM
 		do
 			ev_data_control.select_actions.block
@@ -114,8 +113,7 @@ feature -- Commands
 
 			-- select value matching that in data source, if any match exists, otherwise select
 			-- the 'unknown' value
-			cur_val := data_source_agent.item ([])
-			if value_set.has (cur_val) then
+			if attached data_source_agent.item ([]) as cur_val and then value_set.has (cur_val) then
 				ev_data_control.do_all (
 					agent (li: EV_LIST_ITEM; a_val: STRING)
 						do

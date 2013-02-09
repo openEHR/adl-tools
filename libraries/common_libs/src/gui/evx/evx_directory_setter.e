@@ -82,14 +82,16 @@ feature -- Events
 	on_browse
 			-- Let the user browse for the directory
 		local
-			ds_val, initial_dir: STRING
+			initial_dir: STRING
 		do
-			ds_val := data_source_agent.item ([])
-			if attached default_directory_agent and (not attached ds_val or else ds_val.is_empty) then
+			if attached data_source_agent.item ([]) as ds_val and then not ds_val.is_empty then
+				initial_dir := ds_val
+			elseif attached default_directory_agent then
 				initial_dir := default_directory_agent.item ([])
 			else
-				initial_dir := ds_val
+				initial_dir := application_startup_directory
 			end
+
 			check attached proximate_ev_window (ev_root_container) as pw then
 				ev_data_control.set_text (get_directory (initial_dir, pw))
 			end
@@ -137,8 +139,7 @@ feature {NONE} -- Implementation
 			-- make the user provide something sensible
 			from until attached user_dir loop
 				dialog.show_modal_to_window (a_parent_window)
-
-				if not attached dialog.selected_button or else dialog.selected_button.is_equal (get_text ("cancel_button_text")) then
+				if not attached dialog.selected_button or else dialog.selected_button_name.is_equal (dialog_names.ev_cancel) then
 					user_dir := default_result
 				else
 					if not dialog.directory.is_empty then

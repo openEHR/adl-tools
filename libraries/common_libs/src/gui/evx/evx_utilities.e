@@ -190,6 +190,11 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	dialog_names: EV_DIALOG_NAMES
+		once
+			create Result
+		end
+
 end
 
 

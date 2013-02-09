@@ -43,13 +43,6 @@ feature {NONE} -- Initialization
 
 			create gui_controls.make (0)
 
-			set_minimum_width (530)
-			set_minimum_height (280)
-			set_maximum_width (800)
-			set_maximum_height (800)
-			set_title (get_text ("repository_dialog_title"))
-			set_icon_pixmap (adl_workbench_icon)
-
 			-- ============ root container ============
 			create ev_root_container
 			ev_root_container.set_padding (Default_padding_width)
@@ -134,6 +127,19 @@ feature {NONE} -- Initialization
 			create ok_cancel_buttons.make (agent on_ok, agent hide)
 			ev_root_container.extend (ok_cancel_buttons.ev_root_container)
 			ev_root_container.disable_item_expand (ok_cancel_buttons.ev_root_container)
+		end
+
+	initialize
+		do
+			precursor
+			set_minimum_width (530)
+			set_minimum_height (280)
+			set_maximum_width (800)
+			set_maximum_height (800)
+			set_title (get_text ("repository_dialog_title"))
+			set_icon_pixmap (adl_workbench_icon)
+			extend (ev_root_container)
+
 			set_default_cancel_button (ok_cancel_buttons.cancel_button)
 			set_default_push_button (ok_cancel_buttons.ok_button)
 
@@ -143,12 +149,6 @@ feature {NONE} -- Initialization
 			rep_profiles_copy := repository_profiles.deep_twin
 			selected_profile_key := rep_profiles_copy.current_profile_name
 			populate_controls
-		end
-
-	initialize
-		do
-			extend (ev_root_container)
-			precursor
 		end
 
 feature {NONE} -- Events

@@ -59,7 +59,7 @@ feature -- Access
 			Result := ev_data_control.text.to_string_8
 		end
 
-	data_source_agent: FUNCTION [ANY, TUPLE, STRING]
+	data_source_agent: FUNCTION [ANY, TUPLE, detachable STRING]
 
 	data_source_setter_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
 			-- agent for creating & setting the data source
@@ -114,12 +114,10 @@ feature {NONE} -- Implementation
 		local
 			old_val, new_val: STRING
 			undo_agt, redo_agt: detachable PROCEDURE [ANY, TUPLE]
-			ds: STRING
 			error_dialog: EV_INFORMATION_DIALOG
 		do
 			new_val := utf32_to_utf8 (ev_data_control.text)
-			ds := data_source_agent.item ([])
-			if attached ds then
+			if attached data_source_agent.item ([]) as ds then
 				create old_val.make_from_string (ds)
 			else
 				create old_val.make_empty

@@ -28,17 +28,30 @@ class REPOSITORY_PROFILE_CONFIG
 
 inherit
 	DT_CONVERTIBLE
+		redefine
+			default_create
+		end
 
 	TABLE_ITERABLE [REPOSITORY_PROFILE, STRING]
+		undefine
+			default_create
+		end
 
 create
 	make, default_create
 
 feature -- Initialisation
 
+	default_create
+			-- Basic make routine to guarantee validity on creation.
+		do
+			create profiles.make (0)
+		end
+
 	make_dt (make_args: detachable ARRAY[ANY])
 			-- Basic make routine to guarantee validity on creation.
 		do
+			default_create
 		end
 
 	make (a_profiles: HASH_TABLE [REPOSITORY_PROFILE, STRING])
@@ -226,9 +239,6 @@ feature {NONE} -- Implementation
 
 	profiles: HASH_TABLE [REPOSITORY_PROFILE, STRING]
 			-- Hash table of profiles, keyed by their names.
-		attribute
-			create Result.make (0)
-		end
 
 invariant
 -- FIXME: This is commented because we cannot satisfy the invariant immediately after creation via DT_OBJECT_CONVERTER:

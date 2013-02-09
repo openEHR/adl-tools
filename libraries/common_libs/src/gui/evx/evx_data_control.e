@@ -36,7 +36,7 @@ feature -- Access
 		deferred
 		end
 
-	data_source_agent: FUNCTION [ANY, TUPLE, ANY]
+	data_source_agent: FUNCTION [ANY, TUPLE, detachable ANY]
 			-- specialise in descendants
 
 	data_source_setter_agent: detachable PROCEDURE [ANY, TUPLE [ANY]]
