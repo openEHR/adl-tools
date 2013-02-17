@@ -3,7 +3,7 @@ note
 	description: "Shared UI resources"
 	keywords:    "test, ADL"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
@@ -12,18 +12,11 @@ class SHARED_APP_UI_RESOURCES
 inherit
 	SHARED_APP_RESOURCES
 
+	SHARED_ICON_RESOURCES
+
 	EVX_DEFINITIONS
 		export
 			{NONE} all
-		end
-
-	EV_STOCK_PIXMAPS
-		rename
-			implementation as pixmaps_implementation
-		export
-			{NONE} all
-		undefine
-			copy, default_create
 		end
 
 feature -- Definitions
@@ -31,6 +24,11 @@ feature -- Definitions
 	Sane_screen_coord: INTEGER = -2500
 			-- assumed 'most negative' screen X or Y position that app could, due to use of multiple screens. If it is more negative
 			-- than this, at least on windows, assume that the app was minimised and start it in a default screen location instead
+
+	icon_directory: STRING
+		once
+			Result := file_system.pathname (application_startup_directory, "icons")
+		end
 
 	bug_reporter_url: STRING = "http://www.openehr.org/issues/browse/AWBPR/"
 			-- The URL to ADL Workbench's problem reporter.
@@ -50,10 +48,6 @@ feature -- Definitions
 		ensure
 			not_empty: not Result.is_empty
 		end
-
-	icon_ico_extension: STRING = ".ico"
-
-	icon_png_extension: STRING = ".png"
 
 	rm_icon_dir: STRING = "rm"
 
@@ -175,44 +169,6 @@ feature -- Access
 	adl_workbench_icon: EV_PIXMAP
 		do
 			Result := get_icon_pixmap ("openehr_adl_workbench_logo")
-		end
-
-	icon_directory: STRING
-		once
-			Result := file_system.pathname (application_startup_directory, "icons")
-		ensure
-			not_empty: not Result.is_empty
-		end
-
-	has_icon_directory: BOOLEAN
-			-- True if icon directory available
-		local
-			a_dir: DIRECTORY
-		do
-			create a_dir.make(icon_directory)
-			Result := a_dir.exists
-		end
-
-	has_icon_pixmap (key: STRING): BOOLEAN
-			-- True if pixmap corresponding to `key' exists
-		do
-			Result := icon_pixmaps.has (key.as_lower)
-		end
-
-	get_icon_pixmap (key: STRING): EV_PIXMAP
-			-- obtain pixmap corresponding to `key' or else a generic pixmap
-		local
-			pixmap_name: STRING
-		do
-			pixmap_name := key.as_lower
-			if icon_pixmaps.has (pixmap_name) then
-				check attached icon_pixmaps.item (pixmap_name) as pxm then
-					Result := pxm
-				end
-			else
-				post_error (generator, "get_icon_pixmap", "no_pixmap_found", <<key>>)
-				create Result.default_create
-			end
 		end
 
 feature -- Application Switches
@@ -490,56 +446,6 @@ feature -- Conversion
 		end
 
 feature {NONE} -- Implementation
-
-	icon_pixmaps: attached HASH_TABLE [EV_PIXMAP, STRING]
-			-- Table of pixmap file paths keyed by relative path, e.g.
-			-- tool/compile.ico
-			-- added/c_attribute.ico
-			-- rm/openehr/entry.ico
-		require
-			has_icon_directory
-		once
-			create Result.make (0)
-			recursive_load_pixmaps (Result, "")
-		end
-
-	recursive_load_pixmaps (pixmap_table: HASH_TABLE [EV_PIXMAP, STRING]; rel_path: STRING)
-			-- load .png and .ico pixmaps into `pixmaps', keyed by relative path under icons root directory
-		require
-			has_icon_directory
-		local
-			pixmap: EV_PIXMAP
-			abs_path, full_path, new_rel_path, key: STRING
-			dir: DIRECTORY
-			dir_items: ARRAYED_LIST [STRING_32]
-		do
-			abs_path := file_system.pathname (icon_directory, rel_path)
-			create dir.make (abs_path)
-			dir.open_read
-			dir_items := dir.linear_representation_32
-
-			-- process files
-			across dir_items as dir_items_csr loop
-				if dir_items_csr.item.item (1) /= '.' then
-					full_path := file_system.pathname (abs_path, dir_items_csr.item)
-					new_rel_path := file_system.pathname (rel_path, dir_items_csr.item)
-					if file_system.directory_exists (full_path) then
-						-- process child directory
-						recursive_load_pixmaps (pixmap_table, new_rel_path)
-
-					elseif full_path.ends_with (icon_ico_extension) or full_path.ends_with (icon_png_extension) then
-						create pixmap
-						pixmap.set_with_named_file (full_path)
-						pixmap.set_minimum_size (pixmap.width, pixmap.height)
-						key := new_rel_path.twin
-						key.remove_tail (key.count - key.last_index_of ('.', key.count) + 1)
-						key.to_lower
-						key.replace_substring_all ("\", "/")
-						pixmap_table.put (pixmap, key)
-					end
-				end
-			end
-		end
 
 	splash_text: STRING
 			-- Text for splash screens, About boxes, etc.

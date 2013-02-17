@@ -57,9 +57,7 @@ feature {NONE} -- Initialization
 			hb.set_border_width (15)
 			border.extend (hb)
 
-			if has_icon_directory then
-				hb.extend (adl_workbench_icon)
-			end
+			hb.extend (adl_workbench_icon)
 
 			create label
 			label.align_text_left
