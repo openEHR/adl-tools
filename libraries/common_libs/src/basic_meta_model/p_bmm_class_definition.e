@@ -2,15 +2,10 @@ note
 	component:   "openEHR re-usable library"
 	description: "Definition of dADL persistent form of an instance of BMM_CLASS_DEFINITION"
 	keywords:    "model, UML"
-
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011 The openEHR Foundation <http://www.openEHR.org>"
+	copyright:   "Copyright (c) 2011- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class P_BMM_CLASS_DEFINITION
 
@@ -22,9 +17,7 @@ inherit
 feature -- Initialisation
 
 	make_dt (make_args: ARRAY[ANY])
-			-- make in a safe way for DT building purposes
 		do
-			create properties.make (0)
 			create ancestors.make (0)
 			ancestors.compare_objects
 		end
@@ -35,27 +28,40 @@ feature -- Access
 			-- unique id generated for later comparison during merging, in order to detect if two classes are the same
 			-- Assigned in post-load processing
 
-	name: attached STRING
+	name: STRING
 			-- name of the class FROM SCHEMA
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+		attribute
+			create Result.make_from_string (unknown_type_name)
+		end
 
 	generic_parameter_defs: detachable HASH_TABLE [P_BMM_GENERIC_PARAMETER_DEFINITION, STRING]
 			-- list of generic parameter definitions
 			-- FIXME: this won't function correctly unless ordering is guaranteed;
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
-	ancestors: attached ARRAYED_LIST [STRING]
+	ancestors: ARRAYED_LIST [STRING]
 			-- list of immediate inheritance parents FROM SCHEMA
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+		attribute
+			create Result.make (0)
+			Result.compare_objects
+		end
 
-	properties: attached HASH_TABLE [P_BMM_PROPERTY_DEFINITION, STRING]
+	properties: HASH_TABLE [P_BMM_PROPERTY_DEFINITION, STRING]
 			-- list of attributes defined in this class FROM SCHEMA
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+		attribute
+			create Result.make (0)
+		end
 
 feature -- Access
 
 	source_schema_id: STRING
 			-- reference to original source schema defining this class
+		attribute
+			create Result.make_from_string (Unknown_schema_id)
+		end
 
 	bmm_class_definition: detachable BMM_CLASS_DEFINITION
 		note
@@ -109,35 +115,42 @@ feature -- Factory
 	populate_bmm_class_definition (a_bmm_schema: BMM_SCHEMA)
 			-- add remaining model elements from `' to `bmm_class_definition'
 		do
-			-- populate references to ancestor classes; should be every class except Any
-			if attached ancestors then
-				across ancestors as ancs_csr loop
-					bmm_class_definition.add_ancestor (a_bmm_schema.class_definition (ancs_csr.item))
+			if attached bmm_class_definition as bmm_class_def then
+				-- populate references to ancestor classes; should be every class except Any
+				if attached ancestors then
+					across ancestors as ancs_csr loop
+						if attached a_bmm_schema.class_definition (ancs_csr.item) as class_def then
+							bmm_class_def.add_ancestor (class_def)
+						end
+					end
 				end
-			end
 
-			-- create generic parameters
-			if attached generic_parameter_defs then
-				across generic_parameter_defs as gen_parm_defs_csr loop
-					gen_parm_defs_csr.item.create_bmm_generic_parameter_definition (a_bmm_schema)
-					bmm_class_definition.add_generic_parameter (gen_parm_defs_csr.item.bmm_generic_parameter_definition)
+				-- create generic parameters
+				if attached generic_parameter_defs then
+					across generic_parameter_defs as gen_parm_defs_csr loop
+						gen_parm_defs_csr.item.create_bmm_generic_parameter_definition (a_bmm_schema)
+						if attached gen_parm_defs_csr.item.bmm_generic_parameter_definition as bm_gen_parm_def then
+							bmm_class_def.add_generic_parameter (bm_gen_parm_def)
+						end
+					end
 				end
-			end
 
-			-- populate properties
-			across properties as props_csr loop
-				props_csr.item.create_bmm_property_definition (a_bmm_schema, bmm_class_definition)
-				bmm_class_definition.add_property (props_csr.item.bmm_property_definition)
+				-- populate properties
+				across properties as props_csr loop
+					props_csr.item.create_bmm_property_definition (a_bmm_schema, bmm_class_def)
+					if attached props_csr.item.bmm_property_definition as bmm_prop_def then
+						bmm_class_def.add_property (bmm_prop_def)
+					end
+				end
 			end
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Persistence
 
-	persistent_attributes: ARRAYED_LIST[STRING]
+	persistent_attributes: detachable ARRAYED_LIST[STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		do
-			-- FIXME: not in use, since no serialisatoin back out at this stage
 		end
 
 end

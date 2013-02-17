@@ -148,7 +148,7 @@ feature -- Access
 
 feature -- Access
 
-	term_definition (a_language, a_code: STRING): ARCHETYPE_TERM
+	term_definition (a_language, a_code: STRING): detachable ARCHETYPE_TERM
 			-- retrieve the term definition in language `a_language' for code `a_code'
 		require
 			Term_definition_exists: has_term_definition (a_language, a_code)
@@ -156,7 +156,7 @@ feature -- Access
 			Result := term_definitions.item (a_language).item (a_code)
 		end
 
-	constraint_definition (a_language, a_code: STRING): ARCHETYPE_TERM
+	constraint_definition (a_language, a_code: STRING): detachable ARCHETYPE_TERM
 			-- retrieve the constraint definition in language `a_language' for code `a_code'
 		require
 			Term_definition_exists: has_constraint_definition (a_language, a_code)
@@ -164,7 +164,7 @@ feature -- Access
 			Result := constraint_definitions.item (a_language).item (a_code)
 		end
 
-	term_binding (a_terminology, a_key: STRING): CODE_PHRASE
+	term_binding (a_terminology, a_key: STRING): detachable CODE_PHRASE
 			-- retrieve the term binding from terminology `a_terminology' for code `a_key'
 		require
 			Term_code_valid: has_term_binding (a_terminology, a_key)
@@ -172,7 +172,7 @@ feature -- Access
 			Result := term_bindings.item (a_terminology).item (a_key)
 		end
 
-	constraint_binding (a_terminology, a_code: STRING): URI
+	constraint_binding (a_terminology, a_code: STRING): detachable URI
 			-- retrieve the constraint binding from terminology `a_terminology' for code `a_code'
 			-- in form of a string: "service::query"
 		require
@@ -181,7 +181,7 @@ feature -- Access
 			Result := constraint_bindings.item (a_terminology).item (a_code)
 		end
 
-	terminology_extract_term (a_terminology, a_code: STRING): ARCHETYPE_TERM
+	terminology_extract_term (a_terminology, a_code: STRING): detachable ARCHETYPE_TERM
 			-- true if there is an extract from terminology `a_terminology'
 		require
 			Terminology_valid: has_terminology_extract (a_terminology)
@@ -190,7 +190,7 @@ feature -- Access
 			Result := terminology_extracts.item (a_terminology).item (a_code)
 		end
 
-	term_bindings_for_terminology (a_terminology: STRING): HASH_TABLE [CODE_PHRASE, STRING]
+	term_bindings_for_terminology (a_terminology: STRING): detachable HASH_TABLE [CODE_PHRASE, STRING]
 			-- retrieve the term bindings for a particular terminology
 		require
 			Terminology_valid: term_bindings.has (a_terminology)
@@ -204,14 +204,14 @@ feature -- Access
 			Terminology_valid: has_any_term_binding (a_key)
 		do
 			create Result.make (0)
-			across term_bindings as bindings_csr loop
-				if bindings_csr.item.has (a_key) then
-					Result.put (bindings_csr.item.item (a_key), bindings_csr.key)
+			across term_bindings as bindings_for_lang_csr loop
+				if bindings_for_lang_csr.item.has (a_key) and then attached bindings_for_lang_csr.item.item (a_key) as binding_for_key then
+					Result.put (binding_for_key, bindings_for_lang_csr.key)
 				end
 			end
 		end
 
-	constraint_bindings_for_terminology (a_terminology: STRING): HASH_TABLE [URI, STRING]
+	constraint_bindings_for_terminology (a_terminology: STRING): detachable HASH_TABLE [URI, STRING]
 			-- retrieve the term bindings for a particular terminology
 		require
 			Terminology_valid: constraint_bindings.has (a_terminology)
@@ -270,9 +270,9 @@ feature -- Access
 			end
 		end
 
-	last_added_term_definition_code: STRING
+	last_added_term_definition_code: detachable STRING
 
-	last_added_constraint_definition_code: STRING
+	last_added_constraint_definition_code: detachable STRING
 
 feature -- Status Report
 
@@ -314,7 +314,9 @@ feature -- Status Report
 			Term_code_valid: is_valid_code (a_code)
 			Language_valid: not a_language.is_empty
 		do
-			Result := term_definitions.has (a_language) and then term_definitions.item (a_language).has (a_code)
+			if term_definitions.has (a_language) and then attached term_definitions.item (a_language) as term_def_for_lang then
+				Result := term_def_for_lang.has (a_code)
+			end
 		end
 
 	has_constraint_definition (a_language, a_code: STRING): BOOLEAN
@@ -323,7 +325,9 @@ feature -- Status Report
 			Constraint_code_valid: is_valid_code (a_code)
 			Language_valid: not a_language.is_empty
 		do
-			Result := constraint_definitions.has (a_language) and then constraint_definitions.item (a_language).has (a_code)
+			if constraint_definitions.has (a_language) and then attached constraint_definitions.item (a_language) as term_def_for_lang then
+				Result := term_def_for_lang.has (a_code)
+			end
 		end
 
 	has_any_term_binding (a_key: STRING): BOOLEAN
@@ -419,9 +423,12 @@ feature -- Modification
 			-- add a new term definition with default content;
 			-- automatically add translation placeholders in all other languages
 			-- return the new code in `last_added_term_definition'
+		local
+			str: STRING
 		do
-			last_added_term_definition_code := new_non_refined_term_code
-			merge_term_definition (original_language, create {ARCHETYPE_TERM}.make (last_added_term_definition_code))
+			str := new_non_refined_term_code
+			merge_term_definition (original_language, create {ARCHETYPE_TERM}.make (str))
+			last_added_term_definition_code := str
 		end
 
 	add_new_refined_term_definition (parent_code: STRING)
@@ -430,18 +437,24 @@ feature -- Modification
 			-- return the new code in `last_added_term_definition'
 		require
 			Term_valid: specialisation_depth_from_code (parent_code) < specialisation_depth
+		local
+			str: STRING
 		do
-			last_added_term_definition_code := new_refined_term_code (parent_code)
-			merge_term_definition (original_language, create {ARCHETYPE_TERM}.make (last_added_term_definition_code))
+			str := new_refined_term_code (parent_code)
+			merge_term_definition (original_language, create {ARCHETYPE_TERM}.make (str))
+			last_added_term_definition_code := str
 		end
 
-	add_new_non_refined_constraint_definition: STRING
+	add_new_non_refined_constraint_definition
 			-- add a new constraint definition with default content;
 			-- automatically add translation placeholders in all other languages
 			-- return the new code in `last_added_constraint_definition'
+		local
+			str: STRING
 		do
-			last_added_constraint_definition_code := new_non_refined_constraint_code
-			merge_constraint_definition (original_language, create {ARCHETYPE_TERM}.make (last_added_constraint_definition_code))
+			str := new_non_refined_constraint_code
+			merge_constraint_definition (original_language, create {ARCHETYPE_TERM}.make (str))
+			last_added_constraint_definition_code := str
 		end
 
 	add_new_refined_constraint_definition (parent_code: STRING)
@@ -450,25 +463,30 @@ feature -- Modification
 			-- return the new code in `last_added_constraint_definition'
 		require
 			Term_valid: specialisation_depth_from_code (parent_code) < specialisation_depth
+		local
+			str: STRING
 		do
-			last_added_constraint_definition_code := new_refined_constraint_code (parent_code)
-			merge_constraint_definition (original_language, create {ARCHETYPE_TERM}.make (last_added_constraint_definition_code))
+			str := new_refined_constraint_code (parent_code)
+			merge_constraint_definition (original_language, create {ARCHETYPE_TERM}.make (str))
+			last_added_constraint_definition_code := str
 		end
 
 	add_term_binding (a_code_phrase: CODE_PHRASE; a_code: STRING)
 			-- add a new term binding to local code a_code, in the terminology
 			-- group corresponding to the a_code_phrase.terminology
 		require
-			Local_code_valid: has_term_code(a_code)
-			Not_already_added: not has_term_binding(a_code_phrase.terminology_id.name, a_code)
+			Local_code_valid: has_term_code (a_code)
+			Not_already_added: not has_term_binding (a_code_phrase.terminology_id.name, a_code)
 		local
 			a_terminology: STRING
 		do
 			a_terminology := a_code_phrase.terminology_id.name
 			if not has_term_bindings (a_terminology) then
-				term_bindings.put(create {HASH_TABLE[CODE_PHRASE, STRING]}.make(0), a_terminology)
+				term_bindings.put (create {HASH_TABLE[CODE_PHRASE, STRING]}.make(0), a_terminology)
 			end
-			term_bindings.item (a_terminology).put (a_code_phrase, a_code)
+			if attached term_bindings.item (a_terminology) as bindings then
+				bindings.put (a_code_phrase, a_code)
+			end
 		ensure
 			Binding_added: has_term_binding (a_code_phrase.terminology_id.name, a_code)
 		end
@@ -483,7 +501,9 @@ feature -- Modification
 			if not has_constraint_bindings (a_terminology) then
 				constraint_bindings.put (create {HASH_TABLE[URI, STRING]}.make(0), a_terminology)
 			end
-			constraint_bindings.item (a_terminology).put (a_uri, a_code)
+			if attached constraint_bindings.item (a_terminology) as bindings then
+				bindings.put (a_uri, a_code)
+			end
 		ensure
 			Binding_added: has_constraint_binding (a_terminology, a_code)
 		end
@@ -493,11 +513,8 @@ feature -- Modification
 		require
 			Language_valid: has_language (a_language)
 			Term_valid: has_term_code (a_code)
-		local
-			term: ARCHETYPE_TERM
 		do
-			term := term_definitions.item (a_language).item (a_code)
-			if term.has_key (a_key) then
+			if attached term_definitions.item (a_language) as defs_for_lang and then attached defs_for_lang.item (a_code) as term and then term.has_key (a_key) then
 				term.set_value (a_value, a_key)
 			end
 		end
@@ -507,11 +524,8 @@ feature -- Modification
 		require
 			Language_valid: has_language (a_language)
 			Term_valid: has_constraint_code (a_code)
-		local
-			term: ARCHETYPE_TERM
 		do
-			term := constraint_definitions.item (a_language).item (a_code)
-			if term.has_key (a_key) then
+			if attached constraint_definitions.item (a_language) as defs_for_lang and then attached defs_for_lang.item (a_code) as term and then term.has_key (a_key) then
 				term.set_value (a_value, a_key)
 			end
 		end

@@ -3,16 +3,11 @@ note
 
 	description: "Simple terminology service interface definition"
 	keywords:    "terminology, vocabulary, identifiers"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2000- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 	void_safe:   "yes"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class TERMINOLOGY_SERVICE
 
@@ -22,17 +17,6 @@ inherit
 	OPENEHR_TERMINOLOGY_GROUP_IDENTIFIERS
 
 	OPENEHR_CODE_SET_IDENTIFIERS
-
-feature -- Definitions
-
-	Default_language_code_set: STRING = "ISO_639-1"
-			-- FIXME - replace by call to code_sets for 'language'; need
-			-- a dADL config file
-
-	Default_language_code: CODE_PHRASE
-		do
-			create Result.make("ISO_639-1", Default_language)
-		end
 
 feature -- Access
 

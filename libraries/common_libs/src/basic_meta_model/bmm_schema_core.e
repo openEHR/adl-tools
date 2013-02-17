@@ -2,7 +2,6 @@ note
 	component:   "openEHR re-usable library"
 	description: "Core properties of BMM_SCHEMA"
 	keywords:    "Basic meta-model"
-
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2011- The openEHR Foundation <http://www.openEHR.org>"
@@ -20,14 +19,16 @@ inherit
 feature -- Definitions
 
 	Default_schema_option_class_name: STRING = "Any"
-	Default_schema_lifecycle_state: STRING = "Unknown"
+	Default_schema_lifecycle_state: STRING = "Initial"
+	Default_schema_name: STRING = "Unknown"
+	Default_schema_release: STRING = "Unknown"
 	Default_schema_revision: STRING = "Unknown"
 	Default_schema_author: STRING = "Unknown"
 	Default_schema_description: STRING = "(none)"
 
 feature -- Initialisation
 
-	make (a_rm_publisher, a_schema_name, a_rm_release: attached STRING)
+	make (a_rm_publisher, a_schema_name, a_rm_release: STRING)
 		require
 			valid_rm_publisher: not a_rm_publisher.is_empty
 			valid_schema_name: not a_schema_name.is_empty
@@ -52,12 +53,15 @@ feature -- Identification
 			-- A publisher with more than one model can have multiple schemas.
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 		attribute
-			create Result.make_from_string (Default_schema_revision)
+			create Result.make_from_string (default_schema_name)
 		end
 
 	rm_release: STRING
 			-- release of model expressed in the schema
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+		attribute
+			create Result.make_from_string (Default_schema_release)
+		end
 
 	schema_id: STRING
 			-- derived name of schema, based on model publisher, model name, model release
@@ -75,6 +79,9 @@ feature -- Identification
 	schema_lifecycle_state: STRING
 			-- lifecycle state of schema
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
+		attribute
+			create Result.make_from_string (Default_schema_lifecycle_state)
+		end
 
 	schema_author: STRING
 			-- primary author of schema
@@ -109,7 +116,7 @@ feature -- Access
 			-- enabling filtering of classes in RM visualisation. If empty, 'Any' is assumed
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
-	archetype_rm_closure_packages: detachable ARRAYED_SET [STRING]
+	archetype_rm_closure_packages: ARRAYED_SET [STRING]
 			-- list of top-level package paths that provide the RM 'model' part in achetype identifiers,
 			-- e.g. the path "org.openehr.ehr" gives "EHR" in "openEHR-EHR". Within this namespace,
 			-- archetypes can be based on any class reachable from classes defined directly in these packages

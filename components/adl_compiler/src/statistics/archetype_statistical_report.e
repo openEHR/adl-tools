@@ -7,10 +7,6 @@ note
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class ARCHETYPE_STATISTICAL_REPORT
 
 inherit
@@ -24,7 +20,6 @@ feature -- Initialisation
 	make (a_bmm_schema: BMM_SCHEMA)
 		do
 			bmm_schema :=  a_bmm_schema
-			create archetype_metrics.make (0)
 			Archetype_metric_names.do_all (
 				agent (metric_name: STRING)
 					do
@@ -36,15 +31,13 @@ feature -- Initialisation
 			-- no 'LOCATABLE' or equivalent class declared, create a default table. Additionally create a
 			-- primitive types table (for nodes that archetype RM types like String, Integer etc), since this can
 			-- always be detected
-			create rm_grouped_class_table.make (0)
-			create default_rm_class_table.make (0)
-			if bmm_schema.has_archetype_parent_class then
-				rm_grouped_class_table.put (default_rm_class_table, bmm_schema.archetype_parent_class)
+			if attached bmm_schema.archetype_parent_class as apc then
+				rm_grouped_class_table.put (default_rm_class_table, apc)
 			else
 				rm_grouped_class_table.put (default_rm_class_table, "Any")
 			end
-			if bmm_schema.has_archetype_data_value_parent_class then
-				rm_grouped_class_table.put (create {HASH_TABLE [RM_CLASS_STATISTICS, STRING]}.make(0), bmm_schema.archetype_data_value_parent_class)
+			if attached bmm_schema.archetype_data_value_parent_class as dvpc then
+				rm_grouped_class_table.put (create {HASH_TABLE [RM_CLASS_STATISTICS, STRING]}.make(0), dvpc)
 			end
 			rm_grouped_class_table.put (create {HASH_TABLE [RM_CLASS_STATISTICS, STRING]}.make(0), Rm_primitive_group_key)
 		end
@@ -53,10 +46,16 @@ feature -- Access
 
 	archetype_metrics: HASH_TABLE [STATISTICAL_DATUM, STRING]
 			-- other archetype metrics (not relating to RM), keyed by metric name
+		attribute
+			create Result.make (0)
+		end
 
 	rm_grouped_class_table: HASH_TABLE [HASH_TABLE [RM_CLASS_STATISTICS, STRING], STRING]
 			-- table of grouped stats of all RM classes, keyed by class name, with
 			-- each group keyed by a base class name, e.g. 'LOCATABLE', 'DATA_VALUE', 'Any' etc
+		attribute
+			create Result.make (0)
+		end
 
 	bmm_schema: BMM_SCHEMA
 
@@ -66,17 +65,20 @@ feature -- Modification
 		local
 			rm_class_table: HASH_TABLE [RM_CLASS_STATISTICS, STRING]
 		do
-			if bmm_schema.is_primitive_type (a_stat_accum.rm_class_name) then
-				rm_class_table := rm_grouped_class_table.item (Rm_primitive_group_key)
-			elseif bmm_schema.has_archetype_parent_class and then bmm_schema.is_descendant_of (a_stat_accum.rm_class_name, bmm_schema.archetype_parent_class) then
-				rm_class_table := rm_grouped_class_table.item (bmm_schema.archetype_parent_class)
-			elseif bmm_schema.has_archetype_data_value_parent_class and then bmm_schema.is_descendant_of (a_stat_accum.rm_class_name, bmm_schema.archetype_data_value_parent_class) then
-				rm_class_table := rm_grouped_class_table.item (bmm_schema.archetype_data_value_parent_class)
+			if bmm_schema.is_primitive_type (a_stat_accum.rm_class_name) and then attached rm_grouped_class_table.item (Rm_primitive_group_key) as rgct_prim then
+				rm_class_table := rgct_prim
+			elseif attached bmm_schema.archetype_parent_class as apc and then bmm_schema.is_descendant_of (a_stat_accum.rm_class_name, apc) and then
+				attached rm_grouped_class_table.item (apc) as rgct_apc then
+				rm_class_table := rgct_apc
+			elseif attached bmm_schema.archetype_data_value_parent_class as dvpc and then bmm_schema.is_descendant_of (a_stat_accum.rm_class_name, dvpc) and then
+				attached rm_grouped_class_table.item (dvpc) as rgct_dvpc then
+				rm_class_table := rgct_dvpc
 			else
 				rm_class_table := default_rm_class_table
 			end
-			if rm_class_table.has (a_stat_accum.rm_class_name) then
-				rm_class_table.item (a_stat_accum.rm_class_name).merge (a_stat_accum)
+
+			if rm_class_table.has (a_stat_accum.rm_class_name) and then attached rm_class_table.item (a_stat_accum.rm_class_name) as rct then
+				rct.merge (a_stat_accum)
 			else
 				rm_class_table.put (a_stat_accum, a_stat_accum.rm_class_name)
 			end
@@ -96,7 +98,6 @@ feature -- Modification
 			other.bmm_schema = bmm_schema
 		local
 			merged_class_stats: RM_CLASS_STATISTICS
-			rm_class_table, other_rm_class_table: HASH_TABLE [RM_CLASS_STATISTICS, STRING]
 		do
 			-- archetype metrics table
 			across other.archetype_metrics as metrics_csr loop
@@ -105,8 +106,7 @@ feature -- Modification
 
 			-- rm class table
 			across other.rm_grouped_class_table as other_grouped_table_csr loop
-				if rm_grouped_class_table.has (other_grouped_table_csr.key) then
-					rm_class_table := rm_grouped_class_table.item (other_grouped_table_csr.key)
+				if rm_grouped_class_table.has (other_grouped_table_csr.key) and then attached rm_grouped_class_table.item (other_grouped_table_csr.key) as rm_class_table then
 					across other.rm_grouped_class_table.item_for_iteration as other_table_csr loop
 						if rm_class_table.has (other_table_csr.key) then
 							merged_class_stats := rm_class_table.item (other_table_csr.key).deep_twin
@@ -135,6 +135,9 @@ feature -- Copying
 feature {NONE} -- Implementation
 
 	default_rm_class_table: HASH_TABLE [RM_CLASS_STATISTICS, STRING]
+		attribute
+			create Result.make (0)
+		end
 
 end
 

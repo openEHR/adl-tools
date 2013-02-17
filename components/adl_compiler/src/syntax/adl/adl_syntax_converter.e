@@ -5,9 +5,9 @@ note
 				 that have been created with earlier versions of the parser.
 				 ]"
 	keywords:    "ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2006-2009 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 class ADL_SYNTAX_CONVERTER
@@ -26,7 +26,7 @@ inherit
 
 feature -- Access
 
-	perform_syntax_upgrade (dadl_text: attached STRING)
+	perform_syntax_upgrade (dadl_text: STRING)
 			-- perform any upgrades likely to be required on older archetypes
 			-- dadl_text will be of form "C_SOME_TYPE <xxxxx>"
 		do
@@ -34,7 +34,7 @@ feature -- Access
 
 feature -- ADL 1.4 conversions
 
-	convert_dadl_language (dadl_text: attached STRING)
+	convert_dadl_language (dadl_text: STRING)
 			-- converted language = <"xxx"> to language = <[ISO-639::xxx]>
 		local
 			pos, lpos, rpos: INTEGER
@@ -51,13 +51,13 @@ feature -- ADL 1.4 conversions
 				lang := dadl_text.substring (lpos+1, rpos-1)
 				rep_str := "[" + Terminology_ISO_639_1 + "::" + lang + "]"
 				dadl_text.replace_substring (rep_str, lpos, rpos)
-				post_info(Current, "convert_dadl_language", "syntax_upgraded_i1",
+				post_info (generator, "convert_dadl_language", "syntax_upgraded_i1",
 					<<"language = <%"" + lang + "%">", "language = <[" + Terminology_ISO_639_1 + "::" + lang + "]>">>)
 				pos := dadl_text.substring_index("language = <%"", rpos)
 			end
 		end
 
-	convert_c_dv_names (dadl_text: attached STRING)
+	convert_c_dv_names (dadl_text: STRING)
 			-- convert C_QUANTITY and C_ORDINAL in embedded dADL sections of cADL to
 			-- C_DV_QUANTITY and C_DV_ORDINAL
 		local
@@ -68,17 +68,17 @@ feature -- ADL 1.4 conversions
 			if pos > 0 then
 				dadl_text.replace_substring ("C_DV_QUANTITY", pos, pos+("C_QUANTITY").count-1)
 				convert_c_quantity_property(dadl_text)
-				post_info(Current, "convert_dadl_language", "syntax_upgraded_i1", <<"C_QUANTITY", "C_DV_QUANTITY">>)
+				post_info (generator, "convert_dadl_language", "syntax_upgraded_i1", <<"C_QUANTITY", "C_DV_QUANTITY">>)
 			else
 				pos := dadl_text.substring_index("C_ORDINAL", 1)
 				if pos > 0 then
 					dadl_text.replace_substring ("C_DV_ORDINAL", pos, pos+("C_ORDINAL").count-1)
-					post_info(Current, "convert_dadl_language", "syntax_upgraded_i1", <<"C_ORDINAL", "C_DV_ORDINAL">>)
+					post_info (generator, "convert_dadl_language", "syntax_upgraded_i1", <<"C_ORDINAL", "C_DV_ORDINAL">>)
 				end
 			end
 		end
 
-	convert_c_quantity_property (dadl_text: attached STRING)
+	convert_c_quantity_property (dadl_text: STRING)
 			-- convert an old style C_QUANTITY property dADL fragment from ADL 1.x
 			-- to ADL 1.4
 			-- The old fragment looks like this:
@@ -103,11 +103,11 @@ feature -- ADL 1.4 conversions
 				end
 
 				dadl_text.replace_substring (new_str, lpos, rpos)
-				post_info(Current, "convert_dadl_language", "syntax_upgraded_i1", <<"property = <%"xxx%">", "language = <[openehr::xxx]>">>)
+				post_info (generator, "convert_dadl_language", "syntax_upgraded_i1", <<"property = <%"xxx%">", "language = <[openehr::xxx]>">>)
 			end
 		end
 
-	convert_non_conforming_duration (a_str: attached STRING): STRING
+	convert_non_conforming_duration (a_str: STRING): STRING
 			-- fix an ISO8601-like duration string which is missing a 'T' character
 			-- called from cADL lexer, matched by pattern:
 			-- P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[dD])?([0-9]+h)?([0-9]+m)?([0-9]+s)?
@@ -148,13 +148,13 @@ feature -- ADL 1.4 conversions
 				end
 				-- have to insert a 'T' to the right of the cursor
 				Result.insert_character ('T', i+1)
-				post_info(Current, "convert_dadl_language", "syntax_upgraded_i1", <<"ISO 8601 duration", "(missing 'T' added)">>)
+				post_info (generator, "convert_dadl_language", "syntax_upgraded_i1", <<"ISO 8601 duration", "(missing 'T' added)">>)
 			end
 		end
 
 feature -- ADL 1.5 conversions
 
-	convert_dadl_type_name (a_type_name: attached STRING): STRING
+	convert_dadl_type_name (a_type_name: STRING): STRING
 			-- convert type name preceding <> dADL block to (typename), i.e. add parentheses
 			-- spec change is part of ADL 1.4.1, Release 1.0.2 of openEHR
 		require
@@ -196,13 +196,13 @@ feature -- ADL 1.5 conversions
 --			end
 --		end
 
-	old_archetype_id_pattern_regex: attached LX_DFA_REGULAR_EXPRESSION
+	old_archetype_id_pattern_regex: LX_DFA_REGULAR_EXPRESSION
 			-- Pattern matcher for archetype ids with the 'draft' still in the version
 		once
 			create Result.compile_case_insensitive ("^[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+){2}\.[a-zA-Z][a-zA-Z0-9_]+(-[a-zA-Z][a-zA-Z0-9_]+)*\.v[1-9][0-9a-z]*$")
 		end
 
-	convert_ontology_to_nested (dt: attached DT_COMPLEX_OBJECT_NODE)
+	convert_ontology_to_nested (dt: DT_COMPLEX_OBJECT_NODE)
 			-- convert 'items' nodes in ontology to nested form, corresponding to declaration like
 			-- HASH_TABLE [HASH_TABLE [ARCHETPE_TERM, STRING]]; the ADL way of expression ontology
 			-- has nested structures in the AOM, but non-nested structures in the dADL, due to
@@ -226,27 +226,23 @@ feature -- ADL 1.5 conversions
 			convert_ontology_items_to_nested (dt, "constraint_bindings")
 		end
 
-	convert_ontology_items_to_nested (dt: attached DT_COMPLEX_OBJECT_NODE; attr_name: attached STRING)
+	convert_ontology_items_to_nested (dt: DT_COMPLEX_OBJECT_NODE; attr_name: STRING)
 			-- mark 'items' attribute nodes in ontology section as being nested_container; this is
 			-- to simulate having been parsed that way in the first place, so that these structures
 			-- will be correctly converted by DT_OBJECT_CONVERTER into nested HASH_TABLEs
-		local
-			dt_attr: DT_ATTRIBUTE_NODE
-			dt_objs: ARRAYED_LIST [DT_OBJECT_ITEM]
 		do
 			if dt.has_attribute (attr_name) then
-				dt_objs := dt.attribute_node (attr_name).children
-				from dt_objs.start until dt_objs.off loop
-					if attached {DT_COMPLEX_OBJECT_NODE} dt_objs.item as dt_co and then dt_co.has_attribute ("items") then
-						dt_attr := dt_co.attribute_node ("items")
+				across dt.attribute_node (attr_name).children as dt_objs_csr loop
+					if attached {DT_COMPLEX_OBJECT_NODE} dt_objs_csr.item as dt_co and then dt_co.has_attribute ("items") and then
+						attached dt_co.attribute_node ("items") as dt_attr
+					then
 						dt_attr.set_nested_container
 					end
-					dt_objs.forth
 				end
 			end
 		end
 
-	convert_ontology_to_unnested (dt: attached DT_COMPLEX_OBJECT_NODE)
+	convert_ontology_to_unnested (dt: DT_COMPLEX_OBJECT_NODE)
 			-- routine to reverse effects of `convert_ontology_to_nested' for
 			-- standard ADL1.4 style serialisation
 		do
@@ -256,38 +252,33 @@ feature -- ADL 1.5 conversions
 			convert_ontology_items_to_unnested (dt, "constraint_bindings")
 		end
 
-	convert_ontology_items_to_unnested (dt: attached DT_COMPLEX_OBJECT_NODE; attr_name: attached STRING)
+	convert_ontology_items_to_unnested (dt: DT_COMPLEX_OBJECT_NODE; attr_name: STRING)
 			-- mark 'items' attribute nodes in ontology section as being nested_container; this is
 			-- to simulate having been parsed that way in the first place, so that these structures
 			-- will be correctly converted by DT_OBJECT_CONVERTER into nested HASH_TABLEs
-		local
-			dt_attr: DT_ATTRIBUTE_NODE
-			dt_objs: ARRAYED_LIST [DT_OBJECT_ITEM]
 		do
 			if dt.has_attribute (attr_name) then
-				dt_objs := dt.attribute_node (attr_name).children
-				from dt_objs.start until dt_objs.off loop
-					if attached {DT_COMPLEX_OBJECT_NODE} dt_objs.item as dt_co and then dt_co.has_attribute ("items") then
-						dt_attr := dt_co.attribute_node ("items")
+				across dt.attribute_node (attr_name).children as dt_objs_csr loop
+					if attached {DT_COMPLEX_OBJECT_NODE} dt_objs_csr.item as dt_co and then dt_co.has_attribute ("items") and then
+						attached dt_co.attribute_node ("items") as dt_attr
+					then
 						dt_attr.unset_nested
 					end
-					dt_objs.forth
 				end
 			end
 		end
 
 feature -- Path conversions
 
-	convert_use_ref_paths (ref_node_list: attached ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]; index_path: attached STRING; referree: attached ARCHETYPE)
+	convert_use_ref_paths (ref_node_list: ARRAYED_LIST[ARCHETYPE_INTERNAL_REF]; index_path: STRING; referree: ARCHETYPE)
 			-- FIXME: the following only needed while old use_ref paths containing redundant node_ids are in existence
 			-- rewrite target path into standard Xpath format, removing [atnnn] predicates on objects below single attributes
 		local
 			xpath: STRING
 		do
 			xpath := referree.definition.c_object_at_path (index_path).path
-			from ref_node_list.start until ref_node_list.off loop
-				ref_node_list.item.set_target_path (xpath)
-				ref_node_list.forth
+			across ref_node_list as ref_node_list_csr loop
+				ref_node_list_csr.item.set_target_path (xpath)
 			end
 		end
 

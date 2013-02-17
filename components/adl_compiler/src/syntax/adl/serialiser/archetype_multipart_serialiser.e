@@ -18,13 +18,11 @@ inherit
 
 feature -- Serialisation
 
-	serialise_from_parts (an_archetype: attached ARCHETYPE;
-			lang_serialised, desc_serialised, def_serialised: attached STRING;
-			inv_serialised: STRING; ont_serialised: attached STRING;
-			ann_serialised, comp_onts_serialised: STRING)
+	serialise_from_parts (an_archetype: ARCHETYPE;
+			lang_serialised, desc_serialised, def_serialised: STRING;
+			inv_serialised: detachable STRING; ont_serialised: STRING;
+			ann_serialised, comp_onts_serialised: detachable STRING)
 		deferred
-		ensure
-			attached archetype
 		end
 
 	serialise_initialise

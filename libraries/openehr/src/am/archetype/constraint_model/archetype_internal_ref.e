@@ -2,21 +2,17 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Item representing a 'use' reference in an ADL parse tree. The referenced node must be an object node."
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class ARCHETYPE_INTERNAL_REF
 
 inherit
 	C_REFERENCE_OBJECT
 		redefine
-			representation, set_occurrences, enter_subtree, exit_subtree
+			set_occurrences, enter_subtree, exit_subtree
 		end
 
 create
@@ -24,22 +20,23 @@ create
 
 feature -- Initialisation
 
-	make (a_rm_type_name, a_path: attached STRING)
+	make (a_rm_type_name, a_path: STRING)
 			-- make assuming target object id
 		require
 			a_rm_type_name_valid: not a_rm_type_name.is_empty
 			a_path_exists: not a_path.is_empty
 		do
 			default_create
-			create representation.make_anonymous (Current)
 			rm_type_name := a_rm_type_name
 			set_target_path (a_path)
 			use_target_occurrences := True
+			create representation_cache.make_anonymous
+			representation_cache.set_content (Current)
 		ensure
 			Use_target_occurrences: use_target_occurrences
 		end
 
-	make_identified (a_rm_type_name, an_object_id, a_path: attached STRING)
+	make_identified (a_rm_type_name, an_object_id, a_path: STRING)
 			-- make with id
 		require
 			rm_type_name_valid: not a_rm_type_name.is_empty
@@ -47,10 +44,11 @@ feature -- Initialisation
 			path_valid: not a_path.is_empty
 		do
 			default_create
-			create representation.make (an_object_id, Current)
 			rm_type_name := a_rm_type_name
 			set_target_path (a_path)
 			use_target_occurrences := True
+			create representation_cache.make (an_object_id)
+			representation_cache.set_content (Current)
 		ensure
 			Use_target_occurrences: use_target_occurrences
 		end
@@ -68,39 +66,35 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_target_path (a_path: attached STRING)
+	set_target_path (a_path: STRING)
 			-- set reference path with a valid ADL path string
 		do
 			target_path := a_path
 		end
 
-	set_occurrences (ivl: attached MULTIPLICITY_INTERVAL)
+	set_occurrences (ivl: MULTIPLICITY_INTERVAL)
 			--
 		do
-			precursor(ivl)
+			precursor (ivl)
 			use_target_occurrences := False
 		ensure then
 			Dont_use_target_occurrences: not use_target_occurrences
 		end
 
-feature -- Representation
-
-	representation: attached OG_OBJECT_LEAF
-
 feature -- Visitor
 
-	enter_subtree(visitor: C_VISITOR; depth: INTEGER)
+	enter_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
-			precursor(visitor, depth)
-			visitor.start_archetype_internal_ref(Current, depth)
+			precursor (visitor, depth)
+			visitor.start_archetype_internal_ref (Current, depth)
 		end
 
-	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
+	exit_subtree (visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
-			precursor(visitor, depth)
-			visitor.end_archetype_internal_ref(Current, depth)
+			precursor (visitor, depth)
+			visitor.end_archetype_internal_ref (Current, depth)
 		end
 
 end

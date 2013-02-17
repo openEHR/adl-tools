@@ -12,7 +12,7 @@ class C_CODE_PHRASE
 inherit
 	C_DOMAIN_TYPE
 		redefine
-			out, enter_subtree, exit_subtree, synchronise_to_tree, inferred_specialisation_status, node_conforms_to
+			out, enter_subtree, exit_subtree, synchronise_to_tree, inferred_specialisation_status, node_conforms_to, default_create
 		end
 
 create
@@ -27,14 +27,18 @@ feature -- Definitions
 
 feature -- Initialisation
 
+	default_create
+		do
+			make_from_terminology_id ("(uninitialised)")
+		end
+
 	make_from_terminology_id (a_terminology_id: STRING)
 			-- Make from `terminology_id'.
 		do
-			default_create
 			create terminology_id.make (a_terminology_id)
 		ensure
 			Not_any_allowed: not any_allowed
-			Terminology_id_set: terminology_id.value.is_equal (a_terminology_id)
+			Terminology_id_set: attached terminology_id as tid and then tid.value.is_equal (a_terminology_id)
 		end
 
 	make_from_pattern (a_pattern: STRING)
@@ -43,7 +47,6 @@ feature -- Initialisation
 		require
 			valid_pattern (a_pattern)
 		do
-			default_create
 			initialise_from_pattern (a_pattern)
 		ensure
 			Not_any_allowed: not any_allowed
@@ -52,12 +55,9 @@ feature -- Initialisation
 
 feature -- Access
 
-	terminology_id: TERMINOLOGY_ID
+	terminology_id: detachable TERMINOLOGY_ID
 			-- id of terminology from which codes come. If code list empty, any code from
 			-- this terminology is allowed
-		attribute
-			create Result.default_create
-		end
 
 	code_list: detachable ARRAYED_LIST[STRING]
 			-- list of codes in terminology designated by terminology_id
@@ -74,24 +74,27 @@ feature -- Access
 			-- generate a default value from this constraint object of the form
 			-- "terminology_id::code_string"
 		do
-			if assumed_value /= Void then
-				Result := assumed_value
+			if attached assumed_value as av then
+				Result := av
 			elseif any_allowed then
 				create Result
-			else -- must have a terminology_id	
-				if code_list /= Void then
-					create Result.make_from_string (terminology_id.value + separator + code_list.first)
+			elseif attached terminology_id as tid then
+				 -- must have a terminology_id	
+				if attached code_list as clist then
+					create Result.make_from_string (tid.value + separator + clist.first)
 				else
-					create Result.make_from_string (terminology_id.value + separator)
+					create Result.make_from_string (tid.value + separator)
 				end
+			else
+				create Result.default_create
 			end
 		end
 
-	fail_reason: STRING
+	fail_reason: detachable STRING
 
 feature -- Statistics
 
-	constrained_rm_attributes: attached ARRAYED_SET [STRING]
+	constrained_rm_attributes: ARRAYED_SET [STRING]
 			-- report which attributes of the equivalent DV_QUANTITY are being constrained here
 		do
 			create Result.make (0)
@@ -118,7 +121,7 @@ feature -- Status Report
 		require
 			not any_allowed
 		do
-			Result := terminology_id.is_local
+			Result := attached terminology_id as tid and then tid.is_local
 		end
 
 	valid_value (a_value: like prototype_value): BOOLEAN
@@ -127,10 +130,10 @@ feature -- Status Report
 			if any_allowed then
 				Result := True
 			else
-				if terminology_id /= Void then
-					Result := a_value.terminology_id.value.is_equal (terminology_id.value)
-					if code_list /= Void then
-						Result := Result and code_list.has (a_value.code_string)
+				if attached terminology_id as tid then
+					Result := a_value.terminology_id.value.is_equal (tid.value)
+					if attached code_list as clist then
+						Result := Result and clist.has (a_value.code_string)
 					end
 				end
 			end
@@ -139,28 +142,29 @@ feature -- Status Report
 	has_code (a_code: STRING): BOOLEAN
 			-- True if 'a_code' found in code list
 		require
-			Code_valid: a_code /= Void and then not a_code.is_empty
+			Code_valid: not a_code.is_empty
 		do
-			Result := code_list /= Void and code_list.has (a_code)
+			Result := attached code_list as clist and then clist.has (a_code)
 		end
 
 	has_parent_code (a_code: STRING): BOOLEAN
 			-- True if an immediate parent of 'a_code' found in code list, assuming a_code is sepcialised
 		require
-			Code_valid: a_code /= Void and then not a_code.is_empty
+			Code_valid: not a_code.is_empty
 		do
-			if code_list /= Void and is_refined_code (a_code) then
-				Result := code_list.has (specialisation_parent_from_code (a_code))
+			if attached code_list as clist and is_refined_code (a_code) then
+				Result := clist.has (specialisation_parent_from_code (a_code))
 			end
 		end
 
 	valid_pattern (a_pattern: STRING): BOOLEAN
 			-- Verify that the pattern of form "terminology_id::[code, code, ... [; code]]" is valid
 		require
-			Pattern_valid: a_pattern /= Void and then not a_pattern.is_empty
+			Pattern_valid: not a_pattern.is_empty
 		local
 			sep_pos, end_pos: INTEGER
-			str, code_str, assumed_code: STRING
+			str, code_str: STRING
+			assumed_code: detachable STRING
 			codes: LIST[STRING]
 			code_set: ARRAYED_SET[STRING]
 		do
@@ -187,8 +191,8 @@ feature -- Status Report
 					end
 					if code_set.count /= codes.count then
 						fail_reason := "duplicate code(s) found in code list"
-					elseif assumed_code /= Void and not code_set.has (assumed_code) then
-						fail_reason := "assumed value code " + assumed_code + " not found in code list"
+					elseif attached assumed_code as ac and then not code_set.has (ac) then
+						fail_reason := "assumed value code " + ac + " not found in code list"
 					end
 				end
 			else
@@ -206,15 +210,15 @@ feature -- Comparison
 			-- 	a) this node contains codes already in `other' (but with some removed) and/or
 			--	b) this node contains redefinitions of codes found in `other'
 		do
-			if precursor(other, an_rm_schema) then
+			if precursor (other, an_rm_schema) then
 				if other.any_allowed then
 					Result := True
-				elseif not any_allowed then
-					if terminology_id.is_equal (other.terminology_id) then
+				elseif attached terminology_id as tid and attached other.terminology_id as other_tid then
+					if tid.is_equal (other_tid) then
 						if other.code_list = Void then
 							Result := True
-						elseif attached code_list then
-							Result := across code_list as code_list_csr all other.has_code (code_list_csr.item) or else other.has_parent_code (code_list_csr.item) end
+						elseif attached code_list as clist then
+							Result := across clist as code_list_csr all other.has_code (code_list_csr.item) or else other.has_parent_code (code_list_csr.item) end
 						end
 					end
 				end
@@ -240,7 +244,7 @@ feature -- Source Control
 
 feature -- Modification
 
-	add_code (a_code: attached STRING)
+	add_code (a_code: STRING)
 			-- 	add a term to the list
 		require
 			Not_any_allowed: not any_allowed
@@ -256,7 +260,7 @@ feature -- Modification
 			Not_any_allowed: not any_allowed
 		end
 
-	set_code_list (a_code_list: attached ARRAYED_LIST[STRING])
+	set_code_list (a_code_list: ARRAYED_LIST[STRING])
 		do
 			code_list := a_code_list
 			code_list.compare_objects
@@ -281,8 +285,8 @@ feature -- Conversion
 			else
 				Result.append ("[" + terminology_id.value + separator)
 
-				if code_list /= Void then
-					across code_list as code_list_csr loop
+				if attached code_list as clist then
+					across clist as code_list_csr loop
 						if code_list_csr.cursor_index > 1 then
 							Result.append (", ")
 						end
@@ -290,8 +294,8 @@ feature -- Conversion
 					end
 				end
 
-				if assumed_value /= Void then
-					Result.append ("; " + assumed_value.code_string)
+				if attached assumed_value as av then
+					Result.append ("; " + av.code_string)
 				end
 
 				Result.append ("]")
@@ -301,6 +305,7 @@ feature -- Conversion
 	standard_equivalent: C_COMPLEX_OBJECT
 		do
 			-- FIXME: to be implemented
+			create Result.make_anonymous (Any_type)
 		end
 
 feature -- Synchronisation

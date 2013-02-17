@@ -2,9 +2,9 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Shared application resources for any ADL application, GUI or non-GUI"
 	keywords:    "test, ADL"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
 class SHARED_APP_RESOURCES
@@ -51,7 +51,7 @@ feature -- Definitions
 	Default_rm_schema_directory: attached STRING
 			-- default directory of Reference Model schema files; same as full path to app + "/rm_schemas";
 			-- contains schema files in .dadl format e.g.
-			-- .../rm_schemas/openehr_rm_102.dadl
+			-- .../rm_schemas/openehr_rm_102.bmm
 		once
 			Result := file_system.pathname (application_startup_directory, "rm_schemas")
 		end
@@ -93,7 +93,7 @@ feature -- Definitions
 	xml_rules_sample_file_path: STRING
 			-- Full path to XML rules file.
 		once
-			Result := file_system.pathname (application_startup_directory, extension_replaced ("sample_xml_rules", User_config_file_extension))
+			Result :=  file_system.pathname (application_startup_directory, extension_replaced ("sample_xml_rules", User_config_file_extension))
 		ensure
 			not_empty: not Result.is_empty
 		end
@@ -126,12 +126,12 @@ feature -- Initialisation
 
 feature -- Application Switches
 
-	archetype_view_language: attached STRING
+	archetype_view_language: STRING
 		do
 			Result := app_cfg.string_value ("/general/archetype_view_language")
 		end
 
-	set_archetype_view_language (a_lang: attached STRING)
+	set_archetype_view_language (a_lang: STRING)
 			-- set the language that should be used to display archetypes in the UI.
 		require
 			a_lang_attached: not a_lang.is_empty
@@ -166,7 +166,7 @@ feature -- Application Switches
 			no_empty_items: Result.for_all (agent (s: STRING): BOOLEAN do Result := attached s and then not s.is_empty end)
 		end
 
-	set_rm_schemas_load_list (a_schema_list: attached LIST [STRING])
+	set_rm_schemas_load_list (a_schema_list: LIST [STRING])
 			-- set rm_schemas(s)
 		require
 			a_schema_list_valid: not a_schema_list.is_empty
@@ -174,7 +174,7 @@ feature -- Application Switches
 			app_cfg.put_value("/rm_schemas/load_list", a_schema_list)
 		end
 
-	repository_profiles: attached REPOSITORY_PROFILE_CONFIG
+	repository_profiles: REPOSITORY_PROFILE_CONFIG
 			-- hash of profiles each of which is a list of {ref_repo_path, working_repo_path} or maybe just
 			-- {ref_repo_path}, keyed by profile name. The data are stored in the following way:
 			--
@@ -192,17 +192,19 @@ feature -- Application Switches
 			--	>
 			--
 		do
-			if not attached repository_profiles_cache.item then
+			if attached repository_profiles_cache.item as pci then
+				Result := pci
+			else
 				if attached {REPOSITORY_PROFILE_CONFIG} app_cfg.object_value ("/profile", "REPOSITORY_PROFILE_CONFIG") as p then
-					repository_profiles_cache.put (p)
+					Result := p
 				else
-					repository_profiles_cache.put (create {REPOSITORY_PROFILE_CONFIG}.default_create)
+					create Result.default_create
 				end
+				repository_profiles_cache.put (Result)
 			end
-			Result := repository_profiles_cache.item
 		end
 
-	set_repository_profiles (profiles: attached REPOSITORY_PROFILE_CONFIG)
+	set_repository_profiles (profiles: REPOSITORY_PROFILE_CONFIG)
 			-- hash of profiles each of which is a list of {ref_repo_path, working_repo_path} or maybe just
 			-- {ref_repo_path}, keyed by profile name. The data are stored for the moment in the old-style
 			-- resource .cfg file, in the following way:
@@ -214,11 +216,11 @@ feature -- Application Switches
 			-- profile_n=a_ref_path,a_working_path
 			--
 		do
-			repository_profiles_cache.put(profiles)
-			app_cfg.put_object ("/profile", repository_profiles_cache.item)
+			repository_profiles_cache.put (profiles)
+			app_cfg.put_object ("/profile", profiles)
 		end
 
-	set_current_profile (a_profile_name: attached STRING)
+	set_current_profile (a_profile_name: STRING)
 		require
 			profile_name_valid: not a_profile_name.is_empty
 		do
@@ -230,13 +232,20 @@ feature -- Application Switches
 
 	init_gen_dirs_from_current_profile
 			-- create compiler source and flat generated file areas for current profile
+		require
+			repository_profiles.has_current_profile
+		local
+			curr_prof: STRING
 		do
-			compiler_gen_source_directory.copy (file_system.pathname (file_system.pathname (compiler_gen_directory, repository_profiles.current_profile_name), "source"))
+			check attached repository_profiles.current_profile_name as cpn then
+				curr_prof := cpn
+			end
+			compiler_gen_source_directory.copy (file_system.pathname (file_system.pathname (compiler_gen_directory, curr_prof), "source"))
 			if not file_system.directory_exists (compiler_gen_source_directory) then
 				file_system.recursive_create_directory (compiler_gen_source_directory)
 			end
 
-			compiler_gen_flat_directory.copy (file_system.pathname (file_system.pathname (compiler_gen_directory, repository_profiles.current_profile_name), "flat"))
+			compiler_gen_flat_directory.copy (file_system.pathname (file_system.pathname (compiler_gen_directory, curr_prof), "flat"))
 			if not file_system.directory_exists (compiler_gen_flat_directory) then
 				file_system.recursive_create_directory (compiler_gen_flat_directory)
 			end
@@ -271,7 +280,7 @@ feature -- Application Switches
 			Result > 100 and Result <= 999
 		end
 
-	adl_version_for_flat_output: attached STRING
+	adl_version_for_flat_output: STRING
 			-- version of ADL syntax to use for outputting flat archetypes
 		do
 			Result := app_cfg.string_value ("/compiler/adl_version_for_flat_output")
@@ -282,7 +291,7 @@ feature -- Application Switches
 			not Result.is_empty
 		end
 
-	set_adl_version_for_flat_output (a_value: attached STRING)
+	set_adl_version_for_flat_output (a_value: STRING)
 			-- Set version of ADL syntax to use for outputting flat archetypes.
 		require
 			value_not_empty: not a_value.is_empty
@@ -334,7 +343,7 @@ feature -- Application Switches
 			Result := app_cfg.string_value_env_var_sub ("/file_system/terminology_directory")
 		end
 
-	set_terminology_directory (a_path: attached STRING)
+	set_terminology_directory (a_path: STRING)
 			-- Set the path of directory where openEHR reference terminology is found
 		require
 			path_not_empty: not a_path.is_empty
@@ -360,7 +369,7 @@ feature -- Application Switches
 			app_cfg.put_value ("/file_system/export_directory", a_path)
 		end
 
-	html_export_directory: attached STRING
+	html_export_directory: STRING
 			-- Path of directory to which HTML is exported.
 		do
 			Result := app_cfg.string_value_env_var_sub ("/file_system/html_export_directory")
@@ -377,7 +386,7 @@ feature -- Application Switches
 			app_cfg.put_value ("/file_system/html_export_directory", a_path)
 		end
 
-	test_diff_directory: attached STRING
+	test_diff_directory: STRING
 			-- Path of directory where .adls files are saved by GUI_TEST_ARCHETYPE_TREE_CONTROL for diff testing.
 		do
 			Result := app_cfg.string_value_env_var_sub ("/file_system/test_diff_directory")
@@ -387,7 +396,7 @@ feature -- Application Switches
 			end
 		end
 
-	set_test_diff_directory (a_path: attached STRING)
+	set_test_diff_directory (a_path: STRING)
 			-- Set the path of directory where diffs are written
 		require
 			path_not_empty: not a_path.is_empty
@@ -395,17 +404,17 @@ feature -- Application Switches
 			app_cfg.put_value ("/file_system/test_diff_directory", a_path)
 		end
 
-	compiler_gen_directory: attached STRING
+	compiler_gen_directory: STRING
 			-- Path of directory where compiler generated files go
 		do
 			Result := app_cfg.string_value_env_var_sub ("/file_system/compiler_gen_directory")
-			if Result.is_empty then
-			Result := file_system.pathname (user_config_file_directory, "gen")
+			if Result.is_empty and attached file_system.pathname (user_config_file_directory, "gen") as pn then
+				Result := pn
 				set_compiler_gen_directory (Result)
 			end
 		end
 
-	set_compiler_gen_directory (a_path: attached STRING)
+	set_compiler_gen_directory (a_path: STRING)
 			-- Set the path of directory where compiler generated files go
 		require
 			path_not_empty: not a_path.is_empty
@@ -413,7 +422,7 @@ feature -- Application Switches
 			app_cfg.put_value("/file_system/compiler_gen_directory", a_path)
 		end
 
-	author_name: attached STRING
+	author_name: STRING
 			-- default name string to insert into newly created archetype description section
 		do
 			Result := app_cfg.string_value ("/authoring/author_name")
@@ -424,7 +433,7 @@ feature -- Application Switches
 			not Result.is_empty
 		end
 
-	set_author_name (a_value: attached STRING)
+	set_author_name (a_value: STRING)
 			-- Set `author_name'
 		require
 			value_not_empty: not a_value.is_empty
@@ -432,7 +441,7 @@ feature -- Application Switches
 			app_cfg.put_value ("/authoring/author_name", a_value)
 		end
 
-	author_org: attached STRING
+	author_org: STRING
 			-- default organisation name string to insert into newly created archetype description section
 		do
 			Result := app_cfg.string_value ("/authoring/author_org")
@@ -443,7 +452,7 @@ feature -- Application Switches
 			not Result.is_empty
 		end
 
-	set_author_org (a_value: attached STRING)
+	set_author_org (a_value: STRING)
 			-- Set `author_org'
 		require
 			value_not_empty: not a_value.is_empty
@@ -462,7 +471,7 @@ feature -- Application Switches
 			not Result.is_empty
 		end
 
-	set_author_copyright (a_value: attached STRING)
+	set_author_copyright (a_value: STRING)
 			-- Set `author_copyright'
 		require
 			value_not_empty: not a_value.is_empty
@@ -472,19 +481,19 @@ feature -- Application Switches
 
 feature {NONE} -- Cached Settings
 
-	compiler_gen_source_directory: attached STRING
+	compiler_gen_source_directory: STRING
 			-- Path of directory where compiled source files go in dADL serialisation form
 		once
 			create Result.make_empty
 		end
 
-	compiler_gen_flat_directory: attached STRING
+	compiler_gen_flat_directory: STRING
 			-- Path of directory where compiled flat files go in dADL serialisation form
 		once
 			create Result.make_empty
 		end
 
-	repository_profiles_cache: CELL [REPOSITORY_PROFILE_CONFIG]
+	repository_profiles_cache: CELL [detachable REPOSITORY_PROFILE_CONFIG]
 		once
 			create Result.put (Void)
 		end

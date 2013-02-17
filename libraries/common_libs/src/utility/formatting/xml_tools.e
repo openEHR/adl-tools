@@ -3,20 +3,16 @@ note
 	description: "Utility functions for XML text"
 	keywords:    "xml, utility"
 
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class XML_TOOLS
 
 feature -- Access
 
-	xml_tag_position (a_str, tag: attached STRING; start: INTEGER): INTEGER
+	xml_tag_position (a_str, tag: STRING; start: INTEGER): INTEGER
 			-- Position of "<" character of leading tag 'tag' in 'a_str'
 			-- 'a_str' must contain a matching pair of tags
 		require
@@ -33,7 +29,7 @@ feature -- Access
 			end
 		end
 
-	xml_has_tag (a_str, tag: attached STRING; start: INTEGER): BOOLEAN
+	xml_has_tag (a_str, tag: STRING; start: INTEGER): BOOLEAN
 			-- True if a_str has the tag pair <tag></tag> at or after position start
 		require
 			Str_valid: not a_str.is_empty
@@ -47,7 +43,7 @@ feature -- Access
 			Result := lpos > 1 and rpos > lpos
 		end
 
-	xml_extract_from_tags (a_str, tag: attached STRING; start: INTEGER): attached STRING
+	xml_extract_from_tags (a_str, tag: STRING; start: INTEGER): STRING
 			-- extract string xxx from first occurrence of matching tags
 			-- pair "<tag>xxx</tag>" starting from 'start'
 		require
@@ -70,7 +66,7 @@ feature -- Access
 			Result := a_str.substring(lpos, rpos)
 		end
 
-	xml_remove_tags (a_str: attached STRING): attached STRING
+	xml_remove_tags (a_str: STRING): STRING
 			-- remove outer level of XML-style tags from string
 		require
 			String_exists: xml_tag_pattern.matches(a_str)
@@ -90,7 +86,7 @@ feature -- Access
 			create Result.compile("<..*>..*<\/..*>", False)
 		end
 
-	xml_tag_indent (xml_string: attached STRING): attached STRING
+	xml_tag_indent (xml_string: STRING): STRING
 			-- indent `xml_string' in the usual way, with one tag per line, and using
 			-- 1 TAB character for each indent level
 		local
@@ -132,7 +128,7 @@ feature -- Access
 			end
 		end
 
-	xml_tag_start (tag_name: attached STRING; attributes: HASH_TABLE [STRING, STRING]): attached STRING
+	xml_tag_start (tag_name: STRING; attributes: detachable HASH_TABLE [STRING, STRING]): STRING
 			-- output opening tag `content' in tags of `tag_name', optionally with attributes in the
 			-- lead tag, e.g. '<tag_name attr1="val_1" attr2="val_2">'
 		require
@@ -142,16 +138,15 @@ feature -- Access
 
 			Result.append ("<" + tag_name)
 
-			if attributes /= Void then
-				from attributes.start until attributes.off loop
-					Result.append(" " + attributes.key_for_iteration + "=%"" + attributes.item_for_iteration + "%"")
-					attributes.forth
+			if attached attributes as atts then
+				across atts as atts_csr loop
+					Result.append (" " + atts_csr.key + "=%"" + atts_csr.item + "%"")
 				end
 			end
 			Result.append (">")
 		end
 
-	xml_tag_end (tag_name: attached STRING): attached STRING
+	xml_tag_end (tag_name: STRING): STRING
 			-- output closing tag  `tag_name'; use for finishing a block
 		require
 			Tag_name_valid: not tag_name.is_empty
@@ -160,7 +155,7 @@ feature -- Access
 			Result.append ("</" + tag_name + ">")
 		end
 
-	xml_tag_enclose (tag_name, content: attached STRING; attributes: HASH_TABLE [STRING, STRING]): attached STRING
+	xml_tag_enclose (tag_name, content: STRING; attributes: detachable HASH_TABLE [STRING, STRING]): STRING
 			-- enclose `content' in tags of `tag_name' in inline style,
 			-- optionally with attributes in the lead tag, e.g.
 			-- 	'<tag_name attr1="val_1" attr2="val_2">content</tag_name>'
@@ -177,7 +172,7 @@ feature -- Access
 			Result.append (xml_tag_end (tag_name))
 		end
 
-	xml_quote (str: attached STRING): attached STRING
+	xml_quote (str: STRING): STRING
 			-- quote string using XML rules
 		do
 			create Result.make(0)

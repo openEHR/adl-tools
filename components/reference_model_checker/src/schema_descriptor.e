@@ -5,15 +5,10 @@ note
 				 schema file.
 	             ]"
 	keywords:    "ADL, archetype, reference model"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2009 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2009- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 
 class SCHEMA_DESCRIPTOR
 
@@ -27,6 +22,12 @@ inherit
 
 	BMM_DEFINITIONS
 		export
+			{NONE} all;
+			{ANY} valid_meta_data
+		end
+
+	SHARED_DT_OBJECT_CONVERTER
+		export
 			{NONE} all
 		end
 
@@ -35,27 +36,33 @@ create
 
 feature -- Initialisation
 
-	make (a_meta_data: attached HASH_TABLE [STRING, STRING])
+	make (a_meta_data: HASH_TABLE [STRING, STRING])
+		require
+			Meta_data_valid: valid_meta_data (a_meta_data)
 		local
 			bmm_ver: STRING
 		do
 			reset
 			meta_data := a_meta_data
-			schema_id := create_schema_id (meta_data.item (metadata_rm_publisher), meta_data.item (metadata_schema_name), meta_data.item (metadata_rm_release))
 
-			-- if there is no bmm_version meta-data item, that means that the initial fast-parse scan (note: doesn't use the main dadl parser)
-			-- did not find one; therefore we use the assumed value
-			if not meta_data.has (Metadata_bmm_version) then
-				bmm_ver := Assumed_bmm_version
-			else
-				bmm_ver := meta_data.item (Metadata_bmm_version)
-			end
-			is_bmm_compatible := bmm_version_compatible (bmm_ver)
-			if not is_bmm_compatible then
-				add_error ("BMM_VER", <<schema_id, bmm_ver, Bmm_internal_version>>)
-			end
+			if attached meta_data.item (metadata_rm_publisher) as md_publisher and attached meta_data.item (metadata_schema_name) as md_schema_name and
+				attached meta_data.item (metadata_rm_release) as md_release and attached meta_data.item (Metadata_schema_path) as md_schema_path
+			then
+				schema_id := create_schema_id (md_publisher, md_schema_name, md_release)
 
-			create includes.make (0)
+				-- if there is no bmm_version meta-data item, that means that the initial fast-parse scan (note: doesn't use the main dadl parser)
+				-- did not find one; therefore we use the assumed value
+				if meta_data.has (Metadata_bmm_version) and then attached meta_data.item (Metadata_bmm_version) as bv then
+					bmm_ver := bv
+				else
+					bmm_ver := Assumed_bmm_version
+				end
+				is_bmm_compatible := bmm_version_compatible (bmm_ver)
+				if not is_bmm_compatible then
+					add_error ("BMM_VER", <<schema_id, bmm_ver, Bmm_internal_version>>)
+				end
+				schema_path := md_schema_path
+			end
 		end
 
 feature -- Access
@@ -70,6 +77,14 @@ feature -- Access
 			-- schema id, formed from:
 			-- meta_data(Metadata_model_publisher) '-' meta_data(metadata_schema_name) '-' meta_data(Metadata_model_release)
 			--	 e.g. openehr_rm_1.0.3, openehr_test_1.0.1, iso_13606-1_2008
+		attribute
+			create Result.make_empty
+		end
+
+	schema_path: STRING
+		attribute
+			create Result.make_empty
+		end
 
 	meta_data: HASH_TABLE [STRING, STRING]
 			-- table of {key, value} pairs of schema meta-data, keys as follows:
@@ -84,6 +99,9 @@ feature -- Access
 
 	includes: ARRAYED_LIST [STRING]
 			-- schema_ids of schemas included by this schema
+		attribute
+			create Result.make (0)
+		end
 
 feature -- Status Report
 
@@ -112,24 +130,24 @@ feature {REFERENCE_MODEL_ACCESS} -- Commands
 			-- load schema into in-memory form
 		local
 			model_file: PLAIN_TEXT_FILE
-			dt_tree: DT_COMPLEX_OBJECT_NODE
 			parser: DADL_VALIDATOR
 		do
 			reset
 			schema := Void
 			p_schema := Void
-			create model_file.make (meta_data.item (Metadata_schema_path))
+			create model_file.make (schema_path)
 			if not model_file.exists or else not model_file.is_readable then
-				add_error ("model_access_e1", <<meta_data.item (Metadata_schema_path)>>)
+				add_error ("model_access_e1", <<schema_path>>)
 			else
 				model_file.open_read
 				model_file.read_stream (model_file.count)
 				create parser.make
 				parser.execute(model_file.last_string, 1)
-				if not parser.syntax_error then
-					dt_tree := parser.output
+				if not parser.syntax_error and then attached parser.output as dt_tree then
 					if not attached {P_BMM_SCHEMA} dt_tree.as_object_from_string ("P_BMM_SCHEMA", Void) as p_sch then
-						add_error ("model_access_e4", <<meta_data.item (Metadata_schema_path)>>)
+						add_error ("model_access_e4", <<schema_path>>)
+					elseif object_converter.errors.has_errors then
+						add_error ("load_conv_fail_err", <<schema_path, object_converter.errors.as_string>>)
 					else
 						p_schema := p_sch
 						passed := True
@@ -140,7 +158,7 @@ feature {REFERENCE_MODEL_ACCESS} -- Commands
 						end
 					end
 				else
-					add_error ("model_access_e2", <<meta_data.item (Metadata_schema_path), parser.errors.as_string>>)
+					add_error ("model_access_e2", <<schema_path, parser.errors.as_string>>)
 				end
 				model_file.close
 			end

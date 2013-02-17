@@ -18,7 +18,7 @@ inherit
 	EVX_DEFINITIONS
 		export
 			{NONE} all;
-			{ANY} standard_is_equal, deep_twin, is_deep_equal
+			{ANY} standard_is_equal, is_deep_equal, deep_copy, deep_twin
 		end
 
 create
@@ -48,7 +48,7 @@ feature -- Access
 
 	ev_grid: EV_GRID_KBD_MOUSE
 
-	last_row: EV_GRID_ROW
+	last_row: detachable EV_GRID_ROW
 			-- result of last successful call to `add_row' or `add_sub_row'
 
 	row_count: INTEGER

@@ -4,14 +4,8 @@ note
 	keywords:    "ADL, archetype"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2006-2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2006- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 
 class ARCH_CAT_CATEGORY_NODE
 

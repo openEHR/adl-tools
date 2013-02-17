@@ -8,10 +8,6 @@ note
 	copyright:   "Copyright (c) 2009 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 deferred class BMM_PROPERTY_DEFINITION
 
 inherit

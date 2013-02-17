@@ -23,11 +23,6 @@ note
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
 class EVX_COMBO_CONTROL
 
 inherit
@@ -56,7 +51,7 @@ feature -- Access
 
 	ev_data_control: EV_COMBO_BOX
 
-	data_source_agent: FUNCTION [ANY, TUPLE, LIST [STRING]]
+	data_source_agent: FUNCTION [ANY, TUPLE, detachable LIST [STRING]]
 
 feature -- Commands
 

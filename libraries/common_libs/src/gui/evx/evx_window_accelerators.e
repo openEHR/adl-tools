@@ -14,7 +14,7 @@ inherit
 	EV_KEY_CONSTANTS
 		export
 			{NONE} all;
-			{ANY} standard_is_equal, deep_twin, is_deep_equal
+			{ANY} standard_is_equal, is_deep_equal, deep_copy, deep_twin
 		end
 
 feature {NONE} -- Implementation

@@ -27,7 +27,7 @@ inherit
 	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all;
-			{ANY} standard_is_equal, deep_twin, is_deep_equal
+			{ANY} deep_twin, is_deep_equal, standard_is_equal
 		end
 
 	STRING_UTILITIES

@@ -2,15 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Miscellaneous String utilities."
 	keywords:    "formatting"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class STRING_UTILITIES
 
@@ -21,7 +16,7 @@ feature -- Definitions
 
 feature -- Conversion
 
-	primitive_value_to_dadl_string (a_prim_val: attached ANY): STRING
+	primitive_value_to_dadl_string (a_prim_val: ANY): STRING
 			-- generate a string, including dADL delimiters, e.g. "", '' for strings and chars.
 		do
 			if attached {STRING_GENERAL} a_prim_val then
@@ -46,7 +41,7 @@ feature -- Conversion
 			end
 		end
 
-	primitive_value_to_simple_string (a_prim_val: attached ANY): STRING
+	primitive_value_to_simple_string (a_prim_val: ANY): STRING
 			-- generate a basic string
 		do
 			-- FIXME: duration.out does not exist in Eiffel, and in any case would not be ISO8601-compliant
@@ -63,7 +58,7 @@ feature -- Conversion
 			end
 		end
 
-	primitive_value_to_json_string (a_prim_val: attached ANY): STRING
+	primitive_value_to_json_string (a_prim_val: ANY): STRING
 			-- generate a string, including JSON delimiters, e.g. "", '' for strings and chars.
 		do
 			if attached {STRING_GENERAL} a_prim_val then
@@ -90,7 +85,7 @@ feature -- Conversion
 			end
 		end
 
-	primitive_value_to_yaml_string (a_prim_val: attached ANY): STRING
+	primitive_value_to_yaml_string (a_prim_val: ANY): STRING
 			-- generate a string, including YAML delimiters, e.g. "", '' for strings and chars.
 		do
 			if attached {STRING_GENERAL} a_prim_val then
@@ -203,8 +198,6 @@ feature -- Element Change
 
 	concatenate (items: ARRAY [STRING]): STRING
 			-- turn <<str, str, str...>> into a STRING
-		require
-			Args_valid: items /= Void
 		local
 			i:INTEGER
 		do
@@ -213,11 +206,9 @@ feature -- Element Change
 				Result.append(items.item(i))
 				i := i + 1
 			end
-		ensure
-			Result_exists: Result /= Void
 		end
 
-	indented (s, indent: attached STRING): attached STRING
+	indented (s, indent: STRING): STRING
 			-- indent every line in 's' by 'indent' and return result
 		local
 			indent_str: STRING
@@ -313,14 +304,14 @@ feature -- Unicode
 --			not_longer: Result.count <= utf8_bytes.count
 --		end
 
-	utf8_to_utf32 (utf8_bytes: attached STRING): attached STRING_32
+	utf8_to_utf32 (utf8_bytes: STRING): STRING_32
 			-- `utf8_bytes' converted from a sequence of UTF-8 bytes to 32-bit Unicode characters.
 		do
 			utf8_encoding.convert_to (utf32_encoding, utf8_bytes)
 			Result := utf8_encoding.last_converted_string_32
 		end
 
-	utf32_to_utf8 (utf32_bytes: attached STRING_32): attached STRING_8
+	utf32_to_utf8 (utf32_bytes: STRING_32): STRING_8
 			-- `utf32_bytes' converted from a sequence of UTF-32 bytes to UTF-8 byte sequence
 		do
 			utf32_encoding.convert_to (utf8_encoding, utf32_bytes)
@@ -329,7 +320,7 @@ feature -- Unicode
 
 feature -- Matching
 
-	regex_from_string (a_str: attached STRING): attached STRING
+	regex_from_string (a_str: STRING): STRING
 			-- turn an ordinary string like "abc" into a regex that can be used with standard regex matching
 			-- libs like gobo
 		do

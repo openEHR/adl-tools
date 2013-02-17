@@ -16,15 +16,22 @@ inherit
 			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
+create
+	initialise
+
 feature {ADL15_ENGINE} -- Initialisation
 
 	initialise (ara: ARCH_CAT_ARCHETYPE; an_rm_schema: BMM_SCHEMA)
 			-- set target_descriptor
 			-- initialise reporting variables
+		require
+			ara.compilation_state >= {COMPILATION_STATES}.Cs_parsed
 		do
 			rm_schema := an_rm_schema
 			target_descriptor := ara
-			target := ara.differential_archetype
+			check attached ara.differential_archetype as diff_arch then
+				target := diff_arch
+			end
 			if ara.is_specialised then
 				arch_parent_flat := target_descriptor.specialisation_parent.flat_archetype
 			end
@@ -64,14 +71,20 @@ feature {NONE} -- Implementation
 		do
 			across target.accodes_index as ac_codes_csr loop
 				across ac_codes_csr.item as cref_list_csr loop
-					proximal_ca := cref_list_csr.item.parent
+					check attached cref_list_csr.item.parent as p then
+						proximal_ca := p
+					end
 					if proximal_ca.has_differential_path then
-						create apa.make_from_string (proximal_ca.differential_path)
-						if attached {C_COMPLEX_OBJECT} arch_parent_flat.c_object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth)) as cco then
+						check attached proximal_ca.differential_path as diff_path then
+							create apa.make_from_string (diff_path)
+						end
+						check attached {C_COMPLEX_OBJECT} arch_parent_flat.c_object_at_path (apa.path_at_level (arch_parent_flat.specialisation_depth)) as cco then
 							proximal_co := cco
 						end
 					else
-						proximal_co := proximal_ca.parent
+						check attached proximal_ca.parent as p then
+							proximal_co := p
+						end
 					end
 					bmm_prop_def := rm_schema.property_definition (proximal_co.rm_type_name, proximal_ca.rm_attribute_name)
 					cref_list_csr.item.set_rm_type_name (bmm_prop_def.type.root_class)

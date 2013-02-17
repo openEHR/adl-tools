@@ -36,8 +36,8 @@ feature -- Initialisation
 
 	make (a_scheme, a_path, a_query, a_fragment: STRING)
 		require
-			Scheme_exists: a_scheme /= Void and then not a_scheme.is_empty
-			Path_exists: a_path /= Void and then not a_path.is_empty
+			Scheme_exists: not a_scheme.is_empty
+			Path_exists: not a_path.is_empty
 			Valid_query: a_query /= Void implies not a_query.is_empty
 			Valid_fragment: a_fragment /= Void implies not a_fragment.is_empty
 		do
@@ -46,7 +46,7 @@ feature -- Initialisation
 
 	make_from_string (a_uri_string: STRING)
 		require
-			valid_string: a_uri_string /= Void and then valid_uri(a_uri_string)
+			valid_string: valid_uri (a_uri_string)
 		do
 			value := a_uri_string
 		end

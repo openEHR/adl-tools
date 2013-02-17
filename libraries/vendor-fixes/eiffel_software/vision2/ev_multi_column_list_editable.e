@@ -23,9 +23,9 @@ feature -- Initialization
 		require
 			window_not_void: a_window /= Void
 		do
-			create change_widgets.make (0)
-			create editable_columns.make (0)
-			create editable_rows.make (0)
+			change_widgets.wipe_out
+			editable_columns.wipe_out
+			editable_rows.wipe_out
 			create end_edit_actions.default_create
 			relative_window := a_window
 
@@ -193,16 +193,13 @@ feature -- Status setting
 			-- Set widget type to be displayed at column index 'i'
 		require
 			editable_column: column_editable (i)
-		local
-			combo_box: detachable EV_COMBO_BOX
 		do
 			if change_widgets.has (i) then
 				change_widgets.replace (a_widget, i)
 			else
 				change_widgets.put (a_widget, i)
 			end
-			combo_box ?= a_widget
-			if combo_box /= Void then
+			if attached {EV_COMBO_BOX} a_widget as combo_box then
 				combo_box.select_actions.extend (agent combo_item_selected (combo_box))
 			end
 		end
@@ -286,6 +283,9 @@ feature -- Actions
 
 	end_edit_actions: EV_LITE_ACTION_SEQUENCE [TUPLE]
 			-- List of actions to perform when list row has just been edited.
+		attribute
+			create Result.default_create
+		end
 
 feature {NONE} -- Actions
 
@@ -327,6 +327,8 @@ feature {NONE} -- Actions
 	update_actions
 			-- Actions to be performed when change widget is updated, redefine for custom
 			-- behaviour.
+		require
+			is_initialized
 		local
 			l_widget: like widget
 			l_saved_text: like saved_text
@@ -345,7 +347,9 @@ feature {NONE} -- Actions
 						create l_error_dialog.make_with_text
 							("This column identifier is in use by another row.%N Please choose another.")
 						error_dialog := l_error_dialog
-						l_error_dialog.show_modal_to_window (relative_window)
+						check attached relative_window as rw then
+							l_error_dialog.show_modal_to_window (rw)
+						end
 					end
 				else
 					l_selected_item.put_i_th (l_widget.text, widget_column)
@@ -361,12 +365,12 @@ feature {NONE} -- Actions
 			-- it hides the editable dialog.  If not `adding' then remove the
 			-- appropriate agent.
 		local
-			con: detachable EV_CONTAINER
-			a_container: detachable LINEAR [EV_WIDGET]
 			button_press_actions: EV_POINTER_BUTTON_ACTION_SEQUENCE
+			a_container: detachable LINEAR [EV_WIDGET]
 		do
-			a_container ?= a_container_arg.linear_representation
-			check a_container /= Void end
+			check attached {LINEAR [EV_WIDGET]} a_container_arg.linear_representation as c then
+				a_container := c
+			end
 			from
 				a_container.start
 			until
@@ -379,8 +383,7 @@ feature {NONE} -- Actions
 					button_press_actions.go_i_th (button_press_actions.count)
 					button_press_actions.remove
 				end
-				con ?= a_container.item
-				if con /= Void then
+				if attached {EV_CONTAINER} a_container.item as con then
 					update_agents (con, adding)
 				end
 				a_container.forth
@@ -391,8 +394,10 @@ feature {NONE} -- Commands
 
 	generate_edit_dialog
 			-- Generate new edit dialog for row editing in column at index 'i'.
+		require
+			is_initialized
 		local
-			textable: EV_TEXTABLE
+			textable: EV_TEXT_FIELD
 			l_widget: like widget
 			l_internal_dialog: like internal_dialog
 			l_saved_text: like saved_text
@@ -406,13 +411,13 @@ feature {NONE} -- Commands
 					internal_dialog := Void
 				end
 
-				if change_widgets.has (widget_column) then
-					widget ?= change_widgets.item (widget_column)
+				if change_widgets.has (widget_column) and then attached {EV_TEXT_COMPONENT} change_widgets.item (widget_column) as tw then
+					widget := tw
 				else
 						-- Use text field as default widget type
-					create {EV_TEXT_FIELD} textable
+					create textable
 					change_widgets.put (textable, widget_column)
-					widget ?= textable
+					widget := textable
 				end
 				l_widget := widget
 				check l_widget /= Void end
@@ -425,7 +430,9 @@ feature {NONE} -- Commands
 				l_internal_dialog.extend (l_widget)
 				l_internal_dialog.disable_user_resize
 				l_internal_dialog.set_size (dialog_width, dialog_height)
-				l_internal_dialog.show_relative_to_window (relative_window)
+				check attached relative_window as rw then
+					l_internal_dialog.show_relative_to_window (rw)
+				end
 				l_internal_dialog.set_position (x_offset, y_offset)
 				initialize_observers
 
@@ -460,10 +467,13 @@ feature {NONE} -- Commands
 		local
 			l_internal_dialog: like internal_dialog
 		do
-			l_internal_dialog := internal_dialog
-			check l_internal_dialog /= Void end
+			check attached internal_dialog as lid then
+				l_internal_dialog := lid
+			end
 			l_internal_dialog.set_size (dialog_width, dialog_height)
-			l_internal_dialog.show_relative_to_window (relative_window)
+			check attached relative_window as rw then
+				l_internal_dialog.show_relative_to_window (rw)
+			end
 			calculate_x_offset (0)
 			l_internal_dialog.set_position (x_offset, y_offset)
 		end
@@ -539,18 +549,27 @@ feature -- Widget
 
 feature {NONE} -- Access
 
-	relative_window: EV_WINDOW
+	relative_window: detachable EV_WINDOW
 			-- Window to which editable dialogs are to be shown relative to.
 
 	editable_columns: ARRAYED_LIST [INTEGER]
 			-- Indices of all editable columns in row.
+		attribute
+			create Result.make (0)
+		end
 
 	editable_rows: ARRAYED_LIST [INTEGER]
 			-- Indices of all editable rows in list.			
+		attribute
+			create Result.make (0)
+		end
 
 	change_widgets: HASH_TABLE [EV_TEXTABLE, INTEGER]
 			-- List of textable widgets associated by column.  Used to determine
 			-- widget type for each column.
+		attribute
+			create Result.make (0)
+		end
 
 feature {NONE} -- Implementation
 

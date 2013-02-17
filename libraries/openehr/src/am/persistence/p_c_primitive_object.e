@@ -28,14 +28,18 @@ feature -- Initialisation
 
 feature -- Access
 
-	item: C_PRIMITIVE
+	item: detachable C_PRIMITIVE
 
 feature -- Factory
 
 	create_c_primitive_object: C_PRIMITIVE_OBJECT
 		do
-			create Result.make (item)
-			populate_c_instance (Result)
+			if attached item as cp then
+				create Result.make (cp)
+				populate_c_instance (Result)
+			else
+				create Result.make_any (rm_type_name)
+			end
 		end
 
 end

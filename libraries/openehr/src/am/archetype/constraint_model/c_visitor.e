@@ -21,7 +21,7 @@ feature -- Initialisation
 			archetype := an_archetype
 			differential_view := attached {DIFFERENTIAL_ARCHETYPE} an_archetype
 			archetype_specialisation_level := archetype.specialisation_depth
-			create ontologies.make(0)
+			ontologies.wipe_out
 			ontologies.extend (archetype.ontology)
 		end
 
@@ -186,6 +186,9 @@ feature {NONE} -- Implementation
 
 	ontologies: ARRAYED_STACK [ARCHETYPE_ONTOLOGY]
 			-- we use a stack here to handle ontologies inside operational templates
+		attribute
+			create Result.make (0)
+		end
 
 	ontology: ARCHETYPE_ONTOLOGY
 			-- The ontology for `target_archetype'.

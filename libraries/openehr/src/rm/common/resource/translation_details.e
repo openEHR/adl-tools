@@ -27,7 +27,7 @@ create
 feature -- Initialisation
 
 
-	make_from_language (a_lang: attached STRING)
+	make_from_language (a_lang: STRING)
 			-- make
 		require
 			Language_valid: not a_lang.is_empty
@@ -112,7 +112,7 @@ feature -- Modification
 			author.remove (a_key)
 		end
 
-	put_other_details_item (a_key, a_value: attached STRING)
+	put_other_details_item (a_key, a_value: STRING)
 			-- set key=value pair into other_details
 		require
 			Key_valid: not a_key.is_empty
@@ -124,7 +124,7 @@ feature -- Modification
 			other_details.force (a_value, a_key)
 		end
 
-	remove_other_details_item (a_key: attached STRING)
+	remove_other_details_item (a_key: STRING)
 			-- remove item with key `a_key' from other_details
 		require
 			Key_valid: other_details.has (a_key)

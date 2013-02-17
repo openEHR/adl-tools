@@ -2,15 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Specialised form of SELECTION_HISTORY for ARCHETYPE_CATALOGUE"
 	keywords:    "ADL"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2011- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 
 class ARCHETYPE_CATALOGUE_SELECTION_HISTORY
 

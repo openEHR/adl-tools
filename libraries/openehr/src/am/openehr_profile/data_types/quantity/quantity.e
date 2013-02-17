@@ -2,15 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "FIXME: temporary type for QUANTITY until reconciled with DV_QUANTITY"
 	keywords:    "quantity, ADL"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2003-2005 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class QUANTITY
 
@@ -41,10 +36,10 @@ feature -- Initialisation
 			precision = Default_precision
 		end
 
-	make(a_magnitude: REAL; a_units: STRING; a_precision: INTEGER)
+	make (a_magnitude: REAL; a_units: detachable STRING; a_precision: INTEGER)
 			-- set magnitude and units; precision should be set to -1 if no precision
 		require
-			Units_valid: a_units /= Void implies not a_units.is_empty
+			Units_valid: attached a_units implies not a_units.is_empty
 		do
 			magnitude := a_magnitude
 			units := a_units
@@ -59,7 +54,7 @@ feature -- Access
 
 	magnitude: REAL
 
-	units: STRING
+	units: detachable STRING
 
 	precision: INTEGER
 
@@ -81,8 +76,8 @@ feature -- Conversion
 			end
 			Result.left_adjust
 
-			if units /= Void then
-				Result.append (" " + units)
+			if attached units as att_units then
+				Result.append (" " + att_units)
 			end
 		end
 

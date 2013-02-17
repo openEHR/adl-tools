@@ -39,7 +39,9 @@ feature -- Initialisation
 			a_dir_path: not a_dir_path.is_empty
 		do
 			qualified_name := a_dir_path
-			name := file_system.basename (a_dir_path)
+			check attached file_system.basename (a_dir_path) as pn then
+				name := pn
+			end
 			group_name := "file_folder"
 		ensure
 			qualified_name_set: qualified_name.is_equal (a_dir_path)
@@ -55,7 +57,7 @@ feature -- Access
 
 feature -- Modification
 
-	put_child (a_child: like child_type)
+	put_child (a_child: like child_with_qualified_key)
 		do
 			if children = Void then
 				create children.make

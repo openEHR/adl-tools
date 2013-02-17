@@ -15,11 +15,6 @@ note
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
 deferred class EVX_TEXT_CONTROL
 
 inherit
@@ -64,7 +59,7 @@ feature -- Access
 			Result := ev_data_control.text.to_string_8
 		end
 
-	data_source_agent: FUNCTION [ANY, TUPLE, STRING]
+	data_source_agent: FUNCTION [ANY, TUPLE, detachable STRING]
 
 	data_source_setter_agent: detachable PROCEDURE [ANY, TUPLE [STRING]]
 			-- agent for creating & setting the data source
@@ -118,13 +113,11 @@ feature {NONE} -- Implementation
 			Setter_agent_available: attached data_source_setter_agent
 		local
 			old_val, new_val: STRING
-			undo_agt, redo_agt: PROCEDURE [ANY, TUPLE]
-			ds: STRING
+			undo_agt, redo_agt: detachable PROCEDURE [ANY, TUPLE]
 			error_dialog: EV_INFORMATION_DIALOG
 		do
 			new_val := utf32_to_utf8 (ev_data_control.text)
-			ds := data_source_agent.item ([])
-			if attached ds then
+			if attached data_source_agent.item ([]) as ds then
 				create old_val.make_from_string (ds)
 			else
 				create old_val.make_empty
@@ -136,7 +129,9 @@ feature {NONE} -- Implementation
 				then
 					ev_data_control.focus_out_actions.block
 					create error_dialog.make_with_text (validity_error_msg_agent.item ([<<new_val>>]))
-					error_dialog.show_modal_to_window (proximate_ev_window (ev_data_control))
+					check attached proximate_ev_window (ev_data_control) as pw then
+						error_dialog.show_modal_to_window (pw)
+					end
 					populate
 					ev_data_control.focus_out_actions.resume
 				else

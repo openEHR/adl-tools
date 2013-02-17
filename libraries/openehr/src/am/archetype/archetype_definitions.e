@@ -9,12 +9,10 @@ note
 	copyright:   "Copyright (c) 2006-2009 Ocean Informatics Pty Ltd"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
 class ARCHETYPE_DEFINITIONS
+
+inherit
+	BASIC_DEFINITIONS
 
 feature -- Syntax Elements
 
@@ -149,7 +147,7 @@ feature -- Definitions
 
 feature -- Comparison
 
-	valid_adl_version (a_ver: attached STRING): BOOLEAN
+	valid_adl_version (a_ver: STRING): BOOLEAN
 			-- set adl_version with a string containing only '.' and numbers,
 			-- not commencing or finishing in '.'
 		require

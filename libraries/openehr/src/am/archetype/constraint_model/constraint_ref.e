@@ -15,7 +15,7 @@ class CONSTRAINT_REF
 inherit
 	C_REFERENCE_OBJECT
 		redefine
-			representation, enter_subtree, exit_subtree
+			enter_subtree, exit_subtree
 		end
 
 	BMM_DEFINITIONS
@@ -28,19 +28,20 @@ create
 
 feature -- Initialisation
 
-	make (a_code: attached STRING)
+	make (a_code: STRING)
 			-- make from pattern of form "[acNNNN[.NN[etc]]]"
 		do
 			rm_type_name := Any_type
-			create representation.make_anonymous(Current)
 			target := a_code
+			create representation_cache.make_anonymous
+			representation_cache.set_content (Current)
 		ensure
 			Target_set: target = a_code
 		end
 
 feature -- Access
 
-	target: attached STRING
+	target: STRING
 			-- reference to another constraint object containing the logical
 			-- constraints for this object, defined outside the archetype,
 			-- usually in the ontology section of an ADL archetype
@@ -75,13 +76,13 @@ feature -- Conversion
 	as_string: STRING
 			--
 		do
-			create Result.make (0)
+			create Result.make_empty
 			Result.append ("[" + target + "]")
 		end
 
 feature -- Modification
 
-	set_external_reference_from_string (an_ext_ref, a_syntax: attached STRING)
+	set_external_reference_from_string (an_ext_ref, a_syntax: STRING)
 			-- set `external_reference' from two parameters - the actual reference (e.g. a URI string)
 			-- and a syntax model, used to help interpret the reference structure
 		require
@@ -91,7 +92,7 @@ feature -- Modification
 			create external_reference.make (an_ext_ref, a_syntax)
 		end
 
-	set_external_reference (an_ext_ref: attached DV_PARSABLE)
+	set_external_reference (an_ext_ref: DV_PARSABLE)
 		do
 			external_reference := an_ext_ref
 		end
@@ -102,24 +103,20 @@ feature -- Modification
 			rm_type_name := a_type_name
 		end
 
-feature -- Representation
-
-	representation: attached OG_OBJECT_LEAF
-
 feature -- Visitor
 
 	enter_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at start of block for this node
 		do
-			precursor(visitor, depth)
-			visitor.start_constraint_ref(Current, depth)
+			precursor (visitor, depth)
+			visitor.start_constraint_ref (Current, depth)
 		end
 
 	exit_subtree(visitor: C_VISITOR; depth: INTEGER)
 			-- perform action at end of block for this node
 		do
-			precursor(visitor, depth)
-			visitor.end_constraint_ref(Current, depth)
+			precursor (visitor, depth)
+			visitor.end_constraint_ref (Current, depth)
 		end
 
 end

@@ -49,36 +49,35 @@ feature -- Initialisation
 
 			if attached {OPERATIONAL_TEMPLATE} an_archetype as opt and then attached opt.component_ontologies then
 				create component_ontologies.make(0)
-				from opt.component_ontologies.start until opt.component_ontologies.off loop
-					component_ontologies.put (create {P_ARCHETYPE_ONTOLOGY}.make(opt.component_ontologies.item_for_iteration), opt.component_ontologies.key_for_iteration)
-					opt.component_ontologies.forth
+				across opt.component_ontologies as opt_comp_onts_csr loop
+					component_ontologies.put (create {P_ARCHETYPE_ONTOLOGY}.make (opt_comp_onts_csr.item), opt_comp_onts_csr.key)
 				end
 			end
 		end
 
 feature -- Access
 
-	artefact_object_type: STRING
+	artefact_object_type: detachable STRING
 			-- records object model type of the original artefact
 
-	archetype_id: STRING
+	archetype_id: detachable STRING
 
-	adl_version: STRING
+	adl_version: detachable STRING
 			-- ADL version of this archetype
 
-	artefact_type: STRING
+	artefact_type: detachable STRING
 			-- design type of artefact, archetype, template, template-component, etc
 
 	parent_archetype_id: detachable STRING
 			-- id of specialisation parent of this archetype
 
-	definition: P_C_COMPLEX_OBJECT
+	definition: detachable P_C_COMPLEX_OBJECT
 
 	invariants: detachable ARRAYED_LIST [ASSERTION]
 
-	ontology: P_ARCHETYPE_ONTOLOGY
+	ontology: detachable P_ARCHETYPE_ONTOLOGY
 
-	component_ontologies: HASH_TABLE [P_ARCHETYPE_ONTOLOGY, STRING]
+	component_ontologies: detachable HASH_TABLE [P_ARCHETYPE_ONTOLOGY, STRING]
 
 feature -- Status Report
 
@@ -91,67 +90,74 @@ feature -- Status Report
 
 feature -- Factory
 
-	create_archetype: ARCHETYPE
+	create_archetype: detachable ARCHETYPE
 		local
-			parent_arch_id: ARCHETYPE_ID
-			diff_arch_ont: DIFFERENTIAL_ARCHETYPE_ONTOLOGY
-			flat_arch_ont: FLAT_ARCHETYPE_ONTOLOGY
+			o_parent_archetype_id, o_archetype_id: detachable ARCHETYPE_ID
+			o_diff_arch_ont: DIFFERENTIAL_ARCHETYPE_ONTOLOGY
+			o_flat_arch_ont: FLAT_ARCHETYPE_ONTOLOGY
+			o_artefact_type: ARTEFACT_TYPE
 		do
-			if artefact_object_type.same_string ("DIFFERENTIAL_ARCHETYPE") then
-				if attached parent_archetype_id then
-					create parent_arch_id.make_from_string (parent_archetype_id)
-				end
-				create diff_arch_ont.make (original_language.as_string, definition.node_id)
-				ontology.populate_ontology (diff_arch_ont)
-				diff_arch_ont.finalise_dt
-
-				create {DIFFERENTIAL_ARCHETYPE} Result.make_all (
-					create {ARTEFACT_TYPE}.make_from_type_name (artefact_type),
-					adl_version,
-					create {ARCHETYPE_ID}.make_from_string (archetype_id),
-					parent_arch_id,
-					is_controlled,
-					original_language,
-					translations,
-					description,
-					definition.create_c_complex_object,
-					invariants,
-					diff_arch_ont,
-					annotations
-				)
-
-			elseif artefact_object_type.same_string ("FLAT_ARCHETYPE") then
-				if attached parent_archetype_id then
-					create parent_arch_id.make_from_string (parent_archetype_id)
-				end
-				create flat_arch_ont.make (original_language.as_string, definition.node_id)
-				ontology.populate_ontology (flat_arch_ont)
-				flat_arch_ont.finalise_dt
-
-				create {FLAT_ARCHETYPE} Result.make_all (
-					create {ARTEFACT_TYPE}.make_from_type_name (artefact_type),
-					adl_version,
-					create {ARCHETYPE_ID}.make_from_string (archetype_id),
-					parent_arch_id,
-					is_controlled,
-					original_language,
-					translations,
-					description,
-					definition.create_c_complex_object,
-					invariants,
-					flat_arch_ont,
-					annotations
-				)
+			if attached parent_archetype_id as pid then
+				create o_parent_archetype_id.make_from_string (pid)
 			end
 
-			if is_generated then
-				Result.set_is_generated
+			if attached archetype_id as aid and attached artefact_type as at and attached adl_version as o_adl_version and
+				attached original_language as o_original_language and attached description as o_description and
+				attached definition as o_definition and attached ontology as ont
+			then
+				create o_archetype_id.make_from_string (aid)
+				create o_artefact_type.make_from_type_name (at)
+
+				if artefact_object_type.same_string ("DIFFERENTIAL_ARCHETYPE") then
+					create o_diff_arch_ont.make (original_language.as_string, o_definition.node_id)
+					ont.populate_ontology (o_diff_arch_ont)
+					o_diff_arch_ont.finalise_dt
+
+					create {DIFFERENTIAL_ARCHETYPE} Result.make_all (
+						o_artefact_type,
+						o_adl_version,
+						o_archetype_id,
+						o_parent_archetype_id,
+						is_controlled,
+						o_original_language,
+						translations,
+						o_description,
+						o_definition.create_c_complex_object,
+						invariants,
+						o_diff_arch_ont,
+						annotations
+					)
+
+				else
+					create o_flat_arch_ont.make (original_language.as_string, o_definition.node_id)
+					ont.populate_ontology (o_flat_arch_ont)
+					o_flat_arch_ont.finalise_dt
+
+					create {FLAT_ARCHETYPE} Result.make_all (
+						o_artefact_type,
+						o_adl_version,
+						o_archetype_id,
+						o_parent_archetype_id,
+						is_controlled,
+						o_original_language,
+						translations,
+						o_description,
+						o_definition.create_c_complex_object,
+						invariants,
+						o_flat_arch_ont,
+						annotations
+					)
+				end
+
+				if is_generated then
+					Result.set_is_generated
+				end
 			end
 		end
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	persistent_attributes: ARRAYED_LIST [STRING]
+	persistent_attributes: detachable ARRAYED_LIST [STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		do

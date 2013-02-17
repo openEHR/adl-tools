@@ -4,12 +4,8 @@ note
 	keywords:    "archetype"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003-2102 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class DIFFERENTIAL_ARCHETYPE
 
@@ -89,13 +85,14 @@ feature -- Initialisation
 			Is_valid: is_valid
 		end
 
-	make_from_legacy_flat (a_flat: attached FLAT_ARCHETYPE)
+	make_from_legacy_flat (a_flat: FLAT_ARCHETYPE)
 			-- create from a legacy flat archetype (which has no overlay markers) by cloning and then removing inherited parts
 			-- the pieces of `a_flat' will be used, without cloning
 		require
 			not a_flat.is_generated
 		local
 			c_it: C_ITERATOR
+			inherited_subtree_list: HASH_TABLE [ARCHETYPE_CONSTRAINT, STRING]
 		do
 			make_all (a_flat.artefact_type, Latest_adl_version, a_flat.archetype_id, a_flat.parent_archetype_id,
 					a_flat.is_controlled, a_flat.original_language, a_flat.translations,
@@ -110,7 +107,10 @@ feature -- Initialisation
 				create inherited_subtree_list.make (0)
 				create c_it.make (definition)
 				c_it.do_at_surface (
-					agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER) do inherited_subtree_list.put (a_c_node, a_c_node.path) end,
+					agent (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER; subtree_list: HASH_TABLE [ARCHETYPE_CONSTRAINT, STRING])
+						do
+							subtree_list.put (a_c_node, a_c_node.path)
+						end (?, ?, inherited_subtree_list),
 					agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := a_c_node.inferred_rolled_up_specialisation_status.value = ss_inherited end
 				)
 
@@ -157,7 +157,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	ontology: attached DIFFERENTIAL_ARCHETYPE_ONTOLOGY
+	ontology: DIFFERENTIAL_ARCHETYPE_ONTOLOGY
 
 	ontology_unused_term_codes: ARRAYED_LIST [STRING]
 			-- list of at codes found in ontology that are not referenced anywhere in the archetype definition
@@ -222,26 +222,29 @@ feature {ARCH_CAT_ARCHETYPE} -- Structure
 		do
 			converted_def := definition.deep_twin
 			create def_it.make (definition)
-			def_it.do_at_surface (agent node_set_differential_path, agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN do Result := not a_c_node.is_path_compressible end)
-			definition := converted_def
-			rebuild
+			def_it.do_at_surface (agent node_set_differential_path,
+				agent (a_c_node: ARCHETYPE_CONSTRAINT): BOOLEAN
+					do
+						Result := not a_c_node.is_path_compressible
+					end
+			)
+			if attached converted_def as conv_def then
+				definition := conv_def
+				rebuild
+			end
 		end
 
-	converted_def: attached C_COMPLEX_OBJECT
+	converted_def: detachable C_COMPLEX_OBJECT
 
 	node_set_differential_path (a_c_node: ARCHETYPE_CONSTRAINT; depth: INTEGER)
 			-- FIXME: only needed while differential archetype source is being created in uncompressed form
 			-- perform validation of node against reference model
 			-- This function gets executed on nodes 1 level BELOW where the is_congruent marker is True
-		local
-			co2: C_OBJECT
-			ca2: C_ATTRIBUTE
 		do
 			if attached {C_ATTRIBUTE} a_c_node as ca then
 				-- these are attributes that are not congruent to any node in the parent archetype,
 				-- i.e. they don't exist in the parent.
-				if converted_def.has_attribute_path (ca.path) then
-					ca2 := converted_def.c_attribute_at_path (ca.path)
+				if converted_def.has_attribute_path (ca.path) and then attached converted_def.c_attribute_at_path (ca.path) as ca2 then
 					if not ca2.has_differential_path then
 						debug("compress")
 							io.put_string ("Compressing path at ATTR " + ca.path + "%N")
@@ -255,8 +258,7 @@ feature {ARCH_CAT_ARCHETYPE} -- Structure
 				end
 			elseif attached {C_OBJECT} a_c_node as co then
 				if not co.is_root then
-					if converted_def.has_object_path (co.path) then
-						co2 := converted_def.c_object_at_path (co.path)
+					if converted_def.has_object_path (co.path) and then attached converted_def.c_object_at_path (co.path) as co2 then
 						if not co2.parent.has_differential_path then
 							debug("compress")
 								io.put_string ("Compressing path of ATTR above OBJ with path " + co.path + "%N")
@@ -307,12 +309,6 @@ feature -- Modification
 				ontology.remove_constraint_definition (codes_csr.item)
 			end
 		end
-
-feature {NONE} -- Implementation
-
-	inherited_subtree_list: HASH_TABLE [ARCHETYPE_CONSTRAINT, STRING]
-			-- table of {object_node, path} of nodes at the top of inherited subtrees,
-			-- that if deleted should bring the archetype back to differential form
 
 end
 

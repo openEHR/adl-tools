@@ -1,20 +1,12 @@
 note
-
 	component:   "openEHR Common Archetype Model"
-
 	description: "parent type of constrainer types of simple types"
 	keywords:    "archetype, string, data"
-
 	design:      "openEHR Common Archetype Model 0.2"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2000- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class C_PRIMITIVE
 
@@ -58,10 +50,10 @@ feature -- Status Report
 
 feature -- Modification
 
-	set_assumed_value (a_value: like assumed_value)
+	set_assumed_value (a_value: like prototype_value)
 			-- set `assumed_value'
 		require
-			valid_value(a_value)
+			valid_value (a_value)
 		do
 			assumed_value := a_value
 		ensure

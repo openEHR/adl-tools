@@ -33,7 +33,22 @@ note
 				    end
 				    
 				    This class can then be inherited by the class MESSAGE_DB in any app.
-				   ]"
+				    
+						USAGE:
+						   msgdbc.exe [-l <lang>] [-s <directory>] [-o <directory>] [-v] [-nologo]
+
+						OPTIONS:
+						   Options should be prefixed with: '-' or '/'
+
+						   -l --lang      : language (Optional)
+						                    <lang>: language code
+						   -s --source_dir: source directory (Optional)
+						                    <directory>: directory
+						   -o --output_dir: output directory (Optional)
+						                    <directory>: directory
+						   -? --help      : Display usage information. (Optional)
+						   -v --version   : Displays version information. (Optional)
+  				   ]"
 	keywords:    "Internationalisation, I18N, Localisation, L10N"
 	author:      "Thomas Beale <thomas.beale@OceanInformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
@@ -46,14 +61,17 @@ class
 inherit
 	SHARED_MESSAGE_DB
 
-	KL_SHARED_FILE_SYSTEM
-
 	ANY_VALIDATOR
+
+	SHARED_RESOURCES
+		export
+			{NONE} all
+		end
 
 create
 	make
 
-feature -- Definition
+feature -- Definitions
 
 	Error_file_extension: STRING = ".txt"
 
@@ -81,7 +99,9 @@ feature -- Commands
 			populate (options_processor.msg_source_dir, options_processor.locale_lang)
 			if passed then
 				class_generator.generate (message_defs)
-				file_path := file_system.pathname (options_processor.output_file_dir, class_generator.class_name.as_lower + ".e")
+				check attached file_system.pathname (options_processor.output_file_dir, class_generator.class_name.as_lower + ".e") as pn then
+					file_path := pn
+				end
 				create fd.make_create_read_write (file_path)
 				fd.put_string (class_generator.output)
 				io.put_string ("Wrote class text to " + file_path + "%N")
@@ -99,7 +119,7 @@ feature {NONE} -- Implementation
 
 	options_processor: OPTIONS_PROCESSOR
 		once
-			create Result.make
+			create Result.make (locale_language_short)
 			Result.set_is_usage_displayed_on_error (True)
 		end
 
@@ -111,17 +131,19 @@ feature {NONE} -- Implementation
 			dir: DIRECTORY
 			found_count: INTEGER
 		do
-			create message_defs.make (0)
+			create message_defs.make (1000)
 			create dir.make (a_msg_db_dir)
 			if dir.exists then
 				dir.open_read
 				across dir.linear_representation as file_names_csr loop
 					if file_names_csr.item.ends_with (Error_file_extension) then
 						found_count := found_count + 1
-						file_path := file_system.pathname (a_msg_db_dir, file_names_csr.item)
+						check attached file_system.pathname (a_msg_db_dir, file_names_csr.item) as pn then
+							file_path := pn
+						end
 						create msg_file.make (file_path)
 						if not msg_file.exists or else not msg_file.is_readable then
-							add_error ("Message database file: " + file_path + " does not exist or not readable%N", Void)
+							add_error ("msg_file_not_found", <<file_path>>)
 						else
 							msg_file.open_read
 							msg_file.read_stream (msg_file.count)
@@ -131,10 +153,10 @@ feature {NONE} -- Implementation
 					end
 				end
 				if found_count = 0 then
-					add_error ("No message files found in " + a_msg_db_dir + "%N", Void)
+					add_error ("msg_files_dir_empty", <<a_msg_db_dir>>)
 				end
 			else
-				add_error ("Message database directory: " + a_msg_db_dir + " does not exist or not readable%N", Void)
+				add_error ("msg_files_dir_not_found", <<a_msg_db_dir>>)
 			end
 		end
 
@@ -164,15 +186,17 @@ feature {NONE} -- Implementation
 								message_defs.put (msg_def_csr.item, msg_def_csr.key)
 								key_file_xref.put (a_file_path, msg_def_csr.key)
 							else
-								add_error ("Key " + msg_def_csr.key + " in file " + a_file_path + "already defined in file " + key_file_xref.item (msg_def_csr.key) + "%N", Void)
+								check attached key_file_xref.item (msg_def_csr.key) as kfx then
+									add_error ("dup_key_in_other_file", <<msg_def_csr.key, a_file_path, kfx>>)
+								end
 							end
 						end
 					else
-						add_error ("Language " + a_locale_lang + " not found in file " + a_file_path + "%N", Void)
+						add_error ("lang_not_found", <<a_locale_lang, a_file_path>>)
 					end
 				end
 			else
-				add_error ("dADL parsing failure in message file " + a_file_path + ": " + dadl_parser.errors.as_string + "%N", Void)
+				add_error ("dadl_parse_failure", <<a_file_path, dadl_parser.errors.as_string>>)
 			end
 		end
 

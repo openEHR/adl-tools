@@ -54,12 +54,15 @@ feature -- Visitor
 		local
 			spec_sts: SPECIALISATION_STATUS
 		do
-			spec_sts := a_node.inferred_specialisation_status (archetype_specialisation_level)
-			from a_node.attributes.start until a_node.attributes.off loop
-				spec_sts := spec_sts.specialisation_dominant_status (a_node.attributes.item.inferred_rolled_up_specialisation_status)
-				a_node.attributes.forth
+			if attached a_node.inferred_specialisation_status (archetype_specialisation_level) as ss then
+				spec_sts := ss
+				across a_node.attributes as attrs_csr loop
+					if attached attrs_csr.item.inferred_rolled_up_specialisation_status as attr_ss then
+						spec_sts := spec_sts.specialisation_dominant_status (attr_ss)
+					end
+				end
+				a_node.set_inferred_rolled_up_specialisation_status (spec_sts)
 			end
-			a_node.set_inferred_rolled_up_specialisation_status (spec_sts)
 		end
 
 	end_c_attribute (a_node: C_ATTRIBUTE; depth: INTEGER)
@@ -67,24 +70,27 @@ feature -- Visitor
 		local
 			spec_sts: SPECIALISATION_STATUS
 		do
-			spec_sts := a_node.inferred_specialisation_status (archetype_specialisation_level)
-			from a_node.children.start until a_node.children.off loop
-				spec_sts := spec_sts.specialisation_dominant_status (a_node.children.item.inferred_rolled_up_specialisation_status)
-				a_node.children.forth
+			if attached a_node.inferred_specialisation_status (archetype_specialisation_level) as ss then
+				spec_sts := ss
+				across a_node.children as child_csr loop
+					if attached child_csr.item.inferred_rolled_up_specialisation_status as child_ss then
+						spec_sts := spec_sts.specialisation_dominant_status (child_ss)
+					end
+				end
+				a_node.set_inferred_rolled_up_specialisation_status (spec_sts)
 			end
-			a_node.set_inferred_rolled_up_specialisation_status (spec_sts)
 		end
 
 	start_c_leaf_object (a_node: C_LEAF_OBJECT; depth: INTEGER)
 			-- enter a C_LEAF_OBJECT
 		do
-			a_node.set_inferred_rolled_up_specialisation_status(a_node.inferred_specialisation_status (archetype_specialisation_level))
+			a_node.set_inferred_rolled_up_specialisation_status (a_node.inferred_specialisation_status (archetype_specialisation_level))
 		end
 
 	start_c_reference_object (a_node: C_REFERENCE_OBJECT; depth: INTEGER)
 			-- enter an C_REFERENCE_OBJECT
 		do
-			a_node.set_inferred_rolled_up_specialisation_status(a_node.inferred_specialisation_status (archetype_specialisation_level))
+			a_node.set_inferred_rolled_up_specialisation_status (a_node.inferred_specialisation_status (archetype_specialisation_level))
 		end
 
 	start_c_complex_object (a_node: C_COMPLEX_OBJECT; depth: INTEGER)

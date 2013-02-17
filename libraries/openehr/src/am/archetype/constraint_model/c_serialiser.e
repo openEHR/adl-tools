@@ -2,15 +2,10 @@ note
 	component:   "openEHR Archetype Project"
 	description: "Serialise a C_XXX object structure to any format"
 	keywords:    "test, constraint model"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2003-2010 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class C_SERIALISER
 
@@ -59,6 +54,9 @@ feature {NONE} -- Implementation
 	language: STRING
 			-- IETF RFC 5646 language tag; wll be an exact text match
 			-- for one of the 'languages' in the archetype
+		attribute
+			create Result.make_empty
+		end
 
 end
 

@@ -7,10 +7,6 @@ note
 	copyright:   "Copyright (c) 2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 class ARCHETYPE_STATISTICAL_ANALYSER
 
 inherit
@@ -22,12 +18,16 @@ create
 feature -- Initialisation
 
 	make (a_target_descriptor: ARCH_CAT_ARCHETYPE; in_differential_mode: BOOLEAN)
+		require
+			a_target_descriptor.is_valid
 		do
 			target_descriptor := a_target_descriptor
-			if in_differential_mode then
-				target := a_target_descriptor.differential_archetype
-			else
-				target := a_target_descriptor.flat_archetype
+			check attached a_target_descriptor.differential_archetype as diff_arch and attached a_target_descriptor.flat_archetype as flat_arch then
+				if in_differential_mode then
+					target := diff_arch
+				else
+					target := flat_arch
+				end
 			end
 			create stats.make (target_descriptor.rm_schema)
 		end
@@ -92,12 +92,12 @@ feature {NONE} -- Implementation
 				total_node_count := total_node_count + 1
 
 				-- capture LOCATABLE node count
-				if target_descriptor.rm_schema.has_archetype_parent_class and then
-					target_descriptor.rm_schema.is_descendant_of (co.rm_type_name, target_descriptor.rm_schema.archetype_parent_class)
+				if attached target_descriptor.rm_schema.archetype_parent_class as apc and then
+					target_descriptor.rm_schema.is_descendant_of (co.rm_type_name, apc)
 				then
 					locatable_node_count := locatable_node_count + 1
-				elseif target_descriptor.rm_schema.has_archetype_data_value_parent_class and then -- capture DATA_VALUE node count
-					target_descriptor.rm_schema.is_descendant_of (co.rm_type_name, target_descriptor.rm_schema.archetype_data_value_parent_class)
+				elseif attached target_descriptor.rm_schema.archetype_data_value_parent_class as dvpc and then
+					target_descriptor.rm_schema.is_descendant_of (co.rm_type_name, dvpc)
 				then
 					data_value_node_count := data_value_node_count + 1
 				end

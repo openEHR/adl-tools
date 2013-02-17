@@ -2,15 +2,10 @@ note
 	component:   "openEHR Project"
 	description: "Structured error list with some useful facilities"
 	keywords:    "ADL, archetype"
-	author:      "Thomas Beale"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2010 Ocean Informatics Pty Ltd"
+	copyright:   "Copyright (c) 2010- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
 
 class ERROR_ACCUMULATOR
 
@@ -123,27 +118,27 @@ feature -- Status Setting
 
 feature -- Modification
 
-	add_error (a_code: attached STRING; args: ARRAY[STRING]; a_loc: STRING)
+	add_error (a_code: STRING; args: detachable ARRAY[STRING]; a_loc: detachable STRING)
 		do
 			extend (create {ERROR_DESCRIPTOR}.make (a_code, error_type_error, get_msg (a_code, args), a_loc))
 		end
 
-	add_warning (a_code: attached STRING; args: ARRAY[STRING]; a_loc: STRING)
+	add_warning (a_code: STRING; args: detachable ARRAY[STRING]; a_loc: detachable STRING)
 		do
 			extend (create {ERROR_DESCRIPTOR}.make (a_code, error_type_warning, get_msg (a_code, args), a_loc))
 		end
 
-	add_info (a_code: attached STRING; args: ARRAY[STRING]; a_loc: STRING)
+	add_info (a_code: STRING; args: detachable ARRAY[STRING]; a_loc: detachable STRING)
 		do
 			extend (create {ERROR_DESCRIPTOR}.make (a_code, error_type_info, get_msg (a_code, args), a_loc))
 		end
 
-	add_debug (a_message: attached STRING; a_loc: STRING)
+	add_debug (a_message: STRING; a_loc: detachable STRING)
 		do
 			extend (create {ERROR_DESCRIPTOR}.make ("", error_type_debug, a_message, a_loc))
 		end
 
-	extend (err_desc: attached ERROR_DESCRIPTOR)
+	extend (err_desc: ERROR_DESCRIPTOR)
 		do
 			list.extend(err_desc)
 			has_errors := has_errors or err_desc.severity = Error_type_error
@@ -151,7 +146,7 @@ feature -- Modification
 			has_info := has_info or err_desc.severity = Error_type_info
 		end
 
-	append (other: attached ERROR_ACCUMULATOR)
+	append (other: ERROR_ACCUMULATOR)
 		do
 			list.append (other.list)
 			has_errors := has_errors or other.has_errors
@@ -169,7 +164,7 @@ feature -- Modification
 
 feature -- Output
 
-	as_string: attached STRING
+	as_string: STRING
 			-- generate stringified version of contents, with newlines inserted after each entry
 		do
 			create Result.make(0)
@@ -184,7 +179,7 @@ feature -- Output
 
 feature {ERROR_ACCUMULATOR} -- Implementation
 
-	list: attached ARRAYED_LIST [ERROR_DESCRIPTOR]
+	list: ARRAYED_LIST [ERROR_DESCRIPTOR]
 			-- error output of validator - things that must be corrected
 
 	error_reporting_level_cell: CELL [INTEGER]

@@ -1,20 +1,13 @@
 note
 	component:   "openEHR Data Types"
-
 	description: "Implementation of DV_DATE_TIME"
 	keywords:    "date, time"
-
 	requirements:"ISO 18308 TS V1.0 STR 3.7, 3.10"
 	design:      "openEHR Data Types Reference Model 1.7"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2011- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class DV_DATE_TIME
 
@@ -30,7 +23,7 @@ inherit
 		end
 
 create
-	default_create,	make_from_string, make_date_and_time
+	default_create,	make_from_string, make_date_and_time, make_date_time
 
 feature -- Definitions
 
@@ -41,22 +34,9 @@ feature -- Initialisation
 	default_create
 			-- create the date/time "1800-01-01T00:00:00"
 		do
-			make_from_string (value)
+			make_from_string (Default_value)
 		ensure then
 			default: as_string.is_equal (Default_value)
-		end
-
-	make_from_canonical_string(str: STRING)
-		do
-			make_from_string(str)
-		end
-
-feature -- Status Report
-
-	valid_canonical_string(str: STRING): BOOLEAN
-			-- True if str contains required tags
-		do
-			Result := valid_iso8601_date_time(str)
 		end
 
 feature -- Access
@@ -71,17 +51,32 @@ feature -- Basic Operations
 
 	add (a_diff: like diff): like Current
 			-- Addition of a differential amount to this quantity.
+		local
+			secs: INTEGER
 		do
+			secs := date_part.to_days * seconds_in_day
+			if attached time_part as tp then
+				secs := secs + tp.to_seconds.floor
+			end
+			create Result.make_date_time (create {DATE_TIME}.make_from_epoch (secs + a_diff.to_seconds.floor))
 		end
 
 	subtract (a_diff: like diff): like Current
 			-- Result of subtracting a differential amount from this quantity.
+		local
+			secs: INTEGER
 		do
+			secs := date_part.to_days * seconds_in_day
+			if attached time_part as tp then
+				secs := secs + tp.to_seconds.floor
+			end
+			create Result.make_date_time (create {DATE_TIME}.make_from_epoch (secs - a_diff.to_seconds.floor))
 		end
 
 	diff (other: like Current): DV_DURATION
 			-- Difference of two quantities.
 		do
+			create Result.make_date_time_duration (to_date_time.duration.minus (other.to_date_time.duration))
 		end
 
 feature -- Comparison
@@ -90,13 +85,6 @@ feature -- Comparison
 			-- True for all date/time types
 		do
 			Result := True
-		end
-
-feature -- Output
-
-	as_canonical_string: STRING
-		do
-			Result := as_string
 		end
 
 end

@@ -13,7 +13,7 @@ inherit
 	EV_SHARED_APPLICATION
 		export
 			{NONE} all;
-			{ANY} standard_is_equal, deep_twin, is_deep_equal
+			{ANY} standard_is_equal, is_deep_equal, deep_copy, deep_twin
 		end
 
 create
@@ -84,10 +84,10 @@ feature -- Edit events
 			-- Executing it within a text box would cause it to be performed twice.
 			-- For some actions this wouldn't really matter (cut, copy), but for paste it would be a blatant bug.
 		local
-			t: EV_TEXT_COMPONENT
+			t: detachable EV_TEXT_COMPONENT
 		do
 			t := focused_text
-			if t = Void or attached {EV_RICH_TEXT} t then
+			if not attached t or else attached {EV_RICH_TEXT} t then
 				action.call ([])
 			end
 		end
@@ -106,17 +106,17 @@ feature -- Edit events
 			end
 		end
 
-	focus_first_widget (widget: attached EV_WIDGET)
+	focus_first_widget (widget: EV_WIDGET)
 			-- Set focus to `widget' or to its first child widget that accepts focus.
 		local
 			widgets: LINEAR [EV_WIDGET]
 		do
-			if attached {EV_CONTAINER} widget as container and not attached {EV_GRID} widget as grid then
+			if attached {EV_CONTAINER} widget as container and not attached {EV_GRID} widget as grid and attached ev_application.focused_widget as fw then
+				widgets := container.linear_representation
 				from
-					widgets := container.linear_representation
 					widgets.start
 				until
-					widgets.off or container.has_recursive (ev_application.focused_widget)
+					widgets.off or container.has_recursive (fw)
 				loop
 					focus_first_widget (widgets.item)
 					widgets.forth
@@ -133,11 +133,13 @@ feature {NONE} -- Implementation
 	notebook_containing_focused_widget: detachable EV_NOTEBOOK
 			-- The notebook, if any, containing the currently focused widget.
 		local
-			container: EV_CONTAINER
+			container: detachable EV_CONTAINER
 		do
-			if root.has_recursive (ev_application.focused_widget) then
-				from container := ev_application.focused_widget.parent until container = Void or Result /= Void loop
-					Result ?= container
+			if attached ev_application.focused_widget as fw and then root.has_recursive (fw) then
+				from container := fw.parent until container = Void or attached Result loop
+					if attached {EV_NOTEBOOK} container as c then
+						Result := c
+					end
 					container := container.parent
 				end
 			end
@@ -146,14 +148,12 @@ feature {NONE} -- Implementation
 	focused_text: detachable EV_TEXT_COMPONENT
 			-- The currently focused text widget, if any.
 		do
-			Result ?= ev_application.focused_widget
-
-			if not root.has_recursive (Result) then
-				Result := Void
+			if attached {EV_TEXT_COMPONENT} ev_application.focused_widget as fw and then root.has_recursive (fw) then
+				Result := fw
 			end
 		ensure
-			focused: Result /= Void implies Result.has_focus
-			in_this_window: Result /= Void implies root.has_recursive (Result)
+			focused: attached Result implies Result.has_focus
+			in_this_window: attached Result implies root.has_recursive (Result)
 		end
 
 end

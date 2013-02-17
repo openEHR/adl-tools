@@ -17,19 +17,15 @@ inherit
 			{ANY} deep_copy, deep_twin, is_deep_equal, standard_is_equal
 		end
 
-feature -- Initialisation
-
-	make
-		do
-			create packages.make (0)
-		end
-
 feature -- Access
 
 	packages: HASH_TABLE [BMM_PACKAGE_DEFINITION, STRING]
 			-- child packages; keys all in upper case for guaranteed matching
+		attribute
+			create Result.make (0)
+		end
 
-	package_at_path (a_path: STRING): BMM_PACKAGE_DEFINITION
+	package_at_path (a_path: STRING): detachable BMM_PACKAGE_DEFINITION
 			-- package at the path `a_path'
 		require
 			has_package_path (a_path)
@@ -40,7 +36,9 @@ feature -- Access
 			pkg_names.start
 			Result := packages.item (pkg_names.item)
 			from pkg_names.forth until pkg_names.off loop
-				Result := Result.packages.item (pkg_names.item)
+				if attached Result.packages.item (pkg_names.item) as pkg then
+					Result := pkg
+				end
 				pkg_names.forth
 			end
 		end
@@ -56,7 +54,9 @@ feature -- Status Report
 			pkg_names := a_path.as_upper.split (Package_name_delimiter)
 			pkg_csr := Current
 			from pkg_names.start until pkg_names.off or not pkg_csr.packages.has (pkg_names.item) loop
-				pkg_csr := pkg_csr.packages.item (pkg_names.item)
+				if attached pkg_csr.packages.item (pkg_names.item) as pkg then
+					pkg_csr := pkg
+				end
 				pkg_names.forth
 			end
 			Result := pkg_names.off

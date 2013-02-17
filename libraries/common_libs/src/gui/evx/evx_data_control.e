@@ -16,7 +16,7 @@ inherit
 	SHARED_APP_UI_RESOURCES
 		export
 			{NONE} all;
-			{ANY} standard_is_equal, deep_twin, is_deep_equal
+			{ANY} deep_twin, is_deep_equal, standard_is_equal
 		end
 
 	EVX_UTILITIES
@@ -36,7 +36,7 @@ feature -- Access
 		deferred
 		end
 
-	data_source_agent: FUNCTION [ANY, TUPLE, ANY]
+	data_source_agent: FUNCTION [ANY, TUPLE, detachable ANY]
 			-- specialise in descendants
 
 	data_source_setter_agent: detachable PROCEDURE [ANY, TUPLE [ANY]]

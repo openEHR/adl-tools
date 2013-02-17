@@ -10,11 +10,6 @@ note
 	copyright:   "Copyright (c) 2012 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
 
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
-
-
 deferred class EVX_TITLED_DATA_CONTROL
 
 inherit
@@ -44,16 +39,15 @@ feature -- Initialisation
 			else
 				create {EV_VERTICAL_BOX} ev_root_container
 			end
-			ev_root_container.set_data (Current)
 
 			-- if there is a title, set appropriate padding & border
-			if attached a_title and then not a_title.is_empty then
+			if attached a_title as t and then not t.is_empty then
 				ev_root_container.set_padding (Default_padding_width)
 				ev_root_container.set_border_width (Default_border_width)
 
 				-- create the title and add to ev_container
 				create ev_title_label
-				ev_title_label.set_text (a_title)
+				ev_title_label.set_text (t)
 				ev_root_container.extend (ev_title_label)
 				ev_root_container.disable_item_expand (ev_title_label)
 
@@ -81,6 +75,7 @@ feature -- Initialisation
 				ev_root_container.extend (create {EV_CELL})
 				ev_root_container.disable_item_expand (ev_data_control)
 			end
+	--		ev_root_container.set_data (Current)
 		ensure
 			not is_readonly
 		end
@@ -99,7 +94,7 @@ feature -- Initialisation
 	make_linked (a_title: STRING; a_data_source_agent: like data_source_agent;
 				a_data_source_create_agent: like data_source_setter_agent;
 				a_data_source_remove_agent: like data_source_remove_agent;
-				an_undo_redo_chain: detachable UNDO_REDO_CHAIN;
+				an_undo_redo_chain: like undo_redo_chain;
 				min_height, min_width: INTEGER; arrange_horizontally: BOOLEAN)
 			-- make with active editing agents so that changes made in the visual control
 			-- affect the data source
@@ -116,7 +111,11 @@ feature -- Access
 
 	ev_root_container: EV_BOX
 
-	ev_title_label: EV_LABEL
+	ev_title_label: detachable EV_LABEL
+		note
+			option: stable
+		attribute
+		end
 
 feature -- Commands
 

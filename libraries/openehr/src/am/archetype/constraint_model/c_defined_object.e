@@ -5,14 +5,10 @@ note
 				 defined as references to exterior resources.
 				 ]"
 	keywords:    "ADL"
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.com>"
-	copyright:   "Copyright (c) 2006 Ocean Informatics Pty Ltd"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2006- The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 deferred class C_DEFINED_OBJECT
 
@@ -21,12 +17,12 @@ inherit
 
 feature -- Access
 
-	prototype_value: attached ANY
+	prototype_value: ANY
 			-- 	generate a default value from this constraint object
 		deferred
 		end
 
-    assumed_value: like prototype_value
+    assumed_value: detachable like prototype_value
             -- value to be assumed if none sent in data
 
 feature -- Status Report
@@ -36,14 +32,14 @@ feature -- Status Report
 		deferred
 		end
 
-	valid_value (a_value: attached like prototype_value): BOOLEAN
+	valid_value (a_value: like prototype_value): BOOLEAN
 		deferred
 		end
 
 	has_assumed_value: BOOLEAN
 			-- True if there is an assumed value
 		do
-			Result := assumed_value /= Void
+			Result := attached assumed_value
 		end
 
 feature -- Modification
@@ -59,7 +55,7 @@ feature -- Modification
 		end
 
 invariant
-	Assumed_value_valid: assumed_value /= Void implies valid_value(assumed_value)
+	Assumed_value_valid: attached assumed_value as av implies valid_value (av)
 	Any_allowed_validity: not (any_allowed and is_prohibited)
 
 end

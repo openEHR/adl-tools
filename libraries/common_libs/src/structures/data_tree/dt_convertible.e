@@ -27,7 +27,7 @@ feature -- Initialisation
 
 feature -- Representation
 
-	dt_representation: DT_COMPLEX_OBJECT_NODE
+	dt_representation: detachable DT_COMPLEX_OBJECT_NODE
 			-- representation as a data tree
 		note
 			option: transient
@@ -53,7 +53,7 @@ feature -- Duplication
 
 	safe_deep_twin: like Current
 		local
-			dt_co: DT_COMPLEX_OBJECT_NODE
+			dt_co: detachable DT_COMPLEX_OBJECT_NODE
 		do
 			dt_co := dt_representation
 			dt_representation := Void
@@ -63,7 +63,7 @@ feature -- Duplication
 
 feature {DT_OBJECT_CONVERTER} -- Conversion
 
-	persistent_attributes: ARRAYED_LIST [STRING]
+	persistent_attributes: detachable ARRAYED_LIST [STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		deferred

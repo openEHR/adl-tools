@@ -2,15 +2,10 @@ note
 	component:   "openEHR re-usable library"
 	description: "Date/time routines"
 	keywords:    "date time"
-
-	author:      "Thomas Beale"
-	support:     "Ocean Informatics <support@OceanInformatics.biz>"
-	copyright:   "Copyright (c) 2000-2004 The openEHR Foundation <http://www.openEHR.org>"
+	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
+	support:     "http://www.openehr.org/issues/browse/AWB"
+	copyright:   "Copyright (c) 2000 The openEHR Foundation <http://www.openEHR.org>"
 	license:     "See notice at bottom of class"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class DATE_TIME_ROUTINES
 
@@ -19,7 +14,7 @@ inherit
 
 feature -- Definitions
 
-	valid_date_constraint_patterns: attached ARRAYED_LIST [STRING]
+	valid_date_constraint_patterns: ARRAYED_LIST [STRING]
 			-- List of allowed date constraints.
 		once
 			create Result.make (0)
@@ -34,7 +29,7 @@ feature -- Definitions
 			not_empty: not Result.is_empty
 		end
 
-	valid_date_constraint_replacements: attached HASH_TABLE[ARRAY [STRING], STRING]
+	valid_date_constraint_replacements: HASH_TABLE[ARRAY [STRING], STRING]
 			-- List of allowed date constraint replacements e.g. in specialised archetype
 		once
 			create Result.make (0)
@@ -56,7 +51,7 @@ feature -- Definitions
 			not_empty: not Result.is_empty
 		end
 
-	valid_time_constraint_patterns: attached ARRAYED_LIST [STRING]
+	valid_time_constraint_patterns: ARRAYED_LIST [STRING]
 			-- List of allowed time constraints.
 		once
 			create Result.make (0)
@@ -70,7 +65,7 @@ feature -- Definitions
 			not_empty: not Result.is_empty
 		end
 
-	valid_time_constraint_replacements: attached HASH_TABLE[ARRAY [STRING], STRING]
+	valid_time_constraint_replacements: HASH_TABLE[ARRAY [STRING], STRING]
 			-- List of allowed time constraint replacements e.g. in specialised archetype
 		once
 			create Result.make (0)
@@ -91,7 +86,7 @@ feature -- Definitions
 			not_empty: not Result.is_empty
 		end
 
-	valid_date_time_constraint_patterns: attached ARRAYED_LIST [STRING]
+	valid_date_time_constraint_patterns: ARRAYED_LIST [STRING]
 			-- List of allowed date/time constraints.
 		once
 			create Result.make (0)
@@ -106,7 +101,7 @@ feature -- Definitions
 			not_empty: not Result.is_empty
 		end
 
-	valid_date_time_constraint_replacements: attached HASH_TABLE [ARRAY [STRING], STRING]
+	valid_date_time_constraint_replacements: HASH_TABLE [ARRAY [STRING], STRING]
 			-- List of allowed date/time constraint replacements e.g. in specialised archetype
 		once
 			create Result.make (0)
@@ -130,56 +125,49 @@ feature -- Definitions
 
 feature -- Status Report
 
-	valid_iso8601_time_constraint_pattern(s: STRING): BOOLEAN
+	valid_iso8601_time_constraint_pattern (s: STRING): BOOLEAN
 			-- True if string literal like "hh:mm:ss[.ssss]"
 			-- with XX or ?? allowed in mm or ss slots
-		require
-			s_attached: s /= Void
 		do
 			Result := valid_time_constraint_patterns.has (s.as_upper)
 		end
 
-	valid_iso8601_date_constraint_pattern(s: STRING): BOOLEAN
+	valid_iso8601_date_constraint_pattern (s: STRING): BOOLEAN
 			-- True if string literal like "yyyy-MM-dd"
 			-- with XX or ?? allowed in MM or dd slots
-		require
-			s_attached: s /= Void
 		do
 			Result := valid_date_constraint_patterns.has (s.as_upper)
 		end
 
-	valid_iso8601_date_time_constraint_pattern(s: STRING): BOOLEAN
+	valid_iso8601_date_time_constraint_pattern (s: STRING): BOOLEAN
 			-- True if string in form "yyyy-MM-dd hh:mm:ss[.ssss]"
-		require
-			s_attached: s /= Void
 		do
 			Result := valid_date_time_constraint_patterns.has (s.as_upper)
 		end
 
-	valid_iso8601_duration_constraint_pattern(s: STRING): BOOLEAN
+	valid_iso8601_duration_constraint_pattern (s: STRING): BOOLEAN
 			-- True if string in form
 			-- P[Y|y][M|m][W|w][D|d][T[H|h][M|m][S|s]]
 			-- (note: allowing 'W' to be mixed in is an openEHR deviation of ISO 8601)
-		require
-			s_attached: s /= Void
 		local
 			time_leader_pos, i: INTEGER
-			str, ymd_part, hms_part: STRING
+			str: STRING
+			arg_ymd_part, arg_hms_part: detachable STRING
 		do
 			str := s.as_upper
 
 			if str.count >= 2 and str.item(1) = Duration_leader then
-				time_leader_pos := str.index_of(Time_leader, 1)
+				time_leader_pos := str.index_of (Time_leader, 1)
 				if time_leader_pos = 1 then
-					hms_part := str.substring(time_leader_pos + 1, str.count)
+					arg_hms_part := str.substring (time_leader_pos + 1, str.count)
 				elseif time_leader_pos > 1 then
-					hms_part := str.substring(time_leader_pos + 1, str.count)
-					ymd_part := str.substring(2, time_leader_pos - 1)
+					arg_hms_part := str.substring (time_leader_pos + 1, str.count)
+					arg_ymd_part := str.substring (2, time_leader_pos - 1)
 				else
-					ymd_part := str.substring(2, str.count)
+					arg_ymd_part := str.substring (2, str.count)
 				end
 				Result := True
-				if ymd_part /= Void then
+				if attached arg_ymd_part as ymd_part then
 					from
 						i := 1
 					until
@@ -194,7 +182,7 @@ feature -- Status Report
 						i := i + 1
 					end
 				end
-				if Result and hms_part /= Void then
+				if Result and attached arg_hms_part as hms_part then
 					from
 						i := 1
 					until

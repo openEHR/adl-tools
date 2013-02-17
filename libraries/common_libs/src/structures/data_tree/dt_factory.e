@@ -26,34 +26,34 @@ feature -- Access
 			a_parent.put_child(Result)
 		end
 
-	create_attribute_node (a_parent: attached DT_COMPLEX_OBJECT_NODE; a_rel_name: attached STRING; is_multiple: BOOLEAN): attached DT_ATTRIBUTE_NODE
+	create_attribute_node (a_parent: DT_COMPLEX_OBJECT_NODE; a_rel_name: STRING; is_multiple: BOOLEAN): DT_ATTRIBUTE_NODE
 			-- create a rel_node with a simple name like "text" or "description"
 			-- is_multiple flag indicates if multiple cardinality
 		do
 			if is_multiple then
-				create Result.make_container(a_rel_name)
+				create Result.make_container (a_rel_name)
 			else
-				create Result.make_single(a_rel_name)
+				create Result.make_single (a_rel_name)
 			end
 			a_parent.put_attribute(Result)
 		end
 
-	create_dt_primitive_object (a_parent: attached DT_ATTRIBUTE_NODE; an_item: attached ANY; a_node_id: detachable STRING): attached DT_PRIMITIVE_OBJECT
+	create_dt_primitive_object (a_parent: DT_ATTRIBUTE_NODE; an_item: ANY; a_node_id: detachable STRING): DT_PRIMITIVE_OBJECT
 			-- an_item must be STRING, INTEGER, REAL, DOUBLE, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION
 		require
-			an_item_valid: has_dt_primitive_atomic_type(an_item)
+			an_item_valid: has_dt_primitive_atomic_type (an_item)
 			a_node_id_valid: attached a_node_id implies not a_node_id.is_empty
 		do
 			if attached a_node_id then
-				create Result.make_identified(an_item, a_node_id)
+				create Result.make_identified (an_item, a_node_id)
 			else
-				create Result.make_anonymous(an_item)
+				create Result.make_anonymous (an_item)
 			end
 			a_parent.put_child(Result)
 		end
 
-	create_primitive_object_list (a_parent: attached DT_ATTRIBUTE_NODE; an_item: attached LIST [ANY]; a_node_id: detachable STRING): attached DT_PRIMITIVE_OBJECT_LIST
+	create_primitive_object_list (a_parent: DT_ATTRIBUTE_NODE; an_item: LIST [ANY]; a_node_id: detachable STRING): DT_PRIMITIVE_OBJECT_LIST
 			-- an_item must conform to LIST of STRING, INTEGER, REAL, DOUBLE, BOOLEAN, CHARACTER,
 			-- DATE, TIME, DATE_TIME, DATE_TIME_DURATION
 		require
@@ -75,9 +75,9 @@ feature -- Access
 			a_node_id_valid: a_node_id /= Void implies not a_node_id.is_empty
 		do
 			if a_node_id /= Void then
-				create Result.make_identified(create {CODE_PHRASE}.make_from_string(a_qualified_code), a_node_id)
+				create Result.make_identified (create {CODE_PHRASE}.make_from_string(a_qualified_code), a_node_id)
 			else
-				create Result.make_anonymous(create {CODE_PHRASE}.make_from_string(a_qualified_code))
+				create Result.make_anonymous (create {CODE_PHRASE}.make_from_string(a_qualified_code))
 			end
 			a_parent.put_child(Result)
 		end

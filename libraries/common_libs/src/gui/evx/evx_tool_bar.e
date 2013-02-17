@@ -15,7 +15,7 @@ inherit
 	EVX_DEFINITIONS
 		export
 			{NONE} all;
-			{ANY} standard_is_equal, deep_twin, is_deep_equal
+			{ANY} standard_is_equal, is_deep_equal, deep_copy, deep_twin
 		end
 
 	EVX_UTILITIES
@@ -48,17 +48,17 @@ feature -- Access
 
 	ev_root_container: EV_BOX
 
-	last_label: EV_LABEL
+	last_label: detachable EV_LABEL
 
-	last_text_field: EV_TEXT_FIELD
+	last_text_field: detachable EV_TEXT_FIELD
 
-	last_tool_bar: EV_TOOL_BAR
+	last_tool_bar: detachable EV_TOOL_BAR
 
-	last_tool_bar_radio_button: EV_TOOL_BAR_RADIO_BUTTON
+	last_tool_bar_radio_button: detachable EV_TOOL_BAR_RADIO_BUTTON
 
-	last_tool_bar_button: EV_TOOL_BAR_BUTTON
+	last_tool_bar_button: detachable EV_TOOL_BAR_BUTTON
 
-	last_combo_box: EV_COMBO_BOX
+	last_combo_box: detachable EV_COMBO_BOX
 
 feature -- Status Report
 
@@ -72,62 +72,73 @@ feature -- Modification
 
 	add_label (a_text: STRING; a_min_width: INTEGER; expandable, align_right: BOOLEAN)
 			-- add an EV_LABEL. If `a_min_width' = 0, don't set width
+		local
+			new_label: EV_LABEL
 		do
-			create last_label
-			last_label.set_text (a_text)
+			create new_label
+			last_label := new_label
+			new_label.set_text (a_text)
 			if a_min_width > 0 then
-				last_label.set_minimum_width (a_min_width)
+				new_label.set_minimum_width (a_min_width)
 			end
 			if align_right then
-				last_label.align_text_right
+				new_label.align_text_right
 			end
-			ev_root_container.extend (last_label)
+			ev_root_container.extend (new_label)
 			if not expandable then
-				ev_root_container.disable_item_expand (last_label)
+				ev_root_container.disable_item_expand (new_label)
 			end
 		end
 
 	add_titled_label (a_title, a_text, a_tooltip_text: STRING; a_min_width: INTEGER)
 		do
 			add_label (a_title, 0, False, True)
-			if not a_tooltip_text.is_empty then
-				last_label.set_tooltip (a_tooltip_text)
+			if not a_tooltip_text.is_empty and attached last_label as new_label then
+				new_label.set_tooltip (a_tooltip_text)
 			end
 			add_label (a_text, a_min_width, False, False)
 		end
 
 	add_expanding_text_field (a_title, a_tooltip_text: STRING)
 			-- add an EV_TEXT_FIELD
+		local
+			new_text_field: EV_TEXT_FIELD
 		do
 			if not a_title.is_empty then
 				add_label (a_title, 0, False, True)
 			end
-			create last_text_field
+			create new_text_field
+			last_text_field := new_text_field
 			if not a_tooltip_text.is_empty then
-				last_text_field.set_tooltip (a_tooltip_text)
+				new_text_field.set_tooltip (a_tooltip_text)
 			end
-			ev_root_container.extend (last_text_field)
+			ev_root_container.extend (new_text_field)
 		end
 
 	add_fixed_text_field (a_title, a_tooltip_text: STRING; a_min_width: INTEGER)
 			-- add a fixed width EV_TEXT_FIELD
 		do
 			add_expanding_text_field (a_title, a_tooltip_text)
-			last_text_field.set_minimum_width (a_min_width)
-			ev_root_container.disable_item_expand (last_text_field)
+			if attached last_text_field as new_text_field then
+				new_text_field.set_minimum_width (a_min_width)
+				ev_root_container.disable_item_expand (new_text_field)
+		end
 		end
 
 	add_expanding_combo_box (a_title, a_tooltip_text: STRING; a_select_action: detachable PROCEDURE [ANY, TUPLE])
 			-- add an EV_COMBO_BOX; if `a_title' or `a_tooltip_text' are empty, don't add them
+		local
+			new_combo_box: EV_COMBO_BOX
 		do
 			if not a_title.is_empty then
 				add_label (a_title, 0, False, True)
 			end
-			create last_combo_box
-			last_combo_box.set_tooltip (a_tooltip_text)
-			ev_root_container.extend (last_combo_box)
+			create new_combo_box
+			last_combo_box := new_combo_box
+			new_combo_box.set_tooltip (a_tooltip_text)
+			ev_root_container.extend (new_combo_box)
 			if attached a_select_action then
-				last_combo_box.select_actions.extend (a_select_action)
+				new_combo_box.select_actions.extend (a_select_action)
 			end
 		end
 
@@ -135,18 +146,23 @@ feature -- Modification
 			-- add a fixed width EV_COMBO_BOX
 		do
 			add_expanding_combo_box (a_title, a_tooltip_text, a_select_action)
-			ev_root_container.disable_item_expand (last_combo_box)
-			last_combo_box.set_minimum_width (a_min_combo_width)
+			if attached last_combo_box as new_combo_box then
+				ev_root_container.disable_item_expand (new_combo_box)
+				new_combo_box.set_minimum_width (a_min_combo_width)
+		end
 		end
 
 	add_tool_bar
 			-- add an EV_TOOL_BAR;
 			-- calls to `add_tool_bar_*' will add to this toolbar
 			-- until another call is made to this routine
+		local
+			new_tool_bar: EV_TOOL_BAR
 		do
-			create last_tool_bar
-			ev_root_container.extend (last_tool_bar)
-			ev_root_container.disable_item_expand (last_tool_bar)
+			create new_tool_bar
+			last_tool_bar := new_tool_bar
+			ev_root_container.extend (new_tool_bar)
+			ev_root_container.disable_item_expand (new_tool_bar)
 		ensure
 			has_ev_tool_bar
 		end
@@ -162,18 +178,23 @@ feature -- Modification
 
 	add_tool_bar_radio_button (an_active_pixmap: detachable EV_PIXMAP; a_tooltip_text: detachable STRING; a_select_action: detachable PROCEDURE [ANY, TUPLE])
 			-- add a radio button to current EV_TOOL_BAR
+		local
+			new_tb_radio_button: EV_TOOL_BAR_RADIO_BUTTON
 		do
-			create last_tool_bar_radio_button
-			last_tool_bar.extend (last_tool_bar_radio_button)
+			create new_tb_radio_button
+			last_tool_bar_radio_button := new_tb_radio_button
 			if attached an_active_pixmap then
-				last_tool_bar_radio_button.set_pixmap (an_active_pixmap)
+				new_tb_radio_button.set_pixmap (an_active_pixmap)
 			end
 			if attached a_tooltip_text then
-				last_tool_bar_radio_button.set_tooltip (a_tooltip_text)
+				new_tb_radio_button.set_tooltip (a_tooltip_text)
 			end
 			if attached a_select_action then
-				last_tool_bar_radio_button.select_actions.extend (a_select_action)
+				new_tb_radio_button.select_actions.extend (a_select_action)
 			end
+			if attached last_tool_bar as last_tb then
+				last_tb.extend (new_tb_radio_button)
+		end
 		end
 
 	add_tool_bar_button (an_active_pixmap, an_inactive_pixmap: detachable EV_PIXMAP; a_tooltip_text: detachable STRING; a_select_action: detachable PROCEDURE [ANY, TUPLE])
@@ -185,8 +206,10 @@ feature -- Modification
 		do
 			create gui_button.make (an_active_pixmap, an_inactive_pixmap, a_tooltip_text, a_select_action)
 			last_tool_bar_button := gui_button.ev_button
-			last_tool_bar.extend (last_tool_bar_button)
-			last_tool_bar_button.set_data (gui_button)
+			gui_button.ev_button.set_data (gui_button)
+			if attached last_tool_bar as last_tb then
+				last_tb.extend (gui_button.ev_button)
+		end
 		end
 
 	activate_tool_bar_button (a_tool_bar_button: EV_TOOL_BAR_BUTTON)

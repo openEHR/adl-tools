@@ -2,7 +2,6 @@ note
 	component:   "openEHR re-usable library"
 	description: "dADL Persistent form of BMM_SCHEMA"
 	keywords:    "Basic meta-model"
-
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
 	copyright:   "Copyright (c) 2011- The openEHR Foundation <http://www.openEHR.org>"
@@ -14,9 +13,6 @@ inherit
 	BMM_SCHEMA_CORE
 
 	P_BMM_PACKAGE_CONTAINER
-		rename
-			make as make_package_container
-		end
 
 	DT_CONVERTIBLE
 		redefine
@@ -46,11 +42,14 @@ feature -- Initialisation
 			-- make in a safe way for DT building purposes
 		do
 			reset
+			state := State_created
+			create archetype_rm_closure_packages.make (0)
+			archetype_rm_closure_packages.compare_objects
 		end
 
 feature -- Access (attributes from schema)
 
-	bmm_version: STRING
+	bmm_version: detachable STRING
 			-- version of BMM model, enabling schema evolution reasoning
 			-- DO NOT RENAME OR OTHERWISE CHANGE THIS ATTRIBUTE EXCEPT IN SYNC WITH RM SCHEMA
 
@@ -84,19 +83,21 @@ feature -- Access (Attributes from schema load post-processing)
 		note
 			option: transient
 		attribute
-			Result := State_created
 		end
 
 	canonical_packages: HASH_TABLE [P_BMM_PACKAGE_DEFINITION, STRING]
 			-- package structure in which all top-level qualified package names like xx.yy.zz have been
 			-- expanded out to a hierarchy of BMM_PACKAGE_DEFINITION objects
-		note
-			option: transient
-		attribute
-			create Result.make (0)
+		do
+			if attached canonical_packages_cache as cpc then
+				Result := cpc
+			else
+				create Result.make (0)
+				canonical_packages_cache := Result
+			end
 		end
 
-	bmm_schema: BMM_SCHEMA
+	bmm_schema: detachable BMM_SCHEMA
 		note
 			option: transient
 		attribute
@@ -104,11 +105,14 @@ feature -- Access (Attributes from schema load post-processing)
 
 	includes_to_process: ARRAYED_LIST [STRING]
 			-- list of includes to process during setup
-		note
-			option: transient
-		attribute
-			create Result.make (0)
-			Result.compare_objects
+		do
+			if attached includes_to_process_cache as ipc then
+				Result := ipc
+			else
+				create Result.make (0)
+				Result.compare_objects
+				includes_to_process_cache := Result
+			end
 		end
 
 	bmm_version_from_schema: BOOLEAN
@@ -122,14 +126,18 @@ feature -- Access (Attributes from schema load post-processing)
 
 	ancestors_index: HASH_TABLE [ARRAYED_SET [STRING], STRING]
 			-- index of all ancestors of each class
-		note
-			option: transient
-		attribute
+		do
+			if attached ancestors_index_cache as aic then
+				Result := aic
+			else
+				create Result.make (0)
+				ancestors_index_cache := Result
+			end
 		end
 
 feature -- Access
 
-	class_definition (a_class_name: attached STRING): P_BMM_CLASS_DEFINITION
+	class_definition (a_class_name: STRING): detachable P_BMM_CLASS_DEFINITION
 			-- class definition corresponding to `a_class_name'
 		require
 			Class_valid: has_class_definition (a_class_name)
@@ -146,7 +154,7 @@ feature -- Access
 
 feature -- Status Report
 
-	has_class_definition (a_class_name: attached STRING): BOOLEAN
+	has_class_definition (a_class_name: STRING): BOOLEAN
 			-- True if `a_class_name' has a class definition or is a primitive type in the model. Note that a_type_name
 			-- could be a generic type string; only the root class is considered
 		require
@@ -158,7 +166,7 @@ feature -- Status Report
 			Result := primitive_types.has (a_key) or class_definitions.has (a_key)
 		end
 
-	has_canonical_package_path (a_path: attached STRING): BOOLEAN
+	has_canonical_package_path (a_path: STRING): BOOLEAN
 			-- True if there is a package at the path `a_path' under this package
 		local
 			pkg_names: LIST [STRING]
@@ -166,10 +174,12 @@ feature -- Status Report
 		do
 			pkg_names := a_path.as_upper.split (Package_name_delimiter)
 			pkg_names.start
-			if canonical_packages.has (pkg_names.item) then
-				pkg_csr := canonical_packages.item (pkg_names.item)
+			if canonical_packages.has (pkg_names.item) and then attached canonical_packages.item (pkg_names.item) as pkg then
+				pkg_csr := pkg
 				from pkg_names.forth until pkg_names.off or not pkg_csr.packages.has (pkg_names.item) loop
-					pkg_csr := pkg_csr.packages.item (pkg_names.item)
+					if attached pkg_csr.packages.item (pkg_names.item) as pkg2 then
+						pkg_csr := pkg2
+					end
 					pkg_names.forth
 				end
 				Result := pkg_names.off
@@ -205,7 +215,7 @@ feature -- Comparison
 			end
 		end
 
-	type_conforms_to (type_1, type_2: attached STRING): BOOLEAN
+	type_conforms_to (type_1, type_2: STRING): BOOLEAN
 			-- check conformance of type 1 to type 2 for substitutability; each type may be generic
 		local
 			tlist1, tlist2: ARRAYED_LIST[STRING]
@@ -225,13 +235,13 @@ feature -- Comparison
 			end
 		end
 
-	type_strictly_conforms_to (type_1, type_2: attached STRING): BOOLEAN
+	type_strictly_conforms_to (type_1, type_2: STRING): BOOLEAN
 			-- check conformance of type 1 to type 2 for redefinition; each type may be generic
 		do
 			Result := not type_same_as (type_1, type_2) and then type_conforms_to (type_1, type_2)
 		end
 
-	type_same_as (type_1, type_2: attached STRING): BOOLEAN
+	type_same_as (type_1, type_2: STRING): BOOLEAN
 			-- check if type 1 and type 2 are identical; each type may be generic
 		do
 			Result := type_name_as_flat_list (type_1).is_equal (type_name_as_flat_list (type_2))
@@ -318,40 +328,40 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 			state = State_validated_created
 		local
 			child_pkg: P_BMM_PACKAGE_DEFINITION
-			child_pkg_names: LIST [STRING]
 			pkg_csr: like packages
 			child_pkg_key: STRING
 		do
 			-- top-level package canonicalisation: the result is that in each P_BMM_SCHEMA, the
 			-- attribute `canonical_packages' contains the mergeable structure
-			create canonical_packages.make(0)
 			across packages as top_packages_csr loop
-				if top_packages_csr.item.name.has (package_name_delimiter) then
-					-- iterate over qualified name, inserting new packages for each of these names.
-					-- E.g. 'rm.composition.content' causes three new packages 'rm', 'composition'
-					-- and 'content' to be created and linked, with the 'rm' one being put in
-					-- `canonical_packages'
-					pkg_csr := canonical_packages
-					child_pkg_names := top_packages_csr.item.name.split (Package_name_delimiter)
-					across child_pkg_names as child_pkg_names_csr loop
-						child_pkg_key := child_pkg_names_csr.item.as_upper
-						if not pkg_csr.has (child_pkg_key) then
-							create child_pkg.make (child_pkg_names_csr.item)
-							pkg_csr.put (child_pkg, child_pkg_key)
-						else
-							child_pkg := pkg_csr.item (child_pkg_key)
+				if attached top_packages_csr.item as top_pkg then
+					if top_pkg.name.has (package_name_delimiter) then
+						-- iterate over qualified name, inserting new packages for each of these names.
+						-- E.g. 'rm.composition.content' causes three new packages 'rm', 'composition'
+						-- and 'content' to be created and linked, with the 'rm' one being put in
+						-- `canonical_packages'
+						pkg_csr := canonical_packages
+						child_pkg := top_pkg
+						across top_pkg.name.split (Package_name_delimiter) as child_pkg_names_csr loop
+							child_pkg_key := child_pkg_names_csr.item.as_upper
+							if pkg_csr.has (child_pkg_key) and then attached pkg_csr.item (child_pkg_key) as cp then
+								child_pkg := cp
+							else
+								create child_pkg.make (child_pkg_names_csr.item)
+								pkg_csr.put (child_pkg, child_pkg_key)
+							end
+							pkg_csr := child_pkg.packages
 						end
-						pkg_csr := child_pkg.packages
-					end
 
-					-- now we need to make the final package in the chain created above contain
-					-- the same references as the original package with the qualified name
-					child_pkg.make_from_other (top_packages_csr.item)
-				else
-					-- just create a reference in the canonical packages; note that this precludes
-					-- the situation where top-level packages like 'rm' and 'rm.composition.content'
-					-- co-exist - this would be bad structure
-					canonical_packages.put (top_packages_csr.item, top_packages_csr.item.name.as_upper)
+						-- now we need to make the final package in the chain created above contain
+						-- the same references as the original package with the qualified name
+						child_pkg.make_from_other (top_pkg)
+					else
+						-- just create a reference in the canonical packages; note that this precludes
+						-- the situation where top-level packages like 'rm' and 'rm.composition.content'
+						-- co-exist - this would be bad structure
+						canonical_packages.put (top_pkg, top_pkg.name.as_upper)
+					end
 				end
 			end
 
@@ -366,7 +376,7 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 			end
 		end
 
-	merge (other: attached P_BMM_SCHEMA)
+	merge (other: P_BMM_SCHEMA)
 			-- merge in class and package definitions from `other', except where the current schema already has
 			-- a definition for the given type or package
 		require
@@ -414,7 +424,6 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 
 			-- compute ancestors index:
 			-- pass 1: add class direct ancestors
-			create ancestors_index.make(0)
 			do_all_classes (
 				agent (a_class_def: P_BMM_CLASS_DEFINITION)
 					local
@@ -430,12 +439,14 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 			do_all_classes (
 				agent (a_class_def: P_BMM_CLASS_DEFINITION)
 					local
-						anc_copy: ARRAYED_SET [STRING]
+						anc_list_copy: ARRAYED_SET [STRING]
 					do
-						anc_copy := ancestors_index.item (a_class_def.name.as_upper).deep_twin -- create a copy for iteration purposes
-						across anc_copy as anc_copy_csr loop
-							if ancestors_index.has (anc_copy_csr.item.as_upper) then
-								ancestors_index.item (a_class_def.name.as_upper).merge (ancestors_index.item (anc_copy_csr.item.as_upper))
+						if attached ancestors_index.item (a_class_def.name.as_upper) as anc_list then
+							anc_list_copy := anc_list.deep_twin -- create a copy for iteration purposes
+							across anc_list_copy as anc_copy_csr loop
+								if ancestors_index.has (anc_copy_csr.item.as_upper) and then attached ancestors_index.item (anc_copy_csr.item.as_upper) as iter_anc_list then
+									anc_list.merge (iter_anc_list)
+								end
 							end
 						end
 					end
@@ -470,8 +481,8 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 			package_classes: HASH_TABLE [STRING, STRING]
 		do
 			-- check archetype parent class in list of class names
-			if attached archetype_parent_class and then not has_class_definition (archetype_parent_class) then
-				add_error ("BMM_ARPAR", <<schema_id, archetype_parent_class>>)
+			if attached archetype_parent_class as apc and then not has_class_definition (apc) then
+				add_error ("BMM_ARPAR", <<schema_id, apc>>)
 			end
 
 			-- check that all models refer to declared packages
@@ -487,8 +498,8 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 				pkgs_csr.item.do_recursive_classes (
 					agent (a_pkg: P_BMM_PACKAGE_DEFINITION; a_class_name: STRING; class_list: HASH_TABLE [STRING, STRING])
 						do
-							if class_list.has (a_class_name.as_lower) then
-								add_error ("BMM_CLDUP", <<schema_id, a_class_name, a_pkg.name, class_list.item (a_class_name.as_lower)>>)
+							if class_list.has (a_class_name.as_lower) and then attached class_list.item (a_class_name.as_lower) as cl_item then
+								add_error ("BMM_CLDUP", <<schema_id, a_class_name, a_pkg.name, cl_item>>)
 							else
 								class_list.put (a_pkg.name, a_class_name.as_lower)
 							end
@@ -512,8 +523,8 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 			-- check that all generic parameter.conforms_to_type exist exists
 			if a_class_def.is_generic then
 				across a_class_def.generic_parameter_defs as gen_param_defs_csr loop
-					if attached gen_param_defs_csr.item.conforms_to_type and then not has_class_definition (gen_param_defs_csr.item.conforms_to_type) then
-						add_validity_error (a_class_def.source_schema_id, "BMM_GPCT", <<a_class_def.source_schema_id, a_class_def.name, gen_param_defs_csr.item.name, gen_param_defs_csr.item.conforms_to_type>>)
+					if attached gen_param_defs_csr.item.conforms_to_type as conf_type and then not has_class_definition (conf_type) then
+						add_validity_error (a_class_def.source_schema_id, "BMM_GPCT", <<a_class_def.source_schema_id, a_class_def.name, gen_param_defs_csr.item.name, conf_type>>)
 					end
 				end
 			end
@@ -530,8 +541,9 @@ feature {SCHEMA_DESCRIPTOR, REFERENCE_MODEL_ACCESS} -- Schema Processing
 		do
 			-- first check if any property replicates a property from a parent class
 			across a_class_def.ancestors as ancs_csr loop
-				if class_definition (ancs_csr.item).properties.has (a_prop_def.name) and then not
-					property_conforms_to (a_class_def, a_prop_def, class_definition (ancs_csr.item).properties.item (a_prop_def.name))
+				if attached class_definition (ancs_csr.item) as anc_class and then anc_class.properties.has (a_prop_def.name) and then
+					attached anc_class.properties.item (a_prop_def.name) as anc_prop and then not
+					property_conforms_to (a_class_def, a_prop_def, anc_prop)
 				then
 					add_validity_error (a_class_def.source_schema_id, "BMM_PRNCF", <<a_class_def.source_schema_id, a_class_def.name, a_prop_def.name, ancs_csr.item>>)
 				end
@@ -586,21 +598,26 @@ feature -- Factory
 			-- generate a BMM_SCHEMA object
 		require
 			state = State_includes_processed
+		local
+			new_bmm_schema: BMM_SCHEMA
 		do
 			--------- PASS 1 ----------
-			create bmm_schema.make (rm_publisher, schema_name, rm_release)
-			bmm_schema.set_schema_author (schema_author)
+			create new_bmm_schema.make (rm_publisher, schema_name, rm_release)
+			bmm_schema := new_bmm_schema
+			new_bmm_schema.set_schema_author (schema_author)
 			if not schema_contributors.is_empty then
-				bmm_schema.set_schema_contributors (schema_contributors)
+				new_bmm_schema.set_schema_contributors (schema_contributors)
 			end
-			bmm_schema.set_schema_lifecycle_state (schema_lifecycle_state)
-			bmm_schema.set_schema_revision (schema_revision)
-			bmm_schema.set_schema_description (schema_description)
+			new_bmm_schema.set_schema_lifecycle_state (schema_lifecycle_state)
+			new_bmm_schema.set_schema_revision (schema_revision)
+			new_bmm_schema.set_schema_description (schema_description)
 
 			-- packages - add package structure only, no classes yet
 			across canonical_packages as pkgs_csr loop
 				pkgs_csr.item.create_bmm_package_definition
-				bmm_schema.add_package (pkgs_csr.item.bmm_package_definition)
+				if attached pkgs_csr.item.bmm_package_definition as pkg_def then
+					new_bmm_schema.add_package (pkg_def)
+				end
 			end
 
 			-- now add classes. We do this in such a way that all ancestors of a class
@@ -610,47 +627,52 @@ feature -- Factory
 			end
 
 			-- set the archetype root class
-			if attached archetype_parent_class then
-				bmm_schema.set_archetype_parent_class (archetype_parent_class)
+			if attached archetype_parent_class as apc then
+				new_bmm_schema.set_archetype_parent_class (apc)
 			end
 			-- set the archetype data value root class
-			if attached archetype_data_value_parent_class then
-				bmm_schema.set_archetype_data_value_parent_class (archetype_data_value_parent_class)
+			if attached archetype_data_value_parent_class as advp then
+				new_bmm_schema.set_archetype_data_value_parent_class (advp)
 			end
 			-- set the archetype data value root class
-			if attached archetype_visualise_descendants_of then
-				bmm_schema.set_archetype_visualise_descendants_of (archetype_visualise_descendants_of)
+			if attached archetype_visualise_descendants_of as avd then
+				new_bmm_schema.set_archetype_visualise_descendants_of (avd)
 			end
 			-- add RM closure packages - clone because merging will change the structure in the BMM_SCHEMA
-			bmm_schema.set_archetype_rm_closure_packages (archetype_rm_closure_packages.deep_twin)
+			new_bmm_schema.set_archetype_rm_closure_packages (archetype_rm_closure_packages.deep_twin)
 
 			--------- PASS 2 ----------
 			-- populate BMM_CLASS_DEFINITION objects
-			do_all_classes_in_order (agent (a_class_def: P_BMM_CLASS_DEFINITION) do a_class_def.populate_bmm_class_definition (bmm_schema) end)
+			do_all_classes_in_order (
+				agent (a_class_def: P_BMM_CLASS_DEFINITION; a_bmm_schema: BMM_SCHEMA)
+					do
+						a_class_def.populate_bmm_class_definition (a_bmm_schema)
+					end (?, new_bmm_schema))
 		end
 
 	add_bmm_schema_class_definition (a_pkg: P_BMM_PACKAGE_DEFINITION; a_class_name: STRING)
 			-- create the BMM_CLASS_DEFINITION object, add it to the BMM_SCHEMA;
 			-- set its source_schema_id; set its primitive_type flag; its BMM_SCHEMA link will also be set
-		local
-			bmm_class_def: BMM_CLASS_DEFINITION
 		do
-			class_definition (a_class_name).create_bmm_class_definition
-			bmm_class_def := class_definition (a_class_name).bmm_class_definition
-			if primitive_types.has (a_class_name.as_upper) then
-				bmm_class_def.set_primitive_type
+			if attached class_definition (a_class_name) as p_class_def then
+				p_class_def.create_bmm_class_definition
+				if attached p_class_def.bmm_class_definition as bmm_class_def and attached a_pkg.bmm_package_definition as pkg_def then
+					if primitive_types.has (a_class_name.as_upper) then
+						bmm_class_def.set_primitive_type
+					end
+					if p_class_def.is_override then
+						bmm_class_def.set_is_override
+					end
+					bmm_schema.add_class_definition (bmm_class_def, pkg_def)
+				end
 			end
-			if class_definition (a_class_name).is_override then
-				bmm_class_def.set_is_override
-			end
-			bmm_schema.add_class_definition (bmm_class_def, a_pkg.bmm_package_definition)
 		end
 
 	missed_class_count: INTEGER
 
 feature {DT_OBJECT_CONVERTER} -- Persistence
 
-	persistent_attributes: ARRAYED_LIST[STRING]
+	persistent_attributes: detachable ARRAYED_LIST[STRING]
 			-- list of attribute names to persist as DT structure
 			-- empty structure means all attributes
 		do
@@ -696,10 +718,13 @@ feature {REFERENCE_MODEL_ACCESS} -- Implementation
 
 	schema_error_table: HASH_TABLE [ERROR_ACCUMULATOR, STRING]
 			-- set of error accumulators for other schemas, keyed by schema id
-		note
-			option: transient
-		attribute
-			create Result.make (0)
+		do
+			if attached schema_error_table_cache as set then
+				Result := set
+			else
+				create Result.make (0)
+				schema_error_table_cache := Result
+			end
 		end
 
 feature {NONE} -- Implementation
@@ -792,6 +817,33 @@ feature {NONE} -- Implementation
 				end
 				schema_error_table.item (source_schema_id).add_warning (a_key, args, "")
 			end
+		end
+
+	schema_error_table_cache: detachable HASH_TABLE [ERROR_ACCUMULATOR, STRING]
+			-- set of error accumulators for other schemas, keyed by schema id
+		note
+			option: transient
+		attribute
+		end
+
+	ancestors_index_cache: detachable HASH_TABLE [ARRAYED_SET [STRING], STRING]
+			-- index of all ancestors of each class
+		note
+			option: transient
+		attribute
+		end
+
+	includes_to_process_cache: detachable ARRAYED_LIST [STRING]
+			-- list of includes to process during setup
+		note
+			option: transient
+		attribute
+		end
+
+	canonical_packages_cache: detachable HASH_TABLE [P_BMM_PACKAGE_DEFINITION, STRING]
+		note
+			option: transient
+		attribute
 		end
 
 end

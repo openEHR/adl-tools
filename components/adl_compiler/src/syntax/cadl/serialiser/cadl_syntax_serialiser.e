@@ -9,13 +9,8 @@ note
 	keywords:    "serialiser, CADL"
 	author:      "Thomas Beale <thomas.beale@oceaninformatics.com>"
 	support:     "http://www.openehr.org/issues/browse/AWB"
-	copyright:   "Copyright (c) 2003-2011 Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
+	copyright:   "Copyright (c) 2003- Ocean Informatics Pty Ltd <http://www.oceaninfomatics.com>"
 	license:     "See notice at bottom of class"
-	void_safety: "initial"
-
-	file:        "$URL$"
-	revision:    "$LastChangedRevision$"
-	last_change: "$LastChangedDate$"
 
 class CADL_SYNTAX_SERIALISER
 
@@ -215,9 +210,9 @@ feature -- Visitor
 		do
 			if last_object_simple then
 				last_result.append (symbol(SYM_END_CBLOCK))
-				if last_object_simple_buffer /= Void then
-					last_result.append (last_object_simple_buffer)
-					last_object_simple_buffer.wipe_out
+				if attached last_object_simple_buffer as s then
+					last_result.append (s)
+					s.wipe_out
 				end
 				last_object_simple := False
 
@@ -345,8 +340,6 @@ feature -- Visitor
 
 	start_c_code_phrase (a_node: C_CODE_PHRASE; depth: INTEGER)
 			-- start serialising an C_CODE_PHRASE
-		local
-			adl_term: ARCHETYPE_TERM
 		do
 			if a_node.code_count = 1 or a_node.code_count = 0 then
 				last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	
@@ -355,9 +348,10 @@ feature -- Visitor
 				if not a_node.any_allowed and then (a_node.is_local and a_node.code_count = 1 and ontology.has_term_code(a_node.code_list.first)) then
 					last_object_simple_buffer.append (format_item(FMT_INDENT))
 
-					adl_term := ontology.term_definition(language, a_node.code_list.first)
-					last_object_simple_buffer.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-						safe_comment(adl_term.text), STYLE_COMMENT))
+					check attached ontology.term_definition(language, a_node.code_list.first) as adl_term then
+						last_object_simple_buffer.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
+							safe_comment(adl_term.text), STYLE_COMMENT))
+					end
 				end
 				last_object_simple := True
 
@@ -376,18 +370,19 @@ feature -- Visitor
 						last_result.append (apply_style("]", STYLE_TERM_REF))
 					end
 
-					if a_node.is_local and ontology.has_term_code(a_node.code_list.item) then
-						adl_term := ontology.term_definition(language, a_node.code_list.item)
-						last_result.append (format_item(FMT_INDENT) +
-							apply_style(format_item(FMT_COMMENT) +
-							safe_comment(adl_term.text), STYLE_COMMENT))
+					if a_node.is_local and ontology.has_term_code (a_node.code_list.item) then
+						check attached ontology.term_definition(language, a_node.code_list.item) as adl_term then
+							last_result.append (format_item(FMT_INDENT) +
+								apply_style(format_item(FMT_COMMENT) +
+								safe_comment(adl_term.text), STYLE_COMMENT))
+						end
 					end
 					last_result.append (format_item(FMT_NEWLINE))
 					a_node.code_list.forth
 				end
 
-				if a_node.assumed_value /= Void then
-					last_result.append (create_indent(depth) + apply_style(a_node.assumed_value.code_string, STYLE_TERM_REF))
+				if attached a_node.assumed_value as av then
+					last_result.append (create_indent(depth) + apply_style(av.code_string, STYLE_TERM_REF))
 					last_result.append (apply_style("]", STYLE_TERM_REF))
 					last_result.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
 							"assumed value", STYLE_COMMENT))
@@ -399,7 +394,6 @@ feature -- Visitor
 	start_c_ordinal (a_node: C_DV_ORDINAL; depth: INTEGER)
 			-- start serialising an C_DV_ORDINAL
 		local
-			adl_term: ARCHETYPE_TERM
 			i: INTEGER
 		do
 			if a_node.any_allowed then
@@ -408,14 +402,15 @@ feature -- Visitor
 				dadl_engine.serialise (output_format, False, True)
 				last_result.append ((create {STRING_UTILITIES}).indented (dadl_engine.serialised, create_indent(depth)))
 			elseif a_node.items.count = 1 then
-				last_result.remove_tail(format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	
+				last_result.remove_tail (format_item(FMT_NEWLINE).count)	-- remove last newline due to OBJECT_REL_NODE	
 				last_result.append (apply_style(clean(a_node.as_string), STYLE_TERM_REF))
 				create last_object_simple_buffer.make(0)
 				if a_node.is_local then
 					last_object_simple_buffer.append (format_item(FMT_INDENT))
-					adl_term := ontology.term_definition(language, a_node.items.first.symbol.code_string)
-					last_object_simple_buffer.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
-						safe_comment(adl_term.text), STYLE_COMMENT))
+					check attached ontology.term_definition (language, a_node.items.first.symbol.code_string) as adl_term then
+						last_object_simple_buffer.append (format_item(FMT_INDENT) + apply_style(format_item(FMT_COMMENT) +
+							safe_comment(adl_term.text), STYLE_COMMENT))
+					end
 				end
 				last_object_simple := True
 
@@ -435,10 +430,11 @@ feature -- Visitor
 						last_result.append (create {STRING}.make_filled (' ', format_item(FMT_LIST_ITEM_SEPARATOR).count))
 					end
 					if a_node.is_local then
-						adl_term := ontology.term_definition(language, a_node.items.item.symbol.code_string)
-						last_result.append (format_item(FMT_INDENT) +
-							apply_style(format_item(FMT_COMMENT) +
-							safe_comment(adl_term.text), STYLE_COMMENT))
+						check attached ontology.term_definition (language, a_node.items.item.symbol.code_string) as adl_term then
+							last_result.append (format_item(FMT_INDENT) +
+								apply_style(format_item(FMT_COMMENT) +
+								safe_comment (adl_term.text), STYLE_COMMENT))
+						end
 					end
 					last_result.append (format_item(FMT_NEWLINE))
 					a_node.items.forth
