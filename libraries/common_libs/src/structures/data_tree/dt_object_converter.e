@@ -299,7 +299,7 @@ end
 								if not eif_hash_fld_val.is_empty  then
 									create a_dt_attr.make_container (eif_fld_name)
 									a_dt_attr.set_type_name (eif_fld_val.generating_type)
-									if eif_fld_static_type /= eif_fld_dynamic_type then
+									if attached_type (eif_fld_static_type) /= attached_type (eif_fld_dynamic_type) then
 										a_dt_attr.set_type_visible
 									end
 									populate_dt_attr_from_eif_hash (a_dt_attr, eif_hash_fld_val, eif_fld_static_type)

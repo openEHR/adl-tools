@@ -54,16 +54,16 @@ feature -- Access
 	occurrences: detachable MULTIPLICITY_INTERVAL
 
 	occurrences_key_string: STRING
-			-- generate a string of the form ".multiple", ".multiple.optional" or ".optional" or ""
+			-- generate a string of the form "_multiple", "_multiple_optional" or "_optional" or ""
 			-- representing the occurrences, useful as a key to variant pixmaps, files etc.
 		do
 			create Result.make_empty
 			if attached occurrences as occ then
 				if occ.upper > 1 or occ.upper_unbounded then
-					Result.append (".multiple")
+					Result.append ("_multiple")
 				end
 				if occ.is_optional then
-					Result.append (".optional")
+					Result.append ("_optional")
 				end
 			end
 		end

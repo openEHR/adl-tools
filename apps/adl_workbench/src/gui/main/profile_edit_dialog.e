@@ -217,9 +217,6 @@ feature -- Access
 
 	work_dir: STRING
 			-- current value of work directory setting based on choosing so far
-		attribute
-			create Result.make_empty
-		end
 
 feature -- Status Report
 

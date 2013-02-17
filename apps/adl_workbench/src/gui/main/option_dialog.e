@@ -33,10 +33,6 @@ feature {NONE} -- Initialization
 			create gui_controls.make (0)
 
 			-- ========== root container ============
-			set_minimum_width (400)
-			set_title (get_text ("option_dialog_title"))
-			set_icon_pixmap (adl_workbench_icon)
-
 			create ev_root_container
 			ev_root_container.set_padding (Default_padding_width)
 			ev_root_container.set_border_width (Default_border_width)
@@ -208,6 +204,17 @@ feature {NONE} -- Initialization
 			create ok_cancel_buttons.make (agent on_ok, agent hide)
 			ev_root_container.extend (ok_cancel_buttons.ev_root_container)
 			ev_root_container.disable_item_expand (ok_cancel_buttons.ev_root_container)
+		end
+
+	initialize
+		do
+			precursor
+
+			set_minimum_width (400)
+			set_title (get_text ("option_dialog_title"))
+			set_icon_pixmap (adl_workbench_icon)
+
+			extend (ev_root_container)
 			set_default_cancel_button (ok_cancel_buttons.cancel_button)
 			set_default_push_button (ok_cancel_buttons.ok_button)
 
@@ -216,12 +223,6 @@ feature {NONE} -- Initialization
 			enable_edit
 			old_show_entire_ontology := show_entire_ontology
 			do_populate
-		end
-
-	initialize
-		do
-			extend (ev_root_container)
-			precursor
 		end
 
 feature -- Status

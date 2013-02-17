@@ -266,36 +266,18 @@ feature -- Access
 	diff_dir_source_flat_new: STRING
 			-- directory where flat files go, renamed to .adlx, for source/flat
 			-- comparison, non-specialised archetypes only
-		attribute
-			create Result.make_empty
-		end
 
 	dadl_source_dir: STRING
 			-- directory where dADL files from source form archetypes are saved
-		attribute
-			create Result.make_empty
-		end
 
 	dadl_flat_dir: STRING
 			-- directory where dADL files from flat form archetypes are saved
-		attribute
-			create Result.make_empty
-		end
 
 	dadl_adl_root: STRING
-		attribute
-			create Result.make_empty
-		end
 
 	diff_dadl_round_trip_source_orig_dir: STRING
-		attribute
-			create Result.make_empty
-		end
 
 	diff_dadl_round_trip_source_new_dir: STRING
-		attribute
-			create Result.make_empty
-		end
 
 feature -- Status Setting
 
@@ -796,9 +778,6 @@ feature {NONE} -- Implementation
 
 	test_status: STRING
 			-- Cumulative status message during running of test.
-		attribute
-			create Result.make (0)
-		end
 
 	target: detachable ARCH_CAT_ARCHETYPE
 			-- current target of compilation operation
@@ -809,9 +788,6 @@ feature {NONE} -- Implementation
 
 	original_differential_text: STRING
 			-- copy of archetype text after successful parse; = what was on file
-		attribute
-			create Result.make (0)
-		end
 
 	populate_gui_tree_node_enter (ari: ARCH_CAT_ITEM)
 			-- Add a node representing `an_item' to `gui_file_tree'.

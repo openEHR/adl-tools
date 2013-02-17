@@ -196,9 +196,7 @@ feature -- Environment
 			-- or F_code directory, the Eiffel project directory. This must be called before any change_dir calls are made
 			-- since there is no easy way to get the startup directory.
 		once
-			check attached file_system.dirname (application_full_path) as dn then
-				Result := dn
-			end
+			Result := file_system.dirname (application_full_path)
 		ensure
 			not_empty: not Result.is_empty
 		end
@@ -206,9 +204,7 @@ feature -- Environment
 	application_name: STRING
 			-- The name of the application executable, with any leading directory components removed.
 	    once
-			check attached file_system.basename (application_full_path) as bn then
-				Result := bn
-			end
+			Result := file_system.basename (application_full_path)
 	    end
 
 	locale_language_short: STRING

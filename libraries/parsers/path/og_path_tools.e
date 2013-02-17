@@ -13,9 +13,6 @@ feature -- Access
 
 	path_parse_error: STRING
 			-- result of last failed parse
-		attribute
-			create Result.make_empty
-		end
 
 feature -- Validation
 
@@ -26,6 +23,7 @@ feature -- Validation
 		local
 			path_parser: OG_PATH_VALIDATOR
 		do
+			create path_parse_error.make_empty
 			create path_parser.make
 			path_parser.execute (a_path)
 			if path_parser.syntax_error then
