@@ -29,14 +29,6 @@ feature {NONE} -- Shared Objects
 
 	icon_resources: ICON_RESOURCES
 		once
-			--
-			-- use the following code to use file icons in the 'icons' directory of the app
-			--
-			-- create {ICON_RESOURCES_FILE_BASED} Result.make
-
-			--
-			-- use the following code to use compiled icon classes (avoids having to deliver icon files)
-			--
 			create {ICON_RESOURCES_COMPILED} Result.make
 		end
 

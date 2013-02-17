@@ -40,13 +40,6 @@ feature {NONE} -- Initialization
 			default_create
 			app_root.initialise_shell
 			if app_root.ready_to_initialise_app then
-
-				--
-				-- use the following code to use file icons in the 'icons' directory of the app
-				--
-				-- if attached {ICON_RESOURCES_FILE_BASED} icon_resources as icon_resources_fb then
-				-- 	icon_resources_fb.set_icon_directory (icon_directory)
-				-- end
 				app_root.initialise_app
 				if not app_root.has_errors then
 					show_splash_window
@@ -70,13 +63,6 @@ feature {NONE} -- Initialization
 		do
 			create splash.make
 			splash.show
-
-			if not file_system.directory_exists (icon_directory) then
-				new_abort_dialog ("The 'icons' directory is missing. Please reinstall ADL Workbench and try again.").show_modal_to_window (splash)
-				destroy
-			end
-		ensure
-			aborting_if_no_icons: is_destroyed xor file_system.directory_exists (icon_directory)
 		end
 
 	show_main_window
