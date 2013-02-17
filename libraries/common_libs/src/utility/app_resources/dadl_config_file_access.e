@@ -58,6 +58,7 @@ feature -- Initialisation
 			-- Make with `a_file_path', which doesn't necessarily exist as a file. If it does, it will be read;
 			-- if not, nothing will be read, and the first save request will create the file new.
 		do
+			create errors.make
 			create refresh_listeners.make (0)
 			create requested_resources.make (0)
 			file_path := a_file_path
@@ -142,6 +143,8 @@ feature -- Access
 			end
 			requested_resources.extend (a_path)
 		end
+
+	errors: ERROR_ACCUMULATOR
 
 feature -- Status Report
 
@@ -269,6 +272,8 @@ feature {NONE} -- Implementation
 				parser.execute (res_file.last_string, 1)
 				if not parser.syntax_error then
 					dt_tree := parser.output
+				else
+					errors.add_error ("cfg_file_parse_error", <<file_path, parser.errors.as_string>>, generator)
 				end
 				res_file.close
 			end

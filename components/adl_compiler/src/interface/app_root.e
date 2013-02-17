@@ -55,6 +55,10 @@ feature -- Initialisation
 
 			initialise_serialisers
 			reset
+
+			if app_cfg.errors.has_errors then
+				errors.append (app_cfg.errors)
+			end
 		end
 
 	initialise_app
@@ -145,7 +149,7 @@ feature -- Status Report
 
 	ready_to_initialise_app: BOOLEAN
 		do
-			Result := message_db.database_loaded
+			Result := message_db.database_loaded and not app_cfg.errors.has_errors
 		end
 
 end
