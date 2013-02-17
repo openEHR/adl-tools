@@ -18,20 +18,16 @@
 		</library>
 		<library name="encoding" location="$ISE_LIBRARY\library\encoding\encoding-safe.ecf"/>
 		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel-safe.ecf"/>
-		<library name="gobo_lexical" location="$ISE_LIBRARY\library\gobo\gobo_lexical-safe.ecf"/>
-		<library name="gobo_parse" location="$ISE_LIBRARY\library\gobo\gobo_parse-safe.ecf"/>
-		<library name="gobo_structure" location="$ISE_LIBRARY\library\gobo\gobo_structure-safe.ecf"/>
-		<library name="gobo_utility" location="$ISE_LIBRARY\library\gobo\gobo_utility-safe.ecf"/>
 		<library name="i18n" location="$ISE_LIBRARY\library\i18n\i18n-safe.ecf"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time-safe.ecf">
 			<renaming old_name="C_DATE" new_name="TIME_C_DATE"/>
 			<renaming old_name="INTERVAL" new_name="TIME_INTERVAL"/>
 		</library>
 		<cluster name="app" location="..\src\" recursive="true">
-			<option void_safety="initialization">
+			<option void_safety="none">
 			</option>
 		</cluster>
-		<cluster name="app_messages" location="..\..\message_db\generated\">
+		<cluster name="messages_generated" location="..\..\resources\messages\compiled\">
 			<option void_safety="initialization">
 			</option>
 		</cluster>
@@ -68,5 +64,14 @@
 			<option void_safety="initialization">
 			</option>
 		</cluster>
+		<cluster name="gobo_lexical" location="$ISE_LIBRARY\contrib\library\gobo\library\lexical\" recursive="true"/>
+		<cluster name="gobo_lexical_override" location="$ISE_LIBRARY\library\gobo\override\generated\library\lexical\" recursive="true"/>
+		<cluster name="gobo_parse" location="$ISE_LIBRARY\contrib\library\gobo\library\parse\" recursive="true"/>
+		<cluster name="gobo_parse_override" location="$ISE_LIBRARY\library\gobo\override\generated\library\parse\" recursive="true"/>
+		<cluster name="gobo_pattern" location="$ISE_LIBRARY\contrib\library\gobo\library\pattern\" recursive="true"/>
+		<cluster name="gobo_regexp" location="$ISE_LIBRARY\contrib\library\gobo\library\regexp\" recursive="true"/>
+		<cluster name="gobo_string" location="$ISE_LIBRARY\contrib\library\gobo\library\string\" recursive="true"/>
+		<cluster name="gobo_structure" location="$ISE_LIBRARY\contrib\library\gobo\library\structure\" recursive="true"/>
+		<cluster name="gobo_utility" location="$ISE_LIBRARY\contrib\library\gobo\library\utility\" recursive="true"/>
 	</target>
 </system>

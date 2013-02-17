@@ -20,6 +20,7 @@ templates = <
 		["general_error"] = <"$1">
 		["general"] = <"$1">
 		["cfg_file_i1"] = <"Wrote config file $1">
+		["cfg_file_parse_error"] = <"Config file $1 parse error: $2">
 		["directory_does_not_exist"] = <"Directory $1 does not exist.">
 		["empty_directory_does_not_exist"] = <"Directory <empty> does not exist.">
 		["file_does_not_exist"] = <"File $1 does not exist.">

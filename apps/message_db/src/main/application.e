@@ -61,14 +61,17 @@ class
 inherit
 	SHARED_MESSAGE_DB
 
-	KL_SHARED_FILE_SYSTEM
-
 	ANY_VALIDATOR
+
+	SHARED_RESOURCES
+		export
+			{NONE} all
+		end
 
 create
 	make
 
-feature -- Definition
+feature -- Definitions
 
 	Error_file_extension: STRING = ".txt"
 
@@ -116,7 +119,7 @@ feature {NONE} -- Implementation
 
 	options_processor: OPTIONS_PROCESSOR
 		once
-			create Result.make
+			create Result.make (locale_language_short)
 			Result.set_is_usage_displayed_on_error (True)
 		end
 
@@ -128,7 +131,7 @@ feature {NONE} -- Implementation
 			dir: DIRECTORY
 			found_count: INTEGER
 		do
-			message_defs.wipe_out
+			create message_defs.make (1000)
 			create dir.make (a_msg_db_dir)
 			if dir.exists then
 				dir.open_read
@@ -210,9 +213,6 @@ feature {NONE} -- Implementation
 
 	message_defs: HASH_TABLE [STRING, STRING]
 			-- message definitions in the form of a table of templates keyed by id
-		attribute
-			create Result.make (1000)
-		end
 
 	class_generator: MESSAGE_CLASS_GENERATOR
 		once
